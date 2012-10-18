@@ -46,6 +46,34 @@
 NS_LOG_COMPONENT_DEFINE ("LteMiErrorModel");
 
 namespace ns3 {
+
+  // global table of the effective code rates (ECR)s that have BLER performance curves
+  double BlerCurvesEcrMap[38] = {
+    // QPSK (M=2)
+    0.000041, 0.000512, 0.00064,   // ECRs of MCS0 retx
+    0.08, 0.1, 0.11, 0.15, 0.19, 0.24, 0.3, 0.37, 0.44, 0.51, // ECRs of MCSs
+    // 16QAM (M=4)
+    0.0081, 0.027, 0.09, // ECRs of MCS10 retx
+    0.3, 0.33, 0.37, 0.42, 0.48, 0.54, 0.6,// ECRs of MCSs
+    // 64QAM (M=6)
+    0.034, 0.079, 0.185,// ECRs of MCS17 retx
+    0.43, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.89, 0.92// ECRs of MCSs
+  };
+
+  // Table codifing standard MCSs ECR to available ECRs
+  uint8_t McsEcrBlerTableMapping[29] = {
+    3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+    16, 17, 18, 19, 20, 21, 22,
+    26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37    
+  };
+
+  // Table of ECR of the standard MCSs
+  double McsEcrTable [29] = {0.08, 0.1, 0.11, 0.15, 0.19, 0.24, 0.3, 0.37, 0.44, 0.51, 0.3, 0.33, 0.37, 0.42, 0.48, 0.54, 0.6, 0.43, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.89, 0.92
+  };
+
+  // Table with ECRs obtained with retransmissions with BLER curves
+  double HarqRetxEcr[9] = {0.00064, 0.000512, 0.000041, 0.09, 0.027, 0.0081, 0.185, 0.079, 0.034    
+  };
  
   // PCFICH-PDCCH Error model based on 3GPP R4-081920 "LTE PDCCH/PCFICH
   //  Demodulation Performance Results with Implementation Margin"
@@ -122,136 +150,172 @@ double MI_map_64qam_axis[MI_MAP_64QAM_SIZE] = {
 
 
 
-double bEcrTable [9][29] = {
+double bEcrTable [9][38] = {
   // CB of 40 bits
   {
-    0.1777, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000,
-    -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000,
-    -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000,
-    -1.000, -1.000
+    -1.000, -1.000, 0.01572, // QPSK retx
+    0.1777, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, // QPSK
+    -1.000, -1.000, -1.000, // 16QAM retx
+    -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, // 16QAM
+    -1.000, -1.000, -1.000, // 64QAM retx
+    -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000 // 64QAM
   },  
   // CB of 104 bits
   {
-    0.1423, 0.1753, 0.1882, 0.2499, -1.000, -1.000, -1.000, -1.000, -1.000,
-    -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000,
-    -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000,
-    -1.000, -1.000    
+    -1.000, -1.000, 0.01224, // QPSK retx
+    0.1423, 0.1753, 0.1882, 0.2499, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, // QPSK
+    -1.000, -1.000, -1.000, // 16QAM retx
+    -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, // 16QAM
+    -1.000, -1.000, -1.000, // 64QAM retx
+    -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000 // 64QAM
   },
   // CB of 160
   {
-    0.1354, 0.1655, 0.1812, 0.2351, 0.2873, 0.3462, -1.000, -1.000, -1.000,
-    -1.0000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, 
-    -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000,
-    -1.000, -1.000        
+    -1.000, -1.000, 0.01148, // QPSK retx
+    0.1354, 0.1655, 0.1812, 0.2351, 0.2873, 0.3462, -1.000, -1.000, -1.000, -1.0000, // QPSK
+    -1.000, -1.000, -1.000, // 16QAM retx
+    -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, // 16QAM
+    -1.000, -1.000, -1.000, // 64QAM retx
+    -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000 // 64QAM
   },
   // CB of 256
   {
-    0.1304, 0.1584, 0.1735, 0.2265, 0.2782, 0.3340, 0.3927, 0.4785, 0.5566,
-    -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, 
-    -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000,
-    -1.000, -1.000        
+    -1.000, -1.000, 0.01094, // QPSK retx
+    0.1304, 0.1584, 0.1735, 0.2265, 0.2782, 0.3340, 0.3927, 0.4785, 0.5566, -1.000, // QPSK
+    -1.000, -1.000, -1.000, // 16QAM retx
+    -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, // 16QAM
+    -1.000, -1.000, -1.000, // 64QAM retx
+    -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000  // 64QAM
   },
   // CB of 512
   {
-    0.1257, 0.1528, 0.1667, 0.2188, 0.2680, 0.3229, 0.3818, 0.4607, 0.5373,
-    0.6081, 0.7451, 0.4049, 0.4472, 0.4975, -1.000, -1.000, -1.000, -1.000,
-    -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000,
-    -1.000, -1.000        
+    -1.000, -1.000, 0.01048, // QPSK retx
+    0.1257, 0.1528, 0.1667, 0.2188, 0.2680, 0.3229, 0.3818, 0.4607, 0.5373, 0.6081, // QPSK
+    0.07198, 0.16632, 0.3737, // 16 QAM retx
+    0.7451, 0.4049, 0.4472, 0.4975, -1.000, -1.000, -1.000, //16QAM
+    -1.000, -1.000, -1.000, // 64QAM retx
+    -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000  // 64QAM
   },
   // CB of 1024
   {
-    0.1224, 0.1497, 0.1638, 0.2139, 0.2636, 0.3195, 0.3768, 0.4520, 0.5269,
-    0.5963, 0.7412, 0.3979, 0.4399, 0.4894, 0.6422, 0.6034, 0.6619, 0.7538,
-    0.7743, 0.5627, 0.6089, 0.6577, 0.7049, 0.7508, -1.000, -1.000, -1.000,
-    -1.000, -1.000            
+    -1.000, -1.000, 0.01026, // QPSK retx
+    0.1224, 0.1497, 0.1638, 0.2139, 0.2636, 0.3195, 0.3768, 0.4520, 0.5269, 0.5963, // QPSK
+    0.07228, 0.1652, 0.36928, // 16QAM retx
+    0.7412, 0.3979, 0.4399, 0.4894, 0.6422, 0.6034, 0.6619, // 16QAM
+    0.21138, 0.42448, 0.77898, // 64QAM retx
+    0.7538, 0.7743, 0.5627, 0.6089, 0.6577, 0.7049, 0.7508, -1.000, -1.000, -1.000, -1.000, -1.000  //64QAM
   },
   // CB of 2560
   {
-    0.1211, 0.1480, 0.1615, 0.2119, 0.2611, 0.3157, 0.3735, 0.4458, 0.5205,
-    0.5902, 0.7376, 0.3939, 0.4351, 0.4851, 0.6365, 0.5976, 0.6554, 0.7442, 
-    0.7701, 0.5619, 0.6056, 0.6521, 0.6982, 0.7441, 0.7874, 0.8315, 0.8735,
-    0.9089, 0.9369            
+     -1.000, -1.000, 0.01008, // QPSK retx
+    0.1211, 0.1480, 0.1615, 0.2119, 0.2611, 0.3157, 0.3735, 0.4458, 0.5205, 0.5902, // QPSK
+    0.0592, 0.15188, 0.36016, // 16 QAM retx
+    0.7376, 0.3939, 0.4351, 0.4851, 0.6365, 0.5976, 0.6554, // 16QAM
+    0.20886, 0.41926, 0.76674, // 64 QAM retx
+    0.7442, 0.7701, 0.5619, 0.6056, 0.6521, 0.6982, 0.7441, 0.7874, 0.8315, 0.8735, 0.9089, 0.9369  // 64QAM
   },
   // CB of 4032
   {
-    0.1208, 0.1477, 0.1612, 0.2112, 0.2606, 0.3153, 0.3728, 0.4441, 0.5185,
-    0.5882, 0.7349, 0.3921, 0.4338, 0.4871, 0.6535, 0.5940, 0.6527, 0.7430, 
-    0.7699, 0.5591, 0.6027, 0.6512, 0.6981, 0.7437, 0.7873, 0.8301, 0.8702,
-    0.9082, 0.9339            
+    -1.000, -1.000, 0.01008, // QPSK retx
+    0.1208, 0.1477, 0.1612, 0.2112, 0.2606, 0.3153, 0.3728, 0.4441, 0.5185, 0.5882,  // QPSK
+    0.06074, 0.1527, 0.36034, // 16 QAM retx
+    0.7349, 0.3921, 0.4338, 0.4871, 0.6535, 0.5940, 0.6527,  // 16QAM
+    0.2088, 0.41928, 0.76588, // 64QAM retx
+    0.7430, 0.7699, 0.5591, 0.6027, 0.6512, 0.6981, 0.7437, 0.7873, 0.8301, 0.8702, 0.9082, 0.9339  // 64QAM
   },
   // CB of 6144
   {
-    0.1207, 0.1474, 0.1612, 0.2111, 0.2605, 0.3153, 0.3726, 0.4439, 0.5193,
-    0.5882, 0.7369, 0.3921, 0.4339, 0.4833, 0.6339, 0.5952, 0.6528, 0.7420, 
-    0.7664, 0.5600, 0.6027, 0.6494, 0.6948, 0.7407, 0.7842, 0.8284, 0.8692,
-    0.9058, 0.9325            
+    -1.000, -1.000, 0.01006, // QPSK retx
+    0.1207, 0.1474, 0.1612, 0.2111, 0.2605, 0.3153, 0.3726, 0.4439, 0.5193, 0.5882,  // QPSK
+    0.06302, 0.15566, 0.36364, // 16QAM retx
+    0.7369, 0.3921, 0.4339, 0.4833, 0.6339, 0.5952, 0.6528, // 16QAM
+    0.20874, 0.41872, 0.76562,  // 64QAM retx
+    0.7420, 0.7664, 0.5600, 0.6027, 0.6494, 0.6948, 0.7407, 0.7842, 0.8284, 0.8692, 0.9058, 0.9325  // 64QAM
   },
 };
   
   
-double cEcrTable [9][29] = {
+double cEcrTable [9][38] = {
   // CB of 40 bits
   {
-    0.0342, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000,
-    -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000,
-    -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000,
-    -1.000, -1.000            
+    -1.000, -1.000, 0.00359, // QPSK retx
+    0.0342, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, // QPSK
+    -1.000, -1.000, -1.000, // 16QAM retx
+    -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, // 16QAM
+    -1.000, -1.000, -1.000, // 64QAM retx
+    -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000,    -1.000, -1.000 // 64 QAM
   },
   // CB of 104 bits
   {
-    0.0198, 0.0239, 0.0248, 0.0320, -1.000, -1.000, -1.000, -1.000, -1.000,
-    -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000,
-    -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000,
-    -1.000, -1.000            
+    -1.000, -1.000, 0.00193, // QPSK retx
+    0.0198, 0.0239, 0.0248, 0.0320, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, // QPSK
+    -1.000, -1.000, -1.000, // 16QAM retx
+    -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, // 16QAM
+    -1.000, -1.000, -1.000, // 64QAM retx
+    -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000 // 64QAM
   },
   // CB of 160 bits
   {
-    0.0157, 0.0190, 0.0204, 0.0252, 0.0310, 0.0348, -1.0000, -1.000, -1.000,
-    -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, 
-    -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000,
-    -1.000, -1.000            
+    -1.000, -1.000, 0.00159, // QPSK retx
+    0.0157, 0.0190, 0.0204, 0.0252, 0.0310, 0.0348, -1.0000, -1.000, -1.000, -1.000, //QPSK
+    -1.000, -1.000, -1.000, // 16QAM retx
+    -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, // 16QAM
+    -1.000, -1.000, -1.000, // 64QAM retx
+    -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000 // 64QAM
   },
   // CB of 256 bits
   {
-    0.0123, 0.0149, 0.0163, 0.0212, 0.0252, 0.0298, 0.0304, 0.0341, 0.0382,
-    -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, 
-    -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000,
-    -1.000, -1.000            
+    -1.000, -1.000, 0.00119, // QPSK retx
+    0.0123, 0.0149, 0.0163, 0.0212, 0.0252, 0.0298, 0.0304, 0.0341, 0.0382, -1.000, // QPSK
+    -1.000, -1.000, -1.000, // 16QAM retx
+    -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, // 16QAM
+    -1.000, -1.000, -1.000, // 64QAM retx
+    -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000
   },
   // CB of 512 bits
   {
-    0.0085, 0.0106, 0.0109, 0.0140, 0.0178, 0.0217, 0.0219, 0.0249, 0.0270, 
-    0.0292, 0.0293, 0.0206, 0.0220, 0.0235, 0.0257, -1.000, -1.000, -1.000,
-    -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000,
-    -1.000, -1.000            
+    -1.000, -1.000, 0.00091, // QPSK retx
+    0.0085, 0.0106, 0.0109, 0.0140, 0.0178, 0.0217, 0.0219, 0.0249, 0.0270, 0.0292, // QPSK
+    0.00797, 0.01357, 0.0234, // 16QAM retx
+    0.0293, 0.0206, 0.0220, 0.0235, 0.0257, -1.000, -1.000, // 16 QAM
+    -1.000, -1.000, -1.000, // 64QAM retx
+    -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000, -1.000
   },
   // CB of 1024 bits
   {
-    0.0061, 0.0074, 0.0078, 0.0102, 0.0121, 0.0138, 0.0163, 0.0178, 0.0207,
-    0.0198, 0.0203, 0.0137, 0.0154, 0.0164, 0.0183, 0.0188, 0.0188, 0.0220,
-    0.0215, 0.0157, 0.0169, 0.0185, 0.0189, 0.0200, -1.000, -1.000, -1.000,
-    -1.000, -1.000            
+    -1.000, -1.000, 0.00059, // QPSK retx
+    0.0061, 0.0074, 0.0078, 0.0102, 0.0121, 0.0138, 0.0163, 0.0178, 0.0207, 0.0198, // QPSK
+    0.00615, 0.01013, 0.01681, // 16QAM retx
+    0.0203, 0.0137, 0.0154, 0.0164, 0.0183, 0.0188, 0.0188, // 16QAM
+    0.01053, 0.01869, 0.02261, // 64QAM retx
+    0.0220, 0.0215, 0.0157, 0.0169, 0.0185, 0.0189, 0.0200, -1.000, -1.000, -1.000, -1.000, -1.000 // 64QAM
   },
   // CB of 2560 bits
   {
-    0.0040, 0.0047, 0.0050, 0.0063, 0.0079, 0.0091, 0.0101, 0.0117, 0.0123,
-    0.0129, 0.0123, 0.0091, 0.0095, 0.0102, 0.0116, 0.0114, 0.0119, 0.0116,
-    0.0123, 0.0096, 0.0104, 0.0109, 0.0108, 0.0118, 0.0122, 0.0117, 0.0110,
-    0.0097, 0.0085            
+    -1.000, -1.000, 0.00039, // QPSK retx
+    0.0040, 0.0047, 0.0050, 0.0063, 0.0079, 0.0091, 0.0101, 0.0117, 0.0123, 0.0129, // QPSK
+    0.00213, 0.00475, 0.00921, // 16QAM retx
+    0.0123, 0.0091, 0.0095, 0.0102, 0.0116, 0.0114, 0.0119, // 16QAM
+    0.00637, 0.01161, 0.01273, // 64QAM retx
+    0.0116, 0.0123, 0.0096, 0.0104, 0.0109, 0.0108, 0.0118, 0.0122, 0.0117, 0.0110, 0.0097, 0.0085 // 64QAM
   },
   // CB of 4032 bits
   {
-    0.0032, 0.0038, 0.0039, 0.0051, 0.0063, 0.0072, 0.0079, 0.0084, 0.0100,
-    0.0106, 0.0106, 0.0074, 0.0078, 0.0090, 0.0095, 0.0089, 0.0092, 0.0101,
-    0.0096, 0.0080, 0.0081, 0.0090, 0.0091, 0.0095, 0.0096, 0.0094, 0.0086,
-    0.0078, 0.0071            
+    -1.000, -1.000, 0.00029, // QPSK retx
+    0.0032, 0.0038, 0.0039, 0.0051, 0.0063, 0.0072, 0.0079, 0.0084, 0.0100, 0.0106, // QPSK
+    0.00193, 0.00405, 0.00777, // 16QAM retx
+    0.0106, 0.0074, 0.0078, 0.0090, 0.0095, 0.0089, 0.0092, // 16 QAM
+    0.00565, 0.00981, 0.01143, // 64QAM retx
+    0.0101, 0.0096, 0.0080, 0.0081, 0.0090, 0.0091, 0.0095, 0.0096, 0.0094, 0.0086, 0.0078, 0.0071 // 64QAM
   },
   // CB of 6144 bits
   {
-    0.0025, 0.0032, 0.0032, 0.0042, 0.0054, 0.0059, 0.0064, 0.0073, 0.0081,
-    0.0076, 0.0083, 0.0058, 0.0064, 0.0070, 0.0077, 0.0074, 0.0080, 0.0080,
-    0.0080, 0.0061, 0.0066, 0.0069, 0.0080, 0.0081, 0.0080, 0.0077, 0.0068,
-    0.0066, 0.0058            
+    -1.000, -1.000, 0.00025, // QPSK retx
+    0.0025, 0.0032, 0.0032, 0.0042, 0.0054, 0.0059, 0.0064, 0.0073, 0.0081, 0.0076, // QPSK
+    0.00175, 0.00367, 0.006223, // 16QAM retx
+    0.0083, 0.0058, 0.0064, 0.0070, 0.0077, 0.0074, 0.0080, // 16QAM
+    0.00437, 0.00785, 0.00873,
+    0.0080, 0.0080, 0.0061, 0.0066, 0.0069, 0.0080, 0.0081, 0.0080, 0.0077, 0.0068, 0.0066, 0.0058 // 64QAM
   }
     
 };
@@ -269,7 +333,7 @@ LteMiErrorModel::Mib (const SpectrumValue& sinr, const std::vector<int>& map, ui
     {
       SpectrumValue sinrCopy = sinr;
       double sinrLin = sinrCopy[map.at (i)];
-      if (mcs <= 10) // QPSK
+      if (mcs <= MI_QPSK_MAX_ID) // QPSK
         {
           int tr = 0;
           while ((tr<MI_MAP_QPSK_SIZE)&&(MI_map_qpsk_axis[tr] < sinrLin))
@@ -288,7 +352,7 @@ LteMiErrorModel::Mib (const SpectrumValue& sinr, const std::vector<int>& map, ui
         }
       else
         {
-          if (mcs > 10 && mcs < 20 )	// 16-QAM
+          if (mcs > MI_QPSK_MAX_ID && mcs <= MI_16QAM_MAX_ID )	// 16-QAM
             {
               int tr = 0;
               while ((tr<MI_MAP_16QAM_SIZE)&&(MI_map_16qam_axis[tr] < sinrLin))
@@ -333,21 +397,25 @@ LteMiErrorModel::Mib (const SpectrumValue& sinr, const std::vector<int>& map, ui
 
 
 double 
-LteMiErrorModel::MappingMiBler (double mib, uint8_t mcs, uint16_t cbSize)
+LteMiErrorModel::MappingMiBler (double mib, uint8_t ecrId, uint16_t cbSize)
 {
-  NS_LOG_FUNCTION (mib << (uint32_t) mcs << (uint32_t) cbSize);
+  NS_LOG_FUNCTION (mib << (uint32_t) ecrId << (uint32_t) cbSize);
   double b = 0;
   double c = 0;
-  NS_ASSERT_MSG (mcs < 29, "MCS out of range [0..28]");
+  if (ecrId<2)
+    {
+      ecrId = 2; // Minimum ECR with available BLER curves
+    }
+  NS_ASSERT_MSG (ecrId <= MI_64QAM_BLER_MAX_ID, "ECR out of range [0..37]: " << (uint16_t) ecrId);
   int cbIndex = 1;
   while ((cbIndex < 9)&&(cbMiSizeTable[cbIndex]<= cbSize))
     {
       cbIndex++;
     }
   cbIndex--;
-  NS_LOG_LOGIC (" MCS " << (uint16_t)mcs << " TBS " << TbsIndex[mcs] << " CB size " << cbSize << " CB size curve " << cbMiSizeTable[cbIndex]);
+  NS_LOG_LOGIC (" ECR " << (uint16_t)ecrId << " CB size " << cbSize << " CB size curve " << cbMiSizeTable[cbIndex]);
 
-  b = bEcrTable[cbIndex][mcs];
+  b = bEcrTable[cbIndex][ecrId];
   if (b<0.0)
     {
       //take the lowest CB size including this CB for removing CB size
@@ -355,10 +423,10 @@ LteMiErrorModel::MappingMiBler (double mib, uint8_t mcs, uint16_t cbSize)
       int i = cbIndex;
       while ((i<9)&&(b<0))
         {
-          b = bEcrTable[i++][mcs];
+          b = bEcrTable[i++][ecrId];
         }
     }
-  c = cEcrTable[cbIndex][mcs];
+  c = cEcrTable[cbIndex][ecrId];
   if (c<0.0)
     {
       //take the lowest CB size including this CB for removing CB size
@@ -366,7 +434,7 @@ LteMiErrorModel::MappingMiBler (double mib, uint8_t mcs, uint16_t cbSize)
       int i = cbIndex;
       while ((i<9)&&(c<0))
         {
-          c = cEcrTable[i++][mcs];
+          c = cEcrTable[i++][ecrId];
         }
     }
   // see IEEE802.16m EMD formula 55 of section 4.3.2.1
@@ -375,241 +443,6 @@ LteMiErrorModel::MappingMiBler (double mib, uint8_t mcs, uint16_t cbSize)
   return bler;
 }
 
-
-double
-LteMiErrorModel::GetTbError (const SpectrumValue& sinr, const std::vector<int>& map, uint16_t size, uint8_t mcs)
-{
-  NS_LOG_FUNCTION (sinr << &map << (uint32_t) size << (uint32_t) mcs);
-  
-  double MI = Mib(sinr, map, mcs);
-  // estimate CB size (according to sec 5.1.2 of TS 36.212)
-  uint16_t Z = 6144; // max size of a codeblock (including CRC)
-  uint32_t B = size * 8;
-//   B = 1234;
-  uint32_t L = 0;
-  uint32_t C = 0; // no. of codeblocks
-  uint32_t Cplus = 0; // no. of codeblocks with size K+
-  uint32_t Kplus = 0; // no. of codeblocks with size K+
-  uint32_t Cminus = 0; // no. of codeblocks with size K+
-  uint32_t Kminus = 0; // no. of codeblocks with size K+
-  uint32_t B1 = 0;
-  uint32_t deltaK = 0;
-  if (B <= Z)
-    {
-      // only one codeblock
-      L = 0;
-      C = 1;
-      B1 = B;
-    }
-  else
-    {
-      L = 24;
-      C = ceil ((double)B / ((double)(Z-L)));
-      B1 = B + C * L;
-    }
-  // first segmentation: K+ = minimum K in table such that C * K >= B1
-//   uint i = 0;
-//   while (B1 > cbSizeTable[i] * C)
-//     {
-// //       NS_LOG_INFO (" K+ " << cbSizeTable[i] << " means " << cbSizeTable[i] * C);
-//       i++;
-//     }
-//   uint16_t KplusId = i;
-//   Kplus = cbSizeTable[i];
-  
-  // implement a modified binary search
-  int min = 0;
-  int max = 187;
-  int mid = 0;
-  do
-    {
-      mid = (min+max) / 2;
-      if (B1 > cbSizeTable[mid]*C)
-        {
-          if (B1 < cbSizeTable[mid+1]*C)
-            {
-              break;
-            }
-          else
-            {
-              min = mid + 1;
-            }
-        }
-      else
-        {
-          if (B1 > cbSizeTable[mid-1]*C)
-            {
-              break;
-            }
-          else
-            {
-              max = mid - 1;
-            }
-        }
-  } while ((cbSizeTable[mid]*C != B1) && (min < max));
-  // adjust binary search to the largest integer value of K containing B1
-  if (B1 > cbSizeTable[mid]*C)
-    {
-      mid ++;
-    }
-  
-  uint16_t KplusId = mid;
-  Kplus = cbSizeTable[mid];
-  
-  
-  if (C==1)
-    {
-      Cplus = 1;
-      Cminus = 0;
-      Kminus = 0;
-    }
-  else
-    {
-      // second segmentation size: K- = maximum K in table such that K < K+
-      Kminus = cbSizeTable[KplusId-1 > 0 ? KplusId-1 : 0];
-      deltaK = Kplus - Kminus;
-      Cminus = floor ((((double) C * Kplus) - (double)B1) / (double)deltaK);
-      Cplus = C - Cminus;
-    }
-  NS_LOG_INFO ("--------------------LteMiErrorModel: TB size of " << B << " needs of " << B1 << " bits reparted in " << C << " CBs as "<< Cplus << " block(s) of " << Kplus << " and " << Cminus << " of " << Kminus);
-  
-  double errorRate = 1.0;
-  if (C!=1)
-    {
-      double cbler = MappingMiBler (MI, mcs, Kplus);
-      errorRate *= pow (1.0 - cbler, Cplus);
-      cbler = MappingMiBler (MI, mcs, Kminus);
-      errorRate *= pow (1.0 - cbler, Cminus);
-      errorRate = 1.0 - errorRate;
-    }
-  else
-    {
-      errorRate = MappingMiBler (MI, mcs, Kplus);
-    }
-  
-  NS_LOG_LOGIC (" Error rate " << errorRate);
-  
-  return errorRate;
-}
-
-
-TbStats_t
-LteMiErrorModel::GetTbDecodificationStats (const SpectrumValue& sinr, const std::vector<int>& map, uint16_t size, uint8_t mcs, double mi)
-{
-  NS_LOG_FUNCTION (sinr << &map << (uint32_t) size << (uint32_t) mcs);
-
-  double MI = Mib(sinr, map, mcs) + mi;
-  // estimate CB size (according to sec 5.1.2 of TS 36.212)
-  uint16_t Z = 6144; // max size of a codeblock (including CRC)
-  uint32_t B = size * 8;
-//   B = 1234;
-  uint32_t L = 0;
-  uint32_t C = 0; // no. of codeblocks
-  uint32_t Cplus = 0; // no. of codeblocks with size K+
-  uint32_t Kplus = 0; // no. of codeblocks with size K+
-  uint32_t Cminus = 0; // no. of codeblocks with size K+
-  uint32_t Kminus = 0; // no. of codeblocks with size K+
-  uint32_t B1 = 0;
-  uint32_t deltaK = 0;
-  if (B <= Z)
-    {
-      // only one codeblock
-      L = 0;
-      C = 1;
-      B1 = B;
-    }
-  else
-    {
-      L = 24;
-      C = ceil ((double)B / ((double)(Z-L)));
-      B1 = B + C * L;
-    }
-  // first segmentation: K+ = minimum K in table such that C * K >= B1
-//   uint i = 0;
-//   while (B1 > cbSizeTable[i] * C)
-//     {
-// //       NS_LOG_INFO (" K+ " << cbSizeTable[i] << " means " << cbSizeTable[i] * C);
-//       i++;
-//     }
-//   uint16_t KplusId = i;
-//   Kplus = cbSizeTable[i];
-
-  // implement a modified binary search
-  int min = 0;
-  int max = 187;
-  int mid = 0;
-  do
-    {
-      mid = (min+max) / 2;
-      if (B1 > cbSizeTable[mid]*C)
-        {
-          if (B1 < cbSizeTable[mid+1]*C)
-            {
-              break;
-            }
-          else
-            {
-              min = mid + 1;
-            }
-        }
-      else
-        {
-          if (B1 > cbSizeTable[mid-1]*C)
-            {
-              break;
-            }
-          else
-            {
-              max = mid - 1;
-            }
-        }
-  } while ((cbSizeTable[mid]*C != B1) && (min < max));
-  // adjust binary search to the largest integer value of K containing B1
-  if (B1 > cbSizeTable[mid]*C)
-    {
-      mid ++;
-    }
-
-  uint16_t KplusId = mid;
-  Kplus = cbSizeTable[mid];
-
-
-  if (C==1)
-    {
-      Cplus = 1;
-      Cminus = 0;
-      Kminus = 0;
-    }
-  else
-    {
-      // second segmentation size: K- = maximum K in table such that K < K+
-      Kminus = cbSizeTable[KplusId-1 > 0 ? KplusId-1 : 0];
-      deltaK = Kplus - Kminus;
-      Cminus = floor ((((double) C * Kplus) - (double)B1) / (double)deltaK);
-      Cplus = C - Cminus;
-    }
-  NS_LOG_INFO ("--------------------LteMiErrorModel: TB size of " << B << " needs of " << B1 << " bits reparted in " << C << " CBs as "<< Cplus << " block(s) of " << Kplus << " and " << Cminus << " of " << Kminus);
-
-  double errorRate = 1.0;
-  if (C!=1)
-    {
-      double cbler = MappingMiBler (MI, mcs, Kplus);
-      errorRate *= pow (1.0 - cbler, Cplus);
-      cbler = MappingMiBler (MI, mcs, Kminus);
-      errorRate *= pow (1.0 - cbler, Cminus);
-      errorRate = 1.0 - errorRate;
-    }
-  else
-    {
-      errorRate = MappingMiBler (MI, mcs, Kplus);
-    }
-
-  NS_LOG_LOGIC (" Error rate " << errorRate);
-  TbStats_t ret;
-  ret.error = errorRate;
-  ret.mi = MI;
-  return ret;
-}
 
 
 double
@@ -819,22 +652,64 @@ LteMiErrorModel::GetTbDecodificationStats (const SpectrumValue& sinr, const std:
   NS_LOG_INFO ("--------------------LteMiErrorModel: TB size of " << B << " needs of " << B1 << " bits reparted in " << C << " CBs as "<< Cplus << " block(s) of " << Kplus << " and " << Cminus << " of " << Kminus);
 
   double errorRate = 1.0;
+  uint8_t ecrId = 0;
+  if (miHistory.size ()==0)
+    {
+      // first tx -> get ECR from MCS
+      ecrId = McsEcrBlerTableMapping[mcs];
+      NS_LOG_DEBUG ("NO HARQ MCS " << (uint16_t)mcs << " ECR id " << (uint16_t)ecrId);
+    }
+  else
+    {
+      NS_LOG_DEBUG ("HARQ!!!!!!!!!!! " << miHistory.size ());
+      // harq retx -> get closest ECR to Reff from available ones
+      if (mcs <= MI_QPSK_MAX_ID)
+        {
+          // Modulation order 2
+          uint8_t i = MI_QPSK_MAX_ID;
+          while ((BlerCurvesEcrMap[i]>Reff)&&(i>0))
+            {
+              i--;
+            }
+          ecrId = i;
+        }
+      else if (mcs <= MI_16QAM_MAX_ID)
+        {
+          // Modulation order 4
+          uint8_t i = MI_16QAM_MAX_ID;
+          while ((BlerCurvesEcrMap[i]>Reff)&&(i>MI_QPSK_MAX_ID))
+            {
+              i--;
+            }
+          ecrId = i;
+        }
+      else
+        {
+          // Modulation order 6
+          uint8_t i = MI_64QAM_MAX_ID;
+          while ((BlerCurvesEcrMap[i]>Reff)&&(i>MI_16QAM_MAX_ID))
+            {
+              i--;
+            }
+          ecrId = i;
+        }
+    }
   if (C!=1)
     {
-      double cbler = MappingMiBler (MI, mcs, Kplus);
+      double cbler = MappingMiBler (MI, ecrId, Kplus);
       errorRate *= pow (1.0 - cbler, Cplus);
-      cbler = MappingMiBler (MI, mcs, Kminus);
+      cbler = MappingMiBler (MI, ecrId, Kminus);
       errorRate *= pow (1.0 - cbler, Cminus);
       errorRate = 1.0 - errorRate;
     }
   else
     {
-      errorRate = MappingMiBler (MI, mcs, Kplus);
+      errorRate = MappingMiBler (MI, ecrId, Kplus);
     }
 
   NS_LOG_LOGIC (" Error rate " << errorRate);
   TbStats_t ret;
-  ret.error = errorRate;
+  ret.tbler = errorRate;
   ret.mi = tbMi;
   return ret;
 }

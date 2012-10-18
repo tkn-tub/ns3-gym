@@ -775,9 +775,9 @@ LteSpectrumPhy::UpdateSinrPerceived (const SpectrumValue& sinr)
 
 
 void
-LteSpectrumPhy::AddExpectedTb (uint16_t  rnti, uint16_t size, uint8_t mcs, std::vector<int> map, uint8_t layer, uint8_t harqId, double miCumulated, bool downlink)
+LteSpectrumPhy::AddExpectedTb (uint16_t  rnti, uint8_t ndi, uint16_t size, uint8_t mcs, std::vector<int> map, uint8_t layer, uint8_t harqId, bool downlink)
 {
-  NS_LOG_FUNCTION (this << " rnti: " << rnti << " size " << size << " mcs " << (uint16_t)mcs << " layer " << (uint16_t)layer << " MI " << miCumulated);
+  NS_LOG_FUNCTION (this << " rnti: " << rnti << " NDI " << (uint16_t)ndi << " size " << size << " mcs " << (uint16_t)mcs << " layer " << (uint16_t)layer);
   TbId_t tbId;
   tbId.m_rnti = rnti;
   tbId.m_layer = layer;
@@ -790,7 +790,7 @@ LteSpectrumPhy::AddExpectedTb (uint16_t  rnti, uint16_t size, uint8_t mcs, std::
     }
   // insert new entry
   std::vector<uint8_t> rv;
-  tbInfo_t tbInfo = {size, mcs, map, harqId, miCumulated, downlink, false};
+  tbInfo_t tbInfo = {ndi, size, mcs, map, harqId, 0.0, downlink, false};
   m_expectedTbs.insert (std::pair<TbId_t, tbInfo_t> (tbId,tbInfo));
 }
 
@@ -819,33 +819,35 @@ LteSpectrumPhy::EndRxData ()
     {
       if (m_dataErrorModelEnabled)
         {
-//           double errorRate = LteMiErrorModel::GetTbError (m_sinrPerceived, (*itTb).second.rbBitmap, (*itTb).second.size, (*itTb).second.mcs);
           // retrieve HARQ info
           HarqProcessInfoList_t harqInfoList;
-          uint16_t ulHarqId = 0;  // TODO 0 means current HARQ porc under evaluation
-          if ((*itTb).second.downlink)
+          if ((*itTb).second.ndi == 0)
             {
-              harqInfoList = m_harqPhyModule->GetHarqProcessInfoDl ((*itTb).second.harqProcessId, (*itTb).first.m_layer);
+              // TB retxed: retrieve HARQ history
+              uint16_t ulHarqId = 0;
+              if ((*itTb).second.downlink)
+                {
+                  harqInfoList = m_harqPhyModule->GetHarqProcessInfoDl ((*itTb).second.harqProcessId, (*itTb).first.m_layer);
+                }
+              else
+                {
+                  harqInfoList = m_harqPhyModule->GetHarqProcessInfoUl ((*itTb).first.m_rnti, ulHarqId);
+                }
             }
-          else
-            {
-              harqInfoList = m_harqPhyModule->GetHarqProcessInfoUl ((*itTb).first.m_rnti, ulHarqId);
-            }
-//           TbStats_t tbStats = LteMiErrorModel::GetTbDecodificationStats (m_sinrPerceived, (*itTb).second.rbBitmap, (*itTb).second.size, (*itTb).second.mcs, (*itTb).second.mi);
           TbStats_t tbStats = LteMiErrorModel::GetTbDecodificationStats (m_sinrPerceived, (*itTb).second.rbBitmap, (*itTb).second.size, (*itTb).second.mcs, harqInfoList);
           (*itTb).second.mi = tbStats.mi;
-          (*itTb).second.corrupt = m_random->GetValue () > tbStats.error ? false : true;
+          (*itTb).second.corrupt = m_random->GetValue () > tbStats.tbler ? false : true;
           // DEBUG: force error for testing HARQ
-          if ((*itTb).second.downlink)
-          {
+//           if ((*itTb).second.downlink)
+//           {
 //             if (((*itTb).second.harqProcessId == 0)&&(Simulator::Now ().GetNanoSeconds ()<=20000000))
-            if ((errors<1) && ( ((*itTb).first.m_rnti==1)||((*itTb).first.m_rnti==3)) )
-              {
-                (*itTb).second.corrupt = true;
-                errors++;
-              }
-          }
-          NS_LOG_DEBUG (this << "RNTI " << (*itTb).first.m_rnti << " size " << (*itTb).second.size << " mcs " << (uint32_t)(*itTb).second.mcs << " bitmap " << (*itTb).second.rbBitmap.size () << " layer " << (uint16_t)(*itTb).first.m_layer << " ErrorRate " << tbStats.error << " corrupted " << (*itTb).second.corrupt);
+//             if ((errors<1) && ( ((*itTb).first.m_rnti==1)||((*itTb).first.m_rnti==3)) )
+//               {
+//                 (*itTb).second.corrupt = true;
+//                 errors++;
+//               }
+//           }
+          NS_LOG_DEBUG (this << "RNTI " << (*itTb).first.m_rnti << " size " << (*itTb).second.size << " mcs " << (uint32_t)(*itTb).second.mcs << " bitmap " << (*itTb).second.rbBitmap.size () << " layer " << (uint16_t)(*itTb).first.m_layer << " TBLER " << tbStats.tbler << " corrupted " << (*itTb).second.corrupt);
        }
       
 //       for (uint16_t i = 0; i < (*itTb).second.rbBitmap.size (); i++)

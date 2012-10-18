@@ -60,6 +60,7 @@ struct TbId_t
   
 struct tbInfo_t
 {
+  uint8_t ndi;
   uint16_t size;
   uint8_t mcs;
   std::vector<int> rbBitmap;
@@ -321,15 +322,15 @@ public:
   * 
   * 
   * \param rnti the rnti of the source of the TB
+  * \param ndi new data indicator flag
   * \param size the size of the TB
   * \param mcs the MCS of the TB
   * \param map the map of RB(s) used
   * \param layer the layer (in case of MIMO tx)
   * \param harqId the id of the HARQ process (valid only for DL)
-  * \param miCumulated the MI cumulated (in case of HARQ retx)
   * \param downlink true when the TB is for DL
   */
-  void AddExpectedTb (uint16_t  rnti, uint16_t size, uint8_t mcs, std::vector<int> map, uint8_t layer, uint8_t harqId, double miCumulated, bool downlink);
+  void AddExpectedTb (uint16_t  rnti, uint8_t ndi, uint16_t size, uint8_t mcs, std::vector<int> map, uint8_t layer, uint8_t harqId, bool downlink);
 
 
   /** 
