@@ -896,7 +896,7 @@ LteSpectrumPhy::EndRxData ()
                       {
                         harqUlInfo.m_receptionStatus = UlInfoListElement_s::NotOk;
                         NS_LOG_DEBUG (this << " RNTI " << tbId.m_rnti << " send UL-HARQ-NACK");
-                        m_harqPhyModule->UpdateUlHarqProcessStatus (tbId.m_rnti, (*itTb).second.mi, (*itTb).second.size, EffectiveCodingRate [(*itTb).second.mcs] * (*itTb).second.size);
+                        m_harqPhyModule->UpdateUlHarqProcessStatus (tbId.m_rnti, (*itTb).second.mi, (*itTb).second.size, (*itTb).second.size / EffectiveCodingRate [(*itTb).second.mcs]);
                       }
                     else
                       {
@@ -922,7 +922,7 @@ LteSpectrumPhy::EndRxData ()
                           {
                             harqDlInfo.m_harqStatus.at (tbId.m_layer) = DlInfoListElement_s::NACK;
                             NS_LOG_DEBUG (this << " RNTI " << tbId.m_rnti << " harqId " << (uint16_t)(*itTb).second.harqProcessId << " layer " <<(uint16_t)tbId.m_layer << " send DL-HARQ-NACK");
-                            m_harqPhyModule->UpdateDlHarqProcessStatus ((*itTb).second.harqProcessId, tbId.m_layer, (*itTb).second.mi, (*itTb).second.size, EffectiveCodingRate [(*itTb).second.mcs] * (*itTb).second.size);
+                            m_harqPhyModule->UpdateDlHarqProcessStatus ((*itTb).second.harqProcessId, tbId.m_layer, (*itTb).second.mi, (*itTb).second.size, (*itTb).second.size / EffectiveCodingRate [(*itTb).second.mcs]);
                           }
                         else
                           {
@@ -939,7 +939,7 @@ LteSpectrumPhy::EndRxData ()
                         {
                           (*itHarq).second.m_harqStatus.at (tbId.m_layer) = DlInfoListElement_s::NACK;
                           NS_LOG_DEBUG (this << " RNTI " << tbId.m_rnti << " harqId " << (uint16_t)(*itTb).second.harqProcessId << " layer " <<(uint16_t)tbId.m_layer << " size " << (*itHarq).second.m_harqStatus.size () << " send DL-HARQ-NACK");
-                          m_harqPhyModule->UpdateDlHarqProcessStatus ((*itTb).second.harqProcessId, tbId.m_layer, (*itTb).second.mi, (*itTb).second.size, EffectiveCodingRate [(*itTb).second.mcs] * (*itTb).second.size);
+                          m_harqPhyModule->UpdateDlHarqProcessStatus ((*itTb).second.harqProcessId, tbId.m_layer, (*itTb).second.mi, (*itTb).second.size, (*itTb).second.size / EffectiveCodingRate [(*itTb).second.mcs]);
                         }
                       else
                         {
