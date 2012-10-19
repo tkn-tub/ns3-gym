@@ -130,6 +130,11 @@ void
 LteHarqPhy::UpdateDlHarqProcessStatus (uint8_t id, uint8_t layer, double mi, uint16_t infoBits, uint16_t codeBits)
 {
   NS_LOG_FUNCTION (this << (uint16_t) id << mi);
+  if (m_miDlHarqProcessesInfoMap.at (layer).at (id).size () == 3)  // MAX HARQ RETX
+    {
+      // HARQ should be disabled -> discard info
+      return;
+    }
   HarqProcessInfoElement_t el;
   el.m_mi = mi;
   el.m_infoBits = infoBits;
@@ -170,6 +175,11 @@ LteHarqPhy::UpdateUlHarqProcessStatus (uint16_t rnti, double mi, uint16_t infoBi
     }
   else
     {
+      if ((*it).second.at (7).size () == 3) // MAX HARQ RETX
+        {
+          // HARQ should be disabled -> discard info
+          return;
+        }
       HarqProcessInfoElement_t el;
       el.m_mi = mi;
       el.m_infoBits = infoBits;
