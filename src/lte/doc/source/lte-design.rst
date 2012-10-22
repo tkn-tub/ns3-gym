@@ -652,6 +652,176 @@ where :math:`|\cdot|` indicates the cardinality of the set; finally,
    \right)}{\tau}
    
 
+Maximum Throughput (MT) Scheduler
+----------------------------------
+
+The Maximum Throughput (MT) scheduler [FCapo2012]_ aims to maximize the overall throughput of eNB.
+It allocates each RB to the user that can achieve the maximum achievable rate in the current TTI.
+Currently, MT scheduler in LENA has two versions: frequency domain (FDMT) and time domain (TDMT).
+In FDMT, every TTI, MAC scheduler allocates RBGs to the UE who has highest achievable rate calculated 
+by subband CQI. In TDMT, every TTI, MAC scheduler selects one UE which has highest achievable rate 
+calculated by wideband CQI. Then MAC scheduler allocates all RBGs to this UE in current TTI.
+The calculation of achievable rate in FDMT and TDMT is as same as the one in PF.
+Let :math:`i,j` denote generic users; let :math:`t` be the
+subframe index, and :math:`k` be the resource block index; let :math:`M_{i,k}(t)` be MCS
+usable by user :math:`i` on resource block :math:`k` according to what reported by the AMC
+model (see `Adaptive Modulation and Coding`_); finally, let :math:`S(M, B)` be the TB
+size in bits as defined in [TS36.213]_ for the case where a number :math:`B` of
+resource blocks is used. The achievable rate :math:`R_{i}(k,t)` in bit/s for user :math:`i`
+on resource block :math:`k` at subframe :math:`t` is defined as 
+
+.. math::
+
+   R_{i}(k,t) =  \frac{S\left( M_{i,k}(t), 1\right)}{\tau} 
+
+where :math:`\tau` is the TTI duration.
+At the start of each subframe :math:`t`, each RB is assigned to a certain user.
+In detail, the index :math:`\widehat{i}_{k}(t)` to which RB :math:`k` is assigned at time
+:math:`t` is determined as
+
+.. math::
+
+   \widehat{i}_{k}(t) = \underset{j=1,...,N}{\operatorname{argmax}}
+       \left( { R_{j}(k,t) } \right) 
+
+When there are several UEs having the same achievable rate, current implementation always selects
+the first UE created in script. Although MT can maximize cell throughput, it cannot provide
+fairness to UEs in poor channel condition.
+
+
+Throughput to Average (TTA) Scheduler
+--------------------------------------
+
+The Throughput to Average (TTA) scheduler [FCapo2012]_ can be considered as an intermediate between MT and PF. 
+The metric used in TTA is calculated as follows:
+
+.. math::
+
+   \widehat{i}_{k}(t) = \underset{j=1,...,N}{\operatorname{argmax}}
+    \left( \frac{ R_{j}(k,t) }{ R_{j}(t) } \right) 
+
+Here, :math:`R_{i}(k,t)` in bit/s represents the achievable rate for user :math:`i`
+on resource block :math:`k` at subframe :math:`t`. The 
+calculation method already is shown in MT and PF. Meanwhile, :math:`R_{i}(t)` in bit/s stands 
+for the achievable rate for :math:`i` at subframe :math:`t`. The difference between those two 
+achievable rates is how to get MCS. For :math:`R_{i}(k,t)`, MCS is calculated by subband CQI while 
+:math:`R_{i}(t)` is calculated by wideband CQI. TTA scheduler can only be implemented in frequency domain (FD) because
+the achievable rate of particular RBG is only related to FD scheduling.
+
+Blind Average Throughput Scheduler
+----------------------------------
+
+The Blind Average Throughput scheduler [FCapo2012]_ aims to provide equal throughput to all UEs under eNB. The metric
+used in TTA is calculated as follows:
+
+.. math::
+
+   \widehat{i}_{k}(t) = \underset{j=1,...,N}{\operatorname{argmax}}
+    \left( \frac{ 1 }{ T_\mathrm{j}(t) } \right) 
+
+where :math:`T_{j}(t)` is the past throughput performance perceived by the user :math:`j` and can be calculated by the 
+same method in PF scheduler. In the time domain blind average throughput (TD-BET), the scheduler selects the UE
+with largest priority metric and allocates all RBGs to this UE. On the other hand, in the frequency domain blind 
+average throughput (FD-BET), every TTI, the scheduler first selects one UE with lowest pastAverageThroughput (largest 
+priority metric). Then scheduler assigns one RBG to this UE, it calculates expected throughput of this UE and uses it
+to compare with past average throughput :math:`T_{j}(t)` of other UEs. The scheduler continues 
+to allocate RBG to this UE until its expected throughput is not the smallest one among past average throughput :math:`T_{j}(t)` 
+of all UE. Then the scheduler will use the same way to allocate RBG for a new UE which has the 
+lowest past average throughput :math:`T_{j}(t)` until all RBGs are allocated to UEs. The principle behind this is
+that, in every TTI, the scheduler tries the best to achieve the equal throughput among all UEs.
+
+Token Bank Fair Queue Scheduler
+-------------------------------
+
+Token Band Fair Queue (TBFQ) is a QoS aware scheduler which derives from the leaky-bucket mechanism. In TBFQ, 
+a traffic flow of user :math:`i` is characterized by following parameters: 
+
+ * :math:`t_{i}`: packet arrival rate (byte/sec )
+ * :math:`r_{i}`: token generation rate (byte/sec)
+ * :math:`p_{i}`: token pool size (byte)
+ * :math:`E_{i}`: counter that records the number of token borrowed from or given to the token bank by flow :math:`i` ;
+   :math:`E_{i}` can be smaller than zero 
+
+Each K bytes data consumes k tokens. Also, TBFQ maintains a shared token bank (:math:`B`) so as to balance the traffic
+between different flows. If token generation rate :math:`r_{i}` is bigger than packet arrival rate :math:`t_{i}`, then tokens
+overflowing from token pool are added to the token bank, and :math:`E_{i}` is increased by the same amount. Otherwise,
+flow :math:`i` needs to withdraw tokens from token bank based on a priority metric :math:`frac{E_{i}}{r_{i}}`, and :math:`E_{i}` is decreased.
+Obviously, the user contributes more on token bank has higher priority to borrow tokens; on the other hand, the 
+user borrows more tokens from bank has lower priority to continue to withdraw tokens. Therefore, in case of several
+users having the same token generation rate, traffic rate and token pool size, user suffers from higher interference
+has more opportunity to borrow tokens from bank. In addition, TBFQ can police the traffic by setting the token 
+generation rate to limit the throughput.  Additionally, TBFQ also maintains following three parameters for each flow: 
+
+ * Debt limit :math:`d_{i}`: if :math:`E_{i}` belows this threshold, user i cannot further borrow tokens from bank. This is for 
+   preventing malicious UE to borrow too much tokens.
+ * Credit limit :math:`c_{i}`: the maximum number of tokens UE i can borrow from the bank in one time.
+ * Credit threshold :math:`C`: once :math:`E_{i}` reaches debt limit, UE i must store :math:`C` tokens to bank in order to further 
+   borrow token from bank.
+
+LTE in NS-3 has two versions of TBFQ scheduler: frequency domain TBFQ (FD-TBFQ) and time domain TBFQ (TD-TBFQ). 
+In FD-TBFQ, the scheduler always select UE with highest metric and allocates RBG with highest subband CQI until 
+there are no packets within UE's RLC buffer or all RBGs are allocated [FABokhari2009]_. In TD-TBFQ, after selecting
+UE with maximum metric, it allocates all RBGs to this UE by using wideband CQI [WKWong2004]_. 
+
+Priority Set Scheduler
+----------------------
+
+Priority set scheduler (PSS) is a QoS aware scheduler which combines time domain (TD) and frequency domain (FD) 
+packet scheduling operations into one scheduler [GMonghal2008]_. It controls the fairness among UEs by a specified 
+Target Bit Rate (TBR). 
+
+In TD scheduler part, PSS first selects UEs with non-empty RLC buffer and then divide them into two sets based 
+on the TBR: 
+
+* set 1: UE whose past average throughput is smaller than TBR; TD scheduler calculates their priority metric in
+  Blind Equal Throughput (BET) style:
+
+.. math::
+
+   \widehat{i}_{k}(t) = \underset{j=1,...,N}{\operatorname{argmax}}
+    \left( \frac{ 1 }{ T_\mathrm{j}(t) } \right) 
+
+* set 2: UE whose past average throughput is larger (or equal) than TBR; TD scheduler calculates their priority
+  metric in Proportional Fair (PF) style:
+
+.. math::
+
+   \widehat{i}_{k}(t) = \underset{j=1,...,N}{\operatorname{argmax}}
+    \left( \frac{ R_{j}(k,t) }{ T_\mathrm{j}(t) } \right) 
+
+UEs belonged to set 1 have higher priority than ones in set 2. Then PSS will select :math:`N_{mux}` UEs with
+highest metric in two sets and forward those UE to FD scheduler. In PSS, FD scheduler allocates RBG k to UE n 
+that maximums the chosen metric. Two PF schedulers are used in PF scheduler:
+
+* Proportional Fair scheduled (PFsch)
+
+.. math::
+
+   \widehat{Msch}_{k}(t) = \underset{j=1,...,N}{\operatorname{argmax}}
+    \left( \frac{ R_{j}(k,t) }{ Tsch_\mathrm{j}(t) } \right) 
+
+
+* Carrier over Interference to Average (CoIta)
+
+.. math::
+
+   \widehat{Mcoi}_{k}(t) = \underset{j=1,...,N}{\operatorname{argmax}}
+    \left( \frac{ CoI[j,k] }{ \sum_{k=0}^{N_{RBG}} CoI[j,k] } \right) 
+
+where :math:`Tsch_{j}(t)` is similar past throughput performance perceived by the user :math:`j`, with the 
+difference that it is updated only when the i-th user is actually served. :math:`CoI[j,k]` is an 
+estimation of the SINR on the RBG :math:`k` of UE :math:`j`. Both PFsch and CoIta is for decoupling 
+FD metric from TD scheduler. In addition, PSS FD scheduler also provide a weight metric W[n] for helping 
+controlling fairness in case of low number of UEs.
+
+.. math::
+
+   W[n] =  max (1, \frac{TBR}{ T_{j}(t) })
+
+where :math:`T_{j}(t)` is the past throughput performance perceived by the user :math:`j` . Therefore, on
+RBG k, the FD scheduler selects the UE :math:`j` that maximizes the product of the frequency domain 
+metric (:math:`Msch`, :math:`MCoI`) by weight :math:`W[n]`. This strategy will guarantee the throughput of lower
+quality UE tend towards the TBR. 
 
 Transport Blocks
 ----------------

@@ -38,6 +38,11 @@ EpsBearer::EpsBearer (Qci x)
 {
 }
 
+EpsBearer::EpsBearer (Qci x, struct GbrQosInformation y)
+  : qci (x), gbrQosInfo (y)
+{
+}
+
 bool
 EpsBearer::IsGbr () const
 {

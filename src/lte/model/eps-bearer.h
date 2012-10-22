@@ -88,6 +88,8 @@ struct EpsBearer
    */
   EpsBearer (Qci x);
 
+  EpsBearer (Qci x, GbrQosInformation y);
+
   /**
    *
    * @return true if the EPS Bearer is a Guaranteed Bit Rate bearer, false otherwise

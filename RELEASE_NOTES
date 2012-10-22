@@ -21,6 +21,8 @@ Supported platforms
 
 New user-visible features
 -------------------------
+-Support several new LTE MAC schedulers developed in GSoC 2012 project. Those schedulers include FD-MT, TD-MT, TTA, FD-BET, TD-BET, FD-TBFQ, TD-TBFQ, PSS. Here, FD and TD mean frequency domain and time domain respectively.
+
 
 Bugs fixed
 ----------
