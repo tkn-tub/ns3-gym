@@ -661,18 +661,18 @@ TdTbfqFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::S
       if (it != m_flowStatsDl.end ())
         {
           if ( bytesTxed <= (*it).second.tokenPoolSize )
-	          {
-	            (*it).second.tokenPoolSize -= bytesTxed;
-	          }
-	        else
-	          {
-	            (*it).second.counter = (*it).second.counter - ( bytesTxed -  (*it).second.tokenPoolSize );
-	            (*it).second.tokenPoolSize = 0;
-	            if (bankSize <= ( bytesTxed - (*it).second.tokenPoolSize ))
-		            bankSize = 0;
-	            else 
-	              bankSize = bankSize - ( bytesTxed -  (*it).second.tokenPoolSize );
-	          }
+	    {
+	      (*it).second.tokenPoolSize -= bytesTxed;
+	    }
+	  else
+	    {
+	      (*it).second.counter = (*it).second.counter - ( bytesTxed -  (*it).second.tokenPoolSize );
+	      (*it).second.tokenPoolSize = 0;
+	      if (bankSize <= ( bytesTxed - (*it).second.tokenPoolSize ))
+	        bankSize = 0;
+	      else 
+	        bankSize = bankSize - ( bytesTxed -  (*it).second.tokenPoolSize );
+	    }
         }
       else
         {

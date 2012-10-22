@@ -248,7 +248,7 @@ TdMtFfMacScheduler::GetTypeId (void)
                    UintegerValue (1000),
                    MakeUintegerAccessor (&TdMtFfMacScheduler::m_cqiTimersThreshold),
                    MakeUintegerChecker<uint32_t> ())
-    ;
+  ;
   return tid;
 }
 
@@ -458,18 +458,18 @@ TdMtFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sch
           NS_FATAL_ERROR ("No Transmission Mode info on user " << (*it));
         }
       int nLayer = TransmissionModesLayers::TxMode2LayerNum ((*itTxMode).second);
-	    uint8_t wbCqi = 0;
-	    if (itCqi == m_p10CqiRxed.end())
-	      {
-	        wbCqi = 1; // start with lowest value
-	      }
+      uint8_t wbCqi = 0;
+      if (itCqi == m_p10CqiRxed.end())
+        {
+          wbCqi = 1; // start with lowest value
+        }
       else
         {
-	        wbCqi = (*itCqi).second;
+          wbCqi = (*itCqi).second;
         }
 
-	    if (wbCqi > 0)
-	      {
+      if (wbCqi > 0)
+        {
           if (LcActivePerFlow (*it) > 0)
             {
               // this UE has data to transmit
@@ -481,30 +481,30 @@ TdMtFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sch
                   achievableRate += ((m_amc->GetTbSizeFromMcs (mcs, rbgSize) / 8) / 0.001); // = TB size / TTI
                 }
 
-			        double metric = achievableRate;
+              double metric = achievableRate;
 
               if (metric > metricMax)
                 {
                   metricMax = metric;
                   itMax = it;
                 }
-           }
+            }
         } // end of wbCqi
     } // end for m_flowStatsDl
 
   if (itMax == m_flowStatsDl.end ())
     {
-      // no UE available for downlink 
-	    return;
+      // no UE available for downlink  
+      return;
     }
   else
     {
       // assign all RBGs to this UE
       std::vector <uint16_t> tempMap;
-	    for (int i = 0; i < rbgNum; i++)
-	      {
+      for (int i = 0; i < rbgNum; i++)
+        {
           tempMap.push_back (i);
-	      }
+        }
       allocationMap.insert (std::pair <uint16_t, std::vector <uint16_t> > ((*itMax), tempMap));
     }
 
@@ -523,8 +523,8 @@ TdMtFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sch
       newDci.m_rnti = (*itMap).first;
 
       uint16_t lcActives = LcActivePerFlow ((*itMap).first);
-      std::map <uint16_t,uint8_t>::iterator itCqi;
-	    itCqi = m_p10CqiRxed.find((*itMap).first);
+      std::map <uint16_t,uint8_t>::iterator itCqi; 
+      itCqi = m_p10CqiRxed.find((*itMap).first);
       std::map <uint16_t,uint8_t>::iterator itTxMode;
       itTxMode = m_uesTxMode.find ((*itMap).first);
       if (itTxMode == m_uesTxMode.end ())

@@ -246,7 +246,7 @@ FdBetFfMacScheduler::GetTypeId (void)
                    UintegerValue (1000),
                    MakeUintegerAccessor (&FdBetFfMacScheduler::m_cqiTimersThreshold),
                    MakeUintegerChecker<uint32_t> ())
-    ;
+  ;
   return tid;
 }
 

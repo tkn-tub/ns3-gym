@@ -248,7 +248,7 @@ TtaFfMacScheduler::GetTypeId (void)
                    UintegerValue (1000),
                    MakeUintegerAccessor (&TtaFfMacScheduler::m_cqiTimersThreshold),
                    MakeUintegerChecker<uint32_t> ())
-    ;
+  ;
   return tid;
 }
 
@@ -475,14 +475,14 @@ TtaFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
               sbCqi = (*itCqi).second.m_higherLayerSelected.at (i).m_sbCqi;
             }
 
-	        uint8_t wbCqi = 0;
-	        if (itWbCqi == m_p10CqiRxed.end())
-	          {
-	            wbCqi = 1; // start with lowest value
-	          }
+	  uint8_t wbCqi = 0;
+	  if (itWbCqi == m_p10CqiRxed.end())
+	    {
+	      wbCqi = 1; // start with lowest value
+	    }
           else
             {
-	            wbCqi = (*itWbCqi).second;
+	      wbCqi = (*itWbCqi).second;
             }
 
           uint8_t cqi1 = sbCqi.at(0);
@@ -497,7 +497,7 @@ TtaFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
               if (LcActivePerFlow (*it) > 0)
                 {
                   // this UE has data to transmit
-	                uint8_t sbMcs = 0; 
+	          uint8_t sbMcs = 0; 
                   uint8_t wbMcs = 0; 
                   double achievableSbRate = 1.0;
                   double achievableWbRate = 1.0;
@@ -519,7 +519,7 @@ TtaFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
 
                   double metric = achievableSbRate / achievableWbRate;
   
-		              if (metric > metricMax)
+	          if (metric > metricMax)
                     {
                       metricMax = metric;
                       itMax = it;

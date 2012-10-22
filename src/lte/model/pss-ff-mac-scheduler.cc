@@ -555,6 +555,7 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
       else
         nMux = (int)((ueSet1.size() + ueSet2.size()) / 2) ; // TD scheduler only transfers half selected UE per RTT to TD scheduler
     }
+
   for (it = m_flowStatsDl.begin (); it != m_flowStatsDl.end (); it--)
    {
      std::vector <std::pair<double, uint16_t> >::iterator itSet;
@@ -701,38 +702,38 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
                           sbCqi = 0;
                         }
                       colMetric += (double)sbCqi / (double)(*itSbCqiSum).second;
-   	                } 
+   	            } 
                 }   // end if cqi
 
               double metric;
-	            if (colMetric != 0)
-	              metric= weight * colMetric;
-	            else
-	              metric = 1;
+	      if (colMetric != 0)
+	        metric= weight * colMetric;
+	      else
+	        metric = 1;
 
-    	        if (metric > metricMax )
+    	      if (metric > metricMax )
                 {
                   metricMax = metric;
                   itMax = it;
                 }
-	          } // end of tdUeSet
+	    } // end of tdUeSet
 
           if (itMax == m_flowStatsDl.end ())
             {
               // no UE available for downlink 
-	            return;
+	      return;
             }
           else
             {
               // assign all RBGs to this UE
               std::vector <uint16_t> tempMap;
-	            for (int i = 0; i < rbgNum; i++)
-	              {
+	      for (int i = 0; i < rbgNum; i++)
+	        {
                   tempMap.push_back (i);
-	              }
+	        }
               allocationMap.insert (std::pair <uint16_t, std::vector <uint16_t> > ((*itMax).first, tempMap));
             }
-	      }// end of rbgNum
+        }// end of rbgNum
 
     }// end of CoIta
  
@@ -747,8 +748,8 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
             {
               // calculate PF weigth 
               double weight = (*it).second.targetThroughput / (*it).second.lastAveragedThroughput;
-	            if (weight < 1.0)
-	              weight = 1.0;
+	      if (weight < 1.0)
+	        weight = 1.0;
 
               std::map <uint16_t,SbMeasResult_s>::iterator itCqi;
               itCqi = m_a30CqiRxed.find ((*it).first);
@@ -794,9 +795,9 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
                         {
                           // no info on this subband  -> worst MCS
                           mcs = 0;
-                	      }
+                        }
                       achievableRate += ((m_amc->GetTbSizeFromMcs (mcs, rbgSize) / 8) / 0.001); // = TB size / TTI
-    	  	         }
+    	  	    }
                   schMetric = achievableRate / (*it).second.secondLastAveragedThroughput;
                 }   // end if cqi
  
