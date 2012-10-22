@@ -636,7 +636,7 @@ that is managed by an ``UdpEchoClientHelper``.
 
     UdpEchoClientHelper echoClient (interfaces.GetAddress (1), 9);
     echoClient.SetAttribute ("MaxPackets", UintegerValue (1));
-    echoClient.SetAttribute ("Interval", TimeValue (Seconds (1.)));
+    echoClient.SetAttribute ("Interval", TimeValue (Seconds (1.0)));
     echoClient.SetAttribute ("PacketSize", UintegerValue (1024));
 
     ApplicationContainer clientApps = echoClient.Install (nodes.Get (0));
