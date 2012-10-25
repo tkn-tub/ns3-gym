@@ -616,7 +616,7 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
               // find RBGs for sending HARQ retx
               uint8_t j = 0;
               uint8_t rbgId = (dciRbg.at (dciRbg.size () - 1) + 1) % rbgNum;
-              uint8_t startRbg = dciRbg.at (dciRbg.size () - 1) + 1;
+              uint8_t startRbg = dciRbg.at (dciRbg.size () - 1);
               std::vector <bool> rbgMapCopy = rbgMap;
               while ((j < dciRbg.size ())&&(startRbg!=rbgId))
                 {
