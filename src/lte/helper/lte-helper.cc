@@ -319,6 +319,9 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
   Ptr<LteDataSinrChunkProcessor> pData = Create<LteDataSinrChunkProcessor> (ulPhy, phy);
   ulPhy->AddDataSinrChunkProcessor (pData); // for evaluating PUSCH UL-CQI
 
+  Ptr<LteInterferencePowerChunkProcessor> pInterf = Create<LteInterferencePowerChunkProcessor> (phy);
+  ulPhy->AddInterferenceChunkProcessor (pInterf); // for interference power tracing
+
   dlPhy->SetChannel (m_downlinkChannel);
   ulPhy->SetChannel (m_uplinkChannel);
 

@@ -309,6 +309,14 @@ public:
   * \param p the new LteSinrChunkProcessor to be added to the data processing chain
   */
   void AddDataSinrChunkProcessor (Ptr<LteSinrChunkProcessor> p);
+
+  /**
+  *  LteSinrChunkProcessor devoted to evaluate intefrerence + noise power 
+  *  in data frame
+  *
+  * \param p the new LteSinrChunkProcessor to be added to the data processing chain
+  */
+  void AddInterferenceChunkProcessor (Ptr<LteSinrChunkProcessor> p);
   
   
   /** 

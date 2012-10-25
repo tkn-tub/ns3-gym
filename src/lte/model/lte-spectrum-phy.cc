@@ -1050,6 +1050,12 @@ LteSpectrumPhy::AddDataSinrChunkProcessor (Ptr<LteSinrChunkProcessor> p)
 }
 
 void
+LteSpectrumPhy::AddInterferenceChunkProcessor (Ptr<LteSinrChunkProcessor> p)
+{
+  m_interferenceData->AddInterferenceChunkProcessor (p);
+}
+
+void
 LteSpectrumPhy::AddCtrlSinrChunkProcessor (Ptr<LteSinrChunkProcessor> p)
 {
   m_interferenceCtrl->AddSinrChunkProcessor (p);

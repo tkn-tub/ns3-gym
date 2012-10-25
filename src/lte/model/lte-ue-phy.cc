@@ -127,7 +127,8 @@ LteUePhy::LteUePhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy)
     m_uePhySapUser (0),
     m_ueCphySapUser (0),
     m_rnti (0),
-    m_srsPeriodicity (0)
+    m_srsPeriodicity (0),
+    m_rsrpRsrqSampleCounter (0)
 {
   m_amc = CreateObject <LteAmc> ();
   m_uePhySapProvider = new UeMemberLteUePhySapProvider (this);
@@ -224,6 +225,14 @@ LteUePhy::GetTypeId (void)
                   DoubleValue (0.0),
                    MakeDoubleAccessor (&LteUePhy::SetTxMode7Gain                       ),
                   MakeDoubleChecker<double> ())
+    .AddTraceSource ("ReportCurrentCellRsrpRsrq",
+                     "RSRP and RSRQ statistics.",
+                     MakeTraceSourceAccessor (&LteUePhy::m_reportCurrentCellRsrpRsrqTrace))
+    .AddAttribute ("RsrpRsrqSamplePeriod",
+                   "The sampling period for reporting RSRP-RSRQ stats (default value 1)",
+                   UintegerValue (1),
+                   MakeUintegerAccessor (&LteUePhy::m_rsrpRsrqSamplePeriod),
+                   MakeUintegerChecker<uint16_t> ())
   ;
   return tid;
 }
@@ -388,6 +397,12 @@ LteUePhy::GenerateDataCqiReport (const SpectrumValue& sinr)
   // Not used by UE, CQI are based only on RS
 }
 
+void
+LteUePhy::ReportInterference (const SpectrumValue& interf)
+{
+  // Currently not used by UE
+}
+
 
 
 Ptr<DlCqiLteControlMessage>
@@ -399,7 +414,16 @@ LteUePhy::CreateDlCqiFeedbackMessage (const SpectrumValue& sinr)
   NS_ASSERT (m_transmissionMode < m_txModeGain.size ());
   SpectrumValue newSinr = sinr;
   newSinr *= m_txModeGain.at (m_transmissionMode);
-//   std::vector<int> cqi = m_amc->CreateCqiFeedbacks (newSinr);
+
+  m_rsrpRsrqSampleCounter++;
+  if (m_rsrpRsrqSampleCounter==m_rsrpRsrqSamplePeriod)
+    {
+      // Generate RSRP and RSRQ traces (dummy values, real valeus TBD)
+      double rsrp = 0.0;
+      double rsrq = 0.0;
+      m_reportCurrentCellRsrpRsrqTrace (m_rnti, m_cellId, rsrp, rsrq);
+      m_rsrpRsrqSampleCounter = 0;
+    }
 
 
 

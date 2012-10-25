@@ -230,6 +230,8 @@ public:
   // inherited from LtePhy
   virtual void GenerateCtrlCqiReport (const SpectrumValue& sinr);
   virtual void GenerateDataCqiReport (const SpectrumValue& sinr);
+  virtual void ReportInterference (const SpectrumValue& interf);
+
 
   /**
   * \brief PhySpectrum generated a new UL HARQ feedback
@@ -258,6 +260,8 @@ private:
 
   bool DeleteUePhy (uint16_t rnti);
 
+  void CreateSrsReport(uint16_t rnti, double srs);
+
 
   std::set <uint16_t> m_ueAttached;
   
@@ -284,6 +288,23 @@ private:
   uint16_t m_currentSrsOffset;
 
   Ptr<LteHarqPhy> m_harqPhyModule;
+
+  /**
+   * Trace reporting the linear average of SRS SINRs 
+   * uint16_t rnti, uint16_t cellId, double sinrLinear
+   */
+  TracedCallback<uint16_t, uint16_t, double> m_reportUeSinr;
+  uint16_t m_srsSamplePeriod;
+  std::map <uint16_t,uint16_t> m_srsSampleCounterMap;
+
+  /**
+   * Trace reporting the interference per PHY RB (TS 36.214 section 5.2.2,
+   *  measured on DATA) 
+   * uint16_t cellId, Ptr<SpectrumValue> interference linear power per RB basis
+   */
+  TracedCallback<uint16_t, Ptr<SpectrumValue> > m_reportInterferenceTrace;
+  uint16_t m_interferenceSamplePeriod;
+  uint16_t m_interferenceSampleCounter;
   
 };
 
