@@ -28,7 +28,7 @@
 #include <ns3/spectrum-propagation-loss-model.h>
 #include <ns3/propagation-delay-model.h>
 #include <map>
-#include <list>
+#include <set>
 
 namespace ns3 {
 
@@ -62,7 +62,7 @@ public:
   RxSpectrumModelInfo (Ptr<const SpectrumModel> rxSpectrumModel);
 
   Ptr<const SpectrumModel> m_rxSpectrumModel;
-  std::list<Ptr<SpectrumPhy> > m_rxPhyList;
+  std::set<Ptr<SpectrumPhy> > m_rxPhySet;
 };
 
 typedef std::map<SpectrumModelUid_t, RxSpectrumModelInfo> RxSpectrumModelInfoMap_t;
@@ -75,9 +75,13 @@ typedef std::map<SpectrumModelUid_t, RxSpectrumModelInfo> RxSpectrumModelInfoMap
  *
  * This SpectrumChannel implementation can handle the presence of
  * SpectrumPhy instances which can use
- * different spectrum models, i.e.,  different SpectrumModel. The only
- * requirement is that every SpectrumPhy instance uses the same
- * SpectrumModel for the whole simulation.
+ * different spectrum models, i.e.,  different SpectrumModel. 
+ *
+ * \note It is allowed for a receiving SpectrumPhy to switch to a
+ * different SpectrumModel during the simulation. The requirement
+ * for this to work is that, after the SpectrumPhy switched its
+ * SpectrumModel,  MultiModelSpectrumChannel::AddRx () is
+ * called again passing the pointer to that SpectrumPhy.
  */
 class MultiModelSpectrumChannel : public SpectrumChannel
 {
@@ -119,18 +123,6 @@ private:
    * @return an iterator pointing to the corresponding entry in m_txSpectrumModelInfoMap
    */
   TxSpectrumModelInfoMap_t::const_iterator FindAndEventuallyAddTxSpectrumModel (Ptr<const SpectrumModel> txSpectrumModel);
-
-
-  /**
-   * make sure that there are SpectrumConverters from any
-   * SpectrumPhy being used for TX to the given SpectrumModel being used for RX
-   *
-   * @param rxPhy the RXing SpectrumPhy
-   * @param rxSpectrumModel the SpectrumModel used for RX by rxPhy
-   */
-  void CheckAddRxSpectrumModel (Ptr<SpectrumPhy> rxPhy, Ptr<const SpectrumModel> rxSpectrumModel);
-
-
 
   /**
    * used internally to reschedule transmission after the propagation delay
@@ -177,13 +169,7 @@ private:
    */
   RxSpectrumModelInfoMap_t m_rxSpectrumModelInfoMap;
 
-  /**
-   * this is only used to provide a straighforward implementation of
-   * GetNDevices() and GetDevice()
-   *
-   */
-  std::vector<Ptr<SpectrumPhy> > m_phyVector;
-
+  uint32_t m_numDevices;
 
   double m_maxLossDb;
 
