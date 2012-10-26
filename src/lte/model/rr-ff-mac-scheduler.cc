@@ -436,9 +436,48 @@ RrFfMacScheduler::SortRlcBufferReq (FfMacSchedSapProvider::SchedDlRlcBufferReqPa
 
 
 uint8_t
+RrFfMacScheduler::HarqProcessAvailability (uint16_t rnti)
+{
+  NS_LOG_FUNCTION (this << rnti);
+    
+  std::map <uint16_t, uint8_t>::iterator it = m_dlHarqCurrentProcessId.find (rnti);
+  if (it==m_dlHarqCurrentProcessId.end ())
+    {
+      NS_FATAL_ERROR ("No Process Id found for this RNTI " << rnti);
+    }
+  std::map <uint16_t, DlHarqProcessesStatus_t>::iterator itStat = m_dlHarqProcessesStatus.find (rnti);
+  if (itStat==m_dlHarqProcessesStatus.end ())
+    {
+      NS_FATAL_ERROR ("No Process Id Statusfound for this RNTI " << rnti);
+    }
+  uint8_t i = (*it).second;
+  do
+    {
+      i = (i + 1) % HARQ_PROC_NUM;
+      //     NS_LOG_DEBUG (this << " check i " << (uint16_t)i << " stat " << (uint16_t)(*itStat).second.at (i));
+    } while ( ((*itStat).second.at (i)!=0)&&(i!=(*it).second));
+  if ((*itStat).second.at (i)==0)
+    {
+      return (true);
+    }
+  else
+    {
+      return (false); // return a not valid harq proc id
+    }
+}
+
+
+
+uint8_t
 RrFfMacScheduler::UpdateHarqProcessId (uint16_t rnti)
 {
   NS_LOG_FUNCTION (this << rnti);
+
+
+  if (m_harqOn == false)
+    {
+      return (0);
+    }
 
   std::map <uint16_t, uint8_t>::iterator it = m_dlHarqCurrentProcessId.find (rnti);
   if (it==m_dlHarqCurrentProcessId.end ())
@@ -742,7 +781,9 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
       if ( (((*it).m_rlcTransmissionQueueSize > 0)
            || ((*it).m_rlcRetransmissionQueueSize > 0)
            || ((*it).m_rlcStatusPduSize > 0))
-           && (itRnti == rntiAllocated.end ()) ) // UE must not be allocated for HARQ retx
+           && (itRnti == rntiAllocated.end ())  // UE must not be allocated for HARQ retx
+           && (HarqProcessAvailability ((*it).m_rnti))  ) // UE needs HARQ proc free
+           
         {
           std::map <uint16_t,uint8_t>::iterator itCqi = m_p10CqiRxed.find ((*it).m_rnti);
           uint8_t cqi = 0;
@@ -843,26 +884,7 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
       // create the DlDciListElement_s
       DlDciListElement_s newDci;
       newDci.m_rnti = (*it).m_rnti;
-      if (m_harqOn == true)
-        {
-          newDci.m_harqProcess = UpdateHarqProcessId ((*it).m_rnti);
-          if (newDci.m_harqProcess>8)
-            {
-              // not valid HARQ ID -> no more HARQ proc available, stop allocation for this user
-              it++;
-              if (it == m_rlcBufferReq.end ())
-                {
-                  // restart from the first
-                  it = m_rlcBufferReq.begin ();
-                }
-              NS_LOG_DEBUG (this << " All HARQ process busy, drop UE allocation");
-              continue;
-            }
-        }
-      else
-        {
-          newDci.m_harqProcess = 0;
-        }
+      newDci.m_harqProcess = UpdateHarqProcessId ((*it).m_rnti);
       newDci.m_resAlloc = 0;
       newDci.m_rbBitmap = 0;
       std::map <uint16_t,uint8_t>::iterator itCqi = m_p10CqiRxed.find (newEl.m_rnti);

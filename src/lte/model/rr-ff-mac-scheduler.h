@@ -148,6 +148,14 @@ private:
    * \return the process id  value
    */
   uint8_t UpdateHarqProcessId (uint16_t rnti);
+
+    /**
+  * \brief Return the availability of free process for the RNTI specified
+  *
+  * \param rnti the RNTI of the UE to be updated
+  * \return the process id  value
+  */
+  uint8_t HarqProcessAvailability (uint16_t rnti);
   
   Ptr<LteAmc> m_amc;
 
