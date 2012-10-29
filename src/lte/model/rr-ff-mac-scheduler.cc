@@ -739,6 +739,7 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
             }
           newEl.m_rnti = rnti;
           newEl.m_dci = dci;
+          (*itHarq).second.at (harqId).m_rv = dci.m_rv;
           ret.m_buildDataList.push_back (newEl);
           rntiAllocated.insert (rnti);
         }

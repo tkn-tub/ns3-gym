@@ -777,6 +777,7 @@ PfFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
               }
           newEl.m_rnti = rnti;
           newEl.m_dci = dci;
+          (*itHarq).second.at (harqId).m_rv = dci.m_rv;
           ret.m_buildDataList.push_back (newEl);
           rntiAllocated.insert (rnti);
         }
@@ -1045,8 +1046,8 @@ PfFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
         }
       for (uint8_t j = 0; j < nLayer; j++)
         {
-          newDci.m_ndi.push_back (1); // TBD (new data indicator)
-          newDci.m_rv.push_back (0); // TBD (redundancy version)
+          newDci.m_ndi.push_back (1);
+          newDci.m_rv.push_back (0);
         }
 
       newEl.m_dci = newDci;

@@ -840,8 +840,8 @@ LteSpectrumPhy::EndRxData ()
           // DEBUG: force error for testing HARQ
 //           if ((*itTb).second.downlink)
 //           {
-//             if (((*itTb).second.harqProcessId == 0)&&(Simulator::Now ().GetNanoSeconds ()<=20000000))
-//             if ((errors<1) && ( ((*itTb).first.m_rnti==1)||((*itTb).first.m_rnti==3)) )
+// //             if (((*itTb).second.harqProcessId == 0)&&(Simulator::Now ().GetNanoSeconds ()<=20000000))
+//             if ((errors<4) && ((*itTb).second.harqProcessId == 0) && ( ((*itTb).first.m_rnti==1)||((*itTb).first.m_rnti==3)) )
 //               {
 //                 (*itTb).second.corrupt = true;
 //                 errors++;
