@@ -100,8 +100,10 @@ public:
   * \param id the HARQ proc id
   * \param layer layer no. (for MIMO spatail multiplexing)
   * \param mi the new MI
+  * \param infoBytes the no. of bytes of info
+  * \param mi the total no. of bytes txed
   */
-  void UpdateDlHarqProcessStatus (uint8_t id, uint8_t layer, double mi, uint16_t infoBits, uint16_t codeBits);
+  void UpdateDlHarqProcessStatus (uint8_t id, uint8_t layer, double mi, uint16_t infoBytes, uint16_t codeBytes);
 
   /**
   * \brief Reset  the info associated to the decodification of an HARQ process
@@ -115,8 +117,10 @@ public:
   * for DL (asynchronous)
   * \param rnti the RNTI of the transmitter
   * \param mi the new MI
+  * \param infoBytes the no. of bytes of info
+  * \param mi the total no. of bytes txed
   */
-  void UpdateUlHarqProcessStatus (uint16_t rnti, double mi, uint16_t infoBits, uint16_t codeBits);
+  void UpdateUlHarqProcessStatus (uint16_t rnti, double mi, uint16_t infoBytes, uint16_t codeBytes);
 
   /**
   * \brief Reset  the info associated to the decodification of an HARQ process

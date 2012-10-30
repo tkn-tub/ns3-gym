@@ -127,7 +127,7 @@ LteHarqPhy::GetHarqProcessInfoUl (uint16_t rnti, uint8_t harqProcId)
 
 
 void
-LteHarqPhy::UpdateDlHarqProcessStatus (uint8_t id, uint8_t layer, double mi, uint16_t infoBits, uint16_t codeBits)
+LteHarqPhy::UpdateDlHarqProcessStatus (uint8_t id, uint8_t layer, double mi, uint16_t infoBytes, uint16_t codeBytes)
 {
   NS_LOG_FUNCTION (this << (uint16_t) id << mi);
   if (m_miDlHarqProcessesInfoMap.at (layer).at (id).size () == 3)  // MAX HARQ RETX
@@ -137,8 +137,8 @@ LteHarqPhy::UpdateDlHarqProcessStatus (uint8_t id, uint8_t layer, double mi, uin
     }
   HarqProcessInfoElement_t el;
   el.m_mi = mi;
-  el.m_infoBits = infoBits;
-  el.m_codeBits = codeBits;
+  el.m_infoBits = infoBytes * 8;
+  el.m_codeBits = codeBytes * 8;
   m_miDlHarqProcessesInfoMap.at (layer).at (id).push_back (el);
 }
 
@@ -156,7 +156,7 @@ LteHarqPhy::ResetDlHarqProcessStatus (uint8_t id)
 
 
 void
-LteHarqPhy::UpdateUlHarqProcessStatus (uint16_t rnti, double mi, uint16_t infoBits, uint16_t codeBits)
+LteHarqPhy::UpdateUlHarqProcessStatus (uint16_t rnti, double mi, uint16_t infoBytes, uint16_t codeBytes)
 {
   NS_LOG_FUNCTION (this << rnti << mi);
   std::map <uint16_t, std::vector <HarqProcessInfoList_t> >::iterator it;
@@ -168,8 +168,8 @@ LteHarqPhy::UpdateUlHarqProcessStatus (uint16_t rnti, double mi, uint16_t infoBi
       harqList.resize (8);
       HarqProcessInfoElement_t el;
       el.m_mi = mi;
-      el.m_infoBits = infoBits;
-      el.m_codeBits = codeBits;
+      el.m_infoBits = infoBytes * 8;
+      el.m_codeBits = codeBytes * 8;
       harqList.at (7).push_back (el);
       m_miUlHarqProcessesInfoMap.insert (std::pair <uint16_t, std::vector <HarqProcessInfoList_t> > (rnti, harqList));
     }
@@ -182,8 +182,8 @@ LteHarqPhy::UpdateUlHarqProcessStatus (uint16_t rnti, double mi, uint16_t infoBi
         }
       HarqProcessInfoElement_t el;
       el.m_mi = mi;
-      el.m_infoBits = infoBits;
-      el.m_codeBits = codeBits;
+      el.m_infoBits = infoBytes * 8;
+      el.m_codeBits = codeBytes * 8;
       (*it).second.at (7).push_back (el);
     }
 }
