@@ -104,7 +104,8 @@ def build(bld):
         'test/test-lte-epc-e2e-data.cc',
         'test/test-lte-antenna.cc',
         'test/lte-test-phy-error-model.cc',
-        'test/lte-test-mimo.cc'
+        'test/lte-test-mimo.cc',
+        'test/lte-test-harq.cc'
         ]
 
     headers = bld.new_task_gen(features=['ns3header'])
