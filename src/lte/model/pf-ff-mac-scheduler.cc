@@ -894,6 +894,7 @@ PfFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
             }
           else
             {
+              rbgMap.at (i) = true;
               std::map <uint16_t, std::vector <uint16_t> >::iterator itMap;
               itMap = allocationMap.find ((*itMax).first);
               if (itMap == allocationMap.end ())
@@ -906,7 +907,6 @@ PfFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
               else
                 {
                   (*itMap).second.push_back (i);
-                  rbgMap.at (i) = true;
                 }
     //           NS_LOG_DEBUG (this << " UE assigned " << (*itMax).first);
             }
