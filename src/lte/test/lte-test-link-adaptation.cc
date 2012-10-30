@@ -201,12 +201,12 @@ LteLinkAdaptationTestCase::DoRun (void)
   // It will be used to test that the SNR is as intended
   Ptr<LtePhy> uePhy = ueDevs.Get (0)->GetObject<LteUeNetDevice> ()->GetPhy ()->GetObject<LtePhy> ();
   Ptr<LteTestSinrChunkProcessor> testSinr = Create<LteTestSinrChunkProcessor> (uePhy);
-  uePhy->GetDownlinkSpectrumPhy ()->AddDataSinrChunkProcessor (testSinr);
+  uePhy->GetDownlinkSpectrumPhy ()->AddCtrlSinrChunkProcessor (testSinr);
 
   Config::Connect ("/NodeList/0/DeviceList/0/LteEnbMac/DlScheduling",
                    MakeBoundCallback (&LteTestDlSchedulingCallback, this));
 
-  Simulator::Stop (Seconds (0.007));
+  Simulator::Stop (Seconds (0.026));
   Simulator::Run ();
 
   double calculatedSinrDb = 10.0 * log10 (testSinr->GetSinr ()->operator[] (0));
@@ -229,10 +229,11 @@ LteLinkAdaptationTestCase::DlScheduling (uint32_t frameNo, uint32_t subframeNo, 
 
   /**
    * Note:
-   *    For first 4 subframeNo in the first frameNo, the MCS cannot be properly evaluated,
-   *    because CQI feedback is still not available at the eNB.
+   * the MCS can only be properly evaluated after:
+   * RRC connection has been completed and
+   * CQI feedback is available at the eNB.
    */
-  if ( (frameNo > 1) || (subframeNo > 8) )
+  if (Simulator::Now ().GetSeconds () > 0.024)
     {
       NS_LOG_INFO (m_snrDb << "\t" << m_mcsIndex << "\t" << (uint16_t)mcsTb1);
 

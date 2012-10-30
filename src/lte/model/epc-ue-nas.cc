@@ -33,10 +33,30 @@ namespace ns3 {
 
 
 
+
+
+const char* g_ueNasStateName[EpcUeNas::NUM_STATES] = 
+  {
+      "OFF",
+      "ATTACHING",
+      "IDLE_REGISTERED",
+      "CONNECTING_TO_EPC",
+      "ACTIVE "    
+  };
+
+std::string ToString (EpcUeNas::State s)
+{
+  return std::string (g_ueNasStateName[s]);
+}
+
+
+
+
 NS_OBJECT_ENSURE_REGISTERED (EpcUeNas);
 
 EpcUeNas::EpcUeNas ()
-  : m_asSapProvider (0),
+  : m_state (OFF),
+    m_asSapProvider (0),
     m_bidCounter (0)
 {
   NS_LOG_FUNCTION (this);
@@ -63,6 +83,9 @@ EpcUeNas::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::EpcUeNas")
     .SetParent<Object> ()
     .AddConstructor<EpcUeNas> ()
+    .AddTraceSource ("StateTransition",
+                     "fired upon every UE NAS state transition",
+                     MakeTraceSourceAccessor (&EpcUeNas::m_stateTransitionCallback))
   ;
   return tid;
 }
@@ -107,6 +130,9 @@ EpcUeNas::SetForwardUpCallback (Callback <void, Ptr<Packet> > cb)
 void 
 EpcUeNas::Connect (Ptr<NetDevice> enbDevice)
 {
+  NS_LOG_FUNCTION (this);
+
+  m_enbDevice = enbDevice;
 
   // since RRC Idle Mode cell selection is not supported yet, we
   // force the UE RRC to be camped on a specific eNB
@@ -115,22 +141,35 @@ EpcUeNas::Connect (Ptr<NetDevice> enbDevice)
 
   // tell RRC to go into connected mode
   m_asSapProvider->Connect ();
-
-  if (m_epcHelper)
-    {
-      m_epcHelper->AttachUe (m_device, m_imsi, enbDevice);
-      // also activate default EPS bearer
-      ActivateEpsBearer (EpsBearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT), EpcTft::Default ());
-    }
 }
+
+
+void 
+EpcUeNas::Disconnect ()
+{
+  NS_LOG_FUNCTION (this);
+  m_asSapProvider->Disconnect ();
+  SwitchToState (OFF);
+}
+
 
 void 
 EpcUeNas::ActivateEpsBearer (EpsBearer bearer, Ptr<EpcTft> tft)
 {
-  NS_ASSERT_MSG (m_bidCounter < 11, "cannot have more than 11 EPS bearers");
-  uint8_t bid = ++m_bidCounter;
-  m_epcHelper->ActivateEpsBearer (m_device, m_imsi, tft, bearer);
-  m_tftClassifier.Add (tft, bid);
+  NS_LOG_FUNCTION (this);
+  switch (m_state)
+    {
+    case ACTIVE:
+      DoActivateEpsBearer (bearer, tft);
+      break;
+
+    default:
+      BearerToBeActivated btba;
+      btba.bearer = bearer;
+      btba.tft = tft;
+      m_bearersToBeActivatedList.push_back (btba);
+      break;
+    }
 }
 
 bool
@@ -138,23 +177,43 @@ EpcUeNas::Send (Ptr<Packet> packet)
 {
   NS_LOG_FUNCTION (this << packet);
   
-  uint32_t id = m_tftClassifier.Classify (packet, EpcTft::UPLINK);
-  NS_ASSERT ((id & 0xFFFFFF00) == 0);
-  uint8_t bid = (uint8_t) (id & 0x000000FF);
-  if (bid == 0)
+  switch (m_state)
     {
+    case ACTIVE:
+      {
+        uint32_t id = m_tftClassifier.Classify (packet, EpcTft::UPLINK);
+        NS_ASSERT ((id & 0xFFFFFF00) == 0);
+        uint8_t bid = (uint8_t) (id & 0x000000FF);
+        if (bid == 0)
+          {
+            return false;
+          }
+        else
+          {
+            m_asSapProvider->SendData (packet, bid); 
+            return true;
+        }
+      }
+      break;
+
+    default:      
+      NS_LOG_WARN (this << " NAS OFF, discarding packet");
       return false;
-    }
-  else
-    {
-      m_asSapProvider->SendData (packet, bid); 
-      return true;
-    }
+      break;
+    }        
 }
 
 void 
 EpcUeNas::DoNotifyConnectionSuccessful ()
 {
+  NS_LOG_FUNCTION (this);
+  if (m_epcHelper)
+    {
+      m_epcHelper->AttachUe (m_device, m_imsi, m_enbDevice);
+      // also activate default EPS bearer
+      DoActivateEpsBearer (EpsBearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT), EpcTft::Default ());
+      SwitchToState (ACTIVE);
+    }
 }
 
 void 
@@ -170,7 +229,48 @@ EpcUeNas::DoRecvData (Ptr<Packet> packet)
   m_forwardUpCallback (packet);
 }
 
+void 
+EpcUeNas::DoNotifyConnectionReleased ()
+{
+  NS_FATAL_ERROR ("connection failed, it should not happen with the current model");
+}
 
+void 
+EpcUeNas::DoActivateEpsBearer (EpsBearer bearer, Ptr<EpcTft> tft)
+{
+  NS_LOG_FUNCTION (this);
+  NS_ASSERT_MSG (m_bidCounter < 11, "cannot have more than 11 EPS bearers");
+  uint8_t bid = ++m_bidCounter;
+  m_epcHelper->ActivateEpsBearer (m_device, m_imsi, tft, bearer);
+  m_tftClassifier.Add (tft, bid);
+}
+
+void 
+EpcUeNas::SwitchToState (State newState)
+{
+  NS_LOG_FUNCTION (this << newState);
+  State oldState = m_state;
+  m_state = newState;
+  NS_LOG_INFO ("IMSI " << m_imsi << " NAS " << ToString (oldState) << " --> " << ToString (newState));
+  m_stateTransitionCallback (oldState, newState);
+
+  // actions to be done when entering a new state:
+  switch (m_state)
+    {
+    case ACTIVE:
+      for (std::list<BearerToBeActivated>::iterator it = m_bearersToBeActivatedList.begin ();
+           it != m_bearersToBeActivatedList.end ();
+           m_bearersToBeActivatedList.erase (it++))
+        {
+          DoActivateEpsBearer (it->bearer, it->tft);
+        }
+      break;
+
+    default:
+      break;
+    }
+
+}
 
 
 } // namespace ns3

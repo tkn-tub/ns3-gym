@@ -252,7 +252,7 @@ LenaDataPhyErrorModelTestCase::DoRun (void)
       // get the imsi
       uint64_t imsi = ueDevs.Get (i)->GetObject<LteUeNetDevice> ()->GetImsi ();
       // get the lcId
-      uint8_t lcId = ueDevs.Get (i)->GetObject<LteUeNetDevice> ()->GetRrc ()->GetLcIdVector ().at (0);
+      uint8_t lcId = 1;
       dlDataRxed.push_back (rlcStats->GetDlRxData (imsi, lcId));
       double txed = rlcStats->GetDlTxData (imsi, lcId);
       int n = txed / m_tbSize;
@@ -438,7 +438,7 @@ LenaDlCtrlPhyErrorModelTestCase::DoRun (void)
     // get the imsi
     uint64_t imsi = ueDevs.Get (i)->GetObject<LteUeNetDevice> ()->GetImsi ();
     // get the lcId
-    uint8_t lcId = ueDevs.Get (i)->GetObject<LteUeNetDevice> ()->GetRrc ()->GetLcIdVector ().at (0);
+    uint8_t lcId = 1;
     dlDataRxed.push_back (rlcStats->GetDlRxData (imsi, lcId));
     double txed = rlcStats->GetDlTxData (imsi, lcId);
     double ber = 1.0 - ((double)dlDataRxed.at (i)/txed);

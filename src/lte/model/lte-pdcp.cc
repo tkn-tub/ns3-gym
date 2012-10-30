@@ -145,7 +145,7 @@ LtePdcp::GetLteRlcSapUser ()
 ////////////////////////////////////////
 
 void
-LtePdcp::DoTransmitRrcPdu (Ptr<Packet> p)
+LtePdcp::DoTransmitPdcpSdu (Ptr<Packet> p)
 {
   NS_LOG_FUNCTION (this << m_rnti << (uint32_t) m_lcid << p->GetSize ());
 
@@ -200,11 +200,11 @@ LtePdcp::DoReceivePdu (Ptr<Packet> p)
       m_rxSequenceNumber = 0;
     }
 
-  LtePdcpSapUser::ReceiveRrcPduParameters params;
-  params.rrcPdu = p;
+  LtePdcpSapUser::ReceivePdcpSduParameters params;
+  params.pdcpSdu = p;
   params.rnti = m_rnti;
   params.lcid = m_lcid;
-  m_pdcpSapUser->ReceiveRrcPdu (params);
+  m_pdcpSapUser->ReceivePdcpSdu (params);
 }
 
 void

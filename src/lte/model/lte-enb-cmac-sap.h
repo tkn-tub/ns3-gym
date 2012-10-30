@@ -135,6 +135,14 @@ class LteEnbCmacSapUser
 {
 public:
   virtual ~LteEnbCmacSapUser ();
+
+  /** 
+   * request the allocation of a Temporary C-RNTI 
+   *
+   * \return the T-C-RNTI
+   */
+  virtual uint16_t AllocateTemporaryCellRnti () = 0;
+
   /**
    * notify the result of the last LC config operation
    *

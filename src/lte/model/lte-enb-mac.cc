@@ -233,6 +233,7 @@ public:
   virtual void ReceivePhyPdu (Ptr<Packet> p);
   virtual void SubframeIndication (uint32_t frameNo, uint32_t subframeNo);
   virtual void ReceiveLteControlMessage (Ptr<LteControlMessage> msg);
+  virtual void ReceiveRachPreamble (uint32_t prachId);
   virtual void UlCqiReport (FfMacSchedSapProvider::SchedUlCqiInfoReqParameters ulcqi);
 
 private:
@@ -260,6 +261,12 @@ void
 EnbMacMemberLteEnbPhySapUser::ReceiveLteControlMessage (Ptr<LteControlMessage> msg)
 {
   m_mac->DoReceiveLteControlMessage (msg);
+}
+
+void
+EnbMacMemberLteEnbPhySapUser::ReceiveRachPreamble (uint32_t prachId)
+{
+  m_mac->DoReceiveRachPreamble (prachId);
 }
 
 void
@@ -513,9 +520,31 @@ LteEnbMac::DoReceiveLteControlMessage  (Ptr<LteControlMessage> msg)
     }
   else
     {
-      NS_LOG_LOGIC (this << " LteControlMessage not recognized");
+      NS_LOG_LOGIC (this << " LteControlMessage type " << msg->GetMessageType () << " not recognized");
     }
 }
+
+void
+LteEnbMac::DoReceiveRachPreamble  (uint32_t prachId)
+{
+  NS_LOG_FUNCTION (this << prachId);
+  uint16_t rnti = m_cmacSapUser->AllocateTemporaryCellRnti ();
+  
+  // todo: should trigger SCHED_DL_RACH_INFO_REQ here
+  // and then wait for DL_SCHEDULE_INDICATION to build the RARs from the RAR_List
+
+  // for now, we take a shortcut and just build the RAR here as an ideal message and without an UL grant
+
+  BuildRarListElement_s rar;
+  rar.m_rnti = rnti;
+  
+  Ptr<RarLteControlMessage> msg = Create<RarLteControlMessage> ();
+  msg->SetPrachId (prachId);
+  msg->SetRar (rar);
+  m_enbPhySapProvider->SendLteControlMessage (msg);
+  
+}
+
 
 
 void
@@ -549,7 +578,6 @@ LteEnbMac::ReceiveBsrMessage  (MacCeListElement_s bsr)
 
   m_ulCeReceived.push_back (bsr);
 }
-
 
 
 void
@@ -602,7 +630,6 @@ LteEnbMac::DoReceivePhyPdu (Ptr<Packet> p)
 
 
 
-
 // ////////////////////////////////////////////
 // CMAC SAP
 // ////////////////////////////////////////////
@@ -628,6 +655,7 @@ LteEnbMac::DoAddUe (uint16_t rnti)
   FfMacCschedSapProvider::CschedUeConfigReqParameters params;
   params.m_rnti = rnti;
   params.m_transmissionMode = 0; // set to default value (SISO) for avoiding random initialization (valgrind error)
+
   m_cschedSapProvider->CschedUeConfigReq (params);
 }
 
@@ -644,10 +672,11 @@ void
 LteEnbMac::DoAddLc (LteEnbCmacSapProvider::LcInfo lcinfo, LteMacSapUser* msu)
 {
   NS_LOG_FUNCTION (this);
+
   std::map <LteFlowId_t, LteMacSapUser* >::iterator it;
-
+  
   LteFlowId_t flow (lcinfo.rnti, lcinfo.lcId);
-
+  
   it = m_rlcAttached.find (flow);
   if (it == m_rlcAttached.end ())
     {
@@ -658,24 +687,30 @@ LteEnbMac::DoAddLc (LteEnbCmacSapProvider::LcInfo lcinfo, LteMacSapUser* msu)
       NS_LOG_ERROR ("LC already exists");
     }
 
+  // CCCH (LCID 0) is pre-configured 
+  // see FF LTE MAC Scheduler
+  // Interface Specification v1.11, 
+  // 4.3.4 logicalChannelConfigListElement
+  if (lcinfo.lcId != 0)
+    {
+      struct FfMacCschedSapProvider::CschedLcConfigReqParameters params;
+      params.m_rnti = lcinfo.rnti;
+      params.m_reconfigureFlag = false;
 
-  struct FfMacCschedSapProvider::CschedLcConfigReqParameters params;
-  params.m_rnti = lcinfo.rnti;
-  params.m_reconfigureFlag = false;
+      struct LogicalChannelConfigListElement_s lccle;
+      lccle.m_logicalChannelIdentity = lcinfo.lcId;
+      lccle.m_logicalChannelGroup = lcinfo.lcGroup;
+      lccle.m_direction = LogicalChannelConfigListElement_s::DIR_BOTH;
+      lccle.m_qosBearerType = lcinfo.isGbr ? LogicalChannelConfigListElement_s::QBT_GBR : LogicalChannelConfigListElement_s::QBT_NON_GBR;
+      lccle.m_qci = lcinfo.qci;
+      lccle.m_eRabMaximulBitrateUl = lcinfo.mbrUl;
+      lccle.m_eRabMaximulBitrateDl = lcinfo.mbrDl;
+      lccle.m_eRabGuaranteedBitrateUl = lcinfo.gbrUl;
+      lccle.m_eRabGuaranteedBitrateDl = lcinfo.gbrDl;
+      params.m_logicalChannelConfigList.push_back (lccle);
 
-  struct LogicalChannelConfigListElement_s lccle;
-  lccle.m_logicalChannelIdentity = lcinfo.lcId;
-  lccle.m_logicalChannelGroup = lcinfo.lcGroup;
-  lccle.m_direction = LogicalChannelConfigListElement_s::DIR_BOTH;
-  lccle.m_qosBearerType = lcinfo.isGbr ? LogicalChannelConfigListElement_s::QBT_GBR : LogicalChannelConfigListElement_s::QBT_NON_GBR;
-  lccle.m_qci = lcinfo.qci;
-  lccle.m_eRabMaximulBitrateUl = lcinfo.mbrUl;
-  lccle.m_eRabMaximulBitrateDl = lcinfo.mbrDl;
-  lccle.m_eRabGuaranteedBitrateUl = lcinfo.gbrUl;
-  lccle.m_eRabGuaranteedBitrateDl = lcinfo.gbrDl;
-  params.m_logicalChannelConfigList.push_back (lccle);
-
-  m_cschedSapProvider->CschedLcConfigReq (params);
+      m_cschedSapProvider->CschedLcConfigReq (params);
+    }
 }
 
 void
@@ -875,6 +910,7 @@ LteEnbMac::DoUeUpdateConfigurationReq (LteEnbCmacSapProvider::UeConfig params)
   FfMacCschedSapProvider::CschedUeConfigReqParameters req;
   req.m_rnti = params.m_rnti;
   req.m_transmissionMode = params.m_transmissionMode;
+  req.m_reconfigureFlag = true;
   m_cschedSapProvider->CschedUeConfigReq (req);
 }
 

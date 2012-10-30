@@ -119,6 +119,8 @@ public:
   void SetLteEnbPhySapProvider (LteEnbPhySapProvider* s);
 
 
+private:
+
   /**
   * \brief Receive a DL CQI ideal control message
   * \param msg the DL CQI message
@@ -133,11 +135,11 @@ public:
   */
   void ReceiveBsrMessage  (MacCeListElement_s bsr);
 
+ 
   void DoUlCqiReport (FfMacSchedSapProvider::SchedUlCqiInfoReqParameters ulcqi);
 
 
 
-private:
   // forwarded from LteEnbCmacSapProvider
   void DoConfigureMac (uint8_t ulBandwidth, uint8_t dlBandwidth);
   void DoAddUe (uint16_t rnti);
@@ -166,24 +168,14 @@ private:
   
   void DoUeUpdateConfigurationReq (LteEnbCmacSapProvider::UeConfig params);
 
-  /**
-  * \brief Forwarded from LteEnbPhySapUser: trigger the start from a new frame
-  *
-  * \param frameNo frame number
-  * \param subframeNo subframe number
-  */
+  // forwarded from LteEnbPhySapUser
   void DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo);
+  void DoReceiveRachPreamble (uint32_t prachId);
 
-  /**
-  * \brief Forwarded from LtePhySapUser: receive a PHY-PDU
-  *
-  * \param p PHY-PDU received
-  */
 public:
   // legacy public for use the Phy callback
   void DoReceivePhyPdu (Ptr<Packet> p);
 
-private:
 private:
   std::map <LteFlowId_t, LteMacSapUser*> m_rlcAttached;
 

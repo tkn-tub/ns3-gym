@@ -53,9 +53,11 @@ public:
   UeMemberLteUeCmacSapProvider (LteUeMac* mac);
 
   // inherited from LteUeCmacSapProvider
-  virtual void ConfigureUe (uint16_t rnti);
-  virtual void AddLc (uint8_t lcId, LteMacSapUser* msu);
+  virtual void StartContentionBasedRandomAccessProcedure ();
+  virtual void StartNonContentionBasedRandomAccessProcedure (uint16_t rnti, uint8_t preambleId, uint8_t prachMask);
+  virtual void AddLc (uint8_t lcId, LteUeCmacSapProvider::LogicalChannelConfig lcConfig, LteMacSapUser* msu);
   virtual void RemoveLc (uint8_t lcId);
+  virtual void Reset ();
 
 private:
   LteUeMac* m_mac;
@@ -67,22 +69,35 @@ UeMemberLteUeCmacSapProvider::UeMemberLteUeCmacSapProvider (LteUeMac* mac)
 {
 }
 
-void
-UeMemberLteUeCmacSapProvider::ConfigureUe (uint16_t rnti)
+  void 
+UeMemberLteUeCmacSapProvider::StartContentionBasedRandomAccessProcedure ()
 {
-  m_mac->DoConfigureUe (rnti);
+  m_mac->DoStartContentionBasedRandomAccessProcedure ();
 }
 
-void
-UeMemberLteUeCmacSapProvider::AddLc (uint8_t lcId, LteMacSapUser* msu)
+ void 
+UeMemberLteUeCmacSapProvider::StartNonContentionBasedRandomAccessProcedure (uint16_t rnti, uint8_t preambleId, uint8_t prachMask)
 {
-  m_mac->DoAddLc (lcId, msu);
+  m_mac->DoStartNonContentionBasedRandomAccessProcedure (rnti, preambleId, prachMask);
+}
+
+
+void
+UeMemberLteUeCmacSapProvider::AddLc (uint8_t lcId, LogicalChannelConfig lcConfig, LteMacSapUser* msu)
+{
+  m_mac->DoAddLc (lcId, lcConfig, msu);
 }
 
 void
 UeMemberLteUeCmacSapProvider::RemoveLc (uint8_t lcid)
 {
   m_mac->DoRemoveLc (lcid);
+}
+
+void
+UeMemberLteUeCmacSapProvider::Reset ()
+{
+  m_mac->DoReset ();
 }
 
 class UeMemberLteMacSapProvider : public LteMacSapProvider
@@ -178,8 +193,9 @@ LteUeMac::GetTypeId (void)
 
 LteUeMac::LteUeMac ()
   :  m_bsrPeriodicity (MilliSeconds (1)), // ideal behavior
-  m_bsrLast (MilliSeconds (0)),
-  m_freshUlBsr (false)
+     m_bsrLast (MilliSeconds (0)),
+     m_freshUlBsr (false),
+     m_rnti (0)
   
 {
   NS_LOG_FUNCTION (this);
@@ -277,29 +293,40 @@ void
 LteUeMac::SendReportBufferStatus (void)
 {
   NS_LOG_FUNCTION (this);
+
+  if (m_rnti == 0)
+    {
+      NS_LOG_INFO ("MAC not initialized, BSR deferred");
+      return; 
+    }
+
   if (m_ulBsrReceived.size () == 0)
     {
-      return;  // No BSR report to transmit
+      NS_LOG_INFO ("No BSR report to transmit");
+      return; 
     }
   MacCeListElement_s bsr;
   bsr.m_rnti = m_rnti;
   bsr.m_macCeType = MacCeListElement_s::BSR;
 
-  // BSR is reported for each LCG. As a simplification, we consider that all LCs belong to the first LCG.
+  // BSR is reported for each LCG
   std::map <uint8_t, uint64_t>::iterator it;  
-  int queue = 0;
+  std::vector<uint32_t> queue (4, 0); // one value per each of the 4 LCGs, initialized to 0
   for (it = m_ulBsrReceived.begin (); it != m_ulBsrReceived.end (); it++)
     {
-      queue += (*it).second;
-  
+      uint8_t lcid = it->first;
+      std::map <uint8_t, LcInfo>::iterator lcInfoMapIt;
+      lcInfoMapIt = m_lcInfoMap.find (lcid);
+      NS_ASSERT (lcInfoMapIt !=  m_lcInfoMap.end ());
+      uint8_t lcg = lcInfoMapIt->second.lcConfig.logicalChannelGroup;
+      queue.at (lcg) += (*it).second;
     }
-  int index = BufferSizeLevelBsr::BufferSize2BsrId (queue);
-  bsr.m_macCeValue.m_bufferStatus.push_back (index);
+
   // FF API says that all 4 LCGs are always present
-  // we do so but reporting a 0 size for all other LCGs
-  bsr.m_macCeValue.m_bufferStatus.push_back (BufferSizeLevelBsr::BufferSize2BsrId (0));
-  bsr.m_macCeValue.m_bufferStatus.push_back (BufferSizeLevelBsr::BufferSize2BsrId (0));
-  bsr.m_macCeValue.m_bufferStatus.push_back (BufferSizeLevelBsr::BufferSize2BsrId (0));
+  bsr.m_macCeValue.m_bufferStatus.push_back (BufferSizeLevelBsr::BufferSize2BsrId (queue.at (0)));
+  bsr.m_macCeValue.m_bufferStatus.push_back (BufferSizeLevelBsr::BufferSize2BsrId (queue.at (1)));
+  bsr.m_macCeValue.m_bufferStatus.push_back (BufferSizeLevelBsr::BufferSize2BsrId (queue.at (2)));
+  bsr.m_macCeValue.m_bufferStatus.push_back (BufferSizeLevelBsr::BufferSize2BsrId (queue.at (3)));
 
   // create the feedback to eNB
   Ptr<BsrLteControlMessage> msg = Create<BsrLteControlMessage> ();
@@ -308,27 +335,74 @@ LteUeMac::SendReportBufferStatus (void)
 
 }
 
-void
-LteUeMac::DoConfigureUe (uint16_t rnti)
+void 
+LteUeMac::DoStartContentionBasedRandomAccessProcedure ()
+{
+  NS_LOG_FUNCTION (this);
+  static uint32_t prachIdCounter = 256;
+  prachIdCounter += 2;
+  m_prachId = prachIdCounter;
+  NS_LOG_INFO ("sending RACH preamble " << m_prachId);
+
+
+  // Since regular UL LteControlMessages need m_ulConfigured = true in
+  // order to be sent by the UE, the rach preamble needs to be sent
+  // with a dedicated primitive (not
+  // m_uePhySapProvider->SendLteControlMessage (msg)) so that it can
+  // bypass the m_ulConfigured flag. This is reasonable, since In fact
+  // the RACH preamble is sent on 6RB bandwidth so the uplink
+  // bandwidth does not need to be configured. 
+
+  Ptr<RachPreambleLteControlMessage> msg = Create<RachPreambleLteControlMessage> ();
+  msg->SetPrachId (m_prachId);
+  m_uePhySapProvider->SendRachPreamble (m_prachId);
+}
+
+void 
+LteUeMac::DoStartNonContentionBasedRandomAccessProcedure (uint16_t rnti, uint8_t preambleId, uint8_t prachMask)
 {
   NS_LOG_FUNCTION (this << " rnti" << rnti);
   m_rnti = rnti;
 }
 
 void
-LteUeMac::DoAddLc (uint8_t lcId, LteMacSapUser* msu)
+LteUeMac::DoAddLc (uint8_t lcId,  LteUeCmacSapProvider::LogicalChannelConfig lcConfig, LteMacSapUser* msu)
 {
   NS_LOG_FUNCTION (this << " lcId" << (uint16_t) lcId);
-  NS_ASSERT_MSG (m_macSapUserMap.find (lcId) == m_macSapUserMap.end (), "cannot add channel because LCID " << lcId << " is already present");
-  m_macSapUserMap[lcId] = msu;
+  NS_ASSERT_MSG (m_lcInfoMap.find (lcId) == m_lcInfoMap.end (), "cannot add channel because LCID " << lcId << " is already present");
+  
+  LcInfo lcInfo;
+  lcInfo.lcConfig = lcConfig;
+  lcInfo.macSapUser = msu;
+  m_lcInfoMap[lcId] = lcInfo;
 }
 
 void
 LteUeMac::DoRemoveLc (uint8_t lcId)
 {
   NS_LOG_FUNCTION (this << " lcId" << lcId);
-  NS_ASSERT_MSG (m_macSapUserMap.find (lcId) == m_macSapUserMap.end (), "could not find LCID " << lcId);
-  m_macSapUserMap.erase (lcId);
+  NS_ASSERT_MSG (m_lcInfoMap.find (lcId) == m_lcInfoMap.end (), "could not find LCID " << lcId);
+  m_lcInfoMap.erase (lcId);
+}
+
+void
+LteUeMac::DoReset ()
+{
+  NS_LOG_FUNCTION (this);
+  std::map <uint8_t, LcInfo>::iterator it = m_lcInfoMap.begin ();
+  while (it != m_lcInfoMap.end ())
+    {
+      // don't delete CCCH)
+      if (it->first == 0)
+        {          
+          ++it;
+        }
+      else
+        {
+          // note: use of postfix operator preserves validity of iterator
+          m_lcInfoMap.erase (it++);
+        }
+    }
 }
 
 void
@@ -339,9 +413,9 @@ LteUeMac::DoReceivePhyPdu (Ptr<Packet> p)
   if (tag.GetRnti () == m_rnti)
     {
       // packet is for the current user
-      std::map <uint8_t, LteMacSapUser*>::const_iterator it = m_macSapUserMap.find (tag.GetLcid ());
-      NS_ASSERT_MSG (it != m_macSapUserMap.end (), "received packet with unknown lcid");
-      it->second->ReceivePdu (p);
+      std::map <uint8_t, LcInfo>::const_iterator it = m_lcInfoMap.find (tag.GetLcid ());
+      NS_ASSERT_MSG (it != m_lcInfoMap.end (), "received packet with unknown lcid");
+      it->second.macSapUser->ReceivePdu (p);
     }
 }
 
@@ -355,7 +429,6 @@ LteUeMac::DoReceiveLteControlMessage (Ptr<LteControlMessage> msg)
       Ptr<UlDciLteControlMessage> msg2 = DynamicCast<UlDciLteControlMessage> (msg);
       UlDciListElement_s dci = msg2->GetDci ();
       std::map <uint8_t, uint64_t>::iterator itBsr;
-      NS_ASSERT_MSG (m_ulBsrReceived.size () <=4, " Too many LCs (max is 4)");
       uint16_t activeLcs = 0;
       for (itBsr = m_ulBsrReceived.begin (); itBsr != m_ulBsrReceived.end (); itBsr++)
         {
@@ -369,18 +442,19 @@ LteUeMac::DoReceiveLteControlMessage (Ptr<LteControlMessage> msg)
           NS_LOG_ERROR (this << " No active flows for this UL-DCI");
           return;
         }
-      std::map <uint8_t, LteMacSapUser*>::iterator it;
-      NS_LOG_FUNCTION (this << " UE: UL-CQI notified TxOpportunity of " << dci.m_tbSize);
-      for (it = m_macSapUserMap.begin (); it!=m_macSapUserMap.end (); it++)
+      std::map <uint8_t, LcInfo>::iterator it;
+      uint32_t bytesPerActiveLc = dci.m_tbSize / activeLcs;
+      NS_LOG_LOGIC (this << " UE: UL-CQI notified TxOpportunity of " << dci.m_tbSize << " => " << bytesPerActiveLc << " bytes per active LC");
+      for (it = m_lcInfoMap.begin (); it!=m_lcInfoMap.end (); it++)
         {
           itBsr = m_ulBsrReceived.find ((*it).first);
-          if (itBsr!=m_ulBsrReceived.end ())
+          if (((itBsr!=m_ulBsrReceived.end ()) && ((*itBsr).second > 0)))
             {
-              NS_LOG_FUNCTION (this << "\t" << dci.m_tbSize / m_macSapUserMap.size () << " bytes to LC " << (uint16_t)(*it).first << " queue " << (*itBsr).second);
-              (*it).second->NotifyTxOpportunity (dci.m_tbSize / activeLcs, 0);
-              if ((*itBsr).second >=  static_cast<uint64_t> (dci.m_tbSize / activeLcs))
+              NS_LOG_LOGIC (this << "\t" << bytesPerActiveLc << " bytes to LC " << (uint16_t)(*it).first << " queue " << (*itBsr).second);
+              (*it).second.macSapUser->NotifyTxOpportunity (bytesPerActiveLc, 0);
+              if ((*itBsr).second >=  static_cast<uint64_t> (bytesPerActiveLc))
                 {
-                  (*itBsr).second -= dci.m_tbSize / activeLcs;
+                  (*itBsr).second -= bytesPerActiveLc;
                 }
               else
                 {
@@ -390,9 +464,26 @@ LteUeMac::DoReceiveLteControlMessage (Ptr<LteControlMessage> msg)
         }
 
     }
+  else if (msg->GetMessageType () == LteControlMessage::RAR)
+    {
+      Ptr<RarLteControlMessage> msg2 = DynamicCast<RarLteControlMessage> (msg);
+      
+      if (msg2->GetPrachId () == m_prachId)
+        {
+          m_rnti = msg2->GetRar ().m_rnti;
+          NS_LOG_INFO ("got RAR for PRACH ID " << m_prachId << ", setting T-C-RNTI = " << m_rnti);
+          m_cmacSapUser->SetTemporaryCellRnti (m_rnti);
+            
+          // in principle we should wait for contention resolution,
+          // but, since we don't model RACH PREAMBLE collisions, we
+          // just stop here
+          m_cmacSapUser->NotifyRandomAccessSuccessful ();
+        }
+      // else the RAR is not for me
+    }
   else
     {
-      NS_LOG_FUNCTION (this << " LteControlMessage not recognized");
+      NS_LOG_WARN (this << " LteControlMessage not recognized");
     }
 }
 

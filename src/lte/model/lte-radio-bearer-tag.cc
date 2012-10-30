@@ -33,11 +33,11 @@ LteRadioBearerTag::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::LteRadioBearerTag")
     .SetParent<Tag> ()
     .AddConstructor<LteRadioBearerTag> ()
-    .AddAttribute ("rnti", "The rnti that indicates the UE which packet belongs",
+    .AddAttribute ("rnti", "The rnti that indicates the UE to which packet belongs",
                    UintegerValue (0),
                    MakeUintegerAccessor (&LteRadioBearerTag::GetRnti),
                    MakeUintegerChecker<uint16_t> ())
-    .AddAttribute ("lcid", "The LC id that indicates the UE which packet belongs",
+    .AddAttribute ("lcid", "The id whithin the UE identifying the logical channel to which the packet belongs",
                    UintegerValue (0),
                    MakeUintegerAccessor (&LteRadioBearerTag::GetLcid),
                    MakeUintegerChecker<uint8_t> ())

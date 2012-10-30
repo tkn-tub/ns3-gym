@@ -217,6 +217,12 @@ LteSpectrumPhy::SetChannel (Ptr<SpectrumChannel> c)
   m_channel = c;
 }
 
+Ptr<SpectrumChannel> 
+LteSpectrumPhy::GetChannel ()
+{
+  return m_channel;
+}
+
 Ptr<const SpectrumModel>
 LteSpectrumPhy::GetRxSpectrumModel () const
 {
@@ -451,6 +457,7 @@ LteSpectrumPhy::StartTxUlSrsFrame ()
       (ii) the power transmission
       */
       NS_ASSERT (m_txPsd);
+      NS_LOG_LOGIC (this << " m_txPsd: " << *m_txPsd);
       
       // we need to convey some PHY meta information to the receiver
       // to be used for simulation purposes (e.g., the CellId). This

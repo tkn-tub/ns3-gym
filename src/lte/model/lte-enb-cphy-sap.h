@@ -25,6 +25,8 @@
 #include <stdint.h>
 #include <ns3/ptr.h>
 
+#include <ns3/lte-rrc-sap.h>
+
 namespace ns3 {
 
 class LteEnbNetDevice;
@@ -69,6 +71,13 @@ public:
    * \param rnti the UE id relative to this cell
    */
   virtual void AddUe (uint16_t rnti) = 0;
+
+  /** 
+   * Remove an UE from the the cell
+   * 
+   * \param rnti the UE id relative to this cell
+   */
+  virtual void RemoveUe (uint16_t rnti) = 0;
   
   /**
    * \param rnti the RNTI of the user
@@ -82,6 +91,11 @@ public:
    */
   virtual void SetSrsConfigurationIndex (uint16_t  rnti, uint16_t srsCi) = 0;
 
+  /** 
+   * 
+   * \param mib the Master Information Block to be sent on the BCH
+   */
+  virtual void SetMasterInformationBlock (LteRrcSap::MasterInformationBlock mib) = 0;
 };
 
 
@@ -119,9 +133,11 @@ public:
   virtual void SetBandwidth (uint8_t ulBandwidth, uint8_t dlBandwidth);
   virtual void SetEarfcn (uint16_t ulEarfcn, uint16_t dlEarfcn);
   virtual void AddUe (uint16_t rnti);
+  virtual void RemoveUe (uint16_t rnti);
   virtual void SetTransmissionMode (uint16_t  rnti, uint8_t txMode);
   virtual void SetSrsConfigurationIndex (uint16_t  rnti, uint16_t srsCi);
-
+  virtual void SetMasterInformationBlock (LteRrcSap::MasterInformationBlock mib);
+  
 private:
   MemberLteEnbCphySapProvider ();
   C* m_owner;
@@ -167,6 +183,12 @@ MemberLteEnbCphySapProvider<C>::AddUe (uint16_t rnti)
   m_owner->DoAddUe (rnti);
 }
 
+template <class C>
+void 
+MemberLteEnbCphySapProvider<C>::RemoveUe (uint16_t rnti)
+{
+  m_owner->DoRemoveUe (rnti);
+}
 
 template <class C>
 void 
@@ -182,6 +204,12 @@ MemberLteEnbCphySapProvider<C>::SetSrsConfigurationIndex (uint16_t  rnti, uint16
   m_owner->DoSetSrsConfigurationIndex (rnti, srsCi);
 }
 
+template <class C> 
+void 
+MemberLteEnbCphySapProvider<C>::SetMasterInformationBlock (LteRrcSap::MasterInformationBlock mib)
+{
+  m_owner->DoSetMasterInformationBlock (mib);
+}
 
 
 

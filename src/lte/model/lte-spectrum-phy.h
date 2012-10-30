@@ -307,6 +307,13 @@ public:
   */
   void SetTransmissionMode (uint8_t txMode);
   
+
+  /** 
+   * 
+   * \return the previously set channel
+   */
+  Ptr<SpectrumChannel> GetChannel ();
+
   friend class LteUePhy;
   
 

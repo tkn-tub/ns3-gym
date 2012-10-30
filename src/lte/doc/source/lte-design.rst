@@ -1071,6 +1071,16 @@ The RRC model implemented in the simulator provides the following functionality:
    + handover
 
 
+Radio Bearer Configuration
+--------------------------
+
+Some implementation choices have been made in the RRC regarding the setup of radio bearers:
+
+ - three Logical Channel Groups (out of four available) are used, according to the following policy:
+   + LCG 0 is for signaling radio bearers
+   + LCG 1 is for GBR data radio bearers
+   + LCG 2 is for Non-GBR data radio bearers
+
 
 RRC connection establishment
 ----------------------------

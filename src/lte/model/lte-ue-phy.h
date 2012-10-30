@@ -37,7 +37,6 @@
 namespace ns3 {
 
 class PacketBurst;
-class LteNetDevice;
 class LteEnbPhy;
 
 /**
@@ -120,11 +119,6 @@ public:
    */
   uint8_t GetMacChDelay (void) const;
 
-  /**
-   * \brief Queue the MAC PDU to be sent
-   * \param p the MAC PDU to sent
-   */
-  virtual void DoSendMacPdu (Ptr<Packet> p);
 
   /**
    * \brief Create the PSD for the TX
@@ -168,10 +162,7 @@ public:
   virtual void GenerateCtrlCqiReport (const SpectrumValue& sinr);
   virtual void GenerateDataCqiReport (const SpectrumValue& sinr);
 
-  virtual void DoSendLteControlMessage (Ptr<LteControlMessage> msg);
   virtual void ReceiveLteControlMessageList (std::list<Ptr<LteControlMessage> >);
-  
-  virtual void DoSetSrsConfigurationIndex (uint16_t srcCi);
   
 
 
@@ -210,16 +201,20 @@ private:
   void SetTxMode7Gain (double gain);
   void SetTxModeGain (uint8_t txMode, double gain);
 
-  void UpdateNoisePsd ();
-  
   void QueueSubChannelsForTransmission (std::vector <int> rbMap);
 
-  // CPHY SAP methods
-  void DoSetBandwidth (uint8_t ulBandwidth, uint8_t dlBandwidth);
-  void DoSetEarfcn (uint16_t dlEarfcn, uint16_t ulEarfcn);
-  void DoSetTransmissionMode (uint8_t txMode);
+  // UE CPHY SAP methods
+  void DoSyncronizeWithEnb (uint16_t cellId, uint16_t dlEarfcn);  
+  void DoSetDlBandwidth (uint8_t ulBandwidth);
+  void DoConfigureUplink (uint16_t ulEarfcn, uint8_t ulBandwidth);
   void DoSetRnti (uint16_t rnti);
-  void DoSyncronizeWithEnb (Ptr<LteEnbNetDevice> enbDevice, uint16_t cellId);
+  void DoSetTransmissionMode (uint8_t txMode);
+  void DoSetSrsConfigurationIndex (uint16_t srcCi);
+
+  // UE PHY SAP methods 
+  virtual void DoSendMacPdu (Ptr<Packet> p);  
+  virtual void DoSendLteControlMessage (Ptr<LteControlMessage> msg);
+  virtual void DoSendRachPreamble (uint32_t prachId);
   
   std::vector <int> m_subChannelsForTransmission;
   std::vector <int> m_subChannelsForReception;
@@ -246,13 +241,17 @@ private:
   uint16_t  m_rnti;
 
   uint16_t m_enbCellId;
-  Ptr<LteEnbNetDevice> m_enbDevice; // wild hack, might go away in later versions
-  
+ 
   uint8_t m_transmissionMode;
   std::vector <double> m_txModeGain;
   
   uint16_t m_srsPeriodicity;
-  uint16_t m_srsCounter;
+  uint16_t m_srsSubframeOffset;
+  uint16_t m_srsConfigured;
+
+  bool m_dlConfigured;
+  bool m_ulConfigured;
+  bool m_addedToDlChannel;
 
 };
 

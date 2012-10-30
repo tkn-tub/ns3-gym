@@ -47,7 +47,7 @@ public:
   {
     uint16_t rnti; /**< the RNTI corresponding to the IMSI for which
                       the radio bearer activation was requested */
-    uint8_t lcid; /**< the LCID of the newly created radio bearer */
+    uint8_t bid; /**< the EPS Bearer ID of the bearer to be created*/
 
     uint32_t teid; /**< context information that was passed upon the
                       corresponding call to

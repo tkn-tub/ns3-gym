@@ -28,12 +28,35 @@
 #include "ns3/uinteger.h"
 
 #include "epc-gtpu-header.h"
-#include "lte-radio-bearer-tag.h"
+#include "eps-bearer-tag.h"
 
 
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("EpcEnbApplication");
+
+
+EpcEnbApplication::EpsFlowId_t::EpsFlowId_t ()
+{
+}
+
+EpcEnbApplication::EpsFlowId_t::EpsFlowId_t (const uint16_t a, const uint8_t b)
+  : m_rnti (a),
+    m_bid (b)
+{
+}
+
+bool
+operator == (const EpcEnbApplication::EpsFlowId_t &a, const EpcEnbApplication::EpsFlowId_t &b)
+{
+  return ( (a.m_rnti == b.m_rnti) && (a.m_bid == b.m_bid) );
+}
+
+bool
+operator < (const EpcEnbApplication::EpsFlowId_t& a, const EpcEnbApplication::EpsFlowId_t& b)
+{
+  return ( (a.m_rnti < b.m_rnti) || ( (a.m_rnti == b.m_rnti) && (a.m_bid < b.m_bid) ) );
+}
 
 
 TypeId
@@ -93,8 +116,8 @@ EpcEnbApplication::ErabSetupRequest (uint32_t teid, uint64_t imsi, EpsBearer bea
 void 
 EpcEnbApplication::DoS1BearerSetupRequest (EpcEnbS1SapProvider::S1BearerSetupRequestParameters params)
 {
-  NS_LOG_FUNCTION (this);
-  LteFlowId_t rbid (params.rnti, params.lcid);
+  NS_LOG_FUNCTION (this << params.rnti << params.bid);
+  EpsFlowId_t rbid (params.rnti, params.bid);
   // side effect: create entries if not exist
   m_rbidTeidMap[rbid] = params.teid;
   m_teidRbidMap[params.teid] = rbid;
@@ -120,14 +143,14 @@ EpcEnbApplication::RecvFromLteSocket (Ptr<Socket> socket)
   SocketAddressTag satag;
   packet->RemovePacketTag (satag);
 
-  LteRadioBearerTag tag;
+  EpsBearerTag tag;
   bool found = packet->RemovePacketTag (tag);
   NS_ASSERT (found);
-  LteFlowId_t flowId;
+  EpsFlowId_t flowId;
   flowId.m_rnti = tag.GetRnti ();
-  flowId.m_lcId = tag.GetLcid ();
-  NS_LOG_LOGIC ("received packet with RNTI=" << flowId.m_rnti << ", LCID=" << (uint16_t)  flowId.m_lcId);
-  std::map<LteFlowId_t, uint32_t>::iterator it = m_rbidTeidMap.find (flowId);
+  flowId.m_bid = tag.GetBid ();
+  NS_LOG_LOGIC ("received packet with RNTI=" << flowId.m_rnti << ", BID=" << (uint16_t)  flowId.m_bid);
+  std::map<EpsFlowId_t, uint32_t>::iterator it = m_rbidTeidMap.find (flowId);
   NS_ASSERT (it != m_rbidTeidMap.end ());
   uint32_t teid = it->second;
   SendToS1uSocket (packet, teid);
@@ -142,21 +165,21 @@ EpcEnbApplication::RecvFromS1uSocket (Ptr<Socket> socket)
   GtpuHeader gtpu;
   packet->RemoveHeader (gtpu);
   uint32_t teid = gtpu.GetTeid ();
-  std::map<uint32_t, LteFlowId_t>::iterator it = m_teidRbidMap.find (teid);
+  std::map<uint32_t, EpsFlowId_t>::iterator it = m_teidRbidMap.find (teid);
   NS_ASSERT (it != m_teidRbidMap.end ());
 
   // workaround for bug 231 https://www.nsnam.org/bugzilla/show_bug.cgi?id=231
   SocketAddressTag tag;
   packet->RemovePacketTag (tag);
   
-  SendToLteSocket (packet, it->second.m_rnti, it->second.m_lcId);
+  SendToLteSocket (packet, it->second.m_rnti, it->second.m_bid);
 }
 
 void 
-EpcEnbApplication::SendToLteSocket (Ptr<Packet> packet, uint16_t rnti, uint8_t lcid)
+EpcEnbApplication::SendToLteSocket (Ptr<Packet> packet, uint16_t rnti, uint8_t bid)
 {
-  NS_LOG_FUNCTION (this << packet << rnti << (uint16_t) lcid);  
-  LteRadioBearerTag tag (rnti, lcid);
+  NS_LOG_FUNCTION (this << packet << rnti << (uint16_t) bid);  
+  EpsBearerTag tag (rnti, bid);
   packet->AddPacketTag (tag);
   int sentBytes = m_lteSocket->Send (packet);
   NS_ASSERT (sentBytes > 0);

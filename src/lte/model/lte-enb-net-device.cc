@@ -265,7 +265,7 @@ LteEnbNetDevice::Send (Ptr<Packet> packet, const Address& dest, uint16_t protoco
 {
   NS_LOG_FUNCTION (this << packet   << dest << protocolNumber);
   NS_ASSERT_MSG (protocolNumber == Ipv4L3Protocol::PROT_NUMBER, "unsupported protocol " << protocolNumber << ", only IPv4 is supported");
-  return m_rrc->Send (packet);
+  return m_rrc->SendData (packet);
 }
 
 

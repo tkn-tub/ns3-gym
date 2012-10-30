@@ -156,10 +156,10 @@ LteTestRrc::SetPduSize (uint32_t pduSize)
  */
 
 void
-LteTestRrc::DoReceiveRrcPdu (LtePdcpSapUser::ReceiveRrcPduParameters params)
+LteTestRrc::DoReceivePdcpSdu (LtePdcpSapUser::ReceivePdcpSduParameters params)
 {
-  NS_LOG_FUNCTION (this << params.rrcPdu->GetSize ());
-  Ptr<Packet> p = params.rrcPdu;
+  NS_LOG_FUNCTION (this << params.pdcpSdu->GetSize ());
+  Ptr<Packet> p = params.pdcpSdu;
 //   NS_LOG_LOGIC ("PDU received = " << (*p));
 
   uint32_t dataLen = p->GetSize ();
@@ -193,12 +193,12 @@ LteTestRrc::Start ()
   m_txBytes += m_pduSize;
   m_txLastTime = Simulator::Now ();
 
-  LtePdcpSapProvider::TransmitRrcPduParameters p;
+  LtePdcpSapProvider::TransmitPdcpSduParameters p;
   p.rnti = 1111;
   p.lcid = 222;
-  p.rrcPdu = Create<Packet> (m_pduSize);
+  p.pdcpSdu = Create<Packet> (m_pduSize);
 
-  Simulator::ScheduleNow (&LtePdcpSapProvider::TransmitRrcPdu, m_pdcpSapProvider, p);
+  Simulator::ScheduleNow (&LtePdcpSapProvider::TransmitPdcpSdu, m_pdcpSapProvider, p);
   m_nextPdu = Simulator::Schedule (m_arrivalTime, &LteTestRrc::Start, this);
 //   Simulator::Run ();
 }
@@ -219,15 +219,15 @@ LteTestRrc::SendData (Time at, std::string dataToSend)
   m_txPdus++;
   m_txBytes += dataToSend.length ();
 
-  LtePdcpSapProvider::TransmitRrcPduParameters p;
+  LtePdcpSapProvider::TransmitPdcpSduParameters p;
   p.rnti = 1111;
   p.lcid = 222;
 
   NS_LOG_LOGIC ("Data(" << dataToSend.length () << ") = " << dataToSend.data ());
-  p.rrcPdu = Create<Packet> ((uint8_t *) dataToSend.data (), dataToSend.length ());
+  p.pdcpSdu = Create<Packet> ((uint8_t *) dataToSend.data (), dataToSend.length ());
 
-  NS_LOG_LOGIC ("Packet(" << p.rrcPdu->GetSize () << ")");
-  Simulator::Schedule (at, &LtePdcpSapProvider::TransmitRrcPdu, m_pdcpSapProvider, p);
+  NS_LOG_LOGIC ("Packet(" << p.pdcpSdu->GetSize () << ")");
+  Simulator::Schedule (at, &LtePdcpSapProvider::TransmitPdcpSdu, m_pdcpSapProvider, p);
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -659,7 +659,7 @@ EpcTestRrc::DoDataRadioBearerSetupRequest (EpcEnbS1SapUser::DataRadioBearerSetup
 {
   EpcEnbS1SapProvider::S1BearerSetupRequestParameters response;   
   response.rnti = request.rnti;
-  response.lcid = 1;      
+  response.bid = 1;      
   response.teid = request.teid;
   m_s1SapProvider->S1BearerSetupRequest (response);
 }

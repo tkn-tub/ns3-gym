@@ -27,6 +27,8 @@
 #include <ns3/lte-pdcp-sap.h>
 #include <ns3/lte-as-sap.h>
 #include <ns3/lte-ue-cphy-sap.h>
+#include <ns3/lte-rrc-sap.h>
+#include <ns3/traced-callback.h>
 
 #include <map>
 
@@ -36,7 +38,8 @@ class LteRlc;
 class LteMacSapProvider;
 class LteUeCmacSapUser;
 class LteUeCmacSapProvider;
-class LteRadioBearerInfo;
+class LteDataRadioBearerInfo;
+class LteSignalingRadioBearerInfo;
 class LteEnbRrc;
 
 /**
@@ -51,8 +54,28 @@ class LteUeRrc : public Object
   friend class LtePdcpSpecificLtePdcpSapUser<LteUeRrc>;
   friend class MemberLteAsSapProvider<LteUeRrc>;
   friend class MemberLteUeCphySapUser<LteUeRrc>;
+  friend class MemberLteUeRrcSapProvider<LteUeRrc>;
 
 public:
+
+  /**
+   * The states of the UE RRC entity
+   * 
+   */
+  enum State
+    {
+      IDLE_CELL_SELECTION = 0,
+      IDLE_WAIT_SYSTEM_INFO,
+      IDLE_CAMPED_NORMALLY,
+      IDLE_RANDOM_ACCESS,
+      IDLE_CONNECTING,
+      CONNECTED_NORMALLY,
+      CONNECTED_REESTABLISHING,
+      CONNECTED_HANDOVER,
+      NUM_STATES
+    };
+
+
   /**
    * create an RRC instance for use within an ue
    *
@@ -67,7 +90,10 @@ public:
 
 
   // inherited from Object
+private:
+  virtual void DoStart (void);
   virtual void DoDispose (void);
+public:
   static TypeId GetTypeId (void);
 
 
@@ -98,6 +124,21 @@ public:
    * \return s the CMAC SAP User interface offered to the MAC by this RRC
    */
   LteUeCmacSapUser* GetLteUeCmacSapUser ();
+
+
+  /**
+   * set the RRC SAP this RRC should interact with
+   *
+   * \param s the RRC SAP User to be used by this RRC
+   */
+  void SetLteUeRrcSapUser (LteUeRrcSapUser * s);
+
+  /**
+   *
+   *
+   * \return s the RRC SAP Provider interface offered to the MAC by this RRC
+   */
+  LteUeRrcSapProvider* GetLteUeRrcSapProvider ();
 
   /**
    * set the MAC SAP provider. The ue RRC does not use this
@@ -130,37 +171,6 @@ public:
   void SetImsi (uint64_t imsi);
 
   /**
-   * Set UE RRC parameters
-   *
-   * \param rnti  C-RNTI of the UE
-   * \param cellId Serving cell identifier
-   */
-  void ConfigureUe (uint16_t rnti, uint16_t cellId);
-
-
-
-  /**
-   * Setup a new radio bearer for the given user
-   *
-   * \param bearer the characteristics of the bearer to be activated
-   * \param rlcTypeId the TypeId identifying the type of RLC to be used for this bearer.
-   * \param lcid the logical channel id allocated for this bearer by the eNB
-   * \param tft the Traffic Flow Template identifying this bearer
-   *
-   */
-  void SetupRadioBearer (EpsBearer bearer, TypeId rlcTypeId, uint8_t lcid);
-
-
-  /**
-   *
-   * Release the given radio bearer
-   *
-   * \param lcId the logical channel id of the bearer to be released
-   */
-  void ReleaseRadioBearer (uint8_t lcId);
-
-
-  /**
    *
    * \return the C-RNTI of the user
    */
@@ -173,46 +183,79 @@ public:
    */
   uint16_t GetCellId () const;
 
-  /**
-   *
-   * @return a vector with the allocated LCID
-   */
-  std::vector<uint8_t> GetLcIdVector ();
-
 
   /** 
-   * reception of the RRC ConnectionReconfiguration message
-   *
+   * \return the uplink bandwidth in RBs
    */
-  void DoRecvConnectionSetup (LteUeConfig_t params);
+  uint8_t GetUlBandwidth () const;
 
   /** 
-   * reception of the RRC ConnectionReconfiguration message
-   *
+   * \return the downlink bandwidth in RBs
    */
-  void DoRecvConnectionReconfiguration (LteUeConfig_t params);
-
+  uint8_t GetDlBandwidth () const;
 
   /** 
-   * Execute a handover
+   * \return the downlink carrier frequency (EARFCN)
+   */
+  uint16_t GetDlEarfcn () const;
+
+  /** 
+   * \return the uplink carrier frequency (EARFCN)
+   */
+  uint16_t GetUlEarfcn () const;
+
+  /** 
    * 
-   * \param targetCellId 
-   * \param newRnti 
+   * \return the current state
    */
-  void DoRecvConnectionReconfigurationWithMobilityControlInfo (uint16_t targetCellId, uint16_t newRnti);
-  
+  State GetState ();
+
+  /** 
+   * 
+   * 
+   * \param val true if RLC SM is to be used, false if RLC UM/AM are to be used
+   */
+  void SetUseRlcSm (bool val);
+
+
 private:
 
+
   // PDCP SAP methods
-  void DoReceiveRrcPdu (LtePdcpSapUser::ReceiveRrcPduParameters params);
+  void DoReceivePdcpSdu (LtePdcpSapUser::ReceivePdcpSduParameters params);
 
   // CMAC SAP methods
-  void DoLcConfigCompleted ();
-
+  void DoSetTemporaryCellRnti (uint16_t rnti);
+  void DoNotifyRandomAccessSuccessful ();
+  void DoNotifyRandomAccessFailed ();
+ 
   // LTE AS SAP methods
   void DoForceCampedOnEnb (Ptr<LteEnbNetDevice> enbDevice, uint16_t cellId);
   void DoConnect ();
   void DoSendData (Ptr<Packet> packet, uint8_t bid);
+  void DoDisconnect ();
+
+  // CPHY SAP methods
+  void DoRecvMasterInformationBlock (LteRrcSap::MasterInformationBlock msg);
+
+  // RRC SAP methods
+  void DoRecvSystemInformationBlockType1 (LteRrcSap::SystemInformationBlockType1 msg);
+  void DoRecvSystemInformation (LteRrcSap::SystemInformation msg);
+  void DoRecvRrcConnectionSetup (LteRrcSap::RrcConnectionSetup msg);
+  void DoRecvRrcConnectionReconfiguration (LteRrcSap::RrcConnectionReconfiguration msg);
+  void DoRecvRrcConnectionReestablishment (LteRrcSap::RrcConnectionReestablishment msg);
+  void DoRecvRrcConnectionReestablishmentReject (LteRrcSap::RrcConnectionReestablishmentReject msg);
+  void DoRecvRrcConnectionRelease (LteRrcSap::RrcConnectionRelease msg);
+
+ 
+  // internal methods
+  void ApplyRadioResourceConfigDedicated (LteRrcSap::RadioResourceConfigDedicated rrcd);
+  void StartConnection ();
+  void LeaveConnectedMode ();
+  uint8_t Bid2Drbid (uint8_t bid);
+  void SwitchToState (State s);
+
+  std::map<uint8_t, uint8_t> m_bid2DrbidMap;
 
   LteUeCphySapUser* m_cphySapUser;
   LteUeCphySapProvider* m_cphySapProvider;
@@ -220,20 +263,41 @@ private:
   LteUeCmacSapUser* m_cmacSapUser;
   LteUeCmacSapProvider* m_cmacSapProvider;
 
+  LteUeRrcSapUser* m_rrcSapUser;
+  LteUeRrcSapProvider* m_rrcSapProvider;
+
   LteMacSapProvider* m_macSapProvider;
   LtePdcpSapUser* m_pdcpSapUser;
   
   LteAsSapProvider* m_asSapProvider;
   LteAsSapUser* m_asSapUser;
 
+  State m_state;
+
   uint64_t m_imsi;
   uint16_t m_rnti;
   uint16_t m_cellId;
 
-  std::map <uint8_t, Ptr<LteRadioBearerInfo> > m_rbMap;  
-
-  Ptr<LteEnbRrc> m_enbRrc; // wild hack, might go away in future versions
+  Ptr<LteSignalingRadioBearerInfo> m_srb0;
+  Ptr<LteSignalingRadioBearerInfo> m_srb1;
+  std::map <uint8_t, Ptr<LteDataRadioBearerInfo> > m_drbMap;
   
+  bool m_useRlcSm;
+
+  uint8_t m_lastRrcTransactionIdentifier;
+
+  uint8_t m_dlBandwidth; /**< downlink bandwidth in RBs */
+  uint8_t m_ulBandwidth; /**< uplink bandwidth in RBs */
+
+  uint16_t m_dlEarfcn;  /**< downlink carrier frequency */
+  uint16_t m_ulEarfcn;  /**< uplink carrier frequency */
+
+  TracedCallback<State, State> m_stateTransitionCallback;
+
+  bool m_connectionPending; /**< true if a connection request by upper layers is pending */
+  bool m_receivedMib; /**< true if MIB was received for the current cell  */
+  bool m_receivedSib2; /**< true if SIB2 was received for the current cell  */
+
 };
 
 

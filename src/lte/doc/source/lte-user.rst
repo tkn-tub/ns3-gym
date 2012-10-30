@@ -48,10 +48,10 @@ Here is the minimal simulation program that is needed to do an LTE-only simulati
 
 #. Initial boilerplate::
        
-    #include "ns3/core-module.h"
-    #include "ns3/network-module.h"
-    #include "ns3/mobility-module.h"
-    #include "ns3/lte-module.h"   
+    #include <ns3/core-module.h>
+    #include <ns3/network-module.h>
+    #include <ns3/mobility-module.h>
+    #include <ns3/lte-module.h>   
 
     using namespace ns3;    
 
@@ -106,14 +106,13 @@ Here is the minimal simulation program that is needed to do an LTE-only simulati
 
       lteHelper->Attach (ueDevs, enbDevs.Get (0));
 
-#. Activate an EPS Bearer including the setup of the Radio Bearer between an eNB and its attached UE::
+#. Activate a data radio bearer between each UE and the eNB it is attached to::
 
       enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
       EpsBearer bearer (q);
-      lteHelper->ActivateEpsBearer (ueDevs, bearer);
+      lteHelper->ActivateDataRadioBearer (ueDevs, bearer);
 
-   In the current version of the ns-3 LTE model, the activation of an
-   EPS Bearer will also activate two saturation traffic generators for
+   this method will also activate two saturation traffic generators for
    that bearer, one in uplink and one in downlink. 
 
 #. Set the stop time::
@@ -707,10 +706,24 @@ additionally do like this::
           ueStaticRouting->SetDefaultRoute (epcHelper->GetUeDefaultGatewayAddress (), 1);
         }
 
-The activation of bearers is done exactly in the same way as for an
-LTE-only simulation. Here is how to activate a default bearer::
+The activation of bearers is done in a slightly different way with
+respect to what done for an LTE-only simulation. First, the method
+ActivateDataRadioBearer is not to be used when the EPC is
+used. Second, when EPC is used, the default EPS bearer will be
+activated automatically when you call LteHelper::Attach (). Third, if
+you want to setup dedicated EPS bearer, you can do so using the method
+LteHelper::ActivateDedicatedEpsBearer (). This method takes as a
+parameter the Traffic Flow Template (TFT), which is a struct that
+identifies the type of traffic that will be mapped to the dedicated
+EPS bearer. Here is an example for how to setup a dedicated bearer
+for an application at the UE communicating on port 1234::
 
-      lteHelper->ActivateEpsBearer (ueLteDevs, EpsBearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT), EpcTft::Default ());
+      Ptr<EpcTft> tft = Create<EpcTft> ();
+      EpcTft::PacketFilter pf;
+      pf.localPortStart = 1234;
+      pf.localPortEnd = 1234;
+      tft->Add (pf);  
+      lteHelper->ActivateEpsBearer (ueLteDevs, EpsBearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT), pf);
 
 you can of course use custom EpsBearer and EpcTft configurations,
 please refer to the doxygen documentation for how to do it.

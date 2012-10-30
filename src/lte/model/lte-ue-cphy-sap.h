@@ -25,6 +25,8 @@
 #include <stdint.h>
 #include <ns3/ptr.h>
 
+#include <ns3/lte-rrc-sap.h>
+
 namespace ns3 {
 
 
@@ -48,24 +50,24 @@ public:
   /** 
    * tell the PHY to synchronize with a given eNB for communication purposes
    * 
-   * \param enbPhy a pointer to the PHY of the eNB (wild hack, might go away in later versions)
    * \param cellId the ID of the eNB
+   * \param dlEarfcn  the carrier frequency (EARFCN) in downlink
    */
-  virtual void SyncronizeWithEnb (Ptr<LteEnbNetDevice> enbDevice, uint16_t cellId) = 0;
+  virtual void SyncronizeWithEnb (uint16_t cellId, uint16_t dlEarfcn) = 0;
   
   /**
-   *
-   * \param dlEarfcn the carrier frequency (EARFCN) in downlink
-   * \param ulEarfcn the carrier frequency (EARFCN) in downlink
-   */
-  virtual void SetEarfcn (uint16_t dlEarfcn, uint16_t ulEarfcn) = 0;
-
-  /**
-   * \param ulBandwidth the UL bandwidth in PRBs
    * \param dlBandwidth the DL bandwidth in PRBs
    */
-  virtual void SetBandwidth (uint8_t ulBandwidth, uint8_t dlBandwidth) = 0;
-  
+  virtual void SetDlBandwidth (uint8_t dlBandwidth) = 0;
+
+  /** 
+   * Configure uplink (normally done after reception of SIB2)
+   * 
+   * \param ulEarfcn the carrier frequency (EARFCN) in uplink
+   * \param ulBandwidth the UL bandwidth in PRBs
+   */
+  virtual void ConfigureUplink (uint16_t ulEarfcn, uint8_t ulBandwidth) = 0;
+
   /** 
    * 
    * \param rnti the cell-specific UE identifier
@@ -99,6 +101,13 @@ public:
    * destructor
    */
   virtual ~LteUeCphySapUser ();
+
+
+  /** 
+   * 
+   * \param mib the Master Information Block received on the BCH
+   */
+  virtual void RecvMasterInformationBlock (LteRrcSap::MasterInformationBlock mib) = 0;
 };
 
 
@@ -116,9 +125,9 @@ public:
   MemberLteUeCphySapProvider (C* owner);
 
   // inherited from LteUeCphySapProvider
-  virtual void SyncronizeWithEnb (Ptr<LteEnbNetDevice> enbDevice, uint16_t cellId);
-  virtual void SetEarfcn (uint16_t dlEarfcn, uint16_t ulEarfcn);
-  virtual void SetBandwidth (uint8_t ulBandwidth, uint8_t dlBandwidth);
+  virtual void SyncronizeWithEnb (uint16_t cellId, uint16_t dlEarfcn);  
+  virtual void SetDlBandwidth (uint8_t ulBandwidth);
+  virtual void ConfigureUplink (uint16_t ulEarfcn, uint8_t ulBandwidth);
   virtual void SetRnti (uint16_t rnti);
   virtual void SetTransmissionMode (uint8_t txMode);
   virtual void SetSrsConfigurationIndex (uint16_t srcCi);
@@ -141,23 +150,23 @@ MemberLteUeCphySapProvider<C>::MemberLteUeCphySapProvider ()
 
 template <class C>
 void 
-MemberLteUeCphySapProvider<C>::SyncronizeWithEnb (Ptr<LteEnbNetDevice> enbDevice, uint16_t cellId)
+MemberLteUeCphySapProvider<C>::SyncronizeWithEnb (uint16_t cellId, uint16_t dlEarfcn)
 {
-  m_owner->DoSyncronizeWithEnb (enbDevice, cellId);
+  m_owner->DoSyncronizeWithEnb (cellId, dlEarfcn);
 }
 
 template <class C>
 void 
-MemberLteUeCphySapProvider<C>::SetEarfcn (uint16_t dlEarfcn, uint16_t ulEarfcn)
+MemberLteUeCphySapProvider<C>::SetDlBandwidth (uint8_t dlBandwidth)
 {
-  m_owner->DoSetEarfcn (dlEarfcn, ulEarfcn);
+  m_owner->DoSetDlBandwidth (dlBandwidth);
 }
 
 template <class C>
 void 
-MemberLteUeCphySapProvider<C>::SetBandwidth (uint8_t ulBandwidth, uint8_t dlBandwidth)
+MemberLteUeCphySapProvider<C>::ConfigureUplink (uint16_t ulEarfcn, uint8_t ulBandwidth)
 {
-  m_owner->DoSetBandwidth (ulBandwidth, dlBandwidth);
+  m_owner->DoConfigureUplink (ulEarfcn, ulBandwidth);
 }
 
 template <class C>
@@ -195,6 +204,7 @@ public:
   MemberLteUeCphySapUser (C* owner);
 
   // methods inherited from LteUeCphySapUser go here
+  virtual void RecvMasterInformationBlock (LteRrcSap::MasterInformationBlock mib);
 
 private:
   MemberLteUeCphySapUser ();
@@ -210,6 +220,13 @@ MemberLteUeCphySapUser<C>::MemberLteUeCphySapUser (C* owner)
 template <class C>
 MemberLteUeCphySapUser<C>::MemberLteUeCphySapUser ()
 {
+}
+
+template <class C> 
+void 
+MemberLteUeCphySapUser<C>::RecvMasterInformationBlock (LteRrcSap::MasterInformationBlock mib)
+{
+  m_owner->DoRecvMasterInformationBlock (mib);
 }
 
 

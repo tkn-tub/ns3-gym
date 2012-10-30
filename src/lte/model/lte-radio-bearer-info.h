@@ -24,6 +24,7 @@
 #include <ns3/object.h>
 #include <ns3/pointer.h>
 #include <ns3/eps-bearer.h>
+#include <ns3/lte-rrc-sap.h>
 
 namespace ns3 {
 
@@ -44,9 +45,44 @@ public:
 
   Ptr<LteRlc> m_rlc;
   Ptr<LtePdcp> m_pdcp;  
-  EpsBearer m_epsBearer;
-  uint32_t m_teid;
 };
+
+
+/**
+ * store information on active signaling radio bearer instance
+ * 
+ */
+class LteSignalingRadioBearerInfo : public LteRadioBearerInfo
+{
+
+public:
+  static TypeId GetTypeId (void);
+
+  uint8_t m_srbIdentity;   
+  LteRrcSap::LogicalChannelConfig m_logicalChannelConfig;  
+};
+
+
+/**
+ * store information on active data radio bearer instance
+ * 
+ */
+class LteDataRadioBearerInfo : public LteRadioBearerInfo
+{
+
+public:
+  static TypeId GetTypeId (void);
+
+  EpsBearer m_epsBearer;
+  uint8_t m_epsBearerIdentity;
+  uint8_t m_drbIdentity;
+  LteRrcSap::RlcConfig m_rlcConfig;
+  uint8_t m_logicalChannelIdentity;
+  LteRrcSap::LogicalChannelConfig m_logicalChannelConfig;
+};
+
+
+
 
 
 } // namespace ns3

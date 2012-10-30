@@ -93,12 +93,20 @@ public:
   void SetForwardUpCallback (Callback <void, Ptr<Packet> > cb);
  
   /** 
-   * instruct the NAS to go to EMM Registered + ECM Connected
+   * instruct the NAS to go to ACTIVE state, i.e., EMM Registered + ECM Connected
    * 
    * 
-   * \param enbDevice the eNB through which to connect
+   * \param enbDevice the eNB through which to connect. This parameter
+   * might be removed in future versions.
    */
   void Connect (Ptr<NetDevice> enbDevice);
+ 
+  /** 
+   * instruct the NAS to disconnect
+   * 
+   */
+  void Disconnect ();
+
 
   /** 
    * Activate an EPS bearer
@@ -116,16 +124,44 @@ public:
    * \return true if successful, false if an error occurred
    */
   bool Send (Ptr<Packet> p);
+
+
+  /**
+   * Definition of NAS states as per "LTE - From theory to practice",
+   * Section 3.2.3.2 "Connection Establishment and Release"
+   * 
+   */
+  enum State 
+    {
+      OFF = 0,
+      ATTACHING,
+      IDLE_REGISTERED,
+      CONNECTING_TO_EPC,
+      ACTIVE,
+      NUM_STATES
+    };
+
  
 private:
   
   // LTE AS SAP methods
   void DoNotifyConnectionSuccessful ();
   void DoNotifyConnectionFailed ();
+  void DoNotifyConnectionReleased ();
   void DoRecvData (Ptr<Packet> packet);
+
+  // internal methods
+  void DoActivateEpsBearer (EpsBearer bearer, Ptr<EpcTft> tft);
+  void SwitchToState (State s);
+
+  State m_state;
+
+  TracedCallback<State, State> m_stateTransitionCallback;
 
   Ptr<EpcHelper> m_epcHelper;
   Ptr<NetDevice> m_device;
+
+  Ptr<NetDevice> m_enbDevice; // might go away in future versions
 
   uint64_t m_imsi;
   
@@ -136,6 +172,14 @@ private:
   EpcTftClassifier m_tftClassifier;
 
   Callback <void, Ptr<Packet> > m_forwardUpCallback;
+
+  struct BearerToBeActivated
+  {
+    EpsBearer bearer;
+    Ptr<EpcTft> tft;
+  };
+
+  std::list<BearerToBeActivated> m_bearersToBeActivatedList;
 
 };
 

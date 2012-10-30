@@ -119,9 +119,6 @@ LteInterferenceTestCase::DoRun (void)
   Config::SetDefault ("ns3::LteAmc::AmcModel", EnumValue (LteAmc::PiroEW2010));
   Config::SetDefault ("ns3::LteAmc::Ber", DoubleValue (0.00005));
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
-//   lteHelper->EnableLogComponents ();
-  lteHelper->EnableMacTraces ();
-  lteHelper->EnableRlcTraces ();
   lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
 
   // Create Nodes: eNodeB and UE
@@ -190,7 +187,7 @@ LteInterferenceTestCase::DoRun (void)
 
 
   // same as above for eNB2 and UE2
-  
+
   Ptr<LtePhy> ue2Phy = ueDevs2.Get (0)->GetObject<LteUeNetDevice> ()->GetPhy ()->GetObject<LtePhy> ();
   Ptr<LteTestSinrChunkProcessor> testDlSinr2 = Create<LteTestSinrChunkProcessor> (ue2Phy);
   ue2Phy->GetDownlinkSpectrumPhy ()->AddDataSinrChunkProcessor (testDlSinr2);
@@ -205,10 +202,10 @@ LteInterferenceTestCase::DoRun (void)
   Config::Connect ("/NodeList/1/DeviceList/0/LteEnbMac/UlScheduling",
                    MakeBoundCallback (&LteTestUlSchedulingCallback, this));
 
-
-  Simulator::Stop (Seconds (0.020));
+// need to allow for RRC connection establishment + SRS
+  Simulator::Stop (Seconds (0.040));
   Simulator::Run ();
-  
+
 
   double dlSinr1Db = 10.0 * log10 (testDlSinr1->GetSinr ()->operator[] (0));
   NS_TEST_ASSERT_MSG_EQ_TOL (dlSinr1Db, m_dlSinrDb, 0.01, "Wrong SINR in DL! (eNB1 --> UE1)");
@@ -218,12 +215,12 @@ LteInterferenceTestCase::DoRun (void)
 
   double dlSinr2Db = 10.0 * log10 (testDlSinr2->GetSinr ()->operator[] (0));
   NS_TEST_ASSERT_MSG_EQ_TOL (dlSinr2Db, m_dlSinrDb, 0.01, "Wrong SINR in DL! (eNB2 --> UE2)");
-  
+
   double ulSinr2Db = 10.0 * log10 (testUlSinr2->GetSinr ()->operator[] (0));
   NS_TEST_ASSERT_MSG_EQ_TOL (ulSinr2Db, m_ulSinrDb, 0.01, "Wrong SINR in UL!  (UE2 --> eNB2)");
 
   Simulator::Destroy ();
- 
+
 }
 
 
@@ -231,14 +228,10 @@ void
 LteInterferenceTestCase::DlScheduling (uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
                                        uint8_t mcsTb1, uint16_t sizeTb1, uint8_t mcsTb2, uint16_t sizeTb2)
 {
-  /**
-   * Note:
-   *    For first 4 subframeNo in the first frameNo, the MCS cannot be properly evaluated,
-   *    because CQI feedback is still not available at the eNB.
-   */
-  if ( (frameNo > 1) || (subframeNo > 9) )
+  // need to allow for RRC connection establishment + CQI feedback reception
+  if (Simulator::Now () > MilliSeconds (35))
     {
-      NS_TEST_ASSERT_MSG_EQ ((uint16_t)mcsTb1, m_dlMcs, "Wrong DL MCS ");
+      NS_TEST_ASSERT_MSG_EQ ((uint32_t)mcsTb1, (uint32_t)m_dlMcs, "Wrong DL MCS ");
     }
 }
 
@@ -246,14 +239,10 @@ void
 LteInterferenceTestCase::UlScheduling (uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
                                        uint8_t mcs, uint16_t sizeTb)
 {
-  /**
-   * Note:
-   *    For first 5 subframeNo in the first frameNo, the MCS cannot be properly evaluated,
-   *    because CQI feedback is still not available at the eNB.
-   */
-  if ( (frameNo > 1) && (subframeNo > 6) )
+  // need to allow for RRC connection establishment + SRS transmission
+  if (Simulator::Now () > MilliSeconds (35))
     {
-      NS_TEST_ASSERT_MSG_EQ ((uint16_t)mcs, m_ulMcs, "Wrong UL MCS");
+      NS_TEST_ASSERT_MSG_EQ ((uint32_t)mcs, (uint32_t)m_ulMcs, "Wrong UL MCS");
     }
 }
 

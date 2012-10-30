@@ -72,8 +72,6 @@ public:
   virtual void SetCellId (uint16_t cellId);
   virtual void SendLteControlMessage (Ptr<LteControlMessage> msg);
   virtual uint8_t GetMacChTtiDelay ();
-  virtual void SetTransmissionMode (uint16_t  rnti, uint8_t txMode);
-  virtual void SetSrsConfigurationIndex (uint16_t  rnti, uint16_t srcCi);
   
 
 private:
@@ -84,7 +82,6 @@ EnbMemberLteEnbPhySapProvider::EnbMemberLteEnbPhySapProvider (LteEnbPhy* phy) : 
 {
 
 }
-
 
 void
 EnbMemberLteEnbPhySapProvider::SendMacPdu (Ptr<Packet> p)
@@ -114,18 +111,6 @@ uint8_t
 EnbMemberLteEnbPhySapProvider::GetMacChTtiDelay ()
 {
   return (m_phy->DoGetMacChTtiDelay ());
-}
-
-void
-EnbMemberLteEnbPhySapProvider::SetTransmissionMode (uint16_t  rnti, uint8_t txMode)
-{
-  m_phy->DoSetTransmissionMode (rnti, txMode);
-}
-
-void
-EnbMemberLteEnbPhySapProvider::SetSrsConfigurationIndex (uint16_t  rnti, uint16_t srcCi)
-{
-  m_phy->DoSetSrsConfigurationIndex (rnti, srcCi);
 }
 
 
@@ -419,9 +404,20 @@ LteEnbPhy::ReceiveLteControlMessageList (std::list<Ptr<LteControlMessage> > msgL
   std::list<Ptr<LteControlMessage> >::iterator it;
   for (it = msgList.begin (); it != msgList.end(); it++)
     {
-      m_enbPhySapUser->ReceiveLteControlMessage (*it);
+      switch ((*it)->GetMessageType ())
+        {
+        case LteControlMessage::RACH_PREAMBLE:
+          {
+            Ptr<RachPreambleLteControlMessage> rachPreamble = DynamicCast<RachPreambleLteControlMessage> (*it);
+            m_enbPhySapUser->ReceiveRachPreamble (rachPreamble->GetPrachId ());
+          }
+          break;
+          
+        default:
+          m_enbPhySapUser->ReceiveLteControlMessage (*it);
+          break;
+        }
     }
-    
 }
 
 
@@ -434,6 +430,13 @@ LteEnbPhy::StartFrame (void)
   ++m_nrFrames;
   NS_LOG_INFO ("-----frame " << m_nrFrames << "-----");
   m_nrSubFrames = 0;
+
+  // send MIB at beginning of every frame
+  m_mib.systemFrameNumber = m_nrSubFrames;
+  Ptr<MibLteControlMessage> mibMsg = Create<MibLteControlMessage> ();
+  mibMsg->SetMib (m_mib);
+  m_controlMessagesQueue.at (0).push_back (mibMsg);
+
   StartSubFrame ();
 }
 
@@ -447,7 +450,9 @@ LteEnbPhy::StartSubFrame (void)
   if (m_srsPeriodicity>0)
     { 
       // might be 0 in case the eNB has no UEs attached
-      m_currentSrsOffset = (m_currentSrsOffset + 1) % m_srsPeriodicity;
+        NS_ASSERT_MSG (m_nrFrames > 1, "the SRS index check code assumes that frameNo starts at 1");
+      NS_ASSERT_MSG (m_nrSubFrames > 0 && m_nrSubFrames <= 10, "the SRS index check code assumes that subframeNo starts at 1");
+      m_currentSrsOffset = (((m_nrFrames-1)*10 + (m_nrSubFrames-1)) % m_srsPeriodicity);
     }
   NS_LOG_INFO ("-----sub frame " << m_nrSubFrames << "-----");
   
@@ -677,6 +682,15 @@ LteEnbPhy::DoAddUe (uint16_t rnti)
   NS_ASSERT_MSG (success, "AddUePhy() failed");
 }
 
+void 
+LteEnbPhy::DoRemoveUe (uint16_t rnti)
+{
+  NS_LOG_FUNCTION (this << rnti);
+ 
+  bool success = DeleteUePhy (rnti);
+  NS_ASSERT_MSG (success, "DeleteUePhy() failed");
+}
+
 
 FfMacSchedSapProvider::SchedUlCqiInfoReqParameters
 LteEnbPhy::CreateSrsCqiReport (const SpectrumValue& sinr)
@@ -754,7 +768,6 @@ LteEnbPhy::DoSetSrsConfigurationIndex (uint16_t  rnti, uint16_t srcCi)
       m_srsUeOffset.clear ();
       m_srsUeOffset.resize (p, 0);
       m_srsPeriodicity = p;
-      m_currentSrsOffset = p - 1; // for starting from 0 next subframe
     }
     
   NS_LOG_DEBUG (this << " ENB SRS P " << m_srsPeriodicity << " RNTI " << rnti << " offset " << GetSrsSubframeOffset (srcCi) << " CI " << srcCi);
@@ -769,6 +782,14 @@ LteEnbPhy::DoSetSrsConfigurationIndex (uint16_t  rnti, uint16_t srcCi)
     }
   m_srsUeOffset.at (GetSrsSubframeOffset (srcCi)) = rnti;
   
+}
+
+
+void 
+LteEnbPhy::DoSetMasterInformationBlock (LteRrcSap::MasterInformationBlock mib)
+{
+  NS_LOG_FUNCTION (this);
+  m_mib = mib;
 }
 
 

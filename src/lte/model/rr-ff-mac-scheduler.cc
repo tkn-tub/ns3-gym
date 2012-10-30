@@ -415,11 +415,11 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
   m_rlcBufferReq.sort (SortRlcBufferReq);
   int nflows = 0;
   int nTbs = 0;
-  std::map <uint16_t,uint8_t> lcActivesPerRnti;
+  std::map <uint16_t,uint8_t> lcActivesPerRnti; // tracks how many active LCs per RNTI there are
   std::map <uint16_t,uint8_t>::iterator itLcRnti;
   for (it = m_rlcBufferReq.begin (); it != m_rlcBufferReq.end (); it++)
     {
-//       NS_LOG_INFO (this << " User " << (*it).m_rnti << " LC " << (uint16_t)(*it).m_logicalChannelIdentity);
+      NS_LOG_LOGIC (this << " User " << (*it).m_rnti << " LC " << (uint16_t)(*it).m_logicalChannelIdentity);
       // remove old entries of this UE-LC
       if ( ((*it).m_rlcTransmissionQueueSize > 0)
            || ((*it).m_rlcRetransmissionQueueSize > 0)
@@ -542,16 +542,24 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
       int tbSize = (m_amc->GetTbSizeFromMcs (newDci.m_mcs.at (0), rbgPerTb * rbgSize) / 8);
       NS_LOG_DEBUG (this << " DL - Allocate user " << newEl.m_rnti << " LCs " << (uint16_t)(*itLcRnti).second << " bytes " << tbSize << " PRBs " <<  rbgAllocated * rbgSize << "..." << (rbgAllocated* rbgSize) + (rbgPerTb * rbgSize) - 1 << " mcs " << (uint16_t) newDci.m_mcs.at (0) << " layers " << nLayer);
       uint16_t rlcPduSize = tbSize / lcNum;
-      for (int i = 0; i < lcNum ; i++)
+      while (lcNum>0)
         {
-          for (uint8_t j = 0; j < nLayer; j++)
+          if ( ((*it).m_rlcTransmissionQueueSize > 0)
+               || ((*it).m_rlcRetransmissionQueueSize > 0)
+               || ((*it).m_rlcStatusPduSize > 0) )
             {
-              RlcPduListElement_s newRlcEl;
-              newRlcEl.m_logicalChannelIdentity = (*it).m_logicalChannelIdentity;
-//               NS_LOG_DEBUG (this << "LCID " << (uint32_t) newRlcEl.m_logicalChannelIdentity << " size " << rlcPduSize << " ID " << (*it).m_rnti << " layer " << (uint16_t)j);
-              newRlcEl.m_size = rlcPduSize;
-              UpdateDlRlcBufferInfo ((*it).m_rnti, newRlcEl.m_logicalChannelIdentity, rlcPduSize);
-              newRlcPduLe.push_back (newRlcEl);
+              std::vector <struct RlcPduListElement_s> newRlcPduLe;
+              for (uint8_t j = 0; j < nLayer; j++)
+                {
+                  RlcPduListElement_s newRlcEl;
+                  newRlcEl.m_logicalChannelIdentity = (*it).m_logicalChannelIdentity;
+                  //               NS_LOG_DEBUG (this << "LCID " << (uint32_t) newRlcEl.m_logicalChannelIdentity << " size " << rlcPduSize << " ID " << (*it).m_rnti << " layer " << (uint16_t)j);
+                  newRlcEl.m_size = rlcPduSize;
+                  UpdateDlRlcBufferInfo ((*it).m_rnti, newRlcEl.m_logicalChannelIdentity, rlcPduSize);
+                  newRlcPduLe.push_back (newRlcEl);
+                }
+              newEl.m_rlcPduList.push_back (newRlcPduLe);
+              lcNum--;
             }
           it++;
           if (it == m_rlcBufferReq.end ())
@@ -827,22 +835,31 @@ RrFfMacScheduler::DoSchedUlMacCtrlInfoReq (const struct FfMacSchedSapProvider::S
     {
       if ( params.m_macCeList.at (i).m_macCeType == MacCeListElement_s::BSR )
         {
-          // buffer status report
-          // note that we only consider LCG 0, the other three LCGs are neglected
-          // this is consistent with the assumption in LteUeMac that the first LCG gathers all LCs
+          // buffer status report          
+          // note that this scheduler does not differentiate the
+          // allocation according to which LCGs have more/less bytes
+          // to send.
+          // Hence the BSR of different LCGs are just summed up to get
+          // a total queue size that is used for allocation purposes.
+
+          uint32_t buffer = 0;
+          for (uint8_t lcg = 0; lcg < 4; ++lcg)
+            {
+              uint8_t bsrId = params.m_macCeList.at (i).m_macCeValue.m_bufferStatus.at (lcg);
+              buffer += BufferSizeLevelBsr::BsrId2BufferSize (bsrId);
+            }
+
           uint16_t rnti = params.m_macCeList.at (i).m_rnti;
           it = m_ceBsrRxed.find (rnti);
           if (it == m_ceBsrRxed.end ())
             {
               // create the new entry
-              uint8_t bsrId = params.m_macCeList.at (i).m_macCeValue.m_bufferStatus.at (0);
-              int buffer = BufferSizeLevelBsr::BsrId2BufferSize (bsrId);
               m_ceBsrRxed.insert ( std::pair<uint16_t, uint32_t > (rnti, buffer));
             }
           else
             {
               // update the buffer size value
-              (*it).second = BufferSizeLevelBsr::BsrId2BufferSize (params.m_macCeList.at (i).m_macCeValue.m_bufferStatus.at (0));
+              (*it).second = buffer;
             }
         }
     }

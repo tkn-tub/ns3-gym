@@ -32,16 +32,12 @@ NS_LOG_COMPONENT_DEFINE ("LteControlMessage");
 namespace ns3 {
 
 LteControlMessage::LteControlMessage (void)
-  : m_source (0),
-    m_destination (0)
 {
 }
 
 
 LteControlMessage::~LteControlMessage (void)
 {
-  m_source = 0;
-  m_destination = 0;
 }
 
 
@@ -174,6 +170,88 @@ BsrLteControlMessage::GetBsr (void)
 {
   return m_bsr;
 }
+
+
+
+// ----------------------------------------------------------------------------------------------------------
+
+
+RachPreambleLteControlMessage::RachPreambleLteControlMessage (void)
+{
+  SetMessageType (LteControlMessage::RACH_PREAMBLE);
+}
+
+void
+RachPreambleLteControlMessage::SetPrachId (uint32_t prachId)
+{
+  m_prachId = prachId;
+}
+
+uint32_t 
+RachPreambleLteControlMessage::GetPrachId () const
+{
+  return m_prachId;
+}
+
+
+
+// ----------------------------------------------------------------------------------------------------------
+
+
+RarLteControlMessage::RarLteControlMessage (void)
+{
+  SetMessageType (LteControlMessage::RAR);
+}
+
+
+void
+RarLteControlMessage::SetRar (BuildRarListElement_s rar)
+{
+  m_rar = rar;
+}
+
+BuildRarListElement_s 
+RarLteControlMessage::GetRar () const
+{
+  return m_rar;
+}
+
+
+void
+RarLteControlMessage::SetPrachId (uint32_t prachId)
+{
+  m_prachId = prachId;
+}
+
+uint32_t 
+RarLteControlMessage::GetPrachId () const
+{
+  return m_prachId;
+}
+
+
+// ----------------------------------------------------------------------------------------------------------
+
+
+
+MibLteControlMessage::MibLteControlMessage (void)
+{
+  SetMessageType (LteControlMessage::MIB);
+}
+
+
+void
+MibLteControlMessage::SetMib (LteRrcSap::MasterInformationBlock  mib)
+{
+  m_mib = mib;
+}
+
+LteRrcSap::MasterInformationBlock 
+MibLteControlMessage::GetMib () const
+{
+  return m_mib;
+}
+
 
 
 } // namespace ns3

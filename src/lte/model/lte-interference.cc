@@ -32,7 +32,9 @@ namespace ns3 {
 
 
 LteInterference::LteInterference ()
-  : m_receiving (false)
+  : m_receiving (false),
+    m_lastSignalId (0),
+    m_lastSignalIdBeforeReset (0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -95,11 +97,18 @@ void
 LteInterference::EndRx ()
 {
   NS_LOG_FUNCTION (this);
-  ConditionallyEvaluateChunk ();
-  m_receiving = false;
-  for (std::list<Ptr<LteSinrChunkProcessor> >::const_iterator it = m_sinrChunkProcessorList.begin (); it != m_sinrChunkProcessorList.end (); ++it)
+  if (m_receiving != true)
     {
-      (*it)->End (); 
+      NS_LOG_INFO ("EndRx was already evaluated or RX was aborted");
+    }
+  else
+    {
+      ConditionallyEvaluateChunk ();
+      m_receiving = false;
+      for (std::list<Ptr<LteSinrChunkProcessor> >::const_iterator it = m_sinrChunkProcessorList.begin (); it != m_sinrChunkProcessorList.end (); ++it)
+        {
+          (*it)->End (); 
+        }
     }
 }
 
@@ -108,13 +117,18 @@ void
 LteInterference::AddSignal (Ptr<const SpectrumValue> spd, const Time duration)
 {
   NS_LOG_FUNCTION (this << *spd << duration);
-  // if this is the first signal that we see, we need to initialize the interference calculation
-  if (m_allSignals == 0) 
-    {
-      m_allSignals = Create<SpectrumValue> (spd->GetSpectrumModel ());
-    }
   DoAddSignal (spd);
-  Simulator::Schedule (duration, &LteInterference::DoSubtractSignal, this, spd);
+  uint32_t signalId = ++m_lastSignalId;
+  if (signalId == m_lastSignalIdBeforeReset)
+    {
+      // This happens when m_lastSignalId eventually wraps around. Given that so
+      // many signals have elapsed since the last reset, we hope that by now there is
+      // no stale pending signal (i.e., a signal that was scheduled
+      // for subtraction before the reset). So we just move the
+      // boundary further.
+      m_lastSignalIdBeforeReset += 0x10000000;
+    }
+  Simulator::Schedule (duration, &LteInterference::DoSubtractSignal, this, spd, signalId);
 }
 
 
@@ -124,16 +138,22 @@ LteInterference::DoAddSignal  (Ptr<const SpectrumValue> spd)
   NS_LOG_FUNCTION (this << *spd);
   ConditionallyEvaluateChunk ();
   (*m_allSignals) += (*spd);
-  m_lastChangeTime = Now ();
 }
 
 void
-LteInterference::DoSubtractSignal  (Ptr<const SpectrumValue> spd)
+LteInterference::DoSubtractSignal  (Ptr<const SpectrumValue> spd, uint32_t signalId)
 { 
   NS_LOG_FUNCTION (this << *spd);
-  ConditionallyEvaluateChunk ();
-  (*m_allSignals) -= (*spd);
-  m_lastChangeTime = Now ();
+  ConditionallyEvaluateChunk ();   
+  int32_t deltaSignalId = signalId - m_lastSignalIdBeforeReset;
+  if (deltaSignalId > 0)
+    {   
+      (*m_allSignals) -= (*spd);
+    }
+  else
+    {
+      NS_LOG_INFO ("ignoring signal scheduled for subtraction before last reset");
+    }
 }
 
 
@@ -156,6 +176,7 @@ LteInterference::ConditionallyEvaluateChunk ()
         {
           (*it)->EvaluateSinrChunk (sinr, duration);
         }
+      m_lastChangeTime = Now ();
     }
   else
     {
@@ -167,12 +188,19 @@ void
 LteInterference::SetNoisePowerSpectralDensity (Ptr<const SpectrumValue> noisePsd)
 {
   NS_LOG_FUNCTION (this << *noisePsd);
+  ConditionallyEvaluateChunk ();
   m_noise = noisePsd;
-  // we can initialize m_allSignal only now, because earlier we
-  // didn't know what spectrum model was going to be used.
-  // we'll now create a zeroed SpectrumValue using the same
-  // SpectrumModel which is being specified for the noise.
+  // reset m_allSignals (will reset if already set previously)
+  // this is needed since this method can potentially change the SpectrumModel
   m_allSignals = Create<SpectrumValue> (noisePsd->GetSpectrumModel ());
+  if (m_receiving == true)
+    {
+      // abort rx
+      m_receiving = false;
+    }
+  // record the last SignalId so that we can ignore all signals that
+  // were scheduled for subtraction before m_allSignal 
+  m_lastSignalIdBeforeReset = m_lastSignalId;
 }
 
 void

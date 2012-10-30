@@ -1,6 +1,6 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2011 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
+ * Copyright (c) 2011, 2012 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Marco Miozzo <marco.miozzo@cttc.es>,
+ * Author: Marco Miozzo <marco.miozzo@cttc.es>
  *         Nicola Baldo <nbaldo@cttc.es>
  */
 
@@ -207,43 +207,16 @@ LenaPfFfMacSchedulerTestCase1::~LenaPfFfMacSchedulerTestCase1 ()
 void
 LenaPfFfMacSchedulerTestCase1::DoRun (void)
 {
+  NS_LOG_FUNCTION (this << m_nUser << m_nLc << m_dist);
+  Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue (false));
+  Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));  
   Config::SetDefault ("ns3::LteAmc::AmcModel", EnumValue (LteAmc::PiroEW2010));
   Config::SetDefault ("ns3::LteAmc::Ber", DoubleValue (0.00005));
-  Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue (false));
-  Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));  LogComponentDisableAll (LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteEnbRrc", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteUeRrc", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteEnbMac", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteUeMac", LOG_LEVEL_ALL);
-//     LogComponentEnable ("LteRlc", LOG_LEVEL_ALL);
-//
-//   LogComponentEnable ("LtePhy", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteEnbPhy", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteUePhy", LOG_LEVEL_ALL);
-
-  //   LogComponentEnable ("LteSpectrumPhy", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteInterference", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteSinrChunkProcessor", LOG_LEVEL_ALL);
-  // 
-  //   LogComponentEnable ("LtePropagationLossModel", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LossModel", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("ShadowingLossModel", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("PenetrationLossModel", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("MultipathLossModel", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("PathLossModel", LOG_LEVEL_ALL);
-  // 
-  //   LogComponentEnable ("LteNetDevice", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteUeNetDevice", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteEnbNetDevice", LOG_LEVEL_ALL);
-
-//     LogComponentEnable ("PfFfMacScheduler", LOG_LEVEL_ALL);
-  LogComponentEnable ("LenaTestPfFfMacCheduler", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteAmc", LOG_LEVEL_ALL);
-//     LogComponentEnable ("RadioBearerStatsCalculator", LOG_LEVEL_ALL);
 
   /**
    * Initialize Simulation Scenario: 1 eNB and m_nUser UEs
    */
+
 
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
   
@@ -276,7 +249,8 @@ LenaPfFfMacSchedulerTestCase1::DoRun (void)
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
   lteHelper->ActivateDataRadioBearer (ueDevs, bearer);
-
+  
+ 
   Ptr<LteEnbNetDevice> lteEnbDev = enbDevs.Get (0)->GetObject<LteEnbNetDevice> ();
   Ptr<LteEnbPhy> enbPhy = lteEnbDev->GetPhy ();
   enbPhy->SetAttribute ("TxPower", DoubleValue (30.0));
@@ -293,14 +267,18 @@ LenaPfFfMacSchedulerTestCase1::DoRun (void)
       uePhy->SetAttribute ("NoiseFigure", DoubleValue (9.0));
     }
 
-  lteHelper->EnableRlcTraces ();
 
-  double simulationTime = 1.0;
+  double statsStartTime = 0.050; // need to allow for RRC connection establishment + SRS 
+  double statsDuration = 0.4;
   double tolerance = 0.1;
-  Simulator::Stop (Seconds (simulationTime));
+  Simulator::Stop (Seconds (statsStartTime + statsDuration + 0.000001));
 
+  lteHelper->EnableMacTraces ();
+  Simulator::Schedule (Seconds (statsStartTime), &LteHelper::EnableRlcTraces, lteHelper);
   Ptr<RadioBearerStatsCalculator> rlcStats = lteHelper->GetRlcStats ();
-  rlcStats->SetAttribute ("EpochDuration", TimeValue (Seconds (simulationTime)));
+  rlcStats->SetAttribute ("StartTime", TimeValue (Seconds (statsStartTime)));
+  rlcStats->SetAttribute ("EpochDuration", TimeValue (Seconds (statsDuration)));
+
 
   Simulator::Run ();
 
@@ -313,10 +291,9 @@ LenaPfFfMacSchedulerTestCase1::DoRun (void)
     {
       // get the imsi
       uint64_t imsi = ueDevs.Get (i)->GetObject<LteUeNetDevice> ()->GetImsi ();
-      // get the lcId
-      uint8_t lcId = ueDevs.Get (i)->GetObject<LteUeNetDevice> ()->GetRrc ()->GetLcIdVector ().at (0);
+      uint8_t lcId = 3;
       dlDataRxed.push_back (rlcStats->GetDlRxData (imsi, lcId));
-      NS_LOG_INFO ("\tUser " << i << " imsi " << imsi << " bytes rxed " << (double)dlDataRxed.at (i) << "  thr " << (double)dlDataRxed.at (i) / simulationTime << " ref " << m_thrRefDl);
+      NS_LOG_INFO ("\tUser " << i << " imsi " << imsi << " bytes rxed " << (double)dlDataRxed.at (i) << "  thr " << (double)dlDataRxed.at (i) / statsDuration << " ref " << m_thrRefDl);
     }
   /**
   * Check that the assignation is done in a "proportional fair" manner among users
@@ -326,7 +303,7 @@ LenaPfFfMacSchedulerTestCase1::DoRun (void)
   */
   for (int i = 0; i < m_nUser; i++)
     {
-      NS_TEST_ASSERT_MSG_EQ_TOL ((double)dlDataRxed.at (i) / simulationTime, m_thrRefDl, m_thrRefDl * tolerance, " Unfair Throughput!");
+      NS_TEST_ASSERT_MSG_EQ_TOL ((double)dlDataRxed.at (i) / statsDuration, m_thrRefDl, m_thrRefDl * tolerance, " Unfair Throughput!");
     }
 
   /**
@@ -339,9 +316,9 @@ LenaPfFfMacSchedulerTestCase1::DoRun (void)
       // get the imsi
       uint64_t imsi = ueDevs.Get (i)->GetObject<LteUeNetDevice> ()->GetImsi ();
       // get the lcId
-      uint8_t lcId = ueDevs.Get (i)->GetObject<LteUeNetDevice> ()->GetRrc ()->GetLcIdVector ().at (0);
+      uint8_t lcId = 3;
       ulDataRxed.push_back (rlcStats->GetUlRxData (imsi, lcId));
-      NS_LOG_INFO ("\tUser " << i << " imsi " << imsi << " bytes rxed " << (double)ulDataRxed.at (i) << "  thr " << (double)ulDataRxed.at (i) / simulationTime << " ref " << m_thrRefUl);
+      NS_LOG_INFO ("\tUser " << i << " imsi " << imsi << " bytes rxed " << (double)ulDataRxed.at (i) << "  thr " << (double)ulDataRxed.at (i) / statsDuration << " ref " << m_thrRefUl);
     }
   /**
   * Check that the assignation is done in a "proportional fair" manner among users
@@ -351,7 +328,7 @@ LenaPfFfMacSchedulerTestCase1::DoRun (void)
   */
   for (int i = 0; i < m_nUser; i++)
     {
-      NS_TEST_ASSERT_MSG_EQ_TOL ((double)ulDataRxed.at (i) / simulationTime, m_thrRefUl, m_thrRefUl * tolerance, " Unfair Throughput!");
+      NS_TEST_ASSERT_MSG_EQ_TOL ((double)ulDataRxed.at (i) / statsDuration, m_thrRefUl, m_thrRefUl * tolerance, " Unfair Throughput!");
     }
   Simulator::Destroy ();
 
@@ -392,35 +369,12 @@ LenaPfFfMacSchedulerTestCase2::~LenaPfFfMacSchedulerTestCase2 ()
 void
 LenaPfFfMacSchedulerTestCase2::DoRun (void)
 {
-  //   LogComponentEnable ("LteEnbRrc", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteUeRrc", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteEnbMac", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteUeMac", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteRlc", LOG_LEVEL_ALL);
-  // 
-  //   LogComponentEnable ("LtePhy", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteEnbPhy", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteUePhy", LOG_LEVEL_ALL);
+  NS_LOG_FUNCTION (this);
 
-  //   LogComponentEnable ("LteSpectrumPhy", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteInterference", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteSinrChunkProcessor", LOG_LEVEL_ALL);
-  // 
-  //   LogComponentEnable ("LtePropagationLossModel", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LossModel", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("ShadowingLossModel", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("PenetrationLossModel", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("MultipathLossModel", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("PathLossModel", LOG_LEVEL_ALL);
-  // 
-  //   LogComponentEnable ("LteNetDevice", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteUeNetDevice", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteEnbNetDevice", LOG_LEVEL_ALL);
-
-//     LogComponentEnable ("PfFfMacScheduler", LOG_LEVEL_ALL);
-  LogComponentEnable ("LenaTestPfFfMacCheduler", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteAmc", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("RadioBearerStatsCalculator", LOG_LEVEL_ALL);
+  Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue (false));
+  Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));  
+  Config::SetDefault ("ns3::LteAmc::AmcModel", EnumValue (LteAmc::PiroEW2010));
+  Config::SetDefault ("ns3::LteAmc::Ber", DoubleValue (0.00005));
 
   /**
   * Initialize Simulation Scenario: 1 eNB and m_nUser UEs
@@ -474,14 +428,16 @@ LenaPfFfMacSchedulerTestCase2::DoRun (void)
       uePhy->SetAttribute ("NoiseFigure", DoubleValue (9.0));
     }
 
-  lteHelper->EnableRlcTraces ();
-
-  double simulationTime = 0.4;
+  double statsStartTime = 0.050; // need to allow for RRC connection establishment + SRS 
+  double statsDuration = 0.4;
   double tolerance = 0.1;
-  Simulator::Stop (Seconds (simulationTime));
+  Simulator::Stop (Seconds (statsStartTime + statsDuration + 0.000001));
 
+  Simulator::Schedule (Seconds (statsStartTime), &LteHelper::EnableRlcTraces, lteHelper);
   Ptr<RadioBearerStatsCalculator> rlcStats = lteHelper->GetRlcStats ();
-  rlcStats->SetAttribute ("EpochDuration", TimeValue (Seconds (simulationTime)));
+  rlcStats->SetAttribute ("StartTime", TimeValue (Seconds (statsStartTime)));
+  rlcStats->SetAttribute ("EpochDuration", TimeValue (Seconds (statsDuration)));
+
 
   Simulator::Run ();
 
@@ -494,10 +450,10 @@ LenaPfFfMacSchedulerTestCase2::DoRun (void)
       // get the imsi
       uint64_t imsi = ueDevs.Get (i)->GetObject<LteUeNetDevice> ()->GetImsi ();
       // get the lcId
-      uint8_t lcId = ueDevs.Get (i)->GetObject<LteUeNetDevice> ()->GetRrc ()->GetLcIdVector ().at (0);
+      uint8_t lcId = 3;
       dlDataRxed.push_back (rlcStats->GetDlRxData (imsi, lcId));
       totalData += (double)dlDataRxed.at (i);
-      NS_LOG_INFO ("\tUser " << i << " dist " << m_dist.at (i) << " imsi " << imsi << " bytes rxed " << (double)dlDataRxed.at (i) << "  thr " << (double)dlDataRxed.at (i) / simulationTime << " ref " << m_nUser);
+      NS_LOG_INFO ("\tUser " << i << " dist " << m_dist.at (i) << " imsi " << imsi << " bytes rxed " << (double)dlDataRxed.at (i) << "  thr " << (double)dlDataRxed.at (i) / statsDuration);
       totalEstThrPf += m_estThrPfDl.at (i);
     }
 
@@ -525,10 +481,10 @@ LenaPfFfMacSchedulerTestCase2::DoRun (void)
       // get the imsi
       uint64_t imsi = ueDevs.Get (i)->GetObject<LteUeNetDevice> ()->GetImsi ();
       // get the lcId
-      uint8_t lcId = ueDevs.Get (i)->GetObject<LteUeNetDevice> ()->GetRrc ()->GetLcIdVector ().at (0);
+      uint8_t lcId = 3;
       ulDataRxed.push_back (rlcStats->GetUlRxData (imsi, lcId));
-      NS_LOG_INFO ("\tUser " << i << " dist " << m_dist.at (i) << " bytes rxed " << (double)ulDataRxed.at (i) << "  thr " << (double)ulDataRxed.at (i) / simulationTime << " ref " << (double)m_estThrPfUl.at (i));
-      NS_TEST_ASSERT_MSG_EQ_TOL ((double)ulDataRxed.at (i) / simulationTime, (double)m_estThrPfUl.at (i), (double)m_estThrPfUl.at (i) * tolerance, " Unfair Throughput!");
+      NS_LOG_INFO ("\tUser " << i << " dist " << m_dist.at (i) << " bytes rxed " << (double)ulDataRxed.at (i) << "  thr " << (double)ulDataRxed.at (i) / statsDuration << " ref " << (double)m_estThrPfUl.at (i));
+      NS_TEST_ASSERT_MSG_EQ_TOL ((double)ulDataRxed.at (i) / statsDuration, (double)m_estThrPfUl.at (i), (double)m_estThrPfUl.at (i) * tolerance, " Unfair Throughput!");
     }
   Simulator::Destroy ();
 

@@ -214,7 +214,7 @@ LteEpcE2eDataTestCase::DoRun ()
                 ++dlPort;
                 PacketSinkHelper packetSinkHelper ("ns3::UdpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), dlPort));
                 ApplicationContainer apps = packetSinkHelper.Install (ue);
-                apps.Start (Seconds (0.01));
+                apps.Start (Seconds (0.04));
                 bearerTestData.dlServerApp = apps.Get (0)->GetObject<PacketSink> ();
           
                 UdpEchoClientHelper client (ueIpIface.GetAddress (0), dlPort);
@@ -222,7 +222,7 @@ LteEpcE2eDataTestCase::DoRun ()
                 client.SetAttribute ("Interval", TimeValue (bearerTestData.interPacketInterval));
                 client.SetAttribute ("PacketSize", UintegerValue (bearerTestData.pktSize));
                 apps = client.Install (remoteHost);
-                apps.Start (Seconds (0.01));
+                apps.Start (Seconds (0.04));
                 bearerTestData.dlClientApp = apps.Get (0);
               }
 
@@ -230,7 +230,7 @@ LteEpcE2eDataTestCase::DoRun ()
                 ++ulPort;
                 PacketSinkHelper packetSinkHelper ("ns3::UdpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), ulPort));
                 ApplicationContainer apps = packetSinkHelper.Install (remoteHost);
-                apps.Start (Seconds (0.5));
+                apps.Start (Seconds (0.8));
                 bearerTestData.ulServerApp = apps.Get (0)->GetObject<PacketSink> ();
           
                 UdpEchoClientHelper client (remoteHostAddr, ulPort);
@@ -238,7 +238,7 @@ LteEpcE2eDataTestCase::DoRun ()
                 client.SetAttribute ("Interval", TimeValue (bearerTestData.interPacketInterval));
                 client.SetAttribute ("PacketSize", UintegerValue (bearerTestData.pktSize));
                 apps = client.Install (ue);
-                apps.Start (Seconds (0.5));
+                apps.Start (Seconds (0.8));
                 bearerTestData.ulClientApp = apps.Get (0);
               }
 
@@ -266,9 +266,13 @@ LteEpcE2eDataTestCase::DoRun ()
   Config::Set ("/NodeList/*/DeviceList/*/LteUeRrc/RadioBearerMap/*/LteRlc/MaxTxBufferSize",
                UintegerValue (2 * 1024 * 1024));
 
-  lteHelper->EnableRlcTraces ();
-  lteHelper->EnablePdcpTraces ();
+
   Time simulationTime = Seconds (2.0);
+
+  double statsStartTime = 0.040; // need to allow for RRC connection establishment + SRS 
+  Simulator::Schedule (Seconds (statsStartTime), &LteHelper::EnablePdcpTraces, lteHelper);
+
+  lteHelper->GetPdcpStats ()->SetAttribute ("StartTime", TimeValue (Seconds (statsStartTime)));
   lteHelper->GetPdcpStats ()->SetAttribute ("EpochDuration", TimeValue (simulationTime));
   
   
@@ -288,9 +292,9 @@ LteEpcE2eDataTestCase::DoRun ()
           uint64_t imsi = ++imsiCounter;
           for (uint32_t b = 0; b < ueit->bearers.size (); ++b)
             {
-              // LCID 0 is unused 
-              // LCID 1 is (at the moment) the Default EPS bearer, and is unused in this test program
-              uint8_t lcid = b+2;
+              // LCID 0, 1, 2 are for SRBs
+              // LCID 3 is (at the moment) the Default EPS bearer, and is unused in this test program
+              uint8_t lcid = b+4;
               NS_TEST_ASSERT_MSG_EQ (lteHelper->GetPdcpStats ()->GetDlTxPackets (imsi, lcid), 
                                      ueit->bearers.at (b).numPkts, 
                                      "wrong TX PDCP packets in downlink for IMSI=" << imsi << " LCID=" << (uint16_t) lcid);

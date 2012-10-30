@@ -114,6 +114,20 @@ public:
   void RecvFromS1uSocket (Ptr<Socket> socket);
 
 
+  struct EpsFlowId_t
+  {
+    uint16_t  m_rnti;
+    uint8_t   m_bid;
+
+  public:
+    EpsFlowId_t ();
+    EpsFlowId_t (const uint16_t a, const uint8_t b);
+
+    friend bool operator == (const EpsFlowId_t &a, const EpsFlowId_t &b);
+    friend bool operator < (const EpsFlowId_t &a, const EpsFlowId_t &b);
+  };
+
+
 private:
 
   // S1 SAP provider methods
@@ -124,9 +138,9 @@ private:
    * Send a packet to the UE via the LTE radio interface of the eNB
    * 
    * \param packet t
-   * \param rbid the Radio Bearer IDentifier
+   * \param bid the EPS Bearer IDentifier
    */
-  void SendToLteSocket (Ptr<Packet> packet, uint16_t rnti, uint8_t lcid);
+  void SendToLteSocket (Ptr<Packet> packet, uint16_t rnti, uint8_t bid);
 
 
   /** 
@@ -144,9 +158,9 @@ private:
    * 
    * \param teid 
    * \param rnti 
-   * \param lcid 
+   * \param bid 
    */
-  void SetupS1Bearer (uint32_t teid, uint16_t rnti, uint8_t lcid);
+  void SetupS1Bearer (uint32_t teid, uint16_t rnti, uint8_t bid);
 
   /**
    * raw packet socket to send and receive the packets to and from the LTE radio interface
@@ -164,16 +178,16 @@ private:
   Ipv4Address m_sgwAddress;
 
   /**
-   * map telling for each RadioBearer (RNTI,LCID) the corresponding  S1-U TEID
+   * map telling for each EpsBearer (RNTI,BID) the corresponding  S1-U TEID
    * 
    */
-  std::map<LteFlowId_t, uint32_t> m_rbidTeidMap;  
+  std::map<EpsFlowId_t, uint32_t> m_rbidTeidMap;  
 
   /**
-   * map telling for each S1-U TEID the corresponding RadioBearer (RNTI,LCID) 
+   * map telling for each S1-U TEID the corresponding EpsBearer (RNTI,BID) 
    * 
    */
-  std::map<uint32_t, LteFlowId_t> m_teidRbidMap;
+  std::map<uint32_t, EpsFlowId_t> m_teidRbidMap;
  
   /**
    * UDP port to be used for GTP

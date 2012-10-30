@@ -149,7 +149,7 @@ LteEnbAntennaTestCase::DoRun (void)
   enbphy->GetUplinkSpectrumPhy ()->AddDataSinrChunkProcessor (testUlSinr);
 
 
-  Simulator::Stop (Seconds (0.020));
+  Simulator::Stop (Seconds (0.035));
   Simulator::Run ();
 
 

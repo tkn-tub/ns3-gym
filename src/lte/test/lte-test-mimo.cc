@@ -168,13 +168,13 @@ LenaMimoTestCase::DoRun (void)
   uePhy->SetAttribute ("TxPower", DoubleValue (23.0));
   uePhy->SetAttribute ("NoiseFigure", DoubleValue (9.0));
   
-
-  lteHelper->EnableRlcTraces ();
+  // need to allow for RRC connection establishment + SRS before enabling traces
+  Simulator::Schedule (Seconds (0.050), &LteHelper::EnableRlcTraces, lteHelper);
   lteHelper->EnableMacTraces ();
   double simulationTime = 0.401;
   double tolerance = 0.1;
   
-  uint8_t rnti = ueDevs.Get (0)->GetObject<LteUeNetDevice> ()->GetRrc ()->GetRnti ();
+  uint8_t rnti = 1;
   Ptr<LteEnbNetDevice> enbNetDev = enbDevs.Get (0)->GetObject<LteEnbNetDevice> ();
   
   PointerValue ptrval;
@@ -212,7 +212,6 @@ LenaMimoTestCase::DoRun (void)
   Ptr<RadioBearerStatsCalculator> rlcStats = lteHelper->GetRlcStats ();
   rlcStats->SetAttribute ("EpochDuration", TimeValue (Seconds (0.1)));
 
-
   /**
    * Check that the assignation is done in a RR fashion
    */
@@ -223,8 +222,7 @@ LenaMimoTestCase::DoRun (void)
       NS_LOG_INFO ("\t test with user at distance " << m_dist << " time " << sampleTime);
       // get the imsi
       uint64_t imsi = ueDevs.Get (0)->GetObject<LteUeNetDevice> ()->GetImsi ();
-      // get the lcId
-      uint8_t lcId = ueDevs.Get (0)->GetObject<LteUeNetDevice> ()->GetRrc ()->GetLcIdVector ().at (0);
+      uint8_t lcId = 3;
       Time t = Seconds (sampleTime);
       Simulator::Schedule(t, &LenaMimoTestCase::GetRlcBufferSample, this, rlcStats, imsi, lcId);
       sampleTime += 0.1;

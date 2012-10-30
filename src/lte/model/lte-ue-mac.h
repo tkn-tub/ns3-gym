@@ -78,10 +78,12 @@ private:
   void DoReportBufferStatus (LteMacSapProvider::ReportBufferStatusParameters params);
 
   // forwarded from UE CMAC SAP
-  void DoConfigureUe (uint16_t rnti);
-  void DoAddLc (uint8_t lcId, LteMacSapUser* msu);
+
+  void DoStartContentionBasedRandomAccessProcedure ();
+  void DoStartNonContentionBasedRandomAccessProcedure (uint16_t rnti, uint8_t preambleId, uint8_t prachMask);
+  void DoAddLc (uint8_t lcId, LteUeCmacSapProvider::LogicalChannelConfig lcConfig, LteMacSapUser* msu);
   void DoRemoveLc (uint8_t lcId);
-  void DoRrcUpdateConfigurationReq (LteUeConfig_t params);
+  void DoReset ();
 
   // forwarded from PHY SAP
   void DoReceivePhyPdu (Ptr<Packet> p);
@@ -90,8 +92,15 @@ private:
   void SendReportBufferStatus (void);
 
 private:
-  // end of temporary hack
-  std::map <uint8_t, LteMacSapUser*> m_macSapUserMap;
+
+  struct LcInfo
+  {
+    LteUeCmacSapProvider::LogicalChannelConfig lcConfig;
+    LteMacSapUser* macSapUser;
+  };
+
+  std::map <uint8_t, LcInfo> m_lcInfoMap;
+
   LteMacSapProvider* m_macSapProvider;
 
   LteUeCmacSapUser* m_cmacSapUser;
@@ -107,8 +116,9 @@ private:
   
   bool m_freshUlBsr; // true when a BSR has been received in the last TTI
 
-
   uint16_t m_rnti;
+
+  uint32_t m_prachId;
 
 };
 
