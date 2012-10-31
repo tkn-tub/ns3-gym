@@ -1340,7 +1340,7 @@ PfFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
   do
     {
       std::set <uint16_t>::iterator itRnti = rntiAllocated.find ((*it).first);
-      if (itRnti!=rntiAllocated.end ())
+      if ((itRnti!=rntiAllocated.end ())||((*it).second == 0))
         {
           // UE already allocated for UL-HARQ -> skip it
           it++;
