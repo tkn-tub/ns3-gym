@@ -333,15 +333,17 @@ EpcX2::DoSendHandoverRequestAck (EpcX2SapProvider::HandoverRequestAckParams para
   NS_LOG_INFO ("Send X2 message: HANDOVER REQUEST ACK");
 
   // Build the X2 message
-  EpcX2Header x2Header;
-  x2Header.SetMessageType (EpcX2Header::SuccessfulOutcome);
-  x2Header.SetProcedureCode (EpcX2Header::HandoverPreparation);
-
   EpcX2HandoverRequestAckHeader x2HoAckHeader;
   x2HoAckHeader.SetOldEnbUeX2apId (params.oldEnbUeX2apId);
   x2HoAckHeader.SetNewEnbUeX2apId (params.newEnbUeX2apId);
   x2HoAckHeader.SetAdmittedBearers (params.admittedBearers);
   x2HoAckHeader.SetNotAdmittedBearers (params.notAdmittedBearers);
+
+  EpcX2Header x2Header;
+  x2Header.SetMessageType (EpcX2Header::SuccessfulOutcome);
+  x2Header.SetProcedureCode (EpcX2Header::HandoverPreparation);
+  x2Header.SetLengthOfIes (x2HoAckHeader.GetLengthOfIes ());
+  x2Header.SetNumberOfIes (x2HoAckHeader.GetNumberOfIes ());
 
   NS_LOG_INFO ("X2 header: " << x2Header);
   NS_LOG_INFO ("X2 HandoverAck header: " << x2HoAckHeader);
@@ -384,13 +386,15 @@ EpcX2::DoSendUeContextRelease (EpcX2SapProvider::UeContextReleaseParams params)
   NS_LOG_INFO ("Send X2 message: UE CONTEXT RELEASE");
 
   // Build the X2 message
-  EpcX2Header x2Header;
-  x2Header.SetMessageType (EpcX2Header::InitiatingMessage);
-  x2Header.SetProcedureCode (EpcX2Header::UeContextRelease);
-
   EpcX2UeContextReleaseHeader x2UeCtxReleaseHeader;
   x2UeCtxReleaseHeader.SetOldEnbUeX2apId (params.oldEnbUeX2apId);
   x2UeCtxReleaseHeader.SetNewEnbUeX2apId (params.newEnbUeX2apId);
+
+  EpcX2Header x2Header;
+  x2Header.SetMessageType (EpcX2Header::InitiatingMessage);
+  x2Header.SetProcedureCode (EpcX2Header::UeContextRelease);
+  x2Header.SetLengthOfIes (x2UeCtxReleaseHeader.GetLengthOfIes ());
+  x2Header.SetNumberOfIes (x2UeCtxReleaseHeader.GetNumberOfIes ());
 
   NS_LOG_INFO ("X2 header: " << x2Header);
   NS_LOG_INFO ("X2 UeContextRelease header: " << x2UeCtxReleaseHeader);

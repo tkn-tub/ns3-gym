@@ -150,7 +150,13 @@ public:
   std::vector <EpcX2Sap::ErabNotAdmittedItem> GetNotAdmittedBearers () const;
   void SetNotAdmittedBearers (std::vector <EpcX2Sap::ErabNotAdmittedItem> bearers);
 
+  uint32_t GetLengthOfIes () const;
+  uint32_t GetNumberOfIes () const;
+
 private:
+  uint32_t          m_numberOfIes;
+  uint32_t          m_headerLength;
+
   uint16_t          m_oldEnbUeX2apId;
   uint16_t          m_newEnbUeX2apId;
   std::vector <EpcX2Sap::ErabAdmittedItem>     m_erabsAdmittedList;
@@ -178,7 +184,13 @@ public:
   uint16_t GetNewEnbUeX2apId () const;
   void SetNewEnbUeX2apId (uint16_t x2apId);
 
+  uint32_t GetLengthOfIes () const;
+  uint32_t GetNumberOfIes () const;
+
 private:
+  uint32_t          m_numberOfIes;
+  uint32_t          m_headerLength;
+
   uint16_t          m_oldEnbUeX2apId;
   uint16_t          m_newEnbUeX2apId;
 };
