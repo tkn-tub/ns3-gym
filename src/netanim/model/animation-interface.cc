@@ -363,7 +363,12 @@ std::string AnimationInterface::GetIpv4Address (Ptr <NetDevice> nd)
   Ptr<Ipv4> ipv4 = NodeList::GetNode (nd->GetNode ()->GetId ())->GetObject <Ipv4> ();
   if (!ipv4)
     return "0.0.0.0";
-  uint32_t ifIndex = ipv4->GetInterfaceForDevice (nd);
+  int32_t ifIndex = ipv4->GetInterfaceForDevice (nd);
+  if (ifIndex == -1)
+    {
+      NS_LOG_WARN ("Node :" << nd->GetNode ()->GetId () << " Could not find index of NetDevice");
+      return "0.0.0.0";
+    }
   Ipv4InterfaceAddress addr = ipv4->GetAddress (ifIndex, 0);
   std::ostringstream oss;
   oss << addr.GetLocal ();
