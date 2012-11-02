@@ -586,6 +586,18 @@ As an example, here is the REM that can be obtained with the example program len
    REM obtained from the lena-dual-stripe example
 
 
+Note that the lena-dual-stripe example program also generate
+gnuplot-compatible output files containing information about the
+positions of the UE and eNB nodes as well as of the buildings,
+respectively in the files ``ues.txt``, ``enbs.txt`` and
+``buildings.txt``. These can be easily included when using
+gnuplot. For example, assuming that your gnuplot script (e.g., the
+minimal gnuplot script described above) is saved in a file named
+``my_plot_script``, running the following command would plot the
+location of UEs, eNBs and buildings on top of the REM:: 
+
+   gnuplot -p enbs.txt ues.txt buildings.txt my_plot_script
+
 
 
 AMC Model and CQI Calculation
