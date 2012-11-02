@@ -97,6 +97,14 @@ protected:
 public: 
   static TypeId GetTypeId (void);
 
+  /** 
+   * Set the identifiers of the source eNB for the case where a UE
+   * joins the current eNB as part of a handover procedure 
+   * 
+   * \param sourceCellId 
+   * \param sourceX2apId 
+   */
+  void SetSource (uint16_t sourceCellId, uint16_t sourceX2apId);
 
   /** 
    * Setup a new data radio bearer, including both the configuration
@@ -321,6 +329,8 @@ private:
   LtePdcpSapUser* m_pdcpSapUser;
   bool m_pendingRrcConnectionReconfiguration;
   TracedCallback<State, State> m_stateTransitionCallback;
+  uint16_t m_sourceX2apId;
+  uint16_t m_sourceCellId;
 };
 
 
@@ -524,10 +534,11 @@ private:
   void DoDataRadioBearerSetupRequest (EpcEnbS1SapUser::DataRadioBearerSetupRequestParameters params);
 
 
-  // methods forwarded from X2 SAP
+  // X2 SAP methods
   void DoRecvHandoverRequest (EpcX2SapUser::HandoverRequestParams params);
   void DoRecvHandoverRequestAck (EpcX2SapUser::HandoverRequestAckParams params);
-
+  void DoRecvUeContextRelease (EpcX2SapUser::UeContextReleaseParams params);
+  
 
   // CMAC SAP methods
   uint16_t DoAllocateTemporaryCellRnti ();

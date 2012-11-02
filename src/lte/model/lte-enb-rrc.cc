@@ -134,7 +134,9 @@ UeManager::UeManager (Ptr<LteEnbRrc> rrc, uint16_t rnti, State s)
     m_lastRrcTransactionIdentifier (0),
     m_rrc (rrc),
     m_state (s),
-    m_pendingRrcConnectionReconfiguration (false)
+    m_pendingRrcConnectionReconfiguration (false),
+    m_sourceX2apId (0),
+    m_sourceCellId (0)
 { 
   NS_LOG_FUNCTION (this);
 
@@ -254,6 +256,12 @@ TypeId UeManager::GetTypeId (void)
   return tid;
 }
 
+void 
+UeManager::SetSource (uint16_t sourceCellId, uint16_t sourceX2apId)
+{
+  m_sourceX2apId = sourceX2apId;
+  m_sourceCellId = sourceCellId;
+}
 
 uint8_t
 UeManager::SetupDataRadioBearer (EpsBearer bearer)
@@ -445,32 +453,67 @@ void
 UeManager::RecvRrcConnectionRequest (LteRrcSap::RrcConnectionRequest msg)
 {
   NS_LOG_FUNCTION (this);
-  m_imsi = msg.ueIdentity;
-
-  if (m_rrc->m_s1SapProvider != 0)
+  switch (m_state)
     {
-      m_rrc->m_s1SapProvider->InitialUeMessage (m_imsi, m_rnti);
+    case INITIAL_RANDOM_ACCESS:      
+      {      
+        m_imsi = msg.ueIdentity;      
+        if (m_rrc->m_s1SapProvider != 0)
+          {
+            m_rrc->m_s1SapProvider->InitialUeMessage (m_imsi, m_rnti);
+          }      
+        LteRrcSap::RrcConnectionSetup msg2;
+        msg2.rrcTransactionIdentifier = GetNewRrcTransactionIdentifier ();
+        msg2.radioResourceConfigDedicated = BuildRadioResourceConfigDedicated ();
+        m_rrc->m_rrcSapUser->SendRrcConnectionSetup (m_rnti, msg2);
+        SwitchToState (CONNECTION_SETUP);
+      }
+      break;
+      
+    default:
+      NS_FATAL_ERROR ("method unexpected in state " << ToString (m_state));
+      break;      
     }
-
-  LteRrcSap::RrcConnectionSetup msg2;
-  msg2.rrcTransactionIdentifier = GetNewRrcTransactionIdentifier ();
-  msg2.radioResourceConfigDedicated = BuildRadioResourceConfigDedicated ();
-  m_rrc->m_rrcSapUser->SendRrcConnectionSetup (m_rnti, msg2);
-  SwitchToState (CONNECTION_SETUP);
 }
 
 void
 UeManager::RecvRrcConnectionSetupCompleted (LteRrcSap::RrcConnectionSetupCompleted msg)
 {
   NS_LOG_FUNCTION (this);
-  SwitchToState (CONNECTED_NORMALLY);
+  switch (m_state)
+    {
+    case CONNECTION_SETUP:      
+      SwitchToState (CONNECTED_NORMALLY);
+      break;
+            
+    default:
+      NS_FATAL_ERROR ("method unexpected in state " << ToString (m_state));
+      break;      
+    }
 }
 
 void
 UeManager::RecvRrcConnectionReconfigurationCompleted (LteRrcSap::RrcConnectionReconfigurationCompleted msg)
 {
   NS_LOG_FUNCTION (this);
-  SwitchToState (CONNECTED_NORMALLY);
+  switch (m_state)
+    {
+    case CONNECTION_RECONFIGURATION:      
+      SwitchToState (CONNECTED_NORMALLY);
+      break;
+      
+    case HANDOVER_JOINING:
+      NS_LOG_INFO ("Send UE CONTEXT RELEASE from target eNB to source eNB");
+      EpcX2SapProvider::UeContextReleaseParams ueCtxReleaseParams;
+      ueCtxReleaseParams.oldEnbUeX2apId = m_sourceX2apId;
+      ueCtxReleaseParams.newEnbUeX2apId = m_rnti;
+      m_rrc->m_x2SapProvider->SendUeContextRelease (ueCtxReleaseParams);
+      SwitchToState (CONNECTED_NORMALLY);
+      
+    default:
+      NS_FATAL_ERROR ("method unexpected in state " << ToString (m_state));
+      break;      
+    }
 }
   
 void 
@@ -1069,7 +1112,8 @@ LteEnbRrc::DoRecvHandoverRequest (EpcX2SapUser::HandoverRequestParams params)
   NS_LOG_LOGIC ("targetCellId = " << params.targetCellId);
   
   uint16_t rnti = AddUe (UeManager::HANDOVER_JOINING);
-  Ptr<UeManager> ueManager = GetUeManager (rnti);  
+  Ptr<UeManager> ueManager = GetUeManager (rnti);
+  ueManager->SetSource (params.sourceCellId, params.oldEnbUeX2apId);
 
   for (std::vector <EpcX2Sap::ErabToBeSetupItem>::iterator it = params.bearers.begin ();
        it != params.bearers.end ();
@@ -1114,7 +1158,7 @@ LteEnbRrc::DoRecvHandoverRequestAck (EpcX2SapUser::HandoverRequestAckParams para
   Ptr<UeManager> ueManager = GetUeManager (rnti);  
   
   // note: the Handover command from the target eNB to the source eNB
-  // is expected to be sent transparently tothe UE; however, here we
+  // is expected to be sent transparently to the UE; however, here we
   // decode the message and eventually reencode it. This way we can
   // support both a real RRC protocol implementation and an ideal one
   // without actual RRC protocol encoding. 
@@ -1125,6 +1169,19 @@ LteEnbRrc::DoRecvHandoverRequestAck (EpcX2SapUser::HandoverRequestAckParams para
 
 }
 
+void
+LteEnbRrc::DoRecvUeContextRelease (EpcX2SapUser::UeContextReleaseParams params)
+{
+  NS_LOG_FUNCTION (this);
+  
+  NS_LOG_LOGIC ("Recv X2 message: UE CONTEXT RELEASE");
+  
+  NS_LOG_LOGIC ("oldEnbUeX2apId = " << params.oldEnbUeX2apId);
+  NS_LOG_LOGIC ("newEnbUeX2apId = " << params.newEnbUeX2apId);
+
+  uint16_t rnti = params.oldEnbUeX2apId;
+  RemoveUe (rnti);
+}
 
 uint16_t 
 LteEnbRrc::DoAllocateTemporaryCellRnti ()
@@ -1178,7 +1235,6 @@ void
 LteEnbRrc::RemoveUe (uint16_t rnti)
 {
   NS_LOG_FUNCTION (this << (uint32_t) rnti);
-  NS_FATAL_ERROR ("I though this method was unused so far...");
   std::map <uint16_t, Ptr<UeManager> >::iterator it = m_ueMap.find (rnti);
   NS_ASSERT_MSG (it != m_ueMap.end (), "request to remove UE info with unknown rnti " << rnti);
   uint16_t srsCi = (*it).second->GetSrsConfigurationIndex ();

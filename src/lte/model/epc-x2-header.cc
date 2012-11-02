@@ -533,5 +533,94 @@ EpcX2HandoverRequestAckHeader::SetNotAdmittedBearers (std::vector <EpcX2Sap::Era
   m_erabsNotAdmittedList = bearers;
 }
 
+/////////////////////////////////////////////////////////////////////
+
+NS_OBJECT_ENSURE_REGISTERED (EpcX2UeContextReleaseHeader);
+
+EpcX2UeContextReleaseHeader::EpcX2UeContextReleaseHeader ()
+  : m_oldEnbUeX2apId (0xfffa),
+    m_newEnbUeX2apId (0xfffa)
+{
+}
+
+EpcX2UeContextReleaseHeader::~EpcX2UeContextReleaseHeader ()
+{
+  m_oldEnbUeX2apId = 0xfffb;
+  m_newEnbUeX2apId = 0xfffb;
+}
+
+TypeId
+EpcX2UeContextReleaseHeader::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::EpcX2UeContextReleaseHeader")
+    .SetParent<Header> ()
+    .AddConstructor<EpcX2UeContextReleaseHeader> ()
+  ;
+  return tid;
+}
+
+TypeId
+EpcX2UeContextReleaseHeader::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
+}
+
+uint32_t
+EpcX2UeContextReleaseHeader::GetSerializedSize (void) const
+{
+  return 4;
+}
+
+void
+EpcX2UeContextReleaseHeader::Serialize (Buffer::Iterator start) const
+{
+  Buffer::Iterator i = start;
+
+  i.WriteHtonU16 (m_oldEnbUeX2apId);
+  i.WriteHtonU16 (m_newEnbUeX2apId);
+}
+
+uint32_t
+EpcX2UeContextReleaseHeader::Deserialize (Buffer::Iterator start)
+{
+  Buffer::Iterator i = start;
+
+  m_oldEnbUeX2apId = i.ReadNtohU16 ();
+  m_newEnbUeX2apId = i.ReadNtohU16 ();
+
+  return GetSerializedSize ();
+}
+
+void
+EpcX2UeContextReleaseHeader::Print (std::ostream &os) const
+{
+  os << "OldEnbUeX2apId=" << m_oldEnbUeX2apId;
+  os << " NewEnbUeX2apId=" << m_newEnbUeX2apId;
+}
+
+uint16_t
+EpcX2UeContextReleaseHeader::GetOldEnbUeX2apId () const
+{
+  return m_oldEnbUeX2apId;
+}
+
+void
+EpcX2UeContextReleaseHeader::SetOldEnbUeX2apId (uint16_t x2apId)
+{
+  m_oldEnbUeX2apId = x2apId;
+}
+
+uint16_t
+EpcX2UeContextReleaseHeader::GetNewEnbUeX2apId () const
+{
+  return m_newEnbUeX2apId;
+}
+
+void
+EpcX2UeContextReleaseHeader::SetNewEnbUeX2apId (uint16_t x2apId)
+{
+  m_newEnbUeX2apId = x2apId;
+}
+
 
 } // namespace ns3

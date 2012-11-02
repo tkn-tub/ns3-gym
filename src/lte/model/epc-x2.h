@@ -112,12 +112,18 @@ protected:
   // Interface provided by LteRlcSapProvider
   virtual void DoSendHandoverRequest (EpcX2SapProvider::HandoverRequestParams params);
   virtual void DoSendHandoverRequestAck (EpcX2SapProvider::HandoverRequestAckParams params);
+  virtual void DoSendUeContextRelease (EpcX2SapProvider::UeContextReleaseParams params);
 
   EpcX2SapUser* m_x2SapUser;
   EpcX2SapProvider* m_x2SapProvider;
 
 
 private:
+
+  /**
+   * Map the enbUeX2apId to the corresponding cellId where the UE is camping on
+   */
+  std::map < uint16_t, uint16_t > m_x2Ues;
 
   /**
    * Map the targetCellId to the corresponding (sourceSocket, remoteIpAddr) to be used
