@@ -415,7 +415,7 @@ LteMiErrorModel::MappingMiBler (double mib, uint8_t ecrId, uint16_t cbSize)
       cbIndex++;
     }
   cbIndex--;
-  NS_LOG_LOGIC (" ECR " << (uint16_t)ecrId << " CB size " << cbSize << " CB size curve " << cbMiSizeTable[cbIndex]);
+  NS_LOG_LOGIC (" ECRid " << (uint16_t)ecrId << " ECR " << BlerCurvesEcrMap[ecrId] << " CB size " << cbSize << " CB size curve " << cbMiSizeTable[cbIndex]);
 
   b = bEcrTable[cbIndex][ecrId];
   if (b<0.0)
@@ -683,7 +683,7 @@ LteMiErrorModel::GetTbDecodificationStats (const SpectrumValue& sinr, const std:
         {
           // Modulation order 4
           uint8_t i = MI_16QAM_MAX_ID;
-          while ((BlerCurvesEcrMap[i]>Reff)&&(i>MI_QPSK_MAX_ID))
+          while ((BlerCurvesEcrMap[i]>Reff)&&(i>MI_QPSK_MAX_ID + 1))
             {
               i--;
             }
@@ -693,7 +693,7 @@ LteMiErrorModel::GetTbDecodificationStats (const SpectrumValue& sinr, const std:
         {
           // Modulation order 6
           uint8_t i = MI_64QAM_MAX_ID;
-          while ((BlerCurvesEcrMap[i]>Reff)&&(i>MI_16QAM_MAX_ID))
+          while ((BlerCurvesEcrMap[i]>Reff)&&(i>MI_16QAM_MAX_ID + 1))
             {
               i--;
             }

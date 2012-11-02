@@ -511,27 +511,10 @@ LteEnbMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
       m_ulInfoListReceived.clear ();
     }
 
-//   std::map <uint16_t,UlInfoListElement_s>::iterator it;
-//   for (it = m_ulInfoListElements.begin (); it != m_ulInfoListElements.end (); it++)
-//     {
-//       ulparams.m_ulInfoList.push_back ((*it).second);
-//     }
   m_schedSapProvider->SchedUlTriggerReq (ulparams);
 
-
-
-
-  // reset UL info
-//   for (it = m_ulInfoListElements.begin (); it != m_ulInfoListElements.end (); it++)
-//     {
-//       for (uint16_t i = 0; i < (*it).second.m_ulReception.size (); i++)
-//         {
-//           (*it).second.m_ulReception.at (i) = 0;
-//         }
-//       (*it).second.m_receptionStatus = UlInfoListElement_s::Ok;
-//       (*it).second.m_tpc = 0;
-//     }
 }
+
 
 void
 LteEnbMac::DoReceiveLteControlMessage  (Ptr<LteControlMessage> msg)

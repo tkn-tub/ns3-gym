@@ -73,7 +73,7 @@ LenaTestPhyErrorModelrSuite::LenaTestPhyErrorModelrSuite ()
 
   // Tests on DL/UL Data channels (PDSCH, PUSCH)
   // MCS 2 TB size of 256 bits BER 0.33 SINR -5.51
-  AddTestCase (new LenaDataPhyErrorModelTestCase (4, 1800, 32, 0.35, 50));
+  AddTestCase (new LenaDataPhyErrorModelTestCase (4, 1800, 32, 0.33, 50));
 // MCS 2 TB size of 528 bits BER 0.11 SINR -5.51
   AddTestCase (new LenaDataPhyErrorModelTestCase (2, 1800, 66, 0.11, 34));
 // MCS 2 TB size of 1088 bits BER 0.02 SINR -5.51

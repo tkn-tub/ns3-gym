@@ -1380,7 +1380,7 @@ PfFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
               
               for (uint16_t j = rbAllocated; j < rbAllocated + rbPerFlow; j++)
                 {
-                  rbMap.at (j) = false;
+                  rbMap.at (j) = true;
                   // store info on allocation for managing ul-cqi interpretation
                   rbgAllocationMap.at (j) = (*it).first;
                   NS_LOG_DEBUG ("\t " << j);

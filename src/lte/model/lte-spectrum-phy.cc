@@ -837,23 +837,9 @@ LteSpectrumPhy::EndRxData ()
           TbStats_t tbStats = LteMiErrorModel::GetTbDecodificationStats (m_sinrPerceived, (*itTb).second.rbBitmap, (*itTb).second.size, (*itTb).second.mcs, harqInfoList);
           (*itTb).second.mi = tbStats.mi;
           (*itTb).second.corrupt = m_random->GetValue () > tbStats.tbler ? false : true;
-          // DEBUG: force error for testing HARQ
-//           if ((*itTb).second.downlink)
-//           {
-// //             if (((*itTb).second.harqProcessId == 0)&&(Simulator::Now ().GetNanoSeconds ()<=20000000))
-//             if ((errors<4) && ((*itTb).second.harqProcessId == 0) && ( ((*itTb).first.m_rnti==1)||((*itTb).first.m_rnti==3)) )
-//               {
-//                 (*itTb).second.corrupt = true;
-//                 errors++;
-//               }
-//           }
           NS_LOG_DEBUG (this << "RNTI " << (*itTb).first.m_rnti << " size " << (*itTb).second.size << " mcs " << (uint32_t)(*itTb).second.mcs << " bitmap " << (*itTb).second.rbBitmap.size () << " layer " << (uint16_t)(*itTb).first.m_layer << " TBLER " << tbStats.tbler << " corrupted " << (*itTb).second.corrupt);
        }
       
-//       for (uint16_t i = 0; i < (*itTb).second.rbBitmap.size (); i++)
-//         {
-//           NS_LOG_DEBUG (this << " RB " << (*itTb).second.rbBitmap.at (i) << " SINR " << m_sinrPerceived[(*itTb).second.rbBitmap.at (i)]);
-//         }
       itTb++;
     }
     std::map <uint16_t, DlInfoListElement_s> harqDlInfoMap;
