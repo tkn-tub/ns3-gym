@@ -23,6 +23,7 @@
 
 #include <stdint.h>
 #include <ns3/eps-bearer.h>
+#include <ns3/ipv4-address.h>
 
 namespace ns3 {
 
@@ -49,9 +50,7 @@ public:
                       the radio bearer activation was requested */
     uint8_t bid; /**< the EPS Bearer ID of the bearer to be created*/
 
-    uint32_t teid; /**< context information that was passed upon the
-                      corresponding call to
-                      EpcEnbS1SapUser::DataRadioBearerSetupRequest  */
+    uint32_t gtpTeid; /**<  S1-bearer GTP tunnel endpoint identifier, see 36.423 9.2.1  */
   };
 
   /**
@@ -93,9 +92,8 @@ public:
 			DataRadioBearer is to be created */ 
     EpsBearer bearer; /**< the characteristics of the bearer to be set
                          up */
-    uint32_t teid;   /**< context information that needs to be passed
-                      to the corresponding call to
-                      EpcEnbS1SapProvider::S1BearerSetupRequest */ 
+    uint32_t    gtpTeid; /**< S1-bearer GTP tunnel endpoint identifier, see 36.423 9.2.1 */
+    Ipv4Address transportLayerAddress; /**< IP Address of the SGW, see 36.423 9.2.1 */
   };
 
   /**

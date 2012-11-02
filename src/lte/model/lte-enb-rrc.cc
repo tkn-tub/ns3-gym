@@ -264,7 +264,7 @@ UeManager::SetSource (uint16_t sourceCellId, uint16_t sourceX2apId)
 }
 
 uint8_t
-UeManager::SetupDataRadioBearer (EpsBearer bearer)
+UeManager::SetupDataRadioBearer (EpsBearer bearer, uint32_t gtpTeid, Ipv4Address transportLayerAddress)
 {
   NS_LOG_FUNCTION (this << (uint32_t) m_rnti);
 
@@ -275,6 +275,8 @@ UeManager::SetupDataRadioBearer (EpsBearer bearer)
   drbInfo->m_epsBearerIdentity = bid;
   drbInfo->m_drbIdentity = drbid;
   drbInfo->m_logicalChannelIdentity = lcid;
+  drbInfo->m_gtpTeid = gtpTeid;
+  drbInfo->m_transportLayerAddress = transportLayerAddress;
 
   TypeId rlcTypeId = m_rrc->GetRlcType (bearer);
 
@@ -436,7 +438,13 @@ UeManager::GetErabList ()
        it != m_drbMap.end ();
        ++it)
     {
-      NS_FATAL_ERROR ("filling of each ErabToBeSetupItem is not implemented yet");
+      EpcX2Sap::ErabToBeSetupItem etbsi;
+      etbsi.erabId = it->second->m_epsBearerIdentity;
+      etbsi.erabLevelQosParameters = it->second->m_epsBearer;
+      etbsi.dlForwarding = false;
+      etbsi.transportLayerAddress = it->second->m_transportLayerAddress;
+      etbsi.gtpTeid = it->second->m_gtpTeid;
+      ret.push_back (etbsi);      
     }
   return ret;
 }
@@ -1090,8 +1098,8 @@ LteEnbRrc::DoDataRadioBearerSetupRequest (EpcEnbS1SapUser::DataRadioBearerSetupR
   EpcEnbS1SapProvider::S1BearerSetupRequestParameters response;
   Ptr<UeManager> ueManager = GetUeManager (request.rnti);
   response.rnti = request.rnti;
-  response.bid = ueManager->SetupDataRadioBearer (request.bearer);       
-  response.teid = request.teid;
+  response.bid = ueManager->SetupDataRadioBearer (request.bearer, request.gtpTeid, request.transportLayerAddress);       
+  response.gtpTeid = request.gtpTeid;
   if (m_s1SapProvider)
     {          
       m_s1SapProvider->S1BearerSetupRequest (response);
@@ -1119,7 +1127,7 @@ LteEnbRrc::DoRecvHandoverRequest (EpcX2SapUser::HandoverRequestParams params)
        it != params.bearers.end ();
        ++it)
     {
-      ueManager->SetupDataRadioBearer (it->erabLevelQosParameters);
+      ueManager->SetupDataRadioBearer (it->erabLevelQosParameters, it->gtpTeid, it->transportLayerAddress);
     }
 
   LteRrcSap::RrcConnectionReconfiguration handoverCommand = ueManager->GetHandoverCommand ();

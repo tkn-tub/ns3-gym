@@ -608,7 +608,7 @@ LteHelper::ActivateDataRadioBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer)
           EpcEnbS1SapUser::DataRadioBearerSetupRequestParameters params;
           params.rnti = rnti;
           params.bearer = bearer;
-          params.teid = 0; // don't care
+          params.gtpTeid = 0; // don't care
           enbRrc->GetS1SapUser ()->DataRadioBearerSetupRequest (params);
           done = true;
         }

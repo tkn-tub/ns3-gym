@@ -299,7 +299,7 @@ EpcHelper::ActivateEpsBearer (Ptr<NetDevice> ueLteDevice, uint64_t imsi, Ptr<Epc
   Ptr<Ipv4> enbIpv4 = enbNode->GetObject<Ipv4> ();
   NS_LOG_LOGIC ("number of Ipv4 ifaces of the eNB: " << enbIpv4->GetNInterfaces ());
   // two ifaces total: loopback + the S1-U interface
-  NS_ASSERT (enbIpv4->GetNInterfaces () == 2); 
+  NS_ASSERT (enbIpv4->GetNInterfaces () >= 2); 
   NS_ASSERT (ueIpv4->GetNAddresses (1) == 1);
   // iface index 0 is loopback, index 1 is the S1-U interface
   Ipv4Address enbAddr = enbIpv4->GetAddress (1, 0).GetLocal (); 

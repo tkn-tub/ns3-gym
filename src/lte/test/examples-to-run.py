@@ -25,6 +25,7 @@ cpp_examples = [
     ("lena-rem-sector-antenna", "True", "True"),
     ("lena-simple", "True", "True"),
     ("lena-simple-epc", "True", "True"),
+    ("lena-x2-handover", "True", "True"),
 ]
 
 # A list of Python examples to run in order to ensure that they remain

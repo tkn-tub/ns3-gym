@@ -660,7 +660,7 @@ EpcTestRrc::DoDataRadioBearerSetupRequest (EpcEnbS1SapUser::DataRadioBearerSetup
   EpcEnbS1SapProvider::S1BearerSetupRequestParameters response;   
   response.rnti = request.rnti;
   response.bid = 1;      
-  response.teid = request.teid;
+  response.gtpTeid = request.gtpTeid;
   m_s1SapProvider->S1BearerSetupRequest (response);
 }
 

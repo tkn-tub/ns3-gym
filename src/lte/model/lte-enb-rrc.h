@@ -111,10 +111,12 @@ public:
    * within the eNB and the necessary RRC signaling with the UE
    * 
    * \param bearer 
+   * \param gtpTeid S1-bearer GTP tunnel endpoint identifier, see 36.423 9.2.1
+   * \param transportLayerAddress  IP Address of the SGW, see 36.423 9.2.1
    * 
    * \return the EPS Bearer Id
    */
-  uint8_t SetupDataRadioBearer (EpsBearer bearer);
+  uint8_t SetupDataRadioBearer (EpsBearer bearer, uint32_t gtpTeid, Ipv4Address transportLayerAddress);
   
   /**
    *
