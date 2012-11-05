@@ -35,6 +35,7 @@ Bugs fixed
  - bug 1493 - test.py --list should show the test type default tip
  - bug 1494 - test.py --constrain doesn't work
  - bug 1495 - test.py claims test passed when no test was run
+ - bug 1509 - rttEstimator returns invalid value in presence of errors
 
 Known issues
 ------------

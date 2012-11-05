@@ -1982,7 +1982,16 @@ TcpSocketBase::EstimateRtt (const TcpHeader& tcpHeader)
   // Use m_rtt for the estimation. Note, RTT of duplicated acknowledgement
   // (which should be ignored) is handled by m_rtt. Once timestamp option
   // is implemented, this function would be more elaborated.
-  m_lastRtt = m_rtt->AckSeq (tcpHeader.GetAckNumber () );
+  Time nextRtt =  m_rtt->AckSeq (tcpHeader.GetAckNumber () );
+
+  //nextRtt will be zero for dup acks.  Don't want to update lastRtt in that case
+  //but still needed to do list clearing that is done in AckSeq. 
+  if(nextRtt != 0)
+  {
+    m_lastRtt = nextRtt;
+    NS_LOG_FUNCTION(this << m_lastRtt);
+  }
+  
 }
 
 // Called by the ReceivedAck() when new ACK received and by ProcessSynRcvd()
