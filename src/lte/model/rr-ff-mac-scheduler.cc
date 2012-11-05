@@ -772,11 +772,11 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
   m_rlcBufferReq.sort (SortRlcBufferReq);
   int nflows = 0;
   int nTbs = 0;
-  std::map <uint16_t,uint8_t> lcActivesPerRnti;
+  std::map <uint16_t,uint8_t> lcActivesPerRnti; // tracks how many active LCs per RNTI there are
   std::map <uint16_t,uint8_t>::iterator itLcRnti;
   for (it = m_rlcBufferReq.begin (); it != m_rlcBufferReq.end (); it++)
     {
-//       NS_LOG_INFO (this << " User " << (*it).m_rnti << " LC " << (uint16_t)(*it).m_logicalChannelIdentity);
+      NS_LOG_LOGIC (this << " User " << (*it).m_rnti << " LC " << (uint16_t)(*it).m_logicalChannelIdentity);
       // remove old entries of this UE-LC
       std::set <uint16_t>::iterator itRnti = rntiAllocated.find ((*it).m_rnti);
       if ( (((*it).m_rlcTransmissionQueueSize > 0)
@@ -902,38 +902,45 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
         }
       int tbSize = (m_amc->GetTbSizeFromMcs (newDci.m_mcs.at (0), rbgPerTb * rbgSize) / 8);
       uint16_t rlcPduSize = tbSize / lcNum;
-      for (int i = 0; i < lcNum ; i++)
+      while (lcNum>0)
         {
-          std::vector <struct RlcPduListElement_s> newRlcPduLe;
-          for (uint8_t j = 0; j < nLayer; j++)
+          if ( ((*it).m_rlcTransmissionQueueSize > 0)
+               || ((*it).m_rlcRetransmissionQueueSize > 0)
+               || ((*it).m_rlcStatusPduSize > 0) )
             {
-              RlcPduListElement_s newRlcEl;
-              newRlcEl.m_logicalChannelIdentity = (*it).m_logicalChannelIdentity;
-//               NS_LOG_DEBUG (this << "LCID " << (uint32_t) newRlcEl.m_logicalChannelIdentity << " size " << rlcPduSize << " ID " << (*it).m_rnti << " layer " << (uint16_t)j);
-              newRlcEl.m_size = rlcPduSize;
-              UpdateDlRlcBufferInfo ((*it).m_rnti, newRlcEl.m_logicalChannelIdentity, rlcPduSize);
-              newRlcPduLe.push_back (newRlcEl);
-              if (m_harqOn == true)
+              std::vector <struct RlcPduListElement_s> newRlcPduLe;
+              for (uint8_t j = 0; j < nLayer; j++)
                 {
-                  // store RLC PDU list for HARQ
-                  std::map <uint16_t, DlHarqRlcPduListBuffer_t>::iterator itRlcPdu =  m_dlHarqProcessesRlcPduListBuffer.find ((*it).m_rnti);
-                  if (itRlcPdu==m_dlHarqProcessesRlcPduListBuffer.end ())
+                  RlcPduListElement_s newRlcEl;
+                  newRlcEl.m_logicalChannelIdentity = (*it).m_logicalChannelIdentity;
+    //               NS_LOG_DEBUG (this << "LCID " << (uint32_t) newRlcEl.m_logicalChannelIdentity << " size " << rlcPduSize << " ID " << (*it).m_rnti << " layer " << (uint16_t)j);
+                  newRlcEl.m_size = rlcPduSize;
+                  UpdateDlRlcBufferInfo ((*it).m_rnti, newRlcEl.m_logicalChannelIdentity, rlcPduSize);
+                  newRlcPduLe.push_back (newRlcEl);
+                  
+                  if (m_harqOn == true)
                     {
-                      NS_FATAL_ERROR ("Unable to find RlcPdcList in HARQ buffer for RNTI " << (*it).m_rnti);
+                      // store RLC PDU list for HARQ
+                      std::map <uint16_t, DlHarqRlcPduListBuffer_t>::iterator itRlcPdu =  m_dlHarqProcessesRlcPduListBuffer.find ((*it).m_rnti);
+                      if (itRlcPdu==m_dlHarqProcessesRlcPduListBuffer.end ())
+                        {
+                          NS_FATAL_ERROR ("Unable to find RlcPdcList in HARQ buffer for RNTI " << (*it).m_rnti);
+                        }
+        //                 NS_ASSERT_MSG ((*itRlcPdu).second.at (j).at (newDci.m_harqProcess).size () <= 1, " MIMO ERR 4" <<(*itRlcPdu).second.at (j).at (newDci.m_harqProcess).size () );
+                      (*itRlcPdu).second.at (j).at (newDci.m_harqProcess).push_back (newRlcEl);
+        //               NS_ASSERT_MSG ((*itRlcPdu).second.at (j).at (newDci.m_harqProcess).size () <= 1, " MIMO ERR 3" <<(*itRlcPdu).second.at (j).at (newDci.m_harqProcess).size () );
                     }
-    //                 NS_ASSERT_MSG ((*itRlcPdu).second.at (j).at (newDci.m_harqProcess).size () <= 1, " MIMO ERR 4" <<(*itRlcPdu).second.at (j).at (newDci.m_harqProcess).size () );
-                  (*itRlcPdu).second.at (j).at (newDci.m_harqProcess).push_back (newRlcEl);
-    //               NS_ASSERT_MSG ((*itRlcPdu).second.at (j).at (newDci.m_harqProcess).size () <= 1, " MIMO ERR 3" <<(*itRlcPdu).second.at (j).at (newDci.m_harqProcess).size () );
-                }
 
+                }
+              newEl.m_rlcPduList.push_back (newRlcPduLe);
+              lcNum--;
             }
-            newEl.m_rlcPduList.push_back (newRlcPduLe);
-            it++;
-            if (it == m_rlcBufferReq.end ())
-              {
-                // restart from the first
-                it = m_rlcBufferReq.begin ();
-              }      
+          it++;
+          if (it == m_rlcBufferReq.end ())
+            {
+              // restart from the first
+              it = m_rlcBufferReq.begin ();
+            }
         }
       uint32_t rbgMask = 0;
       uint16_t i = 0;
@@ -1359,21 +1366,30 @@ RrFfMacScheduler::DoSchedUlMacCtrlInfoReq (const struct FfMacSchedSapProvider::S
       if ( params.m_macCeList.at (i).m_macCeType == MacCeListElement_s::BSR )
         {
           // buffer status report
-          // note that we only consider LCG 0, the other three LCGs are neglected
-          // this is consistent with the assumption in LteUeMac that the first LCG gathers all LCs
+          // note that this scheduler does not differentiate the
+          // allocation according to which LCGs have more/less bytes
+          // to send.
+          // Hence the BSR of different LCGs are just summed up to get
+          // a total queue size that is used for allocation purposes.
+
+          uint32_t buffer = 0;
+          for (uint8_t lcg = 0; lcg < 4; ++lcg)
+            {
+              uint8_t bsrId = params.m_macCeList.at (i).m_macCeValue.m_bufferStatus.at (lcg);
+              buffer += BufferSizeLevelBsr::BsrId2BufferSize (bsrId);
+            }
+
           uint16_t rnti = params.m_macCeList.at (i).m_rnti;
           it = m_ceBsrRxed.find (rnti);
           if (it == m_ceBsrRxed.end ())
             {
               // create the new entry
-              uint8_t bsrId = params.m_macCeList.at (i).m_macCeValue.m_bufferStatus.at (0);
-              int buffer = BufferSizeLevelBsr::BsrId2BufferSize (bsrId);
               m_ceBsrRxed.insert ( std::pair<uint16_t, uint32_t > (rnti, buffer));
             }
           else
             {
               // update the buffer size value
-              (*it).second = BufferSizeLevelBsr::BsrId2BufferSize (params.m_macCeList.at (i).m_macCeValue.m_bufferStatus.at (0));
+              (*it).second = buffer;
             }
         }
     }

@@ -1561,28 +1561,37 @@ PfFfMacScheduler::DoSchedUlMacCtrlInfoReq (const struct FfMacSchedSapProvider::S
   std::map <uint16_t,uint32_t>::iterator it;
   
   for (unsigned int i = 0; i < params.m_macCeList.size (); i++)
-  {
-    if ( params.m_macCeList.at (i).m_macCeType == MacCeListElement_s::BSR )
     {
-      // buffer status report
-      // note that we only consider LCG 0, the other three LCGs are neglected
-      // this is consistent with the assumption in LteUeMac that the first LCG gathers all LCs
-      uint16_t rnti = params.m_macCeList.at (i).m_rnti;
-      it = m_ceBsrRxed.find (rnti);
-      if (it == m_ceBsrRxed.end ())
-      {
-        // create the new entry
-        uint8_t bsrId = params.m_macCeList.at (i).m_macCeValue.m_bufferStatus.at (0);
-        int buffer = BufferSizeLevelBsr::BsrId2BufferSize (bsrId);
-        m_ceBsrRxed.insert ( std::pair<uint16_t, uint32_t > (rnti, buffer)); 
-      }
-      else
-      {
-        // update the buffer size value
-        (*it).second = BufferSizeLevelBsr::BsrId2BufferSize (params.m_macCeList.at (i).m_macCeValue.m_bufferStatus.at (0));
-      }
+      if ( params.m_macCeList.at (i).m_macCeType == MacCeListElement_s::BSR )
+        {
+          // buffer status report
+          // note that this scheduler does not differentiate the
+          // allocation according to which LCGs have more/less bytes
+          // to send.
+          // Hence the BSR of different LCGs are just summed up to get
+          // a total queue size that is used for allocation purposes.
+
+          uint32_t buffer = 0;
+          for (uint8_t lcg = 0; lcg < 4; ++lcg)
+            {
+              uint8_t bsrId = params.m_macCeList.at (i).m_macCeValue.m_bufferStatus.at (lcg);
+              buffer += BufferSizeLevelBsr::BsrId2BufferSize (bsrId);
+            }
+
+          uint16_t rnti = params.m_macCeList.at (i).m_rnti;
+          it = m_ceBsrRxed.find (rnti);
+          if (it == m_ceBsrRxed.end ())
+            {
+              // create the new entry
+              m_ceBsrRxed.insert ( std::pair<uint16_t, uint32_t > (rnti, buffer));
+            }
+          else
+            {
+              // update the buffer size value
+              (*it).second = buffer;
+            }
+        }
     }
-  }
   
   return;
 }
