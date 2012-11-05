@@ -22,16 +22,17 @@
 #include <list>
 #include <utility>
 #include <iostream>
+#include <string.h>
 #include "assert.h"
 #include "ns3/core-config.h"
 #include "fatal-error.h"
 
 #ifdef HAVE_GETENV
-#include <cstring>
+#include <string.h>
 #endif
 
 #ifdef HAVE_STDLIB_H
-#include <cstdlib>
+#include <stdlib.h>
 #endif
 
 namespace ns3 {
@@ -127,7 +128,7 @@ LogComponent::EnvVarCheck (char const * name)
           component = tmp;
           if (component == myName || component == "*")
             {
-              int level = LOG_ALL | LOG_PREFIX_TIME | LOG_PREFIX_FUNC | LOG_PREFIX_NODE;
+              int level = LOG_ALL | LOG_PREFIX_TIME | LOG_PREFIX_FUNC | LOG_PREFIX_NODE | LOG_PREFIX_LEVEL;
               Enable ((enum LogLevel)level);
               return;
             }
@@ -184,6 +185,14 @@ LogComponent::EnvVarCheck (char const * name)
                   else if (lev == "prefix_node")
                     {
                       level |= LOG_PREFIX_NODE;
+                    }
+                  else if (lev == "prefix_level")
+                    {
+                      level |= LOG_PREFIX_LEVEL;
+                    }
+                  else if (lev == "prefix_all")
+                    {
+                      level |= LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_PREFIX_NODE | LOG_PREFIX_LEVEL;
                     }
                   else if (lev == "level_error")
                     {
@@ -255,6 +264,26 @@ LogComponent::Name (void) const
   return m_name;
 }
 
+std::map<enum LogLevel, std::string>
+LogComponent::LevelLabels() const
+{
+  std::map<enum LogLevel, std::string> labels;
+  labels[LOG_ERROR]    = "ERROR";
+  labels[LOG_WARN]     = "WARN";
+  labels[LOG_DEBUG]    = "DEBUG";
+  labels[LOG_INFO]     = "INFO";
+  labels[LOG_LOGIC]    = "LOGIC";
+
+  return labels;
+}
+
+std::string
+LogComponent::GetLevelLabel(const enum LogLevel level) const
+{
+  static std::map<enum LogLevel, std::string> levelLabel = LevelLabels ();
+  return levelLabel[level];
+}
+  
 
 void 
 LogComponentEnable (char const *name, enum LogLevel level)
@@ -389,7 +418,7 @@ static void CheckEnvironmentVariables (void)
 {
 #ifdef HAVE_GETENV
   char *envVar = getenv ("NS_LOG");
-  if (envVar == 0 || std::strlen(envVar) == 0)
+  if (envVar == 0 || strlen(envVar) == 0)
     {
       return;
     }
