@@ -148,8 +148,8 @@ EpcX2Header::SetNumberOfIes (uint32_t numberOfIes)
 NS_OBJECT_ENSURE_REGISTERED (EpcX2HandoverRequestHeader);
 
 EpcX2HandoverRequestHeader::EpcX2HandoverRequestHeader ()
-  : m_numberOfIes (0),
-    m_headerLength (0),
+  : m_numberOfIes (1 + 1 + 1 + 1),
+    m_headerLength (6 + 5 + 12 + (3 + 8 + 8 + 4)),
     m_oldEnbUeX2apId (0xfffa),
     m_cause (0xfffa),
     m_targetCellId (0xfffa)
@@ -241,18 +241,21 @@ EpcX2HandoverRequestHeader::Deserialize (Buffer::Iterator start)
   Buffer::Iterator i = start;
 
   m_headerLength = 0;
+  m_numberOfIes = 0;
 
   i.ReadNtohU16 ();
   i.ReadU8 ();
   i.ReadU8 ();
   m_oldEnbUeX2apId = i.ReadNtohU16 ();
   m_headerLength += 6;
+  m_numberOfIes++;
 
   i.ReadNtohU16 ();
   i.ReadU8 ();
   i.ReadU8 ();
   m_cause = i.ReadU8 ();
   m_headerLength += 5;
+  m_numberOfIes++;
   
   i.ReadNtohU16 ();
   i.ReadU8 ();
@@ -260,21 +263,23 @@ EpcX2HandoverRequestHeader::Deserialize (Buffer::Iterator start)
   i.ReadNtohU32 ();
   m_targetCellId = i.ReadNtohU32 () >> 4;
   m_headerLength += 12;
+  m_numberOfIes++;
 
   i.ReadNtohU16 ();
   i.ReadU8 ();
   m_ueAggregateMaxBitRateDownlink = i.ReadNtohU64 ();
   m_ueAggregateMaxBitRateUplink   = i.ReadNtohU64 ();
-
   int sz = i.ReadNtohU32 ();
+  m_headerLength += 23;
+  m_numberOfIes++;
+
   for (int j = 0; j < sz; j++)
     {
       EpcX2Sap::ErabToBeSetupItem erabItem;
 
       erabItem.erabId = i.ReadNtohU16 ();
+ 
       erabItem.erabLevelQosParameters = EpsBearer ((EpsBearer::Qci) i.ReadNtohU16 ());
-
-#if 0 // TODO missing some parameters in EpsBearer
       erabItem.erabLevelQosParameters.gbrQosInfo.gbrDl = i.ReadNtohU64 ();
       erabItem.erabLevelQosParameters.gbrQosInfo.gbrUl = i.ReadNtohU64 ();
       erabItem.erabLevelQosParameters.gbrQosInfo.mbrDl = i.ReadNtohU64 ();
@@ -282,21 +287,13 @@ EpcX2HandoverRequestHeader::Deserialize (Buffer::Iterator start)
       erabItem.erabLevelQosParameters.arp.priorityLevel = i.ReadU8 ();
       erabItem.erabLevelQosParameters.arp.preemptionCapability = i.ReadU8 ();
       erabItem.erabLevelQosParameters.arp.preemptionVulnerability = i.ReadU8 ();
-#else
-      i.ReadNtohU64 ();
-      i.ReadNtohU64 ();
-      i.ReadNtohU64 ();
-      i.ReadNtohU64 ();
-      i.ReadU8 ();
-      i.ReadU8 ();
-      i.ReadU8 ();
-#endif
 
       erabItem.dlForwarding = i.ReadU8 ();
       erabItem.transportLayerAddress = Ipv4Address (i.ReadNtohU32 ());
       erabItem.gtpTeid = i.ReadNtohU32 ();
 
-      m_erabsToBeSetupList[j] = erabItem;
+      m_erabsToBeSetupList.push_back (erabItem);
+      m_headerLength += 48;
     }
 
   return GetSerializedSize ();
@@ -313,12 +310,22 @@ EpcX2HandoverRequestHeader::Print (std::ostream &os) const
   os << " NumOfBearers=" << m_erabsToBeSetupList.size ();
 
   std::vector <EpcX2Sap::ErabToBeSetupItem>::size_type sz = m_erabsToBeSetupList.size ();
-  os << " [";
+  if (sz > 0)
+    {
+      os << " [";
+    }
   for (int j = 0; j < (int) sz; j++)
     {
-      os << m_erabsToBeSetupList[j].erabId << " ";
+      os << m_erabsToBeSetupList[j].erabId;
+      if (j < (int) sz - 1)
+        {
+          os << ", ";
+        }
+      else
+        {
+          os << "]";
+        }
     }
-  os << "]";
 }
 
 uint16_t
@@ -331,9 +338,6 @@ void
 EpcX2HandoverRequestHeader::SetOldEnbUeX2apId (uint16_t x2apId)
 {
   m_oldEnbUeX2apId = x2apId;
-
-  m_headerLength += 6;
-  m_numberOfIes++;
 }
 
 uint16_t
@@ -346,9 +350,6 @@ void
 EpcX2HandoverRequestHeader::SetCause (uint16_t cause)
 {
   m_cause = cause;
-
-  m_headerLength += 5;
-  m_numberOfIes++;
 }
 
 uint16_t
@@ -361,9 +362,6 @@ void
 EpcX2HandoverRequestHeader::SetTargetCellId (uint16_t targetCellId)
 {
   m_targetCellId = targetCellId;
-
-  m_headerLength += 12;
-  m_numberOfIes++;
 }
 
 std::vector <EpcX2Sap::ErabToBeSetupItem>
@@ -375,6 +373,7 @@ EpcX2HandoverRequestHeader::GetBearers () const
 void
 EpcX2HandoverRequestHeader::SetBearers (std::vector <EpcX2Sap::ErabToBeSetupItem> bearers)
 {
+  m_headerLength += 48 * bearers.size ();
   m_erabsToBeSetupList = bearers;
 }
 
@@ -388,8 +387,6 @@ void
 EpcX2HandoverRequestHeader::SetUeAggregateMaxBitRateDownlink (uint64_t bitRate)
 {
   m_ueAggregateMaxBitRateDownlink = bitRate;
-  
-  m_headerLength += 8;
 }
 
 uint64_t
@@ -402,8 +399,6 @@ void
 EpcX2HandoverRequestHeader::SetUeAggregateMaxBitRateUplink (uint64_t bitRate)
 {
   m_ueAggregateMaxBitRateUplink = bitRate;
-
-  m_headerLength += 8;
 }
 
 uint32_t
@@ -415,7 +410,7 @@ EpcX2HandoverRequestHeader::GetLengthOfIes () const
 uint32_t
 EpcX2HandoverRequestHeader::GetNumberOfIes () const
 {
-  return m_numberOfIes + 1;
+  return m_numberOfIes;
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -423,13 +418,17 @@ EpcX2HandoverRequestHeader::GetNumberOfIes () const
 NS_OBJECT_ENSURE_REGISTERED (EpcX2HandoverRequestAckHeader);
 
 EpcX2HandoverRequestAckHeader::EpcX2HandoverRequestAckHeader ()
-  : m_oldEnbUeX2apId (0xfffa),
+  : m_numberOfIes (1 + 1 + 1 + 1),
+    m_headerLength (2 + 2 + 4 + 4),
+    m_oldEnbUeX2apId (0xfffa),
     m_newEnbUeX2apId (0xfffa)
 {
 }
 
 EpcX2HandoverRequestAckHeader::~EpcX2HandoverRequestAckHeader ()
 {
+  m_numberOfIes = 0;
+  m_headerLength = 0;
   m_oldEnbUeX2apId = 0xfffb;
   m_newEnbUeX2apId = 0xfffb;
   m_erabsAdmittedList.clear ();
@@ -455,7 +454,7 @@ EpcX2HandoverRequestAckHeader::GetInstanceTypeId (void) const
 uint32_t
 EpcX2HandoverRequestAckHeader::GetSerializedSize (void) const
 {
-  return 4;
+  return m_headerLength;
 }
 
 void
@@ -465,6 +464,23 @@ EpcX2HandoverRequestAckHeader::Serialize (Buffer::Iterator start) const
 
   i.WriteHtonU16 (m_oldEnbUeX2apId);
   i.WriteHtonU16 (m_newEnbUeX2apId);
+
+  std::vector <EpcX2Sap::ErabAdmittedItem>::size_type sz = m_erabsAdmittedList.size (); 
+  i.WriteHtonU32 (sz);
+  for (int j = 0; j < (int) sz; j++)
+    {
+      i.WriteHtonU16 (m_erabsAdmittedList [j].erabId);
+      i.WriteHtonU32 (m_erabsAdmittedList [j].ulGtpTeid);
+      i.WriteHtonU32 (m_erabsAdmittedList [j].dlGtpTeid);
+    }
+
+  std::vector <EpcX2Sap::ErabNotAdmittedItem>::size_type sz2 = m_erabsNotAdmittedList.size (); 
+  i.WriteHtonU32 (sz2);
+  for (int j = 0; j < (int) sz2; j++)
+    {
+      i.WriteHtonU16 (m_erabsNotAdmittedList [j].erabId);
+      i.WriteHtonU16 (m_erabsNotAdmittedList [j].cause);
+    }
 }
 
 uint32_t
@@ -472,8 +488,44 @@ EpcX2HandoverRequestAckHeader::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
 
+  m_headerLength = 0;
+  m_numberOfIes = 0;
+
   m_oldEnbUeX2apId = i.ReadNtohU16 ();
   m_newEnbUeX2apId = i.ReadNtohU16 ();
+  m_headerLength += 4;
+  m_numberOfIes += 2;
+
+  int sz = i.ReadNtohU32 ();
+  m_headerLength += 4;
+  m_numberOfIes++;
+
+  for (int j = 0; j < sz; j++)
+    {
+      EpcX2Sap::ErabAdmittedItem erabItem;
+
+      erabItem.erabId = i.ReadNtohU16 ();
+      erabItem.ulGtpTeid = i.ReadNtohU32 ();
+      erabItem.dlGtpTeid = i.ReadNtohU32 ();
+
+      m_erabsAdmittedList.push_back (erabItem);
+      m_headerLength += 6;
+    }
+
+  sz = i.ReadNtohU32 ();
+  m_headerLength += 4;
+  m_numberOfIes++;
+
+  for (int j = 0; j < sz; j++)
+    {
+      EpcX2Sap::ErabNotAdmittedItem erabItem;
+
+      erabItem.erabId = i.ReadNtohU16 ();
+      erabItem.cause  = i.ReadNtohU16 ();
+
+      m_erabsNotAdmittedList.push_back (erabItem);
+      m_headerLength += 4;
+    }
 
   return GetSerializedSize ();
 }
@@ -483,6 +535,45 @@ EpcX2HandoverRequestAckHeader::Print (std::ostream &os) const
 {
   os << "OldEnbUeX2apId=" << m_oldEnbUeX2apId;
   os << " NewEnbUeX2apId=" << m_newEnbUeX2apId;
+
+  os << " AdmittedBearers=" << m_erabsAdmittedList.size ();
+  std::vector <EpcX2Sap::ErabAdmittedItem>::size_type sz = m_erabsAdmittedList.size ();
+  if (sz > 0)
+    {
+      os << " [";
+    }
+  for (int j = 0; j < (int) sz; j++)
+    {
+      os << m_erabsAdmittedList[j].erabId;
+      if (j < (int) sz - 1)
+        {
+          os << ", ";
+        }
+      else
+        {
+          os << "]";
+        }
+    }
+  
+  os << " NotAdmittedBearers=" << m_erabsNotAdmittedList.size ();
+  std::vector <EpcX2Sap::ErabNotAdmittedItem>::size_type sz2 = m_erabsNotAdmittedList.size ();
+  if (sz2 > 0)
+    {
+      os << " [";
+    }
+  for (int j = 0; j < (int) sz2; j++)
+    {
+      os << m_erabsNotAdmittedList[j].erabId;
+      if (j < (int) sz2 - 1)
+        {
+          os << ", ";
+        }
+      else
+        {
+          os << "]";
+        }
+    }
+
 }
 
 uint16_t
@@ -518,6 +609,7 @@ EpcX2HandoverRequestAckHeader::GetAdmittedBearers () const
 void
 EpcX2HandoverRequestAckHeader::SetAdmittedBearers (std::vector <EpcX2Sap::ErabAdmittedItem> bearers)
 {
+  m_headerLength += 10 * bearers.size ();
   m_erabsAdmittedList = bearers;
 }
 
@@ -530,7 +622,20 @@ EpcX2HandoverRequestAckHeader::GetNotAdmittedBearers () const
 void
 EpcX2HandoverRequestAckHeader::SetNotAdmittedBearers (std::vector <EpcX2Sap::ErabNotAdmittedItem> bearers)
 {
+  m_headerLength += 4 * bearers.size ();
   m_erabsNotAdmittedList = bearers;
+}
+
+uint32_t
+EpcX2HandoverRequestAckHeader::GetLengthOfIes () const
+{
+  return m_headerLength;
+}
+
+uint32_t
+EpcX2HandoverRequestAckHeader::GetNumberOfIes () const
+{
+  return m_numberOfIes;
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -538,13 +643,17 @@ EpcX2HandoverRequestAckHeader::SetNotAdmittedBearers (std::vector <EpcX2Sap::Era
 NS_OBJECT_ENSURE_REGISTERED (EpcX2UeContextReleaseHeader);
 
 EpcX2UeContextReleaseHeader::EpcX2UeContextReleaseHeader ()
-  : m_oldEnbUeX2apId (0xfffa),
+  : m_numberOfIes (1 + 1),
+    m_headerLength (2 + 2),
+    m_oldEnbUeX2apId (0xfffa),
     m_newEnbUeX2apId (0xfffa)
 {
 }
 
 EpcX2UeContextReleaseHeader::~EpcX2UeContextReleaseHeader ()
 {
+  m_numberOfIes = 0;
+  m_headerLength = 0;
   m_oldEnbUeX2apId = 0xfffb;
   m_newEnbUeX2apId = 0xfffb;
 }
@@ -568,7 +677,7 @@ EpcX2UeContextReleaseHeader::GetInstanceTypeId (void) const
 uint32_t
 EpcX2UeContextReleaseHeader::GetSerializedSize (void) const
 {
-  return 4;
+  return m_headerLength;
 }
 
 void
@@ -587,6 +696,8 @@ EpcX2UeContextReleaseHeader::Deserialize (Buffer::Iterator start)
 
   m_oldEnbUeX2apId = i.ReadNtohU16 ();
   m_newEnbUeX2apId = i.ReadNtohU16 ();
+  m_numberOfIes = 2;
+  m_headerLength = 4;
 
   return GetSerializedSize ();
 }
@@ -620,6 +731,18 @@ void
 EpcX2UeContextReleaseHeader::SetNewEnbUeX2apId (uint16_t x2apId)
 {
   m_newEnbUeX2apId = x2apId;
+}
+
+uint32_t
+EpcX2UeContextReleaseHeader::GetLengthOfIes () const
+{
+  return m_headerLength;
+}
+
+uint32_t
+EpcX2UeContextReleaseHeader::GetNumberOfIes () const
+{
+  return m_numberOfIes;
 }
 
 
