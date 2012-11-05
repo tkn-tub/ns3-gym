@@ -103,7 +103,7 @@ public:
   {
     enum {SETUP, RESET} type;
     uint8_t srsBandwidth;
-    uint8_t srsConfigIndex;
+    uint16_t srsConfigIndex;
   };
 
   struct AntennaInfoDedicated

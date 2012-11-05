@@ -272,6 +272,7 @@ private:
   uint32_t m_nrSubFrames;
   
   uint16_t m_srsPeriodicity;
+  Time m_srsStartTime;
   std::map <uint16_t,uint16_t> m_srsCounter;
   std::vector <uint16_t> m_srsUeOffset;
   uint16_t m_currentSrsOffset;
