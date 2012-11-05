@@ -54,7 +54,9 @@ def build(bld):
         'model/lte-radio-bearer-tag.cc',
         'model/lte-phy-tag.cc',
         'model/lte-enb-phy-sap.cc',
+        'model/lte-enb-cphy-sap.cc',
         'model/lte-ue-phy-sap.cc',
+        'model/lte-ue-cphy-sap.cc',
         'model/lte-interference.cc',
         'model/lte-sinr-chunk-processor.cc',
         'model/pf-ff-mac-scheduler.cc',
@@ -62,10 +64,17 @@ def build(bld):
         'model/trace-fading-loss-model.cc',
         'model/epc-enb-application.cc',
         'model/epc-sgw-pgw-application.cc',
+        'model/epc-x2-sap.cc',
+        'model/epc-x2-header.cc',
+        'model/epc-x2.cc',
         'model/epc-tft.cc',
         'model/epc-tft-classifier.cc',
         'model/lte-mi-error-model.cc',
-        'model/lte-vendor-specific-parameters.cc'
+        'model/lte-vendor-specific-parameters.cc',
+        'model/epc-enb-s1-sap.cc',
+        'model/lte-as-sap.cc',
+        'model/epc-ue-nas.cc',
+        'model/lte-harq-phy.cc',
         ]
 
     module_test = bld.create_ns3_module_test_library('lte')
@@ -95,7 +104,8 @@ def build(bld):
         'test/test-lte-epc-e2e-data.cc',
         'test/test-lte-antenna.cc',
         'test/lte-test-phy-error-model.cc',
-        'test/lte-test-mimo.cc'
+        'test/lte-test-mimo.cc',
+        'test/lte-test-harq.cc'
         ]
 
     headers = bld.new_task_gen(features=['ns3header'])
@@ -151,7 +161,9 @@ def build(bld):
         'model/lte-radio-bearer-tag.h',
         'model/lte-phy-tag.h',
         'model/lte-enb-phy-sap.h',
+        'model/lte-enb-cphy-sap.h',
         'model/lte-ue-phy-sap.h',
+        'model/lte-ue-cphy-sap.h',
         'model/lte-interference.h',
         'model/lte-sinr-chunk-processor.h',
         'model/pf-ff-mac-scheduler.h',
@@ -160,11 +172,18 @@ def build(bld):
         'model/epc-enb-application.h',
         'model/epc-sgw-pgw-application.h',
         'model/lte-vendor-specific-parameters.h',
+        'model/epc-x2-sap.h',
+        'model/epc-x2-header.h',
+        'model/epc-x2.h',
         'model/epc-tft.h',
         'model/epc-tft-classifier.h',
         'model/lte-mi-error-model.h',
         'test/lte-test-ue-phy.h',
-        'test/lte-test-sinr-chunk-processor.h'
+        'test/lte-test-sinr-chunk-processor.h',
+        'model/epc-enb-s1-sap.h',
+        'model/lte-as-sap.h',
+        'model/epc-ue-nas.h',
+        'model/lte-harq-phy.h',
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):

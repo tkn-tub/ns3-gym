@@ -345,18 +345,21 @@ LteAmc::CreateCqiFeedbacks (const SpectrumValue& sinr, uint8_t rbgSize)
         if ((rbId % rbgSize == 0)||((it+1)==sinr.ConstValuesEnd ()))
          {
             uint8_t mcs = 0;
-            double ber = 0.0;
+            TbStats_t tbStats;
             while (mcs < 28)
               {
-                ber = LteMiErrorModel::GetTbError (sinr, rbgMap, (uint16_t)GetTbSizeFromMcs (mcs, rbgSize) / 8, mcs);
-                if (ber > 0.1)
-                  break;
+                HarqProcessInfoList_t harqInfoList;
+                tbStats = LteMiErrorModel::GetTbDecodificationStats (sinr, rbgMap, (uint16_t)GetTbSizeFromMcs (mcs, rbgSize) / 8, mcs, harqInfoList);
+                if (tbStats.tbler > 0.1)
+                  {
+                    break;
+                  }
                 mcs++;
                 
               }
-            NS_LOG_DEBUG (this << "\t RBG " << rbId << " MCS " << (uint16_t)mcs << " BER " << ber);
+            NS_LOG_DEBUG (this << "\t RBG " << rbId << " MCS " << (uint16_t)mcs << " TBLER " << tbStats.tbler);
             int rbgCqi = 0;
-            if ((ber > 0.1)&&(mcs==0))
+            if ((tbStats.tbler > 0.1)&&(mcs==0))
               {
                 rbgCqi = 0; // any MCS can guarantee the 10 % of BER
               }

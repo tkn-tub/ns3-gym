@@ -42,7 +42,7 @@ private:
   
   void GetRlcBufferSample (Ptr<RadioBearerStatsCalculator> rlcStats, uint64_t imsi, uint8_t rnti);
   
-  static std::string BuildNameString (uint16_t dist);
+  static std::string BuildNameString (uint16_t dist, std::string schedulerType);
   uint16_t m_nUser;
   uint16_t m_nLc;
   uint16_t m_dist;

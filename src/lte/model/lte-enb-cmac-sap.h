@@ -54,6 +54,12 @@ public:
 
   virtual void AddUe (uint16_t rnti) = 0;
 
+  /** 
+   * remove the UE, e.g., after handover or termination of the RRC connection
+   * 
+   * \param rnti 
+   */
+  virtual void RemoveUe (uint16_t rnti) = 0;
 
   /**
    * Logical Channel information to be passed to CmacSapProvider::ConfigureLc
@@ -97,7 +103,22 @@ public:
    */
   virtual void ReleaseLc (uint16_t rnti, uint8_t lcid) = 0;
   
-  virtual void UeUpdateConfigurationReq (LteUeConfig_t params) = 0;
+  /**
+   * \brief Parameters for [re]configuring the UE 
+   */
+  struct UeConfig
+  {
+    /**
+     * UE id within this cell
+     */
+    uint16_t  m_rnti;
+    /**
+     * Transmission mode [1..7] (i.e., SISO, MIMO, etc.)
+     */
+    uint8_t   m_transmissionMode;
+  };
+
+  virtual void UeUpdateConfigurationReq (UeConfig params) = 0;
 
 
 };
@@ -122,7 +143,28 @@ public:
    * \param success true if the operation was successful, false otherwise
    */
   virtual void NotifyLcConfigResult (uint16_t rnti, uint8_t lcid, bool success) = 0;
-  virtual void RrcConfigurationUpdateInd (LteUeConfig_t params) = 0;
+
+  /**
+   * \brief Parameters for [re]configuring the UE 
+   */
+  struct UeConfig
+  {
+    /**
+     * UE id within this cell
+     */
+    uint16_t  m_rnti;
+    /**
+     * Transmission mode [1..7] (i.e., SISO, MIMO, etc.)
+     */
+    uint8_t   m_transmissionMode;
+  };
+
+  /** 
+   * Notify the RRC of a UE config updated requested by the MAC (normally, by the scheduler)
+   * 
+   * \param params 
+   */
+  virtual void RrcConfigurationUpdateInd (UeConfig params) = 0;
 };
 
 

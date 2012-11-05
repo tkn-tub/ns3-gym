@@ -464,6 +464,9 @@ main (int argc, char *argv[])
   // use always LOS model
   lteHelper->SetPathlossModelAttribute ("Los2NlosThr", DoubleValue (1e6));
   lteHelper->SetSpectrumChannelType ("ns3::MultiModelSpectrumChannel");
+
+//   lteHelper->EnableLogComponents ();
+//   LogComponentEnable ("PfFfMacScheduler", LOG_LEVEL_ALL);
   
   if (!fadingTrace.empty ())
     {
@@ -530,7 +533,6 @@ main (int argc, char *argv[])
   mobility.SetPositionAllocator (positionAlloc);
   mobility.Install (macroUes);
   NetDeviceContainer macroUeDevs = lteHelper->InstallUeDevice (macroUes);
-  lteHelper->AttachToClosestEnb (macroUeDevs, macroEnbDevs);
 
 
   // home UEs located in the same apartment in which there are the Home eNBs
@@ -539,31 +541,20 @@ main (int argc, char *argv[])
   mobility.Install (homeUes);
   NetDeviceContainer homeUeDevs = lteHelper->InstallUeDevice (homeUes);
 
-  NetDeviceContainer::Iterator ueDevIt;
-  NetDeviceContainer::Iterator enbDevIt = homeEnbDevs.Begin ();
-  // attach explicitly each home UE to its home eNB
-  for (ueDevIt = homeUeDevs.Begin (); 
-       ueDevIt != homeUeDevs.End ();
-       ++ueDevIt, ++enbDevIt)
-    {
-      // this because of the order in which SameRoomPositionAllocator
-      // will place the UEs
-      if (enbDevIt == homeEnbDevs.End ())
-        {
-          enbDevIt = homeEnbDevs.Begin ();
-        }
-      lteHelper->Attach (*ueDevIt, *enbDevIt);
-    }
-
-
+  Ipv4Address remoteHostAddr;
+  NodeContainer ues;
+  Ipv4StaticRoutingHelper ipv4RoutingHelper;
+  Ipv4InterfaceContainer ueIpIfaces;
+   Ptr<Node> remoteHost;
+   NetDeviceContainer ueDevs;
   if (epc)
     {
-      NS_LOG_LOGIC ("setting up internet, remote host and applications");
+      NS_LOG_LOGIC ("setting up internet and remote host");
   
       // Create a single RemoteHost
       NodeContainer remoteHostContainer;
       remoteHostContainer.Create (1);
-      Ptr<Node> remoteHost = remoteHostContainer.Get (0);
+      remoteHost = remoteHostContainer.Get (0);
       InternetStackHelper internet;
       internet.Install (remoteHostContainer);
 
@@ -578,25 +569,49 @@ main (int argc, char *argv[])
       ipv4h.SetBase ("1.0.0.0", "255.0.0.0");
       Ipv4InterfaceContainer internetIpIfaces = ipv4h.Assign (internetDevices);
       // in this container, interface 0 is the pgw, 1 is the remoteHost
-      Ipv4Address remoteHostAddr = internetIpIfaces.GetAddress (1);
+      remoteHostAddr = internetIpIfaces.GetAddress (1);
 
       Ipv4StaticRoutingHelper ipv4RoutingHelper;
       Ptr<Ipv4StaticRouting> remoteHostStaticRouting = ipv4RoutingHelper.GetStaticRouting (remoteHost->GetObject<Ipv4> ());
       remoteHostStaticRouting->AddNetworkRouteTo (Ipv4Address ("7.0.0.0"), Ipv4Mask ("255.0.0.0"), 1);
 
       // for internetworking purposes, consider together home UEs and macro UEs
-      NodeContainer ues;
       ues.Add (homeUes);
       ues.Add (macroUes);
-      NetDeviceContainer ueDevs;
       ueDevs.Add (homeUeDevs);
       ueDevs.Add (macroUeDevs);      
 
       // Install the IP stack on the UEs      
       internet.Install (ues);
-      Ipv4InterfaceContainer ueIpIfaces;
       ueIpIfaces = epcHelper->AssignUeIpv4Address (NetDeviceContainer (ueDevs));
-      
+    }
+
+  // attachment (needs to be done after IP stack configuration)
+  // macro UEs attached to the closest macro eNB
+  lteHelper->AttachToClosestEnb (macroUeDevs, macroEnbDevs);
+  // each home UE is ttach explicitly to its home eNB
+  NetDeviceContainer::Iterator ueDevIt;
+  NetDeviceContainer::Iterator enbDevIt = homeEnbDevs.Begin ();
+
+  for (ueDevIt = homeUeDevs.Begin ();
+       ueDevIt != homeUeDevs.End ();
+       ++ueDevIt, ++enbDevIt)
+    {
+      // this because of the order in which SameRoomPositionAllocator
+      // will place the UEs
+      if (enbDevIt == homeEnbDevs.End ())
+        {
+          enbDevIt = homeEnbDevs.Begin ();
+        }
+      lteHelper->Attach (*ueDevIt, *enbDevIt);
+    }
+
+    
+
+  if (epc)
+    {
+      NS_LOG_LOGIC ("setting up applications");
+    
       // Install and start applications on UEs and remote host
       uint16_t dlPort = 10000;
       uint16_t ulPort = 20000;
@@ -690,7 +705,7 @@ main (int argc, char *argv[])
               if (epcDl || epcUl)
                 {
                   EpsBearer bearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT);
-                  lteHelper->ActivateEpsBearer (ueDevs.Get (u), bearer, tft);
+                  lteHelper->ActivateDedicatedEpsBearer (ueDevs.Get (u), bearer, tft);
                 }
               Time startTime = Seconds (startTimeSeconds->GetValue ());
               serverApps.Start (startTime);
@@ -713,7 +728,7 @@ main (int argc, char *argv[])
             {
               enum EpsBearer::Qci q = EpsBearer::NGBR_VIDEO_TCP_DEFAULT;
               EpsBearer bearer (q);
-              lteHelper->ActivateEpsBearer (ueDev, bearer, EpcTft::Default ());  
+              lteHelper->ActivateDataRadioBearer (ueDev, bearer);
             }
         }
     }

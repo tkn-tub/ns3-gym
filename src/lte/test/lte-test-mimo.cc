@@ -83,15 +83,15 @@ LenaTestMimoSuite::LenaTestMimoSuite ()
 static LenaTestMimoSuite lenaTestMimoSuite;
 
 std::string 
-LenaMimoTestCase::BuildNameString (uint16_t dist)
+LenaMimoTestCase::BuildNameString (uint16_t dist, std::string schedulerType)
 {
   std::ostringstream oss;
-  oss << " UE distance " << dist << " m";
+  oss << " UE distance " << dist << " m" << " Scheduler " << schedulerType;
   return oss.str ();
 }
 
 LenaMimoTestCase::LenaMimoTestCase (uint16_t dist, std::vector<uint32_t> estThrDl, std::string schedulerType)
-  : TestCase (BuildNameString (dist)),              
+  : TestCase (BuildNameString (dist, schedulerType)),              
     m_dist (dist),
     m_estThrDl (estThrDl),
     m_schedulerType (schedulerType)
@@ -105,42 +105,8 @@ LenaMimoTestCase::~LenaMimoTestCase ()
 void
 LenaMimoTestCase::DoRun (void)
 {
-//   Config::SetDefault ("ns3::LteSpectrumPhy::PemEnabled", BooleanValue (false));
+  Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));
   Config::SetDefault ("ns3::LteAmc::AmcModel", EnumValue (LteAmc::PiroEW2010));
-  LogComponentDisableAll (LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteEnbRrc", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteUeRrc", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteEnbMac", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteUeMac", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteRlc", LOG_LEVEL_ALL);
-// 
-//   LogComponentEnable ("LtePhy", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteEnbPhy", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteUePhy", LOG_LEVEL_ALL);
-
-//   LogComponentEnable ("LteSpectrumPhy", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteInterference", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteSinrChunkProcessor", LOG_LEVEL_ALL);
-// 
-//   LogComponentEnable ("LtePropagationLossModel", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LossModel", LOG_LEVEL_ALL);
-//   LogComponentEnable ("ShadowingLossModel", LOG_LEVEL_ALL);
-//   LogComponentEnable ("PenetrationLossModel", LOG_LEVEL_ALL);
-//   LogComponentEnable ("MultipathLossModel", LOG_LEVEL_ALL);
-//   LogComponentEnable ("PathLossModel", LOG_LEVEL_ALL);
-// 
-//   LogComponentEnable ("LteNetDevice", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteUeNetDevice", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteEnbNetDevice", LOG_LEVEL_ALL);
-
-//     LogComponentEnable ("LteMiErrorModel", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteAmc", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteSpectrumPhy", LOG_LEVEL_ALL);
-
-  LogComponentEnable ("LenaTestMimo", LOG_LEVEL_ALL);
-//   LogComponentEnable ("BuildingsPropagationLossModel", LOG_LEVEL_ALL);
-//   LogComponentEnable ("RrFfMacScheduler", LOG_LEVEL_ALL);
-//   LogComponentEnable ("PfFfMacScheduler", LOG_LEVEL_ALL);
 
 
   /**
@@ -149,6 +115,10 @@ LenaMimoTestCase::DoRun (void)
 
 
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
+  Config::SetDefault ("ns3::RrFfMacScheduler::HarqEnabled", BooleanValue (false));
+  Config::SetDefault ("ns3::PfFfMacScheduler::HarqEnabled", BooleanValue (false));
+  
+//   lteHelper->SetSchedulerAttribute ("HarqEnabled", BooleanValue (false));
   
   
   lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::HybridBuildingsPropagationLossModel"));
@@ -156,7 +126,7 @@ LenaMimoTestCase::DoRun (void)
   lteHelper->SetPathlossModelAttribute ("ShadowSigmaIndoor", DoubleValue (0.0));
   lteHelper->SetPathlossModelAttribute ("ShadowSigmaExtWalls", DoubleValue (0.0));
   
-//   lteHelper->EnableLogComponents ();
+  lteHelper->EnableLogComponents ();
 
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
@@ -184,7 +154,7 @@ LenaMimoTestCase::DoRun (void)
   // Activate an EPS bearer
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
-  lteHelper->ActivateEpsBearer (ueDevs, bearer, EpcTft::Default ());
+  lteHelper->ActivateDataRadioBearer (ueDevs, bearer);
   
 
   Ptr<LteEnbNetDevice> lteEnbDev = enbDevs.Get (0)->GetObject<LteEnbNetDevice> ();
@@ -222,7 +192,6 @@ LenaMimoTestCase::DoRun (void)
         {
           NS_FATAL_ERROR ("No RR Scheduler available");
         }
-      
       Simulator::Schedule (Seconds (0.2), &RrFfMacScheduler::TransmissionModeConfigurationUpdate, rrsched, rnti, 1);
       Simulator::Schedule (Seconds (0.3), &RrFfMacScheduler::TransmissionModeConfigurationUpdate, rrsched, rnti, 2);
     }

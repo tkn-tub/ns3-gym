@@ -29,6 +29,7 @@
 #include <ns3/lte-control-messages.h>
 #include <ns3/lte-amc.h>
 #include <ns3/lte-ue-phy-sap.h>
+#include <ns3/lte-ue-cphy-sap.h>
 #include <ns3/ptr.h>
 #include <ns3/lte-amc.h>
 
@@ -38,6 +39,7 @@ namespace ns3 {
 class PacketBurst;
 class LteNetDevice;
 class LteEnbPhy;
+class LteHarqPhy;
 
 /**
  * \ingroup lte
@@ -48,6 +50,7 @@ class LteUePhy : public LtePhy
 {
 
   friend class UeMemberLteUePhySapProvider;
+  friend class MemberLteUeCphySapProvider<LteUePhy>;
 
 public:
   /**
@@ -71,15 +74,27 @@ public:
 
   /**
    * \brief Get the PHY SAP provider
-   * \return a pointer to the SAP Provider of the PHY
+   * \return a pointer to the SAP Provider 
    */
   LteUePhySapProvider* GetLteUePhySapProvider ();
 
   /**
   * \brief Set the PHY SAP User
-  * \param s a pointer to the PHY SAP user
+  * \param s a pointer to the SAP user
   */
   void SetLteUePhySapUser (LteUePhySapUser* s);
+
+  /**
+   * \brief Get the CPHY SAP provider
+   * \return a pointer to the SAP Provider
+   */
+  LteUeCphySapProvider* GetLteUeCphySapProvider ();
+
+  /**
+  * \brief Set the CPHY SAP User
+  * \param s a pointer to the SAP user
+  */
+  void SetLteUeCphySapUser (LteUeCphySapUser* s);
 
 
   /**
@@ -153,13 +168,12 @@ public:
   // inherited from LtePhy
   virtual void GenerateCtrlCqiReport (const SpectrumValue& sinr);
   virtual void GenerateDataCqiReport (const SpectrumValue& sinr);
+  virtual void ReportInterference (const SpectrumValue& interf);
 
   virtual void DoSendLteControlMessage (Ptr<LteControlMessage> msg);
   virtual void ReceiveLteControlMessageList (std::list<Ptr<LteControlMessage> >);
   
-  virtual void DoSetTransmissionMode (uint8_t txMode);
   virtual void DoSetSrsConfigurationIndex (uint16_t srcCi);
-  
   
 
 
@@ -180,24 +194,21 @@ public:
 
 
   /**
-  * \param rnti the rnti assigned to the UE
-  */
-  void SetRnti (uint16_t rnti);
-
-
-  /**
-   * set the cellId of the eNb this PHY is synchronized with
-   *
-   * \param cellId the cell identifier of the eNB
-   */
-  void SetEnbCellId (uint16_t cellId);
-  
-  /**
   * \brief Send the SRS signal in the last symbols of the frame
   */
   void SendSrs ();
   
-  
+    /**
+  * \brief PhySpectrum generated a new DL HARQ feedback
+  */
+  virtual void ReceiveLteDlHarqFeedback (DlInfoListElement_s mes);
+
+  /**
+  * \brief Set the HARQ PHY module
+  */
+  void SetHarqPhyModule (Ptr<LteHarqPhy> harq);
+
+
 
 
 private:
@@ -210,8 +221,17 @@ private:
   void SetTxMode6Gain (double gain);
   void SetTxMode7Gain (double gain);
   void SetTxModeGain (uint8_t txMode, double gain);
+
+  void UpdateNoisePsd ();
   
   void QueueSubChannelsForTransmission (std::vector <int> rbMap);
+
+  // CPHY SAP methods
+  void DoSetBandwidth (uint8_t ulBandwidth, uint8_t dlBandwidth);
+  void DoSetEarfcn (uint16_t dlEarfcn, uint16_t ulEarfcn);
+  void DoSetTransmissionMode (uint8_t txMode);
+  void DoSetRnti (uint16_t rnti);
+  void DoSyncronizeWithEnb (Ptr<LteEnbNetDevice> enbDevice, uint16_t cellId);
   
   std::vector <int> m_subChannelsForTransmission;
   std::vector <int> m_subChannelsForReception;
@@ -232,15 +252,29 @@ private:
   LteUePhySapProvider* m_uePhySapProvider;
   LteUePhySapUser* m_uePhySapUser;
 
+  LteUeCphySapProvider* m_ueCphySapProvider;
+  LteUeCphySapUser* m_ueCphySapUser;
+
   uint16_t  m_rnti;
 
   uint16_t m_enbCellId;
+  Ptr<LteEnbNetDevice> m_enbDevice; // wild hack, might go away in later versions
   
   uint8_t m_transmissionMode;
   std::vector <double> m_txModeGain;
   
   uint16_t m_srsPeriodicity;
   uint16_t m_srsCounter;
+
+  Ptr<LteHarqPhy> m_harqPhyModule;
+
+  /**
+   * Trace information regarding RSRP and RSRQ (see TS 36.214)
+   * uint16_t rnti, uint16_t cellId, double rsrp, double rsrq
+   */
+  TracedCallback<uint16_t, uint16_t, double, double> m_reportCurrentCellRsrpRsrqTrace;
+  uint16_t m_rsrpRsrqSamplePeriod;
+  uint16_t m_rsrpRsrqSampleCounter;
 
 };
 

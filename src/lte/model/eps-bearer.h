@@ -46,8 +46,8 @@ struct GbrQosInformation
 struct AllocationRetentionPriority
 {
   uint8_t priorityLevel;     // /< 1-15; 1 = highest
-  bool preemprionCapability; // /< true if bearer can preempt others
-  bool preemprionVulnerability; // true if bearer can be preempted by others
+  bool preemptionCapability; // /< true if bearer can preempt others
+  bool preemptionVulnerability; // true if bearer can be preempted by others
 };
 
 /**
@@ -80,6 +80,12 @@ struct EpsBearer
 
   GbrQosInformation gbrQosInfo;
   AllocationRetentionPriority arp;
+
+  /**
+   * Deault constructor. QCI will be initialized to NGBR_VIDEO_TCP_DEFAULT
+   * 
+   */
+  EpsBearer ();
 
   /**
    *
@@ -116,8 +122,6 @@ struct EpsBearer
    */
   double  GetPacketErrorLossRate () const;
 
-private:
-  EpsBearer ();
 };
 
 } // namespace ns3

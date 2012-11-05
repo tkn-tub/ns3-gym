@@ -162,7 +162,7 @@ LteRlcAm::DoTransmitPdcpPdu (Ptr<Packet> p)
  */
 
 void
-LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer)
+LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId)
 {
   NS_LOG_FUNCTION (this << m_rnti << (uint32_t) m_lcid << bytes);
   
@@ -191,6 +191,7 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer)
       params.rnti = m_rnti;
       params.lcid = m_lcid;
       params.layer = layer;
+      params.harqProcessId = harqId;
 
       m_macSapProvider->TransmitPdu (params);
       return;
@@ -213,6 +214,7 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer)
           params.rnti = m_rnti;
           params.lcid = m_lcid;
           params.layer = layer;
+          params.harqProcessId = harqId;
 
           m_macSapProvider->TransmitPdu (params);
           return;
@@ -541,6 +543,7 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer)
   params.rnti = m_rnti;
   params.lcid = m_lcid;
   params.layer = layer;
+  params.harqProcessId = harqId;
 
   m_macSapProvider->TransmitPdu (params);
 }

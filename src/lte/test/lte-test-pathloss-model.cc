@@ -266,7 +266,7 @@ LtePathlossModelSystemTestCase::DoRun (void)
   // Activate an EPS bearer
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
-  lteHelper->ActivateEpsBearer (ueDevs, bearer, EpcTft::Default ());
+  lteHelper->ActivateDataRadioBearer (ueDevs, bearer);
   
   // Use testing chunk processor in the PHY layer
   // It will be used to test that the SNR is as intended

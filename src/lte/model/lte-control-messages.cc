@@ -176,5 +176,34 @@ BsrLteControlMessage::GetBsr (void)
 }
 
 
+
+// ---------------------------------------------------------------------------
+
+
+DlHarqFeedbackLteControlMessage::DlHarqFeedbackLteControlMessage (void)
+{
+  SetMessageType (LteControlMessage::DL_HARQ);
+}
+
+
+DlHarqFeedbackLteControlMessage::~DlHarqFeedbackLteControlMessage (void)
+{
+
+}
+
+void
+DlHarqFeedbackLteControlMessage::SetDlHarqFeedback (DlInfoListElement_s m)
+{
+  m_dlInfoListElement = m;
+}
+
+
+DlInfoListElement_s
+DlHarqFeedbackLteControlMessage::GetDlHarqFeedback (void)
+{
+  return m_dlInfoListElement;
+}
+
+
 } // namespace ns3
 

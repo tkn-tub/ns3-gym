@@ -195,7 +195,7 @@ LteLinkAdaptationTestCase::DoRun (void)
   // Activate the default EPS bearer
   enum EpsBearer::Qci q = EpsBearer::NGBR_VIDEO_TCP_DEFAULT;
   EpsBearer bearer (q);
-  lteHelper->ActivateEpsBearer (ueDevs, bearer, EpcTft::Default ());
+  lteHelper->ActivateDataRadioBearer (ueDevs, bearer);
 
   // Use testing chunk processor in the PHY layer
   // It will be used to test that the SNR is as intended

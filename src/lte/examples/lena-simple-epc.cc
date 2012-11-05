@@ -113,12 +113,6 @@ main (int argc, char *argv[])
   NetDeviceContainer enbLteDevs = lteHelper->InstallEnbDevice (enbNodes);
   NetDeviceContainer ueLteDevs = lteHelper->InstallUeDevice (ueNodes);
 
-  // Attach one UE per eNodeB
-  for (uint16_t i = 0; i < numberOfNodes; i++)
-      {
-        lteHelper->Attach (ueLteDevs.Get(i), enbLteDevs.Get(i));
-      }
-
   // Install the IP stack on the UEs
   internet.Install (ueNodes);
   Ipv4InterfaceContainer ueIpIface;
@@ -131,7 +125,13 @@ main (int argc, char *argv[])
       Ptr<Ipv4StaticRouting> ueStaticRouting = ipv4RoutingHelper.GetStaticRouting (ueNode->GetObject<Ipv4> ());
       ueStaticRouting->SetDefaultRoute (epcHelper->GetUeDefaultGatewayAddress (), 1);
     }
-  lteHelper->ActivateEpsBearer (ueLteDevs, EpsBearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT), EpcTft::Default ());
+
+  // Attach one UE per eNodeB
+  for (uint16_t i = 0; i < numberOfNodes; i++)
+      {
+        lteHelper->Attach (ueLteDevs.Get(i), enbLteDevs.Get(i));
+        // side effect: the default EPS bearer will be activated
+      }
 
 
   // Install and start applications on UEs and remote host

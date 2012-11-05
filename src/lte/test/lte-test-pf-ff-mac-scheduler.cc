@@ -213,7 +213,7 @@ LenaPfFfMacSchedulerTestCase1::DoRun (void)
   Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));  LogComponentDisableAll (LOG_LEVEL_ALL);
   //   LogComponentEnable ("LteEnbRrc", LOG_LEVEL_ALL);
   //   LogComponentEnable ("LteUeRrc", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteEnbMac", LOG_LEVEL_ALL);
+//     LogComponentEnable ("LteEnbMac", LOG_LEVEL_ALL);
   //   LogComponentEnable ("LteUeMac", LOG_LEVEL_ALL);
 //     LogComponentEnable ("LteRlc", LOG_LEVEL_ALL);
 //
@@ -275,7 +275,7 @@ LenaPfFfMacSchedulerTestCase1::DoRun (void)
   // Activate an EPS bearer
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
-  lteHelper->ActivateEpsBearer (ueDevs, bearer, EpcTft::Default ());
+  lteHelper->ActivateDataRadioBearer (ueDevs, bearer);
 
   Ptr<LteEnbNetDevice> lteEnbDev = enbDevs.Get (0)->GetObject<LteEnbNetDevice> ();
   Ptr<LteEnbPhy> enbPhy = lteEnbDev->GetPhy ();
@@ -456,7 +456,7 @@ LenaPfFfMacSchedulerTestCase2::DoRun (void)
   // Activate an EPS bearer
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
-  lteHelper->ActivateEpsBearer (ueDevs, bearer, EpcTft::Default ());
+  lteHelper->ActivateDataRadioBearer (ueDevs, bearer);
 
   Ptr<LteEnbNetDevice> lteEnbDev = enbDevs.Get (0)->GetObject<LteEnbNetDevice> ();
   Ptr<LteEnbPhy> enbPhy = lteEnbDev->GetPhy ();

@@ -23,9 +23,11 @@
 #define ENB_LTE_PHY_H
 
 
+#include <ns3/lte-control-messages.h>
 #include <ns3/lte-enb-phy-sap.h>
+#include <ns3/lte-enb-cphy-sap.h>
 #include <ns3/lte-phy.h>
-#include <ns3/lte-ue-phy.h>
+#include <ns3/lte-harq-phy.h>
 
 #include <map>
 #include <set>
@@ -36,6 +38,7 @@ namespace ns3 {
 
 class PacketBurst;
 class LteNetDevice;
+class LteUePhy;
 
 /**
  * \ingroup lte
@@ -43,9 +46,9 @@ class LteNetDevice;
  */
 class LteEnbPhy : public LtePhy
 {
-
   friend class EnbMemberLteEnbPhySapProvider;
-
+  friend class MemberLteEnbCphySapProvider<LteEnbPhy>;
+  
 public:
   /**
    * @warning the default constructor should not be used
@@ -80,6 +83,18 @@ public:
   void SetLteEnbPhySapUser (LteEnbPhySapUser* s);
 
   /**
+   * \brief Get the CPHY SAP provider
+   * \return a pointer to the SAP Provider
+   */
+  LteEnbCphySapProvider* GetLteEnbCphySapProvider ();
+
+  /**
+  * \brief Set the CPHY SAP User
+  * \param s a pointer to the SAP user
+  */
+  void SetLteEnbCphySapUser (LteEnbCphySapUser* s);
+
+  /**
    * \param pw the transmission power in dBm
    */
   void SetTxPower (double pow);
@@ -109,18 +124,6 @@ public:
    * \returns the TTI delay between MAC and channel
    */
   uint8_t GetMacChDelay (void) const;
-
-  /**
-  * \brief Queue the MAC PDU to be sent
-  * \param p the MAC PDU to sent
-  */
-  virtual void DoSendMacPdu (Ptr<Packet> p);
-  
-  virtual void DoSetTransmissionMode (uint16_t  rnti, uint8_t txMode);
-  
-  virtual void DoSetSrsConfigurationIndex (uint16_t  rnti, uint16_t srcCi);
-    
-  virtual uint8_t DoGetMacChTtiDelay ();
 
   /**
    * \brief set the resource blocks (a.k.a. sub channels) to be used in the downlink for transmission
@@ -174,13 +177,6 @@ public:
   */
   FfMacSchedSapProvider::SchedUlCqiInfoReqParameters CreateSrsCqiReport (const SpectrumValue& sinr);
 
-
-  void DoSendLteControlMessage (Ptr<LteControlMessage> msg);
-
-  bool AddUePhy (uint16_t rnti);
-
-  bool DeleteUePhy (uint16_t rnti);
-  
   /**
   * \brief Send the PDCCH and PCFICH in the first 3 symbols
   * \param ctrlMsgList the list of control messages of PDCCH
@@ -234,9 +230,39 @@ public:
   // inherited from LtePhy
   virtual void GenerateCtrlCqiReport (const SpectrumValue& sinr);
   virtual void GenerateDataCqiReport (const SpectrumValue& sinr);
+  virtual void ReportInterference (const SpectrumValue& interf);
+
+
+  /**
+  * \brief PhySpectrum generated a new UL HARQ feedback
+  */
+  virtual void ReceiveLteUlHarqFeedback (UlInfoListElement_s mes);
+
+  void SetHarqPhyModule (Ptr<LteHarqPhy> harq);
 
 
 private:
+
+  // LteEnbCphySapProvider forwarded methods
+  void DoSetBandwidth (uint8_t ulBandwidth, uint8_t dlBandwidth);
+  void DoSetEarfcn (uint16_t dlEarfcn, uint16_t ulEarfcn);
+  void DoAddUe (uint16_t rnti);  
+  void DoSetTransmissionMode (uint16_t  rnti, uint8_t txMode);
+
+
+  // LteEnbPhySapProvider forwarded methods
+  void DoSendMacPdu (Ptr<Packet> p);  
+  void DoSetSrsConfigurationIndex (uint16_t  rnti, uint16_t srcCi);  
+  void DoSendLteControlMessage (Ptr<LteControlMessage> msg);  
+  uint8_t DoGetMacChTtiDelay ();  
+
+  bool AddUePhy (uint16_t rnti);
+
+  bool DeleteUePhy (uint16_t rnti);
+
+  void CreateSrsReport(uint16_t rnti, double srs);
+
+
   std::set <uint16_t> m_ueAttached;
   
   std::vector <int> m_listOfDownlinkSubchannel;
@@ -247,6 +273,9 @@ private:
 
   LteEnbPhySapProvider* m_enbPhySapProvider;
   LteEnbPhySapUser* m_enbPhySapUser;
+
+  LteEnbCphySapProvider* m_enbCphySapProvider;
+  LteEnbCphySapUser* m_enbCphySapUser;
   
   std::vector <uint16_t> m_ulRntiRxed;
 
@@ -257,6 +286,25 @@ private:
   std::map <uint16_t,uint16_t> m_srsCounter;
   std::vector <uint16_t> m_srsUeOffset;
   uint16_t m_currentSrsOffset;
+
+  Ptr<LteHarqPhy> m_harqPhyModule;
+
+  /**
+   * Trace reporting the linear average of SRS SINRs 
+   * uint16_t rnti, uint16_t cellId, double sinrLinear
+   */
+  TracedCallback<uint16_t, uint16_t, double> m_reportUeSinr;
+  uint16_t m_srsSamplePeriod;
+  std::map <uint16_t,uint16_t> m_srsSampleCounterMap;
+
+  /**
+   * Trace reporting the interference per PHY RB (TS 36.214 section 5.2.2,
+   *  measured on DATA) 
+   * uint16_t cellId, Ptr<SpectrumValue> interference linear power per RB basis
+   */
+  TracedCallback<uint16_t, Ptr<SpectrumValue> > m_reportInterferenceTrace;
+  uint16_t m_interferenceSamplePeriod;
+  uint16_t m_interferenceSampleCounter;
   
 };
 

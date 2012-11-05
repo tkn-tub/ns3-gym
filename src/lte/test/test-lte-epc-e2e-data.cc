@@ -184,12 +184,10 @@ LteEpcE2eDataTestCase::DoRun ()
       ueMobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
       ueMobility.Install (ues);
       NetDeviceContainer ueLteDevs = lteHelper->InstallUeDevice (ues);
-      lteHelper->Attach (ueLteDevs, *enbLteDevIt);        
        
       // we install the IP stack on the UEs 
       InternetStackHelper internet;
       internet.Install (ues);
-      
 
       // assign IP address to UEs, and install applications
       for (uint32_t u = 0; u < ues.GetN (); ++u)
@@ -201,6 +199,11 @@ LteEpcE2eDataTestCase::DoRun ()
           // set the default gateway for the UE
           Ptr<Ipv4StaticRouting> ueStaticRouting = ipv4RoutingHelper.GetStaticRouting (ue->GetObject<Ipv4> ());          
           ueStaticRouting->SetDefaultRoute (epcHelper->GetUeDefaultGatewayAddress (), 1);
+
+
+          // we can now attach the UE, which will also activate the default EPS bearer
+          lteHelper->Attach (ueLteDevice, *enbLteDevIt);        
+      
   
           uint16_t dlPort = 2000;          
           for (uint32_t b = 0; b < enbit->ues.at (u).bearers.size (); ++b)
@@ -239,7 +242,7 @@ LteEpcE2eDataTestCase::DoRun ()
                 bearerTestData.ulClientApp = apps.Get (0);
               }
 
-              EpsBearer epsBearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT);
+              EpsBearer epsBearer (EpsBearer::NGBR_VOICE_VIDEO_GAMING);
 
               Ptr<EpcTft> tft = Create<EpcTft> ();
               EpcTft::PacketFilter dlpf;
@@ -251,7 +254,8 @@ LteEpcE2eDataTestCase::DoRun ()
               ulpf.remotePortEnd = ulPort;
               tft->Add (ulpf);                            
  
-              lteHelper->ActivateEpsBearer (ueLteDevice, epsBearer, tft);
+              // all data will go over the dedicated bearer instead of the default EPS bearer
+              lteHelper->ActivateDedicatedEpsBearer (ueLteDevice, epsBearer, tft);
             }
         } 
             
@@ -284,7 +288,9 @@ LteEpcE2eDataTestCase::DoRun ()
           uint64_t imsi = ++imsiCounter;
           for (uint32_t b = 0; b < ueit->bearers.size (); ++b)
             {
-              uint8_t lcid = b+1;
+              // LCID 0 is unused 
+              // LCID 1 is (at the moment) the Default EPS bearer, and is unused in this test program
+              uint8_t lcid = b+2;
               NS_TEST_ASSERT_MSG_EQ (lteHelper->GetPdcpStats ()->GetDlTxPackets (imsi, lcid), 
                                      ueit->bearers.at (b).numPkts, 
                                      "wrong TX PDCP packets in downlink for IMSI=" << imsi << " LCID=" << (uint16_t) lcid);

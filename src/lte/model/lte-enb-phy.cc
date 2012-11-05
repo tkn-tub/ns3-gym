@@ -28,14 +28,20 @@
 
 
 #include "lte-enb-phy.h"
+#include "lte-ue-phy.h"
 #include "lte-net-device.h"
 #include "lte-spectrum-value-helper.h"
 #include "lte-control-messages.h"
 #include "lte-enb-net-device.h"
+#include "lte-ue-rrc.h"
 #include "lte-enb-mac.h"
 #include <ns3/lte-common.h>
 #include <ns3/lte-vendor-specific-parameters.h>
 
+// WILD HACK for the inizialization of direct eNB-UE ctrl messaging
+#include <ns3/node-list.h>
+#include <ns3/node.h>
+#include <ns3/lte-ue-net-device.h>
 
 NS_LOG_COMPONENT_DEFINE ("LteEnbPhy");
 
@@ -140,12 +146,19 @@ LteEnbPhy::LteEnbPhy ()
 
 LteEnbPhy::LteEnbPhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy)
   : LtePhy (dlPhy, ulPhy),
+    m_enbPhySapUser (0),
+    m_enbCphySapUser (0),
     m_nrFrames (0),
     m_nrSubFrames (0),
     m_srsPeriodicity (0),
-    m_currentSrsOffset (0)
+    m_currentSrsOffset (0),
+    m_interferenceSampleCounter (0)
 {
   m_enbPhySapProvider = new EnbMemberLteEnbPhySapProvider (this);
+  m_enbCphySapProvider = new MemberLteEnbCphySapProvider<LteEnbPhy> (this);
+  m_harqPhyModule = Create <LteHarqPhy> ();
+  m_downlinkSpectrumPhy->SetHarqPhyModule (m_harqPhyModule);
+  m_uplinkSpectrumPhy->SetHarqPhyModule (m_harqPhyModule);
   Simulator::ScheduleNow (&LteEnbPhy::StartFrame, this);
 }
 
@@ -179,6 +192,22 @@ LteEnbPhy::GetTypeId (void)
                    MakeUintegerAccessor (&LteEnbPhy::SetMacChDelay, 
                                          &LteEnbPhy::GetMacChDelay),
                    MakeUintegerChecker<uint8_t> ())
+    .AddTraceSource ("ReportUeSinr",
+                     "Report UEs' averaged linear SINR",
+                     MakeTraceSourceAccessor (&LteEnbPhy::m_reportUeSinr))
+    .AddAttribute ("UeSinrSamplePeriod",
+                   "The sampling period for reporting UEs' SINR stats (default value 1)",
+                   UintegerValue (1),
+                   MakeUintegerAccessor (&LteEnbPhy::m_srsSamplePeriod),
+                   MakeUintegerChecker<uint16_t> ())
+    .AddTraceSource ("ReportInterference",
+                     "Report linear interference power per PHY RB",
+                     MakeTraceSourceAccessor (&LteEnbPhy::m_reportInterferenceTrace))
+    .AddAttribute ("InterferenceSamplePeriod",
+                   "The sampling period for reporting interference stats (default value 1)",
+                   UintegerValue (1),
+                   MakeUintegerAccessor (&LteEnbPhy::m_interferenceSamplePeriod),
+                   MakeUintegerChecker<uint16_t> ())
   ;
   return tid;
 }
@@ -195,6 +224,7 @@ LteEnbPhy::DoDispose ()
   m_ueAttached.clear ();
   m_srsUeOffset.clear ();
   delete m_enbPhySapProvider;
+  delete m_enbCphySapProvider;
   LtePhy::DoDispose ();
 }
 
@@ -218,6 +248,20 @@ LteEnbPhySapProvider*
 LteEnbPhy::GetLteEnbPhySapProvider ()
 {
   return (m_enbPhySapProvider);
+}
+
+void
+LteEnbPhy::SetLteEnbCphySapUser (LteEnbCphySapUser* s)
+{
+  NS_LOG_FUNCTION (this);
+  m_enbCphySapUser = s;
+}
+
+LteEnbCphySapProvider*
+LteEnbPhy::GetLteEnbCphySapProvider ()
+{
+  NS_LOG_FUNCTION (this);
+  return (m_enbCphySapProvider);
 }
 
 void
@@ -251,6 +295,7 @@ LteEnbPhy::GetNoiseFigure () const
 void
 LteEnbPhy::SetMacChDelay (uint8_t delay)
 {
+  NS_LOG_FUNCTION (this);
   m_macChTtiDelay = delay;
   for (int i = 0; i < m_macChTtiDelay; i++)
     {
@@ -274,9 +319,12 @@ LteEnbPhy::GetMacChDelay (void) const
   return (m_macChTtiDelay);
 }
 
+
+
 bool
 LteEnbPhy::AddUePhy (uint16_t rnti)
 {
+  NS_LOG_FUNCTION (this << rnti);
   std::set <uint16_t>::iterator it;
   it = m_ueAttached.find (rnti);
   if (it == m_ueAttached.end ())
@@ -294,6 +342,7 @@ LteEnbPhy::AddUePhy (uint16_t rnti)
 bool
 LteEnbPhy::DeleteUePhy (uint16_t rnti)
 {
+  NS_LOG_FUNCTION (this << rnti);
   std::set <uint16_t>::iterator it;
   it = m_ueAttached.find (rnti);
   if (it == m_ueAttached.end ())
@@ -421,7 +470,7 @@ LteEnbPhy::StartSubFrame (void)
       m_currentSrsOffset = (m_currentSrsOffset + 1) % m_srsPeriodicity;
     }
   NS_LOG_INFO ("-----sub frame " << m_nrSubFrames << "-----");
-  
+  m_harqPhyModule->SubframeIndication (m_nrFrames, m_nrSubFrames);
   
   // update info on TB to be received
   std::list<UlDciLteControlMessage> uldcilist = DequeueUlDci ();
@@ -446,7 +495,15 @@ LteEnbPhy::StartSubFrame (void)
             {
               rbMap.push_back (i);
             }
-          m_uplinkSpectrumPhy->AddExpectedTb ((*dciIt).GetDci ().m_rnti, (*dciIt).GetDci ().m_tbSize, (*dciIt).GetDci ().m_mcs, rbMap, 0 /* always SISO*/);
+          m_uplinkSpectrumPhy->AddExpectedTb ((*dciIt).GetDci ().m_rnti, (*dciIt).GetDci ().m_ndi, (*dciIt).GetDci ().m_tbSize, (*dciIt).GetDci ().m_mcs, rbMap, 0 /* always SISO*/, 0 /* no HARQ proc id in UL*/, false /* UL*/);
+          if ((*dciIt).GetDci ().m_ndi==1)
+            {
+              NS_LOG_DEBUG (this << " RNTI " << (*dciIt).GetDci ().m_rnti << " NEW TB");
+            }
+          else
+            {
+              NS_LOG_DEBUG (this << " RNTI " << (*dciIt).GetDci ().m_rnti << " HARQ RETX");
+            }
           m_ulRntiRxed.push_back ((*dciIt).GetDci ().m_rnti);
         }
     }
@@ -583,6 +640,20 @@ LteEnbPhy::GenerateDataCqiReport (const SpectrumValue& sinr)
   m_enbPhySapUser->UlCqiReport (ulcqi);
 }
 
+void
+LteEnbPhy::ReportInterference (const SpectrumValue& interf)
+{
+  NS_LOG_FUNCTION (this << interf);
+  Ptr<SpectrumValue> interfCopy = Create<SpectrumValue> (interf);
+  m_interferenceSampleCounter++;
+  if (m_interferenceSampleCounter==m_interferenceSamplePeriod)
+    {
+      m_reportInterferenceTrace (m_cellId, interfCopy);
+      m_interferenceSampleCounter = 0;
+    }
+}
+
+
 
 
 FfMacSchedSapProvider::SchedUlCqiInfoReqParameters
@@ -607,6 +678,48 @@ LteEnbPhy::CreatePuschCqiReport (const SpectrumValue& sinr)
 }
 
 
+void
+LteEnbPhy::DoSetBandwidth (uint8_t ulBandwidth, uint8_t dlBandwidth)
+{
+  NS_LOG_FUNCTION (this << (uint32_t) ulBandwidth << (uint32_t) dlBandwidth);
+  m_ulBandwidth = ulBandwidth;
+  m_dlBandwidth = dlBandwidth;
+
+  int Type0AllocationRbg[4] = {
+    10,     // RGB size 1
+    26,     // RGB size 2
+    63,     // RGB size 3
+    110     // RGB size 4
+  };  // see table 7.1.6.1-1 of 36.213
+  for (int i = 0; i < 4; i++)
+    {
+      if (dlBandwidth < Type0AllocationRbg[i])
+        {
+          m_rbgSize = i + 1;
+          break;
+        }
+    }
+}
+
+void 
+LteEnbPhy::DoSetEarfcn (uint16_t ulEarfcn, uint16_t dlEarfcn)
+{
+  NS_LOG_FUNCTION (this << ulEarfcn << dlEarfcn);
+  m_ulEarfcn = ulEarfcn;
+  m_dlEarfcn = dlEarfcn;
+}
+
+
+void 
+LteEnbPhy::DoAddUe (uint16_t rnti)
+{
+  NS_LOG_FUNCTION (this << rnti);
+ 
+  bool success = AddUePhy (rnti);
+  NS_ASSERT_MSG (success, "AddUePhy() failed");
+}
+
+
 FfMacSchedSapProvider::SchedUlCqiInfoReqParameters
 LteEnbPhy::CreateSrsCqiReport (const SpectrumValue& sinr)
 {
@@ -615,12 +728,14 @@ LteEnbPhy::CreateSrsCqiReport (const SpectrumValue& sinr)
   FfMacSchedSapProvider::SchedUlCqiInfoReqParameters ulcqi;
   ulcqi.m_ulCqi.m_type = UlCqi_s::SRS;
   int i = 0;
+  double srsSum = 0.0;
   for (it = sinr.ConstValuesBegin (); it != sinr.ConstValuesEnd (); it++)
   {
     double sinrdb = 10 * log10 ((*it));
     //       NS_LOG_DEBUG ("ULCQI RB " << i << " value " << sinrdb);
     // convert from double to fixed point notation Sxxxxxxxxxxx.xxx
     int16_t sinrFp = LteFfConverter::double2fpS11dot3 (sinrdb);
+    srsSum += (*it);
     ulcqi.m_ulCqi.m_sinr.push_back (sinrFp);
     i++;
   }
@@ -632,8 +747,30 @@ LteEnbPhy::CreateSrsCqiReport (const SpectrumValue& sinr)
   Ptr<SrsCqiRntiVsp> rnti  = Create <SrsCqiRntiVsp> (m_srsUeOffset.at (m_currentSrsOffset));
   vsp.m_value = rnti;
   ulcqi.m_vendorSpecificList.push_back (vsp);
+  // call SRS tracing method
+  CreateSrsReport (m_srsUeOffset.at (m_currentSrsOffset), srsSum / i);
   return (ulcqi);
   
+}
+
+
+void
+LteEnbPhy::CreateSrsReport(uint16_t rnti, double srs)
+{
+  NS_LOG_FUNCTION (this << rnti << srs);
+  std::map <uint16_t,uint16_t>::iterator it = m_srsSampleCounterMap.find (rnti);
+  if (it==m_srsSampleCounterMap.end ())
+    {
+      // create new entry
+      m_srsSampleCounterMap.insert (std::pair <uint16_t,uint16_t> (rnti, 0));
+      it = m_srsSampleCounterMap.find (rnti);
+    }
+  (*it).second++;
+  if ((*it).second == m_srsSamplePeriod)
+    {
+      m_reportUeSinr (rnti, m_cellId, srs);
+      (*it).second = 0;
+    }
 }
 
 void
@@ -700,5 +837,19 @@ LteEnbPhy::DoSetSrsConfigurationIndex (uint16_t  rnti, uint16_t srcCi)
   
 }
 
+
+void
+LteEnbPhy::SetHarqPhyModule (Ptr<LteHarqPhy> harq)
+{
+  m_harqPhyModule = harq;
+}
+
+
+void
+LteEnbPhy::ReceiveLteUlHarqFeedback (UlInfoListElement_s mes)
+{
+  NS_LOG_FUNCTION (this);
+  m_enbPhySapUser->UlInfoListElementHarqFeeback (mes);
+}
 
 };
