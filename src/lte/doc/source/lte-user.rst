@@ -547,9 +547,12 @@ create one separate instance for each REM.
 Note that the REM generation is very demanding, in particular:
 
  * the run-time memory consumption is approximately 5KB per pixel. For example,
-   a REM with a resolution of 500x500 needs about 1.25 GB of memory, and
-   a resolution of 1000x1000 needs about 5 GB (too much for a
-   regular PC at the time of this writing).
+   a REM with a resolution of 500x500 would need about 1.25 GB of memory, and
+   a resolution of 1000x1000 would need needs about 5 GB (too much for a
+   regular PC at the time of this writing). To overcome this issue,
+   the REM is generated at successive steps, with each step evaluating
+   at most a number of pixels determined by the value of the 
+   the attribute ``RadioEnvironmentMapHelper::MaxPointsPerIteration``. 
  * if you generate a REM at the beginning of a simulation, it will
    slow down the execution of the rest of the simulation. If you want
    to generate a REM for a program and also use the same program to
