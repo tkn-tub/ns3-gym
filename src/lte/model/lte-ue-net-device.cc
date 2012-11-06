@@ -119,6 +119,8 @@ LteUeNetDevice::DoDispose (void)
   m_rrc = 0;
   m_phy->Dispose ();
   m_phy = 0;
+  m_nas->Dispose ();
+  m_nas = 0;
   LteNetDevice::DoDispose ();
 }
 
