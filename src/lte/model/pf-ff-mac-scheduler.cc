@@ -590,6 +590,12 @@ PfFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
   std::vector <struct DlInfoListElement_s> dlInfoListUntxed;
   for (uint8_t i = 0; i < m_dlInfoListBuffered.size (); i++)
     {
+      std::set <uint16_t>::iterator itRnti = rntiAllocated.find (m_dlInfoListBuffered.at (i).m_rnti);
+      if (itRnti!=rntiAllocated.end ())
+        {
+          // RNTI already allocated for retx
+          continue;
+        }
       uint8_t nLayers = m_dlInfoListBuffered.at (i).m_harqStatus.size ();
       std::vector <bool> retx;
       NS_LOG_DEBUG (this << " Processing DLHARQ-FEEDBACK");
@@ -753,17 +759,7 @@ PfFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
                       dci.m_rv.at (j) ++;
                       (*itHarq).second.at (harqId).m_rv.at (j)++;
                       NS_LOG_DEBUG (this << " layer " << (uint16_t)j << " RV " << (uint16_t)dci.m_rv.at (j));
-                      newEl.m_rlcPduList.push_back ((*itRlcPdu).second.at (j).at (dci.m_harqProcess));
                     }
-                  //                   NS_ASSERT_MSG ((*itRlcPdu).second.size () >dci.m_harqProcess, " size " <<  (*itRlcPdu).second.size ());
-                  //                   NS_ASSERT ((*itRlcPdu).second.at (j).size () > dci.m_harqProcess);
-                  //                   newEl.m_rlcPduList.push_back ((*itRlcPdu).second.at (j).at (dci.m_harqProcess));
-                  //                   NS_LOG_DEBUG (this << " size 1 " << (*itRlcPdu).second.size () << " size 2 " << (*itRlcPdu).second.at (j).size ());
-                  //                   NS_ASSERT_MSG ((*itRlcPdu).second.at (j).at (dci.m_harqProcess).size () <= 1, " MIMO ERRROR 1");
-                  //                   for (uint16_t k = 0; k < (*itRlcPdu).second.at (j).at (dci.m_harqProcess).size (); k++)
-                  //                     {
-                    //                       NS_LOG_DEBUG (this << " k " << k);
-                    //                     }
                 }
               else
                 {
@@ -774,7 +770,26 @@ PfFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
                   dci.m_tbsSize.at (j) = 0;
                   NS_LOG_DEBUG (this << " layer " << (uint16_t)j << " no retx");
                 }
-              }
+            }
+          for (uint16_t k = 0; k < (*itRlcPdu).second.at (0).at (dci.m_harqProcess).size (); k++)
+            {
+              std::vector <struct RlcPduListElement_s> rlcPduListPerLc;
+              for (uint8_t j = 0; j < nLayers; j++)
+                {
+                  if (retx.at (j))
+                    {
+                      if (j < dci.m_ndi.size ())
+                        {
+                          rlcPduListPerLc.push_back ((*itRlcPdu).second.at (j).at (dci.m_harqProcess).at (k));
+                        }
+                    }
+                }
+
+              if (rlcPduListPerLc.size ()>0)
+                {
+                  newEl.m_rlcPduList.push_back (rlcPduListPerLc);
+                }
+            }
           newEl.m_rnti = rnti;
           newEl.m_dci = dci;
           (*itHarq).second.at (harqId).m_rv = dci.m_rv;
@@ -1032,9 +1047,7 @@ PfFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
                         {
                           NS_FATAL_ERROR ("Unable to find RlcPdcList in HARQ buffer for RNTI " << (*itMap).first);
                         }
-                      //                 NS_ASSERT_MSG ((*itRlcPdu).second.at (j).at (newDci.m_harqProcess).size () <= 1, " MIMO ERR 4" <<(*itRlcPdu).second.at (j).at (newDci.m_harqProcess).size () );
                       (*itRlcPdu).second.at (j).at (newDci.m_harqProcess).push_back (newRlcEl);
-                      //               NS_ASSERT_MSG ((*itRlcPdu).second.at (j).at (newDci.m_harqProcess).size () <= 1, " MIMO ERR 3" <<(*itRlcPdu).second.at (j).at (newDci.m_harqProcess).size () );
                     }
                 }
               newEl.m_rlcPduList.push_back (newRlcPduLe);

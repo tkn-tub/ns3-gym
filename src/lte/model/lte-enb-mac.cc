@@ -782,9 +782,6 @@ LteEnbMac::DoSchedDlConfigInd (FfMacSchedSapUser::SchedDlConfigIndParameters ind
         {
           for (uint16_t k = 0; k < ind.m_buildDataList.at (i).m_rlcPduList.at (j).size (); k++)
             {
-//               NS_ASSERT_MSG (ind.m_buildDataList.at (i).m_dci.m_ndi.size ()<=1, " NOT MIMO, layer " << k);
-//               NS_ASSERT_MSG (ind.m_buildDataList.size ()>i, " I " << i);
-//               NS_ASSERT_MSG (ind.m_buildDataList.at (i).m_dci.m_ndi.size ()>k, " k " << ind.m_buildDataList.at (i).m_rlcPduList.at (j).size ());
               if (ind.m_buildDataList.at (i).m_dci.m_ndi.at (k) == 1)
                 {
                   // New Data -> retrieve it from RLC
