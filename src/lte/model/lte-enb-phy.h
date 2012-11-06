@@ -291,7 +291,7 @@ private:
 
   /**
    * Trace reporting the linear average of SRS SINRs 
-   * uint16_t rnti, uint16_t cellId, double sinrLinear
+   * uint16_t cellId, uint16_t rnti,  double sinrLinear
    */
   TracedCallback<uint16_t, uint16_t, double> m_reportUeSinr;
   uint16_t m_srsSamplePeriod;

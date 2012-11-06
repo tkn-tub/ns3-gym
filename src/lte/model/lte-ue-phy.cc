@@ -421,7 +421,7 @@ LteUePhy::CreateDlCqiFeedbackMessage (const SpectrumValue& sinr)
       // Generate RSRP and RSRQ traces (dummy values, real valeus TBD)
       double rsrp = 0.0;
       double rsrq = 0.0;
-      m_reportCurrentCellRsrpRsrqTrace (m_rnti, m_cellId, rsrp, rsrq);
+      m_reportCurrentCellRsrpRsrqTrace (m_cellId, m_rnti, rsrp, rsrq);
       m_rsrpRsrqSampleCounter = 0;
     }
 

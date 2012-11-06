@@ -185,6 +185,12 @@ LteUeRrc::SetImsi (uint64_t imsi)
   m_imsi = imsi;
 }
 
+uint64_t
+LteUeRrc::GetImsi (void)
+{
+  return m_imsi;
+}
+
 void
 LteUeRrc::SetupRadioBearer (EpsBearer bearer, TypeId rlcTypeId, uint8_t lcid)
 {

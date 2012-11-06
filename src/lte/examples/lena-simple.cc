@@ -46,10 +46,10 @@ int main (int argc, char *argv[])
   cmd.Parse (argc, argv);
 
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
-  lteHelper->EnableTraces ();
+
 
   // Uncomment to enable logging
-  //lteHelper->EnableLogComponents ();
+//  lteHelper->EnableLogComponents ();
 
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
@@ -80,13 +80,14 @@ int main (int argc, char *argv[])
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
   lteHelper->ActivateDataRadioBearer (ueDevs, bearer);
-
-  Simulator::Stop (Seconds (0.010));
+  // Uncomment next line to enable traces
+  //lteHelper->EnableTraces ();
+  Simulator::Stop (Seconds (1.010));
 
   Simulator::Run ();
 
-  //GtkConfigStore config;
-  //config.ConfigureAttributes ();
+/*  GtkConfigStore config;
+  config.ConfigureAttributes ();*/
 
   Simulator::Destroy ();
   return 0;

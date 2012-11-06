@@ -270,7 +270,7 @@ private:
 
   /**
    * Trace information regarding RSRP and RSRQ (see TS 36.214)
-   * uint16_t rnti, uint16_t cellId, double rsrp, double rsrq
+   * uint16_t cellId, uint16_t rnti, double rsrp, double rsrq
    */
   TracedCallback<uint16_t, uint16_t, double, double> m_reportCurrentCellRsrpRsrqTrace;
   uint16_t m_rsrpRsrqSamplePeriod;

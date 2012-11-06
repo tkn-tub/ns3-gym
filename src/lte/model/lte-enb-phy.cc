@@ -47,6 +47,7 @@ NS_LOG_COMPONENT_DEFINE ("LteEnbPhy");
 
 namespace ns3 {
 
+NS_OBJECT_ENSURE_REGISTERED (LteEnbPhy);
 
 // duration of the data part of a subframe in DL
 // = 0.001 / 14 * 11 (fixed to 11 symbols) -1ns as margin to avoid overlapping simulator events
@@ -133,9 +134,6 @@ EnbMemberLteEnbPhySapProvider::SetSrsConfigurationIndex (uint16_t  rnti, uint16_
 // generic LteEnbPhy methods
 ////////////////////////////////////////
 
-
-
-NS_OBJECT_ENSURE_REGISTERED (LteEnbPhy);
 
 
 LteEnbPhy::LteEnbPhy ()
@@ -768,7 +766,7 @@ LteEnbPhy::CreateSrsReport(uint16_t rnti, double srs)
   (*it).second++;
   if ((*it).second == m_srsSamplePeriod)
     {
-      m_reportUeSinr (rnti, m_cellId, srs);
+      m_reportUeSinr (m_cellId, rnti, srs);
       (*it).second = 0;
     }
 }
