@@ -81,6 +81,7 @@ LteUeRrc::LteUeRrc ()
     m_cmacSapProvider (0),
     m_macSapProvider (0),
     m_asSapUser (0),
+    m_rnti (0),
     m_cellId (0)
 {
   NS_LOG_FUNCTION (this);
