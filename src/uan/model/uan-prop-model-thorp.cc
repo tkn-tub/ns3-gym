@@ -57,7 +57,7 @@ UanPropModelThorp::GetPathLossDb (Ptr<MobilityModel> a, Ptr<MobilityModel> b, Ua
   double dist = a->GetDistanceFrom (b);
 
   return m_SpreadCoef * 10.0 * std::log10 (dist)
-         + dist * GetAttenDbKm (mode.GetCenterFreqHz () / 1000.0);
+         + (dist / 1000.0) * GetAttenDbKm (mode.GetCenterFreqHz () / 1000.0);
 }
 
 UanPdp
