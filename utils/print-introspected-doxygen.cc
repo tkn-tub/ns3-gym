@@ -16,35 +16,35 @@ NS_LOG_COMPONENT_DEFINE ("PrintIntrospectedDoxygen");
 
 namespace
 {
-  std::string anchor;
-  std::string boldStart;
-  std::string boldStop;
-  std::string breakBoth;
-  std::string breakHtmlOnly;
-  std::string breakTextOnly;
-  std::string brief;
-  std::string commentStart;
-  std::string commentStop;
-  std::string defgroupAttributeListStart;
-  std::string defgroupAttributeListStop;
-  std::string defgroupGlobalValueListStart;
-  std::string defgroupGlobalValueListStop;
-  std::string defgroupTraceSourceListStart;
-  std::string defgroupTraceSourceListStop;
-  std::string flagSpanStart;
-  std::string flagSpanStop;
-  std::string functionStart;
-  std::string functionStop;
-  std::string headingStart;
-  std::string headingStop;
-  std::string indentHtmlOnly;
-  std::string ingroupConstructs;
-  std::string listStart;
-  std::string listStop;
-  std::string listLineStart;
-  std::string listLineStop;
-  std::string reference;
-  std::string temporaryCharacter;
+  std::string anchor;                        ///< hyperlink anchor
+  std::string boldStart;                     ///< start of bold span
+  std::string boldStop;                      ///< end of bold span
+  std::string breakBoth;                     ///< linebreak
+  std::string breakHtmlOnly;                 ///< linebreak for html output only
+  std::string breakTextOnly;                 ///< linebreak for text output only
+  std::string brief;                         ///< brief tag
+  std::string commentStart;                  ///< start of code comment
+  std::string commentStop;                   ///< end of code comment
+  std::string defgroupAttributeListStart;    ///< start of AttributeList group
+  std::string defgroupAttributeListStop;     ///< end of AttributeList group
+  std::string defgroupGlobalValueListStart;  ///< start of GlobalValueList group
+  std::string defgroupGlobalValueListStop;   ///< end of GlobalValueList group
+  std::string defgroupTraceSourceListStart;  ///< start of TraceSourceList group
+  std::string defgroupTraceSourceListStop;   ///< end of TraceSourceList group
+  std::string flagSpanStart;                 ///< start of Attribute flag value
+  std::string flagSpanStop;                  ///< end of Attribute flag value
+  std::string functionStart;                 ///< start of a class/function
+  std::string functionStop;                  ///< end of a class/function
+  std::string headingStart;                  ///< start of section heading (h3)
+  std::string headingStop;                   ///< end of section heading (h3)
+  std::string indentHtmlOnly;                ///< small indent
+  std::string ingroupConstructs;             ///< add to constructs group
+  std::string listStart;                     ///< start unordered list
+  std::string listStop;                      ///< end unordered list
+  std::string listLineStart;                 ///< start unordered list item
+  std::string listLineStop;                  ///< end unordered list item
+  std::string reference;                     ///< reference tag
+  std::string temporaryCharacter;            ///< "%" placeholder
 
 } // anonymous namespace
 
@@ -103,24 +103,83 @@ PrintTraceSources (TypeId tid, std::ostream &os)
 }
 
 
+/**
+ * Gather aggregation and configuration path information from registered types.
+ */
 class StaticInformation
 {
 public:
+  /**
+   * Record the a -> b aggregation relation.
+   *
+   * \param a [in] the source(?) TypeId name
+   * \param b [in] the destination(?) TypeId name
+   */
   void RecordAggregationInfo (std::string a, std::string b);
+  /**
+   * Gather aggregation and configuration path information for tid
+   *
+   * \param tid [in] the TypeId to gather information from
+   */
   void Gather (TypeId tid);
+  /**
+   * Print output in "a -> b" form on std::cout
+   */
   void Print (void) const;
 
+  /**
+   * \return the configuration paths for tid
+   *
+   * \param tid [in] the TypeId to return information for
+   */
   std::vector<std::string> Get (TypeId tid);
 
 private:
+  /**
+   * \return the current configuration path
+   */
   std::string GetCurrentPath (void) const;
+  /**
+   * Gather attribute, configuration path information for tid
+   *
+   * \param tid [in] the TypeId to gather information from
+   */
   void DoGather (TypeId tid);
+  /**
+   *  Record the current config path for tid.
+   *
+   * \param tid [in] the TypeId to record.
+   */
   void RecordOutput (TypeId tid);
+  /**
+   * \return whether the tid has already been processed
+   *
+   * \param tid [in] the TypeId to check.
+   */
   bool HasAlreadyBeenProcessed (TypeId tid) const;
+  /**
+   * (Inplace) find and replace all instances of string
+   *
+   * \param source [inout] string to search and replace in
+   * \param find [in] string to search for
+   * \param replace [in] string to insert in place of find
+   */
   void find_and_replace (std::string &source, const std::string find, std::string replace );
+  /**
+   * Configuration path for each TypeId
+   */
   std::vector<std::pair<TypeId,std::string> > m_output;
+  /**
+   * Current configuration path
+   */
   std::vector<std::string> m_currentPath;
+  /**
+   * List of TypeIds we've already processed
+   */
   std::vector<TypeId> m_alreadyProcessed;
+  /**
+   * List of aggregation relationships.
+   */
   std::vector<std::pair<TypeId,TypeId> > m_aggregates;
 };
 
