@@ -10,7 +10,7 @@ ROOT=`hg root`
 
 conf=$DIR/doxygen.conf
 
-sed -i.bak -E '/^EXTRACT_ALL |^HAVE_DOT /s/YES/no/' $conf
+sed -i.bak -E '/^EXTRACT_ALL |^HAVE_DOT |^WARNINGS /s/YES/no/' $conf
 rm -f $conf.bak
 
 echo -n "Rebuilding doxygen docs with full errors..."
@@ -26,16 +26,21 @@ else
     exit 1
 fi
 
+
+# Save the log file
+log=$DIR/doxygen.warnings.log
+
+mv $DIR/doxygen.log $log
+
 # Now we're ready to summarize the log
 
-logfile=$DIR/doxygen.warnings.log
 
 echo
 echo "Summary Report of Doxygen warnings:"
 echo
 echo "Count of warning by module:"
 echo "Count Module"
-grep "^$ROOT" $logfile  | \
+grep "^$ROOT" $log  | \
     cut -d ':' -f 1 | \
     sed "s|$ROOT||g" | \
     cut -d '/' -f 1-3 | \
@@ -46,9 +51,9 @@ grep "^$ROOT" $logfile  | \
 echo 
 
 undocparam=` \
-grep -v "^$ROOT" $logfile | \
+grep -v "^$ROOT" $log | \
     grep -v "not generated, too many nodes" | \
-    grep "^  parameter '" $logfile | \
+    grep "^  parameter '" $log | \
     wc -l | \
     sed 's/^[ \t]*//;s/[ \t]*$//' `
 
