@@ -1362,7 +1362,7 @@ PfFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
             }
           continue;
         }
-      if (rbAllocated + rbPerFlow > m_cschedCellConfig.m_ulBandwidth)
+      if (rbAllocated + rbPerFlow - 1 > m_cschedCellConfig.m_ulBandwidth)
         {
           // limit to physical resources last resource assignment
           rbPerFlow = m_cschedCellConfig.m_ulBandwidth - rbAllocated;
@@ -1372,7 +1372,7 @@ PfFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
       uldci.m_rnti = (*it).first;
       uldci.m_rbLen = rbPerFlow;
       bool allocated = false;
-      while ((!allocated)&&(rbAllocated < m_cschedCellConfig.m_ulBandwidth))
+      while ((!allocated)&&((rbAllocated + rbPerFlow - 1) < m_cschedCellConfig.m_ulBandwidth))
         {
           // check availability
           bool free = true;
@@ -1399,6 +1399,11 @@ PfFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
               break;
             }
           rbAllocated++;
+          if (rbAllocated + rbPerFlow - 1 > m_cschedCellConfig.m_ulBandwidth)
+            {
+              // limit to physical resources last resource assignment
+              rbPerFlow = m_cschedCellConfig.m_ulBandwidth - rbAllocated;
+            }
         }
       if (!allocated)
         {
