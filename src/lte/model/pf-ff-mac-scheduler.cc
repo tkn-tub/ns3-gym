@@ -1227,71 +1227,77 @@ PfFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
   rbMap.resize (m_cschedCellConfig.m_ulBandwidth, false);
 
 
-  //   Process UL HARQ feedback
-  //   update UL HARQ proc id
-  std::map <uint16_t, uint8_t>::iterator itProcId;
-  for (itProcId = m_ulHarqCurrentProcessId.begin (); itProcId != m_ulHarqCurrentProcessId.end (); itProcId++)
+  if (m_harqOn == true)
     {
-      (*itProcId).second = ((*itProcId).second + 1) % HARQ_PROC_NUM;
-    }
-  for (uint8_t i = 0; i < params.m_ulInfoList.size (); i++)
-    {
-      if (params.m_ulInfoList.at (i).m_receptionStatus == UlInfoListElement_s::NotOk)
+      //   Process UL HARQ feedback
+      //   update UL HARQ proc id
+      std::map <uint16_t, uint8_t>::iterator itProcId;
+      for (itProcId = m_ulHarqCurrentProcessId.begin (); itProcId != m_ulHarqCurrentProcessId.end (); itProcId++)
         {
-          // retx correspondent block: retrieve the UL-DCI
-          uint16_t rnti = params.m_ulInfoList.at (i).m_rnti;
-          uint8_t harqId = (uint8_t)((*itProcId).second - HARQ_PERIOD) % HARQ_PROC_NUM;
-          NS_LOG_INFO (this << " UL-HARQ retx RNTI " << rnti << " harqId " << (uint16_t)harqId);
-          std::map <uint16_t, UlHarqProcessesDciBuffer_t>::iterator itHarq = m_ulHarqProcessesDciBuffer.find (rnti);
-          if (itHarq == m_ulHarqProcessesDciBuffer.end ())
+          (*itProcId).second = ((*itProcId).second + 1) % HARQ_PROC_NUM;
+        }
+      for (uint8_t i = 0; i < params.m_ulInfoList.size (); i++)
+        {
+          if (params.m_ulInfoList.at (i).m_receptionStatus == UlInfoListElement_s::NotOk)
             {
-              NS_FATAL_ERROR ("No info find in UL-HARQ buffer for UE " << rnti);
-            }
-          itProcId = m_ulHarqCurrentProcessId.find (rnti);
-          if (itProcId == m_ulHarqCurrentProcessId.end ())
-            {
-              NS_FATAL_ERROR ("No info find in HARQ buffer for UE " << rnti);
-            }
-          UlDciListElement_s dci = (*itHarq).second.at (harqId);
-          std::map <uint16_t, UlHarqProcessesStatus_t>::iterator itStat = m_ulHarqProcessesStatus.find (rnti);
-          if (itStat == m_ulHarqProcessesStatus.end ())
-            {
-              NS_FATAL_ERROR ("No info find in HARQ buffer for UE " << rnti);
-            }
-          if ((*itStat).second.at (harqId) > 3)
-            {
-              NS_LOG_DEBUG ("Max number of retransmissions reached (UL)-> drop process");
-              continue;
-            }
-          bool free = true;
-          for (int j = dci.m_rbStart; j < dci.m_rbStart + dci.m_rbLen; j++)
-            {
-              if (rbMap.at (j) == true)
+              // retx correspondent block: retrieve the UL-DCI
+              uint16_t rnti = params.m_ulInfoList.at (i).m_rnti;
+              itProcId = m_ulHarqCurrentProcessId.find (rnti);
+              if (itProcId == m_ulHarqCurrentProcessId.end ())
                 {
-                  free = false;
-                  NS_LOG_INFO (this << " BUSY " << j);
+                  NS_FATAL_ERROR ("No info find in HARQ buffer for UE " << rnti);
                 }
-            }
-          if (free)
-            {
-              // retx on the same RBs
+              uint8_t harqId = (uint8_t)((*itProcId).second - HARQ_PERIOD) % HARQ_PROC_NUM;
+              NS_LOG_INFO (this << " UL-HARQ retx RNTI " << rnti << " harqId " << (uint16_t)harqId);
+              std::map <uint16_t, UlHarqProcessesDciBuffer_t>::iterator itHarq = m_ulHarqProcessesDciBuffer.find (rnti);
+              if (itHarq == m_ulHarqProcessesDciBuffer.end ())
+                {
+                  NS_FATAL_ERROR ("No info find in UL-HARQ buffer for UE " << rnti);
+                }
+              UlDciListElement_s dci = (*itHarq).second.at (harqId);
+              std::map <uint16_t, UlHarqProcessesStatus_t>::iterator itStat = m_ulHarqProcessesStatus.find (rnti);
+              if (itStat == m_ulHarqProcessesStatus.end ())
+                {
+                  NS_FATAL_ERROR ("No info find in HARQ buffer for UE " << rnti);
+                }
+              if ((*itStat).second.at (harqId) >= 3)
+                {
+                  NS_LOG_DEBUG ("Max number of retransmissions reached (UL)-> drop process");
+                  continue;
+                }
+              bool free = true;
               for (int j = dci.m_rbStart; j < dci.m_rbStart + dci.m_rbLen; j++)
                 {
-                  rbMap.at (j) = true;
-                  rbgAllocationMap.at (j) = dci.m_rnti;
-                  NS_LOG_INFO ("\t" << j);
-                  rbAllocatedNum++;
+                  if (rbMap.at (j) == true)
+                    {
+                      free = false;
+                      NS_LOG_INFO (this << " BUSY " << j);
+                    }
                 }
-              NS_LOG_INFO (this << " Send retx in the same RBGs " << (uint16_t)dci.m_rbStart << " to " << dci.m_rbStart + dci.m_rbLen);
+              if (free)
+                {
+                  // retx on the same RBs
+                  for (int j = dci.m_rbStart; j < dci.m_rbStart + dci.m_rbLen; j++)
+                    {
+                      rbMap.at (j) = true;
+                      rbgAllocationMap.at (j) = dci.m_rnti;
+                      NS_LOG_INFO ("\tRB " << j);
+                      rbAllocatedNum++;
+                    }
+                  NS_LOG_INFO (this << " Send retx in the same RBs " << (uint16_t)dci.m_rbStart << " to " << dci.m_rbStart + dci.m_rbLen << " RV " << (*itStat).second.at (harqId) + 1);
+                }
+              else
+                {
+                  NS_FATAL_ERROR ("Cannot allocare retx for UE " << rnti);
+                }
+              dci.m_ndi = 0;
+              // Update HARQ buffers with new HarqId
+              (*itStat).second.at ((*itProcId).second) = (*itStat).second.at (harqId) + 1;
+              (*itStat).second.at (harqId) = 0;
+              (*itHarq).second.at ((*itProcId).second) = dci;
+              ret.m_dciList.push_back (dci);
+              rntiAllocated.insert (dci.m_rnti);
             }
-          else
-            {
-              NS_FATAL_ERROR ("Cannot allocare retx for UE " << rnti);
-            }
-          dci.m_ndi = 0;
-          ret.m_dciList.push_back (dci);
-          rntiAllocated.insert (dci.m_rnti);
-
         }
     }
 
@@ -1315,11 +1321,10 @@ PfFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
 
 
   // Divide the remaining resources equally among the active users starting from the subsequent one served last scheduling trigger
-//   int rbPerFlow = m_cschedCellConfig.m_ulBandwidth / nflows;
   uint16_t rbPerFlow = (m_cschedCellConfig.m_ulBandwidth) / (nflows + rntiAllocated.size ());
   if (rbPerFlow == 0)
     {
-      rbPerFlow = 1;              // at least 1 rbg per flow (till available resource)
+      rbPerFlow = 1;  // at least 1 rbg per flow (till available resource)
     }
   int rbAllocated = 0;
 
@@ -1469,11 +1474,11 @@ PfFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
       uldci.m_freqHopping = 0;
       uldci.m_pdcchPowerOffset = 0; // not used
       ret.m_dciList.push_back (uldci);
-
       // store DCI for HARQ_PERIOD
       uint8_t harqId = 0;
       if (m_harqOn == true)
         {
+          std::map <uint16_t, uint8_t>::iterator itProcId;
           itProcId = m_ulHarqCurrentProcessId.find (uldci.m_rnti);
           if (itProcId == m_ulHarqCurrentProcessId.end ())
             {
