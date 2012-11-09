@@ -10,6 +10,9 @@
 # See test.py for more information.
 cpp_examples = [
     ("lena-cqi-threshold", "True", "True"),
+    ("lena-dual-stripe", "True", "True"),
+    ("lena-dual-stripe --simTime=0.0 --nApartmentsX=1 --homeEnbDeploymentRatio=0.5 --nMacroEnbSites=0 --macroUeDensity=0 --nBlocks=1", "True", "True"),
+    ("lena-dual-stripe --epc=1 --simTime=0.0 --nApartmentsX=1 --homeEnbDeploymentRatio=0.5 --nMacroEnbSites=0 --macroUeDensity=0 --nBlocks=1", "True", "True"),
     ("lena-dual-stripe --simTime=0.01", "True", "True"),
     ("lena-dual-stripe --epc=1 --simTime=0.01", "True", "True"),
     ("lena-dual-stripe --epc=1 --useUdp=0 --simTime=0.01", "True", "True"),

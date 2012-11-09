@@ -129,6 +129,7 @@ EpcHelper::GetTypeId (void)
 void
 EpcHelper::DoDispose ()
 {
+  NS_LOG_FUNCTION (this);
   m_tunDevice->SetSendCallback (MakeNullCallback<bool, Ptr<Packet>, const Address&, const Address&, uint16_t> ());
   m_tunDevice = 0;
   m_sgwPgwApp = 0;  
