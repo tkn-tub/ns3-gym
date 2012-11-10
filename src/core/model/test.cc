@@ -20,6 +20,7 @@
 #include "assert.h"
 #include "abort.h"
 #include "system-path.h"
+#include "log.h"
 #include <cmath>
 #include <cstring>
 #include <vector>
@@ -29,9 +30,12 @@
 
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("Test");
+
 bool
 TestDoubleIsEqual (const double x1, const double x2, const double epsilon)
 {
+  NS_LOG_FUNCTION (x1 << x2 << epsilon);
   int exponent;
   double delta, difference;
 
@@ -127,10 +131,14 @@ TestCaseFailure::TestCaseFailure (std::string _cond, std::string _actual,
                                   std::string _file, int32_t _line)
   : cond (_cond), actual (_actual), limit (_limit),
     message (_message), file (_file), line (_line)
-{}
+{
+  NS_LOG_FUNCTION (this << _cond << _actual << _limit << _message << _file << _line);
+}
 TestCase::Result::Result ()
   : childrenFailed (false)
-{}
+{
+  NS_LOG_FUNCTION (this);
+}
 
 
 
@@ -141,10 +149,12 @@ TestCase::TestCase (std::string name)
     m_result (0),
     m_name (name)
 {
+  NS_LOG_FUNCTION (this << name);
 }
 
 TestCase::~TestCase ()
 {
+  NS_LOG_FUNCTION (this);
   NS_ASSERT (m_runner == 0);
   m_parent = 0;
   delete m_result;
@@ -158,6 +168,7 @@ TestCase::~TestCase ()
 void
 TestCase::AddTestCase (TestCase *testCase)
 {
+  NS_LOG_FUNCTION (&testCase);
   m_children.push_back (testCase);
   testCase->m_parent = this;
 
@@ -187,12 +198,14 @@ TestCase::AddTestCase (TestCase *testCase)
 bool
 TestCase::IsFailed (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_result->childrenFailed || !m_result->failure.empty ();
 }
 
 void 
 TestCase::Run (TestRunnerImpl *runner)
 {
+  NS_LOG_FUNCTION (this << runner);
   m_result = new Result ();
   m_runner = runner;
   DoSetup ();
@@ -215,6 +228,7 @@ TestCase::Run (TestRunnerImpl *runner)
 std::string 
 TestCase::GetName (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_name;
 }
 void
@@ -222,6 +236,7 @@ TestCase::ReportTestFailure (std::string cond, std::string actual,
                              std::string limit, std::string message, 
                              std::string file, int32_t line)
 {
+  NS_LOG_FUNCTION (this << cond << actual << limit << message << file << line);
   m_result->failure.push_back (TestCaseFailure (cond, actual, limit,
                                                 message, file, line));
   // set childrenFailed flag on parents.
@@ -236,17 +251,20 @@ TestCase::ReportTestFailure (std::string cond, std::string actual,
 bool 
 TestCase::MustAssertOnFailure (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_runner->MustAssertOnFailure ();
 }
 bool 
 TestCase::MustContinueOnFailure (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_runner->MustContinueOnFailure ();
 }
 
 std::string 
 TestCase::CreateDataDirFilename (std::string filename)
 {
+  NS_LOG_FUNCTION (this << filename);
   const TestCase *current = this;
   while (current->m_dataDir == "" && current != 0)
     {
@@ -264,6 +282,7 @@ TestCase::CreateDataDirFilename (std::string filename)
 std::string 
 TestCase::CreateTempDirFilename (std::string filename)
 {
+  NS_LOG_FUNCTION (this << filename);
   if (m_runner->MustUpdateData ())
     {
       return CreateDataDirFilename (filename);
@@ -285,49 +304,61 @@ TestCase::CreateTempDirFilename (std::string filename)
 bool 
 TestCase::GetErrorStatus (void) const
 {
+  NS_LOG_FUNCTION (this);
   return IsStatusFailure ();
 }
 bool 
 TestCase::IsStatusFailure (void) const
 {
+  NS_LOG_FUNCTION (this);
   return !IsStatusSuccess ();
 }
 bool 
 TestCase::IsStatusSuccess (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_result->failure.empty ();
 }
 
 void 
 TestCase::SetDataDir (std::string directory)
 {
+  NS_LOG_FUNCTION (this << directory);
   m_dataDir = directory;
 }
 
 void 
 TestCase::DoSetup (void)
-{}
+{
+  NS_LOG_FUNCTION (this);
+}
 void 
 TestCase::DoTeardown (void)
-{}
+{
+  NS_LOG_FUNCTION (this);
+}
 
 
 TestSuite::TestSuite (std::string name, TestSuite::Type type)
   : TestCase (name), 
     m_type (type)
 {
+  NS_LOG_FUNCTION (this << name << type);
   TestRunnerImpl::Instance ()->AddTestSuite (this);
 }
 
 TestSuite::Type 
 TestSuite::GetTestType (void)
 {
+  NS_LOG_FUNCTION (this);
   return m_type;
 }
 
 void 
 TestSuite::DoRun (void)
-{}
+{
+  NS_LOG_FUNCTION (this);
+}
 
 TestRunnerImpl::TestRunnerImpl ()
  : m_tempDir (""),
@@ -335,10 +366,12 @@ TestRunnerImpl::TestRunnerImpl ()
    m_continueOnFailure (true),
    m_updateData (false)
 {
+  NS_LOG_FUNCTION (this);
 }
 
 TestRunnerImpl::~TestRunnerImpl ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 
@@ -346,6 +379,7 @@ TestRunnerImpl::~TestRunnerImpl ()
 TestRunnerImpl *
 TestRunnerImpl::Instance (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   static TestRunnerImpl runner;
   return &runner;
 }
@@ -353,6 +387,7 @@ TestRunnerImpl::Instance (void)
 void
 TestRunnerImpl::AddTestSuite (TestSuite *testSuite)
 {
+  NS_LOG_FUNCTION (this << testSuite);
   m_suites.push_back (testSuite);
 }
 
@@ -360,27 +395,32 @@ TestRunnerImpl::AddTestSuite (TestSuite *testSuite)
 bool 
 TestRunnerImpl::MustAssertOnFailure (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_assertOnFailure;
 }
 bool 
 TestRunnerImpl::MustContinueOnFailure (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_continueOnFailure;
 }
 
 bool 
 TestRunnerImpl::MustUpdateData (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_updateData;
 }
 std::string
 TestRunnerImpl::GetTempDir (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_tempDir;
 }
 bool
 TestRunnerImpl::IsTopLevelSourceDir (std::string path) const
 {
+  NS_LOG_FUNCTION (this << path);
   bool haveVersion = false;
   bool haveLicense = false;
   
@@ -408,6 +448,7 @@ TestRunnerImpl::IsTopLevelSourceDir (std::string path) const
 std::string 
 TestRunnerImpl::GetTopLevelSourceDir (void) const
 {
+  NS_LOG_FUNCTION (this);
   std::string self = SystemPath::FindSelfDirectory ();
   std::list<std::string> elements = SystemPath::Split (self);
   while (!elements.empty ())
@@ -430,6 +471,7 @@ TestRunnerImpl::GetTopLevelSourceDir (void) const
 std::string
 TestRunnerImpl::ReplaceXmlSpecialCharacters (std::string xml) const
 {
+  NS_LOG_FUNCTION (this << xml);
   std::string specials = "<>&\"'";
   std::string replacements[] = {"&lt;", "&gt;", "&amp;", "&#39;", "&quot;"};
   std::string result;
@@ -458,9 +500,12 @@ struct Indent
 };
 Indent::Indent (int _level)
   : level (_level)
-{}
+{
+  NS_LOG_FUNCTION (this << _level);
+}
 std::ostream &operator << (std::ostream &os, const Indent &val)
 {
+  NS_LOG_FUNCTION (&os << &val);
   for (int i = 0; i < val.level; i++)
     {
       os << "  ";
@@ -471,6 +516,7 @@ std::ostream &operator << (std::ostream &os, const Indent &val)
 void
 TestRunnerImpl::PrintReport (TestCase *test, std::ostream *os, bool xml, int level)
 {
+  NS_LOG_FUNCTION (this << test << os << xml << level);
   if (test->m_result == 0)
     {
       // Do not print reports for tests that were not run.
@@ -543,6 +589,7 @@ TestRunnerImpl::PrintReport (TestCase *test, std::ostream *os, bool xml, int lev
 void
 TestRunnerImpl::PrintHelp (const char *program_name) const
 {
+  NS_LOG_FUNCTION (this << program_name);
   std::cout << "Usage: " << program_name << " [OPTIONS]" << std::endl
             << std::endl
             << "Options: "
@@ -575,6 +622,7 @@ TestRunnerImpl::PrintTestNameList (std::list<TestCase *>::const_iterator begin,
                                    std::list<TestCase *>::const_iterator end,
                                    bool printTestType) const
 {
+  NS_LOG_FUNCTION (this << &begin << &end << printTestType);
   std::map<TestSuite::Type, std::string> label;
 
   label[TestSuite::ALL]         = "all          ";
@@ -598,6 +646,7 @@ TestRunnerImpl::PrintTestNameList (std::list<TestCase *>::const_iterator begin,
 void
 TestRunnerImpl::PrintTestTypeList (void) const
 {
+  NS_LOG_FUNCTION (this);
   std::cout << "  bvt:         Build Verification Tests (to see if build completed successfully)" << std::endl;
   std::cout << "  core:        Run all TestSuite-based tests (exclude examples)" << std::endl;
   std::cout << "  example:     Examples (to see if example programs run successfully)" << std::endl;
@@ -610,6 +659,7 @@ TestRunnerImpl::PrintTestTypeList (void) const
 std::list<TestCase *>
 TestRunnerImpl::FilterTests (std::string testName, enum TestSuite::Type testType) const
 {
+  NS_LOG_FUNCTION (this << testName << testType);
   std::list<TestCase *> tests;
   for (uint32_t i = 0; i < m_suites.size (); ++i)
     {
@@ -633,6 +683,7 @@ TestRunnerImpl::FilterTests (std::string testName, enum TestSuite::Type testType
 int 
 TestRunnerImpl::Run (int argc, char *argv[])
 {
+  NS_LOG_FUNCTION (this << argc << argv);
   std::string testName = "";
   std::string testTypeString = "";
   std::string out = "";
@@ -832,6 +883,7 @@ TestRunnerImpl::Run (int argc, char *argv[])
 int 
 TestRunner::Run (int argc, char *argv[])
 {
+  NS_LOG_FUNCTION (argc << argv);
   return TestRunnerImpl::Instance ()->Run (argc, argv);
 }
 

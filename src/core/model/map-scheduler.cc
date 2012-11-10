@@ -34,6 +34,7 @@ NS_OBJECT_ENSURE_REGISTERED (MapScheduler);
 TypeId
 MapScheduler::GetTypeId (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   static TypeId tid = TypeId ("ns3::MapScheduler")
     .SetParent<Scheduler> ()
     .AddConstructor<MapScheduler> ()
@@ -43,9 +44,11 @@ MapScheduler::GetTypeId (void)
 
 MapScheduler::MapScheduler ()
 {
+  NS_LOG_FUNCTION (this);
 }
 MapScheduler::~MapScheduler ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 void
@@ -60,6 +63,7 @@ MapScheduler::Insert (const Event &ev)
 bool
 MapScheduler::IsEmpty (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_list.empty ();
 }
 

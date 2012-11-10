@@ -18,6 +18,9 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "watchdog.h"
+#include "log.h"
+
+NS_LOG_COMPONENT_DEFINE ("Watchdog");
 
 namespace ns3 {
 
@@ -26,16 +29,19 @@ Watchdog::Watchdog ()
     m_event (),
     m_end (MicroSeconds (0))
 {
+  NS_LOG_FUNCTION_NOARGS ();
 }
 
 Watchdog::~Watchdog ()
 {
+  NS_LOG_FUNCTION (this);
   delete m_impl;
 }
 
 void
 Watchdog::Ping (Time delay)
 {
+  NS_LOG_FUNCTION (this << delay);
   Time end = Simulator::Now () + delay;
   m_end = std::max (m_end, end);
   if (m_event.IsRunning ())
@@ -48,6 +54,7 @@ Watchdog::Ping (Time delay)
 void
 Watchdog::Expire (void)
 {
+  NS_LOG_FUNCTION (this);
   if (m_end == Simulator::Now ())
     {
       m_impl->Invoke ();

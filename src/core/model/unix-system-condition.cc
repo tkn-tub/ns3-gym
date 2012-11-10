@@ -51,7 +51,7 @@ private:
 
 SystemConditionPrivate::SystemConditionPrivate ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 
   m_condition = false;
 
@@ -76,7 +76,7 @@ SystemConditionPrivate::SystemConditionPrivate ()
 
 SystemConditionPrivate::~SystemConditionPrivate() 
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   pthread_mutex_destroy (&m_mutex);
   pthread_cond_destroy (&m_cond);
 }
@@ -84,21 +84,21 @@ SystemConditionPrivate::~SystemConditionPrivate()
 void
 SystemConditionPrivate::SetCondition (bool condition)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << condition);
   m_condition = condition;
 }
 	
 bool
 SystemConditionPrivate::GetCondition (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return m_condition;
 }
 	
 void
 SystemConditionPrivate::Signal (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 
   pthread_mutex_lock (&m_mutex);
   pthread_cond_signal (&m_cond);
@@ -108,7 +108,7 @@ SystemConditionPrivate::Signal (void)
 void
 SystemConditionPrivate::Broadcast (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 
   pthread_mutex_lock (&m_mutex);
   pthread_cond_broadcast (&m_cond);
@@ -118,7 +118,7 @@ SystemConditionPrivate::Broadcast (void)
 void
 SystemConditionPrivate::Wait (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 
   pthread_mutex_lock (&m_mutex);
   m_condition = false;
@@ -132,7 +132,7 @@ SystemConditionPrivate::Wait (void)
 bool
 SystemConditionPrivate::TimedWait (uint64_t ns)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << ns);
 
   struct timespec ts;
   ts.tv_sec = ns / NS_PER_SEC;
@@ -168,54 +168,54 @@ SystemConditionPrivate::TimedWait (uint64_t ns)
 SystemCondition::SystemCondition() 
   : m_priv (new SystemConditionPrivate ())
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);;
 }
 
 SystemCondition::~SystemCondition () 
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   delete m_priv;
 }
 
 void
 SystemCondition::SetCondition (bool condition) 
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << condition);
   m_priv->SetCondition (condition);
 }
 
 bool
 SystemCondition::GetCondition (void) 
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return m_priv->GetCondition ();
 }
 
 void
 SystemCondition::Signal (void) 
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   m_priv->Signal ();
 }
 
 void
 SystemCondition::Broadcast (void) 
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   m_priv->Broadcast ();
 }
 
 void
 SystemCondition::Wait (void) 
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   m_priv->Wait ();
 }
 
 bool
 SystemCondition::TimedWait (uint64_t ns) 
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << ns);
   return m_priv->TimedWait (ns);
 }
 

@@ -1,6 +1,9 @@
 #include "int64x64-128.h"
 #include "abort.h"
 #include "assert.h"
+#include "log.h"
+
+NS_LOG_COMPONENT_DEFINE ("int64x64-128");
 
 namespace ns3 {
 
@@ -19,6 +22,7 @@ namespace ns3 {
 void
 int64x64_t::Mul (int64x64_t const &o)
 {
+  NS_LOG_FUNCTION (this << &o);
   bool negResult;
   uint128_t a, b;
   negResult = OUTPUT_SIGN (_v, o._v, a, b);
@@ -31,6 +35,7 @@ int64x64_t::Mul (int64x64_t const &o)
 uint128_t
 int64x64_t::Umul (uint128_t a, uint128_t b)
 {
+  NS_LOG_FUNCTION (&a << &b);
   uint128_t aL = a & MASK_LO;
   uint128_t bL = b & MASK_LO;
   uint128_t aH = (a >> 64) & MASK_LO;
@@ -60,6 +65,7 @@ int64x64_t::Umul (uint128_t a, uint128_t b)
 void
 int64x64_t::Div (int64x64_t const &o)
 {
+  NS_LOG_FUNCTION (this << &o);
   bool negResult;
   uint128_t a, b;
   negResult = OUTPUT_SIGN (_v, o._v, a, b);
@@ -71,6 +77,7 @@ int64x64_t::Div (int64x64_t const &o)
 uint128_t
 int64x64_t::Divu (uint128_t a, uint128_t b)
 {
+  NS_LOG_FUNCTION (&a << &b);
   uint128_t quo = a / b;
   uint128_t rem = (a % b);
   uint128_t result = quo << 64;
@@ -94,6 +101,7 @@ int64x64_t::Divu (uint128_t a, uint128_t b)
 void 
 int64x64_t::MulByInvert (const int64x64_t &o)
 {
+  NS_LOG_FUNCTION (this << &o);
   bool negResult = _v < 0;
   uint128_t a = negResult ? -_v : _v;
   uint128_t result = UmulByInvert (a, o._v);
@@ -103,6 +111,7 @@ int64x64_t::MulByInvert (const int64x64_t &o)
 uint128_t
 int64x64_t::UmulByInvert (uint128_t a, uint128_t b)
 {
+  NS_LOG_FUNCTION (&a << &b);
   uint128_t result, ah, bh, al, bl;
   uint128_t hi, mid;
   ah = a >> 64;
@@ -118,6 +127,7 @@ int64x64_t::UmulByInvert (uint128_t a, uint128_t b)
 int64x64_t 
 int64x64_t::Invert (uint64_t v)
 {
+  NS_LOG_FUNCTION (v);
   NS_ASSERT (v > 1);
   uint128_t a;
   a = 1;

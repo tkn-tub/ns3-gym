@@ -20,12 +20,15 @@
 #include "type-id.h"
 #include "singleton.h"
 #include "trace-source-accessor.h"
+#include "log.h"
 #include <vector>
 #include <sstream>
 
 /*********************************************************************
  *         Helper code
  *********************************************************************/
+
+NS_LOG_COMPONENT_DEFINE ("TypeID");
 
 namespace {
 
@@ -89,11 +92,13 @@ private:
 
 IidManager::IidManager ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 uint16_t
 IidManager::AllocateUid (std::string name)
 {
+  NS_LOG_FUNCTION (this << name);
   uint16_t j = 1;
   for (Iterator i = m_information.begin (); i != m_information.end (); i++)
     {
@@ -119,6 +124,7 @@ IidManager::AllocateUid (std::string name)
 struct IidManager::IidInformation *
 IidManager::LookupInformation (uint16_t uid) const
 {
+  NS_LOG_FUNCTION (this << uid);
   NS_ASSERT (uid <= m_information.size () && uid != 0);
   return const_cast<struct IidInformation *> (&m_information[uid-1]);
 }
@@ -126,6 +132,7 @@ IidManager::LookupInformation (uint16_t uid) const
 void 
 IidManager::SetParent (uint16_t uid, uint16_t parent)
 {
+  NS_LOG_FUNCTION (this << uid << parent);
   NS_ASSERT (parent <= m_information.size ());
   struct IidInformation *information = LookupInformation (uid);
   information->parent = parent;
@@ -133,12 +140,14 @@ IidManager::SetParent (uint16_t uid, uint16_t parent)
 void 
 IidManager::SetGroupName (uint16_t uid, std::string groupName)
 {
+  NS_LOG_FUNCTION (this << uid << groupName);
   struct IidInformation *information = LookupInformation (uid);
   information->groupName = groupName;
 }
 void
 IidManager::HideFromDocumentation (uint16_t uid)
 {
+  NS_LOG_FUNCTION (this << uid);
   struct IidInformation *information = LookupInformation (uid);
   information->mustHideFromDocumentation = true;
 }
@@ -146,6 +155,7 @@ IidManager::HideFromDocumentation (uint16_t uid)
 void 
 IidManager::AddConstructor (uint16_t uid, ns3::Callback<ns3::ObjectBase *> callback)
 {
+  NS_LOG_FUNCTION (this << uid << &callback);
   struct IidInformation *information = LookupInformation (uid);
   if (information->hasConstructor)
     {
@@ -158,6 +168,7 @@ IidManager::AddConstructor (uint16_t uid, ns3::Callback<ns3::ObjectBase *> callb
 uint16_t 
 IidManager::GetUid (std::string name) const
 {
+  NS_LOG_FUNCTION (this << name);
   uint32_t j = 1;
   for (Iterator i = m_information.begin (); i != m_information.end (); i++)
     {
@@ -173,18 +184,21 @@ IidManager::GetUid (std::string name) const
 std::string 
 IidManager::GetName (uint16_t uid) const
 {
+  NS_LOG_FUNCTION (this << uid);
   struct IidInformation *information = LookupInformation (uid);
   return information->name;
 }
 uint16_t 
 IidManager::GetParent (uint16_t uid) const
 {
+  NS_LOG_FUNCTION (this << uid);
   struct IidInformation *information = LookupInformation (uid);
   return information->parent;
 }
 std::string 
 IidManager::GetGroupName (uint16_t uid) const
 {
+  NS_LOG_FUNCTION (this << uid);
   struct IidInformation *information = LookupInformation (uid);
   return information->groupName;
 }
@@ -192,6 +206,7 @@ IidManager::GetGroupName (uint16_t uid) const
 ns3::Callback<ns3::ObjectBase *> 
 IidManager::GetConstructor (uint16_t uid) const
 {
+  NS_LOG_FUNCTION (this << uid);
   struct IidInformation *information = LookupInformation (uid);
   if (!information->hasConstructor)
     {
@@ -203,6 +218,7 @@ IidManager::GetConstructor (uint16_t uid) const
 bool 
 IidManager::HasConstructor (uint16_t uid) const
 {
+  NS_LOG_FUNCTION (this << uid);
   struct IidInformation *information = LookupInformation (uid);
   return information->hasConstructor;
 }
@@ -210,11 +226,13 @@ IidManager::HasConstructor (uint16_t uid) const
 uint32_t 
 IidManager::GetRegisteredN (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_information.size ();
 }
 uint16_t 
 IidManager::GetRegistered (uint32_t i) const
 {
+  NS_LOG_FUNCTION (this << i);
   return i + 1;
 }
 
@@ -222,6 +240,7 @@ bool
 IidManager::HasAttribute (uint16_t uid,
                           std::string name)
 {
+  NS_LOG_FUNCTION (this << uid << name);
   struct IidInformation *information  = LookupInformation (uid);
   while (true)
     {
@@ -254,6 +273,7 @@ IidManager::AddAttribute (uint16_t uid,
                           ns3::Ptr<const ns3::AttributeAccessor> accessor,
                           ns3::Ptr<const ns3::AttributeChecker> checker)
 {
+  NS_LOG_FUNCTION (this << uid << name << help << flags << initialValue << accessor << checker);
   struct IidInformation *information = LookupInformation (uid);
   if (HasAttribute (uid, name))
     {
@@ -275,6 +295,7 @@ IidManager::SetAttributeInitialValue(uint16_t uid,
                                      uint32_t i,
                                      ns3::Ptr<const ns3::AttributeValue> initialValue)
 {
+  NS_LOG_FUNCTION (this << uid << i << initialValue);
   struct IidInformation *information = LookupInformation (uid);
   NS_ASSERT (i < information->attributes.size ());
   information->attributes[i].initialValue = initialValue;
@@ -285,12 +306,14 @@ IidManager::SetAttributeInitialValue(uint16_t uid,
 uint32_t 
 IidManager::GetAttributeN (uint16_t uid) const
 {
+  NS_LOG_FUNCTION (this << uid);
   struct IidInformation *information = LookupInformation (uid);
   return information->attributes.size ();
 }
 struct ns3::TypeId::AttributeInformation 
 IidManager::GetAttribute(uint16_t uid, uint32_t i) const
 {
+  NS_LOG_FUNCTION (this << uid << i);
   struct IidInformation *information = LookupInformation (uid);
   NS_ASSERT (i < information->attributes.size ());
   return information->attributes[i];
@@ -300,6 +323,7 @@ bool
 IidManager::HasTraceSource (uint16_t uid,
                             std::string name)
 {
+  NS_LOG_FUNCTION (this << uid << name);
   struct IidInformation *information  = LookupInformation (uid);
   while (true)
     {
@@ -329,6 +353,7 @@ IidManager::AddTraceSource (uint16_t uid,
                             std::string help,
                             ns3::Ptr<const ns3::TraceSourceAccessor> accessor)
 {
+  NS_LOG_FUNCTION (this << uid << name << help << accessor);
   struct IidInformation *information  = LookupInformation (uid);
   if (HasTraceSource (uid, name))
     {
@@ -344,12 +369,14 @@ IidManager::AddTraceSource (uint16_t uid,
 uint32_t 
 IidManager::GetTraceSourceN (uint16_t uid) const
 {
+  NS_LOG_FUNCTION (this << uid);
   struct IidInformation *information = LookupInformation (uid);
   return information->traceSources.size ();
 }
 struct ns3::TypeId::TraceSourceInformation 
 IidManager::GetTraceSource(uint16_t uid, uint32_t i) const
 {
+  NS_LOG_FUNCTION (this << uid << i);
   struct IidInformation *information = LookupInformation (uid);
   NS_ASSERT (i < information->traceSources.size ());
   return information->traceSources[i];
@@ -357,6 +384,7 @@ IidManager::GetTraceSource(uint16_t uid, uint32_t i) const
 bool 
 IidManager::MustHideFromDocumentation (uint16_t uid) const
 {
+  NS_LOG_FUNCTION (this << uid);
   struct IidInformation *information = LookupInformation (uid);
   return information->mustHideFromDocumentation;
 }
@@ -371,6 +399,7 @@ namespace ns3 {
 
 TypeId::TypeId (const char *name)
 {
+  NS_LOG_FUNCTION (this << name);
   uint16_t uid = Singleton<IidManager>::Get ()->AllocateUid (name);
   NS_ASSERT (uid != 0);
   m_tid = uid;
@@ -380,10 +409,12 @@ TypeId::TypeId (const char *name)
 TypeId::TypeId (uint16_t tid)
   : m_tid (tid)
 {
+  NS_LOG_FUNCTION (this << tid);
 }
 TypeId
 TypeId::LookupByName (std::string name)
 {
+  NS_LOG_FUNCTION (name);
   uint16_t uid = Singleton<IidManager>::Get ()->GetUid (name);
   NS_ASSERT_MSG (uid != 0, "Assert in TypeId::LookupByName: " << name << " not found");
   return TypeId (uid);
@@ -391,6 +422,7 @@ TypeId::LookupByName (std::string name)
 bool
 TypeId::LookupByNameFailSafe (std::string name, TypeId *tid)
 {
+  NS_LOG_FUNCTION (name << tid);
   uint16_t uid = Singleton<IidManager>::Get ()->GetUid (name);
   if (uid == 0)
     {
@@ -403,17 +435,20 @@ TypeId::LookupByNameFailSafe (std::string name, TypeId *tid)
 uint32_t 
 TypeId::GetRegisteredN (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   return Singleton<IidManager>::Get ()->GetRegisteredN ();
 }
 TypeId 
 TypeId::GetRegistered (uint32_t i)
 {
+  NS_LOG_FUNCTION (i);
   return TypeId (Singleton<IidManager>::Get ()->GetRegistered (i));
 }
 
 bool
 TypeId::LookupAttributeByName (std::string name, struct TypeId::AttributeInformation *info) const
 {
+  NS_LOG_FUNCTION (this << name << info);
   TypeId tid;
   TypeId nextTid = *this;
   do {
@@ -435,30 +470,35 @@ TypeId::LookupAttributeByName (std::string name, struct TypeId::AttributeInforma
 TypeId 
 TypeId::SetParent (TypeId tid)
 {
+  NS_LOG_FUNCTION (this << tid);
   Singleton<IidManager>::Get ()->SetParent (m_tid, tid.m_tid);
   return *this;
 }
 TypeId 
 TypeId::SetGroupName (std::string groupName)
 {
+  NS_LOG_FUNCTION (this << groupName);
   Singleton<IidManager>::Get ()->SetGroupName (m_tid, groupName);
   return *this;
 }
 TypeId 
 TypeId::GetParent (void) const
 {
+  NS_LOG_FUNCTION (this);
   uint16_t parent = Singleton<IidManager>::Get ()->GetParent (m_tid);
   return TypeId (parent);
 }
 bool 
 TypeId::HasParent (void) const
 {
+  NS_LOG_FUNCTION (this);
   uint16_t parent = Singleton<IidManager>::Get ()->GetParent (m_tid);
   return parent != m_tid;
 }
 bool 
 TypeId::IsChildOf (TypeId other) const
 {
+  NS_LOG_FUNCTION (this << other);
   TypeId tmp = *this;
   while (tmp != other && tmp != tmp.GetParent ())
     {
@@ -469,6 +509,7 @@ TypeId::IsChildOf (TypeId other) const
 std::string 
 TypeId::GetGroupName (void) const
 {
+  NS_LOG_FUNCTION (this);
   std::string groupName = Singleton<IidManager>::Get ()->GetGroupName (m_tid);
   return groupName;
 }
@@ -476,6 +517,7 @@ TypeId::GetGroupName (void) const
 std::string 
 TypeId::GetName (void) const
 {
+  NS_LOG_FUNCTION (this);
   std::string name = Singleton<IidManager>::Get ()->GetName (m_tid);
   return name;
 }
@@ -483,6 +525,7 @@ TypeId::GetName (void) const
 bool 
 TypeId::HasConstructor (void) const
 {
+  NS_LOG_FUNCTION (this);
   bool hasConstructor = Singleton<IidManager>::Get ()->HasConstructor (m_tid);
   return hasConstructor;
 }
@@ -490,6 +533,7 @@ TypeId::HasConstructor (void) const
 void
 TypeId::DoAddConstructor (Callback<ObjectBase *> cb)
 {
+  NS_LOG_FUNCTION (this << &cb);
   Singleton<IidManager>::Get ()->AddConstructor (m_tid, cb);
 }
 
@@ -500,6 +544,7 @@ TypeId::AddAttribute (std::string name,
                       Ptr<const AttributeAccessor> accessor,
                       Ptr<const AttributeChecker> checker)
 {
+  NS_LOG_FUNCTION (this << name << help << &initialValue << accessor << checker);
   Singleton<IidManager>::Get ()->AddAttribute (m_tid, name, help, ATTR_SGC, initialValue.Copy (), accessor, checker);
   return *this;
 }
@@ -512,6 +557,7 @@ TypeId::AddAttribute (std::string name,
                       Ptr<const AttributeAccessor> accessor,
                       Ptr<const AttributeChecker> checker)
 {
+  NS_LOG_FUNCTION (this << name << help << flags << &initialValue << accessor << checker);
   Singleton<IidManager>::Get ()->AddAttribute (m_tid, name, help, flags, initialValue.Copy (), accessor, checker);
   return *this;
 }
@@ -520,6 +566,7 @@ bool
 TypeId::SetAttributeInitialValue(uint32_t i, 
                                  Ptr<const AttributeValue> initialValue)
 {
+  NS_LOG_FUNCTION (this << i << initialValue);
   Singleton<IidManager>::Get ()->SetAttributeInitialValue (m_tid, i, initialValue);
   return true;
 }
@@ -528,6 +575,7 @@ TypeId::SetAttributeInitialValue(uint32_t i,
 Callback<ObjectBase *> 
 TypeId::GetConstructor (void) const
 {
+  NS_LOG_FUNCTION (this);
   Callback<ObjectBase *>  cb = Singleton<IidManager>::Get ()->GetConstructor (m_tid);
   return cb;
 }
@@ -535,6 +583,7 @@ TypeId::GetConstructor (void) const
 bool 
 TypeId::MustHideFromDocumentation (void) const
 {
+  NS_LOG_FUNCTION (this);
   bool mustHide = Singleton<IidManager>::Get ()->MustHideFromDocumentation (m_tid);
   return mustHide;
 }
@@ -542,17 +591,20 @@ TypeId::MustHideFromDocumentation (void) const
 uint32_t 
 TypeId::GetAttributeN (void) const
 {
+  NS_LOG_FUNCTION (this);
   uint32_t n = Singleton<IidManager>::Get ()->GetAttributeN (m_tid);
   return n;
 }
 struct TypeId::AttributeInformation 
 TypeId::GetAttribute(uint32_t i) const
 {
+  NS_LOG_FUNCTION (this << i);
   return Singleton<IidManager>::Get ()->GetAttribute(m_tid, i);
 }
 std::string 
 TypeId::GetAttributeFullName (uint32_t i) const
 {
+  NS_LOG_FUNCTION (this << i);
   struct TypeId::AttributeInformation info = GetAttribute(i);
   return GetName () + "::" + info.name;
 }
@@ -560,11 +612,13 @@ TypeId::GetAttributeFullName (uint32_t i) const
 uint32_t 
 TypeId::GetTraceSourceN (void) const
 {
+  NS_LOG_FUNCTION (this);
   return Singleton<IidManager>::Get ()->GetTraceSourceN (m_tid);
 }
 struct TypeId::TraceSourceInformation 
 TypeId::GetTraceSource(uint32_t i) const
 {
+  NS_LOG_FUNCTION (this << i);
   return Singleton<IidManager>::Get ()->GetTraceSource(m_tid, i);
 }
 
@@ -573,6 +627,7 @@ TypeId::AddTraceSource (std::string name,
                         std::string help,
                         Ptr<const TraceSourceAccessor> accessor)
 {
+  NS_LOG_FUNCTION (this << name << help << accessor);
   Singleton<IidManager>::Get ()->AddTraceSource (m_tid, name, help, accessor);
   return *this;
 }
@@ -580,6 +635,7 @@ TypeId::AddTraceSource (std::string name,
 TypeId 
 TypeId::HideFromDocumentation (void)
 {
+  NS_LOG_FUNCTION (this);
   Singleton<IidManager>::Get ()->HideFromDocumentation (m_tid);
   return *this;
 }
@@ -588,6 +644,7 @@ TypeId::HideFromDocumentation (void)
 Ptr<const TraceSourceAccessor> 
 TypeId::LookupTraceSourceByName (std::string name) const
 {
+  NS_LOG_FUNCTION (this << name);
   TypeId tid;
   TypeId nextTid = *this;
   do {
@@ -608,21 +665,25 @@ TypeId::LookupTraceSourceByName (std::string name) const
 uint16_t 
 TypeId::GetUid (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_tid;
 }
 void 
 TypeId::SetUid (uint16_t tid)
 {
+  NS_LOG_FUNCTION (this << tid);
   m_tid = tid;
 }
 
 std::ostream & operator << (std::ostream &os, TypeId tid)
 {
+  NS_LOG_FUNCTION (&os << &tid);
   os << tid.GetName ();
   return os;
 }
 std::istream & operator >> (std::istream &is, TypeId &tid)
 {
+  NS_LOG_FUNCTION (&is << &tid);
   std::string tidString;
   is >> tidString;
   bool ok = TypeId::LookupByNameFailSafe (tidString, &tid);
@@ -638,6 +699,7 @@ ATTRIBUTE_HELPER_CPP (TypeId);
 
 bool operator < (TypeId a, TypeId b)
 {
+  NS_LOG_FUNCTION (a << b);
   return a.m_tid < b.m_tid;
 }
 

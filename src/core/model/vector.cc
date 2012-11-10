@@ -19,8 +19,11 @@
  */
 #include "vector.h"
 #include "fatal-error.h"
+#include "log.h"
 #include <cmath>
 #include <sstream>
+
+NS_LOG_COMPONENT_DEFINE ("Vector");
 
 namespace ns3 {
 
@@ -29,6 +32,7 @@ ATTRIBUTE_HELPER_CPP (Vector2D);
 // compatibility for mobility code
 Ptr<const AttributeChecker> MakeVectorChecker (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   return MakeVector3DChecker ();
 }
 
@@ -38,6 +42,7 @@ Vector3D::Vector3D (double _x, double _y, double _z)
     y (_y),
     z (_z)
 {
+  NS_LOG_FUNCTION (this << _x << _y << _z);
 }
 
 Vector3D::Vector3D ()
@@ -45,23 +50,27 @@ Vector3D::Vector3D ()
     y (0.0),
     z (0.0)
 {
+  NS_LOG_FUNCTION (this);
 }
 
 Vector2D::Vector2D (double _x, double _y)
   : x (_x),
     y (_y)
 {
+  NS_LOG_FUNCTION (this << _x << _y);
 }
 
 Vector2D::Vector2D ()
   : x (0.0),
     y (0.0)
 {
+  NS_LOG_FUNCTION (this);
 }
 
 double
 CalculateDistance (const Vector3D &a, const Vector3D &b)
 {
+  NS_LOG_FUNCTION (a << b);
   double dx = b.x - a.x;
   double dy = b.y - a.y;
   double dz = b.z - a.z;
@@ -71,6 +80,7 @@ CalculateDistance (const Vector3D &a, const Vector3D &b)
 double 
 CalculateDistance (const Vector2D &a, const Vector2D &b)
 {
+  NS_LOG_FUNCTION (a << b);
   double dx = b.x - a.x;
   double dy = b.y - a.y;
   double distance = std::sqrt (dx * dx + dy * dy);
@@ -79,11 +89,13 @@ CalculateDistance (const Vector2D &a, const Vector2D &b)
 
 std::ostream &operator << (std::ostream &os, const Vector3D &vector)
 {
+  NS_LOG_FUNCTION (&os << vector);
   os << vector.x << ":" << vector.y << ":" << vector.z;
   return os;
 }
 std::istream &operator >> (std::istream &is, Vector3D &vector)
 {
+  NS_LOG_FUNCTION (&is << vector);
   char c1, c2;
   is >> vector.x >> c1 >> vector.y >> c2 >> vector.z;
   if (c1 != ':' ||
@@ -95,11 +107,13 @@ std::istream &operator >> (std::istream &is, Vector3D &vector)
 }
 std::ostream &operator << (std::ostream &os, const Vector2D &vector)
 {
+  NS_LOG_FUNCTION (&os << vector);
   os << vector.x << ":" << vector.y;
   return os;
 }
 std::istream &operator >> (std::istream &is, Vector2D &vector)
 {
+  NS_LOG_FUNCTION (&is << vector);
   char c1;
   is >> vector.x >> c1 >> vector.y;
   if (c1 != ':')

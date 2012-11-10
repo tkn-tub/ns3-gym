@@ -26,13 +26,17 @@
 #include "string.h"
 #include "object.h"
 #include "config.h"
+#include "log.h"
 #include <cmath>
 #include <sstream>
 
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("Time");
+
 Time::Time (const std::string& s)
 {
+  NS_LOG_FUNCTION (this << &s);
   std::string::size_type n = s.find_first_not_of ("+-0123456789.");
   if (n != std::string::npos)
     { // Found non-numeric
@@ -85,6 +89,7 @@ Time::Time (const std::string& s)
 struct Time::Resolution
 Time::GetNsResolution (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   struct Resolution resolution;
   SetResolution (Time::NS, &resolution);
   return resolution;
@@ -92,11 +97,13 @@ Time::GetNsResolution (void)
 void 
 Time::SetResolution (enum Unit resolution)
 {
+  NS_LOG_FUNCTION (resolution);
   SetResolution (resolution, PeekResolution ());
 }
 void 
 Time::SetResolution (enum Unit unit, struct Resolution *resolution)
 {
+  NS_LOG_FUNCTION (unit << resolution);
   int8_t power [LAST] = { 15, 12, 9, 6, 3, 0};
   for (int i = 0; i < Time::LAST; i++)
     {
@@ -132,6 +139,7 @@ Time::SetResolution (enum Unit unit, struct Resolution *resolution)
 enum Time::Unit
 Time::GetResolution (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   return PeekResolution ()->unit;
 }
 
@@ -139,6 +147,7 @@ Time::GetResolution (void)
 std::ostream&
 operator<< (std::ostream& os, const Time & time)
 {
+  NS_LOG_FUNCTION (&os << time);
   std::string unit;
   switch (Time::GetResolution ())
     {
@@ -171,6 +180,7 @@ operator<< (std::ostream& os, const Time & time)
 }
 std::istream& operator>> (std::istream& is, Time & time)
 {
+  NS_LOG_FUNCTION (&is << time);
   std::string value;
   is >> value;
   time = Time (value);

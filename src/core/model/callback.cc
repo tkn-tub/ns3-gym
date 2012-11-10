@@ -1,31 +1,41 @@
 #include "callback.h"
+#include "log.h"
+
+NS_LOG_COMPONENT_DEFINE ("Callback");
 
 namespace ns3 {
 
 CallbackValue::CallbackValue ()
   : m_value ()
 {
+  NS_LOG_FUNCTION (this);
 }
 CallbackValue::CallbackValue (const CallbackBase &base)
   : m_value (base)
 {
+  NS_LOG_FUNCTION (&base);
 }
 CallbackValue::~CallbackValue ()
 {
+  NS_LOG_FUNCTION (this);
 }
 void
 CallbackValue::Set (CallbackBase base)
 {
+  NS_LOG_FUNCTION (&base);
+
   m_value = base;
 }
 Ptr<AttributeValue>
 CallbackValue::Copy (void) const
 {
+  NS_LOG_FUNCTION (this);
   return Create<CallbackValue> (m_value);
 }
 std::string
 CallbackValue::SerializeToString (Ptr<const AttributeChecker> checker) const
 {
+  NS_LOG_FUNCTION (this << checker);
   std::ostringstream oss;
   oss << PeekPointer (m_value.GetImpl ());
   return oss.str ();
@@ -33,6 +43,7 @@ CallbackValue::SerializeToString (Ptr<const AttributeChecker> checker) const
 bool
 CallbackValue::DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker)
 {
+  NS_LOG_FUNCTION (this << value << checker);
   return false;
 }
 
@@ -51,6 +62,8 @@ namespace ns3 {
 std::string
 CallbackBase::Demangle (const std::string& mangled)
 {
+  NS_LOG_FUNCTION (mangled);
+
   int status;
   char* demangled = abi::__cxa_demangle (mangled.c_str (),
                                          NULL, NULL, &status);
@@ -90,6 +103,7 @@ CallbackBase::Demangle (const std::string& mangled)
 std::string
 ns3::CallbackBase::Demangle (const std::string& mangled)
 {
+  NS_LOG_FUNCTION (this << mangled);
   return mangled;
 }
 

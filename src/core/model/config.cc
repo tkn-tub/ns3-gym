@@ -36,6 +36,7 @@ namespace Config {
 
 MatchContainer::MatchContainer ()
 {
+  NS_LOG_FUNCTION (this);
 }
 MatchContainer::MatchContainer (const std::vector<Ptr<Object> > &objects,
                                 const std::vector<std::string> &contexts,
@@ -44,41 +45,49 @@ MatchContainer::MatchContainer (const std::vector<Ptr<Object> > &objects,
     m_contexts (contexts),
     m_path (path)
 {
+  NS_LOG_FUNCTION (this << &objects << &contexts << path);
 }
 MatchContainer::Iterator
 MatchContainer::Begin (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_objects.begin ();
 }
 MatchContainer::Iterator
 MatchContainer::End (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_objects.end ();
 }
 uint32_t
 MatchContainer::GetN (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_objects.size ();
 }
 Ptr<Object>
 MatchContainer::Get (uint32_t i) const
 {
+  NS_LOG_FUNCTION (this << i);
   return m_objects[i];
 }
 std::string
 MatchContainer::GetMatchedPath (uint32_t i) const
 {
+  NS_LOG_FUNCTION (this << i);
   return m_contexts[i];
 }
 std::string
 MatchContainer::GetPath (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_path;
 }
 
 void
 MatchContainer::Set (std::string name, const AttributeValue &value)
 {
+  NS_LOG_FUNCTION (this << name << &value);
   for (Iterator tmp = Begin (); tmp != End (); ++tmp)
     {
       Ptr<Object> object = *tmp;
@@ -88,6 +97,7 @@ MatchContainer::Set (std::string name, const AttributeValue &value)
 void 
 MatchContainer::Connect (std::string name, const CallbackBase &cb)
 {
+  NS_LOG_FUNCTION (this << name << &cb);
   NS_ASSERT (m_objects.size () == m_contexts.size ());
   for (uint32_t i = 0; i < m_objects.size (); ++i)
     {
@@ -99,6 +109,8 @@ MatchContainer::Connect (std::string name, const CallbackBase &cb)
 void 
 MatchContainer::ConnectWithoutContext (std::string name, const CallbackBase &cb)
 {
+  NS_LOG_FUNCTION (this << name << &cb);
+
   for (Iterator tmp = Begin (); tmp != End (); ++tmp)
     {
       Ptr<Object> object = *tmp;
@@ -108,6 +120,7 @@ MatchContainer::ConnectWithoutContext (std::string name, const CallbackBase &cb)
 void 
 MatchContainer::Disconnect (std::string name, const CallbackBase &cb)
 {
+  NS_LOG_FUNCTION (this << name << &cb);
   NS_ASSERT (m_objects.size () == m_contexts.size ());
   for (uint32_t i = 0; i < m_objects.size (); ++i)
     {
@@ -119,6 +132,7 @@ MatchContainer::Disconnect (std::string name, const CallbackBase &cb)
 void 
 MatchContainer::DisconnectWithoutContext (std::string name, const CallbackBase &cb)
 {
+  NS_LOG_FUNCTION (this << name << &cb);
   for (Iterator tmp = Begin (); tmp != End (); ++tmp)
     {
       Ptr<Object> object = *tmp;
@@ -142,10 +156,12 @@ private:
 ArrayMatcher::ArrayMatcher (std::string element)
   : m_element (element)
 {
+  NS_LOG_FUNCTION (this << element);
 }
 bool
 ArrayMatcher::Matches (uint32_t i) const
 {
+  NS_LOG_FUNCTION (this << i);
   if (m_element == "*")
     {
       NS_LOG_DEBUG ("Array "<<i<<" matches *");
@@ -209,6 +225,7 @@ ArrayMatcher::Matches (uint32_t i) const
 bool
 ArrayMatcher::StringToUint32 (std::string str, uint32_t *value) const
 {
+  NS_LOG_FUNCTION (this << str << value);
   std::istringstream iss;
   iss.str (str);
   iss >> (*value);
@@ -237,14 +254,18 @@ private:
 Resolver::Resolver (std::string path)
   : m_path (path)
 {
+  NS_LOG_FUNCTION (this << path);
   Canonicalize ();
 }
 Resolver::~Resolver ()
 {
+  NS_LOG_FUNCTION (this);
 }
 void
 Resolver::Canonicalize (void)
 {
+  NS_LOG_FUNCTION (this);
+
   // ensure that we start and end with a '/'
   std::string::size_type tmp = m_path.find ("/");
   if (tmp != 0)
@@ -263,12 +284,16 @@ Resolver::Canonicalize (void)
 void 
 Resolver::Resolve (Ptr<Object> root)
 {
+  NS_LOG_FUNCTION (this << root);
+
   DoResolve (m_path, root);
 }
 
 std::string
 Resolver::GetResolvedPath (void) const
 {
+  NS_LOG_FUNCTION (this);
+
   std::string fullPath = "/";
   for (std::vector<std::string>::const_iterator i = m_workStack.begin (); i != m_workStack.end (); i++)
     {
@@ -280,6 +305,8 @@ Resolver::GetResolvedPath (void) const
 void 
 Resolver::DoResolveOne (Ptr<Object> object)
 {
+  NS_LOG_FUNCTION (this << object);
+
   NS_LOG_DEBUG ("resolved="<<GetResolvedPath ());
   DoOne (object, GetResolvedPath ());
 }
@@ -287,7 +314,7 @@ Resolver::DoResolveOne (Ptr<Object> object)
 void
 Resolver::DoResolve (std::string path, Ptr<Object> root)
 {
-  NS_LOG_FUNCTION (path << root);
+  NS_LOG_FUNCTION (this << path << root);
   NS_ASSERT ((path.find ("/")) == 0);
   std::string::size_type next = path.find ("/", 1);
 
@@ -433,7 +460,7 @@ Resolver::DoResolve (std::string path, Ptr<Object> root)
 void 
 Resolver::DoArrayResolve (std::string path, const ObjectPtrContainerValue &container)
 {
-  NS_LOG_FUNCTION(this << path);
+  NS_LOG_FUNCTION(this << path << &container);
   NS_ASSERT (path != "");
   NS_ASSERT ((path.find ("/")) == 0);
   std::string::size_type next = path.find ("/", 1);
@@ -485,6 +512,8 @@ private:
 void 
 ConfigImpl::ParsePath (std::string path, std::string *root, std::string *leaf) const
 {
+  NS_LOG_FUNCTION (this << path << root << leaf);
+
   std::string::size_type slash = path.find_last_of ("/");
   NS_ASSERT (slash != std::string::npos);
   *root = path.substr (0, slash);
@@ -495,6 +524,8 @@ ConfigImpl::ParsePath (std::string path, std::string *root, std::string *leaf) c
 void 
 ConfigImpl::Set (std::string path, const AttributeValue &value)
 {
+  NS_LOG_FUNCTION (this << path << &value);
+
   std::string root, leaf;
   ParsePath (path, &root, &leaf);
   Config::MatchContainer container = LookupMatches (root);
@@ -503,6 +534,7 @@ ConfigImpl::Set (std::string path, const AttributeValue &value)
 void 
 ConfigImpl::ConnectWithoutContext (std::string path, const CallbackBase &cb)
 {
+  NS_LOG_FUNCTION (this << path << &cb);
   std::string root, leaf;
   ParsePath (path, &root, &leaf);
   Config::MatchContainer container = LookupMatches (root);
@@ -511,6 +543,7 @@ ConfigImpl::ConnectWithoutContext (std::string path, const CallbackBase &cb)
 void 
 ConfigImpl::DisconnectWithoutContext (std::string path, const CallbackBase &cb)
 {
+  NS_LOG_FUNCTION (this << path << &cb);
   std::string root, leaf;
   ParsePath (path, &root, &leaf);
   Config::MatchContainer container = LookupMatches (root);
@@ -519,6 +552,8 @@ ConfigImpl::DisconnectWithoutContext (std::string path, const CallbackBase &cb)
 void 
 ConfigImpl::Connect (std::string path, const CallbackBase &cb)
 {
+  NS_LOG_FUNCTION (this << path << &cb);
+
   std::string root, leaf;
   ParsePath (path, &root, &leaf);
   Config::MatchContainer container = LookupMatches (root);
@@ -527,6 +562,8 @@ ConfigImpl::Connect (std::string path, const CallbackBase &cb)
 void 
 ConfigImpl::Disconnect (std::string path, const CallbackBase &cb)
 {
+  NS_LOG_FUNCTION (this << path << &cb);
+
   std::string root, leaf;
   ParsePath (path, &root, &leaf);
   Config::MatchContainer container = LookupMatches (root);
@@ -536,7 +573,7 @@ ConfigImpl::Disconnect (std::string path, const CallbackBase &cb)
 Config::MatchContainer 
 ConfigImpl::LookupMatches (std::string path)
 {
-  NS_LOG_FUNCTION (path);
+  NS_LOG_FUNCTION (this << path);
   class LookupMatchesResolver : public Resolver 
   {
   public:
@@ -568,12 +605,15 @@ ConfigImpl::LookupMatches (std::string path)
 void 
 ConfigImpl::RegisterRootNamespaceObject (Ptr<Object> obj)
 {
+  NS_LOG_FUNCTION (this << obj);
   m_roots.push_back (obj);
 }
 
 void 
 ConfigImpl::UnregisterRootNamespaceObject (Ptr<Object> obj)
 {
+  NS_LOG_FUNCTION (this << obj);
+
   for (std::vector<Ptr<Object> >::iterator i = m_roots.begin (); i != m_roots.end (); i++)
     {
       if (*i == obj)
@@ -587,11 +627,13 @@ ConfigImpl::UnregisterRootNamespaceObject (Ptr<Object> obj)
 uint32_t 
 ConfigImpl::GetRootNamespaceObjectN (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_roots.size ();
 }
 Ptr<Object> 
 ConfigImpl::GetRootNamespaceObject (uint32_t i) const
 {
+  NS_LOG_FUNCTION (this << i);
   return m_roots[i];
 }
 
@@ -599,6 +641,7 @@ namespace Config {
 
 void Reset (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   // First, let's reset the initial value of every attribute
   for (uint32_t i = 0; i < TypeId::GetRegisteredN (); i++)
     {
@@ -618,10 +661,12 @@ void Reset (void)
 
 void Set (std::string path, const AttributeValue &value)
 {
+  NS_LOG_FUNCTION (path << &value);
   Singleton<ConfigImpl>::Get ()->Set (path, value);
 }
 void SetDefault (std::string name, const AttributeValue &value)
 {
+  NS_LOG_FUNCTION (name << &value);
   if (!SetDefaultFailSafe(name, value))
     {
       NS_FATAL_ERROR ("Could not set default value for " << name);
@@ -629,6 +674,7 @@ void SetDefault (std::string name, const AttributeValue &value)
 }
 bool SetDefaultFailSafe (std::string fullName, const AttributeValue &value)
 {
+  NS_LOG_FUNCTION (fullName << &value);
   std::string::size_type pos = fullName.rfind ("::");
   if (pos == std::string::npos)
     {
@@ -660,52 +706,63 @@ bool SetDefaultFailSafe (std::string fullName, const AttributeValue &value)
 }
 void SetGlobal (std::string name, const AttributeValue &value)
 {
+  NS_LOG_FUNCTION (name << &value);
   GlobalValue::Bind (name, value);
 }
 bool SetGlobalFailSafe (std::string name, const AttributeValue &value)
 {
+  NS_LOG_FUNCTION (name << &value);
   return GlobalValue::BindFailSafe (name, value);
 }
 void ConnectWithoutContext (std::string path, const CallbackBase &cb)
 {
+  NS_LOG_FUNCTION (path << &cb);
   Singleton<ConfigImpl>::Get ()->ConnectWithoutContext (path, cb);
 }
 void DisconnectWithoutContext (std::string path, const CallbackBase &cb)
 {
+  NS_LOG_FUNCTION (path << &cb);
   Singleton<ConfigImpl>::Get ()->DisconnectWithoutContext (path, cb);
 }
 void 
 Connect (std::string path, const CallbackBase &cb)
 {
+  NS_LOG_FUNCTION (path << &cb);
   Singleton<ConfigImpl>::Get ()->Connect (path, cb);
 }
 void 
 Disconnect (std::string path, const CallbackBase &cb)
 {
+  NS_LOG_FUNCTION (path << &cb);
   Singleton<ConfigImpl>::Get ()->Disconnect (path, cb);
 }
 Config::MatchContainer LookupMatches (std::string path)
 {
+  NS_LOG_FUNCTION (path);
   return Singleton<ConfigImpl>::Get ()->LookupMatches (path);
 }
 
 void RegisterRootNamespaceObject (Ptr<Object> obj)
 {
+  NS_LOG_FUNCTION (obj);
   Singleton<ConfigImpl>::Get ()->RegisterRootNamespaceObject (obj);
 }
 
 void UnregisterRootNamespaceObject (Ptr<Object> obj)
 {
+  NS_LOG_FUNCTION (obj);
   Singleton<ConfigImpl>::Get ()->UnregisterRootNamespaceObject (obj);
 }
 
 uint32_t GetRootNamespaceObjectN (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   return Singleton<ConfigImpl>::Get ()->GetRootNamespaceObjectN ();
 }
 
 Ptr<Object> GetRootNamespaceObject (uint32_t i)
 {
+  NS_LOG_FUNCTION (i);
   return Singleton<ConfigImpl>::Get ()->GetRootNamespaceObject (i);
 }
 

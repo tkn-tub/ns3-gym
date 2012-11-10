@@ -24,6 +24,9 @@
 #include <iostream>
 #include "rng-stream.h"
 #include "fatal-error.h"
+#include "log.h"
+
+NS_LOG_COMPONENT_DEFINE ("RngStream");
 
 namespace
 {
@@ -70,6 +73,7 @@ const Matrix A2p0 = {
 //
 double MultModM (double a, double s, double c, double m)
 {
+  NS_LOG_FUNCTION (a << s << c << m);
   double v;
   int32_t a1;
 
@@ -105,6 +109,7 @@ double MultModM (double a, double s, double c, double m)
 void MatVecModM (const Matrix A, const double s[3], double v[3],
                  double m)
 {
+  NS_LOG_FUNCTION (&A << s << v << m);
   int i;
   double x[3];                 // Necessary if v = s
 
@@ -128,6 +133,7 @@ void MatVecModM (const Matrix A, const double s[3], double v[3],
 void MatMatModM (const Matrix A, const Matrix B,
                  Matrix C, double m)
 {
+  NS_LOG_FUNCTION (&A << &B << &C << m);
   int i, j;
   double V[3];
   Matrix W;
@@ -159,6 +165,7 @@ void MatMatModM (const Matrix A, const Matrix B,
 //
 void MatTwoPowModM (const Matrix src, Matrix dst, double m, int32_t e)
 {
+  NS_LOG_FUNCTION (&src << &dst << m << e);
   int i, j;
 
   /* initialize: dst = src */
@@ -183,6 +190,7 @@ void MatTwoPowModM (const Matrix src, Matrix dst, double m, int32_t e)
 /*
 void MatPowModM (const double A[3][3], double B[3][3], double m, int32_t n)
 {
+  NS_LOG_FUNCTION (A << B << m << n);
   int i, j;
   double W[3][3];
 
@@ -233,6 +241,7 @@ struct Precalculated PowerOfTwoConstants (void)
 }
 void PowerOfTwoMatrix (int n, Matrix a1p, Matrix a2p)
 {
+  NS_LOG_FUNCTION (n << &a1p << &a2p);
   static struct Precalculated constants = PowerOfTwoConstants ();
   for (int i = 0; i < 3; i ++)
     {
@@ -253,6 +262,7 @@ namespace ns3 {
 //
 double RngStream::RandU01 ()
 {
+  NS_LOG_FUNCTION (this);
   int32_t k;
   double p1, p2, u;
 
@@ -284,6 +294,7 @@ double RngStream::RandU01 ()
 
 RngStream::RngStream (uint32_t seedNumber, uint64_t stream, uint64_t substream)
 {
+  NS_LOG_FUNCTION (this << seedNumber << stream << substream);
   if (seedNumber >= m1 || seedNumber >= m2 || seedNumber == 0)
     {
       NS_FATAL_ERROR ("invalid Seed " << seedNumber);
@@ -298,6 +309,7 @@ RngStream::RngStream (uint32_t seedNumber, uint64_t stream, uint64_t substream)
 
 RngStream::RngStream(const RngStream& r)
 {
+  NS_LOG_FUNCTION (this << &r);
   for (int i = 0; i < 6; ++i)
     {
       m_currentState[i] = r.m_currentState[i];
@@ -307,6 +319,7 @@ RngStream::RngStream(const RngStream& r)
 void 
 RngStream::AdvanceNthBy (uint64_t nth, int by, double state[6])
 {
+  NS_LOG_FUNCTION (this << &nth << by << state);
   Matrix matrix1,matrix2;
   for (int i = 0; i < 64; i++)
     {

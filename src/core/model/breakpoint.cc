@@ -21,9 +21,12 @@
 
 #include "breakpoint.h"
 #include "ns3/core-config.h"
+#include "log.h"
 #ifdef HAVE_SIGNAL_H
 # include <signal.h>
 #endif
+
+NS_LOG_COMPONENT_DEFINE ("Breakpoint");
 
 namespace ns3 {
 
@@ -32,6 +35,8 @@ namespace ns3 {
 void
 BreakpointFallback (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
+
   raise (SIGTRAP);
 }
 
@@ -40,6 +45,8 @@ BreakpointFallback (void)
 void
 BreakpointFallback (void)
 {
+  NS_LOG_FUNCTION (this);
+
   int *a = 0;
   /**
    * we test here to allow a debugger to change the value of

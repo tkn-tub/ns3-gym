@@ -29,6 +29,7 @@ namespace ns3 {
 
 int64_t RandomVariableStreamHelper::AssignStreams (std::string path, int64_t stream)
 {
+  NS_LOG_FUNCTION (this << path << stream);
   NS_ASSERT (stream >= 0);
   Config::MatchContainer mc = Config::LookupMatches (path);
   int64_t i = 0;

@@ -35,6 +35,7 @@ NS_OBJECT_ENSURE_REGISTERED (CalendarScheduler);
 TypeId
 CalendarScheduler::GetTypeId (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   static TypeId tid = TypeId ("ns3::CalendarScheduler")
     .SetParent<Scheduler> ()
     .AddConstructor<CalendarScheduler> ()
@@ -70,6 +71,8 @@ CalendarScheduler::Init (uint32_t nBuckets,
 void
 CalendarScheduler::PrintInfo (void)
 {
+  NS_LOG_FUNCTION (this);
+
   std::cout << "nBuckets=" << m_nBuckets << ", width=" << m_width << std::endl;
   std::cout << "Bucket Distribution ";
   for (uint32_t i = 0; i < m_nBuckets; i++)
@@ -81,6 +84,8 @@ CalendarScheduler::PrintInfo (void)
 uint32_t
 CalendarScheduler::Hash (uint64_t ts) const
 {
+  NS_LOG_FUNCTION (this);
+
   uint32_t bucket = (ts / m_width) % m_nBuckets;
   return bucket;
 }
@@ -109,6 +114,7 @@ CalendarScheduler::DoInsert (const Event &ev)
 void
 CalendarScheduler::Insert (const Event &ev)
 {
+  NS_LOG_FUNCTION (this << &ev);
   DoInsert (ev);
   m_qSize++;
   ResizeUp ();
@@ -116,12 +122,13 @@ CalendarScheduler::Insert (const Event &ev)
 bool
 CalendarScheduler::IsEmpty (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_qSize == 0;
 }
 Scheduler::Event
 CalendarScheduler::PeekNext (void) const
 {
-  NS_LOG_FUNCTION (this << m_lastBucket << m_bucketTop);
+  NS_LOG_FUNCTION (this);
   NS_ASSERT (!IsEmpty ());
   uint32_t i = m_lastBucket;
   uint64_t bucketTop = m_bucketTop;
@@ -152,6 +159,8 @@ CalendarScheduler::PeekNext (void) const
 Scheduler::Event
 CalendarScheduler::DoRemoveNext (void)
 {
+  NS_LOG_FUNCTION (this);
+
   uint32_t i = m_lastBucket;
   uint64_t bucketTop = m_bucketTop;
   int32_t minBucket = -1;
@@ -212,6 +221,7 @@ CalendarScheduler::RemoveNext (void)
 void
 CalendarScheduler::Remove (const Event &ev)
 {
+  NS_LOG_FUNCTION (this << &ev);
   NS_ASSERT (!IsEmpty ());
   // bucket index of event
   uint32_t bucket = Hash (ev.key.m_ts);
@@ -235,6 +245,8 @@ CalendarScheduler::Remove (const Event &ev)
 void
 CalendarScheduler::ResizeUp (void)
 {
+  NS_LOG_FUNCTION (this);
+
   if (m_qSize > m_nBuckets * 2
       && m_nBuckets < 32768)
     {
@@ -244,6 +256,8 @@ CalendarScheduler::ResizeUp (void)
 void
 CalendarScheduler::ResizeDown (void)
 {
+  NS_LOG_FUNCTION (this);
+
   if (m_qSize < m_nBuckets / 2)
     {
       Resize (m_nBuckets / 2);
@@ -253,6 +267,8 @@ CalendarScheduler::ResizeDown (void)
 uint32_t
 CalendarScheduler::CalculateNewWidth (void)
 {
+  NS_LOG_FUNCTION (this);
+
   if (m_qSize < 2)
     {
       return 1;
@@ -330,6 +346,8 @@ CalendarScheduler::CalculateNewWidth (void)
 void
 CalendarScheduler::DoResize (uint32_t newSize, uint32_t newWidth)
 {
+  NS_LOG_FUNCTION (this << newSize << newWidth);
+
   Bucket *oldBuckets = m_buckets;
   uint32_t oldNBuckets = m_nBuckets;
   Init (newSize, newWidth, m_lastPrio);

@@ -19,7 +19,10 @@
  */
 #include "double.h"
 #include "object.h"
+#include "log.h"
 #include <sstream>
+
+NS_LOG_COMPONENT_DEFINE ("Double");
 
 namespace ns3 {
 
@@ -29,6 +32,8 @@ namespace internal {
 
 Ptr<const AttributeChecker> MakeDoubleChecker (double min, double max, std::string name)
 {
+  NS_LOG_FUNCTION (min << max << name);
+
   struct Checker : public AttributeChecker
   {
     Checker (double minValue, double maxValue, std::string name)
@@ -36,6 +41,7 @@ Ptr<const AttributeChecker> MakeDoubleChecker (double min, double max, std::stri
         m_maxValue (maxValue),
         m_name (name) {}
     virtual bool Check (const AttributeValue &value) const {
+      NS_LOG_FUNCTION (&value);
       const DoubleValue *v = dynamic_cast<const DoubleValue *> (&value);
       if (v == 0)
         {
@@ -44,20 +50,25 @@ Ptr<const AttributeChecker> MakeDoubleChecker (double min, double max, std::stri
       return v->Get () >= m_minValue && v->Get () <= m_maxValue;
     }
     virtual std::string GetValueTypeName (void) const {
+      NS_LOG_FUNCTION_NOARGS ();
       return "ns3::DoubleValue";
     }
     virtual bool HasUnderlyingTypeInformation (void) const {
+      NS_LOG_FUNCTION_NOARGS ();
       return true;
     }
     virtual std::string GetUnderlyingTypeInformation (void) const {
+      NS_LOG_FUNCTION_NOARGS ();
       std::ostringstream oss;
       oss << m_name << " " << m_minValue << ":" << m_maxValue;
       return oss.str ();
     }
     virtual Ptr<AttributeValue> Create (void) const {
+      NS_LOG_FUNCTION_NOARGS ();
       return ns3::Create<DoubleValue> ();
     }
     virtual bool Copy (const AttributeValue &source, AttributeValue &destination) const {
+      NS_LOG_FUNCTION (&source << &destination);
       const DoubleValue *src = dynamic_cast<const DoubleValue *> (&source);
       DoubleValue *dst = dynamic_cast<DoubleValue *> (&destination);
       if (src == 0 || dst == 0)

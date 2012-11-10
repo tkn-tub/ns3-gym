@@ -48,7 +48,7 @@ DefaultSimulatorImpl::GetTypeId (void)
 
 DefaultSimulatorImpl::DefaultSimulatorImpl ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   m_stop = false;
   // uids are allocated from 4.
   // uid 0 is "invalid" events
@@ -66,13 +66,13 @@ DefaultSimulatorImpl::DefaultSimulatorImpl ()
 
 DefaultSimulatorImpl::~DefaultSimulatorImpl ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 void
 DefaultSimulatorImpl::DoDispose (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   while (!m_events->IsEmpty ())
     {
       Scheduler::Event next = m_events->RemoveNext ();
@@ -84,7 +84,7 @@ DefaultSimulatorImpl::DoDispose (void)
 void
 DefaultSimulatorImpl::Destroy ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   while (!m_destroyEvents.empty ()) 
     {
       Ptr<EventImpl> ev = m_destroyEvents.front ().PeekEventImpl ();
@@ -100,7 +100,7 @@ DefaultSimulatorImpl::Destroy ()
 void
 DefaultSimulatorImpl::SetScheduler (ObjectFactory schedulerFactory)
 {
-  NS_LOG_FUNCTION (this << &schedulerFactory);
+  NS_LOG_FUNCTION (this << schedulerFactory);
   Ptr<Scheduler> scheduler = schedulerFactory.Create<Scheduler> ();
 
   if (m_events != 0)
@@ -118,14 +118,14 @@ DefaultSimulatorImpl::SetScheduler (ObjectFactory schedulerFactory)
 uint32_t 
 DefaultSimulatorImpl::GetSystemId (void) const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return 0;
 }
 
 void
 DefaultSimulatorImpl::ProcessOneEvent (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   Scheduler::Event next = m_events->RemoveNext ();
 
   NS_ASSERT (next.key.m_ts >= m_currentTs);
@@ -144,14 +144,14 @@ DefaultSimulatorImpl::ProcessOneEvent (void)
 bool 
 DefaultSimulatorImpl::IsFinished (void) const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return m_events->IsEmpty () || m_stop;
 }
 
 void
 DefaultSimulatorImpl::ProcessEventsWithContext (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   if (m_eventsWithContextEmpty)
     {
       return;
@@ -182,7 +182,7 @@ DefaultSimulatorImpl::ProcessEventsWithContext (void)
 void
 DefaultSimulatorImpl::Run (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   // Set the current threadId as the main threadId
   m_main = SystemThread::Self();
   ProcessEventsWithContext ();
@@ -201,7 +201,7 @@ DefaultSimulatorImpl::Run (void)
 void 
 DefaultSimulatorImpl::Stop (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   m_stop = true;
 }
 
@@ -239,7 +239,7 @@ DefaultSimulatorImpl::Schedule (Time const &time, EventImpl *event)
 void
 DefaultSimulatorImpl::ScheduleWithContext (uint32_t context, Time const &time, EventImpl *event)
 {
-  NS_LOG_FUNCTION (this << context << time.GetTimeStep () << m_currentTs << event);
+  NS_LOG_FUNCTION (this << context << time.GetTimeStep () << event);
 
   if (SystemThread::Equals (m_main))
     {
@@ -299,7 +299,7 @@ DefaultSimulatorImpl::ScheduleDestroy (EventImpl *event)
 Time
 DefaultSimulatorImpl::Now (void) const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return TimeStep (m_currentTs);
 }
 
@@ -399,7 +399,7 @@ DefaultSimulatorImpl::IsExpired (const EventId &ev) const
 Time 
 DefaultSimulatorImpl::GetMaximumSimulationTime (void) const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   // XXX: I am fairly certain other compilers use other non-standard
   // post-fixes to indicate 64 bit constants.
   return TimeStep (0x7fffffffffffffffLL);
@@ -408,7 +408,7 @@ DefaultSimulatorImpl::GetMaximumSimulationTime (void) const
 uint32_t
 DefaultSimulatorImpl::GetContext (void) const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return m_currentContext;
 }
 

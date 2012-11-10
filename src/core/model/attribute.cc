@@ -29,29 +29,36 @@ namespace ns3 {
 
 AttributeValue::AttributeValue ()
 {
+  NS_LOG_FUNCTION (this);
 }
 AttributeValue::~AttributeValue ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 
 AttributeAccessor::AttributeAccessor ()
 {
+  NS_LOG_FUNCTION (this);
 }
 AttributeAccessor::~AttributeAccessor ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 AttributeChecker::AttributeChecker ()
 {
+  NS_LOG_FUNCTION (this);
 }
 AttributeChecker::~AttributeChecker ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 Ptr<AttributeValue> 
 AttributeChecker::CreateValidValue (const AttributeValue &value) const
 {
+  NS_LOG_FUNCTION (this << &value);
   if (Check (value))
     {
       return value.Copy ();
@@ -79,20 +86,24 @@ AttributeChecker::CreateValidValue (const AttributeValue &value) const
 
 EmptyAttributeValue::EmptyAttributeValue ()
 {
+  NS_LOG_FUNCTION (this);
 }
 Ptr<AttributeValue>
 EmptyAttributeValue::Copy (void) const
 {
+  NS_LOG_FUNCTION (this);
   return Create<EmptyAttributeValue> ();
 }
 std::string
 EmptyAttributeValue::SerializeToString (Ptr<const AttributeChecker> checker) const
 {
+  NS_LOG_FUNCTION (this << checker);
   return "";
 }
 bool
 EmptyAttributeValue::DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker)
 {
+  NS_LOG_FUNCTION (this << value << checker);
   return true;
 }
 

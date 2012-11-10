@@ -27,31 +27,37 @@ NS_LOG_COMPONENT_DEFINE("ObjectFactory");
 
 ObjectFactory::ObjectFactory ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 ObjectFactory::ObjectFactory (std::string typeId)
 {
+  NS_LOG_FUNCTION (this << typeId);
   SetTypeId (typeId);
 }
 
 void
 ObjectFactory::SetTypeId (TypeId tid)
 {
+  NS_LOG_FUNCTION (this << tid.GetName ());
   m_tid = tid;
 }
 void
 ObjectFactory::SetTypeId (std::string tid)
 {
+  NS_LOG_FUNCTION (this << tid);
   m_tid = TypeId::LookupByName (tid);
 }
 void
 ObjectFactory::SetTypeId (const char *tid)
 {
+  NS_LOG_FUNCTION (this << tid);
   m_tid = TypeId::LookupByName (tid);
 }
 void
 ObjectFactory::Set (std::string name, const AttributeValue &value)
 {
+  NS_LOG_FUNCTION (this << name << &value);
   if (name == "")
     {
       return;
@@ -75,12 +81,14 @@ ObjectFactory::Set (std::string name, const AttributeValue &value)
 TypeId 
 ObjectFactory::GetTypeId (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_tid;
 }
 
 Ptr<Object> 
 ObjectFactory::Create (void) const
 {
+  NS_LOG_FUNCTION (this);
   Callback<ObjectBase *> cb = m_tid.GetConstructor ();
   ObjectBase *base = cb ();
   Object *derived = dynamic_cast<Object *> (base);
@@ -92,6 +100,7 @@ ObjectFactory::Create (void) const
 
 std::ostream & operator << (std::ostream &os, const ObjectFactory &factory)
 {
+  NS_LOG_FUNCTION (&os << &factory);
   os << factory.m_tid.GetName () << "[";
   bool first = true;
   for (AttributeConstructionList::CIterator i = factory.m_parameters.Begin (); i != factory.m_parameters.End (); ++i)
@@ -107,6 +116,7 @@ std::ostream & operator << (std::ostream &os, const ObjectFactory &factory)
 }
 std::istream & operator >> (std::istream &is, ObjectFactory &factory)
 {
+  NS_LOG_FUNCTION (&is << &factory);
   std::string v;
   is >> v;
   std::string::size_type lbracket, rbracket;

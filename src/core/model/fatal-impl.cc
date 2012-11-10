@@ -18,6 +18,7 @@
  * Author: Quincy Tse <quincy.tse@nicta.com.au>
  */
 #include "fatal-impl.h"
+#include "log.h"
 
 #include <iostream>
 #include <list>
@@ -26,6 +27,8 @@
 #include <cstdio>
 
 #include <csignal>
+
+NS_LOG_COMPONENT_DEFINE ("FatalImpl");
 
 namespace ns3 {
 namespace FatalImpl {
@@ -47,11 +50,13 @@ namespace FatalImpl {
 namespace {
 std::list<std::ostream*> **PeekStreamList (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   static std::list<std::ostream*> *streams = 0;
   return &streams;
 }
 std::list<std::ostream*> *GetStreamList (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   std::list<std::ostream*> **pstreams = PeekStreamList ();
   if (*pstreams == 0)
     {
@@ -63,6 +68,7 @@ struct destructor
 {
   ~destructor ()
   {
+    NS_LOG_FUNCTION (this);
     std::list<std::ostream*> **pstreams = PeekStreamList ();
     delete *pstreams;
     *pstreams = 0;
@@ -73,12 +79,14 @@ struct destructor
 void
 RegisterStream (std::ostream* stream)
 {
+  NS_LOG_FUNCTION (stream);
   GetStreamList ()->push_back (stream);
 }
 
 void
 UnregisterStream (std::ostream* stream)
 {
+  NS_LOG_FUNCTION (stream);
   std::list<std::ostream*> **pl = PeekStreamList ();
   if (*pl == 0)
     {
@@ -98,6 +106,7 @@ namespace {
  * HandleTerminate function is run. */
 void sigHandler (int sig)
 {
+  NS_LOG_FUNCTION (sig);
   FlushStreams ();
   std::abort ();
 }
@@ -106,6 +115,7 @@ void sigHandler (int sig)
 void 
 FlushStreams (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   std::list<std::ostream*> **pl = PeekStreamList ();
   if (*pl == 0)
     {

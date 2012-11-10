@@ -54,12 +54,14 @@ GlobalValue g_schedTypeImpl = GlobalValue ("SchedulerType",
 static void
 TimePrinter (std::ostream &os)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   os << Simulator::Now ().GetSeconds () << "s";
 }
 
 static void
 NodePrinter (std::ostream &os)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   if (Simulator::GetContext () == 0xffffffff)
     {
       os << "-1";
@@ -72,12 +74,14 @@ NodePrinter (std::ostream &os)
 
 static SimulatorImpl **PeekImpl (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   static SimulatorImpl *impl = 0;
   return &impl;
 }
 
 static SimulatorImpl * GetImpl (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   SimulatorImpl **pimpl = PeekImpl ();
   /* Please, don't include any calls to logging macros in this function
    * or pay the price, that is, stack explosions.
@@ -159,6 +163,7 @@ Simulator::Run (void)
 void 
 Simulator::Stop (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   NS_LOG_LOGIC ("stop");
   GetImpl ()->Stop ();
 }
@@ -176,6 +181,7 @@ Simulator::Now (void)
   /* Please, don't include any calls to logging macros in this function
    * or pay the price, that is, stack explosions.
    */
+  NS_LOG_FUNCTION_NOARGS ();
   return GetImpl ()->Now ();
 }
 
@@ -202,6 +208,7 @@ Simulator::ScheduleNow (const Ptr<EventImpl> &ev)
 void
 Simulator::ScheduleWithContext (uint32_t context, const Time &time, EventImpl *impl)
 {
+  NS_LOG_FUNCTION (context << time << impl);
   return GetImpl ()->ScheduleWithContext (context, time, impl);
 }
 EventId
@@ -213,16 +220,19 @@ Simulator::ScheduleDestroy (const Ptr<EventImpl> &ev)
 EventId 
 Simulator::DoSchedule (Time const &time, EventImpl *impl)
 {
+  NS_LOG_FUNCTION (time << impl);
   return GetImpl ()->Schedule (time, impl);
 }
 EventId 
 Simulator::DoScheduleNow (EventImpl *impl)
 {
+  NS_LOG_FUNCTION (impl);
   return GetImpl ()->ScheduleNow (impl);
 }
 EventId 
 Simulator::DoScheduleDestroy (EventImpl *impl)
 {
+  NS_LOG_FUNCTION (impl);
   return GetImpl ()->ScheduleDestroy (impl);
 }
 
@@ -304,6 +314,7 @@ Simulator::GetMaximumSimulationTime (void)
 uint32_t
 Simulator::GetContext (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   return GetImpl ()->GetContext ();
 }
 
@@ -325,6 +336,7 @@ Simulator::GetSystemId (void)
 void
 Simulator::SetImplementation (Ptr<SimulatorImpl> impl)
 {
+  NS_LOG_FUNCTION (impl);
   if (*PeekImpl () != 0)
     {
       NS_FATAL_ERROR ("It is not possible to set the implementation after calling any Simulator:: function. Call Simulator::SetImplementation earlier or after Simulator::Destroy.");
@@ -349,6 +361,7 @@ Simulator::SetImplementation (Ptr<SimulatorImpl> impl)
 Ptr<SimulatorImpl>
 Simulator::GetImplementation (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   return GetImpl ();
 }
 

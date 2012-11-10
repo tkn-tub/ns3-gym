@@ -40,17 +40,20 @@ FdReader::FdReader ()
   : m_fd (-1), m_readCallback (0), m_readThread (0), m_stop (false),
     m_destroyEvent ()
 {
+  NS_LOG_FUNCTION (this);
   m_evpipe[0] = -1;
   m_evpipe[1] = -1;
 }
 
 FdReader::~FdReader ()
 {
+  NS_LOG_FUNCTION (this);
   Stop ();
 }
 
 void FdReader::Start (int fd, Callback<void, uint8_t *, ssize_t> readCallback)
 {
+  NS_LOG_FUNCTION (this << fd << &readCallback);
   int tmp;
 
   NS_ASSERT_MSG (m_readThread == 0, "read thread already exists");
@@ -102,12 +105,14 @@ void FdReader::Start (int fd, Callback<void, uint8_t *, ssize_t> readCallback)
 
 void FdReader::DestroyEvent (void)
 {
+  NS_LOG_FUNCTION (this);
   Stop ();
   this->Unref ();
 }
 
 void FdReader::Stop (void)
 {
+  NS_LOG_FUNCTION (this);
   m_stop = true;
 
   // signal the read thread
@@ -149,6 +154,7 @@ void FdReader::Stop (void)
 // This runs in a separate thread
 void FdReader::Run (void)
 {
+  NS_LOG_FUNCTION (this);
   int nfds;
   fd_set rfds;
 
