@@ -71,6 +71,7 @@ PacketSink::~PacketSink()
 
 uint32_t PacketSink::GetTotalRx () const
 {
+  NS_LOG_FUNCTION (this);
   return m_totalRx;
 }
 
