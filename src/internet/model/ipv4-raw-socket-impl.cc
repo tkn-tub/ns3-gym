@@ -311,6 +311,16 @@ Ipv4RawSocketImpl::ForwardUp (Ptr<const Packet> p, Ipv4Header ipHeader, Ptr<Ipv4
     {
       return false;
     }
+
+  Ptr<NetDevice> boundNetDevice = Socket::GetBoundNetDevice();
+  if (boundNetDevice)
+    {
+      if (boundNetDevice != incomingInterface->GetDevice())
+        {
+          return false;
+        }
+    }
+
   NS_LOG_LOGIC ("src = " << m_src << " dst = " << m_dst);
   if ((m_src == Ipv4Address::GetAny () || ipHeader.GetDestination () == m_src) &&
       (m_dst == Ipv4Address::GetAny () || ipHeader.GetSource () == m_dst) &&
