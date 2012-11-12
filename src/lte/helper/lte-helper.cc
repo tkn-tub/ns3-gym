@@ -1133,7 +1133,6 @@ LteHelper::EnableUlPhyTraces (void)
                    MakeBoundCallback (&ReportUeSinr, m_phyStats));
   Config::Connect ("/NodeList/*/DeviceList/*/LteEnbPhy/ReportInterference",
                    MakeBoundCallback (&ReportInterference, m_phyStats));
-//  value /$ns3::NodeListPriv/NodeList/1/$ns3::Node/DeviceList/0/$ns3::LteUeNetDevice/LteUePhy/$ns3::LteUePhy/RsrpRsrqSamplePeriod "2"
 
 }
 

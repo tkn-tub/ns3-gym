@@ -44,6 +44,16 @@ EpcEnbApplication::GetTypeId (void)
   return tid;
 }
 
+void
+EpcEnbApplication::DoDispose (void)
+{
+  NS_LOG_FUNCTION (this);
+  m_lteSocket = 0;
+  m_s1uSocket = 0;
+  delete m_s1SapProvider;
+}
+
+
 EpcEnbApplication::EpcEnbApplication (Ptr<Socket> lteSocket, Ptr<Socket> s1uSocket, Ipv4Address sgwAddress)
   : m_lteSocket (lteSocket),
     m_s1uSocket (s1uSocket),    

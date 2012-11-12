@@ -666,14 +666,11 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
     }
   else
     {
-      // send only PUCCH (ideal: fake full bandwidth signal)
+      // send only PUCCH (ideal: fake null bandwidth signal)
       if (ctrlMsg.size ()>0)
         {
+          NS_LOG_LOGIC (this << " UE - start TX PUCCH (NO PUSCH)");
           std::vector <int> dlRb;
-          for (uint8_t i = 0; i < m_ulBandwidth; i++)
-            {
-              dlRb.push_back (i);
-            }
           SetSubChannelsForTransmission (dlRb);
           m_uplinkSpectrumPhy->StartTxDataFrame (pb, ctrlMsg, UL_DATA_DURATION);
         }

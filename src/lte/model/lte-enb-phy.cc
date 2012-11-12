@@ -644,7 +644,7 @@ LteEnbPhy::ReportInterference (const SpectrumValue& interf)
   NS_LOG_FUNCTION (this << interf);
   Ptr<SpectrumValue> interfCopy = Create<SpectrumValue> (interf);
   m_interferenceSampleCounter++;
-  if (m_interferenceSampleCounter==m_interferenceSamplePeriod)
+  if (m_interferenceSampleCounter == m_interferenceSamplePeriod)
     {
       m_reportInterferenceTrace (m_cellId, interfCopy);
       m_interferenceSampleCounter = 0;

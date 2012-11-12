@@ -29,6 +29,7 @@
 #include <ns3/applications-module.h>
 #include <ns3/log.h>
 #include <iomanip>
+#include <ios>
 #include <string>
 #include <vector>
 
@@ -143,7 +144,7 @@ void
 PrintGnuplottableBuildingListToFile (std::string filename)
 {
   std::ofstream outFile;
-  outFile.open (filename.c_str ());
+  outFile.open (filename.c_str (), std::ios_base::out | std::ios_base::trunc);
   if (!outFile.is_open ())
     {
       NS_LOG_ERROR ("Can't open file " << filename);
@@ -166,7 +167,7 @@ void
 PrintGnuplottableUeListToFile (std::string filename)
 {
   std::ofstream outFile;
-  outFile.open (filename.c_str ());
+  outFile.open (filename.c_str (), std::ios_base::out | std::ios_base::trunc);
   if (!outFile.is_open ())
     {
       NS_LOG_ERROR ("Can't open file " << filename);
@@ -194,7 +195,7 @@ void
 PrintGnuplottableEnbListToFile (std::string filename)
 {
   std::ofstream outFile;
-  outFile.open (filename.c_str ());
+  outFile.open (filename.c_str (), std::ios_base::out | std::ios_base::trunc);
   if (!outFile.is_open ())
     {
       NS_LOG_ERROR ("Can't open file " << filename);
@@ -325,6 +326,10 @@ static ns3::GlobalValue g_fadingTrace ("fadingTrace",
                                            "is loaded, i.e., fading is not considered)",  
                                            ns3::StringValue (""),
                                            ns3::MakeStringChecker ());
+static ns3::GlobalValue g_numBearersPerUe ("numBearersPerUe",
+                                               "How many bearers per UE there are in the simulation",
+                                               ns3::UintegerValue (1),
+                                               ns3::MakeUintegerChecker<uint16_t> ());
 
 
 int
@@ -343,7 +348,7 @@ main (int argc, char *argv[])
   // parse again so you can override input file default values via command line
   cmd.Parse (argc, argv); 
 
-  // the scenario parameters get their values from the global attributes definde above
+  // the scenario parameters get their values from the global attributes defined above
   UintegerValue uintegerValue;
   DoubleValue doubleValue;
   BooleanValue booleanValue;
@@ -396,6 +401,8 @@ main (int argc, char *argv[])
   bool generateRem = booleanValue.Get ();
   GlobalValue::GetValueByName ("fadingTrace", stringValue);
   std::string fadingTrace = stringValue.Get ();
+  GlobalValue::GetValueByName ("numBearersPerUe", uintegerValue);
+  uint16_t numBearersPerUe = uintegerValue.Get ();
 
   Box macroUeBox;
 
@@ -457,6 +464,9 @@ main (int argc, char *argv[])
   // use always LOS model
   lteHelper->SetPathlossModelAttribute ("Los2NlosThr", DoubleValue (1e6));
   lteHelper->SetSpectrumChannelType ("ns3::MultiModelSpectrumChannel");
+
+//   lteHelper->EnableLogComponents ();
+//   LogComponentEnable ("PfFfMacScheduler", LOG_LEVEL_ALL);
   
   if (!fadingTrace.empty ())
     {
@@ -525,24 +535,26 @@ main (int argc, char *argv[])
   NetDeviceContainer macroUeDevs = lteHelper->InstallUeDevice (macroUes);
 
 
-
-
   // home UEs located in the same apartment in which there are the Home eNBs
   positionAlloc = CreateObject<SameRoomPositionAllocator> (homeEnbs);
   mobility.SetPositionAllocator (positionAlloc);
   mobility.Install (homeUes);
   NetDeviceContainer homeUeDevs = lteHelper->InstallUeDevice (homeUes);
 
- 
-
+  Ipv4Address remoteHostAddr;
+  NodeContainer ues;
+  Ipv4StaticRoutingHelper ipv4RoutingHelper;
+  Ipv4InterfaceContainer ueIpIfaces;
+   Ptr<Node> remoteHost;
+   NetDeviceContainer ueDevs;
   if (epc)
     {
-      NS_LOG_LOGIC ("setting up internet, remote host and applications");
+      NS_LOG_LOGIC ("setting up internet and remote host");
   
       // Create a single RemoteHost
       NodeContainer remoteHostContainer;
       remoteHostContainer.Create (1);
-      Ptr<Node> remoteHost = remoteHostContainer.Get (0);
+      remoteHost = remoteHostContainer.Get (0);
       InternetStackHelper internet;
       internet.Install (remoteHostContainer);
 
@@ -557,91 +569,22 @@ main (int argc, char *argv[])
       ipv4h.SetBase ("1.0.0.0", "255.0.0.0");
       Ipv4InterfaceContainer internetIpIfaces = ipv4h.Assign (internetDevices);
       // in this container, interface 0 is the pgw, 1 is the remoteHost
-      Ipv4Address remoteHostAddr = internetIpIfaces.GetAddress (1);
+      remoteHostAddr = internetIpIfaces.GetAddress (1);
 
       Ipv4StaticRoutingHelper ipv4RoutingHelper;
       Ptr<Ipv4StaticRouting> remoteHostStaticRouting = ipv4RoutingHelper.GetStaticRouting (remoteHost->GetObject<Ipv4> ());
       remoteHostStaticRouting->AddNetworkRouteTo (Ipv4Address ("7.0.0.0"), Ipv4Mask ("255.0.0.0"), 1);
 
       // for internetworking purposes, consider together home UEs and macro UEs
-      NodeContainer ues;
       ues.Add (homeUes);
       ues.Add (macroUes);
-      NetDeviceContainer ueDevs;
       ueDevs.Add (homeUeDevs);
       ueDevs.Add (macroUeDevs);      
 
       // Install the IP stack on the UEs      
       internet.Install (ues);
-      Ipv4InterfaceContainer ueIpIfaces;
       ueIpIfaces = epcHelper->AssignUeIpv4Address (NetDeviceContainer (ueDevs));
-      
-      // Install and start applications on UEs and remote host
-      uint16_t dlPort = 10000;
-      uint16_t ulPort = 20000;
-
-      ApplicationContainer clientApps;
-      ApplicationContainer serverApps;
-      for (uint32_t u = 0; u < ues.GetN (); ++u)
-        {
-          Ptr<Node> ue = ues.Get (u);
-          // Set the default gateway for the UE
-          Ptr<Ipv4StaticRouting> ueStaticRouting = ipv4RoutingHelper.GetStaticRouting (ue->GetObject<Ipv4> ());
-          ueStaticRouting->SetDefaultRoute (epcHelper->GetUeDefaultGatewayAddress (), 1);
-          ++dlPort;
-          ++ulPort;
-          if (useUdp)
-            {              
-              if (epcDl)
-                {
-                  NS_LOG_LOGIC ("installing UDP DL app for UE " << u);
-                  UdpClientHelper dlClientHelper (ueIpIfaces.GetAddress (u), dlPort);
-                  clientApps.Add (dlClientHelper.Install (remoteHost));
-                  PacketSinkHelper dlPacketSinkHelper ("ns3::UdpSocketFactory", 
-                                                       InetSocketAddress (Ipv4Address::GetAny (), dlPort));
-                  serverApps.Add (dlPacketSinkHelper.Install (ue));
-                }
-              if (epcUl)
-                {      
-                  NS_LOG_LOGIC ("installing UDP UL app for UE " << u);
-                  UdpClientHelper ulClientHelper (remoteHostAddr, ulPort);
-                  clientApps.Add (ulClientHelper.Install (ue));
-                  PacketSinkHelper ulPacketSinkHelper ("ns3::UdpSocketFactory", 
-                                                       InetSocketAddress (Ipv4Address::GetAny (), ulPort));
-                  serverApps.Add (ulPacketSinkHelper.Install (remoteHost));  
-                }            
-            }                    
-          else // use TCP
-            {
-              if (epcDl)
-                {
-                  NS_LOG_LOGIC ("installing TCP DL app for UE " << u);
-                  BulkSendHelper dlClientHelper ("ns3::TcpSocketFactory",
-                                                 InetSocketAddress (ueIpIfaces.GetAddress (u), dlPort));
-                  dlClientHelper.SetAttribute ("MaxBytes", UintegerValue (0));
-                  clientApps.Add (dlClientHelper.Install (remoteHost));
-                  PacketSinkHelper dlPacketSinkHelper ("ns3::TcpSocketFactory", 
-                                                       InetSocketAddress (Ipv4Address::GetAny (), dlPort));
-                  serverApps.Add (dlPacketSinkHelper.Install (ue));
-                }
-              if (epcUl)
-                {     
-                  NS_LOG_LOGIC ("installing TCP UL app for UE " << u);              
-                  BulkSendHelper ulClientHelper ("ns3::TcpSocketFactory",
-                                                 InetSocketAddress (remoteHostAddr, ulPort));
-                  ulClientHelper.SetAttribute ("MaxBytes", UintegerValue (0));                  
-                  clientApps.Add (ulClientHelper.Install (ue));
-                  PacketSinkHelper ulPacketSinkHelper ("ns3::TcpSocketFactory", 
-                                                       InetSocketAddress (Ipv4Address::GetAny (), ulPort));
-                  serverApps.Add (ulPacketSinkHelper.Install (remoteHost));
-                }
-            }
-        }
-      serverApps.Start (Seconds (0.0));
-      clientApps.Start (Seconds (0.0));
-
-    } // end if (epc)
-
+    }
 
   // attachment (needs to be done after IP stack configuration)
   // macro UEs attached to the closest macro eNB
@@ -649,8 +592,8 @@ main (int argc, char *argv[])
   // each home UE is ttach explicitly to its home eNB
   NetDeviceContainer::Iterator ueDevIt;
   NetDeviceContainer::Iterator enbDevIt = homeEnbDevs.Begin ();
-  
-  for (ueDevIt = homeUeDevs.Begin (); 
+
+  for (ueDevIt = homeUeDevs.Begin ();
        ueDevIt != homeUeDevs.End ();
        ++ueDevIt, ++enbDevIt)
     {
@@ -663,14 +606,131 @@ main (int argc, char *argv[])
       lteHelper->Attach (*ueDevIt, *enbDevIt);
     }
 
-  if (!epc)
+    
+
+  if (epc)
     {
-      // simplified LTE-only simulation
-      // need to activate radio bearers explicitly after attachment
-      enum EpsBearer::Qci q = EpsBearer::NGBR_VIDEO_TCP_DEFAULT;
-      EpsBearer bearer (q);
-      lteHelper->ActivateDataRadioBearer (homeUeDevs, bearer);  
-      lteHelper->ActivateDataRadioBearer (macroUeDevs, bearer);      
+      NS_LOG_LOGIC ("setting up applications");
+    
+      // Install and start applications on UEs and remote host
+      uint16_t dlPort = 10000;
+      uint16_t ulPort = 20000;
+
+      // randomize a bit start times to avoid simulation artifacts
+      // (e.g., buffer overflows due to packet transmissions happening
+      // exactly at the same time) 
+      Ptr<UniformRandomVariable> startTimeSeconds = CreateObject<UniformRandomVariable> ();
+      startTimeSeconds->SetAttribute ("Min", DoubleValue (0));
+      startTimeSeconds->SetAttribute ("Max", DoubleValue (0.010));
+
+     
+      for (uint32_t u = 0; u < ues.GetN (); ++u)
+        {
+          Ptr<Node> ue = ues.Get (u);
+          // Set the default gateway for the UE
+          Ptr<Ipv4StaticRouting> ueStaticRouting = ipv4RoutingHelper.GetStaticRouting (ue->GetObject<Ipv4> ());
+          ueStaticRouting->SetDefaultRoute (epcHelper->GetUeDefaultGatewayAddress (), 1);
+
+          for (uint32_t b = 0; b < numBearersPerUe; ++b)
+            {
+              ++dlPort;
+              ++ulPort;
+
+              ApplicationContainer clientApps;
+              ApplicationContainer serverApps;
+
+              if (useUdp)
+                {              
+                  if (epcDl)
+                    {
+                      NS_LOG_LOGIC ("installing UDP DL app for UE " << u);
+                      UdpClientHelper dlClientHelper (ueIpIfaces.GetAddress (u), dlPort);
+                      clientApps.Add (dlClientHelper.Install (remoteHost));
+                      PacketSinkHelper dlPacketSinkHelper ("ns3::UdpSocketFactory", 
+                                                           InetSocketAddress (Ipv4Address::GetAny (), dlPort));
+                      serverApps.Add (dlPacketSinkHelper.Install (ue));
+                    }
+                  if (epcUl)
+                    {      
+                      NS_LOG_LOGIC ("installing UDP UL app for UE " << u);
+                      UdpClientHelper ulClientHelper (remoteHostAddr, ulPort);
+                      clientApps.Add (ulClientHelper.Install (ue));
+                      PacketSinkHelper ulPacketSinkHelper ("ns3::UdpSocketFactory", 
+                                                           InetSocketAddress (Ipv4Address::GetAny (), ulPort));
+                      serverApps.Add (ulPacketSinkHelper.Install (remoteHost));  
+                    }            
+                }                    
+              else // use TCP
+                {
+                  if (epcDl)
+                    {
+                      NS_LOG_LOGIC ("installing TCP DL app for UE " << u);
+                      BulkSendHelper dlClientHelper ("ns3::TcpSocketFactory",
+                                                     InetSocketAddress (ueIpIfaces.GetAddress (u), dlPort));
+                      dlClientHelper.SetAttribute ("MaxBytes", UintegerValue (0));
+                      clientApps.Add (dlClientHelper.Install (remoteHost));
+                      PacketSinkHelper dlPacketSinkHelper ("ns3::TcpSocketFactory", 
+                                                           InetSocketAddress (Ipv4Address::GetAny (), dlPort));
+                      serverApps.Add (dlPacketSinkHelper.Install (ue));
+                    }
+                  if (epcUl)
+                    {     
+                      NS_LOG_LOGIC ("installing TCP UL app for UE " << u);              
+                      BulkSendHelper ulClientHelper ("ns3::TcpSocketFactory",
+                                                     InetSocketAddress (remoteHostAddr, ulPort));
+                      ulClientHelper.SetAttribute ("MaxBytes", UintegerValue (0));                  
+                      clientApps.Add (ulClientHelper.Install (ue));
+                      PacketSinkHelper ulPacketSinkHelper ("ns3::TcpSocketFactory", 
+                                                           InetSocketAddress (Ipv4Address::GetAny (), ulPort));
+                      serverApps.Add (ulPacketSinkHelper.Install (remoteHost));
+                    }
+                } // end if (useUdp)
+
+              Ptr<EpcTft> tft = Create<EpcTft> ();
+              if (epcDl)
+                {
+                  EpcTft::PacketFilter dlpf;
+                  dlpf.localPortStart = dlPort;
+                  dlpf.localPortEnd = dlPort;
+                  tft->Add (dlpf); 
+                }
+              if (epcUl)
+                {
+                  EpcTft::PacketFilter ulpf;
+                  ulpf.remotePortStart = ulPort;
+                  ulpf.remotePortEnd = ulPort;
+                  tft->Add (ulpf);
+                }
+
+              if (epcDl || epcUl)
+                {
+                  EpsBearer bearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT);
+                  lteHelper->ActivateDedicatedEpsBearer (ueDevs.Get (u), bearer, tft);
+                }
+              Time startTime = Seconds (startTimeSeconds->GetValue ());
+              serverApps.Start (startTime);
+              clientApps.Start (startTime);
+
+            } // end for b
+        }
+
+    } 
+  else // (epc == false)
+    {
+      // for radio bearer activation purposes, consider together home UEs and macro UEs
+      NetDeviceContainer ueDevs;
+      ueDevs.Add (homeUeDevs);
+      ueDevs.Add (macroUeDevs);  
+      for (uint32_t u = 0; u < ueDevs.GetN (); ++u)
+        {
+          Ptr<NetDevice> ueDev = ueDevs.Get (u);
+          for (uint32_t b = 0; b < numBearersPerUe; ++b)
+            {
+              enum EpsBearer::Qci q = EpsBearer::NGBR_VIDEO_TCP_DEFAULT;
+              EpsBearer bearer (q);
+              lteHelper->ActivateDataRadioBearer (ueDev, bearer);
+            }
+        }
     }
 
   BuildingsHelper::MakeMobilityModelConsistent ();

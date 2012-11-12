@@ -71,7 +71,7 @@ LenaTestHarqSuite::LenaTestHarqSuite ()
   // MCS 10 TB size of 469 bytes SINR 4 expected throughput 236096 bytes
   // TBLER 1st tx 1.0
   // TBLER 2nd tx 0.0138
-  AddTestCase (new LenaHarqTestCase (1, 640, 41, 0.02, 236096));
+  AddTestCase (new LenaHarqTestCase (1, 640, 469, 0.02, 236096));
 
 
 

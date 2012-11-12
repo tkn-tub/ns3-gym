@@ -23,8 +23,7 @@
 #include "ns3/network-module.h"
 #include "ns3/mobility-module.h"
 #include "ns3/lte-module.h"
-#include "ns3/config-store.h"
-//#include "ns3/gtk-config-store.h"
+#include "ns3/config-store-module.h"
 
 
 using namespace ns3;
@@ -82,7 +81,7 @@ int main (int argc, char *argv[])
   lteHelper->EnableRlcTraces ();
 
 
-  double distance_temp [] = { 10000,10000,10000};
+  double distance_temp [] = { 1000,1000,1000};
   std::vector<double> userDistance;
   userDistance.assign (distance_temp, distance_temp + 3);
   for (int i = 0; i < 3; i++)
@@ -94,8 +93,8 @@ int main (int argc, char *argv[])
   Simulator::Run ();
 
   // Uncomment to show available paths
-  /*GtkConfigStore config;
-  config.ConfigureAttributes ();*/
+  // GtkConfigStore config;
+  // config.ConfigureAttributes ();
 
   Simulator::Destroy ();
 

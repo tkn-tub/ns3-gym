@@ -547,9 +547,12 @@ create one separate instance for each REM.
 Note that the REM generation is very demanding, in particular:
 
  * the run-time memory consumption is approximately 5KB per pixel. For example,
-   a REM with a resolution of 500x500 needs about 1.25 GB of memory, and
-   a resolution of 1000x1000 needs about 5 GB (too much for a
-   regular PC at the time of this writing).
+   a REM with a resolution of 500x500 would need about 1.25 GB of memory, and
+   a resolution of 1000x1000 would need needs about 5 GB (too much for a
+   regular PC at the time of this writing). To overcome this issue,
+   the REM is generated at successive steps, with each step evaluating
+   at most a number of pixels determined by the value of the 
+   the attribute ``RadioEnvironmentMapHelper::MaxPointsPerIteration``. 
  * if you generate a REM at the beginning of a simulation, it will
    slow down the execution of the rest of the simulation. If you want
    to generate a REM for a program and also use the same program to
@@ -585,6 +588,18 @@ As an example, here is the REM that can be obtained with the example program len
 
    REM obtained from the lena-dual-stripe example
 
+
+Note that the lena-dual-stripe example program also generate
+gnuplot-compatible output files containing information about the
+positions of the UE and eNB nodes as well as of the buildings,
+respectively in the files ``ues.txt``, ``enbs.txt`` and
+``buildings.txt``. These can be easily included when using
+gnuplot. For example, assuming that your gnuplot script (e.g., the
+minimal gnuplot script described above) is saved in a file named
+``my_plot_script``, running the following command would plot the
+location of UEs, eNBs and buildings on top of the REM:: 
+
+   gnuplot -p enbs.txt ues.txt buildings.txt my_plot_script
 
 
 
