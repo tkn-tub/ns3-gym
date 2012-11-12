@@ -73,10 +73,11 @@ int main (int argc, char *argv[])
   // Activate an EPS bearer
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
-lteHelper->ActivateDataRadioBearer (ueDevs, bearer);
+  lteHelper->ActivateDataRadioBearer (ueDevs, bearer);
 
   Simulator::Stop (Seconds (2));
 
+  lteHelper->EnablePhyTraces ();
   lteHelper->EnableMacTraces ();
   lteHelper->EnableRlcTraces ();
 

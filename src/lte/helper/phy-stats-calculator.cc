@@ -49,17 +49,17 @@ PhyStatsCalculator::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::PhyStatsCalculator")
     .SetParent<LteStatsCalculator> ()
     .AddConstructor<PhyStatsCalculator> ()
-    .AddAttribute ("RsrpRsrqFilename",
+    .AddAttribute ("DlRsrpRsrqFilename",
                    "Name of the file where the RSRP/RSRQ statistics will be saved.",
                    StringValue ("DlRsrpRsrqStats.txt"),
                    MakeStringAccessor (&PhyStatsCalculator::SetCurrentCellRsrpRsrqFilename),
                    MakeStringChecker ())
-    .AddAttribute ("UeSinrFilename",
+    .AddAttribute ("UlSinrFilename",
                    "Name of the file where the UE SINR statistics will be saved.",
                    StringValue ("UlSinrStats.txt"),
                    MakeStringAccessor (&PhyStatsCalculator::SetUeSinrFilename),
                    MakeStringChecker ())
-    .AddAttribute ("InterferenceFilename",
+    .AddAttribute ("UlInterferenceFilename",
                    "Name of the file where the interference statistics will be saved.",
                    StringValue ("UlInterferenceStats.txt"),
                    MakeStringAccessor (&PhyStatsCalculator::SetInterferenceFilename),
