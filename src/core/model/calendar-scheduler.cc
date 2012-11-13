@@ -35,7 +35,6 @@ NS_OBJECT_ENSURE_REGISTERED (CalendarScheduler);
 TypeId
 CalendarScheduler::GetTypeId (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
   static TypeId tid = TypeId ("ns3::CalendarScheduler")
     .SetParent<Scheduler> ()
     .AddConstructor<CalendarScheduler> ()

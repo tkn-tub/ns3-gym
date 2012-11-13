@@ -34,7 +34,6 @@ NS_OBJECT_ENSURE_REGISTERED (HeapScheduler);
 TypeId
 HeapScheduler::GetTypeId (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
   static TypeId tid = TypeId ("ns3::HeapScheduler")
     .SetParent<Scheduler> ()
     .AddConstructor<HeapScheduler> ()

@@ -8,7 +8,6 @@ namespace ns3 {
 TypeId 
 SimulatorImpl::GetTypeId (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
   static TypeId tid = TypeId ("ns3::SimulatorImpl")
     .SetParent<Object> ()
   ;

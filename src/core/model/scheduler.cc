@@ -36,7 +36,6 @@ Scheduler::~Scheduler ()
 TypeId
 Scheduler::GetTypeId (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
   static TypeId tid = TypeId ("ns3::Scheduler")
     .SetParent<Object> ()
   ;

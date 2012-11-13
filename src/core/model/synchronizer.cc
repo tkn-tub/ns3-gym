@@ -28,7 +28,6 @@ NS_OBJECT_ENSURE_REGISTERED (Synchronizer);
 TypeId 
 Synchronizer::GetTypeId (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
   static TypeId tid = TypeId ("ns3::Synchronizer")
     .SetParent<Object> ()
   ;

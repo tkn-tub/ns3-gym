@@ -34,7 +34,6 @@ NS_OBJECT_ENSURE_REGISTERED (MapScheduler);
 TypeId
 MapScheduler::GetTypeId (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
   static TypeId tid = TypeId ("ns3::MapScheduler")
     .SetParent<Scheduler> ()
     .AddConstructor<MapScheduler> ()

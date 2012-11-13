@@ -35,7 +35,6 @@ NS_OBJECT_ENSURE_REGISTERED (ListScheduler);
 TypeId
 ListScheduler::GetTypeId (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
   static TypeId tid = TypeId ("ns3::ListScheduler")
     .SetParent<Scheduler> ()
     .AddConstructor<ListScheduler> ()

@@ -45,7 +45,6 @@ NS_OBJECT_ENSURE_REGISTERED (RandomVariableStream);
 TypeId 
 RandomVariableStream::GetTypeId (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
   static TypeId tid = TypeId ("ns3::RandomVariableStream")
     .SetParent<Object> ()
     .AddAttribute("Stream",
@@ -136,7 +135,6 @@ NS_OBJECT_ENSURE_REGISTERED(UniformRandomVariable);
 TypeId 
 UniformRandomVariable::GetTypeId (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
   static TypeId tid = TypeId ("ns3::UniformRandomVariable")
     .SetParent<RandomVariableStream>()
     .AddConstructor<UniformRandomVariable> ()
@@ -207,7 +205,6 @@ NS_OBJECT_ENSURE_REGISTERED(ConstantRandomVariable);
 TypeId 
 ConstantRandomVariable::GetTypeId (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
   static TypeId tid = TypeId ("ns3::ConstantRandomVariable")
     .SetParent<RandomVariableStream>()
     .AddConstructor<ConstantRandomVariable> ()
@@ -262,7 +259,6 @@ NS_OBJECT_ENSURE_REGISTERED(SequentialRandomVariable);
 TypeId 
 SequentialRandomVariable::GetTypeId (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
   static TypeId tid = TypeId ("ns3::SequentialRandomVariable")
     .SetParent<RandomVariableStream>()
     .AddConstructor<SequentialRandomVariable> ()
@@ -362,7 +358,6 @@ NS_OBJECT_ENSURE_REGISTERED(ExponentialRandomVariable);
 TypeId 
 ExponentialRandomVariable::GetTypeId (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
   static TypeId tid = TypeId ("ns3::ExponentialRandomVariable")
     .SetParent<RandomVariableStream>()
     .AddConstructor<ExponentialRandomVariable> ()
@@ -444,7 +439,6 @@ NS_OBJECT_ENSURE_REGISTERED(ParetoRandomVariable);
 TypeId 
 ParetoRandomVariable::GetTypeId (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
   static TypeId tid = TypeId ("ns3::ParetoRandomVariable")
     .SetParent<RandomVariableStream>()
     .AddConstructor<ParetoRandomVariable> ()
@@ -540,7 +534,6 @@ NS_OBJECT_ENSURE_REGISTERED(WeibullRandomVariable);
 TypeId 
 WeibullRandomVariable::GetTypeId (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
   static TypeId tid = TypeId ("ns3::WeibullRandomVariable")
     .SetParent<RandomVariableStream>()
     .AddConstructor<WeibullRandomVariable> ()
@@ -636,7 +629,6 @@ const double NormalRandomVariable::INFINITE_VALUE = 1e307;
 TypeId 
 NormalRandomVariable::GetTypeId (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
   static TypeId tid = TypeId ("ns3::NormalRandomVariable")
     .SetParent<RandomVariableStream>()
     .AddConstructor<NormalRandomVariable> ()
@@ -754,7 +746,6 @@ NS_OBJECT_ENSURE_REGISTERED(LogNormalRandomVariable);
 TypeId 
 LogNormalRandomVariable::GetTypeId (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
   static TypeId tid = TypeId ("ns3::LogNormalRandomVariable")
     .SetParent<RandomVariableStream>()
     .AddConstructor<LogNormalRandomVariable> ()
@@ -874,7 +865,6 @@ NS_OBJECT_ENSURE_REGISTERED(GammaRandomVariable);
 TypeId 
 GammaRandomVariable::GetTypeId (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
   static TypeId tid = TypeId ("ns3::GammaRandomVariable")
     .SetParent<RandomVariableStream>()
     .AddConstructor<GammaRandomVariable> ()
@@ -1050,7 +1040,6 @@ NS_OBJECT_ENSURE_REGISTERED(ErlangRandomVariable);
 TypeId 
 ErlangRandomVariable::GetTypeId (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
   static TypeId tid = TypeId ("ns3::ErlangRandomVariable")
     .SetParent<RandomVariableStream>()
     .AddConstructor<ErlangRandomVariable> ()
@@ -1162,7 +1151,6 @@ NS_OBJECT_ENSURE_REGISTERED(TriangularRandomVariable);
 TypeId 
 TriangularRandomVariable::GetTypeId (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
   static TypeId tid = TypeId ("ns3::TriangularRandomVariable")
     .SetParent<RandomVariableStream>()
     .AddConstructor<TriangularRandomVariable> ()
@@ -1259,7 +1247,6 @@ NS_OBJECT_ENSURE_REGISTERED(ZipfRandomVariable);
 TypeId 
 ZipfRandomVariable::GetTypeId (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
   static TypeId tid = TypeId ("ns3::ZipfRandomVariable")
     .SetParent<RandomVariableStream>()
     .AddConstructor<ZipfRandomVariable> ()
@@ -1350,7 +1337,6 @@ NS_OBJECT_ENSURE_REGISTERED(ZetaRandomVariable);
 TypeId 
 ZetaRandomVariable::GetTypeId (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
   static TypeId tid = TypeId ("ns3::ZetaRandomVariable")
     .SetParent<RandomVariableStream>()
     .AddConstructor<ZetaRandomVariable> ()
@@ -1434,7 +1420,6 @@ NS_OBJECT_ENSURE_REGISTERED(DeterministicRandomVariable);
 TypeId 
 DeterministicRandomVariable::GetTypeId (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
   static TypeId tid = TypeId ("ns3::DeterministicRandomVariable")
     .SetParent<RandomVariableStream>()
     .AddConstructor<DeterministicRandomVariable> ()
@@ -1527,7 +1512,6 @@ EmpiricalRandomVariable::ValueCDF::ValueCDF (const ValueCDF& c)
 TypeId 
 EmpiricalRandomVariable::GetTypeId (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
   static TypeId tid = TypeId ("ns3::EmpiricalRandomVariable")
     .SetParent<RandomVariableStream>()
     .AddConstructor<EmpiricalRandomVariable> ()
