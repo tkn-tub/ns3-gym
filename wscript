@@ -341,9 +341,9 @@ def configure(conf):
         elif sys.platform == 'cygwin':
             env.append_value("LINKFLAGS", "-Wl,--enable-auto-import")
 
-        cxx, = env['CXX']
-
-        p = subprocess.Popen([cxx, '-print-file-name=libstdc++.so'], stdout=subprocess.PIPE)
+        cxx = env['CXX']
+        cxx_check_libstdcxx = cxx + ['stdout=subprocess.PIPE']
+        p = subprocess.Popen(cxx_check_libstdcxx, stdout=subprocess.PIPE)
         libstdcxx_location = os.path.dirname(p.stdout.read().strip())
         p.wait()
         if libstdcxx_location:
