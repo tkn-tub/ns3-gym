@@ -61,11 +61,18 @@ PrintAttributes (TypeId tid, std::ostream &os)
 	 << "    " << listLineStart << "Set with class: " << reference << info.checker->GetValueTypeName () << listLineStop << std::endl;
       if (info.checker->HasUnderlyingTypeInformation ())
 	{
-	  os << "    " << listLineStart << "Underlying type: " << reference << info.checker->GetUnderlyingTypeInformation () << listLineStop << std::endl;
+	  os << "    " << listLineStart << "Underlying type: ";
+	  if (    (info.checker->GetValueTypeName () != "ns3::EnumValue")
+	       && (info.checker->GetUnderlyingTypeInformation () != "std::string")
+	      )
+	    {
+	      os << reference;
+	    }
+	  os << info.checker->GetUnderlyingTypeInformation () << listLineStop << std::endl;
 	}
       if (info.flags & TypeId::ATTR_CONSTRUCT && info.accessor->HasSetter ())
 	{
-	  os << "    " << listLineStart << "Initial value: " << reference << info.initialValue->SerializeToString (info.checker) << listLineStop << std::endl;
+	  os << "    " << listLineStart << "Initial value: " << info.initialValue->SerializeToString (info.checker) << listLineStop << std::endl;
 	}
       os << "    " << listLineStart << "Flags: ";
       if (info.flags & TypeId::ATTR_CONSTRUCT && info.accessor->HasSetter ())

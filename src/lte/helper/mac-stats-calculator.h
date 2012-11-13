@@ -31,7 +31,6 @@ namespace ns3 {
 
 /**
  * Takes care of storing the information generated at MAC layer. Metrics saved are:
- *time\tframe\tsframe\tRNTI\tmcsTb1\tsizeTb1\tmcsTb2\tsizeTb2
  *   - Timestamp (in seconds)
  *   - Frame index
  *   - Subframe index
