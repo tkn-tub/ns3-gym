@@ -128,6 +128,7 @@ LteUePhy::LteUePhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy)
     m_ueCphySapUser (0),
     m_rnti (0),
     m_srsPeriodicity (0),
+    m_rsReceivedPowerUpdated (false),
     m_rsrpRsrqSampleCounter (0)
 {
   m_amc = CreateObject <LteAmc> ();
@@ -403,6 +404,14 @@ LteUePhy::ReportInterference (const SpectrumValue& interf)
   // Currently not used by UE
 }
 
+void
+LteUePhy::ReportRsReceivedPower (const SpectrumValue& power)
+{
+  NS_LOG_FUNCTION (this << power);
+  m_rsReceivedPowerUpdated = true;
+  m_rsReceivedPower = power;  
+}
+
 
 
 Ptr<DlCqiLteControlMessage>
@@ -418,9 +427,26 @@ LteUePhy::CreateDlCqiFeedbackMessage (const SpectrumValue& sinr)
   m_rsrpRsrqSampleCounter++;
   if (m_rsrpRsrqSampleCounter==m_rsrpRsrqSamplePeriod)
     {
-      // Generate RSRP and RSRQ traces (dummy values, real valeus TBD)
-      double rsrp = 0.0;
-      double rsrq = 0.0;
+      NS_ASSERT_MSG (m_rsReceivedPowerUpdated, " RS received power info obsolete");
+      // RSRP evaluated as averaged received power among RBs
+      double sum = 0.0;
+      uint8_t rbNum = 0;
+      Values::const_iterator it;
+      for (it = m_rsReceivedPower.ConstValuesBegin (); it != m_rsReceivedPower.ConstValuesEnd (); it++)
+        {
+          sum += (*it);
+          rbNum++;
+        }
+      double rsrp = sum / (double)rbNum;
+      // RSRQ evaluated as averaged SINR among RBs
+      for (it = sinr.ConstValuesBegin (); it != sinr.ConstValuesEnd (); it++)
+        {
+          sum += (*it);
+          rbNum++;
+        }
+      double rsrq = sum / (double)rbNum;
+      NS_LOG_INFO (this << " cellId " << m_cellId << " rnti " << m_rnti << " RSRP " << rsrp << " RSRQ " << rsrq);
+ 
       m_reportCurrentCellRsrpRsrqTrace (m_cellId, m_rnti, rsrp, rsrq);
       m_rsrpRsrqSampleCounter = 0;
     }
@@ -625,7 +651,9 @@ void
 LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
 {
   NS_LOG_FUNCTION (this << frameNo << subframeNo);
-  
+
+  // refresh internal variables
+  m_rsReceivedPowerUpdated = false;
   // update uplink transmission mask according to previous UL-CQIs
   SetSubChannelsForTransmission (m_subChannelsForTransmissionQueue.at (0));
   // shift the queue

@@ -651,6 +651,11 @@ LteEnbPhy::ReportInterference (const SpectrumValue& interf)
     }
 }
 
+void
+LteEnbPhy::ReportRsReceivedPower (const SpectrumValue& power)
+{
+  // not used by eNB
+}
 
 
 

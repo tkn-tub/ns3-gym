@@ -231,6 +231,8 @@ public:
   virtual void GenerateCtrlCqiReport (const SpectrumValue& sinr);
   virtual void GenerateDataCqiReport (const SpectrumValue& sinr);
   virtual void ReportInterference (const SpectrumValue& interf);
+  virtual void ReportRsReceivedPower (const SpectrumValue& interf);
+
 
 
   /**

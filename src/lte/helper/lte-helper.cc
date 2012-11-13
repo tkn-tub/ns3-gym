@@ -441,6 +441,9 @@ LteHelper::InstallSingleUeDevice (Ptr<Node> n)
   ulPhy->SetHarqPhyModule (harq);
   phy->SetHarqPhyModule (harq);
 
+  Ptr<LteRsReceivedPowerChunkProcessor> pRs = Create<LteRsReceivedPowerChunkProcessor> (phy->GetObject<LtePhy> ());
+  dlPhy->AddRsPowerChunkProcessor (pRs);
+  
   Ptr<LteCtrlSinrChunkProcessor> pCtrl = Create<LteCtrlSinrChunkProcessor> (phy->GetObject<LtePhy> (), dlPhy);
   dlPhy->AddCtrlSinrChunkProcessor (pCtrl);
 

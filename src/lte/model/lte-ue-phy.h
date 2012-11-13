@@ -169,6 +169,7 @@ public:
   virtual void GenerateCtrlCqiReport (const SpectrumValue& sinr);
   virtual void GenerateDataCqiReport (const SpectrumValue& sinr);
   virtual void ReportInterference (const SpectrumValue& interf);
+  virtual void ReportRsReceivedPower (const SpectrumValue& power);
 
   virtual void DoSendLteControlMessage (Ptr<LteControlMessage> msg);
   virtual void ReceiveLteControlMessageList (std::list<Ptr<LteControlMessage> >);
@@ -265,6 +266,9 @@ private:
   
   uint16_t m_srsPeriodicity;
   uint16_t m_srsCounter;
+
+  bool m_rsReceivedPowerUpdated;
+  SpectrumValue m_rsReceivedPower;
 
   Ptr<LteHarqPhy> m_harqPhyModule;
 
