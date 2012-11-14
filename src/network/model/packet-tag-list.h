@@ -249,7 +249,7 @@ private:
    *          pointing to \pname{cur}.
    * \returns True if operation successful, false otherwise
    */
-  typedef bool (PacketTagList::*COWWriter_fp)
+  typedef bool (PacketTagList::*COWWriter)
     (Tag       & tag, bool         preMerge,
     struct TagData * cur, struct TagData ** prevNext);
   /**
@@ -259,7 +259,7 @@ private:
    * \param [in] Writer The copy-on-write function to use.
    * \returns True if \pname{tag} found, false otherwise.
    */
-  bool COWTraverse   (Tag & tag, PacketTagList::COWWriter_fp Writer);
+  bool COWTraverse   (Tag & tag, PacketTagList::COWWriter Writer);
   /**
    * Copy-on-write implementing Remove.
    *

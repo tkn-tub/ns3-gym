@@ -35,7 +35,7 @@ NS_LOG_COMPONENT_DEFINE ("PacketTagList");
 namespace ns3 {
 
 bool
-PacketTagList::COWTraverse (Tag & tag, PacketTagList::COWWriter_fp Writer)
+PacketTagList::COWTraverse (Tag & tag, PacketTagList::COWWriter Writer)
 {
   TypeId tid = tag.GetInstanceTypeId ();
   NS_LOG_FUNCTION (this << tid);
