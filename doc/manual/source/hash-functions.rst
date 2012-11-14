@@ -7,12 +7,13 @@ Hash Functions
 In the simplest usage, the hash function returns the 32-bit or 64-bit
 hash of a data buffer or string.  The default underlying hash function
 is murmur3_, chosen because it has good hash function properties and
-offers a 64-bit version.  The venerable FNV1a hash is also available.
+offers a 64-bit version.  The venerable FNV1a_ hash is also available.
 
 There is a straight-forward mechanism to
 add (or provide at run time) alternative hash function implementations.
 
 .. _murmur3: http://code.google.com/p/smhasher/wiki/MurmurHash3
+.. _FNV1a:   http://isthe.com/chongo/tech/comp/fnv/
 
 Basic Usage
 ***********
@@ -67,6 +68,6 @@ Sources for Hash Functions
 Sources for other hash function implementations include:
 
  * Peter Kankowski: http://www.strchr.com
- * Arash Partow:  http://www.partow.net/programming/hashfunctions/index.html
- * SMHasher:
- * Sanmayce:  http://www.sanmayce.com/Fastest_Hash/index.html 
+ * Arash Partow:    http://www.partow.net/programming/hashfunctions/index.html
+ * SMHasher:        http://code.google.com/p/smhasher/
+ * Sanmayce:        http://www.sanmayce.com/Fastest_Hash/index.html
