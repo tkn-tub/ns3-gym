@@ -98,14 +98,14 @@ HashFnv1aTestCase::DoRun (void)
   Hash hasher = Hash ( Create<HashFunction::Fnv1a> () );
 
   uint32_t h32r = 0x5735855b;  // FNV1A(key)
-  uint32_t h32 = hasher.GetHash32 (key);
+  uint32_t h32 = hasher.clear ().GetHash32 (key);
   NS_TEST_ASSERT_MSG_EQ (h32, h32r,
                          "Hash32 produced " << std::hex << std::setw ( 8) << h32
                          << ", expected "   << std::hex << std::setw ( 8) << h32r
                          );
 
   uint64_t h64r = 0x6fb0aea4ad83c27b;
-  uint64_t h64 = hasher.GetHash64 (key);
+  uint64_t h64 = hasher.clear ().GetHash64 (key);
   NS_TEST_ASSERT_MSG_EQ (h64, h64r,
                          "Hash64 produced " << std::hex << std::setw (16) << h64
                          << ", expected "   << std::hex << std::setw (16) << h64r
@@ -142,14 +142,14 @@ HashMurmur3TestCase::DoRun (void)
   Hash hasher = Hash ( Create<HashFunction::Murmur3> () );
 
   uint32_t h32r = 0xe8a2d100;  // Murmur3(key)
-  uint32_t h32 = hasher.GetHash32 (key);
+  uint32_t h32 = hasher.clear ().GetHash32 (key);
   NS_TEST_ASSERT_MSG_EQ (h32, h32r,
                          "Hash32 produced " << std::hex << std::setw ( 8) << h32
                          << ", expected "   << std::hex << std::setw ( 8) << h32r
                          );
 
   uint64_t h64r = 0x95373d091a691071;
-  uint64_t h64 = hasher.GetHash64 (key);
+  uint64_t h64 = hasher.clear ().GetHash64 (key);
   NS_TEST_ASSERT_MSG_EQ (h64, h64r,
                          "Hash64 produced " << std::hex << std::setw (16) << h64
                          << ", expected "   << std::hex << std::setw (16) << h64r

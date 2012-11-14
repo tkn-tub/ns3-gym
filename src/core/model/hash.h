@@ -109,7 +109,7 @@ public:
    *
    * \return this
    */
-  Hash * clear (void);
+  Hash & clear (void);
   
 private:
   Ptr<HashImplementation> m_impl;    /** Hash implementation */
