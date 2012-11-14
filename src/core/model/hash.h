@@ -104,6 +104,12 @@ public:
    * \return 64-bit hash of the string
    */
   Hash64_t  GetHash64  (const std::string s);
+  /**
+   * Restore initial state
+   *
+   * \return this
+   */
+  Hash * clear (void);
   
 private:
   Ptr<HashImplementation> m_impl;    /** Hash implementation */

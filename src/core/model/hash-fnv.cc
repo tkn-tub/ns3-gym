@@ -742,6 +742,11 @@ Fnv1a::GetHash64  (const char * buffer, const size_t size)
   return result;
 }
       
+void
+Fnv1a::clear (void)
+{
+}
+
   }  // namespace HashFunction
   
 } // namespace ns3

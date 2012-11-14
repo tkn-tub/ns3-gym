@@ -374,6 +374,11 @@ Murmur3::GetHash64  (const char * buffer, const size_t size)
   return result[0];
 }
 
+void
+Murmur3::clear (void)
+{
+}
+
   }  // namespace HashFunction
   
 } // namespace ns3

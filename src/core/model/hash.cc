@@ -41,5 +41,12 @@ Hash::Hash (Ptr<HashImplementation> hp)
 {
   NS_ASSERT (m_impl != 0);
 }
-  
+
+Hash *
+Hash::clear (void)
+{
+  m_impl->clear();
+  return this;
+}
+
 } // namespace ns3

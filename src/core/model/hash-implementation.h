@@ -60,6 +60,10 @@ public:
    * \return 64-bit hash of the buffer
    */
   virtual Hash64_t  GetHash64  (const char * buffer, const size_t size);
+  /**
+   * Restore initial state
+   */
+  virtual void clear (void) = 0;
   /*
    * Destructor
    */
