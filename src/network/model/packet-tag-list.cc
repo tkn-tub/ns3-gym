@@ -34,66 +34,6 @@ NS_LOG_COMPONENT_DEFINE ("PacketTagList");
 
 namespace ns3 {
 
-#ifndef USE_FREE_LIST
-#define USE_FREE_LIST 0
-#endif
- 
-#if USE_FREE_LIST
-
-struct PacketTagList::TagData * PacketTagList::g_free = 0;
-uint32_t PacketTagList::g_nfree = 0;
- 
-struct PacketTagList::TagData *
-PacketTagList::AllocData (void) const
-{
-  NS_LOG_FUNCTION (g_nfree);
-  struct TagData * retval;
-  if (g_free != 0) 
-    {
-      retval = g_free;
-      g_free = g_free->next;
-      g_nfree--;
-    } 
-  else 
-    {
-      retval = new struct TagData ();
-    }
-  return retval;
-}
-
-void
-PacketTagList::FreeData (struct TagData *data) const
-{
-  NS_LOG_FUNCTION (g_nfree << data);
-  if (g_nfree > FREE_LIST_MAX) 
-    {
-      delete data;
-      return;
-    }
-  g_nfree++;
-  data->next = g_free;
-  g_free = data;
-  memset (data->data, 0, TagData::MAX_SIZE);
-  data->tid = TypeId ();
-  data->count = 0;
-}
-#else  // if USE_FREE_LIST
-
-struct PacketTagList::TagData *
-PacketTagList::AllocData (void) const
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  return new struct TagData ();
-}
-
-void
-PacketTagList::FreeData (struct TagData *data) const
-{
-  NS_LOG_FUNCTION (data);
-  delete data;
-}
-#endif  // if USE_FREE_LIST
-
 bool
 PacketTagList::COWTraverse (Tag & tag, PacketTagList::COWWriter_fp Writer)
 {
@@ -193,7 +133,7 @@ PacketTagList::COWTraverse (Tag & tag, PacketTagList::COWWriter_fp Writer)
       NS_ASSERT (cur != 0);
       NS_ASSERT (cur->count > 1);
       cur->count--;                       // unmerge cur
-      struct TagData * copy = AllocData ();
+      struct TagData * copy = new struct TagData ();
       copy->tid = cur->tid;
       copy->count = 1;
       memcpy (copy->data, cur->data, TagData::MAX_SIZE);
@@ -237,7 +177,7 @@ PacketTagList::RemoveWriter (Tag & tag, bool preMerge,
   if (preMerge)
     {
       // found tid before first merge, so delete cur
-      FreeData (cur);
+      delete cur;
     }
   else
     {
@@ -285,7 +225,7 @@ PacketTagList::ReplaceWriter (Tag & tag, bool preMerge,
       // cur is always a merge at this point
       // need to copy, replace, and link past cur
       cur->count--;                     // unmerge cur
-      struct TagData * copy = AllocData ();
+      struct TagData * copy = new struct TagData ();
       copy->tid = tag.GetInstanceTypeId ();
       copy->count = 1;
       tag.Serialize (TagBuffer (copy->data,
@@ -309,7 +249,7 @@ PacketTagList::Add (const Tag &tag) const
     {
       NS_ASSERT (cur->tid != tag.GetInstanceTypeId ());
     }
-  struct TagData * head = AllocData ();
+  struct TagData * head = new struct TagData ();
   head->count = 1;
   head->next = 0;
   head->tid = tag.GetInstanceTypeId ();

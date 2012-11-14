@@ -123,12 +123,6 @@ class Tag;
  *
  * \par <b> Memory Management: </b>
  * \n
- * If the preprocessor symbol \link packet-tag-list.cc#USE_FREE_LIST
- * \c USE_FREE_LIST \endlink is true, #FreeData'd #TagData's
- * are added to the static free list #g_free.  The free list size is bounded.
- * Using the free list avoids \c new'ing and \c delete'ing #TagData's
- * every time a tag is added/removed from a PacketTagList.
- * \n\n
  * Packet tags must serialize to a finite maximum size, see #TagData
  *
  * This documentation entitles the original author to a free beer.
@@ -153,8 +147,7 @@ public:
      * in this constant.
      *
      * \intern
-     * Ideally, #TagData would be 32 bytes in size, so they
-     * can be added/removed from a single free list, and require
+     * Ideally, #TagData would be 32 bytes in size, so they require
      * no padding on 64-bit architectures.  (The architecture
      * affects the size because of the \c #next pointer.)
      * This would leave 18 bytes for \c #data.  However,
@@ -185,7 +178,7 @@ public:
    * \param [in] o The PacketTagList to copy.
    *
    * This makes a light-weight copy by #RemoveAll, then
-   * pointing to the same #TagData as \pname{o}.
+   * pointing to the same #struct TagData as \pname{o}.
    */
   inline PacketTagList (PacketTagList const &o);
   /**
@@ -194,7 +187,7 @@ public:
    * \param [in] o The PacketTagList to copy.
    *
    * This makes a light-weight copy by #RemoveAll, then
-   * pointing to the same #TagData as \pname{o}.
+   * pointing to the same #struct TagData as \pname{o}.
    */
   inline PacketTagList &operator = (PacketTagList const &o);
   /**
@@ -247,15 +240,6 @@ public:
 
 private:
   /**
-   * \returns A pointer to a new #TagData
-   */
-  struct TagData * AllocData (void) const;
-  /**
-   * Free a #TagData, adding it to the free list.
-   */
-  void FreeData (struct TagData * data) const;
-
-  /**
    * Typedef of method function pointer for copy-on-write operations
    *
    * \param [in] tag The tag type to operate on.
@@ -303,15 +287,10 @@ private:
    */
   bool ReplaceWriter (Tag & tag, bool preMerge, struct TagData * cur, struct TagData ** prevNext);
 
-  enum PacketTagList_e
-  {
-    FREE_LIST_MAX = 1000      /**< Maximum size of free list */
-  };
-
-  static struct TagData * g_free;  /**< Head of #TagData free list */
-  static uint32_t g_nfree; /**< Number of #TagData's on the free list */
-
-  struct TagData * m_next;  /**< Pointer to first #TagData on the list */
+  /**
+   * Pointer to first #struct TagData on the list
+   */
+  struct TagData *m_next;
 };
 
 } // namespace ns3
@@ -371,13 +350,13 @@ PacketTagList::RemoveAll (void)
         }
       if (prev != 0) 
         {
-          FreeData (prev);
+	  delete prev;
         }
       prev = cur;
     }
   if (prev != 0) 
     {
-      FreeData (prev);
+      delete prev;
     }
   m_next = 0;
 }

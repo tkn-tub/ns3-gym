@@ -630,7 +630,9 @@ PacketTagListTest::DoRun (void)
   ReplaceCheck (7);
 
   std::cout << GetName () << "freelist timing" << std::endl;
+  for (int i = 0; i < 100; ++i) {
   AddRemoveTime ();
+  }
   
   std::cout << GetName () << "remove timing" << std::endl;
   RemoveTime (ref, t7, "t7");
