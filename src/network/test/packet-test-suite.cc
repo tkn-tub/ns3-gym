@@ -20,6 +20,7 @@
 #include "ns3/packet.h"
 #include "ns3/packet-tag-list.h"
 #include "ns3/test.h"
+#include <limits>     // std:numeric_limits
 #include <string>
 #include <cstdarg>
 #include <iostream>
@@ -459,9 +460,9 @@ private:
   void CheckRef (PacketTagList & ref, ATestTagBase & t,
                  const char * msg, bool miss = false);
   void CheckRefList (PacketTagList & ref, const char * msg, int miss = 0);
-  void RemoveTime (const PacketTagList & ref, ATestTagBase & t,
+  int RemoveTime (const PacketTagList & ref, ATestTagBase & t,
                    const char * msg);
-  void AddRemoveTime ();
+  int AddRemoveTime ();
 };
 
 PacketTagListTest::PacketTagListTest ()
@@ -514,7 +515,7 @@ PacketTagListTest::CheckRefList (PacketTagList & ref,
   CheckRef (ref, t7, msg, miss == 7);
 }
   
-void
+int
 PacketTagListTest::RemoveTime (const PacketTagList & ref, ATestTagBase & t,
                                const char * msg)
 {
@@ -525,12 +526,14 @@ PacketTagListTest::RemoveTime (const PacketTagList & ref, ATestTagBase & t,
     ptv[i].Remove (t);
   }
   int stop = clock ();
+  int delta = stop - start;
   std::cout << GetName () << "remove time: " << msg << ": "
-            << stop - start << " ticks"
+            << delta << " ticks"
             << std::endl;
+  return delta;
 }
 
-void
+int
 PacketTagListTest::AddRemoveTime ()
 {
   /*  old free list priming
@@ -561,9 +564,11 @@ PacketTagListTest::AddRemoveTime ()
     ptl.Remove (t);
   }
   int stop = clock ();
+  int delta = stop - start;
   std::cout << GetName () << "freelist time: "
-            << stop - start << " ticks"
+            << delta << " ticks"
             << std::endl;
+  return delta;
 }
 
 void
@@ -630,19 +635,37 @@ PacketTagListTest::DoRun (void)
   ReplaceCheck (7);
 
   std::cout << GetName () << "freelist timing" << std::endl;
+  int flm = std::numeric_limits<int>::max ();
   for (int i = 0; i < 100; ++i) {
-  AddRemoveTime ();
+    int now = AddRemoveTime ();
+    if (now < flm) flm = now;
   }
+  std::cout << GetName () << "min freelist time: "
+            << flm << " ticks" << std::endl;
   
   std::cout << GetName () << "remove timing" << std::endl;
-  RemoveTime (ref, t7, "t7");
-  RemoveTime (ref, t6, "t6");
-  RemoveTime (ref, t5, "t5");
-  RemoveTime (ref, t4, "t4");
-  RemoveTime (ref, t3, "t3");
-  RemoveTime (ref, t2, "t2");
-  RemoveTime (ref, t1, "t1");
-  RemoveTime (ref, t7, "t7");
+  std::vector <int> rmn (7, std::numeric_limits<int>::max ());
+  for (int i = 0; i < 100; ++i) {
+    for (int j = 1; j < 8; ++j) {
+      int now = 0;
+      switch (j) {
+        case 7:  now = RemoveTime (ref, t7, "t7");  break;
+        case 6:  now = RemoveTime (ref, t6, "t6");  break;
+        case 5:  now = RemoveTime (ref, t5, "t5");  break;
+        case 4:  now = RemoveTime (ref, t4, "t4");  break;
+        case 3:  now = RemoveTime (ref, t3, "t3");  break;
+        case 2:  now = RemoveTime (ref, t2, "t2");  break;
+        case 1:  now = RemoveTime (ref, t1, "t1");  break;
+      }  // switch
+
+      if (now < rmn[j]) rmn[j] = now;
+    } // for tag j
+  } // for iteration i
+  for (int j = 7; j > 0; --j) {
+    std::cout << GetName () << "min remove time: t"
+              << j << ": " << rmn[j] << std::endl;
+  }
+  
 }
 
 //-----------------------------------------------------------------------------
