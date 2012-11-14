@@ -25,14 +25,6 @@
 
 namespace ns3 {
 
-/**
- * \ingroup hash
- *
- * Hash value opaque types
- */
-typedef uint32_t uint32_t;
-typedef uint64_t uint64_t;
-
 namespace Hash {
 
 /**
