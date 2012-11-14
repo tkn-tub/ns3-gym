@@ -794,6 +794,31 @@ FindImsiFromUeRlcPath (std::string path)
 
 }
 
+uint16_t
+FindCellIdFromUeRlcPath (std::string path)
+{
+  NS_LOG_FUNCTION (path);
+  // Sample path input:
+  // /NodeList/#NodeId/DeviceList/#DeviceId/LteUeRrc/RadioBearer/#LCID/RxPDU
+
+  // We retrieve the LteUeNetDevice path
+  std::string lteUeNetDevicePath = path.substr (0, path.find ("/LteUeRrc"));
+  Config::MatchContainer match = Config::LookupMatches (lteUeNetDevicePath);
+
+  if (match.GetN () != 0)
+    {
+      Ptr<Object> ueNetDevice = match.Get (0);
+      NS_LOG_LOGIC ("FindImsiFromUeRlcPath: " << path << ", " << ueNetDevice->GetObject<LteUeNetDevice> ()->GetImsi ());
+      return ueNetDevice->GetObject<LteUeNetDevice> ()->GetRrc ()->GetCellId ();
+    }
+  else
+    {
+      NS_FATAL_ERROR ("Lookup " << lteUeNetDevicePath << " got no matches");
+    }
+
+}
+
+
 uint64_t
 FindImsiFromEnbMac (std::string path, uint16_t rnti)
 {
@@ -866,7 +891,18 @@ DlRxPduCallback (Ptr<RadioBearerStatsCalculator> rlcStats, std::string path,
       imsi = FindImsiFromUeRlcPath (path);
       rlcStats->SetImsiPath (path, imsi);
     }
-  rlcStats->DlRxPdu (imsi, rnti, lcid, packetSize, delay);
+
+  uint16_t cellId = 0;
+  if (rlcStats->ExistsCellIdPath (path) == true)
+    {
+      cellId = rlcStats->GetCellIdPath (path);
+    }
+  else
+    {
+      cellId = FindCellIdFromUeRlcPath (path);
+      rlcStats->SetCellIdPath (path, cellId);
+    }
+  rlcStats->DlRxPdu (cellId, imsi, rnti, lcid, packetSize, delay);
 }
 
 void
@@ -894,7 +930,18 @@ UlTxPduCallback (Ptr<RadioBearerStatsCalculator> rlcStats, std::string path,
       imsi = FindImsiFromUeRlcPath (path);
       rlcStats->SetImsiPath (path, imsi);
     }
-  rlcStats->UlTxPdu (imsi, rnti, lcid, packetSize);
+
+  uint16_t cellId = 0;
+  if (rlcStats->ExistsCellIdPath (path) == true)
+    {
+      cellId = rlcStats->GetCellIdPath (path);
+    }
+  else
+    {
+      cellId = FindCellIdFromUeRlcPath (path);
+      rlcStats->SetCellIdPath (path, cellId);
+    }
+  rlcStats->UlTxPdu (cellId, imsi, rnti, lcid, packetSize);
 }
 
 void
