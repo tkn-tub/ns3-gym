@@ -79,22 +79,22 @@ class Tag;
  *      };
  * \enddot
  *
- *   - Tags are stored in serialized form in a tree of #TagData
+ *   - Tags are stored in serialized form in a tree of TagData
  *     structures. (<tt>T1-T7</tt> in the diagram)
  *
- *   - Each #TagData points (\c next pointers in the diagram)
+ *   - Each TagData points (\c next pointers in the diagram)
  *     toward the root of the tree, which is a null pointer.
  *
  *   - \c count is the number of incoming pointers to this
- *     #TagData.  Branch points, where branches merge or join, have
- *     <tt>count \> 1</tt> (\c T3, \c T5); succesive links along
+ *     TagData.  Branch points, where branches merge or join, have
+ *     <tt>count \> 1</tt> (\c T3, \c T5); successive links along
  *     a branch have <tt>count = 1</tt> (\c T1, \c T2, \c T4, \c T6, \c T7).
  *
- *   - Each PacketTagList points to a specific #TagData,
+ *   - Each PacketTagList points to a specific TagData,
  *     which is the most recent Tag added to the packet. (<tt>T5-T7</tt>)
  *
  *   - Conceptually, therefore, each Packet has a PacketTagList which
- *     points to a singly-linked list of #TagData.
+ *     points to a singly-linked list of TagData.
  *
  * \par <b> Copy-on-write </b> is implemented as follows:
  *
@@ -123,7 +123,7 @@ class Tag;
  *
  * \par <b> Memory Management: </b>
  * \n
- * Packet tags must serialize to a finite maximum size, see #TagData
+ * Packet tags must serialize to a finite maximum size, see TagData
  *
  * This documentation entitles the original author to a free beer.
  */
@@ -147,12 +147,12 @@ public:
      * in this constant.
      *
      * \intern
-     * Ideally, #TagData would be 32 bytes in size, so they require
+     * Ideally, TagData would be 32 bytes in size, so they require
      * no padding on 64-bit architectures.  (The architecture
      * affects the size because of the \c #next pointer.)
      * This would leave 18 bytes for \c #data.  However,
      * ns3:Ipv6PacketInfoTag needs 19 bytes!  The current
-     * implementation allows 20 bytes, which gives #TagData
+     * implementation allows 20 bytes, which gives TagData
      * a size of 30 bytes on 32-byte machines (which gets
      * padded with 2 bytes), and 34 bytes on 64-bit machines, which
      * gets padded to 40 bytes.
