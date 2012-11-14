@@ -30,10 +30,10 @@ namespace ns3 {
 /**
  *  \ingroup hash
  *
- *  \brief Fnv hash function implementation
+ *  \brief Fnv1a hash function implementation
  *
  */
-class Fnv : public HashImplementation
+class Fnv1a : public HashImplementation
 {
 public:
   /**
@@ -65,7 +65,7 @@ private:
       SEED = 0x8BADF00D  // Ate bad food
     };
 
-};  // class Fnv
+};  // class Fnv1a
 
 }  // namespace HashImplNS
   

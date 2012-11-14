@@ -23,6 +23,7 @@
 
 #include <string>
 
+#include "ns3/assert.h"
 #include "ns3/ptr.h"
 #include "ns3/simple-ref-count.h"
 
@@ -263,6 +264,7 @@ inline
 Hash::Hash32_t
 Hash::GetHash32  (const char * buffer, const size_t size)
 {
+  NS_ASSERT (m_impl != 0);
   return m_impl->GetHash32  (buffer, size);
 }
 
@@ -270,6 +272,7 @@ inline
 Hash::Hash64_t
 Hash::GetHash64  (const char * buffer, const size_t size)
 {
+  NS_ASSERT (m_impl != 0);
   return m_impl->GetHash64  (buffer, size);
 }
 
@@ -277,6 +280,7 @@ inline
 Hash::Hash32_t
 Hash::GetHash32  (const std::string s)
 {
+  NS_ASSERT (m_impl != 0);
   return m_impl->GetHash32  (s.c_str (), s.size ());
 }
 
@@ -284,6 +288,7 @@ inline
 Hash::Hash64_t
 Hash::GetHash64  (const std::string s)
 {
+  NS_ASSERT (m_impl != 0);
   return m_impl->GetHash64  (s.c_str (), s.size ());
 }
 

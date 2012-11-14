@@ -41,7 +41,7 @@ NS_LOG_COMPONENT_DEFINE ("Hash-Fnv");
   
   namespace HashImplNS {
 
-    namespace FnvNS {
+    namespace Fnv1aNS {
       
 /*************************************************
  **  class FnvHashImplementation
@@ -152,7 +152,7 @@ typedef u_int32_t Fnv32_t;
  *
  * Use fully qualified type so this define works outside this scope //PDB
  */
-#define FNV0_32_INIT ((HashImplNS::FnvNS::Fnv32_t)0)
+#define FNV0_32_INIT ((HashImplNS::Fnv1aNS::Fnv32_t)0)
 
 
 /*
@@ -169,7 +169,7 @@ typedef u_int32_t Fnv32_t;
  *
  * Use fully qualified type so this define works outside this scope //PDB
  */
-#define FNV1_32_INIT ((HashImplNS::FnvNS::Fnv32_t)0x811c9dc5)
+#define FNV1_32_INIT ((HashImplNS::Fnv1aNS::Fnv32_t)0x811c9dc5)
 #define FNV1_32A_INIT FNV1_32_INIT
 
 
@@ -202,10 +202,10 @@ typedef struct {
  * Use fully qualified type so this define works outside this scope //PDB
  */
 #if defined(HAVE_64BIT_LONG_LONG)
-#define FNV0_64_INIT ((HashImplNS::FnvNS::Fnv64_t)0)
+#define FNV0_64_INIT ((HashImplNS::Fnv1aNS::Fnv64_t)0)
 #else /* HAVE_64BIT_LONG_LONG */
 extern const Fnv64_t fnv0_64_init;
-#define FNV0_64_INIT (HashImplNS::FnvNS::fnv0_64_init)
+#define FNV0_64_INIT (HashImplNS::Fnv1aNS::fnv0_64_init)
 #endif /* HAVE_64BIT_LONG_LONG */
 
 
@@ -222,7 +222,7 @@ extern const Fnv64_t fnv0_64_init;
  * NOTE: The FNV-1a initial basis is the same value as FNV-1 by definition.
  */
 #if defined(HAVE_64BIT_LONG_LONG)
-#define FNV1_64_INIT ((HashImplNS::FnvNS::Fnv64_t)0xcbf29ce484222325ULL)
+#define FNV1_64_INIT ((HashImplNS::Fnv1aNS::Fnv64_t)0xcbf29ce484222325ULL)
 #define FNV1A_64_INIT FNV1_64_INIT
 #else /* HAVE_64BIT_LONG_LONG */
 extern const fnv1_64_init;
@@ -338,7 +338,7 @@ enum fnv_type {
 /*
  * 32 bit magic FNV-1a prime
  */
-#define FNV_32_PRIME ((HashImplNS::FnvNS::Fnv32_t)0x01000193)
+#define FNV_32_PRIME ((HashImplNS::Fnv1aNS::Fnv32_t)0x01000193)
 
 
 /*
@@ -497,7 +497,7 @@ const Fnv64_t fnv1a_64_init = { 0x84222325, 0xcbf29ce4 };
  * 64 bit magic FNV-1a prime
  */
 #if defined(HAVE_64BIT_LONG_LONG)
-#define FNV_64_PRIME ((HashImplNS::FnvNS::Fnv64_t)0x100000001b3ULL)
+#define FNV_64_PRIME ((HashImplNS::Fnv1aNS::Fnv64_t)0x100000001b3ULL)
 #else /* HAVE_64BIT_LONG_LONG */
 #define FNV_64_PRIME_LOW ((unsigned long)0x1b3)	/* lower bits of FNV prime */
 #define FNV_64_PRIME_SHIFT (8)		/* top FNV prime shift above 2^32 */
@@ -723,21 +723,21 @@ fnv_64a_str(char *str, Fnv64_t hval)
 //-----------------------------------------------------------------------------
 
 
-}  // namespace FnvNS
+}  // namespace Fnv1aNS
 
 
 
 Hash::Hash32_t
-Fnv::GetHash32  (const char * buffer, const size_t size)
+Fnv1a::GetHash32  (const char * buffer, const size_t size)
 {
-  uint32_t result = FnvNS::fnv_32a_buf ((void *)buffer, size, FNV1_32A_INIT);
+  uint32_t result = Fnv1aNS::fnv_32a_buf ((void *)buffer, size, FNV1_32A_INIT);
   return result;
 }
 
 Hash::Hash64_t
-Fnv::GetHash64  (const char * buffer, const size_t size)
+Fnv1a::GetHash64  (const char * buffer, const size_t size)
 {
-  uint64_t result = FnvNS::fnv_64a_buf ((void *)buffer, size, FNV1A_64_INIT);
+  uint64_t result = Fnv1aNS::fnv_64a_buf ((void *)buffer, size, FNV1A_64_INIT);
   return result;
 }
       

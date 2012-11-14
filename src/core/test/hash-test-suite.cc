@@ -41,7 +41,7 @@ private:
 };
 
 HashFoxTestCase::HashFoxTestCase ()
-  : TestCase ("Check Hash on a known string")
+  : TestCase ("Check default Hash on a known string")
 {
 }
 
@@ -69,6 +69,93 @@ HashFoxTestCase::DoRun (void)
                          );
 }
 
+//----------------------------
+//
+// Test FNV hash on fixed string
+
+class HashFnv1aTestCase : public TestCase
+{
+public:
+  HashFnv1aTestCase ();
+  virtual ~HashFnv1aTestCase ();
+private:
+  virtual void DoRun (void);
+};
+
+HashFnv1aTestCase::HashFnv1aTestCase ()
+  : TestCase ("Check FNV1A Hash on a known string")
+{
+}
+
+HashFnv1aTestCase::~HashFnv1aTestCase ()
+{
+}
+
+void
+HashFnv1aTestCase::DoRun (void)
+{
+  std::string key("The quick brown fnv1a.");
+  Hash hasher = Hash ( Create<HashImplNS::Fnv1a> () );
+
+  uint32_t h32r = 0x5735855b;  // FNV1A(key)
+  uint32_t h32 = hasher.GetHash32 (key);
+  NS_TEST_ASSERT_MSG_EQ (h32, h32r,
+                         "Hash32 produced " << std::hex << std::setw ( 8) << h32
+                         << ", expected "   << std::hex << std::setw ( 8) << h32r
+                         );
+
+  uint64_t h64r = 0x6fb0aea4ad83c27b;
+  uint64_t h64 = hasher.GetHash64 (key);
+  NS_TEST_ASSERT_MSG_EQ (h64, h64r,
+                         "Hash64 produced " << std::hex << std::setw (16) << h64
+                         << ", expected "   << std::hex << std::setw (16) << h64r
+                         );
+}
+
+
+//----------------------------
+//
+// Test Murmur3 hash on fixed string
+
+class HashMurmur3TestCase : public TestCase
+{
+public:
+  HashMurmur3TestCase ();
+  virtual ~HashMurmur3TestCase ();
+private:
+  virtual void DoRun (void);
+};
+
+HashMurmur3TestCase::HashMurmur3TestCase ()
+  : TestCase ("Check Murmur3 Hash on a known string")
+{
+}
+
+HashMurmur3TestCase::~HashMurmur3TestCase ()
+{
+}
+
+void
+HashMurmur3TestCase::DoRun (void)
+{
+  std::string key("The quick brown murmur3.");
+  Hash hasher = Hash ( Create<HashImplNS::Murmur3> () );
+
+  uint32_t h32r = 0xe8a2d100;  // Murmur3(key)
+  uint32_t h32 = hasher.GetHash32 (key);
+  NS_TEST_ASSERT_MSG_EQ (h32, h32r,
+                         "Hash32 produced " << std::hex << std::setw ( 8) << h32
+                         << ", expected "   << std::hex << std::setw ( 8) << h32r
+                         );
+
+  uint64_t h64r = 0x95373d091a691071;
+  uint64_t h64 = hasher.GetHash64 (key);
+  NS_TEST_ASSERT_MSG_EQ (h64, h64r,
+                         "Hash64 produced " << std::hex << std::setw (16) << h64
+                         << ", expected "   << std::hex << std::setw (16) << h64r
+                         );
+}
+
 
 //----------------------------
 //
@@ -84,6 +171,8 @@ HashTestSuite::HashTestSuite ()
   : TestSuite ("hash", UNIT)
 {
   AddTestCase (new HashFoxTestCase);
+  AddTestCase (new HashFnv1aTestCase);
+  AddTestCase (new HashMurmur3TestCase);
 }
 
 static HashTestSuite g_hashTestSuite;  

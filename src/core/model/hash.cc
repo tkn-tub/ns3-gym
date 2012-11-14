@@ -33,11 +33,13 @@ NS_LOG_COMPONENT_DEFINE ("Hash");
 Hash::Hash ()
 {
   m_impl = Create <HashImplNS::Murmur3> ();
+  NS_ASSERT (m_impl != 0);
 }
 
 Hash::Hash (Ptr<HashImplementation> hp)
   : m_impl(hp)
 {
+  NS_ASSERT (m_impl != 0);
 }
   
   
