@@ -149,6 +149,8 @@ def build(bld):
         'model/system-path.cc',
         'helper/random-variable-stream-helper.cc',
         'helper/event-garbage-collector.cc',
+        'model/hash.cc',
+        'model/hash-murmur3.cc',
         ]
 
     core_test = bld.create_ns3_module_test_library('core')
@@ -173,6 +175,7 @@ def build(bld):
         'test/traced-callback-test-suite.cc',
         'test/type-traits-test-suite.cc',
         'test/watchdog-test-suite.cc',
+        'test/hash-test-suite.cc',
         ]
 
     headers = bld(features='ns3header')
@@ -251,6 +254,8 @@ def build(bld):
         'model/math.h',
         'helper/event-garbage-collector.h',
         'helper/random-variable-stream-helper.h',
+        'model/hash.h',
+        'model/hash-murmur3.h',
         ]
 
     if sys.platform == 'win32':
