@@ -207,7 +207,7 @@ Hash64_t Hash64 (const std::string s);
 namespace ns3 {
 
 /*************************************************
- class Hash implementation, inlined for rvo
+ class Hasher implementation, inlined for rvo
 */
 
 inline

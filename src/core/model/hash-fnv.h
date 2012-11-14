@@ -34,6 +34,15 @@ namespace Function {
  *
  *  \brief Fnv1a hash function implementation
  *
+ *  This is the venerable Fowler-Noll-Vo hash, version 1A.  (See the
+ *  <a href="http://isthe.com/chongo/tech/comp/fnv/">FNV page</a>.)
+ *
+ *  The implementation here is taken directly from the published FNV 
+ *  <a href="http://isthe.com/chongo/tech/comp/fnv/#FNV-reference-source">
+ *  reference code</a>,
+ *  with minor modifications to wrap into this class.  See the
+ *  hash-fnv.cc file for details.
+ *
  */
 class Fnv1a : public Implementation
 {
