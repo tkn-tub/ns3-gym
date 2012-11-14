@@ -27,16 +27,12 @@ The simplest way to get a hash value of a data buffer or string is just::
   char * buffer = ...
   size_t buffer_size = ...
   
-  Hash32_t  buffer_hash = Hash32 ( buffer, buffer_size);
+  uint32_t  buffer_hash = Hash32 ( buffer, buffer_size);
 
   std::string s;
-  Hash32_t  string_hash = Hash32 (s);
+  uint32_t  string_hash = Hash32 (s);
 
-The ``Hash32_t`` type (just an ``uint32_t``) is a reminder that
-hash values are opaque.
-
-Equivalent functions and ``Hash64_t`` type are defined for 64-bit hash
-values.
+Equivalent functions are defined for 64-bit hash values.
 
 Incremental Hashing
 *******************
@@ -62,7 +58,7 @@ This is almost as straight-forward as the first example:
 	buffer = <get next buffer>;
 	hasher (buffer, buffer_size);
     }
-  Hash32_t combined_hash = hasher.GetHash32 ();
+  uint32_t combined_hash = hasher.GetHash32 ();
 
 By default ``Hasher`` preserves internal state to enable incremental
 hashing.  If you want to reuse a ``Hasher`` object (for example
@@ -106,8 +102,8 @@ even need to create a new class derived from HashImplementation::
 For this to compile, your ``hashf`` has to match one of the function pointer
 signatures::
 
-  typedef Hash::Hash32_t (*Hash32Function_ptr) (const char *, const size_t);
-  typedef Hash::Hash64_t (*Hash64Function_ptr) (const char *, const size_t);
+  typedef uint32_t (*Hash32Function_ptr) (const char *, const size_t);
+  typedef uint64_t (*Hash64Function_ptr) (const char *, const size_t);
 
 
 Sources for Hash Functions

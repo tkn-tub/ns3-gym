@@ -65,7 +65,7 @@ public:
    * \param [in] size length of the buffer, in bytes
    * \return 32-bit hash of the buffer
    */
-  Hash32_t  GetHash32  (const char * buffer, const size_t size);
+  uint32_t  GetHash32  (const char * buffer, const size_t size);
   /**
    * Compute 64-bit hash of a byte buffer.
    *
@@ -80,7 +80,7 @@ public:
    * \param [in] size length of the buffer, in bytes
    * \return 64-bit hash of the buffer
    */
-  Hash64_t  GetHash64  (const char * buffer, const size_t size);
+  uint64_t  GetHash64  (const char * buffer, const size_t size);
   /**
    * Restore initial state
    */
@@ -97,7 +97,7 @@ private:
   {
     SEED = 0x8BADF00D  // Ate bad food
   };
-  /@{
+  //@{
   /**
    * Cache last hash value, and total bytes hashed,
    * for incremental hashing

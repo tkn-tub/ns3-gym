@@ -734,7 +734,7 @@ Fnv1a::Fnv1a ()
   clear ();
 }
 
-Hash32_t
+uint32_t
 Fnv1a::GetHash32  (const char * buffer, const size_t size)
 {
   m_hash32 =
@@ -742,7 +742,7 @@ Fnv1a::GetHash32  (const char * buffer, const size_t size)
   return m_hash32;
 }
 
-Hash64_t
+uint64_t
 Fnv1a::GetHash64  (const char * buffer, const size_t size)
 {
   m_hash64 =

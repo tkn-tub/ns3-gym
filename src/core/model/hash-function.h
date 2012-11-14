@@ -30,8 +30,8 @@ namespace ns3 {
  *
  * Hash value opaque types
  */
-typedef uint32_t Hash32_t;
-typedef uint64_t Hash64_t;
+typedef uint32_t uint32_t;
+typedef uint64_t uint64_t;
 
 namespace Hash {
 
@@ -57,7 +57,7 @@ public:
    * \param [in] size length of the buffer, in bytes
    * \return 32-bit hash of the buffer
    */
-  virtual Hash32_t  GetHash32  (const char * buffer, const size_t size) = 0;
+  virtual uint32_t  GetHash32  (const char * buffer, const size_t size) = 0;
   /**
    * Compute 64-bit hash of a byte buffer.
    *
@@ -74,7 +74,7 @@ public:
    * \param [in] size length of the buffer, in bytes
    * \return 64-bit hash of the buffer
    */
-  virtual Hash64_t  GetHash64  (const char * buffer, const size_t size);
+  virtual uint64_t  GetHash64  (const char * buffer, const size_t size);
   /**
    * Restore initial state
    */
@@ -103,8 +103,8 @@ public:
  *
  * See Hash32Implementation<> or Hash64Implementation<>
  */
-typedef Hash32_t (*Hash32Function_ptr) (const char *, const size_t);
-typedef Hash64_t (*Hash64Function_ptr) (const char *, const size_t);
+typedef uint32_t (*Hash32Function_ptr) (const char *, const size_t);
+typedef uint64_t (*Hash64Function_ptr) (const char *, const size_t);
 
 namespace Function {
 
@@ -117,7 +117,7 @@ class Hash32 : public Implementation
 {
 public:
   Hash32 (Hash32Function_ptr hp) : m_fp (hp) { };
-  Hash32_t GetHash32 (const char * buffer, const size_t size)
+  uint32_t GetHash32 (const char * buffer, const size_t size)
   {
     return (*m_fp) (buffer, size);
   }
@@ -135,14 +135,14 @@ class Hash64 : public Implementation
 {
 public:
   Hash64 (Hash64Function_ptr hp) : m_fp (hp) { };
-  Hash64_t GetHash64 (const char * buffer, const size_t size)
+  uint64_t GetHash64 (const char * buffer, const size_t size)
   {
     return (*m_fp) (buffer, size);
   }
-  Hash32_t GetHash32 (const char * buffer, const size_t size)
+  uint32_t GetHash32 (const char * buffer, const size_t size)
   {
-    Hash64_t hash = GetHash64 (buffer, size);
-    return *(Hash32_t *)(void *)(&hash);
+    uint64_t hash = GetHash64 (buffer, size);
+    return *(uint32_t *)(void *)(&hash);
   }
   void clear () { };
 private:

@@ -430,27 +430,27 @@ Murmur3::  Murmur3 ()
   clear ();
 }
 
-Hash32_t
+uint32_t
 Murmur3::GetHash32  (const char * buffer, const size_t size)
 {
   using namespace Murmur3Implementation;
 
   MurmurHash3_x86_32_incr (buffer, size, m_hash32, (void *) & m_hash32);
   m_size32 += size;
-  Hash32_t hash;
+  uint32_t hash;
   MurmurHash3_x86_32_fin  (m_size32, m_hash32, (void *) & hash);
 
   return hash;
 }
 
-Hash64_t
+uint64_t
 Murmur3::GetHash64  (const char * buffer, const size_t size)
 {
   using namespace Murmur3Implementation;
   MurmurHash3_x86_128_incr (buffer, size,
                             (uint32_t *)(void *)m_hash64, (void *)(m_hash64));
   m_size64 += size;
-  Hash64_t hash[2];
+  uint64_t hash[2];
   MurmurHash3_x86_128_fin (m_size64,
                            (uint32_t*)(void *)m_hash64, (void *)hash);
   return hash[0];

@@ -32,13 +32,13 @@ public:
   HashTestCase (const std::string name);
   virtual ~HashTestCase ();
 protected:
-  void Check ( const std::string hashName, const Hash32_t hash);
-  void Check ( const std::string hashName, const Hash64_t hash);
+  void Check ( const std::string hashName, const uint32_t hash);
+  void Check ( const std::string hashName, const uint64_t hash);
   std::string key;
-  Hash32_t hash32Reference;
-  Hash64_t hash64Reference;
+  uint32_t hash32Reference;
+  uint64_t hash64Reference;
 private:
-  void Check ( const std::string hashName, const int bits, const Hash64_t hash);
+  void Check ( const std::string hashName, const int bits, const uint64_t hash);
   virtual void DoRun (void);
 };  // class HashTestCase
 
@@ -53,23 +53,23 @@ HashTestCase::~HashTestCase ()
 }
 
 void
-HashTestCase::Check ( const std::string hashName, const Hash32_t hash)
+HashTestCase::Check ( const std::string hashName, const uint32_t hash)
 {
   Check (hashName, 32, hash);
 }
 
 void
-HashTestCase::Check ( const std::string hashName, const Hash64_t hash)
+HashTestCase::Check ( const std::string hashName, const uint64_t hash)
 {
   Check (hashName, 64, hash);
 }
 
 void
-HashTestCase::Check ( std::string hashName, int bits, Hash64_t hash)
+HashTestCase::Check ( std::string hashName, int bits, uint64_t hash)
 {
   int w;
   std::string type;
-  Hash64_t hashRef;
+  uint64_t hashRef;
 
   if (bits == 32)
     {
@@ -231,19 +231,19 @@ gnu_sum (const char * buffer, const size_t size)
 }
 
 // Hash32FunctionPtr
-Hash32_t
+uint32_t
 gnu_sum32 (const char * buffer, const size_t size)
 {
-  Hash32_t h = gnu_sum (buffer, size);
-  return (Hash32_t)( (h << 16) + h);
+  uint32_t h = gnu_sum (buffer, size);
+  return (uint32_t)( (h << 16) + h);
 }
 
 // Hash64FunctionPtr
-Hash64_t
+uint64_t
 gnu_sum64 (const char * buffer, const size_t size)
 {
-  Hash64_t h = gnu_sum32 (buffer, size);
-  return (Hash64_t)( (h << 32) + h);
+  uint64_t h = gnu_sum32 (buffer, size);
+  return (uint64_t)( (h << 32) + h);
 }
 
 class Hash32FunctionPtrTestCase : public HashTestCase
