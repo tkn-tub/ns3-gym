@@ -96,7 +96,7 @@ private:
   };
   //@{
   /**
-   * Cache last hash value, for incremental hashing
+   * Cache last hash value, for incremental hashing.
    */
   uint32_t m_hash32;
   uint64_t m_hash64;
