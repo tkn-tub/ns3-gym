@@ -357,14 +357,7 @@ void MurmurHash3_x64_128 ( const void * key, const int len,
 
 
 
-TypeId
-Murmur3::GetTypeId (void)
-{
-  static TypeId tid = TypeId ("ns3::HashImpl::Murmur3");
-  return tid;
-}
-  
-uint32_t
+Hash::Hash32_t
 Murmur3::GetHash32  (const char * buffer, const size_t size)
 {
   uint32_t result;
@@ -373,7 +366,7 @@ Murmur3::GetHash32  (const char * buffer, const size_t size)
   return result;
 }
 
-uint64_t
+Hash::Hash64_t
 Murmur3::GetHash64  (const char * buffer, const size_t size)
 {
   uint64_t result[2];

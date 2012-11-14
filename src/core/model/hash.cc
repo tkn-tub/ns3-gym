@@ -30,13 +30,6 @@ NS_LOG_COMPONENT_DEFINE ("Hash");
  **  class Hash
  ************************************************/
 
-TypeId
-Hash::GetTypeId (void)
-{
-  static TypeId tid = TypeId ("ns3::Hash");
-  return tid;
-}
-  
 Hash::Hash ()
 {
   m_impl = Create <HashImplNS::Murmur3> ();
@@ -52,7 +45,7 @@ Hash::Hash (Ptr<HashImplementation> hp)
  **  class HashImplementation
  ************************************************/
 
-uint64_t
+Hash::Hash64_t
 HashImplementation::GetHash64  (const char * buffer, const size_t size)
 {
   NS_LOG_WARN("64-bit hash requested, only 32-bit implementation available");

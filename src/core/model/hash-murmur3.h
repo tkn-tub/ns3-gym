@@ -52,7 +52,7 @@ public:
    * \param [in] size length of the buffer, in bytes
    * \return 32-bit hash of the buffer
    */
-  uint32_t  GetHash32  (const char * buffer, const size_t size);
+  Hash::Hash32_t  GetHash32  (const char * buffer, const size_t size);
   /**
    * Compute 64-bit hash of a byte buffer.
    *
@@ -60,11 +60,7 @@ public:
    * \param [in] size length of the buffer, in bytes
    * \return 64-bit hash of the buffer
    */
-  uint64_t  GetHash64  (const char * buffer, const size_t size);
-  /**
-   * Get Hash TypeId
-   */
-  static TypeId GetTypeId (void);
+  Hash::Hash64_t  GetHash64  (const char * buffer, const size_t size);
 
 private:
   /**

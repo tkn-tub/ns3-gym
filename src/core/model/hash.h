@@ -25,8 +25,6 @@
 
 #include "ns3/ptr.h"
 #include "ns3/simple-ref-count.h"
-#include "ns3/type-id.h"
-
 
 namespace ns3 {
 
@@ -60,6 +58,9 @@ class HashImplementation;
 class Hash
 {
 public:
+  typedef uint32_t Hash32_t;
+  typedef uint64_t Hash64_t;
+
   /**
    * Constructor using the default implementation
    */
@@ -70,7 +71,6 @@ public:
    * \param [in] hp Ptr<HashImplementation> to the desired implementation
    */
   Hash (Ptr<HashImplementation> hp);
-
   /**
    * Compute 32-bit hash of a byte buffer
    *
@@ -78,7 +78,7 @@ public:
    * \param [in] size length of the buffer, in bytes
    * \return 32-bit hash of the buffer
    */
-  uint32_t  GetHash32  (const char * buffer, const size_t size);
+  Hash32_t  GetHash32  (const char * buffer, const size_t size);
   /**
    * Compute 64-bit hash of a byte buffer
    *
@@ -86,7 +86,7 @@ public:
    * \param [in] size length of the buffer, in bytes
    * \return 64-bit hash of the buffer
    */
-  uint64_t  GetHash64  (const char * buffer, const size_t size);
+  Hash64_t  GetHash64  (const char * buffer, const size_t size);
 
   /**
    * Compute 32-bit hash of a string
@@ -94,18 +94,14 @@ public:
    * \param [in] s string to hash
    * \return 32-bit hash of the string
    */
-  uint32_t  GetHash32  (const std::string s);
+  Hash32_t  GetHash32  (const std::string s);
   /**
    * Compute 64-bit hash of a string
    *
    * \param [in] s string to hash
    * \return 64-bit hash of the string
    */
-  uint64_t  GetHash64  (const std::string s);
-  /**
-   * Get Hash TypeId
-   */
-  static TypeId GetTypeId (void);
+  Hash64_t  GetHash64  (const std::string s);
   
 private:
   Ptr<HashImplementation> m_impl;    /** Hash implementation */
@@ -125,7 +121,7 @@ private:
  * \param [in] size length of the buffer, in bytes
  * \return 32-bit hash of the buffer
  */
-uint32_t Hash32 (const char * buffer, const size_t size);
+Hash::Hash32_t Hash32 (const char * buffer, const size_t size);
 /**
  * \ingroup hash
  *
@@ -135,7 +131,7 @@ uint32_t Hash32 (const char * buffer, const size_t size);
  * \param [in] size length of the buffer, in bytes
  * \return 64-bit hash of the buffer
  */
-uint64_t Hash64 (const char * buffer, const size_t size);
+Hash::Hash64_t Hash64 (const char * buffer, const size_t size);
 
 /**
  * \ingroup hash
@@ -145,7 +141,7 @@ uint64_t Hash64 (const char * buffer, const size_t size);
  * \param [in] s string to hash
  * \return 32-bit hash of the string
  */
-uint32_t Hash32 (const std::string s);
+Hash::Hash32_t Hash32 (const std::string s);
 /**
  * \ingroup hash
  *
@@ -154,7 +150,7 @@ uint32_t Hash32 (const std::string s);
  * \param [in] s string to hash
  * \return 64-bit hash of the string
  */
-uint64_t Hash64 (const std::string s);
+Hash::Hash64_t Hash64 (const std::string s);
 
 
 /*************************************************
@@ -178,7 +174,7 @@ public:
    * \param [in] size length of the buffer, in bytes
    * \return 32-bit hash of the buffer
    */
-  virtual uint32_t  GetHash32  (const char * buffer, const size_t size) = 0;
+  virtual Hash::Hash32_t  GetHash32  (const char * buffer, const size_t size) = 0;
   /**
    * Compute 64-bit hash of a byte buffer.
    *
@@ -188,7 +184,7 @@ public:
    * \param [in] size length of the buffer, in bytes
    * \return 64-bit hash of the buffer
    */
-  virtual uint64_t  GetHash64  (const char * buffer, const size_t size);
+  virtual Hash::Hash64_t  GetHash64  (const char * buffer, const size_t size);
   /*
    * Destructor
    */
@@ -204,8 +200,8 @@ public:
  *
  * See Hash32Implementation<> or Hash64Implementation<>
  */
-typedef uint32_t (*Hash32Function_ptr) (const char *, const size_t);
-typedef uint64_t (*Hash64Function_ptr) (const char *, const size_t);
+typedef Hash::Hash32_t (*Hash32Function_ptr) (const char *, const size_t);
+typedef Hash::Hash64_t (*Hash64Function_ptr) (const char *, const size_t);
 
 
 /**
@@ -216,7 +212,7 @@ typedef uint64_t (*Hash64Function_ptr) (const char *, const size_t);
 template <Hash32Function_ptr hp>
 class Hash32Implementation : public HashImplementation
 {
-  uint32_t GetHash32 (const char * buffer, const size_t size)
+  Hash::Hash32_t GetHash32 (const char * buffer, const size_t size)
   {
     return (*hp) (buffer, size);
   }
@@ -230,14 +226,14 @@ class Hash32Implementation : public HashImplementation
 template <Hash64Function_ptr hp>
 class Hash64Implementation : public HashImplementation
 {
-  uint64_t GetHash64 (const char * buffer, const size_t size)
+  Hash::Hash64_t GetHash64 (const char * buffer, const size_t size)
   {
     return (*hp) (buffer, size);
   }
-  uint32_t GetHash32 (const char * buffer, const size_t size)
+  Hash::Hash32_t GetHash32 (const char * buffer, const size_t size)
   {
-    uint64_t hash = GetHash64(buffer, size);
-    return (uint32_t *)(&hash);
+    Hash::Hash64_t hash = GetHash64(buffer, size);
+    return (Hash::Hash32_t *)(&hash);
   }
 };  // Hash32Implementation<HashFunction>
 
@@ -263,28 +259,28 @@ namespace ns3 {
 */
 
 inline
-uint32_t
+Hash::Hash32_t
 Hash::GetHash32  (const char * buffer, const size_t size)
 {
   return m_impl->GetHash32  (buffer, size);
 }
 
 inline
-uint64_t
+Hash::Hash64_t
 Hash::GetHash64  (const char * buffer, const size_t size)
 {
   return m_impl->GetHash64  (buffer, size);
 }
 
 inline
-uint32_t
+Hash::Hash32_t
 Hash::GetHash32  (const std::string s)
 {
   return m_impl->GetHash32  (s.c_str (), s.size ());
 }
 
 inline
-uint64_t
+Hash::Hash64_t
 Hash::GetHash64  (const std::string s)
 {
   return m_impl->GetHash64  (s.c_str (), s.size ());
@@ -296,28 +292,28 @@ Hash::GetHash64  (const std::string s)
 */
 
 inline
-uint32_t
+Hash::Hash32_t
 Hash32 (const char * buffer, const size_t size)
 {
   return Hash().GetHash32 (buffer, size);
 }
 
 inline
-uint64_t
+Hash::Hash64_t
 Hash64 (const char * buffer, const size_t size)
 {
   return Hash().GetHash64 (buffer, size);
 }
 
 inline
-uint32_t
+Hash::Hash32_t
 Hash32 (const std::string s)
 {
   return Hash().GetHash32 (s);
 }
 
 inline
-uint64_t
+Hash::Hash64_t
 Hash64 (const std::string s)
 {
   return Hash().GetHash64 (s);
