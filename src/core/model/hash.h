@@ -40,7 +40,7 @@ class HashImplementation;
  *  The choice of hash function can be made at construction by
  *  passing a Ptr<> to the desired HashImplementation.
  *  The available implementations are documented in group hash.
- *  The default implementation is Murmur3.
+ *  The default implementation is Murmur3.  FNV is also available.
  *
  *  In addition to this class interface, global functions are
  *  defined which use the default hash implementation.
@@ -246,6 +246,7 @@ class Hash64Implementation : public HashImplementation
  ************************************************/
 
 #include "ns3/hash-murmur3.h"
+#include "ns3/hash-fnv.h"
 
 
 /*************************************************

@@ -151,6 +151,7 @@ def build(bld):
         'helper/event-garbage-collector.cc',
         'model/hash.cc',
         'model/hash-murmur3.cc',
+        'model/hash-fnv.cc',
         ]
 
     core_test = bld.create_ns3_module_test_library('core')
@@ -256,6 +257,7 @@ def build(bld):
         'helper/random-variable-stream-helper.h',
         'model/hash.h',
         'model/hash-murmur3.h',
+        'model/hash-fnv.h',
         ]
 
     if sys.platform == 'win32':

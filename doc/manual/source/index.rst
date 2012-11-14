@@ -18,6 +18,7 @@ This document is written in `reStructuredText <http://docutils.sourceforge.net/r
 
    organization
    random-variables
+   hash-functions
    events
    callbacks
    object-model
