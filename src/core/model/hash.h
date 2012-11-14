@@ -26,7 +26,7 @@
 #include "assert.h"
 #include "ptr.h"
 
-#include "hash-implementation.h"  // typedef ns3::Hash32_t, ns3::Hash64_t
+#include "hash-function.h"  // typedef ns3::Hash32_t, ns3::Hash64_t
 #include "hash-murmur3.h"
 #include "hash-fnv.h"
 
@@ -40,7 +40,11 @@ namespace ns3 {
  *  This class provides a generic interface for computing hashes
  *  of buffers.  Various getters return hashes of different lengths.
  *  The choice of hash function can be made at construction by
- *  passing a Ptr<> to the desired HashImplementation.
+ *    \code
+ *    Hasher hasher = Hasher ( Create<Hash::Function::Fnv1a> () );
+ *    Hash32_t hash = Hasher.GetHash32 (data);
+ *    \endcode
+ *
  *  The available implementations are documented in group hash.
  *  The default implementation is Murmur3.  FNV1a is also available.
  *
@@ -57,22 +61,19 @@ namespace ns3 {
  *  but our \ref buffer class seems a bit overkill for this case.
  *
  */
-class Hash
+class Hasher
 {
 public:
-  typedef uint32_t Hash32_t;
-  typedef uint64_t Hash64_t;
-
   /**
    * Constructor using the default implementation
    */
-  Hash ();
+  Hasher ();
   /**
    * Constructor using the supplied implementation
    *
-   * \param [in] hp Ptr<HashImplementation> to the desired implementation
+   * \param [in] hp Ptr<Hash::Implementation> to the desired implementation
    */
-  Hash (Ptr<HashImplementation> hp);
+  Hasher (Ptr<Hash::Implementation> hp);
   /**
    * Compute 32-bit hash of a byte buffer
    *
@@ -109,12 +110,12 @@ public:
    *
    * \return this
    */
-  Hash & clear (void);
+  Hasher & clear (void);
   
 private:
-  Ptr<HashImplementation> m_impl;    /** Hash implementation */
+  Ptr<Hash::Implementation> m_impl;    /** Hash implementation */
   
-};  // Hash
+};  // Hasher
 
 
 /*************************************************
@@ -176,7 +177,7 @@ namespace ns3 {
 
 inline
 Hash32_t
-Hash::GetHash32  (const char * buffer, const size_t size)
+Hasher::GetHash32  (const char * buffer, const size_t size)
 {
   NS_ASSERT (m_impl != 0);
   return m_impl->GetHash32  (buffer, size);
@@ -184,7 +185,7 @@ Hash::GetHash32  (const char * buffer, const size_t size)
 
 inline
 Hash64_t
-Hash::GetHash64  (const char * buffer, const size_t size)
+Hasher::GetHash64  (const char * buffer, const size_t size)
 {
   NS_ASSERT (m_impl != 0);
   return m_impl->GetHash64  (buffer, size);
@@ -192,7 +193,7 @@ Hash::GetHash64  (const char * buffer, const size_t size)
 
 inline
 Hash32_t
-Hash::GetHash32  (const std::string s)
+Hasher::GetHash32  (const std::string s)
 {
   NS_ASSERT (m_impl != 0);
   return m_impl->GetHash32  (s.c_str (), s.size ());
@@ -200,7 +201,7 @@ Hash::GetHash32  (const std::string s)
 
 inline
 Hash64_t
-Hash::GetHash64  (const std::string s)
+Hasher::GetHash64  (const std::string s)
 {
   NS_ASSERT (m_impl != 0);
   return m_impl->GetHash64  (s.c_str (), s.size ());
@@ -215,28 +216,28 @@ inline
 Hash32_t
 Hash32 (const char * buffer, const size_t size)
 {
-  return Hash().GetHash32 (buffer, size);
+  return Hasher().GetHash32 (buffer, size);
 }
 
 inline
 Hash64_t
 Hash64 (const char * buffer, const size_t size)
 {
-  return Hash().GetHash64 (buffer, size);
+  return Hasher().GetHash64 (buffer, size);
 }
 
 inline
 Hash32_t
 Hash32 (const std::string s)
 {
-  return Hash().GetHash32 (s);
+  return Hasher().GetHash32 (s);
 }
 
 inline
 Hash64_t
 Hash64 (const std::string s)
 {
-  return Hash().GetHash64 (s);
+  return Hasher().GetHash64 (s);
 }
 
 

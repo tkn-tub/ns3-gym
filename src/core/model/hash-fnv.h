@@ -21,11 +21,13 @@
 #ifndef HASH_FNV_H
 #define HASH_FNV_H
 
-#include "hash-implementation.h"
+#include "hash-function.h"
 
 namespace ns3 {
 
-  namespace HashFunction {
+  namespace Hash {
+
+    namespace Function {
 
 /**
  *  \ingroup hash
@@ -33,7 +35,7 @@ namespace ns3 {
  *  \brief Fnv1a hash function implementation
  *
  */
-class Fnv1a : public HashImplementation
+class Fnv1a : public Implementation
 {
 public:
   /**
@@ -68,7 +70,9 @@ private:
 
 };  // class Fnv1a
 
-  }  // namespace HashFunction
+    }  // namespace Function
+
+  }  // namespace Hash
   
 } // namespace ns3
 

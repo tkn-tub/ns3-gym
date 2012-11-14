@@ -18,8 +18,8 @@
  * Author: Peter D. Barnes, Jr. <pdbarnes@llnl.gov>
  */
 
-#ifndef HASHIMPLEMENTATION_H
-#define HASHIMPLEMENTATION_H
+#ifndef HASHFUNCTION_H
+#define HASHFUNCTION_H
 
 #include "simple-ref-count.h"
 
@@ -33,13 +33,14 @@ namespace ns3 {
 typedef uint32_t Hash32_t;
 typedef uint64_t Hash64_t;
 
-
+  namespace Hash {
+    
 /**
  *  \ingroup hash
  *
  *  \brief Hash function implementation base class
  */
-class HashImplementation : public SimpleRefCount<HashImplementation>
+class Implementation : public SimpleRefCount<Implementation>
 {
 public:
   /**
@@ -64,11 +65,15 @@ public:
    * Restore initial state
    */
   virtual void clear (void) = 0;
-  /*
+  /**
+   * Constructor
+   */
+  Implementation () {} ;
+  /**
    * Destructor
    */
-  virtual ~HashImplementation () {} ;
-};  // HashImplementation
+  virtual ~Implementation () {} ;
+};  // Hashfunction
 
   
 /*--------------------------------------
@@ -87,28 +92,29 @@ public:
 typedef Hash32_t (*Hash32Function_ptr) (const char *, const size_t);
 typedef Hash64_t (*Hash64Function_ptr) (const char *, const size_t);
 
+    namespace Function {
 
 /**
  * \ingroup hash
  *
- * \brief Template for HashImplementations from 32-bit hash functions
+ * \brief Template for Hashfunctions from 32-bit hash functions
  */
 template <Hash32Function_ptr hp>
-class Hash32Implementation : public HashImplementation
+class Hash32 : public Implementation
 {
   Hash32_t GetHash32 (const char * buffer, const size_t size)
   {
     return (*hp) (buffer, size);
   }
-};  // Hash32Implementation<HashFunction>
+};  // Hash32<Hash32Function_ptr>
 
 /**
  * \ingroup hash
  *
- * \brief Template for HashImplementations from 64-bit hash functions
+ * \brief Template for Hashfunctions from 64-bit hash functions
  */
 template <Hash64Function_ptr hp>
-class Hash64Implementation : public HashImplementation
+class Hash64 : public Implementation
 {
   Hash64_t GetHash64 (const char * buffer, const size_t size)
   {
@@ -119,9 +125,14 @@ class Hash64Implementation : public HashImplementation
     Hash64_t hash = GetHash64(buffer, size);
     return (Hash32_t *)(&hash);
   }
-};  // Hash32Implementation<HashFunction>
+};  // Hash64<Hash64Function_ptr>
+
+      
+    }  // namespace Function
+
+  }  // namespace Hash
 
 }  // namespace ns3
 
-#endif /* HASHIMPLEMENTATION_H */
+#endif /* HASHFUNCTION_H */
 

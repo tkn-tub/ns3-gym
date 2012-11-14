@@ -21,11 +21,13 @@
 #ifndef HASH_MURMUR3_H
 #define HASH_MURMUR3_H
 
-#include "hash-implementation.h"
+#include "hash-function.h"
 
 namespace ns3 {
   
-  namespace HashFunction {
+  namespace Hash {
+
+    namespace Function {
 
 /**
  *  \ingroup hash
@@ -42,7 +44,7 @@ namespace ns3 {
  *  compile and run any of them on any platform, but your performance with the
  *  non-native version will be less than optimal.
  */
-class Murmur3 : public HashImplementation
+class Murmur3 : public Implementation
 {
 public:
   /**
@@ -80,7 +82,9 @@ private:
 
 };  // class Murmur3
 
-  }  // namespace HashFunction
+    }  // namespace Function
+    
+  }  // namespace Hash
   
 } // namespace ns3
 

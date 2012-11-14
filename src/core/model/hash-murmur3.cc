@@ -25,9 +25,11 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("Hash-Murmur3");
   
-  namespace HashFunction {
+  namespace Hash {
 
-    namespace Murmur3Implementation {
+    namespace Function {
+
+      namespace Murmur3Implementation {
       
 /*************************************************
  **  class Murmur3HashImplementation
@@ -351,10 +353,9 @@ void MurmurHash3_x64_128 ( const void * key, const int len,
 //-----------------------------------------------------------------------------
 
 
-    }  // namespace Murmur3Implementation
+      }  // namespace Murmur3Implementation
 
-
-
+      
 Hash32_t
 Murmur3::GetHash32  (const char * buffer, const size_t size)
 {
@@ -379,6 +380,8 @@ Murmur3::clear (void)
 {
 }
 
-  }  // namespace HashFunction
+    }  // namespace Function
+
+  }  // namespace Hash
   
 } // namespace ns3

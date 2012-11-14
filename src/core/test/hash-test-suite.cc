@@ -83,7 +83,7 @@ private:
 };
 
 HashFnv1aTestCase::HashFnv1aTestCase ()
-  : TestCase ("Check FNV1A Hash on a known string")
+  : TestCase ("Check Fnv1a Hash on a known string")
 {
 }
 
@@ -95,9 +95,9 @@ void
 HashFnv1aTestCase::DoRun (void)
 {
   std::string key("The quick brown fnv1a.");
-  Hash hasher = Hash ( Create<HashFunction::Fnv1a> () );
+  Hasher hasher = Hasher ( Create<Hash::Function::Fnv1a> () );
 
-  uint32_t h32r = 0x5735855b;  // FNV1A(key)
+  uint32_t h32r = 0x5735855b;  // Fnv1a(key)
   uint32_t h32 = hasher.clear ().GetHash32 (key);
   NS_TEST_ASSERT_MSG_EQ (h32, h32r,
                          "Hash32 produced " << std::hex << std::setw ( 8) << h32
@@ -139,7 +139,7 @@ void
 HashMurmur3TestCase::DoRun (void)
 {
   std::string key("The quick brown murmur3.");
-  Hash hasher = Hash ( Create<HashFunction::Murmur3> () );
+  Hasher hasher = Hasher ( Create<Hash::Function::Murmur3> () );
 
   uint32_t h32r = 0xe8a2d100;  // Murmur3(key)
   uint32_t h32 = hasher.clear ().GetHash32 (key);

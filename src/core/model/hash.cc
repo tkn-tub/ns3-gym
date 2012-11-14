@@ -26,24 +26,20 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("Hash");
 
-/*************************************************
- **  class Hash
- ************************************************/
-
-Hash::Hash ()
+Hasher::Hasher ()
 {
-  m_impl = Create <HashFunction::Murmur3> ();
+  m_impl = Create <Hash::Function::Murmur3> ();
   NS_ASSERT (m_impl != 0);
 }
 
-Hash::Hash (Ptr<HashImplementation> hp)
+Hasher::Hasher (Ptr<Hash::Implementation> hp)
   : m_impl(hp)
 {
   NS_ASSERT (m_impl != 0);
 }
 
-Hash &
-Hash::clear (void)
+Hasher &
+Hasher::clear (void)
 {
   m_impl->clear();
   return *this;
