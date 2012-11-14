@@ -121,11 +121,6 @@ protected:
 private:
 
   /**
-   * Map the enbUeX2apId to the corresponding cellId where the UE is camping on
-   */
-  std::map < uint16_t, uint16_t > m_x2Ues;
-
-  /**
    * Map the targetCellId to the corresponding (sourceSocket, remoteIpAddr) to be used
    * to send the X2 message
    */

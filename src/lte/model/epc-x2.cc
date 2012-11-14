@@ -154,7 +154,7 @@ EpcX2::RecvFromX2cSocket (Ptr<Socket> socket)
 
   EpcX2Header x2Header;
   packet->RemoveHeader (x2Header);
-  
+
   NS_LOG_LOGIC ("X2 header: " << x2Header);
 
   uint8_t messageType = x2Header.GetMessageType ();
@@ -194,11 +194,6 @@ EpcX2::RecvFromX2cSocket (Ptr<Socket> socket)
           NS_LOG_LOGIC ("cellsInfo->m_localCellId = " << cellsInfo->m_localCellId);
           NS_ASSERT_MSG (params.targetCellId == cellsInfo->m_localCellId,
                          "TargetCellId mismatches with localCellId");
-
-          // Map oldEnbUeX2apId to sourceCellId
-          NS_ASSERT_MSG (m_x2Ues.find (params.oldEnbUeX2apId) == m_x2Ues.end (),
-                         "UE already in CellId. enbUeX2apId = " << params.oldEnbUeX2apId << ". CellId = " << params.sourceCellId);
-          m_x2Ues [params.oldEnbUeX2apId] = params.sourceCellId;
 
           m_x2SapUser->RecvHandoverRequest (params);
         }
@@ -274,11 +269,6 @@ EpcX2::DoSendHandoverRequest (EpcX2SapProvider::HandoverRequestParams params)
 
   NS_LOG_LOGIC ("sourceSocket = " << sourceSocket);
   NS_LOG_LOGIC ("targetIpAddr = " << targetIpAddr);
-
-  // Map oldEnbUeX2apId to sourceCellId
-  NS_ASSERT_MSG (m_x2Ues.find (params.oldEnbUeX2apId) == m_x2Ues.end (),
-                 "UE already in CellId. enbUeX2apId = " << params.oldEnbUeX2apId << ". CellId = " << params.sourceCellId);
-  m_x2Ues [params.oldEnbUeX2apId] = params.sourceCellId;
 
   NS_LOG_INFO ("Send X2 message: HANDOVER REQUEST");
 
@@ -367,18 +357,13 @@ EpcX2::DoSendUeContextRelease (EpcX2SapProvider::UeContextReleaseParams params)
 
   NS_LOG_LOGIC ("oldEnbUeX2apId = " << params.oldEnbUeX2apId);
   NS_LOG_LOGIC ("newEnbUeX2apId = " << params.newEnbUeX2apId);
+  NS_LOG_LOGIC ("sourceCellId = " << params.sourceCellId);
 
-  NS_ASSERT_MSG (m_x2Ues.find (params.oldEnbUeX2apId) != m_x2Ues.end (),
-                 "Missing CellId for enbUeX2apId = " << params.oldEnbUeX2apId);
-  uint16_t sourceCellId = m_x2Ues [params.oldEnbUeX2apId];
+  NS_ASSERT_MSG (m_x2InterfaceSockets.find (params.sourceCellId) != m_x2InterfaceSockets.end (),
+                 "Socket infos not defined for sourceCellId = " << params.sourceCellId);
 
-  NS_LOG_LOGIC ("sourceCellId = " << sourceCellId);
-  
-  NS_ASSERT_MSG (m_x2InterfaceSockets.find (sourceCellId) != m_x2InterfaceSockets.end (),
-                 "Socket infos not defined for sourceCellId = " << sourceCellId);
-
-  Ptr<Socket> localSocket = m_x2InterfaceSockets [sourceCellId]->m_localSocket;
-  Ipv4Address remoteIpAddr = m_x2InterfaceSockets [sourceCellId]->m_remoteIpAddr;
+  Ptr<Socket> localSocket = m_x2InterfaceSockets [params.sourceCellId]->m_localSocket;
+  Ipv4Address remoteIpAddr = m_x2InterfaceSockets [params.sourceCellId]->m_remoteIpAddr;
 
   NS_LOG_LOGIC ("localSocket = " << localSocket);
   NS_LOG_LOGIC ("remoteIpAddr = " << remoteIpAddr);

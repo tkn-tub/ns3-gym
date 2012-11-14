@@ -137,6 +137,7 @@ public:
   {
     uint16_t            oldEnbUeX2apId;
     uint16_t            newEnbUeX2apId;
+    uint16_t            sourceCellId;
   };
 };
 
