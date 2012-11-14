@@ -25,6 +25,8 @@
  * and
  *   // End <fnv-file>   ---->
  * comments.
+ *
+ * Changes from the FNV distribution are marked with `//PDB'
  */
 
 #include <sys/types.h>
@@ -38,12 +40,12 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("Hash-Fnv");
 
-  namespace Hash {
+namespace Hash {
 
-    namespace Function {
+namespace Function {
 
-      namespace Fnv1aImplementation {
-      
+namespace Fnv1aImplementation {
+
 /*************************************************
  **  class FnvHashImplementation
  ************************************************/
@@ -52,7 +54,7 @@ extern "C" {
 
 // Changes from FNV distribution are marked with `//PDB'
 //
-  
+
 // Begin fnv.h ----------------------------------->
 
 /*
@@ -718,39 +720,45 @@ fnv_64a_str(char *str, Fnv64_t hval)
 }
   
 // End hash_64a.c--------------------------->
-  
+
 }  /* extern "C" */
 
 //-----------------------------------------------------------------------------
 
 
-      }  // namespace Fnv1aImplementation
+}  // namespace Fnv1aImplementation
 
 
+Fnv1a::Fnv1a ()
+{
+  clear ();
+}
 
 Hash32_t
 Fnv1a::GetHash32  (const char * buffer, const size_t size)
 {
-  uint32_t result =
-    Fnv1aImplementation::fnv_32a_buf ((void *)buffer, size, FNV1_32A_INIT);
-  return result;
+  m_hash32 =
+    Fnv1aImplementation::fnv_32a_buf ((void *)buffer, size, m_hash32);
+  return m_hash32;
 }
 
 Hash64_t
 Fnv1a::GetHash64  (const char * buffer, const size_t size)
 {
-  uint64_t result =
-    Fnv1aImplementation::fnv_64a_buf ((void *)buffer, size, FNV1A_64_INIT);
-  return result;
+  m_hash64 =
+    Fnv1aImplementation::fnv_64a_buf ((void *)buffer, size, m_hash64);
+  return m_hash64;
 }
-      
+
 void
 Fnv1a::clear (void)
 {
+  m_hash32 = FNV1_32A_INIT;
+  m_hash64 = FNV1A_64_INIT;
 }
 
-    }  // namespace Function
+}  // namespace Function
 
-  }  // namespace Hash
-  
-} // namespace ns3
+}  // namespace Hash
+
+}  // namespace ns3

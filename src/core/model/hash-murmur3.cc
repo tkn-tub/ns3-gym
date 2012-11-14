@@ -16,21 +16,34 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Peter D. Barnes, Jr. <pdbarnes@llnl.gov>
+ *
+ * This copyright notice applies strictly to the wrapper material.
+ *
+ * The murmur3 source code itself is in the public domain.  The murmur3 source
+ * code sections are marked by
+ *   // Begin <murmur3-file> ---->
+ * and
+ *   // End <murmur3-file>   ---->
+ * comments.
+ *
+ * Changes from the murmur3 distribution are marked with `//PDB'
  */
 
 #include "log.h"
 #include "hash-murmur3.h"
 
+#include <iomanip>
+
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("Hash-Murmur3");
-  
-  namespace Hash {
 
-    namespace Function {
+namespace Hash {
 
-      namespace Murmur3Implementation {
-      
+namespace Function {
+
+namespace Murmur3Implementation {
+
 /*************************************************
  **  class Murmur3HashImplementation
  ************************************************/
@@ -38,8 +51,8 @@ NS_LOG_COMPONENT_DEFINE ("Hash-Murmur3");
 // Adapted from http://code.google.com/p/smhasher/
 
 // Begin Murmur3.cpp ----------------------------->
-  
-//  
+
+//
 //-----------------------------------------------------------------------------
 // MurmurHash3 was written by Austin Appleby, and is placed in the public
 // domain. The author hereby disclaims copyright to this source code.
@@ -105,8 +118,23 @@ inline uint64_t fmix ( uint64_t k )
 
 //-----------------------------------------------------------------------------
 
+//PDB forward
+void MurmurHash3_x86_32_incr ( const void * key, int len,
+                               uint32_t seed, void * out );
+void MurmurHash3_x86_32_fin ( int len,
+                              uint32_t seed, void * out );
+
+//PDB - incremental hashing
 void MurmurHash3_x86_32 ( const void * key, int len,
                           uint32_t seed, void * out )
+{
+  uint32_t h1;
+  MurmurHash3_x86_32_incr (key, len, seed, &h1);
+  MurmurHash3_x86_32_fin (len, h1, out);
+}
+
+void MurmurHash3_x86_32_incr ( const void * key, int len,
+                               uint32_t seed, void * out )
 {
   const uint8_t * data = (const uint8_t*)key;
   const int nblocks = len / 4;
@@ -149,6 +177,15 @@ void MurmurHash3_x86_32 ( const void * key, int len,
           k1 *= c1; k1 = rotl32(k1,15); k1 *= c2; h1 ^= k1;
   };
 
+  *(uint32_t*)out = h1;
+}
+
+//PDB - incremental hashing - finalization
+void MurmurHash3_x86_32_fin ( int len,
+                              uint32_t seed, void * out )
+{
+  uint32_t h1 = seed;
+
   //----------
   // finalization
 
@@ -161,16 +198,33 @@ void MurmurHash3_x86_32 ( const void * key, int len,
 
 //-----------------------------------------------------------------------------
 
+//PDB forward
+void MurmurHash3_x86_128_incr ( const void * key, const int len,
+                                uint32_t * seeds, void * out );
+void MurmurHash3_x86_128_fin ( const int len,
+                               uint32_t * seeds, void * out );
+
+//PDB - incremental hashing
 void MurmurHash3_x86_128 ( const void * key, const int len,
                            uint32_t seed, void * out )
+{
+  uint32_t seeds[4];
+  uint32_t h[4];
+  seeds[0] = seeds[1] = seeds[2] = seeds[3] = seed;
+  MurmurHash3_x86_128_incr (key, len, seeds, h);
+  MurmurHash3_x86_128_fin (len, h, out);
+}
+
+void MurmurHash3_x86_128_incr ( const void * key, const int len,
+                                uint32_t * seeds, void * out )
 {
   const uint8_t * data = (const uint8_t*)key;
   const int nblocks = len / 16;
 
-  uint32_t h1 = seed;
-  uint32_t h2 = seed;
-  uint32_t h3 = seed;
-  uint32_t h4 = seed;
+  uint32_t h1 = seeds[0];
+  uint32_t h2 = seeds[1];
+  uint32_t h3 = seeds[2];
+  uint32_t h4 = seeds[3];
 
   uint32_t c1 = 0x239b961b; 
   uint32_t c2 = 0xab0e9789;
@@ -242,9 +296,24 @@ void MurmurHash3_x86_128 ( const void * key, const int len,
            k1 *= c1; k1  = rotl32(k1,15); k1 *= c2; h1 ^= k1;
   };
 
+  ((uint32_t*)out)[0] = h1;
+  ((uint32_t*)out)[1] = h2;
+  ((uint32_t*)out)[2] = h3;
+  ((uint32_t*)out)[3] = h4;
+}
+
+//PDB - incremental hashing - finalization
+void MurmurHash3_x86_128_fin ( const int len,
+                               uint32_t * seeds, void * out )
+{
   //----------
   // finalization
 
+  uint32_t h1 = seeds[0];
+  uint32_t h2 = seeds[1];
+  uint32_t h3 = seeds[2];
+  uint32_t h4 = seeds[3];
+  
   h1 ^= len; h2 ^= len; h3 ^= len; h4 ^= len;
 
   h1 += h2; h1 += h3; h1 += h4;
@@ -353,35 +422,52 @@ void MurmurHash3_x64_128 ( const void * key, const int len,
 //-----------------------------------------------------------------------------
 
 
-      }  // namespace Murmur3Implementation
+}  // namespace Murmur3Implementation
 
-      
+
+Murmur3::  Murmur3 ()
+{
+  clear ();
+}
+
 Hash32_t
 Murmur3::GetHash32  (const char * buffer, const size_t size)
 {
-  uint32_t result;
-  Murmur3Implementation::MurmurHash3_x86_32 (buffer, size,
-                                 (uint32_t)SEED, (void *)(&result));
-  return result;
+  using namespace Murmur3Implementation;
+
+  MurmurHash3_x86_32_incr (buffer, size, m_hash32, (void *) & m_hash32);
+  m_size32 += size;
+  Hash32_t hash;
+  MurmurHash3_x86_32_fin  (m_size32, m_hash32, (void *) & hash);
+
+  return hash;
 }
 
 Hash64_t
 Murmur3::GetHash64  (const char * buffer, const size_t size)
 {
-  uint64_t result[2];
-  
-  Murmur3Implementation::MurmurHash3_x86_128 (buffer, size,
-                                  (uint32_t)SEED, (void *)(result));
-  return result[0];
+  using namespace Murmur3Implementation;
+  MurmurHash3_x86_128_incr (buffer, size,
+                            (uint32_t *)(void *)m_hash64, (void *)(m_hash64));
+  m_size64 += size;
+  Hash64_t hash[2];
+  MurmurHash3_x86_128_fin (m_size64,
+                           (uint32_t*)(void *)m_hash64, (void *)hash);
+  return hash[0];
 }
 
 void
 Murmur3::clear (void)
 {
+  m_hash32 = (uint32_t)SEED;
+  m_size32 = 0;
+  m_hash64[0] = ((uint64_t)(SEED) << 32) + (uint64_t)SEED;
+  m_hash64[1] = ((uint64_t)(SEED) << 32) + (uint64_t)SEED;
+  m_size64 = 0;
 }
 
-    }  // namespace Function
+}  // namespace Function
 
-  }  // namespace Hash
-  
-} // namespace ns3
+}  // namespace Hash
+
+}  // namespace ns3

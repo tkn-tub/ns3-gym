@@ -33,7 +33,7 @@ Hasher::Hasher ()
 }
 
 Hasher::Hasher (Ptr<Hash::Implementation> hp)
-  : m_impl(hp)
+  : m_impl (hp)
 {
   NS_ASSERT (m_impl != 0);
 }
@@ -41,8 +41,8 @@ Hasher::Hasher (Ptr<Hash::Implementation> hp)
 Hasher &
 Hasher::clear (void)
 {
-  m_impl->clear();
+  m_impl->clear ();
   return *this;
 }
 
-} // namespace ns3
+}  // namespace ns3

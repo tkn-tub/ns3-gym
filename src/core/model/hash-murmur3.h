@@ -24,10 +24,10 @@
 #include "hash-function.h"
 
 namespace ns3 {
-  
-  namespace Hash {
 
-    namespace Function {
+namespace Hash {
+
+namespace Function {
 
 /**
  *  \ingroup hash
@@ -48,7 +48,18 @@ class Murmur3 : public Implementation
 {
 public:
   /**
+   * Constructor, clears internal state
+   */
+  Murmur3 ();
+  /**
    * Compute 32-bit hash of a byte buffer
+   *
+   * Call clear () between calls to GetHash32() to reset the
+   * internal state and hash each buffer separately.
+   *
+   * If you don't call clear() between calls to GetHash32,
+   * you can hash successive buffers.  The final return value
+   * will be the cumulative hash across all calls.
    *
    * \param [in] buffer pointer to the beginning of the buffer
    * \param [in] size length of the buffer, in bytes
@@ -57,6 +68,13 @@ public:
   Hash32_t  GetHash32  (const char * buffer, const size_t size);
   /**
    * Compute 64-bit hash of a byte buffer.
+   *
+   * Call clear () between calls to GetHash64() to reset the
+   * internal state and hash each buffer separately.
+   *
+   * If you don't call clear() between calls to GetHash64,
+   * you can hash successive buffers.  The final return value
+   * will be the cumulative hash across all calls.
    *
    * \param [in] buffer pointer to the beginning of the buffer
    * \param [in] size length of the buffer, in bytes
@@ -76,16 +94,25 @@ private:
    * the same hash from the same string.
    */
   enum seed
-    {
-      SEED = 0x8BADF00D  // Ate bad food
-    };
-
+  {
+    SEED = 0x8BADF00D  // Ate bad food
+  };
+  /@{
+  /**
+   * Cache last hash value, and total bytes hashed,
+   * for incremental hashing
+   */
+  uint32_t m_hash32;
+  uint32_t m_size32;
+  uint64_t m_hash64[2];  // murmur3 produces 128-bit hash
+  uint64_t m_size64;
+  //@}
 };  // class Murmur3
 
-    }  // namespace Function
-    
-  }  // namespace Hash
-  
-} // namespace ns3
+}  // namespace Function
+
+}  // namespace Hash
+
+}  // namespace ns3
 
 #endif  /* HASH_MURMUR3_H */

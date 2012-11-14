@@ -22,20 +22,67 @@ The simplest way to get a hash value of a data buffer or string is just::
 
   #include "ns3/hash.h"
 
+  using namespace ns3;
+
   char * buffer = ...
   size_t buffer_size = ...
   
-  Hash::Hash32_t  buffer_hash = Hash32 ( (const char *) buffer, buffer_size);
+  Hash32_t  buffer_hash = Hash32 ( buffer, buffer_size);
 
   std::string s;
+  Hash32_t  string_hash = Hash32 (s);
 
-  Hash::Hash32_t  s_hash = Hash32 (s);
+The ``Hash32_t`` type (just an ``uint32_t``) is a reminder that
+hash values are opaque.
 
-The ``Hash::Hash32_t`` type is just an ``uint32_t``, as a reminder that hash
-values are opaque.
-
-Equivalent functions and ``Hash::Hash64_t`` type are defined for 64-bit hash
+Equivalent functions and ``Hash64_t`` type are defined for 64-bit hash
 values.
+
+Incremental Hashing
+*******************
+
+In some situations it's useful to compute the hash of multiple buffers,
+as if they had been joined together.  (For example, you might want
+the hash of a packet stream, but not want to assemble a single buffer
+with the combined contents of all the packets.)
+
+This is almost as straight-forward as the first example:
+
+  #include "ns3/hash.h"
+
+  using namespace ns3;
+
+  char * buffer;
+  size_t buffer_size;
+
+  Hasher hasher;  // Use default hash function
+
+  for (<every buffer>)
+    {
+	buffer = <get next buffer>;
+	hasher (buffer, buffer_size);
+    }
+  Hash32_t combined_hash = hasher.GetHash32 ();
+
+By default ``Hasher`` preserves internal state to enable incremental
+hashing.  If you want to reuse a ``Hasher`` object (for example
+because it's configured with a non-default hash function), but don't
+want to add to the previously computed hash, you need to ``clear()``
+first:
+
+  hasher.clear ().GetHash32 (buffer, buffer_size);
+
+This reinitializes the internal state before hashing the buffer.
+
+
+Using an Alternative Hash Function
+**********************************
+
+The default hash function is murmur3_.  FNV1a_ is also available.  To specify
+the hash function explicitly, use this contructor:
+
+  Hasher hasher = Hasher ( Create<Hash::Function::Fnv1a> () );
+
 
 Adding New Hash Function Implementations
 ****************************************
@@ -43,17 +90,18 @@ Adding New Hash Function Implementations
 To add the hash function ``foo``, follow the ``hash-murmur3.h``/``.cc`` pattern:
 
  * Create a class declaration (``.h``) and definition (``.cc``) inheriting
-   from ``HashImplementation``.
+   from ``Hash::Implementation``.
  * ``include`` the declaration in ``hash.h`` (at the point where
    ``hash-murmur3.h`` is included.
  * In your own code, instantiate a ``Hash`` object via the constructor
-   ``Hash (Ptr<HashImplementation> (Foo))``
+   ``Hash (Ptr<Hash::Function::Foo> ())``
    
 
 If your hash function is a single function, e.g. ``hashf``, you don't
 even need to create a new class derived from HashImplementation::
 
-  Hash (Ptr<HashImplementation> (Hash32Implementation<&hashf>))
+  Hasher hasher =
+    Hasher ( Create<Hash::Function::Hash32> (&hashf) );
 
 For this to compile, your ``hashf`` has to match one of the function pointer
 signatures::

@@ -39,6 +39,14 @@ namespace ns3 {
  *
  *  This class provides a generic interface for computing hashes
  *  of buffers.  Various getters return hashes of different lengths.
+ *
+ *  Call clear () between calls to the getter to reset the
+ *  internal state and hash each buffer separately.
+ *
+ *  If you don't call clear() between calls to the getter
+ *  you can hash successive buffers.  The final return value
+ *  will be the cumulative hash across all calls.
+ *
  *  The choice of hash function can be made at construction by
  *    \code
  *    Hasher hasher = Hasher ( Create<Hash::Function::Fnv1a> () );
@@ -75,7 +83,14 @@ public:
    */
   Hasher (Ptr<Hash::Implementation> hp);
   /**
-   * Compute 32-bit hash of a byte buffer
+   * Compute 32-bit hash of a byte buffer.
+   *
+   * Call clear () between calls to GetHash32() to reset the
+   * internal state and hash each buffer separately.
+   *
+   * If you don't call clear() between calls to GetHash32,
+   * you can hash successive buffers.  The final return value
+   * will be the cumulative hash across all calls.
    *
    * \param [in] buffer pointer to the beginning of the buffer
    * \param [in] size length of the buffer, in bytes
@@ -84,6 +99,13 @@ public:
   Hash32_t  GetHash32  (const char * buffer, const size_t size);
   /**
    * Compute 64-bit hash of a byte buffer
+   *
+   * Call clear () between calls to GetHash64() to reset the
+   * internal state and hash each buffer separately.
+   *
+   * If you don't call clear() between calls to GetHash64,
+   * you can hash successive buffers.  The final return value
+   * will be the cumulative hash across all calls.
    *
    * \param [in] buffer pointer to the beginning of the buffer
    * \param [in] size length of the buffer, in bytes
@@ -94,12 +116,26 @@ public:
   /**
    * Compute 32-bit hash of a string
    *
+   * Call clear () between calls to GetHash32() to reset the
+   * internal state and hash each string separately.
+   *
+   * If you don't call clear() between calls to GetHash32,
+   * you can hash successive strings.  The final return value
+   * will be the cumulative hash across all calls.
+   *
    * \param [in] s string to hash
    * \return 32-bit hash of the string
    */
   Hash32_t  GetHash32  (const std::string s);
   /**
    * Compute 64-bit hash of a string
+   *
+   * Call clear () between calls to GetHash64() to reset the
+   * internal state and hash each string separately.
+   *
+   * If you don't call clear() between calls to GetHash64,
+   * you can hash successive strings.  The final return value
+   * will be the cumulative hash across all calls.
    *
    * \param [in] s string to hash
    * \return 64-bit hash of the string
@@ -111,10 +147,9 @@ public:
    * \return this
    */
   Hasher & clear (void);
-  
+
 private:
   Ptr<Hash::Implementation> m_impl;    /** Hash implementation */
-  
 };  // Hasher
 
 
@@ -170,7 +205,7 @@ Hash64_t Hash64 (const std::string s);
  ************************************************/
 
 namespace ns3 {
-  
+
 /*************************************************
  class Hash implementation, inlined for rvo
 */
@@ -216,28 +251,28 @@ inline
 Hash32_t
 Hash32 (const char * buffer, const size_t size)
 {
-  return Hasher().GetHash32 (buffer, size);
+  return Hasher ().GetHash32 (buffer, size);
 }
 
 inline
 Hash64_t
 Hash64 (const char * buffer, const size_t size)
 {
-  return Hasher().GetHash64 (buffer, size);
+  return Hasher ().GetHash64 (buffer, size);
 }
 
 inline
 Hash32_t
 Hash32 (const std::string s)
 {
-  return Hasher().GetHash32 (s);
+  return Hasher ().GetHash32 (s);
 }
 
 inline
 Hash64_t
 Hash64 (const std::string s)
 {
-  return Hasher().GetHash64 (s);
+  return Hasher ().GetHash64 (s);
 }
 
 

@@ -33,8 +33,8 @@ namespace ns3 {
 typedef uint32_t Hash32_t;
 typedef uint64_t Hash64_t;
 
-  namespace Hash {
-    
+namespace Hash {
+
 /**
  *  \ingroup hash
  *
@@ -46,6 +46,13 @@ public:
   /**
    * Compute 32-bit hash of a byte buffer
    *
+   * Call clear () between calls to GetHash32() to reset the
+   * internal state and hash each buffer separately.
+   *
+   * If you don't call clear() between calls to GetHash32,
+   * you can hash successive buffers.  The final return value
+   * will be the cumulative hash across all calls.
+   *
    * \param [in] buffer pointer to the beginning of the buffer
    * \param [in] size length of the buffer, in bytes
    * \return 32-bit hash of the buffer
@@ -55,6 +62,13 @@ public:
    * Compute 64-bit hash of a byte buffer.
    *
    * Default implementation returns 32-bit hash, with a warning.
+   *
+   * Call clear () between calls to GetHash64() to reset the
+   * internal state and hash each buffer separately.
+   *
+   * If you don't call clear() between calls to GetHash64,
+   * you can hash successive buffers.  The final return value
+   * will be the cumulative hash across all calls.
    *
    * \param [in] buffer pointer to the beginning of the buffer
    * \param [in] size length of the buffer, in bytes
@@ -68,11 +82,11 @@ public:
   /**
    * Constructor
    */
-  Implementation () {} ;
+  Implementation () { };
   /**
    * Destructor
    */
-  virtual ~Implementation () {} ;
+  virtual ~Implementation () { };
 };  // Hashfunction
 
   
@@ -92,45 +106,53 @@ public:
 typedef Hash32_t (*Hash32Function_ptr) (const char *, const size_t);
 typedef Hash64_t (*Hash64Function_ptr) (const char *, const size_t);
 
-    namespace Function {
+namespace Function {
 
 /**
  * \ingroup hash
  *
  * \brief Template for Hashfunctions from 32-bit hash functions
  */
-template <Hash32Function_ptr hp>
 class Hash32 : public Implementation
 {
+public:
+  Hash32 (Hash32Function_ptr hp) : m_fp (hp) { };
   Hash32_t GetHash32 (const char * buffer, const size_t size)
   {
-    return (*hp) (buffer, size);
+    return (*m_fp) (buffer, size);
   }
-};  // Hash32<Hash32Function_ptr>
+  void clear () { };
+private:
+  Hash32Function_ptr m_fp;
+};  // Hash32
 
 /**
  * \ingroup hash
  *
  * \brief Template for Hashfunctions from 64-bit hash functions
  */
-template <Hash64Function_ptr hp>
 class Hash64 : public Implementation
 {
+public:
+  Hash64 (Hash64Function_ptr hp) : m_fp (hp) { };
   Hash64_t GetHash64 (const char * buffer, const size_t size)
   {
-    return (*hp) (buffer, size);
+    return (*m_fp) (buffer, size);
   }
   Hash32_t GetHash32 (const char * buffer, const size_t size)
   {
-    Hash64_t hash = GetHash64(buffer, size);
-    return (Hash32_t *)(&hash);
+    Hash64_t hash = GetHash64 (buffer, size);
+    return *(Hash32_t *)(void *)(&hash);
   }
+  void clear () { };
+private:
+  Hash64Function_ptr m_fp;
 };  // Hash64<Hash64Function_ptr>
 
-      
-    }  // namespace Function
 
-  }  // namespace Hash
+}  // namespace Function
+
+}  // namespace Hash
 
 }  // namespace ns3
 

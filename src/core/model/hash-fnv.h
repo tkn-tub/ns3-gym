@@ -25,9 +25,9 @@
 
 namespace ns3 {
 
-  namespace Hash {
+namespace Hash {
 
-    namespace Function {
+namespace Function {
 
 /**
  *  \ingroup hash
@@ -39,7 +39,18 @@ class Fnv1a : public Implementation
 {
 public:
   /**
+   * Constructor
+   */
+  Fnv1a ();
+  /**
    * Compute 32-bit hash of a byte buffer
+   *
+   * Call clear () between calls to GetHash32() to reset the
+   * internal state and hash each buffer separately.
+   *
+   * If you don't call clear() between calls to GetHash32,
+   * you can hash successive buffers.  The final return value
+   * will be the cumulative hash across all calls.
    *
    * \param [in] buffer pointer to the beginning of the buffer
    * \param [in] size length of the buffer, in bytes
@@ -48,6 +59,13 @@ public:
   Hash32_t  GetHash32  (const char * buffer, const size_t size);
   /**
    * Compute 64-bit hash of a byte buffer.
+   *
+   * Call clear () between calls to GetHash64() to reset the
+   * internal state and hash each buffer separately.
+   *
+   * If you don't call clear() between calls to GetHash64,
+   * you can hash successive buffers.  The final return value
+   * will be the cumulative hash across all calls.
    *
    * \param [in] buffer pointer to the beginning of the buffer
    * \param [in] size length of the buffer, in bytes
@@ -64,16 +82,23 @@ private:
    * Seed value
    */
   enum seed
-    {
-      SEED = 0x8BADF00D  // Ate bad food
-    };
+  {
+    SEED = 0x8BADF00D  // Ate bad food
+  };
+  //@{
+  /**
+   * Cache last hash value, for incremental hashing
+   */
+  uint32_t m_hash32;
+  uint64_t m_hash64;
+  //@}
 
 };  // class Fnv1a
 
-    }  // namespace Function
+}  // namespace Function
 
-  }  // namespace Hash
-  
-} // namespace ns3
+}  // namespace Hash
+
+}  // namespace ns3
 
 #endif  /* HASH_FNV_H */
