@@ -26,7 +26,7 @@
 #include "assert.h"
 #include "ptr.h"
 
-#include "hash-function.h"  // typedef ns3::uint32_t, ns3::uint64_t
+#include "hash-function.h"
 #include "hash-murmur3.h"
 #include "hash-fnv.h"
 
