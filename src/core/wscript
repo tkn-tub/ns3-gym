@@ -150,6 +150,7 @@ def build(bld):
         'helper/random-variable-stream-helper.cc',
         'helper/event-garbage-collector.cc',
         'model/hash.cc',
+        'model/hash-implementation.cc',
         'model/hash-murmur3.cc',
         'model/hash-fnv.cc',
         ]
@@ -256,6 +257,7 @@ def build(bld):
         'helper/event-garbage-collector.h',
         'helper/random-variable-stream-helper.h',
         'model/hash.h',
+        'model/hash-implementation.h',
         'model/hash-murmur3.h',
         'model/hash-fnv.h',
         ]

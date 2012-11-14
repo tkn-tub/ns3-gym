@@ -19,27 +19,23 @@
  */
 
 #include "log.h"
-#include "hash.h"
+#include "hash-implementation.h"
 
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("Hash");
+NS_LOG_COMPONENT_DEFINE ("HashImplementation");
 
+    
 /*************************************************
- **  class Hash
+ **  class HashImplementation
  ************************************************/
 
-Hash::Hash ()
+Hash64_t
+HashImplementation::GetHash64  (const char * buffer, const size_t size)
 {
-  m_impl = Create <HashFunction::Murmur3> ();
-  NS_ASSERT (m_impl != 0);
-}
-
-Hash::Hash (Ptr<HashImplementation> hp)
-  : m_impl(hp)
-{
-  NS_ASSERT (m_impl != 0);
+  NS_LOG_WARN("64-bit hash requested, only 32-bit implementation available");
+  return GetHash32 (buffer, size);
 }
   
 } // namespace ns3

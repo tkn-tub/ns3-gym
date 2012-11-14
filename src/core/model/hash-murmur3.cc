@@ -18,18 +18,16 @@
  * Author: Peter D. Barnes, Jr. <pdbarnes@llnl.gov>
  */
 
-#include "ns3/hash.h"
-#include "ns3/hash-murmur3.h"
-#include "ns3/log.h"
-
+#include "log.h"
+#include "hash-murmur3.h"
 
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("Hash-Murmur3");
   
-  namespace HashImplNS {
+  namespace HashFunction {
 
-    namespace Murmur3NS {
+    namespace Murmur3Implementation {
       
 /*************************************************
  **  class Murmur3HashImplementation
@@ -353,29 +351,29 @@ void MurmurHash3_x64_128 ( const void * key, const int len,
 //-----------------------------------------------------------------------------
 
 
-}  // namespace Murmur3NS
+    }  // namespace Murmur3Implementation
 
 
 
-Hash::Hash32_t
+Hash32_t
 Murmur3::GetHash32  (const char * buffer, const size_t size)
 {
   uint32_t result;
-  Murmur3NS::MurmurHash3_x86_32 (buffer, size,
+  Murmur3Implementation::MurmurHash3_x86_32 (buffer, size,
                                  (uint32_t)SEED, (void *)(&result));
   return result;
 }
 
-Hash::Hash64_t
+Hash64_t
 Murmur3::GetHash64  (const char * buffer, const size_t size)
 {
   uint64_t result[2];
   
-  Murmur3NS::MurmurHash3_x86_128 (buffer, size,
+  Murmur3Implementation::MurmurHash3_x86_128 (buffer, size,
                                   (uint32_t)SEED, (void *)(result));
   return result[0];
 }
-      
-  }  // namespace HashImpl
+
+  }  // namespace HashFunction
   
 } // namespace ns3

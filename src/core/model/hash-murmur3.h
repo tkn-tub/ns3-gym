@@ -21,11 +21,11 @@
 #ifndef HASH_MURMUR3_H
 #define HASH_MURMUR3_H
 
-#include "ns3/hash.h"
+#include "hash-implementation.h"
 
 namespace ns3 {
   
-  namespace HashImplNS {
+  namespace HashFunction {
 
 /**
  *  \ingroup hash
@@ -52,7 +52,7 @@ public:
    * \param [in] size length of the buffer, in bytes
    * \return 32-bit hash of the buffer
    */
-  Hash::Hash32_t  GetHash32  (const char * buffer, const size_t size);
+  Hash32_t  GetHash32  (const char * buffer, const size_t size);
   /**
    * Compute 64-bit hash of a byte buffer.
    *
@@ -60,7 +60,7 @@ public:
    * \param [in] size length of the buffer, in bytes
    * \return 64-bit hash of the buffer
    */
-  Hash::Hash64_t  GetHash64  (const char * buffer, const size_t size);
+  Hash64_t  GetHash64  (const char * buffer, const size_t size);
 
 private:
   /**
@@ -76,7 +76,7 @@ private:
 
 };  // class Murmur3
 
-}  // namespace HashImplNS
+  }  // namespace HashFunction
   
 } // namespace ns3
 

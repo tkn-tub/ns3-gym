@@ -23,13 +23,14 @@
 
 #include <string>
 
-#include "ns3/assert.h"
-#include "ns3/ptr.h"
-#include "ns3/simple-ref-count.h"
+#include "assert.h"
+#include "ptr.h"
+
+#include "hash-implementation.h"  // typedef ns3::Hash32_t, ns3::Hash64_t
+#include "hash-murmur3.h"
+#include "hash-fnv.h"
 
 namespace ns3 {
-
-class HashImplementation;
 
 /**
  *  \ingroup hash
@@ -41,7 +42,7 @@ class HashImplementation;
  *  The choice of hash function can be made at construction by
  *  passing a Ptr<> to the desired HashImplementation.
  *  The available implementations are documented in group hash.
- *  The default implementation is Murmur3.  FNV is also available.
+ *  The default implementation is Murmur3.  FNV1a is also available.
  *
  *  In addition to this class interface, global functions are
  *  defined which use the default hash implementation.
@@ -109,8 +110,9 @@ private:
   
 };  // Hash
 
+
 /*************************************************
- **  Global functions
+ **  Global functions declarations
  ************************************************/
 
 /**
@@ -122,7 +124,7 @@ private:
  * \param [in] size length of the buffer, in bytes
  * \return 32-bit hash of the buffer
  */
-Hash::Hash32_t Hash32 (const char * buffer, const size_t size);
+Hash32_t Hash32 (const char * buffer, const size_t size);
 /**
  * \ingroup hash
  *
@@ -132,7 +134,7 @@ Hash::Hash32_t Hash32 (const char * buffer, const size_t size);
  * \param [in] size length of the buffer, in bytes
  * \return 64-bit hash of the buffer
  */
-Hash::Hash64_t Hash64 (const char * buffer, const size_t size);
+Hash64_t Hash64 (const char * buffer, const size_t size);
 
 /**
  * \ingroup hash
@@ -142,7 +144,7 @@ Hash::Hash64_t Hash64 (const char * buffer, const size_t size);
  * \param [in] s string to hash
  * \return 32-bit hash of the string
  */
-Hash::Hash32_t Hash32 (const std::string s);
+Hash32_t Hash32 (const std::string s);
 /**
  * \ingroup hash
  *
@@ -151,103 +153,9 @@ Hash::Hash32_t Hash32 (const std::string s);
  * \param [in] s string to hash
  * \return 64-bit hash of the string
  */
-Hash::Hash64_t Hash64 (const std::string s);
-
-
-/*************************************************
- **  Hash function implementation class
- ************************************************/
-  
-/**
- *  \ingroup hash
- *
- *  \brief Hash function implementation base class
- */
-#ifndef HASHIMPLEMENTATION_C
-#define HASHIMPLEMENTATION_C
-class HashImplementation : public SimpleRefCount<HashImplementation>
-{
-public:
-  /**
-   * Compute 32-bit hash of a byte buffer
-   *
-   * \param [in] buffer pointer to the beginning of the buffer
-   * \param [in] size length of the buffer, in bytes
-   * \return 32-bit hash of the buffer
-   */
-  virtual Hash::Hash32_t  GetHash32  (const char * buffer, const size_t size) = 0;
-  /**
-   * Compute 64-bit hash of a byte buffer.
-   *
-   * Default implementation returns 32-bit hash, with a warning.
-   *
-   * \param [in] buffer pointer to the beginning of the buffer
-   * \param [in] size length of the buffer, in bytes
-   * \return 64-bit hash of the buffer
-   */
-  virtual Hash::Hash64_t  GetHash64  (const char * buffer, const size_t size);
-  /*
-   * Destructor
-   */
-  virtual ~HashImplementation () {} ;
-};  // HashImplementation
-#endif /* HASHIMPLEMENTATION_C */
-
-/**
- *
- * \ingroup hash
- *
- * \brief Basic hash function typedefs.
- *
- * See Hash32Implementation<> or Hash64Implementation<>
- */
-typedef Hash::Hash32_t (*Hash32Function_ptr) (const char *, const size_t);
-typedef Hash::Hash64_t (*Hash64Function_ptr) (const char *, const size_t);
-
-
-/**
- * \ingroup hash
- *
- * \brief Template for HashImplementations from 32-bit hash functions
- */
-template <Hash32Function_ptr hp>
-class Hash32Implementation : public HashImplementation
-{
-  Hash::Hash32_t GetHash32 (const char * buffer, const size_t size)
-  {
-    return (*hp) (buffer, size);
-  }
-};  // Hash32Implementation<HashFunction>
-
-/**
- * \ingroup hash
- *
- * \brief Template for HashImplementations from 64-bit hash functions
- */
-template <Hash64Function_ptr hp>
-class Hash64Implementation : public HashImplementation
-{
-  Hash::Hash64_t GetHash64 (const char * buffer, const size_t size)
-  {
-    return (*hp) (buffer, size);
-  }
-  Hash::Hash32_t GetHash32 (const char * buffer, const size_t size)
-  {
-    Hash::Hash64_t hash = GetHash64(buffer, size);
-    return (Hash::Hash32_t *)(&hash);
-  }
-};  // Hash32Implementation<HashFunction>
+Hash64_t Hash64 (const std::string s);
 
 }  // namespace ns3
-
-
-
-/*************************************************
- **  Real Hash function implementations
- ************************************************/
-
-#include "ns3/hash-murmur3.h"
-#include "ns3/hash-fnv.h"
 
 
 /*************************************************
@@ -261,7 +169,7 @@ namespace ns3 {
 */
 
 inline
-Hash::Hash32_t
+Hash32_t
 Hash::GetHash32  (const char * buffer, const size_t size)
 {
   NS_ASSERT (m_impl != 0);
@@ -269,7 +177,7 @@ Hash::GetHash32  (const char * buffer, const size_t size)
 }
 
 inline
-Hash::Hash64_t
+Hash64_t
 Hash::GetHash64  (const char * buffer, const size_t size)
 {
   NS_ASSERT (m_impl != 0);
@@ -277,7 +185,7 @@ Hash::GetHash64  (const char * buffer, const size_t size)
 }
 
 inline
-Hash::Hash32_t
+Hash32_t
 Hash::GetHash32  (const std::string s)
 {
   NS_ASSERT (m_impl != 0);
@@ -285,7 +193,7 @@ Hash::GetHash32  (const std::string s)
 }
 
 inline
-Hash::Hash64_t
+Hash64_t
 Hash::GetHash64  (const std::string s)
 {
   NS_ASSERT (m_impl != 0);
@@ -298,28 +206,28 @@ Hash::GetHash64  (const std::string s)
 */
 
 inline
-Hash::Hash32_t
+Hash32_t
 Hash32 (const char * buffer, const size_t size)
 {
   return Hash().GetHash32 (buffer, size);
 }
 
 inline
-Hash::Hash64_t
+Hash64_t
 Hash64 (const char * buffer, const size_t size)
 {
   return Hash().GetHash64 (buffer, size);
 }
 
 inline
-Hash::Hash32_t
+Hash32_t
 Hash32 (const std::string s)
 {
   return Hash().GetHash32 (s);
 }
 
 inline
-Hash::Hash64_t
+Hash64_t
 Hash64 (const std::string s)
 {
   return Hash().GetHash64 (s);

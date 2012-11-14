@@ -21,8 +21,8 @@
 #include <iomanip>
 #include <string>
 
-#include "ns3/hash.h"
 #include "ns3/test.h"
+#include "ns3/hash.h"
 
 namespace ns3 {
 
@@ -95,7 +95,7 @@ void
 HashFnv1aTestCase::DoRun (void)
 {
   std::string key("The quick brown fnv1a.");
-  Hash hasher = Hash ( Create<HashImplNS::Fnv1a> () );
+  Hash hasher = Hash ( Create<HashFunction::Fnv1a> () );
 
   uint32_t h32r = 0x5735855b;  // FNV1A(key)
   uint32_t h32 = hasher.GetHash32 (key);
@@ -139,7 +139,7 @@ void
 HashMurmur3TestCase::DoRun (void)
 {
   std::string key("The quick brown murmur3.");
-  Hash hasher = Hash ( Create<HashImplNS::Murmur3> () );
+  Hash hasher = Hash ( Create<HashFunction::Murmur3> () );
 
   uint32_t h32r = 0xe8a2d100;  // Murmur3(key)
   uint32_t h32 = hasher.GetHash32 (key);
