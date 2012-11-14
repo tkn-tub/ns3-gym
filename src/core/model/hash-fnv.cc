@@ -149,8 +149,10 @@ typedef u_int32_t Fnv32_t;
  *
  * This historic hash is not recommended.  One should use
  * the FNV-1 hash and initial basis instead.
+ *
+ * Use fully qualified type so this define works outside this scope //PDB
  */
-#define FNV0_32_INIT ((Fnv32_t)0)
+#define FNV0_32_INIT ((HashImplNS::FnvNS::Fnv32_t)0)
 
 
 /*
@@ -164,8 +166,10 @@ typedef u_int32_t Fnv32_t;
  * They are literal ASCII  backslash 0x5c characters.
  *
  * NOTE: The FNV-1a initial basis is the same value as FNV-1 by definition.
+ *
+ * Use fully qualified type so this define works outside this scope //PDB
  */
-#define FNV1_32_INIT ((Fnv32_t)0x811c9dc5)
+#define FNV1_32_INIT ((HashImplNS::FnvNS::Fnv32_t)0x811c9dc5)
 #define FNV1_32A_INIT FNV1_32_INIT
 
 
@@ -194,12 +198,14 @@ typedef struct {
  *
  * This historic hash is not recommended.  One should use
  * the FNV-1 hash and initial basis instead.
+ *
+ * Use fully qualified type so this define works outside this scope //PDB
  */
 #if defined(HAVE_64BIT_LONG_LONG)
-#define FNV0_64_INIT ((Fnv64_t)0)
+#define FNV0_64_INIT ((HashImplNS::FnvNS::Fnv64_t)0)
 #else /* HAVE_64BIT_LONG_LONG */
 extern const Fnv64_t fnv0_64_init;
-#define FNV0_64_INIT (fnv0_64_init)
+#define FNV0_64_INIT (HashImplNS::FnvNS::fnv0_64_init)
 #endif /* HAVE_64BIT_LONG_LONG */
 
 
@@ -216,7 +222,7 @@ extern const Fnv64_t fnv0_64_init;
  * NOTE: The FNV-1a initial basis is the same value as FNV-1 by definition.
  */
 #if defined(HAVE_64BIT_LONG_LONG)
-#define FNV1_64_INIT ((Fnv64_t)0xcbf29ce484222325ULL)
+#define FNV1_64_INIT ((HashImplNS::FnvNS::Fnv64_t)0xcbf29ce484222325ULL)
 #define FNV1A_64_INIT FNV1_64_INIT
 #else /* HAVE_64BIT_LONG_LONG */
 extern const fnv1_64_init;
@@ -332,7 +338,7 @@ enum fnv_type {
 /*
  * 32 bit magic FNV-1a prime
  */
-#define FNV_32_PRIME ((Fnv32_t)0x01000193)
+#define FNV_32_PRIME ((HashImplNS::FnvNS::Fnv32_t)0x01000193)
 
 
 /*
@@ -491,7 +497,7 @@ const Fnv64_t fnv1a_64_init = { 0x84222325, 0xcbf29ce4 };
  * 64 bit magic FNV-1a prime
  */
 #if defined(HAVE_64BIT_LONG_LONG)
-#define FNV_64_PRIME ((Fnv64_t)0x100000001b3ULL)
+#define FNV_64_PRIME ((HashImplNS::FnvNS::Fnv64_t)0x100000001b3ULL)
 #else /* HAVE_64BIT_LONG_LONG */
 #define FNV_64_PRIME_LOW ((unsigned long)0x1b3)	/* lower bits of FNV prime */
 #define FNV_64_PRIME_SHIFT (8)		/* top FNV prime shift above 2^32 */
