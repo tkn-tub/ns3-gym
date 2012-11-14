@@ -71,8 +71,8 @@ ByteTagIterator::Next (void)
 {
   ByteTagList::Iterator::Item i = m_current.Next ();
   return ByteTagIterator::Item (i.tid,
-                                i.start - m_current.GetOffsetStart (),
-                                i.end - m_current.GetOffsetStart (),
+                                i.start-m_current.GetOffsetStart (),
+                                i.end-m_current.GetOffsetStart (),
                                 i.buf);
 }
 ByteTagIterator::ByteTagIterator (ByteTagList::Iterator i)
@@ -373,7 +373,7 @@ Packet::PeekData (void) const
   uint32_t newStart = m_buffer.GetCurrentStartOffset ();
  
   // Update tag offsets if buffer offsets were changed
-  const_cast<ByteTagList &> (m_byteTagList).AddAtStart (newStart - oldStart, newStart);
+  const_cast<ByteTagList &>(m_byteTagList).AddAtStart (newStart - oldStart, newStart);
   return data;
 }
 
@@ -434,8 +434,7 @@ Packet::Print (std::ostream &os) const
       PacketMetadata::Item item = i.Next ();
       if (item.isFragment)
         {
-          switch (item.type)
-            {
+          switch (item.type) {
             case PacketMetadata::Item::PAYLOAD:
               os << "Payload";
               break;
@@ -444,13 +443,12 @@ Packet::Print (std::ostream &os) const
               os << item.tid.GetName ();
               break;
             }
-          os << " Fragment [" << item.currentTrimedFromStart << ":"
+          os << " Fragment [" << item.currentTrimedFromStart<<":"
              << (item.currentTrimedFromStart + item.currentSize) << "]";
         }
       else
         {
-          switch (item.type)
-            {
+          switch (item.type) {
             case PacketMetadata::Item::PAYLOAD:
               os << "Payload (size=" << item.currentSize << ")";
               break;
@@ -489,8 +487,7 @@ Packet::Print (std::ostream &os) const
       PacketMetadata::Item item = i.Next ();
       if (item.isFragment)
         {
-          switch (item.type)
-            {
+          switch (item.type) {
             case PacketMetadata::Item::PAYLOAD:
               os << "Payload";
               break;
@@ -499,13 +496,12 @@ Packet::Print (std::ostream &os) const
               os << item.tid.GetName ();
               break;
             }
-          os << " Fragment [" << item.currentTrimedFromStart << ":"
+          os << " Fragment [" << item.currentTrimedFromStart<<":"
              << (item.currentTrimedFromStart + item.currentSize) << "]";
         }
       else
         {
-          switch (item.type)
-            {
+          switch (item.type) {
             case PacketMetadata::Item::PAYLOAD:
               os << "Payload (size=" << item.currentSize << ")";
               break;
@@ -633,7 +629,7 @@ Packet::Serialize (uint8_t* buffer, uint32_t maxSize) const
             {
               // increment p by nixSize bytes
               // ensuring 4-byte boundary
-              p += ((nixSize + 3) & (~3)) / 4;
+              p += ((nixSize+3) & (~3)) / 4;
             }
           else
             {
@@ -681,7 +677,7 @@ Packet::Serialize (uint8_t* buffer, uint32_t maxSize) const
         {
           // increment p by metaSize bytes
           // ensuring 4-byte boundary
-          p += ((metaSize + 3) & (~3)) / 4;
+          p += ((metaSize+3) & (~3)) / 4;
         }
       else
         {
@@ -710,7 +706,7 @@ Packet::Serialize (uint8_t* buffer, uint32_t maxSize) const
         {
           // increment p by bufSize bytes
           // ensuring 4-byte boundary
-          p += ((bufSize + 3) & (~3)) / 4;
+          p += ((bufSize+3) & (~3)) / 4;
         }
       else 
         {
@@ -855,7 +851,6 @@ Packet::RemovePacketTag (Tag &tag)
   bool found = m_packetTagList.Remove (tag);
   return found;
 }
-
 bool
 Packet::ReplacePacketTag (Tag &tag)
 {

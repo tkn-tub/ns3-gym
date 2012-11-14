@@ -33,7 +33,6 @@ namespace ns3 {
 
 class Tag;
 
-
 /**
  * \ingroup packet
  *

@@ -68,9 +68,10 @@ struct ByteTagListData;
 class ByteTagList
 {
 public:
+
   class Iterator
   {
-  public:
+public:
     struct Item 
     {
       TypeId tid;
@@ -79,14 +80,14 @@ public:
       int32_t end;
       TagBuffer buf;
       Item (TagBuffer buf);
-    private:
+private:
       friend class ByteTagList;
       friend class ByteTagList::Iterator;
     };
     bool HasNext (void) const;
     struct ByteTagList::Iterator::Item Next (void);
     uint32_t GetOffsetStart (void) const;
-  private:
+private:
     friend class ByteTagList;
     Iterator (uint8_t *start, uint8_t *end, int32_t offsetStart, int32_t offsetEnd);
     void PrepareForNext (void);
@@ -157,7 +158,7 @@ private:
   bool IsDirtyAtStart (int32_t prependOffset);
   ByteTagList::Iterator BeginAll (void) const;
 
-  struct ByteTagListData * Allocate (uint32_t size);
+  struct ByteTagListData *Allocate (uint32_t size);
   void Deallocate (struct ByteTagListData *data);
 
   uint16_t m_used;

@@ -189,11 +189,6 @@ private:
  * qos class id set by an application and processed by a lower-level MAC 
  * layer.
  *
- * - Packet tags must have unique types; repeated tags of a single type
- * (even with different values) can't be attached to a single packet.
- * Packet tags must serialize to a finite maximum size, see
- * PacketTagList::TagData.
- *
  * Implementing a new type of Header or Trailer for a new protocol is 
  * pretty easy and is a matter of creating a subclass of the ns3::Header 
  * or of the ns3::Trailer base class, and implementing the methods
@@ -208,6 +203,7 @@ private:
 class Packet : public SimpleRefCount<Packet>
 {
 public:
+
   /**
    * Create an empty packet with a new uid (as returned
    * by getUid).
@@ -324,7 +320,7 @@ public:
   void AddPaddingAtEnd (uint32_t size);
   /** 
    * Remove size bytes from the end of the current packet
-   * It is safe to remove more bytes than arepresent in
+   * It is safe to remove more bytes than are present in
    * the packet.
    *
    * \param size number of bytes from remove
@@ -350,7 +346,7 @@ public:
    * an explicit copy.
    *
    */
-  uint8_t const * PeekData (void) const NS_DEPRECATED;
+  uint8_t const *PeekData (void) const NS_DEPRECATED;
 
   /**
    * Copy the packet contents to a byte buffer.
@@ -360,9 +356,7 @@ public:
    * \param size the size of the byte buffer. 
    * \returns the number of bytes read from the packet
    *
-   * No more than \b size bytes will be copied by this function,
-   * even if the packet has more content.  Use GetSize"()" to
-   * to find the total size of the buffer needed.
+   * No more than \b size bytes will be copied by this function.
    */
   uint32_t CopyData (uint8_t *buffer, uint32_t size) const;
 
@@ -379,7 +373,7 @@ public:
   /**
    * \returns a COW copy of the packet.
    *
-   * The returned packet will behave like an independent copy of
+   * The returns packet will behave like an independent copy of
    * the original packet, even though they both share the
    * same datasets internally.
    */
