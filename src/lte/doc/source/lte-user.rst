@@ -193,7 +193,7 @@ simulator, including lots of non-LTE attributes.
 Simulation Output
 -----------------
 
-The ns-3 LTE model currently supports the output to file of MAC, RLC
+The ns-3 LTE model currently supports the output to file of PHY, MAC, RLC
 and PDCP level Key Performance Indicators (KPIs). You can enable it in
 the following way::
 
@@ -201,6 +201,7 @@ the following way::
       
       // configure all the simulation scenario here...
       
+      lteHelper->EnablePhyTraces ();
       lteHelper->EnableMacTraces ();
       lteHelper->EnableRlcTraces ();   
       lteHelper->EnablePdcpTraces ();   
@@ -289,6 +290,27 @@ The names of the files used for MAC KPI output can be customized via
 the ns-3 attributes ``ns3::MacStatsCalculator::DlOutputFilename`` and 
 ``ns3::MacStatsCalculator::UlOutputFilename``.
 
+PHY KPIs are distributed in three different files, configurable through the attributes 
+ ``ns3::PhyStatsCalculator::RsrpRsrqFilename``,  ``ns3::PhyStatsCalculator::UeSinrFilename``
+and  ``ns3::PhyStatsCalculator::InterferenceFilename``. 
+
+In the RSRP/RSR file, the following content is available:
+  1. Simulation time in seconds at which the allocation is indicated by the scheduler
+  2. Cell ID
+  3. unique UE ID (IMSI)
+  4. RSRP
+  5. RSRQ
+
+The contents in the UE SINR file are:
+  1. Simulation time in seconds at which the allocation is indicated by the scheduler
+  2. Cell ID
+  3. unique UE ID (IMSI)
+  4. SINR in linear units for the UE
+
+And finally, in the interference filename the content is:
+  1. Simulation time in seconds at which the allocation is indicated by the scheduler
+  2. Cell ID
+  3. List of interference values per RB
 
 Fading Trace Usage
 ------------------
