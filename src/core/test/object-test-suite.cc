@@ -29,7 +29,7 @@ class BaseA : public ns3::Object
 {
 public:
   static ns3::TypeId GetTypeId (void) {
-    static ns3::TypeId tid = ns3::TypeId ("BaseA")
+    static ns3::TypeId tid = ns3::TypeId ("ObjectTest:BaseA")
       .SetParent (Object::GetTypeId ())
       .HideFromDocumentation ()
       .AddConstructor<BaseA> ();
@@ -44,7 +44,7 @@ class DerivedA : public BaseA
 {
 public:
   static ns3::TypeId GetTypeId (void) {
-    static ns3::TypeId tid = ns3::TypeId ("DerivedA")
+    static ns3::TypeId tid = ns3::TypeId ("ObjectTest:DerivedA")
       .SetParent (BaseA::GetTypeId ())
       .HideFromDocumentation ()
       .AddConstructor<DerivedA> ();
@@ -61,7 +61,7 @@ class BaseB : public ns3::Object
 {
 public:
   static ns3::TypeId GetTypeId (void) {
-    static ns3::TypeId tid = ns3::TypeId ("BaseB")
+    static ns3::TypeId tid = ns3::TypeId ("ObjectTest:BaseB")
       .SetParent (Object::GetTypeId ())
       .HideFromDocumentation ()
       .AddConstructor<BaseB> ();
@@ -76,7 +76,7 @@ class DerivedB : public BaseB
 {
 public:
   static ns3::TypeId GetTypeId (void) {
-    static ns3::TypeId tid = ns3::TypeId ("DerivedB")
+    static ns3::TypeId tid = ns3::TypeId ("ObjectTest:DerivedB")
       .SetParent (BaseB::GetTypeId ())
       .HideFromDocumentation ()
       .AddConstructor<DerivedB> ();
