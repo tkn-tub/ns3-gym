@@ -22,9 +22,12 @@
 // George F. Riley, Georgia Tech, Fall 2006
 
 #include "application.h"
+#include "ns3/log.h"
 #include "ns3/node.h"
 #include "ns3/nstime.h"
 #include "ns3/simulator.h"
+
+NS_LOG_COMPONENT_DEFINE ("Application");
 
 namespace ns3 {
 
@@ -52,21 +55,25 @@ Application::GetTypeId (void)
 // \brief Application Constructor
 Application::Application()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 // \brief Application Destructor
 Application::~Application()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 void
 Application::SetStartTime (Time start)
 {
+  NS_LOG_FUNCTION (this << start);
   m_startTime = start;
 }
 void
 Application::SetStopTime (Time stop)
 {
+  NS_LOG_FUNCTION (this << stop);
   m_stopTime = stop;
 }
 
@@ -74,6 +81,7 @@ Application::SetStopTime (Time stop)
 void
 Application::DoDispose (void)
 {
+  NS_LOG_FUNCTION (this);
   m_node = 0;
   m_startEvent.Cancel ();
   m_stopEvent.Cancel ();
@@ -83,6 +91,7 @@ Application::DoDispose (void)
 void
 Application::DoStart (void)
 {
+  NS_LOG_FUNCTION (this);
   m_startEvent = Simulator::Schedule (m_startTime, &Application::StartApplication, this);
   if (m_stopTime != TimeStep (0))
     {
@@ -93,12 +102,14 @@ Application::DoStart (void)
 
 Ptr<Node> Application::GetNode () const
 {
+  NS_LOG_FUNCTION (this);
   return m_node;
 }
 
 void 
 Application::SetNode (Ptr<Node> node)
 {
+  NS_LOG_FUNCTION (this);
   m_node = node;
 }
 
@@ -106,10 +117,12 @@ Application::SetNode (Ptr<Node> node)
 // StartApp and StopApp will likely be overridden by application subclasses
 void Application::StartApplication ()
 { // Provide null functionality in case subclass is not interested
+  NS_LOG_FUNCTION (this);
 }
 
 void Application::StopApplication ()
 { // Provide null functionality in case subclass is not interested
+  NS_LOG_FUNCTION (this);
 }
 
 } // namespace ns3

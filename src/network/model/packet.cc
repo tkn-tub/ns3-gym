@@ -38,16 +38,19 @@ ByteTagIterator::Item::GetTypeId (void) const
 uint32_t 
 ByteTagIterator::Item::GetStart (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_start;
 }
 uint32_t 
 ByteTagIterator::Item::GetEnd (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_end;
 }
 void 
 ByteTagIterator::Item::GetTag (Tag &tag) const
 {
+  NS_LOG_FUNCTION (this << &tag);
   if (tag.GetInstanceTypeId () != GetTypeId ())
     {
       NS_FATAL_ERROR ("The tag you provided is not of the right type.");
@@ -60,6 +63,7 @@ ByteTagIterator::Item::Item (TypeId tid, uint32_t start, uint32_t end, TagBuffer
     m_end (end),
     m_buffer (buffer)
 {
+  NS_LOG_FUNCTION (this << tid << start << end << &buffer);
 }
 bool
 ByteTagIterator::HasNext (void) const
@@ -69,6 +73,7 @@ ByteTagIterator::HasNext (void) const
 ByteTagIterator::Item
 ByteTagIterator::Next (void)
 {
+  NS_LOG_FUNCTION (this);
   ByteTagList::Iterator::Item i = m_current.Next ();
   return ByteTagIterator::Item (i.tid,
                                 i.start-m_current.GetOffsetStart (),
@@ -78,21 +83,25 @@ ByteTagIterator::Next (void)
 ByteTagIterator::ByteTagIterator (ByteTagList::Iterator i)
   : m_current (i)
 {
+  NS_LOG_FUNCTION (this);
 }
 
 
 PacketTagIterator::PacketTagIterator (const struct PacketTagList::TagData *head)
   : m_current (head)
 {
+  NS_LOG_FUNCTION (this << head);
 }
 bool
 PacketTagIterator::HasNext (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_current != 0;
 }
 PacketTagIterator::Item
 PacketTagIterator::Next (void)
 {
+  NS_LOG_FUNCTION (this);
   NS_ASSERT (HasNext ());
   const struct PacketTagList::TagData *prev = m_current;
   m_current = m_current->next;
@@ -102,6 +111,7 @@ PacketTagIterator::Next (void)
 PacketTagIterator::Item::Item (const struct PacketTagList::TagData *data)
   : m_data (data)
 {
+  NS_LOG_FUNCTION (this << data);
 }
 TypeId
 PacketTagIterator::Item::GetTypeId (void) const
@@ -111,6 +121,7 @@ PacketTagIterator::Item::GetTypeId (void) const
 void
 PacketTagIterator::Item::GetTag (Tag &tag) const
 {
+  NS_LOG_FUNCTION (this << &tag);
   NS_ASSERT (tag.GetInstanceTypeId () == m_data->tid);
   tag.Deserialize (TagBuffer ((uint8_t*)m_data->data, (uint8_t*)m_data->data+PACKET_TAG_MAX_SIZE));
 }
@@ -122,6 +133,7 @@ Packet::Copy (void) const
   // we need to invoke the copy constructor directly
   // rather than calling Create because the copy constructor
   // is private.
+  NS_LOG_FUNCTION (this);
   return Ptr<Packet> (new Packet (*this), false);
 }
 
@@ -138,6 +150,7 @@ Packet::Packet ()
     m_metadata (static_cast<uint64_t> (Simulator::GetSystemId ()) << 32 | m_globalUid, 0),
     m_nixVector (0)
 {
+  NS_LOG_FUNCTION (this);
   m_globalUid++;
 }
 
@@ -147,6 +160,7 @@ Packet::Packet (const Packet &o)
     m_packetTagList (o.m_packetTagList),
     m_metadata (o.m_metadata)
 {
+  NS_LOG_FUNCTION (this << &o);
   o.m_nixVector ? m_nixVector = o.m_nixVector->Copy ()
     : m_nixVector = 0;
 }
@@ -154,6 +168,7 @@ Packet::Packet (const Packet &o)
 Packet &
 Packet::operator = (const Packet &o)
 {
+  NS_LOG_FUNCTION (this << &o);
   if (this == &o)
     {
       return *this;
@@ -180,6 +195,7 @@ Packet::Packet (uint32_t size)
     m_metadata (static_cast<uint64_t> (Simulator::GetSystemId ()) << 32 | m_globalUid, size),
     m_nixVector (0)
 {
+  NS_LOG_FUNCTION (this << size);
   m_globalUid++;
 }
 Packet::Packet (uint8_t const *buffer, uint32_t size, bool magic)
@@ -189,6 +205,7 @@ Packet::Packet (uint8_t const *buffer, uint32_t size, bool magic)
     m_metadata (0,0),
     m_nixVector (0)
 {
+  NS_LOG_FUNCTION (this << buffer << size << magic);
   NS_ASSERT (magic);
   Deserialize (buffer, size);
 }
@@ -206,6 +223,7 @@ Packet::Packet (uint8_t const*buffer, uint32_t size)
     m_metadata (static_cast<uint64_t> (Simulator::GetSystemId ()) << 32 | m_globalUid, size),
     m_nixVector (0)
 {
+  NS_LOG_FUNCTION (this << buffer << size);
   m_globalUid++;
   m_buffer.AddAtStart (size);
   Buffer::Iterator i = m_buffer.Begin ();
@@ -220,6 +238,7 @@ Packet::Packet (const Buffer &buffer,  const ByteTagList &byteTagList,
     m_metadata (metadata),
     m_nixVector (0)
 {
+  NS_LOG_FUNCTION (this << &buffer << &byteTagList << &packetTagList << &metadata);
 }
 
 Ptr<Packet>
@@ -238,12 +257,14 @@ Packet::CreateFragment (uint32_t start, uint32_t length) const
 void
 Packet::SetNixVector (Ptr<NixVector> nixVector)
 {
+  NS_LOG_FUNCTION (this << nixVector);
   m_nixVector = nixVector;
 }
 
 Ptr<NixVector>
 Packet::GetNixVector (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_nixVector;
 } 
 
@@ -251,7 +272,7 @@ void
 Packet::AddHeader (const Header &header)
 {
   uint32_t size = header.GetSerializedSize ();
-  NS_LOG_FUNCTION (this << header.GetInstanceTypeId ().GetName () << size);
+  NS_LOG_FUNCTION (this << &header);
   uint32_t orgStart = m_buffer.GetCurrentStartOffset ();
   bool resized = m_buffer.AddAtStart (size);
   if (resized)
@@ -266,7 +287,7 @@ uint32_t
 Packet::RemoveHeader (Header &header)
 {
   uint32_t deserialized = header.Deserialize (m_buffer.Begin ());
-  NS_LOG_FUNCTION (this << header.GetInstanceTypeId ().GetName () << deserialized);
+  NS_LOG_FUNCTION (this << &header);
   m_buffer.RemoveAtStart (deserialized);
   m_metadata.RemoveHeader (header, deserialized);
   return deserialized;
@@ -275,14 +296,14 @@ uint32_t
 Packet::PeekHeader (Header &header) const
 {
   uint32_t deserialized = header.Deserialize (m_buffer.Begin ());
-  NS_LOG_FUNCTION (this << header.GetInstanceTypeId ().GetName () << deserialized);
+  NS_LOG_FUNCTION (this << &header);
   return deserialized;
 }
 void
 Packet::AddTrailer (const Trailer &trailer)
 {
   uint32_t size = trailer.GetSerializedSize ();
-  NS_LOG_FUNCTION (this << trailer.GetInstanceTypeId ().GetName () << size);
+  NS_LOG_FUNCTION (this << &trailer);
   uint32_t orgStart = m_buffer.GetCurrentStartOffset ();
   bool resized = m_buffer.AddAtEnd (size);
   if (resized)
@@ -298,7 +319,7 @@ uint32_t
 Packet::RemoveTrailer (Trailer &trailer)
 {
   uint32_t deserialized = trailer.Deserialize (m_buffer.End ());
-  NS_LOG_FUNCTION (this << trailer.GetInstanceTypeId ().GetName () << deserialized);
+  NS_LOG_FUNCTION (this << &trailer);
   m_buffer.RemoveAtEnd (deserialized);
   m_metadata.RemoveTrailer (trailer, deserialized);
   return deserialized;
@@ -307,14 +328,14 @@ uint32_t
 Packet::PeekTrailer (Trailer &trailer)
 {
   uint32_t deserialized = trailer.Deserialize (m_buffer.End ());
-  NS_LOG_FUNCTION (this << trailer.GetInstanceTypeId ().GetName () << deserialized);
+  NS_LOG_FUNCTION (this << &trailer);
   return deserialized;
 }
 
 void 
 Packet::AddAtEnd (Ptr<const Packet> packet)
 {
-  NS_LOG_FUNCTION (this << packet << packet->GetSize ());
+  NS_LOG_FUNCTION (this << packet);
   uint32_t aStart = m_buffer.GetCurrentStartOffset ();
   uint32_t bEnd = packet->m_buffer.GetCurrentEndOffset ();
   m_buffer.AddAtEnd (packet->m_buffer);
@@ -378,24 +399,28 @@ Packet::PeekData (void) const
 uint32_t 
 Packet::CopyData (uint8_t *buffer, uint32_t size) const
 {
+  NS_LOG_FUNCTION (this << buffer << size);
   return m_buffer.CopyData (buffer, size);
 }
 
 void
 Packet::CopyData (std::ostream *os, uint32_t size) const
 {
+  NS_LOG_FUNCTION (this << &os << size);
   return m_buffer.CopyData (os, size);
 }
 
 uint64_t 
 Packet::GetUid (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_metadata.GetUid ();
 }
 
 void 
 Packet::PrintByteTags (std::ostream &os) const
 {
+  NS_LOG_FUNCTION (this << &os);
   ByteTagIterator i = GetByteTagIterator ();
   while (i.HasNext ())
     {
@@ -426,6 +451,7 @@ Packet::PrintByteTags (std::ostream &os) const
 void 
 Packet::Print (std::ostream &os) const
 {
+  NS_LOG_FUNCTION (this << &os);
   PacketMetadata::ItemIterator i = m_metadata.BeginItem (m_buffer);
   while (i.HasNext ())
     {
@@ -543,6 +569,7 @@ Packet::Print (std::ostream &os) const
 PacketMetadata::ItemIterator 
 Packet::BeginItem (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_metadata.BeginItem (m_buffer);
 }
 
@@ -562,6 +589,7 @@ Packet::EnableChecking (void)
 
 uint32_t Packet::GetSerializedSize (void) const
 {
+  NS_LOG_FUNCTION (this);
   uint32_t size = 0;
 
   if (m_nixVector)
@@ -605,6 +633,7 @@ uint32_t Packet::GetSerializedSize (void) const
 uint32_t 
 Packet::Serialize (uint8_t* buffer, uint32_t maxSize) const
 {
+  NS_LOG_FUNCTION (this << buffer << maxSize);
   uint32_t* p = reinterpret_cast<uint32_t *> (buffer);
   uint32_t size = 0;
 
@@ -723,7 +752,7 @@ Packet::Serialize (uint8_t* buffer, uint32_t maxSize) const
 uint32_t 
 Packet::Deserialize (const uint8_t* buffer, uint32_t size)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << buffer << size);
 
   const uint32_t* p = reinterpret_cast<const uint32_t *> (buffer);
 
@@ -805,7 +834,7 @@ Packet::Deserialize (const uint8_t* buffer, uint32_t size)
 void 
 Packet::AddByteTag (const Tag &tag) const
 {
-  NS_LOG_FUNCTION (this << tag.GetInstanceTypeId ().GetName () << tag.GetSerializedSize ());
+  NS_LOG_FUNCTION (this << &tag);
   ByteTagList *list = const_cast<ByteTagList *> (&m_byteTagList);
   TagBuffer buffer = list->Add (tag.GetInstanceTypeId (), tag.GetSerializedSize (), 
                                 m_buffer.GetCurrentStartOffset (),
@@ -815,12 +844,14 @@ Packet::AddByteTag (const Tag &tag) const
 ByteTagIterator 
 Packet::GetByteTagIterator (void) const
 {
+  NS_LOG_FUNCTION (this);
   return ByteTagIterator (m_byteTagList.Begin (m_buffer.GetCurrentStartOffset (), m_buffer.GetCurrentEndOffset ()));
 }
 
 bool 
 Packet::FindFirstMatchingByteTag (Tag &tag) const
 {
+  NS_LOG_FUNCTION (this << &tag);
   TypeId tid = tag.GetInstanceTypeId ();
   ByteTagIterator i = GetByteTagIterator ();
   while (i.HasNext ())
@@ -838,19 +869,20 @@ Packet::FindFirstMatchingByteTag (Tag &tag) const
 void 
 Packet::AddPacketTag (const Tag &tag) const
 {
-  NS_LOG_FUNCTION (this << tag.GetInstanceTypeId ().GetName () << tag.GetSerializedSize ());
+  NS_LOG_FUNCTION (this << &tag);
   m_packetTagList.Add (tag);
 }
 bool 
 Packet::RemovePacketTag (Tag &tag)
 {
-  NS_LOG_FUNCTION (this << tag.GetInstanceTypeId ().GetName () << tag.GetSerializedSize ());
+  NS_LOG_FUNCTION (this << &tag);
   bool found = m_packetTagList.Remove (tag);
   return found;
 }
 bool 
 Packet::PeekPacketTag (Tag &tag) const
 {
+  NS_LOG_FUNCTION (this << &tag);
   bool found = m_packetTagList.Peek (tag);
   return found;
 }
@@ -864,6 +896,7 @@ Packet::RemoveAllPacketTags (void)
 void 
 Packet::PrintPacketTags (std::ostream &os) const
 {
+  NS_LOG_FUNCTION (this << &os);
   PacketTagIterator i = GetPacketTagIterator ();
   while (i.HasNext ())
     {
@@ -887,11 +920,13 @@ Packet::PrintPacketTags (std::ostream &os) const
 PacketTagIterator 
 Packet::GetPacketTagIterator (void) const
 {
+  NS_LOG_FUNCTION (this);
   return PacketTagIterator (m_packetTagList.Head ());
 }
 
 std::ostream& operator<< (std::ostream& os, const Packet &packet)
 {
+  NS_LOG_FUNCTION (&os << packet);
   packet.Print (os);
   return os;
 }

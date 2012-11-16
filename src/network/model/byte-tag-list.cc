@@ -47,6 +47,7 @@ static uint32_t g_maxSize = 0;
 
 ByteTagListDataFreeList::~ByteTagListDataFreeList ()
 {
+  NS_LOG_FUNCTION (this);
   for (ByteTagListDataFreeList::iterator i = begin ();
        i != end (); i++)
     {
@@ -59,11 +60,13 @@ ByteTagListDataFreeList::~ByteTagListDataFreeList ()
 ByteTagList::Iterator::Item::Item (TagBuffer buf_)
   : buf (buf_)
 {
+  NS_LOG_FUNCTION (this << &buf_);
 }
 
 bool
 ByteTagList::Iterator::HasNext (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_current < m_end;
 }
 struct ByteTagList::Iterator::Item
@@ -83,6 +86,7 @@ ByteTagList::Iterator::Next (void)
 void
 ByteTagList::Iterator::PrepareForNext (void)
 {
+  NS_LOG_FUNCTION (this);
   while (m_current < m_end)
     {
       TagBuffer buf = TagBuffer (m_current, m_end);
@@ -106,12 +110,14 @@ ByteTagList::Iterator::Iterator (uint8_t *start, uint8_t *end, int32_t offsetSta
     m_offsetStart (offsetStart),
     m_offsetEnd (offsetEnd)
 {
+  NS_LOG_FUNCTION (this << &start << &end << offsetStart << offsetEnd);
   PrepareForNext ();
 }
 
 uint32_t 
 ByteTagList::Iterator::GetOffsetStart (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_offsetStart;
 }
 

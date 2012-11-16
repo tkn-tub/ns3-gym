@@ -92,6 +92,7 @@ PacketSocket::GetErrno (void) const
 enum Socket::SocketType
 PacketSocket::GetSocketType (void) const
 {
+  NS_LOG_FUNCTION (this);
   return NS3_SOCK_RAW;
 }
 
@@ -115,6 +116,7 @@ PacketSocket::Bind (void)
 int
 PacketSocket::Bind6 (void)
 {
+  NS_LOG_FUNCTION (this);
   return(Bind());
 }
 
@@ -246,6 +248,7 @@ error:
 int 
 PacketSocket::Listen (void)
 {
+  NS_LOG_FUNCTION (this);
   m_errno = Socket::ERROR_OPNOTSUPP;
   return -1;
 }
@@ -266,6 +269,7 @@ PacketSocket::Send (Ptr<Packet> p, uint32_t flags)
 uint32_t
 PacketSocket::GetMinMtu (PacketSocketAddress ad) const
 {
+  NS_LOG_FUNCTION (this << ad);
   if (ad.IsSingleDevice ())
     {
       Ptr<NetDevice> device = m_node->GetDevice (ad.GetSingleDevice ());
@@ -286,6 +290,7 @@ PacketSocket::GetMinMtu (PacketSocketAddress ad) const
 uint32_t 
 PacketSocket::GetTxAvailable (void) const
 {
+  NS_LOG_FUNCTION (this);
   if (m_state == STATE_CONNECTED)
     {
       PacketSocketAddress ad = PacketSocketAddress::ConvertFrom (m_destAddr);
@@ -478,6 +483,7 @@ PacketSocket::GetSockName (Address &address) const
 bool
 PacketSocket::SetAllowBroadcast (bool allowBroadcast)
 {
+  NS_LOG_FUNCTION (this << allowBroadcast);
   if (allowBroadcast)
     {
       return false;
@@ -488,6 +494,7 @@ PacketSocket::SetAllowBroadcast (bool allowBroadcast)
 bool
 PacketSocket::GetAllowBroadcast () const
 {
+  NS_LOG_FUNCTION (this);
   return false;
 }
 

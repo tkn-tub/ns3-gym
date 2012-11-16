@@ -86,18 +86,18 @@ TypeId ErrorModel::GetTypeId (void)
 ErrorModel::ErrorModel () :
   m_enable (true) 
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 ErrorModel::~ErrorModel ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 bool
 ErrorModel::IsCorrupt (Ptr<Packet> p)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << p);
   bool result;
   // Insert any pre-conditions here
   result = DoCorrupt (p);
@@ -108,28 +108,28 @@ ErrorModel::IsCorrupt (Ptr<Packet> p)
 void
 ErrorModel::Reset (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   DoReset ();
 }
 
 void
 ErrorModel::Enable (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   m_enable = true;
 }
 
 void
 ErrorModel::Disable (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   m_enable = false;
 }
 
 bool
 ErrorModel::IsEnabled (void) const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return m_enable;
 }
 
@@ -165,52 +165,53 @@ TypeId RateErrorModel::GetTypeId (void)
 
 RateErrorModel::RateErrorModel ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 RateErrorModel::~RateErrorModel () 
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 RateErrorModel::ErrorUnit
 RateErrorModel::GetUnit (void) const 
 { 
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return m_unit; 
 }
 
 void 
 RateErrorModel::SetUnit (enum ErrorUnit error_unit) 
 { 
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << error_unit);
   m_unit = error_unit; 
 }
 
 double
 RateErrorModel::GetRate (void) const 
 { 
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return m_rate; 
 }
 
 void 
 RateErrorModel::SetRate (double rate)
 { 
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << rate);
   m_rate = rate;
 }
 
 void 
 RateErrorModel::SetRandomVariable (Ptr<RandomVariableStream> ranvar)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << ranvar);
   m_ranvar = ranvar;
 }
 
 int64_t 
 RateErrorModel::AssignStreams (int64_t stream)
 {
+  NS_LOG_FUNCTION (this << stream);
   m_ranvar->SetStream (stream);
   return 1;
 }
@@ -218,7 +219,7 @@ RateErrorModel::AssignStreams (int64_t stream)
 bool 
 RateErrorModel::DoCorrupt (Ptr<Packet> p) 
 { 
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << p);
   if (!IsEnabled ())
     {
       return false;
@@ -241,14 +242,14 @@ RateErrorModel::DoCorrupt (Ptr<Packet> p)
 bool
 RateErrorModel::DoCorruptPkt (Ptr<Packet> p)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << p);
   return (m_ranvar->GetValue () < m_rate);
 }
 
 bool
 RateErrorModel::DoCorruptByte (Ptr<Packet> p)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << p);
   // compute pkt error rate, assume uniformly distributed byte error
   double per = 1 - std::pow (1.0 - m_rate, static_cast<double> (p->GetSize ()));
   return (m_ranvar->GetValue () < per);
@@ -257,7 +258,7 @@ RateErrorModel::DoCorruptByte (Ptr<Packet> p)
 bool
 RateErrorModel::DoCorruptBit (Ptr<Packet> p)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << p);
   // compute pkt error rate, assume uniformly distributed bit error
   double per = 1 - std::pow (1.0 - m_rate, static_cast<double> (8 * p->GetSize ()) );
   return (m_ranvar->GetValue () < per);
@@ -266,7 +267,7 @@ RateErrorModel::DoCorruptBit (Ptr<Packet> p)
 void 
 RateErrorModel::DoReset (void) 
 { 
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   /* re-initialize any state; no-op for now */ 
 }
 
@@ -287,25 +288,25 @@ TypeId ListErrorModel::GetTypeId (void)
 
 ListErrorModel::ListErrorModel ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 ListErrorModel::~ListErrorModel () 
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 std::list<uint32_t> 
 ListErrorModel::GetList (void) const 
 { 
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return m_packetList; 
 }
 
 void 
 ListErrorModel::SetList (const std::list<uint32_t> &packetlist)
 { 
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << &packetlist);
   m_packetList = packetlist;
 }
 
@@ -315,7 +316,7 @@ ListErrorModel::SetList (const std::list<uint32_t> &packetlist)
 bool 
 ListErrorModel::DoCorrupt (Ptr<Packet> p) 
 { 
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << p);
   if (!IsEnabled ())
     {
       return false;
@@ -335,7 +336,7 @@ ListErrorModel::DoCorrupt (Ptr<Packet> p)
 void 
 ListErrorModel::DoReset (void) 
 { 
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   m_packetList.clear ();
 }
 
@@ -358,32 +359,32 @@ TypeId ReceiveListErrorModel::GetTypeId (void)
 ReceiveListErrorModel::ReceiveListErrorModel () :
   m_timesInvoked (0)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 ReceiveListErrorModel::~ReceiveListErrorModel () 
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 std::list<uint32_t> 
 ReceiveListErrorModel::GetList (void) const 
 { 
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return m_packetList; 
 }
 
 void 
 ReceiveListErrorModel::SetList (const std::list<uint32_t> &packetlist)
 { 
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << &packetlist);
   m_packetList = packetlist;
 }
 
 bool 
 ReceiveListErrorModel::DoCorrupt (Ptr<Packet> p) 
 { 
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << p);
   if (!IsEnabled ())
     {
       return false;
@@ -403,7 +404,7 @@ ReceiveListErrorModel::DoCorrupt (Ptr<Packet> p)
 void 
 ReceiveListErrorModel::DoReset (void) 
 { 
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   m_packetList.clear ();
 }
 

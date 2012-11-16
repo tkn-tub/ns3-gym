@@ -56,13 +56,14 @@ SimpleNetDevice::SimpleNetDevice ()
     m_mtu (0xffff),
     m_ifIndex (0)
 {
+  NS_LOG_FUNCTION (this);
 }
 
 void
 SimpleNetDevice::Receive (Ptr<Packet> packet, uint16_t protocol,
                           Mac48Address to, Mac48Address from)
 {
-  NS_LOG_FUNCTION (packet << protocol << to << from);
+  NS_LOG_FUNCTION (this << packet << protocol << to << from);
   NetDevice::PacketType packetType;
 
   if (m_receiveErrorModel && m_receiveErrorModel->IsCorrupt (packet) )
@@ -97,6 +98,7 @@ SimpleNetDevice::Receive (Ptr<Packet> packet, uint16_t protocol,
 void 
 SimpleNetDevice::SetChannel (Ptr<SimpleChannel> channel)
 {
+  NS_LOG_FUNCTION (this << channel);
   m_channel = channel;
   m_channel->Add (this);
 }
@@ -104,27 +106,32 @@ SimpleNetDevice::SetChannel (Ptr<SimpleChannel> channel)
 void
 SimpleNetDevice::SetReceiveErrorModel (Ptr<ErrorModel> em)
 {
+  NS_LOG_FUNCTION (this << em);
   m_receiveErrorModel = em;
 }
 
 void 
 SimpleNetDevice::SetIfIndex (const uint32_t index)
 {
+  NS_LOG_FUNCTION (this << index);
   m_ifIndex = index;
 }
 uint32_t 
 SimpleNetDevice::GetIfIndex (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_ifIndex;
 }
 Ptr<Channel> 
 SimpleNetDevice::GetChannel (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_channel;
 }
 void
 SimpleNetDevice::SetAddress (Address address)
 {
+  NS_LOG_FUNCTION (this << address);
   m_address = Mac48Address::ConvertFrom (address);
 }
 Address 
@@ -133,69 +140,82 @@ SimpleNetDevice::GetAddress (void) const
   //
   // Implicit conversion from Mac48Address to Address
   //
+  NS_LOG_FUNCTION (this);
   return m_address;
 }
 bool 
 SimpleNetDevice::SetMtu (const uint16_t mtu)
 {
+  NS_LOG_FUNCTION (this << mtu);
   m_mtu = mtu;
   return true;
 }
 uint16_t 
 SimpleNetDevice::GetMtu (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_mtu;
 }
 bool 
 SimpleNetDevice::IsLinkUp (void) const
 {
+  NS_LOG_FUNCTION (this);
   return true;
 }
 void 
 SimpleNetDevice::AddLinkChangeCallback (Callback<void> callback)
-{}
+{
+ NS_LOG_FUNCTION (this << &callback);
+}
 bool 
 SimpleNetDevice::IsBroadcast (void) const
 {
+  NS_LOG_FUNCTION (this);
   return true;
 }
 Address
 SimpleNetDevice::GetBroadcast (void) const
 {
+  NS_LOG_FUNCTION (this);
   return Mac48Address ("ff:ff:ff:ff:ff:ff");
 }
 bool 
 SimpleNetDevice::IsMulticast (void) const
 {
+  NS_LOG_FUNCTION (this);
   return false;
 }
 Address 
 SimpleNetDevice::GetMulticast (Ipv4Address multicastGroup) const
 {
+  NS_LOG_FUNCTION (this << multicastGroup);
   return Mac48Address::GetMulticast (multicastGroup);
 }
 
 Address SimpleNetDevice::GetMulticast (Ipv6Address addr) const
 {
+  NS_LOG_FUNCTION (this << addr);
   return Mac48Address::GetMulticast (addr);
 }
 
 bool 
 SimpleNetDevice::IsPointToPoint (void) const
 {
+  NS_LOG_FUNCTION (this);
   return false;
 }
 
 bool 
 SimpleNetDevice::IsBridge (void) const
 {
+  NS_LOG_FUNCTION (this);
   return false;
 }
 
 bool 
 SimpleNetDevice::Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber)
 {
-  NS_LOG_FUNCTION (packet << dest << protocolNumber);
+  NS_LOG_FUNCTION (this << packet << dest << protocolNumber);
   Mac48Address to = Mac48Address::ConvertFrom (dest);
   m_channel->Send (packet, protocolNumber, to, m_address, this);
   return true;
@@ -203,6 +223,7 @@ SimpleNetDevice::Send (Ptr<Packet> packet, const Address& dest, uint16_t protoco
 bool 
 SimpleNetDevice::SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber)
 {
+  NS_LOG_FUNCTION (this << packet << source << dest << protocolNumber);
   Mac48Address to = Mac48Address::ConvertFrom (dest);
   Mac48Address from = Mac48Address::ConvertFrom (source);
   m_channel->Send (packet, protocolNumber, to, from, this);
@@ -212,27 +233,32 @@ SimpleNetDevice::SendFrom (Ptr<Packet> packet, const Address& source, const Addr
 Ptr<Node> 
 SimpleNetDevice::GetNode (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_node;
 }
 void 
 SimpleNetDevice::SetNode (Ptr<Node> node)
 {
+  NS_LOG_FUNCTION (this << node);
   m_node = node;
 }
 bool 
 SimpleNetDevice::NeedsArp (void) const
 {
+  NS_LOG_FUNCTION (this);
   return false;
 }
 void 
 SimpleNetDevice::SetReceiveCallback (NetDevice::ReceiveCallback cb)
 {
+  NS_LOG_FUNCTION (this << &cb);
   m_rxCallback = cb;
 }
 
 void
 SimpleNetDevice::DoDispose (void)
 {
+  NS_LOG_FUNCTION (this);
   m_channel = 0;
   m_node = 0;
   m_receiveErrorModel = 0;
@@ -243,12 +269,14 @@ SimpleNetDevice::DoDispose (void)
 void
 SimpleNetDevice::SetPromiscReceiveCallback (PromiscReceiveCallback cb)
 {
+  NS_LOG_FUNCTION (this << &cb);
   m_promiscCallback = cb;
 }
 
 bool
 SimpleNetDevice::SupportsSendFrom (void) const
 {
+  NS_LOG_FUNCTION (this);
   return true;
 }
 

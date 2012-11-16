@@ -1,4 +1,7 @@
 #include "trailer.h"
+#include "ns3/log.h"
+
+NS_LOG_COMPONENT_DEFINE ("Trailer");
 
 namespace ns3 {
 
@@ -6,6 +9,7 @@ NS_OBJECT_ENSURE_REGISTERED (Trailer);
 
 Trailer::~Trailer ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 TypeId
@@ -19,6 +23,7 @@ Trailer::GetTypeId (void)
 
 std::ostream & operator << (std::ostream &os, const Trailer &trailer)
 {
+  NS_LOG_FUNCTION (&os << &trailer);
   trailer.Print (os);
   return os;
 }

@@ -46,6 +46,7 @@ extern "C"
  */
 static uint32_t lookuphash (unsigned char* k, uint32_t length, uint32_t level)
 {
+  NS_LOG_FUNCTION (k << length << level);
 #define mix(a, b, c) \
   ({ \
      (a) -= (b); (a) -= (c); (a) ^= ((c) >> 13); \
@@ -119,6 +120,7 @@ static uint32_t lookuphash (unsigned char* k, uint32_t length, uint32_t level)
  */
 static bool AsciiToIpv6Host (const char *address, uint8_t addr[16])
 {
+  NS_LOG_FUNCTION (address << addr);
   static const char xdigits_l[] = "0123456789abcdef";
   static const char xdigits_u[] = "0123456789ABCDEF";
   unsigned char tmp[16];
@@ -250,26 +252,31 @@ static bool AsciiToIpv6Host (const char *address, uint8_t addr[16])
 
 Ipv6Address::Ipv6Address ()
 {
+  NS_LOG_FUNCTION (this);
   memset (m_address, 0x00, 16);
 }
 
 Ipv6Address::Ipv6Address (Ipv6Address const& addr)
 {
+  NS_LOG_FUNCTION (this << addr);
   memcpy (m_address, addr.m_address, 16);
 }
 
 Ipv6Address::Ipv6Address (Ipv6Address const* addr)
 {
+  NS_LOG_FUNCTION (this << addr);
   memcpy (m_address, addr->m_address, 16);
 }
 
 Ipv6Address::Ipv6Address (char const* address)
 {
+  NS_LOG_FUNCTION (this << address);
   AsciiToIpv6Host (address, m_address);
 }
 
 Ipv6Address::Ipv6Address (uint8_t address[16])
 {
+  NS_LOG_FUNCTION (this << address);
   /* 128 bit => 16 bytes */
   memcpy (m_address, address, 16);
 }
@@ -277,32 +284,38 @@ Ipv6Address::Ipv6Address (uint8_t address[16])
 Ipv6Address::~Ipv6Address ()
 {
   /* do nothing */
+  NS_LOG_FUNCTION (this);
 }
 
 void Ipv6Address::Set (char const* address)
 {
+  NS_LOG_FUNCTION (this << address);
   AsciiToIpv6Host (address, m_address);
 }
 
 void Ipv6Address::Set (uint8_t address[16])
 {
   /* 128 bit => 16 bytes */
+  NS_LOG_FUNCTION (this << address);
   memcpy (m_address, address, 16);
 }
 
 void Ipv6Address::Serialize (uint8_t buf[16]) const
 {
+  NS_LOG_FUNCTION (this << buf);
   memcpy (buf, m_address, 16);
 }
 
 Ipv6Address Ipv6Address::Deserialize (const uint8_t buf[16])
 {
+  NS_LOG_FUNCTION (buf);
   Ipv6Address ipv6 ((uint8_t*)buf);
   return ipv6;
 }
 
 Ipv6Address Ipv6Address::MakeIpv4MappedAddress(Ipv4Address addr)
 {
+  NS_LOG_FUNCTION (addr);
   uint8_t buf[16] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                       0x00, 0x00, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00 };
   addr.Serialize (&buf[12]);
@@ -311,6 +324,7 @@ Ipv6Address Ipv6Address::MakeIpv4MappedAddress(Ipv4Address addr)
 
 Ipv4Address Ipv6Address::GetIpv4MappedAddress() const
 {
+  NS_LOG_FUNCTION (this);
     uint8_t buf[16];
     Ipv4Address v4Addr;
 
@@ -321,6 +335,7 @@ Ipv4Address Ipv6Address::GetIpv4MappedAddress() const
 
 Ipv6Address Ipv6Address::MakeAutoconfiguredAddress (Mac48Address addr, Ipv6Address prefix)
 {
+  NS_LOG_FUNCTION (addr << prefix);
   Ipv6Address ret;
   uint8_t buf[16];
   uint8_t buf2[16];
@@ -340,6 +355,7 @@ Ipv6Address Ipv6Address::MakeAutoconfiguredAddress (Mac48Address addr, Ipv6Addre
 
 Ipv6Address Ipv6Address::MakeAutoconfiguredLinkLocalAddress (Mac48Address addr)
 {
+  NS_LOG_FUNCTION (addr);
   Ipv6Address ret;
   uint8_t buf[16];
   uint8_t buf2[16];
@@ -361,6 +377,7 @@ Ipv6Address Ipv6Address::MakeAutoconfiguredLinkLocalAddress (Mac48Address addr)
 
 Ipv6Address Ipv6Address::MakeSolicitedAddress (Ipv6Address addr)
 {
+  NS_LOG_FUNCTION (addr);
   uint8_t buf[16];
   uint8_t buf2[16];
   Ipv6Address ret;
@@ -382,6 +399,7 @@ Ipv6Address Ipv6Address::MakeSolicitedAddress (Ipv6Address addr)
 
 void Ipv6Address::Print (std::ostream& os) const
 {
+  NS_LOG_FUNCTION (this << &os);
   os << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_address[0]
      << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_address[1] << ":"
      << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_address[2]
@@ -403,12 +421,14 @@ void Ipv6Address::Print (std::ostream& os) const
 
 bool Ipv6Address::IsLocalhost () const
 {
+  NS_LOG_FUNCTION (this);
   static Ipv6Address localhost ("::1");
   return (*this == localhost);
 }
 
 bool Ipv6Address::IsMulticast () const
 {
+  NS_LOG_FUNCTION (this);
   if (m_address[0] == 0xff)
     {
       return true;
@@ -418,6 +438,7 @@ bool Ipv6Address::IsMulticast () const
 
 bool Ipv6Address::IsLinkLocalMulticast () const
 {
+  NS_LOG_FUNCTION (this);
   if (m_address[0] == 0xff && m_address[1] == 0x02)
     {
       return true;
@@ -427,6 +448,7 @@ bool Ipv6Address::IsLinkLocalMulticast () const
 
 bool Ipv6Address::IsIpv4MappedAddress ()
 {
+  NS_LOG_FUNCTION (this);
   uint8_t v4MappedPrefix[12] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                                  0x00, 0x00, 0xff, 0xff };
   if (memcmp(m_address, v4MappedPrefix, sizeof(v4MappedPrefix)) == 0)
@@ -438,6 +460,7 @@ bool Ipv6Address::IsIpv4MappedAddress ()
 
 Ipv6Address Ipv6Address::CombinePrefix (Ipv6Prefix const& prefix)
 {
+  NS_LOG_FUNCTION (this << prefix);
   Ipv6Address ipv6;
   uint8_t addr[16];
   uint8_t pref[16];
@@ -457,6 +480,7 @@ Ipv6Address Ipv6Address::CombinePrefix (Ipv6Prefix const& prefix)
 
 bool Ipv6Address::IsSolicitedMulticast () const
 {
+  NS_LOG_FUNCTION (this);
   uint8_t buf[16];
 
   Serialize (buf);
@@ -473,40 +497,47 @@ bool Ipv6Address::IsSolicitedMulticast () const
 
 bool Ipv6Address::IsAllNodesMulticast () const
 {
+  NS_LOG_FUNCTION (this);
   static Ipv6Address allnodes ("ff02::1");
   return (*this == allnodes);
 }
 
 bool Ipv6Address::IsAllRoutersMulticast () const
 {
+  NS_LOG_FUNCTION (this);
   static Ipv6Address allrouters ("ff02::2");
   return (*this == allrouters);
 }
 
 bool Ipv6Address::IsAllHostsMulticast () const
 {
+  NS_LOG_FUNCTION (this);
   static Ipv6Address allhosts ("ff02::3");
   return (*this == allhosts);
 }
 
 bool Ipv6Address::IsAny () const
 {
+  NS_LOG_FUNCTION (this);
   static Ipv6Address any ("::");
   return (*this == any);
 }
 
 bool Ipv6Address::IsMatchingType (const Address& address)
 {
+  NS_LOG_FUNCTION (address);
   return address.CheckCompatible (GetType (), 16);
 }
 
 Ipv6Address::operator Address () const
 {
+  NS_LOG_FUNCTION (this);
   return ConvertTo ();
 }
 
 Address Ipv6Address::ConvertTo (void) const
 {
+  NS_LOG_FUNCTION (this);
   uint8_t buf[16];
   Serialize (buf);
   return Address (GetType (), buf, 16);
@@ -514,6 +545,7 @@ Address Ipv6Address::ConvertTo (void) const
 
 Ipv6Address Ipv6Address::ConvertFrom (const Address &address)
 {
+  NS_LOG_FUNCTION (address);
   NS_ASSERT (address.CheckCompatible (GetType (), 16));
   uint8_t buf[16];
   address.CopyTo (buf);
@@ -522,59 +554,69 @@ Ipv6Address Ipv6Address::ConvertFrom (const Address &address)
 
 uint8_t Ipv6Address::GetType (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   static uint8_t type = Address::Register ();
   return type;
 }
 
 Ipv6Address Ipv6Address::GetAllNodesMulticast ()
 {
+  NS_LOG_FUNCTION_NOARGS ();
   static Ipv6Address nmc ("ff02::1");
   return nmc;
 }
 
 Ipv6Address Ipv6Address::GetAllRoutersMulticast ()
 {
+  NS_LOG_FUNCTION_NOARGS ();
   static Ipv6Address rmc ("ff02::2");
   return rmc;
 }
 
 Ipv6Address Ipv6Address::GetAllHostsMulticast ()
 {
+  NS_LOG_FUNCTION_NOARGS ();
   static Ipv6Address hmc ("ff02::3");
   return hmc;
 }
 
 Ipv6Address Ipv6Address::GetLoopback ()
 {
+  NS_LOG_FUNCTION_NOARGS ();
   static Ipv6Address loopback ("::1");
   return loopback;
 }
 
 Ipv6Address Ipv6Address::GetZero ()
 {
+  NS_LOG_FUNCTION_NOARGS ();
   static Ipv6Address zero ("::");
   return zero;
 }
 
 Ipv6Address Ipv6Address::GetAny ()
 {
+  NS_LOG_FUNCTION_NOARGS ();
   static Ipv6Address any ("::");
   return any;
 }
 
 Ipv6Address Ipv6Address::GetOnes ()
 {
+  NS_LOG_FUNCTION_NOARGS ();
   static Ipv6Address ones ("ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff");
   return ones; 
 }
 
 void Ipv6Address::GetBytes (uint8_t buf[16]) const
 {
+  NS_LOG_FUNCTION (this << buf);
   memcpy (buf, m_address, 16);
 }
 
 bool Ipv6Address::IsLinkLocal () const
 {
+  NS_LOG_FUNCTION (this);
   Ipv6Address linkLocal ("fe80::0");
   if (!IsMulticast () && ((Ipv6Address*)this)->CombinePrefix (Ipv6Prefix (64)) == linkLocal)
     {
@@ -585,6 +627,7 @@ bool Ipv6Address::IsLinkLocal () const
 
 bool Ipv6Address::IsEqual (const Ipv6Address& other) const
 {
+  NS_LOG_FUNCTION (this << other);
   if (!memcmp (m_address, other.m_address, 16))
     {
       return true;
@@ -594,12 +637,14 @@ bool Ipv6Address::IsEqual (const Ipv6Address& other) const
 
 std::ostream& operator << (std::ostream& os, Ipv6Address const& address)
 {
+  NS_LOG_FUNCTION (&os << address);
   address.Print (os);
   return os;
 }
 
 std::istream& operator >> (std::istream& is, Ipv6Address& address)
 {
+  NS_LOG_FUNCTION (&is << address);
   std::string str;
   is >> str;
   address = Ipv6Address (str.c_str ());
@@ -608,21 +653,25 @@ std::istream& operator >> (std::istream& is, Ipv6Address& address)
 
 Ipv6Prefix::Ipv6Prefix ()
 {
+  NS_LOG_FUNCTION (this);
   memset (m_prefix, 0x00, 16);
 }
 
 Ipv6Prefix::Ipv6Prefix (char const* prefix)
 {
+  NS_LOG_FUNCTION (this << prefix);
   AsciiToIpv6Host (prefix, m_prefix);
 }
 
 Ipv6Prefix::Ipv6Prefix (uint8_t prefix[16])
 {
+  NS_LOG_FUNCTION (this << prefix);
   memcpy (m_prefix, prefix, 16);
 }
 
 Ipv6Prefix::Ipv6Prefix (uint8_t prefix)
 {
+  NS_LOG_FUNCTION (this << prefix);
   unsigned int nb=0;
   unsigned int mod=0;
   unsigned int i=0;
@@ -657,21 +706,25 @@ Ipv6Prefix::Ipv6Prefix (uint8_t prefix)
 
 Ipv6Prefix::Ipv6Prefix (Ipv6Prefix const& prefix)
 {
+  NS_LOG_FUNCTION (this << prefix);
   memcpy (m_prefix, prefix.m_prefix, 16);
 }
 
 Ipv6Prefix::Ipv6Prefix (Ipv6Prefix const* prefix)
 {
+  NS_LOG_FUNCTION (this << prefix);
   memcpy (m_prefix, prefix->m_prefix, 16);
 }
 
 Ipv6Prefix::~Ipv6Prefix ()
 {
   /* do nothing */
+  NS_LOG_FUNCTION (this);
 }
 
 bool Ipv6Prefix::IsMatch (Ipv6Address a, Ipv6Address b) const
 {
+  NS_LOG_FUNCTION (this << a << b);
   uint8_t addrA[16];
   uint8_t addrB[16];
   unsigned int i = 0;
@@ -692,6 +745,7 @@ bool Ipv6Prefix::IsMatch (Ipv6Address a, Ipv6Address b) const
 
 void Ipv6Prefix::Print (std::ostream &os) const
 {
+  NS_LOG_FUNCTION (this << &os);
   os << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_prefix[0]
   << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_prefix[1] << ":"
   << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_prefix[2]
@@ -712,29 +766,34 @@ void Ipv6Prefix::Print (std::ostream &os) const
 
 Ipv6Prefix Ipv6Prefix::GetLoopback ()
 {
+  NS_LOG_FUNCTION_NOARGS ();
   static Ipv6Prefix prefix ((uint8_t)128);
   return prefix;
 }
 
 Ipv6Prefix Ipv6Prefix::GetOnes ()
 {
+  NS_LOG_FUNCTION_NOARGS ();
   static Ipv6Prefix ones ((uint8_t)128);
   return ones; 
 }
 
 Ipv6Prefix Ipv6Prefix::GetZero ()
 {
+  NS_LOG_FUNCTION_NOARGS ();
   static Ipv6Prefix prefix ((uint8_t)0);
   return prefix;
 }
 
 void Ipv6Prefix::GetBytes (uint8_t buf[16]) const
 {
+  NS_LOG_FUNCTION (this << buf);
   memcpy (buf, m_prefix, 16);
 }
 
 uint8_t Ipv6Prefix::GetPrefixLength () const
 {
+  NS_LOG_FUNCTION (this);
   uint8_t i = 0;
   uint8_t prefixLength = 0;
 
@@ -754,6 +813,7 @@ uint8_t Ipv6Prefix::GetPrefixLength () const
 
 bool Ipv6Prefix::IsEqual (const Ipv6Prefix& other) const
 {
+  NS_LOG_FUNCTION (this << other);
   if (!memcmp (m_prefix, other.m_prefix, 16))
     {
       return true;
@@ -763,12 +823,14 @@ bool Ipv6Prefix::IsEqual (const Ipv6Prefix& other) const
 
 std::ostream& operator << (std::ostream& os, Ipv6Prefix const& prefix)
 {
+  NS_LOG_FUNCTION (&os << prefix);
   prefix.Print (os);
   return os;
 }
 
 std::istream& operator >> (std::istream& is, Ipv6Prefix& prefix)
 {
+  NS_LOG_FUNCTION (&is << prefix);
   std::string str;
   is >> str;
   prefix = Ipv6Prefix (str.c_str ());
@@ -777,16 +839,19 @@ std::istream& operator >> (std::istream& is, Ipv6Prefix& prefix)
 
 bool operator == (Ipv6Prefix const &a, Ipv6Prefix const &b)
 {
+  NS_LOG_FUNCTION (a << b);
   return a.IsEqual (b);
 }
 
 bool operator != (Ipv6Prefix const &a, Ipv6Prefix const &b)
 {
+  NS_LOG_FUNCTION (a << b);
   return !a.IsEqual (b);
 }
 
 size_t Ipv6AddressHash::operator () (Ipv6Address const &x) const
 {
+  NS_LOG_FUNCTION (this << x);
   uint8_t buf[16];
 
   x.GetBytes (buf);

@@ -1,4 +1,7 @@
 #include "header.h"
+#include "ns3/log.h"
+
+NS_LOG_COMPONENT_DEFINE ("Header");
 
 namespace ns3 {
 
@@ -6,6 +9,7 @@ NS_OBJECT_ENSURE_REGISTERED (Header);
 
 Header::~Header ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 TypeId
@@ -19,6 +23,7 @@ Header::GetTypeId (void)
 
 std::ostream & operator << (std::ostream &os, const Header &header)
 {
+  NS_LOG_FUNCTION (&os << &header);
   header.Print (os);
   return os;
 }
