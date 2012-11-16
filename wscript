@@ -342,7 +342,7 @@ def configure(conf):
             env.append_value("LINKFLAGS", "-Wl,--enable-auto-import")
 
         cxx = env['CXX']
-        cxx_check_libstdcxx = cxx + ['stdout=subprocess.PIPE']
+        cxx_check_libstdcxx = cxx + ['-print-file-name=libstdc++.so']
         p = subprocess.Popen(cxx_check_libstdcxx, stdout=subprocess.PIPE)
         libstdcxx_location = os.path.dirname(p.stdout.read().strip())
         p.wait()
