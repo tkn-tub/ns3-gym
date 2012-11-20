@@ -30,6 +30,8 @@
 #include "ns3/net-device.h"
 #include "address.h"
 #include <stdint.h>
+#include "ns3/inet-socket-address.h"
+#include "ns3/inet6-socket-address.h"
 
 namespace ns3 {
 
@@ -610,6 +612,183 @@ public:
    * \returns True if packet information should be sent to socket
    */
   bool IsRecvPktInfo () const;
+
+  /*
+   * \brief Manually set IP Type of Service field
+   * 
+   * This method corresponds to using setsockopt () IP_TOS of
+   * real network or BSD sockets. This option is for IPv4 only.
+   * Setting the IP TOS should also change the socket queueing
+   * priority as stated in the man page. However, socket priority
+   * is not yet supported.
+   *
+   * \param ipTos The desired TOS value for IP headers
+   */
+  void SetIpTos (uint8_t ipTos);
+
+  /*
+   * \brief Query the value of IP Type of Service of this socket
+   *
+   * This method corresponds to using getsockopt () IP_TOS of real network
+   * or BSD sockets.
+   *
+   * \return The raw IP TOS value
+   */
+  uint8_t GetIpTos (void) const;
+
+  /**
+   * \brief Tells a socket to pass information about IP Type of Service up the stack
+   *
+   * This method corresponds to using setsockopt () IP_RECVTOS of real
+   * network or BSD sockets. In our implementation, the socket simply 
+   * adds a SocketIpTosTag tag to the packet before passing the
+   * packet up the stack.
+   *
+   * \param ipv4RecvTos Whether the socket should add SocketIpv4TosTag tag
+   * to the packet
+   */
+  void SetIpRecvTos (bool ipv4RecvTos);
+
+  /**
+   * \brief Ask if the socket is currently passing information about IP Type of Service up the stack
+   *
+   * This method corresponds to using getsockopt () IP_RECVTOS of real
+   * network or BSD sockets.
+   *
+   * \return Wheter the IP_RECVTOS is set
+   */
+  bool IsIpRecvTos (void) const;
+
+  /*
+   * \brief Manually set IPv6 Traffic Class field
+   * 
+   * This method corresponds to using setsockopt () IPV6_TCLASS of
+   * real network or BSD sockets. This option is for IPv6 only.
+   * Setting the IPV6_TCLASSS to -1 clears the option and let the socket
+   * uses the default value.
+   *
+   * \param ipTclass The desired TCLASS value for IPv6 headers
+   */
+  void SetIpv6Tclass (int ipTclass);
+
+  /*
+   * \brief Query the value of IPv6 Traffic Class field of this socket
+   *
+   * This method corresponds to using getsockopt () IPV6_TCLASS of real network
+   * or BSD sockets.
+   *
+   * \return The raw IPV6_TCLASS value
+   */
+  uint8_t GetIpv6Tclass (void) const;
+
+  /**
+   * \brief Tells a socket to pass information about IPv6 Traffic Class up the stack
+   *
+   * This method corresponds to using setsockopt () IPV6_RECVTCLASS of real
+   * network or BSD sockets. In our implementation, the socket simply 
+   * adds a SocketIpv6TclasssTag tag to the packet before passing the
+   * packet up the stack.
+   *
+   * \param ipv6RecvTclass Whether the socket should add SocketIpv6TclassTag tag
+   * to the packet
+   */
+  void SetIpv6RecvTclass (bool ipv6RecvTclass);
+
+  /**
+   * \brief Ask if the socket is currently passing information about IPv6 Traffic Class up the stack
+   *
+   * This method corresponds to using getsockopt () IPV6_RECVTCLASS of real
+   * network or BSD sockets.
+   *
+   * \return Wheter the IPV6_RECVTCLASS is set
+   */
+  bool IsIpv6RecvTclass (void) const;
+
+  /*
+   * \brief Manually set IP Time to Live field
+   * 
+   * This method corresponds to using setsockopt () IP_TTL of
+   * real network or BSD sockets.
+   *
+   * \param ipTtl The desired TTL value for IP headers
+   */
+  virtual void SetIpTtl (uint8_t ipTtl);
+
+  /*
+   * \brief Query the value of IP Time to Live field of this socket
+   *
+   * This method corresponds to using getsockopt () IP_TTL of real network
+   * or BSD sockets.
+   *
+   * \return The raw IP TTL value
+   */
+  virtual uint8_t GetIpTtl (void) const;
+
+  /**
+   * \brief Tells a socket to pass information about IP_TTL up the stack
+   *
+   * This method corresponds to using setsockopt () IP_RECVTTL of real
+   * network or BSD sockets. In our implementation, the socket simply 
+   * adds a SocketIpTtlTag tag to the packet before passing the
+   * packet up the stack.
+   *
+   * \param ipv4RecvTtl Whether the socket should add SocketIpv4TtlTag tag
+   * to the packet
+   */
+  void SetIpRecvTtl (bool ipv4RecvTtl);
+
+  /**
+   * \brief Ask if the socket is currently passing information about IP_TTL up the stack
+   *
+   * This method corresponds to using getsockopt () IP_RECVTTL of real
+   * network or BSD sockets.
+   *
+   * \return Wheter the IP_RECVTTL is set
+   */
+  bool IsIpRecvTtl (void) const;
+
+  /*
+   * \brief Manually set IPv6 Hop Limit
+   * 
+   * This method corresponds to using setsockopt () IPV6_HOPLIMIT of
+   * real network or BSD sockets.
+   *
+   * \param ipHopLimit The desired Hop Limit value for IPv6 headers
+   */
+  virtual void SetIpv6HopLimit (uint8_t ipHopLimit);
+
+  /*
+   * \brief Query the value of IP Hop Limit field of this socket
+   *
+   * This method corresponds to using getsockopt () IPV6_HOPLIMIT of real network
+   * or BSD sockets.
+   *
+   * \return The raw IPv6 Hop Limit value
+   */
+  virtual uint8_t GetIpv6HopLimit (void) const;
+
+  /**
+   * \brief Tells a socket to pass information about IPv6 Hop Limit up the stack
+   *
+   * This method corresponds to using setsockopt () IPV6_RECVHOPLIMIT of real
+   * network or BSD sockets. In our implementation, the socket simply 
+   * adds a SocketIpv6HopLimitTag tag to the packet before passing the
+   * packet up the stack.
+   *
+   * \param ipv6RecvHopLimit Whether the socket should add SocketIpv6HopLimitTag tag
+   * to the packet
+   */
+  void SetIpv6RecvHopLimit (bool ipv6RecvHopLimit);
+
+  /**
+   * \brief Ask if the socket is currently passing information about IPv6 Hop Limit up the stack
+   *
+   * This method corresponds to using getsockopt () IPV6_RECVHOPLIMIT of real
+   * network or BSD sockets.
+   *
+   * \return Wheter the IPV6_RECVHOPLIMIT is set
+   */
+  bool IsIpv6RecvHopLimit (void) const;
  
 protected:
   void NotifyConnectionSucceeded (void);
@@ -622,8 +801,15 @@ protected:
   void NotifySend (uint32_t spaceAvailable);
   void NotifyDataRecv (void);
   virtual void DoDispose (void);
+
+  bool IsManualIpTos (void) const;
+  bool IsManualIpv6Tclass (void) const;
+  bool IsManualIpTtl (void) const;
+  bool IsManualIpv6HopLimit (void) const;
+
   Ptr<NetDevice> m_boundnetdevice;
   bool m_recvPktInfo;
+
 private:
   Callback<void, Ptr<Socket> >                   m_connectionSucceeded;
   Callback<void, Ptr<Socket> >                   m_connectionFailed;
@@ -635,6 +821,23 @@ private:
   Callback<void, Ptr<Socket>, uint32_t >         m_sendCb;
   Callback<void, Ptr<Socket> >                   m_receivedData;
 
+  //IPv4 options
+  bool m_manualIpTos;
+  bool m_manualIpTtl;
+  bool m_ipRecvTos;
+  bool m_ipRecvTtl;
+
+  uint8_t m_ipTos;
+  uint8_t m_ipTtl;
+
+  //IPv6 options
+  bool m_manualIpv6Tclass;
+  bool m_manualIpv6HopLimit;
+  bool m_ipv6RecvTclass;
+  bool m_ipv6RecvHopLimit;
+
+  uint8_t m_ipv6Tclass;
+  uint8_t m_ipv6HopLimit;
 };
 
 /**
@@ -681,6 +884,27 @@ private:
   uint8_t m_ttl;
 };
 
+/**
+ * \brief This class implements a tag that carries the socket-specific
+ * HOPLIMIT of a packet to the IPv6 layer
+ */
+class SocketIpv6HopLimitTag : public Tag
+{
+public:
+  SocketIpv6HopLimitTag ();
+  void SetHopLimit (uint8_t hopLimit);
+  uint8_t GetHopLimit (void) const;
+
+  static TypeId GetTypeId (void);
+  virtual TypeId GetInstanceTypeId (void) const;
+  virtual uint32_t GetSerializedSize (void) const;
+  virtual void Serialize (TagBuffer i) const;
+  virtual void Deserialize (TagBuffer i);
+  virtual void Print (std::ostream &os) const;
+
+private:
+  uint8_t m_hopLimit;
+};
 
 /**
  * \brief indicated whether packets should be sent out with
@@ -702,6 +926,48 @@ public:
   virtual void Print (std::ostream &os) const;
 private:
   bool m_dontFragment;
+};
+
+/*
+ * \brief indicated whether the socket has IP_TOS set.
+ * This tag is for IPv4 socket.
+ */
+class SocketIpTosTag : public Tag
+{
+public:
+  SocketIpTosTag ();
+  void SetTos (uint8_t tos);
+  uint8_t GetTos (void) const;
+  
+  static TypeId GetTypeId (void);
+  virtual TypeId GetInstanceTypeId (void) const;
+  virtual uint32_t GetSerializedSize (void) const;
+  virtual void Serialize (TagBuffer i) const;
+  virtual void Deserialize (TagBuffer i);
+  virtual void Print (std::ostream &os) const;
+private:
+  uint8_t m_ipTos;
+};
+
+/*
+ * \brief indicated whether the socket has IPV6_TCLASS set.
+ * This tag is for IPv6 socket.
+ */
+class SocketIpv6TclassTag : public Tag
+{
+public:
+  SocketIpv6TclassTag ();
+  void SetTclass (uint8_t tclass);
+  uint8_t GetTclass (void) const;
+  
+  static TypeId GetTypeId (void);
+  virtual TypeId GetInstanceTypeId (void) const;
+  virtual uint32_t GetSerializedSize (void) const;
+  virtual void Serialize (TagBuffer i) const;
+  virtual void Deserialize (TagBuffer i);
+  virtual void Print (std::ostream &os) const;
+private:
+  uint8_t m_ipv6Tclass;
 };
 
 } // namespace ns3

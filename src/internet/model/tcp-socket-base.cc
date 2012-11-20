@@ -777,9 +777,9 @@ TcpSocketBase::ForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port,
 }
 
 void
-TcpSocketBase::ForwardUp6 (Ptr<Packet> packet, Ipv6Address saddr, Ipv6Address daddr, uint16_t port)
+TcpSocketBase::ForwardUp6 (Ptr<Packet> packet, Ipv6Header header, uint16_t port)
 {
-  DoForwardUp (packet, saddr, daddr, port);
+  DoForwardUp (packet, header, port);
 }
 
 void
@@ -908,15 +908,15 @@ TcpSocketBase::DoForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port
 }
 
 void
-TcpSocketBase::DoForwardUp (Ptr<Packet> packet, Ipv6Address saddr, Ipv6Address daddr, uint16_t port)
+TcpSocketBase::DoForwardUp (Ptr<Packet> packet, Ipv6Header header, uint16_t port)
 {
   NS_LOG_LOGIC ("Socket " << this << " forward up " <<
                 m_endPoint6->GetPeerAddress () <<
                 ":" << m_endPoint6->GetPeerPort () <<
                 " to " << m_endPoint6->GetLocalAddress () <<
                 ":" << m_endPoint6->GetLocalPort ());
-  Address fromAddress = Inet6SocketAddress (saddr, port);
-  Address toAddress = Inet6SocketAddress (daddr, m_endPoint6->GetLocalPort ());
+  Address fromAddress = Inet6SocketAddress (header.GetSourceAddress (), port);
+  Address toAddress = Inet6SocketAddress (header.GetDestinationAddress (), m_endPoint6->GetLocalPort ());
 
   // Peel off TCP header and do validity checking
   TcpHeader tcpHeader;
@@ -977,7 +977,7 @@ TcpSocketBase::DoForwardUp (Ptr<Packet> packet, Ipv6Address saddr, Ipv6Address d
           h.SetDestinationPort (tcpHeader.GetSourcePort ());
           h.SetWindowSize (AdvertisedWindowSize ());
           AddOptions (h);
-          m_tcp->SendPacket (Create<Packet> (), h, daddr, saddr, m_boundnetdevice);
+          m_tcp->SendPacket (Create<Packet> (), h, header.GetDestinationAddress (), header.GetSourceAddress (), m_boundnetdevice);
         }
       break;
     case SYN_SENT:
@@ -1528,6 +1528,40 @@ TcpSocketBase::SendEmptyPacket (uint8_t flags)
   TcpHeader header;
   SequenceNumber32 s = m_nextTxSequence;
 
+  /*
+   * Add tags for each socket option.
+   * Note that currently the socket adds both IPv4 tag and IPv6 tag
+   * if both options are set. Once the packet got to layer three, only
+   * the corresponding tags will be read.
+   */
+  if (IsManualIpTos ())
+    {
+      SocketIpTosTag ipTosTag;
+      ipTosTag.SetTos (GetIpTos ());
+      p->AddPacketTag (ipTosTag);
+    }
+
+  if (IsManualIpv6Tclass ())
+    {
+      SocketIpv6TclassTag ipTclassTag;
+      ipTclassTag.SetTclass (GetIpv6Tclass ());
+      p->AddPacketTag (ipTclassTag);
+    }
+
+  if (IsManualIpTtl ())
+    {
+      SocketIpTtlTag ipTtlTag;
+      ipTtlTag.SetTtl (GetIpTtl ());
+      p->AddPacketTag (ipTtlTag);
+    }
+
+  if (IsManualIpv6HopLimit ())
+    {
+      SocketIpv6HopLimitTag ipHopLimitTag;
+      ipHopLimitTag.SetHopLimit (GetIpv6HopLimit ());
+      p->AddPacketTag (ipHopLimitTag);
+    }
+
   if (m_endPoint == 0 && m_endPoint6 == 0)
     {
       NS_LOG_WARN ("Failed to send empty packet due to null endpoint");
@@ -1764,6 +1798,41 @@ TcpSocketBase::SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool with
   uint32_t sz = p->GetSize (); // Size of packet
   uint8_t flags = withAck ? TcpHeader::ACK : 0;
   uint32_t remainingData = m_txBuffer.SizeFromSequence (seq + SequenceNumber32 (sz));
+
+  /*
+   * Add tags for each socket option.
+   * Note that currently the socket adds both IPv4 tag and IPv6 tag
+   * if both options are set. Once the packet got to layer three, only
+   * the corresponding tags will be read.
+   */
+  if (IsManualIpTos ())
+    {
+      SocketIpTosTag ipTosTag;
+      ipTosTag.SetTos (GetIpTos ());
+      p->AddPacketTag (ipTosTag);
+    }
+
+  if (IsManualIpv6Tclass ())
+    {
+      SocketIpv6TclassTag ipTclassTag;
+      ipTclassTag.SetTclass (GetIpv6Tclass ());
+      p->AddPacketTag (ipTclassTag);
+    }
+
+  if (IsManualIpTtl ())
+    {
+      SocketIpTtlTag ipTtlTag;
+      ipTtlTag.SetTtl (GetIpTtl ());
+      p->AddPacketTag (ipTtlTag);
+    }
+
+  if (IsManualIpv6HopLimit ())
+    {
+      SocketIpv6HopLimitTag ipHopLimitTag;
+      ipHopLimitTag.SetHopLimit (GetIpv6HopLimit ());
+      p->AddPacketTag (ipHopLimitTag);
+    }
+
   if (m_closeOnEmpty && (remainingData == 0))
     {
       flags |= TcpHeader::FIN;

@@ -28,8 +28,7 @@ public:
                                                  Ipv4Header const &header,
                                                  Ptr<Ipv4Interface> incomingInterface);
   virtual enum IpL4Protocol::RxStatus Receive (Ptr<Packet> p,
-                                                 Ipv6Address &src,
-                                                 Ipv6Address &dst,
+                                                 Ipv6Header const &header,
                                                  Ptr<Ipv6Interface> incomingInterface);
 
   void SendDestUnreachFragNeeded (Ipv4Header header, Ptr<const Packet> orgData, uint16_t nextHopMtu);

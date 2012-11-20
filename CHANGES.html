@@ -48,7 +48,18 @@ us a note on ns-developers mailing list.</p>
 
 <h2>New API:</h2>
 <ul>
-<li></li>
+<li>In the Socket class, the following functions were added: 
+ <ul>
+  <li>(Set/Get)IpTos - sets IP Type of Service field in the IP headers.</li>
+  <li>(Set/Is)IpRecvTos - tells the socket to pass information about IP ToS up the stack (by adding SocketIpTosTag to the packet).</li>
+  <li>(Set/Get)IpTtl - sets IP Time to live field in the IP headers.</li>
+  <li>(Set/Is)RecvIpTtl - tells the socket to pass information about IP TTL up the stack (by adding SocketIpTtlTag to the packet).</li>
+  <li>(Set/Is)Ipv6Tclass - sets Traffic Class field in the IPv6 headers.</li>
+  <li>(Set/Is)Ipv6RecvTclass - tells the socket to pass information about IPv6 TCLASS up the stack (by adding SocketIpv6TclassTag to the packet).</li>
+  <li>(Set/Get)Ipv6HopLimit - sets Hop Limit field in the IPv6 headers.</li>
+  <li>(Set/Is)Ipv6RecvHopLimit - tells the socket to pass information about IPv6 HOPLIMIT up the stack (by adding SocketIpv6HoplimitTag to the packet).</li>
+ </ul>	
+A user can call these functions to set/get the corresponding socket option. See examples/socket/socket-options-ipv4.cc and examples/socket/socket-options-ipv6.cc for examples.
 </ul>
 
 <h2>Changes to existing API:</h2>

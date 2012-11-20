@@ -42,10 +42,23 @@ Socket::GetTypeId (void)
 }
 
 Socket::Socket (void)
+  : m_manualIpTos (false),
+    m_manualIpTtl (false),
+    m_ipRecvTos (false),
+    m_ipRecvTtl (false),
+    m_manualIpv6Tclass (false),
+    m_manualIpv6HopLimit (false),
+    m_ipv6RecvTclass (false),
+    m_ipv6RecvHopLimit (false)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   m_boundnetdevice = 0;
   m_recvPktInfo = false;
-  NS_LOG_FUNCTION (this);
+
+  m_ipTos = 0;
+  m_ipTtl = 0;
+  m_ipv6Tclass = 0;
+  m_ipv6HopLimit = 0;
 }
 
 Socket::~Socket ()
@@ -353,6 +366,149 @@ bool Socket::IsRecvPktInfo () const
   return m_recvPktInfo;
 }
 
+bool
+Socket::IsManualIpTos (void) const
+{
+  return m_manualIpTos;
+}
+
+bool
+Socket::IsManualIpv6Tclass (void) const
+{
+  return m_manualIpv6Tclass;
+}
+
+bool
+Socket::IsManualIpTtl (void) const
+{
+  return m_manualIpTtl;
+}
+
+bool
+Socket::IsManualIpv6HopLimit (void) const
+{
+  return m_manualIpv6HopLimit;
+}
+
+void
+Socket::SetIpTos (uint8_t tos)
+{
+  Address address;
+  GetSockName (address);
+  m_manualIpTos = true;
+  m_ipTos = tos;
+}
+
+uint8_t
+Socket::GetIpTos (void) const
+{
+  return m_ipTos;
+}
+
+void
+Socket::SetIpRecvTos (bool ipv4RecvTos)
+{
+  m_ipRecvTos = ipv4RecvTos;
+}
+
+bool
+Socket::IsIpRecvTos (void) const
+{
+  return m_ipRecvTos;
+}
+
+void
+Socket::SetIpv6Tclass (int tclass)
+{
+  Address address;
+  GetSockName (address);
+
+  //If -1 or invalid values, use default
+  if (tclass == -1 || tclass < -1 || tclass > 0xff)
+    {
+      //Print a warning
+      if (tclass < -1 || tclass > 0xff)
+        {
+          NS_LOG_WARN ("Invalid IPV6_TCLASS value. Using default.");
+        }
+      m_manualIpv6Tclass = false;
+      m_ipv6Tclass = 0;
+    }
+  else
+    {
+      m_manualIpv6Tclass = true;
+      m_ipv6Tclass = tclass;
+    }
+}
+
+uint8_t
+Socket::GetIpv6Tclass (void) const
+{
+  return m_ipv6Tclass;
+}
+
+void
+Socket::SetIpv6RecvTclass (bool ipv6RecvTclass)
+{
+  m_ipv6RecvTclass = ipv6RecvTclass;
+}
+
+bool
+Socket::IsIpv6RecvTclass (void) const
+{
+  return m_ipv6RecvTclass;
+}
+
+void
+Socket::SetIpTtl (uint8_t ttl)
+{
+  m_manualIpTtl = true;
+  m_ipTtl = ttl;
+}
+
+uint8_t
+Socket::GetIpTtl (void) const
+{
+  return m_ipTtl;
+}
+
+void
+Socket::SetIpRecvTtl (bool ipv4RecvTtl)
+{
+  m_ipRecvTtl = ipv4RecvTtl;
+}
+
+bool
+Socket::IsIpRecvTtl (void) const
+{
+  return m_ipRecvTtl;
+}
+
+void
+Socket::SetIpv6HopLimit (uint8_t ipHopLimit)
+{
+  m_manualIpv6HopLimit = true;
+  m_ipv6HopLimit = ipHopLimit;
+}
+
+uint8_t
+Socket::GetIpv6HopLimit (void) const
+{
+  return m_ipv6HopLimit;
+}
+
+void
+Socket::SetIpv6RecvHopLimit (bool ipv6RecvHopLimit)
+{
+  m_ipv6RecvHopLimit = ipv6RecvHopLimit;
+}
+
+bool
+Socket::IsIpv6RecvHopLimit (void) const
+{
+  return m_ipv6RecvHopLimit;
+}
+
 /***************************************************************
  *           Socket Tags
  ***************************************************************/
@@ -478,6 +634,59 @@ SocketIpTtlTag::Print (std::ostream &os) const
   os << "Ttl=" << (uint32_t) m_ttl;
 }
 
+SocketIpv6HopLimitTag::SocketIpv6HopLimitTag ()
+{
+}
+
+void 
+SocketIpv6HopLimitTag::SetHopLimit (uint8_t hopLimit)
+{
+  m_hopLimit = hopLimit;
+}
+
+uint8_t 
+SocketIpv6HopLimitTag::GetHopLimit (void) const
+{
+  return m_hopLimit;
+}
+
+NS_OBJECT_ENSURE_REGISTERED (SocketIpv6HopLimitTag);
+
+TypeId
+SocketIpv6HopLimitTag::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::SocketIpv6HopLimitTag")
+    .SetParent<Tag> ()
+    .AddConstructor<SocketIpv6HopLimitTag> ()
+  ;
+  return tid;
+}
+TypeId
+SocketIpv6HopLimitTag::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
+}
+
+uint32_t 
+SocketIpv6HopLimitTag::GetSerializedSize (void) const
+{ 
+  return 1;
+}
+void 
+SocketIpv6HopLimitTag::Serialize (TagBuffer i) const
+{ 
+  i.WriteU8 (m_hopLimit);
+}
+void 
+SocketIpv6HopLimitTag::Deserialize (TagBuffer i)
+{ 
+  m_hopLimit = i.ReadU8 ();
+}
+void
+SocketIpv6HopLimitTag::Print (std::ostream &os) const
+{
+  os << "HopLimit=" << (uint32_t) m_hopLimit;
+}
 
 SocketSetDontFragmentTag::SocketSetDontFragmentTag ()
 {
@@ -540,6 +749,118 @@ SocketSetDontFragmentTag::Print (std::ostream &os) const
 {
   NS_LOG_FUNCTION (this << &os);
   os << (m_dontFragment ? "true" : "false");
+}
+
+
+SocketIpTosTag::SocketIpTosTag ()
+{
+}
+
+void
+SocketIpTosTag::SetTos (uint8_t ipTos)
+{
+  m_ipTos = ipTos;
+}
+
+uint8_t
+SocketIpTosTag::GetTos (void) const
+{
+  return m_ipTos;
+}
+
+TypeId
+SocketIpTosTag::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::SocketIpTosTag")
+    .SetParent<Tag> ()
+    .AddConstructor<SocketIpTosTag> ()
+    ;
+  return tid;
+}
+
+TypeId 
+SocketIpTosTag::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
+}
+
+uint32_t
+SocketIpTosTag::GetSerializedSize (void) const
+{
+  return sizeof (uint8_t);
+}
+
+void
+SocketIpTosTag::Serialize (TagBuffer i) const
+{
+  i.WriteU8 (m_ipTos);
+}
+
+void
+SocketIpTosTag::Deserialize (TagBuffer i)
+{
+  m_ipTos = i.ReadU8();
+}
+void
+SocketIpTosTag::Print (std::ostream &os) const
+{
+  os << "IP_TOS = " << m_ipTos;
+}
+
+
+SocketIpv6TclassTag::SocketIpv6TclassTag ()
+{
+}
+
+void
+SocketIpv6TclassTag::SetTclass (uint8_t tclass)
+{
+  m_ipv6Tclass = tclass;
+}
+
+uint8_t
+SocketIpv6TclassTag::GetTclass (void) const
+{
+  return m_ipv6Tclass;
+}
+
+TypeId
+SocketIpv6TclassTag::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::SocketIpv6TclassTag")
+    .SetParent<Tag> ()
+    .AddConstructor<SocketIpv6TclassTag> ()
+    ;
+  return tid;
+}
+
+TypeId 
+SocketIpv6TclassTag::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
+}
+
+uint32_t
+SocketIpv6TclassTag::GetSerializedSize (void) const
+{
+  return sizeof (uint8_t);
+}
+
+void
+SocketIpv6TclassTag::Serialize (TagBuffer i) const
+{
+  i.WriteU8 (m_ipv6Tclass);
+}
+
+void
+SocketIpv6TclassTag::Deserialize (TagBuffer i)
+{
+  m_ipv6Tclass = i.ReadU8();
+}
+void
+SocketIpv6TclassTag::Print (std::ostream &os) const
+{
+  os << "IPV6_TCLASS = " << m_ipv6Tclass;
 }
 
 } // namespace ns3

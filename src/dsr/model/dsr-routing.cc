@@ -3098,11 +3098,10 @@ DsrRouting::Receive (Ptr<Packet> p,
 
 enum IpL4Protocol::RxStatus
 DsrRouting::Receive (Ptr<Packet> p,
-                     Ipv6Address &src,
-                     Ipv6Address &dst,
+                     Ipv6Header const &ip,
                      Ptr<Ipv6Interface> incomingInterface)
 {
-  NS_LOG_FUNCTION (this << p << src << dst << incomingInterface);
+  NS_LOG_FUNCTION (this << p << ip.GetSourceAddress () << ip.GetDestinationAddress () << incomingInterface);
   return IpL4Protocol::RX_ENDPOINT_UNREACH;
 }
 

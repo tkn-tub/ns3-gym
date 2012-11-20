@@ -30,6 +30,7 @@
 #include "ns3/ipv4-address.h"
 #include "ns3/ipv4-header.h"
 #include "ns3/ipv4-interface.h"
+#include "ns3/ipv6-header.h"
 #include "ns3/event-id.h"
 #include "tcp-tx-buffer.h"
 #include "tcp-rx-buffer.h"
@@ -135,9 +136,9 @@ protected:
 
   // Helper functions: Transfer operation
   void ForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port, Ptr<Ipv4Interface> incomingInterface);
-  void ForwardUp6 (Ptr<Packet> packet, Ipv6Address saddr, Ipv6Address daddr, uint16_t port);
+  void ForwardUp6 (Ptr<Packet> packet, Ipv6Header header, uint16_t port);
   virtual void DoForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port, Ptr<Ipv4Interface> incomingInterface); //Get a pkt from L3
-  virtual void DoForwardUp (Ptr<Packet> packet, Ipv6Address saddr, Ipv6Address daddr, uint16_t port); // Ipv6 version
+  virtual void DoForwardUp (Ptr<Packet> packet, Ipv6Header header, uint16_t port); // Ipv6 version
   void ForwardIcmp (Ipv4Address icmpSource, uint8_t icmpTtl, uint8_t icmpType, uint8_t icmpCode, uint32_t icmpInfo);
   void ForwardIcmp6 (Ipv6Address icmpSource, uint8_t icmpTtl, uint8_t icmpType, uint8_t icmpCode, uint32_t icmpInfo);  
   bool SendPendingData (bool withAck = false); // Send as much as the window allows

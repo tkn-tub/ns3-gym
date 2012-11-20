@@ -59,6 +59,10 @@ TypeId Ipv6L3Protocol::GetTypeId ()
                    UintegerValue (64),
                    MakeUintegerAccessor (&Ipv6L3Protocol::m_defaultTtl),
                    MakeUintegerChecker<uint8_t> ())
+    .AddAttribute ("DefaultTclass", "The TCLASS value set by default on all outgoing packets generated on this node.",
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&Ipv6L3Protocol::m_defaultTclass),
+                   MakeUintegerChecker<uint8_t> ())
     .AddAttribute ("InterfaceList", "The set of IPv6 interfaces associated to this IPv6 stack.",
                    ObjectVectorValue (),
                    MakeObjectVectorAccessor (&Ipv6L3Protocol::m_interfaces),
@@ -605,17 +609,32 @@ void Ipv6L3Protocol::SetDefaultTtl (uint8_t ttl)
   m_defaultTtl = ttl;
 }
 
+void Ipv6L3Protocol::SetDefaultTclass (uint8_t tclass)
+{
+  NS_LOG_FUNCTION (this << tclass);
+  m_defaultTclass = tclass;
+}
+
 void Ipv6L3Protocol::Send (Ptr<Packet> packet, Ipv6Address source, Ipv6Address destination, uint8_t protocol, Ptr<Ipv6Route> route)
 {
   NS_LOG_FUNCTION (this << packet << source << destination << (uint32_t)protocol << route);
   Ipv6Header hdr;
   uint8_t ttl = m_defaultTtl;
-  SocketIpTtlTag tag;
+  SocketIpv6HopLimitTag tag;
   bool found = packet->RemovePacketTag (tag);
 
   if (found)
     {
-      ttl = tag.GetTtl ();
+      ttl = tag.GetHopLimit ();
+    }
+
+  SocketIpv6TclassTag tclassTag;
+  uint8_t tclass = m_defaultTclass;
+  found = packet->RemovePacketTag (tclassTag);
+  
+  if (found)
+    {
+      tclass = tclassTag.GetTclass ();
     }
 
   /* Handle 3 cases:
@@ -628,7 +647,7 @@ void Ipv6L3Protocol::Send (Ptr<Packet> packet, Ipv6Address source, Ipv6Address d
   if (route && route->GetGateway () != Ipv6Address::GetZero ())
     {
       NS_LOG_LOGIC ("Ipv6L3Protocol::Send case 1: passed in with a route");
-      hdr = BuildHeader (source, destination, protocol, packet->GetSize (), ttl);
+      hdr = BuildHeader (source, destination, protocol, packet->GetSize (), ttl, tclass);
       SendRealOut (route, packet, hdr);
       return;
     }
@@ -638,7 +657,7 @@ void Ipv6L3Protocol::Send (Ptr<Packet> packet, Ipv6Address source, Ipv6Address d
     {
       NS_LOG_LOGIC ("Ipv6L3Protocol::Send case 1: probably sent to machine on same IPv6 network");
       /* NS_FATAL_ERROR ("This case is not yet implemented"); */
-      hdr = BuildHeader (source, destination, protocol, packet->GetSize (), ttl);
+      hdr = BuildHeader (source, destination, protocol, packet->GetSize (), ttl, tclass);
       SendRealOut (route, packet, hdr);
       return;
     }
@@ -649,7 +668,7 @@ void Ipv6L3Protocol::Send (Ptr<Packet> packet, Ipv6Address source, Ipv6Address d
   Ptr<NetDevice> oif (0);
   Ptr<Ipv6Route> newRoute = 0;
 
-  hdr = BuildHeader (source, destination, protocol, packet->GetSize (), ttl);
+  hdr = BuildHeader (source, destination, protocol, packet->GetSize (), ttl, tclass);
 
   //for link-local traffic, we need to determine the interface
   if (source.IsLinkLocal ()
@@ -1034,7 +1053,7 @@ void Ipv6L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv6Header const& i
 
               /* L4 protocol */
               Ptr<Packet> copy = p->Copy ();
-              enum IpL4Protocol::RxStatus status = protocol->Receive (p, src, dst, GetInterface (iif));
+              enum IpL4Protocol::RxStatus status = protocol->Receive (p, ip, GetInterface (iif));
 
               switch (status)
                 {
@@ -1067,9 +1086,9 @@ void Ipv6L3Protocol::RouteInputError (Ptr<const Packet> p, const Ipv6Header& ipH
   m_dropTrace (ipHeader, p, DROP_ROUTE_ERROR, m_node->GetObject<Ipv6> (), 0);
 }
 
-Ipv6Header Ipv6L3Protocol::BuildHeader (Ipv6Address src, Ipv6Address dst, uint8_t protocol, uint16_t payloadSize, uint8_t ttl)
+Ipv6Header Ipv6L3Protocol::BuildHeader (Ipv6Address src, Ipv6Address dst, uint8_t protocol, uint16_t payloadSize, uint8_t ttl, uint8_t tclass)
 {
-  NS_LOG_FUNCTION (this << src << dst << (uint32_t)protocol << (uint32_t)payloadSize << (uint32_t)ttl);
+  NS_LOG_FUNCTION (this << src << dst << (uint32_t)protocol << (uint32_t)payloadSize << (uint32_t)ttl << (uint32_t)tclass);
   Ipv6Header hdr;
 
   hdr.SetSourceAddress (src);
@@ -1077,6 +1096,7 @@ Ipv6Header Ipv6L3Protocol::BuildHeader (Ipv6Address src, Ipv6Address dst, uint8_
   hdr.SetNextHeader (protocol);
   hdr.SetPayloadLength (payloadSize);
   hdr.SetHopLimit (ttl);
+  hdr.SetTrafficClass (tclass);
   return hdr;
 }
 

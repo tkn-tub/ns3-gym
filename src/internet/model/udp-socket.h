@@ -101,8 +101,6 @@ private:
   // Indirect the attribute setting and getting through private virtual methods
   virtual void SetRcvBufSize (uint32_t size) = 0;
   virtual uint32_t GetRcvBufSize (void) const = 0;
-  virtual void SetIpTtl (uint8_t ipTtl) = 0;
-  virtual uint8_t GetIpTtl (void) const = 0;
   virtual void SetIpMulticastTtl (uint8_t ipTtl) = 0;
   virtual uint8_t GetIpMulticastTtl (void) const = 0;
   virtual void SetIpMulticastIf (int32_t ipIf) = 0;
