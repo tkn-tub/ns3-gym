@@ -120,7 +120,7 @@ EpcX2::AddX2Interface (uint16_t enb1CellId, Ptr<Socket> enb1X2cSocket, uint16_t 
 
   Address addr;
   int retval;
-  
+
   retval = enb1X2cSocket->GetSockName (addr);
   NS_ASSERT (retval == 0);
   InetSocketAddress localInetAddr = InetSocketAddress::ConvertFrom (addr);
@@ -225,7 +225,26 @@ EpcX2::RecvFromX2cSocket (Ptr<Socket> socket)
           m_x2SapUser->RecvHandoverRequestAck (params);
         }
     }
-  else // procedureCode == EpcX2Header::HandoverPreparation
+  else if (procedureCode == EpcX2Header::LoadInformation)
+    {
+      if (messageType == EpcX2Header::InitiatingMessage)
+        {
+          NS_LOG_LOGIC ("Recv X2 message: LOAD INFORMATION");
+
+          EpcX2LoadInformationHeader x2LoadInfoHeader;
+          packet->RemoveHeader (x2LoadInfoHeader);
+
+          NS_LOG_INFO ("X2 LoadInformation header: " << x2LoadInfoHeader);
+
+          EpcX2SapUser::LoadInformationParams params;
+          params.cellInformationList = x2LoadInfoHeader.GetCellInformationList ();
+
+          NS_LOG_LOGIC ("cellInformationList size = " << params.cellInformationList.size ());
+
+          m_x2SapUser->RecvLoadInformation (params);
+        }
+    }
+  else if (procedureCode == EpcX2Header::UeContextRelease)
     {
       if (messageType == EpcX2Header::InitiatingMessage)
         {
@@ -246,7 +265,10 @@ EpcX2::RecvFromX2cSocket (Ptr<Socket> socket)
           m_x2SapUser->RecvUeContextRelease (params);
         }
     }
-
+  else
+    {
+      NS_ASSERT_MSG (false, "ProcedureCode NOT SUPPORTED!!!");
+    }
 }
 
 //
@@ -291,7 +313,7 @@ EpcX2::DoSendHandoverRequest (EpcX2SapProvider::HandoverRequestParams params)
   NS_LOG_INFO ("X2 HandoverRequest header: " << x2HoReqHeader);
 
   // Build the X2 packet
-  Ptr<Packet> packet = params.rrcContext;
+  Ptr<Packet> packet = (params.rrcContext != 0) ? (params.rrcContext) : (Create <Packet> ());
   packet->AddHeader (x2HoReqHeader);
   packet->AddHeader (x2Header);
   NS_LOG_INFO ("packetLen = " << packet->GetSize ());
@@ -392,6 +414,50 @@ EpcX2::DoSendUeContextRelease (EpcX2SapProvider::UeContextReleaseParams params)
 
   // Send the X2 message through the socket
   localSocket->SendTo (packet, 0, InetSocketAddress (remoteIpAddr, m_x2cUdpPort));
+}
+
+
+void
+EpcX2::DoSendLoadInformation (EpcX2SapProvider::LoadInformationParams params)
+{
+  NS_LOG_FUNCTION (this);
+
+  NS_LOG_LOGIC ("targetCellId = " << params.targetCellId);
+  NS_LOG_LOGIC ("cellInformationList size = " << params.cellInformationList.size ());
+
+  NS_ASSERT_MSG (m_x2InterfaceSockets.find (params.targetCellId) != m_x2InterfaceSockets.end (),
+                 "Missing infos for targetCellId = " << params.targetCellId);
+  Ptr<X2IfaceInfo> socketInfo = m_x2InterfaceSockets [params.targetCellId];
+  Ptr<Socket> sourceSocket = socketInfo->m_localSocket;
+  Ipv4Address targetIpAddr = socketInfo->m_remoteIpAddr;
+
+  NS_LOG_LOGIC ("sourceSocket = " << sourceSocket);
+  NS_LOG_LOGIC ("targetIpAddr = " << targetIpAddr);
+
+  NS_LOG_INFO ("Send X2 message: LOAD INFORMATION");
+
+  // Build the X2 message
+  EpcX2LoadInformationHeader x2LoadInfoHeader;
+  x2LoadInfoHeader.SetCellInformationList (params.cellInformationList);
+
+  EpcX2Header x2Header;
+  x2Header.SetMessageType (EpcX2Header::InitiatingMessage);
+  x2Header.SetProcedureCode (EpcX2Header::LoadInformation);
+  x2Header.SetLengthOfIes (x2LoadInfoHeader.GetLengthOfIes ());
+  x2Header.SetNumberOfIes (x2LoadInfoHeader.GetNumberOfIes ());
+
+  NS_LOG_INFO ("X2 header: " << x2Header);
+  NS_LOG_INFO ("X2 LoadInformation header: " << x2LoadInfoHeader);
+
+  // Build the X2 packet
+  Ptr<Packet> packet = Create <Packet> ();
+  packet->AddHeader (x2LoadInfoHeader);
+  packet->AddHeader (x2Header);
+  NS_LOG_INFO ("packetLen = " << packet->GetSize ());
+
+  // Send the X2 message through the socket
+  sourceSocket->SendTo (packet, 0, InetSocketAddress (targetIpAddr, m_x2cUdpPort));
+
 }
 
 
