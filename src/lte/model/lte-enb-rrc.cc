@@ -410,7 +410,7 @@ UeManager::GetRadioResourceConfigForHandoverPreparationInfo ()
 }
 
 LteRrcSap::RrcConnectionReconfiguration 
-UeManager::GetHandoverCommand ()
+UeManager::GetRrcConnectionReconfigurationForHandover ()
 {
   NS_LOG_FUNCTION (this);
   return BuildRrcConnectionReconfiguration ();
@@ -508,6 +508,10 @@ UeManager::RecvRrcConnectionReconfigurationCompleted (LteRrcSap::RrcConnectionRe
     {
     case CONNECTION_RECONFIGURATION:      
       SwitchToState (CONNECTED_NORMALLY);
+      break;
+
+    case HANDOVER_LEAVING:      
+      NS_LOG_INFO ("ignoring RecvRrcConnectionReconfigurationCompleted in state " << ToString (m_state));
       break;
       
     case HANDOVER_JOINING:
@@ -1118,6 +1122,8 @@ LteEnbRrc::DoRecvHandoverRequest (EpcX2SapUser::HandoverRequestParams params)
   NS_LOG_LOGIC ("oldEnbUeX2apId = " << params.oldEnbUeX2apId);
   NS_LOG_LOGIC ("sourceCellId = " << params.sourceCellId);
   NS_LOG_LOGIC ("targetCellId = " << params.targetCellId);
+
+  NS_ASSERT (params.targetCellId == m_cellId);
   
   uint16_t rnti = AddUe (UeManager::HANDOVER_JOINING);
   Ptr<UeManager> ueManager = GetUeManager (rnti);
@@ -1130,7 +1136,26 @@ LteEnbRrc::DoRecvHandoverRequest (EpcX2SapUser::HandoverRequestParams params)
       ueManager->SetupDataRadioBearer (it->erabLevelQosParameters, it->gtpTeid, it->transportLayerAddress);
     }
 
-  LteRrcSap::RrcConnectionReconfiguration handoverCommand = ueManager->GetHandoverCommand ();
+  LteRrcSap::RrcConnectionReconfiguration handoverCommand = ueManager->GetRrcConnectionReconfigurationForHandover ();
+  handoverCommand.haveMobilityControlInfo = true;
+  handoverCommand.mobilityControlInfo.targetPhysCellId = m_cellId;
+  handoverCommand.mobilityControlInfo.carrierFreq.dlCarrierFreq = m_dlEarfcn;
+  handoverCommand.mobilityControlInfo.carrierFreq.ulCarrierFreq = m_ulEarfcn;
+  handoverCommand.mobilityControlInfo.haveCarrierBandwidth = true;
+  handoverCommand.mobilityControlInfo.carrierBandwidth.dlBandwidth = m_dlBandwidth;
+  handoverCommand.mobilityControlInfo.carrierBandwidth.ulBandwidth = m_ulBandwidth;
+  handoverCommand.mobilityControlInfo.newUeIdentity = rnti;
+  LteEnbCmacSapProvider::AllocateNcRaPreambleReturnValue anrcrv = m_cmacSapProvider->AllocateNcRaPreamble ();
+  if (anrcrv.valid == true)
+    {
+      handoverCommand.mobilityControlInfo.haveRachConfigDedicated = true;
+      handoverCommand.mobilityControlInfo.rachConfigDedicated.raPreambleIndex = anrcrv.raPreambleId;
+      handoverCommand.mobilityControlInfo.rachConfigDedicated.raPrachMaskIndex = anrcrv.raPrachMaskIndex;
+    }
+  else
+    {
+      handoverCommand.mobilityControlInfo.haveRachConfigDedicated = false;      
+    }
   Ptr<Packet> encodedHandoverCommand = m_rrcSapUser->EncodeHandoverCommand (handoverCommand);
 
   NS_LOG_LOGIC ("Send X2 message: HANDOVER REQUEST ACK");
@@ -1440,6 +1465,14 @@ LteEnbRrc::SendSystemInformation ()
   si.haveSib2 = true;
   si.sib2.freqInfo.ulCarrierFreq = m_ulEarfcn;
   si.sib2.freqInfo.ulBandwidth = m_ulBandwidth;
+  
+  LteEnbCmacSapProvider::RachConfig rc = m_cmacSapProvider->GetRachConfig ();
+  LteRrcSap::RachConfigCommon rachConfigCommon;
+  rachConfigCommon.preambleInfo.numberOfRaPreambles = rc.numberOfRaPreambles;
+  rachConfigCommon.raSupervisionInfo.preambleTransMax = rc.preambleTransMax;
+  rachConfigCommon.raSupervisionInfo.raResponseWindowSize = rc.raResponseWindowSize;
+  si.sib2.radioResourceConfigCommon.rachConfigCommon = rachConfigCommon;
+
   m_rrcSapUser->SendSystemInformation (si);
   Simulator::Schedule (m_systemInformationPeriodicity, &LteEnbRrc::SendSystemInformation, this);
 }

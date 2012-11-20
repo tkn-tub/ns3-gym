@@ -39,22 +39,22 @@ NS_LOG_COMPONENT_DEFINE ("EpcX2HandoverExample");
 int
 main (int argc, char *argv[])
 {
-  LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
+  // LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
 
-  LogComponentEnable ("LteHelper", logLevel);
-  LogComponentEnable ("EpcHelper", logLevel);
-  LogComponentEnable ("EpcEnbApplication", logLevel);
-  LogComponentEnable ("EpcX2", logLevel);
-  LogComponentEnable ("EpcSgwPgwApplication", logLevel);
+  // LogComponentEnable ("LteHelper", logLevel);
+  // LogComponentEnable ("EpcHelper", logLevel);
+  // LogComponentEnable ("EpcEnbApplication", logLevel);
+  // LogComponentEnable ("EpcX2", logLevel);
+  // LogComponentEnable ("EpcSgwPgwApplication", logLevel);
 
-  LogComponentEnable ("LteEnbRrc", logLevel);
-  LogComponentEnable ("LteEnbNetDevice", logLevel);
-  LogComponentEnable ("LteUeRrc", logLevel);
-  LogComponentEnable ("LteUeNetDevice", logLevel);
+  // LogComponentEnable ("LteEnbRrc", logLevel);
+  // LogComponentEnable ("LteEnbNetDevice", logLevel);
+  // LogComponentEnable ("LteUeRrc", logLevel);
+  // LogComponentEnable ("LteUeNetDevice", logLevel);
 
   uint16_t numberOfUes = 1;
   uint16_t numberOfEnbs = 2;
-  double simTime = 6.0;
+  double simTime = 2.0;
   double distance = 60.0;
 
   // Command line arguments
@@ -145,7 +145,7 @@ main (int argc, char *argv[])
   lteHelper->AddX2Interface (enbNodes);
 
   // X2-based Handover
-  lteHelper->HandoverRequest (Seconds (2.0), ueLteDevs.Get (0), enbLteDevs.Get (0), enbLteDevs.Get (1));
+  lteHelper->HandoverRequest (Seconds (1.0), ueLteDevs.Get (0), enbLteDevs.Get (0), enbLteDevs.Get (1));
   
   
   // Uncomment to enable PCAP tracing

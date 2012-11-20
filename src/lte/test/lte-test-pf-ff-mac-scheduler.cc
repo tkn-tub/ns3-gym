@@ -268,10 +268,10 @@ LenaPfFfMacSchedulerTestCase1::DoRun (void)
     }
 
 
-  double statsStartTime = 0.050; // need to allow for RRC connection establishment + SRS 
-  double statsDuration = 0.4;
+  double statsStartTime = 0.060; // need to allow for RRC connection establishment + SRS 
+  double statsDuration = 0.6;
   double tolerance = 0.1;
-  Simulator::Stop (Seconds (statsStartTime + statsDuration + 0.000001));
+  Simulator::Stop (Seconds (statsStartTime + statsDuration - 0.000001));
 
   lteHelper->EnableMacTraces ();
   Simulator::Schedule (Seconds (statsStartTime), &LteHelper::EnableRlcTraces, lteHelper);

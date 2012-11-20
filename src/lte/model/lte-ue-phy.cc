@@ -512,13 +512,13 @@ LteUePhy::DoSendLteControlMessage (Ptr<LteControlMessage> msg)
 }
 
 void 
-LteUePhy::DoSendRachPreamble (uint32_t prachId)
+LteUePhy::DoSendRachPreamble (uint32_t raPreambleId)
 {
-  NS_LOG_FUNCTION (this << prachId);
+  NS_LOG_FUNCTION (this << raPreambleId);
 
   // unlike other control messages, RACH preamble is sent ASAP
   Ptr<RachPreambleLteControlMessage> msg = Create<RachPreambleLteControlMessage> ();
-  msg->SetPrachId (prachId);
+  msg->SetRapId (raPreambleId);
   m_controlMessagesQueue.at (0).push_back (msg);
 }
 

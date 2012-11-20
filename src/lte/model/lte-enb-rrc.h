@@ -155,8 +155,11 @@ public:
    * \return retrieve the data that the target eNB needs to send to the source
    * eNB as the Handover Command in the X2-based handover
    * procedure.
+   *
+   * \note mobility control info is not expected to be filled in
+   * (shall be filled in by the caller). 
    */
-  LteRrcSap::RrcConnectionReconfiguration GetHandoverCommand ();
+  LteRrcSap::RrcConnectionReconfiguration GetRrcConnectionReconfigurationForHandover ();
 
   /** 
    * Send a data packet over the appropriate Data Radio Bearer
@@ -548,7 +551,7 @@ private:
   void DoRrcConfigurationUpdateInd (LteEnbCmacSapUser::UeConfig params);
   
 
-
+  // Internal methods
 
   /**
    * Allocate a new RNTI for a new UE. This is done in the following cases:

@@ -410,7 +410,7 @@ LteEnbPhy::ReceiveLteControlMessageList (std::list<Ptr<LteControlMessage> > msgL
         case LteControlMessage::RACH_PREAMBLE:
           {
             Ptr<RachPreambleLteControlMessage> rachPreamble = DynamicCast<RachPreambleLteControlMessage> (*it);
-            m_enbPhySapUser->ReceiveRachPreamble (rachPreamble->GetPrachId ());
+            m_enbPhySapUser->ReceiveRachPreamble (rachPreamble->GetRapId ());
           }
           break;
           

@@ -279,13 +279,23 @@ class RachPreambleLteControlMessage : public LteControlMessage
 public:
   RachPreambleLteControlMessage (void);
 
-  void SetPrachId (uint32_t prachId);
-
-  uint32_t GetPrachId () const;
+  
+  /** 
+   * Set the Random Access Preamble Identifier (RAPID), see 3GPP TS 36.321 6.2.2
+   *
+   * \param rapid
+   */
+  void SetRapId (uint32_t rapid);
+  
+  /** 
+   * 
+   * \return the RAPID
+   */
+  uint32_t GetRapId () const;
 
 private:
   
-  uint32_t m_prachId;
+  uint32_t m_rapId;
 
 
 };
@@ -315,19 +325,52 @@ class RarLteControlMessage : public LteControlMessage
 public:
   RarLteControlMessage (void);
 
-  void SetRar (BuildRarListElement_s);
+  /** 
+   * 
+   * \param raRnti the RA-RNTI, see 3GPP TS 36.321 5.1.4
+   */
+  void SetRaRnti (uint16_t raRnti);
 
-  BuildRarListElement_s GetRar () const;
+  /** 
+   * 
+   * \return  the RA-RNTI, see 3GPP TS 36.321 5.1.4
+   */
+  uint16_t GetRaRnti () const;
+
+  /**
+   * a MAC RAR and the corresponding RAPID subheader 
+   * 
+   */
+  struct Rar
+  {
+    uint8_t rapId;
+    BuildRarListElement_s rarPayload;
+  };
+
+  /** 
+   * add a RAR to the MAC PDU, see 3GPP TS 36.321 6.2.3
+   * 
+   * \param rar the rar
+   */
+  void AddRar (Rar rar);
+
+  /** 
+   * 
+   * \return a const iterator to the beginning of the RAR list
+   */
+  std::list<Rar>::const_iterator RarListBegin () const;
   
-  void SetPrachId (uint32_t prachId);
+  /** 
+   * 
+   * \return a const iterator to the end of the RAR list
+   */
+  std::list<Rar>::const_iterator RarListEnd () const;
   
-  uint32_t GetPrachId () const;
-
-
+  
 private:
   
-  BuildRarListElement_s m_rar;
-  uint32_t m_prachId;
+  std::list<Rar> m_rarList;
+  uint16_t m_raRnti;
 
 };
 

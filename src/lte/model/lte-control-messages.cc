@@ -182,17 +182,16 @@ RachPreambleLteControlMessage::RachPreambleLteControlMessage (void)
 }
 
 void
-RachPreambleLteControlMessage::SetPrachId (uint32_t prachId)
+RachPreambleLteControlMessage::SetRapId (uint32_t rapId)
 {
-  m_prachId = prachId;
+  m_rapId = rapId;
 }
 
 uint32_t 
-RachPreambleLteControlMessage::GetPrachId () const
+RachPreambleLteControlMessage::GetRapId () const
 {
-  return m_prachId;
+  return m_rapId;
 }
-
 
 
 // ----------------------------------------------------------------------------------------------------------
@@ -205,28 +204,34 @@ RarLteControlMessage::RarLteControlMessage (void)
 
 
 void
-RarLteControlMessage::SetRar (BuildRarListElement_s rar)
+RarLteControlMessage::SetRaRnti (uint16_t raRnti)
 {
-  m_rar = rar;
+  m_raRnti = raRnti;
 }
 
-BuildRarListElement_s 
-RarLteControlMessage::GetRar () const
+uint16_t 
+RarLteControlMessage::GetRaRnti () const
 {
-  return m_rar;
+  return m_raRnti;
 }
 
 
 void
-RarLteControlMessage::SetPrachId (uint32_t prachId)
+RarLteControlMessage::AddRar (Rar rar)
 {
-  m_prachId = prachId;
+  m_rarList.push_back (rar);
 }
 
-uint32_t 
-RarLteControlMessage::GetPrachId () const
+std::list<RarLteControlMessage::Rar>::const_iterator 
+RarLteControlMessage::RarListBegin () const
 {
-  return m_prachId;
+  return m_rarList.begin ();
+}
+
+std::list<RarLteControlMessage::Rar>::const_iterator 
+RarLteControlMessage::RarListEnd () const
+{
+  return m_rarList.end ();
 }
 
 

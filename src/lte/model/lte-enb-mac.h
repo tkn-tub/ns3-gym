@@ -147,6 +147,9 @@ private:
   void DoAddLc (LteEnbCmacSapProvider::LcInfo lcinfo, LteMacSapUser* msu);
   void DoReconfigureLc (LteEnbCmacSapProvider::LcInfo lcinfo);
   void DoReleaseLc (uint16_t  rnti, uint8_t lcid);
+  void DoUeUpdateConfigurationReq (LteEnbCmacSapProvider::UeConfig params);
+  LteEnbCmacSapProvider::RachConfig DoGetRachConfig ();
+  LteEnbCmacSapProvider::AllocateNcRaPreambleReturnValue DoAllocateNcRaPreamble ();
 
   // forwarded from LteMacSapProvider
   void DoTransmitPdu (LteMacSapProvider::TransmitPduParameters);
@@ -165,12 +168,10 @@ private:
   // forwarded from FfMacSchedSapUser
   void DoSchedDlConfigInd (FfMacSchedSapUser::SchedDlConfigIndParameters ind);
   void DoSchedUlConfigInd (FfMacSchedSapUser::SchedUlConfigIndParameters params);
-  
-  void DoUeUpdateConfigurationReq (LteEnbCmacSapProvider::UeConfig params);
 
   // forwarded from LteEnbPhySapUser
   void DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo);
-  void DoReceiveRachPreamble (uint32_t prachId);
+  void DoReceiveRachPreamble (uint8_t prachId);
 
 public:
   // legacy public for use the Phy callback
@@ -222,7 +223,19 @@ private:
   
   uint8_t m_macChTtiDelay; // delay of MAC, PHY and channel in terms of TTIs
   
+  uint8_t m_numberOfRaPreambles;
+  uint8_t m_preambleTransMax;
+  uint8_t m_raResponseWindowSize;
 
+  /**
+   * map storing as key the random acccess preamble IDs allocated for
+   * non-contention based access, and as value the expiration time of
+   * this allocation (so that stale preambles can be reused).
+   * 
+   */
+  std::map<uint8_t, Time> m_allocatedNcRaPreambleMap;
+ 
+  std::map<uint8_t, uint32_t> m_receivedRachPreambleCount;
 };
 
 } // end namespace ns3

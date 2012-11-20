@@ -23,6 +23,7 @@
 #include <ns3/log.h>
 #include <ns3/pointer.h>
 #include <ns3/packet.h>
+#include <ns3/simulator.h>
 
 #include "lte-amc.h"
 #include "lte-control-messages.h"
@@ -64,6 +65,9 @@ public:
   virtual void ReconfigureLc (LcInfo lcinfo);
   virtual void ReleaseLc (uint16_t rnti, uint8_t lcid);
   virtual void UeUpdateConfigurationReq (UeConfig params);
+  virtual RachConfig GetRachConfig ();
+  virtual AllocateNcRaPreambleReturnValue AllocateNcRaPreamble ();
+  
 
 private:
   LteEnbMac* m_mac;
@@ -117,6 +121,17 @@ EnbMacMemberLteEnbCmacSapProvider::UeUpdateConfigurationReq (UeConfig params)
   m_mac->DoUeUpdateConfigurationReq (params);
 }
 
+LteEnbCmacSapProvider::RachConfig 
+EnbMacMemberLteEnbCmacSapProvider::GetRachConfig ()
+{
+  return m_mac->DoGetRachConfig ();
+}
+ 
+LteEnbCmacSapProvider::AllocateNcRaPreambleReturnValue 
+EnbMacMemberLteEnbCmacSapProvider::AllocateNcRaPreamble ()
+{
+  return m_mac->DoAllocateNcRaPreamble ();
+}
 
 
 class EnbMacMemberFfMacSchedSapUser : public FfMacSchedSapUser
@@ -287,6 +302,21 @@ LteEnbMac::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::LteEnbMac")
     .SetParent<Object> ()
     .AddConstructor<LteEnbMac> ()
+    .AddAttribute ("NumberOfRaPreambles",
+                   "how many random access preambles are available for the contention based RACH process",
+                   UintegerValue (50),
+                   MakeUintegerAccessor (&LteEnbMac::m_numberOfRaPreambles),
+                   MakeUintegerChecker<uint8_t> (4, 64))
+    .AddAttribute ("PreambleTransMax",
+                   "Maximum number of random access preamble transmissions",
+                   UintegerValue (10),
+                   MakeUintegerAccessor (&LteEnbMac::m_preambleTransMax),
+                   MakeUintegerChecker<uint8_t> (3, 200))
+    .AddAttribute ("RaResponseWindowSize",
+                   "length of the window (in TTIs) for the reception of the random access response (RAR); the resulting RAR timeout is this value + 3 ms",
+                   UintegerValue (3),
+                   MakeUintegerAccessor (&LteEnbMac::m_raResponseWindowSize),
+                   MakeUintegerChecker<uint8_t> (2, 10))
     .AddTraceSource ("DlScheduling",
                      "Information regarding DL scheduling.",
                      MakeTraceSourceAccessor (&LteEnbMac::m_dlScheduling))
@@ -419,6 +449,50 @@ LteEnbMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
       m_schedSapProvider->SchedDlCqiInfoReq (dlcqiInfoReq);
     }
 
+  if (!m_receivedRachPreambleCount.empty ())
+    {
+      // process received RACH preambles and notify the scheduler
+      FfMacSchedSapProvider::SchedDlRachInfoReqParameters rachInfoReqParams;
+      // TODO: we should wait for DL_SCHEDULE_INDICATION to build the RARs
+      // from the RAR_List; this requires proper support from the scheduler.
+      // For now, we take a shortcut and just build the RAR here
+      // as an ideal message and without an UL grant.
+      Ptr<RarLteControlMessage> rarMsg = Create<RarLteControlMessage> ();
+      NS_ASSERT (subframeNo > 0 && subframeNo <= 10); // subframe in 1..10
+      // see TS 36.321 5.1.4;  preambles were sent two frames ago
+      // (plus 3GPP counts subframes from 0, not 1)
+      uint16_t raRnti = subframeNo - 3; 
+      rarMsg->SetRaRnti (raRnti);
+      for (std::map<uint8_t, uint32_t>::const_iterator it = m_receivedRachPreambleCount.begin ();
+           it != m_receivedRachPreambleCount.end ();
+           ++it)
+        {
+          NS_LOG_LOGIC ("preambleId " << (uint32_t) it->first << ": " << it->second << " received");
+          NS_ASSERT (it->second != 0);
+          if (it->second > 1)
+            {
+              NS_LOG_INFO ("preambleId " << (uint32_t) it->first << ": collision");
+              // we assume that no preamble is successfully received, hence no RAR is sent
+            }
+          else
+            {
+              uint16_t rnti = m_cmacSapUser->AllocateTemporaryCellRnti ();
+              NS_LOG_INFO ("preambleId " << (uint32_t) it->first << ": allocated T-C-RNTI " << (uint32_t) rnti << ", sending RAR");
+              RachListElement_s rachLe;
+              rachLe.m_rnti = rnti;
+              rachLe.m_estimatedSize = 144; // to be confirmed
+              rachInfoReqParams.m_rachList.push_back (rachLe);
+              RarLteControlMessage::Rar rar;
+              rar.rapId = it->first;
+              rar.rarPayload.m_rnti = rnti;
+              // no UL grant for now
+              rarMsg->AddRar (rar);
+            }
+        }
+      m_schedSapProvider->SchedDlRachInfoReq (rachInfoReqParams);
+      m_enbPhySapProvider->SendLteControlMessage (rarMsg);  
+      m_receivedRachPreambleCount.clear ();
+    }
 
   // Get downlink transmission opportunities
   uint32_t dlSchedFrameNo = m_frameNo;
@@ -525,27 +599,12 @@ LteEnbMac::DoReceiveLteControlMessage  (Ptr<LteControlMessage> msg)
 }
 
 void
-LteEnbMac::DoReceiveRachPreamble  (uint32_t prachId)
+LteEnbMac::DoReceiveRachPreamble  (uint8_t rapId)
 {
-  NS_LOG_FUNCTION (this << prachId);
-  uint16_t rnti = m_cmacSapUser->AllocateTemporaryCellRnti ();
-  
-  // todo: should trigger SCHED_DL_RACH_INFO_REQ here
-  // and then wait for DL_SCHEDULE_INDICATION to build the RARs from the RAR_List
-
-  // for now, we take a shortcut and just build the RAR here as an ideal message and without an UL grant
-
-  BuildRarListElement_s rar;
-  rar.m_rnti = rnti;
-  
-  Ptr<RarLteControlMessage> msg = Create<RarLteControlMessage> ();
-  msg->SetPrachId (prachId);
-  msg->SetRar (rar);
-  m_enbPhySapProvider->SendLteControlMessage (msg);
-  
+  NS_LOG_FUNCTION (this << rapId);
+  // just record that the preamble has been received; it will be processed later
+  ++m_receivedRachPreambleCount[rapId]; // will create entry if not exists
 }
-
-
 
 void
 LteEnbMac::DoUlCqiReport (FfMacSchedSapProvider::SchedUlCqiInfoReqParameters ulcqi)
@@ -725,6 +784,63 @@ LteEnbMac::DoReleaseLc (uint16_t rnti, uint8_t lcid)
   NS_FATAL_ERROR ("not implemented");
 }
 
+void
+LteEnbMac::DoUeUpdateConfigurationReq (LteEnbCmacSapProvider::UeConfig params)
+{
+  NS_LOG_FUNCTION (this);
+
+  // propagates to scheduler
+  FfMacCschedSapProvider::CschedUeConfigReqParameters req;
+  req.m_rnti = params.m_rnti;
+  req.m_transmissionMode = params.m_transmissionMode;
+  req.m_reconfigureFlag = true;
+  m_cschedSapProvider->CschedUeConfigReq (req);
+}
+
+LteEnbCmacSapProvider::RachConfig 
+LteEnbMac::DoGetRachConfig ()
+{
+  struct LteEnbCmacSapProvider::RachConfig rc;
+  rc.numberOfRaPreambles = m_numberOfRaPreambles;
+  rc.preambleTransMax = m_preambleTransMax;
+  rc.raResponseWindowSize = m_raResponseWindowSize;
+  return rc;
+}
+ 
+LteEnbCmacSapProvider::AllocateNcRaPreambleReturnValue 
+LteEnbMac::DoAllocateNcRaPreamble ()
+{
+  bool found = false;
+  uint8_t preambleId;
+  for (preambleId = m_numberOfRaPreambles; preambleId < 64; ++preambleId)
+    {
+      std::map<uint8_t, Time>::iterator it = m_allocatedNcRaPreambleMap.find (preambleId);
+      if ((it ==  m_allocatedNcRaPreambleMap.end ())
+          || (it->second < Simulator::Now ()))
+        {
+          found = true;
+          uint32_t expiryIntervalMs = (uint32_t) m_preambleTransMax * ((uint32_t) m_raResponseWindowSize + 5); 
+          Time expiryTime = Simulator::Now () + MilliSeconds (expiryIntervalMs);
+          m_allocatedNcRaPreambleMap[preambleId] = expiryTime; // create if not exist, update otherwise
+          break;
+        }
+    }
+  LteEnbCmacSapProvider::AllocateNcRaPreambleReturnValue ret;
+  if (found)
+    {
+      ret.valid = true;
+      ret.raPreambleId = preambleId;
+      ret.raPrachMaskIndex = 0;
+    }
+  else
+    {
+      ret.valid = false;
+      ret.raPreambleId = 0;
+      ret.raPrachMaskIndex = 0;
+    }
+  return ret;
+}
+
 
 
 // ////////////////////////////////////////////
@@ -899,19 +1015,6 @@ LteEnbMac::DoCschedUeConfigUpdateInd (FfMacCschedSapUser::CschedUeConfigUpdateIn
   ueConfigUpdate.m_rnti = params.m_rnti;
   ueConfigUpdate.m_transmissionMode = params.m_transmissionMode;
   m_cmacSapUser->RrcConfigurationUpdateInd (ueConfigUpdate);
-}
-
-void
-LteEnbMac::DoUeUpdateConfigurationReq (LteEnbCmacSapProvider::UeConfig params)
-{
-  NS_LOG_FUNCTION (this);
-
-  // propagates to scheduler
-  FfMacCschedSapProvider::CschedUeConfigReqParameters req;
-  req.m_rnti = params.m_rnti;
-  req.m_transmissionMode = params.m_transmissionMode;
-  req.m_reconfigureFlag = true;
-  m_cschedSapProvider->CschedUeConfigReq (req);
 }
 
 void

@@ -136,12 +136,31 @@ public:
     LogicalChannelConfig logicalChannelConfig;
   };
 
+  struct PreambleInfo
+  {
+    uint8_t numberOfRaPreambles;
+  };
+  
+  struct RaSupervisionInfo
+  {
+    uint8_t preambleTransMax;
+    uint8_t raResponseWindowSize;
+  };
+
+  struct RachConfigCommon
+  {
+    PreambleInfo preambleInfo;
+    RaSupervisionInfo raSupervisionInfo;
+  };
+
   struct RadioResourceConfigCommon
   {    
+    RachConfigCommon rachConfigCommon;
   };
 
   struct RadioResourceConfigCommonSib
   {    
+    RachConfigCommon rachConfigCommon;
   };
 
   struct RadioResourceConfigDedicated

@@ -30,7 +30,7 @@
 #include <ns3/lte-ue-cmac-sap.h>
 #include <ns3/lte-ue-phy-sap.h>
 #include <ns3/nstime.h>
-
+#include <ns3/event-id.h>
 
 namespace ns3 {
 
@@ -78,9 +78,9 @@ private:
   void DoReportBufferStatus (LteMacSapProvider::ReportBufferStatusParameters params);
 
   // forwarded from UE CMAC SAP
-
+  void DoConfigureRach (LteUeCmacSapProvider::RachConfig rc);
   void DoStartContentionBasedRandomAccessProcedure ();
-  void DoStartNonContentionBasedRandomAccessProcedure (uint16_t rnti, uint8_t preambleId, uint8_t prachMask);
+  void DoStartNonContentionBasedRandomAccessProcedure (uint16_t rnti, uint8_t rapId, uint8_t prachMask);
   void DoAddLc (uint8_t lcId, LteUeCmacSapProvider::LogicalChannelConfig lcConfig, LteMacSapUser* msu);
   void DoRemoveLc (uint8_t lcId);
   void DoReset ();
@@ -89,6 +89,12 @@ private:
   void DoReceivePhyPdu (Ptr<Packet> p);
   void DoReceiveLteControlMessage (Ptr<LteControlMessage> msg);
   
+  // internal methods
+  void RandomlySelectAndSendRaPreamble ();
+  void SendRaPreamble (bool contention);
+  void StartWaitingForRaResponse ();
+  void RecvRaResponse (BuildRarListElement_s raResponse);
+  void RaResponseTimeout (bool contention);
   void SendReportBufferStatus (void);
 
 private:
@@ -118,8 +124,17 @@ private:
 
   uint16_t m_rnti;
 
-  uint32_t m_prachId;
+  bool m_rachConfigured;
+  LteUeCmacSapProvider::RachConfig m_rachConfig;
+  uint8_t m_raPreambleId;
+  uint8_t m_preambleTransmissionCounter;
+  uint16_t m_backoffParameter;
+  EventId m_noRaResponseReceivedEvent;
 
+  uint32_t m_frameNo;
+  uint32_t m_subframeNo;
+  uint8_t m_raRnti;
+  bool m_waitingForRaResponse;
 };
 
 } // namespace ns3
