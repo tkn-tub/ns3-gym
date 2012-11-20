@@ -1181,15 +1181,28 @@ void
 LteEnbRrc::DoRecvUeContextRelease (EpcX2SapUser::UeContextReleaseParams params)
 {
   NS_LOG_FUNCTION (this);
-  
+
   NS_LOG_LOGIC ("Recv X2 message: UE CONTEXT RELEASE");
-  
+
   NS_LOG_LOGIC ("oldEnbUeX2apId = " << params.oldEnbUeX2apId);
   NS_LOG_LOGIC ("newEnbUeX2apId = " << params.newEnbUeX2apId);
 
   uint16_t rnti = params.oldEnbUeX2apId;
   RemoveUe (rnti);
 }
+
+void
+LteEnbRrc::DoRecvLoadInformation (EpcX2SapUser::LoadInformationParams params)
+{
+  NS_LOG_FUNCTION (this);
+
+  NS_LOG_LOGIC ("Recv X2 message: LOAD INFORMATION");
+
+  NS_LOG_LOGIC ("Number of cellInformationItems = " << params.cellInformationList.size ());
+
+  NS_ASSERT ("Processing of LOAD INFORMATION X2 message IS NOT IMPLEMENTED");
+}
+
 
 uint16_t 
 LteEnbRrc::DoAllocateTemporaryCellRnti ()

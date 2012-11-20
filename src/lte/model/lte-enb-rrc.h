@@ -540,6 +540,7 @@ private:
   void DoRecvHandoverRequest (EpcX2SapUser::HandoverRequestParams params);
   void DoRecvHandoverRequestAck (EpcX2SapUser::HandoverRequestAckParams params);
   void DoRecvUeContextRelease (EpcX2SapUser::UeContextReleaseParams params);
+  void DoRecvLoadInformation (EpcX2SapUser::LoadInformationParams params);
   
 
   // CMAC SAP methods
