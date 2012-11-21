@@ -24,6 +24,8 @@ cpp_examples = [
     ("lena-intercell-interference", "True", "True"),
     ("lena-pathloss-traces", "True", "True"),
     ("lena-profiling", "True", "True"),
+    ("lena-profiling --simTime=1.0 --nUe=2 --nEnb=5 --nFloors=0", "True", "True"),
+    ("lena-profiling --simTime=1.0 --nUe=3 --nEnb=6 --nFloors=1", "True", "True"),
     ("lena-rlc-traces", "True", "True"),
     ("lena-rem", "True", "True"),
     ("lena-rem-sector-antenna", "True", "True"),
