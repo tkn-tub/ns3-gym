@@ -26,6 +26,8 @@
 #include "ns3/mobility-model.h"
 #include "ns3/boolean.h"
 #include "ns3/double.h"
+#include "ns3/string.h"
+#include "ns3/pointer.h"
 #include <math.h>
 
 NS_LOG_COMPONENT_DEFINE ("PropagationLossModel");
@@ -60,6 +62,12 @@ PropagationLossModel::SetNext (Ptr<PropagationLossModel> next)
   m_next = next;
 }
 
+Ptr<PropagationLossModel>
+PropagationLossModel::GetNext ()
+{
+  return m_next;
+}
+
 double
 PropagationLossModel::CalcRxPower (double txPowerDbm,
                                    Ptr<MobilityModel> a,
@@ -73,6 +81,18 @@ PropagationLossModel::CalcRxPower (double txPowerDbm,
   return self;
 }
 
+int64_t
+PropagationLossModel::AssignStreams (int64_t stream)
+{
+  int64_t currentStream = stream;
+  currentStream += DoAssignStreams (stream);
+  if (m_next != 0)
+    {
+      currentStream += m_next->AssignStreams (currentStream);
+    }
+  return (currentStream - stream);
+}
+
 // ------------------------------------------------------------------------- //
 
 NS_OBJECT_ENSURE_REGISTERED (RandomPropagationLossModel);
@@ -84,9 +104,9 @@ RandomPropagationLossModel::GetTypeId (void)
     .SetParent<PropagationLossModel> ()
     .AddConstructor<RandomPropagationLossModel> ()
     .AddAttribute ("Variable", "The random variable used to pick a loss everytime CalcRxPower is invoked.",
-                   RandomVariableValue (ConstantVariable (1.0)),
-                   MakeRandomVariableAccessor (&RandomPropagationLossModel::m_variable),
-                   MakeRandomVariableChecker ())
+                   StringValue ("ns3::ConstantRandomVariable[Constant=1.0]"),
+                   MakePointerAccessor (&RandomPropagationLossModel::m_variable),
+                   MakePointerChecker<RandomVariableStream> ())
   ;
   return tid;
 }
@@ -104,9 +124,16 @@ RandomPropagationLossModel::DoCalcRxPower (double txPowerDbm,
                                            Ptr<MobilityModel> a,
                                            Ptr<MobilityModel> b) const
 {
-  double rxc = -m_variable.GetValue ();
+  double rxc = -m_variable->GetValue ();
   NS_LOG_DEBUG ("attenuation coefficent="<<rxc<<"Db");
   return txPowerDbm + rxc;
+}
+
+int64_t
+RandomPropagationLossModel::DoAssignStreams (int64_t stream)
+{
+  m_variable->SetStream (stream);
+  return 1;
 }
 
 // ------------------------------------------------------------------------- //
@@ -237,6 +264,12 @@ FriisPropagationLossModel::DoCalcRxPower (double txPowerDbm,
   double pr = 10 * log10 (numerator / denominator);
   NS_LOG_DEBUG ("distance="<<distance<<"m, attenuation coefficient="<<pr<<"dB");
   return txPowerDbm + pr;
+}
+
+int64_t
+FriisPropagationLossModel::DoAssignStreams (int64_t stream)
+{
+  return 0;
 }
 
 // ------------------------------------------------------------------------- //
@@ -408,6 +441,11 @@ TwoRayGroundPropagationLossModel::DoCalcRxPower (double txPowerDbm,
     }
 }
 
+int64_t
+TwoRayGroundPropagationLossModel::DoAssignStreams (int64_t stream)
+{
+  return 0;
+}
 
 // ------------------------------------------------------------------------- //
 
@@ -489,6 +527,12 @@ LogDistancePropagationLossModel::DoCalcRxPower (double txPowerDbm,
   NS_LOG_DEBUG ("distance="<<distance<<"m, reference-attenuation="<< -m_referenceLoss<<"dB, "<<
                 "attenuation coefficient="<<rxc<<"db");
   return txPowerDbm + rxc;
+}
+
+int64_t
+LogDistancePropagationLossModel::DoAssignStreams (int64_t stream)
+{
+  return 0;
 }
 
 // ------------------------------------------------------------------------- //
@@ -586,6 +630,12 @@ ThreeLogDistancePropagationLossModel::DoCalcRxPower (double txPowerDbm,
   return txPowerDbm - pathLossDb;
 }
 
+int64_t
+ThreeLogDistancePropagationLossModel::DoAssignStreams (int64_t stream)
+{
+  return 0;
+}
+
 // ------------------------------------------------------------------------- //
 
 NS_OBJECT_ENSURE_REGISTERED (NakagamiPropagationLossModel);
@@ -621,6 +671,16 @@ NakagamiPropagationLossModel::GetTypeId (void)
                    DoubleValue (0.75),
                    MakeDoubleAccessor (&NakagamiPropagationLossModel::m_m2),
                    MakeDoubleChecker<double> ())
+    .AddAttribute ("ErlangRv",
+                   "Access to the underlying ErlangRandomVariable",
+                   StringValue ("ns3::ErlangRandomVariable"),
+                   MakePointerAccessor (&NakagamiPropagationLossModel::m_erlangRandomVariable),
+                   MakePointerChecker<ErlangRandomVariable> ())
+    .AddAttribute ("GammaRv",
+                   "Access to the underlying GammaRandomVariable",
+                   StringValue ("ns3::GammaRandomVariable"),
+                   MakePointerAccessor (&NakagamiPropagationLossModel::m_gammaRandomVariable),
+                   MakePointerChecker<GammaRandomVariable> ());
   ;
   return tid;
 
@@ -666,11 +726,11 @@ NakagamiPropagationLossModel::DoCalcRxPower (double txPowerDbm,
 
   if (int_m == m)
     {
-      resultPowerW = m_erlangRandomVariable.GetValue (int_m, powerW / m);
+      resultPowerW = m_erlangRandomVariable->GetValue (int_m, powerW / m);
     }
   else
     {
-      resultPowerW = m_gammaRandomVariable.GetValue (m, powerW / m);
+      resultPowerW = m_gammaRandomVariable->GetValue (m, powerW / m);
     }
 
   double resultPowerDbm = 10 * log10 (resultPowerW) + 30;
@@ -680,6 +740,14 @@ NakagamiPropagationLossModel::DoCalcRxPower (double txPowerDbm,
                 "resultPower=" << resultPowerW << "W=" << resultPowerDbm << "dBm");
 
   return resultPowerDbm;
+}
+
+int64_t
+NakagamiPropagationLossModel::DoAssignStreams (int64_t stream)
+{
+  m_erlangRandomVariable->SetStream (stream);
+  m_gammaRandomVariable->SetStream (stream + 1);
+  return 2;
 }
 
 // ------------------------------------------------------------------------- //
@@ -720,6 +788,12 @@ FixedRssLossModel::DoCalcRxPower (double txPowerDbm,
                                   Ptr<MobilityModel> b) const
 {
   return m_rss;
+}
+
+int64_t
+FixedRssLossModel::DoAssignStreams (int64_t stream)
+{
+  return 0;
 }
 
 // ------------------------------------------------------------------------- //
@@ -795,6 +869,12 @@ MatrixPropagationLossModel::DoCalcRxPower (double txPowerDbm,
     }
 }
 
+int64_t
+MatrixPropagationLossModel::DoAssignStreams (int64_t stream)
+{
+  return 0;
+}
+
 // ------------------------------------------------------------------------- //
 
 NS_OBJECT_ENSURE_REGISTERED (RangePropagationLossModel);
@@ -832,6 +912,12 @@ RangePropagationLossModel::DoCalcRxPower (double txPowerDbm,
     {
       return -1000;
     }
+}
+
+int64_t
+RangePropagationLossModel::DoAssignStreams (int64_t stream)
+{
+  return 0;
 }
 
 // ------------------------------------------------------------------------- //

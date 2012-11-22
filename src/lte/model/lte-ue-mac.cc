@@ -25,6 +25,7 @@
 #include <ns3/pointer.h>
 #include <ns3/packet.h>
 #include <ns3/packet-burst.h>
+#include <ns3/random-variable.h>
 
 #include "lte-ue-mac.h"
 #include "lte-ue-net-device.h"
@@ -33,6 +34,7 @@
 #include <ns3/lte-control-messages.h>
 #include <ns3/simulator.h>
 #include <ns3/lte-common.h>
+
 
 
 NS_LOG_COMPONENT_DEFINE ("LteUeMac");
@@ -202,15 +204,18 @@ LteUeMac::LteUeMac ()
   :  m_bsrPeriodicity (MilliSeconds (1)), // ideal behavior
      m_bsrLast (MilliSeconds (0)),
      m_freshUlBsr (false),
+     m_harqProcessId (0),
      m_rnti (0),
      m_rachConfigured (false),
      m_waitingForRaResponse (false)
   
 {
   NS_LOG_FUNCTION (this);
+  m_miUlHarqProcessesPacket.resize (HARQ_PERIOD);
   m_macSapProvider = new UeMemberLteMacSapProvider (this);
   m_cmacSapProvider = new UeMemberLteUeCmacSapProvider (this);
   m_uePhySapUser = new UeMemberLteUePhySapUser (this);
+  m_raPreambleUniformVariable = CreateObject<UniformRandomVariable> ();
 }
 
 
@@ -223,6 +228,7 @@ void
 LteUeMac::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
+  m_miUlHarqProcessesPacket.clear ();
   delete m_macSapProvider;
   delete m_cmacSapProvider;
   delete m_uePhySapUser;
@@ -269,11 +275,9 @@ LteUeMac::DoTransmitPdu (LteMacSapProvider::TransmitPduParameters params)
   NS_ASSERT_MSG (m_rnti == params.rnti, "RNTI mismatch between RLC and MAC");
   LteRadioBearerTag tag (params.rnti, params.lcid, 0 /* UE works in SISO mode*/);
   params.pdu->AddPacketTag (tag);
-//   Ptr<PacketBurst> pb = CreateObject<PacketBurst> ();
-//   pb->AddPacket (params.pdu);
+  // store pdu in HARQ buffer
+  m_miUlHarqProcessesPacket.at (m_harqProcessId) = params.pdu;//->Copy ();
   m_uePhySapProvider->SendMacPdu (params.pdu);
-  // Uplink not implemented yet, so we wait can wait for the PHY SAP
-  // to be defined before we implement the transmission method.
 }
 
 void
@@ -350,9 +354,8 @@ LteUeMac::RandomlySelectAndSendRaPreamble ()
   NS_LOG_FUNCTION (this);
   // 3GPP 36.321 5.1.1  
   NS_ASSERT_MSG (m_rachConfigured, "RACH not configured");
-  UniformVariable uv;
   // assume that there is no Random Access Preambles group B
-  m_raPreambleId = uv.GetInteger (0, m_rachConfig.numberOfRaPreambles - 1);
+  m_raPreambleId = m_raPreambleUniformVariable->GetInteger (0, m_rachConfig.numberOfRaPreambles - 1);
   bool contention = true;
   SendRaPreamble (contention);
 }
@@ -523,39 +526,51 @@ LteUeMac::DoReceiveLteControlMessage (Ptr<LteControlMessage> msg)
     {
       Ptr<UlDciLteControlMessage> msg2 = DynamicCast<UlDciLteControlMessage> (msg);
       UlDciListElement_s dci = msg2->GetDci ();
-      std::map <uint8_t, uint64_t>::iterator itBsr;
-      uint16_t activeLcs = 0;
-      for (itBsr = m_ulBsrReceived.begin (); itBsr != m_ulBsrReceived.end (); itBsr++)
+      if (dci.m_ndi==1)
         {
-          if ((*itBsr).second > 0)
+          // New transmission -> retrieve data from RLC
+          std::map <uint8_t, uint64_t>::iterator itBsr;
+          uint16_t activeLcs = 0;
+          for (itBsr = m_ulBsrReceived.begin (); itBsr != m_ulBsrReceived.end (); itBsr++)
             {
-              activeLcs++;
-            }
-        }
-      if (activeLcs == 0)
-        {
-          NS_LOG_ERROR (this << " No active flows for this UL-DCI");
-          return;
-        }
-      std::map <uint8_t, LcInfo>::iterator it;
-      uint32_t bytesPerActiveLc = dci.m_tbSize / activeLcs;
-      NS_LOG_LOGIC (this << " UE: UL-CQI notified TxOpportunity of " << dci.m_tbSize << " => " << bytesPerActiveLc << " bytes per active LC");
-      for (it = m_lcInfoMap.begin (); it!=m_lcInfoMap.end (); it++)
-        {
-          itBsr = m_ulBsrReceived.find ((*it).first);
-          if (((itBsr!=m_ulBsrReceived.end ()) && ((*itBsr).second > 0)))
-            {
-              NS_LOG_LOGIC (this << "\t" << bytesPerActiveLc << " bytes to LC " << (uint32_t)(*it).first << " queue " << (*itBsr).second);
-              (*it).second.macSapUser->NotifyTxOpportunity (bytesPerActiveLc, 0);
-              if ((*itBsr).second >=  static_cast<uint64_t> (bytesPerActiveLc))
+              if ((*itBsr).second > 0)
                 {
-                  (*itBsr).second -= bytesPerActiveLc;
-                }
-              else
-                {
-                  (*itBsr).second = 0;
+                  activeLcs++;
                 }
             }
+          if (activeLcs == 0)
+            {
+              NS_LOG_ERROR (this << " No active flows for this UL-DCI");
+              return;
+            }
+          std::map <uint8_t, LcInfo>::iterator it;
+          uint32_t bytesPerActiveLc = dci.m_tbSize / activeLcs;
+          NS_LOG_LOGIC (this << " UE: UL-CQI notified TxOpportunity of " << dci.m_tbSize << " => " << bytesPerActiveLc << " bytes per active LC");
+          for (it = m_lcInfoMap.begin (); it!=m_lcInfoMap.end (); it++)
+            {
+              itBsr = m_ulBsrReceived.find ((*it).first);
+              if (((itBsr!=m_ulBsrReceived.end ()) && ((*itBsr).second > 0)))
+                {
+                  NS_LOG_LOGIC (this << "\t" << bytesPerActiveLc << " bytes to LC " << (uint32_t)(*it).first << " queue " << (*itBsr).second);
+                  (*it).second.macSapUser->NotifyTxOpportunity (bytesPerActiveLc, 0, 0); // layer and HARQ ID are not used in UL
+                  if ((*itBsr).second >=  static_cast<uint64_t> (bytesPerActiveLc))
+                    {
+                      (*itBsr).second -= bytesPerActiveLc;
+                    }
+                  else
+                    {
+                      (*itBsr).second = 0;
+                    }
+                }
+            }
+        }
+      else
+        {
+          // HARQ retransmission -> retrieve data from HARQ buffer
+          NS_LOG_DEBUG (this << " UE MAC RETX HARQ " << (uint16_t)m_harqProcessId);
+          Ptr<Packet> pkt = m_miUlHarqProcessesPacket.at (m_harqProcessId);
+          m_uePhySapProvider->SendMacPdu (pkt);
+          
         }
 
     }
@@ -598,8 +613,16 @@ LteUeMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
       SendReportBufferStatus ();
       m_bsrLast = Simulator::Now ();
       m_freshUlBsr = false;
+      m_harqProcessId = (m_harqProcessId + 1) % HARQ_PERIOD;
     }
 }
 
+int64_t
+LteUeMac::AssignStreams (int64_t stream)
+{
+  NS_LOG_FUNCTION (this << stream);
+  m_raPreambleUniformVariable->SetStream (stream);
+  return 1;
+}
 
 } // namespace ns3

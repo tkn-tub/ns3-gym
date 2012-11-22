@@ -131,10 +131,12 @@ main (int argc, char *argv[])
   // Position of UEs attached to eNB
   for (uint32_t i = 0; i < nEnb; i++)
     {
-      UniformVariable posX (enbPosition.at(i).x - roomLength * 0,
-                            enbPosition.at(i).x + roomLength * 0);
-      UniformVariable posY (enbPosition.at(i).y - roomLength * 0,
-                            enbPosition.at(i).y + roomLength * 0);
+      Ptr<UniformRandomVariable> posX = CreateObject<UniformRandomVariable> ();
+      posX->SetAttribute ("Min", DoubleValue (enbPosition.at(i).x - roomLength * 0));
+      posX->SetAttribute ("Max", DoubleValue (enbPosition.at(i).x + roomLength * 0));
+      Ptr<UniformRandomVariable> posY = CreateObject<UniformRandomVariable> ();
+      posY->SetAttribute ("Min", DoubleValue (enbPosition.at(i).y - roomLength * 0));
+      posY->SetAttribute ("Max", DoubleValue (enbPosition.at(i).y + roomLength * 0));
       positionAlloc = CreateObject<ListPositionAllocator> ();
       for (uint32_t j = 0; j < nUe; j++)
         {
@@ -152,7 +154,7 @@ main (int argc, char *argv[])
             }
           else
             {
-              positionAlloc->Add (Vector (posX.GetValue (), posY.GetValue (), nodeHeight));
+              positionAlloc->Add (Vector (posX->GetValue (), posY->GetValue (), nodeHeight));
             }
           mobility.SetPositionAllocator (positionAlloc);
         }

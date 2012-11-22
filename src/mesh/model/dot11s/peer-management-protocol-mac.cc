@@ -316,6 +316,12 @@ PeerManagementProtocolMac::GetLinkMetric (Mac48Address peerAddress)
 {
   return m_parent->GetLinkMetric (peerAddress);
 }
+int64_t
+PeerManagementProtocolMac::AssignStreams (int64_t stream)
+{ 
+  return m_protocol->AssignStreams (stream);
+}
+
 } // namespace dot11s
 } // namespace ns3
 

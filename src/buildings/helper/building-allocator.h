@@ -24,7 +24,6 @@
 
 #include "ns3/object.h"
 #include "ns3/object-factory.h"
-#include "ns3/random-variable.h"
 #include "ns3/vector.h"
 #include "ns3/building-container.h"
 #include "ns3/position-allocator.h"

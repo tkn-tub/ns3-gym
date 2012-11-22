@@ -24,7 +24,7 @@
 #include "mobility-model.h"
 #include "position-allocator.h"
 #include "ns3/ptr.h"
-#include "ns3/random-variable.h"
+#include "ns3/random-variable-stream.h"
 
 namespace ns3 {
 
@@ -32,10 +32,17 @@ namespace ns3 {
  * \ingroup mobility
  * \brief Random waypoint mobility model.
  *
- * Each object chooses a random destination "waypoint", a random speed,
- * and a random pause time: it then pauses for the specified pause time,
- * and starts moving towards the specified destination with the specified
- * speed. Once the destination is reached the process starts again.
+ * Each object starts by pausing at time zero for the duration governed
+ * by the random variable "Pause".  After pausing, the object will pick 
+ * a new waypoint (via the PositionAllocator) and a new random speed 
+ * via the random variable "Speed", and will begin moving towards the 
+ * waypoint at a constant speed.  When it reaches the destination, 
+ * the process starts over (by pausing).
+ *
+ * This mobility model enforces no bounding box by itself; the 
+ * PositionAllocator assigned to this object will bound the movement.
+ * If the user fails to provide a pointer to a PositionAllocator to
+ * be used to pick waypoints, the simulation program will assert.
  *
  * The implementation of this model is not 2d-specific. i.e. if you provide
  * a 3d random waypoint position model to this mobility model, the model 
@@ -54,11 +61,12 @@ private:
   virtual Vector DoGetPosition (void) const;
   virtual void DoSetPosition (const Vector &position);
   virtual Vector DoGetVelocity (void) const;
+  virtual int64_t DoAssignStreams (int64_t);
 
   ConstantVelocityHelper m_helper;
   Ptr<PositionAllocator> m_position;
-  RandomVariable m_speed;
-  RandomVariable m_pause;
+  Ptr<RandomVariableStream> m_speed;
+  Ptr<RandomVariableStream> m_pause;
   EventId m_event;
 };
 

@@ -62,6 +62,7 @@
 #include "ns3/double.h"
 #include "ns3/simulator.h"
 #include "ns3/abort.h"
+#include "ns3/random-variable-stream.h"
 #include "red-queue.h"
 
 NS_LOG_COMPONENT_DEFINE ("RedQueue");
@@ -153,6 +154,7 @@ RedQueue::RedQueue () :
   m_hasRedStarted (false)
 {
   NS_LOG_FUNCTION_NOARGS ();
+  m_uv = CreateObject<UniformRandomVariable> ();
 }
 
 RedQueue::~RedQueue ()
@@ -194,6 +196,13 @@ RedQueue::Stats
 RedQueue::GetStats ()
 {
   return m_stats;
+}
+
+int64_t 
+RedQueue::AssignStreams (int64_t stream)
+{
+  m_uv->SetStream (stream);
+  return 1;
 }
 
 bool
@@ -450,8 +459,7 @@ RedQueue::DropEarly (Ptr<Packet> p, uint32_t qSize)
         }
     }
 
-  UniformVariable uV;
-  double u = uV.GetValue ();
+  double u = m_uv->GetValue ();
 
   if (m_cautious == 2)
     {

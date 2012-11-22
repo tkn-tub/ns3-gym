@@ -450,7 +450,7 @@ void
 LteTestMac::SendTxOpportunity (Time time, uint32_t bytes)
 {
   NS_LOG_FUNCTION (this << time << bytes);
-  Simulator::Schedule (time, &LteMacSapUser::NotifyTxOpportunity, m_macSapUser, bytes, 0);
+  Simulator::Schedule (time, &LteMacSapUser::NotifyTxOpportunity, m_macSapUser, bytes, 0, 0);
   if (m_txOpportunityMode == RANDOM_MODE)
   {
     if (m_txOppTime != Seconds (0))
@@ -572,17 +572,17 @@ LteTestMac::DoReportBufferStatus (LteMacSapProvider::ReportBufferStatusParameter
       if (params.statusPduSize)
         {
           Simulator::Schedule (Seconds (0.1), &LteMacSapUser::NotifyTxOpportunity,
-                               m_macSapUser, params.statusPduSize + 2, 0);
+                               m_macSapUser, params.statusPduSize + 2, 0, 0);
         }
       else if (params.txQueueSize)
         {
           Simulator::Schedule (Seconds (0.1), &LteMacSapUser::NotifyTxOpportunity,
-                               m_macSapUser, params.txQueueSize + 2, 0);
+                               m_macSapUser, params.txQueueSize + 2, 0, 0);
         }
       else if (params.retxQueueSize)
         {
           Simulator::Schedule (Seconds (0.1), &LteMacSapUser::NotifyTxOpportunity,
-                               m_macSapUser, params.retxQueueSize + 2, 0);
+                               m_macSapUser, params.retxQueueSize + 2, 0, 0);
         }
     }
 }

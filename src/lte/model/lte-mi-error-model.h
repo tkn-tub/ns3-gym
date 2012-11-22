@@ -38,6 +38,7 @@
 #include <ns3/ptr.h>
 #include <stdint.h>
 #include <ns3/spectrum-value.h>
+#include <ns3/lte-harq-phy.h>
 
 
 
@@ -45,9 +46,21 @@
 namespace ns3 {
   
   const uint16_t PDCCH_PCFICH_CURVE_SIZE = 46;
-  const uint16_t MI_MAP_QPSK_SIZE = 766;
-  const uint16_t MI_MAP_16QAM_SIZE = 843;
-  const uint16_t MI_MAP_64QAM_SIZE = 725;
+  const uint16_t MI_MAP_QPSK_SIZE = 797;
+  const uint16_t MI_MAP_16QAM_SIZE = 994;
+  const uint16_t MI_MAP_64QAM_SIZE = 752;
+  const uint16_t MI_QPSK_MAX_ID = 9;
+  const uint16_t MI_16QAM_MAX_ID = 16;
+  const uint16_t MI_64QAM_MAX_ID = 28;  // 29,30 and 31 are reserved
+  const uint16_t MI_QPSK_BLER_MAX_ID = 12; // MI_QPSK_MAX_ID + 3 RETX
+  const uint16_t MI_16QAM_BLER_MAX_ID = 22;
+  const uint16_t MI_64QAM_BLER_MAX_ID = 37;
+
+struct TbStats_t
+{
+  double tbler;
+  double mi;
+};
   
 
 
@@ -74,17 +87,18 @@ public:
    * \param cbSize the size of the CB
    * \return the code block error rate
    */
-  static double MappingMiBler (double mib, uint8_t mcs, uint16_t cbSize);
+  static double MappingMiBler (double mib, uint8_t ecrId, uint16_t cbSize);
 
-  /** 
+  /**
    * \brief run the error-model algorithm for the specified TB
    * \param sinr the perceived sinrs in the whole bandwidth
    * \param map the actives RBs for the TB
    * \param size the size in bytes of the TB
    * \param mcs the MCS of the TB
-   * \return the TB error rate
-   */  
-  static double GetTbError (const SpectrumValue& sinr, const std::vector<int>& map, uint16_t size, uint8_t mcs);
+   * \param miHistory  MI of past transmissions (in case of retx)
+   * \return the TB error rate and MI
+   */
+  static TbStats_t GetTbDecodificationStats (const SpectrumValue& sinr, const std::vector<int>& map, uint16_t size, uint8_t mcs, HarqProcessInfoList_t miHistory);
   
   /** 
   * \brief run the error-model algorithm for the specified PCFICH+PDCCH channels

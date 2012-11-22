@@ -150,8 +150,7 @@ def main(argv):
     socket.SetProtocol(1)
 
     onoff = ns.applications.OnOffHelper("ns3::PacketSocketFactory", ns.network.Address(socket))
-    onoff.SetAttribute("OnTime", ns.core.RandomVariableValue(ns.core.ConstantVariable(42)))
-    onoff.SetAttribute("OffTime", ns.core.RandomVariableValue(ns.core.ConstantVariable(0)))
+    onoff.SetConstantRate (ns.network.DataRate ("500kb/s"))
 
     apps = onoff.Install(ns.network.NodeContainer(stas.Get(0)))
     apps.Start(ns.core.Seconds(0.5))

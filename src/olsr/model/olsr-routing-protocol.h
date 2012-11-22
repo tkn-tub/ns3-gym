@@ -33,6 +33,7 @@
 #include "ns3/node.h"
 #include "ns3/socket.h"
 #include "ns3/event-garbage-collector.h"
+#include "ns3/random-variable-stream.h"
 #include "ns3/timer.h"
 #include "ns3/traced-callback.h"
 #include "ns3/ipv4.h"
@@ -101,6 +102,16 @@ public:
    * Return the list of routing table entries discovered by OLSR
    **/
   std::vector<RoutingTableEntry> GetRoutingTableEntries () const;
+
+ /**
+  * Assign a fixed random variable stream number to the random variables
+  * used by this model.  Return the number of streams (possibly zero) that
+  * have been assigned.
+  *
+  * \param stream first stream index to use
+  * \return the number of stream indices assigned by this model
+  */
+  int64_t AssignStreams (int64_t stream);
 
 private:
   std::set<uint32_t> m_interfaceExclusions;
@@ -299,6 +310,9 @@ private:
   TracedCallback <const PacketHeader &,
                   const MessageList &> m_txPacketTrace;
   TracedCallback <uint32_t> m_routingTableChanged;
+
+  /// Provides uniform random variables.
+  Ptr<UniformRandomVariable> m_uniformRandomVariable;  
 
 };
 

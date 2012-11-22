@@ -144,6 +144,16 @@ public:
                      Ipv4Address destination, uint8_t protocol, Ptr<Ipv4Route> route) = 0;
 
   /**
+   * \param packet packet to send
+   * \param ipHeader IP Header
+   * \param route route entry
+   *
+   * Higher-level layers call this method to send a packet with IPv4 Header
+   * (Intend to be used with IpHeaderInclude attribute.)
+   */
+  virtual void SendWithHeader (Ptr<Packet> packet, Ipv4Header ipHeader, Ptr<Ipv4Route> route) = 0;
+
+  /**
    * \param protocol a pointer to the protocol to add to this L4 Demux.
    *
    * Adds a protocol to an internal list of L4 protocols.
@@ -333,6 +343,31 @@ public:
    * If set to true, IP forwarding is enabled for input datagrams on this device
    */
   virtual void SetForwarding (uint32_t interface, bool val) = 0;
+
+  /**
+   * \param protocolNumber number of protocol to lookup
+   *        in this L4 Demux
+   * \returns a matching L4 Protocol
+   *
+   * This method is typically called by lower layers
+   * to forward packets up the stack to the right protocol.
+   */
+  virtual Ptr<IpL4Protocol> GetProtocol (int protocolNumber) const = 0;
+
+  /**
+   * \brief Creates a raw socket
+   *
+   * \returns a smart pointer to the instantiated raw socket
+   */
+  virtual Ptr<Socket> CreateRawSocket (void) = 0;
+
+  /**
+   * \brief Deletes a particular raw socket
+   *
+   * \param socket Smart pointer to the raw socket to be deleted
+   */
+  virtual void DeleteRawSocket (Ptr<Socket> socket) = 0;
+
 
   static const uint32_t IF_ANY = 0xffffffff;
 

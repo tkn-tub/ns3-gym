@@ -27,6 +27,7 @@
 #include "ns3/callback.h"
 #include "ns3/nstime.h"
 #include "ns3/event-id.h"
+#include "ns3/random-variable-stream.h"
 #include "wimax-phy.h"
 #include "bvec.h"
 #include "ns3/snr-to-block-error-rate-manager.h"
@@ -174,6 +175,17 @@ public:
    * purposes.
    */
   void NotifyRxDrop (Ptr<PacketBurst> burst);
+
+ /**
+  * Assign a fixed random variable stream number to the random variables
+  * used by this model.  Return the number of streams (possibly zero) that
+  * have been assigned.
+  *
+  * \param stream first stream index to use
+  * \return the number of stream indices assigned by this model
+  */
+  int64_t AssignStreams (int64_t stream);
+
 private:
   Time DoGetTransmissionTime (uint32_t size, WimaxPhy::ModulationType modulationType) const;
   uint64_t DoGetNrSymbols (uint32_t size, WimaxPhy::ModulationType modulationType) const;
@@ -304,6 +316,9 @@ private:
   TracedCallback<Ptr<PacketBurst > > m_phyRxDropTrace;
 
   SNRToBlockErrorRateManager * m_snrToBlockErrorRateManager;
+
+  /// Provides uniform random variables.
+  Ptr<UniformRandomVariable> m_URNG;
 
 };
 

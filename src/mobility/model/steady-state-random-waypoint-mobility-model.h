@@ -24,7 +24,7 @@
 #include "mobility-model.h"
 #include "position-allocator.h"
 #include "ns3/ptr.h"
-#include "ns3/random-variable.h"
+#include "ns3/random-variable-stream.h"
 
 namespace ns3 {
 
@@ -64,11 +64,12 @@ private:
   virtual Vector DoGetPosition (void) const;
   virtual void DoSetPosition (const Vector &position);
   virtual Vector DoGetVelocity (void) const;
+  virtual int64_t DoAssignStreams (int64_t);
 
   ConstantVelocityHelper m_helper;
   double m_maxSpeed;
   double m_minSpeed;
-  UniformVariable m_speed;
+  Ptr<UniformRandomVariable> m_speed;
   double m_minX;
   double m_maxX;
   double m_minY;
@@ -76,9 +77,16 @@ private:
   Ptr<RandomRectanglePositionAllocator> m_position;
   double m_minPause;
   double m_maxPause;
-  UniformVariable m_pause;
+  Ptr<UniformRandomVariable> m_pause;
   EventId m_event;
   bool alreadyStarted;
+  Ptr<UniformRandomVariable> m_x1_r;
+  Ptr<UniformRandomVariable> m_y1_r;
+  Ptr<UniformRandomVariable> m_x2_r;
+  Ptr<UniformRandomVariable> m_y2_r;
+  Ptr<UniformRandomVariable> m_u_r;
+  Ptr<UniformRandomVariable> m_x;
+  Ptr<UniformRandomVariable> m_y;
 };
 
 } // namespace ns3

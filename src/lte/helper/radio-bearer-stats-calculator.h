@@ -113,13 +113,14 @@ public:
 
   /**
    * Notifies the stats calculator that an uplink transmission has occurred.
+   * @param cellId CellId of the attached Enb
    * @param imsi IMSI of the UE who transmitted the PDU
    * @param rnti C-RNTI of the UE who transmitted the PDU
    * @param lcid LCID through which the PDU has been transmitted
    * @param packetSize size of the PDU in bytes
    */
   void
-  UlTxPdu (uint64_t imsi, uint16_t rnti, uint8_t lcid, uint32_t packetSize);
+  UlTxPdu (uint16_t cellId, uint64_t imsi, uint16_t rnti, uint8_t lcid, uint32_t packetSize);
 
   /**
    * Notifies the stats calculator that an uplink reception has occurred.
@@ -146,6 +147,7 @@ public:
 
   /**
    * Notifies the stats calculator that an downlink reception has occurred.
+   * @param cellId CellId of the attached Enb
    * @param imsi IMSI of the UE who received the PDU
    * @param rnti C-RNTI of the UE who received the PDU
    * @param lcid LCID through which the PDU has been transmitted
@@ -153,7 +155,7 @@ public:
    * @param delay RLC to RLC delay in nanoseconds
    */
   void
-  DlRxPdu (uint64_t imsi, uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay);
+  DlRxPdu (uint16_t cellId, uint64_t imsi, uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay);
 
   /**
    * Gets the number of transmitted uplink packets.

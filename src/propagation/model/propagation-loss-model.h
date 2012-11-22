@@ -26,7 +26,7 @@
 #define PROPAGATION_LOSS_MODEL_H
 
 #include "ns3/object.h"
-#include "ns3/random-variable.h"
+#include "ns3/random-variable-stream.h"
 #include <map>
 
 namespace ns3 {
@@ -65,6 +65,17 @@ public:
   void SetNext (Ptr<PropagationLossModel> next);
 
   /**
+   * \brief Gets the next PropagationLossModel in the chain of loss models
+   * that act on the signal.
+   * \returns The next PropagationLossModel in the chain
+   *
+   * This method of chaining propagation loss models only works commutatively
+   * if the propagation loss of all models in the chain are independent
+   * of transmit power.
+   */
+  Ptr<PropagationLossModel> GetNext ();
+
+  /**
    * \param txPowerDbm current transmission power (in dBm)
    * \param a the mobility model of the source
    * \param b the mobility model of the destination
@@ -73,12 +84,32 @@ public:
   double CalcRxPower (double txPowerDbm,
                       Ptr<MobilityModel> a,
                       Ptr<MobilityModel> b) const;
+
+  /**
+   * If this loss model uses objects of type RandomVariableStream,
+   * set the stream numbers to the integers starting with the offset
+   * 'stream'. Return the number of streams (possibly zero) that
+   * have been assigned.  If there are PropagationLossModels chained
+   * together, this method will also assign streams to the
+   * downstream models.
+   *
+   * \param stream
+   * \return the number of stream indices assigned by this model
+   */
+  int64_t AssignStreams (int64_t stream);
+
 private:
   PropagationLossModel (const PropagationLossModel &o);
   PropagationLossModel &operator = (const PropagationLossModel &o);
   virtual double DoCalcRxPower (double txPowerDbm,
                                 Ptr<MobilityModel> a,
                                 Ptr<MobilityModel> b) const = 0;
+
+  /**
+   * Subclasses must implement this; those not using random variables
+   * can return zero
+   */
+  virtual int64_t DoAssignStreams (int64_t stream) = 0;
 
   Ptr<PropagationLossModel> m_next;
 };
@@ -102,7 +133,8 @@ private:
   virtual double DoCalcRxPower (double txPowerDbm,
                                 Ptr<MobilityModel> a,
                                 Ptr<MobilityModel> b) const;
-  RandomVariable m_variable;
+  virtual int64_t DoAssignStreams (int64_t stream);
+  Ptr<RandomVariableStream> m_variable;
 };
 
 /**
@@ -195,6 +227,7 @@ private:
   virtual double DoCalcRxPower (double txPowerDbm,
                                 Ptr<MobilityModel> a,
                                 Ptr<MobilityModel> b) const;
+  virtual int64_t DoAssignStreams (int64_t stream);
   double DbmToW (double dbm) const;
   double DbmFromW (double w) const;
 
@@ -285,6 +318,7 @@ private:
   virtual double DoCalcRxPower (double txPowerDbm,
                                 Ptr<MobilityModel> a,
                                 Ptr<MobilityModel> b) const;
+  virtual int64_t DoAssignStreams (int64_t stream);
   double DbmToW (double dbm) const;
   double DbmFromW (double w) const;
 
@@ -339,6 +373,7 @@ private:
   virtual double DoCalcRxPower (double txPowerDbm,
                                 Ptr<MobilityModel> a,
                                 Ptr<MobilityModel> b) const;
+  virtual int64_t DoAssignStreams (int64_t stream);
   static Ptr<PropagationLossModel> CreateDefaultReference (void);
 
   double m_exponent;
@@ -401,6 +436,7 @@ private:
   virtual double DoCalcRxPower (double txPowerDbm,
                                 Ptr<MobilityModel> a,
                                 Ptr<MobilityModel> b) const;
+  virtual int64_t DoAssignStreams (int64_t stream);
 
   double m_distance0;
   double m_distance1;
@@ -423,8 +459,8 @@ private:
  * \f[ p(x; m, \omega) = \frac{2 m^m}{\Gamma(m) \omega^m} x^{2m - 1} e^{-\frac{m}{\omega} x^2} = 2 x \cdot p_{\text{Gamma}}(x^2, m, \frac{m}{\omega}) \f]
  * with \f$ m \f$ the fading depth parameter and \f$ \omega \f$ the average received power.
  *
- * It is implemented by either a ns3::GammaVariable or a ns3::ErlangVariable
- * random variable.
+ * It is implemented by either a ns3::GammaRandomVariable or a 
+ * ns3::ErlangRandomVariable random variable.
  *
  * Like in ns3::ThreeLogDistancePropagationLossModel, the m parameter is varied
  * over three distance fields:
@@ -449,6 +485,7 @@ private:
   virtual double DoCalcRxPower (double txPowerDbm,
                                 Ptr<MobilityModel> a,
                                 Ptr<MobilityModel> b) const;
+  virtual int64_t DoAssignStreams (int64_t stream);
 
   double m_distance1;
   double m_distance2;
@@ -457,8 +494,8 @@ private:
   double m_m1;
   double m_m2;
 
-  ErlangVariable        m_erlangRandomVariable;
-  GammaVariable         m_gammaRandomVariable;
+  Ptr<ErlangRandomVariable>  m_erlangRandomVariable;
+  Ptr<GammaRandomVariable> m_gammaRandomVariable;
 };
 
 /**
@@ -494,6 +531,7 @@ private:
   virtual double DoCalcRxPower (double txPowerDbm,
                                 Ptr<MobilityModel> a,
                                 Ptr<MobilityModel> b) const;
+  virtual int64_t DoAssignStreams (int64_t stream);
   double m_rss;
 };
 
@@ -529,6 +567,7 @@ private:
   virtual double DoCalcRxPower (double txPowerDbm,
                                 Ptr<MobilityModel> a,
                                 Ptr<MobilityModel> b) const;
+  virtual int64_t DoAssignStreams (int64_t stream);
 private:
   /// default loss
   double m_default; 
@@ -559,6 +598,7 @@ private:
   virtual double DoCalcRxPower (double txPowerDbm,
                                 Ptr<MobilityModel> a,
                                 Ptr<MobilityModel> b) const;
+  virtual int64_t DoAssignStreams (int64_t stream);
 private:
   double m_range;
 };

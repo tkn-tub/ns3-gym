@@ -10,7 +10,14 @@ open( FILE, '>epcTimes.csv' );
 print FILE "#sTime\tnodes\trTime\trTDev\n";
 
 my @nodes = ( 1,2,3,4,5,6,7, 8, 12, 14);
-my @simTime = ( 1, 2, 5, 7, 10);
+my @simTime = (5, 10);
+
+
+# Configure and complite first the program to avoid counting compilation time as running time
+my $launch = "CXXFLAGS=\"-O3 -w\" ./waf -d optimized configure --enable-static --enable-examples --enable-modules=lte"
+my $out, my $err;
+capture { system($launch ) } \$out, \$err;
+$launch = "./waf --run \'lena-profiling --simTime=0.1 --nUe=1 --nEnb=1 --nFloors=0\'";
 
 foreach my $time (@simTime)
 {
@@ -19,8 +26,7 @@ foreach my $time (@simTime)
             my $timeStats = Statistics::Descriptive::Full->new();
             for ( my $iteration = 0 ; $iteration < $nIterations ; $iteration++ )
             {
-               my $launch = "time ./waf --run \'lena-simple-epc --simTime=$time --numberOfNodes=$node'";
-               my $out, my $err;
+               $launch = "time ./waf --run \'lena-simple-epc --simTime=$time --numberOfNodes=$node'";
                print "$launch\n";
                capture { system($launch ) } \$out, \$err;
                $err =~ /real(.+)m(.+)s/;

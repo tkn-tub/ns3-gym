@@ -242,6 +242,14 @@ DcaTxop::Queue (Ptr<const Packet> packet, const WifiMacHeader &hdr)
   StartAccessIfNeeded ();
 }
 
+int64_t
+DcaTxop::AssignStreams (int64_t stream)
+{
+  NS_LOG_FUNCTION (this << stream);
+  m_rng->AssignStreams (stream);
+  return 1;
+}
+
 void
 DcaTxop::RestartAccessIfNeeded (void)
 {

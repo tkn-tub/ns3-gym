@@ -30,7 +30,6 @@
 
 #include "minstrel-wifi-manager.h"
 #include "wifi-phy.h"
-#include "ns3/random-variable.h"
 #include "ns3/simulator.h"
 #include "ns3/log.h"
 #include "ns3/uinteger.h"
@@ -121,6 +120,8 @@ MinstrelWifiManager::GetTypeId (void)
 
 MinstrelWifiManager::MinstrelWifiManager ()
 {
+  m_uniformRandomVariable = CreateObject<UniformRandomVariable> ();
+
   m_nsupported = 0;
 }
 
@@ -138,6 +139,14 @@ MinstrelWifiManager::SetupPhy (Ptr<WifiPhy> phy)
       AddCalcTxTime (mode, phy->CalculateTxDuration (m_pktLen, mode, WIFI_PREAMBLE_LONG));
     }
   WifiRemoteStationManager::SetupPhy (phy);
+}
+
+int64_t
+MinstrelWifiManager::AssignStreams (int64_t stream)
+{
+  NS_LOG_FUNCTION (this << stream);
+  m_uniformRandomVariable->SetStream (stream);
+  return 1;
 }
 
 Time
@@ -490,7 +499,7 @@ MinstrelWifiManager::FindRate (MinstrelWifiRemoteStation *station)
   uint32_t idx;
 
   /// for determining when to try a sample rate
-  UniformVariable coinFlip (0, 100);
+  int coinFlip = m_uniformRandomVariable->GetInteger (0, 100) % 2;
 
   /**
    * if we are below the target of look around rate percentage, look around
@@ -498,7 +507,7 @@ MinstrelWifiManager::FindRate (MinstrelWifiRemoteStation *station)
    * all at once until it reaches the look around rate
    */
   if ( (((100 * station->m_sampleCount) / (station->m_sampleCount + station->m_packetCount )) < m_lookAroundRate)
-       && ((int)coinFlip.GetValue ()) % 2 == 1 )
+       && (coinFlip == 1) )
     {
 
       /// now go through the table and find an index rate
@@ -746,8 +755,8 @@ MinstrelWifiManager::InitSampleTable (MinstrelWifiRemoteStation *station)
            * The next two lines basically tries to generate a random number
            * between 0 and the number of available rates
            */
-          UniformVariable uv (0, numSampleRates);
-          newIndex = (i + (uint32_t)uv.GetValue ()) % numSampleRates;
+          int uv = m_uniformRandomVariable->GetInteger (0, numSampleRates);
+          newIndex = (i + uv) % numSampleRates;
 
           /// this loop is used for filling in other uninitilized places
           while (m_sampleTable[newIndex][col] != 0)

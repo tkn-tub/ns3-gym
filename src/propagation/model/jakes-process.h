@@ -22,10 +22,13 @@
 
 #include "ns3/object.h"
 #include "ns3/nstime.h"
+#include "ns3/random-variable-stream.h"
 #include <complex>
 
 namespace ns3
 {
+class PropagationLossModel;
+class JakesPropagationLossModel;
 /**
  * \ingroup fading
  *
@@ -55,9 +58,11 @@ public:
   static TypeId GetTypeId (void);
   JakesProcess ();
   virtual ~JakesProcess();
+  virtual void DoDispose ();
   std::complex<double> GetComplexGain () const;
   /// Get Channel gain [dB]
   double GetChannelGainDb () const;
+  void SetPropagationLossModel (Ptr<const PropagationLossModel>);
 private:
   /// Represents a single oscillator
   struct Oscillator
@@ -73,8 +78,6 @@ private:
     /// Rotation speed of the oscillator \f[\omega_d \cos(\alpha_n)]
     double m_omega;
   };
-  /// PI Constant
-  static const double PI;
 private:
   void SetNOscillators (unsigned int nOscillators);
   void SetDopplerFrequencyHz (double dopplerFrequencyHz);
@@ -86,6 +89,8 @@ private:
   ///\{
   double m_omegaDopplerMax;
   unsigned int m_nOscillators;
+  Ptr<UniformRandomVariable> m_uniformVariable;
+  Ptr<const JakesPropagationLossModel> m_jakes;
   ///\}
 };
 } // namespace ns3

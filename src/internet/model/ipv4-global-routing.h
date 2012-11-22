@@ -27,7 +27,7 @@
 #include "ns3/ptr.h"
 #include "ns3/ipv4.h"
 #include "ns3/ipv4-routing-protocol.h"
-#include "ns3/random-variable.h"
+#include "ns3/random-variable-stream.h"
 
 namespace ns3 {
 
@@ -211,6 +211,16 @@ public:
  */
   void RemoveRoute (uint32_t i);
 
+ /**
+  * Assign a fixed random variable stream number to the random variables
+  * used by this model.  Return the number of streams (possibly zero) that
+  * have been assigned.
+  *
+  * \param stream first stream index to use
+  * \return the number of stream indices assigned by this model
+  */
+  int64_t AssignStreams (int64_t stream);
+
 protected:
   void DoDispose (void);
 
@@ -220,7 +230,7 @@ private:
   /// Set to true if this interface should respond to interface events by globallly recomputing routes 
   bool m_respondToInterfaceEvents;
   /// A uniform random number generator for randomly routing packets among ECMP 
-  UniformVariable m_rand;
+  Ptr<UniformRandomVariable> m_rand;
 
   typedef std::list<Ipv4RoutingTableEntry *> HostRoutes;
   typedef std::list<Ipv4RoutingTableEntry *>::const_iterator HostRoutesCI;

@@ -591,4 +591,33 @@ WimaxHelper::EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool exp
   phy->TraceConnectWithoutContext ("Rx", MakeBoundCallback (&PcapSniffTxRxEvent, file));
 }
 
+int64_t
+WimaxHelper::AssignStreams (int64_t stream)
+{
+  NS_LOG_FUNCTION (this << stream);
+  return m_channel->AssignStreams (stream);
+}
+
+int64_t
+WimaxHelper::AssignStreams (NetDeviceContainer c, int64_t stream)
+{
+  int64_t currentStream = stream;
+  Ptr<NetDevice> netDevice;
+  for (NetDeviceContainer::Iterator i = c.Begin (); i != c.End (); ++i)
+    {
+      netDevice = (*i);
+      Ptr<WimaxNetDevice> wimax = DynamicCast<WimaxNetDevice> (netDevice);
+      if (wimax)
+        {
+          // Handle any random numbers in the PHY objects.
+          currentStream += wimax->GetPhy ()->AssignStreams (currentStream);
+        }
+    }
+
+  // Handle any random numbers in the channel.
+  currentStream += m_channel->AssignStreams (currentStream);
+
+  return (currentStream - stream);
+}
+
 } // namespace ns3

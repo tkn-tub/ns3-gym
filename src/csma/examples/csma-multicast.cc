@@ -134,9 +134,7 @@ main (int argc, char *argv[])
   // every few seconds
   OnOffHelper onoff ("ns3::UdpSocketFactory", 
                      Address (InetSocketAddress (multicastGroup, multicastPort)));
-  onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
-  onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
-  onoff.SetAttribute ("DataRate", DataRateValue (DataRate ("255b/s")));
+  onoff.SetConstantRate (DataRate ("255b/s"));
   onoff.SetAttribute ("PacketSize", UintegerValue (128));
 
   ApplicationContainer srcC = onoff.Install (c0.Get (0));

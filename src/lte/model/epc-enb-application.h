@@ -50,10 +50,16 @@ class EpcEnbApplication : public Application
 
   friend class MemberEpcEnbS1SapProvider<EpcEnbApplication>;
 
-public:
+
 
   // inherited from Object
+public:
   static TypeId GetTypeId (void);
+protected:
+  void DoDispose (void);
+
+public:
+  
   
 
   /** 

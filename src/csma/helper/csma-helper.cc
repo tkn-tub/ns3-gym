@@ -281,6 +281,23 @@ CsmaHelper::Install (const NodeContainer &c, std::string channelName) const
   return Install (c, channel);
 }
 
+int64_t
+CsmaHelper::AssignStreams (NetDeviceContainer c, int64_t stream)
+{
+  int64_t currentStream = stream;
+  Ptr<NetDevice> netDevice;
+  for (NetDeviceContainer::Iterator i = c.Begin (); i != c.End (); ++i)
+    {
+      netDevice = (*i);
+      Ptr<CsmaNetDevice> csma = DynamicCast<CsmaNetDevice> (netDevice);
+      if (csma)
+        {
+          currentStream += csma->AssignStreams (currentStream);
+        }
+    }
+  return (currentStream - stream);
+}
+
 Ptr<NetDevice>
 CsmaHelper::InstallPriv (Ptr<Node> node, Ptr<CsmaChannel> channel) const
 {

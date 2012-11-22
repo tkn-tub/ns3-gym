@@ -18,9 +18,10 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "propagation-delay-model.h"
-#include "ns3/random-variable.h"
 #include "ns3/mobility-model.h"
 #include "ns3/double.h"
+#include "ns3/string.h"
+#include "ns3/pointer.h"
 
 namespace ns3 {
 
@@ -39,6 +40,14 @@ PropagationDelayModel::~PropagationDelayModel ()
 {
 }
 
+int64_t
+PropagationDelayModel::AssignStreams (int64_t stream)
+{
+  return DoAssignStreams (stream);
+}
+
+// ------------------------------------------------------------------------- //
+
 NS_OBJECT_ENSURE_REGISTERED (RandomPropagationDelayModel);
 
 TypeId
@@ -49,9 +58,9 @@ RandomPropagationDelayModel::GetTypeId (void)
     .AddConstructor<RandomPropagationDelayModel> ()
     .AddAttribute ("Variable",
                    "The random variable which generates random delays (s).",
-                   RandomVariableValue (UniformVariable (0.0, 1.0)),
-                   MakeRandomVariableAccessor (&RandomPropagationDelayModel::m_variable),
-                   MakeRandomVariableChecker ())
+                   StringValue ("ns3::UniformRandomVariable"),
+                   MakePointerAccessor (&RandomPropagationDelayModel::m_variable),
+                   MakePointerChecker<RandomVariableStream> ())
   ;
   return tid;
 }
@@ -65,7 +74,14 @@ RandomPropagationDelayModel::~RandomPropagationDelayModel ()
 Time
 RandomPropagationDelayModel::GetDelay (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
 {
-  return Seconds (m_variable.GetValue ());
+  return Seconds (m_variable->GetValue ());
+}
+
+int64_t
+RandomPropagationDelayModel::DoAssignStreams (int64_t stream)
+{
+  m_variable->SetStream (stream);
+  return 1;
 }
 
 NS_OBJECT_ENSURE_REGISTERED (ConstantSpeedPropagationDelayModel);
@@ -104,5 +120,12 @@ ConstantSpeedPropagationDelayModel::GetSpeed (void) const
 {
   return m_speed;
 }
+
+int64_t
+ConstantSpeedPropagationDelayModel::DoAssignStreams (int64_t stream)
+{
+  return 0;
+}
+
 
 } // namespace ns3

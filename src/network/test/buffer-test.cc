@@ -1,5 +1,6 @@
 #include "ns3/buffer.h"
-#include "ns3/random-variable.h"
+#include "ns3/random-variable-stream.h"
+#include "ns3/double.h"
 #include "ns3/test.h"
 
 namespace ns3 {
@@ -247,7 +248,9 @@ BufferTest::DoRun (void)
   {
     const uint32_t actualSize = 72602;
     const uint32_t chunkSize = 67624;
-    UniformVariable bytesRng (0, 256);
+    Ptr<UniformRandomVariable> bytesRng = CreateObject<UniformRandomVariable> ();
+    bytesRng->SetAttribute ("Min", DoubleValue (0));
+    bytesRng->SetAttribute ("Max", DoubleValue (256));
 
     Buffer inputBuffer;
     Buffer outputBuffer;
@@ -256,7 +259,7 @@ BufferTest::DoRun (void)
     {
       Buffer::Iterator iter = inputBuffer.Begin ();
       for (uint32_t i = 0; i < actualSize; i++)
-        iter.WriteU8 (static_cast<uint8_t> (bytesRng.GetValue ()));
+        iter.WriteU8 (static_cast<uint8_t> (bytesRng->GetValue ()));
     }
 
     outputBuffer.AddAtEnd (chunkSize);

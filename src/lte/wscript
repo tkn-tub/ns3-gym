@@ -77,6 +77,7 @@ def build(bld):
         'model/epc-enb-s1-sap.cc',
         'model/lte-as-sap.cc',
         'model/epc-ue-nas.cc',
+        'model/lte-harq-phy.cc',
         ]
 
     module_test = bld.create_ns3_module_test_library('lte')
@@ -107,6 +108,7 @@ def build(bld):
         'test/test-lte-antenna.cc',
         'test/lte-test-phy-error-model.cc',
         'test/lte-test-mimo.cc',
+        'test/lte-test-harq.cc',
         'test/test-lte-rrc.cc'
         ]
 
@@ -189,6 +191,7 @@ def build(bld):
         'model/epc-enb-s1-sap.h',
         'model/lte-as-sap.h',
         'model/epc-ue-nas.h',
+        'model/lte-harq-phy.h',
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):

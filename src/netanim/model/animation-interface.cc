@@ -25,7 +25,6 @@
 #include "ns3/channel.h"
 #include "ns3/config.h"
 #include "ns3/node.h"
-#include "ns3/random-variable.h"
 #include "ns3/mobility-model.h"
 #include "ns3/packet.h"
 #include "ns3/simulator.h"
@@ -39,6 +38,7 @@
 #include "ns3/lte-enb-phy.h"
 #include "ns3/uan-net-device.h"
 #include "ns3/uan-mac.h"
+#include "ns3/ipv4.h"
 
 #include <stdio.h>
 #include <unistd.h>
@@ -53,8 +53,12 @@ NS_LOG_COMPONENT_DEFINE ("AnimationInterface");
 namespace ns3 {
 
 #define PURGE_INTERVAL 5
+
 static bool initialized = false;
 std::map <uint32_t, std::string> AnimationInterface::nodeDescriptions;
+std::map <uint32_t, Rgb> AnimationInterface::nodeColors;
+std::map <P2pLinkNodeIdPair, LinkProperties, LinkPairCompare> AnimationInterface::linkProperties;
+
 
 AnimationInterface::AnimationInterface (const std::string fn, uint64_t maxPktsPerFile, bool usingXML)
   : m_xml (usingXML), m_mobilityPollInterval (Seconds(0.25)), 
@@ -64,6 +68,8 @@ AnimationInterface::AnimationInterface (const std::string fn, uint64_t maxPktsPe
     m_enablePacketMetadata (false), m_startTime (Seconds(0)), m_stopTime (Seconds(3600 * 1000)),
     m_maxPktsPerFile (maxPktsPerFile), m_originalFileName (fn)
 {
+  m_uniformRandomVariable = CreateObject<UniformRandomVariable> ();
+
   initialized = true;
   StartAnimation ();
 }
@@ -96,6 +102,12 @@ void AnimationInterface::StartNewTraceFile ()
   ++i;
 
 }
+
+std::string AnimationInterface::GetNetAnimVersion ()
+{
+  return "netanim-3.101";
+}
+
 void AnimationInterface::SetStartTime (Time t)
 {
   m_startTime = t;
@@ -208,7 +220,7 @@ Vector AnimationInterface::UpdatePosition (Ptr <Node> n)
    {
      NS_LOG_UNCOND ( "AnimationInterface WARNING:Node:" << n->GetId () << " Does not have a mobility model. Use SetConstantPosition if it is stationary");
      Vector deterministicVector (100,100,0);
-     Vector randomVector (UniformVariable (0, m_topoMaxX - m_topoMinX).GetValue (), UniformVariable (0, m_topoMaxY - m_topoMinY).GetValue (), 0);
+     Vector randomVector (m_uniformRandomVariable->GetValue (0, m_topoMaxX - m_topoMinX), m_uniformRandomVariable->GetValue (0, m_topoMaxY - m_topoMinY), 0);
      if (m_randomPosition)
        {
          m_nodeLocation[n->GetId ()] = randomVector;
@@ -346,6 +358,18 @@ void AnimationInterface::PurgePendingCsma ()
 
 }
 
+std::string AnimationInterface::GetIpv4Address (Ptr <NetDevice> nd)
+{
+  Ptr<Ipv4> ipv4 = NodeList::GetNode (nd->GetNode ()->GetId ())->GetObject <Ipv4> ();
+  if (!ipv4)
+    return "0.0.0.0";
+  uint32_t ifIndex = ipv4->GetInterfaceForDevice (nd);
+  Ipv4InterfaceAddress addr = ipv4->GetAddress (ifIndex, 0);
+  std::ostringstream oss;
+  oss << addr.GetLocal ();
+  return oss.str ();
+}
+
 void AnimationInterface::StartAnimation (bool restart)
 {
   m_currentPktCount = 0;
@@ -366,6 +390,11 @@ void AnimationInterface::StartAnimation (bool restart)
       m_topoMinY = std::min (m_topoMinY, v.y);
       m_topoMaxX = std::max (m_topoMaxX, v.x);
       m_topoMaxY = std::max (m_topoMaxY, v.y);
+      struct Rgb rgb = {255, 0, 0};
+      if (nodeColors.find (n->GetId ()) == nodeColors.end ())
+      {
+        nodeColors[n->GetId ()] = rgb;
+      }
     }
 
   AddMargin ();
@@ -386,7 +415,8 @@ void AnimationInterface::StartAnimation (bool restart)
       if (m_xml)
         {
           Vector v = GetPosition (n);
-          oss << GetXMLOpenClose_node (0, n->GetId (), v.x, v.y);
+          struct Rgb rgb = nodeColors[n->GetId ()];
+          oss << GetXMLOpenClose_node (0, n->GetId (), v.x, v.y, rgb);
 	  WriteN (oss.str ());
         }
       else
@@ -425,11 +455,14 @@ void AnimationInterface::StartAnimation (bool restart)
                   Ptr<NetDevice> chDev = ch->GetDevice (j);
                   uint32_t n2Id = chDev->GetNode ()->GetId ();
                   if (n1Id < n2Id)
-                    { // ouptut the p2p link
+                    { 
+                      // ouptut the p2p link
+                      NS_LOG_INFO ("Link:" << GetIpv4Address (dev) << "----" << GetIpv4Address (chDev));
+                      SetLinkDescription (n1Id, n2Id, "", GetIpv4Address (dev), GetIpv4Address (chDev));
                       std::ostringstream oss;
                       if (m_xml)
                         {
-                          oss << GetXMLOpenClose_link (0,n1Id,0,n2Id);
+                          oss << GetXMLOpenClose_link (0, n1Id, 0, n2Id);
                         }
                       else
                         {
@@ -445,6 +478,7 @@ void AnimationInterface::StartAnimation (bool restart)
             }
         }
     }
+  linkProperties.clear ();
   if (m_xml && !restart)
     {
       WriteN (GetXMLClose ("topology"));
@@ -1281,6 +1315,13 @@ uint64_t AnimationInterface::GetTracePktCount ()
   return m_currentPktCount;
 }
 
+int64_t
+AnimationInterface::AssignStreams (int64_t stream)
+{
+  NS_LOG_FUNCTION (this << stream);
+  m_uniformRandomVariable->SetStream (stream);
+  return 1;
+}
 
 // Helper to output a wireless packet.
 // For now, only the XML interface is supported
@@ -1293,6 +1334,7 @@ std::string AnimationInterface::GetPreamble ()
     Description of attributes:\n\
     =========================\n\
     anim\n\
+    * ver = Current version\n\
     topology\n\
     * minX = minimum X coordinate of the canvas\n\
     * minY = minimum Y coordinate of the canvas\n\
@@ -1302,9 +1344,25 @@ std::string AnimationInterface::GetPreamble ()
     * id = Node Id\n\
     * locX = X coordinate\n\
     * locY = Y coordinate\n\
+    * r = Red component\n\
+    * g = Green component\n\
+    * b = Blue component\n\
     link\n\
     * fromId = From Node Id\n\
     * toId   = To Node Id\n\
+    * fd = From Node description (for IP Address)\n\
+    * td = To Node description (for IP Address)\n\
+    * ld = Link description (for Bandwidth, delay etc)\n\
+    linkupdate\n\
+    * t = Simulation time\n\
+    * ld = Link description (for Bandwidth, delay etc)\n\
+    nodeupdate\n\
+    * t = Simulation time\n\
+    * descr = Node description\n\
+    * r = Red component\n\
+    * g = Green component\n\
+    * b = Blue component\n\
+    * visible = Node visibility\n\
     packet\n\
     * fbTx = First bit transmit time\n\
     * lbTx = Last bit transmit time\n\
@@ -1380,14 +1438,141 @@ void AnimationInterface::SetConstantPosition (Ptr <Node> n, double x, double y, 
 
 }
 
+void AnimationInterface::SetNodeColor (Ptr <Node> n, uint8_t r, uint8_t g, uint8_t b)
+{
+  if (initialized)
+    NS_FATAL_ERROR ("SetNodeColor must be used prior to creating the AnimationInterface object");
+  NS_ASSERT (n);
+  NS_LOG_INFO ("Setting node color for Node Id:" << n->GetId ());
+  struct Rgb rgb = {r, g, b};
+  nodeColors[n->GetId ()] = rgb;
+}
+
+void AnimationInterface::ShowNode (uint32_t nodeId, bool show)
+{
+  NS_ASSERT (NodeList::GetNode (nodeId));
+  NS_LOG_INFO ("Setting node visibility for Node Id:" << nodeId); 
+  std::ostringstream oss;
+  oss << GetXMLOpenClose_nodeupdate (nodeId, show);
+  WriteN (oss.str ());
+
+}
+
+void AnimationInterface::ShowNode (Ptr <Node> n, bool show)
+{
+  ShowNode (n, show);
+}
+
+void AnimationInterface::UpdateNodeColor (Ptr <Node> n, uint8_t r, uint8_t g, uint8_t b)
+{
+  UpdateNodeColor (n->GetId (), r, g, b);
+}
+
+void AnimationInterface::UpdateNodeColor (uint32_t nodeId, uint8_t r, uint8_t g, uint8_t b)
+{
+  NS_ASSERT (NodeList::GetNode (nodeId));
+  NS_LOG_INFO ("Setting node color for Node Id:" << nodeId); 
+  struct Rgb rgb = {r, g, b};
+  nodeColors[nodeId] = rgb;
+  std::ostringstream oss;
+  oss << GetXMLOpenClose_nodeupdate (nodeId);
+  WriteN (oss.str ());
+}
+
+
+
+void AnimationInterface::SetNodeColor (NodeContainer nc, uint8_t r, uint8_t g, uint8_t b)
+{
+  for (uint32_t i = 0; i < nc.GetN (); ++i)
+    {
+      Ptr <Node> n = nc.Get (i);
+      NS_ASSERT (n);
+      SetNodeColor (n, r, g, b);
+    }
+}
+
+
+void AnimationInterface::UpdateLinkDescription (uint32_t fromNode, uint32_t toNode,
+                                                std::string linkDescription)
+{
+  std::ostringstream oss;
+  oss << GetXMLOpenClose_linkupdate (fromNode, toNode, linkDescription);
+  WriteN (oss.str ());
+}
+
+void AnimationInterface::UpdateLinkDescription (Ptr <Node> fromNode, Ptr <Node> toNode,
+                                                std::string linkDescription)
+{
+  NS_ASSERT (fromNode);
+  NS_ASSERT (toNode);
+  std::ostringstream oss;
+  oss << GetXMLOpenClose_linkupdate (fromNode->GetId (), toNode->GetId (), linkDescription);
+  WriteN (oss.str ());
+}
+
+void AnimationInterface::SetLinkDescription (uint32_t fromNode, uint32_t toNode, 
+                                             std::string linkDescription,
+                                             std::string fromNodeDescription,
+                                             std::string toNodeDescription)
+{
+
+  P2pLinkNodeIdPair p2pPair;
+  p2pPair.fromNode = fromNode;
+  p2pPair.toNode = toNode;
+  LinkProperties lp = { fromNodeDescription, toNodeDescription, linkDescription };
+  linkProperties[p2pPair] = lp;
+  /* DEBUG */
+  /*
+  for (std::map <P2pLinkNodeIdPair, LinkProperties>::const_iterator i = linkProperties.begin ();
+	i != linkProperties.end(); ++i)
+   {
+    P2pLinkNodeIdPair ppair = i->first;
+    LinkProperties l = i->second;
+    NS_LOG_UNCOND ("A:" << ppair.fromNode << " B:" << ppair.toNode << " ad:" << l.fromNodeDescription << " bd:" << l.toNodeDescription << " ld:" << l.linkDescription);
+     
+   }
+   */
+}
+
+void AnimationInterface::SetLinkDescription (Ptr <Node> fromNode, Ptr <Node> toNode,
+                                             std::string linkDescription,
+                                             std::string fromNodeDescription,
+                                             std::string toNodeDescription)
+{
+  NS_ASSERT (fromNode);
+  NS_ASSERT (toNode);
+  SetLinkDescription (fromNode->GetId (), toNode->GetId (), linkDescription, fromNodeDescription, toNodeDescription);
+}
+
+
 void AnimationInterface::SetNodeDescription (Ptr <Node> n, std::string descr) 
 {
+  if (initialized)
+    NS_FATAL_ERROR ("SetNodeDescription must be used prior to creating the AnimationInterface object");
   NS_ASSERT (n);
   nodeDescriptions[n->GetId ()] = descr;
 }
 
+void AnimationInterface::UpdateNodeDescription (Ptr <Node> n, std::string descr)
+{
+  UpdateNodeDescription (n->GetId (), descr);
+}
+
+void AnimationInterface::UpdateNodeDescription (uint32_t nodeId, std::string descr)
+{
+  NS_ASSERT (NodeList::GetNode (nodeId));
+  nodeDescriptions[nodeId] = descr;
+  std::ostringstream oss;
+  oss << GetXMLOpenClose_nodeupdate (nodeId);
+  WriteN (oss.str ());
+}
+
+
+
 void AnimationInterface::SetNodeDescription (NodeContainer nc, std::string descr)
 {
+  if (initialized)
+    NS_FATAL_ERROR ("SetNodeDescription must be used prior to creating the AnimationInterface object");
   for (uint32_t i = 0; i < nc.GetN (); ++i)
     {
       Ptr <Node> n = nc.Get (i);
@@ -1402,10 +1587,10 @@ void AnimationInterface::SetNodeDescription (NodeContainer nc, std::string descr
 std::string AnimationInterface::GetXMLOpen_anim (uint32_t lp)
 {
   std::ostringstream oss;
-  oss <<"<anim lp = \"" << lp << "\" >\n";
+  oss <<"<anim ver=\"" << GetNetAnimVersion () << "\">\n";
   return oss.str ();
 }
-std::string AnimationInterface::GetXMLOpen_topology (double minX,double minY,double maxX,double maxY)
+std::string AnimationInterface::GetXMLOpen_topology (double minX, double minY, double maxX, double maxY)
 {
   std::ostringstream oss;
   oss << "<topology minX = \"" << minX << "\" minY = \"" << minY
@@ -1415,10 +1600,37 @@ std::string AnimationInterface::GetXMLOpen_topology (double minX,double minY,dou
 
 }
 
-std::string AnimationInterface::GetXMLOpenClose_node (uint32_t lp,uint32_t id,double locX,double locY)
+std::string AnimationInterface::GetXMLOpenClose_nodeupdate (uint32_t id, bool visible)
+{
+  struct Rgb rgb = nodeColors[id];
+  uint8_t r = rgb.r;
+  uint8_t g = rgb.g;
+  uint8_t b = rgb.b;
+  std::ostringstream oss;
+  oss << "<nodeupdate id=\"" << id << "\"";
+  oss << " t=\"" << Simulator::Now ().GetSeconds () << "\"";
+  if (visible)
+    oss << " visible=\"" << 1 << "\"";
+  else
+    oss << " visible=\"" << 0 << "\"";
+  if (nodeDescriptions.find (id) != nodeDescriptions.end ())
+    {
+      oss << " descr=\""<< nodeDescriptions[id] << "\"";
+    }
+  else
+    {
+      oss << " descr=\"\"";
+    }
+  oss << " r=\"" << (uint32_t)r << "\" "
+      << " g=\"" << (uint32_t)g << "\" b=\"" << (uint32_t)b <<"\"/>\n";
+  return oss.str ();
+
+}
+
+std::string AnimationInterface::GetXMLOpenClose_node (uint32_t lp, uint32_t id, double locX, double locY)
 {
   std::ostringstream oss;
-  oss <<"<node id = \"" << id << "\""; 
+  oss <<"<node id=\"" << id << "\""; 
   if (nodeDescriptions.find (id) != nodeDescriptions.end ())
     {
       oss << " descr=\""<< nodeDescriptions[id] << "\"";
@@ -1430,17 +1642,73 @@ std::string AnimationInterface::GetXMLOpenClose_node (uint32_t lp,uint32_t id,do
   oss << " locX = \"" << locX << "\" " << "locY = \"" << locY << "\" />\n";
   return oss.str ();
 }
-std::string AnimationInterface::GetXMLOpenClose_link (uint32_t fromLp,uint32_t fromId, uint32_t toLp, uint32_t toId)
+
+std::string AnimationInterface::GetXMLOpenClose_node (uint32_t lp, uint32_t id, double locX, double locY, struct Rgb rgb)
+{
+  uint8_t r = rgb.r;
+  uint8_t g = rgb.g;
+  uint8_t b = rgb.b;
+  std::ostringstream oss;
+  oss <<"<node id = \"" << id << "\"";
+  if (nodeDescriptions.find (id) != nodeDescriptions.end ())
+    {
+      oss << " descr=\""<< nodeDescriptions[id] << "\"";
+    }
+  else
+    {
+      oss << " descr=\"\"";
+    }
+  oss << " locX=\"" << locX << "\" " << "locY=\"" << locY << "\"" << " r=\"" << (uint32_t)r << "\" " 
+    << " g=\"" << (uint32_t)g << "\" b=\"" << (uint32_t)b <<"\"/>\n";
+  return oss.str ();
+}
+
+std::string AnimationInterface::GetXMLOpenClose_linkupdate (uint32_t fromId, uint32_t toId, std::string linkDescription)
+{
+  std::ostringstream oss;
+  oss << "<linkupdate t=\"" << Simulator::Now ().GetSeconds () << "\""
+      << " fromId=\"" << fromId
+      << "\" toId=\"" << toId
+      << "\" ";
+
+  oss << " ld=\"" << linkDescription << "\""
+      << " />\n";
+  return oss.str ();
+
+}
+
+std::string AnimationInterface::GetXMLOpenClose_link (uint32_t fromLp, uint32_t fromId, uint32_t toLp, uint32_t toId)
 {
   std::ostringstream oss;
   oss << "<link fromId=\"" << fromId
-      << "\" toLp=\"0\" toId=\"" << toId
-      << "\"/>" << std::endl;
+      << "\" toId=\"" << toId
+      << "\" ";
+
+  LinkProperties lprop ;
+  lprop.fromNodeDescription = "";
+  lprop.toNodeDescription = "";
+  lprop.linkDescription = "";
+
+  P2pLinkNodeIdPair p1 = { fromId, toId };
+  P2pLinkNodeIdPair p2 = { toId, fromId };
+  if (linkProperties.find (p1) != linkProperties.end())
+    {
+      lprop = linkProperties[p1];
+    }
+  else if (linkProperties.find (p2) != linkProperties.end())
+    {
+      lprop = linkProperties[p2];
+    }
+   
+  oss << " fd=\"" << lprop.fromNodeDescription << "\""
+      << " td=\"" << lprop.toNodeDescription << "\""
+      << " ld=\"" << lprop.linkDescription << "\""
+      << " />\n";
   return oss.str ();
 }
 
 
-std::string AnimationInterface::GetXMLOpen_packet (uint32_t fromLp,uint32_t fromId, double fbTx, double lbTx, std::string auxInfo)
+std::string AnimationInterface::GetXMLOpen_packet (uint32_t fromLp, uint32_t fromId, double fbTx, double lbTx, std::string auxInfo)
 {
   std::ostringstream oss;
   oss << std::setprecision (10);
@@ -1452,7 +1720,7 @@ std::string AnimationInterface::GetXMLOpen_packet (uint32_t fromLp,uint32_t from
   return oss.str ();
 }
 
-std::string AnimationInterface::GetXMLOpen_wpacket (uint32_t fromLp,uint32_t fromId, double fbTx, double lbTx, double range)
+std::string AnimationInterface::GetXMLOpen_wpacket (uint32_t fromLp, uint32_t fromId, double fbTx, double lbTx, double range)
 {
   std::ostringstream oss;
   oss << std::setprecision (10);

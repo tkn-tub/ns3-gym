@@ -233,4 +233,22 @@ UanHelper::Install (Ptr<Node> node, Ptr<UanChannel> channel) const
   return device;
 }
 
+int64_t
+UanHelper::AssignStreams (NetDeviceContainer c, int64_t stream)
+{
+  int64_t currentStream = stream;
+  Ptr<NetDevice> netDevice;
+  for (NetDeviceContainer::Iterator i = c.Begin (); i != c.End (); ++i)
+    {
+      netDevice = (*i);
+      Ptr<UanNetDevice> uan = DynamicCast<UanNetDevice> (netDevice);
+      if (uan)
+        {
+          currentStream += uan->GetPhy ()->AssignStreams (currentStream);
+          currentStream += uan->GetMac ()->AssignStreams (currentStream);
+        }
+    }
+  return (currentStream - stream);
+}
+
 } // end namespace ns3

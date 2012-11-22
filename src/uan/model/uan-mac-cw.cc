@@ -23,7 +23,6 @@
 #include "ns3/uinteger.h"
 #include "ns3/double.h"
 #include "ns3/nstime.h"
-#include "ns3/random-variable.h"
 #include "ns3/uan-header-common.h"
 #include "ns3/trace-source-accessor.h"
 #include "ns3/log.h"
@@ -42,6 +41,7 @@ UanMacCw::UanMacCw ()
     m_cleared (false)
 
 {
+  m_rv = CreateObject<UniformRandomVariable> ();
 }
 
 UanMacCw::~UanMacCw ()
@@ -156,8 +156,7 @@ UanMacCw::Enqueue (Ptr<Packet> packet, const Address &dest, uint16_t protocolNum
             m_pktTx = packet;
             m_pktTxProt = protocolNumber;
             m_state = CCABUSY;
-            UniformVariable rv (0,m_cw);
-            uint32_t cw = (uint32_t) rv.GetValue ();
+            uint32_t cw = (uint32_t) m_rv->GetValue (0,m_cw);
             m_savedDelayS = Seconds ((double)(cw) * m_slotTime.GetSeconds ());
             m_sendTime = Simulator::Now () + m_savedDelayS;
             NS_LOG_DEBUG ("Time " << Simulator::Now ().GetSeconds () << ": Addr " << GetAddress () << ": Enqueuing new packet while busy:  (Chose CW " << cw << ", Sending at " << m_sendTime.GetSeconds () << " Packet size: " << packet->GetSize ());
@@ -285,6 +284,14 @@ UanMacCw::NotifyTxStart (Time duration)
 
     }
 
+}
+
+int64_t
+UanMacCw::AssignStreams (int64_t stream)
+{
+  NS_LOG_FUNCTION (this << stream);
+  m_rv->SetStream (stream);
+  return 1;
 }
 
 void

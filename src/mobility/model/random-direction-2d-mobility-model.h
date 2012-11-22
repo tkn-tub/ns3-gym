@@ -25,7 +25,7 @@
 #include "ns3/nstime.h"
 #include "ns3/event-id.h"
 #include "ns3/rectangle.h"
-#include "ns3/random-variable.h"
+#include "ns3/random-variable-stream.h"
 #include "mobility-model.h"
 #include "constant-velocity-helper.h"
 
@@ -45,6 +45,7 @@ class RandomDirection2dMobilityModel : public MobilityModel
 {
 public:
   static TypeId GetTypeId (void);
+  RandomDirection2dMobilityModel ();
 
 private:
   void ResetDirectionAndSpeed (void);
@@ -57,12 +58,13 @@ private:
   virtual Vector DoGetPosition (void) const;
   virtual void DoSetPosition (const Vector &position);
   virtual Vector DoGetVelocity (void) const;
+  virtual int64_t DoAssignStreams (int64_t);
 
   static const double PI;
-  UniformVariable m_direction;
+  Ptr<UniformRandomVariable> m_direction;
   Rectangle m_bounds;
-  RandomVariable m_speed;
-  RandomVariable m_pause;
+  Ptr<RandomVariableStream> m_speed;
+  Ptr<RandomVariableStream> m_pause;
   EventId m_event;
   ConstantVelocityHelper m_helper;
 };

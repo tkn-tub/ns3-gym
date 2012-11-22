@@ -36,9 +36,11 @@
 #include <ns3/generic-phy.h>
 #include <ns3/packet-burst.h>
 #include <ns3/lte-interference.h>
-#include <ns3/random-variable.h>
+#include "ns3/random-variable-stream.h"
 #include <map>
 #include <ns3/ff-mac-common.h>
+#include <ns3/lte-harq-phy.h>
+#include <ns3/lte-common.h>
 
 namespace ns3 {
 
@@ -58,9 +60,13 @@ struct TbId_t
   
 struct tbInfo_t
 {
+  uint8_t ndi;
   uint16_t size;
   uint8_t mcs;
   std::vector<int> rbBitmap;
+  uint8_t harqProcessId;
+  double mi;
+  bool downlink;
   bool corrupt;
 };
 
@@ -113,6 +119,18 @@ typedef Callback< void, std::list<Ptr<LteControlMessage> > > LtePhyRxCtrlEndOkCa
 */
 typedef Callback< void > LtePhyRxCtrlEndErrorCallback;
 
+/**
+* This method is used by the LteSpectrumPhy to notify the PHY about
+* the status of a certain DL HARQ process
+*/
+typedef Callback< void, DlInfoListElement_s > LtePhyDlHarqFeedbackCallback;
+
+/**
+* This method is used by the LteSpectrumPhy to notify the PHY about
+* the status of a certain UL HARQ process
+*/
+typedef Callback< void, UlInfoListElement_s > LtePhyUlHarqFeedbackCallback;
+
 
 
 /**
@@ -153,6 +171,8 @@ public:
   void StartRx (Ptr<SpectrumSignalParameters> params);
   void StartRxData (Ptr<LteSpectrumSignalParametersDataFrame> params);
   void StartRxCtrl (Ptr<SpectrumSignalParameters> params);
+
+  void SetHarqPhyModule (Ptr<LteHarqPhy> harq);
 
   /**
    * set the Power Spectral Density of outgoing signals in W/Hz.
@@ -254,6 +274,22 @@ public:
   void SetLtePhyRxCtrlEndErrorCallback (LtePhyRxCtrlEndErrorCallback c);
 
   /**
+  * set the callback for the DL HARQ feedback as part of the 
+  * interconnections betweenthe LteSpectrumPhy and the PHY
+  *
+  * @param c the callback
+  */
+  void SetLtePhyDlHarqFeedbackCallback (LtePhyDlHarqFeedbackCallback c);
+
+  /**
+  * set the callback for the UL HARQ feedback as part of the
+  * interconnections betweenthe LteSpectrumPhy and the PHY
+  *
+  * @param c the callback
+  */
+  void SetLtePhyUlHarqFeedbackCallback (LtePhyUlHarqFeedbackCallback c);
+
+  /**
    * \brief Set the state of the phy layer
    * \param newState the state
    */
@@ -273,6 +309,14 @@ public:
   * \param p the new LteSinrChunkProcessor to be added to the data processing chain
   */
   void AddDataSinrChunkProcessor (Ptr<LteSinrChunkProcessor> p);
+
+  /**
+  *  LteSinrChunkProcessor devoted to evaluate intefrerence + noise power 
+  *  in data frame
+  *
+  * \param p the new LteSinrChunkProcessor to be added to the data processing chain
+  */
+  void AddInterferenceChunkProcessor (Ptr<LteSinrChunkProcessor> p);
   
   
   /** 
@@ -286,13 +330,17 @@ public:
   * 
   * 
   * \param rnti the rnti of the source of the TB
+  * \param ndi new data indicator flag
   * \param size the size of the TB
   * \param mcs the MCS of the TB
   * \param map the map of RB(s) used
   * \param layer the layer (in case of MIMO tx)
+  * \param harqId the id of the HARQ process (valid only for DL)
+  * \param downlink true when the TB is for DL
   */
-  void AddExpectedTb (uint16_t  rnti, uint16_t size, uint8_t mcs, std::vector<int> map, uint8_t layer);
-  
+  void AddExpectedTb (uint16_t  rnti, uint8_t ndi, uint16_t size, uint8_t mcs, std::vector<int> map, uint8_t layer, uint8_t harqId, bool downlink);
+
+
   /** 
   * 
   * 
@@ -316,6 +364,15 @@ public:
 
   friend class LteUePhy;
   
+ /**
+  * Assign a fixed random variable stream number to the random variables
+  * used by this model.  Return the number of streams (possibly zero) that
+  * have been assigned.
+  *
+  * \param stream first stream index to use
+  * \return the number of stream indices assigned by this model
+  */
+  int64_t AssignStreams (int64_t stream);
 
 private:
   void ChangeState (State newState);
@@ -366,14 +423,22 @@ private:
   
   expectedTbs_t m_expectedTbs;
   SpectrumValue m_sinrPerceived;
-  
-  UniformVariable m_random;
+
+  /// Provides uniform random variables.
+  Ptr<UniformRandomVariable> m_random;
   bool m_dataErrorModelEnabled; // when true (default) the phy error model is enabled
   bool m_ctrlErrorModelEnabled; // when true (default) the phy error model is enabled for DL ctrl frame
   
   uint8_t m_transmissionMode; // for UEs: store the transmission mode
+  uint8_t m_layersNum;
   std::vector <double> m_txModeGain; // duplicate value of LteUePhy
-  
+
+  Ptr<LteHarqPhy> m_harqPhyModule;
+  LtePhyDlHarqFeedbackCallback m_ltePhyDlHarqFeedbackCallback;
+  LtePhyUlHarqFeedbackCallback m_ltePhyUlHarqFeedbackCallback;
+
+  uint16_t errors; // DEBUG
+
 };
 
 

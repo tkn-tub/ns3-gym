@@ -150,4 +150,11 @@ UanMacAloha::GetBroadcast (void) const
   return broadcast;
 }
 
+int64_t
+UanMacAloha::AssignStreams (int64_t stream)
+{
+  NS_LOG_FUNCTION (this << stream);
+  return 0;
+}
+
 }

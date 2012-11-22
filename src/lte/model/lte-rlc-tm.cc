@@ -101,9 +101,9 @@ LteRlcTm::DoTransmitPdcpPdu (Ptr<Packet> p)
  */
 
 void
-LteRlcTm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer)
+LteRlcTm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId)
 {
-  NS_LOG_FUNCTION (this << m_rnti << (uint32_t) m_lcid << bytes);
+  NS_LOG_FUNCTION (this << m_rnti << (uint32_t) m_lcid << bytes  << (uint32_t) layer << (uint32_t) harqId);
 
   // 5.1.1.1 Transmit operations 
   // 5.1.1.1.1 General
@@ -140,6 +140,7 @@ LteRlcTm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer)
   params.rnti = m_rnti;
   params.lcid = m_lcid;
   params.layer = layer;
+  params.harqProcessId = harqId;
 
   m_macSapProvider->TransmitPdu (params);
 

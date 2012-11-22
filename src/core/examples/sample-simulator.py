@@ -44,7 +44,9 @@ def CancelledEvent():
 def main(dummy_argv):
 
     model = MyModel()
-    v = ns.core.UniformVariable(10,20)
+    v = ns.core.UniformRandomVariable()
+    v.SetAttribute("Min", ns.core.DoubleValue (10))
+    v.SetAttribute("Max", ns.core.DoubleValue (20))
 
     ns.core.Simulator.Schedule(ns.core.Seconds(10.0), ExampleFunction, model)
 

@@ -125,7 +125,6 @@ public:
    *
    * This method is typically called by lower layers
    * to forward packets up the stack to the right protocol.
-   * It is also called from NodeImpl::GetUdp for example.
    */
   Ptr<IpL4Protocol> GetProtocol (int protocolNumber) const;
   /**

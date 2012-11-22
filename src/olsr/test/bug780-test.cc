@@ -39,6 +39,7 @@
 #include "ns3/v4ping-helper.h"
 #include "ns3/pcap-file.h"
 #include "ns3/pcap-test.h"
+#include "ns3/rng-seed-manager.h"
 
 #include "bug780-test.h"
 
@@ -71,7 +72,8 @@ Bug780Test::~Bug780Test()
 void
 Bug780Test::DoRun ()
 {
-  SeedManager::SetSeed (123);
+  RngSeedManager::SetSeed (12345);
+  RngSeedManager::SetRun (12345);
   CreateNodes ();
 
   Simulator::Stop (m_time);
@@ -87,6 +89,7 @@ Bug780Test::CreateNodes (void)
   int nWifis = 3;
   double SimTime = 200.0;
   std::string phyMode ("DsssRate1Mbps");
+  int64_t streamsUsed = 0;
 
   //sending one packets per sec
   // Fix non-unicast data rate to be the same as that of unicast
@@ -101,7 +104,8 @@ Bug780Test::CreateNodes (void)
   YansWifiChannelHelper wifiChannel;
   wifiChannel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
   wifiChannel.AddPropagationLoss ("ns3::FriisPropagationLossModel");
-  wifiPhy.SetChannel (wifiChannel.Create ());
+  Ptr<YansWifiChannel> chan = wifiChannel.Create ();
+  wifiPhy.SetChannel (chan);
 
   // Add a non-QoS upper mac, and disable rate control
   NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
@@ -118,11 +122,21 @@ Bug780Test::CreateNodes (void)
   wifiMac.SetType ("ns3::AdhocWifiMac");
   NetDeviceContainer adhocDevices = wifi.Install (wifiPhy, wifiMac, adhocNodes);
 
+  // Assign fixed stream numbers to wifi and channel random variables
+  streamsUsed += wifi.AssignStreams (adhocDevices, streamsUsed);
+  // Assign 6 streams per Wifi device
+  NS_TEST_ASSERT_MSG_EQ (streamsUsed, (adhocDevices.GetN () * 6), "Stream assignment mismatch");
+  streamsUsed += wifiChannel.AssignStreams (chan, streamsUsed);
+  // Assign 0 streams per channel for this configuration 
+  NS_TEST_ASSERT_MSG_EQ (streamsUsed, (adhocDevices.GetN () * 6), "Stream assignment mismatch");
+
   OlsrHelper olsr;
 
   InternetStackHelper internet;
   internet.SetRoutingHelper (olsr);
   internet.Install (adhocNodes);
+  streamsUsed += olsr.AssignStreams (adhocNodes, 0);
+  NS_TEST_ASSERT_MSG_EQ (streamsUsed, ((adhocDevices.GetN () * 6) + nWifis), "Should have assigned 3 streams");
 
   Ipv4AddressHelper addressAdhoc;
   addressAdhoc.SetBase ("10.1.1.0", "255.255.255.0");

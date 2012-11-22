@@ -477,11 +477,16 @@ PcapFile::Diff (std::string const & f1, std::string const & f2,
 
   uint8_t *data1 = new uint8_t [snapLen] ();
   uint8_t *data2 = new uint8_t [snapLen] ();
-  uint32_t tsSec1, tsSec2;
-  uint32_t tsUsec1, tsUsec2;
-  uint32_t inclLen1, inclLen2;
-  uint32_t origLen1, origLen2;
-  uint32_t readLen1, readLen2;
+  uint32_t tsSec1 = 0;
+  uint32_t tsSec2 = 0;
+  uint32_t tsUsec1 = 0;
+  uint32_t tsUsec2 = 0;
+  uint32_t inclLen1 = 0;
+  uint32_t inclLen2 = 0;
+  uint32_t origLen1 = 0;
+  uint32_t origLen2 = 0;
+  uint32_t readLen1 = 0;
+  uint32_t readLen2 = 0;
   bool diff = false;
 
   while (!pcap1.Eof () && !pcap2.Eof ())

@@ -65,15 +65,23 @@ Running time is measured using default Linux shell command **time**. This comman
 Perl script
 ~~~~~~~~~~~
 
-To simplify the process of running the profiling script for a wide range of values and collecting its timing data, a simple Perl script to automate the complete process is provided. It is placed in ``src/lte/test/lte-test-run-time.pl`` for *lena-profiling* and in ``src/lte/epc-test-run-time.pl`` for *lena-simple-epc*. It simply runs a batch of simulations with a range of parameters and stores the timing results in a CSV file called *times.csv* and *epcTimes.csv* respectively. The range of values each parameter sweeps can be modified editing the corresponding script.
+To simplify the process of running the profiling script for a wide range of values and collecting its timing data, a simple Perl script to automate the complete process is provided. It is placed in ``src/lte/test/lte-test-run-time.pl`` for *lena-profiling* and in ``src/lte/epc-test-run-time.pl`` for *lena-simple-epc*. It simply runs a batch of simulations with a range of parameters and stores the timing results in a CSV file called *lteTimes.csv* and *epcTimes.csv* respectively. The range of values each parameter sweeps can be modified editing the corresponding script.
 
 Requirements
 ------------
 
 The following Perl modules are required to use the provided script, all of them available from CPAN:
-* IO::CaptureOutput 
-* Statistics::Descriptive
-* Cwd
+ * IO::CaptureOutput 
+ * Statistics::Descriptive
+
+For installing the modules, simply use the follwing command:
+
+``perl -MCPAN -e 'install moduleName'``
+
+Plotting results
+----------------
+
+To plot the results obtained from running the Perl scripts, two gnuplot scripts are provided, in ``src/lte/test/lte-test-run-plot`` and ``src/lte/test/epc-test-run-plot``. Most of the plots available in this documentation can be reproduced with those, typing the commands ``gnuplot < src/lte/test/lte-test-run-plot``  and  ``gnuplot < src/lte/test/epc-test-run-plot``.
 
 Reference software and equipment
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

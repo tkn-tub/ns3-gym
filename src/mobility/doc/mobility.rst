@@ -217,6 +217,43 @@ Once the helper is configured, it is typically passed a container, such as:
 A MobilityHelper object may be reconfigured and reused for different
 NodeContainers during the configuration of an ns-3 scenario.
 
+Use of Random Variables
+=======================
+
+A typical use case is to evaluate protocols on a mobile topology that
+involves some randomness in the motion or initial position allocation.
+To obtain random motion and positioning that is not affected by
+the configuration of the rest of the scenario, it is recommended to
+use the "AssignStreams" facility of the random number system.
+
+Class ``MobilityModel`` and class ``PositionAllocator`` both have public
+API to assign streams to underlying random variables:
+
+::
+
+  /**
+   * Assign a fixed random variable stream number to the random variables
+   * used by this model. Return the number of streams (possibly zero) that
+   * have been assigned.
+   *
+   * \param stream first stream index to use
+   * \return the number of stream indices assigned by this model
+   */
+  int64_t AssignStreams (int64_t stream);
+
+The class ``MobilityHelper`` also provides this API.  The typical usage 
+pattern when using the helper is:
+
+::
+
+  int64_t streamIndex = /*some positive integer */  
+  MobilityHelper mobility;
+  ... (configure mobility)
+  mobility.Install (wifiStaNodes);
+  int64_t streamsUsed = mobility.AssignStreams (wifiStaNodes, streamIndex);
+
+If AssignStreams is called before Install, it will not have any effect.
+
 Advanced Usage
 ==============
 

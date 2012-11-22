@@ -165,6 +165,12 @@ to be specified.  Running the command
 
   ./test.py --suite=ns3-wifi-propagation-loss-models
 
+or equivalently
+
+::
+
+  ./test.py -s ns3-wifi-propagation-loss-models
+
 results in that single test suite being run.
 
 ::
@@ -456,11 +462,35 @@ Performance Tests
 Performance tests are those which exercise a particular part of the system
 and determine if the tests have executed to completion in a reasonable time.
 
+As of ns-3.15, there are no performance tests that are formally part of
+the test framework (contributed tests would be helpful here).
+
 Running Tests
-+++++++++++++
+*************
 
 Tests are typically run using the high level ``test.py`` program. To get a list of the available command-line options, run ``test.py --help``
- 
+
+The test program ``test.py`` will run both tests and those examples that
+have been added to the list to check.  The difference between tests
+and examples is as follows.  Tests generally check that specific simulation
+output or events conforms to expected behavior.  In contrast, the output
+of examples is not checked, and the test program merely checks the exit
+status of the example program to make sure that it runs without error.
+
+Briefly, to run all tests, first one must configure tests during configuration
+stage, and also (optionally) examples if examples are to be checked:
+
+::
+
+   ./waf --configure --enable-examples --enable-tests
+
+Then, build ns-3, and after it is built, just run ``test.py``.  ``test.py -h``
+will show a number of configuration options that modify the behavior
+of test.py.
+
+The program ``test.py`` invokes, for C++ tests and examples, a lower-level
+C++ program called ``test-runner`` to actually run the tests.  As discussed
+below, this ``test-runner`` can be a helpful way to debug tests.
 
 Debugging Tests
 ***************
@@ -541,7 +571,10 @@ directory tree looking for a directory file with files named ``VERSION`` and
 ``LICENSE.``  If it finds one, it assumes that must be the basedir and provides
 it for you.
 
-Similarly, many test suites need to write temporary files (such as pcap files)
+Test output
++++++++++++
+
+Many test suites need to write temporary files (such as pcap files)
 in the process of running the tests.  The tests then need a temporary directory
 to write to.  The Python test utility (test.py) will provide a temporary file
 automatically, but if run stand-alone this temporary directory must be provided.
@@ -562,6 +595,20 @@ named something like
 The time is provided as a hint so that you can relatively easily reconstruct
 what directory was used if you need to go back and look at the files that were
 placed in that directory.
+
+Another class of output is test output like pcap traces that are generated
+to compare to reference output.  The test program will typically delete
+these after the test suites all run.  To disable the deletion of test
+output, run ``test.py`` with the "retain" option:
+
+::
+
+   ./test.py -r
+
+and test output can be found in the ``testpy-output/`` directory.
+
+Reporting of test failures
+++++++++++++++++++++++++++
 
 When you run a test suite using the test-runner it will run the test quietly
 by default.  The only indication that you will get that the test passed is 
@@ -620,6 +667,41 @@ If you are familiar with XML this should be fairly self-explanatory.  It is
 also not a complete XML file since test suites are designed to have their
 output appended to a master XML status file as described in the ``test.py``
 section.
+
+Debugging test suite failures
++++++++++++++++++++++++++++++
+
+To debug test crashes, such as::
+
+  CRASH: TestSuite ns3-wifi-interference
+
+You can access the underlying test-runner program via gdb as follows, and
+then pass the "--basedir=`pwd`" argument to run (you can also pass other
+arguments as needed, but basedir is the minimum needed)::
+
+  ./waf --command-template="gdb %s" --run "test-runner"
+  Waf: Entering directory `/home/tomh/hg/sep09/ns-3-allinone/ns-3-dev-678/build'
+  Waf: Leaving directory `/home/tomh/hg/sep09/ns-3-allinone/ns-3-dev-678/build'
+  'build' finished successfully (0.380s)
+  GNU gdb 6.8-debian
+  Copyright (C) 2008 Free Software Foundation, Inc.
+  L cense GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+  This is free software: you are free to change and redistribute it.
+  There is NO WARRANTY, to the extent permitted by law.  Type "show copying"
+  and "show warranty" for details.
+  This GDB was configured as "x86_64-linux-gnu"...
+  (gdb) r --basedir=`pwd`
+  Starting program: <..>/build/debug/utils/test-runner --basedir=`pwd`
+  [Thread debugging using libthread_db enabled]
+  assert failed. file=../src/core/model/type-id.cc, line=138, cond="uid <= m_information.size () && uid != 0"
+  ...
+
+Here is another example of how to use valgrind to debug a memory problem
+such as::
+
+  VALGR: TestSuite devices-mesh-dot11s-regression
+
+  ./waf --command-template="valgrind %s --basedir=`pwd` --suite=devices-mesh-dot11s-regression" --run test-runner
 
 Class TestRunner
 ****************
@@ -706,7 +788,7 @@ case a name and override the ``DoRun`` method to run the test.
   }
 
 Utilities
-+++++++++
+*********
 
 There are a number of utilities of various kinds that are also part of the 
 testing framework.  Examples include a generalized pcap file useful for
@@ -714,37 +796,6 @@ storing test vectors; a generic container useful for transient storage of
 test vectors during test execution; and tools for generating presentations
 based on validation and verification testing results.
 
-Debugging test suite failures
-+++++++++++++++++++++++++++++
-
-To debug test crashes, such as::
-
-  CRASH: TestSuite ns3-wifi-interference
-
-You can access the underlying test-runner program via gdb as follows, and
-then pass the "--basedir=`pwd`" argument to run (you can also pass other
-arguments as needed, but basedir is the minimum needed)::
-
-  ./waf --command-template="gdb %s" --run "test-runner"
-  Waf: Entering directory `/home/tomh/hg/sep09/ns-3-allinone/ns-3-dev-678/build'
-  Waf: Leaving directory `/home/tomh/hg/sep09/ns-3-allinone/ns-3-dev-678/build'
-  'build' finished successfully (0.380s)
-  GNU gdb 6.8-debian
-  Copyright (C) 2008 Free Software Foundation, Inc.
-  L cense GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
-  This is free software: you are free to change and redistribute it.
-  There is NO WARRANTY, to the extent permitted by law.  Type "show copying"
-  and "show warranty" for details.
-  This GDB was configured as "x86_64-linux-gnu"...
-  (gdb) r --basedir=`pwd`
-  Starting program: <..>/build/debug/utils/test-runner --basedir=`pwd`
-  [Thread debugging using libthread_db enabled]
-  assert failed. file=../src/core/model/type-id.cc, line=138, cond="uid <= m_information.size () && uid != 0"
-  ...
-
-Here is another example of how to use valgrind to debug a memory problem
-such as::
-
-  VALGR: TestSuite devices-mesh-dot11s-regression
-
-  ./waf --command-template="valgrind %s --basedir=`pwd` --suite=devices-mesh-dot11s-regression" --run test-runner
+These utilities are not documented here, but for example, please see
+how the TCP tests found in ``src/test/ns3tcp/`` use pcap files and reference
+output.

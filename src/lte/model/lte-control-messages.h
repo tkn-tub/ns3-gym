@@ -49,6 +49,7 @@ public:
     DL_DCI, UL_DCI, // Downlink/Uplink Data Control Indicator
     DL_CQI, UL_CQI, // Downlink/Uplink Channel Quality Indicator
     BSR, // Buffer Status Report
+    DL_HARQ, // UL HARQ feedback
     RACH_PREAMBLE, // Random Access Preamble
     RAR, // Random Access Response
     MIB, // Master Information Block
@@ -78,7 +79,7 @@ private:
 
 
 
-// ----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------
 
 
 #ifndef DL_DCI_LTE_CONTROL_MESSAGES_H
@@ -121,7 +122,7 @@ private:
 #endif /* DL_DCI_LTE_CONTROL_MESSAGES_H */
 
 
-// ----------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
 
 
 #ifndef UL_DCI_LTE_CONTROL_MESSAGES_H
@@ -165,7 +166,7 @@ private:
 
 
 
-// ----------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
 
 
 
@@ -211,7 +212,7 @@ private:
 #endif /* DLCQI_LTE_CONTROL_MESSAGES_H */
 
 
-// ----------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
 
 #ifndef BSR_LTE_CONTROL_MESSAGES_H
 #define BSR_LTE_CONTROL_MESSAGES_H
@@ -255,8 +256,51 @@ private:
 
 } // namespace ns3
 
-#endif  // BSR_LTE_CONTROL_MESSAGES_H
+#endif /* BSR_LTE_CONTROL_MESSAGES_H */
 
+
+// ---------------------------------------------------------------------------
+
+#ifndef DL_HARQ_LTE_CONTROL_MESSAGES_H
+#define DL_HARQ_LTE_CONTROL_MESSAGES_H
+
+#include <ns3/object.h>
+#include <ns3/ff-mac-common.h>
+
+namespace ns3 {
+
+/**
+ * \ingroup lte
+ * The downlink DlHarqFeedbackLteControlMessage defines the specific
+ * messages for transmitting the DL HARQ feedback through PUCCH
+ */
+class DlHarqFeedbackLteControlMessage : public LteControlMessage
+{
+public:
+  DlHarqFeedbackLteControlMessage (void);
+  virtual ~DlHarqFeedbackLteControlMessage (void);
+
+  /**
+  * \brief add a DL HARQ feedback record into the message.
+  * \param DlInfoListElement_s the dl HARQ feedback
+  */
+  void SetDlHarqFeedback (DlInfoListElement_s m);
+
+  /**
+  * \brief Get DL HARQ informations
+  * \return DL HARQ message
+  */
+  DlInfoListElement_s GetDlHarqFeedback (void);
+
+
+private:
+  DlInfoListElement_s m_dlInfoListElement;
+
+
+};
+} // namespace ns3
+
+#endif /* DL_HARQ_LTE_CONTROL_MESSAGES_H */
 
 
 #ifndef RACH_PREAMBLE_LTE_CONTROL_MESSAGES_H

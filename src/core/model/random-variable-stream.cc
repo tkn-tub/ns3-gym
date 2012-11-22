@@ -251,7 +251,7 @@ SequentialRandomVariable::GetTypeId (void)
 		  MakeDoubleAccessor(&SequentialRandomVariable::m_max),
 		  MakeDoubleChecker<double>())
     .AddAttribute("Increment", "The sequence random variable increment.",
-                  StringValue("ns3::ConstantRandomVariable[Contant=1]"),
+                  StringValue("ns3::ConstantRandomVariable[Constant=1]"),
                   MakePointerAccessor (&SequentialRandomVariable::m_increment),
                   MakePointerChecker<RandomVariableStream> ())
     .AddAttribute("Consecutive", "The number of times each member of the sequence is repeated.",

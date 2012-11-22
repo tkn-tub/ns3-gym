@@ -74,15 +74,18 @@ Implementation changes
 ======================
 
 * The DsrFsHeader has added 3 fields: message type, source id, destination id, 
-and these changes only for post-processing
-** message type is used to identify the data packet from control packet
-** source id is used to identify the real source of the data packet since we have to deliver the packet hop-by-hop and the ipv4header is not carrying the real source and destination ip address as needed
-** destination id is for same reason of above
+  and these changes only for post-processing
+
+  * message type is used to identify the data packet from control packet
+  * source id is used to identify the real source of the data packet since we have to deliver the packet hop-by-hop and the ipv4header is not carrying the real source and destination ip address as needed
+  * destination id is for same reason of above
+    
 * Route Reply header is not word-aligned in DSR rfc, change it to word-aligned in implementation
 * DSR works as a shim header between transport and network protocol, it needs its own forwarding mechanism, we are changing the packet transmission to hop-by-hop delivery, so we added two fields in dsr fixed header to notify packet delivery
-     1. message type to notify the type of this packet: data packet or control one
-     2. source id to identify the real source address of this packet
-     3. destination id to identify the real destination
+  
+  # message type to notify the type of this packet: data packet or control one
+  # source id to identify the real source address of this packet
+  # destination id to identify the real destination
 
 Current Route Cache implementation
 ==================================
@@ -124,7 +127,8 @@ Examples
 
 The example can be found in ``src/dsr/examples/``:
 
-* dsr.cc use DSR as routing protocol within a traditional MANETs environment[3]. 
+* dsr.cc use DSR as routing protocol within a traditional MANETs environment[3].
+
 DSR is also built in the routing comparison case in ``examples/routing/``:
 
 * ``manet-routing-compare.cc`` is a comparison case with built in MANET routing protocols and can generate its own results.

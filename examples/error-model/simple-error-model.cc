@@ -116,9 +116,7 @@ main (int argc, char *argv[])
 
   OnOffHelper onoff ("ns3::UdpSocketFactory",
                      Address (InetSocketAddress (i3i2.GetAddress (1), port)));
-  onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
-  onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
-
+  onoff.SetConstantRate (DataRate ("448kb/s"));
   ApplicationContainer apps = onoff.Install (c.Get (0));
   apps.Start (Seconds (1.0));
   apps.Stop (Seconds (10.0));
@@ -149,8 +147,8 @@ main (int argc, char *argv[])
   //
   // Create an ErrorModel based on the implementation (constructor)
   // specified by the default classId
-  Ptr<RateErrorModel> em = CreateObjectWithAttributes<RateErrorModel> ("RanVar", RandomVariableValue (UniformVariable (0.0, 1.0)),
-                                                                       "ErrorRate", DoubleValue (0.001));
+  Ptr<RateErrorModel> em = CreateObject<RateErrorModel> ();
+  em->SetAttribute ("ErrorRate", DoubleValue (0.001));
   d3d2.Get (0)->SetAttribute ("ReceiveErrorModel", PointerValue (em));
 
   // Now, let's use the ListErrorModel and explicitly force a loss

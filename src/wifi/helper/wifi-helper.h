@@ -171,6 +171,22 @@ public:
    */
   static void EnableLogComponents (void);
 
+  /**
+  * Assign a fixed random variable stream number to the random variables
+  * used by the Phy and Mac aspects of the Wifi models.  Each device in
+  * container c has fixed stream numbers assigned to its random variables.
+  * The Wifi channel (e.g. propagation loss model) is excluded.
+  * Return the number of streams (possibly zero) that
+  * have been assigned. The Install() method should have previously been
+  * called by the user.
+  *
+  * \param c NetDeviceContainer of the set of net devices for which the 
+  *          WifiNetDevice should be modified to use fixed streams
+  * \param stream first stream index to use
+  * \return the number of stream indices assigned by this helper
+  */
+  int64_t AssignStreams (NetDeviceContainer c, int64_t stream);
+
 private:
   ObjectFactory m_stationManager;
   enum WifiPhyStandard m_standard;

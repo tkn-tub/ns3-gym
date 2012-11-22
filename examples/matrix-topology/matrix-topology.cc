@@ -243,15 +243,16 @@ int main (int argc, char *argv[])
               // same time. This rn is added to AppStartTime to have the sources
               // start at different time, however they will still send at the same rate.
 
-              UniformVariable x (0,1);
-              double rn = x.GetValue ();
+              Ptr<UniformRandomVariable> x = CreateObject<UniformRandomVariable> ();
+              x->SetAttribute ("Min", DoubleValue (0));
+              x->SetAttribute ("Max", DoubleValue (1));
+              double rn = x->GetValue ();
               Ptr<Node> n = nodes.Get (j);
               Ptr<Ipv4> ipv4 = n->GetObject<Ipv4> ();
               Ipv4InterfaceAddress ipv4_int_addr = ipv4->GetAddress (1, 0);
               Ipv4Address ip_addr = ipv4_int_addr.GetLocal ();
               OnOffHelper onoff ("ns3::UdpSocketFactory", InetSocketAddress (ip_addr, port)); // traffic flows from node[i] to node[j]
-              onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable  (1)));
-              onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
+              onoff.SetConstantRate (DataRate (AppPacketRate));
               ApplicationContainer apps = onoff.Install (nodes.Get (i));  // traffic sources are installed on all nodes
               apps.Start (Seconds (AppStartTime + rn));
               apps.Stop (Seconds (AppStopTime));

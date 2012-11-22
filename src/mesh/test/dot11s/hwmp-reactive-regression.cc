@@ -20,7 +20,8 @@
 
 #include "ns3/mesh-helper.h"
 #include "ns3/simulator.h"
-#include "ns3/random-variable.h"
+#include "ns3/random-variable-stream.h"
+#include "ns3/rng-seed-manager.h"
 #include "ns3/mobility-helper.h"
 #include "ns3/double.h"
 #include "ns3/uinteger.h"
@@ -51,7 +52,8 @@ HwmpReactiveRegressionTest::~HwmpReactiveRegressionTest ()
 void
 HwmpReactiveRegressionTest::DoRun ()
 {
-  SeedManager::SetSeed (12345);
+  RngSeedManager::SetSeed (12345);
+  RngSeedManager::SetRun (7);
   CreateNodes ();
   CreateDevices ();
   InstallApplications ();
@@ -99,18 +101,27 @@ HwmpReactiveRegressionTest::InstallApplications ()
 void
 HwmpReactiveRegressionTest::CreateDevices ()
 {
+  int64_t streamsUsed = 0;
   // 1. setup WiFi
   YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
   // This test suite output was originally based on YansErrorRateModel
   wifiPhy.SetErrorRateModel ("ns3::YansErrorRateModel");
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
-  wifiPhy.SetChannel (wifiChannel.Create ());
+  Ptr<YansWifiChannel> chan = wifiChannel.Create ();
+  wifiPhy.SetChannel (chan);
+
   // 2. setup mesh
   MeshHelper mesh = MeshHelper::Default ();
   mesh.SetStackInstaller ("ns3::Dot11sStack");
   mesh.SetMacType ("RandomStart", TimeValue (Seconds (0.1)));
   mesh.SetNumberOfInterfaces (1);
   NetDeviceContainer meshDevices = mesh.Install (wifiPhy, *m_nodes);
+  // Six devices, 4 streams per device
+  streamsUsed += mesh.AssignStreams (meshDevices, streamsUsed);
+  NS_TEST_EXPECT_MSG_EQ (streamsUsed, (meshDevices.GetN () * 4), "Stream assignment mismatch");
+  streamsUsed += wifiChannel.AssignStreams (chan, streamsUsed);
+  NS_TEST_EXPECT_MSG_EQ (streamsUsed, (meshDevices.GetN () * 4), "Stream assignment mismatch");
+
   // 3. setup TCP/IP
   InternetStackHelper internetStack;
   internetStack.Install (*m_nodes);

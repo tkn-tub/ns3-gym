@@ -107,7 +107,7 @@ public:
   virtual ~Ns2MobilityHelperTest ()
   {
   }
-  /// Set NS-2 trace to read as single large string (don't forget to add \n and quote ")
+  /// Set NS-2 trace to read as single large string (don't forget to add \\n and quote \"'s)
   void SetTrace (std::string const & trace)
   {
     m_trace = trace;
