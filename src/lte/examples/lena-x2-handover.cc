@@ -39,8 +39,6 @@ NS_LOG_COMPONENT_DEFINE ("EpcX2HandoverExample");
 int
 main (int argc, char *argv[])
 {
-  Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue (false));
-  Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));  
   // LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
 
   // LogComponentEnable ("LteHelper", logLevel);
@@ -107,6 +105,10 @@ main (int argc, char *argv[])
   for (uint16_t i = 0; i < numberOfEnbs; i++)
     {
       positionAlloc->Add (Vector(distance * 2*i - distance, 0, 0));
+    }
+  for (uint16_t i = 0; i < numberOfUes; i++)
+    {
+      positionAlloc->Add (Vector(0, 0, 0));
     }
   MobilityHelper mobility;
   mobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
