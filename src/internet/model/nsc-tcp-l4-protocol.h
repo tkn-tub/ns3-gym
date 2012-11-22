@@ -84,8 +84,7 @@ public:
                                             Ipv4Header const &header,
                                             Ptr<Ipv4Interface> incomingInterface);
   virtual IpL4Protocol::RxStatus Receive (Ptr<Packet> p,
-                                                 Ipv6Address &src,
-                                                 Ipv6Address &dst,
+                                                 Ipv6Header const &header,
                                                  Ptr<Ipv6Interface> interface);
 
   // From IpL4Protocol
