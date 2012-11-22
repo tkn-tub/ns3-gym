@@ -88,13 +88,67 @@ public:
     uint16_t    cause;
   };
 
+  /**
+   * UL Interference OverloadIndication as
+   * it is used in the LOAD INFORMATION message.
+   * See section 9.2.17 for further info about the values
+   */
+  enum UlInterferenceOverloadIndicationItem
+  {
+    HighInterference,
+    MediumInterference,
+    LowInterference
+  };
+
+  /**
+   * UL High Interference Information as
+   * it is used in the LOAD INFORMATION message.
+   * See section 9.1.2.1 for further info about the parameters
+   */
+  struct UlHighInterferenceInformationItem
+  {
+    uint16_t    targetCellId;
+    std::vector <bool> ulHighInterferenceIndicationList;
+  };
+
+  /**
+   * Relative Narrowband Tx Power (RNTP) as
+   * it is used in the LOAD INFORMATION message.
+   * See section 9.2.19 for further info about the parameters
+   * 
+   * Note: You can use INT16_MIN value for -infinite value
+   *       in the rntpThreshold field
+   */
+  struct RelativeNarrowbandTxBand
+  {
+    std::vector <bool> rntpPerPrbList;
+    int16_t     rntpThreshold;
+    uint16_t    antennaPorts;
+    uint16_t    pB;
+    uint16_t    pdcchInterferenceImpact;
+  };
+
+  /**
+   * Cell Information Item as
+   * it is used in the LOAD INFORMATION message.
+   * See section 9.1.2.1 for further info about the parameters
+   */
+  struct CellInformationItem
+  {
+    uint16_t    sourceCellId;
+    std::vector <UlInterferenceOverloadIndicationItem> ulInterferenceOverloadIndicationList;
+    std::vector <UlHighInterferenceInformationItem> ulHighInterferenceInformationList;
+    RelativeNarrowbandTxBand relativeNarrowbandTxBand;
+  };
+
+
   enum IdCause
   {
     HandoverDesirableForRadioReason,
     TimeCriticalHandover
   };
 
-  
+
   /**
    * \brief Parameters of the HANDOVER REQUEST message.
    *
@@ -139,6 +193,18 @@ public:
     uint16_t            newEnbUeX2apId;
     uint16_t            sourceCellId;
   };
+
+  /**
+   * \brief Parameters of the LOAD INFORMATION message.
+   *
+   * See section 9.1.2.1 for further info about the parameters
+   */
+  struct LoadInformationParams
+  {
+    uint16_t            targetCellId;
+    std::vector <CellInformationItem> cellInformationList;
+  };
+
 };
 
 
@@ -158,11 +224,10 @@ public:
   virtual void SendHandoverRequest (HandoverRequestParams params) = 0;
 
   virtual void SendHandoverRequestAck (HandoverRequestAckParams params) = 0;
-  
-// TODO
-//   virtual void SendSnStatusTransfer (const struct SnStatusTransfer& params) = 0;
-// 
+
   virtual void SendUeContextRelease (UeContextReleaseParams params) = 0;
+
+  virtual void SendLoadInformation (LoadInformationParams params) = 0;
 };
 
 
@@ -180,13 +245,12 @@ public:
    */
 
   virtual void RecvHandoverRequest (HandoverRequestParams params) = 0;
-  
+
   virtual void RecvHandoverRequestAck (HandoverRequestAckParams params) = 0;
 
-// TODO
-//   virtual void RecvSnStatusTransfer (const struct SnStatusTransfer& params) = 0;
-// 
   virtual void RecvUeContextRelease (UeContextReleaseParams params) = 0;
+
+  virtual void RecvLoadInformation (LoadInformationParams params) = 0;
 };
 
 ///////////////////////////////////////
@@ -206,6 +270,8 @@ public:
   virtual void SendHandoverRequestAck (HandoverRequestAckParams params);
 
   virtual void SendUeContextRelease (UeContextReleaseParams params);
+
+  virtual void SendLoadInformation (LoadInformationParams params);
   
 private:
   EpcX2SpecificEpcX2SapProvider ();
@@ -244,6 +310,13 @@ EpcX2SpecificEpcX2SapProvider<C>::SendUeContextRelease (UeContextReleaseParams p
   m_x2->DoSendUeContextRelease (params);
 }
 
+template <class C>
+void
+EpcX2SpecificEpcX2SapProvider<C>::SendLoadInformation (LoadInformationParams params)
+{
+  m_x2->DoSendLoadInformation (params);
+}
+
 ///////////////////////////////////////
 
 template <class C>
@@ -261,7 +334,9 @@ public:
   virtual void RecvHandoverRequestAck (HandoverRequestAckParams params);
   
   virtual void RecvUeContextRelease (UeContextReleaseParams params);
-  
+
+  virtual void RecvLoadInformation (LoadInformationParams params);
+
 private:
   EpcX2SpecificEpcX2SapUser ();
   C* m_rrc;
@@ -299,6 +374,12 @@ EpcX2SpecificEpcX2SapUser<C>::RecvUeContextRelease (UeContextReleaseParams param
   m_rrc->DoRecvUeContextRelease (params);
 }
 
+template <class C>
+void
+EpcX2SpecificEpcX2SapUser<C>::RecvLoadInformation (LoadInformationParams params)
+{
+  m_rrc->DoRecvLoadInformation (params);
+}
 
 } // namespace ns3
 
