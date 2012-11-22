@@ -157,9 +157,11 @@ public:
   /** 
    * Allocate a random access preamble for non-contention based random access (e.g., for handover).
    * 
-   * \return the newly allocated random access preamble (0 < 
+   * \param rnti the RNTI of the UE who will perform non-contention based random access
+   * 
+   * \return  the newly allocated random access preamble 
    */
-  virtual AllocateNcRaPreambleReturnValue AllocateNcRaPreamble () = 0;
+  virtual AllocateNcRaPreambleReturnValue AllocateNcRaPreamble (uint16_t rnti) = 0;
 
 };
 

@@ -66,7 +66,7 @@ public:
   virtual void ReleaseLc (uint16_t rnti, uint8_t lcid);
   virtual void UeUpdateConfigurationReq (UeConfig params);
   virtual RachConfig GetRachConfig ();
-  virtual AllocateNcRaPreambleReturnValue AllocateNcRaPreamble ();
+  virtual AllocateNcRaPreambleReturnValue AllocateNcRaPreamble (uint16_t rnti);
   
 
 private:
@@ -128,9 +128,9 @@ EnbMacMemberLteEnbCmacSapProvider::GetRachConfig ()
 }
  
 LteEnbCmacSapProvider::AllocateNcRaPreambleReturnValue 
-EnbMacMemberLteEnbCmacSapProvider::AllocateNcRaPreamble ()
+EnbMacMemberLteEnbCmacSapProvider::AllocateNcRaPreamble (uint16_t rnti)
 {
-  return m_mac->DoAllocateNcRaPreamble ();
+  return m_mac->DoAllocateNcRaPreamble (rnti);
 }
 
 
@@ -487,17 +487,30 @@ LteEnbMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
            it != m_receivedRachPreambleCount.end ();
            ++it)
         {
-          NS_LOG_LOGIC ("preambleId " << (uint32_t) it->first << ": " << it->second << " received");
+          NS_LOG_INFO ("RA-RNTI " << raRnti << ", preambleId " << (uint32_t) it->first << ": " << it->second << " received");
           NS_ASSERT (it->second != 0);
           if (it->second > 1)
             {
               NS_LOG_INFO ("preambleId " << (uint32_t) it->first << ": collision");
-              // we assume that no preamble is successfully received, hence no RAR is sent
+              // in case of collision we assume that no preamble is
+              // successfully received, hence no RAR is sent 
             }
           else
             {
-              uint16_t rnti = m_cmacSapUser->AllocateTemporaryCellRnti ();
-              NS_LOG_INFO ("preambleId " << (uint32_t) it->first << ": allocated T-C-RNTI " << (uint32_t) rnti << ", sending RAR");
+              uint16_t rnti;
+              std::map<uint8_t, NcRaPreambleInfo>::iterator jt = m_allocatedNcRaPreambleMap.find (it->first);
+              if (jt != m_allocatedNcRaPreambleMap.end ())
+                {
+                  rnti = jt->second.rnti;
+                  NS_LOG_INFO ("preambleId previously allocated for NC based RA, RNTI =" << (uint32_t) rnti << ", sending RAR");
+                  
+                }
+              else
+                {
+                  rnti = m_cmacSapUser->AllocateTemporaryCellRnti ();
+                  NS_LOG_INFO ("preambleId " << (uint32_t) it->first << ": allocated T-C-RNTI " << (uint32_t) rnti << ", sending RAR");
+                }
+
               RachListElement_s rachLe;
               rachLe.m_rnti = rnti;
               rachLe.m_estimatedSize = 144; // to be confirmed
@@ -841,20 +854,24 @@ LteEnbMac::DoGetRachConfig ()
 }
  
 LteEnbCmacSapProvider::AllocateNcRaPreambleReturnValue 
-LteEnbMac::DoAllocateNcRaPreamble ()
+LteEnbMac::DoAllocateNcRaPreamble (uint16_t rnti)
 {
   bool found = false;
   uint8_t preambleId;
   for (preambleId = m_numberOfRaPreambles; preambleId < 64; ++preambleId)
     {
-      std::map<uint8_t, Time>::iterator it = m_allocatedNcRaPreambleMap.find (preambleId);
+      std::map<uint8_t, NcRaPreambleInfo>::iterator it = m_allocatedNcRaPreambleMap.find (preambleId);
       if ((it ==  m_allocatedNcRaPreambleMap.end ())
-          || (it->second < Simulator::Now ()))
+          || (it->second.expiryTime < Simulator::Now ()))
         {
           found = true;
+          NcRaPreambleInfo preambleInfo;
           uint32_t expiryIntervalMs = (uint32_t) m_preambleTransMax * ((uint32_t) m_raResponseWindowSize + 5); 
-          Time expiryTime = Simulator::Now () + MilliSeconds (expiryIntervalMs);
-          m_allocatedNcRaPreambleMap[preambleId] = expiryTime; // create if not exist, update otherwise
+          
+          preambleInfo.expiryTime = Simulator::Now () + MilliSeconds (expiryIntervalMs);
+          preambleInfo.rnti = rnti;
+          NS_LOG_INFO ("allocated preamble for NC based RA: preamble " << preambleId << ", RNTI " << preambleInfo.rnti << ", exiryTime " << preambleInfo.expiryTime);
+          m_allocatedNcRaPreambleMap[preambleId] = preambleInfo; // create if not exist, update otherwise
           break;
         }
     }

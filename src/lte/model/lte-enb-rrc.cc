@@ -519,8 +519,10 @@ UeManager::RecvRrcConnectionReconfigurationCompleted (LteRrcSap::RrcConnectionRe
       EpcX2SapProvider::UeContextReleaseParams ueCtxReleaseParams;
       ueCtxReleaseParams.oldEnbUeX2apId = m_sourceX2apId;
       ueCtxReleaseParams.newEnbUeX2apId = m_rnti;
+      ueCtxReleaseParams.sourceCellId = m_sourceCellId;
       m_rrc->m_x2SapProvider->SendUeContextRelease (ueCtxReleaseParams);
       SwitchToState (CONNECTED_NORMALLY);
+      break;
       
     default:
       NS_FATAL_ERROR ("method unexpected in state " << ToString (m_state));
@@ -1126,6 +1128,15 @@ LteEnbRrc::DoRecvHandoverRequest (EpcX2SapUser::HandoverRequestParams params)
   NS_ASSERT (params.targetCellId == m_cellId);
   
   uint16_t rnti = AddUe (UeManager::HANDOVER_JOINING);
+  LteEnbCmacSapProvider::AllocateNcRaPreambleReturnValue anrcrv = m_cmacSapProvider->AllocateNcRaPreamble (rnti);
+  if (anrcrv.valid == false)
+    {
+      NS_LOG_INFO (this << "failed to allocate a preamble for non-contention based RA => cannot accept HO");
+      RemoveUe (rnti);
+      NS_FATAL_ERROR ("should trigger HO Preparation Failure, but it is not implemented");
+      return;
+    }    
+
   Ptr<UeManager> ueManager = GetUeManager (rnti);
   ueManager->SetSource (params.sourceCellId, params.oldEnbUeX2apId);
 
@@ -1139,23 +1150,16 @@ LteEnbRrc::DoRecvHandoverRequest (EpcX2SapUser::HandoverRequestParams params)
   LteRrcSap::RrcConnectionReconfiguration handoverCommand = ueManager->GetRrcConnectionReconfigurationForHandover ();
   handoverCommand.haveMobilityControlInfo = true;
   handoverCommand.mobilityControlInfo.targetPhysCellId = m_cellId;
+  handoverCommand.mobilityControlInfo.haveCarrierFreq = true;
   handoverCommand.mobilityControlInfo.carrierFreq.dlCarrierFreq = m_dlEarfcn;
   handoverCommand.mobilityControlInfo.carrierFreq.ulCarrierFreq = m_ulEarfcn;
   handoverCommand.mobilityControlInfo.haveCarrierBandwidth = true;
   handoverCommand.mobilityControlInfo.carrierBandwidth.dlBandwidth = m_dlBandwidth;
   handoverCommand.mobilityControlInfo.carrierBandwidth.ulBandwidth = m_ulBandwidth;
   handoverCommand.mobilityControlInfo.newUeIdentity = rnti;
-  LteEnbCmacSapProvider::AllocateNcRaPreambleReturnValue anrcrv = m_cmacSapProvider->AllocateNcRaPreamble ();
-  if (anrcrv.valid == true)
-    {
-      handoverCommand.mobilityControlInfo.haveRachConfigDedicated = true;
-      handoverCommand.mobilityControlInfo.rachConfigDedicated.raPreambleIndex = anrcrv.raPreambleId;
-      handoverCommand.mobilityControlInfo.rachConfigDedicated.raPrachMaskIndex = anrcrv.raPrachMaskIndex;
-    }
-  else
-    {
-      handoverCommand.mobilityControlInfo.haveRachConfigDedicated = false;      
-    }
+  handoverCommand.mobilityControlInfo.haveRachConfigDedicated = true;
+  handoverCommand.mobilityControlInfo.rachConfigDedicated.raPreambleIndex = anrcrv.raPreambleId;
+  handoverCommand.mobilityControlInfo.rachConfigDedicated.raPrachMaskIndex = anrcrv.raPrachMaskIndex;
   Ptr<Packet> encodedHandoverCommand = m_rrcSapUser->EncodeHandoverCommand (handoverCommand);
 
   NS_LOG_LOGIC ("Send X2 message: HANDOVER REQUEST ACK");
@@ -1410,11 +1414,10 @@ void
 LteEnbRrc::RemoveSrsConfigurationIndex (uint16_t srcCi)
 {
   NS_LOG_FUNCTION (this << srcCi);
-  NS_FATAL_ERROR ("I though this method was unused so far...");
   std::set<uint16_t>::iterator it = m_ueSrsConfigurationIndexSet.find (srcCi);
   NS_ASSERT_MSG (it != m_ueSrsConfigurationIndexSet.end (), "request to remove unkwown SRS CI " << srcCi);
   m_ueSrsConfigurationIndexSet.erase (it);
-  NS_ASSERT (m_srsCurrentPeriodicityId > 1);
+  NS_ASSERT (m_srsCurrentPeriodicityId >= 1 && m_srsCurrentPeriodicityId <= SRS_ENTRIES);
   if (m_ueSrsConfigurationIndexSet.size () < g_srsPeriodicity[m_srsCurrentPeriodicityId - 1])
     {
       // reduce the periodicity

@@ -755,28 +755,30 @@ LteUePhy::DoSyncronizeWithEnb (uint16_t cellId, uint16_t dlEarfcn)
 void
 LteUePhy::DoSetDlBandwidth (uint8_t dlBandwidth)
 {
-
-  m_dlBandwidth = dlBandwidth;
-
-  int Type0AllocationRbg[4] = {
-    10,     // RGB size 1
-    26,     // RGB size 2
-    63,     // RGB size 3
-    110     // RGB size 4
-  };  // see table 7.1.6.1-1 of 36.213
-  for (int i = 0; i < 4; i++)
+  NS_LOG_FUNCTION (this << (uint32_t) dlBandwidth);
+  if (m_dlBandwidth != dlBandwidth)
     {
-      if (dlBandwidth < Type0AllocationRbg[i])
-        {
-          m_rbgSize = i + 1;
-          break;
-        }
-    }
-  
-  Ptr<SpectrumValue> noisePsd = LteSpectrumValueHelper::CreateNoisePowerSpectralDensity (m_dlEarfcn, m_dlBandwidth, m_noiseFigure);
-  m_downlinkSpectrumPhy->SetNoisePowerSpectralDensity (noisePsd);
-  m_downlinkSpectrumPhy->GetChannel ()->AddRx (m_downlinkSpectrumPhy);  
+      m_dlBandwidth = dlBandwidth;
 
+      int Type0AllocationRbg[4] = {
+        10,     // RGB size 1
+        26,     // RGB size 2
+        63,     // RGB size 3
+        110     // RGB size 4
+      };  // see table 7.1.6.1-1 of 36.213
+      for (int i = 0; i < 4; i++)
+        {
+          if (dlBandwidth < Type0AllocationRbg[i])
+            {
+              m_rbgSize = i + 1;
+              break;
+            }
+        }
+  
+      Ptr<SpectrumValue> noisePsd = LteSpectrumValueHelper::CreateNoisePowerSpectralDensity (m_dlEarfcn, m_dlBandwidth, m_noiseFigure);
+      m_downlinkSpectrumPhy->SetNoisePowerSpectralDensity (noisePsd);
+      m_downlinkSpectrumPhy->GetChannel ()->AddRx (m_downlinkSpectrumPhy);  
+    }
   m_dlConfigured = true;
 }
 
