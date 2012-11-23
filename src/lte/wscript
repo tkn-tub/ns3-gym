@@ -110,7 +110,8 @@ def build(bld):
         'test/lte-test-phy-error-model.cc',
         'test/lte-test-mimo.cc',
         'test/lte-test-harq.cc',
-        'test/test-lte-rrc.cc'
+        'test/test-lte-rrc.cc',
+        'test/test-lte-x2-handover.cc',
         ]
 
     headers = bld.new_task_gen(features=['ns3header'])

@@ -1343,6 +1343,7 @@ LteEnbRrc::GetNewSrsConfigurationIndex ()
   // SRS
   if (m_srsCurrentPeriodicityId==0)
     {
+      NS_ASSERT (m_ueSrsConfigurationIndexSet.empty ());
       // no UEs -> init
       m_ueSrsConfigurationIndexSet.insert (0);
       m_lastAllocatedConfigurationIndex = 0;
@@ -1383,6 +1384,7 @@ LteEnbRrc::GetNewSrsConfigurationIndex ()
     {
       // find a CI from the available ones
       std::set<uint16_t>::reverse_iterator rit = m_ueSrsConfigurationIndexSet.rbegin ();
+      NS_ASSERT (rit != m_ueSrsConfigurationIndexSet.rend ());
       NS_LOG_DEBUG (this << " lower bound " << (*rit) << " of " << g_srsCiHigh[m_srsCurrentPeriodicityId]);
       if ((*rit) <= g_srsCiHigh[m_srsCurrentPeriodicityId])
         {
@@ -1417,37 +1419,35 @@ LteEnbRrc::RemoveSrsConfigurationIndex (uint16_t srcCi)
   std::set<uint16_t>::iterator it = m_ueSrsConfigurationIndexSet.find (srcCi);
   NS_ASSERT_MSG (it != m_ueSrsConfigurationIndexSet.end (), "request to remove unkwown SRS CI " << srcCi);
   m_ueSrsConfigurationIndexSet.erase (it);
-  NS_ASSERT (m_srsCurrentPeriodicityId >= 1 && m_srsCurrentPeriodicityId <= SRS_ENTRIES);
+
+  if (m_ueSrsConfigurationIndexSet.empty ())
+    {
+      m_srsCurrentPeriodicityId = 0;
+      return;
+    }
+
+  NS_ASSERT (m_srsCurrentPeriodicityId > 1 && m_srsCurrentPeriodicityId <= SRS_ENTRIES);
   if (m_ueSrsConfigurationIndexSet.size () < g_srsPeriodicity[m_srsCurrentPeriodicityId - 1])
     {
       // reduce the periodicity
       m_ueSrsConfigurationIndexSet.clear ();
       m_srsCurrentPeriodicityId--;
-      if (m_srsCurrentPeriodicityId==0)
+      // update all the UE's CI
+      uint16_t srcCi = g_srsCiLow[m_srsCurrentPeriodicityId];
+      std::map<uint16_t, Ptr<UeManager> >::iterator it;
+      for (it = m_ueMap.begin (); it != m_ueMap.end (); it++)
         {
-          // no active users : renitialize structures
-          m_lastAllocatedConfigurationIndex = 0;
-        }
-      else
-        {
-          // update all the UE's CI
-          uint16_t srcCi = g_srsCiLow[m_srsCurrentPeriodicityId];
-          std::map<uint16_t, Ptr<UeManager> >::iterator it;
-          for (it = m_ueMap.begin (); it != m_ueMap.end (); it++)
-            {
-              (*it).second->SetSrsConfigurationIndex (srcCi);
-              m_ueSrsConfigurationIndexSet.insert (srcCi);
-              m_lastAllocatedConfigurationIndex = srcCi;
+          (*it).second->SetSrsConfigurationIndex (srcCi);
+          m_ueSrsConfigurationIndexSet.insert (srcCi);
+          m_lastAllocatedConfigurationIndex = srcCi;
 
-
-              // update UeManager and trigger/update RRC connection reconfiguration
-              (*it).second->SetSrsConfigurationIndex (srcCi);
+          // update UeManager and trigger/update RRC connection reconfiguration
+          (*it).second->SetSrsConfigurationIndex (srcCi);
           
-              // configure PHY
-              m_cphySapProvider->SetSrsConfigurationIndex ((*it).first, (*it).second->GetSrsConfigurationIndex ());
+          // configure PHY
+          m_cphySapProvider->SetSrsConfigurationIndex ((*it).first, (*it).second->GetSrsConfigurationIndex ());
 
-              srcCi++;
-            }
+          srcCi++;
         }
     }
 }
