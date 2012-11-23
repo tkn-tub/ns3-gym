@@ -762,9 +762,12 @@ LteUeRrc::ApplyRadioResourceConfigDedicated (LteRrcSap::RadioResourceConfigDedic
           rlc->SetRnti (m_rnti);
           rlc->SetLcId (dtamIt->logicalChannelIdentity);
 
-          Ptr<LteDataRadioBearerInfo> rbInfo = CreateObject<LteDataRadioBearerInfo> ();
-          rbInfo->m_rlc = rlc;
-
+          Ptr<LteDataRadioBearerInfo> drbInfo = CreateObject<LteDataRadioBearerInfo> ();
+          drbInfo->m_rlc = rlc;
+          drbInfo->m_epsBearerIdentity = dtamIt->epsBearerIdentity;
+          drbInfo->m_logicalChannelIdentity = dtamIt->logicalChannelIdentity;
+          drbInfo->m_drbIdentity = dtamIt->drbIdentity;
+ 
           // we need PDCP only for real RLC, i.e., RLC/UM or RLC/AM
           // if we are using RLC/SM we don't care of anything above RLC
           if (rlcTypeId != LteRlcSm::GetTypeId ())
@@ -775,12 +778,12 @@ LteUeRrc::ApplyRadioResourceConfigDedicated (LteRrcSap::RadioResourceConfigDedic
               pdcp->SetLtePdcpSapUser (m_pdcpSapUser);
               pdcp->SetLteRlcSapProvider (rlc->GetLteRlcSapProvider ());
               rlc->SetLteRlcSapUser (pdcp->GetLteRlcSapUser ());
-              rbInfo->m_pdcp = pdcp;
+              drbInfo->m_pdcp = pdcp;
             }
 
           m_bid2DrbidMap[dtamIt->epsBearerIdentity] = dtamIt->drbIdentity;
   
-          m_drbMap.insert (std::pair<uint8_t, Ptr<LteDataRadioBearerInfo> > (dtamIt->drbIdentity, rbInfo));
+          m_drbMap.insert (std::pair<uint8_t, Ptr<LteDataRadioBearerInfo> > (dtamIt->drbIdentity, drbInfo));
   
 
           struct LteUeCmacSapProvider::LogicalChannelConfig lcConfig;
@@ -795,9 +798,9 @@ LteUeRrc::ApplyRadioResourceConfigDedicated (LteRrcSap::RadioResourceConfigDedic
         }
       else
         {
-          NS_LOG_INFO ("request to modify existing DRBID (skipping as currently not implemented)");
-          Ptr<LteDataRadioBearerInfo> rbInfo = drbMapIt->second;
-          // would need to modify rbInfo, and then propagate changes to the MAC
+          NS_LOG_INFO ("request to modify existing DRBID");
+          Ptr<LteDataRadioBearerInfo> drbInfo = drbMapIt->second;
+          // TODO: currently not implemented. Would need to modify drbInfo, and then propagate changes to the MAC
         }
     }
   
