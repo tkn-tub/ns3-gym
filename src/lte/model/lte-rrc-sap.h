@@ -52,6 +52,8 @@ class LteRrcSap
 {
 public:
 
+  virtual ~LteRrcSap ();
+
   // Information Elements
   
   struct PlmnIdentityInfo

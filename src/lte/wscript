@@ -14,6 +14,7 @@ def build(bld):
         'model/lte-amc.cc',
         'model/lte-enb-rrc.cc',
         'model/lte-ue-rrc.cc',
+        'model/lte-rrc-sap.cc',
         'model/lte-rrc-protocol-ideal.cc',
         'model/lte-rlc-sap.cc',
         'model/lte-rlc.cc',
