@@ -62,7 +62,6 @@ private:
   virtual void DoRun (void);
   void CheckConnected (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice);
 
-
   uint32_t m_nUes; // number of UEs in the test
   uint32_t m_nDedicatedBearers; // number of UEs in the test
   std::list<HandoverEvent> m_handoverEventList;
@@ -72,6 +71,29 @@ private:
   std::string m_schedulerType;
   Ptr<LteHelper> m_lteHelper;
   Ptr<EpcHelper> m_epcHelper;
+  
+  struct BearerData
+  {
+    uint32_t bid;
+    Ptr<PacketSink> dlSink;
+    Ptr<PacketSink> ulSink;
+    uint32_t dlOldTotalRx;
+    uint32_t ulOldTotalRx;
+  };
+
+  struct UeData
+  {
+    uint32_t id;
+    std::list<BearerData> bearerDataList;
+  };
+
+  void SaveStatsAfterHandover (uint32_t ueIndex);
+  void CheckStatsAWhileAfterHandover (uint32_t ueIndex);
+
+  std::vector<UeData> m_ueDataVector;
+
+  const Time m_maxHoDuration; 
+  const Time m_statsDuration; 
 };
 
 
@@ -94,7 +116,9 @@ LteX2HandoverTestCase::LteX2HandoverTestCase (uint32_t nUes, uint32_t nDedicated
     m_handoverEventListName (handoverEventListName),
     m_epc (true),
     m_useUdp (useUdp),
-    m_schedulerType (schedulerType)
+    m_schedulerType (schedulerType),
+    m_maxHoDuration (Seconds (0.1)),
+    m_statsDuration (Seconds (0.5))
 {
 }
 
@@ -102,6 +126,10 @@ void
 LteX2HandoverTestCase::DoRun ()
 {
   NS_LOG_FUNCTION (this << BuildNameString (m_nUes, m_nDedicatedBearers, m_handoverEventListName, m_useUdp, m_schedulerType));
+
+  Config::SetDefault ("ns3::UdpClient::Interval", TimeValue (MilliSeconds(100)));
+  Config::SetDefault ("ns3::UdpClient::MaxPackets", UintegerValue(1000000));  
+  Config::SetDefault ("ns3::UdpClient::PacketSize", UintegerValue(100));  
   
   m_lteHelper = CreateObject<LteHelper> ();
   m_lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
@@ -195,7 +223,7 @@ LteX2HandoverTestCase::DoRun ()
       Ptr<UniformRandomVariable> startTimeSeconds = CreateObject<UniformRandomVariable> ();
       startTimeSeconds->SetAttribute ("Min", DoubleValue (0));
       startTimeSeconds->SetAttribute ("Max", DoubleValue (0.010));
-     
+
       for (uint32_t u = 0; u < ueNodes.GetN (); ++u)
         {
           Ptr<Node> ue = ueNodes.Get (u);
@@ -203,6 +231,8 @@ LteX2HandoverTestCase::DoRun ()
           Ptr<Ipv4StaticRouting> ueStaticRouting = ipv4RoutingHelper.GetStaticRouting (ue->GetObject<Ipv4> ());
           ueStaticRouting->SetDefaultRoute (m_epcHelper->GetUeDefaultGatewayAddress (), 1);
 
+          UeData ueData;
+     
           for (uint32_t b = 0; b < m_nDedicatedBearers; ++b)
             {
               ++dlPort;
@@ -210,6 +240,7 @@ LteX2HandoverTestCase::DoRun ()
 
               ApplicationContainer clientApps;
               ApplicationContainer serverApps;
+              BearerData bearerData;
 
               if (m_useUdp)
                 {              
@@ -219,7 +250,10 @@ LteX2HandoverTestCase::DoRun ()
                       clientApps.Add (dlClientHelper.Install (remoteHost));
                       PacketSinkHelper dlPacketSinkHelper ("ns3::UdpSocketFactory", 
                                                            InetSocketAddress (Ipv4Address::GetAny (), dlPort));
-                      serverApps.Add (dlPacketSinkHelper.Install (ue));
+                      ApplicationContainer sinkContainer = dlPacketSinkHelper.Install (ue);
+                      bearerData.dlSink = sinkContainer.Get (0)->GetObject<PacketSink> ();
+                      serverApps.Add (sinkContainer);
+                      
                     }
                   if (epcUl)
                     {      
@@ -227,7 +261,9 @@ LteX2HandoverTestCase::DoRun ()
                       clientApps.Add (ulClientHelper.Install (ue));
                       PacketSinkHelper ulPacketSinkHelper ("ns3::UdpSocketFactory", 
                                                            InetSocketAddress (Ipv4Address::GetAny (), ulPort));
-                      serverApps.Add (ulPacketSinkHelper.Install (remoteHost));  
+                      ApplicationContainer sinkContainer = ulPacketSinkHelper.Install (remoteHost);
+                      bearerData.ulSink = sinkContainer.Get (0)->GetObject<PacketSink> ();
+                      serverApps.Add (sinkContainer);  
                     }            
                 }                    
               else // use TCP
@@ -240,7 +276,9 @@ LteX2HandoverTestCase::DoRun ()
                       clientApps.Add (dlClientHelper.Install (remoteHost));
                       PacketSinkHelper dlPacketSinkHelper ("ns3::TcpSocketFactory", 
                                                            InetSocketAddress (Ipv4Address::GetAny (), dlPort));
-                      serverApps.Add (dlPacketSinkHelper.Install (ue));
+                      ApplicationContainer sinkContainer = dlPacketSinkHelper.Install (ue);
+                      bearerData.dlSink = sinkContainer.Get (0)->GetObject<PacketSink> ();
+                      serverApps.Add (sinkContainer);
                     }
                   if (epcUl)
                     {     
@@ -250,7 +288,9 @@ LteX2HandoverTestCase::DoRun ()
                       clientApps.Add (ulClientHelper.Install (ue));
                       PacketSinkHelper ulPacketSinkHelper ("ns3::TcpSocketFactory", 
                                                            InetSocketAddress (Ipv4Address::GetAny (), ulPort));
-                      serverApps.Add (ulPacketSinkHelper.Install (remoteHost));
+                      ApplicationContainer sinkContainer = ulPacketSinkHelper.Install (remoteHost);
+                      bearerData.ulSink = sinkContainer.Get (0)->GetObject<PacketSink> ();
+                      serverApps.Add (sinkContainer);  
                     }
                 } // end if (useUdp)
 
@@ -279,7 +319,11 @@ LteX2HandoverTestCase::DoRun ()
               serverApps.Start (startTime);
               clientApps.Start (startTime);
 
+              ueData.bearerDataList.push_back (bearerData);
+
             } // end for b
+
+          m_ueDataVector.push_back (ueData);
         }
 
     } 
@@ -311,7 +355,7 @@ LteX2HandoverTestCase::DoRun ()
     }
   
   // schedule handover events and corresponding checks
-  const Time maxHoDuration = Seconds (0.100);
+
   Time stopTime = Seconds (0);  
   for (std::list<HandoverEvent>::iterator hoEventIt = m_handoverEventList.begin ();
        hoEventIt != m_handoverEventList.end ();
@@ -321,12 +365,17 @@ LteX2HandoverTestCase::DoRun ()
                                     ueDevices.Get (hoEventIt->ueDeviceIndex),
                                     enbDevices.Get (hoEventIt->sourceEnbDeviceIndex),
                                     enbDevices.Get (hoEventIt->targetEnbDeviceIndex));
-      Time hoEndTime = hoEventIt->startTime + maxHoDuration;
+      Time hoEndTime = hoEventIt->startTime + m_maxHoDuration;
       Simulator::Schedule (hoEndTime, 
                            &LteX2HandoverTestCase::CheckConnected, 
                            this, 
                            ueDevices.Get (hoEventIt->ueDeviceIndex), 
                            enbDevices.Get (hoEventIt->targetEnbDeviceIndex));
+      Simulator::Schedule (hoEndTime, &LteX2HandoverTestCase::SaveStatsAfterHandover,
+                           this, hoEventIt->ueDeviceIndex);
+      Time checkStatsAfterHoTime = hoEndTime + m_statsDuration;
+      Simulator::Schedule (checkStatsAfterHoTime, &LteX2HandoverTestCase::CheckStatsAWhileAfterHandover, 
+                           this, hoEventIt->ueDeviceIndex);      
       if (stopTime <= hoEndTime)
         {
           stopTime = hoEndTime + MilliSeconds (1);
@@ -405,6 +454,36 @@ LteX2HandoverTestCase::CheckConnected (Ptr<NetDevice> ueDevice, Ptr<NetDevice> e
   NS_ASSERT_MSG (ueBearerIt == ueDataRadioBearerMapValue.End (), "too many bearers at UE");  
 }
 
+void 
+LteX2HandoverTestCase::SaveStatsAfterHandover (uint32_t ueIndex)
+{
+  for (std::list<BearerData>::iterator it = m_ueDataVector.at (ueIndex).bearerDataList.begin ();
+       it != m_ueDataVector.at (ueIndex).bearerDataList.end ();
+       ++it)
+    {
+      it->dlOldTotalRx = it->dlSink->GetTotalRx ();
+      it->ulOldTotalRx = it->ulSink->GetTotalRx ();
+    }
+}
+
+void 
+LteX2HandoverTestCase::CheckStatsAWhileAfterHandover (uint32_t ueIndex)
+{        
+  uint32_t b = 1;
+  for (std::list<BearerData>::iterator it = m_ueDataVector.at (ueIndex).bearerDataList.begin ();
+       it != m_ueDataVector.at (ueIndex).bearerDataList.end ();
+       ++it)
+    {
+      uint32_t dlRx = it->dlSink->GetTotalRx () - it->dlOldTotalRx;
+      uint32_t ulRx = it->ulSink->GetTotalRx () - it->ulOldTotalRx;
+      //             udpclient pktsize interval 
+      uint32_t expectedBytes = 100.0 * (0.100 / m_statsDuration.GetSeconds ());
+      //                           tolerance
+      NS_TEST_ASSERT_MSG_GT (dlRx,   0.500 * expectedBytes, "too few RX bytes in DL, ue=" << ueIndex << ", b=" << b);
+      NS_TEST_ASSERT_MSG_GT (ulRx,   0.500 * expectedBytes, "too few RX bytes in UL, ue=" << ueIndex << ", b=" << b);
+      ++b;
+    }
+}
 
 
 class LteX2HandoverTestSuite : public TestSuite
