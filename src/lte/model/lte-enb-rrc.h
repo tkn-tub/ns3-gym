@@ -541,7 +541,8 @@ private:
   void DoRecvHandoverRequestAck (EpcX2SapUser::HandoverRequestAckParams params);
   void DoRecvUeContextRelease (EpcX2SapUser::UeContextReleaseParams params);
   void DoRecvLoadInformation (EpcX2SapUser::LoadInformationParams params);
-  
+  void DoRecvResourceStatusUpdate (EpcX2SapUser::ResourceStatusUpdateParams params);
+
 
   // CMAC SAP methods
   uint16_t DoAllocateTemporaryCellRnti ();

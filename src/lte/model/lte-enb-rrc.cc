@@ -1203,6 +1203,18 @@ LteEnbRrc::DoRecvLoadInformation (EpcX2SapUser::LoadInformationParams params)
   NS_ASSERT ("Processing of LOAD INFORMATION X2 message IS NOT IMPLEMENTED");
 }
 
+void
+LteEnbRrc::DoRecvResourceStatusUpdate (EpcX2SapUser::ResourceStatusUpdateParams params)
+{
+  NS_LOG_FUNCTION (this);
+
+  NS_LOG_LOGIC ("Recv X2 message: RESOURCE STATUS UPDATE");
+
+  NS_LOG_LOGIC ("Number of cellMeasurementResultItems = " << params.cellMeasurementResultList.size ());
+
+  NS_ASSERT ("Processing of RESOURCE STATUS UPDATE X2 message IS NOT IMPLEMENTED");
+}
+
 
 uint16_t 
 LteEnbRrc::DoAllocateTemporaryCellRnti ()
