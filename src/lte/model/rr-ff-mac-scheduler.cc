@@ -785,7 +785,6 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
   std::map <uint16_t,uint8_t>::iterator itLcRnti;
   for (it = m_rlcBufferReq.begin (); it != m_rlcBufferReq.end (); it++)
     {
-      NS_LOG_LOGIC (this << " User " << (*it).m_rnti << " LC " << (uint16_t)(*it).m_logicalChannelIdentity);
       // remove old entries of this UE-LC
       std::set <uint16_t>::iterator itRnti = rntiAllocated.find ((*it).m_rnti);
       if ( (((*it).m_rlcTransmissionQueueSize > 0)
@@ -795,6 +794,7 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
            && (HarqProcessAvailability ((*it).m_rnti))  ) // UE needs HARQ proc free
 
         {
+          NS_LOG_LOGIC (this << " User " << (*it).m_rnti << " LC " << (uint16_t)(*it).m_logicalChannelIdentity << " is active, status  " << (*it).m_rlcStatusPduSize << " retx " << (*it).m_rlcRetransmissionQueueSize << " tx " << (*it).m_rlcTransmissionQueueSize);
           std::map <uint16_t,uint8_t>::iterator itCqi = m_p10CqiRxed.find ((*it).m_rnti);
           uint8_t cqi = 0;
           if (itCqi != m_p10CqiRxed.end ())
@@ -836,6 +836,7 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
   // Resource allocation type 0 (see sec 7.1.6.1 of 36.213)
 
   int rbgPerTb = (rbgNum - rbgAllocatedNum) / nTbs;
+  NS_LOG_DEBUG (this << " Flows to be transmitted " << nflows << " rbgPerTb " << rbgPerTb);
   if (rbgPerTb == 0)
     {
       rbgPerTb = 1;                // at least 1 rbg per TB (till available resource)
@@ -871,8 +872,16 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
       std::set <uint16_t>::iterator itRnti = rntiAllocated.find ((*it).m_rnti);
       if ((itLcRnti == lcActivesPerRnti.end ())||(itRnti != rntiAllocated.end ()))
         {
-          // skip this entry (no active queue or yet allocated for HARQ)
-          it++;
+          // skip this RNTI (no active queue or yet allocated for HARQ)
+          uint16_t rntiDiscared = (*it).m_rnti;
+          while (it != m_rlcBufferReq.end ())
+            {
+              if ((*it).m_rnti != rntiDiscared)
+                {
+                  break;
+                }
+              it++;
+            }
           if (it == m_rlcBufferReq.end ())
             {
               // restart from the first
@@ -1622,11 +1631,12 @@ RrFfMacScheduler::RefreshUlCqiMaps (void)
 void
 RrFfMacScheduler::UpdateDlRlcBufferInfo (uint16_t rnti, uint8_t lcid, uint16_t size)
 {
+  NS_LOG_FUNCTION (this);
   size = size - 2; // remove the minimum RLC overhead
   std::list<FfMacSchedSapProvider::SchedDlRlcBufferReqParameters>::iterator it;
   for (it = m_rlcBufferReq.begin (); it != m_rlcBufferReq.end (); it++)
     {
-      if (((*it).m_rnti == rnti) && ((*it).m_logicalChannelIdentity))
+      if (((*it).m_rnti == rnti) && ((*it).m_logicalChannelIdentity == lcid))
         {
           NS_LOG_INFO (this << " UE " << rnti << " LC " << (uint16_t)lcid << " txqueue " << (*it).m_rlcTransmissionQueueSize << " retxqueue " << (*it).m_rlcRetransmissionQueueSize << " status " << (*it).m_rlcStatusPduSize << " decrease " << size);
           // Update queues: RLC tx order Status, ReTx, Tx
@@ -1661,6 +1671,7 @@ RrFfMacScheduler::UpdateDlRlcBufferInfo (uint16_t rnti, uint8_t lcid, uint16_t s
           else
             {
               (*it).m_rlcTransmissionQueueSize -= size;
+              NS_LOG_DEBUG ("dequeue " << (*it).m_rlcTransmissionQueueSize);
               return;
             }
           return;
