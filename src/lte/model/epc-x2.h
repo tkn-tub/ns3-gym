@@ -82,6 +82,7 @@ public:
   virtual ~EpcX2 (void);
 
   static TypeId GetTypeId (void);
+  virtual void DoDispose (void);
 
 
   /**
@@ -111,11 +112,12 @@ public:
 
 
 protected:
-  // Interface provided by LteRlcSapProvider
+  // Interface provided by EpcX2SapProvider
   virtual void DoSendHandoverRequest (EpcX2SapProvider::HandoverRequestParams params);
   virtual void DoSendHandoverRequestAck (EpcX2SapProvider::HandoverRequestAckParams params);
   virtual void DoSendUeContextRelease (EpcX2SapProvider::UeContextReleaseParams params);
   virtual void DoSendLoadInformation (EpcX2SapProvider::LoadInformationParams params);
+  virtual void DoSendResourceStatusUpdate (EpcX2SapProvider::ResourceStatusUpdateParams params);
 
   EpcX2SapUser* m_x2SapUser;
   EpcX2SapProvider* m_x2SapProvider;

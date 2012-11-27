@@ -56,8 +56,9 @@ public:
 
   enum ProcedureCode_t {
     HandoverPreparation     = 0,
-    LoadInformation         = 2,
-    UeContextRelease        = 5
+    LoadIndication          = 2,
+    UeContextRelease        = 5,
+    ResourceStatusReporting = 10
   };
 
   enum TypeOfMessage_t {
@@ -222,6 +223,42 @@ private:
   uint32_t          m_headerLength;
 
   std::vector <EpcX2Sap::CellInformationItem> m_cellInformationList;
+};
+
+
+class EpcX2ResourceStatusUpdateHeader : public Header
+{
+public:
+  EpcX2ResourceStatusUpdateHeader ();
+  virtual ~EpcX2ResourceStatusUpdateHeader ();
+
+  static TypeId GetTypeId (void);
+  virtual TypeId GetInstanceTypeId (void) const;
+  virtual uint32_t GetSerializedSize (void) const;
+  virtual void Serialize (Buffer::Iterator start) const;
+  virtual uint32_t Deserialize (Buffer::Iterator start);
+  virtual void Print (std::ostream &os) const;
+
+
+  uint16_t GetEnb1MeasurementId () const;
+  void SetEnb1MeasurementId (uint16_t enb1MeasurementId);
+
+  uint16_t GetEnb2MeasurementId () const;
+  void SetEnb2MeasurementId (uint16_t enb2MeasurementId);
+
+  std::vector <EpcX2Sap::CellMeasurementResultItem> GetCellMeasurementResultList () const;
+  void SetCellMeasurementResultList (std::vector <EpcX2Sap::CellMeasurementResultItem> cellMeasurementResultList);
+
+  uint32_t GetLengthOfIes () const;
+  uint32_t GetNumberOfIes () const;
+
+private:
+  uint32_t          m_numberOfIes;
+  uint32_t          m_headerLength;
+
+  uint16_t          m_enb1MeasurementId;
+  uint16_t          m_enb2MeasurementId;
+  std::vector <EpcX2Sap::CellMeasurementResultItem> m_cellMeasurementResultList;
 };
 
 

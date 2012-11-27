@@ -61,7 +61,7 @@ public:
     bool        dlForwarding;
     Ipv4Address transportLayerAddress;
     uint32_t    gtpTeid;
-    
+
     ErabToBeSetupItem ();
   };
 
@@ -76,7 +76,7 @@ public:
     uint32_t    ulGtpTeid;
     uint32_t    dlGtpTeid;
   };
-  
+
   /**
    * E-RABs not admitted item as
    * it is used in the HANDOVER REQUEST ACKNOWLEDGE message.
@@ -141,6 +141,56 @@ public:
     RelativeNarrowbandTxBand relativeNarrowbandTxBand;
   };
 
+  /**
+   * Load Indicator as
+   * it is used in the RESOURCE STATUS UPDATE message.
+   * See section 9.2.36 for further info about the value
+   */
+  enum LoadIndicator
+  {
+    LowLoad,
+    MediumLoad,
+    HighLoad,
+    Overload
+  };
+
+  /**
+   * Composite Available Capacity as
+   * it is used in the RESOURCE STATUS UPDATE message.
+   * See section 9.2.45 for further info about the parameters
+   */
+  struct CompositeAvailCapacity
+  {
+    uint16_t    cellCapacityClassValue;
+    uint16_t    capacityValue;
+  };
+
+  /**
+   * Cell Measurement Result Item as
+   * it is used in the RESOURCE STATUS UPDATE message.
+   * See section 9.1.2.14 for further info about the parameters
+   */
+  struct CellMeasurementResultItem
+  {
+    uint16_t        sourceCellId;
+
+    LoadIndicator   dlHardwareLoadIndicator;
+    LoadIndicator   ulHardwareLoadIndicator;
+
+    LoadIndicator   dlS1TnlLoadIndicator;
+    LoadIndicator   ulS1TnlLoadIndicator;
+
+    uint16_t        dlGbrPrbUsage;
+    uint16_t        ulGbrPrbUsage;
+    uint16_t        dlNonGbrPrbUsage;
+    uint16_t        ulNonGbrPrbUsage;
+    uint16_t        dlTotalPrbUsage;
+    uint16_t        ulTotalPrbUsage;
+
+    CompositeAvailCapacity  dlCompositeAvailableCapacity;
+    CompositeAvailCapacity  ulCompositeAvailableCapacity;
+  };
+
 
   enum IdCause
   {
@@ -165,7 +215,7 @@ public:
     std::vector <ErabToBeSetupItem> bearers;
     Ptr<Packet>         rrcContext;
   };
-  
+
   /**
    * \brief Parameters of the HANDOVER REQUEST ACKNOWLEDGE message.
    *
@@ -205,6 +255,19 @@ public:
     std::vector <CellInformationItem> cellInformationList;
   };
 
+  /**
+   * \brief Parameters of the RESOURCE STATUS UPDATE message.
+   *
+   * See section 9.1.2.14 for further info about the parameters
+   */
+  struct ResourceStatusUpdateParams
+  {
+    uint16_t            targetCellId;
+    uint16_t            enb1MeasurementId;
+    uint16_t            enb2MeasurementId;
+    std::vector <CellMeasurementResultItem> cellMeasurementResultList;
+  };
+
 };
 
 
@@ -216,7 +279,7 @@ class EpcX2SapProvider : public EpcX2Sap
 {
 public:
   virtual ~EpcX2SapProvider ();
-  
+
   /**
    * Service primitives
    */
@@ -228,6 +291,8 @@ public:
   virtual void SendUeContextRelease (UeContextReleaseParams params) = 0;
 
   virtual void SendLoadInformation (LoadInformationParams params) = 0;
+
+  virtual void SendResourceStatusUpdate (ResourceStatusUpdateParams params) = 0;
 };
 
 
@@ -251,6 +316,8 @@ public:
   virtual void RecvUeContextRelease (UeContextReleaseParams params) = 0;
 
   virtual void RecvLoadInformation (LoadInformationParams params) = 0;
+  
+  virtual void RecvResourceStatusUpdate (ResourceStatusUpdateParams params) = 0;
 };
 
 ///////////////////////////////////////
@@ -272,7 +339,9 @@ public:
   virtual void SendUeContextRelease (UeContextReleaseParams params);
 
   virtual void SendLoadInformation (LoadInformationParams params);
-  
+
+  virtual void SendResourceStatusUpdate (ResourceStatusUpdateParams params);
+
 private:
   EpcX2SpecificEpcX2SapProvider ();
   C* m_x2;
@@ -317,6 +386,13 @@ EpcX2SpecificEpcX2SapProvider<C>::SendLoadInformation (LoadInformationParams par
   m_x2->DoSendLoadInformation (params);
 }
 
+template <class C>
+void
+EpcX2SpecificEpcX2SapProvider<C>::SendResourceStatusUpdate (ResourceStatusUpdateParams params)
+{
+  m_x2->DoSendResourceStatusUpdate (params);
+}
+
 ///////////////////////////////////////
 
 template <class C>
@@ -332,10 +408,12 @@ public:
   virtual void RecvHandoverRequest (HandoverRequestParams params);
 
   virtual void RecvHandoverRequestAck (HandoverRequestAckParams params);
-  
+
   virtual void RecvUeContextRelease (UeContextReleaseParams params);
 
   virtual void RecvLoadInformation (LoadInformationParams params);
+
+  virtual void RecvResourceStatusUpdate (ResourceStatusUpdateParams params);
 
 private:
   EpcX2SpecificEpcX2SapUser ();
@@ -379,6 +457,13 @@ void
 EpcX2SpecificEpcX2SapUser<C>::RecvLoadInformation (LoadInformationParams params)
 {
   m_rrc->DoRecvLoadInformation (params);
+}
+
+template <class C>
+void
+EpcX2SpecificEpcX2SapUser<C>::RecvResourceStatusUpdate (ResourceStatusUpdateParams params)
+{
+  m_rrc->DoRecvResourceStatusUpdate (params);
 }
 
 } // namespace ns3
