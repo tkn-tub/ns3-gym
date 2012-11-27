@@ -46,7 +46,9 @@ void
 LteInterference::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
+  m_rsPowerChunkProcessorList.clear ();
   m_sinrChunkProcessorList.clear ();
+  m_interfChunkProcessorList.clear ();
   m_rxSignal = 0;
   m_allSignals = 0;
   m_noise = 0;
@@ -97,6 +99,10 @@ LteInterference::EndRx ()
   NS_LOG_FUNCTION (this);
   ConditionallyEvaluateChunk ();
   m_receiving = false;
+  for (std::list<Ptr<LteSinrChunkProcessor> >::const_iterator it = m_rsPowerChunkProcessorList.begin (); it != m_rsPowerChunkProcessorList.end (); ++it)
+    {
+      (*it)->End ();
+    }
   for (std::list<Ptr<LteSinrChunkProcessor> >::const_iterator it = m_sinrChunkProcessorList.begin (); it != m_sinrChunkProcessorList.end (); ++it)
     {
       (*it)->End (); 
@@ -162,6 +168,10 @@ LteInterference::ConditionallyEvaluateChunk ()
         {
           (*it)->EvaluateSinrChunk (sinr, duration);
         }
+      for (std::list<Ptr<LteSinrChunkProcessor> >::const_iterator it = m_rsPowerChunkProcessorList.begin (); it != m_rsPowerChunkProcessorList.end (); ++it)
+        {
+          (*it)->EvaluateSinrChunk (*m_rxSignal, duration);
+        }
 
       for (std::list<Ptr<LteSinrChunkProcessor> >::const_iterator it = m_interfChunkProcessorList.begin (); it != m_interfChunkProcessorList.end (); ++it)
         {
@@ -185,6 +195,13 @@ LteInterference::SetNoisePowerSpectralDensity (Ptr<const SpectrumValue> noisePsd
   // we'll now create a zeroed SpectrumValue using the same
   // SpectrumModel which is being specified for the noise.
   m_allSignals = Create<SpectrumValue> (noisePsd->GetSpectrumModel ());
+}
+
+void
+LteInterference::AddRsPowerChunkProcessor (Ptr<LteSinrChunkProcessor> p)
+{
+  NS_LOG_FUNCTION (this << p);
+  m_rsPowerChunkProcessorList.push_back (p);
 }
 
 void

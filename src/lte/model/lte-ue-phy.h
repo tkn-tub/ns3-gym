@@ -169,6 +169,7 @@ public:
   virtual void GenerateCtrlCqiReport (const SpectrumValue& sinr);
   virtual void GenerateDataCqiReport (const SpectrumValue& sinr);
   virtual void ReportInterference (const SpectrumValue& interf);
+  virtual void ReportRsReceivedPower (const SpectrumValue& power);
 
   virtual void DoSendLteControlMessage (Ptr<LteControlMessage> msg);
   virtual void ReceiveLteControlMessageList (std::list<Ptr<LteControlMessage> >);
@@ -266,15 +267,18 @@ private:
   uint16_t m_srsPeriodicity;
   uint16_t m_srsCounter;
 
+  bool m_rsReceivedPowerUpdated;
+  SpectrumValue m_rsReceivedPower;
+
   Ptr<LteHarqPhy> m_harqPhyModule;
 
   /**
-   * Trace information regarding RSRP and RSRQ (see TS 36.214)
-   * uint16_t rnti, uint16_t cellId, double rsrp, double rsrq
+   * Trace information regarding RSRP and average SINR (see TS 36.214)
+   * uint16_t cellId, uint16_t rnti, double rsrp, double sinr
    */
-  TracedCallback<uint16_t, uint16_t, double, double> m_reportCurrentCellRsrpRsrqTrace;
-  uint16_t m_rsrpRsrqSamplePeriod;
-  uint16_t m_rsrpRsrqSampleCounter;
+  TracedCallback<uint16_t, uint16_t, double, double> m_reportCurrentCellRsrpSinrTrace;
+  uint16_t m_rsrpSinrSamplePeriod;
+  uint16_t m_rsrpSinrSampleCounter;
 
 };
 

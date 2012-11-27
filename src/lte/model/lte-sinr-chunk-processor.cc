@@ -169,6 +169,62 @@ LteDataSinrChunkProcessor::End ()
 }
 
 
+
+
+// ------------- LteRsReceivedPowerChunkProcessor ------------------------------
+
+LteRsReceivedPowerChunkProcessor::LteRsReceivedPowerChunkProcessor (Ptr<LtePhy> p)
+: m_phy (p)
+{
+  NS_LOG_FUNCTION (this << p);
+  NS_ASSERT (m_phy);
+}
+
+LteRsReceivedPowerChunkProcessor::~LteRsReceivedPowerChunkProcessor ()
+{
+  NS_LOG_FUNCTION (this);
+}
+
+
+void
+LteRsReceivedPowerChunkProcessor::Start ()
+{
+  NS_LOG_FUNCTION (this);
+  m_sumSinr = 0;
+  m_totDuration = MicroSeconds (0);
+}
+
+
+void
+LteRsReceivedPowerChunkProcessor::EvaluateSinrChunk (const SpectrumValue& sinr, Time duration)
+{
+  NS_LOG_FUNCTION (this << sinr << duration);
+  if (m_sumSinr == 0)
+    {
+      m_sumSinr = Create<SpectrumValue> (sinr.GetSpectrumModel ());
+    }
+  (*m_sumSinr) += sinr * duration.GetSeconds ();
+  m_totDuration += duration;
+}
+
+void
+LteRsReceivedPowerChunkProcessor::End ()
+{
+  NS_LOG_FUNCTION (this);
+  if (m_totDuration.GetSeconds () > 0)
+    {
+      m_phy->ReportRsReceivedPower ((*m_sumSinr) / m_totDuration.GetSeconds ());
+    }
+  else
+    {
+      NS_LOG_WARN ("m_numSinr == 0");
+    }
+}
+
+
+
+
+
 // ------------- LteInterferencePowerChunkProcessor ------------------------------
 
 LteInterferencePowerChunkProcessor::LteInterferencePowerChunkProcessor (Ptr<LtePhy> p)
