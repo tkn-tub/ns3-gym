@@ -101,6 +101,9 @@ public:
   uint16_t GetTargetCellId () const;
   void SetTargetCellId (uint16_t targetCellId);
 
+  uint32_t GetMmeUeS1apId () const;
+  void SetMmeUeS1apId (uint32_t mmeUeS1apId);
+
   std::vector <EpcX2Sap::ErabToBeSetupItem> GetBearers () const;
   void SetBearers (std::vector <EpcX2Sap::ErabToBeSetupItem> bearers);
 
@@ -120,6 +123,7 @@ private:
   uint16_t          m_oldEnbUeX2apId;
   uint16_t          m_cause;
   uint16_t          m_targetCellId;
+  uint32_t          m_mmeUeS1apId;
   uint64_t          m_ueAggregateMaxBitRateDownlink;
   uint64_t          m_ueAggregateMaxBitRateUplink;
   std::vector <EpcX2Sap::ErabToBeSetupItem> m_erabsToBeSetupList;

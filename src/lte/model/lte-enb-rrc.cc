@@ -1037,6 +1037,7 @@ LteEnbRrc::SendHandoverRequest (uint16_t rnti, uint16_t cellId)
   params.cause          = EpcX2SapProvider::HandoverDesirableForRadioReason;
   params.sourceCellId   = m_cellId;
   params.targetCellId   = cellId;
+  params.mmeUeS1apId    = 1234567;
   params.ueAggregateMaxBitRateDownlink = 200 * 1000;
   params.ueAggregateMaxBitRateUplink = 100 * 1000;
   params.bearers = ueManager->GetErabList ();
@@ -1050,6 +1051,7 @@ LteEnbRrc::SendHandoverRequest (uint16_t rnti, uint16_t cellId)
   NS_LOG_LOGIC ("oldEnbUeX2apId = " << params.oldEnbUeX2apId);
   NS_LOG_LOGIC ("sourceCellId = " << params.sourceCellId);
   NS_LOG_LOGIC ("targetCellId = " << params.targetCellId);
+  NS_LOG_LOGIC ("mmmUeS1apId = " << params.oldEnbUeX2apId);
   NS_LOG_LOGIC ("rrcContext   = " << params.rrcContext);
 
   m_x2SapProvider->SendHandoverRequest (params);
@@ -1124,6 +1126,7 @@ LteEnbRrc::DoRecvHandoverRequest (EpcX2SapUser::HandoverRequestParams params)
   NS_LOG_LOGIC ("oldEnbUeX2apId = " << params.oldEnbUeX2apId);
   NS_LOG_LOGIC ("sourceCellId = " << params.sourceCellId);
   NS_LOG_LOGIC ("targetCellId = " << params.targetCellId);
+  NS_LOG_LOGIC ("mmeUeS1apId = " << params.mmeUeS1apId);
 
   NS_ASSERT (params.targetCellId == m_cellId);
   
