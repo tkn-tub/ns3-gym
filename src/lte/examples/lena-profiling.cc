@@ -74,7 +74,7 @@ main (int argc, char *argv[])
   else
     {
       lteHelper->SetAttribute ("PathlossModel",
-                               StringValue ("ns3::BuildingsPropagationLossModel"));
+                               StringValue ("ns3::HybridBuildingsPropagationLossModel"));
       nEnb = nFloors * nEnbPerFloor;
     }
 
