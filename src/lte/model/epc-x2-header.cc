@@ -154,6 +154,7 @@ EpcX2HandoverRequestHeader::EpcX2HandoverRequestHeader ()
     m_cause (0xfffa),
     m_targetCellId (0xfffa)
 {
+  m_erabsToBeSetupList.clear ();
 }
 
 EpcX2HandoverRequestHeader::~EpcX2HandoverRequestHeader ()
@@ -741,6 +742,230 @@ EpcX2UeContextReleaseHeader::GetLengthOfIes () const
 
 uint32_t
 EpcX2UeContextReleaseHeader::GetNumberOfIes () const
+{
+  return m_numberOfIes;
+}
+
+/////////////////////////////////
+
+NS_OBJECT_ENSURE_REGISTERED (EpcX2LoadInformationHeader);
+
+EpcX2LoadInformationHeader::EpcX2LoadInformationHeader ()
+  : m_numberOfIes (1),
+    m_headerLength (6)
+{
+  m_cellInformationList.clear ();
+}
+
+EpcX2LoadInformationHeader::~EpcX2LoadInformationHeader ()
+{
+  m_numberOfIes = 0;
+  m_headerLength = 0;
+  m_cellInformationList.clear ();
+}
+
+TypeId
+EpcX2LoadInformationHeader::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::EpcX2LoadInformationHeader")
+    .SetParent<Header> ()
+    .AddConstructor<EpcX2LoadInformationHeader> ()
+  ;
+  return tid;
+}
+
+TypeId
+EpcX2LoadInformationHeader::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
+}
+
+uint32_t
+EpcX2LoadInformationHeader::GetSerializedSize (void) const
+{
+  return m_headerLength;
+}
+
+void
+EpcX2LoadInformationHeader::Serialize (Buffer::Iterator start) const
+{
+  Buffer::Iterator i = start;
+
+  i.WriteHtonU16 (6);               // id = CELL_INFORMATION
+  i.WriteU8 (1 << 6);               // criticality = IGNORE
+  i.WriteU8 (4);                    // length of CELL_INFORMATION_ID
+
+  std::vector <EpcX2Sap::CellInformationItem>::size_type sz = m_cellInformationList.size ();
+  i.WriteHtonU16 (sz);              // number of cellInformationItems
+
+  for (int j = 0; j < (int) sz; j++)
+    {
+      i.WriteHtonU16 (m_cellInformationList [j].sourceCellId);
+
+      std::vector <EpcX2Sap::UlInterferenceOverloadIndicationItem>::size_type sz2;
+      sz2 = m_cellInformationList [j].ulInterferenceOverloadIndicationList.size ();
+      i.WriteHtonU16 (sz2);         // number of UlInterferenceOverloadIndicationItem
+
+      for (int k = 0; k < (int) sz2; k++)
+        {
+          i.WriteU8 (m_cellInformationList [j].ulInterferenceOverloadIndicationList [k]);
+        }
+
+      std::vector <EpcX2Sap::UlHighInterferenceInformationItem>::size_type sz3;
+      sz3 = m_cellInformationList [j].ulHighInterferenceInformationList.size ();
+      i.WriteHtonU16 (sz3);         // number of UlHighInterferenceInformationItem
+
+      for (int k = 0; k < (int) sz3; k++)
+        {
+          i.WriteHtonU16 (m_cellInformationList [j].ulHighInterferenceInformationList [k].targetCellId);
+
+          std::vector <bool>::size_type sz4;
+          sz4 = m_cellInformationList [j].ulHighInterferenceInformationList [k].ulHighInterferenceIndicationList.size ();
+          i.WriteHtonU16 (sz4);
+
+          for (int m = 0; m < (int) sz4; m++)
+            {
+              i.WriteU8 (m_cellInformationList [j].ulHighInterferenceInformationList [k].ulHighInterferenceIndicationList [m]);
+            }
+        }
+
+      std::vector <bool>::size_type sz5;
+      sz5 = m_cellInformationList [j].relativeNarrowbandTxBand.rntpPerPrbList.size ();
+      i.WriteHtonU16 (sz5);
+
+      for (int k = 0; k < (int) sz5; k++)
+        {
+          i.WriteU8 (m_cellInformationList [j].relativeNarrowbandTxBand.rntpPerPrbList [k]);
+        }
+
+      i.WriteHtonU16 (m_cellInformationList [j].relativeNarrowbandTxBand.rntpThreshold);
+      i.WriteHtonU16 (m_cellInformationList [j].relativeNarrowbandTxBand.antennaPorts);
+      i.WriteHtonU16 (m_cellInformationList [j].relativeNarrowbandTxBand.pB);
+      i.WriteHtonU16 (m_cellInformationList [j].relativeNarrowbandTxBand.pdcchInterferenceImpact);
+    }
+}
+
+uint32_t
+EpcX2LoadInformationHeader::Deserialize (Buffer::Iterator start)
+{
+  Buffer::Iterator i = start;
+
+  m_headerLength = 0;
+  m_numberOfIes = 0;
+
+  i.ReadNtohU16 ();
+  i.ReadU8 ();
+  i.ReadU8 ();
+  int sz = i.ReadNtohU16 ();
+  m_headerLength += 6;
+  m_numberOfIes++;
+
+  for (int j = 0; j < sz; j++)
+    {
+      EpcX2Sap::CellInformationItem cellInfoItem;
+      cellInfoItem.sourceCellId = i.ReadNtohU16 ();
+      m_headerLength += 2;
+
+      int sz2 = i.ReadNtohU16 ();
+      m_headerLength += 2;
+      for (int k = 0; k < sz2; k++)
+        {
+          EpcX2Sap::UlInterferenceOverloadIndicationItem item = (EpcX2Sap::UlInterferenceOverloadIndicationItem) i.ReadU8 ();
+          cellInfoItem.ulInterferenceOverloadIndicationList.push_back (item);
+        }
+      m_headerLength += sz2;
+
+      int sz3 = i.ReadNtohU16 ();
+      m_headerLength += 2;
+      for (int k = 0; k < sz3; k++)
+        {
+          EpcX2Sap::UlHighInterferenceInformationItem item;
+          item.targetCellId = i.ReadNtohU16 ();
+          m_headerLength += 2;
+
+          int sz4 = i.ReadNtohU16 ();
+          m_headerLength += 2;
+          for (int m = 0; m < sz4; m++)
+            {
+              item.ulHighInterferenceIndicationList.push_back (i.ReadU8 ());
+            }
+          m_headerLength += sz4;
+
+          cellInfoItem.ulHighInterferenceInformationList.push_back (item);
+        }
+
+      int sz5 = i.ReadNtohU16 ();
+      m_headerLength += 2;
+      for (int k = 0; k < sz5; k++)
+        {
+          cellInfoItem.relativeNarrowbandTxBand.rntpPerPrbList.push_back (i.ReadU8 ());
+        }
+      m_headerLength += sz5;
+
+      cellInfoItem.relativeNarrowbandTxBand.rntpThreshold = i.ReadNtohU16 ();
+      cellInfoItem.relativeNarrowbandTxBand.antennaPorts = i.ReadNtohU16 ();
+      cellInfoItem.relativeNarrowbandTxBand.pB = i.ReadNtohU16 ();
+      cellInfoItem.relativeNarrowbandTxBand.pdcchInterferenceImpact = i.ReadNtohU16 ();
+      m_headerLength += 8;
+
+      m_cellInformationList.push_back (cellInfoItem);
+    }
+
+  return GetSerializedSize ();
+}
+
+void
+EpcX2LoadInformationHeader::Print (std::ostream &os) const
+{
+  os << "NumOfCellInformationItems=" << m_cellInformationList.size ();
+}
+
+std::vector <EpcX2Sap::CellInformationItem>
+EpcX2LoadInformationHeader::GetCellInformationList () const
+{
+  return m_cellInformationList;
+}
+
+void
+EpcX2LoadInformationHeader::SetCellInformationList (std::vector <EpcX2Sap::CellInformationItem> cellInformationList)
+{
+  m_cellInformationList = cellInformationList;
+  m_headerLength += 2;
+
+  std::vector <EpcX2Sap::CellInformationItem>::size_type sz = m_cellInformationList.size ();
+  for (int j = 0; j < (int) sz; j++)
+    {
+      m_headerLength += 2;
+
+      std::vector <EpcX2Sap::UlInterferenceOverloadIndicationItem>::size_type sz2;
+      sz2 = m_cellInformationList [j].ulInterferenceOverloadIndicationList.size ();
+      m_headerLength += 2 + sz2;
+
+      std::vector <EpcX2Sap::UlHighInterferenceInformationItem>::size_type sz3;
+      sz3 = m_cellInformationList [j].ulHighInterferenceInformationList.size ();
+      m_headerLength += 2;
+
+      for (int k = 0; k < (int) sz3; k++)
+        {
+          std::vector <bool>::size_type sz4;
+          sz4 = m_cellInformationList [j].ulHighInterferenceInformationList [k].ulHighInterferenceIndicationList.size ();
+          m_headerLength += 2 + 2 + sz4;
+        }
+
+      std::vector <bool>::size_type sz5;
+      sz5 = m_cellInformationList [j].relativeNarrowbandTxBand.rntpPerPrbList.size ();
+      m_headerLength += 2 + sz5 + 8;
+    }
+}
+
+uint32_t
+EpcX2LoadInformationHeader::GetLengthOfIes () const
+{
+  return m_headerLength;
+}
+
+uint32_t
+EpcX2LoadInformationHeader::GetNumberOfIes () const
 {
   return m_numberOfIes;
 }

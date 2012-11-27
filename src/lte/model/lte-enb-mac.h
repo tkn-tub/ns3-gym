@@ -150,7 +150,7 @@ private:
   void DoReleaseLc (uint16_t  rnti, uint8_t lcid);
   void DoUeUpdateConfigurationReq (LteEnbCmacSapProvider::UeConfig params);
   LteEnbCmacSapProvider::RachConfig DoGetRachConfig ();
-  LteEnbCmacSapProvider::AllocateNcRaPreambleReturnValue DoAllocateNcRaPreamble ();
+  LteEnbCmacSapProvider::AllocateNcRaPreambleReturnValue DoAllocateNcRaPreamble (uint16_t rnti);
 
   // forwarded from LteMacSapProvider
   void DoTransmitPdu (LteMacSapProvider::TransmitPduParameters);
@@ -238,12 +238,21 @@ private:
   uint8_t m_raResponseWindowSize;
 
   /**
-   * map storing as key the random acccess preamble IDs allocated for
-   * non-contention based access, and as value the expiration time of
-   * this allocation (so that stale preambles can be reused).
+   * info associated with a preamble allocated for non-contention based RA
    * 
    */
-  std::map<uint8_t, Time> m_allocatedNcRaPreambleMap;
+  struct NcRaPreambleInfo
+  {   
+    uint16_t rnti; ///< rnti previously allocated for this non-contention based RA procedure
+    Time expiryTime; ///< value the expiration time of this allocation (so that stale preambles can be reused)
+  };
+
+  /**
+   * map storing as key the random acccess preamble IDs allocated for
+   * non-contention based access, and as value the associated info
+   * 
+   */
+  std::map<uint8_t, NcRaPreambleInfo> m_allocatedNcRaPreambleMap;
  
   std::map<uint8_t, uint32_t> m_receivedRachPreambleCount;
 };

@@ -153,6 +153,13 @@ void
 LteRrcConnectionEstablishmentTestCase::Connect (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice)
 {
   m_lteHelper->Attach (ueDevice, enbDevice);
+
+  for (uint32_t b = 0; b < m_nBearers; ++b)
+    {
+      enum EpsBearer::Qci q = EpsBearer::NGBR_VIDEO_TCP_DEFAULT;
+      EpsBearer bearer (q);
+      m_lteHelper->ActivateDataRadioBearer (ueDevice, bearer);
+    }
 }
 void 
 LteRrcConnectionEstablishmentTestCase::CheckConnected (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice)
@@ -190,6 +197,34 @@ LteRrcConnectionEstablishmentTestCase::CheckConnected (Ptr<NetDevice> ueDevice, 
   NS_TEST_ASSERT_MSG_EQ (ueUlBandwidth, enbUlBandwidth, "inconsistent UlBandwidth");
   NS_TEST_ASSERT_MSG_EQ (ueDlEarfcn, enbDlEarfcn, "inconsistent DlEarfcn");
   NS_TEST_ASSERT_MSG_EQ (ueUlEarfcn, enbUlEarfcn, "inconsistent UlEarfcn");
+
+  ObjectMapValue enbDataRadioBearerMapValue;
+  ueManager->GetAttribute ("DataRadioBearerMap", enbDataRadioBearerMapValue);
+  NS_TEST_ASSERT_MSG_EQ (enbDataRadioBearerMapValue.GetN (), m_nBearers, "wrong num bearers at eNB");  
+
+  ObjectMapValue ueDataRadioBearerMapValue;
+  ueRrc->GetAttribute ("DataRadioBearerMap", ueDataRadioBearerMapValue);
+  NS_TEST_ASSERT_MSG_EQ (ueDataRadioBearerMapValue.GetN (), m_nBearers, "wrong num bearers at UE"); 
+
+  ObjectMapValue::Iterator enbBearerIt = enbDataRadioBearerMapValue.Begin ();
+  ObjectMapValue::Iterator ueBearerIt = ueDataRadioBearerMapValue.Begin ();
+  while (enbBearerIt != enbDataRadioBearerMapValue.End () &&
+         ueBearerIt != ueDataRadioBearerMapValue.End ())
+    {
+      Ptr<LteDataRadioBearerInfo> enbDrbInfo = enbBearerIt->second->GetObject<LteDataRadioBearerInfo> ();
+      Ptr<LteDataRadioBearerInfo> ueDrbInfo = ueBearerIt->second->GetObject<LteDataRadioBearerInfo> ();
+      //NS_TEST_ASSERT_MSG_EQ (enbDrbInfo->m_epsBearer, ueDrbInfo->m_epsBearer, "epsBearer differs");
+      NS_TEST_ASSERT_MSG_EQ ((uint32_t) enbDrbInfo->m_epsBearerIdentity, (uint32_t) ueDrbInfo->m_epsBearerIdentity, "epsBearerIdentity differs");
+      NS_TEST_ASSERT_MSG_EQ ((uint32_t) enbDrbInfo->m_drbIdentity, (uint32_t) ueDrbInfo->m_drbIdentity, "drbIdentity differs");
+      //NS_TEST_ASSERT_MSG_EQ (enbDrbInfo->m_rlcConfig, ueDrbInfo->m_rlcConfig, "rlcConfig differs");
+      NS_TEST_ASSERT_MSG_EQ ((uint32_t) enbDrbInfo->m_logicalChannelIdentity, (uint32_t) ueDrbInfo->m_logicalChannelIdentity, "logicalChannelIdentity differs");
+      //NS_TEST_ASSERT_MSG_EQ (enbDrbInfo->m_logicalChannelConfig, ueDrbInfo->m_logicalChannelConfig, "logicalChannelConfig differs");
+ 
+      ++enbBearerIt;
+      ++ueBearerIt;
+    }
+  NS_ASSERT_MSG (enbBearerIt == enbDataRadioBearerMapValue.End (), "too many bearers at eNB");
+  NS_ASSERT_MSG (ueBearerIt == ueDataRadioBearerMapValue.End (), "too many bearers at UE");
   
 }
 

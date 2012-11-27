@@ -56,6 +56,7 @@ public:
 
   enum ProcedureCode_t {
     HandoverPreparation     = 0,
+    LoadInformation         = 2,
     UeContextRelease        = 5
   };
 
@@ -81,7 +82,7 @@ class EpcX2HandoverRequestHeader : public Header
 public:
   EpcX2HandoverRequestHeader ();
   virtual ~EpcX2HandoverRequestHeader ();
-  
+
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
   virtual uint32_t GetSerializedSize (void) const;
@@ -92,7 +93,7 @@ public:
 
   uint16_t GetOldEnbUeX2apId () const;
   void SetOldEnbUeX2apId (uint16_t x2apId);
-  
+
   uint16_t GetCause () const;
   void SetCause (uint16_t cause);
 
@@ -136,8 +137,8 @@ public:
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
   virtual void Print (std::ostream &os) const;
-  
-  
+
+
   uint16_t GetOldEnbUeX2apId () const;
   void SetOldEnbUeX2apId (uint16_t x2apId);
 
@@ -169,15 +170,15 @@ class EpcX2UeContextReleaseHeader : public Header
 public:
   EpcX2UeContextReleaseHeader ();
   virtual ~EpcX2UeContextReleaseHeader ();
-  
+
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
   virtual uint32_t GetSerializedSize (void) const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
   virtual void Print (std::ostream &os) const;
-  
-  
+
+
   uint16_t GetOldEnbUeX2apId () const;
   void SetOldEnbUeX2apId (uint16_t x2apId);
 
@@ -194,6 +195,35 @@ private:
   uint16_t          m_oldEnbUeX2apId;
   uint16_t          m_newEnbUeX2apId;
 };
+
+
+class EpcX2LoadInformationHeader : public Header
+{
+public:
+  EpcX2LoadInformationHeader ();
+  virtual ~EpcX2LoadInformationHeader ();
+
+  static TypeId GetTypeId (void);
+  virtual TypeId GetInstanceTypeId (void) const;
+  virtual uint32_t GetSerializedSize (void) const;
+  virtual void Serialize (Buffer::Iterator start) const;
+  virtual uint32_t Deserialize (Buffer::Iterator start);
+  virtual void Print (std::ostream &os) const;
+
+
+  std::vector <EpcX2Sap::CellInformationItem> GetCellInformationList () const;
+  void SetCellInformationList (std::vector <EpcX2Sap::CellInformationItem> cellInformationList);
+
+  uint32_t GetLengthOfIes () const;
+  uint32_t GetNumberOfIes () const;
+
+private:
+  uint32_t          m_numberOfIes;
+  uint32_t          m_headerLength;
+
+  std::vector <EpcX2Sap::CellInformationItem> m_cellInformationList;
+};
+
 
 } // namespace ns3
 

@@ -14,6 +14,7 @@ def build(bld):
         'model/lte-amc.cc',
         'model/lte-enb-rrc.cc',
         'model/lte-ue-rrc.cc',
+        'model/lte-rrc-sap.cc',
         'model/lte-rrc-protocol-ideal.cc',
         'model/lte-rlc-sap.cc',
         'model/lte-rlc.cc',
@@ -109,7 +110,8 @@ def build(bld):
         'test/lte-test-phy-error-model.cc',
         'test/lte-test-mimo.cc',
         'test/lte-test-harq.cc',
-        'test/test-lte-rrc.cc'
+        'test/test-lte-rrc.cc',
+        'test/test-lte-x2-handover.cc',
         ]
 
     headers = bld.new_task_gen(features=['ns3header'])
