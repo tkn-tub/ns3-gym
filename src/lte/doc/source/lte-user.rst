@@ -291,15 +291,15 @@ the ns-3 attributes ``ns3::MacStatsCalculator::DlOutputFilename`` and
 ``ns3::MacStatsCalculator::UlOutputFilename``.
 
 PHY KPIs are distributed in three different files, configurable through the attributes 
- ``ns3::PhyStatsCalculator::RsrpRsrqFilename``,  ``ns3::PhyStatsCalculator::UeSinrFilename``
+ ``ns3::PhyStatsCalculator::RsrpSinrFilename``,  ``ns3::PhyStatsCalculator::UeSinrFilename``
 and  ``ns3::PhyStatsCalculator::InterferenceFilename``. 
 
-In the RSRP/RSR file, the following content is available:
+In the RSRP/SINR file, the following content is available:
   1. Simulation time in seconds at which the allocation is indicated by the scheduler
   2. Cell ID
   3. unique UE ID (IMSI)
   4. RSRP
-  5. RSRQ
+  5. Linear average of the SINR peceived by the RBs
 
 The contents in the UE SINR file are:
   1. Simulation time in seconds at which the allocation is indicated by the scheduler
