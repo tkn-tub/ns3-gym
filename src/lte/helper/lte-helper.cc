@@ -1068,13 +1068,13 @@ LteHelper::EnablePhyTraces (void)
 
 
 void
-ReportCurrentCellRsrpRsrqCallback (Ptr<PhyStatsCalculator> phyStats,
+ReportCurrentCellRsrpSinrCallback (Ptr<PhyStatsCalculator> phyStats,
                       std::string path, uint16_t cellId, uint16_t rnti,
-                      double rsrp, double rsrq)
+                      double rsrp, double sinr)
 {
   NS_LOG_FUNCTION (phyStats << path);
   uint64_t imsi = 0;
-  std::string pathUePhy  = path.substr (0, path.find ("/ReportCurrentCellRsrpRsrq"));
+  std::string pathUePhy  = path.substr (0, path.find ("/ReportCurrentCellRsrpSinr"));
   if (phyStats->ExistsImsiPath (pathUePhy) == true)
     {
       imsi = phyStats->GetImsiPath (pathUePhy);
@@ -1085,15 +1085,15 @@ ReportCurrentCellRsrpRsrqCallback (Ptr<PhyStatsCalculator> phyStats,
       phyStats->SetImsiPath (pathUePhy, imsi);
     }
 
-  phyStats->ReportCurrentCellRsrpRsrq (cellId, imsi, rnti, rsrp,rsrq);
+  phyStats->ReportCurrentCellRsrpSinr (cellId, imsi, rnti, rsrp,sinr);
 }
 
 void
 LteHelper::EnableDlPhyTraces (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  Config::Connect ("/NodeList/*/DeviceList/*/LteUePhy/ReportCurrentCellRsrpRsrq",
-                   MakeBoundCallback (&ReportCurrentCellRsrpRsrqCallback, m_phyStats));
+  Config::Connect ("/NodeList/*/DeviceList/*/LteUePhy/ReportCurrentCellRsrpSinr",
+                   MakeBoundCallback (&ReportCurrentCellRsrpSinrCallback, m_phyStats));
 }
 
 void

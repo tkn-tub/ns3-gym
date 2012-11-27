@@ -32,12 +32,12 @@ namespace ns3 {
 
 /**
  * Takes care of storing the information generated at PHY layer. Metrics saved are:
- * - RSRP/RSRQ for DL
+ * - RSRP and average SINR for DL
  *   - Timestamp (in seconds)
  *   - IMSI
  *   - C-RNTI
  *   - RSRP
- *   - RSRQ
+ *   - SINR
  * - UE SINR
  *   - Timestamp (in seconds)
  *   - Cell ID of the reported Enb
@@ -69,16 +69,16 @@ public:
   static TypeId GetTypeId (void);
 
   /**
-   * Set the name of the file where the RSRP/RSRQ statistics will be stored.
+   * Set the name of the file where the RSRP/SINR statistics will be stored.
    *
    * \param filename string with the name of the file
    */
-  void SetCurrentCellRsrpRsrqFilename (std::string filename);
+  void SetCurrentCellRsrpSinrFilename (std::string filename);
 
   /**
-   * Get the name of the file where the RSRP/RSRQ statistics will be stored.
+   * Get the name of the file where the RSRP/SINR statistics will be stored.
    */
-  std::string GetCurrentCellRsrpRsrqFilename  (void);
+  std::string GetCurrentCellRsrpSinrFilename  (void);
 
   /**
    * Set the name of the file where the UE SINR statistics will be stored.
@@ -105,13 +105,13 @@ public:
   std::string GetInterferenceFilename (void);
 
   /**
-   * Notifies the stats calculator that an RSRP and RSRQ report has occurred.
+   * Notifies the stats calculator that an RSRP and SINR report has occurred.
    * @param imsi IMSI of the scheduled UE
    * @param rnti C-RNTI scheduled
    * @param rsrp Reference Signal Received Power
-   * @param rsrq Reference Signal Received Quality
+   * @param sinr SINR averaged among RBs
    */
-  void ReportCurrentCellRsrpRsrq (uint16_t cellId, uint64_t imsi, uint16_t rnti, double rsrp, double rsrq);
+  void ReportCurrentCellRsrpSinr (uint16_t cellId, uint64_t imsi, uint16_t rnti, double rsrp, double sinr);
 
   /**
    * Notifies the stats calculator that an UE SINR report has occurred.
@@ -131,11 +131,11 @@ public:
   void ReportInterference (uint16_t cellId, Ptr<SpectrumValue> interference);
 
 private:
-  bool m_RsrpRsrqFirstWrite;
+  bool m_RsrpSinrFirstWrite;
   bool m_UeSinrFirstWrite;
   bool m_InterferenceFirstWrite;
 
-  std::string m_RsrpRsrqFilename;
+  std::string m_RsrpSinrFilename;
   std::string m_ueSinrFilename;
   std::string m_interferenceFilename;
 

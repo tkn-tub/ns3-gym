@@ -129,7 +129,7 @@ LteUePhy::LteUePhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy)
     m_rnti (0),
     m_srsPeriodicity (0),
     m_rsReceivedPowerUpdated (false),
-    m_rsrpRsrqSampleCounter (0)
+    m_rsrpSinrSampleCounter (0)
 {
   m_amc = CreateObject <LteAmc> ();
   m_uePhySapProvider = new UeMemberLteUePhySapProvider (this);
@@ -226,13 +226,13 @@ LteUePhy::GetTypeId (void)
                   DoubleValue (0.0),
                    MakeDoubleAccessor (&LteUePhy::SetTxMode7Gain                       ),
                   MakeDoubleChecker<double> ())
-    .AddTraceSource ("ReportCurrentCellRsrpRsrq",
-                     "RSRP and RSRQ statistics.",
-                     MakeTraceSourceAccessor (&LteUePhy::m_reportCurrentCellRsrpRsrqTrace))
-    .AddAttribute ("RsrpRsrqSamplePeriod",
-                   "The sampling period for reporting RSRP-RSRQ stats (default value 1)",
+    .AddTraceSource ("ReportCurrentCellRsrpSinr",
+                     "RSRP and SINR statistics.",
+                     MakeTraceSourceAccessor (&LteUePhy::m_reportCurrentCellRsrpSinrTrace))
+    .AddAttribute ("RsrpSinrSamplePeriod",
+                   "The sampling period for reporting RSRP-SINR stats (default value 1)",
                    UintegerValue (1),
-                   MakeUintegerAccessor (&LteUePhy::m_rsrpRsrqSamplePeriod),
+                   MakeUintegerAccessor (&LteUePhy::m_rsrpSinrSamplePeriod),
                    MakeUintegerChecker<uint16_t> ())
   ;
   return tid;
@@ -424,8 +424,8 @@ LteUePhy::CreateDlCqiFeedbackMessage (const SpectrumValue& sinr)
   SpectrumValue newSinr = sinr;
   newSinr *= m_txModeGain.at (m_transmissionMode);
 
-  m_rsrpRsrqSampleCounter++;
-  if (m_rsrpRsrqSampleCounter==m_rsrpRsrqSamplePeriod)
+  m_rsrpSinrSampleCounter++;
+  if (m_rsrpSinrSampleCounter==m_rsrpSinrSamplePeriod)
     {
       NS_ASSERT_MSG (m_rsReceivedPowerUpdated, " RS received power info obsolete");
       // RSRP evaluated as averaged received power among RBs
@@ -438,17 +438,17 @@ LteUePhy::CreateDlCqiFeedbackMessage (const SpectrumValue& sinr)
           rbNum++;
         }
       double rsrp = sum / (double)rbNum;
-      // RSRQ evaluated as averaged SINR among RBs
+      // averaged SINR among RBs
       for (it = sinr.ConstValuesBegin (); it != sinr.ConstValuesEnd (); it++)
         {
           sum += (*it);
           rbNum++;
         }
-      double rsrq = sum / (double)rbNum;
-      NS_LOG_INFO (this << " cellId " << m_cellId << " rnti " << m_rnti << " RSRP " << rsrp << " RSRQ " << rsrq);
+      double avSinr = sum / (double)rbNum;
+      NS_LOG_INFO (this << " cellId " << m_cellId << " rnti " << m_rnti << " RSRP " << rsrp << " SINR " << avSinr);
  
-      m_reportCurrentCellRsrpRsrqTrace (m_cellId, m_rnti, rsrp, rsrq);
-      m_rsrpRsrqSampleCounter = 0;
+      m_reportCurrentCellRsrpSinrTrace (m_cellId, m_rnti, rsrp, avSinr);
+      m_rsrpSinrSampleCounter = 0;
     }
 
 

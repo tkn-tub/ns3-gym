@@ -30,7 +30,7 @@ NS_LOG_COMPONENT_DEFINE ("PhyStatsCalculator");
 NS_OBJECT_ENSURE_REGISTERED (PhyStatsCalculator);
 
 PhyStatsCalculator::PhyStatsCalculator ()
-  :  m_RsrpRsrqFirstWrite (true),
+  :  m_RsrpSinrFirstWrite (true),
     m_UeSinrFirstWrite (true),
     m_InterferenceFirstWrite (true)
 {
@@ -49,10 +49,10 @@ PhyStatsCalculator::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::PhyStatsCalculator")
     .SetParent<LteStatsCalculator> ()
     .AddConstructor<PhyStatsCalculator> ()
-    .AddAttribute ("DlRsrpRsrqFilename",
-                   "Name of the file where the RSRP/RSRQ statistics will be saved.",
-                   StringValue ("DlRsrpRsrqStats.txt"),
-                   MakeStringAccessor (&PhyStatsCalculator::SetCurrentCellRsrpRsrqFilename),
+    .AddAttribute ("DlRsrpSinrFilename",
+                   "Name of the file where the RSRP/SINR statistics will be saved.",
+                   StringValue ("DlRsrpSinrStats.txt"),
+                   MakeStringAccessor (&PhyStatsCalculator::SetCurrentCellRsrpSinrFilename),
                    MakeStringChecker ())
     .AddAttribute ("UlSinrFilename",
                    "Name of the file where the UE SINR statistics will be saved.",
@@ -69,15 +69,15 @@ PhyStatsCalculator::GetTypeId (void)
 }
 
 void
-PhyStatsCalculator::SetCurrentCellRsrpRsrqFilename (std::string filename)
+PhyStatsCalculator::SetCurrentCellRsrpSinrFilename (std::string filename)
 {
-  m_RsrpRsrqFilename = filename;
+  m_RsrpSinrFilename = filename;
 }
 
 std::string
-PhyStatsCalculator::GetCurrentCellRsrpRsrqFilename (void)
+PhyStatsCalculator::GetCurrentCellRsrpSinrFilename (void)
 {
-  return m_RsrpRsrqFilename;
+  return m_RsrpSinrFilename;
 }
 
 void
@@ -107,31 +107,31 @@ PhyStatsCalculator::GetInterferenceFilename (void)
 
 
 void
-PhyStatsCalculator::ReportCurrentCellRsrpRsrq (uint16_t cellId, uint64_t imsi, uint16_t rnti,
-                                               double rsrp, double rsrq)
+PhyStatsCalculator::ReportCurrentCellRsrpSinr (uint16_t cellId, uint64_t imsi, uint16_t rnti,
+                                               double rsrp, double sinr)
 {
-  NS_LOG_FUNCTION (this << cellId <<  imsi << rnti  << rsrp << rsrq);
-  NS_LOG_INFO ("Write RSRP/RSRQ Phy Stats in " << GetCurrentCellRsrpRsrqFilename ().c_str ());
+  NS_LOG_FUNCTION (this << cellId <<  imsi << rnti  << rsrp << sinr);
+  NS_LOG_INFO ("Write RSRP/SINR Phy Stats in " << GetCurrentCellRsrpSinrFilename ().c_str ());
 
   std::ofstream outFile;
-  if ( m_RsrpRsrqFirstWrite == true )
+  if ( m_RsrpSinrFirstWrite == true )
     {
-      outFile.open (GetCurrentCellRsrpRsrqFilename ().c_str ());
+      outFile.open (GetCurrentCellRsrpSinrFilename ().c_str ());
       if (!outFile.is_open ())
         {
-          NS_LOG_ERROR ("Can't open file " << GetCurrentCellRsrpRsrqFilename ().c_str ());
+          NS_LOG_ERROR ("Can't open file " << GetCurrentCellRsrpSinrFilename ().c_str ());
           return;
         }
-      m_RsrpRsrqFirstWrite = false;
-      outFile << "% time\tcellId\tIMSI\tRNTI\trsrp\trsrq";
+      m_RsrpSinrFirstWrite = false;
+      outFile << "% time\tcellId\tIMSI\tRNTI\trsrp\tsinr";
       outFile << std::endl;
     }
   else
     {
-      outFile.open (GetCurrentCellRsrpRsrqFilename ().c_str (),  std::ios_base::app);
+      outFile.open (GetCurrentCellRsrpSinrFilename ().c_str (),  std::ios_base::app);
       if (!outFile.is_open ())
         {
-          NS_LOG_ERROR ("Can't open file " << GetCurrentCellRsrpRsrqFilename ().c_str ());
+          NS_LOG_ERROR ("Can't open file " << GetCurrentCellRsrpSinrFilename ().c_str ());
           return;
         }
     }
@@ -141,7 +141,7 @@ PhyStatsCalculator::ReportCurrentCellRsrpRsrq (uint16_t cellId, uint64_t imsi, u
   outFile << imsi << "\t";
   outFile << rnti << "\t";
   outFile << rsrp << "\t";
-  outFile << rsrq << std::endl;
+  outFile << sinr << std::endl;
   outFile.close ();
 }
 
