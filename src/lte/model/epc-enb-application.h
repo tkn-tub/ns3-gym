@@ -33,6 +33,7 @@
 #include <ns3/application.h>
 #include <ns3/eps-bearer.h>
 #include <ns3/epc-enb-s1-sap.h>
+#include <ns3/epc-s1ap-sap.h>
 #include <map>
 
 namespace ns3 {
@@ -49,7 +50,7 @@ class EpcEnbApplication : public Application
 {
 
   friend class MemberEpcEnbS1SapProvider<EpcEnbApplication>;
-
+  friend class MemberEpcS1apSapEnb<EpcEnbApplication>;
 
 
   // inherited from Object
@@ -69,9 +70,9 @@ public:
    * \param s1uSocket the socket to be used to send/receive packets
    * to/from the S1-U interface connected with the SGW 
    * \param sgwAddress the IPv4 address at which this eNB will be able to reach its SGW
-   * 
+   * \param cellId the identifier of the enb
    */
-  EpcEnbApplication (Ptr<Socket> lteSocket, Ptr<Socket> s1uSocket, Ipv4Address sgwAddress);
+  EpcEnbApplication (Ptr<Socket> lteSocket, Ptr<Socket> s1uSocket, Ipv4Address sgwAddress, uint16_t cellId);
 
   /**
    * Destructor
@@ -92,6 +93,19 @@ public:
    * \return the S1 SAP Provider
    */
   EpcEnbS1SapProvider* GetS1SapProvider ();
+
+  /** 
+   * Set the MME side of the S1-AP SAP 
+   * 
+   * \param s the MME side of the S1-AP SAP 
+   */
+  void SetS1apSapMme (EpcS1apSapMme * s);
+
+  /** 
+   * 
+   * \return the ENB side of the S1-AP SAP 
+   */
+  EpcS1apSapEnb* GetS1apSapEnb ();
 
   /** 
    * This method is triggered after the eNB received
@@ -136,9 +150,13 @@ public:
 
 private:
 
-  // S1 SAP provider methods
+  // ENB S1 SAP provider methods
   void DoS1BearerSetupRequest (EpcEnbS1SapProvider::S1BearerSetupRequestParameters params);
   void DoInitialUeMessage (uint64_t imsi, uint16_t rnti);
+
+  // S1-AP SAP ENB methods
+  void DoInitialContextSetupRequest (uint64_t mmeUeS1Id, uint16_t enbUeS1Id, std::list<EpcS1apSapEnb::ErabToBeSetupItem> erabToBeSetupList);
+  void DoPathSwitchRequestAcknowledge (uint64_t enbUeS1Id, uint64_t mmeUeS1Id, uint16_t cgi, std::list<EpcS1apSapEnb::ErabSwitchedInUplinkItem> erabToBeSwitchedInUplinkList);
 
   /** 
    * Send a packet to the UE via the LTE radio interface of the eNB
@@ -210,12 +228,25 @@ private:
    */
   EpcEnbS1SapUser* m_s1SapUser;
 
+  /**
+   * MME side of the S1-AP SAP
+   * 
+   */
+  EpcS1apSapMme* m_s1apSapMme;
+
+  /**
+   * ENB side of the S1-AP SAP
+   * 
+   */
+  EpcS1apSapEnb* m_s1apSapEnb;
 
   /**
    * UE context info
    * 
    */
   std::map<uint64_t, uint16_t> m_imsiRntiMap;
+
+  uint16_t m_cellId;
 
 };
 

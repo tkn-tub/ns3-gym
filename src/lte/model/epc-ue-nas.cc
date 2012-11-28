@@ -73,8 +73,7 @@ void
 EpcUeNas::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  delete m_asSapUser;
-  m_epcHelper = 0;
+  delete m_asSapUser;  
 }
 
 TypeId
@@ -88,13 +87,6 @@ EpcUeNas::GetTypeId (void)
                      MakeTraceSourceAccessor (&EpcUeNas::m_stateTransitionCallback))
   ;
   return tid;
-}
-
-
-void 
-EpcUeNas::SetEpcHelper (Ptr<EpcHelper> epcHelper)
-{
-  m_epcHelper = epcHelper;
 }
 
 void 
@@ -128,16 +120,13 @@ EpcUeNas::SetForwardUpCallback (Callback <void, Ptr<Packet> > cb)
 }
 
 void 
-EpcUeNas::Connect (Ptr<NetDevice> enbDevice)
+EpcUeNas::Connect (uint16_t cellId, uint16_t earfcn)
 {
   NS_LOG_FUNCTION (this);
 
-  m_enbDevice = enbDevice;
-
   // since RRC Idle Mode cell selection is not supported yet, we
   // force the UE RRC to be camped on a specific eNB
-  Ptr<LteEnbNetDevice> enbLteDevice = enbDevice->GetObject<LteEnbNetDevice> ();
-  m_asSapProvider->ForceCampedOnEnb (enbLteDevice, enbLteDevice->GetCellId ());
+  m_asSapProvider->ForceCampedOnEnb (cellId, earfcn);
 
   // tell RRC to go into connected mode
   m_asSapProvider->Connect ();
@@ -160,7 +149,7 @@ EpcUeNas::ActivateEpsBearer (EpsBearer bearer, Ptr<EpcTft> tft)
   switch (m_state)
     {
     case ACTIVE:
-      DoActivateEpsBearer (bearer, tft);
+      NS_FATAL_ERROR ("the necessary NAS signaling to activate a bearer after the initial context has already been setup is not implemented");
       break;
 
     default:
@@ -207,13 +196,8 @@ void
 EpcUeNas::DoNotifyConnectionSuccessful ()
 {
   NS_LOG_FUNCTION (this);
-  if (m_epcHelper)
-    {
-      m_epcHelper->AttachUe (m_device, m_imsi, m_enbDevice);
-      // also activate default EPS bearer
-      DoActivateEpsBearer (EpsBearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT), EpcTft::Default ());
-      SwitchToState (ACTIVE);
-    }
+
+  SwitchToState (ACTIVE); // will eventually activate dedicated bearers
 }
 
 void 
@@ -241,7 +225,6 @@ EpcUeNas::DoActivateEpsBearer (EpsBearer bearer, Ptr<EpcTft> tft)
   NS_LOG_FUNCTION (this);
   NS_ASSERT_MSG (m_bidCounter < 11, "cannot have more than 11 EPS bearers");
   uint8_t bid = ++m_bidCounter;
-  m_epcHelper->ActivateEpsBearer (m_device, m_imsi, tft, bearer);
   m_tftClassifier.Add (tft, bid);
 }
 

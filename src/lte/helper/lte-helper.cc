@@ -418,7 +418,7 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
   if (m_epcHelper != 0)
     {
       NS_LOG_INFO ("adding this eNB to the EPC");
-      m_epcHelper->AddEnb (n, dev);
+      m_epcHelper->AddEnb (n, dev, dev->GetCellId ());
       Ptr<EpcEnbApplication> enbApp = n->GetApplication (0)->GetObject<EpcEnbApplication> ();
       NS_ASSERT_MSG (enbApp != 0, "cannot retrieve EpcEnbApplication");
 
@@ -480,8 +480,6 @@ LteHelper::InstallSingleUeDevice (Ptr<Node> n)
     }
   Ptr<EpcUeNas> nas = CreateObject<EpcUeNas> ();
  
-  nas->SetEpcHelper (m_epcHelper);
-
   // connect SAPs
   nas->SetAsSapProvider (rrc->GetAsSapProvider ());
   rrc->SetAsSapUser (nas->GetAsSapUser ());
@@ -511,6 +509,11 @@ LteHelper::InstallSingleUeDevice (Ptr<Node> n)
   dlPhy->SetLtePhyDlHarqFeedbackCallback (MakeCallback (&LteUePhy::ReceiveLteDlHarqFeedback, phy));
   nas->SetForwardUpCallback (MakeCallback (&LteUeNetDevice::Receive, dev));
 
+  if (m_epcHelper != 0)
+    {
+      m_epcHelper->AddUe (dev, dev->GetImsi ());
+    }
+
   dev->Start ();
 
   return dev;
@@ -534,8 +537,16 @@ LteHelper::Attach (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice)
   //enbRrc->SetCellId (enbDevice->GetObject<LteEnbNetDevice> ()->GetCellId ());
 
   Ptr<LteUeNetDevice> ueLteDevice = ueDevice->GetObject<LteUeNetDevice> ();
+  Ptr<LteEnbNetDevice> enbLteDevice = enbDevice->GetObject<LteEnbNetDevice> ();
+
   Ptr<EpcUeNas> ueNas = ueLteDevice->GetNas ();
-  ueNas->Connect (enbDevice);
+  ueNas->Connect (enbLteDevice->GetCellId (), enbLteDevice->GetDlEarfcn ());
+
+  if (m_epcHelper != 0)
+    {
+      // activate default EPS bearer
+      m_epcHelper->ActivateEpsBearer (ueDevice, ueLteDevice->GetImsi (), EpcTft::Default (), EpsBearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT));
+    }
   
   // tricks needed for the simplified LTE-only simulations 
   if (m_epcHelper == 0)
@@ -594,8 +605,8 @@ LteHelper::ActivateDedicatedEpsBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer
 
   NS_ASSERT_MSG (m_epcHelper != 0, "dedicated EPS bearers cannot be set up when EPC is not used");
   
-  ueDevice->GetObject<LteUeNetDevice> ()->ActivateDedicatedEpsBearer (bearer, tft);
-
+  uint64_t imsi = ueDevice->GetObject<LteUeNetDevice> ()->GetImsi ();
+  m_epcHelper->ActivateEpsBearer (ueDevice, imsi, tft, bearer);
 }
 
 void 

@@ -131,6 +131,7 @@ EpcS1uDlTestCase::DoRun ()
 
 
   NodeContainer enbs;
+  uint16_t cellIdCounter = 0;
 
   for (std::vector<EnbDlTestData>::iterator enbit = m_enbDlTestData.begin ();
        enbit < m_enbDlTestData.end ();
@@ -142,6 +143,8 @@ EpcS1uDlTestCase::DoRun ()
       // we test EPC without LTE, hence we use:
       // 1) a CSMA network to simulate the cell
       // 2) a raw socket opened on the CSMA device to simulate the LTE socket
+
+      uint16_t cellId = ++cellIdCounter;
 
       NodeContainer ues;
       ues.Create (enbit->ues.size ());
@@ -157,7 +160,7 @@ EpcS1uDlTestCase::DoRun ()
       Ptr<NetDevice> enbDevice = cellDevices.Get (cellDevices.GetN () - 1);
 
       // Note that the EpcEnbApplication won't care of the actual NetDevice type
-      epcHelper->AddEnb (enb, enbDevice);      
+      epcHelper->AddEnb (enb, enbDevice, cellId);      
 
       // Plug test RRC entity
       Ptr<EpcEnbApplication> enbApp = enb->GetApplication (0)->GetObject<EpcEnbApplication> ();
@@ -201,9 +204,9 @@ EpcS1uDlTestCase::DoRun ()
           enbit->ues[u].clientApp = apps.Get (0);
 
           uint64_t imsi = u+1;
-          epcHelper->AttachUe (ueLteDevice, imsi, enbDevice);
-          enbApp->GetS1SapProvider ()->InitialUeMessage (imsi, (uint16_t) imsi);
+          epcHelper->AddUe (ueLteDevice, imsi);
           epcHelper->ActivateEpsBearer (ueLteDevice, imsi, EpcTft::Default (), EpsBearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT));
+          enbApp->GetS1SapProvider ()->InitialUeMessage (imsi, (uint16_t) imsi);
         } 
             
     } 

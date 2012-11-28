@@ -10,7 +10,7 @@ diagram {
 						EpcSgwPgwApplication => EpcSgwPgwApplication [label="Create GTP-U tunnel endpoint"];
 					}
 					EpcHelper => EpcEnbApplication [label="ErabSetupRequest(TEID, IMSI)"] {
-						EpcEnbApplication => LteEnbRrc [label="RadioBearerSetupRequest (IMSI)", return="RadioBearerSetupCompleted (RNTI, LCID)"] {
+						EpcEnbApplication => LteEnbRrc [label="RadioBearerSetupRequest (IMSI)", return="S1BearerSetupRequest (RNTI, LCID)"] {
 							LteEnbRrc => LteUeRrc [label="RRC connection reconfiguration"];
 						}
 						EpcEnbApplication -> EpcEnbApplication [label="Create GTP-U tunnel endpoint (TEID)"];

@@ -74,19 +74,24 @@ EpcEnbApplication::DoDispose (void)
   m_lteSocket = 0;
   m_s1uSocket = 0;
   delete m_s1SapProvider;
+  delete m_s1apSapEnb;
 }
 
 
-EpcEnbApplication::EpcEnbApplication (Ptr<Socket> lteSocket, Ptr<Socket> s1uSocket, Ipv4Address sgwAddress)
+EpcEnbApplication::EpcEnbApplication (Ptr<Socket> lteSocket, Ptr<Socket> s1uSocket, Ipv4Address sgwAddress, uint16_t cellId)
   : m_lteSocket (lteSocket),
     m_s1uSocket (s1uSocket),    
     m_sgwAddress (sgwAddress),
-    m_gtpuUdpPort (2152) // fixed by the standard
+    m_gtpuUdpPort (2152), // fixed by the standard
+    m_s1SapUser (0),
+    m_s1apSapMme (0),
+    m_cellId (cellId)
 {
   NS_LOG_FUNCTION (this << lteSocket << s1uSocket << sgwAddress);
   m_s1uSocket->SetRecvCallback (MakeCallback (&EpcEnbApplication::RecvFromS1uSocket, this));
   m_lteSocket->SetRecvCallback (MakeCallback (&EpcEnbApplication::RecvFromLteSocket, this));
   m_s1SapProvider = new MemberEpcEnbS1SapProvider<EpcEnbApplication> (this);
+  m_s1apSapEnb = new MemberEpcS1apSapEnb<EpcEnbApplication> (this);
 }
 
 
@@ -107,6 +112,19 @@ EpcEnbS1SapProvider*
 EpcEnbApplication::GetS1SapProvider ()
 {
   return m_s1SapProvider;
+}
+
+void 
+EpcEnbApplication::SetS1apSapMme (EpcS1apSapMme * s)
+{
+  m_s1apSapMme = s;
+}
+
+  
+EpcS1apSapEnb* 
+EpcEnbApplication::GetS1apSapEnb ()
+{
+  return m_s1apSapEnb;
 }
 
 void 
@@ -140,6 +158,28 @@ EpcEnbApplication::DoInitialUeMessage (uint64_t imsi, uint16_t rnti)
   NS_LOG_FUNCTION (this);
   // side effect: create entry if not exist
   m_imsiRntiMap[imsi] = rnti;
+  m_s1apSapMme->InitialUeMessage (imsi, rnti, imsi, m_cellId);
+}
+
+
+void 
+EpcEnbApplication::DoInitialContextSetupRequest (uint64_t mmeUeS1Id, uint16_t enbUeS1Id, std::list<EpcS1apSapEnb::ErabToBeSetupItem> erabToBeSetupList)
+{
+  NS_LOG_FUNCTION (this);
+  
+  for (std::list<EpcS1apSapEnb::ErabToBeSetupItem>::iterator it = erabToBeSetupList.begin ();
+       it != erabToBeSetupList.end ();
+       ++it)
+    {
+      ErabSetupRequest (it->sgwTeid, mmeUeS1Id, it->erabLevelQosParameters);
+    }
+}
+
+void 
+EpcEnbApplication::DoPathSwitchRequestAcknowledge (uint64_t enbUeS1Id, uint64_t mmeUeS1Id, uint16_t gci, std::list<EpcS1apSapEnb::ErabSwitchedInUplinkItem> erabToBeSwitchedInUplinkList)
+{
+  NS_LOG_FUNCTION (this);
+  NS_FATAL_ERROR ("not implemented");
 }
 
 void 

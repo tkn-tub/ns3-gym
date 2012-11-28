@@ -72,6 +72,18 @@ EpcSgwPgwApplication::UeInfo::SetEnbAddr (Ipv4Address enbAddr)
   m_enbAddr = enbAddr;
 }
 
+Ipv4Address 
+EpcSgwPgwApplication::UeInfo::GetUeAddr ()
+{
+  return m_ueAddr;
+}
+
+void
+EpcSgwPgwApplication::UeInfo::SetUeAddr (Ipv4Address ueAddr)
+{
+  m_ueAddr = ueAddr;
+}
+
 /////////////////////////
 // EpcSgwPgwApplication
 /////////////////////////
@@ -98,10 +110,12 @@ EpcSgwPgwApplication::EpcSgwPgwApplication (const Ptr<VirtualNetDevice> tunDevic
   : m_s1uSocket (s1uSocket),
     m_tunDevice (tunDevice),
     m_gtpuUdpPort (2152), // fixed by the standard
-    m_teidCount (0)
+    m_teidCount (0),
+    m_s11SapMme (0)
 {
   NS_LOG_FUNCTION (this << tunDevice << s1uSocket);
   m_s1uSocket->SetRecvCallback (MakeCallback (&EpcSgwPgwApplication::RecvFromS1uSocket, this));
+  m_s11SapSgw = new MemberEpcS11SapSgw<EpcSgwPgwApplication> (this);
 }
 
   
@@ -122,17 +136,9 @@ EpcSgwPgwApplication::ActivateS1Bearer (Ipv4Address ueAddr, Ipv4Address enbAddr,
   NS_ABORT_IF (m_teidCount == 0xFFFFFFFF);
   uint32_t teid = ++m_teidCount;  
 
-  std::map<Ipv4Address, UeInfo>::iterator it = m_ueInfoMap.find (ueAddr);
-  if (it == m_ueInfoMap.end ())
-    {
-      // UE unknown, creating new entry
-      std::pair<std::map<Ipv4Address, UeInfo>::iterator, bool> ret;
-      ret = m_ueInfoMap.insert (std::pair <Ipv4Address, UeInfo> (ueAddr, UeInfo ()));
-      it = ret.first;
-      it->second.SetEnbAddr (enbAddr);
-    }
-        
-  it->second.AddBearer (tft, teid);
+  std::map<Ipv4Address, Ptr<UeInfo> >::iterator it = m_ueInfoByAddrMap.find (ueAddr);
+  NS_ASSERT (it != m_ueInfoByAddrMap.end ());       
+  it->second->AddBearer (tft, teid);
   return teid;
 }
 
@@ -149,15 +155,15 @@ EpcSgwPgwApplication::RecvFromTunDevice (Ptr<Packet> packet, const Address& sour
   NS_LOG_LOGIC ("packet addressed to UE " << ueAddr);
 
   // find corresponding UeInfo address
-  std::map<Ipv4Address, UeInfo>::iterator it = m_ueInfoMap.find (ueAddr);
-  if (it == m_ueInfoMap.end ())
+  std::map<Ipv4Address, Ptr<UeInfo> >::iterator it = m_ueInfoByAddrMap.find (ueAddr);
+  if (it == m_ueInfoByAddrMap.end ())
     {        
       NS_LOG_WARN ("unknown UE address " << ueAddr) ;
     }
   else
     {
-      Ipv4Address enbAddr = it->second.GetEnbAddr ();      
-      uint32_t teid = it->second.Classify (packet);   
+      Ipv4Address enbAddr = it->second->GetEnbAddr ();      
+      uint32_t teid = it->second->Classify (packet);   
       if (teid == 0)
         {
           NS_LOG_WARN ("no matching bearer for this packet");                   
@@ -214,4 +220,84 @@ EpcSgwPgwApplication::SendToS1uSocket (Ptr<Packet> packet, Ipv4Address enbAddr, 
   m_s1uSocket->SendTo (packet, flags, InetSocketAddress(enbAddr, m_gtpuUdpPort));
 }
 
+
+void 
+EpcSgwPgwApplication::SetS11SapMme (EpcS11SapMme * s)
+{
+  m_s11SapMme = s;
+}
+
+EpcS11SapSgw* 
+EpcSgwPgwApplication::GetS11SapSgw ()
+{
+  return m_s11SapSgw;
+}
+
+void 
+EpcSgwPgwApplication::AddEnb (uint16_t cellId, Ipv4Address enbAddr, Ipv4Address sgwAddr)
+{
+  NS_LOG_FUNCTION (this << cellId << enbAddr << sgwAddr);
+  EnbInfo enbInfo;
+  enbInfo.enbAddr = enbAddr;
+  enbInfo.sgwAddr = sgwAddr;
+  m_enbInfoByCellId[cellId] = enbInfo;
+}
+
+void 
+EpcSgwPgwApplication::AddUe (uint64_t imsi)
+{
+  NS_LOG_FUNCTION (this << imsi);
+  Ptr<UeInfo> ueInfo = Create<UeInfo> ();
+  m_ueInfoByImsiMap[imsi] = ueInfo;
+}
+
+void 
+EpcSgwPgwApplication::SetUeAddress (uint64_t imsi, Ipv4Address ueAddr)
+{
+  NS_LOG_FUNCTION (this << imsi << ueAddr);
+  std::map<uint64_t, Ptr<UeInfo> >::iterator ueit = m_ueInfoByImsiMap.find (imsi);
+  NS_ASSERT_MSG (ueit != m_ueInfoByImsiMap.end (), "unknown IMSI " << imsi); 
+  m_ueInfoByAddrMap[ueAddr] = ueit->second;
+  ueit->second->SetUeAddr (ueAddr);
+}
+
+void 
+EpcSgwPgwApplication::DoRecvCreateSessionRequest (uint64_t imsi, EpcS11Sap::Uli uli, std::list<EpcS11SapSgw::BearerContext> bearersToBeSetup)
+{
+  NS_LOG_FUNCTION (this << imsi);
+  std::map<uint64_t, Ptr<UeInfo> >::iterator ueit = m_ueInfoByImsiMap.find (imsi);
+  NS_ASSERT_MSG (ueit != m_ueInfoByImsiMap.end (), "unknown IMSI " << imsi); 
+  Ipv4Address ueAddr = ueit->second->GetUeAddr ();
+  uint16_t cellId = uli.gci;
+  std::map<uint16_t, EnbInfo>::iterator enbit = m_enbInfoByCellId.find (cellId);
+  NS_ASSERT_MSG (enbit != m_enbInfoByCellId.end (), "unknown CellId " << cellId); 
+  Ipv4Address enbAddr = enbit->second.enbAddr;
+  ueit->second->SetEnbAddr (enbAddr);
+
+  // bearer context info to be fed back to the MME in the response
+  std::list<EpcS11SapMme::BearerContext> bearersContextList;
+
+  for (std::list<EpcS11SapSgw::BearerContext>::iterator bit = bearersToBeSetup.begin ();
+       bit != bearersToBeSetup.end ();
+       ++bit)
+    {
+      uint32_t teid = ActivateS1Bearer (ueAddr, enbAddr, bit->tft);
+      EpcS11SapMme::BearerContext bearerContext;
+      bearerContext.sgwFteid.teid = teid;
+      bearerContext.sgwFteid.address = enbit->second.sgwAddr;
+      bearerContext.epsBearerId =  bit->epsBearerId; 
+      bearerContext.bearerLevelQos = bit->bearerLevelQos; 
+      bearerContext.tft = bit->tft;
+      bearersContextList.push_back (bearerContext);
+    }
+  m_s11SapMme->RecvCreateSessionResponse (imsi, bearersContextList);
+  
+}
+
+void 
+EpcSgwPgwApplication::DoModifyBearerRequest (uint64_t mei, EpcS11Sap::Uli uli, std::list<EpcS11SapSgw::BearerContext> bearersToBeSetup)
+{
+  NS_FATAL_ERROR ("not implemented");
+}
+ 
 }; // namespace ns3

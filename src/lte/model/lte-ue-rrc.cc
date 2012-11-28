@@ -445,12 +445,12 @@ LteUeRrc::DoNotifyRandomAccessFailed ()
 
 
 void 
-LteUeRrc::DoForceCampedOnEnb (Ptr<LteEnbNetDevice> enbLteDevice, uint16_t cellId)
+LteUeRrc::DoForceCampedOnEnb (uint16_t cellId, uint16_t earfcn)
 {
-  NS_LOG_FUNCTION (this << cellId);
+  NS_LOG_FUNCTION (this << cellId << earfcn);
     
   m_cellId = cellId;
-  m_dlEarfcn = enbLteDevice->GetDlEarfcn ();
+  m_dlEarfcn = earfcn;
   m_cphySapProvider->SyncronizeWithEnb (m_cellId, m_dlEarfcn); 
   SwitchToState (IDLE_WAIT_SYSTEM_INFO);
 }

@@ -230,7 +230,7 @@ private:
   void DoNotifyRandomAccessFailed ();
  
   // LTE AS SAP methods
-  void DoForceCampedOnEnb (Ptr<LteEnbNetDevice> enbDevice, uint16_t cellId);
+  void DoForceCampedOnEnb (uint16_t cellId, uint16_t earfcn);
   void DoConnect ();
   void DoSendData (Ptr<Packet> packet, uint8_t bid);
   void DoDisconnect ();
