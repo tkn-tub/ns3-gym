@@ -128,31 +128,6 @@ EpcEnbApplication::GetS1apSapEnb ()
 }
 
 void 
-EpcEnbApplication::ErabSetupRequest (uint32_t teid, uint64_t imsi, EpsBearer bearer)
-{
-  NS_LOG_FUNCTION (this << teid << imsi);
-  // request the RRC to setup a radio bearer
-  struct EpcEnbS1SapUser::DataRadioBearerSetupRequestParameters params;
-  params.bearer = bearer;
-  params.gtpTeid = teid;
-  std::map<uint64_t, uint16_t>::iterator it = m_imsiRntiMap.find (imsi);
-  NS_ASSERT_MSG (it != m_imsiRntiMap.end (), "unknown IMSI");
-  params.rnti = it->second;
-  m_s1SapUser->DataRadioBearerSetupRequest (params);
-}
-
-void 
-EpcEnbApplication::DoS1BearerSetupRequest (EpcEnbS1SapProvider::S1BearerSetupRequestParameters params)
-{
-  NS_LOG_FUNCTION (this << params.rnti << params.bid);
-  EpsFlowId_t rbid (params.rnti, params.bid);
-  // side effect: create entries if not exist
-  m_rbidTeidMap[rbid] = params.gtpTeid;
-  m_teidRbidMap[params.gtpTeid] = rbid;
-}
-
-
-void 
 EpcEnbApplication::DoInitialUeMessage (uint64_t imsi, uint16_t rnti)
 {
   NS_LOG_FUNCTION (this);
@@ -167,11 +142,29 @@ EpcEnbApplication::DoInitialContextSetupRequest (uint64_t mmeUeS1Id, uint16_t en
 {
   NS_LOG_FUNCTION (this);
   
-  for (std::list<EpcS1apSapEnb::ErabToBeSetupItem>::iterator it = erabToBeSetupList.begin ();
-       it != erabToBeSetupList.end ();
-       ++it)
+  for (std::list<EpcS1apSapEnb::ErabToBeSetupItem>::iterator erabIt = erabToBeSetupList.begin ();
+       erabIt != erabToBeSetupList.end ();
+       ++erabIt)
     {
-      ErabSetupRequest (it->sgwTeid, mmeUeS1Id, it->erabLevelQosParameters);
+      // request the RRC to setup a radio bearer
+
+      uint64_t imsi = mmeUeS1Id;
+      std::map<uint64_t, uint16_t>::iterator imsiIt = m_imsiRntiMap.find (imsi);
+      NS_ASSERT_MSG (imsiIt != m_imsiRntiMap.end (), "unknown IMSI");
+      uint16_t rnti = imsiIt->second;
+      
+      struct EpcEnbS1SapUser::DataRadioBearerSetupRequestParameters params;
+      params.rnti = rnti;
+      params.bearer = erabIt->erabLevelQosParameters;
+      params.bearerId = erabIt->erabId;
+      params.gtpTeid = erabIt->sgwTeid;
+      m_s1SapUser->DataRadioBearerSetupRequest (params);
+
+      EpsFlowId_t rbid (rnti, erabIt->erabId);
+      // side effect: create entries if not exist
+      m_rbidTeidMap[rbid] = params.gtpTeid;
+      m_teidRbidMap[params.gtpTeid] = rbid;
+
     }
 }
 

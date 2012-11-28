@@ -106,18 +106,7 @@ public:
    * \return the ENB side of the S1-AP SAP 
    */
   EpcS1apSapEnb* GetS1apSapEnb ();
-
-  /** 
-   * This method is triggered after the eNB received
-   * a S1-AP message of type E-RAB Setup Request by the MME and will
-   * trigger the corresponding RadioBearer creation 
-   * 
-   * \param teid the Tunnel Endpoint IDentifier of the S1-bearer to be setup.
-   * \param imsi the unique ID of the UE
-   * \param bearer the specification of the corresponding EPS bearer
-   */
-  void ErabSetupRequest (uint32_t teid, uint64_t imsi, EpsBearer bearer);
-
+ 
   /** 
    * Method to be assigned to the recv callback of the LTE socket. It is called when the eNB receives a data packet from the radio interface that is to be forwarded to the SGW.
    * 
@@ -151,7 +140,6 @@ public:
 private:
 
   // ENB S1 SAP provider methods
-  void DoS1BearerSetupRequest (EpcEnbS1SapProvider::S1BearerSetupRequestParameters params);
   void DoInitialUeMessage (uint64_t imsi, uint16_t rnti);
 
   // S1-AP SAP ENB methods

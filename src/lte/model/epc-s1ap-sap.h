@@ -110,7 +110,7 @@ public:
 
   struct ErabToBeSetupItem
   {
-    uint16_t    erabId;
+    uint8_t    erabId;
     EpsBearer   erabLevelQosParameters;
     Ipv4Address transportLayerAddress;
     uint32_t    sgwTeid;    
@@ -133,7 +133,7 @@ public:
    */
   struct ErabSwitchedInUplinkItem
   {
-    uint16_t    erabId;
+    uint8_t    erabId;
     Ipv4Address transportLayerAddress;
     uint32_t    enbTeid;    
   };

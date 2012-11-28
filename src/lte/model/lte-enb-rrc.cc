@@ -1101,15 +1101,10 @@ LteEnbRrc::DoRecvRrcConnectionReestablishmentComplete (uint16_t rnti, LteRrcSap:
 void 
 LteEnbRrc::DoDataRadioBearerSetupRequest (EpcEnbS1SapUser::DataRadioBearerSetupRequestParameters request)
 {
-  EpcEnbS1SapProvider::S1BearerSetupRequestParameters response;
+
   Ptr<UeManager> ueManager = GetUeManager (request.rnti);
-  response.rnti = request.rnti;
-  response.bid = ueManager->SetupDataRadioBearer (request.bearer, request.gtpTeid, request.transportLayerAddress);       
-  response.gtpTeid = request.gtpTeid;
-  if (m_s1SapProvider)
-    {          
-      m_s1SapProvider->S1BearerSetupRequest (response);
-    }
+  uint8_t bid = ueManager->SetupDataRadioBearer (request.bearer, request.gtpTeid, request.transportLayerAddress);       
+  NS_ASSERT_MSG ( request.bearerId == 0 || bid == request.bearerId, "bearer ID mismatch (" << (uint32_t) bid << " != " << (uint32_t) request.bearerId << ", the assumption that ID are allocated in the same way by MME and RRC is not valid any more");
   ueManager->ScheduleRrcConnectionReconfiguration ();
 }
 
