@@ -53,12 +53,6 @@ public:
     uint32_t gtpTeid; /**<  S1-bearer GTP tunnel endpoint identifier, see 36.423 9.2.1  */
   };
 
-  /**
-   * Request the setup of a S1 bearer
-   * 
-   */
-  virtual void S1BearerSetupRequest (S1BearerSetupRequestParameters params) = 0;
-  
   /** 
    * 
    * 
@@ -92,6 +86,7 @@ public:
 			DataRadioBearer is to be created */ 
     EpsBearer bearer; /**< the characteristics of the bearer to be set
                          up */
+    uint8_t bearerId; /**< the EPS Bearer Identifier */
     uint32_t    gtpTeid; /**< S1-bearer GTP tunnel endpoint identifier, see 36.423 9.2.1 */
     Ipv4Address transportLayerAddress; /**< IP Address of the SGW, see 36.423 9.2.1 */
   };
@@ -119,7 +114,6 @@ public:
   MemberEpcEnbS1SapProvider (C* owner);
 
   // inherited from EpcEnbS1SapProvider
-  virtual void S1BearerSetupRequest (S1BearerSetupRequestParameters params);
   virtual void InitialUeMessage (uint64_t imsi, uint16_t rnti);
 
 private:
@@ -136,12 +130,6 @@ MemberEpcEnbS1SapProvider<C>::MemberEpcEnbS1SapProvider (C* owner)
 template <class C>
 MemberEpcEnbS1SapProvider<C>::MemberEpcEnbS1SapProvider ()
 {
-}
-
-template <class C>
-void MemberEpcEnbS1SapProvider<C>::S1BearerSetupRequest (S1BearerSetupRequestParameters params)
-{
-  m_owner->DoS1BearerSetupRequest (params);
 }
 
 

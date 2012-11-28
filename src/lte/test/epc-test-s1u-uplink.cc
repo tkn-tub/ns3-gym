@@ -328,17 +328,20 @@ EpcS1uUlTestCase::DoRun ()
   uint16_t udpSinkPort = 1234;
     
   NodeContainer enbs;
+  uint16_t cellIdCounter = 0;
 
   for (std::vector<EnbUlTestData>::iterator enbit = m_enbUlTestData.begin ();
        enbit < m_enbUlTestData.end ();
        ++enbit)
     {
       Ptr<Node> enb = CreateObject<Node> ();
-      enbs.Add (enb);
+      enbs.Add (enb);      
 
       // we test EPC without LTE, hence we use:
       // 1) a CSMA network to simulate the cell
       // 2) a raw socket opened on the CSMA device to simulate the LTE socket
+
+      uint16_t cellId = ++cellIdCounter;
 
       NodeContainer ues;
       ues.Create (enbit->ues.size ());
@@ -354,7 +357,7 @@ EpcS1uUlTestCase::DoRun ()
       Ptr<NetDevice> enbDevice = cellDevices.Get (cellDevices.GetN () - 1);
 
       // Note that the EpcEnbApplication won't care of the actual NetDevice type
-      epcHelper->AddEnb (enb, enbDevice);      
+      epcHelper->AddEnb (enb, enbDevice, cellId);      
       
        // Plug test RRC entity
       Ptr<EpcEnbApplication> enbApp = enb->GetApplication (0)->GetObject<EpcEnbApplication> ();
@@ -424,9 +427,9 @@ EpcS1uUlTestCase::DoRun ()
           enbit->ues[u].clientApp = client;
 
           uint64_t imsi = u+1;
-          epcHelper->AttachUe (ueLteDevice, imsi, enbDevice);
-          enbApp->GetS1SapProvider ()->InitialUeMessage (imsi, (uint16_t) imsi);
+          epcHelper->AddUe (ueLteDevice, imsi);
           epcHelper->ActivateEpsBearer (ueLteDevice, imsi, EpcTft::Default (), EpsBearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT));
+          enbApp->GetS1SapProvider ()->InitialUeMessage (imsi, (uint16_t) imsi);
           
           // need this since all sinks are installed in the same node
           ++udpSinkPort; 

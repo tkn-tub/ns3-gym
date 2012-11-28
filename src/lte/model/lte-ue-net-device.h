@@ -97,13 +97,6 @@ public:
    */
   Ptr<LteEnbNetDevice> GetTargetEnb (void);
 
-  /** 
-   * Activate a dedicated EPS bearer
-   * 
-   * \param bearer the bearer paramaters
-   * \param tft the TFT identifying the traffic that will go over the bearer
-   */
-  void ActivateDedicatedEpsBearer (EpsBearer bearer, Ptr<EpcTft> tft);
 
 protected:
   // inherited from Object

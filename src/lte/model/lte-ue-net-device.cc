@@ -188,12 +188,6 @@ LteUeNetDevice::GetTargetEnb (void)
 }
 
 void 
-LteUeNetDevice::ActivateDedicatedEpsBearer (EpsBearer bearer, Ptr<EpcTft> tft)
-{
-  m_nas->ActivateEpsBearer (bearer, tft);
-}
-
-void 
 LteUeNetDevice::DoStart (void)
 {
   NS_LOG_FUNCTION (this);

@@ -76,9 +76,12 @@ def build(bld):
         'model/lte-mi-error-model.cc',
         'model/lte-vendor-specific-parameters.cc',
         'model/epc-enb-s1-sap.cc',
+        'model/epc-s1ap-sap.cc',
+        'model/epc-s11-sap.cc',
         'model/lte-as-sap.cc',
         'model/epc-ue-nas.cc',
         'model/lte-harq-phy.cc',
+        'model/epc-mme.cc',
         ]
 
     module_test = bld.create_ns3_module_test_library('lte')
@@ -191,9 +194,12 @@ def build(bld):
         'test/lte-test-ue-phy.h',
         'test/lte-test-sinr-chunk-processor.h',
         'model/epc-enb-s1-sap.h',
+        'model/epc-s1ap-sap.h',
+        'model/epc-s11-sap.h',
         'model/lte-as-sap.h',
         'model/epc-ue-nas.h',
         'model/lte-harq-phy.h',
+        'model/epc-mme.h',
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):
