@@ -26,6 +26,7 @@
 #include "ns3/ipv6-address.h"
 #include "ns3/callback.h"
 #include "ns3/ipv6-header.h"
+#include "ns3/net-device.h"
 
 namespace ns3
 {
@@ -94,6 +95,38 @@ public:
    * \param port peer port
    */
   void SetPeer (Ipv6Address addr, uint16_t port);
+
+  /**
+   * \brief Bind a socket to specific device.
+   *
+   * This method corresponds to using setsockopt() SO_BINDTODEVICE
+   * of real network or BSD sockets.   If set on a socket, this option will
+   * force packets to leave the bound device regardless of the device that
+   * IP routing would naturally choose.  In the receive direction, only
+   * packets received from the bound interface will be delivered.
+   *
+   * This option has no particular relationship to binding sockets to
+   * an address via Socket::Bind ().  It is possible to bind sockets to a
+   * specific IP address on the bound interface by calling both
+   * Socket::Bind (address) and Socket::BindToNetDevice (device), but it
+   * is also possible to bind to mismatching device and address, even if
+   * the socket can not receive any packets as a result.
+   *
+   * \param netdevice Pointer to Netdevice of desired interface
+   * \returns nothing
+   */
+  void BindToNetDevice (Ptr<NetDevice> netdevice);
+
+  /**
+   * \brief Returns socket's bound netdevice, if any.
+   *
+   * This method corresponds to using getsockopt() SO_BINDTODEVICE
+   * of real network or BSD sockets.
+   *
+   *
+   * \returns Pointer to interface.
+   */
+  Ptr<NetDevice> GetBoundNetDevice (void);
 
   /**
    * \brief Set the reception callback.
@@ -174,6 +207,11 @@ private:
    * \brief The peer port.
    */
   uint16_t m_peerPort;
+
+  /**
+   * \brief The NetDevice the EndPoint is bound to (if any).
+   */
+  Ptr<NetDevice> m_boundnetdevice;
 
   /**
    * \brief The RX callback.

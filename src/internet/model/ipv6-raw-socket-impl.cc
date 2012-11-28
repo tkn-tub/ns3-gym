@@ -317,6 +317,15 @@ bool Ipv6RawSocketImpl::ForwardUp (Ptr<const Packet> p, Ipv6Header hdr, Ptr<NetD
       return false;
     }
 
+  Ptr<NetDevice> boundNetDevice = Socket::GetBoundNetDevice();
+  if (boundNetDevice)
+    {
+      if (boundNetDevice != device)
+        {
+          return false;
+        }
+    }
+
   if ((m_src == Ipv6Address::GetAny () || hdr.GetDestinationAddress () == m_src) && 
       (m_dst == Ipv6Address::GetAny () || hdr.GetSourceAddress () == m_dst) &&
       hdr.GetNextHeader () == m_protocol)

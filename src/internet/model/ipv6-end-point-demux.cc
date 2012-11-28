@@ -195,6 +195,18 @@ Ipv6EndPointDemux::EndPoints Ipv6EndPointDemux::Lookup (Ipv6Address daddr, uint1
           continue;
         }
 
+      if (endP->GetBoundNetDevice ())
+        {
+          if (endP->GetBoundNetDevice () != incomingInterface->GetDevice ())
+            {
+              NS_LOG_LOGIC ("Skipping endpoint " << &endP
+                                                 << " because endpoint is bound to specific device and"
+                                                 << endP->GetBoundNetDevice ()
+                                                 << " does not match packet device " << incomingInterface->GetDevice ());
+              continue;
+            }
+        }
+
       /*    Ipv6Address incomingInterfaceAddr = incomingInterface->GetAddress (); */
       NS_LOG_DEBUG ("dest addr " << daddr);
 

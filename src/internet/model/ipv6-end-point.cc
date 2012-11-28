@@ -78,6 +78,17 @@ uint16_t Ipv6EndPoint::GetPeerPort ()
   return m_peerPort;
 }
 
+void Ipv6EndPoint::BindToNetDevice (Ptr<NetDevice> netdevice)
+{
+  m_boundnetdevice = netdevice;
+  return;
+}
+
+Ptr<NetDevice> Ipv6EndPoint::GetBoundNetDevice (void)
+{
+  return m_boundnetdevice;
+}
+
 void Ipv6EndPoint::SetPeer (Ipv6Address addr, uint16_t port)
 {
   m_peerAddr = addr;
