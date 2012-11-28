@@ -37,11 +37,13 @@
 
 
 #define HARQ_PROC_NUM 8
+#define HARQ_DL_TIMEOUT 8
 
 namespace ns3 {
 
 
 typedef std::vector < uint8_t > DlHarqProcessesStatus_t;
+typedef std::vector < uint8_t > DlHarqProcessesTimer_t;
 typedef std::vector < DlDciListElement_s > DlHarqProcessesDciBuffer_t;
 typedef std::vector < std::vector <struct RlcPduListElement_s> > RlcPduList_t; // vector of the LCs and layers per UE
 typedef std::vector < RlcPduList_t > DlHarqRlcPduListBuffer_t; // vector of the 8 HARQ processes per UE
@@ -172,6 +174,12 @@ private:
   */
   uint8_t HarqProcessAvailability (uint16_t rnti);
 
+  /**
+  * \brief Refresh HARQ processes according to the timers
+  *
+  */
+  void RefreshHarqProcesses ();
+
   Ptr<LteAmc> m_amc;
 
   /*
@@ -258,6 +266,7 @@ private:
   // 0: process Id available
   // x>0: process Id equal to `x` trasmission count
   std::map <uint16_t, DlHarqProcessesStatus_t> m_dlHarqProcessesStatus;
+  std::map <uint16_t, DlHarqProcessesTimer_t> m_dlHarqProcessesTimer;
   std::map <uint16_t, DlHarqProcessesDciBuffer_t> m_dlHarqProcessesDciBuffer;
   std::map <uint16_t, DlHarqRlcPduListBuffer_t> m_dlHarqProcessesRlcPduListBuffer;
   std::vector <DlInfoListElement_s> m_dlInfoListBuffered; // HARQ retx buffered
