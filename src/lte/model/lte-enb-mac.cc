@@ -715,11 +715,13 @@ LteEnbMac::DoReceivePhyPdu (Ptr<Packet> p)
 
 
   // forward the packet to the correspondent RLC
-  LteFlowId_t flow ( tag.GetRnti (), tag.GetLcid () );
-  std::map <LteFlowId_t, LteMacSapUser* >::iterator it2;
-  it2 = m_rlcAttached.find (flow);
-  NS_ASSERT_MSG (it2 != m_rlcAttached.end (), "UE not attached rnti=" << flow.m_rnti << " lcid=" << (uint32_t) flow.m_lcId);
-  (*it2).second->ReceivePdu (p);
+  uint16_t rnti = tag.GetRnti ();
+  uint8_t lcid = tag.GetLcid ();
+  std::map <uint16_t, std::map<uint8_t, LteMacSapUser*> >::iterator rntiIt = m_rlcAttached.find (rnti);
+  NS_ASSERT_MSG (rntiIt != m_rlcAttached.end (), "could not find RNTI" << rnti);
+  std::map<uint8_t, LteMacSapUser*>::iterator lcidIt = rntiIt->second.find (lcid);
+  NS_ASSERT_MSG (lcidIt != rntiIt->second.end (), "could not find LCID" << lcid);
+  (*lcidIt).second->ReceivePdu (p);
 
 }
 
@@ -747,6 +749,12 @@ void
 LteEnbMac::DoAddUe (uint16_t rnti)
 {
   NS_LOG_FUNCTION (this << " rnti=" << rnti);
+  std::map<uint8_t, LteMacSapUser*> empty;
+  std::pair <std::map <uint16_t, std::map<uint8_t, LteMacSapUser*> >::iterator, bool> 
+    ret = m_rlcAttached.insert (std::pair <uint16_t,  std::map<uint8_t, LteMacSapUser*> > 
+                                (rnti, empty));
+  NS_ASSERT_MSG (ret.second, "element already present, RNTI already existed");
+
   FfMacCschedSapProvider::CschedUeConfigReqParameters params;
   params.m_rnti = rnti;
   params.m_transmissionMode = 0; // set to default value (SISO) for avoiding random initialization (valgrind error)
@@ -771,6 +779,7 @@ LteEnbMac::DoRemoveUe (uint16_t rnti)
   FfMacCschedSapProvider::CschedUeReleaseReqParameters params;
   params.m_rnti = rnti;
   m_cschedSapProvider->CschedUeReleaseReq (params);
+  m_rlcAttached.erase (rnti);
 }
 
 void
@@ -782,10 +791,12 @@ LteEnbMac::DoAddLc (LteEnbCmacSapProvider::LcInfo lcinfo, LteMacSapUser* msu)
   
   LteFlowId_t flow (lcinfo.rnti, lcinfo.lcId);
   
-  it = m_rlcAttached.find (flow);
-  if (it == m_rlcAttached.end ())
+  std::map <uint16_t, std::map<uint8_t, LteMacSapUser*> >::iterator rntiIt = m_rlcAttached.find (lcinfo.rnti);
+  NS_ASSERT_MSG (rntiIt != m_rlcAttached.end (), "RNTI not found");
+  std::map<uint8_t, LteMacSapUser*>::iterator lcidIt = rntiIt->second.find (lcinfo.lcId);
+  if (lcidIt == rntiIt->second.end ())
     {
-      m_rlcAttached.insert (std::pair<LteFlowId_t, LteMacSapUser* > (flow, msu));
+      rntiIt->second.insert (std::pair<uint8_t, LteMacSapUser*> (lcinfo.lcId, msu));
     }
   else
     {
@@ -953,12 +964,14 @@ LteEnbMac::DoSchedDlConfigInd (FfMacSchedSapUser::SchedDlConfigIndParameters ind
               if (ind.m_buildDataList.at (i).m_dci.m_ndi.at (k) == 1)
                 {
                   // New Data -> retrieve it from RLC
-                  LteFlowId_t flow (ind.m_buildDataList.at (i).m_rnti,
-                                    ind.m_buildDataList.at (i).m_rlcPduList.at (j).at (k).m_logicalChannelIdentity);
-                  it = m_rlcAttached.find (flow);
-                  NS_ASSERT_MSG (it != m_rlcAttached.end (), "rnti=" << flow.m_rnti << " lcid=" << (uint32_t) flow.m_lcId);
-                  NS_LOG_DEBUG (this << " rnti= " << flow.m_rnti << " lcid= " << (uint32_t) flow.m_lcId << " layer= " << k);
-                  (*it).second->NotifyTxOpportunity (ind.m_buildDataList.at (i).m_rlcPduList.at (j).at (k).m_size, k, ind.m_buildDataList.at (i).m_dci.m_harqProcess);
+                  uint16_t rnti = ind.m_buildDataList.at (i).m_rnti;
+                  uint8_t lcid = ind.m_buildDataList.at (i).m_rlcPduList.at (j).at (k).m_logicalChannelIdentity;
+                  std::map <uint16_t, std::map<uint8_t, LteMacSapUser*> >::iterator rntiIt = m_rlcAttached.find (rnti);
+                  NS_ASSERT_MSG (rntiIt != m_rlcAttached.end (), "could not find RNTI" << rnti);
+                  std::map<uint8_t, LteMacSapUser*>::iterator lcidIt = rntiIt->second.find (lcid);
+                  NS_ASSERT_MSG (lcidIt != rntiIt->second.end (), "could not find LCID" << lcid);
+                  NS_LOG_DEBUG (this << " rnti= " << rnti << " lcid= " << (uint32_t) lcid << " layer= " << k);
+                  (*lcidIt).second->NotifyTxOpportunity (ind.m_buildDataList.at (i).m_rlcPduList.at (j).at (k).m_size, k, ind.m_buildDataList.at (i).m_dci.m_harqProcess);
                 }
               else
                 {

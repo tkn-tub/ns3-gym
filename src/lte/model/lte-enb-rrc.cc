@@ -1491,7 +1491,7 @@ LteEnbRrc::RemoveSrsConfigurationIndex (uint16_t srcCi)
       return;
     }
 
-  NS_ASSERT (m_srsCurrentPeriodicityId > 1 && m_srsCurrentPeriodicityId <= SRS_ENTRIES);
+  NS_ASSERT (m_srsCurrentPeriodicityId > 0 && m_srsCurrentPeriodicityId <= SRS_ENTRIES);
   if (m_ueSrsConfigurationIndexSet.size () < g_srsPeriodicity[m_srsCurrentPeriodicityId - 1])
     {
       // reduce the periodicity
