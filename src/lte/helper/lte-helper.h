@@ -406,6 +406,10 @@ private:
 
   Ptr<EpcHelper> m_epcHelper;
 
+  uint64_t m_imsiCounter;
+  uint16_t m_cellIdCounter;
+
+
 };
 
 

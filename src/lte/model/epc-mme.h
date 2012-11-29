@@ -118,7 +118,8 @@ private:
 
 
   // S11 SAP MME forwarded methods
-  void DoRecvCreateSessionResponse (uint64_t imsi, std::list<EpcS11SapMme::BearerContext>);
+  void DoCreateSessionResponse (EpcS11SapMme::CreateSessionResponseMessage msg);
+  void DoModifyBearerResponse (EpcS11SapMme::ModifyBearerResponseMessage msg);
 
   /**
    * Hold info on an EPS bearer to be activated

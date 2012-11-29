@@ -78,16 +78,17 @@ EpcEnbApplication::DoDispose (void)
 }
 
 
-EpcEnbApplication::EpcEnbApplication (Ptr<Socket> lteSocket, Ptr<Socket> s1uSocket, Ipv4Address sgwAddress, uint16_t cellId)
+EpcEnbApplication::EpcEnbApplication (Ptr<Socket> lteSocket, Ptr<Socket> s1uSocket, Ipv4Address enbS1uAddress, Ipv4Address sgwS1uAddress, uint16_t cellId)
   : m_lteSocket (lteSocket),
     m_s1uSocket (s1uSocket),    
-    m_sgwAddress (sgwAddress),
+    m_enbS1uAddress (enbS1uAddress),
+    m_sgwS1uAddress (sgwS1uAddress),
     m_gtpuUdpPort (2152), // fixed by the standard
     m_s1SapUser (0),
     m_s1apSapMme (0),
     m_cellId (cellId)
 {
-  NS_LOG_FUNCTION (this << lteSocket << s1uSocket << sgwAddress);
+  NS_LOG_FUNCTION (this << lteSocket << s1uSocket << sgwS1uAddress);
   m_s1uSocket->SetRecvCallback (MakeCallback (&EpcEnbApplication::RecvFromS1uSocket, this));
   m_lteSocket->SetRecvCallback (MakeCallback (&EpcEnbApplication::RecvFromLteSocket, this));
   m_s1SapProvider = new MemberEpcEnbS1SapProvider<EpcEnbApplication> (this);
@@ -136,6 +137,41 @@ EpcEnbApplication::DoInitialUeMessage (uint64_t imsi, uint16_t rnti)
   m_s1apSapMme->InitialUeMessage (imsi, rnti, imsi, m_cellId);
 }
 
+void 
+EpcEnbApplication::DoPathSwitchRequest (EpcEnbS1SapProvider::PathSwitchRequestParameters params)
+{
+  NS_LOG_FUNCTION (this);
+  uint16_t enbUeS1Id = params.rnti;  
+  uint64_t mmeUeS1Id = params.mmeUeS1Id;
+  uint64_t imsi = mmeUeS1Id;
+  // side effect: create entry if not exist
+  m_imsiRntiMap[imsi] = params.rnti;
+
+  uint16_t gci = params.cellId;
+  std::list<EpcS1apSapMme::ErabSwitchedInDownlinkItem> erabToBeSwitchedInDownlinkList;
+  for (std::list<EpcEnbS1SapProvider::BearerToBeSwitched>::iterator bit = params.bearersToBeSwitched.begin ();
+       bit != params.bearersToBeSwitched.end ();
+       ++bit)
+    {
+      EpsFlowId_t flowId;
+      flowId.m_rnti = params.rnti;
+      flowId.m_bid = bit->epsBearerId;
+      uint32_t teid = bit->teid;
+      
+      EpsFlowId_t rbid (params.rnti, bit->epsBearerId);
+      // side effect: create entries if not exist
+      m_rbidTeidMap[rbid] = teid;
+      m_teidRbidMap[teid] = rbid;
+
+      EpcS1apSapMme::ErabSwitchedInDownlinkItem erab;
+      erab.erabId = bit->epsBearerId;
+      erab.enbTransportLayerAddress = m_enbS1uAddress;
+      erab.enbTeid = bit->teid;
+
+      erabToBeSwitchedInDownlinkList.push_back (erab);
+    }
+  m_s1apSapMme->PathSwitchRequest (enbUeS1Id, mmeUeS1Id, gci, erabToBeSwitchedInDownlinkList);
+}
 
 void 
 EpcEnbApplication::DoInitialContextSetupRequest (uint64_t mmeUeS1Id, uint16_t enbUeS1Id, std::list<EpcS1apSapEnb::ErabToBeSetupItem> erabToBeSetupList)
@@ -172,7 +208,14 @@ void
 EpcEnbApplication::DoPathSwitchRequestAcknowledge (uint64_t enbUeS1Id, uint64_t mmeUeS1Id, uint16_t gci, std::list<EpcS1apSapEnb::ErabSwitchedInUplinkItem> erabToBeSwitchedInUplinkList)
 {
   NS_LOG_FUNCTION (this);
-  NS_FATAL_ERROR ("not implemented");
+
+  uint64_t imsi = mmeUeS1Id;
+  std::map<uint64_t, uint16_t>::iterator imsiIt = m_imsiRntiMap.find (imsi);
+  NS_ASSERT_MSG (imsiIt != m_imsiRntiMap.end (), "unknown IMSI");
+  uint16_t rnti = imsiIt->second;
+  EpcEnbS1SapUser::PathSwitchRequestAcknowledgeParameters params;
+  params.rnti = rnti;
+  m_s1SapUser->PathSwitchRequestAcknowledge (params);
 }
 
 void 
@@ -240,7 +283,7 @@ EpcEnbApplication::SendToS1uSocket (Ptr<Packet> packet, uint32_t teid)
   gtpu.SetLength (packet->GetSize () + gtpu.GetSerializedSize () - 8);  
   packet->AddHeader (gtpu);
   uint32_t flags = 0;
-  m_s1uSocket->SendTo (packet, flags, InetSocketAddress(m_sgwAddress, m_gtpuUdpPort));
+  m_s1uSocket->SendTo (packet, flags, InetSocketAddress(m_sgwS1uAddress, m_gtpuUdpPort));
 }
 
 

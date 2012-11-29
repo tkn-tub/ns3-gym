@@ -69,10 +69,11 @@ public:
    * \param lteSocket the socket to be used to send/receive packets to/from the LTE radio interface
    * \param s1uSocket the socket to be used to send/receive packets
    * to/from the S1-U interface connected with the SGW 
-   * \param sgwAddress the IPv4 address at which this eNB will be able to reach its SGW
+   * \param enbS1uAddress the IPv4 address of the S1-U interface of this eNB
+   * \param sgwS1uAddress the IPv4 address at which this eNB will be able to reach its SGW for S1-U communications
    * \param cellId the identifier of the enb
    */
-  EpcEnbApplication (Ptr<Socket> lteSocket, Ptr<Socket> s1uSocket, Ipv4Address sgwAddress, uint16_t cellId);
+  EpcEnbApplication (Ptr<Socket> lteSocket, Ptr<Socket> s1uSocket, Ipv4Address enbS1uAddress, Ipv4Address sgwS1uAddress, uint16_t cellId);
 
   /**
    * Destructor
@@ -141,6 +142,7 @@ private:
 
   // ENB S1 SAP provider methods
   void DoInitialUeMessage (uint64_t imsi, uint16_t rnti);
+  void DoPathSwitchRequest (EpcEnbS1SapProvider::PathSwitchRequestParameters params);
 
   // S1-AP SAP ENB methods
   void DoInitialContextSetupRequest (uint64_t mmeUeS1Id, uint16_t enbUeS1Id, std::list<EpcS1apSapEnb::ErabToBeSetupItem> erabToBeSetupList);
@@ -185,9 +187,14 @@ private:
   Ptr<Socket> m_s1uSocket;
 
   /**
+   * address of the eNB for S1-U communications
+   */
+  Ipv4Address m_enbS1uAddress;
+
+  /**
    * address of the SGW which terminates all S1-U tunnels
    */
-  Ipv4Address m_sgwAddress;
+  Ipv4Address m_sgwS1uAddress;
 
   /**
    * map telling for each EpsBearer (RNTI,BID) the corresponding  S1-U TEID

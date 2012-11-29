@@ -290,7 +290,8 @@ private:
 
   // S1 SAP methods
   void DoDataRadioBearerSetupRequest (EpcEnbS1SapUser::DataRadioBearerSetupRequestParameters params);
-
+  void DoPathSwitchRequestAcknowledge (EpcEnbS1SapUser::PathSwitchRequestAcknowledgeParameters params);  
+  
   EpcEnbS1SapProvider* m_s1SapProvider;
   EpcEnbS1SapUser* m_s1SapUser;
   

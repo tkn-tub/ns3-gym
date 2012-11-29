@@ -59,15 +59,20 @@ public:
    */
   virtual void InitialUeMessage (uint64_t mmeUeS1Id, uint16_t enbUeS1Id, uint64_t imsi, uint16_t ecgi) = 0;
 
+
+  /**
+   *  E-RAB Setup Item IEs, see 3GPP TS 36.413 9.1.4.2 
+   * 
+   */
   struct ErabSetupItem
   {
     uint16_t    erabId;
-    Ipv4Address transportLayerAddress;
+    Ipv4Address enbTransportLayerAddress;
     uint32_t    enbTeid;    
   };
 
   /** 
-   * 
+   * INITIAL CONTEXT SETUP RESPONSE message,  see 3GPP TS 36.413 9.1.4.2 
    * 
    * \param mmeUeS1Id in practice, we use the IMSI
    * \param enbUeS1Id in practice, we use the RNTI
@@ -84,7 +89,7 @@ public:
   struct ErabSwitchedInDownlinkItem
   {
     uint16_t    erabId;
-    Ipv4Address transportLayerAddress;
+    Ipv4Address enbTransportLayerAddress;
     uint32_t    enbTeid;    
   };
 
@@ -92,7 +97,7 @@ public:
    * PATH SWITCH REQUEST message, see 3GPP TS 36.413 9.1.5.8
    * 
    */
-  virtual void PathSwitchRequest (uint64_t enbUeS1Id, uint64_t mmeUeS1Id, uint16_t cgi, std::list<ErabSwitchedInDownlinkItem> erabToBeSwitchedInDownlinkList) = 0;
+  virtual void PathSwitchRequest (uint64_t enbUeS1Id, uint64_t mmeUeS1Id, uint16_t gci, std::list<ErabSwitchedInDownlinkItem> erabToBeSwitchedInDownlinkList) = 0;
 };
 
 

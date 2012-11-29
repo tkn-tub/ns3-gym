@@ -36,6 +36,11 @@ public:
 
   virtual ~EpcS11Sap ();
 
+  struct GtpcMessage
+  {
+    uint32_t teid;
+  };
+
   /**
    * Fully-qualified TEID, see 3GPP TS 29.274 section 8.22
    * 
@@ -64,7 +69,7 @@ public:
  * MME side of the S11 Service Access Point (SAP), provides the MME
  * methods to be called when an S11 message is received by the MME. 
  */
-  class EpcS11SapMme : public EpcS11Sap
+class EpcS11SapMme : public EpcS11Sap
 {
 public:
   
@@ -72,7 +77,7 @@ public:
    * 3GPP TS 29.274 version 8.3.1 Release 8 section 8.28
    * 
    */
-  struct BearerContext
+  struct BearerContextCreated
   {
 
     EpcS11Sap::Fteid sgwFteid;
@@ -81,7 +86,43 @@ public:
     Ptr<EpcTft> tft;
   };
 
-  virtual void RecvCreateSessionResponse (uint64_t imsi, std::list<BearerContext> bearerContextList) = 0;
+
+  /**     
+   * Create Session Response message, see 3GPP TS 29.274 7.2.2
+   */
+  struct CreateSessionResponseMessage : public GtpcMessage
+  {
+    std::list<BearerContextCreated> bearerContextsCreated;
+  };
+
+
+  /** 
+   * send a Create Session Response message
+   * 
+   * \params msg the message
+   */
+  virtual void CreateSessionResponse (CreateSessionResponseMessage msg) = 0;
+
+
+  /**     
+   * Modify Bearer Response message, see 3GPP TS 29.274 7.2.7
+   */
+  struct ModifyBearerResponseMessage : public GtpcMessage
+  {
+    enum Cause {
+      REQUEST_ACCEPTED = 0,
+      REQUEST_ACCEPTED_PARTIALLY,
+      REQUEST_REJECTED,
+      CONTEXT_NOT_FOUND
+    } cause;
+  };
+
+  /** 
+   * send a Modify Bearer Response message
+   * 
+   * \params msg the message
+   */
+  virtual void ModifyBearerResponse (ModifyBearerResponseMessage msg) = 0;
 
 };
 
@@ -95,36 +136,47 @@ class EpcS11SapSgw : public EpcS11Sap
 {
 public:
 
-  struct BearerContext
-  {
-    
+  struct BearerContextToBeCreated
+  {    
     EpcS11Sap::Fteid sgwFteid;
     uint8_t epsBearerId; 
     EpsBearer bearerLevelQos; 
     Ptr<EpcTft> tft;
   };
 
-  /** 
-   * 
-   * 
-   * \param imsi
-   * \param uli theoretically, the User Location Information (ULI) which
-   * includes the EGCI. In practice, we use the Cell Id. 
-   * \param bearersToBeSetup default bearer + eventual other bearers
-   * to be setup
+  
+  /**     
+   * Create Session Request message, see 3GPP TS 29.274 7.2.1
    */
-  virtual void RecvCreateSessionRequest (uint64_t imsi, Uli uli, std::list<BearerContext> bearersToBeSetup) = 0;
+  struct CreateSessionRequestMessage : public GtpcMessage
+  {
+    uint64_t imsi; 
+    Uli uli; 
+    std::list<BearerContextToBeCreated> bearerContextsToBeCreated;    
+  };
+
+  /** 
+   * send a Create Session Request message
+   * 
+   * \params msg the message
+   */
+  virtual void CreateSessionRequest (CreateSessionRequestMessage msg) = 0;
 
 
-  /** 
-   * 
-   * 
-   * \param imsi not included in the specs, we add it for simplicity.
-   * \param uli theoretically, the User Location Information (ULI) which
-   * includes the EGCI. In practice, we use the Cell Id. 
-   * \param bearersToBeSetup 
+  /**     
+   * Modify Bearer Request message, see 3GPP TS 29.274 7.2.7
    */
-  virtual void ModifyBearerRequest (uint64_t mei, Uli uli, std::list<BearerContext> bearersToBeSetup) = 0;
+  struct ModifyBearerRequestMessage : public GtpcMessage
+  {
+    Uli uli;
+  };
+
+  /** 
+   * send a Modify Bearer Request message
+   * 
+   * \params msg the message
+   */
+  virtual void ModifyBearerRequest (ModifyBearerRequestMessage msg) = 0;
 
 };
 
@@ -146,7 +198,8 @@ public:
   MemberEpcS11SapMme (C* owner);
 
   // inherited from EpcS11SapMme
-  void RecvCreateSessionResponse (uint64_t imsi, std::list<BearerContext>);
+  virtual void CreateSessionResponse (CreateSessionResponseMessage msg);
+  virtual void ModifyBearerResponse (ModifyBearerResponseMessage msg);
 
 private:
   MemberEpcS11SapMme ();
@@ -165,9 +218,15 @@ MemberEpcS11SapMme<C>::MemberEpcS11SapMme ()
 }
 
 template <class C>
-void MemberEpcS11SapMme<C>::RecvCreateSessionResponse (uint64_t imsi, std::list<BearerContext> bearerContextList)
+void MemberEpcS11SapMme<C>::CreateSessionResponse (CreateSessionResponseMessage msg)
 {
-  m_owner->DoRecvCreateSessionResponse (imsi, bearerContextList);
+  m_owner->DoCreateSessionResponse (msg);
+}
+
+template <class C>
+void MemberEpcS11SapMme<C>::ModifyBearerResponse (ModifyBearerResponseMessage msg)
+{
+  m_owner->DoModifyBearerResponse (msg);
 }
 
 
@@ -186,8 +245,8 @@ public:
   MemberEpcS11SapSgw (C* owner);
 
   // inherited from EpcS11SapSgw
-  virtual void RecvCreateSessionRequest (uint64_t imsi, Uli uli, std::list<BearerContext> bearersToBeSetup);
-  virtual void ModifyBearerRequest (uint64_t mei, Uli uli, std::list<BearerContext> bearersToBeSetup);
+  virtual void CreateSessionRequest (CreateSessionRequestMessage msg);
+  virtual void ModifyBearerRequest (ModifyBearerRequestMessage msg);
 
 private:
   MemberEpcS11SapSgw ();
@@ -206,15 +265,15 @@ MemberEpcS11SapSgw<C>::MemberEpcS11SapSgw ()
 }
 
 template <class C>
-void MemberEpcS11SapSgw<C>::RecvCreateSessionRequest (uint64_t imsi, Uli uli, std::list<BearerContext> bearersToBeSetup)
+void MemberEpcS11SapSgw<C>::CreateSessionRequest (CreateSessionRequestMessage msg)
 {
-  m_owner->DoRecvCreateSessionRequest (imsi, uli, bearersToBeSetup);
+  m_owner->DoCreateSessionRequest (msg);
 }
 
 template <class C>
-void MemberEpcS11SapSgw<C>::ModifyBearerRequest (uint64_t mei, Uli uli, std::list<BearerContext> bearersToBeSetup)
+void MemberEpcS11SapSgw<C>::ModifyBearerRequest (ModifyBearerRequestMessage msg)
 {
-  m_owner->DoModifyBearerRequest (mei, uli, bearersToBeSetup);
+  m_owner->DoModifyBearerRequest (msg);
 }
 
 

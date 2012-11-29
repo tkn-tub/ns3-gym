@@ -743,8 +743,8 @@ LteUePhy::DoSyncronizeWithEnb (uint16_t cellId, uint16_t dlEarfcn)
   m_uplinkSpectrumPhy->SetCellId (cellId);
 
   // configure DL for receing the BCH with the minimum bandwith
-  const uint8_t minDlBandwidth = 6;
-  Ptr<SpectrumValue> noisePsd = LteSpectrumValueHelper::CreateNoisePowerSpectralDensity (m_dlEarfcn, minDlBandwidth, m_noiseFigure);
+  m_dlBandwidth = 6;
+  Ptr<SpectrumValue> noisePsd = LteSpectrumValueHelper::CreateNoisePowerSpectralDensity (m_dlEarfcn, m_dlBandwidth, m_noiseFigure);
   m_downlinkSpectrumPhy->SetNoisePowerSpectralDensity (noisePsd);
   m_downlinkSpectrumPhy->GetChannel ()->AddRx (m_downlinkSpectrumPhy);  
   

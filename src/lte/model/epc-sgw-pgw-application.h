@@ -168,8 +168,8 @@ public:
 private:
 
   // S11 SAP SGW methods
-  void DoRecvCreateSessionRequest (uint64_t imsi, EpcS11Sap::Uli uli, std::list<EpcS11SapSgw::BearerContext> bearersToBeSetup);
-  void DoModifyBearerRequest (uint64_t mei, EpcS11Sap::Uli uli, std::list<EpcS11SapSgw::BearerContext> bearersToBeSetup);  
+  void DoCreateSessionRequest (EpcS11SapSgw::CreateSessionRequestMessage msg);
+  void DoModifyBearerRequest (EpcS11SapSgw::ModifyBearerRequestMessage msg);  
 
   /**
    * store info for each UE connected to this SGW
@@ -182,9 +182,10 @@ private:
     /** 
      * 
      * \param tft the Traffic Flow Template of the new bearer to be added
+     * \param epsBearerId the ID of the EPS Bearer to be activated
      * \param teid  the TEID of the new bearer
      */
-    void AddBearer (Ptr<EpcTft> tft, uint32_t teid);
+    void AddBearer (Ptr<EpcTft> tft, uint8_t epsBearerId, uint32_t teid);
 
     /** 
      * 
@@ -226,6 +227,7 @@ private:
     EpcTftClassifier m_tftClassifier;
     Ipv4Address m_enbAddr;
     Ipv4Address m_ueAddr;
+    std::map<uint8_t, uint32_t> m_teidByBearerIdMap;
   };
 
 

@@ -61,6 +61,8 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (LteHelper);
 
 LteHelper::LteHelper (void)
+  :   m_imsiCounter (0),
+      m_cellIdCounter (0)
 {
   NS_LOG_FUNCTION (this);
   m_enbNetDeviceFactory.SetTypeId (LteEnbNetDevice::GetTypeId ());
@@ -374,8 +376,12 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
   phy->SetLteEnbCphySapUser (rrc->GetLteEnbCphySapUser ());
   rrc->SetLteEnbCphySapProvider (phy->GetLteEnbCphySapProvider ());
  
+  NS_ABORT_MSG_IF (m_cellIdCounter == 65535, "max num eNBs exceeded");
+  uint16_t cellId = ++m_cellIdCounter;
+
   Ptr<LteEnbNetDevice> dev = m_enbNetDeviceFactory.Create<LteEnbNetDevice> ();
   dev->SetNode (n);
+  dev->SetAttribute ("CellId", UintegerValue (cellId)); 
   dev->SetAttribute ("LteEnbPhy", PointerValue (phy));
   dev->SetAttribute ("LteEnbMac", PointerValue (mac));
   dev->SetAttribute ("FfMacScheduler", PointerValue (sched));
@@ -497,7 +503,9 @@ LteHelper::InstallSingleUeDevice (Ptr<Node> n)
   phy->SetLteUeCphySapUser (rrc->GetLteUeCphySapUser ());
   rrc->SetLteUeCphySapProvider (phy->GetLteUeCphySapProvider ());
 
-  Ptr<LteUeNetDevice> dev = CreateObject<LteUeNetDevice> (n, phy, mac, rrc, nas);
+  NS_ABORT_MSG_IF (m_imsiCounter >= 0xFFFFFFFF, "max num UEs exceeded");  
+  uint64_t imsi = ++m_imsiCounter;
+  Ptr<LteUeNetDevice> dev = CreateObject<LteUeNetDevice> (n, phy, mac, rrc, nas, imsi);
   phy->SetDevice (dev);
   dlPhy->SetDevice (dev);
   ulPhy->SetDevice (dev);

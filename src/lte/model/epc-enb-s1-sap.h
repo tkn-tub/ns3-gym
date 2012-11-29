@@ -21,6 +21,7 @@
 #ifndef EPC_ENB_S1_SAP_H
 #define EPC_ENB_S1_SAP_H
 
+#include <list>
 #include <stdint.h>
 #include <ns3/eps-bearer.h>
 #include <ns3/ipv4-address.h>
@@ -38,20 +39,7 @@ namespace ns3 {
 class EpcEnbS1SapProvider
 {
 public:
-  virtual ~EpcEnbS1SapProvider ();
-  
-  /**
-   * Parameters passed to S1BearerSetupRequest ()
-   * 
-   */
-  struct S1BearerSetupRequestParameters
-  {
-    uint16_t rnti; /**< the RNTI corresponding to the IMSI for which
-                      the radio bearer activation was requested */
-    uint8_t bid; /**< the EPS Bearer ID of the bearer to be created*/
-
-    uint32_t gtpTeid; /**<  S1-bearer GTP tunnel endpoint identifier, see 36.423 9.2.1  */
-  };
+  virtual ~EpcEnbS1SapProvider ();  
 
   /** 
    * 
@@ -60,6 +48,24 @@ public:
    * \param rnti 
    */
   virtual void InitialUeMessage (uint64_t imsi, uint16_t rnti) = 0;
+
+
+  struct BearerToBeSwitched
+  {
+    uint8_t epsBearerId;
+    uint32_t teid;
+  };
+  
+  struct PathSwitchRequestParameters
+  {
+    uint16_t rnti;
+    uint16_t cellId;
+    uint32_t mmeUeS1Id;
+    std::list<BearerToBeSwitched> bearersToBeSwitched;
+  };
+
+  virtual void PathSwitchRequest (PathSwitchRequestParameters params) = 0;
+    
 };
   
 
@@ -96,6 +102,14 @@ public:
    * 
    */
   virtual void DataRadioBearerSetupRequest (DataRadioBearerSetupRequestParameters params) = 0;
+
+  
+  struct PathSwitchRequestAcknowledgeParameters
+  {
+    uint16_t rnti;
+  };
+
+  virtual void PathSwitchRequestAcknowledge (PathSwitchRequestAcknowledgeParameters params) = 0;
   
 };
   
@@ -115,6 +129,8 @@ public:
 
   // inherited from EpcEnbS1SapProvider
   virtual void InitialUeMessage (uint64_t imsi, uint16_t rnti);
+  virtual void PathSwitchRequest (PathSwitchRequestParameters params);
+  
 
 private:
   MemberEpcEnbS1SapProvider ();
@@ -139,6 +155,13 @@ void MemberEpcEnbS1SapProvider<C>::InitialUeMessage (uint64_t imsi, uint16_t rnt
   m_owner->DoInitialUeMessage (imsi, rnti);
 }
 
+
+template <class C>
+void MemberEpcEnbS1SapProvider<C>::PathSwitchRequest (PathSwitchRequestParameters params)
+{
+  m_owner->DoPathSwitchRequest (params);
+}
+
 /**
  * Template for the implementation of the EpcEnbS1SapUser as a member
  * of an owner class of type C to which all methods are forwarded
@@ -152,6 +175,7 @@ public:
 
   // inherited from EpcEnbS1SapUser
   virtual void DataRadioBearerSetupRequest (DataRadioBearerSetupRequestParameters params);
+  virtual void PathSwitchRequestAcknowledge (PathSwitchRequestAcknowledgeParameters params);
 
 private:
   MemberEpcEnbS1SapUser ();
@@ -175,6 +199,11 @@ void MemberEpcEnbS1SapUser<C>::DataRadioBearerSetupRequest (DataRadioBearerSetup
   m_owner->DoDataRadioBearerSetupRequest (params);
 }
 
+template <class C>
+void MemberEpcEnbS1SapUser<C>::PathSwitchRequestAcknowledge (PathSwitchRequestAcknowledgeParameters params)
+{
+  m_owner->DoPathSwitchRequestAcknowledge (params);
+}
 
 } // namespace ns3
 

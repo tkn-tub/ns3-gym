@@ -659,7 +659,12 @@ EpcTestRrc::DoDataRadioBearerSetupRequest (EpcEnbS1SapUser::DataRadioBearerSetup
 {
 
 }
+  
+void 
+EpcTestRrc::DoPathSwitchRequestAcknowledge (EpcEnbS1SapUser::PathSwitchRequestAcknowledgeParameters params)
+{
 
+}
 
 
 } // namespace ns3

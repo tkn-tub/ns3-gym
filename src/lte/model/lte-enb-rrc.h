@@ -72,6 +72,7 @@ public:
       CONNECTION_RECONFIGURATION,
       CONNECTION_REESTABLISHMENT,
       HANDOVER_JOINING,
+      HANDOVER_PATH_SWITCH,
       HANDOVER_LEAVING,
       NUM_STATES
     };
@@ -105,6 +106,13 @@ public:
    * \param sourceX2apId 
    */
   void SetSource (uint16_t sourceCellId, uint16_t sourceX2apId);
+
+  /** 
+   * Set the IMSI
+   * 
+   * \param imsi the IMSI
+   */
+  void SetImsi (uint64_t imsi);
 
   /** 
    * Setup a new data radio bearer, including both the configuration
@@ -174,6 +182,13 @@ public:
    * \return a list of ERAB-to-be-setup items to be put in a X2 HO REQ message
    */
   std::vector<EpcX2Sap::ErabToBeSetupItem> GetErabList ();
+
+  /** 
+   * send the UE CONTEXT RELEASE X2 message to the source eNB, thus
+   * successfully terminating an X2 handover procedure 
+   * 
+   */
+  void SendUeContextRelease ();
   
 
   // methods forwarded from RRC SAP
@@ -537,8 +552,7 @@ private:
 
   // S1 SAP methods
   void DoDataRadioBearerSetupRequest (EpcEnbS1SapUser::DataRadioBearerSetupRequestParameters params);
-
-
+  void DoPathSwitchRequestAcknowledge (EpcEnbS1SapUser::PathSwitchRequestAcknowledgeParameters params);       
   // X2 SAP methods
   void DoRecvHandoverRequest (EpcX2SapUser::HandoverRequestParams params);
   void DoRecvHandoverRequestAck (EpcX2SapUser::HandoverRequestAckParams params);

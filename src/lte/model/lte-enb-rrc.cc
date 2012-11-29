@@ -103,6 +103,7 @@ const char* g_ueManagerStateName[UeManager::NUM_STATES] =
     "CONNECTION_RECONFIGURATION",
     "CONNECTION_REESTABLISHMENT",
     "HANDOVER_JOINING",
+    "HANDOVER_PATH_SWITCH",
     "HANDOVER_LEAVING",
   };
 
@@ -261,6 +262,12 @@ UeManager::SetSource (uint16_t sourceCellId, uint16_t sourceX2apId)
 {
   m_sourceX2apId = sourceX2apId;
   m_sourceCellId = sourceCellId;
+}
+
+void 
+UeManager::SetImsi (uint64_t imsi)
+{
+  m_imsi = imsi;
 }
 
 uint8_t
@@ -449,6 +456,31 @@ UeManager::GetErabList ()
   return ret;
 }
 
+void
+UeManager::SendUeContextRelease ()
+{
+  NS_LOG_FUNCTION (this);
+  switch (m_state)
+    {     
+    case HANDOVER_PATH_SWITCH:
+      NS_LOG_INFO ("Send UE CONTEXT RELEASE from target eNB to source eNB");
+      EpcX2SapProvider::UeContextReleaseParams ueCtxReleaseParams;
+      ueCtxReleaseParams.oldEnbUeX2apId = m_sourceX2apId;
+      ueCtxReleaseParams.newEnbUeX2apId = m_rnti;
+      ueCtxReleaseParams.sourceCellId = m_sourceCellId;
+      m_rrc->m_x2SapProvider->SendUeContextRelease (ueCtxReleaseParams);
+      SwitchToState (CONNECTED_NORMALLY);
+      break;
+      
+    default:
+      NS_FATAL_ERROR ("method unexpected in state " << ToString (m_state));
+      break;      
+    }
+}
+
+
+// methods forwarded from RRC SAP
+
 void 
 UeManager::CompleteSetupUe (LteEnbRrcSapProvider::CompleteSetupUeParameters params)
 {
@@ -515,13 +547,24 @@ UeManager::RecvRrcConnectionReconfigurationCompleted (LteRrcSap::RrcConnectionRe
       break;
       
     case HANDOVER_JOINING:
-      NS_LOG_INFO ("Send UE CONTEXT RELEASE from target eNB to source eNB");
-      EpcX2SapProvider::UeContextReleaseParams ueCtxReleaseParams;
-      ueCtxReleaseParams.oldEnbUeX2apId = m_sourceX2apId;
-      ueCtxReleaseParams.newEnbUeX2apId = m_rnti;
-      ueCtxReleaseParams.sourceCellId = m_sourceCellId;
-      m_rrc->m_x2SapProvider->SendUeContextRelease (ueCtxReleaseParams);
-      SwitchToState (CONNECTED_NORMALLY);
+      {
+        NS_LOG_INFO ("Send PATH SWITCH REQUEST to the MME");
+        EpcEnbS1SapProvider::PathSwitchRequestParameters params;
+        params.rnti = m_rnti;
+        params.cellId = m_rrc->m_cellId;
+        params.mmeUeS1Id = m_imsi;
+        SwitchToState (HANDOVER_PATH_SWITCH);
+        for (std::map <uint8_t, Ptr<LteDataRadioBearerInfo> >::iterator it =  m_drbMap.begin ();
+             it != m_drbMap.end ();
+             ++it)
+          {
+            EpcEnbS1SapProvider::BearerToBeSwitched b;
+            b.epsBearerId = it->second->m_epsBearerIdentity;
+            b.teid =  it->second->m_gtpTeid;
+            params.bearersToBeSwitched.push_back (b);
+          }     
+        m_rrc->m_s1SapProvider->PathSwitchRequest (params);
+      }
       break;
       
     default:
@@ -549,6 +592,8 @@ UeManager::RecvRrcConnectionReestablishmentComplete (LteRrcSap::RrcConnectionRee
 }
 
 
+// methods forwarded from CMAC SAP
+
 void
 UeManager::CmacUeConfigUpdateInd (LteEnbCmacSapUser::UeConfig cmacParams)
 {
@@ -570,6 +615,8 @@ UeManager::CmacUeConfigUpdateInd (LteEnbCmacSapUser::UeConfig cmacParams)
   ScheduleRrcConnectionReconfiguration ();
 }
 
+
+// methods forwarded from PDCP SAP
 
 void
 UeManager::DoReceivePdcpSdu (LtePdcpSapUser::ReceivePdcpSduParameters params)
@@ -1037,7 +1084,7 @@ LteEnbRrc::SendHandoverRequest (uint16_t rnti, uint16_t cellId)
   params.cause          = EpcX2SapProvider::HandoverDesirableForRadioReason;
   params.sourceCellId   = m_cellId;
   params.targetCellId   = cellId;
-  params.mmeUeS1apId    = 1234567;
+  params.mmeUeS1apId    = ueManager->GetImsi ();
   params.ueAggregateMaxBitRateDownlink = 200 * 1000;
   params.ueAggregateMaxBitRateUplink = 100 * 1000;
   params.bearers = ueManager->GetErabList ();
@@ -1110,6 +1157,12 @@ LteEnbRrc::DoDataRadioBearerSetupRequest (EpcEnbS1SapUser::DataRadioBearerSetupR
   ueManager->ScheduleRrcConnectionReconfiguration ();
 }
 
+void 
+LteEnbRrc::DoPathSwitchRequestAcknowledge (EpcEnbS1SapUser::PathSwitchRequestAcknowledgeParameters params)
+{
+  Ptr<UeManager> ueManager = GetUeManager (params.rnti);
+  ueManager->SendUeContextRelease ();
+}
 
 void
 LteEnbRrc::DoRecvHandoverRequest (EpcX2SapUser::HandoverRequestParams params)
@@ -1137,6 +1190,7 @@ LteEnbRrc::DoRecvHandoverRequest (EpcX2SapUser::HandoverRequestParams params)
 
   Ptr<UeManager> ueManager = GetUeManager (rnti);
   ueManager->SetSource (params.sourceCellId, params.oldEnbUeX2apId);
+  ueManager->SetImsi (params.mmeUeS1apId);
 
   for (std::vector <EpcX2Sap::ErabToBeSetupItem>::iterator it = params.bearers.begin ();
        it != params.bearers.end ();
