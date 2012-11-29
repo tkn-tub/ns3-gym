@@ -143,7 +143,8 @@ private:
   // ENB S1 SAP provider methods
   void DoInitialUeMessage (uint64_t imsi, uint16_t rnti);
   void DoPathSwitchRequest (EpcEnbS1SapProvider::PathSwitchRequestParameters params);
-
+  void DoUeContextRelease (uint16_t rnti);
+  
   // S1-AP SAP ENB methods
   void DoInitialContextSetupRequest (uint64_t mmeUeS1Id, uint16_t enbUeS1Id, std::list<EpcS1apSapEnb::ErabToBeSetupItem> erabToBeSetupList);
   void DoPathSwitchRequestAcknowledge (uint64_t enbUeS1Id, uint64_t mmeUeS1Id, uint16_t cgi, std::list<EpcS1apSapEnb::ErabSwitchedInUplinkItem> erabToBeSwitchedInUplinkList);
@@ -197,13 +198,13 @@ private:
   Ipv4Address m_sgwS1uAddress;
 
   /**
-   * map telling for each EpsBearer (RNTI,BID) the corresponding  S1-U TEID
+   * map of maps telling for each RNTI and BID the corresponding  S1-U TEID
    * 
    */
-  std::map<EpsFlowId_t, uint32_t> m_rbidTeidMap;  
+  std::map<uint16_t, std::map<uint8_t, uint32_t> > m_rbidTeidMap;  
 
   /**
-   * map telling for each S1-U TEID the corresponding EpsBearer (RNTI,BID) 
+   * map telling for each S1-U TEID the corresponding RNTI,BID
    * 
    */
   std::map<uint32_t, EpsFlowId_t> m_teidRbidMap;

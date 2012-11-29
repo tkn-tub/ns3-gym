@@ -160,7 +160,7 @@ EpcEnbApplication::DoPathSwitchRequest (EpcEnbS1SapProvider::PathSwitchRequestPa
       
       EpsFlowId_t rbid (params.rnti, bit->epsBearerId);
       // side effect: create entries if not exist
-      m_rbidTeidMap[rbid] = teid;
+      m_rbidTeidMap[params.rnti][bit->epsBearerId] = teid;
       m_teidRbidMap[teid] = rbid;
 
       EpcS1apSapMme::ErabSwitchedInDownlinkItem erab;
@@ -171,6 +171,22 @@ EpcEnbApplication::DoPathSwitchRequest (EpcEnbS1SapProvider::PathSwitchRequestPa
       erabToBeSwitchedInDownlinkList.push_back (erab);
     }
   m_s1apSapMme->PathSwitchRequest (enbUeS1Id, mmeUeS1Id, gci, erabToBeSwitchedInDownlinkList);
+}
+
+void 
+EpcEnbApplication::DoUeContextRelease (uint16_t rnti)
+{
+  NS_LOG_FUNCTION (this << rnti);
+  std::map<uint16_t, std::map<uint8_t, uint32_t> >::iterator rntiIt = m_rbidTeidMap.find (rnti);
+  NS_ASSERT (rntiIt != m_rbidTeidMap.end ());
+  for (std::map<uint8_t, uint32_t>::iterator bidIt = rntiIt->second.begin ();
+       bidIt != rntiIt->second.end ();
+       ++bidIt)
+    {
+      uint32_t teid = bidIt->second;
+      m_teidRbidMap.erase (teid);
+    }
+  m_rbidTeidMap.erase (rntiIt);
 }
 
 void 
@@ -198,7 +214,7 @@ EpcEnbApplication::DoInitialContextSetupRequest (uint64_t mmeUeS1Id, uint16_t en
 
       EpsFlowId_t rbid (rnti, erabIt->erabId);
       // side effect: create entries if not exist
-      m_rbidTeidMap[rbid] = params.gtpTeid;
+      m_rbidTeidMap[rnti][erabIt->erabId] = params.gtpTeid;
       m_teidRbidMap[params.gtpTeid] = rbid;
 
     }
@@ -232,13 +248,14 @@ EpcEnbApplication::RecvFromLteSocket (Ptr<Socket> socket)
   EpsBearerTag tag;
   bool found = packet->RemovePacketTag (tag);
   NS_ASSERT (found);
-  EpsFlowId_t flowId;
-  flowId.m_rnti = tag.GetRnti ();
-  flowId.m_bid = tag.GetBid ();
-  NS_LOG_LOGIC ("received packet with RNTI=" << flowId.m_rnti << ", BID=" << (uint16_t)  flowId.m_bid);
-  std::map<EpsFlowId_t, uint32_t>::iterator it = m_rbidTeidMap.find (flowId);
-  NS_ASSERT (it != m_rbidTeidMap.end ());
-  uint32_t teid = it->second;
+  uint16_t rnti = tag.GetRnti ();
+  uint8_t bid = tag.GetBid ();
+  NS_LOG_LOGIC ("received packet with RNTI=" << (uint32_t) rnti << ", BID=" << (uint32_t)  bid);
+  std::map<uint16_t, std::map<uint8_t, uint32_t> >::iterator rntiIt = m_rbidTeidMap.find (rnti);
+  NS_ASSERT (rntiIt != m_rbidTeidMap.end ());
+  std::map<uint8_t, uint32_t>::iterator bidIt = rntiIt->second.find (bid);
+  NS_ASSERT (bidIt != rntiIt->second.end ());
+  uint32_t teid = bidIt->second;
   SendToS1uSocket (packet, teid);
 }
 

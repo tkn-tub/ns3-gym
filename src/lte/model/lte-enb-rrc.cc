@@ -239,6 +239,7 @@ UeManager::DoDispose ()
   
   m_rrc->m_cmacSapProvider->RemoveUe (m_rnti);
   m_rrc->m_cphySapProvider->RemoveUe (m_rnti);
+  m_rrc->m_s1SapProvider->UeContextRelease (m_rnti);
 }
 
 TypeId UeManager::GetTypeId (void)

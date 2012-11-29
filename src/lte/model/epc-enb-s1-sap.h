@@ -65,6 +65,16 @@ public:
   };
 
   virtual void PathSwitchRequest (PathSwitchRequestParameters params) = 0;
+
+
+  /** 
+   * release UE context at the S1 Application of the source eNB after
+   * reception of the UE CONTEXT RELEASE X2 message from the target eNB
+   * during X2-based handover 
+   * 
+   * \param rnti 
+   */
+  virtual void UeContextRelease (uint16_t rnti) = 0;
     
 };
   
@@ -130,7 +140,7 @@ public:
   // inherited from EpcEnbS1SapProvider
   virtual void InitialUeMessage (uint64_t imsi, uint16_t rnti);
   virtual void PathSwitchRequest (PathSwitchRequestParameters params);
-  
+  virtual void UeContextRelease (uint16_t rnti);
 
 private:
   MemberEpcEnbS1SapProvider ();
@@ -160,6 +170,12 @@ template <class C>
 void MemberEpcEnbS1SapProvider<C>::PathSwitchRequest (PathSwitchRequestParameters params)
 {
   m_owner->DoPathSwitchRequest (params);
+}
+
+template <class C>
+void MemberEpcEnbS1SapProvider<C>::UeContextRelease (uint16_t rnti)
+{
+  m_owner->DoUeContextRelease (rnti);
 }
 
 /**
