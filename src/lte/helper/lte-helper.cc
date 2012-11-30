@@ -47,6 +47,7 @@
 #include <ns3/lte-rlc-am.h>
 #include <ns3/epc-enb-s1-sap.h>
 #include <ns3/lte-rrc-protocol-ideal.h>
+#include <ns3/lte-rrc-protocol-real.h>
 
 #include <ns3/epc-helper.h>
 #include <iostream>
@@ -150,6 +151,12 @@ TypeId LteHelper::GetTypeId (void)
                    StringValue (""), // fake module -> no fading 
                    MakeStringAccessor (&LteHelper::SetFadingModel),
                    MakeStringChecker ())
+    .AddAttribute ("UseIdealRrc",
+                   "If true, LteRrcProtocolIdeal will be used for RRC signaling. "
+                   "If false, LteRrcProtocolReal will be used.",
+                   BooleanValue (true), 
+                   MakeBooleanAccessor (&LteHelper::m_useIdealRrc),
+                   MakeBooleanChecker ())
   ;
   return tid;
 }
@@ -306,6 +313,10 @@ LteHelper::InstallUeDevice (NodeContainer c)
 Ptr<NetDevice>
 LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
 {
+
+  NS_ABORT_MSG_IF (m_cellIdCounter == 65535, "max num eNBs exceeded");
+  uint16_t cellId = ++m_cellIdCounter;
+
   Ptr<LteSpectrumPhy> dlPhy = CreateObject<LteSpectrumPhy> ();
   Ptr<LteSpectrumPhy> ulPhy = CreateObject<LteSpectrumPhy> ();
 
@@ -341,8 +352,23 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
   Ptr<LteEnbMac> mac = CreateObject<LteEnbMac> ();
   Ptr<FfMacScheduler> sched = m_schedulerFactory.Create<FfMacScheduler> ();
   Ptr<LteEnbRrc> rrc = CreateObject<LteEnbRrc> ();
-  Ptr<LteEnbRrcProtocolIdeal> rrcProtocol = CreateObject<LteEnbRrcProtocolIdeal> ();
-  rrc->AggregateObject (rrcProtocol);
+
+  if (m_useIdealRrc)
+    {
+      Ptr<LteEnbRrcProtocolIdeal> rrcProtocol = CreateObject<LteEnbRrcProtocolIdeal> ();
+      rrcProtocol->SetLteEnbRrcSapProvider (rrc->GetLteEnbRrcSapProvider ());
+      rrc->SetLteEnbRrcSapUser (rrcProtocol->GetLteEnbRrcSapUser ());
+      rrc->AggregateObject (rrcProtocol);
+      rrcProtocol->SetCellId (cellId);
+    }
+  else
+    {
+      Ptr<LteEnbRrcProtocolReal> rrcProtocol = CreateObject<LteEnbRrcProtocolReal> ();
+      rrcProtocol->SetLteEnbRrcSapProvider (rrc->GetLteEnbRrcSapProvider ());
+      rrc->SetLteEnbRrcSapUser (rrcProtocol->GetLteEnbRrcSapUser ());
+      rrc->AggregateObject (rrcProtocol);
+      rrcProtocol->SetCellId (cellId);
+    }
 
   if (m_epcHelper != 0)
     {
@@ -354,10 +380,6 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
           rrc->SetAttribute ("EpsBearerToRlcMapping", EnumValue (LteEnbRrc::RLC_UM_ALWAYS));
         }
     }
-
-  // connect SAPs
-  rrcProtocol->SetLteEnbRrcSapProvider (rrc->GetLteEnbRrcSapProvider ());
-  rrc->SetLteEnbRrcSapUser (rrcProtocol->GetLteEnbRrcSapUser ());
 
   rrc->SetLteEnbCmacSapProvider (mac->GetLteEnbCmacSapProvider ());
   mac->SetLteEnbCmacSapUser (rrc->GetLteEnbCmacSapUser ());
@@ -375,9 +397,6 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
 
   phy->SetLteEnbCphySapUser (rrc->GetLteEnbCphySapUser ());
   rrc->SetLteEnbCphySapProvider (phy->GetLteEnbCphySapProvider ());
- 
-  NS_ABORT_MSG_IF (m_cellIdCounter == 65535, "max num eNBs exceeded");
-  uint16_t cellId = ++m_cellIdCounter;
 
   Ptr<LteEnbNetDevice> dev = m_enbNetDeviceFactory.Create<LteEnbNetDevice> ();
   dev->SetNode (n);
@@ -414,10 +433,7 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
     }
   
 
-  dev->Start ();
-
-  rrcProtocol->SetCellId (dev->GetCellId ());
-  
+  dev->Start (); 
 
   m_uplinkChannel->AddRx (ulPhy);
 
@@ -476,9 +492,23 @@ LteHelper::InstallSingleUeDevice (Ptr<Node> n)
 
   Ptr<LteUeMac> mac = CreateObject<LteUeMac> ();
   Ptr<LteUeRrc> rrc = CreateObject<LteUeRrc> ();
-  Ptr<LteUeRrcProtocolIdeal> rrcProtocol = CreateObject<LteUeRrcProtocolIdeal> ();
-  rrc->AggregateObject (rrcProtocol);
-  rrcProtocol->SetUeRrc (rrc);
+
+  if (m_useIdealRrc)
+    {      
+      Ptr<LteUeRrcProtocolIdeal> rrcProtocol = CreateObject<LteUeRrcProtocolIdeal> ();      
+      rrcProtocol->SetUeRrc (rrc);
+      rrc->AggregateObject (rrcProtocol);
+      rrcProtocol->SetLteUeRrcSapProvider (rrc->GetLteUeRrcSapProvider ());
+      rrc->SetLteUeRrcSapUser (rrcProtocol->GetLteUeRrcSapUser ());      
+    }
+  else
+    {
+      Ptr<LteUeRrcProtocolReal> rrcProtocol = CreateObject<LteUeRrcProtocolReal> ();      
+      rrcProtocol->SetUeRrc (rrc);
+      rrc->AggregateObject (rrcProtocol);
+      rrcProtocol->SetLteUeRrcSapProvider (rrc->GetLteUeRrcSapProvider ());
+      rrc->SetLteUeRrcSapUser (rrcProtocol->GetLteUeRrcSapUser ());      
+    }
 
   if (m_epcHelper != 0)
     {
@@ -486,12 +516,8 @@ LteHelper::InstallSingleUeDevice (Ptr<Node> n)
     }
   Ptr<EpcUeNas> nas = CreateObject<EpcUeNas> ();
  
-  // connect SAPs
   nas->SetAsSapProvider (rrc->GetAsSapProvider ());
   rrc->SetAsSapUser (nas->GetAsSapUser ());
-
-  rrcProtocol->SetLteUeRrcSapProvider (rrc->GetLteUeRrcSapProvider ());
-  rrc->SetLteUeRrcSapUser (rrcProtocol->GetLteUeRrcSapUser ());
 
   rrc->SetLteUeCmacSapProvider (mac->GetLteUeCmacSapProvider ());
   mac->SetLteUeCmacSapUser (rrc->GetLteUeCmacSapUser ());

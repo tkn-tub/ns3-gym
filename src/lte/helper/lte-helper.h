@@ -409,7 +409,7 @@ private:
   uint64_t m_imsiCounter;
   uint16_t m_cellIdCounter;
 
-
+  bool m_useIdealRrc;
 };
 
 
