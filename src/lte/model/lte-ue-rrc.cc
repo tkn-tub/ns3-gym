@@ -135,7 +135,7 @@ LteUeRrc::LteUeRrc ()
   m_cphySapUser = new MemberLteUeCphySapUser<LteUeRrc> (this);
   m_cmacSapUser = new UeMemberLteUeCmacSapUser (this);
   m_rrcSapProvider = new MemberLteUeRrcSapProvider<LteUeRrc> (this);
-  m_pdcpSapUser = new LtePdcpSpecificLtePdcpSapUser<LteUeRrc> (this);
+  m_drbPdcpSapUser = new LtePdcpSpecificLtePdcpSapUser<LteUeRrc> (this);
   m_asSapProvider = new MemberLteAsSapProvider<LteUeRrc> (this);
 }
 
@@ -151,7 +151,7 @@ LteUeRrc::DoDispose ()
   NS_LOG_FUNCTION (this);
   delete m_cphySapUser;
   delete m_cmacSapUser;
-  delete m_pdcpSapUser;
+  delete m_drbPdcpSapUser;
   delete m_asSapProvider;
   m_drbMap.clear ();
 }
@@ -511,6 +511,15 @@ LteUeRrc::DoRecvMasterInformationBlock (LteRrcSap::MasterInformationBlock msg)
 // RRC SAP methods
 
 void 
+LteUeRrc::DoCompleteSetup (LteUeRrcSapProvider::CompleteSetupParameters params)
+{
+  NS_LOG_FUNCTION (this);
+  m_srb0->m_rlc->SetLteRlcSapUser (params.srb0SapUser);
+  m_srb1->m_pdcp->SetLtePdcpSapUser (params.srb1SapUser);
+}
+
+
+void 
 LteUeRrc::DoRecvSystemInformationBlockType1 (LteRrcSap::SystemInformationBlockType1 msg)
 {
   NS_LOG_FUNCTION (this);
@@ -686,7 +695,7 @@ LteUeRrc::ApplyRadioResourceConfigDedicated (LteRrcSap::RadioResourceConfigDedic
           Ptr<LtePdcp> pdcp = CreateObject<LtePdcp> ();
           pdcp->SetRnti (m_rnti);
           pdcp->SetLcId (lcid);
-          pdcp->SetLtePdcpSapUser (m_pdcpSapUser);
+          pdcp->SetLtePdcpSapUser (m_drbPdcpSapUser);
           pdcp->SetLteRlcSapProvider (rlc->GetLteRlcSapProvider ());
           rlc->SetLteRlcSapUser (pdcp->GetLteRlcSapUser ());
 
@@ -775,7 +784,7 @@ LteUeRrc::ApplyRadioResourceConfigDedicated (LteRrcSap::RadioResourceConfigDedic
               Ptr<LtePdcp> pdcp = CreateObject<LtePdcp> ();
               pdcp->SetRnti (m_rnti);
               pdcp->SetLcId (dtamIt->logicalChannelIdentity);
-              pdcp->SetLtePdcpSapUser (m_pdcpSapUser);
+              pdcp->SetLtePdcpSapUser (m_drbPdcpSapUser);
               pdcp->SetLteRlcSapProvider (rlc->GetLteRlcSapProvider ());
               rlc->SetLteRlcSapUser (pdcp->GetLteRlcSapUser ());
               drbInfo->m_pdcp = pdcp;

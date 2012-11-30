@@ -346,7 +346,7 @@ private:
   LteRrcSap::PhysicalConfigDedicated m_physicalConfigDedicated;
   Ptr<LteEnbRrc> m_rrc;
   State m_state;
-  LtePdcpSapUser* m_pdcpSapUser;
+  LtePdcpSapUser* m_drbPdcpSapUser;
   bool m_pendingRrcConnectionReconfiguration;
   TracedCallback<State, State> m_stateTransitionCallback;
   uint16_t m_sourceX2apId;

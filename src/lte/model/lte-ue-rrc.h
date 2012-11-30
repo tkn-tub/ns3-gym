@@ -239,6 +239,7 @@ private:
   void DoRecvMasterInformationBlock (LteRrcSap::MasterInformationBlock msg);
 
   // RRC SAP methods
+  void DoCompleteSetup (LteUeRrcSapProvider::CompleteSetupParameters params);
   void DoRecvSystemInformationBlockType1 (LteRrcSap::SystemInformationBlockType1 msg);
   void DoRecvSystemInformation (LteRrcSap::SystemInformation msg);
   void DoRecvRrcConnectionSetup (LteRrcSap::RrcConnectionSetup msg);
@@ -267,7 +268,7 @@ private:
   LteUeRrcSapProvider* m_rrcSapProvider;
 
   LteMacSapProvider* m_macSapProvider;
-  LtePdcpSapUser* m_pdcpSapUser;
+  LtePdcpSapUser* m_drbPdcpSapUser;
   
   LteAsSapProvider* m_asSapProvider;
   LteAsSapUser* m_asSapUser;

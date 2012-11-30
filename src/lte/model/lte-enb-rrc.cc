@@ -141,7 +141,7 @@ UeManager::UeManager (Ptr<LteEnbRrc> rrc, uint16_t rnti, State s)
 { 
   NS_LOG_FUNCTION (this);
 
-  m_pdcpSapUser = new LtePdcpSpecificLtePdcpSapUser<UeManager> (this);
+  m_drbPdcpSapUser = new LtePdcpSpecificLtePdcpSapUser<UeManager> (this);
 
   m_physicalConfigDedicated.haveAntennaInfoDedicated = true;
   m_physicalConfigDedicated.antennaInfo.transmissionMode = m_rrc->m_defaultTransmissionMode;
@@ -185,7 +185,7 @@ UeManager::UeManager (Ptr<LteEnbRrc> rrc, uint16_t rnti, State s)
     Ptr<LtePdcp> pdcp = CreateObject<LtePdcp> ();
     pdcp->SetRnti (m_rnti);
     pdcp->SetLcId (lcid);
-    pdcp->SetLtePdcpSapUser (m_pdcpSapUser);
+    pdcp->SetLtePdcpSapUser (m_drbPdcpSapUser);
     pdcp->SetLteRlcSapProvider (rlc->GetLteRlcSapProvider ());
     rlc->SetLteRlcSapUser (pdcp->GetLteRlcSapUser ());
 
@@ -235,7 +235,7 @@ UeManager::~UeManager (void)
 void
 UeManager::DoDispose ()
 {
-  delete m_pdcpSapUser;
+  delete m_drbPdcpSapUser;
   
   m_rrc->m_cmacSapProvider->RemoveUe (m_rnti);
   m_rrc->m_cphySapProvider->RemoveUe (m_rnti);
@@ -305,7 +305,7 @@ UeManager::SetupDataRadioBearer (EpsBearer bearer, uint32_t gtpTeid, Ipv4Address
       Ptr<LtePdcp> pdcp = CreateObject<LtePdcp> ();
       pdcp->SetRnti (m_rnti);
       pdcp->SetLcId (lcid);
-      pdcp->SetLtePdcpSapUser (m_pdcpSapUser);
+      pdcp->SetLtePdcpSapUser (m_drbPdcpSapUser);
       pdcp->SetLteRlcSapProvider (rlc->GetLteRlcSapProvider ());
       rlc->SetLteRlcSapUser (pdcp->GetLteRlcSapUser ());
       drbInfo->m_pdcp = pdcp;
