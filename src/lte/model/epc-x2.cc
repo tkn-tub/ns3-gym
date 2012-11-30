@@ -209,7 +209,7 @@ EpcX2::RecvFromX2cSocket (Ptr<Socket> socket)
 
           m_x2SapUser->RecvHandoverRequest (params);
         }
-      else // messageType == SuccessfulOutcome
+      else if (messageType == EpcX2Header::SuccessfulOutcome)
         {
           NS_LOG_LOGIC ("Recv X2 message: HANDOVER REQUEST ACK");
 
@@ -235,6 +235,32 @@ EpcX2::RecvFromX2cSocket (Ptr<Socket> socket)
           NS_LOG_LOGIC ("targetCellId = " << params.targetCellId);
 
           m_x2SapUser->RecvHandoverRequestAck (params);
+        }
+      else // messageType == EpcX2Header::UnsuccessfulOutcome
+        {
+          NS_LOG_LOGIC ("Recv X2 message: HANDOVER PREPARATION FAILURE");
+
+          EpcX2HandoverPreparationFailureHeader x2HoPrepFailHeader;
+          packet->RemoveHeader (x2HoPrepFailHeader);
+
+          NS_ASSERT_MSG (m_x2InterfaceCellIds.find (socket) != m_x2InterfaceCellIds.end (),
+                         "Missing infos of local and remote CellId");
+          Ptr<X2CellInfo> cellsInfo = m_x2InterfaceCellIds [socket];
+
+          EpcX2SapUser::HandoverPreparationFailureParams params;          
+          params.oldEnbUeX2apId = x2HoPrepFailHeader.GetOldEnbUeX2apId ();
+          params.sourceCellId   = cellsInfo->m_localCellId;
+          params.targetCellId   = cellsInfo->m_remoteCellId;
+          params.cause          = x2HoPrepFailHeader.GetCause ();
+          params.criticalityDiagnostics = x2HoPrepFailHeader.GetCriticalityDiagnostics ();
+
+          NS_LOG_LOGIC ("oldEnbUeX2apId = " << params.oldEnbUeX2apId);
+          NS_LOG_LOGIC ("sourceCellId = " << params.sourceCellId);
+          NS_LOG_LOGIC ("targetCellId = " << params.targetCellId);
+          NS_LOG_LOGIC ("cause = " << params.cause);
+          NS_LOG_LOGIC ("criticalityDiagnostics = " << params.criticalityDiagnostics);
+
+          m_x2SapUser->RecvHandoverPreparationFailure (params);
         }
     }
   else if (procedureCode == EpcX2Header::LoadIndication)
@@ -399,6 +425,54 @@ EpcX2::DoSendHandoverRequestAck (EpcX2SapProvider::HandoverRequestAckParams para
   // Build the X2 packet
   Ptr<Packet> packet = (params.rrcContext != 0) ? (params.rrcContext) : (Create <Packet> ());
   packet->AddHeader (x2HoAckHeader);
+  packet->AddHeader (x2Header);
+  NS_LOG_INFO ("packetLen = " << packet->GetSize ());
+
+  // Send the X2 message through the socket
+  localSocket->SendTo (packet, 0, InetSocketAddress (remoteIpAddr, m_x2cUdpPort));
+}
+
+
+void
+EpcX2::DoSendHandoverPreparationFailure (EpcX2SapProvider::HandoverPreparationFailureParams params)
+{
+  NS_LOG_FUNCTION (this);
+
+  NS_LOG_LOGIC ("oldEnbUeX2apId = " << params.oldEnbUeX2apId);
+  NS_LOG_LOGIC ("sourceCellId = " << params.sourceCellId);
+  NS_LOG_LOGIC ("targetCellId = " << params.targetCellId);
+  NS_LOG_LOGIC ("cause = " << params.cause);
+  NS_LOG_LOGIC ("criticalityDiagnostics = " << params.criticalityDiagnostics);
+
+  NS_ASSERT_MSG (m_x2InterfaceSockets.find (params.sourceCellId) != m_x2InterfaceSockets.end (),
+                 "Socket infos not defined for sourceCellId = " << params.sourceCellId);
+
+  Ptr<Socket> localSocket = m_x2InterfaceSockets [params.sourceCellId]->m_localSocket;
+  Ipv4Address remoteIpAddr = m_x2InterfaceSockets [params.sourceCellId]->m_remoteIpAddr;
+
+  NS_LOG_LOGIC ("localSocket = " << localSocket);
+  NS_LOG_LOGIC ("remoteIpAddr = " << remoteIpAddr);
+
+  NS_LOG_INFO ("Send X2 message: HANDOVER PREPARATION FAILURE");
+
+  // Build the X2 message
+  EpcX2HandoverPreparationFailureHeader x2HoPrepFailHeader;
+  x2HoPrepFailHeader.SetOldEnbUeX2apId (params.oldEnbUeX2apId);
+  x2HoPrepFailHeader.SetCause (params.cause);
+  x2HoPrepFailHeader.SetCriticalityDiagnostics (params.criticalityDiagnostics);
+
+  EpcX2Header x2Header;
+  x2Header.SetMessageType (EpcX2Header::UnsuccessfulOutcome);
+  x2Header.SetProcedureCode (EpcX2Header::HandoverPreparation);
+  x2Header.SetLengthOfIes (x2HoPrepFailHeader.GetLengthOfIes ());
+  x2Header.SetNumberOfIes (x2HoPrepFailHeader.GetNumberOfIes ());
+
+  NS_LOG_INFO ("X2 header: " << x2Header);
+  NS_LOG_INFO ("X2 HandoverPrepFail header: " << x2HoPrepFailHeader);
+
+  // Build the X2 packet
+  Ptr<Packet> packet = Create <Packet> ();
+  packet->AddHeader (x2HoPrepFailHeader);
   packet->AddHeader (x2Header);
   NS_LOG_INFO ("packetLen = " << packet->GetSize ());
 
