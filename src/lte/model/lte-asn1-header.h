@@ -89,6 +89,7 @@ protected:
   template <int N>
   void SerializeBitstring (std::bitset<N> bitstring) const;
   void SerializeBitstring (std::bitset<1> bitstring) const;
+  void SerializeBitstring (std::bitset<2> bitstring) const;
   void SerializeBitstring (std::bitset<8> bitstring) const;
   void SerializeBitstring (std::bitset<10> bitstring) const;
   void SerializeBitstring (std::bitset<16> bitstring) const;
@@ -122,6 +123,7 @@ protected:
   template <int N>
   Buffer::Iterator DeserializeBitstring (std::bitset<N> *bitstring, Buffer::Iterator bIterator);
   Buffer::Iterator DeserializeBitstring (std::bitset<1> *bitstring, Buffer::Iterator bIterator);
+  Buffer::Iterator DeserializeBitstring (std::bitset<2> *bitstring, Buffer::Iterator bIterator);
   Buffer::Iterator DeserializeBitstring (std::bitset<8> *bitstring, Buffer::Iterator bIterator);
   Buffer::Iterator DeserializeBitstring (std::bitset<10> *bitstring, Buffer::Iterator bIterator);
   Buffer::Iterator DeserializeBitstring (std::bitset<16> *bitstring, Buffer::Iterator bIterator);

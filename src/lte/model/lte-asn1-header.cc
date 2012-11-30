@@ -182,6 +182,11 @@ void Asn1Header::SerializeBitstring (std::bitset<1> data) const
   SerializeBitstring<1> (data);
 }
 
+void Asn1Header::SerializeBitstring (std::bitset<2> data) const
+{
+  SerializeBitstring<2> (data);
+}
+
 void Asn1Header::SerializeBitstring (std::bitset<8> data) const
 {
   SerializeBitstring<8> (data);
@@ -476,6 +481,11 @@ Buffer::Iterator Asn1Header::DeserializeBitstring (std::bitset<N> *data, Buffer:
 Buffer::Iterator Asn1Header::DeserializeBitstring (std::bitset<1> *data, Buffer::Iterator bIterator)
 {
   return DeserializeBitstring<1> (data,bIterator);
+}
+
+Buffer::Iterator Asn1Header::DeserializeBitstring (std::bitset<2> *data, Buffer::Iterator bIterator)
+{
+  return DeserializeBitstring<2> (data,bIterator);
 }
 
 Buffer::Iterator Asn1Header::DeserializeBitstring (std::bitset<8> *data, Buffer::Iterator bIterator)
