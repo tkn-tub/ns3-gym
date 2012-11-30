@@ -2581,6 +2581,353 @@ HandoverPreparationInfoHeader::GetAsConfig () const
   return m_asConfig;
 }
 
+//////////////////// RrcConnectionReestablishmentRequestHeader class ////////////////////////
+
+RrcConnectionReestablishmentRequestHeader::RrcConnectionReestablishmentRequestHeader ()
+{
+}
+
+void
+RrcConnectionReestablishmentRequestHeader::PreSerialize () const
+{
+  m_serializationResult = Buffer ();
+
+  // Serialize RrcConnectionReestablishmentReques sequence:
+  // no default or optional fields. Extension marker not present.
+  SerializeSequence<0> (std::bitset<0> (),false);
+
+  // Serialize criticalExtensions choice
+  // chosen: rrcConnectionReestablishmentRequest-r8
+  SerializeChoice (2,0);
+
+  // Serialize RRCConnectionReestablishmentRequest-r8-IEs sequence
+  // no default or optional fields. Extension marker not present.
+  SerializeSequence<0> (std::bitset<0> (),false);
+
+  // Serialize ue-Identity
+  SerializeSequence<0> (std::bitset<0> (),false);
+  // Serialize c-RNTI
+  SerializeBitstring (std::bitset<16> (m_ueIdentity.cRnti));
+  // Serialize physCellId
+  SerializeInteger (m_ueIdentity.physCellId,0,503);
+  // Serialize shortMAC-I
+  SerializeBitstring (std::bitset<16> (0));
+
+  // Serialize ReestablishmentCause
+  switch (m_reestablishmentCause)
+    {
+    case RECONFIGURATION_FAILURE:
+      SerializeEnum (4,0);
+      break;
+    case HANDOVER_FAILURE:
+      SerializeEnum (4,1);
+      break;
+    case OTHER_FAILURE:
+      SerializeEnum (4,2);
+      break;
+    default:
+      SerializeEnum (4,3);
+    }
+
+  // Serialize spare
+  SerializeBitstring<2> (std::bitset<2> (0));
+
+  // Finish serialization
+  FinalizeSerialization ();
+}
+
+uint32_t
+RrcConnectionReestablishmentRequestHeader::Deserialize (Buffer::Iterator bIterator)
+{
+  std::bitset<0> bitset0;
+  int n;
+
+  // Deserialize RrcConnectionReestablishmentRequest sequence
+  // 0 optional fields, no extension marker
+  bIterator = DeserializeSequence (&bitset0,false,bIterator);
+
+  // Deserialize criticalExtensions choice
+  bIterator = DeserializeChoice (2,&n,bIterator);
+  if ( n == 1)
+    {
+      // Deserialize criticalExtensionsFuture
+      bIterator = DeserializeSequence (&bitset0,false,bIterator);
+    }
+  else if ( n == 0)
+    {
+      // Deserialize RRCConnectionReestablishmentRequest-r8-IEs
+      bIterator = DeserializeSequence (&bitset0,false,bIterator);
+
+      // Deserialize ReestabUE-Identity sequence
+      bIterator = DeserializeSequence (&bitset0,false,bIterator);
+
+      // Deserialize c-RNTI
+      std::bitset<16> cRnti;
+      bIterator = DeserializeBitstring (&cRnti,bIterator);
+      m_ueIdentity.cRnti = cRnti.to_ulong ();
+
+      // Deserialize physCellId
+      int physCellId;
+      bIterator = DeserializeInteger (&physCellId,0,503,bIterator);
+      m_ueIdentity.physCellId = physCellId;
+
+      // Deserialize shortMAC-I
+      std::bitset<16> shortMacI;
+      bIterator = DeserializeBitstring (&shortMacI,bIterator);
+
+      // Deserialize ReestablishmentCause
+      int reestCs;
+      bIterator = DeserializeEnum (4,&reestCs,bIterator);
+      switch (reestCs)
+        {
+        case 0:
+          m_reestablishmentCause = RECONFIGURATION_FAILURE;
+          break;
+        case 1:
+          m_reestablishmentCause = HANDOVER_FAILURE;
+          break;
+        case 2:
+          m_reestablishmentCause = OTHER_FAILURE;
+          break;
+        case 3:
+          break;
+        }
+
+      // Deserialize spare
+      std::bitset<2> spare;
+      bIterator = DeserializeBitstring (&spare,bIterator);
+    }
+
+  return GetSerializedSize ();
+}
+
+void
+RrcConnectionReestablishmentRequestHeader::Print (std::ostream &os) const
+{
+  os << "ueIdentity.cRnti: " << (int)m_ueIdentity.cRnti << std::endl;
+  os << "ueIdentity.physCellId: " << (int)m_ueIdentity.physCellId << std::endl;
+  os << "m_reestablishmentCause: " << m_reestablishmentCause << std::endl;
+}
+
+void
+RrcConnectionReestablishmentRequestHeader::SetMessage (RrcConnectionReestablishmentRequest msg)
+{
+  m_ueIdentity = msg.ueIdentity;
+  m_reestablishmentCause = msg.reestablishmentCause;
+  m_isDataSerialized = false;
+}
+
+LteRrcSap::ReestabUeIdentity
+RrcConnectionReestablishmentRequestHeader::GetUeIdentity () const
+{
+  return m_ueIdentity;
+}
+
+LteRrcSap::ReestablishmentCause
+RrcConnectionReestablishmentRequestHeader::GetReestablishmentCause () const
+{
+  return m_reestablishmentCause;
+}
+
+//////////////////// RrcConnectionReestablishmentRequestHeader class ////////////////////////
+
+RrcConnectionReestablishmentHeader::RrcConnectionReestablishmentHeader ()
+{
+}
+
+void
+RrcConnectionReestablishmentHeader::PreSerialize () const
+{
+  m_serializationResult = Buffer ();
+
+  // Serialize RrcConnectionReestablishment sequence:
+  // no default or optional fields. Extension marker not present.
+  SerializeSequence (std::bitset<0> (),false);
+
+  // Serialize rrc-TransactionIdentifier
+  SerializeInteger (m_rrcTransactionIdentifier,0,3);
+
+  // Serialize criticalExtensions choice
+  SerializeChoice (2,0);
+
+  // Serialize c1 choice
+  SerializeChoice (8,0);
+
+  // Serialize RRCConnectionReestablishment-r8-IEs sequence
+  // 1 optional field, no extension marker
+  SerializeSequence (std::bitset<1> (0),false);
+
+  // Serialize radioResourceConfigDedicated
+  SerializeRadioResourceConfigDedicated (m_radioResourceConfigDedicated);
+
+  // Serialize nextHopChainingCount
+  SerializeInteger (0,0,7);
+
+  // Finish serialization
+  FinalizeSerialization ();
+}
+
+uint32_t
+RrcConnectionReestablishmentHeader::Deserialize (Buffer::Iterator bIterator)
+{
+  std::bitset<0> bitset0;
+  int n;
+
+  // Deserialize RrcConnectionReestablishment sequence
+  // 0 optional fields, no extension marker
+  bIterator = DeserializeSequence (&bitset0,false,bIterator);
+
+  // Deserialize rrc-TransactionIdentifier
+  bIterator = DeserializeInteger (&n,0,3,bIterator);
+  m_rrcTransactionIdentifier = n;
+
+  // Deserialize criticalExtensions choice
+  int criticalExtensionsChoice;
+  bIterator = DeserializeChoice (2,&criticalExtensionsChoice,bIterator);
+  if (criticalExtensionsChoice == 1)
+    {
+      // Deserialize criticalExtensionsFuture
+      bIterator = DeserializeSequence (&bitset0,false,bIterator);
+    }
+  else if (criticalExtensionsChoice == 0)
+    {
+      // Deserialize c1
+      int c1;
+      bIterator = DeserializeChoice (8,&c1,bIterator);
+      if (c1 > 0)
+        {
+          bIterator = DeserializeNull (bIterator);
+        }
+      else if (c1 == 0)
+        {
+          // Deserialize rrcConnectionReestablishment-r8
+          // 1 optional field
+          std::bitset<1> nonCriticalExtensionPresent;
+          bIterator = DeserializeSequence (&nonCriticalExtensionPresent,false,bIterator);
+
+          // Deserialize RadioResourceConfigDedicated
+          bIterator = DeserializeRadioResourceConfigDedicated (&m_radioResourceConfigDedicated,bIterator);
+
+          // Deserialize nextHopChainingCount
+          bIterator = DeserializeInteger (&n,0,7,bIterator);
+        }
+    }
+
+  return GetSerializedSize ();
+}
+
+void
+RrcConnectionReestablishmentHeader::Print (std::ostream &os) const
+{
+  os << "rrcTransactionIdentifier: " << (int)m_rrcTransactionIdentifier << std::endl;
+  os << "RadioResourceConfigDedicated: " << std::endl;
+  RrcAsn1Header::Print (os,m_radioResourceConfigDedicated);
+}
+
+void
+RrcConnectionReestablishmentHeader::SetMessage (RrcConnectionReestablishment msg)
+{
+  m_rrcTransactionIdentifier = msg.rrcTransactionIdentifier;
+  m_radioResourceConfigDedicated = msg.radioResourceConfigDedicated;
+  m_isDataSerialized = false;
+}
+
+uint8_t
+RrcConnectionReestablishmentHeader::GetRrcTransactionIdentifier () const
+{
+  return m_rrcTransactionIdentifier;
+}
+
+LteRrcSap::RadioResourceConfigDedicated
+RrcConnectionReestablishmentHeader::GetRadioResourceConfigDedicated () const
+{
+  return m_radioResourceConfigDedicated;
+}
+
+//////////////////// RrcConnectionReestablishmentCompleteHeader class ////////////////////////
+
+RrcConnectionReestablishmentCompleteHeader::RrcConnectionReestablishmentCompleteHeader ()
+{
+}
+
+void
+RrcConnectionReestablishmentCompleteHeader::PreSerialize () const
+{
+  m_serializationResult = Buffer ();
+
+  // Serialize RrcConnectionReestablishmentComplete sequence:
+  // no default or optional fields. Extension marker not present.
+  SerializeSequence (std::bitset<0> (),false);
+
+  // Serialize rrc-TransactionIdentifier
+  SerializeInteger (m_rrcTransactionIdentifier,0,3);
+
+  // Serialize criticalExtensions choice
+  SerializeChoice (2,0);
+
+  // Serialize rrcConnectionReestablishmentComplete-r8 sequence
+  // 1 optional field (not present), no extension marker.
+  SerializeSequence (std::bitset<1> (0),false);
+
+  // Finish serialization
+  FinalizeSerialization ();
+}
+
+uint32_t
+RrcConnectionReestablishmentCompleteHeader::Deserialize (Buffer::Iterator bIterator)
+{
+  std::bitset<0> bitset0;
+  int n;
+
+  // Deserialize RrcConnectionReestablishmentComplete sequence
+  // 0 optional fields, no extension marker
+  bIterator = DeserializeSequence (&bitset0,false,bIterator);
+
+  // Deserialize rrc-TransactionIdentifier
+  bIterator = DeserializeInteger (&n,0,3,bIterator);
+  m_rrcTransactionIdentifier = n;
+
+  // Deserialize criticalExtensions choice
+  int criticalExtensionsChoice;
+  bIterator = DeserializeChoice (2,&criticalExtensionsChoice,bIterator);
+  if (criticalExtensionsChoice == 1)
+    {
+      // Deserialize criticalExtensionsFuture
+      bIterator = DeserializeSequence (&bitset0,false,bIterator);
+    }
+  else if (criticalExtensionsChoice == 0)
+    {
+      // Deserialize rrcConnectionReestablishmentComplete-r8
+      std::bitset<1> opts;
+      bIterator = DeserializeSequence (&opts,false,bIterator);
+      if (opts[0])
+        {
+          // Deserialize RRCConnectionReestablishmentComplete-v920-IEs
+          // ...
+        }
+    }
+
+  return GetSerializedSize ();
+}
+
+void
+RrcConnectionReestablishmentCompleteHeader::Print (std::ostream &os) const
+{
+  os << "rrcTransactionIdentifier: " << (int)m_rrcTransactionIdentifier << std::endl;
+}
+
+void
+RrcConnectionReestablishmentCompleteHeader::SetMessage (RrcConnectionReestablishmentComplete msg)
+{
+  m_rrcTransactionIdentifier = msg.rrcTransactionIdentifier;
+  m_isDataSerialized = false;
+}
+
+uint8_t
+RrcConnectionReestablishmentCompleteHeader::GetRrcTransactionIdentifier () const
+{
+  return m_rrcTransactionIdentifier;
+}
 
 } // namespace ns3
 

@@ -1944,3 +1944,91 @@ The S1 service interface is used by the X2 entity to get some information neeede
   * the ``S1SapProvider`` part is provided by the S1 entity and used by the X2 entity and
 
   * the ``S1SapUser`` part is provided by the X2 entity and used by the S1 entity.
+
+--------------------------
+ASN.1 encoding of RRC IE's
+--------------------------
+
+The messages defined in RRC SAP, common to all Ue/Enb SAP Users/Providers, are transported in a transparent container to/from a Ue/Enb. The encoding format for the different Information Elements are specified in 3GPP TS 36.331, using ASN.1 rules in the unaligned variant. The implementation in Ns3/Lte has been divided in the following classes:
+
+  * Asn1Header : Contains the encoding / decoding of basic ASN types
+
+  * RrcAsn1Header : Inherits Asn1Header and contains the encoding / decoding of common IE's defined in 3GPP TS 36.331
+  
+  * Rrc specific messages/IEs classes : A class for each of the messages defined in RRC SAP header
+
+Asn1Header class - Implementation of base ASN.1 types
++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+This class implements the methods to Serialize / Deserialize the ASN.1 types being used in 3GPP TS 36.331, according to the packed encoding rules in ITU-T X.691. The types considered are:
+
+  * Boolean : a boolean value uses a single bit (1=true, 0=false).
+  
+  * Integer : a constrained integer (with min and max values defined) uses the minimum amount of bits to encode its range (max-min+1).
+  
+  * Bitstring : a bistring will be copied bit by bit to the serialization buffer.
+  
+  * Octetstring : not being currently used.
+  
+  * Sequence : the sequence generates a preamble indicating the presence of optional and default fields. It also adds a bit indicating the presence of extension marker.
+  
+  * Sequence...Of : the sequence...of type encodes the number of elements of the sequence as an integer (the subsequent elements will need to be encoded afterwards).
+  
+  * Choice : indicates which element among the ones in the choice set is being encoded.
+  
+  * Enumeration : is serialized as an integer indicating which value is used, among the ones in the enumeration, with the number of elements in the enumeration as upper bound.
+  
+  * Null : the null value is not encoded, although its serialization function is defined to provide a clearer map between specification and implementation.
+
+The class inherits from ns-3 Header, but Deserialize() function is declared pure virtual, thus inherited classes having to implement it. The reason is that deserialization will retrieve the elements in RRC messages, each of them containing different information elements.
+
+Additionally, it has to be noted that the resulting byte length of a specific type/message can vary, according to the presence of optional fields, and due to the optimized encoding. Hence, the serialized bits will be processed using PreSerialize() function, saving the result in m_serializationResult Buffer. As the methods to read/write in a ns3 buffer are defined in a byte basis, the serialization bits are stored into m_serializationPendingBits attribute, until the 8 bits are set and can be written to buffer iterator. Finally, when invoking Serialize(), the contents of the m_serializationResult attribute will be copied to Buffer::Iterator parameter
+
+RrcAsn1Header : Common 3GPP TS 36.331 IE's
+++++++++++++++++++++++++++++++++++++++++++
+
+As some Information Elements are being used for several RRC messages, this class implements the following common IE's:
+
+  * SrbToAddModList
+  
+  * DrbToAddModList
+  
+  * LogicalChannelConfig
+  
+  * RadioResourceConfigDedicated
+  
+  * PhysicalConfigDedicated
+  
+  * SystemInformationBlockType1
+  
+  * SystemInformationBlockType2
+  
+  * RadioResourceConfigCommonSIB
+
+
+Rrc specific messages/IEs classes
++++++++++++++++++++++++++++++++++
+
+The following RRC SAP have been implemented:
+
+  * RrcConnectionRequest
+  
+  * RrcConnectionSetup
+  
+  * RrcConnectionSetupCompleted
+  
+  * RrcConnectionReconfiguration
+  
+  * RrcConnectionReconfigurationCompleted
+  
+  * HandoverPreparationInfo
+  
+  * RrcConnectionReestablishmentRequest
+  
+  * RrcConnectionReestablishment
+  
+  * RrcConnectionReestablishmentComplete
+  
+  * RrcConnectionReestablishmentReject
+  
+  * RrcConnectionRelease

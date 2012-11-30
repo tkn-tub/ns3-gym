@@ -215,6 +215,68 @@ private:
   AsConfig m_asConfig;
 };
 
+/**
+* This class manages the serialization/deserialization of RRCConnectionReestablishmentRequest IE
+*/
+class RrcConnectionReestablishmentRequestHeader : public RrcAsn1Header,
+                                                  LteRrcSap
+{
+public:
+  RrcConnectionReestablishmentRequestHeader ();
+  void PreSerialize () const;
+  uint32_t Deserialize (Buffer::Iterator bIterator);
+  void Print (std::ostream &os) const;
+  void SetMessage (RrcConnectionReestablishmentRequest msg);
+
+  ReestabUeIdentity GetUeIdentity () const;
+  ReestablishmentCause GetReestablishmentCause () const;
+
+private:
+  ReestabUeIdentity m_ueIdentity;
+  ReestablishmentCause m_reestablishmentCause;
+};
+
+/**
+* This class manages the serialization/deserialization of RrcConnectionReestablishment IE
+*/
+class RrcConnectionReestablishmentHeader : public RrcAsn1Header,
+                                           LteRrcSap
+{
+public:
+  RrcConnectionReestablishmentHeader ();
+  void PreSerialize () const;
+  uint32_t Deserialize (Buffer::Iterator bIterator);
+  void Print (std::ostream &os) const;
+  void SetMessage (RrcConnectionReestablishment msg);
+
+  uint8_t GetRrcTransactionIdentifier () const;
+  RadioResourceConfigDedicated GetRadioResourceConfigDedicated () const;
+
+private:
+  uint8_t m_rrcTransactionIdentifier;
+  RadioResourceConfigDedicated m_radioResourceConfigDedicated;
+};
+
+/**
+* This class manages the serialization/deserialization of RrcConnectionReestablishmentComplete IE
+*/
+class RrcConnectionReestablishmentCompleteHeader : public RrcAsn1Header,
+                                                   LteRrcSap
+{
+public:
+  RrcConnectionReestablishmentCompleteHeader ();
+  void PreSerialize () const;
+  uint32_t Deserialize (Buffer::Iterator bIterator);
+  void Print (std::ostream &os) const;
+  void SetMessage (RrcConnectionReestablishmentComplete msg);
+
+  uint8_t GetRrcTransactionIdentifier () const;
+
+private:
+  uint8_t m_rrcTransactionIdentifier;
+};
+
+
 } // namespace ns3
 
 #endif // EPC_ASN1_HEADER_H

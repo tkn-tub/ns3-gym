@@ -598,6 +598,159 @@ HandoverPreparationInfoTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (source.GetAsConfig ().sourceDlCarrierFreq, destination.GetAsConfig ().sourceDlCarrierFreq, "sourceDlCarrierFreq");
 }
 
+// --------------------------- CLASS RrcConnectionReestablishmentRequestTestCase -----------------------------
+class RrcConnectionReestablishmentRequestTestCase : public RrcHeaderTestCase
+{
+public:
+  RrcConnectionReestablishmentRequestTestCase ();
+  virtual void DoRun (void);
+};
+
+RrcConnectionReestablishmentRequestTestCase::RrcConnectionReestablishmentRequestTestCase () : RrcHeaderTestCase ("Testing RrcConnectionReestablishmentRequestTestCase")
+{
+}
+
+void
+RrcConnectionReestablishmentRequestTestCase::DoRun (void)
+{
+  std::cout << "============= RrcConnectionReestablishmentRequestTestCase ===========" << std::endl;
+  // add header
+  Ptr<Packet> packet = Create<Packet> ();
+  packet->Print (std::cout);
+  std::cout << std::endl;
+
+  LteRrcSap::RrcConnectionReestablishmentRequest msg;
+  msg.ueIdentity.cRnti = 12;
+  msg.ueIdentity.physCellId = 21;
+  msg.reestablishmentCause = LteRrcSap::HANDOVER_FAILURE;
+
+  RrcConnectionReestablishmentRequestHeader source;
+  source.SetMessage (msg);
+
+  std::cout << "--------- SOURCE INFO: -------" << std::endl;
+  source.Print (std::cout);
+  packet->AddHeader (source);
+  std::cout << std::endl;
+
+  // print serialized packet contents
+  std::cout << "---- SERIALIZED PACKET CONTENTS: -------" << std::endl;
+  std::cout << "Hex: ";
+  TestUtils::printPacketContentsHex (GetPointer (packet));
+  std::cout << "Bin: ";
+  TestUtils::printPacketContentsBin (GetPointer (packet));
+
+  // remove header
+  RrcConnectionReestablishmentRequestHeader destination;
+  packet->RemoveHeader (destination);
+  std::cout << "--------- DESTINATION INFO: -------" << std::endl;
+  destination.Print (std::cout);
+
+  // Check that the destination and source headers contain the same values
+  NS_TEST_ASSERT_MSG_EQ (source.GetUeIdentity ().cRnti, destination.GetUeIdentity ().cRnti, "cRnti");
+  NS_TEST_ASSERT_MSG_EQ (source.GetUeIdentity ().physCellId, destination.GetUeIdentity ().physCellId, "physCellId");
+  NS_TEST_ASSERT_MSG_EQ (source.GetReestablishmentCause (),destination.GetReestablishmentCause (), "ReestablishmentCause");
+}
+
+// --------------------------- CLASS RrcConnectionReestablishmentTestCase -----------------------------
+class RrcConnectionReestablishmentTestCase : public RrcHeaderTestCase
+{
+public:
+  RrcConnectionReestablishmentTestCase ();
+  virtual void DoRun (void);
+};
+
+RrcConnectionReestablishmentTestCase::RrcConnectionReestablishmentTestCase () : RrcHeaderTestCase ("Testing RrcConnectionReestablishmentTestCase")
+{
+}
+
+void
+RrcConnectionReestablishmentTestCase::DoRun (void)
+{
+  std::cout << "============= RrcConnectionReestablishmentTestCase ===========" << std::endl;
+  // add header
+  Ptr<Packet> packet = Create<Packet> ();
+  packet->Print (std::cout);
+  std::cout << std::endl;
+
+  LteRrcSap::RrcConnectionReestablishment msg;
+  msg.rrcTransactionIdentifier = 2;
+  msg.radioResourceConfigDedicated = CreateRadioResourceConfigDedicated ();
+
+  RrcConnectionReestablishmentHeader source;
+  source.SetMessage (msg);
+
+  std::cout << "--------- SOURCE INFO: -------" << std::endl;
+  source.Print (std::cout);
+  packet->AddHeader (source);
+  std::cout << std::endl;
+
+  // print serialized packet contents
+  std::cout << "---- SERIALIZED PACKET CONTENTS: -------" << std::endl;
+  std::cout << "Hex: ";
+  TestUtils::printPacketContentsHex (GetPointer (packet));
+  std::cout << "Bin: ";
+  TestUtils::printPacketContentsBin (GetPointer (packet));
+
+  // remove header
+  RrcConnectionReestablishmentHeader destination;
+  packet->RemoveHeader (destination);
+  std::cout << "--------- DESTINATION INFO: -------" << std::endl;
+  destination.Print (std::cout);
+
+  // Check that the destination and source headers contain the same values
+  NS_TEST_ASSERT_MSG_EQ (source.GetRrcTransactionIdentifier (), destination.GetRrcTransactionIdentifier (), "rrcTransactionIdentifier");
+  AssertEqualRadioResourceConfigDedicated (source.GetRadioResourceConfigDedicated (),destination.GetRadioResourceConfigDedicated ());
+}
+
+// --------------------------- CLASS RrcConnectionReestablishmentCompleteTestCase -----------------------------
+class RrcConnectionReestablishmentCompleteTestCase : public RrcHeaderTestCase
+{
+public:
+  RrcConnectionReestablishmentCompleteTestCase ();
+  virtual void DoRun (void);
+};
+
+RrcConnectionReestablishmentCompleteTestCase::RrcConnectionReestablishmentCompleteTestCase () : RrcHeaderTestCase ("Testing RrcConnectionReestablishmentCompleteTestCase")
+{
+}
+
+void
+RrcConnectionReestablishmentCompleteTestCase::DoRun (void)
+{
+  std::cout << "============= RrcConnectionReestablishmentCompleteTestCase ===========" << std::endl;
+  // add header
+  Ptr<Packet> packet = Create<Packet> ();
+  packet->Print (std::cout);
+  std::cout << std::endl;
+
+  LteRrcSap::RrcConnectionReestablishmentComplete msg;
+  msg.rrcTransactionIdentifier = 3;
+
+  RrcConnectionReestablishmentCompleteHeader source;
+  source.SetMessage (msg);
+
+  std::cout << "--------- SOURCE INFO: -------" << std::endl;
+  source.Print (std::cout);
+  packet->AddHeader (source);
+  std::cout << std::endl;
+
+  // print serialized packet contents
+  std::cout << "---- SERIALIZED PACKET CONTENTS: -------" << std::endl;
+  std::cout << "Hex: ";
+  TestUtils::printPacketContentsHex (GetPointer (packet));
+  std::cout << "Bin: ";
+  TestUtils::printPacketContentsBin (GetPointer (packet));
+
+  // remove header
+  RrcConnectionReestablishmentCompleteHeader destination;
+  packet->RemoveHeader (destination);
+  std::cout << "--------- DESTINATION INFO: -------" << std::endl;
+  destination.Print (std::cout);
+
+  // Check that the destination and source headers contain the same values
+  NS_TEST_ASSERT_MSG_EQ (source.GetRrcTransactionIdentifier (), destination.GetRrcTransactionIdentifier (), "rrcTransactionIdentifier");
+}
+
 // --------------------------- CLASS Asn1EncodingSuite -----------------------------
 class Asn1EncodingSuite : public TestSuite
 {
@@ -616,6 +769,9 @@ Asn1EncodingSuite::Asn1EncodingSuite ()
   AddTestCase (new RrcConnectionReconfigurationCompleteTestCase);
   AddTestCase (new RrcConnectionReconfigurationTestCase);
   AddTestCase (new HandoverPreparationInfoTestCase);
+  AddTestCase (new RrcConnectionReestablishmentRequestTestCase);
+  AddTestCase (new RrcConnectionReestablishmentTestCase);
+  AddTestCase (new RrcConnectionReestablishmentCompleteTestCase);
 }
 
 Asn1EncodingSuite asn1EncodingSuite;
