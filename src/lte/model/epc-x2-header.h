@@ -131,7 +131,7 @@ class EpcX2HandoverRequestAckHeader : public Header
 public:
   EpcX2HandoverRequestAckHeader ();
   virtual ~EpcX2HandoverRequestAckHeader ();
-  
+
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
   virtual uint32_t GetSerializedSize (void) const;
@@ -163,6 +163,42 @@ private:
   uint16_t          m_newEnbUeX2apId;
   std::vector <EpcX2Sap::ErabAdmittedItem>     m_erabsAdmittedList;
   std::vector <EpcX2Sap::ErabNotAdmittedItem>  m_erabsNotAdmittedList;
+};
+
+
+class EpcX2HandoverPreparationFailureHeader : public Header
+{
+public:
+  EpcX2HandoverPreparationFailureHeader ();
+  virtual ~EpcX2HandoverPreparationFailureHeader ();
+
+  static TypeId GetTypeId (void);
+  virtual TypeId GetInstanceTypeId (void) const;
+  virtual uint32_t GetSerializedSize (void) const;
+  virtual void Serialize (Buffer::Iterator start) const;
+  virtual uint32_t Deserialize (Buffer::Iterator start);
+  virtual void Print (std::ostream &os) const;
+
+
+  uint16_t GetOldEnbUeX2apId () const;
+  void SetOldEnbUeX2apId (uint16_t x2apId);
+
+  uint16_t GetCause () const;
+  void SetCause (uint16_t cause);
+
+  uint16_t GetCriticalityDiagnostics () const;
+  void SetCriticalityDiagnostics (uint16_t criticalityDiagnostics);
+
+  uint32_t GetLengthOfIes () const;
+  uint32_t GetNumberOfIes () const;
+
+private:
+  uint32_t          m_numberOfIes;
+  uint32_t          m_headerLength;
+
+  uint16_t          m_oldEnbUeX2apId;
+  uint16_t          m_cause;
+  uint16_t          m_criticalityDiagnostics;
 };
 
 

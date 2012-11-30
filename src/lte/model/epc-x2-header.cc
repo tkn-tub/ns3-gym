@@ -641,6 +641,131 @@ EpcX2HandoverRequestAckHeader::GetNumberOfIes () const
 
 /////////////////////////////////////////////////////////////////////
 
+NS_OBJECT_ENSURE_REGISTERED (EpcX2HandoverPreparationFailureHeader);
+
+EpcX2HandoverPreparationFailureHeader::EpcX2HandoverPreparationFailureHeader ()
+  : m_numberOfIes (1 + 1 + 1),
+    m_headerLength (2 + 2 + 2),
+    m_oldEnbUeX2apId (0xfffa),
+    m_cause (0xfffa),
+    m_criticalityDiagnostics (0xfffa)
+{
+}
+
+EpcX2HandoverPreparationFailureHeader::~EpcX2HandoverPreparationFailureHeader ()
+{
+  m_numberOfIes = 0;
+  m_headerLength = 0;
+  m_oldEnbUeX2apId = 0xfffb;
+  m_cause = 0xfffb;
+  m_criticalityDiagnostics = 0xfffb;
+}
+
+TypeId
+EpcX2HandoverPreparationFailureHeader::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::EpcX2HandoverPreparationFailureHeader")
+    .SetParent<Header> ()
+    .AddConstructor<EpcX2HandoverPreparationFailureHeader> ()
+  ;
+  return tid;
+}
+
+TypeId
+EpcX2HandoverPreparationFailureHeader::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
+}
+
+uint32_t
+EpcX2HandoverPreparationFailureHeader::GetSerializedSize (void) const
+{
+  return m_headerLength;
+}
+
+void
+EpcX2HandoverPreparationFailureHeader::Serialize (Buffer::Iterator start) const
+{
+  Buffer::Iterator i = start;
+
+  i.WriteHtonU16 (m_oldEnbUeX2apId);
+  i.WriteHtonU16 (m_cause);
+  i.WriteHtonU16 (m_criticalityDiagnostics);
+}
+
+uint32_t
+EpcX2HandoverPreparationFailureHeader::Deserialize (Buffer::Iterator start)
+{
+  Buffer::Iterator i = start;
+
+  m_oldEnbUeX2apId = i.ReadNtohU16 ();
+  m_cause = i.ReadNtohU16 ();
+  m_criticalityDiagnostics = i.ReadNtohU16 ();
+
+  m_headerLength = 6;
+  m_numberOfIes = 3;
+
+  return GetSerializedSize ();
+}
+
+void
+EpcX2HandoverPreparationFailureHeader::Print (std::ostream &os) const
+{
+  os << "OldEnbUeX2apId = " << m_oldEnbUeX2apId;
+  os << " Cause = " << m_cause;
+  os << " CriticalityDiagnostics = " << m_criticalityDiagnostics;
+}
+
+uint16_t
+EpcX2HandoverPreparationFailureHeader::GetOldEnbUeX2apId () const
+{
+  return m_oldEnbUeX2apId;
+}
+
+void
+EpcX2HandoverPreparationFailureHeader::SetOldEnbUeX2apId (uint16_t x2apId)
+{
+  m_oldEnbUeX2apId = x2apId;
+}
+
+uint16_t
+EpcX2HandoverPreparationFailureHeader::GetCause () const
+{
+  return m_cause;
+}
+
+void
+EpcX2HandoverPreparationFailureHeader::SetCause (uint16_t cause)
+{
+  m_cause = cause;
+}
+
+uint16_t
+EpcX2HandoverPreparationFailureHeader::GetCriticalityDiagnostics () const
+{
+  return m_criticalityDiagnostics;
+}
+
+void
+EpcX2HandoverPreparationFailureHeader::SetCriticalityDiagnostics (uint16_t criticalityDiagnostics)
+{
+  m_criticalityDiagnostics = criticalityDiagnostics;
+}
+
+uint32_t
+EpcX2HandoverPreparationFailureHeader::GetLengthOfIes () const
+{
+  return m_headerLength;
+}
+
+uint32_t
+EpcX2HandoverPreparationFailureHeader::GetNumberOfIes () const
+{
+  return m_numberOfIes;
+}
+
+/////////////////////////////////////////////////////////////////////
+
 NS_OBJECT_ENSURE_REGISTERED (EpcX2UeContextReleaseHeader);
 
 EpcX2UeContextReleaseHeader::EpcX2UeContextReleaseHeader ()
