@@ -375,16 +375,14 @@ FdTbfqFfMacScheduler::DoCschedLcConfigReq (const struct FfMacCschedSapProvider::
 void
 FdTbfqFfMacScheduler::DoCschedLcReleaseReq (const struct FfMacCschedSapProvider::CschedLcReleaseReqParameters& params)
 {
-  NS_LOG_FUNCTION (this);
-  // TODO: Implementation of the API
+  NS_FATAL_ERROR ("unimplemented");
   return;
 }
 
 void
 FdTbfqFfMacScheduler::DoCschedUeReleaseReq (const struct FfMacCschedSapProvider::CschedUeReleaseReqParameters& params)
 {
-  NS_LOG_FUNCTION (this);
-  // TODO: Implementation of the API
+  NS_FATAL_ERROR ("unimplemented");
   return;
 }
 
@@ -416,16 +414,14 @@ FdTbfqFfMacScheduler::DoSchedDlRlcBufferReq (const struct FfMacSchedSapProvider:
 void
 FdTbfqFfMacScheduler::DoSchedDlPagingBufferReq (const struct FfMacSchedSapProvider::SchedDlPagingBufferReqParameters& params)
 {
-  NS_LOG_FUNCTION (this);
-  // TODO: Implementation of the API
+  NS_FATAL_ERROR ("unimplemented");
   return;
 }
 
 void
 FdTbfqFfMacScheduler::DoSchedDlMacBufferReq (const struct FfMacSchedSapProvider::SchedDlMacBufferReqParameters& params)
 {
-  NS_LOG_FUNCTION (this);
-  // TODO: Implementation of the API
+  NS_FATAL_ERROR ("unimplemented");
   return;
 }
 
@@ -515,27 +511,27 @@ FdTbfqFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::S
               continue;
             }
 
-	  std::set <uint16_t>::iterator rnti;
+		      std::set <uint16_t>::iterator rnti;
           rnti = allocatedRnti.find((*it).first);
-	  if (rnti != allocatedRnti.end ())  //  already allocated RBGs to this UE
-	    {
-	      continue;
-	    }
+		      if (rnti != allocatedRnti.end ())  //  already allocated RBGs to this UE
+		        {
+		          continue;
+		        }
   
-          double metric = ( ( (double)(*it).second.counter ) / ( (double)(*it).second.tokenGenerationRate ) );
+		      double metric = ( ( (double)(*it).second.counter ) / ( (double)(*it).second.tokenGenerationRate ) );
   
-          if (firstRnti == true)
-            {
-              metricMax = metric;
-              itMax = it;
-              firstRnti = false;
-              continue;
-	    }
-	  if (metric > metricMax)
-            {
-              metricMax = metric;
-              itMax = it;
-            } 
+		      if (firstRnti == true)
+		        {
+		          metricMax = metric;
+		          itMax = it;
+		          firstRnti = false;
+		          continue;
+		        }
+		      if (metric > metricMax)
+              {
+                metricMax = metric;
+                itMax = it;
+              } 
         } // end for m_flowStatsDl
   
       if (itMax == m_flowStatsDl.end())
@@ -551,37 +547,37 @@ FdTbfqFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::S
       uint32_t budget = 0;
       if ( bankSize > 0 )
         {
-          budget = (*itMax).second.counter - (*itMax).second.debtLimit;
-          if ( budget > (*itMax).second.burstCredit )
-            budget = (*itMax).second.burstCredit;
-         if ( budget > bankSize )
-            budget = bankSize;
-        }
+		      budget = (*itMax).second.counter - (*itMax).second.debtLimit;
+		      if ( budget > (*itMax).second.burstCredit )
+		        budget = (*itMax).second.burstCredit;
+		      if ( budget > bankSize )
+		        budget = bankSize;
+	      }
       budget = budget + (*itMax).second.tokenPoolSize;
 
       // calcualte how much bytes this UE actally need
       if (budget == 0)
         {
           // there are no tokens for this UE
-          continue;
+ 	        continue;
         }
       else 
         {	
-          // calculate rlc buffer size
-          uint32_t rlcBufSize;
+	      // calculate rlc buffer size
+	        uint32_t rlcBufSize;
           uint8_t lcid;
           std::map<LteFlowId_t, FfMacSchedSapProvider::SchedDlRlcBufferReqParameters>::iterator itRlcBuf;
           for (itRlcBuf = m_rlcBufferReq.begin (); itRlcBuf != m_rlcBufferReq.end (); itRlcBuf++)
-	    {
+	          {
               if ( (*itRlcBuf).first.m_rnti == (*itMax).first )
               lcid = (*itRlcBuf).first.m_lcId;
-	    }
+	          }
           LteFlowId_t flow ((*itMax).first, lcid);
           itRlcBuf = m_rlcBufferReq.find (flow);
           if (itRlcBuf!=m_rlcBufferReq.end ())
-	    rlcBufSize = (*itRlcBuf).second.m_rlcTransmissionQueueSize + (*itRlcBuf).second.m_rlcRetransmissionQueueSize + (*itRlcBuf).second.m_rlcStatusPduSize;
-	  if ( budget > rlcBufSize )
-	    budget = rlcBufSize;
+	          rlcBufSize = (*itRlcBuf).second.m_rlcTransmissionQueueSize + (*itRlcBuf).second.m_rlcRetransmissionQueueSize + (*itRlcBuf).second.m_rlcStatusPduSize;
+	        if ( budget > rlcBufSize )
+	          budget = rlcBufSize;
         }
 
       // assign RBGs to this UE 
@@ -605,12 +601,12 @@ FdTbfqFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::S
 	        // find RBG with largest achievableRate
           double achievableRateMax = 0.0;
           rbgIndex = rbgNum;
- 	  for (int k = 0; k < rbgNum; k++)
-	    {
+ 	        for (int k = 0; k < rbgNum; k++)
+	          {
        	      std::set <uint8_t>::iterator rbg;
               rbg = allocatedRbg.find (k);
-	      if (rbg != allocatedRbg.end ())  // RBGs are already allocated to this UE
-	        continue;
+	            if (rbg != allocatedRbg.end ())  // RBGs are already allocated to this UE
+	              continue;
 
               std::vector <uint8_t> sbCqi;
               if (itCqi == m_a30CqiRxed.end ())
@@ -636,7 +632,7 @@ FdTbfqFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::S
                   if (LcActivePerFlow ((*itMax).first) > 0)
                     {
                       // this UE has data to transmit
-	              double achievableRate = 0.0;
+	                    double achievableRate = 0.0;
                       for (uint8_t j = 0; j < nLayer; j++) 
                         {
                           uint8_t mcs = 0; 
@@ -652,26 +648,26 @@ FdTbfqFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::S
                           achievableRate += ((m_amc->GetTbSizeFromMcs (mcs, rbgSize) / 8) / 0.001); // = TB size / TTI
                         }
 
-	              if ( achievableRate > achievableRateMax )
-		        {
-		          achievableRateMax = achievableRate;
-		          rbgIndex = k;
-		        }
-		    }  // end of LcActivePerFlow
-		}  // end of cqi
+	   	              if ( achievableRate > achievableRateMax )
+		       	        {
+		                  achievableRateMax = achievableRate;
+		                  rbgIndex = k;
+		                }
+		              }  // end of LcActivePerFlow
+		            }  // end of cqi
             }  // end of for rbgNum
 
-	  if ( rbgIndex == rbgNum)  // impossible
-	    {
-	      // all RBGs are already assigned
-	      totalRbg = rbgNum;
-	      break;
-	    }
-	  else
-	    {
-	      // mark this UE as "allocated"
+	        if ( rbgIndex == rbgNum)  // impossible
+	          {
+	            // all RBGs are already assigned
+	            totalRbg = rbgNum;
+	            break;
+	          }
+	        else
+	          {
+	            // mark this UE as "allocated"
               allocatedRbg.insert (rbgIndex);
-	    }
+	          }
 
           // assign this RBG to UE
           std::map <uint16_t, std::vector <uint16_t> >::iterator itMap;
@@ -733,41 +729,41 @@ FdTbfqFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::S
                 }
             }
  
- 	  bytesTxedTmp = bytesTxed;
+ 	        bytesTxedTmp = bytesTxed;
           bytesTxed = 0;
-	  for (uint8_t j = 0; j < nLayer; j++)
+	        for (uint8_t j = 0; j < nLayer; j++)
             {
               int tbSize = (m_amc->GetTbSizeFromMcs (m_amc->GetMcsFromCqi (worstCqi.at (j)), RbgPerRnti * rbgSize) / 8); // (size of TB in bytes according to table 7.1.7.2.1-1 of 36.213) 
               bytesTxed += tbSize;
             }
 
-        } // end of while()
+	      } // end of while()
 
-      // remove and unmark last RBG assigned to UE
-      if ( bytesTxed > budget )
-        {
+        // remove and unmark last RBG assigned to UE
+	    if ( bytesTxed > budget )
+	      {
           std::map <uint16_t, std::vector <uint16_t> >::iterator itMap;
           itMap = allocationMap.find ((*itMax).first);
           (*itMap).second.pop_back ();
           allocatedRbg.erase (rbgIndex);
-	  bytesTxed = bytesTxedTmp;  // recovery bytesTxed
+	        bytesTxed = bytesTxedTmp;  // recovery bytesTxed
           totalRbg--;
-	}
+	      }
 
-      // update UE stats
+        // update UE stats
       if ( bytesTxed <= (*itMax).second.tokenPoolSize )
         {
-	  (*itMax).second.tokenPoolSize -= bytesTxed;
+	        (*itMax).second.tokenPoolSize -= bytesTxed;
         }
       else
-        {
-          (*itMax).second.counter = (*itMax).second.counter - ( bytesTxed -  (*itMax).second.tokenPoolSize );
-          (*itMax).second.tokenPoolSize = 0;
-          if (bankSize <= ( bytesTxed -  (*itMax).second.tokenPoolSize ))
-            bankSize = 0;
-          else 
-            bankSize = bankSize - ( bytesTxed -  (*itMax).second.tokenPoolSize );
-        }
+	      {
+	        (*itMax).second.counter = (*itMax).second.counter - ( bytesTxed -  (*itMax).second.tokenPoolSize );
+	        (*itMax).second.tokenPoolSize = 0;
+	        if (bankSize <= ( bytesTxed -  (*itMax).second.tokenPoolSize ))
+	          bankSize = 0;
+	        else 
+	          bankSize = bankSize - ( bytesTxed -  (*itMax).second.tokenPoolSize );
+	      }
     } // end of RBGs
 
   // generate the transmission opportunities by grouping the RBGs of the same RNTI and
@@ -896,8 +892,7 @@ FdTbfqFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::S
 void
 FdTbfqFfMacScheduler::DoSchedDlRachInfoReq (const struct FfMacSchedSapProvider::SchedDlRachInfoReqParameters& params)
 {
-  NS_LOG_FUNCTION (this);
-  // TODO: Implementation of the API
+  NS_FATAL_ERROR ("unimplemented");
   return;
 }
 
@@ -1065,7 +1060,6 @@ FdTbfqFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::S
         {
           // no cqi info about this UE
           uldci.m_mcs = 0; // MCS 0 -> UL-AMC TBD
-//           NS_LOG_DEBUG (this << " UE does not have ULCQI " << (*it).first );
         }
       else
         {
@@ -1077,7 +1071,6 @@ FdTbfqFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::S
             }
           for (uint16_t i = uldci.m_rbStart; i < uldci.m_rbStart + uldci.m_rbLen; i++)
             {
-//               NS_LOG_DEBUG (this << " UE " << (*it).first << " has SINR " << (*itCqi).second.at(i));
               double sinr = (*itCqi).second.at (i);
               if (sinr == NO_SINR)
                 {
@@ -1105,7 +1098,6 @@ FdTbfqFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::S
               continue; // CQI == 0 means "out of range" (see table 7.2.3-1 of 36.213)
             }
           uldci.m_mcs = m_amc->GetMcsFromCqi (cqi);
-//           NS_LOG_DEBUG (this << " UE " <<  (*it).first << " minsinr " << minSinr << " -> mcs " << (uint16_t)uldci.m_mcs);
 
         }
       
@@ -1156,16 +1148,14 @@ FdTbfqFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::S
 void
 FdTbfqFfMacScheduler::DoSchedUlNoiseInterferenceReq (const struct FfMacSchedSapProvider::SchedUlNoiseInterferenceReqParameters& params)
 {
-  NS_LOG_FUNCTION (this);
-  // TODO: Implementation of the API
+  NS_FATAL_ERROR ("unimplemented");
   return;
 }
 
 void
 FdTbfqFfMacScheduler::DoSchedUlSrInfoReq (const struct FfMacSchedSapProvider::SchedUlSrInfoReqParameters& params)
 {
-  NS_LOG_FUNCTION (this);
-  // TODO: Implementation of the API
+  NS_FATAL_ERROR ("unimplemented");
   return;
 }
 
@@ -1207,7 +1197,6 @@ void
 FdTbfqFfMacScheduler::DoSchedUlCqiInfoReq (const struct FfMacSchedSapProvider::SchedUlCqiInfoReqParameters& params)
 {
   NS_LOG_FUNCTION (this);
-//   NS_LOG_DEBUG (this << " RX SFNID " << params.m_sfnSf);
   // retrieve the allocation for this subframe
   switch (m_ulCqiFilter)
     {
@@ -1252,7 +1241,6 @@ FdTbfqFfMacScheduler::DoSchedUlCqiInfoReq (const struct FfMacSchedSapProvider::S
             // convert from fixed point notation Sxxxxxxxxxxx.xxx to double
       //       NS_LOG_INFO (this << " i " << i << " size " << params.m_ulCqi.m_sinr.size () << " mapSIze " << (*itMap).second.size ());
             double sinr = LteFfConverter::fpS11dot3toDouble (params.m_ulCqi.m_sinr.at (i));
-            //NS_LOG_DEBUG (this << " UE " << (*itMap).second.at (i) << " SINRfp " << params.m_ulCqi.m_sinr.at (i) << " sinrdb " << sinr);
             itCqi = m_ueCqi.find ((*itMap).second.at (i));
             if (itCqi == m_ueCqi.end ())
               {
@@ -1445,7 +1433,6 @@ FdTbfqFfMacScheduler::UpdateDlRlcBufferInfo (uint16_t rnti, uint8_t lcid, uint16
   it = m_rlcBufferReq.find (flow);
   if (it!=m_rlcBufferReq.end ())
     {
-//       NS_LOG_DEBUG (this << " UE " << rnti << " LC " << (uint16_t)lcid << " txqueue " << (*it).second.m_rlcTransmissionQueueSize << " retxqueue " << (*it).second.m_rlcRetransmissionQueueSize << " status " << (*it).second.m_rlcStatusPduSize << " decrease " << size);
       // Update queues: RLC tx order Status, ReTx, Tx
       // Update status queue
       if ((*it).second.m_rlcStatusPduSize <= size)
@@ -1495,7 +1482,6 @@ FdTbfqFfMacScheduler::UpdateUlRlcBufferInfo (uint16_t rnti, uint16_t size)
   std::map <uint16_t,uint32_t>::iterator it = m_ceBsrRxed.find (rnti);
   if (it!=m_ceBsrRxed.end ())
     {
-//       NS_LOG_DEBUG (this << " UE " << rnti << " size " << size << " BSR " << (*it).second);      
       if ((*it).second >= size)
         {
           (*it).second -= size;

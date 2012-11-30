@@ -375,16 +375,14 @@ TdTbfqFfMacScheduler::DoCschedLcConfigReq (const struct FfMacCschedSapProvider::
 void
 TdTbfqFfMacScheduler::DoCschedLcReleaseReq (const struct FfMacCschedSapProvider::CschedLcReleaseReqParameters& params)
 {
-  NS_LOG_FUNCTION (this);
-  // TODO: Implementation of the API
+  NS_FATAL_ERROR ("unimplemented");
   return;
 }
 
 void
 TdTbfqFfMacScheduler::DoCschedUeReleaseReq (const struct FfMacCschedSapProvider::CschedUeReleaseReqParameters& params)
 {
-  NS_LOG_FUNCTION (this);
-  // TODO: Implementation of the API
+  NS_FATAL_ERROR ("unimplemented");
   return;
 }
 
@@ -416,16 +414,14 @@ TdTbfqFfMacScheduler::DoSchedDlRlcBufferReq (const struct FfMacSchedSapProvider:
 void
 TdTbfqFfMacScheduler::DoSchedDlPagingBufferReq (const struct FfMacSchedSapProvider::SchedDlPagingBufferReqParameters& params)
 {
-  NS_LOG_FUNCTION (this);
-  // TODO: Implementation of the API
+  NS_FATAL_ERROR ("unimplemented");
   return;
 }
 
 void
 TdTbfqFfMacScheduler::DoSchedDlMacBufferReq (const struct FfMacSchedSapProvider::SchedDlMacBufferReqParameters& params)
 {
-  NS_LOG_FUNCTION (this);
-  // TODO: Implementation of the API
+  NS_FATAL_ERROR ("unimplemented");
   return;
 }
 
@@ -661,18 +657,18 @@ TdTbfqFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::S
       if (it != m_flowStatsDl.end ())
         {
           if ( bytesTxed <= (*it).second.tokenPoolSize )
-	    {
-	      (*it).second.tokenPoolSize -= bytesTxed;
-	    }
-	  else
-	    {
-	      (*it).second.counter = (*it).second.counter - ( bytesTxed -  (*it).second.tokenPoolSize );
-	      (*it).second.tokenPoolSize = 0;
-	      if (bankSize <= ( bytesTxed - (*it).second.tokenPoolSize ))
-	        bankSize = 0;
-	      else 
-	        bankSize = bankSize - ( bytesTxed -  (*it).second.tokenPoolSize );
-	    }
+	          {
+	            (*it).second.tokenPoolSize -= bytesTxed;
+	          }
+	        else
+	          {
+	            (*it).second.counter = (*it).second.counter - ( bytesTxed -  (*it).second.tokenPoolSize );
+	            (*it).second.tokenPoolSize = 0;
+	            if (bankSize <= ( bytesTxed - (*it).second.tokenPoolSize ))
+		            bankSize = 0;
+	            else 
+	              bankSize = bankSize - ( bytesTxed -  (*it).second.tokenPoolSize );
+	          }
         }
       else
         {
@@ -692,8 +688,7 @@ TdTbfqFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::S
 void
 TdTbfqFfMacScheduler::DoSchedDlRachInfoReq (const struct FfMacSchedSapProvider::SchedDlRachInfoReqParameters& params)
 {
-  NS_LOG_FUNCTION (this);
-  // TODO: Implementation of the API
+  NS_FATAL_ERROR ("unimplemented");
   return;
 }
 
@@ -861,7 +856,6 @@ TdTbfqFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::S
         {
           // no cqi info about this UE
           uldci.m_mcs = 0; // MCS 0 -> UL-AMC TBD
-//           NS_LOG_DEBUG (this << " UE does not have ULCQI " << (*it).first );
         }
       else
         {
@@ -873,7 +867,6 @@ TdTbfqFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::S
             }
           for (uint16_t i = uldci.m_rbStart; i < uldci.m_rbStart + uldci.m_rbLen; i++)
             {
-//               NS_LOG_DEBUG (this << " UE " << (*it).first << " has SINR " << (*itCqi).second.at(i));
               double sinr = (*itCqi).second.at (i);
               if (sinr == NO_SINR)
                 {
@@ -901,7 +894,6 @@ TdTbfqFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::S
               continue; // CQI == 0 means "out of range" (see table 7.2.3-1 of 36.213)
             }
           uldci.m_mcs = m_amc->GetMcsFromCqi (cqi);
-//           NS_LOG_DEBUG (this << " UE " <<  (*it).first << " minsinr " << minSinr << " -> mcs " << (uint16_t)uldci.m_mcs);
 
         }
       
@@ -952,16 +944,14 @@ TdTbfqFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::S
 void
 TdTbfqFfMacScheduler::DoSchedUlNoiseInterferenceReq (const struct FfMacSchedSapProvider::SchedUlNoiseInterferenceReqParameters& params)
 {
-  NS_LOG_FUNCTION (this);
-  // TODO: Implementation of the API
+  NS_FATAL_ERROR ("unimplemented");
   return;
 }
 
 void
 TdTbfqFfMacScheduler::DoSchedUlSrInfoReq (const struct FfMacSchedSapProvider::SchedUlSrInfoReqParameters& params)
 {
-  NS_LOG_FUNCTION (this);
-  // TODO: Implementation of the API
+  NS_FATAL_ERROR ("unimplemented");
   return;
 }
 
@@ -1003,7 +993,6 @@ void
 TdTbfqFfMacScheduler::DoSchedUlCqiInfoReq (const struct FfMacSchedSapProvider::SchedUlCqiInfoReqParameters& params)
 {
   NS_LOG_FUNCTION (this);
-//   NS_LOG_DEBUG (this << " RX SFNID " << params.m_sfnSf);
   // retrieve the allocation for this subframe
   switch (m_ulCqiFilter)
     {
@@ -1048,7 +1037,6 @@ TdTbfqFfMacScheduler::DoSchedUlCqiInfoReq (const struct FfMacSchedSapProvider::S
             // convert from fixed point notation Sxxxxxxxxxxx.xxx to double
       //       NS_LOG_INFO (this << " i " << i << " size " << params.m_ulCqi.m_sinr.size () << " mapSIze " << (*itMap).second.size ());
             double sinr = LteFfConverter::fpS11dot3toDouble (params.m_ulCqi.m_sinr.at (i));
-            //NS_LOG_DEBUG (this << " UE " << (*itMap).second.at (i) << " SINRfp " << params.m_ulCqi.m_sinr.at (i) << " sinrdb " << sinr);
             itCqi = m_ueCqi.find ((*itMap).second.at (i));
             if (itCqi == m_ueCqi.end ())
               {
@@ -1241,7 +1229,6 @@ TdTbfqFfMacScheduler::UpdateDlRlcBufferInfo (uint16_t rnti, uint8_t lcid, uint16
   it = m_rlcBufferReq.find (flow);
   if (it!=m_rlcBufferReq.end ())
     {
-//       NS_LOG_DEBUG (this << " UE " << rnti << " LC " << (uint16_t)lcid << " txqueue " << (*it).second.m_rlcTransmissionQueueSize << " retxqueue " << (*it).second.m_rlcRetransmissionQueueSize << " status " << (*it).second.m_rlcStatusPduSize << " decrease " << size);
       // Update queues: RLC tx order Status, ReTx, Tx
       // Update status queue
       if ((*it).second.m_rlcStatusPduSize <= size)
@@ -1291,7 +1278,6 @@ TdTbfqFfMacScheduler::UpdateUlRlcBufferInfo (uint16_t rnti, uint16_t size)
   std::map <uint16_t,uint32_t>::iterator it = m_ceBsrRxed.find (rnti);
   if (it!=m_ceBsrRxed.end ())
     {
-//       NS_LOG_DEBUG (this << " UE " << rnti << " size " << size << " BSR " << (*it).second);      
       if ((*it).second >= size)
         {
           (*it).second -= size;

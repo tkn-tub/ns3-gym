@@ -86,7 +86,7 @@ References
 .. [R4-081920] 3GPP R4-081920 `LTE PDCCH/PCFICH Demodulation Performance Results with Implementation Margin
  <http://www.3gpp.org/ftp/tsg_ran/wg4_radio/TSGR4_48/Documents/R4-081920.zip>`_
 
-.. [FCapo2012] F.Capozzi, G.Piro L.A.Grieco, G.Boggia, P.Camarda, "Downlink Packet Scheduling in LTE Cellular Networks: Key Design Issues and a Survey", IEEE Comm. Surveys and Tutorials, to appear 
+.. [FCapo2012] F.Capozzi, G.Piro L.A.Grieco, G.Boggia, P.Camarda, "Downlink Packet Scheduling in LTE Cellular Networks: Key Design Issues and a Survey", IEEE Comm. Surveys and Tutorials, vol.2012, no.99, pp.1-23, Jun. 2012
 
 .. [FABokhari2009] F.A. Bokhari, H. Yanikomeroglu, W.K. Wong, M. Rahman, "Cross-Layer Resource Scheduling for Video Traffic in the Downlink of OFDMA-Based Wireless 4G Networks",EURASIP J. Wirel. Commun. Netw., vol.2009, no.3, pp. 1-10, Jan. 2009. 
 

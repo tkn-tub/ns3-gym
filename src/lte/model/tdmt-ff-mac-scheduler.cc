@@ -248,7 +248,7 @@ TdMtFfMacScheduler::GetTypeId (void)
                    UintegerValue (1000),
                    MakeUintegerAccessor (&TdMtFfMacScheduler::m_cqiTimersThreshold),
                    MakeUintegerChecker<uint32_t> ())
-  ;
+    ;
   return tid;
 }
 
@@ -336,16 +336,14 @@ TdMtFfMacScheduler::DoCschedLcConfigReq (const struct FfMacCschedSapProvider::Cs
 void
 TdMtFfMacScheduler::DoCschedLcReleaseReq (const struct FfMacCschedSapProvider::CschedLcReleaseReqParameters& params)
 {
-  NS_LOG_FUNCTION (this);
-  // TODO: Implementation of the API
+  NS_FATAL_ERROR ("unimplemented");
   return;
 }
 
 void
 TdMtFfMacScheduler::DoCschedUeReleaseReq (const struct FfMacCschedSapProvider::CschedUeReleaseReqParameters& params)
 {
-  NS_LOG_FUNCTION (this);
-  // TODO: Implementation of the API
+  NS_FATAL_ERROR ("unimplemented");
   return;
 }
 
@@ -377,16 +375,14 @@ TdMtFfMacScheduler::DoSchedDlRlcBufferReq (const struct FfMacSchedSapProvider::S
 void
 TdMtFfMacScheduler::DoSchedDlPagingBufferReq (const struct FfMacSchedSapProvider::SchedDlPagingBufferReqParameters& params)
 {
-  NS_LOG_FUNCTION (this);
-  // TODO: Implementation of the API
+  NS_FATAL_ERROR ("unimplemented");
   return;
 }
 
 void
 TdMtFfMacScheduler::DoSchedDlMacBufferReq (const struct FfMacSchedSapProvider::SchedDlMacBufferReqParameters& params)
 {
-  NS_LOG_FUNCTION (this);
-  // TODO: Implementation of the API
+  NS_FATAL_ERROR ("unimplemented");
   return;
 }
 
@@ -458,18 +454,18 @@ TdMtFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sch
           NS_FATAL_ERROR ("No Transmission Mode info on user " << (*it));
         }
       int nLayer = TransmissionModesLayers::TxMode2LayerNum ((*itTxMode).second);
-      uint8_t wbCqi = 0;
-      if (itCqi == m_p10CqiRxed.end())
-        {
-          wbCqi = 1; // start with lowest value
-        }
+	    uint8_t wbCqi = 0;
+	    if (itCqi == m_p10CqiRxed.end())
+	      {
+	        wbCqi = 1; // start with lowest value
+	      }
       else
         {
-          wbCqi = (*itCqi).second;
+	        wbCqi = (*itCqi).second;
         }
 
-      if (wbCqi > 0)
-        {
+	    if (wbCqi > 0)
+	      {
           if (LcActivePerFlow (*it) > 0)
             {
               // this UE has data to transmit
@@ -481,30 +477,30 @@ TdMtFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sch
                   achievableRate += ((m_amc->GetTbSizeFromMcs (mcs, rbgSize) / 8) / 0.001); // = TB size / TTI
                 }
 
-              double metric = achievableRate;
+			        double metric = achievableRate;
 
               if (metric > metricMax)
                 {
                   metricMax = metric;
                   itMax = it;
                 }
-            }
+           }
         } // end of wbCqi
     } // end for m_flowStatsDl
 
   if (itMax == m_flowStatsDl.end ())
     {
-      // no UE available for downlink  
-      return;
+      // no UE available for downlink 
+	    return;
     }
   else
     {
       // assign all RBGs to this UE
       std::vector <uint16_t> tempMap;
-      for (int i = 0; i < rbgNum; i++)
-        {
+	    for (int i = 0; i < rbgNum; i++)
+	      {
           tempMap.push_back (i);
-        }
+	      }
       allocationMap.insert (std::pair <uint16_t, std::vector <uint16_t> > ((*itMax), tempMap));
     }
 
@@ -523,8 +519,8 @@ TdMtFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sch
       newDci.m_rnti = (*itMap).first;
 
       uint16_t lcActives = LcActivePerFlow ((*itMap).first);
-      std::map <uint16_t,uint8_t>::iterator itCqi; 
-      itCqi = m_p10CqiRxed.find((*itMap).first);
+      std::map <uint16_t,uint8_t>::iterator itCqi;
+	    itCqi = m_p10CqiRxed.find((*itMap).first);
       std::map <uint16_t,uint8_t>::iterator itTxMode;
       itTxMode = m_uesTxMode.find ((*itMap).first);
       if (itTxMode == m_uesTxMode.end ())
@@ -601,8 +597,7 @@ TdMtFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sch
 void
 TdMtFfMacScheduler::DoSchedDlRachInfoReq (const struct FfMacSchedSapProvider::SchedDlRachInfoReqParameters& params)
 {
-  NS_LOG_FUNCTION (this);
-  // TODO: Implementation of the API
+  NS_FATAL_ERROR ("unimplemented");
   return;
 }
 
@@ -770,7 +765,6 @@ TdMtFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sch
         {
           // no cqi info about this UE
           uldci.m_mcs = 0; // MCS 0 -> UL-AMC TBD
-//           NS_LOG_DEBUG (this << " UE does not have ULCQI " << (*it).first );
         }
       else
         {
@@ -782,7 +776,6 @@ TdMtFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sch
             }
           for (uint16_t i = uldci.m_rbStart; i < uldci.m_rbStart + uldci.m_rbLen; i++)
             {
-//               NS_LOG_DEBUG (this << " UE " << (*it).first << " has SINR " << (*itCqi).second.at(i));
               double sinr = (*itCqi).second.at (i);
               if (sinr == NO_SINR)
                 {
@@ -810,7 +803,6 @@ TdMtFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sch
               continue; // CQI == 0 means "out of range" (see table 7.2.3-1 of 36.213)
             }
           uldci.m_mcs = m_amc->GetMcsFromCqi (cqi);
-//           NS_LOG_DEBUG (this << " UE " <<  (*it).first << " minsinr " << minSinr << " -> mcs " << (uint16_t)uldci.m_mcs);
 
         }
       
@@ -862,16 +854,14 @@ TdMtFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sch
 void
 TdMtFfMacScheduler::DoSchedUlNoiseInterferenceReq (const struct FfMacSchedSapProvider::SchedUlNoiseInterferenceReqParameters& params)
 {
-  NS_LOG_FUNCTION (this);
-  // TODO: Implementation of the API
+  NS_FATAL_ERROR ("unimplemented");
   return;
 }
 
 void
 TdMtFfMacScheduler::DoSchedUlSrInfoReq (const struct FfMacSchedSapProvider::SchedUlSrInfoReqParameters& params)
 {
-  NS_LOG_FUNCTION (this);
-  // TODO: Implementation of the API
+  NS_FATAL_ERROR ("unimplemented");
   return;
 }
 
@@ -913,7 +903,6 @@ void
 TdMtFfMacScheduler::DoSchedUlCqiInfoReq (const struct FfMacSchedSapProvider::SchedUlCqiInfoReqParameters& params)
 {
   NS_LOG_FUNCTION (this);
-//   NS_LOG_DEBUG (this << " RX SFNID " << params.m_sfnSf);
   // retrieve the allocation for this subframe
   switch (m_ulCqiFilter)
     {
@@ -958,7 +947,6 @@ TdMtFfMacScheduler::DoSchedUlCqiInfoReq (const struct FfMacSchedSapProvider::Sch
             // convert from fixed point notation Sxxxxxxxxxxx.xxx to double
       //       NS_LOG_INFO (this << " i " << i << " size " << params.m_ulCqi.m_sinr.size () << " mapSIze " << (*itMap).second.size ());
             double sinr = LteFfConverter::fpS11dot3toDouble (params.m_ulCqi.m_sinr.at (i));
-            //NS_LOG_DEBUG (this << " UE " << (*itMap).second.at (i) << " SINRfp " << params.m_ulCqi.m_sinr.at (i) << " sinrdb " << sinr);
             itCqi = m_ueCqi.find ((*itMap).second.at (i));
             if (itCqi == m_ueCqi.end ())
               {
@@ -1151,7 +1139,6 @@ TdMtFfMacScheduler::UpdateDlRlcBufferInfo (uint16_t rnti, uint8_t lcid, uint16_t
   it = m_rlcBufferReq.find (flow);
   if (it!=m_rlcBufferReq.end ())
     {
-//       NS_LOG_DEBUG (this << " UE " << rnti << " LC " << (uint16_t)lcid << " txqueue " << (*it).second.m_rlcTransmissionQueueSize << " retxqueue " << (*it).second.m_rlcRetransmissionQueueSize << " status " << (*it).second.m_rlcStatusPduSize << " decrease " << size);
       // Update queues: RLC tx order Status, ReTx, Tx
       // Update status queue
       if ((*it).second.m_rlcStatusPduSize <= size)
@@ -1201,7 +1188,6 @@ TdMtFfMacScheduler::UpdateUlRlcBufferInfo (uint16_t rnti, uint16_t size)
   std::map <uint16_t,uint32_t>::iterator it = m_ceBsrRxed.find (rnti);
   if (it!=m_ceBsrRxed.end ())
     {
-//       NS_LOG_DEBUG (this << " UE " << rnti << " size " << size << " BSR " << (*it).second);      
       if ((*it).second >= size)
         {
           (*it).second -= size;

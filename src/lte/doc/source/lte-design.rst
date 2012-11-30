@@ -657,7 +657,7 @@ Maximum Throughput (MT) Scheduler
 
 The Maximum Throughput (MT) scheduler [FCapo2012]_ aims to maximize the overall throughput of eNB.
 It allocates each RB to the user that can achieve the maximum achievable rate in the current TTI.
-Currently, MT scheduler in LENA has two versions: frequency domain (FDMT) and time domain (TDMT).
+Currently, MT scheduler in NS-3 has two versions: frequency domain (FDMT) and time domain (TDMT).
 In FDMT, every TTI, MAC scheduler allocates RBGs to the UE who has highest achievable rate calculated 
 by subband CQI. In TDMT, every TTI, MAC scheduler selects one UE which has highest achievable rate 
 calculated by wideband CQI. Then MAC scheduler allocates all RBGs to this UE in current TTI.
@@ -733,7 +733,7 @@ that, in every TTI, the scheduler tries the best to achieve the equal throughput
 Token Bank Fair Queue Scheduler
 -------------------------------
 
-Token Band Fair Queue (TBFQ) is a QoS aware scheduler which derives from the leaky-bucket mechanism. In TBFQ, 
+Token Bank Fair Queue (TBFQ) is a QoS aware scheduler which derives from the leaky-bucket mechanism. In TBFQ, 
 a traffic flow of user :math:`i` is characterized by following parameters: 
 
  * :math:`t_{i}`: packet arrival rate (byte/sec )

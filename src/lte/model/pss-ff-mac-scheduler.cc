@@ -360,16 +360,14 @@ PssFfMacScheduler::DoCschedLcConfigReq (const struct FfMacCschedSapProvider::Csc
 void
 PssFfMacScheduler::DoCschedLcReleaseReq (const struct FfMacCschedSapProvider::CschedLcReleaseReqParameters& params)
 {
-  NS_LOG_FUNCTION (this);
-  // TODO: Implementation of the API
+  NS_FATAL_ERROR ("unimplemented");
   return;
 }
 
 void
 PssFfMacScheduler::DoCschedUeReleaseReq (const struct FfMacCschedSapProvider::CschedUeReleaseReqParameters& params)
 {
-  NS_LOG_FUNCTION (this);
-  // TODO: Implementation of the API
+  NS_FATAL_ERROR ("unimplemented");
   return;
 }
 
@@ -401,16 +399,14 @@ PssFfMacScheduler::DoSchedDlRlcBufferReq (const struct FfMacSchedSapProvider::Sc
 void
 PssFfMacScheduler::DoSchedDlPagingBufferReq (const struct FfMacSchedSapProvider::SchedDlPagingBufferReqParameters& params)
 {
-  NS_LOG_FUNCTION (this);
-  // TODO: Implementation of the API
+  NS_FATAL_ERROR ("unimplemented");
   return;
 }
 
 void
 PssFfMacScheduler::DoSchedDlMacBufferReq (const struct FfMacSchedSapProvider::SchedDlMacBufferReqParameters& params)
 {
-  NS_LOG_FUNCTION (this);
-  // TODO: Implementation of the API
+  NS_FATAL_ERROR ("unimplemented");
   return;
 }
 
@@ -555,7 +551,6 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
       else
         nMux = (int)((ueSet1.size() + ueSet2.size()) / 2) ; // TD scheduler only transfers half selected UE per RTT to TD scheduler
     }
-
   for (it = m_flowStatsDl.begin (); it != m_flowStatsDl.end (); it--)
    {
      std::vector <std::pair<double, uint16_t> >::iterator itSet;
@@ -702,38 +697,38 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
                           sbCqi = 0;
                         }
                       colMetric += (double)sbCqi / (double)(*itSbCqiSum).second;
-   	            } 
+   	                } 
                 }   // end if cqi
 
               double metric;
-	      if (colMetric != 0)
-	        metric= weight * colMetric;
-	      else
-	        metric = 1;
+	            if (colMetric != 0)
+	              metric= weight * colMetric;
+	            else
+	              metric = 1;
 
-    	      if (metric > metricMax )
+    	        if (metric > metricMax )
                 {
                   metricMax = metric;
                   itMax = it;
                 }
-	    } // end of tdUeSet
+	          } // end of tdUeSet
 
           if (itMax == m_flowStatsDl.end ())
             {
               // no UE available for downlink 
-	      return;
+	            return;
             }
           else
             {
               // assign all RBGs to this UE
               std::vector <uint16_t> tempMap;
-	      for (int i = 0; i < rbgNum; i++)
-	        {
+	            for (int i = 0; i < rbgNum; i++)
+	              {
                   tempMap.push_back (i);
-	        }
+	              }
               allocationMap.insert (std::pair <uint16_t, std::vector <uint16_t> > ((*itMax).first, tempMap));
             }
-        }// end of rbgNum
+	      }// end of rbgNum
 
     }// end of CoIta
  
@@ -748,8 +743,8 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
             {
               // calculate PF weigth 
               double weight = (*it).second.targetThroughput / (*it).second.lastAveragedThroughput;
-	      if (weight < 1.0)
-	        weight = 1.0;
+	            if (weight < 1.0)
+	              weight = 1.0;
 
               std::map <uint16_t,SbMeasResult_s>::iterator itCqi;
               itCqi = m_a30CqiRxed.find ((*it).first);
@@ -795,9 +790,9 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
                         {
                           // no info on this subband  -> worst MCS
                           mcs = 0;
-                        }
+                	      }
                       achievableRate += ((m_amc->GetTbSizeFromMcs (mcs, rbgSize) / 8) / 0.001); // = TB size / TTI
-    	  	    }
+    	  	         }
                   schMetric = achievableRate / (*it).second.secondLastAveragedThroughput;
                 }   // end if cqi
  
@@ -995,8 +990,7 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
 void
 PssFfMacScheduler::DoSchedDlRachInfoReq (const struct FfMacSchedSapProvider::SchedDlRachInfoReqParameters& params)
 {
-  NS_LOG_FUNCTION (this);
-  // TODO: Implementation of the API
+  NS_FATAL_ERROR ("unimplemented");
   return;
 }
 
@@ -1164,7 +1158,6 @@ PssFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sche
         {
           // no cqi info about this UE
           uldci.m_mcs = 0; // MCS 0 -> UL-AMC TBD
-//           NS_LOG_DEBUG (this << " UE does not have ULCQI " << (*it).first );
         }
       else
         {
@@ -1176,7 +1169,6 @@ PssFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sche
             }
           for (uint16_t i = uldci.m_rbStart; i < uldci.m_rbStart + uldci.m_rbLen; i++)
             {
-//               NS_LOG_DEBUG (this << " UE " << (*it).first << " has SINR " << (*itCqi).second.at(i));
               double sinr = (*itCqi).second.at (i);
               if (sinr == NO_SINR)
                 {
@@ -1204,8 +1196,6 @@ PssFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sche
               continue; // CQI == 0 means "out of range" (see table 7.2.3-1 of 36.213)
             }
           uldci.m_mcs = m_amc->GetMcsFromCqi (cqi);
-//           NS_LOG_DEBUG (this << " UE " <<  (*it).first << " minsinr " << minSinr << " -> mcs " << (uint16_t)uldci.m_mcs);
-
         }
       
       rbAllocated += rbPerFlow;
@@ -1255,16 +1245,14 @@ PssFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sche
 void
 PssFfMacScheduler::DoSchedUlNoiseInterferenceReq (const struct FfMacSchedSapProvider::SchedUlNoiseInterferenceReqParameters& params)
 {
-  NS_LOG_FUNCTION (this);
-  // TODO: Implementation of the API
+  NS_FATAL_ERROR ("unimplemented");
   return;
 }
 
 void
 PssFfMacScheduler::DoSchedUlSrInfoReq (const struct FfMacSchedSapProvider::SchedUlSrInfoReqParameters& params)
 {
-  NS_LOG_FUNCTION (this);
-  // TODO: Implementation of the API
+  NS_FATAL_ERROR ("unimplemented");
   return;
 }
 
@@ -1306,7 +1294,6 @@ void
 PssFfMacScheduler::DoSchedUlCqiInfoReq (const struct FfMacSchedSapProvider::SchedUlCqiInfoReqParameters& params)
 {
   NS_LOG_FUNCTION (this);
-//   NS_LOG_DEBUG (this << " RX SFNID " << params.m_sfnSf);
   // retrieve the allocation for this subframe
   switch (m_ulCqiFilter)
     {
@@ -1351,7 +1338,6 @@ PssFfMacScheduler::DoSchedUlCqiInfoReq (const struct FfMacSchedSapProvider::Sche
             // convert from fixed point notation Sxxxxxxxxxxx.xxx to double
       //       NS_LOG_INFO (this << " i " << i << " size " << params.m_ulCqi.m_sinr.size () << " mapSIze " << (*itMap).second.size ());
             double sinr = LteFfConverter::fpS11dot3toDouble (params.m_ulCqi.m_sinr.at (i));
-            //NS_LOG_DEBUG (this << " UE " << (*itMap).second.at (i) << " SINRfp " << params.m_ulCqi.m_sinr.at (i) << " sinrdb " << sinr);
             itCqi = m_ueCqi.find ((*itMap).second.at (i));
             if (itCqi == m_ueCqi.end ())
               {
@@ -1544,7 +1530,6 @@ PssFfMacScheduler::UpdateDlRlcBufferInfo (uint16_t rnti, uint8_t lcid, uint16_t 
   it = m_rlcBufferReq.find (flow);
   if (it!=m_rlcBufferReq.end ())
     {
-//       NS_LOG_DEBUG (this << " UE " << rnti << " LC " << (uint16_t)lcid << " txqueue " << (*it).second.m_rlcTransmissionQueueSize << " retxqueue " << (*it).second.m_rlcRetransmissionQueueSize << " status " << (*it).second.m_rlcStatusPduSize << " decrease " << size);
       // Update queues: RLC tx order Status, ReTx, Tx
       // Update status queue
       if ((*it).second.m_rlcStatusPduSize <= size)
@@ -1594,7 +1579,6 @@ PssFfMacScheduler::UpdateUlRlcBufferInfo (uint16_t rnti, uint16_t size)
   std::map <uint16_t,uint32_t>::iterator it = m_ceBsrRxed.find (rnti);
   if (it!=m_ceBsrRxed.end ())
     {
-//       NS_LOG_DEBUG (this << " UE " << rnti << " size " << size << " BSR " << (*it).second);      
       if ((*it).second >= size)
         {
           (*it).second -= size;
