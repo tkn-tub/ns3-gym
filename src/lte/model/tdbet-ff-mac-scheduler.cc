@@ -518,7 +518,7 @@ TdBetFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sc
         }
 	   
       for (uint8_t i = 0; i < nLayer; i++)
-	    {
+	{
           int tbSize = (m_amc->GetTbSizeFromMcs (newDci.m_mcs.at (0), rbgNum * rbgSize) / 8); // (size of TB in bytes according to table 7.1.7.2.1-1 of 36.213)
           newDci.m_tbsSize.push_back (tbSize);
           bytesTxed += tbSize;

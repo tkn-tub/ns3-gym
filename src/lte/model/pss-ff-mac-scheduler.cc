@@ -505,7 +505,7 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
             }
           int nLayer = TransmissionModesLayers::TxMode2LayerNum ((*itTxMode).second);
           uint8_t wbCqi = 0;
-	        if (itCqi == m_p10CqiRxed.end())
+          if (itCqi == m_p10CqiRxed.end())
             {
               wbCqi = 1; // start with lowest value
             }
@@ -701,34 +701,34 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
                 }   // end if cqi
 
               double metric;
-	            if (colMetric != 0)
-	              metric= weight * colMetric;
-	            else
-	              metric = 1;
+              if (colMetric != 0)
+                metric= weight * colMetric;
+              else
+                metric = 1;
 
-    	        if (metric > metricMax )
+              if (metric > metricMax )
                 {
                   metricMax = metric;
                   itMax = it;
                 }
-	          } // end of tdUeSet
+            } // end of tdUeSet
 
           if (itMax == m_flowStatsDl.end ())
             {
               // no UE available for downlink 
-	            return;
+              return;
             }
           else
             {
               // assign all RBGs to this UE
               std::vector <uint16_t> tempMap;
-	            for (int i = 0; i < rbgNum; i++)
-	              {
+              for (int i = 0; i < rbgNum; i++)
+                {
                   tempMap.push_back (i);
-	              }
+                }
               allocationMap.insert (std::pair <uint16_t, std::vector <uint16_t> > ((*itMax).first, tempMap));
             }
-	      }// end of rbgNum
+        }// end of rbgNum
 
     }// end of CoIta
  
@@ -743,8 +743,8 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
             {
               // calculate PF weigth 
               double weight = (*it).second.targetThroughput / (*it).second.lastAveragedThroughput;
-	            if (weight < 1.0)
-	              weight = 1.0;
+              if (weight < 1.0)
+                weight = 1.0;
 
               std::map <uint16_t,SbMeasResult_s>::iterator itCqi;
               itCqi = m_a30CqiRxed.find ((*it).first);
@@ -784,15 +784,15 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
                       uint8_t mcs = 0;
                       if (sbCqis.size () > k)
                         {                       
-    	                    mcs = m_amc->GetMcsFromCqi (sbCqis.at (k));
+                          mcs = m_amc->GetMcsFromCqi (sbCqis.at (k));
                         }
                       else
                         {
                           // no info on this subband  -> worst MCS
                           mcs = 0;
-                	      }
+                        }
                       achievableRate += ((m_amc->GetTbSizeFromMcs (mcs, rbgSize) / 8) / 0.001); // = TB size / TTI
-    	  	         }
+    	  	    }
                   schMetric = achievableRate / (*it).second.secondLastAveragedThroughput;
                 }   // end if cqi
  
@@ -899,7 +899,7 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
             }
         }
       uint32_t bytesTxed = 0;
-	  for (uint8_t j = 0; j < nLayer; j++)
+      for (uint8_t j = 0; j < nLayer; j++)
         {
           newDci.m_mcs.push_back (m_amc->GetMcsFromCqi (worstCqi.at (j)));
           int tbSize = (m_amc->GetTbSizeFromMcs (newDci.m_mcs.at (j), rbgPerRnti * rbgSize) / 8); // (size of TB in bytes according to table 7.1.7.2.1-1 of 36.213)
