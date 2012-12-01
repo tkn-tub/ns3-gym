@@ -39,6 +39,7 @@ Bugs fixed
  - bug 1494 - test.py --constrain doesn't work
  - bug 1495 - test.py claims test passed when no test was run
  - bug 1509 - rttEstimator returns invalid value in presence of errors
+ - bug 1532 - unimplemented LTE Scheduler methods
 
 Known issues
 ------------

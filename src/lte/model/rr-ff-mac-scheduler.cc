@@ -316,7 +316,7 @@ void
 RrFfMacScheduler::DoCschedLcReleaseReq (const struct FfMacCschedSapProvider::CschedLcReleaseReqParameters& params)
 {
   NS_LOG_FUNCTION (this);
-  // TODO: Implementation of the API
+  NS_FATAL_ERROR ("method not implemented");
   return;
 }
 
@@ -324,7 +324,7 @@ void
 RrFfMacScheduler::DoCschedUeReleaseReq (const struct FfMacCschedSapProvider::CschedUeReleaseReqParameters& params)
 {
   NS_LOG_FUNCTION (this);
-  // TODO: Implementation of the API
+  NS_FATAL_ERROR ("method not implemented");
   return;
 }
 
@@ -366,7 +366,7 @@ void
 RrFfMacScheduler::DoSchedDlPagingBufferReq (const struct FfMacSchedSapProvider::SchedDlPagingBufferReqParameters& params)
 {
   NS_LOG_FUNCTION (this);
-  // TODO: Implementation of the API
+  NS_FATAL_ERROR ("method not implemented");
   return;
 }
 
@@ -374,7 +374,7 @@ void
 RrFfMacScheduler::DoSchedDlMacBufferReq (const struct FfMacSchedSapProvider::SchedDlMacBufferReqParameters& params)
 {
   NS_LOG_FUNCTION (this);
-  // TODO: Implementation of the API
+  NS_FATAL_ERROR ("method not implemented");
   return;
 }
 
@@ -598,7 +598,7 @@ void
 RrFfMacScheduler::DoSchedDlRachInfoReq (const struct FfMacSchedSapProvider::SchedDlRachInfoReqParameters& params)
 {
   NS_LOG_FUNCTION (this);
-  // TODO: Implementation of the API
+  NS_FATAL_ERROR ("method not implemented");
   return;
 }
 
