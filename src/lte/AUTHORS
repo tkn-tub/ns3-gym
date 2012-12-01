@@ -1,6 +1,19 @@
 
 The ns-3 LTE module is the result of the development effort carried out by different people/institutions/projects. The main contributors are listed below.
 
+
+====================================================
+        Google Summer of Code (GSoC) (2012)
+====================================================
+ 
+Dizhi Zhou, University of New Brunswick, Canada <dizhi.zhou@gmail.com>
+develop several LTE MAC schedulers
+ 
+Nicola Baldo, CTTC <nbaldo@cttc.es>
+Marco Miozzo, CTTC <mmiozzo@cttc.es>
+supervision and GSoC project mentorship
+
+
 ====================================================
        Google Summer of Code (GSoC) (2010)
 ====================================================

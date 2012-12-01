@@ -347,6 +347,197 @@ more resources to the users that use a higher MCS index.
    where the UEs have MCS index :math:`28, 24, 16, 12, 6`
 
 
+Maximum Throughput scheduler performance
+----------------------------------------
+
+Test suites ``lte-fdmt-ff-mac-scheduler`` and ``lte-tdmt-ff-mac-scheduler`` 
+create different test cases with a single eNB and several UEs, all having the same 
+Radio Bearer specification, using the Frequency Domain Maximum Throughput (FDMT) 
+scheduler and Time Domain Maximum Throughput (TDMT) scheduler respectively.
+In other words, UEs are all placed at the
+same distance from the eNB, and hence all placed in order to have the
+same SNR. Different test cases are implemented by using a different
+SNR values and a different number of UEs. The test consists on
+checking that the obtained throughput performance matches with the
+known reference throughput up to a given tolerance.The expected
+behavior of both FDMT and TDMT scheduler when all UEs have the same SNR is that
+scheduler allocates all RBGs to the first UE defined in script. This is because
+the current FDMT and TDMT implementation always select the first UE to serve when there are
+multiple UEs having the same SNR value. We calculate the reference
+throughput value for first UE by the throughput achievable of a single UE
+at the given SNR, while reference throughput value for other UEs by zero.
+Let :math:`\tau` be the TTI duration, :math:`B` the transmission
+bandwidth configuration in number of RBs, :math:`M` the modulation and
+coding scheme in use at the given SNR and :math:`S(M, B)` be the
+transport block size as defined in [TS36.213]_. The reference
+throughput :math:`T` in bit/s achieved by each UE is calculated as 
+
+.. math::
+
+   T = \frac{S(M,B)}{\tau}
+
+Throughput to Average scheduler performance
+-------------------------------------------
+
+Test suites ``lte-tta-ff-mac-scheduler``
+create different test cases with a single eNB and several UEs, all having the same 
+Radio Bearer specification using TTA scheduler. Network topology and configurations in
+TTA test case are as the same as the test for MT scheduler. More complex test case needs to be 
+developed to show the fairness feature of TTA scheduler.
+
+
+Blind Average Throughput scheduler performance
+----------------------------------------------
+
+Test suites ``lte-tdbet-ff-mac-scheduler`` and ``lte-fdbet-ff-mac-scheduler`` create different
+test cases with a single eNB and several UEs, all having the same Radio Bearer specification. 
+
+In the first test case of ``lte-tdbet-ff-mac-scheduler`` and ``lte-fdbet-ff-mac-scheduler``, 
+the UEs are all placed at the same distance from the eNB, and hence all placed in order to 
+have the same SNR. Different test cases are implemented by using a different SNR value and 
+a different number of UEs. The test consists on checking that the obtained throughput performance 
+matches with the known reference throughput up to a given tolerance. In long term, the expected
+behavior of both TD-BET and FD-BET when all UEs have the same SNR is that each UE should get an 
+equal throughput. However, the exact throughput value of TD-BET and FD-BET in this test case is not
+the same.
+
+When all UEs have the same SNR, TD-BET can be seen as a specific case of PF where achievable rate equals
+to 1. Therefore, the throughput obtained by TD-BET is equal to that of PF. On the other hand, FD-BET performs
+very similar to the round robin (RR) scheduler in case of that all UEs have the same SNR and the number of UE( or RBG)
+is an integer multiple of the number of RBG( or UE). In this case, FD-BET always allocate the same number of RBGs 
+to each UE. For example, if eNB has 12 RBGs and there are 6 UEs, then each UE will get 2 RBGs in each TTI.
+Or if eNB has 12 RBGs and there are 24 UEs, then each UE will get 2 RBGs per two TTIs. When the number of 
+UE (RBG) is not an integer multiple of the number of RBG (UE), FD-BET will not follow the RR behavior because
+it will assigned different number of RBGs to some UEs, while the throughput of each UE is still the same.
+
+The second category of tests aims at verifying the fairness of the both TD-BET and FD-BET schedulers in a more realistic 
+simulation scenario where the UEs have a different SNR (constant for the whole simulation). In this case, 
+both scheduler should give the same amount of averaged throughput to each user.
+
+Specifically, for TD-BET, let :math:`F_i` be the fraction of time allocated to user i in total simulation time, 
+:math:`R^{fb}_i` be the the full bandwidth achievable rate for user i and :math:`T_i` be the achieved throughput of 
+user i. Then we have:
+
+.. math::
+    
+      T_i = F_i R^{fb}_i
+
+In TD-BET, the sum of :math:`F_i` for all user equals one. In long term, all UE has the same :math:`T_i` so that we replace 
+:math:`T_i` by :math:`T`.  Then we have:
+
+.. math::
+    
+      T = \frac{1}{ \sum_{i=1}^{N} \frac{1}{R^{fb}_i} }
+
+Token Band Fair Queue scheduler performance
+-------------------------------------------
+
+Test suites ``lte-fdtbfq-ff-mac-scheduler`` and ``lte-tdtbfq-ff-mac-scheduler`` create different
+test cases for testing three key features of TBFQ scheduler: traffic policing, fairness and traffic
+balance. Constant Bit Rate UDP traffic is used in both downlink and uplink in all test cases. 
+The packet interval is set to 1ms to keep the RLC buffer non-empty. Different traffic rate is 
+achieved by setting different packet size. Specifically, two classes of flows are created in the 
+testsuites:
+
+ * Homogeneous flow: flows with the same token generation rate and packet arrival rate
+ * Heterogeneous flow: flows with different packet arrival rate, but with the same token generation rate
+
+In test case 1 verifies traffic policing and fairness features for the scenario that all UEs are 
+placed at the same distance from the eNB. In this case, all Ues have the same SNR value. Different
+test cases are implemented by using a different SNR value and a different number of UEs. Because each 
+flow have the same traffic rate and token generation rate, TBFQ scheduler will guarantee the same
+throughput among UEs without the constraint of token generation rate. In addition, the exact value 
+of UE throughput is depended on the total traffic rate:
+        
+ * If total traffic rate <= maximum throughput, UE throughput = traffic rate
+
+ * If total traffic rate > maximum throughput,  UE throughput = maximum throughput / N
+
+Here, N is the number of UE connected to eNodeB. The maximum throughput in this case equals to the rate
+that all RBGs are assigned to one UE(e.g., when distance equals 0, maximum throughput is 2196000 byte/sec).
+When the traffic rate is smaller than max bandwidth, TBFQ can police the traffic by token generation rate
+so that the UE throughput equals its actual traffic rate (token generation rate is set to traffic 
+generation rate); On the other hand, when total traffic rate is bigger than the max throughput, eNodeB
+cannot forward all traffic to UEs. Therefore, in each TTI, TBFQ will allocate all RBGs to one UE due to
+the large packets buffered in RLC buffer. When  a UE is scheduled in current TTI, its token counter is decreased 
+so that it will not be scheduled in the next TTI. Because each UE has the same traffic generation rate, 
+TBFQ will serve each UE in turn and only serve one UE in each TTI (both in TD TBFQ and FD TBFQ). 
+Therefore, the UE throughput in the second condition equals to the evenly share of maximum throughput.
+
+Test case 2 verifies traffic policing and fairness features for the scenario that each UE is placed at 
+the different distance from the eNB. In this case, each UE has the different SNR value. Similar to test
+case 1, UE throughput in test case 2 is also depended on the total traffic rate but with a different 
+maximum throughput. Suppose all UEs have a high traffic load. Then the traffic will saturate the RLC buffer 
+in eNodeB. In each TTI, after selecting one UE with highest metric, TBFQ will allocate all RBGs to this 
+UE due to the large RLC buffer size. On the other hand, once RLC buffer is saturated, the total throughput 
+of all UEs cannot increase any more. In addition, as we discussed in test case 1, for homogeneous flows 
+which have the same t_i and r_i, each UE will achieve the same throughput in long term. Therefore, we 
+can use the same method in TD BET to calculate the maximum throughput:
+
+.. math::
+    
+      T = \frac{N}{ \sum_{i=1}^{N} \frac{1}{R^{fb}_i} }
+
+Here, :math:`T` is the maximum throughput. :math:`R^{fb}_i` be the the full bandwidth achievable rate 
+for user i. :math:`N` is the number of UE.
+
+When the totol traffic rate is bigger than :math:`T`, the UE throughput equals to :math:`\frac{T}{N}` . Otherwise, UE throughput
+equals to its traffic generation rate.
+
+In test case 3, three flows with different traffic rate are created. Token generation rate for each 
+flow is the same and equals to the average traffic rate of three flows. Because TBFQ use a shared token
+bank, tokens contributed by UE with lower traffic load can be utilized by UE with higher traffic load.
+In this way, TBFQ can guarantee the traffic rate for each flow. Although we use heterogeneous flow here,
+the calculation of maximum throughput is as same as that in test case 2. In calculation max throughput
+of test case 2, we assume that all UEs suffer high traffic load so that scheduler always assign all RBGs
+to one UE in each TTI. This assumes is also true in heterogeneous flow case. In other words, whether 
+those flows have the same traffic rate and token generation rate, if their traffic rate is bigger enough, 
+TBFQ performs as same as it in test case 2. Therefore, the maximum bandwidth in test case 3 is as 
+same as it in test case 2.
+
+In test case 3, in some flows, token generate rate does not equal to MBR, although all flows are CBR 
+traffic. This is not accorded with our parameter setting rules. Actually, the traffic balance feature
+is used in VBR traffic. Because different UE's peak rate may occur in different time, TBFQ use shared
+token bank to balance the traffic among those VBR traffics. Test case 3 use CBR traffic to verify this 
+feature. But in the real simulation, it is recommended to set token generation rate to MBR.
+
+Priority Set scheduler performance
+----------------------------------
+
+Test suites ``lte-pss-ff-mac-scheduler`` create different test cases with a single eNB and several UEs.
+In all test cases, we select PFsch in FD scheduler. Same testing results can also be obtained by using CoItA
+scheduler. In addition, all test cases do not define nMux so that TD scheduler in PSS will always select half
+of total UE.
+
+In the first class test case of ``lte-pss-ff-mac-scheduler``, the UEs are all placed at the same distance from
+the eNB, and hence all placed in order to have the same SNR. Different test cases are implemented 
+by using a different TBR for each UEs. In each test cases, all UEs have the same
+Target Bit Rate configured by GBR in EPS bear setting. The expected behavior of PSS is to guarantee that 
+each UE's throughput at least equals its TBR if the total flow rate is blow maximum throughput. Similar 
+to TBFQ, the maximum throughput in this case equals to the rate that all RBGs are assigned to one UE.
+When the traffic rate is smaller than max bandwidth, the UE throughput equals its actual traffic rate;
+On the other hand, UE throughput equals to the evenly share of the maximum throughput.
+
+In the first class of test cases, each UE has the same SNR. Therefore, the priority metric in PF scheduler will be 
+determined by past average throughput :math:`T_{j}(t)` because each UE has the same achievable throughput
+:math:`R_{j}(k,t)` in PFsch or same :math:`CoI[k,n]` in CoItA. This means that PSS will performs like a 
+TD-BET which allocates all RBGs to one UE in each TTI. Then the maximum value of UE throughput equals to
+the achievable rate that all RBGs are allocated to this UE.
+
+In the second class of test case of ``lte-pss-ff-mac-scheduler``, the UEs are all placed at the same distance from
+the eNB, and hence all placed in order to have the same SNR. Different TBR values are assigned to each UE. 
+There also exist an maximum throughput in this case. Once total traffic rate is bigger than this threshold,
+there will be some UEs that cannot achieve their TBR. Because there is no fading, subband CQIs for each
+RBGs frequency are the same. Therefore, in FD scheduler,in each TTI, priority metrics of UE for all RBGs
+are the same. This means that FD scheduler will always allocate all RBGs to one user. Therefore, in the
+maximum throughput case, PSS performs like a TD-BET. Then we have:
+
+.. math::
+    
+      T = \frac{N}{ \sum_{i=1}^N \frac{1}{R^{fb}_i} }
+
+Here, :math:`T` is the maximum throughput. :math:`R^{fb}_i` be the the full bandwidth achievable rate 
+for user i. :math:`N` is the number of UE.
 
 Building Propagation Loss Model
 -------------------------------
