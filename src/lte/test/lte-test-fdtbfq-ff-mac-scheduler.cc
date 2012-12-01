@@ -329,36 +329,7 @@ LenaFdTbfqFfMacSchedulerTestCase1::DoRun (void)
   lteHelper->SetAttribute ("EpsBearerToRlcMapping", EnumValue (LteHelper::RLC_UM_ALWAYS));
 
   LogComponentDisableAll (LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteEnbRrc", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteUeRrc", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteEnbMac", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteUeMac", LOG_LEVEL_ALL);
-//     LogComponentEnable ("LteRlc", LOG_LEVEL_ALL);
-//
-//   LogComponentEnable ("LtePhy", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteEnbPhy", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteUePhy", LOG_LEVEL_ALL);
-
-  //   LogComponentEnable ("LteSpectrumPhy", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteInterference", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteSinrChunkProcessor", LOG_LEVEL_ALL);
-  // 
-  //   LogComponentEnable ("LtePropagationLossModel", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LossModel", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("ShadowingLossModel", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("PenetrationLossModel", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("MultipathLossModel", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("PathLossModel", LOG_LEVEL_ALL);
-  // 
-  //   LogComponentEnable ("LteNetDevice", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteUeNetDevice", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteEnbNetDevice", LOG_LEVEL_ALL);
-
-//     LogComponentEnable ("FdTbfqFfMacScheduler", LOG_LEVEL_AlL);
-  LogComponentEnable ("LenaTestFdTbfqFfMacCheduler", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteAmc", LOG_LEVEL_ALL);
-//     LogComponentEnable ("RadioBearerStatsCalculator", LOG_LEVEL_ALL);
-
+  //LogComponentEnable ("LenaTestFdTbfqFfMacCheduler", LOG_LEVEL_ALL);
    
   lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
 
@@ -425,9 +396,7 @@ LenaFdTbfqFfMacSchedulerTestCase1::DoRun (void)
   EpsBearer bearer (q, qos);
   lteHelper->ActivateEpsBearer (ueDevs, bearer, EpcTft::Default ());
 
-  lteHelper->EnableMacTraces ();
   lteHelper->EnableRlcTraces ();
-  lteHelper->EnablePdcpTraces ();
 
   // Install downlind and uplink applications
   uint16_t dlPort = 1234;
@@ -587,36 +556,7 @@ LenaFdTbfqFfMacSchedulerTestCase2::DoRun (void)
   lteHelper->SetAttribute ("EpsBearerToRlcMapping", EnumValue (LteHelper::RLC_UM_ALWAYS));
 
   LogComponentDisableAll (LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteEnbRrc", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteUeRrc", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteEnbMac", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteUeMac", LOG_LEVEL_ALL);
-//     LogComponentEnable ("LteRlc", LOG_LEVEL_ALL);
-//
-//   LogComponentEnable ("LtePhy", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteEnbPhy", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteUePhy", LOG_LEVEL_ALL);
-
-  //   LogComponentEnable ("LteSpectrumPhy", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteInterference", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteSinrChunkProcessor", LOG_LEVEL_ALL);
-  // 
-  //   LogComponentEnable ("LtePropagationLossModel", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LossModel", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("ShadowingLossModel", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("PenetrationLossModel", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("MultipathLossModel", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("PathLossModel", LOG_LEVEL_ALL);
-  // 
-  //   LogComponentEnable ("LteNetDevice", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteUeNetDevice", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteEnbNetDevice", LOG_LEVEL_ALL);
-
-//     LogComponentEnable ("FdTbfqFfMacScheduler", LOG_LEVEL_AlL);
-  LogComponentEnable ("LenaTestFdTbfqFfMacCheduler", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteAmc", LOG_LEVEL_ALL);
-//     LogComponentEnable ("RadioBearerStatsCalculator", LOG_LEVEL_ALL);
-
+  //LogComponentEnable ("LenaTestFdTbfqFfMacCheduler", LOG_LEVEL_ALL);
    
   lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
 
@@ -688,9 +628,7 @@ LenaFdTbfqFfMacSchedulerTestCase2::DoRun (void)
   EpsBearer bearer (q, qos);
   lteHelper->ActivateEpsBearer (ueDevs, bearer, EpcTft::Default ());
 
-  lteHelper->EnableMacTraces ();
   lteHelper->EnableRlcTraces ();
-  lteHelper->EnablePdcpTraces ();
 
   // Install downlind and uplink applications
   uint16_t dlPort = 1234;

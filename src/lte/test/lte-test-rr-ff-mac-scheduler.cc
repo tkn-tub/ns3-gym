@@ -194,38 +194,9 @@ LenaRrFfMacSchedulerTestCase::DoRun (void)
   Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue (false));
   Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));  Config::SetDefault ("ns3::LteAmc::AmcModel", EnumValue (LteAmc::PiroEW2010));
   Config::SetDefault ("ns3::LteAmc::Ber", DoubleValue (0.00005));
+
   LogComponentDisableAll (LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteEnbRrc", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteUeRrc", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteEnbMac", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteUeMac", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteRlc", LOG_LEVEL_ALL);
-// 
-//   LogComponentEnable ("LtePhy", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteEnbPhy", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteUePhy", LOG_LEVEL_ALL);
-
-//   LogComponentEnable ("LteSpectrumPhy", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteInterference", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteSinrChunkProcessor", LOG_LEVEL_ALL);
-// 
-//   LogComponentEnable ("LtePropagationLossModel", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LossModel", LOG_LEVEL_ALL);
-//   LogComponentEnable ("ShadowingLossModel", LOG_LEVEL_ALL);
-//   LogComponentEnable ("PenetrationLossModel", LOG_LEVEL_ALL);
-//   LogComponentEnable ("MultipathLossModel", LOG_LEVEL_ALL);
-//   LogComponentEnable ("PathLossModel", LOG_LEVEL_ALL);
-// 
-//   LogComponentEnable ("LteNetDevice", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteUeNetDevice", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteEnbNetDevice", LOG_LEVEL_ALL);
-
-//   LogComponentEnable ("RrFfMacScheduler", LOG_LEVEL_ALL);
-  LogComponentEnable ("LenaTestRrFfMacCheduler", LOG_LEVEL_ALL);
-//     LogComponentEnable ("LteMiErrorModel", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LenaHelper", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteSpectrumPhy", LOG_LEVEL_ALL);
-
+  //LogComponentEnable ("LenaTestRrFfMacCheduler", LOG_LEVEL_ALL);
 
   /**
    * Initialize Simulation Scenario: 1 eNB and m_nUser UEs

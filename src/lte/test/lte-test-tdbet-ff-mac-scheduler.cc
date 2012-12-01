@@ -212,36 +212,9 @@ LenaTdBetFfMacSchedulerTestCase1::DoRun (void)
   Config::SetDefault ("ns3::LteAmc::Ber", DoubleValue (0.00005));
   Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue (false));
   Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));
+
   LogComponentDisableAll (LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteEnbRrc", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteUeRrc", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteEnbMac", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteUeMac", LOG_LEVEL_ALL);
-//     LogComponentEnable ("LteRlc", LOG_LEVEL_ALL);
-//
-//   LogComponentEnable ("LtePhy", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteEnbPhy", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteUePhy", LOG_LEVEL_ALL);
-
-  //   LogComponentEnable ("LteSpectrumPhy", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteInterference", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteSinrChunkProcessor", LOG_LEVEL_ALL);
-  // 
-  //   LogComponentEnable ("LtePropagationLossModel", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LossModel", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("ShadowingLossModel", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("PenetrationLossModel", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("MultipathLossModel", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("PathLossModel", LOG_LEVEL_ALL);
-  // 
-  //   LogComponentEnable ("LteNetDevice", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteUeNetDevice", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteEnbNetDevice", LOG_LEVEL_ALL);
-
-//     LogComponentEnable ("TdBetFfMacScheduler", LOG_LEVEL_ALL);
-  LogComponentEnable ("LenaTestTdBetFfMacCheduler", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteAmc", LOG_LEVEL_ALL);
-//     LogComponentEnable ("RadioBearerStatsCalculator", LOG_LEVEL_ALL);
+  //LogComponentEnable ("LenaTestTdBetFfMacCheduler", LOG_LEVEL_ALL);
 
   /**
    * Initialize Simulation Scenario: 1 eNB and m_nUser UEs
@@ -394,35 +367,8 @@ LenaTdBetFfMacSchedulerTestCase2::~LenaTdBetFfMacSchedulerTestCase2 ()
 void
 LenaTdBetFfMacSchedulerTestCase2::DoRun (void)
 {
-  //   LogComponentEnable ("LteEnbRrc", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteUeRrc", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteEnbMac", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteUeMac", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteRlc", LOG_LEVEL_ALL);
-  // 
-  //   LogComponentEnable ("LtePhy", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteEnbPhy", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteUePhy", LOG_LEVEL_ALL);
-
-  //   LogComponentEnable ("LteSpectrumPhy", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteInterference", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteSinrChunkProcessor", LOG_LEVEL_ALL);
-  // 
-  //   LogComponentEnable ("LtePropagationLossModel", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LossModel", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("ShadowingLossModel", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("PenetrationLossModel", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("MultipathLossModel", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("PathLossModel", LOG_LEVEL_ALL);
-  // 
-  //   LogComponentEnable ("LteNetDevice", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteUeNetDevice", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteEnbNetDevice", LOG_LEVEL_ALL);
-
-//     LogComponentEnable ("TdBetFfMacScheduler", LOG_LEVEL_ALL);
-  LogComponentEnable ("LenaTestTdBetFfMacCheduler", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteAmc", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("RadioBearerStatsCalculator", LOG_LEVEL_ALL);
+  LogComponentDisableAll (LOG_LEVEL_ALL);
+  //LogComponentEnable ("LenaTestTdBetFfMacCheduler", LOG_LEVEL_ALL);
 
   /**
   * Initialize Simulation Scenario: 1 eNB and m_nUser UEs
