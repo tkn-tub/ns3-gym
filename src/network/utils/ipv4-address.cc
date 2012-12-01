@@ -279,7 +279,7 @@ Ipv4Address::IsLocalMulticast (void) const
 void
 Ipv4Address::Serialize (uint8_t buf[4]) const
 {
-  NS_LOG_FUNCTION (this << buf);
+  NS_LOG_FUNCTION (this << &buf);
   buf[0] = (m_address >> 24) & 0xff;
   buf[1] = (m_address >> 16) & 0xff;
   buf[2] = (m_address >> 8) & 0xff;
@@ -288,7 +288,7 @@ Ipv4Address::Serialize (uint8_t buf[4]) const
 Ipv4Address 
 Ipv4Address::Deserialize (const uint8_t buf[4])
 {
-  NS_LOG_FUNCTION (buf);
+  NS_LOG_FUNCTION (&buf);
   Ipv4Address ipv4;
   ipv4.m_address = 0;
   ipv4.m_address |= buf[0];

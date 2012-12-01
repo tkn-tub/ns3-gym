@@ -1047,7 +1047,7 @@ PbbMessage::~PbbMessage ()
 void
 PbbMessage::SetType (uint8_t type)
 {
-  NS_LOG_FUNCTION (this << type);
+  NS_LOG_FUNCTION (this << static_cast<uint32_t> (type));
   m_type = type;
 }
 
@@ -1091,7 +1091,7 @@ PbbMessage::HasOriginatorAddress (void) const
 void
 PbbMessage::SetHopLimit (uint8_t hopLimit)
 {
-  NS_LOG_FUNCTION (this << hopLimit);
+  NS_LOG_FUNCTION (this << static_cast<uint32_t> (hopLimit));
   m_hopLimit = hopLimit;
   m_hasHopLimit = true;
 }
@@ -1114,7 +1114,7 @@ PbbMessage::HasHopLimit (void) const
 void
 PbbMessage::SetHopCount (uint8_t hopCount)
 {
-  NS_LOG_FUNCTION (this << hopCount);
+  NS_LOG_FUNCTION (this << static_cast<uint32_t> (hopCount));
   m_hopCount = hopCount;
   m_hasHopCount = true;
 }
@@ -1505,7 +1505,7 @@ PbbMessage::Serialize (Buffer::Iterator &start) const
 Ptr<PbbMessage>
 PbbMessage::DeserializeMessage (Buffer::Iterator &start)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (&start);
   /* We need to read the msg-addr-len field to determine what kind of object to
    * construct. */
   start.Next ();
@@ -2021,7 +2021,7 @@ PbbAddressBlock::PrefixBack (void) const
 void
 PbbAddressBlock::PrefixPushFront (uint8_t prefix)
 {
-  NS_LOG_FUNCTION (this << prefix);
+  NS_LOG_FUNCTION (this << static_cast<uint32_t> (prefix));
   m_prefixList.push_front (prefix);
 }
 
@@ -2035,7 +2035,7 @@ PbbAddressBlock::PrefixPopFront (void)
 void
 PbbAddressBlock::PrefixPushBack (uint8_t prefix)
 {
-  NS_LOG_FUNCTION (this << prefix);
+  NS_LOG_FUNCTION (this << static_cast<uint32_t> (prefix));
   m_prefixList.push_back (prefix);
 }
 
@@ -2049,7 +2049,7 @@ PbbAddressBlock::PrefixPopBack (void)
 PbbAddressBlock::PrefixIterator
 PbbAddressBlock::PrefixInsert (PbbAddressBlock::PrefixIterator position, const uint8_t value)
 {
-  NS_LOG_FUNCTION (this << &position << value);
+  NS_LOG_FUNCTION (this << &position << static_cast<uint32_t> (value));
   return m_prefixList.insert (position, value);
 }
 
@@ -2496,7 +2496,8 @@ void
 PbbAddressBlock::GetHeadTail (uint8_t *head, uint8_t &headlen,
                               uint8_t *tail, uint8_t &taillen) const
 {
-  NS_LOG_FUNCTION (this << head << headlen << tail << taillen);
+  NS_LOG_FUNCTION (this << &head << static_cast<uint32_t> (headlen)
+                   << &tail << static_cast<uint32_t> (taillen));
   headlen = GetAddressLength ();
   taillen = headlen;
 
@@ -2559,7 +2560,7 @@ PbbAddressBlock::GetHeadTail (uint8_t *head, uint8_t &headlen,
 bool
 PbbAddressBlock::HasZeroTail (const uint8_t *tail, uint8_t taillen) const
 {
-  NS_LOG_FUNCTION (this << tail << taillen);
+  NS_LOG_FUNCTION (this << &tail << static_cast<uint32_t> (taillen));
   int i;
   for (i = 0; i < taillen; i++)
     {
@@ -2593,14 +2594,14 @@ PbbAddressBlockIpv4::GetAddressLength (void) const
 void
 PbbAddressBlockIpv4::SerializeAddress (uint8_t *buffer, ConstAddressIterator iter) const
 {
-  NS_LOG_FUNCTION (this << buffer << &iter);
+  NS_LOG_FUNCTION (this << &buffer << &iter);
   Ipv4Address::ConvertFrom (*iter).Serialize (buffer);
 }
 
 Address
 PbbAddressBlockIpv4::DeserializeAddress (uint8_t *buffer) const
 {
-  NS_LOG_FUNCTION (this << buffer);
+  NS_LOG_FUNCTION (this << &buffer);
   return Ipv4Address::Deserialize (buffer);
 }
 
@@ -2633,14 +2634,14 @@ PbbAddressBlockIpv6::GetAddressLength (void) const
 void
 PbbAddressBlockIpv6::SerializeAddress (uint8_t *buffer, ConstAddressIterator iter) const
 {
-  NS_LOG_FUNCTION (this << buffer << &iter);
+  NS_LOG_FUNCTION (this << &buffer << &iter);
   Ipv6Address::ConvertFrom (*iter).Serialize (buffer);
 }
 
 Address
 PbbAddressBlockIpv6::DeserializeAddress (uint8_t *buffer) const
 {
-  NS_LOG_FUNCTION (this << buffer);
+  NS_LOG_FUNCTION (this << &buffer);
   return Ipv6Address::Deserialize (buffer);
 }
 
@@ -2672,7 +2673,7 @@ PbbTlv::~PbbTlv (void)
 void
 PbbTlv::SetType (uint8_t type)
 {
-  NS_LOG_FUNCTION (this << type);
+  NS_LOG_FUNCTION (this << static_cast<uint32_t> (type));
   m_type = type;
 }
 
@@ -2686,7 +2687,7 @@ PbbTlv::GetType (void) const
 void
 PbbTlv::SetTypeExt (uint8_t typeExt)
 {
-  NS_LOG_FUNCTION (this << typeExt);
+  NS_LOG_FUNCTION (this << static_cast<uint32_t> (typeExt));
   m_typeExt = typeExt;
   m_hasTypeExt = true;
 }
@@ -2709,7 +2710,7 @@ PbbTlv::HasTypeExt (void) const
 void
 PbbTlv::SetIndexStart (uint8_t index)
 {
-  NS_LOG_FUNCTION (this << index);
+  NS_LOG_FUNCTION (this << static_cast<uint32_t> (index));
   m_indexStart = index;
   m_hasIndexStart = true;
 }
@@ -2732,7 +2733,7 @@ PbbTlv::HasIndexStart (void) const
 void
 PbbTlv::SetIndexStop (uint8_t index)
 {
-  NS_LOG_FUNCTION (this << index);
+  NS_LOG_FUNCTION (this << static_cast<uint32_t> (index));
   m_indexStop = index;
   m_hasIndexStop = true;
 }
@@ -2777,7 +2778,7 @@ PbbTlv::SetValue (Buffer start)
 void
 PbbTlv::SetValue (const uint8_t * buffer, uint32_t size)
 {
-  NS_LOG_FUNCTION (this << buffer << size);
+  NS_LOG_FUNCTION (this << &buffer << size);
   m_hasValue = true;
   m_value.AddAtStart (size);
   m_value.Begin ().Write (buffer, size);
@@ -3041,7 +3042,7 @@ PbbTlv::operator!= (const PbbTlv &other) const
 void 
 PbbAddressTlv::SetIndexStart (uint8_t index)
 {
-  NS_LOG_FUNCTION (this << index);
+  NS_LOG_FUNCTION (this << static_cast<uint32_t> (index));
   PbbTlv::SetIndexStart (index);
 }
 
@@ -3062,7 +3063,7 @@ PbbAddressTlv::HasIndexStart (void) const
 void 
 PbbAddressTlv::SetIndexStop (uint8_t index)
 {
-  NS_LOG_FUNCTION (this << index);
+  NS_LOG_FUNCTION (this << static_cast<uint32_t> (index));
   PbbTlv::SetIndexStop (index);
 }
 

@@ -205,7 +205,7 @@ Packet::Packet (uint8_t const *buffer, uint32_t size, bool magic)
     m_metadata (0,0),
     m_nixVector (0)
 {
-  NS_LOG_FUNCTION (this << buffer << size << magic);
+  NS_LOG_FUNCTION (this << &buffer << size << magic);
   NS_ASSERT (magic);
   Deserialize (buffer, size);
 }
@@ -223,7 +223,7 @@ Packet::Packet (uint8_t const*buffer, uint32_t size)
     m_metadata (static_cast<uint64_t> (Simulator::GetSystemId ()) << 32 | m_globalUid, size),
     m_nixVector (0)
 {
-  NS_LOG_FUNCTION (this << buffer << size);
+  NS_LOG_FUNCTION (this << &buffer << size);
   m_globalUid++;
   m_buffer.AddAtStart (size);
   Buffer::Iterator i = m_buffer.Begin ();
@@ -399,7 +399,7 @@ Packet::PeekData (void) const
 uint32_t 
 Packet::CopyData (uint8_t *buffer, uint32_t size) const
 {
-  NS_LOG_FUNCTION (this << buffer << size);
+  NS_LOG_FUNCTION (this << &buffer << size);
   return m_buffer.CopyData (buffer, size);
 }
 
@@ -633,7 +633,7 @@ uint32_t Packet::GetSerializedSize (void) const
 uint32_t 
 Packet::Serialize (uint8_t* buffer, uint32_t maxSize) const
 {
-  NS_LOG_FUNCTION (this << buffer << maxSize);
+  NS_LOG_FUNCTION (this << &buffer << maxSize);
   uint32_t* p = reinterpret_cast<uint32_t *> (buffer);
   uint32_t size = 0;
 
@@ -752,7 +752,7 @@ Packet::Serialize (uint8_t* buffer, uint32_t maxSize) const
 uint32_t 
 Packet::Deserialize (const uint8_t* buffer, uint32_t size)
 {
-  NS_LOG_FUNCTION (this << buffer << size);
+  NS_LOG_FUNCTION (this << &buffer << size);
 
   const uint32_t* p = reinterpret_cast<const uint32_t *> (buffer);
 

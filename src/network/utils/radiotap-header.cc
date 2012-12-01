@@ -251,7 +251,7 @@ RadiotapHeader::GetTsft () const
 void 
 RadiotapHeader::SetFrameFlags (uint8_t flags)
 {
-  NS_LOG_FUNCTION (this << flags);
+  NS_LOG_FUNCTION (this << static_cast<uint32_t> (flags));
   m_flags = flags;
 
   if (!(m_present & RADIOTAP_FLAGS))
@@ -273,7 +273,7 @@ RadiotapHeader::GetFrameFlags (void) const
 void 
 RadiotapHeader::SetRate (uint8_t rate)
 {
-  NS_LOG_FUNCTION (this << rate);
+  NS_LOG_FUNCTION (this << static_cast<uint32_t> (rate));
   m_rate = rate;
 
   if (!(m_present & RADIOTAP_RATE))

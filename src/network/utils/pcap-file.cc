@@ -149,7 +149,7 @@ PcapFile::GetSwapMode (void)
 uint8_t
 PcapFile::Swap (uint8_t val)
 {
-  NS_LOG_FUNCTION (this << val);
+  NS_LOG_FUNCTION (this << static_cast<uint32_t> (val));
   return val;
 }
 
@@ -404,7 +404,7 @@ PcapFile::WritePacketHeader (uint32_t tsSec, uint32_t tsUsec, uint32_t totalLen)
 void
 PcapFile::Write (uint32_t tsSec, uint32_t tsUsec, uint8_t const * const data, uint32_t totalLen)
 {
-  NS_LOG_FUNCTION (this << tsSec << tsUsec << data << totalLen);
+  NS_LOG_FUNCTION (this << tsSec << tsUsec << &data << totalLen);
   uint32_t inclLen = WritePacketHeader (tsSec, tsUsec, totalLen);
   m_file.write ((const char *)data, inclLen);
 }
@@ -444,7 +444,7 @@ PcapFile::Read (
   uint32_t &origLen,
   uint32_t &readLen)
 {
-  NS_LOG_FUNCTION (this << data <<maxBytes << tsSec << tsUsec << inclLen << origLen << readLen);
+  NS_LOG_FUNCTION (this << &data <<maxBytes << tsSec << tsUsec << inclLen << origLen << readLen);
   NS_ASSERT (m_file.good ());
 
   PcapRecordHeader header;
@@ -498,7 +498,7 @@ PcapFile::Diff (std::string const & f1, std::string const & f2,
                 uint32_t & sec, uint32_t & usec, 
                 uint32_t snapLen)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (f1 << f2 << sec << usec << snapLen);
   PcapFile pcap1, pcap2;
   pcap1.Open (f1, std::ios::in);
   pcap2.Open (f2, std::ios::in);

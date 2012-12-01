@@ -91,13 +91,13 @@ Mac48Address::Mac48Address (const char *str)
 void 
 Mac48Address::CopyFrom (const uint8_t buffer[6])
 {
-  NS_LOG_FUNCTION (this << buffer);
+  NS_LOG_FUNCTION (this << &buffer);
   std::memcpy (m_address, buffer, 6);
 }
 void 
 Mac48Address::CopyTo (uint8_t buffer[6]) const
 {
-  NS_LOG_FUNCTION (this << buffer);
+  NS_LOG_FUNCTION (this << &buffer);
   std::memcpy (buffer, m_address, 6);
 }
 

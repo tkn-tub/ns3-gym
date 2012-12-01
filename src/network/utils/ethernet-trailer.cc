@@ -156,7 +156,7 @@ EthernetTrailer::Deserialize (Buffer::Iterator end)
 uint32_t
 EthernetTrailer::DoCalcFcs (uint8_t const *buffer, size_t len) const
 {
-  NS_LOG_FUNCTION (this << buffer << len);
+  NS_LOG_FUNCTION (this << &buffer << len);
   uint32_t crc = 0xffffffff;
   int i;
 

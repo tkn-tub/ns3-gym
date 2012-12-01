@@ -133,7 +133,7 @@ PcapFileWrapper::Write (Time t, Header &header, Ptr<const Packet> p)
 void
 PcapFileWrapper::Write (Time t, uint8_t const *buffer, uint32_t length)
 {
-  NS_LOG_FUNCTION (this << t << buffer << length);
+  NS_LOG_FUNCTION (this << t << &buffer << length);
   uint64_t current = t.GetMicroSeconds ();
   uint64_t s = current / 1000000;
   uint64_t us = current % 1000000;

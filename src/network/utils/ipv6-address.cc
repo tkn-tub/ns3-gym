@@ -120,7 +120,7 @@ static uint32_t lookuphash (unsigned char* k, uint32_t length, uint32_t level)
  */
 static bool AsciiToIpv6Host (const char *address, uint8_t addr[16])
 {
-  NS_LOG_FUNCTION (address << addr);
+  NS_LOG_FUNCTION (address << &addr);
   static const char xdigits_l[] = "0123456789abcdef";
   static const char xdigits_u[] = "0123456789ABCDEF";
   unsigned char tmp[16];
@@ -276,7 +276,7 @@ Ipv6Address::Ipv6Address (char const* address)
 
 Ipv6Address::Ipv6Address (uint8_t address[16])
 {
-  NS_LOG_FUNCTION (this << address);
+  NS_LOG_FUNCTION (this << &address);
   /* 128 bit => 16 bytes */
   memcpy (m_address, address, 16);
 }
@@ -296,19 +296,19 @@ void Ipv6Address::Set (char const* address)
 void Ipv6Address::Set (uint8_t address[16])
 {
   /* 128 bit => 16 bytes */
-  NS_LOG_FUNCTION (this << address);
+  NS_LOG_FUNCTION (this << &address);
   memcpy (m_address, address, 16);
 }
 
 void Ipv6Address::Serialize (uint8_t buf[16]) const
 {
-  NS_LOG_FUNCTION (this << buf);
+  NS_LOG_FUNCTION (this << &buf);
   memcpy (buf, m_address, 16);
 }
 
 Ipv6Address Ipv6Address::Deserialize (const uint8_t buf[16])
 {
-  NS_LOG_FUNCTION (buf);
+  NS_LOG_FUNCTION (&buf);
   Ipv6Address ipv6 ((uint8_t*)buf);
   return ipv6;
 }
@@ -610,7 +610,7 @@ Ipv6Address Ipv6Address::GetOnes ()
 
 void Ipv6Address::GetBytes (uint8_t buf[16]) const
 {
-  NS_LOG_FUNCTION (this << buf);
+  NS_LOG_FUNCTION (this << &buf);
   memcpy (buf, m_address, 16);
 }
 
@@ -665,13 +665,13 @@ Ipv6Prefix::Ipv6Prefix (char const* prefix)
 
 Ipv6Prefix::Ipv6Prefix (uint8_t prefix[16])
 {
-  NS_LOG_FUNCTION (this << prefix);
+  NS_LOG_FUNCTION (this << &prefix);
   memcpy (m_prefix, prefix, 16);
 }
 
 Ipv6Prefix::Ipv6Prefix (uint8_t prefix)
 {
-  NS_LOG_FUNCTION (this << prefix);
+  NS_LOG_FUNCTION (this << static_cast<uint32_t> (prefix));
   unsigned int nb=0;
   unsigned int mod=0;
   unsigned int i=0;
@@ -787,7 +787,7 @@ Ipv6Prefix Ipv6Prefix::GetZero ()
 
 void Ipv6Prefix::GetBytes (uint8_t buf[16]) const
 {
-  NS_LOG_FUNCTION (this << buf);
+  NS_LOG_FUNCTION (this << &buf);
   memcpy (buf, m_prefix, 16);
 }
 

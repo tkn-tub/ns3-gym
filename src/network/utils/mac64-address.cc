@@ -89,13 +89,13 @@ Mac64Address::Mac64Address (const char *str)
 void 
 Mac64Address::CopyFrom (const uint8_t buffer[8])
 {
-  NS_LOG_FUNCTION (this << buffer);
+  NS_LOG_FUNCTION (this << &buffer);
   std::memcpy (m_address, buffer, 8);
 }
 void 
 Mac64Address::CopyTo (uint8_t buffer[8]) const
 {
-  NS_LOG_FUNCTION (this << buffer);
+  NS_LOG_FUNCTION (this << &buffer);
   std::memcpy (buffer, m_address, 8);
 }
 

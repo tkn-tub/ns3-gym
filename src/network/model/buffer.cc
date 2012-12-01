@@ -590,10 +590,9 @@ Buffer::GetSerializedSize (void) const
 uint32_t
 Buffer::Serialize (uint8_t* buffer, uint32_t maxSize) const
 {
+  NS_LOG_FUNCTION (this << &buffer << maxSize);
   uint32_t* p = reinterpret_cast<uint32_t *> (buffer);
   uint32_t size = 0;
-
-  NS_LOG_FUNCTION (this << buffer << maxSize);
 
   // Add the zero data length
   if (size + 4 <= maxSize)
@@ -661,7 +660,7 @@ Buffer::Serialize (uint8_t* buffer, uint32_t maxSize) const
 uint32_t 
 Buffer::Deserialize (const uint8_t *buffer, uint32_t size)
 {
-  NS_LOG_FUNCTION (this << buffer << size);
+  NS_LOG_FUNCTION (this << &buffer << size);
   const uint32_t* p = reinterpret_cast<const uint32_t *> (buffer);
   uint32_t sizeCheck = size-4;
 
@@ -769,7 +768,7 @@ Buffer::CopyData (std::ostream *os, uint32_t size) const
 uint32_t 
 Buffer::CopyData (uint8_t *buffer, uint32_t size) const
 {
-  NS_LOG_FUNCTION (this << buffer << size);
+  NS_LOG_FUNCTION (this << &buffer << size);
   uint32_t originalSize = size;
   if (size > 0)
     {
@@ -979,7 +978,7 @@ Buffer::Iterator::WriteHtonU64 (uint64_t data)
 void 
 Buffer::Iterator::Write (uint8_t const*buffer, uint32_t size)
 {
-  NS_LOG_FUNCTION (this << buffer << size);
+  NS_LOG_FUNCTION (this << &buffer << size);
   NS_ASSERT_MSG (CheckNoZero (m_current, size),
                  GetWriteErrorMessage ());
   uint8_t *to;
@@ -1149,7 +1148,7 @@ Buffer::Iterator::ReadLsbtohU64 (void)
 void 
 Buffer::Iterator::Read (uint8_t *buffer, uint32_t size)
 {
-  NS_LOG_FUNCTION (this << buffer << size);
+  NS_LOG_FUNCTION (this << &buffer << size);
   for (uint32_t i = 0; i < size; i++)
     {
       buffer[i] = ReadU8 ();

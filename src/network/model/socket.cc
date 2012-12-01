@@ -140,7 +140,7 @@ Socket::Send (Ptr<Packet> p)
 int 
 Socket::Send (const uint8_t* buf, uint32_t size, uint32_t flags)
 {
-  NS_LOG_FUNCTION (this << buf << size << flags);
+  NS_LOG_FUNCTION (this << &buf << size << flags);
   Ptr<Packet> p;
   if (buf)
     {
@@ -157,7 +157,7 @@ int
 Socket::SendTo (const uint8_t* buf, uint32_t size, uint32_t flags,
                 const Address &toAddress)
 {
-  NS_LOG_FUNCTION (this << buf << size << flags << &toAddress);
+  NS_LOG_FUNCTION (this << &buf << size << flags << &toAddress);
   Ptr<Packet> p;
   if(buf)
     {
@@ -180,7 +180,7 @@ Socket::Recv (void)
 int 
 Socket::Recv (uint8_t* buf, uint32_t size, uint32_t flags)
 {
-  NS_LOG_FUNCTION (this << buf << size << flags);
+  NS_LOG_FUNCTION (this << &buf << size << flags);
   Ptr<Packet> p = Recv (size, flags); // read up to "size" bytes
   if (p == 0)
     {
@@ -201,7 +201,7 @@ int
 Socket::RecvFrom (uint8_t* buf, uint32_t size, uint32_t flags,
                   Address &fromAddress)
 {
-  NS_LOG_FUNCTION (this << buf << size << flags << &fromAddress);
+  NS_LOG_FUNCTION (this << &buf << size << flags << &fromAddress);
   Ptr<Packet> p = RecvFrom (size, flags, fromAddress); 
   if (p == 0)
     {
@@ -581,7 +581,7 @@ SocketIpTtlTag::SocketIpTtlTag ()
 void 
 SocketIpTtlTag::SetTtl (uint8_t ttl)
 {
-  NS_LOG_FUNCTION (this << ttl);
+  NS_LOG_FUNCTION (this << static_cast<uint32_t> (ttl));
   m_ttl = ttl;
 }
 

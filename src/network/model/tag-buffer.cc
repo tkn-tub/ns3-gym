@@ -31,7 +31,7 @@ namespace ns3 {
 void 
 TagBuffer::WriteU8 (uint8_t v)
 {
-  NS_LOG_FUNCTION (this << v);
+  NS_LOG_FUNCTION (this << static_cast<uint32_t> (v));
   NS_ASSERT (m_current + 1 <= m_end);
   *m_current = v;
   m_current++;
@@ -124,7 +124,7 @@ TagBuffer::WriteDouble (double v)
 void 
 TagBuffer::Write (const uint8_t *buffer, uint32_t size)
 {
-  NS_LOG_FUNCTION (this << buffer << size);
+  NS_LOG_FUNCTION (this << &buffer << size);
   for (uint32_t i = 0; i < size; ++i, ++buffer)
     {
       WriteU8 (*buffer);
@@ -175,7 +175,7 @@ TagBuffer::ReadDouble (void)
 void 
 TagBuffer::Read (uint8_t *buffer, uint32_t size)
 {
-  NS_LOG_FUNCTION (this << buffer << size);
+  NS_LOG_FUNCTION (this << &buffer << size);
   for (uint32_t i = 0; i < size; ++i, ++buffer)
     {
       *buffer = ReadU8 ();
@@ -185,7 +185,7 @@ TagBuffer::TagBuffer (uint8_t *start, uint8_t *end)
   : m_current (start),
     m_end (end)
 {
-  NS_LOG_FUNCTION (this << start << end);
+  NS_LOG_FUNCTION (this << &start << &end);
 }
 
 void

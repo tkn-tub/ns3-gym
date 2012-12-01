@@ -42,7 +42,7 @@ Address::Address (uint8_t type, const uint8_t *buffer, uint8_t len)
   : m_type (type),
     m_len (len)
 {
-  NS_LOG_FUNCTION (this<< type << buffer << len);
+  NS_LOG_FUNCTION (this << static_cast<uint32_t> (type) << &buffer << static_cast<uint32_t> (len));
   NS_ASSERT (m_len <= MAX_SIZE);
   std::memcpy (m_data, buffer, m_len);
 }
@@ -83,7 +83,7 @@ Address::GetLength (void) const
 uint32_t
 Address::CopyTo (uint8_t buffer[MAX_SIZE]) const
 {
-  NS_LOG_FUNCTION (this << buffer);
+  NS_LOG_FUNCTION (this << &buffer);
   NS_ASSERT (m_len <= MAX_SIZE);
   std::memcpy (buffer, m_data, m_len);
   return m_len;
@@ -91,7 +91,7 @@ Address::CopyTo (uint8_t buffer[MAX_SIZE]) const
 uint32_t
 Address::CopyAllTo (uint8_t *buffer, uint8_t len) const
 {
-  NS_LOG_FUNCTION (this << buffer << len);
+  NS_LOG_FUNCTION (this << &buffer << static_cast<uint32_t> (len));
   NS_ASSERT (len >= m_len + 2);
   buffer[0] = m_type;
   buffer[1] = m_len;
@@ -102,7 +102,7 @@ Address::CopyAllTo (uint8_t *buffer, uint8_t len) const
 uint32_t
 Address::CopyFrom (const uint8_t *buffer, uint8_t len)
 {
-  NS_LOG_FUNCTION (this << buffer << len);
+  NS_LOG_FUNCTION (this << &buffer << static_cast<uint32_t> (len));
   NS_ASSERT (len <= MAX_SIZE);
   std::memcpy (m_data, buffer, len);
   m_len = len;
@@ -111,7 +111,7 @@ Address::CopyFrom (const uint8_t *buffer, uint8_t len)
 uint32_t
 Address::CopyAllFrom (const uint8_t *buffer, uint8_t len)
 {
-  NS_LOG_FUNCTION (this << buffer << len);
+  NS_LOG_FUNCTION (this << &buffer << static_cast<uint32_t> (len));
   NS_ASSERT (len >= 2);
   m_type = buffer[0];
   m_len = buffer[1];
@@ -123,14 +123,14 @@ Address::CopyAllFrom (const uint8_t *buffer, uint8_t len)
 bool 
 Address::CheckCompatible (uint8_t type, uint8_t len) const
 {
-  NS_LOG_FUNCTION (this << type << len);
+  NS_LOG_FUNCTION (this << static_cast<uint32_t> (type) << static_cast<uint32_t> (len));
   NS_ASSERT (len <= MAX_SIZE);
   return m_len == len && (m_type == type || m_type == 0);
 }
 bool 
 Address::IsMatchingType (uint8_t type) const
 {
-  NS_LOG_FUNCTION (this << type);
+  NS_LOG_FUNCTION (this << static_cast<uint32_t> (type));
   return m_type == type;
 }
 
