@@ -495,7 +495,7 @@ TdTbfqFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::S
   // select UE with largest metric
   std::map <uint16_t, tdtbfqsFlowPerf_t>::iterator it;
   std::map <uint16_t, tdtbfqsFlowPerf_t>::iterator itMax = m_flowStatsDl.end ();
-  double metricMax;
+  double metricMax = 0.0;
   bool firstRnti = true;
   for (it = m_flowStatsDl.begin (); it != m_flowStatsDl.end (); it++)
     {

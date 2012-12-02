@@ -485,7 +485,7 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
   std::vector <std::pair<double,uint16_t> > ueSet2;
   for (it = ueSet.begin (); it != ueSet.end (); it++)
     {
-      double metric;
+      double metric = 0.0;
       if ((*it).second.lastAveragedThroughput < (*it).second.targetThroughput )
         {
     	    // calculate TD BET metric
@@ -700,7 +700,7 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
    	                } 
                 }   // end if cqi
 
-              double metric;
+              double metric = 0.0;
               if (colMetric != 0)
                 metric= weight * colMetric;
               else
@@ -796,7 +796,7 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
                   schMetric = achievableRate / (*it).second.secondLastAveragedThroughput;
                 }   // end if cqi
  
-              double metric;
+              double metric = 0.0;
               metric= weight * schMetric;
  
               if (metric > metricMax )
@@ -971,9 +971,9 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
       std::map <uint16_t, pssFlowPerf_t>::iterator itUeScheduleted = tdUeSet.end();
       itUeScheduleted = tdUeSet.find((*itStats).first);
       if (itUeScheduleted != tdUeSet.end())
-	  {
-            (*itStats).second.secondLastAveragedThroughput = ((1.0 - (1 / m_timeWindow)) * (*itStats).second.secondLastAveragedThroughput) + ((1 / m_timeWindow) * (double)((*itStats).second.lastTtiBytesTransmitted / 0.001));
-	  }
+        {
+          (*itStats).second.secondLastAveragedThroughput = ((1.0 - (1 / m_timeWindow)) * (*itStats).second.secondLastAveragedThroughput) + ((1 / m_timeWindow) * (double)((*itStats).second.lastTtiBytesTransmitted / 0.001));
+        }
 
       (*itStats).second.totalBytesTransmitted += (*itStats).second.lastTtiBytesTransmitted;
       // update average throughput (see eq. 12.3 of Sec 12.3.1.2 of LTE – The UMTS Long Term Evolution, Ed Wiley)

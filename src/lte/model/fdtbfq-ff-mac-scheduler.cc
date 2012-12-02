@@ -502,7 +502,7 @@ FdTbfqFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::S
       // select UE with largest metric
       std::map <uint16_t, fdtbfqsFlowPerf_t>::iterator it;
       std::map <uint16_t, fdtbfqsFlowPerf_t>::iterator itMax = m_flowStatsDl.end ();
-      double metricMax;
+      double metricMax = 0.0;
       bool firstRnti = true;
       for (it = m_flowStatsDl.begin (); it != m_flowStatsDl.end (); it++)
         {
@@ -729,7 +729,7 @@ FdTbfqFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::S
                 }
             }
  
- 	        bytesTxedTmp = bytesTxed;
+          bytesTxedTmp = bytesTxed;
           bytesTxed = 0;
           for (uint8_t j = 0; j < nLayer; j++)
             {
