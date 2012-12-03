@@ -84,7 +84,7 @@ std::string LteRrcConnectionEstablishmentTestCase::BuildNameString (uint32_t nUe
 }
 
 LteRrcConnectionEstablishmentTestCase::LteRrcConnectionEstablishmentTestCase (uint32_t nUes, uint32_t nBearers, uint32_t tConnBase, uint32_t tConnIncrPerUe, uint32_t delayDiscStart, bool useIdealRrc)
-  : TestCase (BuildNameString (nUes, nBearers, tConnBase, tConnIncrPerUe, delayDiscStart)),
+  : TestCase (BuildNameString (nUes, nBearers, tConnBase, tConnIncrPerUe, delayDiscStart, useIdealRrc)),
     m_nUes (nUes),
     m_nBearers (nBearers),
     m_tConnBase (tConnBase),
@@ -275,12 +275,14 @@ LteRrcTestSuite::LteRrcTestSuite ()
       AddTestCase (new LteRrcConnectionEstablishmentTestCase (  4,        0,        20,              0,             1, useIdealRrc));
       AddTestCase (new LteRrcConnectionEstablishmentTestCase (  4,        0,        20,            300,             1, useIdealRrc));
       AddTestCase (new LteRrcConnectionEstablishmentTestCase ( 20,        0,        10,              1,             1, useIdealRrc));
-  AddTestCase (new LteRrcConnectionEstablishmentTestCase ( 50,        0,         0,              0,             1));, useIdealRrc
-  // // time consuming tests with a lot of UEs
-  // AddTestCase (new LteRrcConnectionEstablishmentTestCase (100,        0,        10,              0,             1));
-  // AddTestCase (new LteRrcConnectionEstablishmentTestCase (100,        0,        10,              1,             1));
-  // AddTestCase (new LteRrcConnectionEstablishmentTestCase (200,        0,        10,              0,             1));
-  // AddTestCase (new LteRrcConnectionEstablishmentTestCase (200,        0,        10,              1,             1));
+      AddTestCase (new LteRrcConnectionEstablishmentTestCase ( 50,        0,         0,              0,             1, useIdealRrc));
+
+      // // time consuming tests with a lot of UEs
+      // AddTestCase (new LteRrcConnectionEstablishmentTestCase (100,        0,        10,              0,             1, useIdealRrc));
+      // AddTestCase (new LteRrcConnectionEstablishmentTestCase (100,        0,        10,              1,             1, useIdealRrc));
+      // AddTestCase (new LteRrcConnectionEstablishmentTestCase (200,        0,        10,              0,             1, useIdealRrc));
+      // AddTestCase (new LteRrcConnectionEstablishmentTestCase (200,        0,        10,              1,             1, useIdealRrc));
+    }
 
 }
 
