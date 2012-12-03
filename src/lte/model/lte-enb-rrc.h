@@ -348,7 +348,8 @@ private:
   State m_state;
   LtePdcpSapUser* m_drbPdcpSapUser;
   bool m_pendingRrcConnectionReconfiguration;
-  TracedCallback<State, State> m_stateTransitionCallback;
+  //             imsi      cellid    rnti      old    new
+  TracedCallback<uint64_t, uint16_t, uint16_t, State, State> m_stateTransitionTrace;
   uint16_t m_sourceX2apId;
   uint16_t m_sourceCellId;
 };
@@ -684,6 +685,15 @@ private:
   std::set<uint16_t> m_ueSrsConfigurationIndexSet;
   uint16_t m_lastAllocatedConfigurationIndex;
   bool m_reconfigureUes;
+
+  //             imsi      cellid    rnti   
+  TracedCallback<uint64_t, uint16_t, uint16_t> m_connectionEstablishedTrace;
+  //             imsi      cellid    rnti   
+  TracedCallback<uint64_t, uint16_t, uint16_t> m_connectionReconfigurationTrace;
+  //             imsi      cellid    rnti     targetCellId
+  TracedCallback<uint64_t, uint16_t, uint16_t, uint16_t> m_handoverStartTrace;
+  //             imsi      cellid    rnti    
+  TracedCallback<uint64_t, uint16_t, uint16_t> m_handoverEndOkTrace;
 
 };
 

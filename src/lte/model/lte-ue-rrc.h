@@ -293,7 +293,16 @@ private:
   uint16_t m_dlEarfcn;  /**< downlink carrier frequency */
   uint16_t m_ulEarfcn;  /**< uplink carrier frequency */
 
-  TracedCallback<State, State> m_stateTransitionCallback;
+  //             imsi      cellid    rnti   
+  TracedCallback<uint64_t, uint16_t, uint16_t, State, State> m_stateTransitionTrace;
+  //             imsi      cellid    rnti   
+  TracedCallback<uint64_t, uint16_t, uint16_t> m_connectionEstablishedTrace;
+  //             imsi      cellid    rnti   
+  TracedCallback<uint64_t, uint16_t, uint16_t> m_connectionReconfigurationTrace;
+  //             imsi      cellid    rnti     targetCellId
+  TracedCallback<uint64_t, uint16_t, uint16_t, uint16_t> m_handoverStartTrace;
+  //             imsi      cellid    rnti    
+  TracedCallback<uint64_t, uint16_t, uint16_t> m_handoverEndOkTrace;
 
   bool m_connectionPending; /**< true if a connection request by upper layers is pending */
   bool m_receivedMib; /**< true if MIB was received for the current cell  */

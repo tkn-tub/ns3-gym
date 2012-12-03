@@ -253,8 +253,8 @@ TypeId UeManager::GetTypeId (void)
                    MakeObjectMapChecker<LteDataRadioBearerInfo> ())
     .AddTraceSource ("StateTransition",
                      "fired upon every UE state transition seen by the UeManager at the eNB RRC",
-                     MakeTraceSourceAccessor (&UeManager::m_stateTransitionCallback))
-  ;
+                     MakeTraceSourceAccessor (&UeManager::m_stateTransitionTrace))
+    ;
   return tid;
 }
 
@@ -408,6 +408,8 @@ UeManager::SendHandoverCommand (LteRrcSap::RrcConnectionReconfiguration rcr)
   NS_LOG_FUNCTION (this);
   m_rrc->m_rrcSapUser->SendRrcConnectionReconfiguration (m_rnti, rcr);
   SwitchToState (HANDOVER_LEAVING);
+  NS_ASSERT (rcr.haveMobilityControlInfo);
+  m_rrc->m_handoverStartTrace (m_imsi, m_rrc->m_cellId, m_rnti, rcr.mobilityControlInfo.targetPhysCellId);
 }
 
 LteRrcSap::RadioResourceConfigDedicated
@@ -471,6 +473,7 @@ UeManager::SendUeContextRelease ()
       ueCtxReleaseParams.sourceCellId = m_sourceCellId;
       m_rrc->m_x2SapProvider->SendUeContextRelease (ueCtxReleaseParams);
       SwitchToState (CONNECTED_NORMALLY);
+      m_rrc->m_handoverEndOkTrace (m_imsi, m_rrc->m_cellId, m_rnti);
       break;
       
     default:
@@ -525,6 +528,7 @@ UeManager::RecvRrcConnectionSetupCompleted (LteRrcSap::RrcConnectionSetupComplet
     {
     case CONNECTION_SETUP:      
       SwitchToState (CONNECTED_NORMALLY);
+      m_rrc->m_connectionEstablishedTrace (m_imsi, m_rrc->m_cellId, m_rnti);
       break;
             
     default:
@@ -541,6 +545,7 @@ UeManager::RecvRrcConnectionReconfigurationCompleted (LteRrcSap::RrcConnectionRe
     {
     case CONNECTION_RECONFIGURATION:      
       SwitchToState (CONNECTED_NORMALLY);
+      m_rrc->m_connectionReconfigurationTrace (m_imsi, m_rrc->m_cellId, m_rnti);
       break;
 
     case HANDOVER_LEAVING:      
@@ -817,7 +822,7 @@ UeManager::SwitchToState (State newState)
   State oldState = m_state;
   m_state = newState;
   NS_LOG_INFO ("IMSI " << m_imsi << " RNTI " << m_rnti << " UeManager " << ToString (oldState) << " --> " << ToString (newState));
-  m_stateTransitionCallback (oldState, newState);
+  m_stateTransitionTrace (m_imsi, m_rrc->m_cellId, m_rnti, oldState, newState);
   
   switch (newState)
     {
@@ -929,7 +934,19 @@ LteEnbRrc::GetTypeId (void)
                    "The interval for sending system information",
                    TimeValue (MilliSeconds (80)),  
                    MakeTimeAccessor (&LteEnbRrc::m_systemInformationPeriodicity),
-                   MakeTimeChecker ())         
+                   MakeTimeChecker ())      
+    .AddTraceSource ("ConnectionEstablished",
+                     "trace fired upon successful RRC connection establishment",
+                     MakeTraceSourceAccessor (&LteEnbRrc::m_connectionEstablishedTrace))
+    .AddTraceSource ("ConnectionReconfiguration",
+                     "trace fired upon RRC connection reconfiguration",
+                     MakeTraceSourceAccessor (&LteEnbRrc::m_connectionReconfigurationTrace))
+    .AddTraceSource ("HandoverStart",
+                     "trace fired upon start of a handover procedure",
+                     MakeTraceSourceAccessor (&LteEnbRrc::m_handoverStartTrace))
+    .AddTraceSource ("HandoverEndOk",
+                     "trace fired upon successful termination of a handover procedure",
+                     MakeTraceSourceAccessor (&LteEnbRrc::m_handoverEndOkTrace))
   ;
   return tid;
 }

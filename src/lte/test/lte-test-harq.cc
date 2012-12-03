@@ -223,7 +223,7 @@ LenaHarqTestCase::DoRun (void)
   double statsDuration = 4.0;
   Simulator::Stop (Seconds (statsStartTime + statsDuration - 0.0001));
 
-  Simulator::Schedule (Seconds (statsStartTime), &LteHelper::EnableRlcTraces, lena);
+  lena->EnableRlcTraces ();
   Ptr<RadioBearerStatsCalculator> rlcStats = lena->GetRlcStats ();
   rlcStats->SetAttribute ("StartTime", TimeValue (Seconds (statsStartTime)));
   rlcStats->SetAttribute ("EpochDuration", TimeValue (Seconds (statsDuration)));

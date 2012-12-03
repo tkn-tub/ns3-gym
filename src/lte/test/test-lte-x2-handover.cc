@@ -381,6 +381,12 @@ LteX2HandoverTestCase::DoRun ()
           stopTime = hoEndTime + MilliSeconds (1);
         }
     }
+  
+  m_lteHelper->EnableRlcTraces ();
+  Ptr<RadioBearerStatsCalculator> rlcStats = m_lteHelper->GetRlcStats ();
+  rlcStats->SetAttribute ("StartTime", TimeValue (Seconds (0.101)));
+  rlcStats->SetAttribute ("EpochDuration", TimeValue (Seconds (0.1)));
+  m_lteHelper->EnablePdcpTraces();
 
  
   Simulator::Stop (stopTime);
@@ -570,6 +576,9 @@ LteX2HandoverTestSuite::LteX2HandoverTestSuite ()
   std::list<HandoverEvent> hel7;
   hel7.push_back (ue2fwd);     
   hel7.push_back (ue2bwd);    
+
+  AddTestCase (new LteX2HandoverTestCase (  2,    1,    hel1, hel0name, true, "ns3::RrFfMacScheduler"));
+  return;
 
                                      //  nUes, nDBearers, helist, name, useUdp, scheduler
   AddTestCase (new LteX2HandoverTestCase (  1,    0,    hel0, hel0name, true, "ns3::RrFfMacScheduler"));

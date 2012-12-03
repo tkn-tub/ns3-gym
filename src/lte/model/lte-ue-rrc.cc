@@ -177,8 +177,20 @@ LteUeRrc::GetTypeId (void)
                    MakeUintegerAccessor (&LteUeRrc::GetRnti),
                    MakeUintegerChecker<uint16_t> ())
     .AddTraceSource ("StateTransition",
-                     "fired upon every UE RRC state transition",
-                     MakeTraceSourceAccessor (&LteUeRrc::m_stateTransitionCallback))
+                     "trace fired upon every UE RRC state transition",
+                     MakeTraceSourceAccessor (&LteUeRrc::m_stateTransitionTrace))
+    .AddTraceSource ("ConnectionEstablished",
+                     "trace fired upon successful RRC connection establishment",
+                     MakeTraceSourceAccessor (&LteUeRrc::m_connectionEstablishedTrace))
+    .AddTraceSource ("ConnectionReconfiguration",
+                     "trace fired upon RRC connection reconfiguration",
+                     MakeTraceSourceAccessor (&LteUeRrc::m_connectionReconfigurationTrace))
+    .AddTraceSource ("HandoverStart",
+                     "trace fired upon start of a handover procedure",
+                     MakeTraceSourceAccessor (&LteUeRrc::m_handoverStartTrace))
+    .AddTraceSource ("HandoverEndOk",
+                     "trace fired upon successful termination of a handover procedure",
+                     MakeTraceSourceAccessor (&LteUeRrc::m_handoverEndOkTrace))
     ;
   return tid;
 }
@@ -428,6 +440,7 @@ LteUeRrc::DoNotifyRandomAccessSuccessful ()
         msg.rrcTransactionIdentifier = m_lastRrcTransactionIdentifier;
         m_rrcSapUser->SendRrcConnectionReconfigurationCompleted (msg);
         SwitchToState (CONNECTED_NORMALLY);
+        m_handoverEndOkTrace (m_imsi, m_cellId, m_rnti);
       }
       break;
           
@@ -564,6 +577,7 @@ LteUeRrc::DoRecvRrcConnectionSetup (LteRrcSap::RrcConnectionSetup msg)
         msg2.rrcTransactionIdentifier = msg.rrcTransactionIdentifier;
         m_rrcSapUser->SendRrcConnectionSetupCompleted (msg2);
         m_asSapUser->NotifyConnectionSuccessful ();
+        m_connectionEstablishedTrace (m_imsi, m_cellId, m_rnti);
       }
       break;
       
@@ -589,6 +603,7 @@ LteUeRrc::DoRecvRrcConnectionReconfiguration (LteRrcSap::RrcConnectionReconfigur
           NS_LOG_INFO ("haveMobilityControlInfo == true");
           SwitchToState (CONNECTED_HANDOVER);
           const LteRrcSap::MobilityControlInfo& mci = msg.mobilityControlInfo;
+          m_handoverStartTrace (m_imsi, m_cellId, m_rnti, mci.targetPhysCellId);
           m_cellId = mci.targetPhysCellId;
           NS_ASSERT (mci.haveCarrierFreq);
           NS_ASSERT (mci.haveCarrierBandwidth);
@@ -609,6 +624,7 @@ LteUeRrc::DoRecvRrcConnectionReconfiguration (LteRrcSap::RrcConnectionReconfigur
           LteRrcSap::RrcConnectionReconfigurationCompleted msg2;
           msg2.rrcTransactionIdentifier = msg.rrcTransactionIdentifier;
           m_rrcSapUser->SendRrcConnectionReconfigurationCompleted (msg2);
+          m_connectionReconfigurationTrace (m_imsi, m_cellId, m_rnti);
         }
       break;
 
@@ -871,7 +887,7 @@ LteUeRrc::SwitchToState (State newState)
   State oldState = m_state;
   m_state = newState;
   NS_LOG_INFO ("IMSI " << m_imsi << " RNTI " << m_rnti << " UeRrc " << ToString (oldState) << " --> " << ToString (newState));
-  m_stateTransitionCallback (oldState, newState);
+  m_stateTransitionTrace (m_imsi, m_cellId, m_rnti, oldState, newState);
 
   switch (newState)
     {

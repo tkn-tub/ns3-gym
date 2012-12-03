@@ -173,7 +173,7 @@ LenaMimoTestCase::DoRun (void)
   uePhy->SetAttribute ("NoiseFigure", DoubleValue (9.0));
   
   // need to allow for RRC connection establishment + SRS before enabling traces
-  Simulator::Schedule (Seconds (0.050), &LteHelper::EnableRlcTraces, lteHelper);
+  lteHelper->EnableRlcTraces ();
   lteHelper->EnableMacTraces ();
   double simulationTime = 0.401;
   double tolerance = 0.1;

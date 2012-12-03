@@ -272,7 +272,7 @@ LteEpcE2eDataTestCase::DoRun ()
   Time simulationTime = Seconds (2.0);
 
   double statsStartTime = 0.040; // need to allow for RRC connection establishment + SRS 
-  Simulator::Schedule (Seconds (statsStartTime), &LteHelper::EnablePdcpTraces, lteHelper);
+  lteHelper->EnablePdcpTraces ();
 
   lteHelper->GetPdcpStats ()->SetAttribute ("StartTime", TimeValue (Seconds (statsStartTime)));
   lteHelper->GetPdcpStats ()->SetAttribute ("EpochDuration", TimeValue (simulationTime));
