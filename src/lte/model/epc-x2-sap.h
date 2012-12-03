@@ -234,6 +234,20 @@ public:
   };
 
   /**
+   * \brief Parameters of the HANDOVER PREPARATION FAILURE message.
+   *
+   * See section 9.1.1.3 for further info about the parameters
+   */
+  struct HandoverPreparationFailureParams
+  {
+    uint16_t            oldEnbUeX2apId;
+    uint16_t            sourceCellId;
+    uint16_t            targetCellId;
+    uint16_t            cause;
+    uint16_t            criticalityDiagnostics;
+  };
+
+  /**
    * \brief Parameters of the UE CONTEXT RELEASE message.
    *
    * See section 9.1.1.5 for further info about the parameters
@@ -289,6 +303,8 @@ public:
 
   virtual void SendHandoverRequestAck (HandoverRequestAckParams params) = 0;
 
+  virtual void SendHandoverPreparationFailure (HandoverPreparationFailureParams params) = 0;
+
   virtual void SendUeContextRelease (UeContextReleaseParams params) = 0;
 
   virtual void SendLoadInformation (LoadInformationParams params) = 0;
@@ -314,6 +330,8 @@ public:
 
   virtual void RecvHandoverRequestAck (HandoverRequestAckParams params) = 0;
 
+  virtual void RecvHandoverPreparationFailure (HandoverPreparationFailureParams params) = 0;
+
   virtual void RecvUeContextRelease (UeContextReleaseParams params) = 0;
 
   virtual void RecvLoadInformation (LoadInformationParams params) = 0;
@@ -336,6 +354,8 @@ public:
   virtual void SendHandoverRequest (HandoverRequestParams params);
 
   virtual void SendHandoverRequestAck (HandoverRequestAckParams params);
+
+  virtual void SendHandoverPreparationFailure (HandoverPreparationFailureParams params);
 
   virtual void SendUeContextRelease (UeContextReleaseParams params);
 
@@ -375,6 +395,13 @@ EpcX2SpecificEpcX2SapProvider<C>::SendHandoverRequestAck (HandoverRequestAckPara
 
 template <class C>
 void
+EpcX2SpecificEpcX2SapProvider<C>::SendHandoverPreparationFailure (HandoverPreparationFailureParams params)
+{
+  m_x2->DoSendHandoverPreparationFailure (params);
+}
+
+template <class C>
+void
 EpcX2SpecificEpcX2SapProvider<C>::SendUeContextRelease (UeContextReleaseParams params)
 {
   m_x2->DoSendUeContextRelease (params);
@@ -410,6 +437,8 @@ public:
 
   virtual void RecvHandoverRequestAck (HandoverRequestAckParams params);
 
+  virtual void RecvHandoverPreparationFailure (HandoverPreparationFailureParams params);
+
   virtual void RecvUeContextRelease (UeContextReleaseParams params);
 
   virtual void RecvLoadInformation (LoadInformationParams params);
@@ -444,6 +473,13 @@ void
 EpcX2SpecificEpcX2SapUser<C>::RecvHandoverRequestAck (HandoverRequestAckParams params)
 {
   m_rrc->DoRecvHandoverRequestAck (params);
+}
+
+template <class C>
+void
+EpcX2SpecificEpcX2SapUser<C>::RecvHandoverPreparationFailure (HandoverPreparationFailureParams params)
+{
+  m_rrc->DoRecvHandoverPreparationFailure (params);
 }
 
 template <class C>
