@@ -564,13 +564,13 @@ FdTbfqFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::S
       else 
         {	
 	      // calculate rlc buffer size
-	  uint32_t rlcBufSize;
-          uint8_t lcid;
+	  uint32_t rlcBufSize = 0;
+          uint8_t lcid = 0;
           std::map<LteFlowId_t, FfMacSchedSapProvider::SchedDlRlcBufferReqParameters>::iterator itRlcBuf;
           for (itRlcBuf = m_rlcBufferReq.begin (); itRlcBuf != m_rlcBufferReq.end (); itRlcBuf++)
 	    {
               if ( (*itRlcBuf).first.m_rnti == (*itMax).first )
-              lcid = (*itRlcBuf).first.m_lcId;
+                lcid = (*itRlcBuf).first.m_lcId;
 	    }
           LteFlowId_t flow ((*itMax).first, lcid);
           itRlcBuf = m_rlcBufferReq.find (flow);
