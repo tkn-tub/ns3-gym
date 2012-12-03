@@ -161,25 +161,6 @@ public:
   void SetStopTime (Time t);
 
   /**
-   * \brief Writes the topology information and sets up the appropriate
-   *  animation packet tx callback
-   *
-   * Writes the topology information to the appropriate output, depending
-   * on prior calls to SetOutputFile, SetServerPort, or SetInternalAnimation.
-   * Then creates the callbacks needed for the animator to start processing
-   * packets.
-   * 
-   * \param restart True when restarting animation
-   */
-  void StartAnimation (bool restart = false);
-
-  /**
-   * \brief Closes the interface to the animator.
-   *
-   */
-  void StopAnimation ();
-
-  /**
    * \brief Set mobility poll interval:WARNING: setting a low interval can 
    * cause slowness
    *
@@ -430,6 +411,25 @@ private:
   uint64_t m_maxPktsPerFile;
   std::string m_originalFileName;
 
+  /**
+   * \brief Writes the topology information and sets up the appropriate
+   *  animation packet tx callback
+   *
+   * Writes the topology information to the appropriate output, depending
+   * on prior calls to SetOutputFile, SetServerPort, or SetInternalAnimation.
+   * Then creates the callbacks needed for the animator to start processing
+   * packets.
+   *
+   * \param restart True when restarting animation
+   */
+  void StartAnimation (bool restart = false);
+
+  /**
+   * \brief Closes the interface to the animator.
+   *
+   */
+  void StopAnimation ();
+
   void DevTxTrace (std::string context,
                    Ptr<const Packet> p,
                    Ptr<NetDevice> tx,
@@ -551,6 +551,7 @@ private:
 
   void StartNewTraceFile();
 
+  std::string GetMacAddress (Ptr <NetDevice> nd);
   std::string GetIpv4Address (Ptr <NetDevice> nd);
   void WriteNonP2pLinkProperties (uint32_t id, std::string ipv4Address, std::string channelType);
 

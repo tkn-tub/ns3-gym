@@ -358,6 +358,14 @@ void AnimationInterface::PurgePendingCsma ()
 
 }
 
+std::string AnimationInterface::GetMacAddress (Ptr <NetDevice> nd)
+{
+  Address nodeAddr = nd->GetAddress();
+  std::ostringstream oss;
+  oss << nodeAddr;
+  return oss.str ().substr (6); // Skip the first 6 chars to get the Mac
+}
+
 std::string AnimationInterface::GetIpv4Address (Ptr <NetDevice> nd)
 {
   Ptr<Ipv4> ipv4 = NodeList::GetNode (nd->GetNode ()->GetId ())->GetObject <Ipv4> ();
@@ -461,8 +469,8 @@ void AnimationInterface::StartAnimation (bool restart)
                   if (n1Id < n2Id)
                     { 
                       // ouptut the p2p link
-                      NS_LOG_INFO ("Link:" << GetIpv4Address (dev) << "----" << GetIpv4Address (chDev));
-                      SetLinkDescription (n1Id, n2Id, "", GetIpv4Address (dev), GetIpv4Address (chDev));
+                      NS_LOG_INFO ("Link:" << GetIpv4Address (dev) << ":" << GetMacAddress (dev) << "----" << GetIpv4Address (chDev) << ":" << GetMacAddress (chDev) );
+                      SetLinkDescription (n1Id, n2Id, "", GetIpv4Address (dev) + "~" + GetMacAddress (dev), GetIpv4Address (chDev) + "~" + GetMacAddress (chDev));
                       std::ostringstream oss;
                       if (m_xml)
                         {
@@ -478,8 +486,8 @@ void AnimationInterface::StartAnimation (bool restart)
             }
           else
             {
-              NS_LOG_INFO ("Link:" << GetIpv4Address (dev) << " Channel Type:" << channelType);
-              WriteNonP2pLinkProperties (n->GetId (), GetIpv4Address (dev), channelType); 
+              NS_LOG_INFO ("Link:" << GetIpv4Address (dev) << " Channel Type:" << channelType << " Mac: " << GetMacAddress (dev));
+              WriteNonP2pLinkProperties (n->GetId (), GetIpv4Address (dev) + "~" + GetMacAddress (dev), channelType); 
             }
         }
     }
