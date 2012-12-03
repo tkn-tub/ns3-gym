@@ -109,6 +109,12 @@ TypeId LteRlc::GetTypeId (void)
 }
 
 void
+LteRlcSm::DoDispose ()
+{
+  NS_LOG_FUNCTION (this);
+}
+
+void
 LteRlc::SetRnti (uint16_t rnti)
 {
   NS_LOG_FUNCTION (this << (uint32_t) rnti);

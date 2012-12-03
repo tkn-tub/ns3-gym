@@ -59,6 +59,13 @@ LteRlcTm::GetTypeId (void)
   return tid;
 }
 
+void
+LteRlcTm::DoDispose ()
+{
+  NS_LOG_FUNCTION (this);
+  m_rbsTimer.Cancel ();
+}
+
 
 /**
  * RLC SAP

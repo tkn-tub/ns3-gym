@@ -148,6 +148,7 @@ public:
   LteRlcSm ();
   virtual ~LteRlcSm ();
   static TypeId GetTypeId (void);
+  virtual void DoDispose ();
 
   virtual void DoTransmitPdcpPdu (Ptr<Packet> p);
   virtual void DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId);
