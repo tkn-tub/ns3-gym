@@ -181,7 +181,9 @@ public:
 private:
   void DoUlInfoListElementHarqFeeback (UlInfoListElement_s params);
   void DoDlInfoListElementHarqFeeback (DlInfoListElement_s params);
-  std::map <LteFlowId_t, LteMacSapUser*> m_rlcAttached;
+
+  //            rnti,             lcid, SAP of the RLC instance
+  std::map <uint16_t, std::map<uint8_t, LteMacSapUser*> > m_rlcAttached;
 
   std::vector <CqiListElement_s> m_dlCqiReceived; // DL-CQI received
   std::vector <FfMacSchedSapProvider::SchedUlCqiInfoReqParameters> m_ulCqiReceived; // UL-CQI received

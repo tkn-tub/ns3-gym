@@ -50,8 +50,6 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED ( LteUeNetDevice);
 
-uint64_t LteUeNetDevice::m_imsiCounter = 0;
-
 
 TypeId LteUeNetDevice::GetTypeId (void)
 {
@@ -92,7 +90,7 @@ LteUeNetDevice::LteUeNetDevice (void)
 }
 
 
-  LteUeNetDevice::LteUeNetDevice (Ptr<Node> node, Ptr<LteUePhy> phy, Ptr<LteUeMac> mac, Ptr<LteUeRrc> rrc, Ptr<EpcUeNas> nas)
+  LteUeNetDevice::LteUeNetDevice (Ptr<Node> node, Ptr<LteUePhy> phy, Ptr<LteUeMac> mac, Ptr<LteUeRrc> rrc, Ptr<EpcUeNas> nas, uint64_t imsi)
 {
   NS_LOG_FUNCTION (this);
   m_phy = phy;
@@ -100,7 +98,7 @@ LteUeNetDevice::LteUeNetDevice (void)
   m_rrc = rrc;
   m_nas = nas;
   SetNode (node);
-  m_imsi = ++m_imsiCounter;
+  m_imsi = imsi;
 }
 
 LteUeNetDevice::~LteUeNetDevice (void)
@@ -185,12 +183,6 @@ LteUeNetDevice::GetTargetEnb (void)
 {
   NS_LOG_FUNCTION (this);
   return m_targetEnb;
-}
-
-void 
-LteUeNetDevice::ActivateDedicatedEpsBearer (EpsBearer bearer, Ptr<EpcTft> tft)
-{
-  m_nas->ActivateEpsBearer (bearer, tft);
 }
 
 void 

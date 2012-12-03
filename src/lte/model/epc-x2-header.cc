@@ -149,10 +149,11 @@ NS_OBJECT_ENSURE_REGISTERED (EpcX2HandoverRequestHeader);
 
 EpcX2HandoverRequestHeader::EpcX2HandoverRequestHeader ()
   : m_numberOfIes (1 + 1 + 1 + 1),
-    m_headerLength (6 + 5 + 12 + (3 + 8 + 8 + 4)),
+    m_headerLength (6 + 5 + 12 + (3 + 4 + 8 + 8 + 4)),
     m_oldEnbUeX2apId (0xfffa),
     m_cause (0xfffa),
-    m_targetCellId (0xfffa)
+    m_targetCellId (0xfffa),
+    m_mmeUeS1apId (0xfffffffa)
 {
   m_erabsToBeSetupList.clear ();
 }
@@ -164,6 +165,7 @@ EpcX2HandoverRequestHeader::~EpcX2HandoverRequestHeader ()
   m_oldEnbUeX2apId = 0xfffb;
   m_cause = 0xfffb;
   m_targetCellId = 0xfffb;
+  m_mmeUeS1apId = 0xfffffffb;
   m_erabsToBeSetupList.clear ();
 }
 
@@ -213,6 +215,7 @@ EpcX2HandoverRequestHeader::Serialize (Buffer::Iterator start) const
   i.WriteHtonU16 (14);              // id = UE_CONTEXT_INFORMATION
   i.WriteU8 (0);                    // criticality = REJECT
 
+  i.WriteHtonU32 (m_mmeUeS1apId);
   i.WriteHtonU64 (m_ueAggregateMaxBitRateDownlink);
   i.WriteHtonU64 (m_ueAggregateMaxBitRateUplink);
 
@@ -268,10 +271,11 @@ EpcX2HandoverRequestHeader::Deserialize (Buffer::Iterator start)
 
   i.ReadNtohU16 ();
   i.ReadU8 ();
+  m_mmeUeS1apId = i.ReadNtohU32 ();
   m_ueAggregateMaxBitRateDownlink = i.ReadNtohU64 ();
   m_ueAggregateMaxBitRateUplink   = i.ReadNtohU64 ();
   int sz = i.ReadNtohU32 ();
-  m_headerLength += 23;
+  m_headerLength += 27;
   m_numberOfIes++;
 
   for (int j = 0; j < sz; j++)
@@ -303,12 +307,13 @@ EpcX2HandoverRequestHeader::Deserialize (Buffer::Iterator start)
 void
 EpcX2HandoverRequestHeader::Print (std::ostream &os) const
 {
-  os << "OldEnbUeX2apId=" << m_oldEnbUeX2apId;
-  os << " Cause=" << m_cause;
-  os << " TargetCellId=" << m_targetCellId;
-  os << " UeAggrMaxBitRateDownlink= " << m_ueAggregateMaxBitRateDownlink;
-  os << " UeAggrMaxBitRateUplink= " << m_ueAggregateMaxBitRateUplink;
-  os << " NumOfBearers=" << m_erabsToBeSetupList.size ();
+  os << "OldEnbUeX2apId = " << m_oldEnbUeX2apId;
+  os << " Cause = " << m_cause;
+  os << " TargetCellId = " << m_targetCellId;
+  os << " MmeUeS1apId = " << m_mmeUeS1apId;
+  os << " UeAggrMaxBitRateDownlink = " << m_ueAggregateMaxBitRateDownlink;
+  os << " UeAggrMaxBitRateUplink = " << m_ueAggregateMaxBitRateUplink;
+  os << " NumOfBearers = " << m_erabsToBeSetupList.size ();
 
   std::vector <EpcX2Sap::ErabToBeSetupItem>::size_type sz = m_erabsToBeSetupList.size ();
   if (sz > 0)
@@ -363,6 +368,18 @@ void
 EpcX2HandoverRequestHeader::SetTargetCellId (uint16_t targetCellId)
 {
   m_targetCellId = targetCellId;
+}
+
+uint32_t
+EpcX2HandoverRequestHeader::GetMmeUeS1apId () const
+{
+  return m_mmeUeS1apId;
+}
+
+void
+EpcX2HandoverRequestHeader::SetMmeUeS1apId (uint32_t mmeUeS1apId)
+{
+  m_mmeUeS1apId = mmeUeS1apId;
 }
 
 std::vector <EpcX2Sap::ErabToBeSetupItem>
@@ -635,6 +652,131 @@ EpcX2HandoverRequestAckHeader::GetLengthOfIes () const
 
 uint32_t
 EpcX2HandoverRequestAckHeader::GetNumberOfIes () const
+{
+  return m_numberOfIes;
+}
+
+/////////////////////////////////////////////////////////////////////
+
+NS_OBJECT_ENSURE_REGISTERED (EpcX2HandoverPreparationFailureHeader);
+
+EpcX2HandoverPreparationFailureHeader::EpcX2HandoverPreparationFailureHeader ()
+  : m_numberOfIes (1 + 1 + 1),
+    m_headerLength (2 + 2 + 2),
+    m_oldEnbUeX2apId (0xfffa),
+    m_cause (0xfffa),
+    m_criticalityDiagnostics (0xfffa)
+{
+}
+
+EpcX2HandoverPreparationFailureHeader::~EpcX2HandoverPreparationFailureHeader ()
+{
+  m_numberOfIes = 0;
+  m_headerLength = 0;
+  m_oldEnbUeX2apId = 0xfffb;
+  m_cause = 0xfffb;
+  m_criticalityDiagnostics = 0xfffb;
+}
+
+TypeId
+EpcX2HandoverPreparationFailureHeader::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::EpcX2HandoverPreparationFailureHeader")
+    .SetParent<Header> ()
+    .AddConstructor<EpcX2HandoverPreparationFailureHeader> ()
+  ;
+  return tid;
+}
+
+TypeId
+EpcX2HandoverPreparationFailureHeader::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
+}
+
+uint32_t
+EpcX2HandoverPreparationFailureHeader::GetSerializedSize (void) const
+{
+  return m_headerLength;
+}
+
+void
+EpcX2HandoverPreparationFailureHeader::Serialize (Buffer::Iterator start) const
+{
+  Buffer::Iterator i = start;
+
+  i.WriteHtonU16 (m_oldEnbUeX2apId);
+  i.WriteHtonU16 (m_cause);
+  i.WriteHtonU16 (m_criticalityDiagnostics);
+}
+
+uint32_t
+EpcX2HandoverPreparationFailureHeader::Deserialize (Buffer::Iterator start)
+{
+  Buffer::Iterator i = start;
+
+  m_oldEnbUeX2apId = i.ReadNtohU16 ();
+  m_cause = i.ReadNtohU16 ();
+  m_criticalityDiagnostics = i.ReadNtohU16 ();
+
+  m_headerLength = 6;
+  m_numberOfIes = 3;
+
+  return GetSerializedSize ();
+}
+
+void
+EpcX2HandoverPreparationFailureHeader::Print (std::ostream &os) const
+{
+  os << "OldEnbUeX2apId = " << m_oldEnbUeX2apId;
+  os << " Cause = " << m_cause;
+  os << " CriticalityDiagnostics = " << m_criticalityDiagnostics;
+}
+
+uint16_t
+EpcX2HandoverPreparationFailureHeader::GetOldEnbUeX2apId () const
+{
+  return m_oldEnbUeX2apId;
+}
+
+void
+EpcX2HandoverPreparationFailureHeader::SetOldEnbUeX2apId (uint16_t x2apId)
+{
+  m_oldEnbUeX2apId = x2apId;
+}
+
+uint16_t
+EpcX2HandoverPreparationFailureHeader::GetCause () const
+{
+  return m_cause;
+}
+
+void
+EpcX2HandoverPreparationFailureHeader::SetCause (uint16_t cause)
+{
+  m_cause = cause;
+}
+
+uint16_t
+EpcX2HandoverPreparationFailureHeader::GetCriticalityDiagnostics () const
+{
+  return m_criticalityDiagnostics;
+}
+
+void
+EpcX2HandoverPreparationFailureHeader::SetCriticalityDiagnostics (uint16_t criticalityDiagnostics)
+{
+  m_criticalityDiagnostics = criticalityDiagnostics;
+}
+
+uint32_t
+EpcX2HandoverPreparationFailureHeader::GetLengthOfIes () const
+{
+  return m_headerLength;
+}
+
+uint32_t
+EpcX2HandoverPreparationFailureHeader::GetNumberOfIes () const
 {
   return m_numberOfIes;
 }
@@ -970,5 +1112,182 @@ EpcX2LoadInformationHeader::GetNumberOfIes () const
   return m_numberOfIes;
 }
 
+////////////////
+
+NS_OBJECT_ENSURE_REGISTERED (EpcX2ResourceStatusUpdateHeader);
+
+EpcX2ResourceStatusUpdateHeader::EpcX2ResourceStatusUpdateHeader ()
+  : m_numberOfIes (3),
+    m_headerLength (6),
+    m_enb1MeasurementId (0),
+    m_enb2MeasurementId (0)
+{
+  m_cellMeasurementResultList.clear ();
+}
+
+EpcX2ResourceStatusUpdateHeader::~EpcX2ResourceStatusUpdateHeader ()
+{
+  m_numberOfIes = 0;
+  m_headerLength = 0;
+  m_enb1MeasurementId = 0;
+  m_enb2MeasurementId = 0;
+  m_cellMeasurementResultList.clear ();
+}
+
+TypeId
+EpcX2ResourceStatusUpdateHeader::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::EpcX2ResourceStatusUpdateHeader")
+    .SetParent<Header> ()
+    .AddConstructor<EpcX2ResourceStatusUpdateHeader> ()
+  ;
+  return tid;
+}
+
+TypeId
+EpcX2ResourceStatusUpdateHeader::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
+}
+
+uint32_t
+EpcX2ResourceStatusUpdateHeader::GetSerializedSize (void) const
+{
+  return m_headerLength;
+}
+
+void
+EpcX2ResourceStatusUpdateHeader::Serialize (Buffer::Iterator start) const
+{
+  Buffer::Iterator i = start;
+
+  i.WriteHtonU16 (m_enb1MeasurementId);
+  i.WriteHtonU16 (m_enb2MeasurementId);
+
+  std::vector <EpcX2Sap::CellMeasurementResultItem>::size_type sz = m_cellMeasurementResultList.size ();
+  i.WriteHtonU16 (sz);              // number of CellMeasurementResultItem
+
+  for (int j = 0; j < (int) sz; j++)
+    {
+      EpcX2Sap::CellMeasurementResultItem item = m_cellMeasurementResultList [j];
+
+      i.WriteHtonU16 (item.sourceCellId);
+      i.WriteU8 (item.dlHardwareLoadIndicator);
+      i.WriteU8 (item.ulHardwareLoadIndicator);
+      i.WriteU8 (item.dlS1TnlLoadIndicator);
+      i.WriteU8 (item.ulS1TnlLoadIndicator);
+
+      i.WriteHtonU16 (item.dlGbrPrbUsage);
+      i.WriteHtonU16 (item.ulGbrPrbUsage);
+      i.WriteHtonU16 (item.dlNonGbrPrbUsage);
+      i.WriteHtonU16 (item.ulNonGbrPrbUsage);
+      i.WriteHtonU16 (item.dlTotalPrbUsage);
+      i.WriteHtonU16 (item.ulTotalPrbUsage);
+
+      i.WriteHtonU16 (item.dlCompositeAvailableCapacity.cellCapacityClassValue);
+      i.WriteHtonU16 (item.dlCompositeAvailableCapacity.capacityValue);
+      i.WriteHtonU16 (item.ulCompositeAvailableCapacity.cellCapacityClassValue);
+      i.WriteHtonU16 (item.ulCompositeAvailableCapacity.capacityValue);
+    }
+}
+
+uint32_t
+EpcX2ResourceStatusUpdateHeader::Deserialize (Buffer::Iterator start)
+{
+  Buffer::Iterator i = start;
+
+  m_enb1MeasurementId = i.ReadNtohU16 ();
+  m_enb2MeasurementId = i.ReadNtohU16 ();
+
+  int sz = i.ReadNtohU16 ();
+  for (int j = 0; j < sz; j++)
+    {
+      EpcX2Sap::CellMeasurementResultItem item;
+
+      item.sourceCellId = i.ReadNtohU16 ();
+      item.dlHardwareLoadIndicator = (EpcX2Sap::LoadIndicator) i.ReadU8 ();
+      item.ulHardwareLoadIndicator = (EpcX2Sap::LoadIndicator) i.ReadU8 ();
+      item.dlS1TnlLoadIndicator = (EpcX2Sap::LoadIndicator) i.ReadU8 ();
+      item.ulS1TnlLoadIndicator = (EpcX2Sap::LoadIndicator) i.ReadU8 ();
+
+      item.dlGbrPrbUsage = i.ReadNtohU16 ();
+      item.ulGbrPrbUsage = i.ReadNtohU16 ();
+      item.dlNonGbrPrbUsage = i.ReadNtohU16 ();
+      item.ulNonGbrPrbUsage = i.ReadNtohU16 ();
+      item.dlTotalPrbUsage = i.ReadNtohU16 ();
+      item.ulTotalPrbUsage = i.ReadNtohU16 ();
+
+      item.dlCompositeAvailableCapacity.cellCapacityClassValue = i.ReadNtohU16 ();
+      item.dlCompositeAvailableCapacity.capacityValue = i.ReadNtohU16 ();
+      item.ulCompositeAvailableCapacity.cellCapacityClassValue = i.ReadNtohU16 ();
+      item.ulCompositeAvailableCapacity.capacityValue = i.ReadNtohU16 ();
+
+      m_cellMeasurementResultList.push_back (item);
+    }
+
+  m_headerLength = 6 + sz * 26;
+  m_numberOfIes = 3;
+
+  return GetSerializedSize ();
+}
+
+void
+EpcX2ResourceStatusUpdateHeader::Print (std::ostream &os) const
+{
+  os << "Enb1MeasurementId = " << m_enb1MeasurementId
+     << " Enb2MeasurementId = " << m_enb2MeasurementId
+     << " NumOfCellMeasurementResultItems = " << m_cellMeasurementResultList.size ();
+}
+
+uint16_t
+EpcX2ResourceStatusUpdateHeader::GetEnb1MeasurementId () const
+{
+  return m_enb1MeasurementId;
+}
+
+void
+EpcX2ResourceStatusUpdateHeader::SetEnb1MeasurementId (uint16_t enb1MeasurementId)
+{
+  m_enb1MeasurementId = enb1MeasurementId;
+}
+
+uint16_t
+EpcX2ResourceStatusUpdateHeader::GetEnb2MeasurementId () const
+{
+  return m_enb2MeasurementId;
+}
+
+void
+EpcX2ResourceStatusUpdateHeader::SetEnb2MeasurementId (uint16_t enb2MeasurementId)
+{
+  m_enb2MeasurementId = enb2MeasurementId;
+}
+
+std::vector <EpcX2Sap::CellMeasurementResultItem>
+EpcX2ResourceStatusUpdateHeader::GetCellMeasurementResultList () const
+{
+  return m_cellMeasurementResultList;
+}
+
+void
+EpcX2ResourceStatusUpdateHeader::SetCellMeasurementResultList (std::vector <EpcX2Sap::CellMeasurementResultItem> cellMeasurementResultList)
+{
+  m_cellMeasurementResultList = cellMeasurementResultList;
+
+  std::vector <EpcX2Sap::CellMeasurementResultItem>::size_type sz = m_cellMeasurementResultList.size ();
+  m_headerLength += sz * 26;
+}
+
+uint32_t
+EpcX2ResourceStatusUpdateHeader::GetLengthOfIes () const
+{
+  return m_headerLength;
+}
+
+uint32_t
+EpcX2ResourceStatusUpdateHeader::GetNumberOfIes () const
+{
+  return m_numberOfIes;
+}
 
 } // namespace ns3

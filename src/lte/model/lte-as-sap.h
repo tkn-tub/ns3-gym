@@ -50,7 +50,7 @@ public:
    * future versions)
    * \param cellId the Cell ID identifying the eNB
    */
-  virtual void ForceCampedOnEnb (Ptr<LteEnbNetDevice> enbDevice, uint16_t cellId) = 0;
+  virtual void ForceCampedOnEnb (uint16_t cellId, uint16_t earfcn) = 0;
   
   /** 
    * Tell the RRC to go into Connected Mode
@@ -133,7 +133,7 @@ public:
 
   // inherited from LteAsSapProvider
   virtual void Connect (void);
-  virtual void ForceCampedOnEnb (Ptr<LteEnbNetDevice> enbDevice, uint16_t cellId);
+  virtual void ForceCampedOnEnb (uint16_t cellId, uint16_t earfcn);
   virtual void SendData (Ptr<Packet> packet, uint8_t bid);
   virtual void Disconnect ();
 
@@ -155,9 +155,9 @@ MemberLteAsSapProvider<C>::MemberLteAsSapProvider ()
 
 template <class C>
 void 
-MemberLteAsSapProvider<C>::ForceCampedOnEnb (Ptr<LteEnbNetDevice> enbDevice, uint16_t cellId)
+MemberLteAsSapProvider<C>::ForceCampedOnEnb (uint16_t cellId, uint16_t earfcn)
 {
-  m_owner->DoForceCampedOnEnb (enbDevice, cellId);
+  m_owner->DoForceCampedOnEnb (cellId, earfcn);
 }
 
 

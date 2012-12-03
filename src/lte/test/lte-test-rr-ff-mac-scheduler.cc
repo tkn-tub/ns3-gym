@@ -259,11 +259,10 @@ LenaRrFfMacSchedulerTestCase::DoRun (void)
   double tolerance = 0.1;
   Simulator::Stop (Seconds (statsStartTime + statsDuration - 0.0001));
 
-  Simulator::Schedule (Seconds (statsStartTime), &LteHelper::EnableRlcTraces, lteHelper);
+  lteHelper->EnableRlcTraces ();
   Ptr<RadioBearerStatsCalculator> rlcStats = lteHelper->GetRlcStats ();
   rlcStats->SetAttribute ("StartTime", TimeValue (Seconds (statsStartTime)));
   rlcStats->SetAttribute ("EpochDuration", TimeValue (Seconds (statsDuration)));
-
 
   Simulator::Run ();
 

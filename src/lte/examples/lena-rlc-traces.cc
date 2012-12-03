@@ -46,7 +46,6 @@ int main (int argc, char *argv[])
   lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
   // Enable LTE log components
   //lteHelper->EnableLogComponents ();
-  lteHelper->EnableRlcTraces();
 
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
@@ -73,7 +72,7 @@ int main (int argc, char *argv[])
   // Activate an EPS bearer
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
-lteHelper->ActivateDataRadioBearer (ueDevs, bearer);
+  lteHelper->ActivateDataRadioBearer (ueDevs, bearer);
 
   Simulator::Stop (Seconds (2));
 

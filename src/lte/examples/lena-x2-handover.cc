@@ -25,10 +25,50 @@
 #include "ns3/lte-module.h"
 #include "ns3/applications-module.h"
 #include "ns3/point-to-point-module.h"
-#include "ns3/config-store.h"
-//#include "ns3/gtk-config-store.h"
+#include "ns3/config-store-module.h"
 
 using namespace ns3;
+
+
+
+void 
+NotifyConnectionEstablishedUe (std::string context, uint64_t imsi, uint16_t cellid, uint16_t rnti)
+{
+  std::cout << context << " UE IMSI " << imsi << ": connected to CellId " << cellid << " with RNTI " << rnti << std::endl;
+}
+
+void 
+NotifyHandoverStartUe (std::string context, uint64_t imsi, uint16_t cellid, uint16_t rnti, uint16_t targetCellId)
+{
+  std::cout << context << " UE IMSI " << imsi << ": previously connected to CellId " << cellid << " with RNTI " << rnti << ", doing handover to CellId " << targetCellId << std::endl;
+}
+
+void 
+NotifyHandoverEndOkUe (std::string context, uint64_t imsi, uint16_t cellid, uint16_t rnti)
+{
+  std::cout << context << " UE IMSI " << imsi << ": successful handover to CellId " << cellid << " with RNTI " << rnti << std::endl;
+}
+
+void 
+NotifyConnectionEstablishedEnb (std::string context, uint64_t imsi, uint16_t cellid, uint16_t rnti)
+{
+  std::cout << context << " eNB CellId " << cellid << ": successful connection of UE with IMSI " << imsi << " RNTI " << rnti << std::endl;
+}
+
+void 
+NotifyHandoverStartEnb (std::string context, uint64_t imsi, uint16_t cellid, uint16_t rnti, uint16_t targetCellId)
+{
+  std::cout << context << " eNB CellId " << cellid << ": start handover of UE with IMSI " << imsi << " RNTI " << rnti << " to CellId " << targetCellId << std::endl;
+}
+
+void 
+NotifyHandoverEndOkEnb (std::string context, uint64_t imsi, uint16_t cellid, uint16_t rnti)
+{
+  std::cout << context << " eNB CellId " << cellid << ": completed handover of UE with IMSI " << imsi << " RNTI " << rnti << std::endl;
+}
+ 
+
+
 
 /**
  * Sample simulation script for a X2-based handover.
@@ -54,8 +94,15 @@ main (int argc, char *argv[])
 
   uint16_t numberOfUes = 1;
   uint16_t numberOfEnbs = 2;
+  uint16_t numBearersPerUe = 2;
   double simTime = 0.300;
   double distance = 100.0;
+
+  // change some default attributes so that they are reasonable for
+  // this scenario, but do this before processing command line
+  // arguments, so that the user is allowed to override these settings 
+  Config::SetDefault ("ns3::UdpClient::Interval", TimeValue (MilliSeconds(10)));
+  Config::SetDefault ("ns3::UdpClient::MaxPackets", UintegerValue(1000000));
 
   // Command line arguments
   CommandLine cmd;
@@ -88,6 +135,8 @@ main (int argc, char *argv[])
   Ipv4AddressHelper ipv4h;
   ipv4h.SetBase ("1.0.0.0", "255.0.0.0");
   Ipv4InterfaceContainer internetIpIfaces = ipv4h.Assign (internetDevices);
+  Ipv4Address remoteHostAddr = internetIpIfaces.GetAddress (1);
+
 
   // Routing of the Internet Host (towards the LTE network)
   Ipv4StaticRoutingHelper ipv4RoutingHelper;
@@ -122,8 +171,8 @@ main (int argc, char *argv[])
 
   // Install the IP stack on the UEs
   internet.Install (ueNodes);
-  Ipv4InterfaceContainer ueIpIface;
-  ueIpIface = epcHelper->AssignUeIpv4Address (NetDeviceContainer (ueLteDevs));
+  Ipv4InterfaceContainer ueIpIfaces;
+  ueIpIfaces = epcHelper->AssignUeIpv4Address (NetDeviceContainer (ueLteDevs));
   // Assign IP address to UEs, and install applications
   for (uint32_t u = 0; u < ueNodes.GetN (); ++u)
     {
@@ -140,9 +189,67 @@ main (int argc, char *argv[])
       lteHelper->Attach (ueLteDevs.Get(i), enbLteDevs.Get(0));
     }
 
-  // Activate a dedicated EPS Bearer (including Radio Bearer) between UEs and its eNB
-  // (note that the default EPS bearer will already have been activated)
-  // lteHelper->ActivateDedicatedEpsBearer (ueLteDevs, EpsBearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT), EpcTft::Default ());
+
+  NS_LOG_LOGIC ("setting up applications");
+    
+  // Install and start applications on UEs and remote host
+  uint16_t dlPort = 10000;
+  uint16_t ulPort = 20000;
+
+  // randomize a bit start times to avoid simulation artifacts
+  // (e.g., buffer overflows due to packet transmissions happening
+  // exactly at the same time) 
+  Ptr<UniformRandomVariable> startTimeSeconds = CreateObject<UniformRandomVariable> ();
+  startTimeSeconds->SetAttribute ("Min", DoubleValue (0));
+  startTimeSeconds->SetAttribute ("Max", DoubleValue (0.010));
+     
+  for (uint32_t u = 0; u < numberOfUes; ++u)
+    {
+      Ptr<Node> ue = ueNodes.Get (u);
+      // Set the default gateway for the UE
+      Ptr<Ipv4StaticRouting> ueStaticRouting = ipv4RoutingHelper.GetStaticRouting (ue->GetObject<Ipv4> ());
+      ueStaticRouting->SetDefaultRoute (epcHelper->GetUeDefaultGatewayAddress (), 1);
+
+      for (uint32_t b = 0; b < numBearersPerUe; ++b)
+        {
+          ++dlPort;
+          ++ulPort;
+
+          ApplicationContainer clientApps;
+          ApplicationContainer serverApps;
+          
+          NS_LOG_LOGIC ("installing UDP DL app for UE " << u);
+          UdpClientHelper dlClientHelper (ueIpIfaces.GetAddress (u), dlPort);
+          clientApps.Add (dlClientHelper.Install (remoteHost));
+          PacketSinkHelper dlPacketSinkHelper ("ns3::UdpSocketFactory", 
+                                               InetSocketAddress (Ipv4Address::GetAny (), dlPort));
+          serverApps.Add (dlPacketSinkHelper.Install (ue));
+              
+          NS_LOG_LOGIC ("installing UDP UL app for UE " << u);
+          UdpClientHelper ulClientHelper (remoteHostAddr, ulPort);
+          clientApps.Add (ulClientHelper.Install (ue));
+          PacketSinkHelper ulPacketSinkHelper ("ns3::UdpSocketFactory", 
+                                               InetSocketAddress (Ipv4Address::GetAny (), ulPort));
+          serverApps.Add (ulPacketSinkHelper.Install (remoteHost));  
+             
+          Ptr<EpcTft> tft = Create<EpcTft> ();
+          EpcTft::PacketFilter dlpf;
+          dlpf.localPortStart = dlPort;
+          dlpf.localPortEnd = dlPort;
+          tft->Add (dlpf); 
+          EpcTft::PacketFilter ulpf;
+          ulpf.remotePortStart = ulPort;
+          ulpf.remotePortEnd = ulPort;
+          tft->Add (ulpf);
+          EpsBearer bearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT);
+          lteHelper->ActivateDedicatedEpsBearer (ueLteDevs.Get (u), bearer, tft);
+          
+          Time startTime = Seconds (startTimeSeconds->GetValue ());
+          serverApps.Start (startTime);
+          clientApps.Start (startTime);
+
+        } // end for b
+    }
 
 
   // Add X2 inteface
@@ -156,6 +263,28 @@ main (int argc, char *argv[])
   //p2ph.EnablePcapAll("lena-x2-handover");
 
   lteHelper->EnableMacTraces ();
+  lteHelper->EnableRlcTraces ();
+  lteHelper->EnablePdcpTraces ();
+  Ptr<RadioBearerStatsCalculator> rlcStats = lteHelper->GetRlcStats ();
+  rlcStats->SetAttribute ("EpochDuration", TimeValue (Seconds (0.05)));
+  Ptr<RadioBearerStatsCalculator> pdcpStats = lteHelper->GetPdcpStats ();
+  pdcpStats->SetAttribute ("EpochDuration", TimeValue (Seconds (0.05)));
+
+
+  // connect custom trace sinks for RRC connection establishment and handover notification
+  Config::Connect ("/NodeList/*/DeviceList/*/LteEnbRrc/ConnectionEstablished",
+                   MakeCallback (&NotifyConnectionEstablishedEnb));
+  Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/ConnectionEstablished",
+                   MakeCallback (&NotifyConnectionEstablishedUe));
+  Config::Connect ("/NodeList/*/DeviceList/*/LteEnbRrc/HandoverStart",
+                   MakeCallback (&NotifyHandoverStartEnb));
+  Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/HandoverStart",
+                   MakeCallback (&NotifyHandoverStartUe));
+  Config::Connect ("/NodeList/*/DeviceList/*/LteEnbRrc/HandoverEndOk",
+                   MakeCallback (&NotifyHandoverEndOkEnb));
+  Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/HandoverEndOk",
+                   MakeCallback (&NotifyHandoverEndOkUe));
+
 
   Simulator::Stop(Seconds(simTime));
   Simulator::Run();

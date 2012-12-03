@@ -48,8 +48,6 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED ( LteEnbNetDevice);
 
-uint16_t LteEnbNetDevice::m_cellIdCounter = 0;
-
 TypeId LteEnbNetDevice::GetTypeId (void)
 {
   static TypeId
@@ -250,8 +248,7 @@ LteEnbNetDevice::SetUlEarfcn (uint16_t earfcn)
 void 
 LteEnbNetDevice::DoStart (void)
 {
-  NS_ABORT_MSG_IF (m_cellIdCounter == 65535, "max num eNBs exceeded");
-  m_cellId = ++m_cellIdCounter;
+
   UpdateConfig ();
   m_phy->Start ();
   m_mac->Start ();

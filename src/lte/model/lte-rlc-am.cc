@@ -90,6 +90,15 @@ LteRlcAm::GetTypeId (void)
   return tid;
 }
 
+void
+LteRlcAm::DoDispose ()
+{
+  NS_LOG_FUNCTION (this);
+  m_pollRetransmitTimer.Cancel ();
+  m_reorderingTimer.Cancel ();
+  m_statusProhibitTimer.Cancel ();
+}
+
 
 /**
  * RLC SAP

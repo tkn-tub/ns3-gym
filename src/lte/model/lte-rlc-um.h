@@ -38,6 +38,7 @@ public:
   LteRlcUm ();
   virtual ~LteRlcUm ();
   static TypeId GetTypeId (void);
+  virtual void DoDispose ();
 
   /**
    * RLC SAP

@@ -72,6 +72,7 @@ public:
       CONNECTION_RECONFIGURATION,
       CONNECTION_REESTABLISHMENT,
       HANDOVER_JOINING,
+      HANDOVER_PATH_SWITCH,
       HANDOVER_LEAVING,
       NUM_STATES
     };
@@ -105,6 +106,13 @@ public:
    * \param sourceX2apId 
    */
   void SetSource (uint16_t sourceCellId, uint16_t sourceX2apId);
+
+  /** 
+   * Set the IMSI
+   * 
+   * \param imsi the IMSI
+   */
+  void SetImsi (uint64_t imsi);
 
   /** 
    * Setup a new data radio bearer, including both the configuration
@@ -174,6 +182,13 @@ public:
    * \return a list of ERAB-to-be-setup items to be put in a X2 HO REQ message
    */
   std::vector<EpcX2Sap::ErabToBeSetupItem> GetErabList ();
+
+  /** 
+   * send the UE CONTEXT RELEASE X2 message to the source eNB, thus
+   * successfully terminating an X2 handover procedure 
+   * 
+   */
+  void SendUeContextRelease ();
   
 
   // methods forwarded from RRC SAP
@@ -331,9 +346,10 @@ private:
   LteRrcSap::PhysicalConfigDedicated m_physicalConfigDedicated;
   Ptr<LteEnbRrc> m_rrc;
   State m_state;
-  LtePdcpSapUser* m_pdcpSapUser;
+  LtePdcpSapUser* m_drbPdcpSapUser;
   bool m_pendingRrcConnectionReconfiguration;
-  TracedCallback<State, State> m_stateTransitionCallback;
+  //             imsi      cellid    rnti      old    new
+  TracedCallback<uint64_t, uint16_t, uint16_t, State, State> m_stateTransitionTrace;
   uint16_t m_sourceX2apId;
   uint16_t m_sourceCellId;
 };
@@ -537,14 +553,15 @@ private:
 
   // S1 SAP methods
   void DoDataRadioBearerSetupRequest (EpcEnbS1SapUser::DataRadioBearerSetupRequestParameters params);
-
-
+  void DoPathSwitchRequestAcknowledge (EpcEnbS1SapUser::PathSwitchRequestAcknowledgeParameters params);       
   // X2 SAP methods
   void DoRecvHandoverRequest (EpcX2SapUser::HandoverRequestParams params);
   void DoRecvHandoverRequestAck (EpcX2SapUser::HandoverRequestAckParams params);
+  void DoRecvHandoverPreparationFailure (EpcX2SapUser::HandoverPreparationFailureParams params);
   void DoRecvUeContextRelease (EpcX2SapUser::UeContextReleaseParams params);
   void DoRecvLoadInformation (EpcX2SapUser::LoadInformationParams params);
-  
+  void DoRecvResourceStatusUpdate (EpcX2SapUser::ResourceStatusUpdateParams params);
+
 
   // CMAC SAP methods
   uint16_t DoAllocateTemporaryCellRnti ();
@@ -669,6 +686,15 @@ private:
   std::set<uint16_t> m_ueSrsConfigurationIndexSet;
   uint16_t m_lastAllocatedConfigurationIndex;
   bool m_reconfigureUes;
+
+  //             imsi      cellid    rnti   
+  TracedCallback<uint64_t, uint16_t, uint16_t> m_connectionEstablishedTrace;
+  //             imsi      cellid    rnti   
+  TracedCallback<uint64_t, uint16_t, uint16_t> m_connectionReconfigurationTrace;
+  //             imsi      cellid    rnti     targetCellId
+  TracedCallback<uint64_t, uint16_t, uint16_t, uint16_t> m_handoverStartTrace;
+  //             imsi      cellid    rnti    
+  TracedCallback<uint64_t, uint16_t, uint16_t> m_handoverEndOkTrace;
 
 };
 

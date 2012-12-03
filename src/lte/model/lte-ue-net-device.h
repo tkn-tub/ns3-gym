@@ -62,9 +62,10 @@ public:
    * \param mac the MAC entity
    * \param rrc the RRC entity
    * \param nas the NAS entity
+   * \param imsi the unique UE identifier
    * 
    */
-  LteUeNetDevice (Ptr<Node> node, Ptr<LteUePhy> phy, Ptr<LteUeMac> mac, Ptr<LteUeRrc> rrc, Ptr<EpcUeNas> nas);
+  LteUeNetDevice (Ptr<Node> node, Ptr<LteUePhy> phy, Ptr<LteUeMac> mac, Ptr<LteUeRrc> rrc, Ptr<EpcUeNas> nas, uint64_t imsi);
 
   virtual ~LteUeNetDevice (void);
   virtual void DoDispose ();
@@ -97,13 +98,6 @@ public:
    */
   Ptr<LteEnbNetDevice> GetTargetEnb (void);
 
-  /** 
-   * Activate a dedicated EPS bearer
-   * 
-   * \param bearer the bearer paramaters
-   * \param tft the TFT identifying the traffic that will go over the bearer
-   */
-  void ActivateDedicatedEpsBearer (EpsBearer bearer, Ptr<EpcTft> tft);
 
 protected:
   // inherited from Object
@@ -130,8 +124,6 @@ private:
   Ptr<EpcUeNas> m_nas;
 
   uint64_t m_imsi;
-  static uint64_t m_imsiCounter;
-
   
 };
 

@@ -56,8 +56,9 @@ public:
 
   enum ProcedureCode_t {
     HandoverPreparation     = 0,
-    LoadInformation         = 2,
-    UeContextRelease        = 5
+    LoadIndication          = 2,
+    UeContextRelease        = 5,
+    ResourceStatusReporting = 10
   };
 
   enum TypeOfMessage_t {
@@ -100,6 +101,9 @@ public:
   uint16_t GetTargetCellId () const;
   void SetTargetCellId (uint16_t targetCellId);
 
+  uint32_t GetMmeUeS1apId () const;
+  void SetMmeUeS1apId (uint32_t mmeUeS1apId);
+
   std::vector <EpcX2Sap::ErabToBeSetupItem> GetBearers () const;
   void SetBearers (std::vector <EpcX2Sap::ErabToBeSetupItem> bearers);
 
@@ -119,6 +123,7 @@ private:
   uint16_t          m_oldEnbUeX2apId;
   uint16_t          m_cause;
   uint16_t          m_targetCellId;
+  uint32_t          m_mmeUeS1apId;
   uint64_t          m_ueAggregateMaxBitRateDownlink;
   uint64_t          m_ueAggregateMaxBitRateUplink;
   std::vector <EpcX2Sap::ErabToBeSetupItem> m_erabsToBeSetupList;
@@ -130,7 +135,7 @@ class EpcX2HandoverRequestAckHeader : public Header
 public:
   EpcX2HandoverRequestAckHeader ();
   virtual ~EpcX2HandoverRequestAckHeader ();
-  
+
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
   virtual uint32_t GetSerializedSize (void) const;
@@ -162,6 +167,42 @@ private:
   uint16_t          m_newEnbUeX2apId;
   std::vector <EpcX2Sap::ErabAdmittedItem>     m_erabsAdmittedList;
   std::vector <EpcX2Sap::ErabNotAdmittedItem>  m_erabsNotAdmittedList;
+};
+
+
+class EpcX2HandoverPreparationFailureHeader : public Header
+{
+public:
+  EpcX2HandoverPreparationFailureHeader ();
+  virtual ~EpcX2HandoverPreparationFailureHeader ();
+
+  static TypeId GetTypeId (void);
+  virtual TypeId GetInstanceTypeId (void) const;
+  virtual uint32_t GetSerializedSize (void) const;
+  virtual void Serialize (Buffer::Iterator start) const;
+  virtual uint32_t Deserialize (Buffer::Iterator start);
+  virtual void Print (std::ostream &os) const;
+
+
+  uint16_t GetOldEnbUeX2apId () const;
+  void SetOldEnbUeX2apId (uint16_t x2apId);
+
+  uint16_t GetCause () const;
+  void SetCause (uint16_t cause);
+
+  uint16_t GetCriticalityDiagnostics () const;
+  void SetCriticalityDiagnostics (uint16_t criticalityDiagnostics);
+
+  uint32_t GetLengthOfIes () const;
+  uint32_t GetNumberOfIes () const;
+
+private:
+  uint32_t          m_numberOfIes;
+  uint32_t          m_headerLength;
+
+  uint16_t          m_oldEnbUeX2apId;
+  uint16_t          m_cause;
+  uint16_t          m_criticalityDiagnostics;
 };
 
 
@@ -222,6 +263,42 @@ private:
   uint32_t          m_headerLength;
 
   std::vector <EpcX2Sap::CellInformationItem> m_cellInformationList;
+};
+
+
+class EpcX2ResourceStatusUpdateHeader : public Header
+{
+public:
+  EpcX2ResourceStatusUpdateHeader ();
+  virtual ~EpcX2ResourceStatusUpdateHeader ();
+
+  static TypeId GetTypeId (void);
+  virtual TypeId GetInstanceTypeId (void) const;
+  virtual uint32_t GetSerializedSize (void) const;
+  virtual void Serialize (Buffer::Iterator start) const;
+  virtual uint32_t Deserialize (Buffer::Iterator start);
+  virtual void Print (std::ostream &os) const;
+
+
+  uint16_t GetEnb1MeasurementId () const;
+  void SetEnb1MeasurementId (uint16_t enb1MeasurementId);
+
+  uint16_t GetEnb2MeasurementId () const;
+  void SetEnb2MeasurementId (uint16_t enb2MeasurementId);
+
+  std::vector <EpcX2Sap::CellMeasurementResultItem> GetCellMeasurementResultList () const;
+  void SetCellMeasurementResultList (std::vector <EpcX2Sap::CellMeasurementResultItem> cellMeasurementResultList);
+
+  uint32_t GetLengthOfIes () const;
+  uint32_t GetNumberOfIes () const;
+
+private:
+  uint32_t          m_numberOfIes;
+  uint32_t          m_headerLength;
+
+  uint16_t          m_enb1MeasurementId;
+  uint16_t          m_enb2MeasurementId;
+  std::vector <EpcX2Sap::CellMeasurementResultItem> m_cellMeasurementResultList;
 };
 
 
