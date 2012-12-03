@@ -211,6 +211,7 @@ private:
   uint32_t m_cqiTimersThreshold; // # of TTIs for which a CQI canbe considered valid
 
   std::map <uint16_t,uint8_t> m_uesTxMode; // txMode of the UEs
+  
 
 
   // HARQ attributes
@@ -233,6 +234,12 @@ private:
   // x>0: process Id equal to `x` trasmission count
   std::map <uint16_t, UlHarqProcessesStatus_t> m_ulHarqProcessesStatus;
   std::map <uint16_t, UlHarqProcessesDciBuffer_t> m_ulHarqProcessesDciBuffer;
+
+
+  // RACH attributes
+  std::vector <struct RachListElement_s> m_rachList;
+  std::vector <uint16_t> m_rachAllocationMap;
+  uint8_t m_ulGrantMcs; // MCS for UL grant (default 0)
 };
 
 } // namespace ns3

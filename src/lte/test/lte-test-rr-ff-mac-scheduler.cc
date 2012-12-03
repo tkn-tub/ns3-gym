@@ -254,7 +254,7 @@ LenaRrFfMacSchedulerTestCase::DoRun (void)
     }
 
 
-  double statsStartTime = 0.050; // need to allow for RRC connection establishment + SRS 
+  double statsStartTime = 0.100; // need to allow for RRC connection establishment + SRS
   double statsDuration = 0.4;
   double tolerance = 0.1;
   Simulator::Stop (Seconds (statsStartTime + statsDuration - 0.0001));

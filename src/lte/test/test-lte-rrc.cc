@@ -75,12 +75,12 @@ std::string LteRrcConnectionEstablishmentTestCase::BuildNameString (uint32_t nUe
 }
 
 LteRrcConnectionEstablishmentTestCase::LteRrcConnectionEstablishmentTestCase (uint32_t nUes, uint32_t nBearers, uint32_t tConnBase, uint32_t tConnIncrPerUe, uint32_t delayDiscStart)
-  : TestCase ("RRC connection establishment"),
+  : TestCase (BuildNameString (nUes, nBearers, tConnBase, tConnIncrPerUe, delayDiscStart)),
     m_nUes (nUes),
     m_nBearers (nBearers),
     m_tConnBase (tConnBase),
     m_tConnIncrPerUe (tConnIncrPerUe),
-    m_delayConnEnd (150), // includes: time to receive system information, time for Random Access (RACH preamble, RAR response), time to send and receive RRC connection request+setup+completed. Value should be slightly higher than T300 in TS 36.331
+    m_delayConnEnd (140+nUes*8/4), // includes: time to receive system information, time for Random Access (RACH preamble, RAR response), time to send and receive RRC connection request+setup+completed. Value should be slightly higher than T300 in TS 36.331
     m_delayDiscStart (delayDiscStart),
     m_delayDiscEnd (10)
 {
@@ -263,7 +263,7 @@ LteRrcTestSuite::LteRrcTestSuite ()
   AddTestCase (new LteRrcConnectionEstablishmentTestCase (  4,        0,        20,              0,             1));
   AddTestCase (new LteRrcConnectionEstablishmentTestCase (  4,        0,        20,            300,             1));
   AddTestCase (new LteRrcConnectionEstablishmentTestCase ( 20,        0,        10,              1,             1));
-  AddTestCase (new LteRrcConnectionEstablishmentTestCase ( 50,        0,        10,              0,             1));
+  AddTestCase (new LteRrcConnectionEstablishmentTestCase ( 50,        0,         0,              0,             1));
 
   // // time consuming tests with a lot of UEs
   // AddTestCase (new LteRrcConnectionEstablishmentTestCase (100,        0,        10,              0,             1));

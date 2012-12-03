@@ -371,9 +371,9 @@ LteUeMac::SendRaPreamble (bool contention)
   // bypass the m_ulConfigured flag. This is reasonable, since In fact
   // the RACH preamble is sent on 6RB bandwidth so the uplink
   // bandwidth does not need to be configured. 
-  m_uePhySapProvider->SendRachPreamble (m_raPreambleId);
   NS_ASSERT (m_subframeNo > 0); // sanity check for subframe starting at 1
   m_raRnti = m_subframeNo - 1;
+  m_uePhySapProvider->SendRachPreamble (m_raPreambleId, m_raRnti);
   NS_LOG_INFO (this << " sent preamble id " << (uint32_t) m_raPreambleId << ", RA-RNTI " << (uint32_t) m_raRnti);
   // 3GPP 36.321 5.1.4 
   Time raWindowBegin = MilliSeconds (3); 
@@ -590,6 +590,9 @@ LteUeMac::DoReceiveLteControlMessage (Ptr<LteControlMessage> msg)
                   if (it->rapId == m_raPreambleId) // RAR is for me
                     {
                       RecvRaResponse (it->rarPayload);
+                      // TODO:: RRC generates the RecvRaResponse messaged
+                      // for avoiding holes in transmission at PHY layer
+                      // (which produce erroneous UL CQI evaluation)
                     }
                 }
             }

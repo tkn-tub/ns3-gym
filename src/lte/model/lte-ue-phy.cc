@@ -71,7 +71,7 @@ public:
   // inherited from LtePhySapProvider
   virtual void SendMacPdu (Ptr<Packet> p);
   virtual void SendLteControlMessage (Ptr<LteControlMessage> msg);
-  virtual void SendRachPreamble (uint32_t prachId);
+  virtual void SendRachPreamble (uint32_t prachId, uint32_t raRnti);
 
 private:
   LteUePhy* m_phy;
@@ -95,9 +95,9 @@ UeMemberLteUePhySapProvider::SendLteControlMessage (Ptr<LteControlMessage> msg)
 }
 
 void
-UeMemberLteUePhySapProvider::SendRachPreamble (uint32_t prachId)
+UeMemberLteUePhySapProvider::SendRachPreamble (uint32_t prachId, uint32_t raRnti)
 {
-  m_phy->DoSendRachPreamble (prachId);
+  m_phy->DoSendRachPreamble (prachId, raRnti);
 }
 
 
@@ -132,6 +132,8 @@ LteUePhy::LteUePhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy)
     m_dlConfigured (false),
     m_ulConfigured (false),
     m_addedToDlChannel (false),
+    m_raPreambleId (255), // value out of range
+    m_raRnti (11), // value out of range
     m_rsrpRsrqSampleCounter (0)
 {
   m_amc = CreateObject <LteAmc> ();
@@ -536,13 +538,15 @@ LteUePhy::DoSendLteControlMessage (Ptr<LteControlMessage> msg)
 }
 
 void 
-LteUePhy::DoSendRachPreamble (uint32_t raPreambleId)
+LteUePhy::DoSendRachPreamble (uint32_t raPreambleId, uint32_t raRnti)
 {
   NS_LOG_FUNCTION (this << raPreambleId);
 
   // unlike other control messages, RACH preamble is sent ASAP
   Ptr<RachPreambleLteControlMessage> msg = Create<RachPreambleLteControlMessage> ();
   msg->SetRapId (raPreambleId);
+  m_raPreambleId = raPreambleId;
+  m_raRnti = raRnti;
   m_controlMessagesQueue.at (0).push_back (msg);
 }
 
@@ -604,7 +608,6 @@ LteUePhy::ReceiveLteControlMessageList (std::list<Ptr<LteControlMessage> > msgLi
     else if (msg->GetMessageType () == LteControlMessage::UL_DCI) 
     {
       // set the uplink bandwidht according to the UL-CQI
-      NS_LOG_DEBUG (this << " UL DCI");
       Ptr<UlDciLteControlMessage> msg2 = DynamicCast<UlDciLteControlMessage> (msg);
       UlDciListElement_s dci = msg2->GetDci ();
       if (dci.m_rnti != m_rnti)
@@ -612,17 +615,49 @@ LteUePhy::ReceiveLteControlMessageList (std::list<Ptr<LteControlMessage> > msgLi
           // DCI not for me
           continue;
         }
+      NS_LOG_INFO (this << " UL DCI");
       std::vector <int> ulRb;
       for (int i = 0; i < dci.m_rbLen; i++)
       {
         ulRb.push_back (i + dci.m_rbStart);
         //NS_LOG_DEBUG (this << " UE RB " << i + dci.m_rbStart);
       }
-      
       QueueSubChannelsForTransmission (ulRb);
       // pass the info to the MAC
       m_uePhySapUser->ReceiveLteControlMessage (msg);
     }
+    else if (msg->GetMessageType () == LteControlMessage::RAR)
+      {
+        Ptr<RarLteControlMessage> rarMsg = DynamicCast<RarLteControlMessage> (msg);
+        if (rarMsg->GetRaRnti () == m_raRnti)
+          {
+            for (std::list<RarLteControlMessage::Rar>::const_iterator it = rarMsg->RarListBegin (); it != rarMsg->RarListEnd (); ++it)
+              {
+                if (it->rapId != m_raPreambleId)
+                  {
+                    // UL grant not for me
+                    continue;
+                  }
+                else
+                  {
+                    NS_LOG_INFO ("received RAR RNTI " << m_raRnti);
+                    // set the uplink bandwidht according to the UL grant
+                    std::vector <int> ulRb;
+                    for (int i = 0; i < it->rarPayload.m_grant.m_rbLen; i++)
+                    {
+                      ulRb.push_back (i + it->rarPayload.m_grant.m_rbStart);
+                    }
+
+                    QueueSubChannelsForTransmission (ulRb);
+                    // pass the info to the MAC
+                    m_uePhySapUser->ReceiveLteControlMessage (msg);
+                    // reset RACH variables with out of range values
+                    m_raPreambleId = 255;
+                    m_raRnti = 11;
+                  }
+              }
+          }
+      }
     else if (msg->GetMessageType () == LteControlMessage::MIB) 
       {
         NS_LOG_INFO ("received MIB");
@@ -682,7 +717,7 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
       
       std::list<Ptr<LteControlMessage> > ctrlMsg = GetControlMessages ();
       // send packets in queue
-  NS_LOG_LOGIC (this << " UE - start TX PUSCH + PUCCH");
+      NS_LOG_LOGIC (this << " UE - start slot for PUSCH + PUCCH - RNTI " << m_rnti);
       // send the current burts of packets
       Ptr<PacketBurst> pb = GetPacketBurst ();
       if (pb)
@@ -694,10 +729,14 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
       // send only PUCCH (ideal: fake null bandwidth signal)
           if (ctrlMsg.size ()>0)
             {
-          NS_LOG_LOGIC (this << " UE - start TX PUCCH (NO PUSCH)");
+              NS_LOG_LOGIC (this << " UE - start TX PUCCH (NO PUSCH)");
               std::vector <int> dlRb;
               SetSubChannelsForTransmission (dlRb);
               m_uplinkSpectrumPhy->StartTxDataFrame (pb, ctrlMsg, UL_DATA_DURATION);
+            }
+          else
+            {
+              NS_LOG_LOGIC (this << " UE - UL NOTHING TO SEND");
             }
         }
     }  // m_configured

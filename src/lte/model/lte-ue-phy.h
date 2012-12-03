@@ -226,7 +226,7 @@ private:
   // UE PHY SAP methods 
   virtual void DoSendMacPdu (Ptr<Packet> p);  
   virtual void DoSendLteControlMessage (Ptr<LteControlMessage> msg);
-  virtual void DoSendRachPreamble (uint32_t prachId);
+  virtual void DoSendRachPreamble (uint32_t prachId, uint32_t raRnti);
   
   std::vector <int> m_subChannelsForTransmission;
   std::vector <int> m_subChannelsForReception;
@@ -266,6 +266,9 @@ private:
   bool m_addedToDlChannel;
 
   Ptr<LteHarqPhy> m_harqPhyModule;
+
+  uint32_t m_raPreambleId;
+  uint32_t m_raRnti;
 
   /**
    * Trace information regarding RSRP and RSRQ (see TS 36.214)

@@ -278,8 +278,6 @@ private:
   LteEnbCphySapProvider* m_enbCphySapProvider;
   LteEnbCphySapUser* m_enbCphySapUser;
   
-  std::vector <uint16_t> m_ulRntiRxed;
-
   uint32_t m_nrFrames;
   uint32_t m_nrSubFrames;
   

@@ -481,7 +481,6 @@ LteEnbPhy::StartSubFrame (void)
   // update info on TB to be received
   std::list<UlDciLteControlMessage> uldcilist = DequeueUlDci ();
   std::list<UlDciLteControlMessage>::iterator dciIt = uldcilist.begin ();
-  m_ulRntiRxed.clear ();
   NS_LOG_DEBUG (this << " eNB Expected TBs " << uldcilist.size ());
   for (dciIt = uldcilist.begin (); dciIt!=uldcilist.end (); dciIt++)
     {
@@ -510,15 +509,11 @@ LteEnbPhy::StartSubFrame (void)
             {
               NS_LOG_DEBUG (this << " RNTI " << (*dciIt).GetDci ().m_rnti << " HARQ RETX");
             }
-          m_ulRntiRxed.push_back ((*dciIt).GetDci ().m_rnti);
         }
     }
 
   // process the current burst of control messages
   std::list<Ptr<LteControlMessage> > ctrlMsg = GetControlMessages ();
-  std::list<DlDciListElement_s> dlDci;
-  std::list<UlDciListElement_s> ulDci;
-//   std::vector <int> dlRb;
   m_dlDataRbMap.clear ();
   if (ctrlMsg.size () > 0)
     {
@@ -530,7 +525,6 @@ LteEnbPhy::StartSubFrame (void)
           if (msg->GetMessageType () == LteControlMessage::DL_DCI)
             {
               Ptr<DlDciLteControlMessage> dci = DynamicCast<DlDciLteControlMessage> (msg);
-              dlDci.push_back (dci->GetDci ());
                   // get the tx power spectral density according to DL-DCI(s)
                   // translate the DCI to Spectrum framework
                   uint32_t mask = 0x1;
@@ -551,7 +545,32 @@ LteEnbPhy::StartSubFrame (void)
             {
               Ptr<UlDciLteControlMessage> dci = DynamicCast<UlDciLteControlMessage> (msg);
               QueueUlDci (*dci);
-              ulDci.push_back (dci->GetDci ());
+            }
+          else if (msg->GetMessageType () == LteControlMessage::RAR)
+            {
+              Ptr<RarLteControlMessage> rarMsg = DynamicCast<RarLteControlMessage> (msg);
+              for (std::list<RarLteControlMessage::Rar>::const_iterator it = rarMsg->RarListBegin (); it != rarMsg->RarListEnd (); ++it)
+                {
+                  if (it->rarPayload.m_grant.m_ulDelay == true)
+                    {
+                      NS_FATAL_ERROR (" RAR delay is not yet implemented");
+                    }
+                  UlGrant_s ulGrant = it->rarPayload.m_grant;
+                  // translate the UL grant in a standard UL-DCI and queue it
+                  UlDciListElement_s dci;
+                  dci.m_rnti = ulGrant.m_rnti;
+                  dci.m_rbStart = ulGrant.m_rbStart;
+                  dci.m_rbLen = ulGrant.m_rbLen;
+                  dci.m_tbSize = ulGrant.m_tbSize;
+                  dci.m_mcs = ulGrant.m_mcs;
+                  dci.m_hopping = ulGrant.m_hopping;
+                  dci.m_tpc = ulGrant.m_tpc;
+                  dci.m_cqiRequest = ulGrant.m_cqiRequest;
+                  dci.m_ndi = 1;
+                  UlDciLteControlMessage msg;
+                  msg.SetDci (dci);
+                  QueueUlDci (msg);
+                }
             }
           it++;
 

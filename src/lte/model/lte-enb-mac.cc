@@ -323,7 +323,7 @@ LteEnbMac::GetTypeId (void)
                    MakeUintegerChecker<uint8_t> (4, 64))
     .AddAttribute ("PreambleTransMax",
                    "Maximum number of random access preamble transmissions",
-                   UintegerValue (10),
+                   UintegerValue (50),
                    MakeUintegerAccessor (&LteEnbMac::m_preambleTransMax),
                    MakeUintegerChecker<uint8_t> (3, 200))
     .AddAttribute ("RaResponseWindowSize",
@@ -473,16 +473,10 @@ LteEnbMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
     {
       // process received RACH preambles and notify the scheduler
       FfMacSchedSapProvider::SchedDlRachInfoReqParameters rachInfoReqParams;
-      // TODO: we should wait for DL_SCHEDULE_INDICATION to build the RARs
-      // from the RAR_List; this requires proper support from the scheduler.
-      // For now, we take a shortcut and just build the RAR here
-      // as an ideal message and without an UL grant.
-      Ptr<RarLteControlMessage> rarMsg = Create<RarLteControlMessage> ();
       NS_ASSERT (subframeNo > 0 && subframeNo <= 10); // subframe in 1..10
       // see TS 36.321 5.1.4;  preambles were sent two frames ago
       // (plus 3GPP counts subframes from 0, not 1)
       uint16_t raRnti = subframeNo - 3; 
-      rarMsg->SetRaRnti (raRnti);
       for (std::map<uint8_t, uint32_t>::const_iterator it = m_receivedRachPreambleCount.begin ();
            it != m_receivedRachPreambleCount.end ();
            ++it)
@@ -515,15 +509,10 @@ LteEnbMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
               rachLe.m_rnti = rnti;
               rachLe.m_estimatedSize = 144; // to be confirmed
               rachInfoReqParams.m_rachList.push_back (rachLe);
-              RarLteControlMessage::Rar rar;
-              rar.rapId = it->first;
-              rar.rarPayload.m_rnti = rnti;
-              // no UL grant for now
-              rarMsg->AddRar (rar);
+              m_rapIdRntiMap.insert (std::pair <uint16_t, uint32_t> (rnti, it->first));
             }
         }
       m_schedSapProvider->SchedDlRachInfoReq (rachInfoReqParams);
-      m_enbPhySapProvider->SendLteControlMessage (rarMsg);  
       m_receivedRachPreambleCount.clear ();
     }
   // Get downlink transmission opportunities
@@ -560,7 +549,7 @@ LteEnbMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
     {
       if (subframeNo>1)
         {        
-          m_ulCqiReceived.at (i).m_sfnSf = ((0x3FF & frameNo) << 4) | (0xF & subframeNo);
+          m_ulCqiReceived.at (i).m_sfnSf = ((0x3FF & frameNo) << 4) | (0xF & (subframeNo - 1));
         }
       else
         {
@@ -1007,6 +996,29 @@ LteEnbMac::DoSchedDlConfigInd (FfMacSchedSapUser::SchedDlConfigIndParameters ind
           NS_FATAL_ERROR ("Found element with more than two transport blocks");
         }
     }
+
+  // RACH
+  Ptr<RarLteControlMessage> rarMsg = Create<RarLteControlMessage> ();
+  uint16_t raRnti = m_subframeNo - 3;
+  rarMsg->SetRaRnti (raRnti);
+  for (unsigned int i = 0; i < ind.m_buildRarList.size (); i++)
+    {
+      std::map <uint16_t, uint32_t>::iterator itRapId = m_rapIdRntiMap.find (ind.m_buildRarList.at (i).m_rnti);
+      if (itRapId == m_rapIdRntiMap.end ())
+        {
+          NS_FATAL_ERROR ("Unable to find rapId of RNTI " << ind.m_buildRarList.at (i).m_rnti);
+        }
+      RarLteControlMessage::Rar rar;
+      rar.rapId = itRapId->second;
+      rar.rarPayload = ind.m_buildRarList.at (i);
+      rarMsg->AddRar (rar);
+      NS_LOG_INFO (this << " Send RAR message to RNTI " << ind.m_buildRarList.at (i).m_rnti << " rapId " << itRapId->second);
+    }
+  if (ind.m_buildRarList.size () > 0)
+    {
+      m_enbPhySapProvider->SendLteControlMessage (rarMsg);
+    }
+  m_rapIdRntiMap.clear ();
 }
 
 

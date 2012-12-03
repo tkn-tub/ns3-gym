@@ -58,7 +58,7 @@ public:
    * 
    * \param prachId the ID of the preamble
    */
-  virtual void SendRachPreamble (uint32_t prachId) = 0;
+  virtual void SendRachPreamble (uint32_t prachId, uint32_t raRnti) = 0;
 
 };
 

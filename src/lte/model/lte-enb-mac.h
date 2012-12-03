@@ -255,6 +255,8 @@ private:
   std::map<uint8_t, NcRaPreambleInfo> m_allocatedNcRaPreambleMap;
  
   std::map<uint8_t, uint32_t> m_receivedRachPreambleCount;
+
+  std::map<uint16_t, uint32_t> m_rapIdRntiMap;
 };
 
 } // end namespace ns3
