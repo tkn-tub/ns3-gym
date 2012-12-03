@@ -114,33 +114,38 @@ public:
   ~AnimationInterface ();
 
   /**
+   * \brief Enable tracking of the Ipv4 routing table for all Nodes
+   *
+   * \param fileName Trace file for storing routing table information 
+   * \param startTime Start time for capture
+   * \param stopTime  End time for capture
+   * \param pollInterval The periodic interval at which routing table information is polled
+   *        Default: 5s
+   *
+   * \returns none
+   */
+  void EnableIpv4RouteTracking (std::string fileName, Time startTime, Time stopTime, Time pollInterval = Seconds(5));
+
+  /**
+   * \brief Enable tracking of the Ipv4 routing table for a set of Nodes
+   *
+   * \param fileName Trace file for storing routing table information
+   * \param startTime Start time for capture
+   * \param stopTime  End time for capture
+   * \param nc A NodeContainer containing nodes for which Routing table has to be tracked
+   * \param pollInterval The periodic interval at which routing table information is polled
+   *        Default: 5s
+   *
+   * \returns none
+   */
+  void EnableIpv4RouteTracking (std::string fileName, Time startTime, Time stopTime, NodeContainer nc, Time pollInterval = Seconds(5));
+
+  /**
    * \brief Check if AnimationInterface is initialized
    * \returns true if AnimationInterface was already initialized
    *
    */
   static bool IsInitialized (void);
-
-  /**
-   * \brief Specify that animation commands are to be written
-   * to the specified output file.
-   *
-   * This call is used to write the animation information to a text
-   * file that can later be used as input to the network animator tool.
-   *
-   * \param fn The name of the output file.
-   * \returns true if successful open.
-   *
-   */
-  bool SetOutputFile (const std::string& fn);
-
-  /**
-   * \brief Specify that animation commands are to be written
-   * in XML format.
-   *
-   * \returns none
-   *
-   */
-  void SetXMLOutput ();
 
   /**
    * \brief Specify the time at which capture should start
@@ -358,21 +363,12 @@ public:
   bool IsStarted (void);
 
   /**
-   * \brief Show all 802.11 frames. Default: show only frames accepted by mac layer
-   * \param showAll if true shows all 802.11 frames including beacons, association
-   *  request and acks (very chatty). if false only frames accepted by mac layer
-   *
-   */
-  void ShowAll802_11 (bool showAll); 
-
-  /**
    *
    * \brief Enable Packet metadata
    * \param enable if true enables writing the packet metadata to the XML trace file
    *        if false disables writing the packet metadata
    */
   void EnablePacketMetadata (bool enable);
-
 
   /**
    *
@@ -394,9 +390,10 @@ public:
   int64_t AssignStreams (int64_t stream);
 
 private:
-  FILE * m_f; // File handle for output (-1 if none)
+  FILE * m_f; // File handle for output (0 if none)
+  FILE * m_routingF; // File handle for routing table output (0 if None);
   // Write specified amount of data to the specified handle
-  int WriteN (const char*, uint32_t);
+  int WriteN (const char*, uint32_t, FILE * f);
   bool m_xml;      // True if xml format desired
   Time m_mobilityPollInterval;
   std::string m_outputFileName;
@@ -410,6 +407,36 @@ private:
   Time m_stopTime;
   uint64_t m_maxPktsPerFile;
   std::string m_originalFileName;
+  Time m_routingStopTime;
+  std::string m_routingFileName;
+  Time m_routingPollInterval;
+  NodeContainer m_routingNc;
+  
+  void TrackIpv4Route ();
+  std::string GetIpv4RoutingTable (Ptr <Node> n);
+
+  /**
+   * \brief Specify that animation commands are to be written
+   * to the specified output file.
+   *
+   * This call is used to write the animation information to a text
+   * file that can later be used as input to the network animator tool.
+   *
+   * \param fn The name of the output file.
+   * \returns true if successful open.
+   *
+   */
+  bool SetOutputFile (const std::string& fn);
+  bool SetRoutingOutputFile (const std::string& fn);
+
+  /**
+   * \brief Specify that animation commands are to be written
+   * in XML format.
+   *
+   * \returns none
+   *
+   */
+  void SetXMLOutput ();
 
   /**
    * \brief Writes the topology information and sets up the appropriate
@@ -486,7 +513,7 @@ private:
   void MobilityCourseChangeTrace (Ptr <const MobilityModel> mob);
 
   // Write a string to the specified handle;
-  int  WriteN (const std::string&);
+  int  WriteN (const std::string&, FILE * f);
 
   void OutputWirelessPacket (Ptr<const Packet> p, AnimPacketInfo& pktInfo, AnimRxInfo pktrxInfo);
   void OutputCsmaPacket (Ptr<const Packet> p, AnimPacketInfo& pktInfo, AnimRxInfo pktrxInfo);
@@ -582,6 +609,7 @@ private:
   std::string GetXMLClose (std::string name) {return "</" + name + ">\n"; }
   std::string GetXMLOpenClose_meta (std::string metaInfo);
   std::string GetXMLOpenClose_NonP2pLinkProperties (uint32_t id, std::string ipv4Address, std::string channelType);
+  std::string GetXMLOpenClose_routing (uint32_t id, std::string routingInfo);
 
 
   /// Provides uniform random variables.
