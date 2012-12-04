@@ -702,7 +702,7 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
         }
       m_subChannelsForTransmissionQueue.at (m_macChTtiDelay-1).clear ();
   
-      if (m_srsConfigured)
+      if (m_srsConfigured && (m_srsStartTime <= Simulator::Now ()))
         {
 
           NS_ASSERT_MSG (subframeNo > 0 && subframeNo <= 10, "the SRS index check code assumes that subframeNo starts at 1");
@@ -757,9 +757,10 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
 }
   
 void
-  LteUePhy::SendSrs ()
+LteUePhy::SendSrs ()
 {
-  NS_LOG_FUNCTION (this << " UE " << m_rnti << " start tx SRS, cell Id " << m_cellId);
+  NS_LOG_FUNCTION (this << " UE " << m_rnti << " start tx SRS, cell Id " << (uint32_t) m_cellId);
+  NS_ASSERT (m_cellId > 0);
   // set the current tx power spectral density (full bandwidth)
   std::vector <int> dlRb;
   for (uint8_t i = 0; i < m_ulBandwidth; i++)
@@ -776,7 +777,7 @@ void
 LteUePhy::DoSyncronizeWithEnb (uint16_t cellId, uint16_t dlEarfcn)
 {
   NS_LOG_FUNCTION (this << cellId);
-  m_enbCellId = cellId;
+  m_cellId = cellId;
   m_dlEarfcn = dlEarfcn;
   m_downlinkSpectrumPhy->SetCellId (cellId);
   m_uplinkSpectrumPhy->SetCellId (cellId);
@@ -853,6 +854,12 @@ LteUePhy::DoSetSrsConfigurationIndex (uint16_t srcCi)
   m_srsPeriodicity = GetSrsPeriodicity (srcCi);
   m_srsSubframeOffset = GetSrsSubframeOffset (srcCi);
   m_srsConfigured = true;
+
+  // Need a guard time for the case where the SRS periodicity is changed 
+  // to make sure no UE sends SRSs before all UEs received the new SRS configuration.
+  // Note that the eNB will send the new SRS config to all UEs at the same time,
+  // but with the real RRC model the time it takes to reach each UE might vary.
+  m_srsStartTime = Simulator::Now () + MilliSeconds (3);
   NS_LOG_DEBUG (this << " UE SRS P " << m_srsPeriodicity << " RNTI " << m_rnti << " offset " << m_srsSubframeOffset << " cellId " << m_cellId << " CI " << srcCi);
 }
 

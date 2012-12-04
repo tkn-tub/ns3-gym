@@ -594,10 +594,6 @@ LteUeRrc::DoRecvRrcConnectionReconfiguration (LteRrcSap::RrcConnectionReconfigur
   switch (m_state)
     {
     case CONNECTED_NORMALLY:
-      if (msg.haveRadioResourceConfigDedicated)
-        {
-          ApplyRadioResourceConfigDedicated (msg.radioResourceConfigDedicated);
-        }      
       if (msg.haveMobilityControlInfo)
         {
           NS_LOG_INFO ("haveMobilityControlInfo == true");
@@ -615,12 +611,20 @@ LteUeRrc::DoRecvRrcConnectionReconfiguration (LteRrcSap::RrcConnectionReconfigur
           m_cmacSapProvider->StartNonContentionBasedRandomAccessProcedure (m_rnti, mci.rachConfigDedicated.raPreambleIndex, mci.rachConfigDedicated.raPrachMaskIndex);
           m_cphySapProvider->SetRnti (m_rnti);
           m_lastRrcTransactionIdentifier = msg.rrcTransactionIdentifier;
+          if (msg.haveRadioResourceConfigDedicated)
+            {
+              ApplyRadioResourceConfigDedicated (msg.radioResourceConfigDedicated);
+            } 
           // RRC connection reconfiguration completed will be sent
-          // after handover is completed
+          // after handover is complete
         }
       else
         {
           NS_LOG_INFO ("haveMobilityControlInfo == false");
+          if (msg.haveRadioResourceConfigDedicated)
+            {
+              ApplyRadioResourceConfigDedicated (msg.radioResourceConfigDedicated);
+            } 
           LteRrcSap::RrcConnectionReconfigurationCompleted msg2;
           msg2.rrcTransactionIdentifier = msg.rrcTransactionIdentifier;
           m_rrcSapUser->SendRrcConnectionReconfigurationCompleted (msg2);

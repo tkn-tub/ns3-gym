@@ -858,8 +858,10 @@ LteEnbPhy::DoSetSrsConfigurationIndex (uint16_t  rnti, uint16_t srcCi)
       m_srsUeOffset.clear ();
       m_srsUeOffset.resize (p, 0);
       m_srsPeriodicity = p;
-      // inhibit SRS until RRC Connection Reconfiguration propagates to UEs
-      m_srsStartTime = Simulator::Now () + MilliSeconds (2);
+      // inhibit SRS until RRC Connection Reconfiguration propagates
+      // to UEs, otherwise we might be wrong in determining the UE who
+      // actually sent the SRS (if the UE was using a stale SRS config)
+      m_srsStartTime = Simulator::Now () + MilliSeconds (m_macChTtiDelay) + MilliSeconds (3);
     }
 
   NS_LOG_DEBUG (this << " ENB SRS P " << m_srsPeriodicity << " RNTI " << rnti << " offset " << GetSrsSubframeOffset (srcCi) << " CI " << srcCi);

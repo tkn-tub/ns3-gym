@@ -251,8 +251,6 @@ private:
   LteUeCphySapUser* m_ueCphySapUser;
 
   uint16_t  m_rnti;
-
-  uint16_t m_enbCellId;
  
   uint8_t m_transmissionMode;
   std::vector <double> m_txModeGain;
@@ -260,6 +258,7 @@ private:
   uint16_t m_srsPeriodicity;
   uint16_t m_srsSubframeOffset;
   uint16_t m_srsConfigured;
+  Time     m_srsStartTime;
 
   bool m_dlConfigured;
   bool m_ulConfigured;

@@ -1545,7 +1545,7 @@ LteEnbRrc::GetNewSrsConfigurationIndex ()
       std::set<uint16_t>::reverse_iterator rit = m_ueSrsConfigurationIndexSet.rbegin ();
       NS_ASSERT (rit != m_ueSrsConfigurationIndexSet.rend ());
       NS_LOG_DEBUG (this << " lower bound " << (*rit) << " of " << g_srsCiHigh[m_srsCurrentPeriodicityId]);
-      if ((*rit) <= g_srsCiHigh[m_srsCurrentPeriodicityId])
+      if ((*rit) < g_srsCiHigh[m_srsCurrentPeriodicityId])
         {
           // got it from the upper bound
           m_lastAllocatedConfigurationIndex = (*rit) + 1;
