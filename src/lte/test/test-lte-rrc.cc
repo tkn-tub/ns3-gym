@@ -276,11 +276,13 @@ LteRrcTestSuite::LteRrcTestSuite ()
       AddTestCase (new LteRrcConnectionEstablishmentTestCase (  4,        0,        20,            300,             1, useIdealRrc));
       AddTestCase (new LteRrcConnectionEstablishmentTestCase ( 20,        0,        10,              1,             1, useIdealRrc));
       AddTestCase (new LteRrcConnectionEstablishmentTestCase ( 50,        0,         0,              0,             1, useIdealRrc));
-  // // time consuming tests with a lot of UEs
-  // AddTestCase (new LteRrcConnectionEstablishmentTestCase (100,        0,        10,              0,             1));
-  // AddTestCase (new LteRrcConnectionEstablishmentTestCase (100,        0,        10,              1,             1));
-  // AddTestCase (new LteRrcConnectionEstablishmentTestCase (200,        0,        10,              0,             1));
-  // AddTestCase (new LteRrcConnectionEstablishmentTestCase (200,        0,        10,              1,             1));
+
+      // // time consuming tests with a lot of UEs
+      // AddTestCase (new LteRrcConnectionEstablishmentTestCase (100,        0,        10,              0,             1, useIdealRrc));
+      // AddTestCase (new LteRrcConnectionEstablishmentTestCase (100,        0,        10,              1,             1, useIdealRrc));
+      // AddTestCase (new LteRrcConnectionEstablishmentTestCase (200,        0,        10,              0,             1, useIdealRrc));
+      // AddTestCase (new LteRrcConnectionEstablishmentTestCase (200,        0,        10,              1,             1, useIdealRrc));
+    }
 
     }
 }
