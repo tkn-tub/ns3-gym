@@ -71,6 +71,7 @@ public:
       CONNECTED_NORMALLY,
       CONNECTION_RECONFIGURATION,
       CONNECTION_REESTABLISHMENT,
+      HANDOVER_PREPARATION,
       HANDOVER_JOINING,
       HANDOVER_PATH_SWITCH,
       HANDOVER_LEAVING,
@@ -141,6 +142,13 @@ public:
   void ScheduleRrcConnectionReconfiguration ();
 
   /** 
+   * Start the handover preparation and send the handover request
+   * 
+   * \param cellId id of the target cell
+   */
+  void PrepareHandover (uint16_t cellId);
+
+  /** 
    * In the X2-based handover procedure, at the source eNB, trigger
    * handover by sending to the UE a RRC Connection 
    * Reconfiguration message including Mobility Control Info
@@ -183,12 +191,20 @@ public:
    */
   std::vector<EpcX2Sap::ErabToBeSetupItem> GetErabList ();
 
+
   /** 
    * send the UE CONTEXT RELEASE X2 message to the source eNB, thus
    * successfully terminating an X2 handover procedure 
    * 
    */
   void SendUeContextRelease ();
+
+  /** 
+   * Take the necessary actions in response to the reception of an X2 HO preparation failure message
+   * 
+   * \param cellId id of the target cell
+   */
+  void RecvHandoverPreparationFailure (uint16_t cellId);
   
 
   // methods forwarded from RRC SAP
@@ -352,6 +368,7 @@ private:
   TracedCallback<uint64_t, uint16_t, uint16_t, State, State> m_stateTransitionTrace;
   uint16_t m_sourceX2apId;
   uint16_t m_sourceCellId;
+  uint16_t m_targetCellId;
 };
 
 
@@ -686,6 +703,8 @@ private:
   std::set<uint16_t> m_ueSrsConfigurationIndexSet;
   uint16_t m_lastAllocatedConfigurationIndex;
   bool m_reconfigureUes;
+
+  bool m_admitHandoverRequest;
 
   //             imsi      cellid    rnti   
   TracedCallback<uint64_t, uint16_t, uint16_t> m_connectionEstablishedTrace;
