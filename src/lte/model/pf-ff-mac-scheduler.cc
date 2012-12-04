@@ -434,6 +434,10 @@ PfFfMacScheduler::DoCschedUeReleaseReq (const struct FfMacCschedSapProvider::Csc
           it++;
         }
     }
+  if (m_nextRntiUl == params.m_rnti)
+    {
+      m_nextRntiUl = 0;
+    }
 
   return;
 }

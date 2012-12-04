@@ -379,7 +379,7 @@ RrFfMacScheduler::DoCschedLcReleaseReq (const struct FfMacCschedSapProvider::Csc
 void
 RrFfMacScheduler::DoCschedUeReleaseReq (const struct FfMacCschedSapProvider::CschedUeReleaseReqParameters& params)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << " Release RNTI " << params.m_rnti);
   
   m_uesTxMode.erase (params.m_rnti);
   m_dlHarqCurrentProcessId.erase (params.m_rnti);
@@ -393,15 +393,24 @@ RrFfMacScheduler::DoCschedUeReleaseReq (const struct FfMacCschedSapProvider::Csc
   std::list<FfMacSchedSapProvider::SchedDlRlcBufferReqParameters>::iterator it = m_rlcBufferReq.begin ();
   while (it != m_rlcBufferReq.end ())
     {
-      NS_LOG_DEBUG (this << " Erase RNTI " << (*it).m_rnti << " LC " << (uint16_t)(*it).m_logicalChannelIdentity);
       if ((*it).m_rnti == params.m_rnti)
         {
+          NS_LOG_DEBUG (this << " Erase RNTI " << (*it).m_rnti << " LC " << (uint16_t)(*it).m_logicalChannelIdentity);
           it = m_rlcBufferReq.erase (it);
         }
       else
         {
           it++;
         }
+    }
+  if (m_nextRntiUl == params.m_rnti)
+    {
+      m_nextRntiUl = 0;
+    }
+
+  if (m_nextRntiDl == params.m_rnti)
+    {
+      m_nextRntiDl = 0;
     }
     
   return;
@@ -689,7 +698,7 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
               std::map <uint16_t, DlHarqProcessesStatus_t>::iterator it = m_dlHarqProcessesStatus.find (rnti);
               if (it == m_dlHarqProcessesStatus.end ())
                 {
-                  NS_FATAL_ERROR ("No info find in HARQ buffer for UE " << m_dlInfoListBuffered.at (i).m_rnti);
+                  NS_LOG_ERROR ("No info find in HARQ buffer for UE (might change eNB) " << m_dlInfoListBuffered.at (i).m_rnti);
                 }
               (*it).second.at (harqId) = 0;
               std::map <uint16_t, DlHarqRlcPduListBuffer_t>::iterator itRlcPdu =  m_dlHarqProcessesRlcPduListBuffer.find (rnti);
@@ -1200,20 +1209,20 @@ RrFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
               itProcId = m_ulHarqCurrentProcessId.find (rnti);
               if (itProcId == m_ulHarqCurrentProcessId.end ())
                 {
-                  NS_FATAL_ERROR ("No info find in HARQ buffer for UE " << rnti);
+                  NS_LOG_ERROR ("No info find in HARQ buffer for UE (might change eNB) " << rnti);
                 }
               uint8_t harqId = (uint8_t)((*itProcId).second - HARQ_PERIOD) % HARQ_PROC_NUM;
               NS_LOG_INFO (this << " UL-HARQ retx RNTI " << rnti << " harqId " << (uint16_t)harqId);
               std::map <uint16_t, UlHarqProcessesDciBuffer_t>::iterator itHarq = m_ulHarqProcessesDciBuffer.find (rnti);
               if (itHarq == m_ulHarqProcessesDciBuffer.end ())
                 {
-                  NS_FATAL_ERROR ("No info find in UL-HARQ buffer for UE " << rnti);
+                  NS_LOG_ERROR ("No info find in UL-HARQ buffer for UE (might change eNB) " << rnti);
                 }
               UlDciListElement_s dci = (*itHarq).second.at (harqId);
               std::map <uint16_t, UlHarqProcessesStatus_t>::iterator itStat = m_ulHarqProcessesStatus.find (rnti);
               if (itStat == m_ulHarqProcessesStatus.end ())
                 {
-                  NS_FATAL_ERROR ("No info find in HARQ buffer for UE " << rnti);
+                  NS_LOG_ERROR ("No info find in HARQ buffer for UE (might change eNB) " << rnti);
                 }
               if ((*itStat).second.at (harqId) > 3)
                 {
@@ -1327,7 +1336,7 @@ RrFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
           // limit to physical resources last resource assignment
           rbPerFlow = m_cschedCellConfig.m_ulBandwidth - rbAllocated;
         }
-
+      NS_LOG_DEBUG (this << " try to allocate " << (*it).first);
       UlDciListElement_s uldci;
       uldci.m_rnti = (*it).first;
       uldci.m_rbLen = rbPerFlow;
@@ -1517,11 +1526,13 @@ RrFfMacScheduler::DoSchedUlMacCtrlInfoReq (const struct FfMacSchedSapProvider::S
             {
               // create the new entry
               m_ceBsrRxed.insert ( std::pair<uint16_t, uint32_t > (rnti, buffer));
+              NS_LOG_INFO (this << " Insert RNTI " << rnti);
             }
           else
             {
               // update the buffer size value
               (*it).second = buffer;
+              NS_LOG_INFO (this << " Update RNTI " << rnti);
             }
         }
     }
