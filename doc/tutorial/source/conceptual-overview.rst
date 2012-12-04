@@ -313,7 +313,7 @@ section, so go ahead and expand that documentation node.  Now, expand the
 ``Debugging`` book and then select the ``Logging`` page.
 
 You should now be looking at the Doxygen documentation for the Logging module.
-In the list of ``#define``s at the top of the page you will see the entry
+In the list of ``#define`` s at the top of the page you will see the entry
 for ``NS_LOG_COMPONENT_DEFINE``.  Before jumping in, it would probably be 
 good to look for the "Detailed Description" of the logging module to get a 
 feel for the overall operation.  You can either scroll down or select the

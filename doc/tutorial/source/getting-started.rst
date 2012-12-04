@@ -53,6 +53,7 @@ that approach, you can get a copy of ``ns-3-allinone`` by typing the
 following into your Linux shell (assuming you have installed Mercurial):
 
 ::
+
   cd
   mkdir repos
   cd repos
@@ -220,7 +221,7 @@ have to pick a release, download it and decompress it.
 As mentioned above, one practice is to create a directory called ``repos``
 in one's home directory under which one can keep local Mercurial repositories.
 One could also keep a ``tarballs`` directory.  *Hint:  the tutorial
-will assume you downloaded into a ``repos`` directory, so remember the
+will assume you downloaded into a* ``repos`` *directory, so remember the
 placekeeper.*  If you adopt the ``tarballs`` directory approach, you can 
 get a copy of a release by typing the following into your Linux shell 
 (substitute the appropriate version numbers, of course):

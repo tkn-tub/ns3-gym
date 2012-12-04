@@ -2342,7 +2342,7 @@ must implement a single virtual method inherited from this class.
 
 The signature of this method reflects the device-centric view of the situation
 at this level.  All of the public methods inherited from class 
-2``PcapUserHelperForDevice`` reduce to calling this single device-dependent
+``PcapUserHelperForDevice`` reduce to calling this single device-dependent
 implementation method.  For example, the lowest level pcap method,
 
 ::
