@@ -350,7 +350,7 @@ void
 RrFfMacScheduler::DoCschedLcConfigReq (const struct FfMacCschedSapProvider::CschedLcConfigReqParameters& params)
 {
   NS_LOG_FUNCTION (this);
-  // Not used at this stage
+  // Not used at this stage (LCs updated by DoSchedDlRlcBufferReq)
   return;
 }
 
@@ -358,7 +358,21 @@ void
 RrFfMacScheduler::DoCschedLcReleaseReq (const struct FfMacCschedSapProvider::CschedLcReleaseReqParameters& params)
 {
   NS_LOG_FUNCTION (this);
-  // TODO: Implementation of the API
+    for (uint16_t i = 0; i < params.m_logicalChannelIdentity.size (); i++)
+    {
+     std::list<FfMacSchedSapProvider::SchedDlRlcBufferReqParameters>::iterator it = m_rlcBufferReq.begin ();
+      while (it!=m_rlcBufferReq.end ())
+        {
+          if (((*it).m_rnti == params.m_rnti)&&((*it).m_logicalChannelIdentity == params.m_logicalChannelIdentity.at (i)))
+            {
+              it = m_rlcBufferReq.erase (it);
+            }
+          else
+            {
+              it++;
+            }
+        }
+    }
   return;
 }
 
@@ -366,7 +380,30 @@ void
 RrFfMacScheduler::DoCschedUeReleaseReq (const struct FfMacCschedSapProvider::CschedUeReleaseReqParameters& params)
 {
   NS_LOG_FUNCTION (this);
-  // TODO: Implementation of the API
+  
+  m_uesTxMode.erase (params.m_rnti);
+  m_dlHarqCurrentProcessId.erase (params.m_rnti);
+  m_dlHarqProcessesStatus.erase  (params.m_rnti);
+  m_dlHarqProcessesDciBuffer.erase  (params.m_rnti);
+  m_dlHarqProcessesRlcPduListBuffer.erase  (params.m_rnti);
+  m_ulHarqCurrentProcessId.erase  (params.m_rnti);
+  m_ulHarqProcessesStatus.erase  (params.m_rnti);
+  m_ulHarqProcessesDciBuffer.erase  (params.m_rnti);
+  m_ceBsrRxed.erase (params.m_rnti);
+  std::list<FfMacSchedSapProvider::SchedDlRlcBufferReqParameters>::iterator it = m_rlcBufferReq.begin ();
+  while (it != m_rlcBufferReq.end ())
+    {
+      NS_LOG_DEBUG (this << " Erase RNTI " << (*it).m_rnti << " LC " << (uint16_t)(*it).m_logicalChannelIdentity);
+      if ((*it).m_rnti == params.m_rnti)
+        {
+          it = m_rlcBufferReq.erase (it);
+        }
+      else
+        {
+          it++;
+        }
+    }
+    
   return;
 }
 

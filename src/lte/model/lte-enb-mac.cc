@@ -368,7 +368,7 @@ LteEnbMac::DoDispose ()
   m_ulCeReceived.clear ();
   m_dlInfoListReceived.clear ();
   m_ulInfoListReceived.clear ();
-m_miDlHarqProcessesPackets.clear ();
+  m_miDlHarqProcessesPackets.clear ();
   delete m_macSapProvider;
   delete m_cmacSapProvider;
   delete m_schedSapUser;
@@ -769,6 +769,7 @@ LteEnbMac::DoRemoveUe (uint16_t rnti)
   params.m_rnti = rnti;
   m_cschedSapProvider->CschedUeReleaseReq (params);
   m_rlcAttached.erase (rnti);
+  m_miDlHarqProcessesPackets.erase (rnti);
 }
 
 void

@@ -382,7 +382,24 @@ void
 PfFfMacScheduler::DoCschedLcReleaseReq (const struct FfMacCschedSapProvider::CschedLcReleaseReqParameters& params)
 {
   NS_LOG_FUNCTION (this);
-  // TODO: Implementation of the API
+  for (uint16_t i = 0; i < params.m_logicalChannelIdentity.size (); i++)
+    {
+      std::map<LteFlowId_t, FfMacSchedSapProvider::SchedDlRlcBufferReqParameters>::iterator it = m_rlcBufferReq.begin ();
+      std::map<LteFlowId_t, FfMacSchedSapProvider::SchedDlRlcBufferReqParameters>::iterator temp;
+      while (it!=m_rlcBufferReq.end ())
+        {
+          if (((*it).first.m_rnti == params.m_rnti) && ((*it).first.m_lcId == params.m_logicalChannelIdentity.at (i)))
+            {
+              temp = it;
+              it++;
+              m_rlcBufferReq.erase (temp);
+            }
+          else
+            {
+              it++;
+            }
+        }
+    }
   return;
 }
 
@@ -390,7 +407,34 @@ void
 PfFfMacScheduler::DoCschedUeReleaseReq (const struct FfMacCschedSapProvider::CschedUeReleaseReqParameters& params)
 {
   NS_LOG_FUNCTION (this);
-  // TODO: Implementation of the API
+  
+  m_uesTxMode.erase (params.m_rnti);
+  m_dlHarqCurrentProcessId.erase (params.m_rnti);
+  m_dlHarqProcessesStatus.erase  (params.m_rnti);
+  m_dlHarqProcessesDciBuffer.erase  (params.m_rnti);
+  m_dlHarqProcessesRlcPduListBuffer.erase  (params.m_rnti);
+  m_ulHarqCurrentProcessId.erase  (params.m_rnti);
+  m_ulHarqProcessesStatus.erase  (params.m_rnti);
+  m_ulHarqProcessesDciBuffer.erase  (params.m_rnti);
+  m_flowStatsDl.erase  (params.m_rnti);
+  m_flowStatsUl.erase  (params.m_rnti);
+  m_ceBsrRxed.erase (params.m_rnti);
+  std::map<LteFlowId_t, FfMacSchedSapProvider::SchedDlRlcBufferReqParameters>::iterator it = m_rlcBufferReq.begin ();
+  std::map<LteFlowId_t, FfMacSchedSapProvider::SchedDlRlcBufferReqParameters>::iterator temp;
+  while (it!=m_rlcBufferReq.end ())
+    {
+      if ((*it).first.m_rnti == params.m_rnti)
+        {
+          temp = it;
+          it++;
+          m_rlcBufferReq.erase (temp);
+        }
+      else
+        {
+          it++;
+        }
+    }
+
   return;
 }
 
