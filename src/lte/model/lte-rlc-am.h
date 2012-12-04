@@ -53,8 +53,6 @@ public:
   virtual void DoNotifyHarqDeliveryFailure ();
   virtual void DoReceivePdu (Ptr<Packet> p);
 
-  void Start ();
-
 private:
   /**
    * This method will schedule a timeout at WaitReplyTimeout interval

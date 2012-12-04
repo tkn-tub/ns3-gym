@@ -72,8 +72,6 @@ LteRlcAm::LteRlcAm ()
   // SDU reassembling process
   m_reassemblingState = WAITING_S0_FULL;
   m_expectedSeqNumber = 0;
-
-  Simulator::ScheduleNow (&LteRlcAm::Start, this);
 }
 
 LteRlcAm::~LteRlcAm ()
@@ -1014,24 +1012,6 @@ LteRlcAm::DoReceivePdu (Ptr<Packet> p)
       return;
     }
 
-}
-
-
-void
-LteRlcAm::Start ()
-{
-  NS_LOG_FUNCTION (this);
-
-  LteMacSapProvider::ReportBufferStatusParameters p;
-  p.rnti = m_rnti;
-  p.lcid = m_lcid;
-  p.txQueueSize = 0;
-  p.txQueueHolDelay = 0;
-  p.retxQueueSize = 0;
-  p.retxQueueHolDelay = 0;
-  p.statusPduSize = 0;
-
-  m_macSapProvider->ReportBufferStatus (p);
 }
 
 

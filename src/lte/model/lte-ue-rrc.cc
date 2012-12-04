@@ -739,6 +739,11 @@ LteUeRrc::ApplyRadioResourceConfigDedicated (LteRrcSap::RadioResourceConfigDedic
       
           ++stamIt;
           NS_ASSERT_MSG (stamIt == rrcd.srbToAddModList.end (), "at most one SrbToAdd supported");     
+          
+          LteUeRrcSapUser::SetupParameters ueParams;
+          ueParams.srb0SapProvider = m_srb0->m_rlc->GetLteRlcSapProvider ();
+          ueParams.srb1SapProvider = m_srb1->m_pdcp->GetLtePdcpSapProvider ();
+          m_rrcSapUser->Setup (ueParams);
         }
       else
         {

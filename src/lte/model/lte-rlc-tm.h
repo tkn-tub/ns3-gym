@@ -52,8 +52,6 @@ public:
   virtual void DoNotifyHarqDeliveryFailure ();
   virtual void DoReceivePdu (Ptr<Packet> p);
 
-  void Start ();
-
 private:
   void ExpireRbsTimer (void);
   void DoReportBufferStatus ();

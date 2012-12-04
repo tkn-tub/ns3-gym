@@ -36,8 +36,6 @@ LteRlcTm::LteRlcTm ()
     m_txBufferSize (0)
 {
   NS_LOG_FUNCTION (this);
-
-  Simulator::ScheduleNow (&LteRlcTm::Start, this);
 }
 
 LteRlcTm::~LteRlcTm ()
@@ -184,15 +182,6 @@ LteRlcTm::DoReceivePdu (Ptr<Packet> p)
   // - deliver the TMD PDU without any modification to upper layer.
 
    m_rlcSapUser->ReceivePdcpPdu (p);
-}
-
-
-void
-LteRlcTm::Start ()
-{
-  NS_LOG_FUNCTION (this);
-
-  DoReportBufferStatus ();
 }
 
 

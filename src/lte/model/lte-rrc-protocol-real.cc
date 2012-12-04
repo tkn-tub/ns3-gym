@@ -57,6 +57,8 @@ LteUeRrcProtocolReal::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   delete m_ueRrcSapUser;
+  delete m_completeSetupParameters.srb0SapUser;
+  delete m_completeSetupParameters.srb1SapUser;
   m_rrc = 0;
 }
 
@@ -97,6 +99,17 @@ LteUeRrcProtocolReal::DoSetup (LteUeRrcSapUser::SetupParameters params)
   // after handover). We don't care about SRB0/SRB1 since we use real
   // RRC messages.
   DoReestablish ();
+
+  m_setupParameters.srb0SapProvider = params.srb0SapProvider;
+  m_setupParameters.srb1SapProvider = params.srb1SapProvider;
+
+  LteRlcSapUser* srb0SapUser = new LteRlcSpecificLteRlcSapUser<LteUeRrcProtocolReal> (this);
+  LtePdcpSapUser* srb1SapUser = new LtePdcpSpecificLtePdcpSapUser<LteUeRrcProtocolReal> (this);
+  
+  m_completeSetupParameters.srb0SapUser=srb0SapUser;
+  m_completeSetupParameters.srb1SapUser=srb1SapUser;
+  
+  m_ueRrcSapProvider->CompleteSetup(m_completeSetupParameters);
 }
 
 void 
@@ -137,11 +150,19 @@ LteUeRrcProtocolReal::DoSendRrcConnectionRequest (LteRrcSap::RrcConnectionReques
 void 
 LteUeRrcProtocolReal::DoSendRrcConnectionSetupCompleted (LteRrcSap::RrcConnectionSetupCompleted msg)
 {
-  Simulator::Schedule (RRC_REAL_MSG_DELAY, 
-		       &LteEnbRrcSapProvider::RecvRrcConnectionSetupCompleted,
-                       m_enbRrcSapProvider,
-		       m_rnti, 
-		       msg);
+  Ptr<Packet> packet = Create<Packet> ();
+
+  RrcConnectionSetupCompleteHeader source;
+  source.SetMessage (msg);
+  
+  packet->AddHeader (source);
+
+  LtePdcpSapProvider::TransmitPdcpSduParameters transmitPdcpSduParameters;
+  transmitPdcpSduParameters.pdcpSdu = packet;
+  transmitPdcpSduParameters.rnti = m_rnti;
+  transmitPdcpSduParameters.lcid = 1;
+
+  m_setupParameters.srb1SapProvider->TransmitPdcpSdu(transmitPdcpSduParameters);
 }
 
 void 
@@ -220,6 +241,17 @@ LteUeRrcProtocolReal::SetEnbRrcSapProvider ()
   enbRrcProtocolReal->SetUeRrcSapProvider (m_rnti, m_ueRrcSapProvider);
 }
 
+void
+LteUeRrcProtocolReal::DoReceivePdcpPdu (Ptr<Packet> p)
+{
+  // TODO
+}
+
+void
+LteUeRrcProtocolReal::DoReceivePdcpSdu (LtePdcpSapUser::ReceivePdcpSduParameters params)
+{
+  // TODO
+}
 
 NS_OBJECT_ENSURE_REGISTERED (LteEnbRrcProtocolReal);
 
@@ -322,12 +354,25 @@ LteEnbRrcProtocolReal::DoSetupUe (uint16_t rnti, LteEnbRrcSapUser::SetupUeParame
   // NS_ASSERT_MSG (found , " Unable to find UE with RNTI=" << rnti << " cellId=" << m_cellId);
   // m_enbRrcSapProviderMap[rnti] = ueRrc->GetLteUeRrcSapProvider ();
 
-
   // just create empty entry, the UeRrcSapProvider will be set by the
   // ue upon connection request or connection reconfiguration
   // completed 
   m_enbRrcSapProviderMap[rnti] = 0;
 
+  // Store SetupUeParameters
+  m_setupUeParametersMap[rnti] = params;
+  
+  // Create LteRlcSapUser, LtePdcpSapUser
+  LteRlcSapUser* srb0SapUser = new LteRlcSpecificLteRlcSapUser<LteEnbRrcProtocolReal> (this);
+  LtePdcpSapUser* srb1SapUser = new LtePdcpSpecificLtePdcpSapUser<LteEnbRrcProtocolReal> (this);
+  LteEnbRrcSapProvider::CompleteSetupUeParameters completeSetupUeParameters;
+  completeSetupUeParameters.srb0SapUser = srb0SapUser;
+  completeSetupUeParameters.srb1SapUser = srb1SapUser;
+  
+  // Store LteRlcSapUser, LtePdcpSapUser
+  m_completeSetupUeParametersMap[rnti] = completeSetupUeParameters;
+  
+  m_enbRrcSapProvider->CompleteSetupUe(rnti,completeSetupUeParameters);
 }
 
 void 
@@ -335,6 +380,7 @@ LteEnbRrcProtocolReal::DoRemoveUe (uint16_t rnti)
 {
   NS_LOG_FUNCTION (this << rnti);
   m_enbRrcSapProviderMap.erase (rnti);
+  m_setupUeParametersMap.erase (rnti);
 }
 
 void 
@@ -457,6 +503,24 @@ LteEnbRrcProtocolReal::DoSendRrcConnectionRelease (uint16_t rnti, LteRrcSap::Rrc
 		       msg);
 }
 
+void
+LteEnbRrcProtocolReal::DoReceivePdcpPdu (Ptr<Packet> p)
+{
+  // TODO
+}
+
+void
+LteEnbRrcProtocolReal::DoReceivePdcpSdu (LtePdcpSapUser::ReceivePdcpSduParameters params)
+{
+  // TODO
+  RrcConnectionSetupCompleteHeader rrcConnectionSetupCompleteHeader;
+  params.pdcpSdu->RemoveHeader (rrcConnectionSetupCompleteHeader);
+  
+  LteRrcSap::RrcConnectionSetupCompleted msg = rrcConnectionSetupCompleteHeader.GetMessage();
+  
+  m_enbRrcSapProvider->RecvRrcConnectionSetupCompleted(params.rnti, msg);
+
+}
 
 /*
  * The purpose of LteEnbRrcProtocolReal is to avoid encoding

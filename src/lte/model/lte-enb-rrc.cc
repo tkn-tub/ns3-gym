@@ -141,7 +141,12 @@ UeManager::UeManager (Ptr<LteEnbRrc> rrc, uint16_t rnti, State s)
     m_sourceCellId (0)
 { 
   NS_LOG_FUNCTION (this);
+}
 
+void
+UeManager::DoStart ()
+{
+  NS_LOG_FUNCTION (this);
   m_drbPdcpSapUser = new LtePdcpSpecificLtePdcpSapUser<UeManager> (this);
 
   m_physicalConfigDedicated.haveAntennaInfoDedicated = true;
@@ -149,8 +154,8 @@ UeManager::UeManager (Ptr<LteEnbRrc> rrc, uint16_t rnti, State s)
   m_physicalConfigDedicated.haveSoundingRsUlConfigDedicated = true;
   m_physicalConfigDedicated.soundingRsUlConfigDedicated.srsConfigIndex = m_rrc->GetNewSrsConfigurationIndex ();
 
-  m_rrc->m_cmacSapProvider->AddUe (rnti);
-  m_rrc->m_cphySapProvider->AddUe (rnti);
+  m_rrc->m_cmacSapProvider->AddUe (m_rnti);
+  m_rrc->m_cphySapProvider->AddUe (m_rnti);
 
   // setup the eNB side of SRB0
   {
@@ -219,13 +224,13 @@ UeManager::UeManager (Ptr<LteEnbRrc> rrc, uint16_t rnti, State s)
 
   // configure MAC (and scheduler)
   LteEnbCmacSapProvider::UeConfig req;
-  req.m_rnti = rnti;
+  req.m_rnti = m_rnti;
   req.m_transmissionMode = m_physicalConfigDedicated.antennaInfo.transmissionMode;
   m_rrc->m_cmacSapProvider->UeUpdateConfigurationReq (req);
   
   // configure PHY
-  m_rrc->m_cphySapProvider->SetTransmissionMode (rnti, m_physicalConfigDedicated.antennaInfo.transmissionMode);
-  m_rrc->m_cphySapProvider->SetSrsConfigurationIndex (rnti, m_physicalConfigDedicated.soundingRsUlConfigDedicated.srsConfigIndex);
+  m_rrc->m_cphySapProvider->SetTransmissionMode (m_rnti, m_physicalConfigDedicated.antennaInfo.transmissionMode);
+  m_rrc->m_cphySapProvider->SetSrsConfigurationIndex (m_rnti, m_physicalConfigDedicated.soundingRsUlConfigDedicated.srsConfigIndex);
 }
 
 
@@ -1436,6 +1441,7 @@ LteEnbRrc::AddUe (UeManager::State state)
   m_lastAllocatedRnti = rnti;
   Ptr<UeManager> ueManager = CreateObject<UeManager> (this, rnti, state);
   m_ueMap.insert (std::pair<uint16_t, Ptr<UeManager> > (rnti, ueManager));
+  ueManager->Start ();
   NS_LOG_DEBUG (this << " New UE RNTI " << rnti << " cellId " << m_cellId << " srs CI " << ueManager->GetSrsConfigurationIndex ());              
   return rnti;
 }

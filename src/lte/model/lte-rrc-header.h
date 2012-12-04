@@ -39,7 +39,8 @@ class RrcAsn1Header : public Asn1Header
 {
 public:
   RrcAsn1Header ();
-
+  int GetMessageType ();
+  
 protected:
   // Serialization functions
   void SerializeSrbToAddModList (std::list<LteRrcSap::SrbToAddMod> srbToAddModList) const;
@@ -50,6 +51,10 @@ protected:
   void SerializeSystemInformationBlockType1 (LteRrcSap::SystemInformationBlockType1 systemInformationBlockType1) const;
   void SerializeSystemInformationBlockType2 () const;
   void SerializeRadioResourceConfigCommonSIB () const;
+  void SerializeUlDcchMessage(int msgType) const;
+  void SerializeUlCcchMessage(int msgType) const;
+  void SerializeDlDcchMessage(int msgType) const;
+  void SerializeDlCcchMessage(int msgType) const;
 
   // Deserialization functions
   Buffer::Iterator DeserializeDrbToAddModList (std::list<LteRrcSap::DrbToAddMod> *drbToAddModLis, Buffer::Iterator bIterator);
@@ -61,8 +66,14 @@ protected:
   Buffer::Iterator DeserializeSystemInformationBlockType2 (Buffer::Iterator bIterator);
   Buffer::Iterator DeserializeRadioResourceConfigCommon (Buffer::Iterator bIterator);
   Buffer::Iterator DeserializeRadioResourceConfigCommonSib (Buffer::Iterator bIterator);
+  Buffer::Iterator DeserializeUlDcchMessage (Buffer::Iterator bIterator);
+  Buffer::Iterator DeserializeUlCcchMessage (Buffer::Iterator bIterator);
+  Buffer::Iterator DeserializeDlDcchMessage (Buffer::Iterator bIterator);
+  Buffer::Iterator DeserializeDlCcchMessage (Buffer::Iterator bIterator);
 
   void Print (std::ostream &os, LteRrcSap::RadioResourceConfigDedicated radioResourceConfigDedicated) const;
+  
+  int m_messageType;
 };
 
 /**
@@ -130,8 +141,9 @@ public:
   uint32_t Deserialize (Buffer::Iterator bIterator);
   void Print (std::ostream &os) const;
   void SetMessage (RrcConnectionSetupCompleted msg);
-
+  
   uint8_t GetRrcTransactionIdentifier () const;
+  RrcConnectionSetupCompleted GetMessage() const;
 
 private:
   uint8_t m_rrcTransactionIdentifier;

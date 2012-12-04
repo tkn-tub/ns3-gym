@@ -95,6 +95,7 @@ public:
 
   // inherited from Object
 protected:
+  virtual void DoStart ();
   virtual void DoDispose ();
 public: 
   static TypeId GetTypeId (void);

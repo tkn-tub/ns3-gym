@@ -28,6 +28,9 @@
 #include <ns3/ptr.h>
 #include <ns3/object.h>
 #include <ns3/lte-rrc-sap.h>
+#include <ns3/lte-pdcp-sap.h>
+#include <ns3/lte-rlc-sap.h>
+#include <ns3/lte-rrc-header.h>
 
 namespace ns3 {
 
@@ -47,7 +50,9 @@ class LteUeRrc;
 class LteUeRrcProtocolReal : public Object
 {
   friend class MemberLteUeRrcSapUser<LteUeRrcProtocolReal>;
-
+  friend class LteRlcSpecificLteRlcSapUser<LteUeRrcProtocolReal>;
+  friend class LtePdcpSpecificLtePdcpSapUser<LteUeRrcProtocolReal>;
+  
 public:
 
   LteUeRrcProtocolReal ();
@@ -75,12 +80,17 @@ private:
   void DoSendRrcConnectionReestablishmentComplete (LteRrcSap::RrcConnectionReestablishmentComplete msg);
 
   void SetEnbRrcSapProvider ();
+  void DoReceivePdcpPdu (Ptr<Packet> p);
+  void DoReceivePdcpSdu (LtePdcpSapUser::ReceivePdcpSduParameters params);
 
   Ptr<LteUeRrc> m_rrc;
   uint16_t m_rnti;
   LteUeRrcSapProvider* m_ueRrcSapProvider;
   LteUeRrcSapUser* m_ueRrcSapUser;
   LteEnbRrcSapProvider* m_enbRrcSapProvider;
+  
+  LteUeRrcSapUser::SetupParameters m_setupParameters;
+  LteUeRrcSapProvider::CompleteSetupParameters m_completeSetupParameters;
   
 };
 
@@ -95,7 +105,9 @@ private:
 class LteEnbRrcProtocolReal : public Object
 {
   friend class MemberLteEnbRrcSapUser<LteEnbRrcProtocolReal>;
-
+  friend class LtePdcpSpecificLtePdcpSapUser<LteEnbRrcProtocolReal>;
+  friend class LteRlcSpecificLteRlcSapUser<LteEnbRrcProtocolReal>;
+  
 public:
 
   LteEnbRrcProtocolReal ();
@@ -132,12 +144,16 @@ private:
   Ptr<Packet> DoEncodeHandoverCommand (LteRrcSap::RrcConnectionReconfiguration msg);
   LteRrcSap::RrcConnectionReconfiguration DoDecodeHandoverCommand (Ptr<Packet> p);
 
+  void DoReceivePdcpPdu (Ptr<Packet> p);
+  void DoReceivePdcpSdu (LtePdcpSapUser::ReceivePdcpSduParameters params);
 
   uint16_t m_rnti;
   uint16_t m_cellId;
   LteEnbRrcSapProvider* m_enbRrcSapProvider;
   LteEnbRrcSapUser* m_enbRrcSapUser;
   std::map<uint16_t, LteUeRrcSapProvider*> m_enbRrcSapProviderMap;
+  std::map<uint16_t, LteEnbRrcSapUser::SetupUeParameters> m_setupUeParametersMap;
+  std::map<uint16_t, LteEnbRrcSapProvider::CompleteSetupUeParameters> m_completeSetupUeParametersMap;
   
 };
 
