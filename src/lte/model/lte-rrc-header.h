@@ -155,7 +155,7 @@ private:
 /**
 * This class manages the serialization/deserialization of RrcConnectionSetup IE
 */
-class RrcConnectionSetupHeader : public RrcAsn1Header,
+class RrcConnectionSetupHeader : public RrcDlCcchMessage,
                                  LteRrcSap
 {
 public:
@@ -164,7 +164,7 @@ public:
   uint32_t Deserialize (Buffer::Iterator bIterator);
   void Print (std::ostream &os) const;
   void SetMessage (RrcConnectionSetup msg);
-
+  RrcConnectionSetup GetMessage() const;
   uint8_t GetRrcTransactionIdentifier () const;
   bool HavePhysicalConfigDedicated () const;
   std::list<LteRrcSap::SrbToAddMod> GetSrbToAddModList () const;
@@ -302,7 +302,7 @@ private:
 /**
 * This class manages the serialization/deserialization of RrcConnectionReestablishment IE
 */
-class RrcConnectionReestablishmentHeader : public RrcAsn1Header,
+class RrcConnectionReestablishmentHeader : public RrcDlCcchMessage,
                                            LteRrcSap
 {
 public:
@@ -311,7 +311,7 @@ public:
   uint32_t Deserialize (Buffer::Iterator bIterator);
   void Print (std::ostream &os) const;
   void SetMessage (RrcConnectionReestablishment msg);
-
+  RrcConnectionReestablishment GetMessage() const;
   uint8_t GetRrcTransactionIdentifier () const;
   RadioResourceConfigDedicated GetRadioResourceConfigDedicated () const;
 

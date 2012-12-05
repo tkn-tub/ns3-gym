@@ -1584,6 +1584,8 @@ RrcConnectionSetupHeader::PreSerialize () const
 {
   m_serializationResult = Buffer ();
 
+  SerializeDlCcchMessage(3);
+
   // Serialize RRCConnectionSetup sequence:
   // no default or optional fields. Extension marker not present.
   SerializeSequence (std::bitset<0> (),false);
@@ -1622,6 +1624,9 @@ RrcConnectionSetupHeader::Deserialize (Buffer::Iterator bIterator)
   std::bitset<0> bitset0;
   std::bitset<1> bitset1;
   std::bitset<2> bitset2;
+  
+  bIterator = DeserializeDlCcchMessage(bIterator);
+  
   bIterator = DeserializeSequence (&bitset0,false,bIterator);
 
   // Deserialize rrc-TransactionIdentifier ::=INTEGER (0..3)
@@ -1677,6 +1682,15 @@ RrcConnectionSetupHeader::SetMessage (RrcConnectionSetup msg)
   rrcTransactionIdentifier = msg.rrcTransactionIdentifier;
   radioResourceConfigDedicated = msg.radioResourceConfigDedicated;
   m_isDataSerialized = false;
+}
+
+LteRrcSap::RrcConnectionSetup
+RrcConnectionSetupHeader::GetMessage() const
+{
+  RrcConnectionSetup msg;
+  msg.rrcTransactionIdentifier = rrcTransactionIdentifier;
+  msg.radioResourceConfigDedicated = radioResourceConfigDedicated; 
+  return msg;
 }
 
 uint8_t
@@ -2810,7 +2824,7 @@ RrcConnectionReestablishmentRequestHeader::GetReestablishmentCause () const
   return m_reestablishmentCause;
 }
 
-//////////////////// RrcConnectionReestablishmentRequestHeader class ////////////////////////
+//////////////////// RrcConnectionReestablishmentHeader class ////////////////////////
 
 RrcConnectionReestablishmentHeader::RrcConnectionReestablishmentHeader ()
 {
@@ -2820,6 +2834,8 @@ void
 RrcConnectionReestablishmentHeader::PreSerialize () const
 {
   m_serializationResult = Buffer ();
+
+  SerializeDlCcchMessage(0);
 
   // Serialize RrcConnectionReestablishment sequence:
   // no default or optional fields. Extension marker not present.
@@ -2853,6 +2869,8 @@ RrcConnectionReestablishmentHeader::Deserialize (Buffer::Iterator bIterator)
 {
   std::bitset<0> bitset0;
   int n;
+
+  bIterator = DeserializeDlCcchMessage(bIterator);
 
   // Deserialize RrcConnectionReestablishment sequence
   // 0 optional fields, no extension marker
@@ -2911,6 +2929,15 @@ RrcConnectionReestablishmentHeader::SetMessage (RrcConnectionReestablishment msg
   m_rrcTransactionIdentifier = msg.rrcTransactionIdentifier;
   m_radioResourceConfigDedicated = msg.radioResourceConfigDedicated;
   m_isDataSerialized = false;
+}
+
+LteRrcSap::RrcConnectionReestablishment
+RrcConnectionReestablishmentHeader::GetMessage () const
+{
+  RrcConnectionReestablishment msg;
+  msg.rrcTransactionIdentifier = m_rrcTransactionIdentifier;
+  msg.radioResourceConfigDedicated = m_radioResourceConfigDedicated;
+  return msg;
 }
 
 uint8_t
