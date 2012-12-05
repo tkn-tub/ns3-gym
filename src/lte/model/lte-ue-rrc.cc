@@ -616,6 +616,7 @@ LteUeRrc::DoRecvRrcConnectionReconfiguration (LteRrcSap::RrcConnectionReconfigur
           m_lastRrcTransactionIdentifier = msg.rrcTransactionIdentifier;
           NS_ASSERT (msg.haveRadioResourceConfigDedicated);
           m_srb1 = 0; // dispose SRB1
+          m_drbMap.clear (); // dispose all DRBs
           ApplyRadioResourceConfigDedicated (msg.radioResourceConfigDedicated);          
           // RRC connection reconfiguration completed will be sent
           // after handover is complete

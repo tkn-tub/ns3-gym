@@ -283,7 +283,7 @@ LteUeMac::DoTransmitPdu (LteMacSapProvider::TransmitPduParameters params)
 void
 LteUeMac::DoReportBufferStatus (LteMacSapProvider::ReportBufferStatusParameters params)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << (uint32_t) params.lcid);
   
   std::map <uint8_t, uint64_t>::iterator it;
   
