@@ -40,6 +40,12 @@ RrcAsn1Header::RrcAsn1Header ()
 {
 }
 
+int
+RrcAsn1Header::GetMessageType ()
+{
+  return m_messageType;
+}
+
 void
 RrcAsn1Header::SerializeDrbToAddModList (std::list<LteRrcSap::DrbToAddMod> drbToAddModList) const
 {
@@ -558,46 +564,6 @@ RrcAsn1Header::DeserializeRadioResourceConfigDedicated (LteRrcSap::RadioResource
     }
 
   return bIterator;
-}
-
-void
-RrcAsn1Header::SerializeUlDcchMessage(int messageType) const
-{
-  SerializeSequence(std::bitset<0>(),false);
-  // Choose c1
-  SerializeChoice(2,0);
-  // Choose message type
-  SerializeChoice(16,messageType);  
-}
-
-void
-RrcAsn1Header::SerializeUlCcchMessage(int messageType) const
-{
-  SerializeSequence(std::bitset<0>(),false);
-  // Choose c1
-  SerializeChoice(2,0);
-  // Choose message type
-  SerializeChoice(2,messageType);  
-}
-
-void
-RrcAsn1Header::SerializeDlDcchMessage(int messageType) const
-{
-  SerializeSequence(std::bitset<0>(),false);
-  // Choose c1
-  SerializeChoice(2,0);
-  // Choose message type
-  SerializeChoice(16,messageType);  
-}
-
-void
-RrcAsn1Header::SerializeDlCcchMessage(int messageType) const
-{
-  SerializeSequence(std::bitset<0>(),false);
-  // Choose c1
-  SerializeChoice(2,0);
-  // Choose message type
-  SerializeChoice(4,messageType);  
 }
 
 Buffer::Iterator
@@ -1468,98 +1434,6 @@ RrcAsn1Header::DeserializeRadioResourceConfigCommonSib (Buffer::Iterator bIterat
   return bIterator;
 }
 
-Buffer::Iterator
-RrcAsn1Header::DeserializeUlDcchMessage (Buffer::Iterator bIterator)
-{
-  std::bitset<0> bitset0;
-  int n;
-  
-  bIterator = DeserializeSequence(&bitset0,false,bIterator);
-  bIterator = DeserializeChoice(2,&n,bIterator);
-  if(n==1)
-  {
-    // Deserialize messageClassExtension
-    bIterator = DeserializeSequence(&bitset0,false,bIterator);
-    m_messageType = -1;
-  }
-  else if(n == 0)
-  {
-    // Deserialize c1
-    bIterator = DeserializeChoice(16,&m_messageType,bIterator);
-  }
-
-  return bIterator;
-}
-
-Buffer::Iterator
-RrcAsn1Header::DeserializeUlCcchMessage (Buffer::Iterator bIterator)
-{
-  std::bitset<0> bitset0;
-  int n;
-  
-  bIterator = DeserializeSequence(&bitset0,false,bIterator);
-  bIterator = DeserializeChoice(2,&n,bIterator);
-  if(n==1)
-  {
-    // Deserialize messageClassExtension
-    bIterator = DeserializeSequence(&bitset0,false,bIterator);
-    m_messageType = -1;
-  }
-  else if(n == 0)
-  {
-    // Deserialize c1
-    bIterator = DeserializeChoice(2,&m_messageType,bIterator);
-  }
-
-  return bIterator;
-}
-
-Buffer::Iterator
-RrcAsn1Header::DeserializeDlCcchMessage (Buffer::Iterator bIterator)
-{
-  std::bitset<0> bitset0;
-  int n;
-  
-  bIterator = DeserializeSequence(&bitset0,false,bIterator);
-  bIterator = DeserializeChoice(2,&n,bIterator);
-  if(n==1)
-  {
-    // Deserialize messageClassExtension
-    bIterator = DeserializeSequence(&bitset0,false,bIterator);
-    m_messageType = -1;
-  }
-  else if(n == 0)
-  {
-    // Deserialize c1
-    bIterator = DeserializeChoice(4,&m_messageType,bIterator);
-  }
-
-  return bIterator;
-}
-
-Buffer::Iterator
-RrcAsn1Header::DeserializeDlDcchMessage (Buffer::Iterator bIterator)
-{
-  std::bitset<0> bitset0;
-  int n;
-  
-  bIterator = DeserializeSequence(&bitset0,false,bIterator);
-  bIterator = DeserializeChoice(2,&n,bIterator);
-  if(n==1)
-  {
-    // Deserialize messageClassExtension
-    bIterator = DeserializeSequence(&bitset0,false,bIterator);
-    m_messageType = -1;
-  }
-  else if(n == 0)
-  {
-    // Deserialize c1
-    bIterator = DeserializeChoice(16,&m_messageType,bIterator);
-  }
-
-  return bIterator;
-}
-
 //////////////////// RrcConnectionRequest class ////////////////////////
 
 // Constructor
@@ -1585,6 +1459,8 @@ RrcConnectionRequestHeader::PreSerialize () const
 {
   m_serializationResult = Buffer ();
 
+  SerializeUlCcchMessage(1);
+  
   // Serialize RRCConnectionRequest sequence:
   // no default or optional fields. Extension marker not present.
   SerializeSequence<0> (std::bitset<0> (),false);
@@ -1628,6 +1504,8 @@ RrcConnectionRequestHeader::Deserialize (Buffer::Iterator bIterator)
   std::bitset<0> optionalOrDefaultMask;
   int selectedOption;
 
+  bIterator = DeserializeUlCcchMessage(bIterator);
+  
   // Deserialize RCConnectionRequest sequence
   bIterator = DeserializeSequence (&optionalOrDefaultMask,false,bIterator);
 
@@ -1664,6 +1542,15 @@ RrcConnectionRequestHeader::SetMessage (RrcConnectionRequest msg)
   m_mTmsi = std::bitset<32> ((uint32_t)msg.ueIdentity);
   m_mmec = std::bitset<8> ((uint32_t)(msg.ueIdentity >> 32));
   m_isDataSerialized = false;
+}
+
+LteRrcSap::RrcConnectionRequest
+RrcConnectionRequestHeader::GetMessage () const
+{
+  RrcConnectionRequest msg;
+  msg.ueIdentity = (m_mmec.to_ulong() << 32) | (m_mTmsi.to_ulong());
+
+  return msg;
 }
 
 std::bitset<8>
@@ -2010,6 +1897,14 @@ RrcConnectionReconfigurationCompleteHeader::SetMessage (RrcConnectionReconfigura
   m_isDataSerialized = false;
 }
 
+LteRrcSap::RrcConnectionReconfigurationCompleted
+RrcConnectionReconfigurationCompleteHeader::GetMessage() const
+{
+  RrcConnectionReconfigurationCompleted msg;
+  msg.rrcTransactionIdentifier = m_rrcTransactionIdentifier;
+  return msg;
+}
+
 uint8_t
 RrcConnectionReconfigurationCompleteHeader::GetRrcTransactionIdentifier () const
 {
@@ -2026,6 +1921,8 @@ void
 RrcConnectionReconfigurationHeader::PreSerialize () const
 {
   m_serializationResult = Buffer ();
+
+  SerializeDlDcchMessage(4);
 
   // Serialize RRCConnectionSetupComplete sequence:
   // no default or optional fields. Extension marker not present.
@@ -2149,9 +2046,10 @@ RrcConnectionReconfigurationHeader::PreSerialize () const
 uint32_t
 RrcConnectionReconfigurationHeader::Deserialize (Buffer::Iterator bIterator)
 {
-  // pag 106
   std::bitset<0> bitset0;
 
+  bIterator = DeserializeDlDcchMessage(bIterator);
+  
   // RRCConnectionReconfiguration sequence
   bIterator = DeserializeSequence (&bitset0,false,bIterator);
 
@@ -2390,6 +2288,22 @@ RrcConnectionReconfigurationHeader::SetMessage (RrcConnectionReconfiguration msg
   m_isDataSerialized = false;
 }
 
+LteRrcSap::RrcConnectionReconfiguration
+RrcConnectionReconfigurationHeader::GetMessage () const
+{
+  RrcConnectionReconfiguration msg;
+
+  msg.rrcTransactionIdentifier = m_rrcTransactionIdentifier;
+  msg.haveMeasConfig = m_haveMeasConfig;
+  msg.measConfig = m_measConfig;
+  msg.haveMobilityControlInfo = m_haveMobilityControlInfo;
+  msg.mobilityControlInfo = m_mobilityControlInfo;
+  msg.haveRadioResourceConfigDedicated = m_haveRadioResourceConfigDedicated;
+  msg.radioResourceConfigDedicated = m_radioResourceConfigDedicated;
+  
+  return msg;
+}
+  
 uint8_t
 RrcConnectionReconfigurationHeader::GetRrcTransactionIdentifier () const
 {
@@ -2745,6 +2659,8 @@ RrcConnectionReestablishmentRequestHeader::PreSerialize () const
 {
   m_serializationResult = Buffer ();
 
+  SerializeUlCcchMessage(0);
+  
   // Serialize RrcConnectionReestablishmentReques sequence:
   // no default or optional fields. Extension marker not present.
   SerializeSequence<0> (std::bitset<0> (),false);
@@ -2794,6 +2710,8 @@ RrcConnectionReestablishmentRequestHeader::Deserialize (Buffer::Iterator bIterat
 {
   std::bitset<0> bitset0;
   int n;
+
+  bIterator = DeserializeUlCcchMessage(bIterator);
 
   // Deserialize RrcConnectionReestablishmentRequest sequence
   // 0 optional fields, no extension marker
@@ -2868,6 +2786,16 @@ RrcConnectionReestablishmentRequestHeader::SetMessage (RrcConnectionReestablishm
   m_ueIdentity = msg.ueIdentity;
   m_reestablishmentCause = msg.reestablishmentCause;
   m_isDataSerialized = false;
+}
+
+LteRrcSap::RrcConnectionReestablishmentRequest
+RrcConnectionReestablishmentRequestHeader::GetMessage () const
+{
+  RrcConnectionReestablishmentRequest msg;
+  msg.ueIdentity = m_ueIdentity;
+  msg.reestablishmentCause = m_reestablishmentCause;
+  
+  return msg;
 }
 
 LteRrcSap::ReestabUeIdentity
@@ -3081,10 +3009,230 @@ RrcConnectionReestablishmentCompleteHeader::SetMessage (RrcConnectionReestablish
   m_isDataSerialized = false;
 }
 
+LteRrcSap::RrcConnectionReestablishmentComplete
+RrcConnectionReestablishmentCompleteHeader::GetMessage() const
+{
+  RrcConnectionReestablishmentComplete msg;
+  msg.rrcTransactionIdentifier = m_rrcTransactionIdentifier;
+  return msg;
+}
+
 uint8_t
 RrcConnectionReestablishmentCompleteHeader::GetRrcTransactionIdentifier () const
 {
   return m_rrcTransactionIdentifier;
+}
+
+///////////////////  RrcUlDcchMessage //////////////////////////////////
+uint32_t
+RrcUlDcchMessage::Deserialize(Buffer::Iterator bIterator)
+{
+  DeserializeUlDcchMessage(bIterator);
+  return 1;
+}
+
+void
+RrcUlDcchMessage::Print (std::ostream &os) const
+{
+  std::cout << "UL DCCH MSG TYPE: " << m_messageType << std::endl;
+}
+
+void
+RrcUlDcchMessage::PreSerialize () const
+{
+  SerializeUlDcchMessage(m_messageType);
+}
+
+Buffer::Iterator
+RrcUlDcchMessage::DeserializeUlDcchMessage (Buffer::Iterator bIterator)
+{
+  std::bitset<0> bitset0;
+  int n;
+  
+  bIterator = DeserializeSequence(&bitset0,false,bIterator);
+  bIterator = DeserializeChoice(2,&n,bIterator);
+  if(n==1)
+  {
+    // Deserialize messageClassExtension
+    bIterator = DeserializeSequence(&bitset0,false,bIterator);
+    m_messageType = -1;
+  }
+  else if(n == 0)
+  {
+    // Deserialize c1
+    bIterator = DeserializeChoice(16,&m_messageType,bIterator);
+  }
+
+  return bIterator;
+}
+
+void
+RrcUlDcchMessage::SerializeUlDcchMessage(int messageType) const
+{
+  SerializeSequence(std::bitset<0>(),false);
+  // Choose c1
+  SerializeChoice(2,0);
+  // Choose message type
+  SerializeChoice(16,messageType);  
+}
+
+///////////////////  RrcDlDcchMessage //////////////////////////////////
+uint32_t
+RrcDlDcchMessage::Deserialize(Buffer::Iterator bIterator)
+{
+  DeserializeDlDcchMessage(bIterator);
+  return 1;
+}
+
+void
+RrcDlDcchMessage::Print (std::ostream &os) const
+{
+  std::cout << "DL DCCH MSG TYPE: " << m_messageType << std::endl;
+}
+
+void
+RrcDlDcchMessage::PreSerialize () const
+{
+  SerializeDlDcchMessage(m_messageType);
+}
+
+Buffer::Iterator
+RrcDlDcchMessage::DeserializeDlDcchMessage (Buffer::Iterator bIterator)
+{
+  std::bitset<0> bitset0;
+  int n;
+  
+  bIterator = DeserializeSequence(&bitset0,false,bIterator);
+  bIterator = DeserializeChoice(2,&n,bIterator);
+  if(n==1)
+  {
+    // Deserialize messageClassExtension
+    bIterator = DeserializeSequence(&bitset0,false,bIterator);
+    m_messageType = -1;
+  }
+  else if(n == 0)
+  {
+    // Deserialize c1
+    bIterator = DeserializeChoice(16,&m_messageType,bIterator);
+  }
+
+  return bIterator;
+}
+
+void
+RrcDlDcchMessage::SerializeDlDcchMessage(int messageType) const
+{
+  SerializeSequence(std::bitset<0>(),false);
+  // Choose c1
+  SerializeChoice(2,0);
+  // Choose message type
+  SerializeChoice(16,messageType);  
+}
+
+///////////////////  RrcUlCcchMessage //////////////////////////////////
+uint32_t
+RrcUlCcchMessage::Deserialize(Buffer::Iterator bIterator)
+{
+  DeserializeUlCcchMessage(bIterator);
+  return 1;
+}
+
+void
+RrcUlCcchMessage::Print (std::ostream &os) const
+{
+  std::cout << "UL CCCH MSG TYPE: " << m_messageType << std::endl;
+}
+
+void
+RrcUlCcchMessage::PreSerialize () const
+{
+  SerializeUlCcchMessage(m_messageType);
+}
+
+Buffer::Iterator
+RrcUlCcchMessage::DeserializeUlCcchMessage (Buffer::Iterator bIterator)
+{
+  std::bitset<0> bitset0;
+  int n;
+  
+  bIterator = DeserializeSequence(&bitset0,false,bIterator);
+  bIterator = DeserializeChoice(2,&n,bIterator);
+  if(n==1)
+  {
+    // Deserialize messageClassExtension
+    bIterator = DeserializeSequence(&bitset0,false,bIterator);
+    m_messageType = -1;
+  }
+  else if(n == 0)
+  {
+    // Deserialize c1
+    bIterator = DeserializeChoice(2,&m_messageType,bIterator);
+  }
+
+  return bIterator;
+}
+
+void
+RrcUlCcchMessage::SerializeUlCcchMessage(int messageType) const
+{
+  SerializeSequence(std::bitset<0>(),false);
+  // Choose c1
+  SerializeChoice(2,0);
+  // Choose message type
+  SerializeChoice(2,messageType);  
+}
+
+///////////////////  RrcDlCcchMessage //////////////////////////////////
+uint32_t
+RrcDlCcchMessage::Deserialize(Buffer::Iterator bIterator)
+{
+  DeserializeDlCcchMessage(bIterator);
+  return 1;
+}
+
+void
+RrcDlCcchMessage::Print (std::ostream &os) const
+{
+  std::cout << "DL CCCH MSG TYPE: " << m_messageType << std::endl;
+}
+
+void
+RrcDlCcchMessage::PreSerialize () const
+{
+  SerializeDlCcchMessage(m_messageType);
+}
+
+Buffer::Iterator
+RrcDlCcchMessage::DeserializeDlCcchMessage (Buffer::Iterator bIterator)
+{
+  std::bitset<0> bitset0;
+  int n;
+  
+  bIterator = DeserializeSequence(&bitset0,false,bIterator);
+  bIterator = DeserializeChoice(2,&n,bIterator);
+  if(n==1)
+  {
+    // Deserialize messageClassExtension
+    bIterator = DeserializeSequence(&bitset0,false,bIterator);
+    m_messageType = -1;
+  }
+  else if(n == 0)
+  {
+    // Deserialize c1
+    bIterator = DeserializeChoice(4,&m_messageType,bIterator);
+  }
+
+  return bIterator;
+}
+
+void
+RrcDlCcchMessage::SerializeDlCcchMessage(int messageType) const
+{
+  SerializeSequence(std::bitset<0>(),false);
+  // Choose c1
+  SerializeChoice(2,0);
+  // Choose message type
+  SerializeChoice(4,messageType);  
 }
 
 } // namespace ns3

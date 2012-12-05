@@ -51,10 +51,6 @@ protected:
   void SerializeSystemInformationBlockType1 (LteRrcSap::SystemInformationBlockType1 systemInformationBlockType1) const;
   void SerializeSystemInformationBlockType2 () const;
   void SerializeRadioResourceConfigCommonSIB () const;
-  void SerializeUlDcchMessage(int msgType) const;
-  void SerializeUlCcchMessage(int msgType) const;
-  void SerializeDlDcchMessage(int msgType) const;
-  void SerializeDlCcchMessage(int msgType) const;
 
   // Deserialization functions
   Buffer::Iterator DeserializeDrbToAddModList (std::list<LteRrcSap::DrbToAddMod> *drbToAddModLis, Buffer::Iterator bIterator);
@@ -66,20 +62,73 @@ protected:
   Buffer::Iterator DeserializeSystemInformationBlockType2 (Buffer::Iterator bIterator);
   Buffer::Iterator DeserializeRadioResourceConfigCommon (Buffer::Iterator bIterator);
   Buffer::Iterator DeserializeRadioResourceConfigCommonSib (Buffer::Iterator bIterator);
-  Buffer::Iterator DeserializeUlDcchMessage (Buffer::Iterator bIterator);
-  Buffer::Iterator DeserializeUlCcchMessage (Buffer::Iterator bIterator);
-  Buffer::Iterator DeserializeDlDcchMessage (Buffer::Iterator bIterator);
-  Buffer::Iterator DeserializeDlCcchMessage (Buffer::Iterator bIterator);
 
   void Print (std::ostream &os, LteRrcSap::RadioResourceConfigDedicated radioResourceConfigDedicated) const;
   
   int m_messageType;
 };
 
+
+/**
+ * This class only serves to discriminate which message type has been received
+ * in uplink (ue to eNb) for channel DCCH
+ */
+class RrcUlDcchMessage : public RrcAsn1Header
+{
+  public:
+  uint32_t Deserialize (Buffer::Iterator bIterator);
+  void Print (std::ostream &os) const;
+  void PreSerialize () const;
+  void SerializeUlDcchMessage(int msgType) const;
+  Buffer::Iterator DeserializeUlDcchMessage (Buffer::Iterator bIterator);
+};
+
+/**
+ * This class only serves to discriminate which message type has been received
+ * in downlink (eNb to ue) for channel DCCH
+ */
+class RrcDlDcchMessage : public RrcAsn1Header
+{
+  public:
+  uint32_t Deserialize (Buffer::Iterator bIterator);
+  void Print (std::ostream &os) const;
+  void PreSerialize () const;
+  void SerializeDlDcchMessage(int msgType) const;
+  Buffer::Iterator DeserializeDlDcchMessage (Buffer::Iterator bIterator);
+};
+
+/**
+ * This class only serves to discriminate which message type has been received
+ * in uplink (ue to eNb) for channel CCCH
+ */
+class RrcUlCcchMessage : public RrcAsn1Header
+{
+  public:
+  uint32_t Deserialize (Buffer::Iterator bIterator);
+  void Print (std::ostream &os) const;
+  void PreSerialize () const;
+  void SerializeUlCcchMessage(int msgType) const;
+  Buffer::Iterator DeserializeUlCcchMessage (Buffer::Iterator bIterator);
+};
+
+/**
+ * This class only serves to discriminate which message type has been received
+ * in downlink (eNb to ue) for channel CCCH
+ */
+class RrcDlCcchMessage : public RrcAsn1Header
+{
+  public:
+  uint32_t Deserialize (Buffer::Iterator bIterator);
+  void Print (std::ostream &os) const;
+  void PreSerialize () const;
+  void SerializeDlCcchMessage(int msgType) const;
+  Buffer::Iterator DeserializeDlCcchMessage (Buffer::Iterator bIterator);
+};
+
 /**
 * This class manages the serialization/deserialization of RrcConnectionRequest IE
 */
-class RrcConnectionRequestHeader : public RrcAsn1Header,
+class RrcConnectionRequestHeader : public RrcUlCcchMessage,
                                    LteRrcSap
 {
 public:
@@ -88,7 +137,7 @@ public:
   uint32_t Deserialize (Buffer::Iterator bIterator);
   void Print (std::ostream &os) const;
   void SetMessage (RrcConnectionRequest msg);
-
+  RrcConnectionRequest GetMessage() const;
   std::bitset<8> getMmec () const;
   std::bitset<32> getMtmsi () const;
 
@@ -132,7 +181,7 @@ private:
 /**
 * This class manages the serialization/deserialization of RrcConnectionSetupComplete IE
 */
-class RrcConnectionSetupCompleteHeader : public RrcAsn1Header,
+class RrcConnectionSetupCompleteHeader : public RrcUlDcchMessage,
                                          LteRrcSap
 {
 public:
@@ -153,7 +202,7 @@ private:
 /**
 * This class manages the serialization/deserialization of RrcConnectionSetupComplete IE
 */
-class RrcConnectionReconfigurationCompleteHeader : public RrcAsn1Header,
+class RrcConnectionReconfigurationCompleteHeader : public RrcUlDcchMessage,
                                                    LteRrcSap
 {
 public:
@@ -162,7 +211,7 @@ public:
   uint32_t Deserialize (Buffer::Iterator bIterator);
   void Print (std::ostream &os) const;
   void SetMessage (RrcConnectionReconfigurationCompleted msg);
-
+  RrcConnectionReconfigurationCompleted GetMessage() const;
   uint8_t GetRrcTransactionIdentifier () const;
 
 private:
@@ -173,7 +222,7 @@ private:
 /**
 * This class manages the serialization/deserialization of RrcConnectionReconfiguration IE
 */
-class RrcConnectionReconfigurationHeader : public RrcAsn1Header,
+class RrcConnectionReconfigurationHeader : public RrcDlDcchMessage,
                                            LteRrcSap
 {
 public:
@@ -183,6 +232,7 @@ public:
   void Print (std::ostream &os) const;
   void SetMessage (RrcConnectionReconfiguration msg);
 
+  RrcConnectionReconfiguration GetMessage () const;
   uint8_t GetRrcTransactionIdentifier () const;
   bool GetHaveMeasConfig ();
   MeasConfig GetMeasConfig ();
@@ -230,7 +280,7 @@ private:
 /**
 * This class manages the serialization/deserialization of RRCConnectionReestablishmentRequest IE
 */
-class RrcConnectionReestablishmentRequestHeader : public RrcAsn1Header,
+class RrcConnectionReestablishmentRequestHeader : public RrcUlCcchMessage,
                                                   LteRrcSap
 {
 public:
@@ -239,6 +289,7 @@ public:
   uint32_t Deserialize (Buffer::Iterator bIterator);
   void Print (std::ostream &os) const;
   void SetMessage (RrcConnectionReestablishmentRequest msg);
+  RrcConnectionReestablishmentRequest GetMessage () const;
 
   ReestabUeIdentity GetUeIdentity () const;
   ReestablishmentCause GetReestablishmentCause () const;
@@ -272,7 +323,7 @@ private:
 /**
 * This class manages the serialization/deserialization of RrcConnectionReestablishmentComplete IE
 */
-class RrcConnectionReestablishmentCompleteHeader : public RrcAsn1Header,
+class RrcConnectionReestablishmentCompleteHeader : public RrcUlDcchMessage,
                                                    LteRrcSap
 {
 public:
@@ -281,7 +332,7 @@ public:
   uint32_t Deserialize (Buffer::Iterator bIterator);
   void Print (std::ostream &os) const;
   void SetMessage (RrcConnectionReestablishmentComplete msg);
-
+  RrcConnectionReestablishmentComplete GetMessage() const;
   uint8_t GetRrcTransactionIdentifier () const;
 
 private:
