@@ -338,6 +338,10 @@ LteUeRrc::DoStart (void)
   m_srb0 = CreateObject<LteSignalingRadioBearerInfo> ();  
   m_srb0->m_rlc = rlc;
   m_srb0->m_srbIdentity = 0;
+  LteUeRrcSapUser::SetupParameters ueParams;
+  ueParams.srb0SapProvider = m_srb0->m_rlc->GetLteRlcSapProvider ();
+  ueParams.srb1SapProvider = 0;
+  m_rrcSapUser->Setup (ueParams);
 
   // CCCH (LCID 0) is pre-configured, here is the hardcoded configuration:
   LteUeCmacSapProvider::LogicalChannelConfig lcConfig;
@@ -529,7 +533,10 @@ LteUeRrc::DoCompleteSetup (LteUeRrcSapProvider::CompleteSetupParameters params)
 {
   NS_LOG_FUNCTION (this);
   m_srb0->m_rlc->SetLteRlcSapUser (params.srb0SapUser);
-  m_srb1->m_pdcp->SetLtePdcpSapUser (params.srb1SapUser);
+  if (m_srb1)
+    {
+      m_srb1->m_pdcp->SetLtePdcpSapUser (params.srb1SapUser);
+    }
 }
 
 
