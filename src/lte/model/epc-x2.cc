@@ -164,6 +164,10 @@ EpcX2::RecvFromX2cSocket (Ptr<Socket> socket)
   Ptr<Packet> packet = socket->Recv ();
   NS_LOG_LOGIC ("packetLen = " << packet->GetSize ());
 
+  NS_ASSERT_MSG (m_x2InterfaceCellIds.find (socket) != m_x2InterfaceCellIds.end (),
+                 "Missing infos of local and remote CellId");
+  Ptr<X2CellInfo> cellsInfo = m_x2InterfaceCellIds [socket];
+
   EpcX2Header x2Header;
   packet->RemoveHeader (x2Header);
 
@@ -171,9 +175,6 @@ EpcX2::RecvFromX2cSocket (Ptr<Socket> socket)
 
   uint8_t messageType = x2Header.GetMessageType ();
   uint8_t procedureCode = x2Header.GetProcedureCode ();
-
-  NS_LOG_LOGIC ("messageType = " << (uint32_t)messageType);
-  NS_LOG_LOGIC ("procedureCode = " << (uint32_t)procedureCode);
 
   if (procedureCode == EpcX2Header::HandoverPreparation)
     {
@@ -185,10 +186,6 @@ EpcX2::RecvFromX2cSocket (Ptr<Socket> socket)
           packet->RemoveHeader (x2HoReqHeader);
 
           NS_LOG_INFO ("X2 HandoverRequest header: " << x2HoReqHeader);
-
-          NS_ASSERT_MSG (m_x2InterfaceCellIds.find (socket) != m_x2InterfaceCellIds.end (),
-                         "Missing infos of local and remote CellId");
-          Ptr<X2CellInfo> cellsInfo = m_x2InterfaceCellIds [socket];
 
           EpcX2SapUser::HandoverRequestParams params;
           params.oldEnbUeX2apId = x2HoReqHeader.GetOldEnbUeX2apId ();
@@ -218,9 +215,7 @@ EpcX2::RecvFromX2cSocket (Ptr<Socket> socket)
           EpcX2HandoverRequestAckHeader x2HoReqAckHeader;
           packet->RemoveHeader (x2HoReqAckHeader);
 
-          NS_ASSERT_MSG (m_x2InterfaceCellIds.find (socket) != m_x2InterfaceCellIds.end (),
-                         "Missing infos of local and remote CellId");
-          Ptr<X2CellInfo> cellsInfo = m_x2InterfaceCellIds [socket];
+          NS_LOG_INFO ("X2 HandoverRequestAck header: " << x2HoReqAckHeader);
 
           EpcX2SapUser::HandoverRequestAckParams params;          
           params.oldEnbUeX2apId = x2HoReqAckHeader.GetOldEnbUeX2apId ();
@@ -245,9 +240,7 @@ EpcX2::RecvFromX2cSocket (Ptr<Socket> socket)
           EpcX2HandoverPreparationFailureHeader x2HoPrepFailHeader;
           packet->RemoveHeader (x2HoPrepFailHeader);
 
-          NS_ASSERT_MSG (m_x2InterfaceCellIds.find (socket) != m_x2InterfaceCellIds.end (),
-                         "Missing infos of local and remote CellId");
-          Ptr<X2CellInfo> cellsInfo = m_x2InterfaceCellIds [socket];
+          NS_LOG_INFO ("X2 HandoverPreparationFailure header: " << x2HoPrepFailHeader);
 
           EpcX2SapUser::HandoverPreparationFailureParams params;          
           params.oldEnbUeX2apId = x2HoPrepFailHeader.GetOldEnbUeX2apId ();
@@ -282,6 +275,33 @@ EpcX2::RecvFromX2cSocket (Ptr<Socket> socket)
           NS_LOG_LOGIC ("cellInformationList size = " << params.cellInformationList.size ());
 
           m_x2SapUser->RecvLoadInformation (params);
+        }
+    }
+  else if (procedureCode == EpcX2Header::SnStatusTransfer)
+    {
+      if (messageType == EpcX2Header::InitiatingMessage)
+        {
+          NS_LOG_LOGIC ("Recv X2 message: SN STATUS TRANSFER");
+
+            EpcX2SnStatusTransferHeader x2SnStatusXferHeader;
+            packet->RemoveHeader (x2SnStatusXferHeader);
+
+            NS_LOG_INFO ("X2 SnStatusTransfer header: " << x2SnStatusXferHeader);
+
+            EpcX2SapUser::SnStatusTransferParams params;
+            params.oldEnbUeX2apId = x2SnStatusXferHeader.GetOldEnbUeX2apId ();
+            params.newEnbUeX2apId = x2SnStatusXferHeader.GetNewEnbUeX2apId ();
+            params.sourceCellId   = cellsInfo->m_remoteCellId;
+            params.targetCellId   = cellsInfo->m_localCellId;
+            params.erabsSubjectToStatusTransferList = x2SnStatusXferHeader.GetErabsSubjectToStatusTransferList ();
+
+            NS_LOG_LOGIC ("oldEnbUeX2apId = " << params.oldEnbUeX2apId);
+            NS_LOG_LOGIC ("newEnbUeX2apId = " << params.newEnbUeX2apId);
+            NS_LOG_LOGIC ("sourceCellId = " << params.sourceCellId);
+            NS_LOG_LOGIC ("targetCellId = " << params.targetCellId);
+            NS_LOG_LOGIC ("erabsList size = " << params.erabsSubjectToStatusTransferList.size ());
+
+            m_x2SapUser->RecvSnStatusTransfer (params);
         }
     }
   else if (procedureCode == EpcX2Header::UeContextRelease)
@@ -477,6 +497,54 @@ EpcX2::DoSendHandoverPreparationFailure (EpcX2SapProvider::HandoverPreparationFa
   // Build the X2 packet
   Ptr<Packet> packet = Create <Packet> ();
   packet->AddHeader (x2HoPrepFailHeader);
+  packet->AddHeader (x2Header);
+  NS_LOG_INFO ("packetLen = " << packet->GetSize ());
+
+  // Send the X2 message through the socket
+  localSocket->SendTo (packet, 0, InetSocketAddress (remoteIpAddr, m_x2cUdpPort));
+}
+
+
+void
+EpcX2::DoSendSnStatusTransfer (EpcX2SapProvider::SnStatusTransferParams params)
+{
+  NS_LOG_FUNCTION (this);
+
+  NS_LOG_LOGIC ("oldEnbUeX2apId = " << params.oldEnbUeX2apId);
+  NS_LOG_LOGIC ("newEnbUeX2apId = " << params.newEnbUeX2apId);
+  NS_LOG_LOGIC ("sourceCellId = " << params.sourceCellId);
+  NS_LOG_LOGIC ("targetCellId = " << params.targetCellId);
+  NS_LOG_LOGIC ("erabsList size = " << params.erabsSubjectToStatusTransferList.size ());
+
+  NS_ASSERT_MSG (m_x2InterfaceSockets.find (params.targetCellId) != m_x2InterfaceSockets.end (),
+                 "Socket infos not defined for targetCellId = " << params.targetCellId);
+
+  Ptr<Socket> localSocket = m_x2InterfaceSockets [params.targetCellId]->m_localSocket;
+  Ipv4Address remoteIpAddr = m_x2InterfaceSockets [params.targetCellId]->m_remoteIpAddr;
+
+  NS_LOG_LOGIC ("localSocket = " << localSocket);
+  NS_LOG_LOGIC ("remoteIpAddr = " << remoteIpAddr);
+
+  NS_LOG_INFO ("Send X2 message: SN STATUS TRANSFER");
+
+  // Build the X2 message
+  EpcX2SnStatusTransferHeader x2SnStatusXferHeader;
+  x2SnStatusXferHeader.SetOldEnbUeX2apId (params.oldEnbUeX2apId);
+  x2SnStatusXferHeader.SetNewEnbUeX2apId (params.newEnbUeX2apId);
+  x2SnStatusXferHeader.SetErabsSubjectToStatusTransferList (params.erabsSubjectToStatusTransferList);
+
+  EpcX2Header x2Header;
+  x2Header.SetMessageType (EpcX2Header::InitiatingMessage);
+  x2Header.SetProcedureCode (EpcX2Header::SnStatusTransfer);
+  x2Header.SetLengthOfIes (x2SnStatusXferHeader.GetLengthOfIes ());
+  x2Header.SetNumberOfIes (x2SnStatusXferHeader.GetNumberOfIes ());
+
+  NS_LOG_INFO ("X2 header: " << x2Header);
+  NS_LOG_INFO ("X2 SnStatusTransfer header: " << x2SnStatusXferHeader);
+
+  // Build the X2 packet
+  Ptr<Packet> packet = Create <Packet> ();
+  packet->AddHeader (x2SnStatusXferHeader);
   packet->AddHeader (x2Header);
   NS_LOG_INFO ("packetLen = " << packet->GetSize ());
 

@@ -1359,6 +1359,20 @@ LteEnbRrc::DoRecvHandoverPreparationFailure (EpcX2SapUser::HandoverPreparationFa
 }
 
 void
+LteEnbRrc::DoRecvSnStatusTransfer (EpcX2SapUser::SnStatusTransferParams params)
+{
+  NS_LOG_FUNCTION (this);
+
+  NS_LOG_LOGIC ("Recv X2 message: SN STATUS TRANSFER");
+
+  NS_LOG_LOGIC ("oldEnbUeX2apId = " << params.oldEnbUeX2apId);
+  NS_LOG_LOGIC ("newEnbUeX2apId = " << params.newEnbUeX2apId);
+  NS_LOG_LOGIC ("erabsSubjectToStatusTransferList size = " << params.erabsSubjectToStatusTransferList.size ());
+
+  NS_ASSERT ("Processing of SN STATUS TRANSFER X2 message IS NOT IMPLEMENTED");
+}
+
+void
 LteEnbRrc::DoRecvUeContextRelease (EpcX2SapUser::UeContextReleaseParams params)
 {
   NS_LOG_FUNCTION (this);

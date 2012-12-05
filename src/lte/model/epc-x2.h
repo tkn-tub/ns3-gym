@@ -116,6 +116,7 @@ protected:
   virtual void DoSendHandoverRequest (EpcX2SapProvider::HandoverRequestParams params);
   virtual void DoSendHandoverRequestAck (EpcX2SapProvider::HandoverRequestAckParams params);
   virtual void DoSendHandoverPreparationFailure (EpcX2SapProvider::HandoverPreparationFailureParams params);
+  virtual void DoSendSnStatusTransfer (EpcX2SapProvider::SnStatusTransferParams params);
   virtual void DoSendUeContextRelease (EpcX2SapProvider::UeContextReleaseParams params);
   virtual void DoSendLoadInformation (EpcX2SapProvider::LoadInformationParams params);
   virtual void DoSendResourceStatusUpdate (EpcX2SapProvider::ResourceStatusUpdateParams params);
