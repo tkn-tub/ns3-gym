@@ -40,6 +40,7 @@ Bugs fixed
  - bug 1495 - test.py claims test passed when no test was run
  - bug 1509 - rttEstimator returns invalid value in presence of errors
  - bug 1532 - unimplemented LTE Scheduler methods
+ - bug 1524 - Fragmentation Threshold equals to Packet Size at MAC Layer (Data + IP + UDP) crash the reception
 
 Known issues
 ------------
