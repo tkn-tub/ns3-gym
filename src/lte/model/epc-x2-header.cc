@@ -766,6 +766,198 @@ EpcX2HandoverPreparationFailureHeader::GetNumberOfIes () const
 
 /////////////////////////////////////////////////////////////////////
 
+NS_OBJECT_ENSURE_REGISTERED (EpcX2SnStatusTransferHeader);
+
+EpcX2SnStatusTransferHeader::EpcX2SnStatusTransferHeader ()
+  : m_numberOfIes (3),
+    m_headerLength (6),
+    m_oldEnbUeX2apId (0xfffa),
+    m_newEnbUeX2apId (0xfffa)
+{
+  m_erabsSubjectToStatusTransferList.clear (); 
+}
+
+EpcX2SnStatusTransferHeader::~EpcX2SnStatusTransferHeader ()
+{
+  m_numberOfIes = 0;
+  m_headerLength = 0;
+  m_oldEnbUeX2apId = 0xfffb;
+  m_newEnbUeX2apId = 0xfffb;
+  m_erabsSubjectToStatusTransferList.clear (); 
+}
+
+TypeId
+EpcX2SnStatusTransferHeader::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::EpcX2SnStatusTransferHeader")
+    .SetParent<Header> ()
+    .AddConstructor<EpcX2SnStatusTransferHeader> ()
+  ;
+  return tid;
+}
+
+TypeId
+EpcX2SnStatusTransferHeader::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
+}
+
+uint32_t
+EpcX2SnStatusTransferHeader::GetSerializedSize (void) const
+{
+  return m_headerLength;
+}
+
+void
+EpcX2SnStatusTransferHeader::Serialize (Buffer::Iterator start) const
+{
+  Buffer::Iterator i = start;
+
+  i.WriteHtonU16 (m_oldEnbUeX2apId);
+  i.WriteHtonU16 (m_newEnbUeX2apId);
+
+  std::vector <EpcX2Sap::ErabsSubjectToStatusTransferItem>::size_type sz = m_erabsSubjectToStatusTransferList.size ();
+  i.WriteHtonU16 (sz);              // number of ErabsSubjectToStatusTransferItems
+
+  for (int j = 0; j < (int) sz; j++)
+    {
+      EpcX2Sap::ErabsSubjectToStatusTransferItem item = m_erabsSubjectToStatusTransferList [j];
+
+      i.WriteHtonU16 (item.erabId);
+
+      uint16_t bitsetSize = EpcX2Sap::m_maxPdcpSn / 64;
+      for (int k = 0; k < bitsetSize; k++)
+        {
+          uint64_t statusValue = 0;
+          for (int m = 0; m < 64; m++)
+            {
+              statusValue |= item.receiveStatusOfUlPdcpSdus[64 * k + m] << m;
+            }
+          i.WriteHtonU64 (statusValue);
+        }
+
+      i.WriteHtonU16 (item.ulPdcpSn);
+      i.WriteHtonU32 (item.ulHfn);
+      i.WriteHtonU16 (item.dlPdcpSn);
+      i.WriteHtonU32 (item.dlHfn);
+    }
+}
+
+uint32_t
+EpcX2SnStatusTransferHeader::Deserialize (Buffer::Iterator start)
+{
+  Buffer::Iterator i = start;
+
+  m_oldEnbUeX2apId = i.ReadNtohU16 ();
+  m_newEnbUeX2apId = i.ReadNtohU16 ();
+  int sz = i.ReadNtohU16 ();
+
+  m_numberOfIes = 3;
+  m_headerLength = 6 + sz * (14 + (EpcX2Sap::m_maxPdcpSn / 64));
+
+  for (int j = 0; j < sz; j++)
+    {
+      EpcX2Sap::ErabsSubjectToStatusTransferItem ErabItem;
+      ErabItem.erabId = i.ReadNtohU16 ();
+
+      uint16_t bitsetSize = EpcX2Sap::m_maxPdcpSn / 64;
+      for (int k = 0; k < bitsetSize; k++)
+        {
+          uint64_t statusValue = i.ReadNtohU64 ();
+          for (int m = 0; m < 64; m++)
+            {
+              ErabItem.receiveStatusOfUlPdcpSdus[64 * k + m] = (statusValue >> m) & 1;
+            }
+        }
+
+      ErabItem.ulPdcpSn = i.ReadNtohU16 ();
+      ErabItem.ulHfn    = i.ReadNtohU32 ();
+      ErabItem.dlPdcpSn = i.ReadNtohU16 ();
+      ErabItem.dlHfn    = i.ReadNtohU32 ();
+
+      m_erabsSubjectToStatusTransferList.push_back (ErabItem);
+    }
+
+  return GetSerializedSize ();
+}
+
+void
+EpcX2SnStatusTransferHeader::Print (std::ostream &os) const
+{
+  os << "OldEnbUeX2apId = " << m_oldEnbUeX2apId;
+  os << " NewEnbUeX2apId = " << m_newEnbUeX2apId;
+  os << " ErabsSubjectToStatusTransferList size = " << m_erabsSubjectToStatusTransferList.size ();
+
+  std::vector <EpcX2Sap::ErabsSubjectToStatusTransferItem>::size_type sz = m_erabsSubjectToStatusTransferList.size ();
+  if (sz > 0)
+    {
+      os << " [";
+    }
+  for (int j = 0; j < (int) sz; j++)
+    {
+      os << m_erabsSubjectToStatusTransferList[j].erabId;
+      if (j < (int) sz - 1)
+        {
+          os << ", ";
+        }
+      else
+        {
+          os << "]";
+        }
+    }
+}
+
+uint16_t
+EpcX2SnStatusTransferHeader::GetOldEnbUeX2apId () const
+{
+  return m_oldEnbUeX2apId;
+}
+
+void
+EpcX2SnStatusTransferHeader::SetOldEnbUeX2apId (uint16_t x2apId)
+{
+  m_oldEnbUeX2apId = x2apId;
+}
+
+uint16_t
+EpcX2SnStatusTransferHeader::GetNewEnbUeX2apId () const
+{
+  return m_newEnbUeX2apId;
+}
+
+void
+EpcX2SnStatusTransferHeader::SetNewEnbUeX2apId (uint16_t x2apId)
+{
+  m_newEnbUeX2apId = x2apId;
+}
+
+std::vector <EpcX2Sap::ErabsSubjectToStatusTransferItem>
+EpcX2SnStatusTransferHeader::GetErabsSubjectToStatusTransferList () const
+{
+  return m_erabsSubjectToStatusTransferList;
+}
+
+void
+EpcX2SnStatusTransferHeader::SetErabsSubjectToStatusTransferList (std::vector <EpcX2Sap::ErabsSubjectToStatusTransferItem> erabs)
+{
+  m_headerLength += erabs.size () * (14 + (EpcX2Sap::m_maxPdcpSn / 8));
+  m_erabsSubjectToStatusTransferList = erabs;
+}
+
+uint32_t
+EpcX2SnStatusTransferHeader::GetLengthOfIes () const
+{
+  return m_headerLength;
+}
+
+uint32_t
+EpcX2SnStatusTransferHeader::GetNumberOfIes () const
+{
+  return m_numberOfIes;
+}
+
+/////////////////////////////////////////////////////////////////////
+
 NS_OBJECT_ENSURE_REGISTERED (EpcX2UeContextReleaseHeader);
 
 EpcX2UeContextReleaseHeader::EpcX2UeContextReleaseHeader ()
@@ -1102,8 +1294,8 @@ NS_OBJECT_ENSURE_REGISTERED (EpcX2ResourceStatusUpdateHeader);
 EpcX2ResourceStatusUpdateHeader::EpcX2ResourceStatusUpdateHeader ()
   : m_numberOfIes (3),
     m_headerLength (6),
-    m_enb1MeasurementId (0),
-    m_enb2MeasurementId (0)
+    m_enb1MeasurementId (0xfffa),
+    m_enb2MeasurementId (0xfffa)
 {
   m_cellMeasurementResultList.clear ();
 }
@@ -1112,8 +1304,8 @@ EpcX2ResourceStatusUpdateHeader::~EpcX2ResourceStatusUpdateHeader ()
 {
   m_numberOfIes = 0;
   m_headerLength = 0;
-  m_enb1MeasurementId = 0;
-  m_enb2MeasurementId = 0;
+  m_enb1MeasurementId = 0xfffb;
+  m_enb2MeasurementId = 0xfffb;
   m_cellMeasurementResultList.clear ();
 }
 
