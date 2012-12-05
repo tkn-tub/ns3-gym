@@ -216,6 +216,7 @@ private:
   void QueueSubChannelsForTransmission (std::vector <int> rbMap);
 
   // UE CPHY SAP methods
+  void DoReset ();  
   void DoSyncronizeWithEnb (uint16_t cellId, uint16_t dlEarfcn);  
   void DoSetDlBandwidth (uint8_t ulBandwidth);
   void DoConfigureUplink (uint16_t ulEarfcn, uint8_t ulBandwidth);
@@ -262,7 +263,6 @@ private:
 
   bool m_dlConfigured;
   bool m_ulConfigured;
-  bool m_addedToDlChannel;
 
   Ptr<LteHarqPhy> m_harqPhyModule;
 
@@ -276,6 +276,8 @@ private:
   TracedCallback<uint16_t, uint16_t, double, double> m_reportCurrentCellRsrpRsrqTrace;
   uint16_t m_rsrpRsrqSamplePeriod;
   uint16_t m_rsrpRsrqSampleCounter;
+
+  EventId m_sendSrsEvent;
 
 };
 

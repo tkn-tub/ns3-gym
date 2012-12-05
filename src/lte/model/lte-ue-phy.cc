@@ -117,42 +117,21 @@ LteUePhy::LteUePhy ()
 
 LteUePhy::LteUePhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy)
   : LtePhy (dlPhy, ulPhy),
-    m_p10CqiPeriocity (MilliSeconds (1)),
-    // ideal behavior
-    m_p10CqiLast (MilliSeconds (0)),
-    m_a30CqiPeriocity (MilliSeconds (1)),
-    // ideal behavior
-    m_a30CqiLast (MilliSeconds (0)),
+    m_p10CqiPeriocity (MilliSeconds (1)),  // ideal behavior  
+    m_a30CqiPeriocity (MilliSeconds (1)),  // ideal behavior
     m_uePhySapUser (0),
-    m_ueCphySapUser (0),
-    m_rnti (0),
-    m_transmissionMode (0),
-    m_srsPeriodicity (0),
-    m_srsConfigured (false),
-    m_dlConfigured (false),
-    m_ulConfigured (false),
-    m_addedToDlChannel (false),
-    m_raPreambleId (255), // value out of range
-    m_raRnti (11), // value out of range
-    m_rsrpRsrqSampleCounter (0)
+    m_ueCphySapUser (0)
 {
   m_amc = CreateObject <LteAmc> ();
   m_uePhySapProvider = new UeMemberLteUePhySapProvider (this);
   m_ueCphySapProvider = new MemberLteUeCphySapProvider<LteUePhy> (this);
   m_macChTtiDelay = UL_PUSCH_TTIS_DELAY;
-  for (int i = 0; i < m_macChTtiDelay; i++)
-    {
-      Ptr<PacketBurst> pb = CreateObject <PacketBurst> ();
-      m_packetBurstQueue.push_back (pb);
-      std::list<Ptr<LteControlMessage> > l;
-      m_controlMessagesQueue.push_back (l);
-    }
-  std::vector <int> ulRb;
-  m_subChannelsForTransmissionQueue.resize (m_macChTtiDelay, ulRb);
-
+  
   NS_ASSERT_MSG (Simulator::Now ().GetNanoSeconds () == 0,
                  "Cannot create UE devices after simulation started");
   Simulator::ScheduleNow (&LteUePhy::SubframeIndication, this, 1, 1);
+
+  DoReset ();
 }
 
 
@@ -709,9 +688,9 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
           if ((((frameNo-1)*10 + (subframeNo-1)) % m_srsPeriodicity) == m_srsSubframeOffset)
             {
               NS_LOG_INFO ("frame " << frameNo << " subframe " << subframeNo << " sending SRS (offset=" << m_srsSubframeOffset << ", period=" << m_srsPeriodicity << ")");
-              Simulator::Schedule (UL_SRS_DELAY_FROM_SUBFRAME_START, 
-                                   &LteUePhy::SendSrs,
-                                   this);
+              m_sendSrsEvent = Simulator::Schedule (UL_SRS_DELAY_FROM_SUBFRAME_START, 
+                                                    &LteUePhy::SendSrs,
+                                                    this);
             }
         }
       
@@ -772,6 +751,38 @@ LteUePhy::SendSrs ()
 }
 
 
+void
+LteUePhy::DoReset ()
+{
+  NS_LOG_FUNCTION (this);
+  
+  m_rnti = 0;
+  m_transmissionMode = 0;
+  m_srsPeriodicity = 0;
+  m_srsConfigured = false;
+  m_dlConfigured = false;
+  m_ulConfigured = false;
+  m_raPreambleId = 255; // value out of range
+  m_raRnti = 11; // value out of range
+  m_rsrpRsrqSampleCounter = 0;
+  m_p10CqiLast = Simulator::Now ();
+  m_a30CqiLast = Simulator::Now ();
+
+  m_packetBurstQueue.clear ();
+  m_controlMessagesQueue.clear ();
+  m_subChannelsForTransmissionQueue.clear ();
+  for (int i = 0; i < m_macChTtiDelay; i++)
+    {
+      Ptr<PacketBurst> pb = CreateObject <PacketBurst> ();
+      m_packetBurstQueue.push_back (pb);
+      std::list<Ptr<LteControlMessage> > l;
+      m_controlMessagesQueue.push_back (l);
+    }
+  std::vector <int> ulRb;
+  m_subChannelsForTransmissionQueue.resize (m_macChTtiDelay, ulRb);
+
+  m_sendSrsEvent.Cancel ();
+}
 
 void
 LteUePhy::DoSyncronizeWithEnb (uint16_t cellId, uint16_t dlEarfcn)
