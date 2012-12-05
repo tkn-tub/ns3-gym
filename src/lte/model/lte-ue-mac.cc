@@ -501,6 +501,8 @@ LteUeMac::DoReset ()
         }
     }
   m_rachConfigured = false;
+  m_freshUlBsr = false;
+  m_ulBsrReceived.clear ();
 }
 
 void

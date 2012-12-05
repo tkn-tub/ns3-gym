@@ -337,7 +337,7 @@ LteUeRrc::DoStart (void)
 
   m_srb0 = CreateObject<LteSignalingRadioBearerInfo> ();  
   m_srb0->m_rlc = rlc;
-  m_srb0->m_srbIdentity = 1;
+  m_srb0->m_srbIdentity = 0;
 
   // CCCH (LCID 0) is pre-configured, here is the hardcoded configuration:
   LteUeCmacSapProvider::LogicalChannelConfig lcConfig;
@@ -413,6 +413,7 @@ LteUeRrc::DoSetTemporaryCellRnti (uint16_t rnti)
 {
   NS_LOG_FUNCTION (this << rnti);
   m_rnti = rnti;
+  m_srb0->m_rlc->SetRnti (m_rnti);
   m_rrcSapUser->Reestablish ();
   m_cphySapProvider->SetRnti (m_rnti);
 }
@@ -607,14 +608,15 @@ LteUeRrc::DoRecvRrcConnectionReconfiguration (LteRrcSap::RrcConnectionReconfigur
           m_cphySapProvider->SetDlBandwidth ( mci.carrierBandwidth.dlBandwidth); 
           m_cphySapProvider->ConfigureUplink (mci.carrierFreq.ulCarrierFreq, mci.carrierBandwidth.ulBandwidth); 
           m_rnti = msg.mobilityControlInfo.newUeIdentity;
-          NS_ASSERT_MSG (mci.haveRachConfigDedicated, "handover is only supported with non-contention-based random access procedure");
+          m_srb0->m_rlc->SetRnti (m_rnti);
+          m_cmacSapProvider->Reset ();
+          NS_ASSERT_MSG (mci.haveRachConfigDedicated, "handover is only supported with non-contention-based random access procedure");          
           m_cmacSapProvider->StartNonContentionBasedRandomAccessProcedure (m_rnti, mci.rachConfigDedicated.raPreambleIndex, mci.rachConfigDedicated.raPrachMaskIndex);
           m_cphySapProvider->SetRnti (m_rnti);
           m_lastRrcTransactionIdentifier = msg.rrcTransactionIdentifier;
-          if (msg.haveRadioResourceConfigDedicated)
-            {
-              ApplyRadioResourceConfigDedicated (msg.radioResourceConfigDedicated);
-            } 
+          NS_ASSERT (msg.haveRadioResourceConfigDedicated);
+          m_srb1 = 0; // dispose SRB1
+          ApplyRadioResourceConfigDedicated (msg.radioResourceConfigDedicated);          
           // RRC connection reconfiguration completed will be sent
           // after handover is complete
         }
@@ -702,7 +704,8 @@ LteUeRrc::ApplyRadioResourceConfigDedicated (LteRrcSap::RadioResourceConfigDedic
       if (m_srb1 == 0)
         {
           // SRB1 not setup yet        
-          NS_ASSERT_MSG (m_state == IDLE_CONNECTING, "expected state IDLE_CONNECTING, actual state " << ToString (m_state));
+          NS_ASSERT_MSG ((m_state == IDLE_CONNECTING) || (m_state == CONNECTED_HANDOVER), 
+                         "unexpected state " << ToString (m_state));
           NS_ASSERT_MSG (stamIt->srbIdentity == 1, "only SRB1 supported");
 
           const uint8_t lcid = 1; // fixed LCID for SRB1

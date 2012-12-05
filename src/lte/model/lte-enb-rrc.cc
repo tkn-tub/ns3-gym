@@ -168,7 +168,7 @@ UeManager::DoStart ()
 
     m_srb0 = CreateObject<LteSignalingRadioBearerInfo> ();  
     m_srb0->m_rlc = rlc;
-    m_srb0->m_srbIdentity = 1;
+    m_srb0->m_srbIdentity = 0;
     // no need to store logicalChannelConfig as SRB0 is pre-configured
 
     LteEnbCmacSapProvider::LcInfo lcinfo;
