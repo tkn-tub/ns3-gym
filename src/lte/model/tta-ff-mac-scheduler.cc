@@ -510,7 +510,7 @@ TtaFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
                         }
                       achievableSbRate += ((m_amc->GetTbSizeFromMcs (sbMcs, rbgSize) / 8) / 0.001); // = TB size / TTI
                       wbMcs = m_amc->GetMcsFromCqi (wbCqi);
-                      achievableWbRate = ((m_amc->GetTbSizeFromMcs (wbMcs, rbgSize) / 8) / 0.001); // = TB size / TTI
+                      achievableWbRate += ((m_amc->GetTbSizeFromMcs (wbMcs, rbgSize) / 8) / 0.001); // = TB size / TTI
                     }
 
                   double metric = achievableSbRate / achievableWbRate;
