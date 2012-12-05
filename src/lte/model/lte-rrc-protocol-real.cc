@@ -178,7 +178,10 @@ LteUeRrcProtocolReal::DoSendRrcConnectionSetupCompleted (LteRrcSap::RrcConnectio
   transmitPdcpSduParameters.rnti = m_rnti;
   transmitPdcpSduParameters.lcid = 1;
 
-  m_setupParameters.srb1SapProvider->TransmitPdcpSdu(transmitPdcpSduParameters);
+  if(m_setupParameters.srb1SapProvider)
+  {
+    m_setupParameters.srb1SapProvider->TransmitPdcpSdu(transmitPdcpSduParameters);
+  }
 }
 
 void 
@@ -294,8 +297,8 @@ LteUeRrcProtocolReal::DoReceivePdcpPdu (Ptr<Packet> p)
 
   // Declare possible messages
   LteRrcSap::RrcConnectionReestablishment rrcConnectionReestablishmentMsg;
-  LteRrcSap::RrcConnectionSetup rrcConnectionSetupMsg;
-  
+  LteRrcSap::RrcConnectionSetup rrcConnectionSetupMsg;        
+
   // Deserialize packet and call member recv function with appropiate structure
   switch( rrcDlCcchMessage.GetMessageType() )
   {
@@ -574,12 +577,6 @@ LteEnbRrcProtocolReal::DoSendRrcConnectionSetup (uint16_t rnti, LteRrcSap::RrcCo
   {
     m_setupUeParametersMap[rnti].srb0SapProvider->TransmitPdcpPdu(transmitPdcpPduParameters);
   }
-  
-  /*
-  Simulator::Schedule (RRC_REAL_MSG_DELAY, 
-		       &LteUeRrcSapProvider::RecvRrcConnectionSetup,
-		       GetUeRrcSapProvider (rnti), 
-		       msg);*/
 }
 
 void 

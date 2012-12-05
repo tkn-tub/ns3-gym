@@ -320,31 +320,44 @@ RrcAsn1Header::SerializePhysicalConfigDedicated (LteRrcSap::PhysicalConfigDedica
 void
 RrcAsn1Header::SerializeRadioResourceConfigDedicated (LteRrcSap::RadioResourceConfigDedicated radioResourceConfigDedicated) const
 {
+  bool isSrbToAddModListPresent = !radioResourceConfigDedicated.srbToAddModList.empty();
+  bool isDrbToAddModListPresent = !radioResourceConfigDedicated.drbToAddModList.empty();
+  bool isDrbToReleaseListPresent = !radioResourceConfigDedicated.drbToReleaseList.empty();
+  
   // 6 optional fields. Extension marker is present.
   std::bitset<6> optionalFieldsPresent = std::bitset<6> ();
-  optionalFieldsPresent.set (5,1);  // srb-ToAddModList present
-  optionalFieldsPresent.set (4,1);  // drb-ToAddModList present
-  optionalFieldsPresent.set (3,1);  // drb-ToReleaseList present
+  optionalFieldsPresent.set (5,isSrbToAddModListPresent);  // srb-ToAddModList present
+  optionalFieldsPresent.set (4,isDrbToAddModListPresent);  // drb-ToAddModList present
+  optionalFieldsPresent.set (3,isDrbToReleaseListPresent);  // drb-ToReleaseList present
   optionalFieldsPresent.set (2,0);  // mac-MainConfig not present
   optionalFieldsPresent.set (1,0);  // sps-Config not present
   optionalFieldsPresent.set (0,(radioResourceConfigDedicated.havePhysicalConfigDedicated) ? 1 : 0);
   SerializeSequence<6> (optionalFieldsPresent,true);
 
   // Serialize srbToAddModList
-  SerializeSrbToAddModList (radioResourceConfigDedicated.srbToAddModList);
+  if(isSrbToAddModListPresent)
+  {
+    SerializeSrbToAddModList (radioResourceConfigDedicated.srbToAddModList);
+  }
 
   // Serialize drbToAddModList
-  SerializeDrbToAddModList (radioResourceConfigDedicated.drbToAddModList);
-
+  if(isDrbToAddModListPresent)
+  {
+    SerializeDrbToAddModList (radioResourceConfigDedicated.drbToAddModList);
+  }
+  
   // Serialize drbToReleaseList
-  SerializeSequenceOf (radioResourceConfigDedicated.drbToReleaseList.size (),MAX_DRB,1);
-  std::list<uint8_t>::iterator it = radioResourceConfigDedicated.drbToReleaseList.begin ();
-  for (; it != radioResourceConfigDedicated.drbToReleaseList.end (); it++)
-    {
-      // DRB-Identity ::= INTEGER (1..32)
-      SerializeInteger (*it,1,32);
-    }
-
+  if(isDrbToReleaseListPresent)
+  {
+    SerializeSequenceOf (radioResourceConfigDedicated.drbToReleaseList.size (),MAX_DRB,1);
+    std::list<uint8_t>::iterator it = radioResourceConfigDedicated.drbToReleaseList.begin ();
+    for (; it != radioResourceConfigDedicated.drbToReleaseList.end (); it++)
+      {
+        // DRB-Identity ::= INTEGER (1..32)
+        SerializeInteger (*it,1,32);
+      }
+  }
+  
   if (radioResourceConfigDedicated.havePhysicalConfigDedicated)
     {
       SerializePhysicalConfigDedicated (radioResourceConfigDedicated.physicalConfigDedicated);
@@ -1586,6 +1599,8 @@ RrcConnectionSetupHeader::PreSerialize () const
 
   SerializeDlCcchMessage(3);
 
+  SerializeInteger(15,0,15);
+  
   // Serialize RRCConnectionSetup sequence:
   // no default or optional fields. Extension marker not present.
   SerializeSequence (std::bitset<0> (),false);
@@ -1620,20 +1635,23 @@ RrcConnectionSetupHeader::PreSerialize () const
 uint32_t
 RrcConnectionSetupHeader::Deserialize (Buffer::Iterator bIterator)
 {
-  // Deserialize RRCConnectionSetup sequence
+  int n;
+
   std::bitset<0> bitset0;
   std::bitset<1> bitset1;
   std::bitset<2> bitset2;
   
   bIterator = DeserializeDlCcchMessage(bIterator);
   
+  bIterator = DeserializeInteger(&n,0,15,bIterator);
+
+  // Deserialize RRCConnectionSetup sequence
   bIterator = DeserializeSequence (&bitset0,false,bIterator);
 
   // Deserialize rrc-TransactionIdentifier ::=INTEGER (0..3)
-  int n;
   bIterator = DeserializeInteger (&n,0,3,bIterator);
   rrcTransactionIdentifier = n;
-
+  
   // Deserialize criticalExtensions choice
   int criticalExtensionChoice;
   bIterator = DeserializeChoice (2,&criticalExtensionChoice,bIterator);
