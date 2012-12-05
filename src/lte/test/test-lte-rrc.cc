@@ -68,7 +68,7 @@ std::string LteRrcConnectionEstablishmentTestCase::BuildNameString (uint32_t nUe
 {
   std::ostringstream oss;
   oss << "nUes=" << nUes 
-      << "nBearers=" << nBearers 
+      << ", nBearers=" << nBearers 
       << ", tConnBase=" << tConnBase
       << ", tConnIncrPerUe=" << tConnIncrPerUe
       << ", delayDiscStart=" << delayDiscStart;
@@ -99,6 +99,7 @@ LteRrcConnectionEstablishmentTestCase::LteRrcConnectionEstablishmentTestCase (ui
 void
 LteRrcConnectionEstablishmentTestCase::DoRun ()
 {
+  NS_LOG_FUNCTION (this << GetName ());
   // normal code
   
   m_lteHelper = CreateObject<LteHelper> ();
