@@ -9,6 +9,7 @@
 #include "ns3/global-value.h"
 #include "ns3/string.h"
 #include "ns3/node-container.h"
+#include "ns3/csma-channel.h"
 
 using namespace ns3;
 
@@ -490,6 +491,11 @@ int main (int argc, char *argv[])
   info.RecordAggregationInfo ("ns3::Node", "ns3::MobilityModel");
   info.RecordAggregationInfo ("ns3::Node", "ns3::Ipv4L3Protocol");
   info.RecordAggregationInfo ("ns3::Node", "ns3::ArpL3Protocol");
+
+  // Create a channel object so that channels appear in the namespace
+  // paths that will be generated here.
+  Ptr<CsmaChannel> csma;
+  csma = CreateObject<CsmaChannel> ();
 
   for (uint32_t i = 0; i < Config::GetRootNamespaceObjectN (); ++i)
     {
