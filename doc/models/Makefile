@@ -24,6 +24,7 @@ SOURCES = \
 	$(SRC)/aodv/doc/aodv.rst \
 	$(SRC)/applications/doc/applications.rst \
 	$(SRC)/bridge/doc/bridge.rst \
+	$(SRC)/brite/doc/brite.rst \
 	$(SRC)/buildings/doc/source/buildings.rst \
 	$(SRC)/buildings/doc/source/buildings-design.rst \
 	$(SRC)/buildings/doc/source/buildings-user.rst \
