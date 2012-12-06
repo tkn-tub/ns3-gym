@@ -536,9 +536,11 @@ def configure(conf):
     for (name, caption, was_enabled, reason_not_enabled) in conf.env['NS3_OPTIONAL_FEATURES']:
         if was_enabled:
             status = 'enabled'
+            color = 'GREEN'
         else:
             status = 'not enabled (%s)' % reason_not_enabled
-        print "%-30s: %s" % (caption, status)
+            color = 'RED'
+        print "%-30s: %s%s%s" % (caption, Logs.colors_lst[color], status, Logs.colors_lst['NORMAL'])
 
 
 class SuidBuild_task(Task.TaskBase):
