@@ -876,7 +876,7 @@ def shutdown(ctx):
 
         # Print the list of enabled modules that were not built.
         if env['MODULES_NOT_BUILT']:
-            print 'Modules not built:'
+            print 'Modules not built (see ns-3 tutorial for explanation):'
             print_module_names(env['MODULES_NOT_BUILT'])
             print
 

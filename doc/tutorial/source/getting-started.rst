@@ -299,6 +299,22 @@ following magic words:
   topology-read             uan                       virtual-net-device
   visualizer                wifi                      wimax
 
+  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3.13/build'
+  'build' finished successfully (2m30.586s)
+  
+You may also see something like:
+
+::
+
+  Modules not built (see ns-3 tutorial for explanation):
+  click                     openflow                  visualizer     
+
+This just means that some ns-3 modules that have dependencies on
+outside libraries may not have been built, or that the configuration
+specifically asked not to build them.  It does not mean that the 
+simulator did not build successfully or that it will provide wrong 
+results for the modules listed as being built.
+
 Once the project has built, you can stop working with the
 ``ns-3-allinone`` scripts.  You got what you needed from them and will now 
 interact directly with Waf and we do it in the |ns3| directory,
