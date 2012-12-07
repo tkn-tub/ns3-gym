@@ -40,7 +40,7 @@ class RrcAsn1Header : public Asn1Header
 public:
   RrcAsn1Header ();
   int GetMessageType ();
-  
+
 protected:
   // Serialization functions
   void SerializeSrbToAddModList (std::list<LteRrcSap::SrbToAddMod> srbToAddModList) const;
@@ -64,7 +64,7 @@ protected:
   Buffer::Iterator DeserializeRadioResourceConfigCommonSib (Buffer::Iterator bIterator);
 
   void Print (std::ostream &os, LteRrcSap::RadioResourceConfigDedicated radioResourceConfigDedicated) const;
-  
+
   int m_messageType;
 };
 
@@ -75,11 +75,11 @@ protected:
  */
 class RrcUlDcchMessage : public RrcAsn1Header
 {
-  public:
+public:
   uint32_t Deserialize (Buffer::Iterator bIterator);
   void Print (std::ostream &os) const;
   void PreSerialize () const;
-  void SerializeUlDcchMessage(int msgType) const;
+  void SerializeUlDcchMessage (int msgType) const;
   Buffer::Iterator DeserializeUlDcchMessage (Buffer::Iterator bIterator);
 };
 
@@ -89,11 +89,11 @@ class RrcUlDcchMessage : public RrcAsn1Header
  */
 class RrcDlDcchMessage : public RrcAsn1Header
 {
-  public:
+public:
   uint32_t Deserialize (Buffer::Iterator bIterator);
   void Print (std::ostream &os) const;
   void PreSerialize () const;
-  void SerializeDlDcchMessage(int msgType) const;
+  void SerializeDlDcchMessage (int msgType) const;
   Buffer::Iterator DeserializeDlDcchMessage (Buffer::Iterator bIterator);
 };
 
@@ -103,11 +103,11 @@ class RrcDlDcchMessage : public RrcAsn1Header
  */
 class RrcUlCcchMessage : public RrcAsn1Header
 {
-  public:
+public:
   uint32_t Deserialize (Buffer::Iterator bIterator);
   void Print (std::ostream &os) const;
   void PreSerialize () const;
-  void SerializeUlCcchMessage(int msgType) const;
+  void SerializeUlCcchMessage (int msgType) const;
   Buffer::Iterator DeserializeUlCcchMessage (Buffer::Iterator bIterator);
 };
 
@@ -117,11 +117,11 @@ class RrcUlCcchMessage : public RrcAsn1Header
  */
 class RrcDlCcchMessage : public RrcAsn1Header
 {
-  public:
+public:
   uint32_t Deserialize (Buffer::Iterator bIterator);
   void Print (std::ostream &os) const;
   void PreSerialize () const;
-  void SerializeDlCcchMessage(int msgType) const;
+  void SerializeDlCcchMessage (int msgType) const;
   Buffer::Iterator DeserializeDlCcchMessage (Buffer::Iterator bIterator);
 };
 
@@ -137,7 +137,7 @@ public:
   uint32_t Deserialize (Buffer::Iterator bIterator);
   void Print (std::ostream &os) const;
   void SetMessage (RrcConnectionRequest msg);
-  RrcConnectionRequest GetMessage() const;
+  RrcConnectionRequest GetMessage () const;
   std::bitset<8> getMmec () const;
   std::bitset<32> getMtmsi () const;
 
@@ -164,7 +164,7 @@ public:
   uint32_t Deserialize (Buffer::Iterator bIterator);
   void Print (std::ostream &os) const;
   void SetMessage (RrcConnectionSetup msg);
-  RrcConnectionSetup GetMessage() const;
+  RrcConnectionSetup GetMessage () const;
   uint8_t GetRrcTransactionIdentifier () const;
   bool HavePhysicalConfigDedicated () const;
   std::list<LteRrcSap::SrbToAddMod> GetSrbToAddModList () const;
@@ -190,9 +190,9 @@ public:
   uint32_t Deserialize (Buffer::Iterator bIterator);
   void Print (std::ostream &os) const;
   void SetMessage (RrcConnectionSetupCompleted msg);
-  
+
   uint8_t GetRrcTransactionIdentifier () const;
-  RrcConnectionSetupCompleted GetMessage() const;
+  RrcConnectionSetupCompleted GetMessage () const;
 
 private:
   uint8_t m_rrcTransactionIdentifier;
@@ -211,7 +211,7 @@ public:
   uint32_t Deserialize (Buffer::Iterator bIterator);
   void Print (std::ostream &os) const;
   void SetMessage (RrcConnectionReconfigurationCompleted msg);
-  RrcConnectionReconfigurationCompleted GetMessage() const;
+  RrcConnectionReconfigurationCompleted GetMessage () const;
   uint8_t GetRrcTransactionIdentifier () const;
 
 private:
@@ -270,7 +270,7 @@ public:
   uint32_t Deserialize (Buffer::Iterator bIterator);
   void Print (std::ostream &os) const;
   void SetMessage (HandoverPreparationInfo msg);
-  
+
   HandoverPreparationInfo GetMessage () const;
   AsConfig GetAsConfig () const;
 
@@ -312,7 +312,7 @@ public:
   uint32_t Deserialize (Buffer::Iterator bIterator);
   void Print (std::ostream &os) const;
   void SetMessage (RrcConnectionReestablishment msg);
-  RrcConnectionReestablishment GetMessage() const;
+  RrcConnectionReestablishment GetMessage () const;
   uint8_t GetRrcTransactionIdentifier () const;
   RadioResourceConfigDedicated GetRadioResourceConfigDedicated () const;
 
@@ -333,7 +333,7 @@ public:
   uint32_t Deserialize (Buffer::Iterator bIterator);
   void Print (std::ostream &os) const;
   void SetMessage (RrcConnectionReestablishmentComplete msg);
-  RrcConnectionReestablishmentComplete GetMessage() const;
+  RrcConnectionReestablishmentComplete GetMessage () const;
   uint8_t GetRrcTransactionIdentifier () const;
 
 private:

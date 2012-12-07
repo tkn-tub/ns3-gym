@@ -52,9 +52,8 @@ class LteUeRrcProtocolReal : public Object
   friend class MemberLteUeRrcSapUser<LteUeRrcProtocolReal>;
   friend class LteRlcSpecificLteRlcSapUser<LteUeRrcProtocolReal>;
   friend class LtePdcpSpecificLtePdcpSapUser<LteUeRrcProtocolReal>;
-  
-public:
 
+public:
   LteUeRrcProtocolReal ();
   virtual ~LteUeRrcProtocolReal ();
 
@@ -64,12 +63,11 @@ public:
 
   void SetLteUeRrcSapProvider (LteUeRrcSapProvider* p);
   LteUeRrcSapUser* GetLteUeRrcSapUser ();
-  
+
   void SetUeRrc (Ptr<LteUeRrc> rrc);
-  
+
 
 private:
-
   // methods forwarded from LteUeRrcSapUser
   void DoSetup (LteUeRrcSapUser::SetupParameters params);
   void DoReestablish ();
@@ -88,10 +86,10 @@ private:
   LteUeRrcSapProvider* m_ueRrcSapProvider;
   LteUeRrcSapUser* m_ueRrcSapUser;
   LteEnbRrcSapProvider* m_enbRrcSapProvider;
-  
+
   LteUeRrcSapUser::SetupParameters m_setupParameters;
   LteUeRrcSapProvider::CompleteSetupParameters m_completeSetupParameters;
-  
+
 };
 
 
@@ -100,16 +98,16 @@ private:
  * a real fashion, by creating real RRC PDUs and transmitting them
  * over Signaling Radio Bearers using radio resources allocated by the
  * LTE MAC scheduler.
- * 
+ *
  */
 class LteEnbRrcProtocolReal : public Object
 {
   friend class MemberLteEnbRrcSapUser<LteEnbRrcProtocolReal>;
   friend class LtePdcpSpecificLtePdcpSapUser<LteEnbRrcProtocolReal>;
   friend class LteRlcSpecificLteRlcSapUser<LteEnbRrcProtocolReal>;
-  
-public:
+  friend class RealProtocolRlcSapUser;
 
+public:
   LteEnbRrcProtocolReal ();
   virtual ~LteEnbRrcProtocolReal ();
 
@@ -125,10 +123,7 @@ public:
   LteUeRrcSapProvider* GetUeRrcSapProvider (uint16_t rnti);
   void SetUeRrcSapProvider (uint16_t rnti, LteUeRrcSapProvider* p);
 
-  void DoReceivePdcpPdu (uint16_t rnti, Ptr<Packet> p);
-  
 private:
-
   // methods forwarded from LteEnbRrcSapUser
   void DoSetupUe (uint16_t rnti, LteEnbRrcSapUser::SetupUeParameters params);
   void DoRemoveUe (uint16_t rnti);
@@ -147,6 +142,7 @@ private:
   LteRrcSap::RrcConnectionReconfiguration DoDecodeHandoverCommand (Ptr<Packet> p);
 
   void DoReceivePdcpSdu (LtePdcpSapUser::ReceivePdcpSduParameters params);
+  void DoReceivePdcpPdu (uint16_t rnti, Ptr<Packet> p);
 
   uint16_t m_rnti;
   uint16_t m_cellId;
@@ -155,7 +151,7 @@ private:
   std::map<uint16_t, LteUeRrcSapProvider*> m_enbRrcSapProviderMap;
   std::map<uint16_t, LteEnbRrcSapUser::SetupUeParameters> m_setupUeParametersMap;
   std::map<uint16_t, LteEnbRrcSapProvider::CompleteSetupUeParameters> m_completeSetupUeParametersMap;
-  
+
 };
 
 ///////////////////////////////////////

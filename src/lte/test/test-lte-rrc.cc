@@ -259,24 +259,24 @@ LteRrcTestSuite::LteRrcTestSuite ()
                                                           // nUes, nBearers, tConnBase, tConnIncrPerUe, delayDiscStart, useIdealRrc
       AddTestCase (new LteRrcConnectionEstablishmentTestCase (  1,        0,         0,              0,             1, useIdealRrc));
       AddTestCase (new LteRrcConnectionEstablishmentTestCase (  1,        0,       100,              0,             1, useIdealRrc));
-      //AddTestCase (new LteRrcConnectionEstablishmentTestCase (  1,        1,         0,              0,             1, useIdealRrc));
-      //AddTestCase (new LteRrcConnectionEstablishmentTestCase (  1,        1,       100,              0,             1, useIdealRrc));
-      //AddTestCase (new LteRrcConnectionEstablishmentTestCase (  1,        2,         0,              0,             1, useIdealRrc));
-      //AddTestCase (new LteRrcConnectionEstablishmentTestCase (  1,        2,       100,              0,             1, useIdealRrc));
-      //AddTestCase (new LteRrcConnectionEstablishmentTestCase (  2,        0,        20,              0,             1, useIdealRrc));
-      //AddTestCase (new LteRrcConnectionEstablishmentTestCase (  2,        0,        20,             10,             1, useIdealRrc));
-      //AddTestCase (new LteRrcConnectionEstablishmentTestCase (  2,        0,        20,            100,             1, useIdealRrc));
-      //AddTestCase (new LteRrcConnectionEstablishmentTestCase (  2,        1,        20,              0,             1, useIdealRrc));
-      //AddTestCase (new LteRrcConnectionEstablishmentTestCase (  2,        1,        20,             10,             1, useIdealRrc));
-      //AddTestCase (new LteRrcConnectionEstablishmentTestCase (  2,        1,        20,            100,             1, useIdealRrc));
-      //AddTestCase (new LteRrcConnectionEstablishmentTestCase (  2,        2,        20,              0,             1, useIdealRrc));
-      //AddTestCase (new LteRrcConnectionEstablishmentTestCase (  2,        2,        20,             10,             1, useIdealRrc));
-      //AddTestCase (new LteRrcConnectionEstablishmentTestCase (  2,        2,        20,            100,             1, useIdealRrc));
-      //AddTestCase (new LteRrcConnectionEstablishmentTestCase (  3,        0,        20,              0,             1, useIdealRrc));
-      //AddTestCase (new LteRrcConnectionEstablishmentTestCase (  4,        0,        20,              0,             1, useIdealRrc));
-      //AddTestCase (new LteRrcConnectionEstablishmentTestCase (  4,        0,        20,            300,             1, useIdealRrc));
-      //AddTestCase (new LteRrcConnectionEstablishmentTestCase ( 20,        0,        10,              1,             1, useIdealRrc));
-      //AddTestCase (new LteRrcConnectionEstablishmentTestCase ( 50,        0,         0,              0,             1, useIdealRrc));
+      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  1,        1,         0,              0,             1, useIdealRrc));
+      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  1,        1,       100,              0,             1, useIdealRrc));
+      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  1,        2,         0,              0,             1, useIdealRrc));
+      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  1,        2,       100,              0,             1, useIdealRrc));
+      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  2,        0,        20,              0,             1, useIdealRrc));
+      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  2,        0,        20,             10,             1, useIdealRrc));
+      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  2,        0,        20,            100,             1, useIdealRrc));
+      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  2,        1,        20,              0,             1, useIdealRrc));
+      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  2,        1,        20,             10,             1, useIdealRrc));
+      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  2,        1,        20,            100,             1, useIdealRrc));
+      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  2,        2,        20,              0,             1, useIdealRrc));
+      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  2,        2,        20,             10,             1, useIdealRrc));
+      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  2,        2,        20,            100,             1, useIdealRrc));
+      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  3,        0,        20,              0,             1, useIdealRrc));
+      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  4,        0,        20,              0,             1, useIdealRrc));
+      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  4,        0,        20,            300,             1, useIdealRrc));
+      AddTestCase (new LteRrcConnectionEstablishmentTestCase ( 20,        0,        10,              1,             1, useIdealRrc));
+      AddTestCase (new LteRrcConnectionEstablishmentTestCase ( 50,        0,         0,              0,             1, useIdealRrc));
 
       // // time consuming tests with a lot of UEs
       // AddTestCase (new LteRrcConnectionEstablishmentTestCase (100,        0,        10,              0,             1, useIdealRrc));
