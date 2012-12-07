@@ -270,7 +270,8 @@ public:
   uint32_t Deserialize (Buffer::Iterator bIterator);
   void Print (std::ostream &os) const;
   void SetMessage (HandoverPreparationInfo msg);
-
+  
+  HandoverPreparationInfo GetMessage () const;
   AsConfig GetAsConfig () const;
 
 private:

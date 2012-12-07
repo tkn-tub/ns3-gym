@@ -2674,6 +2674,15 @@ HandoverPreparationInfoHeader::SetMessage (HandoverPreparationInfo msg)
   m_isDataSerialized = false;
 }
 
+LteRrcSap::HandoverPreparationInfo
+HandoverPreparationInfoHeader::GetMessage () const
+{
+  HandoverPreparationInfo msg;
+  msg.asConfig = m_asConfig;
+
+  return msg;
+}
+
 LteRrcSap::AsConfig
 HandoverPreparationInfoHeader::GetAsConfig () const
 {

@@ -141,7 +141,7 @@ LteUeRrcProtocolReal::DoSendRrcConnectionRequest (LteRrcSap::RrcConnectionReques
   m_rnti = m_rrc->GetRnti ();
   SetEnbRrcSapProvider ();
   
-  Ptr<Packet> packet = Create<Packet> ();
+  /*Ptr<Packet> packet = Create<Packet> ();
 
   RrcConnectionRequestHeader rrcConnectionRequestHeader;
   rrcConnectionRequestHeader.SetMessage (msg);
@@ -154,12 +154,12 @@ LteUeRrcProtocolReal::DoSendRrcConnectionRequest (LteRrcSap::RrcConnectionReques
   transmitPdcpPduParameters.lcid = 0;
 
   m_setupParameters.srb0SapProvider->TransmitPdcpPdu(transmitPdcpPduParameters);
-  
-  /*  Simulator::Schedule (RRC_REAL_MSG_DELAY, 
+  */
+    Simulator::Schedule (RRC_REAL_MSG_DELAY, 
                        &LteEnbRrcSapProvider::RecvRrcConnectionRequest,
                        m_enbRrcSapProvider,
                        m_rnti, 
-                       msg);*/
+                       msg);
 }
 
 void 
@@ -710,91 +710,12 @@ LteEnbRrcProtocolReal::DoReceivePdcpSdu (LtePdcpSapUser::ReceivePdcpSduParameter
  * 
  */
 
-std::map<uint32_t, LteRrcSap::HandoverPreparationInfo> g_handoverPreparationInfoMsgMap2;
-uint32_t g_handoverPreparationInfoMsgIdCounter2 = 0;
-
-/*
- * This header encodes the map key discussed above. We keep this
- * private since it should not be used outside this file.
- * 
- */
-class RealHandoverPreparationInfoHeader : public Header
-{
-public:
-  uint32_t GetMsgId ();
-  void SetMsgId (uint32_t id);
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
-  virtual void Print (std::ostream &os) const;
-  virtual uint32_t GetSerializedSize (void) const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start);
-
-private:
-  uint32_t m_msgId;
-};
-
-uint32_t 
-RealHandoverPreparationInfoHeader::GetMsgId ()
-{
-  return m_msgId;
-}  
-
-void 
-RealHandoverPreparationInfoHeader::SetMsgId (uint32_t id)
-{
-  m_msgId = id;
-}  
-
-
-TypeId
-RealHandoverPreparationInfoHeader::GetTypeId (void)
-{
-  static TypeId tid = TypeId ("ns3::RealHandoverPreparationInfoHeader")
-    .SetParent<Header> ()
-    .AddConstructor<RealHandoverPreparationInfoHeader> ()
-  ;
-  return tid;
-}
-
-TypeId
-RealHandoverPreparationInfoHeader::GetInstanceTypeId (void) const
-{
-  return GetTypeId ();
-}
-
-void RealHandoverPreparationInfoHeader::Print (std::ostream &os)  const
-{
-  os << " msgId=" << m_msgId;
-}
-
-uint32_t RealHandoverPreparationInfoHeader::GetSerializedSize (void) const
-{
-  return 4;
-}
-
-void RealHandoverPreparationInfoHeader::Serialize (Buffer::Iterator start) const
-{  
-  start.WriteU32 (m_msgId);
-}
-
-uint32_t RealHandoverPreparationInfoHeader::Deserialize (Buffer::Iterator start)
-{
-  m_msgId = start.ReadU32 ();
-  return GetSerializedSize ();
-}
-
-
-
 Ptr<Packet> 
 LteEnbRrcProtocolReal::DoEncodeHandoverPreparationInformation (LteRrcSap::HandoverPreparationInfo msg)
 {
-  uint32_t msgId = ++g_handoverPreparationInfoMsgIdCounter2;
-  NS_ASSERT_MSG (g_handoverPreparationInfoMsgMap2.find (msgId) == g_handoverPreparationInfoMsgMap2.end (), "msgId " << msgId << " already in use");
-  NS_LOG_INFO (" encoding msgId = " << msgId);
-  g_handoverPreparationInfoMsgMap2.insert (std::pair<uint32_t, LteRrcSap::HandoverPreparationInfo> (msgId, msg));
-  RealHandoverPreparationInfoHeader h;
-  h.SetMsgId (msgId);
+  HandoverPreparationInfoHeader h;
+  h.SetMessage(msg);
+  
   Ptr<Packet> p = Create<Packet> ();
   p->AddHeader (h);
   return p;
@@ -803,14 +724,9 @@ LteEnbRrcProtocolReal::DoEncodeHandoverPreparationInformation (LteRrcSap::Handov
 LteRrcSap::HandoverPreparationInfo 
 LteEnbRrcProtocolReal::DoDecodeHandoverPreparationInformation (Ptr<Packet> p)
 {
-  RealHandoverPreparationInfoHeader h;
+  HandoverPreparationInfoHeader h;
   p->RemoveHeader (h);
-  uint32_t msgId = h.GetMsgId ();
-  NS_LOG_INFO (" decoding msgId = " << msgId);
-  std::map<uint32_t, LteRrcSap::HandoverPreparationInfo>::iterator it = g_handoverPreparationInfoMsgMap2.find (msgId);
-  NS_ASSERT_MSG (it != g_handoverPreparationInfoMsgMap2.end (), "msgId " << msgId << " not found");
-  LteRrcSap::HandoverPreparationInfo msg = it->second;
-  g_handoverPreparationInfoMsgMap2.erase (it);
+  LteRrcSap::HandoverPreparationInfo msg = h.GetMessage();
   return msg;
 }
 
