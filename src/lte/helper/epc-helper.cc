@@ -1,6 +1,6 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2011 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
+ * Copyright (c) 2011-2012 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -17,6 +17,7 @@
  *
  * Author: Jaume Nin <jnin@cttc.es>
  *         Nicola Baldo <nbaldo@cttc.es>
+ *         Manuel Requena <manuel.requena@cttc.es>
  */
 
 #include <ns3/epc-helper.h>
@@ -128,6 +129,21 @@ EpcHelper::GetTypeId (void)
                    UintegerValue (2000),
                    MakeUintegerAccessor (&EpcHelper::m_s1uLinkMtu),
                    MakeUintegerChecker<uint16_t> ())
+    .AddAttribute ("X2LinkDataRate",
+                   "The data rate to be used for the next X2 link to be created",
+                   DataRateValue (DataRate ("10Gb/s")),
+                   MakeDataRateAccessor (&EpcHelper::m_x2LinkDataRate),
+                   MakeDataRateChecker ())
+    .AddAttribute ("X2LinkDelay",
+                   "The delay to be used for the next X2 link to be created",
+                   TimeValue (Seconds (0)),
+                   MakeTimeAccessor (&EpcHelper::m_x2LinkDelay),
+                   MakeTimeChecker ())
+    .AddAttribute ("X2LinkMtu",
+                   "The MTU of the next X2 link to be created. Note that, because of some big X2 messages, you need a big MTU.",
+                   UintegerValue (3000),
+                   MakeUintegerAccessor (&EpcHelper::m_x2LinkMtu),
+                   MakeUintegerChecker<uint16_t> ())
   ;
   return tid;
 }
@@ -230,11 +246,9 @@ EpcHelper::AddX2Interface (Ptr<Node> enb1, Ptr<Node> enb2)
   enbNodes.Add (enb1);
   enbNodes.Add (enb2);
   PointToPointHelper p2ph;
-// TODO Add m_x2Link*** parameters in epc.helper.h
-// TODO Create Make***Accessor functions 
-//   p2ph.SetDeviceAttribute ("DataRate", DataRateValue (m_x2LinkDataRate));
-//   p2ph.SetDeviceAttribute ("Mtu", UintegerValue (m_x2LinkMtu));
-//   p2ph.SetChannelAttribute ("Delay", TimeValue (m_x2LinkDelay));  
+  p2ph.SetDeviceAttribute ("DataRate", DataRateValue (m_x2LinkDataRate));
+  p2ph.SetDeviceAttribute ("Mtu", UintegerValue (m_x2LinkMtu));
+  p2ph.SetChannelAttribute ("Delay", TimeValue (m_x2LinkDelay));
   NetDeviceContainer enbDevices = p2ph.Install (enb1, enb2);
   NS_LOG_LOGIC ("number of Ipv4 ifaces of the eNB #1 after installing p2p dev: " << enb1->GetObject<Ipv4> ()->GetNInterfaces ());
   NS_LOG_LOGIC ("number of Ipv4 ifaces of the eNB #2 after installing p2p dev: " << enb2->GetObject<Ipv4> ()->GetNInterfaces ());
@@ -259,7 +273,7 @@ EpcHelper::AddX2Interface (Ptr<Node> enb1, Ptr<Node> enb2)
   retval = enb2X2cSocket->Bind (InetSocketAddress (enb2Address, m_x2cUdpPort));
   NS_ASSERT (retval == 0);
 
-  
+
   // Add X2 interface to the eNB1's X2 entity 
   Ptr<EpcX2> enb1X2 = enb1->GetObject<EpcX2> ();
   Ptr<LteEnbNetDevice> enb1LteDev = enb1->GetDevice (0)->GetObject<LteEnbNetDevice> ();
