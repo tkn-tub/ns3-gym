@@ -557,7 +557,7 @@ Ns3TcpCwndTestCase2::DoRun (void)
   
   int cwnd = 5 * MSS;
   //In CongAvoid each event will increase cwnd by (MSS * MSS / cwnd)
-  for (uint32_t i = 30; i < 45; ++i)
+  for (uint32_t i = 30; i < N_EVENTS; ++i)
     {
       double adder = static_cast<double> (MSS * MSS) / cwnd;
       adder = std::max (1.0, adder);
