@@ -44,6 +44,7 @@ Bugs fixed
  - bug 1524 - Fragmentation Threshold equals to Packet Size at MAC Layer (Data + IP + UDP) crash the reception
  - bug 1525 - Linker error with mpi on Mac 10.8
  - bug  555 - DCF immediate access
+ - bug 1324 - ns3tcp-cwnd-test-suite.cc test failing
 
 Known issues
 ------------
