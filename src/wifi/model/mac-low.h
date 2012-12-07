@@ -123,7 +123,15 @@ public:
    * you can assume that the packet has not been passed
    * down the stack to the PHY.
    */
-  virtual void Cancel (void) = 0;
+  virtual void Cancel (void) = 0;	
+
+  /** 
+   * Invoked upon the end of the transmission of a frame that does not
+   * require an ACK (e.g., broadcast and multicast frames).
+   * 
+   */
+  virtual void EndTxNoAck (void) = 0;
+
 };
 
 
@@ -541,6 +549,7 @@ private:
   void SendAckAfterData (Mac48Address source, Time duration, WifiMode txMode, double rtsSnr);
   void SendDataAfterCts (Mac48Address source, Time duration, WifiMode txMode);
   void WaitSifsAfterEndTx (void);
+  void EndTxNoAck (void);
 
   void SendRtsForPacket (void);
   void SendDataPacket (void);
@@ -614,6 +623,7 @@ private:
   EventId m_sendAckEvent;
   EventId m_sendDataEvent;
   EventId m_waitSifsEvent;
+  EventId m_endTxNoAckEvent;
   EventId m_navCounterResetCtsMissed;
 
   Ptr<Packet> m_currentPacket;

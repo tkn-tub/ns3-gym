@@ -360,6 +360,7 @@ MacLow::MacLow ()
     m_sendAckEvent (),
     m_sendDataEvent (),
     m_waitSifsEvent (),
+    m_endTxNoAckEvent (),
     m_currentPacket (0),
     m_listener (0)
 {
@@ -396,6 +397,7 @@ MacLow::DoDispose (void)
   m_sendAckEvent.Cancel ();
   m_sendDataEvent.Cancel ();
   m_waitSifsEvent.Cancel ();
+  m_endTxNoAckEvent.Cancel ();
   m_phy = 0;
   m_stationManager = 0;
   delete m_phyMacLowListener;
@@ -455,6 +457,11 @@ MacLow::CancelAllEvents (void)
   if (m_waitSifsEvent.IsRunning ())
     {
       m_waitSifsEvent.Cancel ();
+      oneRunning = true;
+    }
+  if (m_endTxNoAckEvent.IsRunning ()) 
+    {
+      m_endTxNoAckEvent.Cancel ();
       oneRunning = true;
     }
   if (oneRunning && m_listener != 0)
@@ -1352,7 +1359,7 @@ MacLow::StartDataTxTimers (void)
   else
     {
       // since we do not expect any timer to be triggered.
-      m_listener = 0;
+      Simulator::Schedule(txDuration, &MacLow::EndTxNoAck, this);
     }
 }
 
@@ -1488,6 +1495,14 @@ void
 MacLow::WaitSifsAfterEndTx (void)
 {
   m_listener->StartNext ();
+}
+
+void 
+MacLow::EndTxNoAck (void)
+{
+  MacLowTransmissionListener *listener = m_listener;
+  m_listener = 0;
+  listener->EndTxNoAck ();
 }
 
 void

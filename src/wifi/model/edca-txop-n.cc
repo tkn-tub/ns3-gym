@@ -111,6 +111,10 @@ public:
   {
     m_txop->Cancel ();
   }
+  virtual void EndTxNoAck (void)
+  {
+    m_txop->EndTxNoAck ();
+  }
 
 private:
   EdcaTxopN *m_txop;
@@ -384,10 +388,6 @@ EdcaTxopN::NotifyAccessGranted (void)
                                 params,
                                 m_transmissionListener);
 
-      m_currentPacket = 0;
-      m_dcf->ResetCw ();
-      m_dcf->StartBackoffNow (m_rng->GetNext (0, m_dcf->GetCw ()));
-      StartAccessIfNeeded ();
       NS_LOG_DEBUG ("tx broadcast");
     }
   else if (m_currentHdr.GetType () == WIFI_MAC_CTL_BACKREQ)
@@ -728,6 +728,17 @@ EdcaTxopN::Cancel (void)
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_DEBUG ("transmission cancelled");
+}
+
+void
+EdcaTxopN::EndTxNoAck (void)
+{
+  NS_LOG_FUNCTION (this);
+  NS_LOG_DEBUG ("a transmission that did not require an ACK just finished");
+  m_currentPacket = 0;
+  m_dcf->ResetCw ();
+  m_dcf->StartBackoffNow (m_rng->GetNext (0, m_dcf->GetCw ()));
+  StartAccessIfNeeded ();
 }
 
 bool
