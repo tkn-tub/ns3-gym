@@ -704,7 +704,7 @@ LteHelper::ActivateDataRadioBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer)
   NS_ASSERT_MSG (m_epcHelper == 0, "this method must not be used when EPC is being used");  
   
   // Normally it is the EPC that takes care of activating DRBs
-  // after the UE gets connected. When the EPC is not used, we achieve
+  // when the UE gets connected. When the EPC is not used, we achieve
   // the same behavior by hooking a dedicated DRB activation function
   // to the Enb RRC Connection Established trace source
 

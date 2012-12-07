@@ -277,8 +277,8 @@ UeManager::SetImsi (uint64_t imsi)
   m_imsi = imsi;
 }
 
-uint8_t
-UeManager::SetupDataRadioBearer (EpsBearer bearer, uint32_t gtpTeid, Ipv4Address transportLayerAddress)
+void
+UeManager::SetupDataRadioBearer (EpsBearer bearer, uint8_t bearerId, uint32_t gtpTeid, Ipv4Address transportLayerAddress)
 {
   NS_LOG_FUNCTION (this << (uint32_t) m_rnti);
 
@@ -286,6 +286,7 @@ UeManager::SetupDataRadioBearer (EpsBearer bearer, uint32_t gtpTeid, Ipv4Address
   uint8_t drbid = AddDataRadioBearerInfo (drbInfo);
   uint8_t lcid = Drbid2Lcid (drbid); 
   uint8_t bid = Drbid2Bid (drbid);  
+  NS_ASSERT_MSG ( bearerId == 0 || bid == bearerId, "bearer ID mismatch (" << (uint32_t) bid << " != " << (uint32_t) bearerId << ", the assumption that ID are allocated in the same way by MME and RRC is not valid any more");
   drbInfo->m_epsBearerIdentity = bid;
   drbInfo->m_drbIdentity = drbid;
   drbInfo->m_logicalChannelIdentity = lcid;
@@ -351,7 +352,23 @@ UeManager::SetupDataRadioBearer (EpsBearer bearer, uint32_t gtpTeid, Ipv4Address
     }
   drbInfo->m_logicalChannelConfig.bucketSizeDurationMs = 1000;
 
-  return drbid;
+  ScheduleRrcConnectionReconfiguration ();
+}
+
+void
+UeManager::StartDataRadioBearers ()
+{
+  NS_LOG_FUNCTION (this << (uint32_t) m_rnti);
+  for (std::map <uint8_t, Ptr<LteDataRadioBearerInfo> >::iterator it = m_drbMap.begin ();
+       it != m_drbMap.end ();
+       ++it)
+    {
+      it->second->m_rlc->Start ();
+      if (it->second->m_pdcp)
+        {
+          it->second->m_pdcp->Start ();
+        }
+    }    
 }
 
 
@@ -594,7 +611,8 @@ UeManager::RecvRrcConnectionSetupCompleted (LteRrcSap::RrcConnectionSetupComplet
   NS_LOG_FUNCTION (this);
   switch (m_state)
     {
-    case CONNECTION_SETUP:      
+    case CONNECTION_SETUP:
+      StartDataRadioBearers ();
       SwitchToState (CONNECTED_NORMALLY);
       m_rrc->m_connectionEstablishedTrace (m_imsi, m_rrc->m_cellId, m_rnti);
       break;
@@ -611,7 +629,8 @@ UeManager::RecvRrcConnectionReconfigurationCompleted (LteRrcSap::RrcConnectionRe
   NS_LOG_FUNCTION (this);
   switch (m_state)
     {
-    case CONNECTION_RECONFIGURATION:      
+    case CONNECTION_RECONFIGURATION:
+      StartDataRadioBearers ();   
       SwitchToState (CONNECTED_NORMALLY);
       m_rrc->m_connectionReconfigurationTrace (m_imsi, m_rrc->m_cellId, m_rnti);
       break;
@@ -1219,11 +1238,8 @@ LteEnbRrc::DoRecvRrcConnectionReestablishmentComplete (uint16_t rnti, LteRrcSap:
 void 
 LteEnbRrc::DoDataRadioBearerSetupRequest (EpcEnbS1SapUser::DataRadioBearerSetupRequestParameters request)
 {
-
   Ptr<UeManager> ueManager = GetUeManager (request.rnti);
-  uint8_t bid = ueManager->SetupDataRadioBearer (request.bearer, request.gtpTeid, request.transportLayerAddress);       
-  NS_ASSERT_MSG ( request.bearerId == 0 || bid == request.bearerId, "bearer ID mismatch (" << (uint32_t) bid << " != " << (uint32_t) request.bearerId << ", the assumption that ID are allocated in the same way by MME and RRC is not valid any more");
-  ueManager->ScheduleRrcConnectionReconfiguration ();
+  ueManager->SetupDataRadioBearer (request.bearer, request.bearerId, request.gtpTeid, request.transportLayerAddress);       
 }
 
 void 
@@ -1278,7 +1294,7 @@ LteEnbRrc::DoRecvHandoverRequest (EpcX2SapUser::HandoverRequestParams req)
        it != req.bearers.end ();
        ++it)
     {
-      ueManager->SetupDataRadioBearer (it->erabLevelQosParameters, it->gtpTeid, it->transportLayerAddress);
+      ueManager->SetupDataRadioBearer (it->erabLevelQosParameters, it->erabId, it->gtpTeid, it->transportLayerAddress);
     }
 
   LteRrcSap::RrcConnectionReconfiguration handoverCommand = ueManager->GetRrcConnectionReconfigurationForHandover ();
