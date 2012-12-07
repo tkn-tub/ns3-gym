@@ -286,10 +286,12 @@ LteUeRrcProtocolReal::DoReceivePdcpPdu (Ptr<Packet> p)
 
   // Declare possible headers to receive
   RrcConnectionReestablishmentHeader rrcConnectionReestablishmentHeader;
+  RrcConnectionReestablishmentRejectHeader rrcConnectionReestablishmentRejectHeader;
   RrcConnectionSetupHeader rrcConnectionSetupHeader;
 
   // Declare possible messages
   LteRrcSap::RrcConnectionReestablishment rrcConnectionReestablishmentMsg;
+  LteRrcSap::RrcConnectionReestablishmentReject rrcConnectionReestablishmentRejectMsg;
   LteRrcSap::RrcConnectionSetup rrcConnectionSetupMsg;
 
   // Deserialize packet and call member recv function with appropiate structure
@@ -303,7 +305,9 @@ LteUeRrcProtocolReal::DoReceivePdcpPdu (Ptr<Packet> p)
       break;
     case 1:
       // RrcConnectionReestablishmentReject
-      // ...
+      p->RemoveHeader (rrcConnectionReestablishmentRejectHeader);
+      rrcConnectionReestablishmentRejectMsg = rrcConnectionReestablishmentRejectHeader.GetMessage ();
+      // m_ueRrcSapProvider->RecvRrcConnectionReestablishmentReject (rrcConnectionReestablishmentRejectMsg);
       break;
     case 2:
       // RrcConnectionReject
@@ -327,16 +331,24 @@ LteUeRrcProtocolReal::DoReceivePdcpSdu (LtePdcpSapUser::ReceivePdcpSduParameters
 
   // Declare possible headers to receive
   RrcConnectionReconfigurationHeader rrcConnectionReconfigurationHeader;
+  RrcConnectionReleaseHeader rrcConnectionReleaseHeader;
 
+  // Declare possible messages to receive
+  LteRrcSap::RrcConnectionReconfiguration rrcConnectionReconfigurationMsg;
+  LteRrcSap::RrcConnectionRelease rrcConnectionReleaseMsg;
 
   // Deserialize packet and call member recv function with appropiate structure
   switch ( rrcDlDcchMessage.GetMessageType () )
     {
     case 4:
       params.pdcpSdu->RemoveHeader (rrcConnectionReconfigurationHeader);
-      LteRrcSap::RrcConnectionReconfiguration rrcConnectionReconfigurationMsg;
       rrcConnectionReconfigurationMsg = rrcConnectionReconfigurationHeader.GetMessage ();
       m_ueRrcSapProvider->RecvRrcConnectionReconfiguration (rrcConnectionReconfigurationMsg);
+      break;
+    case 5:
+      params.pdcpSdu->RemoveHeader (rrcConnectionReleaseHeader);
+      rrcConnectionReleaseMsg = rrcConnectionReleaseHeader.GetMessage ();
+      //m_ueRrcSapProvider->RecvRrcConnectionRelease (rrcConnectionReleaseMsg);
       break;
     }
 }
@@ -611,19 +623,37 @@ LteEnbRrcProtocolReal::DoSendRrcConnectionReestablishment (uint16_t rnti, LteRrc
 void 
 LteEnbRrcProtocolReal::DoSendRrcConnectionReestablishmentReject (uint16_t rnti, LteRrcSap::RrcConnectionReestablishmentReject msg)
 {
-  Simulator::Schedule (RRC_REAL_MSG_DELAY, 
-                       &LteUeRrcSapProvider::RecvRrcConnectionReestablishmentReject,
-                       GetUeRrcSapProvider (rnti),
-                       msg);
+  Ptr<Packet> packet = Create<Packet> ();
+
+  RrcConnectionReestablishmentRejectHeader rrcConnectionReestablishmentRejectHeader;
+  rrcConnectionReestablishmentRejectHeader.SetMessage (msg);
+
+  packet->AddHeader (rrcConnectionReestablishmentRejectHeader);
+
+  LteRlcSapProvider::TransmitPdcpPduParameters transmitPdcpPduParameters;
+  transmitPdcpPduParameters.pdcpPdu = packet;
+  transmitPdcpPduParameters.rnti = rnti;
+  transmitPdcpPduParameters.lcid = 0;
+
+  m_setupUeParametersMap[rnti].srb0SapProvider->TransmitPdcpPdu (transmitPdcpPduParameters);
 }
 
 void 
 LteEnbRrcProtocolReal::DoSendRrcConnectionRelease (uint16_t rnti, LteRrcSap::RrcConnectionRelease msg)
 {
-  Simulator::Schedule (RRC_REAL_MSG_DELAY, 
-                       &LteUeRrcSapProvider::RecvRrcConnectionRelease,
-                       GetUeRrcSapProvider (rnti),
-                       msg);
+  Ptr<Packet> packet = Create<Packet> ();
+
+  RrcConnectionReleaseHeader rrcConnectionReleaseHeader;
+  rrcConnectionReleaseHeader.SetMessage (msg);
+
+  packet->AddHeader (rrcConnectionReleaseHeader);
+
+  LtePdcpSapProvider::TransmitPdcpSduParameters transmitPdcpSduParameters;
+  transmitPdcpSduParameters.pdcpSdu = packet;
+  transmitPdcpSduParameters.rnti = rnti;
+  transmitPdcpSduParameters.lcid = 1;
+
+  m_setupUeParametersMap[rnti].srb1SapProvider->TransmitPdcpSdu (transmitPdcpSduParameters);
 }
 
 void

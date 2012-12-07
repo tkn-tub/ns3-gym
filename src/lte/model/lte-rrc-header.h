@@ -340,6 +340,42 @@ private:
   uint8_t m_rrcTransactionIdentifier;
 };
 
+/**
+* This class manages the serialization/deserialization of RrcConnectionReestablishmentReject IE
+*/
+class RrcConnectionReestablishmentRejectHeader : public RrcDlCcchMessage,
+                                                 LteRrcSap
+{
+public:
+  RrcConnectionReestablishmentRejectHeader ();
+  void PreSerialize () const;
+  uint32_t Deserialize (Buffer::Iterator bIterator);
+  void Print (std::ostream &os) const;
+  void SetMessage (RrcConnectionReestablishmentReject msg);
+  RrcConnectionReestablishmentReject GetMessage () const;
+
+private:
+  RrcConnectionReestablishmentReject m_rrcConnectionReestablishmentReject;
+};
+
+/**
+* This class manages the serialization/deserialization of RrcConnectionRelease IE
+*/
+class RrcConnectionReleaseHeader : public RrcDlDcchMessage,
+                                   LteRrcSap
+{
+public:
+  RrcConnectionReleaseHeader ();
+  void PreSerialize () const;
+  uint32_t Deserialize (Buffer::Iterator bIterator);
+  void Print (std::ostream &os) const;
+  void SetMessage (RrcConnectionRelease msg);
+  RrcConnectionRelease GetMessage () const;
+  uint8_t GetRrcTransactionIdentifier () const;
+
+private:
+  RrcConnectionRelease m_rrcConnectionRelease;
+};
 
 } // namespace ns3
 

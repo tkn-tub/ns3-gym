@@ -315,6 +315,7 @@ public:
 
   struct RrcConnectionRelease
   {
+    uint8_t rrcTransactionIdentifier;
   };
 
   struct HandoverPreparationInfo
