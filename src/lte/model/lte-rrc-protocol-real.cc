@@ -695,20 +695,7 @@ LteEnbRrcProtocolReal::DoReceivePdcpSdu (LtePdcpSapUser::ReceivePdcpSduParameter
       m_enbRrcSapProvider->RecvRrcConnectionSetupCompleted (params.rnti, rrcConnectionSetupCompletedMsg);
       break;
   }
-
 }
-
-/*
- * The purpose of LteEnbRrcProtocolReal is to avoid encoding
- * messages. In order to do so, we need to have some form of encoding for
- * inter-node RRC messages like HandoverPreparationInfo and HandoverCommand. Doing so
- * directly is not practical (these messages includes a lot of
- * information elements, so encoding all of them would defeat the
- * purpose of LteEnbRrcProtocolReal. The workaround is to store the
- * actual message in a global map, so that then we can just encode the
- * key in a header and send that between eNBs over X2.
- * 
- */
 
 Ptr<Packet> 
 LteEnbRrcProtocolReal::DoEncodeHandoverPreparationInformation (LteRrcSap::HandoverPreparationInfo msg)
@@ -730,93 +717,11 @@ LteEnbRrcProtocolReal::DoDecodeHandoverPreparationInformation (Ptr<Packet> p)
   return msg;
 }
 
-
-
-std::map<uint32_t, LteRrcSap::RrcConnectionReconfiguration> g_handoverCommandMsgMap2;
-uint32_t g_handoverCommandMsgIdCounter2 = 0;
-
-/*
- * This header encodes the map key discussed above. We keep this
- * private since it should not be used outside this file.
- * 
- */
-class RealHandoverCommandHeader : public Header
-{
-public:
-  uint32_t GetMsgId ();
-  void SetMsgId (uint32_t id);
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
-  virtual void Print (std::ostream &os) const;
-  virtual uint32_t GetSerializedSize (void) const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start);
-
-private:
-  uint32_t m_msgId;
-};
-
-uint32_t 
-RealHandoverCommandHeader::GetMsgId ()
-{
-  return m_msgId;
-}  
-
-void 
-RealHandoverCommandHeader::SetMsgId (uint32_t id)
-{
-  m_msgId = id;
-}  
-
-
-TypeId
-RealHandoverCommandHeader::GetTypeId (void)
-{
-  static TypeId tid = TypeId ("ns3::RealHandoverCommandHeader")
-    .SetParent<Header> ()
-    .AddConstructor<RealHandoverCommandHeader> ()
-  ;
-  return tid;
-}
-
-TypeId
-RealHandoverCommandHeader::GetInstanceTypeId (void) const
-{
-  return GetTypeId ();
-}
-
-void RealHandoverCommandHeader::Print (std::ostream &os)  const
-{
-  os << " msgId=" << m_msgId;
-}
-
-uint32_t RealHandoverCommandHeader::GetSerializedSize (void) const
-{
-  return 4;
-}
-
-void RealHandoverCommandHeader::Serialize (Buffer::Iterator start) const
-{  
-  start.WriteU32 (m_msgId);
-}
-
-uint32_t RealHandoverCommandHeader::Deserialize (Buffer::Iterator start)
-{
-  m_msgId = start.ReadU32 ();
-  return GetSerializedSize ();
-}
-
-
-
 Ptr<Packet> 
 LteEnbRrcProtocolReal::DoEncodeHandoverCommand (LteRrcSap::RrcConnectionReconfiguration msg)
 {
-  uint32_t msgId = ++g_handoverCommandMsgIdCounter2;
-  NS_ASSERT_MSG (g_handoverCommandMsgMap2.find (msgId) == g_handoverCommandMsgMap2.end (), "msgId " << msgId << " already in use");
-  NS_LOG_INFO (" encoding msgId = " << msgId);
-  g_handoverCommandMsgMap2.insert (std::pair<uint32_t, LteRrcSap::RrcConnectionReconfiguration> (msgId, msg));
-  RealHandoverCommandHeader h;
-  h.SetMsgId (msgId);
+  RrcConnectionReconfigurationHeader h;
+  h.SetMessage (msg);
   Ptr<Packet> p = Create<Packet> ();
   p->AddHeader (h);
   return p;
@@ -825,19 +730,10 @@ LteEnbRrcProtocolReal::DoEncodeHandoverCommand (LteRrcSap::RrcConnectionReconfig
 LteRrcSap::RrcConnectionReconfiguration
 LteEnbRrcProtocolReal::DoDecodeHandoverCommand (Ptr<Packet> p)
 {
-  RealHandoverCommandHeader h;
+  RrcConnectionReconfigurationHeader h;
   p->RemoveHeader (h);
-  uint32_t msgId = h.GetMsgId ();
-  NS_LOG_INFO (" decoding msgId = " << msgId);
-  std::map<uint32_t, LteRrcSap::RrcConnectionReconfiguration>::iterator it = g_handoverCommandMsgMap2.find (msgId);
-  NS_ASSERT_MSG (it != g_handoverCommandMsgMap2.end (), "msgId " << msgId << " not found");
-  LteRrcSap::RrcConnectionReconfiguration msg = it->second;
-  g_handoverCommandMsgMap2.erase (it);
+  LteRrcSap::RrcConnectionReconfiguration msg = h.GetMessage();
   return msg;
 }
-
-
-
-
 
 } // namespace ns3
