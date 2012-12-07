@@ -148,6 +148,7 @@ public:
   LteRlcSm ();
   virtual ~LteRlcSm ();
   static TypeId GetTypeId (void);
+  virtual void DoStart ();
   virtual void DoDispose ();
 
   virtual void DoTransmitPdcpPdu (Ptr<Packet> p);
@@ -155,7 +156,7 @@ public:
   virtual void DoNotifyHarqDeliveryFailure ();
   virtual void DoReceivePdu (Ptr<Packet> p);
 
-  void Start ();
+
 
 private:
   void ReportBufferStatus ();
