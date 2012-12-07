@@ -141,7 +141,6 @@ LteUeRrcProtocolReal::DoSendRrcConnectionRequest (LteRrcSap::RrcConnectionReques
   m_rnti = m_rrc->GetRnti ();
   SetEnbRrcSapProvider ();
   
-  /*
   Ptr<Packet> packet = Create<Packet> ();
 
   RrcConnectionRequestHeader rrcConnectionRequestHeader;
@@ -154,13 +153,13 @@ LteUeRrcProtocolReal::DoSendRrcConnectionRequest (LteRrcSap::RrcConnectionReques
   transmitPdcpPduParameters.rnti = m_rnti;
   transmitPdcpPduParameters.lcid = 0;
 
-  m_setupParameters.srb0SapProvider->TransmitPdcpPdu(transmitPdcpPduParameters);*/
+  m_setupParameters.srb0SapProvider->TransmitPdcpPdu(transmitPdcpPduParameters);
   
-  Simulator::Schedule (RRC_REAL_MSG_DELAY, 
+  /*  Simulator::Schedule (RRC_REAL_MSG_DELAY, 
                        &LteEnbRrcSapProvider::RecvRrcConnectionRequest,
                        m_enbRrcSapProvider,
                        m_rnti, 
-                       msg);
+                       msg);*/
 }
 
 void 
@@ -582,10 +581,19 @@ LteEnbRrcProtocolReal::DoSendRrcConnectionSetup (uint16_t rnti, LteRrcSap::RrcCo
 void 
 LteEnbRrcProtocolReal::DoSendRrcConnectionReconfiguration (uint16_t rnti, LteRrcSap::RrcConnectionReconfiguration msg)
 {
-  Simulator::Schedule (RRC_REAL_MSG_DELAY, 
-		       &LteUeRrcSapProvider::RecvRrcConnectionReconfiguration,
-		       GetUeRrcSapProvider (rnti), 
-		       msg);
+  Ptr<Packet> packet = Create<Packet> ();
+
+  RrcConnectionReconfigurationHeader rrcConnectionReconfigurationHeader;
+  rrcConnectionReconfigurationHeader.SetMessage (msg);
+  
+  packet->AddHeader (rrcConnectionReconfigurationHeader);
+
+  LtePdcpSapProvider::TransmitPdcpSduParameters transmitPdcpSduParameters;
+  transmitPdcpSduParameters.pdcpSdu = packet;
+  transmitPdcpSduParameters.rnti = rnti;
+  transmitPdcpSduParameters.lcid = 1;
+
+  m_setupUeParametersMap[rnti].srb1SapProvider->TransmitPdcpSdu(transmitPdcpSduParameters);
 }
 
 void 
