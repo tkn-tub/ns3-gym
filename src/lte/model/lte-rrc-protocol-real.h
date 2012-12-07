@@ -125,6 +125,8 @@ public:
   LteUeRrcSapProvider* GetUeRrcSapProvider (uint16_t rnti);
   void SetUeRrcSapProvider (uint16_t rnti, LteUeRrcSapProvider* p);
 
+  void DoReceivePdcpPdu (uint16_t rnti, Ptr<Packet> p);
+  
 private:
 
   // methods forwarded from LteEnbRrcSapUser
@@ -144,7 +146,6 @@ private:
   Ptr<Packet> DoEncodeHandoverCommand (LteRrcSap::RrcConnectionReconfiguration msg);
   LteRrcSap::RrcConnectionReconfiguration DoDecodeHandoverCommand (Ptr<Packet> p);
 
-  void DoReceivePdcpPdu (Ptr<Packet> p);
   void DoReceivePdcpSdu (LtePdcpSapUser::ReceivePdcpSduParameters params);
 
   uint16_t m_rnti;
@@ -157,6 +158,21 @@ private:
   
 };
 
+///////////////////////////////////////
+
+class RealProtocolRlcSapUser : public LteRlcSapUser
+{
+public:
+  RealProtocolRlcSapUser (LteEnbRrcProtocolReal* pdcp, uint16_t rnti);
+
+  // Interface implemented from LteRlcSapUser
+  virtual void ReceivePdcpPdu (Ptr<Packet> p);
+
+private:
+  RealProtocolRlcSapUser ();
+  LteEnbRrcProtocolReal* m_pdcp;
+  uint16_t m_rnti;
+};
 
 
 }
