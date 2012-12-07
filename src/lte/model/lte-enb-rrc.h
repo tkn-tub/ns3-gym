@@ -157,15 +157,11 @@ public:
   void PrepareHandover (uint16_t cellId);
 
   /** 
-   * In the X2-based handover procedure, at the source eNB, trigger
-   * handover by sending to the UE a RRC Connection 
-   * Reconfiguration message including Mobility Control Info
+   * take the necessary actions in response to the reception of an X2 HANDOVER REQUEST ACK message
    * 
-   * \param rcr the RrcConnectionReconfiguration message including the
-   * Mobility Control Info. The content of this struct shall be
-   * provided by the target eNB.
+   * \param params 
    */
-  void SendHandoverCommand (LteRrcSap::RrcConnectionReconfiguration rcr);
+  void RecvHandoverRequestAck (EpcX2SapUser::HandoverRequestAckParams params);
   
   /** 
    * 
@@ -213,6 +209,13 @@ public:
    * \param cellId id of the target cell
    */
   void RecvHandoverPreparationFailure (uint16_t cellId);
+
+  /** 
+   * Take the necessary actions in response to the reception of an X2 SN STATUS TRANSFER message
+   * 
+   * \param params the SN STATUS
+   */
+  void RecvSnStatusTransfer (EpcX2SapUser::SnStatusTransferParams params);
   
 
   // methods forwarded from RRC SAP

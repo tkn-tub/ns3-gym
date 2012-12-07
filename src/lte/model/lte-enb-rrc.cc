@@ -469,16 +469,49 @@ UeManager::PrepareHandover (uint16_t cellId)
 
 }
 
-
 void 
-UeManager::SendHandoverCommand (LteRrcSap::RrcConnectionReconfiguration rcr)
+UeManager::RecvHandoverRequestAck (EpcX2SapUser::HandoverRequestAckParams params)
 {
   NS_LOG_FUNCTION (this);
-  m_rrc->m_rrcSapUser->SendRrcConnectionReconfiguration (m_rnti, rcr);
+  
+  NS_ASSERT_MSG (params.notAdmittedBearers.empty (), "not admission of some bearers upon handover is not supported");
+  //  NS_ASSERT_MSG (params.admittedBearers.size () == m_drbMap.size (), "not enough bearers in admittedBearers");
+
+  // note: the Handover command from the target eNB to the source eNB
+  // is expected to be sent transparently to the UE; however, here we
+  // decode the message and eventually reencode it. This way we can
+  // support both a real RRC protocol implementation and an ideal one
+  // without actual RRC protocol encoding. 
+
+  Ptr<Packet> encodedHandoverCommand = params.rrcContext;
+  LteRrcSap::RrcConnectionReconfiguration handoverCommand = m_rrc->m_rrcSapUser->DecodeHandoverCommand (encodedHandoverCommand);
+  m_rrc->m_rrcSapUser->SendRrcConnectionReconfiguration (m_rnti, handoverCommand);
   SwitchToState (HANDOVER_LEAVING);
-  NS_ASSERT (rcr.haveMobilityControlInfo);
-  m_rrc->m_handoverStartTrace (m_imsi, m_rrc->m_cellId, m_rnti, rcr.mobilityControlInfo.targetPhysCellId);
+  NS_ASSERT (handoverCommand.haveMobilityControlInfo);  
+  m_rrc->m_handoverStartTrace (m_imsi, m_rrc->m_cellId, m_rnti, handoverCommand.mobilityControlInfo.targetPhysCellId);
+
+  EpcX2SapProvider::SnStatusTransferParams sst;
+  sst.oldEnbUeX2apId = params.oldEnbUeX2apId;
+  sst.newEnbUeX2apId = params.newEnbUeX2apId;
+  sst.sourceCellId = params.sourceCellId;
+  sst.targetCellId = params.targetCellId;
+  for ( std::map <uint8_t, Ptr<LteDataRadioBearerInfo> >::iterator drbIt = m_drbMap.begin ();
+        drbIt != m_drbMap.end ();
+        ++drbIt)
+    {
+      // SN status transfer is only for AM RLC
+      if (0 != drbIt->second->m_rlc->GetObject<LteRlcAm> ())
+        {
+          LtePdcp::Status status = drbIt->second->m_pdcp->GetStatus ();
+          EpcX2Sap::ErabsSubjectToStatusTransferItem i;          
+          i.dlPdcpSn = status.txSn;
+          i.ulPdcpSn = status.rxSn;
+          sst.erabsSubjectToStatusTransferList.push_back (i);
+        }
+    }
+  m_rrc->m_x2SapProvider->SendSnStatusTransfer (sst);
 }
+
 
 LteRrcSap::RadioResourceConfigDedicated
 UeManager::GetRadioResourceConfigForHandoverPreparationInfo ()
@@ -565,6 +598,25 @@ UeManager::RecvHandoverPreparationFailure (uint16_t cellId)
     default:
       NS_FATAL_ERROR ("method unexpected in state " << ToString (m_state));
       break;      
+    }
+}
+
+void 
+UeManager::RecvSnStatusTransfer (EpcX2SapUser::SnStatusTransferParams params)
+{
+  NS_LOG_FUNCTION (this);
+  for (std::vector<EpcX2Sap::ErabsSubjectToStatusTransferItem>::iterator erabIt 
+         = params.erabsSubjectToStatusTransferList.begin ();
+       erabIt != params.erabsSubjectToStatusTransferList.end ();
+       ++erabIt)
+    {
+      // LtePdcp::Status status;
+      // status.txSn = erabIt->dlPdcpSn;
+      // status.rxSn = erabIt->ulPdcpSn;
+      // uint8_t drbId = Bid2Drbid (erabIt->erabId);
+      // std::map <uint8_t, Ptr<LteDataRadioBearerInfo> >::iterator drbIt = m_drbMap.find (drbId);
+      // NS_ASSERT_MSG (drbIt != m_drbMap.end (), "could not find DRBID " << (uint32_t) drbId);
+      // drbIt->second->m_pdcp->SetStatus (status);
     }
 }
 
@@ -1290,11 +1342,20 @@ LteEnbRrc::DoRecvHandoverRequest (EpcX2SapUser::HandoverRequestParams req)
   ueManager->SetSource (req.sourceCellId, req.oldEnbUeX2apId);
   ueManager->SetImsi (req.mmeUeS1apId);
 
+  EpcX2SapProvider::HandoverRequestAckParams ackParams;
+  ackParams.oldEnbUeX2apId = req.oldEnbUeX2apId;
+  ackParams.newEnbUeX2apId = rnti;
+  ackParams.sourceCellId = req.sourceCellId;
+  ackParams.targetCellId = req.targetCellId;
+
   for (std::vector <EpcX2Sap::ErabToBeSetupItem>::iterator it = req.bearers.begin ();
        it != req.bearers.end ();
        ++it)
     {
       ueManager->SetupDataRadioBearer (it->erabLevelQosParameters, it->erabId, it->gtpTeid, it->transportLayerAddress);
+      // EpcX2Sap::ErabAdmittedItem i;
+      // i.erabId = it->erabId;
+      //ackParams.admittedBearers.push_back (i);
     }
 
   LteRrcSap::RrcConnectionReconfiguration handoverCommand = ueManager->GetRrcConnectionReconfigurationForHandover ();
@@ -1312,14 +1373,9 @@ LteEnbRrc::DoRecvHandoverRequest (EpcX2SapUser::HandoverRequestParams req)
   handoverCommand.mobilityControlInfo.rachConfigDedicated.raPrachMaskIndex = anrcrv.raPrachMaskIndex;
   Ptr<Packet> encodedHandoverCommand = m_rrcSapUser->EncodeHandoverCommand (handoverCommand);
 
-  NS_LOG_LOGIC ("Send X2 message: HANDOVER REQUEST ACK");
-
-  EpcX2SapProvider::HandoverRequestAckParams ackParams;
-  ackParams.oldEnbUeX2apId = req.oldEnbUeX2apId;
-  ackParams.newEnbUeX2apId = rnti;
-  ackParams.sourceCellId = req.sourceCellId;
-  ackParams.targetCellId = req.targetCellId;
   ackParams.rrcContext = encodedHandoverCommand;
+
+  NS_LOG_LOGIC ("Send X2 message: HANDOVER REQUEST ACK");
 
   NS_LOG_LOGIC ("oldEnbUeX2apId = " << ackParams.oldEnbUeX2apId);
   NS_LOG_LOGIC ("newEnbUeX2apId = " << ackParams.newEnbUeX2apId);
@@ -1343,17 +1399,7 @@ LteEnbRrc::DoRecvHandoverRequestAck (EpcX2SapUser::HandoverRequestAckParams para
 
   uint16_t rnti = params.oldEnbUeX2apId;
   Ptr<UeManager> ueManager = GetUeManager (rnti);  
-  
-  // note: the Handover command from the target eNB to the source eNB
-  // is expected to be sent transparently to the UE; however, here we
-  // decode the message and eventually reencode it. This way we can
-  // support both a real RRC protocol implementation and an ideal one
-  // without actual RRC protocol encoding. 
-
-  Ptr<Packet> encodedHandoverCommand = params.rrcContext;
-  LteRrcSap::RrcConnectionReconfiguration handoverCommand = m_rrcSapUser->DecodeHandoverCommand (encodedHandoverCommand);
-  ueManager->SendHandoverCommand (handoverCommand);
-
+  ueManager->RecvHandoverRequestAck (params);
 }
 
 void
@@ -1385,7 +1431,9 @@ LteEnbRrc::DoRecvSnStatusTransfer (EpcX2SapUser::SnStatusTransferParams params)
   NS_LOG_LOGIC ("newEnbUeX2apId = " << params.newEnbUeX2apId);
   NS_LOG_LOGIC ("erabsSubjectToStatusTransferList size = " << params.erabsSubjectToStatusTransferList.size ());
 
-  NS_ASSERT ("Processing of SN STATUS TRANSFER X2 message IS NOT IMPLEMENTED");
+  uint16_t rnti = params.newEnbUeX2apId;
+  Ptr<UeManager> ueManager = GetUeManager (rnti);
+  ueManager->RecvSnStatusTransfer (params);
 }
 
 void

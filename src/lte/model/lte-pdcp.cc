@@ -142,6 +142,22 @@ LtePdcp::GetLteRlcSapUser ()
   return m_rlcSapUser;
 }
 
+LtePdcp::Status 
+LtePdcp::GetStatus ()
+{
+  Status s;
+  s.txSn = m_txSequenceNumber;
+  s.rxSn = m_rxSequenceNumber;
+  return s;
+}
+
+void 
+LtePdcp::SetStatus (Status s)
+{
+  m_txSequenceNumber = s.txSn;
+  m_rxSequenceNumber = s.rxSn;
+}
+
 ////////////////////////////////////////
 
 void
