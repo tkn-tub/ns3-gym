@@ -215,7 +215,8 @@ FdTbfqFfMacScheduler::FdTbfqFfMacScheduler ()
   :   m_cschedSapUser (0),
     m_schedSapUser (0),
     m_timeWindow (99.0),
-    m_nextRntiUl (0)
+    m_nextRntiUl (0),
+    bankSize (0)
 {
   m_amc = CreateObject <LteAmc> ();
   m_cschedSapProvider = new FdTbfqSchedulerMemberCschedSapProvider (this);
@@ -583,7 +584,7 @@ FdTbfqFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::S
       // assign RBGs to this UE 
       uint32_t bytesTxed = 0;
       uint32_t bytesTxedTmp = 0;
-      int rbgIndex;
+      int rbgIndex = 0;
       while ( bytesTxed <= budget )
         {
           totalRbg++;
@@ -598,7 +599,7 @@ FdTbfqFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::S
             }
           int nLayer = TransmissionModesLayers::TxMode2LayerNum ((*itTxMode).second);
 
-	        // find RBG with largest achievableRate
+	  // find RBG with largest achievableRate
           double achievableRateMax = 0.0;
           rbgIndex = rbgNum;
  	  for (int k = 0; k < rbgNum; k++)
