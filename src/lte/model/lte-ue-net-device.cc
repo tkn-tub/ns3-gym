@@ -72,12 +72,12 @@ TypeId LteUeNetDevice::GetTypeId (void)
                    PointerValue (),
                    MakePointerAccessor (&LteUeNetDevice::m_phy),
                    MakePointerChecker <LteUePhy> ())
-/*    .AddAttribute ("Imsi",
+    .AddAttribute ("Imsi",
                    "International Mobile Subscriber Identity assigned to this UE",
                    TypeId::ATTR_GET,
                    UintegerValue (0), // not used because the attribute is read-only
                    MakeUintegerAccessor (&LteUeNetDevice::m_imsi),
-                   MakeUintegerChecker<uint64_t> ())*/
+                   MakeUintegerChecker<uint64_t> ())
   ;
 
   return tid;
