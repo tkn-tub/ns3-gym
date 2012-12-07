@@ -411,7 +411,33 @@ The error model of PCFICH-PDDCH channels consists of 4 test cases with a single 
  #. 3 eNBs placed 1078 meters far from the UE, which implies a SINR of -4.00 dB and a TB of 217 bits, that in turns produce a BER of 0.045.
  #. 4 eNBs placed 1078 meters far from the UE, which implies a SINR of -6.00 dB and a TB of 133 bits, that in turns produce a BER of 0.206.
  #. 5 eNBs placed 1078 meters far from the UE, which implies a SINR of -7.00 dB and a TB of 81 bits, that in turns produce a BER of 0.343.
- 
+
+
+HARQ Model
+----------
+
+The test suite ``lte-harq`` includes two tests for evaluating the HARQ model and the related extension in the error model. The test consists on checking whether the amount of bytes received during the simulation corresponds to the expected ones according to the values of transport block and the HARQ dynamics. In detail, the test checks whether the throughput obtained after one HARQ retransmission is the expeted one. For evaluating the expected throughput the expected TB delivering time has been evaluated according to the following formula:
+
+.. math::
+
+   \mathrm{T} = P_s^1 \times 1 + P_s^2 \times 2 + (1-P_s^2) \times 3
+
+where :math:`P_s^i` is the probability of receiving with success the HARQ block at the attempt :math:`i` (i.e., the RV with 3GPP naming). According to the scenarios, in the test we always have :math:`P_s^1` equal to 0.0, while :math:`P_s^2` varies in the two tests, in detail:
+
+
+.. math::
+
+   \mathrm{T_{test-1}} = 1 \times 0.0 + 0.77 \times 2 + 0.23 \times 3 = 2.23
+
+   \mathrm{T_{test-2}} = 1 \times 0.0 + 0.9862 \times 2 + 0.0138 \times 3 = 2.0138
+
+The expected throughput is calculted by counting the number of transmission slots available during the simulation (e.g., the number of TTIs) and the size of the TB in the simulation, in detail:
+
+.. math::
+
+   \mathrm{Thr_{test-i}} = \frac{TTI_{NUM}}{T_{test-i}} TB_{size} = \left\{ \begin{array}{lll} \dfrac{1000}{2.23}41 = 19248\mbox{ bps} & \mbox{ for test-1} \\ & \\ \dfrac{1000}{2.0138}469 = 236096\mbox{ bps} & \mbox{ for test-2}\end{array} \right.
+
+The test is performed both for Round Robin scheduler. The test passes if the measured throughput matches with the reference throughput within a relative tolerance of 0.1. This tolerance is needed to account for the transient behavior at the beginning of the simulation and the on-fly blocks at the end of the simulation.
 
 
 MIMO Model

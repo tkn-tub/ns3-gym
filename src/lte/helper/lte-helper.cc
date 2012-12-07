@@ -47,6 +47,7 @@
 #include <ns3/lte-rlc-am.h>
 #include <ns3/epc-enb-s1-sap.h>
 #include <ns3/lte-rrc-protocol-ideal.h>
+#include <ns3/lte-rrc-protocol-real.h>
 
 #include <ns3/epc-helper.h>
 #include <iostream>
@@ -61,6 +62,8 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (LteHelper);
 
 LteHelper::LteHelper (void)
+  :   m_imsiCounter (0),
+      m_cellIdCounter (0)
 {
   NS_LOG_FUNCTION (this);
   m_enbNetDeviceFactory.SetTypeId (LteEnbNetDevice::GetTypeId ());
@@ -148,6 +151,12 @@ TypeId LteHelper::GetTypeId (void)
                    StringValue (""), // fake module -> no fading 
                    MakeStringAccessor (&LteHelper::SetFadingModel),
                    MakeStringChecker ())
+    .AddAttribute ("UseIdealRrc",
+                   "If true, LteRrcProtocolIdeal will be used for RRC signaling. "
+                   "If false, LteRrcProtocolReal will be used.",
+                   BooleanValue (true), 
+                   MakeBooleanAccessor (&LteHelper::m_useIdealRrc),
+                   MakeBooleanChecker ())
   ;
   return tid;
 }
@@ -304,16 +313,28 @@ LteHelper::InstallUeDevice (NodeContainer c)
 Ptr<NetDevice>
 LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
 {
+
+  NS_ABORT_MSG_IF (m_cellIdCounter == 65535, "max num eNBs exceeded");
+  uint16_t cellId = ++m_cellIdCounter;
+
   Ptr<LteSpectrumPhy> dlPhy = CreateObject<LteSpectrumPhy> ();
   Ptr<LteSpectrumPhy> ulPhy = CreateObject<LteSpectrumPhy> ();
 
   Ptr<LteEnbPhy> phy = CreateObject<LteEnbPhy> (dlPhy, ulPhy);
+
+  Ptr<LteHarqPhy> harq = Create<LteHarqPhy> ();
+  dlPhy->SetHarqPhyModule (harq);
+  ulPhy->SetHarqPhyModule (harq);
+  phy->SetHarqPhyModule (harq);
 
   Ptr<LteCtrlSinrChunkProcessor> pCtrl = Create<LteCtrlSinrChunkProcessor> (phy->GetObject<LtePhy> ());
   ulPhy->AddCtrlSinrChunkProcessor (pCtrl); // for evaluating SRS UL-CQI
 
   Ptr<LteDataSinrChunkProcessor> pData = Create<LteDataSinrChunkProcessor> (ulPhy, phy);
   ulPhy->AddDataSinrChunkProcessor (pData); // for evaluating PUSCH UL-CQI
+
+  Ptr<LteInterferencePowerChunkProcessor> pInterf = Create<LteInterferencePowerChunkProcessor> (phy);
+  ulPhy->AddInterferenceChunkProcessor (pInterf); // for interference power tracing
 
   dlPhy->SetChannel (m_downlinkChannel);
   ulPhy->SetChannel (m_uplinkChannel);
@@ -331,8 +352,23 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
   Ptr<LteEnbMac> mac = CreateObject<LteEnbMac> ();
   Ptr<FfMacScheduler> sched = m_schedulerFactory.Create<FfMacScheduler> ();
   Ptr<LteEnbRrc> rrc = CreateObject<LteEnbRrc> ();
-  Ptr<LteEnbRrcProtocolIdeal> rrcProtocol = CreateObject<LteEnbRrcProtocolIdeal> ();
-  rrc->AggregateObject (rrcProtocol);
+
+  if (m_useIdealRrc)
+    {
+      Ptr<LteEnbRrcProtocolIdeal> rrcProtocol = CreateObject<LteEnbRrcProtocolIdeal> ();
+      rrcProtocol->SetLteEnbRrcSapProvider (rrc->GetLteEnbRrcSapProvider ());
+      rrc->SetLteEnbRrcSapUser (rrcProtocol->GetLteEnbRrcSapUser ());
+      rrc->AggregateObject (rrcProtocol);
+      rrcProtocol->SetCellId (cellId);
+    }
+  else
+    {
+      Ptr<LteEnbRrcProtocolReal> rrcProtocol = CreateObject<LteEnbRrcProtocolReal> ();
+      rrcProtocol->SetLteEnbRrcSapProvider (rrc->GetLteEnbRrcSapProvider ());
+      rrc->SetLteEnbRrcSapUser (rrcProtocol->GetLteEnbRrcSapUser ());
+      rrc->AggregateObject (rrcProtocol);
+      rrcProtocol->SetCellId (cellId);
+    }
 
   if (m_epcHelper != 0)
     {
@@ -344,10 +380,6 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
           rrc->SetAttribute ("EpsBearerToRlcMapping", EnumValue (LteEnbRrc::RLC_UM_ALWAYS));
         }
     }
-
-  // connect SAPs
-  rrcProtocol->SetLteEnbRrcSapProvider (rrc->GetLteEnbRrcSapProvider ());
-  rrc->SetLteEnbRrcSapUser (rrcProtocol->GetLteEnbRrcSapUser ());
 
   rrc->SetLteEnbCmacSapProvider (mac->GetLteEnbCmacSapProvider ());
   mac->SetLteEnbCmacSapUser (rrc->GetLteEnbCmacSapUser ());
@@ -365,9 +397,10 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
 
   phy->SetLteEnbCphySapUser (rrc->GetLteEnbCphySapUser ());
   rrc->SetLteEnbCphySapProvider (phy->GetLteEnbCphySapProvider ());
- 
+
   Ptr<LteEnbNetDevice> dev = m_enbNetDeviceFactory.Create<LteEnbNetDevice> ();
   dev->SetNode (n);
+  dev->SetAttribute ("CellId", UintegerValue (cellId)); 
   dev->SetAttribute ("LteEnbPhy", PointerValue (phy));
   dev->SetAttribute ("LteEnbMac", PointerValue (mac));
   dev->SetAttribute ("FfMacScheduler", PointerValue (sched));
@@ -380,6 +413,7 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
   n->AddDevice (dev);
   ulPhy->SetLtePhyRxDataEndOkCallback (MakeCallback (&LteEnbPhy::PhyPduReceived, phy));
   ulPhy->SetLtePhyRxCtrlEndOkCallback (MakeCallback (&LteEnbPhy::ReceiveLteControlMessageList, phy));
+  ulPhy->SetLtePhyUlHarqFeedbackCallback (MakeCallback (&LteEnbPhy::ReceiveLteUlHarqFeedback, phy));
   rrc->SetForwardUpCallback (MakeCallback (&LteEnbNetDevice::Receive, dev));
 
   NS_LOG_LOGIC ("set the propagation model frequencies");
@@ -399,17 +433,14 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
     }
   
 
-  dev->Start ();
-
-  rrcProtocol->SetCellId (dev->GetCellId ());
-  
+  dev->Start (); 
 
   m_uplinkChannel->AddRx (ulPhy);
 
   if (m_epcHelper != 0)
     {
       NS_LOG_INFO ("adding this eNB to the EPC");
-      m_epcHelper->AddEnb (n, dev);
+      m_epcHelper->AddEnb (n, dev, dev->GetCellId ());
       Ptr<EpcEnbApplication> enbApp = n->GetApplication (0)->GetObject<EpcEnbApplication> ();
       NS_ASSERT_MSG (enbApp != 0, "cannot retrieve EpcEnbApplication");
 
@@ -435,6 +466,11 @@ LteHelper::InstallSingleUeDevice (Ptr<Node> n)
 
   Ptr<LteUePhy> phy = CreateObject<LteUePhy> (dlPhy, ulPhy);
 
+  Ptr<LteHarqPhy> harq = Create<LteHarqPhy> ();
+  dlPhy->SetHarqPhyModule (harq);
+  ulPhy->SetHarqPhyModule (harq);
+  phy->SetHarqPhyModule (harq);
+
   Ptr<LteCtrlSinrChunkProcessor> pCtrl = Create<LteCtrlSinrChunkProcessor> (phy->GetObject<LtePhy> (), dlPhy);
   dlPhy->AddCtrlSinrChunkProcessor (pCtrl);
 
@@ -456,9 +492,23 @@ LteHelper::InstallSingleUeDevice (Ptr<Node> n)
 
   Ptr<LteUeMac> mac = CreateObject<LteUeMac> ();
   Ptr<LteUeRrc> rrc = CreateObject<LteUeRrc> ();
-  Ptr<LteUeRrcProtocolIdeal> rrcProtocol = CreateObject<LteUeRrcProtocolIdeal> ();
-  rrc->AggregateObject (rrcProtocol);
-  rrcProtocol->SetUeRrc (rrc);
+
+  if (m_useIdealRrc)
+    {      
+      Ptr<LteUeRrcProtocolIdeal> rrcProtocol = CreateObject<LteUeRrcProtocolIdeal> ();      
+      rrcProtocol->SetUeRrc (rrc);
+      rrc->AggregateObject (rrcProtocol);
+      rrcProtocol->SetLteUeRrcSapProvider (rrc->GetLteUeRrcSapProvider ());
+      rrc->SetLteUeRrcSapUser (rrcProtocol->GetLteUeRrcSapUser ());      
+    }
+  else
+    {
+      Ptr<LteUeRrcProtocolReal> rrcProtocol = CreateObject<LteUeRrcProtocolReal> ();      
+      rrcProtocol->SetUeRrc (rrc);
+      rrc->AggregateObject (rrcProtocol);
+      rrcProtocol->SetLteUeRrcSapProvider (rrc->GetLteUeRrcSapProvider ());
+      rrc->SetLteUeRrcSapUser (rrcProtocol->GetLteUeRrcSapUser ());      
+    }
 
   if (m_epcHelper != 0)
     {
@@ -466,14 +516,8 @@ LteHelper::InstallSingleUeDevice (Ptr<Node> n)
     }
   Ptr<EpcUeNas> nas = CreateObject<EpcUeNas> ();
  
-  nas->SetEpcHelper (m_epcHelper);
-
-  // connect SAPs
   nas->SetAsSapProvider (rrc->GetAsSapProvider ());
   rrc->SetAsSapUser (nas->GetAsSapUser ());
-
-  rrcProtocol->SetLteUeRrcSapProvider (rrc->GetLteUeRrcSapProvider ());
-  rrc->SetLteUeRrcSapUser (rrcProtocol->GetLteUeRrcSapUser ());
 
   rrc->SetLteUeCmacSapProvider (mac->GetLteUeCmacSapProvider ());
   mac->SetLteUeCmacSapUser (rrc->GetLteUeCmacSapUser ());
@@ -485,7 +529,9 @@ LteHelper::InstallSingleUeDevice (Ptr<Node> n)
   phy->SetLteUeCphySapUser (rrc->GetLteUeCphySapUser ());
   rrc->SetLteUeCphySapProvider (phy->GetLteUeCphySapProvider ());
 
-  Ptr<LteUeNetDevice> dev = CreateObject<LteUeNetDevice> (n, phy, mac, rrc, nas);
+  NS_ABORT_MSG_IF (m_imsiCounter >= 0xFFFFFFFF, "max num UEs exceeded");  
+  uint64_t imsi = ++m_imsiCounter;
+  Ptr<LteUeNetDevice> dev = CreateObject<LteUeNetDevice> (n, phy, mac, rrc, nas, imsi);
   phy->SetDevice (dev);
   dlPhy->SetDevice (dev);
   ulPhy->SetDevice (dev);
@@ -494,7 +540,13 @@ LteHelper::InstallSingleUeDevice (Ptr<Node> n)
   n->AddDevice (dev);
   dlPhy->SetLtePhyRxDataEndOkCallback (MakeCallback (&LteUePhy::PhyPduReceived, phy));
   dlPhy->SetLtePhyRxCtrlEndOkCallback (MakeCallback (&LteUePhy::ReceiveLteControlMessageList, phy));
+  dlPhy->SetLtePhyDlHarqFeedbackCallback (MakeCallback (&LteUePhy::ReceiveLteDlHarqFeedback, phy));
   nas->SetForwardUpCallback (MakeCallback (&LteUeNetDevice::Receive, dev));
+
+  if (m_epcHelper != 0)
+    {
+      m_epcHelper->AddUe (dev, dev->GetImsi ());
+    }
 
   dev->Start ();
 
@@ -519,8 +571,16 @@ LteHelper::Attach (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice)
   //enbRrc->SetCellId (enbDevice->GetObject<LteEnbNetDevice> ()->GetCellId ());
 
   Ptr<LteUeNetDevice> ueLteDevice = ueDevice->GetObject<LteUeNetDevice> ();
+  Ptr<LteEnbNetDevice> enbLteDevice = enbDevice->GetObject<LteEnbNetDevice> ();
+
   Ptr<EpcUeNas> ueNas = ueLteDevice->GetNas ();
-  ueNas->Connect (enbDevice);
+  ueNas->Connect (enbLteDevice->GetCellId (), enbLteDevice->GetDlEarfcn ());
+
+  if (m_epcHelper != 0)
+    {
+      // activate default EPS bearer
+      m_epcHelper->ActivateEpsBearer (ueDevice, ueLteDevice->GetImsi (), EpcTft::Default (), EpsBearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT));
+    }
   
   // tricks needed for the simplified LTE-only simulations 
   if (m_epcHelper == 0)
@@ -579,47 +639,84 @@ LteHelper::ActivateDedicatedEpsBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer
 
   NS_ASSERT_MSG (m_epcHelper != 0, "dedicated EPS bearers cannot be set up when EPC is not used");
   
-  ueDevice->GetObject<LteUeNetDevice> ()->ActivateDedicatedEpsBearer (bearer, tft);
-
+  uint64_t imsi = ueDevice->GetObject<LteUeNetDevice> ()->GetImsi ();
+  m_epcHelper->ActivateEpsBearer (ueDevice, imsi, tft, bearer);
 }
+
+class DrbActivator : public SimpleRefCount<DrbActivator>
+{
+public:
+  DrbActivator (Ptr<NetDevice> ueDevice, EpsBearer bearer);
+  static void ActivateCallback (Ptr<DrbActivator> a, std::string context, uint64_t imsi, uint16_t cellId, uint16_t rnti);
+  void ActivateDrb (uint64_t imsi, uint16_t cellId, uint16_t rnti);
+private:
+  bool m_active;
+  Ptr<NetDevice> m_ueDevice;
+  EpsBearer m_bearer;
+  uint64_t m_imsi;
+};
+
+DrbActivator::DrbActivator (Ptr<NetDevice> ueDevice, EpsBearer bearer)
+  : m_active (false),
+    m_ueDevice (ueDevice),
+    m_bearer (bearer),
+    m_imsi (m_ueDevice->GetObject<LteUeNetDevice> ()->GetImsi ())
+{
+}
+
+void
+DrbActivator::ActivateCallback (Ptr<DrbActivator> a, std::string context, uint64_t imsi, uint16_t cellId, uint16_t rnti)
+{
+  NS_LOG_FUNCTION (a << context << imsi << cellId << rnti);
+  a->ActivateDrb (imsi, cellId, rnti);
+}
+
+void
+DrbActivator::ActivateDrb (uint64_t imsi, uint16_t cellId, uint16_t rnti)
+{ 
+  NS_LOG_FUNCTION (this << imsi << cellId << rnti << m_active);
+  if ((!m_active) && (imsi == m_imsi))
+    {
+      Ptr<LteUeRrc> ueRrc = m_ueDevice->GetObject<LteUeNetDevice> ()->GetRrc ();
+      NS_ASSERT (ueRrc->GetState () == LteUeRrc::CONNECTED_NORMALLY);      
+      uint16_t rnti = ueRrc->GetRnti();
+      Ptr<LteEnbNetDevice> enbLteDevice = m_ueDevice->GetObject<LteUeNetDevice> ()->GetTargetEnb ();
+      Ptr<LteEnbRrc> enbRrc = enbLteDevice->GetObject<LteEnbNetDevice> ()->GetRrc ();
+      NS_ASSERT (ueRrc->GetCellId () == enbLteDevice->GetCellId ());
+      Ptr<UeManager> ueManager = enbRrc->GetUeManager (rnti);
+      NS_ASSERT (ueManager->GetState () == UeManager::CONNECTED_NORMALLY ||
+                 ueManager->GetState () == UeManager::CONNECTION_RECONFIGURATION);
+      EpcEnbS1SapUser::DataRadioBearerSetupRequestParameters params;
+      params.rnti = rnti;
+      params.bearer = m_bearer;
+      params.bearerId = 0;
+      params.gtpTeid = 0; // don't care
+      enbRrc->GetS1SapUser ()->DataRadioBearerSetupRequest (params);
+      m_active = true;
+    }
+}
+  
 
 void 
 LteHelper::ActivateDataRadioBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer)
 {
   NS_LOG_FUNCTION (this << ueDevice);
   NS_ASSERT_MSG (m_epcHelper == 0, "this method must not be used when EPC is being used");  
+  
+  // Normally it is the EPC that takes care of activating DRBs
+  // after the UE gets connected. When the EPC is not used, we achieve
+  // the same behavior by hooking a dedicated DRB activation function
+  // to the Enb RRC Connection Established trace source
 
-  /*
-   * Note: this method is kind of a hack, just because running
-   * simulations without the EPC is kind of a hack.  
-   */
 
-  Ptr<LteUeRrc> ueRrc = ueDevice->GetObject<LteUeNetDevice> ()->GetRrc ();
-  bool done = false;
-  if (ueRrc->GetState () == LteUeRrc::CONNECTED_NORMALLY)
-    {
-      uint16_t rnti = ueRrc->GetRnti();
-      Ptr<LteEnbNetDevice> enbLteDevice = ueDevice->GetObject<LteUeNetDevice> ()->GetTargetEnb ();
-      Ptr<LteEnbRrc> enbRrc = enbLteDevice->GetObject<LteEnbNetDevice> ()->GetRrc ();
-      NS_ASSERT (ueRrc->GetCellId () == enbLteDevice->GetCellId ());
-      Ptr<UeManager> ueManager = enbRrc->GetUeManager (rnti);
-      if (ueManager->GetState () == UeManager::CONNECTED_NORMALLY)
-        {
-          EpcEnbS1SapUser::DataRadioBearerSetupRequestParameters params;
-          params.rnti = rnti;
-          params.bearer = bearer;
-          params.gtpTeid = 0; // don't care
-          enbRrc->GetS1SapUser ()->DataRadioBearerSetupRequest (params);
-          done = true;
-        }
-    }
+  Ptr<LteEnbNetDevice> enbLteDevice = ueDevice->GetObject<LteUeNetDevice> ()->GetTargetEnb ();
 
-  if (!done) // UE not connected yet, try again later
-    {
-      // use a function pointer to get around overloading
-      void (LteHelper::*functionPtr) (NetDeviceContainer ueDevices,  EpsBearer bearer) = &LteHelper::ActivateDataRadioBearer;
-      Simulator::Schedule (Seconds (0.001), functionPtr, this, ueDevice, bearer);
-    }
+  std::ostringstream path;
+  path << "/NodeList/" << enbLteDevice->GetNode ()->GetId () 
+       << "/DeviceList/" << enbLteDevice->GetIfIndex ()
+       << "/LteEnbRrc/ConnectionEstablished";  
+  Ptr<DrbActivator> arg = Create<DrbActivator> (ueDevice, bearer);
+  Config::Connect (path.str (), MakeBoundCallback (&DrbActivator::ActivateCallback, arg));
 }
 
 void
@@ -649,6 +746,7 @@ void
 LteHelper::HandoverRequest (Time hoTime, Ptr<NetDevice> ueDev, Ptr<NetDevice> sourceEnbDev, Ptr<NetDevice> targetEnbDev)
 {
   NS_LOG_FUNCTION (this << ueDev << sourceEnbDev << targetEnbDev);
+  NS_ASSERT_MSG (m_epcHelper, "Handover requires the use of the EPC - did you forget to call LteHelper::SetEpcHelper () ?");
   Simulator::Schedule (hoTime, &LteHelper::DoHandoverRequest, this, ueDev, sourceEnbDev, targetEnbDev);
 }
 
@@ -659,8 +757,8 @@ LteHelper::DoHandoverRequest (Ptr<NetDevice> ueDev, Ptr<NetDevice> sourceEnbDev,
 
   uint16_t targetCellId = targetEnbDev->GetObject<LteEnbNetDevice> ()->GetCellId ();
   Ptr<LteEnbRrc> sourceRrc = sourceEnbDev->GetObject<LteEnbNetDevice> ()->GetRrc ();
-  uint64_t imsi = ueDev->GetObject<LteUeNetDevice> ()->GetImsi ();
-  sourceRrc->SendHandoverRequest (imsi, targetCellId);  
+  uint16_t rnti = ueDev->GetObject<LteUeNetDevice> ()->GetRrc ()->GetRnti ();
+  sourceRrc->SendHandoverRequest (rnti, targetCellId);  
 }
 
 
@@ -719,8 +817,37 @@ LteHelper::EnableTraces (void)
 void
 LteHelper::EnableRlcTraces (void)
 {
-  EnableDlRlcTraces ();
-  EnableUlRlcTraces ();
+  m_radioBearerStatsConnector.EnableRlcStats (m_rlcStats);
+}
+
+int64_t
+LteHelper::AssignStreams (NetDeviceContainer c, int64_t stream)
+{
+  int64_t currentStream = stream;
+  Ptr<NetDevice> netDevice;
+  for (NetDeviceContainer::Iterator i = c.Begin (); i != c.End (); ++i)
+    {
+      netDevice = (*i);
+      Ptr<LteEnbNetDevice> lteEnb = DynamicCast<LteEnbNetDevice> (netDevice);
+      if (lteEnb)
+        {
+          Ptr<LteSpectrumPhy> dlPhy = lteEnb->GetPhy ()->GetDownlinkSpectrumPhy ();
+          Ptr<LteSpectrumPhy> ulPhy = lteEnb->GetPhy ()->GetUplinkSpectrumPhy ();
+          currentStream += dlPhy->AssignStreams (currentStream);
+          currentStream += ulPhy->AssignStreams (currentStream);
+        }
+      Ptr<LteUeNetDevice> lteUe = DynamicCast<LteUeNetDevice> (netDevice);
+      if (lteUe)
+        {
+          Ptr<LteSpectrumPhy> dlPhy = lteUe->GetPhy ()->GetDownlinkSpectrumPhy ();
+          Ptr<LteSpectrumPhy> ulPhy = lteUe->GetPhy ()->GetUplinkSpectrumPhy ();
+          Ptr<LteUeMac> ueMac = lteUe->GetMac ();
+          currentStream += dlPhy->AssignStreams (currentStream);
+          currentStream += ulPhy->AssignStreams (currentStream);
+          currentStream += ueMac->AssignStreams (currentStream);
+        }
+    }
+  return (currentStream - stream);
 }
 
 uint64_t
@@ -770,30 +897,6 @@ FindCellIdFromEnbRlcPath (std::string path)
 }
 
 uint64_t
-FindImsiFromUeRlcPath (std::string path)
-{
-  NS_LOG_FUNCTION (path);
-  // Sample path input:
-  // /NodeList/#NodeId/DeviceList/#DeviceId/LteUeRrc/RadioBearer/#LCID/RxPDU
-
-  // We retrieve the LteUeNetDevice path
-  std::string lteUeNetDevicePath = path.substr (0, path.find ("/LteUeRrc"));
-  Config::MatchContainer match = Config::LookupMatches (lteUeNetDevicePath);
-
-  if (match.GetN () != 0)
-    {
-      Ptr<Object> ueNetDevice = match.Get (0);
-      NS_LOG_LOGIC ("FindImsiFromUeRlcPath: " << path << ", " << ueNetDevice->GetObject<LteUeNetDevice> ()->GetImsi ());
-      return ueNetDevice->GetObject<LteUeNetDevice> ()->GetImsi ();
-    }
-  else
-    {
-      NS_FATAL_ERROR ("Lookup " << lteUeNetDevicePath << " got no matches");
-    }
-
-}
-
-uint64_t
 FindImsiFromEnbMac (std::string path, uint16_t rnti)
 {
   NS_LOG_FUNCTION (path << rnti);
@@ -819,109 +922,6 @@ FindCellIdFromEnbMac (std::string path, uint16_t rnti)
   uint16_t cellId = FindCellIdFromEnbRlcPath (p);
   NS_LOG_LOGIC ("FindCellIdFromEnbMac: " << path << ", "<< rnti << ", " << cellId);
   return cellId;
-}
-
-
-void
-DlTxPduCallback (Ptr<RadioBearerStatsCalculator> rlcStats, std::string path,
-                 uint16_t rnti, uint8_t lcid, uint32_t packetSize)
-{
-  NS_LOG_FUNCTION (rlcStats << path << rnti << (uint16_t)lcid << packetSize);
-  uint64_t imsi = 0;
-  if (rlcStats->ExistsImsiPath (path) == true)
-    {
-      imsi = rlcStats->GetImsiPath (path);
-    }
-  else
-    {
-      imsi = FindImsiFromEnbRlcPath (path);
-      rlcStats->SetImsiPath (path, imsi);
-    }
-  uint16_t cellId = 0;
-  if (rlcStats->ExistsCellIdPath (path) == true)
-    {
-      cellId = rlcStats->GetCellIdPath (path);
-    }
-  else
-    {
-      cellId = FindCellIdFromEnbRlcPath (path);
-      rlcStats->SetCellIdPath (path, cellId);
-    }
-  rlcStats->DlTxPdu (cellId, imsi, rnti, lcid, packetSize);
-}
-
-void
-DlRxPduCallback (Ptr<RadioBearerStatsCalculator> rlcStats, std::string path,
-                 uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay)
-{
-  NS_LOG_FUNCTION (rlcStats << path << rnti << (uint16_t)lcid << packetSize << delay);
-  uint64_t imsi = 0;
-  if (rlcStats->ExistsImsiPath (path) == true)
-    {
-      imsi = rlcStats->GetImsiPath (path);
-    }
-  else
-    {
-      imsi = FindImsiFromUeRlcPath (path);
-      rlcStats->SetImsiPath (path, imsi);
-    }
-  rlcStats->DlRxPdu (imsi, rnti, lcid, packetSize, delay);
-}
-
-void
-LteHelper::EnableDlRlcTraces (void)
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  Config::Connect ("/NodeList/*/DeviceList/*/LteEnbRrc/UeMap/*/DataRadioBearerMap/*/LteRlc/TxPDU",
-                   MakeBoundCallback (&DlTxPduCallback, m_rlcStats));
-  Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/DataRadioBearerMap/*/LteRlc/RxPDU",
-                   MakeBoundCallback (&DlRxPduCallback, m_rlcStats));
-}
-
-void
-UlTxPduCallback (Ptr<RadioBearerStatsCalculator> rlcStats, std::string path,
-                 uint16_t rnti, uint8_t lcid, uint32_t packetSize)
-{
-  NS_LOG_FUNCTION (rlcStats << path << rnti << (uint16_t)lcid << packetSize);
-  uint64_t imsi = 0;
-  if (rlcStats->ExistsImsiPath (path) == true)
-    {
-      imsi = rlcStats->GetImsiPath (path);
-    }
-  else
-    {
-      imsi = FindImsiFromUeRlcPath (path);
-      rlcStats->SetImsiPath (path, imsi);
-    }
-  rlcStats->UlTxPdu (imsi, rnti, lcid, packetSize);
-}
-
-void
-UlRxPduCallback (Ptr<RadioBearerStatsCalculator> rlcStats, std::string path,
-                 uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay)
-{
-  NS_LOG_FUNCTION (rlcStats << path << rnti << (uint16_t)lcid << packetSize << delay);
-  uint64_t imsi = 0;
-  if (rlcStats->ExistsImsiPath (path) == true)
-    {
-      imsi = rlcStats->GetImsiPath (path);
-    }
-  else
-    {
-      imsi = FindImsiFromEnbRlcPath (path);
-      rlcStats->SetImsiPath (path, imsi);
-    }
-  uint16_t cellId = 0;
-  if (rlcStats->ExistsCellIdPath (path) == true)
-    {
-      cellId = rlcStats->GetCellIdPath (path);
-    }
-  else
-    {
-      cellId = FindCellIdFromEnbRlcPath (path);
-      rlcStats->SetCellIdPath (path, cellId);
-    }
-  rlcStats->UlRxPdu (cellId, imsi, rnti, lcid, packetSize, delay);
 }
 
 
@@ -957,16 +957,6 @@ DlSchedulingCallback (Ptr<MacStatsCalculator> macStats,
     }
 
   macStats->DlScheduling (cellId, imsi, frameNo, subframeNo, rnti, mcsTb1, sizeTb1, mcsTb2, sizeTb2);
-}
-
-void
-LteHelper::EnableUlRlcTraces (void)
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/DataRadioBearerMap/*/LteRlc/TxPDU",
-                   MakeBoundCallback (&UlTxPduCallback, m_rlcStats));
-  Config::Connect ("/NodeList/*/DeviceList/*/LteEnbRrc/UeMap/*/DataRadioBearerMap/*/LteRlc/RxPDU",
-                   MakeBoundCallback (&UlRxPduCallback, m_rlcStats));
 }
 
 void
@@ -1033,27 +1023,7 @@ LteHelper::GetRlcStats (void)
 void
 LteHelper::EnablePdcpTraces (void)
 {
-  EnableDlPdcpTraces ();
-  EnableUlPdcpTraces ();
-}
-
-void
-LteHelper::EnableDlPdcpTraces (void)
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  Config::Connect ("/NodeList/*/DeviceList/*/LteEnbRrc/UeMap/*/DataRadioBearerMap/*/LtePdcp/TxPDU",
-                   MakeBoundCallback (&DlTxPduCallback, m_pdcpStats));
-  Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/DataRadioBearerMap/*/LtePdcp/RxPDU",
-                   MakeBoundCallback (&DlRxPduCallback, m_pdcpStats));
-}
-
-void
-LteHelper::EnableUlPdcpTraces (void)
-{
-  Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/DataRadioBearerMap/*/LtePdcp/TxPDU",
-                   MakeBoundCallback (&UlTxPduCallback, m_pdcpStats));
-  Config::Connect ("/NodeList/*/DeviceList/*/LteEnbRrc/UeMap/*/DataRadioBearerMap/*/LtePdcp/RxPDU",
-                   MakeBoundCallback (&UlRxPduCallback, m_pdcpStats));
+  m_radioBearerStatsConnector.EnablePdcpStats (m_pdcpStats);
 }
 
 Ptr<RadioBearerStatsCalculator>

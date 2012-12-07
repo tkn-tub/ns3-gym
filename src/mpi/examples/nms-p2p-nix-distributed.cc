@@ -391,9 +391,9 @@ main (int argc, char *argv[])
   Config::SetDefault ("ns3::OnOffApplication::MaxBytes",
                       UintegerValue (nBytes));
   Config::SetDefault ("ns3::OnOffApplication::OnTime",
-                      RandomVariableValue (ConstantVariable (1)));
+                      StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
   Config::SetDefault ("ns3::OnOffApplication::OffTime",
-                      RandomVariableValue (ConstantVariable (0)));
+                      StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
 
 
   if (single)
@@ -441,7 +441,7 @@ main (int argc, char *argv[])
     }
   else
     {
-      UniformVariable urng;
+      Ptr<UniformRandomVariable> urng = CreateObject<UniformRandomVariable> ();
       int r1;
       double r2;
       for (uint32_t z = 0; z < nCN; ++z)
@@ -483,8 +483,8 @@ main (int argc, char *argv[])
                   // Sources
                   if (systemCount == 1)
                     {
-                      r1 = 2 + (int)(4 * urng.GetValue ());
-                      r2 = 10 * urng.GetValue ();
+                      r1 = 2 + (int)(4 * urng->GetValue ());
+                      r2 = 10 * urng->GetValue ();
                       OnOffHelper client ("ns3::UdpSocketFactory", Address ());
 
                       AddressValue remoteAddress
@@ -497,8 +497,8 @@ main (int argc, char *argv[])
                     }
                   else if (systemId == x % systemCount)
                     {
-                      r1 = 2 + (int)(4 * urng.GetValue ());
-                      r2 = 10 * urng.GetValue ();
+                      r1 = 2 + (int)(4 * urng->GetValue ());
+                      r2 = 10 * urng->GetValue ();
                       OnOffHelper client ("ns3::UdpSocketFactory", Address ());
 
                       AddressValue remoteAddress
@@ -543,8 +543,8 @@ main (int argc, char *argv[])
                   // Sources
                   if (systemCount == 1)
                     {
-                      r1 = 2 + (int)(4 * urng.GetValue ());
-                      r2 = 10 * urng.GetValue ();
+                      r1 = 2 + (int)(4 * urng->GetValue ());
+                      r2 = 10 * urng->GetValue ();
                       OnOffHelper client ("ns3::UdpSocketFactory", Address ());
 
                       AddressValue remoteAddress
@@ -557,8 +557,8 @@ main (int argc, char *argv[])
                     }
                   else if (systemId == x % systemCount)
                     {
-                      r1 = 2 + (int)(4 * urng.GetValue ());
-                      r2 = 10 * urng.GetValue ();
+                      r1 = 2 + (int)(4 * urng->GetValue ());
+                      r2 = 10 * urng->GetValue ();
                       OnOffHelper client ("ns3::UdpSocketFactory", Address ());
 
                       AddressValue remoteAddress

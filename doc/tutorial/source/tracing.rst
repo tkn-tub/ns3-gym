@@ -85,7 +85,7 @@ potentially be useful to other people as a patch to the existing core.
 Let's pick a random example.  If you wanted to add more logging to the 
 |ns3| TCP socket (``tcp-socket-base.cc``) you could just add a new 
 message down in the implementation.  Notice that in TcpSocketBase::ReceivedAck()
-there is no log message for the no ack case.  You could simply add one, 
+there is no log message for the no ACK case.  You could simply add one, 
 changing the code from:
 
 ::
@@ -1298,7 +1298,7 @@ when the ``main`` function of your script is running, but before
 executing the simulation,  ``Simulator::Run`` will return control back to 
 the ``main`` function.  When this happens, the script enters what can be 
 called "Teardown Time," which is when the structures and objects created 
-during setup and taken apart and released.
+during setup are taken apart and released.
 
 Perhaps the most common mistake made in trying to use the tracing system is 
 assuming that entities constructed dynamically during simulation time are
@@ -1816,17 +1816,12 @@ to introduce errors into a ``Channel`` at a given *rate*.
 
 ::
 
-  Ptr<RateErrorModel> em = CreateObjectWithAttributes<RateErrorModel> (
-    "RanVar", RandomVariableValue (UniformVariable (0., 1.)),
-    "ErrorRate", DoubleValue (0.00001));
+  Ptr<RateErrorModel> em = CreateObject<RateErrorModel> ();
+  em->SetAttribute ("ErrorRate", DoubleValue (0.00001));
   devices.Get (1)->SetAttribute ("ReceiveErrorModel", PointerValue (em));
 
-The above code instantiates a ``RateErrorModel`` Object.  Rather than 
-using the two-step process of instantiating it and then setting Attributes,
-we use the convenience function ``CreateObjectWithAttributes`` which
-allows us to do both at the same time.  We set the "RanVar" 
-``Attribute`` to a random variable that generates a uniform distribution
-from 0 to 1.  We also set the "ErrorRate" ``Attribute``.
+The above code instantiates a ``RateErrorModel`` Object, and
+we set the "ErrorRate" ``Attribute`` to the desired value.
 We then set the resulting instantiated ``RateErrorModel`` as the error
 model used by the point-to-point ``NetDevice``.  This will give us some
 retransmissions and make our plot a little more interesting.

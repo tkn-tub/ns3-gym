@@ -1,4 +1,6 @@
 
+:orphan: true
+
 .. only:: html or latex
 
 ns-3 LTE module documentation

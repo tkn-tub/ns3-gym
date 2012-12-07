@@ -25,6 +25,7 @@
 
 #include "ns3/nstime.h"
 #include "ns3/propagation-loss-model.h"
+#include "ns3/random-variable-stream.h"
 #include <ns3/building.h>
 #include <ns3/buildings-mobility-model.h>
 
@@ -57,6 +58,7 @@ class BuildingsPropagationLossModel : public PropagationLossModel
 public:
   static TypeId GetTypeId (void);
 
+  BuildingsPropagationLossModel ();
   /**
    * \param a the mobility model of the source
    * \param b the mobility model of the destination
@@ -68,7 +70,6 @@ public:
   virtual double DoCalcRxPower (double txPowerDbm, Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
 
 protected:
-
   double ExternalWallLoss (Ptr<BuildingsMobilityModel> a) const;
   double HeightLoss (Ptr<BuildingsMobilityModel> n) const;
   double InternalWallsLoss (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const;
@@ -82,13 +83,12 @@ protected:
   {
   public:
     ShadowingLoss ();
-    ShadowingLoss (double mean, double sigma, Ptr<MobilityModel> receiver);
+    ShadowingLoss (double shadowingValue, Ptr<MobilityModel> receiver);
     double GetLoss () const;
     Ptr<MobilityModel> GetReceiver (void) const;
   protected:
-    Ptr<MobilityModel> m_receiver;
-    NormalVariable m_randVariable;
     double m_shadowingValue;
+    Ptr<MobilityModel> m_receiver;
   };
 
   mutable std::map<Ptr<MobilityModel>,  std::map<Ptr<MobilityModel>, ShadowingLoss> > m_shadowingLossMap;
@@ -98,7 +98,9 @@ protected:
   double m_shadowingSigmaExtWalls;
   double m_shadowingSigmaOutdoor;
   double m_shadowingSigmaIndoor;
+  Ptr<NormalRandomVariable> m_randVariable;
 
+  virtual int64_t DoAssignStreams (int64_t stream);
 };
 
 }

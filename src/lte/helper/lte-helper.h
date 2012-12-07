@@ -31,6 +31,7 @@
 #include <ns3/eps-bearer.h>
 #include <ns3/mac-stats-calculator.h>
 #include <ns3/radio-bearer-stats-calculator.h>
+#include <ns3/radio-bearer-stats-connector.h>
 #include <ns3/epc-tft.h>
 #include <ns3/mobility-model.h>
 
@@ -253,17 +254,6 @@ public:
 
 
   /** 
-   * Activate a Data Radio Bearer for a simplified LTE-only simulation
-   * without EPC.
-   * 
-   * \param ueDevice the device of the UE for which the radio bearer
-   * is to be activated
-   * \param bearer the characteristics of the bearer to be activated
-   */
-  void ActivateDataRadioBearer (Ptr<NetDevice> ueDevice,  EpsBearer bearer);
-
-
-  /** 
    * Call ActivateDataRadioBearer (ueDevice, bearer) for each UE
    * device in a given set
    * 
@@ -271,6 +261,17 @@ public:
    * \param bearer
    */
   void ActivateDataRadioBearer (NetDeviceContainer ueDevices,  EpsBearer bearer);
+
+  /** 
+   * Activate a Data Radio Bearer for a simplified LTE-only simulation
+   * without EPC. This method will schedule the actual activation of
+   * the bearer so that it happens after the UE got connected.
+   * 
+   * \param ueDevice the device of the UE for which the radio bearer
+   * is to be activated
+   * \param bearer the characteristics of the bearer to be activated
+   */
+  void ActivateDataRadioBearer (Ptr<NetDevice> ueDevice,  EpsBearer bearer);
 
   /** 
    * 
@@ -315,16 +316,6 @@ public:
    */
   void EnableRlcTraces (void);
 
-  /**
-   * Enable trace sinks for DL RLC layer
-   */
-  void EnableDlRlcTraces (void);
-
-  /**
-   * Enable trace sinks for UL MAC layer
-   */
-  void EnableUlRlcTraces (void);
-
   /** 
    * 
    * \return the RLC stats calculator object
@@ -336,21 +327,29 @@ public:
    */
   void EnablePdcpTraces (void);
 
-  /**
-   * Enable trace sinks for DL PDCP layer
-   */
-  void EnableDlPdcpTraces (void);
-
-  /**
-   * Enable trace sinks for UL MAC layer
-   */
-  void EnableUlPdcpTraces (void);
-
   /** 
    * 
    * \return the PDCP stats calculator object
    */
   Ptr<RadioBearerStatsCalculator> GetPdcpStats (void);
+
+  enum LteEpsBearerToRlcMapping_t {RLC_SM_ALWAYS = 1,
+                                   RLC_UM_ALWAYS = 2,
+                                   RLC_AM_ALWAYS = 3,
+                                   PER_BASED = 4};
+
+  /**
+  * Assign a fixed random variable stream number to the random variables
+  * used by this model. Return the number of streams (possibly zero) that
+  * have been assigned. The Install() method should have previously been
+  * called by the user.
+  *
+  * \param c NetDeviceContainer of the set of net devices for which the 
+  *          LteNetDevice should be modified to use a fixed stream
+  * \param stream first stream index to use
+  * \return the number of stream indices assigned by this helper
+  */
+  int64_t AssignStreams (NetDeviceContainer c, int64_t stream);
 
 protected:
   // inherited from Object
@@ -385,9 +384,14 @@ private:
   Ptr<MacStatsCalculator> m_macStats;
   Ptr<RadioBearerStatsCalculator> m_rlcStats;
   Ptr<RadioBearerStatsCalculator> m_pdcpStats;
+  RadioBearerStatsConnector m_radioBearerStatsConnector;
 
   Ptr<EpcHelper> m_epcHelper;
 
+  uint64_t m_imsiCounter;
+  uint16_t m_cellIdCounter;
+
+  bool m_useIdealRrc;
 };
 
 

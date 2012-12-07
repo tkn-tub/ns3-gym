@@ -192,7 +192,7 @@ simulator, including lots of non-LTE attributes.
 Simulation Output
 -----------------
 
-The ns-3 LTE model currently supports the output to file of MAC, RLC
+The ns-3 LTE model currently supports the output to file of PHY, MAC, RLC
 and PDCP level Key Performance Indicators (KPIs). You can enable it in
 the following way::
 
@@ -200,6 +200,7 @@ the following way::
       
       // configure all the simulation scenario here...
       
+      lteHelper->EnablePhyTraces ();
       lteHelper->EnableMacTraces ();
       lteHelper->EnableRlcTraces ();   
       lteHelper->EnablePdcpTraces ();   
@@ -288,6 +289,27 @@ The names of the files used for MAC KPI output can be customized via
 the ns-3 attributes ``ns3::MacStatsCalculator::DlOutputFilename`` and 
 ``ns3::MacStatsCalculator::UlOutputFilename``.
 
+PHY KPIs are distributed in three different files, configurable through the attributes 
+ ``ns3::PhyStatsCalculator::RsrpRsrqFilename``,  ``ns3::PhyStatsCalculator::UeSinrFilename``
+and  ``ns3::PhyStatsCalculator::InterferenceFilename``. 
+
+In the RSRP/RSR file, the following content is available:
+  1. Simulation time in seconds at which the allocation is indicated by the scheduler
+  2. Cell ID
+  3. unique UE ID (IMSI)
+  4. RSRP
+  5. RSRQ
+
+The contents in the UE SINR file are:
+  1. Simulation time in seconds at which the allocation is indicated by the scheduler
+  2. Cell ID
+  3. unique UE ID (IMSI)
+  4. SINR in linear units for the UE
+
+And finally, in the interference filename the content is:
+  1. Simulation time in seconds at which the allocation is indicated by the scheduler
+  2. Cell ID
+  3. List of interference values per RB
 
 Fading Trace Usage
 ------------------
@@ -546,9 +568,12 @@ create one separate instance for each REM.
 Note that the REM generation is very demanding, in particular:
 
  * the run-time memory consumption is approximately 5KB per pixel. For example,
-   a REM with a resolution of 500x500 needs about 1.25 GB of memory, and
-   a resolution of 1000x1000 needs about 5 GB (too much for a
-   regular PC at the time of this writing).
+   a REM with a resolution of 500x500 would need about 1.25 GB of memory, and
+   a resolution of 1000x1000 would need needs about 5 GB (too much for a
+   regular PC at the time of this writing). To overcome this issue,
+   the REM is generated at successive steps, with each step evaluating
+   at most a number of pixels determined by the value of the 
+   the attribute ``RadioEnvironmentMapHelper::MaxPointsPerIteration``. 
  * if you generate a REM at the beginning of a simulation, it will
    slow down the execution of the rest of the simulation. If you want
    to generate a REM for a program and also use the same program to
@@ -584,6 +609,18 @@ As an example, here is the REM that can be obtained with the example program len
 
    REM obtained from the lena-dual-stripe example
 
+
+Note that the lena-dual-stripe example program also generate
+gnuplot-compatible output files containing information about the
+positions of the UE and eNB nodes as well as of the buildings,
+respectively in the files ``ues.txt``, ``enbs.txt`` and
+``buildings.txt``. These can be easily included when using
+gnuplot. For example, assuming that your gnuplot script (e.g., the
+minimal gnuplot script described above) is saved in a file named
+``my_plot_script``, running the following command would plot the
+location of UEs, eNBs and buildings on top of the REM:: 
+
+   gnuplot -p enbs.txt ues.txt buildings.txt my_plot_script
 
 
 

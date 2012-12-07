@@ -14,7 +14,9 @@ def build(bld):
         'model/lte-amc.cc',
         'model/lte-enb-rrc.cc',
         'model/lte-ue-rrc.cc',
+        'model/lte-rrc-sap.cc',
         'model/lte-rrc-protocol-ideal.cc',
+        'model/lte-rrc-protocol-real.cc',
         'model/lte-rlc-sap.cc',
         'model/lte-rlc.cc',
         'model/lte-rlc-sequence-number.cc',
@@ -39,6 +41,7 @@ def build(bld):
         'helper/lte-stats-calculator.cc',
         'helper/epc-helper.cc',
         'helper/radio-bearer-stats-calculator.cc',
+        'helper/radio-bearer-stats-connector.cc',
         'helper/mac-stats-calculator.cc',
         'helper/radio-environment-map-helper.cc',
         'helper/lte-hex-grid-enb-topology-helper.cc',
@@ -75,8 +78,14 @@ def build(bld):
         'model/lte-mi-error-model.cc',
         'model/lte-vendor-specific-parameters.cc',
         'model/epc-enb-s1-sap.cc',
+        'model/epc-s1ap-sap.cc',
+        'model/epc-s11-sap.cc',
         'model/lte-as-sap.cc',
         'model/epc-ue-nas.cc',
+        'model/lte-harq-phy.cc',
+        'model/epc-mme.cc',
+        'model/lte-asn1-header.cc',
+	'model/lte-rrc-header.cc',
         ]
 
     module_test = bld.create_ns3_module_test_library('lte')
@@ -107,7 +116,10 @@ def build(bld):
         'test/test-lte-antenna.cc',
         'test/lte-test-phy-error-model.cc',
         'test/lte-test-mimo.cc',
-        'test/test-lte-rrc.cc'
+        'test/lte-test-harq.cc',
+        'test/test-lte-rrc.cc',
+        'test/test-lte-x2-handover.cc',
+        'test/test-asn1-encoding.cc',
         ]
 
     headers = bld.new_task_gen(features=['ns3header'])
@@ -125,6 +137,7 @@ def build(bld):
         'model/lte-ue-rrc.h',
         'model/lte-rrc-sap.h',
         'model/lte-rrc-protocol-ideal.h',
+        'model/lte-rrc-protocol-real.h',
         'model/lte-rlc-sap.h',
         'model/lte-rlc.h',
         'model/lte-rlc-header.h',
@@ -150,6 +163,7 @@ def build(bld):
         'helper/epc-helper.h',
         'helper/mac-stats-calculator.h',
         'helper/radio-bearer-stats-calculator.h',
+        'helper/radio-bearer-stats-connector.h',
         'helper/radio-environment-map-helper.h',
         'helper/lte-hex-grid-enb-topology-helper.h',
         'model/rem-spectrum-phy.h',
@@ -187,8 +201,14 @@ def build(bld):
         'test/lte-test-ue-phy.h',
         'test/lte-test-sinr-chunk-processor.h',
         'model/epc-enb-s1-sap.h',
+        'model/epc-s1ap-sap.h',
+        'model/epc-s11-sap.h',
         'model/lte-as-sap.h',
         'model/epc-ue-nas.h',
+        'model/lte-harq-phy.h',
+        'model/epc-mme.h',
+        'model/lte-asn1-header.h',
+	'model/lte-rrc-header.h',
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):

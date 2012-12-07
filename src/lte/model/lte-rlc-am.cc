@@ -72,8 +72,6 @@ LteRlcAm::LteRlcAm ()
   // SDU reassembling process
   m_reassemblingState = WAITING_S0_FULL;
   m_expectedSeqNumber = 0;
-
-  Simulator::ScheduleNow (&LteRlcAm::Start, this);
 }
 
 LteRlcAm::~LteRlcAm ()
@@ -88,6 +86,15 @@ LteRlcAm::GetTypeId (void)
     .AddConstructor<LteRlcAm> ()
     ;
   return tid;
+}
+
+void
+LteRlcAm::DoDispose ()
+{
+  NS_LOG_FUNCTION (this);
+  m_pollRetransmitTimer.Cancel ();
+  m_reorderingTimer.Cancel ();
+  m_statusProhibitTimer.Cancel ();
 }
 
 
@@ -162,7 +169,7 @@ LteRlcAm::DoTransmitPdcpPdu (Ptr<Packet> p)
  */
 
 void
-LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer)
+LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId)
 {
   NS_LOG_FUNCTION (this << m_rnti << (uint32_t) m_lcid << bytes);
   
@@ -190,6 +197,8 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer)
       params.pdu = packet;
       params.rnti = m_rnti;
       params.lcid = m_lcid;
+      params.layer = layer;
+      params.harqProcessId = harqId;
 
       m_macSapProvider->TransmitPdu (params);
       return;
@@ -211,6 +220,8 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer)
           params.pdu = packet;
           params.rnti = m_rnti;
           params.lcid = m_lcid;
+          params.layer = layer;
+          params.harqProcessId = harqId;
 
           m_macSapProvider->TransmitPdu (params);
           return;
@@ -539,6 +550,7 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer)
   params.rnti = m_rnti;
   params.lcid = m_lcid;
   params.layer = layer;
+  params.harqProcessId = harqId;
 
   m_macSapProvider->TransmitPdu (params);
 }
@@ -1000,24 +1012,6 @@ LteRlcAm::DoReceivePdu (Ptr<Packet> p)
       return;
     }
 
-}
-
-
-void
-LteRlcAm::Start ()
-{
-  NS_LOG_FUNCTION (this);
-
-  LteMacSapProvider::ReportBufferStatusParameters p;
-  p.rnti = m_rnti;
-  p.lcid = m_lcid;
-  p.txQueueSize = 0;
-  p.txQueueHolDelay = 0;
-  p.retxQueueSize = 0;
-  p.retxQueueHolDelay = 0;
-  p.statusPduSize = 0;
-
-  m_macSapProvider->ReportBufferStatus (p);
 }
 
 

@@ -73,7 +73,7 @@ LenaTestPhyErrorModelrSuite::LenaTestPhyErrorModelrSuite ()
 
   // Tests on DL/UL Data channels (PDSCH, PUSCH)
   // MCS 2 TB size of 256 bits BER 0.33 SINR -5.51
-  AddTestCase (new LenaDataPhyErrorModelTestCase (4, 1800, 32, 0.35, 50));
+  AddTestCase (new LenaDataPhyErrorModelTestCase (4, 1800, 32, 0.33, 50));
 // MCS 2 TB size of 528 bits BER 0.11 SINR -5.51
   AddTestCase (new LenaDataPhyErrorModelTestCase (2, 1800, 66, 0.11, 34));
 // MCS 2 TB size of 1088 bits BER 0.02 SINR -5.51
@@ -122,7 +122,8 @@ LenaDataPhyErrorModelTestCase::DoRun (void)
   Config::SetDefault ("ns3::LteAmc::Ber", DoubleValue (ber));
   Config::SetDefault ("ns3::LteAmc::AmcModel", EnumValue (LteAmc::PiroEW2010));
   Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue (false));
-  Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (true));  
+  Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (true));
+  Config::SetDefault ("ns3::RrFfMacScheduler::HarqEnabled", BooleanValue (false));
 //   LogComponentEnable ("LteEnbRrc", LOG_LEVEL_ALL);
 //   LogComponentEnable ("LteUeRrc", LOG_LEVEL_ALL);
 //   LogComponentEnable ("LteEnbMac", LOG_LEVEL_ALL);
@@ -163,7 +164,7 @@ LenaDataPhyErrorModelTestCase::DoRun (void)
 //   LogComponentEnable ("LteMiErrorModel", LOG_LEVEL_ALL);
 //   LogComponentEnable ("LteAmc", LOG_LEVEL_ALL);
 //   
-  LogComponentDisableAll (LOG_LEVEL_ALL);
+//   LogComponentDisableAll (LOG_LEVEL_ALL);
 
   LogComponentEnable ("LenaTestPhyErrorModel", LOG_LEVEL_ALL);
 
@@ -306,7 +307,8 @@ LenaDlCtrlPhyErrorModelTestCase::DoRun (void)
   Config::SetDefault ("ns3::LteAmc::Ber", DoubleValue (ber));
   Config::SetDefault ("ns3::LteAmc::AmcModel", EnumValue (LteAmc::PiroEW2010));
   Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue (true));
-  Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));  
+  Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));
+  Config::SetDefault ("ns3::RrFfMacScheduler::HarqEnabled", BooleanValue (false));
   //   LogComponentEnable ("LteEnbRrc", LOG_LEVEL_ALL);
   //   LogComponentEnable ("LteUeRrc", LOG_LEVEL_ALL);
   //   LogComponentEnable ("LteEnbMac", LOG_LEVEL_ALL);
@@ -341,13 +343,13 @@ LenaDlCtrlPhyErrorModelTestCase::DoRun (void)
   //   LogComponentEnable ("LteEnbMac", LOG_LEVEL_ALL);
   //   LogComponentEnable ("LteEnbPhy", LOG_LEVEL_ALL);
   //   LogComponentEnable ("LteUePhy", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("RrFfMacScheduler", LOG_LEVEL_ALL);
+//     LogComponentEnable ("RrFfMacScheduler", LOG_LEVEL_ALL);
   //   LogComponentEnable ("LenaHelper", LOG_LEVEL_ALL);
   //   LogComponentEnable ("BuildingsPropagationLossModel", LOG_LEVEL_ALL);
 //     LogComponentEnable ("LteMiErrorModel", LOG_LEVEL_ALL);
   //   LogComponentEnable ("LteAmc", LOG_LEVEL_ALL);
   //   
-  LogComponentDisableAll (LOG_LEVEL_ALL);
+//   LogComponentDisableAll (LOG_LEVEL_ALL);
   
   LogComponentEnable ("LenaTestPhyErrorModel", LOG_LEVEL_ALL);
   

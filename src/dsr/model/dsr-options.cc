@@ -43,7 +43,6 @@
 #include "ns3/node.h"
 #include "ns3/uinteger.h"
 #include "ns3/trace-source-accessor.h"
-#include "ns3/random-variable.h"
 #include "ns3/udp-header.h"
 #include "ns3/pointer.h"
 #include "ns3/node-list.h"

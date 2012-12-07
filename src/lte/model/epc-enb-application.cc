@@ -67,16 +67,32 @@ EpcEnbApplication::GetTypeId (void)
   return tid;
 }
 
-EpcEnbApplication::EpcEnbApplication (Ptr<Socket> lteSocket, Ptr<Socket> s1uSocket, Ipv4Address sgwAddress)
+void
+EpcEnbApplication::DoDispose (void)
+{
+  NS_LOG_FUNCTION (this);
+  m_lteSocket = 0;
+  m_s1uSocket = 0;
+  delete m_s1SapProvider;
+  delete m_s1apSapEnb;
+}
+
+
+EpcEnbApplication::EpcEnbApplication (Ptr<Socket> lteSocket, Ptr<Socket> s1uSocket, Ipv4Address enbS1uAddress, Ipv4Address sgwS1uAddress, uint16_t cellId)
   : m_lteSocket (lteSocket),
     m_s1uSocket (s1uSocket),    
-    m_sgwAddress (sgwAddress),
-    m_gtpuUdpPort (2152) // fixed by the standard
+    m_enbS1uAddress (enbS1uAddress),
+    m_sgwS1uAddress (sgwS1uAddress),
+    m_gtpuUdpPort (2152), // fixed by the standard
+    m_s1SapUser (0),
+    m_s1apSapMme (0),
+    m_cellId (cellId)
 {
-  NS_LOG_FUNCTION (this << lteSocket << s1uSocket << sgwAddress);
+  NS_LOG_FUNCTION (this << lteSocket << s1uSocket << sgwS1uAddress);
   m_s1uSocket->SetRecvCallback (MakeCallback (&EpcEnbApplication::RecvFromS1uSocket, this));
   m_lteSocket->SetRecvCallback (MakeCallback (&EpcEnbApplication::RecvFromLteSocket, this));
   m_s1SapProvider = new MemberEpcEnbS1SapProvider<EpcEnbApplication> (this);
+  m_s1apSapEnb = new MemberEpcS1apSapEnb<EpcEnbApplication> (this);
 }
 
 
@@ -100,29 +116,17 @@ EpcEnbApplication::GetS1SapProvider ()
 }
 
 void 
-EpcEnbApplication::ErabSetupRequest (uint32_t teid, uint64_t imsi, EpsBearer bearer)
+EpcEnbApplication::SetS1apSapMme (EpcS1apSapMme * s)
 {
-  NS_LOG_FUNCTION (this << teid << imsi);
-  // request the RRC to setup a radio bearer
-  struct EpcEnbS1SapUser::DataRadioBearerSetupRequestParameters params;
-  params.bearer = bearer;
-  params.gtpTeid = teid;
-  std::map<uint64_t, uint16_t>::iterator it = m_imsiRntiMap.find (imsi);
-  NS_ASSERT_MSG (it != m_imsiRntiMap.end (), "unknown IMSI");
-  params.rnti = it->second;
-  m_s1SapUser->DataRadioBearerSetupRequest (params);
+  m_s1apSapMme = s;
 }
 
-void 
-EpcEnbApplication::DoS1BearerSetupRequest (EpcEnbS1SapProvider::S1BearerSetupRequestParameters params)
+  
+EpcS1apSapEnb* 
+EpcEnbApplication::GetS1apSapEnb ()
 {
-  NS_LOG_FUNCTION (this << params.rnti << params.bid);
-  EpsFlowId_t rbid (params.rnti, params.bid);
-  // side effect: create entries if not exist
-  m_rbidTeidMap[rbid] = params.gtpTeid;
-  m_teidRbidMap[params.gtpTeid] = rbid;
+  return m_s1apSapEnb;
 }
-
 
 void 
 EpcEnbApplication::DoInitialUeMessage (uint64_t imsi, uint16_t rnti)
@@ -130,6 +134,104 @@ EpcEnbApplication::DoInitialUeMessage (uint64_t imsi, uint16_t rnti)
   NS_LOG_FUNCTION (this);
   // side effect: create entry if not exist
   m_imsiRntiMap[imsi] = rnti;
+  m_s1apSapMme->InitialUeMessage (imsi, rnti, imsi, m_cellId);
+}
+
+void 
+EpcEnbApplication::DoPathSwitchRequest (EpcEnbS1SapProvider::PathSwitchRequestParameters params)
+{
+  NS_LOG_FUNCTION (this);
+  uint16_t enbUeS1Id = params.rnti;  
+  uint64_t mmeUeS1Id = params.mmeUeS1Id;
+  uint64_t imsi = mmeUeS1Id;
+  // side effect: create entry if not exist
+  m_imsiRntiMap[imsi] = params.rnti;
+
+  uint16_t gci = params.cellId;
+  std::list<EpcS1apSapMme::ErabSwitchedInDownlinkItem> erabToBeSwitchedInDownlinkList;
+  for (std::list<EpcEnbS1SapProvider::BearerToBeSwitched>::iterator bit = params.bearersToBeSwitched.begin ();
+       bit != params.bearersToBeSwitched.end ();
+       ++bit)
+    {
+      EpsFlowId_t flowId;
+      flowId.m_rnti = params.rnti;
+      flowId.m_bid = bit->epsBearerId;
+      uint32_t teid = bit->teid;
+      
+      EpsFlowId_t rbid (params.rnti, bit->epsBearerId);
+      // side effect: create entries if not exist
+      m_rbidTeidMap[params.rnti][bit->epsBearerId] = teid;
+      m_teidRbidMap[teid] = rbid;
+
+      EpcS1apSapMme::ErabSwitchedInDownlinkItem erab;
+      erab.erabId = bit->epsBearerId;
+      erab.enbTransportLayerAddress = m_enbS1uAddress;
+      erab.enbTeid = bit->teid;
+
+      erabToBeSwitchedInDownlinkList.push_back (erab);
+    }
+  m_s1apSapMme->PathSwitchRequest (enbUeS1Id, mmeUeS1Id, gci, erabToBeSwitchedInDownlinkList);
+}
+
+void 
+EpcEnbApplication::DoUeContextRelease (uint16_t rnti)
+{
+  NS_LOG_FUNCTION (this << rnti);
+  std::map<uint16_t, std::map<uint8_t, uint32_t> >::iterator rntiIt = m_rbidTeidMap.find (rnti);
+  NS_ASSERT (rntiIt != m_rbidTeidMap.end ());
+  for (std::map<uint8_t, uint32_t>::iterator bidIt = rntiIt->second.begin ();
+       bidIt != rntiIt->second.end ();
+       ++bidIt)
+    {
+      uint32_t teid = bidIt->second;
+      m_teidRbidMap.erase (teid);
+    }
+  m_rbidTeidMap.erase (rntiIt);
+}
+
+void 
+EpcEnbApplication::DoInitialContextSetupRequest (uint64_t mmeUeS1Id, uint16_t enbUeS1Id, std::list<EpcS1apSapEnb::ErabToBeSetupItem> erabToBeSetupList)
+{
+  NS_LOG_FUNCTION (this);
+  
+  for (std::list<EpcS1apSapEnb::ErabToBeSetupItem>::iterator erabIt = erabToBeSetupList.begin ();
+       erabIt != erabToBeSetupList.end ();
+       ++erabIt)
+    {
+      // request the RRC to setup a radio bearer
+
+      uint64_t imsi = mmeUeS1Id;
+      std::map<uint64_t, uint16_t>::iterator imsiIt = m_imsiRntiMap.find (imsi);
+      NS_ASSERT_MSG (imsiIt != m_imsiRntiMap.end (), "unknown IMSI");
+      uint16_t rnti = imsiIt->second;
+      
+      struct EpcEnbS1SapUser::DataRadioBearerSetupRequestParameters params;
+      params.rnti = rnti;
+      params.bearer = erabIt->erabLevelQosParameters;
+      params.bearerId = erabIt->erabId;
+      params.gtpTeid = erabIt->sgwTeid;
+      m_s1SapUser->DataRadioBearerSetupRequest (params);
+
+      EpsFlowId_t rbid (rnti, erabIt->erabId);
+      // side effect: create entries if not exist
+      m_rbidTeidMap[rnti][erabIt->erabId] = params.gtpTeid;
+      m_teidRbidMap[params.gtpTeid] = rbid;
+
+    }
+}
+
+void 
+EpcEnbApplication::DoPathSwitchRequestAcknowledge (uint64_t enbUeS1Id, uint64_t mmeUeS1Id, uint16_t gci, std::list<EpcS1apSapEnb::ErabSwitchedInUplinkItem> erabToBeSwitchedInUplinkList)
+{
+  NS_LOG_FUNCTION (this);
+
+  uint64_t imsi = mmeUeS1Id;
+  std::map<uint64_t, uint16_t>::iterator imsiIt = m_imsiRntiMap.find (imsi);
+  NS_ASSERT_MSG (imsiIt != m_imsiRntiMap.end (), "unknown IMSI");
+  uint16_t rnti = imsiIt->second;
+  EpcEnbS1SapUser::PathSwitchRequestAcknowledgeParameters params;
+  params.rnti = rnti;
+  m_s1SapUser->PathSwitchRequestAcknowledge (params);
 }
 
 void 
@@ -146,13 +248,14 @@ EpcEnbApplication::RecvFromLteSocket (Ptr<Socket> socket)
   EpsBearerTag tag;
   bool found = packet->RemovePacketTag (tag);
   NS_ASSERT (found);
-  EpsFlowId_t flowId;
-  flowId.m_rnti = tag.GetRnti ();
-  flowId.m_bid = tag.GetBid ();
-  NS_LOG_LOGIC ("received packet with RNTI=" << flowId.m_rnti << ", BID=" << (uint16_t)  flowId.m_bid);
-  std::map<EpsFlowId_t, uint32_t>::iterator it = m_rbidTeidMap.find (flowId);
-  NS_ASSERT (it != m_rbidTeidMap.end ());
-  uint32_t teid = it->second;
+  uint16_t rnti = tag.GetRnti ();
+  uint8_t bid = tag.GetBid ();
+  NS_LOG_LOGIC ("received packet with RNTI=" << (uint32_t) rnti << ", BID=" << (uint32_t)  bid);
+  std::map<uint16_t, std::map<uint8_t, uint32_t> >::iterator rntiIt = m_rbidTeidMap.find (rnti);
+  NS_ASSERT (rntiIt != m_rbidTeidMap.end ());
+  std::map<uint8_t, uint32_t>::iterator bidIt = rntiIt->second.find (bid);
+  NS_ASSERT (bidIt != rntiIt->second.end ());
+  uint32_t teid = bidIt->second;
   SendToS1uSocket (packet, teid);
 }
 
@@ -197,7 +300,7 @@ EpcEnbApplication::SendToS1uSocket (Ptr<Packet> packet, uint32_t teid)
   gtpu.SetLength (packet->GetSize () + gtpu.GetSerializedSize () - 8);  
   packet->AddHeader (gtpu);
   uint32_t flags = 0;
-  m_s1uSocket->SendTo (packet, flags, InetSocketAddress(m_sgwAddress, m_gtpuUdpPort));
+  m_s1uSocket->SendTo (packet, flags, InetSocketAddress(m_sgwS1uAddress, m_gtpuUdpPort));
 }
 
 

@@ -100,8 +100,8 @@ void experiment (bool enableCtsRts)
   uint16_t cbrPort = 12345;
   OnOffHelper onOffHelper ("ns3::UdpSocketFactory", InetSocketAddress (Ipv4Address ("10.0.0.2"), cbrPort));
   onOffHelper.SetAttribute ("PacketSize", UintegerValue (200));
-  onOffHelper.SetAttribute ("OnTime",  RandomVariableValue (ConstantVariable (1)));
-  onOffHelper.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
+  onOffHelper.SetAttribute ("OnTime",  StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
+  onOffHelper.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
 
   // flow 1:  node 0 -> node 1
   onOffHelper.SetAttribute ("DataRate", StringValue ("3000000bps"));

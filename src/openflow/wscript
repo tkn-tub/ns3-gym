@@ -107,6 +107,8 @@ int main()
         os.path.abspath(os.path.join(conf.env['WITH_OPENFLOW'],'build','default')),
         os.path.abspath(os.path.join(conf.env['WITH_OPENFLOW'],'lib'))]
     
+    conf.env['DEFINES_OPENFLOW'] = ['NS3_OPENFLOW']
+
     conf.env['OPENFLOW'] = conf.check_nonfatal(fragment=test_code, lib='openflow', 
                                                libpath=conf.env['LIBPATH_OPENFLOW'],
                                                use='OPENFLOW DL XML2')

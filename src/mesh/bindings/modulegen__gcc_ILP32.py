@@ -2098,6 +2098,10 @@ def register_Ns3MeshHelper_methods(root_module, cls):
     cls.add_constructor([param('ns3::MeshHelper const &', 'arg0')])
     ## mesh-helper.h (module 'mesh'): ns3::MeshHelper::MeshHelper() [constructor]
     cls.add_constructor([])
+    ## mesh-helper.h (module 'mesh'): int64_t ns3::MeshHelper::AssignStreams(ns3::NetDeviceContainer c, int64_t stream) [member function]
+    cls.add_method('AssignStreams', 
+                   'int64_t', 
+                   [param('ns3::NetDeviceContainer', 'c'), param('int64_t', 'stream')])
     ## mesh-helper.h (module 'mesh'): static ns3::MeshHelper ns3::MeshHelper::Default() [member function]
     cls.add_method('Default', 
                    'ns3::MeshHelper', 
@@ -3166,6 +3170,10 @@ def register_Ns3WifiHelper_methods(root_module, cls):
     cls.add_constructor([param('ns3::WifiHelper const &', 'arg0')])
     ## wifi-helper.h (module 'wifi'): ns3::WifiHelper::WifiHelper() [constructor]
     cls.add_constructor([])
+    ## wifi-helper.h (module 'wifi'): int64_t ns3::WifiHelper::AssignStreams(ns3::NetDeviceContainer c, int64_t stream) [member function]
+    cls.add_method('AssignStreams', 
+                   'int64_t', 
+                   [param('ns3::NetDeviceContainer', 'c'), param('int64_t', 'stream')])
     ## wifi-helper.h (module 'wifi'): static ns3::WifiHelper ns3::WifiHelper::Default() [member function]
     cls.add_method('Default', 
                    'ns3::WifiHelper', 
@@ -5376,6 +5384,11 @@ def register_Ns3WifiPhy_methods(root_module, cls):
     cls.add_constructor([param('ns3::WifiPhy const &', 'arg0')])
     ## wifi-phy.h (module 'wifi'): ns3::WifiPhy::WifiPhy() [constructor]
     cls.add_constructor([])
+    ## wifi-phy.h (module 'wifi'): int64_t ns3::WifiPhy::AssignStreams(int64_t stream) [member function]
+    cls.add_method('AssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'stream')], 
+                   is_pure_virtual=True, is_virtual=True)
     ## wifi-phy.h (module 'wifi'): double ns3::WifiPhy::CalculateSnr(ns3::WifiMode txMode, double ber) const [member function]
     cls.add_method('CalculateSnr', 
                    'double', 
@@ -6756,6 +6769,10 @@ def register_Ns3EdcaTxopN_methods(root_module, cls):
     cls.add_method('SendDelbaFrame', 
                    'void', 
                    [param('ns3::Mac48Address', 'addr'), param('uint8_t', 'tid'), param('bool', 'byOriginator')])
+    ## edca-txop-n.h (module 'wifi'): int64_t ns3::EdcaTxopN::AssignStreams(int64_t stream) [member function]
+    cls.add_method('AssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'stream')])
     ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::DoStart() [member function]
     cls.add_method('DoStart', 
                    'void', 
@@ -7229,6 +7246,11 @@ def register_Ns3MeshWifiInterfaceMacPlugin_methods(root_module, cls):
     cls.add_constructor([])
     ## mesh-wifi-interface-mac-plugin.h (module 'mesh'): ns3::MeshWifiInterfaceMacPlugin::MeshWifiInterfaceMacPlugin(ns3::MeshWifiInterfaceMacPlugin const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::MeshWifiInterfaceMacPlugin const &', 'arg0')])
+    ## mesh-wifi-interface-mac-plugin.h (module 'mesh'): int64_t ns3::MeshWifiInterfaceMacPlugin::AssignStreams(int64_t stream) [member function]
+    cls.add_method('AssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'stream')], 
+                   is_pure_virtual=True, is_virtual=True)
     ## mesh-wifi-interface-mac-plugin.h (module 'mesh'): bool ns3::MeshWifiInterfaceMacPlugin::Receive(ns3::Ptr<ns3::Packet> packet, ns3::WifiMacHeader const & header) [member function]
     cls.add_method('Receive', 
                    'bool', 
@@ -8415,6 +8437,10 @@ def register_Ns3DcaTxop_methods(root_module, cls):
     cls.add_method('Queue', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('ns3::WifiMacHeader const &', 'hdr')])
+    ## dca-txop.h (module 'wifi'): int64_t ns3::DcaTxop::AssignStreams(int64_t stream) [member function]
+    cls.add_method('AssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'stream')])
     ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::DoStart() [member function]
     cls.add_method('DoStart', 
                    'void', 
@@ -8668,6 +8694,10 @@ def register_Ns3MeshPointDevice_methods(root_module, cls):
 def register_Ns3MeshWifiInterfaceMac_methods(root_module, cls):
     ## mesh-wifi-interface-mac.h (module 'mesh'): ns3::MeshWifiInterfaceMac::MeshWifiInterfaceMac() [constructor]
     cls.add_constructor([])
+    ## mesh-wifi-interface-mac.h (module 'mesh'): int64_t ns3::MeshWifiInterfaceMac::AssignStreams(int64_t stream) [member function]
+    cls.add_method('AssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'stream')])
     ## mesh-wifi-interface-mac.h (module 'mesh'): bool ns3::MeshWifiInterfaceMac::CheckSupportedRates(ns3::SupportedRates rates) const [member function]
     cls.add_method('CheckSupportedRates', 
                    'bool', 
@@ -8787,6 +8817,11 @@ def register_Ns3MeshWifiInterfaceMac_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='private', is_virtual=True)
+    ## mesh-wifi-interface-mac.h (module 'mesh'): void ns3::MeshWifiInterfaceMac::DoStart() [member function]
+    cls.add_method('DoStart', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
     ## mesh-wifi-interface-mac.h (module 'mesh'): void ns3::MeshWifiInterfaceMac::Receive(ns3::Ptr<ns3::Packet> packet, ns3::WifiMacHeader const * hdr) [member function]
     cls.add_method('Receive', 
                    'void', 
@@ -8885,6 +8920,10 @@ def register_Ns3Dot11sDot11sMeshCapability_methods(root_module, cls):
 def register_Ns3Dot11sHwmpProtocol_methods(root_module, cls):
     ## hwmp-protocol.h (module 'mesh'): ns3::dot11s::HwmpProtocol::HwmpProtocol() [constructor]
     cls.add_constructor([])
+    ## hwmp-protocol.h (module 'mesh'): int64_t ns3::dot11s::HwmpProtocol::AssignStreams(int64_t stream) [member function]
+    cls.add_method('AssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'stream')])
     ## hwmp-protocol.h (module 'mesh'): void ns3::dot11s::HwmpProtocol::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
@@ -8934,6 +8973,11 @@ def register_Ns3Dot11sHwmpProtocol_methods(root_module, cls):
     cls.add_method('UnsetRoot', 
                    'void', 
                    [])
+    ## hwmp-protocol.h (module 'mesh'): void ns3::dot11s::HwmpProtocol::DoStart() [member function]
+    cls.add_method('DoStart', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3Dot11sHwmpProtocolFailedDestination_methods(root_module, cls):
@@ -10139,6 +10183,10 @@ def register_Ns3Dot11sPeerLinkFrameStartPlinkFrameStartFields_methods(root_modul
 def register_Ns3Dot11sPeerManagementProtocol_methods(root_module, cls):
     ## peer-management-protocol.h (module 'mesh'): ns3::dot11s::PeerManagementProtocol::PeerManagementProtocol() [constructor]
     cls.add_constructor([])
+    ## peer-management-protocol.h (module 'mesh'): int64_t ns3::dot11s::PeerManagementProtocol::AssignStreams(int64_t stream) [member function]
+    cls.add_method('AssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'stream')])
     ## peer-management-protocol.h (module 'mesh'): void ns3::dot11s::PeerManagementProtocol::ConfigurationMismatch(uint32_t interface, ns3::Mac48Address peerAddress) [member function]
     cls.add_method('ConfigurationMismatch', 
                    'void', 
@@ -10238,6 +10286,11 @@ def register_Ns3Dot11sPeerManagementProtocol_methods(root_module, cls):
     cls.add_method('TransmissionSuccess', 
                    'void', 
                    [param('uint32_t', 'interface'), param('ns3::Mac48Address const', 'peerAddress')])
+    ## peer-management-protocol.h (module 'mesh'): void ns3::dot11s::PeerManagementProtocol::DoStart() [member function]
+    cls.add_method('DoStart', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3FlameFlameHeader_methods(root_module, cls):
@@ -10370,6 +10423,11 @@ def register_Ns3FlameFlameProtocolMac_methods(root_module, cls):
     cls.add_constructor([param('ns3::flame::FlameProtocolMac const &', 'arg0')])
     ## flame-protocol-mac.h (module 'mesh'): ns3::flame::FlameProtocolMac::FlameProtocolMac(uint32_t arg0, ns3::Ptr<ns3::flame::FlameProtocol> arg1) [constructor]
     cls.add_constructor([param('uint32_t', 'arg0'), param('ns3::Ptr< ns3::flame::FlameProtocol >', 'arg1')])
+    ## flame-protocol-mac.h (module 'mesh'): int64_t ns3::flame::FlameProtocolMac::AssignStreams(int64_t stream) [member function]
+    cls.add_method('AssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'stream')], 
+                   is_virtual=True)
     ## flame-protocol-mac.h (module 'mesh'): uint16_t ns3::flame::FlameProtocolMac::GetChannelId() const [member function]
     cls.add_method('GetChannelId', 
                    'uint16_t', 

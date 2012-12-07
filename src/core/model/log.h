@@ -182,6 +182,10 @@ void LogComponentDisableAll (enum LogLevel level);
  * for 'Component2'.  The wildcard can be used here as well.  For example
  * NS_LOG='*=level_all|prefix' would enable all log levels and prefix all
  * prints with the component and function names.
+ *
+ * A note on NS_LOG_FUNCTION() and NS_LOG_FUNCTION_NOARGS():
+ * generally, use of (at least) NS_LOG_FUNCTION(this) is preferred.
+ * Use NS_LOG_FUNCTION_NOARGS() only in static functions.
  */
 
 
@@ -253,6 +257,9 @@ void LogComponentDisableAll (enum LogLevel level);
  * \ingroup logging
  *
  * Output the name of the function.
+ *
+ * This should be used only in static functions; most member functions
+ * should instead use NS_LOG_FUNCTION().
  */
 #define NS_LOG_FUNCTION_NOARGS()                                \
   do                                                            \
@@ -284,6 +291,11 @@ void LogComponentDisableAll (enum LogLevel level);
  * \code
  * Component:Function (aNumber, anotherNumber)
  * \endcode
+ *
+ * To facilitate function tracing, most functions should begin with
+ * (at least) NS_LOG_FUNCTION(this).  Static functions should use
+ * NS_LOG_FUNCTION_NOARGS() instead.
+ *
  */
 #define NS_LOG_FUNCTION(parameters)                             \
   do                                                            \

@@ -27,6 +27,7 @@
 #include "ns3/traced-callback.h"
 #include "ns3/nstime.h"
 #include "ns3/device-energy-model.h"
+#include "ns3/random-variable-stream.h"
 #include <list>
 
 namespace ns3 {
@@ -205,6 +206,16 @@ public:
 
   virtual void SetSleepMode (bool sleep);
 
+ /**
+  * Assign a fixed random variable stream number to the random variables
+  * used by this model.  Return the number of streams (possibly zero) that
+  * have been assigned.
+  *
+  * \param stream first stream index to use
+  * \return the number of stream indices assigned by this model
+  */
+  int64_t AssignStreams (int64_t stream);
+
 private:
   typedef std::list<UanPhyListener *> ListenerList;
 
@@ -235,6 +246,9 @@ private:
 
   bool m_cleared;
   bool m_disabled;
+
+  /// Provides uniform random variables.
+  Ptr<UniformRandomVariable> m_pg;
 
   DeviceEnergyModel::ChangeStateCallback m_energyCallback;
   TracedCallback<Ptr<const Packet>, double, UanTxMode > m_rxOkLogger;

@@ -25,7 +25,9 @@ IMAGES_DIA = \
 	$(FIGURES)/lte-epc-e2e-data-protocol-stack.dia \
 	$(FIGURES)/lte-interference-test-scenario.dia \
 	$(FIGURES)/lte-subframe-structure.dia \
-	$(FIGURES)/lte-epc-x2-interface.dia
+	$(FIGURES)/lte-epc-x2-interface.dia \
+	$(FIGURES)/lte-harq-architecture.dia \
+	$(FIGURES)/lte-harq-processes-scheme.dia
 
 
 # specify eps figures from which .png and .pdf figures need to be built
@@ -52,17 +54,6 @@ IMAGES_EPS = \
 
 
 # rescale pdf figures as necessary
-$(FIGURES)/testbed.pdf_width = 5in
-$(FIGURES)/emulated-channel.pdf_width = 6in
-$(FIGURES)/node.pdf_width = 5in
-$(FIGURES)/packet.pdf_width = 4in
-$(FIGURES)/buffer.pdf_width = 15cm
-$(FIGURES)/sockets-overview.pdf_width = 10cm
-$(FIGURES)/internet-node-send.pdf_width = 5in
-$(FIGURES)/internet-node-recv.pdf_width = 5in
-$(FIGURES)/routing.pdf_width = 6in
-$(FIGURES)/routing-specialization.pdf_width = 5in
-$(FIGURES)/snir.pdf_width = 3in
 $(FIGURES)/lte-interference-test-scenario.pdf_width = 3in
 $(FIGURES)/epc-topology.pdf_width = 4in
 $(FIGURES)/epc-topology-x2-enhanced.pdf_width = 14cm
@@ -75,9 +66,6 @@ $(FIGURES)/lte-rlc-data-txon-dl.pdf_width = 10cm
 $(FIGURES)/lte-rlc-data-txon-ul.pdf_width = 10cm
 $(FIGURES)/lte-rlc-data-retx-ul.pdf_width = 10cm
 $(FIGURES)/lte-phy-interference.pdf_width = 12cm
-$(FIGURES)/rrc-connection-establishment.pdf_width = 9cm
-$(FIGURES)/rrc-connection-reconfiguration-handover.pdf_width = 11cm
-$(FIGURES)/auvmobility-classes.pdf_width = 10cm
 $(FIGURES)/lte-subframe-structure.pdf_width = 2in
 
 
@@ -142,12 +130,18 @@ IMAGES = $(IMAGES_NOBUILD) $(IMAGES_BUILD)
 %.png : %.dia; $(DIA) -t png $< -e $@
 %.png : %.seqdiag; $(SEQDIAG) -Tpng --no-transparency -o $@ $< 
 %.png : %.eps; $(CONVERT) $< $@
-%.pdf : %.seqdiag; $(SEQDIAG) -Tsvg -o $<.svg $< && $(CONVERT) $<.svg $@ ; if test x$($@_width) != x; then TMPFILE=`mktemp`; ./rescale-pdf.sh $($@_width) $@ $${TMPFILE} && mv $${TMPFILE} $@; fi
-%.pdf : %.eps; $(EPSTOPDF) $< -o=$@; if test x$($@_width) != x; then TMPFILE=`mktemp`; ./rescale-pdf.sh $($@_width) $@ $${TMPFILE} && mv $${TMPFILE} $@; fi
+%.pdf : %.seqdiag
+	$(SEQDIAG) -Tpdf -o $@ $<
+	if test x$($@_width) != x; then ./rescale-pdf.sh $($@_width) $@ ; fi
+%.pdf : %.eps
+	$(EPSTOPDF) $< -o=$@
+	if test x$($@_width) != x; ./rescale-pdf.sh $($@_width) $@ ; fi
 
 
 %.png : %.eps; $(CONVERT) $< $@
-%.pdf : %.eps; $(EPSTOPDF) $< -o=$@; if test x$($@_width) != x; then TMPFILE=`mktemp`; ./rescale-pdf.sh $($@_width) $@ $${TMPFILE} && mv $${TMPFILE} $@; fi
+%.pdf : %.eps
+	$(EPSTOPDF) $< -o=$@
+	if test x$($@_width) != x; then ./rescale-pdf.sh $($@_width) $@ ; fi
 
 # You can set these variables from the command line.
 SPHINXOPTS    =

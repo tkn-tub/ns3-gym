@@ -121,8 +121,8 @@ int main (int argc, char const* argv[])
   DataRate dataRate ("1Mb/s");
   OnOffHelper onOff ("ns3::UdpSocketFactory", Address (InetSocketAddress (apIf.GetAddress (0), port)));
   onOff.SetAttribute ("DataRate", DataRateValue (dataRate));
-  onOff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (0.01)));
-  onOff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (8)));
+  onOff.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=0.01]"));
+  onOff.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=8]"));
   onOff.SetAttribute ("PacketSize", UintegerValue (50));
 
   ApplicationContainer staApps = onOff.Install (sta);

@@ -75,7 +75,9 @@ where :math:`\phi_{0}` is the azimuthal orientation of the antenna
  
   n = -\frac{3}{20 \log_{10} \left( \cos \frac{\phi_{3dB}}{4} \right)}
 
-determines the desired 3dB beamwidth :math:`\phi_{3dB}`.
+determines the desired 3dB beamwidth :math:`\phi_{3dB}`. Note that
+this radiation pattern is independent of the inclination angle
+:math:`\theta`. 
 
 A major difference between the model of [Chunjian]_ and the one
 implemented in the class CosineAntennaModel is that only the element
@@ -92,7 +94,7 @@ pattern.
 ParabolicAntennaModel
 +++++++++++++++++++++
 
-This model is based on the parabolic approximation of the main lobe radiation pattern. It is often used in the context of cellular system to model the radiation pattern of a cell sector, see for instance [R4-092042]_ and [Calcev]_. The antenna gain in dB is determined as:
+This model is based on the parabolic approximation of the main lobe radiation pattern. It is often used in the context of cellular system to model the radiation pattern of a cell sector, see for instance [R4-092042a]_ and [Calcev]_. The antenna gain in dB is determined as:
 
 .. math::
  
@@ -101,7 +103,8 @@ This model is based on the parabolic approximation of the main lobe radiation pa
 where :math:`\phi_{0}` is the azimuthal orientation of the antenna
 (i.e., its direction of maximum gain), :math:`\phi_{3dB}` is its 3 dB
 beamwidth, and :math:`A_{max}` is the maximum attenuation in dB of the
-antenna. 
+antenna. Note that this radiation pattern is independent of the inclination angle
+:math:`\theta`. 
 
 
 
@@ -117,7 +120,7 @@ antenna.
    CDMA Networks", in Proc. of the 2nd Annual International Wireless
    Internet Conference (WICON), 2006 
 
-.. [R4-092042]  3GPP TSG RAN WG4 (Radio) Meeting #51, R4-092042, Simulation
+.. [R4-092042a]  3GPP TSG RAN WG4 (Radio) Meeting #51, R4-092042, Simulation
    assumptions and parameters for FDD HeNB RF requirements.
 
 

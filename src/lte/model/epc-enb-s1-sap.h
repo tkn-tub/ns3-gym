@@ -21,6 +21,7 @@
 #ifndef EPC_ENB_S1_SAP_H
 #define EPC_ENB_S1_SAP_H
 
+#include <list>
 #include <stdint.h>
 #include <ns3/eps-bearer.h>
 #include <ns3/ipv4-address.h>
@@ -38,27 +39,8 @@ namespace ns3 {
 class EpcEnbS1SapProvider
 {
 public:
-  virtual ~EpcEnbS1SapProvider ();
-  
-  /**
-   * Parameters passed to S1BearerSetupRequest ()
-   * 
-   */
-  struct S1BearerSetupRequestParameters
-  {
-    uint16_t rnti; /**< the RNTI corresponding to the IMSI for which
-                      the radio bearer activation was requested */
-    uint8_t bid; /**< the EPS Bearer ID of the bearer to be created*/
+  virtual ~EpcEnbS1SapProvider ();  
 
-    uint32_t gtpTeid; /**<  S1-bearer GTP tunnel endpoint identifier, see 36.423 9.2.1  */
-  };
-
-  /**
-   * Request the setup of a S1 bearer
-   * 
-   */
-  virtual void S1BearerSetupRequest (S1BearerSetupRequestParameters params) = 0;
-  
   /** 
    * 
    * 
@@ -66,6 +48,34 @@ public:
    * \param rnti 
    */
   virtual void InitialUeMessage (uint64_t imsi, uint16_t rnti) = 0;
+
+
+  struct BearerToBeSwitched
+  {
+    uint8_t epsBearerId;
+    uint32_t teid;
+  };
+  
+  struct PathSwitchRequestParameters
+  {
+    uint16_t rnti;
+    uint16_t cellId;
+    uint32_t mmeUeS1Id;
+    std::list<BearerToBeSwitched> bearersToBeSwitched;
+  };
+
+  virtual void PathSwitchRequest (PathSwitchRequestParameters params) = 0;
+
+
+  /** 
+   * release UE context at the S1 Application of the source eNB after
+   * reception of the UE CONTEXT RELEASE X2 message from the target eNB
+   * during X2-based handover 
+   * 
+   * \param rnti 
+   */
+  virtual void UeContextRelease (uint16_t rnti) = 0;
+    
 };
   
 
@@ -92,6 +102,7 @@ public:
 			DataRadioBearer is to be created */ 
     EpsBearer bearer; /**< the characteristics of the bearer to be set
                          up */
+    uint8_t bearerId; /**< the EPS Bearer Identifier */
     uint32_t    gtpTeid; /**< S1-bearer GTP tunnel endpoint identifier, see 36.423 9.2.1 */
     Ipv4Address transportLayerAddress; /**< IP Address of the SGW, see 36.423 9.2.1 */
   };
@@ -101,6 +112,14 @@ public:
    * 
    */
   virtual void DataRadioBearerSetupRequest (DataRadioBearerSetupRequestParameters params) = 0;
+
+  
+  struct PathSwitchRequestAcknowledgeParameters
+  {
+    uint16_t rnti;
+  };
+
+  virtual void PathSwitchRequestAcknowledge (PathSwitchRequestAcknowledgeParameters params) = 0;
   
 };
   
@@ -119,8 +138,9 @@ public:
   MemberEpcEnbS1SapProvider (C* owner);
 
   // inherited from EpcEnbS1SapProvider
-  virtual void S1BearerSetupRequest (S1BearerSetupRequestParameters params);
   virtual void InitialUeMessage (uint64_t imsi, uint16_t rnti);
+  virtual void PathSwitchRequest (PathSwitchRequestParameters params);
+  virtual void UeContextRelease (uint16_t rnti);
 
 private:
   MemberEpcEnbS1SapProvider ();
@@ -138,17 +158,24 @@ MemberEpcEnbS1SapProvider<C>::MemberEpcEnbS1SapProvider ()
 {
 }
 
-template <class C>
-void MemberEpcEnbS1SapProvider<C>::S1BearerSetupRequest (S1BearerSetupRequestParameters params)
-{
-  m_owner->DoS1BearerSetupRequest (params);
-}
-
 
 template <class C>
 void MemberEpcEnbS1SapProvider<C>::InitialUeMessage (uint64_t imsi, uint16_t rnti)
 {
   m_owner->DoInitialUeMessage (imsi, rnti);
+}
+
+
+template <class C>
+void MemberEpcEnbS1SapProvider<C>::PathSwitchRequest (PathSwitchRequestParameters params)
+{
+  m_owner->DoPathSwitchRequest (params);
+}
+
+template <class C>
+void MemberEpcEnbS1SapProvider<C>::UeContextRelease (uint16_t rnti)
+{
+  m_owner->DoUeContextRelease (rnti);
 }
 
 /**
@@ -164,6 +191,7 @@ public:
 
   // inherited from EpcEnbS1SapUser
   virtual void DataRadioBearerSetupRequest (DataRadioBearerSetupRequestParameters params);
+  virtual void PathSwitchRequestAcknowledge (PathSwitchRequestAcknowledgeParameters params);
 
 private:
   MemberEpcEnbS1SapUser ();
@@ -187,6 +215,11 @@ void MemberEpcEnbS1SapUser<C>::DataRadioBearerSetupRequest (DataRadioBearerSetup
   m_owner->DoDataRadioBearerSetupRequest (params);
 }
 
+template <class C>
+void MemberEpcEnbS1SapUser<C>::PathSwitchRequestAcknowledge (PathSwitchRequestAcknowledgeParameters params)
+{
+  m_owner->DoPathSwitchRequestAcknowledge (params);
+}
 
 } // namespace ns3
 

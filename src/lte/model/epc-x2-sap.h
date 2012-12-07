@@ -228,6 +228,7 @@ public:
     uint16_t            cause;
     uint16_t            sourceCellId;
     uint16_t            targetCellId;
+    uint32_t            mmeUeS1apId;
     uint64_t            ueAggregateMaxBitRateDownlink;
     uint64_t            ueAggregateMaxBitRateUplink;
     std::vector <ErabToBeSetupItem> bearers;

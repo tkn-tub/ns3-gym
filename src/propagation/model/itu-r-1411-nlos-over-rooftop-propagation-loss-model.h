@@ -71,6 +71,7 @@ private:
   virtual double DoCalcRxPower (double txPowerDbm,
                                 Ptr<MobilityModel> a,
                                 Ptr<MobilityModel> b) const;
+  virtual int64_t DoAssignStreams (int64_t stream);
   
   double m_frequency; ///< frequency in MHz
   double m_lambda; ///< wavelength

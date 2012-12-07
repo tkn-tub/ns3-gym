@@ -26,6 +26,7 @@
 #include <ns3/simulator.h>
 #include <ns3/packet.h>
 #include <ns3/ptr.h>
+#include <ns3/string.h>
 #include <iostream>
 
 #include <ns3/spectrum-model-ism2400MHz-res1MHz.h>
@@ -183,9 +184,7 @@ SpectrumIdealPhyTestCase::DoRun (void)
   socket.SetProtocol (1);
 
   OnOffHelper onoff ("ns3::PacketSocketFactory", Address (socket));
-  onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (250)));
-  onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
-  onoff.SetAttribute ("DataRate", DataRateValue (DataRate (static_cast<uint64_t> (1.2*phyRate))));
+  onoff.SetConstantRate (DataRate (static_cast<uint64_t> (1.2*phyRate)));
   onoff.SetAttribute ("PacketSize", UintegerValue (pktSize));
 
   ApplicationContainer apps = onoff.Install (c.Get (0));

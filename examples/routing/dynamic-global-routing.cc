@@ -151,9 +151,7 @@ main (int argc, char *argv[])
   uint16_t port = 9;   // Discard port (RFC 863)
   OnOffHelper onoff ("ns3::UdpSocketFactory",
                      InetSocketAddress (i5i6.GetAddress (1), port));
-  onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
-  onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
-  onoff.SetAttribute ("DataRate", StringValue ("2kbps"));
+  onoff.SetConstantRate (DataRate ("2kbps"));
   onoff.SetAttribute ("PacketSize", UintegerValue (50));
 
   ApplicationContainer apps = onoff.Install (c.Get (1));
@@ -164,8 +162,8 @@ main (int argc, char *argv[])
   // 210 bytes at a rate of 448 Kb/s
   OnOffHelper onoff2 ("ns3::UdpSocketFactory",
                       InetSocketAddress (i1i6.GetAddress (1), port));
-  onoff2.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
-  onoff2.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
+  onoff2.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
+  onoff2.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
   onoff2.SetAttribute ("DataRate", StringValue ("2kbps"));
   onoff2.SetAttribute ("PacketSize", UintegerValue (50));
 

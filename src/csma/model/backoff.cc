@@ -19,6 +19,9 @@
  */
 
 #include "backoff.h"
+#include "ns3/log.h"
+
+NS_LOG_COMPONENT_DEFINE ("Backoff");
 
 namespace ns3 {
 
@@ -29,6 +32,7 @@ Backoff::Backoff ()
   m_maxSlots = 1000;
   m_ceiling = 10;
   m_maxRetries = 1000;
+  m_rng = CreateObject<UniformRandomVariable> ();
 
   ResetBackoffTime ();
 }
@@ -40,7 +44,7 @@ Backoff::Backoff(Time slotTime, uint32_t minSlots, uint32_t maxSlots, uint32_t c
   m_maxSlots = maxSlots;
   m_ceiling = ceiling;
   m_maxRetries = maxRetries;
-  m_rng = UniformVariable ();
+  m_rng = CreateObject<UniformRandomVariable> ();
 }
 
 Time
@@ -64,7 +68,7 @@ Backoff::GetBackoffTime (void)
       maxSlot = m_maxSlots;
     }
 
-  uint32_t backoffSlots = (uint32_t)m_rng.GetValue (minSlot, maxSlot);
+  uint32_t backoffSlots = (uint32_t)m_rng->GetValue (minSlot, maxSlot);
 
   Time backoff = Time (backoffSlots * m_slotTime);
   return backoff;
@@ -86,6 +90,14 @@ void
 Backoff::IncrNumRetries (void) 
 {
   m_numBackoffRetries++;
+}
+
+int64_t
+Backoff::AssignStreams (int64_t stream)
+{
+  NS_LOG_FUNCTION (this << stream);
+  m_rng->SetStream (stream);
+  return 1;
 }
 
 } // namespace ns3

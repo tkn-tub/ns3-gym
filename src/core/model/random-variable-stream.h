@@ -1088,7 +1088,7 @@ public:
    *
    * which now involves the distances \f$u1\f$ and \f$u2\f$ are from 1.
    */
-  double GetValue (double mean, double variance, double bound);
+  double GetValue (double mean, double variance, double bound = NormalRandomVariable::INFINITE_VALUE);
 
   /**
    * \brief Returns a random unsigned integer from a normal distribution with the specified mean, variance, and bound.

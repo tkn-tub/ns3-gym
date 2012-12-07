@@ -435,12 +435,12 @@ main (int argc, char *argv[])
   cout << "Creating TCP Traffic Flows:" << endl;
   Config::SetDefault ("ns3::OnOffApplication::MaxBytes", UintegerValue (500000));
   Config::SetDefault ("ns3::OnOffApplication::OnTime",
-                      RandomVariableValue (ConstantVariable (1)));
+                      StringValue ("ns3::ConstantRandomVariable[Constant=1.0]"));
   Config::SetDefault ("ns3::OnOffApplication::OffTime",
-                      RandomVariableValue (ConstantVariable (0)));
+                      StringValue ("ns3::ConstantRandomVariable[Constant=0.0]"));
   Config::SetDefault ("ns3::TcpSocket::SegmentSize", UintegerValue (512));
 
-  UniformVariable urng;
+  Ptr<UniformRandomVariable> urng = CreateObject<UniformRandomVariable> ();
   int r1;
   double r2;
   for (int z = 0; z < nCN; ++z) 
@@ -463,8 +463,8 @@ main (int argc, char *argv[])
                   nodes_net2LAN[z][i][j].Get (0));
               sinkApp.Start (Seconds (0.0));
               // Sources
-              r1 = 2 + (int)(4 * urng.GetValue ());
-              r2 = 10 * urng.GetValue ();
+              r1 = 2 + (int)(4 * urng->GetValue ());
+              r2 = 10 * urng->GetValue ();
               OnOffHelper client ("ns3::TcpSocketFactory", Address ());
               AddressValue remoteAddress (InetSocketAddress (
                                             ifs2LAN[z][i][j].GetAddress (0), 9999));
@@ -487,8 +487,8 @@ main (int argc, char *argv[])
                   nodes_net3LAN[z][i][j].Get (0));
               sinkApp.Start (Seconds (0.0));
               // Sources
-              r1 = 2 + (int)(4 * urng.GetValue ());
-              r2 = 10 * urng.GetValue ();
+              r1 = 2 + (int)(4 * urng->GetValue ());
+              r2 = 10 * urng->GetValue ();
               OnOffHelper client ("ns3::TcpSocketFactory", Address ());
               AddressValue remoteAddress (InetSocketAddress (
                                             ifs3LAN[z][i][j].GetAddress (0), 9999));

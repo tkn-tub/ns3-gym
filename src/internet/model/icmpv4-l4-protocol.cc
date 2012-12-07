@@ -56,14 +56,14 @@ Icmpv4L4Protocol::NotifyNewAggregate ()
       Ptr<Node> node = this->GetObject<Node> ();
       if (node != 0)
         {
-          Ptr<Ipv4L3Protocol> ipv4 = this->GetObject<Ipv4L3Protocol> ();
+          Ptr<Ipv4> ipv4 = this->GetObject<Ipv4> ();
           if (ipv4 != 0 && m_downTarget.IsNull ())
             {
               this->SetNode (node);
               ipv4->Insert (this);
               Ptr<Ipv4RawSocketFactoryImpl> rawFactory = CreateObject<Ipv4RawSocketFactoryImpl> ();
               ipv4->AggregateObject (rawFactory);
-              this->SetDownTarget (MakeCallback (&Ipv4L3Protocol::Send, ipv4));
+              this->SetDownTarget (MakeCallback (&Ipv4::Send, ipv4));
             }
         }
     }
@@ -84,7 +84,7 @@ Icmpv4L4Protocol::GetProtocolNumber (void) const
 void
 Icmpv4L4Protocol::SendMessage (Ptr<Packet> packet, Ipv4Address dest, uint8_t type, uint8_t code)
 {
-  Ptr<Ipv4L3Protocol> ipv4 = m_node->GetObject<Ipv4L3Protocol> ();
+  Ptr<Ipv4> ipv4 = m_node->GetObject<Ipv4> ();
   NS_ASSERT (ipv4 != 0 && ipv4->GetRoutingProtocol () != 0);
   Ipv4Header header;
   header.SetDestination (dest);
@@ -179,7 +179,7 @@ Icmpv4L4Protocol::Forward (Ipv4Address source, Icmpv4Header icmp,
                            uint32_t info, Ipv4Header ipHeader,
                            const uint8_t payload[8])
 {
-  Ptr<Ipv4L3Protocol> ipv4 = m_node->GetObject<Ipv4L3Protocol> ();
+  Ptr<Ipv4> ipv4 = m_node->GetObject<Ipv4> ();
   Ptr<IpL4Protocol> l4 = ipv4->GetProtocol (ipHeader.GetProtocol ());
   if (l4 != 0)
     {

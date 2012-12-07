@@ -42,6 +42,15 @@ class LteUeCmacSapProvider
 public:
   virtual ~LteUeCmacSapProvider ();
 
+  struct RachConfig
+  {
+    uint8_t numberOfRaPreambles;
+    uint8_t preambleTransMax;
+    uint8_t raResponseWindowSize;
+  };
+  
+  virtual void ConfigureRach (RachConfig rc) = 0;
+
   /** 
    * tell the MAC to start a contention-based random access procedure,
    * e.g., to perform RRC connection establishment 
@@ -54,10 +63,10 @@ public:
    * procedure, e.g., as a consequence of handover
    * 
    * \param rnti
-   * \param preambleId 
+   * \param rapId Random Access Preamble Identifier
    * \param prachMask 
    */
-  virtual void StartNonContentionBasedRandomAccessProcedure (uint16_t rnti, uint8_t preambleId, uint8_t prachMask) = 0;
+  virtual void StartNonContentionBasedRandomAccessProcedure (uint16_t rnti, uint8_t rapId, uint8_t prachMask) = 0;
 
 
   struct LogicalChannelConfig

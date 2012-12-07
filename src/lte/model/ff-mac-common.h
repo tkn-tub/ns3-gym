@@ -237,12 +237,29 @@ struct BuildDataListElement_s
 };
 
 /**
+ * \brief Substitutive structure for specifying BuildRarListElement_s::m_grant field
+ */
+struct UlGrant_s
+{
+  uint16_t m_rnti;
+  uint8_t m_rbStart;
+  uint8_t m_rbLen;
+  uint16_t m_tbSize;
+  uint8_t m_mcs;
+  bool m_hopping;
+  int8_t m_tpc;
+  bool m_cqiRequest;
+  bool m_ulDelay;
+}; 
+
+/**
  * \brief See section 4.3.10 buildRARListElement
  */
 struct BuildRarListElement_s
 {
   uint16_t  m_rnti;
-  uint32_t  m_grant;
+  //uint32_t  m_grant; // Substituted with type UlGrant_s
+  UlGrant_s m_grant;
   struct DlDciListElement_s m_dci;
 };
 

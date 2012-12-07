@@ -71,7 +71,9 @@ public:
       CONNECTED_NORMALLY,
       CONNECTION_RECONFIGURATION,
       CONNECTION_REESTABLISHMENT,
+      HANDOVER_PREPARATION,
       HANDOVER_JOINING,
+      HANDOVER_PATH_SWITCH,
       HANDOVER_LEAVING,
       NUM_STATES
     };
@@ -93,6 +95,7 @@ public:
 
   // inherited from Object
 protected:
+  virtual void DoStart ();
   virtual void DoDispose ();
 public: 
   static TypeId GetTypeId (void);
@@ -105,6 +108,13 @@ public:
    * \param sourceX2apId 
    */
   void SetSource (uint16_t sourceCellId, uint16_t sourceX2apId);
+
+  /** 
+   * Set the IMSI
+   * 
+   * \param imsi the IMSI
+   */
+  void SetImsi (uint64_t imsi);
 
   /** 
    * Setup a new data radio bearer, including both the configuration
@@ -133,6 +143,13 @@ public:
   void ScheduleRrcConnectionReconfiguration ();
 
   /** 
+   * Start the handover preparation and send the handover request
+   * 
+   * \param cellId id of the target cell
+   */
+  void PrepareHandover (uint16_t cellId);
+
+  /** 
    * In the X2-based handover procedure, at the source eNB, trigger
    * handover by sending to the UE a RRC Connection 
    * Reconfiguration message including Mobility Control Info
@@ -155,8 +172,11 @@ public:
    * \return retrieve the data that the target eNB needs to send to the source
    * eNB as the Handover Command in the X2-based handover
    * procedure.
+   *
+   * \note mobility control info is not expected to be filled in
+   * (shall be filled in by the caller). 
    */
-  LteRrcSap::RrcConnectionReconfiguration GetHandoverCommand ();
+  LteRrcSap::RrcConnectionReconfiguration GetRrcConnectionReconfigurationForHandover ();
 
   /** 
    * Send a data packet over the appropriate Data Radio Bearer
@@ -171,6 +191,21 @@ public:
    * \return a list of ERAB-to-be-setup items to be put in a X2 HO REQ message
    */
   std::vector<EpcX2Sap::ErabToBeSetupItem> GetErabList ();
+
+
+  /** 
+   * send the UE CONTEXT RELEASE X2 message to the source eNB, thus
+   * successfully terminating an X2 handover procedure 
+   * 
+   */
+  void SendUeContextRelease ();
+
+  /** 
+   * Take the necessary actions in response to the reception of an X2 HO preparation failure message
+   * 
+   * \param cellId id of the target cell
+   */
+  void RecvHandoverPreparationFailure (uint16_t cellId);
   
 
   // methods forwarded from RRC SAP
@@ -328,11 +363,13 @@ private:
   LteRrcSap::PhysicalConfigDedicated m_physicalConfigDedicated;
   Ptr<LteEnbRrc> m_rrc;
   State m_state;
-  LtePdcpSapUser* m_pdcpSapUser;
+  LtePdcpSapUser* m_drbPdcpSapUser;
   bool m_pendingRrcConnectionReconfiguration;
-  TracedCallback<State, State> m_stateTransitionCallback;
+  //             imsi      cellid    rnti      old    new
+  TracedCallback<uint64_t, uint16_t, uint16_t, State, State> m_stateTransitionTrace;
   uint16_t m_sourceX2apId;
   uint16_t m_sourceCellId;
+  uint16_t m_targetCellId;
 };
 
 
@@ -534,8 +571,7 @@ private:
 
   // S1 SAP methods
   void DoDataRadioBearerSetupRequest (EpcEnbS1SapUser::DataRadioBearerSetupRequestParameters params);
-
-
+  void DoPathSwitchRequestAcknowledge (EpcEnbS1SapUser::PathSwitchRequestAcknowledgeParameters params);       
   // X2 SAP methods
   void DoRecvHandoverRequest (EpcX2SapUser::HandoverRequestParams params);
   void DoRecvHandoverRequestAck (EpcX2SapUser::HandoverRequestAckParams params);
@@ -552,7 +588,7 @@ private:
   void DoRrcConfigurationUpdateInd (LteEnbCmacSapUser::UeConfig params);
   
 
-
+  // Internal methods
 
   /**
    * Allocate a new RNTI for a new UE. This is done in the following cases:
@@ -669,6 +705,17 @@ private:
   std::set<uint16_t> m_ueSrsConfigurationIndexSet;
   uint16_t m_lastAllocatedConfigurationIndex;
   bool m_reconfigureUes;
+
+  bool m_admitHandoverRequest;
+
+  //             imsi      cellid    rnti   
+  TracedCallback<uint64_t, uint16_t, uint16_t> m_connectionEstablishedTrace;
+  //             imsi      cellid    rnti   
+  TracedCallback<uint64_t, uint16_t, uint16_t> m_connectionReconfigurationTrace;
+  //             imsi      cellid    rnti     targetCellId
+  TracedCallback<uint64_t, uint16_t, uint16_t, uint16_t> m_handoverStartTrace;
+  //             imsi      cellid    rnti    
+  TracedCallback<uint64_t, uint16_t, uint16_t> m_handoverEndOkTrace;
 
 };
 

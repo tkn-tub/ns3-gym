@@ -49,6 +49,7 @@ public:
     DL_DCI, UL_DCI, // Downlink/Uplink Data Control Indicator
     DL_CQI, UL_CQI, // Downlink/Uplink Channel Quality Indicator
     BSR, // Buffer Status Report
+    DL_HARQ, // UL HARQ feedback
     RACH_PREAMBLE, // Random Access Preamble
     RAR, // Random Access Response
     MIB, // Master Information Block
@@ -78,7 +79,7 @@ private:
 
 
 
-// ----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------
 
 
 #ifndef DL_DCI_LTE_CONTROL_MESSAGES_H
@@ -121,7 +122,7 @@ private:
 #endif /* DL_DCI_LTE_CONTROL_MESSAGES_H */
 
 
-// ----------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
 
 
 #ifndef UL_DCI_LTE_CONTROL_MESSAGES_H
@@ -165,7 +166,7 @@ private:
 
 
 
-// ----------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
 
 
 
@@ -211,7 +212,7 @@ private:
 #endif /* DLCQI_LTE_CONTROL_MESSAGES_H */
 
 
-// ----------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
 
 #ifndef BSR_LTE_CONTROL_MESSAGES_H
 #define BSR_LTE_CONTROL_MESSAGES_H
@@ -255,8 +256,51 @@ private:
 
 } // namespace ns3
 
-#endif  // BSR_LTE_CONTROL_MESSAGES_H
+#endif /* BSR_LTE_CONTROL_MESSAGES_H */
 
+
+// ---------------------------------------------------------------------------
+
+#ifndef DL_HARQ_LTE_CONTROL_MESSAGES_H
+#define DL_HARQ_LTE_CONTROL_MESSAGES_H
+
+#include <ns3/object.h>
+#include <ns3/ff-mac-common.h>
+
+namespace ns3 {
+
+/**
+ * \ingroup lte
+ * The downlink DlHarqFeedbackLteControlMessage defines the specific
+ * messages for transmitting the DL HARQ feedback through PUCCH
+ */
+class DlHarqFeedbackLteControlMessage : public LteControlMessage
+{
+public:
+  DlHarqFeedbackLteControlMessage (void);
+  virtual ~DlHarqFeedbackLteControlMessage (void);
+
+  /**
+  * \brief add a DL HARQ feedback record into the message.
+  * \param DlInfoListElement_s the dl HARQ feedback
+  */
+  void SetDlHarqFeedback (DlInfoListElement_s m);
+
+  /**
+  * \brief Get DL HARQ informations
+  * \return DL HARQ message
+  */
+  DlInfoListElement_s GetDlHarqFeedback (void);
+
+
+private:
+  DlInfoListElement_s m_dlInfoListElement;
+
+
+};
+} // namespace ns3
+
+#endif /* DL_HARQ_LTE_CONTROL_MESSAGES_H */
 
 
 #ifndef RACH_PREAMBLE_LTE_CONTROL_MESSAGES_H
@@ -279,13 +323,23 @@ class RachPreambleLteControlMessage : public LteControlMessage
 public:
   RachPreambleLteControlMessage (void);
 
-  void SetPrachId (uint32_t prachId);
-
-  uint32_t GetPrachId () const;
+  
+  /** 
+   * Set the Random Access Preamble Identifier (RAPID), see 3GPP TS 36.321 6.2.2
+   *
+   * \param rapid
+   */
+  void SetRapId (uint32_t rapid);
+  
+  /** 
+   * 
+   * \return the RAPID
+   */
+  uint32_t GetRapId () const;
 
 private:
   
-  uint32_t m_prachId;
+  uint32_t m_rapId;
 
 
 };
@@ -315,19 +369,52 @@ class RarLteControlMessage : public LteControlMessage
 public:
   RarLteControlMessage (void);
 
-  void SetRar (BuildRarListElement_s);
+  /** 
+   * 
+   * \param raRnti the RA-RNTI, see 3GPP TS 36.321 5.1.4
+   */
+  void SetRaRnti (uint16_t raRnti);
 
-  BuildRarListElement_s GetRar () const;
+  /** 
+   * 
+   * \return  the RA-RNTI, see 3GPP TS 36.321 5.1.4
+   */
+  uint16_t GetRaRnti () const;
+
+  /**
+   * a MAC RAR and the corresponding RAPID subheader 
+   * 
+   */
+  struct Rar
+  {
+    uint8_t rapId;
+    BuildRarListElement_s rarPayload;
+  };
+
+  /** 
+   * add a RAR to the MAC PDU, see 3GPP TS 36.321 6.2.3
+   * 
+   * \param rar the rar
+   */
+  void AddRar (Rar rar);
+
+  /** 
+   * 
+   * \return a const iterator to the beginning of the RAR list
+   */
+  std::list<Rar>::const_iterator RarListBegin () const;
   
-  void SetPrachId (uint32_t prachId);
+  /** 
+   * 
+   * \return a const iterator to the end of the RAR list
+   */
+  std::list<Rar>::const_iterator RarListEnd () const;
   
-  uint32_t GetPrachId () const;
-
-
+  
 private:
   
-  BuildRarListElement_s m_rar;
-  uint32_t m_prachId;
+  std::list<Rar> m_rarList;
+  uint16_t m_raRnti;
 
 };
 

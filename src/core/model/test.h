@@ -876,6 +876,11 @@ protected:
    */
   bool IsStatusSuccess (void) const;
 
+  /**
+   * \return name of this test
+   */
+  std::string GetName (void) const;
+  
   // The methods below are used only by test macros and should not
   // be used by normal users.
   void ReportTestFailure (std::string cond, std::string actual, 
@@ -916,7 +921,6 @@ private:
 
   // methods called by TestRunnerImpl
   void Run (TestRunnerImpl *runner);
-  std::string GetName (void) const;
   bool IsFailed (void) const;
 
 

@@ -28,8 +28,8 @@ Quick Overview
 
 * to obtain randomness across multiple simulation runs, you must either set the
   seed differently or set the run number differently.  To set a seed, call
-  :cpp:func:`ns3::SeedManager::SetSeed` at the beginning of the program; to set
-  a run number with the same seed, call :cpp:func:`ns3::SeedManager::SetRun` at
+  :cpp:func:`ns3::RngSeedManager::SetSeed` at the beginning of the program; to set
+  a run number with the same seed, call :cpp:func:`ns3::RngSeedManager::SetRun` at
   the beginning of the program; see :ref:`seeding-and-independent-replications`.
 
 * each RandomVariableStream used in |ns3| has a virtual random number generator
@@ -120,12 +120,12 @@ so as to compute statistics on a large number of independent runs.  The user can
 either change the global seed and rerun the simulation, or can advance the
 substream state of the RNG, which is referred to as incrementing the run number.
 
-A class :cpp:class:`ns3::SeedManager` provides an API to control the seeding and
+A class :cpp:class:`ns3::RngSeedManager` provides an API to control the seeding and
 run number behavior.  This seeding and substream state setting must be called
 before any random variables are created; e.g::
 
-  SeedManager::SetSeed (3);  // Changes seed from default of 1 to 3
-  SeedManager::SetRun (7);  // Changes run number from default of 1 to 7
+  RngSeedManager::SetSeed (3);  // Changes seed from default of 1 to 3
+  RngSeedManager::SetRun (7);  // Changes run number from default of 1 to 7
   // Now, create random variables
   Ptr<UniformRandomVariable> x = CreateObject<UniformRandomVariable> ();
   Ptr<ExponentialRandomVariable> y = CreateObject<ExponentialRandomVarlable> ();

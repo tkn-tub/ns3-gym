@@ -31,12 +31,14 @@
 #include "aodv-routing-protocol.h"
 #include "ns3/log.h"
 #include "ns3/boolean.h"
-#include "ns3/random-variable.h"
+#include "ns3/random-variable-stream.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/trace-source-accessor.h"
 #include "ns3/udp-socket-factory.h"
 #include "ns3/wifi-net-device.h"
 #include "ns3/adhoc-wifi-mac.h"
+#include "ns3/string.h"
+#include "ns3/pointer.h"
 #include <algorithm>
 #include <limits>
 
@@ -253,6 +255,11 @@ RoutingProtocol::GetTypeId (void)
                    MakeBooleanAccessor (&RoutingProtocol::SetBroadcastEnable,
                                         &RoutingProtocol::GetBroadcastEnable),
                    MakeBooleanChecker ())
+    .AddAttribute ("UniformRv",
+                   "Access to the underlying UniformRandomVariable",
+                   StringValue ("ns3::UniformRandomVariable"),
+                   MakePointerAccessor (&RoutingProtocol::m_uniformRandomVariable),
+                   MakePointerChecker<UniformRandomVariable> ())
   ;
   return tid;
 }
@@ -292,6 +299,14 @@ RoutingProtocol::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
 {
   *stream->GetStream () << "Node: " << m_ipv4->GetObject<Node> ()->GetId () << " Time: " << Simulator::Now ().GetSeconds () << "s ";
   m_routingTable.Print (stream);
+}
+
+int64_t
+RoutingProtocol::AssignStreams (int64_t stream)
+{
+  NS_LOG_FUNCTION (this << stream);
+  m_uniformRandomVariable->SetStream (stream);
+  return 1;
 }
 
 void
@@ -567,7 +582,7 @@ RoutingProtocol::SetIpv4 (Ptr<Ipv4> ipv4)
   if (EnableHello)
     {
       m_htimer.SetFunction (&RoutingProtocol::HelloTimerExpire, this);
-      m_htimer.Schedule (MilliSeconds (UniformVariable ().GetInteger (0, 100)));
+      m_htimer.Schedule (MilliSeconds (m_uniformRandomVariable->GetInteger (0, 100)));
     }
 
   m_ipv4 = ipv4;
@@ -896,7 +911,7 @@ RoutingProtocol::SendRequest (Ipv4Address dst)
       if (!m_htimer.IsRunning ())
         {
           m_htimer.Cancel ();
-          m_htimer.Schedule (HelloInterval - Time (0.01 * MilliSeconds (UniformVariable ().GetInteger (0, 10))));
+          m_htimer.Schedule (HelloInterval - Time (0.01 * MilliSeconds (m_uniformRandomVariable->GetInteger (0, 10))));
         }
     }
 }
@@ -1163,7 +1178,7 @@ RoutingProtocol::RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address s
       if (!m_htimer.IsRunning ())
         {
           m_htimer.Cancel ();
-          m_htimer.Schedule (HelloInterval - Time (0.1 * MilliSeconds (UniformVariable ().GetInteger (0, 10))));
+          m_htimer.Schedule (HelloInterval - Time (0.1 * MilliSeconds (m_uniformRandomVariable->GetInteger (0, 10))));
 	}
     }
 }
@@ -1526,7 +1541,7 @@ RoutingProtocol::HelloTimerExpire ()
   NS_LOG_FUNCTION (this);
   SendHello ();
   m_htimer.Cancel ();
-  Time t = Time (0.01 * MilliSeconds (UniformVariable ().GetInteger (0, 100)));
+  Time t = Time (0.01 * MilliSeconds (m_uniformRandomVariable->GetInteger (0, 100)));
   m_htimer.Schedule (HelloInterval - t);
 }
 

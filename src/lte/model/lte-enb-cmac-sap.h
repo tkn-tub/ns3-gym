@@ -118,8 +118,50 @@ public:
     uint8_t   m_transmissionMode;
   };
 
+  /** 
+   * update the configuration of the UE
+   * 
+   * \param params 
+   */
   virtual void UeUpdateConfigurationReq (UeConfig params) = 0;
 
+
+  /**
+   * struct defining the RACH configuration of the MAC
+   * 
+   */
+  struct RachConfig
+  {
+    uint8_t numberOfRaPreambles;
+    uint8_t preambleTransMax;
+    uint8_t raResponseWindowSize;
+  };
+
+  /** 
+   * 
+   * \return the current RACH configuration of the MAC
+   */
+  virtual RachConfig GetRachConfig () = 0;
+
+  /**
+   * 
+   * 
+   */
+  struct AllocateNcRaPreambleReturnValue
+  {
+    bool valid; ///< true if a valid RA config was allocated, false otherwise
+    uint8_t raPreambleId; ///< random access preamble id
+    uint8_t raPrachMaskIndex; /// PRACH mask index
+  };
+
+  /** 
+   * Allocate a random access preamble for non-contention based random access (e.g., for handover).
+   * 
+   * \param rnti the RNTI of the UE who will perform non-contention based random access
+   * 
+   * \return  the newly allocated random access preamble 
+   */
+  virtual AllocateNcRaPreambleReturnValue AllocateNcRaPreamble (uint16_t rnti) = 0;
 
 };
 

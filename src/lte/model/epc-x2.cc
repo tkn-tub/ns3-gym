@@ -192,6 +192,7 @@ EpcX2::RecvFromX2cSocket (Ptr<Socket> socket)
           params.cause          = x2HoReqHeader.GetCause ();
           params.sourceCellId   = cellsInfo->m_remoteCellId;
           params.targetCellId   = x2HoReqHeader.GetTargetCellId ();
+          params.mmeUeS1apId    = x2HoReqHeader.GetMmeUeS1apId ();
           params.ueAggregateMaxBitRateDownlink = x2HoReqHeader.GetUeAggregateMaxBitRateDownlink ();
           params.ueAggregateMaxBitRateUplink   = x2HoReqHeader.GetUeAggregateMaxBitRateUplink ();
           params.bearers        = x2HoReqHeader.GetBearers ();
@@ -200,6 +201,7 @@ EpcX2::RecvFromX2cSocket (Ptr<Socket> socket)
           NS_LOG_LOGIC ("oldEnbUeX2apId = " << params.oldEnbUeX2apId);
           NS_LOG_LOGIC ("sourceCellId = " << params.sourceCellId);
           NS_LOG_LOGIC ("targetCellId = " << params.targetCellId);
+          NS_LOG_LOGIC ("mmeUeS1apId = " << params.mmeUeS1apId);
           NS_LOG_LOGIC ("cellsInfo->m_localCellId = " << cellsInfo->m_localCellId);
           NS_ASSERT_MSG (params.targetCellId == cellsInfo->m_localCellId,
                          "TargetCellId mismatches with localCellId");
@@ -363,6 +365,7 @@ EpcX2::DoSendHandoverRequest (EpcX2SapProvider::HandoverRequestParams params)
   NS_LOG_LOGIC ("oldEnbUeX2apId = " << params.oldEnbUeX2apId);
   NS_LOG_LOGIC ("sourceCellId = " << params.sourceCellId);
   NS_LOG_LOGIC ("targetCellId = " << params.targetCellId);
+  NS_LOG_LOGIC ("mmeUeS1apId  = " << params.mmeUeS1apId);
 
   NS_ASSERT_MSG (m_x2InterfaceSockets.find (params.targetCellId) != m_x2InterfaceSockets.end (),
                  "Missing infos for targetCellId = " << params.targetCellId);
@@ -380,6 +383,7 @@ EpcX2::DoSendHandoverRequest (EpcX2SapProvider::HandoverRequestParams params)
   x2HoReqHeader.SetOldEnbUeX2apId (params.oldEnbUeX2apId);
   x2HoReqHeader.SetCause (params.cause);
   x2HoReqHeader.SetTargetCellId (params.targetCellId);
+  x2HoReqHeader.SetMmeUeS1apId (params.mmeUeS1apId);
   x2HoReqHeader.SetUeAggregateMaxBitRateDownlink (params.ueAggregateMaxBitRateDownlink);
   x2HoReqHeader.SetUeAggregateMaxBitRateUplink (params.ueAggregateMaxBitRateUplink);
   x2HoReqHeader.SetBearers (params.bearers);

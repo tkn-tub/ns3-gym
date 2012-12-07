@@ -32,7 +32,6 @@
 #include "ns3/ipv6-list-routing.h"
 #include "ns3/ipv6-route.h"
 #include "ns3/trace-source-accessor.h"
-#include "ns3/random-variable.h"
 #include "icmpv6-l4-protocol.h"
 #include "ipv6-extension-demux.h"
 #include "ipv6-extension.h"
@@ -59,6 +58,13 @@ TypeId Ipv6Extension::GetTypeId ()
                      MakeTraceSourceAccessor (&Ipv6Extension::m_dropTrace))
   ;
   return tid;
+}
+
+Ipv6Extension::Ipv6Extension ()
+{
+  NS_LOG_FUNCTION_NOARGS ();
+
+  m_uvar = CreateObject<UniformRandomVariable> ();
 }
 
 Ipv6Extension::~Ipv6Extension ()
@@ -168,6 +174,13 @@ uint8_t Ipv6Extension::ProcessOptions (Ptr<Packet>& packet, uint8_t offset, uint
   return processedSize;
 }
 
+int64_t
+Ipv6Extension::AssignStreams (int64_t stream)
+{
+  NS_LOG_FUNCTION (this << stream);
+  m_uvar->SetStream (stream);
+  return 1;
+}
 
 NS_OBJECT_ENSURE_REGISTERED (Ipv6ExtensionHopByHop);
 
@@ -484,8 +497,7 @@ void Ipv6ExtensionFragment::GetFragments (Ptr<Packet> packet, uint32_t maxFragme
   uint32_t currentFragmentablePartSize = 0;
 
   bool moreFragment = true;
-  UniformVariable uvar;
-  uint32_t identification = (uint32_t) uvar.GetValue (0, (uint32_t)-1);
+  uint32_t identification = (uint32_t) m_uvar->GetValue (0, (uint32_t)-1);
   uint16_t offset = 0;
 
   do

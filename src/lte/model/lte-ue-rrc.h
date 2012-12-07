@@ -230,7 +230,7 @@ private:
   void DoNotifyRandomAccessFailed ();
  
   // LTE AS SAP methods
-  void DoForceCampedOnEnb (Ptr<LteEnbNetDevice> enbDevice, uint16_t cellId);
+  void DoForceCampedOnEnb (uint16_t cellId, uint16_t earfcn);
   void DoConnect ();
   void DoSendData (Ptr<Packet> packet, uint8_t bid);
   void DoDisconnect ();
@@ -239,6 +239,7 @@ private:
   void DoRecvMasterInformationBlock (LteRrcSap::MasterInformationBlock msg);
 
   // RRC SAP methods
+  void DoCompleteSetup (LteUeRrcSapProvider::CompleteSetupParameters params);
   void DoRecvSystemInformationBlockType1 (LteRrcSap::SystemInformationBlockType1 msg);
   void DoRecvSystemInformation (LteRrcSap::SystemInformation msg);
   void DoRecvRrcConnectionSetup (LteRrcSap::RrcConnectionSetup msg);
@@ -267,7 +268,7 @@ private:
   LteUeRrcSapProvider* m_rrcSapProvider;
 
   LteMacSapProvider* m_macSapProvider;
-  LtePdcpSapUser* m_pdcpSapUser;
+  LtePdcpSapUser* m_drbPdcpSapUser;
   
   LteAsSapProvider* m_asSapProvider;
   LteAsSapUser* m_asSapUser;
@@ -292,7 +293,16 @@ private:
   uint16_t m_dlEarfcn;  /**< downlink carrier frequency */
   uint16_t m_ulEarfcn;  /**< uplink carrier frequency */
 
-  TracedCallback<State, State> m_stateTransitionCallback;
+  //             imsi      cellid    rnti   
+  TracedCallback<uint64_t, uint16_t, uint16_t, State, State> m_stateTransitionTrace;
+  //             imsi      cellid    rnti   
+  TracedCallback<uint64_t, uint16_t, uint16_t> m_connectionEstablishedTrace;
+  //             imsi      cellid    rnti   
+  TracedCallback<uint64_t, uint16_t, uint16_t> m_connectionReconfigurationTrace;
+  //             imsi      cellid    rnti     targetCellId
+  TracedCallback<uint64_t, uint16_t, uint16_t, uint16_t> m_handoverStartTrace;
+  //             imsi      cellid    rnti    
+  TracedCallback<uint64_t, uint16_t, uint16_t> m_handoverEndOkTrace;
 
   bool m_connectionPending; /**< true if a connection request by upper layers is pending */
   bool m_receivedMib; /**< true if MIB was received for the current cell  */

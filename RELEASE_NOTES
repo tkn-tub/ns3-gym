@@ -21,19 +21,68 @@ Supported platforms
 
 New user-visible features
 -------------------------
+
+Bugs fixed
+----------
+ - bug 1485 - Setting global properties in config file (raw text) does
+              not have any effect
+
+Known issues
+------------
+In general, known issues are tracked on the project tracker available
+at http://www.nsnam.org/bugzilla/
+
+Release 3.15
+============
+
+Availability
+------------
+This release is not yet available.
+
+Supported platforms
+-------------------
+- Fedora Core 17 (32/64 bit) with g++-4.7.0
+- Fedora Core 15 (64 bit) with g++-4.6.3
+- Ubuntu 12.04 (32/64 bit) with g++-4.6.3
+- Ubuntu 10.04.4 LTS (64 bit) with g++-4.4.3
+- OS X Mountain Lion 10.7.4 with g++-4.2.1
+- OS X Snow Leopard 10.6.8 with g++-4.2.1 
+- FreeBSD 8.2 (32 bit) with g++-4.2.1
+- Cygwin 1.7.9-1 with g++-4.5.3
+
+New user-visible features
+-------------------------
 - A new random variable base class called 'RandomVariableStream', has been
-introduced.  This base class derives from ns3::Object, unlike the current 
-'RandomVariable' class which is a special type of object in the ns-3 
-system to date.  By making this class derive from ns3::Object, it can be 
-handled with the Ptr class, can carry attributes, and can have its parameters
-and initial state saved in the config-store subsystem.  A new attribute
-called "Stream" has been introduced for this class, to allow users to
-better control the assignment of underlying pseudo-random sequences to
-the RandomVariableStream objects (bug 101).
+  introduced.  This base class derives from ns3::Object, unlike the current 
+  'RandomVariable' class which is a special type of object in the ns-3 
+  system to date.  By making this class derive from ns3::Object, it can be 
+  handled with the Ptr class, can carry attributes, and can have its parameters
+  and initial state saved in the config-store subsystem.  A new attribute
+  called "Stream" has been introduced for this class, to allow users to
+  better control the assignment of underlying pseudo-random sequences to
+  the RandomVariableStream objects (bug 101).
 
 Bugs fixed
 ----------
  - bug 101 - random variable initialization
+ - bug 1256 - Unnecessary SND.NXT advance, missing ACK for Out of Order segments
+ - bug 1308 - Nix-vector; do not process packets to self
+ - bug 1386 - assert if PositionAllocator not provided to 
+              RandomWaypointMobilityModel
+ - bug 1399 - TCP not backing off retransmissions properly
+ - bug 1441 - IPv4 header length handling
+ - bug 1464 - ConfigStore Save + Load => Could not set default value 
+                  for ns3::UdpSocketImpl::IcmpCallback
+ - bug 1470 - define default parameter for constructor in .h file
+ - bug 1473 - GetQueue/SetQueue missing from Csma python bindings
+ - bug 1475 - "test.py --list" should sort the output
+ - bug 1476 - TestCase::GetName () should not be private
+ - bug 1477 - Click doesn't work with raw sockets
+ - bug 1481 - Openflow example doesn't run
+ - bug 1486 - Segfaults in nix-vector-routing with bridges
+ - bug 1489 - Jakes Log component is missing
+ - fixed bug with multiple LCs in UL BSR
+ - fixed bug with lena-dual-stripe crashes with --homeUesHomeEnbRatio=2
 
 Known issues
 ------------

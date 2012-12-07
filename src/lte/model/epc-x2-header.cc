@@ -149,10 +149,11 @@ NS_OBJECT_ENSURE_REGISTERED (EpcX2HandoverRequestHeader);
 
 EpcX2HandoverRequestHeader::EpcX2HandoverRequestHeader ()
   : m_numberOfIes (1 + 1 + 1 + 1),
-    m_headerLength (6 + 5 + 12 + (3 + 8 + 8 + 4)),
+    m_headerLength (6 + 5 + 12 + (3 + 4 + 8 + 8 + 4)),
     m_oldEnbUeX2apId (0xfffa),
     m_cause (0xfffa),
-    m_targetCellId (0xfffa)
+    m_targetCellId (0xfffa),
+    m_mmeUeS1apId (0xfffffffa)
 {
   m_erabsToBeSetupList.clear ();
 }
@@ -164,6 +165,7 @@ EpcX2HandoverRequestHeader::~EpcX2HandoverRequestHeader ()
   m_oldEnbUeX2apId = 0xfffb;
   m_cause = 0xfffb;
   m_targetCellId = 0xfffb;
+  m_mmeUeS1apId = 0xfffffffb;
   m_erabsToBeSetupList.clear ();
 }
 
@@ -213,6 +215,7 @@ EpcX2HandoverRequestHeader::Serialize (Buffer::Iterator start) const
   i.WriteHtonU16 (14);              // id = UE_CONTEXT_INFORMATION
   i.WriteU8 (0);                    // criticality = REJECT
 
+  i.WriteHtonU32 (m_mmeUeS1apId);
   i.WriteHtonU64 (m_ueAggregateMaxBitRateDownlink);
   i.WriteHtonU64 (m_ueAggregateMaxBitRateUplink);
 
@@ -268,10 +271,11 @@ EpcX2HandoverRequestHeader::Deserialize (Buffer::Iterator start)
 
   i.ReadNtohU16 ();
   i.ReadU8 ();
+  m_mmeUeS1apId = i.ReadNtohU32 ();
   m_ueAggregateMaxBitRateDownlink = i.ReadNtohU64 ();
   m_ueAggregateMaxBitRateUplink   = i.ReadNtohU64 ();
   int sz = i.ReadNtohU32 ();
-  m_headerLength += 23;
+  m_headerLength += 27;
   m_numberOfIes++;
 
   for (int j = 0; j < sz; j++)
@@ -303,12 +307,13 @@ EpcX2HandoverRequestHeader::Deserialize (Buffer::Iterator start)
 void
 EpcX2HandoverRequestHeader::Print (std::ostream &os) const
 {
-  os << "OldEnbUeX2apId=" << m_oldEnbUeX2apId;
-  os << " Cause=" << m_cause;
-  os << " TargetCellId=" << m_targetCellId;
-  os << " UeAggrMaxBitRateDownlink= " << m_ueAggregateMaxBitRateDownlink;
-  os << " UeAggrMaxBitRateUplink= " << m_ueAggregateMaxBitRateUplink;
-  os << " NumOfBearers=" << m_erabsToBeSetupList.size ();
+  os << "OldEnbUeX2apId = " << m_oldEnbUeX2apId;
+  os << " Cause = " << m_cause;
+  os << " TargetCellId = " << m_targetCellId;
+  os << " MmeUeS1apId = " << m_mmeUeS1apId;
+  os << " UeAggrMaxBitRateDownlink = " << m_ueAggregateMaxBitRateDownlink;
+  os << " UeAggrMaxBitRateUplink = " << m_ueAggregateMaxBitRateUplink;
+  os << " NumOfBearers = " << m_erabsToBeSetupList.size ();
 
   std::vector <EpcX2Sap::ErabToBeSetupItem>::size_type sz = m_erabsToBeSetupList.size ();
   if (sz > 0)
@@ -363,6 +368,18 @@ void
 EpcX2HandoverRequestHeader::SetTargetCellId (uint16_t targetCellId)
 {
   m_targetCellId = targetCellId;
+}
+
+uint32_t
+EpcX2HandoverRequestHeader::GetMmeUeS1apId () const
+{
+  return m_mmeUeS1apId;
+}
+
+void
+EpcX2HandoverRequestHeader::SetMmeUeS1apId (uint32_t mmeUeS1apId)
+{
+  m_mmeUeS1apId = mmeUeS1apId;
 }
 
 std::vector <EpcX2Sap::ErabToBeSetupItem>

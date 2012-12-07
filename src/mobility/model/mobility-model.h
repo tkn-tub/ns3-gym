@@ -65,6 +65,15 @@ public:
    * \return the relative speed between the two objects. Unit is meters/s.
    */
   double GetRelativeSpeed (Ptr<const MobilityModel> other) const;
+  /**
+   * Assign a fixed random variable stream number to the random variables
+   * used by this model. Return the number of streams (possibly zero) that
+   * have been assigned.
+   *
+   * \param stream first stream index to use
+   * \return the number of stream indices assigned by this model
+   */
+  int64_t AssignStreams (int64_t stream);
 
 protected:
   /**
@@ -94,6 +103,12 @@ private:
    * implement this method.
    */
   virtual Vector DoGetVelocity (void) const = 0;
+  /**
+   * The default implementation does nothing but return the passed-in
+   * parameter.  Subclasses using random variables are expected to
+   * override this.
+   */
+  virtual int64_t DoAssignStreams (int64_t start);
 
   /**
    * Used to alert subscribers that a change in direction, velocity,

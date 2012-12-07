@@ -22,7 +22,9 @@
 
 #include "ns3/mesh-helper.h"
 #include "ns3/simulator.h"
-#include "ns3/random-variable.h"
+#include "ns3/random-variable-stream.h"
+#include "ns3/rng-seed-manager.h"
+#include "ns3/string.h"
 #include "ns3/mobility-helper.h"
 #include "ns3/double.h"
 #include "ns3/uinteger.h"
@@ -71,7 +73,8 @@ Bug772ChainTest::~Bug772ChainTest ()
 void
 Bug772ChainTest::DoRun ()
 {
-  SeedManager::SetSeed (12345);
+  RngSeedManager::SetSeed (12345);
+  RngSeedManager::SetRun (7);
 
   CreateNodes ();
   CreateDevices ();
@@ -105,6 +108,7 @@ Bug772ChainTest::CreateNodes ()
 void
 Bug772ChainTest::CreateDevices ()
 {
+  int64_t streamsUsed = 0;
   // 1. Setup WiFi
   NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
   wifiMac.SetType ("ns3::AdhocWifiMac");
@@ -112,16 +116,28 @@ Bug772ChainTest::CreateDevices ()
   // This test suite output was originally based on YansErrorRateModel
   wifiPhy.SetErrorRateModel ("ns3::YansErrorRateModel");
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
-  wifiPhy.SetChannel (wifiChannel.Create ());
+  Ptr<YansWifiChannel> chan = wifiChannel.Create ();
+  wifiPhy.SetChannel (chan);
   WifiHelper wifi = WifiHelper::Default ();
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode", StringValue ("OfdmRate6Mbps"), "RtsCtsThreshold", StringValue ("2200"));
   NetDeviceContainer devices = wifi.Install (wifiPhy, wifiMac, *m_nodes); 
+
+  // Assign fixed stream numbers to wifi and channel random variables
+  streamsUsed += wifi.AssignStreams (devices, streamsUsed);
+  // Assign 6 streams per device
+  NS_TEST_ASSERT_MSG_EQ (streamsUsed, (devices.GetN () * 6), "Stream assignment mismatch");
+  streamsUsed += wifiChannel.AssignStreams (chan, streamsUsed);
+  // Assign 0 streams per channel for this configuration 
+  NS_TEST_ASSERT_MSG_EQ (streamsUsed, (devices.GetN () * 6), "Stream assignment mismatch");
 
   // 2. Setup TCP/IP & AODV
   AodvHelper aodv; // Use default parameters here
   InternetStackHelper internetStack;
   internetStack.SetRoutingHelper (aodv);
   internetStack.Install (*m_nodes);
+  streamsUsed += aodv.AssignStreams (*m_nodes, streamsUsed);
+  // Expect to use m_size more streams for AODV
+  NS_TEST_ASSERT_MSG_EQ (streamsUsed, ((devices.GetN () * 6) + m_size), "Stream assignment mismatch");
   Ipv4AddressHelper address;
   address.SetBase ("10.1.1.0", "255.255.255.0");
   Ipv4InterfaceContainer interfaces = address.Assign (devices);
@@ -129,9 +145,7 @@ Bug772ChainTest::CreateDevices ()
   // 3. Setup UDP source and sink
   uint16_t port = 9; // Discard port (RFC 863)
   OnOffHelper onoff (m_proto, Address (InetSocketAddress (interfaces.GetAddress (m_size-1), port)));
-  onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
-  onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
-  onoff.SetAttribute ("DataRate", DataRateValue (DataRate (64000)));
+  onoff.SetConstantRate (DataRate (64000));
   onoff.SetAttribute ("PacketSize", UintegerValue (1200));
   ApplicationContainer app = onoff.Install (m_nodes->Get (0));
   app.Start (Seconds (1.0));

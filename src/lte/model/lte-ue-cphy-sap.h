@@ -48,6 +48,12 @@ public:
   virtual ~LteUeCphySapProvider ();
 
   /** 
+   * reset the PHY
+   * 
+   */
+  virtual void Reset () = 0;
+
+  /** 
    * tell the PHY to synchronize with a given eNB for communication purposes
    * 
    * \param cellId the ID of the eNB
@@ -125,6 +131,7 @@ public:
   MemberLteUeCphySapProvider (C* owner);
 
   // inherited from LteUeCphySapProvider
+  virtual void Reset ();
   virtual void SyncronizeWithEnb (uint16_t cellId, uint16_t dlEarfcn);  
   virtual void SetDlBandwidth (uint8_t ulBandwidth);
   virtual void ConfigureUplink (uint16_t ulEarfcn, uint8_t ulBandwidth);
@@ -146,6 +153,13 @@ MemberLteUeCphySapProvider<C>::MemberLteUeCphySapProvider (C* owner)
 template <class C>
 MemberLteUeCphySapProvider<C>::MemberLteUeCphySapProvider ()
 {
+}
+
+template <class C>
+void 
+MemberLteUeCphySapProvider<C>::Reset ()
+{
+  m_owner->DoReset ();
 }
 
 template <class C>

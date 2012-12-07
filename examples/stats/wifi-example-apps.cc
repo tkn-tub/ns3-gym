@@ -62,9 +62,9 @@ Sender::GetTypeId (void)
                    MakeUintegerAccessor (&Sender::m_numPkts),
                    MakeUintegerChecker<uint32_t>(1))
     .AddAttribute ("Interval", "Delay between transmissions.",
-                   RandomVariableValue (ConstantVariable (0.5)),
-                   MakeRandomVariableAccessor (&Sender::m_interval),
-                   MakeRandomVariableChecker ())
+                   StringValue ("ns3::ConstantRandomVariable[Constant=0.5]"),
+                   MakePointerAccessor (&Sender::m_interval),
+                   MakePointerChecker <RandomVariableStream>())
     .AddTraceSource ("Tx", "A new packet is created and is sent",
                      MakeTraceSourceAccessor (&Sender::m_txTrace))
   ;
@@ -75,6 +75,7 @@ Sender::GetTypeId (void)
 Sender::Sender()
 {
   NS_LOG_FUNCTION_NOARGS ();
+  m_interval = CreateObject<ConstantRandomVariable> ();
   m_socket = 0;
 }
 
@@ -139,7 +140,7 @@ void Sender::SendPacket ()
   m_txTrace (packet);
 
   if (++m_count < m_numPkts) {
-      m_sendEvent = Simulator::Schedule (Seconds (m_interval.GetValue ()),
+      m_sendEvent = Simulator::Schedule (Seconds (m_interval->GetValue ()),
                                          &Sender::SendPacket, this);
     }
 

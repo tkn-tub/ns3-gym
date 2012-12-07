@@ -65,7 +65,6 @@
 #include "ns3/packet.h"
 #include "ns3/queue.h"
 #include "ns3/nstime.h"
-#include "ns3/random-variable.h"
 #include "ns3/boolean.h"
 #include "ns3/data-rate.h"
 #include "ns3/nstime.h"
@@ -73,6 +72,7 @@
 namespace ns3 {
 
 class TraceContainer;
+class UniformRandomVariable;
 
 /*
  * \ingroup queue
@@ -167,6 +167,16 @@ public:
    */
   Stats GetStats ();
 
+ /**
+  * Assign a fixed random variable stream number to the random variables
+  * used by this model.  Return the number of streams (possibly zero) that
+  * have been assigned.
+  *
+  * \param stream first stream index to use
+  * \return the number of stream indices assigned by this model
+  */
+  int64_t AssignStreams (int64_t stream);
+
 private:
   virtual bool DoEnqueue (Ptr<Packet> p);
   virtual Ptr<Packet> DoDequeue (void);
@@ -254,6 +264,8 @@ private:
   uint32_t m_cautious;
   // Start of current idle period
   Time m_idleTime;
+
+  Ptr<UniformRandomVariable> m_uv;
 };
 
 }; // namespace ns3

@@ -97,7 +97,7 @@ Histogram::Histogram (double binWidth)
 
 Histogram::Histogram ()
 {
-  Histogram (DEFAULT_BIN_WIDTH);
+  m_binWidth = DEFAULT_BIN_WIDTH;
 }
 
 

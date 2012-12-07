@@ -38,6 +38,7 @@ namespace ns3 {
 
 class PacketBurst;
 class LteEnbPhy;
+class LteHarqPhy;
 
 /**
  * \ingroup lte
@@ -161,6 +162,7 @@ public:
   // inherited from LtePhy
   virtual void GenerateCtrlCqiReport (const SpectrumValue& sinr);
   virtual void GenerateDataCqiReport (const SpectrumValue& sinr);
+  virtual void ReportInterference (const SpectrumValue& interf);
 
   virtual void ReceiveLteControlMessageList (std::list<Ptr<LteControlMessage> >);
   
@@ -187,7 +189,17 @@ public:
   */
   void SendSrs ();
   
-  
+    /**
+  * \brief PhySpectrum generated a new DL HARQ feedback
+  */
+  virtual void ReceiveLteDlHarqFeedback (DlInfoListElement_s mes);
+
+  /**
+  * \brief Set the HARQ PHY module
+  */
+  void SetHarqPhyModule (Ptr<LteHarqPhy> harq);
+
+
 
 
 private:
@@ -204,6 +216,7 @@ private:
   void QueueSubChannelsForTransmission (std::vector <int> rbMap);
 
   // UE CPHY SAP methods
+  void DoReset ();  
   void DoSyncronizeWithEnb (uint16_t cellId, uint16_t dlEarfcn);  
   void DoSetDlBandwidth (uint8_t ulBandwidth);
   void DoConfigureUplink (uint16_t ulEarfcn, uint8_t ulBandwidth);
@@ -214,7 +227,7 @@ private:
   // UE PHY SAP methods 
   virtual void DoSendMacPdu (Ptr<Packet> p);  
   virtual void DoSendLteControlMessage (Ptr<LteControlMessage> msg);
-  virtual void DoSendRachPreamble (uint32_t prachId);
+  virtual void DoSendRachPreamble (uint32_t prachId, uint32_t raRnti);
   
   std::vector <int> m_subChannelsForTransmission;
   std::vector <int> m_subChannelsForReception;
@@ -239,8 +252,6 @@ private:
   LteUeCphySapUser* m_ueCphySapUser;
 
   uint16_t  m_rnti;
-
-  uint16_t m_enbCellId;
  
   uint8_t m_transmissionMode;
   std::vector <double> m_txModeGain;
@@ -248,10 +259,25 @@ private:
   uint16_t m_srsPeriodicity;
   uint16_t m_srsSubframeOffset;
   uint16_t m_srsConfigured;
+  Time     m_srsStartTime;
 
   bool m_dlConfigured;
   bool m_ulConfigured;
-  bool m_addedToDlChannel;
+
+  Ptr<LteHarqPhy> m_harqPhyModule;
+
+  uint32_t m_raPreambleId;
+  uint32_t m_raRnti;
+
+  /**
+   * Trace information regarding RSRP and RSRQ (see TS 36.214)
+   * uint16_t rnti, uint16_t cellId, double rsrp, double rsrq
+   */
+  TracedCallback<uint16_t, uint16_t, double, double> m_reportCurrentCellRsrpRsrqTrace;
+  uint16_t m_rsrpRsrqSamplePeriod;
+  uint16_t m_rsrpRsrqSampleCounter;
+
+  EventId m_sendSrsEvent;
 
 };
 

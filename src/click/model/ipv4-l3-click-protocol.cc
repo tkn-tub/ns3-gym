@@ -574,7 +574,7 @@ Ipv4L3ClickProtocol::SetForwarding (uint32_t i, bool val)
 void
 Ipv4L3ClickProtocol::SetPromisc (uint32_t i)
 {
-  NS_ASSERT(i <= m_node->GetNDevices ());
+  NS_ASSERT (i <= m_node->GetNDevices ());
   Ptr<NetDevice> netdev = GetNetDevice (i);
   NS_ASSERT (netdev);
   Ptr<Node> node = GetObject<Node> ();
@@ -679,6 +679,22 @@ Ipv4L3ClickProtocol::Send (Ptr<Packet> packet,
 }
 
 void
+Ipv4L3ClickProtocol::SendWithHeader (Ptr<Packet> packet,
+                                     Ipv4Header ipHeader,
+                                     Ptr<Ipv4Route> route)
+{
+  NS_LOG_FUNCTION (this << packet << ipHeader << route);
+
+  Ptr<Ipv4ClickRouting> click = DynamicCast<Ipv4ClickRouting> (m_routingProtocol);
+  if (Node::ChecksumEnabled ())
+    {
+      ipHeader.EnableChecksum ();
+    }
+  packet->AddHeader (ipHeader);
+  click->Send (packet->Copy (), ipHeader.GetSource (), ipHeader.GetDestination ());
+}
+
+void
 Ipv4L3ClickProtocol::SendDown (Ptr<Packet> p, int ifid)
 {
   // Called by Ipv4ClickRouting.
@@ -716,6 +732,48 @@ Ipv4L3ClickProtocol::Receive ( Ptr<NetDevice> device, Ptr<const Packet> p, uint1
                                const Address &to, NetDevice::PacketType packetType)
 {
   NS_LOG_FUNCTION (this << device << p << from << to);
+
+  // Forward packet to raw sockets, if any
+  if (protocol == Ipv4L3ClickProtocol::PROT_NUMBER && m_sockets.size () > 0)
+    {
+      Ptr<Packet> packetForRawSocket = p->Copy ();
+      uint32_t interface = 0;
+      Ptr<Ipv4Interface> ipv4Interface;
+      for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin ();
+           i != m_interfaces.end ();
+           i++, interface++)
+        {
+          ipv4Interface = *i;
+          if (ipv4Interface->GetDevice () == device)
+            {
+              if (ipv4Interface->IsUp ())
+                {
+                  break;
+                }
+              else
+                {
+                  NS_LOG_LOGIC ("Dropping received packet -- interface is down");
+                  return;
+                }
+            }
+        }
+
+      Ipv4Header ipHeader;
+      if (Node::ChecksumEnabled ())
+        {
+          ipHeader.EnableChecksum ();
+        }
+      packetForRawSocket->RemoveHeader (ipHeader);
+
+
+      for (SocketList::iterator i = m_sockets.begin (); i != m_sockets.end (); ++i)
+        {
+          NS_LOG_LOGIC ("Forwarding to raw socket");
+          Ptr<Ipv4RawSocketImpl> socket = *i;
+          socket->ForwardUp (packetForRawSocket, ipHeader, ipv4Interface);
+        }
+    }
+
   Ptr<Packet> packet = p->Copy ();
 
   // Add an ethernet frame. This allows

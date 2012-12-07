@@ -39,6 +39,7 @@ namespace ns3 {
 
 class WifiMacHeader;
 class DcaTxop;
+class UniformRandomVariable;
 /**
  * \ingroup mesh
  *
@@ -134,6 +135,15 @@ public:
   void SetBeaconGeneration (bool enable);
   WifiPhyStandard GetPhyStandard () const;
   virtual void FinishConfigureStandard (enum WifiPhyStandard standard);
+  /**
+   * Assign a fixed random variable stream number to the random variables
+   * used by this model.  Return the number of streams (possibly zero) that
+   * have been assigned.
+   *
+   * \param stream first stream index to use
+   * \return the number of stream indices assigned by this model
+   */
+  int64_t AssignStreams (int64_t stream);
 private:
   /// Frame receive handler
   void  Receive (Ptr<Packet> packet, WifiMacHeader const *hdr);
@@ -151,8 +161,12 @@ private:
 private:
   typedef std::vector<Ptr<MeshWifiInterfaceMacPlugin> > PluginList;
 
+  virtual void DoStart ();
+
   ///\name Mesh timing intervals
   // \{
+  /// whether beaconing is enabled
+  bool m_beaconEnable;
   /// Beaconing interval.
   Time m_beaconInterval;
   /// Maximum delay before first beacon
@@ -186,6 +200,9 @@ private:
   // \}
   /// Current PHY standard: needed to configure metric
   WifiPhyStandard m_standard;
+
+  /// Add randomness to beacon generation
+  Ptr<UniformRandomVariable> m_coefficient;
 };
 
 } // namespace ns3

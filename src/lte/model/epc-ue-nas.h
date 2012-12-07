@@ -50,13 +50,6 @@ public:
   virtual void DoDispose (void);
   static TypeId GetTypeId (void);
 
-  /**
-   * set the EpcHelper with which the NAS will interact as if it were the MME 
-   * 
-   * \param epcHelper 
-   */
-  void SetEpcHelper (Ptr<EpcHelper> epcHelper);
-
 
   /** 
    * 
@@ -94,12 +87,13 @@ public:
  
   /** 
    * instruct the NAS to go to ACTIVE state, i.e., EMM Registered + ECM Connected
+   * Since RRC Idle Mode cell selection is not supported yet, we
+   * force the UE RRC to be camped on a specific eNB.
    * 
-   * 
-   * \param enbDevice the eNB through which to connect. This parameter
-   * might be removed in future versions.
+   * \param cellId the id of the eNB to camp on
+   * \param earfcn the DL frequency of the eNB
    */
-  void Connect (Ptr<NetDevice> enbDevice);
+  void Connect (uint16_t cellId, uint16_t earfcn);
  
   /** 
    * instruct the NAS to disconnect
@@ -158,10 +152,7 @@ private:
 
   TracedCallback<State, State> m_stateTransitionCallback;
 
-  Ptr<EpcHelper> m_epcHelper;
   Ptr<NetDevice> m_device;
-
-  Ptr<NetDevice> m_enbDevice; // might go away in future versions
 
   uint64_t m_imsi;
   

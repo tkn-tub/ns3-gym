@@ -268,13 +268,13 @@ LenaPfFfMacSchedulerTestCase1::DoRun (void)
     }
 
 
-  double statsStartTime = 0.050; // need to allow for RRC connection establishment + SRS 
-  double statsDuration = 0.4;
+  double statsStartTime = 0.100; // need to allow for RRC connection establishment + SRS
+  double statsDuration = 0.6;
   double tolerance = 0.1;
-  Simulator::Stop (Seconds (statsStartTime + statsDuration + 0.000001));
+  Simulator::Stop (Seconds (statsStartTime + statsDuration - 0.000001));
 
   lteHelper->EnableMacTraces ();
-  Simulator::Schedule (Seconds (statsStartTime), &LteHelper::EnableRlcTraces, lteHelper);
+  lteHelper->EnableRlcTraces ();
   Ptr<RadioBearerStatsCalculator> rlcStats = lteHelper->GetRlcStats ();
   rlcStats->SetAttribute ("StartTime", TimeValue (Seconds (statsStartTime)));
   rlcStats->SetAttribute ("EpochDuration", TimeValue (Seconds (statsDuration)));
@@ -428,12 +428,12 @@ LenaPfFfMacSchedulerTestCase2::DoRun (void)
       uePhy->SetAttribute ("NoiseFigure", DoubleValue (9.0));
     }
 
-  double statsStartTime = 0.050; // need to allow for RRC connection establishment + SRS 
+  double statsStartTime = 0.100; // need to allow for RRC connection establishment + SRS
   double statsDuration = 0.4;
   double tolerance = 0.1;
   Simulator::Stop (Seconds (statsStartTime + statsDuration + 0.000001));
 
-  Simulator::Schedule (Seconds (statsStartTime), &LteHelper::EnableRlcTraces, lteHelper);
+  lteHelper->EnableRlcTraces ();
   Ptr<RadioBearerStatsCalculator> rlcStats = lteHelper->GetRlcStats ();
   rlcStats->SetAttribute ("StartTime", TimeValue (Seconds (statsStartTime)));
   rlcStats->SetAttribute ("EpochDuration", TimeValue (Seconds (statsDuration)));

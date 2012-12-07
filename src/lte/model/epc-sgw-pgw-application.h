@@ -34,6 +34,8 @@
 #include <ns3/epc-tft-classifier.h>
 #include <ns3/lte-common.h>
 #include <ns3/application.h>
+#include <ns3/epc-s1ap-sap.h>
+#include <ns3/epc-s11-sap.h>
 #include <map>
 
 namespace ns3 {
@@ -45,6 +47,7 @@ namespace ns3 {
  */
 class EpcSgwPgwApplication : public Application
 {
+  friend class MemberEpcS11SapSgw<EpcSgwPgwApplication>;
 
 public:
 
@@ -125,14 +128,53 @@ public:
   void SendToS1uSocket (Ptr<Packet> packet, Ipv4Address enbS1uAddress, uint32_t teid);
   
 
+  /** 
+   * Set the MME side of the S11 SAP 
+   * 
+   * \param s the MME side of the S11 SAP 
+   */
+  void SetS11SapMme (EpcS11SapMme * s);
+
+  /** 
+   * 
+   * \return the SGW side of the S11 SAP 
+   */
+  EpcS11SapSgw* GetS11SapSgw ();
+
+
+  /** 
+   * Let the SGW be aware of a new eNB 
+   * 
+   * \param cellId the cell identifier
+   * \param enbAdd the address of the eNB
+   */
+  void AddEnb (uint16_t cellId, Ipv4Address enbAddr, Ipv4Address sgwAddr);
+
+  /** 
+   * Let the SGW be aware of a new UE
+   * 
+   * \param imsi the unique identifier of the UE
+   */
+  void AddUe (uint64_t imsi);
+
+  /** 
+   * set the address of a previously added UE
+   * 
+   * \param imsi the unique identifier of the UE
+   * \param ueAddr the IPv4 address of the UE
+   */
+  void SetUeAddress (uint64_t imsi, Ipv4Address ueAddr);
 
 private:
 
+  // S11 SAP SGW methods
+  void DoCreateSessionRequest (EpcS11SapSgw::CreateSessionRequestMessage msg);
+  void DoModifyBearerRequest (EpcS11SapSgw::ModifyBearerRequestMessage msg);  
 
   /**
    * store info for each UE connected to this SGW
    */
-  class UeInfo
+  class UeInfo : public SimpleRefCount<UeInfo>
   {
   public:
     UeInfo ();  
@@ -140,9 +182,10 @@ private:
     /** 
      * 
      * \param tft the Traffic Flow Template of the new bearer to be added
+     * \param epsBearerId the ID of the EPS Bearer to be activated
      * \param teid  the TEID of the new bearer
      */
-    void AddBearer (Ptr<EpcTft> tft, uint32_t teid);
+    void AddBearer (Ptr<EpcTft> tft, uint8_t epsBearerId, uint32_t teid);
 
     /** 
      * 
@@ -167,10 +210,24 @@ private:
      */
     void SetEnbAddr (Ipv4Address addr);
 
+    /** 
+     * \return the address of the UE
+     */
+    Ipv4Address GetUeAddr ();
+
+    /** 
+     * set the address of the UE
+     * 
+     * \param addr the address of the UE
+     */
+    void SetUeAddr (Ipv4Address addr);
+
 
   private:
     EpcTftClassifier m_tftClassifier;
     Ipv4Address m_enbAddr;
+    Ipv4Address m_ueAddr;
+    std::map<uint8_t, uint32_t> m_teidByBearerIdMap;
   };
 
 
@@ -188,7 +245,12 @@ private:
   /**
    * Map telling for each UE address the corresponding UE info 
    */
-  std::map<Ipv4Address, UeInfo> m_ueInfoMap;
+  std::map<Ipv4Address, Ptr<UeInfo> > m_ueInfoByAddrMap;
+
+  /**
+   * Map telling for each IMSI the corresponding UE info 
+   */
+  std::map<uint64_t, Ptr<UeInfo> > m_ueInfoByImsiMap;
 
   /**
    * UDP port to be used for GTP
@@ -197,6 +259,25 @@ private:
 
   uint32_t m_teidCount;
 
+  /**
+   * MME side of the S11 SAP
+   * 
+   */
+  EpcS11SapMme* m_s11SapMme;
+
+  /**
+   * SGW side of the S11 SAP
+   * 
+   */
+  EpcS11SapSgw* m_s11SapSgw;
+
+  struct EnbInfo
+  {
+    Ipv4Address enbAddr;
+    Ipv4Address sgwAddr;    
+  };
+
+  std::map<uint16_t, EnbInfo> m_enbInfoByCellId;
 };
 
 } //namespace ns3

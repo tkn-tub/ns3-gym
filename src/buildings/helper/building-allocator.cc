@@ -21,7 +21,6 @@
  */
 #include "building-allocator.h"
 #include "ns3/building.h"
-#include "ns3/random-variable.h"
 #include "ns3/double.h"
 #include "ns3/uinteger.h"
 #include "ns3/enum.h"

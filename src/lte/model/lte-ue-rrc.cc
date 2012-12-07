@@ -135,7 +135,7 @@ LteUeRrc::LteUeRrc ()
   m_cphySapUser = new MemberLteUeCphySapUser<LteUeRrc> (this);
   m_cmacSapUser = new UeMemberLteUeCmacSapUser (this);
   m_rrcSapProvider = new MemberLteUeRrcSapProvider<LteUeRrc> (this);
-  m_pdcpSapUser = new LtePdcpSpecificLtePdcpSapUser<LteUeRrc> (this);
+  m_drbPdcpSapUser = new LtePdcpSpecificLtePdcpSapUser<LteUeRrc> (this);
   m_asSapProvider = new MemberLteAsSapProvider<LteUeRrc> (this);
 }
 
@@ -151,7 +151,7 @@ LteUeRrc::DoDispose ()
   NS_LOG_FUNCTION (this);
   delete m_cphySapUser;
   delete m_cmacSapUser;
-  delete m_pdcpSapUser;
+  delete m_drbPdcpSapUser;
   delete m_asSapProvider;
   m_drbMap.clear ();
 }
@@ -177,8 +177,20 @@ LteUeRrc::GetTypeId (void)
                    MakeUintegerAccessor (&LteUeRrc::GetRnti),
                    MakeUintegerChecker<uint16_t> ())
     .AddTraceSource ("StateTransition",
-                     "fired upon every UE RRC state transition",
-                     MakeTraceSourceAccessor (&LteUeRrc::m_stateTransitionCallback))
+                     "trace fired upon every UE RRC state transition",
+                     MakeTraceSourceAccessor (&LteUeRrc::m_stateTransitionTrace))
+    .AddTraceSource ("ConnectionEstablished",
+                     "trace fired upon successful RRC connection establishment",
+                     MakeTraceSourceAccessor (&LteUeRrc::m_connectionEstablishedTrace))
+    .AddTraceSource ("ConnectionReconfiguration",
+                     "trace fired upon RRC connection reconfiguration",
+                     MakeTraceSourceAccessor (&LteUeRrc::m_connectionReconfigurationTrace))
+    .AddTraceSource ("HandoverStart",
+                     "trace fired upon start of a handover procedure",
+                     MakeTraceSourceAccessor (&LteUeRrc::m_handoverStartTrace))
+    .AddTraceSource ("HandoverEndOk",
+                     "trace fired upon successful termination of a handover procedure",
+                     MakeTraceSourceAccessor (&LteUeRrc::m_handoverEndOkTrace))
     ;
   return tid;
 }
@@ -325,7 +337,11 @@ LteUeRrc::DoStart (void)
 
   m_srb0 = CreateObject<LteSignalingRadioBearerInfo> ();  
   m_srb0->m_rlc = rlc;
-  m_srb0->m_srbIdentity = 1;
+  m_srb0->m_srbIdentity = 0;
+  LteUeRrcSapUser::SetupParameters ueParams;
+  ueParams.srb0SapProvider = m_srb0->m_rlc->GetLteRlcSapProvider ();
+  ueParams.srb1SapProvider = 0;
+  m_rrcSapUser->Setup (ueParams);
 
   // CCCH (LCID 0) is pre-configured, here is the hardcoded configuration:
   LteUeCmacSapProvider::LogicalChannelConfig lcConfig;
@@ -401,6 +417,7 @@ LteUeRrc::DoSetTemporaryCellRnti (uint16_t rnti)
 {
   NS_LOG_FUNCTION (this << rnti);
   m_rnti = rnti;
+  m_srb0->m_rlc->SetRnti (m_rnti);
   m_rrcSapUser->Reestablish ();
   m_cphySapProvider->SetRnti (m_rnti);
 }
@@ -428,6 +445,7 @@ LteUeRrc::DoNotifyRandomAccessSuccessful ()
         msg.rrcTransactionIdentifier = m_lastRrcTransactionIdentifier;
         m_rrcSapUser->SendRrcConnectionReconfigurationCompleted (msg);
         SwitchToState (CONNECTED_NORMALLY);
+        m_handoverEndOkTrace (m_imsi, m_cellId, m_rnti);
       }
       break;
           
@@ -445,12 +463,12 @@ LteUeRrc::DoNotifyRandomAccessFailed ()
 
 
 void 
-LteUeRrc::DoForceCampedOnEnb (Ptr<LteEnbNetDevice> enbLteDevice, uint16_t cellId)
+LteUeRrc::DoForceCampedOnEnb (uint16_t cellId, uint16_t earfcn)
 {
-  NS_LOG_FUNCTION (this << cellId);
+  NS_LOG_FUNCTION (this << cellId << earfcn);
     
   m_cellId = cellId;
-  m_dlEarfcn = enbLteDevice->GetDlEarfcn ();
+  m_dlEarfcn = earfcn;
   m_cphySapProvider->SyncronizeWithEnb (m_cellId, m_dlEarfcn); 
   SwitchToState (IDLE_WAIT_SYSTEM_INFO);
 }
@@ -511,6 +529,18 @@ LteUeRrc::DoRecvMasterInformationBlock (LteRrcSap::MasterInformationBlock msg)
 // RRC SAP methods
 
 void 
+LteUeRrc::DoCompleteSetup (LteUeRrcSapProvider::CompleteSetupParameters params)
+{
+  NS_LOG_FUNCTION (this);
+  m_srb0->m_rlc->SetLteRlcSapUser (params.srb0SapUser);
+  if (m_srb1)
+    {
+      m_srb1->m_pdcp->SetLtePdcpSapUser (params.srb1SapUser);
+    }
+}
+
+
+void 
 LteUeRrc::DoRecvSystemInformationBlockType1 (LteRrcSap::SystemInformationBlockType1 msg)
 {
   NS_LOG_FUNCTION (this);
@@ -527,6 +557,11 @@ LteUeRrc::DoRecvSystemInformation (LteRrcSap::SystemInformation msg)
       m_receivedSib2 = true;
       m_ulBandwidth = msg.sib2.freqInfo.ulBandwidth;
       m_ulEarfcn = msg.sib2.freqInfo.ulCarrierFreq;
+      LteUeCmacSapProvider::RachConfig rc;
+      rc.numberOfRaPreambles = msg.sib2.radioResourceConfigCommon.rachConfigCommon.preambleInfo.numberOfRaPreambles;
+      rc.preambleTransMax = msg.sib2.radioResourceConfigCommon.rachConfigCommon.raSupervisionInfo.preambleTransMax;
+      rc.raResponseWindowSize = msg.sib2.radioResourceConfigCommon.rachConfigCommon.raSupervisionInfo.raResponseWindowSize;
+      m_cmacSapProvider->ConfigureRach (rc);
       m_cphySapProvider->ConfigureUplink (m_ulEarfcn, m_ulBandwidth);
     }
   if (m_state == IDLE_WAIT_SYSTEM_INFO && m_receivedMib && m_receivedSib2)
@@ -550,6 +585,7 @@ LteUeRrc::DoRecvRrcConnectionSetup (LteRrcSap::RrcConnectionSetup msg)
         msg2.rrcTransactionIdentifier = msg.rrcTransactionIdentifier;
         m_rrcSapUser->SendRrcConnectionSetupCompleted (msg2);
         m_asSapUser->NotifyConnectionSuccessful ();
+        m_connectionEstablishedTrace (m_imsi, m_cellId, m_rnti);
       }
       break;
       
@@ -566,14 +602,14 @@ LteUeRrc::DoRecvRrcConnectionReconfiguration (LteRrcSap::RrcConnectionReconfigur
   switch (m_state)
     {
     case CONNECTED_NORMALLY:
-      if (msg.haveRadioResourceConfigDedicated)
-        {
-          ApplyRadioResourceConfigDedicated (msg.radioResourceConfigDedicated);
-        }      
       if (msg.haveMobilityControlInfo)
         {
+          NS_LOG_INFO ("haveMobilityControlInfo == true");
           SwitchToState (CONNECTED_HANDOVER);
           const LteRrcSap::MobilityControlInfo& mci = msg.mobilityControlInfo;
+          m_handoverStartTrace (m_imsi, m_cellId, m_rnti, mci.targetPhysCellId);
+          m_cmacSapProvider->Reset ();
+          m_cphySapProvider->Reset ();
           m_cellId = mci.targetPhysCellId;
           NS_ASSERT (mci.haveCarrierFreq);
           NS_ASSERT (mci.haveCarrierBandwidth);
@@ -581,18 +617,29 @@ LteUeRrc::DoRecvRrcConnectionReconfiguration (LteRrcSap::RrcConnectionReconfigur
           m_cphySapProvider->SetDlBandwidth ( mci.carrierBandwidth.dlBandwidth); 
           m_cphySapProvider->ConfigureUplink (mci.carrierFreq.ulCarrierFreq, mci.carrierBandwidth.ulBandwidth); 
           m_rnti = msg.mobilityControlInfo.newUeIdentity;
-          NS_ASSERT_MSG (mci.haveRachConfigDedicated, "handover is only supported with non-contention-based random access procedure");
+          m_srb0->m_rlc->SetRnti (m_rnti);
+          NS_ASSERT_MSG (mci.haveRachConfigDedicated, "handover is only supported with non-contention-based random access procedure");          
           m_cmacSapProvider->StartNonContentionBasedRandomAccessProcedure (m_rnti, mci.rachConfigDedicated.raPreambleIndex, mci.rachConfigDedicated.raPrachMaskIndex);
           m_cphySapProvider->SetRnti (m_rnti);
           m_lastRrcTransactionIdentifier = msg.rrcTransactionIdentifier;
+          NS_ASSERT (msg.haveRadioResourceConfigDedicated);
+          m_srb1 = 0; // dispose SRB1
+          m_drbMap.clear (); // dispose all DRBs
+          ApplyRadioResourceConfigDedicated (msg.radioResourceConfigDedicated);          
           // RRC connection reconfiguration completed will be sent
-          // after handover is completed
+          // after handover is complete
         }
       else
         {
+          NS_LOG_INFO ("haveMobilityControlInfo == false");
+          if (msg.haveRadioResourceConfigDedicated)
+            {
+              ApplyRadioResourceConfigDedicated (msg.radioResourceConfigDedicated);
+            } 
           LteRrcSap::RrcConnectionReconfigurationCompleted msg2;
           msg2.rrcTransactionIdentifier = msg.rrcTransactionIdentifier;
           m_rrcSapUser->SendRrcConnectionReconfigurationCompleted (msg2);
+          m_connectionReconfigurationTrace (m_imsi, m_cellId, m_rnti);
         }
       break;
 
@@ -666,7 +713,8 @@ LteUeRrc::ApplyRadioResourceConfigDedicated (LteRrcSap::RadioResourceConfigDedic
       if (m_srb1 == 0)
         {
           // SRB1 not setup yet        
-          NS_ASSERT_MSG (m_state == IDLE_CONNECTING, "expected state IDLE_CONNECTING, actual state " << ToString (m_state));
+          NS_ASSERT_MSG ((m_state == IDLE_CONNECTING) || (m_state == CONNECTED_HANDOVER), 
+                         "unexpected state " << ToString (m_state));
           NS_ASSERT_MSG (stamIt->srbIdentity == 1, "only SRB1 supported");
 
           const uint8_t lcid = 1; // fixed LCID for SRB1
@@ -679,7 +727,7 @@ LteUeRrc::ApplyRadioResourceConfigDedicated (LteRrcSap::RadioResourceConfigDedic
           Ptr<LtePdcp> pdcp = CreateObject<LtePdcp> ();
           pdcp->SetRnti (m_rnti);
           pdcp->SetLcId (lcid);
-          pdcp->SetLtePdcpSapUser (m_pdcpSapUser);
+          pdcp->SetLtePdcpSapUser (m_drbPdcpSapUser);
           pdcp->SetLteRlcSapProvider (rlc->GetLteRlcSapProvider ());
           rlc->SetLteRlcSapUser (pdcp->GetLteRlcSapUser ());
 
@@ -703,6 +751,11 @@ LteUeRrc::ApplyRadioResourceConfigDedicated (LteRrcSap::RadioResourceConfigDedic
       
           ++stamIt;
           NS_ASSERT_MSG (stamIt == rrcd.srbToAddModList.end (), "at most one SrbToAdd supported");     
+          
+          LteUeRrcSapUser::SetupParameters ueParams;
+          ueParams.srb0SapProvider = m_srb0->m_rlc->GetLteRlcSapProvider ();
+          ueParams.srb1SapProvider = m_srb1->m_pdcp->GetLtePdcpSapProvider ();
+          m_rrcSapUser->Setup (ueParams);
         }
       else
         {
@@ -717,7 +770,7 @@ LteUeRrc::ApplyRadioResourceConfigDedicated (LteRrcSap::RadioResourceConfigDedic
        dtamIt != rrcd.drbToAddModList.end ();
        ++dtamIt)
     {
-      NS_LOG_INFO (this << " IMSI " << m_imsi << " adding/modifying DRBID " << dtamIt->drbIdentity << " LC " << (uint32_t) dtamIt->logicalChannelIdentity);
+      NS_LOG_INFO (this << " IMSI " << m_imsi << " adding/modifying DRBID " << (uint32_t) dtamIt->drbIdentity << " LC " << (uint32_t) dtamIt->logicalChannelIdentity);
       NS_ASSERT_MSG (dtamIt->logicalChannelIdentity > 2, "LCID value " << dtamIt->logicalChannelIdentity << " is reserved for SRBs");
 
       std::map<uint8_t, Ptr<LteDataRadioBearerInfo> >::iterator drbMapIt = m_drbMap.find (dtamIt->drbIdentity);
@@ -755,9 +808,12 @@ LteUeRrc::ApplyRadioResourceConfigDedicated (LteRrcSap::RadioResourceConfigDedic
           rlc->SetRnti (m_rnti);
           rlc->SetLcId (dtamIt->logicalChannelIdentity);
 
-          Ptr<LteDataRadioBearerInfo> rbInfo = CreateObject<LteDataRadioBearerInfo> ();
-          rbInfo->m_rlc = rlc;
-
+          Ptr<LteDataRadioBearerInfo> drbInfo = CreateObject<LteDataRadioBearerInfo> ();
+          drbInfo->m_rlc = rlc;
+          drbInfo->m_epsBearerIdentity = dtamIt->epsBearerIdentity;
+          drbInfo->m_logicalChannelIdentity = dtamIt->logicalChannelIdentity;
+          drbInfo->m_drbIdentity = dtamIt->drbIdentity;
+ 
           // we need PDCP only for real RLC, i.e., RLC/UM or RLC/AM
           // if we are using RLC/SM we don't care of anything above RLC
           if (rlcTypeId != LteRlcSm::GetTypeId ())
@@ -765,15 +821,15 @@ LteUeRrc::ApplyRadioResourceConfigDedicated (LteRrcSap::RadioResourceConfigDedic
               Ptr<LtePdcp> pdcp = CreateObject<LtePdcp> ();
               pdcp->SetRnti (m_rnti);
               pdcp->SetLcId (dtamIt->logicalChannelIdentity);
-              pdcp->SetLtePdcpSapUser (m_pdcpSapUser);
+              pdcp->SetLtePdcpSapUser (m_drbPdcpSapUser);
               pdcp->SetLteRlcSapProvider (rlc->GetLteRlcSapProvider ());
               rlc->SetLteRlcSapUser (pdcp->GetLteRlcSapUser ());
-              rbInfo->m_pdcp = pdcp;
+              drbInfo->m_pdcp = pdcp;
             }
 
           m_bid2DrbidMap[dtamIt->epsBearerIdentity] = dtamIt->drbIdentity;
   
-          m_drbMap.insert (std::pair<uint8_t, Ptr<LteDataRadioBearerInfo> > (dtamIt->drbIdentity, rbInfo));
+          m_drbMap.insert (std::pair<uint8_t, Ptr<LteDataRadioBearerInfo> > (dtamIt->drbIdentity, drbInfo));
   
 
           struct LteUeCmacSapProvider::LogicalChannelConfig lcConfig;
@@ -788,9 +844,9 @@ LteUeRrc::ApplyRadioResourceConfigDedicated (LteRrcSap::RadioResourceConfigDedic
         }
       else
         {
-          NS_LOG_INFO ("request to modify existing DRBID (skipping as currently not implemented)");
-          Ptr<LteDataRadioBearerInfo> rbInfo = drbMapIt->second;
-          // would need to modify rbInfo, and then propagate changes to the MAC
+          NS_LOG_INFO ("request to modify existing DRBID");
+          Ptr<LteDataRadioBearerInfo> drbInfo = drbMapIt->second;
+          // TODO: currently not implemented. Would need to modify drbInfo, and then propagate changes to the MAC
         }
     }
   
@@ -852,7 +908,7 @@ LteUeRrc::SwitchToState (State newState)
   State oldState = m_state;
   m_state = newState;
   NS_LOG_INFO ("IMSI " << m_imsi << " RNTI " << m_rnti << " UeRrc " << ToString (oldState) << " --> " << ToString (newState));
-  m_stateTransitionCallback (oldState, newState);
+  m_stateTransitionTrace (m_imsi, m_cellId, m_rnti, oldState, newState);
 
   switch (newState)
     {

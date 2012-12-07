@@ -36,7 +36,9 @@
 #include <ns3/lte-enb-rrc.h>
 #include <ns3/epc-x2.h>
 #include <ns3/lte-enb-net-device.h>
-
+#include <ns3/lte-ue-net-device.h>
+#include <ns3/epc-mme.h>
+#include <ns3/epc-ue-nas.h>
 
 namespace ns3 {
 
@@ -95,6 +97,10 @@ EpcHelper::EpcHelper ()
   // connect SgwPgwApplication and virtual net device for tunneling
   m_tunDevice->SetSendCallback (MakeCallback (&EpcSgwPgwApplication::RecvFromTunDevice, m_sgwPgwApp));
 
+  // Create MME and connect with SGW via S11 interface
+  m_mme = CreateObject<EpcMme> ();
+  m_mme->SetS11SapSgw (m_sgwPgwApp->GetS11SapSgw ());
+  m_sgwPgwApp->SetS11SapMme (m_mme->GetS11SapMme ());
 }
 
 EpcHelper::~EpcHelper ()
@@ -145,6 +151,7 @@ EpcHelper::GetTypeId (void)
 void
 EpcHelper::DoDispose ()
 {
+  NS_LOG_FUNCTION (this);
   m_tunDevice->SetSendCallback (MakeNullCallback<bool, Ptr<Packet>, const Address&, const Address&, uint16_t> ());
   m_tunDevice = 0;
   m_sgwPgwApp = 0;  
@@ -153,9 +160,9 @@ EpcHelper::DoDispose ()
 
 
 void
-EpcHelper::AddEnb (Ptr<Node> enb, Ptr<NetDevice> lteEnbNetDevice)
+EpcHelper::AddEnb (Ptr<Node> enb, Ptr<NetDevice> lteEnbNetDevice, uint16_t cellId)
 {
-  NS_LOG_FUNCTION (this << enb << lteEnbNetDevice);
+  NS_LOG_FUNCTION (this << enb << lteEnbNetDevice << cellId);
 
   NS_ASSERT (enb == lteEnbNetDevice->GetNode ());
 
@@ -210,7 +217,7 @@ EpcHelper::AddEnb (Ptr<Node> enb, Ptr<NetDevice> lteEnbNetDevice)
   
 
   NS_LOG_INFO ("create EpcEnbApplication");
-  Ptr<EpcEnbApplication> enbApp = CreateObject<EpcEnbApplication> (enbLteSocket, enbS1uSocket, sgwAddress);
+  Ptr<EpcEnbApplication> enbApp = CreateObject<EpcEnbApplication> (enbLteSocket, enbS1uSocket, enbAddress, sgwAddress, cellId);
   enb->AddApplication (enbApp);
   NS_ASSERT (enb->GetNApplications () == 1);
   NS_ASSERT_MSG (enb->GetApplication (0)->GetObject<EpcEnbApplication> () != 0, "cannot retrieve EpcEnbApplication");
@@ -221,6 +228,10 @@ EpcHelper::AddEnb (Ptr<Node> enb, Ptr<NetDevice> lteEnbNetDevice)
   Ptr<EpcX2> x2 = CreateObject<EpcX2> ();
   enb->AggregateObject (x2);
 
+  NS_LOG_INFO ("connect S1-AP interface");
+  m_mme->AddEnb (cellId, enbAddress, enbApp->GetS1apSapEnb ());
+  m_sgwPgwApp->AddEnb (cellId, enbAddress, sgwAddress);
+  enbApp->SetS1apSapMme (m_mme->GetS1apSapMme ());
 }
 
 
@@ -282,56 +293,39 @@ EpcHelper::AddX2Interface (Ptr<Node> enb1, Ptr<Node> enb2)
 
 
 void 
-EpcHelper::AttachUe (Ptr<NetDevice> ueLteDevice, uint64_t imsi, Ptr<NetDevice> enbDevice)
+EpcHelper::AddUe (Ptr<NetDevice> ueDevice, uint64_t imsi)
 {
-  NS_LOG_FUNCTION (this << ueLteDevice << enbDevice);
+  NS_LOG_FUNCTION (this << imsi << ueDevice );
+  
+  m_mme->AddUe (imsi);
+  m_sgwPgwApp->AddUe (imsi);
+  
 
-  m_imsiEnbDeviceMap[imsi] = enbDevice;
 }
 
 void
-EpcHelper::ActivateEpsBearer (Ptr<NetDevice> ueLteDevice, uint64_t imsi, Ptr<EpcTft> tft, EpsBearer bearer)
+EpcHelper::ActivateEpsBearer (Ptr<NetDevice> ueDevice, uint64_t imsi, Ptr<EpcTft> tft, EpsBearer bearer)
 {
-  std::map<uint64_t, Ptr<NetDevice> >::iterator it = m_imsiEnbDeviceMap.find (imsi);
-  NS_ASSERT_MSG (it != m_imsiEnbDeviceMap.end (), "no eNB found for this IMSI, did you attach it before?");
-  Ptr<NetDevice> enbDevice = it->second;
-  Ptr<Node> ueNode = ueLteDevice->GetNode (); 
+  NS_LOG_FUNCTION (this << ueDevice << imsi);
+
+  // we now retrieve the IPv4 address of the UE and notify it to the SGW;
+  // we couldn't do it before since address assignment is triggered by
+  // the user simulation program, rather than done by the EPC   
+  Ptr<Node> ueNode = ueDevice->GetNode (); 
   Ptr<Ipv4> ueIpv4 = ueNode->GetObject<Ipv4> ();
   NS_ASSERT_MSG (ueIpv4 != 0, "UEs need to have IPv4 installed before EPS bearers can be activated");
-  int32_t interface =  ueIpv4->GetInterfaceForDevice (ueLteDevice);
+  int32_t interface =  ueIpv4->GetInterfaceForDevice (ueDevice);
   NS_ASSERT (interface >= 0);
   NS_ASSERT (ueIpv4->GetNAddresses (interface) == 1);
   Ipv4Address ueAddr = ueIpv4->GetAddress (interface, 0).GetLocal ();
-  NS_LOG_LOGIC (" UE IP address: " << ueAddr);
-
-  // NOTE: unlike ueLteDevice, enbDevice is NOT an Ipv4 enabled
-  // device. In fact we are interested in the S1 device of the eNB.
-  // We find it by relying on the assumption that the S1 device is the
-  // only Ipv4 enabled device of the eNB besides the localhost interface.
-  Ptr<Node> enbNode = enbDevice->GetNode (); 
-  NS_ASSERT (enbNode != 0);
-  Ptr<Ipv4> enbIpv4 = enbNode->GetObject<Ipv4> ();
-  NS_LOG_LOGIC ("number of Ipv4 ifaces of the eNB: " << enbIpv4->GetNInterfaces ());
-  // two ifaces total: loopback + the S1-U interface
-  NS_ASSERT (enbIpv4->GetNInterfaces () >= 2); 
-  NS_ASSERT (ueIpv4->GetNAddresses (1) == 1);
-  // iface index 0 is loopback, index 1 is the S1-U interface
-  Ipv4Address enbAddr = enbIpv4->GetAddress (1, 0).GetLocal (); 
-  NS_LOG_LOGIC (" ENB IP address: " << enbAddr);
-
-  // setup S1 bearer at EpcSgwPgwApplication
-  uint32_t teid = m_sgwPgwApp->ActivateS1Bearer (ueAddr, enbAddr, tft);
-
-  // setup S1 bearer at EpcEnbApplication
-  NS_LOG_LOGIC ("enb: " << enbNode << ", enb->GetApplication (0): " << enbNode->GetApplication (0));
-  NS_ASSERT (enbNode->GetNApplications () == 1);
-  Ptr<Application> app =  enbNode->GetApplication (0);
-  NS_ASSERT (app != 0);
-  Ptr<EpcEnbApplication> epcEnbApp = app->GetObject<EpcEnbApplication> ();
-  NS_ASSERT (epcEnbApp != 0);
-  epcEnbApp->ErabSetupRequest (teid, imsi, bearer);
+  NS_LOG_LOGIC (" UE IP address: " << ueAddr);  m_sgwPgwApp->SetUeAddress (imsi, ueAddr);
   
-  
+  m_mme->AddBearer (imsi, tft, bearer);
+  Ptr<LteUeNetDevice> ueLteDevice = ueDevice->GetObject<LteUeNetDevice> ();
+  if (ueLteDevice)
+    {
+      ueLteDevice->GetNas ()->ActivateEpsBearer (bearer, tft);
+    }
 }
 
 

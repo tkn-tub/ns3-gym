@@ -52,6 +52,8 @@ class LteRrcSap
 {
 public:
 
+  virtual ~LteRrcSap ();
+
   // Information Elements
   
   struct PlmnIdentityInfo
@@ -136,12 +138,31 @@ public:
     LogicalChannelConfig logicalChannelConfig;
   };
 
+  struct PreambleInfo
+  {
+    uint8_t numberOfRaPreambles;
+  };
+  
+  struct RaSupervisionInfo
+  {
+    uint8_t preambleTransMax;
+    uint8_t raResponseWindowSize;
+  };
+
+  struct RachConfigCommon
+  {
+    PreambleInfo preambleInfo;
+    RaSupervisionInfo raSupervisionInfo;
+  };
+
   struct RadioResourceConfigCommon
   {    
+    RachConfigCommon rachConfigCommon;
   };
 
   struct RadioResourceConfigCommonSib
   {    
+    RachConfigCommon rachConfigCommon;
   };
 
   struct RadioResourceConfigDedicated
@@ -342,6 +363,13 @@ class LteUeRrcSapProvider : public LteRrcSap
 {
 public:
 
+  struct CompleteSetupParameters 
+  {
+    LteRlcSapUser* srb0SapUser;
+    LtePdcpSapUser* srb1SapUser;       
+  };
+
+  virtual void CompleteSetup (CompleteSetupParameters params) = 0;
   virtual void RecvMasterInformationBlock (MasterInformationBlock msg) = 0;
   virtual void RecvSystemInformationBlockType1 (SystemInformationBlockType1 msg) = 0;
   virtual void RecvSystemInformation (SystemInformation msg) = 0;
@@ -520,6 +548,7 @@ public:
   MemberLteUeRrcSapProvider (C* owner);
 
   // methods inherited from LteUeRrcSapProvider go here  
+  virtual void CompleteSetup (CompleteSetupParameters params);
   virtual void RecvMasterInformationBlock (MasterInformationBlock msg);
   virtual void RecvSystemInformationBlockType1 (SystemInformationBlockType1 msg);
   virtual void RecvSystemInformation (SystemInformation msg);
@@ -543,6 +572,13 @@ MemberLteUeRrcSapProvider<C>::MemberLteUeRrcSapProvider (C* owner)
 template <class C>
 MemberLteUeRrcSapProvider<C>::MemberLteUeRrcSapProvider ()
 {
+}
+
+template <class C>
+void 
+MemberLteUeRrcSapProvider<C>::CompleteSetup (CompleteSetupParameters params)
+{
+  m_owner->DoCompleteSetup (params);
 }
 
 template <class C>

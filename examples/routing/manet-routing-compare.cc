@@ -270,19 +270,27 @@ RoutingExperiment::Run (int nSinks, double txp, std::string CSVfileName)
   NetDeviceContainer adhocDevices = wifi.Install (wifiPhy, wifiMac, adhocNodes);
 
   MobilityHelper mobilityAdhoc;
+  int64_t streamIndex = 0; // used to get consistent mobility across scenarios
 
   ObjectFactory pos;
   pos.SetTypeId ("ns3::RandomRectanglePositionAllocator");
-  pos.Set ("X", RandomVariableValue (UniformVariable (0.0, 300.0)));
-  pos.Set ("Y", RandomVariableValue (UniformVariable (0.0, 1500.0)));
+  pos.Set ("X", StringValue ("ns3::UniformRandomVariable[Min=0.0|Max=300.0]"));
+  pos.Set ("Y", StringValue ("ns3::UniformRandomVariable[Min=0.0|Max=1500.0]"));
 
   Ptr<PositionAllocator> taPositionAlloc = pos.Create ()->GetObject<PositionAllocator> ();
+  streamIndex += taPositionAlloc->AssignStreams (streamIndex);
+
+  std::stringstream ssSpeed;
+  ssSpeed << "ns3::UniformRandomVariable[Min=0.0|Max=" << nodeSpeed << "]";
+  std::stringstream ssPause;
+  ssPause << "ns3::ConstantRandomVariable[Constant=" << nodePause << "]";
   mobilityAdhoc.SetMobilityModel ("ns3::RandomWaypointMobilityModel",
-                                  "Speed", RandomVariableValue (UniformVariable (0.0, nodeSpeed)),
-                                  "Pause", RandomVariableValue (ConstantVariable (nodePause)),
+                                  "Speed", StringValue (ssSpeed.str ()),
+                                  "Pause", StringValue (ssPause.str ()),
                                   "PositionAllocator", PointerValue (taPositionAlloc));
   mobilityAdhoc.SetPositionAllocator (taPositionAlloc);
   mobilityAdhoc.Install (adhocNodes);
+  streamIndex += mobilityAdhoc.AssignStreams (adhocNodes, streamIndex);
 
   AodvHelper aodv;
   OlsrHelper olsr;
@@ -332,8 +340,8 @@ RoutingExperiment::Run (int nSinks, double txp, std::string CSVfileName)
   adhocInterfaces = addressAdhoc.Assign (adhocDevices);
 
   OnOffHelper onoff1 ("ns3::UdpSocketFactory",Address ());
-  onoff1.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable  (1)));
-  onoff1.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
+  onoff1.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1.0]"));
+  onoff1.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0.0]"));
 
   for (int i = 0; i <= nSinks - 1; i++)
     {
@@ -342,9 +350,9 @@ RoutingExperiment::Run (int nSinks, double txp, std::string CSVfileName)
       AddressValue remoteAddress (InetSocketAddress (adhocInterfaces.GetAddress (i), port));
       onoff1.SetAttribute ("Remote", remoteAddress);
 
-      UniformVariable var;
+      Ptr<UniformRandomVariable> var = CreateObject<UniformRandomVariable> ();
       ApplicationContainer temp = onoff1.Install (adhocNodes.Get (i + nSinks));
-      temp.Start (Seconds (var.GetValue (100.0,101.0)));
+      temp.Start (Seconds (var->GetValue (100.0,101.0)));
       temp.Stop (Seconds (TotalTime));
     }
 

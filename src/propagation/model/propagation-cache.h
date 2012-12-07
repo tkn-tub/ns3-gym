@@ -43,11 +43,15 @@ public:
     typename PathCache::iterator it = m_pathCache.find (key);
     if (it == m_pathCache.end ())
       {
-        Ptr<T> newPath = CreateObject<T> ();
-        m_pathCache.insert (std::make_pair (key, newPath));
-        return newPath;
+        return 0;
       }
     return it->second;
+  };
+  void AddPathData (Ptr<T> data, Ptr<const MobilityModel> a, Ptr<const MobilityModel> b, uint32_t modelUid)
+  {
+    PropagationPathIdentifier key = PropagationPathIdentifier (a, b, modelUid);
+    NS_ASSERT (m_pathCache.find (key) == m_pathCache.end ());
+    m_pathCache.insert (std::make_pair (key, data)); 
   };
 private:
   /// Each path is identified by

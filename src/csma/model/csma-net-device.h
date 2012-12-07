@@ -32,7 +32,6 @@
 #include "ns3/nstime.h"
 #include "ns3/data-rate.h"
 #include "ns3/ptr.h"
-#include "ns3/random-variable.h"
 #include "ns3/mac48-address.h"
 
 namespace ns3 {
@@ -321,6 +320,16 @@ public:
 
   virtual void SetPromiscReceiveCallback (PromiscReceiveCallback cb);
   virtual bool SupportsSendFrom (void) const;
+
+ /**
+  * Assign a fixed random variable stream number to the random variables
+  * used by this model.  Return the number of streams (possibly zero) that
+  * have been assigned.
+  *
+  * \param stream first stream index to use
+  * \return the number of stream indices assigned by this model
+  */
+  int64_t AssignStreams (int64_t stream);
 
 protected:
   /**

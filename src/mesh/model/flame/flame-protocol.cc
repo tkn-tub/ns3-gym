@@ -30,7 +30,6 @@
 #include "ns3/wifi-net-device.h"
 #include "ns3/mesh-point-device.h"
 #include "ns3/mesh-wifi-interface-mac.h"
-#include "ns3/random-variable.h"
 
 NS_LOG_COMPONENT_DEFINE ("FlameProtocol");
 

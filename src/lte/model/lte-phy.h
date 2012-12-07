@@ -198,6 +198,15 @@ public:
   */
   virtual void  GenerateDataCqiReport (const SpectrumValue& sinr) = 0;
 
+  /**
+  * generate a report based on the linear interference and noise power
+  * perceived during DATA frame
+  * NOTE: used only by eNB 
+  *
+  * \param sinr the interference + noise power measured by the device
+  */
+  virtual void ReportInterference (const SpectrumValue& interf) = 0;
+
 
 
 protected:

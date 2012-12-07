@@ -267,7 +267,7 @@ Ipv4L3Protocol::SetDefaultTtl (uint8_t ttl)
 uint32_t 
 Ipv4L3Protocol::AddInterface (Ptr<NetDevice> device)
 {
-  NS_LOG_FUNCTION (this << &device);
+  NS_LOG_FUNCTION (this << device);
 
   Ptr<Node> node = GetObject<Node> ();
   node->RegisterProtocolHandler (MakeCallback (&Ipv4L3Protocol::Receive, this), 
@@ -434,7 +434,7 @@ void
 Ipv4L3Protocol::Receive ( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t protocol, const Address &from,
                           const Address &to, NetDevice::PacketType packetType)
 {
-  NS_LOG_FUNCTION (this << &device << p << protocol <<  from);
+  NS_LOG_FUNCTION (this << device << p << protocol <<  from << to << packetType);
 
   NS_LOG_LOGIC ("Packet from " << from << " received on node " << 
                 m_node->GetId ());
