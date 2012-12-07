@@ -22,7 +22,7 @@ def configure(conf):
             conf.env['ENABLE_MPI'] = True
             for libpath in conf.env.LIBPATH_MPI:
                 if 'mpi' in libpath:
-                    conf.env.append_value('LINKFLAGS_MPI', '-Wl,-rpath='+libpath)
+                    conf.env.append_value('LINKFLAGS_MPI', '-Wl,-rpath,'+libpath)
             conf.report_optional_feature("mpi", "MPI Support", True, '')            
         else:
             conf.report_optional_feature("mpi", "MPI Support", False, 'mpic++ not found')
