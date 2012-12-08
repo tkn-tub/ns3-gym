@@ -85,18 +85,15 @@ LenaTestPssFfMacSchedulerSuite::LenaTestPssFfMacSchedulerSuite ()
   // 3 user -> 232000 * 3 = 696000 < 2196000 -> througphut = 232000 byte/sec
   // 6 user -> 232000 * 6 = 139200 < 2196000 -> throughput = 232000 byte/sec
   // 12 user -> 232000 * 12 = 2784000 > 2196000 -> throughput = 2196000 / 12 = 183000 byte/sec
-  // 15 user -> 232000 * 15 = 3480000 > 2196000 -> throughput = 2196000 / 15 = 146400 byte/sec
   // UPLINK -> DISTANCE 0 -> MCS 28 -> Itbs 26 (from table 7.1.7.2.1-1 of 36.2    13)
   // 1 user -> 25 PRB at Itbs 26 -> 2292 -> 2292000 > 232000 -> throughput = 232000 bytes/sec
   // 3 users -> 8 PRB at Itbs 26 -> 749 -> 749000 > 232000 -> throughput = 232000 bytes/sec 
   // 6 users -> 4 PRB at Itbs 26 -> 373 -> 373000 > 232000 -> throughput = 232000 bytes/sec
   // 12 users -> 2 PRB at Itbs 26 -> 185 -> 185000 < 232000 -> throughput = 185000 bytes/sec
-  // 15 users -> 1 PRB at Itbs 26 -> 89 -> 89000 bytes/sec
   AddTestCase (new LenaPssFfMacSchedulerTestCase1 (1,0,0,232000,232000,200,1));
   AddTestCase (new LenaPssFfMacSchedulerTestCase1 (3,0,0,232000,232000,200,1));
   AddTestCase (new LenaPssFfMacSchedulerTestCase1 (6,0,0,232000,232000,200,1));
   AddTestCase (new LenaPssFfMacSchedulerTestCase1 (12,0,0,183000,185000,200,1));
-  AddTestCase (new LenaPssFfMacSchedulerTestCase1 (15,0,0,146400,89000,200,1));
 
   // DOWNLINK - DISTANCE 3000 -> MCS 24 -> Itbs 20 (from table 7.1.7.2.1-1 of 36.213)
   // DOWNLINK -> DISTANCE 0 -> MCS 28 -> Itbs 26 (from table 7.1.7.2.1-1 of 36.2    13)
@@ -108,18 +105,15 @@ LenaTestPssFfMacSchedulerSuite::LenaTestPssFfMacSchedulerSuite ()
   // 3 user -> 232000 * 3 = 696000 < 1383000 -> througphut = 232000 byte/sec
   // 6 user -> 232000 * 6 = 139200 > 1383000 -> throughput = 1383000 / 6 = 230500 byte/sec
   // 12 user -> 232000 * 12 = 2784000 > 1383000 -> throughput = 1383000 / 12 = 115250 byte/sec
-  // 15 user -> 232000 * 15 = 3480000 > 1383000 -> throughput = 1383000 / 15 = 92200 byte/sec
   // UPLINK - DISTANCE 3000 -> MCS 20 -> Itbs 18 (from table 7.1.7.2.1-1 of 36.213)
   // 1 user -> 25 PRB at Itbs 18 -> 1239 -> 1239000 > 232000 -> throughput = 232000 bytes/sec
   // 3 users -> 8 PRB at Itbs 18 -> 389 -> 389000 > 232000 -> throughput = 232000 bytes/sec
   // 6 users -> 4 PRB at Itbs 18 -> 193 -> 193000 < 232000 -> throughput = 193000 bytes/sec
   // 12 users -> 2 PRB at Itbs 18 -> 97 -> 97000 < 232000 -> throughput = 97000 bytes/sec
-  // 15 users -> 1 PRB at Itbs 18 -> 47 -> 47000 bytes/sec 
   AddTestCase (new LenaPssFfMacSchedulerTestCase1 (1,0,3000,232000,232000,200,1));
   AddTestCase (new LenaPssFfMacSchedulerTestCase1 (3,0,3000,232000,232000,200,1));
   AddTestCase (new LenaPssFfMacSchedulerTestCase1 (6,0,3000,230500,193000,200,1));
   AddTestCase (new LenaPssFfMacSchedulerTestCase1 (12,0,3000,115250,97000,200,1));
-  AddTestCase (new LenaPssFfMacSchedulerTestCase1 (15,0,3000,92200,47000,200,1));
  
   // DOWNLINK - DISTANCE 6000 -> MCS 16 -> Itbs 15 (from table 7.1.7.2.1-1 of 36.213)
   // Traffic info
@@ -130,18 +124,15 @@ LenaTestPssFfMacSchedulerSuite::LenaTestPssFfMacSchedulerSuite ()
   // 3 user -> 232000 * 3 = 696000 < 903000 -> througphut = 232000 byte/sec
   // 6 user -> 232000 * 6 = 139200 > 903000 -> throughput = 903000 / 6 = 150500 byte/sec
   // 12 user -> 232000 * 12 = 2784000 > 903000 -> throughput = 903000 / 12 = 75250 byte/sec
-  // 15 user -> 232000 * 15 = 3480000 > 903000 -> throughput = 903000 / 15 = 60200 byte/sec
   // UPLINK - DISTANCE 6000 -> MCS 12 -> Itbs 11 (from table 7.1.7.2.1-1 of 36.213)
   // 1 user -> 25 PRB at Itbs 11 -> 621 -> 621000 > 232000 -> throughput = 232000  bytes/sec
   // 3 users -> 8 PRB at Itbs 11 -> 201 -> 201000 < 232000 -> throughput = 201000  bytes/sec
   // 6 users -> 4 PRB at Itbs 11 -> 97 -> 97000 < 232000 -> throughput = 97000 bytes/sec
   // 12 users -> 2 PRB at Itbs 11 -> 47 -> 47000 < 232000 -> throughput = 47000 bytes/sec
-  // 15 users -> 1 PRB at Itbs 11 -> 22 -> 22000 bytes/sec
   AddTestCase (new LenaPssFfMacSchedulerTestCase1 (1,0,6000,232000,232000,200,1));
   AddTestCase (new LenaPssFfMacSchedulerTestCase1 (3,0,6000,232000,201000,200,1));
   AddTestCase (new LenaPssFfMacSchedulerTestCase1 (6,0,6000,150500,97000,200,1));
   AddTestCase (new LenaPssFfMacSchedulerTestCase1 (12,0,6000,75250,47000,200,1));
-  AddTestCase (new LenaPssFfMacSchedulerTestCase1 (15,0,6000,60200,22000,200,1));
 
   // DOWNLINK - DISTANCE 9000 -> MCS 12 -> Itbs 11 (from table 7.1.7.2.1-1 of 36.213)
   // Traffic info
@@ -152,18 +143,15 @@ LenaTestPssFfMacSchedulerSuite::LenaTestPssFfMacSchedulerSuite ()
   // 3 user -> 232000 * 3 = 696000 > 597000 -> througphut = 597000 / 3 = 199000byte/sec
   // 6 user -> 232000 * 6 = 139200 > 597000 -> throughput = 597000 / 6 = 99500 byte/sec
   // 12 user -> 232000 * 12 = 2784000 > 597000 -> throughput = 597000 / 12 = 49750 byte/sec
-  // 15 user -> 232000 * 15 = 3480000 > 597000 -> throughput = 597000 / 15 = 39800 byte/sec
   // UPLINK - DISTANCE 9000 -> MCS 8 -> Itbs 8 (from table 7.1.7.2.1-1 of 36.213)
   // 1 user -> 24 PRB at Itbs 8 -> 437 -> 437000 > 232000 -> throughput = 232000 bytes/sec
   // 3 users -> 8 PRB at Itbs 8 -> 137 -> 137000 < 232000 -> throughput = 137000 bytes/sec
   // 6 users -> 4 PRB at Itbs 8 -> 67 -> 67000 < 232000 -> throughput = 67000 bytes/sec
   // 12 users -> 2 PRB at Itbs 8 -> 32 -> 32000 < 232000 -> throughput = 32000 bytes/sec
-  // 15 users -> 1 PRB at Itbs 8 -> 15 -> 15000 bytes/sec 
   AddTestCase (new LenaPssFfMacSchedulerTestCase1 (1,0,9000,232000,232000,200,1));
   AddTestCase (new LenaPssFfMacSchedulerTestCase1 (3,0,9000,199000,137000,200,1));
   AddTestCase (new LenaPssFfMacSchedulerTestCase1 (6,0,9000,99500,67000,200,1));
   AddTestCase (new LenaPssFfMacSchedulerTestCase1 (12,0,9000,49750,32000,200,1));
-  AddTestCase (new LenaPssFfMacSchedulerTestCase1 (15,0,9000,39800,15000,200,1));
  
   // DONWLINK - DISTANCE 15000 -> MCS 6 -> Itbs 6 (from table 7.1.7.2.1-1 of 36.213)
   // Traffic info
@@ -174,18 +162,15 @@ LenaTestPssFfMacSchedulerSuite::LenaTestPssFfMacSchedulerSuite ()
   // 3 user -> 232000 * 3 = 696000 > 309000 -> througphut = 309000 / 3 = 103000byte/sec
   // 6 user -> 232000 * 6 = 139200 > 309000 -> throughput = 309000 / 6 = 51500 byte/sec
   // 12 user -> 232000 * 12 = 2784000 > 309000 -> throughput = 309000 / 12 = 25750 byte/sec
-  // 15 user -> 232000 * 15 = 3480000 > 309000 -> throughput = 309000 / 15 = 20600 byte/sec
   // UPLINK - DISTANCE 15000 -> MCS 6 -> Itbs 6 (from table 7.1.7.2.1-1 of 36.213)
   // 1 user -> 25 PRB at Itbs 6 -> 233 -> 233000 > 232000 -> throughput = 232000 bytes/sec
   // 3 users -> 8 PRB at Itbs 6 -> 69 -> 69000 < 232000 -> throughput = 69000 bytes/sec
   // 6 users -> 4 PRB at Itbs 6 -> 32 -> 32000 < 232000 -> throughput = 32000 bytes/sec
   // 12 users -> 2 PRB at Itbs 6 -> 15 -> 15000 < 232000 -> throughput = 15000 bytes/sec
-  // 15 users -> 1 PRB at Itbs 6 -> 7 -> 7000 bytes/sec
   AddTestCase (new LenaPssFfMacSchedulerTestCase1 (1,0,15000,232000,232000,200,1));
   AddTestCase (new LenaPssFfMacSchedulerTestCase1 (3,0,15000,103000,69000,200,1));
   AddTestCase (new LenaPssFfMacSchedulerTestCase1 (6,0,15000,51500,32000,200,1));
   AddTestCase (new LenaPssFfMacSchedulerTestCase1 (12,0,15000,25750,15000,200,1));
-  AddTestCase (new LenaPssFfMacSchedulerTestCase1 (15,0,15000,20600,7000,200,1));
 
   // Test Case 2: homogeneous flow test in PSS (different distance)
   // Traffic1 info
