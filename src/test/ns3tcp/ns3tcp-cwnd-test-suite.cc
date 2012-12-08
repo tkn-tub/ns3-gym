@@ -555,7 +555,7 @@ Ns3TcpCwndTestCase2::DoRun (void)
   //Leaving fast recovery
   NS_TEST_ASSERT_MSG_EQ (m_responses.Get (29).m_newCwnd, 5 * MSS, "Wrong new cwnd value in cwnd change event " << 29);  
   
-  int cwnd = 5 * MSS;
+  uint32_t cwnd = 5 * MSS;
   //In CongAvoid each event will increase cwnd by (MSS * MSS / cwnd)
   for (uint32_t i = 30; i < N_EVENTS; ++i)
     {
