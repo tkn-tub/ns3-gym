@@ -313,7 +313,7 @@ section, so go ahead and expand that documentation node.  Now, expand the
 ``Debugging`` book and then select the ``Logging`` page.
 
 You should now be looking at the Doxygen documentation for the Logging module.
-In the list of ``#define`` s at the top of the page you will see the entry
+In the list of ``#define``'s at the top of the page you will see the entry
 for ``NS_LOG_COMPONENT_DEFINE``.  Before jumping in, it would probably be 
 good to look for the "Detailed Description" of the logging module to get a 
 feel for the overall operation.  You can either scroll down or select the
@@ -339,6 +339,20 @@ This is just the declaration of the main function of your program (script).
 Just as in any C++ program, you need to define a main function that will be 
 the first function run.  There is nothing at all special here.  Your 
 |ns3| script is just a C++ program.
+
+The next line sets the time resolution to one nanosecond, which happens
+to be the default value:
+
+::
+
+    Time::SetResolution (Time::NS);
+
+You can change the resolution exactly once (which must be before
+``Simulator::Run ()`` is called, below).  The mechanism enabling this
+flexibility is somewhat memory hungry, so once the resolution has been
+set explicitly we release the memory, preventing further updates.  (If
+you don't set the resolution explicitly, it will default to one nanosecond,
+and the memory will be released when the simulation starts.)
 
 The next two lines of the script are used to enable two logging components that
 are built into the Echo Client and Echo Server applications:

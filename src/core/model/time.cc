@@ -21,22 +21,22 @@
  */
 #include "nstime.h"
 #include "abort.h"
+#include "log.h"
 #include "global-value.h"
 #include "enum.h"
 #include "string.h"
 #include "object.h"
 #include "config.h"
-#include "log.h"
+#include "simulator.h"
 #include <cmath>
 #include <sstream>
 
-namespace ns3 {
-
 NS_LOG_COMPONENT_DEFINE ("Time");
+
+namespace ns3 {
 
 Time::Time (const std::string& s)
 {
-  NS_LOG_FUNCTION (this << &s);
   std::string::size_type n = s.find_first_not_of ("+-0123456789.");
   if (n != std::string::npos)
     { // Found non-numeric
@@ -48,62 +48,82 @@ Time::Time (const std::string& s)
       if (trailer == std::string ("s"))
         {
           *this = Time::FromDouble (r, Time::S);
-          return;
         }
-      if (trailer == std::string ("ms"))
+      else if (trailer == std::string ("ms"))
         {
           *this = Time::FromDouble (r, Time::MS);
-          return;
         }
-      if (trailer == std::string ("us"))
+      else if (trailer == std::string ("us"))
         {
           *this = Time::FromDouble (r, Time::US);
-          return;
         }
-      if (trailer == std::string ("ns"))
+      else if (trailer == std::string ("ns"))
         {
           *this = Time::FromDouble (r, Time::NS);
-          return;
         }
-      if (trailer == std::string ("ps"))
+      else if (trailer == std::string ("ps"))
         {
           *this = Time::FromDouble (r, Time::PS);
-          return;
         }
-      if (trailer == std::string ("fs"))
+      else if (trailer == std::string ("fs"))
         {
           *this = Time::FromDouble (r, Time::FS);
-          return;
         }
-      NS_ABORT_MSG ("Can't Parse Time " << s);
+      else
+        {
+          NS_ABORT_MSG ("Can't Parse Time " << s);
+        }
     }
-  // else
-  // they didn't provide units, assume seconds
-  std::istringstream iss;
-  iss.str (s);
-  double v;
-  iss >> v;
-  *this = Time::FromDouble (v, Time::S);
+  else
+    {
+      // they didn't provide units, assume seconds
+      std::istringstream iss;
+      iss.str (s);
+      double v;
+      iss >> v;
+      *this = Time::FromDouble (v, Time::S);
+    }
+  
+  TimeSet (this);
 }
 
+// static
 struct Time::Resolution
-Time::GetNsResolution (void)
+Time::SetDefaultNsResolution (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION_NOARGS();
   struct Resolution resolution;
-  SetResolution (Time::NS, &resolution);
+  SetResolution (Time::NS, &resolution, false);
   return resolution;
 }
+
+// static
 void 
 Time::SetResolution (enum Unit resolution)
 {
   NS_LOG_FUNCTION (resolution);
   SetResolution (resolution, PeekResolution ());
 }
-void 
-Time::SetResolution (enum Unit unit, struct Resolution *resolution)
+
+// static
+enum Time::Unit
+Time::GetResolution (void)
 {
-  NS_LOG_FUNCTION (unit << resolution);
+  NS_LOG_FUNCTION_NOARGS();
+  return PeekResolution ()->unit;
+}
+
+// static
+void 
+Time::SetResolution (enum Unit unit, struct Resolution *resolution,
+                     const bool convert /* = true */)
+{
+  NS_LOG_FUNCTION (unit << resolution << convert);
+  if (convert)
+    { // We have to convert old values
+      ConvertTimes (unit);
+    }
+  
   int8_t power [LAST] = { 15, 12, 9, 6, 3, 0};
   for (int i = 0; i < Time::LAST; i++)
     {
@@ -136,18 +156,115 @@ Time::SetResolution (enum Unit unit, struct Resolution *resolution)
     }
   resolution->unit = unit;
 }
-enum Time::Unit
-Time::GetResolution (void)
+
+
+// static
+Time::TimesSet *
+Time::GetTimesSet ( const bool deleteMe /* = false */ )
 {
-  NS_LOG_FUNCTION_NOARGS ();
-  return PeekResolution ()->unit;
+  static TimesSet * times = new TimesSet;  
+
+  if (deleteMe)
+    {
+      NS_LOG_LOGIC ("deleting TimesSet");
+      if (times)
+        {
+          delete times;
+        }
+      times = 0;
+    }
+
+  return times;
 }
 
+// static
+void
+Time::DeleteTimesSet ()
+{
+  NS_LOG_FUNCTION_NOARGS();
+  Time::GetTimesSet (true);
+}
+
+// static
+void
+Time::TimeSet (Time * const time)
+{
+  NS_ASSERT (time != 0);
+
+  TimesSet * times = GetTimesSet();
+  if (times)
+    {
+      std::pair< TimesSet::iterator, bool> ret;
+      ret = times->insert ( time);
+      NS_LOG_LOGIC ("\t[" << times->size () << "] recording " << time);
+  
+      if (ret.second == false)
+        {
+          NS_LOG_WARN ("already recorded " << time << "!");
+        }
+      // If this is the first Time, schedule the cleanup.
+      if (times->size () == 1)
+        {
+          // We schedule here, after the first event has been added,
+          // rather than in GetTimesSet when the set is empty.
+          // Scheduling there creates another Time, which
+          // finds an empty set and schedules an event . . .
+          // Doing it here, the schedule creates the second Time,
+          // which doesn't recurse.
+          NS_LOG_LOGIC ("scheduling DeleteTimesSet()");
+          Simulator::Schedule ( Seconds (0), & DeleteTimesSet);
+        }
+    }
+}
+
+// static
+void
+Time::TimeUnset (Time * const time)
+{
+  NS_ASSERT (time != 0);
+  TimesSet * times = GetTimesSet ();
+  if (times)
+    {
+      NS_ASSERT_MSG (times->count (time) == 1,
+		     "Time object " << time << " registered "
+		     << times->count (time) << " times (should be 1)." );
+
+      TimesSet::size_type num = times->erase (time);
+      if (num != 1)
+        {
+          NS_LOG_WARN ("unexpected result erasing " << time << "!");
+          NS_LOG_WARN ("got " << num << ", expected 1");
+        }
+      else
+        {
+          NS_LOG_LOGIC ("\t[" << times->size () << "] removing  " << time);
+        }
+    }
+}
+
+// static
+void
+Time::ConvertTimes (const enum Unit unit)
+{
+  NS_LOG_FUNCTION_NOARGS();
+  TimesSet * times = GetTimesSet ();
+  NS_ASSERT_MSG (times != 0, "No Time registry. Time::SetResolution () called mare than once?");
+  
+  for ( TimesSet::iterator it = times->begin();
+        it != times->end();
+        it++ )
+    {
+      Time * const tp = *it;
+      (*tp) = tp->ToInteger (unit);
+    }
+
+  NS_LOG_LOGIC ("logged " << GetTimesSet ()->size () << " Time objects.");
+  GetTimesSet (true);
+}
 
 std::ostream&
 operator<< (std::ostream& os, const Time & time)
 {
-  NS_LOG_FUNCTION (&os << time);
   std::string unit;
   switch (Time::GetResolution ())
     {
@@ -180,7 +297,6 @@ operator<< (std::ostream& os, const Time & time)
 }
 std::istream& operator>> (std::istream& is, Time & time)
 {
-  NS_LOG_FUNCTION (&is << time);
   std::string value;
   is >> value;
   time = Time (value);
