@@ -18,8 +18,8 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#ifndef LOG_H
-#define LOG_H
+#ifndef NS3_LOG_H
+#define NS3_LOG_H
 
 #include <string>
 #include <iostream>
@@ -55,7 +55,8 @@ enum LogLevel {
   LOG_PREFIX_FUNC    = 0x80000000, // prefix all trace prints with function
   LOG_PREFIX_TIME    = 0x40000000, // prefix all trace prints with simulation time
   LOG_PREFIX_NODE    = 0x20000000, // prefix all trace prints with simulation node
-  LOG_PREFIX_LEVEL   = 0x10000000  // prefix all trace prints with log level (severity)
+  LOG_PREFIX_LEVEL   = 0x10000000, // prefix all trace prints with log level (severity)
+  LOG_PREFIX_ALL     = 0xf0000000  // all prefixes
 };
 
 /**
@@ -392,7 +393,6 @@ public:
   char const *Name (void) const;
   std::string GetLevelLabel(const enum LogLevel level) const;
 private:
-  std::map<enum LogLevel, std::string> LevelLabels() const;
   int32_t     m_levels;
   char const *m_name;
 };
@@ -424,4 +424,4 @@ public:
 } // namespace ns3
 
 
-#endif /* LOG_H */
+#endif /* NS3_LOG_H */
