@@ -475,7 +475,7 @@ UeManager::RecvHandoverRequestAck (EpcX2SapUser::HandoverRequestAckParams params
   NS_LOG_FUNCTION (this);
   
   NS_ASSERT_MSG (params.notAdmittedBearers.empty (), "not admission of some bearers upon handover is not supported");
-  //  NS_ASSERT_MSG (params.admittedBearers.size () == m_drbMap.size (), "not enough bearers in admittedBearers");
+  NS_ASSERT_MSG (params.admittedBearers.size () == m_drbMap.size (), "not enough bearers in admittedBearers");
 
   // note: the Handover command from the target eNB to the source eNB
   // is expected to be sent transparently to the UE; however, here we
@@ -1353,9 +1353,9 @@ LteEnbRrc::DoRecvHandoverRequest (EpcX2SapUser::HandoverRequestParams req)
        ++it)
     {
       ueManager->SetupDataRadioBearer (it->erabLevelQosParameters, it->erabId, it->gtpTeid, it->transportLayerAddress);
-      // EpcX2Sap::ErabAdmittedItem i;
-      // i.erabId = it->erabId;
-      //ackParams.admittedBearers.push_back (i);
+      EpcX2Sap::ErabAdmittedItem i;
+      i.erabId = it->erabId;
+      ackParams.admittedBearers.push_back (i);
     }
 
   LteRrcSap::RrcConnectionReconfiguration handoverCommand = ueManager->GetRrcConnectionReconfigurationForHandover ();
