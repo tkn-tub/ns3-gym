@@ -527,7 +527,7 @@ EpcX2HandoverRequestAckHeader::Deserialize (Buffer::Iterator start)
       erabItem.dlGtpTeid = i.ReadNtohU32 ();
 
       m_erabsAdmittedList.push_back (erabItem);
-      m_headerLength += 6;
+      m_headerLength += 10;
     }
 
   sz = i.ReadNtohU32 ();
