@@ -1970,37 +1970,25 @@ PfFfMacScheduler::UpdateDlRlcBufferInfo (uint16_t rnti, uint8_t lcid, uint16_t s
       NS_LOG_INFO (this << " UE " << rnti << " LC " << (uint16_t)lcid << " txqueue " << (*it).second.m_rlcTransmissionQueueSize << " retxqueue " << (*it).second.m_rlcRetransmissionQueueSize << " status " << (*it).second.m_rlcStatusPduSize << " decrease " << size);
       // Update queues: RLC tx order Status, ReTx, Tx
       // Update status queue
-      if ((*it).second.m_rlcStatusPduSize <= size)
+      if (((*it).second.m_rlcStatusPduSize > 0) && (size >= (*it).second.m_rlcStatusPduSize))
         {
-          size -= (*it).second.m_rlcStatusPduSize;
-          (*it).second.m_rlcStatusPduSize = 0;
+           (*it).second.m_rlcStatusPduSize = 0;
         }
-      else
+      else if (((*it).second.m_rlcRetransmissionQueueSize > 0) && (size >= (*it).second.m_rlcRetransmissionQueueSize))
         {
-          (*it).second.m_rlcStatusPduSize -= size;
-          return;
-        }
-      // update retransmission queue
-      if ((*it).second.m_rlcRetransmissionQueueSize <= size)
-        {
-          size -= (*it).second.m_rlcRetransmissionQueueSize;
           (*it).second.m_rlcRetransmissionQueueSize = 0;
         }
-      else
+      else if ((*it).second.m_rlcTransmissionQueueSize > 0)
         {
-          (*it).second.m_rlcRetransmissionQueueSize -= size;
-          return;
-        }
-      // update transmission queue
-      if ((*it).second.m_rlcTransmissionQueueSize <= size)
-        {
-          size -= (*it).second.m_rlcTransmissionQueueSize;
-          (*it).second.m_rlcTransmissionQueueSize = 0;
-        }
-      else
-        {
-          (*it).second.m_rlcTransmissionQueueSize -= size;
-          return;
+          // update transmission queue
+          if ((*it).second.m_rlcTransmissionQueueSize <= size)
+            {
+              (*it).second.m_rlcTransmissionQueueSize = 0;
+            }
+          else
+            {
+              (*it).second.m_rlcTransmissionQueueSize -= size;
+            }
         }
     }
   else
