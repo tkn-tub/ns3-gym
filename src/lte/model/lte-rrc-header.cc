@@ -1561,7 +1561,7 @@ LteRrcSap::RrcConnectionRequest
 RrcConnectionRequestHeader::GetMessage () const
 {
   RrcConnectionRequest msg;
-  msg.ueIdentity = (m_mmec.to_ulong () << 32) | (m_mTmsi.to_ulong ());
+  msg.ueIdentity = (((uint64_t) m_mmec.to_ulong ()) << 32) | (m_mTmsi.to_ulong ());
 
   return msg;
 }
