@@ -153,6 +153,7 @@ UeManager::DoStart ()
   m_physicalConfigDedicated.antennaInfo.transmissionMode = m_rrc->m_defaultTransmissionMode;
   m_physicalConfigDedicated.haveSoundingRsUlConfigDedicated = true;
   m_physicalConfigDedicated.soundingRsUlConfigDedicated.srsConfigIndex = m_rrc->GetNewSrsConfigurationIndex ();
+  m_physicalConfigDedicated.soundingRsUlConfigDedicated.type = LteRrcSap::SoundingRsUlConfigDedicated::SETUP;
 
   m_rrc->m_cmacSapProvider->AddUe (m_rnti);
   m_rrc->m_cphySapProvider->AddUe (m_rnti);
