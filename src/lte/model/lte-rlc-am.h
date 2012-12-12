@@ -69,6 +69,8 @@ private:
 // 
   void ReassembleAndDeliver (Ptr<Packet> packet);
 
+  void DoReportBufferStatus ();
+
 private:
     std::vector < Ptr<Packet> > m_txonBuffer;       // Transmission buffer
     std::vector < Ptr<Packet> > m_txedBuffer;       // Transmitted packets buffer

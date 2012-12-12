@@ -125,42 +125,7 @@ LteRlcAm::DoTransmitPdcpPdu (Ptr<Packet> p)
   NS_LOG_LOGIC ("txonBufferSize = " << m_txonBufferSize);
 
   /** Report Buffer Status */
-
-  // Transmission Queue HOL time
-  RlcTag txonQueueHolTimeTag;
-  m_txonBuffer.front ()->PeekPacketTag (txonQueueHolTimeTag);
-  Time txonQueueHolDelay = now - txonQueueHolTimeTag.GetSenderTimestamp ();
-
-  // Retransmission Queue HOL time
-  RlcTag retxQueueHolTimeTag;
-  Time retxQueueHolDelay (0);
-  if ( m_retxBufferSize )
-    {
-//MRE      m_retxBuffer.front ().m_pdu->PeekPacketTag (retxQueueHolTimeTag);
-      retxQueueHolDelay = now - retxQueueHolTimeTag.GetSenderTimestamp ();
-    }
-
-  LteMacSapProvider::ReportBufferStatusParameters r;
-  r.rnti = m_rnti;
-  r.lcid = m_lcid;
-  r.txQueueSize = m_txonBufferSize;
-  r.txQueueHolDelay = txonQueueHolDelay.GetMilliSeconds ();
-  r.retxQueueSize = m_retxBufferSize;
-  r.retxQueueHolDelay = retxQueueHolDelay.GetMilliSeconds ();
-
-  if ( m_statusPduRequested && ! m_statusProhibitTimer.IsRunning () )
-    {
-      r.statusPduSize = m_statusPduBufferSize;
-    }
-  else
-    {
-      r.statusPduSize = 0;
-    }
-
-  NS_LOG_INFO ("Send ReportBufferStatus: " << r.txQueueSize << ", " << r.txQueueHolDelay << ", " 
-                                           << r.retxQueueSize << ", " << r.retxQueueHolDelay << ", " 
-                                           << r.statusPduSize);
-  m_macSapProvider->ReportBufferStatus (r);
+  DoReportBufferStatus ();
 }
 
 
@@ -209,7 +174,7 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId)
   else if ( m_retxBufferSize > 0 )
     {
       NS_LOG_LOGIC ("Sending data from Retransmission Buffer");
-      
+
       Ptr<Packet> packet = m_retxBuffer.at (m_vtA.GetValue ()).m_pdu->Copy ();
 
       if ( packet->GetSize () <= bytes )
@@ -519,7 +484,7 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId)
         {
           NS_LOG_LOGIC ("Start PollRetransmit timer");
 
-          m_pollRetransmitTimer = Simulator::Schedule (Time ("0.1s"),
+          m_pollRetransmitTimer = Simulator::Schedule (Time ("0.01s"),
                                                        &LteRlcAm::ExpirePollRetransmitTimer, this);
         }
       else
@@ -527,7 +492,7 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId)
           NS_LOG_LOGIC ("Restart PollRetransmit timer");
 
           m_pollRetransmitTimer.Cancel ();
-          m_pollRetransmitTimer = Simulator::Schedule (Time ("0.1s"),
+          m_pollRetransmitTimer = Simulator::Schedule (Time ("0.01s"),
                                                        &LteRlcAm::ExpirePollRetransmitTimer, this);
         }
     }
@@ -541,7 +506,7 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId)
   NS_LOG_LOGIC ("Put transmitted PDU in the txedBuffer");
   m_txedBufferSize += packet->GetSize ();
   m_txedBuffer.at ( rlcAmHeader.GetSequenceNumber ().GetValue () ) = packet->Copy ();
-  
+
   // Sender timestamp
   RlcTag rlcTag (Simulator::Now ());
   packet->AddByteTag (rlcTag);
@@ -660,47 +625,7 @@ LteRlcAm::DoReceivePdu (Ptr<Packet> p)
 
           if (! m_statusProhibitTimer.IsRunning ())
             {
-              Time now = Simulator::Now ();
-
-              // Transmission Queue HOL time
-              RlcTag txonQueueHolTimeTag;
-              Time txonQueueHolDelay (0);
-              if ( ! m_txonBuffer.empty () )
-                {
-                  m_txonBuffer.front ()->PeekPacketTag (txonQueueHolTimeTag);
-                  txonQueueHolDelay = now - txonQueueHolTimeTag.GetSenderTimestamp ();
-                }
-
-              // Retransmission Queue HOL time
-              RlcTag retxQueueHolTimeTag;
-              Time retxQueueHolDelay (0);
-              if ( m_retxBufferSize )
-                {
-                  m_retxBuffer.front ().m_pdu->PeekPacketTag (retxQueueHolTimeTag);
-                  retxQueueHolDelay = now - retxQueueHolTimeTag.GetSenderTimestamp ();
-                }
-
-              LteMacSapProvider::ReportBufferStatusParameters r;
-              r.rnti = m_rnti;
-              r.lcid = m_lcid;
-              r.txQueueSize = m_txonBufferSize;
-              r.txQueueHolDelay = txonQueueHolDelay.GetMilliSeconds ();
-              r.retxQueueSize = m_retxBufferSize;
-              r.retxQueueHolDelay = retxQueueHolDelay.GetMilliSeconds ();
-
-              if ( m_statusPduRequested && ! m_statusProhibitTimer.IsRunning () )
-                {
-                  r.statusPduSize = m_statusPduBufferSize;
-                }
-              else
-                {
-                  r.statusPduSize = 0;
-                }
-
-              NS_LOG_INFO ("Send ReportBufferStatus: " << r.txQueueSize << ", " << r.txQueueHolDelay << ", "
-                                                      << r.retxQueueSize << ", " << r.retxQueueHolDelay << ", "
-                                                      << r.statusPduSize );
-              m_macSapProvider->ReportBufferStatus (r);
+              DoReportBufferStatus ();
             }
         }
 
@@ -1514,6 +1439,58 @@ LteRlcAm::ReassembleAndDeliver (Ptr<Packet> packet)
 
 
 void
+LteRlcAm::DoReportBufferStatus (void)
+{
+  NS_LOG_FUNCTION (this);
+
+  Time now = Simulator::Now ();
+
+  // Transmission Queue HOL time
+  Time txonQueueHolDelay (0);
+  if ( m_txonBufferSize > 0 )
+    {
+      RlcTag txonQueueHolTimeTag;
+      m_txonBuffer.front ()->PeekPacketTag (txonQueueHolTimeTag);
+      txonQueueHolDelay = now - txonQueueHolTimeTag.GetSenderTimestamp ();
+    }
+
+  // Retransmission Queue HOL time
+  Time retxQueueHolDelay (0);
+  if ( m_retxBufferSize > 0 )
+    {
+      RlcTag retxQueueHolTimeTag;
+//       m_retxBuffer.front ().m_pdu->PeekPacketTag (retxQueueHolTimeTag);
+      retxQueueHolDelay = now - retxQueueHolTimeTag.GetSenderTimestamp ();
+    }
+
+  LteMacSapProvider::ReportBufferStatusParameters r;
+  r.rnti = m_rnti;
+  r.lcid = m_lcid;
+  r.txQueueSize = m_txonBufferSize;
+  r.txQueueHolDelay = txonQueueHolDelay.GetMilliSeconds ();
+  r.retxQueueSize = m_retxBufferSize;
+  r.retxQueueHolDelay = retxQueueHolDelay.GetMilliSeconds ();
+
+  if ( m_statusPduRequested && ! m_statusProhibitTimer.IsRunning () )
+    {
+      r.statusPduSize = m_statusPduBufferSize;
+    }
+  else
+    {
+      r.statusPduSize = 0;
+    }
+
+  NS_LOG_INFO ("Send ReportBufferStatus: " << r.txQueueSize << ", " << r.txQueueHolDelay << ", " 
+                                           << r.retxQueueSize << ", " << r.retxQueueHolDelay << ", " 
+                                           << r.statusPduSize);
+  m_macSapProvider->ReportBufferStatus (r);
+
+//   m_statusPduRequested = false;
+//   m_statusPduBufferSize = 0;
+}
+
+
+void
 LteRlcAm::ExpireReorderingTimer (void)
 {
   NS_LOG_FUNCTION (this);
@@ -1556,7 +1533,14 @@ LteRlcAm::ExpirePollRetransmitTimer (void)
   NS_LOG_FUNCTION (this);
   NS_LOG_LOGIC ("PollRetransmit Timer has expired");
 
+  NS_LOG_LOGIC ("txonBufferSize = " << m_txonBufferSize);
+  NS_LOG_LOGIC ("retxBufferSize = " << m_retxBufferSize);
+  NS_LOG_LOGIC ("txedBufferSize = " << m_txedBufferSize);
 
+  NS_LOG_LOGIC ("statusPduRequested = " << m_statusPduRequested);
+  NS_LOG_LOGIC ("VT(S) = " << m_vtS);
+
+  DoReportBufferStatus ();
 }
 
 
