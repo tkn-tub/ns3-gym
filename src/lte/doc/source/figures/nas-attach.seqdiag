@@ -3,28 +3,22 @@ diagram {
 	EpcUeNas; LteUeRrc; LteEnbRrc; EpcEnbApplication; EpcSgwPgwApplication; EpcMme;	
 	
 	
-	EpcUeNas -> LteUeRrc [label="ForceCampedOnEnb (CellID)"];
-	EpcUeNas => LteUeRrc [label="Connect (S-TMSI, InitialNasMessage = EMM ATTACH REQUEST + ESM PDN CONNECTIVITY REQUEST)"] {
-		LteUeRrc -> LteEnbRrc [label="RRC Connection Request (S-TMSI +  InitialNasMessage)"]
-		=== RRC connection establishment ===
-		LteUeRrc <- LteEnbRrc [label="RNTI"]
-		LteEnbRrc -> EpcEnbApplication [label="UL NAS fwd (initial UE message)"]
-		EpcEnbApplication -> EpcMme [label="S1-AP INITIAL UE MESSAGE (eNB UE S1 id = RNTI, S-TMSI, EGCI, NAS PDU)" return="InitialContextSetup (IMSI, RNTI, ERABs to be setup)"] 
-		EpcMme -> EpcMme [label="store IMSI->eNB UE id (RNTI) mapping"]
-		EpcMme -> EpcSgwPgwApplication [label="CreateSessionRequest (IMSI, EGCI, BearerContext)"] {			
-			EpcSgwPgwApplication => EpcSgwPgwApplication [label="Store UE IP<->eNB IP mapping"];
-			EpcSgwPgwApplication => EpcSgwPgwApplication [label="Create GTP-U tunnel endpoint"];
-		}
-		EpcMme <- EpcSgwPgwApplication [label="CreateSessionResponse (SGW-FQ-CSID, BearerContext)"]
-		EpcMme => EpcEnbApplication [label="InitialContextSetupRequest(TEID, IMSI, RNTI, ERABs to be setup (incl. TEIDs))"] {
-			EpcEnbApplication -> EpcEnbApplication [label="Create GTP-U tunnel endpoint (TEID)"];
-			EpcEnbApplication -> EpcEnbApplication [label="store TEID<->(RNTI,LCID) mapping"];
-			EpcEnbApplication => LteEnbRrc [label="RadioBearerSetupRequest (RNTI, QoS params, EBIs)", return="S1BearerSetupRequest (RNTI, LCID)"] {
-				LteEnbRrc -> LteUeRrc [label="RRC connection reconfiguration"];
-			}
-		}			
-	}
-	EpcUeNas <- EpcMme [label="EMM ATTACH COMPLETE + ESM ACTIVATE DEFAULT EPS BEARER REQUEST"]
-	EpcUeNas -> EpcMme [label="ESM ACTIVATE DEFAULT EPS BEARER RESPONSE"]
+	EpcUeNas ->> LteUeRrc [label="ForceCampedOnEnb (CellId)"];
+	EpcUeNas ->> LteUeRrc [label="Connect"] 
+	LteUeRrc ->> LteEnbRrc [label="RRC Connection Request"]	
+	LteEnbRrc ->> EpcEnbApplication [label="initial UE message"]		
+	EpcEnbApplication ->> EpcMme [label="S1-AP INITIAL UE MESSAGE"]
+	EpcMme ->> EpcMme [label="store IMSI->eNB UE id (RNTI) mapping"]
+	EpcMme ->> EpcSgwPgwApplication [label="S11 CREATE SESSION"]
+	EpcSgwPgwApplication ->> EpcSgwPgwApplication [label="setup S1-U bearers"]
+	EpcMme <<- EpcSgwPgwApplication [label="S11 CREATE SESSION RESPONSE"]
+	EpcEnbApplication <<- EpcMme [label="S1-AP INITIAL CONTEXT SETUP (bearers to be created)"]
+	EpcEnbApplication ->> EpcMme [label="S1-AP INITIAL CONTEXT SETUP RESPONSE"]
+	EpcEnbApplication ->> EpcEnbApplication [label="setup S1-U bearers"]	
+	LteEnbRrc <<- EpcEnbApplication [label="DataRadioBearerSetupRequest"]		
+	LteEnbRrc ->> LteEnbRrc  [label="setup data radio bearers"]
+	LteUeRrc <<- LteEnbRrc [label="RRC Connection Reconfiguration"]	
+	LteUeRrc ->> LteUeRrc  [label="setup data radio bearers"]
+	LteUeRrc ->> LteEnbRrc [label="RRC Connection Reconfiguration Completed"]
 }
 

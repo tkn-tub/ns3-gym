@@ -9,8 +9,13 @@
 .. _overall-architecture:
 
 -----------------------
-Overall Architecture 
+Architecture
 -----------------------
+
+
+Overview
+++++++++
+
 
 The overall architecture of the LENA simulation model is depicted in
 the figure :ref:`fig-epc-topology`. There are two main components:
@@ -19,10 +24,10 @@ the figure :ref:`fig-epc-topology`. There are two main components:
    stack (RRC, PDCP, RLC, MAC, PHY). These entities reside entirely within the
    UE and the eNB nodes.
 
-* the EPC Model. This models includes core network
-  interfaces, protocols and entities. These entities and protocols
-  reside within the SGW, PGW and MME nodes, and partially within the
-  eNB nodes.
+ * the EPC Model. This models includes core network
+   interfaces, protocols and entities. These entities and protocols
+   reside within the SGW, PGW and MME nodes, and partially within the
+   eNB nodes.
 
 
 Each component of the overall architecture is explained in detail in
@@ -42,13 +47,13 @@ the following subsections.
 
 
 
----------------
+
 LTE Model 
----------------
+++++++++++
 
 
 Design Criteria
-+++++++++++++++
+---------------
 
 
 The LTE model has been designed to support the evaluation of the following aspects of LTE systems:  
@@ -117,12 +122,6 @@ have been considered:
 
 
 
-Architecture
-++++++++++++
-
-For the sake of an easier explanation, we consider separately the architecture of the UE and eNB nodes. 
-
-
 UE architecture
 ---------------
 
@@ -150,7 +149,7 @@ The architecture of the PHY/channel model of the UE is represented in figure :re
 
 
 eNB architecture
----------------
+----------------
 
 The architecture of the LTE radio protocol stack model of the eNB is represented in the figure :ref:`fig-lte-arch-enb`. 
 
@@ -175,9 +174,9 @@ The architecture of the PHY/channel model of the eNB is represented in figure :r
 
 
 
-----------------
+
 EPC Model
-----------------
++++++++++
 
 
 
@@ -190,7 +189,7 @@ network topology is depicted in Figure :ref:`fig-epc-topology`.
 
 
 Design Criteria
-+++++++++++++++
+---------------
 
 
 The following design choices have been made for the EPC model:
@@ -233,15 +232,14 @@ The following design choices have been made for the EPC model:
 
 
 
-Architecture
-++++++++++++
 
-The focus of the EPC model is currently on the EPC data plane. To
-understand the architecture of this model, we first look at Figure
-:ref:`fig-lte-epc-e2e-data-protocol-stack`, where we represent the
-end-to-end LTE-EPC protocol stack as it is 
-implemented in the simulator. From the figure, it is evident that the
-biggest simplification introduced in the EPC model for the data plane
+EPC data plane
+--------------
+
+In Figure :ref:`fig-lte-epc-e2e-data-protocol-stack`, we represent the
+end-to-end LTE-EPC data plane protocol stack as it is modeled in the
+simulator. From the figure, it is evident that the 
+biggest simplification introduced in the data plane model
 is the inclusion of the SGW and PGW functionality within a single
 SGW/PGW node, which removes the need for the S5 or S8 interfaces 
 specified by 3GPP. On the other hand, for both the S1-U protocol stack and
@@ -402,20 +400,102 @@ VirtualNetDevice, and the packet will go through the dowlink delivery
 process in order to reach its destination UE.
 
 
-
------------------------------------------
-Detailed description of protocol elements
------------------------------------------
-
-
-
-
+------
 MAC 
-+++
+------
   
 
+Resource Allocation Model
++++++++++++++++++++++++++
+
+
+We now briefly describe how resource allocation is handled in LTE,
+clarifying how it is modeled in the simulator. The scheduler is in
+charge of generating specific structures calles Data Control Indication (DCI)
+which are then transmitted by the PHY of the eNB to the connected UEs, in order
+to inform them of the resource allocation on a per subframe basis. In doing this
+in the downlink direction, the scheduler has to fill some specific fields of the
+DCI structure with all the information, such as: the Modulation and Coding
+Scheme (MCS) to be used, the MAC Transport Block (TB) size, and the allocation
+bitmap which identifies which RBs will contain the data
+transmitted by the eNB to each user. 
+
+For the mapping of resources to
+physical RBs, we adopt a *localized mapping* approach
+(see [Sesia2009]_, Section 9.2.2.1);
+hence in a given subframe each RB is always allocated to the same user in both
+slots.
+The allocation bitmap can be coded in
+different formats; in this implementation, we considered the *Allocation
+Type 0* defined in [TS36213]_, according to which the RBs are grouped in
+Resource Block Groups (RBG) of different size determined as a function of the
+Transmission Bandwidth Configuration in use.
+
+For certain bandwidth
+values not all the RBs are usable, since the 
+group size is not a common divisor of the group. This is for instance the case
+when the bandwidth is equal to 25 RBs, which results in a RBG size of 2 RBs, and
+therefore 1 RB will result not addressable. 
+In uplink the format of the DCIs is different, since only adjacent RBs
+can be used because of the SC-FDMA modulation. As a consequence, all
+RBs can be allocated by the eNB regardless of the bandwidth
+configuration. 
+
+.. _sec-lte-amc:
+
+Adaptive Modulation and Coding
+++++++++++++++++++++++++++++++
+
+The simulator provides two Adaptive Modulation and Coding (AMC) models: one based on the GSoC model [Piro2011]_ and one based on the physical error model (described in the following sections).
+
+The former model is a modified version of the model described in [Piro2011]_,
+which in turn is inspired from [Seo2004]_. Our version is described in the
+following. Let :math:`i` denote the
+generic user, and let :math:`\gamma_i` be its SINR. We get the spectral efficiency
+:math:`\eta_i` of user :math:`i` using the following equations:
+
+.. math::
+
+   \mathrm{BER} = 0.00005
+
+   \Gamma = \frac{ -\ln{ (5 * \mathrm{BER}) } }{ 1.5}
+
+   \eta_i = \log_2 { \left( 1 + \frac{ {\gamma}_i }{ \Gamma } \right)}
+
+The procedure described in [R1-081483]_ is used to get
+the corresponding MCS scheme. The spectral efficiency is quantized based on the
+channel quality indicator (CQI), rounding to the lowest value, and is mapped to the corresponding MCS
+scheme. 
+
+Finally, we note that there are some discrepancies between the MCS index
+in [R1-081483]_
+and that indicated by the standard:  [TS36213]_ Table
+7.1.7.1-1 says that the MCS index goes from 0 to 31, and 0 appears to be a valid
+MCS scheme (TB size is not 0) but in [R1-081483]_ the first useful MCS
+index
+is 1. Hence to get the value as intended by the standard we need to subtract 1
+from the index reported in [R1-081483]_. 
+
+The alternative model is based on the physical error model developed for this simulator and explained in the following subsections. This scheme is able to adapt the MCS selection to the actual PHY layer performance according to the specific CQI report. According to their definition, a CQI index is assigned when a single PDSCH TB with the modulation coding scheme and code rate correspondent to that CQI index in table 7.2.3-1 of [TS36213]_ can be received with an error probability less than 0.1. In case of wideband CQIs, the reference TB includes all the RBGs available in order to have a reference based on the whole available resources; while, for subband CQIs, the reference TB is sized as the RBGs.
+
+
+Transport Block model
++++++++++++++++++++++
+
+The model of the MAC Transport Blocks (TBs) provided by the simulator
+is simplified with respect to the 3GPP specifications. In particular,
+a simulator-specific class (PacketBurst) is used to aggregate 
+MAC SDUs in order to achieve the simulator's equivalent of a TB,
+without the corresponding implementation complexity. 
+The multiplexing of different logical channels to and from the RLC
+layer is performed using a dedicated packet tag (LteRadioBearerTag), which
+performs a functionality which is partially equivalent to that of the
+MAC headers specified by 3GPP. 
+
+
+
 The FemtoForum MAC Scheduler Interface
---------------------------------------
+++++++++++++++++++++++++++++++++++++++
 
 This section describes the ns-3 specific version of the LTE MAC
 Scheduler Interface Specification published by the FemtoForum [FFAPI]_.
@@ -489,90 +569,10 @@ modifications. The same figure also shows, as an example, how the Round Robin
 Scheduler is implemented: to interact with the MAC of the eNB, the Round Robin
 scheduler implements the Provider side of the SCHED SAP and CSCHED
 SAP interfaces. A similar approach can be used to implement other schedulers as
-well. A description of all the scheduler implementations that we provide as
-part of our LTE simulation module will be given in
-the following.
+well. A description of each of the scheduler implementations that we provide as
+part of our LTE simulation module is provided in the following subsections.
 
 
-Resource Allocation Model
--------------------------
-
-
-We now briefly describe how resource allocation is handled in LTE,
-clarifying how it is implemented in the simulator. The scheduler is in
-charge of generating specific structures calles Data Control Indication (DCI)
-which are then transmitted by the PHY of the eNB to the connected UEs, in order
-to inform them of the resource allocation on a per subframe basis. In doing this
-in the downlink direction, the scheduler has to fill some specific fields of the
-DCI structure with all the information, such as: the Modulation and Coding
-Scheme (MCS) to be used, the MAC Transport Block (TB) size, and the allocation
-bitmap which identifies which RBs will contain the data
-transmitted by the eNB to each user. 
-
-For the mapping of resources to
-physical RBs, we adopt a *localized mapping* approach
-(see [Sesia2009]_, Section 9.2.2.1);
-hence in a given subframe each RB is always allocated to the same user in both
-slots.
-The allocation bitmap can be coded in
-different formats; in this implementation, we considered the *Allocation
-Type 0* defined in [TS36213]_, according to which the RBs are grouped in
-Resource Block Groups (RBG) of different size determined as a function of the
-Transmission Bandwidth Configuration in use.
-
-For certain bandwidth
-values not all the RBs are usable, since the 
-group size is not a common divisor of the group. This is for instance the case
-when the bandwidth is equal to 25 RBs, which results in a RBG size of 2 RBs, and
-therefore 1 RB will result not addressable. 
-In uplink the format of the DCIs is different, since only adjacent RBs
-can be used because of the SC-FDMA modulation. As a consequence, all
-RBs can be allocated by the eNB regardless of the bandwidth
-configuration. 
-
-.. _sec-lte-amc:
-
-Adaptive Modulation and Coding
-------------------------------
-
-The simulator provides two Adaptive Modulation and Coding (AMC) models: one based on the GSoC model [Piro2011]_ and one based on the physical error model (described in the following sections).
-
-The former model is a modified version of the model described in [Piro2011]_,
-which in turn is inspired from [Seo2004]_. Our version is described in the
-following. Let :math:`i` denote the
-generic user, and let :math:`\gamma_i` be its SINR. We get the spectral efficiency
-:math:`\eta_i` of user :math:`i` using the following equations:
-
-.. math::
-
-   \mathrm{BER} = 0.00005
-
-   \Gamma = \frac{ -\ln{ (5 * \mathrm{BER}) } }{ 1.5}
-
-   \eta_i = \log_2 { \left( 1 + \frac{ {\gamma}_i }{ \Gamma } \right)}
-
-The procedure described in [R1-081483]_ is used to get
-the corresponding MCS scheme. The spectral efficiency is quantized based on the
-channel quality indicator (CQI), rounding to the lowest value, and is mapped to the corresponding MCS
-scheme. 
-
-Finally, we note that there are some discrepancies between the MCS index
-in [R1-081483]_
-and that indicated by the standard:  [TS36213]_ Table
-7.1.7.1-1 says that the MCS index goes from 0 to 31, and 0 appears to be a valid
-MCS scheme (TB size is not 0) but in [R1-081483]_ the first useful MCS
-index
-is 1. Hence to get the value as intended by the standard we need to subtract 1
-from the index reported in [R1-081483]_. 
-
-The alternative model is based on the physical error model developed for this simulator and explained in the following subsections. This scheme is able to adapt the MCS selection to the actual PHY layer performance according to the specific CQI report. According to their definition, a CQI index is assigned when a single PDSCH TB with the modulation coding scheme and code rate correspondent to that CQI index in table 7.2.3-1 of [TS36213]_ can be received with an error probability less than 0.1. In case of wideband CQIs, the reference TB includes all the RBGs available in order to have a reference based on the whole available resources; while, for subband CQIs, the reference TB is sized as the RBGs.
-
-
-.. only:: latex
-
-    .. raw:: latex
-
-        \clearpage
 
 Round Robin (RR) Scheduler
 --------------------------
@@ -585,11 +585,6 @@ For what concern the HARQ, RR implements the non adaptive version, which implies
   Config::SetDefault ("ns3::RrFfMacScheduler::HarqEnabled", BooleanValue (false));
 
 
-.. only:: latex
-
-    .. raw:: latex
-
-        \clearpage
 
 Proportional Fair (PF) Scheduler
 --------------------------------
@@ -663,35 +658,95 @@ For what concern the HARQ, PF implements the non adaptive version, which implies
 
   Config::SetDefault ("ns3::PfFfMacScheduler::HarqEnabled", BooleanValue (false));
 
-Transport Blocks
-----------------
 
-The implementation of the MAC Transport Blocks (TBs) is simplified with
-respect to the 3GPP specifications. In particular, a simulator-specific class (PacketBurst) is used to aggregate
-MAC SDUs in order to achieve the simulator's equivalent of a TB,
-without the corresponding implementation complexity. 
-The multiplexing of different logical channels to and from the RLC
-layer is performed using a dedicated packet tag (LteRadioBearerTag), which
-performs a functionality which is partially equivalent to that of the
-MAC headers specified by 3GPP. 
+Random Access
++++++++++++++
+
+The LTE model includes a model of the Random Access procedure based on
+some simplifying assumptions, which are detailed in the following for
+each of the messages and signals described in the specs [TS36321]_.
+
+   - **Random Access (RA) preamble**: in real LTE systems this
+     corresponds to a Zadoff-Chu (ZC)
+     sequence using one of several formats available and sent in the
+     PRACH slots which could in principle overlap with PUSCH.
+     The RA preamble is modeled using the LteControlMessage class,
+     i.e., as an ideal message that does not consume any radio
+     resources. The collision of preamble transmission by multiple UEs
+     in the same cell are modeled using a protocol interference model,
+     i.e., whenever two or more identical preambles are transmitted in
+     same cell at the same TTI, no one of these identical preambles
+     will be received by the eNB. Other than this collision model, no
+     error model is associated with the reception of a RA preamble.
+
+   - **Random Access Response (RAR)**: in real LTE systems, this is a
+     special MAC PDU sent on the DL-SCH. Since MAC control elements are not
+     accurately modeled in the simulator (only RLC and above PDUs
+     are), the RAR is modeled as an LteControlMessage that does not
+     consume any radio resources. Still, during the RA procedure, the
+     LteEnbMac will request to the scheduler the allocation of
+     resources for the RAR using the FF MAC Scheduler primitive
+     SCHED_DL_RACH_INFO_REQ. Hence, an enhanced scheduler
+     implementation (not available at the moment) could allocate radio
+     resources for the RAR, thus modeling the consumption of Radio
+     Resources for the transmission of the RAR. 
+
+   - **Message 3**:  in real LTE systems, this is an RLC TM
+     SDU sent over resources specified in the UL Grant in the RAR. In
+     the simulator, this is modeled as a real RLC TM RLC PDU 
+     whose UL resources are allocated by the scheduler upon call to
+     SCHED_DL_RACH_INFO_REQ. 
+
+   - **Contention Resolution (CR)**: in real LTE system, the CR phase
+     is needed to address the case where two or more UE sent the same
+     RA preamble in the same TTI, and the eNB was able to detect this
+     preamble in spite of the collision. Since this event does not
+     occur due to the protocol interference model used for the
+     reception of RA preambles, the CR phase is not modeled in the
+     simulator, i.e., the CR MAC CE is never sent by the eNB and the
+     UEs consider the RA to be successful upon reception of the
+     RAR. As a consequence, the radio resources consumed for the
+     transmission of the CR MAC CE are not modeled.
 
 
 
+Figure :ref:`fig-mac-random-access-contention` and
+:ref:`fig-mac-random-access-noncontention` shows the sequence diagrams
+of respectively the contention-based and non-contention-based MAC
+random access procedure, highlighting the interactions between the MAC
+and the other entities. 
 
 
-RLC and PDCP
-++++++++++++
+.. _fig-mac-random-access-contention:
+
+.. figure:: figures/mac-random-access-contention.*
+   :align: center
+
+   Sequence diagram of the Contention-based MAC Random Access procedure
+
+
+.. _fig-mac-random-access-noncontention:
+
+.. figure:: figures/mac-random-access-noncontention.*
+   :align: center
+
+   Sequence diagram of the Non-contention-based MAC Random Access procedure
+
+
+----
+RLC 
+----
 
 
 
 
 Overview
---------
+++++++++
 
 The RLC entity is specified in the 3GPP technical specification
 [TS36322]_, and comprises three different types of RLC: Transparent
-Mode (TM), Unacknowledge Mode (UM) and Acknowledged Mode (AM). We
-implement only the UM and the AM RLC entities. 
+Mode (TM), Unacknowledge Mode (UM) and Acknowledged Mode (AM). The
+simulator includes one model for each of these entitities
 
 The RLC entities provide the RLC service interface to the upper PDCP layer and the MAC service interface
 to the lower MAC layer. The RLC entities use the PDCP service interface from the upper PDCP layer and
@@ -712,10 +767,10 @@ with all the other entities and services in the protocol stack.
 
 
 Service Interfaces
-------------------
+++++++++++++++++++
 
 PDCP Service Interface
-^^^^^^^^^^^^^^^^^^^^^^
+----------------------
 
 The PDCP service interface is divided into two parts:
 
@@ -723,7 +778,7 @@ The PDCP service interface is divided into two parts:
     * the ``PdcpSapUser`` part is provided by the upper layer and used by the PDCP layer.
 
 PDCP Service Primitives
-"""""""""""""""""""""""
+^^^^^^^^^^^^^^^^^^^^^^^
 
 The following list specifies which service primitives are provided by the PDCP service interfaces:
 
@@ -738,7 +793,7 @@ The following list specifies which service primitives are provided by the PDCP s
           in the receiver peer
 
 RLC Service Interface
-^^^^^^^^^^^^^^^^^^^^^
+---------------------
 
 The RLC service interface is divided into two parts:
 
@@ -748,7 +803,7 @@ The RLC service interface is divided into two parts:
 Both the UM and the AM RLC entities provide the same RLC service interface to the upper PDCP layer.
 
 RLC Service Primitives
-""""""""""""""""""""""
+^^^^^^^^^^^^^^^^^^^^^^
 
 The following list specifies which service primitives are provided by the RLC service interfaces:
 
@@ -763,7 +818,7 @@ The following list specifies which service primitives are provided by the RLC se
           in the receiver peer
 
 MAC Service Interface
-^^^^^^^^^^^^^^^^^^^^^
+---------------------
 
 The MAC service interface is divided into two parts:
 
@@ -771,7 +826,7 @@ The MAC service interface is divided into two parts:
   * the ``MacSapUser``  part is provided by the upper RLC layer and used by the MAC layer.
 
 MAC Service Primitives
-""""""""""""""""""""""
+^^^^^^^^^^^^^^^^^^^^^^
 
 The following list specifies which service primitives are provided by the MAC service interfaces:
 
@@ -795,11 +850,42 @@ The following list specifies which service primitives are provided by the MAC se
           in the receiver peer
 
 
-Interactions between entities and services
-------------------------------------------
+.. _am_data_transfer:
+
+AM RLC
+++++++
+
+
+The processing of the data transfer in the Acknowledge Mode (AM) RLC entity is explained in section 5.1.3 of [TS36322]_.
+In this section we describe some details of the implementation of the
+RLC entity.
+
+
+Buffers for the transmit operations
+-----------------------------------
+
+Our implementation of the AM RLC entity maintains 3 buffers for the
+transmit operations:
+
+    * **Transmission Buffer**: it is the RLC SDU queue. 
+      When the AM RLC entity receives a SDU in the TransmitPdcpPdu service primitive from the
+      upper PDCP entity, it enqueues it in the Transmission Buffer. We
+      put a limit on the RLC buffer size and just silently drop SDUs
+      when the buffer is full. 
+
+    * **Transmitted PDUs Buffer**: it is the queue of transmitted RLC PDUs for which an ACK/NACK has not
+      been received yet. When the AM RLC entity sends a PDU to the MAC
+      entity, it also puts a copy of the transmitted PDU in the Transmitted PDUs Buffer.
+
+    * **Retransmission Buffer**: it is the queue of RLC PDUs which are considered for retransmission
+      (i.e., they have been NACKed). The AM RLC entity moves this PDU to the Retransmission Buffer,
+      when it retransmits a PDU from the Transmitted Buffer.
+
+
+.. _sec-rlc-am-tx-operations:
 
 Transmit operations in downlink
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-------------------------------
 
 The following sequence diagram shows the interactions between the
 different entities (RRC, PDCP, AM RLC, MAC and MAC scheduler) of the
@@ -807,9 +893,7 @@ eNB in the downlink to perform data communications.
 
 Figure :ref:`fig-lte-rlc-data-txon-dl` shows how the upper layers send
 data PDUs and how the data flow is processed by the different
-entities/services of the LTE protocol stack. We will explain in detail
-only the processing related to the AM RLC entity, which is the most
-complex. 
+entities/services of the LTE protocol stack. 
 
 .. _fig-lte-rlc-data-txon-dl:
    
@@ -852,7 +936,7 @@ does the following:
       PDU to the MAC entity. 
 
 Retransmission in downlink
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+--------------------------
 
 The sequence diagram of Figure :ref:`fig-lte-rlc-data-retx-dl` shows
 the interactions between the different entities (AM RLC, MAC and MAC
@@ -875,7 +959,7 @@ When a data PDUs is retransmitted from the Transmitted PDUs Buffer, it is also m
 Retransmission Buffer.
 
 Transmit operations in uplink
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-----------------------------
 
 The sequence diagram of Figure :ref:`fig-lte-rlc-data-txon-ul` shows
 the interactions between the different entities of the UE (RRC, PDCP,
@@ -896,7 +980,7 @@ to the MAC Scheduler in the eNB over the air using the control
 channel. 
 
 Retransmission in uplink
-^^^^^^^^^^^^^^^^^^^^^^^^
+------------------------
 
 The sequence diagram of Figure :ref:`fig-lte-rlc-data-retx-ul` shows
 the interactions between the different entities of the UE (AM RLC and
@@ -911,36 +995,10 @@ by the AM RLC entity.
    Sequence diagram of data PDU retransmission in uplink
 
 
-.. _am_data_transfer:
-
-AM data transfer
-----------------
-
-The processing of the data transfer in the AM RLC entity is explained in section 5.1.3 of [TS36322]_.
-In this section we describe some details of the implementation of the RLC entity.
-
-Management of buffers in transmit operations
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-The AM RLC entity manages 3 buffers:
-
-    * **Transmission Buffer**: it is the RLC SDU queue. 
-      When the AM RLC entity receives a SDU in the TransmitPdcpPdu service primitive from the
-      upper PDCP entity, it enqueues it in the Transmission Buffer. We
-      put a limit on the RLC buffer size and just silently drop SDUs
-      when the buffer is full. 
-
-    * **Transmitted PDUs Buffer**: it is the queue of transmitted RLC PDUs for which an ACK/NACK has not
-      been received yet. When the AM RLC entity sends a PDU to the MAC
-      entity, it also puts a copy of the transmitted PDU in the Transmitted PDUs Buffer.
-
-    * **Retransmission Buffer**: it is the queue of RLC PDUs which are considered for retransmission
-      (i.e., they have been NACKed). The AM RLC entity moves this PDU to the Retransmission Buffer,
-      when it retransmits a PDU from the Transmitted Buffer.
-
+.. _sec-rlc-am-buffer-size
 
 Calculation of the buffer size
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+------------------------------
 
 The Transmission Buffer contains RLC SDUs. A RLC PDU is one or more SDU segments plus an RLC header.
 The size of the RLC header of one RLC PDU depends on the number of SDU segments the PDU contains.
@@ -967,20 +1025,20 @@ of unneeded fragmentation.
 
 
 Concatenation and Segmentation
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+------------------------------
 
 The AM RLC entity generates and sends exactly one RLC PDU for each transmission opportunity even
 if it is smaller than the size reported by the transmission opportunity. So for instance, if a
 STATUS PDU is to be sent, then only this PDU will be sent in that transmission opportunity.
 
 The segmentation and concatenation for the SDU queue of the AM RLC entity follows the same philosophy
-as the same procedures of the UM RLC entity but there are new state variables (see section 7.1) only
-present in the AM RLC entity.
+as the same procedures of the UM RLC entity but there are new state
+variables (see [TS36322]_ section 7.1) only present in the AM RLC entity.
 
 It is noted that, according to the 3GPP specs, there is no concatenation for the Retransmission Buffer.
 
 Re-segmentation
-^^^^^^^^^^^^^^^
+---------------
 
 The current model of the AM RLC entity does not support the
 re-segmentation of the retransmission buffer. Rather, the AM RLC
@@ -990,7 +1048,7 @@ received.
 
 
 Unsupported features
-^^^^^^^^^^^^^^^^^^^^
+--------------------
 
 We do not support the following procedures of [TS36322]_ :
 
@@ -1005,45 +1063,142 @@ We do not support any of the additional primitives of RLC SAP for AM RLC entity.
     * no notification of successful / failed delivery by AM RLC entity to PDCP entity
 
 
+UM RLC
+++++++
+
+In this section we describe the implemnetation of the Unacknowledge Mode (UM) RLC entity.
+
+Transmit operations in downlink
+-------------------------------
+
+The transmit operations of the UM RLC are similar to those of the AM
+RLC previously described in Section :ref:`sec-rlc-am-tx-operations`,
+with the difference that, following the specifications of [TS36322]_,
+retransmission are not performed, and there are no STATUS PDUs.
+
+Transmit operations in uplink
+------------------------------
+
+The transmit operations in the uplink are similar to those of the
+downlink, with the main difference that the Report_Buffer_Status is
+sent from the UE MAC to the MAC Scheduler in the eNB over the air
+using the control channel. 
 
 
-RLC/SM
-------
+Calculation of the buffer size
+------------------------------
 
-In addition to the full-fledged RLC/UM and RLC/AM implementations,
-a simplified RLC model is provided, which is denoted RLC/SM. This RLC model does not accepts
-PDUs from any above layer (such as PDCP); rather, RLC/SM takes care of the
+The calculation of the buffer size for the UM RLC is done using the
+same approach of the AM RLC, please refer to section
+:ref:`sec-rlc-am-buffer-size` for the corresponding description.
+
+
+
+
+TM RLC
+++++++
+
+In this section we describe the implementation of the Transparent Mode (TM) RLC entity.
+
+
+Transmit operations in downlink
+-------------------------------
+
+In the simulator, the TM RLC still provides to the upper layers the
+same service interface provided by the AM and UM RLC
+entities to the PDCP layer; in practice, this interface is used by an RRC
+entity (not a PDCP entity) for the transmission of RLC SDUs. This
+choice is motivated by the fact that the services provided by the TM
+RLC to the upper layers, according to [TS36322]_, is a subset of those
+provided by the UM and AM RLC entities to the PDCP layer; hence,
+we reused the same interface for simplicity.
+
+The transmit operations in the downlink are performed as follows. When
+the ``Transmit_PDCP_PDU service primitive`` is called by the upper
+layers, the TM RLC does the following:
+
+ * put the SDU in the Transmission Buffer
+ * compute the size of the Transmission Buffer
+ * call the ``Report_Buffer_Status`` service primitive of the eNB
+   MAC entity
+ 
+Afterwards, when the MAC scheduler decides that some data can be sent
+by the logical channel to which the TM RLC entity belongs, the MAC
+entity notifies it to the TM RLC entity by calling the
+``Notify_Tx_Opportunity`` service primitive. Upon reception of this
+primitive, the TM RLC entity does the following:
+
+ * if the TX opportunity has a size that is greater than or equal to
+   the size of the head-of-line SDU in the Transmission Buffer
+   
+   - dequeue the head-of-line SDU from the Transmission Buffer
+   
+   - create one RLC PDU that contains entirely that SDU, without any
+     RLC header 
+
+   -  Call the ``Transmit_PDU`` primitive in order to send the RLC
+      PDU to the MAC entity. 
+
+   
+Transmit operations in uplink
+-----------------------------
+
+The transmit operations in the uplink are similar to those of the
+downlink, with the main difference that a transmission opportunity can
+also arise from the assignment of the UL GRANT as part of the Random
+Access procedure, without an explicit Buffer Status Report issued by
+the TM RLC entity.
+
+
+
+Calculation of the buffer size
+------------------------------
+
+As per the specifications [TS36322]_, the TM RLC does not add any RLC
+header to the PDUs being transmitted. Because of this, the buffer size
+reported to the MAC layer is calculated simply by summing the size of
+all packets in the transmission buffer, thus notifying to the MAC the
+exact buffer size.
+
+
+
+SM RLC
+++++++
+
+In addition to the AM, UM and TM implementations that are modeled
+after the 3GPP specifications, a simplified RLC model is provided,
+which is called Saturation Mode (SM) RLC. This RLC model does not accept
+PDUs from any above layer (such as PDCP); rather, the SM RLC takes care of the
 generation of RLC PDUs in response to  
 the notification of transmission opportunities notified by the MAC. 
-In other words, RLC/SM simulates saturation conditions, i.e., it
+In other words, the SM RLC simulates saturation conditions, i.e., it
 assumes that the RLC buffer is always full and can generate a new PDU
-whenever notified by the scheduler. In fact, the "SM" in the name of
-the model stands for "Saturation Mode". 
+whenever notified by the scheduler. 
 
-RLC/SM is used for simplified simulation scenarios in which only the
+The SM RLC is used for simplified simulation scenarios in which only the
 LTE Radio model is used, without the EPC and hence without any IP
-networking support. We note that, although RLC/SM is an
+networking support. We note that, although the SM RLC is an
 unrealistic traffic model, it still allows for the correct simulation
 of scenarios with multiple flows belonging to different (non real-time)
 QoS classes, in order to test the QoS performance obtained by different
 schedulers. This can be 
 done since it is the task of the Scheduler to assign transmission
-resources based on the characteristics of each Radio Bearer which are
-specified upon the creation of each Bearer at the start of the
-simulation.
+resources based on the characteristics (e.g., Guaranteed Bit Rate) of
+each Radio Bearer, which are specified upon the definition of each
+Bearer within the simulation program.
 
 As for schedulers designed to work with real-time QoS
-traffic that has delay constraints, RLC/SM is probably not an appropriate choice.
+traffic that has delay constraints, the SM RLC is probably not an appropriate choice.
 This is because the absence of actual RLC SDUs (replaced by the artificial
 generation of Buffer Status Reports) makes it not possible to provide
 the Scheduler with meaningful head-of-line-delay information, which is
-normally the metric of choice for the implementation of scheduling
+often the metric of choice for the implementation of scheduling
 policies for real-time traffic flows. For the simulation and testing
-of such schedulers, it is advisable to use one of the realistic RLC
-implementations (RLC/UM or RLC/AM).
+of such schedulers, it is advisable to use either the UM or the AM RLC
+models instead.
 
 
-
+----
 PDCP
 ----
 
@@ -1073,9 +1228,9 @@ The following features are currently not supported:
         \clearpage
 
 
-
-Radio Resource Control (RRC)
-++++++++++++++++++++++++++++
+---
+RRC
+---
 
 The RRC model implemented in the simulator provides the following functionality:
 

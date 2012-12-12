@@ -1,6 +1,7 @@
 EPSTOPDF = epstopdf
 DIA = dia
 SEQDIAG = seqdiag
+DOT = dot
 CONVERT = convert -density 250
 
 
@@ -72,11 +73,16 @@ $(FIGURES)/lte-subframe-structure.pdf_width = 2in
 IMAGES_SEQDIAG = \
 	$(FIGURES)/lte-phy-interference.seqdiag \
 	$(FIGURES)/helpers.seqdiag \
+	$(FIGURES)/mac-random-access-contention.seqdiag \
+	$(FIGURES)/mac-random-access-noncontention.seqdiag \
 	$(FIGURES)/rrc-connection-establishment.seqdiag \
 	$(FIGURES)/rrc-connection-reconfiguration.seqdiag \
 	$(FIGURES)/rrc-connection-reconfiguration-handover.seqdiag \
-	$(FIGURES)/nas-attach.seqdiag \
-	$(FIGURES)/nas-activate-dedicated-bearer.seqdiag \
+	$(FIGURES)/nas-attach.seqdiag 
+
+IMAGES_DOT = \
+	$(FIGURES)/lte-enb-rrc-states.dot \
+	$(FIGURES)/lte-ue-rrc-states.dot
 
 IMAGES_NOBUILD = $(FIGURES)/fading_pedestrian.png \
 	$(FIGURES)/fading_vehicular.png \
@@ -113,7 +119,10 @@ IMAGES_NOBUILD = $(FIGURES)/fading_pedestrian.png \
 	$(FIGURES)/miesm_scheme.pdf \
 	$(FIGURES)/miesm_scheme.png \
 	${IMAGES_SEQDIAG:.seqdiag=.png} \
-	${IMAGES_SEQDIAG:.seqdiag=.pdf}
+	${IMAGES_SEQDIAG:.seqdiag=.pdf} \
+	${IMAGES_DOT:.dot=.png} \
+	${IMAGES_DOT:.dot=.pdf} \
+
 
 IMAGES_BUILD = \
 	${IMAGES_DIA:.dia=.eps} \
@@ -129,9 +138,13 @@ IMAGES = $(IMAGES_NOBUILD) $(IMAGES_BUILD)
 %.eps : %.dia; $(DIA) -t eps $< -e $@
 %.png : %.dia; $(DIA) -t png $< -e $@
 %.png : %.seqdiag; $(SEQDIAG) -Tpng --no-transparency -o $@ $< 
+%.png : %.dot; $(DOT) -Tpng -o$@ $< 
 %.png : %.eps; $(CONVERT) $< $@
 %.pdf : %.seqdiag
 	$(SEQDIAG) -Tpdf -o $@ $<
+	if test x$($@_width) != x; then ./rescale-pdf.sh $($@_width) $@ ; fi
+%.pdf : %.dot
+	$(DOT) -Tpdf -o $@ $<
 	if test x$($@_width) != x; then ./rescale-pdf.sh $($@_width) $@ ; fi
 %.pdf : %.eps
 	$(EPSTOPDF) $< -o=$@
@@ -178,6 +191,9 @@ help:
 clean:
 	-rm -rf $(BUILDDIR)/*
 	-rm -f $(IMAGES_BUILD)
+
+
+images: $(IMAGES_NOBUILD) $(IMAGES_BUILD)
 
 frag: pickle
 	@if test ! -d $(BUILDDIR)/frag; then mkdir $(BUILDDIR)/frag; fi
