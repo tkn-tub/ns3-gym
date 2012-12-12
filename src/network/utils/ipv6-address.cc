@@ -258,13 +258,13 @@ Ipv6Address::Ipv6Address ()
 
 Ipv6Address::Ipv6Address (Ipv6Address const& addr)
 {
-  NS_LOG_FUNCTION (this << addr);
+  // Do not add function logging here, to avoid stack overflow
   memcpy (m_address, addr.m_address, 16);
 }
 
 Ipv6Address::Ipv6Address (Ipv6Address const* addr)
 {
-  NS_LOG_FUNCTION (this << addr);
+  // Do not add function logging here, to avoid stack overflow
   memcpy (m_address, addr->m_address, 16);
 }
 
