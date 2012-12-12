@@ -172,7 +172,7 @@ void
 LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId)
 {
   NS_LOG_FUNCTION (this << m_rnti << (uint32_t) m_lcid << bytes);
-  
+
   if (bytes <= 2)
     {
       // Stingy MAC: Header fix part is 2 bytes, we need more bytes for the data
@@ -201,6 +201,9 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId)
       params.harqProcessId = harqId;
 
       m_macSapProvider->TransmitPdu (params);
+
+      m_statusPduRequested = false;
+      m_statusPduBufferSize = 0;
       return;
     }
   else if ( m_retxBufferSize > 0 )
@@ -1513,6 +1516,7 @@ LteRlcAm::ReassembleAndDeliver (Ptr<Packet> packet)
 void
 LteRlcAm::ExpireReorderingTimer (void)
 {
+  NS_LOG_FUNCTION (this);
   NS_LOG_LOGIC ("Reordering Timer has expired");
 
   // 5.1.3.2.4 Actions when t-Reordering expires
@@ -1549,8 +1553,10 @@ LteRlcAm::ExpireReorderingTimer (void)
 void
 LteRlcAm::ExpirePollRetransmitTimer (void)
 {
+  NS_LOG_FUNCTION (this);
   NS_LOG_LOGIC ("PollRetransmit Timer has expired");
-  NS_LOG_LOGIC ("TODO To Check");
+
+
 }
 
 
