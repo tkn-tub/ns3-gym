@@ -247,6 +247,7 @@ private:
   void DoRecvRrcConnectionReestablishment (LteRrcSap::RrcConnectionReestablishment msg);
   void DoRecvRrcConnectionReestablishmentReject (LteRrcSap::RrcConnectionReestablishmentReject msg);
   void DoRecvRrcConnectionRelease (LteRrcSap::RrcConnectionRelease msg);
+  void DoRecvRrcConnectionReject (LteRrcSap::RrcConnectionReject msg);
 
  
   // internal methods

@@ -585,6 +585,25 @@ LteEnbRrcProtocolReal::DoSendRrcConnectionSetup (uint16_t rnti, LteRrcSap::RrcCo
 }
 
 void 
+LteEnbRrcProtocolReal::DoSendRrcConnectionReject (uint16_t rnti, LteRrcSap::RrcConnectionReject msg)
+{
+  Ptr<Packet> packet = Create<Packet> ();
+
+  RrcConnectionRejectHeader rrcConnectionRejectHeader;
+  rrcConnectionRejectHeader.SetMessage (msg);
+
+  packet->AddHeader (rrcConnectionRejectHeader);
+
+  LteRlcSapProvider::TransmitPdcpPduParameters transmitPdcpPduParameters;
+  transmitPdcpPduParameters.pdcpPdu = packet;
+  transmitPdcpPduParameters.rnti = rnti;
+  transmitPdcpPduParameters.lcid = 0;
+
+  std::map<uint16_t, LteEnbRrcSapUser::SetupUeParameters>::iterator it;
+  m_setupUeParametersMap[rnti].srb0SapProvider->TransmitPdcpPdu (transmitPdcpPduParameters);
+}
+
+void 
 LteEnbRrcProtocolReal::DoSendRrcConnectionReconfiguration (uint16_t rnti, LteRrcSap::RrcConnectionReconfiguration msg)
 {
   Ptr<Packet> packet = Create<Packet> ();

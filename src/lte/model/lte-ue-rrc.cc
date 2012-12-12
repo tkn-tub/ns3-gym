@@ -689,6 +689,11 @@ LteUeRrc::DoRecvRrcConnectionRelease (LteRrcSap::RrcConnectionRelease msg)
   NS_LOG_FUNCTION (this);
 }
 
+void 
+LteUeRrc::DoRecvRrcConnectionReject (LteRrcSap::RrcConnectionReject msg)
+{
+  NS_LOG_FUNCTION (this);
+}
 
 
 

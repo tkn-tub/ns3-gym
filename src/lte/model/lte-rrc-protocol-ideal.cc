@@ -457,6 +457,14 @@ LteEnbRrcProtocolIdeal::DoSendRrcConnectionRelease (uint16_t rnti, LteRrcSap::Rr
 		       msg);
 }
 
+void 
+LteEnbRrcProtocolIdeal::DoSendRrcConnectionReject (uint16_t rnti, LteRrcSap::RrcConnectionReject msg)
+{
+  Simulator::Schedule (RRC_IDEAL_MSG_DELAY, 
+		       &LteUeRrcSapProvider::RecvRrcConnectionReject,
+		       GetUeRrcSapProvider (rnti), 
+		       msg);
+}
 
 /*
  * The purpose of LteEnbRrcProtocolIdeal is to avoid encoding
