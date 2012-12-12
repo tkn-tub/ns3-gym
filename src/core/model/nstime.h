@@ -110,47 +110,47 @@ public:
   inline Time ()
     : m_data ()
   {
-    TimeSet (this);
+    Time::Track (this);
   }
   inline Time(const Time &o)
     : m_data (o.m_data)
   {
-    TimeSet (this);
+    Time::Track (this);
   }
   explicit inline Time (double v)
     : m_data (lround (v))
   {
-    TimeSet (this);
+    Time::Track (this);
   }
   explicit inline Time (int v)
     : m_data (v)
   {
-    TimeSet (this);
+    Time::Track (this);
   }
   explicit inline Time (long int v)
     : m_data (v)
   {
-    TimeSet (this);
+    Time::Track (this);
   }
   explicit inline Time (long long int v)
     : m_data (v)
   {
-    TimeSet (this);
+    Time::Track (this);
   }
   explicit inline Time (unsigned int v)
     : m_data (v)
   {
-    TimeSet (this);
+    Time::Track (this);
   }
   explicit inline Time (unsigned long int v)
     : m_data (v)
   {
-    TimeSet (this);
+    Time::Track (this);
   }
   explicit inline Time (unsigned long long int v)
     : m_data (v)
   {
-    TimeSet (this);
+    Time::Track (this);
   }
   /**
    * \brief Construct Time object from common time expressions like "1ms"
@@ -175,7 +175,7 @@ public:
    */
   ~Time ()
   {
-    TimeUnset (this);
+    Time::UnTrack (this);
   }
   
   /**
@@ -296,6 +296,13 @@ public:
    */
   static void SetResolution (enum Unit resolution);
   /**
+   * Freeze the current time resolution. This function is called
+   * internally from the Simulator::Run function. After this
+   * function is called, calls to SetResolution will trigger
+   * an assert.
+   */
+  static void FreezeResolution(void);
+  /**
    * \returns the current global resolution.
    */
   static enum Unit GetResolution (void);
@@ -402,7 +409,7 @@ public:
   explicit inline Time (const int64x64_t &value)
     : m_data (value.GetHigh ())
   {
-    TimeSet (this);
+    Time::Track (this);
   }
   inline static Time From (const int64x64_t &value)
   {
@@ -441,8 +448,7 @@ private:
   }
 
   static struct Resolution SetDefaultNsResolution (void);
-  static void SetResolution (enum Unit unit, struct Resolution *resolution,
-                             const bool convert = true);
+  static void SetResolution (enum Unit unit, struct Resolution *resolution);
 
   /**
    * Record all instances of Time, so we can rescale them when
@@ -461,30 +467,18 @@ private:
    * (and gcc 4.2) say no.
    */
   typedef std::set< Time * > TimesSet;
+  static TimesSet * GetTimesSet ();
+  static TimesSet ** PeekTimesSet ();
   /**
-   * Get the TimesSet instance.
-   *
-   * \param [in] deleteMe If true delete the TimesSet, so that it returns a null pointer ever after
+   * Start tracking a Time instance with the TimesSet
+   * to be able to change the underlying value if the
+   * time resolution changes later
    */
-  static TimesSet * GetTimesSet ( const bool deleteMe = false );
+  static void Track (Time * const time);
   /**
-   * Helper to clean up at Simulator::Run
+   * We do not need to track a Time instance anymore
    */
-  static void DeleteTimesSet ();
-  /**
-   * Record a Time instance with the TimesSet
-   */
-  static void TimeSet (Time * const time);
-  /**
-   * Remove a Time instance from the TimesSet, called by ~Time()
-   */
-  static void TimeUnset (Time * const time);
-
-
-  /**
-   * Convert existing Times to the new unit.
-   */
-  static void ConvertTimes (const enum Unit unit);
+  static void UnTrack (Time * const time);
 
   friend bool operator == (const Time &lhs, const Time &rhs);
   friend bool operator != (const Time &lhs, const Time &rhs);
