@@ -1752,7 +1752,6 @@ void
 RrFfMacScheduler::UpdateDlRlcBufferInfo (uint16_t rnti, uint8_t lcid, uint16_t size)
 {
   NS_LOG_FUNCTION (this);
-  size = size - 2; // remove the minimum RLC overhead
   std::list<FfMacSchedSapProvider::SchedDlRlcBufferReqParameters>::iterator it;
   for (it = m_rlcBufferReq.begin (); it != m_rlcBufferReq.end (); it++)
     {
@@ -1778,6 +1777,7 @@ RrFfMacScheduler::UpdateDlRlcBufferInfo (uint16_t rnti, uint8_t lcid, uint16_t s
                   }
                 else
                   {
+                    size -= 2; // remove minimun RLC overhead due to header
                     (*it).m_rlcTransmissionQueueSize -= size;
                   }
               }
