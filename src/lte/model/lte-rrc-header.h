@@ -377,6 +377,24 @@ private:
   RrcConnectionRelease m_rrcConnectionRelease;
 };
 
+/**
+* This class manages the serialization/deserialization of RrcConnectionReject IE
+*/
+class RrcConnectionRejectHeader : public RrcDlCcchMessage,
+                                                 LteRrcSap
+{
+public:
+  RrcConnectionRejectHeader ();
+  void PreSerialize () const;
+  uint32_t Deserialize (Buffer::Iterator bIterator);
+  void Print (std::ostream &os) const;
+  void SetMessage (RrcConnectionReject msg);
+  RrcConnectionReject GetMessage () const;
+
+private:
+  RrcConnectionReject m_rrcConnectionReject;
+};
+
 } // namespace ns3
 
 #endif // EPC_ASN1_HEADER_H

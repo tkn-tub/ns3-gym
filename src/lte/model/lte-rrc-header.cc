@@ -3282,6 +3282,111 @@ RrcConnectionReleaseHeader::GetMessage () const
   return m_rrcConnectionRelease;
 }
 
+//////////////////// RrcConnectionRejectHeader class ////////////////////////
+
+RrcConnectionRejectHeader::RrcConnectionRejectHeader ()
+{
+}
+
+void
+RrcConnectionRejectHeader::PreSerialize () const
+{
+  m_serializationResult = Buffer ();
+
+  // Serialize CCCH message
+  SerializeDlCcchMessage (2);
+
+  // Serialize RrcConnectionReject sequence:
+  // no default or optional fields. Extension marker not present.
+  SerializeSequence (std::bitset<0> (),false);
+
+  // Serialize criticalExtensions choice
+  SerializeChoice (2,0);
+
+  // Serialize c1 choice
+  SerializeChoice (4,0);
+  
+  // Serialize rrcConnectionReject-r8 sequence
+  // 1 optional field (not present), no extension marker.
+  SerializeSequence (std::bitset<1> (0),false);
+
+  // Serialize waitTime
+  SerializeInteger (m_rrcConnectionReject.waitTime, 1, 16);
+
+  // Finish serialization
+  FinalizeSerialization ();
+}
+
+uint32_t
+RrcConnectionRejectHeader::Deserialize (Buffer::Iterator bIterator)
+{
+  std::bitset<0> bitset0;
+  int n;
+
+  bIterator = DeserializeDlCcchMessage (bIterator);
+
+  // Deserialize RrcConnectionReject sequence
+  // 0 optional fields, no extension marker
+  bIterator = DeserializeSequence (&bitset0,false,bIterator);
+
+  // Deserialize criticalExtensions choice
+  int criticalExtensionsChoice;
+  bIterator = DeserializeChoice (2,&criticalExtensionsChoice,bIterator);
+  if (criticalExtensionsChoice == 1)
+    {
+      // Deserialize criticalExtensionsFuture
+      bIterator = DeserializeSequence (&bitset0,false,bIterator);
+    }
+  else if (criticalExtensionsChoice == 0)
+    {
+      // Deserialize c1 choice
+      int c1Choice;
+      bIterator = DeserializeChoice (4,&c1Choice,bIterator);
+
+      if (c1Choice > 0)
+      {
+        bIterator = DeserializeNull(bIterator);
+      }
+      else if (c1Choice == 0)
+      {
+        // Deserialize rrcConnectionReject-r8
+        std::bitset<1> opts;
+        bIterator = DeserializeSequence (&opts,false,bIterator);
+        
+        bIterator = DeserializeInteger (&n,1,16,bIterator);
+        m_rrcConnectionReject.waitTime = n;
+
+        if (opts[0])
+        {
+          // Deserialize RRCConnectionReject-v8a0-IEs
+          // ...
+        }
+      }
+    }
+
+  return GetSerializedSize ();
+}
+
+void
+RrcConnectionRejectHeader::Print (std::ostream &os) const
+{
+  os << "wait time: " << (int)m_rrcConnectionReject.waitTime << std::endl;
+}
+
+void
+RrcConnectionRejectHeader::SetMessage (RrcConnectionReject msg)
+{
+  m_rrcConnectionReject = msg;
+  m_isDataSerialized = false;
+}
+
+LteRrcSap::RrcConnectionReject
+RrcConnectionRejectHeader::GetMessage () const
+{
+  return m_rrcConnectionReject;
+}
+
+
 ///////////////////  RrcUlDcchMessage //////////////////////////////////
 uint32_t
 RrcUlDcchMessage::Deserialize (Buffer::Iterator bIterator)

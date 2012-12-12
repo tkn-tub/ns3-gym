@@ -318,6 +318,11 @@ public:
     uint8_t rrcTransactionIdentifier;
   };
 
+  struct RrcConnectionReject
+  {
+    uint8_t waitTime;
+  };
+
   struct HandoverPreparationInfo
   {
     AsConfig asConfig;

@@ -751,6 +751,55 @@ RrcConnectionReestablishmentCompleteTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (source.GetRrcTransactionIdentifier (), destination.GetRrcTransactionIdentifier (), "rrcTransactionIdentifier");
 }
 
+// --------------------------- CLASS RrcConnectionRejectTestCase -----------------------------
+class RrcConnectionRejectTestCase : public RrcHeaderTestCase
+{
+public:
+  RrcConnectionRejectTestCase ();
+  virtual void DoRun (void);
+};
+
+RrcConnectionRejectTestCase::RrcConnectionRejectTestCase () : RrcHeaderTestCase ("Testing RrcConnectionRejectTestCase")
+{
+}
+
+void
+RrcConnectionRejectTestCase::DoRun (void)
+{
+  std::cout << "============= RrcConnectionRejectTestCase ===========" << std::endl;
+  // add header
+  Ptr<Packet> packet = Create<Packet> ();
+  packet->Print (std::cout);
+  std::cout << std::endl;
+
+  LteRrcSap::RrcConnectionReject msg;
+  msg.waitTime = 2;
+
+  RrcConnectionRejectHeader source;
+  source.SetMessage (msg);
+
+  std::cout << "--------- SOURCE INFO: -------" << std::endl;
+  source.Print (std::cout);
+  packet->AddHeader (source);
+  std::cout << std::endl;
+
+  // print serialized packet contents
+  std::cout << "---- SERIALIZED PACKET CONTENTS: -------" << std::endl;
+  std::cout << "Hex: ";
+  TestUtils::printPacketContentsHex (GetPointer (packet));
+  std::cout << "Bin: ";
+  TestUtils::printPacketContentsBin (GetPointer (packet));
+
+  // remove header
+  RrcConnectionRejectHeader destination;
+  packet->RemoveHeader (destination);
+  std::cout << "--------- DESTINATION INFO: -------" << std::endl;
+  destination.Print (std::cout);
+
+  // Check that the destination and source headers contain the same values
+  NS_TEST_ASSERT_MSG_EQ (source.GetMessage ().waitTime, destination.GetMessage ().waitTime, "Different waitTime!");
+}
+
 // --------------------------- CLASS Asn1EncodingSuite -----------------------------
 class Asn1EncodingSuite : public TestSuite
 {
@@ -772,6 +821,7 @@ Asn1EncodingSuite::Asn1EncodingSuite ()
   AddTestCase (new RrcConnectionReestablishmentRequestTestCase);
   AddTestCase (new RrcConnectionReestablishmentTestCase);
   AddTestCase (new RrcConnectionReestablishmentCompleteTestCase);
+  AddTestCase (new RrcConnectionRejectTestCase);
 }
 
 Asn1EncodingSuite asn1EncodingSuite;
