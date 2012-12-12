@@ -21,8 +21,13 @@ Supported platforms
 
 New user-visible features
 -------------------------
--Support several new LTE MAC schedulers developed in GSoC 2012 project. Those schedulers include FD-MT, TD-MT, TTA, FD-BET, TD-BET, FD-TBFQ, TD-TBFQ, PSS. Here, FD and TD mean frequency domain and time domain respectively.
-
+- Support several new LTE MAC schedulers developed in GSoC 2012 project. 
+  Those schedulers include FD-MT, TD-MT, TTA, FD-BET, TD-BET, FD-TBFQ,
+  TD-TBFQ, PSS. Here, FD and TD mean frequency domain and time domain 
+  respectively.
+- It's now possible to use distcc when building ns-3 by using
+  $ CXX='distcc g++' ./waf configure
+  $ ./waf build
 
 Bugs fixed
 ----------

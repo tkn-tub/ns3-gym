@@ -471,6 +471,28 @@ the ``-o`` option to configure; e.g.
 This allows users to work with multiple builds rather than always
 overwriting the last build.
 
+In the examples above, waf uses GCC C++ compiler, command ``g++``, for
+building ns-3. However, it's possible to change C++ compiler used by waf.
+Say one wants to use Clang C++ compiler, command ``clang++``; it's done by
+
+::
+
+  CXX="clang++" ./waf configure
+  ./waf build
+
+One can also set up waf to do distributed compilation with ``distcc`` in
+a similar way:
+
+::
+
+  CXX="distcc g++" ./waf configure
+  ./waf build
+
+More info on distcc and distributed compilation can be found on it's
+`project page
+<http://code.google.com/p/distcc/>`_
+under Documentation section.
+
 Testing ns-3
 ************
 
