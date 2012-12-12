@@ -293,6 +293,9 @@ public:
    * Change the global resolution used to convert all 
    * user-provided time values in Time objects and Time objects
    * in user-expected time units.
+   *
+   * This function can be called only once. Further calls
+   * will trigger a forced crash.
    */
   static void SetResolution (enum Unit resolution);
   /**
@@ -449,6 +452,8 @@ private:
 
   static struct Resolution SetDefaultNsResolution (void);
   static void SetResolution (enum Unit unit, struct Resolution *resolution);
+  static void DoSetResolution (enum Unit unit, struct Resolution *resolution);
+  static void FreezeResolution(enum Unit unit);
 
   /**
    * Record all instances of Time, so we can rescale them when

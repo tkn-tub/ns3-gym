@@ -89,7 +89,7 @@ struct Time::Resolution
 Time::SetDefaultNsResolution (void)
 {
   struct Resolution resolution;
-  SetResolution (Time::NS, &resolution);
+  DoSetResolution (Time::NS, &resolution);
   return resolution;
 }
 
@@ -111,12 +111,17 @@ Time::GetResolution (void)
 void 
 Time::SetResolution (enum Unit unit, struct Resolution *resolution)
 {
-  TimesSet * times = GetTimesSet();
-  if (times == 0)
+  if (Time::GetTimesSet() == 0)
     {
-      NS_FATAL_ERROR("It is not legal to try to set the resolution " \
-                     "_after_ it has been frozen by Simulator::Run");
+      NS_FATAL_ERROR("The resolution has already been set once. You cannot set it again.");
     }
+  Time::FreezeResolution(unit);
+  Time::DoSetResolution(unit, resolution);
+}
+// static
+void 
+Time::DoSetResolution (enum Unit unit, struct Resolution *resolution)
+{
   int8_t power [LAST] = { 15, 12, 9, 6, 3, 0};
   for (int i = 0; i < Time::LAST; i++)
     {
@@ -170,24 +175,34 @@ Time::GetTimesSet ()
 void
 Time::FreezeResolution (void)
 {
-  TimesSet * times = GetTimesSet ();
-  if (times == 0)
+  TimesSet **ptimes = PeekTimesSet();
+  if (*ptimes == 0)
     {
       // We froze the resolution more than once: no big deal
       return;
     }
+  delete *ptimes;
+  *ptimes = 0;
+}
+void
+Time::FreezeResolution(enum Time::Unit unit)
+{
+  // We are careful to remove the timeset _first_ because the code in the loop below
+  // actually invokes a Time constructor which invokes the Track method which
+  // adds things to the array we are iterating over.
+  TimesSet **ptimes = PeekTimesSet();
+  TimesSet *times = *ptimes;
+  *ptimes = 0;
   
   for ( TimesSet::iterator it = times->begin();
         it != times->end();
         it++ )
     {
       Time * const tp = *it;
-      (*tp) = tp->ToInteger (Time::GetResolution());
+      (*tp) = tp->ToInteger (unit);
     }
 
-  TimesSet **ptimes = PeekTimesSet();
-  delete *ptimes;
-  *ptimes = 0;
+  delete times;
 }
 
 // static
@@ -197,7 +212,7 @@ Time::Track (Time * const time)
   NS_ASSERT (time != 0);
 
   TimesSet * times = GetTimesSet();
-  if (times)
+  if (times != 0)
     {
       std::pair< TimesSet::iterator, bool> ret;
       ret = times->insert ( time);
@@ -210,7 +225,7 @@ Time::UnTrack (Time * const time)
 {
   NS_ASSERT (time != 0);
   TimesSet * times = GetTimesSet ();
-  if (times)
+  if (times != 0)
     {
       NS_ASSERT_MSG (times->count (time) == 1,
 		     "Time object " << time << " registered "
