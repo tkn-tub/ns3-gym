@@ -74,23 +74,6 @@ RrcAsn1Header::SerializeDrbToAddModList (std::list<LteRrcSap::DrbToAddMod> drbTo
 
       switch (it->rlcConfig.choice)
         {
-        case LteRrcSap::RlcConfig::AM:
-          // Serialize rlc-Config choice
-          SerializeChoice (4,0);
-
-          // Serialize UL-AM-RLC
-          SerializeSequence<0> (std::bitset<0> (),false);
-          SerializeEnum (64,0);  // t-PollRetransmit
-          SerializeEnum (8,0);   // pollPDU
-          SerializeEnum (16,0);  // pollByte
-          SerializeEnum (8,0);   // maxRetxThreshold
-
-          // Serialize DL-AM-RLC
-          SerializeSequence<0> (std::bitset<0> (),false);
-          SerializeEnum (32,0);  // t-Reordering
-          SerializeEnum (64,0);  // t-StatusProhibit
-          break;
-
         case LteRrcSap::RlcConfig::UM_BI_DIRECTIONAL:
           // Serialize rlc-Config choice
           SerializeChoice (4,1);
@@ -122,6 +105,24 @@ RrcAsn1Header::SerializeDrbToAddModList (std::list<LteRrcSap::DrbToAddMod> drbTo
           SerializeSequence<0> (std::bitset<0> (),false);
           SerializeEnum (2,0);  // sn-FieldLength
           SerializeEnum (32,0);  // t-Reordering
+          break;
+
+        case LteRrcSap::RlcConfig::AM:
+        default:
+          // Serialize rlc-Config choice
+          SerializeChoice (4,0);
+
+          // Serialize UL-AM-RLC
+          SerializeSequence<0> (std::bitset<0> (),false);
+          SerializeEnum (64,0);  // t-PollRetransmit
+          SerializeEnum (8,0);   // pollPDU
+          SerializeEnum (16,0);  // pollByte
+          SerializeEnum (8,0);   // maxRetxThreshold
+
+          // Serialize DL-AM-RLC
+          SerializeSequence<0> (std::bitset<0> (),false);
+          SerializeEnum (32,0);  // t-Reordering
+          SerializeEnum (64,0);  // t-StatusProhibit
           break;
         }
 
@@ -263,7 +264,9 @@ RrcAsn1Header::SerializePhysicalConfigDedicated (LteRrcSap::PhysicalConfigDedica
           SerializeChoice (2,0);
           SerializeNull ();
           break;
+
         case LteRrcSap::SoundingRsUlConfigDedicated::SETUP:
+        default:
           // 2 options, selected: 1 (setup)
           SerializeChoice (2,1);
 
