@@ -35,6 +35,10 @@
 
 #include <cmath>
 
+// Note:  Logging in this file is largely avoided due to the
+// number of calls that are made to these functions and the possibility
+// of causing recursions leading to stack overflow
+
 NS_LOG_COMPONENT_DEFINE ("RealtimeSimulatorImpl");
 
 namespace ns3 {
@@ -156,7 +160,6 @@ RealtimeSimulatorImpl::SetScheduler (ObjectFactory schedulerFactory)
 void
 RealtimeSimulatorImpl::ProcessOneEvent (void)
 {
-  NS_LOG_FUNCTION (this);
   //
   // The idea here is to wait until the next event comes due.  In the case of
   // a realtime simulation, we want real time to be consumed between events.
@@ -386,7 +389,6 @@ RealtimeSimulatorImpl::ProcessOneEvent (void)
 bool 
 RealtimeSimulatorImpl::IsFinished (void) const
 {
-  NS_LOG_FUNCTION (this);
   bool rc;
   {
     CriticalSection cs (m_mutex);
@@ -402,7 +404,6 @@ RealtimeSimulatorImpl::IsFinished (void) const
 uint64_t
 RealtimeSimulatorImpl::NextTs (void) const
 {
-  NS_LOG_FUNCTION (this);
   NS_ASSERT_MSG (m_events->IsEmpty () == false, 
                  "RealtimeSimulatorImpl::NextTs(): event queue is empty");
   Scheduler::Event ev = m_events->PeekNext ();
@@ -474,14 +475,12 @@ RealtimeSimulatorImpl::Run (void)
 bool
 RealtimeSimulatorImpl::Running (void) const
 {
-  NS_LOG_FUNCTION (this);
   return m_running;
 }
 
 bool
 RealtimeSimulatorImpl::Realtime (void) const
 {
-  NS_LOG_FUNCTION (this);
   return m_synchronizer->Realtime ();
 }
 
@@ -592,7 +591,6 @@ RealtimeSimulatorImpl::ScheduleNow (EventImpl *impl)
 Time
 RealtimeSimulatorImpl::Now (void) const
 {
-  NS_LOG_FUNCTION (this);
   return TimeStep (m_currentTs);
 }
 
@@ -663,7 +661,6 @@ RealtimeSimulatorImpl::ScheduleRealtimeNow (EventImpl *impl)
 Time
 RealtimeSimulatorImpl::RealtimeNow (void) const
 {
-  NS_LOG_FUNCTION (this);
   return TimeStep (m_synchronizer->GetCurrentRealtime ());
 }
 
@@ -696,7 +693,6 @@ RealtimeSimulatorImpl::GetDelayLeft (const EventId &id) const
   // If the event has expired, there is no delay until it runs.  It is not the
   // case that there is a negative time until it runs.
   //
-  NS_LOG_FUNCTION (this << &id);
   if (IsExpired (id))
     {
       return TimeStep (0);
@@ -708,7 +704,6 @@ RealtimeSimulatorImpl::GetDelayLeft (const EventId &id) const
 void
 RealtimeSimulatorImpl::Remove (const EventId &id)
 {
-  NS_LOG_FUNCTION (this << &id);
   if (id.GetUid () == 2)
     {
       // destroy events.
@@ -748,7 +743,6 @@ RealtimeSimulatorImpl::Remove (const EventId &id)
 void
 RealtimeSimulatorImpl::Cancel (const EventId &id)
 {
-  NS_LOG_FUNCTION (this << &id);
   if (IsExpired (id) == false)
     {
       id.PeekEventImpl ()->Cancel ();
@@ -758,7 +752,6 @@ RealtimeSimulatorImpl::Cancel (const EventId &id)
 bool
 RealtimeSimulatorImpl::IsExpired (const EventId &ev) const
 {
-  NS_LOG_FUNCTION (this << &ev);
   if (ev.GetUid () == 2)
     {
       if (ev.PeekEventImpl () == 0 ||
@@ -804,7 +797,6 @@ RealtimeSimulatorImpl::GetMaximumSimulationTime (void) const
 {
   // XXX: I am fairly certain other compilers use other non-standard
   // post-fixes to indicate 64 bit constants.
-  NS_LOG_FUNCTION (this);
   return TimeStep (0x7fffffffffffffffLL);
 }
 
@@ -812,14 +804,12 @@ RealtimeSimulatorImpl::GetMaximumSimulationTime (void) const
 uint32_t 
 RealtimeSimulatorImpl::GetSystemId (void) const
 {
-  NS_LOG_FUNCTION (this);
   return 0;
 }
 
 uint32_t
 RealtimeSimulatorImpl::GetContext (void) const
 {
-  NS_LOG_FUNCTION (this);
   return m_currentContext;
 }
 

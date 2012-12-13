@@ -25,9 +25,13 @@
 #include <cmath>
 #include <iostream>
 
-namespace ns3 {
+// Note:  Logging in this file is largely avoided due to the
+// number of calls that are made to these functions and the possibility
+// of causing recursions leading to stack overflow
 
 NS_LOG_COMPONENT_DEFINE ("int64x64-cairo");
+
+namespace ns3 {
 
 #define OUTPUT_SIGN(sa,sb,ua,ub)                                        \
   ({ bool negA, negB;                                                    \
@@ -42,7 +46,6 @@ NS_LOG_COMPONENT_DEFINE ("int64x64-cairo");
 void
 int64x64_t::Mul (int64x64_t const &o)
 {
-  NS_LOG_FUNCTION (this << &o);
   cairo_uint128_t a, b, result;
   bool sign = OUTPUT_SIGN (_v, o._v, a, b);
   result = Umul (a, b);
@@ -58,7 +61,6 @@ int64x64_t::Mul (int64x64_t const &o)
 cairo_uint128_t
 int64x64_t::Umul (cairo_uint128_t a, cairo_uint128_t b)
 {
-  NS_LOG_FUNCTION (&a << &b);
   cairo_uint128_t result;
   cairo_uint128_t hiPart,loPart,midPart;
 
@@ -85,7 +87,6 @@ int64x64_t::Umul (cairo_uint128_t a, cairo_uint128_t b)
 void
 int64x64_t::Div (int64x64_t const &o)
 {
-  NS_LOG_FUNCTION (this << &o);
   cairo_uint128_t a, b, result;
   bool sign = OUTPUT_SIGN (_v, o._v, a, b);
   result = Udiv (a, b);
@@ -95,7 +96,6 @@ int64x64_t::Div (int64x64_t const &o)
 cairo_uint128_t
 int64x64_t::Udiv (cairo_uint128_t a, cairo_uint128_t b)
 {
-  NS_LOG_FUNCTION (&a << &b);
   cairo_uquorem128_t qr = _cairo_uint128_divrem (a, b);
   cairo_uint128_t result = _cairo_uint128_lsl (qr.quo, 64);
   // Now, manage the remainder
@@ -120,7 +120,6 @@ int64x64_t::Udiv (cairo_uint128_t a, cairo_uint128_t b)
 void 
 int64x64_t::MulByInvert (const int64x64_t &o)
 {
-  NS_LOG_FUNCTION (this << &o);
   bool negResult = _cairo_int128_negative (_v);
   cairo_uint128_t a = negResult ? _cairo_int128_negate (_v) : _v;
   cairo_uint128_t result = UmulByInvert (a, o._v);
@@ -130,7 +129,6 @@ int64x64_t::MulByInvert (const int64x64_t &o)
 cairo_uint128_t
 int64x64_t::UmulByInvert (cairo_uint128_t a, cairo_uint128_t b)
 {
-  NS_LOG_FUNCTION (&a << &b);
   cairo_uint128_t result;
   cairo_uint128_t hi, mid;
   hi = _cairo_uint64x64_128_mul (a.hi, b.hi);
@@ -144,7 +142,6 @@ int64x64_t::UmulByInvert (cairo_uint128_t a, cairo_uint128_t b)
 int64x64_t 
 int64x64_t::Invert (uint64_t v)
 {
-  NS_LOG_FUNCTION (v);
   NS_ASSERT (v > 1);
   cairo_uint128_t a, factor;
   a.hi = 1;

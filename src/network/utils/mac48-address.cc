@@ -244,7 +244,6 @@ Mac48Address Mac48Address::GetMulticast (Ipv6Address addr)
 
 std::ostream& operator<< (std::ostream& os, const Mac48Address & address)
 {
-  NS_LOG_FUNCTION (&os << address);
   uint8_t ad[6];
   address.CopyTo (ad);
 
@@ -274,7 +273,6 @@ AsInt (std::string v)
 
 std::istream& operator>> (std::istream& is, Mac48Address & address)
 {
- NS_LOG_FUNCTION (&is << address);
   std::string v;
   is >> v;
 

@@ -30,6 +30,10 @@
 
 #include <cmath>
 
+// Note:  Logging in this file is largely avoided due to the
+// number of calls that are made to these functions and the possibility
+// of causing recursions leading to stack overflow
+
 NS_LOG_COMPONENT_DEFINE ("DefaultSimulatorImpl");
 
 namespace ns3 {
@@ -118,14 +122,12 @@ DefaultSimulatorImpl::SetScheduler (ObjectFactory schedulerFactory)
 uint32_t 
 DefaultSimulatorImpl::GetSystemId (void) const
 {
-  NS_LOG_FUNCTION (this);
   return 0;
 }
 
 void
 DefaultSimulatorImpl::ProcessOneEvent (void)
 {
-  NS_LOG_FUNCTION (this);
   Scheduler::Event next = m_events->RemoveNext ();
 
   NS_ASSERT (next.key.m_ts >= m_currentTs);
@@ -144,14 +146,12 @@ DefaultSimulatorImpl::ProcessOneEvent (void)
 bool 
 DefaultSimulatorImpl::IsFinished (void) const
 {
-  NS_LOG_FUNCTION (this);
   return m_events->IsEmpty () || m_stop;
 }
 
 void
 DefaultSimulatorImpl::ProcessEventsWithContext (void)
 {
-  NS_LOG_FUNCTION (this);
   if (m_eventsWithContextEmpty)
     {
       return;
@@ -270,7 +270,6 @@ DefaultSimulatorImpl::ScheduleWithContext (uint32_t context, Time const &time, E
 EventId
 DefaultSimulatorImpl::ScheduleNow (EventImpl *event)
 {
-  NS_LOG_FUNCTION (this << event);
   NS_ASSERT_MSG (SystemThread::Equals (m_main), "Simulator::ScheduleNow Thread-unsafe invocation!");
 
   Scheduler::Event ev;
@@ -287,7 +286,6 @@ DefaultSimulatorImpl::ScheduleNow (EventImpl *event)
 EventId
 DefaultSimulatorImpl::ScheduleDestroy (EventImpl *event)
 {
-  NS_LOG_FUNCTION (this << event);
   NS_ASSERT_MSG (SystemThread::Equals (m_main), "Simulator::ScheduleDestroy Thread-unsafe invocation!");
 
   EventId id (Ptr<EventImpl> (event, false), m_currentTs, 0xffffffff, 2);
@@ -299,14 +297,13 @@ DefaultSimulatorImpl::ScheduleDestroy (EventImpl *event)
 Time
 DefaultSimulatorImpl::Now (void) const
 {
-  NS_LOG_FUNCTION (this);
+  // Do not add function logging here, to avoid stack overflow
   return TimeStep (m_currentTs);
 }
 
 Time 
 DefaultSimulatorImpl::GetDelayLeft (const EventId &id) const
 {
-  NS_LOG_FUNCTION (this << id.GetTs () << id.GetContext () << id.GetUid ());
   if (IsExpired (id))
     {
       return TimeStep (0);
@@ -320,7 +317,6 @@ DefaultSimulatorImpl::GetDelayLeft (const EventId &id) const
 void
 DefaultSimulatorImpl::Remove (const EventId &id)
 {
-  NS_LOG_FUNCTION (this << id.GetTs () << id.GetContext () << id.GetUid ());
   if (id.GetUid () == 2)
     {
       // destroy events.
@@ -354,7 +350,6 @@ DefaultSimulatorImpl::Remove (const EventId &id)
 void
 DefaultSimulatorImpl::Cancel (const EventId &id)
 {
-  NS_LOG_FUNCTION (this << id.GetTs () << id.GetContext () << id.GetUid ());
   if (!IsExpired (id))
     {
       id.PeekEventImpl ()->Cancel ();
@@ -364,7 +359,6 @@ DefaultSimulatorImpl::Cancel (const EventId &id)
 bool
 DefaultSimulatorImpl::IsExpired (const EventId &ev) const
 {
-  NS_LOG_FUNCTION (this << ev.GetTs () << ev.GetContext () << ev.GetUid ());
   if (ev.GetUid () == 2)
     {
       if (ev.PeekEventImpl () == 0 ||
@@ -399,7 +393,6 @@ DefaultSimulatorImpl::IsExpired (const EventId &ev) const
 Time 
 DefaultSimulatorImpl::GetMaximumSimulationTime (void) const
 {
-  NS_LOG_FUNCTION (this);
   // XXX: I am fairly certain other compilers use other non-standard
   // post-fixes to indicate 64 bit constants.
   return TimeStep (0x7fffffffffffffffLL);
@@ -408,7 +401,6 @@ DefaultSimulatorImpl::GetMaximumSimulationTime (void) const
 uint32_t
 DefaultSimulatorImpl::GetContext (void) const
 {
-  NS_LOG_FUNCTION (this);
   return m_currentContext;
 }
 

@@ -89,13 +89,11 @@ CalculateDistance (const Vector2D &a, const Vector2D &b)
 
 std::ostream &operator << (std::ostream &os, const Vector3D &vector)
 {
-  NS_LOG_FUNCTION (&os << vector);
   os << vector.x << ":" << vector.y << ":" << vector.z;
   return os;
 }
 std::istream &operator >> (std::istream &is, Vector3D &vector)
 {
-  NS_LOG_FUNCTION (&is << vector);
   char c1, c2;
   is >> vector.x >> c1 >> vector.y >> c2 >> vector.z;
   if (c1 != ':' ||
@@ -107,13 +105,11 @@ std::istream &operator >> (std::istream &is, Vector3D &vector)
 }
 std::ostream &operator << (std::ostream &os, const Vector2D &vector)
 {
-  NS_LOG_FUNCTION (&os << vector);
   os << vector.x << ":" << vector.y;
   return os;
 }
 std::istream &operator >> (std::istream &is, Vector2D &vector)
 {
-  NS_LOG_FUNCTION (&is << vector);
   char c1;
   is >> vector.x >> c1 >> vector.y;
   if (c1 != ':')

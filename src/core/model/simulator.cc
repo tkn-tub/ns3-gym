@@ -37,6 +37,10 @@
 #include <vector>
 #include <iostream>
 
+// Note:  Logging in this file is largely avoided due to the
+// number of calls that are made to these functions and the possibility
+// of causing recursions leading to stack overflow
+
 NS_LOG_COMPONENT_DEFINE ("Simulator");
 
 namespace ns3 {
@@ -54,14 +58,12 @@ GlobalValue g_schedTypeImpl = GlobalValue ("SchedulerType",
 static void
 TimePrinter (std::ostream &os)
 {
-  NS_LOG_FUNCTION_NOARGS ();
   os << Simulator::Now ().GetSeconds () << "s";
 }
 
 static void
 NodePrinter (std::ostream &os)
 {
-  NS_LOG_FUNCTION_NOARGS ();
   if (Simulator::GetContext () == 0xffffffff)
     {
       os << "-1";
@@ -74,14 +76,12 @@ NodePrinter (std::ostream &os)
 
 static SimulatorImpl **PeekImpl (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
   static SimulatorImpl *impl = 0;
   return &impl;
 }
 
 static SimulatorImpl * GetImpl (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
   SimulatorImpl **pimpl = PeekImpl ();
   /* Please, don't include any calls to logging macros in this function
    * or pay the price, that is, stack explosions.
@@ -183,7 +183,6 @@ Simulator::Now (void)
   /* Please, don't include any calls to logging macros in this function
    * or pay the price, that is, stack explosions.
    */
-  NS_LOG_FUNCTION_NOARGS ();
   return GetImpl ()->Now ();
 }
 
@@ -197,44 +196,37 @@ Simulator::GetDelayLeft (const EventId &id)
 EventId
 Simulator::Schedule (Time const &time, const Ptr<EventImpl> &ev)
 {
-  NS_LOG_FUNCTION (time << ev);
   return DoSchedule (time, GetPointer (ev));
 }
 
 EventId
 Simulator::ScheduleNow (const Ptr<EventImpl> &ev)
 {
-  NS_LOG_FUNCTION (ev);
   return DoScheduleNow (GetPointer (ev));
 }
 void
 Simulator::ScheduleWithContext (uint32_t context, const Time &time, EventImpl *impl)
 {
-  NS_LOG_FUNCTION (context << time << impl);
   return GetImpl ()->ScheduleWithContext (context, time, impl);
 }
 EventId
 Simulator::ScheduleDestroy (const Ptr<EventImpl> &ev)
 {
-  NS_LOG_FUNCTION (ev);
   return DoScheduleDestroy (GetPointer (ev));
 }
 EventId 
 Simulator::DoSchedule (Time const &time, EventImpl *impl)
 {
-  NS_LOG_FUNCTION (time << impl);
   return GetImpl ()->Schedule (time, impl);
 }
 EventId 
 Simulator::DoScheduleNow (EventImpl *impl)
 {
-  NS_LOG_FUNCTION (impl);
   return GetImpl ()->ScheduleNow (impl);
 }
 EventId 
 Simulator::DoScheduleDestroy (EventImpl *impl)
 {
-  NS_LOG_FUNCTION (impl);
   return GetImpl ()->ScheduleDestroy (impl);
 }
 
@@ -242,35 +234,30 @@ Simulator::DoScheduleDestroy (EventImpl *impl)
 EventId
 Simulator::Schedule (Time const &time, void (*f)(void))
 {
-  NS_LOG_FUNCTION (time << f);
   return DoSchedule (time, MakeEvent (f));
 }
 
 void
 Simulator::ScheduleWithContext (uint32_t context, Time const &time, void (*f)(void))
 {
-  NS_LOG_FUNCTION (time << context << f);
   return ScheduleWithContext (context, time, MakeEvent (f));
 }
 
 EventId
 Simulator::ScheduleNow (void (*f)(void))
 {
-  NS_LOG_FUNCTION (f);
   return DoScheduleNow (MakeEvent (f));
 }
 
 EventId
 Simulator::ScheduleDestroy (void (*f)(void))
 {
-  NS_LOG_FUNCTION (f);
   return DoScheduleDestroy (MakeEvent (f));
 }
 
 void
 Simulator::Remove (const EventId &ev)
 {
-  NS_LOG_FUNCTION (&ev);
   if (*PeekImpl () == 0)
     {
       return;
@@ -281,7 +268,6 @@ Simulator::Remove (const EventId &ev)
 void
 Simulator::Cancel (const EventId &ev)
 {
-  NS_LOG_FUNCTION (&ev);
   if (*PeekImpl () == 0)
     {
       return;
@@ -292,7 +278,6 @@ Simulator::Cancel (const EventId &ev)
 bool 
 Simulator::IsExpired (const EventId &id)
 {
-  NS_LOG_FUNCTION (&id);
   if (*PeekImpl () == 0)
     {
       return true;
@@ -302,7 +287,6 @@ Simulator::IsExpired (const EventId &id)
 
 Time Now (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
   return Time (Simulator::Now ());
 }
 
@@ -316,7 +300,6 @@ Simulator::GetMaximumSimulationTime (void)
 uint32_t
 Simulator::GetContext (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
   return GetImpl ()->GetContext ();
 }
 

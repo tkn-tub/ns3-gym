@@ -168,7 +168,6 @@ Packet::Packet (const Packet &o)
 Packet &
 Packet::operator = (const Packet &o)
 {
-  NS_LOG_FUNCTION (this << &o);
   if (this == &o)
     {
       return *this;
@@ -926,7 +925,6 @@ Packet::GetPacketTagIterator (void) const
 
 std::ostream& operator<< (std::ostream& os, const Packet &packet)
 {
-  NS_LOG_FUNCTION (&os << packet);
   packet.Print (os);
   return os;
 }

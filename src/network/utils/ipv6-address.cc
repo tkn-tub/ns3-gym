@@ -531,7 +531,6 @@ bool Ipv6Address::IsMatchingType (const Address& address)
 
 Ipv6Address::operator Address () const
 {
-  NS_LOG_FUNCTION (this);
   return ConvertTo ();
 }
 
@@ -637,14 +636,12 @@ bool Ipv6Address::IsEqual (const Ipv6Address& other) const
 
 std::ostream& operator << (std::ostream& os, Ipv6Address const& address)
 {
-  NS_LOG_FUNCTION (&os << address);
   address.Print (os);
   return os;
 }
 
 std::istream& operator >> (std::istream& is, Ipv6Address& address)
 {
-  NS_LOG_FUNCTION (&is << address);
   std::string str;
   is >> str;
   address = Ipv6Address (str.c_str ());
@@ -706,13 +703,11 @@ Ipv6Prefix::Ipv6Prefix (uint8_t prefix)
 
 Ipv6Prefix::Ipv6Prefix (Ipv6Prefix const& prefix)
 {
-  NS_LOG_FUNCTION (this << prefix);
   memcpy (m_prefix, prefix.m_prefix, 16);
 }
 
 Ipv6Prefix::Ipv6Prefix (Ipv6Prefix const* prefix)
 {
-  NS_LOG_FUNCTION (this << prefix);
   memcpy (m_prefix, prefix->m_prefix, 16);
 }
 
@@ -813,7 +808,6 @@ uint8_t Ipv6Prefix::GetPrefixLength () const
 
 bool Ipv6Prefix::IsEqual (const Ipv6Prefix& other) const
 {
-  NS_LOG_FUNCTION (this << other);
   if (!memcmp (m_prefix, other.m_prefix, 16))
     {
       return true;
@@ -823,14 +817,12 @@ bool Ipv6Prefix::IsEqual (const Ipv6Prefix& other) const
 
 std::ostream& operator << (std::ostream& os, Ipv6Prefix const& prefix)
 {
-  NS_LOG_FUNCTION (&os << prefix);
   prefix.Print (os);
   return os;
 }
 
 std::istream& operator >> (std::istream& is, Ipv6Prefix& prefix)
 {
-  NS_LOG_FUNCTION (&is << prefix);
   std::string str;
   is >> str;
   prefix = Ipv6Prefix (str.c_str ());
@@ -839,13 +831,11 @@ std::istream& operator >> (std::istream& is, Ipv6Prefix& prefix)
 
 bool operator == (Ipv6Prefix const &a, Ipv6Prefix const &b)
 {
-  NS_LOG_FUNCTION (a << b);
   return a.IsEqual (b);
 }
 
 bool operator != (Ipv6Prefix const &a, Ipv6Prefix const &b)
 {
-  NS_LOG_FUNCTION (a << b);
   return !a.IsEqual (b);
 }
 

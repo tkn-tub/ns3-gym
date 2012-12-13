@@ -387,19 +387,16 @@ size_t Ipv4AddressHash::operator() (Ipv4Address const &x) const
 
 std::ostream& operator<< (std::ostream& os, Ipv4Address const& address)
 {
-  NS_LOG_FUNCTION (&os << &address);
   address.Print (os);
   return os;
 }
 std::ostream& operator<< (std::ostream& os, Ipv4Mask const& mask)
 {
-  NS_LOG_FUNCTION (&os << mask);
   mask.Print (os);
   return os;
 }
 std::istream & operator >> (std::istream &is, Ipv4Address &address)
 {
-  NS_LOG_FUNCTION (&is << &address);
   std::string str;
   is >> str;
   address = Ipv4Address (str.c_str ());
@@ -407,7 +404,6 @@ std::istream & operator >> (std::istream &is, Ipv4Address &address)
 }
 std::istream & operator >> (std::istream &is, Ipv4Mask &mask)
 {
-  NS_LOG_FUNCTION (&is << &mask);
   std::string str;
   is >> str;
   mask = Ipv4Mask (str.c_str ());
@@ -416,12 +412,10 @@ std::istream & operator >> (std::istream &is, Ipv4Mask &mask)
 
 bool operator == (Ipv4Mask const &a, Ipv4Mask const &b)
 {
-  NS_LOG_FUNCTION (a << b);
   return a.IsEqual (b);
 }
 bool operator != (Ipv4Mask const &a, Ipv4Mask const &b)
 {
-  NS_LOG_FUNCTION (a << b);
   return !a.IsEqual (b);
 }
 

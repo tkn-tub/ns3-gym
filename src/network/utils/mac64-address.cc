@@ -154,7 +154,6 @@ Mac64Address::GetType (void)
 
 bool operator == (const Mac64Address &a, const Mac64Address &b)
 {
-  NS_LOG_FUNCTION (a << b);
   uint8_t ada[8];
   uint8_t adb[8];
   a.CopyTo (ada);
@@ -169,7 +168,6 @@ bool operator != (const Mac64Address &a, const Mac64Address &b)
 
 std::ostream& operator<< (std::ostream& os, const Mac64Address & address)
 {
-  NS_LOG_FUNCTION (&os << address);
   uint8_t ad[8];
   address.CopyTo (ad);
 

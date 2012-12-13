@@ -5,13 +5,16 @@
 #include "assert.h"
 #include "log.h"
 
+// Note:  Logging in this file is largely avoided due to the
+// number of calls that are made to these functions and the possibility
+// of causing recursions leading to stack overflow
+
 NS_LOG_COMPONENT_DEFINE ("int64x64");
 
 namespace ns3 {
 
 static uint8_t MostSignificantDigit (uint64_t value)
 {
-  NS_LOG_FUNCTION (value);
   uint8_t n = 0;
   do
     {
@@ -23,7 +26,6 @@ static uint8_t MostSignificantDigit (uint64_t value)
 
 static uint64_t PowerOfTen (uint8_t n)
 {
-  NS_LOG_FUNCTION (n);
   uint64_t retval = 1;
   while (n > 0)
     {
@@ -35,7 +37,6 @@ static uint64_t PowerOfTen (uint8_t n)
 
 std::ostream &operator << (std::ostream &os, const int64x64_t &value)
 {
-  NS_LOG_FUNCTION (&os << &value);
   int64_t hi = value.GetHigh ();
   os << ((hi<0) ? "-" : "+") << ((hi<0) ? -hi : hi) << ".";
   uint64_t low = value.GetLow ();
@@ -54,7 +55,6 @@ std::ostream &operator << (std::ostream &os, const int64x64_t &value)
 
 static uint64_t ReadDigits (std::string str)
 {
-  NS_LOG_FUNCTION (str);
   const char *buf = str.c_str ();
   uint64_t retval = 0;
   while (*buf != 0)
@@ -68,7 +68,6 @@ static uint64_t ReadDigits (std::string str)
 
 std::istream &operator >> (std::istream &is, int64x64_t &value)
 {
-  NS_LOG_FUNCTION (&is << &value);
   std::string str;
 
   is >> str;
