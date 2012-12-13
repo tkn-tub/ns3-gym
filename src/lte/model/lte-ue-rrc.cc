@@ -693,6 +693,7 @@ void
 LteUeRrc::DoRecvRrcConnectionReject (LteRrcSap::RrcConnectionReject msg)
 {
   NS_LOG_FUNCTION (this);
+  LeaveConnectedMode();
 }
 
 
