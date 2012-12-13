@@ -650,17 +650,19 @@ class DrbActivator : public SimpleRefCount<DrbActivator>
 public:
   DrbActivator (Ptr<NetDevice> ueDevice, EpsBearer bearer);
   static void ActivateCallback (Ptr<DrbActivator> a, std::string context, uint64_t imsi, uint16_t cellId, uint16_t rnti);
-  void ActivateDrb ();
+  void ActivateDrb (uint64_t imsi, uint16_t cellId, uint16_t rnti);
 private:
   bool m_active;
   Ptr<NetDevice> m_ueDevice;
   EpsBearer m_bearer;
+  uint64_t m_imsi;
 };
 
 DrbActivator::DrbActivator (Ptr<NetDevice> ueDevice, EpsBearer bearer)
   : m_active (false),
     m_ueDevice (ueDevice),
-    m_bearer (bearer)
+    m_bearer (bearer),
+    m_imsi (m_ueDevice->GetObject<LteUeNetDevice> ()->GetImsi ())
 {
 }
 
@@ -668,14 +670,14 @@ void
 DrbActivator::ActivateCallback (Ptr<DrbActivator> a, std::string context, uint64_t imsi, uint16_t cellId, uint16_t rnti)
 {
   NS_LOG_FUNCTION (a << context << imsi << cellId << rnti);
-  a->ActivateDrb ();
+  a->ActivateDrb (imsi, cellId, rnti);
 }
 
 void
-DrbActivator::ActivateDrb ()
+DrbActivator::ActivateDrb (uint64_t imsi, uint16_t cellId, uint16_t rnti)
 { 
-  NS_LOG_FUNCTION (this << m_active);
-  if (!m_active)
+  NS_LOG_FUNCTION (this << imsi << cellId << rnti << m_active);
+  if ((!m_active) && (imsi == m_imsi))
     {
       Ptr<LteUeRrc> ueRrc = m_ueDevice->GetObject<LteUeNetDevice> ()->GetRrc ();
       NS_ASSERT (ueRrc->GetState () == LteUeRrc::CONNECTED_NORMALLY);      
@@ -684,7 +686,8 @@ DrbActivator::ActivateDrb ()
       Ptr<LteEnbRrc> enbRrc = enbLteDevice->GetObject<LteEnbNetDevice> ()->GetRrc ();
       NS_ASSERT (ueRrc->GetCellId () == enbLteDevice->GetCellId ());
       Ptr<UeManager> ueManager = enbRrc->GetUeManager (rnti);
-      NS_ASSERT (ueManager->GetState () == UeManager::CONNECTION_SETUP);
+      NS_ASSERT (ueManager->GetState () == UeManager::CONNECTED_NORMALLY ||
+                 ueManager->GetState () == UeManager::CONNECTION_RECONFIGURATION);
       EpcEnbS1SapUser::DataRadioBearerSetupRequestParameters params;
       params.rnti = rnti;
       params.bearer = m_bearer;
@@ -701,15 +704,19 @@ LteHelper::ActivateDataRadioBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer)
 {
   NS_LOG_FUNCTION (this << ueDevice);
   NS_ASSERT_MSG (m_epcHelper == 0, "this method must not be used when EPC is being used");  
-
+  
   // Normally it is the EPC that takes care of activating DRBs
-  // after the UE gets connected. When the EPC is not used, we achieve
+  // when the UE gets connected. When the EPC is not used, we achieve
   // the same behavior by hooking a dedicated DRB activation function
-  // to the UE RRC Connection Established trace source
+  // to the Enb RRC Connection Established trace source
+
+
+  Ptr<LteEnbNetDevice> enbLteDevice = ueDevice->GetObject<LteUeNetDevice> ()->GetTargetEnb ();
+
   std::ostringstream path;
-  path << "/NodeList/" << ueDevice->GetNode ()->GetId () 
-       << "/DeviceList/" << ueDevice->GetIfIndex ()
-       << "/LteUeRrc/ConnectionEstablished";  
+  path << "/NodeList/" << enbLteDevice->GetNode ()->GetId () 
+       << "/DeviceList/" << enbLteDevice->GetIfIndex ()
+       << "/LteEnbRrc/ConnectionEstablished";  
   Ptr<DrbActivator> arg = Create<DrbActivator> (ueDevice, bearer);
   Config::Connect (path.str (), MakeBoundCallback (&DrbActivator::ActivateCallback, arg));
 }

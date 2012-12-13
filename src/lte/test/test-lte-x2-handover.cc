@@ -55,10 +55,10 @@ public:
    * 
    * \return 
    */
-  LteX2HandoverTestCase (uint32_t nUes, uint32_t nDedicatedBearers, std::list<HandoverEvent> handoverEventList, std::string handoverEventListName, bool useUdp, std::string schedulerType, bool admitHo);
+  LteX2HandoverTestCase (uint32_t nUes, uint32_t nDedicatedBearers, std::list<HandoverEvent> handoverEventList, std::string handoverEventListName, bool useUdp, std::string schedulerType, bool admitHo, bool useIdealRrc);
   
 private:
-  static std::string BuildNameString (uint32_t nUes, uint32_t nDedicatedBearers, std::string handoverEventListName, bool useUdp, std::string schedulerType, bool admitHo);
+  static std::string BuildNameString (uint32_t nUes, uint32_t nDedicatedBearers, std::string handoverEventListName, bool useUdp, std::string schedulerType, bool admitHo, bool useIdealRrc);
   virtual void DoRun (void);
   void CheckConnected (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice);
 
@@ -70,6 +70,7 @@ private:
   bool m_useUdp;
   std::string m_schedulerType;
   bool m_admitHo;
+  bool     m_useIdealRrc;
   Ptr<LteHelper> m_lteHelper;
   Ptr<EpcHelper> m_epcHelper;
   
@@ -95,10 +96,11 @@ private:
 
   const Time m_maxHoDuration; 
   const Time m_statsDuration; 
+
 };
 
 
-std::string LteX2HandoverTestCase::BuildNameString (uint32_t nUes, uint32_t nDedicatedBearers, std::string handoverEventListName, bool useUdp, std::string schedulerType, bool admitHo)
+std::string LteX2HandoverTestCase::BuildNameString (uint32_t nUes, uint32_t nDedicatedBearers, std::string handoverEventListName, bool useUdp, std::string schedulerType, bool admitHo, bool useIdealRrc)
 {
   std::ostringstream oss;
   oss << " nUes=" << nUes 
@@ -107,11 +109,19 @@ std::string LteX2HandoverTestCase::BuildNameString (uint32_t nUes, uint32_t nDed
       << " " << schedulerType
       << " admitHo=" << admitHo
       << " hoList: " << handoverEventListName;
+  if (useIdealRrc)
+    {
+      oss << ", ideal RRC";
+    }
+  else
+    {
+      oss << ", real RRC";
+    }  
   return oss.str ();
 }
 
-LteX2HandoverTestCase::LteX2HandoverTestCase (uint32_t nUes, uint32_t nDedicatedBearers, std::list<HandoverEvent> handoverEventList, std::string handoverEventListName, bool useUdp, std::string schedulerType, bool admitHo)
-  : TestCase (BuildNameString (nUes, nDedicatedBearers, handoverEventListName, useUdp, schedulerType, admitHo)),
+LteX2HandoverTestCase::LteX2HandoverTestCase (uint32_t nUes, uint32_t nDedicatedBearers, std::list<HandoverEvent> handoverEventList, std::string handoverEventListName, bool useUdp, std::string schedulerType, bool admitHo, bool useIdealRrc)
+  : TestCase (BuildNameString (nUes, nDedicatedBearers, handoverEventListName, useUdp, schedulerType, admitHo, useIdealRrc)),
     m_nUes (nUes),
     m_nDedicatedBearers (nDedicatedBearers),
     m_handoverEventList (handoverEventList),
@@ -120,6 +130,7 @@ LteX2HandoverTestCase::LteX2HandoverTestCase (uint32_t nUes, uint32_t nDedicated
     m_useUdp (useUdp),
     m_schedulerType (schedulerType),
     m_admitHo (admitHo),
+    m_useIdealRrc (useIdealRrc),
     m_maxHoDuration (Seconds (0.1)),
     m_statsDuration (Seconds (0.5))
 {
@@ -128,15 +139,19 @@ LteX2HandoverTestCase::LteX2HandoverTestCase (uint32_t nUes, uint32_t nDedicated
 void
 LteX2HandoverTestCase::DoRun ()
 {
-  NS_LOG_FUNCTION (this << BuildNameString (m_nUes, m_nDedicatedBearers, m_handoverEventListName, m_useUdp, m_schedulerType, m_admitHo));
+  NS_LOG_FUNCTION (this << BuildNameString (m_nUes, m_nDedicatedBearers, m_handoverEventListName, m_useUdp, m_schedulerType, m_admitHo, m_useIdealRrc));
 
   Config::SetDefault ("ns3::UdpClient::Interval", TimeValue (MilliSeconds(100)));
   Config::SetDefault ("ns3::UdpClient::MaxPackets", UintegerValue(1000000));  
   Config::SetDefault ("ns3::UdpClient::PacketSize", UintegerValue(100));  
+
+  int64_t stream = 1;
   
   m_lteHelper = CreateObject<LteHelper> ();
   m_lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
-  m_lteHelper->SetSchedulerType (m_schedulerType); 
+  m_lteHelper->SetSchedulerType (m_schedulerType);
+  m_lteHelper->SetAttribute ("UseIdealRrc", BooleanValue (m_useIdealRrc));
+  
 
   NodeContainer enbNodes;
   enbNodes.Create (2);
@@ -164,6 +179,7 @@ LteX2HandoverTestCase::DoRun ()
 
   NetDeviceContainer enbDevices;
   enbDevices = m_lteHelper->InstallEnbDevice (enbNodes);
+  stream += m_lteHelper->AssignStreams (enbDevices, stream);
   for (NetDeviceContainer::Iterator it = enbDevices.Begin ();
        it != enbDevices.End ();
        ++it)
@@ -174,8 +190,7 @@ LteX2HandoverTestCase::DoRun ()
 
   NetDeviceContainer ueDevices;
   ueDevices = m_lteHelper->InstallUeDevice (ueNodes);
-
-
+  stream += m_lteHelper->AssignStreams (ueDevices, stream);
 
   Ipv4Address remoteHostAddr;
   Ipv4StaticRoutingHelper ipv4RoutingHelper;
@@ -233,6 +248,7 @@ LteX2HandoverTestCase::DoRun ()
       Ptr<UniformRandomVariable> startTimeSeconds = CreateObject<UniformRandomVariable> ();
       startTimeSeconds->SetAttribute ("Min", DoubleValue (0));
       startTimeSeconds->SetAttribute ("Max", DoubleValue (0.010));
+      startTimeSeconds->SetStream (stream++);      
 
       for (uint32_t u = 0; u < ueNodes.GetN (); ++u)
         {
@@ -371,6 +387,11 @@ LteX2HandoverTestCase::DoRun ()
        hoEventIt != m_handoverEventList.end ();
        ++hoEventIt)
     {
+      Simulator::Schedule (hoEventIt->startTime, 
+                           &LteX2HandoverTestCase::CheckConnected, 
+                           this, 
+                           ueDevices.Get (hoEventIt->ueDeviceIndex), 
+                           enbDevices.Get (hoEventIt->sourceEnbDeviceIndex));
       m_lteHelper->HandoverRequest (hoEventIt->startTime, 
                                     ueDevices.Get (hoEventIt->ueDeviceIndex),
                                     enbDevices.Get (hoEventIt->sourceEnbDeviceIndex),
@@ -410,6 +431,7 @@ LteX2HandoverTestCase::DoRun ()
 void 
 LteX2HandoverTestCase::CheckConnected (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice)
 {
+  NS_LOG_FUNCTION (this);
   Ptr<LteUeNetDevice> ueLteDevice = ueDevice->GetObject<LteUeNetDevice> ();
   Ptr<LteUeRrc> ueRrc = ueLteDevice->GetRrc ();
   NS_TEST_ASSERT_MSG_EQ (ueRrc->GetState (), LteUeRrc::CONNECTED_NORMALLY, "Wrong LteUeRrc state!");
@@ -433,8 +455,10 @@ LteX2HandoverTestCase::CheckConnected (Ptr<NetDevice> ueDevice, Ptr<NetDevice> e
   uint8_t enbDlEarfcn = enbLteDevice->GetDlEarfcn ();
   uint8_t ueUlEarfcn = ueRrc->GetUlEarfcn ();
   uint8_t enbUlEarfcn = enbLteDevice->GetUlEarfcn ();
+  uint64_t ueImsi = ueLteDevice->GetImsi ();
+  uint64_t enbImsi = ueManager->GetImsi ();
 
-
+  NS_TEST_ASSERT_MSG_EQ (ueImsi, enbImsi, "inconsistent IMSI");
   NS_TEST_ASSERT_MSG_EQ (ueCellId, enbCellId, "inconsistent CellId");
   NS_TEST_ASSERT_MSG_EQ (ueDlBandwidth, enbDlBandwidth, "inconsistent DlBandwidth");
   NS_TEST_ASSERT_MSG_EQ (ueUlBandwidth, enbUlBandwidth, "inconsistent UlBandwidth");
@@ -473,6 +497,7 @@ LteX2HandoverTestCase::CheckConnected (Ptr<NetDevice> ueDevice, Ptr<NetDevice> e
 void 
 LteX2HandoverTestCase::SaveStatsAfterHandover (uint32_t ueIndex)
 {
+  NS_LOG_FUNCTION (this << ueIndex);
   for (std::list<BearerData>::iterator it = m_ueDataVector.at (ueIndex).bearerDataList.begin ();
        it != m_ueDataVector.at (ueIndex).bearerDataList.end ();
        ++it)
@@ -484,7 +509,8 @@ LteX2HandoverTestCase::SaveStatsAfterHandover (uint32_t ueIndex)
 
 void 
 LteX2HandoverTestCase::CheckStatsAWhileAfterHandover (uint32_t ueIndex)
-{        
+{     
+  NS_LOG_FUNCTION (this << ueIndex);
   uint32_t b = 1;
   for (std::list<BearerData>::iterator it = m_ueDataVector.at (ueIndex).bearerDataList.begin ();
        it != m_ueDataVector.at (ueIndex).bearerDataList.end ();
@@ -537,7 +563,7 @@ LteX2HandoverTestSuite::LteX2HandoverTestSuite ()
   ue1fwdagain.targetEnbDeviceIndex = 1;
 
   HandoverEvent ue2fwd;
-  ue1fwd.startTime = MilliSeconds (110); 
+  ue2fwd.startTime = MilliSeconds (110); 
   ue2fwd.ueDeviceIndex = 1;
   ue2fwd.sourceEnbDeviceIndex = 0;
   ue2fwd.targetEnbDeviceIndex = 1;
@@ -587,93 +613,57 @@ LteX2HandoverTestSuite::LteX2HandoverTestSuite ()
   hel7.push_back (ue2fwd);     
   hel7.push_back (ue2bwd);    
 
+  std::vector<std::string> schedulers;
+  schedulers.push_back ("ns3::RrFfMacScheduler");
+  schedulers.push_back ("ns3::PfrFfMacScheduler");
+  for (std::vector<std::string>::iterator schedIt = schedulers.begin (); schedIt != schedulers.end (); ++schedIt)
+    {
+      for (int32_t useIdealRrc = 1; useIdealRrc >= 0; --useIdealRrc)
+        {          
+          //                                     nUes, nDBearers, helist, name, useUdp, sched, admitHo, idealRrc
+          AddTestCase (new LteX2HandoverTestCase (  1,    0,    hel0, hel0name, true, *schedIt, true,  useIdealRrc));
+          AddTestCase (new LteX2HandoverTestCase (  2,    0,    hel0, hel0name, true, *schedIt, true,  useIdealRrc));
+          AddTestCase (new LteX2HandoverTestCase (  1,    5,    hel0, hel0name, true, *schedIt, true,  useIdealRrc));
+          AddTestCase (new LteX2HandoverTestCase (  2,    5,    hel0, hel0name, true, *schedIt, true,  useIdealRrc));
+          AddTestCase (new LteX2HandoverTestCase (  1,    0,    hel1, hel1name, true, *schedIt, true,  useIdealRrc));
+          AddTestCase (new LteX2HandoverTestCase (  1,    1,    hel1, hel1name, true, *schedIt, true,  useIdealRrc));
+          AddTestCase (new LteX2HandoverTestCase (  1,    2,    hel1, hel1name, true, *schedIt, true,  useIdealRrc));
+          AddTestCase (new LteX2HandoverTestCase (  1,    0,    hel1, hel1name, true, *schedIt, false, useIdealRrc));
+          AddTestCase (new LteX2HandoverTestCase (  1,    1,    hel1, hel1name, true, *schedIt, false, useIdealRrc));
+          AddTestCase (new LteX2HandoverTestCase (  1,    2,    hel1, hel1name, true, *schedIt, false, useIdealRrc));
+          AddTestCase (new LteX2HandoverTestCase (  2,    0,    hel1, hel1name, true, *schedIt, true,  useIdealRrc));
+          AddTestCase (new LteX2HandoverTestCase (  2,    1,    hel1, hel1name, true, *schedIt, true,  useIdealRrc));
+          AddTestCase (new LteX2HandoverTestCase (  2,    2,    hel1, hel1name, true, *schedIt, true,  useIdealRrc));
+          AddTestCase (new LteX2HandoverTestCase (  2,    0,    hel1, hel1name, true, *schedIt, false, useIdealRrc));
+          AddTestCase (new LteX2HandoverTestCase (  2,    1,    hel1, hel1name, true, *schedIt, false, useIdealRrc));
+          AddTestCase (new LteX2HandoverTestCase (  2,    2,    hel1, hel1name, true, *schedIt, false, useIdealRrc));
+          AddTestCase (new LteX2HandoverTestCase (  1,    0,    hel2, hel2name, true, *schedIt, true,  useIdealRrc));
+          AddTestCase (new LteX2HandoverTestCase (  1,    1,    hel2, hel2name, true, *schedIt, true,  useIdealRrc));
+          AddTestCase (new LteX2HandoverTestCase (  1,    2,    hel2, hel2name, true, *schedIt, true,  useIdealRrc));
+          AddTestCase (new LteX2HandoverTestCase (  1,    0,    hel3, hel3name, true, *schedIt, true,  useIdealRrc));
+          AddTestCase (new LteX2HandoverTestCase (  1,    1,    hel3, hel3name, true, *schedIt, true,  useIdealRrc));
+          AddTestCase (new LteX2HandoverTestCase (  1,    2,    hel3, hel3name, true, *schedIt, true,  useIdealRrc));
+          AddTestCase (new LteX2HandoverTestCase (  2,    0,    hel3, hel3name, true, *schedIt, true,  useIdealRrc));
+          AddTestCase (new LteX2HandoverTestCase (  2,    1,    hel3, hel3name, true, *schedIt, true,  useIdealRrc));
+          AddTestCase (new LteX2HandoverTestCase (  2,    2,    hel3, hel3name, true, *schedIt, true,  useIdealRrc));
+          AddTestCase (new LteX2HandoverTestCase (  2,    0,    hel4, hel4name, true, *schedIt, true,  useIdealRrc));
+          AddTestCase (new LteX2HandoverTestCase (  2,    1,    hel4, hel4name, true, *schedIt, true,  useIdealRrc));
+          AddTestCase (new LteX2HandoverTestCase (  2,    2,    hel4, hel4name, true, *schedIt, true,  useIdealRrc));
+          AddTestCase (new LteX2HandoverTestCase (  2,    0,    hel5, hel5name, true, *schedIt, true,  useIdealRrc));
+          AddTestCase (new LteX2HandoverTestCase (  2,    1,    hel5, hel5name, true, *schedIt, true,  useIdealRrc));
+          AddTestCase (new LteX2HandoverTestCase (  2,    2,    hel5, hel5name, true, *schedIt, true,  useIdealRrc));
+          AddTestCase (new LteX2HandoverTestCase (  3,    0,    hel3, hel3name, true, *schedIt, true,  useIdealRrc));
+          AddTestCase (new LteX2HandoverTestCase (  3,    1,    hel3, hel3name, true, *schedIt, true,  useIdealRrc));
+          AddTestCase (new LteX2HandoverTestCase (  3,    2,    hel3, hel3name, true, *schedIt, true,  useIdealRrc));
+          AddTestCase (new LteX2HandoverTestCase (  3,    0,    hel4, hel4name, true, *schedIt, true,  useIdealRrc));
+          AddTestCase (new LteX2HandoverTestCase (  3,    1,    hel4, hel4name, true, *schedIt, true,  useIdealRrc));
+          AddTestCase (new LteX2HandoverTestCase (  3,    2,    hel4, hel4name, true, *schedIt, true,  useIdealRrc));
+          AddTestCase (new LteX2HandoverTestCase (  3,    0,    hel5, hel5name, true, *schedIt, true,  useIdealRrc));
+          AddTestCase (new LteX2HandoverTestCase (  3,    1,    hel5, hel5name, true, *schedIt, true,  useIdealRrc));
+          AddTestCase (new LteX2HandoverTestCase (  3,    2,    hel5, hel5name, true, *schedIt, true,  useIdealRrc));
 
-                                     //  nUes, nDBearers, helist, name, useUdp, scheduler,          admitHo
-  AddTestCase (new LteX2HandoverTestCase (  1,    0,    hel0, hel0name, true, "ns3::RrFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  2,    0,    hel0, hel0name, true, "ns3::RrFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  1,    5,    hel0, hel0name, true, "ns3::RrFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  2,    5,    hel0, hel0name, true, "ns3::RrFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  1,    0,    hel1, hel1name, true, "ns3::RrFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  1,    1,    hel1, hel1name, true, "ns3::RrFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  1,    2,    hel1, hel1name, true, "ns3::RrFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  1,    0,    hel1, hel1name, true, "ns3::RrFfMacScheduler", false));
-  AddTestCase (new LteX2HandoverTestCase (  1,    1,    hel1, hel1name, true, "ns3::RrFfMacScheduler", false));
-  AddTestCase (new LteX2HandoverTestCase (  1,    2,    hel1, hel1name, true, "ns3::RrFfMacScheduler", false));
-  AddTestCase (new LteX2HandoverTestCase (  2,    0,    hel1, hel1name, true, "ns3::RrFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  2,    1,    hel1, hel1name, true, "ns3::RrFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  2,    2,    hel1, hel1name, true, "ns3::RrFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  2,    0,    hel1, hel1name, true, "ns3::RrFfMacScheduler", false));
-  AddTestCase (new LteX2HandoverTestCase (  2,    1,    hel1, hel1name, true, "ns3::RrFfMacScheduler", false));
-  AddTestCase (new LteX2HandoverTestCase (  2,    2,    hel1, hel1name, true, "ns3::RrFfMacScheduler", false));
-  AddTestCase (new LteX2HandoverTestCase (  1,    0,    hel2, hel2name, true, "ns3::RrFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  1,    1,    hel2, hel2name, true, "ns3::RrFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  1,    2,    hel2, hel2name, true, "ns3::RrFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  1,    0,    hel3, hel3name, true, "ns3::RrFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  1,    1,    hel3, hel3name, true, "ns3::RrFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  1,    2,    hel3, hel3name, true, "ns3::RrFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  2,    0,    hel3, hel3name, true, "ns3::RrFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  2,    1,    hel3, hel3name, true, "ns3::RrFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  2,    2,    hel3, hel3name, true, "ns3::RrFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  2,    0,    hel4, hel4name, true, "ns3::RrFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  2,    1,    hel4, hel4name, true, "ns3::RrFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  2,    2,    hel4, hel4name, true, "ns3::RrFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  2,    0,    hel5, hel5name, true, "ns3::RrFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  2,    1,    hel5, hel5name, true, "ns3::RrFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  2,    2,    hel5, hel5name, true, "ns3::RrFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  3,    0,    hel3, hel3name, true, "ns3::RrFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  3,    1,    hel3, hel3name, true, "ns3::RrFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  3,    2,    hel3, hel3name, true, "ns3::RrFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  3,    0,    hel4, hel4name, true, "ns3::RrFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  3,    1,    hel4, hel4name, true, "ns3::RrFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  3,    2,    hel4, hel4name, true, "ns3::RrFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  3,    0,    hel5, hel5name, true, "ns3::RrFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  3,    1,    hel5, hel5name, true, "ns3::RrFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  3,    2,    hel5, hel5name, true, "ns3::RrFfMacScheduler", true));
-
-
-
-                                     //  nUes, nDBearers, helist, name, useUdp, scheduler,          admitHo
-  AddTestCase (new LteX2HandoverTestCase (  1,    0,    hel0, hel0name, true, "ns3::PfFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  2,    0,    hel0, hel0name, true, "ns3::PfFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  1,    5,    hel0, hel0name, true, "ns3::PfFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  2,    5,    hel0, hel0name, true, "ns3::PfFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  1,    0,    hel1, hel1name, true, "ns3::PfFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  1,    1,    hel1, hel1name, true, "ns3::PfFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  1,    2,    hel1, hel1name, true, "ns3::PfFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  1,    0,    hel1, hel1name, true, "ns3::PfFfMacScheduler", false));
-  AddTestCase (new LteX2HandoverTestCase (  1,    1,    hel1, hel1name, true, "ns3::PfFfMacScheduler", false));
-  AddTestCase (new LteX2HandoverTestCase (  1,    2,    hel1, hel1name, true, "ns3::PfFfMacScheduler", false));
-  AddTestCase (new LteX2HandoverTestCase (  2,    0,    hel1, hel1name, true, "ns3::PfFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  2,    1,    hel1, hel1name, true, "ns3::PfFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  2,    2,    hel1, hel1name, true, "ns3::PfFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  2,    0,    hel1, hel1name, true, "ns3::PfFfMacScheduler", false));
-  AddTestCase (new LteX2HandoverTestCase (  2,    1,    hel1, hel1name, true, "ns3::PfFfMacScheduler", false));
-  AddTestCase (new LteX2HandoverTestCase (  2,    2,    hel1, hel1name, true, "ns3::PfFfMacScheduler", false));
-  AddTestCase (new LteX2HandoverTestCase (  1,    0,    hel2, hel2name, true, "ns3::PfFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  1,    1,    hel2, hel2name, true, "ns3::PfFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  1,    2,    hel2, hel2name, true, "ns3::PfFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  1,    0,    hel3, hel3name, true, "ns3::PfFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  1,    1,    hel3, hel3name, true, "ns3::PfFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  1,    2,    hel3, hel3name, true, "ns3::PfFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  2,    0,    hel3, hel3name, true, "ns3::PfFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  2,    1,    hel3, hel3name, true, "ns3::PfFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  2,    2,    hel3, hel3name, true, "ns3::PfFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  2,    0,    hel4, hel4name, true, "ns3::PfFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  2,    1,    hel4, hel4name, true, "ns3::PfFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  2,    2,    hel4, hel4name, true, "ns3::PfFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  2,    0,    hel5, hel5name, true, "ns3::PfFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  2,    1,    hel5, hel5name, true, "ns3::PfFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  2,    2,    hel5, hel5name, true, "ns3::PfFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  3,    0,    hel3, hel3name, true, "ns3::PfFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  3,    1,    hel3, hel3name, true, "ns3::PfFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  3,    2,    hel3, hel3name, true, "ns3::PfFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  3,    0,    hel4, hel4name, true, "ns3::PfFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  3,    1,    hel4, hel4name, true, "ns3::PfFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  3,    2,    hel4, hel4name, true, "ns3::PfFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  3,    0,    hel5, hel5name, true, "ns3::PfFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  3,    1,    hel5, hel5name, true, "ns3::PfFfMacScheduler", true));
-  AddTestCase (new LteX2HandoverTestCase (  3,    2,    hel5, hel5name, true, "ns3::PfFfMacScheduler", true));
-
+        }
+    }
 }
 
 static LteX2HandoverTestSuite g_lteX2HandoverTestSuiteInstance;

@@ -1752,7 +1752,6 @@ void
 RrFfMacScheduler::UpdateDlRlcBufferInfo (uint16_t rnti, uint8_t lcid, uint16_t size)
 {
   NS_LOG_FUNCTION (this);
-  size = size - 2; // remove the minimum RLC overhead
   std::list<FfMacSchedSapProvider::SchedDlRlcBufferReqParameters>::iterator it;
   for (it = m_rlcBufferReq.begin (); it != m_rlcBufferReq.end (); it++)
     {
@@ -1761,39 +1760,27 @@ RrFfMacScheduler::UpdateDlRlcBufferInfo (uint16_t rnti, uint8_t lcid, uint16_t s
           NS_LOG_INFO (this << " UE " << rnti << " LC " << (uint16_t)lcid << " txqueue " << (*it).m_rlcTransmissionQueueSize << " retxqueue " << (*it).m_rlcRetransmissionQueueSize << " status " << (*it).m_rlcStatusPduSize << " decrease " << size);
           // Update queues: RLC tx order Status, ReTx, Tx
           // Update status queue
-          if ((*it).m_rlcStatusPduSize <= size)
-            {
-              size -= (*it).m_rlcStatusPduSize;
-              (*it).m_rlcStatusPduSize = 0;
-            }
-          else
-            {
-              (*it).m_rlcStatusPduSize -= size;
-              return;
-            }
-          // update retransmission queue
-          if ((*it).m_rlcRetransmissionQueueSize <= size)
-            {
-              size -= (*it).m_rlcRetransmissionQueueSize;
-              (*it).m_rlcRetransmissionQueueSize = 0;
-            }
-          else
-            {
-              (*it).m_rlcRetransmissionQueueSize -= size;
-              return;
-            }
-          // update transmission queue
-          if ((*it).m_rlcTransmissionQueueSize <= size)
-            {
-              size -= (*it).m_rlcTransmissionQueueSize;
-              (*it).m_rlcTransmissionQueueSize = 0;
-            }
-          else
-            {
-              (*it).m_rlcTransmissionQueueSize -= size;
-              NS_LOG_DEBUG ("dequeue " << (*it).m_rlcTransmissionQueueSize);
-              return;
-            }
+           if (((*it).m_rlcStatusPduSize > 0) && (size >= (*it).m_rlcStatusPduSize))
+              {
+                (*it).m_rlcStatusPduSize = 0;
+              }
+            else if (((*it).m_rlcRetransmissionQueueSize > 0) && (size >= (*it).m_rlcRetransmissionQueueSize))
+              {
+                (*it).m_rlcRetransmissionQueueSize = 0;
+              }
+            else if ((*it).m_rlcTransmissionQueueSize > 0)
+              {
+                // update transmission queue
+                if ((*it).m_rlcTransmissionQueueSize <= size)
+                  {
+                    (*it).m_rlcTransmissionQueueSize = 0;
+                  }
+                else
+                  {
+                    size -= 2; // remove minimun RLC overhead due to header
+                    (*it).m_rlcTransmissionQueueSize -= size;
+                  }
+              }
           return;
         }
     }

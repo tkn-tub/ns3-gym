@@ -25,6 +25,8 @@
 #include "ns3/eps-bearer.h"
 #include "ns3/ipv4-address.h"
 
+#include <bitset>
+
 namespace ns3 {
 
 
@@ -86,6 +88,22 @@ public:
   {
     uint16_t    erabId;
     uint16_t    cause;
+  };
+
+  /**
+   * E-RABs subject to status transfer item as
+   * it is used in the SN STATUS TRANSFER message.
+   * See section 9.1.1.4 for further info about the parameters
+   */
+  static const uint16_t m_maxPdcpSn = 4096;
+  struct ErabsSubjectToStatusTransferItem
+  {
+    uint16_t            erabId;
+    std::bitset<m_maxPdcpSn> receiveStatusOfUlPdcpSdus;
+    uint16_t            ulPdcpSn;
+    uint32_t            ulHfn;
+    uint16_t            dlPdcpSn;
+    uint32_t            dlHfn;
   };
 
   /**
@@ -248,6 +266,20 @@ public:
   };
 
   /**
+   * \brief Parameters of the SN STATUS TRANSFER message.
+   *
+   * See section 9.1.1.4 for further info about the parameters
+   */
+  struct SnStatusTransferParams
+  {
+    uint16_t            oldEnbUeX2apId;
+    uint16_t            newEnbUeX2apId;
+    uint16_t            sourceCellId;
+    uint16_t            targetCellId;
+    std::vector <ErabsSubjectToStatusTransferItem> erabsSubjectToStatusTransferList;
+  };
+
+  /**
    * \brief Parameters of the UE CONTEXT RELEASE message.
    *
    * See section 9.1.1.5 for further info about the parameters
@@ -257,6 +289,7 @@ public:
     uint16_t            oldEnbUeX2apId;
     uint16_t            newEnbUeX2apId;
     uint16_t            sourceCellId;
+    uint16_t            targetCellId;
   };
 
   /**
@@ -305,6 +338,8 @@ public:
 
   virtual void SendHandoverPreparationFailure (HandoverPreparationFailureParams params) = 0;
 
+  virtual void SendSnStatusTransfer (SnStatusTransferParams params) = 0;
+
   virtual void SendUeContextRelease (UeContextReleaseParams params) = 0;
 
   virtual void SendLoadInformation (LoadInformationParams params) = 0;
@@ -332,6 +367,8 @@ public:
 
   virtual void RecvHandoverPreparationFailure (HandoverPreparationFailureParams params) = 0;
 
+  virtual void RecvSnStatusTransfer (SnStatusTransferParams params) = 0;
+
   virtual void RecvUeContextRelease (UeContextReleaseParams params) = 0;
 
   virtual void RecvLoadInformation (LoadInformationParams params) = 0;
@@ -356,6 +393,8 @@ public:
   virtual void SendHandoverRequestAck (HandoverRequestAckParams params);
 
   virtual void SendHandoverPreparationFailure (HandoverPreparationFailureParams params);
+
+  virtual void SendSnStatusTransfer (SnStatusTransferParams params);
 
   virtual void SendUeContextRelease (UeContextReleaseParams params);
 
@@ -402,6 +441,13 @@ EpcX2SpecificEpcX2SapProvider<C>::SendHandoverPreparationFailure (HandoverPrepar
 
 template <class C>
 void
+EpcX2SpecificEpcX2SapProvider<C>::SendSnStatusTransfer (SnStatusTransferParams params)
+{
+  m_x2->DoSendSnStatusTransfer (params);
+}
+
+template <class C>
+void
 EpcX2SpecificEpcX2SapProvider<C>::SendUeContextRelease (UeContextReleaseParams params)
 {
   m_x2->DoSendUeContextRelease (params);
@@ -438,6 +484,8 @@ public:
   virtual void RecvHandoverRequestAck (HandoverRequestAckParams params);
 
   virtual void RecvHandoverPreparationFailure (HandoverPreparationFailureParams params);
+
+  virtual void RecvSnStatusTransfer (SnStatusTransferParams params);
 
   virtual void RecvUeContextRelease (UeContextReleaseParams params);
 
@@ -480,6 +528,13 @@ void
 EpcX2SpecificEpcX2SapUser<C>::RecvHandoverPreparationFailure (HandoverPreparationFailureParams params)
 {
   m_rrc->DoRecvHandoverPreparationFailure (params);
+}
+
+template <class C>
+void
+EpcX2SpecificEpcX2SapUser<C>::RecvSnStatusTransfer (SnStatusTransferParams params)
+{
+  m_rrc->DoRecvSnStatusTransfer (params);
 }
 
 template <class C>

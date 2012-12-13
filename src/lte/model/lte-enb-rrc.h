@@ -95,6 +95,7 @@ public:
 
   // inherited from Object
 protected:
+  virtual void DoStart ();
   virtual void DoDispose ();
 public: 
   static TypeId GetTypeId (void);
@@ -119,14 +120,21 @@ public:
    * Setup a new data radio bearer, including both the configuration
    * within the eNB and the necessary RRC signaling with the UE
    * 
-   * \param bearer 
+   * \param bearer the QoS characteristics of the bearer
+   * \param bearerId the EPS bearer identifier
    * \param gtpTeid S1-bearer GTP tunnel endpoint identifier, see 36.423 9.2.1
    * \param transportLayerAddress  IP Address of the SGW, see 36.423 9.2.1
    * 
-   * \return the EPS Bearer Id
    */
-  uint8_t SetupDataRadioBearer (EpsBearer bearer, uint32_t gtpTeid, Ipv4Address transportLayerAddress);
+  void SetupDataRadioBearer (EpsBearer bearer, uint8_t bearerId, uint32_t gtpTeid, Ipv4Address transportLayerAddress);
   
+  /** 
+   * Start all configured data radio bearers. It is safe to call this
+   * method if any bearer had been already started previously.
+   * 
+   */
+  void StartDataRadioBearers ();
+
   /**
    *
    * Release a given radio bearer
@@ -149,15 +157,11 @@ public:
   void PrepareHandover (uint16_t cellId);
 
   /** 
-   * In the X2-based handover procedure, at the source eNB, trigger
-   * handover by sending to the UE a RRC Connection 
-   * Reconfiguration message including Mobility Control Info
+   * take the necessary actions in response to the reception of an X2 HANDOVER REQUEST ACK message
    * 
-   * \param rcr the RrcConnectionReconfiguration message including the
-   * Mobility Control Info. The content of this struct shall be
-   * provided by the target eNB.
+   * \param params 
    */
-  void SendHandoverCommand (LteRrcSap::RrcConnectionReconfiguration rcr);
+  void RecvHandoverRequestAck (EpcX2SapUser::HandoverRequestAckParams params);
   
   /** 
    * 
@@ -205,6 +209,13 @@ public:
    * \param cellId id of the target cell
    */
   void RecvHandoverPreparationFailure (uint16_t cellId);
+
+  /** 
+   * Take the necessary actions in response to the reception of an X2 SN STATUS TRANSFER message
+   * 
+   * \param params the SN STATUS
+   */
+  void RecvSnStatusTransfer (EpcX2SapUser::SnStatusTransferParams params);
   
 
   // methods forwarded from RRC SAP
@@ -575,6 +586,7 @@ private:
   void DoRecvHandoverRequest (EpcX2SapUser::HandoverRequestParams params);
   void DoRecvHandoverRequestAck (EpcX2SapUser::HandoverRequestAckParams params);
   void DoRecvHandoverPreparationFailure (EpcX2SapUser::HandoverPreparationFailureParams params);
+  void DoRecvSnStatusTransfer (EpcX2SapUser::SnStatusTransferParams params);
   void DoRecvUeContextRelease (EpcX2SapUser::UeContextReleaseParams params);
   void DoRecvLoadInformation (EpcX2SapUser::LoadInformationParams params);
   void DoRecvResourceStatusUpdate (EpcX2SapUser::ResourceStatusUpdateParams params);

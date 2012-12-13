@@ -2,26 +2,23 @@
 
 diagram {
 
-LteHelper => EpcHelper [label="AddEnb"] {
-  EpcHelper  -> EpcHelper [label="create EpcEnbApplication"];
-  EpcHelper  -> EpcHelper [label="Setup S1 link"];
-  EpcHelper  => EpcSgwPgwApplication [label="AddEnb (enbIpv4Address)"];
-}
+SimProgram; LteHelper; EpcHelper; 
 
-
-LteHelper => LteUeRrc [label="GetRnti", return="RNTI"]
-LteHelper => LteEnbRrc [label="SetupRadioBearer", return="LCID"] 
-
-LteHelper => EpcHelper [label="ActivateEpsBearer(UE IP, eNB IP, TFT, RNTI, LCID)"] {
-  EpcHelper => EpcSgwPgwApplication [label="ActivateS1Bearer (UE IP, eNB IP, TFT)", return="TEID"] {
-    EpcSgwPgwApplication => EpcSgwPgwApplication [label="Store UE IP<->eNB IP mapping"];
-    EpcSgwPgwApplication => EpcSgwPgwApplication [label="Create GTP-U tunnel endpoint"];
-  }
-  EpcHelper => EpcEnbApplication [label="ErabSetupRequest(TEID, RNTI, LCID	)"] {
-    EpcEnbApplication -> EpcEnbApplication [label="Create GTP-U tunnel endpoint (TEID)"];
-    EpcEnbApplication -> EpcEnbApplication [label="store TEID<->(RNTI,LCID) mapping"]
-  }  
-}
-    
+SimProgram ->> LteHelper [label="create"]
+SimProgram ->> EpcHelper [label="create"]
+EpcHelper ->> EpcHelper [label="create MME and SGW/PGW"]
+SimProgram ->> LteHelper [label="InstallEnbDevice"] 
+LteHelper ->> LteHelper [label="install protocol stack on eNB"]
+LteHelper ->> EpcHelper [label="AddEnb"]
+EpcHelper ->> EpcHelper [label="setup S1-U, S1-AP and S11"]
+SimProgram ->> LteHelper [label="InstallUeDevice"] 
+LteHelper ->> LteHelper [label="install protocol stack on UE"]
+SimProgram ->> LteHelper [label="Attach (UE, eNB)"] 
+LteHelper ->> LteHelper [label="tell UE NAS to start connection"]
+LteHelper ->> EpcHelper [label="ActivateEpsBearer (default)"]
+EpcHelper ->> EpcHelper [label="tell MME to activate bearer when UE connects"]
+SimProgram ->> LteHelper [label="ActivateDedicatedEpsBearer"]
+LteHelper ->> EpcHelper [label="ActivateEpsBearer"] 
+EpcHelper ->> EpcHelper [label="tell MME to activate bearer when UE connects"]
 
 }

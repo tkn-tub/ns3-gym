@@ -1707,8 +1707,9 @@ PfFfMacScheduler::DoSchedUlMacCtrlInfoReq (const struct FfMacSchedSapProvider::S
               uint8_t bsrId = params.m_macCeList.at (i).m_macCeValue.m_bufferStatus.at (lcg);
               buffer += BufferSizeLevelBsr::BsrId2BufferSize (bsrId);
             }
-
+          
           uint16_t rnti = params.m_macCeList.at (i).m_rnti;
+          NS_LOG_LOGIC (this << "RNTI=" << rnti << " buffer=" << buffer);
           it = m_ceBsrRxed.find (rnti);
           if (it == m_ceBsrRxed.end ())
             {
@@ -1960,7 +1961,6 @@ PfFfMacScheduler::RefreshUlCqiMaps (void)
 void
 PfFfMacScheduler::UpdateDlRlcBufferInfo (uint16_t rnti, uint8_t lcid, uint16_t size)
 {
-  size = size - 2; // remove the minimum RLC overhead
   std::map<LteFlowId_t, FfMacSchedSapProvider::SchedDlRlcBufferReqParameters>::iterator it;
   LteFlowId_t flow (rnti, lcid);
   it = m_rlcBufferReq.find (flow);
@@ -1969,37 +1969,26 @@ PfFfMacScheduler::UpdateDlRlcBufferInfo (uint16_t rnti, uint8_t lcid, uint16_t s
       NS_LOG_INFO (this << " UE " << rnti << " LC " << (uint16_t)lcid << " txqueue " << (*it).second.m_rlcTransmissionQueueSize << " retxqueue " << (*it).second.m_rlcRetransmissionQueueSize << " status " << (*it).second.m_rlcStatusPduSize << " decrease " << size);
       // Update queues: RLC tx order Status, ReTx, Tx
       // Update status queue
-      if ((*it).second.m_rlcStatusPduSize <= size)
+      if (((*it).second.m_rlcStatusPduSize > 0) && (size >= (*it).second.m_rlcStatusPduSize))
         {
-          size -= (*it).second.m_rlcStatusPduSize;
-          (*it).second.m_rlcStatusPduSize = 0;
+           (*it).second.m_rlcStatusPduSize = 0;
         }
-      else
+      else if (((*it).second.m_rlcRetransmissionQueueSize > 0) && (size >= (*it).second.m_rlcRetransmissionQueueSize))
         {
-          (*it).second.m_rlcStatusPduSize -= size;
-          return;
-        }
-      // update retransmission queue
-      if ((*it).second.m_rlcRetransmissionQueueSize <= size)
-        {
-          size -= (*it).second.m_rlcRetransmissionQueueSize;
           (*it).second.m_rlcRetransmissionQueueSize = 0;
         }
-      else
+      else if ((*it).second.m_rlcTransmissionQueueSize > 0)
         {
-          (*it).second.m_rlcRetransmissionQueueSize -= size;
-          return;
-        }
-      // update transmission queue
-      if ((*it).second.m_rlcTransmissionQueueSize <= size)
-        {
-          size -= (*it).second.m_rlcTransmissionQueueSize;
-          (*it).second.m_rlcTransmissionQueueSize = 0;
-        }
-      else
-        {
-          (*it).second.m_rlcTransmissionQueueSize -= size;
-          return;
+          // update transmission queue
+          if ((*it).second.m_rlcTransmissionQueueSize <= size)
+            {
+              (*it).second.m_rlcTransmissionQueueSize = 0;
+            }
+          else
+            {
+              size -= 2; // remove minimun RLC overhead due to header
+              (*it).second.m_rlcTransmissionQueueSize -= size;
+            }
         }
     }
   else

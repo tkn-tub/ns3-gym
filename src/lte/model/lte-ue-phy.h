@@ -216,6 +216,7 @@ private:
   void QueueSubChannelsForTransmission (std::vector <int> rbMap);
 
   // UE CPHY SAP methods
+  void DoReset ();  
   void DoSyncronizeWithEnb (uint16_t cellId, uint16_t dlEarfcn);  
   void DoSetDlBandwidth (uint8_t ulBandwidth);
   void DoConfigureUplink (uint16_t ulEarfcn, uint8_t ulBandwidth);
@@ -251,8 +252,6 @@ private:
   LteUeCphySapUser* m_ueCphySapUser;
 
   uint16_t  m_rnti;
-
-  uint16_t m_enbCellId;
  
   uint8_t m_transmissionMode;
   std::vector <double> m_txModeGain;
@@ -260,10 +259,10 @@ private:
   uint16_t m_srsPeriodicity;
   uint16_t m_srsSubframeOffset;
   uint16_t m_srsConfigured;
+  Time     m_srsStartTime;
 
   bool m_dlConfigured;
   bool m_ulConfigured;
-  bool m_addedToDlChannel;
 
   Ptr<LteHarqPhy> m_harqPhyModule;
 
@@ -277,6 +276,8 @@ private:
   TracedCallback<uint16_t, uint16_t, double, double> m_reportCurrentCellRsrpRsrqTrace;
   uint16_t m_rsrpRsrqSamplePeriod;
   uint16_t m_rsrpRsrqSampleCounter;
+
+  EventId m_sendSrsEvent;
 
   /**
    * Trace information regarding PHY stats from DL Tx perspective

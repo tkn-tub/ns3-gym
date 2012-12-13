@@ -81,7 +81,7 @@ int main (int argc, char *argv[])
   EpsBearer bearer (q);
   lteHelper->ActivateDataRadioBearer (ueDevs, bearer);
 
-  Simulator::Stop (Seconds (0.010));
+  Simulator::Stop (Seconds (0.100));
 
   Simulator::Run ();
 

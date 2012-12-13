@@ -283,20 +283,20 @@ LteUeMac::DoTransmitPdu (LteMacSapProvider::TransmitPduParameters params)
 void
 LteUeMac::DoReportBufferStatus (LteMacSapProvider::ReportBufferStatusParameters params)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << (uint32_t) params.lcid);
   
-  std::map <uint8_t, uint64_t>::iterator it;
+  std::map <uint8_t, LteMacSapProvider::ReportBufferStatusParameters>::iterator it;
   
   
   it = m_ulBsrReceived.find (params.lcid);
   if (it!=m_ulBsrReceived.end ())
     {
       // update entry
-      (*it).second = params.txQueueSize + params.retxQueueSize + params.statusPduSize;
+      (*it).second = params;
     }
   else
     {
-      m_ulBsrReceived.insert (std::pair<uint8_t, uint64_t> (params.lcid, params.txQueueSize + params.retxQueueSize + params.statusPduSize));
+      m_ulBsrReceived.insert (std::pair<uint8_t, LteMacSapProvider::ReportBufferStatusParameters> (params.lcid, params));
     }
   m_freshUlBsr = true;
 }
@@ -323,7 +323,7 @@ LteUeMac::SendReportBufferStatus (void)
   bsr.m_macCeType = MacCeListElement_s::BSR;
 
   // BSR is reported for each LCG
-  std::map <uint8_t, uint64_t>::iterator it;  
+  std::map <uint8_t, LteMacSapProvider::ReportBufferStatusParameters>::iterator it;  
   std::vector<uint32_t> queue (4, 0); // one value per each of the 4 LCGs, initialized to 0
   for (it = m_ulBsrReceived.begin (); it != m_ulBsrReceived.end (); it++)
     {
@@ -332,7 +332,7 @@ LteUeMac::SendReportBufferStatus (void)
       lcInfoMapIt = m_lcInfoMap.find (lcid);
       NS_ASSERT (lcInfoMapIt !=  m_lcInfoMap.end ());
       uint8_t lcg = lcInfoMapIt->second.lcConfig.logicalChannelGroup;
-      queue.at (lcg) += (*it).second;
+      queue.at (lcg) += ((*it).second.txQueueSize + (*it).second.retxQueueSize + (*it).second.statusPduSize);
     }
 
   // FF API says that all 4 LCGs are always present
@@ -501,6 +501,8 @@ LteUeMac::DoReset ()
         }
     }
   m_rachConfigured = false;
+  m_freshUlBsr = false;
+  m_ulBsrReceived.clear ();
 }
 
 void
@@ -529,11 +531,11 @@ LteUeMac::DoReceiveLteControlMessage (Ptr<LteControlMessage> msg)
       if (dci.m_ndi==1)
         {
           // New transmission -> retrieve data from RLC
-          std::map <uint8_t, uint64_t>::iterator itBsr;
+          std::map <uint8_t, LteMacSapProvider::ReportBufferStatusParameters>::iterator itBsr;
           uint16_t activeLcs = 0;
           for (itBsr = m_ulBsrReceived.begin (); itBsr != m_ulBsrReceived.end (); itBsr++)
             {
-              if ((*itBsr).second > 0)
+              if (((*itBsr).second.statusPduSize > 0) || ((*itBsr).second.retxQueueSize > 0) || ((*itBsr).second.txQueueSize > 0))
                 {
                   activeLcs++;
                 }
@@ -549,18 +551,48 @@ LteUeMac::DoReceiveLteControlMessage (Ptr<LteControlMessage> msg)
           for (it = m_lcInfoMap.begin (); it!=m_lcInfoMap.end (); it++)
             {
               itBsr = m_ulBsrReceived.find ((*it).first);
-              if (((itBsr!=m_ulBsrReceived.end ()) && ((*itBsr).second > 0)))
+              if ( (itBsr!=m_ulBsrReceived.end ()) &&
+                  ( ((*itBsr).second.statusPduSize > 0) ||
+                  ((*itBsr).second.retxQueueSize > 0) ||
+                  ((*itBsr).second.txQueueSize > 0)) )
                 {
-                  NS_LOG_LOGIC (this << "\t" << bytesPerActiveLc << " bytes to LC " << (uint32_t)(*it).first << " queue " << (*itBsr).second);
-                  (*it).second.macSapUser->NotifyTxOpportunity (bytesPerActiveLc, 0, 0); // layer and HARQ ID are not used in UL
-                  if ((*itBsr).second >=  static_cast<uint64_t> (bytesPerActiveLc))
+                  uint32_t bytesForThisLc = bytesPerActiveLc;
+                  NS_LOG_LOGIC (this << "\t" << bytesPerActiveLc << " bytes to LC " << (uint32_t)(*it).first << " statusQueue " << (*itBsr).second.statusPduSize << " retxQueue" << (*itBsr).second.retxQueueSize << " txQueue" <<  (*itBsr).second.txQueueSize);
+                  if (((*itBsr).second.statusPduSize > 0) && (bytesForThisLc > (*itBsr).second.statusPduSize))
                     {
-                      (*itBsr).second -= bytesPerActiveLc;
+                      (*it).second.macSapUser->NotifyTxOpportunity ((*itBsr).second.statusPduSize, 0, 0);
+                      bytesForThisLc -= (*itBsr).second.statusPduSize;
+                      (*itBsr).second.statusPduSize = 0;
                     }
-                  else
+                  if ((bytesForThisLc > 0) && (((*itBsr).second.retxQueueSize > 0) || ((*itBsr).second.txQueueSize > 0)))
                     {
-                      (*itBsr).second = 0;
+                      if ((*itBsr).second.retxQueueSize > 0)
+                        {
+                          (*it).second.macSapUser->NotifyTxOpportunity (bytesForThisLc, 0, 0);
+                          if ((*itBsr).second.retxQueueSize >= bytesForThisLc)
+                            {
+                              (*itBsr).second.retxQueueSize -= bytesForThisLc;
+                            }
+                          else
+                            {
+                              (*itBsr).second.retxQueueSize = 0;
+                            }
+                        }
+                      else if ((*itBsr).second.txQueueSize > 0)
+                        {
+                          bytesForThisLc -= 2; // remove RLC header
+                          (*it).second.macSapUser->NotifyTxOpportunity (bytesForThisLc, 0, 0);
+                          if ((*itBsr).second.txQueueSize >= bytesForThisLc)
+                            {
+                              (*itBsr).second.txQueueSize -= bytesForThisLc;
+                            }
+                          else
+                            {
+                              (*itBsr).second.txQueueSize = 0;
+                            }
+                        }
                     }
+
                 }
             }
         }

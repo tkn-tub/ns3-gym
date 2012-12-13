@@ -53,8 +53,6 @@ public:
   virtual void DoNotifyHarqDeliveryFailure ();
   virtual void DoReceivePdu (Ptr<Packet> p);
 
-  void Start ();
-
 private:
   /**
    * This method will schedule a timeout at WaitReplyTimeout interval
@@ -70,6 +68,8 @@ private:
 //   void ReassembleSnLessThan (uint16_t seqNumber);
 // 
   void ReassembleAndDeliver (Ptr<Packet> packet);
+
+  void DoReportBufferStatus ();
 
 private:
     std::vector < Ptr<Packet> > m_txonBuffer;       // Transmission buffer
