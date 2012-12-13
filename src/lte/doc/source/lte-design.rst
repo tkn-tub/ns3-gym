@@ -24,9 +24,6 @@ the figure :ref:`fig-epc-topology`. There are two main components:
    eNB nodes.
 
 
-Each component of the overall architecture is explained in detail in
-the following subsections.
-
 .. _fig-epc-topology:
    
 .. figure:: figures/epc-topology.*
@@ -323,7 +320,15 @@ Channel and Propagation
 -----------------------
 
 
-The LTE module works with the channel objects provided by the Spectrum module, i.e., either SingleModelSpectrumChannel or MultiModelSpectrumChannel. Because of these, all the propagation models supported by these objecs can be used within the LTE module.
+For channel modeling purposes, the LTE module uses the ``SpectrumChannel``
+interface provided by the spectrum module. At the time of this
+writing, two implementations of such interface are available:
+``SingleModelSpectrumChannel`` and ``MultiModelSpectrumChannel``, and the
+LTE module requires the use of the ``MultiModelSpectrumChannel`` in
+order to work properly. This is because of the need to support
+different frequency and bandwidth configurations. All the the
+propagation models supported by ``MultiModelSpectrumChannel`` can be
+used within the LTE module.  
 
 
 
