@@ -580,11 +580,10 @@ LteUeMac::DoReceiveLteControlMessage (Ptr<LteControlMessage> msg)
                         }
                       else if ((*itBsr).second.txQueueSize > 0)
                         {
-                          bytesForThisLc -= 2; // remove RLC header
                           (*it).second.macSapUser->NotifyTxOpportunity (bytesForThisLc, 0, 0);
-                          if ((*itBsr).second.txQueueSize >= bytesForThisLc)
+                          if ((*itBsr).second.txQueueSize >= bytesForThisLc - 2)
                             {
-                              (*itBsr).second.txQueueSize -= bytesForThisLc;
+                              (*itBsr).second.txQueueSize -= bytesForThisLc - 2;
                             }
                           else
                             {
