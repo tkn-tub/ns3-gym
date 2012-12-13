@@ -802,7 +802,7 @@ LteSpectrumPhy::AddExpectedTb (uint16_t  rnti, uint8_t ndi, uint16_t size, uint8
       m_expectedTbs.erase (it);
     }
   // insert new entry
-  tbInfo_t tbInfo = {ndi, size, mcs, map, harqId, 0.0, rv, downlink, false};
+  tbInfo_t tbInfo = {ndi, size, mcs, map, harqId, rv, 0.0, downlink, false};
   m_expectedTbs.insert (std::pair<TbId_t, tbInfo_t> (tbId,tbInfo));
 }
 
