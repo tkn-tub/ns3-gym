@@ -1,7 +1,7 @@
 
 
 diagram {
-	AsSapNas; UeRrc; UeMac; RrcSap;	EnbRrc;
+	AsSap; UeRrc; CmacSap; RrcSap; EnbRrc;
 	
 
 	AsSap ->> UeRrc [label="Connect"]

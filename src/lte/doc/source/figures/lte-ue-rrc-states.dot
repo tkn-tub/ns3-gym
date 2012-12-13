@@ -1,7 +1,5 @@
 digraph LteRrcStates {
 
-size="20,20"
-
 
 IDLE_CELL_SELECTION [shape="box",width=5]
 IDLE_WAIT_SYSTEM_INFO [shape="box",width=5]

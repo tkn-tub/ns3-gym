@@ -11,6 +11,7 @@ FIGURES = $(SOURCE)/figures
 # specify dia figures from which .png and .pdf figures need to be built
 
 IMAGES_DIA = \
+        $(FIGURES)/epc-ctrl-arch.dia \
 	$(FIGURES)/epc-data-flow-dl.dia \
 	$(FIGURES)/epc-data-flow-ul.dia \
 	$(FIGURES)/epc-profiling-scenario.dia \
@@ -19,8 +20,10 @@ IMAGES_DIA = \
 	$(FIGURES)/eutran-profiling-scenario.dia \
 	$(FIGURES)/ff-example.dia \
 	$(FIGURES)/ff-mac-saps.dia \
-	$(FIGURES)/lte-arch-enb.dia \
-	$(FIGURES)/lte-arch-ue.dia \
+	$(FIGURES)/lte-arch-enb-data.dia \
+	$(FIGURES)/lte-arch-enb-ctrl.dia \
+	$(FIGURES)/lte-arch-ue-data.dia \
+	$(FIGURES)/lte-arch-ue-ctrl.dia \
 	$(FIGURES)/lte-enb-phy.dia \
 	$(FIGURES)/lte-ue-phy.dia \
 	$(FIGURES)/lte-epc-e2e-data-protocol-stack.dia \
@@ -56,19 +59,27 @@ IMAGES_EPS = \
 
 # rescale pdf figures as necessary
 $(FIGURES)/lte-interference-test-scenario.pdf_width = 3in
+$(FIGURES)/epc-ctrl-arch.pdf_width = 8cm
 $(FIGURES)/epc-topology.pdf_width = 4in
 $(FIGURES)/epc-topology-x2-enhanced.pdf_width = 14cm
 $(FIGURES)/lte-arch-data-rrc-pdcp-rlc.pdf_width = 3in
 $(FIGURES)/lte-epc-e2e-data-protocol-stack.pdf_width = 15cm
 $(FIGURES)/ff-mac-saps.pdf_width = 5in
 $(FIGURES)/ff-example.pdf_width = 5in
+$(FIGURES)/lte-arch-enb-data.pdf_width = 6cm 
+$(FIGURES)/lte-arch-enb-ctrl.pdf_width = 10cm
+$(FIGURES)/lte-arch-ue-data.pdf_width = 6cm
+$(FIGURES)/lte-arch-ue-ctrl.pdf_width = 10cm
 $(FIGURES)/lte-rlc-implementation-model.pdf_width = 20in
 $(FIGURES)/lte-rlc-data-txon-dl.pdf_width = 10cm
 $(FIGURES)/lte-rlc-data-txon-ul.pdf_width = 10cm
 $(FIGURES)/lte-rlc-data-retx-ul.pdf_width = 10cm
 $(FIGURES)/lte-phy-interference.pdf_width = 12cm
 $(FIGURES)/lte-subframe-structure.pdf_width = 2in
-
+$(FIGURES)/mac-random-access-contention.pdf_width = 10cm
+$(FIGURES)/mac-random-access-noncontention.pdf_width = 15cm
+$(FIGURES)/lte-ue-rrc-states.pdf_width = 7cm
+$(FIGURES)/helpers.pdf_width = 8cm
 
 IMAGES_SEQDIAG = \
 	$(FIGURES)/lte-phy-interference.seqdiag \
