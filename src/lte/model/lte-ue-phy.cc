@@ -899,7 +899,7 @@ LteUePhy::DoSetSrsConfigurationIndex (uint16_t srcCi)
   // to make sure no UE sends SRSs before all UEs received the new SRS configuration.
   // Note that the eNB will send the new SRS config to all UEs at the same time,
   // but with the real RRC model the time it takes to reach each UE might vary.
-  m_srsStartTime = Simulator::Now () + MilliSeconds (3);
+  m_srsStartTime = Simulator::Now () + MilliSeconds (20);
   NS_LOG_DEBUG (this << " UE SRS P " << m_srsPeriodicity << " RNTI " << m_rnti << " offset " << m_srsSubframeOffset << " cellId " << m_cellId << " CI " << srcCi);
 }
 
