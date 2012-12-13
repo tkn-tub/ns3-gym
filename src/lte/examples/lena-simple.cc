@@ -46,7 +46,6 @@ int main (int argc, char *argv[])
   cmd.Parse (argc, argv);
 
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
-  lteHelper->EnableTraces ();
 
   // Uncomment to enable logging
   //lteHelper->EnableLogComponents ();
@@ -81,7 +80,9 @@ int main (int argc, char *argv[])
   EpsBearer bearer (q);
   lteHelper->ActivateDataRadioBearer (ueDevs, bearer);
 
-  Simulator::Stop (Seconds (0.100));
+  lteHelper->EnableTraces ();
+
+  Simulator::Stop (Seconds (1.05));
 
   Simulator::Run ();
 

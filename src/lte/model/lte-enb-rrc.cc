@@ -357,19 +357,34 @@ UeManager::SetupDataRadioBearer (EpsBearer bearer, uint8_t bearerId, uint32_t gt
 }
 
 void
-UeManager::StartDataRadioBearers ()
+UeManager::RecordDataRadioBearersToBeStarted ()
 {
   NS_LOG_FUNCTION (this << (uint32_t) m_rnti);
   for (std::map <uint8_t, Ptr<LteDataRadioBearerInfo> >::iterator it = m_drbMap.begin ();
        it != m_drbMap.end ();
        ++it)
     {
-      it->second->m_rlc->Start ();
-      if (it->second->m_pdcp)
-        {
-          it->second->m_pdcp->Start ();
-        }
+      m_drbsToBeStarted.push_back (it->first);
     }    
+}
+
+void
+UeManager::StartDataRadioBearers ()
+{
+  NS_LOG_FUNCTION (this << (uint32_t) m_rnti);
+  for (std::list <uint8_t>::iterator drbIdIt = m_drbsToBeStarted.begin ();
+       drbIdIt != m_drbsToBeStarted.end ();
+       ++drbIdIt)
+    {
+      std::map <uint8_t, Ptr<LteDataRadioBearerInfo> >::iterator drbIt = m_drbMap.find (*drbIdIt);
+      NS_ASSERT (drbIt != m_drbMap.end ());
+      drbIt->second->m_rlc->Start ();
+      if (drbIt->second->m_pdcp)
+        {
+          drbIt->second->m_pdcp->Start ();
+        }
+    }
+  m_drbsToBeStarted.clear ();
 }
 
 
@@ -417,6 +432,7 @@ UeManager::ScheduleRrcConnectionReconfiguration ()
         m_pendingRrcConnectionReconfiguration = false;
         LteRrcSap::RrcConnectionReconfiguration msg = BuildRrcConnectionReconfiguration ();
         m_rrc->m_rrcSapUser->SendRrcConnectionReconfiguration (m_rnti, msg);
+        RecordDataRadioBearersToBeStarted ();
         SwitchToState (CONNECTION_RECONFIGURATION);
       }
       break;      
@@ -648,6 +664,7 @@ UeManager::RecvRrcConnectionRequest (LteRrcSap::RrcConnectionRequest msg)
         msg2.rrcTransactionIdentifier = GetNewRrcTransactionIdentifier ();
         msg2.radioResourceConfigDedicated = BuildRadioResourceConfigDedicated ();
         m_rrc->m_rrcSapUser->SendRrcConnectionSetup (m_rnti, msg2);
+        RecordDataRadioBearersToBeStarted ();
         SwitchToState (CONNECTION_SETUP);
       }
       break;
