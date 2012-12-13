@@ -205,6 +205,48 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId)
     {
       NS_LOG_LOGIC ("Sending data from Transmission Buffer");
     }
+  else if ( m_txedBufferSize > 0 )
+    {
+      NS_LOG_LOGIC ("Sending data from Transmitted Buffer");
+
+      NS_LOG_INFO ("VT(A)     = " << m_vtA);
+      NS_LOG_INFO ("VT(S)     = " << m_vtS);
+
+      uint16_t vta = m_vtA.GetValue ();
+      Ptr<Packet> packet = m_txedBuffer.at (vta)->Copy ();
+
+      if ( packet->GetSize () <= bytes )
+        {
+          NS_LOG_INFO ("Move SN = " << vta << " to retxBuffer");
+          m_retxBuffer.at (vta).m_pdu = m_txedBuffer.at (vta)->Copy ();
+          m_retxBuffer.at (vta).m_retxCount = 1;
+          m_retxBufferSize += m_retxBuffer.at (vta).m_pdu->GetSize ();
+
+          m_txedBufferSize -= m_txedBuffer.at (vta)->GetSize ();
+          m_txedBuffer.at (vta) = 0;
+
+          LteRlcAmHeader rlcAmHeader;
+          packet->PeekHeader (rlcAmHeader);
+          NS_LOG_LOGIC ("RLC header: " << rlcAmHeader);
+
+          // Send RLC PDU to MAC layer
+          LteMacSapProvider::TransmitPduParameters params;
+          params.pdu = packet;
+          params.rnti = m_rnti;
+          params.lcid = m_lcid;
+          params.layer = layer;
+          params.harqProcessId = harqId;
+
+          m_macSapProvider->TransmitPdu (params);
+          return;
+        }
+      else
+        {
+          NS_LOG_LOGIC ("Tx opportunity too small for retransmission of the packet (" << packet->GetSize () << " bytes)");
+          NS_LOG_LOGIC ("Waiting for bigger tx opportunity");
+          return;
+        }
+    }
   else
     {
       NS_LOG_LOGIC ("No data pending");
@@ -262,7 +304,7 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId)
 
           NS_LOG_LOGIC ("    IF ( firstSegment > nextSegmentSize ||");
           NS_LOG_LOGIC ("         firstSegment > 2047 )");
-          
+
           // Segment txBuffer.FirstBuffer and
           // Give back the remaining segment to the transmission buffer
           Ptr<Packet> newSegment = firstSegment->CreateFragment (0, currSegmentSize);
@@ -1445,6 +1487,12 @@ LteRlcAm::DoReportBufferStatus (void)
 
   Time now = Simulator::Now ();
 
+  NS_LOG_LOGIC ("txonBufferSize = " << m_txonBufferSize);
+  NS_LOG_LOGIC ("retxBufferSize = " << m_retxBufferSize);
+  NS_LOG_LOGIC ("txedBufferSize = " << m_txedBufferSize);
+  NS_LOG_LOGIC ("VT(A) = " << m_vtA);
+  NS_LOG_LOGIC ("VT(S) = " << m_vtS);
+
   // Transmission Queue HOL time
   Time txonQueueHolDelay (0);
   if ( m_txonBufferSize > 0 )
@@ -1456,10 +1504,15 @@ LteRlcAm::DoReportBufferStatus (void)
 
   // Retransmission Queue HOL time
   Time retxQueueHolDelay (0);
+  RlcTag retxQueueHolTimeTag;
   if ( m_retxBufferSize > 0 )
     {
-      RlcTag retxQueueHolTimeTag;
-//       m_retxBuffer.front ().m_pdu->PeekPacketTag (retxQueueHolTimeTag);
+      m_retxBuffer.at (m_vtA.GetValue ()).m_pdu->PeekPacketTag (retxQueueHolTimeTag);
+      retxQueueHolDelay = now - retxQueueHolTimeTag.GetSenderTimestamp ();
+    }
+  else if ( m_txedBufferSize > 0 )
+    {
+      m_txedBuffer.at (m_vtA.GetValue ())->PeekPacketTag (retxQueueHolTimeTag);
       retxQueueHolDelay = now - retxQueueHolTimeTag.GetSenderTimestamp ();
     }
 
@@ -1468,7 +1521,7 @@ LteRlcAm::DoReportBufferStatus (void)
   r.lcid = m_lcid;
   r.txQueueSize = m_txonBufferSize;
   r.txQueueHolDelay = txonQueueHolDelay.GetMilliSeconds ();
-  r.retxQueueSize = m_retxBufferSize;
+  r.retxQueueSize = m_retxBufferSize + m_txedBufferSize;
   r.retxQueueHolDelay = retxQueueHolDelay.GetMilliSeconds ();
 
   if ( m_statusPduRequested && ! m_statusProhibitTimer.IsRunning () )
@@ -1536,9 +1589,7 @@ LteRlcAm::ExpirePollRetransmitTimer (void)
   NS_LOG_LOGIC ("txonBufferSize = " << m_txonBufferSize);
   NS_LOG_LOGIC ("retxBufferSize = " << m_retxBufferSize);
   NS_LOG_LOGIC ("txedBufferSize = " << m_txedBufferSize);
-
   NS_LOG_LOGIC ("statusPduRequested = " << m_statusPduRequested);
-  NS_LOG_LOGIC ("VT(S) = " << m_vtS);
 
   DoReportBufferStatus ();
 }
