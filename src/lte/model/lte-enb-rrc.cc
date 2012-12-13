@@ -1097,6 +1097,11 @@ LteEnbRrc::GetTypeId (void)
                    BooleanValue (true),  
                    MakeBooleanAccessor (&LteEnbRrc::m_admitHandoverRequest),
                    MakeBooleanChecker ()) 
+   .AddAttribute ("AdmitRrcConnectionRequest",
+                   "Whether to admit a connection request from a Ue",
+                   BooleanValue (true),  
+                   MakeBooleanAccessor (&LteEnbRrc::m_admitRrcConnectionRequest),
+                   MakeBooleanChecker ()) 
     .AddTraceSource ("ConnectionEstablished",
                      "trace fired upon successful RRC connection establishment",
                      MakeTraceSourceAccessor (&LteEnbRrc::m_connectionEstablishedTrace))
@@ -1273,7 +1278,18 @@ void
 LteEnbRrc::DoRecvRrcConnectionRequest (uint16_t rnti, LteRrcSap::RrcConnectionRequest msg)
 {
   NS_LOG_FUNCTION (this << rnti);
-  GetUeManager (rnti)->RecvRrcConnectionRequest (msg);
+  
+  if (m_admitRrcConnectionRequest == true)
+  {
+    GetUeManager (rnti)->RecvRrcConnectionRequest (msg);
+  }
+  else
+  {
+    NS_LOG_INFO ("rejecting connection request to rnti " << rnti);
+    LteRrcSap::RrcConnectionReject rejectMsg;
+    rejectMsg.waitTime = 3;
+    m_rrcSapUser->SendRrcConnectionReject (rnti, rejectMsg);
+  }
 }
 
 void

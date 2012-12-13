@@ -574,6 +574,7 @@ public:
                                    RLC_UM_ALWAYS = 2,
                                    RLC_AM_ALWAYS = 3,
                                    PER_BASED = 4};
+
 private:
 
 
@@ -725,6 +726,7 @@ private:
   bool m_reconfigureUes;
 
   bool m_admitHandoverRequest;
+  bool m_admitRrcConnectionRequest;
 
   //             imsi      cellid    rnti   
   TracedCallback<uint64_t, uint16_t, uint16_t> m_connectionEstablishedTrace;
