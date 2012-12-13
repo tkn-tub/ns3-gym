@@ -289,11 +289,19 @@ The names of the files used for MAC KPI output can be customized via
 the ns-3 attributes ``ns3::MacStatsCalculator::DlOutputFilename`` and 
 ``ns3::MacStatsCalculator::UlOutputFilename``.
 
-PHY KPIs are distributed in three different files, configurable through the attributes 
- ``ns3::PhyStatsCalculator::RsrpRsrqFilename``,  ``ns3::PhyStatsCalculator::UeSinrFilename``
-and  ``ns3::PhyStatsCalculator::InterferenceFilename``. 
+PHY KPIs are distributed in seven different files, configurable through the attributes
+
+  1. ``ns3::PhyStatsCalculator::RsrpRsrqFilename``
+  2. ``ns3::PhyStatsCalculator::UeSinrFilename``
+  3. ``ns3::PhyStatsCalculator::InterferenceFilename``
+  4. ``ns3::PhyStatsCalculator::DlTxOutputFilename``
+  5. ``ns3::PhyStatsCalculator::UlTxOutputFilename``
+  6. ``ns3::PhyStatsCalculator::DlRxOutputFilename``
+  7. ``ns3::PhyStatsCalculator::UlRxOutputFilename``
+
 
 In the RSRP/RSR file, the following content is available:
+
   1. Simulation time in seconds at which the allocation is indicated by the scheduler
   2. Cell ID
   3. unique UE ID (IMSI)
@@ -301,15 +309,44 @@ In the RSRP/RSR file, the following content is available:
   5. RSRQ
 
 The contents in the UE SINR file are:
+
   1. Simulation time in seconds at which the allocation is indicated by the scheduler
   2. Cell ID
   3. unique UE ID (IMSI)
   4. SINR in linear units for the UE
 
-And finally, in the interference filename the content is:
+In the interference filename the content is:
+
   1. Simulation time in seconds at which the allocation is indicated by the scheduler
   2. Cell ID
   3. List of interference values per RB
+
+In UL and DL transmission files the parameters included are:
+
+  1. Simulation time in milliseconds
+  2. Cell ID
+  3. unique UE ID (IMSI)
+  4. RNTI
+  5. Layer of transmission
+  6. MCS
+  7. size of the TB
+  8. Redundancy version
+  9. New Data Indicator flag
+
+And finally, in UL and DL reception files the parameters included are:
+
+  1. Simulation time in milliseconds
+  2. Cell ID
+  3. unique UE ID (IMSI)
+  4. RNTI
+  5. Transmission Mode
+  6. Layer of transmission
+  7. MCS
+  8. size of the TB
+  9. Redundancy version
+  10. New Data Indicator flag
+  11. Correctness in the reception of the TB
+
 
 Fading Trace Usage
 ------------------

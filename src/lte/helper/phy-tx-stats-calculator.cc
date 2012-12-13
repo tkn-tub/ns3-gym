@@ -148,7 +148,8 @@ PhyTxStatsCalculator::UlPhyTransmission (PhyTransmissionStatParameters params)
           return;
         }
       m_ulTxFirstWrite = false;
-      outFile << "% time\tcellId\tIMSI\tRNTI\ttxMode\tlayer\tmcs\tsize\trv\tndi";
+//       outFile << "% time\tcellId\tIMSI\tRNTI\ttxMode\tlayer\tmcs\tsize\trv\tndi";
+      outFile << "% time\tcellId\tIMSI\tRNTI\tlayer\tmcs\tsize\trv\tndi";
       outFile << std::endl;
     }
   else
@@ -166,7 +167,7 @@ PhyTxStatsCalculator::UlPhyTransmission (PhyTransmissionStatParameters params)
   outFile << (uint32_t) params.m_cellId << "\t";
   outFile << params.m_imsi << "\t";
   outFile << params.m_rnti << "\t";
-  outFile << (uint32_t) params.m_txMode << "\t";
+  //outFile << (uint32_t) params.m_txMode << "\t";
   outFile << (uint32_t) params.m_layer << "\t";
   outFile << (uint32_t) params.m_mcs << "\t";
   outFile << params.m_size << "\t";
@@ -176,3 +177,4 @@ PhyTxStatsCalculator::UlPhyTransmission (PhyTransmissionStatParameters params)
 }
 
 } // namespace ns3
+
