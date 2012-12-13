@@ -127,10 +127,17 @@ public:
    * 
    */
   void SetupDataRadioBearer (EpsBearer bearer, uint8_t bearerId, uint32_t gtpTeid, Ipv4Address transportLayerAddress);
-  
+
   /** 
    * Start all configured data radio bearers. It is safe to call this
    * method if any bearer had been already started previously.
+   * 
+   */
+  void RecordDataRadioBearersToBeStarted ();
+  
+  /** 
+   * Start the data radio bearers that have been previously recorded
+   * to be started using RecordDataRadioBearersToBeStarted() 
    * 
    */
   void StartDataRadioBearers ();
@@ -380,6 +387,7 @@ private:
   uint16_t m_sourceX2apId;
   uint16_t m_sourceCellId;
   uint16_t m_targetCellId;
+  std::list<uint8_t> m_drbsToBeStarted;
 };
 
 
