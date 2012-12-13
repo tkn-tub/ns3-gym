@@ -37,6 +37,7 @@
 #include <ns3/lte-radio-bearer-tag.h>
 #include <ns3/boolean.h>
 #include <ns3/double.h>
+#include <ns3/config.h>
 
 NS_LOG_COMPONENT_DEFINE ("LteSpectrumPhy");
 
@@ -114,8 +115,7 @@ NS_OBJECT_ENSURE_REGISTERED (LteSpectrumPhy);
 LteSpectrumPhy::LteSpectrumPhy ()
   : m_state (IDLE),
   m_transmissionMode (0),
-  m_layersNum (1),
-  errors (0)
+  m_layersNum (1)
 {
   NS_LOG_FUNCTION (this);
   m_random = CreateObject<UniformRandomVariable> ();
@@ -211,6 +211,12 @@ LteSpectrumPhy::GetTypeId (void)
                     BooleanValue (true),
                     MakeBooleanAccessor (&LteSpectrumPhy::m_ctrlErrorModelEnabled),
                     MakeBooleanChecker ())
+    .AddTraceSource ("DlPhyReception",
+                     "DL reception PHY layer statistics.",
+                     MakeTraceSourceAccessor (&LteSpectrumPhy::m_dlPhyReception))
+    .AddTraceSource ("UlPhyReception",
+                     "DL reception PHY layer statistics.",
+                     MakeTraceSourceAccessor (&LteSpectrumPhy::m_ulPhyReception))
   ;
   return tid;
 }
@@ -782,9 +788,9 @@ LteSpectrumPhy::UpdateSinrPerceived (const SpectrumValue& sinr)
 
 
 void
-LteSpectrumPhy::AddExpectedTb (uint16_t  rnti, uint8_t ndi, uint16_t size, uint8_t mcs, std::vector<int> map, uint8_t layer, uint8_t harqId, bool downlink)
+LteSpectrumPhy::AddExpectedTb (uint16_t  rnti, uint8_t ndi, uint16_t size, uint8_t mcs, std::vector<int> map, uint8_t layer, uint8_t harqId,uint8_t rv,  bool downlink)
 {
-  NS_LOG_FUNCTION (this << " rnti: " << rnti << " NDI " << (uint16_t)ndi << " size " << size << " mcs " << (uint16_t)mcs << " layer " << (uint16_t)layer);
+  NS_LOG_FUNCTION (this << " rnti: " << rnti << " NDI " << (uint16_t)ndi << " size " << size << " mcs " << (uint16_t)mcs << " layer " << (uint16_t)layer << " rv " << (uint16_t)rv);
   TbId_t tbId;
   tbId.m_rnti = rnti;
   tbId.m_layer = layer;
@@ -796,8 +802,7 @@ LteSpectrumPhy::AddExpectedTb (uint16_t  rnti, uint8_t ndi, uint16_t size, uint8
       m_expectedTbs.erase (it);
     }
   // insert new entry
-  std::vector<uint8_t> rv;
-  tbInfo_t tbInfo = {ndi, size, mcs, map, harqId, 0.0, downlink, false};
+  tbInfo_t tbInfo = {ndi, size, mcs, map, harqId, 0.0, rv, downlink, false};
   m_expectedTbs.insert (std::pair<TbId_t, tbInfo_t> (tbId,tbInfo));
 }
 
@@ -845,6 +850,30 @@ LteSpectrumPhy::EndRxData ()
           (*itTb).second.mi = tbStats.mi;
           (*itTb).second.corrupt = m_random->GetValue () > tbStats.tbler ? false : true;
           NS_LOG_DEBUG (this << "RNTI " << (*itTb).first.m_rnti << " size " << (*itTb).second.size << " mcs " << (uint32_t)(*itTb).second.mcs << " bitmap " << (*itTb).second.rbBitmap.size () << " layer " << (uint16_t)(*itTb).first.m_layer << " TBLER " << tbStats.tbler << " corrupted " << (*itTb).second.corrupt);
+          // fire traces on DL/UL reception PHY stats
+          PhyReceptionStatParameters params;
+          params.m_timestamp = Simulator::Now ().GetMilliSeconds ();
+          params.m_cellId = m_cellId;
+          params.m_imsi = 0; // it will be set by DlPhyTransmissionCallback in LteHelper
+          params.m_rnti = (*itTb).first.m_rnti;
+          params.m_txMode = m_transmissionMode;
+          params.m_layer =  (*itTb).first.m_layer;
+          params.m_mcs = (*itTb).second.mcs;
+          params.m_size = (*itTb).second.size;
+          params.m_rv = (*itTb).second.rv;
+          params.m_ndi = (*itTb).second.ndi;
+          params.m_correctness = (uint8_t)!(*itTb).second.corrupt;
+          if ((*itTb).second.downlink)
+            {
+              // DL
+              m_dlPhyReception (params);
+            }
+          else
+            {
+              // UL
+              params.m_rv = harqInfoList.size ();
+              m_ulPhyReception (params);
+            }
        }
       
       itTb++;

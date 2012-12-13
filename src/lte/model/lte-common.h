@@ -117,6 +117,37 @@ class TransmissionModesLayers
 };
 
 
+struct PhyTransmissionStatParameters
+{
+  int64_t  m_timestamp; // in millisecond
+  uint16_t m_cellId;
+  uint64_t m_imsi;
+  uint16_t m_rnti;
+  uint8_t  m_txMode;
+  uint8_t  m_layer;
+  uint8_t  m_mcs;
+  uint16_t m_size;
+  uint8_t  m_rv;
+  uint8_t  m_ndi;
+};
+
+
+struct PhyReceptionStatParameters
+{
+  int64_t  m_timestamp; // in millisecond
+  uint16_t m_cellId;
+  uint64_t m_imsi;
+  uint16_t m_rnti;
+  uint8_t  m_txMode;
+  uint8_t  m_layer;
+  uint8_t  m_mcs;
+  uint16_t m_size;
+  uint8_t  m_rv;
+  uint8_t  m_ndi;
+  uint8_t  m_correctness;
+};
+
+
 }; // namespace ns3
 
 

@@ -29,6 +29,8 @@
 #include <ns3/node.h>
 #include <ns3/node-container.h>
 #include <ns3/eps-bearer.h>
+#include <ns3/phy-tx-stats-calculator.h>
+#include <ns3/phy-rx-stats-calculator.h>
 #include <ns3/mac-stats-calculator.h>
 #include <ns3/radio-bearer-stats-calculator.h>
 #include <ns3/radio-bearer-stats-connector.h>
@@ -292,9 +294,34 @@ public:
   void EnableLogComponents (void);
 
   /**
-   * Enables trace sinks for MAC, RLC and PDCP
+   * Enables trace sinks for PHY, MAC, RLC and PDCP
    */
   void EnableTraces (void);
+
+  /**
+   * Enable trace sinks for PHY layer
+   */
+  void EnablePhyTraces (void);
+
+  /**
+   * Enable trace sinks for DL transmission PHY layer
+   */
+  void EnableDlTxPhyTraces (void);
+
+  /**
+   * Enable trace sinks for UL transmission PHY layer
+   */
+  void EnableUlTxPhyTraces (void);
+
+  /**
+   * Enable trace sinks for DL reception PHY layer
+   */
+  void EnableDlRxPhyTraces (void);
+
+  /**
+   * Enable trace sinks for UL reception PHY layer
+   */
+  void EnableUlRxPhyTraces (void);
 
   /**
    * Enable trace sinks for MAC layer
@@ -381,6 +408,8 @@ private:
   std::string m_fadingModelType;
   ObjectFactory m_fadingModelFactory;
 
+  Ptr<PhyTxStatsCalculator> m_phyTxStats;
+  Ptr<PhyRxStatsCalculator> m_phyRxStats;
   Ptr<MacStatsCalculator> m_macStats;
   Ptr<RadioBearerStatsCalculator> m_rlcStats;
   Ptr<RadioBearerStatsCalculator> m_pdcpStats;

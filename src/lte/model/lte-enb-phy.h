@@ -307,6 +307,12 @@ private:
   TracedCallback<uint16_t, Ptr<SpectrumValue> > m_reportInterferenceTrace;
   uint16_t m_interferenceSamplePeriod;
   uint16_t m_interferenceSampleCounter;
+
+  /**
+   * Trace information regarding PHY stats from UL Tx perspective
+   * PhyTrasmissionStatParameters see lte-common.h
+   */
+  TracedCallback<PhyTransmissionStatParameters> m_dlPhyTransmission;
   
 };
 

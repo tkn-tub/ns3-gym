@@ -65,6 +65,7 @@ struct tbInfo_t
   uint8_t mcs;
   std::vector<int> rbBitmap;
   uint8_t harqProcessId;
+  uint8_t rv;
   double mi;
   bool downlink;
   bool corrupt;
@@ -338,7 +339,7 @@ public:
   * \param harqId the id of the HARQ process (valid only for DL)
   * \param downlink true when the TB is for DL
   */
-  void AddExpectedTb (uint16_t  rnti, uint8_t ndi, uint16_t size, uint8_t mcs, std::vector<int> map, uint8_t layer, uint8_t harqId, bool downlink);
+  void AddExpectedTb (uint16_t  rnti, uint8_t ndi, uint16_t size, uint8_t mcs, std::vector<int> map, uint8_t layer, uint8_t harqId, uint8_t rv, bool downlink);
 
 
   /** 
@@ -437,7 +438,19 @@ private:
   LtePhyDlHarqFeedbackCallback m_ltePhyDlHarqFeedbackCallback;
   LtePhyUlHarqFeedbackCallback m_ltePhyUlHarqFeedbackCallback;
 
-  uint16_t errors; // DEBUG
+
+  /**
+   * Trace information regarding PHY stats from DL Rx perspective
+   * PhyReceptionStatParameters (see lte-common.h)
+   */
+  TracedCallback<PhyReceptionStatParameters> m_dlPhyReception;
+
+  
+  /**
+   * Trace information regarding PHY stats from UL Rx perspective
+   * PhyReceptionStatParameters (see lte-common.h)
+   */
+  TracedCallback<PhyReceptionStatParameters> m_ulPhyReception;
 
 };
 

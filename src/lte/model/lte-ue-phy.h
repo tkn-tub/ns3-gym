@@ -278,6 +278,12 @@ private:
   uint16_t m_rsrpRsrqSamplePeriod;
   uint16_t m_rsrpRsrqSampleCounter;
 
+  /**
+   * Trace information regarding PHY stats from DL Tx perspective
+   * PhyTrasmissionStatParameters  see lte-common.h
+   */
+  TracedCallback<PhyTransmissionStatParameters> m_ulPhyTransmission;
+
 };
 
 

@@ -36,7 +36,7 @@
 #include "ff-mac-common.h"
 #include "lte-sinr-chunk-processor.h"
 #include <ns3/lte-common.h>
-
+#include <ns3/pointer.h>
 
 NS_LOG_COMPONENT_DEFINE ("LteUePhy");
 
@@ -239,6 +239,21 @@ LteUePhy::GetTypeId (void)
                    UintegerValue (1),
                    MakeUintegerAccessor (&LteUePhy::m_rsrpRsrqSamplePeriod),
                    MakeUintegerChecker<uint16_t> ())
+    .AddTraceSource ("UlPhyTransmission",
+                     "DL transmission PHY layer statistics.",
+                     MakeTraceSourceAccessor (&LteUePhy::m_ulPhyTransmission))
+    .AddAttribute ("DlSpectrumPhy",
+                   "The downlink LteSpectrumPhy associated to this LtePhy",
+                   TypeId::ATTR_GET,
+                   PointerValue (),
+                   MakePointerAccessor (&LteUePhy::m_downlinkSpectrumPhy),
+                   MakePointerChecker <LteSpectrumPhy> ())
+    .AddAttribute ("UlSpectrumPhy",
+                   "The uplink LteSpectrumPhy associated to this LtePhy",
+                   TypeId::ATTR_GET,
+                   PointerValue (),
+                   MakePointerAccessor (&LteUePhy::m_uplinkSpectrumPhy),
+                   MakePointerChecker <LteSpectrumPhy> ())
   ;
   return tid;
 }
@@ -598,7 +613,7 @@ LteUePhy::ReceiveLteControlMessageList (std::list<Ptr<LteControlMessage> > msgLi
       NS_LOG_DEBUG (this << " UE " << m_rnti << " DL-DCI " << dci.m_rnti << " bitmap "  << dci.m_rbBitmap);
       for (uint8_t i = 0; i < dci.m_tbsSize.size (); i++)
       {
-        m_downlinkSpectrumPhy->AddExpectedTb (dci.m_rnti, dci.m_ndi.at (i), dci.m_tbsSize.at (i), dci.m_mcs.at (i), dlRb, i, dci.m_harqProcess, true /* DL */);
+        m_downlinkSpectrumPhy->AddExpectedTb (dci.m_rnti, dci.m_ndi.at (i), dci.m_tbsSize.at (i), dci.m_mcs.at (i), dlRb, i, dci.m_harqProcess, dci.m_rv.at (i), true /* DL */);
       }
       
       SetSubChannelsForReception (dlRb);
@@ -623,6 +638,20 @@ LteUePhy::ReceiveLteControlMessageList (std::list<Ptr<LteControlMessage> > msgLi
         //NS_LOG_DEBUG (this << " UE RB " << i + dci.m_rbStart);
       }
       QueueSubChannelsForTransmission (ulRb);
+      // fire trace of UL Tx PHY stats
+      HarqProcessInfoList_t harqInfoList = m_harqPhyModule->GetHarqProcessInfoUl (m_rnti, 0);
+      PhyTransmissionStatParameters params;
+      params.m_cellId = m_cellId;
+      params.m_imsi = 0; // it will be set by DlPhyTransmissionCallback in LteHelper
+      params.m_timestamp = Simulator::Now ().GetMilliSeconds () + UL_PUSCH_TTIS_DELAY;
+      params.m_rnti = m_rnti;
+      params.m_txMode = 0; // always SISO for UE
+      params.m_layer = 0;
+      params.m_mcs = dci.m_mcs;
+      params.m_size = dci.m_tbSize;
+      params.m_rv = harqInfoList.size ();
+      params.m_ndi = dci.m_ndi;
+      m_ulPhyTransmission (params);
       // pass the info to the MAC
       m_uePhySapUser->ReceiveLteControlMessage (msg);
     }

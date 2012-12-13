@@ -116,6 +116,8 @@ LteHelper::DoStart (void)
       m_downlinkChannel->AddSpectrumPropagationLossModel (m_fadingModule);
       m_uplinkChannel->AddSpectrumPropagationLossModel (m_fadingModule);
     }
+  m_phyTxStats = CreateObject<PhyTxStatsCalculator> ();
+  m_phyRxStats = CreateObject<PhyRxStatsCalculator> ();
   m_macStats = CreateObject<MacStatsCalculator> ();
   m_rlcStats = CreateObject<RadioBearerStatsCalculator> ("RLC");
   m_pdcpStats = CreateObject<RadioBearerStatsCalculator> ("PDCP");
@@ -796,12 +798,16 @@ LteHelper::EnableLogComponents (void)
   LogComponentEnable ("LteEnbNetDevice", LOG_LEVEL_ALL);
 
   LogComponentEnable ("RadioBearerStatsCalculator", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteStatsCalculator", LOG_LEVEL_ALL);
   LogComponentEnable ("MacStatsCalculator", LOG_LEVEL_ALL);
+  LogComponentEnable ("PhyTxStatsCalculator", LOG_LEVEL_ALL);
+  LogComponentEnable ("PhyRxStatsCalculator", LOG_LEVEL_ALL);
 }
 
 void
 LteHelper::EnableTraces (void)
 {
+  EnablePhyTraces ();
   EnableMacTraces ();
   EnableRlcTraces ();
   EnablePdcpTraces ();
@@ -866,6 +872,29 @@ FindImsiFromEnbRlcPath (std::string path)
     }
 }
 
+
+uint64_t
+FindImsiFromLteNetDevice (std::string path)
+{
+  NS_LOG_FUNCTION (path);
+  // Sample path input:
+  // /NodeList/#NodeId/DeviceList/#DeviceId/
+
+  // We retrieve the Imsi associated to the LteUeNetDevice
+  Config::MatchContainer match = Config::LookupMatches (path);
+
+  if (match.GetN () != 0)
+    {
+      Ptr<Object> ueNetDevice = match.Get (0);
+      NS_LOG_LOGIC ("FindImsiFromLteNetDevice: " << path << ", " << ueNetDevice->GetObject<LteUeNetDevice> ()->GetImsi ());
+      return ueNetDevice->GetObject<LteUeNetDevice> ()->GetImsi ();
+    }
+  else
+    {
+      NS_FATAL_ERROR ("Lookup " << path << " got no matches");
+    }
+}
+
 uint16_t
 FindCellIdFromEnbRlcPath (std::string path)
 {
@@ -876,7 +905,6 @@ FindCellIdFromEnbRlcPath (std::string path)
   // We retrieve the CellId associated to the Enb
   std::string enbNetDevicePath = path.substr (0, path.find ("/LteEnbRrc"));
   Config::MatchContainer match = Config::LookupMatches (enbNetDevicePath);
-
   if (match.GetN () != 0)
     {
       Ptr<Object> enbNetDevice = match.Get (0);
@@ -893,6 +921,7 @@ uint64_t
 FindImsiFromEnbMac (std::string path, uint16_t rnti)
 {
   NS_LOG_FUNCTION (path << rnti);
+
   // /NodeList/#NodeId/DeviceList/#DeviceId/LteEnbMac/DlScheduling
   std::ostringstream oss;
   std::string p = path.substr (0, path.find ("/LteEnbMac"));
@@ -916,6 +945,183 @@ FindCellIdFromEnbMac (std::string path, uint16_t rnti)
   NS_LOG_LOGIC ("FindCellIdFromEnbMac: " << path << ", "<< rnti << ", " << cellId);
   return cellId;
 }
+
+
+uint64_t
+FindImsiForEnb (std::string path, uint16_t rnti)
+{
+  NS_LOG_FUNCTION (path << rnti);
+  uint64_t imsi;
+  if (path.find ("/DlPhyTransmission"))
+    {
+      // /NodeList/0/DeviceList/0/LteEnbPhy/DlPhyTransmission/LteEnbRrc/UeMap/1
+      std::ostringstream oss;
+      std::string p = path.substr (0, path.find ("/LteEnbPhy"));
+      oss << rnti;
+      p += "/LteEnbRrc/UeMap/" + oss.str ();
+      imsi = FindImsiFromEnbRlcPath (p);
+      NS_LOG_LOGIC ("FindImsiForEnb[Tx]: " << path << ", " << rnti << ", " << imsi);
+    }
+  else if (path.find ("/UIlPhyReception"))
+    {
+      std::string p = path.substr (0, path.find ("/LteUePhy"));
+      imsi = FindImsiFromLteNetDevice (p);
+      NS_LOG_LOGIC ("FindImsiForEnb[Rx]: " << path << ", " << rnti << ", " << imsi);
+    }
+  return imsi;
+}
+
+
+uint64_t
+FindImsiForUe (std::string path, uint16_t rnti)
+{
+  NS_LOG_FUNCTION (path << rnti);
+  uint64_t imsi;
+  if (path.find ("/UIlPhyTransmission"))
+    {
+      std::string p = path.substr (0, path.find ("/LteUePhy"));
+      imsi = FindImsiFromLteNetDevice (p);
+      NS_LOG_LOGIC ("FindImsiForUe[Tx]: " << path << ", " << rnti << ", " << imsi);
+    }
+  else if (path.find ("/DIlPhyReception"))
+    {
+      // /NodeList/0/DeviceList/0/LteEnbPhy/LteSpectrumPhy
+      std::ostringstream oss;
+      std::string p = path.substr (0, path.find ("/LteEnbPhy"));
+      oss << rnti;
+      p += "/LteEnbRrc/UeMap/" + oss.str ();
+      imsi = FindImsiFromEnbRlcPath (p);
+      NS_LOG_LOGIC ("FindImsiForUe[Rx]: " << path << ", " << rnti << ", " << imsi);
+    }
+  return imsi;
+}
+
+void
+DlPhyTransmissionCallback (Ptr<PhyTxStatsCalculator> phyTxStats,
+                      std::string path, PhyTransmissionStatParameters params)
+{
+  NS_LOG_FUNCTION (phyTxStats << path);
+  uint64_t imsi = 0;
+  std::ostringstream pathAndRnti;
+  pathAndRnti << path << "/" << params.m_rnti;
+  if (phyTxStats->ExistsImsiPath (pathAndRnti.str ()) == true)
+    {
+      imsi = phyTxStats->GetImsiPath (pathAndRnti.str ());
+    }
+  else
+    {
+      imsi = FindImsiForEnb (path, params.m_rnti);
+      phyTxStats->SetImsiPath (pathAndRnti.str (), imsi);
+    }
+
+  params.m_imsi = imsi;
+  phyTxStats->DlPhyTransmission (params);
+}
+
+void
+UlPhyTransmissionCallback (Ptr<PhyTxStatsCalculator> phyTxStats,
+                      std::string path, PhyTransmissionStatParameters params)
+{
+  NS_LOG_FUNCTION (phyTxStats << path);
+  uint64_t imsi = 0;
+  std::ostringstream pathAndRnti;
+  pathAndRnti << path << "/" << params.m_rnti;
+  if (phyTxStats->ExistsImsiPath (pathAndRnti.str ()) == true)
+    {
+      imsi = phyTxStats->GetImsiPath (pathAndRnti.str ());
+    }
+  else
+    {
+      imsi = FindImsiForUe (path, params.m_rnti);
+      phyTxStats->SetImsiPath (pathAndRnti.str (), imsi);
+    }
+
+  params.m_imsi = imsi;
+  phyTxStats->UlPhyTransmission (params);
+}
+
+
+void
+DlPhyReceptionCallback (Ptr<PhyRxStatsCalculator> phyRxStats,
+                      std::string path, PhyReceptionStatParameters params)
+{
+  NS_LOG_FUNCTION (phyRxStats << path);
+  uint64_t imsi = 0;
+  std::ostringstream pathAndRnti;
+  pathAndRnti << path << "/" << params.m_rnti;
+  if (phyRxStats->ExistsImsiPath (pathAndRnti.str ()) == true)
+    {
+      imsi = phyRxStats->GetImsiPath (pathAndRnti.str ());
+    }
+  else
+    {
+      imsi = FindImsiForUe (path, params.m_rnti);
+      phyRxStats->SetImsiPath (pathAndRnti.str (), imsi);
+    }
+
+  params.m_imsi = imsi;
+  phyRxStats->DlPhyReception (params);
+}
+
+void
+UlPhyReceptionCallback (Ptr<PhyRxStatsCalculator> phyRxStats,
+                      std::string path, PhyReceptionStatParameters params)
+{
+  NS_LOG_FUNCTION (phyRxStats << path);
+  uint64_t imsi = 0;
+  std::ostringstream pathAndRnti;
+  pathAndRnti << path << "/" << params.m_rnti;
+  if (phyRxStats->ExistsImsiPath (pathAndRnti.str ()) == true)
+    {
+      imsi = phyRxStats->GetImsiPath (pathAndRnti.str ());
+    }
+  else
+    {
+      imsi = FindImsiForEnb (path, params.m_rnti);
+      phyRxStats->SetImsiPath (pathAndRnti.str (), imsi);
+    }
+
+  params.m_imsi = imsi;
+  phyRxStats->UlPhyReception (params);
+}
+
+void
+LteHelper::EnablePhyTraces (void)
+{
+  EnableDlTxPhyTraces ();
+  EnableUlTxPhyTraces ();
+  EnableDlRxPhyTraces ();
+  EnableUlRxPhyTraces ();
+}
+
+void
+LteHelper::EnableDlTxPhyTraces (void)
+{
+  Config::Connect ("/NodeList/*/DeviceList/*/LteEnbPhy/DlPhyTransmission",
+                   MakeBoundCallback (&DlPhyTransmissionCallback, m_phyTxStats));
+}
+
+void
+LteHelper::EnableUlTxPhyTraces (void)
+{
+  Config::Connect ("/NodeList/*/DeviceList/*/LteUePhy/UlPhyTransmission",
+                   MakeBoundCallback (&UlPhyTransmissionCallback, m_phyTxStats));
+}
+
+void
+LteHelper::EnableDlRxPhyTraces (void)
+{
+  Config::Connect ("/NodeList/*/DeviceList/*/LteUePhy/DlSpectrumPhy/DlPhyReception",
+                   MakeBoundCallback (&DlPhyReceptionCallback, m_phyRxStats));
+}
+
+void
+LteHelper::EnableUlRxPhyTraces (void)
+{
+  Config::Connect ("/NodeList/*/DeviceList/*/LteEnbPhy/UlSpectrumPhy/UlPhyReception",
+                   MakeBoundCallback (&UlPhyReceptionCallback, m_phyRxStats));
+}
+
 
 
 void
@@ -951,6 +1157,8 @@ DlSchedulingCallback (Ptr<MacStatsCalculator> macStats,
 
   macStats->DlScheduling (cellId, imsi, frameNo, subframeNo, rnti, mcsTb1, sizeTb1, mcsTb2, sizeTb2);
 }
+
+
 
 void
 LteHelper::EnableMacTraces (void)

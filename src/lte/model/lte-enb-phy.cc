@@ -42,6 +42,7 @@
 #include <ns3/node-list.h>
 #include <ns3/node.h>
 #include <ns3/lte-ue-net-device.h>
+#include <ns3/pointer.h>
 
 NS_LOG_COMPONENT_DEFINE ("LteEnbPhy");
 
@@ -194,6 +195,21 @@ LteEnbPhy::GetTypeId (void)
                    UintegerValue (1),
                    MakeUintegerAccessor (&LteEnbPhy::m_interferenceSamplePeriod),
                    MakeUintegerChecker<uint16_t> ())
+    .AddTraceSource ("DlPhyTransmission",
+                     "DL transmission PHY layer statistics.",
+                     MakeTraceSourceAccessor (&LteEnbPhy::m_dlPhyTransmission))
+    .AddAttribute ("DlSpectrumPhy",
+                   "The downlink LteSpectrumPhy associated to this LtePhy",
+                   TypeId::ATTR_GET,
+                   PointerValue (),
+                   MakePointerAccessor (&LteEnbPhy::m_downlinkSpectrumPhy),
+                   MakePointerChecker <LteSpectrumPhy> ())
+    .AddAttribute ("UlSpectrumPhy",
+                   "The uplink LteSpectrumPhy associated to this LtePhy",
+                   TypeId::ATTR_GET,
+                   PointerValue (),
+                   MakePointerAccessor (&LteEnbPhy::m_uplinkSpectrumPhy),
+                   MakePointerChecker <LteSpectrumPhy> ())
   ;
   return tid;
 }
@@ -500,7 +516,7 @@ LteEnbPhy::StartSubFrame (void)
             {
               rbMap.push_back (i);
             }
-          m_uplinkSpectrumPhy->AddExpectedTb ((*dciIt).GetDci ().m_rnti, (*dciIt).GetDci ().m_ndi, (*dciIt).GetDci ().m_tbSize, (*dciIt).GetDci ().m_mcs, rbMap, 0 /* always SISO*/, 0 /* no HARQ proc id in UL*/, false /* UL*/);
+          m_uplinkSpectrumPhy->AddExpectedTb ((*dciIt).GetDci ().m_rnti, (*dciIt).GetDci ().m_ndi, (*dciIt).GetDci ().m_tbSize, (*dciIt).GetDci ().m_mcs, rbMap, 0 /* always SISO*/, 0 /* no HARQ proc id in UL*/, 0 /*evaluated by LteSpectrumPhy*/, false /* UL*/);
           if ((*dciIt).GetDci ().m_ndi==1)
             {
               NS_LOG_DEBUG (this << " RNTI " << (*dciIt).GetDci ().m_rnti << " NEW TB");
@@ -525,21 +541,38 @@ LteEnbPhy::StartSubFrame (void)
           if (msg->GetMessageType () == LteControlMessage::DL_DCI)
             {
               Ptr<DlDciLteControlMessage> dci = DynamicCast<DlDciLteControlMessage> (msg);
-                  // get the tx power spectral density according to DL-DCI(s)
-                  // translate the DCI to Spectrum framework
-                  uint32_t mask = 0x1;
-                  for (int i = 0; i < 32; i++)
+              // get the tx power spectral density according to DL-DCI(s)
+              // translate the DCI to Spectrum framework
+              uint32_t mask = 0x1;
+              for (int i = 0; i < 32; i++)
+                {
+                  if (((dci->GetDci ().m_rbBitmap & mask) >> i) == 1)
                     {
-                      if (((dci->GetDci ().m_rbBitmap & mask) >> i) == 1)
+                      for (int k = 0; k < GetRbgSize (); k++)
                         {
-                          for (int k = 0; k < GetRbgSize (); k++)
-                            {
-                              m_dlDataRbMap.push_back ((i * GetRbgSize ()) + k);
-                              //NS_LOG_DEBUG(this << " [enb]DL-DCI allocated PRB " << (i*GetRbgSize()) + k);
-                            }
+                          m_dlDataRbMap.push_back ((i * GetRbgSize ()) + k);
+                          //NS_LOG_DEBUG(this << " [enb]DL-DCI allocated PRB " << (i*GetRbgSize()) + k);
                         }
-                      mask = (mask << 1);
                     }
+                  mask = (mask << 1);
+                }
+              // fire trace of DL Tx PHY stats
+              for (uint8_t i = 0; i < dci->GetDci ().m_mcs.size (); i++)
+                {
+                  PhyTransmissionStatParameters params;
+                  params.m_cellId = m_cellId;
+                  params.m_imsi = 0; // it will be set by DlPhyTransmissionCallback in LteHelper
+                  params.m_timestamp = Simulator::Now ().GetMilliSeconds ();
+                  params.m_rnti = dci->GetDci ().m_rnti;
+                  params.m_txMode = 0; // TBD
+                  params.m_layer = i;
+                  params.m_mcs = dci->GetDci ().m_mcs.at (i);
+                  params.m_size = dci->GetDci ().m_tbsSize.at (i);
+                  params.m_rv = dci->GetDci ().m_rv.at (i);
+                  params.m_ndi = dci->GetDci ().m_ndi.at (i);
+                  m_dlPhyTransmission (params);
+                }
+              
             }
           else if (msg->GetMessageType () == LteControlMessage::UL_DCI)
             {
