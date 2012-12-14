@@ -72,7 +72,6 @@ public:
       CONNECTED_NORMALLY,
       CONNECTED_REESTABLISHING,
       CONNECTED_HANDOVER,
-      OFF,
       NUM_STATES
     };
 
