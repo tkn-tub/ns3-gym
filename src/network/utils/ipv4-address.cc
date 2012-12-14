@@ -319,7 +319,6 @@ Ipv4Address::IsMatchingType (const Address &address)
 }
 Ipv4Address::operator Address () const
 {
-  NS_LOG_FUNCTION (this);
   return ConvertTo ();
 }
 
@@ -381,7 +380,6 @@ Ipv4Address::GetLoopback (void)
 
 size_t Ipv4AddressHash::operator() (Ipv4Address const &x) const
 { 
-  NS_LOG_FUNCTION (this << &x);
   return x.Get ();
 }
 

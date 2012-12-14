@@ -88,7 +88,6 @@ EventId::GetUid (void) const
 
 bool operator == (const EventId &a, const EventId &b)
 {
-  NS_LOG_FUNCTION (a.GetUid () << b.GetUid ());
   return 
     a.m_uid == b.m_uid && 
     a.m_context == b.m_context && 
@@ -97,7 +96,6 @@ bool operator == (const EventId &a, const EventId &b)
 }
 bool operator != (const EventId &a, const EventId &b)
 {
-  NS_LOG_FUNCTION (a.GetUid () << b.GetUid ());
   return !(a == b);
 }
 

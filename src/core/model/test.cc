@@ -505,7 +505,6 @@ Indent::Indent (int _level)
 }
 std::ostream &operator << (std::ostream &os, const Indent &val)
 {
-  NS_LOG_FUNCTION (&os << &val);
   for (int i = 0; i < val.level; i++)
     {
       os << "  ";

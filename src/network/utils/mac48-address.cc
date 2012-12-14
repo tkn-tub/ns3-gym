@@ -109,7 +109,6 @@ Mac48Address::IsMatchingType (const Address &address)
 }
 Mac48Address::operator Address () const
 {
-  NS_LOG_FUNCTION (this);
   return ConvertTo ();
 }
 Address 

@@ -113,17 +113,14 @@ RandomVariable::RandomVariable ()
 RandomVariable::RandomVariable (const RandomVariable&o)
   : m_variable (o.m_variable->Copy ())
 {
-  NS_LOG_FUNCTION (this << o);
 }
 RandomVariable::RandomVariable (const RandomVariableBase &variable)
   : m_variable (variable.Copy ())
 {
-  NS_LOG_FUNCTION (&variable);
 }
 RandomVariable &
 RandomVariable::operator = (const RandomVariable &o)
 {
-  NS_LOG_FUNCTION (this << o);
   if (&o == this)
     {
       return *this;
@@ -2018,7 +2015,6 @@ ZetaVariable::ZetaVariable (double alpha)
 
 std::ostream & operator << (std::ostream &os, const RandomVariable &var)
 {
-  NS_LOG_FUNCTION (&os << &var);
   RandomVariableBase *base = var.Peek ();
   ConstantVariableImpl *constant = dynamic_cast<ConstantVariableImpl *> (base);
   if (constant != 0)
@@ -2049,7 +2045,6 @@ std::ostream & operator << (std::ostream &os, const RandomVariable &var)
 }
 std::istream & operator >> (std::istream &is, RandomVariable &var)
 {
-  NS_LOG_FUNCTION (&is << &var);
   std::string value;
   is >> value;
   std::string::size_type tmp;

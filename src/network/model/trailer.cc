@@ -23,7 +23,6 @@ Trailer::GetTypeId (void)
 
 std::ostream & operator << (std::ostream &os, const Trailer &trailer)
 {
-  NS_LOG_FUNCTION (&os << &trailer);
   trailer.Print (os);
   return os;
 }

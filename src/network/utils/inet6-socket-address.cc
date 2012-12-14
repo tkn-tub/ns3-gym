@@ -94,7 +94,6 @@ bool Inet6SocketAddress::IsMatchingType (const Address &addr)
 
 Inet6SocketAddress::operator Address (void) const
 {
-  NS_LOG_FUNCTION (this);
   return ConvertTo ();
 }
 

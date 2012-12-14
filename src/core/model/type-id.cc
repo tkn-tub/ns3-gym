@@ -677,13 +677,11 @@ TypeId::SetUid (uint16_t tid)
 
 std::ostream & operator << (std::ostream &os, TypeId tid)
 {
-  NS_LOG_FUNCTION (&os << &tid);
   os << tid.GetName ();
   return os;
 }
 std::istream & operator >> (std::istream &is, TypeId &tid)
 {
-  NS_LOG_FUNCTION (&is << &tid);
   std::string tidString;
   is >> tidString;
   bool ok = TypeId::LookupByNameFailSafe (tidString, &tid);
@@ -699,7 +697,6 @@ ATTRIBUTE_HELPER_CPP (TypeId);
 
 bool operator < (TypeId a, TypeId b)
 {
-  NS_LOG_FUNCTION (a << b);
   return a.m_tid < b.m_tid;
 }
 

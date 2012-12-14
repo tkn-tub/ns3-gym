@@ -13,7 +13,6 @@ CallbackValue::CallbackValue ()
 CallbackValue::CallbackValue (const CallbackBase &base)
   : m_value (base)
 {
-  NS_LOG_FUNCTION (&base);
 }
 CallbackValue::~CallbackValue ()
 {

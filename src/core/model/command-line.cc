@@ -38,13 +38,11 @@ CommandLine::CommandLine ()
 }
 CommandLine::CommandLine (const CommandLine &cmd)
 {
-  NS_LOG_FUNCTION (&cmd);
   Copy (cmd);
 }
 CommandLine &
 CommandLine::operator = (const CommandLine &cmd)
 {
-  NS_LOG_FUNCTION (&cmd);
   Clear ();
   Copy (cmd);
   return *this;

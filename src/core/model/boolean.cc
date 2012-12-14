@@ -49,14 +49,11 @@ BooleanValue::Get (void) const
 }
 BooleanValue::operator bool () const
 {
-  NS_LOG_FUNCTION (this);
   return m_value;
 }
 
 std::ostream & operator << (std::ostream &os, const BooleanValue &value)
 {
-  NS_LOG_FUNCTION (&os << &value);
-
   if (value.Get ())
     {
       os << "true";

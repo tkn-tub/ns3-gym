@@ -198,37 +198,31 @@ DataRate::DataRate(uint64_t bps)
 
 bool DataRate::operator < (const DataRate& rhs) const
 {
-  NS_LOG_FUNCTION (this << rhs);
   return m_bps<rhs.m_bps;
 }
 
 bool DataRate::operator <= (const DataRate& rhs) const
 {
-  NS_LOG_FUNCTION (this << rhs);
   return m_bps<=rhs.m_bps;
 }
 
 bool DataRate::operator >  (const DataRate& rhs) const
 {
-  NS_LOG_FUNCTION (this << rhs);
   return m_bps>rhs.m_bps;
 }
 
 bool DataRate::operator >= (const DataRate& rhs) const
 {
-  NS_LOG_FUNCTION (this << rhs);
   return m_bps>=rhs.m_bps;
 }
 
 bool DataRate::operator == (const DataRate& rhs) const
 {
-  NS_LOG_FUNCTION (this << rhs);
   return m_bps==rhs.m_bps;
 }
 
 bool DataRate::operator != (const DataRate& rhs) const
 {
-  NS_LOG_FUNCTION (this << rhs);
   return m_bps!=rhs.m_bps;
 }
 
@@ -256,13 +250,11 @@ DataRate::DataRate (std::string rate)
 
 std::ostream &operator << (std::ostream &os, const DataRate &rate)
 {
-  NS_LOG_FUNCTION (&os << rate);
   os << rate.GetBitRate () << "bps";
   return os;
 }
 std::istream &operator >> (std::istream &is, DataRate &rate)
 {
-  NS_LOG_FUNCTION (&is << &rate);
   std::string value;
   is >> value;
   uint64_t v;
@@ -279,13 +271,11 @@ std::istream &operator >> (std::istream &is, DataRate &rate)
 
 double operator* (const DataRate& lhs, const Time& rhs)
 {
-  NS_LOG_FUNCTION (lhs << rhs);
   return rhs.GetSeconds ()*lhs.GetBitRate ();
 }
 
 double operator* (const Time& lhs, const DataRate& rhs)
 {
-  NS_LOG_FUNCTION (lhs << rhs);
   return lhs.GetSeconds ()*rhs.GetBitRate ();
 }
 

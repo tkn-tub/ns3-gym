@@ -131,7 +131,6 @@ Object::Object (const Object &o)
     m_aggregates ((struct Aggregates *) std::malloc (sizeof (struct Aggregates))),
     m_getObjectCount (0)
 {
-  NS_LOG_FUNCTION (&o);
   m_aggregates->n = 1;
   m_aggregates->buffer[0] = this;
 }

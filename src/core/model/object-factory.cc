@@ -100,7 +100,6 @@ ObjectFactory::Create (void) const
 
 std::ostream & operator << (std::ostream &os, const ObjectFactory &factory)
 {
-  NS_LOG_FUNCTION (&os << &factory);
   os << factory.m_tid.GetName () << "[";
   bool first = true;
   for (AttributeConstructionList::CIterator i = factory.m_parameters.Begin (); i != factory.m_parameters.End (); ++i)
@@ -116,7 +115,6 @@ std::ostream & operator << (std::ostream &os, const ObjectFactory &factory)
 }
 std::istream & operator >> (std::istream &is, ObjectFactory &factory)
 {
-  NS_LOG_FUNCTION (&is << &factory);
   std::string v;
   is >> v;
   std::string::size_type lbracket, rbracket;
@@ -129,7 +127,6 @@ std::istream & operator >> (std::istream &is, ObjectFactory &factory)
     }
   if (lbracket == std::string::npos || rbracket == std::string::npos)
     {
-      NS_LOG_DEBUG ("Error while parsing factory specification: mismatching brackets. \"" << v << "\"");
       return is;
     }
   NS_ASSERT (lbracket != std::string::npos);
@@ -145,7 +142,6 @@ std::istream & operator >> (std::istream &is, ObjectFactory &factory)
       if (equal == std::string::npos)
         {
           is.setstate (std::ios_base::failbit);
-          NS_LOG_DEBUG ("Error while parsing serialized attribute: \"" << parameters << "\"");
           break;
         }
       else
@@ -155,7 +151,6 @@ std::istream & operator >> (std::istream &is, ObjectFactory &factory)
           if (!factory.m_tid.LookupAttributeByName (name, &info))
             {
               is.setstate (std::ios_base::failbit);
-              NS_LOG_DEBUG ("Error while parsing serialized attribute: name does not exist: \"" << name << "\"");
               break;
             }
           else
@@ -177,7 +172,6 @@ std::istream & operator >> (std::istream &is, ObjectFactory &factory)
               if (!ok)
                 {
                   is.setstate (std::ios_base::failbit);
-                  NS_LOG_DEBUG ("Error while parsing serialized attribute: value invalid: \"" << value << "\"");
                   break;
                 }
               else

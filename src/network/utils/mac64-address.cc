@@ -107,7 +107,6 @@ Mac64Address::IsMatchingType (const Address &address)
 }
 Mac64Address::operator Address () const
 {
-  NS_LOG_FUNCTION (this);
   return ConvertTo ();
 }
 Mac64Address 
@@ -162,7 +161,6 @@ bool operator == (const Mac64Address &a, const Mac64Address &b)
 }
 bool operator != (const Mac64Address &a, const Mac64Address &b)
 {
-  NS_LOG_FUNCTION (a << b);
   return !(a == b);
 }
 

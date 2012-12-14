@@ -275,7 +275,6 @@ PbbTlvBlock::Print (std::ostream &os, int level) const
 bool
 PbbTlvBlock::operator== (const PbbTlvBlock &other) const
 {
-  NS_LOG_FUNCTION (this << &other);
   if (Size () != other.Size ())
     {
       return false;
@@ -297,7 +296,6 @@ PbbTlvBlock::operator== (const PbbTlvBlock &other) const
 bool
 PbbTlvBlock::operator!= (const PbbTlvBlock &other) const
 {
-  NS_LOG_FUNCTION (this << &other);
   return !(*this == other);
 }
 
@@ -518,7 +516,6 @@ PbbAddressTlvBlock::Print (std::ostream &os, int level) const
 bool
 PbbAddressTlvBlock::operator== (const PbbAddressTlvBlock &other) const
 {
-  NS_LOG_FUNCTION (this << &other);
   if (Size () != other.Size ())
     {
       return false;
@@ -540,7 +537,6 @@ PbbAddressTlvBlock::operator== (const PbbAddressTlvBlock &other) const
 bool
 PbbAddressTlvBlock::operator!= (const PbbAddressTlvBlock &other) const
 {
-  NS_LOG_FUNCTION (this << &other);
   return !(*this == other);
 }
 
@@ -978,7 +974,6 @@ PbbPacket::Print (std::ostream &os) const
 bool
 PbbPacket::operator== (const PbbPacket &other) const
 {
-  NS_LOG_FUNCTION (this << other);
   if (GetVersion () != other.GetVersion ())
     {
       return false;
@@ -1021,7 +1016,6 @@ PbbPacket::operator== (const PbbPacket &other) const
 bool
 PbbPacket::operator!= (const PbbPacket &other) const
 {
-  NS_LOG_FUNCTION (this << other);
   return !(*this == other);
 }
 
@@ -1635,7 +1629,6 @@ PbbMessage::Print (std::ostream &os, int level) const
 bool
 PbbMessage::operator== (const PbbMessage &other) const
 {
-  NS_LOG_FUNCTION (this << &other);
   if (GetAddressLength () != other.GetAddressLength ())
     {
       return false;
@@ -1724,7 +1717,6 @@ PbbMessage::operator== (const PbbMessage &other) const
 bool
 PbbMessage::operator!= (const PbbMessage &other) const
 {
-  NS_LOG_FUNCTION (this << &other);
   return !(*this == other);
 }
 
@@ -2423,7 +2415,6 @@ PbbAddressBlock::Print (std::ostream &os, int level) const
 bool
 PbbAddressBlock::operator== (const PbbAddressBlock &other) const
 {
-  NS_LOG_FUNCTION (this << &other);
   if (AddressSize () != other.AddressSize ())
     {
       return false;
@@ -2467,7 +2458,6 @@ PbbAddressBlock::operator== (const PbbAddressBlock &other) const
 bool
 PbbAddressBlock::operator!= (const PbbAddressBlock &other) const
 {
-  NS_LOG_FUNCTION (this << &other);
   return !(*this == other);
 }
 
@@ -2987,7 +2977,6 @@ PbbTlv::Print (std::ostream &os, int level) const
 bool
 PbbTlv::operator== (const PbbTlv &other) const
 {
-  NS_LOG_FUNCTION (this << &other);
   if (GetType () != other.GetType ())
     {
       return false;
@@ -3033,7 +3022,6 @@ PbbTlv::operator== (const PbbTlv &other) const
 bool
 PbbTlv::operator!= (const PbbTlv &other) const
 {
-  NS_LOG_FUNCTION (this << &other);
   return !(*this == other);
 }
 

@@ -841,7 +841,6 @@ bool operator != (Ipv6Prefix const &a, Ipv6Prefix const &b)
 
 size_t Ipv6AddressHash::operator () (Ipv6Address const &x) const
 {
-  NS_LOG_FUNCTION (this << x);
   uint8_t buf[16];
 
   x.GetBytes (buf);

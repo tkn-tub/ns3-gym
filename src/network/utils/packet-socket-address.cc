@@ -83,7 +83,6 @@ PacketSocketAddress::GetPhysicalAddress (void) const
 
 PacketSocketAddress::operator Address () const
 {
-  NS_LOG_FUNCTION (this);
   return ConvertTo ();
 }
 

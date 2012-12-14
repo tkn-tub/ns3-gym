@@ -51,7 +51,6 @@ NameNode::NameNode ()
 
 NameNode::NameNode (const NameNode &nameNode)
 {
-  NS_LOG_FUNCTION (this << &nameNode);
   m_parent = nameNode.m_parent;
   m_name = nameNode.m_name;
   m_object = nameNode.m_object;
@@ -61,7 +60,6 @@ NameNode::NameNode (const NameNode &nameNode)
 NameNode &
 NameNode::operator = (const NameNode &rhs)
 {
-  NS_LOG_FUNCTION (this << &rhs);
   m_parent = rhs.m_parent;
   m_name = rhs.m_name;
   m_object = rhs.m_object;
