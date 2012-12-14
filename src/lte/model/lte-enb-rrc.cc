@@ -138,7 +138,8 @@ UeManager::UeManager (Ptr<LteEnbRrc> rrc, uint16_t rnti, State s)
     m_state (s),
     m_pendingRrcConnectionReconfiguration (false),
     m_sourceX2apId (0),
-    m_sourceCellId (0)
+    m_sourceCellId (0),
+    m_needTransmissionModeConfiguration (false)
 { 
   NS_LOG_FUNCTION (this);
 }
@@ -701,6 +702,19 @@ UeManager::RecvRrcConnectionReconfigurationCompleted (LteRrcSap::RrcConnectionRe
     {
     case CONNECTION_RECONFIGURATION:
       StartDataRadioBearers ();   
+      if (m_needTransmissionModeConfiguration)
+        {          
+          // configure MAC (and scheduler)
+          LteEnbCmacSapProvider::UeConfig req;
+          req.m_rnti = m_rnti;
+          req.m_transmissionMode = m_physicalConfigDedicated.antennaInfo.transmissionMode;
+          m_rrc->m_cmacSapProvider->UeUpdateConfigurationReq (req);  
+          
+          // configure PHY
+          m_rrc->m_cphySapProvider->SetTransmissionMode (req.m_rnti, req.m_transmissionMode);
+          
+          m_needTransmissionModeConfiguration = false;
+        }
       SwitchToState (CONNECTED_NORMALLY);
       m_rrc->m_connectionReconfigurationTrace (m_imsi, m_rrc->m_cellId, m_rnti);
       break;
@@ -765,14 +779,7 @@ UeManager::CmacUeConfigUpdateInd (LteEnbCmacSapUser::UeConfig cmacParams)
   
   m_physicalConfigDedicated.antennaInfo.transmissionMode = cmacParams.m_transmissionMode;
 
-  // configure MAC (and scheduler)
-  LteEnbCmacSapProvider::UeConfig req;
-  req.m_rnti = m_rnti;
-  req.m_transmissionMode = m_physicalConfigDedicated.antennaInfo.transmissionMode;
-  m_rrc->m_cmacSapProvider->UeUpdateConfigurationReq (req);  
-          
-  // configure PHY
-  m_rrc->m_cphySapProvider->SetTransmissionMode (req.m_rnti, req.m_transmissionMode);
+  m_needTransmissionModeConfiguration = true;
 
   // reconfigure the UE RRC
   ScheduleRrcConnectionReconfiguration ();
