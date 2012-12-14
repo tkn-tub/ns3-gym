@@ -217,6 +217,7 @@ void
 EpcUeNas::DoNotifyConnectionReleased ()
 {
   NS_LOG_FUNCTION (this);
+  SwitchToState (OFF);
 }
 
 void 
