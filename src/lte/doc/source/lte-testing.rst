@@ -519,7 +519,7 @@ The test suite considers a type of scenario with a single eNB and multiple UEs t
  - number of UEs
  - number of Data Radio Bearers to be activated for each UE
  - time :math:`t^c_0` at which the first UE is instructed to start connecting to the eNB
- - time interval :math:`d^i` between the start of connection of UE :math:`n` and UE :math:`n+1`; the time at which user :math:`n` connects is thus determined as :math:`t^c_n = `t^c_0 + n d^i` sdf
+ - time interval :math:`d^i` between the start of connection of UE :math:`n` and UE :math:`n+1`; the time at which user :math:`n` connects is thus determined as :math:`t^c_n = t^c_0 + n d^i` sdf
  - a boolean flag indicating whether the ideal or the real RRC protocol model is used
 
 Each test cases passes if a number of test conditions are positively evaluated for each UE after a delay :math:`d^e` from the time it started connecting to the eNB. The delay :math:`d^e` is determined as 
@@ -561,7 +561,8 @@ where:
      + 0 for :math:`n \le 2`
      + 1 for :math:`n \le 5`
      + 2 for :math:`n \le 10`
-     + 3 for :math:`n \gt 10`
+     + 3 for :math:`n \le 20`
+     + 4 for :math:`n > 20`
 
    Similarly to what done for :math:`d^{ce}`, for each transaction we consider a round trip
    delay of 10ms plus :math:`\lceil 2n/4 \rceil`.
@@ -662,4 +663,42 @@ test passes if all the following conditions are satisfied:
    RadioBearer instance  
 
 
+X2 handover
+-----------
+
+The test suite ``lte-x2-handover`` checks the correct functionality of the X2 handover procedure. The scenario being tested is a topology with two eNBs connected by an X2 interface. Each test case is a particular instance of this scenario defined by the following parameters:
+
+ - the number of UEs that are initially attached to the first eNB
+ - the number of EPS bearers activated for each UE
+ - a list of handover events to be triggered, where each event is defined by:
+   + the start time of the handover trigger
+   + the index of the UE doing the handover
+   + the index of the source eNB
+   + the index of the target eNB
+ - a boolean flag indicating whether the target eNB admits the handover or not
+ - a boolean flag indicating whether the ideal RRC protocol is to be used instead of the real RRC protocol
+ - the type of scheduler to be used (RR or PF)
+
+Each test cases passes if the following conditions are true:
+
+ - at time 0.06s, the test CheckConnected verifies that each UE is connected to the first eNB
+ - for each event in the handover list:
+
+   + at the indicated event start time, the indicated UE is connected to the indicated source eNB
+   + 0.1s after the start time, the indicated UE is connected to the indicated target eNB
+   + 0.6s after the start time, for each active EPS bearer, the uplink and downlink sink applications of the indicated UE have achieved a number of bytes which is at least half the number of bytes transmitted by the corresponding source applications
+
+The condition "UE is connected to eNB" is evaluated positively if and only if all the following conditions are met:
+
+ - the eNB has the context of the UE (identified by the RNTI value
+   retrieved from the UE RRC)
+ - the RRC state of the UE at the eNB is CONNECTED_NORMALLY
+ - the RRC state at the UE is CONNECTED_NORMALLY
+ - the UE is configured with the CellId, DlBandwidth, UlBandwidth,
+   DlEarfcn and UlEarfcn of the eNB
+ - the IMSI of the UE stored at the eNB is correct
+ - the number of active Data Radio Bearers is the expected one, both
+   at the eNB and at the UE
+ - for each Data Radio Bearer, the following identifiers match between
+   the UE and the eNB: EPS bearer id, DRB id, LCID
 
