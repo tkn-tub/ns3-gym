@@ -203,7 +203,7 @@ LenaRrFfMacSchedulerTestCase::DoRun (void)
    * Initialize Simulation Scenario: 1 eNB and m_nUser UEs
    */
 
-
+LogComponentEnable ("PfFfMacScheduler", LOG_LEVEL_ALL);
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
   
   lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
@@ -254,7 +254,7 @@ LenaRrFfMacSchedulerTestCase::DoRun (void)
     }
 
 
-  double statsStartTime = 0.100; // need to allow for RRC connection establishment + SRS
+  double statsStartTime = 0.300; // need to allow for RRC connection establishment + SRS
   double statsDuration = 0.4;
   double tolerance = 0.1;
   Simulator::Stop (Seconds (statsStartTime + statsDuration - 0.0001));

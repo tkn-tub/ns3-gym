@@ -216,7 +216,7 @@ EpcUeNas::DoRecvData (Ptr<Packet> packet)
 void 
 EpcUeNas::DoNotifyConnectionReleased ()
 {
-  NS_FATAL_ERROR ("connection failed, it should not happen with the current model");
+  NS_LOG_FUNCTION (this);
 }
 
 void 

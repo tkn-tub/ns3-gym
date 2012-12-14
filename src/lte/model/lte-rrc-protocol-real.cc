@@ -288,11 +288,13 @@ LteUeRrcProtocolReal::DoReceivePdcpPdu (Ptr<Packet> p)
   RrcConnectionReestablishmentHeader rrcConnectionReestablishmentHeader;
   RrcConnectionReestablishmentRejectHeader rrcConnectionReestablishmentRejectHeader;
   RrcConnectionSetupHeader rrcConnectionSetupHeader;
+  RrcConnectionRejectHeader rrcConnectionRejectHeader;
 
   // Declare possible messages
   LteRrcSap::RrcConnectionReestablishment rrcConnectionReestablishmentMsg;
   LteRrcSap::RrcConnectionReestablishmentReject rrcConnectionReestablishmentRejectMsg;
   LteRrcSap::RrcConnectionSetup rrcConnectionSetupMsg;
+  LteRrcSap::RrcConnectionReject rrcConnectionRejectMsg;
 
   // Deserialize packet and call member recv function with appropiate structure
   switch ( rrcDlCcchMessage.GetMessageType () )
@@ -311,7 +313,9 @@ LteUeRrcProtocolReal::DoReceivePdcpPdu (Ptr<Packet> p)
       break;
     case 2:
       // RrcConnectionReject
-      // ...
+      p->RemoveHeader (rrcConnectionReestablishmentRejectHeader);
+      rrcConnectionReestablishmentRejectMsg = rrcConnectionReestablishmentRejectHeader.GetMessage ();
+      m_ueRrcSapProvider->RecvRrcConnectionReject (rrcConnectionRejectMsg);
       break;
     case 3:
       // RrcConnectionSetup
