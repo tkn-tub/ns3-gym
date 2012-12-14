@@ -315,6 +315,20 @@ public:
     std::vector <CellMeasurementResultItem> cellMeasurementResultList;
   };
 
+  /**
+   * \brief Parameters of the UE DATA primitive
+   *
+   * Forward UE data during the handover procedure from source eNB (sourceCellId)
+   * to target eNB (targetCellId) using a GTP-U tunnel (gtpTeid)
+   */
+  struct UeDataParams
+  {
+    uint16_t    sourceCellId;
+    uint16_t    targetCellId;
+    uint32_t    gtpTeid;
+    Ptr<Packet> ueData;
+  };
+
 };
 
 
@@ -344,6 +358,8 @@ public:
   virtual void SendLoadInformation (LoadInformationParams params) = 0;
 
   virtual void SendResourceStatusUpdate (ResourceStatusUpdateParams params) = 0;
+
+  virtual void SendUeData (UeDataParams params) = 0;
 };
 
 
@@ -373,6 +389,8 @@ public:
   virtual void RecvLoadInformation (LoadInformationParams params) = 0;
   
   virtual void RecvResourceStatusUpdate (ResourceStatusUpdateParams params) = 0;
+
+  virtual void RecvUeData (UeDataParams params) = 0;
 };
 
 ///////////////////////////////////////
@@ -400,6 +418,8 @@ public:
   virtual void SendLoadInformation (LoadInformationParams params);
 
   virtual void SendResourceStatusUpdate (ResourceStatusUpdateParams params);
+
+  virtual void SendUeData (UeDataParams params);
 
 private:
   EpcX2SpecificEpcX2SapProvider ();
@@ -466,6 +486,13 @@ EpcX2SpecificEpcX2SapProvider<C>::SendResourceStatusUpdate (ResourceStatusUpdate
   m_x2->DoSendResourceStatusUpdate (params);
 }
 
+template <class C>
+void
+EpcX2SpecificEpcX2SapProvider<C>::SendUeData (UeDataParams params)
+{
+  m_x2->DoSendUeData (params);
+}
+
 ///////////////////////////////////////
 
 template <class C>
@@ -491,6 +518,8 @@ public:
   virtual void RecvLoadInformation (LoadInformationParams params);
 
   virtual void RecvResourceStatusUpdate (ResourceStatusUpdateParams params);
+
+  virtual void RecvUeData (UeDataParams params);
 
 private:
   EpcX2SpecificEpcX2SapUser ();
@@ -555,6 +584,13 @@ void
 EpcX2SpecificEpcX2SapUser<C>::RecvResourceStatusUpdate (ResourceStatusUpdateParams params)
 {
   m_rrc->DoRecvResourceStatusUpdate (params);
+}
+
+template <class C>
+void
+EpcX2SpecificEpcX2SapUser<C>::RecvUeData (UeDataParams params)
+{
+  m_rrc->DoRecvUeData (params);
 }
 
 } // namespace ns3
