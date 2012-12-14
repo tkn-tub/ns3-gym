@@ -36,14 +36,15 @@ namespace ns3 {
 class X2IfaceInfo : public SimpleRefCount<X2IfaceInfo>
 {
 public:
-  X2IfaceInfo (Ptr<Socket> localSocket, Ipv4Address remoteIpAddr);
+  X2IfaceInfo (Ipv4Address remoteIpAddr, Ptr<Socket> localCtrlPlaneSocket, Ptr<Socket> localUserPlaneSocket);
   virtual ~X2IfaceInfo (void);
-  
+
   X2IfaceInfo& operator= (const X2IfaceInfo &);
 
 public:
-  Ptr<Socket>   m_localSocket;
   Ipv4Address   m_remoteIpAddr;
+  Ptr<Socket>   m_localCtrlPlaneSocket;
+  Ptr<Socket>   m_localUserPlaneSocket;
 };
 
 
@@ -52,7 +53,7 @@ class X2CellInfo : public SimpleRefCount<X2CellInfo>
 public:
   X2CellInfo (uint16_t localCellId, uint16_t remoteCellId);
   virtual ~X2CellInfo (void);
-  
+
   X2CellInfo& operator= (const X2CellInfo &);
 
 public:
@@ -99,16 +100,24 @@ public:
   /**
    * \param s the X2 SAP Provider interface offered by this EPC X2 entity
    */
-  void AddX2Interface (uint16_t enb1CellId, Ptr<Socket> enb1X2cSocket, uint16_t enb2CellId, Ptr<Socket> enb2X2cSocket);
+  void AddX2Interface (uint16_t enb1CellId, Ipv4Address enb1X2Address, uint16_t enb2CellId, Ipv4Address enb2X2Address);
 
 
   /** 
-   * Method to be assigned to the recv callback of the X2 socket.
-   * It is called when the eNB receives a packet from the peer eNB of the X2 interface
+   * Method to be assigned to the recv callback of the X2-C (X2 Control Plane) socket.
+   * It is called when the eNB receives a packet from the peer eNB of the X2-C interface
    * 
-   * \param socket socket of the X2 interface
+   * \param socket socket of the X2-C interface
    */
   void RecvFromX2cSocket (Ptr<Socket> socket);
+
+  /** 
+   * Method to be assigned to the recv callback of the X2-U (X2 User Plane) socket.
+   * It is called when the eNB receives a packet from the peer eNB of the X2-U interface
+   * 
+   * \param socket socket of the X2-U interface
+   */
+  void RecvFromX2uSocket (Ptr<Socket> socket);
 
 
 protected:
@@ -120,6 +129,7 @@ protected:
   virtual void DoSendUeContextRelease (EpcX2SapProvider::UeContextReleaseParams params);
   virtual void DoSendLoadInformation (EpcX2SapProvider::LoadInformationParams params);
   virtual void DoSendResourceStatusUpdate (EpcX2SapProvider::ResourceStatusUpdateParams params);
+  virtual void DoSendUeData (EpcX2SapProvider::UeDataParams params);
 
   EpcX2SapUser* m_x2SapUser;
   EpcX2SapProvider* m_x2SapProvider;
@@ -140,9 +150,10 @@ private:
   std::map < Ptr<Socket>, Ptr<X2CellInfo> > m_x2InterfaceCellIds;
 
   /**
-   * UDP port to be used for the X2 interface
+   * UDP ports to be used for the X2 interfaces: X2-C and X2-U
    */
-   uint16_t m_x2cUdpPort;
+  uint16_t m_x2cUdpPort;
+  uint16_t m_x2uUdpPort;
 
 };
 
