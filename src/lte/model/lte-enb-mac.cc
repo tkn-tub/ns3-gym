@@ -751,10 +751,20 @@ LteEnbMac::DoAddUe (uint16_t rnti)
   m_cschedSapProvider->CschedUeConfigReq (params);
 
   // Create DL trasmission HARQ buffers
-  std::vector < Ptr<Packet> > dlHarqLayer0pkt;
+  std::vector < Ptr<PacketBurst> > dlHarqLayer0pkt;
   dlHarqLayer0pkt.resize (8);
-  std::vector < Ptr<Packet> > dlHarqLayer1pkt;
+  for (uint8_t i = 0; i < 8; i++)
+    {
+      Ptr<PacketBurst> pb = CreateObject <PacketBurst> ();
+      dlHarqLayer0pkt.at (i) = pb;
+    }
+  std::vector < Ptr<PacketBurst> > dlHarqLayer1pkt;
   dlHarqLayer1pkt.resize (8);
+  for (uint8_t i = 0; i < 8; i++)
+    {
+      Ptr<PacketBurst> pb = CreateObject <PacketBurst> ();
+      dlHarqLayer1pkt.at (i) = pb;
+    }
   DlHarqProcessesBuffer_t buf;
   buf.push_back (dlHarqLayer0pkt);
   buf.push_back (dlHarqLayer1pkt);
@@ -909,8 +919,9 @@ LteEnbMac::DoTransmitPdu (LteMacSapProvider::TransmitPduParameters params)
   std::map <uint16_t, DlHarqProcessesBuffer_t>::iterator it =  m_miDlHarqProcessesPackets.find (params.rnti);
   NS_ASSERT (it!=m_miDlHarqProcessesPackets.end ());
   NS_LOG_DEBUG (this << " LAYER " <<(uint16_t)tag.GetLayer () << " HARQ ID " << (uint16_t)params.harqProcessId);
-//   NS_ASSERT ((*it).second.at (params.layer).at (params.harqProcessId) == 0);
-  (*it).second.at (params.layer).at (params.harqProcessId) = params.pdu;//->Copy ();
+  
+  //(*it).second.at (params.layer).at (params.harqProcessId) = params.pdu;//->Copy ();
+  (*it).second.at (params.layer).at (params.harqProcessId)->AddPacket (params.pdu);
   m_enbPhySapProvider->SendMacPdu (params.pdu);
 }
 
@@ -970,8 +981,12 @@ LteEnbMac::DoSchedDlConfigInd (FfMacSchedSapUser::SchedDlConfigIndParameters ind
                       // HARQ retransmission -> retrieve TB from HARQ buffer
                       std::map <uint16_t, DlHarqProcessesBuffer_t>::iterator it = m_miDlHarqProcessesPackets.find (ind.m_buildDataList.at (i).m_rnti);
                       NS_ASSERT(it!=m_miDlHarqProcessesPackets.end());
-                      Ptr<Packet> pkt = (*it).second.at (k).at ( ind.m_buildDataList.at (i).m_dci.m_harqProcess)->Copy ();
-                      m_enbPhySapProvider->SendMacPdu (pkt);
+                      Ptr<PacketBurst> pb = (*it).second.at (k).at ( ind.m_buildDataList.at (i).m_dci.m_harqProcess);
+                      for (std::list<Ptr<Packet> >::const_iterator j = pb->Begin (); j != pb->End (); ++j)
+                        {
+                          Ptr<Packet> pkt = (*j)->Copy ();
+                          m_enbPhySapProvider->SendMacPdu (pkt);
+                        }
                     }
                 }
             }
@@ -1136,7 +1151,8 @@ LteEnbMac::DoDlInfoListElementHarqFeeback (DlInfoListElement_s params)
       if (params.m_harqStatus.at (layer)==DlInfoListElement_s::ACK)
         {
           // discard buffer
-          (*it).second.at (layer).at (params.m_harqProcessId) = 0;
+          Ptr<PacketBurst> emptyBuf = CreateObject <PacketBurst> ();
+          (*it).second.at (layer).at (params.m_harqProcessId) = emptyBuf;
           NS_LOG_DEBUG (this << " HARQ-ACK UE " << params.m_rnti << " harqId " << (uint16_t)params.m_harqProcessId << " layer " << (uint16_t)layer);
         }
       else if (params.m_harqStatus.at (layer)==DlInfoListElement_s::NACK)

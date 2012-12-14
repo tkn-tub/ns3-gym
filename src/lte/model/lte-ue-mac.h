@@ -33,6 +33,7 @@
 #include <ns3/event-id.h>
 #include <vector>
 #include <ns3/packet.h>
+#include <ns3/packet-burst.h>
 
 
 namespace ns3 {
@@ -110,6 +111,7 @@ private:
   void RecvRaResponse (BuildRarListElement_s raResponse);
   void RaResponseTimeout (bool contention);
   void SendReportBufferStatus (void);
+  void RefreshHarqProcessesPacketBuffer (void);
 
 private:
 
@@ -138,7 +140,8 @@ private:
   bool m_freshUlBsr; // true when a BSR has been received in the last TTI
 
   uint8_t m_harqProcessId;
-  std::vector < Ptr<Packet> > m_miUlHarqProcessesPacket; // Packets under trasmission of the UL HARQ processes
+  std::vector < Ptr<PacketBurst> > m_miUlHarqProcessesPacket; // Packets under trasmission of the UL HARQ processes
+  std::vector < uint8_t > m_miUlHarqProcessesPacketTimer; // timer for packet life in the buffer
 
   uint16_t m_rnti;
 

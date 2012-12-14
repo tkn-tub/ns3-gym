@@ -212,6 +212,13 @@ LteUeMac::LteUeMac ()
 {
   NS_LOG_FUNCTION (this);
   m_miUlHarqProcessesPacket.resize (HARQ_PERIOD);
+  for (uint8_t i = 0; i < m_miUlHarqProcessesPacket.size (); i++)
+    {
+      Ptr<PacketBurst> pb = CreateObject <PacketBurst> ();
+      m_miUlHarqProcessesPacket.at (i) = pb;
+    }
+  m_miUlHarqProcessesPacketTimer.resize (HARQ_PERIOD, 0);
+   
   m_macSapProvider = new UeMemberLteMacSapProvider (this);
   m_cmacSapProvider = new UeMemberLteUeCmacSapProvider (this);
   m_uePhySapUser = new UeMemberLteUePhySapUser (this);
@@ -276,7 +283,8 @@ LteUeMac::DoTransmitPdu (LteMacSapProvider::TransmitPduParameters params)
   LteRadioBearerTag tag (params.rnti, params.lcid, 0 /* UE works in SISO mode*/);
   params.pdu->AddPacketTag (tag);
   // store pdu in HARQ buffer
-  m_miUlHarqProcessesPacket.at (m_harqProcessId) = params.pdu;//->Copy ();
+  m_miUlHarqProcessesPacket.at (m_harqProcessId)->AddPacket (params.pdu);
+  m_miUlHarqProcessesPacketTimer.at (m_harqProcessId) = HARQ_PERIOD;
   m_uePhySapProvider->SendMacPdu (params.pdu);
 }
 
@@ -600,9 +608,13 @@ LteUeMac::DoReceiveLteControlMessage (Ptr<LteControlMessage> msg)
         {
           // HARQ retransmission -> retrieve data from HARQ buffer
           NS_LOG_DEBUG (this << " UE MAC RETX HARQ " << (uint16_t)m_harqProcessId);
-          Ptr<Packet> pkt = m_miUlHarqProcessesPacket.at (m_harqProcessId);
-          m_uePhySapProvider->SendMacPdu (pkt);
-          
+          Ptr<PacketBurst> pb = m_miUlHarqProcessesPacket.at (m_harqProcessId);
+          for (std::list<Ptr<Packet> >::const_iterator j = pb->Begin (); j != pb->End (); ++j)
+            {
+              Ptr<Packet> pkt = (*j)->Copy ();
+              m_uePhySapProvider->SendMacPdu (pkt);
+            }
+          m_miUlHarqProcessesPacketTimer.at (m_harqProcessId) = HARQ_PERIOD;          
         }
 
     }
@@ -636,6 +648,30 @@ LteUeMac::DoReceiveLteControlMessage (Ptr<LteControlMessage> msg)
     }
 }
 
+void
+LteUeMac::RefreshHarqProcessesPacketBuffer (void)
+{
+  NS_LOG_FUNCTION (this);
+
+  for (uint16_t i = 0; i < m_miUlHarqProcessesPacketTimer.size (); i++)
+    {
+      if (m_miUlHarqProcessesPacketTimer.at (i) == 0)
+        {
+          if (m_miUlHarqProcessesPacket.at (i)->GetSize () > 0)
+            {
+              // timer expired: drop packets in buffer for this process
+              NS_LOG_INFO (this << " HARQ Proc Id " << i << " packets buffer expired");
+              Ptr<PacketBurst> emptyPb = CreateObject <PacketBurst> ();
+              m_miUlHarqProcessesPacket.at (i) = emptyPb;
+            }
+        }
+      else
+        {
+          m_miUlHarqProcessesPacketTimer.at (i)--;
+        }
+    }
+}
+
 
 void
 LteUeMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
@@ -643,6 +679,7 @@ LteUeMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
   NS_LOG_FUNCTION (this);
   m_frameNo = frameNo;
   m_subframeNo = subframeNo;
+  RefreshHarqProcessesPacketBuffer ();
   if ((Simulator::Now () >= m_bsrLast + m_bsrPeriodicity) && (m_freshUlBsr==true))
     {
       SendReportBufferStatus ();

@@ -34,6 +34,7 @@
 #include "ns3/traced-value.h"
 #include "ns3/trace-source-accessor.h"
 #include <ns3/packet.h>
+#include <ns3/packet-burst.h>
 
 namespace ns3 {
 
@@ -41,7 +42,7 @@ class DlCqiLteControlMessage;
 class UlCqiLteControlMessage;
 class PdcchMapLteControlMessage;
 
-typedef std::vector <std::vector < Ptr<Packet> > > DlHarqProcessesBuffer_t;
+typedef std::vector <std::vector < Ptr<PacketBurst> > > DlHarqProcessesBuffer_t;
 
 /**
  * This class implements the MAC layer of the eNodeB device

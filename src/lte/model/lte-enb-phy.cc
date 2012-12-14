@@ -931,6 +931,7 @@ void
 LteEnbPhy::ReceiveLteUlHarqFeedback (UlInfoListElement_s mes)
 {
   NS_LOG_FUNCTION (this);
+  // forward to scheduler
   m_enbPhySapUser->UlInfoListElementHarqFeeback (mes);
 }
 
