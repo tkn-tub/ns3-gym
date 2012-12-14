@@ -160,7 +160,6 @@ Packet::Packet (const Packet &o)
     m_packetTagList (o.m_packetTagList),
     m_metadata (o.m_metadata)
 {
-  NS_LOG_FUNCTION (this << &o);
   o.m_nixVector ? m_nixVector = o.m_nixVector->Copy ()
     : m_nixVector = 0;
 }

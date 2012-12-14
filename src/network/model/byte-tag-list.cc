@@ -141,7 +141,6 @@ ByteTagList::ByteTagList (const ByteTagList &o)
 ByteTagList &
 ByteTagList::operator = (const ByteTagList &o)
 {
-  NS_LOG_FUNCTION (this << &o);
   if (this == &o)
     {
       return *this;

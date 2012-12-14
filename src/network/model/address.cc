@@ -50,14 +50,12 @@ Address::Address (const Address & address)
   : m_type (address.m_type),
     m_len (address.m_len)
 {
-  NS_LOG_FUNCTION (this << &address);
   NS_ASSERT (m_len <= MAX_SIZE);
   std::memcpy (m_data, address.m_data, m_len);
 }
 Address &
 Address::operator = (const Address &address)
 {
-  NS_LOG_FUNCTION (this << &address);
   NS_ASSERT (m_len <= MAX_SIZE);
   m_type = address.m_type;
   m_len = address.m_len;
@@ -183,7 +181,6 @@ bool operator == (const Address &a, const Address &b)
    * we do not know its type: we really want to be able to
    * compare addresses without knowing their real type.
    */
-  NS_LOG_FUNCTION (&a << &b);
   if (a.m_type != b.m_type &&
       a.m_type != 0 && 
       b.m_type != 0)
@@ -198,12 +195,10 @@ bool operator == (const Address &a, const Address &b)
 }
 bool operator != (const Address &a, const Address &b)
 {
-  NS_LOG_FUNCTION (&a << &b);
   return !(a == b);
 }
 bool operator < (const Address &a, const Address &b)
 {
-  NS_LOG_FUNCTION (&a << &b);
   if (a.m_type < b.m_type)
     {
       return true;
@@ -237,7 +232,6 @@ bool operator < (const Address &a, const Address &b)
 
 std::ostream& operator<< (std::ostream& os, const Address & address)
 {
-  NS_LOG_FUNCTION (&os << &address);
   os.setf (std::ios::hex, std::ios::basefield);
   os.fill ('0');
   os << std::setw (2) << (uint32_t) address.m_type << "-" << std::setw (2) << (uint32_t) address.m_len << "-";
@@ -265,7 +259,6 @@ AsInt (std::string v)
 
 std::istream& operator>> (std::istream& is, Address & address)
 {
-  NS_LOG_FUNCTION (&is << &address);
   std::string v;
   is >> v;
   std::string::size_type firstDash, secondDash;

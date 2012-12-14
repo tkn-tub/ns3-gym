@@ -23,7 +23,6 @@ Header::GetTypeId (void)
 
 std::ostream & operator << (std::ostream &os, const Header &header)
 {
-  NS_LOG_FUNCTION (&os << &header);
   header.Print (os);
   return os;
 }

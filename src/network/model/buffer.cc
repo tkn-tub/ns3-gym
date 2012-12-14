@@ -254,7 +254,6 @@ Buffer::Initialize (uint32_t zeroSize)
 Buffer &
 Buffer::operator = (Buffer const&o)
 {
-  NS_LOG_FUNCTION (this << &o);
   NS_ASSERT (CheckInternalState ());
   if (m_data != o.m_data) 
     {

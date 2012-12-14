@@ -51,13 +51,11 @@ NixVector::NixVector (const NixVector &o)
     m_currentVectorBitSize (o.m_currentVectorBitSize),
     m_totalBitSize (o.m_totalBitSize)
 {
-  NS_LOG_FUNCTION (this << &o);
 }
 
 NixVector &
 NixVector::operator = (const NixVector &o)
 {
-  NS_LOG_FUNCTION (this << &o);
   if (this == &o)
     {
       return *this;
@@ -81,7 +79,6 @@ NixVector::Copy (void) const
 
 std::ostream & operator << (std::ostream &os, const NixVector &nix)
 {
-  NS_LOG_FUNCTION (&os << &nix);
   nix.DumpNixVector (os); 
   return os;
 }
