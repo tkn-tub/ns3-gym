@@ -1515,6 +1515,21 @@ LteEnbRrc::DoRecvResourceStatusUpdate (EpcX2SapUser::ResourceStatusUpdateParams 
   NS_ASSERT ("Processing of RESOURCE STATUS UPDATE X2 message IS NOT IMPLEMENTED");
 }
 
+void
+LteEnbRrc::DoRecvUeData (EpcX2SapUser::UeDataParams params)
+{
+  NS_LOG_FUNCTION (this);
+
+  NS_LOG_LOGIC ("Recv UE DATA FORWARDING through X2 interface");
+  NS_LOG_LOGIC ("sourceCellId = " << params.sourceCellId);
+  NS_LOG_LOGIC ("targetCellId = " << params.targetCellId);
+  NS_LOG_LOGIC ("gtpTeid = " << params.gtpTeid);
+  NS_LOG_LOGIC ("ueData = " << params.ueData);
+  NS_LOG_LOGIC ("ueData size = " << params.ueData->GetSize ());
+
+  NS_ASSERT ("Processing of UE DATA FORWARDING through X2 interface IS NOT IMPLEMENTED");
+}
+
 
 uint16_t 
 LteEnbRrc::DoAllocateTemporaryCellRnti ()

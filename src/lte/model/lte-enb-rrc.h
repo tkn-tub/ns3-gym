@@ -600,6 +600,7 @@ private:
   void DoRecvUeContextRelease (EpcX2SapUser::UeContextReleaseParams params);
   void DoRecvLoadInformation (EpcX2SapUser::LoadInformationParams params);
   void DoRecvResourceStatusUpdate (EpcX2SapUser::ResourceStatusUpdateParams params);
+  void DoRecvUeData (EpcX2SapUser::UeDataParams params);
 
 
   // CMAC SAP methods
