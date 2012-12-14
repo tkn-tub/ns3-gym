@@ -1616,17 +1616,18 @@ LteEnbRrc::GetRlcType (EpsBearer bearer)
 
 // from 3GPP TS 36.213 table 8.2-1 UE Specific SRS Periodicity
 // const uint8_t SRS_ENTRIES = 9;
-// uint16_t g_srsPeriodicity[SRS_ENTRIES] = {0, 2, 5, 10, 20, 40, 80, 160, 320};
-// uint16_t g_srsCiLow[SRS_ENTRIES] = {0, 0, 2, 7, 17, 37, 77, 157, 317};
-// uint16_t g_srsCiHigh[SRS_ENTRIES] = {0, 1, 6, 16, 36, 76, 156, 316, 636};
+// uint16_t g_srsPeriodicity[SRS_ENTRIES] = {0, 2, 5, 10, 20, 40,  80, 160, 320};
+// uint16_t g_srsCiLow[SRS_ENTRIES] =       {0, 0, 2,  7, 17, 37,  77, 157, 317};
+// uint16_t g_srsCiHigh[SRS_ENTRIES] =      {0, 1, 6, 16, 36, 76, 156, 316, 636};
 
-// same as above, but for more than 10 UEs always go with the max
+// same as above, but for more than 20 UEs always go with the max
 // periodicity to avoid triggering too many RRC CONNECTION
 // RECONFIGURATIONs simultaneously 
-const uint8_t SRS_ENTRIES = 5;
-uint16_t g_srsPeriodicity[SRS_ENTRIES] = {0, 2, 5, 10, 320};
-uint16_t g_srsCiLow[SRS_ENTRIES]       = {0, 0, 2, 7,  317};
-uint16_t g_srsCiHigh[SRS_ENTRIES]      = {0, 1, 6, 16, 636};
+// from 3GPP TS 36.213 table 8.2-1 UE Specific SRS Periodicity
+const uint8_t SRS_ENTRIES = 6;
+uint16_t g_srsPeriodicity[SRS_ENTRIES] = {0, 2, 5, 10, 20, 320};
+uint16_t g_srsCiLow[SRS_ENTRIES] =       {0, 0, 2,  7, 17, 317};
+uint16_t g_srsCiHigh[SRS_ENTRIES] =      {0, 1, 6, 16, 36, 636};
 
 uint16_t
 LteEnbRrc::GetNewSrsConfigurationIndex ()
