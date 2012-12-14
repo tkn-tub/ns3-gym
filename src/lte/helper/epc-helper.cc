@@ -46,8 +46,7 @@ NS_OBJECT_ENSURE_REGISTERED (EpcHelper);
 
 
 EpcHelper::EpcHelper () 
-  : m_gtpuUdpPort (2152), // fixed by the standard
-    m_x2cUdpPort (4444)   // fixed by the standard TODO
+  : m_gtpuUdpPort (2152)  // fixed by the standard
 {
   NS_LOG_FUNCTION (this);
 
@@ -249,35 +248,22 @@ EpcHelper::AddX2Interface (Ptr<Node> enb1, Ptr<Node> enb2)
   NS_LOG_LOGIC ("number of Ipv4 ifaces of the eNB #1 after assigning Ipv4 addr to X2 dev: " << enb1->GetObject<Ipv4> ()->GetNInterfaces ());
   NS_LOG_LOGIC ("number of Ipv4 ifaces of the eNB #2 after assigning Ipv4 addr to X2 dev: " << enb2->GetObject<Ipv4> ()->GetNInterfaces ());
 
-  Ipv4Address enb1Address = enbIpIfaces.GetAddress (0);
-  Ipv4Address enb2Address = enbIpIfaces.GetAddress (1);
+  Ipv4Address enb1X2Address = enbIpIfaces.GetAddress (0);
+  Ipv4Address enb2X2Address = enbIpIfaces.GetAddress (1);
 
-  // Create X2-C socket for the eNB1
-  Ptr<Socket> enb1X2cSocket = Socket::CreateSocket (enb1, TypeId::LookupByName ("ns3::UdpSocketFactory"));
-  int retval = enb1X2cSocket->Bind (InetSocketAddress (enb1Address, m_x2cUdpPort));
-  NS_ASSERT (retval == 0);
-
-  // Create X2-C socket for the eNB2
-  Ptr<Socket> enb2X2cSocket = Socket::CreateSocket (enb2, TypeId::LookupByName ("ns3::UdpSocketFactory"));
-  retval = enb2X2cSocket->Bind (InetSocketAddress (enb2Address, m_x2cUdpPort));
-  NS_ASSERT (retval == 0);
-
-
-  // Add X2 interface to the eNB1's X2 entity 
+  // Add X2 interface to both eNBs' X2 entities
   Ptr<EpcX2> enb1X2 = enb1->GetObject<EpcX2> ();
   Ptr<LteEnbNetDevice> enb1LteDev = enb1->GetDevice (0)->GetObject<LteEnbNetDevice> ();
   uint16_t enb1CellId = enb1LteDev->GetCellId ();
   NS_LOG_LOGIC ("LteEnbNetDevice #1 = " << enb1LteDev << " - CellId = " << enb1CellId);
 
-  // Add X2 interface to the eNB2's X2 entity 
   Ptr<EpcX2> enb2X2 = enb2->GetObject<EpcX2> ();
   Ptr<LteEnbNetDevice> enb2LteDev = enb2->GetDevice (0)->GetObject<LteEnbNetDevice> ();
   uint16_t enb2CellId = enb2LteDev->GetCellId ();
   NS_LOG_LOGIC ("LteEnbNetDevice #2 = " << enb2LteDev << " - CellId = " << enb2CellId);
 
-  enb1X2->AddX2Interface (enb1CellId, enb1X2cSocket, enb2CellId, enb2X2cSocket);
-  enb2X2->AddX2Interface (enb2CellId, enb2X2cSocket, enb1CellId, enb1X2cSocket);
-
+  enb1X2->AddX2Interface (enb1CellId, enb1X2Address, enb2CellId, enb2X2Address);
+  enb2X2->AddX2Interface (enb2CellId, enb2X2Address, enb1CellId, enb1X2Address);
 }
 
 

@@ -182,11 +182,6 @@ private:
   Time     m_x2LinkDelay;
   uint16_t m_x2LinkMtu;
 
-  /**
-   * UDP port where the GTP-U Socket is bound, fixed by the standard as 2152 TODO Check value in the spec
-   */
-  uint16_t m_x2cUdpPort;
-
 };
 
 
