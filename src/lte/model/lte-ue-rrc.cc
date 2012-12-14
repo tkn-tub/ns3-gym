@@ -99,8 +99,7 @@ const char* g_ueRrcStateName[LteUeRrc::NUM_STATES] =
     "IDLE_CONNECTING",
     "CONNECTED_NORMALLY",
     "CONNECTED_REESTABLISHING",
-    "CONNECTED_HANDOVER",
-    "OFF"
+    "CONNECTED_HANDOVER"
   };
 
 std::string ToString (LteUeRrc::State s)
@@ -694,7 +693,6 @@ void
 LteUeRrc::DoRecvRrcConnectionReject (LteRrcSap::RrcConnectionReject msg)
 {
   NS_LOG_FUNCTION (this);
-  SwitchToState (OFF);
 }
 
 

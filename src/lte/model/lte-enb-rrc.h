@@ -388,6 +388,7 @@ private:
   uint16_t m_sourceCellId;
   uint16_t m_targetCellId;
   std::list<uint8_t> m_drbsToBeStarted;
+  bool m_needTransmissionModeConfiguration;
 };
 
 
