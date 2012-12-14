@@ -23,7 +23,7 @@
 #include <ns3/network-module.h>
 #include <ns3/mobility-module.h>
 #include <ns3/lte-module.h>
-
+#include <cmath>
 
 NS_LOG_COMPONENT_DEFINE ("LteRrcTest");
 
@@ -89,11 +89,51 @@ LteRrcConnectionEstablishmentTestCase::LteRrcConnectionEstablishmentTestCase (ui
     m_nBearers (nBearers),
     m_tConnBase (tConnBase),
     m_tConnIncrPerUe (tConnIncrPerUe),
-    m_delayConnEnd (140+nUes*8/4), // includes: time to receive system information, time for Random Access (RACH preamble, RAR response), time to send and receive RRC connection request+setup+completed. Value should be slightly higher than T300 in TS 36.331
+   
     m_delayDiscStart (delayDiscStart),
     m_delayDiscEnd (10),
     m_useIdealRrc (useIdealRrc)
 {
+  // see the description of d^e in the LTE testing docs 
+  double dsi = 90;
+  double nRaAttempts = 0;
+  if (nUes <= 20)
+    {
+      nRaAttempts += 5;
+    }
+  else
+    {
+      NS_ASSERT (nUes <= 50);
+      nRaAttempts += 10;
+    }  
+  nRaAttempts += std::ceil (nUes/4.0);  
+  double dra = nRaAttempts * 7;
+  double dce = 10.0 + (2.0*nUes)/4.0;
+  double nCrs;
+  if (nUes <= 2)
+    {
+      nCrs = 0;      
+    }
+  else if (nUes <= 5)
+    {
+      nCrs = 1;      
+    }
+  else if (nUes <= 10)
+    {
+      nCrs = 2;      
+    }
+  else if (nUes <= 20)
+    {
+      nCrs = 3;      
+    }
+  else 
+    {
+      nCrs = 4;      
+    }
+  double dcr =  (10.0 + (2.0*nUes)/4.0)*(m_nBearers + nCrs);
+  
+  m_delayConnEnd = round (dsi + dra + dce + dcr);
+  NS_LOG_LOGIC (this << GetName () << " dsi=" << dsi << " dra=" << dra << " dce=" << dce << " dcr=" <<dcr << " m_delayConnEnd=" << m_delayConnEnd);
 }
 
 void
@@ -253,6 +293,9 @@ LteRrcTestSuite::LteRrcTestSuite ()
   : TestSuite ("lte-rrc", SYSTEM)
 {
   NS_LOG_FUNCTION (this);
+
+  AddTestCase (new LteRrcConnectionEstablishmentTestCase ( 50,        0,         0,              0,             1, 0));
+
   for (uint32_t useIdealRrc = 0; useIdealRrc <= 1; ++useIdealRrc)
     {
                                                           //         <----- all times in ms ----------------->

@@ -504,6 +504,85 @@ transmitted by the RLC instance, both the size and the content of the
 PDU are verified to check for an exact match with the test vector.
 
 
+RRC
+---
+
+The test suite ``lte-rrc`` tests the correct functionality of the following aspects:
+ 
+ #. MAC Random Access
+ #. RRC System Information Acquisition
+ #. RRC Connection Establishment 
+ #. RRC Reconfiguration
+
+The test suite considers a type of scenario with a single eNB and multiple UEs that are instructed to connect to the eNB. Each test case implement an instance of this scenario with specific values of the following parameters:
+
+ - number of UEs
+ - number of Data Radio Bearers to be activated for each UE
+ - time :math:`t^c_0` at which the first UE is instructed to start connecting to the eNB
+ - time interval :math:`d^i` between the start of connection of UE :math:`n` and UE :math:`n+1`; the time at which user :math:`n` connects is thus determined as :math:`t^c_n = `t^c_0 + n d^i` sdf
+ - a boolean flag indicating whether the ideal or the real RRC protocol model is used
+
+Each test cases passes if a number of test conditions are positively evaluated for each UE after a delay :math:`d^e` from the time it started connecting to the eNB. The delay :math:`d^e` is determined as 
+
+.. math::
+
+   d^e = d^{si} + d^{ra} + d^{ce} + d^{cr}
+
+where:
+
+ - :math:`d^{si}` is the max delay necessary for the acquisition of System Information. We set it to 90ms accounting for 10ms for the MIB acquisition and 80ms for the subsequent SIB2 acquisition
+ - :math:`d^{ra}` is the delay for the MAC Random Access (RA)
+   procedure. This depends on preamble collisions as well as on the
+   availability of resources for the UL grant allocation. The total amount of
+   necessary RA attempts depends on preamble collisions and failures
+   to allocate the UL grant because of lack of resources. The number
+   of collisions depends on the number of UEs that try to access
+   simultaneously; we estimated that for a :math:`0.99` RA success
+   probability, 5 attempts are sufficient for up to 20 UEs, and 10
+   attempts for up to 50 UEs. For the UL
+   grant, considered the system bandwidth and the
+   default MCS used for the UL grant (MCS 0), at most 4 UL grants can
+   be assigned in a TTI; so for :math:`n` UEs trying to
+   do RA simultaneously the max number of attempts due to the UL grant
+   issue is :math:`\lceil n/4 \rceil`. The time for
+   a RA attempt  is determined by 3ms + the value of
+   LteEnbMac::RaResponseWindowSize, which defaults to 3ms, plus 1ms
+   for the scheduling of the new transmission.
+ - :math:`d^{ce}` is the delay required for the transmission of RRC CONNECTION
+   SETUP + RRC CONNECTION SETUP COMPLETED. We consider a round trip
+   delay of 10ms plus :math:`\lceil 2n/4 \rceil` considering that 2
+   RRC packets have to be transmitted and that at most 4 such packets
+   can be transmitted per TTI.
+ - :math:`d^{cr}` is the delay required for eventually needed RRC
+   CONNECTION RECONFIGURATION transactions. The number of transactions needed is
+   1 for each bearer activation plus a variable number for SRS
+   reconfiguration that depends on:math:`n`:
+    
+     + 0 for :math:`n \le 2`
+     + 1 for :math:`n \le 5`
+     + 2 for :math:`n \le 10`
+     + 3 for :math:`n \gt 10`
+
+   Similarly to what done for :math:`d^{ce}`, for each transaction we consider a round trip
+   delay of 10ms plus :math:`\lceil 2n/4 \rceil`.
+   delay of 20ms.
+
+The conditions that are evaluated for a test case to pass are, for
+each UE:
+
+ - the eNB has the context of the UE (identified by the RNTI value
+   retrieved from the UE RRC)
+ - the RRC state of the UE at the eNB is CONNECTED_NORMALLY
+ - the RRC state at the UE is CONNECTED_NORMALLY
+ - the UE is configured with the CellId, DlBandwidth, UlBandwidth,
+   DlEarfcn and UlEarfcn of the eNB
+ - the IMSI of the UE stored at the eNB is correct
+ - the number of active Data Radio Bearers is the expected one, both
+   at the eNB and at the UE
+ - for each Data Radio Bearer, the following identifiers match between
+   the UE and the eNB: EPS bearer id, DRB id, LCID
+
+ 
 
 
 
