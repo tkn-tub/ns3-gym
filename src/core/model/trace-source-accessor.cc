@@ -26,11 +26,9 @@ namespace ns3 {
 
 TraceSourceAccessor::TraceSourceAccessor ()
 {
-  NS_LOG_FUNCTION (this);
 }
 TraceSourceAccessor::~TraceSourceAccessor ()
 {
-  NS_LOG_FUNCTION (this);
 }
 
 } // namespace ns3

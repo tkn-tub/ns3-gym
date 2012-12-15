@@ -29,30 +29,24 @@ namespace ns3 {
 
 AttributeValue::AttributeValue ()
 {
-  NS_LOG_FUNCTION (this);
 }
 AttributeValue::~AttributeValue ()
 {
-  NS_LOG_FUNCTION (this);
 }
 
 
 AttributeAccessor::AttributeAccessor ()
 {
-  NS_LOG_FUNCTION (this);
 }
 AttributeAccessor::~AttributeAccessor ()
 {
-  NS_LOG_FUNCTION (this);
 }
 
 AttributeChecker::AttributeChecker ()
 {
-  NS_LOG_FUNCTION (this);
 }
 AttributeChecker::~AttributeChecker ()
 {
-  NS_LOG_FUNCTION (this);
 }
 
 Ptr<AttributeValue> 
