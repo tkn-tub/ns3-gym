@@ -27,7 +27,6 @@ NS_LOG_COMPONENT_DEFINE ("FirstScriptExample");
 int
 main (int argc, char *argv[])
 {
-  Time::SetResolution (Time::NS);
   LogComponentEnable ("UdpEchoClientApplication", LOG_LEVEL_INFO);
   LogComponentEnable ("UdpEchoServerApplication", LOG_LEVEL_INFO);
 

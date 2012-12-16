@@ -157,9 +157,7 @@ void
 Simulator::Run (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  SimulatorImpl *impl = GetImpl ();
-  Time::FreezeResolution();
-  impl->Run ();
+  GetImpl ()->Run ();
 }
 
 void 

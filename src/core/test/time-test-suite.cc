@@ -27,26 +27,31 @@ using namespace ns3;
 class TimeSimpleTestCase : public TestCase
 {
 public:
-  TimeSimpleTestCase ();
+  TimeSimpleTestCase (enum Time::Unit resolution);
 private:
   virtual void DoSetup (void);
   virtual void DoRun (void);
   virtual void DoTeardown (void);
+  enum Time::Unit m_originalResolution;
+  enum Time::Unit m_resolution;
 };
 
-TimeSimpleTestCase::TimeSimpleTestCase ()
-  : TestCase ("Sanity check of common time operations")
+TimeSimpleTestCase::TimeSimpleTestCase (enum Time::Unit resolution)
+  : TestCase ("Sanity check of common time operations"),
+    m_resolution (resolution)
 {
 }
 
 void
 TimeSimpleTestCase::DoSetup (void)
 {
+  m_originalResolution = Time::GetResolution ();
 }
 
 void
 TimeSimpleTestCase::DoRun (void)
 {
+  Time::SetResolution (m_resolution);
   NS_TEST_ASSERT_MSG_EQ_TOL (Seconds (1.0).GetSeconds (), 1.0, TimeStep (1).GetSeconds (), 
                              "is 1 really 1 ?");
   NS_TEST_ASSERT_MSG_EQ_TOL (Seconds (10.0).GetSeconds (), 10.0, TimeStep (1).GetSeconds (), 
@@ -65,18 +70,12 @@ TimeSimpleTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (FemtoSeconds (1).GetFemtoSeconds (), 1, 
                          "is 1fs really 1fs ?");
 #endif
-
-  Time ten = NanoSeconds (10);
-  int64_t tenValue = ten.GetInteger ();
-  Time::SetResolution (Time::PS);
-  int64_t tenKValue = ten.GetInteger ();
-  NS_TEST_ASSERT_MSG_EQ (tenValue * 1000, tenKValue,
-                         "change resolution to PS");
 }
 
 void 
 TimeSimpleTestCase::DoTeardown (void)
 {
+  Time::SetResolution (m_originalResolution);
 }
 
 class TimesWithSignsTestCase : public TestCase
@@ -140,7 +139,7 @@ public:
   TimeTestSuite ()
     : TestSuite ("time", UNIT)
   {
-    AddTestCase (new TimeSimpleTestCase ());
+    AddTestCase (new TimeSimpleTestCase (Time::US));
     AddTestCase (new TimesWithSignsTestCase ());
   }
 } g_timeTestSuite;

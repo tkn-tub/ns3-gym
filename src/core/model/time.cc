@@ -26,14 +26,17 @@
 #include "string.h"
 #include "object.h"
 #include "config.h"
-#include "simulator.h"
+#include "log.h"
 #include <cmath>
 #include <sstream>
 
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("Time");
+
 Time::Time (const std::string& s)
 {
+  NS_LOG_FUNCTION (this << &s);
   std::string::size_type n = s.find_first_not_of ("+-0123456789.");
   if (n != std::string::npos)
     { // Found non-numeric
@@ -45,83 +48,62 @@ Time::Time (const std::string& s)
       if (trailer == std::string ("s"))
         {
           *this = Time::FromDouble (r, Time::S);
+          return;
         }
-      else if (trailer == std::string ("ms"))
+      if (trailer == std::string ("ms"))
         {
           *this = Time::FromDouble (r, Time::MS);
+          return;
         }
-      else if (trailer == std::string ("us"))
+      if (trailer == std::string ("us"))
         {
           *this = Time::FromDouble (r, Time::US);
+          return;
         }
-      else if (trailer == std::string ("ns"))
+      if (trailer == std::string ("ns"))
         {
           *this = Time::FromDouble (r, Time::NS);
+          return;
         }
-      else if (trailer == std::string ("ps"))
+      if (trailer == std::string ("ps"))
         {
           *this = Time::FromDouble (r, Time::PS);
+          return;
         }
-      else if (trailer == std::string ("fs"))
+      if (trailer == std::string ("fs"))
         {
           *this = Time::FromDouble (r, Time::FS);
+          return;
         }
-      else
-        {
-          NS_ABORT_MSG ("Can't Parse Time " << s);
-        }
+      NS_ABORT_MSG ("Can't Parse Time " << s);
     }
-  else
-    {
-      // they didn't provide units, assume seconds
-      std::istringstream iss;
-      iss.str (s);
-      double v;
-      iss >> v;
-      *this = Time::FromDouble (v, Time::S);
-    }
-  
-  Time::Track (this);
+  // else
+  // they didn't provide units, assume seconds
+  std::istringstream iss;
+  iss.str (s);
+  double v;
+  iss >> v;
+  *this = Time::FromDouble (v, Time::S);
 }
 
-// static
 struct Time::Resolution
-Time::SetDefaultNsResolution (void)
+Time::GetNsResolution (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   struct Resolution resolution;
-  DoSetResolution (Time::NS, &resolution);
+  SetResolution (Time::NS, &resolution);
   return resolution;
 }
-
-// static
 void 
 Time::SetResolution (enum Unit resolution)
 {
+  NS_LOG_FUNCTION (resolution);
   SetResolution (resolution, PeekResolution ());
 }
-
-// static
-enum Time::Unit
-Time::GetResolution (void)
-{
-  return PeekResolution ()->unit;
-}
-
-// static
 void 
 Time::SetResolution (enum Unit unit, struct Resolution *resolution)
 {
-  if (Time::GetTimesSet() == 0)
-    {
-      NS_FATAL_ERROR("The resolution has already been set once. You cannot set it again.");
-    }
-  Time::FreezeResolution(unit);
-  Time::DoSetResolution(unit, resolution);
-}
-// static
-void 
-Time::DoSetResolution (enum Unit unit, struct Resolution *resolution)
-{
+  NS_LOG_FUNCTION (unit << resolution);
   int8_t power [LAST] = { 15, 12, 9, 6, 3, 0};
   for (int i = 0; i < Time::LAST; i++)
     {
@@ -154,90 +136,18 @@ Time::DoSetResolution (enum Unit unit, struct Resolution *resolution)
     }
   resolution->unit = unit;
 }
-
-// static
-Time::TimesSet **
-Time::PeekTimesSet (void)
+enum Time::Unit
+Time::GetResolution (void)
 {
-  static TimesSet *times = new TimesSet();
-  return &times;
+  NS_LOG_FUNCTION_NOARGS ();
+  return PeekResolution ()->unit;
 }
 
-// static
-Time::TimesSet *
-Time::GetTimesSet ()
-{
-  TimesSet **ptimes = PeekTimesSet();
-  return *ptimes;
-}
-
-// static
-void
-Time::FreezeResolution (void)
-{
-  TimesSet **ptimes = PeekTimesSet();
-  if (*ptimes == 0)
-    {
-      // We froze the resolution more than once: no big deal
-      return;
-    }
-  delete *ptimes;
-  *ptimes = 0;
-}
-void
-Time::FreezeResolution(enum Time::Unit unit)
-{
-  // We are careful to remove the timeset _first_ because the code in the loop below
-  // actually invokes a Time constructor which invokes the Track method which
-  // adds things to the array we are iterating over.
-  TimesSet **ptimes = PeekTimesSet();
-  TimesSet *times = *ptimes;
-  *ptimes = 0;
-  
-  for ( TimesSet::iterator it = times->begin();
-        it != times->end();
-        it++ )
-    {
-      Time * const tp = *it;
-      (*tp) = tp->ToInteger (unit);
-    }
-
-  delete times;
-}
-
-// static
-void
-Time::Track (Time * const time)
-{
-  NS_ASSERT (time != 0);
-
-  TimesSet * times = GetTimesSet();
-  if (times != 0)
-    {
-      std::pair< TimesSet::iterator, bool> ret;
-      ret = times->insert ( time);
-    }
-}
-
-// static
-void
-Time::UnTrack (Time * const time)
-{
-  NS_ASSERT (time != 0);
-  TimesSet * times = GetTimesSet ();
-  if (times != 0)
-    {
-      NS_ASSERT_MSG (times->count (time) == 1,
-		     "Time object " << time << " registered "
-		     << times->count (time) << " times (should be 1)." );
-
-      times->erase (time);
-    }
-}
 
 std::ostream&
 operator<< (std::ostream& os, const Time & time)
 {
+  NS_LOG_FUNCTION (&os << time);
   std::string unit;
   switch (Time::GetResolution ())
     {
@@ -270,6 +180,7 @@ operator<< (std::ostream& os, const Time & time)
 }
 std::istream& operator>> (std::istream& is, Time & time)
 {
+  NS_LOG_FUNCTION (&is << time);
   std::string value;
   is >> value;
   time = Time (value);

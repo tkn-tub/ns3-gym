@@ -310,10 +310,6 @@ def register_types(module):
     module.add_class('Vector3DChecker', parent=root_module['ns3::AttributeChecker'])
     ## vector.h (module 'core'): ns3::Vector3DValue [class]
     module.add_class('Vector3DValue', parent=root_module['ns3::AttributeValue'])
-    typehandlers.add_type_alias('ns3::Vector3D', 'ns3::Vector')
-    typehandlers.add_type_alias('ns3::Vector3D*', 'ns3::Vector*')
-    typehandlers.add_type_alias('ns3::Vector3D&', 'ns3::Vector&')
-    module.add_typedef(root_module['ns3::Vector3D'], 'Vector')
     typehandlers.add_type_alias('ns3::ObjectPtrContainerValue', 'ns3::ObjectVectorValue')
     typehandlers.add_type_alias('ns3::ObjectPtrContainerValue*', 'ns3::ObjectVectorValue*')
     typehandlers.add_type_alias('ns3::ObjectPtrContainerValue&', 'ns3::ObjectVectorValue&')
@@ -328,6 +324,10 @@ def register_types(module):
     typehandlers.add_type_alias('void ( * ) ( std::ostream & ) *', 'ns3::LogNodePrinter')
     typehandlers.add_type_alias('void ( * ) ( std::ostream & ) **', 'ns3::LogNodePrinter*')
     typehandlers.add_type_alias('void ( * ) ( std::ostream & ) *&', 'ns3::LogNodePrinter&')
+    typehandlers.add_type_alias('ns3::Vector3D', 'ns3::Vector')
+    typehandlers.add_type_alias('ns3::Vector3D*', 'ns3::Vector*')
+    typehandlers.add_type_alias('ns3::Vector3D&', 'ns3::Vector&')
+    module.add_typedef(root_module['ns3::Vector3D'], 'Vector')
     typehandlers.add_type_alias('ns3::Vector3DValue', 'ns3::VectorValue')
     typehandlers.add_type_alias('ns3::Vector3DValue*', 'ns3::VectorValue*')
     typehandlers.add_type_alias('ns3::Vector3DValue&', 'ns3::VectorValue&')
@@ -2382,11 +2382,6 @@ def register_Ns3Time_methods(root_module, cls):
                    'int', 
                    [param('ns3::Time const &', 'o')], 
                    is_const=True)
-    ## nstime.h (module 'core'): static void ns3::Time::FreezeResolution() [member function]
-    cls.add_method('FreezeResolution', 
-                   'void', 
-                   [], 
-                   is_static=True)
     ## nstime.h (module 'core'): static ns3::Time ns3::Time::From(ns3::int64x64_t const & from, ns3::Time::Unit timeUnit) [member function]
     cls.add_method('From', 
                    'ns3::Time', 
