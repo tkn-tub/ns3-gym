@@ -497,11 +497,23 @@ To model the latency of real MAC and PHY implementations, the PHY model simulate
 CQI feedback
 ++++++++++++
 
-The generation of CQI feedback is done accordingly to what specified in [FFAPI]_. In detail, we considered the generation 
-of periodic wideband CQI (i.e., a single value of channel state that is deemed representative of all RBs 
+The generation of CQI feedback is done accordingly to what specified in [FFAPI]_. In detail, we considered the generation
+of periodic wideband CQI (i.e., a single value of channel state that is deemed representative of all RBs
 in use) and inband CQIs (i.e., a set of value representing the channel state for each RB).
 
-The CQI feedbacks are currently evaluated according to the SINR perceived by data transmissions (i.e., PDSHC for downlink and PUSCH for uplink) instead of the one based on reference signals (i.e., RS for downlink and SRS for uplink) since that signals are not implemented in the current version of the PHY layer. This implies that a UE has to transmit some data in order to have CQI feedbacks. This assumption is based on the fact that the reference signals defined in LTE are usually multiplexed within the data transmissions resources.
+In downlink, the CQI feedbacks are currently evaluated according to the SINR perceived by control channel (i.e., PDCCH + PCFIC) in order to have an estimation of the interference when all the eNB are transmitting simultaneously. In uplink, two types of CQIs are implemented:
+
+ - SRS based, periodically sent by the UEs.
+ - PUSCH based, calculated from the actual transmitted data.
+
+The scheduler interface include an attribute system calld ``UlCqiFilter`` for managing the filtering of the CQIs according to their nature, in detail:
+
+  - ``SRS_UL_CQI`` for storing only SRS based CQIs.
+  - ``PUSCH_UL_CQI`` for storing only PUSCH based CQIs.
+  - ``ALL_UL_CQI`` for storing all the CQIs received.
+
+It has to be noted that, the ``FfMacScheduler`` provides only the interface and it is matter of the actual scheduler implementation to include the code for managing these attibutes (see scheduler related section for more information on this matter).
+
 
 Interference Model
 ++++++++++++++++++
@@ -956,6 +968,12 @@ For what concern the HARQ, RR implements the non adaptive version, which implies
 
   Config::SetDefault ("ns3::RrFfMacScheduler::HarqEnabled", BooleanValue (false));
 
+The scheduler implements the filtering of the uplink CQIs according to their nature with ``UlCqiFilter`` attibute, in detail:
+
+  - ``SRS_UL_CQI``: only SRS based CQI are stored in the internal attributes.
+  - ``PUSCH_UL_CQI``: only PUSCH based CQI are stored in the internal attributes.
+  - ``ALL_UL_CQI``: all CQIs are stored in the same internal attibute (i.e., the last CQI received is stored independently from its nature).
+
 
 
 Proportional Fair (PF) Scheduler
@@ -1029,6 +1047,12 @@ where :math:`|\cdot|` indicates the cardinality of the set; finally,
 For what concern the HARQ, PF implements the non adaptive version, which implies that in allocating the retransmission attempts the scheduler uses the same allocation configuration of the original block, which means maintaining the same RBGs and MCS. UEs that are allocated for HARQ retransmissions are not considered for the transmission of new data in case they have a transmission opportunity available in the same TTI. Finally, HARQ can be disabled with ns3 attribute system for maintaining backward compatibility with old test cases and code, in detail::
 
   Config::SetDefault ("ns3::PfFfMacScheduler::HarqEnabled", BooleanValue (false));
+
+The scheduler implements the filtering of the uplink CQIs according to their nature with ``UlCqiFilter`` attibute, in detail:
+
+  - ``SRS_UL_CQI``: only SRS based CQI are stored in the internal attributes.
+  - ``PUSCH_UL_CQI``: only PUSCH based CQI are stored in the internal attributes.
+  - ``ALL_UL_CQI``: all CQIs are stored in the same internal attibute (i.e., the last CQI received is stored independently from its nature).
 
 
 Random Access
