@@ -37,7 +37,7 @@
 
 
 #define HARQ_PROC_NUM 8
-#define HARQ_DL_TIMEOUT 8
+#define HARQ_DL_TIMEOUT 11
 
 namespace ns3 {
 

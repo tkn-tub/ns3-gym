@@ -1472,6 +1472,7 @@ RrFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
                   // restart from the first
                   it = m_ceBsrRxed.begin ();
                 }
+              NS_LOG_DEBUG (this << " CQI = 0");
               continue; // CQI == 0 means "out of range" (see table 7.2.3-1 of 36.213)
             }
           uldci.m_mcs = m_amc->GetMcsFromCqi (cqi);
