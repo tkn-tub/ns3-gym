@@ -140,6 +140,7 @@ private:
    * Timers. See section 7.3 in TS 36.322
    */
   EventId m_pollRetransmitTimer;
+  Time    m_pollRetransmitTimerValue;
   EventId m_reorderingTimer;
   EventId m_statusProhibitTimer;
 
