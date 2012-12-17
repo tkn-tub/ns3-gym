@@ -469,7 +469,7 @@ inter cell intereference calculation and the simulation of uplink traffic, inclu
 
 
 Subframe Structure
-------------------
+++++++++++++++++++
 
 The subframe is divided into control and data part as described in Figure :ref:`fig-lte-subframe-structure`.
 
@@ -489,13 +489,13 @@ The Sounding Reference Signal (SRS) is modeled similar to the downlink control f
 
 
 MAC to Channel delay
---------------------
+++++++++++++++++++++
 
 To model the latency of real MAC and PHY implementations, the PHY model simulates a MAC-to-channel delay in multiples of TTIs (1ms). The transmission of both data and control packets are delayed by this amount.
 
 
 CQI feedback
-------------
+++++++++++++
 
 The generation of CQI feedback is done accordingly to what specified in [FFAPI]_. In detail, we considered the generation 
 of periodic wideband CQI (i.e., a single value of channel state that is deemed representative of all RBs 
@@ -504,7 +504,7 @@ in use) and inband CQIs (i.e., a set of value representing the channel state for
 The CQI feedbacks are currently evaluated according to the SINR perceived by data transmissions (i.e., PDSHC for downlink and PUSCH for uplink) instead of the one based on reference signals (i.e., RS for downlink and SRS for uplink) since that signals are not implemented in the current version of the PHY layer. This implies that a UE has to transmit some data in order to have CQI feedbacks. This assumption is based on the fact that the reference signals defined in LTE are usually multiplexed within the data transmissions resources.
 
 Interference Model
-------------------
+++++++++++++++++++
 
 The PHY model is based on the well-known Gaussian interference models, according to which the powers of interfering signals (in linear units) are summed up together to determine the overall interference power.
 
@@ -521,7 +521,7 @@ The sequence diagram of Figure :ref:`fig-lte-phy-interference` shows how interfe
 
 
 LTE Spectrum Model
-------------------
+++++++++++++++++++
 
 The usage of the radio spectrum by eNBs and UEs in LTE is described in
 [TS36101]_. In the simulator, radio spectrum usage is modeled as follows. 
@@ -542,7 +542,7 @@ discussed in [Ofcom2600MHz]_.
 
 
 Data PHY Error Model
---------------------
+++++++++++++++++++++
 
 The simulator includes an error model of the data plane (i.e., PDSCH and PUSCH) according to the standard link-to-system mapping (LSM) techniques. The choice is aligned with the standard system simulation methodology of OFDMA  radio transmission technology. Thanks to LSM we are able to maintain a good level of accuracy and at the same time limiting the computational complexity increase. It is based on the mapping of single link layer performance obtained by means of link level simulators to system (in our case network) simulators. In particular link the layer simulator is used for generating the performance of a single link from a PHY layer perspective, usually in terms of code block error rate (BLER), under specific static conditions. LSM allows the usage of these parameters in more complex scenarios, typical of system/network simulators, where we have more links, interference and "colored" channel propagation phenomena (e.g., frequency selective fading).
 
@@ -550,7 +550,7 @@ To do this the Vienna LTE Simulator [ViennaLteSim]_ has been used for what conce
 
 
 MIESM
-^^^^^
+-----
 
 The specific LSM method adopted is the one based on the usage of a mutual information metric, commonly referred to as the mutual information per per coded bit (MIB or MMIB when a mean of multiples MIBs is involved). Another option would be represented by the Exponential ESM (EESM); however, recent studies demonstrate that MIESM outperforms EESM in terms of accuracy [LozanoCost]_.
 
@@ -578,7 +578,7 @@ where :math:`x` is the MI of the TB, :math:`b_{ECR}` represents the "transition 
 
 
 BLER Curves
-^^^^^^^^^^^
+-----------
 
 On this respect, we reused part of the curves obtained within [PaduaPEM]_. In detail, we introduced the CB size dependency to the CB BLER curves with the support of the developers of [PaduaPEM]_ and of the LTE Vienna Simulator. In fact, the module released provides the link layer performance only for what concerns the MCSs (i.e, with a given fixed ECR). In detail the new error rate curves for each has been evaluated with a simulation campaign with the link layer simulator for a single link with AWGN noise and for CB size of 104, 140, 256, 512, 1024, 2048, 4032 and 6144. These curves has been mapped with the Gaussian cumulative model formula presented above for obtaining the correspondents :math:`b_{ECR}` and :math:`c_{ECR}` parameters.
 
@@ -674,7 +674,7 @@ The BLER perfomance of all MCS obtained with the link level simulator are plotte
 
 
 Integration of the BLER curves in the ns-3 LTE module
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-----------------------------------------------------
 
 The model implemented uses the curves for the LSM of the recently LTE PHY Error Model released in the ns3 community by the Signet Group [PaduaPEM]_ and the new ones generated for different CB sizes. The ``LteSpectrumPhy`` class is in charge of evaluating the TB BLER thanks to the methods provided by the ``LteMiErrorModel`` class, which is in charge of evaluating the TB BLER according to the vector of the perceived SINR per RB, the MCS and the size in order to proper model the segmentation of the TB in CBs. In order to obtain the vector of the perceived SINR two instances of ``LtePemSinrChunkProcessor`` (child of ``LteSinrChunkProcessor`` dedicated to evaluate the SINR for obtaining physical error performance) have been attached to UE downlink and eNB uplink ``LteSpectrumPhy`` modules for evaluating the error model distribution respectively of PDSCH (UE side) and ULSCH (eNB side).
 
@@ -683,13 +683,13 @@ The model can be disabled for working with a zero-losses channel by setting the 
   Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));  
 
 Control Channels PHY Error Model
---------------------------------
+++++++++++++++++++++++++++++++++
 
 The simulator includes the error model for downlink control channels (PCFICH and PDCCH), while in uplink it is assumed and ideal error-free channel. The model is based on the MIESM approach presented before for considering the effects of the frequency selective channel since most of the control channels span the whole available bandwidth.
 
 
 PCFICH + PDCCH Error Model
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+--------------------------
 
 The model adopted for the error distribution of these channels is based on an evaluation study carried out in the RAN4 of 3GPP, where different vendors investigated the demodulation performance of the PCFICH jointly with PDCCH. This is due to the fact that the PCFICH is the channel in charge of communicating to the UEs the actual dimension of the PDCCH (which spans between 1 and 3 symbols); therefore the correct decodification of the DCIs  depends on the correct interpretation of both ones. In 3GPP this problem have been evaluated for improving the cell-edge performance _[FujitsuWhitePaper], where the interference among neighboring cells can be relatively high due to signal degradation. A similar problem has been notices in femto-cell scenario and, more in general, in HetNet scenarios the bottleneck has been detected mainly as the PCFICH channel _[Bharucha2011], where in case of many eNBs are deployed in the same service area, this channel may collide in frequency, making impossible the correct detection of the PDCCH channel, too. 
 
@@ -697,7 +697,7 @@ In the simulator, the SINR perceived during the reception has been estimated acc
 
 
 MIMO Model
-----------
+++++++++++
 
 The use of multiple antennas both at transmitter and receiver side, known as multiple-input and multiple-output (MIMO), is a problem well studied in literature during the past years. Most of the work concentrate on evaluating analytically the gain that the different MIMO schemes might have in term of capacity; however someones provide also information of the gain in terms of received power _[CatreuxMIMO].
 
