@@ -1127,10 +1127,16 @@ LteEnbRrc::GetTypeId (void)
                                     RLC_AM_ALWAYS, "RlcAmAlways",
                                     PER_BASED,     "PacketErrorRateBased"))
     .AddAttribute ("SystemInformationPeriodicity",
-                   "The interval for sending system information",
+                   "The interval for sending system information (Time value)",
                    TimeValue (MilliSeconds (80)),  
                    MakeTimeAccessor (&LteEnbRrc::m_systemInformationPeriodicity),
-                   MakeTimeChecker ())      
+                   MakeTimeChecker ())
+    .AddAttribute ("SrsPeriodicity",
+                   "The SRS periodicity in milliseconds",
+                   UintegerValue (40),  
+                   MakeUintegerAccessor (&LteEnbRrc::SetSrsPeriodicity, 
+                                         &LteEnbRrc::GetSrsPeriodicity),
+                   MakeUintegerChecker<uint32_t> ())   
    .AddAttribute ("AdmitHandoverRequest",
                    "Whether to admit an X2 handover request from another eNB",
                    BooleanValue (true),  
@@ -1669,63 +1675,63 @@ LteEnbRrc::GetRlcType (EpsBearer bearer)
 
 
 // from 3GPP TS 36.213 table 8.2-1 UE Specific SRS Periodicity
-// const uint8_t SRS_ENTRIES = 9;
-// uint16_t g_srsPeriodicity[SRS_ENTRIES] = {0, 2, 5, 10, 20, 40,  80, 160, 320};
-// uint16_t g_srsCiLow[SRS_ENTRIES] =       {0, 0, 2,  7, 17, 37,  77, 157, 317};
-// uint16_t g_srsCiHigh[SRS_ENTRIES] =      {0, 1, 6, 16, 36, 76, 156, 316, 636};
+const uint8_t SRS_ENTRIES = 9;
+uint16_t g_srsPeriodicity[SRS_ENTRIES] = {0, 2, 5, 10, 20, 40,  80, 160, 320};
+uint16_t g_srsCiLow[SRS_ENTRIES] =       {0, 0, 2,  7, 17, 37,  77, 157, 317};
+uint16_t g_srsCiHigh[SRS_ENTRIES] =      {0, 1, 6, 16, 36, 76, 156, 316, 636};
 
-// same as above, but for more than 20 UEs always go with the max
-// periodicity to avoid triggering too many RRC CONNECTION
-// RECONFIGURATIONs simultaneously 
-// from 3GPP TS 36.213 table 8.2-1 UE Specific SRS Periodicity
-const uint8_t SRS_ENTRIES = 6;
-uint16_t g_srsPeriodicity[SRS_ENTRIES] = {0, 2, 5, 10, 20, 320};
-uint16_t g_srsCiLow[SRS_ENTRIES] =       {0, 0, 2,  7, 17, 317};
-uint16_t g_srsCiHigh[SRS_ENTRIES] =      {0, 1, 6, 16, 36, 636};
+void 
+LteEnbRrc::SetSrsPeriodicity (uint32_t p)
+{
+  NS_LOG_FUNCTION (this << p);
+  for (uint32_t id = 1; id < SRS_ENTRIES; ++id)
+    {
+      if (g_srsPeriodicity[id] == p)
+        {
+          m_srsCurrentPeriodicityId = id;
+          return;
+        }
+    }
+  // no match found
+  std::ostringstream allowedValues;
+  for (uint32_t id = 1; id < SRS_ENTRIES; ++id)
+    {
+      allowedValues << g_srsPeriodicity[id] << " ";
+    }
+  NS_FATAL_ERROR ("illecit SRS periodicity value " << p << ". Allowed values: " << allowedValues.str ());
+}
+
+uint32_t 
+LteEnbRrc::GetSrsPeriodicity () const
+{
+  NS_LOG_FUNCTION (this);
+  NS_ASSERT (m_srsCurrentPeriodicityId > 0);
+  NS_ASSERT (m_srsCurrentPeriodicityId < SRS_ENTRIES);
+  return g_srsPeriodicity[m_srsCurrentPeriodicityId];
+}
+
 
 uint16_t
 LteEnbRrc::GetNewSrsConfigurationIndex ()
 {
   NS_LOG_FUNCTION (this << m_ueSrsConfigurationIndexSet.size ());
   // SRS
-  if (m_srsCurrentPeriodicityId==0)
-    {
-      NS_ASSERT (m_ueSrsConfigurationIndexSet.empty ());
-      // no UEs -> init
-      m_ueSrsConfigurationIndexSet.insert (0);
-      m_lastAllocatedConfigurationIndex = 0;
-      m_srsCurrentPeriodicityId++;
-      
-      return 0;
-    }
+  NS_ASSERT (m_srsCurrentPeriodicityId > 0);
   NS_ASSERT (m_srsCurrentPeriodicityId < SRS_ENTRIES);
   NS_LOG_DEBUG (this << " SRS p " << g_srsPeriodicity[m_srsCurrentPeriodicityId] << " set " << m_ueSrsConfigurationIndexSet.size ());
-  if (m_ueSrsConfigurationIndexSet.size () == g_srsPeriodicity[m_srsCurrentPeriodicityId])
+  if (m_ueSrsConfigurationIndexSet.size () >= g_srsPeriodicity[m_srsCurrentPeriodicityId])
     {
-      NS_LOG_DEBUG (this << " SRS reconfigure CIs " << g_srsPeriodicity[m_srsCurrentPeriodicityId] << " to " << g_srsPeriodicity[m_srsCurrentPeriodicityId+1] << " at " << Simulator::Now ());
-      // increase the current periocity for having enough CIs
-      m_ueSrsConfigurationIndexSet.clear ();
-      m_srsCurrentPeriodicityId++;
-      NS_ASSERT (m_srsCurrentPeriodicityId < SRS_ENTRIES);
-      // update all the UE's CI
-      uint16_t srcCi = g_srsCiLow[m_srsCurrentPeriodicityId];
-      std::map<uint16_t, Ptr<UeManager> >::iterator it;
-      for (it = m_ueMap.begin (); it != m_ueMap.end (); it++)
-        {
-          (*it).second->SetSrsConfigurationIndex (srcCi);
-          m_ueSrsConfigurationIndexSet.insert (srcCi);
-          m_lastAllocatedConfigurationIndex = srcCi;
+      NS_FATAL_ERROR ("too many UEs (" << m_ueSrsConfigurationIndexSet.size () + 1 
+                      << ") for current SRS periodicity " 
+                      <<  g_srsPeriodicity[m_srsCurrentPeriodicityId]
+                      << ", consider increasing the value of ns3::LteEnbRrc::SrsPeriodicity");
+    }
 
-          // update UeManager and trigger/update RRC connection reconfiguration
-          (*it).second->SetSrsConfigurationIndex (srcCi);
-          
-          // configure PHY
-          m_cphySapProvider->SetSrsConfigurationIndex ((*it).first, srcCi);
-          
-          srcCi++;
-        }
-      m_ueSrsConfigurationIndexSet.insert (m_lastAllocatedConfigurationIndex + 1);
-      m_lastAllocatedConfigurationIndex++;
+  if (m_ueSrsConfigurationIndexSet.empty ())
+    {
+      // first entry
+      m_lastAllocatedConfigurationIndex = g_srsCiLow[m_srsCurrentPeriodicityId];
+      m_ueSrsConfigurationIndexSet.insert (m_lastAllocatedConfigurationIndex);
     }
   else
     {
@@ -1766,37 +1772,6 @@ LteEnbRrc::RemoveSrsConfigurationIndex (uint16_t srcCi)
   std::set<uint16_t>::iterator it = m_ueSrsConfigurationIndexSet.find (srcCi);
   NS_ASSERT_MSG (it != m_ueSrsConfigurationIndexSet.end (), "request to remove unkwown SRS CI " << srcCi);
   m_ueSrsConfigurationIndexSet.erase (it);
-
-  if (m_ueSrsConfigurationIndexSet.empty ())
-    {
-      m_srsCurrentPeriodicityId = 0;
-      return;
-    }
-
-  NS_ASSERT (m_srsCurrentPeriodicityId > 0 && m_srsCurrentPeriodicityId <= SRS_ENTRIES);
-  if (m_ueSrsConfigurationIndexSet.size () < g_srsPeriodicity[m_srsCurrentPeriodicityId - 1])
-    {
-      // reduce the periodicity
-      m_ueSrsConfigurationIndexSet.clear ();
-      m_srsCurrentPeriodicityId--;
-      // update all the UE's CI
-      uint16_t srcCi = g_srsCiLow[m_srsCurrentPeriodicityId];
-      std::map<uint16_t, Ptr<UeManager> >::iterator it;
-      for (it = m_ueMap.begin (); it != m_ueMap.end (); it++)
-        {
-          (*it).second->SetSrsConfigurationIndex (srcCi);
-          m_ueSrsConfigurationIndexSet.insert (srcCi);
-          m_lastAllocatedConfigurationIndex = srcCi;
-
-          // update UeManager and trigger/update RRC connection reconfiguration
-          (*it).second->SetSrsConfigurationIndex (srcCi);
-          
-          // configure PHY
-          m_cphySapProvider->SetSrsConfigurationIndex ((*it).first, (*it).second->GetSrsConfigurationIndex ());
-
-          srcCi++;
-        }
-    }
 }
 
 uint8_t 

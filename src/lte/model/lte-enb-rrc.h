@@ -648,6 +648,23 @@ private:
    */
   TypeId GetRlcType (EpsBearer bearer);
 
+
+public:
+
+  /** 
+   * 
+   * \param p the SRS periodicity in num TTIs
+   */
+  void SetSrsPeriodicity (uint32_t p);
+
+  /** 
+   *
+   * \return the current SRS periodicity
+   */
+  uint32_t GetSrsPeriodicity () const;
+
+private:
+
   /** 
    * Allocate a new SRS configuration index for a new UE. 
    *

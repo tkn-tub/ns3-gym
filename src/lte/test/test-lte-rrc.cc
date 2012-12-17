@@ -140,8 +140,10 @@ void
 LteRrcConnectionEstablishmentTestCase::DoRun ()
 {
   NS_LOG_FUNCTION (this << GetName ());
+  Config::Reset ();
+  Config::SetDefault ("ns3::LteEnbRrc::SrsPeriodicity", UintegerValue (80));
+
   // normal code
-  
   m_lteHelper = CreateObject<LteHelper> ();
   m_lteHelper->SetAttribute ("UseIdealRrc", BooleanValue (m_useIdealRrc));
 
