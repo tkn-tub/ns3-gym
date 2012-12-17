@@ -26,9 +26,18 @@ def configure(conf):
                 conf.msg("Checking for BRITE location", False)
                 conf.report_optional_feature("brite", "BRITE Integration", False,
                                      "BRITE not found (see option --with-brite)")
+                # Add this module to the list of modules that won't be built
+                # if they are enabled.
+                conf.env['MODULES_NOT_BUILT'].append('brite')
+
                 return
     else:
         conf.report_optional_feature("brite", "BRITE Integration", False, 'BRITE not enabled (see option --with-brite)')
+
+        # Add this module to the list of modules that won't be built
+        # if they are enabled.
+        conf.env['MODULES_NOT_BUILT'].append('brite')
+
         return
 
     test_code = '''
@@ -65,6 +74,9 @@ int main()
         conf.env.append_value('CPPPATH', conf.env['CPPPATH_BRITE'])
 
 def build(bld):
+    # Don't do anything for this module if brite's not enabled.
+    if 'brite' in bld.env['MODULES_NOT_BUILT']:
+        return
 
     module = bld.create_ns3_module('brite', ['network', 'core', 'internet', 'point-to-point'])
     module.source = [
