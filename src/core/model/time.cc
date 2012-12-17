@@ -147,7 +147,6 @@ Time::GetResolution (void)
 std::ostream&
 operator<< (std::ostream& os, const Time & time)
 {
-  NS_LOG_FUNCTION (&os << time);
   std::string unit;
   switch (Time::GetResolution ())
     {
@@ -180,7 +179,6 @@ operator<< (std::ostream& os, const Time & time)
 }
 std::istream& operator>> (std::istream& is, Time & time)
 {
-  NS_LOG_FUNCTION (&is << time);
   std::string value;
   is >> value;
   time = Time (value);
