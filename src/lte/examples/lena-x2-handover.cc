@@ -32,39 +32,85 @@ using namespace ns3;
 
 
 void 
-NotifyConnectionEstablishedUe (std::string context, uint64_t imsi, uint16_t cellid, uint16_t rnti)
+NotifyConnectionEstablishedUe (std::string context, 
+                               uint64_t imsi, 
+                               uint16_t cellid, 
+                               uint16_t rnti)
 {
-  std::cout << context << " UE IMSI " << imsi << ": connected to CellId " << cellid << " with RNTI " << rnti << std::endl;
+  std::cout << context 
+            << " UE IMSI " << imsi 
+            << ": connected to CellId " << cellid 
+            << " with RNTI " << rnti 
+            << std::endl;
 }
 
 void 
-NotifyHandoverStartUe (std::string context, uint64_t imsi, uint16_t cellid, uint16_t rnti, uint16_t targetCellId)
+NotifyHandoverStartUe (std::string context, 
+                       uint64_t imsi, 
+                       uint16_t cellid, 
+                       uint16_t rnti, 
+                       uint16_t targetCellId)
 {
-  std::cout << context << " UE IMSI " << imsi << ": previously connected to CellId " << cellid << " with RNTI " << rnti << ", doing handover to CellId " << targetCellId << std::endl;
+  std::cout << context 
+            << " UE IMSI " << imsi 
+            << ": previously connected to CellId " << cellid 
+            << " with RNTI " << rnti 
+            << ", doing handover to CellId " << targetCellId 
+            << std::endl;
 }
 
 void 
-NotifyHandoverEndOkUe (std::string context, uint64_t imsi, uint16_t cellid, uint16_t rnti)
+NotifyHandoverEndOkUe (std::string context, 
+                       uint64_t imsi, 
+                       uint16_t cellid, 
+                       uint16_t rnti)
 {
-  std::cout << context << " UE IMSI " << imsi << ": successful handover to CellId " << cellid << " with RNTI " << rnti << std::endl;
+  std::cout << context 
+            << " UE IMSI " << imsi 
+            << ": successful handover to CellId " << cellid 
+            << " with RNTI " << rnti 
+            << std::endl;
 }
 
 void 
-NotifyConnectionEstablishedEnb (std::string context, uint64_t imsi, uint16_t cellid, uint16_t rnti)
+NotifyConnectionEstablishedEnb (std::string context, 
+                                uint64_t imsi, 
+                                uint16_t cellid, 
+                                uint16_t rnti)
 {
-  std::cout << context << " eNB CellId " << cellid << ": successful connection of UE with IMSI " << imsi << " RNTI " << rnti << std::endl;
+  std::cout << context 
+            << " eNB CellId " << cellid 
+            << ": successful connection of UE with IMSI " << imsi 
+            << " RNTI " << rnti 
+            << std::endl;
 }
 
 void 
-NotifyHandoverStartEnb (std::string context, uint64_t imsi, uint16_t cellid, uint16_t rnti, uint16_t targetCellId)
+NotifyHandoverStartEnb (std::string context, 
+                        uint64_t imsi, 
+                        uint16_t cellid, 
+                        uint16_t rnti, 
+                        uint16_t targetCellId)
 {
-  std::cout << context << " eNB CellId " << cellid << ": start handover of UE with IMSI " << imsi << " RNTI " << rnti << " to CellId " << targetCellId << std::endl;
+  std::cout << context 
+            << " eNB CellId " << cellid 
+            << ": start handover of UE with IMSI " << imsi 
+            << " RNTI " << rnti 
+            << " to CellId " << targetCellId 
+            << std::endl;
 }
 
 void 
-NotifyHandoverEndOkEnb (std::string context, uint64_t imsi, uint16_t cellid, uint16_t rnti)
+NotifyHandoverEndOkEnb (std::string context, 
+                        uint64_t imsi, 
+                        uint16_t cellid, 
+                        uint16_t rnti)
 {
-  std::cout << context << " eNB CellId " << cellid << ": completed handover of UE with IMSI " << imsi << " RNTI " << rnti << std::endl;
+  std::cout << context 
+            << " eNB CellId " << cellid 
+            << ": completed handover of UE with IMSI " << imsi 
+            << " RNTI " << rnti 
+            << std::endl;
 }
  
 

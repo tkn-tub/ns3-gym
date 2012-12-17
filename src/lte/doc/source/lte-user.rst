@@ -811,7 +811,8 @@ UdpClient application on the remote host, and a PacketSink on the LTE UE
 (using the same variable names of the previous code snippets) ::
 
        uint16_t dlPort = 1234;
-       PacketSinkHelper packetSinkHelper ("ns3::UdpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), dlPort));
+       PacketSinkHelper packetSinkHelper ("ns3::UdpSocketFactory", 
+                                          InetSocketAddress (Ipv4Address::GetAny (), dlPort));
        ApplicationContainer serverApps = packetSinkHelper.Install (ue);
        serverApps.Start (Seconds (0.01));
        UdpClientHelper client (ueIpIface.GetAddress (0), dlPort);
@@ -824,6 +825,136 @@ That's all! You can now start your simulation as usual::
   Simulator::Run ();
 
 
+
+X2-based handover
+-----------------
+
+The execution of an X2-based handover between two eNBs requires the
+configuration of an X2 interface between the two eNBs. This needs to
+be done explicitly within the simulation program like this::
+
+     lteHelper->AddX2Interface (enbNodes);
+
+where ``enbNodes`` is a ``NodeContainer`` that contains the two eNBs
+between which the X2 interface is to be configured.
+
+Handover event needs to be scheduled explicitly within the simulation
+program, as the current RRC model does not support the automatic
+trigger of handover based on UE measurement. The ``LteHelper``
+provides a convenient method for the scheduling of a handover
+event. As an example, let us assume that ``ueLteDevs``` is a
+``NetDeviceContainer`` that contains the UE that is to be handed over,
+and that ``enbLteDevs`` is another ``NetDeviceContainer`` that
+contains the source and the target eNB. Then, an handover at 0.1s can be
+scheduled like this::
+
+     lteHelper->HandoverRequest (Seconds (0.100), 
+                                 ueLteDevs.Get (0), 
+                                 enbLteDevs.Get (0), 
+                                 enbLteDevs.Get (1));
+
+
+Note that the UE needs to be already connected to the source eNB,
+otherwise the simulation will terminate with an error message.
+
+The RRC model, in particular the ``LteEnbRrc`` and ``LteUeRrc``
+objects, provide some useful traces which can be hooked up to some
+custom functions so that they are called upon start and end of the
+handover execution phase at both the UE and eNB side. As an example,
+in your simulation program you can declare the following methods::
+
+
+  void 
+  NotifyHandoverStartUe (std::string context, 
+                         uint64_t imsi, 
+                         uint16_t cellid, 
+                         uint16_t rnti, 
+                         uint16_t targetCellId)
+  {
+    std::cout << context 
+              << " UE IMSI " << imsi 
+              << ": previously connected to CellId " << cellid 
+              << " with RNTI " << rnti 
+              << ", doing handover to CellId " << targetCellId 
+              << std::endl;
+  }
+
+  void 
+  NotifyHandoverEndOkUe (std::string context, 
+                         uint64_t imsi, 
+                         uint16_t cellid, 
+                         uint16_t rnti)
+  {
+    std::cout << context 
+              << " UE IMSI " << imsi 
+              << ": successful handover to CellId " << cellid 
+              << " with RNTI " << rnti 
+              << std::endl;
+  }
+
+  void 
+  NotifyHandoverStartEnb (std::string context, 
+                          uint64_t imsi, 
+                          uint16_t cellid, 
+                          uint16_t rnti, 
+                          uint16_t targetCellId)
+  {
+    std::cout << context 
+              << " eNB CellId " << cellid 
+              << ": start handover of UE with IMSI " << imsi 
+              << " RNTI " << rnti 
+              << " to CellId " << targetCellId 
+              << std::endl;
+  }
+
+  void 
+  NotifyHandoverEndOkEnb (std::string context, 
+                          uint64_t imsi, 
+                          uint16_t cellid, 
+                          uint16_t rnti)
+  {
+    std::cout << context 
+              << " eNB CellId " << cellid 
+              << ": completed handover of UE with IMSI " << imsi 
+              << " RNTI " << rnti 
+              << std::endl;
+  }
+
+
+Then, you can hook up these methods to the corresponding trace sources
+like this::
+
+  Config::Connect ("/NodeList/*/DeviceList/*/LteEnbRrc/HandoverStart",
+                   MakeCallback (&NotifyHandoverStartEnb));
+  Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/HandoverStart",
+                   MakeCallback (&NotifyHandoverStartUe));
+  Config::Connect ("/NodeList/*/DeviceList/*/LteEnbRrc/HandoverEndOk",
+                   MakeCallback (&NotifyHandoverEndOkEnb));
+  Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/HandoverEndOk",
+                   MakeCallback (&NotifyHandoverEndOkUe));
+
+
+The example program ``src/lte/examples/lena-x2-handover.cc``
+illustrates how the all above instructions can be integrated in a
+simulation program. You can run the program like this::
+
+   ./waf --run lena-x2-handover
+
+and it will output the messages printed by the custom handover trace
+hooks. In order additionally visualize some meaningful logging
+information, you can run the program like this::
+
+    NS_LOG=LteEnbRrc:LteUeRrc:EpcX2 ./waf --run lena-x2-handover
+
+
+Whether a target eNB will accept or not an incoming X2 HANDOVER
+REQUEST is controlled by the boolean attribute
+``LteEnbRrc::AdmitHandoverRequest`` (default: true). As an example,
+you can run the ``lena-x2-handover`` program setting the attribute to
+false in this way::
+
+   NS_LOG=EpcX2:LteEnbRrc ./waf --run lena-x2-handover 
+     --command="%s --ns3::LteEnbRrc::AdmitHandoverRequest=false"
 
 
 

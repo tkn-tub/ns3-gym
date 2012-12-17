@@ -1560,8 +1560,8 @@ models instead.
 PDCP
 ----
 
-Overview
-++++++++
+PDCP Model Overview
++++++++++++++++++++
 
 The reference document for the specification of the PDCP entity is
 [TS36323]_. With respect to this specification, the PDCP model
@@ -1569,6 +1569,7 @@ implemented in the simulator supports only the following features:
 
  * transfer of data (user plane or control plane);
  * maintenance of PDCP SNs;
+ * transfer of SN status (for use upon handover);
 
 The following features are currently not supported:
 
@@ -1743,6 +1744,15 @@ with the fact that, at this stage, only handovers explicitly triggered
 within the simulation program are supported (network-driven handovers
 based on UE measurements are planned only at a later stage).
 
+
+Handover
+++++++++
+
+The RRC model support the execution of an X2-based handover
+procedure. The handover needs to be triggered explicitly by the
+simulation program by scheduling an execution of the method
+``LteEnbRrc::SendHandoverRequest ()``. The automatic triggering of the
+handover based on UE measurements is not supported at this stage.
 
 
 
@@ -2199,6 +2209,11 @@ IP stack of the SGW/PGW will redirect the packet again to the
 VirtualNetDevice, and the packet will go through the dowlink delivery
 process in order to reach its destination UE.
 
+Note that the EPS Bearer QoS is not enforced on the S1-U
+links, it is assumed that the overprovisioning of the link bandwidth
+is sufficient to meet the QoS requirements of all bearers.
+
+
 S1AP
 +++++
 
@@ -2255,7 +2270,14 @@ The X2 interface implemented in the simulator provides detailed implementation o
 
   * UE Context Release procedure
 
-These procedures are involved in the X2-based handover. You can find the detailed description of the handover in section 10.1.2.1 of [TS36300]_. Figure :ref:`fig-x2-based-handover-seq-diagram` shows the interaction of the entities of the X2 model in the simulator.
+These procedures are involved in the X2-based handover. You can find
+the detailed description of the handover in section 10.1.2.1 of
+[TS36300]_. We note that the simulator model currently supports only
+the *seamless handover* as defined in Section 2.6.3.1 of [Sesia2009]_;
+in particular, *lossless handover* as described in Section 2.6.3.2 of
+[Sesia2009]_ is not supported at the time of this writing.
+
+Figure :ref:`fig-x2-based-handover-seq-diagram` shows the interaction of the entities of the X2 model in the simulator.
 
 .. _fig-x2-based-handover-seq-diagram:
 
@@ -2317,7 +2339,31 @@ Figure :ref:`fig-lte-epc-x2-interface` shows the protocol stacks of the X2-U int
 
     X2 interface protocol stacks
 
-In the original X2 interface control plane protocol stack, SCTP is used as the transport protocol but currently, the SCTP protocol is not modeled in the ns-3 simulator and its implementation is out-of-scope of the project. The UDP protocol is used as the datagram oriented protocol instead of the SCTP protocol.
+X2-C
+----
+
+The X2-C interface is the control part of the X2 interface and it is
+used to send the X2-AP PDUs (i.e. the elementary procedures). 
+
+In the original X2 interface control plane protocol stack, SCTP is
+used as the transport protocol but currently, the SCTP protocol is not
+modeled in the ns-3 simulator and its implementation is out-of-scope
+of the project. The UDP protocol is used as the datagram oriented
+protocol instead of the SCTP protocol.  
+
+
+X2-U
+----
+
+The X2-U interface is used to send the bearer data when there is `DL
+forwarding` during the execution of the X2-based handover
+procedure. Similarly to what done for the S1-U interface, data packets
+are encapsulated over GTP/UDP/IP when being sent over this
+interface. Note that the EPS Bearer QoS is not enforced on the X2-U
+links, it is assumed that the overprovisioning of the link bandwidth
+is sufficient to meet the QoS requirements of all bearers.
+
+
 
 X2 Service Interface
 ++++++++++++++++++++
@@ -2328,10 +2374,36 @@ The X2 service interface is used by the RRC entity to send and receive messages 
 
   * the ``EpcX2SapUser`` part is provided by the RRC entity and used by the RRC enity.
 
-For a list of the X2 Service Primitives supported by the above
-classes, as well as for a description of the parameters passed to
-these primitives, the reader is advised to consult the file
-`epc-x2-sap.h` and/or the corresponding doxygen documentation.
+The primitives that are supported in our X2-C model fit into two categories. In the
+first category there are those primitives  used for the X2-based
+handover:
+
+ - HANDOVER REQUEST
+ - HANDOVER REQUEST ACK
+ - HANDOVER PREPARATION FAILURE
+ - SN STATUS STRANSFER
+ - UE CONTEXT RELEASE
+
+all the above primitives are used by the currently implemented RRC
+model during the preparation and execution of the handover procedure. 
+
+In the second category there are those primitives which are needed to
+implement Self-Organized Network (SON) functionalities. The supported
+primitives in this category are:
+
+ - LOAD INFORMATION
+ - RESOURCE STATUS UPDATE
+
+note that the current RRC model does not actually use these
+primitives, they are included in the model just to make it possible to
+develop SON algorithms included in the RRC logic that make use of
+them. For a detailed description of these primitives and the parameters that
+they take, the reader is advised to consult the file `epc-x2-sap.h`
+and/or the corresponding doxygen documentation. 
+
+Finally, it is noted that Mobility Robustness Optimization primitives
+such as Radio Link Failure indication and Handover Report are not
+supported at this stage.
 
 
 
