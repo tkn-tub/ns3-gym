@@ -34,8 +34,8 @@ and/or the buildbots have been testing
    - revise and check in AUTHORS, RELEASE_NOTES, and CHANGES>html
    - required versions for related libraries (nsc, netanim, pybindgen)
      are correct
-   - make latexpdf in the doc/manual, doc/models, and doc/tutorial directories 
    - confirm that Doxygen builds cleanly (./waf doxygen), 
+   - confirm all documents build:  './waf docs' and check outputs
 
 Check out a clean ns-3-dev somewhere using ns-3-allinone 
    - hg clone http://code.nsnam.org/ns-3-allinone
@@ -50,7 +50,7 @@ Test this, and when satisfied, upload it to
 www.nsnam.org:/var/www/html/releases/ (with apache:apache file ownership)
 
 Announce it to ns-developers as:
-https://www.nsnam.org/release/ns-allinone-3.14.rc3.tar.bz2
+https://www.nsnam.org/release/ns-allinone-3.14.rc1.tar.bz2
 
 Iterate the above as needed during the release testing phase.
 
