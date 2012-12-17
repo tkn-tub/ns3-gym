@@ -155,6 +155,7 @@ UeManager::DoStart ()
   m_physicalConfigDedicated.haveSoundingRsUlConfigDedicated = true;
   m_physicalConfigDedicated.soundingRsUlConfigDedicated.srsConfigIndex = m_rrc->GetNewSrsConfigurationIndex ();
   m_physicalConfigDedicated.soundingRsUlConfigDedicated.type = LteRrcSap::SoundingRsUlConfigDedicated::SETUP;
+  m_physicalConfigDedicated.soundingRsUlConfigDedicated.srsBandwidth = 1;
 
   m_rrc->m_cmacSapProvider->AddUe (m_rnti);
   m_rrc->m_cphySapProvider->AddUe (m_rnti);
@@ -467,6 +468,12 @@ UeManager::PrepareHandover (uint16_t cellId)
         hpi.asConfig.sourceUeIdentity = m_rnti;
         hpi.asConfig.sourceDlCarrierFreq = m_rrc->m_dlEarfcn;
         hpi.asConfig.sourceRadioResourceConfig = GetRadioResourceConfigForHandoverPreparationInfo ();
+        hpi.asConfig.sourceMasterInformationBlock.dlBandwidth = 1;
+        hpi.asConfig.sourceMasterInformationBlock.systemFrameNumber = 1;
+        hpi.asConfig.sourceSystemInformationBlockType1.cellAccessRelatedInfo.plmnIdentityInfo.plmnIdentity = 1;
+        hpi.asConfig.sourceSystemInformationBlockType1.cellAccessRelatedInfo.cellIdentity = cellId;
+        hpi.asConfig.sourceSystemInformationBlockType1.cellAccessRelatedInfo.csgIndication = 1;
+        hpi.asConfig.sourceSystemInformationBlockType1.cellAccessRelatedInfo.csgIdentity = 1;
         params.rrcContext = m_rrc->m_rrcSapUser->EncodeHandoverPreparationInformation (hpi);
   
         NS_LOG_LOGIC ("oldEnbUeX2apId = " << params.oldEnbUeX2apId);
