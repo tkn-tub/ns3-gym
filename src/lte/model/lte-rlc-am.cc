@@ -72,6 +72,9 @@ LteRlcAm::LteRlcAm ()
   // SDU reassembling process
   m_reassemblingState = WAITING_S0_FULL;
   m_expectedSeqNumber = 0;
+
+  // Timers
+  m_pollRetransmitTimerValue = MilliSeconds (100);
 }
 
 LteRlcAm::~LteRlcAm ()
@@ -84,6 +87,11 @@ LteRlcAm::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::LteRlcAm")
     .SetParent<LteRlc> ()
     .AddConstructor<LteRlcAm> ()
+    .AddAttribute ("PollRetransmitTimer",
+                   "Value of the t-PollRetransmit (See section 7.3 of 3GPP TS 36.322)",
+                   TimeValue (MilliSeconds (100)),
+                   MakeTimeAccessor (&LteRlcAm::m_pollRetransmitTimerValue),
+                   MakeTimeChecker ())
     ;
   return tid;
 }
@@ -526,7 +534,7 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId)
         {
           NS_LOG_LOGIC ("Start PollRetransmit timer");
 
-          m_pollRetransmitTimer = Simulator::Schedule (Time ("0.01s"),
+          m_pollRetransmitTimer = Simulator::Schedule (m_pollRetransmitTimerValue,
                                                        &LteRlcAm::ExpirePollRetransmitTimer, this);
         }
       else
@@ -534,7 +542,7 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId)
           NS_LOG_LOGIC ("Restart PollRetransmit timer");
 
           m_pollRetransmitTimer.Cancel ();
-          m_pollRetransmitTimer = Simulator::Schedule (Time ("0.01s"),
+          m_pollRetransmitTimer = Simulator::Schedule (m_pollRetransmitTimerValue,
                                                        &LteRlcAm::ExpirePollRetransmitTimer, this);
         }
     }
@@ -1533,13 +1541,17 @@ LteRlcAm::DoReportBufferStatus (void)
       r.statusPduSize = 0;
     }
 
-  NS_LOG_INFO ("Send ReportBufferStatus: " << r.txQueueSize << ", " << r.txQueueHolDelay << ", " 
-                                           << r.retxQueueSize << ", " << r.retxQueueHolDelay << ", " 
-                                           << r.statusPduSize);
-  m_macSapProvider->ReportBufferStatus (r);
-
-//   m_statusPduRequested = false;
-//   m_statusPduBufferSize = 0;
+  if ( r.txQueueSize != 0 || r.retxQueueSize != 0 || r.statusPduSize != 0 )
+    {
+      NS_LOG_INFO ("Send ReportBufferStatus: " << r.txQueueSize << ", " << r.txQueueHolDelay << ", " 
+                                               << r.retxQueueSize << ", " << r.retxQueueHolDelay << ", " 
+                                               << r.statusPduSize);
+      m_macSapProvider->ReportBufferStatus (r);
+    }
+  else
+    {
+      NS_LOG_INFO ("ReportBufferStatus don't needed");
+    }
 }
 
 
