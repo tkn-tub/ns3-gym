@@ -35,6 +35,7 @@
 #include <ns3/lte-enb-cphy-sap.h>
 #include <ns3/lte-rrc-sap.h>
 #include <ns3/traced-callback.h>
+#include <ns3/event-id.h>
 
 #include <map>
 #include <set>
@@ -389,6 +390,7 @@ private:
   uint16_t m_targetCellId;
   std::list<uint8_t> m_drbsToBeStarted;
   bool m_needTransmissionModeConfiguration;
+  EventId m_connectionTimeout;
 };
 
 
@@ -554,6 +556,14 @@ public:
    * \param cb 
    */
   void SetForwardUpCallback (Callback <void, Ptr<Packet> > cb);
+
+  /** 
+   * Method triggered when a UE is expected to get connected but does
+   * not do so in a reasonable time
+   * 
+   * \param rnti the T-C-RNTI whose timeout expired
+   */
+  void ConnectionTimeout (uint16_t rnti);
 
   /** 
    * Send a HandoverRequest through the X2 SAP interface

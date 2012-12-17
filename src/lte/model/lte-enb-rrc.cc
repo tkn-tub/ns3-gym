@@ -234,6 +234,26 @@ UeManager::DoStart ()
   // configure PHY
   m_rrc->m_cphySapProvider->SetTransmissionMode (m_rnti, m_physicalConfigDedicated.antennaInfo.transmissionMode);
   m_rrc->m_cphySapProvider->SetSrsConfigurationIndex (m_rnti, m_physicalConfigDedicated.soundingRsUlConfigDedicated.srsConfigIndex);
+
+  // schedule this UeManager instance to be deleted if the UE does not give any sign of life within a reasonable time
+  Time maxConnectionDelay;
+  switch (m_state)
+    {
+    case INITIAL_RANDOM_ACCESS:
+      // must account for reception of RAR and transmission of RRC CONNECTION REQUEST over UL GRANT
+      maxConnectionDelay = MilliSeconds (15); 
+      break;
+    case HANDOVER_JOINING:
+      // must account for reception of X2 HO REQ ACK by source eNB,
+      // transmission of the Handover Command, and
+      // non-contention-based random access
+      maxConnectionDelay = MilliSeconds (50); 
+      break;      
+    default:
+      NS_FATAL_ERROR ("unspecified maxConnectionDelay for state " << ToString (m_state));
+      break;      
+    }  
+  m_connectionTimeout = Simulator::Schedule (maxConnectionDelay, &LteEnbRrc::ConnectionTimeout, m_rrc, m_rnti);
 }
 
 
@@ -248,7 +268,10 @@ UeManager::DoDispose ()
   
   m_rrc->m_cmacSapProvider->RemoveUe (m_rnti);
   m_rrc->m_cphySapProvider->RemoveUe (m_rnti);
-  m_rrc->m_s1SapProvider->UeContextRelease (m_rnti);
+  if (m_rrc->m_s1SapProvider != 0)
+    {
+      m_rrc->m_s1SapProvider->UeContextRelease (m_rnti);
+    }
 }
 
 TypeId UeManager::GetTypeId (void)
@@ -663,6 +686,7 @@ UeManager::RecvRrcConnectionRequest (LteRrcSap::RrcConnectionRequest msg)
     {
     case INITIAL_RANDOM_ACCESS:      
       {      
+        m_connectionTimeout.Cancel ();
         m_imsi = msg.ueIdentity;      
         if (m_rrc->m_s1SapProvider != 0)
           {
@@ -732,6 +756,7 @@ UeManager::RecvRrcConnectionReconfigurationCompleted (LteRrcSap::RrcConnectionRe
       
     case HANDOVER_JOINING:
       {
+        m_connectionTimeout.Cancel ();
         NS_LOG_INFO ("Send PATH SWITCH REQUEST to the MME");
         EpcEnbS1SapProvider::PathSwitchRequestParameters params;
         params.rnti = m_rnti;
@@ -1266,6 +1291,13 @@ void
 LteEnbRrc::SetForwardUpCallback (Callback <void, Ptr<Packet> > cb)
 {
   m_forwardUpCallback = cb;
+}
+
+void
+LteEnbRrc::ConnectionTimeout (uint16_t rnti)
+{
+  NS_LOG_FUNCTION (this << rnti);
+  RemoveUe (rnti);
 }
 
 
