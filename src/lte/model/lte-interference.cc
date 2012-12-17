@@ -48,7 +48,9 @@ void
 LteInterference::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
+  m_rsPowerChunkProcessorList.clear ();
   m_sinrChunkProcessorList.clear ();
+  m_interfChunkProcessorList.clear ();
   m_rxSignal = 0;
   m_allSignals = 0;
   m_noise = 0;
@@ -76,9 +78,17 @@ LteInterference::StartRx (Ptr<const SpectrumValue> rxPsd)
       m_rxSignal = rxPsd->Copy ();
       m_lastChangeTime = Now ();
       m_receiving = true;
+      for (std::list<Ptr<LteSinrChunkProcessor> >::const_iterator it = m_rsPowerChunkProcessorList.begin (); it != m_rsPowerChunkProcessorList.end (); ++it)
+        {
+          (*it)->Start ();
+        }
       for (std::list<Ptr<LteSinrChunkProcessor> >::const_iterator it = m_sinrChunkProcessorList.begin (); it != m_sinrChunkProcessorList.end (); ++it)
         {
           (*it)->Start (); 
+        }
+      for (std::list<Ptr<LteSinrChunkProcessor> >::const_iterator it = m_interfChunkProcessorList.begin (); it != m_interfChunkProcessorList.end (); ++it)
+        {
+          (*it)->Start ();
         }
     }
   else
@@ -105,6 +115,10 @@ LteInterference::EndRx ()
     {
       ConditionallyEvaluateChunk ();
       m_receiving = false;
+      for (std::list<Ptr<LteSinrChunkProcessor> >::const_iterator it = m_rsPowerChunkProcessorList.begin (); it != m_rsPowerChunkProcessorList.end (); ++it)
+        {
+          (*it)->End ();
+        }
       for (std::list<Ptr<LteSinrChunkProcessor> >::const_iterator it = m_sinrChunkProcessorList.begin (); it != m_sinrChunkProcessorList.end (); ++it)
         {
           (*it)->End (); 
@@ -182,6 +196,10 @@ LteInterference::ConditionallyEvaluateChunk ()
         {
           (*it)->EvaluateSinrChunk (sinr, duration);
         }
+      for (std::list<Ptr<LteSinrChunkProcessor> >::const_iterator it = m_rsPowerChunkProcessorList.begin (); it != m_rsPowerChunkProcessorList.end (); ++it)
+        {
+          (*it)->EvaluateSinrChunk (*m_rxSignal, duration);
+        }
       for (std::list<Ptr<LteSinrChunkProcessor> >::const_iterator it = m_interfChunkProcessorList.begin (); it != m_interfChunkProcessorList.end (); ++it)
         {
           NS_LOG_DEBUG (this << "ConditionallyEvaluateChunk INTERF ");
@@ -212,6 +230,13 @@ LteInterference::SetNoisePowerSpectralDensity (Ptr<const SpectrumValue> noisePsd
   // record the last SignalId so that we can ignore all signals that
   // were scheduled for subtraction before m_allSignal 
   m_lastSignalIdBeforeReset = m_lastSignalId;
+}
+
+void
+LteInterference::AddRsPowerChunkProcessor (Ptr<LteSinrChunkProcessor> p)
+{
+  NS_LOG_FUNCTION (this << p);
+  m_rsPowerChunkProcessorList.push_back (p);
 }
 
 void

@@ -29,6 +29,7 @@
 #include <ns3/node.h>
 #include <ns3/node-container.h>
 #include <ns3/eps-bearer.h>
+#include <ns3/phy-stats-calculator.h>
 #include <ns3/phy-tx-stats-calculator.h>
 #include <ns3/phy-rx-stats-calculator.h>
 #include <ns3/mac-stats-calculator.h>
@@ -294,7 +295,9 @@ public:
   void EnableLogComponents (void);
 
   /**
-   * Enables trace sinks for PHY, MAC, RLC and PDCP
+   * Enables trace sinks for PHY, MAC, RLC and PDCP. To make sure all nodes are
+   * traced, traces should be enabled once all UEs and eNodeBs are in place and
+   * connected, just before starting the simulation.
    */
   void EnableTraces (void);
 
@@ -303,6 +306,18 @@ public:
    */
   void EnablePhyTraces (void);
 
+
+
+  /**
+   * Enable trace sinks for DL PHY layer
+   */
+  void EnableDlPhyTraces (void);
+
+  /**
+   * Enable trace sinks for UL PHY layer
+   */
+  void EnableUlPhyTraces (void);
+  
   /**
    * Enable trace sinks for DL transmission PHY layer
    */
@@ -408,6 +423,7 @@ private:
   std::string m_fadingModelType;
   ObjectFactory m_fadingModelFactory;
 
+  Ptr<PhyStatsCalculator> m_phyStats;
   Ptr<PhyTxStatsCalculator> m_phyTxStats;
   Ptr<PhyRxStatsCalculator> m_phyRxStats;
   Ptr<MacStatsCalculator> m_macStats;

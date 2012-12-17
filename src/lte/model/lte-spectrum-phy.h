@@ -304,6 +304,14 @@ public:
   void SetCellId (uint16_t cellId);
 
 
+  /**
+  *
+  *
+  * \param p the new LteSinrChunkProcessor to be added to the RS power 
+  * \processing chain
+  */
+  void AddRsPowerChunkProcessor (Ptr<LteSinrChunkProcessor> p);
+  
   /** 
   * 
   * 

@@ -237,6 +237,7 @@ RrFfMacScheduler::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_dlHarqProcessesDciBuffer.clear ();
+  m_dlHarqProcessesTimer.clear ();
   m_dlHarqProcessesRlcPduListBuffer.clear ();
   m_dlInfoListBuffered.clear ();
   m_ulHarqCurrentProcessId.clear ();
@@ -323,6 +324,9 @@ RrFfMacScheduler::DoCschedUeConfigReq (const struct FfMacCschedSapProvider::Csch
       DlHarqProcessesStatus_t dlHarqPrcStatus;
       dlHarqPrcStatus.resize (8,0);
       m_dlHarqProcessesStatus.insert (std::pair <uint16_t, DlHarqProcessesStatus_t> (params.m_rnti, dlHarqPrcStatus));
+      DlHarqProcessesTimer_t dlHarqProcessesTimer;
+      dlHarqProcessesTimer.resize (8,0);
+      m_dlHarqProcessesTimer.insert (std::pair <uint16_t, DlHarqProcessesTimer_t> (params.m_rnti, dlHarqProcessesTimer));
       DlHarqProcessesDciBuffer_t dlHarqdci;
       dlHarqdci.resize (8);
       m_dlHarqProcessesDciBuffer.insert (std::pair <uint16_t, DlHarqProcessesDciBuffer_t> (params.m_rnti, dlHarqdci));
@@ -384,6 +388,7 @@ RrFfMacScheduler::DoCschedUeReleaseReq (const struct FfMacCschedSapProvider::Csc
   m_uesTxMode.erase (params.m_rnti);
   m_dlHarqCurrentProcessId.erase (params.m_rnti);
   m_dlHarqProcessesStatus.erase  (params.m_rnti);
+  m_dlHarqProcessesTimer.erase (params.m_rnti);
   m_dlHarqProcessesDciBuffer.erase  (params.m_rnti);
   m_dlHarqProcessesRlcPduListBuffer.erase  (params.m_rnti);
   m_ulHarqCurrentProcessId.erase  (params.m_rnti);
@@ -563,6 +568,39 @@ RrFfMacScheduler::UpdateHarqProcessId (uint16_t rnti)
 
 
 void
+RrFfMacScheduler::RefreshHarqProcesses ()
+{
+  NS_LOG_FUNCTION (this);
+
+  std::map <uint16_t, DlHarqProcessesTimer_t>::iterator itTimers;
+  for (itTimers = m_dlHarqProcessesTimer.begin (); itTimers != m_dlHarqProcessesTimer.end (); itTimers ++)
+    {
+      for (uint16_t i = 0; i < HARQ_PROC_NUM; i++)
+        {
+          if ((*itTimers).second.at (i) == HARQ_DL_TIMEOUT)
+            {
+              // reset HARQ process
+
+              NS_LOG_DEBUG (this << " Reset HARQ proc " << i << " for RNTI " << (*itTimers).first);
+              std::map <uint16_t, DlHarqProcessesStatus_t>::iterator itStat = m_dlHarqProcessesStatus.find ((*itTimers).first);
+              if (itStat == m_dlHarqProcessesStatus.end ())
+                {
+                  NS_FATAL_ERROR ("No Process Id Status found for this RNTI " << (*itTimers).first);
+                }
+              (*itStat).second.at (i) = 0;
+            }
+          else
+            {
+              (*itTimers).second.at (i)++;
+            }
+        }
+    }
+
+}
+
+
+
+void
 RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::SchedDlTriggerReqParameters& params)
 {
   NS_LOG_FUNCTION (this << " DL Frame no. " << (params.m_sfnSf >> 4) << " subframe no. " << (0xF & params.m_sfnSf));
@@ -625,6 +663,7 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
   m_rachList.clear ();
 
   // Process DL HARQ feedback
+  RefreshHarqProcesses ();
   // retrieve past HARQ retx buffered
   if (m_dlInfoListBuffered.size () > 0)
     {
@@ -847,6 +886,13 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
           newEl.m_rnti = rnti;
           newEl.m_dci = dci;
           (*itHarq).second.at (harqId).m_rv = dci.m_rv;
+          // refresh timer
+          std::map <uint16_t, DlHarqProcessesTimer_t>::iterator itHarqTimer = m_dlHarqProcessesTimer.find (rnti);
+          if (itHarqTimer== m_dlHarqProcessesTimer.end ())
+            {
+              NS_FATAL_ERROR ("Unable to find HARQ timer for RNTI " << (uint16_t)rnti);
+            }
+          (*itHarqTimer).second.at (harqId) = 0;
           ret.m_buildDataList.push_back (newEl);
           rntiAllocated.insert (rnti);
         }
@@ -1088,6 +1134,13 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
               NS_FATAL_ERROR ("Unable to find RNTI entry in DCI HARQ buffer for RNTI " << (*it).m_rnti);
             }
           (*itDci).second.at (newDci.m_harqProcess) = newDci;
+          // refresh timer
+          std::map <uint16_t, DlHarqProcessesTimer_t>::iterator itHarqTimer =  m_dlHarqProcessesTimer.find (newEl.m_rnti);
+          if (itHarqTimer== m_dlHarqProcessesTimer.end ())
+            {
+              NS_FATAL_ERROR ("Unable to find HARQ timer for RNTI " << (uint16_t)newEl.m_rnti);
+            }
+          (*itHarqTimer).second.at (newDci.m_harqProcess) = 0;
         }
       // ...more parameters -> ignored in this version
 

@@ -96,6 +96,13 @@ LteTestUePhy::GenerateDataCqiReport (const SpectrumValue& sinr)
 }
 
 void
+LteTestUePhy::ReportRsReceivedPower (const SpectrumValue& power)
+{
+  NS_LOG_FUNCTION (this);
+  // Not used by the LteTestUePhy
+}
+
+void
 LteTestUePhy::ReportInterference (const SpectrumValue& interf)
 {
   NS_LOG_FUNCTION (this);

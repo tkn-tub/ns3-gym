@@ -116,6 +116,7 @@ LteHelper::DoStart (void)
       m_downlinkChannel->AddSpectrumPropagationLossModel (m_fadingModule);
       m_uplinkChannel->AddSpectrumPropagationLossModel (m_fadingModule);
     }
+  m_phyStats = CreateObject<PhyStatsCalculator> ();
   m_phyTxStats = CreateObject<PhyTxStatsCalculator> ();
   m_phyRxStats = CreateObject<PhyRxStatsCalculator> ();
   m_macStats = CreateObject<MacStatsCalculator> ();
@@ -473,6 +474,9 @@ LteHelper::InstallSingleUeDevice (Ptr<Node> n)
   ulPhy->SetHarqPhyModule (harq);
   phy->SetHarqPhyModule (harq);
 
+  Ptr<LteRsReceivedPowerChunkProcessor> pRs = Create<LteRsReceivedPowerChunkProcessor> (phy->GetObject<LtePhy> ());
+  dlPhy->AddRsPowerChunkProcessor (pRs);
+  
   Ptr<LteCtrlSinrChunkProcessor> pCtrl = Create<LteCtrlSinrChunkProcessor> (phy->GetObject<LtePhy> (), dlPhy);
   dlPhy->AddCtrlSinrChunkProcessor (pCtrl);
 
@@ -809,6 +813,9 @@ LteHelper::EnableLogComponents (void)
   LogComponentEnable ("MacStatsCalculator", LOG_LEVEL_ALL);
   LogComponentEnable ("PhyTxStatsCalculator", LOG_LEVEL_ALL);
   LogComponentEnable ("PhyRxStatsCalculator", LOG_LEVEL_ALL);
+  LogComponentEnable ("PhyStatsCalculator", LOG_LEVEL_ALL);
+
+
 }
 
 void
@@ -877,6 +884,30 @@ FindImsiFromEnbRlcPath (std::string path)
     {
       NS_FATAL_ERROR ("Lookup " << ueMapPath << " got no matches");
     }
+}
+
+uint64_t
+FindImsiFromUePhy (std::string path)
+{
+  NS_LOG_FUNCTION (path);
+  // Sample path input:
+  // /NodeList/#NodeId/DeviceList/#DeviceId/LteUePhy
+
+  // We retrieve the UeInfo associated to the C-RNTI and perform the IMSI lookup
+  std::string ueRlcPath = path.substr (0, path.find ("/LteUePhy"));
+  ueRlcPath += "/LteUeRrc";
+  Config::MatchContainer match = Config::LookupMatches (ueRlcPath);
+
+  if (match.GetN () != 0)
+    {
+      Ptr<Object> ueRrc = match.Get (0);
+      return ueRrc->GetObject<LteUeRrc> ()->GetImsi ();
+    }
+  else
+    {
+      NS_FATAL_ERROR ("Lookup " << ueRlcPath << " got no matches");
+    }
+  return 0;
 }
 
 
@@ -1095,6 +1126,8 @@ UlPhyReceptionCallback (Ptr<PhyRxStatsCalculator> phyRxStats,
 void
 LteHelper::EnablePhyTraces (void)
 {
+  EnableDlPhyTraces ();
+  EnableUlPhyTraces ();
   EnableDlTxPhyTraces ();
   EnableUlTxPhyTraces ();
   EnableDlRxPhyTraces ();
@@ -1178,6 +1211,7 @@ LteHelper::EnableMacTraces (void)
 void
 LteHelper::EnableDlMacTraces (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   Config::Connect ("/NodeList/*/DeviceList/*/LteEnbMac/DlScheduling",
                    MakeBoundCallback (&DlSchedulingCallback, m_macStats));
 }
@@ -1218,8 +1252,81 @@ UlSchedulingCallback (Ptr<MacStatsCalculator> macStats, std::string path,
 void
 LteHelper::EnableUlMacTraces (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   Config::Connect ("/NodeList/*/DeviceList/*/LteEnbMac/UlScheduling",
                    MakeBoundCallback (&UlSchedulingCallback, m_macStats));
+}
+
+void
+ReportCurrentCellRsrpSinrCallback (Ptr<PhyStatsCalculator> phyStats,
+                      std::string path, uint16_t cellId, uint16_t rnti,
+                      double rsrp, double sinr)
+{
+  NS_LOG_FUNCTION (phyStats << path);
+  uint64_t imsi = 0;
+  std::string pathUePhy  = path.substr (0, path.find ("/ReportCurrentCellRsrpSinr"));
+  if (phyStats->ExistsImsiPath (pathUePhy) == true)
+    {
+      imsi = phyStats->GetImsiPath (pathUePhy);
+    }
+  else
+    {
+      imsi = FindImsiFromUePhy (pathUePhy);
+      phyStats->SetImsiPath (pathUePhy, imsi);
+    }
+
+  phyStats->ReportCurrentCellRsrpSinr (cellId, imsi, rnti, rsrp,sinr);
+}
+
+void
+LteHelper::EnableDlPhyTraces (void)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  Config::Connect ("/NodeList/*/DeviceList/*/LteUePhy/ReportCurrentCellRsrpSinr",
+                   MakeBoundCallback (&ReportCurrentCellRsrpSinrCallback, m_phyStats));
+}
+
+void
+ReportUeSinr (Ptr<PhyStatsCalculator> phyStats, std::string path,
+              uint16_t cellId, uint16_t rnti, double sinrLinear)
+{
+  NS_LOG_FUNCTION (phyStats << path);
+
+  uint64_t imsi = 0;
+  std::ostringstream pathAndRnti;
+  pathAndRnti << path << "/" << rnti;
+  std::string pathEnbMac  = path.substr (0, path.find ("LteEnbPhy/ReportUeSinr"));
+  pathEnbMac += "LteEnbMac/DlScheduling";
+  if (phyStats->ExistsImsiPath (pathAndRnti.str ()) == true)
+    {
+      imsi = phyStats->GetImsiPath (pathAndRnti.str ());
+    }
+  else
+    {
+      imsi = FindImsiFromEnbMac (pathEnbMac, rnti);
+      phyStats->SetImsiPath (pathAndRnti.str (), imsi);
+    }
+
+  phyStats->ReportUeSinr (cellId, imsi, rnti, sinrLinear);
+}
+
+void
+ReportInterference (Ptr<PhyStatsCalculator> phyStats, std::string path,
+                    uint16_t cellId, Ptr<SpectrumValue> interference)
+{
+  NS_LOG_FUNCTION (phyStats << path);
+  phyStats->ReportInterference (cellId, interference);
+}
+
+void
+LteHelper::EnableUlPhyTraces (void)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  Config::Connect ("/NodeList/*/DeviceList/*/LteEnbPhy/ReportUeSinr",
+                   MakeBoundCallback (&ReportUeSinr, m_phyStats));
+  Config::Connect ("/NodeList/*/DeviceList/*/LteEnbPhy/ReportInterference",
+                   MakeBoundCallback (&ReportInterference, m_phyStats));
+
 }
 
 Ptr<RadioBearerStatsCalculator>

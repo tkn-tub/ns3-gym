@@ -165,10 +165,16 @@ public:
 
   /** 
    * 
-   * 
    * \param imsi the unique UE identifier
    */
   void SetImsi (uint64_t imsi);
+
+  /**
+   *
+   * \return imsi the unique UE identifier
+   */
+  uint64_t GetImsi (void);
+
 
   /**
    *

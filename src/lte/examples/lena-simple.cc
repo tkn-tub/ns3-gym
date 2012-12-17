@@ -48,7 +48,7 @@ int main (int argc, char *argv[])
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
 
   // Uncomment to enable logging
-  //lteHelper->EnableLogComponents ();
+//  lteHelper->EnableLogComponents ();
 
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
@@ -79,15 +79,14 @@ int main (int argc, char *argv[])
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
   lteHelper->ActivateDataRadioBearer (ueDevs, bearer);
-
   lteHelper->EnableTraces ();
 
   Simulator::Stop (Seconds (1.05));
 
   Simulator::Run ();
 
-  //GtkConfigStore config;
-  //config.ConfigureAttributes ();
+  // GtkConfigStore config;
+  // config.ConfigureAttributes ();
 
   Simulator::Destroy ();
   return 0;

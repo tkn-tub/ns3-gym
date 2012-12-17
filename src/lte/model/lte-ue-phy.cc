@@ -120,7 +120,9 @@ LteUePhy::LteUePhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy)
     m_p10CqiPeriocity (MilliSeconds (1)),  // ideal behavior  
     m_a30CqiPeriocity (MilliSeconds (1)),  // ideal behavior
     m_uePhySapUser (0),
-    m_ueCphySapUser (0)
+    m_ueCphySapUser (0),
+    m_rsReceivedPowerUpdated (false),
+    m_rsrpSinrSampleCounter (0)
 {
   m_amc = CreateObject <LteAmc> ();
   m_uePhySapProvider = new UeMemberLteUePhySapProvider (this);
@@ -210,13 +212,13 @@ LteUePhy::GetTypeId (void)
                   DoubleValue (0.0),
                    MakeDoubleAccessor (&LteUePhy::SetTxMode7Gain                       ),
                   MakeDoubleChecker<double> ())
-    .AddTraceSource ("ReportCurrentCellRsrpRsrq",
-                     "RSRP and RSRQ statistics.",
-                     MakeTraceSourceAccessor (&LteUePhy::m_reportCurrentCellRsrpRsrqTrace))
-    .AddAttribute ("RsrpRsrqSamplePeriod",
-                   "The sampling period for reporting RSRP-RSRQ stats (default value 1)",
+    .AddTraceSource ("ReportCurrentCellRsrpSinr",
+                     "RSRP and SINR statistics.",
+                     MakeTraceSourceAccessor (&LteUePhy::m_reportCurrentCellRsrpSinrTrace))
+    .AddAttribute ("RsrpSinrSamplePeriod",
+                   "The sampling period for reporting RSRP-SINR stats (default value 1)",
                    UintegerValue (1),
-                   MakeUintegerAccessor (&LteUePhy::m_rsrpRsrqSamplePeriod),
+                   MakeUintegerAccessor (&LteUePhy::m_rsrpSinrSamplePeriod),
                    MakeUintegerChecker<uint16_t> ())
     .AddTraceSource ("UlPhyTransmission",
                      "DL transmission PHY layer statistics.",
@@ -409,6 +411,14 @@ LteUePhy::ReportInterference (const SpectrumValue& interf)
   // Currently not used by UE
 }
 
+void
+LteUePhy::ReportRsReceivedPower (const SpectrumValue& power)
+{
+  NS_LOG_FUNCTION (this << power);
+  m_rsReceivedPowerUpdated = true;
+  m_rsReceivedPower = power;  
+}
+
 
 
 Ptr<DlCqiLteControlMessage>
@@ -421,14 +431,31 @@ LteUePhy::CreateDlCqiFeedbackMessage (const SpectrumValue& sinr)
   SpectrumValue newSinr = sinr;
   newSinr *= m_txModeGain.at (m_transmissionMode);
 
-  m_rsrpRsrqSampleCounter++;
-  if (m_rsrpRsrqSampleCounter==m_rsrpRsrqSamplePeriod)
+  m_rsrpSinrSampleCounter++;
+  if (m_rsrpSinrSampleCounter==m_rsrpSinrSamplePeriod)
     {
-      // Generate RSRP and RSRQ traces (dummy values, real valeus TBD)
-      double rsrp = 0.0;
-      double rsrq = 0.0;
-      m_reportCurrentCellRsrpRsrqTrace (m_rnti, m_cellId, rsrp, rsrq);
-      m_rsrpRsrqSampleCounter = 0;
+      NS_ASSERT_MSG (m_rsReceivedPowerUpdated, " RS received power info obsolete");
+      // RSRP evaluated as averaged received power among RBs
+      double sum = 0.0;
+      uint8_t rbNum = 0;
+      Values::const_iterator it;
+      for (it = m_rsReceivedPower.ConstValuesBegin (); it != m_rsReceivedPower.ConstValuesEnd (); it++)
+        {
+          sum += (*it);
+          rbNum++;
+        }
+      double rsrp = sum / (double)rbNum;
+      // averaged SINR among RBs
+      for (it = sinr.ConstValuesBegin (); it != sinr.ConstValuesEnd (); it++)
+        {
+          sum += (*it);
+          rbNum++;
+        }
+      double avSinr = sum / (double)rbNum;
+      NS_LOG_INFO (this << " cellId " << m_cellId << " rnti " << m_rnti << " RSRP " << rsrp << " SINR " << avSinr);
+ 
+      m_reportCurrentCellRsrpSinrTrace (m_cellId, m_rnti, rsrp, avSinr);
+      m_rsrpSinrSampleCounter = 0;
     }
 
 
@@ -698,6 +725,9 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
 
   NS_ASSERT_MSG (frameNo > 0, "the SRS index check code assumes that frameNo starts at 1");
   
+  // refresh internal variables
+  m_rsReceivedPowerUpdated = false;
+  
   if (m_ulConfigured)
     {
       // update uplink transmission mask according to previous UL-CQIs
@@ -793,7 +823,7 @@ LteUePhy::DoReset ()
   m_ulConfigured = false;
   m_raPreambleId = 255; // value out of range
   m_raRnti = 11; // value out of range
-  m_rsrpRsrqSampleCounter = 0;
+  m_rsrpSinrSampleCounter = 0;
   m_p10CqiLast = Simulator::Now ();
   m_a30CqiLast = Simulator::Now ();
 

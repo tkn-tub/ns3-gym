@@ -1066,6 +1066,13 @@ LteSpectrumPhy::SetCellId (uint16_t cellId)
 
 
 void
+LteSpectrumPhy::AddRsPowerChunkProcessor (Ptr<LteSinrChunkProcessor> p)
+{
+  m_interferenceCtrl->AddRsPowerChunkProcessor (p);
+}
+
+
+void
 LteSpectrumPhy::AddDataSinrChunkProcessor (Ptr<LteSinrChunkProcessor> p)
 {
   m_interferenceData->AddSinrChunkProcessor (p);

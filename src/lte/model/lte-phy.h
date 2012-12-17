@@ -205,7 +205,16 @@ public:
   *
   * \param sinr the interference + noise power measured by the device
   */
-  virtual void ReportInterference (const SpectrumValue& interf) = 0;
+  virtual void ReportInterference (const SpectrumValue& power) = 0;
+
+  /**
+  * generate a report based on the linear RS power perceived during CTRL 
+  * frame
+  * NOTE: used only by UE for evaluating RSRP
+  *
+  * \param sinr the RS power measured by the device
+  */
+  virtual void ReportRsReceivedPower (const SpectrumValue& interf) = 0;
 
 
 

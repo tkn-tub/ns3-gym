@@ -264,6 +264,12 @@ LteUeRrc::SetImsi (uint64_t imsi)
   m_imsi = imsi;
 }
 
+uint64_t
+LteUeRrc::GetImsi (void)
+{
+  return m_imsi;
+}
+
 uint16_t
 LteUeRrc::GetRnti () const
 {
