@@ -26,6 +26,7 @@
 #include <list>
 
 #include <ns3/ptr.h>
+#include <ns3/simulator.h>
 
 namespace ns3 {
 
@@ -594,63 +595,63 @@ template <class C>
 void 
 MemberLteUeRrcSapProvider<C>::RecvMasterInformationBlock (MasterInformationBlock msg)
 {
-  m_owner->DoRecvMasterInformationBlock (msg);
+  Simulator::ScheduleNow (&C::DoRecvMasterInformationBlock, m_owner, msg);
 }
 
 template <class C>
 void 
 MemberLteUeRrcSapProvider<C>::RecvSystemInformationBlockType1 (SystemInformationBlockType1 msg)
 {
-  m_owner->DoRecvSystemInformationBlockType1 (msg);
+  Simulator::ScheduleNow (&C::DoRecvSystemInformationBlockType1, m_owner, msg);
 }
 
 template <class C>
 void 
 MemberLteUeRrcSapProvider<C>::RecvSystemInformation (SystemInformation msg)
 {
-  m_owner->DoRecvSystemInformation (msg);
+  Simulator::ScheduleNow (&C::DoRecvSystemInformation, m_owner, msg);
 }
 
 template <class C>
 void 
 MemberLteUeRrcSapProvider<C>::RecvRrcConnectionSetup (RrcConnectionSetup msg)
 {
-  m_owner->DoRecvRrcConnectionSetup (msg);
+  Simulator::ScheduleNow (&C::DoRecvRrcConnectionSetup, m_owner, msg);
 }
 
 template <class C>
 void 
 MemberLteUeRrcSapProvider<C>::RecvRrcConnectionReconfiguration (RrcConnectionReconfiguration msg)
 {
-  m_owner->DoRecvRrcConnectionReconfiguration (msg);
+  Simulator::ScheduleNow (&C::DoRecvRrcConnectionReconfiguration, m_owner, msg);
 }
 
 template <class C>
 void 
 MemberLteUeRrcSapProvider<C>::RecvRrcConnectionReestablishment (RrcConnectionReestablishment msg)
 {
-  m_owner->DoRecvRrcConnectionReestablishment (msg);
+  Simulator::ScheduleNow (&C::DoRecvRrcConnectionReestablishment, m_owner, msg);
 }
 
 template <class C>
 void 
 MemberLteUeRrcSapProvider<C>::RecvRrcConnectionReestablishmentReject (RrcConnectionReestablishmentReject msg)
 {
-  m_owner->DoRecvRrcConnectionReestablishmentReject (msg);
+  Simulator::ScheduleNow (&C::DoRecvRrcConnectionReestablishmentReject, m_owner, msg);
 }
 
 template <class C>
 void 
 MemberLteUeRrcSapProvider<C>::RecvRrcConnectionRelease (RrcConnectionRelease msg)
 {
-  m_owner->DoRecvRrcConnectionRelease (msg);
+  Simulator::ScheduleNow (&C::DoRecvRrcConnectionRelease, m_owner, msg);
 }
 
 template <class C>
 void 
 MemberLteUeRrcSapProvider<C>::RecvRrcConnectionReject (RrcConnectionReject msg)
 {
-  m_owner->DoRecvRrcConnectionReject (msg);
+  Simulator::ScheduleNow (&C::DoRecvRrcConnectionReject, m_owner, msg);
 }
 
 
@@ -852,35 +853,35 @@ template <class C>
 void 
 MemberLteEnbRrcSapProvider<C>::RecvRrcConnectionRequest (uint16_t rnti, RrcConnectionRequest msg)
 {
-  m_owner->DoRecvRrcConnectionRequest (rnti, msg);
+  Simulator::ScheduleNow (&C::DoRecvRrcConnectionRequest, m_owner, rnti, msg);
 }
 
 template <class C>
 void 
 MemberLteEnbRrcSapProvider<C>::RecvRrcConnectionSetupCompleted (uint16_t rnti, RrcConnectionSetupCompleted msg)
 {
-  m_owner->DoRecvRrcConnectionSetupCompleted (rnti, msg);
+  Simulator::ScheduleNow (&C::DoRecvRrcConnectionSetupCompleted, m_owner, rnti, msg);
 }
 
 template <class C>
 void 
 MemberLteEnbRrcSapProvider<C>::RecvRrcConnectionReconfigurationCompleted (uint16_t rnti, RrcConnectionReconfigurationCompleted msg)
 {
-  m_owner->DoRecvRrcConnectionReconfigurationCompleted (rnti, msg);
+  Simulator::ScheduleNow (&C::DoRecvRrcConnectionReconfigurationCompleted, m_owner, rnti, msg);
 }
 
 template <class C>
 void 
 MemberLteEnbRrcSapProvider<C>::RecvRrcConnectionReestablishmentRequest (uint16_t rnti, RrcConnectionReestablishmentRequest msg)
 {
-  m_owner->DoRecvRrcConnectionReestablishmentRequest (rnti, msg);
+  Simulator::ScheduleNow (&C::DoRecvRrcConnectionReestablishmentRequest, m_owner, rnti, msg);
 }
 
 template <class C>
 void 
 MemberLteEnbRrcSapProvider<C>::RecvRrcConnectionReestablishmentComplete (uint16_t rnti, RrcConnectionReestablishmentComplete msg)
 {
-  m_owner->DoRecvRrcConnectionReestablishmentComplete (rnti, msg);
+  Simulator::ScheduleNow (&C::DoRecvRrcConnectionReestablishmentComplete, m_owner, rnti, msg);
 }
 
 

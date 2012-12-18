@@ -294,6 +294,27 @@ LteSpectrumPhy::SetNoisePowerSpectralDensity (Ptr<const SpectrumValue> noisePsd)
   m_interferenceCtrl->SetNoisePowerSpectralDensity (noisePsd);
 }
 
+  
+void 
+LteSpectrumPhy::Reset ()
+{
+  NS_LOG_FUNCTION (this);
+  m_cellId = 0;
+  m_state = IDLE;
+  m_transmissionMode = 0;
+  m_layersNum = 1;
+  m_endTxEvent.Cancel ();
+  m_endRxDataEvent.Cancel ();
+  m_endRxDlCtrlEvent.Cancel ();
+  m_endRxUlSrsEvent.Cancel ();
+  m_rxControlMessageList.clear ();
+  m_expectedTbs.clear ();
+  m_txControlMessageList.clear ();
+  m_rxPacketBurstList.clear ();
+  m_txPacketBurst = 0;
+  m_rxSpectrumModel = 0;
+}
+
 
 
 void
@@ -429,7 +450,7 @@ LteSpectrumPhy::StartTxDataFrame (Ptr<PacketBurst> pb, std::list<Ptr<LteControlM
       txParams->ctrlMsgList = ctrlMsgList;
       txParams->cellId = m_cellId;
       m_channel->StartTx (txParams);
-      Simulator::Schedule (duration, &LteSpectrumPhy::EndTx, this);
+      m_endTxEvent = Simulator::Schedule (duration, &LteSpectrumPhy::EndTx, this);
     }
     return false;
     break;
@@ -484,7 +505,7 @@ LteSpectrumPhy::StartTxDlCtrlFrame (std::list<Ptr<LteControlMessage> > ctrlMsgLi
       txParams->cellId = m_cellId;
       txParams->ctrlMsgList = ctrlMsgList;
       m_channel->StartTx (txParams);
-      Simulator::Schedule (DL_CTRL_DURATION, &LteSpectrumPhy::EndTx, this);
+      m_endTxEvent = Simulator::Schedule (DL_CTRL_DURATION, &LteSpectrumPhy::EndTx, this);
     }
     return false;
     break;
@@ -539,7 +560,7 @@ LteSpectrumPhy::StartTxUlSrsFrame ()
       txParams->psd = m_txPsd;
       txParams->cellId = m_cellId;
       m_channel->StartTx (txParams);
-      Simulator::Schedule (UL_SRS_DURATION, &LteSpectrumPhy::EndTx, this);
+      m_endTxEvent = Simulator::Schedule (UL_SRS_DURATION, &LteSpectrumPhy::EndTx, this);
     }
     return false;
     break;
@@ -646,7 +667,7 @@ LteSpectrumPhy::StartRxData (Ptr<LteSpectrumSignalParametersDataFrame> params)
                   m_firstRxStart = Simulator::Now ();
                   m_firstRxDuration = params->duration;
                   NS_LOG_LOGIC (this << " scheduling EndRx with delay " << params->duration.GetSeconds () << "s");
-                  Simulator::Schedule (params->duration, &LteSpectrumPhy::EndRxData, this);
+                  m_endRxDataEvent = Simulator::Schedule (params->duration, &LteSpectrumPhy::EndRxData, this);
                 }
               else
                 {
@@ -740,11 +761,11 @@ LteSpectrumPhy::StartRxCtrl (Ptr<SpectrumSignalParameters> params)
               {
                 // store the DCIs
                 m_rxControlMessageList = lteDlCtrlRxParams->ctrlMsgList;
-                Simulator::Schedule (params->duration, &LteSpectrumPhy::EndRxDlCtrl, this);
+                m_endRxDlCtrlEvent = Simulator::Schedule (params->duration, &LteSpectrumPhy::EndRxDlCtrl, this);
               }
             else
               {
-                Simulator::Schedule (params->duration, &LteSpectrumPhy::EndRxUlSrs, this);
+                m_endRxUlSrsEvent = Simulator::Schedule (params->duration, &LteSpectrumPhy::EndRxUlSrs, this);
               }
           }
           else if (m_state == RX_CTRL)
