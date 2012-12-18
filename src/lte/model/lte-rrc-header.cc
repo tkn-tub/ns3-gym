@@ -2019,8 +2019,30 @@ RrcConnectionReconfigurationHeader::PreSerialize () const
       if (m_mobilityControlInfo.haveCarrierBandwidth)
         {
           SerializeSequence (std::bitset<1> (1),false);
-          SerializeEnum (16,m_mobilityControlInfo.carrierBandwidth.dlBandwidth);
-          SerializeEnum (16,m_mobilityControlInfo.carrierBandwidth.ulBandwidth);
+
+          // Serialize dl-Bandwidth
+          switch(m_mobilityControlInfo.carrierBandwidth.dlBandwidth)
+          {
+            case 6: SerializeEnum (16,0); break;
+            case 15: SerializeEnum (16,1); break;
+            case 25: SerializeEnum (16,2); break;
+            case 50: SerializeEnum (16,3); break;
+            case 75: SerializeEnum (16,4); break;
+            case 100: SerializeEnum (16,5); break;
+            default: SerializeEnum (16,6);
+          }
+
+          // Serialize ul-Bandwidth
+          switch(m_mobilityControlInfo.carrierBandwidth.ulBandwidth)
+          {
+            case 6: SerializeEnum (16,0); break;
+            case 15: SerializeEnum (16,1); break;
+            case 25: SerializeEnum (16,2); break;
+            case 50: SerializeEnum (16,3); break;
+            case 75: SerializeEnum (16,4); break;
+            case 100: SerializeEnum (16,5); break;
+            default: SerializeEnum (16,6);
+          }
         }
 
       // Serialize t304
@@ -2206,12 +2228,58 @@ RrcConnectionReconfigurationHeader::Deserialize (Buffer::Iterator bIterator)
                   bIterator = DeserializeSequence (&ulBandwidthPresent,false,bIterator);
 
                   bIterator = DeserializeEnum (16,&n,bIterator);
-                  m_mobilityControlInfo.carrierBandwidth.dlBandwidth = n;
+                  switch(n)
+                  {
+                    case 0:
+                      m_mobilityControlInfo.carrierBandwidth.dlBandwidth = 6;
+                      break;
+                    case 1:
+                      m_mobilityControlInfo.carrierBandwidth.dlBandwidth = 15;
+                      break;
+                    case 2:
+                      m_mobilityControlInfo.carrierBandwidth.dlBandwidth = 25;
+                      break;
+                    case 3:
+                      m_mobilityControlInfo.carrierBandwidth.dlBandwidth = 50;
+                      break;
+                    case 4:
+                      m_mobilityControlInfo.carrierBandwidth.dlBandwidth = 75;
+                      break;
+                    case 5:
+                      m_mobilityControlInfo.carrierBandwidth.dlBandwidth = 100;
+                      break;
+                    case 6:
+                      m_mobilityControlInfo.carrierBandwidth.dlBandwidth = 0;
+                      break;
+                  }
 
                   if (ulBandwidthPresent[0])
                     {
                       bIterator = DeserializeEnum (16,&n,bIterator);
-                      m_mobilityControlInfo.carrierBandwidth.ulBandwidth = n;
+                      switch(n)
+                      {
+                        case 0:
+                          m_mobilityControlInfo.carrierBandwidth.ulBandwidth = 6;
+                          break;
+                        case 1:
+                          m_mobilityControlInfo.carrierBandwidth.ulBandwidth = 15;
+                          break;
+                        case 2:
+                          m_mobilityControlInfo.carrierBandwidth.ulBandwidth = 25;
+                          break;
+                        case 3:
+                          m_mobilityControlInfo.carrierBandwidth.ulBandwidth = 50;
+                          break;
+                        case 4:
+                          m_mobilityControlInfo.carrierBandwidth.ulBandwidth = 75;
+                          break;
+                        case 5:
+                          m_mobilityControlInfo.carrierBandwidth.ulBandwidth = 100;
+                          break;
+                        case 6:
+                          m_mobilityControlInfo.carrierBandwidth.ulBandwidth = 0;
+                          break;
+                      }
                     }
                 }
 

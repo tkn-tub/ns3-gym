@@ -449,8 +449,8 @@ RrcConnectionReconfigurationTestCase::DoRun (void)
   msg.mobilityControlInfo.carrierFreq.dlCarrierFreq = 3;
   msg.mobilityControlInfo.carrierFreq.ulCarrierFreq = 5;
   msg.mobilityControlInfo.haveCarrierBandwidth = true;
-  msg.mobilityControlInfo.carrierBandwidth.dlBandwidth = 5;
-  msg.mobilityControlInfo.carrierBandwidth.ulBandwidth = 3;
+  msg.mobilityControlInfo.carrierBandwidth.dlBandwidth = 50;
+  msg.mobilityControlInfo.carrierBandwidth.ulBandwidth = 25;
   msg.mobilityControlInfo.newUeIdentity = 11;
   msg.mobilityControlInfo.haveRachConfigDedicated = true;
   msg.mobilityControlInfo.rachConfigDedicated.raPreambleIndex = 2; 
