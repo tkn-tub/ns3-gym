@@ -400,7 +400,7 @@ RrFfMacScheduler::DoCschedUeReleaseReq (const struct FfMacCschedSapProvider::Csc
     {
       if ((*it).m_rnti == params.m_rnti)
         {
-          NS_LOG_DEBUG (this << " Erase RNTI " << (*it).m_rnti << " LC " << (uint16_t)(*it).m_logicalChannelIdentity);
+          NS_LOG_INFO (this << " Erase RNTI " << (*it).m_rnti << " LC " << (uint16_t)(*it).m_logicalChannelIdentity);
           it = m_rlcBufferReq.erase (it);
         }
       else
@@ -581,7 +581,7 @@ RrFfMacScheduler::RefreshHarqProcesses ()
             {
               // reset HARQ process
 
-              NS_LOG_DEBUG (this << " Reset HARQ proc " << i << " for RNTI " << (*itTimers).first);
+              NS_LOG_INFO (this << " Reset HARQ proc " << i << " for RNTI " << (*itTimers).first);
               std::map <uint16_t, DlHarqProcessesStatus_t>::iterator itStat = m_dlHarqProcessesStatus.find ((*itTimers).first);
               if (itStat == m_dlHarqProcessesStatus.end ())
                 {
@@ -980,7 +980,7 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
   // Resource allocation type 0 (see sec 7.1.6.1 of 36.213)
 
   int rbgPerTb = (rbgNum - rbgAllocatedNum) / nTbs;
-  NS_LOG_DEBUG (this << " Flows to be transmitted " << nflows << " rbgPerTb " << rbgPerTb);
+  NS_LOG_INFO (this << " Flows to be transmitted " << nflows << " rbgPerTb " << rbgPerTb);
   if (rbgPerTb == 0)
     {
       rbgPerTb = 1;                // at least 1 rbg per TB (till available resource)
@@ -1104,13 +1104,13 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
       uint32_t rbgMask = 0;
       uint16_t i = 0;
       NS_LOG_INFO (this << " DL - Allocate user " << newEl.m_rnti << " LCs " << (uint16_t)(*itLcRnti).second << " bytes " << tbSize << " mcs " << (uint16_t) newDci.m_mcs.at (0) << " harqId " << (uint16_t)newDci.m_harqProcess <<  " layers " << nLayer);
-      NS_LOG_DEBUG ("RBG:");
+      NS_LOG_INFO ("RBG:");
       while (i < rbgPerTb)
         {
           if (rbgMap.at (rbgAllocated) == false)
             {
               rbgMask = rbgMask + (0x1 << rbgAllocated);
-              NS_LOG_DEBUG ("\t " << rbgAllocated);
+              NS_LOG_INFO ("\t " << rbgAllocated);
               i++;
               rbgMap.at (rbgAllocated) = true;
             }
@@ -1326,6 +1326,7 @@ RrFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
     {
       std::set <uint16_t>::iterator itRnti = rntiAllocated.find ((*it).first);
       // select UEs with queues not empty and not yet allocated for HARQ
+      NS_LOG_INFO (this << " UE " << (*it).first << " queue " << (*it).second);
       if (((*it).second > 0)&&(itRnti == rntiAllocated.end ()))
         {
           nflows++;
@@ -1389,7 +1390,7 @@ RrFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
           // limit to physical resources last resource assignment
           rbPerFlow = m_cschedCellConfig.m_ulBandwidth - rbAllocated;
         }
-      NS_LOG_DEBUG (this << " try to allocate " << (*it).first);
+      NS_LOG_INFO (this << " try to allocate " << (*it).first);
       UlDciListElement_s uldci;
       uldci.m_rnti = (*it).first;
       uldci.m_rbLen = rbPerFlow;
@@ -1415,7 +1416,7 @@ RrFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
                   rbMap.at (j) = true;
                   // store info on allocation for managing ul-cqi interpretation
                   rbgAllocationMap.at (j) = (*it).first;
-                  NS_LOG_DEBUG ("\t " << j);
+                  NS_LOG_INFO ("\t " << j);
                 }
               rbAllocated += rbPerFlow;
               allocated = true;
@@ -1472,7 +1473,7 @@ RrFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
                   // restart from the first
                   it = m_ceBsrRxed.begin ();
                 }
-              NS_LOG_DEBUG (this << " CQI = 0");
+              NS_LOG_INFO (this << " UE discarded for CQI = 0");
               continue; // CQI == 0 means "out of range" (see table 7.2.3-1 of 36.213)
             }
           uldci.m_mcs = m_amc->GetMcsFromCqi (cqi);
@@ -1529,6 +1530,7 @@ RrFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
   while (((*it).first != m_nextRntiUl)&&(rbPerFlow!=0));
 
   m_allocationMaps.insert (std::pair <uint16_t, std::vector <uint16_t> > (params.m_sfnSf, rbgAllocationMap));
+
   m_schedSapUser->SchedUlConfigInd (ret);
   return;
 }
@@ -1580,13 +1582,13 @@ RrFfMacScheduler::DoSchedUlMacCtrlInfoReq (const struct FfMacSchedSapProvider::S
             {
               // create the new entry
               m_ceBsrRxed.insert ( std::pair<uint16_t, uint32_t > (rnti, buffer));
-              NS_LOG_INFO (this << " Insert RNTI " << rnti);
+              NS_LOG_INFO (this << " Insert RNTI " << rnti << " queue " << buffer);
             }
           else
             {
               // update the buffer size value
               (*it).second = buffer;
-              NS_LOG_INFO (this << " Update RNTI " << rnti);
+              NS_LOG_INFO (this << " Update RNTI " << rnti << " queue " << buffer);
             }
         }
     }

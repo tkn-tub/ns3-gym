@@ -541,11 +541,20 @@ LteUeMac::DoReceiveLteControlMessage (Ptr<LteControlMessage> msg)
           // New transmission -> retrieve data from RLC
           std::map <uint8_t, LteMacSapProvider::ReportBufferStatusParameters>::iterator itBsr;
           uint16_t activeLcs = 0;
+          uint32_t statusPduMinSize = 0;
           for (itBsr = m_ulBsrReceived.begin (); itBsr != m_ulBsrReceived.end (); itBsr++)
             {
               if (((*itBsr).second.statusPduSize > 0) || ((*itBsr).second.retxQueueSize > 0) || ((*itBsr).second.txQueueSize > 0))
                 {
                   activeLcs++;
+                  if (((*itBsr).second.statusPduSize!=0)&&((*itBsr).second.statusPduSize < statusPduMinSize))
+                    {
+                      statusPduMinSize = (*itBsr).second.statusPduSize;
+                    }
+                  if (((*itBsr).second.statusPduSize!=0)&&(statusPduMinSize == 0))
+                    {
+                      statusPduMinSize = (*itBsr).second.statusPduSize;
+                    }
                 }
             }
           if (activeLcs == 0)
@@ -555,7 +564,18 @@ LteUeMac::DoReceiveLteControlMessage (Ptr<LteControlMessage> msg)
             }
           std::map <uint8_t, LcInfo>::iterator it;
           uint32_t bytesPerActiveLc = dci.m_tbSize / activeLcs;
-          NS_LOG_LOGIC (this << " UE: UL-CQI notified TxOpportunity of " << dci.m_tbSize << " => " << bytesPerActiveLc << " bytes per active LC");
+          bool statusPduPriority = false;
+          if ((statusPduMinSize != 0)&&(bytesPerActiveLc < statusPduMinSize))
+            {
+              // send only the status PDU which has highest priority
+              statusPduPriority = true;
+              NS_LOG_DEBUG (this << " Reduced resource -> send only Status, b ytes " << statusPduMinSize);
+              if (dci.m_tbSize < statusPduMinSize)
+                {
+                  NS_FATAL_ERROR ("Insufficient Tx Opportunity for sending a status message");
+                }
+            }
+          NS_LOG_LOGIC (this << " UE " << m_rnti << ": UL-CQI notified TxOpportunity of " << dci.m_tbSize << " => " << bytesPerActiveLc << " bytes per active LC");
           for (it = m_lcInfoMap.begin (); it!=m_lcInfoMap.end (); it++)
             {
               itBsr = m_ulBsrReceived.find ((*it).first);
@@ -564,40 +584,59 @@ LteUeMac::DoReceiveLteControlMessage (Ptr<LteControlMessage> msg)
                   ((*itBsr).second.retxQueueSize > 0) ||
                   ((*itBsr).second.txQueueSize > 0)) )
                 {
-                  uint32_t bytesForThisLc = bytesPerActiveLc;
-                  NS_LOG_LOGIC (this << "\t" << bytesPerActiveLc << " bytes to LC " << (uint32_t)(*it).first << " statusQueue " << (*itBsr).second.statusPduSize << " retxQueue" << (*itBsr).second.retxQueueSize << " txQueue" <<  (*itBsr).second.txQueueSize);
-                  if (((*itBsr).second.statusPduSize > 0) && (bytesForThisLc > (*itBsr).second.statusPduSize))
+                  if ((statusPduPriority) && ((*itBsr).second.statusPduSize == statusPduMinSize))
                     {
                       (*it).second.macSapUser->NotifyTxOpportunity ((*itBsr).second.statusPduSize, 0, 0);
-                      bytesForThisLc -= (*itBsr).second.statusPduSize;
+                      NS_LOG_LOGIC (this << "\t" << bytesPerActiveLc << " send  " << (*itBsr).second.statusPduSize << " status bytes to LC " << (uint32_t)(*it).first << " statusQueue " << (*itBsr).second.statusPduSize << " retxQueue" << (*itBsr).second.retxQueueSize << " txQueue" <<  (*itBsr).second.txQueueSize);
                       (*itBsr).second.statusPduSize = 0;
+                      break;
                     }
-                  if ((bytesForThisLc > 0) && (((*itBsr).second.retxQueueSize > 0) || ((*itBsr).second.txQueueSize > 0)))
+                  else
                     {
-                      if ((*itBsr).second.retxQueueSize > 0)
+                      uint32_t bytesForThisLc = bytesPerActiveLc;
+                      NS_LOG_LOGIC (this << "\t" << bytesPerActiveLc << " bytes to LC " << (uint32_t)(*it).first << " statusQueue " << (*itBsr).second.statusPduSize << " retxQueue" << (*itBsr).second.retxQueueSize << " txQueue" <<  (*itBsr).second.txQueueSize);
+                      if (((*itBsr).second.statusPduSize > 0) && (bytesForThisLc > (*itBsr).second.statusPduSize))
                         {
-                          (*it).second.macSapUser->NotifyTxOpportunity (bytesForThisLc, 0, 0);
-                          if ((*itBsr).second.retxQueueSize >= bytesForThisLc)
+                          (*it).second.macSapUser->NotifyTxOpportunity ((*itBsr).second.statusPduSize, 0, 0);
+                          bytesForThisLc -= (*itBsr).second.statusPduSize;
+                          (*itBsr).second.statusPduSize = 0;
+
+                        }
+                      else
+                        {
+                          if ((*itBsr).second.statusPduSize>bytesForThisLc)
                             {
-                              (*itBsr).second.retxQueueSize -= bytesForThisLc;
-                            }
-                          else
-                            {
-                              (*itBsr).second.retxQueueSize = 0;
+                              NS_FATAL_ERROR ("Insufficient Tx Opportunity for sending a status message");
                             }
                         }
-                      else if ((*itBsr).second.txQueueSize > 0)
+                      if ((bytesForThisLc > 0) && (((*itBsr).second.retxQueueSize > 0) || ((*itBsr).second.txQueueSize > 0)))
                         {
-                          (*it).second.macSapUser->NotifyTxOpportunity (bytesForThisLc, 0, 0);
-                          if ((*itBsr).second.txQueueSize >= bytesForThisLc - 2)
+                          if ((*itBsr).second.retxQueueSize > 0)
                             {
-                              (*itBsr).second.txQueueSize -= bytesForThisLc - 2;
+                              (*it).second.macSapUser->NotifyTxOpportunity (bytesForThisLc, 0, 0);
+                              if ((*itBsr).second.retxQueueSize >= bytesForThisLc)
+                                {
+                                  (*itBsr).second.retxQueueSize -= bytesForThisLc;
+                                }
+                              else
+                                {
+                                  (*itBsr).second.retxQueueSize = 0;
+                                }
                             }
-                          else
+                          else if ((*itBsr).second.txQueueSize > 0)
                             {
-                              (*itBsr).second.txQueueSize = 0;
+                              (*it).second.macSapUser->NotifyTxOpportunity (bytesForThisLc, 0, 0);
+                              if ((*itBsr).second.txQueueSize >= bytesForThisLc - 2)
+                                {
+                                  (*itBsr).second.txQueueSize -= bytesForThisLc - 2;
+                                }
+                              else
+                                {
+                                  (*itBsr).second.txQueueSize = 0;
+                                }
                             }
                         }
+                      NS_LOG_LOGIC (this << "\t" << bytesPerActiveLc << "\t new queues " << (uint32_t)(*it).first << " statusQueue " << (*itBsr).second.statusPduSize << " retxQueue" << (*itBsr).second.retxQueueSize << " txQueue" <<  (*itBsr).second.txQueueSize);
                     }
 
                 }
