@@ -69,6 +69,7 @@ struct tbInfo_t
   double mi;
   bool downlink;
   bool corrupt;
+  bool harqFeedbackSent;
 };
 
 typedef std::map<TbId_t, tbInfo_t> expectedTbs_t;

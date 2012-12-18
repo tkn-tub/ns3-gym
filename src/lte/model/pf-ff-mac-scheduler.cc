@@ -724,7 +724,7 @@ PfFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
       m_dlInfoListBuffered.clear ();
     }
   std::vector <struct DlInfoListElement_s> dlInfoListUntxed;
-  for (uint8_t i = 0; i < m_dlInfoListBuffered.size (); i++)
+  for (uint16_t i = 0; i < m_dlInfoListBuffered.size (); i++)
     {
       std::set <uint16_t>::iterator itRnti = rntiAllocated.find (m_dlInfoListBuffered.at (i).m_rnti);
       if (itRnti != rntiAllocated.end ())
@@ -1373,7 +1373,7 @@ PfFfMacScheduler::EstimateUlSinr (uint16_t rnti, uint16_t rb)
 void
 PfFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::SchedUlTriggerReqParameters& params)
 {
-  NS_LOG_FUNCTION (this << " UL - Frame no. " << (params.m_sfnSf >> 4) << " subframe no. " << (0xF & params.m_sfnSf));
+  NS_LOG_FUNCTION (this << " UL - Frame no. " << (params.m_sfnSf >> 4) << " subframe no. " << (0xF & params.m_sfnSf) << " size " << params.m_ulInfoList.size ());
 
   RefreshUlCqiMaps ();
 
@@ -1410,8 +1410,9 @@ PfFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
         {
           (*itProcId).second = ((*itProcId).second + 1) % HARQ_PROC_NUM;
         }
-      for (uint8_t i = 0; i < params.m_ulInfoList.size (); i++)
-        {
+
+      for (uint16_t i = 0; i < params.m_ulInfoList.size (); i++)
+        {        
           if (params.m_ulInfoList.at (i).m_receptionStatus == UlInfoListElement_s::NotOk)
             {
               // retx correspondent block: retrieve the UL-DCI
@@ -1422,7 +1423,7 @@ PfFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
                   NS_LOG_ERROR ("No info find in HARQ buffer for UE (might change eNB) " << rnti);
                 }
               uint8_t harqId = (uint8_t)((*itProcId).second - HARQ_PERIOD) % HARQ_PROC_NUM;
-              NS_LOG_INFO (this << " UL-HARQ retx RNTI " << rnti << " harqId " << (uint16_t)harqId);
+              NS_LOG_INFO (this << " UL-HARQ retx RNTI " << rnti << " harqId " << (uint16_t)harqId << " i " << i << " size "  << params.m_ulInfoList.size ());
               std::map <uint16_t, UlHarqProcessesDciBuffer_t>::iterator itHarq = m_ulHarqProcessesDciBuffer.find (rnti);
               if (itHarq == m_ulHarqProcessesDciBuffer.end ())
                 {
@@ -1436,7 +1437,7 @@ PfFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
                 }
               if ((*itStat).second.at (harqId) >= 3)
                 {
-                  NS_LOG_DEBUG ("Max number of retransmissions reached (UL)-> drop process");
+                  NS_LOG_INFO ("Max number of retransmissions reached (UL)-> drop process");
                   continue;
                 }
               bool free = true;
@@ -1473,9 +1474,12 @@ PfFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
               ret.m_dciList.push_back (dci);
               rntiAllocated.insert (dci.m_rnti);
             }
+            else
+            {
+              NS_LOG_INFO (this << " HARQ-ACK feedback from RNTI " << params.m_ulInfoList.at (i).m_rnti);
+            }
         }
     }
-
 
   std::map <uint16_t,uint32_t>::iterator it;
   int nflows = 0;

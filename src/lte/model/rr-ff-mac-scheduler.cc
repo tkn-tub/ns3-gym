@@ -686,7 +686,7 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
       m_dlInfoListBuffered.clear ();
     }
   std::vector <struct DlInfoListElement_s> dlInfoListUntxed;
-  for (uint8_t i = 0; i < m_dlInfoListBuffered.size (); i++)
+  for (uint16_t i = 0; i < m_dlInfoListBuffered.size (); i++)
     {
       std::set <uint16_t>::iterator itRnti = rntiAllocated.find (m_dlInfoListBuffered.at (i).m_rnti);
       if (itRnti != rntiAllocated.end ())
@@ -1253,7 +1253,7 @@ RrFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
         {
           (*itProcId).second = ((*itProcId).second + 1) % HARQ_PROC_NUM;
         }
-      for (uint8_t i = 0; i < params.m_ulInfoList.size (); i++)
+      for (uint16_t i = 0; i < params.m_ulInfoList.size (); i++)
         {
           if (params.m_ulInfoList.at (i).m_receptionStatus == UlInfoListElement_s::NotOk)
             {

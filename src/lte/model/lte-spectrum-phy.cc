@@ -802,7 +802,7 @@ LteSpectrumPhy::AddExpectedTb (uint16_t  rnti, uint8_t ndi, uint16_t size, uint8
       m_expectedTbs.erase (it);
     }
   // insert new entry
-  tbInfo_t tbInfo = {ndi, size, mcs, map, harqId, rv, 0.0, downlink, false};
+  tbInfo_t tbInfo = {ndi, size, mcs, map, harqId, rv, 0.0, downlink, false, false};
   m_expectedTbs.insert (std::pair<TbId_t, tbInfo_t> (tbId,tbInfo));
 }
 
@@ -909,69 +909,73 @@ LteSpectrumPhy::EndRxData ()
                     m_phyRxEndErrorTrace (*j);
                   }
 
-                // send HARQ feedback
-                if (!(*itTb).second.downlink)
+                // send HARQ feedback (if not already done for this TB)
+                if (!(*itTb).second.harqFeedbackSent)
                   {
-                    UlInfoListElement_s harqUlInfo;
-                    harqUlInfo.m_rnti = tbId.m_rnti;
-                    if ((*itTb).second.corrupt)
+                    (*itTb).second.harqFeedbackSent = true;
+                    if (!(*itTb).second.downlink)
                       {
-                        harqUlInfo.m_receptionStatus = UlInfoListElement_s::NotOk;
-                        NS_LOG_DEBUG (this << " RNTI " << tbId.m_rnti << " send UL-HARQ-NACK");
-                        m_harqPhyModule->UpdateUlHarqProcessStatus (tbId.m_rnti, (*itTb).second.mi, (*itTb).second.size, (*itTb).second.size / EffectiveCodingRate [(*itTb).second.mcs]);
-                      }
-                    else
-                      {
-                        harqUlInfo.m_receptionStatus = UlInfoListElement_s::Ok;
-                        NS_LOG_DEBUG (this << " RNTI " << tbId.m_rnti << " send UL-HARQ-ACK");
-                        m_harqPhyModule->ResetUlHarqProcessStatus (tbId.m_rnti, (*itTb).second.harqProcessId);
-                      }
-                      if (!m_ltePhyUlHarqFeedbackCallback.IsNull ())
-                        {
-                          m_ltePhyUlHarqFeedbackCallback (harqUlInfo);
-                        }
-                  }
-                else
-                  {
-                    std::map <uint16_t, DlInfoListElement_s>::iterator itHarq = harqDlInfoMap.find (tbId.m_rnti);
-                    if (itHarq==harqDlInfoMap.end ())
-                      {
-                        DlInfoListElement_s harqDlInfo;
-                        harqDlInfo.m_harqStatus.resize (m_layersNum, DlInfoListElement_s::NACK);
-                        harqDlInfo.m_rnti = tbId.m_rnti;
-                        harqDlInfo.m_harqProcessId = (*itTb).second.harqProcessId;
+                        UlInfoListElement_s harqUlInfo;
+                        harqUlInfo.m_rnti = tbId.m_rnti;
                         if ((*itTb).second.corrupt)
                           {
-                            harqDlInfo.m_harqStatus.at (tbId.m_layer) = DlInfoListElement_s::NACK;
-                            NS_LOG_DEBUG (this << " RNTI " << tbId.m_rnti << " harqId " << (uint16_t)(*itTb).second.harqProcessId << " layer " <<(uint16_t)tbId.m_layer << " send DL-HARQ-NACK");
-                            m_harqPhyModule->UpdateDlHarqProcessStatus ((*itTb).second.harqProcessId, tbId.m_layer, (*itTb).second.mi, (*itTb).second.size, (*itTb).second.size / EffectiveCodingRate [(*itTb).second.mcs]);
+                            harqUlInfo.m_receptionStatus = UlInfoListElement_s::NotOk;
+                            NS_LOG_DEBUG (this << " RNTI " << tbId.m_rnti << " send UL-HARQ-NACK");
+                            m_harqPhyModule->UpdateUlHarqProcessStatus (tbId.m_rnti, (*itTb).second.mi, (*itTb).second.size, (*itTb).second.size / EffectiveCodingRate [(*itTb).second.mcs]);
                           }
                         else
                           {
-                            
-                            harqDlInfo.m_harqStatus.at (tbId.m_layer) = DlInfoListElement_s::ACK;
-                            NS_LOG_DEBUG (this << " RNTI " << tbId.m_rnti << " harqId " << (uint16_t)(*itTb).second.harqProcessId << " layer " <<(uint16_t)tbId.m_layer << " size " << (*itTb).second.size << " send DL-HARQ-ACK");
-                            m_harqPhyModule->ResetDlHarqProcessStatus ((*itTb).second.harqProcessId);
+                            harqUlInfo.m_receptionStatus = UlInfoListElement_s::Ok;
+                            NS_LOG_DEBUG (this << " RNTI " << tbId.m_rnti << " send UL-HARQ-ACK");
+                            m_harqPhyModule->ResetUlHarqProcessStatus (tbId.m_rnti, (*itTb).second.harqProcessId);
                           }
-                        harqDlInfoMap.insert (std::pair <uint16_t, DlInfoListElement_s> (tbId.m_rnti, harqDlInfo));
+                          if (!m_ltePhyUlHarqFeedbackCallback.IsNull ())
+                            {
+                              m_ltePhyUlHarqFeedbackCallback (harqUlInfo);
+                            }
                       }
                     else
-                    {
-                      if ((*itTb).second.corrupt)
+                      {
+                        std::map <uint16_t, DlInfoListElement_s>::iterator itHarq = harqDlInfoMap.find (tbId.m_rnti);
+                        if (itHarq==harqDlInfoMap.end ())
+                          {
+                            DlInfoListElement_s harqDlInfo;
+                            harqDlInfo.m_harqStatus.resize (m_layersNum, DlInfoListElement_s::NACK);
+                            harqDlInfo.m_rnti = tbId.m_rnti;
+                            harqDlInfo.m_harqProcessId = (*itTb).second.harqProcessId;
+                            if ((*itTb).second.corrupt)
+                              {
+                                harqDlInfo.m_harqStatus.at (tbId.m_layer) = DlInfoListElement_s::NACK;
+                                NS_LOG_DEBUG (this << " RNTI " << tbId.m_rnti << " harqId " << (uint16_t)(*itTb).second.harqProcessId << " layer " <<(uint16_t)tbId.m_layer << " send DL-HARQ-NACK");
+                                m_harqPhyModule->UpdateDlHarqProcessStatus ((*itTb).second.harqProcessId, tbId.m_layer, (*itTb).second.mi, (*itTb).second.size, (*itTb).second.size / EffectiveCodingRate [(*itTb).second.mcs]);
+                              }
+                            else
+                              {
+
+                                harqDlInfo.m_harqStatus.at (tbId.m_layer) = DlInfoListElement_s::ACK;
+                                NS_LOG_DEBUG (this << " RNTI " << tbId.m_rnti << " harqId " << (uint16_t)(*itTb).second.harqProcessId << " layer " <<(uint16_t)tbId.m_layer << " size " << (*itTb).second.size << " send DL-HARQ-ACK");
+                                m_harqPhyModule->ResetDlHarqProcessStatus ((*itTb).second.harqProcessId);
+                              }
+                            harqDlInfoMap.insert (std::pair <uint16_t, DlInfoListElement_s> (tbId.m_rnti, harqDlInfo));
+                          }
+                        else
                         {
-                          (*itHarq).second.m_harqStatus.at (tbId.m_layer) = DlInfoListElement_s::NACK;
-                          NS_LOG_DEBUG (this << " RNTI " << tbId.m_rnti << " harqId " << (uint16_t)(*itTb).second.harqProcessId << " layer " <<(uint16_t)tbId.m_layer << " size " << (*itHarq).second.m_harqStatus.size () << " send DL-HARQ-NACK");
-                          m_harqPhyModule->UpdateDlHarqProcessStatus ((*itTb).second.harqProcessId, tbId.m_layer, (*itTb).second.mi, (*itTb).second.size, (*itTb).second.size / EffectiveCodingRate [(*itTb).second.mcs]);
+                          if ((*itTb).second.corrupt)
+                            {
+                              (*itHarq).second.m_harqStatus.at (tbId.m_layer) = DlInfoListElement_s::NACK;
+                              NS_LOG_DEBUG (this << " RNTI " << tbId.m_rnti << " harqId " << (uint16_t)(*itTb).second.harqProcessId << " layer " <<(uint16_t)tbId.m_layer << " size " << (*itHarq).second.m_harqStatus.size () << " send DL-HARQ-NACK");
+                              m_harqPhyModule->UpdateDlHarqProcessStatus ((*itTb).second.harqProcessId, tbId.m_layer, (*itTb).second.mi, (*itTb).second.size, (*itTb).second.size / EffectiveCodingRate [(*itTb).second.mcs]);
+                            }
+                          else
+                            {
+                              NS_ASSERT_MSG (tbId.m_layer < (*itHarq).second.m_harqStatus.size (), " layer " << (uint16_t)tbId.m_layer);
+                              (*itHarq).second.m_harqStatus.at (tbId.m_layer) = DlInfoListElement_s::ACK;
+                              NS_LOG_DEBUG (this << " RNTI " << tbId.m_rnti << " harqId " << (uint16_t)(*itTb).second.harqProcessId << " layer " << (uint16_t)tbId.m_layer << " size " << (*itHarq).second.m_harqStatus.size () << " send DL-HARQ-ACK");
+                              m_harqPhyModule->ResetDlHarqProcessStatus ((*itTb).second.harqProcessId);
+                            }
                         }
-                      else
-                        {
-                          NS_ASSERT_MSG (tbId.m_layer < (*itHarq).second.m_harqStatus.size (), " layer " << (uint16_t)tbId.m_layer);
-                          (*itHarq).second.m_harqStatus.at (tbId.m_layer) = DlInfoListElement_s::ACK;
-                          NS_LOG_DEBUG (this << " RNTI " << tbId.m_rnti << " harqId " << (uint16_t)(*itTb).second.harqProcessId << " layer " << (uint16_t)tbId.m_layer << " size " << (*itHarq).second.m_harqStatus.size () << " send DL-HARQ-ACK");
-                          m_harqPhyModule->ResetDlHarqProcessStatus ((*itTb).second.harqProcessId);
-                        }
-                    }
-                  } // end if ((*itTb).second.downlink) HARQ
+                      } // end if ((*itTb).second.downlink) HARQ
+                  } // end if (!(*itTb).second.harqFeedbackSent)
               }
           }
       }
