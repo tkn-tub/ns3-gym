@@ -373,7 +373,7 @@ LteX2HandoverTestCase::DoRun ()
   m_lteHelper->AddX2Interface (enbNodes);
 
   // check initial RRC connection
-  const Time maxRrcConnectionEstablishmentDuration = Seconds (0.060);
+  const Time maxRrcConnectionEstablishmentDuration = Seconds (0.080);
   for (NetDeviceContainer::Iterator it = ueDevices.Begin (); it != ueDevices.End (); ++it)
     {
       Simulator::Schedule (maxRrcConnectionEstablishmentDuration, 
@@ -444,7 +444,9 @@ LteX2HandoverTestCase::CheckConnected (Ptr<NetDevice> ueDevice, Ptr<NetDevice> e
   Ptr<UeManager> ueManager = enbRrc->GetUeManager (rnti);  
   NS_TEST_ASSERT_MSG_NE (ueManager, 0, "RNTI " << rnti << " not found in eNB");
 
-  NS_TEST_ASSERT_MSG_EQ (ueManager->GetState (), UeManager::CONNECTED_NORMALLY, "Wrong UeManager state!");
+  UeManager::State ueManagerState = ueManager->GetState ();
+  NS_TEST_ASSERT_MSG_EQ (ueManagerState, UeManager::CONNECTED_NORMALLY, "Wrong UeManager state!");
+  NS_ASSERT_MSG (ueManagerState == UeManager::CONNECTED_NORMALLY, "Wrong UeManager state!");
 
   uint16_t ueCellId = ueRrc->GetCellId ();
   uint16_t enbCellId = enbLteDevice->GetCellId ();
