@@ -254,11 +254,17 @@ EpcEnbApplication::RecvFromLteSocket (Ptr<Socket> socket)
   uint8_t bid = tag.GetBid ();
   NS_LOG_LOGIC ("received packet with RNTI=" << (uint32_t) rnti << ", BID=" << (uint32_t)  bid);
   std::map<uint16_t, std::map<uint8_t, uint32_t> >::iterator rntiIt = m_rbidTeidMap.find (rnti);
-  NS_ASSERT (rntiIt != m_rbidTeidMap.end ());
-  std::map<uint8_t, uint32_t>::iterator bidIt = rntiIt->second.find (bid);
-  NS_ASSERT (bidIt != rntiIt->second.end ());
-  uint32_t teid = bidIt->second;
-  SendToS1uSocket (packet, teid);
+  if (rntiIt == m_rbidTeidMap.end ())
+    {
+      NS_LOG_WARN ("UE context not found, discarding packet");
+    }
+  else
+    {
+      std::map<uint8_t, uint32_t>::iterator bidIt = rntiIt->second.find (bid);
+      NS_ASSERT (bidIt != rntiIt->second.end ());
+      uint32_t teid = bidIt->second;
+      SendToS1uSocket (packet, teid);
+    }
 }
 
 void 

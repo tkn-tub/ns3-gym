@@ -155,9 +155,11 @@ LteLinkAdaptationTestCase::~LteLinkAdaptationTestCase ()
 void
 LteLinkAdaptationTestCase::DoRun (void)
 {
-  
+  Config::Reset ();
   Config::SetDefault ("ns3::LteAmc::AmcModel", EnumValue (LteAmc::PiroEW2010));
   Config::SetDefault ("ns3::LteAmc::Ber", DoubleValue (0.00005));
+  Config::SetDefault ("ns3::LteEnbRrc::SrsPeriodicity", UintegerValue (2));
+
   /**
     * Simulation Topology
     */
@@ -206,7 +208,7 @@ LteLinkAdaptationTestCase::DoRun (void)
   Config::Connect ("/NodeList/0/DeviceList/0/LteEnbMac/DlScheduling",
                    MakeBoundCallback (&LteTestDlSchedulingCallback, this));
 
-  Simulator::Stop (Seconds (0.026));
+  Simulator::Stop (Seconds (0.040));
   Simulator::Run ();
 
   double calculatedSinrDb = 10.0 * log10 (testSinr->GetSinr ()->operator[] (0));
@@ -233,7 +235,7 @@ LteLinkAdaptationTestCase::DlScheduling (uint32_t frameNo, uint32_t subframeNo, 
    * RRC connection has been completed and
    * CQI feedback is available at the eNB.
    */
-  if (Simulator::Now ().GetSeconds () > 0.024)
+  if (Simulator::Now ().GetSeconds () > 0.030)
     {
       NS_LOG_INFO (m_snrDb << "\t" << m_mcsIndex << "\t" << (uint16_t)mcsTb1);
 

@@ -307,6 +307,12 @@ LteSpectrumPhy::Reset ()
   m_endRxDataEvent.Cancel ();
   m_endRxDlCtrlEvent.Cancel ();
   m_endRxUlSrsEvent.Cancel ();
+  m_rxControlMessageList.clear ();
+  m_expectedTbs.clear ();
+  m_txControlMessageList.clear ();
+  m_rxPacketBurstList.clear ();
+  m_txPacketBurst = 0;
+  m_rxSpectrumModel = 0;
 }
 
 
