@@ -331,6 +331,10 @@ static ns3::GlobalValue g_numBearersPerUe ("numBearersPerUe",
                                                ns3::UintegerValue (1),
                                                ns3::MakeUintegerChecker<uint16_t> ());
 
+static ns3::GlobalValue g_srsPeriodicity ("srsPeriodicity",
+                                               "SRS Periodicity (has to be at least greater than the number of UEs per eNB)",
+                                               ns3::UintegerValue (80),
+                                               ns3::MakeUintegerChecker<uint16_t> ());
 
 int
 main (int argc, char *argv[])
@@ -403,6 +407,10 @@ main (int argc, char *argv[])
   std::string fadingTrace = stringValue.Get ();
   GlobalValue::GetValueByName ("numBearersPerUe", uintegerValue);
   uint16_t numBearersPerUe = uintegerValue.Get ();
+  GlobalValue::GetValueByName ("srsPeriodicity", uintegerValue);
+  uint16_t srsPeriodicity = uintegerValue.Get ();
+
+  Config::SetDefault ("ns3::LteEnbRrc::SrsPeriodicity", UintegerValue(srsPeriodicity));
 
   Box macroUeBox;
 
