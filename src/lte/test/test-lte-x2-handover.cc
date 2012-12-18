@@ -616,7 +616,7 @@ LteX2HandoverTestSuite::LteX2HandoverTestSuite ()
   hel7.push_back (ue2fwd);     
   hel7.push_back (ue2bwd);    
 
-  AddTestCase (new LteX2HandoverTestCase (  1,    0,    hel1, hel1name, true, "ns3::RrFfMacScheduler", true, false));
+  AddTestCase (new LteX2HandoverTestCase (  2,    0,    hel1, hel1name, true, "ns3::RrFfMacScheduler", true, false));
 
   std::vector<std::string> schedulers;
   schedulers.push_back ("ns3::RrFfMacScheduler");
