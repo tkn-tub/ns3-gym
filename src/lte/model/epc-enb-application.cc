@@ -178,15 +178,17 @@ EpcEnbApplication::DoUeContextRelease (uint16_t rnti)
 {
   NS_LOG_FUNCTION (this << rnti);
   std::map<uint16_t, std::map<uint8_t, uint32_t> >::iterator rntiIt = m_rbidTeidMap.find (rnti);
-  NS_ASSERT (rntiIt != m_rbidTeidMap.end ());
-  for (std::map<uint8_t, uint32_t>::iterator bidIt = rntiIt->second.begin ();
-       bidIt != rntiIt->second.end ();
-       ++bidIt)
+  if (rntiIt != m_rbidTeidMap.end ())
     {
-      uint32_t teid = bidIt->second;
-      m_teidRbidMap.erase (teid);
+      for (std::map<uint8_t, uint32_t>::iterator bidIt = rntiIt->second.begin ();
+           bidIt != rntiIt->second.end ();
+           ++bidIt)
+        {
+          uint32_t teid = bidIt->second;
+          m_teidRbidMap.erase (teid);
+        }
+      m_rbidTeidMap.erase (rntiIt);
     }
-  m_rbidTeidMap.erase (rntiIt);
 }
 
 void 
