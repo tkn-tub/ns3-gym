@@ -381,7 +381,7 @@ private:
 * This class manages the serialization/deserialization of RrcConnectionReject IE
 */
 class RrcConnectionRejectHeader : public RrcDlCcchMessage,
-                                                 LteRrcSap
+                                  LteRrcSap
 {
 public:
   RrcConnectionRejectHeader ();

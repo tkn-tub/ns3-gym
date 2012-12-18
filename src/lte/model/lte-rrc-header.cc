@@ -2021,28 +2021,54 @@ RrcConnectionReconfigurationHeader::PreSerialize () const
           SerializeSequence (std::bitset<1> (1),false);
 
           // Serialize dl-Bandwidth
-          switch(m_mobilityControlInfo.carrierBandwidth.dlBandwidth)
-          {
-            case 6: SerializeEnum (16,0); break;
-            case 15: SerializeEnum (16,1); break;
-            case 25: SerializeEnum (16,2); break;
-            case 50: SerializeEnum (16,3); break;
-            case 75: SerializeEnum (16,4); break;
-            case 100: SerializeEnum (16,5); break;
-            default: SerializeEnum (16,6);
-          }
+          switch (m_mobilityControlInfo.carrierBandwidth.dlBandwidth)
+            {
+            case 6:
+              SerializeEnum (16,0);
+              break;
+            case 15:
+              SerializeEnum (16,1);
+              break;
+            case 25:
+              SerializeEnum (16,2);
+              break;
+            case 50:
+              SerializeEnum (16,3);
+              break;
+            case 75:
+              SerializeEnum (16,4);
+              break;
+            case 100:
+              SerializeEnum (16,5);
+              break;
+            default:
+              SerializeEnum (16,6);
+            }
 
           // Serialize ul-Bandwidth
-          switch(m_mobilityControlInfo.carrierBandwidth.ulBandwidth)
-          {
-            case 6: SerializeEnum (16,0); break;
-            case 15: SerializeEnum (16,1); break;
-            case 25: SerializeEnum (16,2); break;
-            case 50: SerializeEnum (16,3); break;
-            case 75: SerializeEnum (16,4); break;
-            case 100: SerializeEnum (16,5); break;
-            default: SerializeEnum (16,6);
-          }
+          switch (m_mobilityControlInfo.carrierBandwidth.ulBandwidth)
+            {
+            case 6:
+              SerializeEnum (16,0);
+              break;
+            case 15:
+              SerializeEnum (16,1);
+              break;
+            case 25:
+              SerializeEnum (16,2);
+              break;
+            case 50:
+              SerializeEnum (16,3);
+              break;
+            case 75:
+              SerializeEnum (16,4);
+              break;
+            case 100:
+              SerializeEnum (16,5);
+              break;
+            default:
+              SerializeEnum (16,6);
+            }
         }
 
       // Serialize t304
@@ -2077,7 +2103,7 @@ RrcConnectionReconfigurationHeader::PreSerialize () const
       SerializeBoolean (false);
       SerializeInteger (0,0,29);
       SerializeBoolean (false);
-      SerializeInteger (4,0,7); // **************
+      SerializeInteger (4,0,7);
 
       // Serialize UL-CyclicPrefixLength
       SerializeEnum (2,0);
@@ -2228,8 +2254,8 @@ RrcConnectionReconfigurationHeader::Deserialize (Buffer::Iterator bIterator)
                   bIterator = DeserializeSequence (&ulBandwidthPresent,false,bIterator);
 
                   bIterator = DeserializeEnum (16,&n,bIterator);
-                  switch(n)
-                  {
+                  switch (n)
+                    {
                     case 0:
                       m_mobilityControlInfo.carrierBandwidth.dlBandwidth = 6;
                       break;
@@ -2251,13 +2277,13 @@ RrcConnectionReconfigurationHeader::Deserialize (Buffer::Iterator bIterator)
                     case 6:
                       m_mobilityControlInfo.carrierBandwidth.dlBandwidth = 0;
                       break;
-                  }
+                    }
 
                   if (ulBandwidthPresent[0])
                     {
                       bIterator = DeserializeEnum (16,&n,bIterator);
-                      switch(n)
-                      {
+                      switch (n)
+                        {
                         case 0:
                           m_mobilityControlInfo.carrierBandwidth.ulBandwidth = 6;
                           break;
@@ -2279,7 +2305,7 @@ RrcConnectionReconfigurationHeader::Deserialize (Buffer::Iterator bIterator)
                         case 6:
                           m_mobilityControlInfo.carrierBandwidth.ulBandwidth = 0;
                           break;
-                      }
+                        }
                     }
                 }
 
@@ -3373,7 +3399,7 @@ RrcConnectionRejectHeader::PreSerialize () const
 
   // Serialize c1 choice
   SerializeChoice (4,0);
-  
+
   // Serialize rrcConnectionReject-r8 sequence
   // 1 optional field (not present), no extension marker.
   SerializeSequence (std::bitset<1> (0),false);
@@ -3412,24 +3438,24 @@ RrcConnectionRejectHeader::Deserialize (Buffer::Iterator bIterator)
       bIterator = DeserializeChoice (4,&c1Choice,bIterator);
 
       if (c1Choice > 0)
-      {
-        bIterator = DeserializeNull(bIterator);
-      }
-      else if (c1Choice == 0)
-      {
-        // Deserialize rrcConnectionReject-r8
-        std::bitset<1> opts;
-        bIterator = DeserializeSequence (&opts,false,bIterator);
-        
-        bIterator = DeserializeInteger (&n,1,16,bIterator);
-        m_rrcConnectionReject.waitTime = n;
-
-        if (opts[0])
         {
-          // Deserialize RRCConnectionReject-v8a0-IEs
-          // ...
+          bIterator = DeserializeNull (bIterator);
         }
-      }
+      else if (c1Choice == 0)
+        {
+          // Deserialize rrcConnectionReject-r8
+          std::bitset<1> opts;
+          bIterator = DeserializeSequence (&opts,false,bIterator);
+
+          bIterator = DeserializeInteger (&n,1,16,bIterator);
+          m_rrcConnectionReject.waitTime = n;
+
+          if (opts[0])
+            {
+              // Deserialize RRCConnectionReject-v8a0-IEs
+              // ...
+            }
+        }
     }
 
   return GetSerializedSize ();
