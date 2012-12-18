@@ -708,6 +708,8 @@ void
 LteUeRrc::DoRecvRrcConnectionReject (LteRrcSap::RrcConnectionReject msg)
 {
   NS_LOG_FUNCTION (this);
+  m_cmacSapProvider->Reset ();
+  SwitchToState (IDLE_CAMPED_NORMALLY);
 }
 
 

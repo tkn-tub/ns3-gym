@@ -16,6 +16,7 @@ IDLE_CAMPED_NORMALLY -> IDLE_RANDOM_ACCESS [label="connection request by upper l
 IDLE_RANDOM_ACCESS -> IDLE_CONNECTING  [label="random access successful"]
 IDLE_RANDOM_ACCESS -> IDLE_CAMPED_NORMALLY  [label="random access failure"]
 IDLE_CONNECTING -> CONNECTED_NORMALLY [label="rx RRC CONN SETUP"]
+IDLE_CONNECTING -> IDLE_CAMPED_NORMALLY [label="rx RRC CONN REJECT"]
 CONNECTED_NORMALLY -> CONNECTED_HANDOVER [label="rx RRC CONN RECONF with MobilityCltrInfo"]
 CONNECTED_HANDOVER -> CONNECTED_NORMALLY [label="random access successful"]
 

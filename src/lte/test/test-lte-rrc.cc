@@ -32,20 +32,19 @@ namespace ns3 {
 class LteRrcConnectionEstablishmentTestCase : public TestCase
 {
 public:
-
-  /** 
-   * 
+  /**
+   *
    * 
    * \param nUes number of UEs in the test
    * \param tc connection time base value for all UEs in ms
    * \param tConnIncrPerUe additional connection time increment for each UE index (0...nUes-1) in ms
    * \param delayDiscStart expected duration to perform connection establishment in ms
-   * 
+   *
    */
-  LteRrcConnectionEstablishmentTestCase (uint32_t nUes, uint32_t nBearers, uint32_t tc, uint32_t tConnIncrPerUe, uint32_t delayDiscStart, bool useIdealRrc);
-  
+  LteRrcConnectionEstablishmentTestCase (uint32_t nUes, uint32_t nBearers, uint32_t tc, uint32_t tConnIncrPerUe, uint32_t delayDiscStart, bool useIdealRrc, bool admitRrcConnectionRequest);
+
 private:
-  static std::string BuildNameString (uint32_t nUes, uint32_t nBearers, uint32_t tc, uint32_t tConnIncrPerUe, uint32_t delayDiscStart, bool useIdealRrc);
+  static std::string BuildNameString (uint32_t nUes, uint32_t nBearers, uint32_t tc, uint32_t tConnIncrPerUe, uint32_t delayDiscStart, bool useIdealRrc, bool admitRrcConnectionRequest);
   virtual void DoRun (void);
   void Connect (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice);
   void CheckConnected (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice);
@@ -59,16 +58,17 @@ private:
   uint32_t m_delayDiscStart;  // delay between connection completed and disconnection request in ms
   uint32_t m_delayDiscEnd; // expected duration to complete disconnection in ms
   bool     m_useIdealRrc;
+  bool    m_admitRrcConnectionRequest; // If set to false, eNb will not allow ue connections
   Ptr<LteHelper> m_lteHelper;
 
 };
 
 
-std::string LteRrcConnectionEstablishmentTestCase::BuildNameString (uint32_t nUes, uint32_t nBearers, uint32_t tConnBase, uint32_t tConnIncrPerUe, uint32_t delayDiscStart, bool useIdealRrc)
+std::string LteRrcConnectionEstablishmentTestCase::BuildNameString (uint32_t nUes, uint32_t nBearers, uint32_t tConnBase, uint32_t tConnIncrPerUe, uint32_t delayDiscStart, bool useIdealRrc, bool admitRrcConnectionRequest)
 {
   std::ostringstream oss;
-  oss << "nUes=" << nUes 
-      << ", nBearers=" << nBearers 
+  oss << "nUes=" << nUes
+      << ", nBearers=" << nBearers
       << ", tConnBase=" << tConnBase
       << ", tConnIncrPerUe=" << tConnIncrPerUe
       << ", delayDiscStart=" << delayDiscStart;
@@ -79,22 +79,31 @@ std::string LteRrcConnectionEstablishmentTestCase::BuildNameString (uint32_t nUe
   else
     {
       oss << ", real RRC";
-    }  
+    }
+  if (admitRrcConnectionRequest)
+    {
+      oss << ", admitRrcConnectionRequest = true";
+    }
+  else
+    {
+      oss << ", admitRrcConnectionRequest = false";
+    }
   return oss.str ();
 }
 
-LteRrcConnectionEstablishmentTestCase::LteRrcConnectionEstablishmentTestCase (uint32_t nUes, uint32_t nBearers, uint32_t tConnBase, uint32_t tConnIncrPerUe, uint32_t delayDiscStart, bool useIdealRrc)
-  : TestCase (BuildNameString (nUes, nBearers, tConnBase, tConnIncrPerUe, delayDiscStart, useIdealRrc)),
+LteRrcConnectionEstablishmentTestCase::LteRrcConnectionEstablishmentTestCase (uint32_t nUes, uint32_t nBearers, uint32_t tConnBase, uint32_t tConnIncrPerUe, uint32_t delayDiscStart, bool useIdealRrc, bool admitRrcConnectionRequest)
+  : TestCase (BuildNameString (nUes, nBearers, tConnBase, tConnIncrPerUe, delayDiscStart, useIdealRrc, admitRrcConnectionRequest)),
     m_nUes (nUes),
     m_nBearers (nBearers),
     m_tConnBase (tConnBase),
     m_tConnIncrPerUe (tConnIncrPerUe),
-   
+
     m_delayDiscStart (delayDiscStart),
     m_delayDiscEnd (10),
-    m_useIdealRrc (useIdealRrc)
+    m_useIdealRrc (useIdealRrc),
+    m_admitRrcConnectionRequest (admitRrcConnectionRequest)
 {
-  // see the description of d^e in the LTE testing docs 
+  // see the description of d^e in the LTE testing docs
   double dsi = 90;
   double nRaAttempts = 0;
   if (nUes <= 20)
@@ -105,35 +114,35 @@ LteRrcConnectionEstablishmentTestCase::LteRrcConnectionEstablishmentTestCase (ui
     {
       NS_ASSERT (nUes <= 50);
       nRaAttempts += 10;
-    }  
-  nRaAttempts += std::ceil (nUes/4.0);  
+    }
+  nRaAttempts += std::ceil (nUes / 4.0);
   double dra = nRaAttempts * 7;
-  double dce = 10.0 + (2.0*nUes)/4.0;
+  double dce = 10.0 + (2.0 * nUes) / 4.0;
   double nCrs;
   if (nUes <= 2)
     {
-      nCrs = 0;      
+      nCrs = 0;
     }
   else if (nUes <= 5)
     {
-      nCrs = 1;      
+      nCrs = 1;
     }
   else if (nUes <= 10)
     {
-      nCrs = 2;      
+      nCrs = 2;
     }
   else if (nUes <= 20)
     {
-      nCrs = 3;      
+      nCrs = 3;
     }
-  else 
+  else
     {
-      nCrs = 4;      
+      nCrs = 4;
     }
-  double dcr =  (10.0 + (2.0*nUes)/4.0)*(m_nBearers + nCrs);
-  
+  double dcr =  (10.0 + (2.0 * nUes) / 4.0) * (m_nBearers + nCrs);
+
   m_delayConnEnd = round (dsi + dra + dce + dcr);
-  NS_LOG_LOGIC (this << GetName () << " dsi=" << dsi << " dra=" << dra << " dce=" << dce << " dcr=" <<dcr << " m_delayConnEnd=" << m_delayConnEnd);
+  NS_LOG_LOGIC (this << GetName () << " dsi=" << dsi << " dra=" << dra << " dce=" << dce << " dcr=" << dcr << " m_delayConnEnd=" << m_delayConnEnd);
 }
 
 void
@@ -167,23 +176,32 @@ LteRrcConnectionEstablishmentTestCase::DoRun ()
   // custom code used for testing purposes
   // instead of lteHelper->Attach () and lteHelper->ActivateXxx
 
+  // Set AdmitConnectionRequest attribute
+  for (NetDeviceContainer::Iterator it = enbDevs.Begin ();
+       it != enbDevs.End ();
+       ++it)
+    {
+      Ptr<LteEnbRrc> enbRrc = (*it)->GetObject<LteEnbNetDevice> ()->GetRrc ();
+      enbRrc->SetAttribute ("AdmitRrcConnectionRequest", BooleanValue (m_admitRrcConnectionRequest));
+    }
+
+
   uint32_t i = 0;
   uint32_t tmax = 0;
   for (NetDeviceContainer::Iterator it = ueDevs.Begin (); it != ueDevs.End (); ++it)
     {
       Ptr<NetDevice> ueDevice = *it;
-      Ptr<NetDevice> enbDevice = enbDevs.Get (0);      
+      Ptr<NetDevice> enbDevice = enbDevs.Get (0);
       Ptr<LteUeNetDevice> ueLteDevice = ueDevice->GetObject<LteUeNetDevice> ();
-      Ptr<EpcUeNas> ueNas = ueLteDevice->GetNas ();
-      
+
       uint32_t tc = m_tConnBase + m_tConnIncrPerUe * i; // time connection start
       uint32_t tcc = tc + m_delayConnEnd; // time check connection completed;
       uint32_t td =  tcc + m_delayDiscStart; // time disconnect start
       uint32_t tcd = td + m_delayDiscEnd; // time check disconnection completed
       tmax = std::max (tmax, tcd);
-      
+
       // trick to resolve overloading
-      //void (LteHelper::* overloadedAttachFunctionPointer) (Ptr<NetDevice>, Ptr<NetDevice>) = &LteHelper::Attach;      
+      //void (LteHelper::* overloadedAttachFunctionPointer) (Ptr<NetDevice>, Ptr<NetDevice>) = &LteHelper::Attach;
       //Simulator::Schedule (MilliSeconds (tc), overloadedAttachFunctionPointer, lteHelper, *it, enbDevice);
       Simulator::Schedule (MilliSeconds (tc), &LteRrcConnectionEstablishmentTestCase::Connect, this, ueDevice, enbDevice);
 
@@ -195,7 +213,7 @@ LteRrcConnectionEstablishmentTestCase::DoRun ()
     }
 
 
-  Simulator::Stop (MilliSeconds (tmax+1));
+  Simulator::Stop (MilliSeconds (tmax + 1));
 
   Simulator::Run ();
 
@@ -203,7 +221,7 @@ LteRrcConnectionEstablishmentTestCase::DoRun ()
 
 }
 
-void 
+void
 LteRrcConnectionEstablishmentTestCase::Connect (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice)
 {
   m_lteHelper->Attach (ueDevice, enbDevice);
@@ -215,18 +233,24 @@ LteRrcConnectionEstablishmentTestCase::Connect (Ptr<NetDevice> ueDevice, Ptr<Net
       m_lteHelper->ActivateDataRadioBearer (ueDevice, bearer);
     }
 }
-void 
+void
 LteRrcConnectionEstablishmentTestCase::CheckConnected (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice)
 {
   Ptr<LteUeNetDevice> ueLteDevice = ueDevice->GetObject<LteUeNetDevice> ();
   Ptr<LteUeRrc> ueRrc = ueLteDevice->GetRrc ();
-  NS_TEST_ASSERT_MSG_EQ (ueRrc->GetState (), LteUeRrc::CONNECTED_NORMALLY, "Wrong LteUeRrc state!");
 
+  if (!m_admitRrcConnectionRequest)
+    {
+      NS_TEST_ASSERT_MSG_EQ (ueRrc->GetState (), LteUeRrc::IDLE_CAMPED_NORMALLY, "Wrong LteUeRrc state!");
+      return;
+    }
+
+  NS_TEST_ASSERT_MSG_EQ (ueRrc->GetState (), LteUeRrc::CONNECTED_NORMALLY, "Wrong LteUeRrc state!");
 
   Ptr<LteEnbNetDevice> enbLteDevice = enbDevice->GetObject<LteEnbNetDevice> ();
   Ptr<LteEnbRrc> enbRrc = enbLteDevice->GetRrc ();
   uint16_t rnti = ueRrc->GetRnti ();
-  Ptr<UeManager> ueManager = enbRrc->GetUeManager (rnti);  
+  Ptr<UeManager> ueManager = enbRrc->GetUeManager (rnti);
   NS_TEST_ASSERT_MSG_NE (ueManager, 0, "RNTI " << rnti << " not found in eNB");
 
   NS_TEST_ASSERT_MSG_EQ (ueManager->GetState (), UeManager::CONNECTED_NORMALLY, "Wrong UeManager state!");
@@ -254,16 +278,16 @@ LteRrcConnectionEstablishmentTestCase::CheckConnected (Ptr<NetDevice> ueDevice, 
 
   ObjectMapValue enbDataRadioBearerMapValue;
   ueManager->GetAttribute ("DataRadioBearerMap", enbDataRadioBearerMapValue);
-  NS_TEST_ASSERT_MSG_EQ (enbDataRadioBearerMapValue.GetN (), m_nBearers, "wrong num bearers at eNB");  
+  NS_TEST_ASSERT_MSG_EQ (enbDataRadioBearerMapValue.GetN (), m_nBearers, "wrong num bearers at eNB");
 
   ObjectMapValue ueDataRadioBearerMapValue;
   ueRrc->GetAttribute ("DataRadioBearerMap", ueDataRadioBearerMapValue);
-  NS_TEST_ASSERT_MSG_EQ (ueDataRadioBearerMapValue.GetN (), m_nBearers, "wrong num bearers at UE"); 
+  NS_TEST_ASSERT_MSG_EQ (ueDataRadioBearerMapValue.GetN (), m_nBearers, "wrong num bearers at UE");
 
   ObjectMapValue::Iterator enbBearerIt = enbDataRadioBearerMapValue.Begin ();
   ObjectMapValue::Iterator ueBearerIt = ueDataRadioBearerMapValue.Begin ();
-  while (enbBearerIt != enbDataRadioBearerMapValue.End () &&
-         ueBearerIt != ueDataRadioBearerMapValue.End ())
+  while (enbBearerIt != enbDataRadioBearerMapValue.End ()
+         && ueBearerIt != ueDataRadioBearerMapValue.End ())
     {
       Ptr<LteDataRadioBearerInfo> enbDrbInfo = enbBearerIt->second->GetObject<LteDataRadioBearerInfo> ();
       Ptr<LteDataRadioBearerInfo> ueDrbInfo = ueBearerIt->second->GetObject<LteDataRadioBearerInfo> ();
@@ -273,13 +297,13 @@ LteRrcConnectionEstablishmentTestCase::CheckConnected (Ptr<NetDevice> ueDevice, 
       //NS_TEST_ASSERT_MSG_EQ (enbDrbInfo->m_rlcConfig, ueDrbInfo->m_rlcConfig, "rlcConfig differs");
       NS_TEST_ASSERT_MSG_EQ ((uint32_t) enbDrbInfo->m_logicalChannelIdentity, (uint32_t) ueDrbInfo->m_logicalChannelIdentity, "logicalChannelIdentity differs");
       //NS_TEST_ASSERT_MSG_EQ (enbDrbInfo->m_logicalChannelConfig, ueDrbInfo->m_logicalChannelConfig, "logicalChannelConfig differs");
- 
+
       ++enbBearerIt;
       ++ueBearerIt;
     }
   NS_ASSERT_MSG (enbBearerIt == enbDataRadioBearerMapValue.End (), "too many bearers at eNB");
   NS_ASSERT_MSG (ueBearerIt == ueDataRadioBearerMapValue.End (), "too many bearers at UE");
-  
+
 }
 
 
@@ -296,40 +320,46 @@ LteRrcTestSuite::LteRrcTestSuite ()
 {
   NS_LOG_FUNCTION (this);
 
-  AddTestCase (new LteRrcConnectionEstablishmentTestCase ( 50,        0,         0,              0,             1, 0));
+  //AddTestCase (new LteRrcConnectionEstablishmentTestCase ( 50,        0,         0,              0,             1, 0, true));
 
   for (uint32_t useIdealRrc = 0; useIdealRrc <= 1; ++useIdealRrc)
     {
-                                                          //         <----- all times in ms ----------------->
-                                                          // nUes, nBearers, tConnBase, tConnIncrPerUe, delayDiscStart, useIdealRrc
-      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  1,        0,         0,              0,             1, useIdealRrc));
-      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  1,        0,       100,              0,             1, useIdealRrc));
-      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  1,        1,         0,              0,             1, useIdealRrc));
-      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  1,        1,       100,              0,             1, useIdealRrc));
-      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  1,        2,         0,              0,             1, useIdealRrc));
-      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  1,        2,       100,              0,             1, useIdealRrc));
-      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  2,        0,        20,              0,             1, useIdealRrc));
-      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  2,        0,        20,             10,             1, useIdealRrc));
-      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  2,        0,        20,            100,             1, useIdealRrc));
-      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  2,        1,        20,              0,             1, useIdealRrc));
-      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  2,        1,        20,             10,             1, useIdealRrc));
-      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  2,        1,        20,            100,             1, useIdealRrc));
-      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  2,        2,        20,              0,             1, useIdealRrc));
-      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  2,        2,        20,             10,             1, useIdealRrc));
-      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  2,        2,        20,            100,             1, useIdealRrc));
-      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  3,        0,        20,              0,             1, useIdealRrc));
-      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  4,        0,        20,              0,             1, useIdealRrc));
-      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  4,        0,        20,            300,             1, useIdealRrc));
-      AddTestCase (new LteRrcConnectionEstablishmentTestCase ( 20,        0,        10,              1,             1, useIdealRrc));
-      AddTestCase (new LteRrcConnectionEstablishmentTestCase ( 50,        0,         0,              0,             1, useIdealRrc));
+      //         <----- all times in ms ----------------->
+      // nUes, nBearers, tConnBase, tConnIncrPerUe, delayDiscStart, useIdealRrc, admitRrcConnectionRequest
+      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  1,        0,         0,              0,             1, useIdealRrc, true));
+      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  1,        0,       100,              0,             1, useIdealRrc, true));
+      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  1,        1,         0,              0,             1, useIdealRrc, true));
+      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  1,        1,       100,              0,             1, useIdealRrc, true));
+      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  1,        2,         0,              0,             1, useIdealRrc, true));
+      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  1,        2,       100,              0,             1, useIdealRrc, true));
+      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  2,        0,        20,              0,             1, useIdealRrc, true));
+      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  2,        0,        20,             10,             1, useIdealRrc, true));
+      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  2,        0,        20,            100,             1, useIdealRrc, true));
+      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  2,        1,        20,              0,             1, useIdealRrc, true));
+      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  2,        1,        20,             10,             1, useIdealRrc, true));
+      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  2,        1,        20,            100,             1, useIdealRrc, true));
+      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  2,        2,        20,              0,             1, useIdealRrc, true));
+      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  2,        2,        20,             10,             1, useIdealRrc, true));
+      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  2,        2,        20,            100,             1, useIdealRrc, true));
+      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  3,        0,        20,              0,             1, useIdealRrc, true));
+      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  4,        0,        20,              0,             1, useIdealRrc, true));
+      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  4,        0,        20,            300,             1, useIdealRrc, true));
+      AddTestCase (new LteRrcConnectionEstablishmentTestCase ( 20,        0,        10,              1,             1, useIdealRrc, true));
+      AddTestCase (new LteRrcConnectionEstablishmentTestCase ( 50,        0,         0,              0,             1, useIdealRrc, true));
+
+      // Test cases to check admitRrcConnectionRequest=false
+      //AddTestCase (new LteRrcConnectionEstablishmentTestCase (  1,        0,         0,              0,             1, useIdealRrc, false));
+      //AddTestCase (new LteRrcConnectionEstablishmentTestCase (  1,        2,       100,              0,             1, useIdealRrc, false));
+      //AddTestCase (new LteRrcConnectionEstablishmentTestCase (  2,        0,        20,              0,             1, useIdealRrc, false));
+      //AddTestCase (new LteRrcConnectionEstablishmentTestCase (  2,        1,        20,              0,             1, useIdealRrc, false));
+      //AddTestCase (new LteRrcConnectionEstablishmentTestCase (  3,        0,        20,              0,             1, useIdealRrc, false));
 
       // // time consuming tests with a lot of UEs
-      // AddTestCase (new LteRrcConnectionEstablishmentTestCase (100,        0,        10,              0,             1, useIdealRrc));
-      // AddTestCase (new LteRrcConnectionEstablishmentTestCase (100,        0,        10,              1,             1, useIdealRrc));
-      // AddTestCase (new LteRrcConnectionEstablishmentTestCase (200,        0,        10,              0,             1, useIdealRrc));
-      // AddTestCase (new LteRrcConnectionEstablishmentTestCase (200,        0,        10,              1,             1, useIdealRrc));
+      // AddTestCase (new LteRrcConnectionEstablishmentTestCase (100,        0,        10,              0,             1, useIdealRrc, true));
+      // AddTestCase (new LteRrcConnectionEstablishmentTestCase (100,        0,        10,              1,             1, useIdealRrc, true));
+      // AddTestCase (new LteRrcConnectionEstablishmentTestCase (200,        0,        10,              0,             1, useIdealRrc, true));
+      // AddTestCase (new LteRrcConnectionEstablishmentTestCase (200,        0,        10,              1,             1, useIdealRrc, true));
     }
-
 }
 
 static LteRrcTestSuite g_lteRrcTestSuiteInstance;
