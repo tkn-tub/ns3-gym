@@ -260,6 +260,7 @@ private:
   void ApplyRadioResourceConfigDedicated (LteRrcSap::RadioResourceConfigDedicated rrcd);
   void StartConnection ();
   void LeaveConnectedMode ();
+  void DisposeOldSrb1 ();
   uint8_t Bid2Drbid (uint8_t bid);
   void SwitchToState (State s);
 
@@ -288,6 +289,7 @@ private:
 
   Ptr<LteSignalingRadioBearerInfo> m_srb0;
   Ptr<LteSignalingRadioBearerInfo> m_srb1;
+  Ptr<LteSignalingRadioBearerInfo> m_srb1Old;
   std::map <uint8_t, Ptr<LteDataRadioBearerInfo> > m_drbMap;
   
   bool m_useRlcSm;

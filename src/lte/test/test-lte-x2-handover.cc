@@ -141,6 +141,7 @@ LteX2HandoverTestCase::DoRun ()
 {
   NS_LOG_FUNCTION (this << BuildNameString (m_nUes, m_nDedicatedBearers, m_handoverEventListName, m_useUdp, m_schedulerType, m_admitHo, m_useIdealRrc));
 
+  Config::Reset ();
   Config::SetDefault ("ns3::UdpClient::Interval", TimeValue (MilliSeconds(100)));
   Config::SetDefault ("ns3::UdpClient::MaxPackets", UintegerValue(1000000));  
   Config::SetDefault ("ns3::UdpClient::PacketSize", UintegerValue(100));  
@@ -612,6 +613,8 @@ LteX2HandoverTestSuite::LteX2HandoverTestSuite ()
   std::list<HandoverEvent> hel7;
   hel7.push_back (ue2fwd);     
   hel7.push_back (ue2bwd);    
+
+  AddTestCase (new LteX2HandoverTestCase (  1,    0,    hel1, hel1name, true, "ns3::RrFfMacScheduler", true, false));
 
   std::vector<std::string> schedulers;
   schedulers.push_back ("ns3::RrFfMacScheduler");

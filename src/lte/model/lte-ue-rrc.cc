@@ -24,6 +24,7 @@
 #include <ns3/object-factory.h>
 #include <ns3/node-list.h>
 #include <ns3/node.h>
+#include <ns3/simulator.h>
 
 #include "lte-ue-rrc.h"
 #include "lte-enb-rrc.h"
@@ -629,7 +630,15 @@ LteUeRrc::DoRecvRrcConnectionReconfiguration (LteRrcSap::RrcConnectionReconfigur
           m_cphySapProvider->SetRnti (m_rnti);
           m_lastRrcTransactionIdentifier = msg.rrcTransactionIdentifier;
           NS_ASSERT (msg.haveRadioResourceConfigDedicated);
-          m_srb1 = 0; // dispose SRB1
+
+          // we re-establish SRB1 by creating a new entity
+          // note that we can't dispose the old entity now, because
+          // it's in the current stack, so we would corrupt the stack
+          // if we did so. Hence we schedule it for later disposal
+          m_srb1Old = m_srb1;
+          Simulator::ScheduleNow (&LteUeRrc::DisposeOldSrb1, this);          
+          m_srb1 = 0; // new instance will be be created within ApplyRadioResourceConfigDedicated
+
           m_drbMap.clear (); // dispose all DRBs
           ApplyRadioResourceConfigDedicated (msg.radioResourceConfigDedicated);          
           // RRC connection reconfiguration completed will be sent
@@ -903,6 +912,12 @@ LteUeRrc::LeaveConnectedMode ()
   SwitchToState (IDLE_CAMPED_NORMALLY);
 }
 
+void
+LteUeRrc::DisposeOldSrb1 ()
+{
+  NS_LOG_FUNCTION (this);
+  m_srb1Old = 0;
+}
 
 uint8_t 
 LteUeRrc::Bid2Drbid (uint8_t bid)
