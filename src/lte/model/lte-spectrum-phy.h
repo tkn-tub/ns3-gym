@@ -188,6 +188,12 @@ public:
    * (Watt, Pascal...) per Hz.
    */
   void SetNoisePowerSpectralDensity (Ptr<const SpectrumValue> noisePsd);
+
+  /** 
+   * reset the internal state
+   * 
+   */
+  void Reset ();
  
   /**
    * set the AntennaModel to be used
@@ -459,6 +465,12 @@ private:
    * PhyReceptionStatParameters (see lte-common.h)
    */
   TracedCallback<PhyReceptionStatParameters> m_ulPhyReception;
+
+  EventId m_endTxEvent;
+  EventId m_endRxDataEvent;
+  EventId m_endRxDlCtrlEvent;
+  EventId m_endRxUlSrsEvent;
+  
 
 };
 

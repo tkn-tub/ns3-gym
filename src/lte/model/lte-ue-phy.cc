@@ -755,7 +755,7 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
       
       std::list<Ptr<LteControlMessage> > ctrlMsg = GetControlMessages ();
       // send packets in queue
-      NS_LOG_LOGIC (this << " UE - start slot for PUSCH + PUCCH - RNTI " << m_rnti);
+      NS_LOG_LOGIC (this << " UE - start slot for PUSCH + PUCCH - RNTI " << m_rnti << " CELLID " << m_cellId);
       // send the current burts of packets
       Ptr<PacketBurst> pb = GetPacketBurst ();
       if (pb)
@@ -841,6 +841,8 @@ LteUePhy::DoReset ()
   m_subChannelsForTransmissionQueue.resize (m_macChTtiDelay, ulRb);
 
   m_sendSrsEvent.Cancel ();
+  m_downlinkSpectrumPhy->Reset ();
+  m_uplinkSpectrumPhy->Reset ();
 }
 
 void
