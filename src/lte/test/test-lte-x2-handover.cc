@@ -432,7 +432,6 @@ LteX2HandoverTestCase::DoRun ()
 void 
 LteX2HandoverTestCase::CheckConnected (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice)
 {
-  NS_LOG_FUNCTION (this);
   Ptr<LteUeNetDevice> ueLteDevice = ueDevice->GetObject<LteUeNetDevice> ();
   Ptr<LteUeRrc> ueRrc = ueLteDevice->GetRrc ();
   NS_TEST_ASSERT_MSG_EQ (ueRrc->GetState (), LteUeRrc::CONNECTED_NORMALLY, "Wrong LteUeRrc state!");
@@ -500,7 +499,6 @@ LteX2HandoverTestCase::CheckConnected (Ptr<NetDevice> ueDevice, Ptr<NetDevice> e
 void 
 LteX2HandoverTestCase::SaveStatsAfterHandover (uint32_t ueIndex)
 {
-  NS_LOG_FUNCTION (this << ueIndex);
   for (std::list<BearerData>::iterator it = m_ueDataVector.at (ueIndex).bearerDataList.begin ();
        it != m_ueDataVector.at (ueIndex).bearerDataList.end ();
        ++it)
@@ -512,8 +510,7 @@ LteX2HandoverTestCase::SaveStatsAfterHandover (uint32_t ueIndex)
 
 void 
 LteX2HandoverTestCase::CheckStatsAWhileAfterHandover (uint32_t ueIndex)
-{     
-  NS_LOG_FUNCTION (this << ueIndex);
+{      
   uint32_t b = 1;
   for (std::list<BearerData>::iterator it = m_ueDataVector.at (ueIndex).bearerDataList.begin ();
        it != m_ueDataVector.at (ueIndex).bearerDataList.end ();
@@ -541,8 +538,6 @@ public:
 LteX2HandoverTestSuite::LteX2HandoverTestSuite ()
   : TestSuite ("lte-x2-handover", SYSTEM)
 {
-  NS_LOG_FUNCTION (this);
-
   // in the following:
   // fwd means handover from enb 0 to enb 1
   // bwd means handover from enb 1 to enb 0
@@ -616,11 +611,9 @@ LteX2HandoverTestSuite::LteX2HandoverTestSuite ()
   hel7.push_back (ue2fwd);     
   hel7.push_back (ue2bwd);    
 
-  AddTestCase (new LteX2HandoverTestCase (  2,    0,    hel1, hel1name, true, "ns3::RrFfMacScheduler", true, false));
-
   std::vector<std::string> schedulers;
   schedulers.push_back ("ns3::RrFfMacScheduler");
-  schedulers.push_back ("ns3::PfrFfMacScheduler");
+  schedulers.push_back ("ns3::PfFfMacScheduler");
   for (std::vector<std::string>::iterator schedIt = schedulers.begin (); schedIt != schedulers.end (); ++schedIt)
     {
       for (int32_t useIdealRrc = 1; useIdealRrc >= 0; --useIdealRrc)
