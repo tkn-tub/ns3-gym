@@ -1428,6 +1428,7 @@ PfFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
               if (itHarq == m_ulHarqProcessesDciBuffer.end ())
                 {
                   NS_LOG_ERROR ("No info find in HARQ buffer for UE (might change eNB) " << rnti);
+                  continue;
                 }
               UlDciListElement_s dci = (*itHarq).second.at (harqId);
               std::map <uint16_t, UlHarqProcessesStatus_t>::iterator itStat = m_ulHarqProcessesStatus.find (rnti);
