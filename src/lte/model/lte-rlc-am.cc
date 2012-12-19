@@ -158,8 +158,8 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId)
 {
   NS_LOG_FUNCTION (this << m_rnti << (uint32_t) m_lcid << bytes);
 
-//   if (bytes <= 2)
-  if (bytes <= 4)
+  if (bytes <= 2)
+//   if (bytes <= 4)
     {
       // Stingy MAC: Header fix part is 2 bytes, we need more bytes for the data
       NS_LOG_LOGIC ("TX opportunity too small = " << bytes);
