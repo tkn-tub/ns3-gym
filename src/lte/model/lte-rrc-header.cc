@@ -31,6 +31,12 @@
 #define MAX_SI_MESSAGE 32
 #define MAX_SIB 32
 
+#define MAX_REPORT_CONFIG_ID 32
+#define MAX_OBJECT_ID 32
+#define MAX_MEAS_ID 32
+#define MAX_CELL_MEAS 32
+#define MAX_CELL_REPORT 8
+
 NS_LOG_COMPONENT_DEFINE ("RrcHeader");
 
 namespace ns3 {

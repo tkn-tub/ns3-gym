@@ -15,7 +15,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Nicola Baldo <nbaldo@cttc.es>
+ * Authors: Nicola Baldo <nbaldo@cttc.es>
+ *          Lluis Parcerisa <lparcerisa@cttc.cat>
  */
 
 
@@ -29,7 +30,6 @@
 #include <ns3/simulator.h>
 
 namespace ns3 {
-
 
 class LteRlcSapUser;
 class LtePdcpSapUser;
@@ -174,10 +174,136 @@ public:
     bool havePhysicalConfigDedicated;
     PhysicalConfigDedicated physicalConfigDedicated;
   };
+  
+  struct QuantityConfig
+  {
+    uint8_t filterCoefficientRSRP;
+    uint8_t filterCoefficientRSRQ;
+  };
+
+  struct CellsToAddMod
+  {
+    uint8_t cellIndex;
+    uint16_t physCellId;
+    int8_t cellIndividualOffset;
+  };
+  
+  struct PhysCellIdRange
+  {
+    uint16_t start;
+    bool haveRange;
+    uint16_t range;
+  };
+
+  struct BlackCellsToAddMod
+  {
+    uint8_t cellIndex;
+    PhysCellIdRange physCellIdRange;
+  };
+  
+  struct MeasObjectEutra
+  {
+    uint16_t carrierFreq;
+    uint8_t allowedMeasBandwidth;
+    bool presenceAntennaPort1;
+    uint8_t neighCellConfig;
+    int8_t offsetFreq;
+    std::list<uint8_t> cellsToRemoveList;
+    std::list<CellsToAddMod> cellsToAddModList;
+    std::list<uint8_t> blackCellsToRemoveList;
+    std::list<BlackCellsToAddMod> blackCellsToAddModList;
+    bool haveCellForWhichToReportCGI;
+    uint8_t cellForWhichToReportCGI;
+  };
+  
+  struct ThresholdEutra
+  {
+    uint8_t thresholdRsrp;
+    uint8_t thresholdRsrq;
+  };
+
+  struct ReportConfigEutra
+  {
+    enum {eventA1,eventA2,eventA3,eventA4,eventA5} eventId;
+    ThresholdEutra threshold1; // used for A1, A2, A4, A5
+    ThresholdEutra threshold2; // used for A5
+    bool reportOnLeave; // used for A3
+    int8_t a3Offset; // used for A3
+    uint8_t hysteresis;
+    uint16_t timeToTrigger;
+    enum {reportStrongestCells, reportCgi} purpose;
+    enum {rsrp, rsrq} triggerQuantity;
+    enum {sameAsTriggerQuantity, both} reportQuantity;
+    uint8_t maxReportCells;
+    enum {ms120, ms240, ms480, ms640, ms1024, ms2048, ms5120, ms10240, 
+    min1, min6, min12, min30, min60, spare3, spare2, spare1} reportInterval;
+    uint8_t reportAmount;
+  };
+  
+  struct MeasObjectToAddMod
+  {
+    uint8_t measObjectId; 
+    MeasObjectEutra measObjectEutra;
+  };
+
+  struct ReportConfigToAddMod
+  {
+    uint8_t reportConfigId;
+    ReportConfigEutra reportConfigEutra;
+  };
+
+  struct MeasIdToAddMod
+  {
+    uint8_t measId;
+    uint8_t measObjectId;
+    uint8_t reportConfigId;
+  };
+
+  struct MeasGapConfig
+  {
+    enum {SETUP, RESET} type;
+    enum {gp0, gp1} gapOffsetChoice;
+    uint8_t gapOffsetValue;
+  };
+  
+  struct MobilityStateParameters
+  {
+    uint8_t tEvaluation;
+    uint8_t tHystNormal;
+    uint8_t nCellChangeMedium;
+    uint8_t nCellChangeHigh;
+  };
+  
+  struct SpeedStateScaleFactors
+  {
+    // 25 = oDot25, 50 = oDot5, 75 = oDot75, 100 = lDot0
+    uint8_t sfMedium;
+    uint8_t sfHigh;
+  };
+
+  struct SpeedStatePars
+  {
+    enum {SETUP, RESET} type;
+    MobilityStateParameters mobilityStateParameters;
+    SpeedStateScaleFactors timeToTriggerSf;
+  };
 
   struct MeasConfig
   {
-
+    std::list<uint8_t> measObjectToRemoveList;
+    std::list<MeasObjectToAddMod> measObjectToAddModList;
+    std::list<uint8_t> reportConfigToRemoveList;
+    std::list<ReportConfigToAddMod> reportConfigToAddModList;
+    std::list<uint8_t> measIdToRemoveList;
+    std::list<MeasIdToAddMod> measIdToAddModList;
+    bool haveQuantityConfig;
+    QuantityConfig quantityConfig;
+    bool haveMeasGapConfig;
+    MeasGapConfig measGapConfig;
+    bool haveSmeasure;
+    uint8_t sMeasure;
+    bool haveSpeedStatePars;
+    SpeedStatePars speedStatePars;
   };
 
   struct CarrierFreqEutra
@@ -218,11 +344,11 @@ public:
   };
 
   enum ReestablishmentCause 
-    { 
-      RECONFIGURATION_FAILURE,
-      HANDOVER_FAILURE,
-      OTHER_FAILURE
-    };
+  { 
+    RECONFIGURATION_FAILURE,
+    HANDOVER_FAILURE,
+    OTHER_FAILURE
+  };
 
   struct MasterInformationBlock
   {
@@ -245,8 +371,8 @@ public:
   {
     bool haveSib2;
     SystemInformationBlockType2 sib2;
-  }
-    ;
+  };
+
   struct AsConfig
   {
     MeasConfig sourceMeasConfig;
@@ -257,6 +383,30 @@ public:
     uint16_t sourceDlCarrierFreq;
   };
 
+  struct CellGlobalIdEutra
+  {
+    uint32_t plmnIdentity;
+    uint32_t cellIdentity;
+  };
+
+  struct MeasResultEutra
+  {
+    uint16_t physCellId;
+    CellGlobalIdEutra cellGlobalId;
+    uint16_t trackingAreaCode;
+    std::list<uint32_t> plmnIdentityList;
+    uint8_t rsrpResult;
+    uint8_t rsrqResult;
+  };
+
+  struct MeasResults
+  {
+    uint8_t measId;
+    uint8_t rsrpResult;
+    uint8_t rsrqResult;
+    std::list<MeasResultEutra> MeasResultListEutra;
+
+  };
 
   // Messages
 
@@ -329,6 +479,10 @@ public:
     AsConfig asConfig;
   };
   
+  struct MeasurementReport
+  {
+    MeasResults measResults;
+  };
 };
 
 
