@@ -79,6 +79,7 @@ LteRlcAm::LteRlcAm ()
 
 LteRlcAm::~LteRlcAm ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 TypeId
@@ -103,6 +104,17 @@ LteRlcAm::DoDispose ()
   m_pollRetransmitTimer.Cancel ();
   m_reorderingTimer.Cancel ();
   m_statusProhibitTimer.Cancel ();
+
+  m_txonBuffer.clear ();
+  m_txonBufferSize = 0;
+  m_txedBuffer.clear ();
+  m_txedBufferSize = 0;
+  m_retxBuffer.clear ();
+  m_retxBufferSize = 0;
+  m_rxonBuffer.clear ();
+  m_sdusBuffer.clear ();
+  m_keepS0 = 0;
+  m_controlPduBuffer = 0;
 }
 
 
@@ -146,7 +158,8 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId)
 {
   NS_LOG_FUNCTION (this << m_rnti << (uint32_t) m_lcid << bytes);
 
-  if (bytes <= 2)
+//   if (bytes <= 2)
+  if (bytes <= 4)
     {
       // Stingy MAC: Header fix part is 2 bytes, we need more bytes for the data
       NS_LOG_LOGIC ("TX opportunity too small = " << bytes);

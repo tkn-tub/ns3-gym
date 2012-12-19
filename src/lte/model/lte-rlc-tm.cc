@@ -40,6 +40,7 @@ LteRlcTm::LteRlcTm ()
 
 LteRlcTm::~LteRlcTm ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 TypeId
@@ -62,6 +63,7 @@ LteRlcTm::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_rbsTimer.Cancel ();
+  m_txBuffer.clear ();
 }
 
 

@@ -1,6 +1,6 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2011 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
+ * Copyright (c) 2011-2012 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -74,8 +74,11 @@ LtePdcp::LtePdcp ()
   NS_LOG_FUNCTION (this);
   m_pdcpSapProvider = new LtePdcpSpecificLtePdcpSapProvider<LtePdcp> (this);
   m_rlcSapUser = new LtePdcpSpecificLteRlcSapUser (this);
+}
 
-  Simulator::ScheduleNow (&LtePdcp::Start, this);
+LtePdcp::~LtePdcp ()
+{
+  NS_LOG_FUNCTION (this);
 }
 
 TypeId
@@ -94,6 +97,15 @@ LtePdcp::GetTypeId (void)
 }
 
 void
+LtePdcp::DoDispose ()
+{
+  NS_LOG_FUNCTION (this);
+  delete (m_pdcpSapProvider);
+  delete (m_rlcSapUser);
+}
+
+
+void
 LtePdcp::SetRnti (uint16_t rnti)
 {
   NS_LOG_FUNCTION (this << (uint32_t) rnti);
@@ -105,13 +117,6 @@ LtePdcp::SetLcId (uint8_t lcId)
 {
   NS_LOG_FUNCTION (this << (uint32_t) lcId);
   m_lcid = lcId;
-}
-
-LtePdcp::~LtePdcp ()
-{
-  NS_LOG_FUNCTION (this);
-  delete (m_pdcpSapProvider);
-  delete (m_rlcSapUser);
 }
 
 void
@@ -221,12 +226,6 @@ LtePdcp::DoReceivePdu (Ptr<Packet> p)
   params.rnti = m_rnti;
   params.lcid = m_lcid;
   m_pdcpSapUser->ReceivePdcpSdu (params);
-}
-
-void
-LtePdcp::Start ()
-{
-  NS_LOG_FUNCTION (this);
 }
 
 
