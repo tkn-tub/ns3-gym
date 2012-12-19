@@ -320,12 +320,10 @@ LteRrcTestSuite::LteRrcTestSuite ()
 {
   NS_LOG_FUNCTION (this);
 
-  //AddTestCase (new LteRrcConnectionEstablishmentTestCase ( 50,        0,         0,              0,             1, 0, true));
-
   for (uint32_t useIdealRrc = 0; useIdealRrc <= 1; ++useIdealRrc)
     {
       //         <----- all times in ms ----------------->
-      // nUes, nBearers, tConnBase, tConnIncrPerUe, delayDiscStart, useIdealRrc, admitRrcConnectionRequest
+      //                                                     nUes, nBearers, tConnBase, tConnIncrPerUe, delayDiscStart, useIdealRrc, admitRrcConnectionRequest
       AddTestCase (new LteRrcConnectionEstablishmentTestCase (  1,        0,         0,              0,             1, useIdealRrc, true));
       AddTestCase (new LteRrcConnectionEstablishmentTestCase (  1,        0,       100,              0,             1, useIdealRrc, true));
       AddTestCase (new LteRrcConnectionEstablishmentTestCase (  1,        1,         0,              0,             1, useIdealRrc, true));
@@ -347,12 +345,13 @@ LteRrcTestSuite::LteRrcTestSuite ()
       AddTestCase (new LteRrcConnectionEstablishmentTestCase ( 20,        0,        10,              1,             1, useIdealRrc, true));
       AddTestCase (new LteRrcConnectionEstablishmentTestCase ( 50,        0,         0,              0,             1, useIdealRrc, true));
 
-      // Test cases to check admitRrcConnectionRequest=false
-      //AddTestCase (new LteRrcConnectionEstablishmentTestCase (  1,        0,         0,              0,             1, useIdealRrc, false));
-      //AddTestCase (new LteRrcConnectionEstablishmentTestCase (  1,        2,       100,              0,             1, useIdealRrc, false));
-      //AddTestCase (new LteRrcConnectionEstablishmentTestCase (  2,        0,        20,              0,             1, useIdealRrc, false));
-      //AddTestCase (new LteRrcConnectionEstablishmentTestCase (  2,        1,        20,              0,             1, useIdealRrc, false));
-      //AddTestCase (new LteRrcConnectionEstablishmentTestCase (  3,        0,        20,              0,             1, useIdealRrc, false));
+      //Test cases to check admitRrcConnectionRequest=false
+      //                                                     nUes, nBearers, tConnBase, tConnIncrPerUe, delayDiscStart, useIdealRrc, admitRrcConnectionRequest
+      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  1,        0,         0,              0,             1, useIdealRrc, false));
+      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  1,        2,       100,              0,             1, useIdealRrc, false));
+      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  2,        0,        20,              0,             1, useIdealRrc, false));
+      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  2,        1,        20,              0,             1, useIdealRrc, false));
+      AddTestCase (new LteRrcConnectionEstablishmentTestCase (  3,        0,        20,              0,             1, useIdealRrc, false));
 
       // // time consuming tests with a lot of UEs
       // AddTestCase (new LteRrcConnectionEstablishmentTestCase (100,        0,        10,              0,             1, useIdealRrc, true));

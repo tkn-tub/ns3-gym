@@ -99,6 +99,7 @@ const char* g_ueManagerStateName[UeManager::NUM_STATES] =
   {
     "INITIAL_RANDOM_ACCESS",
     "CONNECTION_SETUP",
+    "CONNECTION_REJECTED",
     "CONNECTED_NORMALLY",
     "CONNECTION_RECONFIGURATION",
     "CONNECTION_REESTABLISHMENT",
@@ -686,18 +687,32 @@ UeManager::RecvRrcConnectionRequest (LteRrcSap::RrcConnectionRequest msg)
     {
     case INITIAL_RANDOM_ACCESS:      
       {      
-        m_connectionTimeout.Cancel ();
-        m_imsi = msg.ueIdentity;      
-        if (m_rrc->m_s1SapProvider != 0)
+        if (m_rrc->m_admitRrcConnectionRequest == true)
           {
-            m_rrc->m_s1SapProvider->InitialUeMessage (m_imsi, m_rnti);
-          }      
-        LteRrcSap::RrcConnectionSetup msg2;
-        msg2.rrcTransactionIdentifier = GetNewRrcTransactionIdentifier ();
-        msg2.radioResourceConfigDedicated = BuildRadioResourceConfigDedicated ();
-        m_rrc->m_rrcSapUser->SendRrcConnectionSetup (m_rnti, msg2);
-        RecordDataRadioBearersToBeStarted ();
-        SwitchToState (CONNECTION_SETUP);
+            m_connectionTimeout.Cancel ();
+            m_imsi = msg.ueIdentity;      
+            if (m_rrc->m_s1SapProvider != 0)
+              {
+                m_rrc->m_s1SapProvider->InitialUeMessage (m_imsi, m_rnti);
+              }      
+            LteRrcSap::RrcConnectionSetup msg2;
+            msg2.rrcTransactionIdentifier = GetNewRrcTransactionIdentifier ();
+            msg2.radioResourceConfigDedicated = BuildRadioResourceConfigDedicated ();
+            m_rrc->m_rrcSapUser->SendRrcConnectionSetup (m_rnti, msg2);
+            RecordDataRadioBearersToBeStarted ();
+            SwitchToState (CONNECTION_SETUP);
+          }
+        else
+          {
+            m_connectionTimeout.Cancel ();
+            NS_LOG_INFO ("rejecting connection request for RNTI " << m_rnti);
+            LteRrcSap::RrcConnectionReject rejectMsg;
+            rejectMsg.waitTime = 3;
+            m_rrc->m_rrcSapUser->SendRrcConnectionReject (m_rnti, rejectMsg);
+            Time maxRecvConnRejectDelay = MilliSeconds (30);
+            m_connectionTimeout = Simulator::Schedule (maxRecvConnRejectDelay, &LteEnbRrc::ConnectionTimeout, m_rrc, m_rnti);
+            SwitchToState (CONNECTION_REJECTED);
+          }        
       }
       break;
       
@@ -1331,17 +1346,7 @@ LteEnbRrc::DoRecvRrcConnectionRequest (uint16_t rnti, LteRrcSap::RrcConnectionRe
 {
   NS_LOG_FUNCTION (this << rnti);
   
-  if (m_admitRrcConnectionRequest == true)
-  {
     GetUeManager (rnti)->RecvRrcConnectionRequest (msg);
-  }
-  else
-  {
-    NS_LOG_INFO ("rejecting connection request to rnti " << rnti);
-    LteRrcSap::RrcConnectionReject rejectMsg;
-    rejectMsg.waitTime = 3;
-    m_rrcSapUser->SendRrcConnectionReject (rnti, rejectMsg);
-  }
 }
 
 void
