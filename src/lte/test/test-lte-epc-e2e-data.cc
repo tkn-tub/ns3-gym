@@ -111,8 +111,11 @@ void
 LteEpcE2eDataTestCase::DoRun ()
 {
   NS_LOG_FUNCTION (this << GetName ());
+  Config::Reset ();
   Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue (false));
-  Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));  Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
+  Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));  
+  Config::SetDefault ("ns3::LteHelper::UseIdealRrc", BooleanValue (true));
+  Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
   Ptr<EpcHelper> epcHelper = CreateObject<EpcHelper> ();
   lteHelper->SetEpcHelper (epcHelper);
 

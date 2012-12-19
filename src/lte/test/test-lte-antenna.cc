@@ -95,8 +95,10 @@ LteEnbAntennaTestCase::~LteEnbAntennaTestCase ()
 void
 LteEnbAntennaTestCase::DoRun (void)
 {
+  Config::Reset ();
   Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue (false));
   Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));
+  Config::SetDefault ("ns3::LteHelper::UseIdealRrc", BooleanValue (true));
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
 
   // use 0dB Pathloss, since we are testing only the antenna gain
