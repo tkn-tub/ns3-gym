@@ -204,7 +204,6 @@ public:
    */
   std::vector<EpcX2Sap::ErabToBeSetupItem> GetErabList ();
 
-
   /** 
    * send the UE CONTEXT RELEASE X2 message to the source eNB, thus
    * successfully terminating an X2 handover procedure 
@@ -742,6 +741,15 @@ private:
   uint16_t m_lastAllocatedRnti;
 
   std::map<uint16_t, Ptr<UeManager> > m_ueMap;  
+
+  struct X2uTeidInfo
+  {
+    uint16_t rnti;
+    uint8_t drbid;
+  };
+    
+  //       TEID      RNTI, DRBID
+  std::map<uint32_t, X2uTeidInfo> m_x2uTeidInfoMap; 
   
   uint8_t m_defaultTransmissionMode;
 

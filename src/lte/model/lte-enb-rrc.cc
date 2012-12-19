@@ -273,6 +273,13 @@ UeManager::DoDispose ()
     {
       m_rrc->m_s1SapProvider->UeContextRelease (m_rnti);
     }
+  // delete eventual X2-U TEIDs
+  for (std::map <uint8_t, Ptr<LteDataRadioBearerInfo> >::iterator it = m_drbMap.begin ();
+       it != m_drbMap.end ();
+       ++it)
+    {
+      m_rrc->m_x2uTeidInfoMap.erase (it->second->m_gtpTeid);
+    }    
 }
 
 TypeId UeManager::GetTypeId (void)
@@ -319,6 +326,17 @@ UeManager::SetupDataRadioBearer (EpsBearer bearer, uint8_t bearerId, uint32_t gt
   drbInfo->m_logicalChannelIdentity = lcid;
   drbInfo->m_gtpTeid = gtpTeid;
   drbInfo->m_transportLayerAddress = transportLayerAddress;
+
+  if (m_state == HANDOVER_JOINING)
+    {
+      // setup TEIDs for receiving data eventually forwarded over X2-U 
+      LteEnbRrc::X2uTeidInfo x2uTeidInfo;
+      x2uTeidInfo.rnti = m_rnti;
+      x2uTeidInfo.drbid = drbid;
+      std::pair<std::map<uint32_t, LteEnbRrc::X2uTeidInfo>::iterator, bool>
+        ret = m_rrc->m_x2uTeidInfoMap.insert (std::pair<uint32_t, LteEnbRrc::X2uTeidInfo> (gtpTeid, x2uTeidInfo));
+      NS_ASSERT_MSG (ret.second == true, "overwriting a pre-existing entry in m_x2uTeidInfoMap");
+    }
 
   TypeId rlcTypeId = m_rrc->GetRlcType (bearer);
 
@@ -421,6 +439,10 @@ UeManager::ReleaseDataRadioBearer (uint8_t drbid)
   uint8_t lcid = Drbid2Lcid (drbid);
   std::map <uint8_t, Ptr<LteDataRadioBearerInfo> >::iterator it = m_drbMap.find (drbid);
   NS_ASSERT_MSG (it != m_drbMap.end (), "request to remove radio bearer with unknown drbid " << drbid);
+
+  // first delete eventual X2-U TEIDs
+  m_rrc->m_x2uTeidInfoMap.erase (it->second->m_gtpTeid);
+
   m_drbMap.erase (it);
   m_rrc->m_cmacSapProvider->ReleaseLc (m_rnti, lcid);
 
@@ -580,13 +602,49 @@ void
 UeManager::SendData (uint8_t bid, Ptr<Packet> p)
 {
   NS_LOG_FUNCTION (this << p << (uint16_t) bid);
-  LtePdcpSapProvider::TransmitPdcpSduParameters params;
-  params.pdcpSdu = p;
-  params.rnti = m_rnti;
-  params.lcid = Bid2Lcid (bid);
-  uint8_t drbid = Bid2Drbid (bid);
-  LtePdcpSapProvider* pdcpSapProvider = GetDataRadioBearerInfo (drbid)->m_pdcp->GetLtePdcpSapProvider ();
-  pdcpSapProvider->TransmitPdcpSdu (params);
+   switch (m_state)
+    {
+    case INITIAL_RANDOM_ACCESS:
+    case CONNECTION_SETUP:
+      NS_LOG_WARN ("not connected, discarding packet");
+      return;
+      break;      
+      
+    case CONNECTED_NORMALLY:      
+    case CONNECTION_RECONFIGURATION:
+    case CONNECTION_REESTABLISHMENT:
+    case HANDOVER_PREPARATION:
+    case HANDOVER_JOINING:
+    case HANDOVER_PATH_SWITCH:
+      {
+        NS_LOG_LOGIC ("queueing data on PDCP for transmission over the air");
+        LtePdcpSapProvider::TransmitPdcpSduParameters params;
+        params.pdcpSdu = p;
+        params.rnti = m_rnti;
+        params.lcid = Bid2Lcid (bid);
+        uint8_t drbid = Bid2Drbid (bid);
+        LtePdcpSapProvider* pdcpSapProvider = GetDataRadioBearerInfo (drbid)->m_pdcp->GetLtePdcpSapProvider ();
+        pdcpSapProvider->TransmitPdcpSdu (params);
+      }
+      break;
+      
+    case HANDOVER_LEAVING:
+      {
+        NS_LOG_LOGIC ("forwarding data to target eNB over X2-U");
+        uint8_t drbid = Bid2Drbid (bid);        
+        EpcX2Sap::UeDataParams params;
+        params.sourceCellId = m_rrc->m_cellId;
+        params.targetCellId = m_targetCellId;
+        params.gtpTeid = GetDataRadioBearerInfo (drbid)->m_gtpTeid;
+        params.ueData = p;
+        m_rrc->m_x2SapProvider->SendUeData (params);
+      }      
+      break;
+      
+    default:
+      NS_FATAL_ERROR ("method unexpected in state " << ToString (m_state));
+      break;      
+    }
 }
 
 std::vector<EpcX2Sap::ErabToBeSetupItem>   
@@ -1577,7 +1635,16 @@ LteEnbRrc::DoRecvUeData (EpcX2SapUser::UeDataParams params)
   NS_LOG_LOGIC ("ueData = " << params.ueData);
   NS_LOG_LOGIC ("ueData size = " << params.ueData->GetSize ());
 
-  NS_ASSERT ("Processing of UE DATA FORWARDING through X2 interface IS NOT IMPLEMENTED");
+  std::map<uint32_t, X2uTeidInfo>::iterator 
+    teidInfoIt = m_x2uTeidInfoMap.find (params.gtpTeid);
+  if (teidInfoIt != m_x2uTeidInfoMap.end ())    
+    {
+      GetUeManager (teidInfoIt->second.rnti)->SendData (teidInfoIt->second.drbid, params.ueData);
+    }
+  else
+    {
+      NS_FATAL_ERROR ("X2-U data received but no X2uTeidInfo found");
+    }
 }
 
 
