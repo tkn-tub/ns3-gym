@@ -94,6 +94,11 @@ LteRlc::LteRlc ()
   m_macSapUser = new LteRlcSpecificLteMacSapUser (this);
 }
 
+LteRlc::~LteRlc ()
+{
+  NS_LOG_FUNCTION (this);
+}
+
 TypeId LteRlc::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LteRlc")
@@ -109,6 +114,14 @@ TypeId LteRlc::GetTypeId (void)
 }
 
 void
+LteRlc::DoDispose ()
+{
+  NS_LOG_FUNCTION (this);
+  delete (m_rlcSapProvider);
+  delete (m_macSapUser);
+}
+
+void
 LteRlc::SetRnti (uint16_t rnti)
 {
   NS_LOG_FUNCTION (this << (uint32_t) rnti);
@@ -120,13 +133,6 @@ LteRlc::SetLcId (uint8_t lcId)
 {
   NS_LOG_FUNCTION (this << (uint32_t) lcId);
   m_lcid = lcId;
-}
-
-LteRlc::~LteRlc ()
-{
-  NS_LOG_FUNCTION (this);
-  delete (m_rlcSapProvider);
-  delete (m_macSapUser);
 }
 
 void
@@ -170,7 +176,7 @@ LteRlcSm::LteRlcSm ()
 
 LteRlcSm::~LteRlcSm ()
 {
-
+  NS_LOG_FUNCTION (this);
 }
 
 TypeId

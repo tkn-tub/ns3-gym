@@ -55,6 +55,7 @@ public:
   LteRlc ();
   virtual ~LteRlc ();
   static TypeId GetTypeId (void);
+  virtual void DoDispose ();
 
   /**
    *
