@@ -72,6 +72,7 @@ private:
   void DoSendRrcConnectionReconfigurationCompleted (LteRrcSap::RrcConnectionReconfigurationCompleted msg);
   void DoSendRrcConnectionReestablishmentRequest (LteRrcSap::RrcConnectionReestablishmentRequest msg);
   void DoSendRrcConnectionReestablishmentComplete (LteRrcSap::RrcConnectionReestablishmentComplete msg);
+  void DoSendMeasurementReport (LteRrcSap::MeasurementReport msg);
 
   void SetEnbRrcSapProvider ();
 

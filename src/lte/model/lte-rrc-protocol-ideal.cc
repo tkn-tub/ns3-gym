@@ -179,6 +179,15 @@ LteUeRrcProtocolIdeal::DoSendRrcConnectionReestablishmentComplete (LteRrcSap::Rr
 msg);
 }
 
+void 
+LteUeRrcProtocolIdeal::DoSendMeasurementReport (LteRrcSap::MeasurementReport msg)
+{
+   Simulator::Schedule (RRC_IDEAL_MSG_DELAY, 
+                        &LteEnbRrcSapProvider::RecvMeasurementReport,
+                        m_enbRrcSapProvider,
+                        m_rnti, 
+                        msg);
+}
 
 void 
 LteUeRrcProtocolIdeal::SetEnbRrcSapProvider ()

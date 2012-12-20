@@ -395,6 +395,25 @@ private:
   RrcConnectionReject m_rrcConnectionReject;
 };
 
+/**
+* This class manages the serialization/deserialization of MeasurementReport IE
+*/
+class MeasurementReportHeader : public RrcUlDcchMessage,
+                                                   LteRrcSap
+{
+public:
+  MeasurementReportHeader ();
+  void PreSerialize () const;
+  uint32_t Deserialize (Buffer::Iterator bIterator);
+  void Print (std::ostream &os) const;
+  void SetMessage (MeasurementReport msg);
+  MeasurementReport GetMessage () const;
+
+private:
+  MeasurementReport m_measurementReport;
+
+};
+
 } // namespace ns3
 
 #endif // EPC_ASN1_HEADER_H

@@ -3486,6 +3486,79 @@ RrcConnectionRejectHeader::GetMessage () const
   return m_rrcConnectionReject;
 }
 
+//////////////////// MeasurementReportHeader class ////////////////////////
+
+MeasurementReportHeader::MeasurementReportHeader ()
+{
+}
+
+void
+MeasurementReportHeader::PreSerialize () const
+{
+  m_serializationResult = Buffer ();
+
+  // Serialize DCCH message
+  SerializeUlDcchMessage (1);
+
+  // Serialize RRCConnectionSetupComplete sequence:
+  // no default or optional fields. Extension marker not present.
+  SerializeSequence<0> (std::bitset<0> (),false);
+
+  
+
+  // Finish serialization
+  FinalizeSerialization ();
+}
+
+uint32_t
+MeasurementReportHeader::Deserialize (Buffer::Iterator bIterator)
+{
+  /*std::bitset<0> bitset0;
+  bIterator = DeserializeSequence (&bitset0,false,bIterator);
+
+  int n;
+
+  bIterator = DeserializeUlDcchMessage (bIterator);
+
+  bIterator = DeserializeInteger (&n,0,3,bIterator);
+  m_rrcTransactionIdentifier = n;
+
+  bIterator = DeserializeChoice (2,&n,bIterator);
+
+  if (n == 1)
+    {
+      // Deserialize criticalExtensionsFuture
+      bIterator = DeserializeSequence (&bitset0,false,bIterator);
+    }
+  else if (n == 0)
+    {
+      // Deserialize rrcConnectionReconfigurationComplete-r8
+      // ...
+    }*/
+
+  return GetSerializedSize ();
+}
+
+void
+MeasurementReportHeader::Print (std::ostream &os) const
+{
+  // TODO
+}
+
+void
+MeasurementReportHeader::SetMessage (MeasurementReport msg)
+{
+  m_measurementReport = msg;
+  m_isDataSerialized = false;
+}
+
+LteRrcSap::MeasurementReport
+MeasurementReportHeader::GetMessage () const
+{
+  MeasurementReport msg;
+  msg = m_measurementReport;
+  return msg;
+}
 
 ///////////////////  RrcUlDcchMessage //////////////////////////////////
 uint32_t

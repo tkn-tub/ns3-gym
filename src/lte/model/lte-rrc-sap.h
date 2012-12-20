@@ -601,6 +601,7 @@ public:
   virtual void RecvRrcConnectionReconfigurationCompleted (uint16_t rnti, RrcConnectionReconfigurationCompleted msg) = 0;
   virtual void RecvRrcConnectionReestablishmentRequest (uint16_t rnti, RrcConnectionReestablishmentRequest msg) = 0;
   virtual void RecvRrcConnectionReestablishmentComplete (uint16_t rnti, RrcConnectionReestablishmentComplete msg) = 0;
+  virtual void RecvMeasurementReport (uint16_t rnti, MeasurementReport msg) = 0;
 
 };
 
@@ -979,6 +980,7 @@ public:
   virtual void RecvRrcConnectionReconfigurationCompleted (uint16_t rnti, RrcConnectionReconfigurationCompleted msg);
   virtual void RecvRrcConnectionReestablishmentRequest (uint16_t rnti, RrcConnectionReestablishmentRequest msg);
   virtual void RecvRrcConnectionReestablishmentComplete (uint16_t rnti, RrcConnectionReestablishmentComplete msg);
+  virtual void RecvMeasurementReport (uint16_t rnti, MeasurementReport msg);
 
 private:
   MemberLteEnbRrcSapProvider ();
@@ -1038,6 +1040,12 @@ MemberLteEnbRrcSapProvider<C>::RecvRrcConnectionReestablishmentComplete (uint16_
   Simulator::ScheduleNow (&C::DoRecvRrcConnectionReestablishmentComplete, m_owner, rnti, msg);
 }
 
+template <class C>
+void 
+MemberLteEnbRrcSapProvider<C>::RecvMeasurementReport (uint16_t rnti, MeasurementReport msg)
+{
+  Simulator::ScheduleNow (&C::DoRecvMeasurementReport, m_owner, rnti, msg);
+}
 
 
 
