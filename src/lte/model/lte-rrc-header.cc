@@ -389,23 +389,11 @@ RrcAsn1Header::SerializeSystemInformationBlockType1 (LteRrcSap::SystemInformatio
 
   // Serialize plmn-IdentityList
   SerializeSequenceOf (1,6,1);
+
   // PLMN-IdentityInfo 
   SerializeSequence (std::bitset<0> (),false);
-  // plmn-Identity sequence, mcc is optional, no extension marker
-  SerializeSequence (std::bitset<1> (0), false);
-  // Serialize mnc
-  int x = systemInformationBlockType1.cellAccessRelatedInfo.plmnIdentityInfo.plmnIdentity;
-  int nDig = (x > 99) ? 3 : 2;
 
-  SerializeSequenceOf (nDig,3,2);
-  for (int i = nDig - 1; i >= 0; i--)
-    {
-      int n = floor (x / pow (10,i));
-      SerializeInteger (n,0,9);
-      x -= n * pow (10,i);
-    }
-  // cellReservedForOperatorUse 
-  SerializeEnum (2,0);
+  SerializePlmnIdentity (systemInformationBlockType1.cellAccessRelatedInfo.plmnIdentityInfo.plmnIdentity);
 
   // Serialize trackingAreaCode
   SerializeBitstring (std::bitset<16> (0));
@@ -532,6 +520,112 @@ RrcAsn1Header::SerializeSystemInformationBlockType2 () const
   SerializeInteger (29,1,32); // additionalSpectrumEmission
   // timeAlignmentTimerCommon
   SerializeEnum (8,0);
+}
+
+void
+RrcAsn1Header::SerializeMeasResults (LteRrcSap::MeasResults measResults) const
+{
+  // Watchdog: if list has 0 elements, set boolean to false
+  if(measResults.measResultListEutra.empty())
+  {
+    measResults.haveMeasResultNeighCells = false;
+  }
+
+  // Serialize MeasResults sequence, 1 optional value, extension marker present
+  SerializeSequence(std::bitset<1>(measResults.haveMeasResultNeighCells),true);
+
+  // Serialize measId
+  SerializeInteger(measResults.measId,1,MAX_MEAS_ID);
+  
+  // Serialize measResultServCell sequence
+  SerializeSequence(std::bitset<0>(0),false);
+
+  // Serialize rsrpResult
+  SerializeInteger(measResults.rsrpResult,0,97);
+  
+  // Serialize rsrqResult
+  SerializeInteger(measResults.rsrqResult,0,34);
+  
+  if(measResults.haveMeasResultNeighCells)
+  {
+    // Serialize Choice = 0 (MeasResultListEUTRA)
+    SerializeChoice (4,0);
+    
+    // Serialize measResultNeighCells
+    SerializeSequenceOf(measResults.measResultListEutra.size(),MAX_CELL_REPORT,1);
+    
+    // serialize MeasResultEutra elements in the list
+    std::list<LteRrcSap::MeasResultEutra>::iterator it;
+    for (it = measResults.measResultListEutra.begin(); it != measResults.measResultListEutra.end(); it++)
+    {
+      SerializeSequence (std::bitset<1> (it->haveCgiInfo),false);
+      
+      // Serialize PhysCellId
+      SerializeInteger (it->physCellId, 0, 503);
+      
+      // Serialize CgiInfo
+      if(it->haveCgiInfo)
+      {
+        SerializeSequence (std::bitset<1>(it->cgiInfo.plmnIdentityList.size()),false);
+
+        // Serialize cellGlobalId
+        SerializeSequence (std::bitset<0>(0),false);
+        SerializePlmnIdentity(it->cgiInfo.plmnIdentity);
+        SerializeBitstring (std::bitset<28>(it->cgiInfo.cellIdentity));
+        
+        // Serialize trackingAreaCode
+        SerializeBitstring (std::bitset<16>(it->cgiInfo.trackingAreaCode));
+        
+        // Serialize plmn-IdentityList
+        if(!it->cgiInfo.plmnIdentityList.empty())
+        {
+          SerializeSequenceOf(it->cgiInfo.plmnIdentityList.size(),5,1);
+          std::list<uint32_t>::iterator it2;
+          for (it2 = it->cgiInfo.plmnIdentityList.begin(); it2 != it->cgiInfo.plmnIdentityList.end(); it2++)
+          {
+            SerializePlmnIdentity(*it2);
+          }
+        }
+      }
+      
+      // Serialize measResult
+      std::bitset<2> measResultFieldsPresent;
+      measResultFieldsPresent[1] = it->haveRsrpResult;
+      measResultFieldsPresent[0] = it->haveRsrqResult;
+      SerializeSequence(measResultFieldsPresent,true);
+      
+      if(it->haveRsrpResult)
+      {
+        SerializeInteger (it->rsrpResult,0,97);
+      }
+      
+      if(it->haveRsrqResult)
+      {
+        SerializeInteger (it->rsrqResult,0,34);
+      }
+    }
+  } 
+}
+
+void
+RrcAsn1Header::SerializePlmnIdentity (uint32_t plmnId) const
+{
+  // plmn-Identity sequence, mcc is optional, no extension marker
+  SerializeSequence (std::bitset<1> (0), false);
+  
+  // Serialize mnc
+  int nDig = (plmnId > 99) ? 3 : 2;
+
+  SerializeSequenceOf (nDig,3,2);
+  for (int i = nDig - 1; i >= 0; i--)
+    {
+      int n = floor (plmnId / pow (10,i));
+      SerializeInteger (n,0,9);
+      plmnId -= n * pow (10,i);
+    }
+    
+  // cellReservedForOperatorUse 
+  SerializeEnum (2,0);
 }
 
 Buffer::Iterator
@@ -1053,27 +1147,7 @@ RrcAsn1Header::DeserializeSystemInformationBlockType1 (LteRrcSap::SystemInformat
       bIterator = DeserializeSequence (&bitset0,false,bIterator);
 
       // plmn-Identity
-      std::bitset<1> isMccPresent;
-      bIterator = DeserializeSequence (&isMccPresent,false,bIterator);
-      if (isMccPresent[0])
-        {
-          // Deserialize mcc
-          // ...
-        }
-      // Deserialize mnc
-      int mncDigits;
-      int mnc = 0;
-      bIterator = DeserializeSequenceOf (&mncDigits,3,2,bIterator);
-
-      for (int j = mncDigits - 1; j >= 0; j--)
-        {
-          bIterator = DeserializeInteger (&n,0,9,bIterator);
-          mnc += n * pow (10,j);
-        }
-      systemInformationBlockType1->cellAccessRelatedInfo.plmnIdentityInfo.plmnIdentity = mnc;
-
-      // cellReservedForOperatorUse
-      bIterator = DeserializeEnum (2,&n,bIterator);
+      bIterator = DeserializePlmnIdentity(&systemInformationBlockType1->cellAccessRelatedInfo.plmnIdentityInfo.plmnIdentity,bIterator);
     }
 
   // Deserialize trackingAreaCode
@@ -1456,6 +1530,44 @@ RrcAsn1Header::DeserializeRadioResourceConfigCommonSib (Buffer::Iterator bIterat
   return bIterator;
 }
 
+Buffer::Iterator
+RrcAsn1Header::DeserializeMeasResults (LteRrcSap::MeasResults *measResults, Buffer::Iterator bIterator)
+{
+  // TODO
+  return bIterator;
+}
+
+Buffer::Iterator
+RrcAsn1Header::DeserializePlmnIdentity (uint32_t *plmnId, Buffer::Iterator bIterator)
+{
+  int n;
+  std::bitset<1> isMccPresent;
+  bIterator = DeserializeSequence (&isMccPresent,false,bIterator);
+  
+  if (isMccPresent[0])
+    {
+      // Deserialize mcc
+      // ...
+    }
+
+  // Deserialize mnc
+  int mncDigits;
+  int mnc = 0;
+  bIterator = DeserializeSequenceOf (&mncDigits,3,2,bIterator);
+
+  for (int j = mncDigits - 1; j >= 0; j--)
+    {
+      bIterator = DeserializeInteger (&n,0,9,bIterator);
+      mnc += n * pow (10,j);
+    }
+
+  *plmnId = mnc;
+
+  // cellReservedForOperatorUse
+  bIterator = DeserializeEnum (2,&n,bIterator);
+  return bIterator;
+}
+  
 //////////////////// RrcConnectionRequest class ////////////////////////
 
 // Constructor
@@ -1900,11 +2012,10 @@ uint32_t
 RrcConnectionReconfigurationCompleteHeader::Deserialize (Buffer::Iterator bIterator)
 {
   std::bitset<0> bitset0;
-  bIterator = DeserializeSequence (&bitset0,false,bIterator);
-
   int n;
 
   bIterator = DeserializeUlDcchMessage (bIterator);
+  bIterator = DeserializeSequence (&bitset0,false,bIterator);
 
   bIterator = DeserializeInteger (&n,0,3,bIterator);
   m_rrcTransactionIdentifier = n;
@@ -3486,6 +3597,111 @@ RrcConnectionRejectHeader::GetMessage () const
   return m_rrcConnectionReject;
 }
 
+//////////////////// MeasurementReportHeader class ////////////////////////
+
+MeasurementReportHeader::MeasurementReportHeader ()
+{
+}
+
+void
+MeasurementReportHeader::PreSerialize () const
+{
+  m_serializationResult = Buffer ();
+
+  // Serialize DCCH message
+  SerializeUlDcchMessage (1);
+
+  // Serialize MeasurementReport sequence:
+  // no default or optional fields. Extension marker not present.
+  SerializeSequence<0> (std::bitset<0> (),false);
+
+  // Serialize criticalExtensions choice:
+  // c1 chosen
+  SerializeChoice (2,0);
+  
+  // Serialize c1 choice
+  // measurementReport-r8 chosen
+  SerializeChoice (8,0);
+
+  // Serialize MeasurementReport-r8-IEs sequence:
+  // 1 optional fields, not present. Extension marker not present.
+  SerializeSequence<1> (std::bitset<1> (0),false);
+
+  // Serialize measResults
+  SerializeMeasResults (m_measurementReport.measResults);
+  
+  // Finish serialization
+  FinalizeSerialization ();
+}
+
+uint32_t
+MeasurementReportHeader::Deserialize (Buffer::Iterator bIterator)
+{
+  std::bitset<0> bitset0;
+
+  bIterator = DeserializeSequence (&bitset0,false,bIterator);
+
+  bIterator = DeserializeUlDcchMessage (bIterator);
+
+  int criticalExtensionsChoice;
+  bIterator = DeserializeChoice (2,&criticalExtensionsChoice,bIterator);
+
+  if (criticalExtensionsChoice == 1)
+    {
+      // Deserialize criticalExtensionsFuture
+      bIterator = DeserializeSequence (&bitset0,false,bIterator);
+    }
+  else if (criticalExtensionsChoice == 0)
+    {
+      // Deserialize c1
+      int c1Choice;
+      bIterator = DeserializeChoice (8,&c1Choice,bIterator);
+      
+      if(c1Choice>0)
+      {
+        bIterator = DeserializeNull(bIterator);
+      }
+      else
+      {
+        // Deserialize measurementReport-r8
+        std::bitset<1> isNonCriticalExtensionPresent;
+        bIterator = DeserializeSequence(&isNonCriticalExtensionPresent,false,bIterator);
+        
+        // Deserialize measResults
+        bIterator = DeserializeMeasResults (&m_measurementReport.measResults, bIterator);
+        
+        if(isNonCriticalExtensionPresent[0])
+        {
+          // Deserialize nonCriticalExtension MeasurementReport-v8a0-IEs
+          // ...
+        }
+
+      }
+    }
+
+  return GetSerializedSize ();
+}
+
+void
+MeasurementReportHeader::Print (std::ostream &os) const
+{
+  // TODO
+}
+
+void
+MeasurementReportHeader::SetMessage (MeasurementReport msg)
+{
+  m_measurementReport = msg;
+  m_isDataSerialized = false;
+}
+
+LteRrcSap::MeasurementReport
+MeasurementReportHeader::GetMessage () const
+{
+  MeasurementReport msg;
+  msg = m_measurementReport;
+  return msg;
+}
 
 ///////////////////  RrcUlDcchMessage //////////////////////////////////
 uint32_t

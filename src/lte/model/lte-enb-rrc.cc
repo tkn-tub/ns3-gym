@@ -873,6 +873,12 @@ UeManager::RecvRrcConnectionReestablishmentComplete (LteRrcSap::RrcConnectionRee
   SwitchToState (CONNECTED_NORMALLY);
 }
 
+void 
+UeManager::RecvMeasurementReport (LteRrcSap::MeasurementReport msg)
+{
+  NS_LOG_FUNCTION (this);
+}
+
 
 // methods forwarded from CMAC SAP
 
@@ -1435,6 +1441,12 @@ LteEnbRrc::DoRecvRrcConnectionReestablishmentComplete (uint16_t rnti, LteRrcSap:
   GetUeManager (rnti)->RecvRrcConnectionReestablishmentComplete (msg);
 }
 
+void 
+LteEnbRrc::DoRecvMeasurementReport (uint16_t rnti, LteRrcSap::MeasurementReport msg)
+{
+  NS_LOG_FUNCTION (this << rnti);
+  GetUeManager (rnti)->RecvMeasurementReport (msg);
+}
 
 void 
 LteEnbRrc::DoDataRadioBearerSetupRequest (EpcEnbS1SapUser::DataRadioBearerSetupRequestParameters request)

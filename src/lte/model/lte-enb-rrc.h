@@ -233,6 +233,7 @@ public:
   void RecvRrcConnectionReconfigurationCompleted (LteRrcSap::RrcConnectionReconfigurationCompleted msg);
   void RecvRrcConnectionReestablishmentRequest (LteRrcSap::RrcConnectionReestablishmentRequest msg);
   void RecvRrcConnectionReestablishmentComplete (LteRrcSap::RrcConnectionReestablishmentComplete msg);
+  void RecvMeasurementReport (LteRrcSap::MeasurementReport msg);
 
 
   // methods forwarded from CMAC SAP
@@ -597,6 +598,7 @@ private:
   void DoRecvRrcConnectionReconfigurationCompleted (uint16_t rnti, LteRrcSap::RrcConnectionReconfigurationCompleted msg);
   void DoRecvRrcConnectionReestablishmentRequest (uint16_t rnti, LteRrcSap::RrcConnectionReestablishmentRequest msg);
   void DoRecvRrcConnectionReestablishmentComplete (uint16_t rnti, LteRrcSap::RrcConnectionReestablishmentComplete msg);
+  void DoRecvMeasurementReport (uint16_t rnti, LteRrcSap::MeasurementReport msg);
 
 
   // S1 SAP methods
