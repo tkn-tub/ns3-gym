@@ -158,16 +158,27 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId)
 {
   NS_LOG_FUNCTION (this << m_rnti << (uint32_t) m_lcid << bytes);
 
-  if (bytes <= 2)
-//   if (bytes <= 4)
+  if (bytes < 4)
     {
-      // Stingy MAC: Header fix part is 2 bytes, we need more bytes for the data
-      NS_LOG_LOGIC ("TX opportunity too small = " << bytes);
+      // Stingy MAC: In general, we need more bytes.
+      // There are a more restrictive test for each particular case
+      NS_LOG_LOGIC ("TxOpportunity (size = " << bytes << ") too small");
+      NS_ASSERT_MSG (false, "TxOpportunity (size = " << bytes << ") too small.\n"
+                         << "Your MAC scheduler is assigned too few resource blocks.");
       return;
     }
 
   if ( m_statusPduRequested && ! m_statusProhibitTimer.IsRunning () )
     {
+      if (bytes < m_statusPduBufferSize)
+        {
+          // Stingy MAC: We need more bytes for the STATUS PDU
+          NS_LOG_LOGIC ("TxOpportunity (size = " << bytes << ") too small for the STATUS PDU (size = " << m_statusPduBufferSize << ")");
+          NS_ASSERT_MSG (false, "TxOpportunity (size = " << bytes << ") too small for the STATUS PDU (size = " << m_statusPduBufferSize << ")\n"
+                             << "Your MAC scheduler is assigned too few resource blocks.");
+          return;
+        }
+
       NS_LOG_LOGIC ("Sending STATUS PDU");
 
       Ptr<Packet> packet = Create<Packet> ();
@@ -217,13 +228,22 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId)
         }
       else
         {
-          NS_LOG_LOGIC ("Tx opportunity too small for retransmission of the packet (" << packet->GetSize () << " bytes)");
-          NS_LOG_LOGIC ("Waiting for bigger tx opportunity");
+          NS_LOG_LOGIC ("TxOpportunity (size = " << bytes << ") too small for retransmission of the packet (size = " << packet->GetSize () << ")");
+          NS_LOG_LOGIC ("Waiting for bigger TxOpportunity");
           return;
         }
     }
   else if ( m_txonBufferSize > 0 )
     {
+      if (bytes < 7)
+      {
+        // Stingy MAC: We need more bytes for new DATA PDUs.
+        NS_LOG_LOGIC ("TxOpportunity (size = " << bytes << ") too small for DATA PDU");
+        NS_ASSERT_MSG (false, "TxOpportunity (size = " << bytes << ") too small for DATA PDU\n"
+                           << "Your MAC scheduler is assigned too few resource blocks.");
+        return;
+      }
+
       NS_LOG_LOGIC ("Sending data from Transmission Buffer");
     }
   else if ( m_txedBufferSize > 0 )
@@ -263,8 +283,8 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId)
         }
       else
         {
-          NS_LOG_LOGIC ("Tx opportunity too small for retransmission of the packet (" << packet->GetSize () << " bytes)");
-          NS_LOG_LOGIC ("Waiting for bigger tx opportunity");
+          NS_LOG_LOGIC ("TxOpportunity (size = " << bytes << ") too small for retransmission of the packet (size = " << packet->GetSize () << ")");
+          NS_LOG_LOGIC ("Waiting for bigger TxOpportunity");
           return;
         }
     }
