@@ -64,11 +64,11 @@ LteRlcAmTransmitterTestCase::~LteRlcAmTransmitterTestCase ()
 void
 LteRlcAmTransmitterTestCase::DoRun (void)
 {
-  // LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
-  // LogComponentEnable ("LteRlcAmTransmitterTest", logLevel);
-  // LogComponentEnable ("LteTestEntities", logLevel);
+  LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
+  LogComponentEnable ("LteRlcAmTransmitterTest", logLevel);
+  LogComponentEnable ("LteTestEntities", logLevel);
   // LogComponentEnable ("LteRlc", logLevel);
-  // LogComponentEnable ("LteRlcAm", logLevel);
+  LogComponentEnable ("LteRlcAm", logLevel);
   // LogComponentEnable ("LteRlcHeader", logLevel);
 
   uint16_t rnti = 1111;
@@ -167,7 +167,7 @@ LteRlcAmTransmitterSegmentationTestCase::DoRun (void)
   //
 
   // PDCP entity sends data
-  txPdcp->SendData (Seconds (0.100), "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+  txPdcp->SendData (Seconds (0.100), "ABCDEFGHIJKLMNOPQRSTUVWXYZZ");
 
   // MAC entity sends small TxOpp to RLC entity generating four segments
   txMac->SendTxOpportunity (Seconds (0.150), 12);
@@ -179,8 +179,8 @@ LteRlcAmTransmitterSegmentationTestCase::DoRun (void)
   txMac->SendTxOpportunity (Seconds (0.350), 12);
   CheckDataReceived (Seconds (0.400), "QRSTUVWX", "Segment #3 is not OK");
 
-  txMac->SendTxOpportunity (Seconds (0.450), 6);
-  CheckDataReceived (Seconds (0.500), "YZ", "Segment #4 is not OK");
+  txMac->SendTxOpportunity (Seconds (0.450), 7);
+  CheckDataReceived (Seconds (0.500), "YZZ", "Segment #4 is not OK");
 
   Simulator::Run ();
   Simulator::Destroy ();
@@ -276,22 +276,22 @@ LteRlcAmTransmitterReportBufferStatusTestCase::DoRun (void)
   CheckDataReceived (Seconds (1.050), "ABCDEFGHIJ", "SDU #4 is not OK");
 
   txPdcp->SendData (Seconds (1.100), "ABCDEFGHIJ");   // 10
-  txPdcp->SendData (Seconds (1.150), "KLMNOPQRST");   // 10
-  txPdcp->SendData (Seconds (1.200), "UVWXYZ");       // 6
+  txPdcp->SendData (Seconds (1.150), "KLMNOPQRSTU");  // 11
+  txPdcp->SendData (Seconds (1.200), "VWXYZ");        // 5
 
-  txMac->SendTxOpportunity (Seconds (1.250), 4 + 2);
-  CheckDataReceived (Seconds (1.300), "KL", "SDU #5 is not OK");
+  txMac->SendTxOpportunity (Seconds (1.250), 4 + 3);
+  CheckDataReceived (Seconds (1.300), "KLM", "SDU #5 is not OK");
 
   txMac->SendTxOpportunity (Seconds (1.350), 4 + 3);
-  CheckDataReceived (Seconds (1.400), "MNO", "SDU #6 is not OK");
+  CheckDataReceived (Seconds (1.400), "NOP", "SDU #6 is not OK");
 
-  txMac->SendTxOpportunity (Seconds (1.450), 4 + 5);
-  CheckDataReceived (Seconds (1.500), "PQRST", "SDU #7 is not OK");
+  txMac->SendTxOpportunity (Seconds (1.450), 4 + 4);
+  CheckDataReceived (Seconds (1.500), "QRST", "SDU #7 is not OK");
 
   txMac->SendTxOpportunity (Seconds (1.550), (4+2+1+2+1+2+1) + (6+8+12+6+10+10+3));
   CheckDataReceived (Seconds (1.600), "UVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVW", "SDU #8 is not OK");
 
-  txMac->SendTxOpportunity (Seconds (1.650), (4+2+1+2) + (3+10+10+6));
+  txMac->SendTxOpportunity (Seconds (1.650), (4+2+1+2) + (3+10+10+7));
   CheckDataReceived (Seconds (1.700), "XYZABCDEFGHIJKLMNOPQRSTUVWXYZ", "SDU #9 is not OK");
 
   Simulator::Run ();
