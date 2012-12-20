@@ -64,11 +64,11 @@ LteRlcAmTransmitterTestCase::~LteRlcAmTransmitterTestCase ()
 void
 LteRlcAmTransmitterTestCase::DoRun (void)
 {
-  LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
-  LogComponentEnable ("LteRlcAmTransmitterTest", logLevel);
-  LogComponentEnable ("LteTestEntities", logLevel);
+  // LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
+  // LogComponentEnable ("LteRlcAmTransmitterTest", logLevel);
+  // LogComponentEnable ("LteTestEntities", logLevel);
   // LogComponentEnable ("LteRlc", logLevel);
-  LogComponentEnable ("LteRlcAm", logLevel);
+  // LogComponentEnable ("LteRlcAm", logLevel);
   // LogComponentEnable ("LteRlcHeader", logLevel);
 
   uint16_t rnti = 1111;
