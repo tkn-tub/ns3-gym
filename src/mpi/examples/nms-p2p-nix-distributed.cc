@@ -79,14 +79,17 @@ main (int argc, char *argv[])
   uint32_t systemId = MpiInterface::GetSystemId ();
   uint32_t systemCount = MpiInterface::GetSize ();
 
-  uint32_t nCN = 2, nLANClients = 42;
+  //temporary fix see bug 1560
+  #define nCN (2)
+  #define nLANClients (42)
+  //uint32_t nCN = 2, nLANClients = 42;
   int32_t single = 0;
   int nBytes = 500000; // Bytes for each on/off app
   bool nix = true;
 
   CommandLine cmd;
-  cmd.AddValue ("CN", "Number of total CNs [2]", nCN);
-  cmd.AddValue ("LAN", "Number of nodes per LAN [42]", nLANClients);
+  //cmd.AddValue ("CN", "Number of total CNs [2]", nCN);
+  //cmd.AddValue ("LAN", "Number of nodes per LAN [42]", nLANClients);
   cmd.AddValue ("single", "1 if use single flow", single);
   cmd.AddValue ("nBytes", "Number of bytes for each on/off app", nBytes);
   cmd.AddValue ("nix", "Toggle the use of nix-vector or global routing", nix);
