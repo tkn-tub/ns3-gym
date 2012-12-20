@@ -1153,6 +1153,12 @@ void AnimationInterface::LteSpectrumPhyTxStart (std::string context, Ptr<const P
 {
   if (!m_started || !IsInTimeWindow ())
     return;
+  if (!pb) 
+    {
+      NS_LOG_WARN ("pb == 0. Not yet supported");
+      return;
+    }
+  context = "/" + context;
   Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
   NS_ASSERT (ndev);
   Ptr <Node> n = ndev->GetNode ();
@@ -1179,6 +1185,12 @@ void AnimationInterface::LteSpectrumPhyRxStart (std::string context, Ptr<const P
 {
   if (!m_started || !IsInTimeWindow ())
     return;
+  if (!pb) 
+    {
+      NS_LOG_WARN ("pb == 0. Not yet supported");
+      return;
+    }
+  context = "/" + context;
   Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
   NS_ASSERT (ndev);
   Ptr <Node> n = ndev->GetNode ();
