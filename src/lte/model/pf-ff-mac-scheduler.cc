@@ -1508,9 +1508,9 @@ PfFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
 
   // Divide the remaining resources equally among the active users starting from the subsequent one served last scheduling trigger
   uint16_t rbPerFlow = (m_cschedCellConfig.m_ulBandwidth) / (nflows + rntiAllocated.size ());
-  if (rbPerFlow == 0)
+  if (rbPerFlow < 3)
     {
-      rbPerFlow = 1;  // at least 1 rbg per flow (till available resource)
+      rbPerFlow = 3;  // at least 3 rbg per flow (till available resource) to ensure TxOpportunity >= 7 bytes
     }
   int rbAllocated = 0;
 
@@ -1552,6 +1552,12 @@ PfFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
         {
           // limit to physical resources last resource assignment
           rbPerFlow = m_cschedCellConfig.m_ulBandwidth - rbAllocated;
+          // at least 3 rbg per flow to ensure TxOpportunity >= 7 bytes
+          if (rbPerFlow < 3)
+            {
+              // terminate allocation
+              rbPerFlow = 0;      
+            }
         }
 
       UlDciListElement_s uldci;
@@ -1590,11 +1596,18 @@ PfFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
             {
               // limit to physical resources last resource assignment
               rbPerFlow = m_cschedCellConfig.m_ulBandwidth - rbAllocated;
+              // at least 3 rbg per flow to ensure TxOpportunity >= 7 bytes
+              if (rbPerFlow < 3)
+                {
+                  // terminate allocation
+                  rbPerFlow = 0;                 
+                }
             }
         }
       if (!allocated)
         {
           // unable to allocate new resource: finish scheduling
+          m_nextRntiUl = (*it).first;
           if (ret.m_dciList.size () > 0)
             {
               m_schedSapUser->SchedUlConfigInd (ret);
@@ -1705,7 +1718,7 @@ PfFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
           // restart from the first
           it = m_ceBsrRxed.begin ();
         }
-      if (rbAllocated == m_cschedCellConfig.m_ulBandwidth)
+      if ((rbAllocated == m_cschedCellConfig.m_ulBandwidth) || (rbPerFlow == 0))
         {
           // Stop allocation: no more PRBs
           m_nextRntiUl = (*it).first;
