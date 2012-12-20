@@ -383,19 +383,22 @@ public:
     uint16_t sourceDlCarrierFreq;
   };
 
-  struct CellGlobalIdEutra
+  struct CgiInfo
   {
     uint32_t plmnIdentity;
     uint32_t cellIdentity;
+    uint16_t trackingAreaCode;
+    std::list<uint32_t> plmnIdentityList;
   };
 
   struct MeasResultEutra
   {
     uint16_t physCellId;
-    CellGlobalIdEutra cellGlobalId;
-    uint16_t trackingAreaCode;
-    std::list<uint32_t> plmnIdentityList;
+    bool haveCgiInfo;
+    CgiInfo cgiInfo;
+    bool haveRsrpResult;
     uint8_t rsrpResult;
+    bool haveRsrqResult;
     uint8_t rsrqResult;
   };
 
@@ -404,7 +407,8 @@ public:
     uint8_t measId;
     uint8_t rsrpResult;
     uint8_t rsrqResult;
-    std::list<MeasResultEutra> MeasResultListEutra;
+    bool haveMeasResultNeighCells;
+    std::list<MeasResultEutra> measResultListEutra;
 
   };
 

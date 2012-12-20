@@ -51,6 +51,8 @@ protected:
   void SerializeSystemInformationBlockType1 (LteRrcSap::SystemInformationBlockType1 systemInformationBlockType1) const;
   void SerializeSystemInformationBlockType2 () const;
   void SerializeRadioResourceConfigCommonSIB () const;
+  void SerializeMeasResults (LteRrcSap::MeasResults measResults) const;
+  void SerializePlmnIdentity (uint32_t plmnId) const;
 
   // Deserialization functions
   Buffer::Iterator DeserializeDrbToAddModList (std::list<LteRrcSap::DrbToAddMod> *drbToAddModLis, Buffer::Iterator bIterator);
@@ -62,6 +64,8 @@ protected:
   Buffer::Iterator DeserializeSystemInformationBlockType2 (Buffer::Iterator bIterator);
   Buffer::Iterator DeserializeRadioResourceConfigCommon (Buffer::Iterator bIterator);
   Buffer::Iterator DeserializeRadioResourceConfigCommonSib (Buffer::Iterator bIterator);
+  Buffer::Iterator DeserializeMeasResults (LteRrcSap::MeasResults *measResults, Buffer::Iterator bIterator);
+  Buffer::Iterator DeserializePlmnIdentity (uint32_t *plmnId, Buffer::Iterator bIterator);
 
   void Print (std::ostream &os, LteRrcSap::RadioResourceConfigDedicated radioResourceConfigDedicated) const;
 
