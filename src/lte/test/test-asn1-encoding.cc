@@ -800,6 +800,119 @@ RrcConnectionRejectTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (source.GetMessage ().waitTime, destination.GetMessage ().waitTime, "Different waitTime!");
 }
 
+// --------------------------- CLASS MeasurementReportTestCase -----------------------------
+class MeasurementReportTestCase : public RrcHeaderTestCase
+{
+public:
+  MeasurementReportTestCase ();
+  virtual void DoRun (void);
+};
+
+MeasurementReportTestCase::MeasurementReportTestCase () : RrcHeaderTestCase ("Testing MeasurementReportTestCase")
+{
+}
+
+void
+MeasurementReportTestCase::DoRun (void)
+{
+  std::cout << "============= MeasurementReportTestCase ===========" << std::endl;
+  // add header
+  Ptr<Packet> packet = Create<Packet> ();
+  packet->Print (std::cout);
+  std::cout << std::endl;
+
+  LteRrcSap::MeasurementReport msg;
+  msg.measResults.measId = 5;
+  msg.measResults.rsrpResult = 18;
+  msg.measResults.rsrqResult = 21;
+  msg.measResults.haveMeasResultNeighCells = true;
+
+  LteRrcSap::MeasResultEutra mResEutra;
+  mResEutra.physCellId = 9;
+  mResEutra.haveRsrpResult = true;
+  mResEutra.rsrpResult = 33;
+  mResEutra.haveRsrqResult = true;
+  mResEutra.rsrqResult = 22;
+  mResEutra.haveCgiInfo = true;
+  mResEutra.cgiInfo.plmnIdentity = 7;
+  mResEutra.cgiInfo.cellIdentity = 6;
+  mResEutra.cgiInfo.trackingAreaCode = 5;
+  msg.measResults.measResultListEutra.push_back (mResEutra);
+
+
+  MeasurementReportHeader source;
+  source.SetMessage (msg);
+
+  std::cout << "--------- SOURCE INFO: -------" << std::endl;
+  source.Print (std::cout);
+  packet->AddHeader (source);
+  std::cout << std::endl;
+
+  // print serialized packet contents
+  std::cout << "---- SERIALIZED PACKET CONTENTS: -------" << std::endl;
+  std::cout << "Hex: ";
+  TestUtils::printPacketContentsHex (GetPointer (packet));
+  std::cout << "Bin: ";
+  TestUtils::printPacketContentsBin (GetPointer (packet));
+
+  // remove header
+  MeasurementReportHeader destination;
+  packet->RemoveHeader (destination);
+  std::cout << "--------- DESTINATION INFO: -------" << std::endl;
+  destination.Print (std::cout);
+
+  // Check that the destination and source headers contain the same values
+  LteRrcSap::MeasResults srcMeas = source.GetMessage ().measResults;
+  LteRrcSap::MeasResults dstMeas = destination.GetMessage ().measResults;
+
+  NS_TEST_ASSERT_MSG_EQ (srcMeas.measId, dstMeas.measId, "Different measId!");
+  NS_TEST_ASSERT_MSG_EQ (srcMeas.rsrpResult, dstMeas.rsrpResult, "Different rsrpResult!");
+  NS_TEST_ASSERT_MSG_EQ (srcMeas.rsrqResult, dstMeas.rsrqResult, "Different rsrqResult!");
+  NS_TEST_ASSERT_MSG_EQ (srcMeas.haveMeasResultNeighCells, dstMeas.haveMeasResultNeighCells, "Different haveMeasResultNeighCells!");
+
+  if (srcMeas.haveMeasResultNeighCells)
+    {
+      std::list<LteRrcSap::MeasResultEutra>::iterator itsrc = srcMeas.measResultListEutra.begin ();
+      std::list<LteRrcSap::MeasResultEutra>::iterator itdst = dstMeas.measResultListEutra.begin ();
+      for (; itsrc != srcMeas.measResultListEutra.end (); itsrc++, itdst++)
+        {
+          NS_TEST_ASSERT_MSG_EQ (itsrc->physCellId, itdst->physCellId, "Different physCellId!");
+
+          NS_TEST_ASSERT_MSG_EQ (itsrc->haveCgiInfo, itdst->haveCgiInfo, "Different haveCgiInfo!");
+          if (itsrc->haveCgiInfo)
+            {
+              NS_TEST_ASSERT_MSG_EQ (itsrc->cgiInfo.plmnIdentity, itdst->cgiInfo.plmnIdentity, "Different cgiInfo.plmnIdentity!");
+              NS_TEST_ASSERT_MSG_EQ (itsrc->cgiInfo.cellIdentity, itdst->cgiInfo.cellIdentity, "Different cgiInfo.cellIdentity!");
+              NS_TEST_ASSERT_MSG_EQ (itsrc->cgiInfo.trackingAreaCode, itdst->cgiInfo.trackingAreaCode, "Different cgiInfo.trackingAreaCode!");
+              NS_TEST_ASSERT_MSG_EQ (itsrc->cgiInfo.plmnIdentityList.size (), itdst->cgiInfo.plmnIdentityList.size (), "Different cgiInfo.plmnIdentityList.size()!");
+
+              if (!itsrc->cgiInfo.plmnIdentityList.empty ())
+                {
+                  std::list<uint32_t>::iterator itsrc2 = itsrc->cgiInfo.plmnIdentityList.begin ();
+                  std::list<uint32_t>::iterator itdst2 = itdst->cgiInfo.plmnIdentityList.begin ();
+                  for (; itsrc2 != itsrc->cgiInfo.plmnIdentityList.begin (); itsrc2++, itdst2++)
+                    {
+                      NS_TEST_ASSERT_MSG_EQ (*itsrc2, *itdst2, "Different plmnId elements!");
+                    }
+                }
+            }
+
+          NS_TEST_ASSERT_MSG_EQ (itsrc->haveRsrpResult, itdst->haveRsrpResult, "Different haveRsrpResult!");
+          if (itsrc->haveRsrpResult)
+            {
+              NS_TEST_ASSERT_MSG_EQ (itsrc->rsrpResult, itdst->rsrpResult, "Different rsrpResult!");
+            }
+
+          NS_TEST_ASSERT_MSG_EQ (itsrc->haveRsrqResult, itdst->haveRsrqResult, "Different haveRsrqResult!");
+          if (itsrc->haveRsrqResult)
+            {
+              NS_TEST_ASSERT_MSG_EQ (itsrc->rsrqResult, itdst->rsrqResult, "Different rsrqResult!");
+            }
+
+        }
+    }
+}
+
 // --------------------------- CLASS Asn1EncodingSuite -----------------------------
 class Asn1EncodingSuite : public TestSuite
 {
@@ -822,6 +935,7 @@ Asn1EncodingSuite::Asn1EncodingSuite ()
   AddTestCase (new RrcConnectionReestablishmentTestCase);
   AddTestCase (new RrcConnectionReestablishmentCompleteTestCase);
   AddTestCase (new RrcConnectionRejectTestCase);
+  AddTestCase (new MeasurementReportTestCase);
 }
 
 Asn1EncodingSuite asn1EncodingSuite;
