@@ -496,7 +496,6 @@ int main (int argc, char *argv[])
   info.RecordAggregationInfo ("ns3::Node", "ns3::Ipv6L3Protocol");
   info.RecordAggregationInfo ("ns3::Node", "ns3::Icmpv6L4Protocol");
   info.RecordAggregationInfo ("ns3::Node", "ns3::TcpL4Protocol");
-  info.RecordAggregationInfo ("ns3::Node", "ns3::NscTcpL4Protocol");
 
   // Create a channel object so that channels appear in the namespace
   // paths that will be generated here.
