@@ -48,6 +48,7 @@ LteRlcUm::LteRlcUm ()
 
 LteRlcUm::~LteRlcUm ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 TypeId
@@ -71,6 +72,8 @@ LteRlcUm::DoDispose ()
   NS_LOG_FUNCTION (this);
   m_reorderingTimer.Cancel ();
   m_rbsTimer.Cancel ();
+
+  LteRlc::DoDispose ();
 }
 
 /**

@@ -200,6 +200,7 @@ void
 LteRlcSm::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
+  LteRlc::DoDispose ();
 }
 
 void

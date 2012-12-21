@@ -115,6 +115,8 @@ LteRlcAm::DoDispose ()
   m_sdusBuffer.clear ();
   m_keepS0 = 0;
   m_controlPduBuffer = 0;
+
+  LteRlc::DoDispose ();
 }
 
 

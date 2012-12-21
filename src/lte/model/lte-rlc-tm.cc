@@ -64,6 +64,8 @@ LteRlcTm::DoDispose ()
   NS_LOG_FUNCTION (this);
   m_rbsTimer.Cancel ();
   m_txBuffer.clear ();
+
+  LteRlc::DoDispose ();
 }
 
 

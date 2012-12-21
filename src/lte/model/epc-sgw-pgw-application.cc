@@ -101,8 +101,10 @@ EpcSgwPgwApplication::GetTypeId (void)
 void
 EpcSgwPgwApplication::DoDispose ()
 {
+  NS_LOG_FUNCTION (this);
   m_s1uSocket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > ());
   m_s1uSocket = 0;
+  delete (m_s11SapSgw);
 }
 
   
@@ -122,7 +124,7 @@ EpcSgwPgwApplication::EpcSgwPgwApplication (const Ptr<VirtualNetDevice> tunDevic
   
 EpcSgwPgwApplication::~EpcSgwPgwApplication ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 

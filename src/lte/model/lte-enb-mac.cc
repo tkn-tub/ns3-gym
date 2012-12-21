@@ -627,7 +627,7 @@ LteEnbMac::DoReceiveLteControlMessage  (Ptr<LteControlMessage> msg)
 void
 LteEnbMac::DoReceiveRachPreamble  (uint8_t rapId)
 {
-  NS_LOG_FUNCTION (this << rapId);
+  NS_LOG_FUNCTION (this << (uint32_t) rapId);
   // just record that the preamble has been received; it will be processed later
   ++m_receivedRachPreambleCount[rapId]; // will create entry if not exists
 }
