@@ -1533,7 +1533,130 @@ RrcAsn1Header::DeserializeRadioResourceConfigCommonSib (Buffer::Iterator bIterat
 Buffer::Iterator
 RrcAsn1Header::DeserializeMeasResults (LteRrcSap::MeasResults *measResults, Buffer::Iterator bIterator)
 {
-  // TODO
+  int n;
+  std::bitset<0> b0;
+  std::bitset<1> measResultNeighCellsPresent;
+  bIterator = DeserializeSequence(&measResultNeighCellsPresent,true,bIterator);
+
+  // Deserialize measId
+  bIterator = DeserializeInteger (&n, 1, MAX_MEAS_ID, bIterator);
+  measResults->measId = n;
+
+  // Deserialize measResultServCell
+  bIterator = DeserializeSequence(&b0,false,bIterator);
+
+  // Deserialize rsrpResult
+  bIterator = DeserializeInteger (&n, 0, 97, bIterator);
+  measResults->rsrpResult = n;
+
+  // Deserialize rsrqResult
+  bIterator = DeserializeInteger (&n, 0, 34, bIterator);
+  measResults->rsrqResult = n;
+
+  measResults->haveMeasResultNeighCells = measResultNeighCellsPresent[0];
+  if( measResults->haveMeasResultNeighCells)
+  {
+    int measResultNeighCellsChoice;
+
+    // Deserialize measResultNeighCells
+    bIterator = DeserializeChoice (4,&measResultNeighCellsChoice,bIterator);
+
+    if(measResultNeighCellsChoice == 0)
+    {
+      // Deserialize measResultListEUTRA
+      int numElems;
+      bIterator = DeserializeSequenceOf (&numElems,MAX_CELL_REPORT,1,bIterator);
+      
+      for(int i =0; i<numElems; i++)
+      {
+        LteRrcSap::MeasResultEutra measResultEutra;
+        
+        std::bitset<1> isCgiInfoPresent;
+        bIterator = DeserializeSequence(&isCgiInfoPresent,false,bIterator);
+        
+        // PhysCellId
+        bIterator = DeserializeInteger(&n,0,503,bIterator);
+        measResultEutra.physCellId = n;
+        
+        measResultEutra.haveCgiInfo = isCgiInfoPresent[0];
+        if(isCgiInfoPresent[0])
+        {
+          std::bitset<1> havePlmnIdentityList;
+          bIterator = DeserializeSequence(&havePlmnIdentityList,false,bIterator);
+          
+          // Deserialize cellGlobalId
+          bIterator = DeserializeSequence (&b0,false,bIterator);
+          
+          // Deserialize plmn-Identity
+          bIterator = DeserializePlmnIdentity(&measResultEutra.cgiInfo.plmnIdentity,bIterator);
+          
+          // Deserialize CellIdentity
+          std::bitset<28> cellId;
+          bIterator = DeserializeBitstring(&cellId,bIterator);
+          measResultEutra.cgiInfo.cellIdentity = cellId.to_ulong();
+          
+          // Deserialize trackingAreaCode
+          std::bitset<16> trArCo;
+          bIterator = DeserializeBitstring(&trArCo,bIterator);
+          measResultEutra.cgiInfo.trackingAreaCode = trArCo.to_ulong();
+          
+          // Deserialize plmn-IdentityList
+          if(havePlmnIdentityList[0])
+          {
+            int numPlmnElems;
+            bIterator = DeserializeSequenceOf (&numPlmnElems, 5, 1, bIterator);
+            
+            for( int j=0; j<numPlmnElems; j++)
+            {
+              uint32_t plmnId;
+              bIterator = DeserializePlmnIdentity(&plmnId,bIterator);
+              measResultEutra.cgiInfo.plmnIdentityList.push_back(plmnId);
+            }
+          }
+        }
+        
+        // Deserialize measResult
+        std::bitset<2> measResultOpts;
+        bIterator = DeserializeSequence(&measResultOpts, true, bIterator);
+        
+        measResultEutra.haveRsrpResult = measResultOpts[1];
+        if(measResultOpts[1])
+        {
+          // Deserialize rsrpResult
+          bIterator = DeserializeInteger(&n,0,97,bIterator);
+          measResultEutra.rsrpResult = n;
+        }
+        
+        measResultEutra.haveRsrqResult = measResultOpts[0];
+        if(measResultOpts[0])
+        {
+          // Deserialize rsrqResult
+          bIterator = DeserializeInteger(&n,0,34,bIterator);
+          measResultEutra.rsrqResult = n;
+        }
+
+        measResults->measResultListEutra.push_back(measResultEutra);
+      }
+    }
+    
+    if(measResultNeighCellsChoice == 1)
+    {    
+      // Deserialize measResultListUTRA
+      // ...
+    }
+    
+    if(measResultNeighCellsChoice == 2)
+    {
+      // Deserialize measResultListGERAN
+      // ...
+    }
+    if(measResultNeighCellsChoice == 3)
+    {
+      // Deserialize measResultsCDMA2000
+      // ...
+    }
+  }
+
   return bIterator;
 }
 
@@ -3685,7 +3808,48 @@ MeasurementReportHeader::Deserialize (Buffer::Iterator bIterator)
 void
 MeasurementReportHeader::Print (std::ostream &os) const
 {
-  // TODO
+  os << "measId = " << (int)m_measurementReport.measResults.measId << std::endl;
+  os << "rsrpResult = " << (int)m_measurementReport.measResults.rsrpResult << std::endl;
+  os << "rsrqResult = " << (int)m_measurementReport.measResults.rsrqResult << std::endl;
+  os << "haveMeasResultNeighCells = " << (int)m_measurementReport.measResults.haveMeasResultNeighCells << std::endl;
+  
+  if(m_measurementReport.measResults.haveMeasResultNeighCells)
+  {
+    std::list<LteRrcSap::MeasResultEutra> measResultListEutra = m_measurementReport.measResults.measResultListEutra;
+    std::list<LteRrcSap::MeasResultEutra>::iterator it = measResultListEutra.begin();
+    for ( ; it != measResultListEutra.end(); it++)
+    {
+      os << "   physCellId =" << (int) it->physCellId << std::endl;
+      os << "   haveCgiInfo =" << it->haveCgiInfo << std::endl;
+      if (it->haveCgiInfo)
+      {
+         os << "      plmnIdentity = " << (int) it->cgiInfo.plmnIdentity << std::endl;
+         os << "      cellIdentity = " << (int) it->cgiInfo.cellIdentity << std::endl;
+         os << "      trackingAreaCode = " << (int) it->cgiInfo.trackingAreaCode << std::endl;
+         os << "      havePlmnIdentityList = " << !it->cgiInfo.plmnIdentityList.empty() << std::endl;
+         if(!it->cgiInfo.plmnIdentityList.empty())
+         {
+           for(std::list<uint32_t>::iterator it2 = it->cgiInfo.plmnIdentityList.begin(); it2 != it->cgiInfo.plmnIdentityList.begin(); it2++)
+           {
+             os << "         plmnId : " << *it2 << std::endl;
+           }
+         }
+      }
+
+      os << "   haveRsrpResult =" << it->haveRsrpResult << std::endl;
+      if (it->haveRsrpResult)
+      {
+        os << "   rsrpResult =" << (int) it->rsrpResult << std::endl;
+      }
+
+      os << "   haveRsrqResult =" << it->haveRsrqResult << std::endl;
+      if (it->haveRsrqResult)
+      {
+        os << "   rsrqResult =" << (int) it->rsrqResult << std::endl;
+      }
+
+    }
+  }
 }
 
 void
