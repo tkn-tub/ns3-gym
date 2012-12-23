@@ -187,14 +187,6 @@ def build(bld):
         'model/epc-tft.h',
         'model/epc-tft-classifier.h',
         'model/lte-mi-error-model.h',
-        'test/lte-test-fdmt-ff-mac-scheduler.h',
-        'test/lte-test-tdmt-ff-mac-scheduler.h',
-        'test/lte-test-tta-ff-mac-scheduler.h',
-        'test/lte-test-fdbet-ff-mac-scheduler.h',
-        'test/lte-test-tdbet-ff-mac-scheduler.h',
-        'test/lte-test-fdtbfq-ff-mac-scheduler.h',
-        'test/lte-test-tdtbfq-ff-mac-scheduler.h',
-        'test/lte-test-pss-ff-mac-scheduler.h',
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):

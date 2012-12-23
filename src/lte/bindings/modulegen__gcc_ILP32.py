@@ -364,9 +364,7 @@ def register_types(module):
     module.add_class('SrListElement_s')
     ## data-calculator.h (module 'stats'): ns3::StatisticalSummary [class]
     module.add_class('StatisticalSummary', allow_subclassing=True, import_from_module='ns.stats')
-    ## system-wall-clock-ms.h (module 'core'): ns3::SystemWallClockMs [class]
-    module.add_class('SystemWallClockMs', import_from_module='ns.core')
-    ## tag.h (module 'network'): ns3::Tag [class]
+   ## tag.h (module 'network'): ns3::Tag [class]
     module.add_class('Tag', import_from_module='ns.network', parent=root_module['ns3::ObjectBase'])
     ## tag-buffer.h (module 'network'): ns3::TagBuffer [class]
     module.add_class('TagBuffer', import_from_module='ns.network')
@@ -1121,7 +1119,6 @@ def register_methods(root_module):
     register_Ns3SrConfig_s_methods(root_module, root_module['ns3::SrConfig_s'])
     register_Ns3SrListElement_s_methods(root_module, root_module['ns3::SrListElement_s'])
     register_Ns3StatisticalSummary_methods(root_module, root_module['ns3::StatisticalSummary'])
-    register_Ns3SystemWallClockMs_methods(root_module, root_module['ns3::SystemWallClockMs'])
     register_Ns3Tag_methods(root_module, root_module['ns3::Tag'])
     register_Ns3TagBuffer_methods(root_module, root_module['ns3::TagBuffer'])
     register_Ns3TbId_t_methods(root_module, root_module['ns3::TbId_t'])
@@ -4976,36 +4973,6 @@ def register_Ns3StatisticalSummary_methods(root_module, cls):
                    'double', 
                    [], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
-    return
-
-def register_Ns3SystemWallClockMs_methods(root_module, cls):
-    ## system-wall-clock-ms.h (module 'core'): ns3::SystemWallClockMs::SystemWallClockMs(ns3::SystemWallClockMs const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::SystemWallClockMs const &', 'arg0')])
-    ## system-wall-clock-ms.h (module 'core'): ns3::SystemWallClockMs::SystemWallClockMs() [constructor]
-    cls.add_constructor([])
-    ## system-wall-clock-ms.h (module 'core'): int64_t ns3::SystemWallClockMs::End() [member function]
-    cls.add_method('End', 
-                   'int64_t', 
-                   [])
-    ## system-wall-clock-ms.h (module 'core'): int64_t ns3::SystemWallClockMs::GetElapsedReal() const [member function]
-    cls.add_method('GetElapsedReal', 
-                   'int64_t', 
-                   [], 
-                   is_const=True)
-    ## system-wall-clock-ms.h (module 'core'): int64_t ns3::SystemWallClockMs::GetElapsedSystem() const [member function]
-    cls.add_method('GetElapsedSystem', 
-                   'int64_t', 
-                   [], 
-                   is_const=True)
-    ## system-wall-clock-ms.h (module 'core'): int64_t ns3::SystemWallClockMs::GetElapsedUser() const [member function]
-    cls.add_method('GetElapsedUser', 
-                   'int64_t', 
-                   [], 
-                   is_const=True)
-    ## system-wall-clock-ms.h (module 'core'): void ns3::SystemWallClockMs::Start() [member function]
-    cls.add_method('Start', 
-                   'void', 
-                   [])
     return
 
 def register_Ns3Tag_methods(root_module, cls):
