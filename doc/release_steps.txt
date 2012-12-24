@@ -31,7 +31,7 @@ and/or the buildbots have been testing
       -- ./waf --pyrun src/flow-monitor/examples/wifi-olsr-flowmon.py --vis
    - ensure that tests pass (./test.py -g) and make sure that the buildbots
      are reporting blue based on the tip of the repository
-   - revise and check in AUTHORS, RELEASE_NOTES, and CHANGES>html
+   - revise and check in AUTHORS, RELEASE_NOTES, and CHANGES.html
    - required versions for related libraries (nsc, netanim, pybindgen)
      are correct
    - confirm that Doxygen builds cleanly (./waf doxygen), 
@@ -140,9 +140,7 @@ preparing the documentation
 
 1. If final release, build release documentation
    - sudo bash; su nsnam; cd /home/nsnam/bin 
-   ./update-doxygen-release ns-3.x
-   ./update-manual-release ns-3.x
-   ./update-tutorial-release ns-3.x
+   ./update-docs -r http://code.nsnam.org/ns-3.x -R
 
 2. Check if these new files are available on the website
 
