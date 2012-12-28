@@ -32,11 +32,11 @@ For example, this code snippet is from ``Ipv4L3Protocol::IsDestinationAddress()`
 
 ::
 
-        if (address == iaddr.GetBroadcast ())
-          {
-            NS_LOG_LOGIC ("For me (interface broadcast address)");
-            return true;
-          }
+  if (address == iaddr.GetBroadcast ())
+    {
+      NS_LOG_LOGIC ("For me (interface broadcast address)");
+      return true;
+     }
 
 If logging has been enabled for the ``Ipv4L3Protocol`` component at a level
 of ``LOGIC`` or above (see below about logging levels), the statement
@@ -48,13 +48,13 @@ Logging levels
 The following levels are defined; each level will enable the levels above
 it, with the ``ALL`` level being most verbose:
 
-# ``LOG_NONE``:  the default, no logging
-# ``LOG_ERROR``:  serious error messages only
-# ``LOG_WARN``:  warning messages
-# ``LOG_DEBUG``:  for use in debugging
-# ``LOG_FUNCTION``: function tracing
-# ``LOG_LOGIC``:  control flow tracing within functions
-# ``LOG_ALL``:  print everything
+#. ``LOG_NONE``:  the default, no logging
+#. ``LOG_ERROR``:  serious error messages only
+#. ``LOG_WARN``:  warning messages
+#. ``LOG_DEBUG``:  for use in debugging
+#. ``LOG_FUNCTION``: function tracing
+#. ``LOG_LOGIC``:  control flow tracing within functions
+#. ``LOG_ALL``:  print everything
 
 A special logging level will cause logging output to unconditionally
 appear on ``std::clog``, regardless of whether the user has explicitly enabled 
@@ -109,6 +109,7 @@ program, such as in the first tutorial program:
    {
      LogComponentEnable ("UdpEchoClientApplication", LOG_LEVEL_INFO);
      LogComponentEnable ("UdpEchoServerApplication", LOG_LEVEL_INFO);
+     ...
 
 Some helpers have special methods to enable the logging of all components
 in a module (across different compilation units, but logically grouped
@@ -127,8 +128,9 @@ To add logging to your code, please follow the below steps:
 
 1) Put ``NS_LOG_COMPONENT_DEFINE`` macro outside of namespace ns3
 
-Create a unique string identifier (usually based on the name of the file)
-and register it with a macro call such as follows:
+Create a unique string identifier (usually based on the name of the file
+and/or class defined within the file) and register it with a macro call
+such as follows:
 
 ::
 
@@ -138,18 +140,18 @@ and register it with a macro call such as follows:
    ...
 
 The macro was carefully written to permit inclusion either within or
-outside of namespace ns3, and usage will vary across the codebase, but
-the original intent was to register this outside of namespace ns3.
+outside of namespace ``ns3``, and usage will vary across the codebase, but
+the original intent was to register this *outside* of namespace ``ns3``.
 
 2) Add logging statements to your functions and function bodies.
 
 There are a couple of guidelines on this:
 
-* Do not add function logging in operators or explicit copy constructors, 
+* Do *not* add function logging in operators or explicit copy constructors, 
   since these will cause infinite recursion and stack overflow.
-* Use the ``NS_LOG_FUNCTION_NOARGS()`` variant for static methods only. When 
-  a non-static member function has no arguments, just log it as 
-  ``NS_LOG_FUNCTION (this)``
+* Use the ``NS_LOG_FUNCTION_NOARGS()`` variant for static methods *only*. When 
+  a non-static member function has no arguments, it should be logged by 
+  ``NS_LOG_FUNCTION (this)`` macro.
 * Make sure that you test that your logging changes do not break the code; 
   running some example programs with all log components turned on (e.g. 
   ``NS_LOG="*"``) is one way to test this.
