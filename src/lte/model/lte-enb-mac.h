@@ -259,7 +259,7 @@ private:
  
   std::map<uint8_t, uint32_t> m_receivedRachPreambleCount;
 
-  std::map<uint16_t, uint32_t> m_rapIdRntiMap;
+  std::map<uint8_t, uint32_t> m_rapIdRntiMap;
 };
 
 } // end namespace ns3
