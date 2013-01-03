@@ -150,8 +150,9 @@ TypeId LteHelper::GetTypeId (void)
                    MakeStringAccessor (&LteHelper::SetPathlossModelType),
                    MakeStringChecker ())
     .AddAttribute ("FadingModel",
-                   "The type of fading model to be used",
-                   StringValue (""), // fake module -> no fading 
+                   "The type of fading model to be used. If the type is set "
+                   "to an empty string, no fading model is used.",
+                   StringValue (""),
                    MakeStringAccessor (&LteHelper::SetFadingModel),
                    MakeStringChecker ())
     .AddAttribute ("UseIdealRrc",

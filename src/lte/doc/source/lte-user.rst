@@ -189,6 +189,27 @@ the default values that are registered in your particular build of the
 simulator, including lots of non-LTE attributes.
 
 
+Many useful attributes of the LTE-EPC model will be described in the
+following subsections. Still, there are many attributes which are not
+explicitly mentioned in the design or user documentation, but which
+are clearly documented using the ns-3 attribute system. You can easily
+print a list of the attributes of a given object together with their
+description and default value passing ``--PrintAttributes=`` to a simulation
+program, like this::
+
+     ./waf --run lena-simple --command-template="%s --PrintAttributes=ns3::LteHelper"
+
+
+You can try also with other LTE and EPC objects, like this::
+   
+     ./waf --run lena-simple --command-template="%s --PrintAttributes=ns3::LteEnbNetDevice"
+     ./waf --run lena-simple --command-template="%s --PrintAttributes=ns3::LteEnbMac"
+     ./waf --run lena-simple --command-template="%s --PrintAttributes=ns3::LteEnbPhy"
+     ./waf --run lena-simple --command-template="%s --PrintAttributes=ns3::LteUePhy"
+     ./waf --run lena-simple --command-template="%s --PrintAttributes=ns3::EpcHelper"
+ 
+
+
 Simulation Output
 -----------------
 
@@ -707,6 +728,13 @@ automatically take care of the necessary setup, such as S1 link
 creation and S1 bearer setup. All this will be done without the
 intervention of the user.
 
+Calling ``lteHelper->SetEpcHelper (epcHelper)`` enables the use of
+EPC, and has the side effect that any new ``LteEnbRrc`` that is
+created will have the ``EpsBearerToRlcMapping`` attribute set to
+``RLC_UM_ALWAYS`` instead of ``RLC_SM_ALWAYS`` if the latter was
+the default; otherwise, the attribute won't be changed (e.g., if
+you changed the default to ``RLC_AM_ALWAYS``, it won't be touched).
+
 It is to be noted that, upon construction, the EpcHelper will also
 create and configure the PGW node. Its configuration in particular
 is very complex, and hence is done automatically by the Helper. Still,
@@ -968,9 +996,19 @@ show how to simulate different LTE scenarios.
 Reference scenarios
 -------------------
 
-There is a vast amount of reference LTE simulation scenarios which can be found in the literature. Here we list some of them:
+There is a vast amount of reference LTE simulation scenarios which can
+be found in the literature. Here we list some of them: 
 
- * The dual stripe model [R4-092042]_, which is partially implemented in the example program ``src/lte/examples/lena-dual-stripe.cc``
+ * The dual stripe model [R4-092042]_, which is partially implemented
+   in the example program
+   ``src/lte/examples/lena-dual-stripe.cc``. This example program
+   features a lot of configurable parameters which can be customize by
+   changing the corresponding global variable. To get a list of all these
+   parameters, you can run this command::
+
+     ./waf --run lena-dual-stripe --command-template="%s --PrintGlobals"
+
+
 
  * The system simulation scenarios mentioned in section A.2 of [TR36814]_
 

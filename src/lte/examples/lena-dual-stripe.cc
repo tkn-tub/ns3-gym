@@ -299,8 +299,10 @@ static ns3::GlobalValue g_generateRem ("generateRem",
                                        ns3::BooleanValue (false),
                                        ns3::MakeBooleanChecker ());
 static ns3::GlobalValue g_epc ("epc", 
-                               "if true, will setup the EPC to simulate an end-to-end topology;"
-                               "if false, only the LTE radio access will be simulated.",  
+                               "If true, will setup the EPC to simulate an end-to-end topology, "
+                               "with real IP applications over PDCP and RLC UM (or RLC AM by changing "
+                               "the default value of EpsBearerToRlcMapping e.g. to RLC_AM_ALWAYS). "
+                               "If false, only the LTE radio access will be simulated with RLC SM. ",  
                                ns3::BooleanValue (false),
                                ns3::MakeBooleanChecker ());
 static ns3::GlobalValue g_epcDl ("epcDl", 
