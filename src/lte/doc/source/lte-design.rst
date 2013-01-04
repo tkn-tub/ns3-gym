@@ -1736,6 +1736,18 @@ represented in Figure :ref:`fig-lte-enb-rrc-states`.
 
 
 
+Radio Admission Control
++++++++++++++++++++++++
+
+Radio Admission Control is supported by having the eNB RRC
+reply to an RRC CONNECTION REQUEST message sent by the UE with either
+an RRC CONNECTION SETUP message or an RRC CONNECTION REJECT message,
+depending on whether the new UE is to be admitted or not. In the
+current implementation, the behavior is determined by the boolean attribute
+``ns3::LteEnbRrc::AdmitRrcConnectionRequest``. There is currently no Radio Admission
+Control algorithm that dynamically decides whether a new connection
+shall be admitted or not. 
+
 
 Radio Bearer Configuration
 ++++++++++++++++++++++++++
@@ -2398,8 +2410,12 @@ The X2 service interface is used by the RRC entity to send and receive messages 
 
   * the ``EpcX2SapUser`` part is provided by the RRC entity and used by the RRC enity.
 
-The primitives that are supported in our X2-C model fit into two categories. In the
-first category there are those primitives  used for the X2-based
+The primitives that are supported in our X2-C model are described in the following subsections.
+
+X2-C primitives for handover execution
+--------------------------------------
+
+The following primitives are used for the X2-based
 handover:
 
  - HANDOVER REQUEST
@@ -2409,11 +2425,16 @@ handover:
  - UE CONTEXT RELEASE
 
 all the above primitives are used by the currently implemented RRC
-model during the preparation and execution of the handover procedure. 
+model during the preparation and execution of the handover
+procedure. Their usage interacts with the RRC state machine;
+therefore, they are not meant to be used for code customization, at
+least unless it is desired to modify the RRC state machine.
 
-In the second category there are those primitives which are needed to
-implement Self-Organized Network (SON) functionalities. The supported
-primitives in this category are:
+
+X2-C SON primitives
+-------------------
+
+The following primitives can be used  to implement Self-Organized Network (SON) functionalities:
 
  - LOAD INFORMATION
  - RESOURCE STATUS UPDATE
@@ -2421,13 +2442,80 @@ primitives in this category are:
 note that the current RRC model does not actually use these
 primitives, they are included in the model just to make it possible to
 develop SON algorithms included in the RRC logic that make use of
-them. For a detailed description of these primitives and the parameters that
-they take, the reader is advised to consult the file `epc-x2-sap.h`
-and/or the corresponding doxygen documentation. 
+them. 
 
-Finally, it is noted that Mobility Robustness Optimization primitives
-such as Radio Link Failure indication and Handover Report are not
-supported at this stage.
+As a first example, we show here how the load information primitive
+can be used. We assume that the LteEnbRrc has been modified to include
+the following new member variables::
+
+  std::vector<EpcX2Sap::UlInterferenceOverloadIndicationItem> 
+    m_currentUlInterferenceOverloadIndicationList;
+  std::vector <EpcX2Sap::UlHighInterferenceInformationItem> 
+    m_currentUlHighInterferenceInformationList;
+  EpcX2Sap::RelativeNarrowbandTxBand m_currentRelativeNarrowbandTxBand;
+
+
+for a detailed description of the type of these variables, we suggest
+to consult the file ``epc-x2-sap.h``, the corresponding doxygen
+documentation, and the references therein to the relevant sections of
+3GPP TS 36.423. Now, assume that at run time these variables have been
+set to meaningful values following the specifications just
+mentioned. Then, you can add the following code in the LteEnbRrc class
+implementation in order to send a load information primitive::
+
+  EpcX2Sap::CellInformationItem cii;
+  cii.sourceCellId = m_cellId;
+  cii.ulInterferenceOverloadIndicationList = m_currentUlInterferenceOverloadIndicationList;
+  cii.ulHighInterferenceInformationList = m_currentUlHighInterferenceInformationList;
+  cii.relativeNarrowbandTxBand = m_currentRelativeNarrowbandTxBand;
+
+  EpcX2Sap::LoadInformationParams params;
+  params.targetCellId = cellId;
+  params.cellInformationList.push_back (cii);
+  m_x2SapProvider->SendLoadInformation (params);
+
+
+The above code allows the source eNB to send the message. The method
+``LteEnbRrc::DoRecvLoadInformation`` will be called when the target
+eNB receives the message. The desired processing of the load
+information should therefore be implemented within that method.
+
+In the following second example we show how the resource
+status update primitive is used. We assume that the LteEnbRrc has been
+modified to include the following new member variable::
+
+  EpcX2Sap::CellMeasurementResultItem m_cmri;
+
+
+similarly to before, we refer to ``epc-x2-sap.h`` and the references
+therein for detailed information about this variable type.
+Again, we assume that the variable has been already set to a
+meaningful value. Then, you can add the following code in order to
+send a resource status update:: 
+
+  EpcX2Sap::ResourceStatusUpdateParams params;
+  params.targetCellId = cellId;
+  params.cellMeasurementResultList.push_back (m_cmri);
+  m_x2SapProvider->SendResourceStatusUpdate (params);
+
+
+The method ``eEnbRrc::DoRecvResourceStatusUpdate`` will be called when
+the target eNB receives the resource status update message. The
+desired processing of this message should therefore be implemented
+within that method. 
+
+Finally, we note that the setting and processing of the appropriate
+values for the variable passed to the above described primitives is
+deemed to be specific of the SON algorithm being implemented, and
+hence is not covered by this documentation. 
+
+
+
+Unsupported primitives
+----------------------
+
+Mobility Robustness Optimization primitives such as Radio Link Failure
+indication and Handover Report are not supported at this stage.
 
 
 
