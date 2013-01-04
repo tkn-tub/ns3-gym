@@ -59,7 +59,6 @@ main (int argc, char *argv[])
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
   Ptr<EpcHelper>  epcHelper = CreateObject<EpcHelper> ();
   lteHelper->SetEpcHelper (epcHelper);
-  lteHelper->SetSchedulerType("ns3::PfFfMacScheduler");
 
   ConfigStore inputConfig;
   inputConfig.ConfigureDefaults();
