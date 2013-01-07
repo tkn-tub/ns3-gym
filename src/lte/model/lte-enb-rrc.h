@@ -768,6 +768,8 @@ private:
   bool m_admitHandoverRequest;
   bool m_admitRrcConnectionRequest;
 
+  //             cellid    rnti   
+  TracedCallback<uint16_t, uint16_t> m_newUeContextTrace;
   //             imsi      cellid    rnti   
   TracedCallback<uint64_t, uint16_t, uint16_t> m_connectionEstablishedTrace;
   //             imsi      cellid    rnti   

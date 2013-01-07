@@ -287,10 +287,24 @@ TypeId UeManager::GetTypeId (void)
   static TypeId  tid = TypeId ("ns3::UeManager")
     .SetParent<Object> ()
     .AddConstructor<UeManager> ()
-    .AddAttribute ("DataRadioBearerMap", "List of UE RadioBearerInfo by DRBID.",
+    .AddAttribute ("DataRadioBearerMap", "List of UE DataRadioBearerInfo by DRBID.",
                    ObjectMapValue (),
                    MakeObjectMapAccessor (&UeManager::m_drbMap),
                    MakeObjectMapChecker<LteDataRadioBearerInfo> ())
+    .AddAttribute ("Srb0", "SignalingRadioBearerInfo for SRB0",
+                   PointerValue (),
+                   MakePointerAccessor (&UeManager::m_srb0),
+                   MakePointerChecker<LteSignalingRadioBearerInfo> ())
+    .AddAttribute ("Srb1", "SignalingRadioBearerInfo for SRB1",
+                   PointerValue (),
+                   MakePointerAccessor (&UeManager::m_srb1),
+                   MakePointerChecker<LteSignalingRadioBearerInfo> ())
+    .AddAttribute ("C-RNTI",
+                   "Cell Radio Network Temporary Identifier",
+                   TypeId::ATTR_GET, // read-only attribute
+                   UintegerValue (0), // unused, read-only attribute
+                   MakeUintegerAccessor (&UeManager::m_rnti),
+                   MakeUintegerChecker<uint16_t> ())
     .AddTraceSource ("StateTransition",
                      "fired upon every UE state transition seen by the UeManager at the eNB RRC",
                      MakeTraceSourceAccessor (&UeManager::m_stateTransitionTrace))
@@ -1226,6 +1240,9 @@ LteEnbRrc::GetTypeId (void)
                    BooleanValue (true),  
                    MakeBooleanAccessor (&LteEnbRrc::m_admitRrcConnectionRequest),
                    MakeBooleanChecker ()) 
+    .AddTraceSource ("NewUeContext",
+                     "trace fired upon creation of a new UE context",
+                     MakeTraceSourceAccessor (&LteEnbRrc::m_newUeContextTrace))
     .AddTraceSource ("ConnectionEstablished",
                      "trace fired upon successful RRC connection establishment",
                      MakeTraceSourceAccessor (&LteEnbRrc::m_connectionEstablishedTrace))
@@ -1705,7 +1722,8 @@ LteEnbRrc::AddUe (UeManager::State state)
   Ptr<UeManager> ueManager = CreateObject<UeManager> (this, rnti, state);
   m_ueMap.insert (std::pair<uint16_t, Ptr<UeManager> > (rnti, ueManager));
   ueManager->Start ();
-  NS_LOG_DEBUG (this << " New UE RNTI " << rnti << " cellId " << m_cellId << " srs CI " << ueManager->GetSrsConfigurationIndex ());              
+  NS_LOG_DEBUG (this << " New UE RNTI " << rnti << " cellId " << m_cellId << " srs CI " << ueManager->GetSrsConfigurationIndex ());      
+  m_newUeContextTrace (m_cellId, rnti);      
   return rnti;
 }
 

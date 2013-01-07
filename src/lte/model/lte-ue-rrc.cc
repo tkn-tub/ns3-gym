@@ -167,6 +167,14 @@ LteUeRrc::GetTypeId (void)
                    ObjectMapValue (),
                    MakeObjectMapAccessor (&LteUeRrc::m_drbMap),
                    MakeObjectMapChecker<LteDataRadioBearerInfo> ())
+    .AddAttribute ("Srb0", "SignalingRadioBearerInfo for SRB0",
+                   PointerValue (),
+                   MakePointerAccessor (&LteUeRrc::m_srb0),
+                   MakePointerChecker<LteSignalingRadioBearerInfo> ())
+    .AddAttribute ("Srb1", "SignalingRadioBearerInfo for SRB1",
+                   PointerValue (),
+                   MakePointerAccessor (&LteUeRrc::m_srb1),
+                   MakePointerChecker<LteSignalingRadioBearerInfo> ())
     .AddAttribute ("CellId",
                    "Serving cell identifier",
                    UintegerValue (0), // unused, read-only attribute
@@ -180,6 +188,9 @@ LteUeRrc::GetTypeId (void)
     .AddTraceSource ("StateTransition",
                      "trace fired upon every UE RRC state transition",
                      MakeTraceSourceAccessor (&LteUeRrc::m_stateTransitionTrace))
+    .AddTraceSource ("RandomAccessSuccessful",
+                     "trace fired upon successful completion of the random access procedure",
+                     MakeTraceSourceAccessor (&LteUeRrc::m_randomAccessSuccessfulTrace))
     .AddTraceSource ("ConnectionEstablished",
                      "trace fired upon successful RRC connection establishment",
                      MakeTraceSourceAccessor (&LteUeRrc::m_connectionEstablishedTrace))
@@ -433,6 +444,7 @@ void
 LteUeRrc::DoNotifyRandomAccessSuccessful ()
 {
   NS_LOG_FUNCTION (this << m_imsi << ToString (m_state));
+  m_randomAccessSuccessfulTrace (m_imsi, m_cellId, m_rnti);  
   switch (m_state)
     {
     case IDLE_RANDOM_ACCESS:     

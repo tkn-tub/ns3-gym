@@ -30,6 +30,7 @@
 #include <ns3/ptr.h>
 
 #include <set>
+#include <map>
 
 namespace ns3 {
 
@@ -51,14 +52,21 @@ public:
   void EnsureConnected ();
 
   // trace sinks, to be used with MakeBoundCallback
+  static void NotifyRandomAccessSuccessfulUe (RadioBearerStatsConnector* c, std::string context, uint64_t imsi, uint16_t cellid, uint16_t rnti);
+  static void NotifyConnectionSetupUe (RadioBearerStatsConnector* c, std::string context, uint64_t imsi, uint16_t cellid, uint16_t rnti);
   static void NotifyConnectionReconfigurationUe (RadioBearerStatsConnector* c, std::string context, uint64_t imsi, uint16_t cellid, uint16_t rnti);
   static void NotifyHandoverStartUe (RadioBearerStatsConnector* c, std::string context, uint64_t imsi, uint16_t cellid, uint16_t rnti, uint16_t targetCellId);
   static void NotifyHandoverEndOkUe (RadioBearerStatsConnector* c, std::string context, uint64_t imsi, uint16_t cellid, uint16_t rnti);
+  static void NotifyNewUeContextEnb (RadioBearerStatsConnector* c, std::string context, uint16_t cellid, uint16_t rnti);
   static void NotifyConnectionReconfigurationEnb (RadioBearerStatsConnector* c, std::string context, uint64_t imsi, uint16_t cellid, uint16_t rnti);
   static void NotifyHandoverStartEnb (RadioBearerStatsConnector* c, std::string context, uint64_t imsi, uint16_t cellid, uint16_t rnti, uint16_t targetCellId);
   static void NotifyHandoverEndOkEnb (RadioBearerStatsConnector* c, std::string context, uint64_t imsi, uint16_t cellid, uint16_t rnti);
 
 private:
+
+  void StoreUeManagerPath (std::string ueManagerPath, uint16_t cellId, uint16_t rnti);
+  void ConnectSrb0Traces (std::string ueRrcPath, uint64_t imsi, uint16_t cellId, uint16_t rnti);
+  void ConnectSrb1TracesUe (std::string ueRrcPath, uint64_t imsi, uint16_t cellId, uint16_t rnti);
   void ConnectTracesUeIfFirstTime (std::string context, uint64_t imsi, uint16_t cellid, uint16_t rnti);
   void ConnectTracesEnbIfFirstTime (std::string context, uint64_t imsi, uint16_t cellid, uint16_t rnti);
   void ConnectTracesUe (std::string context, uint64_t imsi, uint16_t cellid, uint16_t rnti);
@@ -73,6 +81,14 @@ private:
   bool m_connected;
   std::set<uint64_t> m_imsiSeenUe;
   std::set<uint64_t> m_imsiSeenEnb;
+  
+  struct CellIdRnti
+  {
+    uint16_t cellId;
+    uint16_t rnti;
+  };
+  friend bool operator < (const CellIdRnti &a, const CellIdRnti &b);
+  std::map<CellIdRnti, std::string> m_ueManagerPathByCellIdRnti;
 
 };
 
