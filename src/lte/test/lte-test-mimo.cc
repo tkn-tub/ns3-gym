@@ -55,7 +55,7 @@
 #include "lte-test-mimo.h"
 
 
-NS_LOG_COMPONENT_DEFINE ("LenaTestMimo");
+NS_LOG_COMPONENT_DEFINE ("LteTestMimo");
 
 namespace ns3 {
 
@@ -66,14 +66,14 @@ LenaTestMimoSuite::LenaTestMimoSuite ()
   NS_LOG_INFO ("creating LenaMimoTestCase");
 
   // RR DOWNLINK- DISTANCE 300
-  // [0, 0.2] sec   TxMode 0: MCS 20 -> TB size 1191
-  // [0.2, 0.3] sec TxMode 1: MCS 26 -> TB size 1836
-  // [0.3, 0.4] sec TxMode 2: MCS 18 -> TB size  967 (x2 layers)
+  // interval 1 : [0.1, 0.2) sec TxMode 0: MCS 20 -> TB size 1191 bytes
+  // interval 2 : [0.3, 0.4) sec TxMode 1: MCS 26 -> TB size 1836 bytes
+  // interval 3 : [0.5, 0.6) sec TxMode 2: MCS 18 -> TB size  967 bytes (x2 layers)
   // --> 
   std::vector<uint32_t> estThrDl;
-  estThrDl.push_back (119100); // TTI 1 estimated throughput for TxMode 1
-  estThrDl.push_back (183600); // TTI 2 estimated throughput for TxMode 2
-  estThrDl.push_back (193400); // TTI 3 estimated throughput for TxMode 3
+  estThrDl.push_back (119100); // interval 1 : estimated throughput for TxMode 1
+  estThrDl.push_back (183600); // interval 2 : estimated throughput for TxMode 2
+  estThrDl.push_back (193400); // interval 3 : estimated throughput for TxMode 3
   AddTestCase (new LenaMimoTestCase(300, estThrDl, "ns3::RrFfMacScheduler", true));
   AddTestCase (new LenaMimoTestCase(300, estThrDl, "ns3::PfFfMacScheduler", true));
   AddTestCase (new LenaMimoTestCase(300, estThrDl, "ns3::RrFfMacScheduler", false));
@@ -187,7 +187,7 @@ LenaMimoTestCase::DoRun (void)
   // need to allow for RRC connection establishment + SRS before enabling traces
   lteHelper->EnableRlcTraces ();
   lteHelper->EnableMacTraces ();
-  double simulationTime = 0.401;
+  double simulationTime = 0.6; 
   double tolerance = 0.1;
   
   uint8_t rnti = 1;
@@ -205,7 +205,7 @@ LenaMimoTestCase::DoRun (void)
           NS_FATAL_ERROR ("No RR Scheduler available");
         }
       Simulator::Schedule (Seconds (0.2), &RrFfMacScheduler::TransmissionModeConfigurationUpdate, rrsched, rnti, 1);
-      Simulator::Schedule (Seconds (0.3), &RrFfMacScheduler::TransmissionModeConfigurationUpdate, rrsched, rnti, 2);
+      Simulator::Schedule (Seconds (0.4), &RrFfMacScheduler::TransmissionModeConfigurationUpdate, rrsched, rnti, 2);
     }
   else if (m_schedulerType.compare ("ns3::PfFfMacScheduler") == 0)
     {
@@ -216,7 +216,7 @@ LenaMimoTestCase::DoRun (void)
         }
       
       Simulator::Schedule (Seconds (0.2), &PfFfMacScheduler::TransmissionModeConfigurationUpdate, pfsched, rnti, 1);
-      Simulator::Schedule (Seconds (0.3), &PfFfMacScheduler::TransmissionModeConfigurationUpdate, pfsched, rnti, 2);
+      Simulator::Schedule (Seconds (0.4), &PfFfMacScheduler::TransmissionModeConfigurationUpdate, pfsched, rnti, 2);
     }
   else
     {
@@ -227,11 +227,8 @@ LenaMimoTestCase::DoRun (void)
   Ptr<RadioBearerStatsCalculator> rlcStats = lteHelper->GetRlcStats ();
   rlcStats->SetAttribute ("EpochDuration", TimeValue (Seconds (0.1)));
 
-  /**
-   * Check that the assignation is done in a RR fashion
-   */
   NS_LOG_INFO (m_schedulerType << " MIMO test:");
-  double sampleTime = 0.2;
+  double sampleTime = 0.199999; // at 0.2 RlcStats are reset
   for (uint8_t j = 0; j < m_estThrDl.size (); j ++)
     {
       NS_LOG_INFO ("\t test with user at distance " << m_dist << " time " << sampleTime);
@@ -240,7 +237,7 @@ LenaMimoTestCase::DoRun (void)
       uint8_t lcId = 3;
       Time t = Seconds (sampleTime);
       Simulator::Schedule(t, &LenaMimoTestCase::GetRlcBufferSample, this, rlcStats, imsi, lcId);
-      sampleTime += 0.1;
+      sampleTime += 0.2;
     }
   Simulator::Stop (Seconds (simulationTime));
   Simulator::Run ();
@@ -249,7 +246,7 @@ LenaMimoTestCase::DoRun (void)
   NS_LOG_INFO ("Check consistency");
     for (uint8_t i = 0; i < m_estThrDl.size (); i++)
       {
-        NS_LOG_INFO ("\tTTI " << i + 1 << " bytes rxed " << (double)m_dlDataRxed.at (i) << " ref " << m_estThrDl.at (i));
+        NS_LOG_INFO ("interval " << i + 1 << ": bytes rxed " << (double)m_dlDataRxed.at (i) << " ref " << m_estThrDl.at (i));
         NS_TEST_ASSERT_MSG_EQ_TOL ((double)m_dlDataRxed.at (i) , m_estThrDl.at (i), m_estThrDl.at (i) * tolerance, " Unfair Throughput!");
       }
 
@@ -260,7 +257,7 @@ void
 LenaMimoTestCase::GetRlcBufferSample (Ptr<RadioBearerStatsCalculator> rlcStats, uint64_t imsi, uint8_t lcId)
 {
   m_dlDataRxed.push_back (rlcStats->GetDlRxData (imsi, lcId));
-//   NS_LOG_INFO ("\t get bytes " << m_dlDataRxed.at (m_dlDataRxed.size () - 1));
+  NS_LOG_INFO (Simulator::Now () << "\t get bytes " << m_dlDataRxed.at (m_dlDataRxed.size () - 1));
 }
 
 

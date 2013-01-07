@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Jaume Nin <jnin@cttc.es>
+ *         Nicola Baldo <nbaldo@cttc.es>
  */
 
 #include "radio-bearer-stats-calculator.h"
@@ -59,8 +60,16 @@ RadioBearerStatsCalculator::GetTypeId (void)
   static TypeId tid =
     TypeId ("ns3::RadioBearerStatsCalculator")
     .SetParent<LteStatsCalculator> ().AddConstructor<RadioBearerStatsCalculator> ()
-    .AddAttribute ("StartTime", "Start time of the on going epoch.", TimeValue (Seconds (0.)),MakeTimeAccessor (&RadioBearerStatsCalculator::m_startTime), MakeTimeChecker ())
-    .AddAttribute ("EpochDuration", "Epoch duration.", TimeValue (Seconds (0.25)), MakeTimeAccessor (&RadioBearerStatsCalculator::m_epochDuration), MakeTimeChecker ())
+    .AddAttribute ("StartTime", "Start time of the on going epoch.", 
+                   TimeValue (Seconds (0.)),
+                   MakeTimeAccessor (&RadioBearerStatsCalculator::SetStartTime,
+                                     &RadioBearerStatsCalculator::GetStartTime), 
+                   MakeTimeChecker ())
+    .AddAttribute ("EpochDuration", "Epoch duration.", 
+                   TimeValue (Seconds (0.25)), 
+                   MakeTimeAccessor (&RadioBearerStatsCalculator::GetEpoch,
+                                     &RadioBearerStatsCalculator::SetEpoch), 
+                   MakeTimeChecker ())
     .AddAttribute ("DlRlcOutputFilename",
                    "Name of the file where the downlink results will be saved.",
                    StringValue ("DlRlcStats.txt"),
@@ -95,11 +104,36 @@ RadioBearerStatsCalculator::DoDispose ()
     }
 }
 
+void 
+RadioBearerStatsCalculator::SetStartTime (Time t)
+{
+  m_startTime = t;
+  RescheduleEndEpoch ();
+}
+
+Time 
+RadioBearerStatsCalculator::GetStartTime () const
+{
+  return m_startTime;
+}
+
+void 
+RadioBearerStatsCalculator::SetEpoch (Time e)
+{
+  m_epochDuration = e;
+  RescheduleEndEpoch ();
+}
+
+Time 
+RadioBearerStatsCalculator::GetEpoch () const
+{
+  return m_epochDuration;  
+}
+
 void
 RadioBearerStatsCalculator::UlTxPdu (uint16_t cellId, uint64_t imsi, uint16_t rnti, uint8_t lcid, uint32_t packetSize)
 {
   NS_LOG_FUNCTION (this << "UlTxPDU" << imsi << rnti << (uint32_t) lcid << packetSize);
-  CheckEpoch ();
   ImsiLcidPair_t p (imsi, lcid);
   if (Simulator::Now () > m_startTime)
     {
@@ -115,7 +149,6 @@ void
 RadioBearerStatsCalculator::DlTxPdu (uint16_t cellId, uint64_t imsi, uint16_t rnti, uint8_t lcid, uint32_t packetSize)
 {
   NS_LOG_FUNCTION (this << "DlTxPDU" << imsi << rnti << (uint32_t) lcid << packetSize);
-  CheckEpoch ();
   ImsiLcidPair_t p (imsi, lcid);
   if (Simulator::Now () > m_startTime)
     {
@@ -133,8 +166,6 @@ RadioBearerStatsCalculator::UlRxPdu (uint16_t cellId, uint64_t imsi, uint16_t rn
 {
   NS_LOG_FUNCTION (this << "UlRxPDU" << imsi << rnti << (uint32_t) lcid << packetSize << delay);
   ImsiLcidPair_t p (imsi, lcid);
-  CheckEpoch ();
-
   if (Simulator::Now () > m_startTime)
     {
       m_ulCellId[p] = cellId;
@@ -158,7 +189,6 @@ void
 RadioBearerStatsCalculator::DlRxPdu (uint16_t cellId, uint64_t imsi, uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay)
 {
   NS_LOG_FUNCTION (this << "DlRxPDU" << imsi << rnti << (uint32_t) lcid << packetSize << delay);
-  CheckEpoch ();
   ImsiLcidPair_t p (imsi, lcid);
   if (Simulator::Now () > m_startTime)
     {
@@ -349,26 +379,22 @@ RadioBearerStatsCalculator::ResetResults (void)
 }
 
 void
-RadioBearerStatsCalculator::CheckEpoch (void)
+RadioBearerStatsCalculator::RescheduleEndEpoch (void)
 {
   NS_LOG_FUNCTION (this);
-
-  if (Simulator::Now () > m_startTime + m_epochDuration)
-    {
-      ShowResults ();
-      ResetResults ();
-      StartEpoch ();
-    }
+  m_endEpochEvent.Cancel ();
+  NS_ASSERT (Simulator::Now ().GetMilliSeconds () == 0); // below event time assumes this
+  m_endEpochEvent = Simulator::Schedule (m_startTime + m_epochDuration, &RadioBearerStatsCalculator::EndEpoch, this);
 }
 
 void
-RadioBearerStatsCalculator::StartEpoch (void)
+RadioBearerStatsCalculator::EndEpoch (void)
 {
   NS_LOG_FUNCTION (this);
-  while (Simulator::Now () > m_startTime + m_epochDuration)
-    {
-      m_startTime += m_epochDuration;
-    }
+  ShowResults ();
+  ResetResults ();
+  m_startTime += m_epochDuration;
+  m_endEpochEvent = Simulator::Schedule (m_epochDuration, &RadioBearerStatsCalculator::EndEpoch, this);
 }
 
 uint32_t

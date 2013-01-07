@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Jaume Nin <jnin@cttc.es>
+ *         Nicola Baldo <nbaldo@cttc.es>
  */
 
 #ifndef RADIO_BEARER_STATS_CALCULATOR_H_
@@ -49,8 +50,6 @@ typedef std::map<ImsiLcidPair_t, LteFlowId_t> FlowIdMap;
  *   - Number of received bytes
  *   - Average, min, max and standard deviation of RLC to RLC delay
  *   - Average, min, max and standard deviation of RLC PDU size
- *   TODO: Actual statistics calculation implies checking the time every time a packet is send or received so it is not very efficient. The epoch
- *   implementation should be replaced by a timer to avoid this overhead.
  */
 class RadioBearerStatsCalculator : public LteStatsCalculator
 {
@@ -110,6 +109,31 @@ public:
    * Get the name of the file where the downlink PDCP statistics will be stored.
    */
   std::string GetDlPdcpOutputFilename (void);
+
+
+  /** 
+   * 
+   * \param t the value of the StartTime attribute
+   */
+  void SetStartTime (Time t);
+
+  /** 
+   * 
+   * \return the value of the StartTime attribute
+   */
+  Time GetStartTime () const;
+
+  /** 
+   * 
+   * \param e the epoch duration
+   */
+  void SetEpoch (Time e);
+
+  /** 
+   * 
+   * \return the epoch duration
+   */
+  Time GetEpoch () const;
 
   /**
    * Notifies the stats calculator that an uplink transmission has occurred.
@@ -311,10 +335,11 @@ private:
   void
   ResetResults (void);
 
-  void
-  StartEpoch (void);
-  void
-  CheckEpoch (void);
+  void RescheduleEndEpoch ();
+
+  void EndEpoch (void);
+
+  EventId m_endEpochEvent;
 
   FlowIdMap m_flowId;
 
