@@ -70,7 +70,7 @@ RrcAsn1Header::SerializeDrbToAddModList (std::list<LteRrcSap::DrbToAddMod> drbTo
       drbToAddModListOptionalFieldsPresent.set (2,1); // rlc-Config present
       drbToAddModListOptionalFieldsPresent.set (1,1); // logicalChannelIdentity present
       drbToAddModListOptionalFieldsPresent.set (0,1); // logicalChannelConfig present
-      SerializeSequence<5> (drbToAddModListOptionalFieldsPresent,true);
+      SerializeSequence(drbToAddModListOptionalFieldsPresent,true);
 
       // Serialize eps-BearerIdentity::=INTEGER (0..15)
       SerializeInteger (it->epsBearerIdentity,0,15);
@@ -85,11 +85,11 @@ RrcAsn1Header::SerializeDrbToAddModList (std::list<LteRrcSap::DrbToAddMod> drbTo
           SerializeChoice (4,1);
 
           // Serialize UL-UM-RLC
-          SerializeSequence<0> (std::bitset<0> (),false);
+          SerializeSequence(std::bitset<0> (),false);
           SerializeEnum (2,0);  // sn-FieldLength
 
           // Serialize DL-UM-RLC
-          SerializeSequence<0> (std::bitset<0> (),false);
+          SerializeSequence(std::bitset<0> (),false);
           SerializeEnum (2,0);  // sn-FieldLength
           SerializeEnum (32,0);  // t-Reordering
           break;
@@ -99,7 +99,7 @@ RrcAsn1Header::SerializeDrbToAddModList (std::list<LteRrcSap::DrbToAddMod> drbTo
           SerializeChoice (4,2);
 
           // Serialize UL-UM-RLC
-          SerializeSequence<0> (std::bitset<0> (),false);
+          SerializeSequence(std::bitset<0> (),false);
           SerializeEnum (2,0);  // sn-FieldLength
           break;
 
@@ -108,7 +108,7 @@ RrcAsn1Header::SerializeDrbToAddModList (std::list<LteRrcSap::DrbToAddMod> drbTo
           SerializeChoice (4,3);
 
           // Serialize DL-UM-RLC
-          SerializeSequence<0> (std::bitset<0> (),false);
+          SerializeSequence(std::bitset<0> (),false);
           SerializeEnum (2,0);  // sn-FieldLength
           SerializeEnum (32,0);  // t-Reordering
           break;
@@ -119,14 +119,14 @@ RrcAsn1Header::SerializeDrbToAddModList (std::list<LteRrcSap::DrbToAddMod> drbTo
           SerializeChoice (4,0);
 
           // Serialize UL-AM-RLC
-          SerializeSequence<0> (std::bitset<0> (),false);
+          SerializeSequence(std::bitset<0> (),false);
           SerializeEnum (64,0);  // t-PollRetransmit
           SerializeEnum (8,0);   // pollPDU
           SerializeEnum (16,0);  // pollByte
           SerializeEnum (8,0);   // maxRetxThreshold
 
           // Serialize DL-AM-RLC
-          SerializeSequence<0> (std::bitset<0> (),false);
+          SerializeSequence(std::bitset<0> (),false);
           SerializeEnum (32,0);  // t-Reordering
           SerializeEnum (64,0);  // t-StatusProhibit
           break;
@@ -155,7 +155,7 @@ RrcAsn1Header::SerializeSrbToAddModList (std::list<LteRrcSap::SrbToAddMod> srbTo
       std::bitset<2> srbToAddModListOptionalFieldsPresent = std::bitset<2> ();
       srbToAddModListOptionalFieldsPresent.set (1,0); // rlc-Config not present
       srbToAddModListOptionalFieldsPresent.set (0,1); // logicalChannelConfig present
-      SerializeSequence<2> (srbToAddModListOptionalFieldsPresent,true);
+      SerializeSequence(srbToAddModListOptionalFieldsPresent,true);
 
       // Serialize srb-Identity ::= INTEGER (1..2)
       SerializeInteger (it->srbIdentity,1,2);
@@ -174,11 +174,11 @@ RrcAsn1Header::SerializeLogicalChannelConfig (LteRrcSap::LogicalChannelConfig lo
 {
   // Serialize LogicalChannelConfig sequence
   // 1 optional field, which is present. No extension marker.
-  SerializeSequence<1> (std::bitset<1> (1),false);
+  SerializeSequence (std::bitset<1> (1),false);
 
   // Serialize ul-SpecificParameters sequence
   // no optional/default fields. No extension marker.
-  SerializeSequence<0> (std::bitset<0> (),false);
+  SerializeSequence (std::bitset<0> (),false);
 
   // Serialize priority ::= INTEGER (1..16)
   SerializeInteger (logicalChannelConfig.priority,1,16);
@@ -259,7 +259,7 @@ RrcAsn1Header::SerializePhysicalConfigDedicated (LteRrcSap::PhysicalConfigDedica
   optionalFieldsPhysicalConfigDedicated.set (2,physicalConfigDedicated.haveSoundingRsUlConfigDedicated);  // soundingRS-UL-ConfigDedicated
   optionalFieldsPhysicalConfigDedicated.set (1,physicalConfigDedicated.haveAntennaInfoDedicated);  // antennaInfo
   optionalFieldsPhysicalConfigDedicated.set (0,0);  // schedulingRequestConfig not present
-  SerializeSequence<10> (optionalFieldsPhysicalConfigDedicated,true);
+  SerializeSequence (optionalFieldsPhysicalConfigDedicated,true);
 
   if (physicalConfigDedicated.haveSoundingRsUlConfigDedicated)
     {
@@ -278,7 +278,7 @@ RrcAsn1Header::SerializePhysicalConfigDedicated (LteRrcSap::PhysicalConfigDedica
 
           // Serialize setup sequence
           // 0 optional / default fields, no extension marker.
-          SerializeSequence<0> (std::bitset<0> (),false);
+          SerializeSequence(std::bitset<0> (),false);
 
           // Serialize srs-Bandwidth
           SerializeEnum (4,physicalConfigDedicated.soundingRsUlConfigDedicated.srsBandwidth);
@@ -313,7 +313,7 @@ RrcAsn1Header::SerializePhysicalConfigDedicated (LteRrcSap::PhysicalConfigDedica
 
       // Serialize AntennaInfoDedicated sequence
       // 1 optional parameter, not present. No extension marker.
-      SerializeSequence<1> (std::bitset<1> (0),false);
+      SerializeSequence (std::bitset<1> (0),false);
 
       // Serialize transmissionMode
       SerializeEnum (8,physicalConfigDedicated.antennaInfo.transmissionMode);
@@ -341,7 +341,7 @@ RrcAsn1Header::SerializeRadioResourceConfigDedicated (LteRrcSap::RadioResourceCo
   optionalFieldsPresent.set (2,0);  // mac-MainConfig not present
   optionalFieldsPresent.set (1,0);  // sps-Config not present
   optionalFieldsPresent.set (0,(radioResourceConfigDedicated.havePhysicalConfigDedicated) ? 1 : 0);
-  SerializeSequence<6> (optionalFieldsPresent,true);
+  SerializeSequence(optionalFieldsPresent,true);
 
   // Serialize srbToAddModList
   if (isSrbToAddModListPresent)
@@ -780,14 +780,14 @@ RrcAsn1Header::DeserializeDrbToAddModList (std::list<LteRrcSap::DrbToAddMod> *dr
               drbToAddMod.rlcConfig.choice = LteRrcSap::RlcConfig::AM;
 
               // Deserialize UL-AM-RLC
-              bIterator = DeserializeSequence<0> (&bitset0,false, bIterator);
+              bIterator = DeserializeSequence(&bitset0,false, bIterator);
               bIterator = DeserializeEnum (64,&sel, bIterator); // t-PollRetransmit
               bIterator = DeserializeEnum (8,&sel, bIterator); // pollPDU
               bIterator = DeserializeEnum (16,&sel, bIterator); // pollByte
               bIterator = DeserializeEnum (8,&sel, bIterator); // maxRetxThreshold
 
               // Deserialize DL-AM-RLC
-              bIterator = DeserializeSequence<0> (&bitset0,false, bIterator);
+              bIterator = DeserializeSequence(&bitset0,false, bIterator);
               bIterator = DeserializeEnum (32,&sel, bIterator); // t-Reordering
               bIterator = DeserializeEnum (64,&sel, bIterator); // t-StatusProhibit
               break;
@@ -796,11 +796,11 @@ RrcAsn1Header::DeserializeDrbToAddModList (std::list<LteRrcSap::DrbToAddMod> *dr
               drbToAddMod.rlcConfig.choice = LteRrcSap::RlcConfig::UM_BI_DIRECTIONAL;
 
               // Deserialize UL-UM-RLC
-              bIterator = DeserializeSequence<0> (&bitset0,false, bIterator);
+              bIterator = DeserializeSequence(&bitset0,false, bIterator);
               bIterator = DeserializeEnum (2,&sel, bIterator); // sn-FieldLength
 
               // Deserialize DL-UM-RLC
-              bIterator = DeserializeSequence<0> (&bitset0,false, bIterator);
+              bIterator = DeserializeSequence(&bitset0,false, bIterator);
               bIterator = DeserializeEnum (2,&sel, bIterator); // sn-FieldLength
               bIterator = DeserializeEnum (32,&sel, bIterator); // t-Reordering
               break;
@@ -809,7 +809,7 @@ RrcAsn1Header::DeserializeDrbToAddModList (std::list<LteRrcSap::DrbToAddMod> *dr
               drbToAddMod.rlcConfig.choice = LteRrcSap::RlcConfig::UM_UNI_DIRECTIONAL_UL;
 
               // Deserialize UL-UM-RLC
-              bIterator = DeserializeSequence<0> (&bitset0,false, bIterator);
+              bIterator = DeserializeSequence(&bitset0,false, bIterator);
               bIterator = DeserializeEnum (2,&sel, bIterator); // sn-FieldLength
               break;
 
@@ -817,7 +817,7 @@ RrcAsn1Header::DeserializeDrbToAddModList (std::list<LteRrcSap::DrbToAddMod> *dr
               drbToAddMod.rlcConfig.choice = LteRrcSap::RlcConfig::UM_UNI_DIRECTIONAL_DL;
 
               // Deserialize DL-UM-RLC
-              bIterator = DeserializeSequence<0> (&bitset0,false, bIterator);
+              bIterator = DeserializeSequence(&bitset0,false, bIterator);
               bIterator = DeserializeEnum (2,&sel, bIterator); // sn-FieldLength
               bIterator = DeserializeEnum (32,&sel, bIterator); // t-Reordering
               break;
@@ -891,6 +891,8 @@ RrcAsn1Header::DeserializeLogicalChannelConfig (LteRrcSap::LogicalChannelConfig 
         case 7:
           prioritizedBitRateKbps = 10000;
           break;
+        default:
+          prioritizedBitRateKbps = 10000;
         }
       logicalChannelConfig->prioritizedBitRateKbps = prioritizedBitRateKbps;
 
@@ -917,6 +919,8 @@ RrcAsn1Header::DeserializeLogicalChannelConfig (LteRrcSap::LogicalChannelConfig 
         case 5:
           bucketSizeDurationMs = 1000;
           break;
+        default:
+          bucketSizeDurationMs = 1000;  
         }
       logicalChannelConfig->bucketSizeDurationMs = bucketSizeDurationMs;
 
@@ -1720,7 +1724,7 @@ RrcConnectionRequestHeader::PreSerialize () const
 
   // Serialize RRCConnectionRequest sequence:
   // no default or optional fields. Extension marker not present.
-  SerializeSequence<0> (std::bitset<0> (),false);
+  SerializeSequence(std::bitset<0> (),false);
 
   // Serialize criticalExtensions choice:
   // 2 options, selected: 0 (option: rrcConnectionRequest-r8)
@@ -1728,7 +1732,7 @@ RrcConnectionRequestHeader::PreSerialize () const
 
   // Serialize RRCConnectionRequest-r8-IEs sequence:
   // no default or optional fields. Extension marker not present.
-  SerializeSequence<0> (std::bitset<0> (),false);
+  SerializeSequence(std::bitset<0> (),false);
 
   // Serialize InitialUE-Identity choice:
   // 2 options, selected: 0 (option: s-TMSI)
@@ -1736,19 +1740,19 @@ RrcConnectionRequestHeader::PreSerialize () const
 
   // Serialize S-TMSI sequence:
   // no default or optional fields. Extension marker not present.
-  SerializeSequence<0> (std::bitset<0> (),false);
+  SerializeSequence(std::bitset<0> (),false);
 
   // Serialize mmec : MMEC ::= BIT STRING (SIZE (8))
-  SerializeBitstring<8> (m_mmec);
+  SerializeBitstring (m_mmec);
 
   // Serialize m-TMSI ::= BIT STRING (SIZE (32))
-  SerializeBitstring<32> (m_mTmsi);
+  SerializeBitstring (m_mTmsi);
 
   // Serialize establishmentCause : EstablishmentCause ::= ENUMERATED
   SerializeEnum (8,m_establishmentCause);
 
   // Serialize spare : BIT STRING (SIZE (1))
-  SerializeBitstring<1> (std::bitset<1> ());
+  SerializeBitstring (std::bitset<1> ());
 
   // Finish serialization
   FinalizeSerialization ();
@@ -2013,7 +2017,7 @@ RrcConnectionSetupCompleteHeader::PreSerialize () const
 
   // Serialize RRCConnectionSetupComplete sequence:
   // no default or optional fields. Extension marker not present.
-  SerializeSequence<0> (std::bitset<0> (),false);
+  SerializeSequence(std::bitset<0> (),false);
 
   // Serialize rrc-TransactionIdentifier
   SerializeInteger (m_rrcTransactionIdentifier,0,3);
@@ -2115,7 +2119,7 @@ RrcConnectionReconfigurationCompleteHeader::PreSerialize () const
 
   // Serialize RRCConnectionSetupComplete sequence:
   // no default or optional fields. Extension marker not present.
-  SerializeSequence<0> (std::bitset<0> (),false);
+  SerializeSequence(std::bitset<0> (),false);
 
   // Serialize rrc-TransactionIdentifier
   SerializeInteger (m_rrcTransactionIdentifier,0,3);
@@ -2125,7 +2129,7 @@ RrcConnectionReconfigurationCompleteHeader::PreSerialize () const
   SerializeChoice (2,1);
 
   // Choose criticalExtensionsFuture
-  SerializeSequence<0> (std::bitset<0> (),false);
+  SerializeSequence(std::bitset<0> (),false);
 
   // Finish serialization
   FinalizeSerialization ();
@@ -2201,7 +2205,7 @@ RrcConnectionReconfigurationHeader::PreSerialize () const
 
   // Serialize RRCConnectionSetupComplete sequence:
   // no default or optional fields. Extension marker not present.
-  SerializeSequence<0> (std::bitset<0> (),false);
+  SerializeSequence(std::bitset<0> (),false);
 
   // Serialize rrc-TransactionIdentifier
   SerializeInteger (m_rrcTransactionIdentifier,0,3);
@@ -2223,7 +2227,7 @@ RrcConnectionReconfigurationHeader::PreSerialize () const
   options.set (2,m_haveRadioResourceConfigDedicated);
   options.set (1,0); // No securityConfigHO
   options.set (0,0); // No nonCriticalExtension
-  SerializeSequence<6> (options,false);
+  SerializeSequence(options,false);
 
 
   if (m_haveMeasConfig)
@@ -2759,7 +2763,7 @@ HandoverPreparationInfoHeader::PreSerialize () const
 
   // Serialize HandoverPreparationInformation sequence:
   // no default or optional fields. Extension marker not present.
-  SerializeSequence<0> (std::bitset<0> (),false);
+  SerializeSequence(std::bitset<0> (),false);
 
   // Serialize criticalExtensions choice
   // 2 options, selected 0 (c1)
@@ -3041,7 +3045,7 @@ RrcConnectionReestablishmentRequestHeader::PreSerialize () const
 
   // Serialize RrcConnectionReestablishmentReques sequence:
   // no default or optional fields. Extension marker not present.
-  SerializeSequence<0> (std::bitset<0> (),false);
+  SerializeSequence(std::bitset<0> (),false);
 
   // Serialize criticalExtensions choice
   // chosen: rrcConnectionReestablishmentRequest-r8
@@ -3049,10 +3053,10 @@ RrcConnectionReestablishmentRequestHeader::PreSerialize () const
 
   // Serialize RRCConnectionReestablishmentRequest-r8-IEs sequence
   // no default or optional fields. Extension marker not present.
-  SerializeSequence<0> (std::bitset<0> (),false);
+  SerializeSequence(std::bitset<0> (),false);
 
   // Serialize ue-Identity
-  SerializeSequence<0> (std::bitset<0> (),false);
+  SerializeSequence(std::bitset<0> (),false);
   // Serialize c-RNTI
   SerializeBitstring (std::bitset<16> (m_ueIdentity.cRnti));
   // Serialize physCellId
@@ -3077,7 +3081,7 @@ RrcConnectionReestablishmentRequestHeader::PreSerialize () const
     }
 
   // Serialize spare
-  SerializeBitstring<2> (std::bitset<2> (0));
+  SerializeBitstring (std::bitset<2> (0));
 
   // Finish serialization
   FinalizeSerialization ();
@@ -3736,7 +3740,7 @@ MeasurementReportHeader::PreSerialize () const
 
   // Serialize MeasurementReport sequence:
   // no default or optional fields. Extension marker not present.
-  SerializeSequence<0> (std::bitset<0> (),false);
+  SerializeSequence(std::bitset<0> (),false);
 
   // Serialize criticalExtensions choice:
   // c1 chosen
@@ -3748,7 +3752,7 @@ MeasurementReportHeader::PreSerialize () const
 
   // Serialize MeasurementReport-r8-IEs sequence:
   // 1 optional fields, not present. Extension marker not present.
-  SerializeSequence<1> (std::bitset<1> (0),false);
+  SerializeSequence (std::bitset<1> (0),false);
 
   // Serialize measResults
   SerializeMeasResults (m_measurementReport.measResults);
