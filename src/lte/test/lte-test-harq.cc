@@ -251,6 +251,7 @@ LenaHarqTestCase::DoRun (void)
       NS_LOG_INFO (" User " << i << " imsi " << imsi << " bytes rxed/t " << rxed/statsDuration << " txed/t " << txed/statsDuration << " thr Ref " << m_throughputRef << " Err " << (abs (txed/statsDuration - m_throughputRef)) / m_throughputRef);
 
       NS_TEST_ASSERT_MSG_EQ_TOL (txed/statsDuration, m_throughputRef, m_throughputRef * tolerance, " Unexpected Throughput!");
+      NS_TEST_ASSERT_MSG_EQ_TOL (rxed/statsDuration, m_throughputRef, m_throughputRef * tolerance, " Unexpected Throughput!");
     }
 
 
