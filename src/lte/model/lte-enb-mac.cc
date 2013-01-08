@@ -474,14 +474,11 @@ LteEnbMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
       // process received RACH preambles and notify the scheduler
       FfMacSchedSapProvider::SchedDlRachInfoReqParameters rachInfoReqParams;
       NS_ASSERT (subframeNo > 0 && subframeNo <= 10); // subframe in 1..10
-      // see TS 36.321 5.1.4;  preambles were sent two frames ago
-      // (plus 3GPP counts subframes from 0, not 1)
-      uint16_t raRnti = subframeNo - 3; 
       for (std::map<uint8_t, uint32_t>::const_iterator it = m_receivedRachPreambleCount.begin ();
            it != m_receivedRachPreambleCount.end ();
            ++it)
         {
-          NS_LOG_INFO ("RA-RNTI " << raRnti << ", preambleId " << (uint32_t) it->first << ": " << it->second << " received");
+          NS_LOG_INFO (this << " preambleId " << (uint32_t) it->first << ": " << it->second << " received");
           NS_ASSERT (it->second != 0);
           if (it->second > 1)
             {
@@ -1026,8 +1023,10 @@ LteEnbMac::DoSchedDlConfigInd (FfMacSchedSapUser::SchedDlConfigIndParameters ind
         }
     }
 
-  // RACH
+  // Random Access procedure: send RARs
   Ptr<RarLteControlMessage> rarMsg = Create<RarLteControlMessage> ();
+  // see TS 36.321 5.1.4;  preambles were sent two frames ago
+  // (plus 3GPP counts subframes from 0, not 1)
   uint16_t raRnti = m_subframeNo - 3;
   rarMsg->SetRaRnti (raRnti);
   for (unsigned int i = 0; i < ind.m_buildRarList.size (); i++)

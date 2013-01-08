@@ -990,7 +990,7 @@ uint64_t
 FindImsiForEnb (std::string path, uint16_t rnti)
 {
   NS_LOG_FUNCTION (path << rnti);
-  uint64_t imsi;
+  uint64_t imsi = 0;
   if (path.find ("/DlPhyTransmission"))
     {
       // /NodeList/0/DeviceList/0/LteEnbPhy/DlPhyTransmission/LteEnbRrc/UeMap/1
@@ -1001,7 +1001,7 @@ FindImsiForEnb (std::string path, uint16_t rnti)
       imsi = FindImsiFromEnbRlcPath (p);
       NS_LOG_LOGIC ("FindImsiForEnb[Tx]: " << path << ", " << rnti << ", " << imsi);
     }
-  else if (path.find ("/UIlPhyReception"))
+  else if (path.find ("/UlPhyReception"))
     {
       std::string p = path.substr (0, path.find ("/LteUePhy"));
       imsi = FindImsiFromLteNetDevice (p);
@@ -1015,14 +1015,14 @@ uint64_t
 FindImsiForUe (std::string path, uint16_t rnti)
 {
   NS_LOG_FUNCTION (path << rnti);
-  uint64_t imsi;
-  if (path.find ("/UIlPhyTransmission"))
+  uint64_t imsi = 0;
+  if (path.find ("/UlPhyTransmission"))
     {
       std::string p = path.substr (0, path.find ("/LteUePhy"));
       imsi = FindImsiFromLteNetDevice (p);
       NS_LOG_LOGIC ("FindImsiForUe[Tx]: " << path << ", " << rnti << ", " << imsi);
     }
-  else if (path.find ("/DIlPhyReception"))
+  else if (path.find ("/DlPhyReception"))
     {
       // /NodeList/0/DeviceList/0/LteEnbPhy/LteSpectrumPhy
       std::ostringstream oss;

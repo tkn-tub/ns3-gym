@@ -938,6 +938,7 @@ LteSpectrumPhy::EndRxData ()
                       {
                         UlInfoListElement_s harqUlInfo;
                         harqUlInfo.m_rnti = tbId.m_rnti;
+                        harqUlInfo.m_tpc = 0;
                         if ((*itTb).second.corrupt)
                           {
                             harqUlInfo.m_receptionStatus = UlInfoListElement_s::NotOk;
