@@ -158,11 +158,12 @@ PacketSocket::DoBind (const PacketSocketAddress &address)
       dev = 0;
     }
   m_node->RegisterProtocolHandler (MakeCallback (&PacketSocket::ForwardUp, this),
-                                   address.GetProtocol (), dev);
+                                   address.GetProtocol (), dev, (0 == dev));
   m_state = STATE_BOUND;
   m_protocol = address.GetProtocol ();
   m_isSingleDevice = address.IsSingleDevice ();
   m_device = address.GetSingleDevice ();
+  m_boundnetdevice = dev;
   return 0;
 }
 
@@ -381,8 +382,6 @@ PacketSocket::ForwardUp (Ptr<NetDevice> device, Ptr<const Packet> packet,
     {
       return;
     }
-
-
   PacketSocketAddress address;
   address.SetPhysicalAddress (from);
   address.SetSingleDevice (device->GetIfIndex ());
@@ -391,9 +390,16 @@ PacketSocket::ForwardUp (Ptr<NetDevice> device, Ptr<const Packet> packet,
   if ((m_rxAvailable + packet->GetSize ()) <= m_rcvBufSize)
     {
       Ptr<Packet> copy = packet->Copy ();
+      DeviceNameTag dnt;
+      dnt.SetDeviceName (device->GetTypeId ().GetName ());
+      PacketSocketTag pst;
+      pst.SetPacketType (packetType);
+      pst.SetDestAddress (to);
       SocketAddressTag tag;
       tag.SetAddress (address);
-      copy->AddPacketTag (tag);
+      copy->AddPacketTag (tag); // Attach From Physical Address
+      copy->AddPacketTag (pst); // Attach Packet Type and Dest Address
+      copy->AddPacketTag (dnt); // Attach device source name
       m_deliveryQueue.push (copy);
       m_rxAvailable += packet->GetSize ();
       NS_LOG_LOGIC ("UID is " << packet->GetUid () << " PacketSocket " << this);
@@ -497,5 +503,148 @@ PacketSocket::GetAllowBroadcast () const
   NS_LOG_FUNCTION (this);
   return false;
 }
+
+/***************************************************************
+ *           PacketSocket Tags
+ ***************************************************************/
+
+PacketSocketTag::PacketSocketTag ()
+{
+}
+
+void
+PacketSocketTag::SetPacketType(NetDevice::PacketType t)
+{
+  m_packetType = t;
+}
+
+NetDevice::PacketType
+PacketSocketTag::GetPacketType (void) const
+{
+  return m_packetType;
+}
+
+void
+PacketSocketTag::SetDestAddress(Address a)
+{
+  m_destAddr = a;
+}
+
+Address
+PacketSocketTag::GetDestAddress (void) const
+{
+  return m_destAddr;
+}
+
+NS_OBJECT_ENSURE_REGISTERED (PacketSocketTag);
+
+TypeId
+PacketSocketTag::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::PacketSocketTag")
+    .SetParent<Tag> ()
+    .AddConstructor<PacketSocketTag> ()
+  ;
+  return tid;
+}
+TypeId
+PacketSocketTag::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
+}
+uint32_t
+PacketSocketTag::GetSerializedSize (void) const
+{
+  return  1 + m_destAddr.GetSerializedSize();
+}
+void
+PacketSocketTag::Serialize (TagBuffer i) const
+{
+  i.WriteU8 (m_packetType);
+  m_destAddr.Serialize (i);
+}
+void
+PacketSocketTag::Deserialize (TagBuffer i)
+{
+  m_packetType = (NetDevice::PacketType) i.ReadU8 ();
+  m_destAddr.Deserialize (i);
+}
+void
+PacketSocketTag::Print (std::ostream &os) const
+{
+  os << "packetType=" << m_packetType;
+}
+
+/***************************************************************
+ *           DeviceName Tags
+ ***************************************************************/
+
+DeviceNameTag::DeviceNameTag ()
+{
+}
+
+void
+DeviceNameTag::SetDeviceName (std::string n)
+{
+  if ( n.substr(0,5) == "ns3::" )
+    {
+      n = n.substr (5);
+    }
+  m_deviceName = n;
+}
+
+std::string
+DeviceNameTag::GetDeviceName (void) const
+{
+  return m_deviceName;
+}
+
+NS_OBJECT_ENSURE_REGISTERED (DeviceNameTag);
+
+TypeId
+DeviceNameTag::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::DeviceNameTag")
+    .SetParent<Tag> ()
+    .AddConstructor<DeviceNameTag> ();
+  return tid;
+}
+TypeId
+DeviceNameTag::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
+}
+uint32_t
+DeviceNameTag::GetSerializedSize (void) const
+{
+  uint32_t s = 1 + m_deviceName.size();
+  return ( s >= PACKET_TAG_MAX_SIZE)?PACKET_TAG_MAX_SIZE:s;
+}
+void
+DeviceNameTag::Serialize (TagBuffer i) const
+{
+  const char *n = m_deviceName.c_str();
+  uint8_t l = (uint8_t) strlen (n);
+
+  if ( ( 1 + l ) > PACKET_TAG_MAX_SIZE ) l = PACKET_TAG_MAX_SIZE - 1;
+
+  i.WriteU8 (l);
+  i.Write ( (uint8_t*) n , (uint32_t) l );
+}
+void
+DeviceNameTag::Deserialize (TagBuffer i)
+{
+  uint8_t l = i.ReadU8();
+  char buf[256];
+
+  i.Read ( (uint8_t* ) buf, (uint32_t) l);
+  m_deviceName = std::string (buf, l);
+}
+void
+DeviceNameTag::Print (std::ostream &os) const
+{
+  os << "DeviceName=" << m_deviceName;
+}
+
 
 } // namespace ns3
