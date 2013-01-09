@@ -123,7 +123,10 @@ void
 Ipv4EndPoint::DoForwardUp (Ptr<Packet> p, const Ipv4Header& header, uint16_t sport,
                            Ptr<Ipv4Interface> incomingInterface)
 {
-  m_rxCallback (p, header, sport, incomingInterface);
+  if (!m_rxCallback.IsNull ())
+    {
+      m_rxCallback (p, header, sport, incomingInterface);
+    }
 }
 
 void 
@@ -144,7 +147,10 @@ Ipv4EndPoint::DoForwardIcmp (Ipv4Address icmpSource, uint8_t icmpTtl,
                              uint8_t icmpType, uint8_t icmpCode,
                              uint32_t icmpInfo)
 {
-  m_icmpCallback (icmpSource,icmpTtl,icmpType,icmpCode,icmpInfo);
+  if (!m_icmpCallback.IsNull ())
+    {
+      m_icmpCallback (icmpSource,icmpTtl,icmpType,icmpCode,icmpInfo);
+    }
 }
 
 } // namespace ns3
