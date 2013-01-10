@@ -158,7 +158,7 @@ PacketSocket::DoBind (const PacketSocketAddress &address)
       dev = 0;
     }
   m_node->RegisterProtocolHandler (MakeCallback (&PacketSocket::ForwardUp, this),
-                                   address.GetProtocol (), dev, (0 == dev));
+                                   address.GetProtocol (), dev);
   m_state = STATE_BOUND;
   m_protocol = address.GetProtocol ();
   m_isSingleDevice = address.IsSingleDevice ();
