@@ -128,6 +128,7 @@ def parse_examples_to_run_file(
     cpp_executable_dir,
     python_script_dir,
     example_tests,
+    example_names_original,
     python_tests):
 
     # Look for the examples-to-run file exists.
@@ -150,7 +151,9 @@ def parse_examples_to_run_file(
         #
         cpp_examples = get_list_from_file(examples_to_run_path, "cpp_examples")
         for example_name, do_run, do_valgrind_run in cpp_examples:
+
             # Seperate the example name from its arguments.
+            example_name_original = example_name
             example_name_parts = example_name.split(' ', 1)
             if len(example_name_parts) == 1:
                 example_name      = example_name_parts[0]
@@ -174,6 +177,7 @@ def parse_examples_to_run_file(
 
                 # Add this example.
                 example_tests.append((example_path, do_run, do_valgrind_run))
+                example_names_original.append(example_name_original)
     
         # Each tuple in the Python list of examples to run contains
         #
@@ -1080,6 +1084,7 @@ def run_tests():
     # ensure that they remain buildable and runnable over time.
     #
     example_tests = []
+    example_names_original = []
     python_tests = []
     for directory in EXAMPLE_DIRECTORIES:
         # Set the directories and paths for this example. 
@@ -1094,6 +1099,7 @@ def run_tests():
             cpp_executable_dir,
             python_script_dir,
             example_tests,
+            example_names_original,
             python_tests)
 
     for module in NS3_ENABLED_MODULES:
@@ -1113,6 +1119,7 @@ def run_tests():
             cpp_executable_dir,
             python_script_dir,
             example_tests,
+            example_names_original,
             python_tests)
 
     #
@@ -1146,6 +1153,9 @@ def run_tests():
         for item in list_items:
             if len(item.strip()):
                 print item
+        example_names_original.sort()
+        for item in example_names_original:
+                print "example     ", item
         print
 
     if options.kinds or options.list:
