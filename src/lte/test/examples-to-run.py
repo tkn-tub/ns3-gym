@@ -25,6 +25,16 @@ cpp_examples = [
     ("lena-rem-sector-antenna", "True", "True"),
     ("lena-simple", "True", "True"),
     ("lena-simple-epc", "True", "True"),
+    ("lena-simple-epc --simTime=1.1 --ns3::LteHelper::Scheduler=ns3::TtaFfMacScheduler", "options.valgrind", "True"),
+    ("lena-simple-epc --simTime=1.1 --ns3::LteHelper::Scheduler=ns3::TdTbfqFfMacScheduler", "options.valgrind", "True"),
+    ("lena-simple-epc --simTime=1.1 --ns3::LteHelper::Scheduler=ns3::TdMtFfMacScheduler", "options.valgrind", "True"),
+    ("lena-simple-epc --simTime=1.1 --ns3::LteHelper::Scheduler=ns3::TdBetFfMacScheduler", "options.valgrind", "True"),
+    ("lena-simple-epc --simTime=1.1 --ns3::LteHelper::Scheduler=ns3::RrFfMacScheduler", "options.valgrind", "True"),
+    ("lena-simple-epc --simTime=1.1 --ns3::LteHelper::Scheduler=ns3::PssFfMacScheduler", "options.valgrind", "True"),
+    ("lena-simple-epc --simTime=1.1 --ns3::LteHelper::Scheduler=ns3::PfFfMacScheduler", "options.valgrind", "True"),
+    ("lena-simple-epc --simTime=1.1 --ns3::LteHelper::Scheduler=ns3::FdTbfqFfMacScheduler", "options.valgrind", "True"),
+    ("lena-simple-epc --simTime=1.1 --ns3::LteHelper::Scheduler=ns3::FdMtFfMacScheduler", "options.valgrind", "True"),
+    ("lena-simple-epc --simTime=1.1 --ns3::LteHelper::Scheduler=ns3::FdBetFfMacScheduler", "options.valgrind", "True"),
 ]
 
 # A list of Python examples to run in order to ensure that they remain

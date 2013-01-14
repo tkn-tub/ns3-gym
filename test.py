@@ -95,6 +95,16 @@ core_valgrind_skip_tests = [
     "nsc-tcp-loss",
     "ns3-tcp-interoperability",
     "routing-click",
+    "lte-rr-ff-mac-scheduler",
+    "lte-tdmt-ff-mac-scheduler",
+    "lte-fdmt-ff-mac-scheduler",
+    "lte-pf-ff-mac-scheduler",
+    "lte-tta-ff-mac-scheduler",
+    "lte-fdbet-ff-mac-scheduler",
+    "lte-ttbet-ff-mac-scheduler",
+    "lte-fdtbfq-ff-mac-scheduler",
+    "lte-tdtbfq-ff-mac-scheduler",
+    "lte-pss-ff-mac-scheduler",
 ]
 
 # 
