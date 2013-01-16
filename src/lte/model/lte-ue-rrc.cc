@@ -436,7 +436,6 @@ LteUeRrc::DoSetTemporaryCellRnti (uint16_t rnti)
   NS_LOG_FUNCTION (this << rnti);
   m_rnti = rnti;
   m_srb0->m_rlc->SetRnti (m_rnti);
-  m_rrcSapUser->Reestablish ();
   m_cphySapProvider->SetRnti (m_rnti);
 }
 
