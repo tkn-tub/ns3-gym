@@ -483,6 +483,12 @@ int main (int argc, char *argv[])
 
   NodeContainer c; c.Create (1);
 
+  // The below statements register typical aggregation relationships
+  // in ns-3 programs, that otherwise aren't picked up automatically
+  // by the creation of the above node.  To manually list other common
+  // aggregation relationships that you would like to see show up in
+  // the list of configuration paths in the doxygen, add additional
+  // statements below.
   StaticInformation info;
   info.RecordAggregationInfo ("ns3::Node", "ns3::TcpSocketFactory");
   info.RecordAggregationInfo ("ns3::Node", "ns3::UdpSocketFactory");
@@ -555,7 +561,7 @@ int main (int argc, char *argv[])
       // Config --------------
       if (paths.empty ())
 	{
-	  std::cout << "This type is not accessible from the Config system."
+	  std::cout << "Doxygen introspection did not find any typical Config paths."
 		    << breakBoth << std::endl;
 	}
       else
