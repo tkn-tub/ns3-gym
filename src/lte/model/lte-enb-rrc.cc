@@ -266,13 +266,6 @@ void
 UeManager::DoDispose ()
 {
   delete m_drbPdcpSapUser;
-  
-  m_rrc->m_cmacSapProvider->RemoveUe (m_rnti);
-  m_rrc->m_cphySapProvider->RemoveUe (m_rnti);
-  if (m_rrc->m_s1SapProvider != 0)
-    {
-      m_rrc->m_s1SapProvider->UeContextRelease (m_rnti);
-    }
   // delete eventual X2-U TEIDs
   for (std::map <uint8_t, Ptr<LteDataRadioBearerInfo> >::iterator it = m_drbMap.begin ();
        it != m_drbMap.end ();
@@ -1188,6 +1181,7 @@ void
 LteEnbRrc::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
+  m_ueMap.clear ();
   delete m_cmacSapUser;
   delete m_rrcSapProvider;
   delete m_x2SapUser;
@@ -1735,6 +1729,12 @@ LteEnbRrc::RemoveUe (uint16_t rnti)
   NS_ASSERT_MSG (it != m_ueMap.end (), "request to remove UE info with unknown rnti " << rnti);
   uint16_t srsCi = (*it).second->GetSrsConfigurationIndex ();
   m_ueMap.erase (it);
+  m_cmacSapProvider->RemoveUe (rnti);
+  m_cphySapProvider->RemoveUe (rnti);
+  if (m_s1SapProvider != 0)
+    {
+      m_s1SapProvider->UeContextRelease (rnti);
+    }
   // need to do this after UeManager has been deleted
   RemoveSrsConfigurationIndex (srsCi); 
  }

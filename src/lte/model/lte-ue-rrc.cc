@@ -152,6 +152,7 @@ LteUeRrc::DoDispose ()
   NS_LOG_FUNCTION (this);
   delete m_cphySapUser;
   delete m_cmacSapUser;
+  delete m_rrcSapProvider;
   delete m_drbPdcpSapUser;
   delete m_asSapProvider;
   m_drbMap.clear ();

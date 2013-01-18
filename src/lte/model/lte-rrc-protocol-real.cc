@@ -47,6 +47,8 @@ LteUeRrcProtocolReal::LteUeRrcProtocolReal ()
     m_enbRrcSapProvider (0)
 {
   m_ueRrcSapUser = new MemberLteUeRrcSapUser<LteUeRrcProtocolReal> (this);
+  m_completeSetupParameters.srb0SapUser = new LteRlcSpecificLteRlcSapUser<LteUeRrcProtocolReal> (this);
+  m_completeSetupParameters.srb1SapUser = new LtePdcpSpecificLtePdcpSapUser<LteUeRrcProtocolReal> (this);    
 }
 
 LteUeRrcProtocolReal::~LteUeRrcProtocolReal ()
@@ -97,14 +99,7 @@ LteUeRrcProtocolReal::DoSetup (LteUeRrcSapUser::SetupParameters params)
   NS_LOG_FUNCTION (this);
 
   m_setupParameters.srb0SapProvider = params.srb0SapProvider;
-  m_setupParameters.srb1SapProvider = params.srb1SapProvider;
-
-  LteRlcSapUser* srb0SapUser = new LteRlcSpecificLteRlcSapUser<LteUeRrcProtocolReal> (this);
-  LtePdcpSapUser* srb1SapUser = new LtePdcpSpecificLtePdcpSapUser<LteUeRrcProtocolReal> (this);
-
-  m_completeSetupParameters.srb0SapUser = srb0SapUser;
-  m_completeSetupParameters.srb1SapUser = srb1SapUser;
-
+  m_setupParameters.srb1SapProvider = params.srb1SapProvider; 
   m_ueRrcSapProvider->CompleteSetup (m_completeSetupParameters);
 }
 
@@ -374,6 +369,15 @@ LteEnbRrcProtocolReal::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   delete m_enbRrcSapUser;
+  for (std::map<uint16_t, LteEnbRrcSapProvider::CompleteSetupUeParameters>::iterator 
+         it = m_completeSetupUeParametersMap.begin ();
+       it != m_completeSetupUeParametersMap.end ();
+       ++it)
+    {     
+      delete it->second.srb0SapUser;
+      delete it->second.srb1SapUser;
+    }
+  m_completeSetupUeParametersMap.clear ();
 }
 
 TypeId
@@ -481,6 +485,12 @@ void
 LteEnbRrcProtocolReal::DoRemoveUe (uint16_t rnti)
 {
   NS_LOG_FUNCTION (this << rnti);
+  std::map<uint16_t, LteEnbRrcSapProvider::CompleteSetupUeParameters>::iterator 
+    it = m_completeSetupUeParametersMap.find (rnti);
+  NS_ASSERT (it != m_completeSetupUeParametersMap.end ());
+  delete it->second.srb0SapUser;
+  delete it->second.srb1SapUser;
+  m_completeSetupUeParametersMap.erase (it);
   m_enbRrcSapProviderMap.erase (rnti);
   m_setupUeParametersMap.erase (rnti);
 }
