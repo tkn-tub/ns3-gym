@@ -575,10 +575,11 @@ LteUeMac::DoReceiveLteControlMessage (Ptr<LteControlMessage> msg)
                   NS_FATAL_ERROR ("Insufficient Tx Opportunity for sending a status message");
                 }
             }
-          NS_LOG_LOGIC (this << " UE " << m_rnti << ": UL-CQI notified TxOpportunity of " << dci.m_tbSize << " => " << bytesPerActiveLc << " bytes per active LC");
+          NS_LOG_LOGIC (this << " UE " << m_rnti << ": UL-CQI notified TxOpportunity of " << dci.m_tbSize << " => " << bytesPerActiveLc << " bytes per active LC" << " statusPduMinSize " << statusPduMinSize);
           for (it = m_lcInfoMap.begin (); it!=m_lcInfoMap.end (); it++)
             {
               itBsr = m_ulBsrReceived.find ((*it).first);
+              NS_LOG_DEBUG (this << " Processing LC " << (uint32_t)(*it).first << " bytesPerActiveLc " << bytesPerActiveLc);
               if ( (itBsr!=m_ulBsrReceived.end ()) &&
                   ( ((*itBsr).second.statusPduSize > 0) ||
                   ((*itBsr).second.retxQueueSize > 0) ||
@@ -599,8 +600,8 @@ LteUeMac::DoReceiveLteControlMessage (Ptr<LteControlMessage> msg)
                         {
                           (*it).second.macSapUser->NotifyTxOpportunity ((*itBsr).second.statusPduSize, 0, 0);
                           bytesForThisLc -= (*itBsr).second.statusPduSize;
+                          NS_LOG_DEBUG (this << " serve STATUS " << (*itBsr).second.statusPduSize);
                           (*itBsr).second.statusPduSize = 0;
-
                         }
                       else
                         {
@@ -609,10 +610,14 @@ LteUeMac::DoReceiveLteControlMessage (Ptr<LteControlMessage> msg)
                               NS_FATAL_ERROR ("Insufficient Tx Opportunity for sending a status message");
                             }
                         }
-                      if ((bytesForThisLc > 0) && (((*itBsr).second.retxQueueSize > 0) || ((*itBsr).second.txQueueSize > 0)))
+                        
+                      if ((bytesForThisLc > 7) && // 7 is the min TxOpportunity useful for Rlc
+                         (((*itBsr).second.retxQueueSize > 0) ||
+                         ((*itBsr).second.txQueueSize > 0)))
                         {
                           if ((*itBsr).second.retxQueueSize > 0)
                             {
+                              NS_LOG_DEBUG (this << " serve retx DATA, bytes " << bytesForThisLc);
                               (*it).second.macSapUser->NotifyTxOpportunity (bytesForThisLc, 0, 0);
                               if ((*itBsr).second.retxQueueSize >= bytesForThisLc)
                                 {
@@ -625,6 +630,7 @@ LteUeMac::DoReceiveLteControlMessage (Ptr<LteControlMessage> msg)
                             }
                           else if ((*itBsr).second.txQueueSize > 0)
                             {
+                              NS_LOG_DEBUG (this << " serve tx DATA, bytes " << bytesForThisLc);
                               (*it).second.macSapUser->NotifyTxOpportunity (bytesForThisLc, 0, 0);
                               if ((*itBsr).second.txQueueSize >= bytesForThisLc - 2)
                                 {
@@ -634,6 +640,14 @@ LteUeMac::DoReceiveLteControlMessage (Ptr<LteControlMessage> msg)
                                 {
                                   (*itBsr).second.txQueueSize = 0;
                                 }
+                            }
+                        }
+                      else
+                        {
+                          if ( ((*itBsr).second.retxQueueSize > 0) || ((*itBsr).second.txQueueSize > 0)) 
+                            {
+                              // resend BSR info for updating eNB peer MAC
+                              m_freshUlBsr = true;
                             }
                         }
                       NS_LOG_LOGIC (this << "\t" << bytesPerActiveLc << "\t new queues " << (uint32_t)(*it).first << " statusQueue " << (*itBsr).second.statusPduSize << " retxQueue" << (*itBsr).second.retxQueueSize << " txQueue" <<  (*itBsr).second.txQueueSize);

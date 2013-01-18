@@ -109,6 +109,8 @@ uint32_t LtePdcpHeader::Deserialize (Buffer::Iterator start)
   byte_1 = i.ReadU8 ();
   byte_2 = i.ReadU8 ();
   m_dcBit = (byte_1 & 0x80) > 7;
+  // For now, we just support DATA PDUs
+  NS_ASSERT (m_dcBit == DATA_PDU);
   m_sequenceNumber = ((byte_1 & 0x0F) << 8) | byte_2;
 
   return GetSerializedSize ();

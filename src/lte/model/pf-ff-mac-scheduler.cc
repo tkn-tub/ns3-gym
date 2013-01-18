@@ -621,6 +621,7 @@ PfFfMacScheduler::RefreshHarqProcesses ()
                   NS_FATAL_ERROR ("No Process Id Status found for this RNTI " << (*itTimers).first);
                 }
               (*itStat).second.at (i) = 0;
+              (*itTimers).second.at (i) = 0;
             }
           else
             {
