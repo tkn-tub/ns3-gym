@@ -507,7 +507,6 @@ public:
   };
 
   virtual void Setup (SetupParameters params) = 0;
-  virtual void Reestablish () = 0;
   virtual void SendRrcConnectionRequest (RrcConnectionRequest msg) = 0;
   virtual void SendRrcConnectionSetupCompleted (RrcConnectionSetupCompleted msg) = 0;
   virtual void SendRrcConnectionReconfigurationCompleted (RrcConnectionReconfigurationCompleted msg) = 0;
@@ -631,7 +630,6 @@ public:
 
   // inherited from LteUeRrcSapUser
   virtual void Setup (SetupParameters params);
-  virtual void Reestablish ();
   virtual void SendRrcConnectionRequest (RrcConnectionRequest msg);
   virtual void SendRrcConnectionSetupCompleted (RrcConnectionSetupCompleted msg);
   virtual void SendRrcConnectionReconfigurationCompleted (RrcConnectionReconfigurationCompleted msg);
@@ -659,13 +657,6 @@ void
 MemberLteUeRrcSapUser<C>::Setup (SetupParameters params)
 {
   m_owner->DoSetup (params);
-}
-
-template <class C>
-void 
-MemberLteUeRrcSapUser<C>::Reestablish ()
-{
-  m_owner->DoReestablish ();
 }
 
 template <class C>

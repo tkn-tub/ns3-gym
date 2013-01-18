@@ -66,7 +66,6 @@ private:
 
   // methods forwarded from LteUeRrcSapUser
   void DoSetup (LteUeRrcSapUser::SetupParameters params);
-  void DoReestablish ();
   void DoSendRrcConnectionRequest (LteRrcSap::RrcConnectionRequest msg);
   void DoSendRrcConnectionSetupCompleted (LteRrcSap::RrcConnectionSetupCompleted msg);
   void DoSendRrcConnectionReconfigurationCompleted (LteRrcSap::RrcConnectionReconfigurationCompleted msg);

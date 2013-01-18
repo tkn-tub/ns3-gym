@@ -95,11 +95,6 @@ void
 LteUeRrcProtocolReal::DoSetup (LteUeRrcSapUser::SetupParameters params)
 {
   NS_LOG_FUNCTION (this);
-  // Trick: we use this as a trigger to initialize the RNTI and cellID,
-  // and to make sure we are talking to the appropriate eNB (e.g.,
-  // after handover). We don't care about SRB0/SRB1 since we use real
-  // RRC messages.
-  DoReestablish ();
 
   m_setupParameters.srb0SapProvider = params.srb0SapProvider;
   m_setupParameters.srb1SapProvider = params.srb1SapProvider;
@@ -111,26 +106,6 @@ LteUeRrcProtocolReal::DoSetup (LteUeRrcSapUser::SetupParameters params)
   m_completeSetupParameters.srb1SapUser = srb1SapUser;
 
   m_ueRrcSapProvider->CompleteSetup (m_completeSetupParameters);
-}
-
-void 
-LteUeRrcProtocolReal::DoReestablish ()
-{
-  NS_LOG_FUNCTION (this);
-  // // initialize the RNTI and get the EnbLteRrcSapProvider for the
-  // // eNB we are currently attached to
-  // m_rnti = m_rrc->GetRnti ();
-  // SetEnbRrcSapProvider ();
-
-
-  // if (m_havePendingRrcConnectionRequest == true)
-  //   {
-  //     Simulator::Schedule (RRC_REAL_MSG_DELAY, 
-  //                          &LteEnbRrcSapProvider::RecvRrcConnectionRequest,
-  //                          m_enbRrcSapProvider,
-  //                          m_rnti, 
-  //                          m_pendingRrcConnectionRequest);
-  //   }
 }
 
 void 

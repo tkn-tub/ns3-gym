@@ -289,7 +289,7 @@ EpcEnbApplication::RecvFromS1uSocket (Ptr<Socket> socket)
 void 
 EpcEnbApplication::SendToLteSocket (Ptr<Packet> packet, uint16_t rnti, uint8_t bid)
 {
-  NS_LOG_FUNCTION (this << packet << rnti << (uint16_t) bid);  
+  NS_LOG_FUNCTION (this << packet << rnti << (uint16_t) bid << packet->GetSize ());  
   EpsBearerTag tag (rnti, bid);
   packet->AddPacketTag (tag);
   int sentBytes = m_lteSocket->Send (packet);
@@ -300,7 +300,7 @@ EpcEnbApplication::SendToLteSocket (Ptr<Packet> packet, uint16_t rnti, uint8_t b
 void 
 EpcEnbApplication::SendToS1uSocket (Ptr<Packet> packet, uint32_t teid)
 {
-  NS_LOG_FUNCTION (this << packet << teid);  
+  NS_LOG_FUNCTION (this << packet << teid <<  packet->GetSize ());  
   GtpuHeader gtpu;
   gtpu.SetTeid (teid);
   // From 3GPP TS 29.281 v10.0.0 Section 5.1
