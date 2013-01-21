@@ -538,7 +538,10 @@ LteUeMac::DoReceiveLteControlMessage (Ptr<LteControlMessage> msg)
       UlDciListElement_s dci = msg2->GetDci ();
       if (dci.m_ndi==1)
         {
-          // New transmission -> retrieve data from RLC
+          // New transmission -> emtpy pkt buffer queue (for deleting eventual pkts not acked )
+          Ptr<PacketBurst> pb = CreateObject <PacketBurst> ();
+          m_miUlHarqProcessesPacket.at (m_harqProcessId) = pb;
+          // Retrieve data from RLC
           std::map <uint8_t, LteMacSapProvider::ReportBufferStatusParameters>::iterator itBsr;
           uint16_t activeLcs = 0;
           uint32_t statusPduMinSize = 0;
