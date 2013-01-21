@@ -955,6 +955,20 @@ LteEnbMac::DoSchedDlConfigInd (FfMacSchedSapUser::SchedDlConfigIndParameters ind
 
   for (unsigned int i = 0; i < ind.m_buildDataList.size (); i++)
     {
+      for (uint16_t layer = 0; layer < ind.m_buildDataList.at (i).m_dci.m_ndi.size (); layer++)
+        {
+          if (ind.m_buildDataList.at (i).m_dci.m_ndi.at (layer) == 1)
+            {
+              // new data -> force emptying correspondent harq pkt buffer
+              std::map <uint16_t, DlHarqProcessesBuffer_t>::iterator it = m_miDlHarqProcessesPackets.find (ind.m_buildDataList.at (i).m_rnti);
+              NS_ASSERT(it!=m_miDlHarqProcessesPackets.end());
+              for (uint16_t lcId = 0; lcId < (*it).second.size (); lcId ++)
+                {
+                  Ptr<PacketBurst> pb = CreateObject <PacketBurst> ();
+                  (*it).second.at (lcId).at (ind.m_buildDataList.at (i).m_dci.m_harqProcess) = pb;
+                }
+            }
+        }
       for (unsigned int j = 0; j < ind.m_buildDataList.at (i).m_rlcPduList.size (); j++)
         {
           for (uint16_t k = 0; k < ind.m_buildDataList.at (i).m_rlcPduList.at (j).size (); k++)
