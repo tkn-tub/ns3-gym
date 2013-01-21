@@ -77,7 +77,7 @@ int linksNumber = 0;
 int nodesNumber = 0;
 std::map<std::string, Ptr<Node> > nodeMap;
 
-void
+static inline void
 PrintNodeInfo (std::string & uid, std::string & loc, bool dns, bool bb,
                std::vector <std::string>::size_type neighListSize,
                std::string & name, int radius)

@@ -35,7 +35,7 @@ NS_LOG_COMPONENT_DEFINE ("EnergyExample");
 
 using namespace ns3;
 
-std::string
+static inline std::string
 PrintReceivedPacket (Address& from)
 {
   InetSocketAddress iaddr = InetSocketAddress::ConvertFrom (from);

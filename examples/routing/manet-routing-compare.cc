@@ -119,7 +119,7 @@ RoutingExperiment::RoutingExperiment ()
 {
 }
 
-std::string
+static inline std::string
 PrintReceivedPacket (Ptr<Socket> socket, Ptr<Packet> packet)
 {
   SocketAddressTag tag;
