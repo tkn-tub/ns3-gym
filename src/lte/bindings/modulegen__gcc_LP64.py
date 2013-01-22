@@ -1403,14 +1403,14 @@ def register_Ns3Address_methods(root_module, cls):
     return
 
 def register_Ns3AllocationRetentionPriority_methods(root_module, cls):
-    ## eps-bearer.h (module 'lte'): ns3::AllocationRetentionPriority::AllocationRetentionPriority() [constructor]
-    cls.add_constructor([])
     ## eps-bearer.h (module 'lte'): ns3::AllocationRetentionPriority::AllocationRetentionPriority(ns3::AllocationRetentionPriority const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::AllocationRetentionPriority const &', 'arg0')])
-    ## eps-bearer.h (module 'lte'): ns3::AllocationRetentionPriority::preemprionCapability [variable]
-    cls.add_instance_attribute('preemprionCapability', 'bool', is_const=False)
-    ## eps-bearer.h (module 'lte'): ns3::AllocationRetentionPriority::preemprionVulnerability [variable]
-    cls.add_instance_attribute('preemprionVulnerability', 'bool', is_const=False)
+    ## eps-bearer.h (module 'lte'): ns3::AllocationRetentionPriority::AllocationRetentionPriority() [constructor]
+    cls.add_constructor([])
+    ## eps-bearer.h (module 'lte'): ns3::AllocationRetentionPriority::preemptionCapability [variable]
+    cls.add_instance_attribute('preemptionCapability', 'bool', is_const=False)
+    ## eps-bearer.h (module 'lte'): ns3::AllocationRetentionPriority::preemptionVulnerability [variable]
+    cls.add_instance_attribute('preemptionVulnerability', 'bool', is_const=False)
     ## eps-bearer.h (module 'lte'): ns3::AllocationRetentionPriority::priorityLevel [variable]
     cls.add_instance_attribute('priorityLevel', 'uint8_t', is_const=False)
     return
@@ -2798,10 +2798,10 @@ def register_Ns3FfMacSchedSapUserSchedUlConfigIndParameters_methods(root_module,
     return
 
 def register_Ns3GbrQosInformation_methods(root_module, cls):
-    ## eps-bearer.h (module 'lte'): ns3::GbrQosInformation::GbrQosInformation() [constructor]
-    cls.add_constructor([])
     ## eps-bearer.h (module 'lte'): ns3::GbrQosInformation::GbrQosInformation(ns3::GbrQosInformation const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::GbrQosInformation const &', 'arg0')])
+    ## eps-bearer.h (module 'lte'): ns3::GbrQosInformation::GbrQosInformation() [constructor]
+    cls.add_constructor([])
     ## eps-bearer.h (module 'lte'): ns3::GbrQosInformation::gbrDl [variable]
     cls.add_instance_attribute('gbrDl', 'uint64_t', is_const=False)
     ## eps-bearer.h (module 'lte'): ns3::GbrQosInformation::gbrUl [variable]
@@ -7915,11 +7915,6 @@ def register_Ns3Time_methods(root_module, cls):
                    'int', 
                    [param('ns3::Time const &', 'o')], 
                    is_const=True)
-    ## nstime.h (module 'core'): static void ns3::Time::FreezeResolution() [member function]
-    cls.add_method('FreezeResolution', 
-                   'void', 
-                   [], 
-                   is_static=True)
     ## nstime.h (module 'core'): static ns3::Time ns3::Time::From(ns3::int64x64_t const & from, ns3::Time::Unit timeUnit) [member function]
     cls.add_method('From', 
                    'ns3::Time', 
