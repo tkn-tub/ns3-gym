@@ -102,7 +102,6 @@ protected:
 
 RrcHeaderTestCase :: RrcHeaderTestCase(std::string s) : TestCase(s)
 {
-  packet = Create<Packet> ();
 }
 
 LteRrcSap::RadioResourceConfigDedicated
@@ -244,12 +243,13 @@ RrcHeaderTestCase :: AssertEqualRadioResourceConfigDedicated (LteRrcSap::RadioRe
 class RrcConnectionRequestTestCase : public RrcHeaderTestCase
 {
 public:
-  RrcConnectionRequestTestCase ();
+  RrcConnectionRequestTestCase (Ptr<Packet> pkt);
   virtual void DoRun (void);
 };
 
-RrcConnectionRequestTestCase::RrcConnectionRequestTestCase () : RrcHeaderTestCase ("Testing RrcConnectionRequest")
+RrcConnectionRequestTestCase::RrcConnectionRequestTestCase (Ptr<Packet> pkt) : RrcHeaderTestCase ("Testing RrcConnectionRequest")
 {
+  packet = pkt;
 }
 
 void
@@ -288,12 +288,13 @@ RrcConnectionRequestTestCase::DoRun (void)
 class RrcConnectionSetupTestCase : public RrcHeaderTestCase
 {
 public:
-  RrcConnectionSetupTestCase ();
+  RrcConnectionSetupTestCase (Ptr<Packet> pkt);
   virtual void DoRun (void);
 };
 
-RrcConnectionSetupTestCase::RrcConnectionSetupTestCase () : RrcHeaderTestCase ("Testing RrcConnectionSetupTestCase")
+RrcConnectionSetupTestCase::RrcConnectionSetupTestCase (Ptr<Packet> pkt) : RrcHeaderTestCase ("Testing RrcConnectionSetupTestCase")
 {
+  packet = pkt;
 }
 
 void
@@ -334,12 +335,13 @@ RrcConnectionSetupTestCase::DoRun (void)
 class RrcConnectionSetupCompleteTestCase : public RrcHeaderTestCase
 {
 public:
-  RrcConnectionSetupCompleteTestCase ();
+  RrcConnectionSetupCompleteTestCase (Ptr<Packet> pkt);
   virtual void DoRun (void);
 };
 
-RrcConnectionSetupCompleteTestCase::RrcConnectionSetupCompleteTestCase () : RrcHeaderTestCase ("Testing RrcConnectionSetupCompleteTestCase")
+RrcConnectionSetupCompleteTestCase::RrcConnectionSetupCompleteTestCase (Ptr<Packet> pkt) : RrcHeaderTestCase ("Testing RrcConnectionSetupCompleteTestCase")
 {
+  packet = pkt;
 }
 
 void
@@ -377,13 +379,14 @@ RrcConnectionSetupCompleteTestCase::DoRun (void)
 class RrcConnectionReconfigurationCompleteTestCase : public RrcHeaderTestCase
 {
 public:
-  RrcConnectionReconfigurationCompleteTestCase ();
+  RrcConnectionReconfigurationCompleteTestCase (Ptr<Packet> pkt);
   virtual void DoRun (void);
 };
 
-RrcConnectionReconfigurationCompleteTestCase::RrcConnectionReconfigurationCompleteTestCase ()
+RrcConnectionReconfigurationCompleteTestCase::RrcConnectionReconfigurationCompleteTestCase (Ptr<Packet> pkt)
   : RrcHeaderTestCase ("Testing RrcConnectionReconfigurationCompleteTestCase")
 {
+  packet = pkt;
 }
 
 void
@@ -421,13 +424,14 @@ RrcConnectionReconfigurationCompleteTestCase::DoRun (void)
 class RrcConnectionReconfigurationTestCase : public RrcHeaderTestCase
 {
 public:
-  RrcConnectionReconfigurationTestCase ();
+  RrcConnectionReconfigurationTestCase (Ptr<Packet> pkt);
   virtual void DoRun (void);
 };
 
-RrcConnectionReconfigurationTestCase::RrcConnectionReconfigurationTestCase ()
+RrcConnectionReconfigurationTestCase::RrcConnectionReconfigurationTestCase (Ptr<Packet> pkt)
   : RrcHeaderTestCase ("Testing RrcConnectionReconfigurationTestCase")
 {
+  packet = pkt;
 }
 
 void
@@ -530,12 +534,13 @@ RrcConnectionReconfigurationTestCase::DoRun (void)
 class HandoverPreparationInfoTestCase : public RrcHeaderTestCase
 {
 public:
-  HandoverPreparationInfoTestCase ();
+  HandoverPreparationInfoTestCase (Ptr<Packet> pkt);
   virtual void DoRun (void);
 };
 
-HandoverPreparationInfoTestCase::HandoverPreparationInfoTestCase () : RrcHeaderTestCase ("Testing HandoverPreparationInfoTestCase")
+HandoverPreparationInfoTestCase::HandoverPreparationInfoTestCase (Ptr<Packet> pkt) : RrcHeaderTestCase ("Testing HandoverPreparationInfoTestCase")
 {
+  packet = pkt;
 }
 
 void
@@ -590,12 +595,13 @@ HandoverPreparationInfoTestCase::DoRun (void)
 class RrcConnectionReestablishmentRequestTestCase : public RrcHeaderTestCase
 {
 public:
-  RrcConnectionReestablishmentRequestTestCase ();
+  RrcConnectionReestablishmentRequestTestCase (Ptr<Packet> pkt);
   virtual void DoRun (void);
 };
 
-RrcConnectionReestablishmentRequestTestCase::RrcConnectionReestablishmentRequestTestCase () : RrcHeaderTestCase ("Testing RrcConnectionReestablishmentRequestTestCase")
+RrcConnectionReestablishmentRequestTestCase::RrcConnectionReestablishmentRequestTestCase (Ptr<Packet> pkt) : RrcHeaderTestCase ("Testing RrcConnectionReestablishmentRequestTestCase")
 {
+  packet = pkt;
 }
 
 void
@@ -637,12 +643,13 @@ RrcConnectionReestablishmentRequestTestCase::DoRun (void)
 class RrcConnectionReestablishmentTestCase : public RrcHeaderTestCase
 {
 public:
-  RrcConnectionReestablishmentTestCase ();
+  RrcConnectionReestablishmentTestCase (Ptr<Packet> pkt);
   virtual void DoRun (void);
 };
 
-RrcConnectionReestablishmentTestCase::RrcConnectionReestablishmentTestCase () : RrcHeaderTestCase ("Testing RrcConnectionReestablishmentTestCase")
+RrcConnectionReestablishmentTestCase::RrcConnectionReestablishmentTestCase (Ptr<Packet> pkt) : RrcHeaderTestCase ("Testing RrcConnectionReestablishmentTestCase")
 {
+  packet = pkt;
 }
 
 void
@@ -682,12 +689,13 @@ RrcConnectionReestablishmentTestCase::DoRun (void)
 class RrcConnectionReestablishmentCompleteTestCase : public RrcHeaderTestCase
 {
 public:
-  RrcConnectionReestablishmentCompleteTestCase ();
+  RrcConnectionReestablishmentCompleteTestCase (Ptr<Packet> pkt);
   virtual void DoRun (void);
 };
 
-RrcConnectionReestablishmentCompleteTestCase::RrcConnectionReestablishmentCompleteTestCase () : RrcHeaderTestCase ("Testing RrcConnectionReestablishmentCompleteTestCase")
+RrcConnectionReestablishmentCompleteTestCase::RrcConnectionReestablishmentCompleteTestCase (Ptr<Packet> pkt) : RrcHeaderTestCase ("Testing RrcConnectionReestablishmentCompleteTestCase")
 {
+  packet = pkt;
 }
 
 void
@@ -725,12 +733,13 @@ RrcConnectionReestablishmentCompleteTestCase::DoRun (void)
 class RrcConnectionRejectTestCase : public RrcHeaderTestCase
 {
 public:
-  RrcConnectionRejectTestCase ();
+  RrcConnectionRejectTestCase (Ptr<Packet> pkt);
   virtual void DoRun (void);
 };
 
-RrcConnectionRejectTestCase::RrcConnectionRejectTestCase () : RrcHeaderTestCase ("Testing RrcConnectionRejectTestCase")
+RrcConnectionRejectTestCase::RrcConnectionRejectTestCase (Ptr<Packet> pkt) : RrcHeaderTestCase ("Testing RrcConnectionRejectTestCase")
 {
+  packet = pkt;
 }
 
 void
@@ -768,12 +777,13 @@ RrcConnectionRejectTestCase::DoRun (void)
 class MeasurementReportTestCase : public RrcHeaderTestCase
 {
 public:
-  MeasurementReportTestCase ();
+  MeasurementReportTestCase (Ptr<Packet> pkt);
   virtual void DoRun (void);
 };
 
-MeasurementReportTestCase::MeasurementReportTestCase () : RrcHeaderTestCase ("Testing MeasurementReportTestCase")
+MeasurementReportTestCase::MeasurementReportTestCase (Ptr<Packet> pkt) : RrcHeaderTestCase ("Testing MeasurementReportTestCase")
 {
+  packet = pkt;
 }
 
 void
@@ -882,18 +892,22 @@ Asn1EncodingSuite::Asn1EncodingSuite ()
   : TestSuite ("test-asn1-encoding", UNIT)
 {
   Packet::EnablePrinting ();
+  Ptr<Packet> packet = Create<Packet>();
+  
   NS_LOG_FUNCTION (this);
-  AddTestCase (new RrcConnectionRequestTestCase);
-  AddTestCase (new RrcConnectionSetupTestCase);
-  AddTestCase (new RrcConnectionSetupCompleteTestCase);
-  AddTestCase (new RrcConnectionReconfigurationCompleteTestCase);
-  AddTestCase (new RrcConnectionReconfigurationTestCase);
-  AddTestCase (new HandoverPreparationInfoTestCase);
-  AddTestCase (new RrcConnectionReestablishmentRequestTestCase);
-  AddTestCase (new RrcConnectionReestablishmentTestCase);
-  AddTestCase (new RrcConnectionReestablishmentCompleteTestCase);
-  AddTestCase (new RrcConnectionRejectTestCase);
-  AddTestCase (new MeasurementReportTestCase);
+  AddTestCase (new RrcConnectionRequestTestCase(packet));
+  AddTestCase (new RrcConnectionSetupTestCase(packet));
+  AddTestCase (new RrcConnectionSetupCompleteTestCase(packet));
+  AddTestCase (new RrcConnectionReconfigurationCompleteTestCase(packet));
+  AddTestCase (new RrcConnectionReconfigurationTestCase(packet));
+  AddTestCase (new HandoverPreparationInfoTestCase(packet));
+  AddTestCase (new RrcConnectionReestablishmentRequestTestCase(packet));
+  AddTestCase (new RrcConnectionReestablishmentTestCase(packet));
+  AddTestCase (new RrcConnectionReestablishmentCompleteTestCase(packet));
+  AddTestCase (new RrcConnectionRejectTestCase(packet));
+  AddTestCase (new MeasurementReportTestCase(packet));
+  
+  packet.~Ptr();
 }
 
 Asn1EncodingSuite asn1EncodingSuite;
