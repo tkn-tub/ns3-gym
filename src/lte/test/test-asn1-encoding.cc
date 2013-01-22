@@ -37,29 +37,49 @@ namespace ns3 {
 class TestUtils
 {
 public:
-  // Function to output packet contents in hex format
-  static void printPacketContentsHex (Packet *pkt)
+  // Function to convert packet contents in hex format
+  static std::string sprintPacketContentsHex (Packet *pkt)
   {
     uint32_t psize = pkt->GetSize ();
     uint8_t buffer[psize];
-    pkt->CopyData (buffer, psize); 
+    char sbuffer[psize * 3];
+    pkt->CopyData (buffer, psize);
     for (uint32_t i = 0; i < psize; i++)
       {
-        printf ("%02x ",buffer[i]);
+        sprintf (sbuffer,"%02x ",buffer[i]);
       }
-    printf ("\n\n");
+    return std::string (sbuffer);
   }
-  // Function to output packet contents in binary format
-  static void printPacketContentsBin (Packet *pkt)
+
+  // Function to convert packet contents in binary format
+  static std::string sprintPacketContentsBin (Packet *pkt)
   {
     uint32_t psize = pkt->GetSize ();
     uint8_t buffer[psize];
-    pkt->CopyData (buffer, psize); 
+    std::ostringstream oss (std::ostringstream::out);
+    pkt->CopyData (buffer, psize);
     for (uint32_t i = 0; i < psize; i++)
       {
-        std::cout << std::bitset<8> (buffer[i]) << " ";
+        oss << (std::bitset<8> (buffer[i]));
       }
-    std::cout << std::endl << std::endl;
+    return std::string (oss.str () + "\n");
+  }
+
+  // Function to log packet contents
+  static void LogPacketContents (Packet *pkt)
+  {
+    NS_LOG_DEBUG ("---- SERIALIZED PACKET CONTENTS (HEX): -------");
+    NS_LOG_DEBUG ("Hex: " << TestUtils::sprintPacketContentsHex (pkt));
+    NS_LOG_DEBUG ("Bin: " << TestUtils::sprintPacketContentsBin (pkt));
+  }
+
+  template <class T>
+  static void LogPacketInfo (T source,std::string s)
+  {
+    NS_LOG_DEBUG ("--------- " << s.data () << " INFO: -------");
+    std::ostringstream oss (std::ostringstream::out);
+    source.Print (oss);
+    NS_LOG_DEBUG (oss.str ());
   }
 };
 
@@ -75,10 +95,14 @@ public:
   virtual void DoRun (void) = 0;
   LteRrcSap::RadioResourceConfigDedicated CreateRadioResourceConfigDedicated ();
   void AssertEqualRadioResourceConfigDedicated (LteRrcSap::RadioResourceConfigDedicated rrcd1, LteRrcSap::RadioResourceConfigDedicated rrcd2);
+
+protected:
+  Ptr<Packet> packet;
 };
 
-RrcHeaderTestCase :: RrcHeaderTestCase (std::string s) : TestCase (s)
+RrcHeaderTestCase :: RrcHeaderTestCase(std::string s) : TestCase(s)
 {
+  packet = Create<Packet> ();
 }
 
 LteRrcSap::RadioResourceConfigDedicated
@@ -136,7 +160,7 @@ void
 RrcHeaderTestCase :: AssertEqualRadioResourceConfigDedicated (LteRrcSap::RadioResourceConfigDedicated rrcd1, LteRrcSap::RadioResourceConfigDedicated rrcd2)
 {
   NS_TEST_ASSERT_MSG_EQ (rrcd1.srbToAddModList.size (), rrcd2.srbToAddModList.size (),"SrbToAddModList different sizes");
- 
+
   std::list<LteRrcSap::SrbToAddMod> srcSrbToAddModList = rrcd1.srbToAddModList;
   std::list<LteRrcSap::SrbToAddMod>::iterator it1 = srcSrbToAddModList.begin ();
   std::list<LteRrcSap::SrbToAddMod> dstSrbToAddModList = rrcd2.srbToAddModList;
@@ -231,11 +255,7 @@ RrcConnectionRequestTestCase::RrcConnectionRequestTestCase () : RrcHeaderTestCas
 void
 RrcConnectionRequestTestCase::DoRun (void)
 {
-  std::cout << "============= RrcConnectionRequestTestCase ===========" << std::endl;
-  // add header
-  Ptr<Packet> packet = Create<Packet> ();
-  packet->Print (std::cout);
-  std::cout << std::endl;
+  NS_LOG_DEBUG ("============= RrcConnectionRequestTestCase ===========");
 
   LteRrcSap::RrcConnectionRequest msg;
   msg.ueIdentity = 0x83fecafeca;
@@ -243,23 +263,21 @@ RrcConnectionRequestTestCase::DoRun (void)
   RrcConnectionRequestHeader source;
   source.SetMessage (msg);
 
-  std::cout << "--------- SOURCE INFO: -------" << std::endl;
-  source.Print (std::cout);
+  // Log source info
+  TestUtils::LogPacketInfo<RrcConnectionRequestHeader> (source,"SOURCE");
+
+  // Add header
   packet->AddHeader (source);
-  std::cout << std::endl;
 
-  // print serialized packet contents
-  std::cout << "---- SERIALIZED PACKET CONTENTS (HEX): -------" << std::endl;
-  std::cout << "Hex: ";
-  TestUtils::printPacketContentsHex (GetPointer (packet));
-  std::cout << "Bin: ";
-  TestUtils::printPacketContentsBin (GetPointer (packet));
+  // Log serialized packet contents
+  TestUtils::LogPacketContents (GetPointer (packet));
 
-  // remove header
+  // Remove header
   RrcConnectionRequestHeader destination;
   packet->RemoveHeader (destination);
-  std::cout << "--------- DESTINATION INFO: -------" << std::endl;
-  destination.Print (std::cout);
+
+  // Log destination info
+  TestUtils::LogPacketInfo<RrcConnectionRequestHeader> (destination,"DESTINATION");
 
   // Check that the destination and source headers contain the same values
   NS_TEST_ASSERT_MSG_EQ (source.getMmec (),destination.getMmec (), "Different m_mmec!");
@@ -281,11 +299,7 @@ RrcConnectionSetupTestCase::RrcConnectionSetupTestCase () : RrcHeaderTestCase ("
 void
 RrcConnectionSetupTestCase::DoRun (void)
 {
-  std::cout << "============= RrcConnectionSetupTestCase ===========" << std::endl;
-  // add header
-  Ptr<Packet> packet = Create<Packet> ();
-  packet->Print (std::cout);
-  std::cout << std::endl;
+  NS_LOG_DEBUG ("============= RrcConnectionSetupTestCase ===========");
 
   LteRrcSap::RrcConnectionSetup msg;
   msg.rrcTransactionIdentifier = 3;
@@ -294,23 +308,21 @@ RrcConnectionSetupTestCase::DoRun (void)
   RrcConnectionSetupHeader source;
   source.SetMessage (msg);
 
-  std::cout << "--------- SOURCE INFO: -------" << std::endl;
-  source.Print (std::cout);
-  packet->AddHeader (source);
-  std::cout << std::endl;
+  // Log source info
+  TestUtils::LogPacketInfo<RrcConnectionSetupHeader> (source,"SOURCE");
 
-  // print serialized packet contents
-  std::cout << "---- SERIALIZED PACKET CONTENTS: -------" << std::endl;
-  std::cout << "Hex: ";
-  TestUtils::printPacketContentsHex (GetPointer (packet));
-  std::cout << "Bin: ";
-  TestUtils::printPacketContentsBin (GetPointer (packet));
+  // Add header
+  packet->AddHeader (source);
+
+  // Log serialized packet contents
+  TestUtils::LogPacketContents (GetPointer (packet));
 
   // remove header
   RrcConnectionSetupHeader destination;
   packet->RemoveHeader (destination);
-  std::cout << "--------- DESTINATION INFO: -------" << std::endl;
-  destination.Print (std::cout);
+
+  // Log destination info
+  TestUtils::LogPacketInfo<RrcConnectionSetupHeader> (destination,"DESTINATION");
 
   // Check that the destination and source headers contain the same values
   NS_TEST_ASSERT_MSG_EQ (source.GetRrcTransactionIdentifier (),destination.GetRrcTransactionIdentifier (), "RrcTransactionIdentifier");
@@ -333,11 +345,7 @@ RrcConnectionSetupCompleteTestCase::RrcConnectionSetupCompleteTestCase () : RrcH
 void
 RrcConnectionSetupCompleteTestCase::DoRun (void)
 {
-  std::cout << "============= RrcConnectionSetupCompleteTestCase ===========" << std::endl;
-  // add header
-  Ptr<Packet> packet = Create<Packet> ();
-  packet->Print (std::cout);
-  std::cout << std::endl;
+  NS_LOG_DEBUG ("============= RrcConnectionSetupCompleteTestCase ===========");
 
   LteRrcSap::RrcConnectionSetupCompleted msg;
   msg.rrcTransactionIdentifier = 3;
@@ -345,23 +353,21 @@ RrcConnectionSetupCompleteTestCase::DoRun (void)
   RrcConnectionSetupCompleteHeader source;
   source.SetMessage (msg);
 
-  std::cout << "--------- SOURCE INFO: -------" << std::endl;
-  source.Print (std::cout);
+  // Log source info
+  TestUtils::LogPacketInfo<RrcConnectionSetupCompleteHeader> (source,"SOURCE");
+
+  // Add header
   packet->AddHeader (source);
-  std::cout << std::endl;
 
-  // print serialized packet contents
-  std::cout << "---- SERIALIZED PACKET CONTENTS: -------" << std::endl;
-  std::cout << "Hex: ";
-  TestUtils::printPacketContentsHex (GetPointer (packet));
-  std::cout << "Bin: ";
-  TestUtils::printPacketContentsBin (GetPointer (packet));
+  // Log serialized packet contents
+  TestUtils::LogPacketContents (GetPointer (packet));
 
-  // remove header
+  // Remove header
   RrcConnectionSetupCompleteHeader destination;
   packet->RemoveHeader (destination);
-  std::cout << "--------- DESTINATION INFO: -------" << std::endl;
-  destination.Print (std::cout);
+
+  // Log destination info
+  TestUtils::LogPacketInfo<RrcConnectionSetupCompleteHeader> (destination,"DESTINATION");
 
   // Check that the destination and source headers contain the same values
   NS_TEST_ASSERT_MSG_EQ (source.GetRrcTransactionIdentifier (),destination.GetRrcTransactionIdentifier (), "RrcTransactionIdentifier");
@@ -383,11 +389,7 @@ RrcConnectionReconfigurationCompleteTestCase::RrcConnectionReconfigurationComple
 void
 RrcConnectionReconfigurationCompleteTestCase::DoRun (void)
 {
-  std::cout << "============= RrcConnectionReconfigurationCompleteTestCase ===========" << std::endl;
-  // add header
-  Ptr<Packet> packet = Create<Packet> ();
-  packet->Print (std::cout);
-  std::cout << std::endl;
+  NS_LOG_DEBUG ("============= RrcConnectionReconfigurationCompleteTestCase ===========");
 
   LteRrcSap::RrcConnectionReconfigurationCompleted msg;
   msg.rrcTransactionIdentifier = 2;
@@ -395,23 +397,21 @@ RrcConnectionReconfigurationCompleteTestCase::DoRun (void)
   RrcConnectionReconfigurationCompleteHeader source;
   source.SetMessage (msg);
 
-  std::cout << "--------- SOURCE INFO: -------" << std::endl;
-  source.Print (std::cout);
-  packet->AddHeader (source);
-  std::cout << std::endl;
+  // Log source info
+  TestUtils::LogPacketInfo<RrcConnectionReconfigurationCompleteHeader> (source,"SOURCE");
 
-  // print serialized packet contents
-  std::cout << "---- SERIALIZED PACKET CONTENTS: -------" << std::endl;
-  std::cout << "Hex: ";
-  TestUtils::printPacketContentsHex (GetPointer (packet));
-  std::cout << "Bin: ";
-  TestUtils::printPacketContentsBin (GetPointer (packet));
+  // Add header
+  packet->AddHeader (source);
+
+  // Log serialized packet contents
+  TestUtils::LogPacketContents (GetPointer (packet));
 
   // remove header
   RrcConnectionReconfigurationCompleteHeader destination;
   packet->RemoveHeader (destination);
-  std::cout << "--------- DESTINATION INFO: -------" << std::endl;
-  destination.Print (std::cout);
+
+  // Log destination info
+  TestUtils::LogPacketInfo<RrcConnectionReconfigurationCompleteHeader> (destination,"DESTINATION");
 
   // Check that the destination and source headers contain the same values
   NS_TEST_ASSERT_MSG_EQ (source.GetRrcTransactionIdentifier (),destination.GetRrcTransactionIdentifier (), "RrcTransactionIdentifier");
@@ -433,11 +433,7 @@ RrcConnectionReconfigurationTestCase::RrcConnectionReconfigurationTestCase ()
 void
 RrcConnectionReconfigurationTestCase::DoRun (void)
 {
-  std::cout << "============= RrcConnectionReconfigurationTestCase ===========" << std::endl;
-  // add header
-  Ptr<Packet> packet = Create<Packet> ();
-  packet->Print (std::cout);
-  std::cout << std::endl;
+  NS_LOG_DEBUG ("============= RrcConnectionReconfigurationTestCase ===========");
 
   LteRrcSap::RrcConnectionReconfiguration msg;
   msg.rrcTransactionIdentifier = 2;
@@ -453,7 +449,7 @@ RrcConnectionReconfigurationTestCase::DoRun (void)
   msg.mobilityControlInfo.carrierBandwidth.ulBandwidth = 25;
   msg.mobilityControlInfo.newUeIdentity = 11;
   msg.mobilityControlInfo.haveRachConfigDedicated = true;
-  msg.mobilityControlInfo.rachConfigDedicated.raPreambleIndex = 2; 
+  msg.mobilityControlInfo.rachConfigDedicated.raPreambleIndex = 2;
   msg.mobilityControlInfo.rachConfigDedicated.raPrachMaskIndex = 2;
 
   msg.haveRadioResourceConfigDedicated = true;
@@ -463,23 +459,21 @@ RrcConnectionReconfigurationTestCase::DoRun (void)
   RrcConnectionReconfigurationHeader source;
   source.SetMessage (msg);
 
-  std::cout << "--------- SOURCE INFO: -------" << std::endl;
-  source.Print (std::cout);
-  packet->AddHeader (source);
-  std::cout << std::endl;
+  // Log source info
+  TestUtils::LogPacketInfo<RrcConnectionReconfigurationHeader> (source,"SOURCE");
 
-  // print serialized packet contents
-  std::cout << "---- SERIALIZED PACKET CONTENTS: -------" << std::endl;
-  std::cout << "Hex: ";
-  TestUtils::printPacketContentsHex (GetPointer (packet));
-  std::cout << "Bin: ";
-  TestUtils::printPacketContentsBin (GetPointer (packet));
+  // Add header
+  packet->AddHeader (source);
+
+  // Log serialized packet contents
+  TestUtils::LogPacketContents (GetPointer (packet));
 
   // remove header
   RrcConnectionReconfigurationHeader destination;
   packet->RemoveHeader (destination);
-  std::cout << "--------- DESTINATION INFO: -------" << std::endl;
-  destination.Print (std::cout);
+
+  // Log destination info
+  TestUtils::LogPacketInfo<RrcConnectionReconfigurationHeader> (destination,"DESTINATION");
 
   // Check that the destination and source headers contain the same values
   NS_TEST_ASSERT_MSG_EQ (source.GetRrcTransactionIdentifier (),destination.GetRrcTransactionIdentifier (), "RrcTransactionIdentifier");
@@ -547,11 +541,7 @@ HandoverPreparationInfoTestCase::HandoverPreparationInfoTestCase () : RrcHeaderT
 void
 HandoverPreparationInfoTestCase::DoRun (void)
 {
-  std::cout << "============= HandoverPreparationInfoTestCase ===========" << std::endl;
-  // add header
-  Ptr<Packet> packet = Create<Packet> ();
-  packet->Print (std::cout);
-  std::cout << std::endl;
+  NS_LOG_DEBUG ("============= HandoverPreparationInfoTestCase ===========");
 
   LteRrcSap::HandoverPreparationInfo msg;
   msg.asConfig.sourceDlCarrierFreq = 3;
@@ -568,23 +558,21 @@ HandoverPreparationInfoTestCase::DoRun (void)
   HandoverPreparationInfoHeader source;
   source.SetMessage (msg);
 
-  std::cout << "--------- SOURCE INFO: -------" << std::endl;
-  source.Print (std::cout);
-  packet->AddHeader (source);
-  std::cout << std::endl;
+  // Log source info
+  TestUtils::LogPacketInfo<HandoverPreparationInfoHeader> (source,"SOURCE");
 
-  // print serialized packet contents
-  std::cout << "---- SERIALIZED PACKET CONTENTS: -------" << std::endl;
-  std::cout << "Hex: ";
-  TestUtils::printPacketContentsHex (GetPointer (packet));
-  std::cout << "Bin: ";
-  TestUtils::printPacketContentsBin (GetPointer (packet));
+  // Add header
+  packet->AddHeader (source);
+
+  // Log serialized packet contents
+  TestUtils::LogPacketContents (GetPointer (packet));
 
   // remove header
   HandoverPreparationInfoHeader destination;
   packet->RemoveHeader (destination);
-  std::cout << "--------- DESTINATION INFO: -------" << std::endl;
-  destination.Print (std::cout);
+
+  // Log destination info
+  TestUtils::LogPacketInfo<HandoverPreparationInfoHeader> (destination,"DESTINATION");
 
   // Check that the destination and source headers contain the same values
   AssertEqualRadioResourceConfigDedicated (source.GetAsConfig ().sourceRadioResourceConfig, destination.GetAsConfig ().sourceRadioResourceConfig);
@@ -613,11 +601,7 @@ RrcConnectionReestablishmentRequestTestCase::RrcConnectionReestablishmentRequest
 void
 RrcConnectionReestablishmentRequestTestCase::DoRun (void)
 {
-  std::cout << "============= RrcConnectionReestablishmentRequestTestCase ===========" << std::endl;
-  // add header
-  Ptr<Packet> packet = Create<Packet> ();
-  packet->Print (std::cout);
-  std::cout << std::endl;
+  NS_LOG_DEBUG ("============= RrcConnectionReestablishmentRequestTestCase ===========");
 
   LteRrcSap::RrcConnectionReestablishmentRequest msg;
   msg.ueIdentity.cRnti = 12;
@@ -627,23 +611,21 @@ RrcConnectionReestablishmentRequestTestCase::DoRun (void)
   RrcConnectionReestablishmentRequestHeader source;
   source.SetMessage (msg);
 
-  std::cout << "--------- SOURCE INFO: -------" << std::endl;
-  source.Print (std::cout);
-  packet->AddHeader (source);
-  std::cout << std::endl;
+  // Log source info
+  TestUtils::LogPacketInfo<RrcConnectionReestablishmentRequestHeader> (source,"SOURCE");
 
-  // print serialized packet contents
-  std::cout << "---- SERIALIZED PACKET CONTENTS: -------" << std::endl;
-  std::cout << "Hex: ";
-  TestUtils::printPacketContentsHex (GetPointer (packet));
-  std::cout << "Bin: ";
-  TestUtils::printPacketContentsBin (GetPointer (packet));
+  // Add header
+  packet->AddHeader (source);
+
+  // Log serialized packet contents
+  TestUtils::LogPacketContents (GetPointer (packet));
 
   // remove header
   RrcConnectionReestablishmentRequestHeader destination;
   packet->RemoveHeader (destination);
-  std::cout << "--------- DESTINATION INFO: -------" << std::endl;
-  destination.Print (std::cout);
+
+  // Log destination info
+  TestUtils::LogPacketInfo<RrcConnectionReestablishmentRequestHeader> (destination,"DESTINATION");
 
   // Check that the destination and source headers contain the same values
   NS_TEST_ASSERT_MSG_EQ (source.GetUeIdentity ().cRnti, destination.GetUeIdentity ().cRnti, "cRnti");
@@ -666,11 +648,7 @@ RrcConnectionReestablishmentTestCase::RrcConnectionReestablishmentTestCase () : 
 void
 RrcConnectionReestablishmentTestCase::DoRun (void)
 {
-  std::cout << "============= RrcConnectionReestablishmentTestCase ===========" << std::endl;
-  // add header
-  Ptr<Packet> packet = Create<Packet> ();
-  packet->Print (std::cout);
-  std::cout << std::endl;
+  NS_LOG_DEBUG ("============= RrcConnectionReestablishmentTestCase ===========");
 
   LteRrcSap::RrcConnectionReestablishment msg;
   msg.rrcTransactionIdentifier = 2;
@@ -679,23 +657,21 @@ RrcConnectionReestablishmentTestCase::DoRun (void)
   RrcConnectionReestablishmentHeader source;
   source.SetMessage (msg);
 
-  std::cout << "--------- SOURCE INFO: -------" << std::endl;
-  source.Print (std::cout);
-  packet->AddHeader (source);
-  std::cout << std::endl;
+  // Log source info
+  TestUtils::LogPacketInfo<RrcConnectionReestablishmentHeader> (source,"SOURCE");
 
-  // print serialized packet contents
-  std::cout << "---- SERIALIZED PACKET CONTENTS: -------" << std::endl;
-  std::cout << "Hex: ";
-  TestUtils::printPacketContentsHex (GetPointer (packet));
-  std::cout << "Bin: ";
-  TestUtils::printPacketContentsBin (GetPointer (packet));
+  // Add header
+  packet->AddHeader (source);
+
+  // Log serialized packet contents
+  TestUtils::LogPacketContents (GetPointer (packet));
 
   // remove header
   RrcConnectionReestablishmentHeader destination;
   packet->RemoveHeader (destination);
-  std::cout << "--------- DESTINATION INFO: -------" << std::endl;
-  destination.Print (std::cout);
+
+  // Log destination info
+  TestUtils::LogPacketInfo<RrcConnectionReestablishmentHeader> (destination,"DESTINATION");
 
   // Check that the destination and source headers contain the same values
   NS_TEST_ASSERT_MSG_EQ (source.GetRrcTransactionIdentifier (), destination.GetRrcTransactionIdentifier (), "rrcTransactionIdentifier");
@@ -717,11 +693,7 @@ RrcConnectionReestablishmentCompleteTestCase::RrcConnectionReestablishmentComple
 void
 RrcConnectionReestablishmentCompleteTestCase::DoRun (void)
 {
-  std::cout << "============= RrcConnectionReestablishmentCompleteTestCase ===========" << std::endl;
-  // add header
-  Ptr<Packet> packet = Create<Packet> ();
-  packet->Print (std::cout);
-  std::cout << std::endl;
+  NS_LOG_DEBUG ("============= RrcConnectionReestablishmentCompleteTestCase ===========");
 
   LteRrcSap::RrcConnectionReestablishmentComplete msg;
   msg.rrcTransactionIdentifier = 3;
@@ -729,23 +701,21 @@ RrcConnectionReestablishmentCompleteTestCase::DoRun (void)
   RrcConnectionReestablishmentCompleteHeader source;
   source.SetMessage (msg);
 
-  std::cout << "--------- SOURCE INFO: -------" << std::endl;
-  source.Print (std::cout);
-  packet->AddHeader (source);
-  std::cout << std::endl;
+  // Log source info
+  TestUtils::LogPacketInfo<RrcConnectionReestablishmentCompleteHeader> (source,"SOURCE");
 
-  // print serialized packet contents
-  std::cout << "---- SERIALIZED PACKET CONTENTS: -------" << std::endl;
-  std::cout << "Hex: ";
-  TestUtils::printPacketContentsHex (GetPointer (packet));
-  std::cout << "Bin: ";
-  TestUtils::printPacketContentsBin (GetPointer (packet));
+  // Add header
+  packet->AddHeader (source);
+
+  // Log serialized packet contents
+  TestUtils::LogPacketContents (GetPointer (packet));
 
   // remove header
   RrcConnectionReestablishmentCompleteHeader destination;
   packet->RemoveHeader (destination);
-  std::cout << "--------- DESTINATION INFO: -------" << std::endl;
-  destination.Print (std::cout);
+
+  // Log destination info
+  TestUtils::LogPacketInfo<RrcConnectionReestablishmentCompleteHeader> (destination,"DESTINATION");
 
   // Check that the destination and source headers contain the same values
   NS_TEST_ASSERT_MSG_EQ (source.GetRrcTransactionIdentifier (), destination.GetRrcTransactionIdentifier (), "rrcTransactionIdentifier");
@@ -766,11 +736,7 @@ RrcConnectionRejectTestCase::RrcConnectionRejectTestCase () : RrcHeaderTestCase 
 void
 RrcConnectionRejectTestCase::DoRun (void)
 {
-  std::cout << "============= RrcConnectionRejectTestCase ===========" << std::endl;
-  // add header
-  Ptr<Packet> packet = Create<Packet> ();
-  packet->Print (std::cout);
-  std::cout << std::endl;
+  NS_LOG_DEBUG ("============= RrcConnectionRejectTestCase ===========");
 
   LteRrcSap::RrcConnectionReject msg;
   msg.waitTime = 2;
@@ -778,23 +744,21 @@ RrcConnectionRejectTestCase::DoRun (void)
   RrcConnectionRejectHeader source;
   source.SetMessage (msg);
 
-  std::cout << "--------- SOURCE INFO: -------" << std::endl;
-  source.Print (std::cout);
-  packet->AddHeader (source);
-  std::cout << std::endl;
+  // Log source info
+  TestUtils::LogPacketInfo<RrcConnectionRejectHeader> (source,"SOURCE");
 
-  // print serialized packet contents
-  std::cout << "---- SERIALIZED PACKET CONTENTS: -------" << std::endl;
-  std::cout << "Hex: ";
-  TestUtils::printPacketContentsHex (GetPointer (packet));
-  std::cout << "Bin: ";
-  TestUtils::printPacketContentsBin (GetPointer (packet));
+  // Add header
+  packet->AddHeader (source);
+
+  // Log serialized packet contents
+  TestUtils::LogPacketContents (GetPointer (packet));
 
   // remove header
   RrcConnectionRejectHeader destination;
   packet->RemoveHeader (destination);
-  std::cout << "--------- DESTINATION INFO: -------" << std::endl;
-  destination.Print (std::cout);
+
+  // Log destination info
+  TestUtils::LogPacketInfo<RrcConnectionRejectHeader> (destination,"DESTINATION");
 
   // Check that the destination and source headers contain the same values
   NS_TEST_ASSERT_MSG_EQ (source.GetMessage ().waitTime, destination.GetMessage ().waitTime, "Different waitTime!");
@@ -815,11 +779,7 @@ MeasurementReportTestCase::MeasurementReportTestCase () : RrcHeaderTestCase ("Te
 void
 MeasurementReportTestCase::DoRun (void)
 {
-  std::cout << "============= MeasurementReportTestCase ===========" << std::endl;
-  // add header
-  Ptr<Packet> packet = Create<Packet> ();
-  packet->Print (std::cout);
-  std::cout << std::endl;
+  NS_LOG_DEBUG ("============= MeasurementReportTestCase ===========");
 
   LteRrcSap::MeasurementReport msg;
   msg.measResults.measId = 5;
@@ -843,23 +803,21 @@ MeasurementReportTestCase::DoRun (void)
   MeasurementReportHeader source;
   source.SetMessage (msg);
 
-  std::cout << "--------- SOURCE INFO: -------" << std::endl;
-  source.Print (std::cout);
-  packet->AddHeader (source);
-  std::cout << std::endl;
+  // Log source info
+  TestUtils::LogPacketInfo<MeasurementReportHeader> (source,"SOURCE");
 
-  // print serialized packet contents
-  std::cout << "---- SERIALIZED PACKET CONTENTS: -------" << std::endl;
-  std::cout << "Hex: ";
-  TestUtils::printPacketContentsHex (GetPointer (packet));
-  std::cout << "Bin: ";
-  TestUtils::printPacketContentsBin (GetPointer (packet));
+  // Add header
+  packet->AddHeader (source);
+
+  // Log serialized packet contents
+  TestUtils::LogPacketContents (GetPointer (packet));
 
   // remove header
   MeasurementReportHeader destination;
   packet->RemoveHeader (destination);
-  std::cout << "--------- DESTINATION INFO: -------" << std::endl;
-  destination.Print (std::cout);
+
+  // Log destination info
+  TestUtils::LogPacketInfo<MeasurementReportHeader> (destination,"DESTINATION");
 
   // Check that the destination and source headers contain the same values
   LteRrcSap::MeasResults srcMeas = source.GetMessage ().measResults;
