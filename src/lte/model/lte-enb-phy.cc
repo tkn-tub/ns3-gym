@@ -200,13 +200,13 @@ LteEnbPhy::GetTypeId (void)
                    "The downlink LteSpectrumPhy associated to this LtePhy",
                    TypeId::ATTR_GET,
                    PointerValue (),
-                   MakePointerAccessor (&LteEnbPhy::m_downlinkSpectrumPhy),
+                   MakePointerAccessor (&LteEnbPhy::GetDlSpectrumPhy),
                    MakePointerChecker <LteSpectrumPhy> ())
     .AddAttribute ("UlSpectrumPhy",
                    "The uplink LteSpectrumPhy associated to this LtePhy",
                    TypeId::ATTR_GET,
                    PointerValue (),
-                   MakePointerAccessor (&LteEnbPhy::m_uplinkSpectrumPhy),
+                   MakePointerAccessor (&LteEnbPhy::GetUlSpectrumPhy),
                    MakePointerChecker <LteSpectrumPhy> ())
   ;
   return tid;
@@ -319,7 +319,17 @@ LteEnbPhy::GetMacChDelay (void) const
   return (m_macChTtiDelay);
 }
 
+Ptr<LteSpectrumPhy>
+LteEnbPhy::GetDlSpectrumPhy () const
+{
+  return m_downlinkSpectrumPhy;
+}
 
+Ptr<LteSpectrumPhy>
+LteEnbPhy::GetUlSpectrumPhy () const
+{
+  return m_uplinkSpectrumPhy;
+}
 
 bool
 LteEnbPhy::AddUePhy (uint16_t rnti)
