@@ -346,7 +346,7 @@ LteAmc::CreateCqiFeedbacks (const SpectrumValue& sinr, uint8_t rbgSize)
          {
             uint8_t mcs = 0;
             TbStats_t tbStats;
-            while (mcs < 28)
+            while (mcs <= 28)
               {
                 HarqProcessInfoList_t harqInfoList;
                 tbStats = LteMiErrorModel::GetTbDecodificationStats (sinr, rbgMap, (uint16_t)GetTbSizeFromMcs (mcs, rbgSize) / 8, mcs, harqInfoList);
@@ -356,6 +356,10 @@ LteAmc::CreateCqiFeedbacks (const SpectrumValue& sinr, uint8_t rbgSize)
                   }
                 mcs++;
                 
+              }
+            if (mcs > 0)
+              {
+                mcs--;
               }
             NS_LOG_DEBUG (this << "\t RBG " << rbId << " MCS " << (uint16_t)mcs << " TBLER " << tbStats.tbler);
             int rbgCqi = 0;
@@ -376,7 +380,7 @@ LteAmc::CreateCqiFeedbacks (const SpectrumValue& sinr, uint8_t rbgSize)
                   ++rbgCqi;
                 }
               }
-            NS_LOG_DEBUG (this << "\t CQI " << rbgCqi);
+            NS_LOG_DEBUG (this << "\t MCS " << (uint16_t)mcs << "-> CQI " << rbgCqi);
             // fill the cqi vector (per RB basis)
             for (uint8_t j = 0; j < rbgSize; j++)
               {
