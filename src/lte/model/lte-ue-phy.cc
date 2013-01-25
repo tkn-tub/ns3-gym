@@ -398,7 +398,10 @@ LteUePhy::GenerateCtrlCqiReport (const SpectrumValue& sinr)
     {
       Ptr<LteUeNetDevice> thisDevice = GetDevice ()->GetObject<LteUeNetDevice> ();
       Ptr<DlCqiLteControlMessage> msg = CreateDlCqiFeedbackMessage (sinr);
-      DoSendLteControlMessage (msg);
+      if (msg)
+        {
+          DoSendLteControlMessage (msg);
+        }
       m_p10CqiLast = Simulator::Now ();
     }
   // check aperiodic high-layer configured subband CQI
@@ -406,7 +409,10 @@ LteUePhy::GenerateCtrlCqiReport (const SpectrumValue& sinr)
     {
       Ptr<LteUeNetDevice> thisDevice = GetDevice ()->GetObject<LteUeNetDevice> ();
       Ptr<DlCqiLteControlMessage> msg = CreateDlCqiFeedbackMessage (sinr);
-      DoSendLteControlMessage (msg);
+      if (msg)
+        {
+          DoSendLteControlMessage (msg);
+        }
       m_a30CqiLast = Simulator::Now ();
     }
 }
@@ -437,6 +443,12 @@ Ptr<DlCqiLteControlMessage>
 LteUePhy::CreateDlCqiFeedbackMessage (const SpectrumValue& sinr)
 {
   NS_LOG_FUNCTION (this);
+
+  if (m_rnti == 0)
+    {
+      // abort method, the UE is still not registered
+      return (0);
+    }
   
   // apply transmission mode gain
   NS_ASSERT (m_transmissionMode < m_txModeGain.size ());
