@@ -157,7 +157,7 @@ void AnimationInterface::StartNewTraceFile ()
     {
       return;
     }
-  StopAnimation ();
+  StopAnimation (true);
   m_outputFileName = m_originalFileName + "-" + oss.str ();
   StartAnimation (true);
   ++i;
@@ -673,7 +673,7 @@ void AnimationInterface::ConnectCallbacks ()
 }
 
 
-void AnimationInterface::StopAnimation ()
+void AnimationInterface::StopAnimation (bool onlyAnimation)
 {
   m_started = false;
   NS_LOG_INFO ("Stopping Animation");
@@ -687,6 +687,10 @@ void AnimationInterface::StopAnimation ()
       std::fclose (m_f);
     }
     m_outputFileSet = false;
+  if (onlyAnimation)
+    {
+      return;
+    }
   if (m_routingF)
     {
       WriteN (GetXMLClose ("anim"), m_routingF);

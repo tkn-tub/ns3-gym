@@ -455,7 +455,7 @@ private:
    * \brief Closes the interface to the animator.
    *
    */
-  void StopAnimation ();
+  void StopAnimation (bool onlyAnimation = false);
 
   void DevTxTrace (std::string context,
                    Ptr<const Packet> p,
