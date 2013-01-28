@@ -43,6 +43,8 @@ public:
 
 protected:
   // Serialization functions
+  static TypeId GetTypeId (void);
+  virtual TypeId GetInstanceTypeId (void) const;
   void SerializeSrbToAddModList (std::list<LteRrcSap::SrbToAddMod> srbToAddModList) const;
   void SerializeDrbToAddModList (std::list<LteRrcSap::DrbToAddMod> drbToAddModList) const;
   void SerializeLogicalChannelConfig (LteRrcSap::LogicalChannelConfig logicalChannelConfig) const;
@@ -80,6 +82,8 @@ protected:
 class RrcUlDcchMessage : public RrcAsn1Header
 {
 public:
+  RrcUlDcchMessage();
+  ~RrcUlDcchMessage();
   uint32_t Deserialize (Buffer::Iterator bIterator);
   void Print (std::ostream &os) const;
   void PreSerialize () const;
@@ -94,6 +98,8 @@ public:
 class RrcDlDcchMessage : public RrcAsn1Header
 {
 public:
+  RrcDlDcchMessage();
+  ~RrcDlDcchMessage();
   uint32_t Deserialize (Buffer::Iterator bIterator);
   void Print (std::ostream &os) const;
   void PreSerialize () const;
@@ -108,6 +114,8 @@ public:
 class RrcUlCcchMessage : public RrcAsn1Header
 {
 public:
+  RrcUlCcchMessage ();
+  ~RrcUlCcchMessage ();
   uint32_t Deserialize (Buffer::Iterator bIterator);
   void Print (std::ostream &os) const;
   void PreSerialize () const;
@@ -122,6 +130,8 @@ public:
 class RrcDlCcchMessage : public RrcAsn1Header
 {
 public:
+  RrcDlCcchMessage();
+  ~RrcDlCcchMessage();
   uint32_t Deserialize (Buffer::Iterator bIterator);
   void Print (std::ostream &os) const;
   void PreSerialize () const;
@@ -132,16 +142,17 @@ public:
 /**
 * This class manages the serialization/deserialization of RrcConnectionRequest IE
 */
-class RrcConnectionRequestHeader : public RrcUlCcchMessage,
-                                   LteRrcSap
+class RrcConnectionRequestHeader : public RrcUlCcchMessage
 {
 public:
+  static TypeId GetTypeId (void);
   RrcConnectionRequestHeader ();
+  ~RrcConnectionRequestHeader ();
   void PreSerialize () const;
   uint32_t Deserialize (Buffer::Iterator bIterator);
   void Print (std::ostream &os) const;
-  void SetMessage (RrcConnectionRequest msg);
-  RrcConnectionRequest GetMessage () const;
+  void SetMessage (LteRrcSap::RrcConnectionRequest msg);
+  LteRrcSap::RrcConnectionRequest GetMessage () const;
   std::bitset<8> getMmec () const;
   std::bitset<32> getMtmsi () const;
 

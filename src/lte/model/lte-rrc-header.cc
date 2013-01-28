@@ -46,6 +46,21 @@ RrcAsn1Header::RrcAsn1Header ()
 {
 }
 
+TypeId
+RrcAsn1Header::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::RrcAsn1Header")
+    .SetParent<Header> ()
+  ;
+  return tid;
+}
+
+TypeId
+RrcAsn1Header::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
+}
+
 int
 RrcAsn1Header::GetMessageType ()
 {
@@ -1698,12 +1713,26 @@ RrcAsn1Header::DeserializePlmnIdentity (uint32_t *plmnId, Buffer::Iterator bIter
 //////////////////// RrcConnectionRequest class ////////////////////////
 
 // Constructor
-RrcConnectionRequestHeader::RrcConnectionRequestHeader ()
+RrcConnectionRequestHeader::RrcConnectionRequestHeader () : RrcUlCcchMessage()
 {
   m_mmec = std::bitset<8> (0ul);
   m_mTmsi = std::bitset<32> (0ul);
   m_establishmentCause = MO_SIGNALLING;
   m_spare = std::bitset<1> (0ul);
+}
+
+// Destructor
+RrcConnectionRequestHeader::~RrcConnectionRequestHeader ()
+{
+}
+
+TypeId
+RrcConnectionRequestHeader::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::RrcConnectionRequestHeader")
+    .SetParent<Header> ()
+  ;
+  return tid;
 }
 
 void
@@ -1798,7 +1827,7 @@ RrcConnectionRequestHeader::Deserialize (Buffer::Iterator bIterator)
 }
 
 void
-RrcConnectionRequestHeader::SetMessage (RrcConnectionRequest msg)
+RrcConnectionRequestHeader::SetMessage (LteRrcSap::RrcConnectionRequest msg)
 {
   m_mTmsi = std::bitset<32> ((uint32_t)msg.ueIdentity);
   m_mmec = std::bitset<8> ((uint32_t)(msg.ueIdentity >> 32));
@@ -1808,7 +1837,7 @@ RrcConnectionRequestHeader::SetMessage (RrcConnectionRequest msg)
 LteRrcSap::RrcConnectionRequest
 RrcConnectionRequestHeader::GetMessage () const
 {
-  RrcConnectionRequest msg;
+  LteRrcSap::RrcConnectionRequest msg;
   msg.ueIdentity = (((uint64_t) m_mmec.to_ulong ()) << 32) | (m_mTmsi.to_ulong ());
 
   return msg;
@@ -3872,6 +3901,14 @@ MeasurementReportHeader::GetMessage () const
 }
 
 ///////////////////  RrcUlDcchMessage //////////////////////////////////
+RrcUlDcchMessage::RrcUlDcchMessage() : RrcAsn1Header()
+{
+}
+
+RrcUlDcchMessage::~RrcUlDcchMessage()
+{
+}
+
 uint32_t
 RrcUlDcchMessage::Deserialize (Buffer::Iterator bIterator)
 {
@@ -3925,6 +3962,14 @@ RrcUlDcchMessage::SerializeUlDcchMessage (int messageType) const
 }
 
 ///////////////////  RrcDlDcchMessage //////////////////////////////////
+RrcDlDcchMessage::RrcDlDcchMessage() : RrcAsn1Header()
+{
+}
+
+RrcDlDcchMessage::~RrcDlDcchMessage()
+{
+}
+
 uint32_t
 RrcDlDcchMessage::Deserialize (Buffer::Iterator bIterator)
 {
@@ -3978,6 +4023,14 @@ RrcDlDcchMessage::SerializeDlDcchMessage (int messageType) const
 }
 
 ///////////////////  RrcUlCcchMessage //////////////////////////////////
+RrcUlCcchMessage::RrcUlCcchMessage() : RrcAsn1Header()
+{
+}
+
+RrcUlCcchMessage::~RrcUlCcchMessage()
+{
+}
+
 uint32_t
 RrcUlCcchMessage::Deserialize (Buffer::Iterator bIterator)
 {
@@ -4031,6 +4084,14 @@ RrcUlCcchMessage::SerializeUlCcchMessage (int messageType) const
 }
 
 ///////////////////  RrcDlCcchMessage //////////////////////////////////
+RrcDlCcchMessage::RrcDlCcchMessage() : RrcAsn1Header()
+{
+}
+
+RrcDlCcchMessage::~RrcDlCcchMessage()
+{
+}
+
 uint32_t
 RrcDlCcchMessage::Deserialize (Buffer::Iterator bIterator)
 {
