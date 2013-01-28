@@ -97,7 +97,7 @@ public:
   void AssertEqualRadioResourceConfigDedicated (LteRrcSap::RadioResourceConfigDedicated rrcd1, LteRrcSap::RadioResourceConfigDedicated rrcd2);
   
 protected:
-  Ptr<Packet> packet;
+  Packet * packet;
 };
 
 RrcHeaderTestCase :: RrcHeaderTestCase(std::string s) : TestCase(s)
@@ -254,7 +254,7 @@ RrcConnectionRequestTestCase::RrcConnectionRequestTestCase () : RrcHeaderTestCas
 void
 RrcConnectionRequestTestCase::DoRun (void)
 {
-  packet = Create<Packet>();
+  packet = new Packet();
   NS_LOG_DEBUG ("============= RrcConnectionRequestTestCase ===========");
 
   LteRrcSap::RrcConnectionRequest msg;
@@ -270,7 +270,7 @@ RrcConnectionRequestTestCase::DoRun (void)
   packet->AddHeader (source);
 
   // Log serialized packet contents
-  TestUtils::LogPacketContents (GetPointer (packet));
+  TestUtils::LogPacketContents (packet);
 
   // Remove header
   RrcConnectionRequestHeader destination;
@@ -283,7 +283,7 @@ RrcConnectionRequestTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (source.getMmec (),destination.getMmec (), "Different m_mmec!");
   NS_TEST_ASSERT_MSG_EQ (source.getMtmsi (),destination.getMtmsi (), "Different m_mTmsi!");
   
-  packet = 0;
+  delete (packet);
 }
 
 // --------------------------- CLASS RrcConnectionSetupTestCase -----------------------------
@@ -301,7 +301,7 @@ RrcConnectionSetupTestCase::RrcConnectionSetupTestCase () : RrcHeaderTestCase ("
 void
 RrcConnectionSetupTestCase::DoRun (void)
 {
-  packet = Create<Packet>();
+  packet = new Packet();
   NS_LOG_DEBUG ("============= RrcConnectionSetupTestCase ===========");
 
   LteRrcSap::RrcConnectionSetup msg;
@@ -318,7 +318,7 @@ RrcConnectionSetupTestCase::DoRun (void)
   packet->AddHeader (source);
 
   // Log serialized packet contents
-  TestUtils::LogPacketContents (GetPointer (packet));
+  TestUtils::LogPacketContents (packet);
 
   // remove header
   RrcConnectionSetupHeader destination;
@@ -332,7 +332,7 @@ RrcConnectionSetupTestCase::DoRun (void)
 
   AssertEqualRadioResourceConfigDedicated (source.GetRadioResourceConfigDedicated (),destination.GetRadioResourceConfigDedicated ());
   
-  packet = 0;
+  delete (packet);
 }
 
 // --------------------------- CLASS RrcConnectionSetupCompleteTestCase -----------------------------
@@ -350,7 +350,7 @@ RrcConnectionSetupCompleteTestCase::RrcConnectionSetupCompleteTestCase () : RrcH
 void
 RrcConnectionSetupCompleteTestCase::DoRun (void)
 {
-  packet = Create<Packet>();
+  packet = new Packet();
   NS_LOG_DEBUG ("============= RrcConnectionSetupCompleteTestCase ===========");
 
   LteRrcSap::RrcConnectionSetupCompleted msg;
@@ -366,7 +366,7 @@ RrcConnectionSetupCompleteTestCase::DoRun (void)
   packet->AddHeader (source);
 
   // Log serialized packet contents
-  TestUtils::LogPacketContents (GetPointer (packet));
+  TestUtils::LogPacketContents (packet);
 
   // Remove header
   RrcConnectionSetupCompleteHeader destination;
@@ -378,7 +378,7 @@ RrcConnectionSetupCompleteTestCase::DoRun (void)
   // Check that the destination and source headers contain the same values
   NS_TEST_ASSERT_MSG_EQ (source.GetRrcTransactionIdentifier (),destination.GetRrcTransactionIdentifier (), "RrcTransactionIdentifier");
   
-  packet = 0;
+  delete (packet);
 }
 
 // --------------------------- CLASS RrcConnectionReconfigurationCompleteTestCase -----------------------------
@@ -397,7 +397,7 @@ RrcConnectionReconfigurationCompleteTestCase::RrcConnectionReconfigurationComple
 void
 RrcConnectionReconfigurationCompleteTestCase::DoRun (void)
 {
-  packet = Create<Packet>();
+  packet = new Packet();
   NS_LOG_DEBUG ("============= RrcConnectionReconfigurationCompleteTestCase ===========");
 
   LteRrcSap::RrcConnectionReconfigurationCompleted msg;
@@ -413,7 +413,7 @@ RrcConnectionReconfigurationCompleteTestCase::DoRun (void)
   packet->AddHeader (source);
 
   // Log serialized packet contents
-  TestUtils::LogPacketContents (GetPointer (packet));
+  TestUtils::LogPacketContents (packet);
 
   // remove header
   RrcConnectionReconfigurationCompleteHeader destination;
@@ -425,7 +425,7 @@ RrcConnectionReconfigurationCompleteTestCase::DoRun (void)
   // Check that the destination and source headers contain the same values
   NS_TEST_ASSERT_MSG_EQ (source.GetRrcTransactionIdentifier (),destination.GetRrcTransactionIdentifier (), "RrcTransactionIdentifier");
   
-  packet = 0;
+  delete (packet);
 }
 
 // --------------------------- CLASS RrcConnectionReconfigurationTestCase -----------------------------
@@ -444,7 +444,7 @@ RrcConnectionReconfigurationTestCase::RrcConnectionReconfigurationTestCase ()
 void
 RrcConnectionReconfigurationTestCase::DoRun (void)
 {
-  packet = Create<Packet>();
+  packet = new Packet();
   NS_LOG_DEBUG ("============= RrcConnectionReconfigurationTestCase ===========");
 
   LteRrcSap::RrcConnectionReconfiguration msg;
@@ -478,7 +478,7 @@ RrcConnectionReconfigurationTestCase::DoRun (void)
   packet->AddHeader (source);
 
   // Log serialized packet contents
-  TestUtils::LogPacketContents (GetPointer (packet));
+  TestUtils::LogPacketContents (packet);
 
   // remove header
   RrcConnectionReconfigurationHeader destination;
@@ -537,7 +537,7 @@ RrcConnectionReconfigurationTestCase::DoRun (void)
       AssertEqualRadioResourceConfigDedicated (source.GetRadioResourceConfigDedicated (), destination.GetRadioResourceConfigDedicated ());
     }
     
-  packet = 0;
+  delete (packet);
 }
 
 // --------------------------- CLASS HandoverPreparationInfoTestCase -----------------------------
@@ -555,7 +555,7 @@ HandoverPreparationInfoTestCase::HandoverPreparationInfoTestCase () : RrcHeaderT
 void
 HandoverPreparationInfoTestCase::DoRun (void)
 {
-  packet = Create<Packet>();
+  packet = new Packet();
   NS_LOG_DEBUG ("============= HandoverPreparationInfoTestCase ===========");
 
   LteRrcSap::HandoverPreparationInfo msg;
@@ -580,7 +580,7 @@ HandoverPreparationInfoTestCase::DoRun (void)
   packet->AddHeader (source);
 
   // Log serialized packet contents
-  TestUtils::LogPacketContents (GetPointer (packet));
+  TestUtils::LogPacketContents (packet);
 
   // remove header
   HandoverPreparationInfoHeader destination;
@@ -600,7 +600,7 @@ HandoverPreparationInfoTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (source.GetAsConfig ().sourceSystemInformationBlockType1.cellAccessRelatedInfo.csgIdentity, destination.GetAsConfig ().sourceSystemInformationBlockType1.cellAccessRelatedInfo.csgIdentity, "csgIdentity");
   NS_TEST_ASSERT_MSG_EQ (source.GetAsConfig ().sourceDlCarrierFreq, destination.GetAsConfig ().sourceDlCarrierFreq, "sourceDlCarrierFreq");
   
-    packet = 0;
+    delete (packet);
 }
 
 // --------------------------- CLASS RrcConnectionReestablishmentRequestTestCase -----------------------------
@@ -618,7 +618,7 @@ RrcConnectionReestablishmentRequestTestCase::RrcConnectionReestablishmentRequest
 void
 RrcConnectionReestablishmentRequestTestCase::DoRun (void)
 {
-  packet = Create<Packet>();
+  packet = new Packet();
   NS_LOG_DEBUG ("============= RrcConnectionReestablishmentRequestTestCase ===========");
 
   LteRrcSap::RrcConnectionReestablishmentRequest msg;
@@ -636,7 +636,7 @@ RrcConnectionReestablishmentRequestTestCase::DoRun (void)
   packet->AddHeader (source);
 
   // Log serialized packet contents
-  TestUtils::LogPacketContents (GetPointer (packet));
+  TestUtils::LogPacketContents (packet);
 
   // remove header
   RrcConnectionReestablishmentRequestHeader destination;
@@ -650,7 +650,7 @@ RrcConnectionReestablishmentRequestTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (source.GetUeIdentity ().physCellId, destination.GetUeIdentity ().physCellId, "physCellId");
   NS_TEST_ASSERT_MSG_EQ (source.GetReestablishmentCause (),destination.GetReestablishmentCause (), "ReestablishmentCause");
   
-  packet = 0;
+  delete (packet);
 }
 
 // --------------------------- CLASS RrcConnectionReestablishmentTestCase -----------------------------
@@ -668,7 +668,7 @@ RrcConnectionReestablishmentTestCase::RrcConnectionReestablishmentTestCase () : 
 void
 RrcConnectionReestablishmentTestCase::DoRun (void)
 {
-  packet = Create<Packet>();
+  packet = new Packet();
   NS_LOG_DEBUG ("============= RrcConnectionReestablishmentTestCase ===========");
 
   LteRrcSap::RrcConnectionReestablishment msg;
@@ -685,7 +685,7 @@ RrcConnectionReestablishmentTestCase::DoRun (void)
   packet->AddHeader (source);
 
   // Log serialized packet contents
-  TestUtils::LogPacketContents (GetPointer (packet));
+  TestUtils::LogPacketContents (packet);
 
   // remove header
   RrcConnectionReestablishmentHeader destination;
@@ -698,7 +698,7 @@ RrcConnectionReestablishmentTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (source.GetRrcTransactionIdentifier (), destination.GetRrcTransactionIdentifier (), "rrcTransactionIdentifier");
   AssertEqualRadioResourceConfigDedicated (source.GetRadioResourceConfigDedicated (),destination.GetRadioResourceConfigDedicated ());
   
-  packet = 0;
+  delete (packet);
 }
 
 // --------------------------- CLASS RrcConnectionReestablishmentCompleteTestCase -----------------------------
@@ -716,7 +716,7 @@ RrcConnectionReestablishmentCompleteTestCase::RrcConnectionReestablishmentComple
 void
 RrcConnectionReestablishmentCompleteTestCase::DoRun (void)
 {
-  packet = Create<Packet>();
+  packet = new Packet();
   NS_LOG_DEBUG ("============= RrcConnectionReestablishmentCompleteTestCase ===========");
 
   LteRrcSap::RrcConnectionReestablishmentComplete msg;
@@ -732,7 +732,7 @@ RrcConnectionReestablishmentCompleteTestCase::DoRun (void)
   packet->AddHeader (source);
 
   // Log serialized packet contents
-  TestUtils::LogPacketContents (GetPointer (packet));
+  TestUtils::LogPacketContents (packet);
 
   // remove header
   RrcConnectionReestablishmentCompleteHeader destination;
@@ -744,7 +744,7 @@ RrcConnectionReestablishmentCompleteTestCase::DoRun (void)
   // Check that the destination and source headers contain the same values
   NS_TEST_ASSERT_MSG_EQ (source.GetRrcTransactionIdentifier (), destination.GetRrcTransactionIdentifier (), "rrcTransactionIdentifier");
   
-  packet = 0;
+  delete (packet);
 }
 
 // --------------------------- CLASS RrcConnectionRejectTestCase -----------------------------
@@ -762,7 +762,7 @@ RrcConnectionRejectTestCase::RrcConnectionRejectTestCase () : RrcHeaderTestCase 
 void
 RrcConnectionRejectTestCase::DoRun (void)
 {
-  packet = Create<Packet>();
+  packet = new Packet();
   NS_LOG_DEBUG ("============= RrcConnectionRejectTestCase ===========");
 
   LteRrcSap::RrcConnectionReject msg;
@@ -778,7 +778,7 @@ RrcConnectionRejectTestCase::DoRun (void)
   packet->AddHeader (source);
 
   // Log serialized packet contents
-  TestUtils::LogPacketContents (GetPointer (packet));
+  TestUtils::LogPacketContents (packet);
 
   // remove header
   RrcConnectionRejectHeader destination;
@@ -790,7 +790,7 @@ RrcConnectionRejectTestCase::DoRun (void)
   // Check that the destination and source headers contain the same values
   NS_TEST_ASSERT_MSG_EQ (source.GetMessage ().waitTime, destination.GetMessage ().waitTime, "Different waitTime!");
   
-  packet = 0;
+  delete (packet);
 }
 
 // --------------------------- CLASS MeasurementReportTestCase -----------------------------
@@ -808,7 +808,7 @@ MeasurementReportTestCase::MeasurementReportTestCase () : RrcHeaderTestCase ("Te
 void
 MeasurementReportTestCase::DoRun (void)
 {
-  packet = Create<Packet>();
+  packet = new Packet();
   NS_LOG_DEBUG ("============= MeasurementReportTestCase ===========");
 
   LteRrcSap::MeasurementReport msg;
@@ -840,7 +840,7 @@ MeasurementReportTestCase::DoRun (void)
   packet->AddHeader (source);
 
   // Log serialized packet contents
-  TestUtils::LogPacketContents (GetPointer (packet));
+  TestUtils::LogPacketContents (packet);
 
   // remove header
   MeasurementReportHeader destination;
@@ -900,7 +900,7 @@ MeasurementReportTestCase::DoRun (void)
         }
     }
 
-    packet = 0;
+    delete (packet);
 }
 
 // --------------------------- CLASS Asn1EncodingSuite -----------------------------
