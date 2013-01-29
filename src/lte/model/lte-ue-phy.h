@@ -120,6 +120,16 @@ public:
    */
   uint8_t GetMacChDelay (void) const;
 
+  /**
+   * \return a pointer to the LteSpectrumPhy instance relative to the downlink
+   */
+  Ptr<LteSpectrumPhy> GetDlSpectrumPhy () const;
+
+  /**
+   * \return a pointer to the LteSpectrumPhy instance relative to the uplink
+   */
+  Ptr<LteSpectrumPhy> GetUlSpectrumPhy () const;
+
 
   /**
    * \brief Create the PSD for the TX

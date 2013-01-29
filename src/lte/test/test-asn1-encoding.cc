@@ -258,7 +258,7 @@ RrcConnectionRequestTestCase::DoRun (void)
   NS_LOG_DEBUG ("============= RrcConnectionRequestTestCase ===========");
 
   LteRrcSap::RrcConnectionRequest msg;
-  msg.ueIdentity = 0x83fecafeca;
+  msg.ueIdentity = 0x83fecafecaULL;
 
   RrcConnectionRequestHeader source;
   source.SetMessage (msg);

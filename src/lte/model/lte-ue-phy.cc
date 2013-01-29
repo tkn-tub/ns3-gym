@@ -227,13 +227,13 @@ LteUePhy::GetTypeId (void)
                    "The downlink LteSpectrumPhy associated to this LtePhy",
                    TypeId::ATTR_GET,
                    PointerValue (),
-                   MakePointerAccessor (&LteUePhy::m_downlinkSpectrumPhy),
+                   MakePointerAccessor (&LteUePhy::GetDlSpectrumPhy),
                    MakePointerChecker <LteSpectrumPhy> ())
     .AddAttribute ("UlSpectrumPhy",
                    "The uplink LteSpectrumPhy associated to this LtePhy",
                    TypeId::ATTR_GET,
                    PointerValue (),
-                   MakePointerAccessor (&LteUePhy::m_uplinkSpectrumPhy),
+                   MakePointerAccessor (&LteUePhy::GetUlSpectrumPhy),
                    MakePointerChecker <LteSpectrumPhy> ())
   ;
   return tid;
@@ -308,6 +308,18 @@ uint8_t
 LteUePhy::GetMacChDelay (void) const
 {
   return (m_macChTtiDelay);
+}
+
+Ptr<LteSpectrumPhy>
+LteUePhy::GetDlSpectrumPhy () const
+{
+  return m_downlinkSpectrumPhy;
+}
+
+Ptr<LteSpectrumPhy>
+LteUePhy::GetUlSpectrumPhy () const
+{
+  return m_uplinkSpectrumPhy;
 }
 
 void
@@ -386,7 +398,10 @@ LteUePhy::GenerateCtrlCqiReport (const SpectrumValue& sinr)
     {
       Ptr<LteUeNetDevice> thisDevice = GetDevice ()->GetObject<LteUeNetDevice> ();
       Ptr<DlCqiLteControlMessage> msg = CreateDlCqiFeedbackMessage (sinr);
-      DoSendLteControlMessage (msg);
+      if (msg)
+        {
+          DoSendLteControlMessage (msg);
+        }
       m_p10CqiLast = Simulator::Now ();
     }
   // check aperiodic high-layer configured subband CQI
@@ -394,7 +409,10 @@ LteUePhy::GenerateCtrlCqiReport (const SpectrumValue& sinr)
     {
       Ptr<LteUeNetDevice> thisDevice = GetDevice ()->GetObject<LteUeNetDevice> ();
       Ptr<DlCqiLteControlMessage> msg = CreateDlCqiFeedbackMessage (sinr);
-      DoSendLteControlMessage (msg);
+      if (msg)
+        {
+          DoSendLteControlMessage (msg);
+        }
       m_a30CqiLast = Simulator::Now ();
     }
 }
@@ -425,6 +443,12 @@ Ptr<DlCqiLteControlMessage>
 LteUePhy::CreateDlCqiFeedbackMessage (const SpectrumValue& sinr)
 {
   NS_LOG_FUNCTION (this);
+
+  if (m_rnti == 0)
+    {
+      // abort method, the UE is still not registered
+      return (0);
+    }
   
   // apply transmission mode gain
   NS_ASSERT (m_transmissionMode < m_txModeGain.size ());

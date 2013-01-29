@@ -126,6 +126,17 @@ public:
   uint8_t GetMacChDelay (void) const;
 
   /**
+   * \return a pointer to the LteSpectrumPhy instance relative to the downlink
+   */
+  Ptr<LteSpectrumPhy> GetDlSpectrumPhy () const;
+
+  /**
+   * \return a pointer to the LteSpectrumPhy instance relative to the uplink
+   */
+  Ptr<LteSpectrumPhy> GetUlSpectrumPhy () const;
+  
+
+  /**
    * \brief set the resource blocks (a.k.a. sub channels) to be used in the downlink for transmission
    * 
    * \param mask a vector of integers, if the i-th value is j it means
