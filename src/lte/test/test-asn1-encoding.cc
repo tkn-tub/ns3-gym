@@ -280,8 +280,8 @@ RrcConnectionRequestTestCase::DoRun (void)
   TestUtils::LogPacketInfo<RrcConnectionRequestHeader> (destination,"DESTINATION");
 
   // Check that the destination and source headers contain the same values
-  NS_TEST_ASSERT_MSG_EQ (source.getMmec (),destination.getMmec (), "Different m_mmec!");
-  NS_TEST_ASSERT_MSG_EQ (source.getMtmsi (),destination.getMtmsi (), "Different m_mTmsi!");
+  NS_TEST_ASSERT_MSG_EQ (source.GetMmec (),destination.GetMmec (), "Different m_mmec!");
+  NS_TEST_ASSERT_MSG_EQ (source.GetMtmsi (),destination.GetMtmsi (), "Different m_mTmsi!");
   
   packet = 0;
 }

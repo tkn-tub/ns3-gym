@@ -380,6 +380,7 @@ public:
     uint16_t sourceUeIdentity;      
     MasterInformationBlock sourceMasterInformationBlock;
     SystemInformationBlockType1 sourceSystemInformationBlockType1;
+    SystemInformationBlockType2 sourceSystemInformationBlockType2;
     uint16_t sourceDlCarrierFreq;
   };
 

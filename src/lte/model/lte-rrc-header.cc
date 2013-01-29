@@ -448,19 +448,106 @@ RrcAsn1Header::SerializeSystemInformationBlockType1 (LteRrcSap::SystemInformatio
 }
 
 void
-RrcAsn1Header::SerializeRadioResourceConfigCommonSIB () const
+RrcAsn1Header::SerializeRadioResourceConfigCommonSib (LteRrcSap::RadioResourceConfigCommonSib radioResourceConfigCommonSib) const
 {
   SerializeSequence (std::bitset<0> (0),true);
   // rach-ConfigCommon
   SerializeSequence (std::bitset<0> (0),true);
   SerializeSequence (std::bitset<1> (0),false); // preambleInfo
-  SerializeEnum (16,0); // numberOfRA-Preambles
+  
+  // numberOfRA-Preambles
+  switch(radioResourceConfigCommonSib.rachConfigCommon.preambleInfo.numberOfRaPreambles)
+  {
+    case 4: SerializeEnum (16,0);
+      break;
+    case 8: SerializeEnum (16,1);
+      break;
+    case 12: SerializeEnum (16,2);
+      break;
+    case 16 : SerializeEnum (16,3);
+      break;
+    case 20: SerializeEnum (16,4);
+      break;
+    case 24: SerializeEnum (16,5);
+      break;
+    case 28: SerializeEnum (16,6);
+      break;
+    case 32: SerializeEnum (16,7);
+      break;
+    case 36: SerializeEnum (16,8);
+      break;
+    case 40: SerializeEnum (16,9);
+      break;
+    case 44: SerializeEnum (16,10);
+      break;
+    case 48: SerializeEnum (16,11);
+      break;
+    case 52: SerializeEnum (16,12);
+      break;
+    case 56: SerializeEnum (16,13);
+      break;
+    case 60: SerializeEnum (16,14);
+      break;
+    case 64: SerializeEnum (16,15);
+      break;
+    default: SerializeEnum (16,0);
+  }
+  
   SerializeSequence (std::bitset<0> (0),false); // powerRampingParameters
   SerializeEnum (4,0); // powerRampingStep
   SerializeEnum (16,0); // preambleInitialReceivedTargetPower
   SerializeSequence (std::bitset<0> (0),false); // ra-SupervisionInfo
-  SerializeEnum (11,0); // preambleTransMax
-  SerializeEnum (8,0); // ra-ResponseWindowSize
+  
+  // preambleTransMax
+  switch(radioResourceConfigCommonSib.rachConfigCommon.raSupervisionInfo.preambleTransMax)
+  {
+    case 3: SerializeEnum(11,0);
+    break;
+    case 4: SerializeEnum(11,1);
+    break;
+    case 5: SerializeEnum(11,2);
+    break;
+    case 6: SerializeEnum(11,3);
+    break;
+    case 7: SerializeEnum(11,4);
+    break;
+    case 8: SerializeEnum(11,5);
+    break;
+    case 10: SerializeEnum(11,6);
+    break;
+    case 20: SerializeEnum(11,7);
+    break;
+    case 50: SerializeEnum(11,8);
+    break;
+    case 100: SerializeEnum(11,9);
+    break;
+    case 200: SerializeEnum(11,10);
+    break;
+    default: SerializeEnum (11,0);
+  }
+  
+  // ra-ResponseWindowSize
+  switch(radioResourceConfigCommonSib.rachConfigCommon.raSupervisionInfo.raResponseWindowSize)
+  {
+    case 2: SerializeEnum(8,0);
+    break;
+    case 3: SerializeEnum(8,1);
+    break;
+    case 4: SerializeEnum(8,2);
+    break;
+    case 5: SerializeEnum(8,3);
+    break;
+    case 6: SerializeEnum(8,4);
+    break;
+    case 7: SerializeEnum(8,5);
+    break;
+    case 8: SerializeEnum(8,6);
+    break;
+    case 10: SerializeEnum(8,7);
+    break;
+    default: SerializeEnum (8,0); 
+  }
+  
   SerializeEnum (8,0); // mac-ContentionResolutionTimer
   SerializeInteger (1,1,8); // maxHARQ-Msg3Tx
   // bcch-Config 
@@ -515,12 +602,12 @@ RrcAsn1Header::SerializeRadioResourceConfigCommonSIB () const
 }
 
 void
-RrcAsn1Header::SerializeSystemInformationBlockType2 () const
+RrcAsn1Header::SerializeSystemInformationBlockType2 (LteRrcSap::SystemInformationBlockType2 systemInformationBlockType2) const
 {
   SerializeSequence (std::bitset<2> (0),true);
 
-  // RadioResourceConfigCommonSIB
-  SerializeRadioResourceConfigCommonSIB ();
+  // RadioResourceConfigCommonSib
+  SerializeRadioResourceConfigCommonSib (systemInformationBlockType2.radioResourceConfigCommon);
 
   // ue-TimersAndConstants
   SerializeSequence (std::bitset<0> (0),true);
@@ -530,8 +617,27 @@ RrcAsn1Header::SerializeSystemInformationBlockType2 () const
   SerializeEnum (8,0); // n310
   SerializeEnum (7,0); // t311
   SerializeEnum (8,0); // n311
+  
   // freqInfo
-  SerializeSequence (std::bitset<2> (0),false);
+  SerializeSequence (std::bitset<2> (3),false);
+  SerializeInteger ((int) systemInformationBlockType2.freqInfo.ulCarrierFreq, 0, MAX_EARFCN);
+  switch(systemInformationBlockType2.freqInfo.ulBandwidth)
+  {
+    case 6: SerializeEnum(6,0);
+    break;
+    case 15: SerializeEnum(6,1);
+    break;
+    case 25: SerializeEnum(6,2);
+    break;
+    case 50: SerializeEnum(6,3);
+    break;
+    case 75: SerializeEnum(6,4);
+    break;
+    case 100: SerializeEnum(6,5);
+    break;
+    default: SerializeEnum(6,0);
+  }
+
   SerializeInteger (29,1,32); // additionalSpectrumEmission
   // timeAlignmentTimerCommon
   SerializeEnum (8,0);
@@ -1250,7 +1356,7 @@ RrcAsn1Header::DeserializeSystemInformationBlockType1 (LteRrcSap::SystemInformat
 }
 
 Buffer::Iterator
-RrcAsn1Header::DeserializeSystemInformationBlockType2 (Buffer::Iterator bIterator)
+RrcAsn1Header::DeserializeSystemInformationBlockType2 (LteRrcSap::SystemInformationBlockType2 *systemInformationBlockType2, Buffer::Iterator bIterator)
 {
   std::bitset<0> bitset0;
   int n;
@@ -1264,7 +1370,7 @@ RrcAsn1Header::DeserializeSystemInformationBlockType2 (Buffer::Iterator bIterato
     }
 
   // Deserialize radioResourceConfigCommon
-  bIterator = DeserializeRadioResourceConfigCommonSib (bIterator);
+  bIterator = DeserializeRadioResourceConfigCommonSib (&systemInformationBlockType2->radioResourceConfigCommon, bIterator);
 
   // Deserialize ue-TimersAndConstants
   bIterator = DeserializeSequence (&bitset0,true,bIterator);
@@ -1281,14 +1387,40 @@ RrcAsn1Header::DeserializeSystemInformationBlockType2 (Buffer::Iterator bIterato
   if (freqInfoOpts[1])
     {
       // Deserialize ul-CarrierFreq
-      // ...
+      bIterator = DeserializeInteger (&n, 0, MAX_EARFCN, bIterator);
+      systemInformationBlockType2->freqInfo.ulCarrierFreq = n;
     }
   if (freqInfoOpts[0])
     {
       // Deserialize ul-Bandwidth
-      // ...
+      bIterator = DeserializeEnum (6, &n, bIterator);
+      switch(n)
+      {
+        case 0:
+          systemInformationBlockType2->freqInfo.ulBandwidth = 6;
+          break;
+        case 1:
+          systemInformationBlockType2->freqInfo.ulBandwidth = 15;
+          break;        
+        case 2:
+          systemInformationBlockType2->freqInfo.ulBandwidth = 25;
+          break;
+        case 3:
+          systemInformationBlockType2->freqInfo.ulBandwidth = 50;
+          break;          
+        case 4:
+          systemInformationBlockType2->freqInfo.ulBandwidth = 75;
+          break;          
+        case 5:
+          systemInformationBlockType2->freqInfo.ulBandwidth = 100;
+          break;          
+        default:
+          systemInformationBlockType2->freqInfo.ulBandwidth = 6;
+      }
     }
-  bIterator = DeserializeInteger (&n,1,32,bIterator); // additionalSpectrumEmission
+
+  // additionalSpectrumEmission
+  bIterator = DeserializeInteger (&n,1,32,bIterator);
 
   if (sysInfoBlkT2Opts[0])
     {
@@ -1421,32 +1553,161 @@ RrcAsn1Header::DeserializeRadioResourceConfigCommon (Buffer::Iterator bIterator)
 }
 
 Buffer::Iterator
-RrcAsn1Header::DeserializeRadioResourceConfigCommonSib (Buffer::Iterator bIterator)
+RrcAsn1Header::DeserializeRadioResourceConfigCommonSib (LteRrcSap::RadioResourceConfigCommonSib * radioResourceConfigCommonSib, Buffer::Iterator bIterator)
 {
   std::bitset<0> bitset0;
   int n;
-
+    
   bIterator = DeserializeSequence (&bitset0,true,bIterator);
   // rach-ConfigCommon
   bIterator = DeserializeSequence (&bitset0,true,bIterator);
   // preambleInfo
   std::bitset<1> preamblesGroupAConfigPresent;
   bIterator = DeserializeSequence (&preamblesGroupAConfigPresent,false,bIterator);
-  bIterator = DeserializeEnum (16,&n,bIterator); // numberOfRA-Preambles
 
+  // numberOfRA-Preambles
+  bIterator = DeserializeEnum (16,&n,bIterator);
+  switch(n)
+  {
+    case 0:
+      radioResourceConfigCommonSib->rachConfigCommon.preambleInfo.numberOfRaPreambles = 4;
+      break;
+    case 1:
+      radioResourceConfigCommonSib->rachConfigCommon.preambleInfo.numberOfRaPreambles = 8;
+      break;
+    case 2:
+      radioResourceConfigCommonSib->rachConfigCommon.preambleInfo.numberOfRaPreambles = 12;
+      break;
+    case 3:
+      radioResourceConfigCommonSib->rachConfigCommon.preambleInfo.numberOfRaPreambles = 16;
+      break;
+    case 4:
+      radioResourceConfigCommonSib->rachConfigCommon.preambleInfo.numberOfRaPreambles = 20;
+      break;
+    case 5:
+      radioResourceConfigCommonSib->rachConfigCommon.preambleInfo.numberOfRaPreambles = 24;
+      break;
+    case 6:
+      radioResourceConfigCommonSib->rachConfigCommon.preambleInfo.numberOfRaPreambles = 28;
+      break;
+    case 7:
+      radioResourceConfigCommonSib->rachConfigCommon.preambleInfo.numberOfRaPreambles = 32;
+      break;
+    case 8:
+      radioResourceConfigCommonSib->rachConfigCommon.preambleInfo.numberOfRaPreambles = 36;
+      break;
+    case 9:
+      radioResourceConfigCommonSib->rachConfigCommon.preambleInfo.numberOfRaPreambles = 40;
+      break;
+    case 10:
+      radioResourceConfigCommonSib->rachConfigCommon.preambleInfo.numberOfRaPreambles = 44;
+      break;
+    case 11:
+      radioResourceConfigCommonSib->rachConfigCommon.preambleInfo.numberOfRaPreambles = 48;
+      break;
+    case 12:
+      radioResourceConfigCommonSib->rachConfigCommon.preambleInfo.numberOfRaPreambles = 52;
+      break;
+    case 13:
+      radioResourceConfigCommonSib->rachConfigCommon.preambleInfo.numberOfRaPreambles = 56;
+      break;
+    case 14:
+      radioResourceConfigCommonSib->rachConfigCommon.preambleInfo.numberOfRaPreambles = 60;
+      break;
+    case 15:
+      radioResourceConfigCommonSib->rachConfigCommon.preambleInfo.numberOfRaPreambles = 64;
+      break;
+    default:
+      radioResourceConfigCommonSib->rachConfigCommon.preambleInfo.numberOfRaPreambles = 0;
+  }
+
+  radioResourceConfigCommonSib->rachConfigCommon.preambleInfo.numberOfRaPreambles = n;
+  
   if (preamblesGroupAConfigPresent[0])
     {
       // Deserialize preamblesGroupAConfig
       // ...
     }
+    
   // powerRampingParameters
   bIterator = DeserializeSequence (&bitset0,false,bIterator);
   bIterator = DeserializeEnum (4,&n,bIterator); // powerRampingStep
   bIterator = DeserializeEnum (16,&n,bIterator); // preambleInitialReceivedTargetPower
+  
   // ra-SupervisionInfo
   bIterator = DeserializeSequence (&bitset0,false,bIterator);
   bIterator = DeserializeEnum (11,&n,bIterator); // preambleTransMax
-  bIterator = DeserializeEnum (8,&n,bIterator); // ra-ResponseWindowSize
+  switch(n)
+  {
+    case 0:
+      radioResourceConfigCommonSib->rachConfigCommon.raSupervisionInfo.preambleTransMax = 3;
+      break;
+    case 1:
+      radioResourceConfigCommonSib->rachConfigCommon.raSupervisionInfo.preambleTransMax = 4;
+      break;
+    case 2:
+      radioResourceConfigCommonSib->rachConfigCommon.raSupervisionInfo.preambleTransMax = 5;
+      break;
+    case 3:
+      radioResourceConfigCommonSib->rachConfigCommon.raSupervisionInfo.preambleTransMax = 6;
+      break;
+    case 4:
+      radioResourceConfigCommonSib->rachConfigCommon.raSupervisionInfo.preambleTransMax = 7;
+      break;
+    case 5:
+      radioResourceConfigCommonSib->rachConfigCommon.raSupervisionInfo.preambleTransMax = 8;
+      break;
+    case 6:
+      radioResourceConfigCommonSib->rachConfigCommon.raSupervisionInfo.preambleTransMax = 10;
+      break;
+    case 7:
+      radioResourceConfigCommonSib->rachConfigCommon.raSupervisionInfo.preambleTransMax = 20;
+      break;
+    case 8:
+      radioResourceConfigCommonSib->rachConfigCommon.raSupervisionInfo.preambleTransMax = 50;
+      break;
+    case 9:
+      radioResourceConfigCommonSib->rachConfigCommon.raSupervisionInfo.preambleTransMax = 100;
+      break;
+    case 10:
+      radioResourceConfigCommonSib->rachConfigCommon.raSupervisionInfo.preambleTransMax = 200;
+      break;
+    default:
+      radioResourceConfigCommonSib->rachConfigCommon.raSupervisionInfo.preambleTransMax = 0;
+   }
+   
+  // ra-ResponseWindowSize
+  bIterator = DeserializeEnum (8,&n,bIterator);
+  switch(n)
+  {
+    case 0:
+      radioResourceConfigCommonSib->rachConfigCommon.raSupervisionInfo.raResponseWindowSize = 2;
+      break;
+    case 1:
+      radioResourceConfigCommonSib->rachConfigCommon.raSupervisionInfo.raResponseWindowSize = 3;
+      break;
+    case 2:
+      radioResourceConfigCommonSib->rachConfigCommon.raSupervisionInfo.raResponseWindowSize = 4;
+      break;
+    case 3:
+      radioResourceConfigCommonSib->rachConfigCommon.raSupervisionInfo.raResponseWindowSize = 5;
+      break;
+    case 4:
+      radioResourceConfigCommonSib->rachConfigCommon.raSupervisionInfo.raResponseWindowSize = 6;
+      break;
+    case 5:
+      radioResourceConfigCommonSib->rachConfigCommon.raSupervisionInfo.raResponseWindowSize = 7;
+      break;
+    case 6:
+      radioResourceConfigCommonSib->rachConfigCommon.raSupervisionInfo.raResponseWindowSize = 8;
+      break;
+    case 7:
+      radioResourceConfigCommonSib->rachConfigCommon.raSupervisionInfo.raResponseWindowSize = 10;
+      break;
+    default:
+      radioResourceConfigCommonSib->rachConfigCommon.raSupervisionInfo.raResponseWindowSize = 0;
+   } 
+  
   bIterator = DeserializeEnum (8,&n,bIterator); // mac-ContentionResolutionTimer
 
   bIterator = DeserializeInteger (&n,1,8,bIterator); //maxHARQ-Msg3Tx
@@ -1844,13 +2105,13 @@ RrcConnectionRequestHeader::GetMessage () const
 }
 
 std::bitset<8>
-RrcConnectionRequestHeader::getMmec () const
+RrcConnectionRequestHeader::GetMmec () const
 {
   return m_mmec;
 }
 
 std::bitset<32>
-RrcConnectionRequestHeader::getMtmsi () const
+RrcConnectionRequestHeader::GetMtmsi () const
 {
   return m_mTmsi;
 }
@@ -1858,6 +2119,10 @@ RrcConnectionRequestHeader::getMtmsi () const
 
 //////////////////// RrcConnectionSetup class ////////////////////////
 RrcConnectionSetupHeader::RrcConnectionSetupHeader ()
+{
+}
+ 
+RrcConnectionSetupHeader::~RrcConnectionSetupHeader ()
 {
 }
  
@@ -1972,7 +2237,7 @@ RrcConnectionSetupHeader::Deserialize (Buffer::Iterator bIterator)
 }
 
 void
-RrcConnectionSetupHeader::SetMessage (RrcConnectionSetup msg)
+RrcConnectionSetupHeader::SetMessage (LteRrcSap::RrcConnectionSetup msg)
 {
   rrcTransactionIdentifier = msg.rrcTransactionIdentifier;
   radioResourceConfigDedicated = msg.radioResourceConfigDedicated;
@@ -1982,7 +2247,7 @@ RrcConnectionSetupHeader::SetMessage (RrcConnectionSetup msg)
 LteRrcSap::RrcConnectionSetup
 RrcConnectionSetupHeader::GetMessage () const
 {
-  RrcConnectionSetup msg;
+  LteRrcSap::RrcConnectionSetup msg;
   msg.rrcTransactionIdentifier = rrcTransactionIdentifier;
   msg.radioResourceConfigDedicated = radioResourceConfigDedicated; 
   return msg;
@@ -2033,6 +2298,10 @@ RrcConnectionSetupHeader::GetRadioResourceConfigDedicated () const
 //////////////////// RrcConnectionSetupCompleteHeader class ////////////////////////
 
 RrcConnectionSetupCompleteHeader::RrcConnectionSetupCompleteHeader ()
+{
+}
+
+RrcConnectionSetupCompleteHeader::~RrcConnectionSetupCompleteHeader ()
 {
 }
 
@@ -2112,7 +2381,7 @@ RrcConnectionSetupCompleteHeader::Print (std::ostream &os) const
 }
 
 void
-RrcConnectionSetupCompleteHeader::SetMessage (RrcConnectionSetupCompleted msg)
+RrcConnectionSetupCompleteHeader::SetMessage (LteRrcSap::RrcConnectionSetupCompleted msg)
 {
   m_rrcTransactionIdentifier = msg.rrcTransactionIdentifier;
   m_isDataSerialized = false;
@@ -2135,6 +2404,10 @@ RrcConnectionSetupCompleteHeader::GetMessage () const
 //////////////////// RrcConnectionReconfigurationCompleteHeader class ////////////////////////
 
 RrcConnectionReconfigurationCompleteHeader::RrcConnectionReconfigurationCompleteHeader ()
+{
+}
+
+RrcConnectionReconfigurationCompleteHeader::~RrcConnectionReconfigurationCompleteHeader ()
 {
 }
 
@@ -2199,7 +2472,7 @@ RrcConnectionReconfigurationCompleteHeader::Print (std::ostream &os) const
 }
 
 void
-RrcConnectionReconfigurationCompleteHeader::SetMessage (RrcConnectionReconfigurationCompleted msg)
+RrcConnectionReconfigurationCompleteHeader::SetMessage (LteRrcSap::RrcConnectionReconfigurationCompleted msg)
 {
   m_rrcTransactionIdentifier = msg.rrcTransactionIdentifier;
   m_isDataSerialized = false;
@@ -2208,7 +2481,7 @@ RrcConnectionReconfigurationCompleteHeader::SetMessage (RrcConnectionReconfigura
 LteRrcSap::RrcConnectionReconfigurationCompleted
 RrcConnectionReconfigurationCompleteHeader::GetMessage () const
 {
-  RrcConnectionReconfigurationCompleted msg;
+  LteRrcSap::RrcConnectionReconfigurationCompleted msg;
   msg.rrcTransactionIdentifier = m_rrcTransactionIdentifier;
   return msg;
 }
@@ -2222,6 +2495,10 @@ RrcConnectionReconfigurationCompleteHeader::GetRrcTransactionIdentifier () const
 //////////////////// RrcConnectionReconfigurationHeader class ////////////////////////
 
 RrcConnectionReconfigurationHeader::RrcConnectionReconfigurationHeader ()
+{
+}
+
+RrcConnectionReconfigurationHeader::~RrcConnectionReconfigurationHeader ()
 {
 }
 
@@ -2677,7 +2954,7 @@ RrcConnectionReconfigurationHeader::Print (std::ostream &os) const
 }
 
 void
-RrcConnectionReconfigurationHeader::SetMessage (RrcConnectionReconfiguration msg)
+RrcConnectionReconfigurationHeader::SetMessage (LteRrcSap::RrcConnectionReconfiguration msg)
 {
   m_rrcTransactionIdentifier = msg.rrcTransactionIdentifier;
   m_haveMeasConfig = msg.haveMeasConfig;
@@ -2693,7 +2970,7 @@ RrcConnectionReconfigurationHeader::SetMessage (RrcConnectionReconfiguration msg
 LteRrcSap::RrcConnectionReconfiguration
 RrcConnectionReconfigurationHeader::GetMessage () const
 {
-  RrcConnectionReconfiguration msg;
+  LteRrcSap::RrcConnectionReconfiguration msg;
 
   msg.rrcTransactionIdentifier = m_rrcTransactionIdentifier;
   msg.haveMeasConfig = m_haveMeasConfig;
@@ -2848,7 +3125,8 @@ HandoverPreparationInfoHeader::PreSerialize () const
   SerializeSystemInformationBlockType1 (m_asConfig.sourceSystemInformationBlockType1);
 
   // Serialize sourceSystemInformationBlockType2
-  SerializeSystemInformationBlockType2 ();
+  LteRrcSap::SystemInformationBlockType2 systemInformationBlockType2;
+  SerializeSystemInformationBlockType2 (systemInformationBlockType2);
 
   // Serialize AntennaInfoCommon 
   SerializeSequence (std::bitset<0> (0),false);
@@ -2992,7 +3270,7 @@ HandoverPreparationInfoHeader::Deserialize (Buffer::Iterator bIterator)
               bIterator = DeserializeSystemInformationBlockType1 (&m_asConfig.sourceSystemInformationBlockType1,bIterator);
 
               // Deserialize sourceSystemInformationBlockType2
-              bIterator = DeserializeSystemInformationBlockType2 (bIterator);
+              bIterator = DeserializeSystemInformationBlockType2 (&m_asConfig.sourceSystemInformationBlockType2,bIterator);
 
               // Deserialize antennaInfoCommon
               bIterator = DeserializeSequence (&bitset0,false,bIterator);
@@ -3038,7 +3316,7 @@ HandoverPreparationInfoHeader::Print (std::ostream &os) const
 }
 
 void
-HandoverPreparationInfoHeader::SetMessage (HandoverPreparationInfo msg)
+HandoverPreparationInfoHeader::SetMessage (LteRrcSap::HandoverPreparationInfo msg)
 {
   m_asConfig = msg.asConfig;
   m_isDataSerialized = false;
@@ -3047,7 +3325,7 @@ HandoverPreparationInfoHeader::SetMessage (HandoverPreparationInfo msg)
 LteRrcSap::HandoverPreparationInfo
 HandoverPreparationInfoHeader::GetMessage () const
 {
-  HandoverPreparationInfo msg;
+  LteRrcSap::HandoverPreparationInfo msg;
   msg.asConfig = m_asConfig;
 
   return msg;
@@ -3062,6 +3340,10 @@ HandoverPreparationInfoHeader::GetAsConfig () const
 //////////////////// RrcConnectionReestablishmentRequestHeader class ////////////////////////
 
 RrcConnectionReestablishmentRequestHeader::RrcConnectionReestablishmentRequestHeader ()
+{
+}
+
+RrcConnectionReestablishmentRequestHeader::~RrcConnectionReestablishmentRequestHeader ()
 {
 }
 
@@ -3096,13 +3378,13 @@ RrcConnectionReestablishmentRequestHeader::PreSerialize () const
   // Serialize ReestablishmentCause
   switch (m_reestablishmentCause)
     {
-    case RECONFIGURATION_FAILURE:
+    case LteRrcSap::RECONFIGURATION_FAILURE:
       SerializeEnum (4,0);
       break;
-    case HANDOVER_FAILURE:
+    case LteRrcSap::HANDOVER_FAILURE:
       SerializeEnum (4,1);
       break;
-    case OTHER_FAILURE:
+    case LteRrcSap::OTHER_FAILURE:
       SerializeEnum (4,2);
       break;
     default:
@@ -3163,13 +3445,13 @@ RrcConnectionReestablishmentRequestHeader::Deserialize (Buffer::Iterator bIterat
       switch (reestCs)
         {
         case 0:
-          m_reestablishmentCause = RECONFIGURATION_FAILURE;
+          m_reestablishmentCause = LteRrcSap::RECONFIGURATION_FAILURE;
           break;
         case 1:
-          m_reestablishmentCause = HANDOVER_FAILURE;
+          m_reestablishmentCause = LteRrcSap::HANDOVER_FAILURE;
           break;
         case 2:
-          m_reestablishmentCause = OTHER_FAILURE;
+          m_reestablishmentCause = LteRrcSap::OTHER_FAILURE;
           break;
         case 3:
           break;
@@ -3192,7 +3474,7 @@ RrcConnectionReestablishmentRequestHeader::Print (std::ostream &os) const
 }
 
 void
-RrcConnectionReestablishmentRequestHeader::SetMessage (RrcConnectionReestablishmentRequest msg)
+RrcConnectionReestablishmentRequestHeader::SetMessage (LteRrcSap::RrcConnectionReestablishmentRequest msg)
 {
   m_ueIdentity = msg.ueIdentity;
   m_reestablishmentCause = msg.reestablishmentCause;
@@ -3202,7 +3484,7 @@ RrcConnectionReestablishmentRequestHeader::SetMessage (RrcConnectionReestablishm
 LteRrcSap::RrcConnectionReestablishmentRequest
 RrcConnectionReestablishmentRequestHeader::GetMessage () const
 {
-  RrcConnectionReestablishmentRequest msg;
+  LteRrcSap::RrcConnectionReestablishmentRequest msg;
   msg.ueIdentity = m_ueIdentity;
   msg.reestablishmentCause = m_reestablishmentCause;
 
@@ -3224,6 +3506,10 @@ RrcConnectionReestablishmentRequestHeader::GetReestablishmentCause () const
 //////////////////// RrcConnectionReestablishmentHeader class ////////////////////////
 
 RrcConnectionReestablishmentHeader::RrcConnectionReestablishmentHeader ()
+{
+}
+
+RrcConnectionReestablishmentHeader::~RrcConnectionReestablishmentHeader ()
 {
 }
 
@@ -3321,7 +3607,7 @@ RrcConnectionReestablishmentHeader::Print (std::ostream &os) const
 }
 
 void
-RrcConnectionReestablishmentHeader::SetMessage (RrcConnectionReestablishment msg)
+RrcConnectionReestablishmentHeader::SetMessage (LteRrcSap::RrcConnectionReestablishment msg)
 {
   m_rrcTransactionIdentifier = msg.rrcTransactionIdentifier;
   m_radioResourceConfigDedicated = msg.radioResourceConfigDedicated;
@@ -3331,7 +3617,7 @@ RrcConnectionReestablishmentHeader::SetMessage (RrcConnectionReestablishment msg
 LteRrcSap::RrcConnectionReestablishment
 RrcConnectionReestablishmentHeader::GetMessage () const
 {
-  RrcConnectionReestablishment msg;
+  LteRrcSap::RrcConnectionReestablishment msg;
   msg.rrcTransactionIdentifier = m_rrcTransactionIdentifier;
   msg.radioResourceConfigDedicated = m_radioResourceConfigDedicated;
   return msg;
@@ -3427,7 +3713,7 @@ RrcConnectionReestablishmentCompleteHeader::Print (std::ostream &os) const
 }
 
 void
-RrcConnectionReestablishmentCompleteHeader::SetMessage (RrcConnectionReestablishmentComplete msg)
+RrcConnectionReestablishmentCompleteHeader::SetMessage (LteRrcSap::RrcConnectionReestablishmentComplete msg)
 {
   m_rrcTransactionIdentifier = msg.rrcTransactionIdentifier;
   m_isDataSerialized = false;
@@ -3436,7 +3722,7 @@ RrcConnectionReestablishmentCompleteHeader::SetMessage (RrcConnectionReestablish
 LteRrcSap::RrcConnectionReestablishmentComplete
 RrcConnectionReestablishmentCompleteHeader::GetMessage () const
 {
-  RrcConnectionReestablishmentComplete msg;
+  LteRrcSap::RrcConnectionReestablishmentComplete msg;
   msg.rrcTransactionIdentifier = m_rrcTransactionIdentifier;
   return msg;
 }
@@ -3450,6 +3736,10 @@ RrcConnectionReestablishmentCompleteHeader::GetRrcTransactionIdentifier () const
 //////////////////// RrcConnectionReestablishmentRejectHeader class ////////////////////////
 
 RrcConnectionReestablishmentRejectHeader::RrcConnectionReestablishmentRejectHeader ()
+{
+}
+
+RrcConnectionReestablishmentRejectHeader::~RrcConnectionReestablishmentRejectHeader ()
 {
 }
 
@@ -3516,7 +3806,7 @@ RrcConnectionReestablishmentRejectHeader::Print (std::ostream &os) const
 }
 
 void
-RrcConnectionReestablishmentRejectHeader::SetMessage (RrcConnectionReestablishmentReject msg)
+RrcConnectionReestablishmentRejectHeader::SetMessage (LteRrcSap::RrcConnectionReestablishmentReject msg)
 {
   m_rrcConnectionReestablishmentReject = msg;
   m_isDataSerialized = false;
@@ -3531,6 +3821,10 @@ RrcConnectionReestablishmentRejectHeader::GetMessage () const
 //////////////////// RrcConnectionReleaseHeader class ////////////////////////
 
 RrcConnectionReleaseHeader::RrcConnectionReleaseHeader ()
+{
+}
+
+RrcConnectionReleaseHeader::~RrcConnectionReleaseHeader ()
 {
 }
 
@@ -3637,7 +3931,7 @@ RrcConnectionReleaseHeader::Print (std::ostream &os) const
 }
 
 void
-RrcConnectionReleaseHeader::SetMessage (RrcConnectionRelease msg)
+RrcConnectionReleaseHeader::SetMessage (LteRrcSap::RrcConnectionRelease msg)
 {
   m_rrcConnectionRelease = msg;
   m_isDataSerialized = false;
@@ -3652,6 +3946,10 @@ RrcConnectionReleaseHeader::GetMessage () const
 //////////////////// RrcConnectionRejectHeader class ////////////////////////
 
 RrcConnectionRejectHeader::RrcConnectionRejectHeader ()
+{
+}
+
+RrcConnectionRejectHeader::~RrcConnectionRejectHeader ()
 {
 }
 
@@ -3741,7 +4039,7 @@ RrcConnectionRejectHeader::Print (std::ostream &os) const
 }
 
 void
-RrcConnectionRejectHeader::SetMessage (RrcConnectionReject msg)
+RrcConnectionRejectHeader::SetMessage (LteRrcSap::RrcConnectionReject msg)
 {
   m_rrcConnectionReject = msg;
   m_isDataSerialized = false;
@@ -3756,6 +4054,10 @@ RrcConnectionRejectHeader::GetMessage () const
 //////////////////// MeasurementReportHeader class ////////////////////////
 
 MeasurementReportHeader::MeasurementReportHeader ()
+{
+}
+
+MeasurementReportHeader::~MeasurementReportHeader ()
 {
 }
 
@@ -3886,7 +4188,7 @@ MeasurementReportHeader::Print (std::ostream &os) const
 }
 
 void
-MeasurementReportHeader::SetMessage (MeasurementReport msg)
+MeasurementReportHeader::SetMessage (LteRrcSap::MeasurementReport msg)
 {
   m_measurementReport = msg;
   m_isDataSerialized = false;
@@ -3895,7 +4197,7 @@ MeasurementReportHeader::SetMessage (MeasurementReport msg)
 LteRrcSap::MeasurementReport
 MeasurementReportHeader::GetMessage () const
 {
-  MeasurementReport msg;
+  LteRrcSap::MeasurementReport msg;
   msg = m_measurementReport;
   return msg;
 }
