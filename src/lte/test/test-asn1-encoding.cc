@@ -463,6 +463,9 @@ RrcConnectionReconfigurationTestCase::DoRun (void)
   msg.mobilityControlInfo.haveRachConfigDedicated = true;
   msg.mobilityControlInfo.rachConfigDedicated.raPreambleIndex = 2;
   msg.mobilityControlInfo.rachConfigDedicated.raPrachMaskIndex = 2;
+  msg.mobilityControlInfo.radioResourceConfigCommon.rachConfigCommon.preambleInfo.numberOfRaPreambles = 4;
+  msg.mobilityControlInfo.radioResourceConfigCommon.rachConfigCommon.raSupervisionInfo.preambleTransMax = 3;
+  msg.mobilityControlInfo.radioResourceConfigCommon.rachConfigCommon.raSupervisionInfo.raResponseWindowSize = 6;
 
   msg.haveRadioResourceConfigDedicated = true;
 
@@ -570,6 +573,12 @@ HandoverPreparationInfoTestCase::DoRun (void)
   msg.asConfig.sourceSystemInformationBlockType1.cellAccessRelatedInfo.csgIdentity = 4;
   msg.asConfig.sourceSystemInformationBlockType1.cellAccessRelatedInfo.plmnIdentityInfo.plmnIdentity = 123;
 
+  msg.asConfig.sourceSystemInformationBlockType2.freqInfo.ulBandwidth=100;
+  msg.asConfig.sourceSystemInformationBlockType2.freqInfo.ulCarrierFreq=10;
+  msg.asConfig.sourceSystemInformationBlockType2.radioResourceConfigCommon.rachConfigCommon.preambleInfo.numberOfRaPreambles = 4;
+  msg.asConfig.sourceSystemInformationBlockType2.radioResourceConfigCommon.rachConfigCommon.raSupervisionInfo.preambleTransMax = 3;
+  msg.asConfig.sourceSystemInformationBlockType2.radioResourceConfigCommon.rachConfigCommon.raSupervisionInfo.raResponseWindowSize = 6;
+  
   HandoverPreparationInfoHeader source;
   source.SetMessage (msg);
 

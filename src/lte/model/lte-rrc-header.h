@@ -56,9 +56,11 @@ protected:
   void SerializePhysicalConfigDedicated (LteRrcSap::PhysicalConfigDedicated physicalConfigDedicated) const;
   void SerializeSystemInformationBlockType1 (LteRrcSap::SystemInformationBlockType1 systemInformationBlockType1) const;
   void SerializeSystemInformationBlockType2 (LteRrcSap::SystemInformationBlockType2 systemInformationBlockType2) const;
+  void SerializeRadioResourceConfigCommon (LteRrcSap::RadioResourceConfigCommon radioResourceConfigCommon) const;
   void SerializeRadioResourceConfigCommonSib (LteRrcSap::RadioResourceConfigCommonSib radioResourceConfigCommonSib) const;
   void SerializeMeasResults (LteRrcSap::MeasResults measResults) const;
   void SerializePlmnIdentity (uint32_t plmnId) const;
+  void SerializeRachConfigCommon (LteRrcSap::RachConfigCommon rachConfigCommon) const;
 
   // Deserialization functions
   Buffer::Iterator DeserializeDrbToAddModList (std::list<LteRrcSap::DrbToAddMod> *drbToAddModLis, Buffer::Iterator bIterator);
@@ -68,10 +70,11 @@ protected:
   Buffer::Iterator DeserializePhysicalConfigDedicated (LteRrcSap::PhysicalConfigDedicated *physicalConfigDedicated, Buffer::Iterator bIterator);
   Buffer::Iterator DeserializeSystemInformationBlockType1 (LteRrcSap::SystemInformationBlockType1 *systemInformationBlockType1, Buffer::Iterator bIterator);
   Buffer::Iterator DeserializeSystemInformationBlockType2 (LteRrcSap::SystemInformationBlockType2 *systemInformationBlockType2, Buffer::Iterator bIterator);
-  Buffer::Iterator DeserializeRadioResourceConfigCommon (Buffer::Iterator bIterator);
+  Buffer::Iterator DeserializeRadioResourceConfigCommon (LteRrcSap::RadioResourceConfigCommon *radioResourceConfigCommon, Buffer::Iterator bIterator);
   Buffer::Iterator DeserializeRadioResourceConfigCommonSib (LteRrcSap::RadioResourceConfigCommonSib *radioResourceConfigCommonSib, Buffer::Iterator bIterator);
   Buffer::Iterator DeserializeMeasResults (LteRrcSap::MeasResults *measResults, Buffer::Iterator bIterator);
   Buffer::Iterator DeserializePlmnIdentity (uint32_t *plmnId, Buffer::Iterator bIterator);
+  Buffer::Iterator DeserializeRachConfigCommon (LteRrcSap::RachConfigCommon * rachConfigCommon, Buffer::Iterator bIterator);
 
   /**
    * This function prints RadioResourceConfigDedicated IE, for debugging purposes.
@@ -234,25 +237,58 @@ public:
   * @param msg The information element to parse
   */
   void SetMessage (LteRrcSap::RrcConnectionSetup msg);
-  
+
   /**
   * Returns a RrcConnectionSetup IE from the values in the class attributes
   * @return A RrcConnectionSetup, as defined in LteRrcSap
   */
   LteRrcSap::RrcConnectionSetup GetMessage () const;
-  
-  
+
+  /**
+  * Getter for m_rrcTransactionIdentifier
+  * @return m_rrcTransactionIdentifier
+  */
   uint8_t GetRrcTransactionIdentifier () const;
+
+  /**
+  * Getter for m_radioResourceConfigDedicated
+  * @return m_radioResourceConfigDedicated
+  */
+  LteRrcSap::RadioResourceConfigDedicated GetRadioResourceConfigDedicated () const; 
+
+  /**
+  * Gets m_radioResourceConfigDedicated.havePhysicalConfigDedicated
+  * @return m_radioResourceConfigDedicated.havePhysicalConfigDedicated
+  */
   bool HavePhysicalConfigDedicated () const;
-  std::list<LteRrcSap::SrbToAddMod> GetSrbToAddModList () const;
-  std::list<LteRrcSap::DrbToAddMod> GetDrbToAddModList () const;
-  std::list<uint8_t> GetDrbToReleaseList () const;
+
+  /**
+  * Gets m_radioResourceConfigDedicated.physicalConfigDedicated
+  * @return m_radioResourceConfigDedicated.physicalConfigDedicated
+  */
   LteRrcSap::PhysicalConfigDedicated GetPhysicalConfigDedicated () const;
-  LteRrcSap::RadioResourceConfigDedicated GetRadioResourceConfigDedicated () const;
+
+  /**
+  * Gets m_radioResourceConfigDedicated.srbToAddModList
+  * @return m_radioResourceConfigDedicated.srbToAddModList
+  */
+  std::list<LteRrcSap::SrbToAddMod> GetSrbToAddModList () const;
+
+  /**
+  * Gets m_radioResourceConfigDedicated.drbToAddModList
+  * @return m_radioResourceConfigDedicated.drbToAddModList
+  */
+  std::list<LteRrcSap::DrbToAddMod> GetDrbToAddModList () const;
+
+  /**
+  * Gets m_radioResourceConfigDedicated.drbToReleaseList
+  * @return m_radioResourceConfigDedicated.drbToReleaseList
+  */
+  std::list<uint8_t> GetDrbToReleaseList () const;
 
 private:
-  uint8_t rrcTransactionIdentifier;
-  mutable LteRrcSap::RadioResourceConfigDedicated radioResourceConfigDedicated;
+  uint8_t m_rrcTransactionIdentifier;
+  mutable LteRrcSap::RadioResourceConfigDedicated m_radioResourceConfigDedicated;
 };
 
 /**
@@ -274,7 +310,7 @@ public:
   * @param msg The information element to parse
   */
   void SetMessage (LteRrcSap::RrcConnectionSetupCompleted msg);
-  
+
   /**
   * Returns a RrcConnectionSetupCompleted IE from the values in the class attributes
   * @return A RrcConnectionSetupCompleted, as defined in LteRrcSap
@@ -286,7 +322,7 @@ public:
   * @return m_rrcTransactionIdentifier
   */
   uint8_t GetRrcTransactionIdentifier () const;
-  
+
 private:
   uint8_t m_rrcTransactionIdentifier;
 
@@ -311,13 +347,13 @@ public:
   * @param msg The information element to parse
   */
   void SetMessage (LteRrcSap::RrcConnectionReconfigurationCompleted msg);
-  
+
   /**
   * Returns a RrcConnectionReconfigurationCompleted IE from the values in the class attributes
   * @return A RrcConnectionReconfigurationCompleted, as defined in LteRrcSap
   */
   LteRrcSap::RrcConnectionReconfigurationCompleted GetMessage () const;
-  
+
   /**
   * Getter for m_rrcTransactionIdentifier
   * @return m_rrcTransactionIdentifier
@@ -348,61 +384,90 @@ public:
   * @param msg The information element to parse
   */ 
   void SetMessage (LteRrcSap::RrcConnectionReconfiguration msg);
-  
+
   /**
   * Returns a RrcConnectionReconfiguration IE from the values in the class attributes
   * @return A RrcConnectionReconfiguration, as defined in LteRrcSap
   */
   LteRrcSap::RrcConnectionReconfiguration GetMessage () const; 
-  
-  /**
-  * Getter for m_rrcTransactionIdentifier
-  * @return m_rrcTransactionIdentifier
-  */
-  uint8_t GetRrcTransactionIdentifier () const;
-  
+
   /**
   * Getter for m_haveMeasConfig
   * @return m_haveMeasConfig
   */
   bool GetHaveMeasConfig ();
-  
+
   /**
   * Getter for m_measConfig
   * @return m_measConfig
   */
   LteRrcSap::MeasConfig GetMeasConfig ();
-  
+
   /**
   * Getter for m_haveMobilityControlInfo
   * @return m_haveMobilityControlInfo
   */
   bool GetHaveMobilityControlInfo ();
-  
+
   /**
   * Getter for m_mobilityControlInfo
   * @return m_mobilityControlInfo
   */
   LteRrcSap::MobilityControlInfo GetMobilityControlInfo ();
-  
+
   /**
   * Getter for m_haveRadioResourceConfigDedicated
   * @return m_haveRadioResourceConfigDedicated
-  */  
+  */
   bool GetHaveRadioResourceConfigDedicated ();
-  
+
   /**
   * Getter for m_radioResourceConfigDedicated
   * @return m_radioResourceConfigDedicated
   */
   LteRrcSap::RadioResourceConfigDedicated GetRadioResourceConfigDedicated ();
 
-  // RadioResourceConfigDedicated functions
+  /**
+  * Getter for m_rrcTransactionIdentifier
+  * @return m_rrcTransactionIdentifier
+  */
+  uint8_t GetRrcTransactionIdentifier () const;
+
+  /**
+  * Getter for m_radioResourceConfigDedicated
+  * @return m_radioResourceConfigDedicated
+  */
+  LteRrcSap::RadioResourceConfigDedicated GetRadioResourceConfigDedicated () const; 
+
+  /**
+  * Gets m_radioResourceConfigDedicated.havePhysicalConfigDedicated
+  * @return m_radioResourceConfigDedicated.havePhysicalConfigDedicated
+  */
   bool HavePhysicalConfigDedicated () const;
-  std::list<LteRrcSap::SrbToAddMod> GetSrbToAddModList () const;
-  std::list<LteRrcSap::DrbToAddMod> GetDrbToAddModList () const;
-  std::list<uint8_t> GetDrbToReleaseList () const;
+
+  /**
+  * Gets m_radioResourceConfigDedicated.physicalConfigDedicated
+  * @return m_radioResourceConfigDedicated.physicalConfigDedicated
+  */
   LteRrcSap::PhysicalConfigDedicated GetPhysicalConfigDedicated () const;
+
+  /**
+  * Gets m_radioResourceConfigDedicated.srbToAddModList
+  * @return m_radioResourceConfigDedicated.srbToAddModList
+  */
+  std::list<LteRrcSap::SrbToAddMod> GetSrbToAddModList () const;
+
+  /**
+  * Gets m_radioResourceConfigDedicated.drbToAddModList
+  * @return m_radioResourceConfigDedicated.drbToAddModList
+  */
+  std::list<LteRrcSap::DrbToAddMod> GetDrbToAddModList () const;
+
+  /**
+  * Gets m_radioResourceConfigDedicated.drbToReleaseList
+  * @return m_radioResourceConfigDedicated.drbToReleaseList
+  */
+  std::list<uint8_t> GetDrbToReleaseList () const;
 
 private:
   uint8_t m_rrcTransactionIdentifier;
@@ -438,7 +503,7 @@ public:
   * @return A HandoverPreparationInfo, as defined in LteRrcSap
   */
   LteRrcSap::HandoverPreparationInfo GetMessage () const;
-  
+
   /**
   * Getter for m_asConfig
   * @return m_asConfig
@@ -468,7 +533,7 @@ public:
   * @param msg The information element to parse
   */ 
   void SetMessage (LteRrcSap::RrcConnectionReestablishmentRequest msg);
-  
+
   /**
   * Returns a RrcConnectionReestablishmentRequest IE from the values in the class attributes
   * @return A RrcConnectionReestablishmentRequest, as defined in LteRrcSap
@@ -480,7 +545,7 @@ public:
   * @return m_ueIdentity
   */
   LteRrcSap::ReestabUeIdentity GetUeIdentity () const;
-  
+
   /**
   * Getter for m_reestablishmentCause
   * @return m_reestablishmentCause
@@ -553,13 +618,13 @@ public:
   * @param msg The information element to parse
   */ 
   void SetMessage (LteRrcSap::RrcConnectionReestablishmentComplete msg);
-  
+
   /**
   * Returns a RrcConnectionReestablishmentComplete IE from the values in the class attributes
   * @return A RrcConnectionReestablishmentComplete, as defined in LteRrcSap
   */
   LteRrcSap::RrcConnectionReestablishmentComplete GetMessage () const;
-  
+
   /**
   * Getter for m_rrcTransactionIdentifier attribute
   * @return m_rrcTransactionIdentifier
@@ -578,18 +643,18 @@ class RrcConnectionReestablishmentRejectHeader : public RrcDlCcchMessage
 public:
   RrcConnectionReestablishmentRejectHeader ();
   ~RrcConnectionReestablishmentRejectHeader ();
-  
+
   // Inherited from RrcAsn1Header 
   void PreSerialize () const;
   uint32_t Deserialize (Buffer::Iterator bIterator);
   void Print (std::ostream &os) const;
-  
+
   /**
   * Receives a RrcConnectionReestablishmentReject IE and stores the contents into the class attributes
   * @param msg The information element to parse
   */ 
   void SetMessage (LteRrcSap::RrcConnectionReestablishmentReject msg);
-  
+
   /**
   * Returns a RrcConnectionReestablishmentReject IE from the values in the class attributes
   * @return A RrcConnectionReestablishmentReject, as defined in LteRrcSap
@@ -608,24 +673,24 @@ class RrcConnectionReleaseHeader : public RrcDlDcchMessage
 public:
   RrcConnectionReleaseHeader ();
   ~RrcConnectionReleaseHeader ();
-  
+
   // Inherited from RrcAsn1Header 
   void PreSerialize () const;
   uint32_t Deserialize (Buffer::Iterator bIterator);
   void Print (std::ostream &os) const;
-  
+
   /**
   * Receives a RrcConnectionRelease IE and stores the contents into the class attributes
   * @param msg The information element to parse
   */ 
   void SetMessage (LteRrcSap::RrcConnectionRelease msg);
-  
+
   /**
   * Returns a RrcConnectionRelease IE from the values in the class attributes
   * @return A RrcConnectionRelease, as defined in LteRrcSap
   */
   LteRrcSap::RrcConnectionRelease GetMessage () const;
-  
+
   /**
   * Getter for m_rrcConnectionRelease attribute
   * @return m_rrcConnectionRelease
@@ -644,18 +709,18 @@ class RrcConnectionRejectHeader : public RrcDlCcchMessage
 public:
   RrcConnectionRejectHeader ();
   ~RrcConnectionRejectHeader ();
-  
+
   // Inherited from RrcAsn1Header 
   void PreSerialize () const;
   uint32_t Deserialize (Buffer::Iterator bIterator);
   void Print (std::ostream &os) const;
-  
+
   /**
   * Receives a RrcConnectionReject IE and stores the contents into the class attributes
   * @param msg The information element to parse
   */ 
   void SetMessage (LteRrcSap::RrcConnectionReject msg);
-  
+
   /**
   * Returns a RrcConnectionReject IE from the values in the class attributes
   * @return A RrcConnectionReject, as defined in LteRrcSap
@@ -674,18 +739,18 @@ class MeasurementReportHeader : public RrcUlDcchMessage
 public:
   MeasurementReportHeader ();
   ~MeasurementReportHeader ();
-  
+
   // Inherited from RrcAsn1Header 
   void PreSerialize () const;
   uint32_t Deserialize (Buffer::Iterator bIterator);
   void Print (std::ostream &os) const;
-  
+
   /**
   * Receives a MeasurementReport IE and stores the contents into the class attributes
   * @param msg The information element to parse
-  */  
+  */
   void SetMessage (LteRrcSap::MeasurementReport msg);
-  
+
   /**
   * Returns a MeasurementReport IE from the values in the class attributes
   * @return A MeasurementReport, as defined in LteRrcSap

@@ -85,7 +85,7 @@ RrcAsn1Header::SerializeDrbToAddModList (std::list<LteRrcSap::DrbToAddMod> drbTo
       drbToAddModListOptionalFieldsPresent.set (2,1); // rlc-Config present
       drbToAddModListOptionalFieldsPresent.set (1,1); // logicalChannelIdentity present
       drbToAddModListOptionalFieldsPresent.set (0,1); // logicalChannelConfig present
-      SerializeSequence(drbToAddModListOptionalFieldsPresent,true);
+      SerializeSequence (drbToAddModListOptionalFieldsPresent,true);
 
       // Serialize eps-BearerIdentity::=INTEGER (0..15)
       SerializeInteger (it->epsBearerIdentity,0,15);
@@ -100,11 +100,11 @@ RrcAsn1Header::SerializeDrbToAddModList (std::list<LteRrcSap::DrbToAddMod> drbTo
           SerializeChoice (4,1);
 
           // Serialize UL-UM-RLC
-          SerializeSequence(std::bitset<0> (),false);
+          SerializeSequence (std::bitset<0> (),false);
           SerializeEnum (2,0);  // sn-FieldLength
 
           // Serialize DL-UM-RLC
-          SerializeSequence(std::bitset<0> (),false);
+          SerializeSequence (std::bitset<0> (),false);
           SerializeEnum (2,0);  // sn-FieldLength
           SerializeEnum (32,0);  // t-Reordering
           break;
@@ -114,7 +114,7 @@ RrcAsn1Header::SerializeDrbToAddModList (std::list<LteRrcSap::DrbToAddMod> drbTo
           SerializeChoice (4,2);
 
           // Serialize UL-UM-RLC
-          SerializeSequence(std::bitset<0> (),false);
+          SerializeSequence (std::bitset<0> (),false);
           SerializeEnum (2,0);  // sn-FieldLength
           break;
 
@@ -123,7 +123,7 @@ RrcAsn1Header::SerializeDrbToAddModList (std::list<LteRrcSap::DrbToAddMod> drbTo
           SerializeChoice (4,3);
 
           // Serialize DL-UM-RLC
-          SerializeSequence(std::bitset<0> (),false);
+          SerializeSequence (std::bitset<0> (),false);
           SerializeEnum (2,0);  // sn-FieldLength
           SerializeEnum (32,0);  // t-Reordering
           break;
@@ -134,14 +134,14 @@ RrcAsn1Header::SerializeDrbToAddModList (std::list<LteRrcSap::DrbToAddMod> drbTo
           SerializeChoice (4,0);
 
           // Serialize UL-AM-RLC
-          SerializeSequence(std::bitset<0> (),false);
+          SerializeSequence (std::bitset<0> (),false);
           SerializeEnum (64,0);  // t-PollRetransmit
           SerializeEnum (8,0);   // pollPDU
           SerializeEnum (16,0);  // pollByte
           SerializeEnum (8,0);   // maxRetxThreshold
 
           // Serialize DL-AM-RLC
-          SerializeSequence(std::bitset<0> (),false);
+          SerializeSequence (std::bitset<0> (),false);
           SerializeEnum (32,0);  // t-Reordering
           SerializeEnum (64,0);  // t-StatusProhibit
           break;
@@ -170,7 +170,7 @@ RrcAsn1Header::SerializeSrbToAddModList (std::list<LteRrcSap::SrbToAddMod> srbTo
       std::bitset<2> srbToAddModListOptionalFieldsPresent = std::bitset<2> ();
       srbToAddModListOptionalFieldsPresent.set (1,0); // rlc-Config not present
       srbToAddModListOptionalFieldsPresent.set (0,1); // logicalChannelConfig present
-      SerializeSequence(srbToAddModListOptionalFieldsPresent,true);
+      SerializeSequence (srbToAddModListOptionalFieldsPresent,true);
 
       // Serialize srb-Identity ::= INTEGER (1..2)
       SerializeInteger (it->srbIdentity,1,2);
@@ -293,7 +293,7 @@ RrcAsn1Header::SerializePhysicalConfigDedicated (LteRrcSap::PhysicalConfigDedica
 
           // Serialize setup sequence
           // 0 optional / default fields, no extension marker.
-          SerializeSequence(std::bitset<0> (),false);
+          SerializeSequence (std::bitset<0> (),false);
 
           // Serialize srs-Bandwidth
           SerializeEnum (4,physicalConfigDedicated.soundingRsUlConfigDedicated.srsBandwidth);
@@ -356,7 +356,7 @@ RrcAsn1Header::SerializeRadioResourceConfigDedicated (LteRrcSap::RadioResourceCo
   optionalFieldsPresent.set (2,0);  // mac-MainConfig not present
   optionalFieldsPresent.set (1,0);  // sps-Config not present
   optionalFieldsPresent.set (0,(radioResourceConfigDedicated.havePhysicalConfigDedicated) ? 1 : 0);
-  SerializeSequence(optionalFieldsPresent,true);
+  SerializeSequence (optionalFieldsPresent,true);
 
   // Serialize srbToAddModList
   if (isSrbToAddModListPresent)
@@ -448,108 +448,64 @@ RrcAsn1Header::SerializeSystemInformationBlockType1 (LteRrcSap::SystemInformatio
 }
 
 void
+RrcAsn1Header::SerializeRadioResourceConfigCommon (LteRrcSap::RadioResourceConfigCommon radioResourceConfigCommon) const
+{
+  // 9 optional fields. Extension marker yes.
+  std::bitset<9> rrCfgCmmOpts;
+  rrCfgCmmOpts.set (8,1); // rach-ConfigCommon is present
+  rrCfgCmmOpts.set (7,0); // pdsch-ConfigCommon not present
+  rrCfgCmmOpts.set (6,0); // phich-Config not present
+  rrCfgCmmOpts.set (5,0); // pucch-ConfigCommon  not present
+  rrCfgCmmOpts.set (4,0); // soundingRS-UL-ConfigCommon not present
+  rrCfgCmmOpts.set (3,0); // uplinkPowerControlCommon not present
+  rrCfgCmmOpts.set (2,0); // antennaInfoCommon not present
+  rrCfgCmmOpts.set (1,0); // p-Max not present
+  rrCfgCmmOpts.set (0,0); // tdd-Config not present
+
+  SerializeSequence (rrCfgCmmOpts,true);
+
+  if (rrCfgCmmOpts[8])
+    {
+      // Serialize RACH-ConfigCommon
+      SerializeRachConfigCommon (radioResourceConfigCommon.rachConfigCommon);
+    }
+
+  // Serialize PRACH-Config
+  // 1 optional, 0 extension marker.
+  SerializeSequence (std::bitset<1> (0),false);
+
+  // Serialize PRACH-Config rootSequenceIndex
+  SerializeInteger (0,0,1023);
+
+  // Serialize PUSCH-ConfigCommon
+  SerializeSequence (std::bitset<0> (),false);
+
+  // Serialize pusch-ConfigBasic
+  SerializeSequence (std::bitset<0> (),false);
+  SerializeInteger (1,1,4);
+  SerializeEnum (2,0);
+  SerializeInteger (0,0,98);
+  SerializeBoolean (false);
+
+  // Serialize UL-ReferenceSignalsPUSCH
+  SerializeSequence (std::bitset<0> (),false);
+  SerializeBoolean (false);
+  SerializeInteger (0,0,29);
+  SerializeBoolean (false);
+  SerializeInteger (4,0,7);
+
+  // Serialize UL-CyclicPrefixLength
+  SerializeEnum (2,0);
+}
+
+void
 RrcAsn1Header::SerializeRadioResourceConfigCommonSib (LteRrcSap::RadioResourceConfigCommonSib radioResourceConfigCommonSib) const
 {
   SerializeSequence (std::bitset<0> (0),true);
+
   // rach-ConfigCommon
-  SerializeSequence (std::bitset<0> (0),true);
-  SerializeSequence (std::bitset<1> (0),false); // preambleInfo
-  
-  // numberOfRA-Preambles
-  switch(radioResourceConfigCommonSib.rachConfigCommon.preambleInfo.numberOfRaPreambles)
-  {
-    case 4: SerializeEnum (16,0);
-      break;
-    case 8: SerializeEnum (16,1);
-      break;
-    case 12: SerializeEnum (16,2);
-      break;
-    case 16 : SerializeEnum (16,3);
-      break;
-    case 20: SerializeEnum (16,4);
-      break;
-    case 24: SerializeEnum (16,5);
-      break;
-    case 28: SerializeEnum (16,6);
-      break;
-    case 32: SerializeEnum (16,7);
-      break;
-    case 36: SerializeEnum (16,8);
-      break;
-    case 40: SerializeEnum (16,9);
-      break;
-    case 44: SerializeEnum (16,10);
-      break;
-    case 48: SerializeEnum (16,11);
-      break;
-    case 52: SerializeEnum (16,12);
-      break;
-    case 56: SerializeEnum (16,13);
-      break;
-    case 60: SerializeEnum (16,14);
-      break;
-    case 64: SerializeEnum (16,15);
-      break;
-    default: SerializeEnum (16,0);
-  }
-  
-  SerializeSequence (std::bitset<0> (0),false); // powerRampingParameters
-  SerializeEnum (4,0); // powerRampingStep
-  SerializeEnum (16,0); // preambleInitialReceivedTargetPower
-  SerializeSequence (std::bitset<0> (0),false); // ra-SupervisionInfo
-  
-  // preambleTransMax
-  switch(radioResourceConfigCommonSib.rachConfigCommon.raSupervisionInfo.preambleTransMax)
-  {
-    case 3: SerializeEnum(11,0);
-    break;
-    case 4: SerializeEnum(11,1);
-    break;
-    case 5: SerializeEnum(11,2);
-    break;
-    case 6: SerializeEnum(11,3);
-    break;
-    case 7: SerializeEnum(11,4);
-    break;
-    case 8: SerializeEnum(11,5);
-    break;
-    case 10: SerializeEnum(11,6);
-    break;
-    case 20: SerializeEnum(11,7);
-    break;
-    case 50: SerializeEnum(11,8);
-    break;
-    case 100: SerializeEnum(11,9);
-    break;
-    case 200: SerializeEnum(11,10);
-    break;
-    default: SerializeEnum (11,0);
-  }
-  
-  // ra-ResponseWindowSize
-  switch(radioResourceConfigCommonSib.rachConfigCommon.raSupervisionInfo.raResponseWindowSize)
-  {
-    case 2: SerializeEnum(8,0);
-    break;
-    case 3: SerializeEnum(8,1);
-    break;
-    case 4: SerializeEnum(8,2);
-    break;
-    case 5: SerializeEnum(8,3);
-    break;
-    case 6: SerializeEnum(8,4);
-    break;
-    case 7: SerializeEnum(8,5);
-    break;
-    case 8: SerializeEnum(8,6);
-    break;
-    case 10: SerializeEnum(8,7);
-    break;
-    default: SerializeEnum (8,0); 
-  }
-  
-  SerializeEnum (8,0); // mac-ContentionResolutionTimer
-  SerializeInteger (1,1,8); // maxHARQ-Msg3Tx
+  SerializeRachConfigCommon (radioResourceConfigCommonSib.rachConfigCommon);
+
   // bcch-Config 
   SerializeSequence (std::bitset<0> (0),false);
   SerializeEnum (4,0); // modificationPeriodCoeff
@@ -617,26 +573,33 @@ RrcAsn1Header::SerializeSystemInformationBlockType2 (LteRrcSap::SystemInformatio
   SerializeEnum (8,0); // n310
   SerializeEnum (7,0); // t311
   SerializeEnum (8,0); // n311
-  
+
   // freqInfo
   SerializeSequence (std::bitset<2> (3),false);
   SerializeInteger ((int) systemInformationBlockType2.freqInfo.ulCarrierFreq, 0, MAX_EARFCN);
-  switch(systemInformationBlockType2.freqInfo.ulBandwidth)
-  {
-    case 6: SerializeEnum(6,0);
-    break;
-    case 15: SerializeEnum(6,1);
-    break;
-    case 25: SerializeEnum(6,2);
-    break;
-    case 50: SerializeEnum(6,3);
-    break;
-    case 75: SerializeEnum(6,4);
-    break;
-    case 100: SerializeEnum(6,5);
-    break;
-    default: SerializeEnum(6,0);
-  }
+  switch (systemInformationBlockType2.freqInfo.ulBandwidth)
+    {
+    case 6:
+      SerializeEnum (6,0);
+      break;
+    case 15:
+      SerializeEnum (6,1);
+      break;
+    case 25:
+      SerializeEnum (6,2);
+      break;
+    case 50:
+      SerializeEnum (6,3);
+      break;
+    case 75:
+      SerializeEnum (6,4);
+      break;
+    case 100:
+      SerializeEnum (6,5);
+      break;
+    default:
+      SerializeEnum (6,0);
+    }
 
   SerializeInteger (29,1,32); // additionalSpectrumEmission
   // timeAlignmentTimerCommon
@@ -647,85 +610,85 @@ void
 RrcAsn1Header::SerializeMeasResults (LteRrcSap::MeasResults measResults) const
 {
   // Watchdog: if list has 0 elements, set boolean to false
-  if(measResults.measResultListEutra.empty())
-  {
-    measResults.haveMeasResultNeighCells = false;
-  }
+  if (measResults.measResultListEutra.empty ())
+    {
+      measResults.haveMeasResultNeighCells = false;
+    }
 
   // Serialize MeasResults sequence, 1 optional value, extension marker present
-  SerializeSequence(std::bitset<1>(measResults.haveMeasResultNeighCells),true);
+  SerializeSequence (std::bitset<1> (measResults.haveMeasResultNeighCells),true);
 
   // Serialize measId
-  SerializeInteger(measResults.measId,1,MAX_MEAS_ID);
-  
+  SerializeInteger (measResults.measId,1,MAX_MEAS_ID);
+
   // Serialize measResultServCell sequence
-  SerializeSequence(std::bitset<0>(0),false);
+  SerializeSequence (std::bitset<0> (0),false);
 
   // Serialize rsrpResult
-  SerializeInteger(measResults.rsrpResult,0,97);
-  
-  // Serialize rsrqResult
-  SerializeInteger(measResults.rsrqResult,0,34);
-  
-  if(measResults.haveMeasResultNeighCells)
-  {
-    // Serialize Choice = 0 (MeasResultListEUTRA)
-    SerializeChoice (4,0);
-    
-    // Serialize measResultNeighCells
-    SerializeSequenceOf(measResults.measResultListEutra.size(),MAX_CELL_REPORT,1);
-    
-    // serialize MeasResultEutra elements in the list
-    std::list<LteRrcSap::MeasResultEutra>::iterator it;
-    for (it = measResults.measResultListEutra.begin(); it != measResults.measResultListEutra.end(); it++)
-    {
-      SerializeSequence (std::bitset<1> (it->haveCgiInfo),false);
-      
-      // Serialize PhysCellId
-      SerializeInteger (it->physCellId, 0, 503);
-      
-      // Serialize CgiInfo
-      if(it->haveCgiInfo)
-      {
-        SerializeSequence (std::bitset<1>(it->cgiInfo.plmnIdentityList.size()),false);
+  SerializeInteger (measResults.rsrpResult,0,97);
 
-        // Serialize cellGlobalId
-        SerializeSequence (std::bitset<0>(0),false);
-        SerializePlmnIdentity(it->cgiInfo.plmnIdentity);
-        SerializeBitstring (std::bitset<28>(it->cgiInfo.cellIdentity));
-        
-        // Serialize trackingAreaCode
-        SerializeBitstring (std::bitset<16>(it->cgiInfo.trackingAreaCode));
-        
-        // Serialize plmn-IdentityList
-        if(!it->cgiInfo.plmnIdentityList.empty())
+  // Serialize rsrqResult
+  SerializeInteger (measResults.rsrqResult,0,34);
+
+  if (measResults.haveMeasResultNeighCells)
+    {
+      // Serialize Choice = 0 (MeasResultListEUTRA)
+      SerializeChoice (4,0);
+
+      // Serialize measResultNeighCells
+      SerializeSequenceOf (measResults.measResultListEutra.size (),MAX_CELL_REPORT,1);
+
+      // serialize MeasResultEutra elements in the list
+      std::list<LteRrcSap::MeasResultEutra>::iterator it;
+      for (it = measResults.measResultListEutra.begin (); it != measResults.measResultListEutra.end (); it++)
         {
-          SerializeSequenceOf(it->cgiInfo.plmnIdentityList.size(),5,1);
-          std::list<uint32_t>::iterator it2;
-          for (it2 = it->cgiInfo.plmnIdentityList.begin(); it2 != it->cgiInfo.plmnIdentityList.end(); it2++)
-          {
-            SerializePlmnIdentity(*it2);
-          }
+          SerializeSequence (std::bitset<1> (it->haveCgiInfo),false);
+
+          // Serialize PhysCellId
+          SerializeInteger (it->physCellId, 0, 503);
+
+          // Serialize CgiInfo
+          if (it->haveCgiInfo)
+            {
+              SerializeSequence (std::bitset<1> (it->cgiInfo.plmnIdentityList.size ()),false);
+
+              // Serialize cellGlobalId
+              SerializeSequence (std::bitset<0> (0),false);
+              SerializePlmnIdentity (it->cgiInfo.plmnIdentity);
+              SerializeBitstring (std::bitset<28> (it->cgiInfo.cellIdentity));
+
+              // Serialize trackingAreaCode
+              SerializeBitstring (std::bitset<16> (it->cgiInfo.trackingAreaCode));
+
+              // Serialize plmn-IdentityList
+              if (!it->cgiInfo.plmnIdentityList.empty ())
+                {
+                  SerializeSequenceOf (it->cgiInfo.plmnIdentityList.size (),5,1);
+                  std::list<uint32_t>::iterator it2;
+                  for (it2 = it->cgiInfo.plmnIdentityList.begin (); it2 != it->cgiInfo.plmnIdentityList.end (); it2++)
+                    {
+                      SerializePlmnIdentity (*it2);
+                    }
+                }
+            }
+
+          // Serialize measResult
+          std::bitset<2> measResultFieldsPresent;
+          measResultFieldsPresent[1] = it->haveRsrpResult;
+          measResultFieldsPresent[0] = it->haveRsrqResult;
+          SerializeSequence (measResultFieldsPresent,true);
+
+          if (it->haveRsrpResult)
+            {
+              SerializeInteger (it->rsrpResult,0,97);
+            }
+
+          if (it->haveRsrqResult)
+            {
+              SerializeInteger (it->rsrqResult,0,34);
+            }
         }
-      }
-      
-      // Serialize measResult
-      std::bitset<2> measResultFieldsPresent;
-      measResultFieldsPresent[1] = it->haveRsrpResult;
-      measResultFieldsPresent[0] = it->haveRsrqResult;
-      SerializeSequence(measResultFieldsPresent,true);
-      
-      if(it->haveRsrpResult)
-      {
-        SerializeInteger (it->rsrpResult,0,97);
-      }
-      
-      if(it->haveRsrqResult)
-      {
-        SerializeInteger (it->rsrqResult,0,34);
-      }
     }
-  } 
 }
 
 void
@@ -733,7 +696,7 @@ RrcAsn1Header::SerializePlmnIdentity (uint32_t plmnId) const
 {
   // plmn-Identity sequence, mcc is optional, no extension marker
   SerializeSequence (std::bitset<1> (0), false);
-  
+
   // Serialize mnc
   int nDig = (plmnId > 99) ? 3 : 2;
 
@@ -744,9 +707,153 @@ RrcAsn1Header::SerializePlmnIdentity (uint32_t plmnId) const
       SerializeInteger (n,0,9);
       plmnId -= n * pow (10,i);
     }
-    
+
   // cellReservedForOperatorUse 
   SerializeEnum (2,0);
+}
+
+void 
+RrcAsn1Header::SerializeRachConfigCommon (LteRrcSap::RachConfigCommon rachConfigCommon) const
+{
+  // rach-ConfigCommon
+  SerializeSequence (std::bitset<0> (0),true);
+
+  // preambleInfo
+  SerializeSequence (std::bitset<1> (0),false);
+
+  // numberOfRA-Preambles
+  switch (rachConfigCommon.preambleInfo.numberOfRaPreambles)
+    {
+    case 4:
+      SerializeEnum (16,0);
+      break;
+    case 8:
+      SerializeEnum (16,1);
+      break;
+    case 12:
+      SerializeEnum (16,2);
+      break;
+    case 16:
+      SerializeEnum (16,3);
+      break;
+    case 20:
+      SerializeEnum (16,4);
+      break;
+    case 24:
+      SerializeEnum (16,5);
+      break;
+    case 28:
+      SerializeEnum (16,6);
+      break;
+    case 32:
+      SerializeEnum (16,7);
+      break;
+    case 36:
+      SerializeEnum (16,8);
+      break;
+    case 40:
+      SerializeEnum (16,9);
+      break;
+    case 44:
+      SerializeEnum (16,10);
+      break;
+    case 48:
+      SerializeEnum (16,11);
+      break;
+    case 52:
+      SerializeEnum (16,12);
+      break;
+    case 56:
+      SerializeEnum (16,13);
+      break;
+    case 60:
+      SerializeEnum (16,14);
+      break;
+    case 64:
+      SerializeEnum (16,15);
+      break;
+    default:
+      SerializeEnum (16,0);
+    }
+
+  SerializeSequence (std::bitset<0> (0),false); // powerRampingParameters
+  SerializeEnum (4,0); // powerRampingStep
+  SerializeEnum (16,0); // preambleInitialReceivedTargetPower
+  SerializeSequence (std::bitset<0> (0),false); // ra-SupervisionInfo
+
+  // preambleTransMax
+  switch (rachConfigCommon.raSupervisionInfo.preambleTransMax)
+    {
+    case 3:
+      SerializeEnum (11,0);
+      break;
+    case 4:
+      SerializeEnum (11,1);
+      break;
+    case 5:
+      SerializeEnum (11,2);
+      break;
+    case 6:
+      SerializeEnum (11,3);
+      break;
+    case 7:
+      SerializeEnum (11,4);
+      break;
+    case 8:
+      SerializeEnum (11,5);
+      break;
+    case 10:
+      SerializeEnum (11,6);
+      break;
+    case 20:
+      SerializeEnum (11,7);
+      break;
+    case 50:
+      SerializeEnum (11,8);
+      break;
+    case 100:
+      SerializeEnum (11,9);
+      break;
+    case 200:
+      SerializeEnum (11,10);
+      break;
+    default:
+      SerializeEnum (11,0);
+    }
+
+  // ra-ResponseWindowSize
+  switch (rachConfigCommon.raSupervisionInfo.raResponseWindowSize)
+    {
+    case 2:
+      SerializeEnum (8,0);
+      break;
+    case 3:
+      SerializeEnum (8,1);
+      break;
+    case 4:
+      SerializeEnum (8,2);
+      break;
+    case 5:
+      SerializeEnum (8,3);
+      break;
+    case 6:
+      SerializeEnum (8,4);
+      break;
+    case 7:
+      SerializeEnum (8,5);
+      break;
+    case 8:
+      SerializeEnum (8,6);
+      break;
+    case 10:
+      SerializeEnum (8,7);
+      break;
+    default:
+      SerializeEnum (8,0);
+    }
+
+  SerializeEnum (8,0); // mac-ContentionResolutionTimer
+  SerializeInteger (1,1,8); // maxHARQ-Msg3Tx
 }
 
 Buffer::Iterator
@@ -901,14 +1008,14 @@ RrcAsn1Header::DeserializeDrbToAddModList (std::list<LteRrcSap::DrbToAddMod> *dr
               drbToAddMod.rlcConfig.choice = LteRrcSap::RlcConfig::AM;
 
               // Deserialize UL-AM-RLC
-              bIterator = DeserializeSequence(&bitset0,false, bIterator);
+              bIterator = DeserializeSequence (&bitset0,false, bIterator);
               bIterator = DeserializeEnum (64,&sel, bIterator); // t-PollRetransmit
               bIterator = DeserializeEnum (8,&sel, bIterator); // pollPDU
               bIterator = DeserializeEnum (16,&sel, bIterator); // pollByte
               bIterator = DeserializeEnum (8,&sel, bIterator); // maxRetxThreshold
 
               // Deserialize DL-AM-RLC
-              bIterator = DeserializeSequence(&bitset0,false, bIterator);
+              bIterator = DeserializeSequence (&bitset0,false, bIterator);
               bIterator = DeserializeEnum (32,&sel, bIterator); // t-Reordering
               bIterator = DeserializeEnum (64,&sel, bIterator); // t-StatusProhibit
               break;
@@ -917,11 +1024,11 @@ RrcAsn1Header::DeserializeDrbToAddModList (std::list<LteRrcSap::DrbToAddMod> *dr
               drbToAddMod.rlcConfig.choice = LteRrcSap::RlcConfig::UM_BI_DIRECTIONAL;
 
               // Deserialize UL-UM-RLC
-              bIterator = DeserializeSequence(&bitset0,false, bIterator);
+              bIterator = DeserializeSequence (&bitset0,false, bIterator);
               bIterator = DeserializeEnum (2,&sel, bIterator); // sn-FieldLength
 
               // Deserialize DL-UM-RLC
-              bIterator = DeserializeSequence(&bitset0,false, bIterator);
+              bIterator = DeserializeSequence (&bitset0,false, bIterator);
               bIterator = DeserializeEnum (2,&sel, bIterator); // sn-FieldLength
               bIterator = DeserializeEnum (32,&sel, bIterator); // t-Reordering
               break;
@@ -930,7 +1037,7 @@ RrcAsn1Header::DeserializeDrbToAddModList (std::list<LteRrcSap::DrbToAddMod> *dr
               drbToAddMod.rlcConfig.choice = LteRrcSap::RlcConfig::UM_UNI_DIRECTIONAL_UL;
 
               // Deserialize UL-UM-RLC
-              bIterator = DeserializeSequence(&bitset0,false, bIterator);
+              bIterator = DeserializeSequence (&bitset0,false, bIterator);
               bIterator = DeserializeEnum (2,&sel, bIterator); // sn-FieldLength
               break;
 
@@ -938,7 +1045,7 @@ RrcAsn1Header::DeserializeDrbToAddModList (std::list<LteRrcSap::DrbToAddMod> *dr
               drbToAddMod.rlcConfig.choice = LteRrcSap::RlcConfig::UM_UNI_DIRECTIONAL_DL;
 
               // Deserialize DL-UM-RLC
-              bIterator = DeserializeSequence(&bitset0,false, bIterator);
+              bIterator = DeserializeSequence (&bitset0,false, bIterator);
               bIterator = DeserializeEnum (2,&sel, bIterator); // sn-FieldLength
               bIterator = DeserializeEnum (32,&sel, bIterator); // t-Reordering
               break;
@@ -1041,7 +1148,7 @@ RrcAsn1Header::DeserializeLogicalChannelConfig (LteRrcSap::LogicalChannelConfig 
           bucketSizeDurationMs = 1000;
           break;
         default:
-          bucketSizeDurationMs = 1000;  
+          bucketSizeDurationMs = 1000;
         }
       logicalChannelConfig->bucketSizeDurationMs = bucketSizeDurationMs;
 
@@ -1272,7 +1379,7 @@ RrcAsn1Header::DeserializeSystemInformationBlockType1 (LteRrcSap::SystemInformat
       bIterator = DeserializeSequence (&bitset0,false,bIterator);
 
       // plmn-Identity
-      bIterator = DeserializePlmnIdentity(&systemInformationBlockType1->cellAccessRelatedInfo.plmnIdentityInfo.plmnIdentity,bIterator);
+      bIterator = DeserializePlmnIdentity (&systemInformationBlockType1->cellAccessRelatedInfo.plmnIdentityInfo.plmnIdentity,bIterator);
     }
 
   // Deserialize trackingAreaCode
@@ -1394,29 +1501,29 @@ RrcAsn1Header::DeserializeSystemInformationBlockType2 (LteRrcSap::SystemInformat
     {
       // Deserialize ul-Bandwidth
       bIterator = DeserializeEnum (6, &n, bIterator);
-      switch(n)
-      {
+      switch (n)
+        {
         case 0:
           systemInformationBlockType2->freqInfo.ulBandwidth = 6;
           break;
         case 1:
           systemInformationBlockType2->freqInfo.ulBandwidth = 15;
-          break;        
+          break;
         case 2:
           systemInformationBlockType2->freqInfo.ulBandwidth = 25;
           break;
         case 3:
           systemInformationBlockType2->freqInfo.ulBandwidth = 50;
-          break;          
+          break;
         case 4:
           systemInformationBlockType2->freqInfo.ulBandwidth = 75;
-          break;          
+          break;
         case 5:
           systemInformationBlockType2->freqInfo.ulBandwidth = 100;
-          break;          
+          break;
         default:
           systemInformationBlockType2->freqInfo.ulBandwidth = 6;
-      }
+        }
     }
 
   // additionalSpectrumEmission
@@ -1436,7 +1543,7 @@ RrcAsn1Header::DeserializeSystemInformationBlockType2 (LteRrcSap::SystemInformat
 
 
 Buffer::Iterator
-RrcAsn1Header::DeserializeRadioResourceConfigCommon (Buffer::Iterator bIterator)
+RrcAsn1Header::DeserializeRadioResourceConfigCommon (LteRrcSap::RadioResourceConfigCommon * radioResourceConfigCommon, Buffer::Iterator bIterator)
 {
   std::bitset<0> bitset0;
   int n;
@@ -1447,7 +1554,7 @@ RrcAsn1Header::DeserializeRadioResourceConfigCommon (Buffer::Iterator bIterator)
   // rach-ConfigCommon
   if (rrCfgCommOptions[8])
     {
-      // ...
+      bIterator = DeserializeRachConfigCommon (&radioResourceConfigCommon->rachConfigCommon, bIterator);
     }
 
   // prach-Config
@@ -1553,164 +1660,175 @@ RrcAsn1Header::DeserializeRadioResourceConfigCommon (Buffer::Iterator bIterator)
 }
 
 Buffer::Iterator
-RrcAsn1Header::DeserializeRadioResourceConfigCommonSib (LteRrcSap::RadioResourceConfigCommonSib * radioResourceConfigCommonSib, Buffer::Iterator bIterator)
+RrcAsn1Header::DeserializeRachConfigCommon (LteRrcSap::RachConfigCommon * rachConfigCommon, Buffer::Iterator bIterator)
 {
   std::bitset<0> bitset0;
   int n;
-    
+
   bIterator = DeserializeSequence (&bitset0,true,bIterator);
-  // rach-ConfigCommon
-  bIterator = DeserializeSequence (&bitset0,true,bIterator);
+
   // preambleInfo
   std::bitset<1> preamblesGroupAConfigPresent;
   bIterator = DeserializeSequence (&preamblesGroupAConfigPresent,false,bIterator);
 
   // numberOfRA-Preambles
   bIterator = DeserializeEnum (16,&n,bIterator);
-  switch(n)
-  {
+  switch (n)
+    {
     case 0:
-      radioResourceConfigCommonSib->rachConfigCommon.preambleInfo.numberOfRaPreambles = 4;
+      rachConfigCommon->preambleInfo.numberOfRaPreambles = 4;
       break;
     case 1:
-      radioResourceConfigCommonSib->rachConfigCommon.preambleInfo.numberOfRaPreambles = 8;
+      rachConfigCommon->preambleInfo.numberOfRaPreambles = 8;
       break;
     case 2:
-      radioResourceConfigCommonSib->rachConfigCommon.preambleInfo.numberOfRaPreambles = 12;
+      rachConfigCommon->preambleInfo.numberOfRaPreambles = 12;
       break;
     case 3:
-      radioResourceConfigCommonSib->rachConfigCommon.preambleInfo.numberOfRaPreambles = 16;
+      rachConfigCommon->preambleInfo.numberOfRaPreambles = 16;
       break;
     case 4:
-      radioResourceConfigCommonSib->rachConfigCommon.preambleInfo.numberOfRaPreambles = 20;
+      rachConfigCommon->preambleInfo.numberOfRaPreambles = 20;
       break;
     case 5:
-      radioResourceConfigCommonSib->rachConfigCommon.preambleInfo.numberOfRaPreambles = 24;
+      rachConfigCommon->preambleInfo.numberOfRaPreambles = 24;
       break;
     case 6:
-      radioResourceConfigCommonSib->rachConfigCommon.preambleInfo.numberOfRaPreambles = 28;
+      rachConfigCommon->preambleInfo.numberOfRaPreambles = 28;
       break;
     case 7:
-      radioResourceConfigCommonSib->rachConfigCommon.preambleInfo.numberOfRaPreambles = 32;
+      rachConfigCommon->preambleInfo.numberOfRaPreambles = 32;
       break;
     case 8:
-      radioResourceConfigCommonSib->rachConfigCommon.preambleInfo.numberOfRaPreambles = 36;
+      rachConfigCommon->preambleInfo.numberOfRaPreambles = 36;
       break;
     case 9:
-      radioResourceConfigCommonSib->rachConfigCommon.preambleInfo.numberOfRaPreambles = 40;
+      rachConfigCommon->preambleInfo.numberOfRaPreambles = 40;
       break;
     case 10:
-      radioResourceConfigCommonSib->rachConfigCommon.preambleInfo.numberOfRaPreambles = 44;
+      rachConfigCommon->preambleInfo.numberOfRaPreambles = 44;
       break;
     case 11:
-      radioResourceConfigCommonSib->rachConfigCommon.preambleInfo.numberOfRaPreambles = 48;
+      rachConfigCommon->preambleInfo.numberOfRaPreambles = 48;
       break;
     case 12:
-      radioResourceConfigCommonSib->rachConfigCommon.preambleInfo.numberOfRaPreambles = 52;
+      rachConfigCommon->preambleInfo.numberOfRaPreambles = 52;
       break;
     case 13:
-      radioResourceConfigCommonSib->rachConfigCommon.preambleInfo.numberOfRaPreambles = 56;
+      rachConfigCommon->preambleInfo.numberOfRaPreambles = 56;
       break;
     case 14:
-      radioResourceConfigCommonSib->rachConfigCommon.preambleInfo.numberOfRaPreambles = 60;
+      rachConfigCommon->preambleInfo.numberOfRaPreambles = 60;
       break;
     case 15:
-      radioResourceConfigCommonSib->rachConfigCommon.preambleInfo.numberOfRaPreambles = 64;
+      rachConfigCommon->preambleInfo.numberOfRaPreambles = 64;
       break;
     default:
-      radioResourceConfigCommonSib->rachConfigCommon.preambleInfo.numberOfRaPreambles = 0;
-  }
+      rachConfigCommon->preambleInfo.numberOfRaPreambles = 0;
+    }
 
-  radioResourceConfigCommonSib->rachConfigCommon.preambleInfo.numberOfRaPreambles = n;
-  
+  rachConfigCommon->preambleInfo.numberOfRaPreambles = n;
+
   if (preamblesGroupAConfigPresent[0])
     {
       // Deserialize preamblesGroupAConfig
       // ...
     }
-    
+
   // powerRampingParameters
   bIterator = DeserializeSequence (&bitset0,false,bIterator);
   bIterator = DeserializeEnum (4,&n,bIterator); // powerRampingStep
   bIterator = DeserializeEnum (16,&n,bIterator); // preambleInitialReceivedTargetPower
-  
+
   // ra-SupervisionInfo
   bIterator = DeserializeSequence (&bitset0,false,bIterator);
   bIterator = DeserializeEnum (11,&n,bIterator); // preambleTransMax
-  switch(n)
-  {
+  switch (n)
+    {
     case 0:
-      radioResourceConfigCommonSib->rachConfigCommon.raSupervisionInfo.preambleTransMax = 3;
+      rachConfigCommon->raSupervisionInfo.preambleTransMax = 3;
       break;
     case 1:
-      radioResourceConfigCommonSib->rachConfigCommon.raSupervisionInfo.preambleTransMax = 4;
+      rachConfigCommon->raSupervisionInfo.preambleTransMax = 4;
       break;
     case 2:
-      radioResourceConfigCommonSib->rachConfigCommon.raSupervisionInfo.preambleTransMax = 5;
+      rachConfigCommon->raSupervisionInfo.preambleTransMax = 5;
       break;
     case 3:
-      radioResourceConfigCommonSib->rachConfigCommon.raSupervisionInfo.preambleTransMax = 6;
+      rachConfigCommon->raSupervisionInfo.preambleTransMax = 6;
       break;
     case 4:
-      radioResourceConfigCommonSib->rachConfigCommon.raSupervisionInfo.preambleTransMax = 7;
+      rachConfigCommon->raSupervisionInfo.preambleTransMax = 7;
       break;
     case 5:
-      radioResourceConfigCommonSib->rachConfigCommon.raSupervisionInfo.preambleTransMax = 8;
+      rachConfigCommon->raSupervisionInfo.preambleTransMax = 8;
       break;
     case 6:
-      radioResourceConfigCommonSib->rachConfigCommon.raSupervisionInfo.preambleTransMax = 10;
+      rachConfigCommon->raSupervisionInfo.preambleTransMax = 10;
       break;
     case 7:
-      radioResourceConfigCommonSib->rachConfigCommon.raSupervisionInfo.preambleTransMax = 20;
+      rachConfigCommon->raSupervisionInfo.preambleTransMax = 20;
       break;
     case 8:
-      radioResourceConfigCommonSib->rachConfigCommon.raSupervisionInfo.preambleTransMax = 50;
+      rachConfigCommon->raSupervisionInfo.preambleTransMax = 50;
       break;
     case 9:
-      radioResourceConfigCommonSib->rachConfigCommon.raSupervisionInfo.preambleTransMax = 100;
+      rachConfigCommon->raSupervisionInfo.preambleTransMax = 100;
       break;
     case 10:
-      radioResourceConfigCommonSib->rachConfigCommon.raSupervisionInfo.preambleTransMax = 200;
+      rachConfigCommon->raSupervisionInfo.preambleTransMax = 200;
       break;
     default:
-      radioResourceConfigCommonSib->rachConfigCommon.raSupervisionInfo.preambleTransMax = 0;
-   }
-   
+      rachConfigCommon->raSupervisionInfo.preambleTransMax = 0;
+    }
+
   // ra-ResponseWindowSize
   bIterator = DeserializeEnum (8,&n,bIterator);
-  switch(n)
-  {
+  switch (n)
+    {
     case 0:
-      radioResourceConfigCommonSib->rachConfigCommon.raSupervisionInfo.raResponseWindowSize = 2;
+      rachConfigCommon->raSupervisionInfo.raResponseWindowSize = 2;
       break;
     case 1:
-      radioResourceConfigCommonSib->rachConfigCommon.raSupervisionInfo.raResponseWindowSize = 3;
+      rachConfigCommon->raSupervisionInfo.raResponseWindowSize = 3;
       break;
     case 2:
-      radioResourceConfigCommonSib->rachConfigCommon.raSupervisionInfo.raResponseWindowSize = 4;
+      rachConfigCommon->raSupervisionInfo.raResponseWindowSize = 4;
       break;
     case 3:
-      radioResourceConfigCommonSib->rachConfigCommon.raSupervisionInfo.raResponseWindowSize = 5;
+      rachConfigCommon->raSupervisionInfo.raResponseWindowSize = 5;
       break;
     case 4:
-      radioResourceConfigCommonSib->rachConfigCommon.raSupervisionInfo.raResponseWindowSize = 6;
+      rachConfigCommon->raSupervisionInfo.raResponseWindowSize = 6;
       break;
     case 5:
-      radioResourceConfigCommonSib->rachConfigCommon.raSupervisionInfo.raResponseWindowSize = 7;
+      rachConfigCommon->raSupervisionInfo.raResponseWindowSize = 7;
       break;
     case 6:
-      radioResourceConfigCommonSib->rachConfigCommon.raSupervisionInfo.raResponseWindowSize = 8;
+      rachConfigCommon->raSupervisionInfo.raResponseWindowSize = 8;
       break;
     case 7:
-      radioResourceConfigCommonSib->rachConfigCommon.raSupervisionInfo.raResponseWindowSize = 10;
+      rachConfigCommon->raSupervisionInfo.raResponseWindowSize = 10;
       break;
     default:
-      radioResourceConfigCommonSib->rachConfigCommon.raSupervisionInfo.raResponseWindowSize = 0;
-   } 
-  
-  bIterator = DeserializeEnum (8,&n,bIterator); // mac-ContentionResolutionTimer
+      rachConfigCommon->raSupervisionInfo.raResponseWindowSize = 0;
+    }
 
+  bIterator = DeserializeEnum (8,&n,bIterator); // mac-ContentionResolutionTimer
   bIterator = DeserializeInteger (&n,1,8,bIterator); //maxHARQ-Msg3Tx
+  return bIterator;
+}
+
+Buffer::Iterator
+RrcAsn1Header::DeserializeRadioResourceConfigCommonSib (LteRrcSap::RadioResourceConfigCommonSib * radioResourceConfigCommonSib, Buffer::Iterator bIterator)
+{
+  std::bitset<0> bitset0;
+  int n;
+
+  bIterator = DeserializeSequence (&bitset0,true,bIterator);
+
+  // rach-ConfigCommon
+  bIterator = DeserializeRachConfigCommon (&radioResourceConfigCommonSib->rachConfigCommon, bIterator);
 
   // bcch-Config 
   bIterator = DeserializeSequence (&bitset0,false,bIterator);
@@ -1816,14 +1934,14 @@ RrcAsn1Header::DeserializeMeasResults (LteRrcSap::MeasResults *measResults, Buff
   int n;
   std::bitset<0> b0;
   std::bitset<1> measResultNeighCellsPresent;
-  bIterator = DeserializeSequence(&measResultNeighCellsPresent,true,bIterator);
+  bIterator = DeserializeSequence (&measResultNeighCellsPresent,true,bIterator);
 
   // Deserialize measId
   bIterator = DeserializeInteger (&n, 1, MAX_MEAS_ID, bIterator);
   measResults->measId = n;
 
   // Deserialize measResultServCell
-  bIterator = DeserializeSequence(&b0,false,bIterator);
+  bIterator = DeserializeSequence (&b0,false,bIterator);
 
   // Deserialize rsrpResult
   bIterator = DeserializeInteger (&n, 0, 97, bIterator);
@@ -1834,108 +1952,108 @@ RrcAsn1Header::DeserializeMeasResults (LteRrcSap::MeasResults *measResults, Buff
   measResults->rsrqResult = n;
 
   measResults->haveMeasResultNeighCells = measResultNeighCellsPresent[0];
-  if( measResults->haveMeasResultNeighCells)
-  {
-    int measResultNeighCellsChoice;
-
-    // Deserialize measResultNeighCells
-    bIterator = DeserializeChoice (4,&measResultNeighCellsChoice,bIterator);
-
-    if(measResultNeighCellsChoice == 0)
+  if ( measResults->haveMeasResultNeighCells)
     {
-      // Deserialize measResultListEUTRA
-      int numElems;
-      bIterator = DeserializeSequenceOf (&numElems,MAX_CELL_REPORT,1,bIterator);
-      
-      for(int i =0; i<numElems; i++)
-      {
-        LteRrcSap::MeasResultEutra measResultEutra;
-        
-        std::bitset<1> isCgiInfoPresent;
-        bIterator = DeserializeSequence(&isCgiInfoPresent,false,bIterator);
-        
-        // PhysCellId
-        bIterator = DeserializeInteger(&n,0,503,bIterator);
-        measResultEutra.physCellId = n;
-        
-        measResultEutra.haveCgiInfo = isCgiInfoPresent[0];
-        if(isCgiInfoPresent[0])
+      int measResultNeighCellsChoice;
+
+      // Deserialize measResultNeighCells
+      bIterator = DeserializeChoice (4,&measResultNeighCellsChoice,bIterator);
+
+      if (measResultNeighCellsChoice == 0)
         {
-          std::bitset<1> havePlmnIdentityList;
-          bIterator = DeserializeSequence(&havePlmnIdentityList,false,bIterator);
-          
-          // Deserialize cellGlobalId
-          bIterator = DeserializeSequence (&b0,false,bIterator);
-          
-          // Deserialize plmn-Identity
-          bIterator = DeserializePlmnIdentity(&measResultEutra.cgiInfo.plmnIdentity,bIterator);
-          
-          // Deserialize CellIdentity
-          std::bitset<28> cellId;
-          bIterator = DeserializeBitstring(&cellId,bIterator);
-          measResultEutra.cgiInfo.cellIdentity = cellId.to_ulong();
-          
-          // Deserialize trackingAreaCode
-          std::bitset<16> trArCo;
-          bIterator = DeserializeBitstring(&trArCo,bIterator);
-          measResultEutra.cgiInfo.trackingAreaCode = trArCo.to_ulong();
-          
-          // Deserialize plmn-IdentityList
-          if(havePlmnIdentityList[0])
-          {
-            int numPlmnElems;
-            bIterator = DeserializeSequenceOf (&numPlmnElems, 5, 1, bIterator);
-            
-            for( int j=0; j<numPlmnElems; j++)
+          // Deserialize measResultListEUTRA
+          int numElems;
+          bIterator = DeserializeSequenceOf (&numElems,MAX_CELL_REPORT,1,bIterator);
+
+          for (int i = 0; i < numElems; i++)
             {
-              uint32_t plmnId;
-              bIterator = DeserializePlmnIdentity(&plmnId,bIterator);
-              measResultEutra.cgiInfo.plmnIdentityList.push_back(plmnId);
+              LteRrcSap::MeasResultEutra measResultEutra;
+
+              std::bitset<1> isCgiInfoPresent;
+              bIterator = DeserializeSequence (&isCgiInfoPresent,false,bIterator);
+
+              // PhysCellId
+              bIterator = DeserializeInteger (&n,0,503,bIterator);
+              measResultEutra.physCellId = n;
+
+              measResultEutra.haveCgiInfo = isCgiInfoPresent[0];
+              if (isCgiInfoPresent[0])
+                {
+                  std::bitset<1> havePlmnIdentityList;
+                  bIterator = DeserializeSequence (&havePlmnIdentityList,false,bIterator);
+
+                  // Deserialize cellGlobalId
+                  bIterator = DeserializeSequence (&b0,false,bIterator);
+
+                  // Deserialize plmn-Identity
+                  bIterator = DeserializePlmnIdentity (&measResultEutra.cgiInfo.plmnIdentity,bIterator);
+
+                  // Deserialize CellIdentity
+                  std::bitset<28> cellId;
+                  bIterator = DeserializeBitstring (&cellId,bIterator);
+                  measResultEutra.cgiInfo.cellIdentity = cellId.to_ulong ();
+
+                  // Deserialize trackingAreaCode
+                  std::bitset<16> trArCo;
+                  bIterator = DeserializeBitstring (&trArCo,bIterator);
+                  measResultEutra.cgiInfo.trackingAreaCode = trArCo.to_ulong ();
+
+                  // Deserialize plmn-IdentityList
+                  if (havePlmnIdentityList[0])
+                    {
+                      int numPlmnElems;
+                      bIterator = DeserializeSequenceOf (&numPlmnElems, 5, 1, bIterator);
+
+                      for ( int j = 0; j < numPlmnElems; j++)
+                        {
+                          uint32_t plmnId;
+                          bIterator = DeserializePlmnIdentity (&plmnId,bIterator);
+                          measResultEutra.cgiInfo.plmnIdentityList.push_back (plmnId);
+                        }
+                    }
+                }
+
+              // Deserialize measResult
+              std::bitset<2> measResultOpts;
+              bIterator = DeserializeSequence (&measResultOpts, true, bIterator);
+
+              measResultEutra.haveRsrpResult = measResultOpts[1];
+              if (measResultOpts[1])
+                {
+                  // Deserialize rsrpResult
+                  bIterator = DeserializeInteger (&n,0,97,bIterator);
+                  measResultEutra.rsrpResult = n;
+                }
+
+              measResultEutra.haveRsrqResult = measResultOpts[0];
+              if (measResultOpts[0])
+                {
+                  // Deserialize rsrqResult
+                  bIterator = DeserializeInteger (&n,0,34,bIterator);
+                  measResultEutra.rsrqResult = n;
+                }
+
+              measResults->measResultListEutra.push_back (measResultEutra);
             }
-          }
-        }
-        
-        // Deserialize measResult
-        std::bitset<2> measResultOpts;
-        bIterator = DeserializeSequence(&measResultOpts, true, bIterator);
-        
-        measResultEutra.haveRsrpResult = measResultOpts[1];
-        if(measResultOpts[1])
-        {
-          // Deserialize rsrpResult
-          bIterator = DeserializeInteger(&n,0,97,bIterator);
-          measResultEutra.rsrpResult = n;
-        }
-        
-        measResultEutra.haveRsrqResult = measResultOpts[0];
-        if(measResultOpts[0])
-        {
-          // Deserialize rsrqResult
-          bIterator = DeserializeInteger(&n,0,34,bIterator);
-          measResultEutra.rsrqResult = n;
         }
 
-        measResults->measResultListEutra.push_back(measResultEutra);
-      }
+      if (measResultNeighCellsChoice == 1)
+        {
+          // Deserialize measResultListUTRA
+          // ...
+        }
+
+      if (measResultNeighCellsChoice == 2)
+        {
+          // Deserialize measResultListGERAN
+          // ...
+        }
+      if (measResultNeighCellsChoice == 3)
+        {
+          // Deserialize measResultsCDMA2000
+          // ...
+        }
     }
-    
-    if(measResultNeighCellsChoice == 1)
-    {    
-      // Deserialize measResultListUTRA
-      // ...
-    }
-    
-    if(measResultNeighCellsChoice == 2)
-    {
-      // Deserialize measResultListGERAN
-      // ...
-    }
-    if(measResultNeighCellsChoice == 3)
-    {
-      // Deserialize measResultsCDMA2000
-      // ...
-    }
-  }
 
   return bIterator;
 }
@@ -1946,7 +2064,7 @@ RrcAsn1Header::DeserializePlmnIdentity (uint32_t *plmnId, Buffer::Iterator bIter
   int n;
   std::bitset<1> isMccPresent;
   bIterator = DeserializeSequence (&isMccPresent,false,bIterator);
-  
+
   if (isMccPresent[0])
     {
       // Deserialize mcc
@@ -1970,11 +2088,11 @@ RrcAsn1Header::DeserializePlmnIdentity (uint32_t *plmnId, Buffer::Iterator bIter
   bIterator = DeserializeEnum (2,&n,bIterator);
   return bIterator;
 }
-  
+
 //////////////////// RrcConnectionRequest class ////////////////////////
 
 // Constructor
-RrcConnectionRequestHeader::RrcConnectionRequestHeader () : RrcUlCcchMessage()
+RrcConnectionRequestHeader::RrcConnectionRequestHeader () : RrcUlCcchMessage ()
 {
   m_mmec = std::bitset<8> (0ul);
   m_mTmsi = std::bitset<32> (0ul);
@@ -2014,7 +2132,7 @@ RrcConnectionRequestHeader::PreSerialize () const
 
   // Serialize RRCConnectionRequest sequence:
   // no default or optional fields. Extension marker not present.
-  SerializeSequence(std::bitset<0> (),false);
+  SerializeSequence (std::bitset<0> (),false);
 
   // Serialize criticalExtensions choice:
   // 2 options, selected: 0 (option: rrcConnectionRequest-r8)
@@ -2022,7 +2140,7 @@ RrcConnectionRequestHeader::PreSerialize () const
 
   // Serialize RRCConnectionRequest-r8-IEs sequence:
   // no default or optional fields. Extension marker not present.
-  SerializeSequence(std::bitset<0> (),false);
+  SerializeSequence (std::bitset<0> (),false);
 
   // Serialize InitialUE-Identity choice:
   // 2 options, selected: 0 (option: s-TMSI)
@@ -2030,7 +2148,7 @@ RrcConnectionRequestHeader::PreSerialize () const
 
   // Serialize S-TMSI sequence:
   // no default or optional fields. Extension marker not present.
-  SerializeSequence(std::bitset<0> (),false);
+  SerializeSequence (std::bitset<0> (),false);
 
   // Serialize mmec : MMEC ::= BIT STRING (SIZE (8))
   SerializeBitstring (m_mmec);
@@ -2129,9 +2247,9 @@ RrcConnectionSetupHeader::~RrcConnectionSetupHeader ()
 void
 RrcConnectionSetupHeader::Print (std::ostream &os) const
 {
-  os << "rrcTransactionIdentifier: " << (int)rrcTransactionIdentifier << std::endl;
+  os << "rrcTransactionIdentifier: " << (int)m_rrcTransactionIdentifier << std::endl;
   os << "radioResourceConfigDedicated:" << std::endl;
-  RrcAsn1Header::Print (os,radioResourceConfigDedicated);
+  RrcAsn1Header::Print (os,m_radioResourceConfigDedicated);
 }
 
 void
@@ -2148,7 +2266,7 @@ RrcConnectionSetupHeader::PreSerialize () const
   SerializeSequence (std::bitset<0> (),false);
 
   // Serialize rrc-TransactionIdentifier ::=INTEGER (0..3)
-  SerializeInteger (rrcTransactionIdentifier,0,3);
+  SerializeInteger (m_rrcTransactionIdentifier,0,3);
 
   // Serialize criticalExtensions choice:
   // 2 options, selected: 0 (option: c1)
@@ -2163,7 +2281,7 @@ RrcConnectionSetupHeader::PreSerialize () const
   SerializeSequence (std::bitset<1> (0),false);
 
   // Serialize RadioResourceConfigDedicated sequence
-  SerializeRadioResourceConfigDedicated (radioResourceConfigDedicated);
+  SerializeRadioResourceConfigDedicated (m_radioResourceConfigDedicated);
 
   // Serialize nonCriticalExtension sequence
   // 2 optional fields, none present. No extension marker.
@@ -2192,7 +2310,7 @@ RrcConnectionSetupHeader::Deserialize (Buffer::Iterator bIterator)
 
   // Deserialize rrc-TransactionIdentifier ::=INTEGER (0..3)
   bIterator = DeserializeInteger (&n,0,3,bIterator);
-  rrcTransactionIdentifier = n;
+  m_rrcTransactionIdentifier = n;
 
   // Deserialize criticalExtensions choice
   int criticalExtensionChoice;
@@ -2220,7 +2338,7 @@ RrcConnectionSetupHeader::Deserialize (Buffer::Iterator bIterator)
           bIterator = DeserializeSequence (&bitset1,false,bIterator);
 
           // Deserialize radioResourceConfigDedicated
-          bIterator = DeserializeRadioResourceConfigDedicated (&radioResourceConfigDedicated,bIterator);
+          bIterator = DeserializeRadioResourceConfigDedicated (&m_radioResourceConfigDedicated,bIterator);
 
           if (bitset1[0])
             {
@@ -2239,8 +2357,8 @@ RrcConnectionSetupHeader::Deserialize (Buffer::Iterator bIterator)
 void
 RrcConnectionSetupHeader::SetMessage (LteRrcSap::RrcConnectionSetup msg)
 {
-  rrcTransactionIdentifier = msg.rrcTransactionIdentifier;
-  radioResourceConfigDedicated = msg.radioResourceConfigDedicated;
+  m_rrcTransactionIdentifier = msg.rrcTransactionIdentifier;
+  m_radioResourceConfigDedicated = msg.radioResourceConfigDedicated;
   m_isDataSerialized = false;
 }
 
@@ -2248,51 +2366,51 @@ LteRrcSap::RrcConnectionSetup
 RrcConnectionSetupHeader::GetMessage () const
 {
   LteRrcSap::RrcConnectionSetup msg;
-  msg.rrcTransactionIdentifier = rrcTransactionIdentifier;
-  msg.radioResourceConfigDedicated = radioResourceConfigDedicated; 
+  msg.rrcTransactionIdentifier = m_rrcTransactionIdentifier;
+  msg.radioResourceConfigDedicated = m_radioResourceConfigDedicated; 
   return msg;
 }
 
 uint8_t
 RrcConnectionSetupHeader::GetRrcTransactionIdentifier () const
 {
-  return rrcTransactionIdentifier;
+  return m_rrcTransactionIdentifier;
 }
 
 bool
 RrcConnectionSetupHeader::HavePhysicalConfigDedicated () const
 {
-  return radioResourceConfigDedicated.havePhysicalConfigDedicated;
+  return m_radioResourceConfigDedicated.havePhysicalConfigDedicated;
 }
 
 std::list<LteRrcSap::SrbToAddMod>
 RrcConnectionSetupHeader::GetSrbToAddModList () const
 {
-  return radioResourceConfigDedicated.srbToAddModList;
+  return m_radioResourceConfigDedicated.srbToAddModList;
 }
 
 std::list<LteRrcSap::DrbToAddMod>
 RrcConnectionSetupHeader::GetDrbToAddModList () const
 {
-  return radioResourceConfigDedicated.drbToAddModList;
+  return m_radioResourceConfigDedicated.drbToAddModList;
 } 
 
 std::list<uint8_t>
 RrcConnectionSetupHeader::GetDrbToReleaseList () const
 {
-  return radioResourceConfigDedicated.drbToReleaseList;
+  return m_radioResourceConfigDedicated.drbToReleaseList;
 }
 
 LteRrcSap::PhysicalConfigDedicated
 RrcConnectionSetupHeader::GetPhysicalConfigDedicated () const
 {
-  return radioResourceConfigDedicated.physicalConfigDedicated;
+  return m_radioResourceConfigDedicated.physicalConfigDedicated;
 }
 
 LteRrcSap::RadioResourceConfigDedicated
 RrcConnectionSetupHeader::GetRadioResourceConfigDedicated () const
 {
-  return radioResourceConfigDedicated;
+  return m_radioResourceConfigDedicated;
 }
 
 //////////////////// RrcConnectionSetupCompleteHeader class ////////////////////////
@@ -2315,7 +2433,7 @@ RrcConnectionSetupCompleteHeader::PreSerialize () const
 
   // Serialize RRCConnectionSetupComplete sequence:
   // no default or optional fields. Extension marker not present.
-  SerializeSequence(std::bitset<0> (),false);
+  SerializeSequence (std::bitset<0> (),false);
 
   // Serialize rrc-TransactionIdentifier
   SerializeInteger (m_rrcTransactionIdentifier,0,3);
@@ -2421,7 +2539,7 @@ RrcConnectionReconfigurationCompleteHeader::PreSerialize () const
 
   // Serialize RRCConnectionSetupComplete sequence:
   // no default or optional fields. Extension marker not present.
-  SerializeSequence(std::bitset<0> (),false);
+  SerializeSequence (std::bitset<0> (),false);
 
   // Serialize rrc-TransactionIdentifier
   SerializeInteger (m_rrcTransactionIdentifier,0,3);
@@ -2431,7 +2549,7 @@ RrcConnectionReconfigurationCompleteHeader::PreSerialize () const
   SerializeChoice (2,1);
 
   // Choose criticalExtensionsFuture
-  SerializeSequence(std::bitset<0> (),false);
+  SerializeSequence (std::bitset<0> (),false);
 
   // Finish serialization
   FinalizeSerialization ();
@@ -2511,7 +2629,7 @@ RrcConnectionReconfigurationHeader::PreSerialize () const
 
   // Serialize RRCConnectionSetupComplete sequence:
   // no default or optional fields. Extension marker not present.
-  SerializeSequence(std::bitset<0> (),false);
+  SerializeSequence (std::bitset<0> (),false);
 
   // Serialize rrc-TransactionIdentifier
   SerializeInteger (m_rrcTransactionIdentifier,0,3);
@@ -2533,7 +2651,7 @@ RrcConnectionReconfigurationHeader::PreSerialize () const
   options.set (2,m_haveRadioResourceConfigDedicated);
   options.set (1,0); // No securityConfigHO
   options.set (0,0); // No nonCriticalExtension
-  SerializeSequence(options,false);
+  SerializeSequence (options,false);
 
 
   if (m_haveMeasConfig)
@@ -2628,35 +2746,7 @@ RrcConnectionReconfigurationHeader::PreSerialize () const
       SerializeBitstring (std::bitset<16> (m_mobilityControlInfo.newUeIdentity));
 
       // Serialize radioResourceConfigCommon
-      // 9 optional fields, none present. Extension marker yes.
-      SerializeSequence (std::bitset<9> (0),true);
-
-      // Serialize PRACH-Config
-      // 1 optional, 0 extension marker.
-      SerializeSequence (std::bitset<1> (0),false);
-
-      // Serialize PRACH-Config rootSequenceIndex
-      SerializeInteger (0,0,1023);
-
-      // Serialize PUSCH-ConfigCommon
-      SerializeSequence (std::bitset<0> (),false);
-
-      // Serialize pusch-ConfigBasic
-      SerializeSequence (std::bitset<0> (),false);
-      SerializeInteger (1,1,4);
-      SerializeEnum (2,0);
-      SerializeInteger (0,0,98);
-      SerializeBoolean (false);
-
-      // Serialize UL-ReferenceSignalsPUSCH
-      SerializeSequence (std::bitset<0> (),false);
-      SerializeBoolean (false);
-      SerializeInteger (0,0,29);
-      SerializeBoolean (false);
-      SerializeInteger (4,0,7);
-
-      // Serialize UL-CyclicPrefixLength
-      SerializeEnum (2,0);
+      SerializeRadioResourceConfigCommon (m_mobilityControlInfo.radioResourceConfigCommon);
 
       if (m_mobilityControlInfo.haveRachConfigDedicated)
         {
@@ -2874,7 +2964,7 @@ RrcConnectionReconfigurationHeader::Deserialize (Buffer::Iterator bIterator)
               m_mobilityControlInfo.newUeIdentity = cRnti.to_ulong ();
 
               // radioResourceConfigCommon
-              bIterator = DeserializeRadioResourceConfigCommon (bIterator);
+              bIterator = DeserializeRadioResourceConfigCommon (&m_mobilityControlInfo.radioResourceConfigCommon, bIterator);
 
               m_mobilityControlInfo.haveRachConfigDedicated = mobCtrlOpts[0];
               if (m_mobilityControlInfo.haveRachConfigDedicated)
@@ -3069,7 +3159,7 @@ HandoverPreparationInfoHeader::PreSerialize () const
 
   // Serialize HandoverPreparationInformation sequence:
   // no default or optional fields. Extension marker not present.
-  SerializeSequence(std::bitset<0> (),false);
+  SerializeSequence (std::bitset<0> (),false);
 
   // Serialize criticalExtensions choice
   // 2 options, selected 0 (c1)
@@ -3125,8 +3215,7 @@ HandoverPreparationInfoHeader::PreSerialize () const
   SerializeSystemInformationBlockType1 (m_asConfig.sourceSystemInformationBlockType1);
 
   // Serialize sourceSystemInformationBlockType2
-  LteRrcSap::SystemInformationBlockType2 systemInformationBlockType2;
-  SerializeSystemInformationBlockType2 (systemInformationBlockType2);
+  SerializeSystemInformationBlockType2 (m_asConfig.sourceSystemInformationBlockType2);
 
   // Serialize AntennaInfoCommon 
   SerializeSequence (std::bitset<0> (0),false);
@@ -3356,7 +3445,7 @@ RrcConnectionReestablishmentRequestHeader::PreSerialize () const
 
   // Serialize RrcConnectionReestablishmentReques sequence:
   // no default or optional fields. Extension marker not present.
-  SerializeSequence(std::bitset<0> (),false);
+  SerializeSequence (std::bitset<0> (),false);
 
   // Serialize criticalExtensions choice
   // chosen: rrcConnectionReestablishmentRequest-r8
@@ -3364,10 +3453,10 @@ RrcConnectionReestablishmentRequestHeader::PreSerialize () const
 
   // Serialize RRCConnectionReestablishmentRequest-r8-IEs sequence
   // no default or optional fields. Extension marker not present.
-  SerializeSequence(std::bitset<0> (),false);
+  SerializeSequence (std::bitset<0> (),false);
 
   // Serialize ue-Identity
-  SerializeSequence(std::bitset<0> (),false);
+  SerializeSequence (std::bitset<0> (),false);
   // Serialize c-RNTI
   SerializeBitstring (std::bitset<16> (m_ueIdentity.cRnti));
   // Serialize physCellId
@@ -4071,12 +4160,12 @@ MeasurementReportHeader::PreSerialize () const
 
   // Serialize MeasurementReport sequence:
   // no default or optional fields. Extension marker not present.
-  SerializeSequence(std::bitset<0> (),false);
+  SerializeSequence (std::bitset<0> (),false);
 
   // Serialize criticalExtensions choice:
   // c1 chosen
   SerializeChoice (2,0);
-  
+
   // Serialize c1 choice
   // measurementReport-r8 chosen
   SerializeChoice (8,0);
@@ -4087,7 +4176,7 @@ MeasurementReportHeader::PreSerialize () const
 
   // Serialize measResults
   SerializeMeasResults (m_measurementReport.measResults);
-  
+
   // Finish serialization
   FinalizeSerialization ();
 }
@@ -4114,27 +4203,27 @@ MeasurementReportHeader::Deserialize (Buffer::Iterator bIterator)
       // Deserialize c1
       int c1Choice;
       bIterator = DeserializeChoice (8,&c1Choice,bIterator);
-      
-      if(c1Choice>0)
-      {
-        bIterator = DeserializeNull(bIterator);
-      }
-      else
-      {
-        // Deserialize measurementReport-r8
-        std::bitset<1> isNonCriticalExtensionPresent;
-        bIterator = DeserializeSequence(&isNonCriticalExtensionPresent,false,bIterator);
-        
-        // Deserialize measResults
-        bIterator = DeserializeMeasResults (&m_measurementReport.measResults, bIterator);
-        
-        if(isNonCriticalExtensionPresent[0])
-        {
-          // Deserialize nonCriticalExtension MeasurementReport-v8a0-IEs
-          // ...
-        }
 
-      }
+      if (c1Choice > 0)
+        {
+          bIterator = DeserializeNull (bIterator);
+        }
+      else
+        {
+          // Deserialize measurementReport-r8
+          std::bitset<1> isNonCriticalExtensionPresent;
+          bIterator = DeserializeSequence (&isNonCriticalExtensionPresent,false,bIterator);
+
+          // Deserialize measResults
+          bIterator = DeserializeMeasResults (&m_measurementReport.measResults, bIterator);
+
+          if (isNonCriticalExtensionPresent[0])
+            {
+              // Deserialize nonCriticalExtension MeasurementReport-v8a0-IEs
+              // ...
+            }
+
+        }
     }
 
   return GetSerializedSize ();
@@ -4147,44 +4236,44 @@ MeasurementReportHeader::Print (std::ostream &os) const
   os << "rsrpResult = " << (int)m_measurementReport.measResults.rsrpResult << std::endl;
   os << "rsrqResult = " << (int)m_measurementReport.measResults.rsrqResult << std::endl;
   os << "haveMeasResultNeighCells = " << (int)m_measurementReport.measResults.haveMeasResultNeighCells << std::endl;
-  
-  if(m_measurementReport.measResults.haveMeasResultNeighCells)
-  {
-    std::list<LteRrcSap::MeasResultEutra> measResultListEutra = m_measurementReport.measResults.measResultListEutra;
-    std::list<LteRrcSap::MeasResultEutra>::iterator it = measResultListEutra.begin();
-    for ( ; it != measResultListEutra.end(); it++)
+
+  if (m_measurementReport.measResults.haveMeasResultNeighCells)
     {
-      os << "   physCellId =" << (int) it->physCellId << std::endl;
-      os << "   haveCgiInfo =" << it->haveCgiInfo << std::endl;
-      if (it->haveCgiInfo)
-      {
-         os << "      plmnIdentity = " << (int) it->cgiInfo.plmnIdentity << std::endl;
-         os << "      cellIdentity = " << (int) it->cgiInfo.cellIdentity << std::endl;
-         os << "      trackingAreaCode = " << (int) it->cgiInfo.trackingAreaCode << std::endl;
-         os << "      havePlmnIdentityList = " << !it->cgiInfo.plmnIdentityList.empty() << std::endl;
-         if(!it->cgiInfo.plmnIdentityList.empty())
-         {
-           for(std::list<uint32_t>::iterator it2 = it->cgiInfo.plmnIdentityList.begin(); it2 != it->cgiInfo.plmnIdentityList.begin(); it2++)
-           {
-             os << "         plmnId : " << *it2 << std::endl;
-           }
-         }
-      }
+      std::list<LteRrcSap::MeasResultEutra> measResultListEutra = m_measurementReport.measResults.measResultListEutra;
+      std::list<LteRrcSap::MeasResultEutra>::iterator it = measResultListEutra.begin ();
+      for (; it != measResultListEutra.end (); it++)
+        {
+          os << "   physCellId =" << (int) it->physCellId << std::endl;
+          os << "   haveCgiInfo =" << it->haveCgiInfo << std::endl;
+          if (it->haveCgiInfo)
+            {
+              os << "      plmnIdentity = " << (int) it->cgiInfo.plmnIdentity << std::endl;
+              os << "      cellIdentity = " << (int) it->cgiInfo.cellIdentity << std::endl;
+              os << "      trackingAreaCode = " << (int) it->cgiInfo.trackingAreaCode << std::endl;
+              os << "      havePlmnIdentityList = " << !it->cgiInfo.plmnIdentityList.empty () << std::endl;
+              if (!it->cgiInfo.plmnIdentityList.empty ())
+                {
+                  for (std::list<uint32_t>::iterator it2 = it->cgiInfo.plmnIdentityList.begin (); it2 != it->cgiInfo.plmnIdentityList.begin (); it2++)
+                    {
+                      os << "         plmnId : " << *it2 << std::endl;
+                    }
+                }
+            }
 
-      os << "   haveRsrpResult =" << it->haveRsrpResult << std::endl;
-      if (it->haveRsrpResult)
-      {
-        os << "   rsrpResult =" << (int) it->rsrpResult << std::endl;
-      }
+          os << "   haveRsrpResult =" << it->haveRsrpResult << std::endl;
+          if (it->haveRsrpResult)
+            {
+              os << "   rsrpResult =" << (int) it->rsrpResult << std::endl;
+            }
 
-      os << "   haveRsrqResult =" << it->haveRsrqResult << std::endl;
-      if (it->haveRsrqResult)
-      {
-        os << "   rsrqResult =" << (int) it->rsrqResult << std::endl;
-      }
+          os << "   haveRsrqResult =" << it->haveRsrqResult << std::endl;
+          if (it->haveRsrqResult)
+            {
+              os << "   rsrqResult =" << (int) it->rsrqResult << std::endl;
+            }
 
+        }
     }
-  }
 }
 
 void
@@ -4203,11 +4292,11 @@ MeasurementReportHeader::GetMessage () const
 }
 
 ///////////////////  RrcUlDcchMessage //////////////////////////////////
-RrcUlDcchMessage::RrcUlDcchMessage() : RrcAsn1Header()
+RrcUlDcchMessage::RrcUlDcchMessage () : RrcAsn1Header ()
 {
 }
 
-RrcUlDcchMessage::~RrcUlDcchMessage()
+RrcUlDcchMessage::~RrcUlDcchMessage ()
 {
 }
 
@@ -4264,11 +4353,11 @@ RrcUlDcchMessage::SerializeUlDcchMessage (int messageType) const
 }
 
 ///////////////////  RrcDlDcchMessage //////////////////////////////////
-RrcDlDcchMessage::RrcDlDcchMessage() : RrcAsn1Header()
+RrcDlDcchMessage::RrcDlDcchMessage () : RrcAsn1Header ()
 {
 }
 
-RrcDlDcchMessage::~RrcDlDcchMessage()
+RrcDlDcchMessage::~RrcDlDcchMessage ()
 {
 }
 
@@ -4325,11 +4414,11 @@ RrcDlDcchMessage::SerializeDlDcchMessage (int messageType) const
 }
 
 ///////////////////  RrcUlCcchMessage //////////////////////////////////
-RrcUlCcchMessage::RrcUlCcchMessage() : RrcAsn1Header()
+RrcUlCcchMessage::RrcUlCcchMessage () : RrcAsn1Header ()
 {
 }
 
-RrcUlCcchMessage::~RrcUlCcchMessage()
+RrcUlCcchMessage::~RrcUlCcchMessage ()
 {
 }
 
@@ -4386,11 +4475,11 @@ RrcUlCcchMessage::SerializeUlCcchMessage (int messageType) const
 }
 
 ///////////////////  RrcDlCcchMessage //////////////////////////////////
-RrcDlCcchMessage::RrcDlCcchMessage() : RrcAsn1Header()
+RrcDlCcchMessage::RrcDlCcchMessage () : RrcAsn1Header ()
 {
 }
 
-RrcDlCcchMessage::~RrcDlCcchMessage()
+RrcDlCcchMessage::~RrcDlCcchMessage ()
 {
 }
 
