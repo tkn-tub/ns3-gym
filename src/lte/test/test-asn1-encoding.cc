@@ -46,7 +46,7 @@ public:
     pkt->CopyData (buffer, psize);
     for (uint32_t i = 0; i < psize; i++)
       {
-        sprintf (sbuffer,"%02x ",buffer[i]);
+        sprintf (&sbuffer[i*3],"%02x ",buffer[i]);
       }
     return std::string (sbuffer);
   }
