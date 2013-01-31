@@ -296,8 +296,14 @@ void Asn1Header::SerializeEnum (int numElems, int selectedElem) const
   SerializeInteger (selectedElem, 0, numElems - 1);
 }
 
-void Asn1Header::SerializeChoice (int numOptions, int selectedOption) const
+void Asn1Header::SerializeChoice (int numOptions, int selectedOption, bool isExtensionMarkerPresent) const
 {
+  if(isExtensionMarkerPresent)
+  {
+    // Never extended attributes
+    SerializeBoolean(false);
+  }
+  
   // Clause 23.4 ITU-T X.691
   if (numOptions < 2)
     {
@@ -658,8 +664,13 @@ Buffer::Iterator Asn1Header::DeserializeInteger (int *n, int nmin, int nmax, Buf
   return bIterator;
 }
 
-Buffer::Iterator Asn1Header::DeserializeChoice (int numOptions, int *selectedOption, Buffer::Iterator bIterator)
+Buffer::Iterator Asn1Header::DeserializeChoice (int numOptions, bool isExtensionMarkerPresent, int *selectedOption, Buffer::Iterator bIterator)
 {
+  if (isExtensionMarkerPresent)
+  {
+    bool marker;
+    bIterator = DeserializeBoolean (&marker,bIterator);
+  }
   return DeserializeInteger (selectedOption,0,numOptions - 1,bIterator);
 }
 

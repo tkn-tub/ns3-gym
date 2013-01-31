@@ -97,7 +97,7 @@ RrcAsn1Header::SerializeDrbToAddModList (std::list<LteRrcSap::DrbToAddMod> drbTo
         {
         case LteRrcSap::RlcConfig::UM_BI_DIRECTIONAL:
           // Serialize rlc-Config choice
-          SerializeChoice (4,1);
+          SerializeChoice (4,1,true);
 
           // Serialize UL-UM-RLC
           SerializeSequence (std::bitset<0> (),false);
@@ -111,7 +111,7 @@ RrcAsn1Header::SerializeDrbToAddModList (std::list<LteRrcSap::DrbToAddMod> drbTo
 
         case LteRrcSap::RlcConfig::UM_UNI_DIRECTIONAL_UL:
           // Serialize rlc-Config choice
-          SerializeChoice (4,2);
+          SerializeChoice (4,2,true);
 
           // Serialize UL-UM-RLC
           SerializeSequence (std::bitset<0> (),false);
@@ -120,7 +120,7 @@ RrcAsn1Header::SerializeDrbToAddModList (std::list<LteRrcSap::DrbToAddMod> drbTo
 
         case LteRrcSap::RlcConfig::UM_UNI_DIRECTIONAL_DL:
           // Serialize rlc-Config choice
-          SerializeChoice (4,3);
+          SerializeChoice (4,3,true);
 
           // Serialize DL-UM-RLC
           SerializeSequence (std::bitset<0> (),false);
@@ -131,7 +131,7 @@ RrcAsn1Header::SerializeDrbToAddModList (std::list<LteRrcSap::DrbToAddMod> drbTo
         case LteRrcSap::RlcConfig::AM:
         default:
           // Serialize rlc-Config choice
-          SerializeChoice (4,0);
+          SerializeChoice (4,0,true);
 
           // Serialize UL-AM-RLC
           SerializeSequence (std::bitset<0> (),false);
@@ -177,7 +177,7 @@ RrcAsn1Header::SerializeSrbToAddModList (std::list<LteRrcSap::SrbToAddMod> srbTo
 
       // Serialize logicalChannelConfig choice
       // 2 options, selected option 0 (var "explicitValue", of type LogicalChannelConfig)
-      SerializeChoice (2,0);
+      SerializeChoice (2,0,false);
 
       // Serialize LogicalChannelConfig 
       SerializeLogicalChannelConfig (it->logicalChannelConfig);
@@ -188,12 +188,12 @@ void
 RrcAsn1Header::SerializeLogicalChannelConfig (LteRrcSap::LogicalChannelConfig logicalChannelConfig) const
 {
   // Serialize LogicalChannelConfig sequence
-  // 1 optional field, which is present. No extension marker.
-  SerializeSequence (std::bitset<1> (1),false);
+  // 1 optional field (ul-SpecificParameters), which is present. Extension marker present.
+  SerializeSequence (std::bitset<1> (1),true);
 
   // Serialize ul-SpecificParameters sequence
-  // no optional/default fields. No extension marker.
-  SerializeSequence (std::bitset<0> (),false);
+  // 1 optional field (logicalChannelGroup), which is present. No extension marker.
+  SerializeSequence (std::bitset<1> (1),false);
 
   // Serialize priority ::= INTEGER (1..16)
   SerializeInteger (logicalChannelConfig.priority,1,16);
@@ -282,14 +282,14 @@ RrcAsn1Header::SerializePhysicalConfigDedicated (LteRrcSap::PhysicalConfigDedica
       switch (physicalConfigDedicated.soundingRsUlConfigDedicated.type)
         {
         case LteRrcSap::SoundingRsUlConfigDedicated::RESET:
-          SerializeChoice (2,0);
+          SerializeChoice (2,0,false);
           SerializeNull ();
           break;
 
         case LteRrcSap::SoundingRsUlConfigDedicated::SETUP:
         default:
           // 2 options, selected: 1 (setup)
-          SerializeChoice (2,1);
+          SerializeChoice (2,1,false);
 
           // Serialize setup sequence
           // 0 optional / default fields, no extension marker.
@@ -324,17 +324,18 @@ RrcAsn1Header::SerializePhysicalConfigDedicated (LteRrcSap::PhysicalConfigDedica
     {
       // Serialize antennaInfo choice
       // 2 options. Selected: 0 ("explicitValue" of type "AntennaInfoDedicated")
-      SerializeChoice (2,0);
+      SerializeChoice (2,0,false);
 
       // Serialize AntennaInfoDedicated sequence
       // 1 optional parameter, not present. No extension marker.
       SerializeSequence (std::bitset<1> (0),false);
 
       // Serialize transmissionMode
-      SerializeEnum (8,physicalConfigDedicated.antennaInfo.transmissionMode);
+      // Enum values: {tm1, tm2, tm3, tm4, tm5, tm6, tm7, spare1}
+      SerializeEnum (8,physicalConfigDedicated.antennaInfo.transmissionMode-1);
 
       // Serialize ue-TransmitAntennaSelection choice
-      SerializeChoice (2,0);
+      SerializeChoice (2,0,false);
 
       // Serialize release
       SerializeNull ();
@@ -539,7 +540,7 @@ RrcAsn1Header::SerializeRadioResourceConfigCommonSib (LteRrcSap::RadioResourceCo
   SerializeInteger (0,0,7); // nCS-AN
   SerializeInteger (0,0,2047); // n1PUCCH-AN
   // soundingRS-UL-ConfigCommon 
-  SerializeChoice (2,0);
+  SerializeChoice (2,0,false);
   SerializeNull (); // release
   // uplinkPowerControlCommon 
   SerializeSequence (std::bitset<0> (0),false);
@@ -633,7 +634,7 @@ RrcAsn1Header::SerializeMeasResults (LteRrcSap::MeasResults measResults) const
   if (measResults.haveMeasResultNeighCells)
     {
       // Serialize Choice = 0 (MeasResultListEUTRA)
-      SerializeChoice (4,0);
+      SerializeChoice (4,0,false);
 
       // Serialize measResultNeighCells
       SerializeSequenceOf (measResults.measResultListEutra.size (),MAX_CELL_REPORT,1);
@@ -942,7 +943,7 @@ RrcAsn1Header::DeserializeSrbToAddModList (std::list<LteRrcSap::SrbToAddMod> *sr
         {
           // Deserialize logicalChannelConfig choice
           int sel;
-          bIterator = DeserializeChoice (2,&sel,bIterator);
+          bIterator = DeserializeChoice (2,false,&sel,bIterator);
 
           // Deserialize logicalChannelConfig defaultValue
           if (sel == 1)
@@ -998,7 +999,7 @@ RrcAsn1Header::DeserializeDrbToAddModList (std::list<LteRrcSap::DrbToAddMod> *dr
         {
           // Deserialize RLC-Config
           int chosen;
-          bIterator = DeserializeChoice (4,&chosen,bIterator);
+          bIterator = DeserializeChoice (4,true,&chosen,bIterator);
 
           int sel;
           std::bitset<0> bitset0;
@@ -1075,15 +1076,14 @@ RrcAsn1Header::DeserializeLogicalChannelConfig (LteRrcSap::LogicalChannelConfig 
   int n;
 
   // Deserialize LogicalChannelConfig sequence
-  // 1 optional field, no extension marker.
+  // 1 optional field, extension marker is present.
   std::bitset<1> bitset1;
-  bIterator = DeserializeSequence (&bitset1,false,bIterator);
+  bIterator = DeserializeSequence (&bitset1,true,bIterator);
 
   if (bitset1[0])
     {
       // Deserialize ul-SpecificParameters sequence
-      std::bitset<0> bitset0;
-      bIterator = DeserializeSequence (&bitset0,false,bIterator);
+      bIterator = DeserializeSequence (&bitset1,false,bIterator);
 
       // Deserialize priority
       bIterator = DeserializeInteger (&n,1,16,bIterator);
@@ -1152,9 +1152,12 @@ RrcAsn1Header::DeserializeLogicalChannelConfig (LteRrcSap::LogicalChannelConfig 
         }
       logicalChannelConfig->bucketSizeDurationMs = bucketSizeDurationMs;
 
-      // Deserialize logicalChannelGroup
-      bIterator = DeserializeInteger (&n,0,3,bIterator);
-      logicalChannelConfig->logicalChannelGroup = n;
+      if (bitset1[0])
+      {
+        // Deserialize logicalChannelGroup
+        bIterator = DeserializeInteger (&n,0,3,bIterator);
+        logicalChannelConfig->logicalChannelGroup = n;
+      }
     }
   return bIterator;
 }
@@ -1205,7 +1208,7 @@ RrcAsn1Header::DeserializePhysicalConfigDedicated (LteRrcSap::PhysicalConfigDedi
     {
       // Deserialize soundingRS-UL-ConfigDedicated
       int sel;
-      bIterator = DeserializeChoice (2,&sel,bIterator);
+      bIterator = DeserializeChoice (2,false,&sel,bIterator);
 
       if (sel == 0)
         {
@@ -1253,7 +1256,7 @@ RrcAsn1Header::DeserializePhysicalConfigDedicated (LteRrcSap::PhysicalConfigDedi
     {
       // Deserialize antennaInfo
       int sel;
-      bIterator = DeserializeChoice (2,&sel,bIterator);
+      bIterator = DeserializeChoice (2,false,&sel,bIterator);
       if (sel == 1)
         {
           bIterator = DeserializeNull (bIterator);
@@ -1265,7 +1268,7 @@ RrcAsn1Header::DeserializePhysicalConfigDedicated (LteRrcSap::PhysicalConfigDedi
 
           int txmode;
           bIterator = DeserializeEnum (8,&txmode,bIterator);
-          physicalConfigDedicated->antennaInfo.transmissionMode = txmode;
+          physicalConfigDedicated->antennaInfo.transmissionMode = txmode+1;
 
           if (codebookSubsetRestrictionPresent[0])
             {
@@ -1274,7 +1277,7 @@ RrcAsn1Header::DeserializePhysicalConfigDedicated (LteRrcSap::PhysicalConfigDedi
             }
 
           int txantennaselchosen;
-          bIterator = DeserializeChoice (2,&txantennaselchosen,bIterator);
+          bIterator = DeserializeChoice (2,false,&txantennaselchosen,bIterator);
           if (txantennaselchosen == 0)
             {
               // Deserialize ue-TransmitAntennaSelection release
@@ -1897,7 +1900,7 @@ RrcAsn1Header::DeserializeRadioResourceConfigCommonSib (LteRrcSap::RadioResource
 
   // soundingRS-UL-ConfigCommon
   int choice;
-  bIterator = DeserializeChoice (2,&choice,bIterator);
+  bIterator = DeserializeChoice (2,false,&choice,bIterator);
   if (choice == 0)
     {
       bIterator = DeserializeNull (bIterator); // release
@@ -1957,7 +1960,7 @@ RrcAsn1Header::DeserializeMeasResults (LteRrcSap::MeasResults *measResults, Buff
       int measResultNeighCellsChoice;
 
       // Deserialize measResultNeighCells
-      bIterator = DeserializeChoice (4,&measResultNeighCellsChoice,bIterator);
+      bIterator = DeserializeChoice (4,false,&measResultNeighCellsChoice,bIterator);
 
       if (measResultNeighCellsChoice == 0)
         {
@@ -2136,7 +2139,7 @@ RrcConnectionRequestHeader::PreSerialize () const
 
   // Serialize criticalExtensions choice:
   // 2 options, selected: 0 (option: rrcConnectionRequest-r8)
-  SerializeChoice (2,0);
+  SerializeChoice (2,0,false);
 
   // Serialize RRCConnectionRequest-r8-IEs sequence:
   // no default or optional fields. Extension marker not present.
@@ -2144,7 +2147,7 @@ RrcConnectionRequestHeader::PreSerialize () const
 
   // Serialize InitialUE-Identity choice:
   // 2 options, selected: 0 (option: s-TMSI)
-  SerializeChoice (2,0);
+  SerializeChoice (2,0,false);
 
   // Serialize S-TMSI sequence:
   // no default or optional fields. Extension marker not present.
@@ -2179,13 +2182,13 @@ RrcConnectionRequestHeader::Deserialize (Buffer::Iterator bIterator)
   bIterator = DeserializeSequence (&optionalOrDefaultMask,false,bIterator);
 
   // Deserialize criticalExtensions choice:
-  bIterator = DeserializeChoice (2,&selectedOption,bIterator);
+  bIterator = DeserializeChoice (2,false,&selectedOption,bIterator);
 
   // Deserialize RRCConnectionRequest-r8-IEs sequence
   bIterator = DeserializeSequence (&optionalOrDefaultMask,false,bIterator);
 
   // Deserialize InitialUE-Identity choice
-  bIterator = DeserializeChoice (2,&selectedOption,bIterator);
+  bIterator = DeserializeChoice (2,false,&selectedOption,bIterator);
 
   // Deserialize S-TMSI sequence
   bIterator = DeserializeSequence (&optionalOrDefaultMask,false,bIterator);
@@ -2270,11 +2273,11 @@ RrcConnectionSetupHeader::PreSerialize () const
 
   // Serialize criticalExtensions choice:
   // 2 options, selected: 0 (option: c1)
-  SerializeChoice (2,0);
+  SerializeChoice (2,0,false);
 
   // Serialize c1 choice:
   // 8 options, selected: 0 (option: rrcConnectionSetup-r8)
-  SerializeChoice (8,0);
+  SerializeChoice (8,0,false);
 
   // Serialize rrcConnectionSetup-r8 sequence
   // 1 optional fields (not present). Extension marker not present.
@@ -2314,7 +2317,7 @@ RrcConnectionSetupHeader::Deserialize (Buffer::Iterator bIterator)
 
   // Deserialize criticalExtensions choice
   int criticalExtensionChoice;
-  bIterator = DeserializeChoice (2,&criticalExtensionChoice,bIterator);
+  bIterator = DeserializeChoice (2,false,&criticalExtensionChoice,bIterator);
   if (criticalExtensionChoice == 1)
     {
       // Deserialize criticalExtensionsFuture
@@ -2324,7 +2327,7 @@ RrcConnectionSetupHeader::Deserialize (Buffer::Iterator bIterator)
     {
       // Deserialize c1
       int c1;
-      bIterator = DeserializeChoice (8,&c1,bIterator);
+      bIterator = DeserializeChoice (8,false,&c1,bIterator);
 
       if (c1 > 0)
         {
@@ -2440,10 +2443,10 @@ RrcConnectionSetupCompleteHeader::PreSerialize () const
 
   // Serialize criticalExtensions choice
   // 2 options, selected 0 (c1)
-  SerializeChoice (2,0);
+  SerializeChoice (2,0,false);
 
   // Choose spare3 NULL
-  SerializeChoice (4,1);
+  SerializeChoice (4,1,false);
 
   // Serialize spare3 NULL
   SerializeNull ();
@@ -2465,7 +2468,7 @@ RrcConnectionSetupCompleteHeader::Deserialize (Buffer::Iterator bIterator)
   bIterator = DeserializeInteger (&n,0,3,bIterator);
   m_rrcTransactionIdentifier = n;
 
-  bIterator = DeserializeChoice (2,&n,bIterator);
+  bIterator = DeserializeChoice (2,false,&n,bIterator);
 
   if (n == 1)
     {
@@ -2476,7 +2479,7 @@ RrcConnectionSetupCompleteHeader::Deserialize (Buffer::Iterator bIterator)
     {
       // Deserialize c1
       int c1Chosen;
-      bIterator = DeserializeChoice (4,&c1Chosen,bIterator);
+      bIterator = DeserializeChoice (4,false,&c1Chosen,bIterator);
 
       if (c1Chosen == 0)
         {
@@ -2546,7 +2549,7 @@ RrcConnectionReconfigurationCompleteHeader::PreSerialize () const
 
   // Serialize criticalExtensions choice
   // 2 options, selected 1 (criticalExtensionsFuture)
-  SerializeChoice (2,1);
+  SerializeChoice (2,1,false);
 
   // Choose criticalExtensionsFuture
   SerializeSequence (std::bitset<0> (),false);
@@ -2567,7 +2570,7 @@ RrcConnectionReconfigurationCompleteHeader::Deserialize (Buffer::Iterator bItera
   bIterator = DeserializeInteger (&n,0,3,bIterator);
   m_rrcTransactionIdentifier = n;
 
-  bIterator = DeserializeChoice (2,&n,bIterator);
+  bIterator = DeserializeChoice (2,false,&n,bIterator);
 
   if (n == 1)
     {
@@ -2636,11 +2639,11 @@ RrcConnectionReconfigurationHeader::PreSerialize () const
 
   // Serialize criticalExtensions choice
   // 2 options, selected 0 (c1)
-  SerializeChoice (2,0);
+  SerializeChoice (2,0,false);
 
   // Serialize c1 choice
   // 8 options, selected 0 (rrcConnectionReconfiguration-r8)
-  SerializeChoice (8,0);
+  SerializeChoice (8,0,false);
 
   // Serialize RRCConnectionReconfiguration-r8-IEs sequence:
   // 6 optional fields. Extension marker not present.
@@ -2783,7 +2786,7 @@ RrcConnectionReconfigurationHeader::Deserialize (Buffer::Iterator bIterator)
 
   // criticalExtensions
   int sel;
-  bIterator = DeserializeChoice (2,&sel,bIterator);
+  bIterator = DeserializeChoice (2,false,&sel,bIterator);
   if (sel == 1)
     {
       // criticalExtensionsFuture
@@ -2793,7 +2796,7 @@ RrcConnectionReconfigurationHeader::Deserialize (Buffer::Iterator bIterator)
     {
       // c1
       int c1Chosen;
-      bIterator = DeserializeChoice (8,&c1Chosen,bIterator);
+      bIterator = DeserializeChoice (8,false,&c1Chosen,bIterator);
       if (c1Chosen > 0)
         {
           bIterator = DeserializeNull (bIterator);
@@ -3163,11 +3166,11 @@ HandoverPreparationInfoHeader::PreSerialize () const
 
   // Serialize criticalExtensions choice
   // 2 options, selected 0 (c1)
-  SerializeChoice (2,0);
+  SerializeChoice (2,0,false);
 
   // Serialize c1 choice
   // 8 options, selected 0 (handoverPreparationInformation-r8)
-  SerializeChoice (8,0);
+  SerializeChoice (8,0,false);
 
   // Serialize HandoverPreparationInformation-r8-IEs sequence
   // 4 optional fields, no extension marker.
@@ -3240,7 +3243,7 @@ HandoverPreparationInfoHeader::Deserialize (Buffer::Iterator bIterator)
 
   // Deserialize criticalExtensions choice
   int criticalExtensionsChosen;
-  bIterator = DeserializeChoice (2,&criticalExtensionsChosen,bIterator);
+  bIterator = DeserializeChoice (2,false,&criticalExtensionsChosen,bIterator);
 
   if (criticalExtensionsChosen == 1)
     {
@@ -3251,7 +3254,7 @@ HandoverPreparationInfoHeader::Deserialize (Buffer::Iterator bIterator)
     {
       // Deserialize c1 choice
       int c1Chosen;
-      bIterator = DeserializeChoice (8,&c1Chosen,bIterator);
+      bIterator = DeserializeChoice (8,false,&c1Chosen,bIterator);
       if (c1Chosen > 0)
         {
           bIterator = DeserializeNull (bIterator);
@@ -3449,7 +3452,7 @@ RrcConnectionReestablishmentRequestHeader::PreSerialize () const
 
   // Serialize criticalExtensions choice
   // chosen: rrcConnectionReestablishmentRequest-r8
-  SerializeChoice (2,0);
+  SerializeChoice (2,0,false);
 
   // Serialize RRCConnectionReestablishmentRequest-r8-IEs sequence
   // no default or optional fields. Extension marker not present.
@@ -3500,7 +3503,7 @@ RrcConnectionReestablishmentRequestHeader::Deserialize (Buffer::Iterator bIterat
   bIterator = DeserializeSequence (&bitset0,false,bIterator);
 
   // Deserialize criticalExtensions choice
-  bIterator = DeserializeChoice (2,&n,bIterator);
+  bIterator = DeserializeChoice (2,false,&n,bIterator);
   if ( n == 1)
     {
       // Deserialize criticalExtensionsFuture
@@ -3617,10 +3620,10 @@ RrcConnectionReestablishmentHeader::PreSerialize () const
   SerializeInteger (m_rrcTransactionIdentifier,0,3);
 
   // Serialize criticalExtensions choice
-  SerializeChoice (2,0);
+  SerializeChoice (2,0,false);
 
   // Serialize c1 choice
-  SerializeChoice (8,0);
+  SerializeChoice (8,0,false);
 
   // Serialize RRCConnectionReestablishment-r8-IEs sequence
   // 1 optional field, no extension marker
@@ -3654,7 +3657,7 @@ RrcConnectionReestablishmentHeader::Deserialize (Buffer::Iterator bIterator)
 
   // Deserialize criticalExtensions choice
   int criticalExtensionsChoice;
-  bIterator = DeserializeChoice (2,&criticalExtensionsChoice,bIterator);
+  bIterator = DeserializeChoice (2,false,&criticalExtensionsChoice,bIterator);
   if (criticalExtensionsChoice == 1)
     {
       // Deserialize criticalExtensionsFuture
@@ -3664,7 +3667,7 @@ RrcConnectionReestablishmentHeader::Deserialize (Buffer::Iterator bIterator)
     {
       // Deserialize c1
       int c1;
-      bIterator = DeserializeChoice (8,&c1,bIterator);
+      bIterator = DeserializeChoice (8,false,&c1,bIterator);
       if (c1 > 0)
         {
           bIterator = DeserializeNull (bIterator);
@@ -3746,7 +3749,7 @@ RrcConnectionReestablishmentCompleteHeader::PreSerialize () const
   SerializeInteger (m_rrcTransactionIdentifier,0,3);
 
   // Serialize criticalExtensions choice
-  SerializeChoice (2,0);
+  SerializeChoice (2,0,false);
 
   // Serialize rrcConnectionReestablishmentComplete-r8 sequence
   // 1 optional field (not present), no extension marker.
@@ -3774,7 +3777,7 @@ RrcConnectionReestablishmentCompleteHeader::Deserialize (Buffer::Iterator bItera
 
   // Deserialize criticalExtensions choice
   int criticalExtensionsChoice;
-  bIterator = DeserializeChoice (2,&criticalExtensionsChoice,bIterator);
+  bIterator = DeserializeChoice (2,false,&criticalExtensionsChoice,bIterator);
   if (criticalExtensionsChoice == 1)
     {
       // Deserialize criticalExtensionsFuture
@@ -3845,7 +3848,7 @@ RrcConnectionReestablishmentRejectHeader::PreSerialize () const
   SerializeSequence (std::bitset<0> (),false);
 
   // Serialize criticalExtensions choice
-  SerializeChoice (2,0);
+  SerializeChoice (2,0,false);
 
   // Serialize RRCConnectionReestablishmentReject-r8-IEs sequence
   // 1 optional field (not present), no extension marker.
@@ -3868,7 +3871,7 @@ RrcConnectionReestablishmentRejectHeader::Deserialize (Buffer::Iterator bIterato
 
   // Deserialize criticalExtensions choice
   int criticalExtensionsChoice;
-  bIterator = DeserializeChoice (2,&criticalExtensionsChoice,bIterator);
+  bIterator = DeserializeChoice (2,false,&criticalExtensionsChoice,bIterator);
   if (criticalExtensionsChoice == 1)
     {
       // Deserialize criticalExtensionsFuture
@@ -3933,10 +3936,10 @@ RrcConnectionReleaseHeader::PreSerialize () const
   SerializeInteger (m_rrcConnectionRelease.rrcTransactionIdentifier,0,3);
 
   // Serialize criticalExtensions choice
-  SerializeChoice (2,0);
+  SerializeChoice (2,0,false);
 
   // Serialize c1 choice
-  SerializeChoice (4,0);
+  SerializeChoice (4,0,false);
 
   // Serialize RRCConnectionRelease-r8-IEs sequence
   // 3 optional field (not present), no extension marker.
@@ -3967,7 +3970,7 @@ RrcConnectionReleaseHeader::Deserialize (Buffer::Iterator bIterator)
 
   // Deserialize criticalExtensions choice
   int criticalExtensionsChoice;
-  bIterator = DeserializeChoice (2,&criticalExtensionsChoice,bIterator);
+  bIterator = DeserializeChoice (2,false,&criticalExtensionsChoice,bIterator);
   if (criticalExtensionsChoice == 1)
     {
       // Deserialize criticalExtensionsFuture
@@ -3977,7 +3980,7 @@ RrcConnectionReleaseHeader::Deserialize (Buffer::Iterator bIterator)
     {
       // Deserialize c1
       int c1Choice;
-      bIterator = DeserializeChoice (4,&c1Choice,bIterator);
+      bIterator = DeserializeChoice (4,false,&c1Choice,bIterator);
 
       if (c1Choice == 0)
         {
@@ -4055,10 +4058,10 @@ RrcConnectionRejectHeader::PreSerialize () const
   SerializeSequence (std::bitset<0> (),false);
 
   // Serialize criticalExtensions choice
-  SerializeChoice (2,0);
+  SerializeChoice (2,0,false);
 
   // Serialize c1 choice
-  SerializeChoice (4,0);
+  SerializeChoice (4,0,false);
 
   // Serialize rrcConnectionReject-r8 sequence
   // 1 optional field (not present), no extension marker.
@@ -4085,7 +4088,7 @@ RrcConnectionRejectHeader::Deserialize (Buffer::Iterator bIterator)
 
   // Deserialize criticalExtensions choice
   int criticalExtensionsChoice;
-  bIterator = DeserializeChoice (2,&criticalExtensionsChoice,bIterator);
+  bIterator = DeserializeChoice (2,false,&criticalExtensionsChoice,bIterator);
   if (criticalExtensionsChoice == 1)
     {
       // Deserialize criticalExtensionsFuture
@@ -4095,7 +4098,7 @@ RrcConnectionRejectHeader::Deserialize (Buffer::Iterator bIterator)
     {
       // Deserialize c1 choice
       int c1Choice;
-      bIterator = DeserializeChoice (4,&c1Choice,bIterator);
+      bIterator = DeserializeChoice (4,false,&c1Choice,bIterator);
 
       if (c1Choice > 0)
         {
@@ -4164,11 +4167,11 @@ MeasurementReportHeader::PreSerialize () const
 
   // Serialize criticalExtensions choice:
   // c1 chosen
-  SerializeChoice (2,0);
+  SerializeChoice (2,0,false);
 
   // Serialize c1 choice
   // measurementReport-r8 chosen
-  SerializeChoice (8,0);
+  SerializeChoice (8,0,false);
 
   // Serialize MeasurementReport-r8-IEs sequence:
   // 1 optional fields, not present. Extension marker not present.
@@ -4191,7 +4194,7 @@ MeasurementReportHeader::Deserialize (Buffer::Iterator bIterator)
   bIterator = DeserializeUlDcchMessage (bIterator);
 
   int criticalExtensionsChoice;
-  bIterator = DeserializeChoice (2,&criticalExtensionsChoice,bIterator);
+  bIterator = DeserializeChoice (2,false,&criticalExtensionsChoice,bIterator);
 
   if (criticalExtensionsChoice == 1)
     {
@@ -4202,7 +4205,7 @@ MeasurementReportHeader::Deserialize (Buffer::Iterator bIterator)
     {
       // Deserialize c1
       int c1Choice;
-      bIterator = DeserializeChoice (8,&c1Choice,bIterator);
+      bIterator = DeserializeChoice (8,false,&c1Choice,bIterator);
 
       if (c1Choice > 0)
         {
@@ -4326,7 +4329,7 @@ RrcUlDcchMessage::DeserializeUlDcchMessage (Buffer::Iterator bIterator)
   int n;
 
   bIterator = DeserializeSequence (&bitset0,false,bIterator);
-  bIterator = DeserializeChoice (2,&n,bIterator);
+  bIterator = DeserializeChoice (2,false,&n,bIterator);
   if (n == 1)
     {
       // Deserialize messageClassExtension
@@ -4336,7 +4339,7 @@ RrcUlDcchMessage::DeserializeUlDcchMessage (Buffer::Iterator bIterator)
   else if (n == 0)
     {
       // Deserialize c1
-      bIterator = DeserializeChoice (16,&m_messageType,bIterator);
+      bIterator = DeserializeChoice (16,false,&m_messageType,bIterator);
     }
 
   return bIterator;
@@ -4347,9 +4350,9 @@ RrcUlDcchMessage::SerializeUlDcchMessage (int messageType) const
 {
   SerializeSequence (std::bitset<0> (),false);
   // Choose c1
-  SerializeChoice (2,0);
+  SerializeChoice (2,0,false);
   // Choose message type
-  SerializeChoice (16,messageType);
+  SerializeChoice (16,messageType,false);
 }
 
 ///////////////////  RrcDlDcchMessage //////////////////////////////////
@@ -4387,7 +4390,7 @@ RrcDlDcchMessage::DeserializeDlDcchMessage (Buffer::Iterator bIterator)
   int n;
 
   bIterator = DeserializeSequence (&bitset0,false,bIterator);
-  bIterator = DeserializeChoice (2,&n,bIterator);
+  bIterator = DeserializeChoice (2,false,&n,bIterator);
   if (n == 1)
     {
       // Deserialize messageClassExtension
@@ -4397,7 +4400,7 @@ RrcDlDcchMessage::DeserializeDlDcchMessage (Buffer::Iterator bIterator)
   else if (n == 0)
     {
       // Deserialize c1
-      bIterator = DeserializeChoice (16,&m_messageType,bIterator);
+      bIterator = DeserializeChoice (16,false,&m_messageType,bIterator);
     }
 
   return bIterator;
@@ -4408,9 +4411,9 @@ RrcDlDcchMessage::SerializeDlDcchMessage (int messageType) const
 {
   SerializeSequence (std::bitset<0> (),false);
   // Choose c1
-  SerializeChoice (2,0);
+  SerializeChoice (2,0,false);
   // Choose message type
-  SerializeChoice (16,messageType);
+  SerializeChoice (16,messageType,false);
 }
 
 ///////////////////  RrcUlCcchMessage //////////////////////////////////
@@ -4448,7 +4451,7 @@ RrcUlCcchMessage::DeserializeUlCcchMessage (Buffer::Iterator bIterator)
   int n;
 
   bIterator = DeserializeSequence (&bitset0,false,bIterator);
-  bIterator = DeserializeChoice (2,&n,bIterator);
+  bIterator = DeserializeChoice (2,false,&n,bIterator);
   if (n == 1)
     {
       // Deserialize messageClassExtension
@@ -4458,7 +4461,7 @@ RrcUlCcchMessage::DeserializeUlCcchMessage (Buffer::Iterator bIterator)
   else if (n == 0)
     {
       // Deserialize c1
-      bIterator = DeserializeChoice (2,&m_messageType,bIterator);
+      bIterator = DeserializeChoice (2,false,&m_messageType,bIterator);
     }
 
   return bIterator;
@@ -4469,9 +4472,9 @@ RrcUlCcchMessage::SerializeUlCcchMessage (int messageType) const
 {
   SerializeSequence (std::bitset<0> (),false);
   // Choose c1
-  SerializeChoice (2,0);
+  SerializeChoice (2,0,false);
   // Choose message type
-  SerializeChoice (2,messageType);
+  SerializeChoice (2,messageType,false);
 }
 
 ///////////////////  RrcDlCcchMessage //////////////////////////////////
@@ -4509,7 +4512,7 @@ RrcDlCcchMessage::DeserializeDlCcchMessage (Buffer::Iterator bIterator)
   int n;
 
   bIterator = DeserializeSequence (&bitset0,false,bIterator);
-  bIterator = DeserializeChoice (2,&n,bIterator);
+  bIterator = DeserializeChoice (2,false,&n,bIterator);
   if (n == 1)
     {
       // Deserialize messageClassExtension
@@ -4519,7 +4522,7 @@ RrcDlCcchMessage::DeserializeDlCcchMessage (Buffer::Iterator bIterator)
   else if (n == 0)
     {
       // Deserialize c1
-      bIterator = DeserializeChoice (4,&m_messageType,bIterator);
+      bIterator = DeserializeChoice (4,false,&m_messageType,bIterator);
     }
 
   return bIterator;
@@ -4530,9 +4533,9 @@ RrcDlCcchMessage::SerializeDlCcchMessage (int messageType) const
 {
   SerializeSequence (std::bitset<0> (),false);
   // Choose c1
-  SerializeChoice (2,0);
+  SerializeChoice (2,0,false);
   // Choose message type
-  SerializeChoice (4,messageType);
+  SerializeChoice (4,messageType,false);
 }
 
 } // namespace ns3

@@ -76,7 +76,7 @@ protected:
   void SerializeInteger (int n, int nmin, int nmax) const;
   void SerializeOctetstring (std::string s) const;
   void SerializeSequenceOf (int numElems, int nMax, int nMin) const;
-  void SerializeChoice (int numOptions, int selectedOption) const;
+  void SerializeChoice (int numOptions, int selectedOption, bool isExtensionMarkerPresent) const;
   void SerializeEnum (int numElems, int selectedElem) const;
   void SerializeNull () const;
   void FinalizeSerialization () const;
@@ -115,7 +115,7 @@ protected:
 
   Buffer::Iterator DeserializeBoolean (bool *value, Buffer::Iterator bIterator);
   Buffer::Iterator DeserializeInteger (int *n, int nmin, int nmax, Buffer::Iterator bIterator);
-  Buffer::Iterator DeserializeChoice (int numOptions, int *selectedOption, Buffer::Iterator bIterator);
+  Buffer::Iterator DeserializeChoice (int numOptions, bool isExtensionMarkerPresent, int *selectedOption, Buffer::Iterator bIterator);
   Buffer::Iterator DeserializeEnum (int numElems, int *selectedElem, Buffer::Iterator bIterator);
 
   template <int N>
