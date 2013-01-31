@@ -331,8 +331,8 @@ RrcAsn1Header::SerializePhysicalConfigDedicated (LteRrcSap::PhysicalConfigDedica
       SerializeSequence (std::bitset<1> (0),false);
 
       // Serialize transmissionMode
-      // Enum values: {tm1, tm2, tm3, tm4, tm5, tm6, tm7, spare1}
-      SerializeEnum (8,physicalConfigDedicated.antennaInfo.transmissionMode-1);
+      // Assuming the value in the struct is the enum index
+      SerializeEnum (8,physicalConfigDedicated.antennaInfo.transmissionMode);
 
       // Serialize ue-TransmitAntennaSelection choice
       SerializeChoice (2,0,false);
@@ -1268,7 +1268,7 @@ RrcAsn1Header::DeserializePhysicalConfigDedicated (LteRrcSap::PhysicalConfigDedi
 
           int txmode;
           bIterator = DeserializeEnum (8,&txmode,bIterator);
-          physicalConfigDedicated->antennaInfo.transmissionMode = txmode+1;
+          physicalConfigDedicated->antennaInfo.transmissionMode = txmode;
 
           if (codebookSubsetRestrictionPresent[0])
             {

@@ -148,7 +148,7 @@ RrcHeaderTestCase :: CreateRadioResourceConfigDedicated ()
   physicalConfigDedicated.soundingRsUlConfigDedicated.srsConfigIndex = 12;
 
   physicalConfigDedicated.haveAntennaInfoDedicated = true;
-  physicalConfigDedicated.antennaInfo.transmissionMode = 3;
+  physicalConfigDedicated.antennaInfo.transmissionMode = 2;
 
   rrd.physicalConfigDedicated = physicalConfigDedicated;
 
