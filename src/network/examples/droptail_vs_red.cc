@@ -69,16 +69,16 @@ int main (int argc, char *argv[])
 
   if (!modeBytes)
     {
-      Config::SetDefault ("ns3::DropTailQueue::Mode", StringValue ("Packets"));
+      Config::SetDefault ("ns3::DropTailQueue::Mode", StringValue ("QUEUE_MODE_PACKETS"));
       Config::SetDefault ("ns3::DropTailQueue::MaxPackets", UintegerValue (maxPackets));
-      Config::SetDefault ("ns3::RedQueue::Mode", StringValue ("Packets"));
+      Config::SetDefault ("ns3::RedQueue::Mode", StringValue ("QUEUE_MODE_PACKETS"));
       Config::SetDefault ("ns3::RedQueue::QueueLimit", UintegerValue (maxPackets));
     }
   else 
     {
-      Config::SetDefault ("ns3::DropTailQueue::Mode", StringValue ("Bytes"));
+      Config::SetDefault ("ns3::DropTailQueue::Mode", StringValue ("QUEUE_MODE_BYTES"));
       Config::SetDefault ("ns3::DropTailQueue::MaxBytes", UintegerValue (maxPackets * pktSize));
-      Config::SetDefault ("ns3::RedQueue::Mode", StringValue ("Bytes"));
+      Config::SetDefault ("ns3::RedQueue::Mode", StringValue ("QUEUE_MODE_BYTES"));
       Config::SetDefault ("ns3::RedQueue::QueueLimit", UintegerValue (maxPackets * pktSize));
       minTh *= pktSize; 
       maxTh *= pktSize;
