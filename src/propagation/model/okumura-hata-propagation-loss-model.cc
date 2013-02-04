@@ -76,21 +76,21 @@ OkumuraHataPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityMode
     {
       // standard Okumura Hata 
       // see eq. (4.4.1) in the COST 231 final report
-      double log_f = log10 (fmhz);
+      double log_f = std::log10 (fmhz);
       double hb = (a->GetPosition ().z > b->GetPosition ().z ? a->GetPosition ().z : b->GetPosition ().z);
       double hm = (a->GetPosition ().z < b->GetPosition ().z ? a->GetPosition ().z : b->GetPosition ().z);
       NS_ASSERT_MSG (hb > 0 && hm > 0, "nodes' height must be greater then 0");
-      double log_aHeight = 13.82 * log10 (hb);
+      double log_aHeight = 13.82 * std::log10 (hb);
       double log_bHeight = 0.0;
       if (m_citySize == LargeCity)
         {
           if (m_frequency < 200)
             {
-              log_bHeight = 8.29 * pow (log10 (1.54 * hm), 2) -  1.1;
+              log_bHeight = 8.29 * std::pow (log10 (1.54 * hm), 2) -  1.1;
             }
           else
             {
-              log_bHeight = 3.2 * pow (log10 (11.75 * hm), 2) - 4.97;
+              log_bHeight = 3.2 * std::pow (log10 (11.75 * hm), 2) - 4.97;
             }
         }
       else
@@ -98,15 +98,15 @@ OkumuraHataPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityMode
           log_bHeight = 0.8 + (1.1 * log_f - 0.7) * hm - 1.56 * log_f;
         }
 
-      NS_LOG_INFO (this << " logf " << 26.16 * log_f << " loga " << log_aHeight << " X " << (((44.9 - (6.55 * log10(hb)) ))*log10 (a->GetDistanceFrom (b))) << " logb " << log_bHeight);
-      loss = 69.55 + (26.16 * log_f) - log_aHeight + (((44.9 - (6.55 * log10 (hb)) )) * log10 (dist)) - log_bHeight;
+      NS_LOG_INFO (this << " logf " << 26.16 * log_f << " loga " << log_aHeight << " X " << (((44.9 - (6.55 * std::log10 (hb)) )) * std::log10 (a->GetDistanceFrom (b))) << " logb " << log_bHeight);
+      loss = 69.55 + (26.16 * log_f) - log_aHeight + (((44.9 - (6.55 * std::log10 (hb)) )) * std::log10 (dist)) - log_bHeight;
       if (m_environment == SubUrbanEnvironment)
         {
-          loss += -2 * (pow (log10 (fmhz / 28), 2)) - 5.4;
+          loss += -2 * (std::pow (std::log10 (fmhz / 28), 2)) - 5.4;
         }
       else if (m_environment == OpenAreasEnvironment)
         {
-          loss += -4.70 * pow (log10 (fmhz),2) + 18.33 * log10 (fmhz) - 40.94;
+          loss += -4.70 * std::pow (std::log10 (fmhz),2) + 18.33 * std::log10 (fmhz) - 40.94;
         }
 
     }
@@ -115,17 +115,17 @@ OkumuraHataPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityMode
       // COST 231 Okumura model
       // see eq. (4.4.3) in the COST 231 final report
 
-      double log_f = log10 (fmhz);
+      double log_f = std::log10 (fmhz);
       double hb = (a->GetPosition ().z > b->GetPosition ().z ? a->GetPosition ().z : b->GetPosition ().z);
       double hm = (a->GetPosition ().z < b->GetPosition ().z ? a->GetPosition ().z : b->GetPosition ().z);
       NS_ASSERT_MSG (hb > 0 && hm > 0, "nodes' height must be greater then 0");
-      double log_aHeight = 13.82 * log10 (hb);
+      double log_aHeight = 13.82 * std::log10 (hb);
       double log_bHeight = 0.0;
       double C = 0.0;
 
       if (m_citySize == LargeCity)
         {
-          log_bHeight = 3.2 * pow ((log10 (11.75 * hm)),2);
+          log_bHeight = 3.2 * std::pow ((std::log10 (11.75 * hm)), 2);
           C = 3;
         }
       else
@@ -133,7 +133,7 @@ OkumuraHataPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityMode
           log_bHeight = 1.1 * log_f - 0.7 * hm - (1.56 * log_f - 0.8);
         }
 
-      loss = 46.3 + (33.9 * log_f) - log_aHeight + (((44.9 - (6.55 * log10 (hb)) )) * log10 (dist)) - log_bHeight + C;
+      loss = 46.3 + (33.9 * log_f) - log_aHeight + (((44.9 - (6.55 * std::log10 (hb)) )) * std::log10 (dist)) - log_bHeight + C;
     }
   return loss;
 }

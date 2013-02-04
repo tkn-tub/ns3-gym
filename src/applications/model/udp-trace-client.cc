@@ -31,8 +31,8 @@
 #include "ns3/string.h"
 #include "seq-ts-header.h"
 #include "udp-trace-client.h"
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
 #include <fstream>
 
 namespace ns3 {
@@ -119,6 +119,7 @@ UdpTraceClient::~UdpTraceClient ()
 void
 UdpTraceClient::SetRemote (Address ip, uint16_t port)
 {
+  NS_LOG_FUNCTION (this << ip << port);
   m_entries.clear ();
   m_peerAddress = ip;
   m_peerPort = port;
@@ -127,6 +128,7 @@ UdpTraceClient::SetRemote (Address ip, uint16_t port)
 void
 UdpTraceClient::SetRemote (Ipv4Address ip, uint16_t port)
 {
+  NS_LOG_FUNCTION (this << ip << port);
   m_entries.clear ();
   m_peerAddress = Address (ip);
   m_peerPort = port;
@@ -135,6 +137,7 @@ UdpTraceClient::SetRemote (Ipv4Address ip, uint16_t port)
 void
 UdpTraceClient::SetRemote (Ipv6Address ip, uint16_t port)
 {
+  NS_LOG_FUNCTION (this << ip << port);
   m_entries.clear ();
   m_peerAddress = Address (ip);
   m_peerPort = port;
@@ -143,6 +146,7 @@ UdpTraceClient::SetRemote (Ipv6Address ip, uint16_t port)
 void
 UdpTraceClient::SetTraceFile (std::string traceFile)
 {
+  NS_LOG_FUNCTION (this << traceFile);
   if (traceFile == "")
     {
       LoadDefaultTrace ();
@@ -156,12 +160,14 @@ UdpTraceClient::SetTraceFile (std::string traceFile)
 void
 UdpTraceClient::SetMaxPacketSize (uint16_t maxPacketSize)
 {
+  NS_LOG_FUNCTION (this << maxPacketSize);
   m_maxPacketSize = maxPacketSize;
 }
 
 
 uint16_t UdpTraceClient::GetMaxPacketSize (void)
 {
+  NS_LOG_FUNCTION (this);
   return m_maxPacketSize;
 }
 
@@ -169,7 +175,7 @@ uint16_t UdpTraceClient::GetMaxPacketSize (void)
 void
 UdpTraceClient::DoDispose (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   Application::DoDispose ();
 }
 

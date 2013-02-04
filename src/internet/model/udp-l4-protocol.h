@@ -111,8 +111,7 @@ public:
                                                  Ipv4Header const &header,
                                                  Ptr<Ipv4Interface> interface);
   virtual enum IpL4Protocol::RxStatus Receive (Ptr<Packet> p,
-                                                 Ipv6Address &src,
-                                                 Ipv6Address &dst,
+                                                 Ipv6Header const &header,
                                                  Ptr<Ipv6Interface> interface);
 
   /**

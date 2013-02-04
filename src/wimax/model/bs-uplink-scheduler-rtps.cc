@@ -572,7 +572,7 @@ UplinkSchedulerRtps::ULSchedulerRTPSConnection (uint32_t &symbolsToAllocation, u
       for (int i = 0; i < nbAllocation; i++)
         {
           NS_LOG_INFO ("\t\tprevious allocSizeSymbols_[" << i << "] = " << allocSizeSymbols_[i]);
-          allocSizeSymbols_[i] = (uint32_t) floor (allocSizeSymbols_[i] * delta);
+          allocSizeSymbols_[i] = (uint32_t) std::floor (allocSizeSymbols_[i] * delta);
           totAllocSizeSymbols += allocSizeSymbols_[i];
           NS_LOG_INFO ("\t\tnew allocSizeSymbols_[" << i << "] = " << allocSizeSymbols_[i]);
         }

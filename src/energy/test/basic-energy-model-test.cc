@@ -33,7 +33,7 @@
 #include "ns3/string.h"
 #include "ns3/yans-wifi-helper.h"
 #include "ns3/nqos-wifi-mac-helper.h"
-#include <math.h>
+#include <cmath>
 
 using namespace ns3;
 

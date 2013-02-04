@@ -225,7 +225,6 @@ LenaPfFfMacSchedulerTestCase1::DoRun (void)
       Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue (false));
       Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));
     }
-
   Config::SetDefault ("ns3::LteHelper::UseIdealRrc", BooleanValue (true));
 
   /**
@@ -385,7 +384,6 @@ void
 LenaPfFfMacSchedulerTestCase2::DoRun (void)
 {
   NS_LOG_FUNCTION (this);
-
   if (!m_errorModelEnabled)
     {
       Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue (false));

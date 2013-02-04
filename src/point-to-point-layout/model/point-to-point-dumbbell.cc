@@ -18,6 +18,7 @@
 
 // Implement an object to create a dumbbell topology.
 
+#include <cmath>
 #include <iostream>
 #include <sstream>
 
@@ -273,8 +274,8 @@ void PointToPointDumbbellHelper::BoundingBox (double ulx, double uly, // Upper l
           loc = CreateObject<ConstantPositionMobilityModel> ();
           ln->AggregateObject (loc);
         }
-      Vector lnl (lrl.x - cos (theta) * xAdder,
-                  lrl.y + sin (theta) * xAdder, 0);   // Left Node Location
+      Vector lnl (lrl.x - std::cos (theta) * xAdder,
+                  lrl.y + std::sin (theta) * xAdder, 0);   // Left Node Location
       // Insure did not exceed bounding box
       if (lnl.y < uly) 
         {
@@ -306,8 +307,8 @@ void PointToPointDumbbellHelper::BoundingBox (double ulx, double uly, // Upper l
           loc = CreateObject<ConstantPositionMobilityModel> ();
           rn->AggregateObject (loc);
         }
-      Vector rnl (rrl.x + cos (theta) * xAdder, // Right node location
-                  rrl.y + sin (theta) * xAdder, 0);
+      Vector rnl (rrl.x + std::cos (theta) * xAdder, // Right node location
+                  rrl.y + std::sin (theta) * xAdder, 0);
       // Insure did not exceed bounding box
       if (rnl.y < uly) 
         {

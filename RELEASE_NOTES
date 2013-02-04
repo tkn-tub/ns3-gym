@@ -10,7 +10,7 @@ Consult the file CHANGES.html for more detailed information about changed
 API and behavior across ns-3 releases.
 
 Release 3-dev
-============
+=============
 
 Availability
 ------------
@@ -18,14 +18,85 @@ This release is not yet available.
 
 Supported platforms
 -------------------
+To be determined
 
 New user-visible features
 -------------------------
 
 Bugs fixed
 ----------
- - bug 1485 - Setting global properties in config file (raw text) does
-              not have any effect
+
+Known issues
+------------
+In general, known issues are tracked on the project tracker available
+at http://www.nsnam.org/bugzilla/
+
+Release 3.16
+============
+
+Availability
+------------
+This release is available from: 
+http://www.nsnam.org/release/ns-allinone-3.16.tar.bz2
+
+Supported platforms
+-------------------
+- Fedora Core 17 (32/64 bit) with g++-4.7.0
+- Fedora Core 15 (64 bit) with g++-4.6.3
+- Ubuntu 12.10 (32/64 bit) with g++-4.6.3
+- Ubuntu 12.04 (32/64 bit) with g++-4.6.3
+- Ubuntu 10.04.4 LTS (64 bit) with g++-4.4.3
+- OS X Mountain Lion 10.8.3 with g++-4.2.1
+- FreeBSD 8.2 (32 bit) with g++-4.2.1
+- Cygwin 1.7.9-1 with g++-4.5.3
+
+New user-visible features
+-------------------------
+- Support several new LTE MAC schedulers developed in GSoC 2012 project. 
+  Those schedulers include FD-MT, TD-MT, TTA, FD-BET, TD-BET, FD-TBFQ,
+  TD-TBFQ, PSS. Here, FD and TD mean frequency domain and time domain 
+  respectively.
+- It's now possible to use distcc when building ns-3 by using
+  $ CXX='distcc g++' ./waf configure
+  $ ./waf build
+- Support topology generation with the (external) BRITE topology generation 
+  tool
+
+Bugs fixed
+----------
+- bug  555 - DCF immediate access
+- bug  976 - wifi-wired-bridging regression test fails because of 
+             rounding errors in mobility model
+- bug 1055:  Wrong UAN's Thorp absorption loss model formula
+- bug 1284 - ./test.py performance tests do not exist
+- bug 1324 - ns3tcp-cwnd-test-suite.cc test failing
+- bug 1340 - ns3tcp-loss-suite.cc tests failing
+- bug 1342 - ns3tcp-cwnd-test-suite.cc tests failing
+- bug 1345 - ns-3 builds with clang compiler >= 3.0
+- bug 1359 - TCP cannot receive ICMP
+- bug 1361 - Set TOS from Application level (sockets)
+- bug 1463 - ./test.py --example should automatically detect the path
+- bug 1479 - When the Ipv4RawSocket "IpHeaderInclude" Attribute set true,
+             Ip Checksum error
+- bug 1485 - Setting global properties in config file (raw text) does
+             not have any effect
+- bug 1493 - test.py --list should show the test type default tip
+- bug 1493 - test.py --list should show the test type 
+- bug 1494 - test.py --constrain doesn't work
+- bug 1495 - test.py claims test passed when no test was run
+- bug 1506:  TCP data segment piggybacking acknowledgment
+- bug 1509 - RttEstimator returns invalid value in presence of errors
+- bug 1516 - GtkConfigStore does not show read-only attributes
+- bug 1520 - Config paths not fully documented (partial fix)
+- bug 1524 - Fragmentation Threshold equals to Packet Size at MAC Layer 
+             (Data + IP + UDP) crash the reception
+- bug 1525 - Linker error with mpi on Mac 10.8
+- bug 1526:  Wrong calculation of pathloss within 
+             UanPropModelThorp::GetPathLossDb
+- bug 1527 - Ipv4RawSocket's BindToNetDevice not working
+- bug 1528 - BindToNetDevice not working for IPv6 sockets
+- bug 1531 - Crash when using NS_LOG in destructors of static objects
+- bug 1532 - unimplemented LTE Scheduler methods
 
 Known issues
 ------------
@@ -37,7 +108,8 @@ Release 3.15
 
 Availability
 ------------
-This release is not yet available.
+This release is available from: 
+http://www.nsnam.org/release/ns-allinone-3.15.tar.bz2
 
 Supported platforms
 -------------------

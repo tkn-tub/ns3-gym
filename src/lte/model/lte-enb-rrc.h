@@ -520,7 +520,7 @@ public:
   /**
    * configure cell-specific parameters
    *
-   * \param ulBandwidth the uplink bandwdith in number of RB
+   * \param ulBandwidth the uplink bandwidth in number of RB
    * \param dlBandwidth the downlink bandwidth in number of RB
    * \param ulEarfcn the UL EARFCN
    * \param dlEarfcn the DL EARFCN

@@ -96,8 +96,8 @@ LteInterferenceTestCase::LteInterferenceTestCase (std::string name, double d1, d
   : TestCase (name),
     m_d1 (d1),
     m_d2 (d2),
-    m_dlSinrDb (10 * log10 (dlSinr)),
-    m_ulSinrDb (10 * log10 (ulSinr)),
+    m_dlSinrDb (10 * std::log10 (dlSinr)),
+    m_ulSinrDb (10 * std::log10 (ulSinr)),
     m_dlSe (dlSe),
     m_ulSe (ulSe),
     m_dlMcs (dlMcs),
@@ -209,18 +209,18 @@ LteInterferenceTestCase::DoRun (void)
 
   if (m_dlMcs > 0)
     {
-      double dlSinr1Db = 10.0 * log10 (testDlSinr1->GetSinr ()->operator[] (0));
+      double dlSinr1Db = 10.0 * std::log10 (testDlSinr1->GetSinr ()->operator[] (0));
       NS_TEST_ASSERT_MSG_EQ_TOL (dlSinr1Db, m_dlSinrDb, 0.01, "Wrong SINR in DL! (eNB1 --> UE1)");
 
-      double dlSinr2Db = 10.0 * log10 (testDlSinr2->GetSinr ()->operator[] (0));
+      double dlSinr2Db = 10.0 * std::log10 (testDlSinr2->GetSinr ()->operator[] (0));
       NS_TEST_ASSERT_MSG_EQ_TOL (dlSinr2Db, m_dlSinrDb, 0.01, "Wrong SINR in DL! (eNB2 --> UE2)");
     }
   if (m_ulMcs > 0)
     {
-      double ulSinr1Db = 10.0 * log10 (testUlSinr1->GetSinr ()->operator[] (0));
+      double ulSinr1Db = 10.0 * std::log10 (testUlSinr1->GetSinr ()->operator[] (0));
       NS_TEST_ASSERT_MSG_EQ_TOL (ulSinr1Db, m_ulSinrDb, 0.01, "Wrong SINR in UL!  (UE1 --> eNB1)");
       
-      double ulSinr2Db = 10.0 * log10 (testUlSinr2->GetSinr ()->operator[] (0));
+      double ulSinr2Db = 10.0 * std::log10 (testUlSinr2->GetSinr ()->operator[] (0));
       NS_TEST_ASSERT_MSG_EQ_TOL (ulSinr2Db, m_ulSinrDb, 0.01, "Wrong SINR in UL!  (UE2 --> eNB2)");
     }
 

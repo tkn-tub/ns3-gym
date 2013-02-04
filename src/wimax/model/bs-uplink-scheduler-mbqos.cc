@@ -195,7 +195,7 @@ UplinkSchedulerMBQoS::UplinkSchedWindowTimer (void)
 
                   // if backlogged < granted_bw then we don't need to provide granted_bw + min_bw in next window, but backlogged + min_bw
                   if (serviceFlow->GetRecord ()->GetBacklogged ()
-                      < ((uint32_t) abs (serviceFlow->GetRecord ()->GetBwSinceLastExpiry ())))
+                      < (serviceFlow->GetRecord ()->GetBwSinceLastExpiry ()))
                     {
                       serviceFlow->GetRecord ()->SetBwSinceLastExpiry (-serviceFlow->GetRecord ()->GetBacklogged ());
                     }

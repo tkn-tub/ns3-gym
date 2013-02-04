@@ -24,6 +24,7 @@ SOURCES = \
 	$(SRC)/aodv/doc/aodv.rst \
 	$(SRC)/applications/doc/applications.rst \
 	$(SRC)/bridge/doc/bridge.rst \
+	$(SRC)/brite/doc/brite.rst \
 	$(SRC)/buildings/doc/source/buildings.rst \
 	$(SRC)/buildings/doc/source/buildings-design.rst \
 	$(SRC)/buildings/doc/source/buildings-user.rst \
@@ -151,8 +152,6 @@ SOURCEFIGS = \
 	$(SRC)/lte/doc/source/figures/helpers.pdf \
 	$(SRC)/lte/doc/source/figures/miesm_scheme.pdf \
 	$(SRC)/lte/doc/source/figures/miesm_scheme.png \
-	$(SRC)/lte/doc/source/figures/lte-phy-interference.seqdiag \
-	$(SRC)/lte/doc/source/figures/helpers.seqdiag \
 	$(SRC)/lte/doc/source/figures/lte-phy-interference.seqdiag \
 	$(SRC)/lte/doc/source/figures/helpers.seqdiag \
 	$(SRC)/uan/doc/auvmobility-classes.dia \

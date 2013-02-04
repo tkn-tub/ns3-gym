@@ -339,7 +339,7 @@ NscTcpL4Protocol::Receive (Ptr<Packet> packet,
 }
 
 IpL4Protocol::RxStatus
-NscTcpL4Protocol::Receive(Ptr<Packet>, Ipv6Address&, Ipv6Address&, Ptr<Ipv6Interface>)
+NscTcpL4Protocol::Receive(Ptr<Packet>, Ipv6Header const &, Ptr<Ipv6Interface>)
 {
   return IpL4Protocol::RX_ENDPOINT_UNREACH;
 }

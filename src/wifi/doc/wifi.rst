@@ -337,6 +337,30 @@ where the backoff timer duration is lazily calculated whenever needed since it
 is claimed to have much better performance than the simpler recurring timer
 solution.
 
+The backoff procedure of DCF is described in section 9.2.5.2 of [ieee80211]_.
+
+*  “The backoff procedure shall be invoked for a STA to transfer a frame 
+   when finding the medium busy as indicated by either the physical or 
+   virtual CS mechanism.”
+*  “A backoff procedure shall be performed immediately after the end of 
+   every transmission with the More Fragments bit set to 0 of an MPDU of 
+   type Data, Management, or Control with subtype PS-Poll, even if no 
+   additional transmissions are currently queued.”
+
+Thus, if the queue is empty, a newly arrived packet should be transmitted 
+immediately after channel is sensed idle for DIFS.  If queue is not empty 
+and after a successful MPDU that has no more fragments, a node should 
+also start the backoff timer.
+
+Some users have observed that the 802.11 MAC with an empty queue on an 
+idle channel will transmit the first frame arriving to the model 
+immediately without waiting for DIFS or backoff, and wonder whether this 
+is compliant.  According to the standard, “The backoff procedure shall 
+be invoked for a STA to transfer a frame when finding the medium busy 
+as indicated by either the physical or virtual CS mechanism.”  So in 
+this case, the medium is not found to be busy in recent past and the 
+station can transmit immediately. 
+
 The higher-level MAC functions are implemented in a set of other C++ classes and
 deal with:
 

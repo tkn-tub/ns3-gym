@@ -261,8 +261,8 @@ LenaDataPhyErrorModelTestCase::DoRun (void)
       double ber = 1.0 - ((double)dlDataRxed.at (i)/txed);
       double np = n-n*m_berRef;
       NS_LOG_INFO ("\tUser " << i << " imsi " << imsi << " bytes rxed " << (double)dlDataRxed.at (i) << " txed " << txed 
-        << " BER " << ber << " Err " << fabs (m_berRef - ber) << " lambda " << lambda 
-        << " np " << np << " difference " << abs(lambda - np) << " quantile " << m_bernQuantile);
+                   << " BER " << ber << " Err " << std::fabs (m_berRef - ber) << " lambda " << lambda 
+                   << " np " << np << " difference " << std::abs (lambda - np) << " quantile " << m_bernQuantile);
       NS_UNUSED (ber);
       // the quantiles are evaluated offline according to a Bernoulli 
       // ditribution with n equal to the number of packet sent and p equal 

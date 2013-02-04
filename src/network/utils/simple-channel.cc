@@ -42,6 +42,7 @@ SimpleChannel::GetTypeId (void)
 
 SimpleChannel::SimpleChannel ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 void
@@ -49,7 +50,7 @@ SimpleChannel::Send (Ptr<Packet> p, uint16_t protocol,
                      Mac48Address to, Mac48Address from,
                      Ptr<SimpleNetDevice> sender)
 {
-  NS_LOG_FUNCTION (p << protocol << to << from << sender);
+  NS_LOG_FUNCTION (this << p << protocol << to << from << sender);
   for (std::vector<Ptr<SimpleNetDevice> >::const_iterator i = m_devices.begin (); i != m_devices.end (); ++i)
     {
       Ptr<SimpleNetDevice> tmp = *i;
@@ -65,17 +66,20 @@ SimpleChannel::Send (Ptr<Packet> p, uint16_t protocol,
 void
 SimpleChannel::Add (Ptr<SimpleNetDevice> device)
 {
+  NS_LOG_FUNCTION (this << device);
   m_devices.push_back (device);
 }
 
 uint32_t
 SimpleChannel::GetNDevices (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_devices.size ();
 }
 Ptr<NetDevice>
 SimpleChannel::GetDevice (uint32_t i) const
 {
+  NS_LOG_FUNCTION (this << i);
   return m_devices[i];
 }
 

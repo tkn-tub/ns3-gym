@@ -19,11 +19,13 @@
  */
 
 #include <pthread.h>
-#include <string.h>
-#include <errno.h>
+#include <cstring>
+#include <cerrno> // for strerror
+
 #include "fatal-error.h"
 #include "system-mutex.h"
 #include "log.h"
+
 
 NS_LOG_COMPONENT_DEFINE ("SystemMutex");
 
@@ -42,7 +44,7 @@ private:
 
 SystemMutexPrivate::SystemMutexPrivate ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 
   pthread_mutexattr_t attr;
   pthread_mutexattr_init (&attr);
@@ -65,74 +67,74 @@ SystemMutexPrivate::SystemMutexPrivate ()
 
 SystemMutexPrivate::~SystemMutexPrivate() 
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   pthread_mutex_destroy (&m_mutex);
 }
 	
 void
 SystemMutexPrivate::Lock (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 
   int rc = pthread_mutex_lock (&m_mutex);
   if (rc != 0) 
     {
       NS_FATAL_ERROR ("SystemMutexPrivate::Lock()"
                       "pthread_mutex_lock failed: " << rc << " = \"" <<
-                      strerror (rc) << "\"");
+                      std::strerror (rc) << "\"");
     }
 }
 	
 void
 SystemMutexPrivate::Unlock (void) 
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 
   int rc = pthread_mutex_unlock (&m_mutex);
   if (rc != 0)
     {
       NS_FATAL_ERROR ("SystemMutexPrivate::Unlock()"
                       "pthread_mutex_unlock failed: " << rc << " = \"" <<
-                      strerror (rc) << "\"");
+                      std::strerror (rc) << "\"");
     }
 }
 
 SystemMutex::SystemMutex() 
   : m_priv (new SystemMutexPrivate ())
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 SystemMutex::~SystemMutex() 
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   delete m_priv;
 }
 
 void
 SystemMutex::Lock ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   m_priv->Lock ();
 }
 
 void
 SystemMutex::Unlock ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   m_priv->Unlock ();
 }
 
 CriticalSection::CriticalSection (SystemMutex &mutex)
   : m_mutex (mutex)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << &mutex);
   m_mutex.Lock ();
 }
 
 CriticalSection::~CriticalSection ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   m_mutex.Unlock ();
 }
 

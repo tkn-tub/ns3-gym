@@ -19,7 +19,7 @@
  *                              <amine.ismail@udcast.com>
  */
 
-#include <string.h>
+#include <cstring>
 #include "ns3/snr-to-block-error-rate-manager.h"
 #include "ns3/snr-to-block-error-rate-record.h"
 #include "default-traces.h"
@@ -38,7 +38,7 @@ SNRToBlockErrorRateManager::SNRToBlockErrorRateManager (void)
       m_recordModulation[i] = new std::vector<SNRToBlockErrorRateRecord*> ();
     }
   m_activateLoss = false;
-  strcpy (m_traceFilePath,"DefaultTraces");
+  std::strcpy (m_traceFilePath,"DefaultTraces");
 }
 
 SNRToBlockErrorRateManager::~SNRToBlockErrorRateManager (void)
@@ -273,7 +273,7 @@ SNRToBlockErrorRateManager::ReLoadTraces (void)
 void
 SNRToBlockErrorRateManager::SetTraceFilePath (char *traceFilePath)
 {
-  strcpy (m_traceFilePath, traceFilePath);
+  std::strcpy (m_traceFilePath, traceFilePath);
 }
 
 std::string

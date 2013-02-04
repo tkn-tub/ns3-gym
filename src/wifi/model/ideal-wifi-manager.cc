@@ -17,11 +17,12 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
+
 #include "ideal-wifi-manager.h"
 #include "wifi-phy.h"
 #include "ns3/assert.h"
 #include "ns3/double.h"
-#include <math.h>
+#include <cmath>
 
 namespace ns3 {
 

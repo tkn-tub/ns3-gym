@@ -341,9 +341,9 @@ def configure(conf):
         elif sys.platform == 'cygwin':
             env.append_value("LINKFLAGS", "-Wl,--enable-auto-import")
 
-        cxx, = env['CXX']
-
-        p = subprocess.Popen([cxx, '-print-file-name=libstdc++.so'], stdout=subprocess.PIPE)
+        cxx = env['CXX']
+        cxx_check_libstdcxx = cxx + ['-print-file-name=libstdc++.so']
+        p = subprocess.Popen(cxx_check_libstdcxx, stdout=subprocess.PIPE)
         libstdcxx_location = os.path.dirname(p.stdout.read().strip())
         p.wait()
         if libstdcxx_location:
@@ -536,9 +536,11 @@ def configure(conf):
     for (name, caption, was_enabled, reason_not_enabled) in conf.env['NS3_OPTIONAL_FEATURES']:
         if was_enabled:
             status = 'enabled'
+            color = 'GREEN'
         else:
             status = 'not enabled (%s)' % reason_not_enabled
-        print "%-30s: %s" % (caption, status)
+            color = 'RED'
+        print "%-30s: %s%s%s" % (caption, Logs.colors_lst[color], status, Logs.colors_lst['NORMAL'])
 
 
 class SuidBuild_task(Task.TaskBase):
@@ -773,7 +775,15 @@ def build(bld):
                 if program_built:
                     object_name = "%s%s-%s%s" % (wutils.APPNAME, wutils.VERSION, 
                                                   obj.name, bld.env.BUILD_SUFFIX)
-                    bld.env.append_value('NS3_RUNNABLE_PROGRAMS', object_name)
+
+                    # Get the relative path to the program from the
+                    # launch directory.
+                    launch_dir = os.path.abspath(Context.launch_dir)
+                    object_relative_path = os.path.join(
+                        wutils.relpath(obj.path.abspath(), launch_dir),
+                        object_name)
+
+                    bld.env.append_value('NS3_RUNNABLE_PROGRAMS', object_relative_path)
 
             # disable the modules themselves
             if hasattr(obj, "is_ns3_module") and obj.name not in modules:
@@ -866,7 +876,7 @@ def shutdown(ctx):
 
         # Print the list of enabled modules that were not built.
         if env['MODULES_NOT_BUILT']:
-            print 'Modules not built:'
+            print 'Modules not built (see ns-3 tutorial for explanation):'
             print_module_names(env['MODULES_NOT_BUILT'])
             print
 

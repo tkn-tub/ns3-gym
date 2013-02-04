@@ -2613,7 +2613,7 @@ DsrRouting::ScheduleRreqRetry (Ptr<Packet> packet, std::vector<Ipv4Address> addr
       if (m_rreqTable->GetRreqCnt (dst))
         {
           // When the route request count is larger than 0
-          rreqDelay = Time (pow (m_rreqTable->GetRreqCnt (dst), 2) * m_requestPeriod);
+          rreqDelay = Time (std::pow (static_cast<double> (m_rreqTable->GetRreqCnt (dst)), 2.0) * m_requestPeriod);
         }
       else
         {
@@ -3098,11 +3098,10 @@ DsrRouting::Receive (Ptr<Packet> p,
 
 enum IpL4Protocol::RxStatus
 DsrRouting::Receive (Ptr<Packet> p,
-                     Ipv6Address &src,
-                     Ipv6Address &dst,
+                     Ipv6Header const &ip,
                      Ptr<Ipv6Interface> incomingInterface)
 {
-  NS_LOG_FUNCTION (this << p << src << dst << incomingInterface);
+  NS_LOG_FUNCTION (this << p << ip.GetSourceAddress () << ip.GetDestinationAddress () << incomingInterface);
   return IpL4Protocol::RX_ENDPOINT_UNREACH;
 }
 

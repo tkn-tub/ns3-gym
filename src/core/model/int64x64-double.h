@@ -3,7 +3,7 @@
 #define INT64X64_DOUBLE_H
 
 #include <iostream>
-#include <math.h>
+#include <cmath>
 
 namespace ns3 {
 
@@ -43,7 +43,7 @@ public:
   }
   inline int64_t GetHigh (void) const
   {
-    return (int64_t)floor (_v);
+    return (int64_t)std::floor (_v);
   }
   inline uint64_t GetLow (void) const
   {

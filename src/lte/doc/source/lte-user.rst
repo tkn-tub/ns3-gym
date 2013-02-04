@@ -188,6 +188,61 @@ note that the above will put in the file ``input-defaults.txt`` *all*
 the default values that are registered in your particular build of the
 simulator, including lots of non-LTE attributes.
 
+Configure LTE MAC Scheduler
+---------------------------
+
+There are several types of LTE MAC scheduler user can choose here. User can use following codes to define scheduler type::
+
+ Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
+ lteHelper->SetSchedulerType ("ns3::FdMtFfMacScheduler");    // FD-MT scheduler
+ lteHelper->SetSchedulerType ("ns3::TdMtFfMacScheduler");    // TD-MT scheduler
+ lteHelper->SetSchedulerType ("ns3::TtaFfMacScheduler");     // TTA scheduler
+ lteHelper->SetSchedulerType ("ns3::FdBetFfMacScheduler");   // FD-BET scheduler 
+ lteHelper->SetSchedulerType ("ns3::TdBetFfMacScheduler");   // TD-BET scheduler 
+ lteHelper->SetSchedulerType ("ns3::FdTbfqFfMacScheduler");  // FD-TBFQ scheduler
+ lteHelper->SetSchedulerType ("ns3::TdTbfqFfMacScheduler");  // TD-TBFQ scheduler
+ lteHelper->SetSchedulerType ("ns3::PssFfMacScheduler");     //PSS scheduler
+
+TBFQ and PSS have more parameters than other schedulers. Users can define those parameters in following way::
+
+ * TBFQ scheduler::
+
+  Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
+  lteHelper->SetSchedulerAttribute("DebtLimit", IntegerValue(yourvalue)); // default value -625000 bytes (-5Mb)
+  lteHelper->SetSchedulerAttribute("CreditLimit", UintegerValue(yourvalue)); // default value 625000 bytes (5Mb)
+  lteHelper->SetSchedulerAttribute("TokenPoolSize", UintegerValue(yourvalue)); // default value 1 byte
+  lteHelper->SetSchedulerAttribute("CreditableThreshold", UintegerValue(yourvalue)); // default value 0
+
+ * PSS scheduler::
+
+  Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
+  lteHelper->SetSchedulerAttribute("nMux", UIntegerValue(yourvalue)); // the maximum number of UE selected by TD scheduler
+  lteHelper->SetSchedulerAttribute("PssFdSchedulerType", StringValue("CoItA")); // PF scheduler type in PSS
+
+In TBFQ, default values of debt limit and credit limit are set to -5Mb and 5Mb respectively based on paper [FABokhari2009]_. 
+Current implementation does not consider credit threshold (:math:`C` = 0). In PSS, if user does not define nMux, 
+PSS will set this value to half of total UE. The default FD scheduler is PFsch.
+
+In addition, token generation rate in TBFQ and target bit rate in PSS need to be configured by Guarantee Bit Rate (GBR) or 
+Maximum Bit Rate (MBR) in epc bearer QoS parameters. Users can use following codes to define GBR and MBR in both downlink and uplink::
+
+  Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
+  enum EpsBearer::Qci q = EpsBearer::yourvalue;  // define Qci type
+  GbrQosInformation qos;
+  qos.gbrDl = yourvalue; // Downlink GBR
+  qos.gbrUl = yourvalue; // Uplink GBR
+  qos.mbrDl = yourvalue; // Downlink MBR
+  qos.mbrUl = yourvalue; // Uplink MBR
+  EpsBearer bearer (q, qos);
+  lteHelper->ActivateEpsBearer (ueDevs, bearer, EpcTft::Default ());
+
+In PSS, TBR is obtained from GBR in bearer level QoS parameters. In TBFQ, token generation rate is obtained from the MBR
+setting in bearer level QoS parameters, which therefore needs to be configured consistently.
+For constant bit rate (CBR) traffic, it is suggested to set MBR to GBR. For variance bit rate (VBR) traffic, 
+it is suggested to set MBR k times larger than GBR in order to cover the peak traffic rate. In current implementation, k is set to 
+three based on paper [FABokhari2009]_. In addition, current version of TBFQ does not consider RLC header and PDCP header length in 
+MBR and GBR. Another parameter in TBFQ is packet arrival rate. This parameter is calculated within scheduler and equals to the past
+average throughput which is used in PF scheduler.
 
 Many useful attributes of the LTE-EPC model will be described in the
 following subsections. Still, there are many attributes which are not

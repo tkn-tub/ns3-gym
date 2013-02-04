@@ -1,9 +1,13 @@
 #include "make-event.h"
+#include "log.h"
+
+NS_LOG_COMPONENT_DEFINE ("MakeEvent");
 
 namespace ns3 {
 
 EventImpl * MakeEvent (void (*f)(void))
 {
+  NS_LOG_FUNCTION (f);
   // zero arg version
   class EventFunctionImpl0 : public EventImpl
   {

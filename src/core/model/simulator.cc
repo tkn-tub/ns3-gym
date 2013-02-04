@@ -31,11 +31,15 @@
 #include "assert.h"
 #include "log.h"
 
-#include <math.h>
+#include <cmath>
 #include <fstream>
 #include <list>
 #include <vector>
 #include <iostream>
+
+// Note:  Logging in this file is largely avoided due to the
+// number of calls that are made to these functions and the possibility
+// of causing recursions leading to stack overflow
 
 NS_LOG_COMPONENT_DEFINE ("Simulator");
 
@@ -159,6 +163,7 @@ Simulator::Run (void)
 void 
 Simulator::Stop (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   NS_LOG_LOGIC ("stop");
   GetImpl ()->Stop ();
 }
@@ -189,14 +194,12 @@ Simulator::GetDelayLeft (const EventId &id)
 EventId
 Simulator::Schedule (Time const &time, const Ptr<EventImpl> &ev)
 {
-  NS_LOG_FUNCTION (time << ev);
   return DoSchedule (time, GetPointer (ev));
 }
 
 EventId
 Simulator::ScheduleNow (const Ptr<EventImpl> &ev)
 {
-  NS_LOG_FUNCTION (ev);
   return DoScheduleNow (GetPointer (ev));
 }
 void
@@ -207,7 +210,6 @@ Simulator::ScheduleWithContext (uint32_t context, const Time &time, EventImpl *i
 EventId
 Simulator::ScheduleDestroy (const Ptr<EventImpl> &ev)
 {
-  NS_LOG_FUNCTION (ev);
   return DoScheduleDestroy (GetPointer (ev));
 }
 EventId 
@@ -230,35 +232,30 @@ Simulator::DoScheduleDestroy (EventImpl *impl)
 EventId
 Simulator::Schedule (Time const &time, void (*f)(void))
 {
-  NS_LOG_FUNCTION (time << f);
   return DoSchedule (time, MakeEvent (f));
 }
 
 void
 Simulator::ScheduleWithContext (uint32_t context, Time const &time, void (*f)(void))
 {
-  NS_LOG_FUNCTION (time << context << f);
   return ScheduleWithContext (context, time, MakeEvent (f));
 }
 
 EventId
 Simulator::ScheduleNow (void (*f)(void))
 {
-  NS_LOG_FUNCTION (f);
   return DoScheduleNow (MakeEvent (f));
 }
 
 EventId
 Simulator::ScheduleDestroy (void (*f)(void))
 {
-  NS_LOG_FUNCTION (f);
   return DoScheduleDestroy (MakeEvent (f));
 }
 
 void
 Simulator::Remove (const EventId &ev)
 {
-  NS_LOG_FUNCTION (&ev);
   if (*PeekImpl () == 0)
     {
       return;
@@ -269,7 +266,6 @@ Simulator::Remove (const EventId &ev)
 void
 Simulator::Cancel (const EventId &ev)
 {
-  NS_LOG_FUNCTION (&ev);
   if (*PeekImpl () == 0)
     {
       return;
@@ -280,7 +276,6 @@ Simulator::Cancel (const EventId &ev)
 bool 
 Simulator::IsExpired (const EventId &id)
 {
-  NS_LOG_FUNCTION (&id);
   if (*PeekImpl () == 0)
     {
       return true;
@@ -290,7 +285,6 @@ Simulator::IsExpired (const EventId &id)
 
 Time Now (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
   return Time (Simulator::Now ());
 }
 
@@ -325,6 +319,7 @@ Simulator::GetSystemId (void)
 void
 Simulator::SetImplementation (Ptr<SimulatorImpl> impl)
 {
+  NS_LOG_FUNCTION (impl);
   if (*PeekImpl () != 0)
     {
       NS_FATAL_ERROR ("It is not possible to set the implementation after calling any Simulator:: function. Call Simulator::SetImplementation earlier or after Simulator::Destroy.");
@@ -349,6 +344,7 @@ Simulator::SetImplementation (Ptr<SimulatorImpl> impl)
 Ptr<SimulatorImpl>
 Simulator::GetImplementation (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   return GetImpl ();
 }
 

@@ -41,7 +41,7 @@ OlsrEmfTestCase::DoRun (void)
     {
       uint8_t emf = olsr::SecondsToEmf (time);
       double seconds = olsr::EmfToSeconds (emf);
-      NS_TEST_ASSERT_MSG_EQ ((seconds < 0 || fabs (seconds - time) > 0.1), false,
+      NS_TEST_ASSERT_MSG_EQ ((seconds < 0 || std::fabs (seconds - time) > 0.1), false,
                              "XXX");
     }
 }

@@ -43,9 +43,11 @@ MapScheduler::GetTypeId (void)
 
 MapScheduler::MapScheduler ()
 {
+  NS_LOG_FUNCTION (this);
 }
 MapScheduler::~MapScheduler ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 void
@@ -60,6 +62,7 @@ MapScheduler::Insert (const Event &ev)
 bool
 MapScheduler::IsEmpty (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_list.empty ();
 }
 

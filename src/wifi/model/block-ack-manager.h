@@ -31,8 +31,6 @@
 #include "ctrl-headers.h"
 #include "qos-utils.h"
 
-using namespace std;
-
 namespace ns3 {
 
 class MgtAddBaResponseHeader;

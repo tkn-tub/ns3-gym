@@ -22,7 +22,7 @@
 #define LTE_COMMON_H
 
 #include "ns3/uinteger.h"
-#include <math.h>
+#include <cmath>
 
 // see 36.213 section 8
 #define UL_PUSCH_TTIS_DELAY 4

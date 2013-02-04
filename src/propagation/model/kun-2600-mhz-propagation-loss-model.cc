@@ -47,7 +47,7 @@ double
 Kun2600MhzPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
 {
   double dist = a->GetDistanceFrom (b);  
-  double loss = 36 + 26 * log10 (dist);
+  double loss = 36 + 26 * std::log10 (dist);
   return loss;
 }
 

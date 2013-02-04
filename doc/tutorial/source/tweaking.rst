@@ -37,18 +37,32 @@ easily get a quick message out of your scripts or models.
 There are currently seven levels of log messages of increasing verbosity
 defined in the system.  
 
-* NS_LOG_ERROR --- Log error messages;
-* NS_LOG_WARN --- Log warning messages;
-* NS_LOG_DEBUG --- Log relatively rare, ad-hoc debugging messages;
-* NS_LOG_INFO --- Log informational messages about program progress;
-* NS_LOG_FUNCTION --- Log a message describing each function called;
-* NS_LOG_LOGIC -- Log messages describing logical flow within a function;
-* NS_LOG_ALL --- Log everything.
+* LOG_ERROR --- Log error messages (associated macro: NS_LOG_ERROR);
+* LOG_WARN --- Log warning messages (associated macro: NS_LOG_WARN);
+* LOG_DEBUG --- Log relatively rare, ad-hoc debugging messages
+  (associated macro: NS_LOG_DEBUG);
+* LOG_INFO --- Log informational messages about program progress
+  (associated macro: NS_LOG_INFO);
+* LOG_FUNCTION --- Log a message describing each function called
+  (two associated macros: NS_LOG_FUNCTION, used for member functions,
+  and NS_LOG_FUNCTION_NOARGS, used for static functions);
+* LOG_LOGIC -- Log messages describing logical flow within a function
+  (associated macro: NS_LOG_LOGIC);
+* LOG_ALL --- Log everything mentioned above (no associated macro).
 
-We also provide an unconditional logging level that is always displayed,
+For each LOG_TYPE there is also LOG_LEVEL_TYPE that, if used, enables
+logging of all the levels above it in addition to it's level.  (As a
+consequence of this, LOG_ERROR and LOG_LEVEL_ERROR and also LOG_ALL
+and LOG_LEVEL_ALL are functionally equivalent.)  For example,
+enabling LOG_INFO will only enable messages provided by NS_LOG_INFO macro,
+while enabling LOG_LEVEL_INFO will also enable messages provided by
+NS_LOG_DEBUG, NS_LOG_WARN and NS_LOG_ERROR macros.  
+
+We also provide an unconditional logging macro that is always displayed,
 irrespective of logging levels or component selection.
 
-*  NS_LOG_UNCOND -- Log the associated message unconditionally.
+* NS_LOG_UNCOND -- Log the associated message unconditionally (no associated
+  log level).
 
 Each level can be requested singly or cumulatively; and logging can be set 
 up using a shell environment variable (NS_LOG) or by logging system function 
@@ -143,10 +157,12 @@ system will pick up the change and you should see the following output:
 
 The additional debug information provided by the application is from
 the NS_LOG_FUNCTION level.  This shows every time a function in the application
-is called during script execution.  Note that there are no requirements in the
-|ns3| system that models must support any particular logging 
-functionality.  The decision regarding how much information is logged
-is left to the individual model developer.  In the case of the echo 
+is called during script execution.  Generally, use of (at least)
+NS_LOG_FUNCTION(this) in member functions is preferred. Use
+NS_LOG_FUNCTION_NOARGS() only in static functions.  Note, however, that there
+are no requirements in the |ns3| system that models must support any particular
+logging  functionality.  The decision regarding how much information is logged
+is left to the individual model developer.  In the case of the echo
 applications, a good deal of log output is available.
 
 You can now see a log of the function calls that were made to the application.

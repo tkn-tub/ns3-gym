@@ -50,7 +50,8 @@
 
 #include <string>
 #include <limits>
-namespace ns3 {
+
+using namespace ns3;
 
 static void
 AddInternetStack (Ptr<Node> node)
@@ -581,5 +582,3 @@ public:
     AddTestCase (new Udp6SocketLoopbackTest);
   }
 } g_udpTestSuite;
-
-} // namespace ns3

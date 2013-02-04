@@ -291,8 +291,8 @@ LteFadingTestCase::GetFadingSample ()
   (*inPsd1)[1] = 1.;
   Ptr<SpectrumValue> outPsd1 = Create<SpectrumValue> (sm);
   outPsd1 = m_fadingModule->CalcRxPowerSpectralDensity (inPsd1, m_node1, m_node2);
-  (*outPsd1)[0] = (10 * log10 (180000*(*outPsd1)[0])) - (10 * log10 (180000*(*inPsd1)[0]));
-  (*outPsd1)[1] = (10 * log10 (180000*(*outPsd1)[1])) - (10 * log10 (180000*(*inPsd1)[1]));
+  (*outPsd1)[0] = (10 * std::log10 (180000*(*outPsd1)[0])) - (10 * std::log10 (180000*(*inPsd1)[0]));
+  (*outPsd1)[1] = (10 * std::log10 (180000*(*outPsd1)[1])) - (10 * std::log10 (180000*(*inPsd1)[1]));
   m_fadingSamples.push_back ((*outPsd1));
 }
 

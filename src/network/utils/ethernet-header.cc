@@ -36,67 +36,79 @@ EthernetHeader::EthernetHeader (bool hasPreamble)
   : m_enPreambleSfd (hasPreamble),
     m_lengthType (0)
 {
+  NS_LOG_FUNCTION (this << hasPreamble);
 }
 
 EthernetHeader::EthernetHeader ()
   : m_enPreambleSfd (false),
     m_lengthType (0)
 {
+  NS_LOG_FUNCTION (this);
 }
 
 void
 EthernetHeader::SetLengthType (uint16_t lengthType)
 {
+  NS_LOG_FUNCTION (this << lengthType);
   m_lengthType = lengthType;
 }
 uint16_t
 EthernetHeader::GetLengthType (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_lengthType;
 }
 
 void
 EthernetHeader::SetPreambleSfd (uint64_t preambleSfd)
 {
+  NS_LOG_FUNCTION (this << preambleSfd);
   m_preambleSfd = preambleSfd;
 }
 uint64_t
 EthernetHeader::GetPreambleSfd (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_preambleSfd;
 }
 
 void
 EthernetHeader::SetSource (Mac48Address source)
 {
+  NS_LOG_FUNCTION (this << source);
   m_source = source;
 }
 Mac48Address
 EthernetHeader::GetSource (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_source;
 }
 
 void 
 EthernetHeader::SetDestination (Mac48Address dst)
 {
+  NS_LOG_FUNCTION (this << dst);
   m_destination = dst;
 }
 Mac48Address
 EthernetHeader::GetDestination (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_destination;
 }
 
 ethernet_header_t 
 EthernetHeader::GetPacketType (void) const
 {
+  NS_LOG_FUNCTION (this);
   return LENGTH;
 }
 
 uint32_t 
 EthernetHeader::GetHeaderSize (void) const
 {
+  NS_LOG_FUNCTION (this);
   return GetSerializedSize ();
 }
 
@@ -118,6 +130,7 @@ EthernetHeader::GetInstanceTypeId (void) const
 void 
 EthernetHeader::Print (std::ostream &os) const
 {
+  NS_LOG_FUNCTION (this << &os);
   // ethernet, right ?
   if (m_enPreambleSfd)
     {
@@ -131,6 +144,7 @@ EthernetHeader::Print (std::ostream &os) const
 uint32_t 
 EthernetHeader::GetSerializedSize (void) const
 {
+  NS_LOG_FUNCTION (this);
   if (m_enPreambleSfd)
     {
       return PREAMBLE_SIZE + LENGTH_SIZE + 2*MAC_ADDR_SIZE;
@@ -144,6 +158,7 @@ EthernetHeader::GetSerializedSize (void) const
 void
 EthernetHeader::Serialize (Buffer::Iterator start) const
 {
+  NS_LOG_FUNCTION (this << &start);
   Buffer::Iterator i = start;
 
   if (m_enPreambleSfd)
@@ -157,6 +172,7 @@ EthernetHeader::Serialize (Buffer::Iterator start) const
 uint32_t
 EthernetHeader::Deserialize (Buffer::Iterator start)
 {
+  NS_LOG_FUNCTION (this << &start);
   Buffer::Iterator i = start;
 
   if (m_enPreambleSfd)

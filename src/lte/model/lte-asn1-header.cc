@@ -23,7 +23,7 @@
 
 #include <stdio.h>
 #include <sstream>
-#include <math.h> // For log()
+#include <cmath>
 
 NS_LOG_COMPONENT_DEFINE ("Asn1Header");
 
@@ -335,7 +335,7 @@ void Asn1Header::SerializeInteger (int n, int nmin, int nmax) const
     }
 
   // Clause 11.5.6 ITU-T X.691
-  int requiredBits = ceil (log (range) / log (2.0));
+  int requiredBits = std::ceil (std::log (range) / std::log (2.0));
 
   switch (requiredBits)
     {
@@ -547,7 +547,7 @@ Buffer::Iterator Asn1Header::DeserializeInteger (int *n, int nmin, int nmax, Buf
       return bIterator;
     }
 
-  int requiredBits = ceil (log (range) / log (2.0));
+  int requiredBits = std::ceil (std::log (range) / std::log (2.0));
 
   std::bitset<1> bitsRead1;
   std::bitset<2> bitsRead2;

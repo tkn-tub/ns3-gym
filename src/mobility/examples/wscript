@@ -16,3 +16,14 @@ def build(bld):
                                  ['core', 'mobility'])
     obj.source = 'main-random-walk.cc'
 
+    obj = bld.create_ns3_program('mobility-trace-example',
+                                 ['core', 'mobility', 'network'])
+    obj.source = 'mobility-trace-example.cc'
+
+    obj = bld.create_ns3_program('ns2-mobility-trace', 
+                                 ['core', 'mobility'])
+    obj.source = 'ns2-mobility-trace.cc'
+
+    obj = bld.create_ns3_program('bonnmotion-ns2-example', 
+                                 ['core', 'mobility'])
+    obj.source = 'bonnmotion-ns2-example.cc'

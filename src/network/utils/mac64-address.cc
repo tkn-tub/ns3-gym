@@ -20,9 +20,12 @@
 #include "mac64-address.h"
 #include "ns3/address.h"
 #include "ns3/assert.h"
+#include "ns3/log.h"
 #include <iomanip>
 #include <iostream>
-#include <string.h>
+#include <cstring>
+
+NS_LOG_COMPONENT_DEFINE ("Mac64Address");
 
 namespace ns3 {
 
@@ -36,6 +39,7 @@ namespace ns3 {
 static char
 AsciiToLowCase (char c)
 {
+  NS_LOG_FUNCTION (c);
   if (c >= ASCII_a && c <= ASCII_z) {
       return c;
     } else if (c >= ASCII_A && c <= ASCII_Z) {
@@ -48,10 +52,12 @@ AsciiToLowCase (char c)
 
 Mac64Address::Mac64Address ()
 {
-  memset (m_address, 0, 8);
+  NS_LOG_FUNCTION (this);
+  std::memset (m_address, 0, 8);
 }
 Mac64Address::Mac64Address (const char *str)
 {
+  NS_LOG_FUNCTION (this << str);
   int i = 0;
   while (*str != 0 && i < 8) 
     {
@@ -83,17 +89,20 @@ Mac64Address::Mac64Address (const char *str)
 void 
 Mac64Address::CopyFrom (const uint8_t buffer[8])
 {
-  memcpy (m_address, buffer, 8);
+  NS_LOG_FUNCTION (this << &buffer);
+  std::memcpy (m_address, buffer, 8);
 }
 void 
 Mac64Address::CopyTo (uint8_t buffer[8]) const
 {
-  memcpy (buffer, m_address, 8);
+  NS_LOG_FUNCTION (this << &buffer);
+  std::memcpy (buffer, m_address, 8);
 }
 
 bool 
 Mac64Address::IsMatchingType (const Address &address)
 {
+  NS_LOG_FUNCTION (&address);
   return address.CheckCompatible (GetType (), 8);
 }
 Mac64Address::operator Address () const
@@ -103,20 +112,24 @@ Mac64Address::operator Address () const
 Mac64Address 
 Mac64Address::ConvertFrom (const Address &address)
 {
+  NS_LOG_FUNCTION (address);
   NS_ASSERT (address.CheckCompatible (GetType (), 8));
   Mac64Address retval;
   address.CopyTo (retval.m_address);
   return retval;
 }
+
 Address
 Mac64Address::ConvertTo (void) const
 {
+  NS_LOG_FUNCTION (this);
   return Address (GetType (), m_address, 8);
 }
 
 Mac64Address 
 Mac64Address::Allocate (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   static uint64_t id = 0;
   id++;
   Mac64Address address;
@@ -133,6 +146,7 @@ Mac64Address::Allocate (void)
 uint8_t 
 Mac64Address::GetType (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   static uint8_t type = Address::Register ();
   return type;
 }
@@ -143,7 +157,7 @@ bool operator == (const Mac64Address &a, const Mac64Address &b)
   uint8_t adb[8];
   a.CopyTo (ada);
   b.CopyTo (adb);
-  return memcmp (ada, adb, 8) == 0;
+  return std::memcmp (ada, adb, 8) == 0;
 }
 bool operator != (const Mac64Address &a, const Mac64Address &b)
 {

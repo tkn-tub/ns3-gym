@@ -74,8 +74,9 @@ TypeId LteUeNetDevice::GetTypeId (void)
                    MakePointerChecker <LteUePhy> ())
     .AddAttribute ("Imsi",
                    "International Mobile Subscriber Identity assigned to this UE",
-                   UintegerValue (0), // unused, read-only attribute
-                   MakeUintegerAccessor (&LteUeNetDevice::GetImsi),
+                   TypeId::ATTR_GET,
+                   UintegerValue (0), // not used because the attribute is read-only
+                   MakeUintegerAccessor (&LteUeNetDevice::m_imsi),
                    MakeUintegerChecker<uint64_t> ())
   ;
 

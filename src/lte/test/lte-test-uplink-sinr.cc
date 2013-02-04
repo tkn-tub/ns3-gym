@@ -27,8 +27,8 @@
 #include "ns3/spectrum-test.h"
 
 #include "ns3/lte-phy-tag.h"
-#include "ns3/lte-test-ue-phy.h"
-#include "ns3/lte-test-sinr-chunk-processor.h"
+#include "lte-test-ue-phy.h"
+#include "lte-test-sinr-chunk-processor.h"
 #include "ns3/lte-spectrum-signal-parameters.h"
 
 #include "lte-test-uplink-sinr.h"
@@ -156,12 +156,12 @@ LteUplinkDataSinrTestCase::DoRun (void)
   */
 
   // Number of packet bursts (2 data + 4 interferences)
-  int numOfDataPbs = 2;
-  int numOfIntfPbs = 4;
-  int numOfPbs = numOfDataPbs + numOfIntfPbs;
+  const int numOfDataPbs = 2;
+  const int numOfIntfPbs = 4;
+  const int numOfPbs = numOfDataPbs + numOfIntfPbs;
 
   // Number of packets in the packet bursts
-  int numOfPkts = 10;
+  const int numOfPkts = 10;
 
   // Packet bursts
   Ptr<PacketBurst> packetBursts[numOfPbs];

@@ -190,9 +190,8 @@ int main (int argc, char *argv[])
 
   if (writeMobility)
     {
-      std::ofstream os;
-      os.open ("wifi-wired-bridging.mob");
-      MobilityHelper::EnableAsciiAll (os);
+      AsciiTraceHelper ascii;
+      MobilityHelper::EnableAsciiAll (ascii.CreateFileStream ("wifi-wired-bridging.mob"));
     }
 
   Simulator::Stop (Seconds (5.0));

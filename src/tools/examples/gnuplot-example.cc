@@ -35,13 +35,11 @@ namespace {
 
 void Create2DPlotFile ()
 {
-  using namespace std;
-
-  string fileNameWithNoExtension = "plot-2d";
-  string graphicsFileName        = fileNameWithNoExtension + ".png";
-  string plotFileName            = fileNameWithNoExtension + ".plt";
-  string plotTitle               = "2-D Plot";
-  string dataTitle               = "2-D Data";
+  std::string fileNameWithNoExtension = "plot-2d";
+  std::string graphicsFileName        = fileNameWithNoExtension + ".png";
+  std::string plotFileName            = fileNameWithNoExtension + ".plt";
+  std::string plotTitle               = "2-D Plot";
+  std::string dataTitle               = "2-D Data";
 
   // Instantiate the plot and set its title.
   Gnuplot plot (graphicsFileName);
@@ -84,7 +82,7 @@ void Create2DPlotFile ()
   plot.AddDataset (dataset);
 
   // Open the plot file.
-  ofstream plotFile (plotFileName.c_str());
+  std::ofstream plotFile (plotFileName.c_str());
 
   // Write the plot file.
   plot.GenerateOutput (plotFile);
@@ -103,13 +101,11 @@ void Create2DPlotFile ()
 
 void Create2DPlotWithErrorBarsFile ()
 {
-  using namespace std;
-
-  string fileNameWithNoExtension = "plot-2d-with-error-bars";
-  string graphicsFileName        = fileNameWithNoExtension + ".png";
-  string plotFileName            = fileNameWithNoExtension + ".plt";
-  string plotTitle               = "2-D Plot With Error Bars";
-  string dataTitle               = "2-D Data With Error Bars";
+  std::string fileNameWithNoExtension = "plot-2d-with-error-bars";
+  std::string graphicsFileName        = fileNameWithNoExtension + ".png";
+  std::string plotFileName            = fileNameWithNoExtension + ".plt";
+  std::string plotTitle               = "2-D Plot With Error Bars";
+  std::string dataTitle               = "2-D Data With Error Bars";
 
   // Instantiate the plot and set its title.
   Gnuplot plot (graphicsFileName);
@@ -164,7 +160,7 @@ void Create2DPlotWithErrorBarsFile ()
   plot.AddDataset (dataset);
 
   // Open the plot file.
-  ofstream plotFile (plotFileName.c_str());
+  std::ofstream plotFile (plotFileName.c_str());
 
   // Write the plot file.
   plot.GenerateOutput (plotFile);
@@ -183,13 +179,11 @@ void Create2DPlotWithErrorBarsFile ()
 
 void Create3DPlotFile ()
 {
-  using namespace std;
-
-  string fileNameWithNoExtension = "plot-3d";
-  string graphicsFileName        = fileNameWithNoExtension + ".png";
-  string plotFileName            = fileNameWithNoExtension + ".plt";
-  string plotTitle               = "3-D Plot";
-  string dataTitle               = "3-D Data";
+  std::string fileNameWithNoExtension = "plot-3d";
+  std::string graphicsFileName        = fileNameWithNoExtension + ".png";
+  std::string plotFileName            = fileNameWithNoExtension + ".plt";
+  std::string plotTitle               = "3-D Plot";
+  std::string dataTitle               = "3-D Data";
 
   // Instantiate the plot and set its title.
   Gnuplot plot (graphicsFileName);
@@ -250,7 +244,7 @@ void Create3DPlotFile ()
   plot.AddDataset (dataset);
 
   // Open the plot file.
-  ofstream plotFile (plotFileName.c_str());
+  std::ofstream plotFile (plotFileName.c_str());
 
   // Write the plot file.
   plot.GenerateOutput (plotFile);

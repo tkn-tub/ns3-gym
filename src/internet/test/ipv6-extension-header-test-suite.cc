@@ -23,7 +23,7 @@
 using namespace ns3;
 
 // ===========================================================================
-// An empty option field must be filled with pad1 or padN header so the
+// An empty option field must be filled with pad1 or padN header so theshape
 // extension header's size is a multiple of 8.
 //
 // 0                                                              31

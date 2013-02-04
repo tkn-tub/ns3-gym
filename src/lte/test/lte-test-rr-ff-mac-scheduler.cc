@@ -207,6 +207,8 @@ LenaRrFfMacSchedulerTestCase::DoRun (void)
       Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));
     }
   Config::SetDefault ("ns3::LteHelper::UseIdealRrc", BooleanValue (false));
+  LogComponentDisableAll (LOG_LEVEL_ALL);
+  //LogComponentEnable ("LenaTestRrFfMacCheduler", LOG_LEVEL_ALL);
 
   /**
    * Initialize Simulation Scenario: 1 eNB and m_nUser UEs

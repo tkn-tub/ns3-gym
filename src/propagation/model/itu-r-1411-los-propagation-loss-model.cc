@@ -57,18 +57,18 @@ ItuR1411LosPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityMode
   double lossLow = 0.0;
   double lossUp = 0.0;
   NS_ASSERT_MSG (a->GetPosition ().z > 0 && b->GetPosition ().z > 0, "nodes' height must be greater than 0");
-  double Lbp = fabs (20 * log10 ((m_lambda * m_lambda) / (8 * M_PI * a->GetPosition ().z * b->GetPosition ().z)));
+  double Lbp = std::fabs (20 * std::log10 ((m_lambda * m_lambda) / (8 * M_PI * a->GetPosition ().z * b->GetPosition ().z)));
   double Rbp = (4 * a->GetPosition ().z * b->GetPosition ().z) / m_lambda;
   NS_LOG_LOGIC (this << " Lbp " << Lbp << " Rbp " << Rbp << " lambda " << m_lambda);
   if (dist <= Rbp)
     {
-      lossLow = Lbp + 20 * log10 (dist / Rbp);
-      lossUp = Lbp + 20 + 25 * log10 (dist / Rbp);
+      lossLow = Lbp + 20 * std::log10 (dist / Rbp);
+      lossUp = Lbp + 20 + 25 * std::log10 (dist / Rbp);
     }
   else
     {
-      lossLow = Lbp + 40 * log10 (dist / Rbp);
-      lossUp = Lbp + 20 + 40 * log10 (dist / Rbp);
+      lossLow = Lbp + 40 * std::log10 (dist / Rbp);
+      lossUp = Lbp + 20 + 40 * std::log10 (dist / Rbp);
     }
 
   double loss = (lossUp + lossLow) / 2;

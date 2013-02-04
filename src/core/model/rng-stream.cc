@@ -24,6 +24,13 @@
 #include <iostream>
 #include "rng-stream.h"
 #include "fatal-error.h"
+#include "log.h"
+
+// Note:  Logging in this file is largely avoided due to the
+// number of calls that are made to these functions and the possibility
+// of causing recursions leading to stack overflow
+
+NS_LOG_COMPONENT_DEFINE ("RngStream");
 
 namespace
 {
@@ -180,12 +187,14 @@ void MatTwoPowModM (const Matrix src, Matrix dst, double m, int32_t e)
 //-------------------------------------------------------------------------
 // Compute the matrix B = (A^n Mod m);  works even if A = B.
 //
+/*
 void MatPowModM (const double A[3][3], double B[3][3], double m, int32_t n)
 {
+  NS_LOG_FUNCTION (A << B << m << n);
   int i, j;
   double W[3][3];
 
-  /* initialize: W = A; B = I */
+  // initialize: W = A; B = I
   for (i = 0; i < 3; ++i)
     {
       for (j = 0; j < 3; ++j)
@@ -199,7 +208,7 @@ void MatPowModM (const double A[3][3], double B[3][3], double m, int32_t n)
       B[j][j] = 1.0;
     }
 
-  /* Compute B = A^n mod m using the binary decomposition of n */
+  // Compute B = A^n mod m using the binary decomposition of n
   while (n > 0)
     {
       if (n % 2)
@@ -210,6 +219,7 @@ void MatPowModM (const double A[3][3], double B[3][3], double m, int32_t n)
       n /= 2;
     }
 }
+*/
 
 // The following are the transition matrices of the two MRG components
 // (in matrix form), raised to all powers of 2 from 1 to 191

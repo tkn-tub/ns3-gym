@@ -115,7 +115,8 @@ if you run ``test.py --help`` you should see a command summary like:
     -c KIND, --constrain=KIND
                           constrain the test-runner by kind of test
     -e EXAMPLE, --example=EXAMPLE
-                          specify a single example to run (with relative path)
+                          specify a single example to run (no relative path is
+                          needed)
     -g, --grind           run the test suites and examples using valgrind
     -k, --kinds           print the kinds of tests available
     -l, --list            print the list of known tests
@@ -285,12 +286,12 @@ Any of these listed suites can be selected to be run by itself using the
 
 Similarly to test suites, one can run a single C++ example program
 using the ``--example`` option.  Note that the relative path for the
-example must be included and that the executables built for C++
-examples do not have extensions.  Entering
+example does not need to be included and that the executables built
+for C++ examples do not have extensions.  Entering
 
 ::
 
-  ./test.py --example=examples/udp/udp-echo
+  ./test.py --example=udp-echo
 
 results in that single example being run.
 
@@ -303,7 +304,7 @@ You can specify the directory where ns-3 was built using the
 
 ::
 
-  ./test.py --buildpath=/home/craigdo/repos/ns-3-allinone-test/ns-3-dev/build/debug --example=examples/wireless/wifi-simple-adhoc
+  ./test.py --buildpath=/home/craigdo/repos/ns-3-allinone-test/ns-3-dev/build/debug --example=wifi-simple-adhoc
 
 One can run a single Python example program using the ``--pyexample``
 option.  Note that the relative path for the example must be included
@@ -461,9 +462,6 @@ Performance Tests
 
 Performance tests are those which exercise a particular part of the system
 and determine if the tests have executed to completion in a reasonable time.
-
-As of ns-3.15, there are no performance tests that are formally part of
-the test framework (contributed tests would be helpful here).
 
 Running Tests
 *************

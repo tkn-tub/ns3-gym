@@ -60,7 +60,7 @@ ItuR1238PropagationLossModel::GetLoss (Ptr<MobilityModel> a1, Ptr<MobilityModel>
   NS_ASSERT_MSG ((a != 0) && (b != 0), "ItuR1238PropagationLossModel only works with BuildingsMobilityModel");
   NS_ASSERT_MSG (a->GetBuilding ()->GetId () == b->GetBuilding ()->GetId (), "ITU-R 1238 applies only to nodes that are in the same building");
   double N = 0.0;
-  int n = abs (a->GetFloorNumber () - b->GetFloorNumber ());
+  int n = std::abs (a->GetFloorNumber () - b->GetFloorNumber ());
   NS_LOG_LOGIC (this << " A floor " << (uint16_t)a->GetFloorNumber () << " B floor " << (uint16_t)b->GetFloorNumber () << " n " << n);
   double Lf = 0.0;
   Ptr<Building> aBuilding = a->GetBuilding ();
@@ -95,7 +95,7 @@ ItuR1238PropagationLossModel::GetLoss (Ptr<MobilityModel> a1, Ptr<MobilityModel>
     {
       NS_LOG_ERROR (this << " Unkwnon Wall Type");
     }
-  double loss = 20 * log10 (m_frequency / 1e6 /*MHz*/) + N*log10 (a->GetDistanceFrom (b)) + Lf - 28.0;
+  double loss = 20 * std::log10 (m_frequency / 1e6 /*MHz*/) + N * std::log10 (a->GetDistanceFrom (b)) + Lf - 28.0;
   NS_LOG_INFO (this << " Node " << a->GetPosition () << " <-> " << b->GetPosition () << " loss = " << loss << " dB");
 
   return loss;

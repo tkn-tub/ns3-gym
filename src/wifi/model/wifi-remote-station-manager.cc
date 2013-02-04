@@ -165,7 +165,8 @@ WifiRemoteStationManager::GetTypeId (void)
                    "than this value, as per IEEE Std. 802.11-2007, Section 9.4. "
                    "This value will not have any effect on some rate control algorithms.",
                    UintegerValue (2346),
-                   MakeUintegerAccessor (&WifiRemoteStationManager::m_fragmentationThreshold),
+                   MakeUintegerAccessor (&WifiRemoteStationManager::DoSetFragmentationThreshold,
+                                         &WifiRemoteStationManager::DoGetFragmentationThreshold),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("NonUnicastMode", "Wifi mode used for non-unicast transmissions.",
                    WifiModeValue (),
@@ -239,7 +240,7 @@ WifiRemoteStationManager::GetRtsCtsThreshold (void) const
 uint32_t
 WifiRemoteStationManager::GetFragmentationThreshold (void) const
 {
-  return m_fragmentationThreshold;
+  return DoGetFragmentationThreshold ();
 }
 void
 WifiRemoteStationManager::SetMaxSsrc (uint32_t maxSsrc)
@@ -259,7 +260,7 @@ WifiRemoteStationManager::SetRtsCtsThreshold (uint32_t threshold)
 void
 WifiRemoteStationManager::SetFragmentationThreshold (uint32_t threshold)
 {
-  m_fragmentationThreshold = threshold;
+  DoSetFragmentationThreshold (threshold);
 }
 
 void
@@ -497,10 +498,53 @@ WifiRemoteStationManager::NeedFragmentation (Mac48Address address, const WifiMac
   bool normally = (packet->GetSize () + header->GetSize () + WIFI_MAC_FCS_LENGTH) > GetFragmentationThreshold ();
   return DoNeedFragmentation (station, packet, normally);
 }
-uint32_t
-WifiRemoteStationManager::GetNFragments (Ptr<const Packet> packet)
+
+void
+WifiRemoteStationManager::DoSetFragmentationThreshold (uint32_t threshold)
 {
-  uint32_t nFragments = packet->GetSize () / GetFragmentationThreshold () + 1;
+  if (threshold < 256)
+    {
+      /*
+       * ASN.1 encoding of the MAC and PHY MIB (256 ... 8000)
+       */
+      NS_LOG_WARN ("Fragmentation threshold should be larger than 256. Setting to 256.");
+      m_fragmentationThreshold = 256;
+    }
+  else
+    {
+      /*
+       * The length of each fragment shall be an even number of octets, except for the last fragment if an MSDU or
+       * MMPDU, which may be either an even or an odd number of octets.
+       */
+      if (threshold % 2 != 0)
+        {
+          NS_LOG_WARN ("Fragmentation threshold should be an even number. Setting to " << threshold - 1);
+          m_fragmentationThreshold = threshold - 1; 
+        }
+      else
+        {
+          m_fragmentationThreshold = threshold;
+        }
+    }
+}
+
+uint32_t
+WifiRemoteStationManager::DoGetFragmentationThreshold (void) const
+{
+  return m_fragmentationThreshold;
+}
+
+uint32_t
+WifiRemoteStationManager::GetNFragments (const WifiMacHeader *header, Ptr<const Packet> packet)
+{
+  //The number of bytes a fragment can support is (Threshold - WIFI_HEADER_SIZE - WIFI_FCS).
+  uint32_t nFragments = (packet->GetSize () / (GetFragmentationThreshold () - header->GetSize () - WIFI_MAC_FCS_LENGTH));
+
+  //If the size of the last fragment is not 0.
+  if ((packet->GetSize () % (GetFragmentationThreshold () - header->GetSize () - WIFI_MAC_FCS_LENGTH)) > 0)
+    {
+      nFragments++;
+    }
   return nFragments;
 }
 
@@ -509,19 +553,21 @@ WifiRemoteStationManager::GetFragmentSize (Mac48Address address, const WifiMacHe
                                            Ptr<const Packet> packet, uint32_t fragmentNumber)
 {
   NS_ASSERT (!address.IsGroup ());
-  uint32_t nFragment = GetNFragments (packet);
+  uint32_t nFragment = GetNFragments (header, packet);
   if (fragmentNumber >= nFragment)
     {
       return 0;
     }
+  //Last fragment
   if (fragmentNumber == nFragment - 1)
     {
-      uint32_t lastFragmentSize = packet->GetSize () % GetFragmentationThreshold ();
+      uint32_t lastFragmentSize = packet->GetSize () - (fragmentNumber * (GetFragmentationThreshold () - header->GetSize () - WIFI_MAC_FCS_LENGTH));
       return lastFragmentSize;
     }
+  //All fragments but the last, the number of bytes is (Threshold - WIFI_HEADER_SIZE - WIFI_FCS).
   else
     {
-      return GetFragmentationThreshold ();
+      return GetFragmentationThreshold () - header->GetSize () - WIFI_MAC_FCS_LENGTH;
     }
 }
 uint32_t
@@ -529,8 +575,8 @@ WifiRemoteStationManager::GetFragmentOffset (Mac48Address address, const WifiMac
                                              Ptr<const Packet> packet, uint32_t fragmentNumber)
 {
   NS_ASSERT (!address.IsGroup ());
-  NS_ASSERT (fragmentNumber < GetNFragments (packet));
-  uint32_t fragmentOffset = fragmentNumber * GetFragmentationThreshold ();
+  NS_ASSERT (fragmentNumber < GetNFragments (header, packet));
+  uint32_t fragmentOffset = fragmentNumber * (GetFragmentationThreshold () - header->GetSize () - WIFI_MAC_FCS_LENGTH);
   return fragmentOffset;
 }
 bool
@@ -538,7 +584,7 @@ WifiRemoteStationManager::IsLastFragment (Mac48Address address, const WifiMacHea
                                           Ptr<const Packet> packet, uint32_t fragmentNumber)
 {
   NS_ASSERT (!address.IsGroup ());
-  bool isLast = fragmentNumber == (GetNFragments (packet) - 1);
+  bool isLast = fragmentNumber == (GetNFragments (header, packet) - 1);
   return isLast;
 }
 WifiMode
@@ -823,8 +869,8 @@ WifiRemoteStationInfo::WifiRemoteStationInfo ()
 double
 WifiRemoteStationInfo::CalculateAveragingCoefficient ()
 {
-  double retval = exp ((double)(m_lastUpdate.GetMicroSeconds () - Simulator::Now ().GetMicroSeconds ())
-                       / (double)m_memoryTime.GetMicroSeconds ());
+  double retval = std::exp ((double)(m_lastUpdate.GetMicroSeconds () - Simulator::Now ().GetMicroSeconds ())
+                            / (double)m_memoryTime.GetMicroSeconds ());
   m_lastUpdate = Simulator::Now ();
   return retval;
 }

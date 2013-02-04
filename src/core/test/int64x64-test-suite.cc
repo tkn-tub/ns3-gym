@@ -1,8 +1,7 @@
 #include "ns3/int64x64.h"
 #include "ns3/test.h"
 
-namespace ns3
-{
+using namespace ns3;
 
 class Int64x64FracTestCase : public TestCase
 {
@@ -336,5 +335,3 @@ public:
     AddTestCase (new Int64x64InvertTestCase ());
   }
 } g_int64x64TestSuite;
-
-} // namespace ns3

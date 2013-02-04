@@ -19,53 +19,65 @@
  */
 #include "packet-socket-address.h"
 #include "ns3/net-device.h"
+#include "ns3/log.h"
+
+NS_LOG_COMPONENT_DEFINE ("PacketSocketAddress");
 
 namespace ns3 {
 
 PacketSocketAddress::PacketSocketAddress ()
 {
+  NS_LOG_FUNCTION (this);
 }
 void
 PacketSocketAddress::SetProtocol (uint16_t protocol)
 {
+  NS_LOG_FUNCTION (this << protocol);
   m_protocol = protocol;
 }
 void
 PacketSocketAddress::SetAllDevices (void)
 {
+  NS_LOG_FUNCTION (this);
   m_isSingleDevice = false;
   m_device = 0;
 }
 void 
 PacketSocketAddress::SetSingleDevice (uint32_t index)
 {
+  NS_LOG_FUNCTION (this << index);
   m_isSingleDevice = true;
   m_device = index;
 }
 void 
 PacketSocketAddress::SetPhysicalAddress (const Address address)
 {
+  NS_LOG_FUNCTION (this << address);
   m_address = address;
 }
 
 uint16_t 
 PacketSocketAddress::GetProtocol (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_protocol;
 }
 bool
 PacketSocketAddress::IsSingleDevice (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_isSingleDevice;
 }
 uint32_t
 PacketSocketAddress::GetSingleDevice (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_device;
 }
 Address 
 PacketSocketAddress::GetPhysicalAddress (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_address;
 }
 
@@ -77,6 +89,7 @@ PacketSocketAddress::operator Address () const
 Address 
 PacketSocketAddress::ConvertTo (void) const
 {
+  NS_LOG_FUNCTION (this);
   Address address;
   uint8_t buffer[Address::MAX_SIZE];
   buffer[0] = m_protocol & 0xff;
@@ -92,6 +105,7 @@ PacketSocketAddress::ConvertTo (void) const
 PacketSocketAddress 
 PacketSocketAddress::ConvertFrom (const Address &address)
 {
+  NS_LOG_FUNCTION (address);
   NS_ASSERT (IsMatchingType (address));
   uint8_t buffer[Address::MAX_SIZE];
   address.CopyTo (buffer);
@@ -123,11 +137,13 @@ PacketSocketAddress::ConvertFrom (const Address &address)
 bool 
 PacketSocketAddress::IsMatchingType (const Address &address)
 {
+  NS_LOG_FUNCTION (address);
   return address.IsMatchingType (GetType ());
 }
 uint8_t 
 PacketSocketAddress::GetType (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   static uint8_t type = Address::Register ();
   return type;
 }

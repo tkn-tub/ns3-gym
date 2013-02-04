@@ -53,7 +53,6 @@
 #include <mpi.h>
 #endif
 
-using namespace std;
 using namespace ns3;
 
 typedef struct timeval TIMER_TYPE;
@@ -72,7 +71,7 @@ main (int argc, char *argv[])
 
   TIMER_TYPE t0, t1, t2;
   TIMER_NOW (t0);
-  cout << " ==== DARPA NMS CAMPUS NETWORK SIMULATION ====" << endl;
+  std::cout << " ==== DARPA NMS CAMPUS NETWORK SIMULATION ====" << std::endl;
 
   GlobalValue::Bind ("SimulatorImplementationType",
                      StringValue ("ns3::DistributedSimulatorImpl"));
@@ -80,14 +79,17 @@ main (int argc, char *argv[])
   uint32_t systemId = MpiInterface::GetSystemId ();
   uint32_t systemCount = MpiInterface::GetSize ();
 
-  uint32_t nCN = 2, nLANClients = 42;
+  //temporary fix see bug 1560
+  #define nCN (2)
+  #define nLANClients (42)
+  //uint32_t nCN = 2, nLANClients = 42;
   int32_t single = 0;
   int nBytes = 500000; // Bytes for each on/off app
   bool nix = true;
 
   CommandLine cmd;
-  cmd.AddValue ("CN", "Number of total CNs [2]", nCN);
-  cmd.AddValue ("LAN", "Number of nodes per LAN [42]", nLANClients);
+  //cmd.AddValue ("CN", "Number of total CNs [2]", nCN);
+  //cmd.AddValue ("LAN", "Number of nodes per LAN [42]", nLANClients);
   cmd.AddValue ("single", "1 if use single flow", single);
   cmd.AddValue ("nBytes", "Number of bytes for each on/off app", nBytes);
   cmd.AddValue ("nix", "Toggle the use of nix-vector or global routing", nix);
@@ -95,18 +97,18 @@ main (int argc, char *argv[])
 
   if (nCN < 2)
     {
-      cout << "Number of total CNs (" << nCN << ") lower than minimum of 2"
-           << endl;
+      std::cout << "Number of total CNs (" << nCN << ") lower than minimum of 2"
+           << std::endl;
       return 1;
     }
   if (systemCount > nCN)
     {
-      cout << "Number of total CNs (" << nCN << ") should be >= systemCount ("
-           << systemCount << ")." << endl;
+      std::cout << "Number of total CNs (" << nCN << ") should be >= systemCount ("
+           << systemCount << ")." << std::endl;
       return 1;
     }
 
-  cout << "Number of CNs: " << nCN << ", LAN nodes: " << nLANClients << endl;
+  std::cout << "Number of CNs: " << nCN << ", LAN nodes: " << nLANClients << std::endl;
 
   NodeContainer nodes_net0[nCN][3], nodes_net1[nCN][6], nodes_netLR[nCN],
                 nodes_net2[nCN][14], nodes_net2LAN[nCN][7][nLANClients],
@@ -140,9 +142,9 @@ main (int argc, char *argv[])
   // Create Campus Networks
   for (uint32_t z = 0; z < nCN; ++z)
     {
-      cout << "Creating Campus Network " << z << ":" << endl;
+      std::cout << "Creating Campus Network " << z << ":" << std::endl;
       // Create Net0
-      cout << "  SubNet [ 0";
+      std::cout << "  SubNet [ 0";
       for (int i = 0; i < 3; ++i)
         {
           Ptr<Node> node = CreateObject<Node> (z % systemCount);
@@ -158,7 +160,7 @@ main (int argc, char *argv[])
           ndc0[i] = p2p_1gb5ms.Install (nodes_net0[z][i]);
         }
       // Create Net1
-      cout << " 1";
+      std::cout << " 1";
       for (int i = 0; i < 6; ++i)
         {
           Ptr<Node> node = CreateObject<Node> (z % systemCount);
@@ -190,7 +192,7 @@ main (int argc, char *argv[])
       address.SetBase (oss.str ().c_str (), "255.255.255.0");
       ifs = address.Assign (ndc0_1);
       // Create Net2
-      cout << " 2";
+      std::cout << " 2";
       for (int i = 0; i < 14; ++i)
         {
           Ptr<Node> node = CreateObject<Node> (z % systemCount);
@@ -233,7 +235,7 @@ main (int argc, char *argv[])
             }
         }
       // Create Net3
-      cout << " 3 ]" << endl;
+      std::cout << " 3 ]" << std::endl;
       for (int i = 0; i < 9; ++i)
         {
           Ptr<Node> node = CreateObject<Node> (z % systemCount);
@@ -270,7 +272,7 @@ main (int argc, char *argv[])
               ifs3LAN[z][i][j] = address.Assign (ndc3LAN[i][j]);
             }
         }
-      cout << "  Connecting Subnets..." << endl;
+      std::cout << "  Connecting Subnets..." << std::endl;
       // Create Lone Routers (Node 4 & 5)
       Ptr<Node> node1 = CreateObject<Node> (z % systemCount);
       Ptr<Node> node2 = CreateObject<Node> (z % systemCount);
@@ -325,7 +327,7 @@ main (int argc, char *argv[])
       address.SetBase (oss.str ().c_str (), "255.255.255.0");
       ifs = address.Assign (ndc3_5b);
       // Assign IP addresses
-      cout << "  Assigning IP addresses..." << endl;
+      std::cout << "  Assigning IP addresses..." << std::endl;
       for (int i = 0; i < 3; ++i)
         {
           oss.str ("");
@@ -366,7 +368,7 @@ main (int argc, char *argv[])
   // Create Ring Links
   if (nCN > 1)
     {
-      cout << "Forming Ring Topology..." << endl;
+      std::cout << "Forming Ring Topology..." << std::endl;
       NodeContainer nodes_ring[nCN];
       for (uint32_t z = 0; z < nCN - 1; ++z)
         {
@@ -387,7 +389,7 @@ main (int argc, char *argv[])
     }
 
   // Create Traffic Flows
-  cout << "Creating UDP Traffic Flows:" << endl;
+  std::cout << "Creating UDP Traffic Flows:" << std::endl;
   Config::SetDefault ("ns3::OnOffApplication::MaxBytes",
                       UintegerValue (nBytes));
   Config::SetDefault ("ns3::OnOffApplication::OnTime",
@@ -408,7 +410,7 @@ main (int argc, char *argv[])
 
           OnOffHelper client ("ns3::UdpSocketFactory", Address ());
           AddressValue remoteAddress (InetSocketAddress (ifs1[0][2].GetAddress (0), 9999));
-          cout << "Remote Address is " << ifs1[0][2].GetAddress (0) << endl;
+          std::cout << "Remote Address is " << ifs1[0][2].GetAddress (0) << std::endl;
           client.SetAttribute ("Remote", remoteAddress);
 
           ApplicationContainer clientApp;
@@ -431,7 +433,7 @@ main (int argc, char *argv[])
           AddressValue remoteAddress
             (InetSocketAddress (ifs1[1][0].GetAddress (0), 9999));
 
-          cout << "Remote Address is " << ifs1[1][0].GetAddress (0) << endl;
+          std::cout << "Remote Address is " << ifs1[1][0].GetAddress (0) << std::endl;
           client.SetAttribute ("Remote", remoteAddress);
 
           ApplicationContainer clientApp;
@@ -452,7 +454,7 @@ main (int argc, char *argv[])
               x = 0;
             }
           // Subnet 2 LANs
-          cout << "  Campus Network " << z << " Flows [ Net2 ";
+          std::cout << "  Campus Network " << z << " Flows [ Net2 ";
           for (int i = 0; i < 7; ++i)
             {
               for (uint32_t j = 0; j < nLANClients; ++j)
@@ -512,7 +514,7 @@ main (int argc, char *argv[])
                 }
             }
           // Subnet 3 LANs
-          cout << "Net3 ]" << endl;
+          std::cout << "Net3 ]" << std::endl;
           for (int i = 0; i < 5; ++i)
             {
               for (uint32_t j = 0; j < nLANClients; ++j)
@@ -574,40 +576,40 @@ main (int argc, char *argv[])
         }
     }
 
-  cout << "Created " << NodeList::GetNNodes () << " nodes." << endl;
+  std::cout << "Created " << NodeList::GetNNodes () << " nodes." << std::endl;
   TIMER_TYPE routingStart;
   TIMER_NOW (routingStart);
 
   if (nix)
     {
-      cout << "Using Nix-vectors..." << endl;
+      std::cout << "Using Nix-vectors..." << std::endl;
     }
   else
     {
       // Calculate routing tables
-      cout << "Populating Routing tables..." << endl;
+      std::cout << "Populating Routing tables..." << std::endl;
       Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
     }
 
   TIMER_TYPE routingEnd;
   TIMER_NOW (routingEnd);
-  cout << "Routing tables population took "
-       << TIMER_DIFF (routingEnd, routingStart) << endl;
+  std::cout << "Routing tables population took "
+       << TIMER_DIFF (routingEnd, routingStart) << std::endl;
 
-  cout << "Running simulator..." << endl;
+  std::cout << "Running simulator..." << std::endl;
   TIMER_NOW (t1);
   Simulator::Stop (Seconds (100.0));
   Simulator::Run ();
   TIMER_NOW (t2);
-  cout << "Simulator finished." << endl;
+  std::cout << "Simulator finished." << std::endl;
   Simulator::Destroy ();
   // Exit the MPI execution environment
   MpiInterface::Disable ();
   double d1 = TIMER_DIFF (t1, t0), d2 = TIMER_DIFF (t2, t1);
-  cout << "-----" << endl << "Runtime Stats:" << endl;
-  cout << "Simulator init time: " << d1 << endl;
-  cout << "Simulator run time: " << d2 << endl;
-  cout << "Total elapsed time: " << d1 + d2 << endl;
+  std::cout << "-----" << std::endl << "Runtime Stats:" << std::endl;
+  std::cout << "Simulator init time: " << d1 << std::endl;
+  std::cout << "Simulator run time: " << d2 << std::endl;
+  std::cout << "Total elapsed time: " << d1 + d2 << std::endl;
   return 0;
 #else
   NS_FATAL_ERROR ("Can't use distributed simulator without MPI compiled in");

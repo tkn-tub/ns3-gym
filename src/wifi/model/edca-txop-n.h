@@ -126,6 +126,7 @@ public:
   void MissedAck (void);
   void StartNext (void);
   void Cancel (void);
+  void EndTxNoAck (void);
 
   void RestartAccessIfNeeded (void);
   void StartAccessIfNeeded (void);

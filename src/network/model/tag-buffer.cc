@@ -19,7 +19,10 @@
  */
 #include "tag-buffer.h"
 #include "ns3/assert.h"
-#include <string.h>
+#include "ns3/log.h"
+#include <cstring>
+
+NS_LOG_COMPONENT_DEFINE ("TagBuffer");
 
 namespace ns3 {
 
@@ -28,6 +31,7 @@ namespace ns3 {
 void 
 TagBuffer::WriteU8 (uint8_t v)
 {
+  NS_LOG_FUNCTION (this << static_cast<uint32_t> (v));
   NS_ASSERT (m_current + 1 <= m_end);
   *m_current = v;
   m_current++;
@@ -36,12 +40,14 @@ TagBuffer::WriteU8 (uint8_t v)
 void 
 TagBuffer::WriteU16 (uint16_t data)
 {
+  NS_LOG_FUNCTION (this << data);
   WriteU8 ((data >> 0) & 0xff);
   WriteU8 ((data >> 8) & 0xff);
 }
 void 
 TagBuffer::WriteU32 (uint32_t data)
 {
+  NS_LOG_FUNCTION (this << data);
   WriteU8 ((data >> 0) & 0xff);
   WriteU8 ((data >> 8) & 0xff);
   WriteU8 ((data >> 16) & 0xff);
@@ -52,6 +58,7 @@ TagBuffer::WriteU32 (uint32_t data)
 uint8_t
 TagBuffer::ReadU8 (void)
 {
+  NS_LOG_FUNCTION (this);
   NS_ASSERT (m_current + 1 <= m_end);
   uint8_t v;
   v = *m_current;
@@ -62,6 +69,7 @@ TagBuffer::ReadU8 (void)
 uint16_t 
 TagBuffer::ReadU16 (void)
 {
+  NS_LOG_FUNCTION (this);
   uint8_t byte0 = ReadU8 ();
   uint8_t byte1 = ReadU8 ();
   uint16_t data = byte1;
@@ -72,6 +80,7 @@ TagBuffer::ReadU16 (void)
 uint32_t 
 TagBuffer::ReadU32 (void)
 {
+  NS_LOG_FUNCTION (this);
   uint8_t byte0 = ReadU8 ();
   uint8_t byte1 = ReadU8 ();
   uint8_t byte2 = ReadU8 ();
@@ -92,6 +101,7 @@ TagBuffer::ReadU32 (void)
 void 
 TagBuffer::WriteU64 (uint64_t data)
 {
+  NS_LOG_FUNCTION (this << data);
   WriteU8 ((data >> 0) & 0xff);
   WriteU8 ((data >> 8) & 0xff);
   WriteU8 ((data >> 16) & 0xff);
@@ -104,6 +114,7 @@ TagBuffer::WriteU64 (uint64_t data)
 void
 TagBuffer::WriteDouble (double v)
 {
+  NS_LOG_FUNCTION (this << v);
   uint8_t *buf = (uint8_t *)&v;
   for (uint32_t i = 0; i < sizeof (double); ++i, ++buf)
     {
@@ -113,6 +124,7 @@ TagBuffer::WriteDouble (double v)
 void 
 TagBuffer::Write (const uint8_t *buffer, uint32_t size)
 {
+  NS_LOG_FUNCTION (this << &buffer << size);
   for (uint32_t i = 0; i < size; ++i, ++buffer)
     {
       WriteU8 (*buffer);
@@ -121,6 +133,7 @@ TagBuffer::Write (const uint8_t *buffer, uint32_t size)
 uint64_t 
 TagBuffer::ReadU64 (void)
 {
+  NS_LOG_FUNCTION (this);
   uint8_t byte0 = ReadU8 ();
   uint8_t byte1 = ReadU8 ();
   uint8_t byte2 = ReadU8 ();
@@ -150,6 +163,7 @@ TagBuffer::ReadU64 (void)
 double
 TagBuffer::ReadDouble (void)
 {
+  NS_LOG_FUNCTION (this);
   double v;
   uint8_t *buf = (uint8_t *)&v;
   for (uint32_t i = 0; i < sizeof (double); ++i, ++buf)
@@ -161,6 +175,7 @@ TagBuffer::ReadDouble (void)
 void 
 TagBuffer::Read (uint8_t *buffer, uint32_t size)
 {
+  NS_LOG_FUNCTION (this << &buffer << size);
   for (uint32_t i = 0; i < size; ++i, ++buffer)
     {
       *buffer = ReadU8 ();
@@ -170,11 +185,13 @@ TagBuffer::TagBuffer (uint8_t *start, uint8_t *end)
   : m_current (start),
     m_end (end)
 {
+  NS_LOG_FUNCTION (this << &start << &end);
 }
 
 void
 TagBuffer::TrimAtEnd (uint32_t trim)
 {
+  NS_LOG_FUNCTION (this << trim);
   NS_ASSERT (m_current <= (m_end - trim));
   m_end -= trim;
 }
@@ -182,11 +199,12 @@ TagBuffer::TrimAtEnd (uint32_t trim)
 void
 TagBuffer::CopyFrom (TagBuffer o)
 {
+  NS_LOG_FUNCTION (this << &o);
   NS_ASSERT (o.m_end >= o.m_current);
   NS_ASSERT (m_end >= m_current);
   uintptr_t size = o.m_end - o.m_current;
   NS_ASSERT (size <= (uintptr_t)(m_end - m_current));
-  memcpy (m_current, o.m_current, size);
+  std::memcpy (m_current, o.m_current, size);
   m_current += size;
 }
 

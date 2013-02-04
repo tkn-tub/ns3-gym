@@ -30,8 +30,6 @@
 
 namespace ns3 {
 
-using namespace std;
-
 NS_LOG_COMPONENT_DEFINE ("Ipv4FlowProbe");
 
 //////////////////////////////////////

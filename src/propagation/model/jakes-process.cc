@@ -40,7 +40,7 @@ JakesProcess::Oscillator::Oscillator (std::complex<double> amplitude, double ini
 std::complex<double>
 JakesProcess::Oscillator::GetValueAt (Time at) const
 {
-  return (m_amplitude * cos (at.GetSeconds () * m_omega + m_phase));
+  return (m_amplitude * std::cos (at.GetSeconds () * m_omega + m_phase));
 }
 
 NS_OBJECT_ENSURE_REGISTERED (JakesProcess);
@@ -103,10 +103,10 @@ JakesProcess::ConstructOscillators ()
       /// 1a. Initiate \f[ \alpha_n = \frac{2\pi n - \pi + \theta}{4M},  n=1,2, \ldots,M\f], n is oscillatorNumber, M is m_nOscillators
       double alpha = (2.0 * JakesPropagationLossModel::PI * n - JakesPropagationLossModel::PI + theta) / (4.0 * m_nOscillators);
       /// 1b. Initiate rotation speed:
-      double omega = m_omegaDopplerMax * cos (alpha);
+      double omega = m_omegaDopplerMax * std::cos (alpha);
       /// 2. Initiate complex amplitude:
       double psi = m_jakes->GetUniformRandomVariable ()->GetValue ();
-      std::complex<double> amplitude = std::complex<double> (cos (psi), sin (psi)) * 2.0 / sqrt (m_nOscillators);
+      std::complex<double> amplitude = std::complex<double> (std::cos (psi), std::sin (psi)) * 2.0 / std::sqrt (m_nOscillators);
       /// 3. Construct oscillator:
       m_oscillators.push_back (Oscillator (amplitude, phi, omega)); 
     }
@@ -144,7 +144,7 @@ double
 JakesProcess::GetChannelGainDb () const
 {
   std::complex<double> complexGain = GetComplexGain ();
-  return (10 * log10 ((pow (complexGain.real (), 2) + pow (complexGain.imag (), 2)) / 2));
+  return (10 * std::log10 ((std::pow (complexGain.real (), 2) + std::pow (complexGain.imag (), 2)) / 2));
 }
 
 } // namespace ns3

@@ -66,20 +66,25 @@ RandomVariableStream::GetTypeId (void)
 
 RandomVariableStream::RandomVariableStream()
   : m_rng (0)
-{}
+{
+  NS_LOG_FUNCTION (this);
+}
 RandomVariableStream::~RandomVariableStream()
 {
+  NS_LOG_FUNCTION (this);
   delete m_rng;
 }
 
 void
 RandomVariableStream::SetAntithetic(bool isAntithetic)
 {
+  NS_LOG_FUNCTION (this << isAntithetic);
   m_isAntithetic = isAntithetic;
 }
 bool
 RandomVariableStream::IsAntithetic(void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_isAntithetic;
 }
 void
@@ -114,12 +119,14 @@ RandomVariableStream::SetStream (int64_t stream)
 int64_t
 RandomVariableStream::GetStream(void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_stream;
 }
 
 RngStream *
 RandomVariableStream::Peek(void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_rng;
 }
 
@@ -145,22 +152,26 @@ UniformRandomVariable::GetTypeId (void)
 UniformRandomVariable::UniformRandomVariable ()
 {
   // m_min and m_max are initialized after constructor by attributes
+  NS_LOG_FUNCTION (this);
 }
 
 double 
 UniformRandomVariable::GetMin (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_min;
 }
 double 
 UniformRandomVariable::GetMax (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_max;
 }
 
 double 
 UniformRandomVariable::GetValue (double min, double max)
 {
+  NS_LOG_FUNCTION (this << min << max);
   double v = min + Peek ()->RandU01 () * (max - min);
   if (IsAntithetic ())
     {
@@ -171,6 +182,7 @@ UniformRandomVariable::GetValue (double min, double max)
 uint32_t 
 UniformRandomVariable::GetInteger (uint32_t min, uint32_t max)
 {
+  NS_LOG_FUNCTION (this << min << max);
   NS_ASSERT (min <= max);
   return static_cast<uint32_t> ( GetValue (min, max + 1) );
 }
@@ -178,11 +190,13 @@ UniformRandomVariable::GetInteger (uint32_t min, uint32_t max)
 double 
 UniformRandomVariable::GetValue (void)
 {
+  NS_LOG_FUNCTION (this);
   return GetValue (m_min, m_max);
 }
 uint32_t 
 UniformRandomVariable::GetInteger (void)
 {
+  NS_LOG_FUNCTION (this);
   return (uint32_t)GetValue (m_min, m_max + 1);
 }
 
@@ -204,33 +218,39 @@ ConstantRandomVariable::GetTypeId (void)
 ConstantRandomVariable::ConstantRandomVariable ()
 {
   // m_constant is initialized after constructor by attributes
+  NS_LOG_FUNCTION (this);
 }
 
 double 
 ConstantRandomVariable::GetConstant (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_constant;
 }
 
 double 
 ConstantRandomVariable::GetValue (double constant)
 {
+  NS_LOG_FUNCTION (this << constant);
   return constant;
 }
 uint32_t 
 ConstantRandomVariable::GetInteger (uint32_t constant)
 {
+  NS_LOG_FUNCTION (this << constant);
   return constant;
 }
 
 double 
 ConstantRandomVariable::GetValue (void)
 {
+  NS_LOG_FUNCTION (this);
   return GetValue (m_constant);
 }
 uint32_t 
 ConstantRandomVariable::GetInteger (void)
 {
+  NS_LOG_FUNCTION (this);
   return (uint32_t)GetValue (m_constant);
 }
 
@@ -269,29 +289,34 @@ SequentialRandomVariable::SequentialRandomVariable ()
 {
   // m_min, m_max, m_increment, and m_consecutive are initialized
   // after constructor by attributes.
+  NS_LOG_FUNCTION (this);
 }
 
 double 
 SequentialRandomVariable::GetMin (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_min;
 }
 
 double 
 SequentialRandomVariable::GetMax (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_max;
 }
 
 Ptr<RandomVariableStream> 
 SequentialRandomVariable::GetIncrement (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_increment;
 }
 
 uint32_t 
 SequentialRandomVariable::GetConsecutive (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_consecutive;
 }
 
@@ -299,6 +324,7 @@ double
 SequentialRandomVariable::GetValue (void)
 {
   // Set the current sequence value if it hasn't been set.
+  NS_LOG_FUNCTION (this);
   if (!m_isCurrentSet)
     {
       // Start the sequence at its minimium value.
@@ -323,6 +349,7 @@ SequentialRandomVariable::GetValue (void)
 uint32_t 
 SequentialRandomVariable::GetInteger (void)
 {
+  NS_LOG_FUNCTION (this);
   return (uint32_t)GetValue ();
 }
 
@@ -348,22 +375,26 @@ ExponentialRandomVariable::GetTypeId (void)
 ExponentialRandomVariable::ExponentialRandomVariable ()
 {
   // m_mean and m_bound are initialized after constructor by attributes
+  NS_LOG_FUNCTION (this);
 }
 
 double 
 ExponentialRandomVariable::GetMean (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_mean;
 }
 double 
 ExponentialRandomVariable::GetBound (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_bound;
 }
 
 double 
 ExponentialRandomVariable::GetValue (double mean, double bound)
 {
+  NS_LOG_FUNCTION (this << mean << bound);
   while (1)
     {
       // Get a uniform random variable in [0,1].
@@ -386,17 +417,20 @@ ExponentialRandomVariable::GetValue (double mean, double bound)
 uint32_t 
 ExponentialRandomVariable::GetInteger (uint32_t mean, uint32_t bound)
 {
+  NS_LOG_FUNCTION (this << mean << bound);
   return static_cast<uint32_t> ( GetValue (mean, bound) );
 }
 
 double 
 ExponentialRandomVariable::GetValue (void)
 {
+  NS_LOG_FUNCTION (this);
   return GetValue (m_mean, m_bound);
 }
 uint32_t 
 ExponentialRandomVariable::GetInteger (void)
 {
+  NS_LOG_FUNCTION (this);
   return (uint32_t)GetValue (m_mean, m_bound);
 }
 
@@ -427,21 +461,25 @@ ParetoRandomVariable::ParetoRandomVariable ()
 {
   // m_mean, m_shape, and m_bound are initialized after constructor
   // by attributes
+  NS_LOG_FUNCTION (this);
 }
 
 double 
 ParetoRandomVariable::GetMean (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_mean;
 }
 double 
 ParetoRandomVariable::GetShape (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_shape;
 }
 double 
 ParetoRandomVariable::GetBound (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_bound;
 }
 
@@ -449,6 +487,7 @@ double
 ParetoRandomVariable::GetValue (double mean, double shape, double bound)
 {
   // Calculate the scale parameter.
+  NS_LOG_FUNCTION (this << mean << shape << bound);
   double scale = mean * (shape - 1.0) / shape;
 
   while (1)
@@ -473,17 +512,20 @@ ParetoRandomVariable::GetValue (double mean, double shape, double bound)
 uint32_t 
 ParetoRandomVariable::GetInteger (uint32_t mean, uint32_t shape, uint32_t bound)
 {
+  NS_LOG_FUNCTION (this << mean << shape << bound);
   return static_cast<uint32_t> ( GetValue (mean, shape, bound) );
 }
 
 double 
 ParetoRandomVariable::GetValue (void)
 {
+  NS_LOG_FUNCTION (this);
   return GetValue (m_mean, m_shape, m_bound);
 }
 uint32_t 
 ParetoRandomVariable::GetInteger (void)
 {
+  NS_LOG_FUNCTION (this);
   return (uint32_t)GetValue (m_mean, m_shape, m_bound);
 }
 
@@ -514,27 +556,32 @@ WeibullRandomVariable::WeibullRandomVariable ()
 {
   // m_scale, m_shape, and m_bound are initialized after constructor
   // by attributes
+  NS_LOG_FUNCTION (this);
 }
 
 double 
 WeibullRandomVariable::GetScale (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_scale;
 }
 double 
 WeibullRandomVariable::GetShape (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_shape;
 }
 double 
 WeibullRandomVariable::GetBound (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_bound;
 }
 
 double 
 WeibullRandomVariable::GetValue (double scale, double shape, double bound)
 {
+  NS_LOG_FUNCTION (this << scale << shape << bound);
   double exponent = 1.0 / shape;
   while (1)
     {
@@ -558,17 +605,20 @@ WeibullRandomVariable::GetValue (double scale, double shape, double bound)
 uint32_t 
 WeibullRandomVariable::GetInteger (uint32_t scale, uint32_t shape, uint32_t bound)
 {
+  NS_LOG_FUNCTION (this << scale << shape << bound);
   return static_cast<uint32_t> ( GetValue (scale, shape, bound) );
 }
 
 double 
 WeibullRandomVariable::GetValue (void)
 {
+  NS_LOG_FUNCTION (this);
   return GetValue (m_scale, m_shape, m_bound);
 }
 uint32_t 
 WeibullRandomVariable::GetInteger (void)
 {
+  NS_LOG_FUNCTION (this);
   return (uint32_t)GetValue (m_scale, m_shape, m_bound);
 }
 
@@ -603,27 +653,32 @@ NormalRandomVariable::NormalRandomVariable ()
 {
   // m_mean, m_variance, and m_bound are initialized after constructor
   // by attributes
+  NS_LOG_FUNCTION (this);
 }
 
 double 
 NormalRandomVariable::GetMean (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_mean;
 }
 double 
 NormalRandomVariable::GetVariance (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_variance;
 }
 double 
 NormalRandomVariable::GetBound (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_bound;
 }
 
 double 
 NormalRandomVariable::GetValue (double mean, double variance, double bound)
 {
+  NS_LOG_FUNCTION (this << mean << variance << bound);
   if (m_nextValid)
     { // use previously generated
       m_nextValid = false;
@@ -645,13 +700,13 @@ NormalRandomVariable::GetValue (double mean, double variance, double bound)
       double w = v1 * v1 + v2 * v2;
       if (w <= 1.0)
         { // Got good pair
-          double y = sqrt ((-2 * log (w)) / w);
-          m_next = mean + v2 * y * sqrt (variance);
+          double y = std::sqrt ((-2 * std::log (w)) / w);
+          m_next = mean + v2 * y * std::sqrt (variance);
           // if next is in bounds, it is valid
-          m_nextValid = fabs (m_next - mean) <= bound;
-          double x1 = mean + v1 * y * sqrt (variance);
+          m_nextValid = std::fabs (m_next - mean) <= bound;
+          double x1 = mean + v1 * y * std::sqrt (variance);
           // if x1 is in bounds, return it
-          if (fabs (x1 - mean) <= bound)
+          if (std::fabs (x1 - mean) <= bound)
             {
               return x1;
             }
@@ -669,17 +724,20 @@ NormalRandomVariable::GetValue (double mean, double variance, double bound)
 uint32_t 
 NormalRandomVariable::GetInteger (uint32_t mean, uint32_t variance, uint32_t bound)
 {
+  NS_LOG_FUNCTION (this << mean << variance << bound);
   return static_cast<uint32_t> ( GetValue (mean, variance, bound) );
 }
 
 double 
 NormalRandomVariable::GetValue (void)
 {
+  NS_LOG_FUNCTION (this);
   return GetValue (m_mean, m_variance, m_bound);
 }
 uint32_t 
 NormalRandomVariable::GetInteger (void)
 {
+  NS_LOG_FUNCTION (this);
   return (uint32_t)GetValue (m_mean, m_variance, m_bound);
 }
 
@@ -706,16 +764,19 @@ LogNormalRandomVariable::LogNormalRandomVariable ()
 {
   // m_mu and m_sigma are initialized after constructor by
   // attributes
+  NS_LOG_FUNCTION (this);
 }
 
 double 
 LogNormalRandomVariable::GetMu (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_mu;
 }
 double 
 LogNormalRandomVariable::GetSigma (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_sigma;
 }
 
@@ -750,6 +811,8 @@ LogNormalRandomVariable::GetValue (double mu, double sigma)
 {
   double v1, v2, r2, normal, x;
 
+  NS_LOG_FUNCTION (this << mu << sigma);
+
   do
     {
       /* choose x,y in uniform square (-1,-1) to (+1,+1) */
@@ -780,17 +843,20 @@ LogNormalRandomVariable::GetValue (double mu, double sigma)
 uint32_t 
 LogNormalRandomVariable::GetInteger (uint32_t mu, uint32_t sigma)
 {
+  NS_LOG_FUNCTION (this << mu << sigma);
   return static_cast<uint32_t> ( GetValue (mu, sigma));
 }
 
 double 
 LogNormalRandomVariable::GetValue (void)
 {
+  NS_LOG_FUNCTION (this);
   return GetValue (m_mu, m_sigma);
 }
 uint32_t 
 LogNormalRandomVariable::GetInteger (void)
 {
+  NS_LOG_FUNCTION (this);
   return (uint32_t)GetValue (m_mu, m_sigma);
 }
 
@@ -819,16 +885,19 @@ GammaRandomVariable::GammaRandomVariable ()
 {
   // m_alpha and m_beta are initialized after constructor by
   // attributes
+  NS_LOG_FUNCTION (this);
 }
 
 double 
 GammaRandomVariable::GetAlpha (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_alpha;
 }
 double 
 GammaRandomVariable::GetBeta (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_beta;
 }
 
@@ -851,6 +920,7 @@ GammaRandomVariable::GetBeta (void) const
 double 
 GammaRandomVariable::GetValue (double alpha, double beta)
 {
+  NS_LOG_FUNCTION (this << alpha << beta);
   if (alpha < 1)
     {
       double u = Peek ()->RandU01 ();
@@ -863,7 +933,7 @@ GammaRandomVariable::GetValue (double alpha, double beta)
 
   double x, v, u;
   double d = alpha - 1.0 / 3.0;
-  double c = (1.0 / 3.0) / sqrt (d);
+  double c = (1.0 / 3.0) / std::sqrt (d);
 
   while (1)
     {
@@ -890,7 +960,7 @@ GammaRandomVariable::GetValue (double alpha, double beta)
         {
           break;
         }
-      if (log (u) < 0.5 * x * x + d * (1 - v + log (v)))
+      if (std::log (u) < 0.5 * x * x + d * (1 - v + std::log (v)))
         {
           break;
         }
@@ -902,23 +972,27 @@ GammaRandomVariable::GetValue (double alpha, double beta)
 uint32_t 
 GammaRandomVariable::GetInteger (uint32_t alpha, uint32_t beta)
 {
+  NS_LOG_FUNCTION (this << alpha << beta);
   return static_cast<uint32_t> ( GetValue (alpha, beta));
 }
 
 double 
 GammaRandomVariable::GetValue (void)
 {
+  NS_LOG_FUNCTION (this);
   return GetValue (m_alpha, m_beta);
 }
 uint32_t 
 GammaRandomVariable::GetInteger (void)
 {
+  NS_LOG_FUNCTION (this);
   return (uint32_t)GetValue (m_alpha, m_beta);
 }
 
 double 
 GammaRandomVariable::GetNormalValue (double mean, double variance, double bound)
 {
+  NS_LOG_FUNCTION (this << mean << variance << bound);
   if (m_nextValid)
     { // use previously generated
       m_nextValid = false;
@@ -940,13 +1014,13 @@ GammaRandomVariable::GetNormalValue (double mean, double variance, double bound)
       double w = v1 * v1 + v2 * v2;
       if (w <= 1.0)
         { // Got good pair
-          double y = sqrt ((-2 * log (w)) / w);
-          m_next = mean + v2 * y * sqrt (variance);
+          double y = std::sqrt ((-2 * std::log (w)) / w);
+          m_next = mean + v2 * y * std::sqrt (variance);
           // if next is in bounds, it is valid
-          m_nextValid = fabs (m_next - mean) <= bound;
-          double x1 = mean + v1 * y * sqrt (variance);
+          m_nextValid = std::fabs (m_next - mean) <= bound;
+          double x1 = mean + v1 * y * std::sqrt (variance);
           // if x1 is in bounds, return it
-          if (fabs (x1 - mean) <= bound)
+          if (std::fabs (x1 - mean) <= bound)
             {
               return x1;
             }
@@ -983,16 +1057,19 @@ ErlangRandomVariable::GetTypeId (void)
 ErlangRandomVariable::ErlangRandomVariable ()
 {
   // m_k and m_lambda are initialized after constructor by attributes
+  NS_LOG_FUNCTION (this);
 }
 
 uint32_t 
 ErlangRandomVariable::GetK (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_k;
 }
 double 
 ErlangRandomVariable::GetLambda (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_lambda;
 }
 
@@ -1011,6 +1088,7 @@ ErlangRandomVariable::GetLambda (void) const
 double 
 ErlangRandomVariable::GetValue (uint32_t k, double lambda)
 {
+  NS_LOG_FUNCTION (this << k << lambda);
   double mean = lambda;
   double bound = 0.0;
 
@@ -1027,23 +1105,27 @@ ErlangRandomVariable::GetValue (uint32_t k, double lambda)
 uint32_t 
 ErlangRandomVariable::GetInteger (uint32_t k, uint32_t lambda)
 {
+  NS_LOG_FUNCTION (this << k << lambda);
   return static_cast<uint32_t> ( GetValue (k, lambda));
 }
 
 double 
 ErlangRandomVariable::GetValue (void)
 {
+  NS_LOG_FUNCTION (this);
   return GetValue (m_k, m_lambda);
 }
 uint32_t 
 ErlangRandomVariable::GetInteger (void)
 {
+  NS_LOG_FUNCTION (this);
   return (uint32_t)GetValue (m_k, m_lambda);
 }
 
 double 
 ErlangRandomVariable::GetExponentialValue (double mean, double bound)
 {
+  NS_LOG_FUNCTION (this << mean << bound);
   while (1)
     {
       // Get a uniform random variable in [0,1].
@@ -1093,21 +1175,25 @@ TriangularRandomVariable::TriangularRandomVariable ()
 {
   // m_mean, m_min, and m_max are initialized after constructor by
   // attributes
+  NS_LOG_FUNCTION (this);
 }
 
 double 
 TriangularRandomVariable::GetMean (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_mean;
 }
 double 
 TriangularRandomVariable::GetMin (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_min;
 }
 double 
 TriangularRandomVariable::GetMax (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_max;
 }
 
@@ -1115,6 +1201,7 @@ double
 TriangularRandomVariable::GetValue (double mean, double min, double max)
 {
   // Calculate the mode.
+  NS_LOG_FUNCTION (this << mean << min << max);
   double mode = 3.0 * mean - min - max;
 
   // Get a uniform random variable in [0,1].
@@ -1127,28 +1214,31 @@ TriangularRandomVariable::GetValue (double mean, double min, double max)
   // Calculate the triangular random variable.
   if (u <= (mode - min) / (max - min) )
     {
-      return min + sqrt (u * (max - min) * (mode - min) );
+      return min + std::sqrt (u * (max - min) * (mode - min) );
     }
   else
     {
-      return max - sqrt ( (1 - u) * (max - min) * (max - mode) );
+      return max - std::sqrt ( (1 - u) * (max - min) * (max - mode) );
     }
 }
 
 uint32_t 
 TriangularRandomVariable::GetInteger (uint32_t mean, uint32_t min, uint32_t max)
 {
+  NS_LOG_FUNCTION (this << mean << min << max);
   return static_cast<uint32_t> ( GetValue (mean, min, max) );
 }
 
 double 
 TriangularRandomVariable::GetValue (void)
 {
+  NS_LOG_FUNCTION (this);
   return GetValue (m_mean, m_min, m_max);
 }
 uint32_t 
 TriangularRandomVariable::GetInteger (void)
 {
+  NS_LOG_FUNCTION (this);
   return (uint32_t)GetValue (m_mean, m_min, m_max);
 }
 
@@ -1174,22 +1264,26 @@ ZipfRandomVariable::GetTypeId (void)
 ZipfRandomVariable::ZipfRandomVariable ()
 {
   // m_n and m_alpha are initialized after constructor by attributes
+  NS_LOG_FUNCTION (this);
 }
 
 uint32_t 
 ZipfRandomVariable::GetN (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_n;
 }
 double 
 ZipfRandomVariable::GetAlpha (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_alpha;
 }
 
 double 
 ZipfRandomVariable::GetValue (uint32_t n, double alpha)
 {
+  NS_LOG_FUNCTION (this << n << alpha);
   // Calculate the normalization constant c.
   m_c = 0.0;
   for (uint32_t i = 1; i <= n; i++)
@@ -1221,17 +1315,20 @@ ZipfRandomVariable::GetValue (uint32_t n, double alpha)
 uint32_t 
 ZipfRandomVariable::GetInteger (uint32_t n, uint32_t alpha)
 {
+  NS_LOG_FUNCTION (this << n << alpha);
   return static_cast<uint32_t> ( GetValue (n, alpha));
 }
 
 double 
 ZipfRandomVariable::GetValue (void)
 {
+  NS_LOG_FUNCTION (this);
   return GetValue (m_n, m_alpha);
 }
 uint32_t 
 ZipfRandomVariable::GetInteger (void)
 {
+  NS_LOG_FUNCTION (this);
   return (uint32_t)GetValue (m_n, m_alpha);
 }
 
@@ -1253,17 +1350,20 @@ ZetaRandomVariable::GetTypeId (void)
 ZetaRandomVariable::ZetaRandomVariable ()
 {
   // m_alpha is initialized after constructor by attributes
+  NS_LOG_FUNCTION (this);
 }
 
 double 
 ZetaRandomVariable::GetAlpha (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_alpha;
 }
 
 double 
 ZetaRandomVariable::GetValue (double alpha)
 {
+  NS_LOG_FUNCTION (this << alpha);
   m_b = std::pow (2.0, alpha - 1.0);
 
   double u, v;
@@ -1298,17 +1398,20 @@ ZetaRandomVariable::GetValue (double alpha)
 uint32_t 
 ZetaRandomVariable::GetInteger (uint32_t alpha)
 {
+  NS_LOG_FUNCTION (this << alpha);
   return static_cast<uint32_t> ( GetValue (alpha));
 }
 
 double 
 ZetaRandomVariable::GetValue (void)
 {
+  NS_LOG_FUNCTION (this);
   return GetValue (m_alpha);
 }
 uint32_t 
 ZetaRandomVariable::GetInteger (void)
 {
+  NS_LOG_FUNCTION (this);
   return (uint32_t)GetValue (m_alpha);
 }
 
@@ -1329,10 +1432,12 @@ DeterministicRandomVariable::DeterministicRandomVariable ()
   m_next (0),
   m_data (0)
 {
+  NS_LOG_FUNCTION (this);
 }
 DeterministicRandomVariable::~DeterministicRandomVariable ()
 {
   // Delete any values currently set.
+  NS_LOG_FUNCTION (this);
   if (m_data != 0)
   {
     delete[] m_data;
@@ -1342,6 +1447,7 @@ DeterministicRandomVariable::~DeterministicRandomVariable ()
 void
 DeterministicRandomVariable::SetValueArray (double* values, uint64_t length)
 {
+  NS_LOG_FUNCTION (this << values << length);
   // Delete any values currently set.
   if (m_data != 0)
   {
@@ -1363,6 +1469,7 @@ DeterministicRandomVariable::SetValueArray (double* values, uint64_t length)
 double 
 DeterministicRandomVariable::GetValue (void)
 {
+  NS_LOG_FUNCTION (this);
   // Make sure the array has been set.
   NS_ASSERT (m_count > 0);
 
@@ -1376,6 +1483,7 @@ DeterministicRandomVariable::GetValue (void)
 uint32_t 
 DeterministicRandomVariable::GetInteger (void)
 {
+  NS_LOG_FUNCTION (this);
   return (uint32_t)GetValue ();
 }
 
@@ -1386,16 +1494,19 @@ EmpiricalRandomVariable::ValueCDF::ValueCDF ()
   : value (0.0),
     cdf (0.0)
 {
+  NS_LOG_FUNCTION (this);
 }
 EmpiricalRandomVariable::ValueCDF::ValueCDF (double v, double c)
   : value (v),
     cdf (c)
 {
+  NS_LOG_FUNCTION (this << v << c);
 }
 EmpiricalRandomVariable::ValueCDF::ValueCDF (const ValueCDF& c)
   : value (c.value),
     cdf (c.cdf)
 {
+  NS_LOG_FUNCTION (this << &c);
 }
 
 TypeId 
@@ -1411,11 +1522,13 @@ EmpiricalRandomVariable::EmpiricalRandomVariable ()
   :
   validated (false)
 {
+  NS_LOG_FUNCTION (this);
 }
 
 double 
 EmpiricalRandomVariable::GetValue (void)
 {
+  NS_LOG_FUNCTION (this);
   // Return a value from the empirical distribution
   // This code based (loosely) on code by Bruce Mah (Thanks Bruce!)
   if (emp.size () == 0)
@@ -1469,17 +1582,20 @@ EmpiricalRandomVariable::GetValue (void)
 uint32_t 
 EmpiricalRandomVariable::GetInteger (void)
 {
+  NS_LOG_FUNCTION (this);
   return (uint32_t)GetValue ();
 }
 
 void EmpiricalRandomVariable::CDF (double v, double c)
 { // Add a new empirical datapoint to the empirical cdf
   // NOTE.   These MUST be inserted in non-decreasing order
+  NS_LOG_FUNCTION (this << v << c);
   emp.push_back (ValueCDF (v, c));
 }
 
 void EmpiricalRandomVariable::Validate ()
 {
+  NS_LOG_FUNCTION (this);
   ValueCDF prior;
   for (std::vector<ValueCDF>::size_type i = 0; i < emp.size (); ++i)
     {
@@ -1501,6 +1617,7 @@ void EmpiricalRandomVariable::Validate ()
 double EmpiricalRandomVariable::Interpolate (double c1, double c2,
                                            double v1, double v2, double r)
 { // Interpolate random value in range [v1..v2) based on [c1 .. r .. c2)
+  NS_LOG_FUNCTION (this << c1 << c2 << v1 << v2 << r);
   return (v1 + ((v2 - v1) / (c2 - c1)) * (r - c1));
 }
 

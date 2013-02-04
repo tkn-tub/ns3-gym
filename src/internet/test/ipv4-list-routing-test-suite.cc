@@ -21,7 +21,7 @@
 #include "ns3/ipv4-list-routing.h"
 #include "ns3/ipv4-routing-protocol.h"
 
-namespace ns3 {
+using namespace ns3;
 
 class Ipv4ARouting : public Ipv4RoutingProtocol {
 public:
@@ -123,7 +123,3 @@ public:
   }
 
 } g_ipv4ListRoutingTestSuite;
-
-} // namespace ns3
-
-

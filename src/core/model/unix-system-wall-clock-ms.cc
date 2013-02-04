@@ -20,8 +20,11 @@
 
 #include "system-wall-clock-ms.h"
 #include "abort.h"
+#include "log.h"
 #include <sys/times.h>
 #include <unistd.h>
+
+NS_LOG_COMPONENT_DEFINE ("SystemWallClockMsPrivate");
 
 namespace ns3 {
 
@@ -44,6 +47,7 @@ private:
 void 
 SystemWallClockMsPrivate::Start (void)
 {
+  NS_LOG_FUNCTION (this);
   m_startTime = times (&m_startTimes);
 }
 
@@ -76,6 +80,7 @@ SystemWallClockMsPrivate::End (void)
   // time is measured that turns out to be less than a millisecond, we'll just 
   // return zero which would, I think, also will be expected.
   //
+  NS_LOG_FUNCTION (this);
   static int64_t ticksPerSecond = sysconf (_SC_CLK_TCK);
   static double millisecondsPerTick = 1000. / ticksPerSecond;
 
@@ -104,28 +109,33 @@ SystemWallClockMsPrivate::End (void)
 int64_t
 SystemWallClockMsPrivate::GetElapsedReal (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_elapsedReal;
 }
 
 int64_t
 SystemWallClockMsPrivate::GetElapsedUser (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_elapsedUser;
 }
 
 int64_t
 SystemWallClockMsPrivate::GetElapsedSystem (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_elapsedSystem;
 }
 
 SystemWallClockMs::SystemWallClockMs ()
   : m_priv (new SystemWallClockMsPrivate ())
 {
+  NS_LOG_FUNCTION (this);
 }
 
 SystemWallClockMs::~SystemWallClockMs ()
 {
+  NS_LOG_FUNCTION (this);
   delete m_priv;
   m_priv = 0;
 }
@@ -133,30 +143,35 @@ SystemWallClockMs::~SystemWallClockMs ()
 void
 SystemWallClockMs::Start (void)
 {
+  NS_LOG_FUNCTION (this);
   m_priv->Start ();
 }
 
 int64_t
 SystemWallClockMs::End (void)
 {
+  NS_LOG_FUNCTION (this);
   return m_priv->End ();
 }
 
 int64_t
 SystemWallClockMs::GetElapsedReal (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_priv->GetElapsedReal ();
 }
 
 int64_t
 SystemWallClockMs::GetElapsedUser (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_priv->GetElapsedUser ();
 }
 
 int64_t
 SystemWallClockMs::GetElapsedSystem (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_priv->GetElapsedSystem ();
 }
 

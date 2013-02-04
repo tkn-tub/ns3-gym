@@ -103,7 +103,7 @@ BlockAckManager::ExistsAgreementInState (Mac48Address recipient, uint8_t tid,
 void
 BlockAckManager::CreateAgreement (const MgtAddBaRequestHeader *reqHdr, Mac48Address recipient)
 {
-  pair<Mac48Address, uint8_t> key (recipient, reqHdr->GetTid ());
+  std::pair<Mac48Address, uint8_t> key (recipient, reqHdr->GetTid ());
   OriginatorBlockAckAgreement agreement (recipient, reqHdr->GetTid ());
   agreement.SetStartingSequence (reqHdr->GetStartingSequence ());
   /* for now we assume that originator doesn't use this field. Use of this field
@@ -121,8 +121,8 @@ BlockAckManager::CreateAgreement (const MgtAddBaRequestHeader *reqHdr, Mac48Addr
     }
   agreement.SetState (OriginatorBlockAckAgreement::PENDING);
   PacketQueue queue (0);
-  pair<OriginatorBlockAckAgreement, PacketQueue> value (agreement, queue);
-  m_agreements.insert (make_pair (key, value));
+  std::pair<OriginatorBlockAckAgreement, PacketQueue> value (agreement, queue);
+  m_agreements.insert (std::make_pair (key, value));
   m_blockPackets (recipient, reqHdr->GetTid ());
 }
 
@@ -132,7 +132,7 @@ BlockAckManager::DestroyAgreement (Mac48Address recipient, uint8_t tid)
   AgreementsI it = m_agreements.find (std::make_pair (recipient, tid));
   if (it != m_agreements.end ())
     {
-      for (list<PacketQueueI>::iterator i = m_retryPackets.begin (); i != m_retryPackets.end ();)
+      for (std::list<PacketQueueI>::iterator i = m_retryPackets.begin (); i != m_retryPackets.end ();)
         {
           if ((*i)->hdr.GetAddr1 () == recipient && (*i)->hdr.GetQosTid () == tid)
             {
@@ -145,7 +145,7 @@ BlockAckManager::DestroyAgreement (Mac48Address recipient, uint8_t tid)
         }
       m_agreements.erase (it);
       //remove scheduled bar
-      for (list<Bar>::iterator i = m_bars.begin (); i != m_bars.end ();)
+      for (std::list<Bar>::iterator i = m_bars.begin (); i != m_bars.end ();)
         {
           if (i->recipient == recipient && i->tid == tid)
             {
@@ -294,7 +294,7 @@ BlockAckManager::GetNRetryNeededPackets (Mac48Address recipient, uint8_t tid) co
   uint16_t currentSeq = 0;
   if (ExistsAgreement (recipient, tid))
     {
-      list<PacketQueueI>::const_iterator it = m_retryPackets.begin ();
+      std::list<PacketQueueI>::const_iterator it = m_retryPackets.begin ();
       while (it != m_retryPackets.end ())
         {
           if ((*it)->hdr.GetAddr1 () == recipient && (*it)->hdr.GetQosTid () == tid)
@@ -588,7 +588,7 @@ BlockAckManager::CleanupBuffers (void)
           else
             {
               /* remove retry packet iterator if it's present in retry queue */
-              for (list<PacketQueueI>::iterator it = m_retryPackets.begin (); it != m_retryPackets.end (); it++)
+              for (std::list<PacketQueueI>::iterator it = m_retryPackets.begin (); it != m_retryPackets.end (); it++)
                 {
                   if ((*it)->hdr.GetAddr1 () == j->second.first.GetPeer ()
                       && (*it)->hdr.GetQosTid () == j->second.first.GetTid ()

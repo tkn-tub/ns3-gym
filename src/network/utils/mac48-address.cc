@@ -20,9 +20,12 @@
 #include "mac48-address.h"
 #include "ns3/address.h"
 #include "ns3/assert.h"
+#include "ns3/log.h"
 #include <iomanip>
 #include <iostream>
-#include <string.h>
+#include <cstring>
+
+NS_LOG_COMPONENT_DEFINE ("Mac48Address");
 
 namespace ns3 {
 
@@ -38,6 +41,7 @@ ATTRIBUTE_HELPER_CPP (Mac48Address);
 static char
 AsciiToLowCase (char c)
 {
+  NS_LOG_FUNCTION (c);
   if (c >= ASCII_a && c <= ASCII_z) {
       return c;
     } else if (c >= ASCII_A && c <= ASCII_Z) {
@@ -50,10 +54,12 @@ AsciiToLowCase (char c)
 
 Mac48Address::Mac48Address ()
 {
-  memset (m_address, 0, 6);
+  NS_LOG_FUNCTION (this);
+  std::memset (m_address, 0, 6);
 }
 Mac48Address::Mac48Address (const char *str)
 {
+  NS_LOG_FUNCTION (this << str);
   int i = 0;
   while (*str != 0 && i < 6) 
     {
@@ -85,17 +91,20 @@ Mac48Address::Mac48Address (const char *str)
 void 
 Mac48Address::CopyFrom (const uint8_t buffer[6])
 {
-  memcpy (m_address, buffer, 6);
+  NS_LOG_FUNCTION (this << &buffer);
+  std::memcpy (m_address, buffer, 6);
 }
 void 
 Mac48Address::CopyTo (uint8_t buffer[6]) const
 {
-  memcpy (buffer, m_address, 6);
+  NS_LOG_FUNCTION (this << &buffer);
+  std::memcpy (buffer, m_address, 6);
 }
 
 bool 
 Mac48Address::IsMatchingType (const Address &address)
 {
+  NS_LOG_FUNCTION (&address);  
   return address.CheckCompatible (GetType (), 6);
 }
 Mac48Address::operator Address () const
@@ -105,11 +114,13 @@ Mac48Address::operator Address () const
 Address 
 Mac48Address::ConvertTo (void) const
 {
+  NS_LOG_FUNCTION (this);
   return Address (GetType (), m_address, 6);
 }
 Mac48Address 
 Mac48Address::ConvertFrom (const Address &address)
 {
+  NS_LOG_FUNCTION (&address);
   NS_ASSERT (address.CheckCompatible (GetType (), 6));
   Mac48Address retval;
   address.CopyTo (retval.m_address);
@@ -118,6 +129,7 @@ Mac48Address::ConvertFrom (const Address &address)
 Mac48Address 
 Mac48Address::Allocate (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   static uint64_t id = 0;
   id++;
   Mac48Address address;
@@ -132,6 +144,7 @@ Mac48Address::Allocate (void)
 uint8_t 
 Mac48Address::GetType (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   static uint8_t type = Address::Register ();
   return type;
 }
@@ -139,34 +152,40 @@ Mac48Address::GetType (void)
 bool
 Mac48Address::IsBroadcast (void) const
 {
+  NS_LOG_FUNCTION (this);
   return *this == GetBroadcast ();
 }
 bool 
 Mac48Address::IsGroup (void) const
 {
+  NS_LOG_FUNCTION (this);
   return (m_address[0] & 0x01) == 0x01;
 }
 Mac48Address
 Mac48Address::GetBroadcast (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   static Mac48Address broadcast = Mac48Address ("ff:ff:ff:ff:ff:ff");
   return broadcast;
 }
 Mac48Address 
 Mac48Address::GetMulticastPrefix (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   static Mac48Address multicast = Mac48Address ("01:00:5e:00:00:00");
   return multicast;
 }
 Mac48Address
 Mac48Address::GetMulticast6Prefix (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   static Mac48Address multicast = Mac48Address ("33:33:00:00:00:00");
   return multicast;
 }
 Mac48Address 
 Mac48Address::GetMulticast (Ipv4Address multicastGroup)
 {
+  NS_LOG_FUNCTION (multicastGroup);
   Mac48Address etherAddr = Mac48Address::GetMulticastPrefix ();
   //
   // We now have the multicast address in an abstract 48-bit container.  We 
@@ -202,6 +221,7 @@ Mac48Address::GetMulticast (Ipv4Address multicastGroup)
 }
 Mac48Address Mac48Address::GetMulticast (Ipv6Address addr)
 {
+  NS_LOG_FUNCTION (addr);
   Mac48Address etherAddr = Mac48Address::GetMulticast6Prefix ();
   uint8_t etherBuffer[6];
   uint8_t ipBuffer[16];
@@ -242,6 +262,7 @@ std::ostream& operator<< (std::ostream& os, const Mac48Address & address)
 static uint8_t
 AsInt (std::string v)
 {
+  NS_LOG_FUNCTION (v);
   std::istringstream iss;
   iss.str (v);
   uint32_t retval;

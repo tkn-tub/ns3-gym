@@ -234,6 +234,7 @@ private:
     uint8_t protocol,
     uint16_t payloadSize,
     uint8_t ttl,
+    uint8_t tos,
     bool mayFragment);
 
   void
@@ -297,6 +298,7 @@ private:
   bool m_weakEsModel;
   L4List_t m_protocols;
   Ipv4InterfaceList m_interfaces;
+  uint8_t m_defaultTos;
   uint8_t m_defaultTtl;
   uint16_t m_identification;
   Ptr<Node> m_node;

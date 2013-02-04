@@ -24,16 +24,13 @@
 #include <ns3/lte-amc.h>
 #include <ns3/log.h>
 #include <ns3/assert.h>
-#include <math.h>
+#include <ns3/math.h>
 #include <vector>
 #include <ns3/spectrum-value.h>
 #include <ns3/double.h>
 #include "ns3/enum.h"
 #include <ns3/lte-mi-error-model.h>
 
-#ifdef __FreeBSD__
-#define log2(x) (log(x)/M_LN2)
-#endif
 
 NS_LOG_COMPONENT_DEFINE ("LteAmc");
 
@@ -318,14 +315,13 @@ LteAmc::CreateCqiFeedbacks (const SpectrumValue& sinr, uint8_t rbgSize)
               * NB: SINR must be expressed in linear units
               */
 
-              double s = log2 ( 1 + ( sinr_ /
-                                      ( (-log (5.0 * m_ber )) / 1.5) ));
+              double s = log2 ( 1 + ( sinr_ / ( (-std::log (5.0 * m_ber )) / 1.5) ));
 
               int cqi_ = GetCqiFromSpectralEfficiency (s);
 
               NS_LOG_LOGIC (" PRB =" << cqi.size ()
                                     << ", sinr = " << sinr_
-                                    << " (=" << 10 * log10 (sinr_) << " dB)"
+                                    << " (=" << 10 * std::log10 (sinr_) << " dB)"
                                     << ", spectral efficiency =" << s
                                     << ", CQI = " << cqi_ << ", BER = " << m_ber);
 

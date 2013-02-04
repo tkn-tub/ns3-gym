@@ -22,6 +22,7 @@ This document is written in `reStructuredText <http://docutils.sourceforge.net/r
    aodv
    applications
    bridge
+   brite
    buildings
    click
    csma

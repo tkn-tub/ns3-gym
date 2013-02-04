@@ -22,7 +22,7 @@
 #include "ns3/ipv6-route.h"
 #include "ns3/ipv6-routing-protocol.h"
 
-namespace ns3 {
+using namespace ns3;
 
 class Ipv6ARouting : public Ipv6RoutingProtocol {
 public:
@@ -130,5 +130,3 @@ public:
   }
 
 } g_ipv6ListRoutingTestSuite;
-
-} // namespace ns3

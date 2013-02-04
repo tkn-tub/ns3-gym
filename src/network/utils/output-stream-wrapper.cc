@@ -29,6 +29,7 @@ namespace ns3 {
 OutputStreamWrapper::OutputStreamWrapper (std::string filename, std::ios::openmode filemode)
   : m_destroyable (true)
 {
+  NS_LOG_FUNCTION (this << filename << filemode);
   std::ofstream* os = new std::ofstream ();
   os->open (filename.c_str (), filemode);
   m_ostream = os;
@@ -40,12 +41,14 @@ OutputStreamWrapper::OutputStreamWrapper (std::string filename, std::ios::openmo
 OutputStreamWrapper::OutputStreamWrapper (std::ostream* os)
   : m_ostream (os), m_destroyable (false)
 {
+  NS_LOG_FUNCTION (this << os);
   FatalImpl::RegisterStream (m_ostream);
   NS_ABORT_MSG_UNLESS (m_ostream->good (), "Output stream is not vaild for writing.");
 }
 
 OutputStreamWrapper::~OutputStreamWrapper ()
 {
+  NS_LOG_FUNCTION (this);
   FatalImpl::UnregisterStream (m_ostream);
   if (m_destroyable) delete m_ostream;
   m_ostream = 0;
@@ -54,6 +57,7 @@ OutputStreamWrapper::~OutputStreamWrapper ()
 std::ostream *
 OutputStreamWrapper::GetStream (void)
 {
+  NS_LOG_FUNCTION (this);
   return m_ostream;
 }
 

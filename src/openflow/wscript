@@ -112,6 +112,7 @@ int main()
     conf.env['OPENFLOW'] = conf.check_nonfatal(fragment=test_code, lib='openflow', 
                                                libpath=conf.env['LIBPATH_OPENFLOW'],
                                                use='OPENFLOW DL XML2')
+    conf.env.append_value('LIB_OPENFLOW', 'dl')
     conf.report_optional_feature("openflow", "NS-3 OpenFlow Integration",
                                  conf.env['OPENFLOW'], "openflow library not found")
     if conf.env['OPENFLOW']:
@@ -152,7 +153,6 @@ def build(bld):
 	obj.source.append('helper/openflow-switch-helper.cc')
 
         obj.env.append_value('DEFINES', 'NS3_OPENFLOW')
-        obj.use.append("OPENFLOW")
 
 	obj_test.source.append('test/openflow-switch-test-suite.cc')
 	headers.source.append('model/openflow-interface.h')

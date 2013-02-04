@@ -21,7 +21,7 @@
 #include "ns3/ipv6-address-generator.h"
 #include "ns3/simulation-singleton.h"
 
-namespace ns3 {
+using namespace ns3;
 
 class NetworkNumber6AllocatorTestCase : public TestCase
 {
@@ -286,6 +286,3 @@ public:
     AddTestCase (new AddressCollision6TestCase ());
   }
 } g_ipv6AddressGeneratorTestSuite;
-
-} // namespace ns3
-

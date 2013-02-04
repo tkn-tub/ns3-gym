@@ -141,6 +141,82 @@ private:
 
 };
 
+/**
+ * \brief  This class implements a tag that carries the dest address of a packet and the packet type.
+ *
+ */
+class PacketSocketTag : public Tag
+{
+public:
+  /**
+   *  Create an empty PacketSocketTag
+   */
+  PacketSocketTag ();
+  /**
+   * Set the packet type
+   * @param t the packet type of the corresponding packet
+   */
+  void SetPacketType (NetDevice::PacketType t);
+  /**
+   * Get the packet type 
+   * @return the packet type of the corresponding packet
+   */
+  NetDevice::PacketType GetPacketType (void) const;
+  /**
+   * Set the destination address of the corresponding packet
+   * @param a the destination address of the corresponding packet
+   */
+  void SetDestAddress(Address a);
+  /**
+   * Get the destination address of the corresponding packet
+   * @return the destination address of the corresponding packet
+   */
+  Address GetDestAddress (void) const;
+
+  static TypeId GetTypeId (void);
+  virtual TypeId GetInstanceTypeId (void) const;
+  virtual uint32_t GetSerializedSize (void) const;
+  virtual void Serialize (TagBuffer i) const;
+  virtual void Deserialize (TagBuffer i);
+  virtual void Print (std::ostream &os) const;
+
+private:
+  std::string m_deviceName;
+  NetDevice::PacketType m_packetType;
+  Address m_destAddr;
+};
+/**
+ * \brief  This class implements a tag that carries the ns3 device name from where a packet is coming.
+ *
+ */
+class DeviceNameTag : public Tag
+{
+public:
+  /**
+   * Create an empty DeviceNameTag
+   */
+  DeviceNameTag ();
+  /**
+   * Set the device name
+   * @param n the device name from where the corresponding packet is coming.
+   */
+  void SetDeviceName (std::string n);
+  /**
+   * Get the device name from where the corresponding packet is coming.
+   * @return the device name from where the corresponding packet is coming.
+   */
+  std::string GetDeviceName (void) const;
+  static TypeId GetTypeId (void);
+  virtual TypeId GetInstanceTypeId (void) const;
+  virtual uint32_t GetSerializedSize (void) const;
+  virtual void Serialize (TagBuffer i) const;
+  virtual void Deserialize (TagBuffer i);
+  virtual void Print (std::ostream &os) const;
+
+private:
+  std::string m_deviceName;
+};
+
 } // namespace ns3
 
 #endif /* PACKET_SOCKET_H */

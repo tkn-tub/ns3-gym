@@ -60,12 +60,12 @@ TypeId Radvd::GetTypeId ()
 
 Radvd::Radvd ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 Radvd::~Radvd ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   for (RadvdInterfaceListI it = m_configurations.begin (); it != m_configurations.end (); ++it)
     {
       *it = 0;
@@ -76,13 +76,13 @@ Radvd::~Radvd ()
 
 void Radvd::DoDispose ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   Application::DoDispose ();
 }
 
 void Radvd::StartApplication ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 
   if (!m_socket)
     {
@@ -106,7 +106,7 @@ void Radvd::StartApplication ()
 
 void Radvd::StopApplication ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 
   if (m_socket)
     {
@@ -122,6 +122,7 @@ void Radvd::StopApplication ()
 
 void Radvd::AddConfiguration (Ptr<RadvdInterface> routerInterface)
 {
+  NS_LOG_FUNCTION (this << routerInterface);
   m_configurations.push_back (routerInterface);
 }
 
@@ -135,13 +136,13 @@ Radvd:: AssignStreams (int64_t stream)
 
 void Radvd::ScheduleTransmit (Time dt, Ptr<RadvdInterface> config, EventId& eventId, Ipv6Address dst, bool reschedule)
 {
-  NS_LOG_FUNCTION (this << dt);
+  NS_LOG_FUNCTION (this << dt << config << &eventId << dst << reschedule);
   eventId = Simulator::Schedule (dt, &Radvd::Send, this, config, dst, reschedule);
 }
 
 void Radvd::Send (Ptr<RadvdInterface> config, Ipv6Address dst, bool reschedule)
 {
-  NS_LOG_FUNCTION (this << dst);
+  NS_LOG_FUNCTION (this << dst << reschedule);
   NS_ASSERT (m_eventIds[config->GetInterface ()].IsExpired ());
   Icmpv6RA raHdr;
   Icmpv6OptionLinkLayerAddress llaHdr;

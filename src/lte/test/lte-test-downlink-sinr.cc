@@ -27,8 +27,8 @@
 #include "ns3/spectrum-test.h"
 #include "ns3/boolean.h"
 #include "ns3/lte-phy-tag.h"
-#include "ns3/lte-test-ue-phy.h"
-#include "ns3/lte-test-sinr-chunk-processor.h"
+#include "lte-test-ue-phy.h"
+#include "lte-test-sinr-chunk-processor.h"
 #include "ns3/lte-spectrum-signal-parameters.h"
 
 #include "lte-test-downlink-sinr.h"
@@ -148,10 +148,10 @@ LteDownlinkDataSinrTestCase::DoRun (void)
    */
 
   // Number of packet bursts (1 data + 4 interferences)
-  int numOfPbs = 5;
+  const int numOfPbs = 5;
 
   // Number of packets in the packet bursts
-  int numOfPkts = 10;
+  const int numOfPkts = 10;
 
   // Packet bursts
   Ptr<PacketBurst> packetBursts[numOfPbs];
@@ -319,10 +319,10 @@ LteDownlinkCtrlSinrTestCase::DoRun (void)
   */
   
   // Number of ctrl bursts (1 data + 4 interferences)
-  int numOfUes = 5;
+  const int numOfUes = 5;
   
   // Number of control messages in the list
-  int numOfCtrlMsgs = 10;
+  const int numOfCtrlMsgs = 10;
   
   // control messages in the list
   std::list<Ptr<LteControlMessage> > ctrlMsgList[numOfUes];

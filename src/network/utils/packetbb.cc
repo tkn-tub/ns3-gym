@@ -25,8 +25,10 @@
 #include "ns3/ipv4-address.h"
 #include "ns3/ipv6-address.h"
 #include "ns3/assert.h"
-
+#include "ns3/log.h"
 #include "packetbb.h"
+
+NS_LOG_COMPONENT_DEFINE ("PacketBB");
 
 static const uint8_t VERSION = 0;
 /* Packet flags */
@@ -60,107 +62,125 @@ NS_OBJECT_ENSURE_REGISTERED (PbbPacket);
 
 PbbTlvBlock::PbbTlvBlock (void)
 {
+  NS_LOG_FUNCTION (this);
   return;
 }
 
 PbbTlvBlock::~PbbTlvBlock (void)
 {
+  NS_LOG_FUNCTION (this);
   Clear ();
 }
 
 PbbTlvBlock::Iterator
 PbbTlvBlock::Begin (void)
 {
+  NS_LOG_FUNCTION (this);
   return m_tlvList.begin ();
 }
 
 PbbTlvBlock::ConstIterator
 PbbTlvBlock::Begin (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_tlvList.begin ();
 }
 
 PbbTlvBlock::Iterator
 PbbTlvBlock::End (void)
 {
+  NS_LOG_FUNCTION (this);
   return m_tlvList.end ();
 }
 
 PbbTlvBlock::ConstIterator
 PbbTlvBlock::End (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_tlvList.end ();
 }
 
 int
 PbbTlvBlock::Size (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_tlvList.size ();
 }
 
 bool
 PbbTlvBlock::Empty (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_tlvList.empty ();
 }
 
 Ptr<PbbTlv>
 PbbTlvBlock::Front (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_tlvList.front ();
 }
 
 Ptr<PbbTlv>
 PbbTlvBlock::Back (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_tlvList.back ();
 }
 
 void
 PbbTlvBlock::PushFront (Ptr<PbbTlv> tlv)
 {
+  NS_LOG_FUNCTION (this << tlv);
   m_tlvList.push_front (tlv);
 }
 
 void
 PbbTlvBlock::PopFront (void)
 {
+  NS_LOG_FUNCTION (this);
   m_tlvList.pop_front ();
 }
 
 void
 PbbTlvBlock::PushBack (Ptr<PbbTlv> tlv)
 {
+  NS_LOG_FUNCTION (this << tlv);
   m_tlvList.push_back (tlv);
 }
 
 void
 PbbTlvBlock::PopBack (void)
 {
+  NS_LOG_FUNCTION (this);
   m_tlvList.pop_back ();
 }
 
 PbbTlvBlock::Iterator
 PbbTlvBlock::Insert (PbbTlvBlock::Iterator position, const Ptr<PbbTlv> tlv)
 {
+  NS_LOG_FUNCTION (this << &position << tlv);
   return m_tlvList.insert (position, tlv);
 }
 
 PbbTlvBlock::Iterator
 PbbTlvBlock::Erase (PbbTlvBlock::Iterator position)
 {
+  NS_LOG_FUNCTION (this << &position);
   return m_tlvList.erase (position);
 }
 
 PbbTlvBlock::Iterator
 PbbTlvBlock::Erase (PbbTlvBlock::Iterator first, PbbTlvBlock::Iterator last)
 {
+  NS_LOG_FUNCTION (this << &first << &last);
   return m_tlvList.erase (first, last);
 }
 
 void
 PbbTlvBlock::Clear (void)
 {
+  NS_LOG_FUNCTION (this);
   for (Iterator iter = Begin (); iter != End (); iter++)
     {
       *iter = 0;
@@ -171,6 +191,7 @@ PbbTlvBlock::Clear (void)
 uint32_t
 PbbTlvBlock::GetSerializedSize (void) const
 {
+  NS_LOG_FUNCTION (this);
   /* tlv size */
   uint32_t size = 2;
   for (ConstIterator iter = Begin (); iter != End (); iter++)
@@ -183,6 +204,7 @@ PbbTlvBlock::GetSerializedSize (void) const
 void
 PbbTlvBlock::Serialize (Buffer::Iterator &start) const
 {
+  NS_LOG_FUNCTION (this << &start);
   if (Empty ())
     {
       start.WriteHtonU16 (0);
@@ -205,6 +227,7 @@ PbbTlvBlock::Serialize (Buffer::Iterator &start) const
 void
 PbbTlvBlock::Deserialize (Buffer::Iterator &start)
 {
+  NS_LOG_FUNCTION (this << &start);
   uint16_t size = start.ReadNtohU16 ();
 
   Buffer::Iterator tlvstart = start;
@@ -222,12 +245,14 @@ PbbTlvBlock::Deserialize (Buffer::Iterator &start)
 void
 PbbTlvBlock::Print (std::ostream &os) const
 {
+  NS_LOG_FUNCTION (this << &os);
   Print (os, 0);
 }
 
 void
 PbbTlvBlock::Print (std::ostream &os, int level) const
 {
+  NS_LOG_FUNCTION (this << &os << level);
   std::string prefix = "";
   for (int i = 0; i < level; i++)
     {
@@ -278,107 +303,125 @@ PbbTlvBlock::operator!= (const PbbTlvBlock &other) const
 
 PbbAddressTlvBlock::PbbAddressTlvBlock (void)
 {
+  NS_LOG_FUNCTION (this);
   return;
 }
 
 PbbAddressTlvBlock::~PbbAddressTlvBlock (void)
 {
+  NS_LOG_FUNCTION (this);
   Clear ();
 }
 
 PbbAddressTlvBlock::Iterator
 PbbAddressTlvBlock::Begin (void)
 {
+  NS_LOG_FUNCTION (this);
   return m_tlvList.begin ();
 }
 
 PbbAddressTlvBlock::ConstIterator
 PbbAddressTlvBlock::Begin (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_tlvList.begin ();
 }
 
 PbbAddressTlvBlock::Iterator
 PbbAddressTlvBlock::End (void)
 {
+  NS_LOG_FUNCTION (this);
   return m_tlvList.end ();
 }
 
 PbbAddressTlvBlock::ConstIterator
 PbbAddressTlvBlock::End (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_tlvList.end ();
 }
 
 int
 PbbAddressTlvBlock::Size (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_tlvList.size ();
 }
 
 bool
 PbbAddressTlvBlock::Empty (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_tlvList.empty ();
 }
 
 Ptr<PbbAddressTlv>
 PbbAddressTlvBlock::Front (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_tlvList.front ();
 }
 
 Ptr<PbbAddressTlv>
 PbbAddressTlvBlock::Back (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_tlvList.back ();
 }
 
 void
 PbbAddressTlvBlock::PushFront (Ptr<PbbAddressTlv> tlv)
 {
+  NS_LOG_FUNCTION (this << tlv);
   m_tlvList.push_front (tlv);
 }
 
 void
 PbbAddressTlvBlock::PopFront (void)
 {
+  NS_LOG_FUNCTION (this);
   m_tlvList.pop_front ();
 }
 
 void
 PbbAddressTlvBlock::PushBack (Ptr<PbbAddressTlv> tlv)
 {
+  NS_LOG_FUNCTION (this << tlv);
   m_tlvList.push_back (tlv);
 }
 
 void
 PbbAddressTlvBlock::PopBack (void)
 {
+  NS_LOG_FUNCTION (this);
   m_tlvList.pop_back ();
 }
 
 PbbAddressTlvBlock::Iterator
 PbbAddressTlvBlock::Insert (PbbAddressTlvBlock::Iterator position, const Ptr<PbbAddressTlv> tlv)
 {
+  NS_LOG_FUNCTION (this << &position << tlv);
   return m_tlvList.insert (position, tlv);
 }
 
 PbbAddressTlvBlock::Iterator
 PbbAddressTlvBlock::Erase (PbbAddressTlvBlock::Iterator position)
 {
+  NS_LOG_FUNCTION (this << &position);
   return m_tlvList.erase (position);
 }
 
 PbbAddressTlvBlock::Iterator
 PbbAddressTlvBlock::Erase (PbbAddressTlvBlock::Iterator first, PbbAddressTlvBlock::Iterator last)
 {
+  NS_LOG_FUNCTION (this << &first << &last);
   return m_tlvList.erase (first, last);
 }
 
 void
 PbbAddressTlvBlock::Clear (void)
 {
+  NS_LOG_FUNCTION (this);
   for (Iterator iter = Begin (); iter != End (); iter++)
     {
       *iter = 0;
@@ -389,6 +432,7 @@ PbbAddressTlvBlock::Clear (void)
 uint32_t
 PbbAddressTlvBlock::GetSerializedSize (void) const
 {
+  NS_LOG_FUNCTION (this);
   /* tlv size */
   uint32_t size = 2;
   for (ConstIterator iter = Begin (); iter != End (); iter++)
@@ -401,6 +445,7 @@ PbbAddressTlvBlock::GetSerializedSize (void) const
 void
 PbbAddressTlvBlock::Serialize (Buffer::Iterator &start) const
 {
+  NS_LOG_FUNCTION (this << &start);
   if (Empty ())
     {
       start.WriteHtonU16 (0);
@@ -423,6 +468,7 @@ PbbAddressTlvBlock::Serialize (Buffer::Iterator &start) const
 void
 PbbAddressTlvBlock::Deserialize (Buffer::Iterator &start)
 {
+  NS_LOG_FUNCTION (this << &start);
   uint16_t size = start.ReadNtohU16 ();
 
   Buffer::Iterator tlvstart = start;
@@ -440,12 +486,14 @@ PbbAddressTlvBlock::Deserialize (Buffer::Iterator &start)
 void
 PbbAddressTlvBlock::Print (std::ostream &os) const
 {
+  NS_LOG_FUNCTION (this << &os);
   Print (os, 0);
 }
 
 void
 PbbAddressTlvBlock::Print (std::ostream &os, int level) const
 {
+  NS_LOG_FUNCTION (this << &os << level);
   std::string prefix = "";
   for (int i = 0; i < level; i++)
     {
@@ -497,24 +545,28 @@ PbbAddressTlvBlock::operator!= (const PbbAddressTlvBlock &other) const
 
 PbbPacket::PbbPacket (void)
 {
+  NS_LOG_FUNCTION (this);
   m_version = VERSION;
   m_hasseqnum = false;
 }
 
 PbbPacket::~PbbPacket (void)
 {
+  NS_LOG_FUNCTION (this);
   MessageClear ();
 }
 
 uint8_t
 PbbPacket::GetVersion (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_version;
 }
 
 void
 PbbPacket::SetSequenceNumber (uint16_t number)
 {
+  NS_LOG_FUNCTION (this << number);
   m_seqnum = number;
   m_hasseqnum = true;
 }
@@ -522,6 +574,7 @@ PbbPacket::SetSequenceNumber (uint16_t number)
 uint16_t
 PbbPacket::GetSequenceNumber (void) const
 {
+  NS_LOG_FUNCTION (this);
   NS_ASSERT (HasSequenceNumber ());
   return m_seqnum;
 }
@@ -529,6 +582,7 @@ PbbPacket::GetSequenceNumber (void) const
 bool
 PbbPacket::HasSequenceNumber (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_hasseqnum;
 }
 
@@ -537,102 +591,119 @@ PbbPacket::HasSequenceNumber (void) const
 PbbPacket::TlvIterator
 PbbPacket::TlvBegin (void)
 {
+  NS_LOG_FUNCTION (this);
   return m_tlvList.Begin ();
 }
 
 PbbPacket::ConstTlvIterator
 PbbPacket::TlvBegin (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_tlvList.Begin ();
 }
 
 PbbPacket::TlvIterator
 PbbPacket::TlvEnd (void)
 {
+  NS_LOG_FUNCTION (this);
   return m_tlvList.End ();
 }
 
 PbbPacket::ConstTlvIterator
 PbbPacket::TlvEnd (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_tlvList.End ();
 }
 
 int
 PbbPacket::TlvSize (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_tlvList.Size ();
 }
 
 bool
 PbbPacket::TlvEmpty (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_tlvList.Empty ();
 }
 
 Ptr<PbbTlv>
 PbbPacket::TlvFront (void)
 {
+  NS_LOG_FUNCTION (this);
   return m_tlvList.Front ();
 }
 
 const Ptr<PbbTlv>
 PbbPacket::TlvFront (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_tlvList.Front ();
 }
 
 Ptr<PbbTlv>
 PbbPacket::TlvBack (void)
 {
+  NS_LOG_FUNCTION (this);
   return m_tlvList.Back ();
 }
 
 const Ptr<PbbTlv>
 PbbPacket::TlvBack (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_tlvList.Back ();
 }
 
 void
 PbbPacket::TlvPushFront (Ptr<PbbTlv> tlv)
 {
+  NS_LOG_FUNCTION (this << tlv);
   m_tlvList.PushFront (tlv);
 }
 
 void
 PbbPacket::TlvPopFront (void)
 {
+  NS_LOG_FUNCTION (this);
   m_tlvList.PopFront ();
 }
 
 void
 PbbPacket::TlvPushBack (Ptr<PbbTlv> tlv)
 {
+  NS_LOG_FUNCTION (this << tlv);
   m_tlvList.PushBack (tlv);
 }
 
 void
 PbbPacket::TlvPopBack (void)
 {
+  NS_LOG_FUNCTION (this);
   m_tlvList.PopBack ();
 }
 
 PbbPacket::TlvIterator
 PbbPacket::Erase (PbbPacket::TlvIterator position)
 {
+  NS_LOG_FUNCTION (this << &position);
   return m_tlvList.Erase (position);
 }
 
 PbbPacket::TlvIterator
 PbbPacket::Erase (PbbPacket::TlvIterator first, PbbPacket::TlvIterator last)
 {
+  NS_LOG_FUNCTION (this << &first << &last);
   return m_tlvList.Erase (first, last);
 }
 
 void
 PbbPacket::TlvClear (void)
 {
+  NS_LOG_FUNCTION (this);
   m_tlvList.Clear ();
 }
 
@@ -641,90 +712,105 @@ PbbPacket::TlvClear (void)
 PbbPacket::MessageIterator
 PbbPacket::MessageBegin (void)
 {
+  NS_LOG_FUNCTION (this);
   return m_messageList.begin ();
 }
 
 PbbPacket::ConstMessageIterator
 PbbPacket::MessageBegin (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_messageList.begin ();
 }
 
 PbbPacket::MessageIterator
 PbbPacket::MessageEnd (void)
 {
+  NS_LOG_FUNCTION (this);
   return m_messageList.end ();
 }
 
 PbbPacket::ConstMessageIterator
 PbbPacket::MessageEnd (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_messageList.end ();
 }
 
 int
 PbbPacket::MessageSize (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_messageList.size ();
 }
 
 bool
 PbbPacket::MessageEmpty (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_messageList.empty ();
 }
 
 Ptr<PbbMessage>
 PbbPacket::MessageFront (void)
 {
+  NS_LOG_FUNCTION (this);
   return m_messageList.front ();
 }
 
 const Ptr<PbbMessage>
 PbbPacket::MessageFront (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_messageList.front ();
 }
 
 Ptr<PbbMessage>
 PbbPacket::MessageBack (void)
 {
+  NS_LOG_FUNCTION (this);
   return m_messageList.back ();
 }
 
 const Ptr<PbbMessage>
 PbbPacket::MessageBack (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_messageList.back ();
 }
 
 void
 PbbPacket::MessagePushFront (Ptr<PbbMessage> tlv)
 {
+  NS_LOG_FUNCTION (this << tlv);
   m_messageList.push_front (tlv);
 }
 
 void
 PbbPacket::MessagePopFront (void)
 {
+  NS_LOG_FUNCTION (this);
   m_messageList.pop_front ();
 }
 
 void
 PbbPacket::MessagePushBack (Ptr<PbbMessage> tlv)
 {
+  NS_LOG_FUNCTION (this << tlv);
   m_messageList.push_back (tlv);
 }
 
 void
 PbbPacket::MessagePopBack (void)
 {
+  NS_LOG_FUNCTION (this);
   m_messageList.pop_back ();
 }
 
 PbbPacket::MessageIterator
 PbbPacket::Erase (PbbPacket::MessageIterator position)
 {
+  NS_LOG_FUNCTION (this << &position);
   return m_messageList.erase (position);
 }
 
@@ -732,12 +818,14 @@ PbbPacket::MessageIterator
 PbbPacket::Erase (PbbPacket::MessageIterator first,
                   PbbPacket::MessageIterator last)
 {
+  NS_LOG_FUNCTION (this << &first << &last);
   return m_messageList.erase (first, last);
 }
 
 void
 PbbPacket::MessageClear (void)
 {
+  NS_LOG_FUNCTION (this);
   for (MessageIterator iter = MessageBegin (); iter != MessageEnd (); iter++)
     {
       *iter = 0;
@@ -765,6 +853,7 @@ PbbPacket::GetInstanceTypeId (void) const
 uint32_t
 PbbPacket::GetSerializedSize (void) const
 {
+  NS_LOG_FUNCTION (this);
   /* Version number + flags */
   uint32_t size = 1;
 
@@ -791,6 +880,7 @@ PbbPacket::GetSerializedSize (void) const
 void
 PbbPacket::Serialize (Buffer::Iterator start) const
 {
+  NS_LOG_FUNCTION (this << &start);
   /* We remember the start, so we can write the flags after we check for a
    * sequence number and TLV. */
   Buffer::Iterator bufref = start;
@@ -825,6 +915,7 @@ PbbPacket::Serialize (Buffer::Iterator start) const
 uint32_t
 PbbPacket::Deserialize (Buffer::Iterator start)
 {
+  NS_LOG_FUNCTION (this << &start);
   Buffer::Iterator begin = start;
 
   uint8_t flags = start.ReadU8 ();
@@ -858,6 +949,7 @@ PbbPacket::Deserialize (Buffer::Iterator start)
 void
 PbbPacket::Print (std::ostream &os) const
 {
+  NS_LOG_FUNCTION (this << &os);
   os << "PbbPacket {" << std::endl;
 
   if (HasSequenceNumber ())
@@ -931,6 +1023,7 @@ PbbPacket::operator!= (const PbbPacket &other) const
 
 PbbMessage::PbbMessage ()
 {
+  NS_LOG_FUNCTION (this);
   /* Default to IPv4 */
   m_addrSize = IPV4;
   m_hasOriginatorAddress = false;
@@ -941,30 +1034,35 @@ PbbMessage::PbbMessage ()
 
 PbbMessage::~PbbMessage ()
 {
+  NS_LOG_FUNCTION (this);
   AddressBlockClear ();
 }
 
 void
 PbbMessage::SetType (uint8_t type)
 {
+  NS_LOG_FUNCTION (this << static_cast<uint32_t> (type));
   m_type = type;
 }
 
 uint8_t
 PbbMessage::GetType (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_type;
 }
 
 PbbAddressLength
 PbbMessage::GetAddressLength (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_addrSize;
 }
 
 void
 PbbMessage::SetOriginatorAddress (Address address)
 {
+  NS_LOG_FUNCTION (this << address);
   m_originatorAddress = address;
   m_hasOriginatorAddress = true;
 }
@@ -972,6 +1070,7 @@ PbbMessage::SetOriginatorAddress (Address address)
 Address
 PbbMessage::GetOriginatorAddress (void) const
 {
+  NS_LOG_FUNCTION (this);
   NS_ASSERT (HasOriginatorAddress ());
   return m_originatorAddress;
 }
@@ -979,12 +1078,14 @@ PbbMessage::GetOriginatorAddress (void) const
 bool
 PbbMessage::HasOriginatorAddress (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_hasOriginatorAddress;
 }
 
 void
 PbbMessage::SetHopLimit (uint8_t hopLimit)
 {
+  NS_LOG_FUNCTION (this << static_cast<uint32_t> (hopLimit));
   m_hopLimit = hopLimit;
   m_hasHopLimit = true;
 }
@@ -992,6 +1093,7 @@ PbbMessage::SetHopLimit (uint8_t hopLimit)
 uint8_t
 PbbMessage::GetHopLimit (void) const
 {
+  NS_LOG_FUNCTION (this);
   NS_ASSERT (HasHopLimit ());
   return m_hopLimit;
 }
@@ -999,12 +1101,14 @@ PbbMessage::GetHopLimit (void) const
 bool
 PbbMessage::HasHopLimit (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_hasHopLimit;
 }
 
 void
 PbbMessage::SetHopCount (uint8_t hopCount)
 {
+  NS_LOG_FUNCTION (this << static_cast<uint32_t> (hopCount));
   m_hopCount = hopCount;
   m_hasHopCount = true;
 }
@@ -1012,6 +1116,7 @@ PbbMessage::SetHopCount (uint8_t hopCount)
 uint8_t
 PbbMessage::GetHopCount (void) const
 {
+  NS_LOG_FUNCTION (this);
   NS_ASSERT (HasHopCount ());
   return m_hopCount;
 }
@@ -1019,12 +1124,14 @@ PbbMessage::GetHopCount (void) const
 bool
 PbbMessage::HasHopCount (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_hasHopCount;
 }
 
 void
 PbbMessage::SetSequenceNumber (uint16_t sequenceNumber)
 {
+  NS_LOG_FUNCTION (this << sequenceNumber);
   m_sequenceNumber = sequenceNumber;
   m_hasSequenceNumber = true;
 }
@@ -1032,6 +1139,7 @@ PbbMessage::SetSequenceNumber (uint16_t sequenceNumber)
 uint16_t
 PbbMessage::GetSequenceNumber (void) const
 {
+  NS_LOG_FUNCTION (this);
   NS_ASSERT (HasSequenceNumber ());
   return m_sequenceNumber;
 }
@@ -1039,6 +1147,7 @@ PbbMessage::GetSequenceNumber (void) const
 bool
 PbbMessage::HasSequenceNumber (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_hasSequenceNumber;
 }
 
@@ -1047,102 +1156,119 @@ PbbMessage::HasSequenceNumber (void) const
 PbbMessage::TlvIterator
 PbbMessage::TlvBegin (void)
 {
+  NS_LOG_FUNCTION (this);
   return m_tlvList.Begin ();
 }
 
 PbbMessage::ConstTlvIterator
 PbbMessage::TlvBegin (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_tlvList.Begin ();
 }
 
 PbbMessage::TlvIterator
 PbbMessage::TlvEnd (void)
 {
+  NS_LOG_FUNCTION (this);
   return m_tlvList.End ();
 }
 
 PbbMessage::ConstTlvIterator
 PbbMessage::TlvEnd (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_tlvList.End ();
 }
 
 int
 PbbMessage::TlvSize (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_tlvList.Size ();
 }
 
 bool
 PbbMessage::TlvEmpty (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_tlvList.Empty ();
 }
 
 Ptr<PbbTlv>
 PbbMessage::TlvFront (void)
 {
+  NS_LOG_FUNCTION (this);
   return m_tlvList.Front ();
 }
 
 const Ptr<PbbTlv>
 PbbMessage::TlvFront (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_tlvList.Front ();
 }
 
 Ptr<PbbTlv>
 PbbMessage::TlvBack (void)
 {
+  NS_LOG_FUNCTION (this);
   return m_tlvList.Back ();
 }
 
 const Ptr<PbbTlv>
 PbbMessage::TlvBack (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_tlvList.Back ();
 }
 
 void
 PbbMessage::TlvPushFront (Ptr<PbbTlv> tlv)
 {
+  NS_LOG_FUNCTION (this << tlv);
   m_tlvList.PushFront (tlv);
 }
 
 void
 PbbMessage::TlvPopFront (void)
 {
+  NS_LOG_FUNCTION (this);
   m_tlvList.PopFront ();
 }
 
 void
 PbbMessage::TlvPushBack (Ptr<PbbTlv> tlv)
 {
+  NS_LOG_FUNCTION (this << tlv);
   m_tlvList.PushBack (tlv);
 }
 
 void
 PbbMessage::TlvPopBack (void)
 {
+  NS_LOG_FUNCTION (this);
   m_tlvList.PopBack ();
 }
 
 PbbMessage::TlvIterator
 PbbMessage::TlvErase (PbbMessage::TlvIterator position)
 {
+  NS_LOG_FUNCTION (this << &position);
   return m_tlvList.Erase (position);
 }
 
 PbbMessage::TlvIterator
 PbbMessage::TlvErase (PbbMessage::TlvIterator first, PbbMessage::TlvIterator last)
 {
+  NS_LOG_FUNCTION (this << &first << &last);
   return m_tlvList.Erase (first, last);
 }
 
 void
 PbbMessage::TlvClear (void)
 {
+  NS_LOG_FUNCTION (this);
   m_tlvList.Clear ();
 }
 
@@ -1151,90 +1277,105 @@ PbbMessage::TlvClear (void)
 PbbMessage::AddressBlockIterator
 PbbMessage::AddressBlockBegin (void)
 {
+  NS_LOG_FUNCTION (this);
   return m_addressBlockList.begin ();
 }
 
 PbbMessage::ConstAddressBlockIterator
 PbbMessage::AddressBlockBegin (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_addressBlockList.begin ();
 }
 
 PbbMessage::AddressBlockIterator
 PbbMessage::AddressBlockEnd (void)
 {
+  NS_LOG_FUNCTION (this);
   return m_addressBlockList.end ();
 }
 
 PbbMessage::ConstAddressBlockIterator
 PbbMessage::AddressBlockEnd (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_addressBlockList.end ();
 }
 
 int
 PbbMessage::AddressBlockSize (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_addressBlockList.size ();
 }
 
 bool
 PbbMessage::AddressBlockEmpty (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_addressBlockList.empty ();
 }
 
 Ptr<PbbAddressBlock>
 PbbMessage::AddressBlockFront (void)
 {
+  NS_LOG_FUNCTION (this);
   return m_addressBlockList.front ();
 }
 
 const Ptr<PbbAddressBlock>
 PbbMessage::AddressBlockFront (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_addressBlockList.front ();
 }
 
 Ptr<PbbAddressBlock>
 PbbMessage::AddressBlockBack (void)
 {
+  NS_LOG_FUNCTION (this);
   return m_addressBlockList.back ();
 }
 
 const Ptr<PbbAddressBlock>
 PbbMessage::AddressBlockBack (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_addressBlockList.back ();
 }
 
 void
 PbbMessage::AddressBlockPushFront (Ptr<PbbAddressBlock> tlv)
 {
+  NS_LOG_FUNCTION (this << tlv);
   m_addressBlockList.push_front (tlv);
 }
 
 void
 PbbMessage::AddressBlockPopFront (void)
 {
+  NS_LOG_FUNCTION (this);
   m_addressBlockList.pop_front ();
 }
 
 void
 PbbMessage::AddressBlockPushBack (Ptr<PbbAddressBlock> tlv)
 {
+  NS_LOG_FUNCTION (this << tlv);
   m_addressBlockList.push_back (tlv);
 }
 
 void
 PbbMessage::AddressBlockPopBack (void)
 {
+  NS_LOG_FUNCTION (this);
   m_addressBlockList.pop_back ();
 }
 
 PbbMessage::AddressBlockIterator
 PbbMessage::AddressBlockErase (PbbMessage::AddressBlockIterator position)
 {
+  NS_LOG_FUNCTION (this << &position);
   return m_addressBlockList.erase (position);
 }
 
@@ -1242,12 +1383,14 @@ PbbMessage::AddressBlockIterator
 PbbMessage::AddressBlockErase (PbbMessage::AddressBlockIterator first,
                                PbbMessage::AddressBlockIterator last)
 {
+  NS_LOG_FUNCTION (this << &first << &last);
   return m_addressBlockList.erase (first, last);
 }
 
 void
 PbbMessage::AddressBlockClear (void)
 {
+  NS_LOG_FUNCTION (this);
   for (AddressBlockIterator iter = AddressBlockBegin ();
        iter != AddressBlockEnd ();
        iter++)
@@ -1260,6 +1403,7 @@ PbbMessage::AddressBlockClear (void)
 uint32_t
 PbbMessage::GetSerializedSize (void) const
 {
+  NS_LOG_FUNCTION (this);
   /* msg-type + (msg-flags + msg-addr-length) + 2msg-size */
   uint32_t size = 4;
 
@@ -1298,6 +1442,7 @@ PbbMessage::GetSerializedSize (void) const
 void
 PbbMessage::Serialize (Buffer::Iterator &start) const
 {
+  NS_LOG_FUNCTION (this << &start);
   Buffer::Iterator front = start;
 
   start.WriteU8 (GetType ());
@@ -1354,6 +1499,7 @@ PbbMessage::Serialize (Buffer::Iterator &start) const
 Ptr<PbbMessage>
 PbbMessage::DeserializeMessage (Buffer::Iterator &start)
 {
+  NS_LOG_FUNCTION (&start);
   /* We need to read the msg-addr-len field to determine what kind of object to
    * construct. */
   start.Next ();
@@ -1386,6 +1532,7 @@ PbbMessage::DeserializeMessage (Buffer::Iterator &start)
 void
 PbbMessage::Deserialize (Buffer::Iterator &start)
 {
+  NS_LOG_FUNCTION (this << &start);
   Buffer::Iterator front = start;
   SetType (start.ReadU8 ());
   uint8_t flags = start.ReadU8 ();
@@ -1427,12 +1574,14 @@ PbbMessage::Deserialize (Buffer::Iterator &start)
 void
 PbbMessage::Print (std::ostream &os) const
 {
+  NS_LOG_FUNCTION (this << &os);
   Print (os, 0);
 }
 
 void
 PbbMessage::Print (std::ostream &os, int level) const
 {
+  NS_LOG_FUNCTION (this << &os << level);
   std::string prefix = "";
   for (int i = 0; i < level; i++)
     {
@@ -1575,21 +1724,25 @@ PbbMessage::operator!= (const PbbMessage &other) const
 
 PbbMessageIpv4::PbbMessageIpv4 ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 PbbMessageIpv4::~PbbMessageIpv4 ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 PbbAddressLength
 PbbMessageIpv4::GetAddressLength (void) const
 {
+  NS_LOG_FUNCTION (this);
   return IPV4;
 }
 
 void
 PbbMessageIpv4::SerializeOriginatorAddress (Buffer::Iterator &start) const
 {
+  NS_LOG_FUNCTION (this << &start);
   uint8_t* buffer = new uint8_t[GetAddressLength () + 1];
   Ipv4Address::ConvertFrom (GetOriginatorAddress ()).Serialize (buffer);
   start.Write (buffer, GetAddressLength () + 1);
@@ -1599,6 +1752,7 @@ PbbMessageIpv4::SerializeOriginatorAddress (Buffer::Iterator &start) const
 Address
 PbbMessageIpv4::DeserializeOriginatorAddress (Buffer::Iterator &start) const
 {
+  NS_LOG_FUNCTION (this << &start);
   uint8_t* buffer = new uint8_t[GetAddressLength () + 1];
   start.Read (buffer, GetAddressLength () + 1);
   Address result = Ipv4Address::Deserialize (buffer);
@@ -1609,12 +1763,14 @@ PbbMessageIpv4::DeserializeOriginatorAddress (Buffer::Iterator &start) const
 void
 PbbMessageIpv4::PrintOriginatorAddress (std::ostream &os) const
 {
+  NS_LOG_FUNCTION (this << &os);
   Ipv4Address::ConvertFrom (GetOriginatorAddress ()).Print (os);
 }
 
 Ptr<PbbAddressBlock>
 PbbMessageIpv4::AddressBlockDeserialize (Buffer::Iterator &start) const
 {
+  NS_LOG_FUNCTION (this << &start);
   Ptr<PbbAddressBlock> newab = Create<PbbAddressBlockIpv4> ();
   newab->Deserialize (start);
   return newab;
@@ -1624,21 +1780,25 @@ PbbMessageIpv4::AddressBlockDeserialize (Buffer::Iterator &start) const
 
 PbbMessageIpv6::PbbMessageIpv6 ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 PbbMessageIpv6::~PbbMessageIpv6 ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 PbbAddressLength
 PbbMessageIpv6::GetAddressLength (void) const
 {
+  NS_LOG_FUNCTION (this);
   return IPV6;
 }
 
 void
 PbbMessageIpv6::SerializeOriginatorAddress (Buffer::Iterator &start) const
 {
+  NS_LOG_FUNCTION (this << &start);
   uint8_t* buffer = new uint8_t[GetAddressLength () + 1];
   Ipv6Address::ConvertFrom (GetOriginatorAddress ()).Serialize (buffer);
   start.Write (buffer, GetAddressLength () + 1);
@@ -1648,6 +1808,7 @@ PbbMessageIpv6::SerializeOriginatorAddress (Buffer::Iterator &start) const
 Address
 PbbMessageIpv6::DeserializeOriginatorAddress (Buffer::Iterator &start) const
 {
+  NS_LOG_FUNCTION (this << &start);
   uint8_t* buffer = new uint8_t[GetAddressLength () + 1];
   start.Read (buffer, GetAddressLength () + 1);
   Address res = Ipv6Address::Deserialize (buffer);
@@ -1658,12 +1819,14 @@ PbbMessageIpv6::DeserializeOriginatorAddress (Buffer::Iterator &start) const
 void
 PbbMessageIpv6::PrintOriginatorAddress (std::ostream &os) const
 {
+  NS_LOG_FUNCTION (this << &os);
   Ipv6Address::ConvertFrom (GetOriginatorAddress ()).Print (os);
 }
 
 Ptr<PbbAddressBlock>
 PbbMessageIpv6::AddressBlockDeserialize (Buffer::Iterator &start) const
 {
+  NS_LOG_FUNCTION (this << &start);
   Ptr<PbbAddressBlock> newab = Create<PbbAddressBlockIpv6> ();
   newab->Deserialize (start);
   return newab;
@@ -1673,10 +1836,12 @@ PbbMessageIpv6::AddressBlockDeserialize (Buffer::Iterator &start) const
 
 PbbAddressBlock::PbbAddressBlock ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 PbbAddressBlock::~PbbAddressBlock ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 /* Manipulating the address block */
@@ -1684,78 +1849,91 @@ PbbAddressBlock::~PbbAddressBlock ()
 PbbAddressBlock::AddressIterator
 PbbAddressBlock::AddressBegin (void)
 {
+  NS_LOG_FUNCTION (this);
   return m_addressList.begin ();
 }
 
 PbbAddressBlock::ConstAddressIterator
 PbbAddressBlock::AddressBegin (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_addressList.begin ();
 }
 
 PbbAddressBlock::AddressIterator
 PbbAddressBlock::AddressEnd (void)
 {
+  NS_LOG_FUNCTION (this);
   return m_addressList.end ();
 }
 
 PbbAddressBlock::ConstAddressIterator
 PbbAddressBlock::AddressEnd (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_addressList.end ();
 }
 
 int
 PbbAddressBlock::AddressSize (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_addressList.size ();
 }
 
 bool
 PbbAddressBlock::AddressEmpty (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_addressList.empty ();
 }
 
 Address
 PbbAddressBlock::AddressFront (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_addressList.front ();
 }
 
 Address
 PbbAddressBlock::AddressBack (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_addressList.back ();
 }
 
 void
 PbbAddressBlock::AddressPushFront (Address tlv)
 {
+  NS_LOG_FUNCTION (this << tlv);
   m_addressList.push_front (tlv);
 }
 
 void
 PbbAddressBlock::AddressPopFront (void)
 {
+  NS_LOG_FUNCTION (this);
   m_addressList.pop_front ();
 }
 
 void
 PbbAddressBlock::AddressPushBack (Address tlv)
 {
+  NS_LOG_FUNCTION (this << tlv);
   m_addressList.push_back (tlv);
 }
 
 void
 PbbAddressBlock::AddressPopBack (void)
 {
+  NS_LOG_FUNCTION (this);
   m_addressList.pop_back ();
 }
 
 PbbAddressBlock::AddressIterator
 PbbAddressBlock::AddressErase (PbbAddressBlock::AddressIterator position)
 {
+  NS_LOG_FUNCTION (this << &position);
   return m_addressList.erase (position);
 }
 
@@ -1763,12 +1941,14 @@ PbbAddressBlock::AddressIterator
 PbbAddressBlock::AddressErase (PbbAddressBlock::AddressIterator first,
                                PbbAddressBlock::AddressIterator last)
 {
+  NS_LOG_FUNCTION (this << &first << &last);
   return m_addressList.erase (first, last);
 }
 
 void
 PbbAddressBlock::AddressClear (void)
 {
+  NS_LOG_FUNCTION (this);
   return m_addressList.clear ();
 }
 
@@ -1777,96 +1957,112 @@ PbbAddressBlock::AddressClear (void)
 PbbAddressBlock::PrefixIterator
 PbbAddressBlock::PrefixBegin (void)
 {
+  NS_LOG_FUNCTION (this);
   return m_prefixList.begin ();
 }
 
 PbbAddressBlock::ConstPrefixIterator
 PbbAddressBlock::PrefixBegin (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_prefixList.begin ();
 }
 
 PbbAddressBlock::PrefixIterator
 PbbAddressBlock::PrefixEnd (void)
 {
+  NS_LOG_FUNCTION (this);
   return m_prefixList.end ();
 }
 
 PbbAddressBlock::ConstPrefixIterator
 PbbAddressBlock::PrefixEnd (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_prefixList.end ();
 }
 
 int
 PbbAddressBlock::PrefixSize (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_prefixList.size ();
 }
 
 bool
 PbbAddressBlock::PrefixEmpty (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_prefixList.empty ();
 }
 
 uint8_t
 PbbAddressBlock::PrefixFront (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_prefixList.front ();
 }
 
 uint8_t
 PbbAddressBlock::PrefixBack (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_prefixList.back ();
 }
 
 void
 PbbAddressBlock::PrefixPushFront (uint8_t prefix)
 {
+  NS_LOG_FUNCTION (this << static_cast<uint32_t> (prefix));
   m_prefixList.push_front (prefix);
 }
 
 void
 PbbAddressBlock::PrefixPopFront (void)
 {
+  NS_LOG_FUNCTION (this);
   m_prefixList.pop_front ();
 }
 
 void
 PbbAddressBlock::PrefixPushBack (uint8_t prefix)
 {
+  NS_LOG_FUNCTION (this << static_cast<uint32_t> (prefix));
   m_prefixList.push_back (prefix);
 }
 
 void
 PbbAddressBlock::PrefixPopBack (void)
 {
+  NS_LOG_FUNCTION (this);
   m_prefixList.pop_back ();
 }
 
 PbbAddressBlock::PrefixIterator
 PbbAddressBlock::PrefixInsert (PbbAddressBlock::PrefixIterator position, const uint8_t value)
 {
+  NS_LOG_FUNCTION (this << &position << static_cast<uint32_t> (value));
   return m_prefixList.insert (position, value);
 }
 
 PbbAddressBlock::PrefixIterator
 PbbAddressBlock::PrefixErase (PbbAddressBlock::PrefixIterator position)
 {
+  NS_LOG_FUNCTION (this << &position);
   return m_prefixList.erase (position);
 }
 
 PbbAddressBlock::PrefixIterator
 PbbAddressBlock::PrefixErase (PbbAddressBlock::PrefixIterator first, PbbAddressBlock::PrefixIterator last)
 {
+  NS_LOG_FUNCTION (this << &first << &last);
   return m_prefixList.erase (first, last);
 }
 
 void
 PbbAddressBlock::PrefixClear (void)
 {
+  NS_LOG_FUNCTION (this);
   m_prefixList.clear ();
 }
 
@@ -1875,90 +2071,105 @@ PbbAddressBlock::PrefixClear (void)
 PbbAddressBlock::TlvIterator
 PbbAddressBlock::TlvBegin (void)
 {
+  NS_LOG_FUNCTION (this);
   return m_addressTlvList.Begin ();
 }
 
 PbbAddressBlock::ConstTlvIterator
 PbbAddressBlock::TlvBegin (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_addressTlvList.Begin ();
 }
 
 PbbAddressBlock::TlvIterator
 PbbAddressBlock::TlvEnd (void)
 {
+  NS_LOG_FUNCTION (this);
   return m_addressTlvList.End ();
 }
 
 PbbAddressBlock::ConstTlvIterator
 PbbAddressBlock::TlvEnd (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_addressTlvList.End ();
 }
 
 int
 PbbAddressBlock::TlvSize (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_addressTlvList.Size ();
 }
 
 bool
 PbbAddressBlock::TlvEmpty (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_addressTlvList.Empty ();
 }
 
 Ptr<PbbAddressTlv>
 PbbAddressBlock::TlvFront (void)
 {
+  NS_LOG_FUNCTION (this);
   return m_addressTlvList.Front ();
 }
 
 const Ptr<PbbAddressTlv>
 PbbAddressBlock::TlvFront (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_addressTlvList.Front ();
 }
 
 Ptr<PbbAddressTlv>
 PbbAddressBlock::TlvBack (void)
 {
+  NS_LOG_FUNCTION (this);
   return m_addressTlvList.Back ();
 }
 
 const Ptr<PbbAddressTlv>
 PbbAddressBlock::TlvBack (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_addressTlvList.Back ();
 }
 
 void
 PbbAddressBlock::TlvPushFront (Ptr<PbbAddressTlv> tlv)
 {
+  NS_LOG_FUNCTION (this << tlv);
   m_addressTlvList.PushFront (tlv);
 }
 
 void
 PbbAddressBlock::TlvPopFront (void)
 {
+  NS_LOG_FUNCTION (this);
   m_addressTlvList.PopFront ();
 }
 
 void
 PbbAddressBlock::TlvPushBack (Ptr<PbbAddressTlv> tlv)
 {
+  NS_LOG_FUNCTION (this << tlv);
   m_addressTlvList.PushBack (tlv);
 }
 
 void
 PbbAddressBlock::TlvPopBack (void)
 {
+  NS_LOG_FUNCTION (this);
   m_addressTlvList.PopBack ();
 }
 
 PbbAddressBlock::TlvIterator
 PbbAddressBlock::TlvErase (PbbAddressBlock::TlvIterator position)
 {
+  NS_LOG_FUNCTION (this << &position);
   return m_addressTlvList.Erase (position);
 }
 
@@ -1966,17 +2177,20 @@ PbbAddressBlock::TlvIterator
 PbbAddressBlock::TlvErase (PbbAddressBlock::TlvIterator first,
                            PbbAddressBlock::TlvIterator last)
 {
+  NS_LOG_FUNCTION (this << &first << &last);
   return m_addressTlvList.Erase (first, last);
 }
 
 void
 PbbAddressBlock::TlvClear (void)
 {
+  NS_LOG_FUNCTION (this);
   m_addressTlvList.Clear ();
 }
 uint32_t
 PbbAddressBlock::GetSerializedSize (void) const
 {
+  NS_LOG_FUNCTION (this);
   /* num-addr + flags */
   uint32_t size = 2;
 
@@ -2024,6 +2238,7 @@ PbbAddressBlock::GetSerializedSize (void) const
 void
 PbbAddressBlock::Serialize (Buffer::Iterator &start) const
 {
+  NS_LOG_FUNCTION (this << &start);
   start.WriteU8 (AddressSize ());
   Buffer::Iterator bufref = start;
   uint8_t flags = 0;
@@ -2107,6 +2322,7 @@ PbbAddressBlock::Serialize (Buffer::Iterator &start) const
 void
 PbbAddressBlock::Deserialize (Buffer::Iterator &start)
 {
+  NS_LOG_FUNCTION (this << &start);
   uint8_t numaddr = start.ReadU8 ();
   uint8_t flags = start.ReadU8 ();
 
@@ -2160,12 +2376,14 @@ PbbAddressBlock::Deserialize (Buffer::Iterator &start)
 void
 PbbAddressBlock::Print (std::ostream &os) const
 {
+  NS_LOG_FUNCTION (this << &os);
   Print (os, 0);
 }
 
 void
 PbbAddressBlock::Print (std::ostream &os, int level) const
 {
+  NS_LOG_FUNCTION (this << &os << level);
   std::string prefix = "";
   for (int i = 0; i < level; i++)
     {
@@ -2246,6 +2464,7 @@ PbbAddressBlock::operator!= (const PbbAddressBlock &other) const
 uint8_t
 PbbAddressBlock::GetPrefixFlags (void) const
 {
+  NS_LOG_FUNCTION (this);
   switch (PrefixSize ())
     {
     case 0:
@@ -2267,6 +2486,8 @@ void
 PbbAddressBlock::GetHeadTail (uint8_t *head, uint8_t &headlen,
                               uint8_t *tail, uint8_t &taillen) const
 {
+  NS_LOG_FUNCTION (this << &head << static_cast<uint32_t> (headlen)
+                   << &tail << static_cast<uint32_t> (taillen));
   headlen = GetAddressLength ();
   taillen = headlen;
 
@@ -2329,6 +2550,7 @@ PbbAddressBlock::GetHeadTail (uint8_t *head, uint8_t &headlen,
 bool
 PbbAddressBlock::HasZeroTail (const uint8_t *tail, uint8_t taillen) const
 {
+  NS_LOG_FUNCTION (this << &tail << static_cast<uint32_t> (taillen));
   int i;
   for (i = 0; i < taillen; i++)
     {
@@ -2344,33 +2566,39 @@ PbbAddressBlock::HasZeroTail (const uint8_t *tail, uint8_t taillen) const
 
 PbbAddressBlockIpv4::PbbAddressBlockIpv4 ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 PbbAddressBlockIpv4::~PbbAddressBlockIpv4 ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 uint8_t
 PbbAddressBlockIpv4::GetAddressLength (void) const
 {
+  NS_LOG_FUNCTION (this);
   return 4;
 }
 
 void
 PbbAddressBlockIpv4::SerializeAddress (uint8_t *buffer, ConstAddressIterator iter) const
 {
+  NS_LOG_FUNCTION (this << &buffer << &iter);
   Ipv4Address::ConvertFrom (*iter).Serialize (buffer);
 }
 
 Address
 PbbAddressBlockIpv4::DeserializeAddress (uint8_t *buffer) const
 {
+  NS_LOG_FUNCTION (this << &buffer);
   return Ipv4Address::Deserialize (buffer);
 }
 
 void
 PbbAddressBlockIpv4::PrintAddress (std::ostream &os, ConstAddressIterator iter) const
 {
+  NS_LOG_FUNCTION (this << &os << &iter);
   Ipv4Address::ConvertFrom (*iter).Print (os);
 }
 
@@ -2378,33 +2606,39 @@ PbbAddressBlockIpv4::PrintAddress (std::ostream &os, ConstAddressIterator iter) 
 
 PbbAddressBlockIpv6::PbbAddressBlockIpv6 ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 PbbAddressBlockIpv6::~PbbAddressBlockIpv6 ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 uint8_t
 PbbAddressBlockIpv6::GetAddressLength (void) const
 {
+  NS_LOG_FUNCTION (this);
   return 16;
 }
 
 void
 PbbAddressBlockIpv6::SerializeAddress (uint8_t *buffer, ConstAddressIterator iter) const
 {
+  NS_LOG_FUNCTION (this << &buffer << &iter);
   Ipv6Address::ConvertFrom (*iter).Serialize (buffer);
 }
 
 Address
 PbbAddressBlockIpv6::DeserializeAddress (uint8_t *buffer) const
 {
+  NS_LOG_FUNCTION (this << &buffer);
   return Ipv6Address::Deserialize (buffer);
 }
 
 void
 PbbAddressBlockIpv6::PrintAddress (std::ostream &os, ConstAddressIterator iter) const
 {
+  NS_LOG_FUNCTION (this << &os << &iter);
   Ipv6Address::ConvertFrom (*iter).Print (os);
 }
 
@@ -2412,6 +2646,7 @@ PbbAddressBlockIpv6::PrintAddress (std::ostream &os, ConstAddressIterator iter) 
 
 PbbTlv::PbbTlv (void)
 {
+  NS_LOG_FUNCTION (this);
   m_hasTypeExt = false;
   m_hasIndexStart = false;
   m_hasIndexStop = false;
@@ -2421,24 +2656,28 @@ PbbTlv::PbbTlv (void)
 
 PbbTlv::~PbbTlv (void)
 {
+  NS_LOG_FUNCTION (this);
   m_value.RemoveAtEnd (m_value.GetSize ());
 }
 
 void
 PbbTlv::SetType (uint8_t type)
 {
+  NS_LOG_FUNCTION (this << static_cast<uint32_t> (type));
   m_type = type;
 }
 
 uint8_t
 PbbTlv::GetType (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_type;
 }
 
 void
 PbbTlv::SetTypeExt (uint8_t typeExt)
 {
+  NS_LOG_FUNCTION (this << static_cast<uint32_t> (typeExt));
   m_typeExt = typeExt;
   m_hasTypeExt = true;
 }
@@ -2446,6 +2685,7 @@ PbbTlv::SetTypeExt (uint8_t typeExt)
 uint8_t
 PbbTlv::GetTypeExt (void) const
 {
+  NS_LOG_FUNCTION (this);
   NS_ASSERT (HasTypeExt ());
   return m_typeExt;
 }
@@ -2453,12 +2693,14 @@ PbbTlv::GetTypeExt (void) const
 bool
 PbbTlv::HasTypeExt (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_hasTypeExt;
 }
 
 void
 PbbTlv::SetIndexStart (uint8_t index)
 {
+  NS_LOG_FUNCTION (this << static_cast<uint32_t> (index));
   m_indexStart = index;
   m_hasIndexStart = true;
 }
@@ -2466,6 +2708,7 @@ PbbTlv::SetIndexStart (uint8_t index)
 uint8_t
 PbbTlv::GetIndexStart (void) const
 {
+  NS_LOG_FUNCTION (this);
   NS_ASSERT (HasIndexStart ());
   return m_indexStart;
 }
@@ -2473,12 +2716,14 @@ PbbTlv::GetIndexStart (void) const
 bool
 PbbTlv::HasIndexStart (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_hasIndexStart;
 }
 
 void
 PbbTlv::SetIndexStop (uint8_t index)
 {
+  NS_LOG_FUNCTION (this << static_cast<uint32_t> (index));
   m_indexStop = index;
   m_hasIndexStop = true;
 }
@@ -2486,6 +2731,7 @@ PbbTlv::SetIndexStop (uint8_t index)
 uint8_t
 PbbTlv::GetIndexStop (void) const
 {
+  NS_LOG_FUNCTION (this);
   NS_ASSERT (HasIndexStop ());
   return m_indexStop;
 }
@@ -2493,24 +2739,28 @@ PbbTlv::GetIndexStop (void) const
 bool
 PbbTlv::HasIndexStop (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_hasIndexStop;
 }
 
 void
 PbbTlv::SetMultivalue (bool isMultivalue)
 {
+  NS_LOG_FUNCTION (this << isMultivalue);
   m_isMultivalue = isMultivalue;
 }
 
 bool
 PbbTlv::IsMultivalue (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_isMultivalue;
 }
 
 void
 PbbTlv::SetValue (Buffer start)
 {
+  NS_LOG_FUNCTION (this << &start);
   m_hasValue = true;
   m_value = start;
 }
@@ -2518,6 +2768,7 @@ PbbTlv::SetValue (Buffer start)
 void
 PbbTlv::SetValue (const uint8_t * buffer, uint32_t size)
 {
+  NS_LOG_FUNCTION (this << &buffer << size);
   m_hasValue = true;
   m_value.AddAtStart (size);
   m_value.Begin ().Write (buffer, size);
@@ -2526,6 +2777,7 @@ PbbTlv::SetValue (const uint8_t * buffer, uint32_t size)
 Buffer
 PbbTlv::GetValue (void) const
 {
+  NS_LOG_FUNCTION (this);
   NS_ASSERT (HasValue ());
   return m_value;
 }
@@ -2533,12 +2785,14 @@ PbbTlv::GetValue (void) const
 bool
 PbbTlv::HasValue (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_hasValue;
 }
 
 uint32_t
 PbbTlv::GetSerializedSize (void) const
 {
+  NS_LOG_FUNCTION (this);
   /* type + flags */
   uint32_t size = 2;
 
@@ -2576,6 +2830,7 @@ PbbTlv::GetSerializedSize (void) const
 void
 PbbTlv::Serialize (Buffer::Iterator &start) const
 {
+  NS_LOG_FUNCTION (this << &start);
   start.WriteU8 (GetType ());
 
   Buffer::Iterator bufref = start;
@@ -2632,6 +2887,7 @@ PbbTlv::Serialize (Buffer::Iterator &start) const
 void
 PbbTlv::Deserialize (Buffer::Iterator &start)
 {
+  NS_LOG_FUNCTION (this << &start);
   SetType (start.ReadU8 ());
 
   uint8_t flags = start.ReadU8 ();
@@ -2676,12 +2932,14 @@ PbbTlv::Deserialize (Buffer::Iterator &start)
 void
 PbbTlv::Print (std::ostream &os) const
 {
+  NS_LOG_FUNCTION (this << &os);
   Print (os, 0);
 }
 
 void
 PbbTlv::Print (std::ostream &os, int level) const
 {
+  NS_LOG_FUNCTION (this << &os << level);
   std::string prefix = "";
   for (int i = 0; i < level; i++)
     {
@@ -2772,48 +3030,56 @@ PbbTlv::operator!= (const PbbTlv &other) const
 void 
 PbbAddressTlv::SetIndexStart (uint8_t index)
 {
+  NS_LOG_FUNCTION (this << static_cast<uint32_t> (index));
   PbbTlv::SetIndexStart (index);
 }
 
 uint8_t
 PbbAddressTlv::GetIndexStart (void) const
 {
+  NS_LOG_FUNCTION (this);
   return PbbTlv::GetIndexStart ();
 }
 
 bool
 PbbAddressTlv::HasIndexStart (void) const
 {
+  NS_LOG_FUNCTION (this);
   return PbbTlv::HasIndexStart ();
 }
 
 void 
 PbbAddressTlv::SetIndexStop (uint8_t index)
 {
+  NS_LOG_FUNCTION (this << static_cast<uint32_t> (index));
   PbbTlv::SetIndexStop (index);
 }
 
 uint8_t
 PbbAddressTlv::GetIndexStop (void) const
 {
+  NS_LOG_FUNCTION (this);
   return PbbTlv::GetIndexStop ();
 }
 
 bool
 PbbAddressTlv::HasIndexStop (void) const
 {
+  NS_LOG_FUNCTION (this);
   return PbbTlv::HasIndexStop ();
 }
 
 void
 PbbAddressTlv::SetMultivalue (bool isMultivalue)
 {
+  NS_LOG_FUNCTION (this << isMultivalue);
   PbbTlv::SetMultivalue (isMultivalue);
 }
 
 bool
 PbbAddressTlv::IsMultivalue (void) const
 {
+  NS_LOG_FUNCTION (this);
   return PbbTlv::IsMultivalue ();
 }
 

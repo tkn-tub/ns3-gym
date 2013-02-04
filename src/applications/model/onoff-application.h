@@ -160,9 +160,8 @@ private:
   void ScheduleNextTx ();
   void ScheduleStartEvent ();
   void ScheduleStopEvent ();
-  void ConnectionSucceeded (Ptr<Socket>);
-  void ConnectionFailed (Ptr<Socket>);
-  void Ignore (Ptr<Socket>);
+  void ConnectionSucceeded (Ptr<Socket> socket);
+  void ConnectionFailed (Ptr<Socket> socket);
 };
 
 } // namespace ns3

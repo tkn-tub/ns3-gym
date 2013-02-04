@@ -21,7 +21,7 @@
 #include "ns3/test.h"
 #include "ns3/ptr.h"
 
-namespace ns3 {
+using namespace ns3;
 
 class PtrTestCase;
 
@@ -272,5 +272,3 @@ public:
     AddTestCase (new PtrTestCase ());
   }
 } g_ptrTestSuite;
-
-} // namespace ns3

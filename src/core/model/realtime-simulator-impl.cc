@@ -33,7 +33,11 @@
 #include "enum.h"
 
 
-#include <math.h>
+#include <cmath>
+
+// Note:  Logging in this file is largely avoided due to the
+// number of calls that are made to these functions and the possibility
+// of causing recursions leading to stack overflow
 
 NS_LOG_COMPONENT_DEFINE ("RealtimeSimulatorImpl");
 
@@ -65,7 +69,7 @@ RealtimeSimulatorImpl::GetTypeId (void)
 
 RealtimeSimulatorImpl::RealtimeSimulatorImpl ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 
   m_stop = false;
   m_running = false;
@@ -89,12 +93,13 @@ RealtimeSimulatorImpl::RealtimeSimulatorImpl ()
 
 RealtimeSimulatorImpl::~RealtimeSimulatorImpl ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 void
 RealtimeSimulatorImpl::DoDispose (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   while (!m_events->IsEmpty ())
     {
       Scheduler::Event next = m_events->RemoveNext ();
@@ -108,7 +113,7 @@ RealtimeSimulatorImpl::DoDispose (void)
 void
 RealtimeSimulatorImpl::Destroy ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 
   //
   // This function is only called with the private version "disconnected" from
@@ -133,7 +138,7 @@ RealtimeSimulatorImpl::Destroy ()
 void
 RealtimeSimulatorImpl::SetScheduler (ObjectFactory schedulerFactory)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << schedulerFactory);
 
   Ptr<Scheduler> scheduler = schedulerFactory.Create<Scheduler> ();
 
@@ -155,7 +160,6 @@ RealtimeSimulatorImpl::SetScheduler (ObjectFactory schedulerFactory)
 void
 RealtimeSimulatorImpl::ProcessOneEvent (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
   //
   // The idea here is to wait until the next event comes due.  In the case of
   // a realtime simulation, we want real time to be consumed between events.
@@ -385,7 +389,6 @@ RealtimeSimulatorImpl::ProcessOneEvent (void)
 bool 
 RealtimeSimulatorImpl::IsFinished (void) const
 {
-  NS_LOG_FUNCTION_NOARGS ();
   bool rc;
   {
     CriticalSection cs (m_mutex);
@@ -401,7 +404,6 @@ RealtimeSimulatorImpl::IsFinished (void) const
 uint64_t
 RealtimeSimulatorImpl::NextTs (void) const
 {
-  NS_LOG_FUNCTION_NOARGS ();
   NS_ASSERT_MSG (m_events->IsEmpty () == false, 
                  "RealtimeSimulatorImpl::NextTs(): event queue is empty");
   Scheduler::Event ev = m_events->PeekNext ();
@@ -411,7 +413,7 @@ RealtimeSimulatorImpl::NextTs (void) const
 void
 RealtimeSimulatorImpl::Run (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 
   NS_ASSERT_MSG (m_running == false, 
                  "RealtimeSimulatorImpl::Run(): Simulator already running");
@@ -473,27 +475,26 @@ RealtimeSimulatorImpl::Run (void)
 bool
 RealtimeSimulatorImpl::Running (void) const
 {
-  NS_LOG_FUNCTION_NOARGS ();
   return m_running;
 }
 
 bool
 RealtimeSimulatorImpl::Realtime (void) const
 {
-  NS_LOG_FUNCTION_NOARGS ();
   return m_synchronizer->Realtime ();
 }
 
 void 
 RealtimeSimulatorImpl::Stop (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   m_stop = true;
 }
 
 void 
 RealtimeSimulatorImpl::Stop (Time const &time)
 {
+  NS_LOG_FUNCTION (this << time);
   Simulator::Schedule (time, &Simulator::Stop);
 }
 
@@ -503,7 +504,7 @@ RealtimeSimulatorImpl::Stop (Time const &time)
 EventId
 RealtimeSimulatorImpl::Schedule (Time const &time, EventImpl *impl)
 {
-  NS_LOG_FUNCTION (time << impl);
+  NS_LOG_FUNCTION (this << time << impl);
 
   Scheduler::Event ev;
   {
@@ -533,7 +534,7 @@ RealtimeSimulatorImpl::Schedule (Time const &time, EventImpl *impl)
 void
 RealtimeSimulatorImpl::ScheduleWithContext (uint32_t context, Time const &time, EventImpl *impl)
 {
-  NS_LOG_FUNCTION (time << impl);
+  NS_LOG_FUNCTION (this << context << time << impl);
 
   {
     CriticalSection cs (m_mutex);
@@ -569,7 +570,7 @@ RealtimeSimulatorImpl::ScheduleWithContext (uint32_t context, Time const &time, 
 EventId
 RealtimeSimulatorImpl::ScheduleNow (EventImpl *impl)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << impl);
   Scheduler::Event ev;
   {
     CriticalSection cs (m_mutex);
@@ -599,7 +600,7 @@ RealtimeSimulatorImpl::Now (void) const
 void
 RealtimeSimulatorImpl::ScheduleRealtimeWithContext (uint32_t context, Time const &time, EventImpl *impl)
 {
-  NS_LOG_FUNCTION (context << time << impl);
+  NS_LOG_FUNCTION (this << context << time << impl);
 
   {
     CriticalSection cs (m_mutex);
@@ -620,14 +621,14 @@ RealtimeSimulatorImpl::ScheduleRealtimeWithContext (uint32_t context, Time const
 void
 RealtimeSimulatorImpl::ScheduleRealtime (Time const &time, EventImpl *impl)
 {
-  NS_LOG_FUNCTION (time << impl);
+  NS_LOG_FUNCTION (this << time << impl);
   ScheduleRealtimeWithContext (GetContext (), time, impl);
 }
 
 void
 RealtimeSimulatorImpl::ScheduleRealtimeNowWithContext (uint32_t context, EventImpl *impl)
 {
-  NS_LOG_FUNCTION (context << impl);
+  NS_LOG_FUNCTION (this << context << impl);
   {
     CriticalSection cs (m_mutex);
 
@@ -653,7 +654,7 @@ RealtimeSimulatorImpl::ScheduleRealtimeNowWithContext (uint32_t context, EventIm
 void
 RealtimeSimulatorImpl::ScheduleRealtimeNow (EventImpl *impl)
 {
-  NS_LOG_FUNCTION (impl);
+  NS_LOG_FUNCTION (this << impl);
   ScheduleRealtimeNowWithContext (GetContext (), impl);
 }
 
@@ -666,7 +667,7 @@ RealtimeSimulatorImpl::RealtimeNow (void) const
 EventId
 RealtimeSimulatorImpl::ScheduleDestroy (EventImpl *impl)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << impl);
 
   EventId id;
   {
@@ -815,28 +816,28 @@ RealtimeSimulatorImpl::GetContext (void) const
 void 
 RealtimeSimulatorImpl::SetSynchronizationMode (enum SynchronizationMode mode)
 {
-  NS_LOG_FUNCTION (mode);
+  NS_LOG_FUNCTION (this << mode);
   m_synchronizationMode = mode;
 }
 
 RealtimeSimulatorImpl::SynchronizationMode
 RealtimeSimulatorImpl::GetSynchronizationMode (void) const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return m_synchronizationMode;
 }
 
 void 
 RealtimeSimulatorImpl::SetHardLimit (Time limit)
 {
-  NS_LOG_FUNCTION (limit);
+  NS_LOG_FUNCTION (this << limit);
   m_hardLimit = limit;
 }
 
 Time
 RealtimeSimulatorImpl::GetHardLimit (void) const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return m_hardLimit;
 }
 

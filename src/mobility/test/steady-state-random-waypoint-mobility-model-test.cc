@@ -100,7 +100,7 @@ SteadyStateRandomWaypointTest::DistribCompare ()
   for (i = mobilityStack.begin (); i != mobilityStack.end (); ++i)
     {
       model = (*i);
-      velocity = sqrt (pow (model->GetVelocity ().x, 2) + pow (model->GetVelocity ().y, 2));
+      velocity = std::sqrt (std::pow (model->GetVelocity ().x, 2) + std::pow (model->GetVelocity ().y, 2));
       sum_x += model->GetPosition ().x;
       sum_y += model->GetPosition ().y;
       sum_v += velocity;
@@ -120,7 +120,7 @@ SteadyStateRandomWaypointTest::DistribCompare ()
   for (i = mobilityStack.begin (); i != mobilityStack.end (); ++i)
     {
       model = (*i);
-      velocity = sqrt (pow (model->GetVelocity ().x, 2) + pow (model->GetVelocity ().y, 2));
+      velocity = std::sqrt (std::pow (model->GetVelocity ().x, 2) + std::pow (model->GetVelocity ().y, 2));
       tmp = model->GetPosition ().x - mean_x;
       sum_x += tmp * tmp;
       tmp = model->GetPosition ().y - mean_y;

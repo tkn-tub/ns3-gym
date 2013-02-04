@@ -408,16 +408,14 @@ public:
 
   /**
    * \param p packet to forward up
-   * \param src source IPv6 address
-   * \param dst destination IPv6 address
+   * \param header IPv6 Header information
    * \param incomingInterface the Ipv6Interface on which the packet arrived
    *
    * Called from lower-level layers to send the packet up
    * in the stack.  Not implemented (IPv6).
    */
   virtual enum IpL4Protocol::RxStatus Receive (Ptr<Packet> p,
-                                               Ipv6Address &src,
-                                               Ipv6Address &dst,
+                                               Ipv6Header const &header,
                                                Ptr<Ipv6Interface> incomingInterface);
 
   void SetDownTarget (IpL4Protocol::DownTargetCallback callback);

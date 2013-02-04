@@ -24,10 +24,10 @@
 #include "ns3/type-id.h"
 #include "ns3/test.h"
 #include "ns3/string.h"
-#include <stdlib.h>
-#include <stdarg.h>
+#include <cstdlib>
+#include <cstdarg>
 
-namespace ns3 {
+using namespace ns3;
 
 // ===========================================================================
 // A test base class that drives Command Line parsing
@@ -226,5 +226,3 @@ CommandLineTestSuite::CommandLineTestSuite ()
 }
 
 static CommandLineTestSuite CommandLineTestSuite;
-
-} // namespace ns3

@@ -289,12 +289,12 @@ LiIonEnergySource::GetVoltage (double i) const
   double B = 3 / m_qExp;
 
   // slope of the polarization curve
-  double K = std::abs ( (m_eFull - m_eNom + A * (exp (-B * m_qNom) - 1)) * (m_qRated - m_qNom) / m_qNom);
+  double K = std::abs ( (m_eFull - m_eNom + A * (std::exp (-B * m_qNom) - 1)) * (m_qRated - m_qNom) / m_qNom);
 
   // constant voltage
   double E0 = m_eFull + K + m_internalResistance * m_typCurrent - A;
 
-  double E = E0 - K * m_qRated / (m_qRated - it) + A * exp (-B * it);
+  double E = E0 - K * m_qRated / (m_qRated - it) + A * std::exp (-B * it);
 
   // cell voltage
   double V = E - m_internalResistance * i;

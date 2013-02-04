@@ -28,14 +28,13 @@
 #include <ns3/ptr.h>
 #include <ns3/string.h>
 #include <iostream>
-
+#include <ns3/math.h>
 #include <ns3/spectrum-model-ism2400MHz-res1MHz.h>
 #include <ns3/spectrum-model-300kHz-300GHz-log.h>
 #include <ns3/wifi-spectrum-value-helper.h>
 #include <ns3/single-model-spectrum-channel.h>
 #include <ns3/waveform-generator.h>
 #include <ns3/spectrum-analyzer.h>
-#include <ns3/log.h>
 #include <string>
 #include <iomanip>
 #include <ns3/friis-spectrum-propagation-loss.h>
@@ -50,9 +49,6 @@
 #include <ns3/on-off-helper.h>
 #include <ns3/config.h>
 
-#ifdef __FreeBSD__
-#define log2(x) (log(x)/M_LN2)
-#endif
 
 NS_LOG_COMPONENT_DEFINE ("SpectrumIdealPhyTest");
 
@@ -127,7 +123,7 @@ SpectrumIdealPhyTestCase::DoRun (void)
   const double T = 290; // temperature in Kelvin
   double noisePsdValue = k * T; // W/Hz
   double lossLinear = (txPowerW) / (m_snrLinear * noisePsdValue * g_bandwidth); 
-  double lossDb = 10 * log10 (lossLinear);
+  double lossDb = 10 * std::log10 (lossLinear);
   uint64_t phyRate = m_phyRate; // bps
   uint32_t pktSize = 50; // bytes
 

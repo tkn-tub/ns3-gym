@@ -478,7 +478,7 @@ UniformDiscPositionAllocator::GetNext (void) const
       x = m_rv->GetValue (-m_rho, m_rho);
       y = m_rv->GetValue (-m_rho, m_rho);
     }
-  while (sqrt (x*x + y*y) > m_rho);
+  while (std::sqrt (x*x + y*y) > m_rho);
 
   x += m_x;
   y += m_y;

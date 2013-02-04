@@ -24,7 +24,7 @@
 #include <ns3/log.h>
 #include <ns3/test.h>
 #include <iostream>
-#include <math.h>
+#include <cmath>
 
 #include "spectrum-test.h"
 

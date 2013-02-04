@@ -51,7 +51,7 @@
 
 NS_LOG_COMPONENT_DEFINE ("TcpTestSuite");
 
-namespace ns3 {
+using namespace ns3;
 
 class TcpTestCase : public TestCase
 {
@@ -445,5 +445,3 @@ public:
   }
 
 } g_tcpTestSuite;
-
-} // namespace ns3

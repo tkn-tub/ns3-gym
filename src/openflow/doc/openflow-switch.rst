@@ -136,7 +136,7 @@ To do this:
 operation with ns-3. Use mercurial to download this branch and waf to build 
 the library::: 
 
-  $ hg clone http://code.nsnam.org/jpelkey3/openflow
+  $ hg clone http://code.nsnam.org/openflow
   $ cd openflow
 
 From the "openflow" directory, run:::

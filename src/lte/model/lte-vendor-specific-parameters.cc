@@ -42,5 +42,4 @@ SrsCqiRntiVsp::GetRnti ()
   return (m_rnti);
 }
 
-
-}; // namespace ns3
+} // namespace ns3

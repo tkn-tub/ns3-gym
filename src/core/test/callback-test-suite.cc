@@ -20,7 +20,7 @@
 #include "ns3/callback.h"
 #include <stdint.h>
 
-namespace ns3 {
+using namespace ns3;
 
 // ===========================================================================
 // Test the basic Callback mechanism
@@ -576,5 +576,3 @@ CallbackTestSuite::CallbackTestSuite ()
 }
 
 static CallbackTestSuite CallbackTestSuite;
-
-} // namespace

@@ -77,7 +77,7 @@ WifiInterferenceTestCase::~WifiInterferenceTestCase ()
 {
 }
 
-std::string
+static inline std::string
 PrintReceivedPacket (Ptr<Socket> socket)
 {
   Address addr;

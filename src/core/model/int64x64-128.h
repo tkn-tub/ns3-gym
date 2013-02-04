@@ -4,7 +4,7 @@
 
 #include "ns3/core-config.h"
 #include <stdint.h>
-#include <math.h>
+#include <cmath>
 
 #if defined(HAVE___UINT128_T) && !defined(HAVE_UINT128_T)
 typedef __uint128_t uint128_t;
@@ -26,7 +26,7 @@ public:
   {
     bool is_negative = value < 0;
     value = is_negative ? -value : value;
-    double hi = floor (value);
+    double hi = std::floor (value);
     double lo = (value - hi) * HP128_MAX_64;
     _v = (int128_t)hi;
     _v <<= 64;

@@ -53,6 +53,7 @@ that approach, you can get a copy of ``ns-3-allinone`` by typing the
 following into your Linux shell (assuming you have installed Mercurial):
 
 ::
+
   cd
   mkdir repos
   cd repos
@@ -220,7 +221,7 @@ have to pick a release, download it and decompress it.
 As mentioned above, one practice is to create a directory called ``repos``
 in one's home directory under which one can keep local Mercurial repositories.
 One could also keep a ``tarballs`` directory.  *Hint:  the tutorial
-will assume you downloaded into a ``repos`` directory, so remember the
+will assume you downloaded into a* ``repos`` *directory, so remember the
 placekeeper.*  If you adopt the ``tarballs`` directory approach, you can 
 get a copy of a release by typing the following into your Linux shell 
 (substitute the appropriate version numbers, of course):
@@ -297,6 +298,22 @@ following magic words:
   template                  test                      tools
   topology-read             uan                       virtual-net-device
   visualizer                wifi                      wimax
+
+  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3.13/build'
+  'build' finished successfully (2m30.586s)
+  
+You may also see something like:
+
+::
+
+  Modules not built (see ns-3 tutorial for explanation):
+  click                     openflow                  visualizer     
+
+This just means that some ns-3 modules that have dependencies on
+outside libraries may not have been built, or that the configuration
+specifically asked not to build them.  It does not mean that the 
+simulator did not build successfully or that it will provide wrong 
+results for the modules listed as being built.
 
 Once the project has built, you can stop working with the
 ``ns-3-allinone`` scripts.  You got what you needed from them and will now 
@@ -454,6 +471,28 @@ the ``-o`` option to configure; e.g.
 This allows users to work with multiple builds rather than always
 overwriting the last build.
 
+In the examples above, waf uses GCC C++ compiler, command ``g++``, for
+building ns-3. However, it's possible to change C++ compiler used by waf.
+Say one wants to use Clang C++ compiler, command ``clang++``; it's done by
+
+::
+
+  CXX="clang++" ./waf configure
+  ./waf build
+
+One can also set up waf to do distributed compilation with ``distcc`` in
+a similar way:
+
+::
+
+  CXX="distcc g++" ./waf configure
+  ./waf build
+
+More info on distcc and distributed compilation can be found on it's
+`project page
+<http://code.google.com/p/distcc/>`_
+under Documentation section.
+
 Testing ns-3
 ************
 
@@ -541,7 +580,7 @@ produces the following output.
 
 *What do I do if I don't see the output?*
 
-If you don't see ``waf`` messages indicating that the build was 
+If you see ``waf`` messages indicating that the build was 
 completed successfully, but do not see the "Hello Simulator" output, 
 chances are that you have switched your build mode to "optimized" in 
 the "Building with Waf" section, but have missed the change back to 

@@ -19,27 +19,34 @@
  */
 #include "address-utils.h"
 #include "inet-socket-address.h"
+#include "ns3/log.h"
+
+NS_LOG_COMPONENT_DEFINE ("AddressUtils");
 
 namespace ns3 {
 
 void WriteTo (Buffer::Iterator &i, Ipv4Address ad)
 {
+  NS_LOG_FUNCTION (&i << &ad);
   i.WriteHtonU32 (ad.Get ());
 }
 void WriteTo (Buffer::Iterator &i, Ipv6Address ad)
 {
+  NS_LOG_FUNCTION (&i << &ad);
   uint8_t buf[16];
   ad.GetBytes (buf);
   i.Write (buf, 16);
 }
 void WriteTo (Buffer::Iterator &i, const Address &ad)
 {
+  NS_LOG_FUNCTION (&i << &ad);
   uint8_t mac[Address::MAX_SIZE];
   ad.CopyTo (mac);
   i.Write (mac, ad.GetLength ());
 }
 void WriteTo (Buffer::Iterator &i, Mac48Address ad)
 {
+  NS_LOG_FUNCTION (&i << &ad);
   uint8_t mac[6];
   ad.CopyTo (mac);
   i.Write (mac, 6);
@@ -47,22 +54,26 @@ void WriteTo (Buffer::Iterator &i, Mac48Address ad)
 
 void ReadFrom (Buffer::Iterator &i, Ipv4Address &ad)
 {
+  NS_LOG_FUNCTION (&i << &ad);
   ad.Set (i.ReadNtohU32 ());
 }
 void ReadFrom (Buffer::Iterator &i, Ipv6Address &ad)
 {
+  NS_LOG_FUNCTION (&i << &ad);
   uint8_t ipv6[16];
   i.Read (ipv6, 16);
   ad.Set (ipv6);
 }
 void ReadFrom (Buffer::Iterator &i, Address &ad, uint32_t len)
 {
+  NS_LOG_FUNCTION (&i << &ad << len);
   uint8_t mac[Address::MAX_SIZE];
   i.Read (mac, len);
   ad.CopyFrom (mac, len);
 }
 void ReadFrom (Buffer::Iterator &i, Mac48Address &ad)
 {
+  NS_LOG_FUNCTION (&i << &ad);
   uint8_t mac[6];
   i.Read (mac, 6);
   ad.CopyFrom (mac);
@@ -72,6 +83,7 @@ namespace addressUtils {
 
 bool IsMulticast (const Address &ad)
 {
+  NS_LOG_FUNCTION (&ad);
   if (InetSocketAddress::IsMatchingType (ad))
     {
       InetSocketAddress inetAddr = InetSocketAddress::ConvertFrom (ad);

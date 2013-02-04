@@ -43,8 +43,6 @@
 
 NS_LOG_COMPONENT_DEFINE ("OnOffApplication");
 
-using namespace std;
-
 namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (OnOffApplication);
@@ -94,18 +92,18 @@ OnOffApplication::GetTypeId (void)
 
 
 OnOffApplication::OnOffApplication ()
+  : m_socket (0),
+    m_connected (false),
+    m_residualBits (0),
+    m_lastStartTime (Seconds (0)),
+    m_totBytes (0)
 {
-  NS_LOG_FUNCTION_NOARGS ();
-  m_socket = 0;
-  m_connected = false;
-  m_residualBits = 0;
-  m_lastStartTime = Seconds (0);
-  m_totBytes = 0;
+  NS_LOG_FUNCTION (this);
 }
 
 OnOffApplication::~OnOffApplication()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 void 
@@ -134,7 +132,7 @@ OnOffApplication::AssignStreams (int64_t stream)
 void
 OnOffApplication::DoDispose (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 
   m_socket = 0;
   // chain up
@@ -144,7 +142,7 @@ OnOffApplication::DoDispose (void)
 // Application Methods
 void OnOffApplication::StartApplication () // Called at time specified by Start
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 
   // Create the socket if not already
   if (!m_socket)
@@ -154,6 +152,10 @@ void OnOffApplication::StartApplication () // Called at time specified by Start
       m_socket->Connect (m_peer);
       m_socket->SetAllowBroadcast (true);
       m_socket->ShutdownRecv ();
+
+      m_socket->SetConnectCallback (
+        MakeCallback (&OnOffApplication::ConnectionSucceeded, this),
+        MakeCallback (&OnOffApplication::ConnectionFailed, this));
     }
   // Insure no pending event
   CancelEvents ();
@@ -165,7 +167,7 @@ void OnOffApplication::StartApplication () // Called at time specified by Start
 
 void OnOffApplication::StopApplication () // Called at time specified by Stop
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 
   CancelEvents ();
   if(m_socket != 0)
@@ -180,7 +182,7 @@ void OnOffApplication::StopApplication () // Called at time specified by Stop
 
 void OnOffApplication::CancelEvents ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 
   if (m_sendEvent.IsRunning ())
     { // Cancel the pending send packet event
@@ -196,7 +198,7 @@ void OnOffApplication::CancelEvents ()
 // Event handlers
 void OnOffApplication::StartSending ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   m_lastStartTime = Simulator::Now ();
   ScheduleNextTx ();  // Schedule the send packet event
   ScheduleStopEvent ();
@@ -204,7 +206,7 @@ void OnOffApplication::StartSending ()
 
 void OnOffApplication::StopSending ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   CancelEvents ();
 
   ScheduleStartEvent ();
@@ -213,7 +215,7 @@ void OnOffApplication::StopSending ()
 // Private helpers
 void OnOffApplication::ScheduleNextTx ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 
   if (m_maxBytes == 0 || m_totBytes < m_maxBytes)
     {
@@ -233,7 +235,7 @@ void OnOffApplication::ScheduleNextTx ()
 
 void OnOffApplication::ScheduleStartEvent ()
 {  // Schedules the event to start sending data (switch to the "On" state)
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 
   Time offInterval = Seconds (m_offTime->GetValue ());
   NS_LOG_LOGIC ("start at " << offInterval);
@@ -242,7 +244,7 @@ void OnOffApplication::ScheduleStartEvent ()
 
 void OnOffApplication::ScheduleStopEvent ()
 {  // Schedules the event to stop sending data (switch to "Off" state)
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 
   Time onInterval = Seconds (m_onTime->GetValue ());
   NS_LOG_LOGIC ("stop at " << onInterval);
@@ -252,7 +254,7 @@ void OnOffApplication::ScheduleStopEvent ()
 
 void OnOffApplication::SendPacket ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 
   NS_ASSERT (m_sendEvent.IsExpired ());
   Ptr<Packet> packet = Create<Packet> (m_pktSize);
@@ -282,18 +284,17 @@ void OnOffApplication::SendPacket ()
   ScheduleNextTx ();
 }
 
-void OnOffApplication::ConnectionSucceeded (Ptr<Socket>)
-{
-  NS_LOG_FUNCTION_NOARGS ();
 
+void OnOffApplication::ConnectionSucceeded (Ptr<Socket> socket)
+{
+  NS_LOG_FUNCTION (this << socket);
   m_connected = true;
-  ScheduleStartEvent ();
 }
 
-void OnOffApplication::ConnectionFailed (Ptr<Socket>)
+void OnOffApplication::ConnectionFailed (Ptr<Socket> socket)
 {
-  NS_LOG_FUNCTION_NOARGS ();
-  cout << "OnOffApplication, Connection Failed" << endl;
+  NS_LOG_FUNCTION (this << socket);
 }
+
 
 } // Namespace ns3

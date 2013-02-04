@@ -138,12 +138,12 @@ LtePathlossModelTestSuite::LtePathlossModelTestSuite ()
   };
 
 
-  double txPowerDbm = 30; // default eNB TX power over whole bandwdith
-  double txPowerLin = pow (10, (txPowerDbm - 30)/10);
+  double txPowerDbm = 30; // default eNB TX power over whole bandwidth
+  double txPowerLin = std::pow (10, (txPowerDbm - 30)/10);
   double ktDbm = -174;    // reference LTE noise PSD
-  double noisePowerDbm = ktDbm + 10 * log10 (25 * 180000); // corresponds to kT*bandwidth in linear units
+  double noisePowerDbm = ktDbm + 10 * std::log10 (25 * 180000); // corresponds to kT*bandwidth in linear units
   double receiverNoiseFigureDb = 9.0; // default UE noise figure
-  double noiseLin = pow (10, (noisePowerDbm-30+receiverNoiseFigureDb)/10);
+  double noiseLin = std::pow (10, (noisePowerDbm-30+receiverNoiseFigureDb)/10);
 
   // reference values obtained with the octave script src/lte/test/reference/lte_pathloss.m
 
@@ -156,7 +156,7 @@ LtePathlossModelTestSuite::LtePathlossModelTestSuite ()
     //     double lossDb = txPowerDbm - snrEfficiencyMcs[i].snrDb - noisePowerDbm - receiverNoiseFigureDb;
     double sinrLin = (txPowerLin/(pow(10, loss[i]/10))) / noiseLin;
     //     double sinrDb = txPowerDbm- noisePowerDbm - receiverNoiseFigureDb - loss[i];
-    double sinrDb = 10*log10(sinrLin);
+    double sinrDb = 10 * std::log10 (sinrLin);
     NS_LOG_INFO (" Ptx " << txPowerDbm << " Pn " << noisePowerDbm << " Fn " << receiverNoiseFigureDb << " Pl " << loss[i] << " dist " << dist[i]);
 
     int mcs = -1;
@@ -278,7 +278,7 @@ LtePathlossModelSystemTestCase::DoRun (void)
   Simulator::Stop (Seconds (0.035));
   Simulator::Run ();
   
-  double calculatedSinrDb = 10.0 * log10 (testSinr->GetSinr ()->operator[] (0));
+  double calculatedSinrDb = 10.0 * std::log10 (testSinr->GetSinr ()->operator[] (0));
   NS_LOG_INFO ("Distance " << m_distance << " Calculated SINR " << calculatedSinrDb << " ref " << m_snrDb);
   Simulator::Destroy ();
   NS_TEST_ASSERT_MSG_EQ_TOL (calculatedSinrDb, m_snrDb, 0.001, "Wrong SINR !");

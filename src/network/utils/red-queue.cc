@@ -153,33 +153,33 @@ RedQueue::RedQueue () :
   m_bytesInQueue (0),
   m_hasRedStarted (false)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   m_uv = CreateObject<UniformRandomVariable> ();
 }
 
 RedQueue::~RedQueue ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 void
 RedQueue::SetMode (RedQueue::QueueMode mode)
 {
-  NS_LOG_FUNCTION (mode);
+  NS_LOG_FUNCTION (this << mode);
   m_mode = mode;
 }
 
 RedQueue::QueueMode
 RedQueue::GetMode (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return m_mode;
 }
 
 void
 RedQueue::SetQueueLimit (uint32_t lim)
 {
-  NS_LOG_FUNCTION (lim);
+  NS_LOG_FUNCTION (this <<lim);
   m_queueLimit = lim;
 }
 
@@ -195,12 +195,14 @@ RedQueue::SetTh (double minTh, double maxTh)
 RedQueue::Stats
 RedQueue::GetStats ()
 {
+  NS_LOG_FUNCTION (this);
   return m_stats;
 }
 
 int64_t 
 RedQueue::AssignStreams (int64_t stream)
 {
+  NS_LOG_FUNCTION (this << stream);
   m_uv->SetStream (stream);
   return 1;
 }
@@ -338,7 +340,7 @@ RedQueue::DoEnqueue (Ptr<Packet> p)
 void
 RedQueue::InitializeParams (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 
   NS_ASSERT (m_minTh <= m_maxTh);
   m_stats.forcedDrop = 0;
@@ -385,7 +387,7 @@ RedQueue::InitializeParams (void)
  */
   if (m_qW == 0.0)
     {
-      m_qW = 1.0 - exp (-1.0 / m_ptc);
+      m_qW = 1.0 - std::exp (-1.0 / m_ptc);
     }
   else if (m_qW == -1.0)
     {
@@ -395,11 +397,11 @@ RedQueue::InitializeParams (void)
         {
           rtt = 0.1;
         }
-      m_qW = 1.0 - exp (-1.0 / (10 * rtt * m_ptc));
+      m_qW = 1.0 - std::exp (-1.0 / (10 * rtt * m_ptc));
     }
   else if (m_qW == -2.0)
     {
-      m_qW = 1.0 - exp (-10.0 / m_ptc);
+      m_qW = 1.0 - std::exp (-10.0 / m_ptc);
     }
 
   // TODO: implement adaptive RED
@@ -450,7 +452,7 @@ RedQueue::DropEarly (Ptr<Packet> p, uint32_t qSize)
        * pkts: the number of packets arriving in 50 ms
        */
       double pkts = m_ptc * 0.05;
-      double fraction = pow ((1 - m_qW), pkts);
+      double fraction = std::pow ((1 - m_qW), pkts);
 
       if ((double) qSize < fraction * m_qAvg)
         {
@@ -470,7 +472,7 @@ RedQueue::DropEarly (Ptr<Packet> p, uint32_t qSize)
        * pkts: the number of packets arriving in 50 ms
        */
       double pkts = m_ptc * 0.05;
-      double fraction = pow ((1 - m_qW), pkts);
+      double fraction = std::pow ((1 - m_qW), pkts);
       double ratio = qSize / (fraction * m_qAvg);
 
       if (ratio < 1.0)
@@ -591,7 +593,7 @@ RedQueue::ModifyP (double p, uint32_t count, uint32_t countBytes,
 uint32_t
 RedQueue::GetQueueSize (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   if (GetMode () == QUEUE_MODE_BYTES)
     {
       return m_bytesInQueue;

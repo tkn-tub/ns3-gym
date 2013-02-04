@@ -103,6 +103,10 @@ public:
   {
     m_txop->Cancel ();
   }
+  virtual void EndTxNoAck (void)
+  {
+    m_txop->EndTxNoAck ();
+  }
 
 private:
   DcaTxop *m_txop;
@@ -407,10 +411,6 @@ DcaTxop::NotifyAccessGranted (void)
                                  &m_currentHdr,
                                  params,
                                  m_transmissionListener);
-      m_currentPacket = 0;
-      m_dcf->ResetCw ();
-      m_dcf->StartBackoffNow (m_rng->GetNext (0, m_dcf->GetCw ()));
-      StartAccessIfNeeded ();
       NS_LOG_DEBUG ("tx broadcast");
     }
   else
@@ -619,6 +619,17 @@ DcaTxop::Cancel (void)
    * update its <seq,ad> tupple for packets whose destination
    * address is a broadcast address.
    */
+}
+
+void
+DcaTxop::EndTxNoAck (void)
+{
+  NS_LOG_FUNCTION (this);
+  NS_LOG_DEBUG ("a transmission that did not require an ACK just finished");
+  m_currentPacket = 0;
+  m_dcf->ResetCw ();
+  m_dcf->StartBackoffNow (m_rng->GetNext (0, m_dcf->GetCw ()));
+  StartAccessIfNeeded ();
 }
 
 } // namespace ns3

@@ -75,7 +75,7 @@ FriisPropagationLossModelTestCase::DoRun (void)
   // Select a reference transmit power
   // Pt = 10^(17.0206/10)/10^3 = .05035702 W
   double txPowerW = 0.05035702;
-  double txPowerdBm = 10 * log10 (txPowerW) + 30;
+  double txPowerdBm = 10 * std::log10 (txPowerW) + 30;
 
   //
   // We want to test the propagation loss model calculations at a few chosen 
@@ -124,7 +124,7 @@ FriisPropagationLossModelTestCase::DoRun (void)
       testVector = m_testVectors.Get (i);
       b->SetPosition (testVector.m_position);
       double resultdBm = lossModel->CalcRxPower (testVector.m_pt, a, b);
-      double resultW =   pow (10.0, resultdBm/10.0)/1000;
+      double resultW = std::pow (10.0, resultdBm/10.0)/1000;
       NS_TEST_EXPECT_MSG_EQ_TOL (resultW, testVector.m_pr, testVector.m_tolerance, "Got unexpected rcv power");
     }
 }
@@ -174,7 +174,7 @@ TwoRayGroundPropagationLossModelTestCase::DoRun (void)
   // Select a reference transmit power of 17.0206 dBm
   // Pt = 10^(17.0206/10)/10^3 = .05035702 W
   double txPowerW = 0.05035702;
-  double txPowerdBm = 10 * log10 (txPowerW) + 30;
+  double txPowerdBm = 10 * std::log10 (txPowerW) + 30;
 
   //
   // As with the Friis tests above, we want to test the propagation loss 
@@ -253,7 +253,7 @@ TwoRayGroundPropagationLossModelTestCase::DoRun (void)
       testVector = m_testVectors.Get (i);
       b->SetPosition (testVector.m_position);
       double resultdBm = lossModel->CalcRxPower (testVector.m_pt, a, b);
-      double resultW =   pow (10.0, resultdBm / 10.0) / 1000;
+      double resultW = std::pow (10.0, resultdBm / 10.0) / 1000;
       NS_TEST_EXPECT_MSG_EQ_TOL (resultW, testVector.m_pr, testVector.m_tolerance, "Got unexpected rcv power");
     }
 }
@@ -297,7 +297,7 @@ LogDistancePropagationLossModelTestCase::DoRun (void)
   // Select a reference transmit power
   // Pt = 10^(17.0206/10)/10^3 = .05035702 W
   double txPowerW = 0.05035702;
-  double txPowerdBm = 10 * log10 (txPowerW) + 30;
+  double txPowerdBm = 10 * std::log10 (txPowerW) + 30;
 
   //
   // We want to test the propagation loss model calculations at a few chosen 
@@ -341,7 +341,7 @@ LogDistancePropagationLossModelTestCase::DoRun (void)
       testVector = m_testVectors.Get (i);
       b->SetPosition (testVector.m_position);
       double resultdBm = lossModel->CalcRxPower (testVector.m_pt, a, b);
-      double resultW =   pow (10.0, resultdBm/10.0)/1000;
+      double resultW = std::pow (10.0, resultdBm/10.0)/1000;
       NS_TEST_EXPECT_MSG_EQ_TOL (resultW, testVector.m_pr, testVector.m_tolerance, "Got unexpected rcv power");
     }
 }

@@ -28,7 +28,7 @@
 #include "ns3/double.h"
 #include "ns3/string.h"
 #include "ns3/pointer.h"
-#include <math.h>
+#include <cmath>
 
 NS_LOG_COMPONENT_DEFINE ("PropagationLossModel");
 
@@ -209,14 +209,14 @@ FriisPropagationLossModel::GetLambda (void) const
 double
 FriisPropagationLossModel::DbmToW (double dbm) const
 {
-  double mw = pow (10.0,dbm/10.0);
+  double mw = std::pow (10.0,dbm/10.0);
   return mw / 1000.0;
 }
 
 double
 FriisPropagationLossModel::DbmFromW (double w) const
 {
-  double dbm = log10 (w * 1000.0) * 10.0;
+  double dbm = std::log10 (w * 1000.0) * 10.0;
   return dbm;
 }
 
@@ -261,7 +261,7 @@ FriisPropagationLossModel::DoCalcRxPower (double txPowerDbm,
     }
   double numerator = m_lambda * m_lambda;
   double denominator = 16 * PI * PI * distance * distance * m_systemLoss;
-  double pr = 10 * log10 (numerator / denominator);
+  double pr = 10 * std::log10 (numerator / denominator);
   NS_LOG_DEBUG ("distance="<<distance<<"m, attenuation coefficient="<<pr<<"dB");
   return txPowerDbm + pr;
 }
@@ -356,14 +356,14 @@ TwoRayGroundPropagationLossModel::GetLambda (void) const
 double 
 TwoRayGroundPropagationLossModel::DbmToW (double dbm) const
 {
-  double mw = pow (10.0,dbm / 10.0);
+  double mw = std::pow (10.0,dbm / 10.0);
   return mw / 1000.0;
 }
 
 double
 TwoRayGroundPropagationLossModel::DbmFromW (double w) const
 {
-  double dbm = log10 (w * 1000.0) * 10.0;
+  double dbm = std::log10 (w * 1000.0) * 10.0;
   return dbm;
 }
 
@@ -423,7 +423,7 @@ TwoRayGroundPropagationLossModel::DoCalcRxPower (double txPowerDbm,
       double numerator = m_lambda * m_lambda;
       tmp = PI * distance;
       double denominator = 16 * tmp * tmp * m_systemLoss;
-      double pr = 10 * log10 (numerator / denominator);
+      double pr = 10 * std::log10 (numerator / denominator);
       NS_LOG_DEBUG ("Receiver within crossover (" << dCross << "m) for Two_ray path; using Friis");
       NS_LOG_DEBUG ("distance=" << distance << "m, attenuation coefficient=" << pr << "dB");
       return txPowerDbm + pr;
@@ -434,7 +434,7 @@ TwoRayGroundPropagationLossModel::DoCalcRxPower (double txPowerDbm,
       double rayNumerator = tmp * tmp;
       tmp = distance * distance;
       double rayDenominator = tmp * tmp * m_systemLoss;
-      double rayPr = 10 * log10 (rayNumerator / rayDenominator);
+      double rayPr = 10 * std::log10 (rayNumerator / rayDenominator);
       NS_LOG_DEBUG ("distance=" << distance << "m, attenuation coefficient=" << rayPr << "dB");
       return txPowerDbm + rayPr;
 
@@ -522,7 +522,7 @@ LogDistancePropagationLossModel::DoCalcRxPower (double txPowerDbm,
    *
    * rx = rx0(tx) - 10 * n * log (d/d0)
    */
-  double pathLossDb = 10 * m_exponent * log10 (distance / m_referenceDistance);
+  double pathLossDb = 10 * m_exponent * std::log10 (distance / m_referenceDistance);
   double rxc = -m_referenceLoss - pathLossDb;
   NS_LOG_DEBUG ("distance="<<distance<<"m, reference-attenuation="<< -m_referenceLoss<<"dB, "<<
                 "attenuation coefficient="<<rxc<<"db");
@@ -608,20 +608,20 @@ ThreeLogDistancePropagationLossModel::DoCalcRxPower (double txPowerDbm,
   else if (distance < m_distance1)
     {
       pathLossDb = m_referenceLoss
-        + 10 * m_exponent0 * log10 (distance / m_distance0);
+        + 10 * m_exponent0 * std::log10 (distance / m_distance0);
     }
   else if (distance < m_distance2)
     {
       pathLossDb = m_referenceLoss
-        + 10 * m_exponent0 * log10 (m_distance1 / m_distance0)
-        + 10 * m_exponent1 * log10 (distance / m_distance1);
+        + 10 * m_exponent0 * std::log10 (m_distance1 / m_distance0)
+        + 10 * m_exponent1 * std::log10 (distance / m_distance1);
     }
   else
     {
       pathLossDb = m_referenceLoss
-        + 10 * m_exponent0 * log10 (m_distance1 / m_distance0)
-        + 10 * m_exponent1 * log10 (m_distance2 / m_distance1)
-        + 10 * m_exponent2 * log10 (distance / m_distance2);
+        + 10 * m_exponent0 * std::log10 (m_distance1 / m_distance0)
+        + 10 * m_exponent1 * std::log10 (m_distance2 / m_distance1)
+        + 10 * m_exponent2 * std::log10 (distance / m_distance2);
     }
 
   NS_LOG_DEBUG ("ThreeLogDistance distance=" << distance << "m, " <<
@@ -716,13 +716,13 @@ NakagamiPropagationLossModel::DoCalcRxPower (double txPowerDbm,
 
   // the current power unit is dBm, but Watt is put into the Nakagami /
   // Rayleigh distribution.
-  double powerW = pow (10, (txPowerDbm - 30) / 10);
+  double powerW = std::pow (10, (txPowerDbm - 30) / 10);
 
   double resultPowerW;
 
   // switch between Erlang- and Gamma distributions: this is only for
   // speed. (Gamma is equal to Erlang for any positive integer m.)
-  unsigned int int_m = static_cast<unsigned int>(floor (m));
+  unsigned int int_m = static_cast<unsigned int>(std::floor (m));
 
   if (int_m == m)
     {
@@ -733,7 +733,7 @@ NakagamiPropagationLossModel::DoCalcRxPower (double txPowerDbm,
       resultPowerW = m_gammaRandomVariable->GetValue (m, powerW / m);
     }
 
-  double resultPowerDbm = 10 * log10 (resultPowerW) + 30;
+  double resultPowerDbm = 10 * std::log10 (resultPowerW) + 30;
 
   NS_LOG_DEBUG ("Nakagami distance=" << distance << "m, " <<
                 "power=" << powerW <<"W, " <<
