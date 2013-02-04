@@ -306,8 +306,8 @@ LteUeRrcProtocolReal::DoReceivePdcpPdu (Ptr<Packet> p)
       break;
     case 2:
       // RrcConnectionReject
-      p->RemoveHeader (rrcConnectionReestablishmentRejectHeader);
-      rrcConnectionReestablishmentRejectMsg = rrcConnectionReestablishmentRejectHeader.GetMessage ();
+      p->RemoveHeader (rrcConnectionRejectHeader);
+      rrcConnectionRejectMsg = rrcConnectionRejectHeader.GetMessage ();
       m_ueRrcSapProvider->RecvRrcConnectionReject (rrcConnectionRejectMsg);
       break;
     case 3:
