@@ -65,6 +65,10 @@ Ipv4ClickRouting::Ipv4ClickRouting ()
     m_ipv4 (0)
 {
   m_random = CreateObject<UniformRandomVariable> ();
+  m_simNode = new simclick_node_t;
+  timerclear (&m_simNode->curtime);
+
+  AddSimNodeToClickMapping ();
 }
 
 Ipv4ClickRouting::~Ipv4ClickRouting ()
@@ -82,11 +86,6 @@ Ipv4ClickRouting::DoStart ()
       name << "Node" << id;
       m_nodeName = name.str ();
     }
-
-  m_simNode = new simclick_node_t;
-  timerclear (&m_simNode->curtime);
-
-  AddSimNodeToClickMapping ();
 
   NS_ASSERT (m_clickFile.length () > 0);
 
@@ -135,6 +134,18 @@ void
 Ipv4ClickRouting::SetClickFile (std::string clickfile)
 {
   m_clickFile = clickfile;
+}
+
+void
+Ipv4ClickRouting::SetDefines (std::map<std::string, std::string> defines)
+{
+  m_defines = defines;
+}
+
+std::map<std::string, std::string>
+Ipv4ClickRouting::GetDefines (void)
+{
+  return m_defines;
 }
 
 void
@@ -614,7 +625,7 @@ int simclick_sim_command (simclick_node_t *simnode, int cmd, ...)
     case SIMCLICK_SUPPORTS:
       {
         int othercmd = va_arg (val, int);
-        retval = (othercmd >= SIMCLICK_VERSION && othercmd <= SIMCLICK_GET_RANDOM_INT);
+        retval = (othercmd >= SIMCLICK_VERSION && othercmd <= SIMCLICK_GET_DEFINES);
         break;
       }
 
@@ -756,6 +767,48 @@ int simclick_sim_command (simclick_node_t *simnode, int cmd, ...)
         retval = 0;
         NS_LOG_DEBUG (clickInstance->GetNodeName () << " SIMCLICK_RANDOM: " << *randomValue << " " << maxValue << " " << ns3::Simulator::Now ());
         break;
+      }
+
+    case SIMCLICK_GET_DEFINES:
+      {
+        char *buf = va_arg (val, char *);
+        size_t *size = va_arg (val, size_t *);
+        uint32_t required = 0;
+
+        // Try to fill the buffer with up to size bytes.
+        // If this is not enough space, write the required buffer size into
+        // the size variable and return an error code.
+        // Otherwise return the bytes actually writte into the buffer in size.
+
+        // Append key/value pair, seperated by \0.
+        std::map<std::string, std::string> defines = clickInstance->GetDefines ();
+        std::map<std::string, std::string>::const_iterator it = defines.begin ();
+        while (it != defines.end ())
+          {
+            size_t available = *size - required;
+            if (it->first.length() + it->second.length() + 2 <= available)
+              {
+                simstrlcpy(buf + required, available, it->first);
+                required += it->first.length() + 1;
+                available -= it->first.length() + 1;
+                simstrlcpy(buf + required, available, it->second);
+                required += it->second.length() + 1;
+              }
+            else
+              {
+                required += it->first.length() + it->second.length() + 2;
+              }
+            it++;
+          }
+        if (required > *size)
+          {
+            retval = -1;
+          }
+        else
+          {
+            retval = 0;
+          }
+        *size = required;
       }
     }
   return retval;

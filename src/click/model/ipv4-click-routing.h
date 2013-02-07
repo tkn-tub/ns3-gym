@@ -79,6 +79,12 @@ public:
   void SetClickFile (std::string clickfile);
 
   /**
+  * \brief Click defines to be used by the node's Click Instance.
+  * \param defines mapping of defines for .click configuration file parsing
+  */
+  void SetDefines (std::map<std::string, std::string> defines);
+
+  /**
    * \brief Name of the node as to be used by Click. Required for Click Dumps.
    * \param name Name to be assigned to the node.
    */
@@ -131,6 +137,12 @@ public:
   static Ptr<Ipv4ClickRouting> GetClickInstanceFromSimNode (simclick_node_t *simnode);
 
 public:
+  /**
+   * \brief Provides for SIMCLICK_GET_DEFINES
+   * \return The defines mapping for .click configuration file parsing
+   */
+  std::map<std::string, std::string> GetDefines (void);
+
   /**
    * \brief Provides for SIMCLICK_IFID_FROM_NAME
    * \param ifname The name of the interface
@@ -247,6 +259,7 @@ public:
 
 private:
   std::string m_clickFile;
+  std::map < std::string, std::string > m_defines;
   std::string m_nodeName;
   std::string m_clickRoutingTableElement;
 
