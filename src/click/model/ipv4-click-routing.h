@@ -44,6 +44,8 @@ namespace ns3 {
 * This section documents the API of the ns-3 click module. For a generic functional description, please refer to the ns-3 manual.
 */
 
+class UniformRandomVariable;
+
 /**
 * \ingroup click
 * \brief Class to allow a node to use Click for external routing
@@ -63,6 +65,7 @@ public:
   Ipv4ClickRouting ();
   virtual ~Ipv4ClickRouting ();
 
+  Ptr<UniformRandomVariable> GetRandomVariable (void);
 protected:
   virtual void DoStart (void);
 
@@ -255,6 +258,7 @@ private:
   bool m_nonDefaultName;
 
   Ptr<Ipv4> m_ipv4;
+  Ptr<UniformRandomVariable> m_random;
 #endif /* NS3_CLICK */
 };
 

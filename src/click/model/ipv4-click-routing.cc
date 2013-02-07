@@ -24,6 +24,7 @@
 #include "ns3/node.h"
 #include "ns3/simulator.h"
 #include "ns3/log.h"
+#include "ns3/random-variable-stream.h"
 #include "ns3/mac48-address.h"
 #include "ns3/ipv4-interface.h"
 #include "ns3/ipv4-l3-click-protocol.h"
@@ -63,6 +64,7 @@ Ipv4ClickRouting::Ipv4ClickRouting ()
   : m_nonDefaultName (false),
     m_ipv4 (0)
 {
+  m_random = CreateObject<UniformRandomVariable> ();
 }
 
 Ipv4ClickRouting::~Ipv4ClickRouting ()
@@ -109,6 +111,12 @@ void
 Ipv4ClickRouting::SetIpv4 (Ptr<Ipv4> ipv4)
 {
   m_ipv4 = ipv4;
+}
+
+Ptr<UniformRandomVariable>
+Ipv4ClickRouting::GetRandomVariable (void)
+{
+  return m_random;
 }
 
 void
@@ -606,7 +614,7 @@ int simclick_sim_command (simclick_node_t *simnode, int cmd, ...)
     case SIMCLICK_SUPPORTS:
       {
         int othercmd = va_arg (val, int);
-        retval = (othercmd >= SIMCLICK_VERSION && othercmd <= SIMCLICK_GET_NODE_ID);
+        retval = (othercmd >= SIMCLICK_VERSION && othercmd <= SIMCLICK_GET_RANDOM_INT);
         break;
       }
 
@@ -736,6 +744,17 @@ int simclick_sim_command (simclick_node_t *simnode, int cmd, ...)
       {
         // Used only for tracing
         NS_LOG_DEBUG (clickInstance->GetNodeName () << " Received a call for SIMCLICK_GET_NODE_ID");
+        break;
+      }
+
+    case SIMCLICK_GET_RANDOM_INT:
+      {
+        uint32_t *randomValue = va_arg (val, uint32_t *);
+        uint32_t maxValue = va_arg (val, uint32_t);
+
+        *randomValue = static_cast<uint32_t> (clickInstance->GetRandomVariable ()->GetValue (0.0, static_cast<double> (maxValue) + 1.0));
+        retval = 0;
+        NS_LOG_DEBUG (clickInstance->GetNodeName () << " SIMCLICK_RANDOM: " << *randomValue << " " << maxValue << " " << ns3::Simulator::Now ());
         break;
       }
     }
