@@ -468,17 +468,24 @@ LteEnbRrcProtocolReal::DoSetupUe (uint16_t rnti, LteEnbRrcSapUser::SetupUeParame
   // Store SetupUeParameters
   m_setupUeParametersMap[rnti] = params;
 
-  // Create LteRlcSapUser, LtePdcpSapUser
-  LteRlcSapUser* srb0SapUser = new RealProtocolRlcSapUser (this,rnti);
-  LtePdcpSapUser* srb1SapUser = new LtePdcpSpecificLtePdcpSapUser<LteEnbRrcProtocolReal> (this);
   LteEnbRrcSapProvider::CompleteSetupUeParameters completeSetupUeParameters;
-  completeSetupUeParameters.srb0SapUser = srb0SapUser;
-  completeSetupUeParameters.srb1SapUser = srb1SapUser;
-
-  // Store LteRlcSapUser, LtePdcpSapUser
-  m_completeSetupUeParametersMap[rnti] = completeSetupUeParameters;
-
-  m_enbRrcSapProvider->CompleteSetupUe (rnti,completeSetupUeParameters);
+  std::map<uint16_t, LteEnbRrcSapProvider::CompleteSetupUeParameters>::iterator 
+    csupIt = m_completeSetupUeParametersMap.find (rnti);
+  if (csupIt == m_completeSetupUeParametersMap.end ())
+    {
+      // Create LteRlcSapUser, LtePdcpSapUser
+      LteRlcSapUser* srb0SapUser = new RealProtocolRlcSapUser (this,rnti);
+      LtePdcpSapUser* srb1SapUser = new LtePdcpSpecificLtePdcpSapUser<LteEnbRrcProtocolReal> (this);
+      completeSetupUeParameters.srb0SapUser = srb0SapUser;
+      completeSetupUeParameters.srb1SapUser = srb1SapUser;
+      // Store LteRlcSapUser, LtePdcpSapUser
+      m_completeSetupUeParametersMap[rnti] = completeSetupUeParameters;      
+    }
+  else
+    {
+      completeSetupUeParameters = csupIt->second;
+    }
+  m_enbRrcSapProvider->CompleteSetupUe (rnti, completeSetupUeParameters);
 }
 
 void 
