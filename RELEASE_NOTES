@@ -22,6 +22,9 @@ To be determined
 
 New user-visible features
 -------------------------
+- ns-3-click: it's now possible to (i) have Click pull random numbers from
+  ns-3 and (ii) have ns-3 set "defines" in Click via the simulation file 
+  (see src/click/examples/nsclick-defines.cc).
 
 Bugs fixed
 ----------
@@ -52,9 +55,6 @@ Supported platforms
 
 New user-visible features
 -------------------------
-- ns-3-click: it's now possible to (i) have Click pull random numbers from
-  ns-3 and (ii) have ns-3 set "defines" in Click via the simulation file 
-  (see src/click/examples/nsclick-defines.cc).
 - Support several new LTE MAC schedulers developed in GSoC 2012 project. 
   Those schedulers include FD-MT, TD-MT, TTA, FD-BET, TD-BET, FD-TBFQ,
   TD-TBFQ, PSS. Here, FD and TD mean frequency domain and time domain 
