@@ -33,6 +33,7 @@
 #include "wifi-mac-trailer.h"
 #include "qos-utils.h"
 #include "edca-txop-n.h"
+#include "snr-tag.h"
 
 NS_LOG_COMPONENT_DEFINE ("MacLow");
 
@@ -41,74 +42,6 @@ NS_LOG_COMPONENT_DEFINE ("MacLow");
 
 
 namespace ns3 {
-
-class SnrTag : public Tag
-{
-public:
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
-
-  virtual uint32_t GetSerializedSize (void) const;
-  virtual void Serialize (TagBuffer i) const;
-  virtual void Deserialize (TagBuffer i);
-  virtual void Print (std::ostream &os) const;
-
-  void Set (double snr);
-  double Get (void) const;
-private:
-  double m_snr;
-};
-
-TypeId
-SnrTag::GetTypeId (void)
-{
-  static TypeId tid = TypeId ("ns3::SnrTag")
-    .SetParent<Tag> ()
-    .AddConstructor<SnrTag> ()
-    .AddAttribute ("Snr", "The snr of the last packet received",
-                   DoubleValue (0.0),
-                   MakeDoubleAccessor (&SnrTag::Get),
-                   MakeDoubleChecker<double> ())
-  ;
-  return tid;
-}
-TypeId
-SnrTag::GetInstanceTypeId (void) const
-{
-  return GetTypeId ();
-}
-
-uint32_t
-SnrTag::GetSerializedSize (void) const
-{
-  return sizeof (double);
-}
-void
-SnrTag::Serialize (TagBuffer i) const
-{
-  i.WriteDouble (m_snr);
-}
-void
-SnrTag::Deserialize (TagBuffer i)
-{
-  m_snr = i.ReadDouble ();
-}
-void
-SnrTag::Print (std::ostream &os) const
-{
-  os << "Snr=" << m_snr;
-}
-void
-SnrTag::Set (double snr)
-{
-  m_snr = snr;
-}
-double
-SnrTag::Get (void) const
-{
-  return m_snr;
-}
-
 
 MacLowTransmissionListener::MacLowTransmissionListener ()
 {
