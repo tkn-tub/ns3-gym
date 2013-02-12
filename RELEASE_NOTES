@@ -29,6 +29,7 @@ New user-visible features
 Bugs fixed
 ----------
 - bug 1566 - WiFi SNR tag improvements
+- Bug 1582 - IPv6 raw socket return value is not like Linux socket
 
 Known issues
 ------------

@@ -245,6 +245,8 @@ int Ipv6RawSocketImpl::SendTo (Ptr<Packet> p, uint32_t flags, const Address& toA
             }
 
           ipv6->Send (p, route->GetSource (), dst, m_protocol, route);
+          // Return only payload size (as Linux does).
+          return p->GetSize () - hdr.GetSerializedSize ();
         }
       else
         {
@@ -273,7 +275,7 @@ Ptr<Packet> Ipv6RawSocketImpl::RecvFrom (uint32_t maxSize, uint32_t flags, Addre
   /* get packet */
   struct Data data = m_data.front ();
   m_data.pop_front ();
-
+  fromAddress = Inet6SocketAddress (data.fromIp, data.fromProtocol);
   if (data.packet->GetSize () > maxSize)
     {
       Ptr<Packet> first = data.packet->CreateFragment (0, maxSize);
@@ -285,7 +287,6 @@ Ptr<Packet> Ipv6RawSocketImpl::RecvFrom (uint32_t maxSize, uint32_t flags, Addre
       return first;
     }
 
-  fromAddress = Inet6SocketAddress (data.fromIp, data.fromProtocol);
   return data.packet;
 }
 

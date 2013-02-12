@@ -202,6 +202,7 @@ def build(bld):
         'test/ipv6-list-routing-test-suite.cc',
         'test/ipv6-packet-info-tag-test-suite.cc',
         'test/ipv6-test.cc',
+        'test/ipv6-raw-test.cc',
         'test/tcp-test.cc',
         'test/udp-test.cc',
         'test/ipv6-address-generator-test-suite.cc',
