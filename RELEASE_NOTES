@@ -30,6 +30,7 @@ Bugs fixed
 ----------
 - bug 1566 - WiFi SNR tag improvements
 - Bug 1582 - IPv6 raw socket return value is not like Linux socket
+- bug 1585 - Length field of A-MSDU subframe header endianness
 
 Known issues
 ------------
