@@ -921,11 +921,6 @@ EdcaTxopN::CompleteTx (void)
       m_baManager->NotifyMpduTransmission (m_currentHdr.GetAddr1 (), m_currentHdr.GetQosTid (),
                                            m_txMiddle->GetNextSeqNumberByTidAndAddress (m_currentHdr.GetQosTid (),
                                                                                         m_currentHdr.GetAddr1 ()));
-      //we are not waiting for an ack: transmission is completed
-      m_currentPacket = 0;
-      m_dcf->ResetCw ();
-      m_dcf->StartBackoffNow (m_rng->GetNext (0, m_dcf->GetCw ()));
-      StartAccessIfNeeded ();
     }
 }
 

@@ -1704,7 +1704,10 @@ MacLow::SendBlockAckResponse (const CtrlBAckResponseHeader* blockAck, Mac48Addre
     }
   m_txParams.DisableNextData ();
 
-  StartDataTxTimers ();
+  if (!immediate)
+    {
+      StartDataTxTimers ();
+    }
 
   NS_ASSERT (duration >= MicroSeconds (0));
   hdr.SetDuration (duration);
