@@ -38,7 +38,7 @@ using namespace ns3;
  * 
  * This script creates 1-dimensional grid topology and then ping last node from the first one:
  * 
- * [10.0.0.1] <-- step --> [10.0.0.2] <-- step --> [10.0.0.3] <-- step --> [10.0.04]
+ * [10.0.0.1] <-- step --> [10.0.0.2] <-- step --> [10.0.0.3] <-- step --> [10.0.0.4]
  * 
  * ping 10.0.0.4
  */
