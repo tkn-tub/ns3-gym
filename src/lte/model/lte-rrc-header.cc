@@ -1658,12 +1658,64 @@ RrcAsn1Header::SerializeMeasConfig (LteRrcSap::MeasConfig measConfig) const
 Buffer::Iterator
 RrcAsn1Header::DeserializeThresholdEutra (LteRrcSap::ThresholdEutra * thresholdEutra, Buffer::Iterator bIterator)
 {
+  int thresholdEutraChoice, range;
+  bIterator = DeserializeChoice (2, false, &thresholdEutraChoice, bIterator);
+  
+  switch(thresholdEutraChoice)
+  {
+    case 0: thresholdEutra->choice = LteRrcSap::ThresholdEutra::thresholdRsrp;
+      bIterator = DeserializeInteger (&range, 0, 97, bIterator);
+      thresholdEutra->range = range;
+    break;
+    case 1:
+    default: thresholdEutra->choice = LteRrcSap::ThresholdEutra::thresholdRsrq;
+      bIterator = DeserializeInteger (&range, 0, 34, bIterator);
+      thresholdEutra->range = range;
+  }
+  
   return bIterator;
 }
 
 Buffer::Iterator
 RrcAsn1Header::DeserializeQoffsetRange (int8_t * qOffsetRange, Buffer::Iterator bIterator)
 {
+  int n;
+  bIterator = DeserializeEnum (31, &n, bIterator);
+  switch(n)
+  {
+    case 0: *qOffsetRange = -24; break;
+    case 1: *qOffsetRange = -22; break;
+    case 2: *qOffsetRange = -20; break;
+    case 3: *qOffsetRange = -18; break;
+    case 4: *qOffsetRange = -16; break;
+    case 5: *qOffsetRange = -14; break;
+    case 6: *qOffsetRange = -12; break;
+    case 7: *qOffsetRange = -10; break;
+    case 8: *qOffsetRange = -8; break;
+    case 9: *qOffsetRange = -6; break;
+    case 10: *qOffsetRange = -5; break;
+    case 11: *qOffsetRange = -4; break;
+    case 12: *qOffsetRange = -3; break;
+    case 13: *qOffsetRange = -2; break;
+    case 14: *qOffsetRange = -1; break;
+    case 15: *qOffsetRange = 0; break;
+    case 16: *qOffsetRange = 1; break;
+    case 17: *qOffsetRange = 2; break;
+    case 18: *qOffsetRange = 3; break;
+    case 19: *qOffsetRange = 4; break;
+    case 20: *qOffsetRange = 5; break;
+    case 21: *qOffsetRange = 6; break;
+    case 22: *qOffsetRange = 8; break;
+    case 23: *qOffsetRange = 10; break;
+    case 24: *qOffsetRange = 12; break;
+    case 25: *qOffsetRange = 14; break;
+    case 26: *qOffsetRange = 16; break;
+    case 27: *qOffsetRange = 18; break;
+    case 28: *qOffsetRange = 20; break;
+    case 29: *qOffsetRange = 22; break;
+    case 30:
+    default: *qOffsetRange = 24;
+  }
   return bIterator;
 }
 
@@ -2905,7 +2957,10 @@ RrcAsn1Header::DeserializePlmnIdentity (uint32_t *plmnId, Buffer::Iterator bIter
 Buffer::Iterator
 RrcAsn1Header::DeserializeMeasConfig (LteRrcSap::MeasConfig * measConfig, Buffer::Iterator bIterator)
 {
+  std::bitset<0> bitset0;
+  std::bitset<2> bitset2;
   std::bitset<11> bitset11;
+  int n;
 
   // measConfig
   bIterator = DeserializeSequence (&bitset11,true,bIterator);
@@ -2913,46 +2968,737 @@ RrcAsn1Header::DeserializeMeasConfig (LteRrcSap::MeasConfig * measConfig, Buffer
   if (bitset11[10])
     {
       // measObjectToRemoveList
+      int measObjectToRemoveListElems;
+      bIterator = DeserializeSequenceOf (&measObjectToRemoveListElems, MAX_OBJECT_ID, 1, bIterator);
+      
+      for(int i=0; i<measObjectToRemoveListElems; i++)
+      {
+        bIterator = DeserializeInteger (&n, 1, MAX_OBJECT_ID, bIterator);
+        measConfig->measObjectToRemoveList.push_back (n);
+      }
     }
+    
   if (bitset11[9])
     {
       // measObjectToAddModList
-    }
+      int measObjectToAddModListElems;
+      bIterator = DeserializeSequenceOf (&measObjectToAddModListElems, MAX_OBJECT_ID, 1, bIterator);
+      
+      for(int i=0; i<measObjectToAddModListElems; i++)
+      {
+        LteRrcSap::MeasObjectToAddMod * elem = new LteRrcSap::MeasObjectToAddMod();
+        
+        bIterator = DeserializeSequence (&bitset0, false, bIterator);
+        
+        bIterator = DeserializeInteger (&n, 1, MAX_OBJECT_ID, bIterator);
+        elem->measObjectId = n;
+        
+        int measObjectChoice;
+        bIterator = DeserializeChoice (4, true, &measObjectChoice, bIterator);
+
+        switch(measObjectChoice)
+        {
+          case 1:
+          // Deserialize measObjectUTRA
+          // ...
+          break;
+          
+          case 2:
+          // Deserialize measObjectGERAN
+          // ...
+          break;
+          
+          case 3:
+          // Deserialize measObjectCDMA2000
+          // ...
+          break;
+          
+          case 0:          
+          default:
+          // Deserialize measObjectEUTRA
+          std::bitset<5> measObjectEutraOpts;
+          bIterator = DeserializeSequence (&measObjectEutraOpts, true, bIterator);
+          
+          // carrierFreq 
+          bIterator = DeserializeInteger (&n, 0, MAX_EARFCN, bIterator);
+          elem->measObjectEutra.carrierFreq = n;
+          
+          // allowedMeasBandwidth
+          bIterator = DeserializeEnum (6, &n, bIterator);
+          switch(n)
+          {
+            case 0: elem->measObjectEutra.allowedMeasBandwidth = 6;
+            break;
+            case 1: elem->measObjectEutra.allowedMeasBandwidth = 15;
+            break;
+            case 2: elem->measObjectEutra.allowedMeasBandwidth = 25;
+            break;
+            case 3: elem->measObjectEutra.allowedMeasBandwidth = 50;
+            break;
+            case 4: elem->measObjectEutra.allowedMeasBandwidth = 75;
+            break;
+            case 5:
+            default:
+             elem->measObjectEutra.allowedMeasBandwidth = 100;
+            break;
+          }
+          
+          // presenceAntennaPort1 
+          bIterator = DeserializeBoolean (&elem->measObjectEutra.presenceAntennaPort1, bIterator);
+          
+          // neighCellConfig 
+          bIterator = DeserializeBitstring (&bitset2, bIterator);
+          elem->measObjectEutra.neighCellConfig = bitset2.to_ulong();
+          
+          // offsetFreq 
+          DeserializeQoffsetRange (&elem->measObjectEutra.offsetFreq, bIterator);
+
+          if(measObjectEutraOpts[4])
+          {
+            // cellsToRemoveList
+            int numElems;
+            bIterator = DeserializeSequenceOf(&numElems, MAX_CELL_MEAS, 1, bIterator);
+            
+            for(int i = 0; i<numElems; i++)
+            {
+              bIterator = DeserializeInteger (&n, 1, MAX_CELL_MEAS, bIterator);
+              elem->measObjectEutra.cellsToRemoveList.push_back(n);
+            }
+          }
+
+          if(measObjectEutraOpts[3])
+          {
+            // cellsToAddModList 
+            int numElems;
+            bIterator = DeserializeSequenceOf(&numElems, MAX_CELL_MEAS, 1, bIterator);
+            
+            for(int i = 0; i<numElems; i++)
+            {
+              LteRrcSap::CellsToAddMod * cellsToAddMod = new LteRrcSap::CellsToAddMod();
+              
+              bIterator = DeserializeSequence (&bitset0, false, bIterator);
+              
+              // cellIndex
+              bIterator = DeserializeInteger (&n, 1, MAX_CELL_MEAS, bIterator);
+              cellsToAddMod->cellIndex = n;
+              
+              // PhysCellId
+              bIterator = DeserializeInteger (&n, 0, 503, bIterator);
+              cellsToAddMod->physCellId = n;
+              
+              // cellIndividualOffset
+              bIterator = DeserializeQoffsetRange( &cellsToAddMod->cellIndividualOffset, bIterator);
+    
+              elem->measObjectEutra.cellsToAddModList.push_back(*cellsToAddMod);
+            }
+          }
+
+          if(measObjectEutraOpts[2])
+          {
+            // blackCellsToRemoveList 
+            int numElems;
+            bIterator = DeserializeSequenceOf(&numElems, MAX_CELL_MEAS, 1, bIterator);
+            
+            for(int i = 0; i<numElems; i++)
+            {
+              bIterator = DeserializeInteger (&n, 1, MAX_CELL_MEAS, bIterator);
+              elem->measObjectEutra.blackCellsToRemoveList.push_back(n);
+            }
+          }
+
+
+          if(measObjectEutraOpts[1])
+          {
+            // blackCellsToAddModList 
+            int numElems;
+            bIterator = DeserializeSequenceOf(&numElems, MAX_CELL_MEAS, 1, bIterator);
+            
+            for(int i = 0; i<numElems; i++)
+            {
+              LteRrcSap::BlackCellsToAddMod * blackCellsToAddMod = new LteRrcSap::BlackCellsToAddMod();
+              bIterator = DeserializeSequence (&bitset0, false, bIterator);
+              
+              bIterator = DeserializeInteger (&n, 1, MAX_CELL_MEAS, bIterator);
+              blackCellsToAddMod->cellIndex = n;
+              
+              // PhysCellIdRange
+              std::bitset<1> isRangePresent;
+              bIterator = DeserializeSequence (&isRangePresent, false, bIterator);
+              
+              // start
+              bIterator = DeserializeInteger (&n, 0, 503, bIterator);            
+              blackCellsToAddMod->physCellIdRange.start = n;
+
+              blackCellsToAddMod->physCellIdRange.haveRange=isRangePresent[0];  
+              if (blackCellsToAddMod->physCellIdRange.haveRange)
+              {
+                // range
+                bIterator = DeserializeEnum (16, &n, bIterator);
+                switch(n)
+                {
+                  case 0: blackCellsToAddMod->physCellIdRange.range = 4; break; 
+                  case 1: blackCellsToAddMod->physCellIdRange.range = 8; break; 
+                  case 2: blackCellsToAddMod->physCellIdRange.range = 12; break; 
+                  case 3: blackCellsToAddMod->physCellIdRange.range = 16; break; 
+                  case 4: blackCellsToAddMod->physCellIdRange.range = 24; break; 
+                  case 5: blackCellsToAddMod->physCellIdRange.range = 32; break; 
+                  case 6: blackCellsToAddMod->physCellIdRange.range = 48; break; 
+                  case 7: blackCellsToAddMod->physCellIdRange.range = 64; break; 
+                  case 8: blackCellsToAddMod->physCellIdRange.range = 84; break; 
+                  case 9: blackCellsToAddMod->physCellIdRange.range = 96; break; 
+                  case 10: blackCellsToAddMod->physCellIdRange.range = 128; break; 
+                  case 11: blackCellsToAddMod->physCellIdRange.range = 168; break; 
+                  case 12: blackCellsToAddMod->physCellIdRange.range = 252; break; 
+                  case 13: blackCellsToAddMod->physCellIdRange.range = 504; break; 
+                  default: blackCellsToAddMod->physCellIdRange.range = 0;
+                }
+              }            
+              
+              elem->measObjectEutra.blackCellsToAddModList.push_back(*blackCellsToAddMod);
+            }    
+          }
+
+          elem->measObjectEutra.haveCellForWhichToReportCGI = measObjectEutraOpts[0];
+          if(measObjectEutraOpts[0])
+          {
+            // cellForWhichToReportCGI 
+            bIterator = DeserializeInteger (&n, 0, 503, bIterator);
+            elem->measObjectEutra.cellForWhichToReportCGI = n;
+          }
+        }
+        measConfig->measObjectToAddModList.push_back (*elem);
+      }
+  }
+    
   if (bitset11[8])
     {
       // reportConfigToRemoveList
+      int reportConfigToRemoveListElems;
+      bIterator = DeserializeSequenceOf (&reportConfigToRemoveListElems, MAX_REPORT_CONFIG_ID, 1, bIterator);
+      
+      for(int i=0; i<reportConfigToRemoveListElems; i++)
+      {
+        bIterator = DeserializeInteger (&n, 1, MAX_REPORT_CONFIG_ID, bIterator);
+        measConfig->reportConfigToRemoveList.push_back (n);
+      }
     }
+    
   if (bitset11[7])
     {
       // reportConfigToAddModList
+      int reportConfigToAddModListElems;
+      bIterator = DeserializeSequenceOf (&reportConfigToAddModListElems, MAX_REPORT_CONFIG_ID, 1, bIterator);
+      
+      for(int i=0; i<reportConfigToAddModListElems; i++)
+      {
+        LteRrcSap::ReportConfigToAddMod * elem = new LteRrcSap::ReportConfigToAddMod();
+        
+        bIterator = DeserializeSequence (&bitset0, false, bIterator);
+        bIterator = DeserializeInteger (&n, 1, MAX_REPORT_CONFIG_ID, bIterator);
+        elem->reportConfigId = n;
+        
+        // Deserialize reportConfig
+        int reportConfigChoice;
+        bIterator = DeserializeChoice (2, false, &reportConfigChoice, bIterator);
+        
+        if(reportConfigChoice == 0)
+        {
+          // reportConfigEUTRA
+          bIterator = DeserializeSequence (&bitset0, true, bIterator);
+          
+          // triggerType
+          int triggerTypeChoice;
+          bIterator = DeserializeChoice (2, false, &triggerTypeChoice, bIterator);
+          
+          if (triggerTypeChoice == 0)
+          {
+            // event
+            elem->reportConfigEutra.triggerType = LteRrcSap::ReportConfigEutra::event;
+            bIterator = DeserializeSequence (&bitset0, false, bIterator);
+            
+            // eventId
+            int eventIdChoice;
+            bIterator = DeserializeChoice (5, true, &eventIdChoice, bIterator);
+            
+            switch(eventIdChoice)
+            {
+              case 0: elem->reportConfigEutra.eventId = LteRrcSap::ReportConfigEutra::eventA1;
+              bIterator = DeserializeSequence (&bitset0, false, bIterator);
+              bIterator = DeserializeThresholdEutra (&elem->reportConfigEutra.threshold1, bIterator);
+              break;
+
+              case 1: elem->reportConfigEutra.eventId = LteRrcSap::ReportConfigEutra::eventA2;
+              bIterator = DeserializeSequence (&bitset0, false, bIterator);
+              bIterator = DeserializeThresholdEutra (&elem->reportConfigEutra.threshold1, bIterator);
+              break;
+
+              case 2: elem->reportConfigEutra.eventId = LteRrcSap::ReportConfigEutra::eventA3;
+              bIterator = DeserializeSequence (&bitset0, false, bIterator);
+              bIterator = DeserializeInteger (&n, -30, 30, bIterator);
+              elem->reportConfigEutra.a3Offset = n;
+              bIterator = DeserializeBoolean (&elem->reportConfigEutra.reportOnLeave, bIterator);
+              break;
+
+              case 3: elem->reportConfigEutra.eventId = LteRrcSap::ReportConfigEutra::eventA4;
+              bIterator = DeserializeSequence (&bitset0, false, bIterator);
+              bIterator = DeserializeThresholdEutra (&elem->reportConfigEutra.threshold1, bIterator);
+              break;
+
+              default: elem->reportConfigEutra.eventId = LteRrcSap::ReportConfigEutra::eventA5;
+              bIterator = DeserializeSequence (&bitset0, false, bIterator);
+              bIterator = DeserializeThresholdEutra (&elem->reportConfigEutra.threshold1, bIterator);
+              bIterator = DeserializeThresholdEutra (&elem->reportConfigEutra.threshold2, bIterator);
+              break;
+            }
+            
+            bIterator = DeserializeInteger (&n, 0, 30, bIterator);
+            elem->reportConfigEutra.hysteresis = n;
+
+            bIterator = DeserializeEnum (16, &n, bIterator);
+            switch(n)
+            {
+              case 0: elem->reportConfigEutra.timeToTrigger = 0; break;
+              case 1: elem->reportConfigEutra.timeToTrigger = 40; break;
+              case 2: elem->reportConfigEutra.timeToTrigger = 64; break;
+              case 3: elem->reportConfigEutra.timeToTrigger = 80; break;
+              case 4: elem->reportConfigEutra.timeToTrigger = 100; break;
+              case 5: elem->reportConfigEutra.timeToTrigger = 128; break;
+              case 6: elem->reportConfigEutra.timeToTrigger = 160; break;
+              case 7: elem->reportConfigEutra.timeToTrigger = 256; break;
+              case 8: elem->reportConfigEutra.timeToTrigger = 320; break;
+              case 9: elem->reportConfigEutra.timeToTrigger = 480; break;
+              case 10: elem->reportConfigEutra.timeToTrigger = 512; break;
+              case 11: elem->reportConfigEutra.timeToTrigger = 640; break;
+              case 12: elem->reportConfigEutra.timeToTrigger = 1024; break;
+              case 13: elem->reportConfigEutra.timeToTrigger = 1280; break;
+              case 14: elem->reportConfigEutra.timeToTrigger = 2560; break;
+              case 15:
+              default:
+               elem->reportConfigEutra.timeToTrigger = 5120; break;
+            }          
+          }
+          
+          if (triggerTypeChoice == 1)
+          {
+            // periodical
+            elem->reportConfigEutra.triggerType = LteRrcSap::ReportConfigEutra::periodical;
+            
+            bIterator = DeserializeSequence (&bitset0, false, bIterator);
+            bIterator = DeserializeEnum (2, &n, bIterator);
+            if(n==0)
+            {
+              elem->reportConfigEutra.purpose = LteRrcSap::ReportConfigEutra::reportStrongestCells;
+            }
+            else
+            {
+              elem->reportConfigEutra.purpose = LteRrcSap::ReportConfigEutra::reportCgi;
+            }
+          }
+          
+          // triggerQuantity
+          bIterator = DeserializeEnum (2, &n, bIterator);
+          if(n==0)
+          {
+            elem->reportConfigEutra.triggerQuantity = LteRrcSap::ReportConfigEutra::rsrp;
+          }
+          else
+          {
+            elem->reportConfigEutra.triggerQuantity = LteRrcSap::ReportConfigEutra::rsrq;
+          }
+          
+          // reportQuantity
+          bIterator = DeserializeEnum (2, &n, bIterator);
+          if(n==0)
+          {
+            elem->reportConfigEutra.reportQuantity = LteRrcSap::ReportConfigEutra::sameAsTriggerQuantity;
+          }
+          else
+          {
+            elem->reportConfigEutra.reportQuantity = LteRrcSap::ReportConfigEutra::both;
+          }
+          
+          // maxReportCells
+          bIterator = DeserializeInteger(&n, 1, MAX_CELL_REPORT, bIterator);
+          elem->reportConfigEutra.maxReportCells = n;
+          
+          // reportInterval
+          bIterator = DeserializeEnum (16, &n, bIterator);
+          switch(n)
+          {
+            case 0: 
+            elem->reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::ms120;
+            break;
+            case 1:
+            elem->reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::ms240;
+            break;
+            case 2:
+            elem->reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::ms480;
+            break;
+            case 3:
+            elem->reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::ms640;
+            break;
+            case 4:
+            elem->reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::ms1024;
+            break;
+            case 5:
+            elem->reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::ms2048;
+            break;
+            case 6:
+            elem->reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::ms5120;
+            break;
+            case 7:
+            elem->reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::ms10240;
+            break;
+            case 8:
+            elem->reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::min1;
+            break;
+            case 9:
+            elem->reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::min6;
+            break;
+            case 10:
+            elem->reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::min12;
+            break;
+            case 11:
+            elem->reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::min30;
+            break;
+            case 12:
+            elem->reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::min60;
+            break;
+            case 13:
+            elem->reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::spare3;
+            break;
+            case 14:
+            elem->reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::spare2;
+            break;
+            case 15:
+            default:
+            elem->reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::spare1;
+          }
+          
+          // reportAmount
+          bIterator = DeserializeEnum (8, &n, bIterator);
+          switch(n)
+          {
+            case 0: elem->reportConfigEutra.reportAmount = 1; break;
+            case 1: elem->reportConfigEutra.reportAmount = 2; break;
+            case 2: elem->reportConfigEutra.reportAmount = 4; break;
+            case 3: elem->reportConfigEutra.reportAmount = 8; break;
+            case 4: elem->reportConfigEutra.reportAmount = 16; break;
+            case 5: elem->reportConfigEutra.reportAmount = 32; break;
+            case 6: elem->reportConfigEutra.reportAmount = 64; break;
+            default: elem->reportConfigEutra.reportAmount = 0;
+          }          
+        }
+        
+        if(reportConfigChoice == 1)
+        {
+          // ReportConfigInterRAT
+          // ...
+        }
+        
+        measConfig->reportConfigToAddModList.push_back (*elem);
+      }
     }
+
   if (bitset11[6])
     {
       // measIdToRemoveList
+      int measIdToRemoveListElems;
+      bIterator = DeserializeSequenceOf (&measIdToRemoveListElems, MAX_MEAS_ID, 1, bIterator);
+      
+      for(int i=0; i<measIdToRemoveListElems; i++)
+      {
+        bIterator = DeserializeInteger (&n, 1, MAX_MEAS_ID, bIterator);
+        measConfig->measIdToRemoveList.push_back (n);
+      }
     }
+
   if (bitset11[5])
     {
       // measIdToAddModList
+      int measIdToAddModListElems;
+      bIterator = DeserializeSequenceOf (&measIdToAddModListElems, MAX_MEAS_ID, 1, bIterator);
+      
+      for(int i=0; i<measIdToAddModListElems; i++)
+      {
+        LteRrcSap::MeasIdToAddMod * elem = new LteRrcSap::MeasIdToAddMod();
+        
+        bIterator = DeserializeSequence (&bitset0, false, bIterator);
+        
+        bIterator = DeserializeInteger (&n, 1, MAX_MEAS_ID, bIterator);
+        elem->measId = n;
+        
+        bIterator = DeserializeInteger (&n, 1, MAX_OBJECT_ID, bIterator);
+        elem->measObjectId = n;       
+        
+        bIterator = DeserializeInteger (&n, 1, MAX_REPORT_CONFIG_ID, bIterator);
+        elem->reportConfigId = n; 
+        
+        measConfig->measIdToAddModList.push_back (*elem);
+      }
     }
-  if (bitset11[4])
+  
+  measConfig->haveQuantityConfig = bitset11[4];
+  if (measConfig->haveQuantityConfig)
     {
       // quantityConfig
+      std::bitset<4> quantityConfigOpts;
+      bIterator = DeserializeSequence (&quantityConfigOpts, true, bIterator);
+      
+      if(quantityConfigOpts[3])
+      {
+        // quantityConfigEUTRA 
+        bIterator = DeserializeSequence (&bitset0,false,bIterator);
+        bIterator = DeserializeEnum (16, &n, bIterator);
+        switch(n)
+        {
+          case 0:
+          measConfig->quantityConfig.filterCoefficientRSRP = 0;
+          break;
+          case 1:
+          measConfig->quantityConfig.filterCoefficientRSRP = 1;
+          break;
+          case 2:
+          measConfig->quantityConfig.filterCoefficientRSRP = 2;
+          break;
+          case 3:
+          measConfig->quantityConfig.filterCoefficientRSRP = 3;
+          break;
+          case 4:
+          measConfig->quantityConfig.filterCoefficientRSRP = 4;
+          break;
+          case 5:
+          measConfig->quantityConfig.filterCoefficientRSRP = 5;
+          break;
+          case 6:
+          measConfig->quantityConfig.filterCoefficientRSRP = 6;
+          break;
+          case 7:
+          measConfig->quantityConfig.filterCoefficientRSRP = 7;
+          break;
+          case 8:
+          measConfig->quantityConfig.filterCoefficientRSRP = 8;
+          break;
+          case 9:
+          measConfig->quantityConfig.filterCoefficientRSRP = 9;
+          break;
+          case 10:
+          measConfig->quantityConfig.filterCoefficientRSRP = 11;
+          break;
+          case 11:
+          measConfig->quantityConfig.filterCoefficientRSRP = 13;
+          break;
+          case 12:
+          measConfig->quantityConfig.filterCoefficientRSRP = 15;
+          break;
+          case 13:
+          measConfig->quantityConfig.filterCoefficientRSRP = 17;
+          break;
+          case 14:
+          measConfig->quantityConfig.filterCoefficientRSRP = 19;
+          break;
+          case 15:
+          measConfig->quantityConfig.filterCoefficientRSRP = 0;
+          break;
+          default:
+          measConfig->quantityConfig.filterCoefficientRSRP = 4;
+        }
+        bIterator = DeserializeEnum (16, &n, bIterator);
+        switch(n)
+        {
+          case 0:
+          measConfig->quantityConfig.filterCoefficientRSRQ = 0;
+          break;
+          case 1:
+          measConfig->quantityConfig.filterCoefficientRSRQ = 1;
+          break;
+          case 2:
+          measConfig->quantityConfig.filterCoefficientRSRQ = 2;
+          break;
+          case 3:
+          measConfig->quantityConfig.filterCoefficientRSRQ = 3;
+          break;
+          case 4:
+          measConfig->quantityConfig.filterCoefficientRSRQ = 4;
+          break;
+          case 5:
+          measConfig->quantityConfig.filterCoefficientRSRQ = 5;
+          break;
+          case 6:
+          measConfig->quantityConfig.filterCoefficientRSRQ = 6;
+          break;
+          case 7:
+          measConfig->quantityConfig.filterCoefficientRSRQ = 7;
+          break;
+          case 8:
+          measConfig->quantityConfig.filterCoefficientRSRQ = 8;
+          break;
+          case 9:
+          measConfig->quantityConfig.filterCoefficientRSRQ = 9;
+          break;
+          case 10:
+          measConfig->quantityConfig.filterCoefficientRSRQ = 11;
+          break;
+          case 11:
+          measConfig->quantityConfig.filterCoefficientRSRQ = 13;
+          break;
+          case 12:
+          measConfig->quantityConfig.filterCoefficientRSRQ = 15;
+          break;
+          case 13:
+          measConfig->quantityConfig.filterCoefficientRSRQ = 17;
+          break;
+          case 14:
+          measConfig->quantityConfig.filterCoefficientRSRQ = 19;
+          break;
+          case 15:
+          measConfig->quantityConfig.filterCoefficientRSRQ = 0;
+          break;
+          default:
+          measConfig->quantityConfig.filterCoefficientRSRQ = 4;
+        }
+      }
+      if(quantityConfigOpts[2])
+      {
+        // quantityConfigUTRA
+        // ...
+      }      
+      if(quantityConfigOpts[1])
+      {
+        // quantityConfigGERAN
+        // ...
+      }
+      if(quantityConfigOpts[0])
+      {
+        // quantityConfigCDMA2000
+        // ...
+      }
     }
-  if (bitset11[3])
+    
+  measConfig->haveMeasGapConfig = bitset11[3];
+  if (measConfig->haveMeasGapConfig)
     {
       // measGapConfig
+      int measGapConfigChoice;
+      bIterator = DeserializeChoice (2, false, &measGapConfigChoice, bIterator);
+      switch (measGapConfigChoice)
+      {
+        case 0:
+          measConfig->measGapConfig.type = LteRrcSap::MeasGapConfig::RESET;
+          bIterator = DeserializeNull (bIterator);
+          break;
+        case 1:
+        default:
+          measConfig->measGapConfig.type = LteRrcSap::MeasGapConfig::SETUP;
+          bIterator = DeserializeSequence (&bitset0, false, bIterator);
+          
+          int gapOffsetChoice;
+          bIterator = DeserializeChoice (2, true, &gapOffsetChoice, bIterator);
+          switch(gapOffsetChoice)
+          {
+            case 0:
+              measConfig->measGapConfig.gapOffsetChoice = LteRrcSap::MeasGapConfig::gp0;
+              bIterator = DeserializeInteger (&n, 0, 39, bIterator);
+              measConfig->measGapConfig.gapOffsetValue = n;
+              break;
+            case 1:
+            default:
+              measConfig->measGapConfig.gapOffsetChoice = LteRrcSap::MeasGapConfig::gp1;
+              bIterator = DeserializeInteger (&n, 0, 79, bIterator);
+              measConfig->measGapConfig.gapOffsetValue = n;             
+          }
+      }
     }
-  if (bitset11[2])
+  
+  measConfig->haveSmeasure = bitset11[2];
+  if (measConfig->haveSmeasure)
     {
       // s-Measure
+      bIterator = DeserializeInteger (&n, 0, 97, bIterator);
+      measConfig->sMeasure = n;
     }
+
   if (bitset11[1])
     {
       // preRegistrationInfoHRPD
+      // ...
     }
-  if (bitset11[0])
+    
+  measConfig->haveSpeedStatePars = bitset11[0];
+  if (measConfig->haveSpeedStatePars)
     {
-      // speedStatePars
+      // speedStatePars      
+      int speedStateParsChoice;
+      bIterator = DeserializeChoice (2 , false, &speedStateParsChoice, bIterator);
+      switch(speedStateParsChoice)
+      {
+        case 0:
+          measConfig->speedStatePars.type = LteRrcSap::SpeedStatePars::RESET;
+          bIterator = DeserializeNull (bIterator);
+          break;
+        case 1:
+        default:
+          measConfig->speedStatePars.type = LteRrcSap::SpeedStatePars::SETUP;
+          bIterator = DeserializeSequence (&bitset0, false, bIterator);
+          
+          // Deserialize mobilityStateParameters
+          // Deserialize t-Evaluation
+          bIterator = DeserializeEnum (8, &n, bIterator);
+          switch(n)
+          {
+            case 0:
+              measConfig->speedStatePars.mobilityStateParameters.tEvaluation = 30;
+              break;
+            case 1:
+              measConfig->speedStatePars.mobilityStateParameters.tEvaluation = 60;
+              break;
+            case 2:
+              measConfig->speedStatePars.mobilityStateParameters.tEvaluation = 120;
+              break;
+            case 3:
+              measConfig->speedStatePars.mobilityStateParameters.tEvaluation = 180;
+              break;
+            case 4:
+              measConfig->speedStatePars.mobilityStateParameters.tEvaluation = 240;
+              break;
+            default:
+              measConfig->speedStatePars.mobilityStateParameters.tEvaluation = 0;
+          }
+          // Deserialize t-HystNormal
+          bIterator = DeserializeEnum (8, &n, bIterator);
+          switch(n)
+          {
+            case 0:
+              measConfig->speedStatePars.mobilityStateParameters.tHystNormal = 30;
+              break;
+            case 1:
+              measConfig->speedStatePars.mobilityStateParameters.tHystNormal = 60;
+              break;
+            case 2:
+              measConfig->speedStatePars.mobilityStateParameters.tHystNormal = 120;
+              break;
+            case 3:
+              measConfig->speedStatePars.mobilityStateParameters.tHystNormal = 180;
+              break;
+            case 4:
+              measConfig->speedStatePars.mobilityStateParameters.tHystNormal = 240;
+              break;
+            default:
+              measConfig->speedStatePars.mobilityStateParameters.tHystNormal = 0;
+          }
+          
+          bIterator = DeserializeInteger (&n, 1, 16, bIterator);
+          measConfig->speedStatePars.mobilityStateParameters.nCellChangeMedium = n;
+           
+          bIterator = DeserializeInteger (&n, 1, 16, bIterator);
+          measConfig->speedStatePars.mobilityStateParameters.nCellChangeHigh = n;
+    
+          // Deserialize timeToTriggerSf
+          bIterator = DeserializeEnum (4, &n, bIterator);
+          measConfig->speedStatePars.timeToTriggerSf.sfMedium = (n+1)*25;
+          bIterator = DeserializeEnum (4, &n, bIterator);
+          measConfig->speedStatePars.timeToTriggerSf.sfHigh = (n+1)*25;
+      }
     }
   return bIterator;
 }
