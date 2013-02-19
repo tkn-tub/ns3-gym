@@ -712,6 +712,10 @@ def build(bld):
     bld.exclude_taskgen = types.MethodType(_exclude_taskgen, bld)
     bld.find_ns3_module = types.MethodType(_find_ns3_module, bld)
 
+    # Clean documentation build directories; other cleaning happens later
+    if bld.cmd == 'clean':
+        _cleandocs()
+
     # process subfolders from here
     bld.add_subdirs('src')
 
@@ -851,7 +855,26 @@ def build(bld):
         _doxygen(bld)
         raise SystemExit(0)
 
+def _cleandir(name):
+    try:
+        shutil.rmtree(name)
+    except:
+        pass
 
+def _cleandocs():
+    _cleandir('doc/html')
+    _cleandir('doc/manual/build')
+    _cleandir('doc/tutorial/build')
+    _cleandir('doc/tutorial-pt/build')
+    _cleandir('doc/models/build')
+    _cleandir('doc/models/source-temp')
+
+# 'distclean' typically only cleans out build/ directory
+# Here we clean out any build or documentation artifacts not in build/
+def distclean(ctx):
+    _cleandocs()
+    # Now call waf's normal distclean
+    Scripting.distclean(ctx)
 
 def shutdown(ctx):
     bld = wutils.bld
