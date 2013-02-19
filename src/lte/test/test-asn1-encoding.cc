@@ -450,7 +450,43 @@ RrcConnectionReconfigurationTestCase::DoRun (void)
   LteRrcSap::RrcConnectionReconfiguration msg;
   msg.rrcTransactionIdentifier = 2;
 
-  msg.haveMeasConfig = false;
+  msg.haveMeasConfig = true;
+  
+  msg.measConfig.haveQuantityConfig = true;
+  msg.measConfig.quantityConfig.filterCoefficientRSRP = 8;
+  msg.measConfig.quantityConfig.filterCoefficientRSRQ = 7;
+  
+  msg.measConfig.haveMeasGapConfig = true;
+  msg.measConfig.measGapConfig.type = LteRrcSap::MeasGapConfig::SETUP;
+  msg.measConfig.measGapConfig.gapOffsetChoice = LteRrcSap::MeasGapConfig::gp0;
+  msg.measConfig.measGapConfig.gapOffsetValue = 21;  
+  
+  msg.measConfig.haveSmeasure = true;
+  msg.measConfig.sMeasure = 57;
+  
+  msg.measConfig.haveSpeedStatePars = true;
+  msg.measConfig.speedStatePars.type = LteRrcSap::SpeedStatePars::SETUP;
+  msg.measConfig.speedStatePars.mobilityStateParameters.tEvaluation = 240;
+  msg.measConfig.speedStatePars.mobilityStateParameters.tHystNormal = 60;
+  msg.measConfig.speedStatePars.mobilityStateParameters.nCellChangeMedium = 5;
+  msg.measConfig.speedStatePars.mobilityStateParameters.nCellChangeHigh = 13;
+  msg.measConfig.speedStatePars.timeToTriggerSf.sfMedium = 25;
+  msg.measConfig.speedStatePars.timeToTriggerSf.sfHigh = 75;
+  
+  msg.measConfig.measObjectToRemoveList.push_back(23);
+  msg.measConfig.measObjectToRemoveList.push_back(13);
+  
+  msg.measConfig.reportConfigToRemoveList.push_back(7);
+  msg.measConfig.reportConfigToRemoveList.push_back(16);
+
+  msg.measConfig.measIdToRemoveList.push_back(4);
+  msg.measConfig.measIdToRemoveList.push_back(18);
+ 
+  // TODO: Test the following:
+  // std::list<MeasObjectToAddMod> measObjectToAddModList;
+  // std::list<ReportConfigToAddMod> reportConfigToAddModList;
+  // std::list<MeasIdToAddMod> measIdToAddModList;
+    
   msg.haveMobilityControlInfo = true;
   msg.mobilityControlInfo.targetPhysCellId = 4;
   msg.mobilityControlInfo.haveCarrierFreq = true;

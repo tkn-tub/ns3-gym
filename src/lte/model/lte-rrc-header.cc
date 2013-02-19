@@ -1538,6 +1538,7 @@ RrcAsn1Header::SerializeMeasConfig (LteRrcSap::MeasConfig measConfig) const
           break;
         case LteRrcSap::MeasGapConfig::SETUP:
         default:
+          SerializeChoice (2, 1, false);
           SerializeSequence (std::bitset<0> (),false);
           switch (measConfig.measGapConfig.gapOffsetChoice)
             {
@@ -4573,6 +4574,76 @@ RrcConnectionReconfigurationHeader::Print (std::ostream &os) const
 {
   os << "rrcTransactionIdentifier: " << (int) m_rrcTransactionIdentifier << std::endl;
   os << "haveMeasConfig: " << m_haveMeasConfig << std::endl;
+  if (m_haveMobilityControlInfo)
+    {
+      if(!m_measConfig.measObjectToRemoveList.empty())
+      {
+        os << "  measObjectToRemoveList: " ;
+        std::list<uint8_t> auxList = m_measConfig.measObjectToRemoveList;
+        std::list<uint8_t>::iterator it = auxList.begin ();
+        for ( ; it != auxList.end(); it++)
+        {
+          os << (int) *it << ", ";
+         } 
+         os << std::endl;
+      }
+      if(!m_measConfig.reportConfigToRemoveList.empty())
+      {
+        os << "  reportConfigToRemoveList: " ;
+        std::list<uint8_t> auxList = m_measConfig.reportConfigToRemoveList;
+        std::list<uint8_t>::iterator it = auxList.begin ();
+        for ( ; it != auxList.end(); it++)
+        {
+          os << (int) *it << ", ";
+         } 
+         os << std::endl;
+      }
+      if(!m_measConfig.measIdToRemoveList.empty())
+      {
+        os << "  measIdToRemoveList: " ;
+        std::list<uint8_t> auxList = m_measConfig.measIdToRemoveList;
+        std::list<uint8_t>::iterator it = auxList.begin ();
+        for ( ; it != auxList.end(); it++)
+        {
+          os << (int) *it << ", ";
+         } 
+         os << std::endl;
+      }     
+      
+      os << "  haveQuantityConfig: " << m_measConfig.haveQuantityConfig << std::endl;
+      if (m_measConfig.haveQuantityConfig)
+      {
+        os << "    filterCoefficientRSRP: " << (int)m_measConfig.quantityConfig.filterCoefficientRSRP << std::endl;
+        os << "    filterCoefficientRSRQ:" << (int)m_measConfig.quantityConfig.filterCoefficientRSRQ  << std::endl;
+      }
+      
+      os << "  haveMeasGapConfig: " << m_measConfig.haveMeasGapConfig << std::endl;
+      if (m_measConfig.haveMeasGapConfig)
+      {
+        os << "    measGapConfig.type: " << m_measConfig.measGapConfig.type << std::endl;
+        os << "    measGapConfig.gap (gap0/1,value): (" << m_measConfig.measGapConfig.gapOffsetChoice 
+          << "," << (int) m_measConfig.measGapConfig.gapOffsetValue << ")" << std::endl;
+      }
+      
+      os << "  haveSmeasure: " << m_measConfig.haveSmeasure << std::endl;
+      if (m_measConfig.haveSmeasure)
+      {
+        os << "    sMeasure: " << (int) m_measConfig.sMeasure  << std::endl;
+      }
+
+      os << "  haveSpeedStatePars: " << m_measConfig.haveSpeedStatePars << std::endl;
+      if (m_measConfig.haveSpeedStatePars)
+      {
+        os << "    speedStatePars.type: " << m_measConfig.speedStatePars.type << std::endl;
+        os << "    speedStatePars.mobilityStateParameters.tEvaluation: " << (int)m_measConfig.speedStatePars.mobilityStateParameters.tEvaluation << std::endl;
+        os << "    speedStatePars.mobilityStateParameters.tHystNormal: " << (int)m_measConfig.speedStatePars.mobilityStateParameters.tHystNormal << std::endl;
+        os << "    speedStatePars.mobilityStateParameters.nCellChangeMedium: " << (int)m_measConfig.speedStatePars.mobilityStateParameters.nCellChangeMedium << std::endl;
+        os << "    speedStatePars.mobilityStateParameters.nCellChangeHigh: " << (int)m_measConfig.speedStatePars.mobilityStateParameters.nCellChangeHigh << std::endl;
+        os << "    speedStatePars.timeToTriggerSf.sfMedium: " << (int)m_measConfig.speedStatePars.timeToTriggerSf.sfMedium << std::endl;
+        os << "    speedStatePars.timeToTriggerSf.sfHigh: " << (int)m_measConfig.speedStatePars.timeToTriggerSf.sfHigh << std::endl;
+      }
+    }
+    
   os << "haveMobilityControlInfo: " << m_haveMobilityControlInfo << std::endl;
   if (m_haveMobilityControlInfo)
     {
