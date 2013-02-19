@@ -857,6 +857,816 @@ RrcAsn1Header::SerializeRachConfigCommon (LteRrcSap::RachConfigCommon rachConfig
   SerializeInteger (1,1,8); // maxHARQ-Msg3Tx
 }
 
+void
+RrcAsn1Header::SerializeQoffsetRange (int8_t qOffsetRange) const
+{
+  switch (qOffsetRange)
+    {
+    case -24:
+      SerializeEnum (32,0);
+      break;
+    case -22:
+      SerializeEnum (32,1);
+      break;
+    case -20:
+      SerializeEnum (32,2);
+      break;
+    case -18:
+      SerializeEnum (32,3);
+      break;
+    case -16:
+      SerializeEnum (32,4);
+      break;
+    case -14:
+      SerializeEnum (32,5);
+      break;
+    case -12:
+      SerializeEnum (32,6);
+      break;
+    case -10:
+      SerializeEnum (32,7);
+      break;
+    case -8:
+      SerializeEnum (32,8);
+      break;
+    case -6:
+      SerializeEnum (32,9);
+      break;
+    case -5:
+      SerializeEnum (32,10);
+      break;
+    case -4:
+      SerializeEnum (32,11);
+      break;
+    case -3:
+      SerializeEnum (32,12);
+      break;
+    case -2:
+      SerializeEnum (32,13);
+      break;
+    case -1:
+      SerializeEnum (32,14);
+      break;
+    case 0:
+      SerializeEnum (32,15);
+      break;
+    case 1:
+      SerializeEnum (32,16);
+      break;
+    case 2:
+      SerializeEnum (32,17);
+      break;
+    case 3:
+      SerializeEnum (32,18);
+      break;
+    case 4:
+      SerializeEnum (32,19);
+      break;
+    case 5:
+      SerializeEnum (32,20);
+      break;
+    case 6:
+      SerializeEnum (32,21);
+      break;
+    case 8:
+      SerializeEnum (32,22);
+      break;
+    case 10:
+      SerializeEnum (32,23);
+      break;
+    case 12:
+      SerializeEnum (32,24);
+      break;
+    case 14:
+      SerializeEnum (32,25);
+      break;
+    case 16:
+      SerializeEnum (32,26);
+      break;
+    case 18:
+      SerializeEnum (32,27);
+      break;
+    case 20:
+      SerializeEnum (32,28);
+      break;
+    case 22:
+      SerializeEnum (32,29);
+      break;
+    case 24:
+      SerializeEnum (32,30);
+      break;
+    default:
+      SerializeEnum (32,15);
+    }
+}
+
+void
+RrcAsn1Header::SerializeThresholdEutra (LteRrcSap::ThresholdEutra thresholdEutra) const
+{
+  switch (thresholdEutra.choice)
+    {
+    case LteRrcSap::ThresholdEutra::thresholdRsrp:
+      SerializeInteger (thresholdEutra.range, 0, 97);
+      break;
+    case LteRrcSap::ThresholdEutra::thresholdRsrq:
+    default:
+      SerializeInteger (thresholdEutra.range, 0, 34);
+    }
+}
+
+void
+RrcAsn1Header::SerializeMeasConfig (LteRrcSap::MeasConfig measConfig) const
+{
+  // Serialize MeasConfig sequence
+  // 11 optional fields, extension marker present
+  std::bitset<11> measConfigOptional;
+  measConfigOptional.set (10, !measConfig.measObjectToRemoveList.empty () );
+  measConfigOptional.set (9, !measConfig.measObjectToAddModList.empty () );
+  measConfigOptional.set (8, !measConfig.reportConfigToRemoveList.empty () );
+  measConfigOptional.set (7, !measConfig.reportConfigToAddModList.empty () );
+  measConfigOptional.set (6, !measConfig.measIdToRemoveList.empty () );
+  measConfigOptional.set (5, !measConfig.measIdToAddModList.empty () );
+  measConfigOptional.set (4, measConfig.haveQuantityConfig ); 
+  measConfigOptional.set (3, measConfig.haveMeasGapConfig ); 
+  measConfigOptional.set (2, measConfig.haveSmeasure ); 
+  measConfigOptional.set (1, false ); // preRegistrationInfoHRPD
+  measConfigOptional.set (0, measConfig.haveSpeedStatePars ); 
+  SerializeSequence (measConfigOptional,true);
+
+  if (!measConfig.measObjectToRemoveList.empty ())
+    {
+      SerializeSequenceOf (measConfig.measObjectToRemoveList.size (),MAX_OBJECT_ID,1);
+      for (std::list<uint8_t>::iterator it = measConfig.measObjectToRemoveList.begin (); it != measConfig.measObjectToRemoveList.end (); it++)
+        {
+          SerializeInteger (*it, 1, MAX_OBJECT_ID);
+        }
+    }
+
+  if (!measConfig.measObjectToAddModList.empty ())
+    {
+      SerializeSequenceOf (measConfig.measObjectToAddModList.size (),MAX_OBJECT_ID,1);
+      for (std::list<LteRrcSap::MeasObjectToAddMod>::iterator it = measConfig.measObjectToAddModList.begin (); it != measConfig.measObjectToAddModList.end (); it++)
+        {
+          SerializeSequence (std::bitset<0> (), false);
+          SerializeInteger (it->measObjectId, 1, MAX_OBJECT_ID);
+          SerializeChoice (4, 0, true); // Select MeasObjectEUTRA
+
+          // Serialize measObjectEutra
+          std::bitset<5> measObjOpts;
+          measObjOpts.set (4,!it->measObjectEutra.cellsToRemoveList.empty () );
+          measObjOpts.set (3,!it->measObjectEutra.cellsToAddModList.empty () );
+          measObjOpts.set (2,!it->measObjectEutra.blackCellsToRemoveList.empty () );
+          measObjOpts.set (1,!it->measObjectEutra.blackCellsToAddModList.empty () );
+          measObjOpts.set (0,it->measObjectEutra.haveCellForWhichToReportCGI);
+          SerializeSequence (measObjOpts, true);
+
+          // Serialize carrierFreq
+          SerializeInteger (it->measObjectEutra.carrierFreq, 0, MAX_EARFCN);
+
+          // Serialize  allowedMeasBandwidth
+          switch (it->measObjectEutra.allowedMeasBandwidth)
+            {
+            case 6:
+              SerializeEnum (6,0);
+              break;
+            case 15:
+              SerializeEnum (6,1);
+              break;
+            case 25:
+              SerializeEnum (6,2);
+              break;
+            case 50:
+              SerializeEnum (6,3);
+              break;
+            case 75:
+              SerializeEnum (6,4);
+              break;
+            case 100:
+              SerializeEnum (6,5);
+              break;
+            default:
+              SerializeEnum (6,0);
+            }
+
+          SerializeBoolean (it->measObjectEutra.presenceAntennaPort1);
+          SerializeBitstring (std::bitset<2> (it->measObjectEutra.neighCellConfig));
+          SerializeQoffsetRange (it->measObjectEutra.offsetFreq);
+
+          if (!it->measObjectEutra.cellsToRemoveList.empty ())
+            {
+              SerializeSequenceOf (it->measObjectEutra.cellsToRemoveList.size (),MAX_CELL_MEAS,1);
+              for (std::list<uint8_t>::iterator it2 = it->measObjectEutra.cellsToRemoveList.begin (); it2 != it->measObjectEutra.cellsToRemoveList.end (); it2++)
+                {
+                  SerializeInteger (*it2, 1, MAX_CELL_MEAS);
+                }
+            }
+
+          if (!it->measObjectEutra.cellsToAddModList.empty ())
+            {
+              SerializeSequenceOf (it->measObjectEutra.cellsToAddModList.size (), MAX_CELL_MEAS, 1);
+              for (std::list<LteRrcSap::CellsToAddMod>::iterator it2 = it->measObjectEutra.cellsToAddModList.begin (); it2 != it->measObjectEutra.cellsToAddModList.end (); it2++)
+                {
+                  SerializeSequence (std::bitset<0> (), false);
+
+                  // Serialize cellIndex
+                  SerializeInteger (it2->cellIndex, 1, MAX_CELL_MEAS);
+
+                  // Serialize PhysCellIdRange
+                  // range optional and not present
+                  SerializeSequence (std::bitset<1> (0),false);
+                  SerializeInteger (it2->physCellId,0,503);
+
+                  // Serialize cellIndividualOffset
+                  SerializeQoffsetRange (it2->cellIndividualOffset);
+                }
+            }
+
+          if (!it->measObjectEutra.blackCellsToRemoveList.empty () )
+            {
+              SerializeSequenceOf (it->measObjectEutra.blackCellsToRemoveList.size (),MAX_CELL_MEAS,1);
+              for (std::list<uint8_t>::iterator it2 = it->measObjectEutra.blackCellsToRemoveList.begin (); it2 != it->measObjectEutra.blackCellsToRemoveList.end (); it2++)
+                {
+                  SerializeInteger (*it2, 1, MAX_CELL_MEAS);
+                }
+            }
+
+          if (!it->measObjectEutra.blackCellsToAddModList.empty () )
+            {
+              SerializeSequenceOf (it->measObjectEutra.blackCellsToAddModList.size (), MAX_CELL_MEAS, 1);
+              for (std::list<LteRrcSap::BlackCellsToAddMod>::iterator it2 = it->measObjectEutra.blackCellsToAddModList.begin (); it2 != it->measObjectEutra.blackCellsToAddModList.end (); it2++)
+                {
+                  SerializeSequence (std::bitset<0> (),false);
+                  SerializeInteger (it2->cellIndex, 1, MAX_CELL_MEAS);
+
+                  // Serialize PhysCellIdRange
+                  // range optional
+                  std::bitset<1> rangePresent = std::bitset<1> (it2->physCellIdRange.haveRange);
+                  SerializeSequence (rangePresent,false);
+                  SerializeInteger (it2->physCellIdRange.start,0,503);
+                  if (it2->physCellIdRange.haveRange)
+                    {
+                      switch (it2->physCellIdRange.range)
+                        {
+                        case 4:
+                          SerializeEnum (16, 0);
+                          break;
+                        case 8:
+                          SerializeEnum (16, 1);
+                          break;
+                        case 12:
+                          SerializeEnum (16, 2);
+                          break;
+                        case 16:
+                          SerializeEnum (16, 3);
+                          break;
+                        case 24:
+                          SerializeEnum (16, 4);
+                          break;
+                        case 32:
+                          SerializeEnum (16, 5);
+                          break;
+                        case 48:
+                          SerializeEnum (16, 6);
+                          break;
+                        case 64:
+                          SerializeEnum (16, 7);
+                          break;
+                        case 84:
+                          SerializeEnum (16, 8);
+                          break;
+                        case 96:
+                          SerializeEnum (16, 9);
+                          break;
+                        case 128:
+                          SerializeEnum (16, 10);
+                          break;
+                        case 168:
+                          SerializeEnum (16, 11);
+                          break;
+                        case 252:
+                          SerializeEnum (16, 12);
+                          break;
+                        case 504:
+                          SerializeEnum (16, 13);
+                          break;
+                        default:
+                          SerializeEnum (16, 0);
+                        }
+                    }
+                }
+
+            }
+
+          if (it->measObjectEutra.haveCellForWhichToReportCGI)
+            {
+              SerializeInteger (it->measObjectEutra.cellForWhichToReportCGI,0,503);
+            }
+        }
+    }
+
+
+  if (!measConfig.reportConfigToRemoveList.empty () )
+    {
+      SerializeSequenceOf (measConfig.reportConfigToRemoveList.size (),MAX_REPORT_CONFIG_ID,1);
+      for (std::list<uint8_t>::iterator it = measConfig.reportConfigToRemoveList.begin (); it != measConfig.reportConfigToRemoveList.end (); it++)
+        {
+          SerializeInteger (*it, 1,MAX_REPORT_CONFIG_ID);
+        }
+    }
+
+  if (!measConfig.reportConfigToAddModList.empty () )
+    {
+      SerializeSequenceOf (measConfig.reportConfigToAddModList.size (),MAX_REPORT_CONFIG_ID,1);
+      for (std::list<LteRrcSap::ReportConfigToAddMod>::iterator it = measConfig.reportConfigToAddModList.begin (); it != measConfig.reportConfigToAddModList.end (); it++)
+        {
+          SerializeSequence (std::bitset<0> (), false);
+          SerializeInteger (it->reportConfigId,1,MAX_REPORT_CONFIG_ID);
+          SerializeChoice (2,0,false); // reportConfigEUTRA
+
+          // Serialize ReportConfigEUTRA
+          SerializeSequence (std::bitset<0> (), true);
+          switch (it->reportConfigEutra.triggerType)
+            {
+            case LteRrcSap::ReportConfigEutra::periodical:
+              SerializeChoice (2, 1, false); 
+              SerializeSequence (std::bitset<0> (),false);
+              switch (it->reportConfigEutra.purpose)
+                {
+                case LteRrcSap::ReportConfigEutra::reportCgi:
+                  SerializeEnum (2,1);
+                  break;
+                case LteRrcSap::ReportConfigEutra::reportStrongestCells:
+                default:
+                  SerializeEnum (2,0);
+                }
+              break;
+            case LteRrcSap::ReportConfigEutra::event:
+            default: 
+              SerializeChoice (2, 0, false);
+              SerializeSequence (std::bitset<0> (),true);
+              switch (it->reportConfigEutra.eventId)
+                {
+                case LteRrcSap::ReportConfigEutra::eventA1:
+                  SerializeChoice (5, 0, true);
+                  SerializeSequence (std::bitset<0> (),false);
+                  SerializeThresholdEutra (it->reportConfigEutra.threshold1);
+                  break;
+                case LteRrcSap::ReportConfigEutra::eventA2:
+                  SerializeChoice (5, 1, true);
+                  SerializeSequence (std::bitset<0> (),false);
+                  SerializeThresholdEutra (it->reportConfigEutra.threshold1);
+                  break;
+                case LteRrcSap::ReportConfigEutra::eventA3:
+                  SerializeChoice (5, 2, true);
+                  SerializeSequence (std::bitset<0> (),false);
+                  SerializeInteger (it->reportConfigEutra.a3Offset,-30,30);
+                  SerializeBoolean (it->reportConfigEutra.reportOnLeave);
+                  break;
+                case LteRrcSap::ReportConfigEutra::eventA4:
+                  SerializeChoice (5, 3, true);
+                  SerializeSequence (std::bitset<0> (),false);
+                  SerializeThresholdEutra (it->reportConfigEutra.threshold1);
+                  break;
+                case LteRrcSap::ReportConfigEutra::eventA5:
+                default:
+                  SerializeChoice (5, 4, true);
+                  SerializeSequence (std::bitset<0> (),false);
+                  SerializeThresholdEutra (it->reportConfigEutra.threshold1);
+                  SerializeThresholdEutra (it->reportConfigEutra.threshold2);
+                }
+
+              SerializeInteger (it->reportConfigEutra.hysteresis, 0, 30);
+
+              switch (it->reportConfigEutra.timeToTrigger)
+                {
+                case 0:
+                  SerializeEnum (16, 0);
+                  break;
+                case 40:
+                  SerializeEnum (16, 1);
+                  break;
+                case 64:
+                  SerializeEnum (16, 2);
+                  break;
+                case 80:
+                  SerializeEnum (16, 3);
+                  break;
+                case 100:
+                  SerializeEnum (16, 4);
+                  break;
+                case 128:
+                  SerializeEnum (16, 5);
+                  break;
+                case 160:
+                  SerializeEnum (16, 6);
+                  break;
+                case 256:
+                  SerializeEnum (16, 7);
+                  break;
+                case 320:
+                  SerializeEnum (16, 8);
+                  break;
+                case 480:
+                  SerializeEnum (16, 9);
+                  break;
+                case 512:
+                  SerializeEnum (16, 10);
+                  break;
+                case 640:
+                  SerializeEnum (16, 11);
+                  break;
+                case 1024:
+                  SerializeEnum (16, 12);
+                  break;
+                case 1280:
+                  SerializeEnum (16, 13);
+                  break;
+                case 2560:
+                  SerializeEnum (16, 14);
+                  break;
+                case 5120:
+                default:
+                  SerializeEnum (16, 15);
+                }
+            } // end trigger type
+
+          // Serialize triggerQuantity
+          if (it->reportConfigEutra.triggerQuantity == LteRrcSap::ReportConfigEutra::rsrp)
+            {
+              SerializeEnum (2, 0);
+            }
+          else
+            {
+              SerializeEnum (2, 1);
+            }
+
+          // Serialize reportQuantity
+          if (it->reportConfigEutra.reportQuantity == LteRrcSap::ReportConfigEutra::sameAsTriggerQuantity)
+            {
+              SerializeEnum (2, 0);
+            }
+          else
+            {
+              SerializeEnum (2, 1);
+            }
+
+          // Serialize maxReportCells
+          SerializeInteger (it->reportConfigEutra.maxReportCells, 1, MAX_CELL_REPORT);
+
+          // Serialize reportInterval
+          switch (it->reportConfigEutra.reportInterval)
+            {
+            case LteRrcSap::ReportConfigEutra::ms120:
+              SerializeEnum (16, 0);
+              break;
+            case LteRrcSap::ReportConfigEutra::ms240:
+              SerializeEnum (16, 1);
+              break;
+            case LteRrcSap::ReportConfigEutra::ms480:
+              SerializeEnum (16, 2);
+              break;
+            case LteRrcSap::ReportConfigEutra::ms640:
+              SerializeEnum (16, 3);
+              break;
+            case LteRrcSap::ReportConfigEutra::ms1024:
+              SerializeEnum (16, 4);
+              break;
+            case LteRrcSap::ReportConfigEutra::ms2048:
+              SerializeEnum (16, 5);
+              break;
+            case LteRrcSap::ReportConfigEutra::ms5120:
+              SerializeEnum (16, 6);
+              break;
+            case LteRrcSap::ReportConfigEutra::ms10240:
+              SerializeEnum (16, 7);
+              break;
+            case LteRrcSap::ReportConfigEutra::min1:
+              SerializeEnum (16, 8);
+              break;
+            case LteRrcSap::ReportConfigEutra::min6:
+              SerializeEnum (16, 9);
+              break;
+            case LteRrcSap::ReportConfigEutra::min12:
+              SerializeEnum (16, 10);
+              break;
+            case LteRrcSap::ReportConfigEutra::min30:
+              SerializeEnum (16, 11);
+              break;
+            case LteRrcSap::ReportConfigEutra::min60:
+              SerializeEnum (16, 12);
+              break;
+            case LteRrcSap::ReportConfigEutra::spare3:
+              SerializeEnum (16, 13);
+              break;
+            case LteRrcSap::ReportConfigEutra::spare2:
+              SerializeEnum (16, 14);
+              break;
+            case LteRrcSap::ReportConfigEutra::spare1:
+            default:
+              SerializeEnum (16, 15);
+            }
+
+          // Serialize reportAmount
+          switch (it->reportConfigEutra.reportAmount)
+            {
+            case 1:
+              SerializeEnum (8, 0);
+              break;
+            case 2:
+              SerializeEnum (8, 1);
+              break;
+            case 4:
+              SerializeEnum (8, 2);
+              break;
+            case 8:
+              SerializeEnum (8, 3);
+              break;
+            case 16:
+              SerializeEnum (8, 4);
+              break;
+            case 32:
+              SerializeEnum (8, 5);
+              break;
+            case 64:
+              SerializeEnum (8, 6);
+              break;
+            default:
+              SerializeEnum (8, 7);
+            }
+        }
+    }
+
+  if (!measConfig.measIdToRemoveList.empty () )
+    {
+      SerializeSequenceOf (measConfig.measIdToRemoveList.size (), MAX_MEAS_ID, 1);
+      for (std::list<uint8_t>::iterator it = measConfig.measIdToRemoveList.begin (); it != measConfig.measIdToRemoveList.end (); it++)
+        {
+          SerializeInteger (*it, 1, MAX_MEAS_ID);
+        }
+    }
+
+  if (!measConfig.measIdToAddModList.empty () )
+    {
+      SerializeSequenceOf ( measConfig.measIdToAddModList.size (), MAX_MEAS_ID, 1);
+      for (std::list<LteRrcSap::MeasIdToAddMod>::iterator it = measConfig.measIdToAddModList.begin (); it != measConfig.measIdToAddModList.end (); it++)
+        {
+          SerializeInteger (it->measId, 1, MAX_MEAS_ID);
+          SerializeInteger (it->measObjectId, 1, MAX_OBJECT_ID);
+          SerializeInteger (it->reportConfigId, 1, MAX_REPORT_CONFIG_ID);
+        }
+    }
+
+  if (measConfig.haveQuantityConfig )
+    {
+      // QuantityConfig sequence
+      // 4 optional fields, only first (EUTRA) present. Extension marker yes.
+      std::bitset<4> quantityConfigOpts (0);
+      quantityConfigOpts.set (3,1);
+      SerializeSequence (quantityConfigOpts, true);
+      SerializeSequence (std::bitset<0> (), false);
+
+      switch (measConfig.quantityConfig.filterCoefficientRSRP)
+        {
+        case 0:
+          SerializeEnum (16, 0);
+          break;
+        case 1:
+          SerializeEnum (16, 1);
+          break;
+        case 2:
+          SerializeEnum (16, 2);
+          break;
+        case 3:
+          SerializeEnum (16, 3);
+          break;
+        case 4:
+          SerializeEnum (16, 4);
+          break;
+        case 5:
+          SerializeEnum (16, 5);
+          break;
+        case 6:
+          SerializeEnum (16, 6);
+          break;
+        case 7:
+          SerializeEnum (16, 7);
+          break;
+        case 8:
+          SerializeEnum (16, 8);
+          break;
+        case 9:
+          SerializeEnum (16, 9);
+          break;
+        case 11:
+          SerializeEnum (16, 10);
+          break;
+        case 13:
+          SerializeEnum (16, 11);
+          break;
+        case 15:
+          SerializeEnum (16, 12);
+          break;
+        case 17:
+          SerializeEnum (16, 13);
+          break;
+        case 19:
+          SerializeEnum (16, 14);
+          break;
+        default:
+          SerializeEnum (16, 4);
+        }
+
+      switch (measConfig.quantityConfig.filterCoefficientRSRQ)
+        {
+        case 0:
+          SerializeEnum (16, 0);
+          break;
+        case 1:
+          SerializeEnum (16, 1);
+          break;
+        case 2:
+          SerializeEnum (16, 2);
+          break;
+        case 3:
+          SerializeEnum (16, 3);
+          break;
+        case 4:
+          SerializeEnum (16, 4);
+          break;
+        case 5:
+          SerializeEnum (16, 5);
+          break;
+        case 6:
+          SerializeEnum (16, 6);
+          break;
+        case 7:
+          SerializeEnum (16, 7);
+          break;
+        case 8:
+          SerializeEnum (16, 8);
+          break;
+        case 9:
+          SerializeEnum (16, 9);
+          break;
+        case 11:
+          SerializeEnum (16, 10);
+          break;
+        case 13:
+          SerializeEnum (16, 11);
+          break;
+        case 15:
+          SerializeEnum (16, 12);
+          break;
+        case 17:
+          SerializeEnum (16, 13);
+          break;
+        case 19:
+          SerializeEnum (16, 14);
+          break;
+        default:
+          SerializeEnum (16, 4);
+        }
+    }
+
+  if (measConfig.haveMeasGapConfig )
+    {
+      switch (measConfig.measGapConfig.type)
+        {
+        case LteRrcSap::MeasGapConfig::RESET:
+          SerializeChoice (2, 0, false);
+          SerializeNull ();
+          break;
+        case LteRrcSap::MeasGapConfig::SETUP:
+        default:
+          SerializeSequence (std::bitset<0> (),false);
+          switch (measConfig.measGapConfig.gapOffsetChoice)
+            {
+            case LteRrcSap::MeasGapConfig::gp0:
+              SerializeChoice (2, 0, true);
+              SerializeInteger (measConfig.measGapConfig.gapOffsetValue, 0, 39);
+              break;
+            case LteRrcSap::MeasGapConfig::gp1:
+            default:
+              SerializeChoice (2, 1, true);
+              SerializeInteger (measConfig.measGapConfig.gapOffsetValue, 0, 79);
+            }
+        }
+    }
+
+  if (measConfig.haveSmeasure )
+    {
+      SerializeInteger (measConfig.sMeasure, 0, 97);
+    }
+
+  // ...Here preRegistrationInfoHRPD would be serialized
+
+  if (measConfig.haveSpeedStatePars )
+    {
+      switch (measConfig.speedStatePars.type)
+        {
+        case LteRrcSap::SpeedStatePars::RESET:
+          SerializeChoice (2, 0, false);
+          SerializeNull ();
+          break;
+        case LteRrcSap::SpeedStatePars::SETUP:
+        default:
+          SerializeChoice (2, 1, false);
+          SerializeSequence (std::bitset<0> (), false);
+          switch (measConfig.speedStatePars.mobilityStateParameters.tEvaluation)
+            {
+            case 30:
+              SerializeEnum (8, 0);
+              break;
+            case 60:
+              SerializeEnum (8, 1);
+              break;
+            case 120:
+              SerializeEnum (8, 2);
+              break;
+            case 180:
+              SerializeEnum (8, 3);
+              break;
+            case 240:
+              SerializeEnum (8, 4);
+              break;
+            default:
+              SerializeEnum (8, 5);
+              break;
+            }
+
+          switch (measConfig.speedStatePars.mobilityStateParameters.tHystNormal)
+            {
+            case 30:
+              SerializeEnum (8, 0);
+              break;
+            case 60:
+              SerializeEnum (8, 1);
+              break;
+            case 120:
+              SerializeEnum (8, 2);
+              break;
+            case 180:
+              SerializeEnum (8, 3);
+              break;
+            case 240:
+              SerializeEnum (8, 4);
+              break;
+            default:
+              SerializeEnum (8, 5);
+              break;
+            }
+
+          SerializeInteger (measConfig.speedStatePars.mobilityStateParameters.nCellChangeMedium, 1, 16);
+          SerializeInteger (measConfig.speedStatePars.mobilityStateParameters.nCellChangeHigh, 1, 16);
+
+          SerializeSequence (std::bitset<0> (), false);
+          switch (measConfig.speedStatePars.timeToTriggerSf.sfMedium)
+            {
+            case 25:
+              SerializeEnum (4, 0);
+              break;
+            case 50:
+              SerializeEnum (4, 1);
+              break;
+            case 75:
+              SerializeEnum (4, 2);
+              break;
+            case 100:
+            default:
+              SerializeEnum (4, 3);
+            }
+
+          switch (measConfig.speedStatePars.timeToTriggerSf.sfHigh)
+            {
+            case 25:
+              SerializeEnum (4, 0);
+              break;
+            case 50:
+              SerializeEnum (4, 1);
+              break;
+            case 75:
+              SerializeEnum (4, 2);
+              break;
+            case 100:
+            default:
+              SerializeEnum (4, 3);
+            }
+        }
+    }
+}
+
+Buffer::Iterator
+RrcAsn1Header::DeserializeThresholdEutra (LteRrcSap::ThresholdEutra * thresholdEutra, Buffer::Iterator bIterator)
+{
+  return bIterator;
+}
+
+Buffer::Iterator
+RrcAsn1Header::DeserializeQoffsetRange (int8_t * qOffsetRange, Buffer::Iterator bIterator)
+{
+  return bIterator;
+}
+
 Buffer::Iterator
 RrcAsn1Header::DeserializeRadioResourceConfigDedicated (LteRrcSap::RadioResourceConfigDedicated *radioResourceConfigDedicated, Buffer::Iterator bIterator)
 {
@@ -1153,11 +1963,11 @@ RrcAsn1Header::DeserializeLogicalChannelConfig (LteRrcSap::LogicalChannelConfig 
       logicalChannelConfig->bucketSizeDurationMs = bucketSizeDurationMs;
 
       if (bitset1[0])
-      {
-        // Deserialize logicalChannelGroup
-        bIterator = DeserializeInteger (&n,0,3,bIterator);
-        logicalChannelConfig->logicalChannelGroup = n;
-      }
+        {
+          // Deserialize logicalChannelGroup
+          bIterator = DeserializeInteger (&n,0,3,bIterator);
+          logicalChannelConfig->logicalChannelGroup = n;
+        }
     }
   return bIterator;
 }
@@ -2092,6 +2902,60 @@ RrcAsn1Header::DeserializePlmnIdentity (uint32_t *plmnId, Buffer::Iterator bIter
   return bIterator;
 }
 
+Buffer::Iterator
+RrcAsn1Header::DeserializeMeasConfig (LteRrcSap::MeasConfig * measConfig, Buffer::Iterator bIterator)
+{
+  std::bitset<11> bitset11;
+
+  // measConfig
+  bIterator = DeserializeSequence (&bitset11,true,bIterator);
+
+  if (bitset11[10])
+    {
+      // measObjectToRemoveList
+    }
+  if (bitset11[9])
+    {
+      // measObjectToAddModList
+    }
+  if (bitset11[8])
+    {
+      // reportConfigToRemoveList
+    }
+  if (bitset11[7])
+    {
+      // reportConfigToAddModList
+    }
+  if (bitset11[6])
+    {
+      // measIdToRemoveList
+    }
+  if (bitset11[5])
+    {
+      // measIdToAddModList
+    }
+  if (bitset11[4])
+    {
+      // quantityConfig
+    }
+  if (bitset11[3])
+    {
+      // measGapConfig
+    }
+  if (bitset11[2])
+    {
+      // s-Measure
+    }
+  if (bitset11[1])
+    {
+      // preRegistrationInfoHRPD
+    }
+  if (bitset11[0])
+    {
+      // speedStatePars
+    }
+  return bIterator;
+}
 //////////////////// RrcConnectionRequest class ////////////////////////
 
 // Constructor
@@ -2656,13 +3520,9 @@ RrcConnectionReconfigurationHeader::PreSerialize () const
   options.set (0,0); // No nonCriticalExtension
   SerializeSequence (options,false);
 
-
   if (m_haveMeasConfig)
     {
-      // Serialize MeasConfig sequence
-      // 11 optional fields, extension marker present
-      std::bitset<11> measConfigOptional (0);
-      SerializeSequence (measConfigOptional,true);
+      SerializeMeasConfig (m_measConfig);
     }
 
   if (m_haveMobilityControlInfo)
@@ -2810,55 +3670,7 @@ RrcConnectionReconfigurationHeader::Deserialize (Buffer::Iterator bIterator)
           m_haveMeasConfig = rrcConnRecOpts[5];
           if (m_haveMeasConfig)
             {
-              std::bitset<11> bitset11;
-
-              // measConfig
-              bIterator = DeserializeSequence (&bitset11,true,bIterator);
-
-              if (bitset11[10])
-                {
-                  // measObjectToRemoveList
-                }
-              if (bitset11[9])
-                {
-                  // measObjectToAddModList
-                }
-              if (bitset11[8])
-                {
-                  // reportConfigToRemoveList
-                }
-              if (bitset11[7])
-                {
-                  // reportConfigToAddModList
-                }
-              if (bitset11[6])
-                {
-                  // measIdToRemoveList
-                }
-              if (bitset11[5])
-                {
-                  // measIdToAddModList
-                }
-              if (bitset11[4])
-                {
-                  // quantityConfig
-                }
-              if (bitset11[3])
-                {
-                  // measGapConfig
-                }
-              if (bitset11[2])
-                {
-                  // s-Measure
-                }
-              if (bitset11[1])
-                {
-                  // preRegistrationInfoHRPD
-                }
-              if (bitset11[0])
-                {
-                  // speedStatePars
-                }
+              bIterator = DeserializeMeasConfig (&m_measConfig, bIterator);
             }
 
           m_haveMobilityControlInfo = rrcConnRecOpts[4];
@@ -3188,9 +4000,7 @@ HandoverPreparationInfoHeader::PreSerialize () const
   SerializeSequence (std::bitset<0> (),true);
 
   // Serialize sourceMeasConfig
-  // 11 optional fields, extension marker present
-  std::bitset<11> measConfigOptional (0);
-  SerializeSequence (measConfigOptional,true);
+  SerializeMeasConfig (m_asConfig.sourceMeasConfig);
 
   // Serialize sourceRadioResourceConfig
   SerializeRadioResourceConfigDedicated (m_asConfig.sourceRadioResourceConfig);
@@ -3279,53 +4089,7 @@ HandoverPreparationInfoHeader::Deserialize (Buffer::Iterator bIterator)
               bIterator = DeserializeSequence (&bitset0,true,bIterator);
 
               // Deserialize sourceMeasConfig
-              std::bitset<11> bitset11;
-              bIterator = DeserializeSequence (&bitset11,true,bIterator);
-
-              if (bitset11[10]) //measObjectToRemoveList
-                {
-                  // ...
-                }
-              if (bitset11[9]) //measObjectToAddModList
-                {
-                  // ...
-                }
-              if (bitset11[8]) //reportConfigToRemoveList
-                {
-                  // ...
-                }
-              if (bitset11[7]) //reportConfigToAddModList
-                {
-                  // ...
-                }
-              if (bitset11[6]) //measIdToRemoveList
-                {
-                  // ...
-                }
-              if (bitset11[5]) //measIdToAddModList
-                {
-                  // ...
-                }
-              if (bitset11[4]) //quantityConfig
-                {
-                  // ...
-                }
-              if (bitset11[3]) //measGapConfig
-                {
-                  // ...
-                }
-              if (bitset11[2]) //s-Measure
-                {
-                  // ...
-                }
-              if (bitset11[1]) //preRegistrationInfoHRPD
-                {
-                  // ...
-                }
-              if (bitset11[0]) //speedStatePars
-                {
-                  // ...
-                }
+              bIterator = DeserializeMeasConfig (&m_asConfig.sourceMeasConfig, bIterator);
 
               // Deserialize sourceRadioResourceConfig
               bIterator = DeserializeRadioResourceConfigDedicated (&m_asConfig.sourceRadioResourceConfig,bIterator);
