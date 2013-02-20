@@ -615,6 +615,11 @@ HandoverPreparationInfoTestCase::DoRun (void)
   msg.asConfig.sourceSystemInformationBlockType2.radioResourceConfigCommon.rachConfigCommon.raSupervisionInfo.preambleTransMax = 3;
   msg.asConfig.sourceSystemInformationBlockType2.radioResourceConfigCommon.rachConfigCommon.raSupervisionInfo.raResponseWindowSize = 6;
 
+  msg.asConfig.sourceMeasConfig.haveQuantityConfig = false;
+  msg.asConfig.sourceMeasConfig.haveMeasGapConfig = false;
+  msg.asConfig.sourceMeasConfig.haveSmeasure = false;
+  msg.asConfig.sourceMeasConfig.haveSpeedStatePars = false;
+
   HandoverPreparationInfoHeader source;
   source.SetMessage (msg);
 
