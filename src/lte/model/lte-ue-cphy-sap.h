@@ -118,8 +118,8 @@ public:
   /**
    *
    * \param cellId the cellId of the eNB reported
-   * \param rsrp the RSRP measured (see sect. 5.1.1 of 36.214)
-   * \param rsrq the RSRQ measured (see sect. 5.1.3 of 36.214)
+   * \param rsrp the RSRP measured (see sect. 5.1.1 of 36.214) [W]
+   * \param rsrq the RSRQ measured (see sect. 5.1.3 of 36.214) [linear ratio]
    */
   virtual void ReportUeMeasurements (uint16_t cellId, double rsrp, double rsrq) = 0;
 };
