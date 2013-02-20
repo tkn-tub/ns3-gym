@@ -218,12 +218,13 @@ public:
   
   struct ThresholdEutra
   {
-    uint8_t thresholdRsrp;
-    uint8_t thresholdRsrq;
+    enum {thresholdRsrp, thresholdRsrq} choice;
+    uint8_t range;
   };
 
   struct ReportConfigEutra
   {
+    enum {event,periodical} triggerType;
     enum {eventA1,eventA2,eventA3,eventA4,eventA5} eventId;
     ThresholdEutra threshold1; // used for A1, A2, A4, A5
     ThresholdEutra threshold2; // used for A5
