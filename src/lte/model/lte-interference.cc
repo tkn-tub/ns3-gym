@@ -82,13 +82,13 @@ LteInterference::StartRx (Ptr<const SpectrumValue> rxPsd)
         {
           (*it)->Start ();
         }
-      for (std::list<Ptr<LteSinrChunkProcessor> >::const_iterator it = m_sinrChunkProcessorList.begin (); it != m_sinrChunkProcessorList.end (); ++it)
-        {
-          (*it)->Start (); 
-        }
       for (std::list<Ptr<LteSinrChunkProcessor> >::const_iterator it = m_interfChunkProcessorList.begin (); it != m_interfChunkProcessorList.end (); ++it)
         {
           (*it)->Start ();
+        }
+      for (std::list<Ptr<LteSinrChunkProcessor> >::const_iterator it = m_sinrChunkProcessorList.begin (); it != m_sinrChunkProcessorList.end (); ++it)
+        {
+          (*it)->Start (); 
         }
     }
   else
@@ -119,13 +119,13 @@ LteInterference::EndRx ()
         {
           (*it)->End ();
         }
-      for (std::list<Ptr<LteSinrChunkProcessor> >::const_iterator it = m_sinrChunkProcessorList.begin (); it != m_sinrChunkProcessorList.end (); ++it)
-        {
-          (*it)->End (); 
-        }
       for (std::list<Ptr<LteSinrChunkProcessor> >::const_iterator it = m_interfChunkProcessorList.begin (); it != m_interfChunkProcessorList.end (); ++it)
         {
           (*it)->End ();
+        }
+      for (std::list<Ptr<LteSinrChunkProcessor> >::const_iterator it = m_sinrChunkProcessorList.begin (); it != m_sinrChunkProcessorList.end (); ++it)
+        {
+          (*it)->End (); 
         }
     }
 }
@@ -196,20 +196,15 @@ LteInterference::ConditionallyEvaluateChunk ()
         {
           (*it)->EvaluateSinrChunk (sinr, duration);
         }
+      for (std::list<Ptr<LteSinrChunkProcessor> >::const_iterator it = m_interfChunkProcessorList.begin (); it != m_interfChunkProcessorList.end (); ++it)
+        {
+          (*it)->EvaluateSinrChunk (interf, duration);
+        }
       for (std::list<Ptr<LteSinrChunkProcessor> >::const_iterator it = m_rsPowerChunkProcessorList.begin (); it != m_rsPowerChunkProcessorList.end (); ++it)
         {
           (*it)->EvaluateSinrChunk (*m_rxSignal, duration);
         }
-      for (std::list<Ptr<LteSinrChunkProcessor> >::const_iterator it = m_interfChunkProcessorList.begin (); it != m_interfChunkProcessorList.end (); ++it)
-        {
-          NS_LOG_DEBUG (this << "ConditionallyEvaluateChunk INTERF ");
-          (*it)->EvaluateSinrChunk (interf, duration);
-        }
       m_lastChangeTime = Now ();
-    }
-  else
-    {
-      NS_LOG_DEBUG (this << " NO EV");
     }
 }
 

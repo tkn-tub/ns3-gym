@@ -18,6 +18,8 @@ References
 
 .. [TS36213] 3GPP TS 36.213 "E-UTRA Physical layer procedures"
 
+.. [TS36214] 3GPP TS 36.213 "E-UTRA Physical layer – Measurements"
+
 .. [TS36300] 3GPP TS 36.300 "E-UTRA and E-UTRAN; Overall description; Stage 2"
 
 .. [TS36304] 3GPP TS 36.104 "E-UTRA User Equipment (UE) procedures in idle mode"

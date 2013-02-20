@@ -114,6 +114,14 @@ public:
    * \param mib the Master Information Block received on the BCH
    */
   virtual void RecvMasterInformationBlock (LteRrcSap::MasterInformationBlock mib) = 0;
+
+  /**
+   *
+   * \param cellId the cellId of the eNB reported
+   * \param rsrp the RSRP measured (see sect. 5.1.1 of 36.214)
+   * \param rsrq the RSRQ measured (see sect. 5.1.3 of 36.214)
+   */
+  virtual void ReportUeMeasurements (uint16_t cellId, double rsrp, double rsrq) = 0;
 };
 
 
@@ -220,6 +228,8 @@ public:
   // methods inherited from LteUeCphySapUser go here
   virtual void RecvMasterInformationBlock (LteRrcSap::MasterInformationBlock mib);
 
+  virtual void ReportUeMeasurements (uint16_t cellId, double rsrp, double rsrq);
+
 private:
   MemberLteUeCphySapUser ();
   C* m_owner;
@@ -243,7 +253,12 @@ MemberLteUeCphySapUser<C>::RecvMasterInformationBlock (LteRrcSap::MasterInformat
   m_owner->DoRecvMasterInformationBlock (mib);
 }
 
-
+template <class C>
+void
+MemberLteUeCphySapUser<C>::ReportUeMeasurements (uint16_t cellId, double rsrp, double rsrq)
+{
+  m_owner->DoReportUeMeasurements (cellId, rsrp, rsrq);
+}
 
 
 } // namespace ns3

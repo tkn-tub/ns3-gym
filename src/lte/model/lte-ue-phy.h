@@ -175,7 +175,10 @@ public:
   virtual void ReportInterference (const SpectrumValue& interf);
   virtual void ReportRsReceivedPower (const SpectrumValue& power);
 
+  // callbacks for LteSpectrumPhy
   virtual void ReceiveLteControlMessageList (std::list<Ptr<LteControlMessage> >);
+  virtual void ReceivePss (uint16_t cellId, SpectrumValue p);
+  
   
 
 
@@ -275,8 +278,18 @@ private:
   bool m_dlConfigured;
   bool m_ulConfigured;
 
+  uint8_t m_subframeNo;
+
   bool m_rsReceivedPowerUpdated;
   SpectrumValue m_rsReceivedPower;
+
+  bool m_rsInterferencePowerUpdated;
+  SpectrumValue m_rsIntereferencePower;
+
+  bool m_pssReceived;
+  std::map <uint16_t, SpectrumValue> m_pssMap;
+
+  double m_pssReceptionThreshold; // on RSRQ [W]
 
   Ptr<LteHarqPhy> m_harqPhyModule;
 

@@ -101,6 +101,7 @@ LteSpectrumSignalParametersDlCtrlFrame::LteSpectrumSignalParametersDlCtrlFrame (
 {
   NS_LOG_FUNCTION (this << &p);
   cellId = p.cellId;
+  pss = p.pss;
   ctrlMsgList = p.ctrlMsgList;
 }
 

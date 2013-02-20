@@ -543,6 +543,13 @@ LteUeRrc::DoRecvMasterInformationBlock (LteRrcSap::MasterInformationBlock msg)
     }
 }
 
+void
+LteUeRrc::DoReportUeMeasurements (uint16_t cellId, double rsrp, double rsrq)
+{
+  NS_LOG_FUNCTION (this);
+  NS_LOG_DEBUG (this << " CellId " << cellId << " RSRP " << rsrp << " RSRQ " << rsrq);
+}
+
 
 
 // RRC SAP methods

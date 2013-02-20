@@ -121,7 +121,10 @@ LteUePhy::LteUePhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy)
     m_a30CqiPeriocity (MilliSeconds (1)),  // ideal behavior
     m_uePhySapUser (0),
     m_ueCphySapUser (0),
+    m_subframeNo (0),
     m_rsReceivedPowerUpdated (false),
+    m_rsInterferencePowerUpdated (false),
+    m_pssReceived (false),
     m_rsrpSinrSampleCounter (0)
 {
   m_amc = CreateObject <LteAmc> ();
@@ -235,6 +238,11 @@ LteUePhy::GetTypeId (void)
                    PointerValue (),
                    MakePointerAccessor (&LteUePhy::GetUlSpectrumPhy),
                    MakePointerChecker <LteSpectrumPhy> ())
+    .AddAttribute ("RsrqUeMeasThreshold",
+                  "Receive threshold for PSS on RSRQ [W]",
+                  DoubleValue (0.0),
+                   MakeDoubleAccessor (&LteUePhy::m_pssReceptionThreshold                    ),
+                  MakeDoubleChecker<double> ())
   ;
   return tid;
 }
@@ -426,7 +434,9 @@ LteUePhy::GenerateDataCqiReport (const SpectrumValue& sinr)
 void
 LteUePhy::ReportInterference (const SpectrumValue& interf)
 {
-  // Currently not used by UE
+  NS_LOG_FUNCTION (this << interf);
+  m_rsInterferencePowerUpdated = true;
+  m_rsIntereferencePower = interf; 
 }
 
 void
@@ -482,6 +492,45 @@ LteUePhy::CreateDlCqiFeedbackMessage (const SpectrumValue& sinr)
       m_rsrpSinrSampleCounter = 0;
     }
 
+  // UE Measurements
+  if (m_pssReceived)
+    {
+      NS_ASSERT_MSG (m_rsInterferencePowerUpdated, " RS interference power info obsolete");
+      // PSSs received
+      std::map <uint16_t, SpectrumValue>::iterator itPss = m_pssMap.begin ();
+      while (itPss != m_pssMap.end ())
+        {
+          NS_LOG_DEBUG (this << " PSS received from eNB " << (*itPss).first);
+          uint8_t rbNum = 0;
+          SpectrumValue pi = (*itPss).second;
+          Values::const_iterator itPi;
+          double rsrpSum = 0.0;
+          double rsrqSum = 0.0;
+          Values::const_iterator itInt = m_rsIntereferencePower.ConstValuesBegin ();
+          Values::const_iterator itPj = m_rsIntereferencePower.ConstValuesBegin ();
+          Ptr<SpectrumValue> noisePsd = LteSpectrumValueHelper::CreateNoisePowerSpectralDensity (m_ulEarfcn, m_ulBandwidth, m_noiseFigure);
+          Values::const_iterator itN = noisePsd->ConstValuesBegin ();
+          for (itPi = pi.ConstValuesBegin (); itPi != pi.ConstValuesEnd (); itPi++, itInt++, itPj++, itN++)
+            {
+              rbNum++;
+              rsrpSum += (*itPi);
+              rsrqSum += (*itInt) + (*itPj) + (*itN);
+              
+            }
+
+          double rsrp = rsrpSum / (double)rbNum;
+          double rsrq = rsrpSum / rsrqSum;
+
+          if (rsrq > m_pssReceptionThreshold)
+            {
+              // report UE Measurements to upper layers
+              NS_LOG_DEBUG (this << " CellId " << (*itPss).first << " has RSRP " << rsrp << " and RSRQ " << rsrq);
+              m_ueCphySapUser-> ReportUeMeasurements((*itPss).first, rsrp, rsrq);
+              
+            }
+          itPss++;
+        }
+    }
 
 
   // CREATE DlCqiLteControlMessage
@@ -736,6 +785,15 @@ LteUePhy::ReceiveLteControlMessageList (std::list<Ptr<LteControlMessage> > msgLi
 
 
 void
+LteUePhy::ReceivePss (uint16_t cellId, SpectrumValue p)
+{
+  NS_LOG_FUNCTION (this << cellId);
+  m_pssReceived = true;
+  m_pssMap.insert (std::pair <uint16_t, SpectrumValue> (cellId, p));
+}
+
+
+void
 LteUePhy::QueueSubChannelsForTransmission (std::vector <int> rbMap)
 {
   m_subChannelsForTransmissionQueue.at (m_macChTtiDelay - 1) = rbMap;
@@ -751,6 +809,8 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
   
   // refresh internal variables
   m_rsReceivedPowerUpdated = false;
+  m_rsInterferencePowerUpdated = false;
+  m_pssReceived = false;
   
   if (m_ulConfigured)
     {
@@ -806,7 +866,7 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
   // trigger the MAC
   m_uePhySapUser->SubframeIndication (frameNo, subframeNo);
   
-  
+  m_subframeNo = subframeNo;
   ++subframeNo;
   if (subframeNo > 10)
     {

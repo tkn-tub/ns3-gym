@@ -243,6 +243,7 @@ private:
 
   // CPHY SAP methods
   void DoRecvMasterInformationBlock (LteRrcSap::MasterInformationBlock msg);
+  void DoReportUeMeasurements (uint16_t cellId, double rsrp, double rsrq);
 
   // RRC SAP methods
   void DoCompleteSetup (LteUeRrcSapProvider::CompleteSetupParameters params);

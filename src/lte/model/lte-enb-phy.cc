@@ -650,7 +650,12 @@ LteEnbPhy::SendControlChannels (std::list<Ptr<LteControlMessage> > ctrlMsgList)
     }
   SetDownlinkSubChannels (dlRb);
   NS_LOG_LOGIC (this << " eNB start TX CTRL");
-  m_downlinkSpectrumPhy->StartTxDlCtrlFrame (ctrlMsgList);
+  bool pss = false;
+  if ((m_nrSubFrames == 1) || (m_nrSubFrames == 6))
+    {
+      pss = true;
+    }
+  m_downlinkSpectrumPhy->StartTxDlCtrlFrame (ctrlMsgList, pss);
   
 }
 

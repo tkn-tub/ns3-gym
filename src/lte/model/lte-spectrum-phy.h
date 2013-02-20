@@ -122,6 +122,13 @@ typedef Callback< void, std::list<Ptr<LteControlMessage> > > LtePhyRxCtrlEndOkCa
 typedef Callback< void > LtePhyRxCtrlEndErrorCallback;
 
 /**
+* This method is used by the LteSpectrumPhy to notify the UE PHY that a
+* PSS has been received
+*/
+typedef Callback< void, uint16_t, SpectrumValue > LtePhyRxPssCallback;
+
+
+/**
 * This method is used by the LteSpectrumPhy to notify the PHY about
 * the status of a certain DL HARQ process
 */
@@ -220,13 +227,13 @@ public:
   * Start a transmission of control frame in DL
   *
   *
-  * @param dlDci the burst of DL-DCIs to be transmitted
-  * @param ulDci the burst of UL-DCIs to be transmitted
+  * @param ctrlMsgList the burst of contrl messages to be transmitted
+  * @param pss the flag for transmitting the primary synchronization signal
   *
   * @return true if an error occurred and the transmission was not
   * started, false otherwise.
   */
-  bool StartTxDlCtrlFrame (std::list<Ptr<LteControlMessage> > ctrlMsgList);
+  bool StartTxDlCtrlFrame (std::list<Ptr<LteControlMessage> > ctrlMsgList, bool pss);
   
   
   /**
@@ -282,6 +289,14 @@ public:
   void SetLtePhyRxCtrlEndErrorCallback (LtePhyRxCtrlEndErrorCallback c);
 
   /**
+  * set the callback for the reception of the PSS as part
+  * of the interconnections between the LteSpectrumPhy and the UE PHY
+  *
+  * @param c the callback
+  */
+  void SetLtePhyRxPssCallback (LtePhyRxPssCallback c);
+
+  /**
   * set the callback for the DL HARQ feedback as part of the 
   * interconnections betweenthe LteSpectrumPhy and the PHY
   *
@@ -328,11 +343,19 @@ public:
 
   /**
   *  LteSinrChunkProcessor devoted to evaluate intefrerence + noise power 
-  *  in data frame
+  *  in control symbols of the subframe
   *
   * \param p the new LteSinrChunkProcessor to be added to the data processing chain
   */
-  void AddInterferenceChunkProcessor (Ptr<LteSinrChunkProcessor> p);
+  void AddInterferenceCtrlChunkProcessor (Ptr<LteSinrChunkProcessor> p);
+
+  /**
+  *  LteSinrChunkProcessor devoted to evaluate intefrerence + noise power
+  *  in data symbols of the subframe
+  *
+  * \param p the new LteSinrChunkProcessor to be added to the data processing chain
+  */
+  void AddInterferenceDataChunkProcessor (Ptr<LteSinrChunkProcessor> p);
   
   
   /** 
@@ -431,6 +454,7 @@ private:
   
   LtePhyRxCtrlEndOkCallback     m_ltePhyRxCtrlEndOkCallback;
   LtePhyRxCtrlEndErrorCallback  m_ltePhyRxCtrlEndErrorCallback;
+  LtePhyRxPssCallback  m_ltePhyRxPssCallback;
 
   Ptr<LteInterference> m_interferenceData;
   Ptr<LteInterference> m_interferenceCtrl;

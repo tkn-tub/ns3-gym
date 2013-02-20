@@ -155,6 +155,7 @@ void LteSpectrumPhy::DoDispose ()
   m_ltePhyRxCtrlEndErrorCallback = MakeNullCallback< void > ();
   m_ltePhyDlHarqFeedbackCallback = MakeNullCallback< void, DlInfoListElement_s > ();
   m_ltePhyUlHarqFeedbackCallback = MakeNullCallback< void, UlInfoListElement_s > ();
+  m_ltePhyRxPssCallback = MakeNullCallback< void, uint16_t, SpectrumValue > ();
   SpectrumPhy::DoDispose ();
 } 
 
@@ -354,6 +355,14 @@ LteSpectrumPhy::SetLtePhyRxCtrlEndErrorCallback (LtePhyRxCtrlEndErrorCallback c)
   m_ltePhyRxCtrlEndErrorCallback = c;
 }
 
+
+void
+LteSpectrumPhy::SetLtePhyRxPssCallback (LtePhyRxPssCallback c)
+{
+  NS_LOG_FUNCTION (this);
+  m_ltePhyRxPssCallback = c;
+}
+
 void
 LteSpectrumPhy::SetLtePhyDlHarqFeedbackCallback (LtePhyDlHarqFeedbackCallback c)
 {
@@ -463,10 +472,11 @@ LteSpectrumPhy::StartTxDataFrame (Ptr<PacketBurst> pb, std::list<Ptr<LteControlM
 }
 
 bool
-LteSpectrumPhy::StartTxDlCtrlFrame (std::list<Ptr<LteControlMessage> > ctrlMsgList)
+LteSpectrumPhy::StartTxDlCtrlFrame (std::list<Ptr<LteControlMessage> > ctrlMsgList, bool pss)
 {
-  NS_LOG_FUNCTION (this << time);
+  NS_LOG_FUNCTION (this << time << " PSS " << (uint16_t)pss);
   NS_LOG_LOGIC (this << " state: " << m_state);
+  
   
 //   m_phyTxStartTrace (pb);
   
@@ -503,6 +513,7 @@ LteSpectrumPhy::StartTxDlCtrlFrame (std::list<Ptr<LteControlMessage> > ctrlMsgLi
       txParams->txAntenna = m_antenna;
       txParams->psd = m_txPsd;
       txParams->cellId = m_cellId;
+      txParams->pss = pss;
       txParams->ctrlMsgList = ctrlMsgList;
       m_channel->StartTx (txParams);
       m_endTxEvent = Simulator::Schedule (DL_CTRL_DURATION, &LteSpectrumPhy::EndTx, this);
@@ -746,6 +757,18 @@ LteSpectrumPhy::StartRxCtrl (Ptr<SpectrumSignalParameters> params)
             cellId = lteUlSrsRxParams->cellId;
             dl = false;
           }
+        if (dl)
+            {
+              // check presence of PSS for UE measuerements
+              if (lteDlCtrlRxParams->pss == true)
+                {
+                  SpectrumValue pssPsd = *params->psd;
+                  if (!m_ltePhyRxPssCallback.IsNull ())
+                    {
+                      m_ltePhyRxPssCallback (cellId, pssPsd);
+                    }
+                }
+            }
         if (cellId  == m_cellId)
         {
           NS_LOG_LOGIC (this << " synchronized with this signal (cellId=" << cellId << ")");
@@ -786,7 +809,7 @@ LteSpectrumPhy::StartRxCtrl (Ptr<SpectrumSignalParameters> params)
         else
         {
           NS_LOG_LOGIC (this << " not in sync with this signal (cellId=" 
-          << cellId  << ", m_cellId=" << m_cellId << ")");
+          << cellId  << ", m_cellId=" << m_cellId << ")");          
         }
       }
       break;
@@ -1105,7 +1128,13 @@ LteSpectrumPhy::AddDataSinrChunkProcessor (Ptr<LteSinrChunkProcessor> p)
 }
 
 void
-LteSpectrumPhy::AddInterferenceChunkProcessor (Ptr<LteSinrChunkProcessor> p)
+LteSpectrumPhy::AddInterferenceCtrlChunkProcessor (Ptr<LteSinrChunkProcessor> p)
+{
+  m_interferenceCtrl->AddInterferenceChunkProcessor (p);
+}
+
+void
+LteSpectrumPhy::AddInterferenceDataChunkProcessor (Ptr<LteSinrChunkProcessor> p)
 {
   m_interferenceData->AddInterferenceChunkProcessor (p);
 }
