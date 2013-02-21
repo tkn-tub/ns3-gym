@@ -40,6 +40,7 @@ class PacketBurst;
 class LteEnbPhy;
 class LteHarqPhy;
 
+
 /**
  * \ingroup lte
  *
@@ -229,6 +230,8 @@ private:
 
   void QueueSubChannelsForTransmission (std::vector <int> rbMap);
 
+  void ReportUeMeasurements ();
+
   // UE CPHY SAP methods
   void DoReset ();  
   void DoSyncronizeWithEnb (uint16_t cellId, uint16_t dlEarfcn);  
@@ -290,6 +293,18 @@ private:
   std::map <uint16_t, SpectrumValue> m_pssMap;
 
   double m_pssReceptionThreshold; // on RSRQ [W]
+
+  struct UeMeasurementsElement
+    {
+      double rsrpSum;
+      uint8_t rsrpNum;
+      double rsrqSum;
+      uint8_t rsrqNum;
+    };
+
+  std::map <uint16_t, UeMeasurementsElement> m_UeMeasurementsMap;
+  Time m_ueMeasurementsFilterPeriod;
+  Time m_ueMeasurementsFilterLast;
 
   Ptr<LteHarqPhy> m_harqPhyModule;
 

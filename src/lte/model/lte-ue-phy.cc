@@ -125,6 +125,8 @@ LteUePhy::LteUePhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy)
     m_rsReceivedPowerUpdated (false),
     m_rsInterferencePowerUpdated (false),
     m_pssReceived (false),
+    m_ueMeasurementsFilterPeriod (MilliSeconds (200)),
+    m_ueMeasurementsFilterLast (MilliSeconds (0)),
     m_rsrpSinrSampleCounter (0)
 {
   m_amc = CreateObject <LteAmc> ();
@@ -135,6 +137,7 @@ LteUePhy::LteUePhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy)
   NS_ASSERT_MSG (Simulator::Now ().GetNanoSeconds () == 0,
                  "Cannot create UE devices after simulation started");
   Simulator::ScheduleNow (&LteUePhy::SubframeIndication, this, 1, 1);
+  Simulator::Schedule (m_ueMeasurementsFilterPeriod, &LteUePhy::ReportUeMeasurements, this);
 
   DoReset ();
 }
@@ -239,10 +242,15 @@ LteUePhy::GetTypeId (void)
                    MakePointerAccessor (&LteUePhy::GetUlSpectrumPhy),
                    MakePointerChecker <LteSpectrumPhy> ())
     .AddAttribute ("RsrqUeMeasThreshold",
-                  "Receive threshold for PSS on RSRQ [W]",
-                  DoubleValue (0.0),
+                  "Receive threshold for PSS on RSRQ [dB]",
+                  DoubleValue (-1000.0),
                    MakeDoubleAccessor (&LteUePhy::m_pssReceptionThreshold                    ),
                   MakeDoubleChecker<double> ())
+    .AddAttribute ("UeMeasurementsFilterPeriod",
+                  "Time period for reporting UE measurements (default 200 ms.) ",
+                  TimeValue (MilliSeconds (200)),
+                  MakeTimeAccessor (&LteUePhy::m_ueMeasurementsFilterPeriod),
+                  MakeTimeChecker ())
   ;
   return tid;
 }
@@ -518,14 +526,32 @@ LteUePhy::CreateDlCqiFeedbackMessage (const SpectrumValue& sinr)
               
             }
 
-          double rsrp = rsrpSum / (double)rbNum;
-          double rsrq = rsrpSum / rsrqSum;
+          double rsrp_dBm = 10 * log (1000 * rsrpSum / (double)rbNum);
+          double rsrq_dB = 10 * log (rsrpSum / rsrqSum);
 
-          if (rsrq > m_pssReceptionThreshold)
+          if (rsrq_dB > m_pssReceptionThreshold)
             {
               // report UE Measurements to upper layers
-              NS_LOG_DEBUG (this << " CellId " << (*itPss).first << " has RSRP " << rsrp << " and RSRQ " << rsrq);
-              m_ueCphySapUser-> ReportUeMeasurements((*itPss).first, rsrp, rsrq);
+              NS_LOG_DEBUG (this << " CellId " << (*itPss).first << " has RSRP " << rsrp_dBm << " and RSRQ " << rsrq_dB);
+              // store measurements
+              std::map <uint16_t, UeMeasurementsElement>::iterator itMeasMap =  m_UeMeasurementsMap.find ((*itPss).first);
+              if (itMeasMap == m_UeMeasurementsMap.end ())
+                {
+                  // insert new entry
+                  UeMeasurementsElement newEl;
+                  newEl.rsrpSum = rsrp_dBm;
+                  newEl.rsrpNum = 1;
+                  newEl.rsrqSum = rsrq_dB;
+                  newEl.rsrqNum = 1;
+                  m_UeMeasurementsMap.insert (std::pair <uint16_t, UeMeasurementsElement> ((*itPss).first, newEl));
+                }
+              else
+                {
+                  (*itMeasMap).second.rsrpSum += rsrp_dBm;
+                  (*itMeasMap).second.rsrpNum++;
+                  (*itMeasMap).second.rsrqSum += rsrq_dB;
+                  (*itMeasMap).second.rsrqNum++;
+                }
               
             }
           itPss++;
@@ -619,6 +645,30 @@ LteUePhy::CreateDlCqiFeedbackMessage (const SpectrumValue& sinr)
 
   msg->SetDlCqi (dlcqi);
   return msg;
+}
+
+
+void
+LteUePhy::ReportUeMeasurements ()
+{
+  NS_LOG_FUNCTION (this << Simulator::Now ());
+  NS_LOG_DEBUG (this << " Report UE Measurements ");
+  LteUeCphySapUser::UeMeasurementsParameters ret;
+  std::map <uint16_t, UeMeasurementsElement>::iterator it;
+  for (it = m_UeMeasurementsMap.begin (); it != m_UeMeasurementsMap.end (); it++)
+    {
+      double avg_rsrp = (*it).second.rsrpSum / (double)(*it).second.rsrpNum;
+      double avg_rsrq = (*it).second.rsrqSum / (double)(*it).second.rsrqNum;
+      NS_LOG_DEBUG (this << " CellId " << (*it).first << " RSRP " << avg_rsrp << " (nSamples " << (*it).second.rsrpNum << ") RSRQ " << avg_rsrq << " (nSamples " << (*it).second.rsrpNum << ")");
+      LteUeCphySapUser::UeMeasurementsElement newEl;
+      newEl.m_cellId = (*it).first;
+      newEl.m_rsrp = avg_rsrp;
+      newEl.m_rsrq = avg_rsrq;
+      ret.m_ueMeasurementsList.push_back (newEl);
+    }
+  m_ueCphySapUser-> ReportUeMeasurements(ret);
+  m_UeMeasurementsMap.clear ();
+  Simulator::Schedule (m_ueMeasurementsFilterPeriod, &LteUePhy::ReportUeMeasurements, this);
 }
 
 

@@ -544,10 +544,15 @@ LteUeRrc::DoRecvMasterInformationBlock (LteRrcSap::MasterInformationBlock msg)
 }
 
 void
-LteUeRrc::DoReportUeMeasurements (uint16_t cellId, double rsrp, double rsrq)
+LteUeRrc::DoReportUeMeasurements (LteUeCphySapUser::UeMeasurementsParameters params)
 {
   NS_LOG_FUNCTION (this);
-  NS_LOG_DEBUG (this << " CellId " << cellId << " RSRP " << rsrp << " RSRQ " << rsrq);
+  for (uint16_t i = 0; i < params.m_ueMeasurementsList.size (); i++)
+    {
+      
+      NS_LOG_DEBUG (this << " CellId " << params.m_ueMeasurementsList.at (i).m_cellId << " RSRP " << params.m_ueMeasurementsList.at (i).m_rsrp << " RSRQ " << params.m_ueMeasurementsList.at (i).m_rsrq);
+      
+    }
 }
 
 

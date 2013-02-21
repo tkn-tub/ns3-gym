@@ -108,6 +108,17 @@ public:
    */
   virtual ~LteUeCphySapUser ();
 
+  struct UeMeasurementsElement
+    {
+      uint16_t m_cellId;
+      double m_rsrp;
+      double m_rsrq;
+    };
+  struct UeMeasurementsParameters
+    {
+      std::vector <struct UeMeasurementsElement> m_ueMeasurementsList;
+    };
+
 
   /** 
    * 
@@ -121,7 +132,7 @@ public:
    * \param rsrp the RSRP measured (see sect. 5.1.1 of 36.214) [W]
    * \param rsrq the RSRQ measured (see sect. 5.1.3 of 36.214) [linear ratio]
    */
-  virtual void ReportUeMeasurements (uint16_t cellId, double rsrp, double rsrq) = 0;
+  virtual void ReportUeMeasurements (UeMeasurementsParameters params) = 0;
 };
 
 
@@ -228,7 +239,7 @@ public:
   // methods inherited from LteUeCphySapUser go here
   virtual void RecvMasterInformationBlock (LteRrcSap::MasterInformationBlock mib);
 
-  virtual void ReportUeMeasurements (uint16_t cellId, double rsrp, double rsrq);
+  virtual void ReportUeMeasurements (LteUeCphySapUser::UeMeasurementsParameters params);
 
 private:
   MemberLteUeCphySapUser ();
@@ -255,9 +266,9 @@ MemberLteUeCphySapUser<C>::RecvMasterInformationBlock (LteRrcSap::MasterInformat
 
 template <class C>
 void
-MemberLteUeCphySapUser<C>::ReportUeMeasurements (uint16_t cellId, double rsrp, double rsrq)
+MemberLteUeCphySapUser<C>::ReportUeMeasurements (LteUeCphySapUser::UeMeasurementsParameters params)
 {
-  m_owner->DoReportUeMeasurements (cellId, rsrp, rsrq);
+  m_owner->DoReportUeMeasurements (params);
 }
 
 
