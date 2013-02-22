@@ -85,7 +85,7 @@ InetTopologyReader::Read (void)
   lineBuffer >> totlink;
   NS_LOG_INFO ("Inet topology should have " << totnode << " nodes and " << totlink << " links");
 
-  for (int i = 0; i <= totnode; i++)
+  for (int i = 0; i < totnode; i++)
     {
       getline (topgen,line);
     }
