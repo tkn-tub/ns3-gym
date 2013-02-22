@@ -518,6 +518,10 @@ UeManager::PrepareHandover (uint16_t cellId)
         params.bearers = GetErabList ();
   
         LteRrcSap::HandoverPreparationInfo hpi;
+        hpi.asConfig.sourceMeasConfig.haveQuantityConfig = false;
+        hpi.asConfig.sourceMeasConfig.haveMeasGapConfig = false;
+        hpi.asConfig.sourceMeasConfig.haveSmeasure = false;
+        hpi.asConfig.sourceMeasConfig.haveSpeedStatePars = false;
         hpi.asConfig.sourceUeIdentity = m_rnti;
         hpi.asConfig.sourceDlCarrierFreq = m_rrc->m_dlEarfcn;
         hpi.asConfig.sourceRadioResourceConfig = GetRadioResourceConfigForHandoverPreparationInfo ();
