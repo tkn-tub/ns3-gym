@@ -535,6 +535,8 @@ void AnimationInterface::StartAnimation (bool restart)
                       // ouptut the p2p link
                       NS_LOG_INFO ("Link:" << GetIpv4Address (dev) << ":" << GetMacAddress (dev) << "----" << GetIpv4Address (chDev) << ":" << GetMacAddress (chDev) );
                       SetLinkDescription (n1Id, n2Id, "", GetIpv4Address (dev) + "~" + GetMacAddress (dev), GetIpv4Address (chDev) + "~" + GetMacAddress (chDev));
+                      AddToIpv4AddressNodeIdTable (GetIpv4Address (dev), n1Id);
+                      AddToIpv4AddressNodeIdTable (GetIpv4Address (chDev), n2Id);
                       std::ostringstream oss;
                       if (m_xml)
                         {
@@ -552,6 +554,7 @@ void AnimationInterface::StartAnimation (bool restart)
             {
               NS_LOG_INFO ("Link:" << GetIpv4Address (dev) << " Channel Type:" << channelType << " Mac: " << GetMacAddress (dev));
               WriteNonP2pLinkProperties (n->GetId (), GetIpv4Address (dev) + "~" + GetMacAddress (dev), channelType); 
+              AddToIpv4AddressNodeIdTable (GetIpv4Address (dev), n->GetId ());
             }
         }
     }
@@ -563,6 +566,11 @@ void AnimationInterface::StartAnimation (bool restart)
     }
   if (!restart)
     ConnectCallbacks ();
+}
+
+void AnimationInterface::AddToIpv4AddressNodeIdTable (std::string ipv4Address, uint32_t nodeId)
+{
+  m_ipv4ToNodeIdMap[ipv4Address] = nodeId;
 }
 
 void AnimationInterface::ConnectLteEnb (Ptr <Node> n, Ptr <LteEnbNetDevice> nd, uint32_t devIndex)

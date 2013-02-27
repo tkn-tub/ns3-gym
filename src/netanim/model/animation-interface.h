@@ -565,6 +565,8 @@ private:
 
   
   std::map <std::string, uint32_t> m_macToNodeIdMap;
+  std::map <std::string, uint32_t> m_ipv4ToNodeIdMap;
+  void AddToIpv4AddressNodeIdTable (std::string, uint32_t);
   bool IsInTimeWindow ();
 
   // Path helper
