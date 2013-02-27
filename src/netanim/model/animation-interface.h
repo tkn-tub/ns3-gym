@@ -75,6 +75,11 @@ struct LinkPairCompare
    
 };
 
+struct Ipv4RouteTrackElement {
+  std::string destination;
+  uint32_t fromNodeId;
+};
+
 /**
  * \defgroup netanim Netanim
  *
@@ -122,9 +127,9 @@ public:
    * \param pollInterval The periodic interval at which routing table information is polled
    *        Default: 5s
    *
-   * \returns none
+   * \returns reference to this AnimationInterface object
    */
-  void EnableIpv4RouteTracking (std::string fileName, Time startTime, Time stopTime, Time pollInterval = Seconds(5));
+  AnimationInterface & EnableIpv4RouteTracking (std::string fileName, Time startTime, Time stopTime, Time pollInterval = Seconds(5));
 
   /**
    * \brief Enable tracking of the Ipv4 routing table for a set of Nodes
@@ -136,9 +141,9 @@ public:
    * \param pollInterval The periodic interval at which routing table information is polled
    *        Default: 5s
    *
-   * \returns none
+   * \returns reference to this AnimationInterface object
    */
-  void EnableIpv4RouteTracking (std::string fileName, Time startTime, Time stopTime, NodeContainer nc, Time pollInterval = Seconds(5));
+  AnimationInterface & EnableIpv4RouteTracking (std::string fileName, Time startTime, Time stopTime, NodeContainer nc, Time pollInterval = Seconds(5));
 
   /**
    * \brief Check if AnimationInterface is initialized
@@ -354,6 +359,14 @@ public:
   void UpdateLinkDescription (Ptr <Node> fromNode, Ptr <Node> toNode,
                               std::string linkDescription);
 
+  /**
+   * \brief Helper function to print the routing path from a source node to destination IP
+   * \param fromNodeId The source node
+   * \param destinationIpv4Address The destination Ipv4 Address 
+   *
+   * \returns reference to this AnimationInterface object
+   */
+  AnimationInterface & AddSourceDestination (uint32_t fromNodeId, std::string destinationIpv4Address);
 
   /**
    * \brief Is AnimationInterface started
@@ -413,6 +426,7 @@ private:
   NodeContainer m_routingNc;
   
   void TrackIpv4Route ();
+  void TrackIpv4RoutePaths ();
   std::string GetIpv4RoutingTable (Ptr <Node> n);
 
   /**
@@ -567,6 +581,8 @@ private:
   std::map <std::string, uint32_t> m_macToNodeIdMap;
   std::map <std::string, uint32_t> m_ipv4ToNodeIdMap;
   void AddToIpv4AddressNodeIdTable (std::string, uint32_t);
+  void RecursiveIpv4RoutePathSearch (std::string fromIpv4, std::string toIpv4);
+  std::vector <Ipv4RouteTrackElement> m_ipv4RouteTrackElements;
   bool IsInTimeWindow ();
 
   // Path helper

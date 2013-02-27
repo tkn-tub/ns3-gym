@@ -81,7 +81,7 @@ AnimationInterface::~AnimationInterface ()
   StopAnimation ();
 }
 
-void AnimationInterface::EnableIpv4RouteTracking (std::string fileName, Time startTime, Time stopTime, Time pollInterval)
+AnimationInterface & AnimationInterface::EnableIpv4RouteTracking (std::string fileName, Time startTime, Time stopTime, Time pollInterval)
 {
   m_routingFileName = fileName;
   SetRoutingOutputFile (m_routingFileName);
@@ -89,12 +89,13 @@ void AnimationInterface::EnableIpv4RouteTracking (std::string fileName, Time sta
   m_routingPollInterval = pollInterval;
   WriteN (GetXMLOpen_anim (0), m_routingF); 
   Simulator::Schedule (startTime, &AnimationInterface::TrackIpv4Route, this);
+  return *this;
 }
 
-void AnimationInterface::EnableIpv4RouteTracking (std::string fileName, Time startTime, Time stopTime, NodeContainer nc, Time pollInterval)
+AnimationInterface & AnimationInterface::EnableIpv4RouteTracking (std::string fileName, Time startTime, Time stopTime, NodeContainer nc, Time pollInterval)
 {
   m_routingNc = nc;
-  EnableIpv4RouteTracking (fileName, startTime, stopTime, pollInterval);
+  return EnableIpv4RouteTracking (fileName, startTime, stopTime, pollInterval);
 }
 
 std::string AnimationInterface::GetIpv4RoutingTable (Ptr <Node> n)
@@ -111,6 +112,100 @@ std::string AnimationInterface::GetIpv4RoutingTable (Ptr <Node> n)
   Ptr<OutputStreamWrapper> routingstream = Create<OutputStreamWrapper> (&stream);
   ipv4->GetRoutingProtocol ()->PrintRoutingTable (routingstream);
   return stream.str();
+
+}
+
+void AnimationInterface::RecursiveIpv4RoutePathSearch (std::string from, std::string to)
+{
+  Ptr <Node> fromNode = NodeList::GetNode (m_ipv4ToNodeIdMap[from]);
+  Ptr <Node> toNode = NodeList::GetNode (m_ipv4ToNodeIdMap[to]);
+  if (fromNode->GetId () == toNode->GetId ())
+    {
+      return;
+    }
+  if (!fromNode)
+    {
+      NS_FATAL_ERROR ("Node: " << m_ipv4ToNodeIdMap[from] << " Not found");
+      return;
+    }
+  if (!toNode)
+    {
+      NS_FATAL_ERROR ("Node: " << m_ipv4ToNodeIdMap[to] << " Not found");
+      return;
+    }
+  Ptr <ns3::Ipv4> ipv4 = fromNode->GetObject <ns3::Ipv4> ();
+  if (!ipv4)
+    {
+      NS_LOG_WARN ("ipv4 object not found");
+      return;
+    }
+  Ptr <Ipv4RoutingProtocol> rp = ipv4->GetRoutingProtocol ();
+  if (!rp)
+    {
+      NS_LOG_WARN ("Routing protocol object not found");
+      return;
+    }
+  Ptr<Packet> pkt = 0;
+  Ipv4Header header;
+  header.SetDestination (Ipv4Address (to.c_str ()));
+  Socket::SocketErrno sockerr;
+  Ptr <Ipv4Route> rt = rp->RouteOutput (pkt, header, 0, sockerr);
+  if (!rt)
+    {
+      return;
+    }
+  NS_LOG_UNCOND ("Node: " << fromNode->GetId () << " G:" << rt->GetGateway ());
+  std::ostringstream oss;
+  oss << rt->GetGateway ();
+  if (oss.str () == "0.0.0.0" && (sockerr != Socket::ERROR_NOROUTETOHOST))
+    {
+      NS_LOG_UNCOND ("Null gw");
+      return;
+    }
+  RecursiveIpv4RoutePathSearch (oss.str (), to);
+
+}
+
+void AnimationInterface::TrackIpv4RoutePaths ()
+{
+  NS_LOG_UNCOND ("Track");
+  if (m_ipv4RouteTrackElements.empty ())
+    {
+      return;
+    }
+  for (std::vector <Ipv4RouteTrackElement>::const_iterator i = m_ipv4RouteTrackElements.begin ();
+       i != m_ipv4RouteTrackElements.end ();
+       ++i)
+    {
+      Ipv4RouteTrackElement trackElement = *i;
+      Ptr <Node> fromNode = NodeList::GetNode (trackElement.fromNodeId);
+      if (!fromNode)
+        {
+          NS_FATAL_ERROR ("Node: " << trackElement.fromNodeId << " Not found");
+          continue;
+        }
+      Ptr <ns3::Ipv4> ipv4 = fromNode->GetObject <ns3::Ipv4> ();
+      if (!ipv4)
+        {
+          NS_LOG_WARN ("ipv4 object not found");
+          continue;
+        }
+      Ptr <Ipv4RoutingProtocol> rp = ipv4->GetRoutingProtocol ();
+      if (!rp)
+        {
+          NS_LOG_WARN ("Routing protocol object not found");
+          continue;
+        }
+      Ptr<Packet> pkt = 0;
+      Ipv4Header header;
+      header.SetDestination (Ipv4Address (trackElement.destination.c_str ()));
+      Socket::SocketErrno sockerr;
+      Ptr <Ipv4Route> rt = rp->RouteOutput (pkt, header, 0, sockerr);
+      NS_LOG_UNCOND ("Node: " << fromNode->GetId () << " G:" << rt->GetGateway ());
+      std::ostringstream oss;
+      oss << rt->GetGateway ();
+      RecursiveIpv4RoutePathSearch (oss.str (), trackElement.destination);
+    }
 
 }
 
@@ -137,6 +232,7 @@ void AnimationInterface::TrackIpv4Route ()
           WriteN (GetXMLOpenClose_routing (n->GetId (), GetIpv4RoutingTable (n)), m_routingF);
         }
     }
+  //TrackIpv4RoutePaths ();
   Simulator::Schedule (m_routingPollInterval, &AnimationInterface::TrackIpv4Route, this);
 }
 
@@ -447,7 +543,10 @@ std::string AnimationInterface::GetIpv4Address (Ptr <NetDevice> nd)
 {
   Ptr<Ipv4> ipv4 = NodeList::GetNode (nd->GetNode ()->GetId ())->GetObject <Ipv4> ();
   if (!ipv4)
-    return "0.0.0.0";
+    {
+      NS_LOG_WARN ("Node: " << nd->GetNode ()->GetId () << " No ipv4 object found");
+      return "0.0.0.0";
+    }
   int32_t ifIndex = ipv4->GetInterfaceForDevice (nd);
   if (ifIndex == -1)
     {
@@ -519,9 +618,18 @@ void AnimationInterface::StartAnimation (bool restart)
           if (!ch) 
             {
 	      NS_LOG_DEBUG ("No channel can't be a p2p device");
+              // Try to see if it is an LTE NetDevice, which does not return a channel
+              if ((dev->GetInstanceTypeId ().GetName () == "ns3::LteUeNetDevice") || 
+                  (dev->GetInstanceTypeId ().GetName () == "ns3::LteEnbNetDevice")||
+                  (dev->GetInstanceTypeId ().GetName () == "ns3::VirtualNetDevice"))
+                {
+                  WriteNonP2pLinkProperties (n->GetId (), GetIpv4Address (dev) + "~" + GetMacAddress (dev), dev->GetInstanceTypeId ().GetName ());
+                  AddToIpv4AddressNodeIdTable (GetIpv4Address (dev), n->GetId ());
+                }
               continue;
             }
           std::string channelType = ch->GetInstanceTypeId ().GetName ();
+          NS_LOG_DEBUG ("Got ChannelType" << channelType);
           if (channelType == std::string ("ns3::PointToPointChannel"))
             { // Since these are duplex links, we only need to dump
               // if srcid < dstid
@@ -572,6 +680,14 @@ void AnimationInterface::AddToIpv4AddressNodeIdTable (std::string ipv4Address, u
 {
   m_ipv4ToNodeIdMap[ipv4Address] = nodeId;
 }
+
+AnimationInterface & AnimationInterface::AddSourceDestination (uint32_t fromNodeId, std::string ipv4Address)
+{
+  Ipv4RouteTrackElement element = { ipv4Address, fromNodeId };
+  m_ipv4RouteTrackElements.push_back (element);
+  return *this;
+}
+
 
 void AnimationInterface::ConnectLteEnb (Ptr <Node> n, Ptr <LteEnbNetDevice> nd, uint32_t devIndex)
 {
