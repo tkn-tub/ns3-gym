@@ -518,12 +518,9 @@ UeManager::PrepareHandover (uint16_t cellId)
         params.bearers = GetErabList ();
   
         LteRrcSap::HandoverPreparationInfo hpi;
-        hpi.asConfig.sourceMeasConfig.haveQuantityConfig = false;
-        hpi.asConfig.sourceMeasConfig.haveMeasGapConfig = false;
-        hpi.asConfig.sourceMeasConfig.haveSmeasure = false;
-        hpi.asConfig.sourceMeasConfig.haveSpeedStatePars = false;
         hpi.asConfig.sourceUeIdentity = m_rnti;
         hpi.asConfig.sourceDlCarrierFreq = m_rrc->m_dlEarfcn;
+        hpi.asConfig.sourceMeasConfig = BuildMeasConfig ();
         hpi.asConfig.sourceRadioResourceConfig = GetRadioResourceConfigForHandoverPreparationInfo ();
         hpi.asConfig.sourceMasterInformationBlock.dlBandwidth = m_rrc->m_dlBandwidth;
         hpi.asConfig.sourceMasterInformationBlock.systemFrameNumber = 0;
@@ -1028,8 +1025,77 @@ UeManager::BuildRrcConnectionReconfiguration ()
   msg.haveRadioResourceConfigDedicated = true;
   msg.radioResourceConfigDedicated = BuildRadioResourceConfigDedicated ();
   msg.haveMobilityControlInfo = false;
-  msg.haveMeasConfig = false;
+  msg.haveMeasConfig = true;
+  msg.measConfig = BuildMeasConfig ();
+
   return msg;
+}
+
+LteRrcSap::MeasConfig
+UeManager::BuildMeasConfig ()
+{
+  // Just intra-frequency measurements are supported,
+  // so just one measurement object is created
+  LteRrcSap::MeasObjectToAddMod measObject;
+  measObject.measObjectId = 1;
+  measObject.measObjectEutra.carrierFreq = m_rrc->m_dlEarfcn;
+  measObject.measObjectEutra.allowedMeasBandwidth = m_rrc->m_dlBandwidth;
+  measObject.measObjectEutra.presenceAntennaPort1 = false;
+  measObject.measObjectEutra.neighCellConfig = 0;
+  measObject.measObjectEutra.offsetFreq = 0;
+  measObject.measObjectEutra.haveCellForWhichToReportCGI = false;
+
+  // Just event A2 and event A4 are supported
+  LteRrcSap::ReportConfigToAddMod reportConfigA2;
+  reportConfigA2.reportConfigId = 1;
+  reportConfigA2.reportConfigEutra.triggerType = LteRrcSap::ReportConfigEutra::event;
+  reportConfigA2.reportConfigEutra.eventId = LteRrcSap::ReportConfigEutra::eventA2;
+  reportConfigA2.reportConfigEutra.threshold1.choice = LteRrcSap::ThresholdEutra::thresholdRsrq;
+  reportConfigA2.reportConfigEutra.threshold1.range = m_rrc->m_eventA2Threshold;
+  reportConfigA2.reportConfigEutra.hysteresis = 0;
+  reportConfigA2.reportConfigEutra.timeToTrigger = 0;
+  reportConfigA2.reportConfigEutra.triggerQuantity = LteRrcSap::ReportConfigEutra::rsrq;
+  reportConfigA2.reportConfigEutra.reportQuantity = LteRrcSap::ReportConfigEutra::sameAsTriggerQuantity; 
+  reportConfigA2.reportConfigEutra.maxReportCells = LteRrcSap::MaxReportCells;
+  reportConfigA2.reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::ms480;
+  reportConfigA2.reportConfigEutra.reportAmount = 255;
+
+  LteRrcSap::ReportConfigToAddMod reportConfigA4;
+  reportConfigA4.reportConfigId = 2;
+  reportConfigA4.reportConfigEutra.triggerType = LteRrcSap::ReportConfigEutra::event;
+  reportConfigA4.reportConfigEutra.eventId = LteRrcSap::ReportConfigEutra::eventA4;
+  reportConfigA4.reportConfigEutra.threshold1.choice = LteRrcSap::ThresholdEutra::thresholdRsrq;
+  reportConfigA4.reportConfigEutra.threshold1.range = m_rrc->m_eventA4Threshold;
+  reportConfigA4.reportConfigEutra.hysteresis = 0;
+  reportConfigA4.reportConfigEutra.timeToTrigger = 0;
+  reportConfigA4.reportConfigEutra.triggerQuantity = LteRrcSap::ReportConfigEutra::rsrq;
+  reportConfigA4.reportConfigEutra.reportQuantity = LteRrcSap::ReportConfigEutra::sameAsTriggerQuantity; 
+  reportConfigA4.reportConfigEutra.maxReportCells = LteRrcSap::MaxReportCells;
+  reportConfigA4.reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::ms480;
+  reportConfigA4.reportConfigEutra.reportAmount = 255;
+
+  LteRrcSap::MeasIdToAddMod measId[2];
+  measId[0].measId = 1;
+  measId[0].measObjectId = 1;
+  measId[0].reportConfigId = 1;
+  measId[1].measId = 2;
+  measId[1].measObjectId = 1;
+  measId[1].reportConfigId = 2;
+
+  LteRrcSap::MeasConfig measConfig;
+  measConfig.measObjectToAddModList.push_back (measObject);
+  measConfig.reportConfigToAddModList.push_back (reportConfigA2);
+  measConfig.reportConfigToAddModList.push_back (reportConfigA4);
+  measConfig.measIdToAddModList.push_back (measId[0]);
+  measConfig.measIdToAddModList.push_back (measId[1]);
+  measConfig.haveQuantityConfig = true;
+  measConfig.quantityConfig.filterCoefficientRSRP = 4; // default = fc4 (See TS 36.331)
+  measConfig.quantityConfig.filterCoefficientRSRQ = 4; // default = fc4 (See TS 36.331)
+  measConfig.haveMeasGapConfig = false;
+  measConfig.haveSmeasure = false;
+  measConfig.haveSpeedStatePars = false;
+
+  return measConfig;
 }
 
 LteRrcSap::RadioResourceConfigDedicated
@@ -1243,7 +1309,17 @@ LteEnbRrc::GetTypeId (void)
                    "Whether to admit a connection request from a Ue",
                    BooleanValue (true),  
                    MakeBooleanAccessor (&LteEnbRrc::m_admitRrcConnectionRequest),
-                   MakeBooleanChecker ()) 
+                   MakeBooleanChecker ())
+    .AddAttribute ("EventA2Threshold",
+                   "Threshold of the event A2 (Serving becomes worse than threshold)",
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&LteEnbRrc::m_eventA2Threshold),
+                   MakeUintegerChecker<uint8_t> ())   
+    .AddAttribute ("EventA4Threshold",
+                   "Threshold of the event A4 (Neighbour becomes better than threshold)",
+                   UintegerValue (255),
+                   MakeUintegerAccessor (&LteEnbRrc::m_eventA4Threshold),
+                   MakeUintegerChecker<uint8_t> ())   
     .AddTraceSource ("NewUeContext",
                      "trace fired upon creation of a new UE context",
                      MakeTraceSourceAccessor (&LteEnbRrc::m_newUeContextTrace))
