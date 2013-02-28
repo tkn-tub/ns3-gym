@@ -80,6 +80,13 @@ struct Ipv4RouteTrackElement {
   uint32_t fromNodeId;
 };
 
+
+typedef struct {
+  uint32_t nodeId;
+  std::string nextHop;
+  
+} Ipv4RoutePathElement;
+
 /**
  * \defgroup netanim Netanim
  *
@@ -581,8 +588,10 @@ private:
   std::map <std::string, uint32_t> m_macToNodeIdMap;
   std::map <std::string, uint32_t> m_ipv4ToNodeIdMap;
   void AddToIpv4AddressNodeIdTable (std::string, uint32_t);
-  void RecursiveIpv4RoutePathSearch (std::string fromIpv4, std::string toIpv4);
   std::vector <Ipv4RouteTrackElement> m_ipv4RouteTrackElements;
+  typedef std::vector <Ipv4RoutePathElement> Ipv4RoutePathElements;
+  void RecursiveIpv4RoutePathSearch (std::string fromIpv4, std::string toIpv4, Ipv4RoutePathElements &);
+  void WriteRoutePath (uint32_t nodeId, std::string destination, Ipv4RoutePathElements rpElements);
   bool IsInTimeWindow ();
 
   // Path helper
@@ -628,6 +637,8 @@ private:
   std::string GetXMLOpenClose_meta (std::string metaInfo);
   std::string GetXMLOpenClose_NonP2pLinkProperties (uint32_t id, std::string ipv4Address, std::string channelType);
   std::string GetXMLOpenClose_routing (uint32_t id, std::string routingInfo);
+  std::string GetXMLOpenClose_rp (uint32_t nodeId, std::string destination, Ipv4RoutePathElements rpElements);
+
 
 
   /// Provides uniform random variables.

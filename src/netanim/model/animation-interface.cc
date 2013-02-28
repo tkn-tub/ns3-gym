@@ -115,12 +115,20 @@ std::string AnimationInterface::GetIpv4RoutingTable (Ptr <Node> n)
 
 }
 
-void AnimationInterface::RecursiveIpv4RoutePathSearch (std::string from, std::string to)
+void AnimationInterface::RecursiveIpv4RoutePathSearch (std::string from, std::string to, Ipv4RoutePathElements & rpElements)
 {
+  NS_LOG_INFO ("RecursiveIpv4RoutePathSearch from:" << from.c_str () << " to:" << to.c_str ());
+  if (from == "0.0.0.0")
+    {
+      NS_LOG_INFO ("Got 0.0.0.0, End recursion");
+      return;
+    }
   Ptr <Node> fromNode = NodeList::GetNode (m_ipv4ToNodeIdMap[from]);
   Ptr <Node> toNode = NodeList::GetNode (m_ipv4ToNodeIdMap[to]);
   if (fromNode->GetId () == toNode->GetId ())
     {
+      Ipv4RoutePathElement elem = { fromNode->GetId (), "L" };
+      rpElements.push_back (elem);
       return;
     }
   if (!fromNode)
@@ -159,16 +167,25 @@ void AnimationInterface::RecursiveIpv4RoutePathSearch (std::string from, std::st
   oss << rt->GetGateway ();
   if (oss.str () == "0.0.0.0" && (sockerr != Socket::ERROR_NOROUTETOHOST))
     {
-      NS_LOG_UNCOND ("Null gw");
+      NS_LOG_INFO ("Null gw");
+      Ipv4RoutePathElement elem = { fromNode->GetId (), "C" };
+      rpElements.push_back (elem);
+      if ( m_ipv4ToNodeIdMap.find (to) != m_ipv4ToNodeIdMap.end ())
+        {
+          Ipv4RoutePathElement elem2 = { m_ipv4ToNodeIdMap[to], "L" };
+          rpElements.push_back (elem2);
+        }
       return;
     }
-  RecursiveIpv4RoutePathSearch (oss.str (), to);
+  NS_LOG_INFO ("Node:" << fromNode->GetId () << "-->" << rt->GetGateway ()); 
+  Ipv4RoutePathElement elem = { fromNode->GetId (), oss.str () };
+  rpElements.push_back (elem);
+  RecursiveIpv4RoutePathSearch (oss.str (), to, rpElements);
 
 }
 
 void AnimationInterface::TrackIpv4RoutePaths ()
 {
-  NS_LOG_UNCOND ("Track");
   if (m_ipv4RouteTrackElements.empty ())
     {
       return;
@@ -196,15 +213,37 @@ void AnimationInterface::TrackIpv4RoutePaths ()
           NS_LOG_WARN ("Routing protocol object not found");
           continue;
         }
+      NS_LOG_INFO ("Begin Track Route for: " << trackElement.destination.c_str () << " From:" << trackElement.fromNodeId);
       Ptr<Packet> pkt = 0;
       Ipv4Header header;
       header.SetDestination (Ipv4Address (trackElement.destination.c_str ()));
       Socket::SocketErrno sockerr;
       Ptr <Ipv4Route> rt = rp->RouteOutput (pkt, header, 0, sockerr);
-      NS_LOG_UNCOND ("Node: " << fromNode->GetId () << " G:" << rt->GetGateway ());
+      if (!rt)
+        {
+          NS_LOG_INFO ("No route to :" << trackElement.destination.c_str ());
+        }
       std::ostringstream oss;
       oss << rt->GetGateway ();
-      RecursiveIpv4RoutePathSearch (oss.str (), trackElement.destination);
+      NS_LOG_INFO ("Node:" << trackElement.fromNodeId << "-->" << rt->GetGateway ()); 
+      Ipv4RoutePathElements rpElements;
+      if (rt->GetGateway () == "0.0.0.0")
+        {
+          Ipv4RoutePathElement elem = { trackElement.fromNodeId, "C" };
+          rpElements.push_back (elem);
+          if ( m_ipv4ToNodeIdMap.find (trackElement.destination) != m_ipv4ToNodeIdMap.end ())
+            {
+              Ipv4RoutePathElement elem2 = { m_ipv4ToNodeIdMap[trackElement.destination], "L" };
+              rpElements.push_back (elem2);
+            }
+        }
+      else
+        {
+          Ipv4RoutePathElement elem = { trackElement.fromNodeId, oss.str () };
+          rpElements.push_back (elem);
+        }
+      RecursiveIpv4RoutePathSearch (oss.str (), trackElement.destination, rpElements);
+      WriteRoutePath (trackElement.fromNodeId, trackElement.destination, rpElements);
     }
 
 }
@@ -232,7 +271,7 @@ void AnimationInterface::TrackIpv4Route ()
           WriteN (GetXMLOpenClose_routing (n->GetId (), GetIpv4RoutingTable (n)), m_routingF);
         }
     }
-  //TrackIpv4RoutePaths ();
+  TrackIpv4RoutePaths ();
   Simulator::Schedule (m_routingPollInterval, &AnimationInterface::TrackIpv4Route, this);
 }
 
@@ -905,6 +944,21 @@ void AnimationInterface::WriteDummyPacket ()
 
 }
 
+void AnimationInterface::WriteRoutePath (uint32_t nodeId, std::string destination, Ipv4RoutePathElements rpElements)
+{
+  NS_LOG_INFO ("Writing Route Path From :" << nodeId << " To: " << destination.c_str ());
+  WriteN (GetXMLOpenClose_rp (nodeId, destination, rpElements), m_routingF);
+  /*for (Ipv4RoutePathElements::const_iterator i = rpElements.begin ();
+       i != rpElements.end ();
+       ++i)
+    {
+      Ipv4RoutePathElement rpElement = *i;
+      NS_LOG_INFO ("Node:" << rpElement.nodeId << "-->" << rpElement.nextHop.c_str ());
+      WriteN (GetXMLOpenClose_rp (rpElement.node, GetIpv4RoutingTable (n)), m_routingF);
+
+    }
+  */
+}
 
 void AnimationInterface::WriteNonP2pLinkProperties (uint32_t id, std::string ipv4Address, std::string channelType)
 {
@@ -1922,6 +1976,24 @@ std::string AnimationInterface::GetXMLOpenClose_routing (uint32_t nodeId, std::s
       << "/>" << std::endl;
   return oss.str ();
 }
+
+std::string AnimationInterface::GetXMLOpenClose_rp (uint32_t nodeId, std::string destination, Ipv4RoutePathElements rpElements)
+{
+  std::ostringstream oss;
+  oss << "<" << "rp" << " t =\"" << Simulator::Now ().GetSeconds () << "\""
+      << " id=\"" << nodeId << "\"" << " d=\"" << destination.c_str () << "\""
+      << " c=\""  << rpElements.size () << "\"" << ">" << std::endl;
+  for (Ipv4RoutePathElements::const_iterator i = rpElements.begin ();
+       i != rpElements.end ();
+       ++i)
+    {
+      Ipv4RoutePathElement rpElement = *i;
+      oss << "<rpe" << " n=\"" << rpElement.nodeId << "\"" << " nH=\"" << rpElement.nextHop.c_str () << "\"" << "/>" << std::endl;
+    }
+  oss << "<rp/>" << std::endl;
+  return oss.str ();
+}
+
 
 std::string AnimationInterface::GetXMLOpenClose_p (std::string pktType, uint32_t fId, double fbTx, double lbTx, 
                                                    uint32_t tId, double fbRx, double lbRx, std::string metaInfo, 
