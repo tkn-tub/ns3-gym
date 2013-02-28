@@ -4722,7 +4722,7 @@ RrcConnectionReconfigurationHeader::Print (std::ostream &os) const
 {
   os << "rrcTransactionIdentifier: " << (int) m_rrcTransactionIdentifier << std::endl;
   os << "haveMeasConfig: " << m_haveMeasConfig << std::endl;
-  if (m_haveMobilityControlInfo)
+  if (m_haveMeasConfig)
     {
       if (!m_measConfig.measObjectToRemoveList.empty ())
         {
