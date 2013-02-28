@@ -118,9 +118,9 @@ std::string AnimationInterface::GetIpv4RoutingTable (Ptr <Node> n)
 void AnimationInterface::RecursiveIpv4RoutePathSearch (std::string from, std::string to, Ipv4RoutePathElements & rpElements)
 {
   NS_LOG_INFO ("RecursiveIpv4RoutePathSearch from:" << from.c_str () << " to:" << to.c_str ());
-  if (from == "0.0.0.0")
+  if ((from == "0.0.0.0") || (from == "127.0.0.1"))
     {
-      NS_LOG_INFO ("Got 0.0.0.0, End recursion");
+      NS_LOG_INFO ("Got " << from.c_str () << " End recursion");
       return;
     }
   Ptr <Node> fromNode = NodeList::GetNode (m_ipv4ToNodeIdMap[from]);
@@ -236,6 +236,11 @@ void AnimationInterface::TrackIpv4RoutePaths ()
               Ipv4RoutePathElement elem2 = { m_ipv4ToNodeIdMap[trackElement.destination], "L" };
               rpElements.push_back (elem2);
             }
+        }
+      else if (rt->GetGateway () == "127.0.0.1")
+        {
+          Ipv4RoutePathElement elem = { trackElement.fromNodeId, "-1" };
+          rpElements.push_back (elem);
         }
       else
         {
