@@ -38,6 +38,8 @@
 #include "lte-as-sap.h"
 #include "lte-enb-net-device.h"
 
+#include <cmath>
+
 NS_LOG_COMPONENT_DEFINE ("LteUeRrc");
 
 namespace ns3 {
@@ -539,7 +541,7 @@ LteUeRrc::DoRecvMasterInformationBlock (LteRrcSap::MasterInformationBlock msg)
   m_receivedMib = true;
   if (m_state == IDLE_WAIT_SYSTEM_INFO && m_receivedMib && m_receivedSib2)
     {
-       SwitchToState (IDLE_CAMPED_NORMALLY);
+      SwitchToState (IDLE_CAMPED_NORMALLY);
     }
 }
 
@@ -547,12 +549,246 @@ void
 LteUeRrc::DoReportUeMeasurements (LteUeCphySapUser::UeMeasurementsParameters params)
 {
   NS_LOG_FUNCTION (this);
-  for (uint16_t i = 0; i < params.m_ueMeasurementsList.size (); i++)
-    {
+
+  for (std::vector <LteUeCphySapUser::UeMeasurementsElement>::iterator newMeasIt = params.m_ueMeasurementsList.begin (); newMeasIt != params.m_ueMeasurementsList.end (); ++newMeasIt)
+    {      
+      NS_LOG_LOGIC (this << " CellId " << newMeasIt->m_cellId << " RSRP " << newMeasIt->m_rsrp << " RSRQ " << newMeasIt->m_rsrq);    
       
-      NS_LOG_DEBUG (this << " CellId " << params.m_ueMeasurementsList.at (i).m_cellId << " RSRP " << params.m_ueMeasurementsList.at (i).m_rsrp << " RSRQ " << params.m_ueMeasurementsList.at (i).m_rsrq);
-      
+      //  3GPP TS 36.331 section 5.5.3.2 Layer 3 filtering
+      std::map<uint16_t, MeasValues>::iterator storedMeasIt = m_storedMeasValues.find (newMeasIt->m_cellId);
+      if (storedMeasIt == m_storedMeasValues.end ())
+        {
+          // first value is unfiltered
+          MeasValues v;
+          v.rsrp = newMeasIt->m_rsrp;
+          v.rsrq = newMeasIt->m_rsrq;
+          std::pair<uint16_t, MeasValues> val (newMeasIt->m_cellId, v);
+          std::pair<std::map<uint16_t, MeasValues>::iterator, bool> 
+            ret = m_storedMeasValues.insert (val);
+          NS_ASSERT_MSG (ret.second == true, "element already existed");
+          storedMeasIt = ret.first;
+        }
+      else
+        {
+          // F_n = (1-a) F_{n-1} + a M_n
+          storedMeasIt->second.rsrp = (1 - m_varMeasConfig.aRsrp) * storedMeasIt->second.rsrp 
+            + m_varMeasConfig.aRsrp * newMeasIt->m_rsrp;          
+          storedMeasIt->second.rsrq = (1 - m_varMeasConfig.aRsrq) * storedMeasIt->second.rsrq 
+            + m_varMeasConfig.aRsrq * newMeasIt->m_rsrq;          
+        }  
+      storedMeasIt->second.timestamp = Simulator::Now ();
     }
+
+                  
+  //  3GPP TS 36.331 section 5.5.4.1 Measurement report triggering - General
+  for (std::map<uint8_t, LteRrcSap::MeasIdToAddMod>::iterator measIdIt 
+         = m_varMeasConfig.measIdList.begin ();
+       measIdIt != m_varMeasConfig.measIdList.end ();
+       ++measIdIt)               
+    {
+      NS_ASSERT (measIdIt->first == measIdIt->second.measId);
+      uint8_t measId = measIdIt->first;
+      NS_LOG_LOGIC (this << " considering measId " << (uint32_t) measId);
+
+      std::map<uint8_t, LteRrcSap::ReportConfigToAddMod>::iterator 
+        reportConfigIt = m_varMeasConfig.reportConfigList.find (measIdIt->second.reportConfigId);
+      NS_ASSERT (reportConfigIt != m_varMeasConfig.reportConfigList.end ());
+      LteRrcSap::ReportConfigEutra& reportConfigEutra = reportConfigIt->second.reportConfigEutra;
+
+      std::map<uint8_t, LteRrcSap::MeasObjectToAddMod>::iterator 
+        measObjectIt = m_varMeasConfig.measObjectList.find (measIdIt->second.measObjectId);
+      NS_ASSERT (measObjectIt != m_varMeasConfig.measObjectList.end ());
+      LteRrcSap::MeasObjectEutra& measObjectEutra = measObjectIt->second.measObjectEutra;
+
+      std::map<uint8_t, VarMeasReport>::iterator 
+        measReportIt = m_varMeasReportList.find (measId);
+          
+      // we don't check the purpose field, as it is only included for
+      // triggerType == periodical, which is not supported  
+      NS_ASSERT_MSG (reportConfigEutra.triggerType 
+                     == LteRrcSap::ReportConfigEutra::event,
+                     "only triggerType == event is supported");
+      // only EUTRA is supported, no need to check for it
+
+      bool eventEntryCondApplicable = false;
+      bool eventLeavingCondApplicable = false;
+
+      std::list<uint16_t> concernedCellsEntry;
+      std::list<uint16_t> concernedCellsLeaving;
+              
+      switch (reportConfigEutra.eventId)
+        {
+        case LteRrcSap::ReportConfigEutra::eventA2:
+          {
+            double ms; // Ms, the measurement for serving cell
+            double thresh; // Tresh, the threshold parameter for this event
+            double hys = (double) reportConfigEutra.hysteresis * 0.5; // Hys, the hysteresis parameter for this event. See 36.331 section 6.3.5 for the conversion.
+            switch (reportConfigEutra.triggerQuantity)
+              {
+              case LteRrcSap::ReportConfigEutra::rsrp:
+                ms = m_storedMeasValues[m_cellId].rsrp;
+                //ms = EutranMeasurementMapping::QuantizeRsrp (m_storedMeasValues[m_cellId].rsrp);
+                NS_ASSERT (reportConfigEutra.threshold1.choice 
+                           == LteRrcSap::ThresholdEutra::thresholdRsrp);
+                thresh = EutranMeasurementMapping::RsrpRange2Dbm (reportConfigEutra.threshold1.range);
+                break;
+              case LteRrcSap::ReportConfigEutra::rsrq:
+                ms = m_storedMeasValues[m_cellId].rsrq;
+                //ms = EutranMeasurementMapping::QuantizeRsrq (m_storedMeasValues[m_cellId].rsrq);
+                NS_ASSERT (reportConfigEutra.threshold1.choice 
+                           == LteRrcSap::ThresholdEutra::thresholdRsrq);                
+                thresh = EutranMeasurementMapping::RsrqRange2Db (reportConfigEutra.threshold1.range);
+                break;
+              default:
+                NS_FATAL_ERROR ("unsupported triggerQuantity");
+                break;
+              }            
+            // Inequality A2-1 (Entering condition) :  Ms + Hys < Thresh
+            bool entryCond = ms + hys < thresh;
+            if (entryCond == true 
+                && (measReportIt == m_varMeasReportList.end ()
+                    || (measReportIt != m_varMeasReportList.end () 
+                        && (measReportIt->second.cellsTriggeredList.find (m_cellId) 
+                            == measReportIt->second.cellsTriggeredList.end ()))))
+              {
+                concernedCellsEntry.push_back (m_cellId);
+                eventEntryCondApplicable = true;
+              }
+            // Inequality A2-2 (Leaving condition) : Ms − Hys > Thresh
+            bool leavingCond = ms - hys > thresh;
+            if (leavingCond         
+                && measReportIt != m_varMeasReportList.end ()
+                && (measReportIt->second.cellsTriggeredList.find (m_cellId) 
+                    != measReportIt->second.cellsTriggeredList.end ()))
+              {
+                concernedCellsLeaving.push_back (m_cellId);
+                eventLeavingCondApplicable = true;
+              }
+            NS_LOG_LOGIC ("event A2: serving cell " << m_cellId << " ms=" << ms << " thresh=" << thresh << " entryCond=" << entryCond << " leavingCond=" << leavingCond);
+          }                  
+          break;
+
+        case LteRrcSap::ReportConfigEutra::eventA4:
+          {
+            for (std::map<uint16_t, MeasValues>::iterator storedMeasIt = m_storedMeasValues.begin ();
+                 storedMeasIt != m_storedMeasValues.end ();
+                 ++storedMeasIt)
+              {
+                uint16_t cellId = storedMeasIt->first;
+                if (cellId != m_cellId) 
+                  {
+                    double mn; // Mn, the measurement for neighboring cell
+                    double thresh; // Tresh, the threshold parameter for this event
+                    double hys = (double) reportConfigEutra.hysteresis * 0.5; // Hys, the hysteresis parameter for this event. See 36.331 section 6.3.5 for the conversion.
+                    switch (reportConfigEutra.triggerQuantity)
+                      {
+                      case LteRrcSap::ReportConfigEutra::rsrp:
+                        mn = storedMeasIt->second.rsrp;
+                        //mn = EutranMeasurementMapping::QuantizeRsrp (storedMeasIt->second.rsrp);
+                        NS_ASSERT (reportConfigEutra.threshold1.choice 
+                                   == LteRrcSap::ThresholdEutra::thresholdRsrp);    
+                        thresh = EutranMeasurementMapping::RsrpRange2Dbm (reportConfigEutra.threshold1.range);            
+                        break;
+                      case LteRrcSap::ReportConfigEutra::rsrq:
+                        mn = storedMeasIt->second.rsrq;
+                        //mn = EutranMeasurementMapping::QuantizeRsrq (storedMeasIt->second.rsrq);
+                        NS_ASSERT (reportConfigEutra.threshold1.choice 
+                                   == LteRrcSap::ThresholdEutra::thresholdRsrq);                
+                        thresh = EutranMeasurementMapping::RsrqRange2Db (reportConfigEutra.threshold1.range);
+                        break;
+                      default:
+                        NS_FATAL_ERROR ("unsupported triggerQuantity");
+                        break;
+                      }            
+                    // Inequality A4-1 (Entering condition) :  Mn + Ofn + Ocn − Hys > Thresh
+                    bool entryCond = mn + measObjectEutra.offsetFreq + 0.0 - hys > thresh;
+                    if (entryCond == true 
+                        && (measReportIt == m_varMeasReportList.end ()
+                            || (measReportIt != m_varMeasReportList.end () 
+                                && (measReportIt->second.cellsTriggeredList.find (cellId) 
+                                    == measReportIt->second.cellsTriggeredList.end ()))))
+                      {
+                        concernedCellsEntry.push_back (cellId);
+                        eventEntryCondApplicable = true;
+                      }
+                    // Inequality A4-2 (Leaving condition) : Mn + Ofn + Ocn + Hys < Thresh
+                    bool leavingCond = mn + measObjectEutra.offsetFreq + 0.0 + hys < thresh;
+                    if (leavingCond         
+                        && measReportIt != m_varMeasReportList.end ()
+                        && (measReportIt->second.cellsTriggeredList.find (cellId) 
+                            != measReportIt->second.cellsTriggeredList.end ()))
+                      {
+                        concernedCellsLeaving.push_back (cellId);
+                        eventLeavingCondApplicable = true;
+                      }
+                   
+                    NS_LOG_LOGIC ("event A4: neighbor cell " << cellId << " mn=" << mn << " thresh=" << thresh << " entryCond=" << entryCond << " leavingCond=" << leavingCond);
+                  }
+              }
+          }
+          break;
+
+        default:
+          NS_FATAL_ERROR ("unsupported eventId " << reportConfigEutra.eventId);
+          break;
+          
+          } // switch (event type)
+
+      NS_LOG_LOGIC ("eventEntryCondApplicable=" << eventEntryCondApplicable
+                    << " eventLeavingCondApplicable=" << eventLeavingCondApplicable);
+
+      bool initiateUeMeasurementReportingProcedure = false;
+
+      if (eventEntryCondApplicable)
+        {          
+          if (measReportIt == m_varMeasReportList.end ())
+            {
+              VarMeasReport r;
+              r.measId = measId;              
+              std::pair<uint8_t, VarMeasReport> val (measId, r);
+              std::pair<std::map<uint8_t, VarMeasReport>::iterator, bool> 
+                ret = m_varMeasReportList.insert (val);
+              NS_ASSERT_MSG (ret.second == true, "element already existed");
+              measReportIt = ret.first;
+            }
+          for (std::list<uint16_t>::iterator it = concernedCellsEntry.begin ();
+               it != concernedCellsEntry.end ();
+               ++it)
+            {
+              measReportIt->second.cellsTriggeredList.insert (*it);
+            }
+          measReportIt->second.numberOfReportsSent = 0;
+          initiateUeMeasurementReportingProcedure = true;
+        }
+      
+      if (eventLeavingCondApplicable)
+        {                  
+          NS_ASSERT (measReportIt != m_varMeasReportList.end ());
+          for (std::list<uint16_t>::iterator it = concernedCellsLeaving.begin ();
+               it != concernedCellsLeaving.end ();
+               ++it)
+            {
+              measReportIt->second.cellsTriggeredList.erase (*it);
+            }
+          if (reportConfigEutra.reportOnLeave)
+            {
+              initiateUeMeasurementReportingProcedure = true;
+            }          
+        }
+
+      if (initiateUeMeasurementReportingProcedure)
+        {
+          SendMeasurementReport (measId);
+        }    
+      
+      if ((measReportIt != m_varMeasReportList.end ())
+          && (measReportIt->second.cellsTriggeredList.empty ()))
+        {
+          measReportIt->second.periodicReportTimer.Cancel ();
+          m_varMeasReportList.erase (measReportIt);
+        }
+      
+    } // for each measId in m_varMeasConfig.measIdList   
 }
 
 
@@ -664,7 +900,12 @@ LteUeRrc::DoRecvRrcConnectionReconfiguration (LteRrcSap::RrcConnectionReconfigur
           m_srb1 = 0; // new instance will be be created within ApplyRadioResourceConfigDedicated
 
           m_drbMap.clear (); // dispose all DRBs
-          ApplyRadioResourceConfigDedicated (msg.radioResourceConfigDedicated);          
+          ApplyRadioResourceConfigDedicated (msg.radioResourceConfigDedicated);    
+
+          if (msg.haveMeasConfig)
+            {
+              ApplyMeasConfig (msg.measConfig);
+            }
           // RRC connection reconfiguration completed will be sent
           // after handover is complete
         }
@@ -675,6 +916,10 @@ LteUeRrc::DoRecvRrcConnectionReconfiguration (LteRrcSap::RrcConnectionReconfigur
             {
               ApplyRadioResourceConfigDedicated (msg.radioResourceConfigDedicated);
             } 
+          if (msg.haveMeasConfig)
+            {
+              ApplyMeasConfig (msg.measConfig);
+            }          
           LteRrcSap::RrcConnectionReconfigurationCompleted msg2;
           msg2.rrcTransactionIdentifier = msg.rrcTransactionIdentifier;
           m_rrcSapUser->SendRrcConnectionReconfigurationCompleted (msg2);
@@ -911,6 +1156,376 @@ LteUeRrc::ApplyRadioResourceConfigDedicated (LteRrcSap::RadioResourceConfigDedic
     }
 }
 
+
+void 
+LteUeRrc::ApplyMeasConfig (LteRrcSap::MeasConfig mc)
+{
+  NS_LOG_FUNCTION (this);
+
+  // perform the actions specified in 3GPP TS 36.331 section 5.5.2.1 
+
+  // 3GPP TS 36.331 section 5.5.2.4 Measurement object removal
+  for (std::list<uint8_t>::iterator it = mc.measObjectToRemoveList.begin ();
+       it !=  mc.measObjectToRemoveList.end ();
+       ++it)
+    {
+      uint8_t measObjectId = *it;
+      NS_LOG_LOGIC (this << " deleting measObjectId " << (uint32_t)  measObjectId);
+      m_varMeasConfig.measObjectList.erase (measObjectId);
+      std::map<uint8_t, LteRrcSap::MeasIdToAddMod>::iterator measIdIt = m_varMeasConfig.measIdList.begin ();
+      while (measIdIt != m_varMeasConfig.measIdList.end ())
+        {
+          if (measIdIt->second.measObjectId == measObjectId)
+            {
+              uint8_t measId = measIdIt->second.measId;
+              NS_ASSERT (measId == measIdIt->first);
+              NS_LOG_LOGIC (this << " deleting measId " << (uint32_t) measId << " because referring to measObjectId " << (uint32_t)  measObjectId);
+              // note: postfix operator preserves iterator validity
+              m_varMeasConfig.measIdList.erase (measIdIt++);
+              std::map<uint8_t, VarMeasReport>::iterator measReportIt = m_varMeasReportList.find (measId);
+              if (measReportIt != m_varMeasReportList.end ())
+                {                  
+                  NS_LOG_LOGIC (this << " deleting existing report for measId " << (uint32_t) measId << " because referring to measObjectId " << (uint32_t)  measObjectId);
+                  measReportIt->second.periodicReportTimer.Cancel ();
+                  m_varMeasReportList.erase (measReportIt);
+                }
+            }
+          else
+            {
+              ++measIdIt;
+            }
+        }    
+      
+    }     
+
+  // 3GPP TS 36.331 section 5.5.2.5  Measurement object addition/ modification  
+  for (std::list<LteRrcSap::MeasObjectToAddMod>::iterator it = mc.measObjectToAddModList.begin ();
+       it !=  mc.measObjectToAddModList.end ();
+       ++it)
+    {
+      // simplifying assumptions
+      NS_ASSERT_MSG (it->measObjectEutra.cellsToRemoveList.empty (), "cellsToRemoveList not supported");
+      NS_ASSERT_MSG (it->measObjectEutra.cellsToAddModList.empty (), "cellsToAddModList not supported");
+      NS_ASSERT_MSG (it->measObjectEutra.cellsToRemoveList.empty (), "blackCellsToRemoveList not supported");
+      NS_ASSERT_MSG (it->measObjectEutra.blackCellsToAddModList.empty (), "blackCellsToAddModList not supported");
+      NS_ASSERT_MSG (it->measObjectEutra.haveCellForWhichToReportCGI == false , "cellForWhichToReportCGI is not supported");
+      
+                     
+      uint8_t measObjectId = it->measObjectId;         
+      std::map<uint8_t, LteRrcSap::MeasObjectToAddMod>::iterator measObjectIt = m_varMeasConfig.measObjectList.find (measObjectId);      
+      if (measObjectIt != m_varMeasConfig.measObjectList.end ())
+        {
+          NS_LOG_LOGIC ("measObjectId " << (uint32_t) measObjectId << " exists, updating entry");
+          measObjectIt->second = *it;          
+          for (std::map<uint8_t, LteRrcSap::MeasIdToAddMod>::iterator measIdIt 
+                 = m_varMeasConfig.measIdList.begin ();
+               measIdIt != m_varMeasConfig.measIdList.end ();
+               ++measIdIt)               
+            {
+              if (measIdIt->second.measObjectId == measObjectId)
+                {
+                  uint8_t measId = measIdIt->second.measId;
+                  NS_LOG_LOGIC (this << " found measId " << (uint32_t) measId << " referring to measObjectId " << (uint32_t)  measObjectId);
+                  std::map<uint8_t, VarMeasReport>::iterator measReportIt = m_varMeasReportList.find (measId);
+                  if (measReportIt != m_varMeasReportList.end ())
+                    {
+                      NS_LOG_LOGIC (this << " deleting existing report for measId " << (uint32_t) measId << " because referring to measObjectId " << (uint32_t)  measObjectId);
+                      measReportIt->second.periodicReportTimer.Cancel ();
+                      m_varMeasReportList.erase (measReportIt);
+                    }
+                }
+            }
+        }
+      else
+        {
+          NS_LOG_LOGIC ("measObjectId " << (uint32_t) measObjectId << " is new, adding entry");     
+          m_varMeasConfig.measObjectList[measObjectId] = *it;
+        }            
+    }
+
+  // 3GPP TS 36.331 section 5.5.2.6 Reporting configuration removal
+  for (std::list<uint8_t>::iterator it = mc.reportConfigToRemoveList.begin ();
+       it !=  mc.reportConfigToRemoveList.end ();
+       ++it)
+    {
+      uint8_t reportConfigId = *it;
+      NS_LOG_LOGIC (this << " deleting reportConfigId " << (uint32_t)  reportConfigId);
+      m_varMeasConfig.reportConfigList.erase (reportConfigId);
+      std::map<uint8_t, LteRrcSap::MeasIdToAddMod>::iterator measIdIt = m_varMeasConfig.measIdList.begin ();
+      while (measIdIt != m_varMeasConfig.measIdList.end ())
+        {
+          if (measIdIt->second.reportConfigId == reportConfigId)
+            {
+              uint8_t measId = measIdIt->second.measId;
+              NS_ASSERT (measId == measIdIt->first);
+              NS_LOG_LOGIC (this << " deleting measId " << (uint32_t) measId << " because referring to reportConfigId " << (uint32_t)  reportConfigId);
+              // note: postfix operator preserves iterator validity
+              m_varMeasConfig.measIdList.erase (measIdIt++);
+              std::map<uint8_t, VarMeasReport>::iterator measReportIt = m_varMeasReportList.find (measId);
+              if (measReportIt != m_varMeasReportList.end ())
+                {                  
+                  NS_LOG_LOGIC (this << " deleting existing report for measId" << (uint32_t) measId << " because referring to reportConfigId " << (uint32_t)  reportConfigId);
+                  measReportIt->second.periodicReportTimer.Cancel ();
+                  m_varMeasReportList.erase (measReportIt);
+                }
+            }
+          else
+            {
+              ++measIdIt;
+            }
+        }    
+
+    }
+  
+  // 3GPP TS 36.331 section 5.5.2.7 Reporting configuration addition/ modification
+  for (std::list<LteRrcSap::ReportConfigToAddMod>::iterator it = mc.reportConfigToAddModList.begin ();
+       it !=  mc.reportConfigToAddModList.end ();
+       ++it)
+    {
+      // simplifying assumptions
+      NS_ASSERT_MSG (it->reportConfigEutra.triggerType == LteRrcSap::ReportConfigEutra::event,
+                     "only trigger type EVENT is supported");
+      NS_ASSERT_MSG (it->reportConfigEutra.eventId == LteRrcSap::ReportConfigEutra::eventA2
+                     || it->reportConfigEutra.eventId == LteRrcSap::ReportConfigEutra::eventA4,
+                     "only events A2 and A4 are supported");
+      NS_ASSERT_MSG (it->reportConfigEutra.timeToTrigger == 0, "timeToTrigger > 0 is not supported");
+      
+      uint8_t reportConfigId = it->reportConfigId;         
+      std::map<uint8_t, LteRrcSap::ReportConfigToAddMod>::iterator reportConfigIt = m_varMeasConfig.reportConfigList.find (reportConfigId);      
+      if (reportConfigIt != m_varMeasConfig.reportConfigList.end ())
+        {
+          NS_LOG_LOGIC ("reportConfigId " << (uint32_t) reportConfigId << " exists, updating entry");
+          m_varMeasConfig.reportConfigList[reportConfigId] = *it;          
+          for (std::map<uint8_t, LteRrcSap::MeasIdToAddMod>::iterator measIdIt 
+                 = m_varMeasConfig.measIdList.begin ();
+               measIdIt != m_varMeasConfig.measIdList.end ();
+               ++measIdIt)               
+            {
+              if (measIdIt->second.reportConfigId == reportConfigId)
+                {
+                  uint8_t measId = measIdIt->second.measId;
+                  NS_LOG_LOGIC (this << " found measId " << (uint32_t) measId << " referring to reportConfigId " << (uint32_t)  reportConfigId);
+                  std::map<uint8_t, VarMeasReport>::iterator measReportIt = m_varMeasReportList.find (measId);
+                  if (measReportIt != m_varMeasReportList.end ())
+                    {
+                      NS_LOG_LOGIC (this << " deleting existing report for measId " << (uint32_t) measId << " because referring to reportConfigId " << (uint32_t)  reportConfigId);
+                      measReportIt->second.periodicReportTimer.Cancel ();
+                      m_varMeasReportList.erase (measReportIt);
+                    }
+                }
+            }
+        }
+      else
+        {
+          NS_LOG_LOGIC ("reportConfigId " << (uint32_t) reportConfigId << " is new, adding entry");     
+          m_varMeasConfig.reportConfigList[reportConfigId] = *it;
+        }            
+    }
+
+
+  // 3GPP TS 36.331 section 5.5.2.8 Quantity configuration
+  if (mc.haveQuantityConfig)
+    {
+      NS_LOG_LOGIC (this << " setting quantityConfig");
+      m_varMeasConfig.quantityConfig = mc.quantityConfig;
+      std::map<uint8_t, LteRrcSap::MeasIdToAddMod>::iterator measIdIt = m_varMeasConfig.measIdList.begin ();
+      while (measIdIt != m_varMeasConfig.measIdList.end ())
+        {
+          uint8_t measId = measIdIt->second.measId;
+          NS_ASSERT (measId == measIdIt->first);
+          NS_LOG_LOGIC (this << " deleting measId " << (uint32_t) measId);
+          // note: postfix operator preserves iterator validity
+          m_varMeasConfig.measIdList.erase (measIdIt++);
+          std::map<uint8_t, VarMeasReport>::iterator measReportIt = m_varMeasReportList.find (measId);
+          if (measReportIt != m_varMeasReportList.end ())
+            {                  
+              NS_LOG_LOGIC (this << " deleting existing report for measId" << (uint32_t) measId);
+              measReportIt->second.periodicReportTimer.Cancel ();
+              m_varMeasReportList.erase (measReportIt);
+            }
+        }
+      // we calculate here the coefficient a used for Layer 3 filtering, see 3GPP TS 36.331 section 5.5.3.2
+      m_varMeasConfig.aRsrp = std::pow (0.5,  mc.quantityConfig.filterCoefficientRSRP/4.0);
+      m_varMeasConfig.aRsrq = std::pow (0.5,  mc.quantityConfig.filterCoefficientRSRQ/4.0);
+      NS_LOG_LOGIC (this << " new filter coefficients: aRsrp=" << m_varMeasConfig.aRsrp << ", aRsrq=" << m_varMeasConfig.aRsrq);
+
+
+    }
+
+
+  // 3GPP TS 36.331 section 5.5.2.2 Measurement identity removal  
+  for (std::list<uint8_t>::iterator it = mc.measIdToRemoveList.begin ();
+       it !=  mc.measIdToRemoveList.end ();
+       ++it)
+    {
+      uint8_t measId = *it;
+      NS_LOG_LOGIC (this << " deleting measId " << (uint32_t) measId);
+      m_varMeasConfig.measIdList.erase (measId);
+      std::map<uint8_t, VarMeasReport>::iterator measReportIt = m_varMeasReportList.find (measId);
+      if (measReportIt != m_varMeasReportList.end ())
+        {
+          NS_LOG_LOGIC (this << " deleting existing report for measId" << (uint32_t) measId);
+          measReportIt->second.periodicReportTimer.Cancel ();
+          m_varMeasReportList.erase (measReportIt);
+        }
+    }
+
+  // 3GPP TS 36.331 section 5.5.2.3 Measurement identity addition/ modification
+  for (std::list<LteRrcSap::MeasIdToAddMod>::iterator it = mc.measIdToAddModList.begin ();
+       it !=  mc.measIdToAddModList.end ();
+       ++it)
+    {
+      NS_LOG_LOGIC (this << " measId " << (uint32_t) it->measId << " (measObjectId=" 
+                    << (uint32_t) it->measObjectId << ", reportConfigId=" << (uint32_t) it->reportConfigId << ")");
+      NS_ASSERT (m_varMeasConfig.measObjectList.find (it->measObjectId)
+                 != m_varMeasConfig.measObjectList.end ());
+      NS_ASSERT (m_varMeasConfig.reportConfigList.find (it->reportConfigId)
+                 != m_varMeasConfig.reportConfigList.end ());      
+      m_varMeasConfig.measIdList[it->measId] = *it; // side effect: create new entry if not exists
+      std::map<uint8_t, VarMeasReport>::iterator measReportIt = m_varMeasReportList.find (it->measId);
+      if (measReportIt != m_varMeasReportList.end ())
+        {
+          measReportIt->second.periodicReportTimer.Cancel ();
+          m_varMeasReportList.erase (measReportIt);
+        }
+      NS_ASSERT (m_varMeasConfig.reportConfigList.find (it->reportConfigId)
+                 ->second.reportConfigEutra.triggerType != LteRrcSap::ReportConfigEutra::periodical);
+
+    }
+
+  if (mc.haveMeasGapConfig)
+    {
+      NS_FATAL_ERROR ("measurement gaps are currently not supported");
+    }
+
+  if (mc.haveSmeasure)
+    {
+      NS_FATAL_ERROR ("s-measure is currently not supported");
+    }
+
+  if (mc.haveSpeedStatePars)
+    {
+      NS_FATAL_ERROR ("SpeedStatePars are currently not supported");
+    }
+}
+
+void 
+LteUeRrc::SendMeasurementReport (uint8_t measId)
+{
+  NS_LOG_FUNCTION (this << (uint32_t) measId);
+  //  3GPP TS 36.331 section 5.5.5 Measurement reporting
+
+  std::map<uint8_t, LteRrcSap::MeasIdToAddMod>::iterator 
+    measIdIt = m_varMeasConfig.measIdList.find (measId);
+  NS_ASSERT (measIdIt != m_varMeasConfig.measIdList.end ());
+  
+  std::map<uint8_t, LteRrcSap::ReportConfigToAddMod>::iterator 
+    reportConfigIt = m_varMeasConfig.reportConfigList.find (measIdIt->second.reportConfigId);
+  NS_ASSERT (reportConfigIt != m_varMeasConfig.reportConfigList.end ());
+  LteRrcSap::ReportConfigEutra& reportConfigEutra = reportConfigIt->second.reportConfigEutra;
+
+  LteRrcSap::MeasurementReport measurementReport;
+  LteRrcSap::MeasResults& measResults = measurementReport.measResults;
+  measResults.measId = measId;
+  
+  std::map<uint16_t, MeasValues>::iterator servingMeasIt = m_storedMeasValues.find (m_cellId);
+  NS_ASSERT (servingMeasIt != m_storedMeasValues.end ());
+  measResults.rsrpResult = EutranMeasurementMapping::Dbm2RsrpRange (servingMeasIt->second.rsrp);
+  measResults.rsrqResult = EutranMeasurementMapping::Db2RsrqRange (servingMeasIt->second.rsrq);
+  NS_LOG_INFO (this << " reporting serving cell "
+               "RSRP " << (uint32_t) measResults.rsrpResult << " (" << servingMeasIt->second.rsrp << " dBm) "
+               "RSRQ " << (uint32_t) measResults.rsrqResult << " (" << servingMeasIt->second.rsrq << " dB)");
+  measResults.haveMeasResultNeighCells = false;
+  std::map<uint8_t, VarMeasReport>::iterator measReportIt = m_varMeasReportList.find (measId);
+  if (measReportIt == m_varMeasReportList.end ())
+    {
+      NS_LOG_ERROR ("no entry found in m_varMeasReportList for measId " << (uint32_t) measId);
+    }
+  else
+    {
+      if (!(measReportIt->second.cellsTriggeredList.empty ()))
+        {
+          measResults.haveMeasResultNeighCells = true;
+          
+          std::multimap<double, uint16_t> sortedNeighCells;         
+          for (std::set<uint16_t>::iterator cellsTriggeredIt = measReportIt->second.cellsTriggeredList.begin ();
+               cellsTriggeredIt != measReportIt->second.cellsTriggeredList.end ();
+               ++cellsTriggeredIt)
+            {
+              uint16_t cellId = *cellsTriggeredIt;
+              if (cellId != m_cellId)
+                {
+                  std::map<uint16_t, MeasValues>::iterator neighborMeasIt = m_storedMeasValues.find (cellId);
+                  double triggerValue;             
+                  switch (reportConfigEutra.triggerQuantity)
+                    {
+                    case LteRrcSap::ReportConfigEutra::rsrp:
+                      triggerValue = neighborMeasIt->second.rsrp;
+                      break;
+                    case LteRrcSap::ReportConfigEutra::rsrq:
+                      triggerValue = neighborMeasIt->second.rsrq;
+                      break;
+                    default:
+                      NS_FATAL_ERROR ("unsupported triggerQuantity");
+                      break;
+                    }  
+                  sortedNeighCells.insert (std::pair<double, uint16_t> (triggerValue, cellId));
+                }
+            }
+          
+          std::multimap<double, uint16_t>::reverse_iterator sortedNeighCellsIt;
+          uint32_t count;
+          for (sortedNeighCellsIt = sortedNeighCells.rbegin (), count = 0;
+               sortedNeighCellsIt != sortedNeighCells.rend () && count < reportConfigEutra.maxReportCells;
+               ++sortedNeighCellsIt, ++count)
+            {
+              uint16_t cellId = sortedNeighCellsIt->second;
+              std::map<uint16_t, MeasValues>::iterator neighborMeasIt = m_storedMeasValues.find (cellId);
+              NS_ASSERT (neighborMeasIt != m_storedMeasValues.end ());            
+              LteRrcSap::MeasResultEutra measResultEutra;
+              measResultEutra.physCellId = cellId;
+              measResultEutra.haveCgiInfo = false;
+              measResultEutra.haveRsrpResult = true;
+              measResultEutra.rsrpResult = EutranMeasurementMapping::Dbm2RsrpRange (neighborMeasIt->second.rsrp);
+              measResultEutra.haveRsrqResult = true;
+              measResultEutra.rsrqResult = EutranMeasurementMapping::Db2RsrqRange (neighborMeasIt->second.rsrq);           
+              NS_LOG_INFO (this << " reporting neighbor cell " << (uint32_t) measResultEutra.physCellId 
+                           << " RSRP " << (uint32_t) measResultEutra.rsrpResult 
+                           << " (" << neighborMeasIt->second.rsrp << " dBm) "
+                           << " RSRQ " << (uint32_t) measResultEutra.rsrqResult 
+                           << " (" << neighborMeasIt->second.rsrq << " dB)");  
+            }
+        }
+      else
+        {
+          NS_LOG_WARN (this << " cellsTriggeredList is empty");
+        }
+      measReportIt->second.numberOfReportsSent++;
+      measReportIt->second.periodicReportTimer.Cancel ();
+            
+      // the current LteRrcSap implementation is broken in that it does not allow for infinite values
+      // which is probably the most reasonable setting. So we just assume infinite reportAmount
+      // if (measReportIt->numberOfReportsSent < reportConfigEutra.reportAmount)
+      uint32_t intervalMs;
+      switch (reportConfigEutra.reportInterval)
+        {
+        case LteRrcSap::ReportConfigEutra::ms480:
+          intervalMs = 480;
+          break;
+          
+        default:
+          NS_FATAL_ERROR ("unsupported reportInterval");
+          break;          
+        }
+      measReportIt->second.periodicReportTimer 
+        = Simulator::Schedule (MilliSeconds (intervalMs), 
+                               &LteUeRrc::SendMeasurementReport,
+                               this,
+                               measId);
+
+      m_rrcSapUser->SendMeasurementReport (measurementReport);
+    } 
+}
 
 void 
 LteUeRrc::StartConnection ()

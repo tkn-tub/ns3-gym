@@ -31,6 +31,7 @@
 #include <ns3/traced-callback.h>
 
 #include <map>
+#include <set>
 
 namespace ns3 {
 
@@ -259,6 +260,8 @@ private:
  
   // internal methods
   void ApplyRadioResourceConfigDedicated (LteRrcSap::RadioResourceConfigDedicated rrcd);
+  void ApplyMeasConfig (LteRrcSap::MeasConfig mc);
+  void SendMeasurementReport (uint8_t measId);
   void StartConnection ();
   void LeaveConnectedMode ();
   void DisposeOldSrb1 ();
@@ -319,6 +322,47 @@ private:
   bool m_connectionPending; /**< true if a connection request by upper layers is pending */
   bool m_receivedMib; /**< true if MIB was received for the current cell  */
   bool m_receivedSib2; /**< true if SIB2 was received for the current cell  */
+
+
+  /**
+   * Includes the accumulated configuration of the measurements to be
+   * performed by the UE, see TS 36.331 section 7.1. Also note that some
+   * optional variables in the specs are omitted.
+   * 
+   */
+  struct VarMeasConfig
+  {
+    std::map<uint8_t, LteRrcSap::MeasIdToAddMod>   measIdList;
+    std::map<uint8_t, LteRrcSap::MeasObjectToAddMod> measObjectList;
+    std::map<uint8_t, LteRrcSap::ReportConfigToAddMod> reportConfigList;
+    LteRrcSap::QuantityConfig quantityConfig; 
+    double aRsrp;
+    double aRsrq;
+  };
+  
+  struct VarMeasReport
+  {
+    uint8_t measId;
+    std::set<uint16_t> cellsTriggeredList; // note: only EUTRA is
+                                            // supported
+    uint32_t numberOfReportsSent;
+    EventId periodicReportTimer;
+  };
+  
+  VarMeasConfig m_varMeasConfig;
+  //       measId
+  std::map<uint8_t, VarMeasReport> m_varMeasReportList;
+  
+  struct MeasValues
+  {
+    double rsrp;
+    double rsrq;
+    Time timestamp;
+  };
+
+  /////////cellId
+  std::map<uint16_t, MeasValues> m_storedMeasValues;
+  
 
 };
 
