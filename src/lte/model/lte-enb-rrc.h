@@ -315,6 +315,13 @@ private:
    */
   LteRrcSap::RadioResourceConfigDedicated BuildRadioResourceConfigDedicated ();
 
+  /** 
+   * 
+   * \return a MeasConfig struct built based on the
+   * current configuration
+   */
+  LteRrcSap::MeasConfig BuildMeasConfig ();
+
 
   /** 
    * 
@@ -765,8 +772,12 @@ private:
   uint16_t m_lastAllocatedConfigurationIndex;
   bool m_reconfigureUes;
 
+  // Handover related attributes
   bool m_admitHandoverRequest;
   bool m_admitRrcConnectionRequest;
+  uint8_t m_eventA2Threshold;
+  uint8_t m_eventA4Threshold;
+
 
   //             cellid    rnti   
   TracedCallback<uint16_t, uint16_t> m_newUeContextTrace;
