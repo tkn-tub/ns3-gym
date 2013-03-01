@@ -108,11 +108,16 @@ public:
    */
   virtual ~LteUeCphySapUser ();
 
+  
+  /**
+   * Parameters of the ReportUeMeasurements primitive: RSRP [dBm] and RSRQ [dB]
+   * See section 5.1.1 and 5.1.3 of TS 36.214
+   */
   struct UeMeasurementsElement
     {
       uint16_t m_cellId;
-      double m_rsrp;
-      double m_rsrq;
+      double m_rsrp;  // [dBm]
+      double m_rsrq;  // [dB]
     };
   struct UeMeasurementsParameters
     {
@@ -128,9 +133,7 @@ public:
 
   /**
    *
-   * \param cellId the cellId of the eNB reported
-   * \param rsrp the RSRP measured (see sect. 5.1.1 of 36.214) [W]
-   * \param rsrq the RSRQ measured (see sect. 5.1.3 of 36.214) [linear ratio]
+   * \param params the structure containing the vector of cellId, SRSP and RSRQ
    */
   virtual void ReportUeMeasurements (UeMeasurementsParameters params) = 0;
 };
