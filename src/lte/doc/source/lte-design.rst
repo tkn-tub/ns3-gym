@@ -781,10 +781,10 @@ UE Measurements
 ---------------
 
 According to [TS36214]_, the UE has to report a set of measurements of the eNBs that the device is able to perceive: the the reference signal received power (RSRP) and the reference signal received quality (RSRQ). The former is a measure of the received power of a specific eNB, while the latter includes also channel interference and thermal noise.
-The UE has to report the measurements jointly with the physical cell identity (PCI) of the cell. Both measurements are performed during the reception of the RS, while the PCI is obtained with the Primary Synchronization Signal (PSS). The PSS is sent by the eNB each 5 subframes and in detail in the subframes 1 and 6.
+The UE has to report the measurements jointly with the physical cell identity (PCI) of the cell. Both measurements are performed during the reception of the RS, while the PCI is obtained with the Primary Synchronization Signal (PSS). The PSS is sent by the eNB each 5 subframes and in detail in the subframes 1 and 6.  According to [TS36133]_ sections 9.1.4 and 9.1.7, RSRP is reported by PHY lauer in dBm while RSRQ in dB. The values of RSRP and RSRQ are provided to higher layers through the C-PHY SAP (by means of ``UeMeasurementsParameters`` struct) every 200 ms as defined in [TS36331]_ by averaging the all the measurements collected during the last window slot. The periodicity of reporting can be adjusted for research purposes by means of ``LteUePhy::UeMeasurementsFilterPeriod`` attribute.
  
 
-According to the constraints of the PHY reception chain implementation and in order to maintain the level of computational complexity low, only RSRP can be directly obtained. This is due to the fact that ``LteInterference`` is designed for evaluating the interference only respect to the signal of the eNB attached to. For what concern RSRQ, it can be extracted by the current information available of the cell and the RSRP as detailed in the following:
+Considering to the constraints of the PHY reception chain implementation and in order to maintain the level of computational complexity low, only RSRP can be directly obtained. This is due to the fact that ``LteInterference`` is designed for evaluating the interference only respect to the signal of the eNB attached to. For what concern RSRQ, it can be extracted by the current information available of the cell and the RSRP as detailed in the following:
 
 .. math::
 
@@ -794,10 +794,7 @@ According to the constraints of the PHY reception chain implementation and in or
 
     RSRQ_i^j = K \times RSRP_i / RSSI_i^j
 
-wherem :math:`RSRP_i` is the RSRP of cell :math:`i`, :math:`P_i(k)` is the power perceived at the RB :math:`k`, :math:`K` is the total number of RBs, :math:`RSSI_i^j` is the RSSI of the cell :math:`i` when the UE is attached to :math:`j`, :math:`I_j(k)` is the total interference perceived by UE when attached to cell :math:`i` (obtained by the ``LteInterferencePowerChunkProcessor``) in the RB :math:`k`, :math:`P_j(k)` is the power of the perceived of cell :math:`j` in the RB :math:`k` and :math:`N` is the power noise spectral density.
-
-
-In detail, upon reception of RS and PSS signal, the UE reception chain in ``LteUePhy`` triggers the generation of such report to the upper layers containing the RSRP and RSRQ measurements of the eNB that generated the RS when the measurement is above the one defined by the ns3 attibute ``UeMeasurementSnrThr``.
+wherem :math:`RSRP_i` is the RSRP of cell :math:`i`, :math:`P_i(k)` is the power perceived at the RB :math:`k`, :math:`K` is the total number of RBs, :math:`RSSI_i^j` is the RSSI of the cell :math:`i` when the UE is attached to :math:`j`, :math:`I_j(k)` is the total interference perceived by UE when attached to cell :math:`i` (obtained by the ``LteInterferencePowerChunkProcessor``) in the RB :math:`k`, :math:`P_j(k)` is the power of the perceived of cell :math:`j` in the RB :math:`k` and :math:`N` is the power noise spectral density. The sample is considered as valid in case of the RSRQ evaluated is above the ``LteUePhy::RsrqUeMeasThreshold`` attribute.
 
 .. only:: latex
 
