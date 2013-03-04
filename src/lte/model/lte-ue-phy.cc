@@ -505,36 +505,33 @@ LteUePhy::CreateDlCqiFeedbackMessage (const SpectrumValue& sinr)
     {
       NS_ASSERT_MSG (m_rsInterferencePowerUpdated, " RS interference power info obsolete");
       // PSSs received
-      std::map <uint16_t, SpectrumValue>::iterator itPss = m_pssMap.begin ();
-      while (itPss != m_pssMap.end ())
+      std::list <PssElement>::iterator itPss = m_pssList.begin ();
+      while (itPss != m_pssList.end ())
         {
-          NS_LOG_DEBUG (this << " PSS received from eNB " << (*itPss).first);
+          NS_LOG_DEBUG (this << " PSS received from eNB " << (*itPss).cellId << " pssSum " << (*itPss).pssPsdSum << " nRB " << (*itPss).nRB);
           uint8_t rbNum = 0;
-          SpectrumValue pi = (*itPss).second;
-          Values::const_iterator itPi;
-          double rsrpSum = 0.0;
           double rsrqSum = 0.0;
-          Values::const_iterator itInt = m_rsIntereferencePower.ConstValuesBegin ();
-          Values::const_iterator itPj = m_rsIntereferencePower.ConstValuesBegin ();
-          Ptr<SpectrumValue> noisePsd = LteSpectrumValueHelper::CreateNoisePowerSpectralDensity (m_ulEarfcn, m_ulBandwidth, m_noiseFigure);
-          Values::const_iterator itN = noisePsd->ConstValuesBegin ();
-          for (itPi = pi.ConstValuesBegin (); itPi != pi.ConstValuesEnd (); itPi++, itInt++, itPj++, itN++)
+          Values::const_iterator itIntN = m_rsIntereferencePower.ConstValuesBegin ();
+          Values::const_iterator itPj = m_rsReceivedPower.ConstValuesBegin ();
+//           NS_LOG_DEBUG (this << "\t INT + N" << m_rsIntereferencePower);
+//           NS_LOG_DEBUG (this << "\t Pj " << m_rsReceivedPower);
+          for (itPj = m_rsReceivedPower.ConstValuesBegin (); itPj != m_rsReceivedPower.ConstValuesEnd (); itIntN++, itPj++)
             {
               rbNum++;
-              rsrpSum += (*itPi);
-              rsrqSum += (*itInt) + (*itPj) + (*itN);
+              rsrqSum += ((*itIntN) + (*itPj));
+//               NS_LOG_DEBUG (this << " RSRQsum " << rsrqSum);
               
             }
-
-          double rsrp_dBm = 10 * log (1000 * rsrpSum / (double)rbNum);
-          double rsrq_dB = 10 * log (rsrpSum / rsrqSum);
+          NS_ASSERT (rbNum == (*itPss).nRB);
+          double rsrp_dBm = 10 * log (1000 * (*itPss).pssPsdSum / (double)rbNum);
+          double rsrq_dB = 10 * log ((*itPss).pssPsdSum / rsrqSum);
 
           if (rsrq_dB > m_pssReceptionThreshold)
             {
               // report UE Measurements to upper layers
-              NS_LOG_DEBUG (this << " CellId " << (*itPss).first << " has RSRP " << rsrp_dBm << " and RSRQ " << rsrq_dB);
+              NS_LOG_DEBUG (this << " CellId " << (*itPss).cellId << " has RSRP " << rsrp_dBm << " and RSRQ " << rsrq_dB << " RBnum " << (uint16_t)rbNum);
               // store measurements
-              std::map <uint16_t, UeMeasurementsElement>::iterator itMeasMap =  m_UeMeasurementsMap.find ((*itPss).first);
+              std::map <uint16_t, UeMeasurementsElement>::iterator itMeasMap =  m_UeMeasurementsMap.find ((*itPss).cellId);
               if (itMeasMap == m_UeMeasurementsMap.end ())
                 {
                   // insert new entry
@@ -543,7 +540,7 @@ LteUePhy::CreateDlCqiFeedbackMessage (const SpectrumValue& sinr)
                   newEl.rsrpNum = 1;
                   newEl.rsrqSum = rsrq_dB;
                   newEl.rsrqNum = 1;
-                  m_UeMeasurementsMap.insert (std::pair <uint16_t, UeMeasurementsElement> ((*itPss).first, newEl));
+                  m_UeMeasurementsMap.insert (std::pair <uint16_t, UeMeasurementsElement> ((*itPss).cellId, newEl));
                 }
               else
                 {
@@ -835,11 +832,28 @@ LteUePhy::ReceiveLteControlMessageList (std::list<Ptr<LteControlMessage> > msgLi
 
 
 void
-LteUePhy::ReceivePss (uint16_t cellId, SpectrumValue p)
+LteUePhy::ReceivePss (uint16_t cellId, Ptr<SpectrumValue> p)
 {
-  NS_LOG_FUNCTION (this << cellId);
+  NS_LOG_FUNCTION (this << cellId << (*p));
+  if (!m_dlConfigured)
+    {
+      // LteUePhy not yet configured -> skip measurement
+      return;
+    }
   m_pssReceived = true;
-  m_pssMap.insert (std::pair <uint16_t, SpectrumValue> (cellId, p));
+  PssElement el;
+  el.cellId = cellId;
+  double sum = 0.0;
+  uint16_t nRB = 0;
+  Values::const_iterator itPi;
+  for (itPi = p->ConstValuesBegin (); itPi != p->ConstValuesEnd (); itPi++)
+    {
+      sum += (*itPi);
+      nRB++;
+    }
+  el.pssPsdSum = sum;
+  el.nRB = nRB;
+  m_pssList.push_back (el);
 }
 
 

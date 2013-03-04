@@ -155,7 +155,7 @@ void LteSpectrumPhy::DoDispose ()
   m_ltePhyRxCtrlEndErrorCallback = MakeNullCallback< void > ();
   m_ltePhyDlHarqFeedbackCallback = MakeNullCallback< void, DlInfoListElement_s > ();
   m_ltePhyUlHarqFeedbackCallback = MakeNullCallback< void, UlInfoListElement_s > ();
-  m_ltePhyRxPssCallback = MakeNullCallback< void, uint16_t, SpectrumValue > ();
+  m_ltePhyRxPssCallback = MakeNullCallback< void, uint16_t, Ptr<SpectrumValue> > ();
   SpectrumPhy::DoDispose ();
 } 
 
@@ -765,7 +765,7 @@ LteSpectrumPhy::StartRxCtrl (Ptr<SpectrumSignalParameters> params)
                   SpectrumValue pssPsd = *params->psd;
                   if (!m_ltePhyRxPssCallback.IsNull ())
                     {
-                      m_ltePhyRxPssCallback (cellId, pssPsd);
+                      m_ltePhyRxPssCallback (cellId, params->psd);
                     }
                 }
             }

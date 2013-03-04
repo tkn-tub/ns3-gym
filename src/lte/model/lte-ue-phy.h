@@ -178,7 +178,7 @@ public:
 
   // callbacks for LteSpectrumPhy
   virtual void ReceiveLteControlMessageList (std::list<Ptr<LteControlMessage> >);
-  virtual void ReceivePss (uint16_t cellId, SpectrumValue p);
+  virtual void ReceivePss (uint16_t cellId, Ptr<SpectrumValue> p);
   
   
 
@@ -290,7 +290,13 @@ private:
   SpectrumValue m_rsIntereferencePower;
 
   bool m_pssReceived;
-  std::map <uint16_t, SpectrumValue> m_pssMap;
+  struct PssElement
+    {
+      uint16_t cellId;
+      double pssPsdSum;
+      uint16_t nRB;
+    };
+  std::list <PssElement> m_pssList;
 
   double m_pssReceptionThreshold; // on RSRQ [W]
 

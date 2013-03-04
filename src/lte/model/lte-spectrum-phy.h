@@ -125,7 +125,7 @@ typedef Callback< void > LtePhyRxCtrlEndErrorCallback;
 * This method is used by the LteSpectrumPhy to notify the UE PHY that a
 * PSS has been received
 */
-typedef Callback< void, uint16_t, SpectrumValue > LtePhyRxPssCallback;
+typedef Callback< void, uint16_t, Ptr<SpectrumValue> > LtePhyRxPssCallback;
 
 
 /**
