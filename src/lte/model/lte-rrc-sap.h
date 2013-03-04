@@ -232,7 +232,7 @@ public:
     enum {eventA1,eventA2,eventA3,eventA4,eventA5} eventId;
     ThresholdEutra threshold1; // used for A1, A2, A4, A5
     ThresholdEutra threshold2; // used for A5
-    bool reportOnLeave; // used for A3
+    bool reportOnLeave;
     int8_t a3Offset; // used for A3
     uint8_t hysteresis;
     uint16_t timeToTrigger;
@@ -492,6 +492,7 @@ public:
   {
     MeasResults measResults;
   };
+
 };
 
 
@@ -518,7 +519,7 @@ public:
   virtual void SendRrcConnectionReconfigurationCompleted (RrcConnectionReconfigurationCompleted msg) = 0;
   virtual void SendRrcConnectionReestablishmentRequest (RrcConnectionReestablishmentRequest msg) = 0;
   virtual void SendRrcConnectionReestablishmentComplete (RrcConnectionReestablishmentComplete msg) = 0;
-
+  virtual void SendMeasurementReport (MeasurementReport msg) = 0;
 };
 
 
@@ -641,7 +642,8 @@ public:
   virtual void SendRrcConnectionReconfigurationCompleted (RrcConnectionReconfigurationCompleted msg);
   virtual void SendRrcConnectionReestablishmentRequest (RrcConnectionReestablishmentRequest msg);
   virtual void SendRrcConnectionReestablishmentComplete (RrcConnectionReestablishmentComplete msg);
-
+  virtual void SendMeasurementReport (MeasurementReport msg);
+  
 private:
   MemberLteUeRrcSapUser ();
   C* m_owner;
@@ -698,6 +700,13 @@ void
 MemberLteUeRrcSapUser<C>::SendRrcConnectionReestablishmentComplete (RrcConnectionReestablishmentComplete msg)
 {
   m_owner->DoSendRrcConnectionReestablishmentComplete (msg);
+}
+
+template <class C>
+void 
+MemberLteUeRrcSapUser<C>::SendMeasurementReport (MeasurementReport msg)
+{
+  m_owner->DoSendMeasurementReport (msg);
 }
 
 /**
