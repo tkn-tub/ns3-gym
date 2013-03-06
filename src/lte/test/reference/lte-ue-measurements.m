@@ -37,10 +37,11 @@ gamma = -log (5*ber)./1.5;
 %%  eNB1----------UE2
 %%
 
+%d1 = 5400;
 d1 = 50;
 %% for d2 = [10 100 1000 10000 100000 1000000]
-%for d2 = [10 20 50 100 200 500 1000 10000 100000 1000000]
-for d2 = [10]
+for d2 = [10 20 50 100 200 500 1000 10000 100000 1000000]
+%for d2 = [12600]
 
   %% propagation gains (linear)
   %%             g21dl
@@ -55,13 +56,11 @@ for d2 = [10]
   g11ul = gain_freespace (d1, ful);
   g21dl = gain_freespace (d2, fdl);
   g21ul = gain_freespace (d2, ful);
-  dlpdBm
-  dlp
-g11dl
+
 
   %% RSRP (linear)
   rsrp1 = (sum (g11dl.*dlp)) / nrbs;
-  rsrp2 = (sum (g11dl.*dlp)) / nrbs;
+  rsrp2 = (sum (g21dl.*dlp)) / nrbs;
 
   %% RSRP (dBm)
   rsrp1dBm = 10.*log10(1000*rsrp1);

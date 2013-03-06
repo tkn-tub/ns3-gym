@@ -61,16 +61,19 @@ LteUeMeasurementsTestSuite::LteUeMeasurementsTestSuite ()
   : TestSuite ("lte-ue-measurements", SYSTEM)
 {
 
-  AddTestCase (new LteUeMeasurementsTestCase ("d1=50, d2=10",  50.000000, 10.000000, -42.947889, -42.947889, -14.149733, -14.149733));
-//   AddTestCase (new LteUeMeasurementsTestCase ("d1=50, d2=20",  50.000000, 20.000000, -42.947889, -42.947889, -8.603380, -8.603380));
-//   AddTestCase (new LteUeMeasurementsTestCase ("d1=50, d2=50",  50.000000, 50.000000, -42.947889, -42.947889, -3.010300, -3.010300));
-//   AddTestCase (new LteUeMeasurementsTestCase ("d1=50, d2=100",  50.000000, 100.000000, -42.947889, -42.947889, -0.969101, -0.969101));
-//   AddTestCase (new LteUeMeasurementsTestCase ("d1=50, d2=200",  50.000000, 200.000000, -42.947889, -42.947889, -0.263290, -0.263290));
-//   AddTestCase (new LteUeMeasurementsTestCase ("d1=50, d2=500",  50.000000, 500.000000, -42.947889, -42.947889, -0.043214, -0.043214));
-//   AddTestCase (new LteUeMeasurementsTestCase ("d1=50, d2=1000",  50.000000, 1000.000000, -42.947889, -42.947889, -0.010844, -0.010844));
-//   AddTestCase (new LteUeMeasurementsTestCase ("d1=50, d2=10000",  50.000000, 10000.000000, -42.947889, -42.947889, -0.000109, -0.000109));
-//   AddTestCase (new LteUeMeasurementsTestCase ("d1=50, d2=100000",  50.000000, 100000.000000, -42.947889, -42.947889, -0.000002, -0.000002));
-//   AddTestCase (new LteUeMeasurementsTestCase ("d1=50, d2=1000000",  50.000000, 1000000.000000, -42.947889, -42.947889, -0.000000, -0.000000));
+  AddTestCase (new LteUeMeasurementsTestCase ("d1=50, d2=10",  50.000000, 10.000000, -42.947889, -28.968489, -14.149733, -0.170333));
+  AddTestCase (new LteUeMeasurementsTestCase ("d1=50, d2=20",  50.000000, 20.000000, -42.947889, -34.989089, -8.603380, -0.644580));
+  AddTestCase (new LteUeMeasurementsTestCase ("d1=50, d2=50",  50.000000, 50.000000, -42.947889, -42.947889, -3.010300, -3.010300));
+  AddTestCase (new LteUeMeasurementsTestCase ("d1=50, d2=100",  50.000000, 100.000000, -42.947889, -48.968489, -0.969101, -6.989700));
+  AddTestCase (new LteUeMeasurementsTestCase ("d1=50, d2=200",  50.000000, 200.000000, -42.947889, -54.989089, -0.263290, -12.304490));
+  AddTestCase (new LteUeMeasurementsTestCase ("d1=50, d2=500",  50.000000, 500.000000, -42.947889, -62.947889, -0.043214, -20.043214));
+  AddTestCase (new LteUeMeasurementsTestCase ("d1=50, d2=1000",  50.000000, 1000.000000, -42.947889, -68.968489, -0.010844, -26.031444));
+  AddTestCase (new LteUeMeasurementsTestCase ("d1=50, d2=10000",  50.000000, 10000.000000, -42.947889, -88.968489, -0.000109, -46.020709));
+  AddTestCase (new LteUeMeasurementsTestCase ("d1=50, d2=100000",  50.000000, 100000.000000, -42.947889, -108.968489, -0.000002, -66.020601));
+  AddTestCase (new LteUeMeasurementsTestCase ("d1=50, d2=1000000",  50.000000, 1000000.000000, -42.947889, -128.968489, -0.000000, -86.020600));
+
+  AddTestCase (new LteUeMeasurementsTestCase ("d1=4500, d2=12600",  4500.000000, 12600.000000, -82.032740, -90.975900, -0.524862, -9.468022));
+  AddTestCase (new LteUeMeasurementsTestCase ("d1=5400, d2=12600",  5400.000000, 12600.000000, -83.616365, -90.975900, -0.737119, -8.096655));
 
 //   AddTestCase (new LteUeMeasurementsTestCase ("d1=50, d2=10",  50.000000, 10.000000,  0.040000, 0.040000,  0.010399, 0.010399, 0, 0));
 //   AddTestCase (new LteUeMeasurementsTestCase ("d1=50, d2=20",  50.000000, 20.000000,  0.160000, 0.159998,  0.041154, 0.041153, 0, 0));
@@ -125,7 +128,8 @@ LteUeMeasurementsTestCase::DoRun (void)
   lteHelper->SetAttribute ("UseIdealRrc", BooleanValue (false));
 
   LogComponentEnable ("LteUeMeasurementsTest", LOG_LEVEL_ALL);
-  LogComponentEnable ("LteUePhy", LOG_LEVEL_ALL);
+//   LogComponentEnable ("LteUePhy", LOG_LEVEL_ALL);
+//   LogComponentEnable ("LteUeRrc", LOG_LEVEL_ALL);
   
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
@@ -203,7 +207,7 @@ LteUeMeasurementsTestCase::DoRun (void)
 
   
 // need to allow for RRC connection establishment + SRS
-  Simulator::Stop (Seconds (0.100));
+  Simulator::Stop (Seconds (0.800));
   Simulator::Run ();
 
   Simulator::Destroy ();
@@ -217,17 +221,17 @@ LteUeMeasurementsTestCase::ReportUeMeasurements (uint16_t rnti, uint16_t cellId,
   // need to allow for RRC connection establishment + CQI feedback reception + UE measurements filtering (200 ms)
   if (Simulator::Now () > MilliSeconds (400))
     {
-      if (cellId == 1)
+      if (servingCell)
         {
-          NS_LOG_DEBUG ("UE 1 Rxed RSRP " << rsrp << " thr " << m_rsrpDbmUe1 << " RSRQ " << rsrq << " thr " << m_rsrqDbUe1);
-          NS_TEST_ASSERT_MSG_EQ_TOL (m_rsrpDbmUe1, rsrp, 0.1, "Wrong RSRP UE 1");
-          NS_TEST_ASSERT_MSG_EQ_TOL (m_rsrqDbUe1, rsrq, 0.1 , "Wrong RSRQ UE 1");
+          NS_LOG_DEBUG ("UE serving cellId " << cellId << " Rxed RSRP " << rsrp << " thr " << m_rsrpDbmUe1 << " RSRQ " << rsrq << " thr " << m_rsrqDbUe1);
+          NS_TEST_ASSERT_MSG_EQ_TOL (m_rsrpDbmUe1, rsrp, 0.2, "Wrong RSRP UE 1");
+          NS_TEST_ASSERT_MSG_EQ_TOL (m_rsrqDbUe1, rsrq, 0.2 , "Wrong RSRQ UE 1");
         }
       else
         {
-          NS_LOG_DEBUG ("UE 2 Rxed RSRP " << rsrp << " thr " << m_rsrpDbmUe2 << " RSRQ " << rsrq << " thr " << m_rsrqDbUe2);
-          NS_TEST_ASSERT_MSG_EQ_TOL (m_rsrpDbmUe2, rsrp, 0.1 , "Wrong RSRP UE 2");
-          NS_TEST_ASSERT_MSG_EQ_TOL (m_rsrqDbUe2, rsrq, 0.1 , "Wrong RSRQ UE ");
+          NS_LOG_DEBUG ("UE neighbor cellId " << cellId << " Rxed RSRP " << rsrp << " thr " << m_rsrpDbmUe2 << " RSRQ " << rsrq << " thr " << m_rsrqDbUe2);
+          NS_TEST_ASSERT_MSG_EQ_TOL (m_rsrpDbmUe2, rsrp, 0.2 , "Wrong RSRP UE 2");
+          NS_TEST_ASSERT_MSG_EQ_TOL (m_rsrqDbUe2, rsrq, 0.2 , "Wrong RSRQ UE ");
         }
     }
 }
