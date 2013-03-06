@@ -448,7 +448,9 @@ LteUePhy::GenerateCtrlCqiReport (const SpectrumValue& sinr)
       Values::const_iterator it;
       for (it = m_rsReceivedPower.ConstValuesBegin (); it != m_rsReceivedPower.ConstValuesEnd (); it++)
         {
-          sum += (*it);
+          // convert PSD [W/Hz] to linear power [W]
+          double powerTxW = (*it) * (m_dlBandwidth * 180000);
+          sum += powerTxW;
           rbNum++;
         }
       double rsrp = sum / (double)rbNum;
@@ -484,7 +486,10 @@ LteUePhy::GenerateCtrlCqiReport (const SpectrumValue& sinr)
           for (itPj = m_rsReceivedPower.ConstValuesBegin (); itPj != m_rsReceivedPower.ConstValuesEnd (); itIntN++, itPj++)
             {
               rbNum++;
-              rsrqSum += ((*itIntN) + (*itPj));
+              // convert PSD [W/Hz] to linear power [W]
+              double noisePowerTxW = (*itIntN) * (m_dlBandwidth * 180000);
+              double intPowerTxW = (*itPj) * (m_dlBandwidth * 180000);
+              rsrqSum += (noisePowerTxW + intPowerTxW);
 //               NS_LOG_DEBUG (this << " RSRQsum " << rsrqSum);
 
             }
@@ -854,7 +859,10 @@ LteUePhy::ReceivePss (uint16_t cellId, Ptr<SpectrumValue> p)
   Values::const_iterator itPi;
   for (itPi = p->ConstValuesBegin (); itPi != p->ConstValuesEnd (); itPi++)
     {
-      sum += (*itPi);
+      // convert PSD [W/Hz] to linear power [W]
+      double powerTxW = (*itPi) * (m_dlBandwidth * 180000);
+      //NS_LOG_DEBUG (this << " Sum power " << powerTxW);
+      sum += powerTxW;
       nRB++;
     }
   el.pssPsdSum = sum;
