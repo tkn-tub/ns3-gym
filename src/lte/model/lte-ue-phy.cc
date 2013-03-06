@@ -251,6 +251,9 @@ LteUePhy::GetTypeId (void)
                   TimeValue (MilliSeconds (200)),
                   MakeTimeAccessor (&LteUePhy::m_ueMeasurementsFilterPeriod),
                   MakeTimeChecker ())
+    .AddTraceSource ("ReportUeMeasurements",
+                     "Report UE measurements RSRP (dBm) and RSRQ (dB).",
+                     MakeTraceSourceAccessor (&LteUePhy::m_reportUeMeasurements))
   ;
   return tid;
 }
@@ -404,8 +407,10 @@ LteUePhy::GenerateCtrlCqiReport (const SpectrumValue& sinr)
 {
   NS_LOG_FUNCTION (this);
 
-  if (!(m_dlConfigured && m_ulConfigured))
+  if ((!(m_dlConfigured && m_ulConfigured)) || (m_rnti == 0))
     {
+      // abort method, the UE is still not registered
+      m_pssList.clear ();
       return;
     }
 
@@ -431,6 +436,94 @@ LteUePhy::GenerateCtrlCqiReport (const SpectrumValue& sinr)
         }
       m_a30CqiLast = Simulator::Now ();
     }
+
+  // Generate PHY trace
+  m_rsrpSinrSampleCounter++;
+  if (m_rsrpSinrSampleCounter==m_rsrpSinrSamplePeriod)
+    {
+      NS_ASSERT_MSG (m_rsReceivedPowerUpdated, " RS received power info obsolete");
+      // RSRP evaluated as averaged received power among RBs
+      double sum = 0.0;
+      uint8_t rbNum = 0;
+      Values::const_iterator it;
+      for (it = m_rsReceivedPower.ConstValuesBegin (); it != m_rsReceivedPower.ConstValuesEnd (); it++)
+        {
+          sum += (*it);
+          rbNum++;
+        }
+      double rsrp = sum / (double)rbNum;
+      // averaged SINR among RBs
+      for (it = sinr.ConstValuesBegin (); it != sinr.ConstValuesEnd (); it++)
+        {
+          sum += (*it);
+          rbNum++;
+        }
+      double avSinr = sum / (double)rbNum;
+      NS_LOG_INFO (this << " cellId " << m_cellId << " rnti " << m_rnti << " RSRP " << rsrp << " SINR " << avSinr);
+
+      m_reportCurrentCellRsrpSinrTrace (m_cellId, m_rnti, rsrp, avSinr);
+      m_rsrpSinrSampleCounter = 0;
+    }
+
+  // Generate UE Measurements for upper layers
+  if (m_pssReceived)
+    {
+      NS_ASSERT_MSG (m_rsInterferencePowerUpdated, " RS interference power info obsolete");
+      // PSSs received
+      NS_LOG_DEBUG (this << " Process PSS RNTI " << m_rnti << " cellId " << m_cellId << " PSS num " << m_pssList.size ());
+      std::list <PssElement>::iterator itPss = m_pssList.begin ();
+      while (itPss != m_pssList.end ())
+        {
+          NS_LOG_DEBUG (this << " PSS received from eNB " << (*itPss).cellId << " pssSum " << (*itPss).pssPsdSum << " nRB " << (*itPss).nRB);
+          uint8_t rbNum = 0;
+          double rsrqSum = 0.0;
+          Values::const_iterator itIntN = m_rsIntereferencePower.ConstValuesBegin ();
+          Values::const_iterator itPj = m_rsReceivedPower.ConstValuesBegin ();
+//           NS_LOG_DEBUG (this << "\t INT + N" << m_rsIntereferencePower);
+//           NS_LOG_DEBUG (this << "\t Pj " << m_rsReceivedPower);
+          for (itPj = m_rsReceivedPower.ConstValuesBegin (); itPj != m_rsReceivedPower.ConstValuesEnd (); itIntN++, itPj++)
+            {
+              rbNum++;
+              rsrqSum += ((*itIntN) + (*itPj));
+//               NS_LOG_DEBUG (this << " RSRQsum " << rsrqSum);
+
+            }
+          NS_ASSERT (rbNum == (*itPss).nRB);
+          double rsrp_dBm = 10 * log (1000 * (*itPss).pssPsdSum / (double)rbNum);
+          double rsrq_dB = 10 * log ((*itPss).pssPsdSum / rsrqSum);
+
+          if (rsrq_dB > m_pssReceptionThreshold)
+            {
+              // report UE Measurements to upper layers
+              NS_LOG_DEBUG (this << " CellId " << (*itPss).cellId << " has RSRP " << rsrp_dBm << " and RSRQ " << rsrq_dB << " RBnum " << (uint16_t)rbNum);
+              // store measurements
+              std::map <uint16_t, UeMeasurementsElement>::iterator itMeasMap =  m_UeMeasurementsMap.find ((*itPss).cellId);
+              if (itMeasMap == m_UeMeasurementsMap.end ())
+                {
+                  // insert new entry
+                  UeMeasurementsElement newEl;
+                  newEl.rsrpSum = rsrp_dBm;
+                  newEl.rsrpNum = 1;
+                  newEl.rsrqSum = rsrq_dB;
+                  newEl.rsrqNum = 1;
+                  m_UeMeasurementsMap.insert (std::pair <uint16_t, UeMeasurementsElement> ((*itPss).cellId, newEl));
+                }
+              else
+                {
+                  (*itMeasMap).second.rsrpSum += rsrp_dBm;
+                  (*itMeasMap).second.rsrpNum++;
+                  (*itMeasMap).second.rsrqSum += rsrq_dB;
+                  (*itMeasMap).second.rsrqNum++;
+                }
+
+            }
+          itPss++;
+        }
+        m_pssList.clear ();
+    }
+
+
+  
 }
 
 void
@@ -461,102 +554,13 @@ Ptr<DlCqiLteControlMessage>
 LteUePhy::CreateDlCqiFeedbackMessage (const SpectrumValue& sinr)
 {
   NS_LOG_FUNCTION (this);
-
-  if (m_rnti == 0)
-    {
-      // abort method, the UE is still not registered
-      return (0);
-    }
   
   // apply transmission mode gain
   NS_ASSERT (m_transmissionMode < m_txModeGain.size ());
   SpectrumValue newSinr = sinr;
   newSinr *= m_txModeGain.at (m_transmissionMode);
 
-  m_rsrpSinrSampleCounter++;
-  if (m_rsrpSinrSampleCounter==m_rsrpSinrSamplePeriod)
-    {
-      NS_ASSERT_MSG (m_rsReceivedPowerUpdated, " RS received power info obsolete");
-      // RSRP evaluated as averaged received power among RBs
-      double sum = 0.0;
-      uint8_t rbNum = 0;
-      Values::const_iterator it;
-      for (it = m_rsReceivedPower.ConstValuesBegin (); it != m_rsReceivedPower.ConstValuesEnd (); it++)
-        {
-          sum += (*it);
-          rbNum++;
-        }
-      double rsrp = sum / (double)rbNum;
-      // averaged SINR among RBs
-      for (it = sinr.ConstValuesBegin (); it != sinr.ConstValuesEnd (); it++)
-        {
-          sum += (*it);
-          rbNum++;
-        }
-      double avSinr = sum / (double)rbNum;
-      NS_LOG_INFO (this << " cellId " << m_cellId << " rnti " << m_rnti << " RSRP " << rsrp << " SINR " << avSinr);
- 
-      m_reportCurrentCellRsrpSinrTrace (m_cellId, m_rnti, rsrp, avSinr);
-      m_rsrpSinrSampleCounter = 0;
-    }
-
-  // UE Measurements
-  if (m_pssReceived)
-    {
-      NS_ASSERT_MSG (m_rsInterferencePowerUpdated, " RS interference power info obsolete");
-      // PSSs received
-      std::list <PssElement>::iterator itPss = m_pssList.begin ();
-      while (itPss != m_pssList.end ())
-        {
-          NS_LOG_DEBUG (this << " PSS received from eNB " << (*itPss).cellId << " pssSum " << (*itPss).pssPsdSum << " nRB " << (*itPss).nRB);
-          uint8_t rbNum = 0;
-          double rsrqSum = 0.0;
-          Values::const_iterator itIntN = m_rsIntereferencePower.ConstValuesBegin ();
-          Values::const_iterator itPj = m_rsReceivedPower.ConstValuesBegin ();
-//           NS_LOG_DEBUG (this << "\t INT + N" << m_rsIntereferencePower);
-//           NS_LOG_DEBUG (this << "\t Pj " << m_rsReceivedPower);
-          for (itPj = m_rsReceivedPower.ConstValuesBegin (); itPj != m_rsReceivedPower.ConstValuesEnd (); itIntN++, itPj++)
-            {
-              rbNum++;
-              rsrqSum += ((*itIntN) + (*itPj));
-//               NS_LOG_DEBUG (this << " RSRQsum " << rsrqSum);
-              
-            }
-          NS_ASSERT (rbNum == (*itPss).nRB);
-          double rsrp_dBm = 10 * log (1000 * (*itPss).pssPsdSum / (double)rbNum);
-          double rsrq_dB = 10 * log ((*itPss).pssPsdSum / rsrqSum);
-
-          if (rsrq_dB > m_pssReceptionThreshold)
-            {
-              // report UE Measurements to upper layers
-              NS_LOG_DEBUG (this << " CellId " << (*itPss).cellId << " has RSRP " << rsrp_dBm << " and RSRQ " << rsrq_dB << " RBnum " << (uint16_t)rbNum);
-              // store measurements
-              std::map <uint16_t, UeMeasurementsElement>::iterator itMeasMap =  m_UeMeasurementsMap.find ((*itPss).cellId);
-              if (itMeasMap == m_UeMeasurementsMap.end ())
-                {
-                  // insert new entry
-                  UeMeasurementsElement newEl;
-                  newEl.rsrpSum = rsrp_dBm;
-                  newEl.rsrpNum = 1;
-                  newEl.rsrqSum = rsrq_dB;
-                  newEl.rsrqNum = 1;
-                  m_UeMeasurementsMap.insert (std::pair <uint16_t, UeMeasurementsElement> ((*itPss).cellId, newEl));
-                }
-              else
-                {
-                  (*itMeasMap).second.rsrpSum += rsrp_dBm;
-                  (*itMeasMap).second.rsrpNum++;
-                  (*itMeasMap).second.rsrqSum += rsrq_dB;
-                  (*itMeasMap).second.rsrqNum++;
-                }
-              
-            }
-          itPss++;
-        }
-    }
-
-
-  // CREATE DlCqiLteControlMessage
+// CREATE DlCqiLteControlMessage
   Ptr<DlCqiLteControlMessage> msg = Create<DlCqiLteControlMessage> ();
   CqiListElement_s dlcqi;
   std::vector<int> cqi;
@@ -662,6 +666,8 @@ LteUePhy::ReportUeMeasurements ()
       newEl.m_rsrp = avg_rsrp;
       newEl.m_rsrq = avg_rsrq;
       ret.m_ueMeasurementsList.push_back (newEl);
+      // report to UE measurements trace
+      m_reportUeMeasurements (m_rnti, m_cellId, avg_rsrp, avg_rsrq, ((*it).first == m_cellId ? 1 : 0));
     }
   m_ueCphySapUser-> ReportUeMeasurements(ret);
   m_UeMeasurementsMap.clear ();
