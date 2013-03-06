@@ -1317,7 +1317,7 @@ LteEnbRrc::GetTypeId (void)
                    MakeUintegerChecker<uint8_t> ())   
     .AddAttribute ("EventA4Threshold",
                    "Threshold of the event A4 (Neighbour becomes better than threshold)",
-                   UintegerValue (255),
+                   UintegerValue (34),
                    MakeUintegerAccessor (&LteEnbRrc::m_eventA4Threshold),
                    MakeUintegerChecker<uint8_t> ())   
     .AddTraceSource ("NewUeContext",
