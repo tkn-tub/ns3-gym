@@ -522,8 +522,8 @@ OpenFlowSwitchNetDevice::BufferFromPacket (Ptr<Packet> packet, Address src, Addr
     {
       buffer->l4 = new tcp_header;
       tcp_header* tcp_h = (tcp_header*)buffer->l4;
-      tcp_h->tcp_src = htonl (tcp_hd.GetSourcePort ());         // Source Port
-      tcp_h->tcp_dst = htonl (tcp_hd.GetDestinationPort ());    // Destination Port
+      tcp_h->tcp_src = htons (tcp_hd.GetSourcePort ());         // Source Port
+      tcp_h->tcp_dst = htons (tcp_hd.GetDestinationPort ());    // Destination Port
       tcp_h->tcp_seq = tcp_hd.GetSequenceNumber ().GetValue (); // Sequence Number
       tcp_h->tcp_ack = tcp_hd.GetAckNumber ().GetValue ();      // ACK Number
       tcp_h->tcp_ctl = TCP_FLAGS (tcp_hd.GetFlags ());  // Data Offset + Reserved + Flags
@@ -541,8 +541,8 @@ OpenFlowSwitchNetDevice::BufferFromPacket (Ptr<Packet> packet, Address src, Addr
         {
           buffer->l4 = new udp_header;
           udp_header* udp_h = (udp_header*)buffer->l4;
-          udp_h->udp_src = htonl (udp_hd.GetSourcePort ());     // Source Port
-          udp_h->udp_dst = htonl (udp_hd.GetDestinationPort ()); // Destination Port
+          udp_h->udp_src = htons (udp_hd.GetSourcePort ());     // Source Port
+          udp_h->udp_dst = htons (udp_hd.GetDestinationPort ()); // Destination Port
           udp_h->udp_len = htons (UDP_HEADER_LEN + packet->GetSize ());
 
           if (protocol == Ipv4L3Protocol::PROT_NUMBER)
