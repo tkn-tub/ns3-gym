@@ -325,6 +325,12 @@ private:
   uint16_t m_rsrpSinrSamplePeriod;
   uint16_t m_rsrpSinrSampleCounter;
 
+  /**
+   * Trace information regarding RSRP and RSRQ (see TS 36.214)
+   * uint16_t rnti, uint16_t cellId, double rsrp, double sinr, bool servingCell
+   */
+  TracedCallback<uint16_t, uint16_t, double, double, bool> m_reportUeMeasurements;
+
   EventId m_sendSrsEvent;
 
   /**

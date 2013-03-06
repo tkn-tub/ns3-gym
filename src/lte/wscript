@@ -124,6 +124,7 @@ def build(bld):
         'test/test-lte-rrc.cc',
         'test/test-lte-x2-handover.cc',
         'test/test-asn1-encoding.cc',
+        'test/lte-test-ue-measurements.cc',
         ]
 
     headers = bld.new_task_gen(features=['ns3header'])
