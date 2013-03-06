@@ -476,13 +476,10 @@ LteUePhy::GenerateCtrlCqiReport (const SpectrumValue& sinr)
       std::list <PssElement>::iterator itPss = m_pssList.begin ();
       while (itPss != m_pssList.end ())
         {
-          NS_LOG_DEBUG (this << " PSS received from eNB " << (*itPss).cellId << " pssSum " << (*itPss).pssPsdSum << " nRB " << (*itPss).nRB);
           uint8_t rbNum = 0;
           double rsrqSum = 0.0;
           Values::const_iterator itIntN = m_rsIntereferencePower.ConstValuesBegin ();
           Values::const_iterator itPj = m_rsReceivedPower.ConstValuesBegin ();
-//           NS_LOG_DEBUG (this << "\t INT + N" << m_rsIntereferencePower);
-//           NS_LOG_DEBUG (this << "\t Pj " << m_rsReceivedPower);
           for (itPj = m_rsReceivedPower.ConstValuesBegin (); itPj != m_rsReceivedPower.ConstValuesEnd (); itIntN++, itPj++)
             {
               rbNum++;
@@ -490,17 +487,15 @@ LteUePhy::GenerateCtrlCqiReport (const SpectrumValue& sinr)
               double noisePowerTxW = (*itIntN) * (m_dlBandwidth * 180000);
               double intPowerTxW = (*itPj) * (m_dlBandwidth * 180000);
               rsrqSum += (noisePowerTxW + intPowerTxW);
-//               NS_LOG_DEBUG (this << " RSRQsum " << rsrqSum);
-
             }
           NS_ASSERT (rbNum == (*itPss).nRB);
-          double rsrp_dBm = 10 * log (1000 * (*itPss).pssPsdSum / (double)rbNum);
-          double rsrq_dB = 10 * log ((*itPss).pssPsdSum / rsrqSum);
+          double rsrp_dBm = 10 * log10 (1000 * (*itPss).pssPsdSum / (double)rbNum);
+          double rsrq_dB = 10 * log10 ((*itPss).pssPsdSum / rsrqSum);
 
           if (rsrq_dB > m_pssReceptionThreshold)
             {
               // report UE Measurements to upper layers
-              NS_LOG_DEBUG (this << " CellId " << (*itPss).cellId << " has RSRP " << rsrp_dBm << " and RSRQ " << rsrq_dB << " RBnum " << (uint16_t)rbNum);
+              NS_LOG_INFO (this << " PSS received from CellId " << (*itPss).cellId << " has RSRP " << rsrp_dBm << " and RSRQ " << rsrq_dB << " RBnum " << (uint16_t)rbNum);
               // store measurements
               std::map <uint16_t, UeMeasurementsElement>::iterator itMeasMap =  m_UeMeasurementsMap.find ((*itPss).cellId);
               if (itMeasMap == m_UeMeasurementsMap.end ())
@@ -861,7 +856,6 @@ LteUePhy::ReceivePss (uint16_t cellId, Ptr<SpectrumValue> p)
     {
       // convert PSD [W/Hz] to linear power [W]
       double powerTxW = (*itPi) * (m_dlBandwidth * 180000);
-      //NS_LOG_DEBUG (this << " Sum power " << powerTxW);
       sum += powerTxW;
       nRB++;
     }
