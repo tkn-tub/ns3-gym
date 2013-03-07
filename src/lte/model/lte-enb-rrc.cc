@@ -891,6 +891,37 @@ void
 UeManager::RecvMeasurementReport (LteRrcSap::MeasurementReport msg)
 {
   NS_LOG_FUNCTION (this);
+
+  NS_LOG_LOGIC ("measId " << (uint16_t) msg.measResults.measId << 
+                " RSRP " << (uint16_t) msg.measResults.rsrpResult <<
+                " RSRQ " << (uint16_t) msg.measResults.rsrqResult <<
+                " haveMeasResultNeighCells " << msg.measResults.haveMeasResultNeighCells <<
+                " measResultListEutra " << msg.measResults.measResultListEutra.size ());
+
+  /// Event A2 (Serving becomes worse than threshold)
+  if (msg.measResults.measId == 1)
+    {
+
+    }
+  /// Event A4 (Neighbour becomes better than threshold)
+  else if (msg.measResults.measId == 2)
+    {
+      // Update the NRT
+      if (msg.measResults.haveMeasResultNeighCells && ! (msg.measResults.measResultListEutra.empty ()))
+        {
+
+        }
+      else
+        {
+//           NS_LOG_LOGIC ("WARNING");
+           NS_FATAL_ERROR ("Event A4 received without measure results for neighbour cells");
+        }
+    }
+  else
+    {
+      NS_FATAL_ERROR ("Measure identity is unknown");
+    }
+
 }
 
 
