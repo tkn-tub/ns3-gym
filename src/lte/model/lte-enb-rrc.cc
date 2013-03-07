@@ -1312,12 +1312,12 @@ LteEnbRrc::GetTypeId (void)
                    MakeBooleanChecker ())
     .AddAttribute ("EventA2Threshold",
                    "Threshold of the event A2 (Serving becomes worse than threshold)",
-                   UintegerValue (0),
+                   UintegerValue (34),
                    MakeUintegerAccessor (&LteEnbRrc::m_eventA2Threshold),
                    MakeUintegerChecker<uint8_t> ())   
     .AddAttribute ("EventA4Threshold",
                    "Threshold of the event A4 (Neighbour becomes better than threshold)",
-                   UintegerValue (34),
+                   UintegerValue (0),
                    MakeUintegerAccessor (&LteEnbRrc::m_eventA4Threshold),
                    MakeUintegerChecker<uint8_t> ())   
     .AddTraceSource ("NewUeContext",
