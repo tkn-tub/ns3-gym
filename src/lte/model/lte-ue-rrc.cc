@@ -1493,7 +1493,8 @@ LteUeRrc::SendMeasurementReport (uint8_t measId)
                            << " RSRP " << (uint32_t) measResultEutra.rsrpResult 
                            << " (" << neighborMeasIt->second.rsrp << " dBm) "
                            << " RSRQ " << (uint32_t) measResultEutra.rsrqResult 
-                           << " (" << neighborMeasIt->second.rsrq << " dB)");  
+                           << " (" << neighborMeasIt->second.rsrq << " dB)"); 
+              measResults.measResultListEutra.push_back (measResultEutra);
             }
         }
       else
