@@ -892,6 +892,8 @@ UeManager::RecvMeasurementReport (LteRrcSap::MeasurementReport msg)
 {
   NS_LOG_FUNCTION (this);
 
+  m_rrc->m_recvMeasurementReportTrace (m_imsi, m_rrc->m_cellId, m_rnti, msg);
+
   NS_LOG_LOGIC ("measId " << (uint16_t) msg.measResults.measId << 
                 " RSRP " << (uint16_t) msg.measResults.rsrpResult <<
                 " RSRQ " << (uint16_t) msg.measResults.rsrqResult <<
@@ -1366,6 +1368,9 @@ LteEnbRrc::GetTypeId (void)
     .AddTraceSource ("HandoverEndOk",
                      "trace fired upon successful termination of a handover procedure",
                      MakeTraceSourceAccessor (&LteEnbRrc::m_handoverEndOkTrace))
+    .AddTraceSource ("RecvMeasurementReport",
+                     "trace fired when measurement report is received",
+                     MakeTraceSourceAccessor (&LteEnbRrc::m_recvMeasurementReportTrace))
   ;
   return tid;
 }
