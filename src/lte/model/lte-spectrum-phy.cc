@@ -374,7 +374,7 @@ LteSpectrumPhy::StartTxDataFrame (Ptr<PacketBurst> pb, std::list<Ptr<LteControlM
 bool
 LteSpectrumPhy::StartTxDlCtrlFrame (std::list<Ptr<LteControlMessage> > ctrlMsgList)
 {
-  NS_LOG_FUNCTION (this << time);
+  NS_LOG_FUNCTION (this);
   NS_LOG_LOGIC (this << " state: " << m_state);
   
 //   m_phyTxStartTrace (pb);
@@ -430,7 +430,7 @@ LteSpectrumPhy::StartTxDlCtrlFrame (std::list<Ptr<LteControlMessage> > ctrlMsgLi
 bool
 LteSpectrumPhy::StartTxUlSrsFrame ()
 {
-  NS_LOG_FUNCTION (this << time);
+  NS_LOG_FUNCTION (this);
   NS_LOG_LOGIC (this << " state: " << m_state);
   
   //   m_phyTxStartTrace (pb);
