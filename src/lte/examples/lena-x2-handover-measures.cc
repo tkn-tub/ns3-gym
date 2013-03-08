@@ -71,7 +71,7 @@ main (int argc, char *argv[])
   // arguments, so that the user is allowed to override these settings 
   Config::SetDefault ("ns3::UdpClient::Interval", TimeValue (MilliSeconds(10)));
   Config::SetDefault ("ns3::UdpClient::MaxPackets", UintegerValue(1000000));
-  Config::SetDefault ("ns3::LteHelper::UseIdealRrc", BooleanValue(false));
+  Config::SetDefault ("ns3::LteHelper::UseIdealRrc", BooleanValue(true));
 
   // Command line arguments
   CommandLine cmd;
