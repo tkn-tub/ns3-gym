@@ -35,10 +35,12 @@
 
 #include "ns3/lte-ue-phy.h"
 #include "ns3/lte-ue-net-device.h"
+#include <ns3/lte-enb-rrc.h>
 
 #include "lte-test-ue-measurements.h"
 
 #include "lte-test-sinr-chunk-processor.h"
+#include <ns3/lte-common.h>
 
 NS_LOG_COMPONENT_DEFINE ("LteUeMeasurementsTest");
 
@@ -50,6 +52,13 @@ ReportUeMeasurementsCallback (LteUeMeasurementsTestCase *testcase, std::string p
                              uint16_t rnti, uint16_t cellId, double rsrp, double rsrq, bool servingCell)
 {
   testcase->ReportUeMeasurements (rnti, cellId, rsrp, rsrq, servingCell);
+}
+
+void
+RecvMeasurementReportCallback (LteUeMeasurementsTestCase *testcase, std::string path,
+                             uint64_t imsi, uint16_t rnti, uint16_t cellId, LteRrcSap::MeasurementReport meas)
+{
+  testcase->RecvMeasurementReport (imsi, rnti, cellId, meas);
 }
 
 
@@ -88,10 +97,10 @@ LteUeMeasurementsTestCase::LteUeMeasurementsTestCase (std::string name, double d
   : TestCase (name),
     m_d1 (d1),
     m_d2 (d2),
-    m_rsrpDbmUe1 (rsrpDbmUe1),
-    m_rsrpDbmUe2 (rsrpDbmUe2),
-    m_rsrqDbUe1 (rsrqDbUe1),
-    m_rsrqDbUe2 (rsrqDbUe2)
+    m_rsrpDbmUeServingCell (rsrpDbmUe1),
+    m_rsrpDbmUeNeighborCell (rsrpDbmUe2),
+    m_rsrqDbUeServingCell (rsrqDbUe1),
+    m_rsrqDbUeNeighborCell (rsrqDbUe2)
 {
   NS_LOG_INFO ("Test UE Measurements d1 = " << d1 << " m. and d2 = " << d2 << " m.");
 }
@@ -113,7 +122,7 @@ LteUeMeasurementsTestCase::DoRun (void)
   lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
   lteHelper->SetAttribute ("UseIdealRrc", BooleanValue (false));
 
-//   LogComponentEnable ("LteUeMeasurementsTest", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteUeMeasurementsTest", LOG_LEVEL_ALL);
   
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
@@ -175,6 +184,8 @@ LteUeMeasurementsTestCase::DoRun (void)
 
   Config::Connect ("/NodeList/2/DeviceList/0/LteUePhy/ReportUeMeasurements",
                    MakeBoundCallback (&ReportUeMeasurementsCallback, this));
+  Config::Connect ("/NodeList/0/DeviceList/0/LteEnbRrc/RecvMeasurementReport",
+                   MakeBoundCallback (&RecvMeasurementReportCallback, this));
 
   // same as above for eNB2 and UE2
 
@@ -188,6 +199,8 @@ LteUeMeasurementsTestCase::DoRun (void)
 
   Config::Connect ("/NodeList/3/DeviceList/0/LteUePhy/ReportUeMeasurements",
                    MakeBoundCallback (&ReportUeMeasurementsCallback, this));
+  Config::Connect ("/NodeList/1/DeviceList/0/LteEnbRrc/RecvMeasurementReport",
+                   MakeBoundCallback (&RecvMeasurementReportCallback, this));
 
   
 // need to allow for RRC connection establishment + SRS
@@ -207,15 +220,37 @@ LteUeMeasurementsTestCase::ReportUeMeasurements (uint16_t rnti, uint16_t cellId,
     {
       if (servingCell)
         {
-          NS_LOG_DEBUG ("UE serving cellId " << cellId << " Rxed RSRP " << rsrp << " thr " << m_rsrpDbmUe1 << " RSRQ " << rsrq << " thr " << m_rsrqDbUe1);
-          NS_TEST_ASSERT_MSG_EQ_TOL (m_rsrpDbmUe1, rsrp, 0.2, "Wrong RSRP UE 1");
-          NS_TEST_ASSERT_MSG_EQ_TOL (m_rsrqDbUe1, rsrq, 0.2 , "Wrong RSRQ UE 1");
+          NS_LOG_DEBUG ("UE serving cellId " << cellId << " Rxed RSRP " << rsrp << " thr " << m_rsrpDbmUeServingCell << " RSRQ " << rsrq << " thr " << m_rsrqDbUeServingCell);
+          NS_TEST_ASSERT_MSG_EQ_TOL (m_rsrpDbmUeServingCell, rsrp, 0.2, "Wrong RSRP UE 1");
+          NS_TEST_ASSERT_MSG_EQ_TOL (m_rsrqDbUeServingCell, rsrq, 0.2 , "Wrong RSRQ UE 1");
         }
       else
         {
-          NS_LOG_DEBUG ("UE neighbor cellId " << cellId << " Rxed RSRP " << rsrp << " thr " << m_rsrpDbmUe2 << " RSRQ " << rsrq << " thr " << m_rsrqDbUe2);
-          NS_TEST_ASSERT_MSG_EQ_TOL (m_rsrpDbmUe2, rsrp, 0.2 , "Wrong RSRP UE 2");
-          NS_TEST_ASSERT_MSG_EQ_TOL (m_rsrqDbUe2, rsrq, 0.2 , "Wrong RSRQ UE ");
+          NS_LOG_DEBUG ("UE neighbor cellId " << cellId << " Rxed RSRP " << rsrp << " thr " << m_rsrpDbmUeNeighborCell << " RSRQ " << rsrq << " thr " << m_rsrqDbUeNeighborCell);
+          NS_TEST_ASSERT_MSG_EQ_TOL (m_rsrpDbmUeNeighborCell, rsrp, 0.2 , "Wrong RSRP UE 2");
+          NS_TEST_ASSERT_MSG_EQ_TOL (m_rsrqDbUeNeighborCell, rsrq, 0.2 , "Wrong RSRQ UE ");
+        }
+    }
+}
+
+
+void
+LteUeMeasurementsTestCase::RecvMeasurementReport (uint64_t imsi, uint16_t cellId, uint16_t rnti, LteRrcSap::MeasurementReport meas)
+{
+  // need to allow for RRC connection establishment + CQI feedback reception + UE measurements filtering (200 ms)
+  if (Simulator::Now () > MilliSeconds (400))
+    {
+      if (cellId == imsi)
+        {
+          NS_LOG_DEBUG ("Serving Cell: received IMSI " << imsi << " CellId " << cellId << " RNTI " << rnti  << " thr " << (uint16_t)EutranMeasurementMapping::Dbm2RsrpRange (m_rsrpDbmUeServingCell) << " RSRP " << (uint16_t)meas.measResults.rsrpResult << " RSRQ " << (uint16_t)meas.measResults.rsrqResult << " thr " << (uint16_t)EutranMeasurementMapping::Db2RsrqRange (m_rsrqDbUeServingCell));
+          NS_TEST_ASSERT_MSG_EQ (meas.measResults.rsrpResult, EutranMeasurementMapping::Dbm2RsrpRange (m_rsrpDbmUeServingCell), "Wrong RSRP ");
+          NS_TEST_ASSERT_MSG_EQ (meas.measResults.rsrqResult, EutranMeasurementMapping::Db2RsrqRange (m_rsrqDbUeServingCell), "Wrong RSRQ ");
+        }
+      else
+        {
+          NS_LOG_DEBUG ("Neighbor cell: received IMSI " << imsi << " CellId " << cellId << " RNTI " << rnti  << " thr " << (uint16_t)EutranMeasurementMapping::Dbm2RsrpRange (m_rsrpDbmUeNeighborCell) << " RSRP " << (uint16_t)meas.measResults.rsrpResult << " RSRQ " << (uint16_t)meas.measResults.rsrqResult << " thr " << (uint16_t)EutranMeasurementMapping::Db2RsrqRange (m_rsrqDbUeNeighborCell));
+          NS_TEST_ASSERT_MSG_EQ (meas.measResults.rsrpResult, EutranMeasurementMapping::Dbm2RsrpRange (m_rsrpDbmUeNeighborCell), "Wrong RSRP ");
+          NS_TEST_ASSERT_MSG_EQ (meas.measResults.rsrqResult, EutranMeasurementMapping::Db2RsrqRange (m_rsrqDbUeNeighborCell), "Wrong RSRQ ");
         }
     }
 }
