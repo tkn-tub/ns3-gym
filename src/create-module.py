@@ -213,17 +213,23 @@ static %(CAPITALIZED)sTestSuite %(MODULE)sTestSuite;
 DOC_RST_TEMPLATE = '''Example Module Documentation
 ----------------------------
 
+.. include:: replace.txt
+
 .. heading hierarchy:
    ------------- Chapter
    ************* Section (#.#)
    ============= Subsection (#.#.#)
    ############# Paragraph (no number)
 
-This is a suggested outline for adding new module documentation to ns-3.
+This is a suggested outline for adding new module documentation to |ns3|.
 See ``src/click/doc/click.rst`` for an example.
 
 The introductory paragraph is for describing what this code is trying to
 model.
+
+For consistency (italicized formatting), please use |ns3| to refer to
+ns-3 in the documentation (and likewise, |ns2| for ns-2).  These macros
+are defined in the file ``replace.txt``.
 
 Model Description
 *****************
