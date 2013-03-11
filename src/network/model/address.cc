@@ -123,7 +123,8 @@ Address::CheckCompatible (uint8_t type, uint8_t len) const
 {
   NS_LOG_FUNCTION (this << static_cast<uint32_t> (type) << static_cast<uint32_t> (len));
   NS_ASSERT (len <= MAX_SIZE);
-  return m_len == len && (m_type == type || m_type == 0);
+  // Mac address type/length detection is discussed in bug 1568
+  return (m_len == len && m_type == type) || (m_len >= len && m_type == 0);
 }
 bool 
 Address::IsMatchingType (uint8_t type) const
