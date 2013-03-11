@@ -213,7 +213,6 @@ public:
   bool Dequeue (Ipv4Address dst, MaintainBuffEntry & entry);
   // / Remove all packets with destination IP address dst
   void DropPacketWithNextHop (Ipv4Address nextHop);
-  bool FindMaintainEntry (Ptr<Packet> packet, Ipv4Address ourAdd, Ipv4Address src, Ipv4Address nextHop, Ipv4Address dst, NetworkKey networkKey);
   // / Finds whether a packet with destination dst exists in the queue
   bool Find (Ipv4Address nextHop);
   // / Number of entries

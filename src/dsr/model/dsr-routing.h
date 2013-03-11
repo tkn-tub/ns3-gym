@@ -327,15 +327,6 @@ public:
    */
   void SendErrorRequest (DsrOptionRerrUnreachHeader &rerr, uint8_t protocol);
   /*
-   * \brief Send the route request and increment the request count
-   * \param the original packet
-   * \param source address
-   * \param destination address
-   */
-  void SendRequestAndIncrement (Ptr<Packet> packet,
-                                Ipv4Address source,
-                                Ipv4Address destination);
-  /*
    * \brief Forward the route request if the node is not the destination
    * \param the original packet
    * \param source address
@@ -390,10 +381,6 @@ public:
                   Ipv4Address realDst,
                   uint8_t protocol,
                   Ptr<Ipv4Route> route);
-  /*
-   * Get the node using the ip address
-   */
-  Ptr<Node> GetNodeWithAddress (Ipv4Address ipv4Address);
   /**
    * \param p packet to forward up
    * \param header IPv4 Header information
@@ -422,11 +409,6 @@ public:
   void SetDownTarget6 (IpL4Protocol::DownTargetCallback6 callback);
   IpL4Protocol::DownTargetCallback GetDownTarget (void) const;
   IpL4Protocol::DownTargetCallback6 GetDownTarget6 (void) const;
-  /**
-   * \brief Get the extension number.
-   * \return extension number
-   */
-  uint8_t GetExtensionNumber () const;
   /**
    * \brief Process method
    * Called from Ipv4L3Protocol::Receive.
