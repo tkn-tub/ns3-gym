@@ -111,7 +111,9 @@ private:
                           bool printTestType) const;
   void PrintTestTypeList (void) const;
   void PrintHelp (const char *programName) const;
-  std::list<TestCase *> FilterTests (std::string testName, enum TestSuite::Type testType) const;
+  std::list<TestCase *> FilterTests (std::string testName,
+                                     enum TestSuite::Type testType,
+                                     bool skipSlowTests);
 
 
   typedef std::vector<TestSuite *> TestSuiteVector;
@@ -147,7 +149,8 @@ TestCase::TestCase (std::string name)
     m_dataDir (""),
     m_runner (0),
     m_result (0),
-    m_name (name)
+    m_name (name),
+    m_takesForever (false)
 {
   NS_LOG_FUNCTION (this << name);
 }
@@ -166,8 +169,11 @@ TestCase::~TestCase ()
 }
 
 void
-TestCase::AddTestCase (TestCase *testCase)
+TestCase::AddTestCase (TestCase *testCase, bool takesForever)
 {
+  // Record this for use later when all test cases are run.
+  testCase->m_takesForever = takesForever;
+
   NS_LOG_FUNCTION (&testCase);
   m_children.push_back (testCase);
   testCase->m_parent = this;
@@ -597,15 +603,16 @@ TestRunnerImpl::PrintHelp (const char *program_name) const
             << "  --list                 : an alias for --print-test-name-list" << std::endl
             << "  --print-test-types     : print the type of tests along with their names" << std::endl
             << "  --print-test-type-list : print the list of types of tests available" << std::endl
-            << "  --print-temp-dir       : Print name of temporary directory before running the tests" << std::endl
-            << "  --test-type=TYPE       : Process only tests of type TYPE" << std::endl
-            << "  --test-name=NAME       : Process only test whose name matches NAME" << std::endl
+            << "  --print-temp-dir       : print name of temporary directory before running the tests" << std::endl
+            << "  --test-type=TYPE       : process only tests of type TYPE" << std::endl
+            << "  --test-name=NAME       : process only test whose name matches NAME" << std::endl
             << "  --suite=NAME           : an alias (here for compatibility reasons only) "
             << "for --test-name=NAME" << std::endl
             << "  --assert-on-failure    : when a test fails, crash immediately (useful" << std::endl
             << "                           when running under a debugger" << std::endl
             << "  --stop-on-failure      : when a test fails, stop immediately" << std::endl
-            << "  --verbose              : Print details of test execution" << std::endl
+            << "  --full                 : run the full set of tests including slow ones" << std::endl
+            << "  --verbose              : print details of test execution" << std::endl
             << "  --xml                  : format test run output as xml" << std::endl
             << "  --tempdir=DIR          : set temp dir for tests to store output files" << std::endl
             << "  --datadir=DIR          : set data dir for tests to read reference files" << std::endl
@@ -656,7 +663,9 @@ TestRunnerImpl::PrintTestTypeList (void) const
 
 
 std::list<TestCase *>
-TestRunnerImpl::FilterTests (std::string testName, enum TestSuite::Type testType) const
+TestRunnerImpl::FilterTests (std::string testName,
+                             enum TestSuite::Type testType,
+                             bool skipSlowTests)
 {
   NS_LOG_FUNCTION (this << testName << testType);
   std::list<TestCase *> tests;
@@ -673,6 +682,29 @@ TestRunnerImpl::FilterTests (std::string testName, enum TestSuite::Type testType
           // skip test
           continue;
         }
+
+      // Remove any test cases that should be skipped.
+      std::vector<TestCase *>::iterator j;
+      for (j = test->m_children.begin (); j != test->m_children.end ();)
+        {
+          TestCase *testCase = *j;
+
+          // If slow tests are not being run and if this test case takes
+          // forever, then don't run it.
+          if (skipSlowTests && testCase->m_takesForever)
+            {
+              // Remove this test case.
+              test->m_children.erase (j);
+            }
+          else
+            {
+              // Only advance through the vector elements if this test
+              // case wasn't deleted.
+              ++j;
+            }
+        }
+
+      // Add this test suite.
       tests.push_back (test);
     }
   return tests;
@@ -692,6 +724,7 @@ TestRunnerImpl::Run (int argc, char *argv[])
   bool printTestTypeList = false;
   bool printTestNameList = false;
   bool printTestTypeAndName = false;
+  bool skipSlowTests = true;
   char *progname = argv[0];
 
   argv++;
@@ -766,6 +799,11 @@ TestRunnerImpl::Run (int argc, char *argv[])
         {
           out = arg + strlen("--out=");
         }
+      else if (strncmp(arg, "--full", strlen("--full")) == 0)
+        {
+          // Set this so that slow tests will be run.
+          skipSlowTests = false;
+        }
       else
         {
           // un-recognized command-line argument
@@ -810,7 +848,7 @@ TestRunnerImpl::Run (int argc, char *argv[])
       return 1;
     }
 
-  std::list<TestCase *> tests = FilterTests (testName, testType);
+  std::list<TestCase *> tests = FilterTests (testName, testType, skipSlowTests);
 
   if (m_tempDir == "")
     {
@@ -859,6 +897,7 @@ TestRunnerImpl::Run (int argc, char *argv[])
   for (std::list<TestCase *>::const_iterator i = tests.begin (); i != tests.end (); ++i)
     {
       TestCase *test = *i;
+
       test->Run (this);
       PrintReport (test, os, xml, 0);
       if (test->IsFailed ())

@@ -1334,8 +1334,13 @@ def run_tests():
                 multiple = ""
             else:
                 multiple = " --stop-on-failure"
+            if (options.full):
+                full = " --full"
+            else:
+                full = ""
 
-            path_cmd = os.path.join("utils", test_runner_name + " --test-name=%s%s" % (test, multiple))
+            path_cmd = os.path.join("utils", test_runner_name + " --test-name=%s%s%s" % (test, multiple, full))
+
             job.set_shell_command(path_cmd)
 
             if options.valgrind and test in core_valgrind_skip_tests:
@@ -1791,6 +1796,9 @@ def main(argv):
 
     parser.add_option("-u", "--update-data", action="store_true", dest="update_data", default=False,
                       help="If examples use reference data files, get them to re-generate them")
+
+    parser.add_option("-f", "--full", action="store_true", dest="full", default=False,
+                      help="run the full set of tests including slow ones")
 
     parser.add_option("-g", "--grind", action="store_true", dest="valgrind", default=False,
                       help="run the test suites and examples using valgrind")
