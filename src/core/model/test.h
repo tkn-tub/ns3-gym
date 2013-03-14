@@ -848,7 +848,7 @@ protected:
    * \param testCase Pointer to the test case object to be added.
    * \param takesForever Set equal to true if this test case takes a
    * long time to run and should be skipped unless the --full option
-   * is specified for the test-runnr.
+   * is specified for the test-runner.
    */
   void AddTestCase (TestCase *testCase, bool takesForever = false);
 
