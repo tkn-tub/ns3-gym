@@ -993,15 +993,17 @@ void Ipv6L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv6Header const& i
   uint8_t nextHeaderPosition = 0;
   bool isDropped = false;
 
-  /* process hop-by-hop extension first if exists */
+  // check for a malformed hop-by-hop extension
+  // this is a common case when forging IPv6 raw packets
   if (nextHeader == Ipv6Header::IPV6_EXT_HOP_BY_HOP)
     {
-      uint8_t buf[2];
-      p->CopyData (buf, sizeof(buf));
-      nextHeader = buf[0];
-      nextHeaderPosition = buf[1];
-      NS_ASSERT_MSG (nextHeader != Ipv6Header::IPV6_EXT_HOP_BY_HOP, "Double Ipv6Header::IPV6_EXT_HOP_BY_HOP in packet, aborting");
-      NS_ASSERT_MSG (nextHeaderPosition != 0, "Zero-size IPv6 Option Header, aborting");
+      uint8_t buf;
+      p->CopyData (&buf, 1);
+      if (buf == Ipv6Header::IPV6_EXT_HOP_BY_HOP)
+        {
+          NS_LOG_WARN("Double Ipv6Header::IPV6_EXT_HOP_BY_HOP in packet, dropping packet");
+          return;
+        }
     }
 
   /* process all the extensions found and the layer 4 protocol */
