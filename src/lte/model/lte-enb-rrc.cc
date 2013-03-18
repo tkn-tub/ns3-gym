@@ -382,7 +382,7 @@ UeManager::SetupDataRadioBearer (EpsBearer bearer, uint8_t bearerId, uint32_t gt
   lcinfo.gbrDl = bearer.gbrQosInfo.gbrDl;
   m_rrc->m_cmacSapProvider->AddLc (lcinfo, rlc->GetLteMacSapUser ());
   
-  if (drbInfo->m_rlc->GetTypeId () == LteRlcAm::GetTypeId ())
+  if (rlcTypeId == LteRlcAm::GetTypeId ())
     {
       drbInfo->m_rlcConfig.choice =  LteRrcSap::RlcConfig::AM;
     }
