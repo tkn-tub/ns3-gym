@@ -601,7 +601,7 @@ def create_ns3_program(bld, name, dependencies=('core',)):
     program.target = "%s%s-%s%s" % (wutils.APPNAME, wutils.VERSION, name, bld.env.BUILD_SUFFIX)
     # Each of the modules this program depends on has its own library.
     program.ns3_module_dependencies = ['ns3-'+dep for dep in dependencies]
-    program.includes = "# #/.."
+    program.includes = "#"
     program.use = program.ns3_module_dependencies
     if program.env['ENABLE_STATIC_NS3']:
         if sys.platform == 'darwin':
