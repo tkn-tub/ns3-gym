@@ -1334,12 +1334,13 @@ def run_tests():
                 multiple = ""
             else:
                 multiple = " --stop-on-failure"
-            if (options.full):
-                full = " --full"
+            if (len(options.fullness)):
+                fullness = options.fullness.upper()
+                fullness = " --fullness=%s" % fullness
             else:
-                full = ""
+                fullness = " --fullness=QUICK"
 
-            path_cmd = os.path.join("utils", test_runner_name + " --test-name=%s%s%s" % (test, multiple, full))
+            path_cmd = os.path.join("utils", test_runner_name + " --test-name=%s%s%s" % (test, multiple, fullness))
 
             job.set_shell_command(path_cmd)
 
@@ -1797,8 +1798,9 @@ def main(argv):
     parser.add_option("-u", "--update-data", action="store_true", dest="update_data", default=False,
                       help="If examples use reference data files, get them to re-generate them")
 
-    parser.add_option("-f", "--full", action="store_true", dest="full", default=False,
-                      help="run the full set of tests including slow ones")
+    parser.add_option("-f", "--fullness", action="store", type="string", dest="fullness", default="QUICK",
+                      metavar="FULLNESS",
+                      help="choose the duration of tests to run: QUICK, EXTENSIVE, or TAKES_FOREVER, where EXTENSIVE includes QUICK and TAKES_FOREVER includes QUICK and EXTENSIVE (only QUICK tests are run by default)")
 
     parser.add_option("-g", "--grind", action="store_true", dest="valgrind", default=False,
                       help="run the test suites and examples using valgrind")

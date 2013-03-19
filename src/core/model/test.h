@@ -834,6 +834,16 @@ class TestRunnerImpl;
 class TestCase
 {
 public:
+  /**
+   * \enum TestDuration
+   * \brief How long the test takes to execute.
+   */
+  enum TestDuration {
+    QUICK         = 1,  /// Fast test.
+    EXTENSIVE     = 2,  /// Medium length test.
+    TAKES_FOREVER = 3   /// Very long running test.
+  };
+
   virtual ~TestCase ();
 
 protected:
@@ -846,11 +856,9 @@ protected:
    * \brief Add an individual test case to this test suite.
    *
    * \param testCase Pointer to the test case object to be added.
-   * \param takesForever Set equal to true if this test case takes a
-   * long time to run and should be skipped unless the --full option
-   * is specified for the test-runner.
+   * \param duration Amount of time this test takes to execute.
    */
-  void AddTestCase (TestCase *testCase, bool takesForever = false);
+  void AddTestCase (TestCase *testCase, enum TestDuration duration = QUICK);
 
   /**
    * \param directory the directory where the test data is located
@@ -935,7 +943,7 @@ private:
   TestRunnerImpl *m_runner;
   struct Result *m_result;
   std::string m_name;
-  bool m_takesForever;
+  enum TestDuration m_duration;
 };
 
 /**
