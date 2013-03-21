@@ -190,7 +190,21 @@ the link budget calculations (including interference) corresponding to the topol
 test case, and outputs the resulting SINR and spectral efficiency. The
 latter is then used to determine (using the same procedure adopted for 
 :ref:`sec-lte-amc-tests`. We note that the test vector
-contains separate values for uplink and downlink. 
+contains separate values for uplink and downlink.
+
+
+
+UE Measurements Tests
+-----------------------------
+
+The test suite `lte-ue-measurements`` provides system tests recreating an
+inter-cell interference scenario identical of the one defined for `lte-interference`` test-suite. However, in this test the quantities to be tested are represented by RSRP and RSRQ measurements performed by the UE in two different points of the stack: the source, which is UE PHY layer, and the destination, that is the eNB RRC.
+
+The test vectors are obtained by use of a dedicated octave script
+(available in
+`src/lte/test/reference/lte-ue-measurements.m`), which does
+the link budget calculations (including interference) corresponding to the topology of each
+test case, and outputs the resulting RSRP and RSRQ. The obtained values are then used for checking the correctness of the UE Measurements at PHY layer, while they have to converted according to 3GPP formatting for checking they correctness at eNB RRC level.
 
 
 
