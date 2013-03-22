@@ -39,7 +39,7 @@ and idioms.  The APIs are organized around the concept of service primitives
 as shown in the following figure adapted from Figure 14 of 
 IEEE Std. 802.15.4-2006.
 
-.. _fig-lr-wpan-arch:
+.. _fig-lr-wpan-primitives:
 
 .. figure:: figures/lr-wpan-primitives.*
 
