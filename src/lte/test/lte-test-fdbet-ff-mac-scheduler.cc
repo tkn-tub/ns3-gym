@@ -72,10 +72,10 @@ LenaTestFdBetFfMacSchedulerSuite::LenaTestFdBetFfMacSchedulerSuite ()
   // 3 users -> 8 PRB at Itbs 26 -> 749 -> 749000 bytes/sec
   // 6 users -> 4 PRB at Itbs 26 -> 373 -> 373000 bytes/sec
   // 12 users -> 2 PRB at Itbs 26 -> 185 -> 185000 bytes/sec
-  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (1,0,0,2196000,2292000), TestCase::QUICK);
-  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (3,0,0,749000,749000), TestCase::QUICK);
-  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (6,0,0,373000,373000), TestCase::QUICK);
-  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (12,0,0,185000,185000), TestCase::QUICK);
+  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (1,0,0,2196000,2292000), TestCase::EXTENSIVE);
+  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (3,0,0,749000,749000), TestCase::EXTENSIVE);
+  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (6,0,0,373000,373000), TestCase::EXTENSIVE);
+  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (12,0,0,185000,185000), TestCase::EXTENSIVE);
 
   // DOWNLINK - DISTANCE 3000 -> MCS 22 -> Itbs 20 (from table 7.1.7.2.1-1 of 36.213)
   // 1 user -> 24 PRB at Itbs 20 -> 1383 -> 1383000 bytes/sec
@@ -87,10 +87,10 @@ LenaTestFdBetFfMacSchedulerSuite::LenaTestFdBetFfMacSchedulerSuite ()
   // 3 users -> 8 PRB at Itbs 18 -> 389 -> 389000 bytes/sec
   // 6 users -> 4 PRB at Itbs 18 -> 193 -> 193000 bytes/sec
   // 12 users -> 2 PRB at Itbs 18 -> 97 -> 97000 bytes/sec
-  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (1,0,3000,1383000,1239000), TestCase::QUICK);
-  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (3,0,3000,469000,389000), TestCase::QUICK);
-  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (6,0,3000,233500,193000), TestCase::QUICK);
-  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (12,0,3000,113000,97000), TestCase::QUICK);
+  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (1,0,3000,1383000,1239000), TestCase::EXTENSIVE);
+  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (3,0,3000,469000,389000), TestCase::EXTENSIVE);
+  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (6,0,3000,233500,193000), TestCase::EXTENSIVE);
+  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (12,0,3000,113000,97000), TestCase::EXTENSIVE);
 
   // DOWNLINK - DISTANCE 6000 -> MCS 16 -> Itbs 15 (from table 7.1.7.2.1-1 of 36.213)
   // 1 user -> 24 PRB at Itbs 15 -> 903 -> 903000 bytes/sec
@@ -102,10 +102,10 @@ LenaTestFdBetFfMacSchedulerSuite::LenaTestFdBetFfMacSchedulerSuite ()
   // 3 users -> 8 PRB at Itbs 11 -> 201 -> 201000 bytes/sec
   // 6 users -> 4 PRB at Itbs 11 -> 97 -> 97000 bytes/sec
   // 12 users -> 2 PRB at Itbs 11 -> 47 -> 47000 bytes/sec
-  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (1,0,6000,903000,621000), TestCase::QUICK);
-  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (3,0,6000,309000,201000), TestCase::QUICK);
-  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (6,0,6000,153000,97000), TestCase::QUICK);
-  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (12,0,6000,75000,47000), TestCase::QUICK);
+  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (1,0,6000,903000,621000), TestCase::EXTENSIVE);
+  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (3,0,6000,309000,201000), TestCase::EXTENSIVE);
+  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (6,0,6000,153000,97000), TestCase::EXTENSIVE);
+  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (12,0,6000,75000,47000), TestCase::EXTENSIVE);
 
   // DOWNLINK - DISTANCE 9000 -> MCS 12 -> Itbs 11 (from table 7.1.7.2.1-1 of 36.213)
   // 1 user -> 24 PRB at Itbs 11 -> 597 -> 597000 bytes/sec
@@ -117,10 +117,10 @@ LenaTestFdBetFfMacSchedulerSuite::LenaTestFdBetFfMacSchedulerSuite ()
   // 3 users -> 8 PRB at Itbs 8 -> 137 -> 137000 bytes/sec
   // 6 users -> 4 PRB at Itbs 8 -> 67 -> 67000 bytes/sec
   // 12 users -> 2 PRB at Itbs 8 -> 32 -> 32000 bytes/sec
-  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (1,0,9000,597000,437000), TestCase::QUICK);
-  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (3,0,9000,201000,137000), TestCase::QUICK);
-  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (6,0,9000,97000,67000), TestCase::QUICK);
-  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (12,0,9000,47000,32000), TestCase::QUICK);
+  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (1,0,9000,597000,437000), TestCase::EXTENSIVE);
+  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (3,0,9000,201000,137000), TestCase::EXTENSIVE);
+  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (6,0,9000,97000,67000), TestCase::EXTENSIVE);
+  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (12,0,9000,47000,32000), TestCase::EXTENSIVE);
 
   // DOWNLINK - DISTANCE 15000 -> MCS 6 -> Itbs 6 (from table 7.1.7.2.1-1 of 36.213)
   // 1 user -> 24 PRB at Itbs 6 -> 309 -> 309000 bytes/sec
@@ -132,10 +132,10 @@ LenaTestFdBetFfMacSchedulerSuite::LenaTestFdBetFfMacSchedulerSuite ()
   // 3 users -> 8 PRB at Itbs 6 -> 69 -> 69000 bytes/sec
   // 6 users -> 4 PRB at Itbs 6 -> 32 -> 32000 bytes/sec
   // 12 users -> 2 PRB at Itbs 6 -> 15 -> 15000 bytes/sec
-  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (1,0,15000,309000,233000), TestCase::QUICK);
-  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (3,0,15000,101000,69000), TestCase::QUICK);
-  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (6,0,15000,49000,32000), TestCase::QUICK);
-  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (12,0,15000,22000,15000), TestCase::QUICK);
+  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (1,0,15000,309000,233000), TestCase::EXTENSIVE);
+  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (3,0,15000,101000,69000), TestCase::EXTENSIVE);
+  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (6,0,15000,49000,32000), TestCase::EXTENSIVE);
+  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (12,0,15000,22000,15000), TestCase::EXTENSIVE);
 
   // Test Case 2: fairness check
 
