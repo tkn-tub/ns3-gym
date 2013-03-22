@@ -279,10 +279,10 @@ public:
   Ipv6AddressGeneratorTestSuite ()
     : TestSuite ("ipv6-address-generator")
   {
-    AddTestCase (new NetworkNumber6AllocatorTestCase ());
-    AddTestCase (new AddressAllocator6TestCase ());
-    AddTestCase (new NetworkAndAddress6TestCase ());
-    AddTestCase (new ExampleAddress6GeneratorTestCase ());
-    AddTestCase (new AddressCollision6TestCase ());
+    AddTestCase (new NetworkNumber6AllocatorTestCase (), TestCase::QUICK);
+    AddTestCase (new AddressAllocator6TestCase (), TestCase::QUICK);
+    AddTestCase (new NetworkAndAddress6TestCase (), TestCase::QUICK);
+    AddTestCase (new ExampleAddress6GeneratorTestCase (), TestCase::QUICK);
+    AddTestCase (new AddressCollision6TestCase (), TestCase::QUICK);
   }
 } g_ipv6AddressGeneratorTestSuite;

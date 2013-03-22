@@ -883,7 +883,7 @@ public:
 RvBatteryModelTestSuite::RvBatteryModelTestSuite ()
   : TestSuite ("rv-battery-model", SYSTEM)
 {
-  AddTestCase (new BatteryLifetimeTest);
+  AddTestCase (new BatteryLifetimeTest, TestCase::QUICK);
 }
 
 // create an instance of the test suite

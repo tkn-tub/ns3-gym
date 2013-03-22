@@ -1079,14 +1079,14 @@ public:
 CsmaSystemTestSuite::CsmaSystemTestSuite ()
   : TestSuite ("csma-system", UNIT)
 {
-  AddTestCase (new CsmaBridgeTestCase);
-  AddTestCase (new CsmaBroadcastTestCase);
-  AddTestCase (new CsmaMulticastTestCase);
-  AddTestCase (new CsmaOneSubnetTestCase);
-  AddTestCase (new CsmaPacketSocketTestCase);
-  AddTestCase (new CsmaPingTestCase);
-  AddTestCase (new CsmaRawIpSocketTestCase);
-  AddTestCase (new CsmaStarTestCase);
+  AddTestCase (new CsmaBridgeTestCase, TestCase::QUICK);
+  AddTestCase (new CsmaBroadcastTestCase, TestCase::QUICK);
+  AddTestCase (new CsmaMulticastTestCase, TestCase::QUICK);
+  AddTestCase (new CsmaOneSubnetTestCase, TestCase::QUICK);
+  AddTestCase (new CsmaPacketSocketTestCase, TestCase::QUICK);
+  AddTestCase (new CsmaPingTestCase, TestCase::QUICK);
+  AddTestCase (new CsmaRawIpSocketTestCase, TestCase::QUICK);
+  AddTestCase (new CsmaStarTestCase, TestCase::QUICK);
 }
 
 // Do not forget to allocate an instance of this TestSuite

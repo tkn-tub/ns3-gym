@@ -75,7 +75,7 @@ public:
   HistogramTestSuite ()
     : TestSuite ("histogram", UNIT) 
   {
-    AddTestCase (new HistogramTestCase ());
+    AddTestCase (new HistogramTestCase (), TestCase::QUICK);
   }
 } g_HistogramTestSuite;
 

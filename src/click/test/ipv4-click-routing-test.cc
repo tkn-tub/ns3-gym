@@ -197,9 +197,9 @@ class ClickIfidFromNameTestSuite : public TestSuite
 public:
   ClickIfidFromNameTestSuite () : TestSuite ("routing-click", UNIT)
   {
-    AddTestCase (new ClickTrivialTest);
-    AddTestCase (new ClickIfidFromNameTest);
-    AddTestCase (new ClickIpMacAddressFromNameTest);
+    AddTestCase (new ClickTrivialTest, TestCase::QUICK);
+    AddTestCase (new ClickIfidFromNameTest, TestCase::QUICK);
+    AddTestCase (new ClickIpMacAddressFromNameTest, TestCase::QUICK);
   }
 } g_ipv4ClickRoutingTestSuite;
 

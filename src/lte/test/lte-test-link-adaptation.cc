@@ -123,7 +123,7 @@ LteLinkAdaptationTestSuite::LteLinkAdaptationTestSuite ()
       std::ostringstream name;
       name << " snr= " << snrEfficiencyMcs[i].snrDb << " dB, "
            << " mcs= " << snrEfficiencyMcs[i].mcsIndex;
-      AddTestCase (new LteLinkAdaptationTestCase (name.str (),  snrEfficiencyMcs[i].snrDb, lossDb, snrEfficiencyMcs[i].mcsIndex));
+      AddTestCase (new LteLinkAdaptationTestCase (name.str (),  snrEfficiencyMcs[i].snrDb, lossDb, snrEfficiencyMcs[i].mcsIndex), TestCase::QUICK);
     }
 
 }

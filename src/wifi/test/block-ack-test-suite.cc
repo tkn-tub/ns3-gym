@@ -284,9 +284,9 @@ public:
 BlockAckTestSuite::BlockAckTestSuite ()
   : TestSuite ("wifi-block-ack", UNIT)
 {
-  AddTestCase (new PacketBufferingCaseA);
-  AddTestCase (new PacketBufferingCaseB);
-  AddTestCase (new CtrlBAckResponseHeaderTest);
+  AddTestCase (new PacketBufferingCaseA, TestCase::QUICK);
+  AddTestCase (new PacketBufferingCaseB, TestCase::QUICK);
+  AddTestCase (new CtrlBAckResponseHeaderTest, TestCase::QUICK);
 }
 
 static BlockAckTestSuite g_blockAckTestSuite;

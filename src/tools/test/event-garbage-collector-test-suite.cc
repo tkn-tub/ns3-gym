@@ -81,7 +81,7 @@ public:
   EventGarbageCollectorTestSuite ()
     : TestSuite ("event-garbage-collector", UNIT) 
   {
-    AddTestCase (new EventGarbageCollectorTestCase ());
+    AddTestCase (new EventGarbageCollectorTestCase (), TestCase::QUICK);
   }
 } g_eventGarbageCollectorTests;
 

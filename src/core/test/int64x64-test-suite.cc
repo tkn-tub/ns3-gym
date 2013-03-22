@@ -325,13 +325,13 @@ public:
   Int64x64128TestSuite ()
     : TestSuite ("int64x64", UNIT)
   {
-    AddTestCase (new Int64x64FracTestCase ());
-    AddTestCase (new Int64x64InputTestCase ());
-    AddTestCase (new Int64x64InputOutputTestCase ());
-    AddTestCase (new Int64x64ArithmeticTestCase ());
-    AddTestCase (new Int64x64Bug455TestCase ());
-    AddTestCase (new Int64x64Bug863TestCase ());
-    AddTestCase (new Int64x64CompareTestCase ());
-    AddTestCase (new Int64x64InvertTestCase ());
+    AddTestCase (new Int64x64FracTestCase (), TestCase::QUICK);
+    AddTestCase (new Int64x64InputTestCase (), TestCase::QUICK);
+    AddTestCase (new Int64x64InputOutputTestCase (), TestCase::QUICK);
+    AddTestCase (new Int64x64ArithmeticTestCase (), TestCase::QUICK);
+    AddTestCase (new Int64x64Bug455TestCase (), TestCase::QUICK);
+    AddTestCase (new Int64x64Bug863TestCase (), TestCase::QUICK);
+    AddTestCase (new Int64x64CompareTestCase (), TestCase::QUICK);
+    AddTestCase (new Int64x64InvertTestCase (), TestCase::QUICK);
   }
 } g_int64x64TestSuite;

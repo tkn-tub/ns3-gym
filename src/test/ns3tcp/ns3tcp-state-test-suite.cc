@@ -449,15 +449,15 @@ Ns3TcpStateTestSuite::Ns3TcpStateTestSuite ()
   : TestSuite ("ns3-tcp-state", SYSTEM)
 {
   Packet::EnablePrinting ();  // Enable packet metadata for all test cases
-  AddTestCase (new Ns3TcpStateTestCase (0));
-  AddTestCase (new Ns3TcpStateTestCase (1));
-  AddTestCase (new Ns3TcpStateTestCase (2));
-  AddTestCase (new Ns3TcpStateTestCase (3));
-  AddTestCase (new Ns3TcpStateTestCase (4));
-  AddTestCase (new Ns3TcpStateTestCase (5));
-  AddTestCase (new Ns3TcpStateTestCase (6));
-  AddTestCase (new Ns3TcpStateTestCase (7));
-  AddTestCase (new Ns3TcpStateTestCase (8));
+  AddTestCase (new Ns3TcpStateTestCase (0), TestCase::QUICK);
+  AddTestCase (new Ns3TcpStateTestCase (1), TestCase::QUICK);
+  AddTestCase (new Ns3TcpStateTestCase (2), TestCase::QUICK);
+  AddTestCase (new Ns3TcpStateTestCase (3), TestCase::QUICK);
+  AddTestCase (new Ns3TcpStateTestCase (4), TestCase::QUICK);
+  AddTestCase (new Ns3TcpStateTestCase (5), TestCase::QUICK);
+  AddTestCase (new Ns3TcpStateTestCase (6), TestCase::QUICK);
+  AddTestCase (new Ns3TcpStateTestCase (7), TestCase::QUICK);
+  AddTestCase (new Ns3TcpStateTestCase (8), TestCase::QUICK);
 }
 
 static Ns3TcpStateTestSuite ns3TcpLossTestSuite;

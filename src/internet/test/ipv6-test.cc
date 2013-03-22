@@ -144,7 +144,7 @@ public:
   IPv6L3ProtocolTestSuite () :
     TestSuite ("ipv6-protocol", UNIT)
   {
-    AddTestCase (new Ipv6L3ProtocolTestCase ());
+    AddTestCase (new Ipv6L3ProtocolTestCase (), TestCase::QUICK);
   }
 } g_ipv6protocolTestSuite;
 

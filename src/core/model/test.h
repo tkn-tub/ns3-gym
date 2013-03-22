@@ -856,9 +856,19 @@ protected:
    * \brief Add an individual test case to this test suite.
    *
    * \param testCase Pointer to the test case object to be added.
+   *
+   * \deprecated this method will go away in future versions of 
+   * ns-3. Please use instead AddTestCase (TestCase, TestDuration)  
+   */
+  void AddTestCase (TestCase *testCase) NS_DEPRECATED;
+
+  /**
+   * \brief Add an individual test case to this test suite.
+   *
+   * \param testCase Pointer to the test case object to be added.
    * \param duration Amount of time this test takes to execute.
    */
-  void AddTestCase (TestCase *testCase, enum TestDuration duration = QUICK);
+  void AddTestCase (TestCase *testCase, enum TestDuration duration);
 
   /**
    * \param directory the directory where the test data is located

@@ -332,7 +332,7 @@ public:
 BufferTestSuite::BufferTestSuite ()
   : TestSuite ("buffer", UNIT)
 {
-  AddTestCase (new BufferTest);
+  AddTestCase (new BufferTest, TestCase::QUICK);
 }
 
 static BufferTestSuite g_bufferTestSuite;

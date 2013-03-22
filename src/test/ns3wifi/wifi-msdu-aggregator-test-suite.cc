@@ -201,7 +201,7 @@ public:
 WifiMsduAggregatorTestSuite::WifiMsduAggregatorTestSuite ()
   : TestSuite ("ns3-wifi-msdu-aggregator", SYSTEM)
 {
-  AddTestCase (new WifiMsduAggregatorThroughputTest);
+  AddTestCase (new WifiMsduAggregatorThroughputTest, TestCase::QUICK);
 }
 
 static WifiMsduAggregatorTestSuite wifiMsduAggregatorTestSuite;

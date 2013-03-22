@@ -421,10 +421,10 @@ public:
 RngTestSuite::RngTestSuite ()
   : TestSuite ("random-number-generators", UNIT)
 {
-  AddTestCase (new RngUniformTestCase);
-  AddTestCase (new RngNormalTestCase);
-  AddTestCase (new RngExponentialTestCase);
-  AddTestCase (new RngParetoTestCase);
+  AddTestCase (new RngUniformTestCase, TestCase::QUICK);
+  AddTestCase (new RngNormalTestCase, TestCase::QUICK);
+  AddTestCase (new RngExponentialTestCase, TestCase::QUICK);
+  AddTestCase (new RngParetoTestCase, TestCase::QUICK);
 }
 
 static RngTestSuite rngTestSuite;

@@ -95,7 +95,7 @@ class IdCacheTestSuite : public TestSuite
 public:
   IdCacheTestSuite () : TestSuite ("routing-id-cache", UNIT)
   {
-    AddTestCase (new IdCacheTest);
+    AddTestCase (new IdCacheTest, TestCase::QUICK);
   }
 } g_idCacheTestSuite;
 

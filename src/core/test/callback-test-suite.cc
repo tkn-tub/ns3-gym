@@ -568,11 +568,11 @@ public:
 CallbackTestSuite::CallbackTestSuite ()
   : TestSuite ("callback", UNIT)
 {
-  AddTestCase (new BasicCallbackTestCase);
-  AddTestCase (new MakeCallbackTestCase);
-  AddTestCase (new MakeBoundCallbackTestCase);
-  AddTestCase (new NullifyCallbackTestCase);
-  AddTestCase (new MakeCallbackTemplatesTestCase);
+  AddTestCase (new BasicCallbackTestCase, TestCase::QUICK);
+  AddTestCase (new MakeCallbackTestCase, TestCase::QUICK);
+  AddTestCase (new MakeBoundCallbackTestCase, TestCase::QUICK);
+  AddTestCase (new NullifyCallbackTestCase, TestCase::QUICK);
+  AddTestCase (new MakeCallbackTemplatesTestCase, TestCase::QUICK);
 }
 
 static CallbackTestSuite CallbackTestSuite;

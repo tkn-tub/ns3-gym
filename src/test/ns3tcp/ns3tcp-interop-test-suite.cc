@@ -311,7 +311,7 @@ public:
 Ns3TcpInteroperabilityTestSuite::Ns3TcpInteroperabilityTestSuite ()
   : TestSuite ("ns3-tcp-interoperability", SYSTEM)
 {
-  AddTestCase (new Ns3TcpInteroperabilityTestCase);
+  AddTestCase (new Ns3TcpInteroperabilityTestCase, TestCase::QUICK);
 }
 
 static Ns3TcpInteroperabilityTestSuite ns3TcpInteroperabilityTestSuite;

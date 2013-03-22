@@ -258,7 +258,7 @@ public:
             for (unsigned int k=0; k < (sizeof(schedulerTypes) / sizeof(schedulerTypes[0])); ++k) 
               {
                 factory.SetTypeId(schedulerTypes[k]);
-                AddTestCase (new ThreadedSimulatorEventsTestCase (factory, simulatorTypes[i], threadcounts[j]));
+                AddTestCase (new ThreadedSimulatorEventsTestCase (factory, simulatorTypes[i], threadcounts[j]), TestCase::QUICK);
               }
           }
       }

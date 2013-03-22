@@ -85,7 +85,7 @@ public:
 GlobalValueTestSuite::GlobalValueTestSuite ()
   : TestSuite ("global-value", UNIT)
 {
-  AddTestCase (new GlobalValueTestCase);
+  AddTestCase (new GlobalValueTestCase, TestCase::QUICK);
 }
 
 static GlobalValueTestSuite globalValueTestSuite;

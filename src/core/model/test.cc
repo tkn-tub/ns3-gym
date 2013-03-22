@@ -169,6 +169,12 @@ TestCase::~TestCase ()
 }
 
 void
+TestCase::AddTestCase (TestCase *testCase)
+{
+  AddTestCase (testCase, TestCase::QUICK);
+}
+
+void
 TestCase::AddTestCase (TestCase *testCase, enum TestCase::TestDuration duration)
 {
   // Record this for use later when all test cases are run.

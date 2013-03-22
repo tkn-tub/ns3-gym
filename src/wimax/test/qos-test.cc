@@ -287,8 +287,8 @@ public:
 Ns3WimaxQoSTestSuite::Ns3WimaxQoSTestSuite ()
   : TestSuite ("wimax-qos", SYSTEM)
 {
-  AddTestCase (new Ns3WimaxSFTypeTestCase);
-  AddTestCase (new Ns3WimaxSchedulingTestCase);
+  AddTestCase (new Ns3WimaxSFTypeTestCase, TestCase::QUICK);
+  AddTestCase (new Ns3WimaxSchedulingTestCase, TestCase::QUICK);
 }
 
 static Ns3WimaxQoSTestSuite ns3WimaxQoSTestSuite;

@@ -443,11 +443,11 @@ public:
 PropagationLossModelsTestSuite::PropagationLossModelsTestSuite ()
   : TestSuite ("propagation-loss-model", UNIT)
 {
-  AddTestCase (new FriisPropagationLossModelTestCase);
-  AddTestCase (new TwoRayGroundPropagationLossModelTestCase);
-  AddTestCase (new LogDistancePropagationLossModelTestCase);
-  AddTestCase (new MatrixPropagationLossModelTestCase);
-  AddTestCase (new RangePropagationLossModelTestCase);
+  AddTestCase (new FriisPropagationLossModelTestCase, TestCase::QUICK);
+  AddTestCase (new TwoRayGroundPropagationLossModelTestCase, TestCase::QUICK);
+  AddTestCase (new LogDistancePropagationLossModelTestCase, TestCase::QUICK);
+  AddTestCase (new MatrixPropagationLossModelTestCase, TestCase::QUICK);
+  AddTestCase (new RangePropagationLossModelTestCase, TestCase::QUICK);
 }
 
 static PropagationLossModelsTestSuite propagationLossModelsTestSuite;

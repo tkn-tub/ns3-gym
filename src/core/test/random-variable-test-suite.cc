@@ -138,8 +138,8 @@ public:
 BasicRandomNumberTestSuite::BasicRandomNumberTestSuite ()
   : TestSuite ("basic-random-number", UNIT)
 {
-  AddTestCase (new BasicRandomNumberTestCase);
-  AddTestCase (new RandomNumberSerializationTestCase);
+  AddTestCase (new BasicRandomNumberTestCase, TestCase::QUICK);
+  AddTestCase (new RandomNumberSerializationTestCase, TestCase::QUICK);
 }
 
 static BasicRandomNumberTestSuite BasicRandomNumberTestSuite;

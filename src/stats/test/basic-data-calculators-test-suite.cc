@@ -270,9 +270,9 @@ public:
 BasicDataCalculatorsTestSuite::BasicDataCalculatorsTestSuite ()
   : TestSuite ("basic-data-calculators", UNIT)
 {
-  AddTestCase (new OneIntegerTestCase);
-  AddTestCase (new FiveIntegersTestCase);
-  AddTestCase (new FiveDoublesTestCase);
+  AddTestCase (new OneIntegerTestCase, TestCase::QUICK);
+  AddTestCase (new FiveIntegersTestCase, TestCase::QUICK);
+  AddTestCase (new FiveDoublesTestCase, TestCase::QUICK);
 }
 
 static BasicDataCalculatorsTestSuite basicDataCalculatorsTestSuite;

@@ -90,10 +90,10 @@ LenaTestFdTbfqFfMacSchedulerSuite::LenaTestFdTbfqFfMacSchedulerSuite ()
   // 3 users -> 8 PRB at Itbs 26 -> 749 -> 749000 > 232000 -> throughput = 232000 bytes/sec 
   // 6 users -> 4 PRB at Itbs 26 -> 373 -> 373000 > 232000 -> throughput = 232000 bytes/sec
   // 12 users -> 2 PRB at Itbs 26 -> 185 -> 185000 < 232000 -> throughput = 185000 bytes/sec
-  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (1,0,0,232000,232000,200,1));
-  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (3,0,0,232000,232000,200,1));
-  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (6,0,0,232000,232000,200,1));
-  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (12,0,0,183000,185000,200,1));
+  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (1,0,0,232000,232000,200,1), TestCase::QUICK);
+  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (3,0,0,232000,232000,200,1), TestCase::QUICK);
+  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (6,0,0,232000,232000,200,1), TestCase::QUICK);
+  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (12,0,0,183000,185000,200,1), TestCase::QUICK);
 
   // DOWNLINK - DISTANCE 3000 -> MCS 24 -> Itbs 20 (from table 7.1.7.2.1-1 of 36.213)
   // DOWNLINK -> DISTANCE 0 -> MCS 28 -> Itbs 26 (from table 7.1.7.2.1-1 of 36.2    13)
@@ -110,10 +110,10 @@ LenaTestFdTbfqFfMacSchedulerSuite::LenaTestFdTbfqFfMacSchedulerSuite ()
   // 3 users -> 8 PRB at Itbs 18 -> 389 -> 389000 > 232000 -> throughput = 232000 bytes/sec
   // 6 users -> 4 PRB at Itbs 18 -> 193 -> 193000 < 232000 -> throughput = 193000 bytes/sec
   // 12 users -> 2 PRB at Itbs 18 -> 97 -> 97000 < 232000 -> throughput = 97000 bytes/sec
-  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (1,0,3000,232000,232000,200,1));
-  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (3,0,3000,232000,232000,200,1));
-  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (6,0,3000,230500,193000,200,1));
-  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (12,0,3000,115250,97000,200,1));
+  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (1,0,3000,232000,232000,200,1), TestCase::QUICK);
+  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (3,0,3000,232000,232000,200,1), TestCase::QUICK);
+  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (6,0,3000,230500,193000,200,1), TestCase::QUICK);
+  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (12,0,3000,115250,97000,200,1), TestCase::QUICK);
  
   // DOWNLINK - DISTANCE 6000 -> MCS 16 -> Itbs 15 (from table 7.1.7.2.1-1 of 36.213)
   // Traffic info
@@ -129,10 +129,10 @@ LenaTestFdTbfqFfMacSchedulerSuite::LenaTestFdTbfqFfMacSchedulerSuite ()
   // 3 users -> 8 PRB at Itbs 11 -> 201 -> 201000 < 232000 -> throughput = 201000  bytes/sec
   // 6 users -> 4 PRB at Itbs 11 -> 97 -> 97000 < 232000 -> throughput = 97000 bytes/sec
   // 12 users -> 2 PRB at Itbs 11 -> 47 -> 47000 < 232000 -> throughput = 47000 bytes/sec
-  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (1,0,6000,232000,232000,200,1));
-  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (3,0,6000,232000,201000,200,1));
-  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (6,0,6000,150500,97000,200,1));
-  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (12,0,6000,75250,47000,200,1));
+  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (1,0,6000,232000,232000,200,1), TestCase::QUICK);
+  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (3,0,6000,232000,201000,200,1), TestCase::QUICK);
+  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (6,0,6000,150500,97000,200,1), TestCase::QUICK);
+  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (12,0,6000,75250,47000,200,1), TestCase::QUICK);
 
   // DOWNLINK - DISTANCE 9000 -> MCS 12 -> Itbs 11 (from table 7.1.7.2.1-1 of 36.213)
   // Traffic info
@@ -148,10 +148,10 @@ LenaTestFdTbfqFfMacSchedulerSuite::LenaTestFdTbfqFfMacSchedulerSuite ()
   // 3 users -> 8 PRB at Itbs 8 -> 137 -> 137000 < 232000 -> throughput = 137000 bytes/sec
   // 6 users -> 4 PRB at Itbs 8 -> 67 -> 67000 < 232000 -> throughput = 67000 bytes/sec
   // 12 users -> 2 PRB at Itbs 8 -> 32 -> 32000 < 232000 -> throughput = 32000 bytes/sec
-  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (1,0,9000,232000,232000,200,1));
-  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (3,0,9000,199000,137000,200,1));
-  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (6,0,9000,99500,67000,200,1));
-  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (12,0,9000,49750,32000,200,1));
+  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (1,0,9000,232000,232000,200,1), TestCase::QUICK);
+  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (3,0,9000,199000,137000,200,1), TestCase::QUICK);
+  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (6,0,9000,99500,67000,200,1), TestCase::QUICK);
+  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (12,0,9000,49750,32000,200,1), TestCase::QUICK);
  
   // DONWLINK - DISTANCE 15000 -> MCS 6 -> Itbs 6 (from table 7.1.7.2.1-1 of 36.213)
   // Traffic info
@@ -167,10 +167,10 @@ LenaTestFdTbfqFfMacSchedulerSuite::LenaTestFdTbfqFfMacSchedulerSuite ()
   // 3 users -> 8 PRB at Itbs 6 -> 69 -> 69000 < 232000 -> throughput = 69000 bytes/sec
   // 6 users -> 4 PRB at Itbs 6 -> 32 -> 32000 < 232000 -> throughput = 32000 bytes/sec
   // 12 users -> 2 PRB at Itbs 6 -> 15 -> 15000 < 232000 -> throughput = 15000 bytes/sec
-  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (1,0,15000,232000,232000,200,1));
-  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (3,0,15000,103000,69000,200,1));
-  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (6,0,15000,51500,32000,200,1));
-  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (12,0,15000,25750,15000,200,1));
+  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (1,0,15000,232000,232000,200,1), TestCase::QUICK);
+  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (3,0,15000,103000,69000,200,1), TestCase::QUICK);
+  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (6,0,15000,51500,32000,200,1), TestCase::QUICK);
+  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (12,0,15000,25750,15000,200,1), TestCase::QUICK);
 
   // Test Case 2: homogeneous flow test in FDTBFQ (different distance)
   // Traffic1 info
@@ -196,7 +196,7 @@ LenaTestFdTbfqFfMacSchedulerSuite::LenaTestFdTbfqFfMacSchedulerSuite ()
   estThrFdTbfqDl1.push_back (132000); // User 2 estimated TTI throughput from FDTBFQ
   estThrFdTbfqDl1.push_back (132000); // User 3 estimated TTI throughput from FDTBFQ
   estThrFdTbfqDl1.push_back (132000); // User 4 estimated TTI throughput from FDTBFQ
-  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase2 (dist1,estThrFdTbfqDl1,packetSize1,1));
+  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase2 (dist1,estThrFdTbfqDl1,packetSize1,1), TestCase::QUICK);
 
   // Traffic2 info
   //   UDP traffic: payload size = 200 bytes, interval = 1 ms
@@ -221,7 +221,7 @@ LenaTestFdTbfqFfMacSchedulerSuite::LenaTestFdTbfqFfMacSchedulerSuite ()
   estThrFdTbfqDl2.push_back (138944); // User 2 estimated TTI throughput from FDTBFQ
   estThrFdTbfqDl2.push_back (138944); // User 3 estimated TTI throughput from FDTBFQ
   estThrFdTbfqDl2.push_back (138944); // User 4 estimated TTI throughput from FDTBFQ
-  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase2 (dist2,estThrFdTbfqDl2,packetSize2,1));
+  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase2 (dist2,estThrFdTbfqDl2,packetSize2,1), TestCase::QUICK);
 
   // Test Case 3: heterogeneous flow test in FDTBFQ
   //   UDP traffic: payload size = [100,200,300] bytes, interval = 1 ms
@@ -240,7 +240,7 @@ LenaTestFdTbfqFfMacSchedulerSuite::LenaTestFdTbfqFfMacSchedulerSuite ()
   estThrFdTbfqDl3.push_back (132000); // User 0 estimated TTI throughput from FDTBFQ
   estThrFdTbfqDl3.push_back (232000); // User 1 estimated TTI throughput from FDTBFQ
   estThrFdTbfqDl3.push_back (332000); // User 2 estimated TTI throughput from FDTBFQ
-  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase2 (dist3,estThrFdTbfqDl3,packetSize3,1));
+  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase2 (dist3,estThrFdTbfqDl3,packetSize3,1), TestCase::QUICK);
 
 }
 

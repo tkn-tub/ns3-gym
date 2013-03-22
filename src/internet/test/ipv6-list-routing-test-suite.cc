@@ -125,8 +125,8 @@ public:
   Ipv6ListRoutingTestSuite()
     : TestSuite ("ipv6-list-routing", UNIT)
   {
-    AddTestCase (new Ipv6ListRoutingPositiveTestCase ());
-    AddTestCase (new Ipv6ListRoutingNegativeTestCase ());
+    AddTestCase (new Ipv6ListRoutingPositiveTestCase (), TestCase::QUICK);
+    AddTestCase (new Ipv6ListRoutingNegativeTestCase (), TestCase::QUICK);
   }
 
 } g_ipv6ListRoutingTestSuite;

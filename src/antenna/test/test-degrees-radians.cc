@@ -113,21 +113,21 @@ public:
 DegreesRadiansTestSuite::DegreesRadiansTestSuite ()
   : TestSuite ("degrees-radians", UNIT)
 {
-  AddTestCase (new DegreesToRadiansTestCase (0, 0));
-  AddTestCase (new DegreesToRadiansTestCase (90, M_PI_2));
-  AddTestCase (new DegreesToRadiansTestCase (180, M_PI));
-  AddTestCase (new DegreesToRadiansTestCase (270, M_PI + M_PI_2));
-  AddTestCase (new DegreesToRadiansTestCase (360, M_PI + M_PI));
-  AddTestCase (new DegreesToRadiansTestCase (-90, -M_PI_2));
-  AddTestCase (new DegreesToRadiansTestCase (810, 4.5*M_PI));
+  AddTestCase (new DegreesToRadiansTestCase (0, 0), TestCase::QUICK);
+  AddTestCase (new DegreesToRadiansTestCase (90, M_PI_2), TestCase::QUICK);
+  AddTestCase (new DegreesToRadiansTestCase (180, M_PI), TestCase::QUICK);
+  AddTestCase (new DegreesToRadiansTestCase (270, M_PI + M_PI_2), TestCase::QUICK);
+  AddTestCase (new DegreesToRadiansTestCase (360, M_PI + M_PI), TestCase::QUICK);
+  AddTestCase (new DegreesToRadiansTestCase (-90, -M_PI_2), TestCase::QUICK);
+  AddTestCase (new DegreesToRadiansTestCase (810, 4.5*M_PI), TestCase::QUICK);
 
-  AddTestCase (new RadiansToDegreesTestCase (0, 0));
-  AddTestCase (new RadiansToDegreesTestCase (M_PI_2, 90));
-  AddTestCase (new RadiansToDegreesTestCase (M_PI, 180));
-  AddTestCase (new RadiansToDegreesTestCase (M_PI + M_PI_2, 270));
-  AddTestCase (new RadiansToDegreesTestCase (M_PI + M_PI, 360));
-  AddTestCase (new RadiansToDegreesTestCase (-M_PI_2, -90));
-  AddTestCase (new RadiansToDegreesTestCase (4.5*M_PI, 810));
+  AddTestCase (new RadiansToDegreesTestCase (0, 0), TestCase::QUICK);
+  AddTestCase (new RadiansToDegreesTestCase (M_PI_2, 90), TestCase::QUICK);
+  AddTestCase (new RadiansToDegreesTestCase (M_PI, 180), TestCase::QUICK);
+  AddTestCase (new RadiansToDegreesTestCase (M_PI + M_PI_2, 270), TestCase::QUICK);
+  AddTestCase (new RadiansToDegreesTestCase (M_PI + M_PI, 360), TestCase::QUICK);
+  AddTestCase (new RadiansToDegreesTestCase (-M_PI_2, -90), TestCase::QUICK);
+  AddTestCase (new RadiansToDegreesTestCase (4.5*M_PI, 810), TestCase::QUICK);
 
 };
 

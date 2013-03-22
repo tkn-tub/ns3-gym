@@ -82,7 +82,7 @@ private:
 RocketfuelTopologyReaderTestSuite::RocketfuelTopologyReaderTestSuite ()
   : TestSuite ("rocketfuel-topology-reader", UNIT)
 {
-  AddTestCase (new RocketfuelTopologyReaderTest ());
+  AddTestCase (new RocketfuelTopologyReaderTest (), TestCase::QUICK);
 }
 
 static RocketfuelTopologyReaderTestSuite rocketfuelTopologyReaderTestSuite;

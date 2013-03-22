@@ -525,16 +525,16 @@ class AodvTestSuite : public TestSuite
 public:
   AodvTestSuite () : TestSuite ("routing-aodv", UNIT)
   {
-    AddTestCase (new NeighborTest);
-    AddTestCase (new TypeHeaderTest);
-    AddTestCase (new RreqHeaderTest);
-    AddTestCase (new RrepHeaderTest);
-    AddTestCase (new RrepAckHeaderTest);
-    AddTestCase (new RerrHeaderTest);
-    AddTestCase (new QueueEntryTest);
-    AddTestCase (new AodvRqueueTest);
-    AddTestCase (new AodvRtableEntryTest);
-    AddTestCase (new AodvRtableTest);
+    AddTestCase (new NeighborTest, TestCase::QUICK);
+    AddTestCase (new TypeHeaderTest, TestCase::QUICK);
+    AddTestCase (new RreqHeaderTest, TestCase::QUICK);
+    AddTestCase (new RrepHeaderTest, TestCase::QUICK);
+    AddTestCase (new RrepAckHeaderTest, TestCase::QUICK);
+    AddTestCase (new RerrHeaderTest, TestCase::QUICK);
+    AddTestCase (new QueueEntryTest, TestCase::QUICK);
+    AddTestCase (new AodvRqueueTest, TestCase::QUICK);
+    AddTestCase (new AodvRtableEntryTest, TestCase::QUICK);
+    AddTestCase (new AodvRtableTest, TestCase::QUICK);
   }
 } g_aodvTestSuite;
 

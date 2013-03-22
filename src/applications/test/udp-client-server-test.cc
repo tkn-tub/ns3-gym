@@ -340,10 +340,10 @@ public:
 UdpClientServerTestSuite::UdpClientServerTestSuite ()
   : TestSuite ("udp-client-server", UNIT)
 {
-  AddTestCase (new UdpTraceClientServerTestCase);
-  AddTestCase (new UdpClientServerTestCase);
-  AddTestCase (new PacketLossCounterTestCase);
-  AddTestCase (new UdpEchoClientSetFillTestCase);
+  AddTestCase (new UdpTraceClientServerTestCase, TestCase::QUICK);
+  AddTestCase (new UdpClientServerTestCase, TestCase::QUICK);
+  AddTestCase (new PacketLossCounterTestCase, TestCase::QUICK);
+  AddTestCase (new UdpEchoClientSetFillTestCase, TestCase::QUICK);
 }
 
 static UdpClientServerTestSuite udpClientServerTestSuite;

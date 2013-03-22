@@ -264,9 +264,9 @@ public:
 AverageTestSuite::AverageTestSuite ()
   : TestSuite ("average", UNIT)
 {
-  AddTestCase (new OneIntegerAverageTestCase);
-  AddTestCase (new FiveIntegersAverageTestCase);
-  AddTestCase (new FiveDoublesAverageTestCase);
+  AddTestCase (new OneIntegerAverageTestCase, TestCase::QUICK);
+  AddTestCase (new FiveIntegersAverageTestCase, TestCase::QUICK);
+  AddTestCase (new FiveDoublesAverageTestCase, TestCase::QUICK);
 }
 
 static AverageTestSuite averageTestSuite;

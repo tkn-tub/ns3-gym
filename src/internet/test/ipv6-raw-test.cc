@@ -270,6 +270,6 @@ class Ipv6RawTestSuite : public TestSuite
 public:
   Ipv6RawTestSuite () : TestSuite ("ipv6-raw", UNIT)
   {
-    AddTestCase (new Ipv6RawSocketImplTest);
+    AddTestCase (new Ipv6RawSocketImplTest, TestCase::QUICK);
   }
 } g_ipv6rawTestSuite;

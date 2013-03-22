@@ -56,7 +56,7 @@ public:
 TypeTraitsTestSuite::TypeTraitsTestSuite ()
   : TestSuite ("type-traits", UNIT)
 {
-  AddTestCase (new TypeTraitsTestCase);
+  AddTestCase (new TypeTraitsTestCase, TestCase::QUICK);
 }
 
 static TypeTraitsTestSuite typeTraitsTestSuite;

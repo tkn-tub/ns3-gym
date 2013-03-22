@@ -120,20 +120,20 @@ OkumuraHataPropagationLossModelTestSuite::OkumuraHataPropagationLossModelTestSui
 
   double freq = 869e6; // this will use the original OH model
 
-  AddTestCase (new OkumuraHataPropagationLossModelTestCase (freq, 2000, 30, 1, UrbanEnvironment, LargeCity, 137.93, "original OH Urban Large city"));
+  AddTestCase (new OkumuraHataPropagationLossModelTestCase (freq, 2000, 30, 1, UrbanEnvironment, LargeCity, 137.93, "original OH Urban Large city"), TestCase::QUICK);
 
-  AddTestCase (new OkumuraHataPropagationLossModelTestCase (freq, 2000, 30, 1, UrbanEnvironment, SmallCity, 137.88, "original OH Urban small city"));
+  AddTestCase (new OkumuraHataPropagationLossModelTestCase (freq, 2000, 30, 1, UrbanEnvironment, SmallCity, 137.88, "original OH Urban small city"), TestCase::QUICK);
 
-  AddTestCase (new OkumuraHataPropagationLossModelTestCase (freq, 2000, 30, 1, SubUrbanEnvironment, LargeCity, 128.03, "original OH SubUrban"));
+  AddTestCase (new OkumuraHataPropagationLossModelTestCase (freq, 2000, 30, 1, SubUrbanEnvironment, LargeCity, 128.03, "original OH SubUrban"), TestCase::QUICK);
 
-  AddTestCase (new OkumuraHataPropagationLossModelTestCase (freq, 2000, 30, 1, OpenAreasEnvironment, LargeCity, 110.21, "original OH OpenAreas"));
+  AddTestCase (new OkumuraHataPropagationLossModelTestCase (freq, 2000, 30, 1, OpenAreasEnvironment, LargeCity, 110.21, "original OH OpenAreas"), TestCase::QUICK);
 
 
   freq = 2.1140e9;  // this will use the extended COST231 OH model
 
-  AddTestCase (new OkumuraHataPropagationLossModelTestCase (freq, 2000, 30, 1, UrbanEnvironment, LargeCity, 148.55, "COST231 OH Urban Large city"));
+  AddTestCase (new OkumuraHataPropagationLossModelTestCase (freq, 2000, 30, 1, UrbanEnvironment, LargeCity, 148.55, "COST231 OH Urban Large city"), TestCase::QUICK);
 
-  AddTestCase (new OkumuraHataPropagationLossModelTestCase (freq, 2000, 30, 1, UrbanEnvironment, SmallCity, 150.64, "COST231 OH Urban small city and suburban"));
+  AddTestCase (new OkumuraHataPropagationLossModelTestCase (freq, 2000, 30, 1, UrbanEnvironment, SmallCity, 150.64, "COST231 OH Urban small city and suburban"), TestCase::QUICK);
 
 }
 

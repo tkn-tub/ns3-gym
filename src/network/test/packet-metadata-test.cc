@@ -829,7 +829,7 @@ public:
 PacketMetadataTestSuite::PacketMetadataTestSuite ()
   : TestSuite ("packet-metadata", UNIT)
 {
-  AddTestCase (new PacketMetadataTest);
+  AddTestCase (new PacketMetadataTest, TestCase::QUICK);
 }
 
 PacketMetadataTestSuite g_packetMetadataTest;

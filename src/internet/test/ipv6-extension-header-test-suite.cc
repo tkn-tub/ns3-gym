@@ -215,10 +215,10 @@ public:
   Ipv6ExtensionHeaderTestSuite ()
     : TestSuite ("ipv6-extension-header", UNIT)
   {
-    AddTestCase (new TestEmptyOptionField);
-    AddTestCase (new TestOptionWithoutAlignment);
-    AddTestCase (new TestOptionWithAlignment);
-    AddTestCase (new TestFulfilledAlignment);
+    AddTestCase (new TestEmptyOptionField, TestCase::QUICK);
+    AddTestCase (new TestOptionWithoutAlignment, TestCase::QUICK);
+    AddTestCase (new TestOptionWithAlignment, TestCase::QUICK);
+    AddTestCase (new TestFulfilledAlignment, TestCase::QUICK);
 
   }
 };

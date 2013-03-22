@@ -74,8 +74,8 @@ LenaTestMimoSuite::LenaTestMimoSuite ()
   estThrDl.push_back (119100); // TTI 1 estimated throughput for TxMode 1
   estThrDl.push_back (183600); // TTI 2 estimated throughput for TxMode 2
   estThrDl.push_back (193400); // TTI 3 estimated throughput for TxMode 3
-  AddTestCase (new LenaMimoTestCase(300, estThrDl, "ns3::RrFfMacScheduler"));
-  AddTestCase (new LenaMimoTestCase(300, estThrDl, "ns3::PfFfMacScheduler"));
+  AddTestCase (new LenaMimoTestCase(300, estThrDl, "ns3::RrFfMacScheduler"), TestCase::QUICK);
+  AddTestCase (new LenaMimoTestCase(300, estThrDl, "ns3::PfFfMacScheduler"), TestCase::QUICK);
  
 
 }

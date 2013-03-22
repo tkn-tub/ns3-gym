@@ -199,8 +199,8 @@ public:
 Ns3TcpNoDelayTestSuite::Ns3TcpNoDelayTestSuite ()
   : TestSuite ("ns3-tcp-no-delay", SYSTEM)
 {
-  AddTestCase (new Ns3TcpNoDelayTestCase (true));
-  AddTestCase (new Ns3TcpNoDelayTestCase (false));
+  AddTestCase (new Ns3TcpNoDelayTestCase (true), TestCase::QUICK);
+  AddTestCase (new Ns3TcpNoDelayTestCase (false), TestCase::QUICK);
 }
 
 static Ns3TcpNoDelayTestSuite ns3TcpNoDelayTestSuite;

@@ -447,23 +447,23 @@ Ns3TcpLossTestSuite::Ns3TcpLossTestSuite ()
   SetDataDir (NS_TEST_SOURCEDIR);
   Packet::EnablePrinting ();  // Enable packet metadata for all test cases
 
-  AddTestCase (new Ns3TcpLossTestCase ("Tahoe", 0));
-  AddTestCase (new Ns3TcpLossTestCase ("Tahoe", 1));
-  AddTestCase (new Ns3TcpLossTestCase ("Tahoe", 2));
-  AddTestCase (new Ns3TcpLossTestCase ("Tahoe", 3));
-  AddTestCase (new Ns3TcpLossTestCase ("Tahoe", 4));
+  AddTestCase (new Ns3TcpLossTestCase ("Tahoe", 0), TestCase::QUICK);
+  AddTestCase (new Ns3TcpLossTestCase ("Tahoe", 1), TestCase::QUICK);
+  AddTestCase (new Ns3TcpLossTestCase ("Tahoe", 2), TestCase::QUICK);
+  AddTestCase (new Ns3TcpLossTestCase ("Tahoe", 3), TestCase::QUICK);
+  AddTestCase (new Ns3TcpLossTestCase ("Tahoe", 4), TestCase::QUICK);
 
-  AddTestCase (new Ns3TcpLossTestCase ("Reno", 0));
-  AddTestCase (new Ns3TcpLossTestCase ("Reno", 1));
-  AddTestCase (new Ns3TcpLossTestCase ("Reno", 2));
-  AddTestCase (new Ns3TcpLossTestCase ("Reno", 3));
-  AddTestCase (new Ns3TcpLossTestCase ("Reno", 4));
+  AddTestCase (new Ns3TcpLossTestCase ("Reno", 0), TestCase::QUICK);
+  AddTestCase (new Ns3TcpLossTestCase ("Reno", 1), TestCase::QUICK);
+  AddTestCase (new Ns3TcpLossTestCase ("Reno", 2), TestCase::QUICK);
+  AddTestCase (new Ns3TcpLossTestCase ("Reno", 3), TestCase::QUICK);
+  AddTestCase (new Ns3TcpLossTestCase ("Reno", 4), TestCase::QUICK);
 
-  AddTestCase (new Ns3TcpLossTestCase ("NewReno", 0));
-  AddTestCase (new Ns3TcpLossTestCase ("NewReno", 1));
-  AddTestCase (new Ns3TcpLossTestCase ("NewReno", 2));
-  AddTestCase (new Ns3TcpLossTestCase ("NewReno", 3));
-  AddTestCase (new Ns3TcpLossTestCase ("NewReno", 4));
+  AddTestCase (new Ns3TcpLossTestCase ("NewReno", 0), TestCase::QUICK);
+  AddTestCase (new Ns3TcpLossTestCase ("NewReno", 1), TestCase::QUICK);
+  AddTestCase (new Ns3TcpLossTestCase ("NewReno", 2), TestCase::QUICK);
+  AddTestCase (new Ns3TcpLossTestCase ("NewReno", 3), TestCase::QUICK);
+  AddTestCase (new Ns3TcpLossTestCase ("NewReno", 4), TestCase::QUICK);
 
 }
 

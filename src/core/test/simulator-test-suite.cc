@@ -468,12 +468,12 @@ public:
     ObjectFactory factory;
     factory.SetTypeId (ListScheduler::GetTypeId ());
 
-    AddTestCase (new SimulatorEventsTestCase (factory));
+    AddTestCase (new SimulatorEventsTestCase (factory), TestCase::QUICK);
     factory.SetTypeId (MapScheduler::GetTypeId ());
-    AddTestCase (new SimulatorEventsTestCase (factory));
+    AddTestCase (new SimulatorEventsTestCase (factory), TestCase::QUICK);
     factory.SetTypeId (HeapScheduler::GetTypeId ());
-    AddTestCase (new SimulatorEventsTestCase (factory));
+    AddTestCase (new SimulatorEventsTestCase (factory), TestCase::QUICK);
     factory.SetTypeId (CalendarScheduler::GetTypeId ());
-    AddTestCase (new SimulatorEventsTestCase (factory));
+    AddTestCase (new SimulatorEventsTestCase (factory), TestCase::QUICK);
   }
 } g_simulatorTestSuite;
