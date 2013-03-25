@@ -61,7 +61,10 @@ protected:
   void SerializeMeasResults (LteRrcSap::MeasResults measResults) const;
   void SerializePlmnIdentity (uint32_t plmnId) const;
   void SerializeRachConfigCommon (LteRrcSap::RachConfigCommon rachConfigCommon) const;
-
+  void SerializeMeasConfig (LteRrcSap::MeasConfig measConfig) const;
+  void SerializeQoffsetRange (int8_t qOffsetRange) const;
+  void SerializeThresholdEutra (LteRrcSap::ThresholdEutra thresholdEutra) const;
+  
   // Deserialization functions
   Buffer::Iterator DeserializeDrbToAddModList (std::list<LteRrcSap::DrbToAddMod> *drbToAddModLis, Buffer::Iterator bIterator);
   Buffer::Iterator DeserializeSrbToAddModList (std::list<LteRrcSap::SrbToAddMod> *srbToAddModList, Buffer::Iterator bIterator);
@@ -75,6 +78,9 @@ protected:
   Buffer::Iterator DeserializeMeasResults (LteRrcSap::MeasResults *measResults, Buffer::Iterator bIterator);
   Buffer::Iterator DeserializePlmnIdentity (uint32_t *plmnId, Buffer::Iterator bIterator);
   Buffer::Iterator DeserializeRachConfigCommon (LteRrcSap::RachConfigCommon * rachConfigCommon, Buffer::Iterator bIterator);
+  Buffer::Iterator DeserializeMeasConfig (LteRrcSap::MeasConfig * measConfig, Buffer::Iterator bIterator);
+  Buffer::Iterator DeserializeQoffsetRange (int8_t * qOffsetRange, Buffer::Iterator bIterator);
+  Buffer::Iterator DeserializeThresholdEutra (LteRrcSap::ThresholdEutra * thresholdEutra, Buffer::Iterator bIterator);
 
   /**
    * This function prints RadioResourceConfigDedicated IE, for debugging purposes.
