@@ -241,20 +241,21 @@ UeManager::DoStart ()
   switch (m_state)
     {
     case INITIAL_RANDOM_ACCESS:
-      // must account for reception of RAR and transmission of RRC CONNECTION REQUEST over UL GRANT
-      maxConnectionDelay = MilliSeconds (15); 
+      m_connectionTimeout = Simulator::Schedule (m_rrc->m_connectionTimeoutDuration, 
+                                                 &LteEnbRrc::ConnectionTimeout, 
+                                                 m_rrc, m_rnti);
       break;
+
     case HANDOVER_JOINING:
-      // must account for reception of X2 HO REQ ACK by source eNB,
-      // transmission of the Handover Command, and
-      // non-contention-based random access
-      maxConnectionDelay = MilliSeconds (50); 
+      m_handoverJoiningTimeout = Simulator::Schedule (m_rrc->m_handoverJoiningTimeoutDuration, 
+                                                 &LteEnbRrc::HandoverJoiningTimeout, 
+                                                 m_rrc, m_rnti);
       break;      
+
     default:
-      NS_FATAL_ERROR ("unspecified maxConnectionDelay for state " << ToString (m_state));
+      NS_FATAL_ERROR ("unexpected state " << ToString (m_state));
       break;      
     }  
-  m_connectionTimeout = Simulator::Schedule (maxConnectionDelay, &LteEnbRrc::ConnectionTimeout, m_rrc, m_rnti);
 
   m_servingCellMeasures = CreateObject<UeMeasure> ();
   m_servingCellMeasures->m_cellId = m_rrc->m_cellId;
@@ -580,6 +581,9 @@ UeManager::RecvHandoverRequestAck (EpcX2SapUser::HandoverRequestAckParams params
   LteRrcSap::RrcConnectionReconfiguration handoverCommand = m_rrc->m_rrcSapUser->DecodeHandoverCommand (encodedHandoverCommand);
   m_rrc->m_rrcSapUser->SendRrcConnectionReconfiguration (m_rnti, handoverCommand);
   SwitchToState (HANDOVER_LEAVING);
+  m_handoverLeavingTimeout = Simulator::Schedule (m_rrc->m_handoverLeavingTimeoutDuration, 
+                                                  &LteEnbRrc::HandoverLeavingTimeout, 
+                                                  m_rrc, m_rnti);  
   NS_ASSERT (handoverCommand.haveMobilityControlInfo);  
   m_rrc->m_handoverStartTrace (m_imsi, m_rrc->m_cellId, m_rnti, handoverCommand.mobilityControlInfo.targetPhysCellId);
 
@@ -749,6 +753,15 @@ UeManager::RecvSnStatusTransfer (EpcX2SapUser::SnStatusTransferParams params)
     }
 }
 
+void 
+UeManager::RecvUeContextRelease (EpcX2SapUser::UeContextReleaseParams params)
+{
+  NS_LOG_FUNCTION (this);
+  NS_ASSERT_MSG (m_state == HANDOVER_LEAVING, "method unexpected in state " << ToString (m_state));
+  m_handoverLeavingTimeout.Cancel ();  
+}
+
+
 // methods forwarded from RRC SAP
 
 void 
@@ -789,8 +802,9 @@ UeManager::RecvRrcConnectionRequest (LteRrcSap::RrcConnectionRequest msg)
             LteRrcSap::RrcConnectionReject rejectMsg;
             rejectMsg.waitTime = 3;
             m_rrc->m_rrcSapUser->SendRrcConnectionReject (m_rnti, rejectMsg);
-            Time maxRecvConnRejectDelay = MilliSeconds (30);
-            m_connectionTimeout = Simulator::Schedule (maxRecvConnRejectDelay, &LteEnbRrc::ConnectionTimeout, m_rrc, m_rnti);
+            m_connectionRejectedTimeout = Simulator::Schedule (m_rrc->m_connectionRejectedTimeoutDuration, 
+                                                       &LteEnbRrc::ConnectionRejectedTimeout, 
+                                                       m_rrc, m_rnti);
             SwitchToState (CONNECTION_REJECTED);
           }        
       }
@@ -851,7 +865,7 @@ UeManager::RecvRrcConnectionReconfigurationCompleted (LteRrcSap::RrcConnectionRe
       
     case HANDOVER_JOINING:
       {
-        m_connectionTimeout.Cancel ();
+        m_handoverJoiningTimeout.Cancel ();
         NS_LOG_INFO ("Send PATH SWITCH REQUEST to the MME");
         EpcEnbS1SapProvider::PathSwitchRequestParameters params;
         params.rnti = m_rnti;
@@ -881,6 +895,20 @@ void
 UeManager::RecvRrcConnectionReestablishmentRequest (LteRrcSap::RrcConnectionReestablishmentRequest msg)
 {
   NS_LOG_FUNCTION (this);
+  switch (m_state)
+    {
+    case CONNECTED_NORMALLY:
+      break;
+
+    case HANDOVER_LEAVING:      
+      m_handoverLeavingTimeout.Cancel ();  
+      break;      
+      
+    default:
+      NS_FATAL_ERROR ("method unexpected in state " << ToString (m_state));
+      break;      
+    }
+
   LteRrcSap::RrcConnectionReestablishment msg2;
   msg2.rrcTransactionIdentifier = GetNewRrcTransactionIdentifier ();
   msg2.radioResourceConfigDedicated = BuildRadioResourceConfigDedicated ();
@@ -1434,7 +1462,27 @@ LteEnbRrc::GetTypeId (void)
                    UintegerValue (40),  
                    MakeUintegerAccessor (&LteEnbRrc::SetSrsPeriodicity, 
                                          &LteEnbRrc::GetSrsPeriodicity),
-                   MakeUintegerChecker<uint32_t> ())   
+                   MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("ConnectionTimeoutDuration",
+                   "After a RA attempt, if no RRC Connection Request is received before this time, the UE context is destroyed. Must account for reception of RAR and transmission of RRC CONNECTION REQUEST over UL GRANT.",
+                   TimeValue (MilliSeconds (15)),  
+                   MakeTimeAccessor (&LteEnbRrc::m_connectionTimeoutDuration),
+                   MakeTimeChecker ())
+    .AddAttribute ("ConnectionRejectedTimeoutDuration",
+                   "Time to wait between sending a RRC CONNECTION REJECT and destroying the UE context",
+                   TimeValue (MilliSeconds (30)),  
+                   MakeTimeAccessor (&LteEnbRrc::m_connectionRejectedTimeoutDuration),
+                   MakeTimeChecker ())
+    .AddAttribute ("HandoverJoiningTimeoutDuration",
+                   "After accepting a handover request, if no RRC Connection Reconfiguration Completed is received before this time, the UE context is destroyed. Must account for reception of X2 HO REQ ACK by source eNB, transmission of the Handover Command, non-contention-based random access and reception of the RRC Connection Reconfiguration Completed message.",
+                   TimeValue (MilliSeconds (200)),  
+                   MakeTimeAccessor (&LteEnbRrc::m_handoverJoiningTimeoutDuration),
+                   MakeTimeChecker ())
+    .AddAttribute ("HandoverLeavingTimeoutDuration",
+                   "After issuing a Handover Command, if neither RRC Connection Reestablishment nor X2 UE Context Release has been previously received, the UE context is destroyed.",
+                   TimeValue (MilliSeconds (500)),  
+                   MakeTimeAccessor (&LteEnbRrc::m_handoverLeavingTimeoutDuration),
+                   MakeTimeChecker ())
    .AddAttribute ("AdmitHandoverRequest",
                    "Whether to admit an X2 handover request from another eNB",
                    BooleanValue (true),  
@@ -1627,9 +1675,37 @@ void
 LteEnbRrc::ConnectionTimeout (uint16_t rnti)
 {
   NS_LOG_FUNCTION (this << rnti);
+  NS_ASSERT_MSG (GetUeManager (rnti)->GetState () == UeManager::INITIAL_RANDOM_ACCESS, 
+                 "ConnectionTimeout in unexpected state " << ToString (GetUeManager (rnti)->GetState ()));
   RemoveUe (rnti);
 }
 
+void
+LteEnbRrc::ConnectionRejectedTimeout (uint16_t rnti)
+{
+  NS_LOG_FUNCTION (this << rnti);
+  NS_ASSERT_MSG (GetUeManager (rnti)->GetState () == UeManager::CONNECTION_REJECTED,
+                 "ConnectionTimeout in unexpected state " << ToString (GetUeManager (rnti)->GetState ()));
+  RemoveUe (rnti);
+}
+
+void
+LteEnbRrc::HandoverJoiningTimeout (uint16_t rnti)
+{
+  NS_LOG_FUNCTION (this << rnti);
+  NS_ASSERT_MSG (GetUeManager (rnti)->GetState () == UeManager::HANDOVER_JOINING, 
+                 "HandoverJoiningTimeout in unexpected state " << ToString (GetUeManager (rnti)->GetState ()));
+  RemoveUe (rnti);
+}
+
+void
+LteEnbRrc::HandoverLeavingTimeout (uint16_t rnti)
+{
+  NS_LOG_FUNCTION (this << rnti);
+  NS_ASSERT_MSG (GetUeManager (rnti)->GetState () == UeManager::HANDOVER_LEAVING, 
+                 "HandoverLeavingTimeout in unexpected state " << ToString (GetUeManager (rnti)->GetState ()));
+  RemoveUe (rnti);
+}
 
 void
 LteEnbRrc::SendHandoverRequest (uint16_t rnti, uint16_t cellId)
@@ -1859,6 +1935,7 @@ LteEnbRrc::DoRecvUeContextRelease (EpcX2SapUser::UeContextReleaseParams params)
   NS_LOG_LOGIC ("newEnbUeX2apId = " << params.newEnbUeX2apId);
 
   uint16_t rnti = params.oldEnbUeX2apId;
+  GetUeManager (rnti)->RecvUeContextRelease (params);
   RemoveUe (rnti);
 }
 

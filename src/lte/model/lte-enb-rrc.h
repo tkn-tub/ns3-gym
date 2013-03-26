@@ -252,7 +252,13 @@ public:
    * \param params the SN STATUS
    */
   void RecvSnStatusTransfer (EpcX2SapUser::SnStatusTransferParams params);
-  
+ 
+  /** 
+   * Take the necessary actions in response to the reception of an X2 UE CONTEXT RELEASE message
+   * 
+   * \param params the SN STATUS
+   */
+  void RecvUeContextRelease (EpcX2SapUser::UeContextReleaseParams params); 
 
   // methods forwarded from RRC SAP
   void CompleteSetupUe (LteEnbRrcSapProvider::CompleteSetupUeParameters params);
@@ -426,8 +432,11 @@ private:
   uint16_t m_targetCellId;
   std::list<uint8_t> m_drbsToBeStarted;
   bool m_needTransmissionModeConfiguration;
-  EventId m_connectionTimeout;
 
+  EventId m_connectionTimeout;
+  EventId m_connectionRejectedTimeout;
+  EventId m_handoverJoiningTimeout;
+  EventId m_handoverLeavingTimeout;
 
   Ptr<UeMeasure> m_servingCellMeasures;
   //       cellid
@@ -606,6 +615,29 @@ public:
    * \param rnti the T-C-RNTI whose timeout expired
    */
   void ConnectionTimeout (uint16_t rnti);
+
+  /** 
+   * Method triggered a while after sending RRC Connection Rejected
+   * 
+   * \param rnti the T-C-RNTI whose timeout expired
+   */
+  void ConnectionRejectedTimeout (uint16_t rnti);
+
+  /** 
+   * Method triggered when a UE is expected to join the cell for a handover 
+   * but does not do so in a reasonable time
+   * 
+   * \param rnti the C-RNTI whose timeout expired
+   */
+  void HandoverJoiningTimeout (uint16_t rnti);
+
+  /** 
+   * Method triggered when a UE is expected to leave a cell for a handover
+   * but no feedback is received in a reasonable time
+   * 
+   * \param rnti the C-RNTI whose timeout expired
+   */
+  void HandoverLeavingTimeout (uint16_t rnti);
 
   /** 
    * Send a HandoverRequest through the X2 SAP interface
@@ -822,6 +854,11 @@ private:
   uint8_t m_servingCellHandoverThreshold;
   uint8_t m_neighbourCellHandoverOffset;
 
+  // timeouts
+  Time m_connectionTimeoutDuration;
+  Time m_connectionRejectedTimeoutDuration;
+  Time m_handoverJoiningTimeoutDuration;
+  Time m_handoverLeavingTimeoutDuration;  
 
   //       cellid
   std::map<uint16_t, Ptr<NeighbourRelation> > m_neighbourRelationTable;
