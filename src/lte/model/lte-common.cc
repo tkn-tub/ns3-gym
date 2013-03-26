@@ -218,7 +218,7 @@ double
 EutranMeasurementMapping::RsrqRange2Db (uint8_t range)
 {
   // 3GPP TS 36.133 section 9.1.7 RSRQ Measurement Report Mapping
-  NS_ASSERT_MSG (range <= 34, "value " << range << " is out of range");
+  NS_ASSERT_MSG (range <= 34, "value " << (uint16_t) range << " is out of range");
   return ((double) range - 40.0)*0.5;
 }
 
