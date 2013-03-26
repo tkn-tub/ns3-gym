@@ -89,7 +89,7 @@ def build(bld):
         'model/lte-harq-phy.cc',
         'model/epc-mme.cc',
         'model/lte-asn1-header.cc',
-	'model/lte-rrc-header.cc',
+        'model/lte-rrc-header.cc',
         ]
 
     module_test = bld.create_ns3_module_test_library('lte')
@@ -123,6 +123,7 @@ def build(bld):
         'test/lte-test-harq.cc',
         'test/test-lte-rrc.cc',
         'test/test-lte-x2-handover.cc',
+        'test/test-lte-x2-handover-measures.cc',
         'test/test-asn1-encoding.cc',
         'test/lte-test-ue-measurements.cc',
         ]
@@ -217,7 +218,7 @@ def build(bld):
         'model/lte-harq-phy.h',
         'model/epc-mme.h',
         'model/lte-asn1-header.h',
-	'model/lte-rrc-header.h',
+        'model/lte-rrc-header.h',
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):
