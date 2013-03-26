@@ -24,7 +24,8 @@
 #ifndef LTE_TEST_UE_MEASUREMENTS_H
 #define LTE_TEST_UE_MEASUREMENTS_H
 
-#include "ns3/test.h"
+#include <ns3/test.h>
+#include <ns3/lte-rrc-sap.h>
 
 
 namespace ns3 {
@@ -49,16 +50,18 @@ public:
 
   void ReportUeMeasurements (uint16_t rnti, uint16_t cellId, double rsrp, double rsrq, bool servingCell);
 
+  void RecvMeasurementReport (uint64_t imsi, uint16_t cellId, uint16_t rnti, LteRrcSap::MeasurementReport meas);
+
 private:
   virtual void DoRun (void);
 
 
   double m_d1;
   double m_d2;
-  double m_rsrpDbmUe1;
-  double m_rsrpDbmUe2;
-  double m_rsrqDbUe1;
-  double m_rsrqDbUe2;
+  double m_rsrpDbmUeServingCell;
+  double m_rsrpDbmUeNeighborCell;
+  double m_rsrqDbUeServingCell;
+  double m_rsrqDbUeNeighborCell;
   
 };
 
