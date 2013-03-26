@@ -50,6 +50,34 @@ class EpcEnbS1SapProvider;
 class LteUeRrc;
 class LteEnbRrc;
 
+
+/**
+ * Neighbour Relation between two eNBs (serving eNB and neighbour eNB)
+ * See XXXXX for more info
+ */
+class NeighbourRelation : public Object
+{
+public:
+  uint16_t  m_physCellId;
+  bool      m_noRemove;
+  bool      m_noHo;
+  bool      m_noX2;
+  bool      m_detectedAsNeighbour;
+};
+
+/**
+ * Measurements reported by a UE for a cellId
+ * The values are quantized according 3GPP TS XXXXX
+ */
+class UeMeasure : public Object
+{
+public:
+  uint16_t  m_cellId;
+  uint8_t   m_rsrp;
+  uint8_t   m_rsrq;
+};
+
+
 /**
  * Manages all the radio bearer information possessed by the ENB RRC for a single UE
  *
@@ -399,6 +427,12 @@ private:
   std::list<uint8_t> m_drbsToBeStarted;
   bool m_needTransmissionModeConfiguration;
   EventId m_connectionTimeout;
+
+
+  Ptr<UeMeasure> m_servingCellMeasures;
+  //       cellid
+  std::map<uint16_t, Ptr<UeMeasure> > m_neighbourCellMeasures;
+
 };
 
 
@@ -658,7 +692,15 @@ private:
   TypeId GetRlcType (EpsBearer bearer);
 
 
+
 public:
+
+  /** 
+   * Add a neighbour with an X2 interface
+   *
+   * \param cellid neighbouring cell id
+   */
+  void AddX2Neighbour (uint16_t cellId);
 
   /** 
    * 
@@ -777,6 +819,12 @@ private:
   bool m_admitRrcConnectionRequest;
   uint8_t m_eventA2Threshold;
   uint8_t m_eventA4Threshold;
+  uint8_t m_servingCellHandoverThreshold;
+  uint8_t m_neighbourCellHandoverOffset;
+
+
+  //       cellid
+  std::map<uint16_t, Ptr<NeighbourRelation> > m_neighbourRelationTable;
 
 
   //             cellid    rnti   

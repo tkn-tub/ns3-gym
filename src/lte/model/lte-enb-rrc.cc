@@ -255,6 +255,12 @@ UeManager::DoStart ()
       break;      
     }  
   m_connectionTimeout = Simulator::Schedule (maxConnectionDelay, &LteEnbRrc::ConnectionTimeout, m_rrc, m_rnti);
+
+  m_servingCellMeasures = CreateObject<UeMeasure> ();
+  m_servingCellMeasures->m_cellId = m_rrc->m_cellId;
+  m_servingCellMeasures->m_rsrp = 0;
+  m_servingCellMeasures->m_rsrq = 0;
+
 }
 
 
@@ -272,7 +278,9 @@ UeManager::DoDispose ()
        ++it)
     {
       m_rrc->m_x2uTeidInfoMap.erase (it->second->m_gtpTeid);
-    }    
+    }
+
+  m_servingCellMeasures = 0;
 }
 
 TypeId UeManager::GetTypeId (void)
@@ -891,19 +899,68 @@ void
 UeManager::RecvMeasurementReport (LteRrcSap::MeasurementReport msg)
 {
   NS_LOG_FUNCTION (this);
+  NS_LOG_LOGIC ("measId " << (uint16_t) msg.measResults.measId
+                << " haveMeasResultNeighCells " << msg.measResults.haveMeasResultNeighCells
+                << " measResultListEutra " << msg.measResults.measResultListEutra.size ());
+  NS_LOG_LOGIC ("serving cellId " << m_rrc->m_cellId
+                << " RSRP " << (uint16_t) msg.measResults.rsrpResult
+                << " RSRQ " << (uint16_t) msg.measResults.rsrqResult);
+
+  for (std::list <LteRrcSap::MeasResultEutra>::iterator it = msg.measResults.measResultListEutra.begin ();
+       it != msg.measResults.measResultListEutra.end ();
+       ++it)
+    {
+      NS_LOG_LOGIC ("neighbour cellId " << it->physCellId
+                    << " RSRP " << (it->haveRsrpResult ? (uint16_t) it->rsrpResult : 255)
+                    << " RSRQ " << (it->haveRsrqResult ? (uint16_t) it->rsrqResult : 255));
+    }
 
   m_rrc->m_recvMeasurementReportTrace (m_imsi, m_rrc->m_cellId, m_rnti, msg);
 
-  NS_LOG_LOGIC ("measId " << (uint16_t) msg.measResults.measId << 
-                " RSRP " << (uint16_t) msg.measResults.rsrpResult <<
-                " RSRQ " << (uint16_t) msg.measResults.rsrqResult <<
-                " haveMeasResultNeighCells " << msg.measResults.haveMeasResultNeighCells <<
-                " measResultListEutra " << msg.measResults.measResultListEutra.size ());
+  // Just these two measId are supported
+  NS_ASSERT_MSG ((msg.measResults.measId == 1) || (msg.measResults.measId == 2),
+                 "Measure identity is unknown");
 
   /// Event A2 (Serving becomes worse than threshold)
   if (msg.measResults.measId == 1)
     {
+      // Keep new RSRQ value reported for the serving cell
+      m_servingCellMeasures->m_rsrq = msg.measResults.rsrqResult;
+      m_servingCellMeasures->m_rsrp = msg.measResults.rsrpResult;
 
+      // Serving cell is worse than a handover threshold.
+      // This handover threshold is independent from the event A2 threshold
+      if (m_servingCellMeasures->m_rsrq <= m_rrc->m_servingCellHandoverThreshold)
+        {
+          // Find the best neighbour cell (eNB)
+          Ptr<UeMeasure> bestNeighbour = 0;
+          uint8_t bestNeighbourRsrq = 0;
+          NS_LOG_LOGIC ("Number of neighbour cells = " << m_neighbourCellMeasures.size ());
+          for (std::map <uint16_t, Ptr<UeMeasure> >::iterator it = m_neighbourCellMeasures.begin ();
+               it != m_neighbourCellMeasures.end ();
+               ++it)
+            {
+              if (it->second->m_rsrq > bestNeighbourRsrq)
+                {
+                  bestNeighbour = it->second;
+                  bestNeighbourRsrq = it->second->m_rsrq;
+                }
+            }
+
+          // Trigger Handover, if needed
+          if (bestNeighbour)
+            {
+              uint16_t targetCellId = bestNeighbour->m_cellId;
+              NS_LOG_LOGIC ("Best neighbour cellId " << targetCellId);
+              if (bestNeighbour->m_rsrq - m_servingCellMeasures->m_rsrq >= m_rrc->m_neighbourCellHandoverOffset)
+                {
+                  NS_LOG_LOGIC ("Trigger Handover to cellId " << targetCellId);
+                  NS_LOG_LOGIC ("target cell RSRQ " << (uint16_t) bestNeighbour->m_rsrq);
+                  NS_LOG_LOGIC ("serving cell RSRQ " << (uint16_t) m_servingCellMeasures->m_rsrq);
+                  PrepareHandover (targetCellId);
+                }
+            }
+        }
     }
   /// Event A4 (Neighbour becomes better than threshold)
   else if (msg.measResults.measId == 2)
@@ -911,19 +968,64 @@ UeManager::RecvMeasurementReport (LteRrcSap::MeasurementReport msg)
       // Update the NRT
       if (msg.measResults.haveMeasResultNeighCells && ! (msg.measResults.measResultListEutra.empty ()))
         {
+          for (std::list <LteRrcSap::MeasResultEutra>::iterator it = msg.measResults.measResultListEutra.begin ();
+               it != msg.measResults.measResultListEutra.end ();
+               ++it)
+            {
+              // Keep new RSRQ value reported for the neighbour cell
+              NS_ASSERT_MSG (it->haveRsrqResult == true, "RSRQ measure missing for cellId " << it->physCellId);
 
+              // Update Neighbour Relation Table
+              if (m_rrc->m_neighbourRelationTable.find (it->physCellId) != m_rrc->m_neighbourRelationTable.end ())
+                {
+                  // Update neighbour info
+                  Ptr<NeighbourRelation> neighbourRelation = m_rrc->m_neighbourRelationTable[it->physCellId];
+                  NS_ASSERT_MSG (neighbourRelation->m_physCellId == it->physCellId,
+                                 "Wrong cellId " << neighbourRelation->m_physCellId);
+
+                  if (neighbourRelation->m_noX2 == false)
+                    {
+                      neighbourRelation->m_noHo = false;
+                    }
+                  neighbourRelation->m_detectedAsNeighbour = true;
+                }
+              else // new neighbour
+                {
+                  Ptr<NeighbourRelation> neighbourRelation = CreateObject <NeighbourRelation> ();
+                  neighbourRelation->m_physCellId = it->physCellId;
+                  neighbourRelation->m_noRemove = false;
+                  neighbourRelation->m_noHo = true;
+                  neighbourRelation->m_noX2 = true;
+                  neighbourRelation->m_detectedAsNeighbour = true;
+                  m_rrc->m_neighbourRelationTable[it->physCellId] = neighbourRelation;
+                }
+
+              // Update measure info of the neighbour cell
+              Ptr<UeMeasure> neighbourCellMeasures;
+              if (m_neighbourCellMeasures.find (it->physCellId) != m_neighbourCellMeasures.end ())
+                {
+                  neighbourCellMeasures = m_neighbourCellMeasures[it->physCellId];
+                  neighbourCellMeasures->m_cellId = it->physCellId;
+                  neighbourCellMeasures->m_rsrq = it->rsrqResult;
+                  neighbourCellMeasures->m_rsrp = 0;
+                }
+              else
+                {
+                  neighbourCellMeasures = CreateObject <UeMeasure> ();
+                  neighbourCellMeasures->m_cellId = it->physCellId;
+                  neighbourCellMeasures->m_rsrq = it->rsrqResult;
+                  neighbourCellMeasures->m_rsrp = 0;
+                  m_neighbourCellMeasures[it->physCellId] = neighbourCellMeasures;
+                }
+            }
         }
       else
         {
-//           NS_LOG_LOGIC ("WARNING");
-           NS_FATAL_ERROR ("Event A4 received without measure results for neighbour cells");
+           NS_LOG_LOGIC ("WARNING");
+//            NS_ASSERT_MSG ("Event A4 received without measure results for neighbour cells");
+           // TODO Remove neighbours in the neighbourCellMeasures table
         }
     }
-  else
-    {
-      NS_FATAL_ERROR ("Measure identity is unknown");
-    }
-
 }
 
 
@@ -1347,12 +1449,22 @@ LteEnbRrc::GetTypeId (void)
                    "Threshold of the event A2 (Serving becomes worse than threshold)",
                    UintegerValue (34),
                    MakeUintegerAccessor (&LteEnbRrc::m_eventA2Threshold),
-                   MakeUintegerChecker<uint8_t> ())   
+                   MakeUintegerChecker<uint8_t> ())
     .AddAttribute ("EventA4Threshold",
                    "Threshold of the event A4 (Neighbour becomes better than threshold)",
                    UintegerValue (0),
                    MakeUintegerAccessor (&LteEnbRrc::m_eventA4Threshold),
-                   MakeUintegerChecker<uint8_t> ())   
+                   MakeUintegerChecker<uint8_t> ())
+    .AddAttribute ("ServingCellHandoverThreshold",
+                   "If serving cell is worse than this threshold, neighbour cells are consider for Handover",
+                   UintegerValue (15),
+                   MakeUintegerAccessor (&LteEnbRrc::m_servingCellHandoverThreshold),
+                   MakeUintegerChecker<uint8_t> ())
+    .AddAttribute ("NeighbourCellHandoverOffset",
+                   "Minimum offset between serving and best neighbour cell to trigger the Handover",
+                   UintegerValue (1),
+                   MakeUintegerAccessor (&LteEnbRrc::m_neighbourCellHandoverOffset),
+                   MakeUintegerChecker<uint8_t> ())
     .AddTraceSource ("NewUeContext",
                      "trace fired upon creation of a new UE context",
                      MakeTraceSourceAccessor (&LteEnbRrc::m_newUeContextTrace))
@@ -1902,6 +2014,21 @@ LteEnbRrc::GetRlcType (EpsBearer bearer)
 }
 
 
+void
+LteEnbRrc::AddX2Neighbour (uint16_t cellId)
+{
+  NS_LOG_FUNCTION (cellId);
+  NS_ASSERT_MSG (m_neighbourRelationTable.find (cellId) == m_neighbourRelationTable.end (),
+                 "There is already an entry in the Neighbour Relation Table for cellId " << cellId);
+
+  Ptr<NeighbourRelation> neighbourRelation = CreateObject <NeighbourRelation> ();
+  neighbourRelation->m_physCellId = cellId;
+  neighbourRelation->m_noRemove = true;
+  neighbourRelation->m_noHo = true;
+  neighbourRelation->m_noX2 = false;
+  neighbourRelation->m_detectedAsNeighbour = false;
+  m_neighbourRelationTable[cellId] = neighbourRelation;
+}
 
 
 // from 3GPP TS 36.213 table 8.2-1 UE Specific SRS Periodicity
@@ -2026,7 +2153,7 @@ LteEnbRrc::GetLogicalChannelPriority (EpsBearer bearer)
 void
 LteEnbRrc::SendSystemInformation ()
 {
-  NS_LOG_FUNCTION (this);
+//   NS_LOG_FUNCTION (this);
   // for simplicity, we use the same periodicity for all sibs
   // note that in real systems the periodicy of each sibs could be different
   LteRrcSap::SystemInformation si;

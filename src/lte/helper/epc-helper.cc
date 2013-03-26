@@ -275,6 +275,9 @@ EpcHelper::AddX2Interface (Ptr<Node> enb1, Ptr<Node> enb2)
 
   enb1X2->AddX2Interface (enb1CellId, enb1X2Address, enb2CellId, enb2X2Address);
   enb2X2->AddX2Interface (enb2CellId, enb2X2Address, enb1CellId, enb1X2Address);
+
+  enb1LteDev->GetRrc ()->AddX2Neighbour (enb2LteDev->GetCellId ());
+  enb2LteDev->GetRrc ()->AddX2Neighbour (enb1LteDev->GetCellId ());
 }
 
 
