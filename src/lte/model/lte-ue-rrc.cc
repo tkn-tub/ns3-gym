@@ -770,10 +770,15 @@ LteUeRrc::DoReportUeMeasurements (LteUeCphySapUser::UeMeasurementsParameters par
             {
               measReportIt->second.cellsTriggeredList.erase (*it);
             }
-          if (reportConfigEutra.reportOnLeave)
+
+          // reportOnLeave will only be set when eventId = eventA3
+          if(reportConfigEutra.eventId == LteRrcSap::ReportConfigEutra::eventA3)
             {
-              initiateUeMeasurementReportingProcedure = true;
-            }          
+              if (reportConfigEutra.reportOnLeave)
+                {
+                  initiateUeMeasurementReportingProcedure = true;
+                }
+            }    
         }
 
       if (initiateUeMeasurementReportingProcedure)

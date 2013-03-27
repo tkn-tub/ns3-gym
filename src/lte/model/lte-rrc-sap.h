@@ -44,9 +44,9 @@ class Packet;
  * ns-3 model are mentioned here. The naming of the variables that are
  * defined here is the same of 36.331, except for removal of "-" and
  * conversion to CamelCase or ALL_CAPS where needed in order to follow
- * the ns-3 coding style. Due to the 1-to-1 mapping with TS 36.311, 
+ * the ns-3 coding style. Due to the 1-to-1 mapping with TS 36.331, 
  * detailed doxygen documentation is omitted, so please refer to
- * 36.311 for the meaning of these data structures / fields.
+ * 36.331 for the meaning of these data structures / fields.
  * 
  */
 class LteRrcSap
@@ -232,7 +232,7 @@ public:
     enum {eventA1,eventA2,eventA3,eventA4,eventA5} eventId;
     ThresholdEutra threshold1; // used for A1, A2, A4, A5
     ThresholdEutra threshold2; // used for A5
-    bool reportOnLeave;
+    bool reportOnLeave; // used for A3
     int8_t a3Offset; // used for A3
     uint8_t hysteresis;
     uint16_t timeToTrigger;
