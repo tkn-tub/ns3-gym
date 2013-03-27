@@ -1,0 +1,123 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+import os.path
+
+def configure(conf):
+    conf.env['ENABLE_FDNETDEV'] = False
+
+    if conf.env['ENABLE_THREADING']:
+        have_sysioctl = conf.check_nonfatal(header_name='sys/ioctl.h', 
+            define_name = 'HAVE_SYS_IOCTL_H')
+        have_netif =  conf.check_nonfatal(header_name='net/if.h',
+            define_name = 'HAVE_IF_NETS_H')
+
+        # Enable use of TUN/TAP helper
+        conf.env['ENABLE_TAP'] = conf.check_nonfatal(
+           header_name='linux/if_tun.h', 
+           define_name='HAVE_IF_TUN_H') and have_sysioctl and have_netif
+
+        if conf.env['ENABLE_TAP']:
+            conf.define('HAVE_TAP_CREATOR', 1)
+
+        # Enable use of raw socket (EMU) helper.
+        conf.env['ENABLE_EMU'] = conf.check_nonfatal(
+           header_name='netpacket/packet.h',
+           define_name='HAVE_PACKET_H') and have_sysioctl and have_netif
+
+        if conf.env['ENABLE_EMU']:
+            conf.define('HAVE_RAW_SOCKET_CREATOR', 1)
+
+        # Enable use of PlanetLab TAP helper
+        # TODO: How to validate 
+        (sysname, nodename, release, version, machine) = os.uname()
+        if release.find('onelab') != -1:
+            conf.env['ENABLE_PLANETLAB'] = True
+            conf.define('HAVE_PLANETLAB_TAP_CREATOR', 1)
+
+        # Enable the FdNetDevice module. 
+        # Our only requirement is threading support.
+        conf.env['ENABLE_FDNETDEV'] = True
+        conf.report_optional_feature("FdNetDevice", 
+            "File Descriptor Net Device",
+            True,
+            "FdNetDevice module enabled")
+    else:
+        conf.report_optional_feature("FdNetDevice", 
+            "File Descriptor Net Device",
+            False,
+            "needs threading support which is not available")
+
+    if conf.env['ENABLE_FDNETDEV']:
+        blddir = os.path.abspath(os.path.join(conf.bldnode.abspath(), conf.variant))
+        dir = os.path.abspath(os.path.join(blddir, "src/fd-net-device"))
+        conf.env.append_value('NS3_EXECUTABLE_PATH', dir)
+    else:
+        # Add this module to the list of modules that won't be built
+        # if they are enabled.
+        conf.env['MODULES_NOT_BUILT'].append('fd-net-device')
+
+def build(bld):
+    # Don't do anything for this module if emu's not enabled.
+    if not bld.env['ENABLE_FDNETDEV']:
+        return
+
+    module = bld.create_ns3_module('fd-net-device', ['network'])
+    module.source = [
+        'model/fd-net-device.cc',
+        'helper/fd-net-device-helper.cc',
+        'helper/tap-fd-net-device-helper.cc',
+        'helper/emu-fd-net-device-helper.cc',
+        'helper/planetlab-fd-net-device-helper.cc',
+        'helper/encode-decode.cc',
+        'helper/creator-utils.cc',
+        ]
+
+    headers = bld.new_task_gen(features=['ns3header'])
+    headers.module = 'fd-net-device'
+    headers.source = [
+        'model/fd-net-device.h',
+        'helper/fd-net-device-helper.h',
+        'helper/tap-fd-net-device-helper.h',
+        'helper/emu-fd-net-device-helper.h',
+        'helper/planetlab-fd-net-device-helper.h',
+        ]
+
+    if bld.env['ENABLE_TAP']:
+        if not bld.env['PLATFORM'].startswith('freebsd'):
+            creator = bld.create_suid_program('tap-creator')
+            creator.source = [
+                'helper/tap-creator.cc',
+                'helper/encode-decode.cc',
+                'helper/creator-utils.cc',
+            ]
+
+        module.env.append_value("DEFINES", 
+           "TAP_CREATOR=\"%s\"" % (creator.target,))
+
+    if bld.env['ENABLE_EMU']:
+        creator = bld.create_suid_program('raw-sock-creator')
+        creator.source = [
+           'helper/raw-sock-creator.cc',
+           'helper/encode-decode.cc',
+           'helper/creator-utils.cc',
+        ]
+
+        module.env.append_value("DEFINES", 
+           "RAW_SOCK_CREATOR=\"%s\"" % (creator.target,))
+
+    if bld.env['ENABLE_PLANETLAB']:
+        creator = bld.create_suid_program('planetlab-tap-creator')
+        creator.source = [
+           'helper/planetlab-tap-creator.cc',
+           'helper/encode-decode.cc',
+           'helper/creator-utils.cc',
+        ]
+
+        module.env.append_value("DEFINES", 
+           "PLANETLAB_TAP_CREATOR=\"%s\"" % (creator.target,))
+
+    if bld.env['ENABLE_EXAMPLES']:
+        bld.add_subdirs('examples')
+
+    bld.ns3_python_bindings()
+
