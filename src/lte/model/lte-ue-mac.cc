@@ -633,11 +633,26 @@ LteUeMac::DoReceiveLteControlMessage (Ptr<LteControlMessage> msg)
                             }
                           else if ((*itBsr).second.txQueueSize > 0)
                             {
-                              NS_LOG_DEBUG (this << " serve tx DATA, bytes " << bytesForThisLc);
-                              (*it).second.macSapUser->NotifyTxOpportunity (bytesForThisLc, 0, 0);
-                              if ((*itBsr).second.txQueueSize >= bytesForThisLc - 2)
+                              uint16_t lcid = (*it).first;
+                              uint32_t rlcOverhead;
+                              if (lcid == 1)
                                 {
-                                  (*itBsr).second.txQueueSize -= bytesForThisLc - 2;
+                                  // for SRB1 (using RLC AM) it's better to
+                                  // overestimate RLC overhead rather than
+                                  // underestimate it and risk unneeded
+                                  // segmentation which increases delay 
+                                  rlcOverhead = 4;                                  
+                                }
+                              else
+                                {
+                                  // minimum RLC overhead due to header
+                                  rlcOverhead = 2;
+                                }
+                              NS_LOG_DEBUG (this << " serve tx DATA, bytes " << bytesForThisLc << ", RLC overhead " << rlcOverhead);
+                              (*it).second.macSapUser->NotifyTxOpportunity (bytesForThisLc, 0, 0);
+                              if ((*itBsr).second.txQueueSize >= bytesForThisLc - rlcOverhead)
+                                {
+                                  (*itBsr).second.txQueueSize -= bytesForThisLc - rlcOverhead;
                                 }
                               else
                                 {

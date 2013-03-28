@@ -1840,15 +1840,28 @@ RrFfMacScheduler::UpdateDlRlcBufferInfo (uint16_t rnti, uint8_t lcid, uint16_t s
               }
             else if ((*it).m_rlcTransmissionQueueSize > 0)
               {
+                uint32_t rlcOverhead;
+                if (lcid == 1)
+                  {
+                    // for SRB1 (using RLC AM) it's better to
+                    // overestimate RLC overhead rather than
+                    // underestimate it and risk unneeded
+                    // segmentation which increases delay 
+                    rlcOverhead = 4;                                  
+                  }
+                else
+                  {
+                    // minimum RLC overhead due to header
+                    rlcOverhead = 2;
+                  }
                 // update transmission queue
-                if ((*it).m_rlcTransmissionQueueSize <= size)
+                if ((*it).m_rlcTransmissionQueueSize <= size - rlcOverhead)
                   {
                     (*it).m_rlcTransmissionQueueSize = 0;
                   }
                 else
-                  {
-                    size -= 2; // remove minimun RLC overhead due to header
-                    (*it).m_rlcTransmissionQueueSize -= size;
+                  {                    
+                    (*it).m_rlcTransmissionQueueSize -= size - rlcOverhead;
                   }
               }
           return;
