@@ -344,7 +344,7 @@ def main(argv):
     model_cc.close()
 
     model_h = file(os.path.join(moduledir, "model", "%s.h" % modname), "wt")
-    model_h.write(MODEL_H_TEMPLATE % dict(MODULE=modname, INCLUDE_GUARD="__%s_H__" % (modname.upper()),))
+    model_h.write(MODEL_H_TEMPLATE % dict(MODULE=modname, INCLUDE_GUARD="%s_H" % (modname.replace("-", "_").upper()),))
     model_h.close()
 
 
