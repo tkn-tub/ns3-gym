@@ -121,8 +121,6 @@ PlanetLabFdNetDeviceHelper::CreateFileDescriptor (void) const
 {
   NS_LOG_FUNCTION (this);
 
-#ifdef HAVE_PLANETLAB_TAP_CREATOR
-
   //
   // We're going to fork and exec that program soon, but first we need to have
   // a socket to talk to it with.  So we create a local interprocess (Unix)
@@ -329,12 +327,6 @@ PlanetLabFdNetDeviceHelper::CreateFileDescriptor (void) const
         }
       NS_FATAL_ERROR ("Did not get the raw socket from the socket creator");
     }
-
-#else
-
-  NS_FATAL_ERROR ("PLANETLAB_TAP_CREATOR is not defined in your system.");
-
-#endif /* HAVE_PLANETLAB_CREATOR */
 
 }
 

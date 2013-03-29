@@ -51,16 +51,18 @@
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE ("FdNetDeviceSaturationExample");
+NS_LOG_COMPONENT_DEFINE ("RealtimeFdNetDeviceSaturationExample");
 
 int
 main (int argc, char *argv[])
 {
-  GlobalValue::Bind ("ChecksumEnabled", BooleanValue (true));
 
   uint16_t sinkPort = 8000;
   uint32_t packetSize = 10000; // bytes
-  std::string dataRate("10Mb/s");
+  std::string dataRate("1000Mb/s");
+
+  GlobalValue::Bind ("SimulatorImplementationType", StringValue ("ns3::RealtimeSimulatorImpl"));
+  GlobalValue::Bind ("ChecksumEnabled", BooleanValue (true));
 
   NS_LOG_INFO ("Create Node");
   NodeContainer nodes;
@@ -103,8 +105,8 @@ main (int argc, char *argv[])
   PacketSinkHelper sinkHelper ("ns3::TcpSocketFactory", sinkLocalAddress);
   ApplicationContainer sinkApp = sinkHelper.Install (serverNode);
   sinkApp.Start (Seconds (0.0));
-  sinkApp.Stop (Seconds (30.0));
-  fd.EnablePcap ("fd2fd-onoff-server", serverDevice);
+  sinkApp.Stop (Seconds (40.0));
+  fd.EnablePcap ("rt-fd2fd-onoff-server", serverDevice);
 
   // client
   AddressValue serverAddress (InetSocketAddress (serverIp, sinkPort));
@@ -115,11 +117,11 @@ main (int argc, char *argv[])
   onoff.SetAttribute ("DataRate", DataRateValue (dataRate));
   onoff.SetAttribute ("PacketSize", UintegerValue (packetSize));
   ApplicationContainer clientApps = onoff.Install (clientNode);
-  clientApps.Start (Seconds (2.0));
-  clientApps.Stop (Seconds (29.0));
-  fd.EnablePcap ("fd2fd-onoff-client", clientDevice);
+  clientApps.Start (Seconds (1.0));
+  clientApps.Stop (Seconds (39.0));
+  fd.EnablePcap ("rt-fd2fd-onoff-client", clientDevice);
 
-  Simulator::Stop (Seconds (30.0));
+  Simulator::Stop (Seconds (40.0));
   Simulator::Run ();
   Simulator::Destroy ();
 }

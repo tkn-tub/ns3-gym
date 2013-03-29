@@ -296,7 +296,7 @@ main (int argc, char *argv[])
   char *path = NULL;
   int tap = false;
   int pi = false;
-  int prefix = NULL;
+  int prefix = -1;
 
   while ((c = getopt (argc, argv, "vd:i:m:n:I:P:thp:")) != -1)
     {
@@ -357,7 +357,7 @@ main (int argc, char *argv[])
     }
   if (ip6)
     {
-      ABORT_IF (prefix == NULL, "Prefix is a required argument", 0);
+      ABORT_IF (prefix == -1, "Prefix is a required argument", 0);
       LOG ("Provided IP v6 Address is \"" << ip6 << "\"");
       LOG ("Provided IP v6 Prefix is \"" << prefix << "\"");
     }

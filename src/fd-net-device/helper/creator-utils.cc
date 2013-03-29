@@ -30,7 +30,6 @@
 #include <net/ethernet.h>
 #include <net/if.h>
 #include <netinet/in.h>
-#include <netpacket/packet.h>
 #include <arpa/inet.h>
 
 #include "creator-utils.h"

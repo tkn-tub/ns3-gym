@@ -194,8 +194,6 @@ EmuFdNetDeviceHelper::CreateFileDescriptor (void) const
 {
   NS_LOG_FUNCTION (this);
 
-#ifdef HAVE_RAW_SOCKET_CREATOR
-
   //
   // We want to create a raw socket for our net device.  Unfortunately for us
   // you have to have root privileges to do that.  Instead of running the
@@ -407,13 +405,6 @@ EmuFdNetDeviceHelper::CreateFileDescriptor (void) const
         }
       NS_FATAL_ERROR ("Did not get the raw socket from the socket creator");
     }
-
-#else
-
-  NS_FATAL_ERROR ("RAW_SOCKET_CREATOR is not defined in your system.");
-
-#endif /* HAVE_RAW_SOCKET_CREATOR */
-
 }
 
 } // namespace ns3

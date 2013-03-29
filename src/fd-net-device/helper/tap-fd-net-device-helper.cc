@@ -147,7 +147,6 @@ TapFdNetDeviceHelper::CreateFileDescriptor (void) const
 {
   NS_LOG_FUNCTION (this);
 
-#ifdef HAVE_TAP_CREATOR
   //
   // We're going to fork and exec that program soon, but first we need to have
   // a socket to talk to it with.  So we create a local interprocess (Unix)
@@ -264,8 +263,8 @@ TapFdNetDeviceHelper::CreateFileDescriptor (void) const
       //
       // Execute the socket creation process image.
       //
-      status = ::execlp (TAP_CREATOR,
-                         TAP_CREATOR,                       // argv[0] (filename)
+      status = ::execlp (TAP_DEV_CREATOR,
+                         TAP_DEV_CREATOR,                       // argv[0] (filename)
                          ossDeviceName.str ().c_str (),     // argv[1] (-d<device name>)
                          ossMac.str ().c_str (),            // argv[2] (-m<MAC address>
                          ossIp4.str ().c_str (),            // argv[3] (-i<IP v4 address>)
@@ -400,12 +399,6 @@ TapFdNetDeviceHelper::CreateFileDescriptor (void) const
         }
       NS_FATAL_ERROR ("Did not get the raw socket from the socket creator");
     }
-
-#else
-
-  NS_FATAL_ERROR ("TAP_CREATOR is not defined in your system.");
-
-#endif /* HAVE_TAP_CREATOR */
 
 }
 

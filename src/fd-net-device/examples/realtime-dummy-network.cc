@@ -30,11 +30,15 @@
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE ("DummyNetworkExample");
+NS_LOG_COMPONENT_DEFINE ("RealtimeDummyNetworkExample");
 
 int
 main (int argc, char *argv[])
 {
+
+  GlobalValue::Bind ("SimulatorImplementationType", StringValue ("ns3::RealtimeSimulatorImpl"));
+  GlobalValue::Bind ("ChecksumEnabled", BooleanValue (true));
+
   NodeContainer nodes;
   nodes.Create (2);
 
@@ -69,7 +73,7 @@ main (int argc, char *argv[])
   app->SetStartTime (Seconds (0.0));
   app->SetStopTime (Seconds (4.0));
 
-  fd.EnablePcapAll ("dummy-network", false);
+  fd.EnablePcapAll ("realtime-dummy-network", false);
 
   Simulator::Stop (Seconds (5.));
   Simulator::Run ();
