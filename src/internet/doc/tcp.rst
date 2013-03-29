@@ -150,8 +150,7 @@ describing this implementation.
 Current limitations
 +++++++++++++++++++
 
-* Only IPv4 is supported
-* Neither the Nagle algorithm nor SACK are supported
+* SACK is not supported
 
 Network Simulation Cradle
 *************************
@@ -269,6 +268,13 @@ can see the following configuration:::
   StringValue ("0"));
 
 These additional configuration variables are not available to native |ns3| TCP.
+
+Also note that default values for TCP attributes in |ns3| TCP may differ from the nsc TCP implementation.  Specifically in |ns3|::: 
+
+		1) TCP default MSS is 536
+		2) TCP Delayed Ack count is 2 
+		
+Therefore when making comparisons between results obtained using nsc and |ns3| TCP, care must be taken to ensure these values are set appropriately.  See /examples/tcp/tcp-nsc-comparision.cc for an example.
 
 NSC API
 +++++++
