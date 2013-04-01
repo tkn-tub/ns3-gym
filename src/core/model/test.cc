@@ -704,7 +704,10 @@ TestRunnerImpl::FilterTests (std::string testName,
           // duration that should be run, then don't run it.
           if (testCase->m_duration > maximumTestDuration)
             {
-              // Remove this test case.
+              // Free this test case's memory.
+              delete *j;
+
+              // Remove this test case from the test suite.
               test->m_children.erase (j);
             }
           else
