@@ -62,6 +62,7 @@ InetTopologyReader::Read (void)
 
   if ( !topgen.is_open () )
     {
+      NS_LOG_WARN ("Inet topology file object is not open, check file name and permissions");
       return nodes;
     }
 
@@ -102,10 +103,11 @@ InetTopologyReader::Read (void)
 
       if ( (!from.empty ()) && (!to.empty ()) )
         {
-          NS_LOG_INFO ( linksNumber << " From: " << from << " to: " << to );
+          NS_LOG_INFO ( "Link " << linksNumber << " from: " << from << " to: " << to);
 
           if ( nodeMap[from] == 0 )
             {
+              NS_LOG_INFO ( "Node " << nodesNumber << " name: " << from);
               Ptr<Node> tmpNode = CreateObject<Node> ();
               nodeMap[from] = tmpNode;
               nodes.Add (tmpNode);
@@ -114,6 +116,7 @@ InetTopologyReader::Read (void)
 
           if (nodeMap[to] == 0)
             {
+              NS_LOG_INFO ( "Node " << nodesNumber << " name: " << to);
               Ptr<Node> tmpNode = CreateObject<Node> ();
               nodeMap[to] = tmpNode;
               nodes.Add (tmpNode);
@@ -123,6 +126,7 @@ InetTopologyReader::Read (void)
           Link link ( nodeMap[from], from, nodeMap[to], to );
           if ( !linkAttr.empty () )
             {
+              NS_LOG_INFO ( "Link " << linksNumber << " weight: " << linkAttr);
               link.SetAttribute ("Weight", linkAttr);
             }
           AddLink (link);
