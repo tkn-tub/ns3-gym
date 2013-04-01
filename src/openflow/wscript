@@ -1,27 +1,42 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 import os
-import Options
+from waflib import Logs, Options
 from waflib.Errors import WafError
 
 def options(opt):
     opt.add_option('--with-openflow',
 		   help=('Path to OFSID source for NS-3 OpenFlow Integration support'),
 		   default='', dest='with_openflow')
-    opt.tool_options('boost', tooldir=["waf-tools"])
+
+REQUIRED_BOOST_LIBS = ['system', 'signals', 'filesystem']
+
+def required_boost_libs(conf):
+    conf.env['REQUIRED_BOOST_LIBS'] += REQUIRED_BOOST_LIBS
 
 def configure(conf):
-    try:
-        conf.check_tool('boost')
-        conf.check_boost(lib='signals filesystem')
-        if not conf.env.LIB_BOOST:
-            conf.check_boost(lib='signals filesystem', libpath="/usr/lib64")
-    except WafError:
-        conf.env['LIB_BOOST'] = []
-
-    if not conf.env.LIB_BOOST:
+    if not conf.env['LIB_BOOST']:
 	conf.report_optional_feature("openflow", "NS-3 OpenFlow Integration", False,
 				     "Required boost libraries not found")
+
+        # Add this module to the list of modules that won't be built
+        # if they are enabled.
+        conf.env['MODULES_NOT_BUILT'].append('openflow')
+
+	return 
+
+    present_boost_libs = []
+    for boost_lib_name in conf.env['LIB_BOOST']:
+        if boost_lib_name.startswith("boost_"):
+            boost_lib_name = boost_lib_name[6:]
+        if boost_lib_name.endswith("-mt"):
+            boost_lib_name = boost_lib_name[:-3]
+        present_boost_libs.append(boost_lib_name)
+
+    missing_boost_libs = [lib for lib in REQUIRED_BOOST_LIBS if lib not in present_boost_libs]
+    if missing_boost_libs != []:
+	conf.report_optional_feature("openflow", "NS-3 OpenFlow Integration", False,
+				     "Required boost libraries not found, missing: %s" % ', '.join(missing_boost_libs))
 
         # Add this module to the list of modules that won't be built
         # if they are enabled.
@@ -142,7 +157,7 @@ def build(bld):
 	obj.use.extend('OPENFLOW DL XML2'.split())
 	obj_test.use.extend('OPENFLOW DL XML2'.split())
 
-    headers = bld.new_task_gen(features=['ns3header'])
+    headers = bld(features='ns3header')
     headers.module = 'openflow'
     headers.source = [
         ]
@@ -160,4 +175,4 @@ def build(bld):
 	headers.source.append('helper/openflow-switch-helper.h')
 
     if bld.env['ENABLE_EXAMPLES'] and bld.env['ENABLE_OPENFLOW']:
-        bld.add_subdirs('examples')
+        bld.recurse('examples')
