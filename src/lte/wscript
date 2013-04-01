@@ -114,7 +114,7 @@ def build(bld):
         'test/lte-test-mimo.cc'
         ]
 
-    headers = bld.new_task_gen(features=['ns3header'])
+    headers = bld(features='ns3header')
     headers.module = 'lte'
     headers.source = [
         'model/lte-common.h',
@@ -190,6 +190,6 @@ def build(bld):
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):
-      bld.add_subdirs('examples')
+      bld.recurse('examples')
 
     bld.ns3_python_bindings()

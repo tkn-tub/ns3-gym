@@ -99,7 +99,7 @@ def build(bld):
         'helper/creator-utils.cc',
         ]
 
-    headers = bld.new_task_gen(features=['ns3header'])
+    headers = bld(features='ns3header')
     headers.module = 'fd-net-device'
     headers.source = [
         'model/fd-net-device.h',
@@ -165,7 +165,7 @@ def build(bld):
            "PLANETLAB_TAP_CREATOR=\"%s\"" % (creator.target,))
 
     if bld.env['ENABLE_EXAMPLES']:
-        bld.add_subdirs('examples')
+        bld.recurse('examples')
 
     bld.ns3_python_bindings()
 

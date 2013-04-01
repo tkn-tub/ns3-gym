@@ -9,7 +9,7 @@ def build(bld):
         'model/point-to-point-star.cc',
         ]
 
-    headers = bld.new_task_gen(features=['ns3header'])
+    headers = bld(features='ns3header')
     headers.module = 'point-to-point-layout'
     headers.source = [
         'model/point-to-point-dumbbell.h',

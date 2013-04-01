@@ -1,5 +1,5 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
-import Options
+from waflib import Options
 
 required_python_modules = [
     'gtk',
@@ -38,7 +38,7 @@ def configure(conf):
 def build(bld):
 
     module = bld.create_ns3_module('visualizer', ['internet', 'wifi', 'point-to-point'])
-    headers = bld.new_task_gen(features=['ns3header'])
+    headers = bld(features='ns3header')
     headers.module = 'visualizer'
 
     # Don't do anything more for this module if Python was explicitly
@@ -61,7 +61,7 @@ def build(bld):
         'model/dummy-file-for-static-builds.cc',
         ]
 
-    module.features.append('pyembed')
+    module.features += ' pyembed'
     #module.env.append_value('CXXFLAGS', module.env['shlib_CXXFLAGS'])
     #module.includes = '.'
 

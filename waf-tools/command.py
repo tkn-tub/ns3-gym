@@ -1,17 +1,14 @@
-import TaskGen# import feature, taskgen_method, before_method, task_gen
-import Node, Task, Utils, Build
+import re
 import subprocess
-import Options
+
+# import feature, taskgen_method, before_method, task_gen
+from waflib import TaskGen, Node, Task, Utils, Build, Options, Logs, Task
+debug = Logs.debug
+error = Logs.error
 
 import shellcmd
 #shellcmd.subprocess = pproc # the WAF version of the subprocess module is supposedly less buggy
-
-from Logs import debug, error
 shellcmd.debug = debug
-
-import Task
-
-import re
 
 
 arg_rx = re.compile(r"(?P<dollar>\$\$)|(?P<subst>\$\{(?P<var>\w+)(?P<code>.*?)\})", re.M)

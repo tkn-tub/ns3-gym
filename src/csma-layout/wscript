@@ -5,14 +5,14 @@ def build(bld):
     obj.source = [
         'model/csma-star-helper.cc',
         ]
-    headers = bld.new_task_gen(features=['ns3header'])
+    headers = bld(features='ns3header')
     headers.module = 'csma-layout'
     headers.source = [
         'model/csma-star-helper.h',
         ]
 
     if bld.env['ENABLE_EXAMPLES']:
-        bld.add_subdirs('examples')
+        bld.recurse('examples')
 
     bld.ns3_python_bindings()
 

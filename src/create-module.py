@@ -24,7 +24,7 @@ def build(bld):
         'test/%(MODULE)s-test-suite.cc',
         ]
 
-    headers = bld.new_task_gen(features=['ns3header'])
+    headers = bld(features='ns3header')
     headers.module = %(MODULE)r
     headers.source = [
         'model/%(MODULE)s.h',
@@ -32,7 +32,7 @@ def build(bld):
         ]
 
     if bld.env.ENABLE_EXAMPLES:
-        bld.add_subdirs('examples')
+        bld.recurse('examples')
 
     # bld.ns3_python_bindings()
 

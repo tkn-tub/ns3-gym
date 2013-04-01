@@ -11,25 +11,29 @@ def options(opt):
 
 def configure(conf):
     if Options.options.disable_gtk:
-        conf.env['ENABLE_GTK_CONFIG_STORE'] = False
+        conf.env['ENABLE_GTK2'] = False
         conf.report_optional_feature("GtkConfigStore", "GtkConfigStore",
-                                     conf.env['ENABLE_GTK_CONFIG_STORE'],
+                                     conf.env['ENABLE_GTK2'],
                                      "--disable-gtk option given")
     else:
-        have_gtk = conf.pkg_check_modules('GTK_CONFIG_STORE', 'gtk+-2.0 >= 2.12', mandatory=False)
-        conf.env['ENABLE_GTK_CONFIG_STORE'] = have_gtk
+        have_gtk2 = conf.check_cfg(package='gtk+-2.0', atleast_version='2.12', 
+                                   args=['--cflags', '--libs'], uselib_store='GTK2',
+                                   mandatory=False)
+
+        conf.env['ENABLE_GTK2'] = have_gtk2
         conf.report_optional_feature("GtkConfigStore", "GtkConfigStore",
-                                     conf.env['ENABLE_GTK_CONFIG_STORE'],
+                                     conf.env['ENABLE_GTK2'],
                                      "library 'gtk+-2.0 >= 2.12' not found")
 
-    have_libxml2 = conf.pkg_check_modules('LIBXML2', 'libxml-2.0 >= 2.6', mandatory=False)
-    if have_libxml2:
-        conf.define('HAVE_LIBXML2', 1)
+    have_libxml2 = conf.check_cfg(package='libxml-2.0', atleast_version='2.7',
+                                  args=['--cflags', '--libs'], uselib_store='LIBXML2',
+                                  mandatory=False)
 
     conf.env['ENABLE_LIBXML2'] = have_libxml2
     conf.report_optional_feature("XmlIo", "XmlIo",
                                  conf.env['ENABLE_LIBXML2'],
                                  "library 'libxml-2.0 >= 2.7' not found")
+
     conf.write_config_header('ns3/config-store-config.h', top=True)
 
 
@@ -45,27 +49,27 @@ def build(bld):
         'model/raw-text-config.cc',
         ]
 
-    headers = bld.new_task_gen(features=['ns3header'])
+    headers = bld(features='ns3header')
     headers.module = 'config-store'
     headers.source = [
         'model/file-config.h',
         'model/config-store.h',
         ]
 
-    if bld.env['ENABLE_GTK_CONFIG_STORE']:
+    if bld.env['ENABLE_GTK2']:
         headers.source.append ('model/gtk-config-store.h')
         module.source.extend (['model/gtk-config-store.cc',
                                'model/model-node-creator.cc',
                                'model/model-typeid-creator.cc',
                                'model/display-functions.cc',
                                ])
-        module.use.append('GTK_CONFIG_STORE')
+        module.use.append('GTK2')
 
     if bld.env['ENABLE_LIBXML2']:
         module.source.append ('model/xml-config.cc')
         module.use.append('LIBXML2')
 
     if bld.env['ENABLE_EXAMPLES']:
-        bld.add_subdirs('examples')
+        bld.recurse('examples')
 
     bld.ns3_python_bindings()
