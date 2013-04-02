@@ -175,6 +175,7 @@ LteX2HandoverMeasuresTestCase::DoRun ()
   Config::SetDefault ("ns3::UdpClient::PacketSize", UintegerValue (m_udpClientPktSize));
   Config::SetDefault ("ns3::LteEnbRrc::ServingCellHandoverThreshold", UintegerValue (30));
   Config::SetDefault ("ns3::LteEnbRrc::NeighbourCellHandoverOffset", UintegerValue (1));
+  Config::SetDefault ("ns3::LteEnbRrc::HandoverJoiningTimeoutDuration", TimeValue (MilliSeconds (200)));
   Config::SetDefault ("ns3::LteEnbPhy::TxPower", DoubleValue (20));
 
 
@@ -646,12 +647,12 @@ LteX2HandoverMeasuresTestSuite::LteX2HandoverMeasuresTestSuite ()
           //                                             nEnbs, nUes, nDBearers, celist, name, useUdp, sched, admitHo, idealRrc
 //           AddTestCase (new LteX2HandoverMeasuresTestCase (  2,   1,    0,      cel1, cel1name, true, *schedIt, true,  useIdealRrc));
 //           AddTestCase (new LteX2HandoverMeasuresTestCase (  2,   1,    1,      cel1, cel1name, true, *schedIt, true,  useIdealRrc));
-//           AddTestCase (new LteX2HandoverMeasuresTestCase (  2,   1,    2,      cel1, cel1name, true, *schedIt, true,  useIdealRrc)); // CRASH in lte-enb-rrc.cc, line=1916
+          AddTestCase (new LteX2HandoverMeasuresTestCase (  2,   1,    2,      cel1, cel1name, true, *schedIt, true,  useIdealRrc)); // CRASH in lte-enb-rrc.cc, line=1916
     //           AddTestCase (new LteX2HandoverMeasuresTestCase (  2,   1,    0,      cel0, cel0name, true, *schedIt, false, useIdealRrc));
     //           AddTestCase (new LteX2HandoverMeasuresTestCase (  2,   1,    1,      cel0, cel0name, true, *schedIt, false, useIdealRrc));
     //           AddTestCase (new LteX2HandoverMeasuresTestCase (  2,   1,    2,      cel0, cel0name, true, *schedIt, false, useIdealRrc));
-          AddTestCase (new LteX2HandoverMeasuresTestCase (  3,   1,    0,      cel2, cel2name, true, *schedIt, true,  useIdealRrc)); // CRASH in rr-ff-mac-scheduler.cc, line=1519
-//           AddTestCase (new LteX2HandoverMeasuresTestCase (  3,   1,    1,      cel2, cel2name, true, *schedIt, true,  useIdealRrc));
+//           AddTestCase (new LteX2HandoverMeasuresTestCase (  3,   1,    0,      cel2, cel2name, true, *schedIt, true,  useIdealRrc)); // CRASH in rr-ff-mac-scheduler.cc, line=1519
+//           AddTestCase (new LteX2HandoverMeasuresTestCase (  3,   1,    1,      cel2, cel2name, true, *schedIt, true,  useIdealRrc)); // CRASH msg="method unexpected in state HANDOVER_PREPARATION", file=../src/lte/model/lte-enb-rrc.cc, line=560
 //           AddTestCase (new LteX2HandoverMeasuresTestCase (  3,   1,    2,      cel2, cel2name, true, *schedIt, true,  useIdealRrc));
     //           AddTestCase (new LteX2HandoverMeasuresTestCase (  3,   1,    0,      cel0, cel0name, true, *schedIt, false, useIdealRrc));
     //           AddTestCase (new LteX2HandoverMeasuresTestCase (  3,   1,    1,      cel0, cel0name, true, *schedIt, false, useIdealRrc));
