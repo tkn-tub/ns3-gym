@@ -866,9 +866,12 @@ be done explicitly within the simulation program like this::
 where ``enbNodes`` is a ``NodeContainer`` that contains the two eNBs
 between which the X2 interface is to be configured.
 
-Handover event needs to be scheduled explicitly within the simulation
-program, as the current RRC model does not support the automatic
-trigger of handover based on UE measurement. The ``LteHelper``
+
+Manual handover trigger
+***********************
+
+Handover event can be triggered "manually" within the simulation
+program by scheduling an  explicit handover event. The ``LteHelper``
 provides a convenient method for the scheduling of a handover
 event. As an example, let us assume that ``ueLteDevs``` is a
 ``NetDeviceContainer`` that contains the UE that is to be handed over,
@@ -884,6 +887,17 @@ scheduled like this::
 
 Note that the UE needs to be already connected to the source eNB,
 otherwise the simulation will terminate with an error message.
+
+
+Automatic handover trigger
+**************************
+
+add description of how to setup/configure automatic handover
+
+
+
+Handover traces
+***************
 
 The RRC model, in particular the ``LteEnbRrc`` and ``LteUeRrc``
 objects, provide some useful traces which can be hooked up to some
