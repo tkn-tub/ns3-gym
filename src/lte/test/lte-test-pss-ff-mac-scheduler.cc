@@ -338,7 +338,7 @@ LenaPssFfMacSchedulerTestCase1::DoRun (void)
   Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue (false));
   Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));
 
-  lteHelper->SetAttribute ("EpsBearerToRlcMapping", EnumValue (LteHelper::RLC_UM_ALWAYS));
+  Config::SetDefault ("ns3::LteEnbRrc::EpsBearerToRlcMapping", EnumValue (LteHelper::RLC_UM_ALWAYS));
 
   LogComponentDisableAll (LOG_LEVEL_ALL);
   //LogComponentEnable ("LenaTestPssFfMacCheduler", LOG_LEVEL_ALL);
@@ -366,8 +366,6 @@ LenaPssFfMacSchedulerTestCase1::DoRun (void)
   enbDevs = lteHelper->InstallEnbDevice (enbNodes);
   ueDevs = lteHelper->InstallUeDevice (ueNodes);
 
-  // Attach a UE to a eNB
-  lteHelper->Attach (ueDevs, enbDevs.Get (0));
 
   Ptr<LteEnbNetDevice> lteEnbDev = enbDevs.Get (0)->GetObject<LteEnbNetDevice> ();
   Ptr<LteEnbPhy> enbPhy = lteEnbDev->GetPhy ();
@@ -389,15 +387,22 @@ LenaPssFfMacSchedulerTestCase1::DoRun (void)
   internet.Install (ueNodes);
   Ipv4InterfaceContainer ueIpIface;
   ueIpIface = epcHelper->AssignUeIpv4Address (NetDeviceContainer (ueDevs));
-  // Assign IP address to UEs, and install applications
+
+  // Assign IP address to UEs
   for (uint32_t u = 0; u < ueNodes.GetN (); ++u)
     {
       Ptr<Node> ueNode = ueNodes.Get (u);
       // Set the default gateway for the UE
       Ptr<Ipv4StaticRouting> ueStaticRouting = ipv4RoutingHelper.GetStaticRouting (ueNode->GetObject<Ipv4> ());
       ueStaticRouting->SetDefaultRoute (epcHelper->GetUeDefaultGatewayAddress (), 1);
+    }
 
-      // Activate an EPS bearer
+  // Attach a UE to a eNB
+  lteHelper->Attach (ueDevs, enbDevs.Get (0));
+
+  // Activate an EPS bearer on all UEs
+  for (uint32_t u = 0; u < ueNodes.GetN (); ++u)
+    {
       Ptr<NetDevice> ueDevice = ueDevs.Get (u);
       GbrQosInformation qos;
       qos.gbrDl = (m_packetSize + 32) * (1000 / m_interval) * 8 * 1;  // bit/
@@ -568,7 +573,7 @@ LenaPssFfMacSchedulerTestCase2::DoRun (void)
   Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue (false));
   Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));  
 
-  lteHelper->SetAttribute ("EpsBearerToRlcMapping", EnumValue (LteHelper::RLC_UM_ALWAYS));
+  Config::SetDefault ("ns3::LteEnbRrc::EpsBearerToRlcMapping", EnumValue (LteHelper::RLC_UM_ALWAYS));
 
   LogComponentDisableAll (LOG_LEVEL_ALL);
   //LogComponentEnable ("LenaTestPssFfMacCheduler", LOG_LEVEL_ALL);
@@ -596,9 +601,6 @@ LenaPssFfMacSchedulerTestCase2::DoRun (void)
   enbDevs = lteHelper->InstallEnbDevice (enbNodes);
   ueDevs = lteHelper->InstallUeDevice (ueNodes);
 
-  // Attach a UE to a eNB
-  lteHelper->Attach (ueDevs, enbDevs.Get (0));
-
   Ptr<LteEnbNetDevice> lteEnbDev = enbDevs.Get (0)->GetObject<LteEnbNetDevice> ();
   Ptr<LteEnbPhy> enbPhy = lteEnbDev->GetPhy ();
   enbPhy->SetAttribute ("TxPower", DoubleValue (30.0));
@@ -619,15 +621,22 @@ LenaPssFfMacSchedulerTestCase2::DoRun (void)
   internet.Install (ueNodes);
   Ipv4InterfaceContainer ueIpIface;
   ueIpIface = epcHelper->AssignUeIpv4Address (NetDeviceContainer (ueDevs));
-  // Assign IP address to UEs, and install applications
+
+  // Assign IP address to UEs
   for (uint32_t u = 0; u < ueNodes.GetN (); ++u)
     {
       Ptr<Node> ueNode = ueNodes.Get (u);
       // Set the default gateway for the UE
       Ptr<Ipv4StaticRouting> ueStaticRouting = ipv4RoutingHelper.GetStaticRouting (ueNode->GetObject<Ipv4> ());
       ueStaticRouting->SetDefaultRoute (epcHelper->GetUeDefaultGatewayAddress (), 1);
+    }
 
-      // Activate an EPS bearer
+  // Attach a UE to a eNB
+  lteHelper->Attach (ueDevs, enbDevs.Get (0));
+
+  // Activate an EPS bearer on all UEs
+  for (uint32_t u = 0; u < ueNodes.GetN (); ++u)
+    {
       Ptr<NetDevice> ueDevice = ueDevs.Get (u);
       GbrQosInformation qos;
       qos.gbrDl = (m_packetSize.at (u) + 32) * (1000 / m_interval) * 8 * 1;  // bit/s, = Target Bit Rate(TBR)

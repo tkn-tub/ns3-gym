@@ -277,6 +277,8 @@ LenaFdTbfqFfMacSchedulerTestCase1::~LenaFdTbfqFfMacSchedulerTestCase1 ()
 void
 LenaFdTbfqFfMacSchedulerTestCase1::DoRun (void)
 {
+  NS_LOG_FUNCTION (this << GetName ());
+
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
   Ptr<EpcHelper>  epcHelper = CreateObject<EpcHelper> ();
   lteHelper->SetEpcHelper (epcHelper);
@@ -311,7 +313,7 @@ LenaFdTbfqFfMacSchedulerTestCase1::DoRun (void)
   Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue (false));
   Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));
 
-  lteHelper->SetAttribute ("EpsBearerToRlcMapping", EnumValue (LteHelper::RLC_UM_ALWAYS));
+  Config::SetDefault ("ns3::LteEnbRrc::EpsBearerToRlcMapping", EnumValue (LteHelper::RLC_UM_ALWAYS));
 
   LogComponentDisableAll (LOG_LEVEL_ALL);
   //LogComponentEnable ("LenaTestFdTbfqFfMacCheduler", LOG_LEVEL_ALL);
@@ -338,8 +340,6 @@ LenaFdTbfqFfMacSchedulerTestCase1::DoRun (void)
   enbDevs = lteHelper->InstallEnbDevice (enbNodes);
   ueDevs = lteHelper->InstallUeDevice (ueNodes);
 
-  // Attach a UE to a eNB
-  lteHelper->Attach (ueDevs, enbDevs.Get (0));
 
   Ptr<LteEnbNetDevice> lteEnbDev = enbDevs.Get (0)->GetObject<LteEnbNetDevice> ();
   Ptr<LteEnbPhy> enbPhy = lteEnbDev->GetPhy ();
@@ -361,7 +361,8 @@ LenaFdTbfqFfMacSchedulerTestCase1::DoRun (void)
   internet.Install (ueNodes);
   Ipv4InterfaceContainer ueIpIface;
   ueIpIface = epcHelper->AssignUeIpv4Address (NetDeviceContainer (ueDevs));
-  // Assign IP address to UEs, and install applications
+
+  // Assign IP address to UEs
   for (uint32_t u = 0; u < ueNodes.GetN (); ++u)
     {
       Ptr<Node> ueNode = ueNodes.Get (u);
@@ -370,16 +371,23 @@ LenaFdTbfqFfMacSchedulerTestCase1::DoRun (void)
       ueStaticRouting->SetDefaultRoute (epcHelper->GetUeDefaultGatewayAddress (), 1);
     }
 
-// Activate an EPS bearer
-  enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
-  GbrQosInformation qos;
-  qos.gbrDl = (m_packetSize + 32) * (1000 / m_interval) * 8;  // bit/s, considering IP, UDP, RLC, PDCP header size
-  qos.gbrUl = 0;
-  qos.mbrDl = qos.gbrDl;
-  qos.mbrUl = 0;
+  // Attach a UE to a eNB
+  lteHelper->Attach (ueDevs, enbDevs.Get (0));
 
-  EpsBearer bearer (q, qos);
-  lteHelper->ActivateDedicatedEpsBearer (ueDevs, bearer, EpcTft::Default ());
+  // Activate an EPS bearer on all UEs
+  for (uint32_t u = 0; u < ueNodes.GetN (); ++u)
+    {
+      Ptr<NetDevice> ueDevice = ueDevs.Get (u);
+      GbrQosInformation qos;
+      qos.gbrDl = (m_packetSize + 32) * (1000 / m_interval) * 8;  // bit/s, considering IP, UDP, RLC, PDCP header size
+      qos.gbrUl = 0;
+      qos.mbrDl = qos.gbrDl;
+      qos.mbrUl = 0;
+      
+      enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
+      EpsBearer bearer (q, qos);
+      lteHelper->ActivateDedicatedEpsBearer (ueDevice, bearer, EpcTft::Default ());  
+    }
 
   // Install downlind and uplink applications
   uint16_t dlPort = 1234;
@@ -539,7 +547,7 @@ LenaFdTbfqFfMacSchedulerTestCase2::DoRun (void)
   Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue (false));
   Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));
 
-  lteHelper->SetAttribute ("EpsBearerToRlcMapping", EnumValue (LteHelper::RLC_UM_ALWAYS));
+  Config::SetDefault ("ns3::LteEnbRrc::EpsBearerToRlcMapping", EnumValue (LteHelper::RLC_UM_ALWAYS));
 
   LogComponentDisableAll (LOG_LEVEL_ALL);
   //LogComponentEnable ("LenaTestFdTbfqFfMacCheduler", LOG_LEVEL_ALL);
@@ -566,9 +574,6 @@ LenaFdTbfqFfMacSchedulerTestCase2::DoRun (void)
   enbDevs = lteHelper->InstallEnbDevice (enbNodes);
   ueDevs = lteHelper->InstallUeDevice (ueNodes);
 
-  // Attach a UE to a eNB
-  lteHelper->Attach (ueDevs, enbDevs.Get (0));
-
   Ptr<LteEnbNetDevice> lteEnbDev = enbDevs.Get (0)->GetObject<LteEnbNetDevice> ();
   Ptr<LteEnbPhy> enbPhy = lteEnbDev->GetPhy ();
   enbPhy->SetAttribute ("TxPower", DoubleValue (30.0));
@@ -589,7 +594,8 @@ LenaFdTbfqFfMacSchedulerTestCase2::DoRun (void)
   internet.Install (ueNodes);
   Ipv4InterfaceContainer ueIpIface;
   ueIpIface = epcHelper->AssignUeIpv4Address (NetDeviceContainer (ueDevs));
-  // Assign IP address to UEs, and install applications
+
+  // Assign IP address to UEs
   for (uint32_t u = 0; u < ueNodes.GetN (); ++u)
     {
       Ptr<Node> ueNode = ueNodes.Get (u);
@@ -598,21 +604,32 @@ LenaFdTbfqFfMacSchedulerTestCase2::DoRun (void)
       ueStaticRouting->SetDefaultRoute (epcHelper->GetUeDefaultGatewayAddress (), 1);
     }
 
-// Activate an EPS bearer
-  enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
-  GbrQosInformation qos;
+  // Attach a UE to a eNB
+  lteHelper->Attach (ueDevs, enbDevs.Get (0));
+
+  // Activate an EPS bearer on all UEs
+
   uint16_t mbrDl = 0;
   for (uint32_t u = 0; u < ueNodes.GetN (); ++u)
     {
       mbrDl = mbrDl + m_packetSize.at (u);
     }
-  mbrDl = mbrDl / ueNodes.GetN ();
-  qos.gbrDl = (mbrDl + 32) * (1000 / m_interval) * 8;  // bit/s, considering IP, UDP, RLC, PDCP header size
-  qos.gbrUl = 0;
-  qos.mbrDl = qos.gbrDl;
-  qos.mbrUl = 0;
-  EpsBearer bearer (q, qos);
-  lteHelper->ActivateDedicatedEpsBearer (ueDevs, bearer, EpcTft::Default ());
+  mbrDl = mbrDl / ueNodes.GetN (); 
+
+  for (uint32_t u = 0; u < ueNodes.GetN (); ++u)
+    {
+      Ptr<NetDevice> ueDevice = ueDevs.Get (u);
+      GbrQosInformation qos;
+      qos.gbrDl = (mbrDl + 32) * (1000 / m_interval) * 8;  // bit/s, considering IP, UDP, RLC, PDCP header size
+      qos.gbrUl = 0;
+      qos.mbrDl = qos.gbrDl;
+      qos.mbrUl = 0;
+  
+      enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
+      EpsBearer bearer (q, qos);
+      lteHelper->ActivateDedicatedEpsBearer (ueDevice, bearer, EpcTft::Default ());  
+    }
+
 
   // Install downlind and uplink applications
   uint16_t dlPort = 1234;
