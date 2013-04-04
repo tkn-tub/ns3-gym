@@ -7,21 +7,21 @@ close all;
 fdl = 2120e6;  % DL carrier freq Hz, EARFCN = 100
 ful = 1930e6;  % UL carrier freq Hz, EARFCN = 18100
 nrbs = 25; % tx bandwdith configuration in number of RBs
-bw = 180000; % bandwidth in Hz, note that this is smaller than
-        % the nominal Channel Bandwdith, see TS 36.101 fig 5.6-1
+nres = nrbs * 12;
+bw = 180000 / 12; % bandwidth per RE in Hz
+%%bwtot = xxx %%, note that this is smaller than the nominal Channel Bandwdith, see TS 36.101 fig 5.6-1
 kT = -174; % noise PSD in dBm / Hz
-ndBm = kT + 10*log10(bw);  % noise power dBm
+ndBm = kT + 10*log10(bw);  % noise power dBm for a RE
 
-dlpdBm = 30;  % tx power dBm in DL
-dlpdBm = 30.*ones(1,nrbs);  % tx power dBm in DL
-dlp = 10.^((dlpdBm - 30)/10); %% tx pow in W in DL
+dlpdBm = 30;  % tx power in dBm in DL
+dlp = (10.^((dlpdBm - 30)/10))/nres %% tx pow per RE in W in DL
 dlnf = 9; % receiver noise figure in dB in DL
-dln = 10.^((ndBm-30+dlnf)/10); %% noise in W in DL
+dln = 10.^((ndBm-30+dlnf)/10); %% noise per RE in W in DL
 
 ulpdBm = 10;  % tx power dBm in UL
 ulp = 10.^((ulpdBm - 30)/10); %% tx pow in W in UL
 ulnf = 5; % receiver noise figure in dB in UL
-uln = (10.^((ndBm-30+ulnf)/10)).*ones(1,nrbs); %% noise in W in UL
+uln = (10.^((ndBm-30+ulnf)/10)); %% noise in W per RE in UL
 
 ber = 0.00005;
 gamma = -log (5*ber)./1.5;
@@ -38,10 +38,21 @@ gamma = -log (5*ber)./1.5;
 %%
 
 %d1 = 5400;
-d1 = 50;
+%%for d1 = 50;
+
+
+rsrpdBmv1 = [];
+rsrqdBv1 = [];
+sinrdBv1 = [];
+
+%for d1 = [10 20 50 100 200 500 1000 10000 100000 1000000]
+for d1 = [10 20 50 100 200 100 200 500 1000 2000 5000 10000 20000 50000 100000 200000 500000 1000000]
+
+  %%for d1 = [10]
 %% for d2 = [10 100 1000 10000 100000 1000000]
-for d2 = [10 20 50 100 200 500 1000 10000 100000 1000000]
-%for d2 = [12600]
+
+%for d2 = [10 20 50 100 200 500 1000 10000 100000 1000000]
+for d2 = [10000]
 
   %% propagation gains (linear)
   %%             g21dl
@@ -59,16 +70,16 @@ for d2 = [10 20 50 100 200 500 1000 10000 100000 1000000]
 
 
   %% RSRP (linear)
-  rsrp1 = (sum (g11dl.*dlp)) / nrbs;
-  rsrp2 = (sum (g21dl.*dlp)) / nrbs;
+  rsrp1 = g11dl.*dlp
+  rsrp2 = g21dl.*dlp;
 
   %% RSRP (dBm)
-  rsrp1dBm = 10.*log10(1000*rsrp1);
+  rsrp1dBm = 10.*log10(1000*rsrp1)
   rsrp2dBm = 10.*log10(1000*rsrp2);
 
   %% RSSI (linear)
-  rssi1 = sum (dlp*g11dl + dlp*g21dl + dln);
-  rssi2 = sum (dlp*g11dl + dlp*g21dl + dln);
+  rssi1 = (dlp*g11dl + dlp*g21dl + dln)*nrbs;
+  rssi2 = (dlp*g11dl + dlp*g21dl + dln)*nrbs;
 
   %% RSRQ (linear)
   rsrq1 = (nrbs * rsrp1) / rssi1;
@@ -79,11 +90,11 @@ for d2 = [10 20 50 100 200 500 1000 10000 100000 1000000]
   rsrq2dB = 10.*log10(rsrq2);
 
   %% SINR (linear)
-%    dlsinr = dlp*g11dl / (dlp*g21dl + dln);
+  dlsinr = dlp*g11dl / (dlp*g21dl + dln)
 %    ulsinr = ulp*g11ul / (ulp*g21ul + uln);
 
   %% SINR (dB)
-%    dlsinrdB = 10.*log10(dlsinr);
+  dlsinrdB = 10.*log10(dlsinr);
 %    ulsinrdB = 10.*log10(ulsinr);
 
   %% Spectal Efficiency
@@ -95,9 +106,28 @@ for d2 = [10 20 50 100 200 500 1000 10000 100000 1000000]
   %% See the Testing section in the LTE module documentation for more info
   %% on how this is done. You might as well look into lte_amc.m
 
+  
 
   printf("AddTestCase (new LteUeMeasurementsTestCase (\"d1=%d, d2=%d\", % f, %f, % f, %f, % f, %f));\n", \
    d1, d2, d1, d2, rsrp1dBm, rsrp2dBm, rsrq1dB, rsrq2dB)
 
 
+  rsrpdBmv1 = [rsrpdBmv1 rsrp1dBm];
+  rsrqdBv1 = [rsrqdBv1 rsrq1dB];
+  sinrdBv1 = [sinrdBv1 dlsinrdB];
+
+  
 endfor
+
+
+endfor
+
+plot (sinrdBv1, rsrpdBmv1);
+xlabel("SINR (dB)");
+ylabel("RSRP (dBm)");
+figure;
+
+
+plot (sinrdBv1, rsrqdBv1);
+xlabel("SINR (dB)");
+ylabel("RSRQ (dB)");
