@@ -22,21 +22,27 @@
 
 #include "device-energy-model-container.h"
 #include "ns3/names.h"
+#include "ns3/log.h"
+
+NS_LOG_COMPONENT_DEFINE ("DeviceEnergyModelContainer");
 
 namespace ns3 {
 
 DeviceEnergyModelContainer::DeviceEnergyModelContainer ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 DeviceEnergyModelContainer::DeviceEnergyModelContainer (Ptr<DeviceEnergyModel> model)
 {
+  NS_LOG_FUNCTION (this << model);
   NS_ASSERT (model != NULL);
   m_models.push_back (model);
 }
 
 DeviceEnergyModelContainer::DeviceEnergyModelContainer (std::string modelName)
 {
+  NS_LOG_FUNCTION (this << modelName);
   Ptr<DeviceEnergyModel> model = Names::Find<DeviceEnergyModel> (modelName);
   NS_ASSERT (model != NULL);
   m_models.push_back (model);
@@ -45,6 +51,7 @@ DeviceEnergyModelContainer::DeviceEnergyModelContainer (std::string modelName)
 DeviceEnergyModelContainer::DeviceEnergyModelContainer (const DeviceEnergyModelContainer &a,
                                                         const DeviceEnergyModelContainer &b)
 {
+  NS_LOG_FUNCTION (this << &a << &b);
   *this = a;
   Add (b);
 }
@@ -52,30 +59,35 @@ DeviceEnergyModelContainer::DeviceEnergyModelContainer (const DeviceEnergyModelC
 DeviceEnergyModelContainer::Iterator
 DeviceEnergyModelContainer::Begin (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_models.begin ();
 }
 
 DeviceEnergyModelContainer::Iterator
 DeviceEnergyModelContainer::End (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_models.end ();
 }
 
 uint32_t
 DeviceEnergyModelContainer::GetN (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_models.size ();
 }
 
 Ptr<DeviceEnergyModel>
 DeviceEnergyModelContainer::Get (uint32_t i) const
 {
+  NS_LOG_FUNCTION (this << i);
   return m_models[i];
 }
 
 void
 DeviceEnergyModelContainer::Add (DeviceEnergyModelContainer container)
 {
+  NS_LOG_FUNCTION (this << &container);
   for (Iterator i = container.Begin (); i != container.End (); i++)
     {
       m_models.push_back (*i);
@@ -85,6 +97,7 @@ DeviceEnergyModelContainer::Add (DeviceEnergyModelContainer container)
 void
 DeviceEnergyModelContainer::Add (Ptr<DeviceEnergyModel> model)
 {
+  NS_LOG_FUNCTION (this << model);
   NS_ASSERT (model != NULL);
   m_models.push_back (model);
 }
@@ -92,6 +105,7 @@ DeviceEnergyModelContainer::Add (Ptr<DeviceEnergyModel> model)
 void
 DeviceEnergyModelContainer::Add (std::string modelName)
 {
+  NS_LOG_FUNCTION (this << modelName);
   Ptr<DeviceEnergyModel> model = Names::Find<DeviceEnergyModel> (modelName);
   NS_ASSERT (model != NULL);
   m_models.push_back (model);
@@ -100,6 +114,7 @@ DeviceEnergyModelContainer::Add (std::string modelName)
 void
 DeviceEnergyModelContainer::Clear (void)
 {
+  NS_LOG_FUNCTION (this);
   m_models.clear ();
 }
 

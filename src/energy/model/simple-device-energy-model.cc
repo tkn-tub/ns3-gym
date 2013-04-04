@@ -22,7 +22,9 @@
 #include "ns3/trace-source-accessor.h"
 #include "ns3/energy-source.h"
 #include "simple-device-energy-model.h"
+#include "ns3/log.h"
 
+NS_LOG_COMPONENT_DEFINE ("SimpleDeviceEnergyModel");
 
 namespace ns3 {
 
@@ -43,6 +45,7 @@ SimpleDeviceEnergyModel::GetTypeId (void)
 
 SimpleDeviceEnergyModel::SimpleDeviceEnergyModel ()
 {
+  NS_LOG_FUNCTION (this);
   m_lastUpdateTime = Seconds (0.0);
   m_actualCurrentA = 0.0;
   m_source = 0;
@@ -50,11 +53,13 @@ SimpleDeviceEnergyModel::SimpleDeviceEnergyModel ()
 
 SimpleDeviceEnergyModel::~SimpleDeviceEnergyModel ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 void
 SimpleDeviceEnergyModel::SetEnergySource (Ptr<EnergySource> source)
 {
+  NS_LOG_FUNCTION (this << source);
   NS_ASSERT (source != NULL);
   m_source = source;
 }
@@ -62,6 +67,7 @@ SimpleDeviceEnergyModel::SetEnergySource (Ptr<EnergySource> source)
 void
 SimpleDeviceEnergyModel::SetNode (Ptr<Node> node)
 {
+  NS_LOG_FUNCTION (this << node);
   NS_ASSERT (node != NULL);
   m_node = node;
 }
@@ -69,18 +75,21 @@ SimpleDeviceEnergyModel::SetNode (Ptr<Node> node)
 Ptr<Node>
 SimpleDeviceEnergyModel::GetNode () const
 {
+  NS_LOG_FUNCTION (this);
   return m_node;
 }
 
 double
 SimpleDeviceEnergyModel::GetTotalEnergyConsumption (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_totalEnergyConsumption;
 }
 
 void
 SimpleDeviceEnergyModel::SetCurrentA (double current)
 {
+  NS_LOG_FUNCTION (this << current);
   Time duration = Simulator::Now () - m_lastUpdateTime;
 
   double energyToDecrease = 0.0;
@@ -100,12 +109,14 @@ SimpleDeviceEnergyModel::SetCurrentA (double current)
 void
 SimpleDeviceEnergyModel::DoDispose (void)
 {
+  NS_LOG_FUNCTION (this);
   m_source = 0;
 }
 
 double
 SimpleDeviceEnergyModel::DoGetCurrentA (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_actualCurrentA;
 }
 
