@@ -1211,30 +1211,30 @@ UeManager::BuildMeasConfig ()
   // Just event A2 and event A4 are supported
   LteRrcSap::ReportConfigToAddMod reportConfigA2;
   reportConfigA2.reportConfigId = 1;
-  reportConfigA2.reportConfigEutra.triggerType = LteRrcSap::ReportConfigEutra::event;
-  reportConfigA2.reportConfigEutra.eventId = LteRrcSap::ReportConfigEutra::eventA2;
-  reportConfigA2.reportConfigEutra.threshold1.choice = LteRrcSap::ThresholdEutra::thresholdRsrq;
+  reportConfigA2.reportConfigEutra.triggerType = LteRrcSap::ReportConfigEutra::EVENT;
+  reportConfigA2.reportConfigEutra.eventId = LteRrcSap::ReportConfigEutra::EVENT_A2;
+  reportConfigA2.reportConfigEutra.threshold1.choice = LteRrcSap::ThresholdEutra::THRESHOLD_RSRQ;
   reportConfigA2.reportConfigEutra.threshold1.range = m_rrc->m_eventA2Threshold;
   reportConfigA2.reportConfigEutra.hysteresis = 0;
   reportConfigA2.reportConfigEutra.timeToTrigger = 0;
-  reportConfigA2.reportConfigEutra.triggerQuantity = LteRrcSap::ReportConfigEutra::rsrq;
-  reportConfigA2.reportConfigEutra.reportQuantity = LteRrcSap::ReportConfigEutra::sameAsTriggerQuantity; 
+  reportConfigA2.reportConfigEutra.triggerQuantity = LteRrcSap::ReportConfigEutra::RSRQ;
+  reportConfigA2.reportConfigEutra.reportQuantity = LteRrcSap::ReportConfigEutra::SAME_AS_TRIGGER_QUANTITY; 
   reportConfigA2.reportConfigEutra.maxReportCells = LteRrcSap::MaxReportCells;
-  reportConfigA2.reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::ms480;
+  reportConfigA2.reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::MS480;
   reportConfigA2.reportConfigEutra.reportAmount = 255;
 
   LteRrcSap::ReportConfigToAddMod reportConfigA4;
   reportConfigA4.reportConfigId = 2;
-  reportConfigA4.reportConfigEutra.triggerType = LteRrcSap::ReportConfigEutra::event;
-  reportConfigA4.reportConfigEutra.eventId = LteRrcSap::ReportConfigEutra::eventA4;
-  reportConfigA4.reportConfigEutra.threshold1.choice = LteRrcSap::ThresholdEutra::thresholdRsrq;
+  reportConfigA4.reportConfigEutra.triggerType = LteRrcSap::ReportConfigEutra::EVENT;
+  reportConfigA4.reportConfigEutra.eventId = LteRrcSap::ReportConfigEutra::EVENT_A4;
+  reportConfigA4.reportConfigEutra.threshold1.choice = LteRrcSap::ThresholdEutra::THRESHOLD_RSRQ;
   reportConfigA4.reportConfigEutra.threshold1.range = m_rrc->m_eventA4Threshold;
   reportConfigA4.reportConfigEutra.hysteresis = 0;
   reportConfigA4.reportConfigEutra.timeToTrigger = 0;
-  reportConfigA4.reportConfigEutra.triggerQuantity = LteRrcSap::ReportConfigEutra::rsrq;
-  reportConfigA4.reportConfigEutra.reportQuantity = LteRrcSap::ReportConfigEutra::sameAsTriggerQuantity; 
+  reportConfigA4.reportConfigEutra.triggerQuantity = LteRrcSap::ReportConfigEutra::RSRQ;
+  reportConfigA4.reportConfigEutra.reportQuantity = LteRrcSap::ReportConfigEutra::SAME_AS_TRIGGER_QUANTITY; 
   reportConfigA4.reportConfigEutra.maxReportCells = LteRrcSap::MaxReportCells;
-  reportConfigA4.reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::ms480;
+  reportConfigA4.reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::MS480;
   reportConfigA4.reportConfigEutra.reportAmount = 255;
 
   LteRrcSap::MeasIdToAddMod measId[2];

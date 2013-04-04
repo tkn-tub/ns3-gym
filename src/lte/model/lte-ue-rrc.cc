@@ -606,7 +606,7 @@ LteUeRrc::DoReportUeMeasurements (LteUeCphySapUser::UeMeasurementsParameters par
       // we don't check the purpose field, as it is only included for
       // triggerType == periodical, which is not supported  
       NS_ASSERT_MSG (reportConfigEutra.triggerType 
-                     == LteRrcSap::ReportConfigEutra::event,
+                     == LteRrcSap::ReportConfigEutra::EVENT,
                      "only triggerType == event is supported");
       // only EUTRA is supported, no need to check for it
 
@@ -618,25 +618,25 @@ LteUeRrc::DoReportUeMeasurements (LteUeCphySapUser::UeMeasurementsParameters par
               
       switch (reportConfigEutra.eventId)
         {
-        case LteRrcSap::ReportConfigEutra::eventA2:
+        case LteRrcSap::ReportConfigEutra::EVENT_A2:
           {
             double ms; // Ms, the measurement for serving cell
             double thresh; // Tresh, the threshold parameter for this event
             double hys = (double) reportConfigEutra.hysteresis * 0.5; // Hys, the hysteresis parameter for this event. See 36.331 section 6.3.5 for the conversion.
             switch (reportConfigEutra.triggerQuantity)
               {
-              case LteRrcSap::ReportConfigEutra::rsrp:
+              case LteRrcSap::ReportConfigEutra::RSRP:
                 ms = m_storedMeasValues[m_cellId].rsrp;
                 //ms = EutranMeasurementMapping::QuantizeRsrp (m_storedMeasValues[m_cellId].rsrp);
                 NS_ASSERT (reportConfigEutra.threshold1.choice 
-                           == LteRrcSap::ThresholdEutra::thresholdRsrp);
+                           == LteRrcSap::ThresholdEutra::THRESHOLD_RSRP);
                 thresh = EutranMeasurementMapping::RsrpRange2Dbm (reportConfigEutra.threshold1.range);
                 break;
-              case LteRrcSap::ReportConfigEutra::rsrq:
+              case LteRrcSap::ReportConfigEutra::RSRQ:
                 ms = m_storedMeasValues[m_cellId].rsrq;
                 //ms = EutranMeasurementMapping::QuantizeRsrq (m_storedMeasValues[m_cellId].rsrq);
                 NS_ASSERT (reportConfigEutra.threshold1.choice 
-                           == LteRrcSap::ThresholdEutra::thresholdRsrq);                
+                           == LteRrcSap::ThresholdEutra::THRESHOLD_RSRQ);                
                 thresh = EutranMeasurementMapping::RsrqRange2Db (reportConfigEutra.threshold1.range);
                 break;
               default:
@@ -668,7 +668,7 @@ LteUeRrc::DoReportUeMeasurements (LteUeCphySapUser::UeMeasurementsParameters par
           }                  
           break;
 
-        case LteRrcSap::ReportConfigEutra::eventA4:
+        case LteRrcSap::ReportConfigEutra::EVENT_A4:
           {
             for (std::map<uint16_t, MeasValues>::iterator storedMeasIt = m_storedMeasValues.begin ();
                  storedMeasIt != m_storedMeasValues.end ();
@@ -682,18 +682,18 @@ LteUeRrc::DoReportUeMeasurements (LteUeCphySapUser::UeMeasurementsParameters par
                     double hys = (double) reportConfigEutra.hysteresis * 0.5; // Hys, the hysteresis parameter for this event. See 36.331 section 6.3.5 for the conversion.
                     switch (reportConfigEutra.triggerQuantity)
                       {
-                      case LteRrcSap::ReportConfigEutra::rsrp:
+                      case LteRrcSap::ReportConfigEutra::RSRP:
                         mn = storedMeasIt->second.rsrp;
                         //mn = EutranMeasurementMapping::QuantizeRsrp (storedMeasIt->second.rsrp);
                         NS_ASSERT (reportConfigEutra.threshold1.choice 
-                                   == LteRrcSap::ThresholdEutra::thresholdRsrp);    
+                                   == LteRrcSap::ThresholdEutra::THRESHOLD_RSRP);    
                         thresh = EutranMeasurementMapping::RsrpRange2Dbm (reportConfigEutra.threshold1.range);            
                         break;
-                      case LteRrcSap::ReportConfigEutra::rsrq:
+                      case LteRrcSap::ReportConfigEutra::RSRQ:
                         mn = storedMeasIt->second.rsrq;
                         //mn = EutranMeasurementMapping::QuantizeRsrq (storedMeasIt->second.rsrq);
                         NS_ASSERT (reportConfigEutra.threshold1.choice 
-                                   == LteRrcSap::ThresholdEutra::thresholdRsrq);                
+                                   == LteRrcSap::ThresholdEutra::THRESHOLD_RSRQ);                
                         thresh = EutranMeasurementMapping::RsrqRange2Db (reportConfigEutra.threshold1.range);
                         break;
                       default:
@@ -772,7 +772,7 @@ LteUeRrc::DoReportUeMeasurements (LteUeCphySapUser::UeMeasurementsParameters par
             }
 
           // reportOnLeave will only be set when eventId = eventA3
-          if(reportConfigEutra.eventId == LteRrcSap::ReportConfigEutra::eventA3)
+          //if(reportConfigEutra.eventId == LteRrcSap::ReportConfigEutra::eventA3)
             {
               if (reportConfigEutra.reportOnLeave)
                 {
@@ -1288,10 +1288,10 @@ LteUeRrc::ApplyMeasConfig (LteRrcSap::MeasConfig mc)
        ++it)
     {
       // simplifying assumptions
-      NS_ASSERT_MSG (it->reportConfigEutra.triggerType == LteRrcSap::ReportConfigEutra::event,
+      NS_ASSERT_MSG (it->reportConfigEutra.triggerType == LteRrcSap::ReportConfigEutra::EVENT,
                      "only trigger type EVENT is supported");
-      NS_ASSERT_MSG (it->reportConfigEutra.eventId == LteRrcSap::ReportConfigEutra::eventA2
-                     || it->reportConfigEutra.eventId == LteRrcSap::ReportConfigEutra::eventA4,
+      NS_ASSERT_MSG (it->reportConfigEutra.eventId == LteRrcSap::ReportConfigEutra::EVENT_A2
+                     || it->reportConfigEutra.eventId == LteRrcSap::ReportConfigEutra::EVENT_A4,
                      "only events A2 and A4 are supported");
       NS_ASSERT_MSG (it->reportConfigEutra.timeToTrigger == 0, "timeToTrigger > 0 is not supported");
       
@@ -1394,7 +1394,7 @@ LteUeRrc::ApplyMeasConfig (LteRrcSap::MeasConfig mc)
           m_varMeasReportList.erase (measReportIt);
         }
       NS_ASSERT (m_varMeasConfig.reportConfigList.find (it->reportConfigId)
-                 ->second.reportConfigEutra.triggerType != LteRrcSap::ReportConfigEutra::periodical);
+                 ->second.reportConfigEutra.triggerType != LteRrcSap::ReportConfigEutra::PERIODICAL);
 
     }
 
@@ -1464,10 +1464,10 @@ LteUeRrc::SendMeasurementReport (uint8_t measId)
                   double triggerValue;             
                   switch (reportConfigEutra.triggerQuantity)
                     {
-                    case LteRrcSap::ReportConfigEutra::rsrp:
+                    case LteRrcSap::ReportConfigEutra::RSRP:
                       triggerValue = neighborMeasIt->second.rsrp;
                       break;
-                    case LteRrcSap::ReportConfigEutra::rsrq:
+                    case LteRrcSap::ReportConfigEutra::RSRQ:
                       triggerValue = neighborMeasIt->second.rsrq;
                       break;
                     default:
@@ -1515,7 +1515,7 @@ LteUeRrc::SendMeasurementReport (uint8_t measId)
       uint32_t intervalMs;
       switch (reportConfigEutra.reportInterval)
         {
-        case LteRrcSap::ReportConfigEutra::ms480:
+        case LteRrcSap::ReportConfigEutra::MS480:
           intervalMs = 480;
           break;
           

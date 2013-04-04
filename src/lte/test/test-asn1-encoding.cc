@@ -458,7 +458,7 @@ RrcConnectionReconfigurationTestCase::DoRun (void)
 
   msg.measConfig.haveMeasGapConfig = true;
   msg.measConfig.measGapConfig.type = LteRrcSap::MeasGapConfig::SETUP;
-  msg.measConfig.measGapConfig.gapOffsetChoice = LteRrcSap::MeasGapConfig::gp0;
+  msg.measConfig.measGapConfig.gapOffsetChoice = LteRrcSap::MeasGapConfig::GP0;
   msg.measConfig.measGapConfig.gapOffsetValue = 21;
 
   msg.measConfig.haveSmeasure = true;
@@ -511,21 +511,21 @@ RrcConnectionReconfigurationTestCase::DoRun (void)
   // Set reportConfigToAddModList
   LteRrcSap::ReportConfigToAddMod reportConfigToAddMod;
   reportConfigToAddMod.reportConfigId = 22;
-  reportConfigToAddMod.reportConfigEutra.triggerType = LteRrcSap::ReportConfigEutra::event;
-  reportConfigToAddMod.reportConfigEutra.eventId = LteRrcSap::ReportConfigEutra::eventA2;
-  reportConfigToAddMod.reportConfigEutra.threshold1.choice = LteRrcSap::ThresholdEutra::thresholdRsrp;
+  reportConfigToAddMod.reportConfigEutra.triggerType = LteRrcSap::ReportConfigEutra::EVENT;
+  reportConfigToAddMod.reportConfigEutra.eventId = LteRrcSap::ReportConfigEutra::EVENT_A2;
+  reportConfigToAddMod.reportConfigEutra.threshold1.choice = LteRrcSap::ThresholdEutra::THRESHOLD_RSRP;
   reportConfigToAddMod.reportConfigEutra.threshold1.range = 15;
-  reportConfigToAddMod.reportConfigEutra.threshold2.choice = LteRrcSap::ThresholdEutra::thresholdRsrq;
+  reportConfigToAddMod.reportConfigEutra.threshold2.choice = LteRrcSap::ThresholdEutra::THRESHOLD_RSRQ;
   reportConfigToAddMod.reportConfigEutra.threshold2.range = 10;
   reportConfigToAddMod.reportConfigEutra.reportOnLeave = true;
   reportConfigToAddMod.reportConfigEutra.a3Offset = -25;
   reportConfigToAddMod.reportConfigEutra.hysteresis = 18;
   reportConfigToAddMod.reportConfigEutra.timeToTrigger = 100;
-  reportConfigToAddMod.reportConfigEutra.purpose = LteRrcSap::ReportConfigEutra::reportStrongestCells;
-  reportConfigToAddMod.reportConfigEutra.triggerQuantity = LteRrcSap::ReportConfigEutra::rsrq;
-  reportConfigToAddMod.reportConfigEutra.reportQuantity = LteRrcSap::ReportConfigEutra::sameAsTriggerQuantity;
+  reportConfigToAddMod.reportConfigEutra.purpose = LteRrcSap::ReportConfigEutra::REPORT_STRONGEST_CELLS;
+  reportConfigToAddMod.reportConfigEutra.triggerQuantity = LteRrcSap::ReportConfigEutra::RSRQ;
+  reportConfigToAddMod.reportConfigEutra.reportQuantity = LteRrcSap::ReportConfigEutra::SAME_AS_TRIGGER_QUANTITY;
   reportConfigToAddMod.reportConfigEutra.maxReportCells = 5;
-  reportConfigToAddMod.reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::min60;
+  reportConfigToAddMod.reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::MIN60;
   reportConfigToAddMod.reportConfigEutra.reportAmount = 16; 
   msg.measConfig.reportConfigToAddModList.push_back (reportConfigToAddMod);
 

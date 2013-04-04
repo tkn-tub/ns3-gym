@@ -965,11 +965,11 @@ RrcAsn1Header::SerializeThresholdEutra (LteRrcSap::ThresholdEutra thresholdEutra
 {
   switch (thresholdEutra.choice)
     {
-    case LteRrcSap::ThresholdEutra::thresholdRsrp:
+    case LteRrcSap::ThresholdEutra::THRESHOLD_RSRP:
       SerializeChoice (2,0,false);
       SerializeInteger (thresholdEutra.range, 0, 97);
       break;
-    case LteRrcSap::ThresholdEutra::thresholdRsrq:
+    case LteRrcSap::ThresholdEutra::THRESHOLD_RSRQ:
     default:
       SerializeChoice (2,1,false);
       SerializeInteger (thresholdEutra.range, 0, 34);
@@ -1187,47 +1187,47 @@ RrcAsn1Header::SerializeMeasConfig (LteRrcSap::MeasConfig measConfig) const
           SerializeSequence (std::bitset<0> (), true);
           switch (it->reportConfigEutra.triggerType)
             {
-            case LteRrcSap::ReportConfigEutra::periodical:
+            case LteRrcSap::ReportConfigEutra::PERIODICAL:
               SerializeChoice (2, 1, false); 
               SerializeSequence (std::bitset<0> (),false);
               switch (it->reportConfigEutra.purpose)
                 {
-                case LteRrcSap::ReportConfigEutra::reportCgi:
+                case LteRrcSap::ReportConfigEutra::REPORT_CGI:
                   SerializeEnum (2,1);
                   break;
-                case LteRrcSap::ReportConfigEutra::reportStrongestCells:
+                case LteRrcSap::ReportConfigEutra::REPORT_STRONGEST_CELLS:
                 default:
                   SerializeEnum (2,0);
                 }
               break;
-            case LteRrcSap::ReportConfigEutra::event:
+            case LteRrcSap::ReportConfigEutra::EVENT:
             default: 
               SerializeChoice (2, 0, false);
               SerializeSequence (std::bitset<0> (),false);
               switch (it->reportConfigEutra.eventId)
                 {
-                case LteRrcSap::ReportConfigEutra::eventA1:
+                case LteRrcSap::ReportConfigEutra::EVENT_A1:
                   SerializeChoice (5, 0, true);
                   SerializeSequence (std::bitset<0> (),false);
                   SerializeThresholdEutra (it->reportConfigEutra.threshold1);
                   break;
-                case LteRrcSap::ReportConfigEutra::eventA2:
+                case LteRrcSap::ReportConfigEutra::EVENT_A2:
                   SerializeChoice (5, 1, true);
                   SerializeSequence (std::bitset<0> (),false);
                   SerializeThresholdEutra (it->reportConfigEutra.threshold1);
                   break;
-                case LteRrcSap::ReportConfigEutra::eventA3:
+                case LteRrcSap::ReportConfigEutra::EVENT_A3:
                   SerializeChoice (5, 2, true);
                   SerializeSequence (std::bitset<0> (),false);
                   SerializeInteger (it->reportConfigEutra.a3Offset,-30,30);
                   SerializeBoolean (it->reportConfigEutra.reportOnLeave);
                   break;
-                case LteRrcSap::ReportConfigEutra::eventA4:
+                case LteRrcSap::ReportConfigEutra::EVENT_A4:
                   SerializeChoice (5, 3, true);
                   SerializeSequence (std::bitset<0> (),false);
                   SerializeThresholdEutra (it->reportConfigEutra.threshold1);
                   break;
-                case LteRrcSap::ReportConfigEutra::eventA5:
+                case LteRrcSap::ReportConfigEutra::EVENT_A5:
                 default:
                   SerializeChoice (5, 4, true);
                   SerializeSequence (std::bitset<0> (),false);
@@ -1291,7 +1291,7 @@ RrcAsn1Header::SerializeMeasConfig (LteRrcSap::MeasConfig measConfig) const
             } // end trigger type
 
           // Serialize triggerQuantity
-          if (it->reportConfigEutra.triggerQuantity == LteRrcSap::ReportConfigEutra::rsrp)
+          if (it->reportConfigEutra.triggerQuantity == LteRrcSap::ReportConfigEutra::RSRP)
             {
               SerializeEnum (2, 0);
             }
@@ -1301,7 +1301,7 @@ RrcAsn1Header::SerializeMeasConfig (LteRrcSap::MeasConfig measConfig) const
             }
 
           // Serialize reportQuantity
-          if (it->reportConfigEutra.reportQuantity == LteRrcSap::ReportConfigEutra::sameAsTriggerQuantity)
+          if (it->reportConfigEutra.reportQuantity == LteRrcSap::ReportConfigEutra::SAME_AS_TRIGGER_QUANTITY)
             {
               SerializeEnum (2, 0);
             }
@@ -1316,52 +1316,52 @@ RrcAsn1Header::SerializeMeasConfig (LteRrcSap::MeasConfig measConfig) const
           // Serialize reportInterval
           switch (it->reportConfigEutra.reportInterval)
             {
-            case LteRrcSap::ReportConfigEutra::ms120:
+            case LteRrcSap::ReportConfigEutra::MS120:
               SerializeEnum (16, 0);
               break;
-            case LteRrcSap::ReportConfigEutra::ms240:
+            case LteRrcSap::ReportConfigEutra::MS240:
               SerializeEnum (16, 1);
               break;
-            case LteRrcSap::ReportConfigEutra::ms480:
+            case LteRrcSap::ReportConfigEutra::MS480:
               SerializeEnum (16, 2);
               break;
-            case LteRrcSap::ReportConfigEutra::ms640:
+            case LteRrcSap::ReportConfigEutra::MS640:
               SerializeEnum (16, 3);
               break;
-            case LteRrcSap::ReportConfigEutra::ms1024:
+            case LteRrcSap::ReportConfigEutra::MS1024:
               SerializeEnum (16, 4);
               break;
-            case LteRrcSap::ReportConfigEutra::ms2048:
+            case LteRrcSap::ReportConfigEutra::MS2048:
               SerializeEnum (16, 5);
               break;
-            case LteRrcSap::ReportConfigEutra::ms5120:
+            case LteRrcSap::ReportConfigEutra::MS5120:
               SerializeEnum (16, 6);
               break;
-            case LteRrcSap::ReportConfigEutra::ms10240:
+            case LteRrcSap::ReportConfigEutra::MS10240:
               SerializeEnum (16, 7);
               break;
-            case LteRrcSap::ReportConfigEutra::min1:
+            case LteRrcSap::ReportConfigEutra::MIN1:
               SerializeEnum (16, 8);
               break;
-            case LteRrcSap::ReportConfigEutra::min6:
+            case LteRrcSap::ReportConfigEutra::MIN6:
               SerializeEnum (16, 9);
               break;
-            case LteRrcSap::ReportConfigEutra::min12:
+            case LteRrcSap::ReportConfigEutra::MIN12:
               SerializeEnum (16, 10);
               break;
-            case LteRrcSap::ReportConfigEutra::min30:
+            case LteRrcSap::ReportConfigEutra::MIN30:
               SerializeEnum (16, 11);
               break;
-            case LteRrcSap::ReportConfigEutra::min60:
+            case LteRrcSap::ReportConfigEutra::MIN60:
               SerializeEnum (16, 12);
               break;
-            case LteRrcSap::ReportConfigEutra::spare3:
+            case LteRrcSap::ReportConfigEutra::SPARE3:
               SerializeEnum (16, 13);
               break;
-            case LteRrcSap::ReportConfigEutra::spare2:
+            case LteRrcSap::ReportConfigEutra::SPARE2:
               SerializeEnum (16, 14);
               break;
-            case LteRrcSap::ReportConfigEutra::spare1:
+            case LteRrcSap::ReportConfigEutra::SPARE1:
             default:
               SerializeEnum (16, 15);
             }
@@ -1542,11 +1542,11 @@ RrcAsn1Header::SerializeMeasConfig (LteRrcSap::MeasConfig measConfig) const
           SerializeSequence (std::bitset<0> (),false);
           switch (measConfig.measGapConfig.gapOffsetChoice)
             {
-            case LteRrcSap::MeasGapConfig::gp0:
+            case LteRrcSap::MeasGapConfig::GP0:
               SerializeChoice (2, 0, true);
               SerializeInteger (measConfig.measGapConfig.gapOffsetValue, 0, 39);
               break;
-            case LteRrcSap::MeasGapConfig::gp1:
+            case LteRrcSap::MeasGapConfig::GP1:
             default:
               SerializeChoice (2, 1, true);
               SerializeInteger (measConfig.measGapConfig.gapOffsetValue, 0, 79);
@@ -1665,13 +1665,13 @@ RrcAsn1Header::DeserializeThresholdEutra (LteRrcSap::ThresholdEutra * thresholdE
   switch (thresholdEutraChoice)
     {
     case 0:
-      thresholdEutra->choice = LteRrcSap::ThresholdEutra::thresholdRsrp;
+      thresholdEutra->choice = LteRrcSap::ThresholdEutra::THRESHOLD_RSRP;
       bIterator = DeserializeInteger (&range, 0, 97, bIterator);
       thresholdEutra->range = range;
       break;
     case 1:
     default:
-      thresholdEutra->choice = LteRrcSap::ThresholdEutra::thresholdRsrq;
+      thresholdEutra->choice = LteRrcSap::ThresholdEutra::THRESHOLD_RSRQ;
       bIterator = DeserializeInteger (&range, 0, 34, bIterator);
       thresholdEutra->range = range;
     }
@@ -3311,7 +3311,7 @@ RrcAsn1Header::DeserializeMeasConfig (LteRrcSap::MeasConfig * measConfig, Buffer
               if (triggerTypeChoice == 0)
                 {
                   // event
-                  elem.reportConfigEutra.triggerType = LteRrcSap::ReportConfigEutra::event;
+                  elem.reportConfigEutra.triggerType = LteRrcSap::ReportConfigEutra::EVENT;
                   bIterator = DeserializeSequence (&bitset0, false, bIterator);
 
                   // eventId
@@ -3321,19 +3321,19 @@ RrcAsn1Header::DeserializeMeasConfig (LteRrcSap::MeasConfig * measConfig, Buffer
                   switch (eventIdChoice)
                     {
                     case 0:
-                      elem.reportConfigEutra.eventId = LteRrcSap::ReportConfigEutra::eventA1;
+                      elem.reportConfigEutra.eventId = LteRrcSap::ReportConfigEutra::EVENT_A1;
                       bIterator = DeserializeSequence (&bitset0, false, bIterator);
                       bIterator = DeserializeThresholdEutra (&elem.reportConfigEutra.threshold1, bIterator);
                       break;
 
                     case 1:
-                      elem.reportConfigEutra.eventId = LteRrcSap::ReportConfigEutra::eventA2;
+                      elem.reportConfigEutra.eventId = LteRrcSap::ReportConfigEutra::EVENT_A2;
                       bIterator = DeserializeSequence (&bitset0, false, bIterator);
                       bIterator = DeserializeThresholdEutra (&elem.reportConfigEutra.threshold1, bIterator);
                       break;
 
                     case 2:
-                      elem.reportConfigEutra.eventId = LteRrcSap::ReportConfigEutra::eventA3;
+                      elem.reportConfigEutra.eventId = LteRrcSap::ReportConfigEutra::EVENT_A3;
                       bIterator = DeserializeSequence (&bitset0, false, bIterator);
                       bIterator = DeserializeInteger (&n, -30, 30, bIterator);
                       elem.reportConfigEutra.a3Offset = n;
@@ -3341,14 +3341,14 @@ RrcAsn1Header::DeserializeMeasConfig (LteRrcSap::MeasConfig * measConfig, Buffer
                       break;
 
                     case 3:
-                      elem.reportConfigEutra.eventId = LteRrcSap::ReportConfigEutra::eventA4;
+                      elem.reportConfigEutra.eventId = LteRrcSap::ReportConfigEutra::EVENT_A4;
                       bIterator = DeserializeSequence (&bitset0, false, bIterator);
                       bIterator = DeserializeThresholdEutra (&elem.reportConfigEutra.threshold1, bIterator);
                       break;
 
                     case 4:
                     default:
-                      elem.reportConfigEutra.eventId = LteRrcSap::ReportConfigEutra::eventA5;
+                      elem.reportConfigEutra.eventId = LteRrcSap::ReportConfigEutra::EVENT_A5;
                       bIterator = DeserializeSequence (&bitset0, false, bIterator);
                       bIterator = DeserializeThresholdEutra (&elem.reportConfigEutra.threshold1, bIterator);
                       bIterator = DeserializeThresholdEutra (&elem.reportConfigEutra.threshold2, bIterator);
@@ -3415,17 +3415,17 @@ RrcAsn1Header::DeserializeMeasConfig (LteRrcSap::MeasConfig * measConfig, Buffer
               if (triggerTypeChoice == 1)
                 {
                   // periodical
-                  elem.reportConfigEutra.triggerType = LteRrcSap::ReportConfigEutra::periodical;
+                  elem.reportConfigEutra.triggerType = LteRrcSap::ReportConfigEutra::PERIODICAL;
 
                   bIterator = DeserializeSequence (&bitset0, false, bIterator);
                   bIterator = DeserializeEnum (2, &n, bIterator);
                   if (n == 0)
                     {
-                      elem.reportConfigEutra.purpose = LteRrcSap::ReportConfigEutra::reportStrongestCells;
+                      elem.reportConfigEutra.purpose = LteRrcSap::ReportConfigEutra::REPORT_STRONGEST_CELLS;
                     }
                   else
                     {
-                      elem.reportConfigEutra.purpose = LteRrcSap::ReportConfigEutra::reportCgi;
+                      elem.reportConfigEutra.purpose = LteRrcSap::ReportConfigEutra::REPORT_CGI;
                     }
                 }
 
@@ -3433,22 +3433,22 @@ RrcAsn1Header::DeserializeMeasConfig (LteRrcSap::MeasConfig * measConfig, Buffer
               bIterator = DeserializeEnum (2, &n, bIterator);
               if (n == 0)
                 {
-                  elem.reportConfigEutra.triggerQuantity = LteRrcSap::ReportConfigEutra::rsrp;
+                  elem.reportConfigEutra.triggerQuantity = LteRrcSap::ReportConfigEutra::RSRP;
                 }
               else
                 {
-                  elem.reportConfigEutra.triggerQuantity = LteRrcSap::ReportConfigEutra::rsrq;
+                  elem.reportConfigEutra.triggerQuantity = LteRrcSap::ReportConfigEutra::RSRQ;
                 }
 
               // reportQuantity
               bIterator = DeserializeEnum (2, &n, bIterator);
               if (n == 0)
                 {
-                  elem.reportConfigEutra.reportQuantity = LteRrcSap::ReportConfigEutra::sameAsTriggerQuantity;
+                  elem.reportConfigEutra.reportQuantity = LteRrcSap::ReportConfigEutra::SAME_AS_TRIGGER_QUANTITY;
                 }
               else
                 {
-                  elem.reportConfigEutra.reportQuantity = LteRrcSap::ReportConfigEutra::both;
+                  elem.reportConfigEutra.reportQuantity = LteRrcSap::ReportConfigEutra::BOTH;
                 }
 
               // maxReportCells
@@ -3460,53 +3460,53 @@ RrcAsn1Header::DeserializeMeasConfig (LteRrcSap::MeasConfig * measConfig, Buffer
               switch (n)
                 {
                 case 0:
-                  elem.reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::ms120;
+                  elem.reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::MS120;
                   break;
                 case 1:
-                  elem.reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::ms240;
+                  elem.reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::MS240;
                   break;
                 case 2:
-                  elem.reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::ms480;
+                  elem.reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::MS480;
                   break;
                 case 3:
-                  elem.reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::ms640;
+                  elem.reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::MS640;
                   break;
                 case 4:
-                  elem.reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::ms1024;
+                  elem.reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::MS1024;
                   break;
                 case 5:
-                  elem.reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::ms2048;
+                  elem.reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::MS2048;
                   break;
                 case 6:
-                  elem.reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::ms5120;
+                  elem.reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::MS5120;
                   break;
                 case 7:
-                  elem.reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::ms10240;
+                  elem.reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::MS10240;
                   break;
                 case 8:
-                  elem.reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::min1;
+                  elem.reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::MIN1;
                   break;
                 case 9:
-                  elem.reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::min6;
+                  elem.reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::MIN6;
                   break;
                 case 10:
-                  elem.reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::min12;
+                  elem.reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::MIN12;
                   break;
                 case 11:
-                  elem.reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::min30;
+                  elem.reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::MIN30;
                   break;
                 case 12:
-                  elem.reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::min60;
+                  elem.reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::MIN60;
                   break;
                 case 13:
-                  elem.reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::spare3;
+                  elem.reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::SPARE3;
                   break;
                 case 14:
-                  elem.reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::spare2;
+                  elem.reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::SPARE2;
                   break;
                 case 15:
                 default:
-                  elem.reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::spare1;
+                  elem.reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::SPARE1;
                 }
 
               // reportAmount
@@ -3746,13 +3746,13 @@ RrcAsn1Header::DeserializeMeasConfig (LteRrcSap::MeasConfig * measConfig, Buffer
           switch (gapOffsetChoice)
             {
             case 0:
-              measConfig->measGapConfig.gapOffsetChoice = LteRrcSap::MeasGapConfig::gp0;
+              measConfig->measGapConfig.gapOffsetChoice = LteRrcSap::MeasGapConfig::GP0;
               bIterator = DeserializeInteger (&n, 0, 39, bIterator);
               measConfig->measGapConfig.gapOffsetValue = n;
               break;
             case 1:
             default:
-              measConfig->measGapConfig.gapOffsetChoice = LteRrcSap::MeasGapConfig::gp1;
+              measConfig->measGapConfig.gapOffsetChoice = LteRrcSap::MeasGapConfig::GP1;
               bIterator = DeserializeInteger (&n, 0, 79, bIterator);
               measConfig->measGapConfig.gapOffsetValue = n;
             }
@@ -4842,10 +4842,10 @@ RrcConnectionReconfigurationHeader::Print (std::ostream &os) const
             {
               os << "    reportConfigId: " << (int)it->reportConfigId << std::endl;
               os << "    reportConfigEutra.triggerType  " <<  (int)it->reportConfigEutra.triggerType << std::endl;
-              if (it->reportConfigEutra.triggerType == LteRrcSap::ReportConfigEutra::event)
+              if (it->reportConfigEutra.triggerType == LteRrcSap::ReportConfigEutra::EVENT)
                 {
                   os << "    reportConfigEutra.eventId  " <<  (int)it->reportConfigEutra.eventId << std::endl;
-                  if (it->reportConfigEutra.eventId == LteRrcSap::ReportConfigEutra::eventA3)
+                  if (it->reportConfigEutra.eventId == LteRrcSap::ReportConfigEutra::EVENT_A3)
                     {
                       os << "    reportConfigEutra.reportOnLeave  " <<  (int)it->reportConfigEutra.reportOnLeave << std::endl;
                       os << "    reportConfigEutra.a3Offset  " <<  (int)it->reportConfigEutra.a3Offset << std::endl;
@@ -4854,7 +4854,7 @@ RrcConnectionReconfigurationHeader::Print (std::ostream &os) const
                     {
                       os << "    reportConfigEutra.threshold1.choice  " <<  (int)it->reportConfigEutra.threshold1.choice << std::endl;
                       os << "    reportConfigEutra.threshold1.range  " <<  (int)it->reportConfigEutra.threshold1.range << std::endl;
-                      if (it->reportConfigEutra.eventId == LteRrcSap::ReportConfigEutra::eventA5)
+                      if (it->reportConfigEutra.eventId == LteRrcSap::ReportConfigEutra::EVENT_A5)
                         {
                           os << "    reportConfigEutra.threshold2.choice  " <<  (int)it->reportConfigEutra.threshold2.choice << std::endl;
                           os << "    reportConfigEutra.threshold2.range  " <<  (int)it->reportConfigEutra.threshold2.range << std::endl;
