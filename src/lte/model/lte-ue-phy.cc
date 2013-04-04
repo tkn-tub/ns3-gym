@@ -448,8 +448,10 @@ LteUePhy::GenerateCtrlCqiReport (const SpectrumValue& sinr)
       Values::const_iterator it;
       for (it = m_rsReceivedPower.ConstValuesBegin (); it != m_rsReceivedPower.ConstValuesEnd (); it++)
         {
-          // convert PSD [W/Hz] to linear power [W]
-          double powerTxW = (*it) * (m_dlBandwidth * 180000);
+          // convert PSD [W/Hz] to linear power [W] for the single RE
+          // we consider only one RE for the RS since the channel is 
+          // flat within the same RB 
+          double powerTxW = ((*it) * 180000.0) / 12.0;
           sum += powerTxW;
           rbNum++;
         }
@@ -483,13 +485,13 @@ LteUePhy::GenerateCtrlCqiReport (const SpectrumValue& sinr)
           for (itPj = m_rsReceivedPower.ConstValuesBegin (); itPj != m_rsReceivedPower.ConstValuesEnd (); itIntN++, itPj++)
             {
               rbNum++;
-              // convert PSD [W/Hz] to linear power [W]
-              double noisePowerTxW = (*itIntN) * (m_dlBandwidth * 180000);
-              double intPowerTxW = (*itPj) * (m_dlBandwidth * 180000);
+              // convert PSD [W/Hz] to linear power [W] for the single RE
+              double noisePowerTxW = ((*itIntN) * 180000.0) / 12.0;
+              double intPowerTxW = ((*itPj) * 180000.0) / 12.0;
               rsrqSum += (noisePowerTxW + intPowerTxW);
             }
           NS_ASSERT (rbNum == (*itPss).nRB);
-          double rsrp_dBm = 10 * log10 (1000 * (*itPss).pssPsdSum / (double)rbNum);
+          double rsrp_dBm = 10 * log10 (1000 * ((*itPss).pssPsdSum / (double)rbNum));
           double rsrq_dB = 10 * log10 ((*itPss).pssPsdSum / rsrqSum);
 
           if (rsrq_dB > m_pssReceptionThreshold)
@@ -854,8 +856,8 @@ LteUePhy::ReceivePss (uint16_t cellId, Ptr<SpectrumValue> p)
   Values::const_iterator itPi;
   for (itPi = p->ConstValuesBegin (); itPi != p->ConstValuesEnd (); itPi++)
     {
-      // convert PSD [W/Hz] to linear power [W]
-      double powerTxW = (*itPi) * (m_dlBandwidth * 180000);
+      // convert PSD [W/Hz] to linear power [W] for the single RE
+      double powerTxW = ((*itPi) * 180000.0) / 12.0;
       sum += powerTxW;
       nRB++;
     }

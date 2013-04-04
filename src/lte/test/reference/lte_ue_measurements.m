@@ -70,11 +70,11 @@ for d2 = [10000]
 
 
   %% RSRP (linear)
-  rsrp1 = g11dl.*dlp
+  rsrp1 = g11dl.*dlp;
   rsrp2 = g21dl.*dlp;
 
   %% RSRP (dBm)
-  rsrp1dBm = 10.*log10(1000*rsrp1)
+  rsrp1dBm = 10.*log10(1000*rsrp1);
   rsrp2dBm = 10.*log10(1000*rsrp2);
 
   %% RSSI (linear)
@@ -90,24 +90,13 @@ for d2 = [10000]
   rsrq2dB = 10.*log10(rsrq2);
 
   %% SINR (linear)
-  dlsinr = dlp*g11dl / (dlp*g21dl + dln)
+  dlsinr = dlp*g11dl / (dlp*g21dl + dln);
 %    ulsinr = ulp*g11ul / (ulp*g21ul + uln);
 
   %% SINR (dB)
   dlsinrdB = 10.*log10(dlsinr);
 %    ulsinrdB = 10.*log10(ulsinr);
-
-  %% Spectal Efficiency
-%    dlse = log2(1 + dlsinr./gamma);
-%    ulse = log2(1 + ulsinr./gamma);
-
-  %% to get the MCS, you need to do a manual lookup into 3GPP R1-081483
-  %% starting from the spectral efficiency value.
-  %% See the Testing section in the LTE module documentation for more info
-  %% on how this is done. You might as well look into lte_amc.m
-
   
-
   printf("AddTestCase (new LteUeMeasurementsTestCase (\"d1=%d, d2=%d\", % f, %f, % f, %f, % f, %f));\n", \
    d1, d2, d1, d2, rsrp1dBm, rsrp2dBm, rsrq1dB, rsrq2dB)
 

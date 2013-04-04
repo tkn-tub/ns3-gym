@@ -70,19 +70,25 @@ LteUeMeasurementsTestSuite::LteUeMeasurementsTestSuite ()
   : TestSuite ("lte-ue-measurements", SYSTEM)
 {
 
-  AddTestCase (new LteUeMeasurementsTestCase ("d1=50, d2=10",  50.000000, 10.000000, -42.947889, -28.968489, -14.149733, -0.170333));
-  AddTestCase (new LteUeMeasurementsTestCase ("d1=50, d2=20",  50.000000, 20.000000, -42.947889, -34.989089, -8.603380, -0.644580));
-  AddTestCase (new LteUeMeasurementsTestCase ("d1=50, d2=50",  50.000000, 50.000000, -42.947889, -42.947889, -3.010300, -3.010300));
-  AddTestCase (new LteUeMeasurementsTestCase ("d1=50, d2=100",  50.000000, 100.000000, -42.947889, -48.968489, -0.969101, -6.989700));
-  AddTestCase (new LteUeMeasurementsTestCase ("d1=50, d2=200",  50.000000, 200.000000, -42.947889, -54.989089, -0.263290, -12.304490));
-  AddTestCase (new LteUeMeasurementsTestCase ("d1=50, d2=500",  50.000000, 500.000000, -42.947889, -62.947889, -0.043214, -20.043214));
-  AddTestCase (new LteUeMeasurementsTestCase ("d1=50, d2=1000",  50.000000, 1000.000000, -42.947889, -68.968489, -0.010844, -26.031444));
-  AddTestCase (new LteUeMeasurementsTestCase ("d1=50, d2=10000",  50.000000, 10000.000000, -42.947889, -88.968489, -0.000109, -46.020709));
-  AddTestCase (new LteUeMeasurementsTestCase ("d1=50, d2=100000",  50.000000, 100000.000000, -42.947889, -108.968489, -0.000002, -66.020601));
-  AddTestCase (new LteUeMeasurementsTestCase ("d1=50, d2=1000000",  50.000000, 1000000.000000, -42.947889, -128.968489, -0.000000, -86.020600));
 
-  AddTestCase (new LteUeMeasurementsTestCase ("d1=4500, d2=12600",  4500.000000, 12600.000000, -82.032740, -90.975900, -0.524862, -9.468022));
-  AddTestCase (new LteUeMeasurementsTestCase ("d1=5400, d2=12600",  5400.000000, 12600.000000, -83.616365, -90.975900, -0.737119, -8.096655));
+  AddTestCase (new LteUeMeasurementsTestCase ("d1=10, d2=10000",  10.000000, 10000.000000, -53.739702, -113.739702, -0.000005, -60.000005));
+  AddTestCase (new LteUeMeasurementsTestCase ("d1=20, d2=10000",  20.000000, 10000.000000, -59.760302, -113.739702, -0.000019, -53.979419));
+  AddTestCase (new LteUeMeasurementsTestCase ("d1=50, d2=10000",  50.000000, 10000.000000, -67.719102, -113.739702, -0.000121, -46.020721));
+  AddTestCase (new LteUeMeasurementsTestCase ("d1=100, d2=10000",  100.000000, 10000.000000, -73.739702, -113.739702, -0.000483, -40.000483));
+  AddTestCase (new LteUeMeasurementsTestCase ("d1=200, d2=10000",  200.000000, 10000.000000, -79.760302, -113.739702, -0.001932, -33.981332));
+  AddTestCase (new LteUeMeasurementsTestCase ("d1=100, d2=10000",  100.000000, 10000.000000, -73.739702, -113.739702, -0.000483, -40.000483));
+  AddTestCase (new LteUeMeasurementsTestCase ("d1=200, d2=10000",  200.000000, 10000.000000, -79.760302, -113.739702, -0.001932, -33.981332));
+  AddTestCase (new LteUeMeasurementsTestCase ("d1=500, d2=10000",  500.000000, 10000.000000, -87.719102, -113.739702, -0.012059, -26.032659));
+  AddTestCase (new LteUeMeasurementsTestCase ("d1=1000, d2=10000",  1000.000000, 10000.000000, -93.739702, -113.739702, -0.048036, -20.048036));
+  AddTestCase (new LteUeMeasurementsTestCase ("d1=2000, d2=10000",  2000.000000, 10000.000000, -99.760302, -113.739702, -0.189037, -14.168438));
+  AddTestCase (new LteUeMeasurementsTestCase ("d1=5000, d2=10000",  5000.000000, 10000.000000, -107.719102, -113.739702, -1.065494, -7.086093));
+  AddTestCase (new LteUeMeasurementsTestCase ("d1=10000, d2=10000",  10000.000000, 10000.000000, -113.739702, -113.739702, -3.247387, -3.247387));
+  AddTestCase (new LteUeMeasurementsTestCase ("d1=20000, d2=10000",  20000.000000, 10000.000000, -119.760302, -113.739702, -7.363065, -1.342465));
+  AddTestCase (new LteUeMeasurementsTestCase ("d1=50000, d2=10000",  50000.000000, 10000.000000, -127.719102, -113.739702, -14.594746, -0.615346));
+  AddTestCase (new LteUeMeasurementsTestCase ("d1=100000, d2=10000",  100000.000000, 10000.000000, -133.739702, -113.739702, -20.500771, -0.500771));
+  AddTestCase (new LteUeMeasurementsTestCase ("d1=200000, d2=10000",  200000.000000, 10000.000000, -139.760302, -113.739702, -26.492249, -0.471649));
+  AddTestCase (new LteUeMeasurementsTestCase ("d1=500000, d2=10000",  500000.000000, 10000.000000, -147.719102, -113.739702, -34.442860, -0.463460));
+  AddTestCase (new LteUeMeasurementsTestCase ("d1=1000000, d2=10000",  1000000.000000, 10000.000000, -153.739702, -113.739702, -40.462289, -0.462289));
 
 }
 
