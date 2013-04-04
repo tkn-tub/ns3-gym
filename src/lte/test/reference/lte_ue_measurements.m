@@ -111,12 +111,23 @@ endfor
 
 endfor
 
-plot (sinrdBv1, rsrpdBmv1);
+plot (sinrdBv1, rsrpdBmv1, ";mapping;", "linewidth", 3,
+      [min(sinrdBv1) max(sinrdBv1)], [-140 -140], ";min RSRP;", "linewidth", 3,
+      [min(sinrdBv1) max(sinrdBv1)], [-44 -44], ";max RSRP;", "linewidth", 3);
 xlabel("SINR (dB)");
 ylabel("RSRP (dBm)");
+axis([-40 60 -150 -30]);
+grid on
+print -dpng "rsrp.png"
+
 figure;
 
 
-plot (sinrdBv1, rsrqdBv1);
+plot (sinrdBv1, rsrqdBv1, ";mapping;", "linewidth", 3,
+      [min(sinrdBv1) max(sinrdBv1)], [-19.5 -19.5], ";min RSRQ;", "linewidth", 3,
+      [min(sinrdBv1) max(sinrdBv1)], [-3 -3], ";max RSRQ;", "linewidth", 3);
 xlabel("SINR (dB)");
 ylabel("RSRQ (dB)");
+axis([-40 60 -30 5]);
+grid on
+print -dpng "rsrq.png"
