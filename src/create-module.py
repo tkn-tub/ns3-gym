@@ -355,7 +355,7 @@ def main(argv):
     testdir = os.path.join(moduledir, "test")
     os.mkdir(testdir)
     test_cc = file(os.path.join(moduledir, "test", "%s-test-suite.cc" % modname), "wt")
-    test_cc.write(TEST_CC_TEMPLATE % dict(MODULE=modname,CAPITALIZED=modname.capitalize()))
+    test_cc.write(TEST_CC_TEMPLATE % dict(MODULE=modname, CAPITALIZED=''.join([word.capitalize() for word in modname.split('-')])))
     test_cc.close()
 
 
