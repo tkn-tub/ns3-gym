@@ -588,13 +588,17 @@ BlockAckManager::CleanupBuffers (void)
           else
             {
               /* remove retry packet iterator if it's present in retry queue */
-              for (std::list<PacketQueueI>::iterator it = m_retryPackets.begin (); it != m_retryPackets.end (); it++)
+              for (std::list<PacketQueueI>::iterator it = m_retryPackets.begin (); it != m_retryPackets.end ();)
                 {
                   if ((*it)->hdr.GetAddr1 () == j->second.first.GetPeer ()
                       && (*it)->hdr.GetQosTid () == j->second.first.GetTid ()
                       && (*it)->hdr.GetSequenceNumber () == i->hdr.GetSequenceNumber ())
                     {
-                      m_retryPackets.erase (it);
+                      it = m_retryPackets.erase (it);
+                    }
+                  else
+                    {
+                      it++;
                     }
                 }
             }

@@ -320,6 +320,6 @@ class Ipv4RawTestSuite : public TestSuite
 public:
   Ipv4RawTestSuite () : TestSuite ("ipv4-raw", UNIT)
   {
-    AddTestCase (new Ipv4RawSocketImplTest);
+    AddTestCase (new Ipv4RawSocketImplTest, TestCase::QUICK);
   }
 } g_ipv4rawTestSuite;

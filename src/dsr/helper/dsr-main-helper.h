@@ -58,8 +58,6 @@ public:
   DsrMainHelper (const DsrMainHelper &);
   void Install (DsrHelper &dsrHelper, NodeContainer nodes);
   void SetDsrHelper (DsrHelper &dsrHelper);
-  void SetRouteCache (Ptr<dsr::RouteCache> routeCache);
-  void SetRreqTable (Ptr<dsr::RreqTable> rreqTable);
 
 private:
   void Install (Ptr<Node> node);

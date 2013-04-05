@@ -64,7 +64,7 @@ def uid(self):
 	try:
 		return self.uid_
 	except AttributeError:
-		# this is not a real hot zone, but we want to avoid surprizes here
+		# this is not a real hot zone, but we want to avoid surprises here
 		m = Utils.md5()
 		up = m.update
 		up(self.__class__.__name__.encode())
@@ -80,6 +80,6 @@ def apply_incpaths(self):
 	lst = self.to_incnodes(self.to_list(getattr(self, 'includes', [])) + self.env['INCLUDES'])
 	self.includes_nodes = lst
 	bld = self.bld
-	self.env['INCPATHS'] = [x.is_child_of(bld.srcnode) and x.path_from(bld.srcnode) or x.abspath() for x in lst]
+	self.env['INCPATHS'] = [x.is_child_of(bld.srcnode) and x.path_from(bld.bldnode) or x.abspath() for x in lst]
 
 

@@ -261,9 +261,9 @@ public:
   Ipv4AddressHelperTestSuite ()
     : TestSuite ("ipv4-address-helper", UNIT) 
   {
-    AddTestCase (new NetworkAllocatorHelperTestCase ());
-    AddTestCase (new AddressAllocatorHelperTestCase ());
-    AddTestCase (new ResetAllocatorHelperTestCase ());
-    AddTestCase (new IpAddressHelperTestCasev4 ());
+    AddTestCase (new NetworkAllocatorHelperTestCase (), TestCase::QUICK);
+    AddTestCase (new AddressAllocatorHelperTestCase (), TestCase::QUICK);
+    AddTestCase (new ResetAllocatorHelperTestCase (), TestCase::QUICK);
+    AddTestCase (new IpAddressHelperTestCasev4 (), TestCase::QUICK);
   }
 } g_ipv4AddressHelperTestSuite;

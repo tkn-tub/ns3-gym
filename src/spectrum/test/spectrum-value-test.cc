@@ -180,10 +180,10 @@ SpectrumValueTestSuite::SpectrumValueTestSuite ()
   tv6 = v1 / v2;
 
 
-  AddTestCase (new SpectrumValueTestCase (tv3, v3, "tv3 = v1 + v2"));
-  AddTestCase (new SpectrumValueTestCase (tv4, v4, "tv4 = v1 - v2"));
-  AddTestCase (new SpectrumValueTestCase (tv5, v5, "tv5 = v1 * v2"));
-  AddTestCase (new SpectrumValueTestCase (tv6, v6, "tv6 = v1 div v2"));
+  AddTestCase (new SpectrumValueTestCase (tv3, v3, "tv3 = v1 + v2"), TestCase::QUICK);
+  AddTestCase (new SpectrumValueTestCase (tv4, v4, "tv4 = v1 - v2"), TestCase::QUICK);
+  AddTestCase (new SpectrumValueTestCase (tv5, v5, "tv5 = v1 * v2"), TestCase::QUICK);
+  AddTestCase (new SpectrumValueTestCase (tv6, v6, "tv6 = v1 div v2"), TestCase::QUICK);
 
   // std::cerr << v6 << std::endl;
   // std::cerr << tv6 << std::endl;
@@ -199,30 +199,30 @@ SpectrumValueTestSuite::SpectrumValueTestSuite ()
   tv5 *= v2;
   tv6 /= v2;
 
-  AddTestCase (new SpectrumValueTestCase (tv3, v3, "tv3 += v2"));
-  AddTestCase (new SpectrumValueTestCase (tv4, v4, "tv4 -= v2"));
-  AddTestCase (new SpectrumValueTestCase (tv5, v5, "tv5 *= v2"));
-  AddTestCase (new SpectrumValueTestCase (tv6, v6, "tv6 div= v2"));
+  AddTestCase (new SpectrumValueTestCase (tv3, v3, "tv3 += v2"), TestCase::QUICK);
+  AddTestCase (new SpectrumValueTestCase (tv4, v4, "tv4 -= v2"), TestCase::QUICK);
+  AddTestCase (new SpectrumValueTestCase (tv5, v5, "tv5 *= v2"), TestCase::QUICK);
+  AddTestCase (new SpectrumValueTestCase (tv6, v6, "tv6 div= v2"), TestCase::QUICK);
 
   SpectrumValue tv7a (f), tv8a (f), tv9a (f), tv10a (f);
   tv7a = v1 + doubleValue;
   tv8a = v1 - doubleValue;
   tv9a = v1 * doubleValue;
   tv10a = v1 / doubleValue;
-  AddTestCase (new SpectrumValueTestCase (tv7a, v7, "tv7a = v1 + doubleValue"));
-  AddTestCase (new SpectrumValueTestCase (tv8a, v8, "tv8a = v1 - doubleValue"));
-  AddTestCase (new SpectrumValueTestCase (tv9a, v9, "tv9a = v1 * doubleValue"));
-  AddTestCase (new SpectrumValueTestCase (tv10a, v10, "tv10a = v1 div doubleValue"));
+  AddTestCase (new SpectrumValueTestCase (tv7a, v7, "tv7a = v1 + doubleValue"), TestCase::QUICK);
+  AddTestCase (new SpectrumValueTestCase (tv8a, v8, "tv8a = v1 - doubleValue"), TestCase::QUICK);
+  AddTestCase (new SpectrumValueTestCase (tv9a, v9, "tv9a = v1 * doubleValue"), TestCase::QUICK);
+  AddTestCase (new SpectrumValueTestCase (tv10a, v10, "tv10a = v1 div doubleValue"), TestCase::QUICK);
 
   SpectrumValue tv7b (f), tv8b (f), tv9b (f), tv10b (f);
   tv7b =  doubleValue + v1;
   tv8b =  doubleValue - v1;
   tv9b =  doubleValue * v1;
   tv10b = doubleValue / v1;
-  AddTestCase (new SpectrumValueTestCase (tv7b, v7, "tv7b =  doubleValue + v1"));
-  AddTestCase (new SpectrumValueTestCase (tv8b, v8, "tv8b =  doubleValue - v1"));
-  AddTestCase (new SpectrumValueTestCase (tv9b, v9, "tv9b =  doubleValue * v1"));
-  AddTestCase (new SpectrumValueTestCase (tv10b, v10, "tv10b = doubleValue div v1"));
+  AddTestCase (new SpectrumValueTestCase (tv7b, v7, "tv7b =  doubleValue + v1"), TestCase::QUICK);
+  AddTestCase (new SpectrumValueTestCase (tv8b, v8, "tv8b =  doubleValue - v1"), TestCase::QUICK);
+  AddTestCase (new SpectrumValueTestCase (tv9b, v9, "tv9b =  doubleValue * v1"), TestCase::QUICK);
+  AddTestCase (new SpectrumValueTestCase (tv10b, v10, "tv10b = doubleValue div v1"), TestCase::QUICK);
 
 
 
@@ -234,13 +234,13 @@ SpectrumValueTestSuite::SpectrumValueTestSuite ()
   v1ls3[0] = v1[3];
   v1ls3[1] = v1[4];
   tv1ls3 = v1 << 3;
-  AddTestCase (new SpectrumValueTestCase (tv1ls3, v1ls3, "tv1ls3 = v1 << 3"));
+  AddTestCase (new SpectrumValueTestCase (tv1ls3, v1ls3, "tv1ls3 = v1 << 3"), TestCase::QUICK);
 
 
   v1rs3[3] = v1[0];
   v1rs3[4] = v1[1];
   tv1rs3 = v1 >> 3;
-  AddTestCase (new SpectrumValueTestCase (tv1rs3, v1rs3, "tv1rs3 = v1 >> 3"));
+  AddTestCase (new SpectrumValueTestCase (tv1rs3, v1rs3, "tv1rs3 = v1 >> 3"), TestCase::QUICK);
 
 
 }
@@ -296,7 +296,7 @@ SpectrumConverterTestSuite::SpectrumConverterTestSuite ()
 //   NS_LOG_LOGIC(t12);
 //   NS_LOG_LOGIC(*res);
 
-  AddTestCase (new SpectrumValueTestCase (t12, *res, ""));
+  AddTestCase (new SpectrumValueTestCase (t12, *res, ""), TestCase::QUICK);
   // TEST_ASSERT(MoreOrLessEqual(t12, *res));
 
   Ptr<SpectrumValue> v2a = Create<SpectrumValue> (sof2);
@@ -308,7 +308,7 @@ SpectrumConverterTestSuite::SpectrumConverterTestSuite ()
 //   NS_LOG_LOGIC(*v2a);
 //   NS_LOG_LOGIC(t21a);
 //   NS_LOG_LOGIC(*res);
-  AddTestCase (new SpectrumValueTestCase (t21a, *res, ""));
+  AddTestCase (new SpectrumValueTestCase (t21a, *res, ""), TestCase::QUICK);
   // TEST_ASSERT(MoreOrLessEqual(t21a, *res));
 
   Ptr<SpectrumValue> v2b = Create<SpectrumValue> (sof2);
@@ -327,7 +327,7 @@ SpectrumConverterTestSuite::SpectrumConverterTestSuite ()
 //   NS_LOG_LOGIC(*v2b);
 //   NS_LOG_LOGIC(t21b);
 //   NS_LOG_LOGIC(*res);
-  AddTestCase (new SpectrumValueTestCase (t21b, *res, ""));
+  AddTestCase (new SpectrumValueTestCase (t21b, *res, ""), TestCase::QUICK);
 
 
 }

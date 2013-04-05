@@ -1,7 +1,8 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 import os
-import Options
+
+from waflib import Options
 
 
 def options(opt):
@@ -107,7 +108,7 @@ def build(bld):
         module.use.extend(['NSCLICK', 'DL'])
         module_test.use.extend(['NSCLICK', 'DL'])
 
-    headers = bld.new_task_gen(features=['ns3header'])
+    headers = bld(features='ns3header')
     headers.module = 'click'
     headers.source = [
         'model/ipv4-click-routing.h',
@@ -116,6 +117,6 @@ def build(bld):
         ]
 
     if bld.env['ENABLE_EXAMPLES']:
-        bld.add_subdirs('examples')
+        bld.recurse('examples')
 
     bld.ns3_python_bindings()

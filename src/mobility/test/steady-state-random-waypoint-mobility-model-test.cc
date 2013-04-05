@@ -141,7 +141,7 @@ struct SteadyStateRandomWaypointTestSuite : public TestSuite
 {
   SteadyStateRandomWaypointTestSuite () : TestSuite ("steady-state-rwp-mobility-model", UNIT)
   {
-    AddTestCase (new SteadyStateRandomWaypointTest);
+    AddTestCase (new SteadyStateRandomWaypointTest, TestCase::QUICK);
   }
 } g_steadyStateRandomWaypointTestSuite;
 

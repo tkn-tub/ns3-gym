@@ -305,11 +305,11 @@ public:
 OlsrTestSuite::OlsrTestSuite()
   : TestSuite ("routing-olsr-header", UNIT)
 {
-  AddTestCase (new OlsrHnaTestCase ());
-  AddTestCase (new OlsrTcTestCase ());
-  AddTestCase (new OlsrHelloTestCase ());
-  AddTestCase (new OlsrMidTestCase ());
-  AddTestCase (new OlsrEmfTestCase ());
+  AddTestCase (new OlsrHnaTestCase (), TestCase::QUICK);
+  AddTestCase (new OlsrTcTestCase (), TestCase::QUICK);
+  AddTestCase (new OlsrHelloTestCase (), TestCase::QUICK);
+  AddTestCase (new OlsrMidTestCase (), TestCase::QUICK);
+  AddTestCase (new OlsrEmfTestCase (), TestCase::QUICK);
 }
 
 } // namespace ns3

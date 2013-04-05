@@ -151,8 +151,8 @@ static struct WaypointMobilityModelTestSuite : public TestSuite
 {
   WaypointMobilityModelTestSuite () : TestSuite ("waypoint-mobility-model", UNIT)
   {
-    AddTestCase (new WaypointMobilityModelNotifyTest (true));
-    AddTestCase (new WaypointMobilityModelNotifyTest (false));
+    AddTestCase (new WaypointMobilityModelNotifyTest (true), TestCase::QUICK);
+    AddTestCase (new WaypointMobilityModelNotifyTest (false), TestCase::QUICK);
   }
 } g_waypointMobilityModelTestSuite;
 

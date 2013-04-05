@@ -271,8 +271,8 @@ public:
 NscTcpLossTestSuite::NscTcpLossTestSuite ()
   : TestSuite ("nsc-tcp-loss", SYSTEM)
 {
-  AddTestCase (new NscTcpLossTestCase1);
-  AddTestCase (new NscTcpLossTestCase2);
+  AddTestCase (new NscTcpLossTestCase1, TestCase::QUICK);
+  AddTestCase (new NscTcpLossTestCase2, TestCase::QUICK);
 }
 
 static NscTcpLossTestSuite nscTcpLossTestSuite;

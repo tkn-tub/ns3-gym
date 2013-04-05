@@ -450,9 +450,11 @@ TcpSocketBase::Close (void)
   // Bug number 426 claims we should send reset in this case.
   if (m_rxBuffer.Size () != 0)
     {
+      NS_LOG_INFO ("Socket " << this << " << unread rx data during close.  Sending reset");
       SendRST ();
       return 0;
     }
+ 
   if (m_txBuffer.SizeFromSequence (m_nextTxSequence) > 0)
     { // App close with pending data must wait until all data transmitted
       if (m_closeOnEmpty == false)
@@ -470,7 +472,32 @@ int
 TcpSocketBase::ShutdownSend (void)
 {
   NS_LOG_FUNCTION (this);
+  
+  //this prevents data from being added to the buffer
   m_shutdownSend = true;
+  m_closeOnEmpty = true;
+  //if buffer is already empty, send a fin now
+  //otherwise fin will go when buffer empties.
+  if (m_txBuffer.Size () == 0)
+    {
+      if (m_state == ESTABLISHED || m_state == CLOSE_WAIT)
+        {
+          NS_LOG_INFO("Emtpy tx buffer, send fin");
+          SendEmptyPacket (TcpHeader::FIN);  
+
+          if (m_state == ESTABLISHED)
+            { // On active close: I am the first one to send FIN
+              NS_LOG_INFO ("ESTABLISHED -> FIN_WAIT_1");
+              m_state = FIN_WAIT_1;
+            }
+          else
+            { // On passive close: Peer sent me FIN already
+              NS_LOG_INFO ("CLOSE_WAIT -> LAST_ACK");
+              m_state = LAST_ACK;
+            }  
+        }
+    }
+ 
   return 0;
 }
 
@@ -496,6 +523,11 @@ TcpSocketBase::Send (Ptr<Packet> p, uint32_t flags)
       if (!m_txBuffer.Add (p))
         { // TxBuffer overflow, send failed
           m_errno = ERROR_MSGSIZE;
+          return -1;
+        }
+      if (m_shutdownSend)
+        {
+          m_errno = ERROR_SHUTDOWN;
           return -1;
         }
       // Submit the data to lower layers
@@ -1922,12 +1954,6 @@ TcpSocketBase::SendPendingData (bool withAck)
                     " highestRxAck " << m_txBuffer.HeadSequence () <<
                     " pd->Size " << m_txBuffer.Size () <<
                     " pd->SFS " << m_txBuffer.SizeFromSequence (m_nextTxSequence));
-      // Quit if send disallowed
-      if (m_shutdownSend)
-        {
-          m_errno = ERROR_SHUTDOWN;
-          return false;
-        }
       // Stop sending if we need to wait for a larger Tx window (prevent silly window syndrome)
       if (w < m_segmentSize && m_txBuffer.SizeFromSequence (m_nextTxSequence) > w)
         {

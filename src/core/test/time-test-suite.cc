@@ -139,7 +139,7 @@ public:
   TimeTestSuite ()
     : TestSuite ("time", UNIT)
   {
-    AddTestCase (new TimeSimpleTestCase (Time::US));
-    AddTestCase (new TimesWithSignsTestCase ());
+    AddTestCase (new TimeSimpleTestCase (Time::US), TestCase::QUICK);
+    AddTestCase (new TimesWithSignsTestCase (), TestCase::QUICK);
   }
 } g_timeTestSuite;

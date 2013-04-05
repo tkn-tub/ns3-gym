@@ -24,7 +24,7 @@ def build(bld):
         'test/%(MODULE)s-test-suite.cc',
         ]
 
-    headers = bld.new_task_gen(features=['ns3header'])
+    headers = bld(features='ns3header')
     headers.module = %(MODULE)r
     headers.source = [
         'model/%(MODULE)s.h',
@@ -32,7 +32,7 @@ def build(bld):
         ]
 
     if bld.env.ENABLE_EXAMPLES:
-        bld.add_subdirs('examples')
+        bld.recurse('examples')
 
     # bld.ns3_python_bindings()
 
@@ -213,17 +213,23 @@ static %(CAPITALIZED)sTestSuite %(MODULE)sTestSuite;
 DOC_RST_TEMPLATE = '''Example Module Documentation
 ----------------------------
 
+.. include:: replace.txt
+
 .. heading hierarchy:
    ------------- Chapter
    ************* Section (#.#)
    ============= Subsection (#.#.#)
    ############# Paragraph (no number)
 
-This is a suggested outline for adding new module documentation to ns-3.
+This is a suggested outline for adding new module documentation to |ns3|.
 See ``src/click/doc/click.rst`` for an example.
 
 The introductory paragraph is for describing what this code is trying to
 model.
+
+For consistency (italicized formatting), please use |ns3| to refer to
+ns-3 in the documentation (and likewise, |ns2| for ns-2).  These macros
+are defined in the file ``replace.txt``.
 
 Model Description
 *****************
@@ -338,7 +344,7 @@ def main(argv):
     model_cc.close()
 
     model_h = file(os.path.join(moduledir, "model", "%s.h" % modname), "wt")
-    model_h.write(MODEL_H_TEMPLATE % dict(MODULE=modname, INCLUDE_GUARD="__%s_H__" % (modname.upper()),))
+    model_h.write(MODEL_H_TEMPLATE % dict(MODULE=modname, INCLUDE_GUARD="%s_H" % (modname.replace("-", "_").upper()),))
     model_h.close()
 
 
@@ -349,7 +355,7 @@ def main(argv):
     testdir = os.path.join(moduledir, "test")
     os.mkdir(testdir)
     test_cc = file(os.path.join(moduledir, "test", "%s-test-suite.cc" % modname), "wt")
-    test_cc.write(TEST_CC_TEMPLATE % dict(MODULE=modname,CAPITALIZED=modname.capitalize()))
+    test_cc.write(TEST_CC_TEMPLATE % dict(MODULE=modname, CAPITALIZED=''.join([word.capitalize() for word in modname.split('-')])))
     test_cc.close()
 
 
@@ -365,7 +371,7 @@ def main(argv):
     helper_cc.close()
 
     helper_h = file(os.path.join(moduledir, "helper", "%s-helper.h" % modname), "wt")
-    helper_h.write(HELPER_H_TEMPLATE % dict(MODULE=modname, INCLUDE_GUARD="__%s_HELPER_H__" % (modname.upper()),))
+    helper_h.write(HELPER_H_TEMPLATE % dict(MODULE=modname, INCLUDE_GUARD="%s_HELPER_H" % (modname.replace("-", "_").upper()),))
     helper_h.close()
 
     #

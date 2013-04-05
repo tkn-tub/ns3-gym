@@ -618,9 +618,9 @@ public:
 ConfigTestSuite::ConfigTestSuite ()
   : TestSuite ("config", UNIT)
 {
-  AddTestCase (new RootNamespaceConfigTestCase);
-  AddTestCase (new UnderRootNamespaceConfigTestCase);
-  AddTestCase (new ObjectVectorConfigTestCase);
+  AddTestCase (new RootNamespaceConfigTestCase, TestCase::QUICK);
+  AddTestCase (new UnderRootNamespaceConfigTestCase, TestCase::QUICK);
+  AddTestCase (new ObjectVectorConfigTestCase, TestCase::QUICK);
 }
 
 static ConfigTestSuite configTestSuite;

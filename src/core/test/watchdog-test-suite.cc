@@ -74,6 +74,6 @@ public:
   WatchdogTestSuite()
     : TestSuite ("watchdog", UNIT)
   {
-    AddTestCase (new WatchdogTestCase ());
+    AddTestCase (new WatchdogTestCase (), TestCase::QUICK);
   }
 } g_watchdogTestSuite;

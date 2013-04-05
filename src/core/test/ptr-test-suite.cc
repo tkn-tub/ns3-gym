@@ -269,6 +269,6 @@ public:
   PtrTestSuite ()
     : TestSuite ("ptr", UNIT)
   {
-    AddTestCase (new PtrTestCase ());
+    AddTestCase (new PtrTestCase (), TestCase::QUICK);
   }
 } g_ptrTestSuite;

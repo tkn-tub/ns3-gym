@@ -65,7 +65,7 @@ public:
 PointToPointTestSuite::PointToPointTestSuite ()
   : TestSuite ("devices-point-to-point", UNIT)
 {
-  AddTestCase (new PointToPointTest);
+  AddTestCase (new PointToPointTest, TestCase::QUICK);
 }
 
 static PointToPointTestSuite g_pointToPointTestSuite;

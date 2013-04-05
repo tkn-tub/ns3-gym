@@ -26,11 +26,9 @@
 // - pcap traces generated as tcp-nsc-lfn-0-0.pcap and tcp-nsc-lfn-1-0.pcap
 //  Usage (e.g.): ./waf --run 'tcp-nsc-lfn --TCP_CONGESTION=hybla --runtime=30'
 
-#include <ctype.h>
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <cassert>
 
 #include "ns3/core-module.h"
 #include "ns3/network-module.h"

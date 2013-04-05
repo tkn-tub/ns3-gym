@@ -207,5 +207,5 @@ private:
 Ipv6PacketInfoTagTestSuite::Ipv6PacketInfoTagTestSuite ()
   : TestSuite ("ipv6-packet-info-tag", UNIT)
 {
-  AddTestCase (new Ipv6PacketInfoTagTest ());
+  AddTestCase (new Ipv6PacketInfoTagTest (), TestCase::QUICK);
 }

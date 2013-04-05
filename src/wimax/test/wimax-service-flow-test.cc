@@ -165,7 +165,7 @@ public:
 Ns3WimaxServiceFlowTestSuite::Ns3WimaxServiceFlowTestSuite ()
   : TestSuite ("wimax-service-flow", UNIT)
 {
-  AddTestCase (new Ns3WimaxSfCreationTestCase);
+  AddTestCase (new Ns3WimaxSfCreationTestCase, TestCase::QUICK);
 }
 
 static Ns3WimaxServiceFlowTestSuite ns3WimaxServiceFlowTestSuite;

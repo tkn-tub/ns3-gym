@@ -110,9 +110,9 @@ ItuR1411LosPropagationLossModelTestSuite::ItuR1411LosPropagationLossModelTestSui
 
   // reference values obtained with the octave scripts in src/propagation/test/reference/
 
-  AddTestCase (new ItuR1411LosPropagationLossModelTestCase (2.1140e9, 100, 30, 1,  81.005, "freq=2114MHz, dist=100m"));
+  AddTestCase (new ItuR1411LosPropagationLossModelTestCase (2.1140e9, 100, 30, 1,  81.005, "freq=2114MHz, dist=100m"), TestCase::QUICK);
 
-  AddTestCase (new ItuR1411LosPropagationLossModelTestCase (1999e6, 200, 30, 1,  87.060, "freq=1999MHz, dist=200m"));
+  AddTestCase (new ItuR1411LosPropagationLossModelTestCase (1999e6, 200, 30, 1,  87.060, "freq=1999MHz, dist=200m"), TestCase::QUICK);
 
 
 

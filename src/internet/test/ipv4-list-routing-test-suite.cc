@@ -118,8 +118,8 @@ public:
   Ipv4ListRoutingTestSuite()
     : TestSuite ("ipv4-list-routing", UNIT)
   {
-    AddTestCase (new Ipv4ListRoutingPositiveTestCase ());
-    AddTestCase (new Ipv4ListRoutingNegativeTestCase ());
+    AddTestCase (new Ipv4ListRoutingPositiveTestCase (), TestCase::QUICK);
+    AddTestCase (new Ipv4ListRoutingNegativeTestCase (), TestCase::QUICK);
   }
 
 } g_ipv4ListRoutingTestSuite;

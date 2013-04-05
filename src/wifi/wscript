@@ -60,6 +60,7 @@ def build(bld):
         'model/block-ack-agreement.cc',
         'model/block-ack-manager.cc',
         'model/block-ack-cache.cc',
+        'model/snr-tag.cc',
         'helper/athstats-helper.cc',
         'helper/wifi-helper.cc',
         'helper/yans-wifi-helper.cc',
@@ -75,7 +76,7 @@ def build(bld):
         'test/wifi-test.cc',
         ]
 
-    headers = bld.new_task_gen(features=['ns3header'])
+    headers = bld(features='ns3header')
     headers.module = 'wifi'
     headers.source = [
         'model/wifi-information-element.h',
@@ -132,6 +133,7 @@ def build(bld):
         'model/block-ack-agreement.h',
         'model/block-ack-manager.h',
         'model/block-ack-cache.h',
+        'model/snr-tag.h',
         'helper/athstats-helper.h',
         'helper/wifi-helper.h',
         'helper/yans-wifi-helper.h',
@@ -144,7 +146,7 @@ def build(bld):
         obj_test.use.extend(['GSL', 'GSLCBLAS', 'M'])
 
     if (bld.env['ENABLE_EXAMPLES']):
-        bld.add_subdirs('examples')
+        bld.recurse('examples')
 
     bld.ns3_python_bindings()
 

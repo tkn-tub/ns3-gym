@@ -8,7 +8,7 @@ def build(bld):
         'model/csma-channel.cc',
         'helper/csma-helper.cc',
         ]
-    headers = bld.new_task_gen(features=['ns3header'])
+    headers = bld(features='ns3header')
     headers.module = 'csma'
     headers.source = [
         'model/backoff.h',
@@ -18,6 +18,6 @@ def build(bld):
         ]
 
     if bld.env['ENABLE_EXAMPLES']:
-        bld.add_subdirs('examples')
+        bld.recurse('examples')
 
     bld.ns3_python_bindings()

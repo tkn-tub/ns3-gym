@@ -22,9 +22,15 @@ To be determined
 
 New user-visible features
 -------------------------
+- ns-3-click: it's now possible to (i) have Click pull random numbers from
+  ns-3 and (ii) have ns-3 set "defines" in Click via the simulation file 
+  (see src/click/examples/nsclick-defines.cc).
 
 Bugs fixed
 ----------
+- bug 1566 - WiFi SNR tag improvements
+- Bug 1582 - IPv6 raw socket return value is not like Linux socket
+- bug 1585 - Length field of A-MSDU subframe header endianness
 
 Known issues
 ------------

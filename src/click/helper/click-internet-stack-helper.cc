@@ -125,6 +125,21 @@ ClickInternetStackHelper::SetClickFile (Ptr<Node> node, std::string clickfile)
 }
 
 void
+ClickInternetStackHelper::SetDefines (NodeContainer c, std::map<std::string, std::string> defines)
+{
+  for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
+    {
+	  SetDefines (*i, defines);
+    }
+}
+
+void
+ClickInternetStackHelper::SetDefines (Ptr<Node> node, std::map<std::string, std::string> defines)
+{
+  m_nodeToDefinesMap.insert (std::make_pair (node, defines));
+}
+
+void
 ClickInternetStackHelper::SetRoutingTableElement (NodeContainer c, std::string rt)
 {
   for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
@@ -191,6 +206,13 @@ ClickInternetStackHelper::Install (Ptr<Node> node) const
       if (it != m_nodeToClickFileMap.end ())
         {
           ipv4Routing->SetClickFile (it->second);
+        }
+
+      std::map<Ptr<Node>, std::map<std::string, std::string> >::const_iterator definesIt;
+      definesIt = m_nodeToDefinesMap.find (node);
+      if (definesIt != m_nodeToDefinesMap.end ())
+        {
+          ipv4Routing->SetDefines (definesIt->second);
         }
 
       it = m_nodeToRoutingTableElementMap.find (node);

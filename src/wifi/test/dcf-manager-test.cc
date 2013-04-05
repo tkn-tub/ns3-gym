@@ -682,7 +682,7 @@ public:
 DcfTestSuite::DcfTestSuite ()
   : TestSuite ("devices-wifi-dcf", UNIT)
 {
-  AddTestCase (new DcfManagerTest);
+  AddTestCase (new DcfManagerTest, TestCase::QUICK);
 }
 
 static DcfTestSuite g_dcfTestSuite;

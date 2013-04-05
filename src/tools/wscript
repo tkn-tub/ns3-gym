@@ -15,7 +15,7 @@ def build(bld):
         'test/event-garbage-collector-test-suite.cc',
         ]
     
-    headers = bld.new_task_gen(features=['ns3header'])
+    headers = bld(features='ns3header')
     headers.module = 'tools'
     headers.source = [
         'model/average.h',
@@ -25,6 +25,6 @@ def build(bld):
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):
-        bld.add_subdirs('examples')
+        bld.recurse('examples')
 
     bld.ns3_python_bindings()

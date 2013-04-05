@@ -16,7 +16,7 @@ def build(bld):
         return
 
     test = bld.create_ns3_module('test', ['internet', 'mobility', 'applications', 'csma', 'bridge', 'config-store', 'tools', 'point-to-point', 'csma-layout', 'flow-monitor', 'wifi'])
-    headers = bld.new_task_gen(features=['ns3header'])
+    headers = bld(features='ns3header')
     headers.module = 'test'
 
     test_test = bld.create_ns3_module_test_library('test')
@@ -24,7 +24,6 @@ def build(bld):
         'csma-system-test-suite.cc',
         'global-routing-test-suite.cc',
         'static-routing-test-suite.cc',
-        'error-model-test-suite.cc',
         'mobility-test-suite.cc',
         'ns3wifi/wifi-interference-test-suite.cc',
         'ns3wifi/wifi-msdu-aggregator-test-suite.cc',

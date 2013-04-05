@@ -48,6 +48,7 @@ SOURCES = \
 	$(SRC)/propagation/doc/propagation.rst \
 	$(SRC)/network/doc/network-overview.rst \
 	$(SRC)/network/doc/packets.rst \
+	$(SRC)/network/doc/error-model.rst \
 	$(SRC)/network/doc/sockets-api.rst \
 	$(SRC)/network/doc/simple.rst \
 	$(SRC)/network/doc/queue.rst \
@@ -279,6 +280,8 @@ PAPEROPT_letter = -D latex_paper_size=letter
 ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) $(SOURCETEMP) 
 
 .PHONY: help clean html dirhtml singlehtml pickle json htmlhelp qthelp devhelp epub latex latexpdf text man changes linkcheck doctest
+
+.NOTPARALLEL:
 
 help:
 	@echo "Please use \`make <target>' where <target> is one of"

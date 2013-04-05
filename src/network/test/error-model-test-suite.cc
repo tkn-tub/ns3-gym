@@ -129,7 +129,7 @@ public:
 ErrorModelTestSuite::ErrorModelTestSuite ()
   : TestSuite ("error-model", UNIT)
 {
-  AddTestCase (new ErrorModelSimple);
+  AddTestCase (new ErrorModelSimple, TestCase::QUICK);
 }
 
 // Do not forget to allocate an instance of this TestSuite

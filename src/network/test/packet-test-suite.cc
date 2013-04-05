@@ -445,7 +445,7 @@ public:
 PacketTestSuite::PacketTestSuite ()
   : TestSuite ("packet", UNIT)
 {
-  AddTestCase (new PacketTest);
+  AddTestCase (new PacketTest, TestCase::QUICK);
 }
 
 static PacketTestSuite g_packetTestSuite;

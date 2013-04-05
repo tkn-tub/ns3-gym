@@ -214,7 +214,7 @@ public:
   TimerTestSuite ()
     : TestSuite ("timer", UNIT)
   {
-    AddTestCase (new TimerStateTestCase ());
-    AddTestCase (new TimerTemplateTestCase ());
+    AddTestCase (new TimerStateTestCase (), TestCase::QUICK);
+    AddTestCase (new TimerTemplateTestCase (), TestCase::QUICK);
   }
 } g_timerTestSuite;

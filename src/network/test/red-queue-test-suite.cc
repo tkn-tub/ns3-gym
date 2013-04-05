@@ -276,6 +276,6 @@ public:
   RedQueueTestSuite ()
     : TestSuite ("red-queue", UNIT)
   {
-    AddTestCase (new RedQueueTestCase ());
+    AddTestCase (new RedQueueTestCase (), TestCase::QUICK);
   }
 } g_redQueueTestSuite;

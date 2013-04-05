@@ -82,7 +82,7 @@ public:
 ManyUniformRandomVariablesOneGetValueCallTestSuite::ManyUniformRandomVariablesOneGetValueCallTestSuite ()
   : TestSuite ("many-uniform-random-variables-one-get-value-call", PERFORMANCE)
 {
-  AddTestCase (new ManyUniformRandomVariablesOneGetValueCallTestCase);
+  AddTestCase (new ManyUniformRandomVariablesOneGetValueCallTestCase, TestCase::QUICK);
 }
 
 static ManyUniformRandomVariablesOneGetValueCallTestSuite manyUniformRandomVariablesOneGetValueCallTestSuite;

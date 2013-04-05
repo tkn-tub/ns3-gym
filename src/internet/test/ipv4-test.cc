@@ -103,7 +103,7 @@ public:
   IPv4L3ProtocolTestSuite () :
     TestSuite ("ipv4-protocol", UNIT)
   {
-    AddTestCase (new Ipv4L3ProtocolTestCase ());
+    AddTestCase (new Ipv4L3ProtocolTestCase (), TestCase::QUICK);
   }
 } g_ipv4protocolTestSuite;
 

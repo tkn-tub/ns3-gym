@@ -282,7 +282,7 @@ public:
 WifiInterferenceTestSuite::WifiInterferenceTestSuite ()
   : TestSuite ("ns3-wifi-interference", UNIT)
 {
-  AddTestCase (new WifiInterferenceTestCase);
+  AddTestCase (new WifiInterferenceTestCase, TestCase::QUICK);
 }
 
 static WifiInterferenceTestSuite wifiInterferenceTestSuite;

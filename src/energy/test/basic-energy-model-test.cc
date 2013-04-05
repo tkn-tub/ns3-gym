@@ -380,8 +380,8 @@ public:
 BasicEnergyModelTestSuite::BasicEnergyModelTestSuite ()
   : TestSuite ("basic-energy-model", UNIT)
 {
-  AddTestCase (new BasicEnergyUpdateTest);
-  AddTestCase (new BasicEnergyDepletionTest);
+  AddTestCase (new BasicEnergyUpdateTest, TestCase::QUICK);
+  AddTestCase (new BasicEnergyDepletionTest, TestCase::QUICK);
 }
 
 // create an instance of the test suite

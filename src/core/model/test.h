@@ -834,6 +834,16 @@ class TestRunnerImpl;
 class TestCase
 {
 public:
+  /**
+   * \enum TestDuration
+   * \brief How long the test takes to execute.
+   */
+  enum TestDuration {
+    QUICK         = 1,  /// Fast test.
+    EXTENSIVE     = 2,  /// Medium length test.
+    TAKES_FOREVER = 3   /// Very long running test.
+  };
+
   virtual ~TestCase ();
 
 protected:
@@ -846,8 +856,19 @@ protected:
    * \brief Add an individual test case to this test suite.
    *
    * \param testCase Pointer to the test case object to be added.
+   *
+   * \deprecated this method will go away in future versions of 
+   * ns-3. Please use instead AddTestCase (TestCase, TestDuration)  
    */
-  void AddTestCase (TestCase *testCase);
+  void AddTestCase (TestCase *testCase) NS_DEPRECATED;
+
+  /**
+   * \brief Add an individual test case to this test suite.
+   *
+   * \param testCase Pointer to the test case object to be added.
+   * \param duration Amount of time this test takes to execute.
+   */
+  void AddTestCase (TestCase *testCase, enum TestDuration duration);
 
   /**
    * \param directory the directory where the test data is located
@@ -932,6 +953,7 @@ private:
   TestRunnerImpl *m_runner;
   struct Result *m_result;
   std::string m_name;
+  enum TestDuration m_duration;
 };
 
 /**

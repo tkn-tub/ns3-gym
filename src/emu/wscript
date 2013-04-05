@@ -36,7 +36,7 @@ def build(bld):
             'helper/emu-helper.cc',
         ]
 
-    headers = bld.new_task_gen(features=['ns3header'])
+    headers = bld(features='ns3header')
     headers.module = 'emu'
     headers.source = [
             'model/emu-net-device.h',
@@ -52,6 +52,6 @@ def build(bld):
     module.env.append_value("DEFINES", "EMU_SOCK_CREATOR=\"%s\"" % (creator.target,))
 
     if bld.env['ENABLE_EXAMPLES']:
-        bld.add_subdirs('examples')
+        bld.recurse('examples')
 
     bld.ns3_python_bindings()

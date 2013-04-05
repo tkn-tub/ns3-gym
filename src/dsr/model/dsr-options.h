@@ -153,14 +153,6 @@ public:
    */
   void RemoveDuplicates (std::vector<Ipv4Address>& vec);
   /*
-   * \brief Schedule the intermediate node route request broadcast
-   * \param the original packet
-   * \param rrepHeader The rrep header
-   * \param source address
-   * \param destination address
-   */
-  void ScheduleReply (Ptr<Packet> &packet, std::vector<Ipv4Address> &nodeList, Ipv4Address &source, Ipv4Address &destination);
-  /*
    * \brief Get the node id with Ipv4Address
    * \return the id of the node
    */

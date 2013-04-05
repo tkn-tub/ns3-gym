@@ -26,6 +26,7 @@
 #include "ns3/address.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/inet6-socket-address.h"
+#include "ns3/packet-socket-address.h"
 #include "ns3/node.h"
 #include "ns3/nstime.h"
 #include "ns3/data-rate.h"
@@ -148,7 +149,15 @@ void OnOffApplication::StartApplication () // Called at time specified by Start
   if (!m_socket)
     {
       m_socket = Socket::CreateSocket (GetNode (), m_tid);
-      m_socket->Bind ();
+      if (Inet6SocketAddress::IsMatchingType (m_peer))
+        {
+          m_socket->Bind6 ();
+        }
+      else if (InetSocketAddress::IsMatchingType (m_peer) ||
+               PacketSocketAddress::IsMatchingType (m_peer))
+        {
+          m_socket->Bind ();
+        }
       m_socket->Connect (m_peer);
       m_socket->SetAllowBroadcast (true);
       m_socket->ShutdownRecv ();

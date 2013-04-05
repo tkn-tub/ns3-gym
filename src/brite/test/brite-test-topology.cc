@@ -192,8 +192,8 @@ class BriteTestSuite : public TestSuite
 public:
   BriteTestSuite () : TestSuite ("brite-testing", UNIT)
   {
-    AddTestCase (new BriteTopologyStructureTestCase);
-    AddTestCase (new BriteTopologyFunctionTestCase);
+    AddTestCase (new BriteTopologyStructureTestCase, TestCase::QUICK);
+    AddTestCase (new BriteTopologyFunctionTestCase, TestCase::QUICK);
   }
 } g_briteTestSuite;
 

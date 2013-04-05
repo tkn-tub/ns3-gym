@@ -165,8 +165,8 @@ public:
 Ns3WimaxSSMacTestSuite::Ns3WimaxSSMacTestSuite ()
   : TestSuite ("wimax-ss-mac-layer", UNIT)
 {
-  AddTestCase (new Ns3WimaxNetworkEntryTestCase);
-  AddTestCase (new Ns3WimaxManagementConnectionsTestCase);
+  AddTestCase (new Ns3WimaxNetworkEntryTestCase, TestCase::QUICK);
+  AddTestCase (new Ns3WimaxManagementConnectionsTestCase, TestCase::QUICK);
 }
 
 static Ns3WimaxSSMacTestSuite ns3WimaxSSMacTestSuite;

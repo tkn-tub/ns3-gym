@@ -363,10 +363,10 @@ public:
 MobilityTestSuite::MobilityTestSuite ()
   : TestSuite ("mobility", UNIT)
 {
-  AddTestCase (new WaypointLazyNotifyFalse);
-  AddTestCase (new WaypointLazyNotifyTrue);
-  AddTestCase (new WaypointInitialPositionIsWaypoint);
-  AddTestCase (new WaypointMobilityModelViaHelper);
+  AddTestCase (new WaypointLazyNotifyFalse, TestCase::QUICK);
+  AddTestCase (new WaypointLazyNotifyTrue, TestCase::QUICK);
+  AddTestCase (new WaypointInitialPositionIsWaypoint, TestCase::QUICK);
+  AddTestCase (new WaypointMobilityModelViaHelper, TestCase::QUICK);
 }
 
 static MobilityTestSuite mobilityTestSuite;

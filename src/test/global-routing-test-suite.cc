@@ -395,8 +395,8 @@ public:
 GlobalRoutingTestSuite::GlobalRoutingTestSuite ()
   : TestSuite ("global-routing", UNIT)
 {
-  AddTestCase (new DynamicGlobalRoutingTestCase);
-  AddTestCase (new GlobalRoutingSlash32TestCase);
+  AddTestCase (new DynamicGlobalRoutingTestCase, TestCase::QUICK);
+  AddTestCase (new GlobalRoutingSlash32TestCase, TestCase::QUICK);
 }
 
 // Do not forget to allocate an instance of this TestSuite

@@ -186,6 +186,6 @@ public:
   SequenceNumberTestSuite ()
     : TestSuite ("SequenceNumber", UNIT) 
   {
-    AddTestCase (new SequenceNumberTestCase ());
+    AddTestCase (new SequenceNumberTestCase (), TestCase::QUICK);
   }
 } g_seqNumTests;

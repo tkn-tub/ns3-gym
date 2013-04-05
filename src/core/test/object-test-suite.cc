@@ -419,9 +419,9 @@ public:
 ObjectTestSuite::ObjectTestSuite ()
   : TestSuite ("object", UNIT)
 {
-  AddTestCase (new CreateObjectTestCase);
-  AddTestCase (new AggregateObjectTestCase);
-  AddTestCase (new ObjectFactoryTestCase);
+  AddTestCase (new CreateObjectTestCase, TestCase::QUICK);
+  AddTestCase (new AggregateObjectTestCase, TestCase::QUICK);
+  AddTestCase (new ObjectFactoryTestCase, TestCase::QUICK);
 }
 
 static ObjectTestSuite objectTestSuite;

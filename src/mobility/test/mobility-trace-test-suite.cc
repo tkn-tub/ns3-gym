@@ -123,7 +123,7 @@ public:
 MobilityTraceTestSuite::MobilityTraceTestSuite ()
   : TestSuite ("mobility-trace", UNIT)
 {
-  AddTestCase (new MobilityTraceTestCase);
+  AddTestCase (new MobilityTraceTestCase, TestCase::QUICK);
 }
 
 static MobilityTraceTestSuite mobilityTraceTestSuite;

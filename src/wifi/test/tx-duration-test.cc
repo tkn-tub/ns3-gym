@@ -188,7 +188,7 @@ public:
 TxDurationTestSuite::TxDurationTestSuite ()
   : TestSuite ("devices-wifi-tx-duration", UNIT)
 {
-  AddTestCase (new TxDurationTest);
+  AddTestCase (new TxDurationTest, TestCase::QUICK);
 }
 
 static TxDurationTestSuite g_txDurationTestSuite;

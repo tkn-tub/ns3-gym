@@ -438,10 +438,10 @@ public:
 WifiTestSuite::WifiTestSuite ()
   : TestSuite ("devices-wifi", UNIT)
 {
-  AddTestCase (new WifiTest);
-  AddTestCase (new QosUtilsIsOldPacketTest);
-  AddTestCase (new InterferenceHelperSequenceTest); // Bug 991
-  AddTestCase (new Bug555TestCase); // Bug 555
+  AddTestCase (new WifiTest, TestCase::QUICK);
+  AddTestCase (new QosUtilsIsOldPacketTest, TestCase::QUICK);
+  AddTestCase (new InterferenceHelperSequenceTest, TestCase::QUICK); // Bug 991
+  AddTestCase (new Bug555TestCase, TestCase::QUICK); // Bug 555
 }
 
 static WifiTestSuite g_wifiTestSuite;

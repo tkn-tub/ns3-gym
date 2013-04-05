@@ -169,7 +169,7 @@ LtePathlossModelTestSuite::LtePathlossModelTestSuite ()
     std::ostringstream name;
     name << " snr= " << sinrDb << " dB, "
          << " mcs= " << snrEfficiencyMcs[i].mcsIndex;
-    AddTestCase (new LtePathlossModelSystemTestCase (name.str (),  sinrDb, dist[i], mcs));
+    AddTestCase (new LtePathlossModelSystemTestCase (name.str (),  sinrDb, dist[i], mcs), TestCase::QUICK);
   }
 
 

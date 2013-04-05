@@ -83,6 +83,6 @@ public:
   DropTailQueueTestSuite ()
     : TestSuite ("drop-tail-queue", UNIT)
   {
-    AddTestCase (new DropTailQueueTestCase ());
+    AddTestCase (new DropTailQueueTestCase (), TestCase::QUICK);
   }
 } g_dropTailQueueTestSuite;

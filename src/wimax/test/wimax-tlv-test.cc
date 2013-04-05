@@ -208,8 +208,8 @@ public:
 Ns3WimaxTlvTestSuite::Ns3WimaxTlvTestSuite ()
   : TestSuite ("wimax-tlv", UNIT)
 {
-  AddTestCase (new Ns3WimaxCsParamTlvTestCase);
-  AddTestCase (new Ns3WimaxSfTlvTestCase);
+  AddTestCase (new Ns3WimaxCsParamTlvTestCase, TestCase::QUICK);
+  AddTestCase (new Ns3WimaxSfTlvTestCase, TestCase::QUICK);
 }
 
 static Ns3WimaxTlvTestSuite ns3WimaxTlvTestSuite;

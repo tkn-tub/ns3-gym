@@ -143,6 +143,20 @@ public:
   void SetClickFile (Ptr<Node> node, std::string clickfile);
 
   /**
+   * \brief Set defines to be used for a group of nodes.
+   * \param c NodeContainer of nodes
+   * \param defines Defines mapping to be used
+   */
+  void SetDefines (NodeContainer c, std::map<std::string, std::string> defines);
+
+  /**
+   * \brief Set defines to be used for a node.
+   * \param node Node for which the defines are to be set
+   * \param defines Defines mapping to be used
+   */
+  void SetDefines (Ptr<Node> node, std::map<std::string, std::string> defines);
+
+  /**
    * \brief Set a Click routing table element for a group of nodes.
    * \param c NodeContainer of nodes
    * \param rt Click Routing Table element name
@@ -217,6 +231,11 @@ private:
    * \brief Node to Click file mapping
    */
   std::map < Ptr<Node>, std::string  > m_nodeToClickFileMap;
+
+  /**
+   * \brief Node to Click defines mapping
+   */
+  std::map < Ptr<Node>, std::map<std::string, std::string>  > m_nodeToDefinesMap;
 
   /**
    * \brief Node to Routing Table Element mapping

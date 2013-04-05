@@ -308,10 +308,10 @@ public:
   Ipv4AddressGeneratorTestSuite ()
     : TestSuite ("ipv4-address-generator")
   {
-    AddTestCase (new NetworkNumberAllocatorTestCase ());
-    AddTestCase (new AddressAllocatorTestCase ());
-    AddTestCase (new NetworkAndAddressTestCase ());
-    AddTestCase (new ExampleAddressGeneratorTestCase ());
-    AddTestCase (new AddressCollisionTestCase ());
+    AddTestCase (new NetworkNumberAllocatorTestCase (), TestCase::QUICK);
+    AddTestCase (new AddressAllocatorTestCase (), TestCase::QUICK);
+    AddTestCase (new NetworkAndAddressTestCase (), TestCase::QUICK);
+    AddTestCase (new ExampleAddressGeneratorTestCase (), TestCase::QUICK);
+    AddTestCase (new AddressCollisionTestCase (), TestCase::QUICK);
   }
 } g_ipv4AddressGeneratorTestSuite;

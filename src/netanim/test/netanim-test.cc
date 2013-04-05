@@ -112,7 +112,7 @@ public:
   AnimationInterfaceTestSuite () :
     TestSuite ("animation-interface", UNIT)
   {
-    AddTestCase (new AnimationInterfaceTestCase ());
+    AddTestCase (new AnimationInterfaceTestCase (), TestCase::QUICK);
   }
 } g_animationInterfaceTestSuite;
 

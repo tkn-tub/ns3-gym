@@ -1646,7 +1646,13 @@ Icmpv6OptionLinkLayerAddress::Icmpv6OptionLinkLayerAddress (bool source, Address
 {
   SetType (source ? Icmpv6Header::ICMPV6_OPT_LINK_LAYER_SOURCE : Icmpv6Header::ICMPV6_OPT_LINK_LAYER_TARGET);
   SetAddress (addr);
-  SetLength (GetSerializedSize () / 8);
+
+  uint8_t len = (2 + m_addr.GetLength ()) / 8;
+  if ( (2 + m_addr.GetLength ()) % 8 )
+    {
+      len ++;
+    }
+  SetLength (len);
 }
 
 Icmpv6OptionLinkLayerAddress::~Icmpv6OptionLinkLayerAddress ()
@@ -1670,8 +1676,7 @@ void Icmpv6OptionLinkLayerAddress::Print (std::ostream& os) const
 
 uint32_t Icmpv6OptionLinkLayerAddress::GetSerializedSize () const
 {
-  /* TODO add padding */
-  uint8_t nb = 2 + m_addr.GetLength ();
+  uint8_t nb = GetLength() * 8;
   return nb;
 }
 
@@ -1686,7 +1691,11 @@ void Icmpv6OptionLinkLayerAddress::Serialize (Buffer::Iterator start) const
   m_addr.CopyTo (mac);
   i.Write (mac, m_addr.GetLength ());
 
-  /* XXX if size of the option is not a multiple of 8, add padding */
+  uint8_t len = GetLength ()*8 - (2 + m_addr.GetLength ());
+  for (uint8_t nb = 0; nb<len; nb++)
+    {
+      i.WriteU8 (0);
+    }
 }
 
 uint32_t Icmpv6OptionLinkLayerAddress::Deserialize (Buffer::Iterator start)

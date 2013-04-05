@@ -928,20 +928,20 @@ public:
 NamesTestSuite::NamesTestSuite ()
   : TestSuite ("object-name-service", UNIT)
 {
-  AddTestCase (new BasicAddTestCase);
-  AddTestCase (new StringContextAddTestCase);
-  AddTestCase (new FullyQualifiedAddTestCase);
-  AddTestCase (new RelativeAddTestCase);
-  AddTestCase (new BasicRenameTestCase);
-  AddTestCase (new StringContextRenameTestCase);
-  AddTestCase (new FullyQualifiedRenameTestCase);
-  AddTestCase (new RelativeRenameTestCase);
-  AddTestCase (new FindPathTestCase);
-  AddTestCase (new BasicFindTestCase);
-  AddTestCase (new StringContextFindTestCase);
-  AddTestCase (new FullyQualifiedFindTestCase);
-  AddTestCase (new RelativeFindTestCase);
-  AddTestCase (new AlternateFindTestCase);
+  AddTestCase (new BasicAddTestCase, TestCase::QUICK);
+  AddTestCase (new StringContextAddTestCase, TestCase::QUICK);
+  AddTestCase (new FullyQualifiedAddTestCase, TestCase::QUICK);
+  AddTestCase (new RelativeAddTestCase, TestCase::QUICK);
+  AddTestCase (new BasicRenameTestCase, TestCase::QUICK);
+  AddTestCase (new StringContextRenameTestCase, TestCase::QUICK);
+  AddTestCase (new FullyQualifiedRenameTestCase, TestCase::QUICK);
+  AddTestCase (new RelativeRenameTestCase, TestCase::QUICK);
+  AddTestCase (new FindPathTestCase, TestCase::QUICK);
+  AddTestCase (new BasicFindTestCase, TestCase::QUICK);
+  AddTestCase (new StringContextFindTestCase, TestCase::QUICK);
+  AddTestCase (new FullyQualifiedFindTestCase, TestCase::QUICK);
+  AddTestCase (new RelativeFindTestCase, TestCase::QUICK);
+  AddTestCase (new AlternateFindTestCase, TestCase::QUICK);
 }
 
 static NamesTestSuite namesTestSuite;

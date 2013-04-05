@@ -2,10 +2,8 @@
 import os
 import sys
 
-import Options
-import Logs
-import Utils
-import Task
+from waflib import Options, Logs, Utils, Task
+
 
 # Required NSC version
 NSC_RELEASE_NAME = "nsc-0.5.3"
@@ -202,6 +200,7 @@ def build(bld):
         'test/ipv6-list-routing-test-suite.cc',
         'test/ipv6-packet-info-tag-test-suite.cc',
         'test/ipv6-test.cc',
+        'test/ipv6-raw-test.cc',
         'test/tcp-test.cc',
         'test/udp-test.cc',
         'test/ipv6-address-generator-test-suite.cc',
@@ -210,7 +209,7 @@ def build(bld):
         'test/ipv6-address-helper-test-suite.cc',
         ]
 
-    headers = bld.new_task_gen(features=['ns3header'])
+    headers = bld(features='ns3header')
     headers.module = 'internet'
     headers.source = [
         'model/udp-header.h',
@@ -294,7 +293,7 @@ def build(bld):
         internet_test.use.append('DL')
 
     if (bld.env['ENABLE_EXAMPLES']):
-        bld.add_subdirs('examples')
+        bld.recurse('examples')
 
     bld.ns3_python_bindings()
 

@@ -151,7 +151,7 @@ public:
 MeshTestSuite::MeshTestSuite ()
   : TestSuite ("devices-mesh", UNIT)
 {
-  AddTestCase (new MeshInformationElementVectorBist);
+  AddTestCase (new MeshInformationElementVectorBist, TestCase::QUICK);
 }
 
 static MeshTestSuite g_meshTestSuite;

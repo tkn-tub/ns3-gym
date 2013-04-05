@@ -62,6 +62,7 @@ def build(bld):
     network_test.source = [
         'test/buffer-test.cc',
         'test/drop-tail-queue-test-suite.cc',
+        'test/error-model-test-suite.cc',
         'test/ipv6-address-test-suite.cc',
         'test/packetbb-test-suite.cc',
         'test/packet-test-suite.cc',
@@ -71,7 +72,7 @@ def build(bld):
         'test/sequence-number-test-suite.cc',
         ]
 
-    headers = bld.new_task_gen(features=['ns3header'])
+    headers = bld(features='ns3header')
     headers.module = 'network'
     headers.source = [
         'model/address.h',
@@ -135,6 +136,6 @@ def build(bld):
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):
-        bld.add_subdirs('examples')
+        bld.recurse('examples')
 
     bld.ns3_python_bindings()

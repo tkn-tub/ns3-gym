@@ -220,6 +220,6 @@ public:
   GlobalRouteManagerImplTestSuite()
     : TestSuite ("global-route-manager-impl", UNIT)
   {
-    AddTestCase (new GlobalRouteManagerImplTestCase ());
+    AddTestCase (new GlobalRouteManagerImplTestCase (), TestCase::QUICK);
   }
 } g_globalRoutingManagerImplTestSuite;

@@ -108,10 +108,12 @@ LiIonEnergySource::LiIonEnergySource ()
   : m_drainedCapacity (0.0),
     m_lastUpdateTime (Seconds (0.0))
 {
+  NS_LOG_FUNCTION (this);
 }
 
 LiIonEnergySource::~LiIonEnergySource ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 void
@@ -134,6 +136,7 @@ LiIonEnergySource::GetInitialEnergy (void) const
 void
 LiIonEnergySource::SetInitialSupplyVoltage (double supplyVoltageV)
 {
+  NS_LOG_FUNCTION (this << supplyVoltageV);
   m_eFull = supplyVoltageV;
   m_supplyVoltageV = supplyVoltageV;
 }
@@ -148,7 +151,7 @@ LiIonEnergySource::GetSupplyVoltage (void) const
 void
 LiIonEnergySource::SetEnergyUpdateInterval (Time interval)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << interval);
   m_energyUpdateInterval = interval;
 }
 

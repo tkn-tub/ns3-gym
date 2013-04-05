@@ -29,12 +29,9 @@
 // numbers respectively
 //  Usage (e.g.): ./waf --run tcp-large-transfer
 
-
-#include <ctype.h>
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <cassert>
 
 #include "ns3/core-module.h"
 #include "ns3/applications-module.h"

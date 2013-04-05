@@ -219,10 +219,10 @@ public:
 CommandLineTestSuite::CommandLineTestSuite ()
   : TestSuite ("command-line", UNIT)
 {
-  AddTestCase (new CommandLineBooleanTestCase);
-  AddTestCase (new CommandLineIntTestCase);
-  AddTestCase (new CommandLineUnsignedIntTestCase);
-  AddTestCase (new CommandLineStringTestCase);
+  AddTestCase (new CommandLineBooleanTestCase, TestCase::QUICK);
+  AddTestCase (new CommandLineIntTestCase, TestCase::QUICK);
+  AddTestCase (new CommandLineUnsignedIntTestCase, TestCase::QUICK);
+  AddTestCase (new CommandLineStringTestCase, TestCase::QUICK);
 }
 
 static CommandLineTestSuite CommandLineTestSuite;

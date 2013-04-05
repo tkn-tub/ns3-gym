@@ -261,6 +261,6 @@ class Ipv4HeaderTestSuite : public TestSuite
 public:
   Ipv4HeaderTestSuite () : TestSuite ("ipv4-header", UNIT)
   {
-    AddTestCase (new Ipv4HeaderTest);
+    AddTestCase (new Ipv4HeaderTest, TestCase::QUICK);
   }
 } g_ipv4HeaderTestSuite;

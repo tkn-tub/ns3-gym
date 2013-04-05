@@ -206,5 +206,5 @@ private:
 Ipv4PacketInfoTagTestSuite::Ipv4PacketInfoTagTestSuite ()
   : TestSuite ("ipv4-packet-info-tag", UNIT)
 {
-  AddTestCase (new Ipv4PacketInfoTagTest ());
+  AddTestCase (new Ipv4PacketInfoTagTest (), TestCase::QUICK);
 }

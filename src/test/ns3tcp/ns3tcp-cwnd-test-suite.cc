@@ -588,8 +588,8 @@ public:
 Ns3TcpCwndTestSuite::Ns3TcpCwndTestSuite ()
   : TestSuite ("ns3-tcp-cwnd", SYSTEM)
 {
-  AddTestCase (new Ns3TcpCwndTestCase1);
-  AddTestCase (new Ns3TcpCwndTestCase2);
+  AddTestCase (new Ns3TcpCwndTestCase1, TestCase::QUICK);
+  AddTestCase (new Ns3TcpCwndTestCase2, TestCase::QUICK);
 }
 
 Ns3TcpCwndTestSuite ns3TcpCwndTestSuite;

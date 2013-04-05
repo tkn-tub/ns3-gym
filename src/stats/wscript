@@ -1,13 +1,14 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def configure(conf):
-   conf.env['SQLITE_STATS'] = conf.check_nonfatal(lib='sqlite3', define_name='SQLITE3', uselib_store='SQLITE3')
-   if not conf.env['SQLITE_STATS']:
-      conf.env['SQLITE_STATS'] = conf.pkg_check_modules('SQLITE3', 'sqlite3', mandatory=False)
-   conf.report_optional_feature("SqliteDataOutput", "SQlite stats data output",
-                                conf.env['SQLITE_STATS'],
-                                "library 'sqlite3' not found")
+    have_sqlite3 = conf.check_cfg(package='sqlite3', uselib_store='SQLITE3',
+                                  args=['--cflags', '--libs'],
+                                  mandatory=False)
 
+    conf.env['SQLITE_STATS'] = have_sqlite3
+    conf.report_optional_feature("SqliteDataOutput", "SQlite stats data output",
+                                 conf.env['SQLITE_STATS'],
+                                 "library 'sqlite3' not found")
 
 def build(bld):
     obj = bld.create_ns3_module('stats', ['network'])
@@ -25,7 +26,7 @@ def build(bld):
         'test/basic-data-calculators-test-suite.cc',
         ]
 
-    headers = bld.new_task_gen(features=['ns3header'])
+    headers = bld(features='ns3header')
     headers.module = 'stats'
     headers.source = [
         'model/data-calculator.h',

@@ -85,9 +85,9 @@ LteUplinkSinrTestSuite::LteUplinkSinrTestSuite ()
   (*theoreticalSinr1)[0] = 3.72589167251055;
   (*theoreticalSinr1)[1] = 3.72255684126076;
 
-  AddTestCase (new LteUplinkDataSinrTestCase (rxPsd1, rxPsd2, theoreticalSinr1, "sdBm = [-46 -inf] and [-inf -48]"));
+  AddTestCase (new LteUplinkDataSinrTestCase (rxPsd1, rxPsd2, theoreticalSinr1, "sdBm = [-46 -inf] and [-inf -48]"), TestCase::QUICK);
   
-  AddTestCase (new LteUplinkSrsSinrTestCase (rxPsd1, rxPsd2, theoreticalSinr1, "sdBm = [-46 -inf] and [-inf -48]"));
+  AddTestCase (new LteUplinkSrsSinrTestCase (rxPsd1, rxPsd2, theoreticalSinr1, "sdBm = [-46 -inf] and [-inf -48]"), TestCase::QUICK);
 
   /**
    * TX signals #2: Power Spectral Density of the signals of interest = [-63 -inf] and [-inf -61] dBm and BW = [20 22] MHz
@@ -104,9 +104,9 @@ LteUplinkSinrTestSuite::LteUplinkSinrTestSuite ()
   (*theoreticalSinr2)[0] = 0.0743413124381667;
   (*theoreticalSinr2)[1] = 0.1865697965291756;
 
-  AddTestCase (new LteUplinkDataSinrTestCase (rxPsd3, rxPsd4, theoreticalSinr2, "sdBm = [-63 -inf] and [-inf -61]"));
+  AddTestCase (new LteUplinkDataSinrTestCase (rxPsd3, rxPsd4, theoreticalSinr2, "sdBm = [-63 -inf] and [-inf -61]"), TestCase::QUICK);
   
-  AddTestCase (new LteUplinkSrsSinrTestCase (rxPsd3, rxPsd4, theoreticalSinr2, "sdBm = [-63 -inf] and [-inf -61]"));
+  AddTestCase (new LteUplinkSrsSinrTestCase (rxPsd3, rxPsd4, theoreticalSinr2, "sdBm = [-63 -inf] and [-inf -61]"), TestCase::QUICK);
 
 }
 

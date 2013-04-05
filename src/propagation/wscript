@@ -24,7 +24,7 @@ def build(bld):
         'test/itu-r-1411-nlos-over-rooftop-test-suite.cc',
         ]
 
-    headers = bld.new_task_gen(features=['ns3header'])
+    headers = bld(features='ns3header')
     headers.module = 'propagation'
     headers.source = [
         'model/propagation-delay-model.h',
@@ -41,6 +41,6 @@ def build(bld):
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):
-        bld.add_subdirs('examples')
+        bld.recurse('examples')
 
     bld.ns3_python_bindings()

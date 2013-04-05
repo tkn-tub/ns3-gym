@@ -1111,13 +1111,13 @@ PcapFileTestSuite::PcapFileTestSuite ()
   : TestSuite ("pcap-file", UNIT)
 {
   SetDataDir (NS_TEST_SOURCEDIR);
-  AddTestCase (new WriteModeCreateTestCase);
-  AddTestCase (new ReadModeCreateTestCase);
-  //AddTestCase (new AppendModeCreateTestCase);
-  AddTestCase (new FileHeaderTestCase);
-  AddTestCase (new RecordHeaderTestCase);
-  AddTestCase (new ReadFileTestCase);
-  AddTestCase (new DiffTestCase);
+  AddTestCase (new WriteModeCreateTestCase, TestCase::QUICK);
+  AddTestCase (new ReadModeCreateTestCase, TestCase::QUICK);
+  //AddTestCase (new AppendModeCreateTestCase, TestCase::QUICK);
+  AddTestCase (new FileHeaderTestCase, TestCase::QUICK);
+  AddTestCase (new RecordHeaderTestCase, TestCase::QUICK);
+  AddTestCase (new ReadFileTestCase, TestCase::QUICK);
+  AddTestCase (new DiffTestCase, TestCase::QUICK);
 }
 
 static PcapFileTestSuite pcapFileTestSuite;

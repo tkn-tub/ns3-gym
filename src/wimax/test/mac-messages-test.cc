@@ -112,7 +112,7 @@ public:
 Ns3WimaxMacMessagesTestSuite::Ns3WimaxMacMessagesTestSuite ()
   : TestSuite ("wimax-mac-messages", UNIT)
 {
-  AddTestCase (new DsaRequestTestCase);
+  AddTestCase (new DsaRequestTestCase, TestCase::QUICK);
 }
 
 static Ns3WimaxMacMessagesTestSuite ns3WimaxMacMessagesTestSuite;

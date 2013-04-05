@@ -180,8 +180,8 @@ public:
 Ns3WimaxPhyTestSuite::Ns3WimaxPhyTestSuite ()
   : TestSuite ("wimax-phy-layer", UNIT)
 {
-  AddTestCase (new Ns3WimaxSNRtoBLERTestCase);
-  AddTestCase (new Ns3WimaxSimpleOFDMTestCase);
+  AddTestCase (new Ns3WimaxSNRtoBLERTestCase, TestCase::QUICK);
+  AddTestCase (new Ns3WimaxSimpleOFDMTestCase, TestCase::QUICK);
 
 }
 

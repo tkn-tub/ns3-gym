@@ -161,7 +161,7 @@ public:
 Ns3WimaxFragmentationTestSuite::Ns3WimaxFragmentationTestSuite ()
   : TestSuite ("wimax-fragmentation", UNIT)
 {
-  AddTestCase (new Ns3WimaxFragmentationTestCase);
+  AddTestCase (new Ns3WimaxFragmentationTestCase, TestCase::QUICK);
 }
 
 static Ns3WimaxFragmentationTestSuite ns3WimaxFragmentationTestSuite;
