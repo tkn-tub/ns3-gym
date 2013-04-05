@@ -411,7 +411,11 @@ FdTbfqFfMacScheduler::DoCschedLcConfigReq (const struct FfMacCschedSapProvider::
         }
       else
         {
-          NS_LOG_ERROR ("RNTI already exists");
+          // update MBR and GBR 
+          uint64_t mbrDlInBytes = params.m_logicalChannelConfigList.at (i).m_eRabMaximulBitrateDl / 8;
+          uint64_t mbrUlInBytes = params.m_logicalChannelConfigList.at (i).m_eRabMaximulBitrateUl / 8;
+          m_flowStatsDl[(*it).first].tokenGenerationRate = mbrDlInBytes;
+          m_flowStatsUl[(*it).first].tokenGenerationRate = mbrUlInBytes;
         }
     }
 
