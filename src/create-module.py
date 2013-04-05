@@ -371,7 +371,7 @@ def main(argv):
     helper_cc.close()
 
     helper_h = file(os.path.join(moduledir, "helper", "%s-helper.h" % modname), "wt")
-    helper_h.write(HELPER_H_TEMPLATE % dict(MODULE=modname, INCLUDE_GUARD="__%s_HELPER_H__" % (modname.upper()),))
+    helper_h.write(HELPER_H_TEMPLATE % dict(MODULE=modname, INCLUDE_GUARD="%s_HELPER_H" % (modname.replace("-", "_").upper()),))
     helper_h.close()
 
     #
