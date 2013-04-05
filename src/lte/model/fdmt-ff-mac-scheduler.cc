@@ -19,12 +19,9 @@
  * Modification: Dizhi Zhou <dizhi.zhou@gmail.com>    // modify codes related to downlink scheduler
  */
 
-#ifdef __FreeBSD__
-#define log2(x) (log (x) / M_LN2)
-#endif /* __FreeBSD__ */
-
 #include <ns3/log.h>
 #include <ns3/pointer.h>
+#include <ns3/math.h>
 
 #include <ns3/simulator.h>
 #include <ns3/lte-amc.h>
