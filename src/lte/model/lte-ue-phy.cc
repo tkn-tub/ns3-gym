@@ -488,7 +488,7 @@ LteUePhy::GenerateCtrlCqiReport (const SpectrumValue& sinr)
               // convert PSD [W/Hz] to linear power [W] for the single RE
               double noisePowerTxW = ((*itIntN) * 180000.0) / 12.0;
               double intPowerTxW = ((*itPj) * 180000.0) / 12.0;
-              rsrqSum += (noisePowerTxW + intPowerTxW);
+              rsrqSum += (2 * (noisePowerTxW + intPowerTxW));
             }
           NS_ASSERT (rbNum == (*itPss).nRB);
           double rsrp_dBm = 10 * log10 (1000 * ((*itPss).pssPsdSum / (double)rbNum));

@@ -791,13 +791,19 @@ The formulas of the RSRP and RSRQ can be simplified considering the assumption o
          = \frac{\sum_{k=0}^{K-1}\frac{(M \times P(k))}{M}}{K}
          = \frac{\sum_{k=0}^{K-1}(P(k))}{K}
 
-where :math:`P_m(k)` represents the signal power of the RE :math:`m` within the RB :math:`i`, which, as observed before, is constant within the same RB and equal to :math:`P(k)`, :math:`M` is the number of REs in a RB and :math:`K` is the number of RBs.
+where :math:`P_m(k)` represents the signal power of the RE :math:`m` within the RB :math:`k`, which, as observed before, is constant within the same RB and equal to :math:`P(k)`, :math:`M` is the number of REs in a RB and :math:`K` is the number of RBs. It is to be noted that, :math:`P(k)`, and in general all the powers defined in this section, is obtained in the simulator from the PSD of the RB (which is the standard value returned from the ``LteInterferencePowerChunkProcessor``), in detail:
+
+.. math::
+
+    P(k) = PSD_{RB}(k)*180000/12
+
+where :math:`PSD_{RB}(k)` is the power spectral density of the RB :math:`k`, :math:`180000` is the bandwidth in Hz of the RB and :math:`12` is the number of REs per RB.
 Similarly, for RSSI we have
 
 .. math::
-    RSSI = \sum_{k=0}^{K-1} \frac{\sum_{m=0}^{M-1} ( P_m(k) + I_m(k) + N_m)}{M}
-         = \sum_{k=0}^{K-1} \frac{M \times ( P(k) + I(k) + N)}{M}
-         = \sum_{k=0}^{K-1} ( P(k) + I(k) + N)
+    RSSI = \sum_{k=0}^{K-1} 2 \times \frac{\sum_{m=0}^{M-1} ( P_m(k) + I_m(k) + N_m)}{M}
+         = \sum_{k=0}^{K-1} 2 \times \frac{M \times ( P(k) + I(k) + N)}{M}
+         = \sum_{k=0}^{K-1} 2 \times ( P(k) + I(k) + N)
 
 where :math:`I_m(k)` represents the interference power of the RE :math:`m` within the RB :math:`i`, which, as observed before, is constant within the same RB and equal to :math:`P(k)`, and :math:`N_m` is the noise in the RE :math:`m` (another time constant for all the REs to :math:`N`).
 
@@ -807,7 +813,7 @@ Considering to the constraints of the PHY reception chain implementation and in 
 
     RSRP_i = \frac{\sum_{k=0}^{K-1}(P_i(k))}{K}
 
-    RSSI_i = RSSI_j = \sum_{k=0}^{K-1} ( I_j(k) + P_j(k) + N )
+    RSSI_i = RSSI_j = \sum_{k=0}^{K-1} 2 \times ( I_j(k) + P_j(k) + N )
 
     RSRQ_i^j = K \times RSRP_i / RSSI^j
 

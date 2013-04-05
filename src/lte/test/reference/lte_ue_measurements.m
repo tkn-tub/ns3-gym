@@ -78,8 +78,8 @@ for d2 = [10000]
   rsrp2dBm = 10.*log10(1000*rsrp2);
 
   %% RSSI (linear)
-  rssi1 = (dlp*g11dl + dlp*g21dl + dln)*nrbs;
-  rssi2 = (dlp*g11dl + dlp*g21dl + dln)*nrbs;
+  rssi1 = 2*(dlp*g11dl + dlp*g21dl + dln)*nrbs;
+  rssi2 = 2*(dlp*g11dl + dlp*g21dl + dln)*nrbs;
 
   %% RSRQ (linear)
   rsrq1 = (nrbs * rsrp1) / rssi1;
