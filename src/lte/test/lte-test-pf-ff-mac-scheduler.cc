@@ -78,7 +78,7 @@ LenaTestPfFfMacSchedulerSuite::LenaTestPfFfMacSchedulerSuite ()
   // 12 users -> 3 PRB at Itbs 26 -> 277 bytes * 8/12 UE/TTI -> 184670 bytes/sec
   // 15 users -> 3 PRB at Itbs 26 -> 277 bytes * 8/15 UE/TTI -> 147730 bytes/sec
   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (1,0,0,2196000,2292000,errorModel), TestCase::EXTENSIVE);
-  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (3,0,0,732000,749000,errorModel), TestCase::QUICK);
+  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (3,0,0,732000,749000,errorModel), TestCase::EXTENSIVE);
   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (6,0,0,366000,373000,errorModel), TestCase::EXTENSIVE);
   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (12,0,0,183000,184670,errorModel), TestCase::EXTENSIVE);
   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (15,0,0,146400,147730,errorModel), TestCase::EXTENSIVE);

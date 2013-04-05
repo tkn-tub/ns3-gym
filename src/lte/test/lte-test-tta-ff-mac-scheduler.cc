@@ -66,6 +66,7 @@ LenaTestTtaFfMacSchedulerSuite::LenaTestTtaFfMacSchedulerSuite ()
 
   //Test Case : AMC works in TTA
 
+
   //Note: here the MCS is calculated by the narrowband CQI
 
   // DOWNLINK - DISTANCE 0 -> MCS 28 -> Itbs 26 (from table 7.1.7.2.1-1 of 36.213)

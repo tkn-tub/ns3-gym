@@ -91,7 +91,7 @@ LenaTestTdTbfqFfMacSchedulerSuite::LenaTestTdTbfqFfMacSchedulerSuite ()
   // 6 users -> 4 PRB at Itbs 26 -> 373 -> 373000 > 232000 -> throughput = 232000 bytes/sec
   // 12 users -> 2 PRB at Itbs 26 -> 185 -> 185000 < 232000 -> throughput = 185000 bytes/sec
   AddTestCase (new LenaTdTbfqFfMacSchedulerTestCase1 (1,0,0,232000,232000,200,1), TestCase::EXTENSIVE);
-  AddTestCase (new LenaTdTbfqFfMacSchedulerTestCase1 (3,0,0,232000,232000,200,1), TestCase::QUICK);
+  AddTestCase (new LenaTdTbfqFfMacSchedulerTestCase1 (3,0,0,232000,232000,200,1), TestCase::EXTENSIVE);
   AddTestCase (new LenaTdTbfqFfMacSchedulerTestCase1 (6,0,0,232000,232000,200,1), TestCase::EXTENSIVE);
   AddTestCase (new LenaTdTbfqFfMacSchedulerTestCase1 (12,0,0,183000,185000,200,1), TestCase::EXTENSIVE);
 

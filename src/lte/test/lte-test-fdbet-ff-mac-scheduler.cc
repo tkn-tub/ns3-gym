@@ -78,7 +78,7 @@ LenaTestFdBetFfMacSchedulerSuite::LenaTestFdBetFfMacSchedulerSuite ()
   // after the patch enforcing min 3 PRBs per UE:
   // 12 users -> 3 PRB at Itbs 26 -> 277 bytes * 8/12 UE/TTI -> 184670 bytes/sec
   AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (1,0,0,2196000,2292000, errorModel), TestCase::EXTENSIVE);
-  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (3,0,0,749000,749000, errorModel), TestCase::QUICK);
+  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (3,0,0,749000,749000, errorModel), TestCase::EXTENSIVE);
   AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (6,0,0,373000,373000, errorModel), TestCase::EXTENSIVE);
   AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (12,0,0,185000,184670, errorModel), TestCase::EXTENSIVE);
 
