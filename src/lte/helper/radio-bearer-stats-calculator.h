@@ -43,13 +43,22 @@ typedef std::map<ImsiLcidPair_t, double> DoubleMap;
 typedef std::map<ImsiLcidPair_t, LteFlowId_t> FlowIdMap;
 
 /**
- * Calculation of statistics from the RLC layer for uplink and downlink, the data is dumped into a file periodically. Metrics considered are:
+ * This class is an ns-3 trace sink that performs the calculation of
+ * PDU statistics for uplink and downlink. Statistics are generated
+ * on a per radio bearer basis. This class can be used for 
+ * RLC PDU stats or PDCP PDU stats by connecting to the appropriate
+ * trace sources at the RLC or PDCP layer.
+ * 
+ * The statistics are calculated at consecutive time windows and
+ * periodically written to a file. The calculated statistics are:
+ *
  *   - Number of transmitted PDUs
  *   - Number of received PDUs
  *   - Number of transmitted bytes
  *   - Number of received bytes
- *   - Average, min, max and standard deviation of RLC to RLC delay
- *   - Average, min, max and standard deviation of RLC PDU size
+ *   - Average, min, max and standard deviation of PDU delay (delay is
+ *     calculated from the generation of the PDU to its reception)
+ *   - Average, min, max and standard deviation of PDU size
  */
 class RadioBearerStatsCalculator : public LteStatsCalculator
 {
