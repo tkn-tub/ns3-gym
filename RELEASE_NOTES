@@ -35,6 +35,8 @@ Bugs fixed
 - bug 1566 - WiFi SNR tag improvements
 - Bug 1582 - IPv6 raw socket return value is not like Linux socket
 - bug 1585 - Length field of A-MSDU subframe header endianness
+- Bug 1409 - Add an attribute "SystemId" to configure the ID for MPI
+- Bug 1612 - pyviz (visualizer) will not be installed
 
 Known issues
 ------------
