@@ -91,9 +91,9 @@ LenaTestFdTbfqFfMacSchedulerSuite::LenaTestFdTbfqFfMacSchedulerSuite ()
   // 3 users -> 8 PRB at Itbs 26 -> 749 -> 749000 > 232000 -> throughput = 232000 bytes/sec 
   // 6 users -> 4 PRB at Itbs 26 -> 373 -> 373000 > 232000 -> throughput = 232000 bytes/sec
   // 12 users -> 2 PRB at Itbs 26 -> 185 -> 185000 < 232000 -> throughput = 185000 bytes/sec
-  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (1,0,0,232000,232000,200,1,errorModel));
-  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (3,0,0,232000,232000,200,1,errorModel));
-  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (6,0,0,232000,232000,200,1,errorModel));
+  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (1,0,0,232000,232000,200,1,errorModel), TestCase::EXTENSIVE);
+  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (3,0,0,232000,232000,200,1,errorModel), TestCase::EXTENSIVE);
+  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (6,0,0,232000,232000,200,1,errorModel), TestCase::EXTENSIVE);
   //AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (12,0,0,183000,185000,200,1,errorModel));// simulation time = 1.5, otherwise, ul test will fail
 
   // DOWNLINK - DISTANCE 4800 -> MCS 16 -> Itbs 15 (from table 7.1.7.2.1-1 of 36.213)
@@ -111,9 +111,9 @@ LenaTestFdTbfqFfMacSchedulerSuite::LenaTestFdTbfqFfMacSchedulerSuite ()
   // 6 users -> 4 PRB at Itbs 13 -> 125 -> 125000 < 232000 -> throughput = 125000 bytes/sec
   // after the patch enforcing min 3 PRBs per UE:
   // 12 users -> 3 PRB at Itbs 13 -> 93  bytes * 8/12 UE/TTI  -> 62000 < 232000 -> throughput = 62000  bytes/sec
-  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (1,0,4800,232000,232000,200,1,errorModel));
-  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (3,0,4800,232000,232000,200,1,errorModel));
-  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (6,0,4800,150500,125000,200,1,errorModel));
+  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (1,0,4800,232000,232000,200,1,errorModel), TestCase::EXTENSIVE);
+  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (3,0,4800,232000,232000,200,1,errorModel), TestCase::EXTENSIVE);
+  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (6,0,4800,150500,125000,200,1,errorModel), TestCase::EXTENSIVE);
   //AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (12,0,4800,75250,62000,200,1,errorModel)); // simulation time = 1.5, otherwise, ul test will fail
 
   // DOWNLINK - DISTANCE 6000 -> MCS 14 -> Itbs 13 (from table 7.1.7.2.1-1 of 36.213)
@@ -132,9 +132,9 @@ LenaTestFdTbfqFfMacSchedulerSuite::LenaTestFdTbfqFfMacSchedulerSuite ()
   // 6 users -> 4 PRB at Itbs 11 -> 97 -> 97000 < 232000 -> throughput = 97000 bytes/sec
   // after the patch enforcing min 3 PRBs per UE:
   // 12 users -> 3 PRB at Itbs 11 -> 73 bytes * 8/12 UE/TTI -> 48667 < 232000 -> throughput = 48667 bytes/sec
-  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (1,0,6000,232000,232000,200,1,errorModel));
-  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (3,0,6000,232000,201000,200,1,errorModel));
-  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (6,0,6000,129167,97000,200,1,errorModel));
+  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (1,0,6000,232000,232000,200,1,errorModel), TestCase::EXTENSIVE);
+  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (3,0,6000,232000,201000,200,1,errorModel), TestCase::EXTENSIVE);
+  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (6,0,6000,129167,97000,200,1,errorModel), TestCase::EXTENSIVE);
   //AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (12,0,6000,64583,48667,200,1, errorModel)); // simulation time = 1.5, otherwise, ul test will fail
 
   // DOWNLINK - DISTANCE 10000 -> MCS 8 -> Itbs 8 (from table 7.1.7.2.1-1 of 36.213)
@@ -152,9 +152,9 @@ LenaTestFdTbfqFfMacSchedulerSuite::LenaTestFdTbfqFfMacSchedulerSuite ()
   // 6 users -> 4 PRB at Itbs 8 -> 67 -> 67000 < 232000 -> throughput = 67000 bytes/sec
   // after the patch enforcing min 3 PRBs per UE:
   // 12 users -> 3 PRB at Itbs 8 -> 49 bytes * 8/12 UE/TTI -> 32667 < 232000 -> throughput = 32667  bytes/sec
-  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (1,0,10000,232000,232000,200,1,errorModel));
-  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (3,0,10000,140333,137000,200,1,errorModel));
-  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (6,0,10000,70166,67000,200,1,errorModel));
+  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (1,0,10000,232000,232000,200,1,errorModel), TestCase::EXTENSIVE);
+  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (3,0,10000,140333,137000,200,1,errorModel), TestCase::EXTENSIVE);
+  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (6,0,10000,70166,67000,200,1,errorModel), TestCase::EXTENSIVE);
   //AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase1 (12,0,10000,35083,32667,200,1,errorModel));// simulation time = 1.5, otherwise, ul test will fail
 
   // Test Case 2: homogeneous flow test in FDTBFQ (different distance)
@@ -178,7 +178,7 @@ LenaTestFdTbfqFfMacSchedulerSuite::LenaTestFdTbfqFfMacSchedulerSuite ()
   estThrFdTbfqDl1.push_back (132000); // User 1 estimated TTI throughput from FDTBFQ
   estThrFdTbfqDl1.push_back (132000); // User 2 estimated TTI throughput from FDTBFQ
   estThrFdTbfqDl1.push_back (132000); // User 3 estimated TTI throughput from FDTBFQ
-  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase2 (dist1,estThrFdTbfqDl1,packetSize1,1,errorModel));
+  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase2 (dist1,estThrFdTbfqDl1,packetSize1,1,errorModel), TestCase::EXTENSIVE);
 
   // Traffic2 info
   //   UDP traffic: payload size = 200 bytes, interval = 1 ms
@@ -200,7 +200,7 @@ LenaTestFdTbfqFfMacSchedulerSuite::LenaTestFdTbfqFfMacSchedulerSuite ()
   estThrFdTbfqDl2.push_back (180232); // User 1 estimated TTI throughput from FDTBFQ
   estThrFdTbfqDl2.push_back (180232); // User 2 estimated TTI throughput from FDTBFQ
   estThrFdTbfqDl2.push_back (180232); // User 3 estimated TTI throughput from FDTBFQ
-  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase2 (dist2,estThrFdTbfqDl2,packetSize2,1,errorModel));
+  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase2 (dist2,estThrFdTbfqDl2,packetSize2,1,errorModel), TestCase::EXTENSIVE);
 
   // Test Case 3: heterogeneous flow test in FDTBFQ
   //   UDP traffic: payload size = [100,200,300] bytes, interval = 1 ms
@@ -219,7 +219,7 @@ LenaTestFdTbfqFfMacSchedulerSuite::LenaTestFdTbfqFfMacSchedulerSuite ()
   estThrFdTbfqDl3.push_back (132000); // User 0 estimated TTI throughput from FDTBFQ
   estThrFdTbfqDl3.push_back (232000); // User 1 estimated TTI throughput from FDTBFQ
   estThrFdTbfqDl3.push_back (332000); // User 2 estimated TTI throughput from FDTBFQ
-  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase2 (dist3,estThrFdTbfqDl3,packetSize3,1,errorModel));
+  AddTestCase (new LenaFdTbfqFfMacSchedulerTestCase2 (dist3,estThrFdTbfqDl3,packetSize3,1,errorModel), TestCase::QUICK);
 
 }
 
