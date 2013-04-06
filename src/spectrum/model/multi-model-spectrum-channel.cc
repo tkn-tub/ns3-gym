@@ -236,7 +236,7 @@ MultiModelSpectrumChannel::FindAndEventuallyAddTxSpectrumModel (Ptr<const Spectr
     }
   return txInfoIterator;
 }
-    
+
     
 
 void
