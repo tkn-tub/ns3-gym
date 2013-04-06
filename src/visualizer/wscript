@@ -71,4 +71,27 @@ def build(bld):
         ])
     headers.source.append('model/pyviz.h')
 
+    vissrc = [
+        'visualizer/base.py',
+        'visualizer/core.py',
+        'visualizer/higcontainer.py',
+        'visualizer/hud.py',
+        'visualizer/__init__.py',
+        'visualizer/svgitem.py',
+        ]
+    pyviz = bld(features='py')
+    pyviz.source = vissrc
+    pyviz.install_path = '${PYTHONARCHDIR}/visualizer'
+
+    visplugin_src = [
+        'visualizer/plugins/interface_statistics.py',
+        'visualizer/plugins/ipv4_routing_table.py',
+        'visualizer/plugins/olsr.py',
+        'visualizer/plugins/show_last_packets.py',
+        'visualizer/plugins/wifi_intrastructure_link.py'
+        ]
+    pyvizplug = bld(features='py')
+    pyvizplug.source = visplugin_src
+    pyvizplug.install_path = '${PYTHONARCHDIR}/visualizer/plugins'
+
     bld.ns3_python_bindings()
