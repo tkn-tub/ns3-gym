@@ -393,7 +393,13 @@ PssFfMacScheduler::DoCschedLcConfigReq (const struct FfMacCschedSapProvider::Csc
         }
       else
         {
-          NS_LOG_ERROR ("RNTI already exists");
+          //NS_LOG_ERROR ("RNTI already exists");
+
+          // update GBR from UeManager::SetupDataRadioBearer ()
+          double tbrDlInBytes = params.m_logicalChannelConfigList.at (i).m_eRabGuaranteedBitrateDl / 8;   // byte/s
+          double tbrUlInBytes = params.m_logicalChannelConfigList.at (i).m_eRabGuaranteedBitrateUl / 8;   // byte/s
+          m_flowStatsDl[(*it).first].targetThroughput = tbrDlInBytes;
+          m_flowStatsUl[(*it).first].targetThroughput = tbrUlInBytes;
         }
     }
 

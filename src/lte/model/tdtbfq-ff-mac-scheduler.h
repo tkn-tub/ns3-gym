@@ -75,7 +75,7 @@ struct tdtbfqsFlowPerf_t
  */
 /**
  * \ingroup TdTbfqFfMacScheduler
- * \brief Implements the SCHED SAP and CSCHED SAP for a Time Domain Token Bank Fair Queue scheduler
+ * \brief Implements the SCHED SAP and CSCHED SAP for a Time Domain Token Bank Fair Queue  scheduler
  *
  * This class implements the interface defined by the FfMacScheduler abstract class
  */

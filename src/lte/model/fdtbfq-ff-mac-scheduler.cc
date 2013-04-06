@@ -19,9 +19,12 @@
  * Modification: Dizhi Zhou <dizhi.zhou@gmail.com>    // modify codes related to downlink scheduler
  */
 
+#ifdef __FreeBSD__
+#define log2(x) (log (x) / M_LN2)
+#endif /* __FreeBSD__ */
+
 #include <ns3/log.h>
 #include <ns3/pointer.h>
-#include <ns3/math.h>
 
 #include <ns3/simulator.h>
 #include <ns3/lte-amc.h>
@@ -408,11 +411,14 @@ FdTbfqFfMacScheduler::DoCschedLcConfigReq (const struct FfMacCschedSapProvider::
         }
       else
         {
-          // update MBR and GBR 
-          uint64_t mbrDlInBytes = params.m_logicalChannelConfigList.at (i).m_eRabMaximulBitrateDl / 8;
-          uint64_t mbrUlInBytes = params.m_logicalChannelConfigList.at (i).m_eRabMaximulBitrateUl / 8;
-          m_flowStatsDl[(*it).first].tokenGenerationRate = mbrDlInBytes;
-          m_flowStatsUl[(*it).first].tokenGenerationRate = mbrUlInBytes;
+          //NS_LOG_ERROR ("RNTI already exists");
+
+          // update MBR and GBR from UeManager::SetupDataRadioBearer ()
+          uint64_t mbrDlInBytes = params.m_logicalChannelConfigList.at (i).m_eRabMaximulBitrateDl / 8;   // byte/s
+          uint64_t mbrUlInBytes = params.m_logicalChannelConfigList.at (i).m_eRabMaximulBitrateUl / 8;   // byte/s
+          m_flowStatsDl[(*it).first].tokenGenerationRate =  mbrDlInBytes;
+          m_flowStatsUl[(*it).first].tokenGenerationRate =  mbrUlInBytes;
+
         }
     }
 
@@ -513,7 +519,7 @@ void
 FdTbfqFfMacScheduler::DoSchedDlPagingBufferReq (const struct FfMacSchedSapProvider::SchedDlPagingBufferReqParameters& params)
 {
   NS_LOG_FUNCTION (this);
-  NS_FATAL_ERROR ("method not implemented");
+  // TODO: Implementation of the API
   return;
 }
 
@@ -521,7 +527,7 @@ void
 FdTbfqFfMacScheduler::DoSchedDlMacBufferReq (const struct FfMacSchedSapProvider::SchedDlMacBufferReqParameters& params)
 {
   NS_LOG_FUNCTION (this);
-  NS_FATAL_ERROR ("method not implemented");
+  // TODO: Implementation of the API
   return;
 }
 
@@ -1038,7 +1044,7 @@ FdTbfqFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::S
                 }
               continue;
            }
-
+          
           if (LcActivePerFlow ((*it).first) == 0)
             {
               continue;
@@ -1221,6 +1227,7 @@ FdTbfqFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::S
             {
               (*itMap).second.push_back (rbgIndex);
             }
+          rbgMap.at (rbgIndex) = true;  // Mark this RBG as allocated
  
           RbgPerRnti = (*itMap).second.size();
 
@@ -1284,6 +1291,7 @@ FdTbfqFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::S
           allocatedRbg.erase (rbgIndex);
           bytesTxed = bytesTxedTmp;  // recovery bytesTxed
           totalRbg--;
+          rbgMap.at (rbgIndex) = false;  // unmark this RBG
         }
 
         // update UE stats
@@ -1925,6 +1933,7 @@ void
 FdTbfqFfMacScheduler::DoSchedUlNoiseInterferenceReq (const struct FfMacSchedSapProvider::SchedUlNoiseInterferenceReqParameters& params)
 {
   NS_LOG_FUNCTION (this);
+  // TODO: Implementation of the API
   return;
 }
 
@@ -1932,6 +1941,7 @@ void
 FdTbfqFfMacScheduler::DoSchedUlSrInfoReq (const struct FfMacSchedSapProvider::SchedUlSrInfoReqParameters& params)
 {
   NS_LOG_FUNCTION (this);
+  // TODO: Implementation of the API
   return;
 }
 

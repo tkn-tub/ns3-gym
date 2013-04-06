@@ -19,9 +19,12 @@
  * Modification: Dizhi Zhou <dizhi.zhou@gmail.com>    // modify codes related to downlink scheduler
  */
 
+#ifdef __FreeBSD__
+#define log2(x) (log (x) / M_LN2)
+#endif /* __FreeBSD__ */
+
 #include <ns3/log.h>
 #include <ns3/pointer.h>
-#include <ns3/math.h>
 
 #include <ns3/simulator.h>
 #include <ns3/lte-amc.h>
@@ -408,11 +411,14 @@ TdTbfqFfMacScheduler::DoCschedLcConfigReq (const struct FfMacCschedSapProvider::
         }
       else
         {
-          // update MBR and GBR 
-          uint64_t mbrDlInBytes = params.m_logicalChannelConfigList.at (i).m_eRabMaximulBitrateDl / 8;
-          uint64_t mbrUlInBytes = params.m_logicalChannelConfigList.at (i).m_eRabMaximulBitrateUl / 8;
-          m_flowStatsDl[(*it).first].tokenGenerationRate = mbrDlInBytes;
-          m_flowStatsUl[(*it).first].tokenGenerationRate = mbrUlInBytes;
+          //NS_LOG_ERROR ("RNTI already exists");
+
+          // update MBR and GBR from UeManager::SetupDataRadioBearer ()
+          uint64_t mbrDlInBytes = params.m_logicalChannelConfigList.at (i).m_eRabMaximulBitrateDl / 8;   // byte/s
+          uint64_t mbrUlInBytes = params.m_logicalChannelConfigList.at (i).m_eRabMaximulBitrateUl / 8;   // byte/s
+          m_flowStatsDl[(*it).first].tokenGenerationRate =  mbrDlInBytes;
+          m_flowStatsUl[(*it).first].tokenGenerationRate =  mbrUlInBytes;
+
         }
     }
 
@@ -513,7 +519,7 @@ void
 TdTbfqFfMacScheduler::DoSchedDlPagingBufferReq (const struct FfMacSchedSapProvider::SchedDlPagingBufferReqParameters& params)
 {
   NS_LOG_FUNCTION (this);
-  NS_FATAL_ERROR ("method not implemented");
+  // TODO: Implementation of the API
   return;
 }
 
@@ -521,7 +527,7 @@ void
 TdTbfqFfMacScheduler::DoSchedDlMacBufferReq (const struct FfMacSchedSapProvider::SchedDlMacBufferReqParameters& params)
 {
   NS_LOG_FUNCTION (this);
-  NS_FATAL_ERROR ("method not implemented");
+  // TODO: Implementation of the API
   return;
 }
 
@@ -1034,10 +1040,12 @@ TdTbfqFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::S
           continue;
        }
 
+      /*
       if (LcActivePerFlow ((*it).first) == 0)
         {
-          continue;
+          continue;  
         }
+      */
 
       double metric = ( ( (double)(*it).second.counter ) / ( (double)(*it).second.tokenGenerationRate ) );  
 
@@ -1068,10 +1076,14 @@ TdTbfqFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::S
         {
           if ( rbgMap.at (i) == true) // this RBG is allocated in RACH procedure
             continue;
+
           tempMap.push_back (i);
+          rbgMap.at (i) = true;
         }
       allocationMap.insert (std::pair <uint16_t, std::vector <uint16_t> > ((*itMax).first, tempMap));
     }
+
+
 
   // generate the transmission opportunities by grouping the RBGs of the same RNTI and
   // creating the correspondent DCIs
@@ -1223,6 +1235,23 @@ TdTbfqFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::S
             }
           (*itHarqTimer).second.at (newDci.m_harqProcess) = 0;
         }
+
+
+        // update UE stats
+      if ( bytesTxed <= (*itMax).second.tokenPoolSize )
+        {
+          (*itMax).second.tokenPoolSize -= bytesTxed;
+        }
+      else
+        {
+          (*itMax).second.counter = (*itMax).second.counter - ( bytesTxed -  (*itMax).second.tokenPoolSize );
+          (*itMax).second.tokenPoolSize = 0;
+          if (bankSize <= ( bytesTxed -  (*itMax).second.tokenPoolSize ))
+            bankSize = 0;
+          else 
+            bankSize = bankSize - ( bytesTxed -  (*itMax).second.tokenPoolSize );
+        }
+
 
       // ...more parameters -> ingored in this version
 
@@ -1696,6 +1725,7 @@ void
 TdTbfqFfMacScheduler::DoSchedUlNoiseInterferenceReq (const struct FfMacSchedSapProvider::SchedUlNoiseInterferenceReqParameters& params)
 {
   NS_LOG_FUNCTION (this);
+  // TODO: Implementation of the API
   return;
 }
 
@@ -1703,6 +1733,7 @@ void
 TdTbfqFfMacScheduler::DoSchedUlSrInfoReq (const struct FfMacSchedSapProvider::SchedUlSrInfoReqParameters& params)
 {
   NS_LOG_FUNCTION (this);
+  // TODO: Implementation of the API
   return;
 }
 
