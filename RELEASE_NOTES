@@ -25,6 +25,10 @@ New user-visible features
 - ns-3-click: it's now possible to (i) have Click pull random numbers from
   ns-3 and (ii) have ns-3 set "defines" in Click via the simulation file 
   (see src/click/examples/nsclick-defines.cc).
+- Waf shipped with ns-3 has been upgraded to version 1.7.10 and custom
+  pkg-config generator has been replaced by Waf's builtin tool.
+- create-module.py script has been updated to work with waf 1.7 and support
+  for creating modules with names containing dashes has been added.
 
 Bugs fixed
 ----------
