@@ -201,11 +201,12 @@ public:
 %(CAPITALIZED)sTestSuite::%(CAPITALIZED)sTestSuite ()
   : TestSuite ("%(MODULE)s", UNIT)
 {
-  AddTestCase (new %(CAPITALIZED)sTestCase1);
+  // TestDuration for TestCase can be QUICK, EXTENSIVE or TAKES_FOREVER
+  AddTestCase (new %(CAPITALIZED)sTestCase1, TestCase::QUICK);
 }
 
 // Do not forget to allocate an instance of this TestSuite
-static %(CAPITALIZED)sTestSuite %(MODULE)sTestSuite;
+static %(CAPITALIZED)sTestSuite %(COMPOUND)sTestSuite;
 
 '''
 
@@ -318,7 +319,10 @@ def main(argv):
         parser.print_help()
         return 1
 
-    modname = args[0]
+    modname = args[0].lower()
+    if False in [word.isalnum() for word in modname.split("-")]:
+        print >> sys.stderr, "Module name should only contain alphanumeric characters and dashes"
+        return 2
     assert os.path.sep not in modname
 
     moduledir = os.path.join(os.path.dirname(__file__), modname)
@@ -326,6 +330,8 @@ def main(argv):
     if os.path.exists(moduledir):
         print >> sys.stderr, "Module %r already exists" % (modname,)
         return 2
+
+    print "Creating module %r" % (modname,)
 
     os.mkdir(moduledir)
     wscript = file(os.path.join(moduledir, "wscript"), "wt")
@@ -355,7 +361,10 @@ def main(argv):
     testdir = os.path.join(moduledir, "test")
     os.mkdir(testdir)
     test_cc = file(os.path.join(moduledir, "test", "%s-test-suite.cc" % modname), "wt")
-    test_cc.write(TEST_CC_TEMPLATE % dict(MODULE=modname, CAPITALIZED=''.join([word.capitalize() for word in modname.split('-')])))
+    test_cc.write(TEST_CC_TEMPLATE % dict(MODULE=modname,
+                                          CAPITALIZED=''.join([word.capitalize() for word in modname.split('-')]),
+                                          COMPOUND=''.join([modname.split('-')[0]] + [word.capitalize() for word in modname.split('-')[1:]]),
+                                          ))
     test_cc.close()
 
 

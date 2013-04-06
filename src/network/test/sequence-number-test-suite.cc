@@ -78,7 +78,7 @@ public:
 };
 
 SequenceNumberTestCase::SequenceNumberTestCase ()
-  : TestCase ("SequenceNumber")
+  : TestCase ("Sequence number test case")
 {
   m_oldval = 0;
   m_newval = 0;
@@ -184,7 +184,7 @@ static class SequenceNumberTestSuite : public TestSuite
 {
 public:
   SequenceNumberTestSuite ()
-    : TestSuite ("SequenceNumber", UNIT) 
+    : TestSuite ("sequence-number", UNIT) 
   {
     AddTestCase (new SequenceNumberTestCase (), TestCase::QUICK);
   }
