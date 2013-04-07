@@ -217,7 +217,8 @@ FdTbfqFfMacScheduler::FdTbfqFfMacScheduler ()
   :   m_cschedSapUser (0),
     m_schedSapUser (0),
     m_timeWindow (99.0),
-    m_nextRntiUl (0)
+    m_nextRntiUl (0),
+    bankSize (0)
 {
   m_amc = CreateObject <LteAmc> ();
   m_cschedSapProvider = new FdTbfqSchedulerMemberCschedSapProvider (this);
