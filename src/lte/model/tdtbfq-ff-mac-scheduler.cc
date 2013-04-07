@@ -220,7 +220,8 @@ TdTbfqFfMacScheduler::TdTbfqFfMacScheduler ()
   :   m_cschedSapUser (0),
     m_schedSapUser (0),
     m_timeWindow (99.0),
-    m_nextRntiUl (0)
+    m_nextRntiUl (0),
+    bankSize (0)
 {
   m_amc = CreateObject <LteAmc> ();
   m_cschedSapProvider = new TdTbfqSchedulerMemberCschedSapProvider (this);
@@ -1117,7 +1118,6 @@ TdTbfqFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::S
             {
               if ((*itCqi).second.m_higherLayerSelected.size () > (*itMap).second.at (k))
                 {
-                  NS_LOG_INFO (this << " RBG " << (*itMap).second.at (k) << " CQI " << (uint16_t)((*itCqi).second.m_higherLayerSelected.at ((*itMap).second.at (k)).m_sbCqi.at (0)) );
                   for (uint8_t j = 0; j < nLayer; j++)
                     {
                       if ((*itCqi).second.m_higherLayerSelected.at ((*itMap).second.at (k)).m_sbCqi.size () > j)
@@ -1150,17 +1150,12 @@ TdTbfqFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::S
               worstCqi.at (j) = 1; // try with lowest MCS in RBG with no info on channel
             }
         }
-      for (uint8_t j = 0; j < nLayer; j++)
-        {
-          NS_LOG_INFO (this << " Layer " << (uint16_t)j << " CQI selected " << (uint16_t)worstCqi.at (j));
-        }
       uint32_t bytesTxed = 0;
       for (uint8_t j = 0; j < nLayer; j++)
         {
           newDci.m_mcs.push_back (m_amc->GetMcsFromCqi (worstCqi.at (j)));
-          int tbSize = (m_amc->GetTbSizeFromMcs (newDci.m_mcs.at (j), RgbPerRnti * rbgSize) / 8); // (size of TB in bytes according to table 7.1.7.2.1-1 of 36.213)
+          int tbSize = (m_amc->GetTbSizeFromMcs (newDci.m_mcs.at (j), RgbPerRnti * rbgSize) / 8); // (size of TB in bytes according to table 7.1.7.2.1-1 of 36.213) 
           newDci.m_tbsSize.push_back (tbSize);
-          NS_LOG_INFO (this << " Layer " << (uint16_t)j << " MCS selected" << m_amc->GetMcsFromCqi (worstCqi.at (j)));
           bytesTxed += tbSize;
         }
 
