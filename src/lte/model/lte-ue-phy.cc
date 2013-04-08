@@ -470,6 +470,8 @@ LteUePhy::CreateDlCqiFeedbackMessage (const SpectrumValue& sinr)
         }
       double rsrp = sum / (double)rbNum;
       // averaged SINR among RBs
+      sum = 0.0;
+      rbNum = 0;
       for (it = sinr.ConstValuesBegin (); it != sinr.ConstValuesEnd (); it++)
         {
           sum += (*it);
