@@ -120,9 +120,6 @@ LteHelper::DoStart (void)
   m_phyTxStats = CreateObject<PhyTxStatsCalculator> ();
   m_phyRxStats = CreateObject<PhyRxStatsCalculator> ();
   m_macStats = CreateObject<MacStatsCalculator> ();
-  m_rlcStats = CreateObject<RadioBearerStatsCalculator> ("RLC");
-  m_pdcpStats = CreateObject<RadioBearerStatsCalculator> ("PDCP");
-
   Object::DoStart ();
 
 }
@@ -835,6 +832,8 @@ LteHelper::EnableTraces (void)
 void
 LteHelper::EnableRlcTraces (void)
 {
+  NS_ASSERT_MSG (m_rlcStats == 0, "please make sure that LteHelper::EnableRlcTraces is called at most once");
+  m_rlcStats = CreateObject<RadioBearerStatsCalculator> ("RLC");
   m_radioBearerStatsConnector.EnableRlcStats (m_rlcStats);
 }
 
@@ -1343,6 +1342,8 @@ LteHelper::GetRlcStats (void)
 void
 LteHelper::EnablePdcpTraces (void)
 {
+  NS_ASSERT_MSG (m_pdcpStats == 0, "please make sure that LteHelper::EnablePdcpTraces is called at most once");
+  m_pdcpStats = CreateObject<RadioBearerStatsCalculator> ("PDCP");
   m_radioBearerStatsConnector.EnablePdcpStats (m_pdcpStats);
 }
 

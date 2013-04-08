@@ -559,12 +559,13 @@ LteUePhy::CreateDlCqiFeedbackMessage (const SpectrumValue& sinr)
 {
   NS_LOG_FUNCTION (this);
   
+
   // apply transmission mode gain
   NS_ASSERT (m_transmissionMode < m_txModeGain.size ());
   SpectrumValue newSinr = sinr;
   newSinr *= m_txModeGain.at (m_transmissionMode);
 
-// CREATE DlCqiLteControlMessage
+  // CREATE DlCqiLteControlMessage
   Ptr<DlCqiLteControlMessage> msg = Create<DlCqiLteControlMessage> ();
   CqiListElement_s dlcqi;
   std::vector<int> cqi;
