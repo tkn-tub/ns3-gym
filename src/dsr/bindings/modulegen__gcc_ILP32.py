@@ -536,8 +536,14 @@ def register_types_ns3_dsr(module):
     module.add_class('NetworkKey')
     ## dsr-rcache.h (module 'dsr'): ns3::dsr::NodeStab [class]
     module.add_class('NodeStab')
+    ## dsr-passive-buff.h (module 'dsr'): ns3::dsr::PassiveBuffEntry [class]
+    module.add_class('PassiveBuffEntry')
+    ## dsr-passive-buff.h (module 'dsr'): ns3::dsr::PassiveBuffer [class]
+    module.add_class('PassiveBuffer', parent=root_module['ns3::Object'])
     ## dsr-maintain-buff.h (module 'dsr'): ns3::dsr::PassiveKey [struct]
     module.add_class('PassiveKey')
+    ## dsr-rreq-table.h (module 'dsr'): ns3::dsr::ReceivedRreqEntry [class]
+    module.add_class('ReceivedRreqEntry')
     ## dsr-rcache.h (module 'dsr'): ns3::dsr::RouteCache [class]
     module.add_class('RouteCache', parent=root_module['ns3::Object'])
     ## dsr-rcache.h (module 'dsr'): ns3::dsr::RouteCache::Neighbor [struct]
@@ -552,8 +558,6 @@ def register_types_ns3_dsr(module):
     module.add_class('SendBuffEntry')
     ## dsr-rsendbuff.h (module 'dsr'): ns3::dsr::SendBuffer [class]
     module.add_class('SendBuffer')
-    ## dsr-rreq-table.h (module 'dsr'): ns3::dsr::SourceRreqEntry [struct]
-    module.add_class('SourceRreqEntry')
     ## dsr-options.h (module 'dsr'): ns3::dsr::DsrOptionAck [class]
     module.add_class('DsrOptionAck', parent=root_module['ns3::dsr::DsrOptions'])
     ## dsr-option-header.h (module 'dsr'): ns3::dsr::DsrOptionAckHeader [class]
@@ -577,6 +581,7 @@ def register_types_ns3_dsr(module):
     module.add_container('std::vector< ns3::dsr::DsrNetworkQueueEntry >', 'ns3::dsr::DsrNetworkQueueEntry', container_type='vector')
     module.add_container('std::vector< ns3::Ipv4Address >', 'ns3::Ipv4Address', container_type='vector')
     module.add_container('std::vector< ns3::dsr::ErrorBuffEntry >', 'ns3::dsr::ErrorBuffEntry', container_type='vector')
+    module.add_container('std::vector< ns3::dsr::PassiveBuffEntry >', 'ns3::dsr::PassiveBuffEntry', container_type='vector')
     module.add_container('std::vector< ns3::dsr::RouteCache::Neighbor >', 'ns3::dsr::RouteCache::Neighbor', container_type='vector')
     module.add_container('std::vector< ns3::Ptr< ns3::ArpCache > >', 'ns3::Ptr< ns3::ArpCache >', container_type='vector')
     module.add_container('std::list< std::vector< ns3::Ipv4Address > >', 'std::vector< ns3::Ipv4Address >', container_type='list')
@@ -782,7 +787,10 @@ def register_methods(root_module):
     register_Ns3DsrMaintainBuffer_methods(root_module, root_module['ns3::dsr::MaintainBuffer'])
     register_Ns3DsrNetworkKey_methods(root_module, root_module['ns3::dsr::NetworkKey'])
     register_Ns3DsrNodeStab_methods(root_module, root_module['ns3::dsr::NodeStab'])
+    register_Ns3DsrPassiveBuffEntry_methods(root_module, root_module['ns3::dsr::PassiveBuffEntry'])
+    register_Ns3DsrPassiveBuffer_methods(root_module, root_module['ns3::dsr::PassiveBuffer'])
     register_Ns3DsrPassiveKey_methods(root_module, root_module['ns3::dsr::PassiveKey'])
+    register_Ns3DsrReceivedRreqEntry_methods(root_module, root_module['ns3::dsr::ReceivedRreqEntry'])
     register_Ns3DsrRouteCache_methods(root_module, root_module['ns3::dsr::RouteCache'])
     register_Ns3DsrRouteCacheNeighbor_methods(root_module, root_module['ns3::dsr::RouteCache::Neighbor'])
     register_Ns3DsrRouteCacheEntry_methods(root_module, root_module['ns3::dsr::RouteCacheEntry'])
@@ -790,7 +798,6 @@ def register_methods(root_module):
     register_Ns3DsrRreqTableEntry_methods(root_module, root_module['ns3::dsr::RreqTableEntry'])
     register_Ns3DsrSendBuffEntry_methods(root_module, root_module['ns3::dsr::SendBuffEntry'])
     register_Ns3DsrSendBuffer_methods(root_module, root_module['ns3::dsr::SendBuffer'])
-    register_Ns3DsrSourceRreqEntry_methods(root_module, root_module['ns3::dsr::SourceRreqEntry'])
     register_Ns3DsrDsrOptionAck_methods(root_module, root_module['ns3::dsr::DsrOptionAck'])
     register_Ns3DsrDsrOptionAckHeader_methods(root_module, root_module['ns3::dsr::DsrOptionAckHeader'])
     register_Ns3DsrDsrOptionAckReq_methods(root_module, root_module['ns3::dsr::DsrOptionAckReq'])
@@ -10244,10 +10251,10 @@ def register_Ns3DsrDsrOptions_methods(root_module, cls):
     cls.add_method('PrintVector', 
                    'void', 
                    [param('std::vector< ns3::Ipv4Address > &', 'vec')])
-    ## dsr-options.h (module 'dsr'): uint8_t ns3::dsr::DsrOptions::Process(ns3::Ptr<ns3::Packet> packet, ns3::Ptr<ns3::Packet> dsrP, ns3::Ipv4Address ipv4Address, ns3::Ipv4Address source, ns3::Ipv4Header const & ipv4Header, uint8_t protocol, bool & isPromisc) [member function]
+    ## dsr-options.h (module 'dsr'): uint8_t ns3::dsr::DsrOptions::Process(ns3::Ptr<ns3::Packet> packet, ns3::Ptr<ns3::Packet> dsrP, ns3::Ipv4Address ipv4Address, ns3::Ipv4Address source, ns3::Ipv4Header const & ipv4Header, uint8_t protocol, bool & isPromisc, ns3::Ipv4Address promiscSource) [member function]
     cls.add_method('Process', 
                    'uint8_t', 
-                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Ptr< ns3::Packet >', 'dsrP'), param('ns3::Ipv4Address', 'ipv4Address'), param('ns3::Ipv4Address', 'source'), param('ns3::Ipv4Header const &', 'ipv4Header'), param('uint8_t', 'protocol'), param('bool &', 'isPromisc')], 
+                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Ptr< ns3::Packet >', 'dsrP'), param('ns3::Ipv4Address', 'ipv4Address'), param('ns3::Ipv4Address', 'source'), param('ns3::Ipv4Header const &', 'ipv4Header'), param('uint8_t', 'protocol'), param('bool &', 'isPromisc'), param('ns3::Ipv4Address', 'promiscSource')], 
                    is_pure_virtual=True, is_virtual=True)
     ## dsr-options.h (module 'dsr'): void ns3::dsr::DsrOptions::RemoveDuplicates(std::vector<ns3::Ipv4Address, std::allocator<ns3::Ipv4Address> > & vec) [member function]
     cls.add_method('RemoveDuplicates', 
@@ -10261,6 +10268,14 @@ def register_Ns3DsrDsrOptions_methods(root_module, cls):
     cls.add_method('ReverseSearchNextHop', 
                    'ns3::Ipv4Address', 
                    [param('ns3::Ipv4Address', 'ipv4Address'), param('std::vector< ns3::Ipv4Address > &', 'vec')])
+    ## dsr-options.h (module 'dsr'): ns3::Ipv4Address ns3::dsr::DsrOptions::ReverseSearchNextTwoHop(ns3::Ipv4Address ipv4Address, std::vector<ns3::Ipv4Address, std::allocator<ns3::Ipv4Address> > & vec) [member function]
+    cls.add_method('ReverseSearchNextTwoHop', 
+                   'ns3::Ipv4Address', 
+                   [param('ns3::Ipv4Address', 'ipv4Address'), param('std::vector< ns3::Ipv4Address > &', 'vec')])
+    ## dsr-options.h (module 'dsr'): void ns3::dsr::DsrOptions::ScheduleReply(ns3::Ptr<ns3::Packet> & packet, std::vector<ns3::Ipv4Address, std::allocator<ns3::Ipv4Address> > & nodeList, ns3::Ipv4Address & source, ns3::Ipv4Address & destination) [member function]
+    cls.add_method('ScheduleReply', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet > &', 'packet'), param('std::vector< ns3::Ipv4Address > &', 'nodeList'), param('ns3::Ipv4Address &', 'source'), param('ns3::Ipv4Address &', 'destination')])
     ## dsr-options.h (module 'dsr'): ns3::Ipv4Address ns3::dsr::DsrOptions::SearchNextHop(ns3::Ipv4Address ipv4Address, std::vector<ns3::Ipv4Address, std::allocator<ns3::Ipv4Address> > & vec) [member function]
     cls.add_method('SearchNextHop', 
                    'ns3::Ipv4Address', 
@@ -10313,6 +10328,10 @@ def register_Ns3DsrDsrRouting_methods(root_module, cls):
     cls.add_method('CancelPassivePacketTimer', 
                    'void', 
                    [param('ns3::dsr::MaintainBuffEntry &', 'mb')])
+    ## dsr-routing.h (module 'dsr'): bool ns3::dsr::DsrRouting::CancelPassiveTimer(ns3::Ptr<ns3::Packet> packet, ns3::Ipv4Address source, ns3::Ipv4Address destination, uint8_t segsLeft) [member function]
+    cls.add_method('CancelPassiveTimer', 
+                   'bool', 
+                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Ipv4Address', 'source'), param('ns3::Ipv4Address', 'destination'), param('uint8_t', 'segsLeft')])
     ## dsr-routing.h (module 'dsr'): void ns3::dsr::DsrRouting::CancelRreqTimer(ns3::Ipv4Address dst, bool isRemove) [member function]
     cls.add_method('CancelRreqTimer', 
                    'void', 
@@ -10329,6 +10348,10 @@ def register_Ns3DsrDsrRouting_methods(root_module, cls):
     cls.add_method('FindSamePackets', 
                    'bool', 
                    [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Ipv4Address', 'source'), param('ns3::Ipv4Address', 'destination'), param('uint8_t', 'segsLeft')])
+    ## dsr-routing.h (module 'dsr'): bool ns3::dsr::DsrRouting::FindSourceEntry(ns3::Ipv4Address src, ns3::Ipv4Address dst, uint16_t id) [member function]
+    cls.add_method('FindSourceEntry', 
+                   'bool', 
+                   [param('ns3::Ipv4Address', 'src'), param('ns3::Ipv4Address', 'dst'), param('uint16_t', 'id')])
     ## dsr-routing.h (module 'dsr'): void ns3::dsr::DsrRouting::ForwardErrPacket(ns3::dsr::DsrOptionRerrUnreachHeader & rerr, ns3::dsr::DsrOptionSRHeader & sourceRoute, ns3::Ipv4Address nextHop, uint8_t protocol, ns3::Ptr<ns3::Ipv4Route> route) [member function]
     cls.add_method('ForwardErrPacket', 
                    'void', 
@@ -10368,6 +10391,11 @@ def register_Ns3DsrDsrRouting_methods(root_module, cls):
     cls.add_method('GetOption', 
                    'ns3::Ptr< ns3::dsr::DsrOptions >', 
                    [param('int', 'optionNumber')])
+    ## dsr-routing.h (module 'dsr'): ns3::Ptr<ns3::dsr::PassiveBuffer> ns3::dsr::DsrRouting::GetPassiveBuffer() const [member function]
+    cls.add_method('GetPassiveBuffer', 
+                   'ns3::Ptr< ns3::dsr::PassiveBuffer >', 
+                   [], 
+                   is_const=True)
     ## dsr-routing.h (module 'dsr'): uint32_t ns3::dsr::DsrRouting::GetPriority(ns3::dsr::DsrMessageType messageType) [member function]
     cls.add_method('GetPriority', 
                    'uint32_t', 
@@ -10416,6 +10444,10 @@ def register_Ns3DsrDsrRouting_methods(root_module, cls):
     cls.add_method('PacketNewRoute', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Ipv4Address', 'source'), param('ns3::Ipv4Address', 'destination'), param('uint8_t', 'protocol')])
+    ## dsr-routing.h (module 'dsr'): bool ns3::dsr::DsrRouting::PassiveEntryCheck(ns3::Ptr<ns3::Packet> packet, ns3::Ipv4Address source, ns3::Ipv4Address destination, uint8_t segsLeft, uint16_t fragmentOffset, uint16_t identification, bool saveEntry) [member function]
+    cls.add_method('PassiveEntryCheck', 
+                   'bool', 
+                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Ipv4Address', 'source'), param('ns3::Ipv4Address', 'destination'), param('uint8_t', 'segsLeft'), param('uint16_t', 'fragmentOffset'), param('uint16_t', 'identification'), param('bool', 'saveEntry')])
     ## dsr-routing.h (module 'dsr'): void ns3::dsr::DsrRouting::PassiveScheduleTimerExpire(ns3::dsr::MaintainBuffEntry & mb, bool onlyPassive, uint8_t protocol) [member function]
     cls.add_method('PassiveScheduleTimerExpire', 
                    'void', 
@@ -10544,6 +10576,10 @@ def register_Ns3DsrDsrRouting_methods(root_module, cls):
     cls.add_method('SetNode', 
                    'void', 
                    [param('ns3::Ptr< ns3::Node >', 'node')])
+    ## dsr-routing.h (module 'dsr'): void ns3::dsr::DsrRouting::SetPassiveBuffer(ns3::Ptr<ns3::dsr::PassiveBuffer> r) [member function]
+    cls.add_method('SetPassiveBuffer', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::dsr::PassiveBuffer >', 'r')])
     ## dsr-routing.h (module 'dsr'): void ns3::dsr::DsrRouting::SetRequestTable(ns3::Ptr<ns3::dsr::RreqTable> r) [member function]
     cls.add_method('SetRequestTable', 
                    'void', 
@@ -10985,6 +11021,149 @@ def register_Ns3DsrNodeStab_methods(root_module, cls):
                    [param('ns3::Time', 'nodeStab')])
     return
 
+def register_Ns3DsrPassiveBuffEntry_methods(root_module, cls):
+    cls.add_binary_comparison_operator('==')
+    ## dsr-passive-buff.h (module 'dsr'): ns3::dsr::PassiveBuffEntry::PassiveBuffEntry(ns3::dsr::PassiveBuffEntry const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::dsr::PassiveBuffEntry const &', 'arg0')])
+    ## dsr-passive-buff.h (module 'dsr'): ns3::dsr::PassiveBuffEntry::PassiveBuffEntry(ns3::Ptr<ns3::Packet const> pa=0, ns3::Ipv4Address d=ns3::Ipv4Address(), ns3::Ipv4Address s=ns3::Ipv4Address(), ns3::Ipv4Address n=ns3::Ipv4Address(), uint16_t i=0, uint16_t f=0, uint8_t seg=0, ns3::Time exp=ns3::Simulator::Now( ), uint8_t p=0) [constructor]
+    cls.add_constructor([param('ns3::Ptr< ns3::Packet const >', 'pa', default_value='0'), param('ns3::Ipv4Address', 'd', default_value='ns3::Ipv4Address()'), param('ns3::Ipv4Address', 's', default_value='ns3::Ipv4Address()'), param('ns3::Ipv4Address', 'n', default_value='ns3::Ipv4Address()'), param('uint16_t', 'i', default_value='0'), param('uint16_t', 'f', default_value='0'), param('uint8_t', 'seg', default_value='0'), param('ns3::Time', 'exp', default_value='ns3::Simulator::Now( )'), param('uint8_t', 'p', default_value='0')])
+    ## dsr-passive-buff.h (module 'dsr'): ns3::Ipv4Address ns3::dsr::PassiveBuffEntry::GetDestination() const [member function]
+    cls.add_method('GetDestination', 
+                   'ns3::Ipv4Address', 
+                   [], 
+                   is_const=True)
+    ## dsr-passive-buff.h (module 'dsr'): ns3::Time ns3::dsr::PassiveBuffEntry::GetExpireTime() const [member function]
+    cls.add_method('GetExpireTime', 
+                   'ns3::Time', 
+                   [], 
+                   is_const=True)
+    ## dsr-passive-buff.h (module 'dsr'): uint16_t ns3::dsr::PassiveBuffEntry::GetFragmentOffset() const [member function]
+    cls.add_method('GetFragmentOffset', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## dsr-passive-buff.h (module 'dsr'): uint16_t ns3::dsr::PassiveBuffEntry::GetIdentification() const [member function]
+    cls.add_method('GetIdentification', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## dsr-passive-buff.h (module 'dsr'): ns3::Ipv4Address ns3::dsr::PassiveBuffEntry::GetNextHop() const [member function]
+    cls.add_method('GetNextHop', 
+                   'ns3::Ipv4Address', 
+                   [], 
+                   is_const=True)
+    ## dsr-passive-buff.h (module 'dsr'): ns3::Ptr<ns3::Packet const> ns3::dsr::PassiveBuffEntry::GetPacket() const [member function]
+    cls.add_method('GetPacket', 
+                   'ns3::Ptr< ns3::Packet const >', 
+                   [], 
+                   is_const=True)
+    ## dsr-passive-buff.h (module 'dsr'): uint8_t ns3::dsr::PassiveBuffEntry::GetProtocol() const [member function]
+    cls.add_method('GetProtocol', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## dsr-passive-buff.h (module 'dsr'): uint8_t ns3::dsr::PassiveBuffEntry::GetSegsLeft() const [member function]
+    cls.add_method('GetSegsLeft', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## dsr-passive-buff.h (module 'dsr'): ns3::Ipv4Address ns3::dsr::PassiveBuffEntry::GetSource() const [member function]
+    cls.add_method('GetSource', 
+                   'ns3::Ipv4Address', 
+                   [], 
+                   is_const=True)
+    ## dsr-passive-buff.h (module 'dsr'): void ns3::dsr::PassiveBuffEntry::SetDestination(ns3::Ipv4Address d) [member function]
+    cls.add_method('SetDestination', 
+                   'void', 
+                   [param('ns3::Ipv4Address', 'd')])
+    ## dsr-passive-buff.h (module 'dsr'): void ns3::dsr::PassiveBuffEntry::SetExpireTime(ns3::Time exp) [member function]
+    cls.add_method('SetExpireTime', 
+                   'void', 
+                   [param('ns3::Time', 'exp')])
+    ## dsr-passive-buff.h (module 'dsr'): void ns3::dsr::PassiveBuffEntry::SetFragmentOffset(uint16_t f) [member function]
+    cls.add_method('SetFragmentOffset', 
+                   'void', 
+                   [param('uint16_t', 'f')])
+    ## dsr-passive-buff.h (module 'dsr'): void ns3::dsr::PassiveBuffEntry::SetIdentification(uint16_t i) [member function]
+    cls.add_method('SetIdentification', 
+                   'void', 
+                   [param('uint16_t', 'i')])
+    ## dsr-passive-buff.h (module 'dsr'): void ns3::dsr::PassiveBuffEntry::SetNextHop(ns3::Ipv4Address n) [member function]
+    cls.add_method('SetNextHop', 
+                   'void', 
+                   [param('ns3::Ipv4Address', 'n')])
+    ## dsr-passive-buff.h (module 'dsr'): void ns3::dsr::PassiveBuffEntry::SetPacket(ns3::Ptr<ns3::Packet const> p) [member function]
+    cls.add_method('SetPacket', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet const >', 'p')])
+    ## dsr-passive-buff.h (module 'dsr'): void ns3::dsr::PassiveBuffEntry::SetProtocol(uint8_t p) [member function]
+    cls.add_method('SetProtocol', 
+                   'void', 
+                   [param('uint8_t', 'p')])
+    ## dsr-passive-buff.h (module 'dsr'): void ns3::dsr::PassiveBuffEntry::SetSegsLeft(uint8_t seg) [member function]
+    cls.add_method('SetSegsLeft', 
+                   'void', 
+                   [param('uint8_t', 'seg')])
+    ## dsr-passive-buff.h (module 'dsr'): void ns3::dsr::PassiveBuffEntry::SetSource(ns3::Ipv4Address s) [member function]
+    cls.add_method('SetSource', 
+                   'void', 
+                   [param('ns3::Ipv4Address', 's')])
+    return
+
+def register_Ns3DsrPassiveBuffer_methods(root_module, cls):
+    ## dsr-passive-buff.h (module 'dsr'): ns3::dsr::PassiveBuffer::PassiveBuffer(ns3::dsr::PassiveBuffer const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::dsr::PassiveBuffer const &', 'arg0')])
+    ## dsr-passive-buff.h (module 'dsr'): ns3::dsr::PassiveBuffer::PassiveBuffer() [constructor]
+    cls.add_constructor([])
+    ## dsr-passive-buff.h (module 'dsr'): bool ns3::dsr::PassiveBuffer::AllEqual(ns3::dsr::PassiveBuffEntry & entry) [member function]
+    cls.add_method('AllEqual', 
+                   'bool', 
+                   [param('ns3::dsr::PassiveBuffEntry &', 'entry')])
+    ## dsr-passive-buff.h (module 'dsr'): bool ns3::dsr::PassiveBuffer::Dequeue(ns3::Ipv4Address dst, ns3::dsr::PassiveBuffEntry & entry) [member function]
+    cls.add_method('Dequeue', 
+                   'bool', 
+                   [param('ns3::Ipv4Address', 'dst'), param('ns3::dsr::PassiveBuffEntry &', 'entry')])
+    ## dsr-passive-buff.h (module 'dsr'): bool ns3::dsr::PassiveBuffer::Enqueue(ns3::dsr::PassiveBuffEntry & entry) [member function]
+    cls.add_method('Enqueue', 
+                   'bool', 
+                   [param('ns3::dsr::PassiveBuffEntry &', 'entry')])
+    ## dsr-passive-buff.h (module 'dsr'): bool ns3::dsr::PassiveBuffer::Find(ns3::Ipv4Address dst) [member function]
+    cls.add_method('Find', 
+                   'bool', 
+                   [param('ns3::Ipv4Address', 'dst')])
+    ## dsr-passive-buff.h (module 'dsr'): std::vector<ns3::dsr::PassiveBuffEntry, std::allocator<ns3::dsr::PassiveBuffEntry> > & ns3::dsr::PassiveBuffer::GetBuffer() [member function]
+    cls.add_method('GetBuffer', 
+                   'std::vector< ns3::dsr::PassiveBuffEntry > &', 
+                   [])
+    ## dsr-passive-buff.h (module 'dsr'): uint32_t ns3::dsr::PassiveBuffer::GetMaxQueueLen() const [member function]
+    cls.add_method('GetMaxQueueLen', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## dsr-passive-buff.h (module 'dsr'): ns3::Time ns3::dsr::PassiveBuffer::GetPassiveBufferTimeout() const [member function]
+    cls.add_method('GetPassiveBufferTimeout', 
+                   'ns3::Time', 
+                   [], 
+                   is_const=True)
+    ## dsr-passive-buff.h (module 'dsr'): uint32_t ns3::dsr::PassiveBuffer::GetSize() [member function]
+    cls.add_method('GetSize', 
+                   'uint32_t', 
+                   [])
+    ## dsr-passive-buff.h (module 'dsr'): static ns3::TypeId ns3::dsr::PassiveBuffer::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## dsr-passive-buff.h (module 'dsr'): void ns3::dsr::PassiveBuffer::SetMaxQueueLen(uint32_t len) [member function]
+    cls.add_method('SetMaxQueueLen', 
+                   'void', 
+                   [param('uint32_t', 'len')])
+    ## dsr-passive-buff.h (module 'dsr'): void ns3::dsr::PassiveBuffer::SetPassiveBufferTimeout(ns3::Time t) [member function]
+    cls.add_method('SetPassiveBufferTimeout', 
+                   'void', 
+                   [param('ns3::Time', 't')])
+    return
+
 def register_Ns3DsrPassiveKey_methods(root_module, cls):
     cls.add_binary_comparison_operator('<')
     ## dsr-maintain-buff.h (module 'dsr'): ns3::dsr::PassiveKey::PassiveKey() [constructor]
@@ -10999,6 +11178,50 @@ def register_Ns3DsrPassiveKey_methods(root_module, cls):
     cls.add_instance_attribute('m_segsLeft', 'uint8_t', is_const=False)
     ## dsr-maintain-buff.h (module 'dsr'): ns3::dsr::PassiveKey::m_source [variable]
     cls.add_instance_attribute('m_source', 'ns3::Ipv4Address', is_const=False)
+    return
+
+def register_Ns3DsrReceivedRreqEntry_methods(root_module, cls):
+    cls.add_binary_comparison_operator('==')
+    ## dsr-rreq-table.h (module 'dsr'): ns3::dsr::ReceivedRreqEntry::ReceivedRreqEntry(ns3::dsr::ReceivedRreqEntry const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::dsr::ReceivedRreqEntry const &', 'arg0')])
+    ## dsr-rreq-table.h (module 'dsr'): ns3::dsr::ReceivedRreqEntry::ReceivedRreqEntry(ns3::Ipv4Address d=ns3::Ipv4Address(), uint16_t i=0) [constructor]
+    cls.add_constructor([param('ns3::Ipv4Address', 'd', default_value='ns3::Ipv4Address()'), param('uint16_t', 'i', default_value='0')])
+    ## dsr-rreq-table.h (module 'dsr'): ns3::Ipv4Address ns3::dsr::ReceivedRreqEntry::GetDestination() const [member function]
+    cls.add_method('GetDestination', 
+                   'ns3::Ipv4Address', 
+                   [], 
+                   is_const=True)
+    ## dsr-rreq-table.h (module 'dsr'): ns3::Time ns3::dsr::ReceivedRreqEntry::GetExpireTime() const [member function]
+    cls.add_method('GetExpireTime', 
+                   'ns3::Time', 
+                   [], 
+                   is_const=True)
+    ## dsr-rreq-table.h (module 'dsr'): uint16_t ns3::dsr::ReceivedRreqEntry::GetIdentification() const [member function]
+    cls.add_method('GetIdentification', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## dsr-rreq-table.h (module 'dsr'): ns3::Ipv4Address ns3::dsr::ReceivedRreqEntry::GetSource() const [member function]
+    cls.add_method('GetSource', 
+                   'ns3::Ipv4Address', 
+                   [], 
+                   is_const=True)
+    ## dsr-rreq-table.h (module 'dsr'): void ns3::dsr::ReceivedRreqEntry::SetDestination(ns3::Ipv4Address d) [member function]
+    cls.add_method('SetDestination', 
+                   'void', 
+                   [param('ns3::Ipv4Address', 'd')])
+    ## dsr-rreq-table.h (module 'dsr'): void ns3::dsr::ReceivedRreqEntry::SetExpireTime(ns3::Time exp) [member function]
+    cls.add_method('SetExpireTime', 
+                   'void', 
+                   [param('ns3::Time', 'exp')])
+    ## dsr-rreq-table.h (module 'dsr'): void ns3::dsr::ReceivedRreqEntry::SetIdentification(uint16_t i) [member function]
+    cls.add_method('SetIdentification', 
+                   'void', 
+                   [param('uint16_t', 'i')])
+    ## dsr-rreq-table.h (module 'dsr'): void ns3::dsr::ReceivedRreqEntry::SetSource(ns3::Ipv4Address s) [member function]
+    cls.add_method('SetSource', 
+                   'void', 
+                   [param('ns3::Ipv4Address', 's')])
     return
 
 def register_Ns3DsrRouteCache_methods(root_module, cls):
@@ -11349,6 +11572,10 @@ def register_Ns3DsrRreqTable_methods(root_module, cls):
     cls.add_method('FindAndUpdate', 
                    'void', 
                    [param('ns3::Ipv4Address', 'dst')])
+    ## dsr-rreq-table.h (module 'dsr'): bool ns3::dsr::RreqTable::FindSourceEntry(ns3::Ipv4Address src, ns3::Ipv4Address dst, uint16_t id) [member function]
+    cls.add_method('FindSourceEntry', 
+                   'bool', 
+                   [param('ns3::Ipv4Address', 'src'), param('ns3::Ipv4Address', 'dst'), param('uint16_t', 'id')])
     ## dsr-rreq-table.h (module 'dsr'): ns3::dsr::BlackList * ns3::dsr::RreqTable::FindUnidirectional(ns3::Ipv4Address neighbor) [member function]
     cls.add_method('FindUnidirectional', 
                    'ns3::dsr::BlackList *', 
@@ -11528,21 +11755,6 @@ def register_Ns3DsrSendBuffer_methods(root_module, cls):
                    [param('ns3::Time', 't')])
     return
 
-def register_Ns3DsrSourceRreqEntry_methods(root_module, cls):
-    ## dsr-rreq-table.h (module 'dsr'): ns3::dsr::SourceRreqEntry::SourceRreqEntry() [constructor]
-    cls.add_constructor([])
-    ## dsr-rreq-table.h (module 'dsr'): ns3::dsr::SourceRreqEntry::SourceRreqEntry(ns3::dsr::SourceRreqEntry const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::dsr::SourceRreqEntry const &', 'arg0')])
-    ## dsr-rreq-table.h (module 'dsr'): ns3::dsr::SourceRreqEntry::m_dst [variable]
-    cls.add_instance_attribute('m_dst', 'ns3::Ipv4Address', is_const=False)
-    ## dsr-rreq-table.h (module 'dsr'): ns3::dsr::SourceRreqEntry::m_expire [variable]
-    cls.add_instance_attribute('m_expire', 'ns3::Time', is_const=False)
-    ## dsr-rreq-table.h (module 'dsr'): ns3::dsr::SourceRreqEntry::m_identification [variable]
-    cls.add_instance_attribute('m_identification', 'uint32_t', is_const=False)
-    ## dsr-rreq-table.h (module 'dsr'): ns3::dsr::SourceRreqEntry::m_isError [variable]
-    cls.add_instance_attribute('m_isError', 'bool', is_const=False)
-    return
-
 def register_Ns3DsrDsrOptionAck_methods(root_module, cls):
     ## dsr-options.h (module 'dsr'): ns3::dsr::DsrOptionAck::DsrOptionAck(ns3::dsr::DsrOptionAck const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::dsr::DsrOptionAck const &', 'arg0')])
@@ -11563,10 +11775,10 @@ def register_Ns3DsrDsrOptionAck_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## dsr-options.h (module 'dsr'): uint8_t ns3::dsr::DsrOptionAck::Process(ns3::Ptr<ns3::Packet> packet, ns3::Ptr<ns3::Packet> dsrP, ns3::Ipv4Address ipv4Address, ns3::Ipv4Address source, ns3::Ipv4Header const & ipv4Header, uint8_t protocol, bool & isPromisc) [member function]
+    ## dsr-options.h (module 'dsr'): uint8_t ns3::dsr::DsrOptionAck::Process(ns3::Ptr<ns3::Packet> packet, ns3::Ptr<ns3::Packet> dsrP, ns3::Ipv4Address ipv4Address, ns3::Ipv4Address source, ns3::Ipv4Header const & ipv4Header, uint8_t protocol, bool & isPromisc, ns3::Ipv4Address promiscSource) [member function]
     cls.add_method('Process', 
                    'uint8_t', 
-                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Ptr< ns3::Packet >', 'dsrP'), param('ns3::Ipv4Address', 'ipv4Address'), param('ns3::Ipv4Address', 'source'), param('ns3::Ipv4Header const &', 'ipv4Header'), param('uint8_t', 'protocol'), param('bool &', 'isPromisc')], 
+                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Ptr< ns3::Packet >', 'dsrP'), param('ns3::Ipv4Address', 'ipv4Address'), param('ns3::Ipv4Address', 'source'), param('ns3::Ipv4Header const &', 'ipv4Header'), param('uint8_t', 'protocol'), param('bool &', 'isPromisc'), param('ns3::Ipv4Address', 'promiscSource')], 
                    is_virtual=True)
     ## dsr-options.h (module 'dsr'): ns3::dsr::DsrOptionAck::OPT_NUMBER [variable]
     cls.add_static_attribute('OPT_NUMBER', 'uint8_t const', is_const=True)
@@ -11661,10 +11873,10 @@ def register_Ns3DsrDsrOptionAckReq_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## dsr-options.h (module 'dsr'): uint8_t ns3::dsr::DsrOptionAckReq::Process(ns3::Ptr<ns3::Packet> packet, ns3::Ptr<ns3::Packet> dsrP, ns3::Ipv4Address ipv4Address, ns3::Ipv4Address source, ns3::Ipv4Header const & ipv4Header, uint8_t protocol, bool & isPromisc) [member function]
+    ## dsr-options.h (module 'dsr'): uint8_t ns3::dsr::DsrOptionAckReq::Process(ns3::Ptr<ns3::Packet> packet, ns3::Ptr<ns3::Packet> dsrP, ns3::Ipv4Address ipv4Address, ns3::Ipv4Address source, ns3::Ipv4Header const & ipv4Header, uint8_t protocol, bool & isPromisc, ns3::Ipv4Address promiscSource) [member function]
     cls.add_method('Process', 
                    'uint8_t', 
-                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Ptr< ns3::Packet >', 'dsrP'), param('ns3::Ipv4Address', 'ipv4Address'), param('ns3::Ipv4Address', 'source'), param('ns3::Ipv4Header const &', 'ipv4Header'), param('uint8_t', 'protocol'), param('bool &', 'isPromisc')], 
+                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Ptr< ns3::Packet >', 'dsrP'), param('ns3::Ipv4Address', 'ipv4Address'), param('ns3::Ipv4Address', 'source'), param('ns3::Ipv4Header const &', 'ipv4Header'), param('uint8_t', 'protocol'), param('bool &', 'isPromisc'), param('ns3::Ipv4Address', 'promiscSource')], 
                    is_virtual=True)
     ## dsr-options.h (module 'dsr'): ns3::dsr::DsrOptionAckReq::OPT_NUMBER [variable]
     cls.add_static_attribute('OPT_NUMBER', 'uint8_t const', is_const=True)
@@ -11736,10 +11948,10 @@ def register_Ns3DsrDsrOptionPad1_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## dsr-options.h (module 'dsr'): uint8_t ns3::dsr::DsrOptionPad1::Process(ns3::Ptr<ns3::Packet> packet, ns3::Ptr<ns3::Packet> dsrP, ns3::Ipv4Address ipv4Address, ns3::Ipv4Address source, ns3::Ipv4Header const & ipv4Header, uint8_t protocol, bool & isPromisc) [member function]
+    ## dsr-options.h (module 'dsr'): uint8_t ns3::dsr::DsrOptionPad1::Process(ns3::Ptr<ns3::Packet> packet, ns3::Ptr<ns3::Packet> dsrP, ns3::Ipv4Address ipv4Address, ns3::Ipv4Address source, ns3::Ipv4Header const & ipv4Header, uint8_t protocol, bool & isPromisc, ns3::Ipv4Address promiscSource) [member function]
     cls.add_method('Process', 
                    'uint8_t', 
-                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Ptr< ns3::Packet >', 'dsrP'), param('ns3::Ipv4Address', 'ipv4Address'), param('ns3::Ipv4Address', 'source'), param('ns3::Ipv4Header const &', 'ipv4Header'), param('uint8_t', 'protocol'), param('bool &', 'isPromisc')], 
+                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Ptr< ns3::Packet >', 'dsrP'), param('ns3::Ipv4Address', 'ipv4Address'), param('ns3::Ipv4Address', 'source'), param('ns3::Ipv4Header const &', 'ipv4Header'), param('uint8_t', 'protocol'), param('bool &', 'isPromisc'), param('ns3::Ipv4Address', 'promiscSource')], 
                    is_virtual=True)
     ## dsr-options.h (module 'dsr'): ns3::dsr::DsrOptionPad1::OPT_NUMBER [variable]
     cls.add_static_attribute('OPT_NUMBER', 'uint8_t const', is_const=True)
@@ -11760,10 +11972,10 @@ def register_Ns3DsrDsrOptionPadn_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## dsr-options.h (module 'dsr'): uint8_t ns3::dsr::DsrOptionPadn::Process(ns3::Ptr<ns3::Packet> packet, ns3::Ptr<ns3::Packet> dsrP, ns3::Ipv4Address ipv4Address, ns3::Ipv4Address source, ns3::Ipv4Header const & ipv4Header, uint8_t protocol, bool & isPromisc) [member function]
+    ## dsr-options.h (module 'dsr'): uint8_t ns3::dsr::DsrOptionPadn::Process(ns3::Ptr<ns3::Packet> packet, ns3::Ptr<ns3::Packet> dsrP, ns3::Ipv4Address ipv4Address, ns3::Ipv4Address source, ns3::Ipv4Header const & ipv4Header, uint8_t protocol, bool & isPromisc, ns3::Ipv4Address promiscSource) [member function]
     cls.add_method('Process', 
                    'uint8_t', 
-                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Ptr< ns3::Packet >', 'dsrP'), param('ns3::Ipv4Address', 'ipv4Address'), param('ns3::Ipv4Address', 'source'), param('ns3::Ipv4Header const &', 'ipv4Header'), param('uint8_t', 'protocol'), param('bool &', 'isPromisc')], 
+                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Ptr< ns3::Packet >', 'dsrP'), param('ns3::Ipv4Address', 'ipv4Address'), param('ns3::Ipv4Address', 'source'), param('ns3::Ipv4Header const &', 'ipv4Header'), param('uint8_t', 'protocol'), param('bool &', 'isPromisc'), param('ns3::Ipv4Address', 'promiscSource')], 
                    is_virtual=True)
     ## dsr-options.h (module 'dsr'): ns3::dsr::DsrOptionPadn::OPT_NUMBER [variable]
     cls.add_static_attribute('OPT_NUMBER', 'uint8_t const', is_const=True)
@@ -11793,10 +12005,10 @@ def register_Ns3DsrDsrOptionRerr_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## dsr-options.h (module 'dsr'): uint8_t ns3::dsr::DsrOptionRerr::Process(ns3::Ptr<ns3::Packet> packet, ns3::Ptr<ns3::Packet> dsrP, ns3::Ipv4Address ipv4Address, ns3::Ipv4Address source, ns3::Ipv4Header const & ipv4Header, uint8_t protocol, bool & isPromisc) [member function]
+    ## dsr-options.h (module 'dsr'): uint8_t ns3::dsr::DsrOptionRerr::Process(ns3::Ptr<ns3::Packet> packet, ns3::Ptr<ns3::Packet> dsrP, ns3::Ipv4Address ipv4Address, ns3::Ipv4Address source, ns3::Ipv4Header const & ipv4Header, uint8_t protocol, bool & isPromisc, ns3::Ipv4Address promiscSource) [member function]
     cls.add_method('Process', 
                    'uint8_t', 
-                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Ptr< ns3::Packet >', 'dsrP'), param('ns3::Ipv4Address', 'ipv4Address'), param('ns3::Ipv4Address', 'source'), param('ns3::Ipv4Header const &', 'ipv4Header'), param('uint8_t', 'protocol'), param('bool &', 'isPromisc')], 
+                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Ptr< ns3::Packet >', 'dsrP'), param('ns3::Ipv4Address', 'ipv4Address'), param('ns3::Ipv4Address', 'source'), param('ns3::Ipv4Header const &', 'ipv4Header'), param('uint8_t', 'protocol'), param('bool &', 'isPromisc'), param('ns3::Ipv4Address', 'promiscSource')], 
                    is_virtual=True)
     ## dsr-options.h (module 'dsr'): ns3::dsr::DsrOptionRerr::OPT_NUMBER [variable]
     cls.add_static_attribute('OPT_NUMBER', 'uint8_t const', is_const=True)
@@ -11822,10 +12034,10 @@ def register_Ns3DsrDsrOptionRrep_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## dsr-options.h (module 'dsr'): uint8_t ns3::dsr::DsrOptionRrep::Process(ns3::Ptr<ns3::Packet> packet, ns3::Ptr<ns3::Packet> dsrP, ns3::Ipv4Address ipv4Address, ns3::Ipv4Address source, ns3::Ipv4Header const & ipv4Header, uint8_t protocol, bool & isPromisc) [member function]
+    ## dsr-options.h (module 'dsr'): uint8_t ns3::dsr::DsrOptionRrep::Process(ns3::Ptr<ns3::Packet> packet, ns3::Ptr<ns3::Packet> dsrP, ns3::Ipv4Address ipv4Address, ns3::Ipv4Address source, ns3::Ipv4Header const & ipv4Header, uint8_t protocol, bool & isPromisc, ns3::Ipv4Address promiscSource) [member function]
     cls.add_method('Process', 
                    'uint8_t', 
-                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Ptr< ns3::Packet >', 'dsrP'), param('ns3::Ipv4Address', 'ipv4Address'), param('ns3::Ipv4Address', 'source'), param('ns3::Ipv4Header const &', 'ipv4Header'), param('uint8_t', 'protocol'), param('bool &', 'isPromisc')], 
+                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Ptr< ns3::Packet >', 'dsrP'), param('ns3::Ipv4Address', 'ipv4Address'), param('ns3::Ipv4Address', 'source'), param('ns3::Ipv4Header const &', 'ipv4Header'), param('uint8_t', 'protocol'), param('bool &', 'isPromisc'), param('ns3::Ipv4Address', 'promiscSource')], 
                    is_virtual=True)
     ## dsr-options.h (module 'dsr'): ns3::dsr::DsrOptionRrep::OPT_NUMBER [variable]
     cls.add_static_attribute('OPT_NUMBER', 'uint8_t const', is_const=True)
@@ -11851,10 +12063,10 @@ def register_Ns3DsrDsrOptionRreq_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## dsr-options.h (module 'dsr'): uint8_t ns3::dsr::DsrOptionRreq::Process(ns3::Ptr<ns3::Packet> packet, ns3::Ptr<ns3::Packet> dsrP, ns3::Ipv4Address ipv4Address, ns3::Ipv4Address source, ns3::Ipv4Header const & ipv4Header, uint8_t protocol, bool & isPromisc) [member function]
+    ## dsr-options.h (module 'dsr'): uint8_t ns3::dsr::DsrOptionRreq::Process(ns3::Ptr<ns3::Packet> packet, ns3::Ptr<ns3::Packet> dsrP, ns3::Ipv4Address ipv4Address, ns3::Ipv4Address source, ns3::Ipv4Header const & ipv4Header, uint8_t protocol, bool & isPromisc, ns3::Ipv4Address promiscSource) [member function]
     cls.add_method('Process', 
                    'uint8_t', 
-                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Ptr< ns3::Packet >', 'dsrP'), param('ns3::Ipv4Address', 'ipv4Address'), param('ns3::Ipv4Address', 'source'), param('ns3::Ipv4Header const &', 'ipv4Header'), param('uint8_t', 'protocol'), param('bool &', 'isPromisc')], 
+                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Ptr< ns3::Packet >', 'dsrP'), param('ns3::Ipv4Address', 'ipv4Address'), param('ns3::Ipv4Address', 'source'), param('ns3::Ipv4Header const &', 'ipv4Header'), param('uint8_t', 'protocol'), param('bool &', 'isPromisc'), param('ns3::Ipv4Address', 'promiscSource')], 
                    is_virtual=True)
     ## dsr-options.h (module 'dsr'): ns3::dsr::DsrOptionRreq::OPT_NUMBER [variable]
     cls.add_static_attribute('OPT_NUMBER', 'uint8_t const', is_const=True)
@@ -11880,10 +12092,10 @@ def register_Ns3DsrDsrOptionSR_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## dsr-options.h (module 'dsr'): uint8_t ns3::dsr::DsrOptionSR::Process(ns3::Ptr<ns3::Packet> packet, ns3::Ptr<ns3::Packet> dsrP, ns3::Ipv4Address ipv4Address, ns3::Ipv4Address source, ns3::Ipv4Header const & ipv4Header, uint8_t protocol, bool & isPromisc) [member function]
+    ## dsr-options.h (module 'dsr'): uint8_t ns3::dsr::DsrOptionSR::Process(ns3::Ptr<ns3::Packet> packet, ns3::Ptr<ns3::Packet> dsrP, ns3::Ipv4Address ipv4Address, ns3::Ipv4Address source, ns3::Ipv4Header const & ipv4Header, uint8_t protocol, bool & isPromisc, ns3::Ipv4Address promiscSource) [member function]
     cls.add_method('Process', 
                    'uint8_t', 
-                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Ptr< ns3::Packet >', 'dsrP'), param('ns3::Ipv4Address', 'ipv4Address'), param('ns3::Ipv4Address', 'source'), param('ns3::Ipv4Header const &', 'ipv4Header'), param('uint8_t', 'protocol'), param('bool &', 'isPromisc')], 
+                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Ptr< ns3::Packet >', 'dsrP'), param('ns3::Ipv4Address', 'ipv4Address'), param('ns3::Ipv4Address', 'source'), param('ns3::Ipv4Header const &', 'ipv4Header'), param('uint8_t', 'protocol'), param('bool &', 'isPromisc'), param('ns3::Ipv4Address', 'promiscSource')], 
                    is_virtual=True)
     ## dsr-options.h (module 'dsr'): ns3::dsr::DsrOptionSR::OPT_NUMBER [variable]
     cls.add_static_attribute('OPT_NUMBER', 'uint8_t const', is_const=True)

@@ -188,6 +188,8 @@ def register_types(module):
     module.add_class('int64x64_t', import_from_module='ns.core')
     ## chunk.h (module 'network'): ns3::Chunk [class]
     module.add_class('Chunk', import_from_module='ns.network', parent=root_module['ns3::ObjectBase'])
+    ## packet-socket.h (module 'network'): ns3::DeviceNameTag [class]
+    module.add_class('DeviceNameTag', import_from_module='ns.network', parent=root_module['ns3::Tag'])
     ## flow-id-tag.h (module 'network'): ns3::FlowIdTag [class]
     module.add_class('FlowIdTag', import_from_module='ns.network', parent=root_module['ns3::Tag'])
     ## header.h (module 'network'): ns3::Header [class]
@@ -200,6 +202,8 @@ def register_types(module):
     module.add_class('AggregateIterator', import_from_module='ns.core', outer_class=root_module['ns3::Object'])
     ## packet-burst.h (module 'network'): ns3::PacketBurst [class]
     module.add_class('PacketBurst', import_from_module='ns.network', parent=root_module['ns3::Object'])
+    ## packet-socket.h (module 'network'): ns3::PacketSocketTag [class]
+    module.add_class('PacketSocketTag', import_from_module='ns.network', parent=root_module['ns3::Tag'])
     ## pcap-file-wrapper.h (module 'network'): ns3::PcapFileWrapper [class]
     module.add_class('PcapFileWrapper', import_from_module='ns.network', parent=root_module['ns3::Object'])
     ## queue.h (module 'network'): ns3::Queue [class]
@@ -581,12 +585,14 @@ def register_methods(root_module):
     register_Ns3Empty_methods(root_module, root_module['ns3::empty'])
     register_Ns3Int64x64_t_methods(root_module, root_module['ns3::int64x64_t'])
     register_Ns3Chunk_methods(root_module, root_module['ns3::Chunk'])
+    register_Ns3DeviceNameTag_methods(root_module, root_module['ns3::DeviceNameTag'])
     register_Ns3FlowIdTag_methods(root_module, root_module['ns3::FlowIdTag'])
     register_Ns3Header_methods(root_module, root_module['ns3::Header'])
     register_Ns3LlcSnapHeader_methods(root_module, root_module['ns3::LlcSnapHeader'])
     register_Ns3Object_methods(root_module, root_module['ns3::Object'])
     register_Ns3ObjectAggregateIterator_methods(root_module, root_module['ns3::Object::AggregateIterator'])
     register_Ns3PacketBurst_methods(root_module, root_module['ns3::PacketBurst'])
+    register_Ns3PacketSocketTag_methods(root_module, root_module['ns3::PacketSocketTag'])
     register_Ns3PcapFileWrapper_methods(root_module, root_module['ns3::PcapFileWrapper'])
     register_Ns3Queue_methods(root_module, root_module['ns3::Queue'])
     register_Ns3RadiotapHeader_methods(root_module, root_module['ns3::RadiotapHeader'])
@@ -3927,6 +3933,52 @@ def register_Ns3Chunk_methods(root_module, cls):
                    is_pure_virtual=True, is_const=True, is_virtual=True)
     return
 
+def register_Ns3DeviceNameTag_methods(root_module, cls):
+    ## packet-socket.h (module 'network'): ns3::DeviceNameTag::DeviceNameTag(ns3::DeviceNameTag const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::DeviceNameTag const &', 'arg0')])
+    ## packet-socket.h (module 'network'): ns3::DeviceNameTag::DeviceNameTag() [constructor]
+    cls.add_constructor([])
+    ## packet-socket.h (module 'network'): void ns3::DeviceNameTag::Deserialize(ns3::TagBuffer i) [member function]
+    cls.add_method('Deserialize', 
+                   'void', 
+                   [param('ns3::TagBuffer', 'i')], 
+                   is_virtual=True)
+    ## packet-socket.h (module 'network'): std::string ns3::DeviceNameTag::GetDeviceName() const [member function]
+    cls.add_method('GetDeviceName', 
+                   'std::string', 
+                   [], 
+                   is_const=True)
+    ## packet-socket.h (module 'network'): ns3::TypeId ns3::DeviceNameTag::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## packet-socket.h (module 'network'): uint32_t ns3::DeviceNameTag::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## packet-socket.h (module 'network'): static ns3::TypeId ns3::DeviceNameTag::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## packet-socket.h (module 'network'): void ns3::DeviceNameTag::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## packet-socket.h (module 'network'): void ns3::DeviceNameTag::Serialize(ns3::TagBuffer i) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::TagBuffer', 'i')], 
+                   is_const=True, is_virtual=True)
+    ## packet-socket.h (module 'network'): void ns3::DeviceNameTag::SetDeviceName(std::string n) [member function]
+    cls.add_method('SetDeviceName', 
+                   'void', 
+                   [param('std::string', 'n')])
+    return
+
 def register_Ns3FlowIdTag_methods(root_module, cls):
     ## flow-id-tag.h (module 'network'): ns3::FlowIdTag::FlowIdTag(ns3::FlowIdTag const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::FlowIdTag const &', 'arg0')])
@@ -4173,6 +4225,61 @@ def register_Ns3PacketBurst_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='private', is_virtual=True)
+    return
+
+def register_Ns3PacketSocketTag_methods(root_module, cls):
+    ## packet-socket.h (module 'network'): ns3::PacketSocketTag::PacketSocketTag(ns3::PacketSocketTag const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PacketSocketTag const &', 'arg0')])
+    ## packet-socket.h (module 'network'): ns3::PacketSocketTag::PacketSocketTag() [constructor]
+    cls.add_constructor([])
+    ## packet-socket.h (module 'network'): void ns3::PacketSocketTag::Deserialize(ns3::TagBuffer i) [member function]
+    cls.add_method('Deserialize', 
+                   'void', 
+                   [param('ns3::TagBuffer', 'i')], 
+                   is_virtual=True)
+    ## packet-socket.h (module 'network'): ns3::Address ns3::PacketSocketTag::GetDestAddress() const [member function]
+    cls.add_method('GetDestAddress', 
+                   'ns3::Address', 
+                   [], 
+                   is_const=True)
+    ## packet-socket.h (module 'network'): ns3::TypeId ns3::PacketSocketTag::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## packet-socket.h (module 'network'): ns3::NetDevice::PacketType ns3::PacketSocketTag::GetPacketType() const [member function]
+    cls.add_method('GetPacketType', 
+                   'ns3::NetDevice::PacketType', 
+                   [], 
+                   is_const=True)
+    ## packet-socket.h (module 'network'): uint32_t ns3::PacketSocketTag::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## packet-socket.h (module 'network'): static ns3::TypeId ns3::PacketSocketTag::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## packet-socket.h (module 'network'): void ns3::PacketSocketTag::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## packet-socket.h (module 'network'): void ns3::PacketSocketTag::Serialize(ns3::TagBuffer i) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::TagBuffer', 'i')], 
+                   is_const=True, is_virtual=True)
+    ## packet-socket.h (module 'network'): void ns3::PacketSocketTag::SetDestAddress(ns3::Address a) [member function]
+    cls.add_method('SetDestAddress', 
+                   'void', 
+                   [param('ns3::Address', 'a')])
+    ## packet-socket.h (module 'network'): void ns3::PacketSocketTag::SetPacketType(ns3::NetDevice::PacketType t) [member function]
+    cls.add_method('SetPacketType', 
+                   'void', 
+                   [param('ns3::NetDevice::PacketType', 't')])
     return
 
 def register_Ns3PcapFileWrapper_methods(root_module, cls):
@@ -5484,11 +5591,6 @@ def register_Ns3Time_methods(root_module, cls):
                    'int', 
                    [param('ns3::Time const &', 'o')], 
                    is_const=True)
-    ## nstime.h (module 'core'): static void ns3::Time::FreezeResolution() [member function]
-    cls.add_method('FreezeResolution', 
-                   'void', 
-                   [], 
-                   is_static=True)
     ## nstime.h (module 'core'): static ns3::Time ns3::Time::From(ns3::int64x64_t const & from, ns3::Time::Unit timeUnit) [member function]
     cls.add_method('From', 
                    'ns3::Time', 
