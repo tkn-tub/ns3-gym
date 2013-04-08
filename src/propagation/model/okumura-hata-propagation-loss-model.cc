@@ -84,7 +84,7 @@ OkumuraHataPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityMode
       double log_bHeight = 0.0;
       if (m_citySize == LargeCity)
         {
-          if (m_frequency < 200)
+          if (fmhz < 200)
             {
               log_bHeight = 8.29 * std::pow (log10 (1.54 * hm), 2) -  1.1;
             }
