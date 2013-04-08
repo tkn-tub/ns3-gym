@@ -41,15 +41,26 @@ public:
   Asn1Header ();
   virtual ~Asn1Header ();
 
+  // Inherited from ns3::Header base class
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
   uint32_t GetSerializedSize (void) const;
   void Serialize (Buffer::Iterator bIterator) const;
 
-  // Pure virtual methods, implemented in child classes
-  virtual void PreSerialize (void) const = 0;
+  // Inherited from ns3::Header base class
+  // Pure virtual methods, to be implemented in child classes
   virtual uint32_t Deserialize (Buffer::Iterator bIterator) = 0;
   virtual void Print (std::ostream &os) const = 0;
+    
+  /**
+   * This function serializes class attributes to m_serializationResult local Buffer.
+   * As ASN1 encoding produces a bitstream that does not have a fixed length,
+   * this function is needed to store the result, so its length can be retrieved
+   * with Header::GetSerializedSize() function.
+   * This method is pure virtual in this class (needs to be implemented in child classes)
+   * as the meningful information elements are in the subclasses.
+   */
+  virtual void PreSerialize (void) const = 0;
 
 protected:
   mutable uint8_t m_serializationPendingBits;
@@ -65,7 +76,7 @@ protected:
   void SerializeInteger (int n, int nmin, int nmax) const;
   void SerializeOctetstring (std::string s) const;
   void SerializeSequenceOf (int numElems, int nMax, int nMin) const;
-  void SerializeChoice (int numOptions, int selectedOption) const;
+  void SerializeChoice (int numOptions, int selectedOption, bool isExtensionMarkerPresent) const;
   void SerializeEnum (int numElems, int selectedElem) const;
   void SerializeNull () const;
   void FinalizeSerialization () const;
@@ -104,7 +115,7 @@ protected:
 
   Buffer::Iterator DeserializeBoolean (bool *value, Buffer::Iterator bIterator);
   Buffer::Iterator DeserializeInteger (int *n, int nmin, int nmax, Buffer::Iterator bIterator);
-  Buffer::Iterator DeserializeChoice (int numOptions, int *selectedOption, Buffer::Iterator bIterator);
+  Buffer::Iterator DeserializeChoice (int numOptions, bool isExtensionMarkerPresent, int *selectedOption, Buffer::Iterator bIterator);
   Buffer::Iterator DeserializeEnum (int numElems, int *selectedElem, Buffer::Iterator bIterator);
 
   template <int N>
@@ -137,5 +148,5 @@ protected:
 
 } // namespace ns3
 
-#endif // EPC_ASN1_HEADER_H
+#endif // ASN1_HEADER_H
 

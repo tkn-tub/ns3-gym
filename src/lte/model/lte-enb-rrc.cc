@@ -382,7 +382,7 @@ UeManager::SetupDataRadioBearer (EpsBearer bearer, uint8_t bearerId, uint32_t gt
   lcinfo.gbrDl = bearer.gbrQosInfo.gbrDl;
   m_rrc->m_cmacSapProvider->AddLc (lcinfo, rlc->GetLteMacSapUser ());
   
-  if (drbInfo->m_rlc->GetTypeId () == LteRlcAm::GetTypeId ())
+  if (rlcTypeId == LteRlcAm::GetTypeId ())
     {
       drbInfo->m_rlcConfig.choice =  LteRrcSap::RlcConfig::AM;
     }
@@ -518,6 +518,10 @@ UeManager::PrepareHandover (uint16_t cellId)
         params.bearers = GetErabList ();
   
         LteRrcSap::HandoverPreparationInfo hpi;
+        hpi.asConfig.sourceMeasConfig.haveQuantityConfig = false;
+        hpi.asConfig.sourceMeasConfig.haveMeasGapConfig = false;
+        hpi.asConfig.sourceMeasConfig.haveSmeasure = false;
+        hpi.asConfig.sourceMeasConfig.haveSpeedStatePars = false;
         hpi.asConfig.sourceUeIdentity = m_rnti;
         hpi.asConfig.sourceDlCarrierFreq = m_rrc->m_dlEarfcn;
         hpi.asConfig.sourceRadioResourceConfig = GetRadioResourceConfigForHandoverPreparationInfo ();
@@ -527,6 +531,12 @@ UeManager::PrepareHandover (uint16_t cellId)
         hpi.asConfig.sourceSystemInformationBlockType1.cellAccessRelatedInfo.cellIdentity = m_rrc->m_cellId;
         hpi.asConfig.sourceSystemInformationBlockType1.cellAccessRelatedInfo.csgIndication = 0;
         hpi.asConfig.sourceSystemInformationBlockType1.cellAccessRelatedInfo.csgIdentity = 0;
+        LteEnbCmacSapProvider::RachConfig rc = m_rrc->m_cmacSapProvider->GetRachConfig ();
+        hpi.asConfig.sourceSystemInformationBlockType2.radioResourceConfigCommon.rachConfigCommon.preambleInfo.numberOfRaPreambles = rc.numberOfRaPreambles;
+        hpi.asConfig.sourceSystemInformationBlockType2.radioResourceConfigCommon.rachConfigCommon.raSupervisionInfo.preambleTransMax = rc.preambleTransMax;
+        hpi.asConfig.sourceSystemInformationBlockType2.radioResourceConfigCommon.rachConfigCommon.raSupervisionInfo.raResponseWindowSize = rc.raResponseWindowSize;
+        hpi.asConfig.sourceSystemInformationBlockType2.freqInfo.ulCarrierFreq = m_rrc->m_ulEarfcn;
+        hpi.asConfig.sourceSystemInformationBlockType2.freqInfo.ulBandwidth = m_rrc->m_ulBandwidth;
         params.rrcContext = m_rrc->m_rrcSapUser->EncodeHandoverPreparationInformation (hpi);
   
         NS_LOG_LOGIC ("oldEnbUeX2apId = " << params.oldEnbUeX2apId);
@@ -1543,6 +1553,12 @@ LteEnbRrc::DoRecvHandoverRequest (EpcX2SapUser::HandoverRequestParams req)
   handoverCommand.mobilityControlInfo.haveRachConfigDedicated = true;
   handoverCommand.mobilityControlInfo.rachConfigDedicated.raPreambleIndex = anrcrv.raPreambleId;
   handoverCommand.mobilityControlInfo.rachConfigDedicated.raPrachMaskIndex = anrcrv.raPrachMaskIndex;
+
+  LteEnbCmacSapProvider::RachConfig rc = m_cmacSapProvider->GetRachConfig ();
+  handoverCommand.mobilityControlInfo.radioResourceConfigCommon.rachConfigCommon.preambleInfo.numberOfRaPreambles = rc.numberOfRaPreambles;
+  handoverCommand.mobilityControlInfo.radioResourceConfigCommon.rachConfigCommon.raSupervisionInfo.preambleTransMax = rc.preambleTransMax;
+  handoverCommand.mobilityControlInfo.radioResourceConfigCommon.rachConfigCommon.raSupervisionInfo.raResponseWindowSize = rc.raResponseWindowSize;
+
   Ptr<Packet> encodedHandoverCommand = m_rrcSapUser->EncodeHandoverCommand (handoverCommand);
 
   ackParams.rrcContext = encodedHandoverCommand;
