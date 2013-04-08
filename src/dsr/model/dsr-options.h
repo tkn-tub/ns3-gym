@@ -112,7 +112,7 @@ public:
    * \return the vector after the route cut
    */
   std::vector<Ipv4Address> CutRoute (Ipv4Address ipv4Address, std::vector<Ipv4Address> &nodeList);
-  /*
+  /**
    * \brief Set the route to use for data packets
    * \return the route
    * \used by the option headers when sending data/control packets
@@ -123,17 +123,22 @@ public:
    * \return true if successfully reversed
    */
   bool ReverseRoutes  (std::vector<Ipv4Address>& vec);
-  /*
+  /**
    * \brief Search for the next hop in the route
    * \return the next hop address if found
    */
   Ipv4Address SearchNextHop (Ipv4Address ipv4Address, std::vector<Ipv4Address>& vec);
-  /*
+  /**
    * \brief Reverse search for the next hop in the route
-   * \return the next hop address if found
+   * \return the previous next hop address if found
    */
   Ipv4Address ReverseSearchNextHop (Ipv4Address ipv4Address, std::vector<Ipv4Address>& vec);
-  /*
+  /**
+   * \brief Reverse search for the next two hop in the route
+   * \return the previous next two hop address if found
+   */
+  Ipv4Address ReverseSearchNextTwoHop  (Ipv4Address ipv4Address, std::vector<Ipv4Address>& vec);
+  /**
    * \brief Print out the elements in the route vector
    */
   void PrintVector (std::vector<Ipv4Address>& vec);
@@ -152,12 +157,20 @@ public:
    * \return the route after route shorten
    */
   void RemoveDuplicates (std::vector<Ipv4Address>& vec);
-  /*
+  /**
+   * \brief Schedule the intermediate node route request broadcast
+   * \param the original packet
+   * \param rrepHeader The rrep header
+   * \param source address
+   * \param destination address
+   */
+  void ScheduleReply (Ptr<Packet> &packet, std::vector<Ipv4Address> &nodeList, Ipv4Address &source, Ipv4Address &destination);
+  /**
    * \brief Get the node id with Ipv4Address
    * \return the id of the node
    */
   uint32_t GetIDfromIP (Ipv4Address address);
-  /*
+  /**
    * \brief Get the node object with Ipv4Address
    * \return the object of the node
    */
@@ -173,7 +186,7 @@ public:
    * \param isPromisc if the packet must be dropped
    * \return the processed size
    */
-  virtual uint8_t Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Address ipv4Address, Ipv4Address source, Ipv4Header const& ipv4Header, uint8_t protocol, bool& isPromisc) = 0;
+  virtual uint8_t Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Address ipv4Address, Ipv4Address source, Ipv4Header const& ipv4Header, uint8_t protocol, bool& isPromisc, Ipv4Address promiscSource) = 0;
 
 protected:
   /**
@@ -261,7 +274,7 @@ public:
    * \param isPromisc if the packet must be dropped
    * \return the processed size
    */
-  virtual uint8_t Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Address ipv4Address, Ipv4Address source, Ipv4Header const& ipv4Header, uint8_t protocol, bool& isPromisc);
+  virtual uint8_t Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Address ipv4Address, Ipv4Address source, Ipv4Header const& ipv4Header, uint8_t protocol, bool& isPromisc, Ipv4Address promiscSource);
 };
 
 /**
@@ -304,7 +317,7 @@ public:
    * \param isPromisc if the packet must be dropped
    * \return the processed size
    */
-  virtual uint8_t Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Address ipv4Address, Ipv4Address source, Ipv4Header const& ipv4Header, uint8_t protocol, bool& isPromisc);
+  virtual uint8_t Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Address ipv4Address, Ipv4Address source, Ipv4Header const& ipv4Header, uint8_t protocol, bool& isPromisc, Ipv4Address promiscSource);
 };
 
 /**
@@ -352,7 +365,7 @@ public:
    * \param isPromisc if the packet must be dropped
    * \return the processed size
    */
-  virtual uint8_t Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Address ipv4Address, Ipv4Address source, Ipv4Header const& ipv4Header, uint8_t protocol, bool& isPromisc);
+  virtual uint8_t Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Address ipv4Address, Ipv4Address source, Ipv4Header const& ipv4Header, uint8_t protocol, bool& isPromisc, Ipv4Address promiscSource);
 
 private:
   /**
@@ -410,7 +423,7 @@ public:
    * \param isPromisc if the packet must be dropped
    * \return the processed size
    */
-  virtual uint8_t Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Address ipv4Address, Ipv4Address source, Ipv4Header const& ipv4Header, uint8_t protocol, bool& isPromisc);
+  virtual uint8_t Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Address ipv4Address, Ipv4Address source, Ipv4Header const& ipv4Header, uint8_t protocol, bool& isPromisc, Ipv4Address promiscSource);
 
 private:
   /**
@@ -472,7 +485,7 @@ public:
    * \param isPromisc if the packet must be dropped
    * \return the processed size
    */
-  virtual uint8_t Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Address ipv4Address, Ipv4Address source, Ipv4Header const& ipv4Header, uint8_t protocol, bool& isPromisc);
+  virtual uint8_t Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Address ipv4Address, Ipv4Address source, Ipv4Header const& ipv4Header, uint8_t protocol, bool& isPromisc, Ipv4Address promiscSource);
 
 private:
   /**
@@ -530,7 +543,7 @@ public:
    * \param isPromisc if the packet must be dropped
    * \return the processed size
    */
-  virtual uint8_t Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Address ipv4Address, Ipv4Address source, Ipv4Header const& ipv4Header, uint8_t protocol, bool& isPromisc);
+  virtual uint8_t Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Address ipv4Address, Ipv4Address source, Ipv4Header const& ipv4Header, uint8_t protocol, bool& isPromisc, Ipv4Address promiscSource);
   /**
    * \brief Do Send error message
    *
@@ -603,7 +616,7 @@ public:
    * \param isPromisc if the packet must be dropped
    * \return the processed size
    */
-  virtual uint8_t Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Address ipv4Address, Ipv4Address source, Ipv4Header const& ipv4Header, uint8_t protocol, bool& isPromisc);
+  virtual uint8_t Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Address ipv4Address, Ipv4Address source, Ipv4Header const& ipv4Header, uint8_t protocol, bool& isPromisc, Ipv4Address promiscSource);
 
 private:
   /**
@@ -665,7 +678,7 @@ public:
    * \param isPromisc if the packet must be dropped
    * \return the processed size
    */
-  virtual uint8_t Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Address ipv4Address, Ipv4Address source, Ipv4Header const& ipv4Header, uint8_t protocol, bool& isPromisc);
+  virtual uint8_t Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Address ipv4Address, Ipv4Address source, Ipv4Header const& ipv4Header, uint8_t protocol, bool& isPromisc, Ipv4Address promiscSource);
 
 private:
   /**

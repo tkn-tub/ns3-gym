@@ -67,6 +67,7 @@
 #include "dsr-rcache.h"
 #include "dsr-rreq-table.h"
 #include "dsr-maintain-buff.h"
+#include "dsr-passive-buff.h"
 #include "dsr-option-header.h"
 #include "dsr-fs-header.h"
 #include "dsr-rsendbuff.h"
@@ -141,6 +142,16 @@ public:
     * \return the request table
     */
   Ptr<dsr::RreqTable> GetRequestTable () const;
+  /**
+   * \brief Set the node.
+   * \param the passive buffer to set
+   */
+  void SetPassiveBuffer (Ptr<dsr::PassiveBuffer> r);
+  /**
+    * \brief Get the passive buffer
+    * \return the passive buffer
+    */
+  Ptr<dsr::PassiveBuffer> GetPassiveBuffer () const;
 
   ///\functions used to direct to route cache
   //\{
@@ -151,6 +162,7 @@ public:
   bool AddRoute (RouteCacheEntry & rt);
   void DeleteAllRoutesIncludeLink (Ipv4Address errorSrc, Ipv4Address unreachNode, Ipv4Address node);
   bool UpdateRouteEntry (Ipv4Address dst);
+  bool FindSourceEntry (Ipv4Address src, Ipv4Address dst, uint16_t id);
   //\}
 
   /**
@@ -256,6 +268,15 @@ public:
   void SendPacketFromBuffer (DsrOptionSRHeader const &sourceRoute,
                              Ipv4Address nextHop,
                              uint8_t protocol);
+  /**
+   * \brief Find the same passive entry
+   */
+  bool PassiveEntryCheck (Ptr<Packet> packet, Ipv4Address source, Ipv4Address destination, uint8_t segsLeft,
+                      uint16_t fragmentOffset, uint16_t identification, bool saveEntry);
+  /**
+   * \brief Cancel the passive timer
+   */
+  bool CancelPassiveTimer (Ptr<Packet> packet, Ipv4Address source, Ipv4Address destination, uint8_t segsLeft);
   /*
    * \brief Find the similar entries in the maintenance buffer
    */
@@ -616,6 +637,8 @@ private:
 
   Ptr<dsr::RreqTable> m_rreqTable;        // / A "drop-front" queue used by the routing layer to cache route request sent.
 
+  Ptr<dsr::PassiveBuffer> m_passiveBuffer;              ///< A "drop-front" queue used by the routing layer to cache route request sent.
+
   uint32_t m_numPriorityQueues;
 
   std::map<uint32_t, Ptr<dsr::DsrNetworkQueue> > m_priorityQueue;   // / priority queueus
@@ -627,7 +650,7 @@ private:
   std::vector<Ipv4Address> m_addresses;   // / The bind ipv4 addresses with next hop, src, destination address in sequence
 
   /// Provides uniform random variables.
-  Ptr<UniformRandomVariable> m_uniformRandomVariable;  
+  Ptr<UniformRandomVariable> m_uniformRandomVariable;
 };
 }  /* namespace dsr */
 }  /* namespace ns3 */

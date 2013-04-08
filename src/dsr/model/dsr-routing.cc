@@ -113,6 +113,11 @@ TypeId DsrRouting::GetTypeId ()
                    MakePointerAccessor (&DsrRouting::SetRequestTable,
                                         &DsrRouting::GetRequestTable),
                    MakePointerChecker<RreqTable> ())
+    .AddAttribute ("PassiveBuffer", "The passive buffer to manage promisucously received passive ack.",
+                   PointerValue (0),
+                   MakePointerAccessor (&DsrRouting::SetPassiveBuffer,
+                                        &DsrRouting::GetPassiveBuffer),
+                   MakePointerChecker<PassiveBuffer> ())
     .AddAttribute ("MaxSendBuffLen","Maximum number of packets that can be stored in send buffer.",
                    UintegerValue (64),
                    MakeUintegerAccessor (&DsrRouting::m_maxSendBuffLen),
@@ -154,9 +159,9 @@ TypeId DsrRouting::GetTypeId ()
                    MakeUintegerAccessor (&DsrRouting::m_rreqRetries),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("MaintenanceRetries","Maximum number of retransmissions for data packets from maintenance buffer.",
-                   DoubleValue (2),
-                   MakeDoubleAccessor (&DsrRouting::m_maxMaintRexmt),
-                   MakeDoubleChecker<uint32_t> ())
+                   UintegerValue (2),
+                   MakeUintegerAccessor (&DsrRouting::m_maxMaintRexmt),
+                   MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("RequestTableSize","Maximum number of request entries in the request table.",
                    UintegerValue (64),
                    MakeUintegerAccessor (&DsrRouting::m_requestTableSize),
@@ -174,9 +179,9 @@ TypeId DsrRouting::GetTypeId ()
                    MakeTimeAccessor (&DsrRouting::m_nonpropRequestTimeout),
                    MakeTimeChecker ())
     .AddAttribute ("DiscoveryHopLimit","The max discovery hop limit for route requests.",
-                   DoubleValue (255),
-                   MakeDoubleAccessor (&DsrRouting::m_discoveryHopLimit),
-                   MakeDoubleChecker<uint32_t> ())
+                   UintegerValue (255),
+                   MakeUintegerAccessor (&DsrRouting::m_discoveryHopLimit),
+                   MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("MaxSalvageCount","The max salvage count for a single data packet.",
                    UintegerValue (15),
                    MakeUintegerAccessor (&DsrRouting::m_maxSalvageCount),
@@ -353,6 +358,11 @@ void DsrRouting::Start ()
   // The call back to handle link error and send error message to appropriate nodes
   routeCache->SetCallback (MakeCallback (&DsrRouting::SendRerrWhenBreaksLinkToNextHop, this));
   SetRouteCache (routeCache);
+// Set the passive buffer parameters using just the send buffer parameters
+  Ptr<dsr::PassiveBuffer> passiveBuffer = CreateObject<dsr::PassiveBuffer> ();
+  passiveBuffer->SetMaxQueueLen (m_maxSendBuffLen);
+  passiveBuffer->SetPassiveBufferTimeout (m_sendBufferTimeout);
+  SetPassiveBuffer (passiveBuffer);
 
   if (m_mainAddress == Ipv4Address ())
     {
@@ -486,6 +496,19 @@ DsrRouting::GetRequestTable () const
   return m_rreqTable;
 }
 
+void DsrRouting::SetPassiveBuffer (Ptr<dsr::PassiveBuffer> p)
+{
+  // / Set the request table to use
+  m_passiveBuffer = p;
+}
+
+Ptr<dsr::PassiveBuffer>
+DsrRouting::GetPassiveBuffer () const
+{
+  // / Get the request table to use
+  return m_passiveBuffer;
+}
+
 bool DsrRouting::IsLinkCache ()
 {
   return m_routeCache->IsLinkCache ();
@@ -524,6 +547,11 @@ void DsrRouting::DeleteAllRoutesIncludeLink (Ipv4Address errorSrc, Ipv4Address u
 bool DsrRouting::UpdateRouteEntry (Ipv4Address dst)
 {
   return m_routeCache->UpdateRouteEntry (dst);
+}
+
+bool DsrRouting::FindSourceEntry (Ipv4Address src, Ipv4Address dst, uint16_t id)
+{
+  return m_rreqTable->FindSourceEntry (src, dst, id);
 }
 
 Ipv4Address
@@ -704,7 +732,6 @@ void DsrRouting::SendRerrWhenBreaksLinkToNextHop (Ipv4Address nextHop, uint8_t p
           newPacket->RemoveHeader (sourceRoute);
           uint8_t salvage = sourceRoute.GetSalvage ();
 
-          // TODO
           DsrOptionAckReqHeader ackReq;
           newPacket->RemoveHeader (ackReq);
           /*
@@ -1032,20 +1059,21 @@ bool DsrRouting::PromiscReceive (Ptr<NetDevice> device, Ptr<const Packet> packet
           optionType = *(data);
 
           Ptr<dsr::DsrOptions> dsrOption;
-
+          Ipv4Address promiscSource = GetIPfromMAC (Mac48Address::ConvertFrom (from));
           if (optionType == 96)        // This is the source route option
             {
               dsrOption = GetOption (optionType);       // Get the relative DSR option and demux to the process function
-              NS_LOG_DEBUG (Simulator::Now ().GetSeconds () << 
+              NS_LOG_DEBUG (Simulator::Now ().GetSeconds () <<
                             " DSR node " << m_mainAddress <<
                             " overhearing packet PID: " << p->GetUid () <<
-                            " from " << GetIPfromMAC (Mac48Address::ConvertFrom (from)) <<
+                            " from " << promiscSource <<
                             " to " << GetIPfromMAC (Mac48Address::ConvertFrom (to)) <<
                             " with source IP " << ipv4Header.GetSource () <<
                             " and destination IP " << ipv4Header.GetDestination () <<
                             " and packet : " << *dsrPacket);
               bool isPromisc = true;                     // Set the boolean value isPromisc as true
-              dsrOption->Process (p, dsrPacket, m_mainAddress, source, ipv4Header, nextHeader, isPromisc);
+
+              dsrOption->Process (p, dsrPacket, m_mainAddress, source, ipv4Header, nextHeader, isPromisc, promiscSource);
               return true;
             }
         }
@@ -1794,6 +1822,76 @@ DsrRouting::SendPacketFromBuffer (DsrOptionSRHeader const &sourceRoute, Ipv4Addr
     {
       NS_LOG_DEBUG ("Packet not found in either the send or error buffer");
     }
+}
+
+bool
+DsrRouting::PassiveEntryCheck (Ptr<Packet> packet, Ipv4Address source, Ipv4Address destination, uint8_t segsLeft,
+                    uint16_t fragmentOffset, uint16_t identification, bool saveEntry)
+{
+  NS_LOG_FUNCTION (this << packet << source << destination << (uint32_t)segsLeft);
+
+  Ptr<Packet> p = packet->Copy ();
+  // Here the segments left value need to plus one to check the earlier hop maintain buffer entry
+  PassiveBuffEntry newEntry;
+  newEntry.SetPacket (p);
+  newEntry.SetSource (source);
+  newEntry.SetDestination (destination);
+  newEntry.SetIdentification (identification);
+  newEntry.SetFragmentOffset (fragmentOffset);
+  newEntry.SetSegsLeft (segsLeft);  // We try to make sure the segments left is larger for 1
+
+  NS_LOG_DEBUG ("The passive buffer size " << m_passiveBuffer->GetSize());
+
+  if (m_passiveBuffer->AllEqual (newEntry) && (!saveEntry))
+    {
+      // The PromiscEqual function will remove the maintain buffer entry if equal value found
+      // It only compares the source and destination address, ackId, and the segments left value
+      NS_LOG_DEBUG ("We get the all equal for passive buffer here");
+
+      MaintainBuffEntry mbEntry;
+      mbEntry.SetPacket (p);
+      mbEntry.SetSrc (source);
+      mbEntry.SetDst (destination);
+      mbEntry.SetAckId (0);
+      mbEntry.SetSegsLeft (segsLeft + 1);
+
+    /// TODO this needs to be done later
+      CancelPassivePacketTimer (mbEntry);
+      return true;
+    }
+  if (saveEntry)
+    {
+      /// Save this passive buffer entry for later check
+      m_passiveBuffer->Enqueue (newEntry);
+    }
+  return false;
+}
+
+bool
+DsrRouting::CancelPassiveTimer (Ptr<Packet> packet, Ipv4Address source, Ipv4Address destination,
+                                 uint8_t segsLeft)
+{
+  NS_LOG_FUNCTION (this << packet << source << destination << (uint32_t)segsLeft);
+
+  NS_LOG_DEBUG ("Cancel the passive timer");
+
+  Ptr<Packet> p = packet->Copy ();
+  // Here the segments left value need to plus one to check the earlier hop maintain buffer entry
+  MaintainBuffEntry newEntry;
+  newEntry.SetPacket (p);
+  newEntry.SetSrc (source);
+  newEntry.SetDst (destination);
+  newEntry.SetAckId (0);
+  newEntry.SetSegsLeft (segsLeft + 1);
+
+  if (m_maintainBuffer.PromiscEqual (newEntry))
+    {
+      // The PromiscEqual function will remove the maintain buffer entry if equal value found
+      // It only compares the source and destination address, ackId, and the segments left value
+      CancelPassivePacketTimer (newEntry);
+      return true;
+    }
+  return false;
 }
 
 bool
@@ -2632,7 +2730,6 @@ DsrRouting::ScheduleRreqRetry (Ptr<Packet> packet, std::vector<Ipv4Address> addr
           NS_LOG_DEBUG ("The request delay time " << rreqDelay.GetSeconds ());
           m_addressReqTimer[dst].Schedule (rreqDelay);
         }
-
     }
 }
 
@@ -2956,7 +3053,8 @@ DsrRouting::Receive (Ptr<Packet> p,
   optionType = *(data);
   NS_LOG_LOGIC ("The option type value " << (uint32_t)optionType << " with packet size " << p->GetSize ());
   dsrOption = GetOption (optionType);       // Get the relative dsr option and demux to the process function
-
+  // This promisc source is just set as empty, only the promisc received packet will have a promisc source value
+  Ipv4Address promiscSource;
   if (optionType == 1)        // This is the request option
     {
       BlackList *blackList = m_rreqTable->FindUnidirectional (src);
@@ -2967,7 +3065,7 @@ DsrRouting::Receive (Ptr<Packet> p,
         }
 
       dsrOption = GetOption (optionType);
-      optionLength = dsrOption->Process (p, packet, m_mainAddress, source, ip, protocol, isPromisc);
+      optionLength = dsrOption->Process (p, packet, m_mainAddress, source, ip, protocol, isPromisc, promiscSource);
 
       if (optionLength == 0)
         {
@@ -2978,7 +3076,7 @@ DsrRouting::Receive (Ptr<Packet> p,
   else if (optionType == 2)
     {
       dsrOption = GetOption (optionType);
-      optionLength = dsrOption->Process (p, packet, m_mainAddress, source, ip, protocol, isPromisc);
+      optionLength = dsrOption->Process (p, packet, m_mainAddress, source, ip, protocol, isPromisc, promiscSource);
 
       if (optionLength == 0)
         {
@@ -2991,7 +3089,7 @@ DsrRouting::Receive (Ptr<Packet> p,
     {
       NS_LOG_DEBUG ("This is the ack option");
       dsrOption = GetOption (optionType);
-      optionLength = dsrOption->Process (p, packet, m_mainAddress, source, ip, protocol, isPromisc);
+      optionLength = dsrOption->Process (p, packet, m_mainAddress, source, ip, protocol, isPromisc, promiscSource);
 
       if (optionLength == 0)
         {
@@ -3006,7 +3104,7 @@ DsrRouting::Receive (Ptr<Packet> p,
       NS_LOG_DEBUG ("The option type value " << (uint32_t)optionType);
 
       dsrOption = GetOption (optionType);
-      optionLength = dsrOption->Process (p, packet, m_mainAddress, source, ip, protocol, isPromisc);
+      optionLength = dsrOption->Process (p, packet, m_mainAddress, source, ip, protocol, isPromisc, promiscSource);
 
       if (optionLength == 0)
         {
@@ -3020,7 +3118,7 @@ DsrRouting::Receive (Ptr<Packet> p,
     {
       NS_LOG_DEBUG ("This is the source route option " << (uint32_t)optionType);
       dsrOption = GetOption (optionType);
-      optionLength = dsrOption->Process (p, packet, m_mainAddress, source, ip, protocol, isPromisc);
+      optionLength = dsrOption->Process (p, packet, m_mainAddress, source, ip, protocol, isPromisc, promiscSource);
 
       segmentsLeft = *(data + 3);
       NS_LOG_DEBUG ("The segments left in source route header " << (uint32_t)segmentsLeft);
