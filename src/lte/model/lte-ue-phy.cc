@@ -465,11 +465,17 @@ LteUePhy::CreateDlCqiFeedbackMessage (const SpectrumValue& sinr)
       Values::const_iterator it;
       for (it = m_rsReceivedPower.ConstValuesBegin (); it != m_rsReceivedPower.ConstValuesEnd (); it++)
         {
-          sum += (*it);
+          // convert PSD [W/Hz] to linear power [W] for the single RE
+          // we consider only one RE for the RS since the channel is
+          // flat within the same RB
+          double powerTxW = ((*it) * 180000.0) / 12.0;
+          sum += powerTxW;
           rbNum++;
         }
       double rsrp = sum / (double)rbNum;
       // averaged SINR among RBs
+      sum = 0.0;
+      rbNum = 0;
       for (it = sinr.ConstValuesBegin (); it != sinr.ConstValuesEnd (); it++)
         {
           sum += (*it);
