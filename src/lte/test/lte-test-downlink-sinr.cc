@@ -390,6 +390,7 @@ LteDownlinkCtrlSinrTestCase::DoRun (void)
   sp1->duration = ds;
   sp1->ctrlMsgList = ctrlMsgList[0];
   sp1->cellId = pbCellId[0];
+  sp1->pss = false;
   Simulator::Schedule (ts, &LteSpectrumPhy::StartRx, dlPhy, sp1);
   
   
@@ -399,6 +400,7 @@ LteDownlinkCtrlSinrTestCase::DoRun (void)
   ip1->duration = di1;
   ip1->ctrlMsgList = ctrlMsgList[1];
   ip1->cellId = pbCellId[1];
+  ip1->pss = false;
   Simulator::Schedule (ti1, &LteSpectrumPhy::StartRx, dlPhy, ip1);
   
   Ptr<LteSpectrumSignalParametersDlCtrlFrame> ip2 = Create<LteSpectrumSignalParametersDlCtrlFrame> ();
@@ -407,6 +409,7 @@ LteDownlinkCtrlSinrTestCase::DoRun (void)
   ip2->duration = di2;
   ip2->ctrlMsgList = ctrlMsgList[2];
   ip2->cellId = pbCellId[2];
+  ip2->pss = false;
   Simulator::Schedule (ti2, &LteSpectrumPhy::StartRx, dlPhy, ip2);
   
   Ptr<LteSpectrumSignalParametersDlCtrlFrame> ip3 = Create<LteSpectrumSignalParametersDlCtrlFrame> ();
@@ -415,6 +418,7 @@ LteDownlinkCtrlSinrTestCase::DoRun (void)
   ip3->duration = di3;
   ip3->ctrlMsgList = ctrlMsgList[3];
   ip3->cellId = pbCellId[3];
+  ip3->pss = false;
   Simulator::Schedule (ti3, &LteSpectrumPhy::StartRx, dlPhy, ip3);
   
   Ptr<LteSpectrumSignalParametersDlCtrlFrame> ip4 = Create<LteSpectrumSignalParametersDlCtrlFrame> ();
@@ -423,6 +427,7 @@ LteDownlinkCtrlSinrTestCase::DoRun (void)
   ip4->duration = di4;
   ip4->ctrlMsgList = ctrlMsgList[4];
   ip4->cellId = pbCellId[4];
+  ip4->pss = false;
   Simulator::Schedule (ti4, &LteSpectrumPhy::StartRx, dlPhy, ip4);
   
   Simulator::Stop (Seconds (5.0));
