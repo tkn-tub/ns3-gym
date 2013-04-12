@@ -136,19 +136,6 @@ public:
    */
   double GetTti (void) const;
 
-  /**
-  * \param ulBandwidth the UL bandwidth in RB
-  * \param dlBandwidth the DL bandwidth in RB
-  */
-  void DoSetBandwidth (uint8_t ulBandwidth, uint8_t dlBandwidth);
-
-  /**
-   *
-   * \param dlEarfcn the carrier frequency (EARFCN) in downlink
-   * \param ulEarfcn the carrier frequency (EARFCN) in downlink
-   */
-  virtual void DoSetEarfcn (uint16_t dlEarfcn, uint16_t ulEarfcn);
-
   /** 
    * 
    * \param cellId the Cell Identifier
@@ -210,6 +197,24 @@ public:
   * \param sinr the SINR vs frequency measured by the device
   */
   virtual void  GenerateDataCqiReport (const SpectrumValue& sinr) = 0;
+
+  /**
+  * generate a report based on the linear interference and noise power
+  * perceived during DATA frame
+  * NOTE: used only by eNB 
+  *
+  * \param sinr the interference + noise power measured by the device
+  */
+  virtual void ReportInterference (const SpectrumValue& power) = 0;
+
+  /**
+  * generate a report based on the linear RS power perceived during CTRL 
+  * frame
+  * NOTE: used only by UE for evaluating RSRP
+  *
+  * \param sinr the RS power measured by the device
+  */
+  virtual void ReportRsReceivedPower (const SpectrumValue& interf) = 0;
 
 
 

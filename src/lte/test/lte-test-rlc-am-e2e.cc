@@ -63,7 +63,7 @@ LteRlcAmE2eTestSuite::LteRlcAmE2eTestSuite ()
       for ( uint32_t s = 0 ; s < (sizeof (seeds) / sizeof (uint32_t)) ; s++ )
         {
           std::ostringstream name;
-          name << " Losses = " << losses[l] << "%. Seed = " << seeds[s];
+          name << " Losses = " << losses[l] * 100 << "%. Seed = " << seeds[s];
           TestCase::TestDuration testDuration;
           if (l == 1 && s == 0)
             {

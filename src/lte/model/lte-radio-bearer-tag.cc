@@ -33,11 +33,11 @@ LteRadioBearerTag::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::LteRadioBearerTag")
     .SetParent<Tag> ()
     .AddConstructor<LteRadioBearerTag> ()
-    .AddAttribute ("rnti", "The rnti that indicates the UE which packet belongs",
+    .AddAttribute ("rnti", "The rnti that indicates the UE to which packet belongs",
                    UintegerValue (0),
                    MakeUintegerAccessor (&LteRadioBearerTag::GetRnti),
                    MakeUintegerChecker<uint16_t> ())
-    .AddAttribute ("lcid", "The LC id that indicates the UE which packet belongs",
+    .AddAttribute ("lcid", "The id whithin the UE identifying the logical channel to which the packet belongs",
                    UintegerValue (0),
                    MakeUintegerAccessor (&LteRadioBearerTag::GetLcid),
                    MakeUintegerChecker<uint8_t> ())
@@ -91,7 +91,7 @@ LteRadioBearerTag::SetLayer (uint8_t layer)
 uint32_t
 LteRadioBearerTag::GetSerializedSize (void) const
 {
-  return 3;
+  return 4;
 }
 
 void
@@ -99,6 +99,7 @@ LteRadioBearerTag::Serialize (TagBuffer i) const
 {
   i.WriteU16 (m_rnti);
   i.WriteU8 (m_lcid);
+  i.WriteU8 (m_layer);
 }
 
 void
@@ -106,6 +107,7 @@ LteRadioBearerTag::Deserialize (TagBuffer i)
 {
   m_rnti = (uint16_t) i.ReadU16 ();
   m_lcid = (uint8_t) i.ReadU8 ();
+  m_layer = (uint8_t) i.ReadU8 ();
 }
 
 uint16_t
@@ -129,7 +131,7 @@ LteRadioBearerTag::GetLayer () const
 void
 LteRadioBearerTag::Print (std::ostream &os) const
 {
-  os << "rnti=" << m_rnti << ", lcid=" << (uint16_t) m_lcid;
+  os << "rnti=" << m_rnti << ", lcid=" << (uint16_t) m_lcid << ", layer=" << (uint16_t)m_layer;
 }
 
 } // namespace ns3

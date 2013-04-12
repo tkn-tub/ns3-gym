@@ -1,0 +1,23 @@
+digraph LteRrcStates {
+
+
+IDLE_CELL_SELECTION [shape="box",width=5]
+IDLE_WAIT_SYSTEM_INFO [shape="box",width=5]
+IDLE_CAMPED_NORMALLY [shape="box",width=5]
+IDLE_RANDOM_ACCESS [shape="box",width=5]
+IDLE_CONNECTING [shape="box",width=5]
+CONNECTED_NORMALLY [shape="box",width=5]
+CONNECTED_HANDOVER [shape="box",width=5]
+
+
+IDLE_CELL_SELECTION -> IDLE_WAIT_SYSTEM_INFO  [label="eNB CellId enforced by upper layers"]
+IDLE_WAIT_SYSTEM_INFO -> IDLE_CAMPED_NORMALLY [label="rx MIB + SIB2"]
+IDLE_CAMPED_NORMALLY -> IDLE_RANDOM_ACCESS [label="connection request by upper layers"]
+IDLE_RANDOM_ACCESS -> IDLE_CONNECTING  [label="random access successful"]
+IDLE_RANDOM_ACCESS -> IDLE_CAMPED_NORMALLY  [label="random access failure"]
+IDLE_CONNECTING -> CONNECTED_NORMALLY [label="rx RRC CONN SETUP"]
+IDLE_CONNECTING -> IDLE_CAMPED_NORMALLY [label="rx RRC CONN REJECT"]
+CONNECTED_NORMALLY -> CONNECTED_HANDOVER [label="rx RRC CONN RECONF with MobilityCltrInfo"]
+CONNECTED_HANDOVER -> CONNECTED_NORMALLY [label="random access successful"]
+
+}

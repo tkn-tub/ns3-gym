@@ -24,6 +24,7 @@
 #include "ns3/log.h"
 #include "ns3/test.h"
 #include "ns3/epc-helper.h"
+#include "ns3/epc-enb-application.h"
 #include "ns3/packet-sink-helper.h"
 #include "ns3/udp-echo-helper.h"
 #include "ns3/point-to-point-helper.h"
@@ -37,8 +38,8 @@
 #include "ns3/boolean.h"
 #include "ns3/uinteger.h"
 #include "ns3/config.h"
-
-
+#include "ns3/eps-bearer.h"
+#include "lte-test-entities.h"
 
 namespace ns3 {
 
@@ -68,6 +69,7 @@ struct EnbDlTestData
 {
   std::vector<UeDlTestData> ues;
 };
+
 
 
 class EpcS1uDlTestCase : public TestCase
@@ -129,6 +131,7 @@ EpcS1uDlTestCase::DoRun ()
 
 
   NodeContainer enbs;
+  uint16_t cellIdCounter = 0;
 
   for (std::vector<EnbDlTestData>::iterator enbit = m_enbDlTestData.begin ();
        enbit < m_enbDlTestData.end ();
@@ -141,6 +144,8 @@ EpcS1uDlTestCase::DoRun ()
       // 1) a CSMA network to simulate the cell
       // 2) a raw socket opened on the CSMA device to simulate the LTE socket
 
+      uint16_t cellId = ++cellIdCounter;
+
       NodeContainer ues;
       ues.Create (enbit->ues.size ());
 
@@ -152,10 +157,17 @@ EpcS1uDlTestCase::DoRun ()
       NetDeviceContainer cellDevices = csmaCell.Install (cell);
 
       // the eNB's CSMA NetDevice acting as an LTE NetDevice. 
-      Ptr<NetDevice> lteEnbNetDevice = cellDevices.Get (cellDevices.GetN () - 1);
+      Ptr<NetDevice> enbDevice = cellDevices.Get (cellDevices.GetN () - 1);
 
       // Note that the EpcEnbApplication won't care of the actual NetDevice type
-      epcHelper->AddEnb (enb, lteEnbNetDevice);      
+      epcHelper->AddEnb (enb, enbDevice, cellId);      
+
+      // Plug test RRC entity
+      Ptr<EpcEnbApplication> enbApp = enb->GetApplication (0)->GetObject<EpcEnbApplication> ();
+      NS_ASSERT_MSG (enbApp != 0, "cannot retrieve EpcEnbApplication");
+      Ptr<EpcTestRrc> rrc = CreateObject<EpcTestRrc> ();
+      rrc->SetS1SapProvider (enbApp->GetS1SapProvider ());
+      enbApp->SetS1SapUser (rrc->GetS1SapUser ());
       
       // we install the IP stack on UEs only
       InternetStackHelper internet;
@@ -191,10 +203,10 @@ EpcS1uDlTestCase::DoRun ()
           apps.Stop (Seconds (10.0));   
           enbit->ues[u].clientApp = apps.Get (0);
 
-          uint16_t rnti = u+1;
-          uint16_t lcid = 1;
-          epcHelper->ActivateEpsBearer (ueLteDevice, lteEnbNetDevice, EpcTft::Default (), rnti, lcid);
-          
+          uint64_t imsi = u+1;
+          epcHelper->AddUe (ueLteDevice, imsi);
+          epcHelper->ActivateEpsBearer (ueLteDevice, imsi, EpcTft::Default (), EpsBearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT));
+          enbApp->GetS1SapProvider ()->InitialUeMessage (imsi, (uint16_t) imsi);
         } 
             
     } 

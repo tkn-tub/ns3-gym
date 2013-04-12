@@ -48,8 +48,6 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED ( LteEnbNetDevice);
 
-uint16_t LteEnbNetDevice::m_cellIdCounter = 0;
-
 TypeId LteEnbNetDevice::GetTypeId (void)
 {
   static TypeId
@@ -250,8 +248,7 @@ LteEnbNetDevice::SetUlEarfcn (uint16_t earfcn)
 void 
 LteEnbNetDevice::DoStart (void)
 {
-  NS_ABORT_MSG_IF (m_cellIdCounter == 65535, "max num eNBs exceeded");
-  m_cellId = ++m_cellIdCounter;
+
   UpdateConfig ();
   m_phy->Start ();
   m_mac->Start ();
@@ -265,7 +262,7 @@ LteEnbNetDevice::Send (Ptr<Packet> packet, const Address& dest, uint16_t protoco
 {
   NS_LOG_FUNCTION (this << packet   << dest << protocolNumber);
   NS_ASSERT_MSG (protocolNumber == Ipv4L3Protocol::PROT_NUMBER, "unsupported protocol " << protocolNumber << ", only IPv4 is supported");
-  return m_rrc->Send (packet);
+  return m_rrc->SendData (packet);
 }
 
 
@@ -276,14 +273,8 @@ LteEnbNetDevice::UpdateConfig (void)
 {
   NS_LOG_FUNCTION (this);
 
-  m_rrc->ConfigureCell (m_ulBandwidth, m_dlBandwidth);
+  m_rrc->ConfigureCell (m_ulBandwidth, m_dlBandwidth, m_ulEarfcn, m_dlEarfcn, m_cellId);
   m_rrc->SetCellId (m_cellId);
-
-  // Configuring directly for now, but ideally we should use the PHY
-  // SAP instead. Probably should handle this through the RRC.
-  m_phy->DoSetBandwidth (m_ulBandwidth, m_dlBandwidth);
-  m_phy->DoSetEarfcn (m_dlEarfcn, m_ulEarfcn);
-  m_phy->DoSetCellId (m_cellId);
 
 }
 

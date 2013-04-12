@@ -1,6 +1,6 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2011 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
+ * Copyright (c) 2011-2012 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -17,6 +17,7 @@
  *
  * Author: Jaume Nin <jnin@cttc.es>
  *         Nicola Baldo <nbaldo@cttc.es>
+ *         Manuel Requena <manuel.requena@cttc.es>
  */
 
 #ifndef EPC_HELPER_H
@@ -26,7 +27,7 @@
 #include <ns3/ipv4-address-helper.h>
 #include <ns3/data-rate.h>
 #include <ns3/epc-tft.h>
-
+#include <ns3/eps-bearer.h>
 
 namespace ns3 {
 
@@ -34,6 +35,8 @@ class Node;
 class NetDevice;
 class VirtualNetDevice;
 class EpcSgwPgwApplication;
+class EpcX2;
+class EpcMme;
 
 /**
  * \brief Helper class to handle the creation of the EPC entities and protocols.
@@ -68,22 +71,38 @@ public:
    * \param enbNode the previosuly created eNB node which is to be
    * added to the EPC
    * \param lteEnbNetDevice the LteEnbNetDevice of the eNB node
+   * \param cellId ID of the eNB
    */
-  void AddEnb (Ptr<Node> enbNode, Ptr<NetDevice> lteEnbNetDevice);
+  void AddEnb (Ptr<Node> enbNode, Ptr<NetDevice> lteEnbNetDevice, uint16_t cellId);
 
+  /** 
+   * Notify the EPC of the existance of a new UE which might attach at a later time
+   * 
+   * \param ueLteDevice the UE device to be attached
+   * \param imsi the unique identifier of the UE
+   */
+  void AddUe (Ptr<NetDevice> ueLteDevice, uint64_t imsi);
+
+  /** 
+   * Add an X2 interface between two eNB
+   * 
+   * \param enbNode1 one eNB peer of the X2 interface
+   * \param enbNode2 the other eNB peer of the X2 interface
+   */
+  void AddX2Interface (Ptr<Node> enbNode1, Ptr<Node> enbNode2);
 
   /** 
    * Activate an EPS bearer, setting up the corresponding S1-U tunnel.
    * 
    * 
    * 
-   * \param ueLteDevice the Ipv4-enabled device of the UE, normally connected via the LTE radio interface
-   * \param enbLteDevice the non-Ipv4-enabled device of the eNB
+   * \param ueLteDevice the Ipv4-enabled device of the UE, normally
+   * connected via the LTE radio interface
+   * \param imsi the unique identifier of the UE
    * \param tft the Traffic Flow Template of the new bearer
-   * \param rnti the Radio Network Temporary Identifier that identifies the UE
-   * \param lcid the Logical Channel IDentifier of the corresponding RadioBearer
+   * \param bearer struct describing the characteristics of the EPS bearer to be activated
    */
-  void ActivateEpsBearer (Ptr<NetDevice> ueLteDevice, Ptr<NetDevice> enbLteDevice, Ptr<EpcTft> tft, uint16_t rnti, uint8_t lcid);
+  void ActivateEpsBearer (Ptr<NetDevice> ueLteDevice, uint64_t imsi, Ptr<EpcTft> tft, EpsBearer bearer);
 
 
   /** 
@@ -115,12 +134,10 @@ public:
 
 
 private:
-  
-  /** 
-   * helper to assign addresses to S1-U
-   * NetDevices 
+
+  /**
+   * SGW-PGW network element
    */
-  Ipv4AddressHelper m_s1uIpv4AddressHelper; 
 
   /** 
    * helper to assign addresses to UE devices as well as to the TUN device of the SGW/PGW
@@ -130,16 +147,40 @@ private:
   Ptr<Node> m_sgwPgw; 
   Ptr<EpcSgwPgwApplication> m_sgwPgwApp;
   Ptr<VirtualNetDevice> m_tunDevice;
+  Ptr<EpcMme> m_mme;
+
+  /**
+   * S1-U interfaces
+   */
+
+  /** 
+   * helper to assign addresses to S1-U NetDevices 
+   */
+  Ipv4AddressHelper m_s1uIpv4AddressHelper; 
 
   DataRate m_s1uLinkDataRate;
   Time     m_s1uLinkDelay;
   uint16_t m_s1uLinkMtu;
 
-
   /**
    * UDP port where the GTP-U Socket is bound, fixed by the standard as 2152
    */
   uint16_t m_gtpuUdpPort;
+
+  /**
+   * Map storing for each IMSI the corresponding eNB NetDevice
+   * 
+   */
+  std::map<uint64_t, Ptr<NetDevice> > m_imsiEnbDeviceMap;
+  
+  /** 
+   * helper to assign addresses to X2 NetDevices 
+   */
+  Ipv4AddressHelper m_x2Ipv4AddressHelper;   
+
+  DataRate m_x2LinkDataRate;
+  Time     m_x2LinkDelay;
+  uint16_t m_x2LinkMtu;
 
 };
 

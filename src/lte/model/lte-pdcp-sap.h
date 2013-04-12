@@ -38,11 +38,11 @@ public:
   virtual ~LtePdcpSapProvider ();
 
   /**
-   * Parameters for LtePdcpSapProvider::TransmitRrcPdu
+   * Parameters for LtePdcpSapProvider::TransmitPdcpSdu
    */
-  struct TransmitRrcPduParameters
+  struct TransmitPdcpSduParameters
   {
-    Ptr<Packet> rrcPdu;  /**< the RRC PDU */
+    Ptr<Packet> pdcpSdu;  /**< the RRC PDU */
     uint16_t    rnti; /**< the C-RNTI identifying the UE */
     uint8_t     lcid; /**< the logical channel id corresponding to the sending RLC instance */
   };
@@ -54,7 +54,7 @@ public:
    * 
    * \param params 
    */
-  virtual void TransmitRrcPdu (TransmitRrcPduParameters params) = 0;
+  virtual void TransmitPdcpSdu (TransmitPdcpSduParameters params) = 0;
 };
 
 
@@ -71,11 +71,11 @@ public:
   virtual ~LtePdcpSapUser ();
 
   /**
-   * Parameters for LtePdcpSapUser::ReceiveRrcPdu
+   * Parameters for LtePdcpSapUser::ReceivePdcpSdu
    */
-  struct ReceiveRrcPduParameters
+  struct ReceivePdcpSduParameters
   {
-    Ptr<Packet> rrcPdu;  /**< the RRC PDU */
+    Ptr<Packet> pdcpSdu;  /**< the RRC PDU */
     uint16_t    rnti; /**< the C-RNTI identifying the UE */
     uint8_t     lcid; /**< the logical channel id corresponding to the sending RLC instance */
   };
@@ -85,7 +85,7 @@ public:
   *
   * \param params
   */
-  virtual void ReceiveRrcPdu (ReceiveRrcPduParameters params) = 0;
+  virtual void ReceivePdcpSdu (ReceivePdcpSduParameters params) = 0;
 };
 
 ///////////////////////////////////////
@@ -97,7 +97,7 @@ public:
   LtePdcpSpecificLtePdcpSapProvider (C* pdcp);
 
   // Interface implemented from LtePdcpSapProvider
-  virtual void TransmitRrcPdu (TransmitRrcPduParameters params);
+  virtual void TransmitPdcpSdu (TransmitPdcpSduParameters params);
 
 private:
   LtePdcpSpecificLtePdcpSapProvider ();
@@ -116,9 +116,9 @@ LtePdcpSpecificLtePdcpSapProvider<C>::LtePdcpSpecificLtePdcpSapProvider ()
 }
 
 template <class C>
-void LtePdcpSpecificLtePdcpSapProvider<C>::TransmitRrcPdu (TransmitRrcPduParameters params)
+void LtePdcpSpecificLtePdcpSapProvider<C>::TransmitPdcpSdu (TransmitPdcpSduParameters params)
 {
-  m_pdcp->DoTransmitRrcPdu (params.rrcPdu);
+  m_pdcp->DoTransmitPdcpSdu (params.pdcpSdu);
 }
 
 ///////////////////////////////////////
@@ -130,7 +130,7 @@ public:
   LtePdcpSpecificLtePdcpSapUser (C* rrc);
 
   // Interface implemented from LtePdcpSapUser
-  virtual void ReceiveRrcPdu (ReceiveRrcPduParameters params);
+  virtual void ReceivePdcpSdu (ReceivePdcpSduParameters params);
 
 private:
   LtePdcpSpecificLtePdcpSapUser ();
@@ -149,9 +149,9 @@ LtePdcpSpecificLtePdcpSapUser<C>::LtePdcpSpecificLtePdcpSapUser ()
 }
 
 template <class C>
-void LtePdcpSpecificLtePdcpSapUser<C>::ReceiveRrcPdu (ReceiveRrcPduParameters params)
+void LtePdcpSpecificLtePdcpSapUser<C>::ReceivePdcpSdu (ReceivePdcpSduParameters params)
 {
-  m_rrc->DoReceiveRrcPdu (params);
+  m_rrc->DoReceivePdcpSdu (params);
 }
 
 

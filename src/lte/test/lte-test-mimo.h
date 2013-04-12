@@ -34,7 +34,7 @@ namespace ns3 {
 class LenaMimoTestCase : public TestCase
 {
 public:
-  LenaMimoTestCase (uint16_t dist, std::vector<uint32_t> estThrDl, std::string schedulerType);
+  LenaMimoTestCase (uint16_t dist, std::vector<uint32_t> estThrDl, std::string schedulerType, bool useIdealRrc);
   virtual ~LenaMimoTestCase ();
 
 private:
@@ -42,12 +42,13 @@ private:
   
   void GetRlcBufferSample (Ptr<RadioBearerStatsCalculator> rlcStats, uint64_t imsi, uint8_t rnti);
   
-  static std::string BuildNameString (uint16_t dist);
+  static std::string BuildNameString (uint16_t dist, std::string schedulerType, bool useIdealRrc);
   uint16_t m_nUser;
   uint16_t m_nLc;
   uint16_t m_dist;
   std::vector<uint32_t> m_estThrDl;
   std::string m_schedulerType;
+  bool m_useIdealRrc;
   
   std::vector <uint64_t> m_dlDataRxed;
 

@@ -62,6 +62,10 @@ public:
   
   virtual void GenerateDataCqiReport (const SpectrumValue& sinr);
 
+  virtual void ReportInterference (const SpectrumValue& interf);
+
+  virtual void ReportRsReceivedPower (const SpectrumValue& power);
+
   virtual void ReceiveLteControlMessage (Ptr<LteControlMessage> msg);
 
   SpectrumValue GetSinr ();

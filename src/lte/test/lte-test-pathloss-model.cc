@@ -158,10 +158,18 @@ LtePathlossModelTestSuite::LtePathlossModelTestSuite ()
     //     double sinrDb = txPowerDbm- noisePowerDbm - receiverNoiseFigureDb - loss[i];
     double sinrDb = 10 * std::log10 (sinrLin);
     NS_LOG_INFO (" Ptx " << txPowerDbm << " Pn " << noisePowerDbm << " Fn " << receiverNoiseFigureDb << " Pl " << loss[i] << " dist " << dist[i]);
+
+    int mcs = -1;
+    int numSnrEfficiencyMcsEntries = sizeof (snrEfficiencyMcs) / sizeof (SnrEfficiencyMcs);
+    for (int j = 0; j < numSnrEfficiencyMcsEntries && snrEfficiencyMcs[j].snrDb < sinrDb; ++j)
+      {
+        mcs = snrEfficiencyMcs[j].mcsIndex;
+      }
+
     std::ostringstream name;
     name << " snr= " << sinrDb << " dB, "
-    << " mcs= " << snrEfficiencyMcs[i].mcsIndex;
-    AddTestCase (new LtePathlossModelSystemTestCase (name.str (),  sinrDb, dist[i], snrEfficiencyMcs[i].mcsIndex), TestCase::QUICK);
+         << " mcs= " << snrEfficiencyMcs[i].mcsIndex;
+    AddTestCase (new LtePathlossModelSystemTestCase (name.str (),  sinrDb, dist[i], mcs), TestCase::QUICK);
   }
 
 
@@ -198,17 +206,7 @@ LtePathlossModelSystemTestCase::DoRun (void)
   /**
   * Simulation Topology
   */
-//   LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteAmc", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LtePhy", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteEnbPhy", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteUePhy", LOG_LEVEL_ALL);
-//   LogComponentEnable ("SingleModelSpectrumChannel", LOG_LEVEL_ALL);
-  LogComponentEnable ("BuildingsPropagationLossModel", LOG_LEVEL_ALL);
-  LogComponentEnable ("HybridBuildingsPropagationLossModel", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteHelper", LOG_LEVEL_ALL);
 
-//   
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
   //   lteHelper->EnableLogComponents ();
   lteHelper->EnableMacTraces ();
@@ -266,18 +264,18 @@ LtePathlossModelSystemTestCase::DoRun (void)
   // Activate an EPS bearer
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
-  lteHelper->ActivateEpsBearer (ueDevs, bearer, EpcTft::Default ());
+  lteHelper->ActivateDataRadioBearer (ueDevs, bearer);
   
   // Use testing chunk processor in the PHY layer
   // It will be used to test that the SNR is as intended
   //Ptr<LtePhy> uePhy = ueDevs.Get (0)->GetObject<LteUeNetDevice> ()->GetPhy ()->GetObject<LtePhy> ();
   Ptr<LteTestSinrChunkProcessor> testSinr = Create<LteTestSinrChunkProcessor> (uePhy);
-  uePhy->GetDownlinkSpectrumPhy ()->AddDataSinrChunkProcessor (testSinr);
+  uePhy->GetDownlinkSpectrumPhy ()->AddCtrlSinrChunkProcessor (testSinr);
    
 //   Config::Connect ("/NodeList/0/DeviceList/0/LteEnbMac/DlScheduling",
 //                    MakeBoundCallback (&LteTestPathlossDlSchedCallback, this));
                    
-  Simulator::Stop (Seconds (0.005));
+  Simulator::Stop (Seconds (0.035));
   Simulator::Run ();
   
   double calculatedSinrDb = 10.0 * std::log10 (testSinr->GetSinr ()->operator[] (0));
@@ -299,12 +297,9 @@ LtePathlossModelSystemTestCase::DlScheduling (uint32_t frameNo, uint32_t subfram
     NS_LOG_INFO ("SNR\tRef_MCS\tCalc_MCS");
   }
   
-  /**
-  * Note:
-  *    For first 4 subframeNo in the first frameNo, the MCS cannot be properly evaluated,
-  *    because CQI feedback is still not available at the eNB.
-  */
-  if ( (frameNo > 1) || (subframeNo > 4) )
+  
+  // need to allow for RRC connection establishment + SRS transmission
+  if (Simulator::Now () > MilliSeconds (21))
   {
     NS_LOG_INFO (m_snrDb << "\t" << m_mcsIndex << "\t" << (uint16_t)mcsTb1);
     

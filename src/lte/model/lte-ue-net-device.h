@@ -22,13 +22,13 @@
 #ifndef LTE_UE_NET_DEVICE_H
 #define LTE_UE_NET_DEVICE_H
 
-#include "lte-net-device.h"
+#include "ns3/lte-net-device.h"
 #include "ns3/event-id.h"
 #include "ns3/mac48-address.h"
 #include "ns3/traced-callback.h"
 #include "ns3/nstime.h"
-#include "lte-phy.h"
-#include "lte-phy.h"
+#include "ns3/lte-phy.h"
+#include "ns3/eps-bearer.h"
 
 
 namespace ns3 {
@@ -41,6 +41,8 @@ class LteUePhy;
 class LteEnbNetDevice;
 class LteUeMac;
 class LteUeRrc;
+class EpcUeNas;
+class EpcTft;
 
 /**
  * \ingroup lte
@@ -55,10 +57,15 @@ public:
   LteUeNetDevice (void);
   /**
    * \brief Create an UE net device
-   * \param node
-   * \param phy
+   * \param node the node to which the device belongs
+   * \param phy the PHY entity
+   * \param mac the MAC entity
+   * \param rrc the RRC entity
+   * \param nas the NAS entity
+   * \param imsi the unique UE identifier
+   * 
    */
-  LteUeNetDevice (Ptr<Node> node, Ptr<LteUePhy> phy, Ptr<LteUeMac> mac, Ptr<LteUeRrc> rrc);
+  LteUeNetDevice (Ptr<Node> node, Ptr<LteUePhy> phy, Ptr<LteUeMac> mac, Ptr<LteUeRrc> rrc, Ptr<EpcUeNas> nas, uint64_t imsi);
 
   virtual ~LteUeNetDevice (void);
   virtual void DoDispose ();
@@ -68,24 +75,28 @@ public:
   virtual bool Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber);
   
 
-  Ptr<LteUeMac> GetMac (void);
+  Ptr<LteUeMac> GetMac (void) const;
 
-  Ptr<LteUeRrc> GetRrc ();
+  Ptr<LteUeRrc> GetRrc () const ;
 
   Ptr<LteUePhy> GetPhy (void) const;
+  
+  Ptr<EpcUeNas> GetNas (void) const;
 
+  uint64_t GetImsi () const;
+
+ 
   /**
    * \brief Set the targer eNB where the UE is registered
    * \param enb
    */
   void SetTargetEnb (Ptr<LteEnbNetDevice> enb);
+  
   /**
    * \brief Get the targer eNB where the UE is registered
    * \return the pointer to the enb
    */
   Ptr<LteEnbNetDevice> GetTargetEnb (void);
-
-  uint64_t GetImsi ();
 
 
 protected:
@@ -110,10 +121,9 @@ private:
   Ptr<LteUeMac> m_mac;
   Ptr<LteUePhy> m_phy;
   Ptr<LteUeRrc> m_rrc;
+  Ptr<EpcUeNas> m_nas;
 
   uint64_t m_imsi;
-  static uint64_t m_imsiCounter;
-
   
 };
 

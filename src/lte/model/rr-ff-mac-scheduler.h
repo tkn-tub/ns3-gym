@@ -30,8 +30,21 @@
 #include <ns3/lte-common.h>
 #include <ns3/lte-amc.h>
 
+#define HARQ_PROC_NUM 8
+#define HARQ_DL_TIMEOUT 11
 
 namespace ns3 {
+
+
+typedef std::vector < uint8_t > DlHarqProcessesStatus_t;
+typedef std::vector < uint8_t > DlHarqProcessesTimer_t;
+typedef std::vector < DlDciListElement_s > DlHarqProcessesDciBuffer_t;
+typedef std::vector < std::vector <struct RlcPduListElement_s> > RlcPduList_t; // vector of the LCs and layers per UE
+typedef std::vector < RlcPduList_t > DlHarqRlcPduListBuffer_t; // vector of the 8 HARQ processes per UE
+
+typedef std::vector < UlDciListElement_s > UlHarqProcessesDciBuffer_t;
+typedef std::vector < uint8_t > UlHarqProcessesStatus_t;
+
 
 
 
@@ -73,7 +86,7 @@ public:
 
   friend class RrSchedulerMemberCschedSapProvider;
   friend class RrSchedulerMemberSchedSapProvider;
-  
+
   void TransmissionModeConfigurationUpdate (uint16_t rnti, uint8_t txMode);
 
 private:
@@ -121,15 +134,37 @@ private:
 
 
   int GetRbgSize (int dlbandwidth);
-  
+
   static bool SortRlcBufferReq (FfMacSchedSapProvider::SchedDlRlcBufferReqParameters i,FfMacSchedSapProvider::SchedDlRlcBufferReqParameters j);
-  
-  void RefreshDlCqiMaps(void);
-  void RefreshUlCqiMaps(void);
-  
+
+  void RefreshDlCqiMaps (void);
+  void RefreshUlCqiMaps (void);
+
   void UpdateDlRlcBufferInfo (uint16_t rnti, uint8_t lcid, uint16_t size);
   void UpdateUlRlcBufferInfo (uint16_t rnti, uint16_t size);
-  
+
+  /**
+  * \brief Update and return a new process Id for the RNTI specified
+  *
+  * \param rnti the RNTI of the UE to be updated
+  * \return the process id  value
+  */
+  uint8_t UpdateHarqProcessId (uint16_t rnti);
+
+  /**
+  * \brief Return the availability of free process for the RNTI specified
+  *
+  * \param rnti the RNTI of the UE to be updated
+  * \return the process id  value
+  */
+  uint8_t HarqProcessAvailability (uint16_t rnti);
+
+  /**
+  * \brief Refresh HARQ processes according to the timers
+  *
+  */
+  void RefreshHarqProcesses ();
+
   Ptr<LteAmc> m_amc;
 
   /*
@@ -180,11 +215,40 @@ private:
 
   uint16_t m_nextRntiDl; // RNTI of the next user to be served next scheduling in DL
   uint16_t m_nextRntiUl; // RNTI of the next user to be served next scheduling in UL
-  
-  uint32_t m_cqiTimersThreshold; // # of TTIs for which a CQI canbe considered valid
-  
-  std::map <uint16_t,uint8_t> m_uesTxMode; // txMode of the UEs
 
+  uint32_t m_cqiTimersThreshold; // # of TTIs for which a CQI canbe considered valid
+
+  std::map <uint16_t,uint8_t> m_uesTxMode; // txMode of the UEs
+  
+
+
+  // HARQ attributes
+  /**
+  * m_harqOn when false inhibit te HARQ mechanisms (by default active)
+  */
+  bool m_harqOn;
+  std::map <uint16_t, uint8_t> m_dlHarqCurrentProcessId;
+  //HARQ status
+  // 0: process Id available
+  // x>0: process Id equal to `x` trasmission count
+  std::map <uint16_t, DlHarqProcessesStatus_t> m_dlHarqProcessesStatus;
+  std::map <uint16_t, DlHarqProcessesTimer_t> m_dlHarqProcessesTimer;
+  std::map <uint16_t, DlHarqProcessesDciBuffer_t> m_dlHarqProcessesDciBuffer;
+  std::map <uint16_t, DlHarqRlcPduListBuffer_t> m_dlHarqProcessesRlcPduListBuffer;
+  std::vector <DlInfoListElement_s> m_dlInfoListBuffered; // HARQ retx buffered
+
+  std::map <uint16_t, uint8_t> m_ulHarqCurrentProcessId;
+  //HARQ status
+  // 0: process Id available
+  // x>0: process Id equal to `x` trasmission count
+  std::map <uint16_t, UlHarqProcessesStatus_t> m_ulHarqProcessesStatus;
+  std::map <uint16_t, UlHarqProcessesDciBuffer_t> m_ulHarqProcessesDciBuffer;
+
+
+  // RACH attributes
+  std::vector <struct RachListElement_s> m_rachList;
+  std::vector <uint16_t> m_rachAllocationMap;
+  uint8_t m_ulGrantMcs; // MCS for UL grant (default 0)
 };
 
 } // namespace ns3

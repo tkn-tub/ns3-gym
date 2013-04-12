@@ -60,103 +60,112 @@ LenaTestFdBetFfMacSchedulerSuite::LenaTestFdBetFfMacSchedulerSuite ()
 {
   NS_LOG_INFO ("creating LenaTestFdBetFfMacSchedulerSuite");
 
+  bool errorModel = false;
+
   //Test Case 1: AMC works in FDBET
+
+  //Note: here the MCS is calculated by the wideband CQI
 
   // DOWNLINK- DISTANCE 0 -> MCS 28 -> Itbs 26 (from table 7.1.7.2.1-1 of 36.213)
   // 1 user -> 24 PRB at Itbs 26 -> 2196 -> 2196000 bytes/sec
   // 3 users -> 8 PRB at Itbs 26 -> 749 -> 749000 bytes/sec
   // 6 users -> 4 PRB at Itbs 26 -> 373 -> 373000 bytes/sec
-  // 12 users -> 2 PRB at Itbs 26 -> 185 -> 185000 bytes/sec
+  // 12 users -> 2 PRB at Itbs 26 -> 185 -> 185000 bytes/sec 
   // UPLINK- DISTANCE 0 -> MCS 28 -> Itbs 26 (from table 7.1.7.2.1-1 of 36.213)
   // 1 user -> 25 PRB at Itbs 26 -> 2292 -> 2292000 bytes/sec
   // 3 users -> 8 PRB at Itbs 26 -> 749 -> 749000 bytes/sec
   // 6 users -> 4 PRB at Itbs 26 -> 373 -> 373000 bytes/sec
-  // 12 users -> 2 PRB at Itbs 26 -> 185 -> 185000 bytes/sec
-  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (1,0,0,2196000,2292000), TestCase::EXTENSIVE);
-  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (3,0,0,749000,749000), TestCase::EXTENSIVE);
-  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (6,0,0,373000,373000), TestCase::EXTENSIVE);
-  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (12,0,0,185000,185000), TestCase::EXTENSIVE);
+  // after the patch enforcing min 3 PRBs per UE:
+  // 12 users -> 3 PRB at Itbs 26 -> 277 bytes * 8/12 UE/TTI -> 184670 bytes/sec
+  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (1,0,0,2196000,2292000, errorModel), TestCase::EXTENSIVE);
+  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (3,0,0,749000,749000, errorModel), TestCase::EXTENSIVE);
+  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (6,0,0,373000,373000, errorModel), TestCase::EXTENSIVE);
+  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (12,0,0,185000,184670, errorModel), TestCase::EXTENSIVE);
 
-  // DOWNLINK - DISTANCE 3000 -> MCS 22 -> Itbs 20 (from table 7.1.7.2.1-1 of 36.213)
+  // DOWNLINK - DISTANCE 4800 -> MCS 22 -> Itbs 20 (from table 7.1.7.2.1-1 of 36.213)
   // 1 user -> 24 PRB at Itbs 20 -> 1383 -> 1383000 bytes/sec
   // 3 users -> 8 PRB at Itbs 20 -> 469 -> 469000 bytes/sec
   // 6 users -> 4 PRB at Itbs 20 -> 233 -> 233000 bytes/sec
   // 12 users -> 2 PRB at Itbs 20 -> 113 -> 113000 bytes/sec
-  // UPLINK - DISTANCE 3000 -> MCS 20 -> Itbs 18 (from table 7.1.7.2.1-1 of 36.213)
-  // 1 user -> 25 PRB at Itbs 18 -> 1239 -> 1239000 bytes/sec
-  // 3 users -> 8 PRB at Itbs 18 -> 389 -> 389000 bytes/sec
-  // 6 users -> 4 PRB at Itbs 18 -> 193 -> 193000 bytes/sec
-  // 12 users -> 2 PRB at Itbs 18 -> 97 -> 97000 bytes/sec
-  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (1,0,3000,1383000,1239000), TestCase::EXTENSIVE);
-  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (3,0,3000,469000,389000), TestCase::EXTENSIVE);
-  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (6,0,3000,233500,193000), TestCase::EXTENSIVE);
-  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (12,0,3000,113000,97000), TestCase::EXTENSIVE);
+  // UPLINK - DISTANCE 4800 -> MCS 14 -> Itbs 13 (from table 7.1.7.2.1-1 of 36.213)
+  // 1 user -> 25 PRB at Itbs 13 -> 807 -> 807000 bytes/sec
+  // 3 users -> 8 PRB at Itbs 13 -> 253 -> 253000 bytes/sec
+  // 6 users -> 4 PRB at Itbs 13 -> 125 -> 125000 bytes/sec
+  // after the patch enforcing min 3 PRBs per UE:
+  // 12 users -> 3 PRB at Itbs 13 -> 93  bytes * 8/12 UE/TTI  -> 62000 bytes/sec
+  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (1,0,4800,1383000,807000, errorModel), TestCase::EXTENSIVE);
+  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (3,0,4800,469000,253000, errorModel), TestCase::EXTENSIVE);
+  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (6,0,4800,233500,125000, errorModel), TestCase::EXTENSIVE);
+  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (12,0,4800,113000,62000, errorModel), TestCase::EXTENSIVE);
 
-  // DOWNLINK - DISTANCE 6000 -> MCS 16 -> Itbs 15 (from table 7.1.7.2.1-1 of 36.213)
-  // 1 user -> 24 PRB at Itbs 15 -> 903 -> 903000 bytes/sec
-  // 3 users -> 8 PRB at Itbs 15 -> 309 -> 309000 bytes/sec
-  // 6 users -> 4 PRB at Itbs 15 -> 153 -> 153000 bytes/sec
-  // 12 users -> 2 PRB at Itbs 15 -> 75 -> 75000 bytes/sec
+  // DOWNLINK - DISTANCE 6000 -> MCS 14 -> Itbs 13 (from table 7.1.7.2.1-1 of 36.213)
+  // 1 user -> 24 PRB at Itbs 15 -> 775 -> 775000 bytes/sec
+  // 3 users -> 8 PRB at Itbs 15 -> 253 -> 253000 bytes/sec
+  // 6 users -> 4 PRB at Itbs 15 -> 125 -> 125000 bytes/sec
+  // 12 users -> 2 PRB at Itbs 15 -> 61 -> 61000 bytes/sec
   // UPLINK - DISTANCE 6000 -> MCS 12 -> Itbs 11 (from table 7.1.7.2.1-1 of 36.213)
   // 1 user -> 25 PRB at Itbs 11 -> 621 -> 621000 bytes/sec
   // 3 users -> 8 PRB at Itbs 11 -> 201 -> 201000 bytes/sec
   // 6 users -> 4 PRB at Itbs 11 -> 97 -> 97000 bytes/sec
-  // 12 users -> 2 PRB at Itbs 11 -> 47 -> 47000 bytes/sec
-  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (1,0,6000,903000,621000), TestCase::EXTENSIVE);
-  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (3,0,6000,309000,201000), TestCase::EXTENSIVE);
-  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (6,0,6000,153000,97000), TestCase::EXTENSIVE);
-  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (12,0,6000,75000,47000), TestCase::EXTENSIVE);
+  // 12 users -> 3 PRB at Itbs 11 -> 73 bytes * 8/12 UE/TTI -> 48667 bytes/sec
+  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (1,0,6000,775000,621000,errorModel), TestCase::EXTENSIVE);
+  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (3,0,6000,253000,201000,errorModel), TestCase::EXTENSIVE);
+  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (6,0,6000,125000,97000,errorModel), TestCase::EXTENSIVE);
+  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (12,0,6000,61000,48667,errorModel), TestCase::EXTENSIVE);
 
-  // DOWNLINK - DISTANCE 9000 -> MCS 12 -> Itbs 11 (from table 7.1.7.2.1-1 of 36.213)
-  // 1 user -> 24 PRB at Itbs 11 -> 597 -> 597000 bytes/sec
-  // 3 users -> 8 PRB at Itbs 11 -> 201 -> 201000 bytes/sec
-  // 6 users -> 4 PRB at Itbs 11 -> 97 -> 97000 bytes/sec
-  // 12 users -> 2 PRB at Itbs 11 -> 47 -> 47000 bytes/sec
-  // UPLINK - DISTANCE 9000 -> MCS 8 -> Itbs 8 (from table 7.1.7.2.1-1 of 36.213)
-  // 1 user -> 24 PRB at Itbs 8 -> 437 -> 437000 bytes/sec
+  // DOWNLINK - DISTANCE 10000 -> MCS 8 -> Itbs 8 (from table 7.1.7.2.1-1 of 36.213)
+  // 1 user -> 24 PRB at Itbs 8 -> 421 -> 421000 bytes/sec
   // 3 users -> 8 PRB at Itbs 8 -> 137 -> 137000 bytes/sec
   // 6 users -> 4 PRB at Itbs 8 -> 67 -> 67000 bytes/sec
   // 12 users -> 2 PRB at Itbs 8 -> 32 -> 32000 bytes/sec
-  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (1,0,9000,597000,437000), TestCase::EXTENSIVE);
-  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (3,0,9000,201000,137000), TestCase::EXTENSIVE);
-  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (6,0,9000,97000,67000), TestCase::EXTENSIVE);
-  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (12,0,9000,47000,32000), TestCase::EXTENSIVE);
+  // UPLINK - DISTANCE 9000 -> MCS 8 -> Itbs 8 (from table 7.1.7.2.1-1 of 36.213)
+  // 1 user -> 24 PRB at Itbs 8 -> 421 -> 421000 bytes/sec
+  // 3 users -> 8 PRB at Itbs 8 -> 137 -> 137000 bytes/sec
+  // 6 users -> 4 PRB at Itbs 8 -> 67 -> 67000 bytes/sec
+  // after the patch enforcing min 3 PRBs per UE:
+  // 12 users -> 3 PRB at Itbs 8 -> 49 bytes * 8/12 UE/TTI -> 32667 bytes/sec
+  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (1,0,10000,421000,421000,errorModel), TestCase::EXTENSIVE);
+  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (3,0,10000,137000,137000,errorModel), TestCase::EXTENSIVE);
+  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (6,0,10000,67000,67000,errorModel), TestCase::EXTENSIVE);
+  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (12,0,10000,32000,32667,errorModel), TestCase::EXTENSIVE);
 
-  // DOWNLINK - DISTANCE 15000 -> MCS 6 -> Itbs 6 (from table 7.1.7.2.1-1 of 36.213)
-  // 1 user -> 24 PRB at Itbs 6 -> 309 -> 309000 bytes/sec
-  // 3 users -> 8 PRB at Itbs 6 -> 101 -> 101000 bytes/sec
-  // 6 users -> 4 PRB at Itbs 6 -> 49 -> 49000 bytes/sec
-  // 12 users -> 2 PRB at Itbs 6 -> 22 -> 22000 bytes/sec
-  // UPLINK - DISTANCE 15000 -> MCS 6 -> Itbs 6 (from table 7.1.7.2.1-1 of 36.213)
-  // 1 user -> 25 PRB at Itbs 6 -> 233 -> 233000 bytes/sec
-  // 3 users -> 8 PRB at Itbs 6 -> 69 -> 69000 bytes/sec
-  // 6 users -> 4 PRB at Itbs 6 -> 32 -> 32000 bytes/sec
-  // 12 users -> 2 PRB at Itbs 6 -> 15 -> 15000 bytes/sec
-  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (1,0,15000,309000,233000), TestCase::EXTENSIVE);
-  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (3,0,15000,101000,69000), TestCase::EXTENSIVE);
-  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (6,0,15000,49000,32000), TestCase::EXTENSIVE);
-  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (12,0,15000,22000,15000), TestCase::EXTENSIVE);
+  // DOWNLINK - DISTANCE 20000 -> MCS 8 -> Itbs 8 (from table 7.1.7.2.1-1 of 36.213)
+  // 1 user -> 24 PRB at Itbs 8 -> 421 -> 421000 bytes/sec
+  // 3 users -> 8 PRB at Itbs 8 -> 137 -> 137000 bytes/sec
+  // 6 users -> 4 PRB at Itbs 8 -> 67 -> 67000 bytes/sec
+  // 12 users -> 2 PRB at Itbs 8 -> 32 -> 32000 bytes/sec
+  // UPLINK - DISTANCE 20000 -> MCS 2 -> Itbs 2 (from table 7.1.7.2.1-1 of 36.213)
+  // 1 user -> 25 PRB at Itbs 2 -> 137 -> 137000 bytes/sec
+  // 3 users -> 8 PRB at Itbs 2 -> 41 -> 41000 bytes/sec
+  // 6 users -> 4 PRB at Itbs 2 -> 22 -> 22000 bytes/sec
+  // after the patch enforcing min 3 PRBs per UE:
+  // 12 users -> 3 PRB at Itbs 2 -> 18 bytes * 8/12 UE/TTI -> 12000 bytes/sec
+  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (1,0,20000,421000,137000,errorModel), TestCase::EXTENSIVE);
+  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (3,0,20000,137000,41000,errorModel), TestCase::EXTENSIVE);
+  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (6,0,20000,67000,22000,errorModel), TestCase::EXTENSIVE);
+  AddTestCase (new LenaFdBetFfMacSchedulerTestCase1 (12,0,20000,32000,12000,errorModel), TestCase::EXTENSIVE);
 
   // Test Case 2: fairness check
 
   std::vector<uint16_t> dist;
   dist.push_back (0);       // User 0 distance --> MCS 28
-  dist.push_back (3000);    // User 1 distance --> MCS 24
-  dist.push_back (6000);    // User 2 distance --> MCS 16
-  dist.push_back (9000);    // User 3 distance --> MCS 12
+  dist.push_back (4800);    // User 1 distance --> MCS 22
+  dist.push_back (6000);    // User 2 distance --> MCS 14
+  dist.push_back (10000);    // User 3 distance --> MCS 8
+  dist.push_back (20000);    // User 4 distance --> MCS 8
   std::vector<uint32_t> estAchievableRateDl;
   estAchievableRateDl.push_back (2196000);
   estAchievableRateDl.push_back (1383000);
-  estAchievableRateDl.push_back (903000);
-  estAchievableRateDl.push_back (597000);
+  estAchievableRateDl.push_back (775000);
+  estAchievableRateDl.push_back (421000);
+  estAchievableRateDl.push_back (421000);
   std::vector<uint32_t> estThrFdBetUl;
-  estThrFdBetUl.push_back (549000); // User 0 estimated TTI throughput from FDBET
-  estThrFdBetUl.push_back (293000); // User 1 estimated TTI throughput from FDBET
-  estThrFdBetUl.push_back (149000); // User 2 estimated TTI throughput from FDBET
-  estThrFdBetUl.push_back (101000);  // User 3 estimated TTI throughput from FDBET
-  AddTestCase (new LenaFdBetFfMacSchedulerTestCase2 (dist, estAchievableRateDl, estThrFdBetUl), TestCase::QUICK);
-
-
+  estThrFdBetUl.push_back (469000); // User 0 estimated TTI throughput from FDBET
+  estThrFdBetUl.push_back (157000); // User 1 estimated TTI throughput from FDBET
+  estThrFdBetUl.push_back (125000); // User 2 estimated TTI throughput from FDBET
+  estThrFdBetUl.push_back (85000);  // User 3 estimated TTI throughput from FDBET
+  estThrFdBetUl.push_back (26000);  // User 4 estimated TTI throughput from FDBET
+  AddTestCase (new LenaFdBetFfMacSchedulerTestCase2 (dist, estAchievableRateDl, estThrFdBetUl, errorModel), TestCase::QUICK);
 }
 
 static LenaTestFdBetFfMacSchedulerSuite lenaTestFdBetFfMacSchedulerSuite;
@@ -173,13 +182,14 @@ LenaFdBetFfMacSchedulerTestCase1::BuildNameString (uint16_t nUser, uint16_t dist
   return oss.str ();
 }
 
-LenaFdBetFfMacSchedulerTestCase1::LenaFdBetFfMacSchedulerTestCase1 (uint16_t nUser, uint16_t nLc, uint16_t dist, double thrRefDl, double thrRefUl)
+LenaFdBetFfMacSchedulerTestCase1::LenaFdBetFfMacSchedulerTestCase1 (uint16_t nUser, uint16_t nLc, uint16_t dist, double thrRefDl, double thrRefUl, bool errorModelEnabled)
   : TestCase (BuildNameString (nUser, dist)),
     m_nUser (nUser),
     m_nLc (nLc),
     m_dist (dist),
     m_thrRefDl (thrRefDl),
-    m_thrRefUl (thrRefUl)
+    m_thrRefUl (thrRefUl),
+    m_errorModelEnabled (errorModelEnabled)
 {
 }
 
@@ -190,13 +200,13 @@ LenaFdBetFfMacSchedulerTestCase1::~LenaFdBetFfMacSchedulerTestCase1 ()
 void
 LenaFdBetFfMacSchedulerTestCase1::DoRun (void)
 {
-  Config::SetDefault ("ns3::LteAmc::AmcModel", EnumValue (LteAmc::PiroEW2010));
-  Config::SetDefault ("ns3::LteAmc::Ber", DoubleValue (0.00005));
-  Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue (false));
-  Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));
+  if (!m_errorModelEnabled)
+    {
+      Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue (false));
+      Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));
+    }
 
-  LogComponentDisableAll (LOG_LEVEL_ALL);
-  //LogComponentEnable ("LenaTestFdBetFfMacCheduler", LOG_LEVEL_ALL);
+  Config::SetDefault ("ns3::LteHelper::UseIdealRrc", BooleanValue (true));
 
   /**
    * Initialize Simulation Scenario: 1 eNB and m_nUser UEs
@@ -232,7 +242,7 @@ LenaFdBetFfMacSchedulerTestCase1::DoRun (void)
   // Activate an EPS bearer
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
-  lteHelper->ActivateEpsBearer (ueDevs, bearer, EpcTft::Default ());
+  lteHelper->ActivateDataRadioBearer (ueDevs, bearer);
 
   Ptr<LteEnbNetDevice> lteEnbDev = enbDevs.Get (0)->GetObject<LteEnbNetDevice> ();
   Ptr<LteEnbPhy> enbPhy = lteEnbDev->GetPhy ();
@@ -250,14 +260,16 @@ LenaFdBetFfMacSchedulerTestCase1::DoRun (void)
       uePhy->SetAttribute ("NoiseFigure", DoubleValue (9.0));
     }
 
-  lteHelper->EnableRlcTraces ();
-
-  double simulationTime = 1.0;
+  double statsStartTime = 0.300; // need to allow for RRC connection establishment + SRS
+  double statsDuration = 0.6;
   double tolerance = 0.1;
-  Simulator::Stop (Seconds (simulationTime));
+  Simulator::Stop (Seconds (statsStartTime + statsDuration - 0.000001));
 
+  lteHelper->EnableMacTraces ();
+  lteHelper->EnableRlcTraces ();
   Ptr<RadioBearerStatsCalculator> rlcStats = lteHelper->GetRlcStats ();
-  rlcStats->SetAttribute ("EpochDuration", TimeValue (Seconds (simulationTime)));
+  rlcStats->SetAttribute ("StartTime", TimeValue (Seconds (statsStartTime)));
+  rlcStats->SetAttribute ("EpochDuration", TimeValue (Seconds (statsDuration)));
 
   Simulator::Run ();
 
@@ -271,9 +283,9 @@ LenaFdBetFfMacSchedulerTestCase1::DoRun (void)
       // get the imsi
       uint64_t imsi = ueDevs.Get (i)->GetObject<LteUeNetDevice> ()->GetImsi ();
       // get the lcId
-      uint8_t lcId = ueDevs.Get (i)->GetObject<LteUeNetDevice> ()->GetRrc ()->GetLcIdVector ().at (0);
+      uint8_t lcId = 3;
       dlDataRxed.push_back (rlcStats->GetDlRxData (imsi, lcId));
-      NS_LOG_INFO ("\tUser " << i << " imsi " << imsi << " bytes rxed " << (double)dlDataRxed.at (i) << "  thr " << (double)dlDataRxed.at (i) / simulationTime << " ref " << m_thrRefDl);
+      NS_LOG_INFO ("\tUser " << i << " imsi " << imsi << " bytes rxed " << (double)dlDataRxed.at (i) << "  thr " << (double)dlDataRxed.at (i) / statsDuration << " ref " << m_thrRefDl);
     }
   /**
   * Check that the assignation is done in a "FD blind equal throughput" manner among users
@@ -283,7 +295,7 @@ LenaFdBetFfMacSchedulerTestCase1::DoRun (void)
   */
   for (int i = 0; i < m_nUser; i++)
     {
-      NS_TEST_ASSERT_MSG_EQ_TOL ((double)dlDataRxed.at (i) / simulationTime, m_thrRefDl, m_thrRefDl * tolerance, " Unfair Throughput!");
+      NS_TEST_ASSERT_MSG_EQ_TOL ((double)dlDataRxed.at (i) / statsDuration, m_thrRefDl, m_thrRefDl * tolerance, " Unfair Throughput!");
     }
 
   /**
@@ -296,9 +308,9 @@ LenaFdBetFfMacSchedulerTestCase1::DoRun (void)
       // get the imsi
       uint64_t imsi = ueDevs.Get (i)->GetObject<LteUeNetDevice> ()->GetImsi ();
       // get the lcId
-      uint8_t lcId = ueDevs.Get (i)->GetObject<LteUeNetDevice> ()->GetRrc ()->GetLcIdVector ().at (0);
+      uint8_t lcId = 3;
       ulDataRxed.push_back (rlcStats->GetUlRxData (imsi, lcId));
-      NS_LOG_INFO ("\tUser " << i << " imsi " << imsi << " bytes rxed " << (double)ulDataRxed.at (i) << "  thr " << (double)ulDataRxed.at (i) / simulationTime << " ref " << m_thrRefUl);
+      NS_LOG_INFO ("\tUser " << i << " imsi " << imsi << " bytes rxed " << (double)ulDataRxed.at (i) << "  thr " << (double)ulDataRxed.at (i) / statsDuration << " ref " << m_thrRefUl);
     }
   /**
   * Check that the assignation is done in a "FD blind equal throughput" manner among users
@@ -308,7 +320,7 @@ LenaFdBetFfMacSchedulerTestCase1::DoRun (void)
   */
   for (int i = 0; i < m_nUser; i++)
     {
-      NS_TEST_ASSERT_MSG_EQ_TOL ((double)ulDataRxed.at (i) / simulationTime, m_thrRefUl, m_thrRefUl * tolerance, " Unfair Throughput!");
+      NS_TEST_ASSERT_MSG_EQ_TOL ((double)ulDataRxed.at (i) / statsDuration, m_thrRefUl, m_thrRefUl * tolerance, " Unfair Throughput!");
     }
   Simulator::Destroy ();
 
@@ -333,12 +345,13 @@ LenaFdBetFfMacSchedulerTestCase2::BuildNameString (uint16_t nUser, std::vector<u
 }
 
 
-LenaFdBetFfMacSchedulerTestCase2::LenaFdBetFfMacSchedulerTestCase2 (std::vector<uint16_t> dist, std::vector<uint32_t> estAchievableRateDl, std::vector<uint32_t> estThrFdBetUl)
+LenaFdBetFfMacSchedulerTestCase2::LenaFdBetFfMacSchedulerTestCase2 (std::vector<uint16_t> dist, std::vector<uint32_t> estAchievableRateDl, std::vector<uint32_t> estThrFdBetUl, bool errorModelEnabled)
   : TestCase (BuildNameString (dist.size (), dist)),
     m_nUser (dist.size ()),
     m_dist (dist),
     m_achievableRateDl (estAchievableRateDl),
-    m_estThrFdBetUl (estThrFdBetUl)
+    m_estThrFdBetUl (estThrFdBetUl),
+    m_errorModelEnabled (errorModelEnabled)
 {
 }
 
@@ -349,8 +362,15 @@ LenaFdBetFfMacSchedulerTestCase2::~LenaFdBetFfMacSchedulerTestCase2 ()
 void
 LenaFdBetFfMacSchedulerTestCase2::DoRun (void)
 {
-  LogComponentDisableAll (LOG_LEVEL_ALL);
-  //LogComponentEnable ("LenaTestFdBetFfMacCheduler", LOG_LEVEL_ALL);
+
+  NS_LOG_FUNCTION (this);
+
+  if (!m_errorModelEnabled)
+    {
+      Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue (false));
+      Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));
+    }
+  Config::SetDefault ("ns3::LteHelper::UseIdealRrc", BooleanValue (false));
 
   /**
   * Initialize Simulation Scenario: 1 eNB and m_nUser UEs
@@ -386,7 +406,7 @@ LenaFdBetFfMacSchedulerTestCase2::DoRun (void)
   // Activate an EPS bearer
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
-  lteHelper->ActivateEpsBearer (ueDevs, bearer, EpcTft::Default ());
+  lteHelper->ActivateDataRadioBearer (ueDevs, bearer);
 
   Ptr<LteEnbNetDevice> lteEnbDev = enbDevs.Get (0)->GetObject<LteEnbNetDevice> ();
   Ptr<LteEnbPhy> enbPhy = lteEnbDev->GetPhy ();
@@ -404,14 +424,17 @@ LenaFdBetFfMacSchedulerTestCase2::DoRun (void)
       uePhy->SetAttribute ("NoiseFigure", DoubleValue (9.0));
     }
 
-  lteHelper->EnableRlcTraces ();
 
-  double simulationTime = 1;
+  double statsStartTime = 0.300; // need to allow for RRC connection establishment + SRS
+  double statsDuration = 0.4;
   double tolerance = 0.1;
-  Simulator::Stop (Seconds (simulationTime));
+  Simulator::Stop (Seconds (statsStartTime + statsDuration - 0.000001));
 
+  lteHelper->EnableMacTraces ();
+  lteHelper->EnableRlcTraces ();
   Ptr<RadioBearerStatsCalculator> rlcStats = lteHelper->GetRlcStats ();
-  rlcStats->SetAttribute ("EpochDuration", TimeValue (Seconds (simulationTime)));
+  rlcStats->SetAttribute ("StartTime", TimeValue (Seconds (statsStartTime)));
+  rlcStats->SetAttribute ("EpochDuration", TimeValue (Seconds (statsDuration)));
 
   Simulator::Run ();
 
@@ -425,11 +448,11 @@ LenaFdBetFfMacSchedulerTestCase2::DoRun (void)
       // get the imsi
       uint64_t imsi = ueDevs.Get (i)->GetObject<LteUeNetDevice> ()->GetImsi ();
       // get the lcId
-      uint8_t lcId = ueDevs.Get (i)->GetObject<LteUeNetDevice> ()->GetRrc ()->GetLcIdVector ().at (0);
+      uint8_t lcId = 3;
       dlDataRxed.push_back (rlcStats->GetDlRxData (imsi, lcId));
       totalData += (double)dlDataRxed.at (i);
       estTotalThr += 1 / m_achievableRateDl.at (i);
-      //NS_LOG_INFO ("\tUser " << i << " dist " << m_dist.at (i) << " imsi " << imsi << " bytes rxed " << (double)dlDataRxed.at (i) << "  thr " << (double)dlDataRxed.at (i) / simulationTime << " ref " << m_nUser);
+      NS_LOG_INFO ("\tUser " << i << " dist " << m_dist.at (i) << " imsi " << imsi << " bytes rxed " << (double)dlDataRxed.at (i) << "  thr " << (double)dlDataRxed.at (i) / statsDuration << " ref " << m_nUser);
     }
     
   estTotalThr = m_nUser * (1 / estTotalThr);
@@ -444,7 +467,7 @@ LenaFdBetFfMacSchedulerTestCase2::DoRun (void)
       double estThrRatio = (double)dlDataRxed.at (i) / totalData;
       NS_LOG_INFO ("\tUser " << i << " thrRatio " << thrRatio << " estThrRatio " << estThrRatio);
       NS_TEST_ASSERT_MSG_EQ_TOL (estThrRatio, thrRatio, tolerance, " Unfair Throughput!");
-      NS_TEST_ASSERT_MSG_EQ_TOL ((double)dlDataRxed.at (i) / simulationTime, estUeThr, estUeThr * tolerance, " Unfair Throughput!");
+      NS_TEST_ASSERT_MSG_EQ_TOL ((double)dlDataRxed.at (i) / statsDuration, estUeThr, estUeThr * tolerance, " Unfair Throughput!");
 
     }
 
@@ -459,10 +482,10 @@ LenaFdBetFfMacSchedulerTestCase2::DoRun (void)
       // get the imsi
       uint64_t imsi = ueDevs.Get (i)->GetObject<LteUeNetDevice> ()->GetImsi ();
       // get the lcId
-      uint8_t lcId = ueDevs.Get (i)->GetObject<LteUeNetDevice> ()->GetRrc ()->GetLcIdVector ().at (0);
+      uint8_t lcId = 3;
       ulDataRxed.push_back (rlcStats->GetUlRxData (imsi, lcId));
-      NS_LOG_INFO ("\tUser " << i << " dist " << m_dist.at (i) << " bytes rxed " << (double)ulDataRxed.at (i) << "  thr " << (double)ulDataRxed.at (i) / simulationTime << " ref " << (double)m_estThrFdBetUl.at (i));
-      NS_TEST_ASSERT_MSG_EQ_TOL ((double)ulDataRxed.at (i) / simulationTime, (double)m_estThrFdBetUl.at (i), (double)m_estThrFdBetUl.at (i) * tolerance, " Unfair Throughput!");
+      NS_LOG_INFO ("\tUser " << i << " dist " << m_dist.at (i) << " bytes rxed " << (double)ulDataRxed.at (i) << "  thr " << (double)ulDataRxed.at (i) / statsDuration << " ref " << (double)m_estThrFdBetUl.at (i));
+      NS_TEST_ASSERT_MSG_EQ_TOL ((double)ulDataRxed.at (i) / statsDuration, (double)m_estThrFdBetUl.at (i), (double)m_estThrFdBetUl.at (i) * tolerance, " Unfair Throughput!");
     }
   Simulator::Destroy ();
 

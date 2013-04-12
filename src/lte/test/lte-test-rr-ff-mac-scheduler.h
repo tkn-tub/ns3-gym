@@ -40,7 +40,7 @@ namespace ns3 {
 class LenaRrFfMacSchedulerTestCase : public TestCase
 {
 public:
-  LenaRrFfMacSchedulerTestCase (uint16_t nUser, uint16_t nLc, uint16_t dist, double thrRefDl, double thrRefUl);
+  LenaRrFfMacSchedulerTestCase (uint16_t nUser, uint16_t nLc, uint16_t dist, double thrRefDl, double thrRefUl, bool errorModelEnabled);
   virtual ~LenaRrFfMacSchedulerTestCase ();
 
 private:
@@ -51,6 +51,7 @@ private:
   uint16_t m_dist;
   double m_thrRefDl;
   double m_thrRefUl;
+  bool m_errorModelEnabled;
 
 };
 

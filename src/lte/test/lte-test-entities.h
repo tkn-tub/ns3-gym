@@ -23,14 +23,13 @@
 
 #include "ns3/simulator.h"
 #include "ns3/test.h"
-// #include "ns3/type-id.h"
 
 #include "ns3/lte-mac-sap.h"
 #include "ns3/lte-rlc-sap.h"
 #include "ns3/lte-pdcp-sap.h"
 
 #include "ns3/net-device.h"
-
+#include <ns3/epc-enb-s1-sap.h>
 
 namespace ns3 {
 
@@ -85,7 +84,7 @@ class LteTestRrc : public Object
 
   private:
     // Interface forwarded by LtePdcpSapUser
-    virtual void DoReceiveRrcPdu (LtePdcpSapUser::ReceiveRrcPduParameters params);
+    virtual void DoReceivePdcpSdu (LtePdcpSapUser::ReceivePdcpSduParameters params);
 
     LtePdcpSapUser* m_pdcpSapUser;
     LtePdcpSapProvider* m_pdcpSapProvider;
@@ -111,13 +110,8 @@ class LteTestRrc : public Object
  */
 class LteTestPdcp : public Object
 {
-    friend class LteRlcSpecificLteRlcSapUser<LteTestPdcp>;
-//   friend class EnbMacMemberLteEnbCmacSapProvider;
-//   friend class EnbMacMemberLteMacSapProvider<LteTestMac>;
-//   friend class EnbMacMemberFfMacSchedSapUser;
-//   friend class EnbMacMemberFfMacCschedSapUser;
-//   friend class EnbMacMemberLteEnbPhySapUser;
-
+  friend class LteRlcSpecificLteRlcSapUser<LteTestPdcp>;
+  
   public:
     static TypeId GetTypeId (void);
 
@@ -260,6 +254,50 @@ class LteTestMac : public Object
     uint32_t m_rxBytes;
 
 };
+
+
+
+/**
+ * RRC stub providing a testing S1 SAP user to be used with the EpcEnbApplication
+ * 
+ */
+class EpcTestRrc : public Object
+{
+  friend class MemberEpcEnbS1SapUser<EpcTestRrc>;
+
+public:
+  EpcTestRrc ();
+  virtual ~EpcTestRrc ();
+
+  // inherited from Object
+  virtual void DoDispose (void);
+  static TypeId GetTypeId (void);
+
+  /** 
+   * Set the S1 SAP Provider
+   * 
+   * \param s the S1 SAP Provider
+   */
+  void SetS1SapProvider (EpcEnbS1SapProvider* s);
+
+  /** 
+   * 
+   * \return the S1 SAP user
+   */
+  EpcEnbS1SapUser* GetS1SapUser ();
+
+private:
+
+  // S1 SAP methods
+  void DoDataRadioBearerSetupRequest (EpcEnbS1SapUser::DataRadioBearerSetupRequestParameters params);
+  void DoPathSwitchRequestAcknowledge (EpcEnbS1SapUser::PathSwitchRequestAcknowledgeParameters params);  
+  
+  EpcEnbS1SapProvider* m_s1SapProvider;
+  EpcEnbS1SapUser* m_s1SapUser;
+  
+
+};
+
 
 } // namespace ns3
 

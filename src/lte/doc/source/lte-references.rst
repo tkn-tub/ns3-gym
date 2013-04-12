@@ -6,6 +6,8 @@ References
 
 .. [TS25814] 3GPP TS 25.814 "Physical layer aspect for evolved Universal Terrestrial Radio Access"
 
+.. [TS29274] 3GPP TS 29.274 "Tunnelling Protocol for Control plane (GTPv2-C)"
+
 .. [TS36101] 3GPP TS 36.101 "E-UTRA User Equipment (UE) radio transmission and reception"
 
 .. [TS36104] 3GPP TS 36.104 "E-UTRA Base Station (BS) radio transmission and reception"
@@ -16,11 +18,24 @@ References
 
 .. [TS36213] 3GPP TS 36.213 "E-UTRA Physical layer procedures"
 
+.. [TS36300] 3GPP TS 36.300 "E-UTRA and E-UTRAN; Overall description; Stage 2"
+
+.. [TS36304] 3GPP TS 36.104 "E-UTRA User Equipment (UE) procedures in idle mode"
+
 .. [TS36321] 3GPP TS 36.321 "E-UTRA Medium Access Control (MAC) protocol specification"
 
 .. [TS36322] 3GPP TS 36.322 "E-UTRA Radio Link Control (RLC) protocol specification"
 
 .. [TS36323] 3GPP TS 36.323 "E-UTRA Packet Data Convergence Protocol (PDCP) specification"
+
+.. [TS36331] 3GPP TS 36.331 "E-UTRA Radio Resource Control (RRC) protocol specification"
+
+.. [TS36413] 3GPP TS 36.413 "E-UTRAN S1 application protocol (S1AP)"
+
+.. [TS36420] 3GPP TS 36.420 "E-UTRAN X2 general aspects and principles"
+
+.. [TS36423] 3GPP TS 36.423 "E-UTRAN X2 application protocol (X2AP)"
+
 
 .. [R1-081483] 3GPP R1-081483 `Conveying MCS and TB size via PDCCH <http://www.3gpp.org/ftp/tsg_ran/WG1_RL1/TSGR1_52b/Docs/R1-081483.zip>`_
 

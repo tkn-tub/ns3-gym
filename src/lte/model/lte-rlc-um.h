@@ -22,9 +22,9 @@
 #define LTE_RLC_UM_H
 
 #include "ns3/lte-rlc-sequence-number.h"
-
 #include "ns3/lte-rlc.h"
 
+#include <ns3/event-id.h>
 #include <map>
 
 namespace ns3 {
@@ -38,6 +38,7 @@ public:
   LteRlcUm ();
   virtual ~LteRlcUm ();
   static TypeId GetTypeId (void);
+  virtual void DoDispose ();
 
   /**
    * RLC SAP
@@ -47,11 +48,9 @@ public:
   /**
    * MAC SAP
    */
-  virtual void DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer);
+  virtual void DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId);
   virtual void DoNotifyHarqDeliveryFailure ();
   virtual void DoReceivePdu (Ptr<Packet> p);
-
-  void Start ();
 
 private:
   void ExpireReorderingTimer (void);

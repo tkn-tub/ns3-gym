@@ -199,7 +199,7 @@ main (int argc, char *argv[])
       lteHelper->Attach (ueDev, enbDevs.Get (i));
       enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
       EpsBearer bearer (q);
-      lteHelper->ActivateEpsBearer (ueDev, bearer, EpcTft::Default ());
+      lteHelper->ActivateDataRadioBearer (ueDev, bearer);
     }
 
 

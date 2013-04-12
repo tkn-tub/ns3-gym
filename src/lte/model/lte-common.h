@@ -27,6 +27,8 @@
 // see 36.213 section 8
 #define UL_PUSCH_TTIS_DELAY 4
 
+#define HARQ_PERIOD 7
+
 namespace ns3 {
 
 
@@ -112,6 +114,37 @@ class TransmissionModesLayers
 {
   public:
   static uint8_t TxMode2LayerNum (uint8_t txMode);
+};
+
+
+struct PhyTransmissionStatParameters
+{
+  int64_t  m_timestamp; // in millisecond
+  uint16_t m_cellId;
+  uint64_t m_imsi;
+  uint16_t m_rnti;
+  uint8_t  m_txMode;
+  uint8_t  m_layer;
+  uint8_t  m_mcs;
+  uint16_t m_size;
+  uint8_t  m_rv;
+  uint8_t  m_ndi;
+};
+
+
+struct PhyReceptionStatParameters
+{
+  int64_t  m_timestamp; // in millisecond
+  uint16_t m_cellId;
+  uint64_t m_imsi;
+  uint16_t m_rnti;
+  uint8_t  m_txMode;
+  uint8_t  m_layer;
+  uint8_t  m_mcs;
+  uint16_t m_size;
+  uint8_t  m_rv;
+  uint8_t  m_ndi;
+  uint8_t  m_correctness;
 };
 
 

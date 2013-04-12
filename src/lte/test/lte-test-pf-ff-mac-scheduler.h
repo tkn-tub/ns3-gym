@@ -41,7 +41,7 @@ namespace ns3 {
 class LenaPfFfMacSchedulerTestCase1 : public TestCase
 {
 public:
-  LenaPfFfMacSchedulerTestCase1 (uint16_t nUser, uint16_t nLc, uint16_t dist, double thrRefDl, double thrRefUl);
+  LenaPfFfMacSchedulerTestCase1 (uint16_t nUser, uint16_t nLc, uint16_t dist, double thrRefDl, double thrRefUl, bool errorModelEnabled);
   virtual ~LenaPfFfMacSchedulerTestCase1 ();
 
 private:
@@ -52,13 +52,14 @@ private:
   uint16_t m_dist;
   double m_thrRefDl;
   double m_thrRefUl;
+  bool m_errorModelEnabled;
 };
 
 
 class LenaPfFfMacSchedulerTestCase2 : public TestCase
 {
 public:
-  LenaPfFfMacSchedulerTestCase2 (std::vector<uint16_t> dist, std::vector<uint32_t> estThrPfDl, std::vector<uint32_t> estThrPfUl);
+  LenaPfFfMacSchedulerTestCase2 (std::vector<uint16_t> dist, std::vector<uint32_t> estThrPfDl, std::vector<uint32_t> estThrPfUl, bool errorModelEnabled);
   virtual ~LenaPfFfMacSchedulerTestCase2 ();
 
 private:
@@ -68,6 +69,7 @@ private:
   std::vector<uint16_t> m_dist;
   std::vector<uint32_t> m_estThrPfDl;
   std::vector<uint32_t> m_estThrPfUl;
+  bool m_errorModelEnabled;
 };
 
 

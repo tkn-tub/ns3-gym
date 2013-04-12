@@ -44,9 +44,10 @@ EpcSgwPgwApplication::UeInfo::UeInfo ()
 }
 
 void
-EpcSgwPgwApplication::UeInfo::AddBearer (Ptr<EpcTft> tft, uint32_t teid)
+EpcSgwPgwApplication::UeInfo::AddBearer (Ptr<EpcTft> tft, uint8_t bearerId, uint32_t teid)
 {
   NS_LOG_FUNCTION (this << tft << teid);
+  m_teidByBearerIdMap[bearerId] = teid;
   return m_tftClassifier.Add (tft, teid);
 }
 
@@ -72,6 +73,18 @@ EpcSgwPgwApplication::UeInfo::SetEnbAddr (Ipv4Address enbAddr)
   m_enbAddr = enbAddr;
 }
 
+Ipv4Address 
+EpcSgwPgwApplication::UeInfo::GetUeAddr ()
+{
+  return m_ueAddr;
+}
+
+void
+EpcSgwPgwApplication::UeInfo::SetUeAddr (Ipv4Address ueAddr)
+{
+  m_ueAddr = ueAddr;
+}
+
 /////////////////////////
 // EpcSgwPgwApplication
 /////////////////////////
@@ -88,8 +101,10 @@ EpcSgwPgwApplication::GetTypeId (void)
 void
 EpcSgwPgwApplication::DoDispose ()
 {
+  NS_LOG_FUNCTION (this);
   m_s1uSocket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > ());
   m_s1uSocket = 0;
+  delete (m_s11SapSgw);
 }
 
   
@@ -98,43 +113,20 @@ EpcSgwPgwApplication::EpcSgwPgwApplication (const Ptr<VirtualNetDevice> tunDevic
   : m_s1uSocket (s1uSocket),
     m_tunDevice (tunDevice),
     m_gtpuUdpPort (2152), // fixed by the standard
-    m_teidCount (0)
+    m_teidCount (0),
+    m_s11SapMme (0)
 {
   NS_LOG_FUNCTION (this << tunDevice << s1uSocket);
   m_s1uSocket->SetRecvCallback (MakeCallback (&EpcSgwPgwApplication::RecvFromS1uSocket, this));
+  m_s11SapSgw = new MemberEpcS11SapSgw<EpcSgwPgwApplication> (this);
 }
 
   
 EpcSgwPgwApplication::~EpcSgwPgwApplication ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
-
-uint32_t 
-EpcSgwPgwApplication::ActivateS1Bearer (Ipv4Address ueAddr, Ipv4Address enbAddr, Ptr<EpcTft> tft)
-{
-  NS_LOG_FUNCTION (this << ueAddr << enbAddr << tft);
-
-  // simple sanity check. If you ever need more than 4M teids
-  // throughout your simulation, you'll need to implement a smarter teid
-  // management algorithm. 
-  NS_ABORT_IF (m_teidCount == 0xFFFFFFFF);
-  uint32_t teid = ++m_teidCount;  
-
-  std::map<Ipv4Address, UeInfo>::iterator it = m_ueInfoMap.find (ueAddr);
-  if (it == m_ueInfoMap.end ())
-    {
-      // UE unknown, creating new entry
-      std::pair<std::map<Ipv4Address, UeInfo>::iterator, bool> ret;
-      ret = m_ueInfoMap.insert (std::pair <Ipv4Address, UeInfo> (ueAddr, UeInfo ()));
-      it = ret.first;
-      it->second.SetEnbAddr (enbAddr);
-    }
-        
-  it->second.AddBearer (tft, teid);
-  return teid;
-}
 
 bool
 EpcSgwPgwApplication::RecvFromTunDevice (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber)
@@ -149,15 +141,15 @@ EpcSgwPgwApplication::RecvFromTunDevice (Ptr<Packet> packet, const Address& sour
   NS_LOG_LOGIC ("packet addressed to UE " << ueAddr);
 
   // find corresponding UeInfo address
-  std::map<Ipv4Address, UeInfo>::iterator it = m_ueInfoMap.find (ueAddr);
-  if (it == m_ueInfoMap.end ())
+  std::map<Ipv4Address, Ptr<UeInfo> >::iterator it = m_ueInfoByAddrMap.find (ueAddr);
+  if (it == m_ueInfoByAddrMap.end ())
     {        
       NS_LOG_WARN ("unknown UE address " << ueAddr) ;
     }
   else
     {
-      Ipv4Address enbAddr = it->second.GetEnbAddr ();      
-      uint32_t teid = it->second.Classify (packet);   
+      Ipv4Address enbAddr = it->second->GetEnbAddr ();      
+      uint32_t teid = it->second->Classify (packet);   
       if (teid == 0)
         {
           NS_LOG_WARN ("no matching bearer for this packet");                   
@@ -214,4 +206,102 @@ EpcSgwPgwApplication::SendToS1uSocket (Ptr<Packet> packet, Ipv4Address enbAddr, 
   m_s1uSocket->SendTo (packet, flags, InetSocketAddress(enbAddr, m_gtpuUdpPort));
 }
 
+
+void 
+EpcSgwPgwApplication::SetS11SapMme (EpcS11SapMme * s)
+{
+  m_s11SapMme = s;
+}
+
+EpcS11SapSgw* 
+EpcSgwPgwApplication::GetS11SapSgw ()
+{
+  return m_s11SapSgw;
+}
+
+void 
+EpcSgwPgwApplication::AddEnb (uint16_t cellId, Ipv4Address enbAddr, Ipv4Address sgwAddr)
+{
+  NS_LOG_FUNCTION (this << cellId << enbAddr << sgwAddr);
+  EnbInfo enbInfo;
+  enbInfo.enbAddr = enbAddr;
+  enbInfo.sgwAddr = sgwAddr;
+  m_enbInfoByCellId[cellId] = enbInfo;
+}
+
+void 
+EpcSgwPgwApplication::AddUe (uint64_t imsi)
+{
+  NS_LOG_FUNCTION (this << imsi);
+  Ptr<UeInfo> ueInfo = Create<UeInfo> ();
+  m_ueInfoByImsiMap[imsi] = ueInfo;
+}
+
+void 
+EpcSgwPgwApplication::SetUeAddress (uint64_t imsi, Ipv4Address ueAddr)
+{
+  NS_LOG_FUNCTION (this << imsi << ueAddr);
+  std::map<uint64_t, Ptr<UeInfo> >::iterator ueit = m_ueInfoByImsiMap.find (imsi);
+  NS_ASSERT_MSG (ueit != m_ueInfoByImsiMap.end (), "unknown IMSI " << imsi); 
+  m_ueInfoByAddrMap[ueAddr] = ueit->second;
+  ueit->second->SetUeAddr (ueAddr);
+}
+
+void 
+EpcSgwPgwApplication::DoCreateSessionRequest (EpcS11SapSgw::CreateSessionRequestMessage req)
+{
+  NS_LOG_FUNCTION (this << req.imsi);
+  std::map<uint64_t, Ptr<UeInfo> >::iterator ueit = m_ueInfoByImsiMap.find (req.imsi);
+  NS_ASSERT_MSG (ueit != m_ueInfoByImsiMap.end (), "unknown IMSI " << req.imsi); 
+  uint16_t cellId = req.uli.gci;
+  std::map<uint16_t, EnbInfo>::iterator enbit = m_enbInfoByCellId.find (cellId);
+  NS_ASSERT_MSG (enbit != m_enbInfoByCellId.end (), "unknown CellId " << cellId); 
+  Ipv4Address enbAddr = enbit->second.enbAddr;
+  ueit->second->SetEnbAddr (enbAddr);
+
+  EpcS11SapMme::CreateSessionResponseMessage res;
+  res.teid = req.imsi; // trick to avoid the need for allocating TEIDs on the S11 interface
+
+  for (std::list<EpcS11SapSgw::BearerContextToBeCreated>::iterator bit = req.bearerContextsToBeCreated.begin ();
+       bit != req.bearerContextsToBeCreated.end ();
+       ++bit)
+    {
+      // simple sanity check. If you ever need more than 4M teids
+      // throughout your simulation, you'll need to implement a smarter teid
+      // management algorithm. 
+      NS_ABORT_IF (m_teidCount == 0xFFFFFFFF);
+      uint32_t teid = ++m_teidCount;  
+      ueit->second->AddBearer (bit->tft, bit->epsBearerId, teid);
+
+      EpcS11SapMme::BearerContextCreated bearerContext;
+      bearerContext.sgwFteid.teid = teid;
+      bearerContext.sgwFteid.address = enbit->second.sgwAddr;
+      bearerContext.epsBearerId =  bit->epsBearerId; 
+      bearerContext.bearerLevelQos = bit->bearerLevelQos; 
+      bearerContext.tft = bit->tft;
+      res.bearerContextsCreated.push_back (bearerContext);
+    }
+  m_s11SapMme->CreateSessionResponse (res);
+  
+}
+
+void 
+EpcSgwPgwApplication::DoModifyBearerRequest (EpcS11SapSgw::ModifyBearerRequestMessage req)
+{
+  NS_LOG_FUNCTION (this << req.teid);
+  uint64_t imsi = req.teid; // trick to avoid the need for allocating TEIDs on the S11 interface
+  std::map<uint64_t, Ptr<UeInfo> >::iterator ueit = m_ueInfoByImsiMap.find (imsi);
+  NS_ASSERT_MSG (ueit != m_ueInfoByImsiMap.end (), "unknown IMSI " << imsi); 
+  uint16_t cellId = req.uli.gci;
+  std::map<uint16_t, EnbInfo>::iterator enbit = m_enbInfoByCellId.find (cellId);
+  NS_ASSERT_MSG (enbit != m_enbInfoByCellId.end (), "unknown CellId " << cellId); 
+  Ipv4Address enbAddr = enbit->second.enbAddr;
+  ueit->second->SetEnbAddr (enbAddr);
+  // no actual bearer modification: for now we just support the minimum needed for path switch request (handover)
+  EpcS11SapMme::ModifyBearerResponseMessage res;
+  res.teid = imsi; // trick to avoid the need for allocating TEIDs on the S11 interface
+  res.cause = EpcS11SapMme::ModifyBearerResponseMessage::REQUEST_ACCEPTED;
+  m_s11SapMme->ModifyBearerResponse (res);
+}
+ 
 }; // namespace ns3

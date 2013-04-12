@@ -103,6 +103,51 @@ class LteDataSinrChunkProcessor : public LteSinrChunkProcessor
 };
 
 
+/**
+* The LteRsReceivedPowerChunkProcessor averages the received signal power
+* over time for data frame and therefore in charge of generating the
+*  power linear values for generating the RSRP tracing at eNB side
+*
+*/
+class LteRsReceivedPowerChunkProcessor : public LteSinrChunkProcessor
+{
+  public:
+    virtual ~LteRsReceivedPowerChunkProcessor ();
+    LteRsReceivedPowerChunkProcessor (Ptr<LtePhy> p);
+    virtual void Start ();
+    virtual void EvaluateSinrChunk (const SpectrumValue& sinr, Time duration);
+    virtual void End ();
+  private:
+    Ptr<SpectrumValue> m_sumSinr;
+    Time m_totDuration;
+    Ptr<LtePhy> m_phy;
+};
+
+
+
+
+/**
+* The LteInterferencePowerChunkProcessor averages the interference power 
+* over time for data frame and therefore in charge of generating the 
+* interference power linear values for generating the interference power
+* tracing at eNB side
+*
+*/
+class LteInterferencePowerChunkProcessor : public LteSinrChunkProcessor
+{
+  public:
+    virtual ~LteInterferencePowerChunkProcessor ();
+    LteInterferencePowerChunkProcessor (Ptr<LtePhy> p);
+    virtual void Start ();
+    virtual void EvaluateSinrChunk (const SpectrumValue& sinr, Time duration);
+    virtual void End ();
+  private:
+    Ptr<SpectrumValue> m_sumSinr;
+    Time m_totDuration;
+    Ptr<LtePhy> m_phy;
+};
+
+
 
 
 

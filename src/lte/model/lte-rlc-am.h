@@ -21,9 +21,9 @@
 #ifndef LTE_RLC_AM_H
 #define LTE_RLC_AM_H
 
-#include "ns3/lte-rlc-sequence-number.h"
-
-#include "ns3/lte-rlc.h"
+#include <ns3/event-id.h>
+#include <ns3/lte-rlc-sequence-number.h>
+#include <ns3/lte-rlc.h>
 
 #include <vector>
 #include <map>
@@ -39,6 +39,7 @@ public:
   LteRlcAm ();
   virtual ~LteRlcAm ();
   static TypeId GetTypeId (void);
+  virtual void DoDispose ();
 
   /**
    * RLC SAP
@@ -48,11 +49,9 @@ public:
   /**
    * MAC SAP
    */
-  virtual void DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer);
+  virtual void DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId);
   virtual void DoNotifyHarqDeliveryFailure ();
   virtual void DoReceivePdu (Ptr<Packet> p);
-
-  void Start ();
 
 private:
   /**
@@ -69,6 +68,8 @@ private:
 //   void ReassembleSnLessThan (uint16_t seqNumber);
 // 
   void ReassembleAndDeliver (Ptr<Packet> packet);
+
+  void DoReportBufferStatus ();
 
 private:
     std::vector < Ptr<Packet> > m_txonBuffer;       // Transmission buffer
@@ -139,6 +140,7 @@ private:
    * Timers. See section 7.3 in TS 36.322
    */
   EventId m_pollRetransmitTimer;
+  Time    m_pollRetransmitTimerValue;
   EventId m_reorderingTimer;
   EventId m_statusProhibitTimer;
 

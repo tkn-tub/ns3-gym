@@ -156,10 +156,10 @@ LteTestRrc::SetPduSize (uint32_t pduSize)
  */
 
 void
-LteTestRrc::DoReceiveRrcPdu (LtePdcpSapUser::ReceiveRrcPduParameters params)
+LteTestRrc::DoReceivePdcpSdu (LtePdcpSapUser::ReceivePdcpSduParameters params)
 {
-  NS_LOG_FUNCTION (this << params.rrcPdu->GetSize ());
-  Ptr<Packet> p = params.rrcPdu;
+  NS_LOG_FUNCTION (this << params.pdcpSdu->GetSize ());
+  Ptr<Packet> p = params.pdcpSdu;
 //   NS_LOG_LOGIC ("PDU received = " << (*p));
 
   uint32_t dataLen = p->GetSize ();
@@ -193,12 +193,12 @@ LteTestRrc::Start ()
   m_txBytes += m_pduSize;
   m_txLastTime = Simulator::Now ();
 
-  LtePdcpSapProvider::TransmitRrcPduParameters p;
+  LtePdcpSapProvider::TransmitPdcpSduParameters p;
   p.rnti = 1111;
   p.lcid = 222;
-  p.rrcPdu = Create<Packet> (m_pduSize);
+  p.pdcpSdu = Create<Packet> (m_pduSize);
 
-  Simulator::ScheduleNow (&LtePdcpSapProvider::TransmitRrcPdu, m_pdcpSapProvider, p);
+  Simulator::ScheduleNow (&LtePdcpSapProvider::TransmitPdcpSdu, m_pdcpSapProvider, p);
   m_nextPdu = Simulator::Schedule (m_arrivalTime, &LteTestRrc::Start, this);
 //   Simulator::Run ();
 }
@@ -219,15 +219,15 @@ LteTestRrc::SendData (Time at, std::string dataToSend)
   m_txPdus++;
   m_txBytes += dataToSend.length ();
 
-  LtePdcpSapProvider::TransmitRrcPduParameters p;
+  LtePdcpSapProvider::TransmitPdcpSduParameters p;
   p.rnti = 1111;
   p.lcid = 222;
 
   NS_LOG_LOGIC ("Data(" << dataToSend.length () << ") = " << dataToSend.data ());
-  p.rrcPdu = Create<Packet> ((uint8_t *) dataToSend.data (), dataToSend.length ());
+  p.pdcpSdu = Create<Packet> ((uint8_t *) dataToSend.data (), dataToSend.length ());
 
-  NS_LOG_LOGIC ("Packet(" << p.rrcPdu->GetSize () << ")");
-  Simulator::Schedule (at, &LtePdcpSapProvider::TransmitRrcPdu, m_pdcpSapProvider, p);
+  NS_LOG_LOGIC ("Packet(" << p.pdcpSdu->GetSize () << ")");
+  Simulator::Schedule (at, &LtePdcpSapProvider::TransmitPdcpSdu, m_pdcpSapProvider, p);
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -450,7 +450,7 @@ void
 LteTestMac::SendTxOpportunity (Time time, uint32_t bytes)
 {
   NS_LOG_FUNCTION (this << time << bytes);
-  Simulator::Schedule (time, &LteMacSapUser::NotifyTxOpportunity, m_macSapUser, bytes, 0);
+  Simulator::Schedule (time, &LteMacSapUser::NotifyTxOpportunity, m_macSapUser, bytes, 0, 0);
   if (m_txOpportunityMode == RANDOM_MODE)
   {
     if (m_txOppTime != Seconds (0))
@@ -572,17 +572,17 @@ LteTestMac::DoReportBufferStatus (LteMacSapProvider::ReportBufferStatusParameter
       if (params.statusPduSize)
         {
           Simulator::Schedule (Seconds (0.1), &LteMacSapUser::NotifyTxOpportunity,
-                               m_macSapUser, params.statusPduSize + 2, 0);
+                               m_macSapUser, params.statusPduSize + 2, 0, 0);
         }
       else if (params.txQueueSize)
         {
           Simulator::Schedule (Seconds (0.1), &LteMacSapUser::NotifyTxOpportunity,
-                               m_macSapUser, params.txQueueSize + 2, 0);
+                               m_macSapUser, params.txQueueSize + 2, 0, 0);
         }
       else if (params.retxQueueSize)
         {
           Simulator::Schedule (Seconds (0.1), &LteMacSapUser::NotifyTxOpportunity,
-                               m_macSapUser, params.retxQueueSize + 2, 0);
+                               m_macSapUser, params.retxQueueSize + 2, 0, 0);
         }
     }
 }
@@ -600,6 +600,72 @@ LteTestMac::Receive (Ptr<NetDevice> nd, Ptr<const Packet> p, uint16_t protocol, 
   m_macSapUser->ReceivePdu (packet);
   return true;
 }
+
+
+
+
+
+
+
+
+NS_OBJECT_ENSURE_REGISTERED (EpcTestRrc);
+
+EpcTestRrc::EpcTestRrc ()
+  : m_s1SapProvider (0)
+{
+  NS_LOG_FUNCTION (this);
+  m_s1SapUser = new MemberEpcEnbS1SapUser<EpcTestRrc> (this);
+}
+
+
+EpcTestRrc::~EpcTestRrc ()
+{
+  NS_LOG_FUNCTION (this);
+}
+
+
+void
+EpcTestRrc::DoDispose ()
+{
+  NS_LOG_FUNCTION (this);
+  delete m_s1SapUser;
+}
+
+TypeId
+EpcTestRrc::GetTypeId (void)
+{
+  NS_LOG_FUNCTION ("EpcTestRrc::GetTypeId");
+  static TypeId tid = TypeId ("ns3::EpcTestRrc")
+    .SetParent<Object> ()
+    .AddConstructor<EpcTestRrc> ()
+  ;
+  return tid;
+}
+void 
+EpcTestRrc::SetS1SapProvider (EpcEnbS1SapProvider * s)
+{
+  m_s1SapProvider = s;
+}
+
+  
+EpcEnbS1SapUser* 
+EpcTestRrc::GetS1SapUser ()
+{
+  return m_s1SapUser;
+}
+
+void 
+EpcTestRrc::DoDataRadioBearerSetupRequest (EpcEnbS1SapUser::DataRadioBearerSetupRequestParameters request)
+{
+
+}
+  
+void 
+EpcTestRrc::DoPathSwitchRequestAcknowledge (EpcEnbS1SapUser::PathSwitchRequestAcknowledgeParameters params)
+{
+
+}
+
 
 } // namespace ns3
 

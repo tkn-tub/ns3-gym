@@ -91,6 +91,12 @@ struct EpsBearer
   AllocationRetentionPriority arp;
 
   /**
+   * Deault constructor. QCI will be initialized to NGBR_VIDEO_TCP_DEFAULT
+   * 
+   */
+  EpsBearer ();
+
+  /**
    *
    * @param x the QoS Class Indicator
    *
@@ -127,8 +133,6 @@ struct EpsBearer
    */
   double  GetPacketErrorLossRate () const;
 
-private:
-  EpsBearer ();
 };
 
 } // namespace ns3

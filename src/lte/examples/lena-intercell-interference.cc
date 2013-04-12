@@ -42,12 +42,13 @@ int main (int argc, char *argv[])
   double enbDist = 100.0;
   double radius = 50.0;
   uint32_t numUes = 1;
-
+  double simTime = 1.0;
 
   CommandLine cmd;
   cmd.AddValue ("enbDist", "distance between the two eNBs", enbDist);
   cmd.AddValue ("radius", "the radius of the disc where UEs are placed around an eNB", radius);
   cmd.AddValue ("numUes", "how many UEs are attached to each eNB", numUes);
+  cmd.AddValue ("simTime", "Total duration of the simulation (in seconds)", simTime);
   cmd.Parse (argc, argv);
 
   ConfigStore inputConfig;
@@ -120,13 +121,13 @@ int main (int argc, char *argv[])
   lteHelper->Attach (ueDevs1, enbDevs.Get (0));
   lteHelper->Attach (ueDevs2, enbDevs.Get (1));
 
-  // Activate an EPS bearer on all UEs
+  // Activate a data radio bearer each UE
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
-  lteHelper->ActivateEpsBearer (ueDevs1, bearer, EpcTft::Default ());
-  lteHelper->ActivateEpsBearer (ueDevs2, bearer, EpcTft::Default ());
+  lteHelper->ActivateDataRadioBearer (ueDevs1, bearer);
+  lteHelper->ActivateDataRadioBearer (ueDevs2, bearer);
 
-  Simulator::Stop (Seconds (10));
+  Simulator::Stop (Seconds (simTime));
 
   // Insert RLC Performance Calculator
   std::string dlOutFname = "DlRlcStats";

@@ -74,7 +74,7 @@ main (int argc, char *argv[])
   else
     {
       lteHelper->SetAttribute ("PathlossModel",
-                               StringValue ("ns3::BuildingsPropagationLossModel"));
+                               StringValue ("ns3::HybridBuildingsPropagationLossModel"));
       nEnb = nFloors * nEnbPerFloor;
     }
 
@@ -134,9 +134,10 @@ main (int argc, char *argv[])
     }
   else
     {
-      building = CreateObject<Building> (0.0, nRooms * roomLength,
-                                         0.0, nRooms * roomLength,
-                                         0.0, nFloors* roomHeight);
+      building = CreateObject<Building> ();
+      building->SetBoundaries (Box (0.0, nRooms * roomLength,
+                                    0.0, nRooms * roomLength,
+                                    0.0, nFloors* roomHeight));
       building->SetBuildingType (Building::Residential);
       building->SetExtWallsType (Building::ConcreteWithWindows);
       building->SetNFloors (nFloors);
@@ -170,11 +171,7 @@ main (int argc, char *argv[])
                 }
             }
         }
-
-
     }
-
-
 
 
   // Create Devices and install them in the Nodes (eNB and UE)
@@ -188,7 +185,7 @@ main (int argc, char *argv[])
       lteHelper->Attach (ueDev, enbDevs.Get (i));
       enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
       EpsBearer bearer (q);
-      lteHelper->ActivateEpsBearer (ueDev, bearer, EpcTft::Default ());
+      lteHelper->ActivateDataRadioBearer (ueDev, bearer);
     }
 
 

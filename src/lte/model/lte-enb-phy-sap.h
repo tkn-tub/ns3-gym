@@ -49,32 +49,7 @@ public:
    */
   virtual void SendMacPdu (Ptr<Packet> p) = 0;
 
-  /**
-   * \param ulBandwidth the UL bandwidth in RB
-   * \param dlBandwidth the DL bandwidth in RB
-   */
-  virtual void SetBandwidth (uint8_t ulBandwidth, uint8_t dlBandwidth) = 0;
-  
-  /**
-  * \param rnti the RNTI of the user
-  * \param txMode the transmissionMode of the user
-  */
-  virtual void SetTransmissionMode (uint16_t  rnti, uint8_t txMode) = 0;
-  
-  /**
-  * \param rnti the RNTI of the user
-  * \param txMode the SRS Configuration Index of the user
-  */
-  virtual void SetSrsConfigurationIndex (uint16_t  rnti, uint16_t srsCi) = 0;
-
   /** 
-   * 
-   * 
-   * \param cellId the Cell Identifier
-   */
-  virtual void SetCellId (uint16_t cellId) = 0;
-
-  /**
    * \brief Send SendLteControlMessage (PDCCH map, CQI feedbacks) using the ideal control channel
    * \param msg the Ideal Control Message to send
    */
@@ -122,11 +97,33 @@ public:
    */
   virtual void ReceiveLteControlMessage (Ptr<LteControlMessage> msg) = 0;
 
+  /** 
+   * notify the reception of a RACH preamble on the PRACH 
+   * 
+   * \param prachId the ID of the preamble
+   */
+  virtual void ReceiveRachPreamble (uint32_t prachId) = 0;
+
   /**
    * \brief Returns to MAC level the UL-CQI evaluated
    * \param ulcqi the UL-CQI (see FF MAC API 4.3.29)
    */
   virtual void UlCqiReport (FfMacSchedSapProvider::SchedUlCqiInfoReqParameters ulcqi) = 0;
+
+  /**
+   * Notify the HARQ on the UL tranmission status
+   *
+   * \param params
+   */
+  virtual void UlInfoListElementHarqFeeback (UlInfoListElement_s params) = 0;
+
+
+  /**
+   * Notify the HARQ on the DL tranmission status
+   *
+   * \param params
+   */
+  virtual void DlInfoListElementHarqFeeback (DlInfoListElement_s params) = 0;
 
 };
 

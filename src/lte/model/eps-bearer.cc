@@ -43,6 +43,7 @@ AllocationRetentionPriority::AllocationRetentionPriority ()
 }
 
 EpsBearer::EpsBearer ()
+  : qci (NGBR_VIDEO_TCP_DEFAULT)
 {
 }
 

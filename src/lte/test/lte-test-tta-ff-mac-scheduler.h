@@ -36,12 +36,13 @@ using namespace ns3;
 * case, the UEs see the same SINR from the eNB; different test cases are 
 * implemented obtained by using different SINR values and different numbers of 
 * UEs. The test consists on checking that the obtained throughput performance 
-* is consistent with the definition of throughput to average scheduling
+* is consistent with the definition of throughput to average
+* scheduling
 */
 class LenaTtaFfMacSchedulerTestCase : public TestCase
 {
 public:
-  LenaTtaFfMacSchedulerTestCase (uint16_t nUser, uint16_t nLc, uint16_t dist, double thrRefDl, double thrRefUl);
+  LenaTtaFfMacSchedulerTestCase (uint16_t nUser, uint16_t nLc, uint16_t dist, double thrRefDl, double thrRefUl,bool errorModelEnabled);
   virtual ~LenaTtaFfMacSchedulerTestCase ();
 
 private:
@@ -52,6 +53,7 @@ private:
   uint16_t m_dist;
   double m_thrRefDl;
   double m_thrRefUl;
+  bool m_errorModelEnabled;
 };
 
 class LenaTestTtaFfMacSchedulerSuite : public TestSuite

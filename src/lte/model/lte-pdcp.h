@@ -1,6 +1,6 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2011 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
+ * Copyright (c) 2011-2012 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -42,8 +42,7 @@ public:
   LtePdcp ();
   virtual ~LtePdcp ();
   static TypeId GetTypeId (void);
-
-  void Start ();
+  virtual void DoDispose ();
 
   /**
    *
@@ -87,10 +86,34 @@ public:
    */
   LteRlcSapUser* GetLteRlcSapUser ();
 
+  static const uint16_t MAX_PDCP_SN = 4096;
+
+  /**
+   * Status variables of the PDCP
+   * 
+   */
+  struct Status
+  {
+    uint16_t txSn; ///< TX sequence number
+    uint16_t rxSn; ///< RX sequence number
+  };
+
+  /** 
+   * 
+   * \return the current status of the PDCP
+   */
+  Status GetStatus ();
+
+  /**
+   * Set the status of the PDCP
+   * 
+   * \param s 
+   */
+  void SetStatus (Status s);
 
 protected:
   // Interface provided to upper RRC entity
-  virtual void DoTransmitRrcPdu (Ptr<Packet> p);
+  virtual void DoTransmitPdcpSdu (Ptr<Packet> p);
 
   LtePdcpSapUser* m_pdcpSapUser;
   LtePdcpSapProvider* m_pdcpSapProvider;

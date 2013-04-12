@@ -55,6 +55,7 @@ public:
   LteRlc ();
   virtual ~LteRlc ();
   static TypeId GetTypeId (void);
+  virtual void DoDispose ();
 
   /**
    *
@@ -111,7 +112,7 @@ protected:
   LteRlcSapProvider* m_rlcSapProvider;
 
   // Interface forwarded by LteMacSapUser
-  virtual void DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer) = 0;
+  virtual void DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId) = 0;
   virtual void DoNotifyHarqDeliveryFailure () = 0;
   virtual void DoReceivePdu (Ptr<Packet> p) = 0;
 
@@ -148,13 +149,15 @@ public:
   LteRlcSm ();
   virtual ~LteRlcSm ();
   static TypeId GetTypeId (void);
+  virtual void DoStart ();
+  virtual void DoDispose ();
 
   virtual void DoTransmitPdcpPdu (Ptr<Packet> p);
-  virtual void DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer);
+  virtual void DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId);
   virtual void DoNotifyHarqDeliveryFailure ();
   virtual void DoReceivePdu (Ptr<Packet> p);
 
-  void Start ();
+
 
 private:
   void ReportBufferStatus ();

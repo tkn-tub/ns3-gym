@@ -35,6 +35,8 @@
 #include "ns3/lte-enb-net-device.h"
 #include "ns3/ff-mac-scheduler.h"
 
+#include "ns3/lte-global-pathloss-database.h"
+
 #include "lte-test-sinr-chunk-processor.h"
 
 NS_LOG_COMPONENT_DEFINE ("LteAntennaTest");
@@ -93,8 +95,10 @@ LteEnbAntennaTestCase::~LteEnbAntennaTestCase ()
 void
 LteEnbAntennaTestCase::DoRun (void)
 {
+  Config::Reset ();
   Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue (false));
   Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));
+  Config::SetDefault ("ns3::LteHelper::UseIdealRrc", BooleanValue (true));
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
 
   // use 0dB Pathloss, since we are testing only the antenna gain
@@ -136,7 +140,7 @@ LteEnbAntennaTestCase::DoRun (void)
   // Activate the default EPS bearer
   enum EpsBearer::Qci q = EpsBearer::NGBR_VIDEO_TCP_DEFAULT;
   EpsBearer bearer (q);
-  lteHelper->ActivateEpsBearer (ueDevs, bearer, EpcTft::Default ());
+  lteHelper->ActivateDataRadioBearer (ueDevs, bearer);
 
   // Use testing chunk processor in the PHY layer
   // It will be used to test that the SNR is as intended
@@ -149,9 +153,18 @@ LteEnbAntennaTestCase::DoRun (void)
   enbphy->GetUplinkSpectrumPhy ()->AddDataSinrChunkProcessor (testUlSinr);
 
 
-  Simulator::Stop (Seconds (0.020));
-  Simulator::Run ();
+  // keep track of all path loss values in two centralized objects
+  DownlinkLteGlobalPathlossDatabase dlPathlossDb;
+  UplinkLteGlobalPathlossDatabase ulPathlossDb;
+  // we rely on the fact that LteHelper creates the DL channel object first, then the UL channel object,
+  // hence the former will have index 0 and the latter 1
+  Config::Connect ("/ChannelList/0/PathLoss",
+                   MakeCallback (&DownlinkLteGlobalPathlossDatabase::UpdatePathloss, &dlPathlossDb));
+  Config::Connect ("/ChannelList/1/PathLoss",
+                    MakeCallback (&UplinkLteGlobalPathlossDatabase::UpdatePathloss, &ulPathlossDb)); 
 
+  Simulator::Stop (Seconds (0.035));
+  Simulator::Run ();
 
   const double enbTxPowerDbm = 30; // default eNB TX power over whole bandwidth
   const double ueTxPowerDbm  = 10; // default UE TX power over whole bandwidth
@@ -159,24 +172,41 @@ LteEnbAntennaTestCase::DoRun (void)
   const double noisePowerDbm = ktDbm + 10 * std::log10 (25 * 180000); // corresponds to kT*bandwidth in linear units
   const double ueNoiseFigureDb = 9.0; // default UE noise figure
   const double enbNoiseFigureDb = 5.0; // default eNB noise figure
+  double tolerance = (m_antennaGainDb != 0) ? abs (m_antennaGainDb)*0.001 : 0.001;
 
-  double calculatedSinrDbDl = -INFINITY;
-  if (testDlSinr->GetSinr () != 0)
+  // first test with SINR from LteTestSinrChunkProcessor
+  // this can only be done for not-too-bad SINR otherwise the measurement won't be available
+  double expectedSinrDl = enbTxPowerDbm + m_antennaGainDb - noisePowerDbm + ueNoiseFigureDb;
+  if (expectedSinrDl > 0)
     {
-      calculatedSinrDbDl = 10.0 * std::log10 (testDlSinr->GetSinr ()->operator[] (0));
+      double calculatedSinrDbDl = -INFINITY;
+      if (testDlSinr->GetSinr () != 0)
+        {
+          calculatedSinrDbDl = 10.0 * std::log10 (testDlSinr->GetSinr ()->operator[] (0));
+        }      
+      // remember that propagation loss is 0dB
+      double calculatedAntennaGainDbDl = - (enbTxPowerDbm - calculatedSinrDbDl - noisePowerDbm - ueNoiseFigureDb);      
+      NS_TEST_ASSERT_MSG_EQ_TOL (calculatedAntennaGainDbDl, m_antennaGainDb, tolerance, "Wrong DL antenna gain!");
     }
-  double calculatedSinrDbUl = -INFINITY;
-  if (testUlSinr->GetSinr () != 0)
-    {
-      calculatedSinrDbUl = 10.0 * std::log10 (testUlSinr->GetSinr ()->operator[] (0));
+  double expectedSinrUl = ueTxPowerDbm + m_antennaGainDb - noisePowerDbm + enbNoiseFigureDb;
+  if (expectedSinrUl > 0)
+    {      
+      double calculatedSinrDbUl = -INFINITY;
+      if (testUlSinr->GetSinr () != 0)
+        {
+          calculatedSinrDbUl = 10.0 * std::log10 (testUlSinr->GetSinr ()->operator[] (0));
+        }  
+      double calculatedAntennaGainDbUl = - (ueTxPowerDbm - calculatedSinrDbUl - noisePowerDbm - enbNoiseFigureDb);
+      NS_TEST_ASSERT_MSG_EQ_TOL (calculatedAntennaGainDbUl, m_antennaGainDb, tolerance, "Wrong UL antenna gain!");
     }
-  
-  // remember that propagation loss is 0dB
-  double calculatedAntennaGainDbDl = - (enbTxPowerDbm - calculatedSinrDbDl - noisePowerDbm - ueNoiseFigureDb);
-  double calculatedAntennaGainDbUl = - (ueTxPowerDbm - calculatedSinrDbUl - noisePowerDbm - enbNoiseFigureDb);
-  double tolerance = (m_antennaGainDb != 0) ? std::abs (m_antennaGainDb)*0.001 : 0.001;
-  NS_TEST_ASSERT_MSG_EQ_TOL (calculatedAntennaGainDbDl, m_antennaGainDb, tolerance, "Wrong DL antenna gain!");
-  NS_TEST_ASSERT_MSG_EQ_TOL (calculatedAntennaGainDbUl, m_antennaGainDb, tolerance, "Wrong UL antenna gain!");
+
+
+  // repeat the same tests with the LteGlobalPathlossDatabases
+  double measuredLossDl = dlPathlossDb.GetPathloss (1, 1);
+  NS_TEST_ASSERT_MSG_EQ_TOL (measuredLossDl, -m_antennaGainDb, tolerance, "Wrong DL loss!");
+  double measuredLossUl = ulPathlossDb.GetPathloss (1, 1);
+  NS_TEST_ASSERT_MSG_EQ_TOL (measuredLossUl, -m_antennaGainDb, tolerance, "Wrong UL loss!");
+
   
   Simulator::Destroy ();
 }

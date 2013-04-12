@@ -26,6 +26,7 @@
 #include "ns3/lte-module.h"
 #include "ns3/config-store.h"
 #include "ns3/radio-bearer-stats-calculator.h"
+#include "ns3/lte-global-pathloss-database.h"
 
 #include <iomanip>
 #include <string>
@@ -35,96 +36,8 @@
 using namespace ns3;
 
 
-NS_LOG_COMPONENT_DEFINE ("InterCellInterference");
+NS_LOG_COMPONENT_DEFINE ("LenaPathlossTraces");
 
-
-/**
- * Store the last pathloss value for each TX-RX pair. This is an
- * example of how the PathlossTrace (provided by some SpectrumChannel
- * implementations) work. 
- * 
- */
-class GlobalPathlossDatabase
-{
-public:
-
-  /** 
-   * update the pathloss value
-   * 
-   * \param context 
-   * \param txPhy the transmitting PHY
-   * \param rxPhy the receiving PHY
-   * \param lossDb the loss in dB
-   */
-  virtual void UpdatePathloss (std::string context, Ptr<SpectrumPhy> txPhy, Ptr<SpectrumPhy> rxPhy, double lossDb) = 0;
-
-  /** 
-   * print the stored pathloss values to standard output
-   * 
-   */
-  void Print ();
-
-protected:
-
-  //        CELL ID            IMSI     PATHLOSS
-  std::map<uint16_t, std::map<uint64_t, double> > m_pathlossMap;
-};
-
-void 
-GlobalPathlossDatabase::Print ()
-{
-  NS_LOG_FUNCTION (this);
-  for (std::map<uint16_t, std::map<uint64_t, double> >::const_iterator cellIdIt = m_pathlossMap.begin ();
-       cellIdIt != m_pathlossMap.end ();
-       ++cellIdIt)
-    {
-      for (std::map<uint64_t, double>::const_iterator imsiIt = cellIdIt->second.begin ();
-           imsiIt != cellIdIt->second.end ();
-           ++imsiIt)
-        {
-          std::cout << "CellId: " << cellIdIt->first << " IMSI: " << imsiIt->first << " pathloss: " << imsiIt->second << " dB" << std::endl;
-        }
-    }
-}
-
-class DownlinkGlobalPathlossDatabase : public GlobalPathlossDatabase
-{
-public:
-  // inherited from GlobalPathlossDatabase
-  virtual void UpdatePathloss (std::string context, Ptr<SpectrumPhy> txPhy, Ptr<SpectrumPhy> rxPhy, double lossDb);
-};
-
-void
-DownlinkGlobalPathlossDatabase::UpdatePathloss (std::string context, 
-                                        Ptr<SpectrumPhy> txPhy, 
-                                        Ptr<SpectrumPhy> rxPhy, 
-                                        double lossDb)
-{
-  NS_LOG_FUNCTION (this << lossDb);
-  uint16_t cellId = txPhy->GetDevice ()->GetObject<LteEnbNetDevice> ()->GetCellId ();
-  uint16_t imsi = rxPhy->GetDevice ()->GetObject<LteUeNetDevice> ()->GetImsi ();
-  m_pathlossMap[cellId][imsi] = lossDb;
-}
-
-
-class UplinkGlobalPathlossDatabase : public GlobalPathlossDatabase
-{
-public:
-  // inherited from GlobalPathlossDatabase
-  virtual void UpdatePathloss (std::string context, Ptr<SpectrumPhy> txPhy, Ptr<SpectrumPhy> rxPhy, double lossDb);
-};
-
-void
-UplinkGlobalPathlossDatabase::UpdatePathloss (std::string context, 
-                                        Ptr<SpectrumPhy> txPhy, 
-                                        Ptr<SpectrumPhy> rxPhy, 
-                                        double lossDb)
-{
-  NS_LOG_FUNCTION (this << lossDb);
-  uint16_t imsi = txPhy->GetDevice ()->GetObject<LteUeNetDevice> ()->GetImsi ();
-  uint16_t cellId = rxPhy->GetDevice ()->GetObject<LteEnbNetDevice> ()->GetCellId ();
-  m_pathlossMap[cellId][imsi] = lossDb;
-}
 
 
 int main (int argc, char *argv[])
@@ -226,8 +139,8 @@ int main (int argc, char *argv[])
   // Activate an EPS bearer on all UEs
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
-  lteHelper->ActivateEpsBearer (ueDevs1, bearer, EpcTft::Default ());
-  lteHelper->ActivateEpsBearer (ueDevs2, bearer, EpcTft::Default ());
+  lteHelper->ActivateDataRadioBearer (ueDevs1, bearer);
+  lteHelper->ActivateDataRadioBearer (ueDevs2, bearer);
 
   Simulator::Stop (Seconds (0.5));
 
@@ -242,15 +155,15 @@ int main (int argc, char *argv[])
 
 
 
-  // keep track of all path loss values in a global object
-  DownlinkGlobalPathlossDatabase dlPathlossDb;
-  UplinkGlobalPathlossDatabase ulPathlossDb;
+  // keep track of all path loss values in two centralized objects
+  DownlinkLteGlobalPathlossDatabase dlPathlossDb;
+  UplinkLteGlobalPathlossDatabase ulPathlossDb;
   // we rely on the fact that LteHelper creates the DL channel object first, then the UL channel object,
   // hence the former will have index 0 and the latter 1
   Config::Connect ("/ChannelList/0/PathLoss",
-                   MakeCallback (&DownlinkGlobalPathlossDatabase::UpdatePathloss, &dlPathlossDb));
+                   MakeCallback (&DownlinkLteGlobalPathlossDatabase::UpdatePathloss, &dlPathlossDb));
   Config::Connect ("/ChannelList/1/PathLoss",
-                    MakeCallback (&UplinkGlobalPathlossDatabase::UpdatePathloss, &ulPathlossDb)); 
+                    MakeCallback (&UplinkLteGlobalPathlossDatabase::UpdatePathloss, &ulPathlossDb)); 
 
   Simulator::Run ();
 

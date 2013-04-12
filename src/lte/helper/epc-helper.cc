@@ -1,6 +1,6 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2011 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
+ * Copyright (c) 2011-2012 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -17,6 +17,7 @@
  *
  * Author: Jaume Nin <jnin@cttc.es>
  *         Nicola Baldo <nbaldo@cttc.es>
+ *         Manuel Requena <manuel.requena@cttc.es>
  */
 
 #include <ns3/epc-helper.h>
@@ -32,6 +33,12 @@
 #include <ns3/epc-enb-application.h>
 #include <ns3/epc-sgw-pgw-application.h>
 
+#include <ns3/lte-enb-rrc.h>
+#include <ns3/epc-x2.h>
+#include <ns3/lte-enb-net-device.h>
+#include <ns3/lte-ue-net-device.h>
+#include <ns3/epc-mme.h>
+#include <ns3/epc-ue-nas.h>
 
 namespace ns3 {
 
@@ -39,8 +46,9 @@ NS_LOG_COMPONENT_DEFINE ("EpcHelper");
 
 NS_OBJECT_ENSURE_REGISTERED (EpcHelper);
 
+
 EpcHelper::EpcHelper () 
-  : m_gtpuUdpPort (2152) // fixed by the standard
+  : m_gtpuUdpPort (2152)  // fixed by the standard
 {
   NS_LOG_FUNCTION (this);
 
@@ -48,6 +56,8 @@ EpcHelper::EpcHelper ()
   // we use a /30 subnet which can hold exactly two addresses 
   // (remember that net broadcast and null address are not valid)
   m_s1uIpv4AddressHelper.SetBase ("10.0.0.0", "255.255.255.252");
+
+  m_x2Ipv4AddressHelper.SetBase ("12.0.0.0", "255.255.255.252");
 
   // we use a /8 net for all UEs
   m_ueAddressHelper.SetBase ("7.0.0.0", "255.0.0.0");
@@ -86,6 +96,10 @@ EpcHelper::EpcHelper ()
   // connect SgwPgwApplication and virtual net device for tunneling
   m_tunDevice->SetSendCallback (MakeCallback (&EpcSgwPgwApplication::RecvFromTunDevice, m_sgwPgwApp));
 
+  // Create MME and connect with SGW via S11 interface
+  m_mme = CreateObject<EpcMme> ();
+  m_mme->SetS11SapSgw (m_sgwPgwApp->GetS11SapSgw ());
+  m_sgwPgwApp->SetS11SapMme (m_mme->GetS11SapMme ());
 }
 
 EpcHelper::~EpcHelper ()
@@ -114,6 +128,21 @@ EpcHelper::GetTypeId (void)
                    UintegerValue (2000),
                    MakeUintegerAccessor (&EpcHelper::m_s1uLinkMtu),
                    MakeUintegerChecker<uint16_t> ())
+    .AddAttribute ("X2LinkDataRate",
+                   "The data rate to be used for the next X2 link to be created",
+                   DataRateValue (DataRate ("10Gb/s")),
+                   MakeDataRateAccessor (&EpcHelper::m_x2LinkDataRate),
+                   MakeDataRateChecker ())
+    .AddAttribute ("X2LinkDelay",
+                   "The delay to be used for the next X2 link to be created",
+                   TimeValue (Seconds (0)),
+                   MakeTimeAccessor (&EpcHelper::m_x2LinkDelay),
+                   MakeTimeChecker ())
+    .AddAttribute ("X2LinkMtu",
+                   "The MTU of the next X2 link to be created. Note that, because of some big X2 messages, you need a big MTU.",
+                   UintegerValue (3000),
+                   MakeUintegerAccessor (&EpcHelper::m_x2LinkMtu),
+                   MakeUintegerChecker<uint16_t> ())
   ;
   return tid;
 }
@@ -121,6 +150,7 @@ EpcHelper::GetTypeId (void)
 void
 EpcHelper::DoDispose ()
 {
+  NS_LOG_FUNCTION (this);
   m_tunDevice->SetSendCallback (MakeNullCallback<bool, Ptr<Packet>, const Address&, const Address&, uint16_t> ());
   m_tunDevice = 0;
   m_sgwPgwApp = 0;  
@@ -129,9 +159,9 @@ EpcHelper::DoDispose ()
 
 
 void
-EpcHelper::AddEnb (Ptr<Node> enb, Ptr<NetDevice> lteEnbNetDevice)
+EpcHelper::AddEnb (Ptr<Node> enb, Ptr<NetDevice> lteEnbNetDevice, uint16_t cellId)
 {
-  NS_LOG_FUNCTION (this << enb << lteEnbNetDevice);
+  NS_LOG_FUNCTION (this << enb << lteEnbNetDevice << cellId);
 
   NS_ASSERT (enb == lteEnbNetDevice->GetNode ());
 
@@ -186,54 +216,102 @@ EpcHelper::AddEnb (Ptr<Node> enb, Ptr<NetDevice> lteEnbNetDevice)
   
 
   NS_LOG_INFO ("create EpcEnbApplication");
-  Ptr<EpcEnbApplication> enbApp = CreateObject<EpcEnbApplication> (enbLteSocket, enbS1uSocket, sgwAddress);
+  Ptr<EpcEnbApplication> enbApp = CreateObject<EpcEnbApplication> (enbLteSocket, enbS1uSocket, enbAddress, sgwAddress, cellId);
   enb->AddApplication (enbApp);
   NS_ASSERT (enb->GetNApplications () == 1);
   NS_ASSERT_MSG (enb->GetApplication (0)->GetObject<EpcEnbApplication> () != 0, "cannot retrieve EpcEnbApplication");
   NS_LOG_LOGIC ("enb: " << enb << ", enb->GetApplication (0): " << enb->GetApplication (0));
+
   
+  NS_LOG_INFO ("Create EpcX2 entity");
+  Ptr<EpcX2> x2 = CreateObject<EpcX2> ();
+  enb->AggregateObject (x2);
+
+  NS_LOG_INFO ("connect S1-AP interface");
+  m_mme->AddEnb (cellId, enbAddress, enbApp->GetS1apSapEnb ());
+  m_sgwPgwApp->AddEnb (cellId, enbAddress, sgwAddress);
+  enbApp->SetS1apSapMme (m_mme->GetS1apSapMme ());
 }
 
 
 void
-EpcHelper::ActivateEpsBearer (Ptr<NetDevice> ueLteDevice, Ptr<NetDevice> enbLteDevice, Ptr<EpcTft> tft, uint16_t rnti, uint8_t lcid)
+EpcHelper::AddX2Interface (Ptr<Node> enb1, Ptr<Node> enb2)
 {
-  Ptr<Node> ueNode = ueLteDevice->GetNode (); 
+  NS_LOG_FUNCTION (this << enb1 << enb2);
+
+  // Create a point to point link between the two eNBs with
+  // the corresponding new NetDevices on each side
+  NodeContainer enbNodes;
+  enbNodes.Add (enb1);
+  enbNodes.Add (enb2);
+  PointToPointHelper p2ph;
+  p2ph.SetDeviceAttribute ("DataRate", DataRateValue (m_x2LinkDataRate));
+  p2ph.SetDeviceAttribute ("Mtu", UintegerValue (m_x2LinkMtu));
+  p2ph.SetChannelAttribute ("Delay", TimeValue (m_x2LinkDelay));
+  NetDeviceContainer enbDevices = p2ph.Install (enb1, enb2);
+  NS_LOG_LOGIC ("number of Ipv4 ifaces of the eNB #1 after installing p2p dev: " << enb1->GetObject<Ipv4> ()->GetNInterfaces ());
+  NS_LOG_LOGIC ("number of Ipv4 ifaces of the eNB #2 after installing p2p dev: " << enb2->GetObject<Ipv4> ()->GetNInterfaces ());
+  Ptr<NetDevice> enb1Dev = enbDevices.Get (0);
+  Ptr<NetDevice> enb2Dev = enbDevices.Get (1);
+
+  m_x2Ipv4AddressHelper.NewNetwork ();
+  Ipv4InterfaceContainer enbIpIfaces = m_x2Ipv4AddressHelper.Assign (enbDevices);
+  NS_LOG_LOGIC ("number of Ipv4 ifaces of the eNB #1 after assigning Ipv4 addr to X2 dev: " << enb1->GetObject<Ipv4> ()->GetNInterfaces ());
+  NS_LOG_LOGIC ("number of Ipv4 ifaces of the eNB #2 after assigning Ipv4 addr to X2 dev: " << enb2->GetObject<Ipv4> ()->GetNInterfaces ());
+
+  Ipv4Address enb1X2Address = enbIpIfaces.GetAddress (0);
+  Ipv4Address enb2X2Address = enbIpIfaces.GetAddress (1);
+
+  // Add X2 interface to both eNBs' X2 entities
+  Ptr<EpcX2> enb1X2 = enb1->GetObject<EpcX2> ();
+  Ptr<LteEnbNetDevice> enb1LteDev = enb1->GetDevice (0)->GetObject<LteEnbNetDevice> ();
+  uint16_t enb1CellId = enb1LteDev->GetCellId ();
+  NS_LOG_LOGIC ("LteEnbNetDevice #1 = " << enb1LteDev << " - CellId = " << enb1CellId);
+
+  Ptr<EpcX2> enb2X2 = enb2->GetObject<EpcX2> ();
+  Ptr<LteEnbNetDevice> enb2LteDev = enb2->GetDevice (0)->GetObject<LteEnbNetDevice> ();
+  uint16_t enb2CellId = enb2LteDev->GetCellId ();
+  NS_LOG_LOGIC ("LteEnbNetDevice #2 = " << enb2LteDev << " - CellId = " << enb2CellId);
+
+  enb1X2->AddX2Interface (enb1CellId, enb1X2Address, enb2CellId, enb2X2Address);
+  enb2X2->AddX2Interface (enb2CellId, enb2X2Address, enb1CellId, enb1X2Address);
+}
+
+
+void 
+EpcHelper::AddUe (Ptr<NetDevice> ueDevice, uint64_t imsi)
+{
+  NS_LOG_FUNCTION (this << imsi << ueDevice );
+  
+  m_mme->AddUe (imsi);
+  m_sgwPgwApp->AddUe (imsi);
+  
+
+}
+
+void
+EpcHelper::ActivateEpsBearer (Ptr<NetDevice> ueDevice, uint64_t imsi, Ptr<EpcTft> tft, EpsBearer bearer)
+{
+  NS_LOG_FUNCTION (this << ueDevice << imsi);
+
+  // we now retrieve the IPv4 address of the UE and notify it to the SGW;
+  // we couldn't do it before since address assignment is triggered by
+  // the user simulation program, rather than done by the EPC   
+  Ptr<Node> ueNode = ueDevice->GetNode (); 
   Ptr<Ipv4> ueIpv4 = ueNode->GetObject<Ipv4> ();
-  int32_t interface =  ueIpv4->GetInterfaceForDevice (ueLteDevice);
+  NS_ASSERT_MSG (ueIpv4 != 0, "UEs need to have IPv4 installed before EPS bearers can be activated");
+  int32_t interface =  ueIpv4->GetInterfaceForDevice (ueDevice);
   NS_ASSERT (interface >= 0);
   NS_ASSERT (ueIpv4->GetNAddresses (interface) == 1);
   Ipv4Address ueAddr = ueIpv4->GetAddress (interface, 0).GetLocal ();
-  NS_LOG_LOGIC (" UE IP address: " << ueAddr);
-
-  // NOTE: unlike ueLteDevice, enbLteDevice is NOT an Ipv4 enabled
-  // device. In fact we are interested in the S1 device of the eNB.
-  // We find it by relying on the assumption that the S1 device is the
-  // only Ipv4 enabled device of the eNB besides the localhost interface.
-  Ptr<Node> enbNode = enbLteDevice->GetNode (); 
-  NS_ASSERT (enbNode != 0);
-  Ptr<Ipv4> enbIpv4 = enbNode->GetObject<Ipv4> ();
-  NS_LOG_LOGIC ("number of Ipv4 ifaces of the eNB: " << enbIpv4->GetNInterfaces ());
-  // two ifaces total: loopback + the S1-U interface
-  NS_ASSERT (enbIpv4->GetNInterfaces () == 2); 
-  NS_ASSERT (ueIpv4->GetNAddresses (1) == 1);
-  // iface index 0 is loopback, index 1 is the S1-U interface
-  Ipv4Address enbAddr = enbIpv4->GetAddress (1, 0).GetLocal (); 
-  NS_LOG_LOGIC (" ENB IP address: " << enbAddr);
-
-  // setup S1 bearer at EpcSgwPgwApplication
-  uint32_t teid = m_sgwPgwApp->ActivateS1Bearer (ueAddr, enbAddr, tft);
-
-  // setup S1 bearer at EpcEnbApplication
-  NS_LOG_LOGIC ("enb: " << enbNode << ", enb->GetApplication (0): " << enbNode->GetApplication (0));
-  NS_ASSERT (enbNode->GetNApplications () == 1);
-  Ptr<Application> app =  enbNode->GetApplication (0);
-  NS_ASSERT (app != 0);
-  Ptr<EpcEnbApplication> epcEnbApp = app->GetObject<EpcEnbApplication> ();
-  NS_ASSERT (epcEnbApp != 0);
-  epcEnbApp->ErabSetupRequest (teid, rnti, lcid);
+  NS_LOG_LOGIC (" UE IP address: " << ueAddr);  m_sgwPgwApp->SetUeAddress (imsi, ueAddr);
   
-  
+  m_mme->AddBearer (imsi, tft, bearer);
+  Ptr<LteUeNetDevice> ueLteDevice = ueDevice->GetObject<LteUeNetDevice> ();
+  if (ueLteDevice)
+    {
+      ueLteDevice->GetNas ()->ActivateEpsBearer (bearer, tft);
+    }
 }
 
 

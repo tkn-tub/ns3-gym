@@ -31,9 +31,15 @@
 #include <ns3/object.h>
 #include <ns3/lte-common.h>
 #include <ns3/application.h>
+#include <ns3/eps-bearer.h>
+#include <ns3/epc-enb-s1-sap.h>
+#include <ns3/epc-s1ap-sap.h>
 #include <map>
 
 namespace ns3 {
+class EpcEnbS1SapUser;
+class EpcEnbS1SapProvider;
+
 
 /**
  * \ingroup lte
@@ -43,10 +49,18 @@ namespace ns3 {
 class EpcEnbApplication : public Application
 {
 
-public:
+  friend class MemberEpcEnbS1SapProvider<EpcEnbApplication>;
+  friend class MemberEpcS1apSapEnb<EpcEnbApplication>;
+
 
   // inherited from Object
+public:
   static TypeId GetTypeId (void);
+protected:
+  void DoDispose (void);
+
+public:
+  
   
 
   /** 
@@ -55,10 +69,11 @@ public:
    * \param lteSocket the socket to be used to send/receive packets to/from the LTE radio interface
    * \param s1uSocket the socket to be used to send/receive packets
    * to/from the S1-U interface connected with the SGW 
-   * \param sgwAddress the IPv4 address at which this eNB will be able to reach its SGW
-   * 
+   * \param enbS1uAddress the IPv4 address of the S1-U interface of this eNB
+   * \param sgwS1uAddress the IPv4 address at which this eNB will be able to reach its SGW for S1-U communications
+   * \param cellId the identifier of the enb
    */
-  EpcEnbApplication (Ptr<Socket> lteSocket, Ptr<Socket> s1uSocket, Ipv4Address sgwAddress);
+  EpcEnbApplication (Ptr<Socket> lteSocket, Ptr<Socket> s1uSocket, Ipv4Address enbS1uAddress, Ipv4Address sgwS1uAddress, uint16_t cellId);
 
   /**
    * Destructor
@@ -67,17 +82,32 @@ public:
   virtual ~EpcEnbApplication (void);
 
 
+  /** 
+   * Set the S1 SAP User
+   * 
+   * \param s the S1 SAP User
+   */
+  void SetS1SapUser (EpcEnbS1SapUser * s);
 
   /** 
-   * This method is triggered after the eNB received
-   * a S1-AP message of type E-RAB Setup Request by the MME and the RadioBearer has already been created
    * 
-   * \param teid the Tunnel Endpoint IDentifier of the S1-bearer to be setup.
-   * \param rnti the unique ID of the UE on this eNB
-   * \param lcid the Logical Channel ID identifying the Radio Bearer
+   * \return the S1 SAP Provider
    */
-  void ErabSetupRequest (uint32_t teid, uint16_t rnti, uint8_t lcid);
+  EpcEnbS1SapProvider* GetS1SapProvider ();
 
+  /** 
+   * Set the MME side of the S1-AP SAP 
+   * 
+   * \param s the MME side of the S1-AP SAP 
+   */
+  void SetS1apSapMme (EpcS1apSapMme * s);
+
+  /** 
+   * 
+   * \return the ENB side of the S1-AP SAP 
+   */
+  EpcS1apSapEnb* GetS1apSapEnb ();
+ 
   /** 
    * Method to be assigned to the recv callback of the LTE socket. It is called when the eNB receives a data packet from the radio interface that is to be forwarded to the SGW.
    * 
@@ -93,13 +123,39 @@ public:
    */
   void RecvFromS1uSocket (Ptr<Socket> socket);
 
+
+  struct EpsFlowId_t
+  {
+    uint16_t  m_rnti;
+    uint8_t   m_bid;
+
+  public:
+    EpsFlowId_t ();
+    EpsFlowId_t (const uint16_t a, const uint8_t b);
+
+    friend bool operator == (const EpsFlowId_t &a, const EpsFlowId_t &b);
+    friend bool operator < (const EpsFlowId_t &a, const EpsFlowId_t &b);
+  };
+
+
+private:
+
+  // ENB S1 SAP provider methods
+  void DoInitialUeMessage (uint64_t imsi, uint16_t rnti);
+  void DoPathSwitchRequest (EpcEnbS1SapProvider::PathSwitchRequestParameters params);
+  void DoUeContextRelease (uint16_t rnti);
+  
+  // S1-AP SAP ENB methods
+  void DoInitialContextSetupRequest (uint64_t mmeUeS1Id, uint16_t enbUeS1Id, std::list<EpcS1apSapEnb::ErabToBeSetupItem> erabToBeSetupList);
+  void DoPathSwitchRequestAcknowledge (uint64_t enbUeS1Id, uint64_t mmeUeS1Id, uint16_t cgi, std::list<EpcS1apSapEnb::ErabSwitchedInUplinkItem> erabToBeSwitchedInUplinkList);
+
   /** 
    * Send a packet to the UE via the LTE radio interface of the eNB
    * 
    * \param packet t
-   * \param rbid the Radio Bearer IDentifier
+   * \param bid the EPS Bearer IDentifier
    */
-  void SendToLteSocket (Ptr<Packet> packet, uint16_t rnti, uint8_t lcid);
+  void SendToLteSocket (Ptr<Packet> packet, uint16_t rnti, uint8_t bid);
 
 
   /** 
@@ -111,8 +167,15 @@ public:
   void SendToS1uSocket (Ptr<Packet> packet, uint32_t teid);
 
 
-private:
-
+  
+  /** 
+   * internal method used for the actual setup of the S1 Bearer
+   * 
+   * \param teid 
+   * \param rnti 
+   * \param bid 
+   */
+  void SetupS1Bearer (uint32_t teid, uint16_t rnti, uint8_t bid);
 
   /**
    * raw packet socket to send and receive the packets to and from the LTE radio interface
@@ -125,26 +188,61 @@ private:
   Ptr<Socket> m_s1uSocket;
 
   /**
+   * address of the eNB for S1-U communications
+   */
+  Ipv4Address m_enbS1uAddress;
+
+  /**
    * address of the SGW which terminates all S1-U tunnels
    */
-  Ipv4Address m_sgwAddress;
+  Ipv4Address m_sgwS1uAddress;
 
   /**
-   * map telling for each RadioBearer (RNTI,LCID) the corresponding  S1-U TEID
+   * map of maps telling for each RNTI and BID the corresponding  S1-U TEID
    * 
    */
-  std::map<LteFlowId_t, uint32_t> m_rbidTeidMap;  
+  std::map<uint16_t, std::map<uint8_t, uint32_t> > m_rbidTeidMap;  
 
   /**
-   * map telling for each S1-U TEID the corresponding RadioBearer (RNTI,LCID) 
+   * map telling for each S1-U TEID the corresponding RNTI,BID
    * 
    */
-  std::map<uint32_t, LteFlowId_t> m_teidRbidMap;
+  std::map<uint32_t, EpsFlowId_t> m_teidRbidMap;
  
   /**
    * UDP port to be used for GTP
    */
   uint16_t m_gtpuUdpPort;
+
+  /**
+   * Provider for the S1 SAP 
+   */
+  EpcEnbS1SapProvider* m_s1SapProvider;
+
+  /**
+   * User for the S1 SAP 
+   */
+  EpcEnbS1SapUser* m_s1SapUser;
+
+  /**
+   * MME side of the S1-AP SAP
+   * 
+   */
+  EpcS1apSapMme* m_s1apSapMme;
+
+  /**
+   * ENB side of the S1-AP SAP
+   * 
+   */
+  EpcS1apSapEnb* m_s1apSapEnb;
+
+  /**
+   * UE context info
+   * 
+   */
+  std::map<uint64_t, uint16_t> m_imsiRntiMap;
+
+  uint16_t m_cellId;
 
 };
 

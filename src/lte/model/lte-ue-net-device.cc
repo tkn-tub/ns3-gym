@@ -31,24 +31,24 @@
 #include "ns3/trace-source-accessor.h"
 #include "ns3/pointer.h"
 #include "ns3/enum.h"
-#include "lte-enb-net-device.h"
+#include "ns3/lte-enb-net-device.h"
 #include "lte-ue-net-device.h"
 #include "lte-ue-mac.h"
 #include "lte-ue-rrc.h"
 #include "ns3/ipv4-header.h"
 #include "ns3/ipv4.h"
 #include "lte-amc.h"
-#include <ns3/lte-ue-phy.h>
+#include "lte-ue-phy.h"
+#include "epc-ue-nas.h"
 #include <ns3/ipv4-l3-protocol.h>
 #include <ns3/log.h>
+#include "epc-tft.h"
 
 NS_LOG_COMPONENT_DEFINE ("LteUeNetDevice");
 
 namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED ( LteUeNetDevice);
-
-uint64_t LteUeNetDevice::m_imsiCounter = 0;
 
 
 TypeId LteUeNetDevice::GetTypeId (void)
@@ -91,14 +91,15 @@ LteUeNetDevice::LteUeNetDevice (void)
 }
 
 
-LteUeNetDevice::LteUeNetDevice (Ptr<Node> node, Ptr<LteUePhy> phy, Ptr<LteUeMac> mac, Ptr<LteUeRrc> rrc)
+  LteUeNetDevice::LteUeNetDevice (Ptr<Node> node, Ptr<LteUePhy> phy, Ptr<LteUeMac> mac, Ptr<LteUeRrc> rrc, Ptr<EpcUeNas> nas, uint64_t imsi)
 {
   NS_LOG_FUNCTION (this);
   m_phy = phy;
   m_mac = mac;
   m_rrc = rrc;
+  m_nas = nas;
   SetNode (node);
-  m_imsi = ++m_imsiCounter;
+  m_imsi = imsi;
 }
 
 LteUeNetDevice::~LteUeNetDevice (void)
@@ -117,6 +118,8 @@ LteUeNetDevice::DoDispose (void)
   m_rrc = 0;
   m_phy->Dispose ();
   m_phy = 0;
+  m_nas->Dispose ();
+  m_nas = 0;
   LteNetDevice::DoDispose ();
 }
 
@@ -124,12 +127,15 @@ void
 LteUeNetDevice::UpdateConfig (void)
 {
   NS_LOG_FUNCTION (this);
+  m_nas->SetImsi (m_imsi);
+  m_rrc->SetImsi (m_imsi);
+  
 }
 
 
 
 Ptr<LteUeMac>
-LteUeNetDevice::GetMac (void)
+LteUeNetDevice::GetMac (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_mac;
@@ -137,7 +143,7 @@ LteUeNetDevice::GetMac (void)
 
 
 Ptr<LteUeRrc>
-LteUeNetDevice::GetRrc (void)
+LteUeNetDevice::GetRrc (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_rrc;
@@ -151,14 +157,25 @@ LteUeNetDevice::GetPhy (void) const
   return m_phy;
 }
 
+Ptr<EpcUeNas>
+LteUeNetDevice::GetNas (void) const
+{
+  NS_LOG_FUNCTION (this);
+  return m_nas;
+}
+
+uint64_t
+LteUeNetDevice::GetImsi () const
+{
+  NS_LOG_FUNCTION (this);
+  return m_imsi;
+}
+
 void
 LteUeNetDevice::SetTargetEnb (Ptr<LteEnbNetDevice> enb)
 {
   NS_LOG_FUNCTION (this << enb);
   m_targetEnb = enb;
-
-  // should go through RRC and then through PHY SAP
-  m_phy->DoSetCellId (enb->GetCellId ());
 }
 
 
@@ -168,14 +185,6 @@ LteUeNetDevice::GetTargetEnb (void)
   NS_LOG_FUNCTION (this);
   return m_targetEnb;
 }
-
-uint64_t
-LteUeNetDevice::GetImsi ()
-{
-  NS_LOG_FUNCTION (this);
-  return m_imsi;
-}
-
 
 void 
 LteUeNetDevice::DoStart (void)
@@ -193,7 +202,7 @@ LteUeNetDevice::Send (Ptr<Packet> packet, const Address& dest, uint16_t protocol
   NS_LOG_FUNCTION (this << dest << protocolNumber);
   NS_ASSERT_MSG (protocolNumber == Ipv4L3Protocol::PROT_NUMBER, "unsupported protocol " << protocolNumber << ", only IPv4 is supported");
   
-  return m_rrc->Send (packet);
+  return m_nas->Send (packet);
 }
 
 

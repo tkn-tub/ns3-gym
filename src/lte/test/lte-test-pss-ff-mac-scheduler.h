@@ -36,12 +36,13 @@ namespace ns3 {
 * case, the UEs see the same SINR from the eNB; different test cases are 
 * implemented obtained by using different SINR values and different numbers of 
 * UEs. The test consists on checking that the obtained throughput performance 
-* is equal among users is consistent with the definition of priority set scheduling
+* is equal among users is consistent with the definition of token bank fair  
+* queue scheduling
 */
 class LenaPssFfMacSchedulerTestCase1 : public TestCase
 {
 public:
-  LenaPssFfMacSchedulerTestCase1 (uint16_t nUser, uint16_t nLc, uint16_t dist, double thrRefDl, double thrRefUl, uint16_t packetSize, uint16_t interval);
+  LenaPssFfMacSchedulerTestCase1 (uint16_t nUser, uint16_t nLc, uint16_t dist, double thrRefDl, double thrRefUl, uint16_t packetSize, uint16_t interval, bool  errorModelEnabled);
   virtual ~LenaPssFfMacSchedulerTestCase1 ();
 
 private:
@@ -54,13 +55,14 @@ private:
   uint16_t m_interval;    // ms
   double m_thrRefDl;
   double m_thrRefUl;
+  bool m_errorModelEnabled;
 };
 
 
 class LenaPssFfMacSchedulerTestCase2 : public TestCase
 {
 public:
-  LenaPssFfMacSchedulerTestCase2 (std::vector<uint16_t> dist, std::vector<uint32_t> estThrPssDl, std::vector<uint16_t> packetSize, uint16_t interval);
+  LenaPssFfMacSchedulerTestCase2 (std::vector<uint16_t> dist, std::vector<uint32_t> estThrPssDl, std::vector<uint16_t> packetSize, uint16_t interval, bool  errorModelEnabled);
   virtual ~LenaPssFfMacSchedulerTestCase2 ();
 
 private:
@@ -71,6 +73,7 @@ private:
   std::vector<uint16_t> m_packetSize;  // byte
   uint16_t m_interval;    // ms
   std::vector<uint32_t> m_estThrPssDl;
+  bool m_errorModelEnabled;
 };
 
 

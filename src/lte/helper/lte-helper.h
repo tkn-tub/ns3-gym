@@ -29,8 +29,12 @@
 #include <ns3/node.h>
 #include <ns3/node-container.h>
 #include <ns3/eps-bearer.h>
+#include <ns3/phy-stats-calculator.h>
+#include <ns3/phy-tx-stats-calculator.h>
+#include <ns3/phy-rx-stats-calculator.h>
 #include <ns3/mac-stats-calculator.h>
 #include <ns3/radio-bearer-stats-calculator.h>
+#include <ns3/radio-bearer-stats-connector.h>
 #include <ns3/epc-tft.h>
 #include <ns3/mobility-model.h>
 
@@ -178,7 +182,9 @@ public:
   void Attach (NetDeviceContainer ueDevices, Ptr<NetDevice> enbDevice);
 
   /**
-   * Attach a UE device to an eNB device
+   * Attach a UE to the network
+   *
+   * Attach a UE device to the network via a given eNB, and activate the default EPS bearer.
    *
    * \param ueDevice
    * \param enbDevice
@@ -186,7 +192,9 @@ public:
   void Attach (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice);
 
   /** 
-   * Attach each UE in a set to the closest (w.r.t. distance) eNB among those in a set
+   * Attach each UE in a set to the closest (w.r.t. distance) eNB among those in a set.
+   * 
+   * 
    * 
    * \param ueDevices the set of UEs
    * \param enbDevices the set of eNBs
@@ -195,6 +203,8 @@ public:
 
   /** 
    * Attach an UE ito the closest (w.r.t. distance) eNB among those in a set
+   * Will call LteHelper::Attach () passing to it the single eNB
+   * instance which resulted to be the closest to the UE 
    * 
    * \param ueDevice the UE
    * \param enbDevices the set of eNBs
@@ -202,30 +212,69 @@ public:
   void AttachToClosestEnb (Ptr<NetDevice> ueDevice, NetDeviceContainer enbDevices);
 
   /**
-   * Activate an EPS bearer on a given set of UE devices
+   * Activate a dedicated EPS bearer on a given set of UE devices
    *
    * \param ueDevices the set of UE devices
    * \param bearer the characteristics of the bearer to be activated
    * \param tft the Traffic Flow Template that identifies the traffic to go on this bearer
    */
-  void ActivateEpsBearer (NetDeviceContainer ueDevices, EpsBearer bearer, Ptr<EpcTft> tft);
+  void ActivateDedicatedEpsBearer (NetDeviceContainer ueDevices, EpsBearer bearer, Ptr<EpcTft> tft);
 
   /**
-   * Activate an EPS bearer on a given UE device
+   * Activate a dedicated EPS bearer on a given UE device
    *
    * \param ueDevices the set of UE devices
    * \param bearer the characteristics of the bearer to be activated
    * \param tft the Traffic Flow Template that identifies the traffic to go on this bearer
    */
-  void ActivateEpsBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer, Ptr<EpcTft> tft);
+  void ActivateDedicatedEpsBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer, Ptr<EpcTft> tft);
+
+
+  /**
+   * Create an X2 interface between all the eNBs in a given set
+   *
+   * \param enbNodes the set of eNB nodes
+   */
+  void AddX2Interface (NodeContainer enbNodes);
+
+  /**
+   * Create an X2 interface between two eNBs
+   *
+   * \param enbNode1 one eNB of the X2 interface
+   * \param enbNode2 the other eNB of the X2 interface
+   */
+  void AddX2Interface (Ptr<Node> enbNode1, Ptr<Node> enbNode2);
+
+  /**
+   * Trigger an X2-based handover of a UE between two eNBs
+   *
+   * \param hoTime when the Handover is initiated
+   * \param ueDev the UE that hands off
+   * \param enbDev1 source eNB, originally the UE is attached to this eNB
+   * \param enbDev2 target eNB, the UE is finally connected to this eNB
+   */
+  void HandoverRequest (Time hoTime, Ptr<NetDevice> ueDev, Ptr<NetDevice> sourceEnbDev, Ptr<NetDevice> targetEnbDev);
+
 
   /** 
+   * Call ActivateDataRadioBearer (ueDevice, bearer) for each UE
+   * device in a given set
    * 
-   * \param bearer the specification of an EPS bearer
-   * 
-   * \return the type of RLC that is to be created for the given EPS bearer
+   * \param ueDevices the set of UE devices
+   * \param bearer
    */
-  TypeId GetRlcType (EpsBearer bearer);
+  void ActivateDataRadioBearer (NetDeviceContainer ueDevices,  EpsBearer bearer);
+
+  /** 
+   * Activate a Data Radio Bearer for a simplified LTE-only simulation
+   * without EPC. This method will schedule the actual activation of
+   * the bearer so that it happens after the UE got connected.
+   * 
+   * \param ueDevice the device of the UE for which the radio bearer
+   * is to be activated
+   * \param bearer the characteristics of the bearer to be activated
+   */
+  void ActivateDataRadioBearer (Ptr<NetDevice> ueDevice,  EpsBearer bearer);
 
   /** 
    * 
@@ -246,9 +295,48 @@ public:
   void EnableLogComponents (void);
 
   /**
-   * Enables trace sinks for MAC, RLC and PDCP
+   * Enables trace sinks for PHY, MAC, RLC and PDCP. To make sure all nodes are
+   * traced, traces should be enabled once all UEs and eNodeBs are in place and
+   * connected, just before starting the simulation.
    */
   void EnableTraces (void);
+
+  /**
+   * Enable trace sinks for PHY layer
+   */
+  void EnablePhyTraces (void);
+
+
+
+  /**
+   * Enable trace sinks for DL PHY layer
+   */
+  void EnableDlPhyTraces (void);
+
+  /**
+   * Enable trace sinks for UL PHY layer
+   */
+  void EnableUlPhyTraces (void);
+  
+  /**
+   * Enable trace sinks for DL transmission PHY layer
+   */
+  void EnableDlTxPhyTraces (void);
+
+  /**
+   * Enable trace sinks for UL transmission PHY layer
+   */
+  void EnableUlTxPhyTraces (void);
+
+  /**
+   * Enable trace sinks for DL reception PHY layer
+   */
+  void EnableDlRxPhyTraces (void);
+
+  /**
+   * Enable trace sinks for UL reception PHY layer
+   */
+  void EnableUlRxPhyTraces (void);
 
   /**
    * Enable trace sinks for MAC layer
@@ -270,16 +358,6 @@ public:
    */
   void EnableRlcTraces (void);
 
-  /**
-   * Enable trace sinks for DL RLC layer
-   */
-  void EnableDlRlcTraces (void);
-
-  /**
-   * Enable trace sinks for UL MAC layer
-   */
-  void EnableUlRlcTraces (void);
-
   /** 
    * 
    * \return the RLC stats calculator object
@@ -290,16 +368,6 @@ public:
    * Enable trace sinks for PDCP layer
    */
   void EnablePdcpTraces (void);
-
-  /**
-   * Enable trace sinks for DL PDCP layer
-   */
-  void EnableDlPdcpTraces (void);
-
-  /**
-   * Enable trace sinks for UL MAC layer
-   */
-  void EnableUlPdcpTraces (void);
 
   /** 
    * 
@@ -333,6 +401,8 @@ private:
   Ptr<NetDevice> InstallSingleEnbDevice (Ptr<Node> n);
   Ptr<NetDevice> InstallSingleUeDevice (Ptr<Node> n);
 
+  void DoHandoverRequest (Ptr<NetDevice> ueDev, Ptr<NetDevice> sourceEnbDev, Ptr<NetDevice> targetEnbDev);
+
   Ptr<SpectrumChannel> m_downlinkChannel;
   Ptr<SpectrumChannel> m_uplinkChannel;
 
@@ -353,14 +423,20 @@ private:
   std::string m_fadingModelType;
   ObjectFactory m_fadingModelFactory;
 
+  Ptr<PhyStatsCalculator> m_phyStats;
+  Ptr<PhyTxStatsCalculator> m_phyTxStats;
+  Ptr<PhyRxStatsCalculator> m_phyRxStats;
   Ptr<MacStatsCalculator> m_macStats;
   Ptr<RadioBearerStatsCalculator> m_rlcStats;
   Ptr<RadioBearerStatsCalculator> m_pdcpStats;
-
-  enum LteEpsBearerToRlcMapping_t m_epsBearerToRlcMapping;
+  RadioBearerStatsConnector m_radioBearerStatsConnector;
 
   Ptr<EpcHelper> m_epcHelper;
 
+  uint64_t m_imsiCounter;
+  uint16_t m_cellIdCounter;
+
+  bool m_useIdealRrc;
 };
 
 

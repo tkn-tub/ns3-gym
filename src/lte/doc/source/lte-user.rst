@@ -48,10 +48,10 @@ Here is the minimal simulation program that is needed to do an LTE-only simulati
 
 #. Initial boilerplate::
        
-    #include "ns3/core-module.h"
-    #include "ns3/network-module.h"
-    #include "ns3/mobility-module.h"
-    #include "ns3/lte-module.h"   
+    #include <ns3/core-module.h>
+    #include <ns3/network-module.h>
+    #include <ns3/mobility-module.h>
+    #include <ns3/lte-module.h>   
 
     using namespace ns3;    
 
@@ -106,14 +106,13 @@ Here is the minimal simulation program that is needed to do an LTE-only simulati
 
       lteHelper->Attach (ueDevs, enbDevs.Get (0));
 
-#. Activate an EPS Bearer including the setup of the Radio Bearer between an eNB and its attached UE::
+#. Activate a data radio bearer between each UE and the eNB it is attached to::
 
       enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
       EpsBearer bearer (q);
-      lteHelper->ActivateEpsBearer (ueDevs, bearer);
+      lteHelper->ActivateDataRadioBearer (ueDevs, bearer);
 
-   In the current version of the ns-3 LTE model, the activation of an
-   EPS Bearer will also activate two saturation traffic generators for
+   this method will also activate two saturation traffic generators for
    that bearer, one in uplink and one in downlink. 
 
 #. Set the stop time::
@@ -245,10 +244,31 @@ three based on paper [FABokhari2009]_. In addition, current version of TBFQ does
 MBR and GBR. Another parameter in TBFQ is packet arrival rate. This parameter is calculated within scheduler and equals to the past
 average throughput which is used in PF scheduler.
 
+Many useful attributes of the LTE-EPC model will be described in the
+following subsections. Still, there are many attributes which are not
+explicitly mentioned in the design or user documentation, but which
+are clearly documented using the ns-3 attribute system. You can easily
+print a list of the attributes of a given object together with their
+description and default value passing ``--PrintAttributes=`` to a simulation
+program, like this::
+
+     ./waf --run lena-simple --command-template="%s --PrintAttributes=ns3::LteHelper"
+
+
+You can try also with other LTE and EPC objects, like this::
+   
+     ./waf --run lena-simple --command-template="%s --PrintAttributes=ns3::LteEnbNetDevice"
+     ./waf --run lena-simple --command-template="%s --PrintAttributes=ns3::LteEnbMac"
+     ./waf --run lena-simple --command-template="%s --PrintAttributes=ns3::LteEnbPhy"
+     ./waf --run lena-simple --command-template="%s --PrintAttributes=ns3::LteUePhy"
+     ./waf --run lena-simple --command-template="%s --PrintAttributes=ns3::EpcHelper"
+ 
+
+
 Simulation Output
 -----------------
 
-The ns-3 LTE model currently supports the output to file of MAC, RLC
+The ns-3 LTE model currently supports the output to file of PHY, MAC, RLC
 and PDCP level Key Performance Indicators (KPIs). You can enable it in
 the following way::
 
@@ -256,6 +276,7 @@ the following way::
       
       // configure all the simulation scenario here...
       
+      lteHelper->EnablePhyTraces ();
       lteHelper->EnableMacTraces ();
       lteHelper->EnableRlcTraces ();   
       lteHelper->EnablePdcpTraces ();   
@@ -343,6 +364,64 @@ while for uplink MAC KPIs the format is:
 The names of the files used for MAC KPI output can be customized via
 the ns-3 attributes ``ns3::MacStatsCalculator::DlOutputFilename`` and 
 ``ns3::MacStatsCalculator::UlOutputFilename``.
+
+PHY KPIs are distributed in seven different files, configurable through the attributes
+
+  1. ``ns3::PhyStatsCalculator::RsrpSinrFilename``
+  2. ``ns3::PhyStatsCalculator::UeSinrFilename``
+  3. ``ns3::PhyStatsCalculator::InterferenceFilename``
+  4. ``ns3::PhyStatsCalculator::DlTxOutputFilename``
+  5. ``ns3::PhyStatsCalculator::UlTxOutputFilename``
+  6. ``ns3::PhyStatsCalculator::DlRxOutputFilename``
+  7. ``ns3::PhyStatsCalculator::UlRxOutputFilename``
+
+
+In the RSRP/SINR file, the following content is available:
+
+  1. Simulation time in seconds at which the allocation is indicated by the scheduler
+  2. Cell ID
+  3. unique UE ID (IMSI)
+  4. RSRP
+  5. Linear average of the SINR peceived by the RBs
+
+The contents in the UE SINR file are:
+
+  1. Simulation time in seconds at which the allocation is indicated by the scheduler
+  2. Cell ID
+  3. unique UE ID (IMSI)
+  4. SINR in linear units for the UE
+
+In the interference filename the content is:
+
+  1. Simulation time in seconds at which the allocation is indicated by the scheduler
+  2. Cell ID
+  3. List of interference values per RB
+
+In UL and DL transmission files the parameters included are:
+
+  1. Simulation time in milliseconds
+  2. Cell ID
+  3. unique UE ID (IMSI)
+  4. RNTI
+  5. Layer of transmission
+  6. MCS
+  7. size of the TB
+  8. Redundancy version
+  9. New Data Indicator flag
+
+And finally, in UL and DL reception files the parameters included are:
+
+  1. Simulation time in milliseconds
+  2. Cell ID
+  3. unique UE ID (IMSI)
+  4. RNTI
+  5. Transmission Mode
+  6. Layer of transmission
+  7. MCS
+  8. size of the TB
+  9. Redundancy version
+  10. New Data Indicator flag
+  11. Correctness in the reception of the TB
 
 
 Fading Trace Usage
@@ -602,9 +681,12 @@ create one separate instance for each REM.
 Note that the REM generation is very demanding, in particular:
 
  * the run-time memory consumption is approximately 5KB per pixel. For example,
-   a REM with a resolution of 500x500 needs about 1.25 GB of memory, and
-   a resolution of 1000x1000 needs about 5 GB (too much for a
-   regular PC at the time of this writing).
+   a REM with a resolution of 500x500 would need about 1.25 GB of memory, and
+   a resolution of 1000x1000 would need needs about 5 GB (too much for a
+   regular PC at the time of this writing). To overcome this issue,
+   the REM is generated at successive steps, with each step evaluating
+   at most a number of pixels determined by the value of the 
+   the attribute ``RadioEnvironmentMapHelper::MaxPointsPerIteration``. 
  * if you generate a REM at the beginning of a simulation, it will
    slow down the execution of the rest of the simulation. If you want
    to generate a REM for a program and also use the same program to
@@ -640,6 +722,18 @@ As an example, here is the REM that can be obtained with the example program len
 
    REM obtained from the lena-dual-stripe example
 
+
+Note that the lena-dual-stripe example program also generate
+gnuplot-compatible output files containing information about the
+positions of the UE and eNB nodes as well as of the buildings,
+respectively in the files ``ues.txt``, ``enbs.txt`` and
+``buildings.txt``. These can be easily included when using
+gnuplot. For example, assuming that your gnuplot script (e.g., the
+minimal gnuplot script described above) is saved in a file named
+``my_plot_script``, running the following command would plot the
+location of UEs, eNBs and buildings on top of the REM:: 
+
+   gnuplot -p enbs.txt ues.txt buildings.txt my_plot_script
 
 
 
@@ -688,6 +782,13 @@ simulation, or an EPS bearer is created. The EPC helper will
 automatically take care of the necessary setup, such as S1 link
 creation and S1 bearer setup. All this will be done without the
 intervention of the user.
+
+Calling ``lteHelper->SetEpcHelper (epcHelper)`` enables the use of
+EPC, and has the side effect that any new ``LteEnbRrc`` that is
+created will have the ``EpsBearerToRlcMapping`` attribute set to
+``RLC_UM_ALWAYS`` instead of ``RLC_SM_ALWAYS`` if the latter was
+the default; otherwise, the attribute won't be changed (e.g., if
+you changed the default to ``RLC_AM_ALWAYS``, it won't be touched).
 
 It is to be noted that, upon construction, the EpcHelper will also
 create and configure the PGW node. Its configuration in particular
@@ -762,10 +863,24 @@ additionally do like this::
           ueStaticRouting->SetDefaultRoute (epcHelper->GetUeDefaultGatewayAddress (), 1);
         }
 
-The activation of bearers is done exactly in the same way as for an
-LTE-only simulation. Here is how to activate a default bearer::
+The activation of bearers is done in a slightly different way with
+respect to what done for an LTE-only simulation. First, the method
+ActivateDataRadioBearer is not to be used when the EPC is
+used. Second, when EPC is used, the default EPS bearer will be
+activated automatically when you call LteHelper::Attach (). Third, if
+you want to setup dedicated EPS bearer, you can do so using the method
+LteHelper::ActivateDedicatedEpsBearer (). This method takes as a
+parameter the Traffic Flow Template (TFT), which is a struct that
+identifies the type of traffic that will be mapped to the dedicated
+EPS bearer. Here is an example for how to setup a dedicated bearer
+for an application at the UE communicating on port 1234::
 
-      lteHelper->ActivateEpsBearer (ueLteDevs, EpsBearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT), EpcTft::Default ());
+      Ptr<EpcTft> tft = Create<EpcTft> ();
+      EpcTft::PacketFilter pf;
+      pf.localPortStart = 1234;
+      pf.localPortEnd = 1234;
+      tft->Add (pf);  
+      lteHelper->ActivateEpsBearer (ueLteDevs, EpsBearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT), pf);
 
 you can of course use custom EpsBearer and EpcTft configurations,
 please refer to the doxygen documentation for how to do it.
@@ -779,7 +894,8 @@ UdpClient application on the remote host, and a PacketSink on the LTE UE
 (using the same variable names of the previous code snippets) ::
 
        uint16_t dlPort = 1234;
-       PacketSinkHelper packetSinkHelper ("ns3::UdpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), dlPort));
+       PacketSinkHelper packetSinkHelper ("ns3::UdpSocketFactory", 
+                                          InetSocketAddress (Ipv4Address::GetAny (), dlPort));
        ApplicationContainer serverApps = packetSinkHelper.Install (ue);
        serverApps.Start (Seconds (0.01));
        UdpClientHelper client (ueIpIface.GetAddress (0), dlPort);
@@ -793,6 +909,136 @@ That's all! You can now start your simulation as usual::
 
 
 
+X2-based handover
+-----------------
+
+The execution of an X2-based handover between two eNBs requires the
+configuration of an X2 interface between the two eNBs. This needs to
+be done explicitly within the simulation program like this::
+
+     lteHelper->AddX2Interface (enbNodes);
+
+where ``enbNodes`` is a ``NodeContainer`` that contains the two eNBs
+between which the X2 interface is to be configured.
+
+Handover event needs to be scheduled explicitly within the simulation
+program, as the current RRC model does not support the automatic
+trigger of handover based on UE measurement. The ``LteHelper``
+provides a convenient method for the scheduling of a handover
+event. As an example, let us assume that ``ueLteDevs``` is a
+``NetDeviceContainer`` that contains the UE that is to be handed over,
+and that ``enbLteDevs`` is another ``NetDeviceContainer`` that
+contains the source and the target eNB. Then, an handover at 0.1s can be
+scheduled like this::
+
+     lteHelper->HandoverRequest (Seconds (0.100), 
+                                 ueLteDevs.Get (0), 
+                                 enbLteDevs.Get (0), 
+                                 enbLteDevs.Get (1));
+
+
+Note that the UE needs to be already connected to the source eNB,
+otherwise the simulation will terminate with an error message.
+
+The RRC model, in particular the ``LteEnbRrc`` and ``LteUeRrc``
+objects, provide some useful traces which can be hooked up to some
+custom functions so that they are called upon start and end of the
+handover execution phase at both the UE and eNB side. As an example,
+in your simulation program you can declare the following methods::
+
+
+  void 
+  NotifyHandoverStartUe (std::string context, 
+                         uint64_t imsi, 
+                         uint16_t cellid, 
+                         uint16_t rnti, 
+                         uint16_t targetCellId)
+  {
+    std::cout << context 
+              << " UE IMSI " << imsi 
+              << ": previously connected to CellId " << cellid 
+              << " with RNTI " << rnti 
+              << ", doing handover to CellId " << targetCellId 
+              << std::endl;
+  }
+
+  void 
+  NotifyHandoverEndOkUe (std::string context, 
+                         uint64_t imsi, 
+                         uint16_t cellid, 
+                         uint16_t rnti)
+  {
+    std::cout << context 
+              << " UE IMSI " << imsi 
+              << ": successful handover to CellId " << cellid 
+              << " with RNTI " << rnti 
+              << std::endl;
+  }
+
+  void 
+  NotifyHandoverStartEnb (std::string context, 
+                          uint64_t imsi, 
+                          uint16_t cellid, 
+                          uint16_t rnti, 
+                          uint16_t targetCellId)
+  {
+    std::cout << context 
+              << " eNB CellId " << cellid 
+              << ": start handover of UE with IMSI " << imsi 
+              << " RNTI " << rnti 
+              << " to CellId " << targetCellId 
+              << std::endl;
+  }
+
+  void 
+  NotifyHandoverEndOkEnb (std::string context, 
+                          uint64_t imsi, 
+                          uint16_t cellid, 
+                          uint16_t rnti)
+  {
+    std::cout << context 
+              << " eNB CellId " << cellid 
+              << ": completed handover of UE with IMSI " << imsi 
+              << " RNTI " << rnti 
+              << std::endl;
+  }
+
+
+Then, you can hook up these methods to the corresponding trace sources
+like this::
+
+  Config::Connect ("/NodeList/*/DeviceList/*/LteEnbRrc/HandoverStart",
+                   MakeCallback (&NotifyHandoverStartEnb));
+  Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/HandoverStart",
+                   MakeCallback (&NotifyHandoverStartUe));
+  Config::Connect ("/NodeList/*/DeviceList/*/LteEnbRrc/HandoverEndOk",
+                   MakeCallback (&NotifyHandoverEndOkEnb));
+  Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/HandoverEndOk",
+                   MakeCallback (&NotifyHandoverEndOkUe));
+
+
+The example program ``src/lte/examples/lena-x2-handover.cc``
+illustrates how the all above instructions can be integrated in a
+simulation program. You can run the program like this::
+
+   ./waf --run lena-x2-handover
+
+and it will output the messages printed by the custom handover trace
+hooks. In order additionally visualize some meaningful logging
+information, you can run the program like this::
+
+    NS_LOG=LteEnbRrc:LteUeRrc:EpcX2 ./waf --run lena-x2-handover
+
+
+Whether a target eNB will accept or not an incoming X2 HANDOVER
+REQUEST is controlled by the boolean attribute
+``LteEnbRrc::AdmitHandoverRequest`` (default: true). As an example,
+you can run the ``lena-x2-handover`` program setting the attribute to
+false in this way::
+
+   NS_LOG=EpcX2:LteEnbRrc ./waf --run lena-x2-handover 
+     --command="%s --ns3::LteEnbRrc::AdmitHandoverRequest=false"
+
 
 
 Examples Programs
@@ -805,9 +1051,19 @@ show how to simulate different LTE scenarios.
 Reference scenarios
 -------------------
 
-There is a vast amount of reference LTE simulation scenarios which can be found in the literature. Here we list some of them:
+There is a vast amount of reference LTE simulation scenarios which can
+be found in the literature. Here we list some of them: 
 
- * The dual stripe model [R4-092042]_, which is partially implemented in the example program ``src/lte/examples/lena-dual-stripe.cc``
+ * The dual stripe model [R4-092042]_, which is partially implemented
+   in the example program
+   ``src/lte/examples/lena-dual-stripe.cc``. This example program
+   features a lot of configurable parameters which can be customize by
+   changing the corresponding global variable. To get a list of all these
+   parameters, you can run this command::
+
+     ./waf --run lena-dual-stripe --command-template="%s --PrintGlobals"
+
+
 
  * The system simulation scenarios mentioned in section A.2 of [TR36814]_
 

@@ -42,7 +42,7 @@ using namespace ns3;
 class LenaTdMtFfMacSchedulerTestCase : public TestCase
 {
 public:
-  LenaTdMtFfMacSchedulerTestCase (uint16_t nUser, uint16_t nLc, uint16_t dist, double thrRefDl, double thrRefUl);
+  LenaTdMtFfMacSchedulerTestCase (uint16_t nUser, uint16_t nLc, uint16_t dist, double thrRefDl, double thrRefUl,bool errorModelEnabled);
   virtual ~LenaTdMtFfMacSchedulerTestCase ();
 
 private:
@@ -53,6 +53,7 @@ private:
   uint16_t m_dist;
   double m_thrRefDl;
   double m_thrRefUl;
+  bool m_errorModelEnabled;
 };
 
 class LenaTestTdMtFfMacSchedulerSuite : public TestSuite
