@@ -1824,6 +1824,41 @@ within the simulation program are supported (network-driven handovers
 based on UE measurements are planned only at a later stage).
 
 
+UE Measurements
++++++++++++++++
+
+
+UE RRC measurements support
+---------------------------
+
+The UE RRC entities provides support for UE measurements; in
+particular, it implements the procedures described in Section 5.5 of
+[TS36331]_, with the following simplifying assumptions:
+
+ - only E-UTRA intra-frequency measurements are supported;
+
+ - meausrement gaps are not needed to perform the measurements;
+
+ - only event-driven measurements are supported; the other type of
+ measurements are not supported;
+
+ - only the events A2 and A4 are to be supported; 
+
+ - time-to-trigger is not supported, i.e., a time-to-trigger value
+   equal to zero is always assumed;
+
+ - layer 3 filtering assumes that the periodicity of the measurements
+   reported by the PHY is equal to 200ms;
+
+ - in measurement reports, the reportQuantity is always assumed to be
+   "both", i.e., both RSRP and RSRQ are always reported, regardless of
+   the trigger quantity.
+
+
+eNB RRC measurement configuration
+---------------------------------
+
+
 Handover
 ++++++++
 
