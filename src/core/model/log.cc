@@ -281,7 +281,7 @@ LogComponent::GetLevelLabel(const enum LogLevel level) const
     }
   else if (level == LOG_WARN)
     {
-      return "WARN ";
+      return "WARN";
     }
   else if (level == LOG_DEBUG)
     {
@@ -289,7 +289,7 @@ LogComponent::GetLevelLabel(const enum LogLevel level) const
     }
   else if (level == LOG_INFO)
     {
-      return "INFO ";
+      return "INFO";
     }
   else if (level == LOG_FUNCTION)
     {
