@@ -457,13 +457,6 @@ LteX2HandoverMeasuresTestCase::DoRun ()
         }
     }
 
-  // TODO useful? to remove
-//   m_lteHelper->EnableRlcTraces ();
-//   Ptr<RadioBearerStatsCalculator> rlcStats = m_lteHelper->GetRlcStats ();
-//   rlcStats->SetAttribute ("StartTime", TimeValue (Seconds (0.101)));
-//   rlcStats->SetAttribute ("EpochDuration", TimeValue (Seconds (0.1)));
-//   m_lteHelper->EnablePdcpTraces ();
-
   Simulator::Stop (stopTime);
   Simulator::Run ();
   Simulator::Destroy ();
@@ -580,9 +573,7 @@ LteX2HandoverMeasuresTestCase::CheckStats (uint32_t ueIndex)
         }
       double expectedBytes = m_udpClientPktSize * (m_statsDuration.GetSeconds () / m_udpClientInterval.GetSeconds ());
 
-      NS_LOG_LOGIC ("expBytes = " << expectedBytes);
-      NS_LOG_LOGIC ("dlRx     = " << dlRx);
-      NS_LOG_LOGIC ("ulRx     = " << ulRx);
+      NS_LOG_LOGIC ("expBytes " << expectedBytes << " dlRx " << dlRx << " ulRx " << ulRx);
 
       //                                tolerance
       if (it->dlSink)
@@ -614,54 +605,74 @@ LteX2HandoverMeasuresTestSuite::LteX2HandoverMeasuresTestSuite ()
 
   std::string cel1name ("ho: 0 -> 1");
   std::list<CheckPointEvent> cel1;
-  cel1.push_back (CheckPointEvent (Seconds (1), Seconds (16.1), Seconds (1), 0, 0));
-  // HO is performed between seconds 16 and 17
-  cel1.push_back (CheckPointEvent (Seconds (17), Seconds (50), Seconds (1), 0, 1));
+  cel1.push_back (CheckPointEvent (Seconds (1), Seconds (15.1), Seconds (1), 0, 0));
+  // HO is performed between seconds 15 and 16
+  cel1.push_back (CheckPointEvent (Seconds (16), Seconds (50), Seconds (1), 0, 1));
 
   std::string cel2name ("ho: 0 -> 1 -> 2");
   std::list<CheckPointEvent> cel2;
   cel2.push_back (CheckPointEvent (Seconds (1), Seconds (16.1), Seconds (1), 0, 0));
   // First HO is performed between seconds 16 and 17
-  cel2.push_back (CheckPointEvent (Seconds (17), Seconds (26.1), Seconds (1), 0, 1));
-  // Second HO is performed between seconds 26 and 27
-  cel2.push_back (CheckPointEvent (Seconds (27), Seconds (50), Seconds (1), 0, 2));
+  cel2.push_back (CheckPointEvent (Seconds (17), Seconds (25.1), Seconds (1), 0, 1));
+  // Second HO is performed between seconds 25 and 26
+  cel2.push_back (CheckPointEvent (Seconds (26), Seconds (50), Seconds (1), 0, 2));
 
-  std::string cel3name ("ho: 0 -> 1 -> 2 -> 3");
+  std::string cel3name ("ho: 0 -> 1 -> 2 -> 3 (var 1)");
   std::list<CheckPointEvent> cel3;
   cel3.push_back (CheckPointEvent (Seconds (1), Seconds (16.1), Seconds (1),  0, 0));
   // First HO is performed between seconds 16 and 17
-  cel3.push_back (CheckPointEvent (Seconds (17), Seconds (26.1), Seconds (1), 0, 1));
-  // Second HO is performed between seconds 26 and 27
-  cel3.push_back (CheckPointEvent (Seconds (27), Seconds (36.1), Seconds (1), 0, 2));
-  // Third HO is performed between seconds 36 and 37
-  cel3.push_back (CheckPointEvent (Seconds (37), Seconds (50), Seconds (1), 0, 3));
+  cel3.push_back (CheckPointEvent (Seconds (17), Seconds (25.1), Seconds (1), 0, 1));
+  // Second HO is performed between seconds 25 and 26
+  cel3.push_back (CheckPointEvent (Seconds (26), Seconds (35.1), Seconds (1), 0, 2));
+  // Third HO is performed between seconds 35 and 36
+  cel3.push_back (CheckPointEvent (Seconds (36), Seconds (50), Seconds (1), 0, 3));
 
+  std::string cel4name ("ho: 0 -> 1 -> 2 -> 3 (var 2)");
+  std::list<CheckPointEvent> cel4;
+  cel4.push_back (CheckPointEvent (Seconds (1), Seconds (16.1), Seconds (1),  0, 0));
+  // First HO is performed between seconds 16 and 17
+  cel4.push_back (CheckPointEvent (Seconds (17), Seconds (26.1), Seconds (1), 0, 1));
+  // Second HO is performed between seconds 26 and 27
+  cel4.push_back (CheckPointEvent (Seconds (27), Seconds (36.1), Seconds (1), 0, 2));
+  // Third HO is performed between seconds 36 and 37
+  cel4.push_back (CheckPointEvent (Seconds (37), Seconds (50), Seconds (1), 0, 3));
+
+  int32_t useIdealRrc;
   std::vector<std::string> schedulers;
   schedulers.push_back ("ns3::RrFfMacScheduler");
-//   schedulers.push_back ("ns3::PfFfMacScheduler");
+  schedulers.push_back ("ns3::PfFfMacScheduler");
   for (std::vector<std::string>::iterator schedIt = schedulers.begin (); schedIt != schedulers.end (); ++schedIt)
     {
-      int32_t useIdealRrc = 0;
-//       for (int32_t useIdealRrc = 1; useIdealRrc >= 0; --useIdealRrc)
+      for (useIdealRrc = 1; useIdealRrc >= 0; --useIdealRrc)
         {
           //                                             nEnbs, nUes, nDBearers, celist, name, useUdp, sched, admitHo, idealRrc
-//           AddTestCase (new LteX2HandoverMeasuresTestCase (  2,   1,    0,      cel1, cel1name, true, *schedIt, true,  useIdealRrc));
-//           AddTestCase (new LteX2HandoverMeasuresTestCase (  2,   1,    1,      cel1, cel1name, true, *schedIt, true,  useIdealRrc));
-          AddTestCase (new LteX2HandoverMeasuresTestCase (  2,   1,    2,      cel1, cel1name, true, *schedIt, true,  useIdealRrc)); // CRASH in lte-enb-rrc.cc, line=1916
-    //           AddTestCase (new LteX2HandoverMeasuresTestCase (  2,   1,    0,      cel0, cel0name, true, *schedIt, false, useIdealRrc));
-    //           AddTestCase (new LteX2HandoverMeasuresTestCase (  2,   1,    1,      cel0, cel0name, true, *schedIt, false, useIdealRrc));
-    //           AddTestCase (new LteX2HandoverMeasuresTestCase (  2,   1,    2,      cel0, cel0name, true, *schedIt, false, useIdealRrc));
-//           AddTestCase (new LteX2HandoverMeasuresTestCase (  3,   1,    0,      cel2, cel2name, true, *schedIt, true,  useIdealRrc)); // CRASH in rr-ff-mac-scheduler.cc, line=1519
-//           AddTestCase (new LteX2HandoverMeasuresTestCase (  3,   1,    1,      cel2, cel2name, true, *schedIt, true,  useIdealRrc)); // CRASH msg="method unexpected in state HANDOVER_PREPARATION", file=../src/lte/model/lte-enb-rrc.cc, line=560
-//           AddTestCase (new LteX2HandoverMeasuresTestCase (  3,   1,    2,      cel2, cel2name, true, *schedIt, true,  useIdealRrc));
-    //           AddTestCase (new LteX2HandoverMeasuresTestCase (  3,   1,    0,      cel0, cel0name, true, *schedIt, false, useIdealRrc));
-    //           AddTestCase (new LteX2HandoverMeasuresTestCase (  3,   1,    1,      cel0, cel0name, true, *schedIt, false, useIdealRrc));
-    //           AddTestCase (new LteX2HandoverMeasuresTestCase (  3,   1,    2,      cel0, cel0name, true, *schedIt, false, useIdealRrc));
-//           AddTestCase (new LteX2HandoverMeasuresTestCase (  4,   1,    0,      cel3, cel3name, true, *schedIt, true,  useIdealRrc));
-//           AddTestCase (new LteX2HandoverMeasuresTestCase (  4,   1,    1,      cel3, cel3name, true, *schedIt, true,  useIdealRrc));
-//           AddTestCase (new LteX2HandoverMeasuresTestCase (  4,   1,    2,      cel3, cel3name, true, *schedIt, true,  useIdealRrc));
+          AddTestCase (new LteX2HandoverMeasuresTestCase (  2,   1,    0,      cel1, cel1name, true, *schedIt, true,  useIdealRrc));
+          AddTestCase (new LteX2HandoverMeasuresTestCase (  2,   1,    1,      cel1, cel1name, true, *schedIt, true,  useIdealRrc));
+          AddTestCase (new LteX2HandoverMeasuresTestCase (  2,   1,    2,      cel1, cel1name, true, *schedIt, true,  useIdealRrc));
+          AddTestCase (new LteX2HandoverMeasuresTestCase (  3,   1,    0,      cel2, cel2name, true, *schedIt, true,  useIdealRrc));
+          AddTestCase (new LteX2HandoverMeasuresTestCase (  3,   1,    1,      cel2, cel2name, true, *schedIt, true,  useIdealRrc));
+          AddTestCase (new LteX2HandoverMeasuresTestCase (  3,   1,    2,      cel2, cel2name, true, *schedIt, true,  useIdealRrc));
         }
+
+      useIdealRrc = 1;
+      AddTestCase (new LteX2HandoverMeasuresTestCase (  4,   1,    0,      cel3, cel3name, true, *schedIt, true,  useIdealRrc));
+      AddTestCase (new LteX2HandoverMeasuresTestCase (  4,   1,    1,      cel3, cel3name, true, *schedIt, true,  useIdealRrc));
+      AddTestCase (new LteX2HandoverMeasuresTestCase (  4,   1,    2,      cel3, cel3name, true, *schedIt, true,  useIdealRrc));
+
     }
+
+  useIdealRrc = 0;
+  std::string scheduler = "ns3::RrFfMacScheduler";
+  AddTestCase (new LteX2HandoverMeasuresTestCase (  4,   1,    0,      cel3, cel3name, true, scheduler, true,  useIdealRrc));
+  AddTestCase (new LteX2HandoverMeasuresTestCase (  4,   1,    1,      cel4, cel4name, true, scheduler, true,  useIdealRrc));
+  AddTestCase (new LteX2HandoverMeasuresTestCase (  4,   1,    2,      cel3, cel3name, true, scheduler, true,  useIdealRrc));
+
+  useIdealRrc = 0;
+  scheduler = "ns3::PfFfMacScheduler";
+  AddTestCase (new LteX2HandoverMeasuresTestCase (  4,   1,    0,      cel3, cel3name, true, scheduler, true,  useIdealRrc));
+  AddTestCase (new LteX2HandoverMeasuresTestCase (  4,   1,    1,      cel3, cel3name, true, scheduler, true,  useIdealRrc));
+  AddTestCase (new LteX2HandoverMeasuresTestCase (  4,   1,    2,      cel3, cel3name, true, scheduler, true,  useIdealRrc));
+
 }
 
 static LteX2HandoverMeasuresTestSuite g_lteX2HandoverMeasuresTestSuiteInstance;
