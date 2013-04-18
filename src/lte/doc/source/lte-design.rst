@@ -725,6 +725,53 @@ According to the considerations above, a model more flexible can be obtained con
 Therefore the PHY layer implements the MIMO model as the gain perceived by the receiver when using a MIMO scheme respect to the one obtained using SISO one. We note that, these gains referred to a case where there is no correlation between the antennas in MIMO scheme; therefore do not model degradation due to paths correlation.
 
 
+UE Measurements Model
++++++++++++++++++++++
+
+According to [TS36214]_, the UE has to report a set of measurements of the eNBs that the device is able to perceive: the the reference signal received power (RSRP) and the reference signal received quality (RSRQ). The former is a measure of the received power of a specific eNB, while the latter includes also channel interference and thermal noise.
+The UE has to report the measurements jointly with the physical cell identity (PCI) of the cell. Both measurements are performed during the reception of the RS, while the PCI is obtained with the Primary Synchronization Signal (PSS). The PSS is sent by the eNB each 5 subframes and in detail in the subframes 1 and 6.  According to [TS36133]_ sections 9.1.4 and 9.1.7, RSRP is reported by PHY layer in dBm while RSRQ in dB. The values of RSRP and RSRQ are provided to higher layers through the C-PHY SAP (by means of ``UeMeasurementsParameters`` struct) every 200 ms as defined in [TS36331]_. Layer 1 filtering is performed by averaging the all the measurements collected during the last window slot. The periodicity of reporting can be adjusted for research purposes by means of the ``LteUePhy::UeMeasurementsFilterPeriod`` attribute.
+
+The formulas of the RSRP and RSRQ can be simplified considering the assumption of the PHY layer that the channel is flat within the RB, the finest level of accuracy. In fact, this implies that all the REs within a RB have the same power, therefore:
+
+.. math::
+
+    RSRP = \frac{\sum_{k=0}^{K-1}\frac{\sum_{m=0}^{M-1}(P(k,m))}{M}}{K}
+         = \frac{\sum_{k=0}^{K-1}\frac{(M \times P(k))}{M}}{K}
+         = \frac{\sum_{k=0}^{K-1}(P(k))}{K}
+
+where :math:`P(k,m)` represents the signal power of the RE :math:`m` within the RB :math:`k`, which, as observed before, is constant within the same RB and equal to :math:`P(k)`, :math:`M` is the number of REs carrying the RS in a RB and :math:`K` is the number of RBs. It is to be noted that, :math:`P(k)`, and in general all the powers defined in this section, is obtained in the simulator from the PSD of the RB (which is the standard value returned from the ``LteInterferencePowerChunkProcessor``), in detail:
+
+.. math::
+
+    P(k) = PSD_{RB}(k)*180000/12
+
+where :math:`PSD_{RB}(k)` is the power spectral density of the RB :math:`k`, :math:`180000` is the bandwidth in Hz of the RB and :math:`12` is the number of REs per RB in an OFDM symbol.
+Similarly, for RSSI we have
+
+.. math::
+    RSSI = \sum_{k=0}^{K-1} \frac{\sum_{s=0}^{S-1} \sum_{r=0}^{R-1}( P(k,s,r) + I(k,s,r) + N(k,s,r))}{S}
+
+where :math:`S` is the number of OFDM symbols carrying RS in a RB and :math:`R` is the number of REs carrying a RS in a OFDM symbol (e.g., which is fixed to :math:`2`) while :math:`P(k,s,r)`, :math:`I(k,s,r)` and :math:`N(k,s,r)` represent respectively the perceived power of the serving cell, the interference power and the noise power of the RE :math:`r` in symbol :math:`s`. As for RSRP, the measurements within a RB are always equals among each others according to the PHY model; therefore :math:`P(k,s,r) = P(k)`, :math:`I(k,s,r) = I(k)` and :math:`N(k,s,r) = N(k)`, which implies that the RSSI can be calculated as:
+
+.. math::
+    RSSI = \sum_{k=0}^{K-1} \frac{S \times 2 \times ( P(k) + I(k) + N(k))}{S}
+         = \sum_{k=0}^{K-1} 2 \times ( P(k) + I(k) + N (k))
+
+Considering the constraints of the PHY reception chain implementation and, in order to maintain the level of computational complexity low, only RSRP can be directly obtained for all the cells. This is due to the fact that ``LteSpectrumPhy`` is designed for evaluating the interference only respect to the signal of the serving eNB. This implies that the PHY layer is optimized for managing the power signals information with the serving eNB as a reference. However, RSRP and RSRQ of neighbor cell :math:`i` can be extracted by the current information available of the serving cell :math:`j` as detailed in the following:
+
+.. math::
+
+    RSRP_i = \frac{\sum_{k=0}^{K-1}(P_i(k))}{K}
+
+    RSSI_i = RSSI_j = \sum_{k=0}^{K-1} 2 \times ( I_j(k) + P_j(k) + N_j(k) )
+
+    RSRQ_i^j = K \times RSRP_i / RSSI_j
+
+where :math:`RSRP_i` is the RSRP of the neighbor cell :math:`i`, :math:`P_i(k)` is the power perceived at any RE within the RB :math:`k`, :math:`K` is the total number of RBs, :math:`RSSI_i` is the RSSI of the neighbor cell :math:`i` when the UE is attached to cell  :math:`j` (which, since it is the sum of all the received powers, coincides with :math:`RSSI_j`), :math:`I_j(k)` is the total interference perceived by UE in any RE of RB :math:`k` when attached to cell :math:`i` (obtained by the ``LteInterferencePowerChunkProcessor``), :math:`P_j(k)` is the power perceived of cell :math:`j` in any RE of the RB :math:`k` and :math:`N` is the power noise spectral density in any RE. The sample is considered as valid in case of the RSRQ evaluated is above the ``LteUePhy::RsrqUeMeasThreshold`` attribute.
+
+
+
+
 ----------
 HARQ 
 ----------
@@ -768,64 +815,6 @@ Finally, the HARQ engine is always active both at MAC and PHY layer; however, in
    :align: center
 
    Interaction between HARQ and LTE protocol stack
-
-.. only:: latex
-
-   .. raw:: latex
-
-       \clearpage
-
-
----------------
-UE Measurements
----------------
-
-According to [TS36214]_, the UE has to report a set of measurements of the eNBs that the device is able to perceive: the the reference signal received power (RSRP) and the reference signal received quality (RSRQ). The former is a measure of the received power of a specific eNB, while the latter includes also channel interference and thermal noise.
-The UE has to report the measurements jointly with the physical cell identity (PCI) of the cell. Both measurements are performed during the reception of the RS, while the PCI is obtained with the Primary Synchronization Signal (PSS). The PSS is sent by the eNB each 5 subframes and in detail in the subframes 1 and 6.  According to [TS36133]_ sections 9.1.4 and 9.1.7, RSRP is reported by PHY layer in dBm while RSRQ in dB. The values of RSRP and RSRQ are provided to higher layers through the C-PHY SAP (by means of ``UeMeasurementsParameters`` struct) every 200 ms as defined in [TS36331]_. Layer 1 filtering is performed by averaging the all the measurements collected during the last window slot. The periodicity of reporting can be adjusted for research purposes by means of the ``LteUePhy::UeMeasurementsFilterPeriod`` attribute.
-
-The formulas of the RSRP and RSRQ can be simplified considering the assumption of the PHY layer that the channel is flat within the RB, the finest level of accuracy. In fact, this implies that all the REs within a RB have the same power, therefore:
-
-.. math::
-
-    RSRP = \frac{\sum_{k=0}^{K-1}\frac{\sum_{m=0}^{M-1}(P(k,m))}{M}}{K}
-         = \frac{\sum_{k=0}^{K-1}\frac{(M \times P(k))}{M}}{K}
-         = \frac{\sum_{k=0}^{K-1}(P(k))}{K}
-
-where :math:`P(k,m)` represents the signal power of the RE :math:`m` within the RB :math:`k`, which, as observed before, is constant within the same RB and equal to :math:`P(k)`, :math:`M` is the number of REs carrying the RS in a RB and :math:`K` is the number of RBs. It is to be noted that, :math:`P(k)`, and in general all the powers defined in this section, is obtained in the simulator from the PSD of the RB (which is the standard value returned from the ``LteInterferencePowerChunkProcessor``), in detail:
-
-.. math::
-
-    P(k) = PSD_{RB}(k)*180000/12
-
-where :math:`PSD_{RB}(k)` is the power spectral density of the RB :math:`k`, :math:`180000` is the bandwidth in Hz of the RB and :math:`12` is the number of REs per RB in an OFDM symbol.
-Similarly, for RSSI we have
-
-.. math::
-    RSSI = \sum_{k=0}^{K-1} \frac{\sum_{s=0}^{S-1} \sum_{r=0}^{R-1}( P(k,s,r) + I(k,s,r) + N(k,s,r))}{S}
-
-where :math:`S` is the number of OFDM symbols carrying RS in a RB and :math:`R` is the number of REs carrying a RS in a OFDM symbol (e.g., which is fixed to :math:`2`) while :math:`P(k,s,r)`, :math:`I(k,s,r)` and :math:`N(k,s,r)` represent respectively the perceived power of the serving cell, the interference power and the noise power of the RE :math:`r` in symbol :math:`s`. As for RSRP, the measurements within a RB are always equals among each others according to the PHY model; therefore :math:`P(k,s,r) = P(k)`, :math:`I(k,s,r) = I(k)` and :math:`N(k,s,r) = N(k)`, which implies that the RSSI can be calculated as:
-
-.. math::
-    RSSI = \sum_{k=0}^{K-1} \frac{S \times 2 \times ( P(k) + I(k) + N(k))}{S}
-         = \sum_{k=0}^{K-1} 2 \times ( P(k) + I(k) + N (k))
-
-Considering the constraints of the PHY reception chain implementation and, in order to maintain the level of computational complexity low, only RSRP can be directly obtained for all the cells. This is due to the fact that ``LteSpectrumPhy`` is designed for evaluating the interference only respect to the signal of the serving eNB. This implies that the PHY layer is optimized for managing the power signals information with the serving eNB as a reference. However, RSRP and RSRQ of neighbor cell :math:`i` can be extracted by the current information available of the serving cell :math:`j` as detailed in the following:
-
-.. math::
-
-    RSRP_i = \frac{\sum_{k=0}^{K-1}(P_i(k))}{K}
-
-    RSSI_i = RSSI_j = \sum_{k=0}^{K-1} 2 \times ( I_j(k) + P_j(k) + N_j(k) )
-
-    RSRQ_i^j = K \times RSRP_i / RSSI_j
-
-where :math:`RSRP_i` is the RSRP of the neighbor cell :math:`i`, :math:`P_i(k)` is the power perceived at any RE within the RB :math:`k`, :math:`K` is the total number of RBs, :math:`RSSI_i` is the RSSI of the neighbor cell :math:`i` when the UE is attached to cell  :math:`j` (which, since it is the sum of all the received powers, coincides with :math:`RSSI_j`), :math:`I_j(k)` is the total interference perceived by UE in any RE of RB :math:`k` when attached to cell :math:`i` (obtained by the ``LteInterferencePowerChunkProcessor``), :math:`P_j(k)` is the power perceived of cell :math:`j` in any RE of the RB :math:`k` and :math:`N` is the power noise spectral density in any RE. The sample is considered as valid in case of the RSRQ evaluated is above the ``LteUePhy::RsrqUeMeasThreshold`` attribute.
-
-.. only:: latex
-
-   .. raw:: latex
-
-       \clearpage
 
 
 ------
