@@ -739,7 +739,7 @@ The formulas of the RSRP and RSRQ can be simplified considering the assumption o
          = \frac{\sum_{k=0}^{K-1}\frac{(M \times P(k))}{M}}{K}
          = \frac{\sum_{k=0}^{K-1}(P(k))}{K}
 
-where :math:`P(k,m)` represents the signal power of the RE :math:`m` within the RB :math:`k`, which, as observed before, is constant within the same RB and equal to :math:`P(k)`, :math:`M` is the number of REs carrying the RS in a RB and :math:`K` is the number of RBs. It is to be noted that, :math:`P(k)`, and in general all the powers defined in this section, is obtained in the simulator from the PSD of the RB (which is the standard value returned from the ``LteInterferencePowerChunkProcessor``), in detail:
+where :math:`P(k,m)` represents the signal power of the RE :math:`m` within the RB :math:`k`, which, as observed before, is constant within the same RB and equal to :math:`P(k)`, :math:`M` is the number of REs carrying the RS in a RB and :math:`K` is the number of RBs. It is to be noted that :math:`P(k)`, and in general all the powers defined in this section, is obtained in the simulator from the PSD of the RB (which is provided by  the ``LteInterferencePowerChunkProcessor``), in detail:
 
 .. math::
 
@@ -751,13 +751,13 @@ Similarly, for RSSI we have
 .. math::
     RSSI = \sum_{k=0}^{K-1} \frac{\sum_{s=0}^{S-1} \sum_{r=0}^{R-1}( P(k,s,r) + I(k,s,r) + N(k,s,r))}{S}
 
-where :math:`S` is the number of OFDM symbols carrying RS in a RB and :math:`R` is the number of REs carrying a RS in a OFDM symbol (e.g., which is fixed to :math:`2`) while :math:`P(k,s,r)`, :math:`I(k,s,r)` and :math:`N(k,s,r)` represent respectively the perceived power of the serving cell, the interference power and the noise power of the RE :math:`r` in symbol :math:`s`. As for RSRP, the measurements within a RB are always equals among each others according to the PHY model; therefore :math:`P(k,s,r) = P(k)`, :math:`I(k,s,r) = I(k)` and :math:`N(k,s,r) = N(k)`, which implies that the RSSI can be calculated as:
+where :math:`S` is the number of OFDM symbols carrying RS in a RB and :math:`R` is the number of REs carrying a RS in a OFDM symbol (which is fixed to :math:`2`) while :math:`P(k,s,r)`, :math:`I(k,s,r)` and :math:`N(k,s,r)` represent respectively the perceived power of the serving cell, the interference power and the noise power of the RE :math:`r` in symbol :math:`s`. As for RSRP, the measurements within a RB are always equals among each others according to the PHY model; therefore :math:`P(k,s,r) = P(k)`, :math:`I(k,s,r) = I(k)` and :math:`N(k,s,r) = N(k)`, which implies that the RSSI can be calculated as:
 
 .. math::
     RSSI = \sum_{k=0}^{K-1} \frac{S \times 2 \times ( P(k) + I(k) + N(k))}{S}
          = \sum_{k=0}^{K-1} 2 \times ( P(k) + I(k) + N (k))
 
-Considering the constraints of the PHY reception chain implementation and, in order to maintain the level of computational complexity low, only RSRP can be directly obtained for all the cells. This is due to the fact that ``LteSpectrumPhy`` is designed for evaluating the interference only respect to the signal of the serving eNB. This implies that the PHY layer is optimized for managing the power signals information with the serving eNB as a reference. However, RSRP and RSRQ of neighbor cell :math:`i` can be extracted by the current information available of the serving cell :math:`j` as detailed in the following:
+Considering the constraints of the PHY reception chain implementation, and in order to maintain the level of computational complexity low, only RSRP can be directly obtained for all the cells. This is due to the fact that ``LteSpectrumPhy`` is designed for evaluating the interference only respect to the signal of the serving eNB. This implies that the PHY layer is optimized for managing the power signals information with the serving eNB as a reference. However, RSRP and RSRQ of neighbor cell :math:`i` can be extracted by the current information available of the serving cell :math:`j` as detailed in the following:
 
 .. math::
 
