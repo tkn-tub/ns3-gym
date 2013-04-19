@@ -153,11 +153,11 @@ In some very rare cases, developers might need to modify or understand
 how the context (node id) of the first event is set to that of its
 associated node. This is accomplished by the NodeList class: whenever a
 new node is created, the NodeList class uses ScheduleWithContext to
-schedule a 'start' event for this node. The 'start' event thus executes
+schedule a 'initialize' event for this node. The 'initialize' event thus executes
 with a context set to that of the node id and can use the normal variety
-of Schedule methods. It invokes the Node::Start method which propagates
-the 'start' event by calling the DoStart method for each object
-associated with the node. The DoStart method overridden in some of these
+of Schedule methods. It invokes the Node::Initialize method which propagates
+the 'initialize' event by calling the DoInitialize method for each object
+associated with the node. The DoInitialize method overridden in some of these
 objects (most notably in the Application base class) will schedule some
 events (most notably Application::StartApplication) which will in turn
 scheduling traffic generation events which will in turn schedule
@@ -165,8 +165,8 @@ network-level events.
 
 Notes:
 
-* Users need to be careful to propagate DoStart methods across objects
-  by calling Start explicitely on their member objects
+* Users need to be careful to propagate DoInitialize methods across objects
+  by calling Initialize explicitely on their member objects
 * The context id associated with each ScheduleWithContext method has
   other uses beyond logging: it is used by an experimental branch of ns-3
   to perform parallel simulation on multicore systems using
