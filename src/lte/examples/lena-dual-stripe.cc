@@ -630,8 +630,18 @@ main (int argc, char *argv[])
       // (e.g., buffer overflows due to packet transmissions happening
       // exactly at the same time) 
       Ptr<UniformRandomVariable> startTimeSeconds = CreateObject<UniformRandomVariable> ();
-      startTimeSeconds->SetAttribute ("Min", DoubleValue (0));
-      startTimeSeconds->SetAttribute ("Max", DoubleValue (0.010));
+      if (useUdp)
+        {      
+          startTimeSeconds->SetAttribute ("Min", DoubleValue (0));
+          startTimeSeconds->SetAttribute ("Max", DoubleValue (0.010));
+        }
+      else
+        {
+          // TCP needs to be started late enough so that all UEs are connected
+          // otherwise TCP SYN packets will get lost
+          startTimeSeconds->SetAttribute ("Min", DoubleValue (0.100));
+          startTimeSeconds->SetAttribute ("Max", DoubleValue (0.110));
+        }
 
      
       for (uint32_t u = 0; u < ues.GetN (); ++u)
