@@ -1,6 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2007 University of Washington
+ * Copyright (c) 2013 ResiliNets, ITTC, University of Kansas 
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -50,6 +51,13 @@
  * (http://daedalus.cs.berkeley.edu)
  *
  * This code has been ported from ns-2 (queue/errmodel.{cc,h}
+ */
+
+/* BurstErrorModel additions
+ *
+ * Author: Truc Anh N. Nguyen   <annguyen@ittc.ku.edu>
+ *         ResiliNets Research Group   http://wiki.ittc.ku.edu/resilinets
+ *         James P.G. Sterbenz <jpgs@ittc.ku.edu>, director 
  */
 
 #include <cmath>
@@ -271,6 +279,135 @@ RateErrorModel::DoReset (void)
   /* re-initialize any state; no-op for now */ 
 }
 
+
+//
+// BurstErrorModel
+//
+
+NS_OBJECT_ENSURE_REGISTERED (BurstErrorModel);
+
+TypeId BurstErrorModel::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::BurstErrorModel")
+    .SetParent<ErrorModel> ()
+    .AddConstructor<BurstErrorModel> ()
+    .AddAttribute ("ErrorRate", "The burst error event.",
+                   DoubleValue (0.0),
+                   MakeDoubleAccessor (&BurstErrorModel::m_burstRate),
+                   MakeDoubleChecker<double> ())
+    .AddAttribute ("BurstStart", "The decision variable attached to this error model.",
+                   StringValue ("ns3::UniformRandomVariable[Min=0.0|Max=1.0]"),
+                   MakePointerAccessor (&BurstErrorModel::m_burstStart),
+                   MakePointerChecker<RandomVariableStream> ())
+    .AddAttribute ("BurstSize", "The number of packets being corrupted at one drop.",
+                   StringValue ("ns3::UniformRandomVariable[Min=1|Max=4]"),
+                   MakePointerAccessor (&BurstErrorModel::m_burstSize),
+                   MakePointerChecker<RandomVariableStream> ())
+  ;
+  return tid;
+}
+
+
+BurstErrorModel::BurstErrorModel () : m_counter (0), m_currentBurstSz (0)
+{
+
+}
+
+BurstErrorModel::~BurstErrorModel ()
+{
+  NS_LOG_FUNCTION (this);
+}
+
+double
+BurstErrorModel::GetBurstRate (void) const
+{
+  NS_LOG_FUNCTION (this);
+  return m_burstRate;
+}
+
+void
+BurstErrorModel::SetBurstRate (double rate)
+{
+  NS_LOG_FUNCTION (this << rate);
+  m_burstRate = rate;
+}
+
+void
+BurstErrorModel::SetRandomVariable (Ptr<RandomVariableStream> ranVar)
+{
+  NS_LOG_FUNCTION (this << ranVar);
+  m_burstStart = ranVar;
+}
+
+void
+BurstErrorModel::SetRandomBurstSize(Ptr<RandomVariableStream> burstSz)
+{
+  NS_LOG_FUNCTION (this << burstSz);
+  m_burstSize = burstSz;
+}
+
+int64_t
+BurstErrorModel::AssignStreams (int64_t stream)
+{
+  NS_LOG_FUNCTION (this << stream);
+  m_burstStart->SetStream (stream);
+  m_burstSize->SetStream(stream);
+  return 1;
+}
+
+bool
+BurstErrorModel::DoCorrupt (Ptr<Packet> p)
+{
+  NS_LOG_FUNCTION (this);
+  if (!IsEnabled ())
+    {
+      return false;
+    }
+  double ranVar = m_burstStart ->GetValue();
+
+  if (ranVar < m_burstRate)
+    {
+      // get a new burst size for the new error event
+      m_currentBurstSz = m_burstSize->GetInteger();     
+      NS_LOG_DEBUG ("new burst size selected: " << m_currentBurstSz);
+      if (m_currentBurstSz == 0)                        
+        {
+          NS_LOG_WARN ("Burst size == 0; shouldn't happen");
+          return false;
+        }
+      m_counter = 1;  // start counting dropped packets
+      return true;    // drop this packet
+    }
+  else
+    {
+      // not a burst error event
+      if (m_counter < m_currentBurstSz)
+        {
+         // check to see if all the packets (determined by the last 
+         // generated m_currentBurstSz) have been dropped. 
+         // If not, drop 1 more packet
+          m_counter++;                                 
+          return true;
+        }
+      else
+        {
+          // all packets in the last error event have been dropped
+          // and there is no new error event, so do not drop the packet
+          return false;  // no error event
+        }
+    }
+}
+
+void
+BurstErrorModel::DoReset (void)
+{
+  NS_LOG_FUNCTION (this);
+  m_counter = 0;
+  m_currentBurstSz = 0;
+
+}
+
+
 //
 // ListErrorModel
 //
@@ -410,3 +547,4 @@ ReceiveListErrorModel::DoReset (void)
 
 
 } // namespace ns3
+

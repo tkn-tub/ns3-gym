@@ -134,3 +134,20 @@ The ``error-model`` unit test suite provides a single test case of
 of a particular combination of ErrorRate and ErrorUnit for the 
 ``RateErrorModel`` applied to a ``SimpleNetDevice``. 
 
+Acknowledgements
+****************
+
+The basic ErrorModel, RateErrorModel, and ListErrorModel classes were ported
+from |ns2| to |ns3| in 2007.  The ReceiveListErrorModel was added at that
+time.
+
+The burst error model is due to Truc Anh N. Nguyen at the University of
+Kansas (James P.G. Sterbenz <jpgs@ittc.ku.edu>, director, ResiliNets 
+Research Group (http://wiki.ittc.ku.edu/resilinets), Information and 
+Telecommunication Technology Center (ITTC) and Department of Electrical 
+Engineering and Computer Science, The University of Kansas Lawrence, KS USA).
+Work supported in part by NSF FIND (Future Internet Design) Program
+under grant CNS-0626918 (Postmodern Internet Architecture),
+NSF grant CNS-1050226 (Multilayer Network Resilience Analysis and 
+Experimentation on GENI), US Department of Defense (DoD), and ITTC at 
+The University of Kansas.

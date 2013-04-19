@@ -57,16 +57,21 @@ main (int argc, char *argv[])
 
 
   // Set a few attributes
-  Config::SetDefault ("ns3::RateErrorModel::ErrorRate", DoubleValue (0.01));
+  Config::SetDefault ("ns3::RateErrorModel::ErrorRate", DoubleValue (0.001));
   Config::SetDefault ("ns3::RateErrorModel::ErrorUnit", StringValue ("ERROR_UNIT_PACKET"));
+
+  Config::SetDefault ("ns3::BurstErrorModel::ErrorRate", DoubleValue (0.01));
+  Config::SetDefault ("ns3::BurstErrorModel::BurstSize", StringValue ("ns3::UniformRandomVariable[Min=1|Max=3]"));
 
   Config::SetDefault ("ns3::OnOffApplication::PacketSize", UintegerValue (210));
   Config::SetDefault ("ns3::OnOffApplication::DataRate", DataRateValue (DataRate ("448kb/s")));
 
+  std::string errorModelType = "ns3::RateErrorModel";
 
   // Allow the user to override any of the defaults and the above
   // Bind()s at run-time, via command-line arguments
   CommandLine cmd;
+  cmd.AddValue("errorModelType", "TypeId of the error model to use", errorModelType);
   cmd.Parse (argc, argv);
 
   // Here, we will explicitly create four nodes.  In more sophisticated
@@ -146,9 +151,11 @@ main (int argc, char *argv[])
   // Error model
   //
   // Create an ErrorModel based on the implementation (constructor)
-  // specified by the default classId
-  Ptr<RateErrorModel> em = CreateObject<RateErrorModel> ();
-  em->SetAttribute ("ErrorRate", DoubleValue (0.001));
+  // specified by the default TypeId
+ 
+  ObjectFactory factory;
+  factory.SetTypeId (errorModelType);
+  Ptr<ErrorModel> em = factory.Create<ErrorModel> ();
   d3d2.Get (0)->SetAttribute ("ReceiveErrorModel", PointerValue (em));
 
   // Now, let's use the ListErrorModel and explicitly force a loss
