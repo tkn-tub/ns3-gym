@@ -123,7 +123,7 @@ Node::AddDevice (Ptr<NetDevice> device)
   device->SetIfIndex (index);
   device->SetReceiveCallback (MakeCallback (&Node::NonPromiscReceiveFromDevice, this));
   Simulator::ScheduleWithContext (GetId (), Seconds (0.0), 
-                                  &NetDevice::Start, device);
+                                  &NetDevice::Initialize, device);
   NotifyDeviceAdded (device);
   return index;
 }
@@ -150,7 +150,7 @@ Node::AddApplication (Ptr<Application> application)
   m_applications.push_back (application);
   application->SetNode (this);
   Simulator::ScheduleWithContext (GetId (), Seconds (0.0), 
-                                  &Application::Start, application);
+                                  &Application::Initialize, application);
   return index;
 }
 Ptr<Application> 
@@ -193,23 +193,23 @@ Node::DoDispose ()
   Object::DoDispose ();
 }
 void 
-Node::DoStart (void)
+Node::DoInitialize (void)
 {
   NS_LOG_FUNCTION (this);
   for (std::vector<Ptr<NetDevice> >::iterator i = m_devices.begin ();
        i != m_devices.end (); i++)
     {
       Ptr<NetDevice> device = *i;
-      device->Start ();
+      device->Initialize ();
     }
   for (std::vector<Ptr<Application> >::iterator i = m_applications.begin ();
        i != m_applications.end (); i++)
     {
       Ptr<Application> application = *i;
-      application->Start ();
+      application->Initialize ();
     }
 
-  Object::DoStart ();
+  Object::DoInitialize ();
 }
 
 void

@@ -287,7 +287,7 @@ RvBatteryModel::GetNumOfTerms (void) const
  */
 
 void
-RvBatteryModel::DoStart (void)
+RvBatteryModel::DoInitialize (void)
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_DEBUG ("RvBatteryModel:Starting battery level update!");

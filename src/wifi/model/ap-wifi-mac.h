@@ -121,7 +121,7 @@ private:
   void SetBeaconGeneration (bool enable);
   bool GetBeaconGeneration (void) const;
   virtual void DoDispose (void);
-  virtual void DoStart (void);
+  virtual void DoInitialize (void);
 
   Ptr<DcaTxop> m_beaconDca;
   Time m_beaconInterval;

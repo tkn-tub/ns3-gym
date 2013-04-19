@@ -246,13 +246,13 @@ LteEnbNetDevice::SetUlEarfcn (uint16_t earfcn)
 
 
 void 
-LteEnbNetDevice::DoStart (void)
+LteEnbNetDevice::DoInitialize (void)
 {
 
   UpdateConfig ();
-  m_phy->Start ();
-  m_mac->Start ();
-  m_rrc->Start ();
+  m_phy->Initialize ();
+  m_mac->Initialize ();
+  m_rrc->Initialize ();
 }
 
 

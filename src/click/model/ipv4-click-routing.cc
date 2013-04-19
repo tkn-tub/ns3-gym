@@ -76,7 +76,7 @@ Ipv4ClickRouting::~Ipv4ClickRouting ()
 }
 
 void
-Ipv4ClickRouting::DoStart ()
+Ipv4ClickRouting::DoInitialize ()
 {
   uint32_t id = m_ipv4->GetObject<Node> ()->GetId ();
 

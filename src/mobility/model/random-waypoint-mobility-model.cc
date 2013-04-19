@@ -73,19 +73,19 @@ RandomWaypointMobilityModel::BeginWalk (void)
   Time travelDelay = Seconds (CalculateDistance (destination, m_current) / speed);
   m_event.Cancel ();
   m_event = Simulator::Schedule (travelDelay,
-                                 &RandomWaypointMobilityModel::DoStartPrivate, this);
+                                 &RandomWaypointMobilityModel::DoInitializePrivate, this);
   NotifyCourseChange ();
 }
 
 void
-RandomWaypointMobilityModel::DoStart (void)
+RandomWaypointMobilityModel::DoInitialize (void)
 {
-  DoStartPrivate ();
-  MobilityModel::DoStart ();
+  DoInitializePrivate ();
+  MobilityModel::DoInitialize ();
 }
 
 void
-RandomWaypointMobilityModel::DoStartPrivate (void)
+RandomWaypointMobilityModel::DoInitializePrivate (void)
 {
   m_helper.Update ();
   m_helper.Pause ();
@@ -105,7 +105,7 @@ RandomWaypointMobilityModel::DoSetPosition (const Vector &position)
 {
   m_helper.SetPosition (position);
   Simulator::Remove (m_event);
-  m_event = Simulator::ScheduleNow (&RandomWaypointMobilityModel::DoStartPrivate, this);
+  m_event = Simulator::ScheduleNow (&RandomWaypointMobilityModel::DoInitializePrivate, this);
 }
 Vector
 RandomWaypointMobilityModel::DoGetVelocity (void) const

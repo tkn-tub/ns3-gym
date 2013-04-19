@@ -229,12 +229,12 @@ LteEnbPhy::DoDispose ()
 }
 
 void
-LteEnbPhy::DoStart ()
+LteEnbPhy::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
   Ptr<SpectrumValue> noisePsd = LteSpectrumValueHelper::CreateNoisePowerSpectralDensity (m_ulEarfcn, m_ulBandwidth, m_noiseFigure);
   m_uplinkSpectrumPhy->SetNoisePowerSpectralDensity (noisePsd);
-  LtePhy::DoStart ();
+  LtePhy::DoInitialize ();
 }
 
 

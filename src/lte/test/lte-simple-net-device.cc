@@ -70,7 +70,7 @@ LteSimpleNetDevice::DoDispose (void)
 
 
 void
-LteSimpleNetDevice::DoStart (void)
+LteSimpleNetDevice::DoInitialize (void)
 {
   NS_LOG_FUNCTION (this);
 }

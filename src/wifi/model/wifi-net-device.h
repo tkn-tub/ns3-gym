@@ -115,7 +115,7 @@ private:
   static const uint16_t MAX_MSDU_SIZE = 2304;
 
   virtual void DoDispose (void);
-  virtual void DoStart (void);
+  virtual void DoInitialize (void);
   void ForwardUp (Ptr<Packet> packet, Mac48Address from, Mac48Address to);
   void LinkUp (void);
   void LinkDown (void);

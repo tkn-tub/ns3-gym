@@ -169,7 +169,7 @@ BasicEnergySource::UpdateEnergySource (void)
  */
 
 void
-BasicEnergySource::DoStart (void)
+BasicEnergySource::DoInitialize (void)
 {
   NS_LOG_FUNCTION (this);
   UpdateEnergySource ();  // start periodic update

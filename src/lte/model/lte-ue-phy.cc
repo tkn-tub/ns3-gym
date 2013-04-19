@@ -240,10 +240,10 @@ LteUePhy::GetTypeId (void)
 }
 
 void
-LteUePhy::DoStart ()
+LteUePhy::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
-  LtePhy::DoStart ();
+  LtePhy::DoInitialize ();
 }
 
 void

@@ -45,13 +45,13 @@ LteSimpleHelper::LteSimpleHelper (void)
 }
 
 void
-LteSimpleHelper::DoStart (void)
+LteSimpleHelper::DoInitialize (void)
 {
   NS_LOG_FUNCTION (this);
 
   m_phyChannel = CreateObject<SimpleChannel> ();
 
-  Object::DoStart ();
+  Object::DoInitialize ();
 }
 
 LteSimpleHelper::~LteSimpleHelper (void)
@@ -95,7 +95,7 @@ NetDeviceContainer
 LteSimpleHelper::InstallEnbDevice (NodeContainer c)
 {
   NS_LOG_FUNCTION (this);
-  Start ();  // will run DoStart () if necessary
+  Initialize ();  // will run DoInitialize () if necessary
   NetDeviceContainer devices;
   for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
     {

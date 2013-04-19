@@ -153,14 +153,14 @@ private:
   AggregateIterator GetAggregateIterator (void) const;
 
   /**
-   * This method calls the virtual DoStart method on all the objects
-   * aggregated to this object. DoStart will be called only once over
+   * This method calls the virtual DoInitialize method on all the objects
+   * aggregated to this object. DoInitialize will be called only once over
    * the lifetime of an object, just like DoDispose is called only
    * once.
    *
-   * \sa DoStart
+   * \sa DoInitialize
    */
-  void Start (void);
+  void Initialize (void);
 
 protected:
   /**
@@ -172,15 +172,15 @@ protected:
    */
   virtual void NotifyNewAggregate (void);
   /**
-   * This method is called only once by Object::Start. If the user
-   * calls Object::Start multiple times, DoStart is called only the
+   * This method is called only once by Object::Initialize. If the user
+   * calls Object::Initialize multiple times, DoInitialize is called only the
    * first time.
    *
    * Subclasses are expected to override this method and _chain up_
    * to their parent's implementation once they are done. It is
    * safe to call GetObject and AggregateObject from within this method.
    */
-  virtual void DoStart (void);
+  virtual void DoInitialize (void);
   /**
    * This method is called by Object::Dispose or by the object's 
    * destructor, whichever comes first.
@@ -281,10 +281,10 @@ private:
    */
   bool m_disposed;
   /**
-   * Set to true once the DoStart method has run,
+   * Set to true once the DoInitialize method has run,
    * false otherwise
    */
-  bool m_started;
+  bool m_initialized;
   /**
    * a pointer to an array of 'aggregates'. i.e., a pointer to
    * each object aggregated to this object is stored in this 

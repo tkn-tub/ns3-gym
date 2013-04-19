@@ -102,7 +102,7 @@ EnergySource::FindDeviceEnergyModels (std::string name)
 }
 
 void
-EnergySource::StartDeviceModels (void)
+EnergySource::InitializeDeviceModels (void)
 {
   NS_LOG_FUNCTION (this);
   /*
@@ -112,7 +112,7 @@ EnergySource::StartDeviceModels (void)
   DeviceEnergyModelContainer::Iterator i;
   for (i = m_models.Begin (); i != m_models.End (); i++)
     {
-      (*i)->Start ();
+      (*i)->Initialize ();
     }
 }
 

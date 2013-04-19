@@ -211,7 +211,7 @@ public:
   virtual Time GetCompressedBlockAckTimeout (void) const;
 
 protected:
-  virtual void DoStart ();
+  virtual void DoInitialize ();
   virtual void DoDispose ();
 
   MacRxMiddle *m_rxMiddle;

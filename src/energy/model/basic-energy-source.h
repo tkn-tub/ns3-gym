@@ -105,7 +105,7 @@ public:
 
 private:
   /// Defined in ns3::Object
-  void DoStart (void);
+  void DoInitialize (void);
 
   /// Defined in ns3::Object
   void DoDispose (void);

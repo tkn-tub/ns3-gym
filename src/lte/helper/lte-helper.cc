@@ -73,7 +73,7 @@ LteHelper::LteHelper (void)
 }
 
 void 
-LteHelper::DoStart (void)
+LteHelper::DoInitialize (void)
 {
   NS_LOG_FUNCTION (this);
   m_downlinkChannel = m_channelFactory.Create<SpectrumChannel> ();
@@ -112,7 +112,7 @@ LteHelper::DoStart (void)
     {
       Ptr<SpectrumPropagationLossModel> m_fadingModule;
       m_fadingModule = m_fadingModelFactory.Create<SpectrumPropagationLossModel> ();
-      m_fadingModule->Start ();
+      m_fadingModule->Initialize ();
       m_downlinkChannel->AddSpectrumPropagationLossModel (m_fadingModule);
       m_uplinkChannel->AddSpectrumPropagationLossModel (m_fadingModule);
     }
@@ -120,7 +120,7 @@ LteHelper::DoStart (void)
   m_phyTxStats = CreateObject<PhyTxStatsCalculator> ();
   m_phyRxStats = CreateObject<PhyRxStatsCalculator> ();
   m_macStats = CreateObject<MacStatsCalculator> ();
-  Object::DoStart ();
+  Object::DoInitialize ();
 
 }
 
@@ -285,7 +285,7 @@ NetDeviceContainer
 LteHelper::InstallEnbDevice (NodeContainer c)
 {
   NS_LOG_FUNCTION (this);
-  Start ();  // will run DoStart () if necessary
+  Initialize ();  // will run DoInitialize () if necessary
   NetDeviceContainer devices;
   for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
     {
@@ -434,7 +434,7 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
     }
   
 
-  dev->Start (); 
+  dev->Initialize ();
 
   m_uplinkChannel->AddRx (ulPhy);
 
@@ -552,7 +552,7 @@ LteHelper::InstallSingleUeDevice (Ptr<Node> n)
       m_epcHelper->AddUe (dev, dev->GetImsi ());
     }
 
-  dev->Start ();
+  dev->Initialize ();
 
   return dev;
 }

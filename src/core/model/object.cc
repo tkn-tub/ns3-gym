@@ -92,7 +92,7 @@ Object::GetTypeId (void)
 Object::Object ()
   : m_tid (Object::GetTypeId ()),
     m_disposed (false),
-    m_started (false),
+    m_initialized (false),
     m_aggregates ((struct Aggregates *) std::malloc (sizeof (struct Aggregates))),
     m_getObjectCount (0)
 {
@@ -127,7 +127,7 @@ Object::~Object ()
 Object::Object (const Object &o)
   : m_tid (o.m_tid),
     m_disposed (false),
-    m_started (false),
+    m_initialized (false),
     m_aggregates ((struct Aggregates *) std::malloc (sizeof (struct Aggregates))),
     m_getObjectCount (0)
 {
@@ -176,12 +176,12 @@ Object::DoGetObject (TypeId tid) const
   return 0;
 }
 void
-Object::Start (void)
+Object::Initialize (void)
 {
   /**
    * Note: the code here is a bit tricky because we need to protect ourselves from
-   * modifications in the aggregate array while DoStart is called. The user's
-   * implementation of the DoStart method could call GetObject (which could
+   * modifications in the aggregate array while DoInitialize is called. The user's
+   * implementation of the DoInitialize method could call GetObject (which could
    * reorder the array) and it could call AggregateObject which would add an 
    * object at the end of the array. To be safe, we restart iteration over the 
    * array whenever we call some user code, just in case.
@@ -192,10 +192,10 @@ restart:
   for (uint32_t i = 0; i < n; i++)
     {
       Object *current = m_aggregates->buffer[i];
-      if (!current->m_started)
+      if (!current->m_initialized)
         {
-          current->DoStart ();
-          current->m_started = true;
+          current->DoInitialize ();
+          current->m_initialized = true;
           goto restart;
         }
     }
@@ -339,10 +339,10 @@ Object::DoDispose (void)
 }
 
 void
-Object::DoStart (void)
+Object::DoInitialize (void)
 {
   NS_LOG_FUNCTION (this);
-  NS_ASSERT (!m_started);
+  NS_ASSERT (!m_initialized);
 }
 
 bool 

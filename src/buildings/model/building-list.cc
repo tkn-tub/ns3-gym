@@ -126,7 +126,7 @@ BuildingListPriv::Add (Ptr<Building> building)
 {
   uint32_t index = m_buildings.size ();
   m_buildings.push_back (building);
-  Simulator::ScheduleWithContext (index, TimeStep (0), &Building::Start, building);
+  Simulator::ScheduleWithContext (index, TimeStep (0), &Building::Initialize, building);
   return index;
 
 }

@@ -149,7 +149,7 @@ public:
   LteRlcSm ();
   virtual ~LteRlcSm ();
   static TypeId GetTypeId (void);
-  virtual void DoStart ();
+  virtual void DoInitialize ();
   virtual void DoDispose ();
 
   virtual void DoTransmitPdcpPdu (Ptr<Packet> p);

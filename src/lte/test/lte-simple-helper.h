@@ -115,7 +115,7 @@ public:
 
 protected:
   // inherited from Object
-  virtual void DoStart (void);
+  virtual void DoInitialize (void);
 
 private:
   Ptr<NetDevice> InstallSingleEnbDevice (Ptr<Node> n);

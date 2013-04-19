@@ -564,15 +564,15 @@ ApWifiMac::DeaggregateAmsduAndForward (Ptr<Packet> aggregatedPacket,
 }
 
 void
-ApWifiMac::DoStart (void)
+ApWifiMac::DoInitialize (void)
 {
-  m_beaconDca->Start ();
+  m_beaconDca->Initialize ();
   m_beaconEvent.Cancel ();
   if (m_enableBeaconGeneration)
     {
       m_beaconEvent = Simulator::ScheduleNow (&ApWifiMac::SendOneBeacon, this);
     }
-  RegularWifiMac::DoStart ();
+  RegularWifiMac::DoInitialize ();
 }
 
 } // namespace ns3

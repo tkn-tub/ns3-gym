@@ -93,14 +93,14 @@ SteadyStateRandomWaypointMobilityModel::SteadyStateRandomWaypointMobilityModel (
 }
 
 void
-SteadyStateRandomWaypointMobilityModel::DoStart (void)
+SteadyStateRandomWaypointMobilityModel::DoInitialize (void)
 {
-  SteadyStateStart ();
-  MobilityModel::DoStart ();
+  DoInitializePrivate ();
+  MobilityModel::DoInitialize ();
 }
 
 void
-SteadyStateRandomWaypointMobilityModel::SteadyStateStart (void)
+SteadyStateRandomWaypointMobilityModel::DoInitializePrivate (void)
 {
   alreadyStarted = true;
   // Configure random variables based on attributes

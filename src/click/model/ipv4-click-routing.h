@@ -67,7 +67,7 @@ public:
 
   Ptr<UniformRandomVariable> GetRandomVariable (void);
 protected:
-  virtual void DoStart (void);
+  virtual void DoInitialize (void);
 
 public:
   virtual void DoDispose ();
@@ -191,7 +191,7 @@ public:
 
 private:
   /**
-   * \brief Used internally in DoStart () to Add a mapping to m_clickInstanceFromSimNode mapping
+   * \brief Used internally in DoInitialize () to Add a mapping to m_clickInstanceFromSimNode mapping
    */
   void AddSimNodeToClickMapping ();
 

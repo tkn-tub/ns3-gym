@@ -84,15 +84,15 @@ Ipv4ListRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
 }
 
 void
-Ipv4ListRouting::DoStart (void)
+Ipv4ListRouting::DoInitialize (void)
 {
   for (Ipv4RoutingProtocolList::iterator rprotoIter = m_routingProtocols.begin ();
        rprotoIter != m_routingProtocols.end (); rprotoIter++)
     {
       Ptr<Ipv4RoutingProtocol> protocol = (*rprotoIter).second;
-      protocol->Start ();
+      protocol->Initialize ();
     }
-  Ipv4RoutingProtocol::DoStart ();
+  Ipv4RoutingProtocol::DoInitialize ();
 }
 
 

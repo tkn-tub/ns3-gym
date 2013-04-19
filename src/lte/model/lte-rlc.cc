@@ -190,7 +190,7 @@ LteRlcSm::GetTypeId (void)
 }
 
 void
-LteRlcSm::DoStart ()
+LteRlcSm::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
   ReportBufferStatus ();

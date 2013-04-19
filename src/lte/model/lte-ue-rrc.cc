@@ -342,7 +342,7 @@ LteUeRrc::SetUseRlcSm (bool val)
 
 
 void
-LteUeRrc::DoStart (void)
+LteUeRrc::DoInitialize (void)
 {
   NS_LOG_FUNCTION (this);
 
@@ -875,7 +875,7 @@ LteUeRrc::ApplyRadioResourceConfigDedicated (LteRrcSap::RadioResourceConfigDedic
           m_cmacSapProvider->AddLc (dtamIt->logicalChannelIdentity,
                                     lcConfig,
                                     rlc->GetLteMacSapUser ());
-          rlc->Start ();
+          rlc->Initialize ();
         }
       else
         {

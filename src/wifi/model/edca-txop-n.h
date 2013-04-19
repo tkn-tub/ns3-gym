@@ -162,7 +162,7 @@ public:
   int64_t AssignStreams (int64_t stream);
 
 private:
-  void DoStart ();
+  void DoInitialize ();
   /**
    * This functions are used only to correctly set addresses in a-msdu subframe.
    * If aggregating sta is a STA (in an infrastructured network):

@@ -91,7 +91,7 @@ public:
 
   // inherited from Object
 private:
-  virtual void DoStart (void);
+  virtual void DoInitialize (void);
   virtual void DoDispose (void);
 public:
   static TypeId GetTypeId (void);

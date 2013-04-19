@@ -170,7 +170,7 @@ private:
   /**
    * \brief Calls Object::Start () for all EnergySource objects.
    */
-  virtual void DoStart (void);
+  virtual void DoInitialize (void);
 
 private:
   std::vector< Ptr<EnergySource> > m_sources;

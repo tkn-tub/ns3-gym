@@ -129,14 +129,14 @@ EnergySourceContainer::DoDispose (void)
 }
 
 void
-EnergySourceContainer::DoStart (void)
+EnergySourceContainer::DoInitialize (void)
 {
   // call Object::Start for all EnergySource objects
   for (std::vector< Ptr<EnergySource> >::iterator i = m_sources.begin ();
        i != m_sources.end (); i++)
     {
-      (*i)->Start ();
-      (*i)->StartDeviceModels ();
+      (*i)->Initialize ();
+      (*i)->InitializeDeviceModels ();
     }
 }
 

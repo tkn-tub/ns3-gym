@@ -161,7 +161,7 @@ public:
   int64_t AssignStreams (int64_t stream);
 
 private:
-  virtual void DoStart ();
+  virtual void DoInitialize ();
   /**
    * \name Private structures
    * \{

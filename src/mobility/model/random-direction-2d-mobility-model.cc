@@ -69,14 +69,14 @@ RandomDirection2dMobilityModel::DoDispose (void)
   MobilityModel::DoDispose ();
 }
 void
-RandomDirection2dMobilityModel::DoStart (void)
+RandomDirection2dMobilityModel::DoInitialize (void)
 {
-  DoStartPrivate ();
-  MobilityModel::DoStart ();
+  DoInitializePrivate ();
+  MobilityModel::DoInitialize ();
 }
 
 void
-RandomDirection2dMobilityModel::DoStartPrivate (void)
+RandomDirection2dMobilityModel::DoInitializePrivate (void)
 {
   double direction = m_direction->GetValue (0, 2 * PI);
   SetDirectionAndSpeed (direction);
@@ -148,7 +148,7 @@ RandomDirection2dMobilityModel::DoSetPosition (const Vector &position)
   m_helper.SetPosition (position);
   Simulator::Remove (m_event);
   m_event.Cancel ();
-  m_event = Simulator::ScheduleNow (&RandomDirection2dMobilityModel::DoStartPrivate, this);
+  m_event = Simulator::ScheduleNow (&RandomDirection2dMobilityModel::DoInitializePrivate, this);
 }
 Vector
 RandomDirection2dMobilityModel::DoGetVelocity (void) const

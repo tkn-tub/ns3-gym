@@ -236,7 +236,7 @@ LiIonEnergySource::UpdateEnergySource (void)
  * Private functions start here.
  */
 void
-LiIonEnergySource::DoStart (void)
+LiIonEnergySource::DoInitialize (void)
 {
   NS_LOG_FUNCTION (this);
   UpdateEnergySource ();  // start periodic update

@@ -78,7 +78,7 @@ SteadyStateRandomWaypointTest::DoRun (void)
 
       // Add this mobility model to the stack.
       mobilityStack.push_back (model);
-      Simulator::Schedule (Seconds (0.0), &Object::Start, model);
+      Simulator::Schedule (Seconds (0.0), &Object::Initialize, model);
     } 
 
   Simulator::Schedule (Seconds (0.001), &SteadyStateRandomWaypointTest::DistribCompare, this);

@@ -49,7 +49,7 @@ public:
 
   static TypeId GetTypeId ();
   
-  virtual void DoStart (void);
+  virtual void DoInitialize (void);
 
   /**
    * \brief The couple of mobility mnode that form a fading channel realization

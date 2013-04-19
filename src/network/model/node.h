@@ -202,7 +202,7 @@ protected:
    * end of their own DoDispose method.
    */
   virtual void DoDispose (void);
-  virtual void DoStart (void);
+  virtual void DoInitialize (void);
 private:
   void NotifyDeviceAdded (Ptr<NetDevice> device);
   bool NonPromiscReceiveFromDevice (Ptr<NetDevice> device, Ptr<const Packet>, uint16_t protocol, const Address &from);

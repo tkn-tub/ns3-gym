@@ -103,7 +103,7 @@ TraceFadingLossModel::SetTraceLength (Time t)
 }
 
 void 
-TraceFadingLossModel::DoStart ()
+TraceFadingLossModel::DoInitialize ()
 {
   LoadTrace ();
 }

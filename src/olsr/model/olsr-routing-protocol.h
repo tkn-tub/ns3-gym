@@ -133,7 +133,7 @@ public:
   void SetRoutingTableAssociation (Ptr<Ipv4StaticRouting> routingTable);
 
 protected:
-  virtual void DoStart (void);
+  virtual void DoInitialize (void);
 private:
   std::map<Ipv4Address, RoutingTableEntry> m_table; ///< Data structure for the routing table.
 

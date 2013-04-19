@@ -273,7 +273,7 @@ RoutingProtocol::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
   m_hnaRoutingTable->PrintRoutingTable (stream);
 }
 
-void RoutingProtocol::DoStart ()
+void RoutingProtocol::DoInitialize ()
 {
   if (m_mainAddress == Ipv4Address ())
     {

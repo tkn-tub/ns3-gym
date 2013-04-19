@@ -146,7 +146,7 @@ UeManager::UeManager (Ptr<LteEnbRrc> rrc, uint16_t rnti, State s)
 }
 
 void
-UeManager::DoStart ()
+UeManager::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
   m_drbPdcpSapUser = new LtePdcpSpecificLtePdcpSapUser<UeManager> (this);
@@ -429,10 +429,10 @@ UeManager::StartDataRadioBearers ()
     {
       std::map <uint8_t, Ptr<LteDataRadioBearerInfo> >::iterator drbIt = m_drbMap.find (*drbIdIt);
       NS_ASSERT (drbIt != m_drbMap.end ());
-      drbIt->second->m_rlc->Start ();
+      drbIt->second->m_rlc->Initialize ();
       if (drbIt->second->m_pdcp)
         {
-          drbIt->second->m_pdcp->Start ();
+          drbIt->second->m_pdcp->Initialize ();
         }
     }
   m_drbsToBeStarted.clear ();
@@ -1731,7 +1731,7 @@ LteEnbRrc::AddUe (UeManager::State state)
   m_lastAllocatedRnti = rnti;
   Ptr<UeManager> ueManager = CreateObject<UeManager> (this, rnti, state);
   m_ueMap.insert (std::pair<uint16_t, Ptr<UeManager> > (rnti, ueManager));
-  ueManager->Start ();
+  ueManager->Initialize ();
   NS_LOG_DEBUG (this << " New UE RNTI " << rnti << " cellId " << m_cellId << " srs CI " << ueManager->GetSrsConfigurationIndex ());      
   m_newUeContextTrace (m_cellId, rnti);      
   return rnti;
