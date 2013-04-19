@@ -492,6 +492,10 @@ follows:::
       // continue on with constructor.
     }
 
+Beware that the object and all its derived classes must also implement a 
+``virtual TypeId GetInstanceTypeId (void) const;`` method. Otherwise the
+``ObjectBase::ConstructSelf ()`` will not be able to read the attributes.
+
 Extending attributes
 ********************
 

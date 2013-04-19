@@ -134,6 +134,12 @@ RttEstimator::~RttEstimator ()
   NS_LOG_FUNCTION (this);
 }
 
+TypeId
+RttEstimator::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
+}
+
 void RttEstimator::SentSeq (SequenceNumber32 seq, uint32_t size)
 { 
   NS_LOG_FUNCTION (this << seq << size);
@@ -252,6 +258,12 @@ RttMeanDeviation::RttMeanDeviation (const RttMeanDeviation& c)
   : RttEstimator (c), m_gain (c.m_gain), m_variance (c.m_variance)
 {
   NS_LOG_FUNCTION (this);
+}
+
+TypeId
+RttMeanDeviation::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
 }
 
 void RttMeanDeviation::Measurement (Time m)
