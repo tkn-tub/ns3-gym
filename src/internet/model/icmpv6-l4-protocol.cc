@@ -1231,8 +1231,16 @@ bool Icmpv6L4Protocol::Lookup (Ipv6Address dst, Ptr<NetDevice> device, Ptr<Ndisc
       /* try to find the cache */
       cache = FindCache (device);
     }
-
-  return cache->Lookup (dst);
+  if (cache)
+    {
+      NdiscCache::Entry* entry = cache->Lookup (dst);
+      if (entry && !(entry->IsIncomplete() || entry->IsProbe()))
+        {
+          *hardwareDestination = entry->GetMacAddress ();
+          return true;
+        }
+    }
+  return false;
 }
 
 bool Icmpv6L4Protocol::Lookup (Ptr<Packet> p, Ipv6Address dst, Ptr<NetDevice> device, Ptr<NdiscCache> cache, Address* hardwareDestination)
@@ -1243,6 +1251,10 @@ bool Icmpv6L4Protocol::Lookup (Ptr<Packet> p, Ipv6Address dst, Ptr<NetDevice> de
     {
       /* try to find the cache */
       cache = FindCache (device);
+    }
+  if (!cache)
+    {
+      return false;
     }
 
   NdiscCache::Entry* entry = cache->Lookup (dst);
