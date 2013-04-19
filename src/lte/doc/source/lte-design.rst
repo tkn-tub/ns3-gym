@@ -1833,16 +1833,16 @@ UE Measurements
 UE RRC measurements support
 ---------------------------
 
-The UE RRC entities provides support for UE measurements; in
+The UE RRC entity provides support for UE measurements; in
 particular, it implements the procedures described in Section 5.5 of
 [TS36331]_, with the following simplifying assumptions:
 
  - only E-UTRA intra-frequency measurements are supported;
 
- - meausrement gaps are not needed to perform the measurements;
+ - measurement gaps are not needed to perform the measurements;
 
  - only event-driven measurements are supported; the other type of
- measurements are not supported;
+   measurements are not supported;
 
  - only the events A2 and A4 are to be supported; 
 
@@ -1860,16 +1860,68 @@ particular, it implements the procedures described in Section 5.5 of
 eNB RRC measurement configuration
 ---------------------------------
 
+The eNB RRC entity configures the UE measurements. The eNB RRC entity
+sends the configuration parameters to the UE RRC entity in the
+MeasConfig IE of the RRC Connection Reconfiguration message when the UE
+attaches to the eNB or the RRC Handover Request message when the target
+eNB initiates the handover procedure.
+
+The eNB RRC entity implements the configuration parameters and procedures
+described in Section 5.5 of [TS36331]_, with the following simplifying
+assumptions:
+
+ - only E-UTRA intra-frequency measurements are configured, so only the
+   downlink carrier frequency of the serving cell is configured as
+   measurement object;
+
+ - only the events A2 and A4 are configured;
+
+ - only the RSRQ threshold is configured for both events;
+
+ - the reportInterval parameter is configured to 480 ms, so once the
+   events are triggered, the UE will send the measurement reports with
+   this periodicity;
+
+ - the filterCoefficientRSRQ parameter is configured to fc4, it is the
+   default value specified in the protocol specification [TS36331]_;
+
+ - the hysteresis and timeToTrigger parameters are configured with
+   values equal to zero;
+
 
 Handover
 ++++++++
 
-The RRC model support the execution of an X2-based handover
-procedure. The handover needs to be triggered explicitly by the
-simulation program by scheduling an execution of the method
-``LteEnbRrc::SendHandoverRequest ()``. The automatic triggering of the
-handover based on UE measurements is not supported at this stage.
+The RRC model support the execution of an X2-based handover procedure.
+There are 2 ways to trigger the handover procedure:
 
+ - the handover could be triggered explicitly by the simulation program
+   by scheduling an execution of the method ``LteEnbRrc::SendHandoverRequest ()``
+
+ - the handover could be triggered automatically by the eNB RRC entity.
+   The eNB executes the following algorithm :ref:`fig-lte-handover-algorithm` 
+   to trigger the handover procedure for a UE providing measurements in its
+   serving cell and the neighbour cells the UE measures:
+
+.. _fig-lte-handover-algorithm:
+
+.. figure:: figures/lte-handover-algorithm.*
+   :align: center
+
+   Algorithm to automatically trigger the Handover procedure
+
+The simulation user can set two parameters to control the handover decision:
+
+ - servingHandoverThreshold, if the RSRQ value measured by the UE in its
+   serving cell is less or equal to the servingHandoverThreshold parameter
+   (i.e. the conditions of the UE in the serving cell are getting bad or
+   not good enough), then the eNB considers this UE to hand it over to a new
+   neighbour eNB. The handover will really triggered depending on the 
+   measurements of the neighbour cells.
+
+ - neighbourHandoverOffset, if the difference between the best neighbour RSRQ
+   and the serving cell RSRQ is greater or equal to the neighbourHandoverOffset
+   parameter, then the handover procedure is triggered for this UE.
 
 
 RRC sequence diagrams
