@@ -111,13 +111,16 @@ AarfcdWifiManager::GetTypeId (void)
 AarfcdWifiManager::AarfcdWifiManager ()
   : WifiRemoteStationManager ()
 {
+  NS_LOG_FUNCTION (this);
 }
 AarfcdWifiManager::~AarfcdWifiManager ()
 {
+  NS_LOG_FUNCTION (this);
 }
 WifiRemoteStation *
 AarfcdWifiManager::DoCreateStation (void) const
 {
+  NS_LOG_FUNCTION (this);
   AarfcdWifiRemoteStation *station = new AarfcdWifiRemoteStation ();
 
   // aarf fields below
@@ -143,6 +146,7 @@ AarfcdWifiManager::DoCreateStation (void) const
 void
 AarfcdWifiManager::DoReportRtsFailed (WifiRemoteStation *station)
 {
+  NS_LOG_FUNCTION (this << station);
 }
 /**
  * It is important to realize that "recovery" mode starts after failure of
@@ -156,7 +160,7 @@ AarfcdWifiManager::DoReportRtsFailed (WifiRemoteStation *station)
 void
 AarfcdWifiManager::DoReportDataFailed (WifiRemoteStation *st)
 {
-
+  NS_LOG_FUNCTION (this << st);
   AarfcdWifiRemoteStation *station = (AarfcdWifiRemoteStation *)st;
   station->m_timer++;
   station->m_failed++;
@@ -235,11 +239,13 @@ void
 AarfcdWifiManager::DoReportRxOk (WifiRemoteStation *station,
                                  double rxSnr, WifiMode txMode)
 {
+  NS_LOG_FUNCTION (this << station << rxSnr << txMode);
 }
 void
 AarfcdWifiManager::DoReportRtsOk (WifiRemoteStation *st,
                                   double ctsSnr, WifiMode ctsMode, double rtsSnr)
 {
+  NS_LOG_FUNCTION (this << st << ctsSnr << ctsMode << rtsSnr);
   AarfcdWifiRemoteStation *station = (AarfcdWifiRemoteStation *) st;
   NS_LOG_DEBUG ("station=" << station << " rts ok");
   station->m_rtsCounter--;
@@ -248,6 +254,7 @@ void
 AarfcdWifiManager::DoReportDataOk (WifiRemoteStation *st,
                                    double ackSnr, WifiMode ackMode, double dataSnr)
 {
+  NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr);
   AarfcdWifiRemoteStation *station = (AarfcdWifiRemoteStation *) st;
   station->m_timer++;
   station->m_success++;
@@ -279,21 +286,25 @@ AarfcdWifiManager::DoReportDataOk (WifiRemoteStation *st,
 void
 AarfcdWifiManager::DoReportFinalRtsFailed (WifiRemoteStation *station)
 {
+  NS_LOG_FUNCTION (this << station);
 }
 void
 AarfcdWifiManager::DoReportFinalDataFailed (WifiRemoteStation *station)
 {
+  NS_LOG_FUNCTION (this << station);
 }
 
 WifiMode
 AarfcdWifiManager::DoGetDataMode (WifiRemoteStation *st, uint32_t size)
 {
+  NS_LOG_FUNCTION (this << st << size);
   AarfcdWifiRemoteStation *station = (AarfcdWifiRemoteStation *) st;
   return GetSupported (station, station->m_rate);
 }
 WifiMode
 AarfcdWifiManager::DoGetRtsMode (WifiRemoteStation *st)
 {
+  NS_LOG_FUNCTION (this << st);
   // XXX: we could/should implement the Aarf algorithm for
   // RTS only by picking a single rate within the BasicRateSet.
   AarfcdWifiRemoteStation *station = (AarfcdWifiRemoteStation *) st;
@@ -304,6 +315,7 @@ bool
 AarfcdWifiManager::DoNeedRts (WifiRemoteStation *st,
                               Ptr<const Packet> packet, bool normally)
 {
+  NS_LOG_FUNCTION (this << st << packet << normally);
   AarfcdWifiRemoteStation *station = (AarfcdWifiRemoteStation *) st;
   NS_LOG_INFO ("" << station << " rate=" << station->m_rate << " rts=" << (station->m_rtsOn ? "RTS" : "BASIC") <<
                " rtsCounter=" << station->m_rtsCounter);
@@ -313,12 +325,14 @@ AarfcdWifiManager::DoNeedRts (WifiRemoteStation *st,
 bool
 AarfcdWifiManager::IsLowLatency (void) const
 {
+  NS_LOG_FUNCTION (this);
   return true;
 }
 
 void
 AarfcdWifiManager::CheckRts (AarfcdWifiRemoteStation *station)
 {
+  NS_LOG_FUNCTION (this << station);
   if (station->m_rtsCounter == 0 && station->m_rtsOn)
     {
       TurnOffRts (station);
@@ -328,6 +342,7 @@ AarfcdWifiManager::CheckRts (AarfcdWifiRemoteStation *station)
 void
 AarfcdWifiManager::TurnOffRts (AarfcdWifiRemoteStation *station)
 {
+  NS_LOG_FUNCTION (this << station);
   station->m_rtsOn = false;
   station->m_haveASuccess = false;
 }
@@ -335,12 +350,14 @@ AarfcdWifiManager::TurnOffRts (AarfcdWifiRemoteStation *station)
 void
 AarfcdWifiManager::TurnOnRts (AarfcdWifiRemoteStation *station)
 {
+  NS_LOG_FUNCTION (this << station);
   station->m_rtsOn = true;
 }
 
 void
 AarfcdWifiManager::IncreaseRtsWnd (AarfcdWifiRemoteStation *station)
 {
+  NS_LOG_FUNCTION (this << station);
   if (station->m_rtsWnd == m_maxRtsWnd)
     {
       return;
@@ -356,6 +373,7 @@ AarfcdWifiManager::IncreaseRtsWnd (AarfcdWifiRemoteStation *station)
 void
 AarfcdWifiManager::ResetRtsWnd (AarfcdWifiRemoteStation *station)
 {
+  NS_LOG_FUNCTION (this << station);
   station->m_rtsWnd = m_minRtsWnd;
 }
 

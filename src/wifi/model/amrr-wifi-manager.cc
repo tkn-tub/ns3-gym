@@ -81,11 +81,13 @@ AmrrWifiManager::GetTypeId (void)
 
 AmrrWifiManager::AmrrWifiManager ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 WifiRemoteStation *
 AmrrWifiManager::DoCreateStation (void) const
 {
+  NS_LOG_FUNCTION (this);
   AmrrWifiRemoteStation *station = new AmrrWifiRemoteStation ();
   station->m_nextModeUpdate = Simulator::Now () + m_updatePeriod;
   station->m_tx_ok = 0;
@@ -104,14 +106,17 @@ void
 AmrrWifiManager::DoReportRxOk (WifiRemoteStation *station,
                                double rxSnr, WifiMode txMode)
 {
+  NS_LOG_FUNCTION (this << station << rxSnr << txMode);
 }
 void
 AmrrWifiManager::DoReportRtsFailed (WifiRemoteStation *station)
 {
+  NS_LOG_FUNCTION (this << station);
 }
 void
 AmrrWifiManager::DoReportDataFailed (WifiRemoteStation *st)
 {
+  NS_LOG_FUNCTION (this << st);
   AmrrWifiRemoteStation *station = (AmrrWifiRemoteStation *)st;
   station->m_retry++;
   station->m_tx_retr++;
@@ -120,11 +125,13 @@ void
 AmrrWifiManager::DoReportRtsOk (WifiRemoteStation *st,
                                 double ctsSnr, WifiMode ctsMode, double rtsSnr)
 {
+  NS_LOG_FUNCTION (this << st << ctsSnr << ctsMode << rtsSnr);
 }
 void
 AmrrWifiManager::DoReportDataOk (WifiRemoteStation *st,
                                  double ackSnr, WifiMode ackMode, double dataSnr)
 {
+  NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr);
   AmrrWifiRemoteStation *station = (AmrrWifiRemoteStation *)st;
   station->m_retry = 0;
   station->m_tx_ok++;
@@ -132,10 +139,12 @@ AmrrWifiManager::DoReportDataOk (WifiRemoteStation *st,
 void
 AmrrWifiManager::DoReportFinalRtsFailed (WifiRemoteStation *station)
 {
+  NS_LOG_FUNCTION (this << station);
 }
 void
 AmrrWifiManager::DoReportFinalDataFailed (WifiRemoteStation *st)
 {
+  NS_LOG_FUNCTION (this << st);
   AmrrWifiRemoteStation *station = (AmrrWifiRemoteStation *)st;
   station->m_retry = 0;
   station->m_tx_err++;
@@ -143,32 +152,38 @@ AmrrWifiManager::DoReportFinalDataFailed (WifiRemoteStation *st)
 bool
 AmrrWifiManager::IsMinRate (AmrrWifiRemoteStation *station) const
 {
+  NS_LOG_FUNCTION (this << station);
   return (station->m_txrate == 0);
 }
 bool
 AmrrWifiManager::IsMaxRate (AmrrWifiRemoteStation *station) const
 {
+  NS_LOG_FUNCTION (this << station);
   NS_ASSERT (station->m_txrate + 1 <= GetNSupported (station));
   return (station->m_txrate + 1 == GetNSupported (station));
 }
 bool
 AmrrWifiManager::IsSuccess (AmrrWifiRemoteStation *station) const
 {
+  NS_LOG_FUNCTION (this << station);
   return (station->m_tx_retr + station->m_tx_err) < station->m_tx_ok * m_successRatio;
 }
 bool
 AmrrWifiManager::IsFailure (AmrrWifiRemoteStation *station) const
 {
+  NS_LOG_FUNCTION (this << station);
   return (station->m_tx_retr + station->m_tx_err) > station->m_tx_ok * m_failureRatio;
 }
 bool
 AmrrWifiManager::IsEnough (AmrrWifiRemoteStation *station) const
 {
+  NS_LOG_FUNCTION (this << station);
   return (station->m_tx_retr + station->m_tx_err + station->m_tx_ok) > 10;
 }
 void
 AmrrWifiManager::ResetCnt (AmrrWifiRemoteStation *station)
 {
+  NS_LOG_FUNCTION (this << station);
   station->m_tx_ok = 0;
   station->m_tx_err = 0;
   station->m_tx_retr = 0;
@@ -176,18 +191,21 @@ AmrrWifiManager::ResetCnt (AmrrWifiRemoteStation *station)
 void
 AmrrWifiManager::IncreaseRate (AmrrWifiRemoteStation *station)
 {
+  NS_LOG_FUNCTION (this << station);
   station->m_txrate++;
   NS_ASSERT (station->m_txrate < GetNSupported (station));
 }
 void
 AmrrWifiManager::DecreaseRate (AmrrWifiRemoteStation *station)
 {
+  NS_LOG_FUNCTION (this << station);
   station->m_txrate--;
 }
 
 void
 AmrrWifiManager::UpdateMode (AmrrWifiRemoteStation *station)
 {
+  NS_LOG_FUNCTION (this << station);
   if (Simulator::Now () < station->m_nextModeUpdate)
     {
       return;
@@ -252,6 +270,7 @@ AmrrWifiManager::UpdateMode (AmrrWifiRemoteStation *station)
 WifiMode
 AmrrWifiManager::DoGetDataMode (WifiRemoteStation *st, uint32_t size)
 {
+  NS_LOG_FUNCTION (this << st << size);
   AmrrWifiRemoteStation *station = (AmrrWifiRemoteStation *)st;
   UpdateMode (station);
   NS_ASSERT (station->m_txrate < GetNSupported (station));
@@ -299,6 +318,7 @@ AmrrWifiManager::DoGetDataMode (WifiRemoteStation *st, uint32_t size)
 WifiMode
 AmrrWifiManager::DoGetRtsMode (WifiRemoteStation *st)
 {
+  NS_LOG_FUNCTION (this << st);
   AmrrWifiRemoteStation *station = (AmrrWifiRemoteStation *)st;
   UpdateMode (station);
   // XXX: can we implement something smarter ?
@@ -309,6 +329,7 @@ AmrrWifiManager::DoGetRtsMode (WifiRemoteStation *st)
 bool
 AmrrWifiManager::IsLowLatency (void) const
 {
+  NS_LOG_FUNCTION (this);
   return true;
 }
 

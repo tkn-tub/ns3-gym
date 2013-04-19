@@ -68,6 +68,7 @@ AdhocWifiMac::~AdhocWifiMac ()
 void
 AdhocWifiMac::SetAddress (Mac48Address address)
 {
+  NS_LOG_FUNCTION (this << address);
   // In an IBSS, the BSSID is supposed to be generated per Section
   // 11.1.3 of IEEE 802.11. We don't currently do this - instead we
   // make an IBSS STA a bit like an AP, with the BSSID for frames
@@ -152,7 +153,7 @@ AdhocWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
 void
 AdhocWifiMac::SetLinkUpCallback (Callback<void> linkUp)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << &linkUp);
   RegularWifiMac::SetLinkUpCallback (linkUp);
 
   // The approach taken here is that, from the point of view of a STA

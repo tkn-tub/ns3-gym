@@ -21,14 +21,18 @@
 #include "ctrl-headers.h"
 #include "wifi-mac-header.h"
 #include "qos-utils.h"
+#include "ns3/log.h"
 
 #define WINSIZE_ASSERT NS_ASSERT ((m_winEnd - m_winStart + 4096) % 4096 == m_winSize - 1)
+
+NS_LOG_COMPONENT_DEFINE ("BlockAckCache");
 
 namespace ns3 {
 
 void
 BlockAckCache::Init (uint16_t winStart, uint16_t winSize)
 {
+  NS_LOG_FUNCTION (this << winStart << winSize);
   m_winStart = winStart;
   m_winSize = winSize <= 64 ? winSize : 64;
   m_winEnd = (m_winStart + m_winSize - 1) % 4096;
@@ -38,6 +42,7 @@ BlockAckCache::Init (uint16_t winStart, uint16_t winSize)
 void
 BlockAckCache::UpdateWithMpdu (const WifiMacHeader *hdr)
 {
+  NS_LOG_FUNCTION (this << hdr);
   uint16_t seqNumber = hdr->GetSequenceNumber ();
   if (!QosUtilsIsOldPacket (m_winStart, seqNumber))
     {
@@ -60,6 +65,7 @@ BlockAckCache::UpdateWithMpdu (const WifiMacHeader *hdr)
 void
 BlockAckCache::UpdateWithBlockAckReq (uint16_t startingSeq)
 {
+  NS_LOG_FUNCTION (this << startingSeq);
   if (!QosUtilsIsOldPacket (m_winStart, startingSeq))
     {
       if (IsInWindow (startingSeq))
@@ -88,6 +94,7 @@ BlockAckCache::UpdateWithBlockAckReq (uint16_t startingSeq)
 void
 BlockAckCache::ResetPortionOfBitmap (uint16_t start, uint16_t end)
 {
+  NS_LOG_FUNCTION (this << start << end);
   uint32_t i = start;
   for (; i != end; i = (i + 1) % 4096)
     {
@@ -99,12 +106,14 @@ BlockAckCache::ResetPortionOfBitmap (uint16_t start, uint16_t end)
 bool
 BlockAckCache::IsInWindow (uint16_t seq)
 {
+  NS_LOG_FUNCTION (this << seq);
   return ((seq - m_winStart + 4096) % 4096) < m_winSize;
 }
 
 void
 BlockAckCache::FillBlockAckBitmap (CtrlBAckResponseHeader *blockAckHeader)
 {
+  NS_LOG_FUNCTION (this << blockAckHeader);
   if (blockAckHeader->IsBasic ())
     {
       NS_FATAL_ERROR ("Basic block ack is only partially implemented.");

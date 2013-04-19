@@ -84,14 +84,17 @@ AarfWifiManager::GetTypeId (void)
 
 AarfWifiManager::AarfWifiManager ()
 {
+  NS_LOG_FUNCTION (this);
 }
 AarfWifiManager::~AarfWifiManager ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 WifiRemoteStation *
 AarfWifiManager::DoCreateStation (void) const
 {
+  NS_LOG_FUNCTION (this);
   AarfWifiRemoteStation *station = new AarfWifiRemoteStation ();
 
   station->m_successThreshold = m_minSuccessThreshold;
@@ -109,6 +112,7 @@ AarfWifiManager::DoCreateStation (void) const
 void
 AarfWifiManager::DoReportRtsFailed (WifiRemoteStation *station)
 {
+  NS_LOG_FUNCTION (this << station);
 }
 /**
  * It is important to realize that "recovery" mode starts after failure of
@@ -122,6 +126,7 @@ AarfWifiManager::DoReportRtsFailed (WifiRemoteStation *station)
 void
 AarfWifiManager::DoReportDataFailed (WifiRemoteStation *st)
 {
+  NS_LOG_FUNCTION (this << st);
   AarfWifiRemoteStation *station = (AarfWifiRemoteStation *)st;
   station->m_timer++;
   station->m_failed++;
@@ -168,17 +173,20 @@ void
 AarfWifiManager::DoReportRxOk (WifiRemoteStation *station,
                                double rxSnr, WifiMode txMode)
 {
+  NS_LOG_FUNCTION (this << station << rxSnr << txMode);
 }
 void
 AarfWifiManager::DoReportRtsOk (WifiRemoteStation *station,
                                 double ctsSnr, WifiMode ctsMode, double rtsSnr)
 {
+  NS_LOG_FUNCTION (this << station << ctsSnr << ctsMode << rtsSnr);
   NS_LOG_DEBUG ("station=" << station << " rts ok");
 }
 void
 AarfWifiManager::DoReportDataOk (WifiRemoteStation *st,
                                  double ackSnr, WifiMode ackMode, double dataSnr)
 {
+  NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr);
   AarfWifiRemoteStation *station = (AarfWifiRemoteStation *) st;
   station->m_timer++;
   station->m_success++;
@@ -200,21 +208,25 @@ AarfWifiManager::DoReportDataOk (WifiRemoteStation *st,
 void
 AarfWifiManager::DoReportFinalRtsFailed (WifiRemoteStation *station)
 {
+  NS_LOG_FUNCTION (this << station);
 }
 void
 AarfWifiManager::DoReportFinalDataFailed (WifiRemoteStation *station)
 {
+  NS_LOG_FUNCTION (this << station);
 }
 
 WifiMode
 AarfWifiManager::DoGetDataMode (WifiRemoteStation *st, uint32_t size)
 {
+  NS_LOG_FUNCTION (this << st << size);
   AarfWifiRemoteStation *station = (AarfWifiRemoteStation *) st;
   return GetSupported (station, station->m_rate);
 }
 WifiMode
 AarfWifiManager::DoGetRtsMode (WifiRemoteStation *st)
 {
+  NS_LOG_FUNCTION (this << st);
   // XXX: we could/should implement the Aarf algorithm for
   // RTS only by picking a single rate within the BasicRateSet.
   AarfWifiRemoteStation *station = (AarfWifiRemoteStation *) st;
@@ -224,6 +236,7 @@ AarfWifiManager::DoGetRtsMode (WifiRemoteStation *st)
 bool
 AarfWifiManager::IsLowLatency (void) const
 {
+  NS_LOG_FUNCTION (this);
   return true;
 }
 
