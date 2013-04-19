@@ -31,15 +31,18 @@ Icmpv4L4Protocol::GetTypeId (void)
 Icmpv4L4Protocol::Icmpv4L4Protocol ()
   : m_node (0)
 {
+  NS_LOG_FUNCTION (this);
 }
 Icmpv4L4Protocol::~Icmpv4L4Protocol ()
 {
+  NS_LOG_FUNCTION (this);
   NS_ASSERT (m_node == 0);
 }
 
 void
 Icmpv4L4Protocol::SetNode (Ptr<Node> node)
 {
+  NS_LOG_FUNCTION (this << node);
   m_node = node;
 }
 
@@ -51,6 +54,7 @@ Icmpv4L4Protocol::SetNode (Ptr<Node> node)
 void
 Icmpv4L4Protocol::NotifyNewAggregate ()
 {
+  NS_LOG_FUNCTION (this);
   if (m_node == 0)
     {
       Ptr<Node> node = this->GetObject<Node> ();
@@ -73,17 +77,20 @@ Icmpv4L4Protocol::NotifyNewAggregate ()
 uint16_t 
 Icmpv4L4Protocol::GetStaticProtocolNumber (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   return PROT_NUMBER;
 }
 
 int 
 Icmpv4L4Protocol::GetProtocolNumber (void) const
 {
+  NS_LOG_FUNCTION (this);
   return PROT_NUMBER;
 }
 void
 Icmpv4L4Protocol::SendMessage (Ptr<Packet> packet, Ipv4Address dest, uint8_t type, uint8_t code)
 {
+  NS_LOG_FUNCTION (this << packet << dest << static_cast<uint32_t> (type) << static_cast<uint32_t> (code));
   Ptr<Ipv4> ipv4 = m_node->GetObject<Ipv4> ();
   NS_ASSERT (ipv4 != 0 && ipv4->GetRoutingProtocol () != 0);
   Ipv4Header header;
@@ -108,6 +115,7 @@ Icmpv4L4Protocol::SendMessage (Ptr<Packet> packet, Ipv4Address dest, uint8_t typ
 void
 Icmpv4L4Protocol::SendMessage (Ptr<Packet> packet, Ipv4Address source, Ipv4Address dest, uint8_t type, uint8_t code, Ptr<Ipv4Route> route)
 {
+  NS_LOG_FUNCTION (this << packet << source << dest << static_cast<uint32_t> (type) << static_cast<uint32_t> (code) << route);
   Icmpv4Header icmp;
   icmp.SetType (type);
   icmp.SetCode (code);
@@ -179,6 +187,8 @@ Icmpv4L4Protocol::Forward (Ipv4Address source, Icmpv4Header icmp,
                            uint32_t info, Ipv4Header ipHeader,
                            const uint8_t payload[8])
 {
+  NS_LOG_FUNCTION (this << source << icmp << info << ipHeader << payload);
+
   Ptr<Ipv4> ipv4 = m_node->GetObject<Ipv4> ();
   Ptr<IpL4Protocol> l4 = ipv4->GetProtocol (ipHeader.GetProtocol ());
   if (l4 != 0)
@@ -264,23 +274,27 @@ Icmpv4L4Protocol::DoDispose (void)
 void
 Icmpv4L4Protocol::SetDownTarget (IpL4Protocol::DownTargetCallback callback)
 {
+  NS_LOG_FUNCTION (this << &callback);
   m_downTarget = callback;
 }
 
 void
 Icmpv4L4Protocol::SetDownTarget6 (IpL4Protocol::DownTargetCallback6 callback)
 {
+  NS_LOG_FUNCTION (this << &callback);
 }
 
 IpL4Protocol::DownTargetCallback
 Icmpv4L4Protocol::GetDownTarget (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_downTarget;
 }
 
 IpL4Protocol::DownTargetCallback6
 Icmpv4L4Protocol::GetDownTarget6 (void) const
 {
+  NS_LOG_FUNCTION (this);
   return (IpL4Protocol::DownTargetCallback6)NULL;
 }
 

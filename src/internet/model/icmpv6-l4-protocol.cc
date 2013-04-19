@@ -79,17 +79,17 @@ TypeId Icmpv6L4Protocol::GetTypeId ()
 Icmpv6L4Protocol::Icmpv6L4Protocol ()
   : m_node (0)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 Icmpv6L4Protocol::~Icmpv6L4Protocol ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 void Icmpv6L4Protocol::DoDispose ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   for (CacheList::const_iterator it = m_cacheList.begin (); it != m_cacheList.end (); it++)
     {
       Ptr<NdiscCache> cache = *it;
@@ -105,7 +105,7 @@ void Icmpv6L4Protocol::DoDispose ()
 
 void Icmpv6L4Protocol::NotifyNewAggregate ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   if (m_node == 0)
     {
       Ptr<Node> node = this->GetObject<Node> ();
@@ -139,18 +139,19 @@ uint16_t Icmpv6L4Protocol::GetStaticProtocolNumber ()
 
 int Icmpv6L4Protocol::GetProtocolNumber () const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return PROT_NUMBER;
 }
 
 int Icmpv6L4Protocol::GetVersion () const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return 1;
 }
 
 bool Icmpv6L4Protocol::IsAlwaysDad () const
 {
+  NS_LOG_FUNCTION (this);
   return m_alwaysDad;
 }
 

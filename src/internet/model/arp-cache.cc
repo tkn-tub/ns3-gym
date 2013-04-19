@@ -109,12 +109,14 @@ ArpCache::SetDevice (Ptr<NetDevice> device, Ptr<Ipv4Interface> interface)
 Ptr<NetDevice>
 ArpCache::GetDevice (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_device;
 }
 
 Ptr<Ipv4Interface>
 ArpCache::GetInterface (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_interface;
 }
 
@@ -140,16 +142,19 @@ ArpCache::SetWaitReplyTimeout (Time waitReplyTimeout)
 Time
 ArpCache::GetAliveTimeout (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_aliveTimeout;
 }
 Time
 ArpCache::GetDeadTimeout (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_deadTimeout;
 }
 Time
 ArpCache::GetWaitReplyTimeout (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_waitReplyTimeout;
 }
 
@@ -157,7 +162,7 @@ void
 ArpCache::SetArpRequestCallback (Callback<void, Ptr<const ArpCache>,
                                           Ipv4Address> arpRequestCallback)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << &arpRequestCallback);
   m_arpRequestCallback = arpRequestCallback;
 }
 
@@ -240,6 +245,7 @@ ArpCache::Flush (void)
 ArpCache::Entry *
 ArpCache::Lookup (Ipv4Address to)
 {
+  NS_LOG_FUNCTION (this << to);
   if (m_arpCache.find (to) != m_arpCache.end ()) 
     {
       ArpCache::Entry *entry = m_arpCache[to];
@@ -272,16 +278,19 @@ ArpCache::Entry::Entry (ArpCache *arp)
 bool 
 ArpCache::Entry::IsDead (void)
 {
+  NS_LOG_FUNCTION (this);
   return (m_state == DEAD) ? true : false;
 }
 bool 
 ArpCache::Entry::IsAlive (void)
 {
+  NS_LOG_FUNCTION (this);
   return (m_state == ALIVE) ? true : false;
 }
 bool
 ArpCache::Entry::IsWaitReply (void)
 {
+  NS_LOG_FUNCTION (this);
   return (m_state == WAIT_REPLY) ? true : false;
 }
 
@@ -336,12 +345,14 @@ ArpCache::Entry::MarkWaitReply (Ptr<Packet> waiting)
 Address
 ArpCache::Entry::GetMacAddress (void) const
 {
+  NS_LOG_FUNCTION (this);
   NS_ASSERT (m_state == ALIVE);
   return m_macAddress;
 }
 Ipv4Address 
 ArpCache::Entry::GetIpv4Address (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_ipv4Address;
 }
 void 
@@ -353,6 +364,7 @@ ArpCache::Entry::SetIpv4Address (Ipv4Address destination)
 Time
 ArpCache::Entry::GetTimeout (void) const
 {
+  NS_LOG_FUNCTION (this);
   switch (m_state) {
     case ArpCache::Entry::WAIT_REPLY:
       return m_arp->GetWaitReplyTimeout ();
@@ -369,6 +381,7 @@ ArpCache::Entry::GetTimeout (void) const
 bool 
 ArpCache::Entry::IsExpired (void) const
 {
+  NS_LOG_FUNCTION (this);
   Time timeout = GetTimeout ();
   Time delta = Simulator::Now () - m_lastSeen;
   NS_LOG_DEBUG ("delta=" << delta.GetSeconds () << "s");
@@ -396,12 +409,13 @@ ArpCache::Entry::DequeuePending (void)
 void 
 ArpCache::Entry::UpdateSeen (void)
 {
-  NS_LOG_FUNCTION (this << m_macAddress << m_ipv4Address);
+  NS_LOG_FUNCTION (this);
   m_lastSeen = Simulator::Now ();
 }
 uint32_t
 ArpCache::Entry::GetRetries (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_retries;
 }
 void

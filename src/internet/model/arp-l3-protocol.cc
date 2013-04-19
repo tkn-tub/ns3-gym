@@ -69,7 +69,7 @@ ArpL3Protocol::~ArpL3Protocol ()
 void 
 ArpL3Protocol::SetNode (Ptr<Node> node)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << node);
   m_node = node;
 }
 
@@ -80,6 +80,7 @@ ArpL3Protocol::SetNode (Ptr<Node> node)
 void
 ArpL3Protocol::NotifyNewAggregate ()
 {
+  NS_LOG_FUNCTION (this);
   if (m_node == 0)
     {
       Ptr<Node>node = this->GetObject<Node> ();
@@ -245,7 +246,7 @@ ArpL3Protocol::Lookup (Ptr<Packet> packet, Ipv4Address destination,
                        Ptr<ArpCache> cache,
                        Address *hardwareDestination)
 {
-  NS_LOG_FUNCTION (this << packet << destination << device << cache);
+  NS_LOG_FUNCTION (this << packet << destination << device << cache << hardwareDestination);
   ArpCache::Entry *entry = cache->Lookup (destination);
   if (entry != 0)
     {
@@ -332,7 +333,7 @@ ArpL3Protocol::SendArpRequest (Ptr<const ArpCache> cache, Ipv4Address to)
 void
 ArpL3Protocol::SendArpReply (Ptr<const ArpCache> cache, Ipv4Address myIp, Ipv4Address toIp, Address toMac)
 {
-  NS_LOG_FUNCTION (this << cache << toIp << toMac);
+  NS_LOG_FUNCTION (this << cache << myIp << toIp << toMac);
   ArpHeader arp;
   NS_LOG_LOGIC ("ARP: sending reply from node "<<m_node->GetId ()<<
                 "|| src: " << cache->GetDevice ()->GetAddress () <<
