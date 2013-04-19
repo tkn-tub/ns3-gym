@@ -1507,57 +1507,57 @@ you will find,
 
 ::
 
-  Simulator::ScheduleWithContext (index, TimeStep (0), &Node::Start, node);
+  Simulator::ScheduleWithContext (index, TimeStep (0), &Node::Initialize, node);
 
 This tells you that whenever a ``Node`` is created in a simulation, as
-a side-effect, a call to that node's ``Start`` method is scheduled for
+a side-effect, a call to that node's ``Initialize`` method is scheduled for
 you that happens at time zero.  Don't read too much into that name, yet.
 It doesn't mean that the node is going to start doing anything, it can be
 interpreted as an informational call into the ``Node`` telling it that 
 the simulation has started, not a call for action telling the ``Node``
 to start doing something.
 
-So, ``NodeList::Add`` indirectly schedules a call to ``Node::Start``
+So, ``NodeList::Add`` indirectly schedules a call to ``Node::Initialize``
 at time zero to advise a new node that the simulation has started.  If you 
 look in ``src/network/model/node.h`` you will, however, not find a method called
-``Node::Start``.  It turns out that the ``Start`` method is inherited
+``Node::Initialize``.  It turns out that the ``Initialize`` method is inherited
 from class ``Object``.  All objects in the system can be notified when
 the simulation starts, and objects of class ``Node`` are just one kind
 of those objects.
 
-Take a look at ``src/core/model/object.cc`` next and search for ``Object::Start``.
+Take a look at ``src/core/model/object.cc`` next and search for ``Object::Initialize``.
 This code is not as straightforward as you might have expected since 
 |ns3| ``Objects`` support aggregation.  The code in 
-``Object::Start`` then loops through all of the objects that have been
-aggregated together and calls their ``DoStart`` method.  This is another
+``Object::Initialize`` then loops through all of the objects that have been
+aggregated together and calls their ``DoInitialize`` method.  This is another
 idiom that is very common in |ns3|.  There is a public API method,
 that stays constant across implementations, that calls a private implementation
 method that is inherited and implemented by subclasses.  The names are typically
 something like ``MethodName`` for the public API and ``DoMethodName`` for
 the private API.
 
-This tells us that we should look for a ``Node::DoStart`` method in 
+This tells us that we should look for a ``Node::DoInitialize`` method in 
 ``src/network/model/node.cc`` for the method that will continue our trail.  If you
 locate the code, you will find a method that loops through all of the devices
 in the node and then all of the applications in the node calling 
-``device->Start`` and ``application->Start`` respectively.
+``device->Initialize`` and ``application->Initialize`` respectively.
 
 You may already know that classes ``Device`` and ``Application`` both
 inherit from class ``Object`` and so the next step will be to look at
-what happens when ``Application::DoStart`` is called.  Take a look at
+what happens when ``Application::DoInitialize`` is called.  Take a look at
 ``src/network/model/application.cc`` and you will find:
 
 ::
 
   void
-  Application::DoStart (void)
+  Application::DoInitialize (void)
   {
     m_startEvent = Simulator::Schedule (m_startTime, &Application::StartApplication, this);
     if (m_stopTime != TimeStep (0))
       {
         m_stopEvent = Simulator::Schedule (m_stopTime, &Application::StopApplication, this);
       }
-    Object::DoStart ();
+    Object::DoInitialize ();
   }
 
 Here, we finally come to the end of the trail.  If you have kept it all straight,
@@ -1567,16 +1567,16 @@ and ``StopApplication`` methods and provide mechanisms for starting and
 stopping the flow of data out of your new ``Application``.  When a ``Node``
 is created in the simulation, it is added to a global ``NodeList``.  The act
 of adding a node to this ``NodeList`` causes a simulator event to be scheduled
-for time zero which calls the ``Node::Start`` method of the newly added 
+for time zero which calls the ``Node::Initialize`` method of the newly added 
 ``Node`` to be called when the simulation starts.  Since a ``Node`` inherits
-from ``Object``, this calls the ``Object::Start`` method on the ``Node``
-which, in turn, calls the ``DoStart`` methods on all of the ``Objects``
+from ``Object``, this calls the ``Object::Initialize`` method on the ``Node``
+which, in turn, calls the ``DoInitialize`` methods on all of the ``Objects``
 aggregated to the ``Node`` (think mobility models).  Since the ``Node``
-``Object`` has overridden ``DoStart``, that method is called when the 
-simulation starts.  The ``Node::DoStart`` method calls the ``Start`` methods
+``Object`` has overridden ``DoInitialize``, that method is called when the 
+simulation starts.  The ``Node::DoInitialize`` method calls the ``Initialize`` methods
 of all of the ``Applications`` on the node.  Since ``Applications`` are
-also ``Objects``, this causes ``Application::DoStart`` to be called.  When
-``Application::DoStart`` is called, it schedules events for the 
+also ``Objects``, this causes ``Application::DoInitialize`` to be called.  When
+``Application::DoInitialize`` is called, it schedules events for the 
 ``StartApplication`` and ``StopApplication`` calls on the ``Application``.
 These calls are designed to start and stop the flow of data from the 
 ``Application``
