@@ -79,14 +79,14 @@ public:
 Ipv4AddressGeneratorImpl::Ipv4AddressGeneratorImpl () 
   : m_entries (), m_test (false)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   Reset ();
 }
 
 void
 Ipv4AddressGeneratorImpl::Reset (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 
   uint32_t mask = 0;
 //
@@ -124,7 +124,7 @@ Ipv4AddressGeneratorImpl::Reset (void)
 
 Ipv4AddressGeneratorImpl::~Ipv4AddressGeneratorImpl ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 void
@@ -133,7 +133,7 @@ Ipv4AddressGeneratorImpl::Init (
   const Ipv4Mask mask,
   const Ipv4Address addr)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << net << mask << addr);
 //
 // We're going to be playing with the actual bits in the network and mask so
 // pull them out into ints.
@@ -165,7 +165,7 @@ Ipv4Address
 Ipv4AddressGeneratorImpl::GetNetwork (
   const Ipv4Mask mask) const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << mask);
 
   uint32_t index = MaskToIndex (mask);
   return Ipv4Address (m_netTable[index].network << m_netTable[index].shift);
@@ -175,7 +175,7 @@ Ipv4Address
 Ipv4AddressGeneratorImpl::NextNetwork (
   const Ipv4Mask mask)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << mask);
 //
 // The way this is expected to be used is that an address and network prefix
 // are initialized, and then NextAddress() is called repeatedly to set the
@@ -195,7 +195,7 @@ Ipv4AddressGeneratorImpl::InitAddress (
   const Ipv4Address addr,
   const Ipv4Mask mask)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << addr << mask);
 
   uint32_t index = MaskToIndex (mask);
   uint32_t addrBits = addr.Get ();
@@ -208,7 +208,7 @@ Ipv4Address
 Ipv4AddressGeneratorImpl::GetAddress (
   const Ipv4Mask mask) const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << mask);
 
   uint32_t index = MaskToIndex (mask);
 
@@ -220,7 +220,7 @@ Ipv4AddressGeneratorImpl::GetAddress (
 Ipv4Address
 Ipv4AddressGeneratorImpl::NextAddress (const Ipv4Mask mask)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << mask);
 //
 // The way this is expected to be used is that an address and network prefix
 // are initialized, and then NextAddress() is called repeatedly to set the
@@ -249,7 +249,7 @@ Ipv4AddressGeneratorImpl::NextAddress (const Ipv4Mask mask)
 bool
 Ipv4AddressGeneratorImpl::AddAllocated (const Ipv4Address address)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << address);
 
   uint32_t addr = address.Get ();
 
@@ -337,13 +337,16 @@ Ipv4AddressGeneratorImpl::AddAllocated (const Ipv4Address address)
 void
 Ipv4AddressGeneratorImpl::TestMode (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   m_test = true;
 }
 
 uint32_t
 Ipv4AddressGeneratorImpl::MaskToIndex (Ipv4Mask mask) const
 {
+  
+  NS_LOG_FUNCTION (this << mask);
+  
 //
 // We've been given a mask that has a higher order bit set for each bit of the
 // network number.  In order to translate this mask into an index, we just need

@@ -34,7 +34,7 @@
 #include "ipv4-static-routing.h"
 #include "ipv4-routing-table-entry.h"
 
-NS_LOG_COMPONENT_DEFINE ("Ipv4StaticRouting");
+NS_LOG_COMPONENT_DEFINE ("Ipv4StaticRoung");
 
 using std::make_pair;
 
@@ -122,7 +122,7 @@ Ipv4StaticRouting::AddMulticastRoute (Ipv4Address origin,
                                       uint32_t inputInterface,
                                       std::vector<uint32_t> outputInterfaces)
 {
-  NS_LOG_FUNCTION (this << origin << " " << group << " " << inputInterface);
+  NS_LOG_FUNCTION (this << origin << " " << group << " " << inputInterface << " " << &outputInterfaces);
   Ipv4MulticastRoutingTableEntry *route = new Ipv4MulticastRoutingTableEntry ();
   *route = Ipv4MulticastRoutingTableEntry::CreateMulticastRoute (origin, group, 
                                                                  inputInterface, outputInterfaces);
@@ -454,7 +454,7 @@ Ipv4StaticRouting::RemoveRoute (uint32_t index)
 Ptr<Ipv4Route> 
 Ipv4StaticRouting::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDevice> oif, Socket::SocketErrno &sockerr)
 {
-  NS_LOG_FUNCTION (this << header << oif);
+  NS_LOG_FUNCTION (this << p<< header << oif << sockerr);
   Ipv4Address destination = header.GetDestination ();
   Ptr<Ipv4Route> rtentry = 0;
 
@@ -486,7 +486,7 @@ Ipv4StaticRouting::RouteInput  (Ptr<const Packet> p, const Ipv4Header &ipHeader,
                                 UnicastForwardCallback ucb, MulticastForwardCallback mcb,
                                 LocalDeliverCallback lcb, ErrorCallback ecb)
 {
-  NS_LOG_FUNCTION (this << p << ipHeader << ipHeader.GetSource () << ipHeader.GetDestination () << idev);
+  NS_LOG_FUNCTION (this << p << ipHeader << ipHeader.GetSource () << ipHeader.GetDestination () << idev << &ucb << &mcb << &lcb << &ecb);
 
   NS_ASSERT (m_ipv4 != 0);
   // Check if input device supports IP 
@@ -579,11 +579,13 @@ Ipv4StaticRouting::RouteInput  (Ptr<const Packet> p, const Ipv4Header &ipHeader,
 
 Ipv4StaticRouting::~Ipv4StaticRouting ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 void
 Ipv4StaticRouting::DoDispose (void)
 {
+  NS_LOG_FUNCTION (this);
   for (NetworkRoutesI j = m_networkRoutes.begin (); 
        j != m_networkRoutes.end (); 
        j = m_networkRoutes.erase (j)) 
@@ -704,6 +706,7 @@ Ipv4StaticRouting::SetIpv4 (Ptr<Ipv4> ipv4)
 void
 Ipv4StaticRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
 {
+  NS_LOG_FUNCTION (this << stream);
   std::ostream* os = stream->GetStream ();
   if (GetNRoutes () > 0)
     {

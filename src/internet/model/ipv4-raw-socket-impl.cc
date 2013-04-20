@@ -65,6 +65,7 @@ Ipv4RawSocketImpl::Ipv4RawSocketImpl ()
 void 
 Ipv4RawSocketImpl::SetNode (Ptr<Node> node)
 {
+  NS_LOG_FUNCTION (this << node);
   m_node = node;
 }
 
@@ -86,6 +87,7 @@ Ipv4RawSocketImpl::GetErrno (void) const
 enum Socket::SocketType
 Ipv4RawSocketImpl::GetSocketType (void) const
 {
+  NS_LOG_FUNCTION (this);
   return NS3_SOCK_RAW;
 }
 
@@ -118,11 +120,13 @@ Ipv4RawSocketImpl::Bind (void)
 int 
 Ipv4RawSocketImpl::Bind6 (void)
 {
+  NS_LOG_FUNCTION (this);
   return (-1);
 }
 int 
 Ipv4RawSocketImpl::GetSockName (Address &address) const
 {
+  NS_LOG_FUNCTION (this << address);
   address = InetSocketAddress (m_src, 0);
   return 0;
 }
@@ -362,6 +366,7 @@ Ipv4RawSocketImpl::ForwardUp (Ptr<const Packet> p, Ipv4Header ipHeader, Ptr<Ipv4
 bool
 Ipv4RawSocketImpl::SetAllowBroadcast (bool allowBroadcast)
 {
+  NS_LOG_FUNCTION (this << allowBroadcast);
   if (!allowBroadcast)
     {
       return false;
@@ -372,6 +377,7 @@ Ipv4RawSocketImpl::SetAllowBroadcast (bool allowBroadcast)
 bool
 Ipv4RawSocketImpl::GetAllowBroadcast () const
 {
+  NS_LOG_FUNCTION (this);
   return true;
 }
 

@@ -22,6 +22,9 @@
 #include <stdint.h>
 #include "ns3/ipv4-address.h"
 #include "ipv4-packet-info-tag.h"
+#include "ns3/log.h"
+
+NS_LOG_COMPONENT_DEFINE ("Ipv4PacketInfoTag");
 
 namespace ns3 {
 
@@ -31,53 +34,62 @@ Ipv4PacketInfoTag::Ipv4PacketInfoTag ()
     m_ifindex (0),
     m_ttl (0)
 {
+  NS_LOG_FUNCTION (this);
 }
 
 void 
 Ipv4PacketInfoTag::SetAddress (Ipv4Address addr)
 {
+  NS_LOG_FUNCTION (this << addr);
   m_addr = addr;
 }
 
 Ipv4Address
 Ipv4PacketInfoTag::GetAddress (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_addr;
 }
 
 void 
 Ipv4PacketInfoTag::SetLocalAddress (Ipv4Address addr)
 {
+  NS_LOG_FUNCTION (this << addr);
   m_spec_dst = addr;
 }
 
 Ipv4Address
 Ipv4PacketInfoTag::GetLocalAddress (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_spec_dst;
 }
 
 void 
 Ipv4PacketInfoTag::SetRecvIf (uint32_t ifindex)
 {
+  NS_LOG_FUNCTION (this << ifindex);
   m_ifindex = ifindex;
 }
 
 uint32_t 
 Ipv4PacketInfoTag::GetRecvIf (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_ifindex;
 }
 
 void 
 Ipv4PacketInfoTag::SetTtl (uint8_t ttl)
 {
+  NS_LOG_FUNCTION (this << static_cast<uint32_t> (ttl));
   m_ttl = ttl;
 }
 
 uint8_t 
 Ipv4PacketInfoTag::GetTtl (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_ttl;
 }
 
@@ -95,19 +107,22 @@ Ipv4PacketInfoTag::GetTypeId (void)
 TypeId
 Ipv4PacketInfoTag::GetInstanceTypeId (void) const
 {
+  NS_LOG_FUNCTION (this);
   return GetTypeId ();
 }
 
 uint32_t 
 Ipv4PacketInfoTag::GetSerializedSize (void) const
 { 
+  NS_LOG_FUNCTION (this);
   return 4 + 4 
          + sizeof (uint32_t)
          + sizeof (uint8_t);
 }
 void 
 Ipv4PacketInfoTag::Serialize (TagBuffer i) const
-{ 
+{
+  NS_LOG_FUNCTION (this << &i);
   uint8_t buf[4];
   m_addr.Serialize (buf);
   i.Write (buf, 4);
@@ -118,7 +133,8 @@ Ipv4PacketInfoTag::Serialize (TagBuffer i) const
 }
 void 
 Ipv4PacketInfoTag::Deserialize (TagBuffer i)
-{ 
+{
+  NS_LOG_FUNCTION (this<< &i);
   uint8_t buf[4];
   i.Read (buf, 4);
   m_addr = Ipv4Address::Deserialize (buf);
@@ -130,6 +146,7 @@ Ipv4PacketInfoTag::Deserialize (TagBuffer i)
 void
 Ipv4PacketInfoTag::Print (std::ostream &os) const
 {
+  NS_LOG_FUNCTION (this << &os);
   os << "Ipv4 PKTINFO [DestAddr: " << m_addr;
   os << ", Local Address:" << m_spec_dst;
   os << ", RecvIf:" << (uint32_t) m_ifindex;

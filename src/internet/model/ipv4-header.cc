@@ -48,40 +48,47 @@ Ipv4Header::Ipv4Header ()
 void
 Ipv4Header::EnableChecksum (void)
 {
+  NS_LOG_FUNCTION (this);
   m_calcChecksum = true;
 }
 
 void
 Ipv4Header::SetPayloadSize (uint16_t size)
 {
+  NS_LOG_FUNCTION (this << size);
   m_payloadSize = size;
 }
 uint16_t
 Ipv4Header::GetPayloadSize (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_payloadSize;
 }
 
 uint16_t
 Ipv4Header::GetIdentification (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_identification;
 }
 void
 Ipv4Header::SetIdentification (uint16_t identification)
 {
+  NS_LOG_FUNCTION (this << identification);
   m_identification = identification;
 }
 
 void 
 Ipv4Header::SetTos (uint8_t tos)
 {
+  NS_LOG_FUNCTION (this << static_cast<uint32_t> (tos));
   m_tos = tos;
 }
 
 void
 Ipv4Header::SetDscp (DscpType dscp)
 {
+  NS_LOG_FUNCTION (this << dscp);
   m_tos &= 0x3; // Clear out the DSCP part, retain 2 bits of ECN
   m_tos |= dscp;
 }
@@ -89,6 +96,7 @@ Ipv4Header::SetDscp (DscpType dscp)
 void
 Ipv4Header::SetEcn (EcnType ecn)
 {
+  NS_LOG_FUNCTION (this << ecn);
   m_tos &= 0xFC; // Clear out the ECN part, retain 6 bits of DSCP
   m_tos |= ecn;
 }
@@ -96,6 +104,7 @@ Ipv4Header::SetEcn (EcnType ecn)
 Ipv4Header::DscpType 
 Ipv4Header::GetDscp (void) const
 {
+  NS_LOG_FUNCTION (this);
   // Extract only first 6 bits of TOS byte, i.e 0xFC
   return DscpType (m_tos & 0xFC);
 }
@@ -103,6 +112,7 @@ Ipv4Header::GetDscp (void) const
 std::string 
 Ipv4Header::DscpTypeToString (DscpType dscp) const
 {
+  NS_LOG_FUNCTION (this << dscp);
   switch (dscp)
     {
       case DscpDefault:
@@ -156,6 +166,7 @@ Ipv4Header::DscpTypeToString (DscpType dscp) const
 Ipv4Header::EcnType 
 Ipv4Header::GetEcn (void) const
 {
+  NS_LOG_FUNCTION (this);
   // Extract only last 2 bits of TOS byte, i.e 0x3
   return EcnType (m_tos & 0x3);
 }
@@ -163,6 +174,7 @@ Ipv4Header::GetEcn (void) const
 std::string 
 Ipv4Header::EcnTypeToString (EcnType ecn) const
 {
+  NS_LOG_FUNCTION (this << ecn);
   switch (ecn)
     {
       case NotECT:
@@ -181,43 +193,51 @@ Ipv4Header::EcnTypeToString (EcnType ecn) const
 uint8_t 
 Ipv4Header::GetTos (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_tos;
 }
 void 
 Ipv4Header::SetMoreFragments (void)
 {
+  NS_LOG_FUNCTION (this);
   m_flags |= MORE_FRAGMENTS;
 }
 void
 Ipv4Header::SetLastFragment (void)
 {
+  NS_LOG_FUNCTION (this);
   m_flags &= ~MORE_FRAGMENTS;
 }
 bool 
 Ipv4Header::IsLastFragment (void) const
 {
+  NS_LOG_FUNCTION (this);
   return !(m_flags & MORE_FRAGMENTS);
 }
 
 void 
 Ipv4Header::SetDontFragment (void)
 {
+  NS_LOG_FUNCTION (this);
   m_flags |= DONT_FRAGMENT;
 }
 void 
 Ipv4Header::SetMayFragment (void)
 {
+  NS_LOG_FUNCTION (this);
   m_flags &= ~DONT_FRAGMENT;
 }
 bool 
 Ipv4Header::IsDontFragment (void) const
 {
+  NS_LOG_FUNCTION (this);
   return (m_flags & DONT_FRAGMENT);
 }
 
 void 
 Ipv4Header::SetFragmentOffset (uint16_t offsetBytes)
 {
+  NS_LOG_FUNCTION (this << offsetBytes);
   // check if the user is trying to set an invalid offset
   NS_ABORT_MSG_IF ((offsetBytes & 0x7), "offsetBytes must be multiple of 8 bytes");
   m_fragmentOffset = offsetBytes;
@@ -225,6 +245,7 @@ Ipv4Header::SetFragmentOffset (uint16_t offsetBytes)
 uint16_t 
 Ipv4Header::GetFragmentOffset (void) const
 {
+  NS_LOG_FUNCTION (this);
   if ((m_fragmentOffset+m_payloadSize+5*4) > 65535)
     {
       NS_LOG_WARN("Fragment will exceed the maximum packet size once reassembled");
@@ -236,44 +257,52 @@ Ipv4Header::GetFragmentOffset (void) const
 void 
 Ipv4Header::SetTtl (uint8_t ttl)
 {
+  NS_LOG_FUNCTION (this << static_cast<uint32_t> (ttl));
   m_ttl = ttl;
 }
 uint8_t 
 Ipv4Header::GetTtl (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_ttl;
 }
 
 uint8_t 
 Ipv4Header::GetProtocol (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_protocol;
 }
 void 
 Ipv4Header::SetProtocol (uint8_t protocol)
 {
+  NS_LOG_FUNCTION (this << static_cast<uint32_t> (protocol));
   m_protocol = protocol;
 }
 
 void 
 Ipv4Header::SetSource (Ipv4Address source)
 {
+  NS_LOG_FUNCTION (this << source);
   m_source = source;
 }
 Ipv4Address
 Ipv4Header::GetSource (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_source;
 }
 
 void 
 Ipv4Header::SetDestination (Ipv4Address dst)
 {
+  NS_LOG_FUNCTION (this << dst);
   m_destination = dst;
 }
 Ipv4Address
 Ipv4Header::GetDestination (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_destination;
 }
 
@@ -281,6 +310,7 @@ Ipv4Header::GetDestination (void) const
 bool
 Ipv4Header::IsChecksumOk (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_goodChecksum;
 }
 
@@ -296,11 +326,13 @@ Ipv4Header::GetTypeId (void)
 TypeId 
 Ipv4Header::GetInstanceTypeId (void) const
 {
+  NS_LOG_FUNCTION (this);
   return GetTypeId ();
 }
 void 
 Ipv4Header::Print (std::ostream &os) const
 {
+  NS_LOG_FUNCTION (this << &os);
   // ipv4, right ?
   std::string flags;
   if (m_flags == 0)
@@ -340,6 +372,7 @@ Ipv4Header::Print (std::ostream &os) const
 uint32_t 
 Ipv4Header::GetSerializedSize (void) const
 {
+  NS_LOG_FUNCTION (this);
   //return 5 * 4;
 	return m_headerSize;
 }
@@ -347,6 +380,7 @@ Ipv4Header::GetSerializedSize (void) const
 void
 Ipv4Header::Serialize (Buffer::Iterator start) const
 {
+  NS_LOG_FUNCTION (this << &start);
   Buffer::Iterator i = start;
 
   uint8_t verIhl = (4 << 4) | (5);
@@ -386,6 +420,7 @@ Ipv4Header::Serialize (Buffer::Iterator start) const
 uint32_t
 Ipv4Header::Deserialize (Buffer::Iterator start)
 {
+  NS_LOG_FUNCTION (this << &start);
   Buffer::Iterator i = start;
   uint8_t verIhl = i.ReadU8 ();
   uint8_t ihl = verIhl & 0x0f; 

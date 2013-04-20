@@ -124,7 +124,7 @@ Ipv4GlobalRouting::AddASExternalRouteTo (Ipv4Address network,
                                          Ipv4Address nextHop,
                                          uint32_t interface)
 {
-  NS_LOG_FUNCTION (this << network << networkMask << nextHop);
+  NS_LOG_FUNCTION (this << network << networkMask << nextHop << interface);
   Ipv4RoutingTableEntry *route = new Ipv4RoutingTableEntry ();
   *route = Ipv4RoutingTableEntry::CreateNetworkRouteTo (network,
                                                         networkMask,
@@ -398,6 +398,7 @@ Ipv4GlobalRouting::DoDispose (void)
 void
 Ipv4GlobalRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
 {
+  NS_LOG_FUNCTION (this << stream);
   std::ostream* os = stream->GetStream ();
   if (GetNRoutes () > 0)
     {
@@ -444,7 +445,7 @@ Ipv4GlobalRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
 Ptr<Ipv4Route>
 Ipv4GlobalRouting::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDevice> oif, Socket::SocketErrno &sockerr)
 {
-
+  NS_LOG_FUNCTION (this << p << &header << oif << &sockerr);
 //
 // First, see if this is a multicast packet we have a route for.  If we
 // have a route, then send the packet down each of the specified interfaces.
@@ -474,8 +475,7 @@ bool
 Ipv4GlobalRouting::RouteInput  (Ptr<const Packet> p, const Ipv4Header &header, Ptr<const NetDevice> idev,                             UnicastForwardCallback ucb, MulticastForwardCallback mcb,
                                 LocalDeliverCallback lcb, ErrorCallback ecb)
 { 
-
-  NS_LOG_FUNCTION (this << p << header << header.GetSource () << header.GetDestination () << idev);
+  NS_LOG_FUNCTION (this << p << header << header.GetSource () << header.GetDestination () << idev << &lcb << &ecb);
   // Check if input device supports IP
   NS_ASSERT (m_ipv4->GetInterfaceForDevice (idev) >= 0);
   uint32_t iif = m_ipv4->GetInterfaceForDevice (idev);
