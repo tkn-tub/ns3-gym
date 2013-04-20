@@ -1788,8 +1788,8 @@ def register_Ns3Object_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## object.h (module 'core'): void ns3::Object::Start() [member function]
-    cls.add_method('Start', 
+    ## object.h (module 'core'): void ns3::Object::Initialize() [member function]
+    cls.add_method('Initialize', 
                    'void', 
                    [])
     ## object.h (module 'core'): ns3::Object::Object(ns3::Object const & o) [copy constructor]
@@ -1800,8 +1800,8 @@ def register_Ns3Object_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
-    ## object.h (module 'core'): void ns3::Object::DoStart() [member function]
-    cls.add_method('DoStart', 
+    ## object.h (module 'core'): void ns3::Object::DoInitialize() [member function]
+    cls.add_method('DoInitialize', 
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
@@ -3533,8 +3533,8 @@ def register_Ns3Node_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
-    ## node.h (module 'network'): void ns3::Node::DoStart() [member function]
-    cls.add_method('DoStart', 
+    ## node.h (module 'network'): void ns3::Node::DoInitialize() [member function]
+    cls.add_method('DoInitialize', 
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
@@ -3711,15 +3711,15 @@ def register_Ns3RandomDirection2dMobilityModel_methods(root_module, cls):
                    'ns3::Vector', 
                    [], 
                    is_const=True, visibility='private', is_virtual=True)
+    ## random-direction-2d-mobility-model.h (module 'mobility'): void ns3::RandomDirection2dMobilityModel::DoInitialize() [member function]
+    cls.add_method('DoInitialize', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
     ## random-direction-2d-mobility-model.h (module 'mobility'): void ns3::RandomDirection2dMobilityModel::DoSetPosition(ns3::Vector const & position) [member function]
     cls.add_method('DoSetPosition', 
                    'void', 
                    [param('ns3::Vector const &', 'position')], 
-                   visibility='private', is_virtual=True)
-    ## random-direction-2d-mobility-model.h (module 'mobility'): void ns3::RandomDirection2dMobilityModel::DoStart() [member function]
-    cls.add_method('DoStart', 
-                   'void', 
-                   [], 
                    visibility='private', is_virtual=True)
     return
 
@@ -3753,15 +3753,15 @@ def register_Ns3RandomWalk2dMobilityModel_methods(root_module, cls):
                    'ns3::Vector', 
                    [], 
                    is_const=True, visibility='private', is_virtual=True)
+    ## random-walk-2d-mobility-model.h (module 'mobility'): void ns3::RandomWalk2dMobilityModel::DoInitialize() [member function]
+    cls.add_method('DoInitialize', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
     ## random-walk-2d-mobility-model.h (module 'mobility'): void ns3::RandomWalk2dMobilityModel::DoSetPosition(ns3::Vector const & position) [member function]
     cls.add_method('DoSetPosition', 
                    'void', 
                    [param('ns3::Vector const &', 'position')], 
-                   visibility='private', is_virtual=True)
-    ## random-walk-2d-mobility-model.h (module 'mobility'): void ns3::RandomWalk2dMobilityModel::DoStart() [member function]
-    cls.add_method('DoStart', 
-                   'void', 
-                   [], 
                    visibility='private', is_virtual=True)
     return
 
@@ -3775,8 +3775,8 @@ def register_Ns3RandomWaypointMobilityModel_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## random-waypoint-mobility-model.h (module 'mobility'): void ns3::RandomWaypointMobilityModel::DoStart() [member function]
-    cls.add_method('DoStart', 
+    ## random-waypoint-mobility-model.h (module 'mobility'): void ns3::RandomWaypointMobilityModel::DoInitialize() [member function]
+    cls.add_method('DoInitialize', 
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
@@ -3852,8 +3852,8 @@ def register_Ns3SteadyStateRandomWaypointMobilityModel_methods(root_module, cls)
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## steady-state-random-waypoint-mobility-model.h (module 'mobility'): void ns3::SteadyStateRandomWaypointMobilityModel::DoStart() [member function]
-    cls.add_method('DoStart', 
+    ## steady-state-random-waypoint-mobility-model.h (module 'mobility'): void ns3::SteadyStateRandomWaypointMobilityModel::DoInitialize() [member function]
+    cls.add_method('DoInitialize', 
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)

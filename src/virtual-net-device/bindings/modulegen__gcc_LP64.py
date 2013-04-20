@@ -1759,8 +1759,8 @@ def register_Ns3Object_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## object.h (module 'core'): void ns3::Object::Start() [member function]
-    cls.add_method('Start', 
+    ## object.h (module 'core'): void ns3::Object::Initialize() [member function]
+    cls.add_method('Initialize', 
                    'void', 
                    [])
     ## object.h (module 'core'): ns3::Object::Object(ns3::Object const & o) [copy constructor]
@@ -1771,8 +1771,8 @@ def register_Ns3Object_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
-    ## object.h (module 'core'): void ns3::Object::DoStart() [member function]
-    cls.add_method('DoStart', 
+    ## object.h (module 'core'): void ns3::Object::DoInitialize() [member function]
+    cls.add_method('DoInitialize', 
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
@@ -2515,8 +2515,8 @@ def register_Ns3Node_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
-    ## node.h (module 'network'): void ns3::Node::DoStart() [member function]
-    cls.add_method('DoStart', 
+    ## node.h (module 'network'): void ns3::Node::DoInitialize() [member function]
+    cls.add_method('DoInitialize', 
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)

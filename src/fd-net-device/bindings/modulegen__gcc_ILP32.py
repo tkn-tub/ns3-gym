@@ -2731,8 +2731,8 @@ def register_Ns3Object_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
-    ## object.h (module 'core'): void ns3::Object::DoStart() [member function]
-    cls.add_method('DoStart', 
+    ## object.h (module 'core'): void ns3::Object::DoInitialize() [member function]
+    cls.add_method('DoInitialize', 
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
@@ -3934,8 +3934,8 @@ def register_Ns3Node_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
-    ## node.h (module 'network'): void ns3::Node::DoStart() [member function]
-    cls.add_method('DoStart', 
+    ## node.h (module 'network'): void ns3::Node::DoInitialize() [member function]
+    cls.add_method('DoInitialize', 
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)

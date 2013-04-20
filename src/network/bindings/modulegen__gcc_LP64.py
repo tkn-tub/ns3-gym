@@ -402,6 +402,8 @@ def register_types(module):
     module.add_class('AddressChecker', parent=root_module['ns3::AttributeChecker'])
     ## address.h (module 'network'): ns3::AddressValue [class]
     module.add_class('AddressValue', parent=root_module['ns3::AttributeValue'])
+    ## error-model.h (module 'network'): ns3::BurstErrorModel [class]
+    module.add_class('BurstErrorModel', parent=root_module['ns3::ErrorModel'])
     ## packetbb.h (module 'network'): ns3::PbbAddressTlv [class]
     module.add_class('PbbAddressTlv', parent=root_module['ns3::PbbTlv'])
     module.add_container('std::list< ns3::Ptr< ns3::Packet > >', 'ns3::Ptr< ns3::Packet >', container_type='list')
@@ -617,6 +619,7 @@ def register_methods(root_module):
     register_Ns3TypeIdValue_methods(root_module, root_module['ns3::TypeIdValue'])
     register_Ns3AddressChecker_methods(root_module, root_module['ns3::AddressChecker'])
     register_Ns3AddressValue_methods(root_module, root_module['ns3::AddressValue'])
+    register_Ns3BurstErrorModel_methods(root_module, root_module['ns3::BurstErrorModel'])
     register_Ns3PbbAddressTlv_methods(root_module, root_module['ns3::PbbAddressTlv'])
     return
 
@@ -3642,8 +3645,8 @@ def register_Ns3Object_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## object.h (module 'core'): void ns3::Object::Start() [member function]
-    cls.add_method('Start', 
+    ## object.h (module 'core'): void ns3::Object::Initialize() [member function]
+    cls.add_method('Initialize', 
                    'void', 
                    [])
     ## object.h (module 'core'): ns3::Object::Object(ns3::Object const & o) [copy constructor]
@@ -3654,8 +3657,8 @@ def register_Ns3Object_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
-    ## object.h (module 'core'): void ns3::Object::DoStart() [member function]
-    cls.add_method('DoStart', 
+    ## object.h (module 'core'): void ns3::Object::DoInitialize() [member function]
+    cls.add_method('DoInitialize', 
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
@@ -5426,8 +5429,8 @@ def register_Ns3Application_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
-    ## application.h (module 'network'): void ns3::Application::DoStart() [member function]
-    cls.add_method('DoStart', 
+    ## application.h (module 'network'): void ns3::Application::DoInitialize() [member function]
+    cls.add_method('DoInitialize', 
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
@@ -6687,8 +6690,8 @@ def register_Ns3Node_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
-    ## node.h (module 'network'): void ns3::Node::DoStart() [member function]
-    cls.add_method('DoStart', 
+    ## node.h (module 'network'): void ns3::Node::DoInitialize() [member function]
+    cls.add_method('DoInitialize', 
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
@@ -8530,6 +8533,49 @@ def register_Ns3AddressValue_methods(root_module, cls):
     cls.add_method('Set', 
                    'void', 
                    [param('ns3::Address const &', 'value')])
+    return
+
+def register_Ns3BurstErrorModel_methods(root_module, cls):
+    ## error-model.h (module 'network'): ns3::BurstErrorModel::BurstErrorModel(ns3::BurstErrorModel const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::BurstErrorModel const &', 'arg0')])
+    ## error-model.h (module 'network'): ns3::BurstErrorModel::BurstErrorModel() [constructor]
+    cls.add_constructor([])
+    ## error-model.h (module 'network'): int64_t ns3::BurstErrorModel::AssignStreams(int64_t stream) [member function]
+    cls.add_method('AssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'stream')])
+    ## error-model.h (module 'network'): double ns3::BurstErrorModel::GetBurstRate() const [member function]
+    cls.add_method('GetBurstRate', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## error-model.h (module 'network'): static ns3::TypeId ns3::BurstErrorModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## error-model.h (module 'network'): void ns3::BurstErrorModel::SetBurstRate(double rate) [member function]
+    cls.add_method('SetBurstRate', 
+                   'void', 
+                   [param('double', 'rate')])
+    ## error-model.h (module 'network'): void ns3::BurstErrorModel::SetRandomBurstSize(ns3::Ptr<ns3::RandomVariableStream> arg0) [member function]
+    cls.add_method('SetRandomBurstSize', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::RandomVariableStream >', 'arg0')])
+    ## error-model.h (module 'network'): void ns3::BurstErrorModel::SetRandomVariable(ns3::Ptr<ns3::RandomVariableStream> arg0) [member function]
+    cls.add_method('SetRandomVariable', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::RandomVariableStream >', 'arg0')])
+    ## error-model.h (module 'network'): bool ns3::BurstErrorModel::DoCorrupt(ns3::Ptr<ns3::Packet> p) [member function]
+    cls.add_method('DoCorrupt', 
+                   'bool', 
+                   [param('ns3::Ptr< ns3::Packet >', 'p')], 
+                   visibility='private', is_virtual=True)
+    ## error-model.h (module 'network'): void ns3::BurstErrorModel::DoReset() [member function]
+    cls.add_method('DoReset', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3PbbAddressTlv_methods(root_module, cls):

@@ -2557,8 +2557,8 @@ def register_Ns3Object_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## object.h (module 'core'): void ns3::Object::Start() [member function]
-    cls.add_method('Start', 
+    ## object.h (module 'core'): void ns3::Object::Initialize() [member function]
+    cls.add_method('Initialize', 
                    'void', 
                    [])
     ## object.h (module 'core'): ns3::Object::Object(ns3::Object const & o) [copy constructor]
@@ -2569,8 +2569,8 @@ def register_Ns3Object_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
-    ## object.h (module 'core'): void ns3::Object::DoStart() [member function]
-    cls.add_method('DoStart', 
+    ## object.h (module 'core'): void ns3::Object::DoInitialize() [member function]
+    cls.add_method('DoInitialize', 
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
@@ -3639,14 +3639,14 @@ def register_Ns3EnergySource_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## energy-source.h (module 'energy'): void ns3::EnergySource::InitializeDeviceModels() [member function]
+    cls.add_method('InitializeDeviceModels', 
+                   'void', 
+                   [])
     ## energy-source.h (module 'energy'): void ns3::EnergySource::SetNode(ns3::Ptr<ns3::Node> node) [member function]
     cls.add_method('SetNode', 
                    'void', 
                    [param('ns3::Ptr< ns3::Node >', 'node')])
-    ## energy-source.h (module 'energy'): void ns3::EnergySource::StartDeviceModels() [member function]
-    cls.add_method('StartDeviceModels', 
-                   'void', 
-                   [])
     ## energy-source.h (module 'energy'): void ns3::EnergySource::UpdateEnergySource() [member function]
     cls.add_method('UpdateEnergySource', 
                    'void', 
@@ -3727,8 +3727,8 @@ def register_Ns3EnergySourceContainer_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='private', is_virtual=True)
-    ## energy-source-container.h (module 'energy'): void ns3::EnergySourceContainer::DoStart() [member function]
-    cls.add_method('DoStart', 
+    ## energy-source-container.h (module 'energy'): void ns3::EnergySourceContainer::DoInitialize() [member function]
+    cls.add_method('DoInitialize', 
                    'void', 
                    [], 
                    visibility='private', is_virtual=True)
@@ -4096,8 +4096,8 @@ def register_Ns3LiIonEnergySource_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='private', is_virtual=True)
-    ## li-ion-energy-source.h (module 'energy'): void ns3::LiIonEnergySource::DoStart() [member function]
-    cls.add_method('DoStart', 
+    ## li-ion-energy-source.h (module 'energy'): void ns3::LiIonEnergySource::DoInitialize() [member function]
+    cls.add_method('DoInitialize', 
                    'void', 
                    [], 
                    visibility='private', is_virtual=True)
@@ -4355,8 +4355,8 @@ def register_Ns3Node_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
-    ## node.h (module 'network'): void ns3::Node::DoStart() [member function]
-    cls.add_method('DoStart', 
+    ## node.h (module 'network'): void ns3::Node::DoInitialize() [member function]
+    cls.add_method('DoInitialize', 
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
@@ -4686,8 +4686,8 @@ def register_Ns3RvBatteryModel_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='private', is_virtual=True)
-    ## rv-battery-model.h (module 'energy'): void ns3::RvBatteryModel::DoStart() [member function]
-    cls.add_method('DoStart', 
+    ## rv-battery-model.h (module 'energy'): void ns3::RvBatteryModel::DoInitialize() [member function]
+    cls.add_method('DoInitialize', 
                    'void', 
                    [], 
                    visibility='private', is_virtual=True)
@@ -5099,8 +5099,8 @@ def register_Ns3BasicEnergySource_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='private', is_virtual=True)
-    ## basic-energy-source.h (module 'energy'): void ns3::BasicEnergySource::DoStart() [member function]
-    cls.add_method('DoStart', 
+    ## basic-energy-source.h (module 'energy'): void ns3::BasicEnergySource::DoInitialize() [member function]
+    cls.add_method('DoInitialize', 
                    'void', 
                    [], 
                    visibility='private', is_virtual=True)

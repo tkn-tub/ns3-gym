@@ -4068,8 +4068,8 @@ def register_Ns3Object_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## object.h (module 'core'): void ns3::Object::Start() [member function]
-    cls.add_method('Start', 
+    ## object.h (module 'core'): void ns3::Object::Initialize() [member function]
+    cls.add_method('Initialize', 
                    'void', 
                    [])
     ## object.h (module 'core'): ns3::Object::Object(ns3::Object const & o) [copy constructor]
@@ -4080,8 +4080,8 @@ def register_Ns3Object_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
-    ## object.h (module 'core'): void ns3::Object::DoStart() [member function]
-    cls.add_method('DoStart', 
+    ## object.h (module 'core'): void ns3::Object::DoInitialize() [member function]
+    cls.add_method('DoInitialize', 
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
@@ -6777,8 +6777,8 @@ def register_Ns3EdcaTxopN_methods(root_module, cls):
     cls.add_method('AssignStreams', 
                    'int64_t', 
                    [param('int64_t', 'stream')])
-    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::DoStart() [member function]
-    cls.add_method('DoStart', 
+    ## edca-txop-n.h (module 'wifi'): void ns3::EdcaTxopN::DoInitialize() [member function]
+    cls.add_method('DoInitialize', 
                    'void', 
                    [], 
                    visibility='private', is_virtual=True)
@@ -7536,8 +7536,8 @@ def register_Ns3Node_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
-    ## node.h (module 'network'): void ns3::Node::DoStart() [member function]
-    cls.add_method('DoStart', 
+    ## node.h (module 'network'): void ns3::Node::DoInitialize() [member function]
+    cls.add_method('DoInitialize', 
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
@@ -7950,8 +7950,8 @@ def register_Ns3RegularWifiMac_methods(root_module, cls):
                    'ns3::Time', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::DoStart() [member function]
-    cls.add_method('DoStart', 
+    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::DoInitialize() [member function]
+    cls.add_method('DoInitialize', 
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
@@ -8445,8 +8445,8 @@ def register_Ns3DcaTxop_methods(root_module, cls):
     cls.add_method('AssignStreams', 
                    'int64_t', 
                    [param('int64_t', 'stream')])
-    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::DoStart() [member function]
-    cls.add_method('DoStart', 
+    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::DoInitialize() [member function]
+    cls.add_method('DoInitialize', 
                    'void', 
                    [], 
                    visibility='private', is_virtual=True)
@@ -8821,8 +8821,8 @@ def register_Ns3MeshWifiInterfaceMac_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='private', is_virtual=True)
-    ## mesh-wifi-interface-mac.h (module 'mesh'): void ns3::MeshWifiInterfaceMac::DoStart() [member function]
-    cls.add_method('DoStart', 
+    ## mesh-wifi-interface-mac.h (module 'mesh'): void ns3::MeshWifiInterfaceMac::DoInitialize() [member function]
+    cls.add_method('DoInitialize', 
                    'void', 
                    [], 
                    visibility='private', is_virtual=True)
@@ -8977,8 +8977,8 @@ def register_Ns3Dot11sHwmpProtocol_methods(root_module, cls):
     cls.add_method('UnsetRoot', 
                    'void', 
                    [])
-    ## hwmp-protocol.h (module 'mesh'): void ns3::dot11s::HwmpProtocol::DoStart() [member function]
-    cls.add_method('DoStart', 
+    ## hwmp-protocol.h (module 'mesh'): void ns3::dot11s::HwmpProtocol::DoInitialize() [member function]
+    cls.add_method('DoInitialize', 
                    'void', 
                    [], 
                    visibility='private', is_virtual=True)
@@ -10290,8 +10290,8 @@ def register_Ns3Dot11sPeerManagementProtocol_methods(root_module, cls):
     cls.add_method('TransmissionSuccess', 
                    'void', 
                    [param('uint32_t', 'interface'), param('ns3::Mac48Address const', 'peerAddress')])
-    ## peer-management-protocol.h (module 'mesh'): void ns3::dot11s::PeerManagementProtocol::DoStart() [member function]
-    cls.add_method('DoStart', 
+    ## peer-management-protocol.h (module 'mesh'): void ns3::dot11s::PeerManagementProtocol::DoInitialize() [member function]
+    cls.add_method('DoInitialize', 
                    'void', 
                    [], 
                    visibility='private', is_virtual=True)
