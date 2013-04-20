@@ -34,6 +34,7 @@ const double DsssErrorRateModel::WLAN_SIR_IMPOSSIBLE = 0.1;
 double
 DsssErrorRateModel::DqpskFunction (double x)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   return ((std::sqrt (2.0) + 1.0) / std::sqrt (8.0 * 3.1415926 * std::sqrt (2.0)))
     * (1.0 / std::sqrt (x)) * std::exp ( -(2.0 - std::sqrt (2.0)) * x);
 }
@@ -41,6 +42,7 @@ DsssErrorRateModel::DqpskFunction (double x)
 double
 DsssErrorRateModel::GetDsssDbpskSuccessRate (double sinr, uint32_t nbits)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   double EbN0 = sinr * 22000000.0 / 1000000.0; // 1 bit per symbol with 1 MSPS
   double ber = 0.5 * std::exp (-EbN0);
   return std::pow ((1.0 - ber), static_cast<double> (nbits));
@@ -49,6 +51,7 @@ DsssErrorRateModel::GetDsssDbpskSuccessRate (double sinr, uint32_t nbits)
 double
 DsssErrorRateModel::GetDsssDqpskSuccessRate (double sinr,uint32_t nbits)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   double EbN0 = sinr * 22000000.0 / 1000000.0 / 2.0; // 2 bits per symbol, 1 MSPS
   double ber = DqpskFunction (EbN0);
   return std::pow ((1.0 - ber), static_cast<double> (nbits));
@@ -57,6 +60,7 @@ DsssErrorRateModel::GetDsssDqpskSuccessRate (double sinr,uint32_t nbits)
 double
 DsssErrorRateModel::GetDsssDqpskCck5_5SuccessRate (double sinr,uint32_t nbits)
 {
+  NS_LOG_FUNCTION_NOARGS ();
 #ifdef ENABLE_GSL
   // symbol error probability
   double EbN0 = sinr * 22000000.0 / 1375000.0 / 4.0;
@@ -90,6 +94,7 @@ DsssErrorRateModel::GetDsssDqpskCck5_5SuccessRate (double sinr,uint32_t nbits)
 double
 DsssErrorRateModel::GetDsssDqpskCck11SuccessRate (double sinr,uint32_t nbits)
 {
+  NS_LOG_FUNCTION_NOARGS ();
 #ifdef ENABLE_GSL
   // symbol error probability
   double EbN0 = sinr * 22000000.0 / 1375000.0 / 8.0;
