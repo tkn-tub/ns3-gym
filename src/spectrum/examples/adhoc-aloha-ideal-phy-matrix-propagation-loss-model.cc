@@ -122,7 +122,7 @@ GlobalPathlossDatabase::Print ()
 int main (int argc, char** argv)
 {
   CommandLine cmd;
-  double lossDb = 150;
+  double lossDb = 130;
   double txPowerW = 0.1; 
   uint64_t phyRate = 500000;
   uint32_t pktSize = 1000;
@@ -141,14 +141,9 @@ int main (int argc, char** argv)
   c.Create (2);
 
   MobilityHelper mobility;
-  Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
-  positionAlloc->Add (Vector (0.0, 0.0, 0.0));
-  positionAlloc->Add (Vector (5.0, 0.0, 0.0));
-  mobility.SetPositionAllocator (positionAlloc);
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
-
-
   mobility.Install (c);
+  // the actual positions are irrelevant, since we use MatrixPropagationLossModel
 
 
   SpectrumChannelHelper channelHelper;
