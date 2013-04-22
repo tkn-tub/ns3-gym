@@ -725,6 +725,53 @@ According to the considerations above, a model more flexible can be obtained con
 Therefore the PHY layer implements the MIMO model as the gain perceived by the receiver when using a MIMO scheme respect to the one obtained using SISO one. We note that, these gains referred to a case where there is no correlation between the antennas in MIMO scheme; therefore do not model degradation due to paths correlation.
 
 
+UE Measurements Model
++++++++++++++++++++++
+
+According to [TS36214]_, the UE has to report a set of measurements of the eNBs that the device is able to perceive: the the reference signal received power (RSRP) and the reference signal received quality (RSRQ). The former is a measure of the received power of a specific eNB, while the latter includes also channel interference and thermal noise.
+The UE has to report the measurements jointly with the physical cell identity (PCI) of the cell. Both measurements are performed during the reception of the RS, while the PCI is obtained with the Primary Synchronization Signal (PSS). The PSS is sent by the eNB each 5 subframes and in detail in the subframes 1 and 6.  According to [TS36133]_ sections 9.1.4 and 9.1.7, RSRP is reported by PHY layer in dBm while RSRQ in dB. The values of RSRP and RSRQ are provided to higher layers through the C-PHY SAP (by means of ``UeMeasurementsParameters`` struct) every 200 ms as defined in [TS36331]_. Layer 1 filtering is performed by averaging the all the measurements collected during the last window slot. The periodicity of reporting can be adjusted for research purposes by means of the ``LteUePhy::UeMeasurementsFilterPeriod`` attribute.
+
+The formulas of the RSRP and RSRQ can be simplified considering the assumption of the PHY layer that the channel is flat within the RB, the finest level of accuracy. In fact, this implies that all the REs within a RB have the same power, therefore:
+
+.. math::
+
+    RSRP = \frac{\sum_{k=0}^{K-1}\frac{\sum_{m=0}^{M-1}(P(k,m))}{M}}{K}
+         = \frac{\sum_{k=0}^{K-1}\frac{(M \times P(k))}{M}}{K}
+         = \frac{\sum_{k=0}^{K-1}(P(k))}{K}
+
+where :math:`P(k,m)` represents the signal power of the RE :math:`m` within the RB :math:`k`, which, as observed before, is constant within the same RB and equal to :math:`P(k)`, :math:`M` is the number of REs carrying the RS in a RB and :math:`K` is the number of RBs. It is to be noted that :math:`P(k)`, and in general all the powers defined in this section, is obtained in the simulator from the PSD of the RB (which is provided by  the ``LteInterferencePowerChunkProcessor``), in detail:
+
+.. math::
+
+    P(k) = PSD_{RB}(k)*180000/12
+
+where :math:`PSD_{RB}(k)` is the power spectral density of the RB :math:`k`, :math:`180000` is the bandwidth in Hz of the RB and :math:`12` is the number of REs per RB in an OFDM symbol.
+Similarly, for RSSI we have
+
+.. math::
+    RSSI = \sum_{k=0}^{K-1} \frac{\sum_{s=0}^{S-1} \sum_{r=0}^{R-1}( P(k,s,r) + I(k,s,r) + N(k,s,r))}{S}
+
+where :math:`S` is the number of OFDM symbols carrying RS in a RB and :math:`R` is the number of REs carrying a RS in a OFDM symbol (which is fixed to :math:`2`) while :math:`P(k,s,r)`, :math:`I(k,s,r)` and :math:`N(k,s,r)` represent respectively the perceived power of the serving cell, the interference power and the noise power of the RE :math:`r` in symbol :math:`s`. As for RSRP, the measurements within a RB are always equals among each others according to the PHY model; therefore :math:`P(k,s,r) = P(k)`, :math:`I(k,s,r) = I(k)` and :math:`N(k,s,r) = N(k)`, which implies that the RSSI can be calculated as:
+
+.. math::
+    RSSI = \sum_{k=0}^{K-1} \frac{S \times 2 \times ( P(k) + I(k) + N(k))}{S}
+         = \sum_{k=0}^{K-1} 2 \times ( P(k) + I(k) + N (k))
+
+Considering the constraints of the PHY reception chain implementation, and in order to maintain the level of computational complexity low, only RSRP can be directly obtained for all the cells. This is due to the fact that ``LteSpectrumPhy`` is designed for evaluating the interference only respect to the signal of the serving eNB. This implies that the PHY layer is optimized for managing the power signals information with the serving eNB as a reference. However, RSRP and RSRQ of neighbor cell :math:`i` can be extracted by the current information available of the serving cell :math:`j` as detailed in the following:
+
+.. math::
+
+    RSRP_i = \frac{\sum_{k=0}^{K-1}(P_i(k))}{K}
+
+    RSSI_i = RSSI_j = \sum_{k=0}^{K-1} 2 \times ( I_j(k) + P_j(k) + N_j(k) )
+
+    RSRQ_i^j = K \times RSRP_i / RSSI_j
+
+where :math:`RSRP_i` is the RSRP of the neighbor cell :math:`i`, :math:`P_i(k)` is the power perceived at any RE within the RB :math:`k`, :math:`K` is the total number of RBs, :math:`RSSI_i` is the RSSI of the neighbor cell :math:`i` when the UE is attached to cell  :math:`j` (which, since it is the sum of all the received powers, coincides with :math:`RSSI_j`), :math:`I_j(k)` is the total interference perceived by UE in any RE of RB :math:`k` when attached to cell :math:`i` (obtained by the ``LteInterferencePowerChunkProcessor``), :math:`P_j(k)` is the power perceived of cell :math:`j` in any RE of the RB :math:`k` and :math:`N` is the power noise spectral density in any RE. The sample is considered as valid in case of the RSRQ evaluated is above the ``LteUePhy::RsrqUeMeasThreshold`` attribute.
+
+
+
+
 ----------
 HARQ 
 ----------
@@ -768,64 +815,6 @@ Finally, the HARQ engine is always active both at MAC and PHY layer; however, in
    :align: center
 
    Interaction between HARQ and LTE protocol stack
-
-.. only:: latex
-
-   .. raw:: latex
-
-       \clearpage
-
-
----------------
-UE Measurements
----------------
-
-According to [TS36214]_, the UE has to report a set of measurements of the eNBs that the device is able to perceive: the the reference signal received power (RSRP) and the reference signal received quality (RSRQ). The former is a measure of the received power of a specific eNB, while the latter includes also channel interference and thermal noise.
-The UE has to report the measurements jointly with the physical cell identity (PCI) of the cell. Both measurements are performed during the reception of the RS, while the PCI is obtained with the Primary Synchronization Signal (PSS). The PSS is sent by the eNB each 5 subframes and in detail in the subframes 1 and 6.  According to [TS36133]_ sections 9.1.4 and 9.1.7, RSRP is reported by PHY layer in dBm while RSRQ in dB. The values of RSRP and RSRQ are provided to higher layers through the C-PHY SAP (by means of ``UeMeasurementsParameters`` struct) every 200 ms as defined in [TS36331]_. Layer 1 filtering is performed by averaging the all the measurements collected during the last window slot. The periodicity of reporting can be adjusted for research purposes by means of the ``LteUePhy::UeMeasurementsFilterPeriod`` attribute.
-
-The formulas of the RSRP and RSRQ can be simplified considering the assumption of the PHY layer that the channel is flat within the RB, the finest level of accuracy. In fact, this implies that all the REs within a RB have the same power, therefore:
-
-.. math::
-
-    RSRP = \frac{\sum_{k=0}^{K-1}\frac{\sum_{m=0}^{M-1}(P(k,m))}{M}}{K}
-         = \frac{\sum_{k=0}^{K-1}\frac{(M \times P(k))}{M}}{K}
-         = \frac{\sum_{k=0}^{K-1}(P(k))}{K}
-
-where :math:`P(k,m)` represents the signal power of the RE :math:`m` within the RB :math:`k`, which, as observed before, is constant within the same RB and equal to :math:`P(k)`, :math:`M` is the number of REs carrying the RS in a RB and :math:`K` is the number of RBs. It is to be noted that, :math:`P(k)`, and in general all the powers defined in this section, is obtained in the simulator from the PSD of the RB (which is the standard value returned from the ``LteInterferencePowerChunkProcessor``), in detail:
-
-.. math::
-
-    P(k) = PSD_{RB}(k)*180000/12
-
-where :math:`PSD_{RB}(k)` is the power spectral density of the RB :math:`k`, :math:`180000` is the bandwidth in Hz of the RB and :math:`12` is the number of REs per RB in an OFDM symbol.
-Similarly, for RSSI we have
-
-.. math::
-    RSSI = \sum_{k=0}^{K-1} \frac{\sum_{s=0}^{S-1} \sum_{r=0}^{R-1}( P(k,s,r) + I(k,s,r) + N(k,s,r))}{S}
-
-where :math:`S` is the number of OFDM symbols carrying RS in a RB and :math:`R` is the number of REs carrying a RS in a OFDM symbol (e.g., which is fixed to :math:`2`) while :math:`P(k,s,r)`, :math:`I(k,s,r)` and :math:`N(k,s,r)` represent respectively the perceived power of the serving cell, the interference power and the noise power of the RE :math:`r` in symbol :math:`s`. As for RSRP, the measurements within a RB are always equals among each others according to the PHY model; therefore :math:`P(k,s,r) = P(k)`, :math:`I(k,s,r) = I(k)` and :math:`N(k,s,r) = N(k)`, which implies that the RSSI can be calculated as:
-
-.. math::
-    RSSI = \sum_{k=0}^{K-1} \frac{S \times 2 \times ( P(k) + I(k) + N(k))}{S}
-         = \sum_{k=0}^{K-1} 2 \times ( P(k) + I(k) + N (k))
-
-Considering the constraints of the PHY reception chain implementation and, in order to maintain the level of computational complexity low, only RSRP can be directly obtained for all the cells. This is due to the fact that ``LteSpectrumPhy`` is designed for evaluating the interference only respect to the signal of the serving eNB. This implies that the PHY layer is optimized for managing the power signals information with the serving eNB as a reference. However, RSRP and RSRQ of neighbor cell :math:`i` can be extracted by the current information available of the serving cell :math:`j` as detailed in the following:
-
-.. math::
-
-    RSRP_i = \frac{\sum_{k=0}^{K-1}(P_i(k))}{K}
-
-    RSSI_i = RSSI_j = \sum_{k=0}^{K-1} 2 \times ( I_j(k) + P_j(k) + N_j(k) )
-
-    RSRQ_i^j = K \times RSRP_i / RSSI_j
-
-where :math:`RSRP_i` is the RSRP of the neighbor cell :math:`i`, :math:`P_i(k)` is the power perceived at any RE within the RB :math:`k`, :math:`K` is the total number of RBs, :math:`RSSI_i` is the RSSI of the neighbor cell :math:`i` when the UE is attached to cell  :math:`j` (which, since it is the sum of all the received powers, coincides with :math:`RSSI_j`), :math:`I_j(k)` is the total interference perceived by UE in any RE of RB :math:`k` when attached to cell :math:`i` (obtained by the ``LteInterferencePowerChunkProcessor``), :math:`P_j(k)` is the power perceived of cell :math:`j` in any RE of the RB :math:`k` and :math:`N` is the power noise spectral density in any RE. The sample is considered as valid in case of the RSRQ evaluated is above the ``LteUePhy::RsrqUeMeasThreshold`` attribute.
-
-.. only:: latex
-
-   .. raw:: latex
-
-       \clearpage
 
 
 ------
@@ -1833,16 +1822,16 @@ UE Measurements
 UE RRC measurements support
 ---------------------------
 
-The UE RRC entities provides support for UE measurements; in
+The UE RRC entity provides support for UE measurements; in
 particular, it implements the procedures described in Section 5.5 of
 [TS36331]_, with the following simplifying assumptions:
 
  - only E-UTRA intra-frequency measurements are supported;
 
- - meausrement gaps are not needed to perform the measurements;
+ - measurement gaps are not needed to perform the measurements;
 
  - only event-driven measurements are supported; the other type of
- measurements are not supported;
+   measurements are not supported;
 
  - only the events A2 and A4 are to be supported; 
 
@@ -1860,16 +1849,68 @@ particular, it implements the procedures described in Section 5.5 of
 eNB RRC measurement configuration
 ---------------------------------
 
+The eNB RRC entity configures the UE measurements. The eNB RRC entity
+sends the configuration parameters to the UE RRC entity in the
+MeasConfig IE of the RRC Connection Reconfiguration message when the UE
+attaches to the eNB or the RRC Handover Request message when the target
+eNB initiates the handover procedure.
+
+The eNB RRC entity implements the configuration parameters and procedures
+described in Section 5.5 of [TS36331]_, with the following simplifying
+assumptions:
+
+ - only E-UTRA intra-frequency measurements are configured, so only the
+   downlink carrier frequency of the serving cell is configured as
+   measurement object;
+
+ - only the events A2 and A4 are configured;
+
+ - only the RSRQ threshold is configured for both events;
+
+ - the reportInterval parameter is configured to 480 ms, so once the
+   events are triggered, the UE will send the measurement reports with
+   this periodicity;
+
+ - the filterCoefficientRSRQ parameter is configured to fc4, it is the
+   default value specified in the protocol specification [TS36331]_;
+
+ - the hysteresis and timeToTrigger parameters are configured with
+   values equal to zero;
+
 
 Handover
 ++++++++
 
-The RRC model support the execution of an X2-based handover
-procedure. The handover needs to be triggered explicitly by the
-simulation program by scheduling an execution of the method
-``LteEnbRrc::SendHandoverRequest ()``. The automatic triggering of the
-handover based on UE measurements is not supported at this stage.
+The RRC model support the execution of an X2-based handover procedure.
+There are 2 ways to trigger the handover procedure:
 
+ - the handover could be triggered explicitly by the simulation program
+   by scheduling an execution of the method ``LteEnbRrc::SendHandoverRequest ()``
+
+ - the handover could be triggered automatically by the eNB RRC entity.
+   The eNB executes the following algorithm :ref:`fig-lte-handover-algorithm` 
+   to trigger the handover procedure for a UE providing measurements in its
+   serving cell and the neighbour cells the UE measures:
+
+.. _fig-lte-handover-algorithm:
+
+.. figure:: figures/lte-handover-algorithm.*
+   :align: center
+
+   Algorithm to automatically trigger the Handover procedure
+
+The simulation user can set two parameters to control the handover decision:
+
+ - servingHandoverThreshold, if the RSRQ value measured by the UE in its
+   serving cell is less or equal to the servingHandoverThreshold parameter
+   (i.e. the conditions of the UE in the serving cell are getting bad or
+   not good enough), then the eNB considers this UE to hand it over to a new
+   neighbour eNB. The handover will really triggered depending on the 
+   measurements of the neighbour cells.
+
+ - neighbourHandoverOffset, if the difference between the best neighbour RSRQ
+   and the serving cell RSRQ is greater or equal to the neighbourHandoverOffset
+   parameter, then the handover procedure is triggered for this UE.
 
 
 RRC sequence diagrams

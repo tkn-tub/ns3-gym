@@ -693,7 +693,7 @@ The test suite ``lte-x2-handover`` checks the correct functionality of the X2 ha
  - a boolean flag indicating whether the ideal RRC protocol is to be used instead of the real RRC protocol
  - the type of scheduler to be used (RR or PF)
 
-Each test cases passes if the following conditions are true:
+Each test case passes if the following conditions are true:
 
  - at time 0.06s, the test CheckConnected verifies that each UE is connected to the first eNB
  - for each event in the handover list:
@@ -716,3 +716,48 @@ The condition "UE is connected to eNB" is evaluated positively if and only if al
  - for each Data Radio Bearer, the following identifiers match between
    the UE and the eNB: EPS bearer id, DRB id, LCID
 
+
+Automatic X2 handover
+---------------------
+
+The test suite ``lte-x2-handover-measures`` checks the correct functionality of the handover
+algorithm. The scenario being tested is a topology with two, three or four eNBs connected by
+an X2 interface. The eNBs are located in a straight line in the X-axes. A UE moves along the
+X-axes going from the neighbourhood of one eNB to the next eNB. Each test case is a particular
+instance of this scenario defined by the following parameters:
+
+ - the number of eNBs in the X-axes
+ - the number of EPS bearers activated for the UE
+ - a list of check point events to be triggered, where each event is defined by:
+   + the time of the first check point event
+   + the time of the last check point event
+   + interval time between two check point events
+   + the index of the UE doing the handover
+   + the index of the eNB where the UE must be connected
+ - a boolean flag indicating whether the ideal RRC protocol is to be used instead of the
+   real RRC protocol
+ - the type of scheduler to be used (RR or PF)
+
+Each test case passes if the following conditions are true:
+
+ - at time 0.08s, the test CheckConnected verifies that each UE is connected to the first eNB
+ - for each event in the check point list:
+
+   + at the indicated check point time, the indicated UE is connected to the indicated eNB
+   + 0.5s after the check point, for each active EPS bearer, the uplink and downlink sink
+     applications of the UE have achieved a number of bytes which is at least half the number
+     of bytes transmitted by the corresponding source applications
+
+The condition "UE is connected to eNB" is evaluated positively if and only if all the following conditions are met:
+
+ - the eNB has the context of the UE (identified by the RNTI value 
+   retrieved from the UE RRC)
+ - the RRC state of the UE at the eNB is CONNECTED_NORMALLY
+ - the RRC state at the UE is CONNECTED_NORMALLY
+ - the UE is configured with the CellId, DlBandwidth, UlBandwidth, 
+   DlEarfcn and UlEarfcn of the eNB
+ - the IMSI of the UE stored at the eNB is correct
+ - the number of active Data Radio Bearers is the expected one, both
+   at the eNB and at the UE
+ - for each Data Radio Bearer, the following identifiers match between
+   the UE and the eNB: EPS bearer id, DRB id, LCID
