@@ -55,19 +55,102 @@ us a note on ns-developers mailing list.</p>
 
 <h2>New API:</h2>
 <ul>
+	<li>New TCP Westwood and Westwood+ models
   <li>In Ipv4ClickRouting, the following APIs were added:
     <ul>
       <li>Ipv4ClickRouting::SetDefines(), accessible through ClickInternetStackHelper::SetDefines(), for the user to set Click defines from the ns-3 simulation file.</li>
       <li>SIMCLICK_GET_RANDOM_INT click-to-simulator command for ns-3 to drive Click's random number generation.</li>
     </ul>
-  </li>
+  </li>  
+</ul>
+<ul>
+	<li>Additions in LTE
+		<ul>
+			<li>New LTE control message classes DlHarqFeedbackLteControlMessage, RachPreambleLteControlMessage, RarLteControlMessage, MibLteControlMessage</li>
+			<li>New class UeManager
+			<li>New LteRadioBearerInfo subclasses LteSignalingRadioBearerInfo, LteDataRadioBearerInfo</li>
+			<li>New LteSinrChunkProcessor subclasses LteRsReceivedPowerChunkProcessor, LteInterferencePowerChunkProcessor</li>
+		</ul>
+	</li>
+
+<li>New Tag, PacketSocketTag, to carry the dest address of a packet and the packet type</li>
+<li>New Tag, DeviceNameTag, to carry the ns3 device name from where a packet is coming</li>
+<li>New Error Model, BurstError model, to determine which bursts of packets are errored corresponding to an underlying distribution, burst rate, and burst size</li>
 </ul>
 
 <h2>Changes to existing API:</h2>
 <ul>
+<li>ns3::Object and subclasses DoStart has been renamed to DoInitialize</li>
+<li>ns3::Object and subclasses Start has been renamed to Initialize</li>
+<li>EnergySource StartDeviceModels renamed to InitializeDeviceModels</li>
 <li>A typo was fixed in an LTE variable name. The variable ns3::AllocationRetentionPriority::preemprionVulnerability was changed to preemptionVulnerability.</li>
+<li>Changes in TestCase API
+<ul>
+	<li>TestCase has new enumeration TestDuration containing QUICK, EXTENSIVE, TAKES_FOREVER</li>
+	<li>TestCase constructor now requires TestDuration, old constructor marked deprecated</li>
 </ul>
+</li>
+<li>Changes in DSR API
+<ul>
+	<li>DsrMainHelper removed methods SetRouteCache and SetRreqTable</li>
+	<li>MaintainBuffer removed method FindMaintainEntry</li>
+	<li>DsrOptionRreqHeader removed methods (Set/Get)DataLength and SearchNextHop</li>
+	<li>DsrOptions added methods ReverseSearchNextTwoHop, Process</li>
+	<li>RouteCache removed methods GetDestination, DropPathWithDst and IsEqual</li>
+	<li>DsrRouting added (Set/Get) PassiveBuffer</li>
+	<li>DsrRouting added methods FindSourceEntry, PassiveEntryCheck and CancelPassiveTimer</li>
+	<li>DsrRouting removed methods SendRequestAndIncrement, GetNodeWithAddress and GetExtensionNumber</li>
+	<li>struct SourceRreqEntry removed.
+	<li>new class SourceRreqEntry: The request entry for intermediate nodes to check if they have received 	this request or not.  This is used to control the duplication request from being processed</li>
+	<li>RreqTable added method FindSourceEntry</li>
+</ul>
+</li>
+<li>Changes in LTE API
+<ul>
+	<li>EpcHelper added methods AddUe, AddX2Interface.  Method AddEnb now requires a cellId.  Signature of ActivateEpsBearer changed to void ActivateEpsBearer (Ptr<NetDevice> ueLteDevice, uint64_t imsi, Ptr<EpcTft> tft, EpsBearer bearer) </li>
+	<li>LteHelper method ActivateEpsBearer renamed to ActivateDedicatedEpsBearer</li>
+	<li>LteHelper added methods AddX2Interface, HandoverRequest, ActivateDataRadioBearer</li>
+	<li>LteHelper added methods EnableDlPhyTraces, EnableUlPhyTraces, EnableDlTxPhyTraces, EnableUlTxPhyTraces, EnableDlRxPhyTraces, EnableUlRxPhyTraces</li>
+	<li>LteHelper removed methods EnableDlRlcTraces, EnableUlRlcTraces, EnableDlPdcpTraces, EnableUlPdcpTraces</li>
+	<li>RadioBearerStatsCalculator added methods (Set/Get)StartTime, (Set/Get)Epoch, RescheduleEndEpoch, EndEpoch</li>
+	<li>RadioBearerStatsCalculator removed methods StartEpoch, CheckEpoch</li>
+	<li>RadioBearerStatsCalculator methods UlTxPdu, DlRxPdu now require a cellId</li>
+	<li>EpcEnbApplication constructor now requires Ipv4Addresses enbS1uAddress and sgwS1uAddress as well as cellId</li>
+	<li>EpcEnbApplication added methods SetS1SapUser, GetS1SapProvider, SetS1apSapMme and GetS1apSapEnb</li>
+	<li>EpcEnbApplication removed method ErabSetupRequest</li> 
+	<li>EpcSgwPgwApplication added methods SetS11SapMme, GetS11SapSgw, AddEnb, AddUe, SetUeAddress</li>
+	<li>lte-common.h new structs PhyTransmissionStatParameters and PhyReceptionStatParameters used in TracedCallbacks</li>
+	<li>LteControlMessage new message types DL_HARQ, RACH_PREAMBLE, RAR, MIB</li>
+	<li>LteEnbCmacSapProvider new methods RemoveUe, GetRachConfig, AllocateNcRaPreamble, AllocateTemporaryCellRnti</li>
+	<li>LteEnbPhy new methods GetLteEnbCphySapProvider, SetLteEnbCphySapUser, GetDlSpectrumPhy, GetUlSpectrumPhy, CreateSrsReport</li>
+	<li>LteEnbPhy methods DoSendMacPdu, DoSetTransmissionMode, DoSetSrsConfigurationIndex, DoGetMacChTtiDelay, DoSendLteControlMessage, AddUePhy, DeleteUePhy made private</li>
+	<li>LteEnbPhySapProvider removed methods SetBandwidth, SetTransmissionMode, SetSrsConfigurationIndex, SetCellId</li>
+	<li>LteEnbPhySapUser added methods ReceiveRachPreamble, UlInfoListElementHarqFeeback, DlInfoListElementHarqFeeback</li>
+	<li>LtePdcp added methods (Set/Get)Status</li>
+	<li>LtePdcp DoTransmitRrcPdu renamed DoTransmitPdcpSdu</li>
+	<li>LteUeRrc new enum State.  New methods SetLteUeCphySapProvider, GetLteUeCphySapUser, SetLteUeRrcSapUser, GetLteUeRrcSapProvider, GetState, GetDlEarfcn, GetDlBandwidth, GetUlBandwidth, GetCellId, SetUseRlcSm .  GetRnti made const.</li> 
+	<li>LteUeRrc removed methods ReleaseRadioBearer, GetLcIdVector, SetForwardUpCallback, DoRrcConfigurationUpdateInd</li>
+	<li>LtePdcpSapProvider struct TransmitRrcPduParameters renamed TransmitPdcpSduParameters.  Method TransmitRrcPdu renamed TransmitPdcpSdu </li>
+	<li>LtePdcpSapUser struct ReceiveRrcPduParameters renamed ReceivePdcpSduParameters.  Method ReceiveRrcPdu renamed TransmitPdcpSdu</li>
+	<li>LtePdcpSpecificLtePdcpSapProvider method TransmitRrcPdu renamed TransmitPdcpSdu</li>
+	<li>LtePdcpSpecificLtePdcpSapUser method ReceiveRrcPdu  renamed ReceivePdcpSdu. Method ReceiveRrcPdu renamed ReceivePdcpSdu</li>
+	<li>LtePhy removed methods DoSetBandwidth and DoSetEarfcn</li>
+	<li>LtePhy added methods ReportInterference and ReportRsReceivedPower</li>
+	<li>LteSpectrumPhy added methods SetHarqPhyModule, Reset, SetLtePhyDlHarqFeedbackCallback, SetLtePhyUlHarqFeedbackCallback,  AddRsPowerChunkProcessor, AddInterferenceChunkProcessor</li>
+	<li>LteUeCphySapProvider removed methods ConfigureRach, StartContentionBasedRandomAccessProcedure, StartNonContentionBasedRandomAccessProcedure</li>
+	<li>LteUeMac added method AssignStreams</li>
+	<li>LteUeNetDevice methods GetMac, GetRrc, GetImsi  made const</li>
+	<li>LteUeNetDevice new method GetNas</li>
+	<li>LteUePhy new methods GetLteUeCphySapProvider, SetLteUeCphySapUser, GetDlSpectrumPhy, GetUlSpectrumPhy, ReportInterference, ReportRsReceivedPower, ReceiveLteDlHarqFeedback</li>
+	<li>LteUePhy DoSendMacPdu, DoSendLteControlMessage, DoSetTransmissionMode, DoSetSrsConfigurationIndex made private</li>
+	<li>LteUePhySapProvider removed methods	SetBandwidth, SetTransmissionMode, SetSrsConfigurationIndex</li>
+	<li>LteUePhySapProvider added method SendRachPreamble</li>  
+ 	
+</ul>
+<li>AnimationInterface method EnableIpv4RouteTracking returns reference to calling AnimationInterface object</li>
 
+
+</ul>
 <h2>Changes to build system:</h2>
 <ul>
 <li></li>

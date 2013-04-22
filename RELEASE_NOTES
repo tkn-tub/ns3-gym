@@ -22,6 +22,7 @@ To be determined
 
 New user-visible features
 -------------------------
+- new TCP Westwood and Westwood+ models
 - ns-3-click: it's now possible to (i) have Click pull random numbers from
   ns-3 and (ii) have ns-3 set "defines" in Click via the simulation file 
   (see src/click/examples/nsclick-defines.cc).
@@ -36,7 +37,7 @@ Bugs fixed
 - Bug 1582 - IPv6 raw socket return value is not like Linux socket
 - bug 1585 - Length field of A-MSDU subframe header endianness
 - Bug 1409 - Add an attribute "SystemId" to configure the ID for MPI
-- Bug 1601 -  RttEstimator doesn't set the m_currentEstimatedRtt to m_initialEstimatedRtt on creation
+- Bug 1601 - RttEstimator doesn't set the m_currentEstimatedRtt to m_initialEstimatedRtt on creation
 - Bug 1612 - pyviz (visualizer) will not be installed
 - Bug 1623 - pybindgen rev809 is not able to build after Ubuntu 1210
 
