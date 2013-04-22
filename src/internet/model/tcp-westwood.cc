@@ -95,7 +95,10 @@ TcpWestwood::TcpWestwood (const TcpWestwood& sock) :
   m_minRtt(sock.m_minRtt),
   m_lastAck(sock.m_lastAck),
   m_prevAckNo(sock.m_prevAckNo),
-  m_accountedFor(sock.m_accountedFor)
+  m_accountedFor(sock.m_accountedFor),
+  m_pType(sock.m_pType),
+  m_fType(sock.m_fType),
+  m_IsCount(sock.m_IsCount)
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_LOGIC ("Invoked the copy constructor");
