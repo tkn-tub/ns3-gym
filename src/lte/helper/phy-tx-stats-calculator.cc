@@ -105,7 +105,7 @@ PhyTxStatsCalculator::DlPhyTransmission (PhyTransmissionStatParameters params)
         }
       m_dlTxFirstWrite = false;
       //outFile << "% time\tcellId\tIMSI\tRNTI\tlayer\tmcs\tsize\trv\tndi"; // txMode is not available at dl tx side
-      outFile << "% time\tcellId\tIMSI\tRNTI\ttxMode\tlayer\tmcs\tsize\trv\tndi";
+      outFile << "% time\tcellId\tIMSI\tRNTI\tlayer\tmcs\tsize\trv\tndi";
       outFile << std::endl;
     }
   else
