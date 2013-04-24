@@ -28,20 +28,29 @@ def configure(conf):
     #    conf.check(lib='fl', mandatory=True)
 
     # Check for the location of NSC
+    lib_to_check = 'liblinux2.6.26.so'
     if Options.options.with_nsc:
         if os.path.isdir(Options.options.with_nsc):
             conf.msg("Checking for NSC location", ("%s (given)" % Options.options.with_nsc))
             conf.env['WITH_NSC'] = os.path.abspath(Options.options.with_nsc)
     else:
-        # ns-3-dev uses ../nsc, while ns-3 releases use ../NSC_RELEASE_NAME
+        # bake.py uses ../../build, while ns-3-dev uses ../nsc,
+        # and ns-3 release uses ../NSC_RELEASE_NAME
+        nsc_bake_build_dir = os.path.join('..', '..', 'build')
+        nsc_bake_lib_dir = os.path.join(nsc_bake_build_dir, 'lib')
         nsc_dir = os.path.join('..', "nsc")
         nsc_release_dir = os.path.join('..', NSC_RELEASE_NAME)
-        if os.path.isdir(nsc_dir):
+        if os.path.exists(os.path.join(nsc_bake_lib_dir, lib_to_check)):
+            conf.msg("Checking for NSC location",("%s (guessed)" % nsc_bake_build_dir))
+            conf.env['WITH_NSC'] = os.path.abspath(nsc_bake_build_dir)
+        elif os.path.isdir(nsc_dir):
             conf.msg("Checking for NSC location",("%s (guessed)" % nsc_dir))
             conf.env['WITH_NSC'] = os.path.abspath(nsc_dir)
         elif os.path.isdir(nsc_release_dir):
             conf.msg("Checking for NSC location", ("%s (guessed)" % nsc_release_dir))
             conf.env['WITH_NSC'] = os.path.abspath(nsc_release_dir)
+        del nsc_bake_build_dir
+        del nsc_bake_lib_dir
         del nsc_dir
         del nsc_release_dir
 
@@ -69,8 +78,6 @@ def configure(conf):
                                      "architecture %r not supported" % arch)
         return
 
-    lib_to_check = 'liblinux2.6.26.so'
-
     found = False
     for path in ['.', 'lib', 'lib64', 'linux-2.6.26']:
         if os.path.exists(os.path.join(conf.env['WITH_NSC'], path, lib_to_check)):
@@ -86,7 +93,6 @@ def configure(conf):
                                      "NSC library %s is missing: NSC has not been built?" % lib_to_check)
     else:
         conf.report_optional_feature("nsc", "Network Simulation Cradle", True, "")
-
 
 def build(bld):
     # bridge and mpi dependencies are due to global routing
