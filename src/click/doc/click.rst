@@ -76,9 +76,11 @@ Usage
 Building Click
 ==============
 
-The first step is to fetch (http://read.cs.ucla.edu/click/download) and build Click. At the top of your Click source directory::
+The first step is to clone Click from the github repository and build it::
 
-  $: ./configure --enable-userlevel --disable-linuxmodule --enable-nsclick --enable-wifi
+  $: git clone https://github.com/kohler/click
+  $: cd click/
+  $: ./configure --disable-linuxmodule --enable-nsclick --enable-wifi
   $: make
 
 The --enable-wifi flag may be skipped if you don't intend on using Click with Wifi.
