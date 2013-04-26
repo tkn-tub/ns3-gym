@@ -9,8 +9,8 @@ import sys
 from waflib import Task, Options, Configure, TaskGen, Logs, Build, Utils, Errors
 from waflib.Errors import WafError
 
-feature  = TaskGen.feature
-after = TaskGen.after
+# feature  = TaskGen.feature
+# after = TaskGen.after
 
 ## https://launchpad.net/pybindgen/
 REQUIRED_PYBINDGEN_VERSION = (0, 16, 0, 825)
@@ -327,6 +327,18 @@ class apiscan_task(Task.TaskBase):
 
     def display(self):
         return 'api-scan-%s\n' % (self.target,)
+
+    def uid(self):
+        try:
+            return self.uid_
+        except AttributeError:
+            m = Utils.md5()
+            up = m.update
+            up(self.__class__.__name__.encode())
+            up(self.curdirnode.abspath().encode())
+            up(self.target)
+            self.uid_ = m.digest()
+            return self.uid_
 
     def run(self):
         top_builddir = self.bld.bldnode.abspath()
