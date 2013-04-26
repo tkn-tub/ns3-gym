@@ -106,7 +106,6 @@ TunAlloc (int iftype, char *if_name)
 {
   int control_fd;
   struct sockaddr_un addr;
-  int remotefd;
   int ret;
 
   control_fd = socket (AF_UNIX, SOCK_STREAM, 0);
@@ -142,7 +141,10 @@ SetTunUp (const char *ip, const char *prefix, const char *if_name)
 {
   FILE *in;
   FILE *out;
+  char errbuff[4096];
   int nbytes;
+
+  memset(errbuff, 0, 4096);
 
   in = fopen (VSYS_VIFUP_IN, "a");
 
@@ -151,7 +153,7 @@ SetTunUp (const char *ip, const char *prefix, const char *if_name)
       ABORT_IF (in == NULL, "Failed to open " << VSYS_VIFUP_IN, 0);
     }
 
-  out = fopen (VSYS_VIFUP_DOWN, "r");
+  out = fopen (VSYS_VIFUP_OUT, "r");
 
   if (out == NULL)
     {
@@ -164,14 +166,12 @@ SetTunUp (const char *ip, const char *prefix, const char *if_name)
   // close pipe to indicate end parameter passing and flush the fifo
   fclose (in);
 
-  nbytes = fread(if_name, 4096, 1, out);
+  nbytes = fread((void*)errbuff, 4096, 1, out);
  
   // the error buffer will not be empty if we read an error
-  ABORT_IF (strcmp(if_name, "") != 0, if_name, 0);
+  ABORT_IF (strcmp(errbuff, "") != 0, errbuff, 0);
 
   fclose (out);
-
-  return 0;
 }
 
 int

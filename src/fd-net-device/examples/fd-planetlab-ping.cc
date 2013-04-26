@@ -19,34 +19,30 @@
 // Allow ns-3 to ping a real host somewhere, using emulation mode and ping
 // the simulated node from the host.
 //
-//   ------------------
-//   | ns-3 simulation |
-//   |                 |
-//   |  -------        |
-//   | | node  |       |
-//   |  -------        |
-//   | | fd-   |       |
-//   | | net-  |       |
-//   | | device|       |
-//   |  -------        |
-//   |   |             |
-//   |   |             |
-//   ----|-------------
-//   |  ---       ---  |
-//   | |   |     |   | |
-//   | |TAP|     |ETH| |
-//   | |   |     |   | |
-//   |  ---       ---  |
-//   |             |   |
-//   |PlanteLab    |   |
-//   |host         |   |
-//   --------------|----
-//                 |
-//                 |
-//                 ---- (Internet) -------
+//
+//   +-------------------------------------+    
+//   |          PlanetLab host             |
+//   +-------------------------------------+    
+//   |    ns-3 simulation   |              |                       
+//   +----------------------+              |    
+//   |       ns-3 Node      |              |   
+//   |  +----------------+  |              |   
+//   |  |    ns-3 TCP    |  |              |   
+//   |  +----------------+  |              |   
+//   |  |    ns-3 IPv4   |  |              |   
+//   |  +----------------+  |              |   
+//   |  |   FdNetDevice  |  |              |  
+//   |--+----------------+--+    +------+  |
+//   |       | TAP  |            | eth0 |  | 
+//   |       +------+            +------+  |
+//   |       1.2.3.4                 |     |
+//   +-------------------------------|-----+ 
+//                                   |
+//                                   |
+//                                   ------------ (Internet) -----                             
 //
 // To use this example:
-//  1) The ns-3 will create the TAP device for you in the host machine.
+//  1) A ns-3 creator binary will create the TAP device for you in the host machine.
 //     For this you need to provide the network address to allocate IP addresses
 //     for the TAP/TU device and the ns-3 FdNetDevice.
 //  2) Once the experiment is running you can ping the FdNetDevice IP address from
@@ -82,7 +78,7 @@ main (int argc, char *argv[])
 
   std::string remote ("173.194.34.51"); // example.com
   //
-  //  Make suer network and mask correspond to those assigned to your PlanetLab
+  //  Make sure network and mask correspond to those assigned to your PlanetLab
   //  slice, through the tag vsys_vnet x.x.x.x/yy .
   //  In this case The network should be x.x.x.x and the mask should correspond to
   //  the prefix yy.

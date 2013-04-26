@@ -20,15 +20,16 @@
  */
 
 // +----------------------+     +-----------------------+
-// |    client machine    |     |    server machine     |
+// |      client host     |     |      server host      |
 // +----------------------+     +-----------------------+
-// |        node 0        |     |        node 1         |
+// |     ns-3 Node 0      |     |      ns-3 Node 1      |
 // |  +----------------+  |     |   +----------------+  |
 // |  |    ns-3 TCP    |  |     |   |    ns-3 TCP    |  |
 // |  +----------------+  |     |   +----------------+  |
-// |  |    10.1.1.1    |  |     |   |    10.1.1.2    |  |
+// |  |    ns-3 IPv4   |  |     |   |    ns-3 IPv4   |  |
 // |  +----------------+  |     |   +----------------+  |
-// |  |  fd-net-device |  |     |   |  fd-net-device |  |
+// |  |   FdNetDevice  |  |     |   |   FdNetDevice  |  |
+// |  |    10.1.1.1    |  |     |   |    10.1.1.2    |  |
 // |  +----------------+  |     |   +----------------+  |
 // |  |   raw socket   |  |     |   |   raw socket   |  |
 // |  +----------------+  |     |   +----------------+  |
@@ -40,36 +41,38 @@
 //             |                            |
 //             +----------------------------+
 //
-// This example is aimed at meassuring the thoughput of the FdNetDevice
+// This example is aimed at measuring the throughput of the FdNetDevice
 // when using the EmuFdNetDeviceHelper. This is achieved by saturating
-// the channel with TCP traffic. Then the thoughput can be obtained from 
+// the channel with TCP traffic. Then the throughput can be obtained from 
 // the generated .pcap files.
 //
-// To run this example you will need two computers (client & server).
+// To run this example you will need two hosts (client & server).
 // Steps to run the experiment:
 //
-// 1 - Connect the 2 computers with an Ethernet cable
-// 2 - Set the IP addresses on both Ethernet devices
+// 1 - Connect the 2 computers with an Ethernet cable.
+// 2 - Set the IP addresses on both Ethernet devices.
 //
 // client machine: $ sudo ip addr add dev eth0 10.1.1.11/24
 // server machine: $ sudo ip addr add dev eth0 10.1.1.12/24
 //
-// 3 - Set both Ethernet devices to promiscuous mode
+// 3 - Set both Ethernet devices to promiscuous mode.
 //
 // both machines: $ sudo ip link set eth0 promisc on
 //
-// 4 - Give root suid to the raw socket creator binary
+// 4 - Give root suid to the raw socket creator binary.
+//     If the --enable-sudo option was used to configure ns-3 with waf, then the following
+//     step will not be necessary.
 //
-// both machines: $ sudo chown root.root build/src/fd-net-device/ns3-dev-raw-sock-creator
-// both machines: $ sudo chmod 4755 build/src/fd-net-device/ns3-dev-raw-sock-creator
+// both hosts: $ sudo chown root.root build/src/fd-net-device/ns3-dev-raw-sock-creator
+// both hosts: $ sudo chmod 4755 build/src/fd-net-device/ns3-dev-raw-sock-creator
 //
 // 5 - Run the server side:
 //
-// server machine: $ ./waf --run="fd-emu-onoff --serverMode=1"
+// server host: $ ./waf --run="fd-emu-onoff --serverMode=1"
 //
 // 6 - Run the client side:
 //       
-// client machine: $ ./waf --run="fd-emu-onoff"
+// client host: $ ./waf --run="fd-emu-onoff"
 //
 
 #include <iostream>

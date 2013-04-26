@@ -18,22 +18,29 @@
 
 // Allow ns-3 to ping a real host somewhere, using emulation mode
 //
-//   ------------
-//   |  node n0 |
-//   |          |
-//   |  ---     |
-//   | |   |    |
-//   | |emu|    |
-//   | |   |    |
-//   |  ---     |
-//   |   |      |
-//   ----|-------
-//       |
-//     (device on host system, set to promiscuous mode)
-//       |
-//      --------- (Internet) -------
+//   +----------------------+    
+//   |          host        |
+//   +----------------------+    
+//   |    ns-3 simulation   |                                      
+//   +----------------------+                  
+//   |      ns-3 Node       |                 
+//   |  +----------------+  |                 
+//   |  |    ns-3 TCP    |  |              
+//   |  +----------------+  |              
+//   |  |    ns-3 IPv4   |  |                 
+//   |  +----------------+  |                 
+//   |  |   FdNetDevice  |  |                
+//   |--+----------------+--+     
+//   |       | eth0 |       |                
+//   |       +------+       |    
+//   |          |           |
+//   +----------|-----------+ 
+//              |
+//              |         +---------+
+//              .---------| GW host |--- (Internet) -----                             
+//                        +---------+ 
 //
-// To use this example:
+/// To use this example:
 //  1) You need to decide on a physical device on your real system, and either
 //     overwrite the hard-configured device name below (eth0) or pass this
 //     device name in as a command-line argument
@@ -52,6 +59,13 @@
 //     'netstat -rn' command and find the IP address of the default gateway
 //     on your host.  Search for "Ipv4Address gateway" and replace the string
 //     "1.2.3.4" string with the gateway IP address.
+/// 6) Give root suid to the raw socket creator binary.
+//     If the --enable-sudo option was used to configure ns-3 with waf, then the following
+//     step will not be necessary.
+//
+//     $ sudo chown root.root build/src/fd-net-device/ns3-dev-raw-sock-creator
+//     $ sudo chmod 4755 build/src/fd-net-device/ns3-dev-raw-sock-creator
+//
 
 #include "ns3/abort.h"
 #include "ns3/core-module.h"
@@ -77,7 +91,7 @@ main (int argc, char *argv[])
 {
   NS_LOG_INFO ("Ping Emulation Example");
 
-  std::string deviceName ("wlan0");
+  std::string deviceName ("eth0");
   std::string remote ("173.194.34.51"); // example.com
 
   //
@@ -162,7 +176,7 @@ main (int argc, char *argv[])
   ipv4->SetUp (interface);
 
   //
-  // When the ping appliation sends its ICMP packet, it will happily send it
+  // When the ping application sends its ICMP packet, it will happily send it
   // down the ns-3 protocol stack.  We set the IP address of the destination
   // to the address corresponding to example.com above.  This address is off
   // our local network so we have got to provide some kind of default route

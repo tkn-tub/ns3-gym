@@ -19,30 +19,27 @@
 // Allow ns-3 to ping a real host somewhere, using emulation mode and ping
 // the simulated node from the host.
 //
-//   ------------------
-//   | ns-3 simulation |
-//   |                 |
-//   |  -------        |
-//   | | node  |       |
-//   |  -------        |
-//   | | fd-   |       |
-//   | | net-  |       |
-//   | | device|       |
-//   |  -------        |
-//   |   |             |
-//   |   |             |
-//   ----|-------------
-//   |  ---       ---  |
-//   | |   |     |   | |
-//   | |TAP|     |ETH| |
-//   | |   |     |   | |
-//   |  ---       ---  |
-//   |             |   |
-//   |  host       |   |
-//   --------------|----
-//                 |
-//                 |
-//                 ---- (Internet) -------
+//   +-------------------------------------+    
+//   |                host                 |
+//   +-------------------------------------+    
+//   |    ns-3 simulation   |              |                       
+//   +----------------------+              |    
+//   |       ns-3 Node      |              |   
+//   |  +----------------+  |              |   
+//   |  |    ns-3 TCP    |  |              |   
+//   |  +----------------+  |              |   
+//   |  |    ns-3 IPv4   |  |              |   
+//   |  +----------------+  |              |   
+//   |  |   FdNetDevice  |  |              |  
+//   |--+----------------+--+    +------+  |
+//   |       | TAP  |            | eth0 |  | 
+//   |       +------+            +------+  |
+//   |       1.2.3.4                 |     |
+//   +-------------------------------|-----+ 
+//                                   |
+//                                   |
+//                                   ------------ (Internet) -----                             
+//
 //
 // To use this example:
 //  1) ns-3 will create the TAP device for you in the host machine.
@@ -60,7 +57,9 @@
 //     - net-device-ip is be the IP address of the network device connected to the internet
 //     # iptables -t nat -A POSTROUTING -s <TAP-network-addres>/24 -j SNAT --to-source <net-device-ip>
 //
-//  3) Before running the example make sure that the tap creator binary has root suid
+//  3) Before running the example make sure that the tap creator binary has root suid.
+//     If the --enable-sudo option was used to configure ns-3 with waf, then the following
+//     step will not be necessary.
 //
 //     # chown root.root build/src/fd-net-device/ns3-dev-tap-device-creator
 //     # sudo chmod 4755 build/src/fd-net-device/ns3-dev-tap-device-creator
