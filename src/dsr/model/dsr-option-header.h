@@ -338,6 +338,16 @@ public:
    */
   Ipv4Address GetNodeAddress (uint8_t index) const;
   /**
+   * \brief Set the data length.
+   * \param dataLength the data length
+   */
+  void SetDataLength (uint32_t dataLength);
+  /**
+   * \brief Get the data length.
+   * \return the data length
+   */
+  uint32_t GetDataLength () const;
+  /**
    * \brief Set the request id number.
    * \param the identification number
    */
@@ -502,6 +512,12 @@ public:
    * \return the router IPv4 Address
    */
   Ipv4Address GetNodeAddress (uint8_t index) const;
+  /*
+   * \brief Search the next hop Ipv4 address
+   * \param Our own IP address
+   * \return The next hop address of the route
+   */
+  Ipv4Address SearchNextHop (Ipv4Address ipv4Address);
   /**
    * \brief Print some informations about the packet.
    * \param os output stream

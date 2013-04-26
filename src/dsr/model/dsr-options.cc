@@ -562,16 +562,24 @@ uint8_t DsrOptionRreq::Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Addres
   // check whether we have received this request or not, if not, it will save the request in the table for
   // later use, if not found, return false, and push the newly received source request entry in the cache
 
-  bool dupRequest = dsr->FindSourceEntry (sourceAddress, targetAddress, requestId);
+  // Get the TTL value, this is used to test if the packet will be forwarded or not
+  uint8_t ttl = ipv4Header.GetTtl ();
+  bool dupRequest = false;  // initialize the duplicate request check value
+  if (ttl)
+    {
+      // if the ttl value is not 0, then this request will be forwarded, then we need to
+      // save it in the source entry
+      dupRequest = dsr->FindSourceEntry (sourceAddress, targetAddress, requestId);
+    }
   /*
    * Before processing the route request, we need to check two things
    * 1. if this is the exact same request we have just received, ignore it
    * 2. if our address is already in the path list, ignore it
    * 3. otherwise process further
    */
+
   if (dupRequest)
     {
-      NS_LOG_DEBUG ("We have received duplicate request");
       // We have received this same route reqeust before, not forwarding it now
       NS_LOG_LOGIC ("Duplicate request. Drop!");
       m_dropTrace (packet); // call drop trace
@@ -591,7 +599,6 @@ uint8_t DsrOptionRreq::Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Addres
     {
       // A node ignores all RREQs received from any node in its blacklist
       RouteCacheEntry toPrev;
-
       /*
        *  When the reverse route is created or updated, the following actions on the route are also carried out:
        *  3. the next hop in the routing table becomes the node from which the  RREQ was received
@@ -1189,8 +1196,6 @@ uint8_t DsrOptionSR::Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Address 
   // The route size saved in the source route
   std::vector<Ipv4Address> nodeList = sourceRoute.GetNodesAddress ();
   uint8_t segsLeft = sourceRoute.GetSegmentsLeft ();
-  /// TODO remove this one later
-  NS_LOG_DEBUG ("The segment left here " <<  (uint32_t) segsLeft);
   uint8_t salvage = sourceRoute.GetSalvage ();
   /*
    * Get the node from IP address and get the DSR extension object
@@ -1222,12 +1227,10 @@ uint8_t DsrOptionSR::Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Address 
       uint16_t fragmentOffset = ipv4Header.GetFragmentOffset ();
       uint16_t identification = ipv4Header.GetIdentification ();
 
-      /// TODO add the link ack over here
-
       if (destAddress != destination)
         {
           NS_LOG_DEBUG ("Process the promiscuously received packet");
-          bool findPassive = false;
+          bool findPassive;
           int32_t nNodes = NodeList::GetNNodes ();
           for (int32_t i = 0; i < nNodes; ++i)
             {
@@ -1255,9 +1258,6 @@ uint8_t DsrOptionSR::Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Address 
               NS_LOG_DEBUG ("promisc source " << promiscSource);
               Ptr<Node> node = GetNodeWithAddress (promiscSource);
               Ptr<dsr::DsrRouting> dsrSrc = node->GetObject<dsr::DsrRouting> ();
-
-              /// TODO need to think about this part
-              /// TODO this is temporarily disabled to enable other
               dsrSrc->CancelPassiveTimer (packet, source, destination, segsLeft);
             }
           else

@@ -214,11 +214,6 @@ public:
   }
   // \}
 
-  std::vector<PassiveBuffEntry> & GetBuffer ()     /// TODO may need to remove this one here
-  {
-    return m_passiveBuffer;
-  }
-
 private:
   // / The send buffer to cache unsent packet
   std::vector<PassiveBuffEntry> m_passiveBuffer;

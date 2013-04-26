@@ -42,13 +42,16 @@ and state machine, as defined in the standard.  It implements as a STL
 map container. The key is the destination IP address.
 
 Protocol operation strongly depends on broken link detection mechanism. 
-We implement the three heuristics recommended.
+We implement the three heuristics recommended based the rfc.
     
-First, we use layer 2 feedback when possible. A link is considered to be 
+First, we use link layer feedback when possible, which is also the fastest mechanism
+in these three to detect link errors. A link is considered to be 
 broken if frame transmission results in a transmission failure for all 
 retries. This mechanism is meant for active links and works much faster than 
-in its absence.  Layer 2 feedback implementation relies on TxErrHeader trace 
-source, currently it is supported in AdhocWifiMac only.
+in its absence.  DSR is able to detect the link layer transmission failure and 
+notify that as broken.  Recalculation of routes will be triggered when needed.
+If user does not want to use link layer acknowledgment, it can be tuned by setting
+"LinkAcknowledgment" attribute to false in "dsr-routing.cc".
 
 Second, passive acknowledgment should be used whenever possible. The node 
 turns on "promiscuous" receive mode, in which it can receive packets not 

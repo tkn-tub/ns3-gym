@@ -60,7 +60,7 @@ namespace ns3 {
 class Time;
 namespace dsr {
 
-/*
+/**
  * The route cache structure
   \verbatim
   +-+-+-+-+-+-+-+-+-+-+-+-         +-+-+-+-+-+-+-+-+-+-+-            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
@@ -130,6 +130,9 @@ public:
    */
   virtual ~LinkStab ();
 
+  /**
+   * \brief set/get the link stability
+   */
   void SetLinkStability (Time linkStab)
   {
     m_linkStability = linkStab + Simulator::Now ();
@@ -142,7 +145,7 @@ public:
   void Print () const;
 
 private:
-  /*
+  /**
    * The link stability lifetime expected, when the time is due, the link expires the expiration happens
    * when purge the node and link cache before update them when receiving new information
    */
@@ -177,8 +180,8 @@ private:
 class RouteCacheEntry
 {
 public:
-  typedef std::vector<Ipv4Address> IP_VECTOR;                // Define the vector to hold Ip address
-  typedef std::vector<Ipv4Address>::iterator Iterator;       // Define the iterator
+  typedef std::vector<Ipv4Address> IP_VECTOR;                ///< Define the vector to hold Ip address
+  typedef std::vector<Ipv4Address>::iterator Iterator;       ///< Define the iterator
   // / c-tor
   /**
    * \brief Constructor
@@ -273,26 +276,26 @@ public:
   // \}
 
 private:
-  // / RREP_ACK timer
-  Timer m_ackTimer;
-  // / The destination Ip address
-  Ipv4Address m_dst;
-  // / brief The IP address constructed route
-  IP_VECTOR m_path;
-  // / Expire time for queue entry
-  Time m_expire;
-  // / Output interface address
-  Ipv4InterfaceAddress m_iface;
-  // / Number of route requests
-  uint8_t m_reqCount;
-  // / Indicate if this entry is in "blacklist"
-  bool m_blackListState;
-  // / Time for which the node is put into the blacklist
-  Time m_blackListTimeout;
-  // / The Ipv4 route
-  Ptr<Ipv4Route> m_ipv4Route;
-  // / The Ipv4 layer 3
-  Ptr<Ipv4> m_ipv4;
+
+  Timer m_ackTimer;                                                     ///< RREP_ACK timer
+
+  Ipv4Address m_dst;                                                    ///< The destination Ip address
+
+  IP_VECTOR m_path;                                                     ///< brief The IP address constructed route
+
+  Time m_expire;                                                        ///< Expire time for queue entry
+
+  Ipv4InterfaceAddress m_iface;                                         ///< Output interface address
+
+  uint8_t m_reqCount;                                                   ///< Number of route requests
+
+  bool m_blackListState;                                                ///< Indicate if this entry is in "blacklist"
+
+  Time m_blackListTimeout;                                              ///< Time for which the node is put into the blacklist
+
+  Ptr<Ipv4Route> m_ipv4Route;                                           ///< The Ipv4 route
+
+  Ptr<Ipv4> m_ipv4;                                                     ///< The Ipv4 layer 3
 };
 /**
  * \ingroup dsr
@@ -316,10 +319,26 @@ public:
    * \brief Destructor.
    */
   virtual ~RouteCache ();
-  // / Remove the aged route cache entries when the route cache is full
+  /**
+   * \brief Remove the aged route cache entries when the route cache is full
+   */
   void RemoveLastEntry (std::list<RouteCacheEntry> & rtVector);
-  // / Define the vector of route entries.
+  /**
+   * \brief Define the vector of route entries.
+   */
   typedef std::list<RouteCacheEntry::IP_VECTOR> routeVector;
+  /**
+   * \brief Get the destination address of the route.
+   */
+  Ipv4Address GetDestination (void) const;
+  /**
+   * \brief Remove all packets with destination IP address dst
+   */
+  void DropPathWithDst (Ipv4Address dst);
+  /**
+   * \brief To know if the two entries are the same
+   */
+  bool IsEqual (RouteCacheEntry ca);
   // /\name Fields
   // \{
   bool GetSubRoute () const
@@ -404,49 +423,53 @@ public:
   }
   // \}
   /**
-   * Update route cache entry if it has been recently used and successfully delivered the data packet
+   * \brief Update route cache entry if it has been recently used and successfully delivered the data packet
    * \param dst destination address of the route
    * \param vec the route vector
    * \return true in success
    */
   bool UpdateRouteEntry (Ipv4Address dst);
   /**
-   * Add route cache entry if it doesn't yet exist in route cache
+   * \brief Add route cache entry if it doesn't yet exist in route cache
    * \param rt route cache entry
    * \return true in success
    */
   bool AddRoute (RouteCacheEntry & rt);
   /**
-   * Lookup route cache entry with destination address dst
+   * \brief Lookup route cache entry with destination address dst
    * \param dst destination address
    * \param rt entry with destination address dst, if exists
    * \return true on success
    */
   bool LookupRoute (Ipv4Address id, RouteCacheEntry & rt);
   /**
-   * Print the route vector elements
+   * \brief Print the route vector elements
    * \param vec the route vector
    */
   void PrintVector (std::vector<Ipv4Address>& vec);
   /**
-   * Print all the route vector elements from the route list
+   * \brief Print all the route vector elements from the route list
    * \param route the route list
    */
   void PrintRouteVector (std::list<RouteCacheEntry> route);
   /**
-   * Find the same route in the route cache
+   * \brief Find the same route in the route cache
    * \param rt entry with destination address dst, if exists
    * \param rtVector the route vector
    */
   bool FindSameRoute (RouteCacheEntry & rt, std::list<RouteCacheEntry> & rtVector);
   /**
-   * Delete the route with certain destination address
+   * \brief Delete the route with certain destination address
    * \param dst the destination address of the routes that should be deleted
    */
   bool DeleteRoute (Ipv4Address dst);
-  /*
-   * Delete all the routes which includes the link from next hop address that has just been notified
+  /**
+   * \brief Delete all the routes which includes the link from next hop address that has just been notified
    * as unreachable
+   *
+   * \param errorSrc The error source address
+   * \param unreachNode The unreachable node
+   * \param node This node's ip address
    */
   void DeleteAllRoutesIncludeLink (Ipv4Address errorSrc, Ipv4Address unreachNode, Ipv4Address node);
   // / Delete all entries from routing table
@@ -460,16 +483,17 @@ public:
   void Print (std::ostream &os);
 
   //------------------------------------------------------------------------------------------
-  /*
-   * The following code deals with duplicate ack ids
+  /**
+   * \brief Check for duplicate ids and save new entries if the id is not present in the table
    */
-  // / Check for duplicate ids and save new entries if the id is not present in the table
   uint16_t CheckUniqueAckId (Ipv4Address nextHop);
-  // / Get the ack table size
+  /**
+   * \brief Get the ack table size
+   */
   uint16_t GetAckSize ();
 
   // --------------------------------------------------------------------------------------------
-  /*
+  /**
    * The following code handles link-layer acks
    */
   // / Neighbor description
@@ -490,30 +514,47 @@ public:
 
     Neighbor () {} // For Python bindings
   };
-  // / Return expire time for neighbor node with address addr, if exists, else return 0.
+  /**
+   * \brief Return expire time for neighbor node with address addr, if exists, else return 0.
+   */
   Time GetExpireTime (Ipv4Address addr);
-  // / Check that node with address addr  is neighbor
+  /**
+   * \brief Check that node with address addr  is neighbor
+   */
   bool IsNeighbor (Ipv4Address addr);
-  // / Update expire time for entry with address addr, if it exists, else add new entry
+  /**
+   * \brief Update expire time for entry with address addr, if it exists, else add new entry
+   */
   void UpdateNeighbor (std::vector<Ipv4Address> nodeList, Time expire);
-  // / Add to the neighbor list
+  /**
+   * \brief Add to the neighbor list
+   */
   void AddNeighbor (std::vector<Ipv4Address> nodeList, Ipv4Address ownAddress, Time expire);
-  // / Remove all expired mac entries
+  /**
+   * \brief Remove all expired mac entries
+   */
   void PurgeMac ();
-  // / Schedule m_ntimer.
+  /**
+   * \brief Schedule m_ntimer.
+   */
   void ScheduleTimer ();
-  // / Remove all entries
+  /**
+   * \brief Remove all entries
+   */
   void ClearMac ()
   {
     m_nb.clear ();
   }
-  // / Add ARP cache to be used to allow layer 2 notifications processing
+  /**
+   * \brief Add ARP cache to be used to allow layer 2 notifications processing
+   */
   void AddArpCache (Ptr<ArpCache>);
-  // / Don't use given ARP cache any more (interface is down)
+  /**
+   * \brief Don't use given ARP cache any more (interface is down)
+   */
   void DelArpCache (Ptr<ArpCache>);
-  // / Get callback to ProcessTxError
-  /*
-   * This callback is trying to use the wifi mac tx error header to notify a link layer drop event, however,
+  /**
+   * \brief Get callback to ProcessTxError, this callback is trying to use the wifi mac tx error header to notify a link layer drop event, however,
    * it is not fully supported yet
    */
   Callback<void, WifiMacHeader const &> GetTxErrorCallback () const
@@ -534,34 +575,34 @@ public:
 
 private:
   RouteCache & operator= (RouteCache const &);
-  RouteCacheEntry::IP_VECTOR m_vector; // /< The route vector to save the ip addresses for intermediate nodes.
-  uint32_t m_maxCacheLen;              // /< The maximum number of packets that we allow a routing protocol to buffer.
-  Time     RouteCacheTimeout;          // /< The maximum period of time that dsr is allowed to for an unused route.
-  Time     m_badLinkLifetime;          // /< The time for which the neighboring node is put into the blacklist.
-  /*
+  RouteCacheEntry::IP_VECTOR m_vector;                  ///< The route vector to save the ip addresses for intermediate nodes.
+  uint32_t m_maxCacheLen;                               ///< The maximum number of packets that we allow a routing protocol to buffer.
+  Time     RouteCacheTimeout;                           ///< The maximum period of time that dsr is allowed to for an unused route.
+  Time     m_badLinkLifetime;                           ///< The time for which the neighboring node is put into the blacklist.
+  /**
    * Define the parameters for link cache type
    */
-  uint64_t m_stabilityDecrFactor;
-  uint64_t m_stabilityIncrFactor;
+  uint32_t m_stabilityDecrFactor;
+  uint32_t m_stabilityIncrFactor;
   Time m_initStability;
   Time m_minLifeTime;
   Time m_useExtends;
-  /*
+  /**
    * Define the route cache data structure
    */
   typedef std::list<RouteCacheEntry> routeEntryVector;
-  // / Map the ipv4Address to route entry vector
-  std::map<Ipv4Address, routeEntryVector> m_sortedRoutes;
-  // Define the route vector
-  routeEntryVector m_routeEntryVector;
-  // / number of entries for each destination
-  uint32_t m_maxEntriesEachDst;
-  // / The id cache to ensure all the ids are unique
-  std::map<Ipv4Address, uint16_t> m_ackIdCache;
-  // / Check if the route is using path cache or link cache
-  bool m_isLinkCache;
-  // / Check if save the sub route entries or not
-  bool m_subRoute;
+
+  std::map<Ipv4Address, routeEntryVector> m_sortedRoutes;       ///< Map the ipv4Address to route entry vector
+
+  routeEntryVector m_routeEntryVector;                          ///< Define the route vector
+
+  uint32_t m_maxEntriesEachDst;                                 ///< number of entries for each destination
+
+  std::map<Ipv4Address, uint16_t> m_ackIdCache;                 ///< The id cache to ensure all the ids are unique
+
+  bool m_isLinkCache;                                           ///< Check if the route is using path cache or link cache
+
+  bool m_subRoute;                                              ///< Check if save the sub route entries or not
   /**
    * The link cache to update all the link status, bi-link is two link for link is a struct
    * when the weight is calculated we normalized them: 100*weight/max of Weight
@@ -573,27 +614,39 @@ private:
    * change the weight and then recompute the best choice for each node
    */
   std::map<Ipv4Address, std::map<Ipv4Address, uint32_t> > m_netGraph;
-  // for link route cache
-  std::map<Ipv4Address, RouteCacheEntry::IP_VECTOR> m_bestRoutesTable_link;
-  std::map<Link, LinkStab> m_linkCache;
-  std::map<Ipv4Address, NodeStab> m_nodeCache;
-  // used by LookupRoute when LinkCache
+
+  std::map<Ipv4Address, RouteCacheEntry::IP_VECTOR> m_bestRoutesTable_link;     ///< for link route cache
+  std::map<Link, LinkStab> m_linkCache;                                         ///< The data structure to store link info
+  std::map<Ipv4Address, NodeStab> m_nodeCache;                                  ///< The data structure to store node info
+  /**
+   * \brief used by LookupRoute when LinkCache
+   * \param id the ip address we are looking for
+   * \param rt the route cache entry to store the found one
+   */
   bool LookupRoute_Link (Ipv4Address id, RouteCacheEntry & rt);
-
+  /**
+   * \brief increase the stability of the node
+   * \param node the ip address of the node we want to increase stability
+   */
   bool IncStability (Ipv4Address node);
-
+  /**
+   * \brief decrease the stability of the node
+   * \param node the ip address of the node we want to decrease stability
+   */
   bool DecStability (Ipv4Address node);
 
 public:
   /**
    * \brief dijsktra algorithm to get the best route from m_netGraph and update the m_bestRoutesTable_link
    * \when current graph information has changed
+   * \param The type of the cache
    */
   void SetCacheType (std::string type);
   bool IsLinkCache ();
   bool AddRoute_Link (RouteCacheEntry::IP_VECTOR nodelist, Ipv4Address node);
   /**
    *  \brief USE MAXWEIGHT TO REPRESENT MAX; USE BROADCAST ADDRESS TO REPRESENT NULL PRECEEDING ADDRESS
+   *  \param The source address the routes based on
    */
   void RebuildBestRouteTable (Ipv4Address source);
   void PurgeLinkNode ();
@@ -612,22 +665,21 @@ public:
   /**
    * The following code handles link-layer acks
    */
-  // / link failure callback
-  Callback<void, Ipv4Address, uint8_t > m_handleLinkFailure;
-  // / TX error callback
-  Callback<void, WifiMacHeader const &> m_txErrorCallback;
-  // / Timer for neighbor's list. Schedule Purge().
-  Timer m_ntimer;
-  // / vector of entries
-  std::vector<Neighbor> m_nb;
-  // / list of ARP cached to be used for layer 2 notifications processing
-  std::vector<Ptr<ArpCache> > m_arp;
-  // This timeout deals with the passive ack
-  Time m_delay;
-  // / Find MAC address by IP using list of ARP caches
-  Mac48Address LookupMacAddress (Ipv4Address);
-  // / Process layer 2 TX error notification
-  void ProcessTxError (WifiMacHeader const &);
+  Callback<void, Ipv4Address, uint8_t > m_handleLinkFailure;            ///< link failure callback
+
+  Callback<void, WifiMacHeader const &> m_txErrorCallback;              ///< TX error callback
+
+  Timer m_ntimer;                                                       ///< Timer for neighbor's list. Schedule Purge().
+
+  std::vector<Neighbor> m_nb;                                           ///< vector of entries
+
+  std::vector<Ptr<ArpCache> > m_arp;                                    ///< list of ARP cached to be used for layer 2 notifications processing
+
+  Time m_delay;                                                         ///< This timeout deals with the passive ack
+
+  Mac48Address LookupMacAddress (Ipv4Address);                          ///< Find MAC address by IP using list of ARP caches
+
+  void ProcessTxError (WifiMacHeader const &);                          ///< Process layer 2 TX error notification
 };
 } // namespace dsr
 } // namespace ns3

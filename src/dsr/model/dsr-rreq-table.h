@@ -70,7 +70,7 @@ struct RreqTableEntry
   uint32_t m_reqNo;
   Time m_expire;
 };
-/*
+/**
  * The request entry for intermediate nodes to check if they have received this request or not
  * This is used to control the duplication request from being processed
  */
@@ -84,7 +84,7 @@ public:
   {
   }
   /**
-   * Compare send buffer entries
+   * \brief Compare send buffer entries
    * \return true if equal
    */
   bool operator== (ReceivedRreqEntry const & o) const
@@ -213,18 +213,20 @@ public:
    * set the unidirectional entry as QUESTIONABLE state
    */
   void Invalidate ();
-  /** Verify if entry is unidirectional or not(e.g. add this neighbor to "blacklist" for blacklistTimeout period)
+  /**
+   * \brief Verify if entry is unidirectional or not(e.g. add this neighbor to "blacklist" for blacklistTimeout period)
    * \param neighbor - neighbor address link to which assumed to be unidirectional
    * \return true on success
    */
   BlackList* FindUnidirectional (Ipv4Address neighbor);
-  /** Mark entry as unidirectional (e.g. add this neighbor to "blacklist" for blacklistTimeout period)
+  /**
+   * \brief Mark entry as unidirectional (e.g. add this neighbor to "blacklist" for blacklistTimeout period)
    * \param neighbor - neighbor address link to which assumed to be unidirectional
    * \param blacklistTimeout - time for which the neighboring node is put into the blacklist
    * \return true on success
    */
   bool MarkLinkAsUnidirectional (Ipv4Address neighbor, Time blacklistTimeout);
-  // / Remove all expired black list entries
+  ///< Remove all expired black list entries
   void PurgeNeighbor ();
   // ----------------------------------------------------------------------------------------------------------
   /**

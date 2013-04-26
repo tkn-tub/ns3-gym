@@ -74,10 +74,10 @@ PassiveBuffer::Enqueue (PassiveBuffEntry & entry)
   for (std::vector<PassiveBuffEntry>::const_iterator i = m_passiveBuffer.begin (); i
        != m_passiveBuffer.end (); ++i)
     {
-      NS_LOG_INFO ("packet id " << i->GetPacket ()->GetUid () << " " << entry.GetPacket ()->GetUid () << " source " << i->GetSource () << " " << entry.GetSource ()
-                                     << " dst " << i->GetDestination () << " " << entry.GetDestination () << " identification " << i->GetIdentification () << " "
-                                     << entry.GetIdentification () << " fragment " << i->GetFragmentOffset () << " " << entry.GetFragmentOffset ()
-                                     << " segLeft " << i->GetSegsLeft () << " " << entry.GetSegsLeft ());
+//      NS_LOG_INFO ("packet id " << i->GetPacket ()->GetUid () << " " << entry.GetPacket ()->GetUid () << " source " << i->GetSource () << " " << entry.GetSource ()
+//                                     << " dst " << i->GetDestination () << " " << entry.GetDestination () << " identification " << i->GetIdentification () << " "
+//                                     << entry.GetIdentification () << " fragment " << i->GetFragmentOffset () << " " << entry.GetFragmentOffset ()
+//                                     << " segLeft " << i->GetSegsLeft () << " " << entry.GetSegsLeft ());
 
       if ((i->GetPacket ()->GetUid () == entry.GetPacket ()->GetUid ()) && (i->GetSource () == entry.GetSource ()) && (i->GetNextHop () == entry.GetNextHop ())
           && (i->GetDestination () == entry.GetDestination ()) && (i->GetIdentification () == entry.GetIdentification ()) && (i->GetFragmentOffset () == entry.GetFragmentOffset ())
@@ -107,10 +107,10 @@ PassiveBuffer::AllEqual (PassiveBuffEntry & entry)
   for (std::vector<PassiveBuffEntry>::iterator i = m_passiveBuffer.begin (); i
        != m_passiveBuffer.end (); ++i)
     {
-      NS_LOG_INFO ("packet id " << i->GetPacket ()->GetUid () << " " << entry.GetPacket ()->GetUid () << " source " << i->GetSource () << " " << entry.GetSource ()
-                                     << " dst " << i->GetDestination () << " " << entry.GetDestination () << " identification " << i->GetIdentification () << " "
-                                     << entry.GetIdentification () << " fragment " << i->GetFragmentOffset () << " " << entry.GetFragmentOffset ()
-                                     << " segLeft " << (uint32_t) i->GetSegsLeft () << " " << (uint32_t) entry.GetSegsLeft ());
+//      NS_LOG_INFO ("packet id " << i->GetPacket ()->GetUid () << " " << entry.GetPacket ()->GetUid () << " source " << i->GetSource () << " " << entry.GetSource ()
+//                                     << " dst " << i->GetDestination () << " " << entry.GetDestination () << " identification " << i->GetIdentification () << " "
+//                                     << entry.GetIdentification () << " fragment " << i->GetFragmentOffset () << " " << entry.GetFragmentOffset ()
+//                                     << " segLeft " << (uint32_t) i->GetSegsLeft () << " " << (uint32_t) entry.GetSegsLeft ());
 
       if ((i->GetPacket ()->GetUid () == entry.GetPacket ()->GetUid ()) && (i->GetSource () == entry.GetSource ()) && (i->GetNextHop () == entry.GetNextHop ())
           && (i->GetDestination () == entry.GetDestination ()) && (i->GetIdentification () == entry.GetIdentification ()) && (i->GetFragmentOffset () == entry.GetFragmentOffset ())

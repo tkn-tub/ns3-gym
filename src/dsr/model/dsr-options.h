@@ -142,12 +142,12 @@ public:
    * \brief Print out the elements in the route vector
    */
   void PrintVector (std::vector<Ipv4Address>& vec);
-  /*
+  /**
    * \brief Check if the two vectors contain duplicate or not
    * \return true if contains duplicate
    */
   bool IfDuplicates (std::vector<Ipv4Address>& vec, std::vector<Ipv4Address>& vec2);
-  /*
+  /**
    * \brief Check if the route already contains the node ip address
    * \return true if it already exists
    */
@@ -225,7 +225,7 @@ protected:
    * \brief The active route timeout value.
    */
   Time ActiveRouteTimeout;
-  /*
+  /**
    * The receive trace back, only triggered when final destination receive data packet
    */
   TracedCallback <const DsrOptionSRHeader &> m_rxPacketTrace;

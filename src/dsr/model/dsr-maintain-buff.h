@@ -40,13 +40,29 @@
 
 namespace ns3 {
 namespace dsr {
-/*
+/**
  * The maintenance buffer is responsible for maintaining packet next hop delivery
  * The data packet is saved in maintenance buffer whenever the data packet is sent out of send buffer
  */
-/*
- * The packet timer key for controlling data packet retransmission
- */
+struct LinkKey
+{
+  Ipv4Address m_source;
+  Ipv4Address m_destination;
+  Ipv4Address m_ourAdd;
+  Ipv4Address m_nextHop;
+
+  /**
+   * Compare maintain Buffer entries
+   * \return true if equal
+   */
+  bool operator < (LinkKey const & o) const
+  {
+    return ((m_source < o.m_source) && (m_destination < o.m_destination)
+            && (m_ourAdd < o.m_nextHop) && (m_nextHop < o.m_nextHop)
+            );
+  }
+};
+
 struct NetworkKey
 {
   uint16_t m_ackId;
@@ -178,7 +194,7 @@ public:
 private:
   // / Data packet
   Ptr<const Packet> m_packet;
-  // / our own ip address
+  // / Our own ip address
   Ipv4Address m_ourAdd;
   // / Next hop Ip address
   Ipv4Address m_nextHop;
@@ -235,7 +251,10 @@ public:
   {
     m_maintainBufferTimeout = t;
   }
+  // / Verify if all the elements in the maintainence buffer entry is the same
   bool AllEqual (MaintainBuffEntry & entry);
+  // / Verify if the maintain buffer entry is the same in every field for link ack
+  bool LinkEqual (MaintainBuffEntry & entry);
   // / Verify if the maintain buffer entry is the same in every field for network ack
   bool NetworkEqual (MaintainBuffEntry & entry);
   // / Verify if the maintain buffer entry is the same in every field for promiscuous ack
