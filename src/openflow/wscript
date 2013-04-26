@@ -49,10 +49,19 @@ def configure(conf):
 	    conf.msg("Checking for OpenFlow location", ("%s (given)" % Options.options.with_openflow))
 	    conf.env['WITH_OPENFLOW'] = os.path.abspath(Options.options.with_openflow)
     else:
+        # bake.py uses ../../build, while ns-3-dev uses ../openflow.
+        lib_to_check = 'libopenflow.a'
+        openflow_bake_build_dir = os.path.join('..', '..', 'build')
+        openflow_bake_lib_dir = os.path.join(openflow_bake_build_dir, 'lib')
         openflow_dir = os.path.join('..','openflow')
-        if os.path.isdir(openflow_dir):
+        if os.path.exists(os.path.join(openflow_bake_lib_dir, lib_to_check)):
+            conf.msg("Checking for OpenFlow location",("%s (guessed)" % openflow_bake_build_dir))
+            conf.env['WITH_OPENFLOW'] = os.path.abspath(openflow_bake_build_dir)
+        elif os.path.isdir(openflow_dir):
             conf.msg("Checking for OpenFlow location", ("%s (guessed)" % openflow_dir))
 	    conf.env['WITH_OPENFLOW'] = os.path.abspath(openflow_dir)
+        del openflow_bake_build_dir
+        del openflow_bake_lib_dir
 	del openflow_dir
     if not conf.env['WITH_OPENFLOW']:
 	conf.msg("Checking for OpenFlow location", False)
@@ -115,6 +124,7 @@ int main()
     conf.env['XML2'] = conf.check(mandatory=True, lib='xml2', define_name='XML2', uselib_store='XML2')
     
     conf.env.append_value('NS3_MODULE_PATH',os.path.abspath(os.path.join(conf.env['WITH_OPENFLOW'],'build','default')))
+    conf.env.append_value('NS3_MODULE_PATH',os.path.abspath(os.path.join(conf.env['WITH_OPENFLOW'],'lib')))
     
     conf.env['INCLUDES_OPENFLOW'] = [
         os.path.abspath(os.path.join(conf.env['WITH_OPENFLOW'],'include'))]
