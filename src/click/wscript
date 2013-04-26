@@ -24,10 +24,19 @@ def configure(conf):
             conf.msg("Checking for libnsclick.so location", ("%s (given)" % Options.options.with_nsclick))
             conf.env['WITH_NSCLICK'] = os.path.abspath(Options.options.with_nsclick)
     else:
+        # bake.py uses ../../build, while ns-3-dev uses ../click.
+        lib_to_check = 'libnsclick.so'
+        nsclick_bake_build_dir = os.path.join('..', '..', 'build')
+        nsclick_bake_lib_dir = os.path.join(nsclick_bake_build_dir, 'lib')
         nsclick_dir = os.path.join('..','click')
-        if os.path.isdir(nsclick_dir):
+        if os.path.exists(os.path.join(nsclick_bake_lib_dir, lib_to_check)):
+            conf.msg("Checking for click location",("%s (guessed)" % nsclick_bake_build_dir))
+            conf.env['WITH_NSCLICK'] = os.path.abspath(nsclick_bake_build_dir)
+        elif os.path.isdir(nsclick_dir):
             conf.msg("Checking for click location", ("%s (guessed)" % nsclick_dir))
             conf.env['WITH_NSCLICK'] = os.path.abspath(nsclick_dir)
+        del nsclick_bake_build_dir
+        del nsclick_bake_lib_dir
         del nsclick_dir
     if not conf.env['WITH_NSCLICK']:
         conf.msg("Checking for click location", False)

@@ -94,6 +94,7 @@ def configure(conf):
     else:
         conf.report_optional_feature("nsc", "Network Simulation Cradle", True, "")
 
+
 def build(bld):
     # bridge and mpi dependencies are due to global routing
     obj = bld.create_ns3_module('internet', ['bridge', 'mpi', 'network', 'core'])
