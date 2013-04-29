@@ -341,9 +341,9 @@ int main (int argc, char *argv[])
 
   // Flow monitor
   Ptr<FlowMonitor> flowMonitor;
+  FlowMonitorHelper flowHelper;
   if (flow_monitor)
     {
-      FlowMonitorHelper flowHelper;
       flowMonitor = flowHelper.InstallAll();
     }
 

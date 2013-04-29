@@ -188,6 +188,12 @@ Ipv4FlowProbe::~Ipv4FlowProbe ()
 }
 
 void
+Ipv4FlowProbe::DoDispose ()
+{
+  FlowProbe::DoDispose ();
+}
+
+void
 Ipv4FlowProbe::SendOutgoingLogger (const Ipv4Header &ipHeader, Ptr<const Packet> ipPayload, uint32_t interface)
 {
   FlowId flowId;

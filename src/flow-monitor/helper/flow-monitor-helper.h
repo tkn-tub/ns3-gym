@@ -38,6 +38,8 @@ public:
   /// \brief Construct a FlowMonitorHelper class which makes it easier to 
   /// configure and use the FlowMonitor
   FlowMonitorHelper ();
+  /// \brief Dispose of objects allocated by the helper
+  ~FlowMonitorHelper ();
 
   /// \brief Set an attribute for the to-be-created FlowMonitor object
   void SetMonitorAttribute (std::string n1, const AttributeValue &v1);

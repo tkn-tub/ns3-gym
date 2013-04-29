@@ -507,10 +507,10 @@ Experiment::Run (const WifiHelper &wifi, const YansWifiPhyHelper &wifiPhy,
     }
 
   Ptr<FlowMonitor> flowmon;
+  FlowMonitorHelper flowmonHelper;
 
   if (enableFlowMon)
     {
-      FlowMonitorHelper flowmonHelper;
       flowmon = flowmonHelper.InstallAll ();
     }
 

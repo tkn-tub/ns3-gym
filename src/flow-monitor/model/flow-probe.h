@@ -24,7 +24,7 @@
 #include <map>
 #include <vector>
 
-#include "ns3/simple-ref-count.h"
+#include "ns3/object.h"
 #include "ns3/flow-classifier.h"
 #include "ns3/nstime.h"
 
@@ -36,7 +36,7 @@ class FlowMonitor;
 /// in a specific point of the simulated space, report those events to
 /// the global FlowMonitor, and collect its own flow statistics
 /// regarding only the packets that pass through that probe.
-class FlowProbe : public SimpleRefCount<FlowProbe>
+class FlowProbe : public Object
 {
 private:
   FlowProbe (FlowProbe const &);
@@ -45,6 +45,7 @@ private:
 protected:
 
   FlowProbe (Ptr<FlowMonitor> flowMonitor);
+  virtual void DoDispose (void);
 
 public:
   virtual ~FlowProbe ();
