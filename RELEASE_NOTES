@@ -33,16 +33,58 @@ New user-visible features
 
 Bugs fixed
 ----------
+- bug 1256 - Unnecessary SND.NXT advance, missing ACK for Out of Order segments
+- bug 1318 - Ipv6L3Protocol::LocalDeliver can get stuck in an infinte loop
+- bug 1409 - Add an attribute "SystemId" to configure the ID for MPI
+- bug 1434 - DSR throughput not comparable to other protocols for manet example
+- bug 1502 - Shutdown on tcp socket seems to misbehave
+- bug 1503 - BlockAckManager infine loop
+- bug 1517 - Waf clean/distclean doesn't remove the doc/html directory
+- bug 1540 - Waf not finding click libraries
+- bug 1549 - Test for NS_LOG
+- bug 1556 - Uses of htonl making OpenFlow's match field error
+- bug 1563 - Reduce valgrind test scope
+- bug 1564 - Packet meta data isn't shown in dumbbell-animation.xml
 - bug 1566 - WiFi SNR tag improvements
-- Bug 1582 - IPv6 raw socket return value is not like Linux socket
+- bug 1568 - Deserialized addresses are implicity marked as Mac48Address
+- bug 1569 - droptail_vs_red example doesn't run
+- bug 1570 - Valgrind errors in new test examples
+- bug 1574 - Node color overwritten, by mobility updates in netanim
+- bug 1575 - Invert the y-axis in netanim
+- bug 1576 - Frequency units HERTZ and MEGAHERTZ mix up
+- bug 1577 - Typo in ascii picture in example aodv script
+- bug 1579 - edca-txop-n fragmentation causes segfault
+- bug 1582 - IPv6 raw socket return value is not like Linux socket
 - bug 1585 - Length field of A-MSDU subframe header endianness
-- Bug 1409 - Add an attribute "SystemId" to configure the ID for MPI
-- Bug 1601 - RttEstimator doesn't set the m_currentEstimatedRtt to m_initialEstimatedRtt on creation
-- Bug 1612 - pyviz (visualizer) will not be installed
-- Bug 1623 - pybindgen rev809 is not able to build after Ubuntu 1210
-- Bug 1579 - edca-txop-n fragmentation causes segfault
-- Bug 1632 - Prepend bake build directory to the guessed locations
+- bug 1586 - Building documentation fails if make runs in parallel
+- bug 1588 - UdpEchoServer::HandleRead logs fail when using Ipv6
+- bug 1589 - Bake - support pre-2.7 version of python
+- bug 1590 - Bake - more autotools version support
+- bug 1595 - Function declarations without implementations cause problems with dsr module's python bindings
+- bug 1596 - Inet TopologyReader is skipping one link and duplicating another one
+- bug 1600 - Icmpv6OptionLinkLayerAddress can only carry 48 bit addresses correctly
+- bug 1601 - RttEstimator doesn't set the m_currentEstimatedRtt to m_initialEstimatedRtt on creation
+- bug 1602 - waf build can break due to file collisions in higher-level directory
+- bug 1603 - random-variable-stream-helper - this unavalable for static member functions
+- bug 1607 - OnOffApplication over TCP with IPv6 support
+- bug 1608 - DSR Network ACK is not handled correctly
+- bug 1609 - Route Request table is needed
+- bug 1612 - pyviz (visualizer) will not be installed
+- bug 1613 - Can't build ns-3-dev with g++ 4.7.2
+- bug 1615 - Adjusting OLSR HelloInterval Attribute results in no links
+- bug 1618 - bake.py not detecting install of libxml2-dev on ubuntu
+- bug 1623 - pybindgen rev809 is not able to build after Ubuntu 1210
+- bug 1625 - ns-3-dev fails to build on Debian wheezy amd64
+- bug 1626 - ipv6-only network can't use UDP or TCP
+- bug 1632 - Prepend bake build directory to the guessed locations
              that waf will look to find libraries
+- bug 1633 - Bake - should not report that it is downloading qt4 when it is already installed
+- bug 1635 - Small bug without Simulator::Destroy()
+- bug 1636 - Compilation error flagged as unmet dependency
+- bug 1637 - Bake calling apt-get for unpriviledged user
+- bug 1639 - bake.py support for linux mint
+- bug 1640 - bake needs to test for g++
+- bug 1641 - bake reports autotools dependency, but needs automake
 
 Known issues
 ------------
