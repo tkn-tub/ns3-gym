@@ -1230,7 +1230,7 @@ uint8_t DsrOptionSR::Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Address 
       if (destAddress != destination)
         {
           NS_LOG_DEBUG ("Process the promiscuously received packet");
-          bool findPassive;
+          bool findPassive = false;
           int32_t nNodes = NodeList::GetNNodes ();
           for (int32_t i = 0; i < nNodes; ++i)
             {

@@ -1249,13 +1249,12 @@ bool DsrRouting::PromiscReceive (Ptr<NetDevice> device, Ptr<const Packet> packet
           if (optionType == 96)        // This is the source route option
             {
               Ipv4Address promiscSource = GetIPfromMAC (Mac48Address::ConvertFrom (from));
-              Ipv4Address promiscDestination = GetIPfromMAC (Mac48Address::ConvertFrom (to));
               dsrOption = GetOption (optionType);       // Get the relative DSR option and demux to the process function
               NS_LOG_DEBUG (Simulator::Now ().GetSeconds () << 
                             " DSR node " << m_mainAddress <<
                             " overhearing packet PID: " << p->GetUid () <<
                             " from " << promiscSource <<
-                            " to " << promiscDestination <<
+                            " to " << GetIPfromMAC (Mac48Address::ConvertFrom (to)) <<
                             " with source IP " << ipv4Header.GetSource () <<
                             " and destination IP " << ipv4Header.GetDestination () <<
                             " and packet : " << *dsrPacket);
