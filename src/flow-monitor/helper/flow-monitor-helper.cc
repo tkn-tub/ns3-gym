@@ -37,9 +37,12 @@ FlowMonitorHelper::FlowMonitorHelper ()
 
 FlowMonitorHelper::~FlowMonitorHelper ()
 {
-  m_flowMonitor->Dispose ();
-  m_flowMonitor = 0;
-  m_flowClassifier = 0;
+  if (m_flowMonitor)
+    {
+      m_flowMonitor->Dispose ();
+      m_flowMonitor = 0;
+      m_flowClassifier = 0;
+    }
 }
 
 void 
