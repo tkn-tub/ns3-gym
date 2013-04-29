@@ -61,7 +61,6 @@ static uint32_t lookuphash (unsigned char* k, uint32_t length, uint32_t level)
    })
 
   typedef uint32_t  ub4;   /* unsigned 4-byte quantities */
-  typedef unsigned  char ub1;   /* unsigned 1-byte quantities */
   uint32_t a = 0;
   uint32_t b = 0;
   uint32_t c = 0;

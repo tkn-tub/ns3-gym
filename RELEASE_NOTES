@@ -85,6 +85,7 @@ Bugs fixed
 - bug 1639 - bake.py support for linux mint
 - bug 1640 - bake needs to test for g++
 - bug 1641 - bake reports autotools dependency, but needs automake
+- bug 1661 - Variable ub1 defined but not used in ipv6-address.cc
 
 Known issues
 ------------
