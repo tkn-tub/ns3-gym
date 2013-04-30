@@ -1114,6 +1114,7 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
               NS_LOG_INFO ("\t " << rbgAllocated);
               i++;
               rbgMap.at (rbgAllocated) = true;
+              rbgAllocatedNum++;
             }
           rbgAllocated++;
         }
@@ -1146,7 +1147,7 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
       // ...more parameters -> ignored in this version
 
       ret.m_buildDataList.push_back (newEl);
-      if (rbgAllocated == rbgNum)
+      if (rbgAllocatedNum == rbgNum)
         {
           m_nextRntiDl = (*it).m_rnti; // store last RNTI served
           break;                       // no more RGB to be allocated
