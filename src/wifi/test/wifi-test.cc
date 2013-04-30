@@ -111,10 +111,10 @@ WifiTest::RunOne (void)
   CreateOne (Vector (5.0, 0.0, 0.0), channel);
   CreateOne (Vector (5.0, 0.0, 0.0), channel);
 
+  Simulator::Stop (Seconds (10.0));
+
   Simulator::Run ();
   Simulator::Destroy ();
-
-  Simulator::Stop (Seconds (10.0));
 }
 
 void
@@ -147,7 +147,6 @@ WifiTest::DoRun (void)
   m_propDelay.SetTypeId ("ns3::RandomPropagationDelayModel");
   m_mac.SetTypeId ("ns3::AdhocWifiMac");
   RunOne ();
-  Simulator::Destroy ();
 }
 
 //-----------------------------------------------------------------------------
