@@ -352,7 +352,7 @@ BurstErrorModel::AssignStreams (int64_t stream)
   NS_LOG_FUNCTION (this << stream);
   m_burstStart->SetStream (stream);
   m_burstSize->SetStream(stream);
-  return 1;
+  return 2;
 }
 
 bool
