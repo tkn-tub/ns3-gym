@@ -203,6 +203,9 @@ BurstErrorModelSimple::DoRun (void)
   em->SetRandomVariable (uv);
   em->SetAttribute ("ErrorRate", DoubleValue (0.01));
 
+  // Assign the underlying error model random variables to specific streams
+  em->AssignStreams (51);
+
   // The below hooks will cause drops and receptions to be counted
   output->SetAttribute ("ReceiveErrorModel", PointerValue (em));
   output->TraceConnectWithoutContext ("PhyRxDrop", MakeCallback (&BurstErrorModelSimple::DropEvent, this));
@@ -216,9 +219,9 @@ BurstErrorModelSimple::DoRun (void)
   // With the burst error rate to be 0.01 and the burst size to be from 1 to 4,
   // we expect about 2.5 packets being dropped every 1000 packets.
   // That means for 10000 packets, we expect a total of about 250 packet drops.
-  // For this specific RNG seed, we see 9772 receptions and 228 drops.
-  NS_TEST_ASSERT_MSG_EQ (m_count, 9772, "Wrong number of receptions.");
-  NS_TEST_ASSERT_MSG_EQ (m_drops, 228 , "Wrong number of drops.");
+  // For this specific RNG seed, we see 9740 receptions and 260 drops.
+  NS_TEST_ASSERT_MSG_EQ (m_count, 9740, "Wrong number of receptions.");
+  NS_TEST_ASSERT_MSG_EQ (m_drops, 260 , "Wrong number of drops.");
 }
 
 // This is the start of an error model test suite.  For starters, this is
