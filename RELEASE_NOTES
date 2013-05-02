@@ -30,6 +30,8 @@ New user-visible features
   pkg-config generator has been replaced by Waf's builtin tool.
 - create-module.py script has been updated to work with waf 1.7 and support
   for creating modules with names containing dashes has been added.
+- the M5 release of the LTE module by the LENA project has been
+  merged; please see src/lte/RELEASE_NOTES for more detailed info 
 
 Bugs fixed
 ----------

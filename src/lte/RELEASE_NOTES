@@ -7,6 +7,50 @@ This file documents the user-visible features that have been added
 within each release of the ns-3 LTE module.
 
 
+Milestone 5 (M5) release of the LENA project (January 23, 2013)
+================================================================
+
+ - MIMO model
+ - HARQ model integrated with error model
+ - Control Channel and Reference Signals models
+ - MAC Random Access model with protocol interference model
+   for preamble collisions
+ - RRC implementation with new UE and ENB state machines and
+   ASN.1-encoded RRC PDUs sent over Signaling Radio Bearers
+ - RLC TM model
+ - MME, S1-AP and S11 logical models
+ - X2 implementation supporting handover and SON primitives
+ - additional KPIs: RSRP & SINR traces, PHY tx/rx traces,
+   SRB stats
+ - several bug fixes
+
+
+GSoC 2012 release (merged into ns-3-dev on December 2012)
+=========================================================
+
+ - Maximum Throughput (MT) Scheduler
+ - Throughput to Average (TTA) Scheduler
+ - Blind Equal Throughput (BET) Scheduler
+ - Token Bank Fair Queue (TBFQ) Scheduler
+ - Priority Set Scheduler (PSS)
+
+
+Milestone 4 (M4) release of the LENA project (December 15, 2011)
+================================================================
+
++ LTE Radio Protocols:
+  - RLC/UM
+  - RLC/AM
+  - PDCP
++ EPC data plane:
+  - S1-U interface with GTP-U tunneling
+  - SGW/PGW node
+  - TFT classifiers
+  - mapping of EPS bearers to Radio Bearers
+  - integration with ns-3 Ipv4 and ns-3 applications
++ Propagation Models:
+  - revised trace-based fading model with new traces
+  - new buildings pathloss model 
 
 
 Milestone 1 (M1) release of the LENA project (June 17, 2011)

@@ -64,15 +64,27 @@ us a note on ns-developers mailing list.</p>
   </li>  
 </ul>
 <ul>
-	<li>Additions in LTE
-		<ul>
-			<li>New LTE control message classes DlHarqFeedbackLteControlMessage, RachPreambleLteControlMessage, RarLteControlMessage, MibLteControlMessage</li>
-			<li>New class UeManager
-			<li>New LteRadioBearerInfo subclasses LteSignalingRadioBearerInfo, LteDataRadioBearerInfo</li>
-			<li>New LteSinrChunkProcessor subclasses LteRsReceivedPowerChunkProcessor, LteInterferencePowerChunkProcessor</li>
-		</ul>
-	</li>
-
+  <li>LTE module
+    <ul>
+      <li> New user-visible LTE API
+	   <ul>
+	     <li>Two new methods have been added to LteHelper to enable the X2-based handover functionality: AddX2Interface, which setups the X2 interface between two eNBs, and HandoverRequest, which is  a convenience method that schedules an explicit handover event to be executed at a given point in the simulation. </li>
+	     <li>the new LteHelper method EnablePhyTraces can now be used to enable the new PHY traces</li>
+	   </ul>
+      </li> 
+      <li> New internal LTE API 
+	   <ul>
+	     <li>New LTE control message classes DlHarqFeedbackLteControlMessage, 
+	       RachPreambleLteControlMessage, RarLteControlMessage, MibLteControlMessage</li>
+	     <li>New class UeManager
+	     <li>New LteRadioBearerInfo subclasses LteSignalingRadioBearerInfo, 
+	       LteDataRadioBearerInfo</li>
+	     <li>New LteSinrChunkProcessor subclasses LteRsReceivedPowerChunkProcessor, 
+	       LteInterferencePowerChunkProcessor</li>
+	   </ul>
+      </li>
+    </ul>
+  </li>
 <li>New Tag, PacketSocketTag, to carry the dest address of a packet and the packet type</li>
 <li>New Tag, DeviceNameTag, to carry the ns3 device name from where a packet is coming</li>
 <li>New Error Model, BurstError model, to determine which bursts of packets are errored corresponding to an underlying distribution, burst rate, and burst size</li>
@@ -107,9 +119,14 @@ us a note on ns-developers mailing list.</p>
 </li>
 <li>Changes in LTE API
 <ul>
+   <li> User-visible LTE API 
+     <ul>
+	<li>The previous LteHelper method ActivateEpsBearer has been now replaced by two alternative methods: ActivateDataRadioBearer (to be used when the EPC model is not used) and ActivateDedicatedEpsBearer (to be used when the EPC model is used). In the case where the EPC model is used, the default EPS bearer is not automatically activated without the need for a specific method to be called.</li>
+     </ul>
+   </li> 
+   <li> Internal LTE API 
+     <ul>
 	<li>EpcHelper added methods AddUe, AddX2Interface.  Method AddEnb now requires a cellId.  Signature of ActivateEpsBearer changed to void ActivateEpsBearer (Ptr<NetDevice> ueLteDevice, uint64_t imsi, Ptr<EpcTft> tft, EpsBearer bearer) </li>
-	<li>LteHelper method ActivateEpsBearer renamed to ActivateDedicatedEpsBearer</li>
-	<li>LteHelper added methods AddX2Interface, HandoverRequest, ActivateDataRadioBearer</li>
 	<li>LteHelper added methods EnableDlPhyTraces, EnableUlPhyTraces, EnableDlTxPhyTraces, EnableUlTxPhyTraces, EnableDlRxPhyTraces, EnableUlRxPhyTraces</li>
 	<li>LteHelper removed methods EnableDlRlcTraces, EnableUlRlcTraces, EnableDlPdcpTraces, EnableUlPdcpTraces</li>
 	<li>RadioBearerStatsCalculator added methods (Set/Get)StartTime, (Set/Get)Epoch, RescheduleEndEpoch, EndEpoch</li>
@@ -145,7 +162,7 @@ us a note on ns-developers mailing list.</p>
 	<li>LteUePhy DoSendMacPdu, DoSendLteControlMessage, DoSetTransmissionMode, DoSetSrsConfigurationIndex made private</li>
 	<li>LteUePhySapProvider removed methods	SetBandwidth, SetTransmissionMode, SetSrsConfigurationIndex</li>
 	<li>LteUePhySapProvider added method SendRachPreamble</li>  
- 	
+   </li>   	
 </ul>
 <li>AnimationInterface method EnableIpv4RouteTracking returns reference to calling AnimationInterface object</li>
 
