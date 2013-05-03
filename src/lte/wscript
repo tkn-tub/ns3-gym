@@ -140,6 +140,7 @@ def build(bld):
         'test/test-lte-rrc.cc',
         'test/test-lte-x2-handover.cc',
         'test/test-asn1-encoding.cc',
+        'test/test-lte-handover-delay.cc',
         ]
 
     headers = bld(features='ns3header')

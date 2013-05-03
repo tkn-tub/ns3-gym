@@ -893,3 +893,50 @@ The condition "UE is connected to eNB" is evaluated positively if and only if al
  - for each Data Radio Bearer, the following identifiers match between
    the UE and the eNB: EPS bearer id, DRB id, LCID
 
+
+Handover delays
+---------------
+
+Handover procedure consists of several message exchanges between UE, source
+eNodeB, and target eNodeB over both RRC protocol and X2 interface. Test suite
+``lte-handover-delay`` verifies that this procedure consistently spends the
+same amount of time.
+
+The test suite will run several handover test cases. Eact test case is an
+individual simulation featuring a handover at a specified time in simulation.
+For example, the handover in the first test case is invoked at time +0.100s,
+while in the second test case it is at +0.101s. There are 10 test cases, each
+testing a different subframe in LTE. Thus the last test case has the handover
+at +0.109s.
+
+The simulation scenario in the test cases is as follow:
+
+ - EPC is enabled
+ - 2 eNodeBs with circular (isotropic) antenna, separated by 1000 meters
+ - 1 static UE positioned exactly in the center between the eNodeBs
+ - no application installed
+ - no channel fading
+ - default path loss model (Friis)
+ - 0.300s simulation duration
+
+The test case runs as follow. At the beginning of the simulation, the UE is
+attached to the first eNodeB. Then at the time specified by the test case input
+argument, a handover request will be explicitly issued to the second eNodeB.
+The test case will then record the starting time, wait until the handover is
+completed, and then record the completion time. If the difference between the
+completion time and starting time is less than a predefined threshold, then the
+test passes.
+
+A typical handover in the current ns-3 implementation takes 4.2141 ms when using
+Ideal RRC protocol model, and 19.9283 ms when using Real RRC protocol model.
+Accordingly, the test cases use 5 ms and 20 ms as the maximum threshold values.
+The test suite runs 10 test cases with Ideal RRC protocol model and 10 test
+cases with Real RRC protocol model. More information regarding these models can
+be found in Section :ref:`sec-rrc-protocol-models`.
+
+The motivation behind using subframes as the main test parameters is the fact
+that subframe index is one of the factors for calculating RA-RNTI, which is used
+by Random Access during the handover procedure. The test cases verify this
+computation, utilizing the fact that the handover will be delayed when this
+computation is broken. In the default simulation configuration, the handover
+delay observed because of a broken RA-RNTI computation is typically 6 ms.

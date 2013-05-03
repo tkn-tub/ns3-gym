@@ -2035,6 +2035,8 @@ MobilityControlInfo.
    for the handover case
 
 
+.. _sec-rrc-protocol-models:
+
 RRC protocol models
 +++++++++++++++++++
 
@@ -2042,7 +2044,6 @@ As previously anticipated, we provide two different models  for the
 transmission and reception of RRC messages: *Ideal*
 and *Real*. Each of them is described in one of the following
 subsections.
-
 
 Ideal RRC protocol model
 ------------------------
