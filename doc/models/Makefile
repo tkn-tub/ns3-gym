@@ -90,19 +90,27 @@ SOURCEFIGS = \
 	$(SRC)/wifi/doc/WifiArchitecture.dia \
 	$(SRC)/wifi/doc/snir.dia \
 	$(SRC)/wimax/doc/WimaxArchitecture.dia \
+	$(SRC)/lte/doc/source/figures/epc-ctrl-arch.dia \
 	$(SRC)/lte/doc/source/figures/epc-data-flow-dl.dia \
 	$(SRC)/lte/doc/source/figures/epc-data-flow-ul.dia \
 	$(SRC)/lte/doc/source/figures/epc-profiling-scenario.dia \
 	$(SRC)/lte/doc/source/figures/epc-topology.dia \
+	$(SRC)/lte/doc/source/figures/epc-topology-x2-enhanced.dia \
 	$(SRC)/lte/doc/source/figures/eutran-profiling-scenario.dia \
 	$(SRC)/lte/doc/source/figures/ff-example.dia \
 	$(SRC)/lte/doc/source/figures/ff-mac-saps.dia \
-	$(SRC)/lte/doc/source/figures/lte-arch-data-rrc-pdcp-rlc.dia \
-	$(SRC)/lte/doc/source/figures/lte-enb-architecture.dia \
+	$(SRC)/lte/doc/source/figures/lte-arch-enb-data.dia \
+	$(SRC)/lte/doc/source/figures/lte-arch-enb-ctrl.dia \
+	$(SRC)/lte/doc/source/figures/lte-arch-ue-data.dia \
+	$(SRC)/lte/doc/source/figures/lte-arch-ue-ctrl.dia \
+	$(SRC)/lte/doc/source/figures/lte-enb-phy.dia \
+	$(SRC)/lte/doc/source/figures/lte-ue-phy.dia \
 	$(SRC)/lte/doc/source/figures/lte-epc-e2e-data-protocol-stack.dia \
 	$(SRC)/lte/doc/source/figures/lte-interference-test-scenario.dia \
-	$(SRC)/lte/doc/source/figures/lte-ue-architecture.dia \
 	$(SRC)/lte/doc/source/figures/lte-subframe-structure.dia \
+	$(SRC)/lte/doc/source/figures/lte-epc-x2-interface.dia \
+	$(SRC)/lte/doc/source/figures/lte-harq-architecture.dia \
+	$(SRC)/lte/doc/source/figures/lte-harq-processes-scheme.dia \
 	$(SRC)/lte/doc/source/figures/lena-dual-stripe.eps \
 	$(SRC)/lte/doc/source/figures/lte-mcs-index.eps \
 	$(SRC)/lte/doc/source/figures/lenaThrTestCase1.eps \
@@ -119,6 +127,8 @@ SOURCEFIGS = \
 	$(SRC)/lte/doc/source/figures/lte-rlc-data-retx-dl.eps \
 	$(SRC)/lte/doc/source/figures/lte-rlc-data-txon-ul.eps \
 	$(SRC)/lte/doc/source/figures/lte-rlc-data-retx-ul.eps \
+	$(SRC)/lte/doc/source/figures/lte-epc-x2-handover-seq-diagram.eps \
+	$(SRC)/lte/doc/source/figures/lte-epc-x2-entity-saps.eps \
 	$(SRC)/lte/doc/source/figures/fading_pedestrian.png \
 	$(SRC)/lte/doc/source/figures/fading_vehicular.png \
 	$(SRC)/lte/doc/source/figures/fading_urban_3kmph.png \
@@ -147,14 +157,28 @@ SOURCEFIGS = \
 	$(SRC)/lte/doc/source/figures/MCS_12_test.pdf \
 	$(SRC)/lte/doc/source/figures/MCS_16_test.png \
 	$(SRC)/lte/doc/source/figures/MCS_16_test.pdf \
-	$(SRC)/lte/doc/source/figures/lte-phy-interference.png \
-	$(SRC)/lte/doc/source/figures/lte-phy-interference.pdf \
-	$(SRC)/lte/doc/source/figures/helpers.png \
-	$(SRC)/lte/doc/source/figures/helpers.pdf \
 	$(SRC)/lte/doc/source/figures/miesm_scheme.pdf \
 	$(SRC)/lte/doc/source/figures/miesm_scheme.png \
-	$(SRC)/lte/doc/source/figures/lte-phy-interference.seqdiag \
-	$(SRC)/lte/doc/source/figures/helpers.seqdiag \
+	$(SRC)/lte/doc/source/figures/lte-phy-interference.png \
+	$(SRC)/lte/doc/source/figures/helpers.png \
+	$(SRC)/lte/doc/source/figures/mac-random-access-contention.png \
+	$(SRC)/lte/doc/source/figures/mac-random-access-noncontention.png \
+	$(SRC)/lte/doc/source/figures/rrc-connection-establishment.png \
+	$(SRC)/lte/doc/source/figures/rrc-connection-reconfiguration.png \
+	$(SRC)/lte/doc/source/figures/rrc-connection-reconfiguration-handover.png \
+	$(SRC)/lte/doc/source/figures/nas-attach.png \
+	$(SRC)/lte/doc/source/figures/lte-phy-interference.pdf \
+	$(SRC)/lte/doc/source/figures/helpers.pdf \
+	$(SRC)/lte/doc/source/figures/mac-random-access-contention.pdf \
+	$(SRC)/lte/doc/source/figures/mac-random-access-noncontention.pdf \
+	$(SRC)/lte/doc/source/figures/rrc-connection-establishment.pdf \
+	$(SRC)/lte/doc/source/figures/rrc-connection-reconfiguration.pdf \
+	$(SRC)/lte/doc/source/figures/rrc-connection-reconfiguration-handover.pdf \
+	$(SRC)/lte/doc/source/figures/nas-attach.pdf \
+	$(SRC)/lte/doc/source/figures/lte-enb-rrc-states.png \
+	$(SRC)/lte/doc/source/figures/lte-ue-rrc-states.png \
+	$(SRC)/lte/doc/source/figures/lte-enb-rrc-states.pdf \
+	$(SRC)/lte/doc/source/figures/lte-ue-rrc-states.pdf \
 	$(SRC)/uan/doc/auvmobility-classes.dia \
 	$(SRC)/stats/doc/Stat-framework-arch.png \
 	$(SRC)/stats/doc/Wifi-default.png \
@@ -198,19 +222,27 @@ IMAGES_EPS = \
 	$(FIGURES)/WifiArchitecture.eps \
 	$(FIGURES)/snir.eps \
 	$(FIGURES)/WimaxArchitecture.eps \
+	$(FIGURES)/epc-ctrl-arch.eps \
 	$(FIGURES)/epc-data-flow-dl.eps \
 	$(FIGURES)/epc-data-flow-ul.eps \
 	$(FIGURES)/epc-profiling-scenario.eps \
 	$(FIGURES)/epc-topology.eps \
+	$(FIGURES)/epc-topology-x2-enhanced.eps \
 	$(FIGURES)/eutran-profiling-scenario.eps \
 	$(FIGURES)/ff-example.eps \
 	$(FIGURES)/ff-mac-saps.eps \
-	$(FIGURES)/lte-arch-data-rrc-pdcp-rlc.eps \
-	$(FIGURES)/lte-enb-architecture.eps \
+	$(FIGURES)/lte-arch-enb-data.eps \
+	$(FIGURES)/lte-arch-enb-ctrl.eps \
+	$(FIGURES)/lte-arch-ue-data.eps \
+	$(FIGURES)/lte-arch-ue-ctrl.eps \
+	$(FIGURES)/lte-enb-phy.eps \
+	$(FIGURES)/lte-ue-phy.eps \
 	$(FIGURES)/lte-epc-e2e-data-protocol-stack.eps \
 	$(FIGURES)/lte-interference-test-scenario.eps \
-	$(FIGURES)/lte-ue-architecture.eps \
 	$(FIGURES)/lte-subframe-structure.eps \
+	$(FIGURES)/lte-epc-x2-interface.eps \
+	$(FIGURES)/lte-harq-architecture.eps \
+	$(FIGURES)/lte-harq-processes-scheme.eps \
 	$(FIGURES)/lena-dual-stripe.eps \
 	$(FIGURES)/lte-mcs-index.eps \
 	$(FIGURES)/lenaThrTestCase1.eps \
@@ -227,6 +259,8 @@ IMAGES_EPS = \
 	$(FIGURES)/lte-rlc-data-retx-dl.eps \
 	$(FIGURES)/lte-rlc-data-txon-ul.eps \
 	$(FIGURES)/lte-rlc-data-retx-ul.eps \
+	$(FIGURES)/lte-epc-x2-handover-seq-diagram.eps \
+	$(FIGURES)/lte-epc-x2-entity-saps.eps \
 	$(FIGURES)/auvmobility-classes.eps \
 
 # rescale pdf figures as necessary
