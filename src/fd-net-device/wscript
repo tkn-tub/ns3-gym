@@ -2,6 +2,13 @@
 
 import os.path
 
+from waflib import Options
+
+def options(opt):
+    opt.add_option('--force-planetlab',
+                   help=('Forces compilation of PlanetLab even if not suported by the local system'),
+                   dest='force_planetlab', default=False, action="store_true")
+
 def configure(conf):
     conf.env['ENABLE_FDNETDEV'] = False
 
@@ -72,7 +79,7 @@ def configure(conf):
         # Enable use of PlanetLab TAP helper
         # TODO: How to validate 
         (sysname, nodename, release, version, machine) = os.uname()
-        if release.find('onelab') != -1:
+        if release.find('onelab') != -1 or Options.options.force_planetlab:
             conf.env['ENABLE_PLANETLAB'] = True
 
         if conf.env['ENABLE_PLANETLAB']:
@@ -84,7 +91,7 @@ def configure(conf):
             conf.report_optional_feature("PlanetLabFdNetDevice", 
                 "PlanetLab FdNetDevice", 
                 False,
-                "PlanetLab operating system not detected")
+                "PlanetLab operating system not detected (see option --force-planetlab)")
 
 def build(bld):
     # Don't do anything for this module if emu's not enabled.

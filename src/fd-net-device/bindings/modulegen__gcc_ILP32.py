@@ -234,6 +234,8 @@ def register_types(module):
     module.add_class('OutputStreamWrapper', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::OutputStreamWrapper, ns3::empty, ns3::DefaultDeleter<ns3::OutputStreamWrapper> >'])
     ## packet.h (module 'network'): ns3::Packet [class]
     module.add_class('Packet', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet> >'])
+    ## planetlab-fd-net-device-helper.h (module 'fd-net-device'): ns3::PlanetLabFdNetDeviceHelper [class]
+    module.add_class('PlanetLabFdNetDeviceHelper', parent=root_module['ns3::EmuFdNetDeviceHelper'])
     ## tap-fd-net-device-helper.h (module 'fd-net-device'): ns3::TapFdNetDeviceHelper [class]
     module.add_class('TapFdNetDeviceHelper', parent=root_module['ns3::EmuFdNetDeviceHelper'])
     ## nstime.h (module 'core'): ns3::TimeChecker [class]
@@ -363,6 +365,7 @@ def register_methods(root_module):
     register_Ns3ObjectFactoryValue_methods(root_module, root_module['ns3::ObjectFactoryValue'])
     register_Ns3OutputStreamWrapper_methods(root_module, root_module['ns3::OutputStreamWrapper'])
     register_Ns3Packet_methods(root_module, root_module['ns3::Packet'])
+    register_Ns3PlanetLabFdNetDeviceHelper_methods(root_module, root_module['ns3::PlanetLabFdNetDeviceHelper'])
     register_Ns3TapFdNetDeviceHelper_methods(root_module, root_module['ns3::TapFdNetDeviceHelper'])
     register_Ns3TimeChecker_methods(root_module, root_module['ns3::TimeChecker'])
     register_Ns3TimeValue_methods(root_module, root_module['ns3::TimeValue'])
@@ -4170,6 +4173,36 @@ def register_Ns3Packet_methods(root_module, cls):
     cls.add_method('SetNixVector', 
                    'void', 
                    [param('ns3::Ptr< ns3::NixVector >', 'arg0')])
+    return
+
+def register_Ns3PlanetLabFdNetDeviceHelper_methods(root_module, cls):
+    ## planetlab-fd-net-device-helper.h (module 'fd-net-device'): ns3::PlanetLabFdNetDeviceHelper::PlanetLabFdNetDeviceHelper(ns3::PlanetLabFdNetDeviceHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PlanetLabFdNetDeviceHelper const &', 'arg0')])
+    ## planetlab-fd-net-device-helper.h (module 'fd-net-device'): ns3::PlanetLabFdNetDeviceHelper::PlanetLabFdNetDeviceHelper() [constructor]
+    cls.add_constructor([])
+    ## planetlab-fd-net-device-helper.h (module 'fd-net-device'): void ns3::PlanetLabFdNetDeviceHelper::SetTapIpAddress(ns3::Ipv4Address address) [member function]
+    cls.add_method('SetTapIpAddress', 
+                   'void', 
+                   [param('ns3::Ipv4Address', 'address')])
+    ## planetlab-fd-net-device-helper.h (module 'fd-net-device'): void ns3::PlanetLabFdNetDeviceHelper::SetTapMask(ns3::Ipv4Mask mask) [member function]
+    cls.add_method('SetTapMask', 
+                   'void', 
+                   [param('ns3::Ipv4Mask', 'mask')])
+    ## planetlab-fd-net-device-helper.h (module 'fd-net-device'): int ns3::PlanetLabFdNetDeviceHelper::CreateFileDescriptor() const [member function]
+    cls.add_method('CreateFileDescriptor', 
+                   'int', 
+                   [], 
+                   is_const=True, visibility='protected', is_virtual=True)
+    ## planetlab-fd-net-device-helper.h (module 'fd-net-device'): ns3::Ptr<ns3::NetDevice> ns3::PlanetLabFdNetDeviceHelper::InstallPriv(ns3::Ptr<ns3::Node> node) const [member function]
+    cls.add_method('InstallPriv', 
+                   'ns3::Ptr< ns3::NetDevice >', 
+                   [param('ns3::Ptr< ns3::Node >', 'node')], 
+                   is_const=True, visibility='protected', is_virtual=True)
+    ## planetlab-fd-net-device-helper.h (module 'fd-net-device'): void ns3::PlanetLabFdNetDeviceHelper::SetFileDescriptor(ns3::Ptr<ns3::FdNetDevice> device) const [member function]
+    cls.add_method('SetFileDescriptor', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::FdNetDevice >', 'device')], 
+                   is_const=True, visibility='protected', is_virtual=True)
     return
 
 def register_Ns3TapFdNetDeviceHelper_methods(root_module, cls):
