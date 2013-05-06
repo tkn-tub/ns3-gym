@@ -7396,26 +7396,6 @@ def register_Ns3RadioBearerStatsConnector_methods(root_module, cls):
     cls.add_method('EnsureConnected', 
                    'void', 
                    [])
-    ## radio-bearer-stats-connector.h (module 'lte'): static uint16_t ns3::RadioBearerStatsConnector::FindCellIdFromEnbRlcPath(std::string path) [member function]
-    cls.add_method('FindCellIdFromEnbRlcPath', 
-                   'uint16_t', 
-                   [param('std::string', 'path')], 
-                   is_static=True)
-    ## radio-bearer-stats-connector.h (module 'lte'): static uint16_t ns3::RadioBearerStatsConnector::FindCellIdFromUeRlcPath(std::string path) [member function]
-    cls.add_method('FindCellIdFromUeRlcPath', 
-                   'uint16_t', 
-                   [param('std::string', 'path')], 
-                   is_static=True)
-    ## radio-bearer-stats-connector.h (module 'lte'): static uint64_t ns3::RadioBearerStatsConnector::FindImsiFromEnbRlcPath(std::string path) [member function]
-    cls.add_method('FindImsiFromEnbRlcPath', 
-                   'uint64_t', 
-                   [param('std::string', 'path')], 
-                   is_static=True)
-    ## radio-bearer-stats-connector.h (module 'lte'): static uint64_t ns3::RadioBearerStatsConnector::FindImsiFromUeRlcPath(std::string path) [member function]
-    cls.add_method('FindImsiFromUeRlcPath', 
-                   'uint64_t', 
-                   [param('std::string', 'path')], 
-                   is_static=True)
     ## radio-bearer-stats-connector.h (module 'lte'): static void ns3::RadioBearerStatsConnector::NotifyConnectionReconfigurationEnb(ns3::RadioBearerStatsConnector * c, std::string context, uint64_t imsi, uint16_t cellid, uint16_t rnti) [member function]
     cls.add_method('NotifyConnectionReconfigurationEnb', 
                    'void', 
@@ -8615,11 +8595,6 @@ def register_Ns3EpsBearerTag_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## eps-bearer-tag.h (module 'lte'): uint8_t ns3::EpsBearerTag::GetLayer() const [member function]
-    cls.add_method('GetLayer', 
-                   'uint8_t', 
-                   [], 
-                   is_const=True)
     ## eps-bearer-tag.h (module 'lte'): uint16_t ns3::EpsBearerTag::GetRnti() const [member function]
     cls.add_method('GetRnti', 
                    'uint16_t', 
@@ -12612,10 +12587,6 @@ def register_Ns3EpcSgwPgwApplication_methods(root_module, cls):
     cls.add_constructor([param('ns3::EpcSgwPgwApplication const &', 'arg0')])
     ## epc-sgw-pgw-application.h (module 'lte'): ns3::EpcSgwPgwApplication::EpcSgwPgwApplication(ns3::Ptr<ns3::VirtualNetDevice> const tunDevice, ns3::Ptr<ns3::Socket> const s1uSocket) [constructor]
     cls.add_constructor([param('ns3::Ptr< ns3::VirtualNetDevice > const', 'tunDevice'), param('ns3::Ptr< ns3::Socket > const', 's1uSocket')])
-    ## epc-sgw-pgw-application.h (module 'lte'): uint32_t ns3::EpcSgwPgwApplication::ActivateS1Bearer(ns3::Ipv4Address ueAddr, ns3::Ipv4Address enbAddr, ns3::Ptr<ns3::EpcTft> tft) [member function]
-    cls.add_method('ActivateS1Bearer', 
-                   'uint32_t', 
-                   [param('ns3::Ipv4Address', 'ueAddr'), param('ns3::Ipv4Address', 'enbAddr'), param('ns3::Ptr< ns3::EpcTft >', 'tft')])
     ## epc-sgw-pgw-application.h (module 'lte'): void ns3::EpcSgwPgwApplication::AddEnb(uint16_t cellId, ns3::Ipv4Address enbAddr, ns3::Ipv4Address sgwAddr) [member function]
     cls.add_method('AddEnb', 
                    'void', 
@@ -19495,11 +19466,6 @@ def register_Ns3RrcConnectionReleaseHeader_methods(root_module, cls):
     ## lte-rrc-header.h (module 'lte'): ns3::LteRrcSap::RrcConnectionRelease ns3::RrcConnectionReleaseHeader::GetMessage() const [member function]
     cls.add_method('GetMessage', 
                    'ns3::LteRrcSap::RrcConnectionRelease', 
-                   [], 
-                   is_const=True)
-    ## lte-rrc-header.h (module 'lte'): uint8_t ns3::RrcConnectionReleaseHeader::GetRrcTransactionIdentifier() const [member function]
-    cls.add_method('GetRrcTransactionIdentifier', 
-                   'uint8_t', 
                    [], 
                    is_const=True)
     ## lte-rrc-header.h (module 'lte'): void ns3::RrcConnectionReleaseHeader::PreSerialize() const [member function]
