@@ -970,8 +970,13 @@ UeManager::RecvMeasurementReport (LteRrcSap::MeasurementReport msg)
             {
               if (it->second->m_rsrq > bestNeighbourRsrq)
                 {
-                  bestNeighbour = it->second;
-                  bestNeighbourRsrq = it->second->m_rsrq;
+                  Ptr<NeighbourRelation> neighbourRelation = m_rrc->m_neighbourRelationTable[it->second->m_cellId];
+                  if ((neighbourRelation->m_noHo == false) &&
+                      (neighbourRelation->m_noX2 == false))
+                    {
+                      bestNeighbour = it->second;
+                      bestNeighbourRsrq = it->second->m_rsrq;
+                    }
                 }
             }
 
