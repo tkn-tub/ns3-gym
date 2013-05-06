@@ -985,7 +985,8 @@ UeManager::RecvMeasurementReport (LteRrcSap::MeasurementReport msg)
             {
               uint16_t targetCellId = bestNeighbour->m_cellId;
               NS_LOG_LOGIC ("Best neighbour cellId " << targetCellId);
-              if (bestNeighbour->m_rsrq - m_servingCellMeasures->m_rsrq >= m_rrc->m_neighbourCellHandoverOffset)
+              if ( (bestNeighbour->m_rsrq - m_servingCellMeasures->m_rsrq >= m_rrc->m_neighbourCellHandoverOffset) &&
+                   (m_state == CONNECTED_NORMALLY) )
                 {
                   NS_LOG_LOGIC ("Trigger Handover to cellId " << targetCellId);
                   NS_LOG_LOGIC ("target cell RSRQ " << (uint16_t) bestNeighbour->m_rsrq);
