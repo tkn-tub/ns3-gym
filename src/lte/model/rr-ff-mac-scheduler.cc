@@ -1064,7 +1064,7 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
         }
       int tbSize = (m_amc->GetTbSizeFromMcs (newDci.m_mcs.at (0), rbgPerTb * rbgSize) / 8);
       uint16_t rlcPduSize = tbSize / lcNum;
-      while (lcNum > 0)
+      while ((*it).m_rnti == newEl.m_rnti)
         {
           if ( ((*it).m_rlcTransmissionQueueSize > 0)
                || ((*it).m_rlcRetransmissionQueueSize > 0)
@@ -1100,6 +1100,7 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
             {
               // restart from the first
               it = m_rlcBufferReq.begin ();
+              break;
             }
         }
       uint32_t rbgMask = 0;
@@ -1133,7 +1134,7 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
           std::map <uint16_t, DlHarqProcessesDciBuffer_t>::iterator itDci = m_dlHarqProcessesDciBuffer.find (newEl.m_rnti);
           if (itDci == m_dlHarqProcessesDciBuffer.end ())
             {
-              NS_FATAL_ERROR ("Unable to find RNTI entry in DCI HARQ buffer for RNTI " << (*it).m_rnti);
+              NS_FATAL_ERROR ("Unable to find RNTI entry in DCI HARQ buffer for RNTI " << newEl.m_rnti);
             }
           (*itDci).second.at (newDci.m_harqProcess) = newDci;
           // refresh timer
@@ -1149,7 +1150,7 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
       ret.m_buildDataList.push_back (newEl);
       if (rbgAllocatedNum == rbgNum)
         {
-          m_nextRntiDl = (*it).m_rnti; // store last RNTI served
+          m_nextRntiDl = newEl.m_rnti; // store last RNTI served
           break;                       // no more RGB to be allocated
         }
     }
