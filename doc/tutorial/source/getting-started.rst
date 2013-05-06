@@ -4,6 +4,29 @@
 Getting Started
 ---------------
 
+This section is aimed at getting a user to a working state starting
+with a machine that may never have had |ns3| installed.  It covers
+supported platforms, prerequisites, ways to obtain |ns3|, ways to
+build |ns3|, and ways to verify your build and run simple programs.
+
+Overview
+********
+
+|ns3| is built as a system of software libraries that work together.
+User programs can be written that links with (or imports from) these
+libraries.  User programs are written in either the C++ or Python 
+programming languages.
+
+|ns3| is distributed as source code, meaning that the target system
+needs to have a software development environment to build the libraries
+first, then build the user program.  |ns3| could in principle be 
+distributed as pre-built libraries for selected systems, and in the
+future it may be distributed that way, but at present, many users
+actually do their work by editing |ns3| itself, so having the source
+code around to rebuild the libraries is useful.  If someone would like 
+to undertake the job of making pre-built libraries and packages for 
+operating systems, please contact the ns-developers mailing list.
+
 Downloading ns-3
 ****************
 
@@ -12,7 +35,7 @@ number of dependencies on other components.  Along with the systems you will
 most likely deal with every day (the GNU toolchain, Mercurial, a text
 editor) you will need to ensure that a number of additional libraries are
 present on your system before proceeding.  |ns3| provides a wiki
-for your reading pleasure that includes pages with many useful hints and tips.
+page that includes pages with many useful hints and tips.
 One such page is the "Installation" page,
 http://www.nsnam.org/wiki/index.php/Installation.
 
@@ -41,11 +64,44 @@ release.
 The simplest way to get started using Mercurial repositories is to use the
 ``ns-3-allinone`` environment.  This is a set of scripts that manages the 
 downloading and building of various subsystems of |ns3| for you.  We 
-recommend that you begin your |ns3| adventures in this environment
-as it can really simplify your life at this point.
+recommend that you begin your |ns3| work in this environment.
+
+Downloading ns-3 Using a Tarball
+++++++++++++++++++++++++++++++++
+A tarball is a particular format of software archive where multiple
+files are bundled together and the archive possibly compressed.
+|ns3| software releases are provided via a downloadable tarball.
+The process for downloading |ns3| via tarball is simple; you just
+have to pick a release, download it and decompress it.
+
+Let's assume that you, as a user, wish to build |ns3| in a local
+directory called ``workspace``. 
+If you adopt the ``workspace`` directory approach, you can 
+get a copy of a release by typing the following into your Linux shell 
+(substitute the appropriate version numbers, of course):
+
+::
+
+  cd
+  mkdir workspace
+  cd workspace
+  wget http://www.nsnam.org/releases/ns-allinone-3.17.tar.bz2
+  tar xjf ns-allinone-3.17.tar.bz2
+
+If you change into the directory ``ns-allinone-3.17`` you should see a
+number of files:
+
+::
+
+  bake      constants.py   ns-3.17               README
+  build.py  netanim-3.103  pybindgen-0.16.0.825  util.py
+
+You are now ready to build the |ns3| distribution.
 
 Downloading ns-3 Using Mercurial
 ++++++++++++++++++++++++++++++++
+|ns3| can also be fetched from the project's master code repositories
+using a tool called Mercurial.
 One practice is to create a directory called ``repos`` in one's home 
 directory under which one can keep local Mercurial repositories.  
 *Hint:  we will assume you do this later in the tutorial.*  If you adopt
@@ -57,31 +113,33 @@ following into your Linux shell (assuming you have installed Mercurial):
   cd
   mkdir repos
   cd repos
-  hg clone http://code.nsnam.org/ns-3-allinone
+  hg clone http://code.nsnam.org/bake
 
 As the hg (Mercurial) command executes, you should see something like the 
 following displayed,
 
 ::
 
-  destination directory: ns-3-allinone
+  destination directory: bake
   requesting all changes
   adding changesets
   adding manifests
   adding file changes
-  added 47 changesets with 67 changes to 7 files
+  added 252 changesets with 661 changes to 62 files
   updating to branch default
-  7 files updated, 0 files merged, 0 files removed, 0 files unresolved
+  45 files updated, 0 files merged, 0 files removed, 0 files unresolved
 
 After the clone command completes, you should have a directory called 
-``ns-3-allinone``, the contents of which should 
+``bake``, the contents of which should 
 look something like the following:
 
 ::
 
-  build.py*  constants.py  dist.py*  download.py*  README  util.py
+  bake                  bakeconf.xml  doc       generate-binary.py  TODO
+  bake.py               examples      test
 
-Notice that you really just downloaded some Python scripts.  The next step
+Notice that you really just downloaded some Python scripts and a Python
+module called ``bake``.  The next step
 will be to use those scripts to download and build the |ns3|
 distribution of your choice.
 
@@ -100,9 +158,9 @@ they are in a development area with unreleased code present, so you may want
 to consider staying with an official release if you do not need newly-
 introduced features.
 
-Since the release numbers are going to be changing, I will stick with 
+Since the release numbers are going to be changing, we will stick with 
 the more constant ns-3-dev here in the tutorial, but you can replace the 
-string "ns-3-dev" with your choice of release (e.g., ns-3.10) in the 
+string "ns-3-dev" with your choice of release (e.g., ns-3.17) in the 
 text below.  You can find the latest version  of the
 code either by inspection of the repository list or by going to the 
 `"ns-3 Releases"
@@ -110,137 +168,73 @@ code either by inspection of the repository list or by going to the
 web page and clicking on the latest release link.
 
 Go ahead and change into the ``ns-3-allinone`` directory you created when
-you cloned that repository.  We are now going to use the ``download.py`` 
-script to pull down the various pieces of |ns3| you will be using.
+you cloned that repository.  We are now going to use the bake tool
+to pull down the various pieces of |ns3| you will be using.
 
-Go ahead and type the following into your shell (remember you can substitute
-the name of your chosen release number instead of ``ns-3-dev`` -- like
-``"ns-3.10"`` if you want to work with a 
-stable release).
+Go ahead and type the following into your shell:
 
 ::
 
-  ./download.py -n ns-3-dev
+  ./bake.py configure -e ns-3.17
 
-Note that the default for the ``-n`` option is ``ns-3-dev`` and so the
-above is actually redundant.  We provide this example to illustrate how to
-specify alternate repositories.  In order to download ``ns-3-dev`` you 
-can actually use the defaults and simply type,
+Next, we'l ask bake to check whether we have enough tools to download
+various components.  Type:
 
 ::
 
-  ./download.py
+  ./bake.py check
 
-As the hg (Mercurial) command executes, you should see something like the 
-following,
-
-::
-
-      #
-      # Get NS-3
-      #
-  
-  Cloning ns-3 branch
-   =>  hg clone http://code.nsnam.org/ns-3-dev ns-3-dev
-  requesting all changes
-  adding changesets
-  adding manifests
-  adding file changes
-  added 4634 changesets with 16500 changes to 1762 files
-  870 files updated, 0 files merged, 0 files removed, 0 files unresolved
-
-This is output by the download script as it fetches the actual ``ns-3``
-code from the repository.
-
-The download script is smart enough to know that on some platforms various
-pieces of ns-3 are not supported.  On your platform you may not see some
-of these pieces come down.  However, on most platforms, the process should
-continue with something like,
+You should see something like the following,
 
 ::
 
-      #
-      # Get PyBindGen
-      #
+   > Python - OK
+   > GNU C++ compiler - OK
+   > Mercurial - OK
+   > CVS - OK
+   > GIT - OK
+   > Bazaar - OK
+   > Tar tool - OK
+   > Unzip tool - OK
+   > Unrar tool - is missing
+   > 7z  data compression utility - OK
+   > XZ data compression utility - OK
+   > Make - OK
+   > cMake - OK
+   > patch tool - OK
+   > autoreconf tool - OK
 
-  Required pybindgen version:  0.10.0.640
-  Trying to fetch pybindgen; this will fail if no network connection is available.  Hit Ctrl-C to skip.
-   =>  bzr checkout -rrevno:640 https://launchpad.net/pybindgen pybindgen
-  Fetch was successful.
+   > Path searched for tools: /usr/lib64/qt-3.3/bin /usr/lib64/ccache /usr/local/bin /bin /usr/bin /usr/local/sbin /usr/sbin /sbin /home/tomh/bin bin
 
-This was the download script getting the Python bindings generator for you.
-Note that you will need bazaar (bzr), a version control system, to download 
-PyBindGen. Next you should see (modulo platform variations) something along 
-the lines of,
+In particular, download tools such as Mercurial, CVS, GIT, and Bazaar
+are our principal concerns at thi spoint, since they allow us to fetch
+the code.  Please install missing tools at this stage if you are able to.
 
-::
-
-      #
-      # Get NSC
-      #
-
-  Required NSC version:  nsc-0.5.0
-  Retrieving nsc from https://secure.wand.net.nz/mercurial/nsc
-   =>  hg clone https://secure.wand.net.nz/mercurial/nsc nsc
-  requesting all changes
-  adding changesets
-  adding manifests
-  adding file changes
-  added 273 changesets with 17565 changes to 15175 files
-  10622 files updated, 0 files merged, 0 files removed, 0 files unresolved
-
-This part of the process is the script downloading the Network Simulation
-Cradle for you. Note that NSC is not supported on OSX or Cygwin and works 
-best with gcc-3.4 or gcc-4.2 or greater series.
-
-After the download.py script completes, you should have several new directories
-under ``~/repos/ns-3-allinone``:
+Next, try to download the software:
 
 ::
 
-  build.py*     constants.pyc  download.py*  nsc/        README      util.pyc
-  constants.py  dist.py*       ns-3-dev/     pybindgen/  util.py
+  python ./bake.py download
 
-Go ahead and change into ``ns-3-dev`` under your ``~/repos/ns-3-allinone`` 
-directory.  You should see something like the following there:
+should yield something like:
 
 ::
 
-  AUTHORS       doc       ns3            scratch   testpy.supp  VERSION   waf-tools
-  bindings      examples  README         src       utils        waf*      wscript
-  CHANGES.html  LICENSE   RELEASE_NOTES  test.py*  utils.py     waf.bat*  wutils.py
+   >> Searching for system dependency pygoocanvas - OK
+   >> Searching for system dependency python-dev - OK
+   >> Searching for system dependency pygraphviz - OK
+   >> Downloading pybindgen-0.16.0.825 - OK
+   >> Searching for system dependency g++ - OK
+   >> Searching for system dependency qt4 - OK
+   >> Downloading netanim-3.103 - OK
+   >> Downloading ns-3.17 - OK    
 
-You are now ready to build the |ns3| distribution.
-
-Downloading ns-3 Using a Tarball
-++++++++++++++++++++++++++++++++
-The process for downloading |ns3| via tarball is simpler than the
-Mercurial process since all of the pieces are pre-packaged for you.  You just
-have to pick a release, download it and decompress it.
-
-As mentioned above, one practice is to create a directory called ``repos``
-in one's home directory under which one can keep local Mercurial repositories.
-One could also keep a ``tarballs`` directory.  *Hint:  the tutorial
-will assume you downloaded into a* ``repos`` *directory, so remember the
-placekeeper.*  If you adopt the ``tarballs`` directory approach, you can 
-get a copy of a release by typing the following into your Linux shell 
-(substitute the appropriate version numbers, of course):
+The above suggests that three sources have been downloaded.  Check the
+``source`` directory now and type ``ls``; one should see:
 
 ::
 
-  cd
-  mkdir tarballs
-  cd tarballs
-  wget http://www.nsnam.org/releases/ns-allinone-3.13.tar.bz2
-  tar xjf ns-allinone-3.13.tar.bz2
-
-If you change into the directory ``ns-allinone-3.13`` you should see a
-number of files:
-
-::
-
-  build.py      ns-3.13/      pybindgen-0.15.0.795/    util.py
-  constants.py  nsc-0.5.2/    README  
+  netanim-3.103  ns-3.17  pybindgen-0.16.0.825
 
 You are now ready to build the |ns3| distribution.
 
@@ -249,19 +243,17 @@ Building ns-3
 
 Building with build.py
 ++++++++++++++++++++++
-The first time you build the |ns3| project you can build using a 
-convenience program found in the
+When working from a released tarball, the first time you build the 
+|ns3| project you can build using a convenience program found in the
 ``allinone`` directory.  This program is called ``build.py``.  This 
 program will get the project configured for you
 in the most commonly useful way.  However, please note that more advanced
 configuration and work with |ns3| will typically involve using the
 native |ns3| build system, Waf, to be introduced later in this tutorial.  
 
-Change into the directory you created in the download section above.  If you
-downloaded using Mercurial you should have a directory called 
-``ns-3-allinone`` under your ``~/repos`` directory.  If you downloaded
+If you downloaded
 using a tarball you should have a directory called something like 
-``ns-allinone-3.13`` under your ``~/tarballs`` directory.  
+``ns-allinone-3.17`` under your ``~/workspace`` directory.  
 Type the following:
 
 ::
@@ -281,33 +273,37 @@ following magic words:
 
 ::
 
-  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3.13/build'
-  'build' finished successfully (2m30.586s)
+   Waf: Leaving directory `/path/to/workspace/ns-allinone-3.17/ns-3.17/build'
+   'build' finished successfully (6m25.032s)
   
-  Modules built: 
-  aodv                      applications              bridge
-  click                     config-store              core
-  csma                      csma-layout               dsdv
-  emu                       energy                    flow-monitor
-  internet                  lte                       mesh
-  mobility                  mpi                       netanim
-  network                   nix-vector-routing        ns3tcp
-  ns3wifi                   olsr                      openflow
-  point-to-point            point-to-point-layout     propagation
-  spectrum                  stats                     tap-bridge
-  template                  test                      tools
-  topology-read             uan                       virtual-net-device
-  visualizer                wifi                      wimax
+   Modules built:
+   antenna                   aodv                      applications             
+   bridge                    buildings                 config-store             
+   core                      csma                      csma-layout              
+   dsdv                      dsr                       emu                      
+   energy                    fd-net-device             flow-monitor             
+   internet                  lte                       mesh                     
+   mobility                  mpi                       netanim (no Python)      
+   network                   nix-vector-routing        olsr                     
+   point-to-point            point-to-point-layout     propagation              
+   spectrum                  stats                     tap-bridge               
+   test (no Python)          tools                     topology-read            
+   uan                       virtual-net-device        wifi                     
+   wimax                    
+  
+   Modules not built (see ns-3 tutorial for explanation):
+   brite                     click                     openflow                 
+   visualizer               
 
-  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3.13/build'
-  'build' finished successfully (2m30.586s)
-  
-You may also see something like:
+   Leaving directory `./ns-3.17`
+
+Regarding the portion about modules not built:
 
 ::
 
   Modules not built (see ns-3 tutorial for explanation):
-  click                     openflow                  visualizer     
+  brite                     click                     openflow                 
+  visualizer               
 
 This just means that some ns-3 modules that have dependencies on
 outside libraries may not have been built, or that the configuration
@@ -315,20 +311,45 @@ specifically asked not to build them.  It does not mean that the
 simulator did not build successfully or that it will provide wrong 
 results for the modules listed as being built.
 
-Once the project has built, you can stop working with the
-``ns-3-allinone`` scripts.  You got what you needed from them and will now 
-interact directly with Waf and we do it in the |ns3| directory,
-not in the ``ns-3-allinone`` directory.  Go ahead and change into the 
-|ns3| directory (or the directory for the appropriate release  or
-development snapshot that you downloaded; e.g.  
+Building with bake
+++++++++++++++++++
+
+If you used bake above to fetch source code from project repositories, you
+may continue to use it to build |ns3|.  Type 
 
 ::
 
-  cd ns-3-dev
+  python bake.py build
+
+and you should see something like:
+
+:: 
+
+  >> Building pybindgen-0.16.0.825 - OK
+  >> Building netanim-3.103 - OK
+  >> Building ns-3.17 - OK
+
+If there happens to be a failure, please have a look at what the following
+command tells you; it may give a hint as to a missing dependency:
+
+::
+
+  python bake.py show
+
+This will list out the various dependencies of the packages you are
+trying to build.
 
 Building with Waf
 +++++++++++++++++
-Most users directly use Waf to configure and build the |ns3| project.  
+
+Up to this point, we have used either the `build.py` script, or the
+`bake` tool, to get started with building |ns3|.  These tools are useful
+for building |ns3| and supporting libraries, and they call into
+the |ns3| directory to call the Waf build tool to do the actual building.  
+Most users quickly transition to using Waf directly to configure and 
+build |ns3|.  So, to proceed, please change your working directory to 
+the |ns3| directory that you have initially built.
+
 It's not 
 strictly required at this point, but it will be valuable to take a slight
 detour and look at how to make changes to the configuration of the project.
@@ -447,7 +468,7 @@ you could reconfigure using the following command that also includes the example
 
 ::
 
-  ./waf -d debug --enable-sudo --enable-examples --enable-tests configure
+  ./waf configure -d debug --enable-sudo --enable-examples --enable-tests
 
 If you do this, waf will have run sudo to change the socket creator programs of the
 emulation code to run as root.  There are many other configure- and build-time options
@@ -466,7 +487,7 @@ the ``-o`` option to configure; e.g.
 
 ::
 
-  ./waf -d debug -o build/debug --enable-examples --enable-tests configure
+  ./waf configure -d debug -o build/debug --enable-examples --enable-tests
 
 This allows users to work with multiple builds rather than always
 overwriting the last build.
@@ -516,8 +537,8 @@ You will also see output from the test runner and the output will actually look 
 
 ::
 
-  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
-  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
+  Waf: Entering directory `/path/to/workspace/ns-3-allinone/ns-3-dev/build'
+  Waf: Leaving directory `/path/to/workspace/ns-3-allinone/ns-3-dev/build'
   'build' finished successfully (1.799s)
   
   Modules built: 
@@ -593,7 +614,7 @@ type the following,
 
 ::
 
-  ./waf -d debug --enable-examples --enable-tests configure
+  ./waf configure -d debug --enable-examples --enable-tests
 
 to tell ``waf`` to build the debug versions of the |ns3| 
 programs that includes the examples and tests.  You must still build 
