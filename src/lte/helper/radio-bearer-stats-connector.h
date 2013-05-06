@@ -40,11 +40,6 @@ class RadioBearerStatsConnector
 {
 public:
 
-  static uint64_t FindImsiFromEnbRlcPath (std::string path);
-  static uint16_t FindCellIdFromEnbRlcPath (std::string path);
-  static uint64_t FindImsiFromUeRlcPath (std::string path);
-  static uint16_t FindCellIdFromUeRlcPath (std::string path);
-
   RadioBearerStatsConnector ();
 
   void EnableRlcStats (Ptr<RadioBearerStatsCalculator> rlcStats);
