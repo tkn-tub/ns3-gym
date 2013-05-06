@@ -188,7 +188,7 @@ LteX2HandoverMeasuresTestCase::DoRun ()
 
 
   double distance = 1000.0; // m
-  double speed = 100;       // m/s
+  double speed = 200;       // m/s
 
   NodeContainer enbNodes;
   enbNodes.Create (m_nEnbs);
@@ -599,15 +599,19 @@ public:
 LteX2HandoverMeasuresTestSuite::LteX2HandoverMeasuresTestSuite ()
   : TestSuite ("lte-x2-handover-measures", SYSTEM)
 {
+  Time checkInterval = Seconds (1);
+ 
   std::string cel0name ("no ho");
   std::list<CheckPointEvent> cel0;
   cel0.push_back (CheckPointEvent (Seconds (1), Seconds (50), Seconds (1), 0, 0));
 
   std::string cel1name ("ho: 0 -> 1");
   std::list<CheckPointEvent> cel1;
-  cel1.push_back (CheckPointEvent (Seconds (1), Seconds (15.1), Seconds (1), 0, 0));
+//   cel1.push_back (CheckPointEvent (Seconds (1), Seconds (15.1), checkInterval, 0, 0));
+  cel1.push_back (CheckPointEvent (Seconds (1), Seconds (8.1), checkInterval, 0, 0));
   // HO is performed between seconds 15 and 16
-  cel1.push_back (CheckPointEvent (Seconds (16), Seconds (50), Seconds (1), 0, 1));
+//   cel1.push_back (CheckPointEvent (Seconds (16), Seconds (50), checkInterval, 0, 1));
+  cel1.push_back (CheckPointEvent (Seconds (9), Seconds (25), checkInterval, 0, 1));
 
   std::string cel2name ("ho: 0 -> 1 -> 2");
   std::list<CheckPointEvent> cel2;
@@ -640,38 +644,39 @@ LteX2HandoverMeasuresTestSuite::LteX2HandoverMeasuresTestSuite ()
   int32_t useIdealRrc;
   std::vector<std::string> schedulers;
   schedulers.push_back ("ns3::RrFfMacScheduler");
-  schedulers.push_back ("ns3::PfFfMacScheduler");
+//   schedulers.push_back ("ns3::PfFfMacScheduler");
   for (std::vector<std::string>::iterator schedIt = schedulers.begin (); schedIt != schedulers.end (); ++schedIt)
     {
-      for (useIdealRrc = 1; useIdealRrc >= 0; --useIdealRrc)
+//       for (useIdealRrc = 1; useIdealRrc >= 0; --useIdealRrc)
+      useIdealRrc = 0;
         {
           //                                             nEnbs, nUes, nDBearers, celist, name, useUdp, sched, admitHo, idealRrc
           AddTestCase (new LteX2HandoverMeasuresTestCase (  2,   1,    0,      cel1, cel1name, true, *schedIt, true,  useIdealRrc));
-          AddTestCase (new LteX2HandoverMeasuresTestCase (  2,   1,    1,      cel1, cel1name, true, *schedIt, true,  useIdealRrc));
-          AddTestCase (new LteX2HandoverMeasuresTestCase (  2,   1,    2,      cel1, cel1name, true, *schedIt, true,  useIdealRrc));
-          AddTestCase (new LteX2HandoverMeasuresTestCase (  3,   1,    0,      cel2, cel2name, true, *schedIt, true,  useIdealRrc));
-          AddTestCase (new LteX2HandoverMeasuresTestCase (  3,   1,    1,      cel2, cel2name, true, *schedIt, true,  useIdealRrc));
-          AddTestCase (new LteX2HandoverMeasuresTestCase (  3,   1,    2,      cel2, cel2name, true, *schedIt, true,  useIdealRrc));
+//           AddTestCase (new LteX2HandoverMeasuresTestCase (  2,   1,    1,      cel1, cel1name, true, *schedIt, true,  useIdealRrc));
+//           AddTestCase (new LteX2HandoverMeasuresTestCase (  2,   1,    2,      cel1, cel1name, true, *schedIt, true,  useIdealRrc));
+//           AddTestCase (new LteX2HandoverMeasuresTestCase (  3,   1,    0,      cel2, cel2name, true, *schedIt, true,  useIdealRrc));
+//           AddTestCase (new LteX2HandoverMeasuresTestCase (  3,   1,    1,      cel2, cel2name, true, *schedIt, true,  useIdealRrc));
+//           AddTestCase (new LteX2HandoverMeasuresTestCase (  3,   1,    2,      cel2, cel2name, true, *schedIt, true,  useIdealRrc));
         }
 
-      useIdealRrc = 1;
-      AddTestCase (new LteX2HandoverMeasuresTestCase (  4,   1,    0,      cel3, cel3name, true, *schedIt, true,  useIdealRrc));
-      AddTestCase (new LteX2HandoverMeasuresTestCase (  4,   1,    1,      cel3, cel3name, true, *schedIt, true,  useIdealRrc));
-      AddTestCase (new LteX2HandoverMeasuresTestCase (  4,   1,    2,      cel3, cel3name, true, *schedIt, true,  useIdealRrc));
+//       useIdealRrc = 1;
+//       AddTestCase (new LteX2HandoverMeasuresTestCase (  4,   1,    0,      cel3, cel3name, true, *schedIt, true,  useIdealRrc));
+//       AddTestCase (new LteX2HandoverMeasuresTestCase (  4,   1,    1,      cel3, cel3name, true, *schedIt, true,  useIdealRrc));
+//       AddTestCase (new LteX2HandoverMeasuresTestCase (  4,   1,    2,      cel3, cel3name, true, *schedIt, true,  useIdealRrc));
 
     }
 
-  useIdealRrc = 0;
-  std::string scheduler = "ns3::RrFfMacScheduler";
-  AddTestCase (new LteX2HandoverMeasuresTestCase (  4,   1,    0,      cel3, cel3name, true, scheduler, true,  useIdealRrc));
-  AddTestCase (new LteX2HandoverMeasuresTestCase (  4,   1,    1,      cel4, cel4name, true, scheduler, true,  useIdealRrc));
-  AddTestCase (new LteX2HandoverMeasuresTestCase (  4,   1,    2,      cel3, cel3name, true, scheduler, true,  useIdealRrc));
-
-  useIdealRrc = 0;
-  scheduler = "ns3::PfFfMacScheduler";
-  AddTestCase (new LteX2HandoverMeasuresTestCase (  4,   1,    0,      cel3, cel3name, true, scheduler, true,  useIdealRrc));
-  AddTestCase (new LteX2HandoverMeasuresTestCase (  4,   1,    1,      cel3, cel3name, true, scheduler, true,  useIdealRrc));
-  AddTestCase (new LteX2HandoverMeasuresTestCase (  4,   1,    2,      cel3, cel3name, true, scheduler, true,  useIdealRrc));
+//   useIdealRrc = 0;
+//   std::string scheduler = "ns3::RrFfMacScheduler";
+//   AddTestCase (new LteX2HandoverMeasuresTestCase (  4,   1,    0,      cel3, cel3name, true, scheduler, true,  useIdealRrc));
+//   AddTestCase (new LteX2HandoverMeasuresTestCase (  4,   1,    1,      cel4, cel4name, true, scheduler, true,  useIdealRrc));
+//   AddTestCase (new LteX2HandoverMeasuresTestCase (  4,   1,    2,      cel3, cel3name, true, scheduler, true,  useIdealRrc));
+// 
+//   useIdealRrc = 0;
+//   scheduler = "ns3::PfFfMacScheduler";
+//   AddTestCase (new LteX2HandoverMeasuresTestCase (  4,   1,    0,      cel3, cel3name, true, scheduler, true,  useIdealRrc));
+//   AddTestCase (new LteX2HandoverMeasuresTestCase (  4,   1,    1,      cel3, cel3name, true, scheduler, true,  useIdealRrc));
+//   AddTestCase (new LteX2HandoverMeasuresTestCase (  4,   1,    2,      cel3, cel3name, true, scheduler, true,  useIdealRrc));
 
 }
 
