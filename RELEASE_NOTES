@@ -38,6 +38,7 @@ Bugs fixed
 - bug 1256 - Unnecessary SND.NXT advance, missing ACK for Out of Order segments
 - bug 1318 - Ipv6L3Protocol::LocalDeliver can get stuck in an infinte loop
 - bug 1409 - Add an attribute "SystemId" to configure the ID for MPI
+- bug 1421 - Frequency dependent propagation loss models need uniform Frequency / Lambda attribute
 - bug 1434 - DSR throughput not comparable to other protocols for manet example
 - bug 1502 - Shutdown on tcp socket seems to misbehave
 - bug 1503 - BlockAckManager infine loop

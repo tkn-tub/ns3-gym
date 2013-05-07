@@ -148,10 +148,11 @@ FriisPropagationLossModel::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::FriisPropagationLossModel")
     .SetParent<PropagationLossModel> ()
     .AddConstructor<FriisPropagationLossModel> ()
-    .AddAttribute ("Lambda", 
-                   "The wavelength  (default is 5.15 GHz at 300 000 km/s).",
-                   DoubleValue (300000000.0 / 5.150e9),
-                   MakeDoubleAccessor (&FriisPropagationLossModel::m_lambda),
+    .AddAttribute ("Frequency", 
+                   "The carrier frequency (in Hz) at which propagation occurs  (default is 5.15 GHz).",
+                   DoubleValue (5.150e9),
+                   MakeDoubleAccessor (&FriisPropagationLossModel::SetFrequency,
+                                       &FriisPropagationLossModel::GetFrequency),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("SystemLoss", "The system loss",
                    DoubleValue (1.0),
@@ -190,20 +191,19 @@ FriisPropagationLossModel::GetMinDistance (void) const
 {
   return m_minDistance;
 }
+
 void
-FriisPropagationLossModel::SetLambda (double frequency, double speed)
+FriisPropagationLossModel::SetFrequency (double frequency)
 {
-  m_lambda = speed / frequency;
+  m_frequency = frequency;
+  static const double C = 299792458.0; // speed of light in vacuum
+  m_lambda = C / frequency;
 }
-void
-FriisPropagationLossModel::SetLambda (double lambda)
-{
-  m_lambda = lambda;
-}
+
 double
-FriisPropagationLossModel::GetLambda (void) const
+FriisPropagationLossModel::GetFrequency (void) const
 {
-  return m_lambda;
+  return m_frequency;
 }
 
 double
@@ -285,10 +285,11 @@ TwoRayGroundPropagationLossModel::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::TwoRayGroundPropagationLossModel")
     .SetParent<PropagationLossModel> ()
     .AddConstructor<TwoRayGroundPropagationLossModel> ()
-    .AddAttribute ("Lambda",
-                   "The wavelength  (default is 5.15 GHz at 300 000 km/s).",
-                   DoubleValue (300000000.0 / 5.150e9),
-                   MakeDoubleAccessor (&TwoRayGroundPropagationLossModel::m_lambda),
+    .AddAttribute ("Frequency", 
+                   "The carrier frequency (in Hz) at which propagation occurs  (default is 5.15 GHz).",
+                   DoubleValue (5.150e9),
+                   MakeDoubleAccessor (&TwoRayGroundPropagationLossModel::SetFrequency,
+                                       &TwoRayGroundPropagationLossModel::GetFrequency),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("SystemLoss", "The system loss",
                    DoubleValue (1.0),
@@ -337,20 +338,19 @@ TwoRayGroundPropagationLossModel::SetHeightAboveZ (double heightAboveZ)
 {
   m_heightAboveZ = heightAboveZ;
 }
-void 
-TwoRayGroundPropagationLossModel::SetLambda (double frequency, double speed)
+
+void
+TwoRayGroundPropagationLossModel::SetFrequency (double frequency)
 {
-  m_lambda = speed / frequency;
+  m_frequency = frequency;
+  static const double C = 299792458.0; // speed of light in vacuum
+  m_lambda = C / frequency;
 }
-void 
-TwoRayGroundPropagationLossModel::SetLambda (double lambda)
+
+double
+TwoRayGroundPropagationLossModel::GetFrequency (void) const
 {
-  m_lambda = lambda;
-}
-double 
-TwoRayGroundPropagationLossModel::GetLambda (void) const
-{
-  return m_lambda;
+  return m_frequency;
 }
 
 double 
@@ -415,7 +415,7 @@ TwoRayGroundPropagationLossModel::DoCalcRxPower (double txPowerDbm,
    *
    */
 
-  double dCross = (4 * PI * txAntHeight * rxAntHeight) / GetLambda ();
+  double dCross = (4 * PI * txAntHeight * rxAntHeight) / m_lambda;
   double tmp = 0;
   if (distance <= dCross)
     {

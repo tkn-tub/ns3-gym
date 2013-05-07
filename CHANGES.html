@@ -88,6 +88,14 @@ us a note on ns-developers mailing list.</p>
 <li>New Tag, PacketSocketTag, to carry the dest address of a packet and the packet type</li>
 <li>New Tag, DeviceNameTag, to carry the ns3 device name from where a packet is coming</li>
 <li>New Error Model, BurstError model, to determine which bursts of packets are errored corresponding to an underlying distribution, burst rate, and burst size</li>
+<li>To make the API more uniform across the various
+  PropagationLossModel classes, the Set/GetLambda methods of the
+  FriisPropagationLossModel and TwoRayGroundPropagationLossModel
+  classes have been changed to Set/GetFrequency, and now a Frequency
+  attribute is exported which replaces the pre-existing Lambda
+  attribute. Any previous user code setting a value for Lambda should
+  be changed to set instead a value of Frequency = C / Lambda, with C
+  = 299792458.0. </li>
 </ul>
 
 <h2>Changes to existing API:</h2>

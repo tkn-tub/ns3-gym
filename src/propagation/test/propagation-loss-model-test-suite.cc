@@ -68,8 +68,9 @@ FriisPropagationLossModelTestCase::DoRun (void)
   // The ns-3 testing manual gives more background on the values selected
   // for this test.  First, set a few defaults. 
 
-  // wavelength at 2.4 GHz is 0.125m
-  Config::SetDefault ("ns3::FriisPropagationLossModel::Lambda", DoubleValue (0.125));
+  // the test vectors have been determined for a wavelength of 0.125 m 
+  // which corresponds to a frequency of 2398339664.0 Hz in the vacuum
+  Config::SetDefault ("ns3::FriisPropagationLossModel::Frequency", DoubleValue (2398339664.0));
   Config::SetDefault ("ns3::FriisPropagationLossModel::SystemLoss", DoubleValue (1.0));
 
   // Select a reference transmit power
@@ -164,8 +165,9 @@ TwoRayGroundPropagationLossModelTestCase::~TwoRayGroundPropagationLossModelTestC
 void
 TwoRayGroundPropagationLossModelTestCase::DoRun (void)
 {
-  // wavelength at 2.4 GHz is 0.125m
-  Config::SetDefault ("ns3::TwoRayGroundPropagationLossModel::Lambda", DoubleValue (0.125));
+  // the test vectors have been determined for a wavelength of 0.125 m 
+  // which corresponds to a frequency of 2398339664.0 Hz in the vacuum
+  Config::SetDefault ("ns3::TwoRayGroundPropagationLossModel::Frequency", DoubleValue (2398339664.0));
   Config::SetDefault ("ns3::TwoRayGroundPropagationLossModel::SystemLoss", DoubleValue (1.0));
 
   // set antenna height to 1.5m above z coordinate
