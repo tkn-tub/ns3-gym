@@ -457,9 +457,41 @@ LteEnbPhy::ReceiveLteControlMessageList (std::list<Ptr<LteControlMessage> > msgL
             m_enbPhySapUser->ReceiveRachPreamble (rachPreamble->GetRapId ());
           }
           break;
-          
+        case LteControlMessage::DL_CQI:
+          {
+            Ptr<DlCqiLteControlMessage> dlcqiMsg = DynamicCast<DlCqiLteControlMessage> (*it);
+            CqiListElement_s dlcqi = dlcqiMsg->GetDlCqi ();
+            // check whether the UE is connected
+            if (m_ueAttached.find (dlcqi.m_rnti) != m_ueAttached.end ())
+              {
+                m_enbPhySapUser->ReceiveLteControlMessage (*it);
+              }
+          }
+          break;
+        case LteControlMessage::BSR:
+          {
+            Ptr<BsrLteControlMessage> bsrMsg = DynamicCast<BsrLteControlMessage> (*it);
+            MacCeListElement_s bsr = bsrMsg->GetBsr ();
+            // check whether the UE is connected
+            if (m_ueAttached.find (bsr.m_rnti) != m_ueAttached.end ())
+              {
+                m_enbPhySapUser->ReceiveLteControlMessage (*it);
+              }
+          }
+          break;
+        case LteControlMessage::DL_HARQ:
+          {
+            Ptr<DlHarqFeedbackLteControlMessage> dlharqMsg = DynamicCast<DlHarqFeedbackLteControlMessage> (*it);
+            DlInfoListElement_s dlharq = dlharqMsg->GetDlHarqFeedback ();
+            // check whether the UE is connected
+            if (m_ueAttached.find (dlharq.m_rnti) != m_ueAttached.end ())
+              {
+                m_enbPhySapUser->ReceiveLteControlMessage (*it);
+              }
+          }
+          break;          
         default:
-          m_enbPhySapUser->ReceiveLteControlMessage (*it);
+          NS_FATAL_ERROR ("Unexpected LteControlMessage type");
           break;
         }
     }
