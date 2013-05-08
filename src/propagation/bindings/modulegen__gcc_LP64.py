@@ -1348,14 +1348,10 @@ def register_Ns3TwoRayGroundPropagationLossModel_methods(root_module, cls):
                    is_static=True)
     ## propagation-loss-model.h (module 'propagation'): ns3::TwoRayGroundPropagationLossModel::TwoRayGroundPropagationLossModel() [constructor]
     cls.add_constructor([])
-    ## propagation-loss-model.h (module 'propagation'): void ns3::TwoRayGroundPropagationLossModel::SetLambda(double frequency, double speed) [member function]
-    cls.add_method('SetLambda', 
+    ## propagation-loss-model.h (module 'propagation'): void ns3::TwoRayGroundPropagationLossModel::SetFrequency(double frequency) [member function]
+    cls.add_method('SetFrequency', 
                    'void', 
-                   [param('double', 'frequency'), param('double', 'speed')])
-    ## propagation-loss-model.h (module 'propagation'): void ns3::TwoRayGroundPropagationLossModel::SetLambda(double lambda) [member function]
-    cls.add_method('SetLambda', 
-                   'void', 
-                   [param('double', 'lambda')])
+                   [param('double', 'frequency')])
     ## propagation-loss-model.h (module 'propagation'): void ns3::TwoRayGroundPropagationLossModel::SetSystemLoss(double systemLoss) [member function]
     cls.add_method('SetSystemLoss', 
                    'void', 
@@ -1369,8 +1365,8 @@ def register_Ns3TwoRayGroundPropagationLossModel_methods(root_module, cls):
                    'double', 
                    [], 
                    is_const=True)
-    ## propagation-loss-model.h (module 'propagation'): double ns3::TwoRayGroundPropagationLossModel::GetLambda() const [member function]
-    cls.add_method('GetLambda', 
+    ## propagation-loss-model.h (module 'propagation'): double ns3::TwoRayGroundPropagationLossModel::GetFrequency() const [member function]
+    cls.add_method('GetFrequency', 
                    'double', 
                    [], 
                    is_const=True)
@@ -2019,14 +2015,10 @@ def register_Ns3FriisPropagationLossModel_methods(root_module, cls):
                    is_static=True)
     ## propagation-loss-model.h (module 'propagation'): ns3::FriisPropagationLossModel::FriisPropagationLossModel() [constructor]
     cls.add_constructor([])
-    ## propagation-loss-model.h (module 'propagation'): void ns3::FriisPropagationLossModel::SetLambda(double frequency, double speed) [member function]
-    cls.add_method('SetLambda', 
+    ## propagation-loss-model.h (module 'propagation'): void ns3::FriisPropagationLossModel::SetFrequency(double frequency) [member function]
+    cls.add_method('SetFrequency', 
                    'void', 
-                   [param('double', 'frequency'), param('double', 'speed')])
-    ## propagation-loss-model.h (module 'propagation'): void ns3::FriisPropagationLossModel::SetLambda(double lambda) [member function]
-    cls.add_method('SetLambda', 
-                   'void', 
-                   [param('double', 'lambda')])
+                   [param('double', 'frequency')])
     ## propagation-loss-model.h (module 'propagation'): void ns3::FriisPropagationLossModel::SetSystemLoss(double systemLoss) [member function]
     cls.add_method('SetSystemLoss', 
                    'void', 
@@ -2040,8 +2032,8 @@ def register_Ns3FriisPropagationLossModel_methods(root_module, cls):
                    'double', 
                    [], 
                    is_const=True)
-    ## propagation-loss-model.h (module 'propagation'): double ns3::FriisPropagationLossModel::GetLambda() const [member function]
-    cls.add_method('GetLambda', 
+    ## propagation-loss-model.h (module 'propagation'): double ns3::FriisPropagationLossModel::GetFrequency() const [member function]
+    cls.add_method('GetFrequency', 
                    'double', 
                    [], 
                    is_const=True)
