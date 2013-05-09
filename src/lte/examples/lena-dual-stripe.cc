@@ -344,9 +344,10 @@ main (int argc, char *argv[])
   // change some default attributes so that they are reasonable for
   // this scenario, but do this before processing command line
   // arguments, so that the user is allowed to override these settings 
-  Config::SetDefault ("ns3::UdpClient::Interval", TimeValue (MilliSeconds(1)));
-  Config::SetDefault ("ns3::UdpClient::MaxPackets", UintegerValue(1000000));
-  
+  Config::SetDefault ("ns3::UdpClient::Interval", TimeValue (MilliSeconds (1)));
+  Config::SetDefault ("ns3::UdpClient::MaxPackets", UintegerValue (1000000));
+  Config::SetDefault ("ns3::LteRlcUm::MaxTxBufferSize", UintegerValue (10 * 1024));
+
   CommandLine cmd;
   cmd.Parse (argc, argv);
   ConfigStore inputConfig;
@@ -555,8 +556,8 @@ main (int argc, char *argv[])
   NodeContainer ues;
   Ipv4StaticRoutingHelper ipv4RoutingHelper;
   Ipv4InterfaceContainer ueIpIfaces;
-   Ptr<Node> remoteHost;
-   NetDeviceContainer ueDevs;
+  Ptr<Node> remoteHost;
+  NetDeviceContainer ueDevs;
   if (epc)
     {
       NS_LOG_LOGIC ("setting up internet and remote host");
@@ -616,12 +617,11 @@ main (int argc, char *argv[])
       lteHelper->Attach (*ueDevIt, *enbDevIt);
     }
 
-    
 
   if (epc)
     {
       NS_LOG_LOGIC ("setting up applications");
-    
+
       // Install and start applications on UEs and remote host
       uint16_t dlPort = 10000;
       uint16_t ulPort = 20000;
@@ -643,7 +643,6 @@ main (int argc, char *argv[])
           startTimeSeconds->SetAttribute ("Max", DoubleValue (0.110));
         }
 
-     
       for (uint32_t u = 0; u < ues.GetN (); ++u)
         {
           Ptr<Node> ue = ues.Get (u);
@@ -660,7 +659,7 @@ main (int argc, char *argv[])
               ApplicationContainer serverApps;
 
               if (useUdp)
-                {              
+                {
                   if (epcDl)
                     {
                       NS_LOG_LOGIC ("installing UDP DL app for UE " << u);
@@ -671,15 +670,15 @@ main (int argc, char *argv[])
                       serverApps.Add (dlPacketSinkHelper.Install (ue));
                     }
                   if (epcUl)
-                    {      
+                    {
                       NS_LOG_LOGIC ("installing UDP UL app for UE " << u);
                       UdpClientHelper ulClientHelper (remoteHostAddr, ulPort);
                       clientApps.Add (ulClientHelper.Install (ue));
                       PacketSinkHelper ulPacketSinkHelper ("ns3::UdpSocketFactory", 
                                                            InetSocketAddress (Ipv4Address::GetAny (), ulPort));
                       serverApps.Add (ulPacketSinkHelper.Install (remoteHost));  
-                    }            
-                }                    
+                    }
+                }
               else // use TCP
                 {
                   if (epcDl)
@@ -772,8 +771,6 @@ main (int argc, char *argv[])
       remHelper->SetAttribute ("Z", DoubleValue (1.5));
       remHelper->Install ();
       // simulation will stop right after the REM has been generated
-
-
     }
   else
     {
