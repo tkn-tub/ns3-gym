@@ -62,8 +62,6 @@ us a note on ns-developers mailing list.</p>
       <li>SIMCLICK_GET_RANDOM_INT click-to-simulator command for ns-3 to drive Click's random number generation.</li>
     </ul>
   </li>  
-</ul>
-<ul>
   <li>LTE module
     <ul>
       <li> New user-visible LTE API
@@ -85,17 +83,16 @@ us a note on ns-developers mailing list.</p>
       </li>
     </ul>
   </li>
-<li>New Tag, PacketSocketTag, to carry the dest address of a packet and the packet type</li>
+<li>New DSR API
+<ul>
+        <li>Added PassiveBuffer class to save maintenance packet entry for passive acknowledgment option</li>
+        <li>Added FindSourceEntry function in RreqTable class to keep track of route request entry received from same source node</li>
+        <li>Added NotifyDataReciept function in DsrRouting class to notify the data receipt of the next hop from link layer.  This is used for the link layer acknowledgment.</li>
+</ul>
+</li>
+<li>New Tag, PacketSocketTag, to carry the destination address of a packet and the packet type</li>
 <li>New Tag, DeviceNameTag, to carry the ns3 device name from where a packet is coming</li>
 <li>New Error Model, BurstError model, to determine which bursts of packets are errored corresponding to an underlying distribution, burst rate, and burst size</li>
-<li>To make the API more uniform across the various
-  PropagationLossModel classes, the Set/GetLambda methods of the
-  FriisPropagationLossModel and TwoRayGroundPropagationLossModel
-  classes have been changed to Set/GetFrequency, and now a Frequency
-  attribute is exported which replaces the pre-existing Lambda
-  attribute. Any previous user code setting a value for Lambda should
-  be changed to set instead a value of Frequency = C / Lambda, with C
-  = 299792458.0. </li>
 </ul>
 
 <h2>Changes to existing API:</h2>
@@ -108,21 +105,6 @@ us a note on ns-developers mailing list.</p>
 <ul>
 	<li>TestCase has new enumeration TestDuration containing QUICK, EXTENSIVE, TAKES_FOREVER</li>
 	<li>TestCase constructor now requires TestDuration, old constructor marked deprecated</li>
-</ul>
-</li>
-<li>Changes in DSR API
-<ul>
-	<li>DsrMainHelper removed methods SetRouteCache and SetRreqTable</li>
-	<li>MaintainBuffer removed method FindMaintainEntry</li>
-	<li>DsrOptionRreqHeader removed methods (Set/Get)DataLength and SearchNextHop</li>
-	<li>DsrOptions added methods ReverseSearchNextTwoHop, Process</li>
-	<li>RouteCache removed methods GetDestination, DropPathWithDst and IsEqual</li>
-	<li>DsrRouting added (Set/Get) PassiveBuffer</li>
-	<li>DsrRouting added methods FindSourceEntry, PassiveEntryCheck and CancelPassiveTimer</li>
-	<li>DsrRouting removed methods SendRequestAndIncrement, GetNodeWithAddress and GetExtensionNumber</li>
-	<li>struct SourceRreqEntry removed.
-	<li>new class SourceRreqEntry: The request entry for intermediate nodes to check if they have received 	this request or not.  This is used to control the duplication request from being processed</li>
-	<li>RreqTable added method FindSourceEntry</li>
 </ul>
 </li>
 <li>Changes in LTE API
@@ -173,7 +155,14 @@ us a note on ns-developers mailing list.</p>
    </li>   	
 </ul>
 <li>AnimationInterface method EnableIpv4RouteTracking returns reference to calling AnimationInterface object</li>
-
+<li>To make the API more uniform across the various
+  PropagationLossModel classes, the Set/GetLambda methods of the
+  FriisPropagationLossModel and TwoRayGroundPropagationLossModel
+  classes have been changed to Set/GetFrequency, and now a Frequency
+  attribute is exported which replaces the pre-existing Lambda
+  attribute. Any previous user code setting a value for Lambda should
+  be changed to set instead a value of Frequency = C / Lambda, with C
+  = 299792458.0. </li>
 
 </ul>
 <h2>Changes to build system:</h2>
@@ -185,7 +174,14 @@ us a note on ns-developers mailing list.</p>
 
 <h2>Changed behavior:</h2>
 <ul>
-<li></li>
+<li>DSR link layer notification has changed.  The model originally used 
+"TxErrHeader" in Ptr<WifiMac> to indicate the transmission
+error of a specific packet in link layer; however, it was not working
+correctly.  The model now uses a different path to implement
+the link layer notification mechanism; specifically, looking into the 
+trace file to find packet receive events.  If the model finds one 
+receive event for the data packet, it is used as the indicator for 
+successful data delivery.</li>
 </ul>
 
 <hr>
