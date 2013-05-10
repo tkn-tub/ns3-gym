@@ -27,6 +27,12 @@ code around to rebuild the libraries is useful.  If someone would like
 to undertake the job of making pre-built libraries and packages for 
 operating systems, please contact the ns-developers mailing list.
 
+In the following, we'll look at two ways of downloading and building
+|ns3|.  The first is to download and build an official release
+from the main web site.  The second is to fetch and build development
+copies of |ns3|.  We'll walk through both examples since the tools
+involved are slightly different.
+
 Downloading ns-3
 ****************
 
@@ -68,6 +74,7 @@ recommend that you begin your |ns3| work in this environment.
 
 Downloading ns-3 Using a Tarball
 ++++++++++++++++++++++++++++++++
+
 A tarball is a particular format of software archive where multiple
 files are bundled together and the archive possibly compressed.
 |ns3| software releases are provided via a downloadable tarball.
@@ -98,21 +105,27 @@ number of files:
 
 You are now ready to build the |ns3| distribution.
 
-Downloading ns-3 Using Mercurial
-++++++++++++++++++++++++++++++++
-|ns3| can also be fetched from the project's master code repositories
-using a tool called Mercurial.
-One practice is to create a directory called ``repos`` in one's home 
+Downloading ns-3 Using Bake
+++++++++++++++++++++++++++++
+
+Bake is a tool for distributed integration and building, 
+developed for the |ns3| project.  First of all, Bake is 
+developed in Python, and should be fetched from the project's 
+master code repositories using a tool called Mercurial, so to 
+run Bake one must have Python and mercurial on one's machine.
+
+One practice is to create a directory called ``workspace`` in one's home 
 directory under which one can keep local Mercurial repositories.  
-*Hint:  we will assume you do this later in the tutorial.*  If you adopt
-that approach, you can get a copy of ``ns-3-allinone`` by typing the 
+Any directory name will do, but we'll assume that ``workspace`` is used
+herein (note:  ``repos`` may also be used in some documentation as
+an example directory name).  You can get a copy of ``bake`` by typing the 
 following into your Linux shell (assuming you have installed Mercurial):
 
 ::
 
   cd
-  mkdir repos
-  cd repos
+  mkdir workspace
+  cd workspace
   hg clone http://code.nsnam.org/bake
 
 As the hg (Mercurial) command executes, you should see something like the 
@@ -130,8 +143,7 @@ following displayed,
   45 files updated, 0 files merged, 0 files removed, 0 files unresolved
 
 After the clone command completes, you should have a directory called 
-``bake``, the contents of which should 
-look something like the following:
+``bake``, the contents of which should look something like the following:
 
 ::
 
@@ -143,13 +155,16 @@ module called ``bake``.  The next step
 will be to use those scripts to download and build the |ns3|
 distribution of your choice.
 
-If you go to the following link: http://code.nsnam.org/,
-you will see a number of repositories.  Many are the private repositories of
-the |ns3| development team.  The repositories of interest to you will
-be prefixed with "ns-3".  Official releases of |ns3| will be 
-numbered as ``ns-3.<release>.<hotfix>``.  For example, a second hotfix to a
-still hypothetical release forty two of |ns3| would be numbered as
-``ns-3.42.2``.
+There are a few configuration targets available:
+
+1.  ``ns-3.17``:  the module corresponding to the release; it will download
+    components similar to the release tarball.
+2.  ``ns-3-dev``:  a similar module but using the development code tree
+3.  ``ns-allinone-3.17``:  the module that includes other optional features
+    such as click routing, openflow for |ns3|, and the Network Simulation
+    Cradle
+4.  ``ns-3-allinone``:  similar to the released version of the allinone
+    module, but for development code.
 
 The current development snapshot (unreleased) of |ns3| may be found 
 at http://code.nsnam.org/ns-3-dev/.  The 
@@ -158,24 +173,37 @@ they are in a development area with unreleased code present, so you may want
 to consider staying with an official release if you do not need newly-
 introduced features.
 
-Since the release numbers are going to be changing, we will stick with 
-the more constant ns-3-dev here in the tutorial, but you can replace the 
-string "ns-3-dev" with your choice of release (e.g., ns-3.17) in the 
-text below.  You can find the latest version  of the
+You can find the latest version  of the
 code either by inspection of the repository list or by going to the 
 `"ns-3 Releases"
 <http://www.nsnam.org/releases>`_
-web page and clicking on the latest release link.
+web page and clicking on the latest release link.  We'll proceed in
+this tutorial example with ``ns-3.17``.
 
-Go ahead and change into the ``ns-3-allinone`` directory you created when
-you cloned that repository.  We are now going to use the bake tool
-to pull down the various pieces of |ns3| you will be using.
+We are now going to use the bake tool to pull down the various pieces of 
+|ns3| you will be using.  First, we'll say a word about running bake.
 
-Go ahead and type the following into your shell:
+bake works by downloading source packages into a source directory,
+and installing libraries into a build directory.  bake can be run
+by referencing the binary, but if one chooses to run bake from
+outside of the directory it was downloaded into, it is advisable
+to put bake into your path, such as follows (Linux bash shell example):
 
 ::
 
-  ./bake.py configure -e ns-3.17
+   export BAKE_HOME=`pwd`/bake
+   export PATH=$PATH:$BAKE_HOME
+   export PYTHONPATH=$PYTHONPATH:$BAKE_HOME
+
+However, setting environment variables is not strictly necessary to
+complete this tutorial, so we'll call bake directly by specifying the path 
+to it in our shell commands.
+
+Step into the workspace directory and type the following into your shell:
+
+::
+
+  ./bake.py configure -e ns-3-dev
 
 Next, we'l ask bake to check whether we have enough tools to download
 various components.  Type:
@@ -207,14 +235,14 @@ You should see something like the following,
    > Path searched for tools: /usr/lib64/qt-3.3/bin /usr/lib64/ccache /usr/local/bin /bin /usr/bin /usr/local/sbin /usr/sbin /sbin /home/tomh/bin bin
 
 In particular, download tools such as Mercurial, CVS, GIT, and Bazaar
-are our principal concerns at thi spoint, since they allow us to fetch
+are our principal concerns at this point, since they allow us to fetch
 the code.  Please install missing tools at this stage if you are able to.
 
 Next, try to download the software:
 
 ::
 
-  python ./bake.py download
+  ./bake.py download
 
 should yield something like:
 
@@ -319,7 +347,7 @@ may continue to use it to build |ns3|.  Type
 
 ::
 
-  python bake.py build
+  ./bake.py build
 
 and you should see something like:
 
@@ -329,12 +357,14 @@ and you should see something like:
   >> Building netanim-3.103 - OK
   >> Building ns-3.17 - OK
 
+*Hint:  you can also perform both steps, download and build by calling 'bake.py deploy'.*
+
 If there happens to be a failure, please have a look at what the following
 command tells you; it may give a hint as to a missing dependency:
 
 ::
 
-  python bake.py show
+  ./bake.py show
 
 This will list out the various dependencies of the packages you are
 trying to build.
