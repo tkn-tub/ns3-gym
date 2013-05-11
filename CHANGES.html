@@ -55,7 +55,7 @@ us a note on ns-developers mailing list.</p>
 
 <h2>New API:</h2>
 <ul>
-	<li>New TCP Westwood and Westwood+ models
+  <li>New TCP Westwood and Westwood+ models
   <li>In Ipv4ClickRouting, the following APIs were added:
     <ul>
       <li>Ipv4ClickRouting::SetDefines(), accessible through ClickInternetStackHelper::SetDefines(), for the user to set Click defines from the ns-3 simulation file.</li>
@@ -65,97 +65,98 @@ us a note on ns-developers mailing list.</p>
   <li>LTE module
     <ul>
       <li> New user-visible LTE API
-	   <ul>
-	     <li>Two new methods have been added to LteHelper to enable the X2-based handover functionality: AddX2Interface, which setups the X2 interface between two eNBs, and HandoverRequest, which is  a convenience method that schedules an explicit handover event to be executed at a given point in the simulation. </li>
-	     <li>the new LteHelper method EnablePhyTraces can now be used to enable the new PHY traces</li>
-	   </ul>
+      <ul>
+        <li>Two new methods have been added to LteHelper to enable the X2-based handover functionality: AddX2Interface, which setups the X2 interface between two eNBs, and HandoverRequest, which is  a convenience method that schedules an explicit handover event to be executed at a given point in the simulation. </li>
+        <li>the new LteHelper method EnablePhyTraces can now be used to enable the new PHY traces</li>
+      </ul>
       </li> 
       <li> New internal LTE API 
-	   <ul>
-	     <li>New LTE control message classes DlHarqFeedbackLteControlMessage, 
-	       RachPreambleLteControlMessage, RarLteControlMessage, MibLteControlMessage</li>
-	     <li>New class UeManager
-	     <li>New LteRadioBearerInfo subclasses LteSignalingRadioBearerInfo, 
-	       LteDataRadioBearerInfo</li>
-	     <li>New LteSinrChunkProcessor subclasses LteRsReceivedPowerChunkProcessor, 
-	       LteInterferencePowerChunkProcessor</li>
-	   </ul>
+      <ul>
+        <li>New LTE control message classes DlHarqFeedbackLteControlMessage, 
+         RachPreambleLteControlMessage, RarLteControlMessage, MibLteControlMessage</li>
+        <li>New class UeManager
+        <li>New LteRadioBearerInfo subclasses LteSignalingRadioBearerInfo, 
+         LteDataRadioBearerInfo</li>
+        <li>New LteSinrChunkProcessor subclasses LteRsReceivedPowerChunkProcessor, 
+         LteInterferencePowerChunkProcessor</li>
+      </ul>
       </li>
     </ul>
   </li>
-<li>New DSR API
-<ul>
-        <li>Added PassiveBuffer class to save maintenance packet entry for passive acknowledgment option</li>
-        <li>Added FindSourceEntry function in RreqTable class to keep track of route request entry received from same source node</li>
-        <li>Added NotifyDataReciept function in DsrRouting class to notify the data receipt of the next hop from link layer.  This is used for the link layer acknowledgment.</li>
-</ul>
-</li>
-<li>New Tag, PacketSocketTag, to carry the destination address of a packet and the packet type</li>
-<li>New Tag, DeviceNameTag, to carry the ns3 device name from where a packet is coming</li>
-<li>New Error Model, BurstError model, to determine which bursts of packets are errored corresponding to an underlying distribution, burst rate, and burst size</li>
+  <li>New DSR API
+  <ul>
+    <li>Added PassiveBuffer class to save maintenance packet entry for passive acknowledgment option</li>
+    <li>Added FindSourceEntry function in RreqTable class to keep track of route request entry received from same source node</li>
+    <li>Added NotifyDataReciept function in DsrRouting class to notify the data receipt of the next hop from link layer.  This is used for the link layer acknowledgment.</li>
+  </ul>
+  </li>
+  <li>New Tag, PacketSocketTag, to carry the destination address of a packet and the packet type</li>
+  <li>New Tag, DeviceNameTag, to carry the ns3 device name from where a packet is coming</li>
+  <li>New Error Model, BurstError model, to determine which bursts of packets are errored corresponding to an underlying distribution, burst rate, and burst size</li>
 </ul>
 
 <h2>Changes to existing API:</h2>
 <ul>
-<li>ns3::Object and subclasses DoStart has been renamed to DoInitialize</li>
-<li>ns3::Object and subclasses Start has been renamed to Initialize</li>
-<li>EnergySource StartDeviceModels renamed to InitializeDeviceModels</li>
-<li>A typo was fixed in an LTE variable name. The variable ns3::AllocationRetentionPriority::preemprionVulnerability was changed to preemptionVulnerability.</li>
-<li>Changes in TestCase API
-<ul>
-	<li>TestCase has new enumeration TestDuration containing QUICK, EXTENSIVE, TAKES_FOREVER</li>
-	<li>TestCase constructor now requires TestDuration, old constructor marked deprecated</li>
-</ul>
-</li>
-<li>Changes in LTE API
-<ul>
-   <li> User-visible LTE API 
-     <ul>
-	<li>The previous LteHelper method ActivateEpsBearer has been now replaced by two alternative methods: ActivateDataRadioBearer (to be used when the EPC model is not used) and ActivateDedicatedEpsBearer (to be used when the EPC model is used). In the case where the EPC model is used, the default EPS bearer is not automatically activated without the need for a specific method to be called.</li>
-     </ul>
-   </li> 
-   <li> Internal LTE API 
-     <ul>
-	<li>EpcHelper added methods AddUe, AddX2Interface.  Method AddEnb now requires a cellId.  Signature of ActivateEpsBearer changed to void ActivateEpsBearer (Ptr<NetDevice> ueLteDevice, uint64_t imsi, Ptr<EpcTft> tft, EpsBearer bearer) </li>
-	<li>LteHelper added methods EnableDlPhyTraces, EnableUlPhyTraces, EnableDlTxPhyTraces, EnableUlTxPhyTraces, EnableDlRxPhyTraces, EnableUlRxPhyTraces</li>
-	<li>LteHelper removed methods EnableDlRlcTraces, EnableUlRlcTraces, EnableDlPdcpTraces, EnableUlPdcpTraces</li>
-	<li>RadioBearerStatsCalculator added methods (Set/Get)StartTime, (Set/Get)Epoch, RescheduleEndEpoch, EndEpoch</li>
-	<li>RadioBearerStatsCalculator removed methods StartEpoch, CheckEpoch</li>
-	<li>RadioBearerStatsCalculator methods UlTxPdu, DlRxPdu now require a cellId</li>
-	<li>EpcEnbApplication constructor now requires Ipv4Addresses enbS1uAddress and sgwS1uAddress as well as cellId</li>
-	<li>EpcEnbApplication added methods SetS1SapUser, GetS1SapProvider, SetS1apSapMme and GetS1apSapEnb</li>
-	<li>EpcEnbApplication removed method ErabSetupRequest</li> 
-	<li>EpcSgwPgwApplication added methods SetS11SapMme, GetS11SapSgw, AddEnb, AddUe, SetUeAddress</li>
-	<li>lte-common.h new structs PhyTransmissionStatParameters and PhyReceptionStatParameters used in TracedCallbacks</li>
-	<li>LteControlMessage new message types DL_HARQ, RACH_PREAMBLE, RAR, MIB</li>
-	<li>LteEnbCmacSapProvider new methods RemoveUe, GetRachConfig, AllocateNcRaPreamble, AllocateTemporaryCellRnti</li>
-	<li>LteEnbPhy new methods GetLteEnbCphySapProvider, SetLteEnbCphySapUser, GetDlSpectrumPhy, GetUlSpectrumPhy, CreateSrsReport</li>
-	<li>LteEnbPhy methods DoSendMacPdu, DoSetTransmissionMode, DoSetSrsConfigurationIndex, DoGetMacChTtiDelay, DoSendLteControlMessage, AddUePhy, DeleteUePhy made private</li>
-	<li>LteEnbPhySapProvider removed methods SetBandwidth, SetTransmissionMode, SetSrsConfigurationIndex, SetCellId</li>
-	<li>LteEnbPhySapUser added methods ReceiveRachPreamble, UlInfoListElementHarqFeeback, DlInfoListElementHarqFeeback</li>
-	<li>LtePdcp added methods (Set/Get)Status</li>
-	<li>LtePdcp DoTransmitRrcPdu renamed DoTransmitPdcpSdu</li>
-	<li>LteUeRrc new enum State.  New methods SetLteUeCphySapProvider, GetLteUeCphySapUser, SetLteUeRrcSapUser, GetLteUeRrcSapProvider, GetState, GetDlEarfcn, GetDlBandwidth, GetUlBandwidth, GetCellId, SetUseRlcSm .  GetRnti made const.</li> 
-	<li>LteUeRrc removed methods ReleaseRadioBearer, GetLcIdVector, SetForwardUpCallback, DoRrcConfigurationUpdateInd</li>
-	<li>LtePdcpSapProvider struct TransmitRrcPduParameters renamed TransmitPdcpSduParameters.  Method TransmitRrcPdu renamed TransmitPdcpSdu </li>
-	<li>LtePdcpSapUser struct ReceiveRrcPduParameters renamed ReceivePdcpSduParameters.  Method ReceiveRrcPdu renamed TransmitPdcpSdu</li>
-	<li>LtePdcpSpecificLtePdcpSapProvider method TransmitRrcPdu renamed TransmitPdcpSdu</li>
-	<li>LtePdcpSpecificLtePdcpSapUser method ReceiveRrcPdu  renamed ReceivePdcpSdu. Method ReceiveRrcPdu renamed ReceivePdcpSdu</li>
-	<li>LtePhy removed methods DoSetBandwidth and DoSetEarfcn</li>
-	<li>LtePhy added methods ReportInterference and ReportRsReceivedPower</li>
-	<li>LteSpectrumPhy added methods SetHarqPhyModule, Reset, SetLtePhyDlHarqFeedbackCallback, SetLtePhyUlHarqFeedbackCallback,  AddRsPowerChunkProcessor, AddInterferenceChunkProcessor</li>
-	<li>LteUeCphySapProvider removed methods ConfigureRach, StartContentionBasedRandomAccessProcedure, StartNonContentionBasedRandomAccessProcedure</li>
-	<li>LteUeMac added method AssignStreams</li>
-	<li>LteUeNetDevice methods GetMac, GetRrc, GetImsi  made const</li>
-	<li>LteUeNetDevice new method GetNas</li>
-	<li>LteUePhy new methods GetLteUeCphySapProvider, SetLteUeCphySapUser, GetDlSpectrumPhy, GetUlSpectrumPhy, ReportInterference, ReportRsReceivedPower, ReceiveLteDlHarqFeedback</li>
-	<li>LteUePhy DoSendMacPdu, DoSendLteControlMessage, DoSetTransmissionMode, DoSetSrsConfigurationIndex made private</li>
-	<li>LteUePhySapProvider removed methods	SetBandwidth, SetTransmissionMode, SetSrsConfigurationIndex</li>
-	<li>LteUePhySapProvider added method SendRachPreamble</li>  
-   </li>   	
-</ul>
-<li>AnimationInterface method EnableIpv4RouteTracking returns reference to calling AnimationInterface object</li>
-<li>To make the API more uniform across the various
+  <li>ns3::Object and subclasses DoStart has been renamed to DoInitialize</li>
+  <li>ns3::Object and subclasses Start has been renamed to Initialize</li>
+  <li>EnergySource StartDeviceModels renamed to InitializeDeviceModels</li>
+  <li>A typo was fixed in an LTE variable name. The variable ns3::AllocationRetentionPriority::preemprionVulnerability was changed to preemptionVulnerability.</li>
+  <li>Changes in TestCase API
+  <ul>
+    <li>TestCase has new enumeration TestDuration containing QUICK, EXTENSIVE, TAKES_FOREVER</li>
+    <li>TestCase constructor now requires TestDuration, old constructor marked deprecated</li>
+ </ul>
+ </li>
+  <li>Changes in LTE API
+  <ul>
+    <li> User-visible LTE API 
+    <ul>
+      <li>The previous LteHelper method ActivateEpsBearer has been now replaced by two alternative methods: ActivateDataRadioBearer (to be used when the EPC model is not used) and ActivateDedicatedEpsBearer (to be used when the EPC model is used). In the case where the EPC model is used, the default EPS bearer is not automatically activated without the need for a specific method to be called.</li>
+    </ul>
+    </li> 
+    <li> Internal LTE API 
+    <ul>
+      <li>EpcHelper added methods AddUe, AddX2Interface.  Method AddEnb now requires a cellId.  Signature of ActivateEpsBearer changed to void ActivateEpsBearer (Ptr<NetDevice> ueLteDevice, uint64_t imsi, Ptr<EpcTft> tft, EpsBearer bearer)</li>
+      <li>LteHelper added methods EnableDlPhyTraces, EnableUlPhyTraces, EnableDlTxPhyTraces, EnableUlTxPhyTraces, EnableDlRxPhyTraces, EnableUlRxPhyTraces</li>
+      <li>LteHelper removed methods EnableDlRlcTraces, EnableUlRlcTraces, EnableDlPdcpTraces, EnableUlPdcpTraces</li>
+      <li>RadioBearerStatsCalculator added methods (Set/Get)StartTime, (Set/Get)Epoch, RescheduleEndEpoch, EndEpoch</li>
+      <li>RadioBearerStatsCalculator removed methods StartEpoch, CheckEpoch</li>
+      <li>RadioBearerStatsCalculator methods UlTxPdu, DlRxPdu now require a cellId</li>
+      <li>EpcEnbApplication constructor now requires Ipv4Addresses enbS1uAddress and sgwS1uAddress as well as cellId</li>
+      <li>EpcEnbApplication added methods SetS1SapUser, GetS1SapProvider, SetS1apSapMme and GetS1apSapEnb</li>
+      <li>EpcEnbApplication removed method ErabSetupRequest</li> 
+      <li>EpcSgwPgwApplication added methods SetS11SapMme, GetS11SapSgw, AddEnb, AddUe, SetUeAddress</li>
+      <li>lte-common.h new structs PhyTransmissionStatParameters and PhyReceptionStatParameters used in TracedCallbacks</li>
+      <li>LteControlMessage new message types DL_HARQ, RACH_PREAMBLE, RAR, MIB</li>
+      <li>LteEnbCmacSapProvider new methods RemoveUe, GetRachConfig, AllocateNcRaPreamble, AllocateTemporaryCellRnti</li>
+      <li>LteEnbPhy new methods GetLteEnbCphySapProvider, SetLteEnbCphySapUser, GetDlSpectrumPhy, GetUlSpectrumPhy, CreateSrsReport</li>
+      <li>LteEnbPhy methods DoSendMacPdu, DoSetTransmissionMode, DoSetSrsConfigurationIndex, DoGetMacChTtiDelay, DoSendLteControlMessage, AddUePhy, DeleteUePhy made private</li>
+      <li>LteEnbPhySapProvider removed methods SetBandwidth, SetTransmissionMode, SetSrsConfigurationIndex, SetCellId</li>
+      <li>LteEnbPhySapUser added methods ReceiveRachPreamble, UlInfoListElementHarqFeeback, DlInfoListElementHarqFeeback</li>
+      <li>LtePdcp added methods (Set/Get)Status</li>
+      <li>LtePdcp DoTransmitRrcPdu renamed DoTransmitPdcpSdu</li>
+      <li>LteUeRrc new enum State.  New methods SetLteUeCphySapProvider, GetLteUeCphySapUser, SetLteUeRrcSapUser, GetLteUeRrcSapProvider, GetState, GetDlEarfcn, GetDlBandwidth, GetUlBandwidth, GetCellId, SetUseRlcSm .  GetRnti made const.</li> 
+      <li>LteUeRrc removed methods ReleaseRadioBearer, GetLcIdVector, SetForwardUpCallback, DoRrcConfigurationUpdateInd</li>
+      <li>LtePdcpSapProvider struct TransmitRrcPduParameters renamed TransmitPdcpSduParameters.  Method TransmitRrcPdu renamed TransmitPdcpSdu </li>
+      <li>LtePdcpSapUser struct ReceiveRrcPduParameters renamed ReceivePdcpSduParameters.  Method ReceiveRrcPdu renamed TransmitPdcpSdu</li>
+      <li>LtePdcpSpecificLtePdcpSapProvider method TransmitRrcPdu renamed TransmitPdcpSdu</li>
+      <li>LtePdcpSpecificLtePdcpSapUser method ReceiveRrcPdu  renamed ReceivePdcpSdu. Method ReceiveRrcPdu renamed ReceivePdcpSdu</li>
+      <li>LtePhy removed methods DoSetBandwidth and DoSetEarfcn</li>
+      <li>LtePhy added methods ReportInterference and ReportRsReceivedPower</li>
+      <li>LteSpectrumPhy added methods SetHarqPhyModule, Reset, SetLtePhyDlHarqFeedbackCallback, SetLtePhyUlHarqFeedbackCallback,  AddRsPowerChunkProcessor, AddInterferenceChunkProcessor</li>
+      <li>LteUeCphySapProvider removed methods ConfigureRach, StartContentionBasedRandomAccessProcedure, StartNonContentionBasedRandomAccessProcedure</li>
+      <li>LteUeMac added method AssignStreams</li>
+      <li>LteUeNetDevice methods GetMac, GetRrc, GetImsi  made const</li>
+      <li>LteUeNetDevice new method GetNas</li>
+      <li>LteUePhy new methods GetLteUeCphySapProvider, SetLteUeCphySapUser, GetDlSpectrumPhy, GetUlSpectrumPhy, ReportInterference, ReportRsReceivedPower, ReceiveLteDlHarqFeedback</li>
+      <li>LteUePhy DoSendMacPdu, DoSendLteControlMessage, DoSetTransmissionMode, DoSetSrsConfigurationIndex made private</li>
+      <li>LteUePhySapProvider removed methods SetBandwidth, SetTransmissionMode, SetSrsConfigurationIndex</li>
+      <li>LteUePhySapProvider added method SendRachPreamble</li>  
+    </ul>
+   </li>    
+  </ul>
+  <li>AnimationInterface method EnableIpv4RouteTracking returns reference to calling AnimationInterface object</li>
+  <li>To make the API more uniform across the various
   PropagationLossModel classes, the Set/GetLambda methods of the
   FriisPropagationLossModel and TwoRayGroundPropagationLossModel
   classes have been changed to Set/GetFrequency, and now a Frequency
@@ -163,25 +164,24 @@ us a note on ns-developers mailing list.</p>
   attribute. Any previous user code setting a value for Lambda should
   be changed to set instead a value of Frequency = C / Lambda, with C
   = 299792458.0. </li>
-
 </ul>
 <h2>Changes to build system:</h2>
 <ul>
-<li>Waf shipped with ns-3 has been upgraded to version 1.7.10 and custom
+  <li>Waf shipped with ns-3 has been upgraded to version 1.7.10 and custom
   pkg-config generator has been replaced by Waf's builtin tool.
-</li>
+  </li>
 </ul>
 
 <h2>Changed behavior:</h2>
 <ul>
-<li>DSR link layer notification has changed.  The model originally used 
-"TxErrHeader" in Ptr<WifiMac> to indicate the transmission
-error of a specific packet in link layer; however, it was not working
-correctly.  The model now uses a different path to implement
-the link layer notification mechanism; specifically, looking into the 
-trace file to find packet receive events.  If the model finds one 
-receive event for the data packet, it is used as the indicator for 
-successful data delivery.</li>
+  <li>DSR link layer notification has changed.  The model originally used 
+  "TxErrHeader" in Ptr<WifiMac> to indicate the transmission
+  error of a specific packet in link layer; however, it was not working
+  correctly.  The model now uses a different path to implement
+  the link layer notification mechanism; specifically, looking into the 
+  trace file to find packet receive events.  If the model finds one 
+  receive event for the data packet, it is used as the indicator for 
+  successful data delivery.</li>
 </ul>
 
 <hr>
@@ -199,7 +199,7 @@ successful data delivery.</li>
   <li>(Set/Is)Ipv6RecvTclass - tells the socket to pass information about IPv6 TCLASS up the stack (by adding SocketIpv6TclassTag to the packet).</li>
   <li>(Set/Get)Ipv6HopLimit - sets Hop Limit field in the IPv6 headers.</li>
   <li>(Set/Is)Ipv6RecvHopLimit - tells the socket to pass information about IPv6 HOPLIMIT up the stack (by adding SocketIpv6HoplimitTag to the packet).</li>
- </ul>	
+ </ul>  
 A user can call these functions to set/get the corresponding socket option. See examples/socket/socket-options-ipv4.cc and examples/socket/socket-options-ipv6.cc for examples.
 </ul>
 
@@ -1053,16 +1053,16 @@ For example, before:
 <pre>
 void
 SimpleChannel::Send (Ptr&lt;Packet&gt; p, uint16_t protocol, 
-		     Mac48Address to, Mac48Address from,
-		     Ptr&lt;SimpleNetDevice&gt; sender)
+         Mac48Address to, Mac48Address from,
+         Ptr&lt;SimpleNetDevice&gt; sender)
 {
   for (std::vector&lt;Ptr&lt;SimpleNetDevice&gt; &gt;::const_iterator i = m_devices.begin (); i != m_devices.end (); ++i)
     {
       Ptr&lt;SimpleNetDevice&gt; tmp = *i;
       if (tmp == sender)
-	{
-	  continue;
-	}
+  {
+    continue;
+  }
       Simulator::ScheduleNow (&SimpleNetDevice::Receive, tmp, p->Copy (), protocol, to, from);
     }
 }
@@ -1071,16 +1071,16 @@ After:
 <pre>
 void
 SimpleChannel::Send (Ptr&lt;Packet&gt; p, uint16_t protocol, 
-		     Mac48Address to, Mac48Address from,
-		     Ptr&lt;SimpleNetDevice&gt; sender)
+         Mac48Address to, Mac48Address from,
+         Ptr&lt;SimpleNetDevice&gt; sender)
 {
   for (std::vector&lt;Ptr&lt;SimpleNetDevice&gt; &gt;::const_iterator i = m_devices.begin (); i != m_devices.end (); ++i)
     {
       Ptr&lt;SimpleNetDevice&gt; tmp = *i;
       if (tmp == sender)
-	{
-	  continue;
-	}
+  {
+    continue;
+  }
       Simulator::ScheduleWithContext (tmp->GetNode ()->GetId (), Seconds (0),
                                       &SimpleNetDevice::Receive, tmp, p->Copy (), protocol, to, from);
     }
