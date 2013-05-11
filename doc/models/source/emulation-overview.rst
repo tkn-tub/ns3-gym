@@ -5,17 +5,28 @@ Emulation Overview
 
 |ns3| has been designed for integration into testbed and virtual machine
 environments. We have addressed this need by providing two kinds of net devices.
-The first kind, which we call an ``Emu`` ``NetDevice`` allows |ns3| simulations
+The first kind of device is a file descriptor net device (``FdNetDevice``),
+which is a generic device type that can read and write from a file descriptor.
+By associating this file descriptor with different things on the host
+system, different capabilities can be provided.  For instance, the
+FdNetDevice can be associated with an underlying packet socket to provide
+emulation capabilities.  This allows |ns3| simulations
 to send data on a "real" network. The second kind, called a ``Tap``
 ``NetDevice`` allows a "real" host to participate in an |ns3| simulation as if
 it were one of the simulated nodes. An |ns3| simulation may be constructed with
-any combination of simulated, ``Emu``, or ``Tap`` devices.
+any combination of simulated or emulated devices.
+
+**Note:** Prior to ns-3.17, the emulation capability was provided by a
+special device called an ``Emu`` NetDevice; the ``Emu`` NetDevice has
+been superseded by the ``FdNetDevice``, and will be deprecated and removed
+in future revisions of |ns3|.
 
 One of the use-cases we want to support is that of a testbed. A concrete example
 of an environment of this kind is the ORBIT testbed. ORBIT is a laboratory
 emulator/field trial network arranged as a two dimensional grid of 400 802.11
 radio nodes. We integrate with ORBIT by using their "imaging" process to load
-and run |ns3| simulations on the ORBIT array. We use our ``Emu`` ``NetDevice``
+and run |ns3| simulations on the ORBIT array. We can use our 
+``EmuFdNetDevice``
 to drive the hardware in the testbed and we can accumulate results either using
 the |ns3| tracing and logging functions, or the native ORBIT data gathering
 techniques. See `<http://www.orbit-lab.org/>`_ for details on the ORBIT
@@ -72,5 +83,5 @@ simulated |ns3| networks.
 
 .. toctree::
 
-  emu
+  fd-net-device
   tap
