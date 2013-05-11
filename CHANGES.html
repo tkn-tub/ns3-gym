@@ -56,6 +56,20 @@ us a note on ns-developers mailing list.</p>
 <h2>New API:</h2>
 <ul>
   <li>New TCP Westwood and Westwood+ models
+  <li>New FdNetDevice class providing a special NetDevice that is able to read
+      and write traffic from a file descriptor.  Three helpers are provided
+      to associate the file descriptor with different underlying devices:  
+    <ul> 
+    <li> EmuFdNetDeviceHelper (to associate the |ns3| device with a physical 
+         device in the host machine).  This helper is intended to
+         eventually replace the EmuNetDevice in src/emu. </li>
+    <li> TapFdNetDeviceHelper (to associate the ns-3 device with the file 
+         descriptor from a tap device in the host machine) </li>
+    <li> PlanteLabFdNetDeviceHelper (to automate the creation of tap devices 
+         in PlanetLab nodes, enabling |ns3| simulations that can send and 
+         receive traffic though the Internet using PlanetLab resource.</li>
+    </ul> 
+  </li>
   <li>In Ipv4ClickRouting, the following APIs were added:
     <ul>
       <li>Ipv4ClickRouting::SetDefines(), accessible through ClickInternetStackHelper::SetDefines(), for the user to set Click defines from the ns-3 simulation file.</li>

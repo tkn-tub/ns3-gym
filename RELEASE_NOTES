@@ -31,6 +31,11 @@ These platforms have been tested; others may work also:
 New user-visible features
 -------------------------
 - new TCP Westwood and Westwood+ models
+- new FdNetDevice model and associated helpers.  The FdNetDevice is able
+  to read and write from a file descriptor.  Various helpers are provided
+  to associate this descriptor with underlying devices or sockets on the 
+  host operating system, including a packet socket for emulation, and
+  tap devices including a version specialized for use on PlanetLab.
 - ns-3-click: it's now possible to (i) have Click pull random numbers from
   ns-3 and (ii) have ns-3 set "defines" in Click via the simulation file 
   (see src/click/examples/nsclick-defines.cc).
