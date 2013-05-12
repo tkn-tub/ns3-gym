@@ -1326,7 +1326,8 @@ connect the two.  We will use the mobility model predefined course change
 trace source to originate the trace events.  We will need to write a trace 
 sink to connect to that source that will display some pretty information for 
 us.  Despite its reputation as being difficult, it's really quite simple.
-Just before the main program of the ``scratch/mythird.cc`` script, add the 
+Just before the main program of the ``scratch/mythird.cc`` script (i.e.,
+just after the ``NS_LOG_COMPONENT_DEFINE`` statement), add the 
 following function:
 
 ::
