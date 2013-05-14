@@ -21,11 +21,14 @@
 #include "data-rate.h"
 #include "ns3/nstime.h"
 #include "ns3/fatal-error.h"
+#include "ns3/log.h"
 
+NS_LOG_COMPONENT_DEFINE ("DataRate");
 
 static bool
 DoParse (const std::string s, uint64_t *v)
 {
+  NS_LOG_FUNCTION (s << v);
   std::string::size_type n = s.find_first_not_of ("0123456789.");
   if (n != std::string::npos)
     { // Found non-numeric
@@ -184,11 +187,13 @@ ATTRIBUTE_HELPER_CPP (DataRate);
 DataRate::DataRate ()
   : m_bps (0)
 {
+  NS_LOG_FUNCTION (this);
 }
 
 DataRate::DataRate(uint64_t bps)
   : m_bps (bps)
 {
+  NS_LOG_FUNCTION (this << bps);
 }
 
 bool DataRate::operator < (const DataRate& rhs) const
@@ -223,16 +228,19 @@ bool DataRate::operator != (const DataRate& rhs) const
 
 double DataRate::CalculateTxTime (uint32_t bytes) const
 {
+  NS_LOG_FUNCTION (this << bytes);
   return static_cast<double>(bytes)*8/m_bps;
 }
 
 uint64_t DataRate::GetBitRate () const
 {
+  NS_LOG_FUNCTION (this);
   return m_bps;
 }
 
 DataRate::DataRate (std::string rate)
 {
+  NS_LOG_FUNCTION (this << rate);
   bool ok = DoParse (rate, &m_bps);
   if (!ok)
     {

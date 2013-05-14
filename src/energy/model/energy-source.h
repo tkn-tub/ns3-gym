@@ -150,7 +150,7 @@ public:
    * not aggregated to the node, therefore we need to manually start them here.
    * Called by EnergySourceContainer, which is aggregated to the node.
    */
-  void StartDeviceModels (void);
+  void InitializeDeviceModels (void);
 
   /**
    * Calls Dispose () method of the device energy models. Device energy models

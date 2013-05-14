@@ -250,7 +250,7 @@ EpcS1uDlTestSuite::EpcS1uDlTestSuite ()
   UeDlTestData f1 (1, 100);
   e1.ues.push_back (f1);
   v1.push_back (e1);
-  AddTestCase (new EpcS1uDlTestCase ("1 eNB, 1UE", v1));
+  AddTestCase (new EpcS1uDlTestCase ("1 eNB, 1UE", v1), TestCase::QUICK);
 
 
   std::vector<EnbDlTestData> v2;  
@@ -260,13 +260,13 @@ EpcS1uDlTestSuite::EpcS1uDlTestSuite ()
   UeDlTestData f2_2 (2, 200);
   e2.ues.push_back (f2_2);
   v2.push_back (e2);
-  AddTestCase (new EpcS1uDlTestCase ("1 eNB, 2UEs", v2));
+  AddTestCase (new EpcS1uDlTestCase ("1 eNB, 2UEs", v2), TestCase::QUICK);
 
 
   std::vector<EnbDlTestData> v3;  
   v3.push_back (e1);
   v3.push_back (e2);
-  AddTestCase (new EpcS1uDlTestCase ("2 eNBs", v3));
+  AddTestCase (new EpcS1uDlTestCase ("2 eNBs", v3), TestCase::QUICK);
 
 
   EnbDlTestData e3;
@@ -280,35 +280,35 @@ EpcS1uDlTestSuite::EpcS1uDlTestSuite ()
   v4.push_back (e3);
   v4.push_back (e1);
   v4.push_back (e2);
-  AddTestCase (new EpcS1uDlTestCase ("3 eNBs", v4));
+  AddTestCase (new EpcS1uDlTestCase ("3 eNBs", v4), TestCase::QUICK);
 
   std::vector<EnbDlTestData> v5;  
   EnbDlTestData e5;
   UeDlTestData f5 (10, 3000);
   e5.ues.push_back (f5);
   v5.push_back (e5);
-  AddTestCase (new EpcS1uDlTestCase ("1 eNB, 10 pkts 3000 bytes each", v5));
+  AddTestCase (new EpcS1uDlTestCase ("1 eNB, 10 pkts 3000 bytes each", v5), TestCase::QUICK);
 
   std::vector<EnbDlTestData> v6;  
   EnbDlTestData e6;
   UeDlTestData f6 (50, 3000);
   e6.ues.push_back (f6);
   v6.push_back (e6);
-  AddTestCase (new EpcS1uDlTestCase ("1 eNB, 50 pkts 3000 bytes each", v6));
+  AddTestCase (new EpcS1uDlTestCase ("1 eNB, 50 pkts 3000 bytes each", v6), TestCase::QUICK);
   
   std::vector<EnbDlTestData> v7;  
   EnbDlTestData e7;
   UeDlTestData f7 (10, 15000);
   e7.ues.push_back (f7);
   v7.push_back (e7);
-  AddTestCase (new EpcS1uDlTestCase ("1 eNB, 10 pkts 15000 bytes each", v7));
+  AddTestCase (new EpcS1uDlTestCase ("1 eNB, 10 pkts 15000 bytes each", v7), TestCase::QUICK);
 
   std::vector<EnbDlTestData> v8;  
   EnbDlTestData e8;
   UeDlTestData f8 (100, 15000);
   e8.ues.push_back (f8);
   v8.push_back (e8);
-  AddTestCase (new EpcS1uDlTestCase ("1 eNB, 100 pkts 15000 bytes each", v8));
+  AddTestCase (new EpcS1uDlTestCase ("1 eNB, 100 pkts 15000 bytes each", v8), TestCase::QUICK);
 }
 
 

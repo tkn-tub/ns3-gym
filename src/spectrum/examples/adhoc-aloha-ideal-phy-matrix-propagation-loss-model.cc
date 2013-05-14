@@ -40,9 +40,6 @@
 #include <ns3/applications-module.h>
 #include <ns3/adhoc-aloha-noack-ideal-phy-helper.h>
 
-#ifdef __FreeBSD__
-#define log2(x) (log (x)/M_LN2)
-#endif
 
 NS_LOG_COMPONENT_DEFINE ("TestAdhocOfdmAloha");
 
@@ -125,7 +122,7 @@ GlobalPathlossDatabase::Print ()
 int main (int argc, char** argv)
 {
   CommandLine cmd;
-  double lossDb = 150;
+  double lossDb = 130;
   double txPowerW = 0.1; 
   uint64_t phyRate = 500000;
   uint32_t pktSize = 1000;
@@ -144,14 +141,9 @@ int main (int argc, char** argv)
   c.Create (2);
 
   MobilityHelper mobility;
-  Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
-  positionAlloc->Add (Vector (0.0, 0.0, 0.0));
-  positionAlloc->Add (Vector (5.0, 0.0, 0.0));
-  mobility.SetPositionAllocator (positionAlloc);
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
-
-
   mobility.Install (c);
+  // the actual positions are irrelevant, since we use MatrixPropagationLossModel
 
 
   SpectrumChannelHelper channelHelper;
@@ -216,7 +208,7 @@ int main (int argc, char** argv)
       std::cout << "throughput:       " << throughputBps << std::endl;
       std::cout << "throughput:       " << std::setw (20) << std::fixed << throughputBps << " bps" << std::endl;
       std::cout << "phy rate  :       "   << std::setw (20) << std::fixed << phyRate*1.0 << " bps" << std::endl; 
-      double rxPowerW = txPowerW / (pow (10.0, lossDb/10.0));
+      double rxPowerW = txPowerW / (std::pow (10.0, lossDb/10.0));
       double capacity = 20e6*log2 (1.0 + (rxPowerW/20.0e6)/noisePsdValue);
       std::cout << "shannon capacity: "   << std::setw (20) << std::fixed << capacity <<  " bps" << std::endl; 
 

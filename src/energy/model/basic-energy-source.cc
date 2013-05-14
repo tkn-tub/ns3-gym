@@ -64,11 +64,13 @@ BasicEnergySource::GetTypeId (void)
 
 BasicEnergySource::BasicEnergySource ()
 {
+  NS_LOG_FUNCTION (this);
   m_lastUpdateTime = Seconds (0.0);
 }
 
 BasicEnergySource::~BasicEnergySource ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 void
@@ -97,18 +99,21 @@ BasicEnergySource::SetEnergyUpdateInterval (Time interval)
 Time
 BasicEnergySource::GetEnergyUpdateInterval (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_energyUpdateInterval;
 }
 
 double
 BasicEnergySource::GetSupplyVoltage (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_supplyVoltageV;
 }
 
 double
 BasicEnergySource::GetInitialEnergy (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_initialEnergyJ;
 }
 
@@ -164,7 +169,7 @@ BasicEnergySource::UpdateEnergySource (void)
  */
 
 void
-BasicEnergySource::DoStart (void)
+BasicEnergySource::DoInitialize (void)
 {
   NS_LOG_FUNCTION (this);
   UpdateEnergySource ();  // start periodic update

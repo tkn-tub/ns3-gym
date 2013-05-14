@@ -18,12 +18,9 @@
  * Author: Marco Miozzo <marco.miozzo@cttc.es>
  */
 
-#ifdef __FreeBSD__
-#define log2(x) (log (x) / M_LN2)
-#endif /* __FreeBSD__ */
-
 #include <ns3/log.h>
 #include <ns3/pointer.h>
+#include <ns3/math.h>
 
 #include <ns3/simulator.h>
 #include <ns3/lte-amc.h>
@@ -476,7 +473,7 @@ void
 PfFfMacScheduler::DoSchedDlPagingBufferReq (const struct FfMacSchedSapProvider::SchedDlPagingBufferReqParameters& params)
 {
   NS_LOG_FUNCTION (this);
-  // TODO: Implementation of the API
+  NS_FATAL_ERROR ("method not implemented");
   return;
 }
 
@@ -484,7 +481,7 @@ void
 PfFfMacScheduler::DoSchedDlMacBufferReq (const struct FfMacSchedSapProvider::SchedDlMacBufferReqParameters& params)
 {
   NS_LOG_FUNCTION (this);
-  // TODO: Implementation of the API
+  NS_FATAL_ERROR ("method not implemented");
   return;
 }
 
@@ -1649,8 +1646,8 @@ PfFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
 
           // translate SINR -> cqi: WILD ACK: same as DL
           double s = log2 ( 1 + (
-                              pow (10, minSinr / 10 )  /
-                              ( (-log (5.0 * 0.00005 )) / 1.5) ));
+                                 std::pow (10, minSinr / 10 )  /
+                                 ( (-std::log (5.0 * 0.00005 )) / 1.5) ));
           cqi = m_amc->GetCqiFromSpectralEfficiency (s);
           if (cqi == 0)
             {
@@ -1750,7 +1747,6 @@ void
 PfFfMacScheduler::DoSchedUlNoiseInterferenceReq (const struct FfMacSchedSapProvider::SchedUlNoiseInterferenceReqParameters& params)
 {
   NS_LOG_FUNCTION (this);
-  // TODO: Implementation of the API
   return;
 }
 
@@ -1758,7 +1754,6 @@ void
 PfFfMacScheduler::DoSchedUlSrInfoReq (const struct FfMacSchedSapProvider::SchedUlSrInfoReqParameters& params)
 {
   NS_LOG_FUNCTION (this);
-  // TODO: Implementation of the API
   return;
 }
 

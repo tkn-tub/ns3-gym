@@ -27,7 +27,6 @@
 #include "ns3/log.h"
 #include "orbis-topology-reader.h"
 
-using namespace std;
 
 namespace ns3 {
 
@@ -56,9 +55,9 @@ OrbisTopologyReader::~OrbisTopologyReader ()
 NodeContainer
 OrbisTopologyReader::Read (void)
 {
-  ifstream topgen;
+  std::ifstream topgen;
   topgen.open (GetFileName ().c_str ());
-  map<string, Ptr<Node> > nodeMap;
+  std::map<std::string, Ptr<Node> > nodeMap;
   NodeContainer nodes;
 
   if ( !topgen.is_open () )
@@ -66,10 +65,10 @@ OrbisTopologyReader::Read (void)
       return nodes;
     }
 
-  string from;
-  string to;
-  istringstream lineBuffer;
-  string line;
+  std::string from;
+  std::string to;
+  std::istringstream lineBuffer;
+  std::string line;
 
   int linksNumber = 0;
   int nodesNumber = 0;

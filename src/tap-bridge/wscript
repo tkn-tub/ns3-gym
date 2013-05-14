@@ -34,7 +34,7 @@ def build(bld):
         'model/tap-encode-decode.cc',
         'helper/tap-bridge-helper.cc',
         ]
-    headers = bld.new_task_gen(features=['ns3header'])
+    headers = bld(features='ns3header')
     headers.module = 'tap-bridge'
     headers.source = [
         'model/tap-bridge.h',
@@ -52,6 +52,6 @@ def build(bld):
     module.env.append_value("DEFINES", "TAP_CREATOR=\"%s\"" % (tap_creator.target,))
 
     if bld.env['ENABLE_EXAMPLES']:
-        bld.add_subdirs('examples')
+        bld.recurse('examples')
 
     bld.ns3_python_bindings()

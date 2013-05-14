@@ -157,8 +157,11 @@ main (int argc, char *argv[])
   AnimationInterface::SetNodeColor (wifiApNode, 0, 255, 0); // Optional
   AnimationInterface::SetNodeColor (wifiStaNodes, 255, 0, 0); // Optional
   AnimationInterface::SetNodeColor (csmaNodes, 0, 0, 255); // Optional
+
   AnimationInterface anim ("wireless-animation.xml"); // Mandatory
+
   anim.EnablePacketMetadata (true); // Optional
+  anim.EnableIpv4RouteTracking ("routingtable-wireless.xml", Seconds(0), Seconds(5), Seconds(0.25)); //Optional
   Simulator::Run ();
   Simulator::Destroy ();
   return 0;

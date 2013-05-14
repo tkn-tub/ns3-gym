@@ -112,9 +112,9 @@ LteLinkAdaptationTestSuite::LteLinkAdaptationTestSuite ()
   };
   int numOfTests = sizeof (snrEfficiencyMcs) / sizeof (SnrEfficiencyMcs);
 
-  double txPowerDbm = 30; // default eNB TX power over whole bandwdith
+  double txPowerDbm = 30; // default eNB TX power over whole bandwidth
   double ktDbm = -174;    // reference LTE noise PSD
-  double noisePowerDbm = ktDbm + 10 * log10 (25 * 180000); // corresponds to kT*bandwidth in linear units
+  double noisePowerDbm = ktDbm + 10 * std::log10 (25 * 180000); // corresponds to kT*bandwidth in linear units
   double receiverNoiseFigureDb = 9.0; // default UE noise figure
 
   for ( int i = 0 ; i < numOfTests; i++ )
@@ -124,7 +124,7 @@ LteLinkAdaptationTestSuite::LteLinkAdaptationTestSuite ()
       std::ostringstream name;
       name << " snr= " << snrEfficiencyMcs[i].snrDb << " dB, "
            << " mcs= " << snrEfficiencyMcs[i].mcsIndex;
-      AddTestCase (new LteLinkAdaptationTestCase (name.str (),  snrEfficiencyMcs[i].snrDb, lossDb, snrEfficiencyMcs[i].mcsIndex));
+      AddTestCase (new LteLinkAdaptationTestCase (name.str (),  snrEfficiencyMcs[i].snrDb, lossDb, snrEfficiencyMcs[i].mcsIndex), TestCase::QUICK);
     }
 
 }
@@ -213,7 +213,7 @@ LteLinkAdaptationTestCase::DoRun (void)
   Simulator::Stop (Seconds (0.040));
   Simulator::Run ();
 
-  double calculatedSinrDb = 10.0 * log10 (testSinr->GetSinr ()->operator[] (0));
+  double calculatedSinrDb = 10.0 * std::log10 (testSinr->GetSinr ()->operator[] (0));
   NS_TEST_ASSERT_MSG_EQ_TOL (calculatedSinrDb, m_snrDb, 0.0000001, "Wrong SINR !");
   Simulator::Destroy ();
 }

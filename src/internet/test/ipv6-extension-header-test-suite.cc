@@ -23,7 +23,7 @@
 using namespace ns3;
 
 // ===========================================================================
-// An empty option field must be filled with pad1 or padN header so the
+// An empty option field must be filled with pad1 or padN header so theshape
 // extension header's size is a multiple of 8.
 //
 // 0                                                              31
@@ -215,10 +215,10 @@ public:
   Ipv6ExtensionHeaderTestSuite ()
     : TestSuite ("ipv6-extension-header", UNIT)
   {
-    AddTestCase (new TestEmptyOptionField);
-    AddTestCase (new TestOptionWithoutAlignment);
-    AddTestCase (new TestOptionWithAlignment);
-    AddTestCase (new TestFulfilledAlignment);
+    AddTestCase (new TestEmptyOptionField, TestCase::QUICK);
+    AddTestCase (new TestOptionWithoutAlignment, TestCase::QUICK);
+    AddTestCase (new TestOptionWithAlignment, TestCase::QUICK);
+    AddTestCase (new TestFulfilledAlignment, TestCase::QUICK);
 
   }
 };

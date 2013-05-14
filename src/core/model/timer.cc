@@ -20,6 +20,9 @@
 #include "timer.h"
 #include "simulator.h"
 #include "simulation-singleton.h"
+#include "log.h"
+
+NS_LOG_COMPONENT_DEFINE ("Timer");
 
 namespace ns3 {
 
@@ -29,6 +32,7 @@ Timer::Timer ()
     m_event (),
     m_impl (0)
 {
+  NS_LOG_FUNCTION (this);
 }
 
 Timer::Timer (enum DestroyPolicy destroyPolicy)
@@ -37,10 +41,12 @@ Timer::Timer (enum DestroyPolicy destroyPolicy)
     m_event (),
     m_impl (0)
 {
+  NS_LOG_FUNCTION (this << destroyPolicy);
 }
 
 Timer::~Timer ()
 {
+  NS_LOG_FUNCTION (this);
   if (m_flags & CHECK_ON_DESTROY)
     {
       if (m_event.IsRunning ())
@@ -62,16 +68,19 @@ Timer::~Timer ()
 void
 Timer::SetDelay (const Time &time)
 {
+  NS_LOG_FUNCTION (this << time);
   m_delay = time;
 }
 Time
 Timer::GetDelay (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_delay;
 }
 Time
 Timer::GetDelayLeft (void) const
 {
+  NS_LOG_FUNCTION (this);
   switch (GetState ())
     {
     case Timer::RUNNING:
@@ -93,31 +102,37 @@ Timer::GetDelayLeft (void) const
 void
 Timer::Cancel (void)
 {
+  NS_LOG_FUNCTION (this);
   Simulator::Cancel (m_event);
 }
 void
 Timer::Remove (void)
 {
+  NS_LOG_FUNCTION (this);
   Simulator::Remove (m_event);
 }
 bool
 Timer::IsExpired (void) const
 {
+  NS_LOG_FUNCTION (this);
   return !IsSuspended () && m_event.IsExpired ();
 }
 bool
 Timer::IsRunning (void) const
 {
+  NS_LOG_FUNCTION (this);
   return !IsSuspended () && m_event.IsRunning ();
 }
 bool
 Timer::IsSuspended (void) const
 {
+  NS_LOG_FUNCTION (this);
   return (m_flags & TIMER_SUSPENDED) == TIMER_SUSPENDED;
 }
 enum Timer::State
 Timer::GetState (void) const
 {
+  NS_LOG_FUNCTION (this);
   if (IsRunning ())
     {
       return Timer::RUNNING;
@@ -136,12 +151,14 @@ Timer::GetState (void) const
 void
 Timer::Schedule (void)
 {
+  NS_LOG_FUNCTION (this);
   Schedule (m_delay);
 }
 
 void
 Timer::Schedule (Time delay)
 {
+  NS_LOG_FUNCTION (this << delay);
   NS_ASSERT (m_impl != 0);
   if (m_event.IsRunning ())
     {
@@ -153,6 +170,7 @@ Timer::Schedule (Time delay)
 void
 Timer::Suspend (void)
 {
+  NS_LOG_FUNCTION (this);
   NS_ASSERT (IsRunning ());
   m_delayLeft = Simulator::GetDelayLeft (m_event);
   Simulator::Remove (m_event);
@@ -162,6 +180,7 @@ Timer::Suspend (void)
 void
 Timer::Resume (void)
 {
+  NS_LOG_FUNCTION (this);
   NS_ASSERT (m_flags & TIMER_SUSPENDED);
   m_event = m_impl->Schedule (m_delayLeft);
   m_flags &= ~TIMER_SUSPENDED;

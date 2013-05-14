@@ -23,7 +23,6 @@
 
 #include <stdio.h>
 #include <sstream>
-#include <math.h> // For log()
 
 #define MAX_DRB 11 // According to section 6.4 3GPP TS 36.331
 #define MAX_EARFCN 65535

@@ -24,9 +24,9 @@
 #include <sstream>
 
 #include "ns3/log.h"
+
 #include "inet-topology-reader.h"
 
-using namespace std;
 
 namespace ns3 {
 
@@ -55,19 +55,20 @@ InetTopologyReader::~InetTopologyReader ()
 NodeContainer
 InetTopologyReader::Read (void)
 {
-  ifstream topgen;
+  std::ifstream topgen;
   topgen.open (GetFileName ().c_str ());
-  map<string, Ptr<Node> > nodeMap;
+  std::map<std::string, Ptr<Node> > nodeMap;
   NodeContainer nodes;
 
   if ( !topgen.is_open () )
     {
+      NS_LOG_WARN ("Inet topology file object is not open, check file name and permissions");
       return nodes;
     }
 
-  string from;
-  string to;
-  string linkAttr;
+  std::string from;
+  std::string to;
+  std::string linkAttr;
 
   int linksNumber = 0;
   int nodesNumber = 0;
@@ -75,8 +76,8 @@ InetTopologyReader::Read (void)
   int totnode = 0;
   int totlink = 0;
 
-  istringstream lineBuffer;
-  string line;
+  std::istringstream lineBuffer;
+  std::string line;
 
   getline (topgen,line);
   lineBuffer.str (line);
@@ -85,7 +86,7 @@ InetTopologyReader::Read (void)
   lineBuffer >> totlink;
   NS_LOG_INFO ("Inet topology should have " << totnode << " nodes and " << totlink << " links");
 
-  for (int i = 0; i <= totnode; i++)
+  for (int i = 0; i < totnode; i++)
     {
       getline (topgen,line);
     }
@@ -102,10 +103,11 @@ InetTopologyReader::Read (void)
 
       if ( (!from.empty ()) && (!to.empty ()) )
         {
-          NS_LOG_INFO ( linksNumber << " From: " << from << " to: " << to );
+          NS_LOG_INFO ( "Link " << linksNumber << " from: " << from << " to: " << to);
 
           if ( nodeMap[from] == 0 )
             {
+              NS_LOG_INFO ( "Node " << nodesNumber << " name: " << from);
               Ptr<Node> tmpNode = CreateObject<Node> ();
               nodeMap[from] = tmpNode;
               nodes.Add (tmpNode);
@@ -114,6 +116,7 @@ InetTopologyReader::Read (void)
 
           if (nodeMap[to] == 0)
             {
+              NS_LOG_INFO ( "Node " << nodesNumber << " name: " << to);
               Ptr<Node> tmpNode = CreateObject<Node> ();
               nodeMap[to] = tmpNode;
               nodes.Add (tmpNode);
@@ -123,6 +126,7 @@ InetTopologyReader::Read (void)
           Link link ( nodeMap[from], from, nodeMap[to], to );
           if ( !linkAttr.empty () )
             {
+              NS_LOG_INFO ( "Link " << linksNumber << " weight: " << linkAttr);
               link.SetAttribute ("Weight", linkAttr);
             }
           AddLink (link);

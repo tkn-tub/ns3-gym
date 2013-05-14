@@ -96,7 +96,7 @@ NS_LOG_COMPONENT_DEFINE ("WifiSimpleInterference");
 
 using namespace ns3;
 
-std::string PrintReceivedPacket (Ptr<Socket> socket)
+static inline std::string PrintReceivedPacket (Ptr<Socket> socket)
 {
   Address addr;
   socket->GetSockName (addr);
@@ -108,7 +108,7 @@ std::string PrintReceivedPacket (Ptr<Socket> socket)
   return oss.str ();
 }
 
-void ReceivePacket (Ptr<Socket> socket)
+static void ReceivePacket (Ptr<Socket> socket)
 {
   NS_LOG_UNCOND (PrintReceivedPacket (socket));
 }

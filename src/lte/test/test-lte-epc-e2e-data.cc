@@ -361,7 +361,7 @@ LteEpcE2eDataTestSuite::LteEpcE2eDataTestSuite ()
   u1.bearers.push_back (f1);
   e1.ues.push_back (u1);
   v1.push_back (e1);
-  AddTestCase (new LteEpcE2eDataTestCase ("1 eNB, 1UE", v1));
+  AddTestCase (new LteEpcE2eDataTestCase ("1 eNB, 1UE", v1), TestCase::QUICK);
 
   std::vector<EnbTestData> v2;  
   EnbTestData e2;
@@ -374,12 +374,12 @@ LteEpcE2eDataTestSuite::LteEpcE2eDataTestSuite ()
   u2_2.bearers.push_back (f2_2);
   e2.ues.push_back (u2_2);
   v2.push_back (e2);
-  AddTestCase (new LteEpcE2eDataTestCase ("1 eNB, 2UEs", v2));
+  AddTestCase (new LteEpcE2eDataTestCase ("1 eNB, 2UEs", v2), TestCase::EXTENSIVE);
 
   std::vector<EnbTestData> v3;  
   v3.push_back (e1);
   v3.push_back (e2);
-  AddTestCase (new LteEpcE2eDataTestCase ("2 eNBs", v3));
+  AddTestCase (new LteEpcE2eDataTestCase ("2 eNBs", v3), TestCase::EXTENSIVE);
 
   EnbTestData e4;
   UeTestData u4_1;
@@ -398,7 +398,7 @@ LteEpcE2eDataTestSuite::LteEpcE2eDataTestSuite ()
   v4.push_back (e4);
   v4.push_back (e1);
   v4.push_back (e2);
-  AddTestCase (new LteEpcE2eDataTestCase ("3 eNBs", v4));
+  AddTestCase (new LteEpcE2eDataTestCase ("3 eNBs", v4), TestCase::EXTENSIVE);
 
   EnbTestData e5;
   UeTestData u5;
@@ -407,7 +407,7 @@ LteEpcE2eDataTestSuite::LteEpcE2eDataTestSuite ()
   e5.ues.push_back (u5);
   std::vector<EnbTestData> v5;
   v5.push_back (e5);
-  AddTestCase (new LteEpcE2eDataTestCase ("1 eNB, 1UE with 1000 byte packets", v5));
+  AddTestCase (new LteEpcE2eDataTestCase ("1 eNB, 1UE with 1000 byte packets", v5), TestCase::EXTENSIVE);
 
 
   EnbTestData e6;
@@ -417,7 +417,7 @@ LteEpcE2eDataTestSuite::LteEpcE2eDataTestSuite ()
   e6.ues.push_back (u6);
   std::vector<EnbTestData> v6;
   v6.push_back (e6);
-  AddTestCase (new LteEpcE2eDataTestCase ("1 eNB, 1UE with 1400 byte packets", v6));
+  AddTestCase (new LteEpcE2eDataTestCase ("1 eNB, 1UE with 1400 byte packets", v6), TestCase::EXTENSIVE);
 
   EnbTestData e7;
   UeTestData u7;
@@ -428,7 +428,7 @@ LteEpcE2eDataTestSuite::LteEpcE2eDataTestSuite ()
   e7.ues.push_back (u7);
   std::vector<EnbTestData> v7;
   v7.push_back (e7);
-  AddTestCase (new LteEpcE2eDataTestCase ("1 eNB, 1UE with 2 bearers", v7));
+  AddTestCase (new LteEpcE2eDataTestCase ("1 eNB, 1UE with 2 bearers", v7), TestCase::EXTENSIVE);
 
   EnbTestData e8;
   UeTestData u8;
@@ -437,7 +437,7 @@ LteEpcE2eDataTestSuite::LteEpcE2eDataTestSuite ()
   e8.ues.push_back (u8);
   std::vector<EnbTestData> v8;
   v8.push_back (e8);
-  AddTestCase (new LteEpcE2eDataTestCase ("1 eNB, 1UE with fragmentation", v8));
+  AddTestCase (new LteEpcE2eDataTestCase ("1 eNB, 1UE with fragmentation", v8), TestCase::EXTENSIVE);
 
 
   EnbTestData e9;
@@ -447,7 +447,7 @@ LteEpcE2eDataTestSuite::LteEpcE2eDataTestSuite ()
   e9.ues.push_back (u9);
   std::vector<EnbTestData> v9;
   v9.push_back (e9);
-  AddTestCase (new LteEpcE2eDataTestCase ("1 eNB, 1UE with aggregation", v9));
+  AddTestCase (new LteEpcE2eDataTestCase ("1 eNB, 1UE with aggregation", v9), TestCase::EXTENSIVE);
 
 
 }

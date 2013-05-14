@@ -38,14 +38,11 @@ public:
   static TypeId GetTypeId (void);
 
   /**
-   * Every event scheduled by the Simulator::insertAtDestroy method is
-   * invoked. Then, we ensure that any memory allocated by the 
-   * Simulator is freed.
    * This method is typically invoked at the end of a simulation
    * to avoid false-positive reports by a leak checker.
    * After this method has been invoked, it is actually possible
-   * to restart a new simulation with a set of calls to Simulator::run
-   * and Simulator::insert_*.
+   * to restart a new simulation with a set of calls to Simulator::Run,
+   * Simulator::Schedule and Simulator::ScheduleWithContext.
    */
   virtual void Destroy () = 0;
   /**
@@ -56,12 +53,12 @@ public:
   virtual bool IsFinished (void) const = 0;
   /**
    * If an event invokes this method, it will be the last
-   * event scheduled by the Simulator::run method before
+   * event scheduled by the Simulator::Run method before
    * returning to the caller.
    */
   virtual void Stop (void) = 0;
   /**
-   * Force the Simulator::run method to return to the caller when the
+   * Force the Simulator::Run method to return to the caller when the
    * expiration time of the next event to be processed is greater than
    * or equal to the stop time.  The stop time is relative to the
    * current simulation time.
@@ -119,9 +116,9 @@ public:
    * Set the cancel bit on this event: the event's associated function
    * will not be invoked when it expires. 
    * This method has the same visible effect as the 
-   * ns3::Simulator::remove method but its algorithmic complexity is 
+   * ns3::Simulator::Remove method but its algorithmic complexity is 
    * much lower: it has O(1) complexity.
-   * This method has the exact same semantics as ns3::EventId::cancel.
+   * This method has the exact same semantics as ns3::EventId::Cancel.
    * Note that it is not possible to cancel events which were scheduled
    * for the "destroy" time. Doing so will result in a program error (crash).
    * 
@@ -144,8 +141,8 @@ public:
   /**
    * Run the simulation until one of:
    *   - no events are present anymore
-   *   - the user called Simulator::stop
-   *   - the user called Simulator::stopAtUs and the
+   *   - the user called Simulator::Stop
+   *   - the user called Simulator::Stop with stop time and the
    *     expiration time of the next event to be processed
    *     is greater than or equal to the stop time.
    */

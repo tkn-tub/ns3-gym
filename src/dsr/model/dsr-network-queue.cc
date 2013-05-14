@@ -31,9 +31,9 @@
 
 #include "dsr-network-queue.h"
 #include "ns3/test.h"
+#include <map>
 #include <algorithm>
 #include <functional>
-#include <map>
 #include "ns3/log.h"
 #include "ns3/ipv4-route.h"
 #include "ns3/socket.h"
@@ -60,17 +60,17 @@ DsrNetworkQueue::DsrNetworkQueue (uint32_t maxLen, Time maxDelay)
     m_maxSize (maxLen),
     m_maxDelay (maxDelay)
 {
-  NS_LOG_FUNCTION (this );
+  NS_LOG_FUNCTION (this);
 }
 
 DsrNetworkQueue::DsrNetworkQueue () : m_size (0)
 {
-  NS_LOG_FUNCTION (this );
+  NS_LOG_FUNCTION (this);
 }
 
 DsrNetworkQueue::~DsrNetworkQueue ()
 {
-  NS_LOG_FUNCTION (this );
+  NS_LOG_FUNCTION (this);
   Flush ();
 }
 
@@ -110,7 +110,7 @@ DsrNetworkQueue::Enqueue (DsrNetworkQueueEntry & entry)
   entry.SetInsertedTimeStamp (now);
   m_dsrNetworkQueue.push_back (entry);
   m_size++;
-  NS_LOG_DEBUG ("The network queue size for now " << m_size);
+  NS_LOG_LOGIC ("The network queue size is " << m_size);
   return true;
 }
 
@@ -123,7 +123,7 @@ DsrNetworkQueue::Dequeue (DsrNetworkQueueEntry & entry)
   if (i == m_dsrNetworkQueue.end ())
     {
       // no elements in array
-      NS_LOG_DEBUG ("Does not find the queued packet in the network queue");
+      NS_LOG_LOGIC ("No queued packet in the network queue");
       return false;
     }
   entry = *i;
@@ -151,6 +151,7 @@ DsrNetworkQueue::Cleanup (void)
         }
       else
         {
+          NS_LOG_LOGIC ("Outdated packet");
           i = m_dsrNetworkQueue.erase (i);
           n++;
         }

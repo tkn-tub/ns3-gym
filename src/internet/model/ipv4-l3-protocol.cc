@@ -54,6 +54,10 @@ Ipv4L3Protocol::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::Ipv4L3Protocol")
     .SetParent<Ipv4> ()
     .AddConstructor<Ipv4L3Protocol> ()
+    .AddAttribute ("DefaultTos", "The TOS value set by default on all outgoing packets generated on this node.",
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&Ipv4L3Protocol::m_defaultTos),
+                   MakeUintegerChecker<uint8_t> ())
     .AddAttribute ("DefaultTtl", "The TTL value set by default on all outgoing packets generated on this node.",
                    UintegerValue (64),
                    MakeUintegerAccessor (&Ipv4L3Protocol::m_defaultTtl),
@@ -87,6 +91,7 @@ Ipv4L3Protocol::GetTypeId (void)
 
 Ipv4L3Protocol::Ipv4L3Protocol()
   : m_identification (0)
+
 {
   NS_LOG_FUNCTION (this);
 }
@@ -99,11 +104,13 @@ Ipv4L3Protocol::~Ipv4L3Protocol ()
 void
 Ipv4L3Protocol::Insert (Ptr<IpL4Protocol> protocol)
 {
+  NS_LOG_FUNCTION (this << protocol);
   m_protocols.push_back (protocol);
 }
 Ptr<IpL4Protocol>
 Ipv4L3Protocol::GetProtocol (int protocolNumber) const
 {
+  NS_LOG_FUNCTION (this << protocolNumber);
   for (L4List_t::const_iterator i = m_protocols.begin (); i != m_protocols.end (); ++i)
     {
       if ((*i)->GetProtocolNumber () == protocolNumber)
@@ -116,12 +123,14 @@ Ipv4L3Protocol::GetProtocol (int protocolNumber) const
 void
 Ipv4L3Protocol::Remove (Ptr<IpL4Protocol> protocol)
 {
+  NS_LOG_FUNCTION (this << protocol);
   m_protocols.remove (protocol);
 }
 
 void
 Ipv4L3Protocol::SetNode (Ptr<Node> node)
 {
+  NS_LOG_FUNCTION (this << node);
   m_node = node;
   // Add a LoopbackNetDevice if needed, and an Ipv4Interface on top of it
   SetupLoopback ();
@@ -157,6 +166,7 @@ Ipv4L3Protocol::DeleteRawSocket (Ptr<Socket> socket)
 void
 Ipv4L3Protocol::NotifyNewAggregate ()
 {
+  NS_LOG_FUNCTION (this);
   if (m_node == 0)
     {
       Ptr<Node>node = this->GetObject<Node>();
@@ -173,7 +183,7 @@ Ipv4L3Protocol::NotifyNewAggregate ()
 void 
 Ipv4L3Protocol::SetRoutingProtocol (Ptr<Ipv4RoutingProtocol> routingProtocol)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << routingProtocol);
   m_routingProtocol = routingProtocol;
   m_routingProtocol->SetIpv4 (this);
 }
@@ -182,6 +192,7 @@ Ipv4L3Protocol::SetRoutingProtocol (Ptr<Ipv4RoutingProtocol> routingProtocol)
 Ptr<Ipv4RoutingProtocol> 
 Ipv4L3Protocol::GetRoutingProtocol (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_routingProtocol;
 }
 
@@ -261,6 +272,7 @@ Ipv4L3Protocol::SetupLoopback (void)
 void 
 Ipv4L3Protocol::SetDefaultTtl (uint8_t ttl)
 {
+  NS_LOG_FUNCTION (this << static_cast<uint32_t> (ttl));
   m_defaultTtl = ttl;
 }
 
@@ -294,6 +306,7 @@ Ipv4L3Protocol::AddIpv4Interface (Ptr<Ipv4Interface>interface)
 Ptr<Ipv4Interface>
 Ipv4L3Protocol::GetInterface (uint32_t index) const
 {
+  NS_LOG_FUNCTION (this << index);
   if (index < m_interfaces.size ())
     {
       return m_interfaces[index];
@@ -304,6 +317,7 @@ Ipv4L3Protocol::GetInterface (uint32_t index) const
 uint32_t 
 Ipv4L3Protocol::GetNInterfaces (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_interfaces.size ();
 }
 
@@ -311,6 +325,7 @@ int32_t
 Ipv4L3Protocol::GetInterfaceForAddress (
   Ipv4Address address) const
 {
+  NS_LOG_FUNCTION (this << address);
   int32_t interface = 0;
   for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin (); 
        i != m_interfaces.end (); 
@@ -333,6 +348,7 @@ Ipv4L3Protocol::GetInterfaceForPrefix (
   Ipv4Address address, 
   Ipv4Mask mask) const
 {
+  NS_LOG_FUNCTION (this << address << mask);
   int32_t interface = 0;
   for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin (); 
        i != m_interfaces.end (); 
@@ -354,6 +370,7 @@ int32_t
 Ipv4L3Protocol::GetInterfaceForDevice (
   Ptr<const NetDevice> device) const
 {
+  NS_LOG_FUNCTION (this << device);
   int32_t interface = 0;
   for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin (); 
        i != m_interfaces.end (); 
@@ -371,6 +388,7 @@ Ipv4L3Protocol::GetInterfaceForDevice (
 bool
 Ipv4L3Protocol::IsDestinationAddress (Ipv4Address address, uint32_t iif) const
 {
+  NS_LOG_FUNCTION (this << address << iif);
   // First check the incoming interface for a unicast address match
   for (uint32_t i = 0; i < GetNAddresses (iif); i++)
     {
@@ -434,7 +452,7 @@ void
 Ipv4L3Protocol::Receive ( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t protocol, const Address &from,
                           const Address &to, NetDevice::PacketType packetType)
 {
-  NS_LOG_FUNCTION (this << device << p << protocol <<  from << to << packetType);
+  NS_LOG_FUNCTION (this << device << p << protocol << from << to << packetType);
 
   NS_LOG_LOGIC ("Packet from " << from << " received on node " << 
                 m_node->GetId ());
@@ -509,6 +527,7 @@ Ipv4L3Protocol::Receive ( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t p
 Ptr<Icmpv4L4Protocol> 
 Ipv4L3Protocol::GetIcmp (void) const
 {
+  NS_LOG_FUNCTION (this);
   Ptr<IpL4Protocol> prot = GetProtocol (Icmpv4L4Protocol::GetStaticProtocolNumber ());
   if (prot != 0)
     {
@@ -523,6 +542,7 @@ Ipv4L3Protocol::GetIcmp (void) const
 bool
 Ipv4L3Protocol::IsUnicast (Ipv4Address ad, Ipv4Mask interfaceMask) const
 {
+  NS_LOG_FUNCTION (this << ad << interfaceMask);
   return !ad.IsMulticast () && !ad.IsSubnetDirectedBroadcast (interfaceMask);
 }
 
@@ -532,6 +552,10 @@ Ipv4L3Protocol::SendWithHeader (Ptr<Packet> packet,
                                 Ptr<Ipv4Route> route)
 {
   NS_LOG_FUNCTION (this << packet << ipHeader << route);
+  if (Node::ChecksumEnabled ())
+    {
+      ipHeader.EnableChecksum ();
+    }
   SendRealOut (route, packet, ipHeader);
 }
 
@@ -554,6 +578,14 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
       ttl = tag.GetTtl ();
     }
 
+  uint8_t tos = m_defaultTos;
+  SocketIpTosTag ipTosTag;
+  found = packet->RemovePacketTag (ipTosTag);
+  if (found)
+    {
+      tos = ipTosTag.GetTos ();
+    }
+
   // Handle a few cases:
   // 1) packet is destined to limited broadcast address
   // 2) packet is destined to a subnet-directed broadcast address
@@ -565,7 +597,7 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
   if (destination.IsBroadcast () || destination.IsLocalMulticast ())
     {
       NS_LOG_LOGIC ("Ipv4L3Protocol::Send case 1:  limited broadcast");
-      ipHeader = BuildHeader (source, destination, protocol, packet->GetSize (), ttl, mayFragment);
+      ipHeader = BuildHeader (source, destination, protocol, packet->GetSize (), ttl, tos, mayFragment);
       uint32_t ifaceIndex = 0;
       for (Ipv4InterfaceList::iterator ifaceIter = m_interfaces.begin ();
            ifaceIter != m_interfaces.end (); ifaceIter++, ifaceIndex++)
@@ -597,7 +629,7 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
               destination.CombineMask (ifAddr.GetMask ()) == ifAddr.GetLocal ().CombineMask (ifAddr.GetMask ())   )
             {
               NS_LOG_LOGIC ("Ipv4L3Protocol::Send case 2:  subnet directed bcast to " << ifAddr.GetLocal ());
-              ipHeader = BuildHeader (source, destination, protocol, packet->GetSize (), ttl, mayFragment);
+              ipHeader = BuildHeader (source, destination, protocol, packet->GetSize (), ttl, tos, mayFragment);
               Ptr<Packet> packetCopy = packet->Copy ();
               m_sendOutgoingTrace (ipHeader, packetCopy, ifaceIndex);
               packetCopy->AddHeader (ipHeader);
@@ -613,7 +645,7 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
   if (route && route->GetGateway () != Ipv4Address ())
     {
       NS_LOG_LOGIC ("Ipv4L3Protocol::Send case 3:  passed in with route");
-      ipHeader = BuildHeader (source, destination, protocol, packet->GetSize (), ttl, mayFragment);
+      ipHeader = BuildHeader (source, destination, protocol, packet->GetSize (), ttl, tos, mayFragment);
       int32_t interface = GetInterfaceForDevice (route->GetOutputDevice ());
       m_sendOutgoingTrace (ipHeader, packet, interface);
       SendRealOut (route, packet->Copy (), ipHeader);
@@ -632,7 +664,7 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
   NS_LOG_LOGIC ("Ipv4L3Protocol::Send case 5:  passed in with no route " << destination);
   Socket::SocketErrno errno_; 
   Ptr<NetDevice> oif (0); // unused for now
-  ipHeader = BuildHeader (source, destination, protocol, packet->GetSize (), ttl, mayFragment);
+  ipHeader = BuildHeader (source, destination, protocol, packet->GetSize (), ttl, tos, mayFragment);
   Ptr<Ipv4Route> newRoute;
   if (m_routingProtocol != 0)
     {
@@ -665,15 +697,17 @@ Ipv4L3Protocol::BuildHeader (
   uint8_t protocol,
   uint16_t payloadSize,
   uint8_t ttl,
+  uint8_t tos,
   bool mayFragment)
 {
-  NS_LOG_FUNCTION (this << source << destination << (uint16_t)protocol << payloadSize << (uint16_t)ttl << mayFragment);
+  NS_LOG_FUNCTION (this << source << destination << (uint16_t)protocol << payloadSize << (uint16_t)ttl << (uint16_t)tos << mayFragment);
   Ipv4Header ipHeader;
   ipHeader.SetSource (source);
   ipHeader.SetDestination (destination);
   ipHeader.SetProtocol (protocol);
   ipHeader.SetPayloadSize (payloadSize);
   ipHeader.SetTtl (ttl);
+  ipHeader.SetTos (tos);
   if (mayFragment == true)
     {
       ipHeader.SetMayFragment ();
@@ -699,8 +733,7 @@ Ipv4L3Protocol::SendRealOut (Ptr<Ipv4Route> route,
                              Ptr<Packet> packet,
                              Ipv4Header const &ipHeader)
 {
-  NS_LOG_FUNCTION (this << packet << &ipHeader);
-
+  NS_LOG_FUNCTION (this << route << packet << &ipHeader);
   if (route == 0)
     {
       NS_LOG_WARN ("No route to host.  Drop.");
@@ -842,7 +875,7 @@ Ipv4L3Protocol::IpForward (Ptr<Ipv4Route> rtentry, Ptr<const Packet> p, const Ip
 void
 Ipv4L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv4Header const&ip, uint32_t iif)
 {
-  NS_LOG_FUNCTION (this << packet << &ip);
+  NS_LOG_FUNCTION (this << packet << &ip << iif);
   Ptr<Packet> p = packet->Copy (); // need to pass a non-const packet up
   Ipv4Header ipHeader = ip;
 
@@ -916,6 +949,7 @@ Ipv4L3Protocol::AddAddress (uint32_t i, Ipv4InterfaceAddress address)
 Ipv4InterfaceAddress 
 Ipv4L3Protocol::GetAddress (uint32_t interfaceIndex, uint32_t addressIndex) const
 {
+  NS_LOG_FUNCTION (this << interfaceIndex << addressIndex);
   Ptr<Ipv4Interface> interface = GetInterface (interfaceIndex);
   return interface->GetAddress (addressIndex);
 }
@@ -923,6 +957,7 @@ Ipv4L3Protocol::GetAddress (uint32_t interfaceIndex, uint32_t addressIndex) cons
 uint32_t 
 Ipv4L3Protocol::GetNAddresses (uint32_t interface) const
 {
+  NS_LOG_FUNCTION (this << interface);
   Ptr<Ipv4Interface> iface = GetInterface (interface);
   return iface->GetNAddresses ();
 }
@@ -1008,6 +1043,7 @@ Ipv4L3Protocol::SetMetric (uint32_t i, uint16_t metric)
 uint16_t
 Ipv4L3Protocol::GetMetric (uint32_t i) const
 {
+  NS_LOG_FUNCTION (this << i);
   Ptr<Ipv4Interface> interface = GetInterface (i);
   return interface->GetMetric ();
 }
@@ -1015,6 +1051,7 @@ Ipv4L3Protocol::GetMetric (uint32_t i) const
 uint16_t 
 Ipv4L3Protocol::GetMtu (uint32_t i) const
 {
+  NS_LOG_FUNCTION (this << i);
   Ptr<Ipv4Interface> interface = GetInterface (i);
   return interface->GetDevice ()->GetMtu ();
 }
@@ -1022,6 +1059,7 @@ Ipv4L3Protocol::GetMtu (uint32_t i) const
 bool 
 Ipv4L3Protocol::IsUp (uint32_t i) const
 {
+  NS_LOG_FUNCTION (this << i);
   Ptr<Ipv4Interface> interface = GetInterface (i);
   return interface->IsUp ();
 }
@@ -1072,6 +1110,7 @@ Ipv4L3Protocol::SetForwarding (uint32_t i, bool val)
 Ptr<NetDevice>
 Ipv4L3Protocol::GetNetDevice (uint32_t i)
 {
+  NS_LOG_FUNCTION (this << i);
   return GetInterface (i)->GetDevice ();
 }
 
@@ -1089,18 +1128,21 @@ Ipv4L3Protocol::SetIpForward (bool forward)
 bool 
 Ipv4L3Protocol::GetIpForward (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_ipForward;
 }
 
 void 
 Ipv4L3Protocol::SetWeakEsModel (bool model)
 {
+  NS_LOG_FUNCTION (this << model);
   m_weakEsModel = model;
 }
 
 bool 
 Ipv4L3Protocol::GetWeakEsModel (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_weakEsModel;
 }
 
@@ -1120,7 +1162,7 @@ Ipv4L3Protocol::DoFragmentation (Ptr<Packet> packet, uint32_t outIfaceMtu, std::
   // If (when) IPv4 option headers will be implemented, the following code shall be changed.
   // Of course also the reassemby code shall be changed as well.
 
-  NS_LOG_FUNCTION (this << *packet << " - MTU: " << outIfaceMtu);
+  NS_LOG_FUNCTION (this << *packet << outIfaceMtu << &listFragments);
 
   Ptr<Packet> p = packet->Copy ();
 
@@ -1208,7 +1250,7 @@ Ipv4L3Protocol::DoFragmentation (Ptr<Packet> packet, uint32_t outIfaceMtu, std::
 bool
 Ipv4L3Protocol::ProcessFragment (Ptr<Packet>& packet, Ipv4Header& ipHeader, uint32_t iif)
 {
-  NS_LOG_FUNCTION (this << packet << " " << ipHeader << " " << iif);
+  NS_LOG_FUNCTION (this << packet << ipHeader << iif);
 
   uint64_t addressCombination = uint64_t (ipHeader.GetSource ().Get ()) << 32 & uint64_t (ipHeader.GetDestination ().Get ());
   uint32_t idProto = uint32_t (ipHeader.GetIdentification ()) << 16 & uint32_t (ipHeader.GetProtocol ());
@@ -1259,16 +1301,18 @@ Ipv4L3Protocol::ProcessFragment (Ptr<Packet>& packet, Ipv4Header& ipHeader, uint
 Ipv4L3Protocol::Fragments::Fragments ()
   : m_moreFragment (0)
 {
+  NS_LOG_FUNCTION (this);
 }
 
 Ipv4L3Protocol::Fragments::~Fragments ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 void
 Ipv4L3Protocol::Fragments::AddFragment (Ptr<Packet> fragment, uint16_t fragmentOffset, bool moreFragment)
 {
-  NS_LOG_FUNCTION (this << fragment << " " << fragmentOffset << " " << moreFragment);
+  NS_LOG_FUNCTION (this << fragment << fragmentOffset << moreFragment);
 
   std::list<std::pair<Ptr<Packet>, uint16_t> >::iterator it;
 
@@ -1358,6 +1402,8 @@ Ipv4L3Protocol::Fragments::GetPacket () const
 Ptr<Packet>
 Ipv4L3Protocol::Fragments::GetPartialPacket () const
 {
+  NS_LOG_FUNCTION (this);
+  
   std::list<std::pair<Ptr<Packet>, uint16_t> >::const_iterator it = m_fragments.begin ();
 
   Ptr<Packet> p = Create<Packet> ();
@@ -1391,7 +1437,7 @@ Ipv4L3Protocol::Fragments::GetPartialPacket () const
 void
 Ipv4L3Protocol::HandleFragmentsTimeout (std::pair<uint64_t, uint32_t> key, Ipv4Header & ipHeader, uint32_t iif)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << &key << &ipHeader << iif);
 
   MapFragments_t::iterator it = m_fragments.find (key);
   Ptr<Packet> packet = it->second->GetPartialPacket ();

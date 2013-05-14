@@ -21,8 +21,15 @@
 #include "test.h"
 #include "abort.h"
 #include "assert.h"
-#include <math.h>
+#include "log.h"
+#include <cmath>
 #include <iostream>
+
+// Note:  Logging in this file is largely avoided due to the
+// number of calls that are made to these functions and the possibility
+// of causing recursions leading to stack overflow
+
+NS_LOG_COMPONENT_DEFINE ("int64x64-cairo");
 
 namespace ns3 {
 

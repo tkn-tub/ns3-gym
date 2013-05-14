@@ -1,7 +1,8 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 import sys
 import subprocess
-import Options
+
+from waflib import Options
 from waflib.Errors import WafError
 
 def configure(conf):
@@ -22,7 +23,7 @@ def configure(conf):
             conf.env['ENABLE_MPI'] = True
             for libpath in conf.env.LIBPATH_MPI:
                 if 'mpi' in libpath:
-                    conf.env.append_value('LINKFLAGS_MPI', '-Wl,-rpath='+libpath)
+                    conf.env.append_value('LINKFLAGS_MPI', '-Wl,-rpath,'+libpath)
             conf.report_optional_feature("mpi", "MPI Support", True, '')            
         else:
             conf.report_optional_feature("mpi", "MPI Support", False, 'mpic++ not found')
@@ -39,7 +40,7 @@ def build(bld):
         'model/mpi-receiver.cc',
         ]
 
-    headers = bld.new_task_gen(features=['ns3header'])
+    headers = bld(features='ns3header')
     headers.module = 'mpi'
     headers.source = [
         'model/distributed-simulator-impl.h',
@@ -51,6 +52,6 @@ def build(bld):
         sim.use.append('MPI')
 
     if bld.env['ENABLE_EXAMPLES']:
-        bld.add_subdirs('examples')
+        bld.recurse('examples')
       
     bld.ns3_python_bindings()

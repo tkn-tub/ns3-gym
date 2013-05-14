@@ -3,7 +3,7 @@
 #include "ns3/double.h"
 #include "ns3/test.h"
 
-namespace ns3 {
+using namespace ns3;
 
 //-----------------------------------------------------------------------------
 // Unit tests
@@ -332,9 +332,7 @@ public:
 BufferTestSuite::BufferTestSuite ()
   : TestSuite ("buffer", UNIT)
 {
-  AddTestCase (new BufferTest);
+  AddTestCase (new BufferTest, TestCase::QUICK);
 }
 
 static BufferTestSuite g_bufferTestSuite;
-
-} // namespace ns3

@@ -63,7 +63,16 @@ LteRlcUmE2eTestSuite::LteRlcUmE2eTestSuite ()
         {
           std::ostringstream name;
           name << " Losses = " << losses[l] << "%. Seed = " << seeds[s];
-          AddTestCase (new LteRlcUmE2eTestCase (name.str (), seeds[s], losses[l]));
+          TestCase::TestDuration testDuration;
+          if (l == 1 && s == 0)
+            {
+              testDuration = TestCase::QUICK;
+            }
+          else
+            {
+              testDuration = TestCase::EXTENSIVE;
+            }
+          AddTestCase (new LteRlcUmE2eTestCase (name.str (), seeds[s], losses[l]), testDuration);
         }
     }
 }

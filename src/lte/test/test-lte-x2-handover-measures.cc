@@ -628,15 +628,15 @@ LteX2HandoverMeasuresTestSuite::LteX2HandoverMeasuresTestSuite ()
       for (useIdealRrc = 1; useIdealRrc >= 0; --useIdealRrc)
         {
           //                                             nEnbs, nUes, nDBearers, celist, name, useUdp, sched, admitHo, idealRrc
-          AddTestCase (new LteX2HandoverMeasuresTestCase (  2,   1,    0,      cel1, cel1name, true, *schedIt, true,  useIdealRrc));
-          AddTestCase (new LteX2HandoverMeasuresTestCase (  2,   1,    1,      cel1, cel1name, true, *schedIt, true,  useIdealRrc));
-          AddTestCase (new LteX2HandoverMeasuresTestCase (  2,   1,    2,      cel1, cel1name, true, *schedIt, true,  useIdealRrc));
-          AddTestCase (new LteX2HandoverMeasuresTestCase (  3,   1,    0,      cel2, cel2name, true, *schedIt, true,  useIdealRrc));
-          AddTestCase (new LteX2HandoverMeasuresTestCase (  3,   1,    1,      cel2, cel2name, true, *schedIt, true,  useIdealRrc));
-          AddTestCase (new LteX2HandoverMeasuresTestCase (  3,   1,    2,      cel2, cel2name, true, *schedIt, true,  useIdealRrc));
-          AddTestCase (new LteX2HandoverMeasuresTestCase (  4,   1,    0,      cel3, cel3name, true, *schedIt, true,  useIdealRrc));
-          AddTestCase (new LteX2HandoverMeasuresTestCase (  4,   1,    1,      cel3, cel3name, true, *schedIt, true,  useIdealRrc));
-          AddTestCase (new LteX2HandoverMeasuresTestCase (  4,   1,    2,      cel3, cel3name, true, *schedIt, true,  useIdealRrc));
+          AddTestCase (new LteX2HandoverMeasuresTestCase (  2,   1,    0,      cel1, cel1name, true, *schedIt, true,  useIdealRrc), TestCase::EXTENSIVE);
+          AddTestCase (new LteX2HandoverMeasuresTestCase (  2,   1,    1,      cel1, cel1name, true, *schedIt, true,  useIdealRrc), TestCase::QUICK);
+          AddTestCase (new LteX2HandoverMeasuresTestCase (  2,   1,    2,      cel1, cel1name, true, *schedIt, true,  useIdealRrc), TestCase::EXTENSIVE);
+          AddTestCase (new LteX2HandoverMeasuresTestCase (  3,   1,    0,      cel2, cel2name, true, *schedIt, true,  useIdealRrc), TestCase::EXTENSIVE);
+          AddTestCase (new LteX2HandoverMeasuresTestCase (  3,   1,    1,      cel2, cel2name, true, *schedIt, true,  useIdealRrc), TestCase::EXTENSIVE);
+          AddTestCase (new LteX2HandoverMeasuresTestCase (  3,   1,    2,      cel2, cel2name, true, *schedIt, true,  useIdealRrc), TestCase::EXTENSIVE);
+          AddTestCase (new LteX2HandoverMeasuresTestCase (  4,   1,    0,      cel3, cel3name, true, *schedIt, true,  useIdealRrc), TestCase::EXTENSIVE);
+          AddTestCase (new LteX2HandoverMeasuresTestCase (  4,   1,    1,      cel3, cel3name, true, *schedIt, true,  useIdealRrc), TestCase::EXTENSIVE);
+          AddTestCase (new LteX2HandoverMeasuresTestCase (  4,   1,    2,      cel3, cel3name, true, *schedIt, true,  useIdealRrc), TestCase::EXTENSIVE);
         }
     }
 
@@ -647,15 +647,15 @@ LteX2HandoverMeasuresTestSuite::LteX2HandoverMeasuresTestSuite ()
       for (useIdealRrc = 1; useIdealRrc >= 0; --useIdealRrc)
         {
           //                                             nEnbs, nUes, nDBearers, celist, name, useUdp, sched, admitHo, idealRrc
-          AddTestCase (new LteX2HandoverMeasuresTestCase (  2,   1,    0,      cel1, cel1name, true, *schedIt, true,  useIdealRrc));
-//           AddTestCase (new LteX2HandoverMeasuresTestCase (  2,   1,    1,      cel1b, cel1bname, true, *schedIt, true,  useIdealRrc));
-//           AddTestCase (new LteX2HandoverMeasuresTestCase (  2,   1,    2,      cel1, cel1name, true, *schedIt, true,  useIdealRrc));
-          AddTestCase (new LteX2HandoverMeasuresTestCase (  3,   1,    0,      cel2, cel2name, true, *schedIt, true,  useIdealRrc));
-//           AddTestCase (new LteX2HandoverMeasuresTestCase (  3,   1,    1,      cel2, cel2name, true, *schedIt, true,  useIdealRrc));
-//           AddTestCase (new LteX2HandoverMeasuresTestCase (  3,   1,    2,      cel2, cel2name, true, *schedIt, true,  useIdealRrc));
-          AddTestCase (new LteX2HandoverMeasuresTestCase (  4,   1,    0,      cel3, cel3name, true, *schedIt, true,  useIdealRrc));
-//           AddTestCase (new LteX2HandoverMeasuresTestCase (  4,   1,    1,      cel3, cel3name, true, *schedIt, true,  useIdealRrc));
-//           AddTestCase (new LteX2HandoverMeasuresTestCase (  4,   1,    2,      cel3, cel3name, true, *schedIt, true,  useIdealRrc));
+          AddTestCase (new LteX2HandoverMeasuresTestCase (  2,   1,    0,      cel1, cel1name, true, *schedIt, true,  useIdealRrc), TestCase::EXTENSIVE);
+//           AddTestCase (new LteX2HandoverMeasuresTestCase (  2,   1,    1,      cel1b, cel1bname, true, *schedIt, true,  useIdealRrc), TestCase::EXTENSIVE);
+//           AddTestCase (new LteX2HandoverMeasuresTestCase (  2,   1,    2,      cel1, cel1name, true, *schedIt, true,  useIdealRrc), TestCase::EXTENSIVE);
+          AddTestCase (new LteX2HandoverMeasuresTestCase (  3,   1,    0,      cel2, cel2name, true, *schedIt, true,  useIdealRrc), TestCase::EXTENSIVE);
+//           AddTestCase (new LteX2HandoverMeasuresTestCase (  3,   1,    1,      cel2, cel2name, true, *schedIt, true,  useIdealRrc), TestCase::EXTENSIVE);
+//           AddTestCase (new LteX2HandoverMeasuresTestCase (  3,   1,    2,      cel2, cel2name, true, *schedIt, true,  useIdealRrc), TestCase::EXTENSIVE);
+          AddTestCase (new LteX2HandoverMeasuresTestCase (  4,   1,    0,      cel3, cel3name, true, *schedIt, true,  useIdealRrc), TestCase::EXTENSIVE);
+//           AddTestCase (new LteX2HandoverMeasuresTestCase (  4,   1,    1,      cel3, cel3name, true, *schedIt, true,  useIdealRrc), TestCase::QUICK);
+//           AddTestCase (new LteX2HandoverMeasuresTestCase (  4,   1,    2,      cel3, cel3name, true, *schedIt, true,  useIdealRrc), TestCase::QUICK);
         }
     }
 

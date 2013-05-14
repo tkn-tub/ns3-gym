@@ -1042,7 +1042,15 @@ LteEnbMac::DoSchedDlConfigInd (FfMacSchedSapUser::SchedDlConfigIndParameters ind
   Ptr<RarLteControlMessage> rarMsg = Create<RarLteControlMessage> ();
   // see TS 36.321 5.1.4;  preambles were sent two frames ago
   // (plus 3GPP counts subframes from 0, not 1)
-  uint16_t raRnti = m_subframeNo - 3;
+  uint16_t raRnti;
+  if (m_subframeNo < 3)
+    {
+      raRnti = m_subframeNo + 7; // equivalent to +10-3
+    }
+  else
+    {
+      raRnti = m_subframeNo - 3;
+    }
   rarMsg->SetRaRnti (raRnti);
   for (unsigned int i = 0; i < ind.m_buildRarList.size (); i++)
     {

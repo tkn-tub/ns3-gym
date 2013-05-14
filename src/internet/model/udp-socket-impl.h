@@ -89,8 +89,6 @@ private:
   // Attributes set through UdpSocket base class 
   virtual void SetRcvBufSize (uint32_t size);
   virtual uint32_t GetRcvBufSize (void) const;
-  virtual void SetIpTtl (uint8_t ipTtl);
-  virtual uint8_t GetIpTtl (void) const;
   virtual void SetIpMulticastTtl (uint8_t ipTtl);
   virtual uint8_t GetIpMulticastTtl (void) const;
   virtual void SetIpMulticastIf (int32_t ipIf);
@@ -106,7 +104,7 @@ private:
   int FinishBind (void);
   void ForwardUp (Ptr<Packet> p, Ipv4Header header, uint16_t port, 
                   Ptr<Ipv4Interface> incomingInterface);
-  void ForwardUp6 (Ptr<Packet> p, Ipv6Address saddr, Ipv6Address daddr, uint16_t port);
+  void ForwardUp6 (Ptr<Packet> p, Ipv6Header header, uint16_t port);
   void Destroy (void);
   void Destroy6 (void);
   int DoSend (Ptr<Packet> p);
@@ -139,7 +137,6 @@ private:
 
   // Socket attributes
   uint32_t m_rcvBufSize;
-  uint8_t m_ipTtl;
   uint8_t m_ipMulticastTtl;
   int32_t m_ipMulticastIf;
   bool m_ipMulticastLoop;

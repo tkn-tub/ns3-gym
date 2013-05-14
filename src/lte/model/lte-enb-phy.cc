@@ -21,7 +21,7 @@
 
 #include <ns3/object-factory.h>
 #include <ns3/log.h>
-#include <math.h>
+#include <cmath>
 #include <ns3/simulator.h>
 #include <ns3/attribute-accessor-helper.h>
 #include <ns3/double.h>
@@ -229,12 +229,12 @@ LteEnbPhy::DoDispose ()
 }
 
 void
-LteEnbPhy::DoStart ()
+LteEnbPhy::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
   Ptr<SpectrumValue> noisePsd = LteSpectrumValueHelper::CreateNoisePowerSpectralDensity (m_ulEarfcn, m_ulBandwidth, m_noiseFigure);
   m_uplinkSpectrumPhy->SetNoisePowerSpectralDensity (noisePsd);
-  LtePhy::DoStart ();
+  LtePhy::DoInitialize ();
 }
 
 
@@ -778,7 +778,7 @@ LteEnbPhy::CreatePuschCqiReport (const SpectrumValue& sinr)
   int i = 0;
   for (it = sinr.ConstValuesBegin (); it != sinr.ConstValuesEnd (); it++)
     {
-      double sinrdb = 10 * log10 ((*it));
+      double sinrdb = 10 * std::log10 ((*it));
 //       NS_LOG_DEBUG ("ULCQI RB " << i << " value " << sinrdb);
       // convert from double to fixed point notation Sxxxxxxxxxxx.xxx
       int16_t sinrFp = LteFfConverter::double2fpS11dot3 (sinrdb);

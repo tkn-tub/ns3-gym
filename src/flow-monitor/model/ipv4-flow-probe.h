@@ -68,6 +68,10 @@ public:
     DROP_INVALID_REASON,
   };
 
+protected:
+
+    virtual void DoDispose (void);
+
 private:
 
   void SendOutgoingLogger (const Ipv4Header &ipHeader, Ptr<const Packet> ipPayload, uint32_t interface);

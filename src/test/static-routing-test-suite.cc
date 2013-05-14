@@ -163,7 +163,7 @@ public:
 StaticRoutingTestSuite::StaticRoutingTestSuite ()
   : TestSuite ("static-routing", UNIT)
 {
-  AddTestCase (new StaticRoutingSlash32TestCase);
+  AddTestCase (new StaticRoutingSlash32TestCase, TestCase::QUICK);
 }
 
 // Do not forget to allocate an instance of this TestSuite

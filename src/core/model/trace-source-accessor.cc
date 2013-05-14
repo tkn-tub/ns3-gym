@@ -18,6 +18,9 @@
  * Authors: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "trace-source-accessor.h"
+#include "log.h"
+
+NS_LOG_COMPONENT_DEFINE ("TraceSourceAccessor");
 
 namespace ns3 {
 

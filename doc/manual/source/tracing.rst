@@ -26,7 +26,7 @@ output, as in, ::
   int main ()
   {
     ...
-    std::cout << ``The value of x is `` << x << std::endl;
+    std::cout << "The value of x is " << x << std::endl;
     ...
   } 
 
@@ -109,11 +109,11 @@ The Simplest Example
 
 It will be useful to go walk a quick example just to reinforce what we've
 said.::
-
-  #include ``ns3/object.h''
-  #include ``ns3/uinteger.h''
-  #include ``ns3/traced-value.h''
-  #include ``ns3/trace-source-accessor.h''
+ 
+  #include "ns3/object.h"
+  #include "ns3/uinteger.h"
+  #include "ns3/traced-value.h""
+  #include "ns3/trace-source-accessor.h"
   
   #include <iostream>
   
@@ -167,7 +167,7 @@ callback process.::
   void
   IntTrace (Int oldValue, Int newValue)
   {
-    std::cout << ``Traced `` << oldValue << `` to `` << newValue << std::endl;
+    std::cout << "Traced " << oldValue << " to " << newValue << std::endl;
   }
 
 This is the definition of the trace sink. It corresponds directly to a callback
@@ -199,7 +199,7 @@ context for now since it is not important yet.
 
 Finally, the line,::
 
-   myObject->m_myInt = 1234;
+  myObject->m_myInt = 1234;
 
 should be interpreted as an invocation of ``operator=`` on the member variable
 ``m_myInt`` with the integer :math:`1234` passed as a parameter. It turns out

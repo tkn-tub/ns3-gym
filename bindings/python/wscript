@@ -6,23 +6,15 @@ import subprocess
 import shutil
 import sys
 
-import Task
-import Options
-import Configure
-import TaskGen
-import Logs
-import Build
-import Utils
-
+from waflib import Task, Options, Configure, TaskGen, Logs, Build, Utils, Errors
 from waflib.Errors import WafError
 
+# feature  = TaskGen.feature
+# after = TaskGen.after
+
 ## https://launchpad.net/pybindgen/
-REQUIRED_PYBINDGEN_VERSION = (0, 15, 0, 809)
+REQUIRED_PYBINDGEN_VERSION = (0, 16, 0, 825)
 REQUIRED_PYGCCXML_VERSION = (0, 9, 5)
-
-
-from TaskGen import feature, after
-import Task
 
 
 
@@ -38,7 +30,7 @@ def set_pybindgen_pythonpath(env):
 
 
 def options(opt):
-    opt.tool_options('python')
+    opt.load('python')
     opt.add_option('--disable-python',
                    help=("Don't build Python bindings."),
                    action="store_true", default=False,
@@ -76,7 +68,7 @@ def configure(conf):
     available_modules.sort()
     all_modules_enabled = (enabled_modules == available_modules)
 
-    conf.check_tool('misc', tooldir=['waf-tools'])
+    conf.load('misc', tooldir=['waf-tools'])
 
     if sys.platform == 'cygwin':
         conf.report_optional_feature("python", "Python Bindings", False,
@@ -91,20 +83,20 @@ def configure(conf):
         conf.env.PYTHON = Options.options.with_python
 
     try:
-        conf.check_tool('python')
-    except Configure.ConfigurationError, ex:
+        conf.load('python')
+    except Errors.ConfigurationError, ex:
         conf.report_optional_feature("python", "Python Bindings", False,
                                      "The python interpreter was not found")
         return
     try:
         conf.check_python_version((2,3))
-    except Configure.ConfigurationError, ex:
+    except Errors.ConfigurationError, ex:
         conf.report_optional_feature("python", "Python Bindings", False,
                                      "The python found version is too low (2.3 required)")
         return
     try:
         conf.check_python_headers()
-    except Configure.ConfigurationError, ex:
+    except Errors.ConfigurationError, ex:
         conf.report_optional_feature("python", "Python Bindings", False,
                                      "Python library or headers missing")
         return
@@ -161,7 +153,7 @@ def configure(conf):
 
     try:
         conf.check_python_module('pybindgen')
-    except Configure.ConfigurationError:
+    except Errors.ConfigurationError:
         Logs.warn("pybindgen missing => no python bindings")
         conf.report_optional_feature("python", "Python Bindings", False,
                                      "PyBindGen missing")
@@ -197,9 +189,9 @@ int main ()
 
         try:
             ret = conf.run_c_code(code=test_program,
-                                  env=conf.env.copy(), compile_filename='test.cc',
+                                  env=conf.env.derive(), compile_filename='test.cc',
                                   features='cxx cprogram', execute=False)
-        except Configure.ConfigurationError:
+        except Errors.ConfigurationError:
             ret = 1
         conf.msg('Checking for types %s and %s equivalence' % (t1, t2), (ret and 'no' or 'yes'))
         return not ret
@@ -250,7 +242,7 @@ int main ()
     ## Check for pygccxml
     try:
         conf.check_python_module('pygccxml')
-    except Configure.ConfigurationError:
+    except Errors.ConfigurationError:
         conf.report_optional_feature("pygccxml", "Python API Scanning Support", False,
                                      "Missing 'pygccxml' Python module")
         return
@@ -322,7 +314,7 @@ class apiscan_task(Task.TaskBase):
     """Uses gccxml to scan the file 'everything.h' and extract API definitions.
     """
     after = 'gen_ns3_module_header ns3header'
-    before = 'cc cxx command'
+    before = 'cxx command'
     color = "BLUE"
     def __init__(self, curdirnode, env, bld, target, cflags, module):
         self.bld = bld
@@ -335,6 +327,18 @@ class apiscan_task(Task.TaskBase):
 
     def display(self):
         return 'api-scan-%s\n' % (self.target,)
+
+    def uid(self):
+        try:
+            return self.uid_
+        except AttributeError:
+            m = Utils.md5()
+            up = m.update
+            up(self.__class__.__name__.encode())
+            up(self.curdirnode.abspath().encode())
+            up(self.target)
+            self.uid_ = m.digest()
+            return self.uid_
 
     def run(self):
         top_builddir = self.bld.bldnode.abspath()
@@ -393,7 +397,7 @@ class python_scan_task_collector(Task.TaskBase):
     """Tasks that waits for the python-scan-* tasks to complete and then signals WAF to exit
     """
     after = 'apiscan'
-    before = 'cc cxx'
+    before = 'cxx'
     color = "BLUE"
     def __init__(self, curdirnode, env, bld):
         self.bld = bld
@@ -415,7 +419,7 @@ class python_scan_task_collector(Task.TaskBase):
 
 class gen_ns3_compat_pymod_task(Task.Task):
     """Generates a 'ns3.py' compatibility module."""
-    before = 'cc cxx'
+    before = 'cxx'
     color = 'BLUE'
     
     def run(self):
@@ -437,8 +441,6 @@ def build(bld):
         return
 
     env = bld.env
-    curdir = bld.path.abspath()
-
     set_pybindgen_pythonpath(env)
 
     if Options.options.apiscan:
@@ -489,9 +491,7 @@ def build(bld):
         grp = bld.get_group(bld.current_group)
         grp.append(task)
 
-        bld.new_task_gen(features='copy',
-                         source="ns__init__.py",
-                         target='ns/__init__.py')
+        bld(features='copy', source="ns__init__.py", target='ns/__init__.py')
         bld.install_as('${PYTHONARCHDIR}/ns/__init__.py', 'ns__init__.py')
 
 

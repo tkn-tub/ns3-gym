@@ -20,10 +20,11 @@
 #include "system-path.h"
 #include "fatal-error.h"
 #include "assert.h"
+#include "log.h"
 #include "ns3/core-config.h"
-#include <stdlib.h>
-#include <errno.h>
-#include <string.h>
+#include <cstdlib>
+#include <cerrno>
+#include <cstring>
 #if defined (HAVE_DIRENT_H) and defined (HAVE_SYS_TYPES_H)
 #define HAVE_OPENDIR
 #include <sys/types.h>
@@ -54,12 +55,15 @@
 #define SYSTEM_PATH_SEP "/"
 #endif
 
+NS_LOG_COMPONENT_DEFINE ("SystemPath");
+
 namespace ns3 {
 
 namespace SystemPath {
 
 std::string Dirname (std::string path)
 {
+  NS_LOG_FUNCTION (path);
   std::list<std::string> elements = Split (path);
   std::list<std::string>::const_iterator last = elements.end();
   last--;
@@ -77,6 +81,7 @@ std::string FindSelfDirectory (void)
    * BSD with procfs: readlink /proc/curproc/file
    * Windows: GetModuleFileName() with hModule = NULL
    */
+  NS_LOG_FUNCTION_NOARGS ();
   std::string filename;
 #if defined(__linux__)
   {
@@ -158,6 +163,7 @@ std::string FindSelfDirectory (void)
 std::string Append (std::string left, std::string right)
 {
   // removing trailing separators from 'left'
+  NS_LOG_FUNCTION (left << right);
   while (true)
     {
       std::string::size_type lastSep = left.rfind (SYSTEM_PATH_SEP);
@@ -173,6 +179,7 @@ std::string Append (std::string left, std::string right)
 
 std::list<std::string> Split (std::string path)
 {
+  NS_LOG_FUNCTION (path);
   std::list<std::string> retval;
   std::string::size_type current = 0, next = 0;
   next = path.find (SYSTEM_PATH_SEP, current);
@@ -191,6 +198,7 @@ std::list<std::string> Split (std::string path)
 std::string Join (std::list<std::string>::const_iterator begin,
 		  std::list<std::string>::const_iterator end)
 {
+  NS_LOG_FUNCTION (&begin << &end);
   std::string retval = "";
   for (std::list<std::string>::const_iterator i = begin; i != end; i++)
     {
@@ -208,6 +216,7 @@ std::string Join (std::list<std::string>::const_iterator begin,
   
 std::list<std::string> ReadFiles (std::string path)
 {
+  NS_LOG_FUNCTION (path);
   std::list<std::string> files;
 #if defined HAVE_OPENDIR
   DIR *dp = opendir (path.c_str ());
@@ -246,6 +255,7 @@ std::list<std::string> ReadFiles (std::string path)
 std::string 
 MakeTemporaryDirectoryName (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   char *path = NULL;
 
   path = getenv ("TMP");
@@ -292,6 +302,7 @@ MakeTemporaryDirectoryName (void)
 void 
 MakeDirectories (std::string path)
 {
+  NS_LOG_FUNCTION (path);
   std::list<std::string> elements = Split (path);
   for (std::list<std::string>::const_iterator i = elements.begin (); i != elements.end (); ++i)
     {

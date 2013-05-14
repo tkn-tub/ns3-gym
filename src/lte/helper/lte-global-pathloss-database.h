@@ -41,6 +41,8 @@ class LteGlobalPathlossDatabase
 {
 public:
 
+  virtual ~LteGlobalPathlossDatabase (void);
+
   /** 
    * update the pathloss value
    * 

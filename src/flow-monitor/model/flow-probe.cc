@@ -36,6 +36,13 @@ FlowProbe::FlowProbe (Ptr<FlowMonitor> flowMonitor)
 }
 
 void
+FlowProbe::DoDispose (void)
+{
+  m_flowMonitor = 0;
+  Object::DoDispose ();
+}
+
+void
 FlowProbe::AddPacketStats (FlowId flowId, uint32_t packetSize, Time delayFromFirstProbe)
 {
   FlowStats &flow = m_stats[flowId];

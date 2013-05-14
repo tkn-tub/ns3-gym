@@ -1,27 +1,42 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 import os
-import Options
+from waflib import Logs, Options
 from waflib.Errors import WafError
 
 def options(opt):
     opt.add_option('--with-openflow',
 		   help=('Path to OFSID source for NS-3 OpenFlow Integration support'),
 		   default='', dest='with_openflow')
-    opt.tool_options('boost', tooldir=["waf-tools"])
+
+REQUIRED_BOOST_LIBS = ['system', 'signals', 'filesystem']
+
+def required_boost_libs(conf):
+    conf.env['REQUIRED_BOOST_LIBS'] += REQUIRED_BOOST_LIBS
 
 def configure(conf):
-    try:
-        conf.check_tool('boost')
-        conf.check_boost(lib='signals filesystem')
-        if not conf.env.LIB_BOOST:
-            conf.check_boost(lib='signals filesystem', libpath="/usr/lib64")
-    except WafError:
-        conf.env['LIB_BOOST'] = []
-
-    if not conf.env.LIB_BOOST:
+    if not conf.env['LIB_BOOST']:
 	conf.report_optional_feature("openflow", "NS-3 OpenFlow Integration", False,
 				     "Required boost libraries not found")
+
+        # Add this module to the list of modules that won't be built
+        # if they are enabled.
+        conf.env['MODULES_NOT_BUILT'].append('openflow')
+
+	return 
+
+    present_boost_libs = []
+    for boost_lib_name in conf.env['LIB_BOOST']:
+        if boost_lib_name.startswith("boost_"):
+            boost_lib_name = boost_lib_name[6:]
+        if boost_lib_name.endswith("-mt"):
+            boost_lib_name = boost_lib_name[:-3]
+        present_boost_libs.append(boost_lib_name)
+
+    missing_boost_libs = [lib for lib in REQUIRED_BOOST_LIBS if lib not in present_boost_libs]
+    if missing_boost_libs != []:
+	conf.report_optional_feature("openflow", "NS-3 OpenFlow Integration", False,
+				     "Required boost libraries not found, missing: %s" % ', '.join(missing_boost_libs))
 
         # Add this module to the list of modules that won't be built
         # if they are enabled.
@@ -34,10 +49,19 @@ def configure(conf):
 	    conf.msg("Checking for OpenFlow location", ("%s (given)" % Options.options.with_openflow))
 	    conf.env['WITH_OPENFLOW'] = os.path.abspath(Options.options.with_openflow)
     else:
+        # bake.py uses ../../build, while ns-3-dev uses ../openflow.
+        lib_to_check = 'libopenflow.a'
+        openflow_bake_build_dir = os.path.join('..', '..', 'build')
+        openflow_bake_lib_dir = os.path.join(openflow_bake_build_dir, 'lib')
         openflow_dir = os.path.join('..','openflow')
-        if os.path.isdir(openflow_dir):
+        if os.path.exists(os.path.join(openflow_bake_lib_dir, lib_to_check)):
+            conf.msg("Checking for OpenFlow location",("%s (guessed)" % openflow_bake_build_dir))
+            conf.env['WITH_OPENFLOW'] = os.path.abspath(openflow_bake_build_dir)
+        elif os.path.isdir(openflow_dir):
             conf.msg("Checking for OpenFlow location", ("%s (guessed)" % openflow_dir))
 	    conf.env['WITH_OPENFLOW'] = os.path.abspath(openflow_dir)
+        del openflow_bake_build_dir
+        del openflow_bake_lib_dir
 	del openflow_dir
     if not conf.env['WITH_OPENFLOW']:
 	conf.msg("Checking for OpenFlow location", False)
@@ -100,6 +124,7 @@ int main()
     conf.env['XML2'] = conf.check(mandatory=True, lib='xml2', define_name='XML2', uselib_store='XML2')
     
     conf.env.append_value('NS3_MODULE_PATH',os.path.abspath(os.path.join(conf.env['WITH_OPENFLOW'],'build','default')))
+    conf.env.append_value('NS3_MODULE_PATH',os.path.abspath(os.path.join(conf.env['WITH_OPENFLOW'],'lib')))
     
     conf.env['INCLUDES_OPENFLOW'] = [
         os.path.abspath(os.path.join(conf.env['WITH_OPENFLOW'],'include'))]
@@ -112,6 +137,7 @@ int main()
     conf.env['OPENFLOW'] = conf.check_nonfatal(fragment=test_code, lib='openflow', 
                                                libpath=conf.env['LIBPATH_OPENFLOW'],
                                                use='OPENFLOW DL XML2')
+    conf.env.append_value('LIB_OPENFLOW', 'dl')
     conf.report_optional_feature("openflow", "NS-3 OpenFlow Integration",
                                  conf.env['OPENFLOW'], "openflow library not found")
     if conf.env['OPENFLOW']:
@@ -141,7 +167,7 @@ def build(bld):
 	obj.use.extend('OPENFLOW DL XML2'.split())
 	obj_test.use.extend('OPENFLOW DL XML2'.split())
 
-    headers = bld.new_task_gen(features=['ns3header'])
+    headers = bld(features='ns3header')
     headers.module = 'openflow'
     headers.source = [
         ]
@@ -152,7 +178,6 @@ def build(bld):
 	obj.source.append('helper/openflow-switch-helper.cc')
 
         obj.env.append_value('DEFINES', 'NS3_OPENFLOW')
-        obj.use.append("OPENFLOW")
 
 	obj_test.source.append('test/openflow-switch-test-suite.cc')
 	headers.source.append('model/openflow-interface.h')
@@ -160,4 +185,4 @@ def build(bld):
 	headers.source.append('helper/openflow-switch-helper.h')
 
     if bld.env['ENABLE_EXAMPLES'] and bld.env['ENABLE_OPENFLOW']:
-        bld.add_subdirs('examples')
+        bld.recurse('examples')

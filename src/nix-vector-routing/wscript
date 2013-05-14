@@ -8,7 +8,7 @@ def build(bld):
 	'helper/ipv4-nix-vector-helper.cc',
         ]
 
-    headers = bld.new_task_gen(features=['ns3header'])
+    headers = bld(features='ns3header')
     headers.module = 'nix-vector-routing'
     headers.source = [
         'model/ipv4-nix-vector-routing.h',
@@ -16,6 +16,6 @@ def build(bld):
         ]
 
     if bld.env['ENABLE_EXAMPLES']:
-        bld.add_subdirs('examples')
+        bld.recurse('examples')
 
     bld.ns3_python_bindings()

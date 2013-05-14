@@ -22,13 +22,16 @@
 #include "attribute.h"
 #include "string.h"
 #include "uinteger.h"
+#include "log.h"
 
 #include "ns3/core-config.h"
 #ifdef HAVE_STDLIB_H
-#include <stdlib.h>
+#include <cstdlib>
 #endif
 
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("GlobalValue");
 
 GlobalValue::GlobalValue (std::string name, std::string help,
                           const AttributeValue &initialValue,
@@ -39,6 +42,7 @@ GlobalValue::GlobalValue (std::string name, std::string help,
     m_currentValue (0),
     m_checker (checker)
 {
+  NS_LOG_FUNCTION (name << help << &initialValue << checker);
   if (m_checker == 0)
     {
       NS_FATAL_ERROR ("Checker should not be zero on " << name );
@@ -56,6 +60,7 @@ GlobalValue::GlobalValue (std::string name, std::string help,
 void
 GlobalValue::InitializeFromEnv (void)
 {
+  NS_LOG_FUNCTION (this);
 #ifdef HAVE_GETENV
   char *envVar = getenv ("NS_GLOBAL_VALUE");
   if (envVar == 0)
@@ -93,16 +98,19 @@ GlobalValue::InitializeFromEnv (void)
 std::string 
 GlobalValue::GetName (void) const
 {
+  NS_LOG_FUNCTION_NOARGS ();
   return m_name;
 }
 std::string 
 GlobalValue::GetHelp (void) const
 {
+  NS_LOG_FUNCTION_NOARGS ();
   return m_help;
 }
 void
 GlobalValue::GetValue (AttributeValue &value) const
 {
+  NS_LOG_FUNCTION (&value);
   bool ok = m_checker->Copy (*m_currentValue, value);
   if (ok)
     {
@@ -118,12 +126,16 @@ GlobalValue::GetValue (AttributeValue &value) const
 Ptr<const AttributeChecker> 
 GlobalValue::GetChecker (void) const
 {
+  NS_LOG_FUNCTION (this);
+
   return m_checker;
 }
 
 bool
 GlobalValue::SetValue (const AttributeValue &value)
 {
+  NS_LOG_FUNCTION (&value);
+
   Ptr<AttributeValue> v = m_checker->CreateValidValue (value);
   if (v == 0)
     {
@@ -136,6 +148,8 @@ GlobalValue::SetValue (const AttributeValue &value)
 void 
 GlobalValue::Bind (std::string name, const AttributeValue &value)
 {
+  NS_LOG_FUNCTION (name << &value);
+
   for (Iterator i = Begin (); i != End (); i++)
     {
       if ((*i)->GetName () == name)
@@ -152,6 +166,8 @@ GlobalValue::Bind (std::string name, const AttributeValue &value)
 bool 
 GlobalValue::BindFailSafe (std::string name, const AttributeValue &value)
 {
+  NS_LOG_FUNCTION (name << &value);
+
   for (Iterator i = Begin (); i != End (); i++)
     {
       if ((*i)->GetName () == name)
@@ -164,23 +180,28 @@ GlobalValue::BindFailSafe (std::string name, const AttributeValue &value)
 GlobalValue::Iterator 
 GlobalValue::Begin (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
+
   return GetVector ()->begin ();
 }
 GlobalValue::Iterator 
 GlobalValue::End (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   return GetVector ()->end ();
 }
 
 void 
 GlobalValue::ResetInitialValue (void)
 {
+  NS_LOG_FUNCTION (this);
   m_currentValue = m_initialValue;
 }
 
 bool
 GlobalValue::GetValueByNameFailSafe (std::string name, AttributeValue &value)
 {
+  NS_LOG_FUNCTION (name << &value);
   for (GlobalValue::Iterator gvit = GlobalValue::Begin (); gvit != GlobalValue::End (); ++gvit)
     {
       if ((*gvit)->GetName () == name)
@@ -195,6 +216,7 @@ GlobalValue::GetValueByNameFailSafe (std::string name, AttributeValue &value)
 void
 GlobalValue::GetValueByName (std::string name, AttributeValue &value)
 {
+  NS_LOG_FUNCTION (name << &value);
   if (!GetValueByNameFailSafe (name, value))
     {
       NS_FATAL_ERROR ("Could not find GlobalValue named \"" << name << "\"");
@@ -204,6 +226,7 @@ GlobalValue::GetValueByName (std::string name, AttributeValue &value)
 GlobalValue::Vector *
 GlobalValue::GetVector (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   static Vector vector;
   return &vector;
 }

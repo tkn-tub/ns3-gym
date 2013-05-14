@@ -33,17 +33,20 @@ EthernetTrailer::EthernetTrailer ()
   : m_calcFcs (false),
     m_fcs (0)
 {
+  NS_LOG_FUNCTION (this);
 }
 
 void
 EthernetTrailer::EnableFcs (bool enable)
 {
+  NS_LOG_FUNCTION (this << enable);
   m_calcFcs = enable;
 }
 
 bool
 EthernetTrailer::CheckFcs (Ptr<const Packet> p) const
 {
+  NS_LOG_FUNCTION (this << p);
   int len = p->GetSize ();
   uint8_t *buffer;
   uint32_t crc;
@@ -63,6 +66,7 @@ EthernetTrailer::CheckFcs (Ptr<const Packet> p) const
 void
 EthernetTrailer::CalcFcs (Ptr<const Packet> p)
 {
+  NS_LOG_FUNCTION (this << p);
   int len = p->GetSize ();
   uint8_t *buffer;
 
@@ -80,18 +84,21 @@ EthernetTrailer::CalcFcs (Ptr<const Packet> p)
 void
 EthernetTrailer::SetFcs (uint32_t fcs)
 {
+  NS_LOG_FUNCTION (this << fcs);
   m_fcs = fcs;
 }
 
 uint32_t
 EthernetTrailer::GetFcs (void)
 {
+  NS_LOG_FUNCTION (this);
   return m_fcs;
 }
 
 uint32_t
 EthernetTrailer::GetTrailerSize (void) const
 {
+  NS_LOG_FUNCTION (this);
   return GetSerializedSize ();
 }
 
@@ -112,17 +119,20 @@ EthernetTrailer::GetInstanceTypeId (void) const
 void 
 EthernetTrailer::Print (std::ostream &os) const
 {
+  NS_LOG_FUNCTION (this << &os);
   os << "fcs=" << m_fcs;
 }
 uint32_t 
 EthernetTrailer::GetSerializedSize (void) const
 {
+  NS_LOG_FUNCTION (this);
   return 4;
 }
 
 void
 EthernetTrailer::Serialize (Buffer::Iterator end) const
 {
+  NS_LOG_FUNCTION (this << &end);
   Buffer::Iterator i = end;
   i.Prev (GetSerializedSize ());
 
@@ -131,6 +141,7 @@ EthernetTrailer::Serialize (Buffer::Iterator end) const
 uint32_t
 EthernetTrailer::Deserialize (Buffer::Iterator end)
 {
+  NS_LOG_FUNCTION (this << &end);
   Buffer::Iterator i = end;
   uint32_t size = GetSerializedSize ();
   i.Prev (size);
@@ -145,6 +156,7 @@ EthernetTrailer::Deserialize (Buffer::Iterator end)
 uint32_t
 EthernetTrailer::DoCalcFcs (uint8_t const *buffer, size_t len) const
 {
+  NS_LOG_FUNCTION (this << &buffer << len);
   uint32_t crc = 0xffffffff;
   int i;
 

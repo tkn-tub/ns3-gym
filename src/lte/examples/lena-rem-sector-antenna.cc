@@ -146,11 +146,11 @@ main (int argc, char *argv[])
             }
           else if ( i == nEnb - 2 )
             {
-              positionAlloc->Add (Vector (enbPosition.at(i).x - sqrt (10), enbPosition.at(i).y + sqrt (10), nodeHeight));
+              positionAlloc->Add (Vector (enbPosition.at(i).x - std::sqrt (10), enbPosition.at(i).y + std::sqrt (10), nodeHeight));
             }
           else if ( i == nEnb - 1 )
             {
-              positionAlloc->Add (Vector (enbPosition.at(i).x - sqrt (10), enbPosition.at(i).y - sqrt (10), nodeHeight));
+              positionAlloc->Add (Vector (enbPosition.at(i).x - std::sqrt (10), enbPosition.at(i).y - std::sqrt (10), nodeHeight));
             }
           else
             {

@@ -19,7 +19,7 @@
 #ifndef PCAP_FILE_WRAPPER_H
 #define PCAP_FILE_WRAPPER_H
 
-#include <string.h>
+#include <cstring>
 #include <limits>
 #include <fstream>
 #include "ns3/ptr.h"

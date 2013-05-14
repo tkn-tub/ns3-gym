@@ -46,7 +46,8 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <sys/types.h>
-namespace ns3 {
+
+using namespace ns3;
 
 static void
 AddInternetStack (Ptr<Node> node)
@@ -319,8 +320,6 @@ class Ipv4RawTestSuite : public TestSuite
 public:
   Ipv4RawTestSuite () : TestSuite ("ipv4-raw", UNIT)
   {
-    AddTestCase (new Ipv4RawSocketImplTest);
+    AddTestCase (new Ipv4RawSocketImplTest, TestCase::QUICK);
   }
 } g_ipv4rawTestSuite;
-
-} // namespace ns3

@@ -27,7 +27,7 @@
 
 #define STATS_HAS_SQLITE3
 
-class sqlite3;
+struct sqlite3;
 
 namespace ns3 {
 

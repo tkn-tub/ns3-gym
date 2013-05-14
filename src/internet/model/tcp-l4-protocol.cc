@@ -285,6 +285,60 @@ TcpL4Protocol::DeAllocate (Ipv6EndPoint *endPoint)
   m_endPoints6->DeAllocate (endPoint);
 }
 
+void 
+TcpL4Protocol::ReceiveIcmp (Ipv4Address icmpSource, uint8_t icmpTtl,
+                            uint8_t icmpType, uint8_t icmpCode, uint32_t icmpInfo,
+                            Ipv4Address payloadSource,Ipv4Address payloadDestination,
+                            const uint8_t payload[8])
+{
+  NS_LOG_FUNCTION (this << icmpSource << icmpTtl << icmpType << icmpCode << icmpInfo 
+                        << payloadSource << payloadDestination);
+  uint16_t src, dst;
+  src = payload[0] << 8;
+  src |= payload[1];
+  dst = payload[2] << 8;
+  dst |= payload[3];
+
+  Ipv4EndPoint *endPoint = m_endPoints->SimpleLookup (payloadSource, src, payloadDestination, dst);
+  if (endPoint != 0)
+    {
+      endPoint->ForwardIcmp (icmpSource, icmpTtl, icmpType, icmpCode, icmpInfo);
+    }
+  else
+    {
+      NS_LOG_DEBUG ("no endpoint found source=" << payloadSource <<
+                    ", destination="<<payloadDestination<<
+                    ", src=" << src << ", dst=" << dst);
+    }
+}
+
+void 
+TcpL4Protocol::ReceiveIcmp (Ipv6Address icmpSource, uint8_t icmpTtl,
+                            uint8_t icmpType, uint8_t icmpCode, uint32_t icmpInfo,
+                            Ipv6Address payloadSource,Ipv6Address payloadDestination,
+                            const uint8_t payload[8])
+{
+  NS_LOG_FUNCTION (this << icmpSource << icmpTtl << icmpType << icmpCode << icmpInfo 
+                        << payloadSource << payloadDestination);
+  uint16_t src, dst;
+  src = payload[0] << 8;
+  src |= payload[1];
+  dst = payload[2] << 8;
+  dst |= payload[3];
+
+  Ipv6EndPoint *endPoint = m_endPoints6->SimpleLookup (payloadSource, src, payloadDestination, dst);
+  if (endPoint != 0)
+    {
+      endPoint->ForwardIcmp (icmpSource, icmpTtl, icmpType, icmpCode, icmpInfo);
+    }
+  else
+    {
+      NS_LOG_DEBUG ("no endpoint found source=" << payloadSource <<
+                    ", destination="<<payloadDestination<<
+                    ", src=" << src << ", dst=" << dst);
+    }
+}
+
 enum IpL4Protocol::RxStatus
 TcpL4Protocol::Receive (Ptr<Packet> packet,
                         Ipv4Header const &ipHeader,
@@ -323,9 +377,12 @@ TcpL4Protocol::Receive (Ptr<Packet> packet,
         {
           NS_LOG_LOGIC ("  No Ipv4 endpoints matched on TcpL4Protocol, trying Ipv6 "<<this);
           Ptr<Ipv6Interface> fakeInterface;
+          Ipv6Header ipv6Header;
           Ipv6Address src = Ipv6Address::MakeIpv4MappedAddress (ipHeader.GetSource ());
           Ipv6Address dst = Ipv6Address::MakeIpv4MappedAddress (ipHeader.GetDestination ());
-          return (this->Receive (packet, src, dst, fakeInterface));
+          ipv6Header.SetSourceAddress (src);
+          ipv6Header.SetDestinationAddress (dst);
+          return (this->Receive (packet, ipv6Header, fakeInterface));
         }
 
       NS_LOG_LOGIC ("  No endpoints matched on TcpL4Protocol "<<this);
@@ -373,11 +430,10 @@ TcpL4Protocol::Receive (Ptr<Packet> packet,
 
 enum IpL4Protocol::RxStatus
 TcpL4Protocol::Receive (Ptr<Packet> packet,
-                        Ipv6Address &src,
-                        Ipv6Address &dst,
+                        Ipv6Header const &ipHeader,
                         Ptr<Ipv6Interface> interface)
 {
-  NS_LOG_FUNCTION (this << packet << src << dst);
+  NS_LOG_FUNCTION (this << packet << ipHeader.GetSourceAddress () << ipHeader.GetDestinationAddress ());
 
   TcpHeader tcpHeader;
 
@@ -388,7 +444,7 @@ TcpL4Protocol::Receive (Ptr<Packet> packet,
   if(Node::ChecksumEnabled ())
     {
       tcpHeader.EnableChecksums ();
-      tcpHeader.InitializeChecksum (src, dst, PROT_NUMBER);
+      tcpHeader.InitializeChecksum (ipHeader.GetSourceAddress (), ipHeader.GetDestinationAddress (), PROT_NUMBER);
     }
 
   packet->PeekHeader (tcpHeader);
@@ -407,16 +463,16 @@ TcpL4Protocol::Receive (Ptr<Packet> packet,
 
   NS_LOG_LOGIC ("TcpL4Protocol "<<this<<" received a packet");
   Ipv6EndPointDemux::EndPoints endPoints =
-    m_endPoints6->Lookup (dst, tcpHeader.GetDestinationPort (),
-                          src, tcpHeader.GetSourcePort (),interface);
+    m_endPoints6->Lookup (ipHeader.GetDestinationAddress (), tcpHeader.GetDestinationPort (),
+                          ipHeader.GetSourceAddress (), tcpHeader.GetSourcePort (),interface);
   if (endPoints.empty ())
     {
       NS_LOG_LOGIC ("  No IPv6 endpoints matched on TcpL4Protocol "<<this);
       std::ostringstream oss;
       oss<<"  destination IP: ";
-      dst.Print (oss);
+      (ipHeader.GetDestinationAddress ()).Print (oss);
       oss<<" destination port: "<< tcpHeader.GetDestinationPort ()<<" source IP: ";
-      src.Print (oss);
+      (ipHeader.GetSourceAddress ()).Print (oss);
       oss<<" source port: "<<tcpHeader.GetSourcePort ();
       NS_LOG_LOGIC (oss.str ());
 
@@ -439,7 +495,7 @@ TcpL4Protocol::Receive (Ptr<Packet> packet,
             }
           header.SetSourcePort (tcpHeader.GetDestinationPort ());
           header.SetDestinationPort (tcpHeader.GetSourcePort ());
-          SendPacket (rstPacket, header, dst, src);
+          SendPacket (rstPacket, header, ipHeader.GetDestinationAddress (), ipHeader.GetSourceAddress ());
           return IpL4Protocol::RX_ENDPOINT_CLOSED;
         }
       else
@@ -449,7 +505,7 @@ TcpL4Protocol::Receive (Ptr<Packet> packet,
     }
   NS_ASSERT_MSG (endPoints.size () == 1, "Demux returned more than one endpoint");
   NS_LOG_LOGIC ("TcpL4Protocol "<<this<<" forwarding up to endpoint/socket");
-  (*endPoints.begin ())->ForwardUp (packet, src, dst, tcpHeader.GetSourcePort ());
+  (*endPoints.begin ())->ForwardUp (packet, ipHeader, tcpHeader.GetSourcePort ());
   return IpL4Protocol::RX_OK;
 }
 

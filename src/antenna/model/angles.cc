@@ -73,14 +73,14 @@ Angles::Angles (double p, double t)
 
 
 Angles::Angles (Vector v)
-  : phi (atan2 (v.y, v.x)),
-    theta (acos (v.z / sqrt (v.x*v.x + v.y*v.y + v.z*v.z)))
+  : phi (std::atan2 (v.y, v.x)),
+    theta (std::acos (v.z / sqrt (v.x*v.x + v.y*v.y + v.z*v.z)))
 {
 }
 
 Angles::Angles (Vector v, Vector o)
-  : phi (atan2 (v.y - o.y, v.x - o.x)),
-    theta (acos ((v.z - o.z) / CalculateDistance (v, o)))
+  : phi (std::atan2 (v.y - o.y, v.x - o.x)),
+    theta (std::acos ((v.z - o.z) / CalculateDistance (v, o)))
 {
 }
 

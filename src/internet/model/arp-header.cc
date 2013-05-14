@@ -21,6 +21,9 @@
 #include "ns3/assert.h"
 #include "ns3/address-utils.h"
 #include "arp-header.h"
+#include "ns3/log.h"
+
+NS_LOG_COMPONENT_DEFINE ("ArpHeader");
 
 namespace ns3 {
 
@@ -32,6 +35,7 @@ ArpHeader::SetRequest (Address sourceHardwareAddress,
                        Address destinationHardwareAddress,
                        Ipv4Address destinationProtocolAddress)
 {
+  NS_LOG_FUNCTION (this << sourceHardwareAddress << sourceProtocolAddress << destinationHardwareAddress << destinationProtocolAddress);
   m_type = ARP_TYPE_REQUEST;
   m_macSource = sourceHardwareAddress;
   m_macDest = destinationHardwareAddress;
@@ -44,6 +48,7 @@ ArpHeader::SetReply (Address sourceHardwareAddress,
                      Address destinationHardwareAddress,
                      Ipv4Address destinationProtocolAddress)
 {
+  NS_LOG_FUNCTION (this << sourceHardwareAddress << sourceProtocolAddress << destinationHardwareAddress << destinationProtocolAddress);
   m_type = ARP_TYPE_REPLY;
   m_macSource = sourceHardwareAddress;
   m_macDest = destinationHardwareAddress;
@@ -53,31 +58,37 @@ ArpHeader::SetReply (Address sourceHardwareAddress,
 bool 
 ArpHeader::IsRequest (void) const
 {
+  NS_LOG_FUNCTION (this);
   return (m_type == ARP_TYPE_REQUEST) ? true : false;
 }
 bool 
 ArpHeader::IsReply (void) const
 {
+  NS_LOG_FUNCTION (this);
   return (m_type == ARP_TYPE_REPLY) ? true : false;
 }
 Address 
 ArpHeader::GetSourceHardwareAddress (void)
 {
+  NS_LOG_FUNCTION (this);
   return m_macSource;
 }
 Address 
 ArpHeader::GetDestinationHardwareAddress (void)
 {
+  NS_LOG_FUNCTION (this);
   return m_macDest;
 }
 Ipv4Address 
 ArpHeader::GetSourceIpv4Address (void)
 {
+  NS_LOG_FUNCTION (this);
   return m_ipv4Source;
 }
 Ipv4Address 
 ArpHeader::GetDestinationIpv4Address (void)
 {
+  NS_LOG_FUNCTION (this);
   return m_ipv4Dest;
 }
 
@@ -94,11 +105,13 @@ ArpHeader::GetTypeId (void)
 TypeId 
 ArpHeader::GetInstanceTypeId (void) const
 {
+  NS_LOG_FUNCTION (this);
   return GetTypeId ();
 }
 void 
 ArpHeader::Print (std::ostream &os) const
 {
+  NS_LOG_FUNCTION (this << &os);
   if (IsRequest ()) 
     {
       os << "request "
@@ -121,6 +134,7 @@ ArpHeader::Print (std::ostream &os) const
 uint32_t 
 ArpHeader::GetSerializedSize (void) const
 {
+  NS_LOG_FUNCTION (this);
   NS_ASSERT((m_macSource.GetLength () == 6) || (m_macSource.GetLength () == 8));
   NS_ASSERT (m_macSource.GetLength () == m_macDest.GetLength ());
 
@@ -133,6 +147,7 @@ ArpHeader::GetSerializedSize (void) const
 void
 ArpHeader::Serialize (Buffer::Iterator start) const
 {
+  NS_LOG_FUNCTION (this << &start);
   Buffer::Iterator i = start;
   NS_ASSERT (m_macSource.GetLength () == m_macDest.GetLength ());
 
@@ -152,6 +167,7 @@ ArpHeader::Serialize (Buffer::Iterator start) const
 uint32_t
 ArpHeader::Deserialize (Buffer::Iterator start)
 {
+  NS_LOG_FUNCTION (this << &start);
   Buffer::Iterator i = start;
   i.Next (2);                                    // Skip HRD
   uint32_t protocolType = i.ReadNtohU16 ();      // Read PRO

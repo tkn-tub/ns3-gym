@@ -25,7 +25,7 @@
 #include "attribute-helper.h"
 #include "int64x64.h"
 #include <stdint.h>
-#include <math.h>
+#include <cmath>
 #include <ostream>
 
 namespace ns3 {

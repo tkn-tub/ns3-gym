@@ -20,7 +20,7 @@
 
 #include <ns3/object-factory.h>
 #include <ns3/log.h>
-#include <math.h>
+#include <cmath>
 #include <ns3/simulator.h>
 #include <ns3/trace-source-accessor.h>
 #include <ns3/packet-burst.h>
@@ -289,7 +289,7 @@ HalfDuplexIdealPhy::StartTx (Ptr<Packet> p)
         txParams->psd = m_txPsd;
         txParams->data = m_txPacket;
 
-        NS_LOG_LOGIC (this << " tx power: " << 10 * log10 (Integral (*(txParams->psd))) + 30 << " dBm");
+        NS_LOG_LOGIC (this << " tx power: " << 10 * std::log10 (Integral (*(txParams->psd))) + 30 << " dBm");
         m_channel->StartTx (txParams);
         Simulator::Schedule (Seconds (txTimeSeconds), &HalfDuplexIdealPhy::EndTx, this);
       }
@@ -329,7 +329,7 @@ HalfDuplexIdealPhy::StartRx (Ptr<SpectrumSignalParameters> spectrumParams)
 {
   NS_LOG_FUNCTION (this << spectrumParams);
   NS_LOG_LOGIC (this << " state: " << m_state);
-  NS_LOG_LOGIC (this << " rx power: " << 10 * log10 (Integral (*(spectrumParams->psd))) + 30 << " dBm");
+  NS_LOG_LOGIC (this << " rx power: " << 10 * std::log10 (Integral (*(spectrumParams->psd))) + 30 << " dBm");
 
   // interference will happen regardless of the state of the receiver
   m_interference.AddSignal (spectrumParams->psd, spectrumParams->duration);

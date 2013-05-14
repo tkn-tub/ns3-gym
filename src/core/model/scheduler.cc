@@ -20,6 +20,9 @@
 
 #include "scheduler.h"
 #include "assert.h"
+#include "log.h"
+
+NS_LOG_COMPONENT_DEFINE ("Scheduler");
 
 namespace ns3 {
 
@@ -27,6 +30,7 @@ NS_OBJECT_ENSURE_REGISTERED (Scheduler);
 
 Scheduler::~Scheduler ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 TypeId

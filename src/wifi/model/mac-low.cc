@@ -33,6 +33,7 @@
 #include "wifi-mac-trailer.h"
 #include "qos-utils.h"
 #include "edca-txop-n.h"
+#include "snr-tag.h"
 
 NS_LOG_COMPONENT_DEFINE ("MacLow");
 
@@ -41,74 +42,6 @@ NS_LOG_COMPONENT_DEFINE ("MacLow");
 
 
 namespace ns3 {
-
-class SnrTag : public Tag
-{
-public:
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
-
-  virtual uint32_t GetSerializedSize (void) const;
-  virtual void Serialize (TagBuffer i) const;
-  virtual void Deserialize (TagBuffer i);
-  virtual void Print (std::ostream &os) const;
-
-  void Set (double snr);
-  double Get (void) const;
-private:
-  double m_snr;
-};
-
-TypeId
-SnrTag::GetTypeId (void)
-{
-  static TypeId tid = TypeId ("ns3::SnrTag")
-    .SetParent<Tag> ()
-    .AddConstructor<SnrTag> ()
-    .AddAttribute ("Snr", "The snr of the last packet received",
-                   DoubleValue (0.0),
-                   MakeDoubleAccessor (&SnrTag::Get),
-                   MakeDoubleChecker<double> ())
-  ;
-  return tid;
-}
-TypeId
-SnrTag::GetInstanceTypeId (void) const
-{
-  return GetTypeId ();
-}
-
-uint32_t
-SnrTag::GetSerializedSize (void) const
-{
-  return sizeof (double);
-}
-void
-SnrTag::Serialize (TagBuffer i) const
-{
-  i.WriteDouble (m_snr);
-}
-void
-SnrTag::Deserialize (TagBuffer i)
-{
-  m_snr = i.ReadDouble ();
-}
-void
-SnrTag::Print (std::ostream &os) const
-{
-  os << "Snr=" << m_snr;
-}
-void
-SnrTag::Set (double snr)
-{
-  m_snr = snr;
-}
-double
-SnrTag::Get (void) const
-{
-  return m_snr;
-}
-
 
 MacLowTransmissionListener::MacLowTransmissionListener ()
 {
@@ -360,6 +293,7 @@ MacLow::MacLow ()
     m_sendAckEvent (),
     m_sendDataEvent (),
     m_waitSifsEvent (),
+    m_endTxNoAckEvent (),
     m_currentPacket (0),
     m_listener (0)
 {
@@ -396,6 +330,7 @@ MacLow::DoDispose (void)
   m_sendAckEvent.Cancel ();
   m_sendDataEvent.Cancel ();
   m_waitSifsEvent.Cancel ();
+  m_endTxNoAckEvent.Cancel ();
   m_phy = 0;
   m_stationManager = 0;
   delete m_phyMacLowListener;
@@ -455,6 +390,11 @@ MacLow::CancelAllEvents (void)
   if (m_waitSifsEvent.IsRunning ())
     {
       m_waitSifsEvent.Cancel ();
+      oneRunning = true;
+    }
+  if (m_endTxNoAckEvent.IsRunning ()) 
+    {
+      m_endTxNoAckEvent.Cancel ();
       oneRunning = true;
     }
   if (oneRunning && m_listener != 0)
@@ -1352,7 +1292,7 @@ MacLow::StartDataTxTimers (void)
   else
     {
       // since we do not expect any timer to be triggered.
-      m_listener = 0;
+      Simulator::Schedule(txDuration, &MacLow::EndTxNoAck, this);
     }
 }
 
@@ -1488,6 +1428,14 @@ void
 MacLow::WaitSifsAfterEndTx (void)
 {
   m_listener->StartNext ();
+}
+
+void 
+MacLow::EndTxNoAck (void)
+{
+  MacLowTransmissionListener *listener = m_listener;
+  m_listener = 0;
+  listener->EndTxNoAck ();
 }
 
 void
@@ -1756,7 +1704,10 @@ MacLow::SendBlockAckResponse (const CtrlBAckResponseHeader* blockAck, Mac48Addre
     }
   m_txParams.DisableNextData ();
 
-  StartDataTxTimers ();
+  if (!immediate)
+    {
+      StartDataTxTimers ();
+    }
 
   NS_ASSERT (duration >= MicroSeconds (0));
   hdr.SetDuration (duration);

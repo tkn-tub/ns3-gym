@@ -77,7 +77,7 @@ WifiInterferenceTestCase::~WifiInterferenceTestCase ()
 {
 }
 
-std::string
+static inline std::string
 PrintReceivedPacket (Ptr<Socket> socket)
 {
   Address addr;
@@ -282,7 +282,7 @@ public:
 WifiInterferenceTestSuite::WifiInterferenceTestSuite ()
   : TestSuite ("ns3-wifi-interference", UNIT)
 {
-  AddTestCase (new WifiInterferenceTestCase);
+  AddTestCase (new WifiInterferenceTestCase, TestCase::QUICK);
 }
 
 static WifiInterferenceTestSuite wifiInterferenceTestSuite;

@@ -2,10 +2,8 @@
 import os
 import sys
 
-import Options
-import Logs
-import Utils
-import Task
+from waflib import Options, Logs, Utils, Task
+
 
 # Required NSC version
 NSC_RELEASE_NAME = "nsc-0.5.3"
@@ -30,20 +28,29 @@ def configure(conf):
     #    conf.check(lib='fl', mandatory=True)
 
     # Check for the location of NSC
+    lib_to_check = 'liblinux2.6.26.so'
     if Options.options.with_nsc:
         if os.path.isdir(Options.options.with_nsc):
             conf.msg("Checking for NSC location", ("%s (given)" % Options.options.with_nsc))
             conf.env['WITH_NSC'] = os.path.abspath(Options.options.with_nsc)
     else:
-        # ns-3-dev uses ../nsc, while ns-3 releases use ../NSC_RELEASE_NAME
+        # bake.py uses ../../build, while ns-3-dev uses ../nsc,
+        # and ns-3 release uses ../NSC_RELEASE_NAME
+        nsc_bake_build_dir = os.path.join('..', '..', 'build')
+        nsc_bake_lib_dir = os.path.join(nsc_bake_build_dir, 'lib')
         nsc_dir = os.path.join('..', "nsc")
         nsc_release_dir = os.path.join('..', NSC_RELEASE_NAME)
-        if os.path.isdir(nsc_dir):
+        if os.path.exists(os.path.join(nsc_bake_lib_dir, lib_to_check)):
+            conf.msg("Checking for NSC location",("%s (guessed)" % nsc_bake_build_dir))
+            conf.env['WITH_NSC'] = os.path.abspath(nsc_bake_build_dir)
+        elif os.path.isdir(nsc_dir):
             conf.msg("Checking for NSC location",("%s (guessed)" % nsc_dir))
             conf.env['WITH_NSC'] = os.path.abspath(nsc_dir)
         elif os.path.isdir(nsc_release_dir):
             conf.msg("Checking for NSC location", ("%s (guessed)" % nsc_release_dir))
             conf.env['WITH_NSC'] = os.path.abspath(nsc_release_dir)
+        del nsc_bake_build_dir
+        del nsc_bake_lib_dir
         del nsc_dir
         del nsc_release_dir
 
@@ -70,8 +77,6 @@ def configure(conf):
         conf.report_optional_feature("nsc", "Network Simulation Cradle", False,
                                      "architecture %r not supported" % arch)
         return
-
-    lib_to_check = 'liblinux2.6.26.so'
 
     found = False
     for path in ['.', 'lib', 'lib64', 'linux-2.6.26']:
@@ -137,6 +142,7 @@ def build(bld):
         'model/tcp-tahoe.cc',
         'model/tcp-reno.cc',
         'model/tcp-newreno.cc',
+        'model/tcp-westwood.cc',
         'model/tcp-rx-buffer.cc',
         'model/tcp-tx-buffer.cc',
         'model/ipv4-packet-info-tag.cc',
@@ -202,15 +208,16 @@ def build(bld):
         'test/ipv6-list-routing-test-suite.cc',
         'test/ipv6-packet-info-tag-test-suite.cc',
         'test/ipv6-test.cc',
+        'test/ipv6-raw-test.cc',
         'test/tcp-test.cc',
         'test/udp-test.cc',
         'test/ipv6-address-generator-test-suite.cc',
         'test/ipv6-dual-stack-test-suite.cc',
         'test/ipv6-fragmentation-test.cc',
         'test/ipv6-address-helper-test-suite.cc',
+        'test/rtt-test.cc',
         ]
-
-    headers = bld.new_task_gen(features=['ns3header'])
+    headers = bld(features='ns3header')
     headers.module = 'internet'
     headers.source = [
         'model/udp-header.h',
@@ -282,6 +289,15 @@ def build(bld):
         'helper/ipv6-interface-container.h',
         'helper/ipv6-routing-helper.h',
         'model/ipv6-address-generator.h',
+        'model/tcp-rfc793.h',        
+        'model/tcp-tahoe.h',
+        'model/tcp-reno.h',
+        'model/tcp-newreno.h',
+        'model/tcp-westwood.h',
+        'model/tcp-socket-base.h',
+        'model/tcp-tx-buffer.h',
+        'model/tcp-rx-buffer.h',
+        'model/rtt-estimator.h',
        ]
 
     if bld.env['NSC_ENABLED']:
@@ -294,7 +310,7 @@ def build(bld):
         internet_test.use.append('DL')
 
     if (bld.env['ENABLE_EXAMPLES']):
-        bld.add_subdirs('examples')
+        bld.recurse('examples')
 
     bld.ns3_python_bindings()
 

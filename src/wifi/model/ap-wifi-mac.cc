@@ -98,6 +98,7 @@ ApWifiMac::DoDispose ()
 void
 ApWifiMac::SetAddress (Mac48Address address)
 {
+  NS_LOG_FUNCTION (this << address);
   // As an AP, our MAC address is also the BSSID. Hence we are
   // overriding this function and setting both in our parent class.
   RegularWifiMac::SetAddress (address);
@@ -122,12 +123,14 @@ ApWifiMac::SetBeaconGeneration (bool enable)
 bool
 ApWifiMac::GetBeaconGeneration (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_enableBeaconGeneration;
 }
 
 Time
 ApWifiMac::GetBeaconInterval (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_beaconInterval;
 }
 
@@ -142,7 +145,7 @@ ApWifiMac::SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> stationMan
 void
 ApWifiMac::SetLinkUpCallback (Callback<void> linkUp)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << &linkUp);
   RegularWifiMac::SetLinkUpCallback (linkUp);
 
   // The approach taken here is that, from the point of view of an AP,
@@ -173,6 +176,7 @@ void
 ApWifiMac::ForwardDown (Ptr<const Packet> packet, Mac48Address from,
                         Mac48Address to)
 {
+  NS_LOG_FUNCTION (this << packet << from << to);
   // If we are not a QoS AP then we definitely want to use AC_BE to
   // transmit the packet. A TID of zero will map to AC_BE (through \c
   // QosUtilsMapTidToAc()), so we use that as our default here.
@@ -198,7 +202,7 @@ void
 ApWifiMac::ForwardDown (Ptr<const Packet> packet, Mac48Address from,
                         Mac48Address to, uint8_t tid)
 {
-  NS_LOG_FUNCTION (this << packet << from << to);
+  NS_LOG_FUNCTION (this << packet << from << to << static_cast<uint32_t> (tid));
   WifiMacHeader hdr;
 
   // For now, an AP that supports QoS does not support non-QoS
@@ -254,6 +258,7 @@ ApWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to, Mac48Address from
 void
 ApWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
 {
+  NS_LOG_FUNCTION (this << packet << to);
   // We're sending this packet with a from address that is our own. We
   // get that address from the lower MAC and make use of the
   // from-spoofing Enqueue() method to avoid duplicated code.
@@ -263,12 +268,14 @@ ApWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
 bool
 ApWifiMac::SupportsSendFrom (void) const
 {
+  NS_LOG_FUNCTION (this);
   return true;
 }
 
 SupportedRates
 ApWifiMac::GetSupportedRates (void) const
 {
+  NS_LOG_FUNCTION (this);
   // send the set of supported rates and make sure that we indicate
   // the Basic Rate set in this set of supported rates.
   SupportedRates rates;
@@ -542,6 +549,7 @@ void
 ApWifiMac::DeaggregateAmsduAndForward (Ptr<Packet> aggregatedPacket,
                                        const WifiMacHeader *hdr)
 {
+  NS_LOG_FUNCTION (this << aggregatedPacket << hdr);
   MsduAggregator::DeaggregatedMsdus packets =
     MsduAggregator::Deaggregate (aggregatedPacket);
 
@@ -564,15 +572,16 @@ ApWifiMac::DeaggregateAmsduAndForward (Ptr<Packet> aggregatedPacket,
 }
 
 void
-ApWifiMac::DoStart (void)
+ApWifiMac::DoInitialize (void)
 {
-  m_beaconDca->Start ();
+  NS_LOG_FUNCTION (this);
+  m_beaconDca->Initialize ();
   m_beaconEvent.Cancel ();
   if (m_enableBeaconGeneration)
     {
       m_beaconEvent = Simulator::ScheduleNow (&ApWifiMac::SendOneBeacon, this);
     }
-  RegularWifiMac::DoStart ();
+  RegularWifiMac::DoInitialize ();
 }
 
 } // namespace ns3

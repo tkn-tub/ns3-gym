@@ -33,9 +33,11 @@ Ipv4EndPoint::Ipv4EndPoint (Ipv4Address address, uint16_t port)
     m_peerAddr (Ipv4Address::GetAny ()),
     m_peerPort (0)
 {
+  NS_LOG_FUNCTION (this << address << port);
 }
 Ipv4EndPoint::~Ipv4EndPoint ()
 {
+  NS_LOG_FUNCTION (this);
   if (!m_destroyCallback.IsNull ())
     {
       m_destroyCallback ();
@@ -48,33 +50,39 @@ Ipv4EndPoint::~Ipv4EndPoint ()
 Ipv4Address 
 Ipv4EndPoint::GetLocalAddress (void)
 {
+  NS_LOG_FUNCTION (this);
   return m_localAddr;
 }
 
 void 
 Ipv4EndPoint::SetLocalAddress (Ipv4Address address)
 {
+  NS_LOG_FUNCTION (this << address);
   m_localAddr = address;
 }
 
 uint16_t 
 Ipv4EndPoint::GetLocalPort (void)
 {
+  NS_LOG_FUNCTION (this);
   return m_localPort;
 }
 Ipv4Address 
 Ipv4EndPoint::GetPeerAddress (void)
 {
+  NS_LOG_FUNCTION (this);
   return m_peerAddr;
 }
 uint16_t 
 Ipv4EndPoint::GetPeerPort (void)
 {
+  NS_LOG_FUNCTION (this);
   return m_peerPort;
 }
 void 
 Ipv4EndPoint::SetPeer (Ipv4Address address, uint16_t port)
 {
+  NS_LOG_FUNCTION (this << address << port);
   m_peerAddr = address;
   m_peerPort = port;
 }
@@ -82,6 +90,7 @@ Ipv4EndPoint::SetPeer (Ipv4Address address, uint16_t port)
 void
 Ipv4EndPoint::BindToNetDevice (Ptr<NetDevice> netdevice)
 {
+  NS_LOG_FUNCTION (this << netdevice);
   m_boundnetdevice = netdevice;
   return;
 }
@@ -89,23 +98,27 @@ Ipv4EndPoint::BindToNetDevice (Ptr<NetDevice> netdevice)
 Ptr<NetDevice> 
 Ipv4EndPoint::GetBoundNetDevice (void)
 {
+  NS_LOG_FUNCTION (this);
   return m_boundnetdevice;
 }
 
 void 
 Ipv4EndPoint::SetRxCallback (Callback<void,Ptr<Packet>, Ipv4Header, uint16_t, Ptr<Ipv4Interface> > callback)
 {
+  NS_LOG_FUNCTION (this << &callback);
   m_rxCallback = callback;
 }
 void 
 Ipv4EndPoint::SetIcmpCallback (Callback<void,Ipv4Address,uint8_t,uint8_t,uint8_t,uint32_t> callback)
 {
+  NS_LOG_FUNCTION (this << &callback);
   m_icmpCallback = callback;
 }
 
 void 
 Ipv4EndPoint::SetDestroyCallback (Callback<void> callback)
 {
+  NS_LOG_FUNCTION (this << &callback);
   m_destroyCallback = callback;
 }
 
@@ -113,6 +126,8 @@ void
 Ipv4EndPoint::ForwardUp (Ptr<Packet> p, const Ipv4Header& header, uint16_t sport,
                          Ptr<Ipv4Interface> incomingInterface)
 {
+  NS_LOG_FUNCTION (this << p << &header << sport << incomingInterface);
+  
   if (!m_rxCallback.IsNull ())
     {
       Simulator::ScheduleNow (&Ipv4EndPoint::DoForwardUp, this, p, header, sport, 
@@ -123,7 +138,12 @@ void
 Ipv4EndPoint::DoForwardUp (Ptr<Packet> p, const Ipv4Header& header, uint16_t sport,
                            Ptr<Ipv4Interface> incomingInterface)
 {
-  m_rxCallback (p, header, sport, incomingInterface);
+  NS_LOG_FUNCTION (this << p << &header << sport << incomingInterface);
+  
+  if (!m_rxCallback.IsNull ())
+    {
+      m_rxCallback (p, header, sport, incomingInterface);
+    }
 }
 
 void 
@@ -144,7 +164,12 @@ Ipv4EndPoint::DoForwardIcmp (Ipv4Address icmpSource, uint8_t icmpTtl,
                              uint8_t icmpType, uint8_t icmpCode,
                              uint32_t icmpInfo)
 {
-  m_icmpCallback (icmpSource,icmpTtl,icmpType,icmpCode,icmpInfo);
+  NS_LOG_FUNCTION (this << icmpSource << static_cast<uint32_t> (icmpTtl) << static_cast<uint32_t> (icmpType) << static_cast<uint32_t> (icmpCode) << icmpInfo);
+  
+  if (!m_icmpCallback.IsNull ())
+    {
+      m_icmpCallback (icmpSource,icmpTtl,icmpType,icmpCode,icmpInfo);
+    }
 }
 
 } // namespace ns3

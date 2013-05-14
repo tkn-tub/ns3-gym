@@ -62,7 +62,7 @@ struct BlackList
   {
   }
 };
-/*
+/**
  * The route request table entries
  */
 struct RreqTableEntry
@@ -70,17 +70,70 @@ struct RreqTableEntry
   uint32_t m_reqNo;
   Time m_expire;
 };
-/*
- * The route request table id for originators
- * It is responsible for checking duplicate requests from a single source to a specific destination
+/**
+ * The request entry for intermediate nodes to check if they have received this request or not
+ * This is used to control the duplication request from being processed
  */
-struct SourceRreqEntry
+class ReceivedRreqEntry
 {
-  uint32_t m_identification;
-  Ipv4Address m_dst;
-  bool m_isError;
-  Time m_expire;
+public:
+  // / c-tor
+  ReceivedRreqEntry (Ipv4Address d = Ipv4Address (), uint16_t i = 0)
+    : m_destination (d),
+      m_identification (i)
+  {
+  }
+  /**
+   * \brief Compare send buffer entries
+   * \return true if equal
+   */
+  bool operator== (ReceivedRreqEntry const & o) const
+  {
+    return ((m_destination == o.m_destination) && (m_identification == o.m_identification)
+           );
+  }
+  // /\name Fields
+  // \{
+  Ipv4Address GetDestination () const
+  {
+    return m_destination;
+  }
+  void SetDestination (Ipv4Address d)
+  {
+    m_destination = d;
+  }
+  Ipv4Address GetSource () const
+  {
+    return m_source;
+  }
+  void SetSource (Ipv4Address s)
+  {
+    m_source = s;
+  }
+  uint16_t GetIdentification () const
+  {
+    return m_identification;
+  }
+  void SetIdentification (uint16_t i)
+  {
+    m_identification = i;
+  }
+  void SetExpireTime (Time exp)
+  {
+    m_expire = exp + Simulator::Now ();
+  }
+  Time GetExpireTime () const
+  {
+    return m_expire - Simulator::Now ();
+  }
+  // \}
+private:
+    Ipv4Address m_destination;
+    Ipv4Address m_source;
+    uint16_t m_identification;
+    Time m_expire;
 };
+
 /**
  * \ingroup dsr
  * \brief maintain list of RreqTable entry
@@ -147,38 +200,45 @@ public:
   void RemoveRreqEntry (Ipv4Address dst);
   // / Get the request count number for one destination address
   uint32_t GetRreqCnt (Ipv4Address dst);
-
   //----------------------------------------------------------------------------------------------------------
-  /*
+  /**
    * The following code generates new request id for each destination
    */
   // / Check for duplicate ids and save new entries if the id is not present in the table
   uint32_t CheckUniqueRreqId (Ipv4Address dst);
   // / Get the request id size
   uint32_t GetRreqSize ();
-
   // ---------------------------------------------------------------------------------------------------------
-  /*
+  /**
    * set the unidirectional entry as QUESTIONABLE state
    */
   void Invalidate ();
-  /** Verify if entry is unidirectional or not(e.g. add this neighbor to "blacklist" for blacklistTimeout period)
+  /**
+   * \brief Verify if entry is unidirectional or not(e.g. add this neighbor to "blacklist" for blacklistTimeout period)
    * \param neighbor - neighbor address link to which assumed to be unidirectional
    * \return true on success
    */
   BlackList* FindUnidirectional (Ipv4Address neighbor);
-  /** Mark entry as unidirectional (e.g. add this neighbor to "blacklist" for blacklistTimeout period)
+  /**
+   * \brief Mark entry as unidirectional (e.g. add this neighbor to "blacklist" for blacklistTimeout period)
    * \param neighbor - neighbor address link to which assumed to be unidirectional
    * \param blacklistTimeout - time for which the neighboring node is put into the blacklist
    * \return true on success
    */
   bool MarkLinkAsUnidirectional (Ipv4Address neighbor, Time blacklistTimeout);
-  // / Remove all expired black list entries
+  ///< Remove all expired black list entries
   void PurgeNeighbor ();
+  // ----------------------------------------------------------------------------------------------------------
+  /**
+   * Find the source request entry in the route request queue, return false if not found
+   * \param src the source address we just received the source request
+   * \param dst the destination address the request is targeted at
+   * \param id the identification number for this request
+   */
+  bool FindSourceEntry (Ipv4Address src, Ipv4Address dst, uint16_t id);
 
 private:
-  // / Timer for neighbor's list. Schedule Purge().
-  Timer m_ntimer;
+
   // / The max # of requests to retransmit
   uint32_t MaxRequestRexmt;
   // / The max request period among requests
@@ -200,13 +260,14 @@ private:
   // / The state of the unidirectional link
   LinkStates m_linkStates;
   // / Map of entries
-  std::list<SourceRreqEntry> m_sourceRreq;
-  // / The id cache to ensure all the ids are unique
+  std::list<ReceivedRreqEntry> m_sourceRequests;
+  // / The id cache to ensure all the ids are unique, it is used when sending out route request
   std::map<Ipv4Address, uint32_t> m_rreqIdCache;
   // / The cache to save route request table entries indexed with destination address
   std::map<Ipv4Address, RreqTableEntry > m_rreqDstMap;
   // / The cache to ensure all the route request from unique source
-  std::map<Ipv4Address, std::list<SourceRreqEntry> > m_rreqMap;
+  std::map<Ipv4Address, std::list<ReceivedRreqEntry> > m_sourceRreqMap;
+
   // / The Black list
   std::vector<BlackList> m_blackList;
   // / Check if the entry is expired or not

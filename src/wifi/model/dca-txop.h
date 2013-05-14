@@ -130,7 +130,7 @@ private:
 
   // Inherited from ns3::Object
   Ptr<MacLow> Low (void);
-  void DoStart ();
+  void DoInitialize ();
   /* dcf notifications forwarded here */
   bool NeedsAccess (void) const;
   void NotifyAccessGranted (void);
@@ -147,6 +147,7 @@ private:
   void MissedAck (void);
   void StartNext (void);
   void Cancel (void);
+  void EndTxNoAck (void);
 
   void RestartAccessIfNeeded (void);
   void StartAccessIfNeeded (void);

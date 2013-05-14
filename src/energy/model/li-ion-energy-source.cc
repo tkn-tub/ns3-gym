@@ -108,10 +108,12 @@ LiIonEnergySource::LiIonEnergySource ()
   : m_drainedCapacity (0.0),
     m_lastUpdateTime (Seconds (0.0))
 {
+  NS_LOG_FUNCTION (this);
 }
 
 LiIonEnergySource::~LiIonEnergySource ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 void
@@ -134,6 +136,7 @@ LiIonEnergySource::GetInitialEnergy (void) const
 void
 LiIonEnergySource::SetInitialSupplyVoltage (double supplyVoltageV)
 {
+  NS_LOG_FUNCTION (this << supplyVoltageV);
   m_eFull = supplyVoltageV;
   m_supplyVoltageV = supplyVoltageV;
 }
@@ -148,7 +151,7 @@ LiIonEnergySource::GetSupplyVoltage (void) const
 void
 LiIonEnergySource::SetEnergyUpdateInterval (Time interval)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << interval);
   m_energyUpdateInterval = interval;
 }
 
@@ -233,7 +236,7 @@ LiIonEnergySource::UpdateEnergySource (void)
  * Private functions start here.
  */
 void
-LiIonEnergySource::DoStart (void)
+LiIonEnergySource::DoInitialize (void)
 {
   NS_LOG_FUNCTION (this);
   UpdateEnergySource ();  // start periodic update
@@ -289,12 +292,12 @@ LiIonEnergySource::GetVoltage (double i) const
   double B = 3 / m_qExp;
 
   // slope of the polarization curve
-  double K = std::abs ( (m_eFull - m_eNom + A * (exp (-B * m_qNom) - 1)) * (m_qRated - m_qNom) / m_qNom);
+  double K = std::abs ( (m_eFull - m_eNom + A * (std::exp (-B * m_qNom) - 1)) * (m_qRated - m_qNom) / m_qNom);
 
   // constant voltage
   double E0 = m_eFull + K + m_internalResistance * m_typCurrent - A;
 
-  double E = E0 - K * m_qRated / (m_qRated - it) + A * exp (-B * it);
+  double E = E0 - K * m_qRated / (m_qRated - it) + A * std::exp (-B * it);
 
   // cell voltage
   double V = E - m_internalResistance * i;

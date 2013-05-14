@@ -76,27 +76,29 @@ UdpServer::~UdpServer ()
 uint16_t
 UdpServer::GetPacketWindowSize () const
 {
+  NS_LOG_FUNCTION (this);
   return m_lossCounter.GetBitMapSize ();
 }
 
 void
 UdpServer::SetPacketWindowSize (uint16_t size)
 {
+  NS_LOG_FUNCTION (this << size);
   m_lossCounter.SetBitMapSize (size);
 }
 
 uint32_t
 UdpServer::GetLost (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_lossCounter.GetLost ();
 }
 
 uint32_t
 UdpServer::GetReceived (void) const
 {
-
+  NS_LOG_FUNCTION (this);
   return m_received;
-
 }
 
 void

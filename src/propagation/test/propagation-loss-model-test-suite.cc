@@ -68,14 +68,15 @@ FriisPropagationLossModelTestCase::DoRun (void)
   // The ns-3 testing manual gives more background on the values selected
   // for this test.  First, set a few defaults. 
 
-  // wavelength at 2.4 GHz is 0.125m
-  Config::SetDefault ("ns3::FriisPropagationLossModel::Lambda", DoubleValue (0.125));
+  // the test vectors have been determined for a wavelength of 0.125 m 
+  // which corresponds to a frequency of 2398339664.0 Hz in the vacuum
+  Config::SetDefault ("ns3::FriisPropagationLossModel::Frequency", DoubleValue (2398339664.0));
   Config::SetDefault ("ns3::FriisPropagationLossModel::SystemLoss", DoubleValue (1.0));
 
   // Select a reference transmit power
   // Pt = 10^(17.0206/10)/10^3 = .05035702 W
   double txPowerW = 0.05035702;
-  double txPowerdBm = 10 * log10 (txPowerW) + 30;
+  double txPowerdBm = 10 * std::log10 (txPowerW) + 30;
 
   //
   // We want to test the propagation loss model calculations at a few chosen 
@@ -124,7 +125,7 @@ FriisPropagationLossModelTestCase::DoRun (void)
       testVector = m_testVectors.Get (i);
       b->SetPosition (testVector.m_position);
       double resultdBm = lossModel->CalcRxPower (testVector.m_pt, a, b);
-      double resultW =   pow (10.0, resultdBm/10.0)/1000;
+      double resultW = std::pow (10.0, resultdBm/10.0)/1000;
       NS_TEST_EXPECT_MSG_EQ_TOL (resultW, testVector.m_pr, testVector.m_tolerance, "Got unexpected rcv power");
     }
 }
@@ -164,8 +165,9 @@ TwoRayGroundPropagationLossModelTestCase::~TwoRayGroundPropagationLossModelTestC
 void
 TwoRayGroundPropagationLossModelTestCase::DoRun (void)
 {
-  // wavelength at 2.4 GHz is 0.125m
-  Config::SetDefault ("ns3::TwoRayGroundPropagationLossModel::Lambda", DoubleValue (0.125));
+  // the test vectors have been determined for a wavelength of 0.125 m 
+  // which corresponds to a frequency of 2398339664.0 Hz in the vacuum
+  Config::SetDefault ("ns3::TwoRayGroundPropagationLossModel::Frequency", DoubleValue (2398339664.0));
   Config::SetDefault ("ns3::TwoRayGroundPropagationLossModel::SystemLoss", DoubleValue (1.0));
 
   // set antenna height to 1.5m above z coordinate
@@ -174,7 +176,7 @@ TwoRayGroundPropagationLossModelTestCase::DoRun (void)
   // Select a reference transmit power of 17.0206 dBm
   // Pt = 10^(17.0206/10)/10^3 = .05035702 W
   double txPowerW = 0.05035702;
-  double txPowerdBm = 10 * log10 (txPowerW) + 30;
+  double txPowerdBm = 10 * std::log10 (txPowerW) + 30;
 
   //
   // As with the Friis tests above, we want to test the propagation loss 
@@ -253,7 +255,7 @@ TwoRayGroundPropagationLossModelTestCase::DoRun (void)
       testVector = m_testVectors.Get (i);
       b->SetPosition (testVector.m_position);
       double resultdBm = lossModel->CalcRxPower (testVector.m_pt, a, b);
-      double resultW =   pow (10.0, resultdBm / 10.0) / 1000;
+      double resultW = std::pow (10.0, resultdBm / 10.0) / 1000;
       NS_TEST_EXPECT_MSG_EQ_TOL (resultW, testVector.m_pr, testVector.m_tolerance, "Got unexpected rcv power");
     }
 }
@@ -297,7 +299,7 @@ LogDistancePropagationLossModelTestCase::DoRun (void)
   // Select a reference transmit power
   // Pt = 10^(17.0206/10)/10^3 = .05035702 W
   double txPowerW = 0.05035702;
-  double txPowerdBm = 10 * log10 (txPowerW) + 30;
+  double txPowerdBm = 10 * std::log10 (txPowerW) + 30;
 
   //
   // We want to test the propagation loss model calculations at a few chosen 
@@ -341,7 +343,7 @@ LogDistancePropagationLossModelTestCase::DoRun (void)
       testVector = m_testVectors.Get (i);
       b->SetPosition (testVector.m_position);
       double resultdBm = lossModel->CalcRxPower (testVector.m_pt, a, b);
-      double resultW =   pow (10.0, resultdBm/10.0)/1000;
+      double resultW = std::pow (10.0, resultdBm/10.0)/1000;
       NS_TEST_EXPECT_MSG_EQ_TOL (resultW, testVector.m_pr, testVector.m_tolerance, "Got unexpected rcv power");
     }
 }
@@ -443,11 +445,11 @@ public:
 PropagationLossModelsTestSuite::PropagationLossModelsTestSuite ()
   : TestSuite ("propagation-loss-model", UNIT)
 {
-  AddTestCase (new FriisPropagationLossModelTestCase);
-  AddTestCase (new TwoRayGroundPropagationLossModelTestCase);
-  AddTestCase (new LogDistancePropagationLossModelTestCase);
-  AddTestCase (new MatrixPropagationLossModelTestCase);
-  AddTestCase (new RangePropagationLossModelTestCase);
+  AddTestCase (new FriisPropagationLossModelTestCase, TestCase::QUICK);
+  AddTestCase (new TwoRayGroundPropagationLossModelTestCase, TestCase::QUICK);
+  AddTestCase (new LogDistancePropagationLossModelTestCase, TestCase::QUICK);
+  AddTestCase (new MatrixPropagationLossModelTestCase, TestCase::QUICK);
+  AddTestCase (new RangePropagationLossModelTestCase, TestCase::QUICK);
 }
 
 static PropagationLossModelsTestSuite propagationLossModelsTestSuite;

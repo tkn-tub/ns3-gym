@@ -18,7 +18,7 @@
  * Author: Mitch Watrous (watrous@u.washington.edu)
  */
 
-#include <math.h>
+#include <cmath>
 
 #include "ns3/test.h"
 #include "ns3/average.h"
@@ -91,7 +91,7 @@ OneIntegerAverageTestCase::DoRun (void)
     {
       variance = (count * sqrSum - sum * sum) / (count * (count - 1));
     }
-  stddev = sqrt (variance);
+  stddev = std::sqrt (variance);
 
   // Test the calculator.
   NS_TEST_ASSERT_MSG_EQ_TOL (calculator.Count (),    count,    TOLERANCE, "Count value wrong");
@@ -167,7 +167,7 @@ FiveIntegersAverageTestCase::DoRun (void)
     {
       variance = (count * sqrSum - sum * sum) / (count * (count - 1));
     }
-  stddev = sqrt (variance);
+  stddev = std::sqrt (variance);
 
   // Test the calculator.
   NS_TEST_ASSERT_MSG_EQ_TOL (calculator.Count (),    count,    TOLERANCE, "Count value wrong");
@@ -243,7 +243,7 @@ FiveDoublesAverageTestCase::DoRun (void)
     {
       variance = (count * sqrSum - sum * sum) / (count * (count - 1));
     }
-  stddev = sqrt (variance);
+  stddev = std::sqrt (variance);
 
   // Test the calculator.
   NS_TEST_ASSERT_MSG_EQ_TOL (calculator.Count (),    count,    TOLERANCE, "Count value wrong");
@@ -264,9 +264,9 @@ public:
 AverageTestSuite::AverageTestSuite ()
   : TestSuite ("average", UNIT)
 {
-  AddTestCase (new OneIntegerAverageTestCase);
-  AddTestCase (new FiveIntegersAverageTestCase);
-  AddTestCase (new FiveDoublesAverageTestCase);
+  AddTestCase (new OneIntegerAverageTestCase, TestCase::QUICK);
+  AddTestCase (new FiveIntegersAverageTestCase, TestCase::QUICK);
+  AddTestCase (new FiveDoublesAverageTestCase, TestCase::QUICK);
 }
 
 static AverageTestSuite averageTestSuite;

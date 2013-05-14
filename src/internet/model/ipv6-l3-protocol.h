@@ -136,6 +136,12 @@ public:
   void SetDefaultTtl (uint8_t ttl);
 
   /**
+   * \brief Set the default TCLASS.
+   * \param tclass TCLASS to set
+   */
+  void SetDefaultTclass (uint8_t tclass);
+
+  /**
    * \brief Receive method when a packet arrive in the stack.
    * This method removes IPv6 header and forward up to L4 protocol.
    *
@@ -398,11 +404,11 @@ private:
    * \param dst destination IPv6 address
    * \param protocol L4 protocol
    * \param payloadSize payload size
-   * \param ttl TTL
+   * \param hopLimit Hop limit
    * \return newly created IPv6 header
    */
   Ipv6Header BuildHeader (Ipv6Address src, Ipv6Address dst, uint8_t protocol,
-                          uint16_t payloadSize, uint8_t ttl);
+                          uint16_t payloadSize, uint8_t hopLimit, uint8_t tclass);
 
   /**
    * \brief Send packet with route.
@@ -509,6 +515,11 @@ private:
    * \brief Default TTL for outgoing packets.
    */
   uint8_t m_defaultTtl;
+
+  /**
+   * \brief Default TCLASS for outgoing packets.
+   */
+  uint8_t m_defaultTclass;
 
   /**
    * \brief Routing protocol.

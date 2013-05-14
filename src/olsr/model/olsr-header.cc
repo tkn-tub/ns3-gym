@@ -18,10 +18,12 @@
  * Author: Gustavo J. A. M. Carneiro  <gjc@inescporto.pt>
  */
 
+#include <cmath>
+
 #include "ns3/assert.h"
+#include "ns3/log.h"
 
 #include "olsr-header.h"
-#include "ns3/log.h"
 
 #define IPV4_ADDRESS_SIZE 4
 #define OLSR_MSG_HEADER_SIZE 12
@@ -58,7 +60,7 @@ SecondsToEmf (double seconds)
   double tmp = 16*(seconds/(OLSR_C*(1<<b))-1);
 
   // round it up.  This results in the value for 'a'
-  a = (int) ceil (tmp);
+  a = (int) std::ceil (tmp);
 
   // if 'a' is equal to 16: increment 'b' by one, and set 'a' to 0
   if (a == 16)

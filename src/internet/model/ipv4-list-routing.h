@@ -90,7 +90,7 @@ public:
 
 protected:
   void DoDispose (void);
-  void DoStart (void);
+  void DoInitialize (void);
 private:
   typedef std::pair<int16_t, Ptr<Ipv4RoutingProtocol> > Ipv4RoutingProtocolEntry;
   typedef std::list<Ipv4RoutingProtocolEntry> Ipv4RoutingProtocolList;

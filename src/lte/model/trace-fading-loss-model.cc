@@ -103,7 +103,7 @@ TraceFadingLossModel::SetTraceLength (Time t)
 }
 
 void 
-TraceFadingLossModel::DoStart ()
+TraceFadingLossModel::DoInitialize ()
 {
   LoadTrace ();
 }
@@ -185,7 +185,7 @@ TraceFadingLossModel::DoCalcRxPowerSpectralDensity (
   //Vector aSpeedVector = a->GetVelocity ();
   //Vector bSpeedVector = b->GetVelocity ();
   
-  //double speed = sqrt (pow (aSpeedVector.x-bSpeedVector.x,2) +  pow (aSpeedVector.y-bSpeedVector.y,2));
+  //double speed = std::sqrt (std::pow (aSpeedVector.x-bSpeedVector.x,2) + std::pow (aSpeedVector.y-bSpeedVector.y,2));
 
   NS_LOG_LOGIC (this << *rxPsd);
   NS_ASSERT (!m_fadingTrace.empty ());
@@ -201,11 +201,11 @@ TraceFadingLossModel::DoCalcRxPowerSpectralDensity (
           double fading = m_fadingTrace.at (subChannel).at (index);
           NS_LOG_INFO (this << " FADING now " << now_ms << " offset " << (*itOff).second << " id " << index << " fading " << fading);
           double power = *vit; // in Watt/Hz
-          power = 10 * log10 (180000 * power); // in dB
+          power = 10 * std::log10 (180000 * power); // in dB
 
           NS_LOG_LOGIC (this << subChannel << *vit  << power << fading);
 
-          *vit = pow (10., ((power + fading) / 10)) / 180000; // in Watt
+          *vit = std::pow (10., ((power + fading) / 10)) / 180000; // in Watt
 
           NS_LOG_LOGIC (this << subChannel << *vit);
 

@@ -58,25 +58,25 @@ DropTailQueue::DropTailQueue () :
   m_packets (),
   m_bytesInQueue (0)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 DropTailQueue::~DropTailQueue ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 void
 DropTailQueue::SetMode (DropTailQueue::QueueMode mode)
 {
-  NS_LOG_FUNCTION (mode);
+  NS_LOG_FUNCTION (this << mode);
   m_mode = mode;
 }
 
 DropTailQueue::QueueMode
 DropTailQueue::GetMode (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return m_mode;
 }
 

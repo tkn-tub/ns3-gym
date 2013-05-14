@@ -38,7 +38,7 @@ namespace ns3 {
 EpsGtpuTestSuite::EpsGtpuTestSuite ()
   : TestSuite ("epc-gtpu", SYSTEM)
 {
-  AddTestCase (new EpsGtpuHeaderTestCase ());
+  AddTestCase (new EpsGtpuHeaderTestCase (), TestCase::QUICK);
 }
 
 static EpsGtpuTestSuite epsGtpuTestSuite;

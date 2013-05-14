@@ -201,7 +201,7 @@ HwmpProtocol::~HwmpProtocol ()
 }
 
 void
-HwmpProtocol::DoStart ()
+HwmpProtocol::DoInitialize ()
 {
   m_coefficient->SetAttribute ("Max", DoubleValue (m_randomStart.GetSeconds ()));
   if (m_isRoot)

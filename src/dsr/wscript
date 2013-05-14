@@ -9,12 +9,13 @@ def build(bld):
         'model/dsr-fs-header.cc',
         'model/dsr-option-header.cc',
         'model/dsr-maintain-buff.cc',
+        'model/dsr-passive-buff.cc',
         'model/dsr-rsendbuff.cc',
         'model/dsr-rcache.cc',
         'model/dsr-rreq-table.cc',
         'model/dsr-gratuitous-reply-table.cc',
-	'model/dsr-errorbuff.cc',
-	'model/dsr-network-queue.cc',
+        'model/dsr-errorbuff.cc',
+        'model/dsr-network-queue.cc',
         'helper/dsr-helper.cc',
         'helper/dsr-main-helper.cc',
         ]
@@ -24,7 +25,7 @@ def build(bld):
         'test/dsr-test-suite.cc',
         ]
         
-    headers = bld.new_task_gen(features=['ns3header'])
+    headers = bld(features='ns3header')
     headers.module = 'dsr'
     headers.source = [
         'model/dsr-routing.h',
@@ -32,17 +33,18 @@ def build(bld):
         'model/dsr-fs-header.h',
         'model/dsr-option-header.h',
         'model/dsr-maintain-buff.h',
+        'model/dsr-passive-buff.h',
         'model/dsr-rsendbuff.h',
         'model/dsr-rcache.h',
         'model/dsr-rreq-table.h',
         'model/dsr-gratuitous-reply-table.h',
-	'model/dsr-errorbuff.h',
-	'model/dsr-network-queue.h',
+        'model/dsr-errorbuff.h',
+        'model/dsr-network-queue.h',
         'helper/dsr-helper.h',
         'helper/dsr-main-helper.h',
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):
-      bld.add_subdirs('examples')
+      bld.recurse('examples')
 
     bld.ns3_python_bindings()

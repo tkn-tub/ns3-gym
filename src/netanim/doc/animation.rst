@@ -205,17 +205,6 @@ Persist combobox
 When packets are transmitted and received very quickly, they can be almost invisible. The persist time setting
 allows the user to control the duration for which a packet should be visible on the animation canvas. 
 
-Fast-forward button
-~~~~~~~~~~~~~~~~~~~
-.. figure:: figures/FastForward.*
-   :width: 50px
-
-   The Fast-forward button
-
-This setting is ON by default. With this setting ON, the animation progresses in simulation time rather than
-wall-clock time. This means, if there were three intervals of time, A to B , B to C and C to D, and if all packets are transmitted and received only in the intervals A to B and C to D , while B to C is a 
-20 second idle period with no packet tranmission or reception or node mobility, NetAnim will skip over B to C, instantly without waiting for 20 seconds. The user can turn OFF Fast-forward when they want the animation to proceed like wall-clock time. 
-
 Update-interval slider
 ~~~~~~~~~~~~~~~~~~~~~~
 .. figure:: figures/UpdateRateInterval.*
@@ -223,45 +212,8 @@ Update-interval slider
 
    The update-interval slider
 
-If Fast-forward (discussed above) is turned OFF, the update-interval slider controls the rate at which 
-NetAnim refreshes the canvas screen. For instance, for the setting above, NetAnim, updates the position
-of nodes and packets only once in 250 ms.
-
-Precision button
-~~~~~~~~~~~~~~~~
-.. figure:: figures/Precision.*
-   :width: 50px
-
-   The precision button
-
-This setting is turned OFF by default. When using purely point-to-point topologies precision can be turned ON, 
-to distinguish between small and large packets travelling on a link. For instance a small packet such as a 
-TCP ACK segment occupies only a small fraction of the length of the link , which provides a realistic animation.
-
-CAUTION: Precision should be turned ON only for completely point-to-point topologies.
-
-The below two images show the difference between packet link animation for the case without precision and for the
-case with precision. The one with precision ON, shows that the SYN segment does not occupy the full link, because 
-they are small packets. This is provides a better visualization.
-
-.. figure:: figures/WithoutPrecision.*
-   :width: 150px
-
-   Without precision
-
-.. figure:: figures/WithPrecision.*
-   :width: 150px
-
-   With precision
-
-Sim-time spinbox
-~~~~~~~~~~~~~~~~
-.. figure:: figures/SimTime.*
-   :width: 150px
-
-   The Sim-time spinbox
-
-The Sim-time spinbox can be used to go forward or backward in simulation time.
+The update-interval slider controls the rate at which NetAnim refreshes the canvas screen. For instance, 
+for the setting above, NetAnim, updates the position of nodes and packets only once in 250 ms.
 
 
 Parts of the XML
@@ -325,34 +277,28 @@ Example::
 
   <link fromId="0" toId="1"/>
 
-5. <packet> element
+5. <p> element
 
 This element describes a packet over wired links being transmitted at some node and received at another. 
 
 The reception details are described in its associated rx element
  Attributes are::
 
-   fromId = Node Id transmitting the packet
+   fId = Node Id transmitting the packet
    fbTx = First bit transmit time of the packet
    lbTx = Last bit transmit time of the packet
-
-Example::
-
-  <packet fromId="1" fbTx="1" lbTx="1.000067199"><rx toLp="0" toId="0" fbRx="1.002" lbRx="1.002067199"/>
-
-A packet over wired-links from Node 1 was received at Node 0. The first bit of the packet was transmitted at  the 1st second, the last bit was transmitted at the 1.000067199th second of the simulation Node 0 received the first bit of the packet at the 1.002th second and the last bit of the packet at the 1.002067199th second of the simulation
-NOTE: A packet with fromId == toId is a dummy packet used internally by the AnimationInterface. Please ignore this packet
-
-6. <rx> element
-
-This element describes the reception of a packet at a node.
- Attributes are::
-
    toId = Node Id receiving the packet
    fbRx = First bit Reception Time of the packet
    lbRx = Last bit Reception Time of the packet
 
-7. <wpacket> element
+Example::
+
+  <p fId="1" fbTx="1" lbTx="1.000067199" tId="0" fbRx="1.002" lbRx="1.002067199"/>
+
+A packet over wired-links from Node 1 was received at Node 0. The first bit of the packet was transmitted at  the 1st second, the last bit was transmitted at the 1.000067199th second of the simulation Node 0 received the first bit of the packet at the 1.002th second and the last bit of the packet at the 1.002067199th second of the simulation
+NOTE: A packet with fromId == toId is a dummy packet used internally by the AnimationInterface. Please ignore this packet
+
+7. <wp> element
 
 This element describes a packet over wireless links being transmitted at some node and received at another. 
 
@@ -366,8 +312,7 @@ The reception details are described in its associated rx element.
 
 Example::
 
-  <wpacket fromId = "20" fbTx = "0.003" lbTx = "0.003254" range = "59.68176982">
-  <rx toLp="0" toId="32" fbRx="0.003000198" lbRx="0.003254198"/>
+  <wp fId = "20" fbTx = "0.003" lbTx = "0.003254" range = "59.68176982" tId="32" fbRx="0.003000198" lbRx="0.003254198"/>
 
 A packet over wireless-links from Node 20 was received at Node 32. The first bit of the packet was transmitted at  the 0.003th second, the last bit was transmitted at the 0.003254 second of the simulation Node 0 received the first bit of the packet at the 0.003000198 second and the last bit of the packet at the 0.003254198 second of the simulation
 

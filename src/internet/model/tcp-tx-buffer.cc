@@ -20,10 +20,12 @@
 
 #include <iostream>
 #include <algorithm>
-#include <string.h>
+#include <cstring>
+
 #include "ns3/packet.h"
 #include "ns3/fatal-error.h"
 #include "ns3/log.h"
+
 #include "tcp-tx-buffer.h"
 
 NS_LOG_COMPONENT_DEFINE ("TcpTxBuffer");

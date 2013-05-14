@@ -24,7 +24,7 @@
 #include "ns3/map-scheduler.h"
 #include "ns3/calendar-scheduler.h"
 
-namespace ns3 {
+using namespace ns3;
 
 class SimulatorEventsTestCase : public TestCase
 {
@@ -468,14 +468,12 @@ public:
     ObjectFactory factory;
     factory.SetTypeId (ListScheduler::GetTypeId ());
 
-    AddTestCase (new SimulatorEventsTestCase (factory));
+    AddTestCase (new SimulatorEventsTestCase (factory), TestCase::QUICK);
     factory.SetTypeId (MapScheduler::GetTypeId ());
-    AddTestCase (new SimulatorEventsTestCase (factory));
+    AddTestCase (new SimulatorEventsTestCase (factory), TestCase::QUICK);
     factory.SetTypeId (HeapScheduler::GetTypeId ());
-    AddTestCase (new SimulatorEventsTestCase (factory));
+    AddTestCase (new SimulatorEventsTestCase (factory), TestCase::QUICK);
     factory.SetTypeId (CalendarScheduler::GetTypeId ());
-    AddTestCase (new SimulatorEventsTestCase (factory));
+    AddTestCase (new SimulatorEventsTestCase (factory), TestCase::QUICK);
   }
 } g_simulatorTestSuite;
-
-} // namespace ns3

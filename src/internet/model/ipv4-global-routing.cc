@@ -59,14 +59,14 @@ Ipv4GlobalRouting::Ipv4GlobalRouting ()
   : m_randomEcmpRouting (false),
     m_respondToInterfaceEvents (false)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 
   m_rand = CreateObject<UniformRandomVariable> ();
 }
 
 Ipv4GlobalRouting::~Ipv4GlobalRouting ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 void 
@@ -74,7 +74,7 @@ Ipv4GlobalRouting::AddHostRouteTo (Ipv4Address dest,
                                    Ipv4Address nextHop, 
                                    uint32_t interface)
 {
-  NS_LOG_FUNCTION (dest << nextHop << interface);
+  NS_LOG_FUNCTION (this << dest << nextHop << interface);
   Ipv4RoutingTableEntry *route = new Ipv4RoutingTableEntry ();
   *route = Ipv4RoutingTableEntry::CreateHostRouteTo (dest, nextHop, interface);
   m_hostRoutes.push_back (route);
@@ -84,7 +84,7 @@ void
 Ipv4GlobalRouting::AddHostRouteTo (Ipv4Address dest, 
                                    uint32_t interface)
 {
-  NS_LOG_FUNCTION (dest << interface);
+  NS_LOG_FUNCTION (this << dest << interface);
   Ipv4RoutingTableEntry *route = new Ipv4RoutingTableEntry ();
   *route = Ipv4RoutingTableEntry::CreateHostRouteTo (dest, interface);
   m_hostRoutes.push_back (route);
@@ -96,7 +96,7 @@ Ipv4GlobalRouting::AddNetworkRouteTo (Ipv4Address network,
                                       Ipv4Address nextHop, 
                                       uint32_t interface)
 {
-  NS_LOG_FUNCTION (network << networkMask << nextHop << interface);
+  NS_LOG_FUNCTION (this << network << networkMask << nextHop << interface);
   Ipv4RoutingTableEntry *route = new Ipv4RoutingTableEntry ();
   *route = Ipv4RoutingTableEntry::CreateNetworkRouteTo (network,
                                                         networkMask,
@@ -110,7 +110,7 @@ Ipv4GlobalRouting::AddNetworkRouteTo (Ipv4Address network,
                                       Ipv4Mask networkMask, 
                                       uint32_t interface)
 {
-  NS_LOG_FUNCTION (network << networkMask << interface);
+  NS_LOG_FUNCTION (this << network << networkMask << interface);
   Ipv4RoutingTableEntry *route = new Ipv4RoutingTableEntry ();
   *route = Ipv4RoutingTableEntry::CreateNetworkRouteTo (network,
                                                         networkMask,
@@ -124,7 +124,7 @@ Ipv4GlobalRouting::AddASExternalRouteTo (Ipv4Address network,
                                          Ipv4Address nextHop,
                                          uint32_t interface)
 {
-  NS_LOG_FUNCTION (network << networkMask << nextHop);
+  NS_LOG_FUNCTION (this << network << networkMask << nextHop << interface);
   Ipv4RoutingTableEntry *route = new Ipv4RoutingTableEntry ();
   *route = Ipv4RoutingTableEntry::CreateNetworkRouteTo (network,
                                                         networkMask,
@@ -137,7 +137,7 @@ Ipv4GlobalRouting::AddASExternalRouteTo (Ipv4Address network,
 Ptr<Ipv4Route>
 Ipv4GlobalRouting::LookupGlobal (Ipv4Address dest, Ptr<NetDevice> oif)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << dest << oif);
   NS_LOG_LOGIC ("Looking for route for destination " << dest);
   Ptr<Ipv4Route> rtentry = 0;
   // store all available routes that bring packets to their destination
@@ -246,7 +246,7 @@ Ipv4GlobalRouting::LookupGlobal (Ipv4Address dest, Ptr<NetDevice> oif)
 uint32_t 
 Ipv4GlobalRouting::GetNRoutes (void) const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   uint32_t n = 0;
   n += m_hostRoutes.size ();
   n += m_networkRoutes.size ();
@@ -257,7 +257,7 @@ Ipv4GlobalRouting::GetNRoutes (void) const
 Ipv4RoutingTableEntry *
 Ipv4GlobalRouting::GetRoute (uint32_t index) const
 {
-  NS_LOG_FUNCTION (index);
+  NS_LOG_FUNCTION (this << index);
   if (index < m_hostRoutes.size ())
     {
       uint32_t tmp = 0;
@@ -306,7 +306,7 @@ Ipv4GlobalRouting::GetRoute (uint32_t index) const
 void 
 Ipv4GlobalRouting::RemoveRoute (uint32_t index)
 {
-  NS_LOG_FUNCTION (index);
+  NS_LOG_FUNCTION (this << index);
   if (index < m_hostRoutes.size ())
     {
       uint32_t tmp = 0;
@@ -371,7 +371,7 @@ Ipv4GlobalRouting::AssignStreams (int64_t stream)
 void
 Ipv4GlobalRouting::DoDispose (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   for (HostRoutesI i = m_hostRoutes.begin (); 
        i != m_hostRoutes.end (); 
        i = m_hostRoutes.erase (i)) 
@@ -398,6 +398,7 @@ Ipv4GlobalRouting::DoDispose (void)
 void
 Ipv4GlobalRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
 {
+  NS_LOG_FUNCTION (this << stream);
   std::ostream* os = stream->GetStream ();
   if (GetNRoutes () > 0)
     {
@@ -444,7 +445,7 @@ Ipv4GlobalRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
 Ptr<Ipv4Route>
 Ipv4GlobalRouting::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDevice> oif, Socket::SocketErrno &sockerr)
 {
-
+  NS_LOG_FUNCTION (this << p << &header << oif << &sockerr);
 //
 // First, see if this is a multicast packet we have a route for.  If we
 // have a route, then send the packet down each of the specified interfaces.
@@ -474,8 +475,7 @@ bool
 Ipv4GlobalRouting::RouteInput  (Ptr<const Packet> p, const Ipv4Header &header, Ptr<const NetDevice> idev,                             UnicastForwardCallback ucb, MulticastForwardCallback mcb,
                                 LocalDeliverCallback lcb, ErrorCallback ecb)
 { 
-
-  NS_LOG_FUNCTION (this << p << header << header.GetSource () << header.GetDestination () << idev);
+  NS_LOG_FUNCTION (this << p << header << header.GetSource () << header.GetDestination () << idev << &lcb << &ecb);
   // Check if input device supports IP
   NS_ASSERT (m_ipv4->GetInterfaceForDevice (idev) >= 0);
   uint32_t iif = m_ipv4->GetInterfaceForDevice (idev);

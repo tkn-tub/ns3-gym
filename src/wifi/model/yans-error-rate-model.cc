@@ -17,6 +17,9 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
+
+#include <cmath>
+
 #include "yans-error-rate-model.h"
 #include "wifi-phy.h"
 #include "ns3/log.h"
@@ -44,13 +47,13 @@ YansErrorRateModel::YansErrorRateModel ()
 double
 YansErrorRateModel::Log2 (double val) const
 {
-  return log (val) / log (2.0);
+  return std::log (val) / std::log (2.0);
 }
 double
 YansErrorRateModel::GetBpskBer (double snr, uint32_t signalSpread, uint32_t phyRate) const
 {
   double EbNo = snr * signalSpread / phyRate;
-  double z = sqrt (EbNo);
+  double z = std::sqrt (EbNo);
   double ber = 0.5 * erfc (z);
   NS_LOG_INFO ("bpsk snr=" << snr << " ber=" << ber);
   return ber;
@@ -59,9 +62,9 @@ double
 YansErrorRateModel::GetQamBer (double snr, unsigned int m, uint32_t signalSpread, uint32_t phyRate) const
 {
   double EbNo = snr * signalSpread / phyRate;
-  double z = sqrt ((1.5 * Log2 (m) * EbNo) / (m - 1.0));
-  double z1 = ((1.0 - 1.0 / sqrt (m)) * erfc (z));
-  double z2 = 1 - pow ((1 - z1), 2.0);
+  double z = std::sqrt ((1.5 * Log2 (m) * EbNo) / (m - 1.0));
+  double z1 = ((1.0 - 1.0 / std::sqrt (m)) * erfc (z));
+  double z2 = 1 - std::pow ((1 - z1), 2.0);
   double ber = z2 / Log2 (m);
   NS_LOG_INFO ("Qam m=" << m << " rate=" << phyRate << " snr=" << snr << " ber=" << ber);
   return ber;
@@ -80,7 +83,7 @@ YansErrorRateModel::Factorial (uint32_t k) const
 double
 YansErrorRateModel::Binomial (uint32_t k, double p, uint32_t n) const
 {
-  double retval = Factorial (n) / (Factorial (k) * Factorial (n - k)) * pow (p, k) * pow (1 - p, n - k);
+  double retval = Factorial (n) / (Factorial (k) * Factorial (n - k)) * std::pow (p, static_cast<double> (k)) * std::pow (1 - p, static_cast<double> (n - k));
   return retval;
 }
 double
@@ -142,7 +145,7 @@ YansErrorRateModel::GetFecBpskBer (double snr, double nbits,
   double pd = CalculatePd (ber, dFree);
   double pmu = adFree * pd;
   pmu = std::min (pmu, 1.0);
-  double pms = pow (1 - pmu, nbits);
+  double pms = std::pow (1 - pmu, nbits);
   return pms;
 }
 
@@ -165,7 +168,7 @@ YansErrorRateModel::GetFecQamBer (double snr, uint32_t nbits,
   pd = CalculatePd (ber, dFree + 1);
   pmu += adFreePlusOne * pd;
   pmu = std::min (pmu, 1.0);
-  double pms = pow (1 - pmu, nbits);
+  double pms = std::pow (1 - pmu, static_cast<double> (nbits));
   return pms;
 }
 

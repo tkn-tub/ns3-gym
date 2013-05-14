@@ -176,7 +176,7 @@ public:
 OlsrProtocolTestSuite::OlsrProtocolTestSuite()
   : TestSuite ("routing-olsr", UNIT)
 {
-  AddTestCase (new OlsrMprTestCase ());
+  AddTestCase (new OlsrMprTestCase (), TestCase::QUICK);
 }
 
 }

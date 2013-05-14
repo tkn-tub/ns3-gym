@@ -161,7 +161,7 @@ private:
 private:
   typedef std::vector<Ptr<MeshWifiInterfaceMacPlugin> > PluginList;
 
-  virtual void DoStart ();
+  virtual void DoInitialize ();
 
   ///\name Mesh timing intervals
   // \{

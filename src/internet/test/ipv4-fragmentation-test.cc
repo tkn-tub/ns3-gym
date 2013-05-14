@@ -50,7 +50,7 @@
 #include <limits>
 #include <netinet/in.h>
 
-namespace ns3 {
+using namespace ns3;
 
 class UdpSocketImpl;
 
@@ -407,8 +407,6 @@ class Ipv4FragmentationTestSuite : public TestSuite
 public:
   Ipv4FragmentationTestSuite () : TestSuite ("ipv4-fragmentation", UNIT)
   {
-    AddTestCase (new Ipv4FragmentationTest);
+    AddTestCase (new Ipv4FragmentationTest, TestCase::QUICK);
   }
 } g_ipv4fragmentationTestSuite;
-
-}; // namespace ns3

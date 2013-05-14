@@ -1,0 +1,105 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+import os
+
+from waflib import Options
+
+
+def options(opt):
+    opt.add_option('--with-brite',
+                   help=('Use BRITE integration support, given by the indicated path,'
+                         ' to allow the use of the BRITE topology generator'),
+                   default=False, dest='with_brite')
+
+def configure(conf):
+    conf.env['ENABLE_BRITE'] = False
+
+    if Options.options.with_brite:
+        if os.path.isdir(Options.options.with_brite):
+            conf.msg("Checking BRITE location", ("%s (given)" % Options.options.with_brite))
+            conf.env['WITH_BRITE'] = os.path.abspath(Options.options.with_brite)
+        else:
+            brite_dir = os.path.join('..','BRITE')
+            if os.path.isdir(brite_dir):
+                conf.msg("Checking for BRITE location", ("%s (guessed)" % brite_dir))
+                conf.env['WITH_BRITE'] = os.path.abspath(brite_dir)
+                del brite_dir
+            if not conf.env['WITH_BRITE']:
+                conf.msg("Checking for BRITE location", False)
+                conf.report_optional_feature("brite", "BRITE Integration", False,
+                                     "BRITE not found (see option --with-brite)")
+                # Add this module to the list of modules that won't be built
+                # if they are enabled.
+                conf.env['MODULES_NOT_BUILT'].append('brite')
+
+                return
+    else:
+        conf.report_optional_feature("brite", "BRITE Integration", False, 'BRITE not enabled (see option --with-brite)')
+
+        # Add this module to the list of modules that won't be built
+        # if they are enabled.
+        conf.env['MODULES_NOT_BUILT'].append('brite')
+
+        return
+
+    test_code = '''
+#include "Brite.h"
+
+int main()
+{
+  return 0;
+}
+'''
+
+    conf.env['DL'] = conf.check(mandatory=True, lib='dl', define_name='DL', uselib='DL')
+
+    conf.env.append_value('NS3_MODULE_PATH',os.path.abspath(os.path.join(conf.env['WITH_BRITE'], '.')))
+
+    conf.env['INCLUDES_BRITE'] = os.path.abspath(os.path.join(conf.env['WITH_BRITE'],'.'))
+
+    conf.env['CPPPATH_BRITE'] = [
+            os.path.abspath(os.path.join(conf.env['WITH_BRITE'],'.')),
+            os.path.abspath(os.path.join(conf.env['WITH_BRITE'],'Models'))
+            ]
+    conf.env['LIBPATH_BRITE'] = [os.path.abspath(os.path.join(conf.env['WITH_BRITE'], '.'))]
+
+    conf.env.append_value('CXXDEFINES', 'NS3_BRITE')
+    conf.env.append_value('CPPPATH', conf.env['CPPPATH_BRITE'])
+
+    conf.env['BRITE'] = conf.check(fragment=test_code, lib='brite', libpath=conf.env['LIBPATH_BRITE'], use='BRITE DL')
+    conf.report_optional_feature("brite", "BRITE Integration",
+                                          conf.env['BRITE'], "BRITE library not found")
+
+    if conf.env['BRITE']:
+        conf.env['ENABLE_BRITE'] = True
+        conf.env.append_value('CXXDEFINES', 'NS3_BRITE')
+        conf.env.append_value('CPPPATH', conf.env['CPPPATH_BRITE'])
+
+def build(bld):
+    # Don't do anything for this module if brite's not enabled.
+    if 'brite' in bld.env['MODULES_NOT_BUILT']:
+        return
+
+    module = bld.create_ns3_module('brite', ['network', 'core', 'internet', 'point-to-point'])
+    module.source = [
+        ]
+
+    module_test = bld.create_ns3_module_test_library('brite')
+    module_test.source = [
+        ]
+
+    if bld.env['BRITE'] and bld.env['DL']:
+        module.uselib = 'BRITE DL'
+
+    headers = bld(features='ns3header')
+    headers.module = 'brite'
+    headers.source = [
+        ]
+
+    if bld.env['ENABLE_BRITE']:
+        module.source.append ('helper/brite-topology-helper.cc')
+        headers.source.append ('helper/brite-topology-helper.h')
+        module_test.source.append('test/brite-test-topology.cc')
+
+    if bld.env['ENABLE_EXAMPLES'] and bld.env['ENABLE_BRITE']:
+      bld.recurse('examples')

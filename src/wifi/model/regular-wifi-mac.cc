@@ -75,15 +75,15 @@ RegularWifiMac::~RegularWifiMac ()
 }
 
 void
-RegularWifiMac::DoStart ()
+RegularWifiMac::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
 
-  m_dca->Start ();
+  m_dca->Initialize ();
 
   for (EdcaQueues::iterator i = m_edca.begin (); i != m_edca.end (); ++i)
     {
-      i->second->Start ();
+      i->second->Initialize ();
     }
 }
 

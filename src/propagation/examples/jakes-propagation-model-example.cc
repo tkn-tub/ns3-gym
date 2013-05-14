@@ -21,7 +21,7 @@
 #include "ns3/mobility-module.h"
 #include "ns3/jakes-propagation-loss-model.h"
 #include <vector>
-#include <math.h>
+#include <cmath>
 
 using namespace ns3;
 /**

@@ -37,7 +37,7 @@ Ipv4InterfaceAddress::Ipv4InterfaceAddress (Ipv4Address local, Ipv4Mask mask)
   : m_scope (GLOBAL), 
     m_secondary (false)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << local << mask);
   m_local = local;
   m_mask = mask;
   m_broadcast = Ipv4Address (local.Get () | (~mask.Get ()));
@@ -50,83 +50,83 @@ Ipv4InterfaceAddress::Ipv4InterfaceAddress (const Ipv4InterfaceAddress &o)
     m_scope (o.m_scope),
     m_secondary (o.m_secondary)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << &o);
 }
 
 void 
 Ipv4InterfaceAddress::SetLocal (Ipv4Address local)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << local);
   m_local = local;
 }
 
 Ipv4Address 
 Ipv4InterfaceAddress::GetLocal (void) const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return m_local; 
 }
 
 void 
 Ipv4InterfaceAddress::SetMask (Ipv4Mask mask) 
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << mask);
   m_mask = mask;
 }
 
 Ipv4Mask 
 Ipv4InterfaceAddress::GetMask (void) const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return m_mask;
 }
 
 void 
 Ipv4InterfaceAddress::SetBroadcast (Ipv4Address broadcast)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << broadcast);
   m_broadcast = broadcast;
 }
 
 Ipv4Address 
 Ipv4InterfaceAddress::GetBroadcast (void) const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return m_broadcast;
 }
 
 void 
 Ipv4InterfaceAddress::SetScope (Ipv4InterfaceAddress::InterfaceAddressScope_e scope)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << scope);
   m_scope = scope;
 }
 
 Ipv4InterfaceAddress::InterfaceAddressScope_e 
 Ipv4InterfaceAddress::GetScope (void) const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return m_scope;
 }
 
 bool 
 Ipv4InterfaceAddress::IsSecondary (void) const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return m_secondary;
 }
 
 void 
 Ipv4InterfaceAddress::SetSecondary (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   m_secondary = true;
 }
 
 void 
 Ipv4InterfaceAddress::SetPrimary (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   m_secondary = false;
 }
 

@@ -59,7 +59,7 @@
 #include <limits>
 #include <netinet/in.h>
 
-namespace ns3 {
+using namespace ns3;
 
 class UdpSocketImpl;
 
@@ -423,8 +423,6 @@ class Ipv6FragmentationTestSuite : public TestSuite
 public:
   Ipv6FragmentationTestSuite () : TestSuite ("ipv6-fragmentation", UNIT)
   {
-    AddTestCase (new Ipv6FragmentationTest);
+    AddTestCase (new Ipv6FragmentationTest, TestCase::QUICK);
   }
 } g_ipv6fragmentationTestSuite;
-
-}; // namespace ns3

@@ -22,6 +22,9 @@
 
 #include "ns3/string.h"
 #include "ns3/assert.h"
+#include "ns3/log.h"
+
+NS_LOG_COMPONENT_DEFINE ("ConstantRateWifiManager");
 
 namespace ns3 {
 
@@ -47,15 +50,18 @@ ConstantRateWifiManager::GetTypeId (void)
 
 ConstantRateWifiManager::ConstantRateWifiManager ()
 {
+  NS_LOG_FUNCTION (this);
 }
 ConstantRateWifiManager::~ConstantRateWifiManager ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 
 WifiRemoteStation *
 ConstantRateWifiManager::DoCreateStation (void) const
 {
+  NS_LOG_FUNCTION (this);
   WifiRemoteStation *station = new WifiRemoteStation ();
   return station;
 }
@@ -65,48 +71,58 @@ void
 ConstantRateWifiManager::DoReportRxOk (WifiRemoteStation *station,
                                        double rxSnr, WifiMode txMode)
 {
+  NS_LOG_FUNCTION (this << station << rxSnr << txMode);
 }
 void
 ConstantRateWifiManager::DoReportRtsFailed (WifiRemoteStation *station)
 {
+  NS_LOG_FUNCTION (this << station);
 }
 void
 ConstantRateWifiManager::DoReportDataFailed (WifiRemoteStation *station)
 {
+  NS_LOG_FUNCTION (this << station);
 }
 void
 ConstantRateWifiManager::DoReportRtsOk (WifiRemoteStation *st,
                                         double ctsSnr, WifiMode ctsMode, double rtsSnr)
 {
+  NS_LOG_FUNCTION (this << st << ctsSnr << ctsMode << rtsSnr);
 }
 void
 ConstantRateWifiManager::DoReportDataOk (WifiRemoteStation *st,
                                          double ackSnr, WifiMode ackMode, double dataSnr)
 {
+  NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr);
 }
 void
 ConstantRateWifiManager::DoReportFinalRtsFailed (WifiRemoteStation *station)
 {
+  NS_LOG_FUNCTION (this << station);
 }
 void
 ConstantRateWifiManager::DoReportFinalDataFailed (WifiRemoteStation *station)
 {
+  NS_LOG_FUNCTION (this << station);
 }
 
 WifiMode
 ConstantRateWifiManager::DoGetDataMode (WifiRemoteStation *st, uint32_t size)
 {
+  NS_LOG_FUNCTION (this << st << size);
   return m_dataMode;
 }
 WifiMode
 ConstantRateWifiManager::DoGetRtsMode (WifiRemoteStation *st)
 {
+  NS_LOG_FUNCTION (this << st);
   return m_ctlMode;
 }
 
 bool
 ConstantRateWifiManager::IsLowLatency (void) const
 {
+  NS_LOG_FUNCTION (this);
   return true;
 }
 

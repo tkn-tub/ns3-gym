@@ -69,22 +69,6 @@ public:
    * Destructor
    */
   virtual ~EpcSgwPgwApplication (void);
-
-
-  /** 
-   * Simulates the reception by the PGW of a GTP-C message of type
-   * CreateSessionRequest or BearerResourceCommand coming from the
-   * MME. This triggers the creation of a new EPS Bearer. 
-   * 
-   * \param bearer the specification of the EPS Bearer to be created
-   * \param enbS1uAddress the IPv4 address at which the SGW can reach
-   * the eNB via the S1-U interface
-   * \param tft the Traffic Flow Template related to this bearer
-   * 
-   * \return the TunnelEndpointIdentifier of this EPS bearer
-   */
-  uint32_t ActivateS1Bearer (Ipv4Address ueAddr, Ipv4Address enbAddr, Ptr<EpcTft> tft);
-
   
   /** 
    * Method to be assigned to the callback of the Gi TUN VirtualNetDevice. It

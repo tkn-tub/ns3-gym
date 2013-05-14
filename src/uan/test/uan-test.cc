@@ -250,7 +250,7 @@ public:
 UanTestSuite::UanTestSuite ()
   :  TestSuite ("devices-uan", UNIT)
 {
-  AddTestCase (new UanTest);
+  AddTestCase (new UanTest, TestCase::QUICK);
 }
 
 static UanTestSuite g_uanTestSuite;

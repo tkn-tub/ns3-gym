@@ -103,7 +103,7 @@ LteHexGridEnbTopologyHelper::SetPositionAndInstallEnbDevice (NodeContainer c)
 {
   NS_LOG_FUNCTION (this);
   NetDeviceContainer enbDevs;
-  const double xydfactor = sqrt (0.75);
+  const double xydfactor = std::sqrt (0.75);
   double yd = xydfactor*m_d;
   for (uint32_t n = 0; n < c.GetN (); ++n)
     {

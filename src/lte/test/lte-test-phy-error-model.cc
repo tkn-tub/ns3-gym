@@ -63,28 +63,28 @@ LenaTestPhyErrorModelrSuite::LenaTestPhyErrorModelrSuite ()
   
   // Tests on DL Control Channels (PCFICH+PDDCH)
   // 1 interfering eNB SINR -2.0 BER 0.007 TB size 217
-  AddTestCase (new LenaDlCtrlPhyErrorModelTestCase (2, 1078, 217, 0.007));
+  AddTestCase (new LenaDlCtrlPhyErrorModelTestCase (2, 1078, 217, 0.007), TestCase::QUICK);
   // 2 interfering eNBs SINR -4.0 BER 0.037 TB size 217
-  AddTestCase (new LenaDlCtrlPhyErrorModelTestCase (3, 1040, 217, 0.045));
+  AddTestCase (new LenaDlCtrlPhyErrorModelTestCase (3, 1040, 217, 0.045), TestCase::EXTENSIVE);
   // 3 interfering eNBs SINR -6.0 BER 0.21 TB size 133
-  AddTestCase (new LenaDlCtrlPhyErrorModelTestCase (4, 1250, 133, 0.206));
+  AddTestCase (new LenaDlCtrlPhyErrorModelTestCase (4, 1250, 133, 0.206), TestCase::EXTENSIVE);
   // 4 interfering eNBs SINR -7.0 BER 0.34 TB size 133
-  AddTestCase (new LenaDlCtrlPhyErrorModelTestCase (5, 1260, 81, 0.343));
+  AddTestCase (new LenaDlCtrlPhyErrorModelTestCase (5, 1260, 81, 0.343), TestCase::EXTENSIVE);
 
   // Tests on DL/UL Data channels (PDSCH, PUSCH)
   // MCS 2 TB size of 256 bits BER 0.33 SINR -5.51
-  AddTestCase (new LenaDataPhyErrorModelTestCase (4, 1800, 32, 0.33, 50));
+  AddTestCase (new LenaDataPhyErrorModelTestCase (4, 1800, 32, 0.33, 50), TestCase::QUICK);
 // MCS 2 TB size of 528 bits BER 0.11 SINR -5.51
-  AddTestCase (new LenaDataPhyErrorModelTestCase (2, 1800, 66, 0.11, 34));
+  AddTestCase (new LenaDataPhyErrorModelTestCase (2, 1800, 66, 0.11, 34), TestCase::EXTENSIVE);
 // MCS 2 TB size of 1088 bits BER 0.02 SINR -5.51
-  AddTestCase (new LenaDataPhyErrorModelTestCase (1, 1800, 136, 0.02, 16));
+  AddTestCase (new LenaDataPhyErrorModelTestCase (1, 1800, 136, 0.02, 16), TestCase::EXTENSIVE);
   // MCS 12 TB size of 4800 bits  BER 0.3  SINR 4.43
-  AddTestCase (new LenaDataPhyErrorModelTestCase (1, 600, 600, 0.3, 48));
+  AddTestCase (new LenaDataPhyErrorModelTestCase (1, 600, 600, 0.3, 48), TestCase::EXTENSIVE);
 // MCS 12 TB size of 1632 bits  BER 0.55  SINR 4.43
-  AddTestCase (new LenaDataPhyErrorModelTestCase (3, 600, 204, 0.55, 52));
+  AddTestCase (new LenaDataPhyErrorModelTestCase (3, 600, 204, 0.55, 52), TestCase::EXTENSIVE);
 // MCS 16 TB size of 7272 bits (3648 x 3584) BER 0.14 SINR 8.48
 // BER 0.14 = 1 - ((1-0.075)*(1-0.075))
-  AddTestCase (new LenaDataPhyErrorModelTestCase (1, 470, 781, 0.14, 29));
+  AddTestCase (new LenaDataPhyErrorModelTestCase (1, 470, 781, 0.14, 29), TestCase::EXTENSIVE);
 
  
 
@@ -261,8 +261,8 @@ LenaDataPhyErrorModelTestCase::DoRun (void)
       double ber = 1.0 - ((double)dlDataRxed.at (i)/txed);
       double np = n-n*m_berRef;
       NS_LOG_INFO ("\tUser " << i << " imsi " << imsi << " bytes rxed " << (double)dlDataRxed.at (i) << " txed " << txed 
-        << " BER " << ber << " Err " << fabs (m_berRef - ber) << " lambda " << lambda 
-        << " np " << np << " difference " << abs(lambda - np) << " quantile " << m_bernQuantile);
+                   << " BER " << ber << " Err " << std::fabs (m_berRef - ber) << " lambda " << lambda 
+                   << " np " << np << " difference " << std::abs (lambda - np) << " quantile " << m_bernQuantile);
       NS_UNUSED (ber);
       // the quantiles are evaluated offline according to a Bernoulli 
       // ditribution with n equal to the number of packet sent and p equal 

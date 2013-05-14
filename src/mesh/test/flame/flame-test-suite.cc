@@ -145,8 +145,8 @@ public:
 FlameTestSuite::FlameTestSuite ()
   : TestSuite ("devices-mesh-flame", UNIT)
 {
-  AddTestCase (new FlameHeaderTest);
-  AddTestCase (new FlameRtableTest);
+  AddTestCase (new FlameHeaderTest, TestCase::QUICK);
+  AddTestCase (new FlameRtableTest, TestCase::QUICK);
 }
 
 static FlameTestSuite g_flameTestSuite;

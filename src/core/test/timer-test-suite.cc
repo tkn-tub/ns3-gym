@@ -46,7 +46,7 @@ void barir (int &)
 }
 } // anonymous namespace
 
-namespace ns3 {
+using namespace ns3;
 
 class TimerStateTestCase : public TestCase
 {
@@ -214,11 +214,7 @@ public:
   TimerTestSuite ()
     : TestSuite ("timer", UNIT)
   {
-    AddTestCase (new TimerStateTestCase ());
-    AddTestCase (new TimerTemplateTestCase ());
+    AddTestCase (new TimerStateTestCase (), TestCase::QUICK);
+    AddTestCase (new TimerTemplateTestCase (), TestCase::QUICK);
   }
 } g_timerTestSuite;
-
-} // namespace ns3
-
-

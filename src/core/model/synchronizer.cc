@@ -17,6 +17,9 @@
  */
 
 #include "synchronizer.h"
+#include "log.h"
+
+NS_LOG_COMPONENT_DEFINE ("Synchronizer");
 
 namespace ns3 {
 
@@ -34,27 +37,32 @@ Synchronizer::GetTypeId (void)
 Synchronizer::Synchronizer ()
   : m_realtimeOriginNano (0), m_simOriginNano (0)
 {
+  NS_LOG_FUNCTION (this);
 }
 
 Synchronizer::~Synchronizer ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 bool
 Synchronizer::Realtime (void)
 {
+  NS_LOG_FUNCTION (this);
   return DoRealtime ();
 }
 
 uint64_t
 Synchronizer::GetCurrentRealtime (void)
 {
+  NS_LOG_FUNCTION (this);
   return NanosecondToTimeStep (DoGetCurrentRealtime ());
 }
 
 void
 Synchronizer::SetOrigin (uint64_t ts)
 {
+  NS_LOG_FUNCTION (this << ts);
   m_simOriginNano = TimeStepToNanosecond (ts);
   DoSetOrigin (m_simOriginNano);
 }
@@ -62,12 +70,14 @@ Synchronizer::SetOrigin (uint64_t ts)
 uint64_t
 Synchronizer::GetOrigin (void)
 {
+  NS_LOG_FUNCTION (this);
   return NanosecondToTimeStep (m_simOriginNano);
 }
 
 int64_t
 Synchronizer::GetDrift (uint64_t ts)
 {
+  NS_LOG_FUNCTION (this << ts);
   int64_t tDrift = DoGetDrift (TimeStepToNanosecond (ts));
 
   if (tDrift < 0) 
@@ -81,6 +91,7 @@ Synchronizer::GetDrift (uint64_t ts)
 bool
 Synchronizer::Synchronize (uint64_t tsCurrent, uint64_t tsDelay)
 {
+  NS_LOG_FUNCTION (this << tsCurrent << tsDelay);
   return DoSynchronize (TimeStepToNanosecond (tsCurrent), 
                         TimeStepToNanosecond (tsDelay));
 }
@@ -88,36 +99,42 @@ Synchronizer::Synchronize (uint64_t tsCurrent, uint64_t tsDelay)
 void
 Synchronizer::Signal (void)
 {
+  NS_LOG_FUNCTION (this);
   DoSignal ();
 }
 
 void
 Synchronizer::SetCondition (bool cond)
 {
+  NS_LOG_FUNCTION (this << cond);
   DoSetCondition (cond);
 }
 
 void
 Synchronizer::EventStart (void)
 {
+  NS_LOG_FUNCTION (this);
   DoEventStart ();
 }
 
 uint64_t
 Synchronizer::EventEnd (void)
 {
+  NS_LOG_FUNCTION (this);
   return NanosecondToTimeStep (DoEventEnd ());
 }
 
 uint64_t
 Synchronizer::TimeStepToNanosecond (uint64_t ts)
 {
+  NS_LOG_FUNCTION (this << ts);
   return TimeStep (ts).GetNanoSeconds ();
 }
 
 uint64_t
 Synchronizer::NanosecondToTimeStep (uint64_t ns)
 {
+  NS_LOG_FUNCTION (this << ns);
   return NanoSeconds (ns).GetTimeStep ();
 }
 

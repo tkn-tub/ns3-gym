@@ -69,9 +69,11 @@ V4Ping::V4Ping ()
     m_verbose (false),
     m_recv (0)
 {
+  NS_LOG_FUNCTION (this);
 }
 V4Ping::~V4Ping ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 void
@@ -85,6 +87,7 @@ V4Ping::DoDispose (void)
 uint32_t
 V4Ping::GetApplicationId (void) const
 {
+  NS_LOG_FUNCTION (this);
   Ptr<Node> node = GetNode ();
   for (uint32_t i = 0; i < node->GetNApplications (); ++i)
     {
@@ -165,6 +168,7 @@ V4Ping::Receive (Ptr<Socket> socket)
 void
 V4Ping::Write32 (uint8_t *buffer, const uint32_t data)
 {
+  NS_LOG_FUNCTION (this << buffer << data);
   buffer[0] = (data >> 0) & 0xff;
   buffer[1] = (data >> 8) & 0xff;
   buffer[2] = (data >> 16) & 0xff;
@@ -175,13 +179,16 @@ V4Ping::Write32 (uint8_t *buffer, const uint32_t data)
 void
 V4Ping::Read32 (const uint8_t *buffer, uint32_t &data)
 {
+  NS_LOG_FUNCTION (this << buffer << data);
   data = (buffer[3] << 24) + (buffer[2] << 16) + (buffer[1] << 8) + buffer[0];
 }
 
 void 
 V4Ping::Send ()
 {
-  NS_LOG_FUNCTION (m_seq);
+  NS_LOG_FUNCTION (this);
+
+  NS_LOG_INFO ("m_seq=" << m_seq);
   Ptr<Packet> p = Create<Packet> ();
   Icmpv4Echo echo;
   echo.SetSequenceNumber (m_seq);

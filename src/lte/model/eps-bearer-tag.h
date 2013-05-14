@@ -70,7 +70,6 @@ public:
 
   uint16_t GetRnti (void) const;
   uint8_t GetBid (void) const;
-  uint8_t GetLayer (void) const;
 
 private:
   uint16_t m_rnti;

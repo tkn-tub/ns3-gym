@@ -20,3 +20,7 @@ def build(bld):
    obj = bld.create_ns3_program('nsclick-routing',
                                 ['click', 'csma', 'internet', 'applications'])
    obj.source = 'nsclick-routing.cc'
+
+   obj = bld.create_ns3_program('nsclick-defines',
+                                ['click'])
+   obj.source = 'nsclick-defines.cc'

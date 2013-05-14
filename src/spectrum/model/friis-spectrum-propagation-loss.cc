@@ -18,11 +18,9 @@
  * Author: Nicola Baldo <nbaldo@cttc.es>
  */
 
-
 #include <ns3/mobility-model.h>
 #include <ns3/friis-spectrum-propagation-loss.h>
-#include <math.h>
-
+#include <cmath> // for M_PI
 
 
 namespace ns3 {

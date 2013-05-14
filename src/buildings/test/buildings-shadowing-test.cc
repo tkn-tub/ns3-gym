@@ -54,13 +54,13 @@ BuildingsShadowingTestSuite::BuildingsShadowingTestSuite ()
   LogComponentEnable ("BuildingsShadowingTest", LOG_LEVEL_ALL);
 
   // Test #1 Outdoor Model
-  AddTestCase (new BuildingsShadowingTestCase (1, 2, 148.86, 7.0, "Outdoor Shadowing"));
+  AddTestCase (new BuildingsShadowingTestCase (1, 2, 148.86, 7.0, "Outdoor Shadowing"), TestCase::QUICK);
 
   // Test #2 Indoor model
-  AddTestCase (new BuildingsShadowingTestCase (5, 6, 88.5724, 8.0, "Indoor Shadowing"));
+  AddTestCase (new BuildingsShadowingTestCase (5, 6, 88.5724, 8.0, "Indoor Shadowing"), TestCase::QUICK);
 
   // Test #3 Indoor -> Outdoor
-  AddTestCase (new BuildingsShadowingTestCase (9, 10, 85.0012, 8.6, "Indoor -> Outdoor Shadowing"));
+  AddTestCase (new BuildingsShadowingTestCase (9, 10, 85.0012, 8.6, "Indoor -> Outdoor Shadowing"), TestCase::QUICK);
 
 }
 
@@ -112,13 +112,13 @@ BuildingsShadowingTestCase::DoRun (void)
       sumSquared += (loss.at (loss.size () - 1) * loss.at (loss.size () - 1));
     }
   double mean = sum / samples;
-  double sigma = sqrt (sumSquared / samples - (mean * mean));
+  double sigma = std::sqrt (sumSquared / samples - (mean * mean));
   // test whether the distribution falls in the 99% confidence interval, as expected with a nornal distribution
-  double ci = (2.575829303549 * sigma) / sqrt (samples);
+  double ci = (2.575829303549 * sigma) / std::sqrt (samples);
 
   NS_LOG_INFO ("Mean from simulation " << mean << ", sigma " << sigma << ", reference value " << m_sigmaRef << ", CI(99%) " << ci);
 
-  NS_TEST_ASSERT_MSG_EQ_TOL (fabs (mean), 0.0, ci, "Wrong shadowing distribution !");
+  NS_TEST_ASSERT_MSG_EQ_TOL (std::fabs (mean), 0.0, ci, "Wrong shadowing distribution !");
   Simulator::Destroy ();
 }
 

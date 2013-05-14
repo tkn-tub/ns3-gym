@@ -16,7 +16,7 @@ def build(bld):
         'test/point-to-point-test.cc',
         ]
 
-    headers = bld.new_task_gen(features=['ns3header'])
+    headers = bld(features='ns3header')
     headers.module = 'point-to-point'
     headers.source = [
         'model/point-to-point-net-device.h',
@@ -27,6 +27,6 @@ def build(bld):
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):
-        bld.add_subdirs('examples')
+        bld.recurse('examples')
 
     bld.ns3_python_bindings()

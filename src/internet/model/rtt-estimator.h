@@ -64,6 +64,8 @@ public:
 
   virtual ~RttEstimator();
 
+  virtual TypeId GetInstanceTypeId (void) const;
+
   /**
    * \brief Note that a particular sequence has been sent
    * \param seq the packet sequence number.
@@ -166,6 +168,8 @@ public:
   RttMeanDeviation ();
 
   RttMeanDeviation (const RttMeanDeviation&);
+
+  virtual TypeId GetInstanceTypeId (void) const;
 
   /**
    * \brief Add a new measurement to the estimator.

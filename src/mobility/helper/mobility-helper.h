@@ -24,6 +24,7 @@
 #include <vector>
 #include "ns3/object-factory.h"
 #include "ns3/attribute.h"
+#include "ns3/output-stream-wrapper.h"
 #include "ns3/position-allocator.h"
 #include "node-container.h"
 
@@ -221,31 +222,31 @@ public:
   void InstallAll (void);
 
   /**
-   * \param os output stream
+   * \param stream an output stream wrapper
    * \param nodeid the id of the node to generate ascii output for.
    *
    * Enable ascii output on the mobility model associated to the
    * specified nodeid and dump that to the specified stdc++ output 
    * stream.
    */
-  static void EnableAscii (std::ostream &os, uint32_t nodeid);
+  static void EnableAscii (Ptr<OutputStreamWrapper> stream, uint32_t nodeid);
   /**
-   * \param os output stream
+   * \param stream an output stream wrapper
    * \param n node container
    *
    * Enable ascii output on the mobility model associated each of
    * the nodes in the input container and dump that to the 
    * specified stdc++ output stream.
    */
-  static void EnableAscii (std::ostream &os, NodeContainer n);
+  static void EnableAscii (Ptr<OutputStreamWrapper> stream, NodeContainer n);
   /**
-   * \param os output stream
+   * \param stream an output stream wrapper
    *
    * Enable ascii output on the mobility model associated
    * every node in the system and dump that to the specified 
    * stdc++ output stream.
    */
-  static void EnableAsciiAll (std::ostream &os);
+  static void EnableAsciiAll (Ptr<OutputStreamWrapper> stream);
   /**
    * Assign a fixed random variable stream number to the random variables
    * used by the mobility models (including any position allocators assigned
@@ -264,7 +265,7 @@ private:
   /**
    * \internal
    */
-  static void CourseChanged (std::ostream *os, Ptr<const MobilityModel> mobility);
+  static void CourseChanged (Ptr<OutputStreamWrapper> stream, Ptr<const MobilityModel> mobility);
   std::vector<Ptr<MobilityModel> > m_mobilityStack;
   ObjectFactory m_mobility;
   Ptr<PositionAllocator> m_position;

@@ -10,7 +10,7 @@ Consult the file CHANGES.html for more detailed information about changed
 API and behavior across ns-3 releases.
 
 Release 3-dev
-============
+=============
 
 Availability
 ------------
@@ -18,14 +18,149 @@ This release is not yet available.
 
 Supported platforms
 -------------------
+To be determined
 
 New user-visible features
 -------------------------
+- new TCP Westwood and Westwood+ models
+- ns-3-click: it's now possible to (i) have Click pull random numbers from
+  ns-3 and (ii) have ns-3 set "defines" in Click via the simulation file 
+  (see src/click/examples/nsclick-defines.cc).
+- Waf shipped with ns-3 has been upgraded to version 1.7.10 and custom
+  pkg-config generator has been replaced by Waf's builtin tool.
+- create-module.py script has been updated to work with waf 1.7 and support
+  for creating modules with names containing dashes has been added.
+- the M5 release of the LTE module by the LENA project has been
+  merged; please see src/lte/RELEASE_NOTES for more detailed info 
 
 Bugs fixed
 ----------
- - bug 1485 - Setting global properties in config file (raw text) does
-              not have any effect
+- bug 1256 - Unnecessary SND.NXT advance, missing ACK for Out of Order segments
+- bug 1318 - Ipv6L3Protocol::LocalDeliver can get stuck in an infinte loop
+- bug 1409 - Add an attribute "SystemId" to configure the ID for MPI
+- bug 1421 - Frequency dependent propagation loss models need uniform Frequency / Lambda attribute
+- bug 1434 - DSR throughput not comparable to other protocols for manet example
+- bug 1502 - Shutdown on tcp socket seems to misbehave
+- bug 1503 - BlockAckManager infine loop
+- bug 1517 - Waf clean/distclean doesn't remove the doc/html directory
+- bug 1540 - Waf not finding click libraries
+- bug 1549 - Test for NS_LOG
+- bug 1556 - Uses of htonl making OpenFlow's match field error
+- bug 1563 - Reduce valgrind test scope
+- bug 1564 - Packet meta data isn't shown in dumbbell-animation.xml
+- bug 1566 - WiFi SNR tag improvements
+- bug 1568 - Deserialized addresses are implicity marked as Mac48Address
+- bug 1569 - droptail_vs_red example doesn't run
+- bug 1570 - Valgrind errors in new test examples
+- bug 1574 - Node color overwritten, by mobility updates in netanim
+- bug 1575 - Invert the y-axis in netanim
+- bug 1576 - Frequency units HERTZ and MEGAHERTZ mix up
+- bug 1577 - Typo in ascii picture in example aodv script
+- bug 1579 - edca-txop-n fragmentation causes segfault
+- bug 1582 - IPv6 raw socket return value is not like Linux socket
+- bug 1585 - Length field of A-MSDU subframe header endianness
+- bug 1586 - Building documentation fails if make runs in parallel
+- bug 1588 - UdpEchoServer::HandleRead logs fail when using Ipv6
+- bug 1589 - Bake - support pre-2.7 version of python
+- bug 1590 - Bake - more autotools version support
+- bug 1595 - Function declarations without implementations cause problems with dsr module's python bindings
+- bug 1596 - Inet TopologyReader is skipping one link and duplicating another one
+- bug 1600 - Icmpv6OptionLinkLayerAddress can only carry 48 bit addresses correctly
+- bug 1601 - RttEstimator doesn't set the m_currentEstimatedRtt to m_initialEstimatedRtt on creation
+- bug 1602 - waf build can break due to file collisions in higher-level directory
+- bug 1603 - random-variable-stream-helper - this unavalable for static member functions
+- bug 1607 - OnOffApplication over TCP with IPv6 support
+- bug 1608 - DSR Network ACK is not handled correctly
+- bug 1609 - Route Request table is needed
+- bug 1612 - pyviz (visualizer) will not be installed
+- bug 1613 - Can't build ns-3-dev with g++ 4.7.2
+- bug 1615 - Adjusting OLSR HelloInterval Attribute results in no links
+- bug 1618 - bake.py not detecting install of libxml2-dev on ubuntu
+- bug 1623 - pybindgen rev809 is not able to build after Ubuntu 1210
+- bug 1625 - ns-3-dev fails to build on Debian wheezy amd64
+- bug 1626 - ipv6-only network can't use UDP or TCP
+- bug 1632 - Prepend bake build directory to the guessed locations
+             that waf will look to find libraries
+- bug 1633 - Bake - should not report that it is downloading qt4 when it is already installed
+- bug 1635 - Small bug without Simulator::Destroy()
+- bug 1636 - Compilation error flagged as unmet dependency
+- bug 1637 - Bake calling apt-get for unpriviledged user
+- bug 1639 - bake.py support for linux mint
+- bug 1640 - bake needs to test for g++
+- bug 1641 - bake reports autotools dependency, but needs automake
+- bug 1661 - Variable ub1 defined but not used in ipv6-address.cc
+
+Known issues
+------------
+In general, known issues are tracked on the project tracker available
+at http://www.nsnam.org/bugzilla/
+
+Release 3.16
+============
+
+Availability
+------------
+This release is available from: 
+http://www.nsnam.org/release/ns-allinone-3.16.tar.bz2
+
+Supported platforms
+-------------------
+- Fedora Core 17 (32/64 bit) with g++-4.7.0
+- Fedora Core 15 (64 bit) with g++-4.6.3
+- Ubuntu 12.10 (32/64 bit) with g++-4.6.3
+- Ubuntu 12.04 (32/64 bit) with g++-4.6.3
+- Ubuntu 10.04.4 LTS (64 bit) with g++-4.4.3
+- OS X Mountain Lion 10.8.3 with g++-4.2.1
+- FreeBSD 8.2 (32 bit) with g++-4.2.1
+- Cygwin 1.7.9-1 with g++-4.5.3
+
+New user-visible features
+-------------------------
+- Support several new LTE MAC schedulers developed in GSoC 2012 project. 
+  Those schedulers include FD-MT, TD-MT, TTA, FD-BET, TD-BET, FD-TBFQ,
+  TD-TBFQ, PSS. Here, FD and TD mean frequency domain and time domain 
+  respectively.
+- It's now possible to use distcc when building ns-3 by using
+  $ CXX='distcc g++' ./waf configure
+  $ ./waf build
+- Support topology generation with the (external) BRITE topology generation 
+  tool
+
+Bugs fixed
+----------
+- bug  555 - DCF immediate access
+- bug  976 - wifi-wired-bridging regression test fails because of 
+             rounding errors in mobility model
+- bug 1055:  Wrong UAN's Thorp absorption loss model formula
+- bug 1284 - ./test.py performance tests do not exist
+- bug 1324 - ns3tcp-cwnd-test-suite.cc test failing
+- bug 1340 - ns3tcp-loss-suite.cc tests failing
+- bug 1342 - ns3tcp-cwnd-test-suite.cc tests failing
+- bug 1345 - ns-3 builds with clang compiler >= 3.0
+- bug 1359 - TCP cannot receive ICMP
+- bug 1361 - Set TOS from Application level (sockets)
+- bug 1463 - ./test.py --example should automatically detect the path
+- bug 1479 - When the Ipv4RawSocket "IpHeaderInclude" Attribute set true,
+             Ip Checksum error
+- bug 1485 - Setting global properties in config file (raw text) does
+             not have any effect
+- bug 1493 - test.py --list should show the test type default tip
+- bug 1493 - test.py --list should show the test type 
+- bug 1494 - test.py --constrain doesn't work
+- bug 1495 - test.py claims test passed when no test was run
+- bug 1506:  TCP data segment piggybacking acknowledgment
+- bug 1509 - RttEstimator returns invalid value in presence of errors
+- bug 1516 - GtkConfigStore does not show read-only attributes
+- bug 1520 - Config paths not fully documented (partial fix)
+- bug 1524 - Fragmentation Threshold equals to Packet Size at MAC Layer 
+             (Data + IP + UDP) crash the reception
+- bug 1525 - Linker error with mpi on Mac 10.8
+- bug 1526:  Wrong calculation of pathloss within 
+             UanPropModelThorp::GetPathLossDb
+- bug 1527 - Ipv4RawSocket's BindToNetDevice not working
+- bug 1528 - BindToNetDevice not working for IPv6 sockets
+- bug 1531 - Crash when using NS_LOG in destructors of static objects
+- bug 1532 - unimplemented LTE Scheduler methods
 
 Known issues
 ------------
@@ -37,7 +172,8 @@ Release 3.15
 
 Availability
 ------------
-This release is not yet available.
+This release is available from: 
+http://www.nsnam.org/release/ns-allinone-3.15.tar.bz2
 
 Supported platforms
 -------------------

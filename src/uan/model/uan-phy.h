@@ -77,7 +77,7 @@ public:
    */
   inline double DbToKp (double db) const
   {
-    return pow (10, db / 10.0);
+    return std::pow (10, db / 10.0);
   }
   /**
    * \param kp value in kilopascals
@@ -86,7 +86,7 @@ public:
    */
   inline double KpToDb (double kp) const
   {
-    return 10 * log10 (kp);
+    return 10 * std::log10 (kp);
   }
 };
 

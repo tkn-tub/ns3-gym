@@ -24,7 +24,7 @@
 
 #include <fstream>
 #include <vector>
-#include <math.h>
+#include <cmath>
 
 using namespace ns3;
 
@@ -62,9 +62,9 @@ int main (int argc, char *argv[])
 
       for (double snr = -5.0; snr <= 30.0; snr += 0.1)
         {
-          double ps = yans->GetChunkSuccessRate (WifiMode (modes[i]), pow (10.0,snr/10.0), FrameSize*8);
+          double ps = yans->GetChunkSuccessRate (WifiMode (modes[i]), std::pow (10.0,snr/10.0), FrameSize*8);
           yansdataset.Add (snr, ps);
-          ps = nist->GetChunkSuccessRate (WifiMode (modes[i]), pow (10.0,snr/10.0), FrameSize*8);
+          ps = nist->GetChunkSuccessRate (WifiMode (modes[i]), std::pow (10.0,snr/10.0), FrameSize*8);
           nistdataset.Add (snr, ps);
         }
 

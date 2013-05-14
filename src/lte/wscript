@@ -70,6 +70,14 @@ def build(bld):
         'model/lte-interference.cc',
         'model/lte-sinr-chunk-processor.cc',
         'model/pf-ff-mac-scheduler.cc',
+        'model/fdmt-ff-mac-scheduler.cc',
+        'model/tdmt-ff-mac-scheduler.cc',
+        'model/tta-ff-mac-scheduler.cc',
+        'model/fdbet-ff-mac-scheduler.cc',
+        'model/tdbet-ff-mac-scheduler.cc',
+        'model/fdtbfq-ff-mac-scheduler.cc',
+        'model/tdtbfq-ff-mac-scheduler.cc',
+        'model/pss-ff-mac-scheduler.cc',
         'model/epc-gtpu-header.cc',
         'model/trace-fading-loss-model.cc',
         'model/epc-enb-application.cc',
@@ -102,6 +110,14 @@ def build(bld):
         'test/lte-test-ue-phy.cc',
         'test/lte-test-rr-ff-mac-scheduler.cc',
         'test/lte-test-pf-ff-mac-scheduler.cc',
+        'test/lte-test-fdmt-ff-mac-scheduler.cc',
+        'test/lte-test-tdmt-ff-mac-scheduler.cc',
+        'test/lte-test-tta-ff-mac-scheduler.cc',
+        'test/lte-test-fdbet-ff-mac-scheduler.cc',
+        'test/lte-test-tdbet-ff-mac-scheduler.cc',
+        'test/lte-test-fdtbfq-ff-mac-scheduler.cc',
+        'test/lte-test-tdtbfq-ff-mac-scheduler.cc',
+        'test/lte-test-pss-ff-mac-scheduler.cc',
         'test/lte-test-earfcn.cc',
         'test/lte-test-spectrum-value-helper.cc',
         'test/lte-test-pathloss-model.cc',
@@ -126,9 +142,10 @@ def build(bld):
         'test/test-lte-x2-handover-measures.cc',
         'test/test-asn1-encoding.cc',
         'test/lte-test-ue-measurements.cc',
+        'test/test-lte-handover-delay.cc',
         ]
 
-    headers = bld.new_task_gen(features=['ns3header'])
+    headers = bld(features='ns3header')
     headers.module = 'lte'
     headers.source = [
         'model/lte-common.h',
@@ -197,6 +214,14 @@ def build(bld):
         'model/lte-interference.h',
         'model/lte-sinr-chunk-processor.h',
         'model/pf-ff-mac-scheduler.h',
+        'model/fdmt-ff-mac-scheduler.h',
+        'model/tdmt-ff-mac-scheduler.h',
+        'model/tta-ff-mac-scheduler.h',
+        'model/fdbet-ff-mac-scheduler.h',
+        'model/tdbet-ff-mac-scheduler.h',
+        'model/fdtbfq-ff-mac-scheduler.h',
+        'model/tdtbfq-ff-mac-scheduler.h',
+        'model/pss-ff-mac-scheduler.h',
         'model/trace-fading-loss-model.h',
         'model/epc-gtpu-header.h',
         'model/epc-enb-application.h',
@@ -208,8 +233,6 @@ def build(bld):
         'model/epc-tft.h',
         'model/epc-tft-classifier.h',
         'model/lte-mi-error-model.h',
-        'test/lte-test-ue-phy.h',
-        'test/lte-test-sinr-chunk-processor.h',
         'model/epc-enb-s1-sap.h',
         'model/epc-s1ap-sap.h',
         'model/epc-s11-sap.h',
@@ -222,6 +245,6 @@ def build(bld):
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):
-      bld.add_subdirs('examples')
+      bld.recurse('examples')
 
     bld.ns3_python_bindings()

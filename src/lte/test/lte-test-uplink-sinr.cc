@@ -27,8 +27,8 @@
 #include "ns3/spectrum-test.h"
 
 #include "ns3/lte-phy-tag.h"
-#include "ns3/lte-test-ue-phy.h"
-#include "ns3/lte-test-sinr-chunk-processor.h"
+#include "lte-test-ue-phy.h"
+#include "lte-test-sinr-chunk-processor.h"
 #include "ns3/lte-spectrum-signal-parameters.h"
 
 #include "lte-test-uplink-sinr.h"
@@ -85,9 +85,9 @@ LteUplinkSinrTestSuite::LteUplinkSinrTestSuite ()
   (*theoreticalSinr1)[0] = 3.72589167251055;
   (*theoreticalSinr1)[1] = 3.72255684126076;
 
-  AddTestCase (new LteUplinkDataSinrTestCase (rxPsd1, rxPsd2, theoreticalSinr1, "sdBm = [-46 -inf] and [-inf -48]"));
+  AddTestCase (new LteUplinkDataSinrTestCase (rxPsd1, rxPsd2, theoreticalSinr1, "sdBm = [-46 -inf] and [-inf -48]"), TestCase::QUICK);
   
-  AddTestCase (new LteUplinkSrsSinrTestCase (rxPsd1, rxPsd2, theoreticalSinr1, "sdBm = [-46 -inf] and [-inf -48]"));
+  AddTestCase (new LteUplinkSrsSinrTestCase (rxPsd1, rxPsd2, theoreticalSinr1, "sdBm = [-46 -inf] and [-inf -48]"), TestCase::QUICK);
 
   /**
    * TX signals #2: Power Spectral Density of the signals of interest = [-63 -inf] and [-inf -61] dBm and BW = [20 22] MHz
@@ -104,9 +104,9 @@ LteUplinkSinrTestSuite::LteUplinkSinrTestSuite ()
   (*theoreticalSinr2)[0] = 0.0743413124381667;
   (*theoreticalSinr2)[1] = 0.1865697965291756;
 
-  AddTestCase (new LteUplinkDataSinrTestCase (rxPsd3, rxPsd4, theoreticalSinr2, "sdBm = [-63 -inf] and [-inf -61]"));
+  AddTestCase (new LteUplinkDataSinrTestCase (rxPsd3, rxPsd4, theoreticalSinr2, "sdBm = [-63 -inf] and [-inf -61]"), TestCase::QUICK);
   
-  AddTestCase (new LteUplinkSrsSinrTestCase (rxPsd3, rxPsd4, theoreticalSinr2, "sdBm = [-63 -inf] and [-inf -61]"));
+  AddTestCase (new LteUplinkSrsSinrTestCase (rxPsd3, rxPsd4, theoreticalSinr2, "sdBm = [-63 -inf] and [-inf -61]"), TestCase::QUICK);
 
 }
 
@@ -156,12 +156,12 @@ LteUplinkDataSinrTestCase::DoRun (void)
   */
 
   // Number of packet bursts (2 data + 4 interferences)
-  int numOfDataPbs = 2;
-  int numOfIntfPbs = 4;
-  int numOfPbs = numOfDataPbs + numOfIntfPbs;
+  const int numOfDataPbs = 2;
+  const int numOfIntfPbs = 4;
+  const int numOfPbs = numOfDataPbs + numOfIntfPbs;
 
   // Number of packets in the packet bursts
-  int numOfPkts = 10;
+  const int numOfPkts = 10;
 
   // Packet bursts
   Ptr<PacketBurst> packetBursts[numOfPbs];

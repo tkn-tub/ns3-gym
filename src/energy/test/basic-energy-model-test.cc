@@ -33,7 +33,7 @@
 #include "ns3/string.h"
 #include "ns3/yans-wifi-helper.h"
 #include "ns3/nqos-wifi-mac-helper.h"
-#include <math.h>
+#include <cmath>
 
 using namespace ns3;
 
@@ -380,8 +380,8 @@ public:
 BasicEnergyModelTestSuite::BasicEnergyModelTestSuite ()
   : TestSuite ("basic-energy-model", UNIT)
 {
-  AddTestCase (new BasicEnergyUpdateTest);
-  AddTestCase (new BasicEnergyDepletionTest);
+  AddTestCase (new BasicEnergyUpdateTest, TestCase::QUICK);
+  AddTestCase (new BasicEnergyDepletionTest, TestCase::QUICK);
 }
 
 // create an instance of the test suite

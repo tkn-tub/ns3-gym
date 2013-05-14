@@ -383,7 +383,7 @@ UanMacRcGw::StartCycle (void)
   double winSize = (double)(totalBytes) * 8.0 / dataRate + m_sifs.GetSeconds () * totalFrames + pDelay;
   if (numRts == 0)
     {
-      winSize = (optA * exp (1.0) + 0.5) * 2.0 * 8.0 * m_rtsSize / (thAlpha * m_totalRate) + 2 * m_maxDelta.GetSeconds ();
+      winSize = (optA * std::exp (1.0) + 0.5) * 2.0 * 8.0 * m_rtsSize / (thAlpha * m_totalRate) + 2 * m_maxDelta.GetSeconds ();
     }
   double effWinSize = winSize - m_rtsSize * 8 / ctlRate  - 2 * m_maxDelta.GetSeconds ();
 
@@ -559,7 +559,7 @@ UanMacRcGw::ComputeAlpha (uint32_t totalFrames, uint32_t totalBytes, uint32_t n,
 {
 
   double alpha;
-  double lrae = m_rtsSize * 8.0*a*std::exp (1.0);
+  double lrae = m_rtsSize * 8.0 * a * std::exp (1.0);
   if (totalFrames == 0)
     {
 
@@ -574,11 +574,11 @@ UanMacRcGw::ComputeAlpha (uint32_t totalFrames, uint32_t totalBytes, uint32_t n,
 
       double gamma = (w - u + v) / (2 * (u - totalFrames * m_sifs.GetSeconds () * m_totalRate));
 
-      alpha = -gamma + sqrt (gamma * gamma + v / (u - totalFrames * m_sifs.GetSeconds () * m_totalRate));
+      alpha = -gamma + std::sqrt (gamma * gamma + v / (u - totalFrames * m_sifs.GetSeconds () * m_totalRate));
 
       if (alpha < 0 || alpha > 1)
         {
-          alpha = -gamma - sqrt (gamma * gamma + v / (u - totalFrames * m_sifs.GetSeconds () * m_totalRate));
+          alpha = -gamma - std::sqrt (gamma * gamma + v / (u - totalFrames * m_sifs.GetSeconds () * m_totalRate));
         }
     }
   NS_ASSERT_MSG (alpha > 0 && alpha < 1, "Error computing alpha.  Alpha out of valid range!");

@@ -66,13 +66,13 @@ LenaTestHarqSuite::LenaTestHarqSuite ()
   // MCS 0 TB size of 41 bytes SINR -17 expected throughput 18375 bytes/s
   // TBLER 1st tx 1.0
   // TBLER 2nd tx 0.23
-  AddTestCase (new LenaHarqTestCase (2, 4000, 41, 0.17, 18375));
+  AddTestCase (new LenaHarqTestCase (2, 4000, 41, 0.17, 18375), TestCase::QUICK);
 
   // Tests on DL/UL Data channels (PDSCH, PUSCH)
   // MCS 10 TB size of 469 bytes SINR 4 expected throughput 236096 bytes/s
   // TBLER 1st tx 1.0
   // TBLER 2nd tx 0.0138
-  AddTestCase (new LenaHarqTestCase (1, 640, 469, 0.02, 236096));
+  AddTestCase (new LenaHarqTestCase (1, 640, 469, 0.02, 236096), TestCase::QUICK);
 
 
 

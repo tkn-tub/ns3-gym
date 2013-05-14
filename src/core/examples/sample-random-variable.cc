@@ -20,7 +20,6 @@
 #include <iostream>
 
 using namespace ns3;
-using namespace std;
 
 /*
  * This program can be run from waf such as "./waf --run sample-random-variable"
@@ -58,6 +57,6 @@ int main (int argc, char *argv[])
 
   UniformVariable uv;
 
-  cout << uv.GetValue () << endl;
+  std::cout << uv.GetValue () << std::endl;
 
 }

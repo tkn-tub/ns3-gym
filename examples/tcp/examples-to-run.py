@@ -13,6 +13,7 @@ cpp_examples = [
     ("tcp-nsc-lfn", "NSC_ENABLED == True", "False"),
     ("tcp-nsc-zoo", "NSC_ENABLED == True", "False"),
     ("tcp-star-server", "True", "True"),
+    ("tcp-variants-comparison", "True", "True"),
 ]
 
 # A list of Python examples to run in order to ensure that they remain

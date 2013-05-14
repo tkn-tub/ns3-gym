@@ -393,7 +393,10 @@ private:
   /// Find a remote station by its remote address and TID taken from MAC header
   WifiRemoteStation* Lookup (Mac48Address address, const WifiMacHeader *header) const;
   WifiMode GetControlAnswerMode (Mac48Address address, WifiMode reqMode);
-  uint32_t GetNFragments (Ptr<const Packet> packet);
+
+  void DoSetFragmentationThreshold (uint32_t threshold);
+  uint32_t DoGetFragmentationThreshold (void) const;
+  uint32_t GetNFragments (const WifiMacHeader *header, Ptr<const Packet> packet);
 
   typedef std::vector <WifiRemoteStation *> Stations;
   typedef std::vector <WifiRemoteStationState *> StationStates;

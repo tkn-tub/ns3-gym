@@ -44,6 +44,8 @@ namespace ns3 {
 * This section documents the API of the ns-3 click module. For a generic functional description, please refer to the ns-3 manual.
 */
 
+class UniformRandomVariable;
+
 /**
 * \ingroup click
 * \brief Class to allow a node to use Click for external routing
@@ -63,8 +65,9 @@ public:
   Ipv4ClickRouting ();
   virtual ~Ipv4ClickRouting ();
 
+  Ptr<UniformRandomVariable> GetRandomVariable (void);
 protected:
-  virtual void DoStart (void);
+  virtual void DoInitialize (void);
 
 public:
   virtual void DoDispose ();
@@ -74,6 +77,12 @@ public:
   * \param clickfile name of .click configuration file
   */
   void SetClickFile (std::string clickfile);
+
+  /**
+  * \brief Click defines to be used by the node's Click Instance.
+  * \param defines mapping of defines for .click configuration file parsing
+  */
+  void SetDefines (std::map<std::string, std::string> defines);
 
   /**
    * \brief Name of the node as to be used by Click. Required for Click Dumps.
@@ -129,6 +138,12 @@ public:
 
 public:
   /**
+   * \brief Provides for SIMCLICK_GET_DEFINES
+   * \return The defines mapping for .click configuration file parsing
+   */
+  std::map<std::string, std::string> GetDefines (void);
+
+  /**
    * \brief Provides for SIMCLICK_IFID_FROM_NAME
    * \param ifname The name of the interface
    * \return The interface ID which corresponds to ifname
@@ -176,7 +191,7 @@ public:
 
 private:
   /**
-   * \brief Used internally in DoStart () to Add a mapping to m_clickInstanceFromSimNode mapping
+   * \brief Used internally in DoInitialize () to Add a mapping to m_clickInstanceFromSimNode mapping
    */
   void AddSimNodeToClickMapping ();
 
@@ -244,6 +259,7 @@ public:
 
 private:
   std::string m_clickFile;
+  std::map < std::string, std::string > m_defines;
   std::string m_nodeName;
   std::string m_clickRoutingTableElement;
 
@@ -255,6 +271,7 @@ private:
   bool m_nonDefaultName;
 
   Ptr<Ipv4> m_ipv4;
+  Ptr<UniformRandomVariable> m_random;
 #endif /* NS3_CLICK */
 };
 

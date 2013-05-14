@@ -126,29 +126,29 @@ LteEarfcnTestSuite::LteEarfcnTestSuite ()
 {
   NS_LOG_FUNCTION (this);
 
-  AddTestCase (new LteEarfcnDlTestCase ("DL EARFCN=500", 500, 2160e6));
-  AddTestCase (new LteEarfcnDlTestCase ("DL EARFCN=1000", 1000, 1970e6));
-  AddTestCase (new LteEarfcnDlTestCase ("DL EARFCN=1301", 1301, 1815.1e6));
-  AddTestCase (new LteEarfcnDlTestCase ("DL EARFCN=7000", 7000, 0.0));
-  AddTestCase (new LteEarfcnDlTestCase ("DL EARFCN=20000", 20000, 0.0));
-  AddTestCase (new LteEarfcnDlTestCase ("DL EARFCN=50000", 50000, 0.0));
+  AddTestCase (new LteEarfcnDlTestCase ("DL EARFCN=500", 500, 2160e6), TestCase::QUICK);
+  AddTestCase (new LteEarfcnDlTestCase ("DL EARFCN=1000", 1000, 1970e6), TestCase::QUICK);
+  AddTestCase (new LteEarfcnDlTestCase ("DL EARFCN=1301", 1301, 1815.1e6), TestCase::QUICK);
+  AddTestCase (new LteEarfcnDlTestCase ("DL EARFCN=7000", 7000, 0.0), TestCase::QUICK);
+  AddTestCase (new LteEarfcnDlTestCase ("DL EARFCN=20000", 20000, 0.0), TestCase::QUICK);
+  AddTestCase (new LteEarfcnDlTestCase ("DL EARFCN=50000", 50000, 0.0), TestCase::QUICK);
 
-  AddTestCase (new LteEarfcnUlTestCase ("UL EARFCN=18100", 18100, 1930e6));
-  AddTestCase (new LteEarfcnUlTestCase ("UL EARFCN=19000", 19000, 1890e6));
-  AddTestCase (new LteEarfcnUlTestCase ("UL EARFCN=19400", 19400, 1730e6));
-  AddTestCase (new LteEarfcnUlTestCase ("UL EARFCN=10", 10, 0.0));
-  AddTestCase (new LteEarfcnUlTestCase ("UL EARFCN=1000", 1000, 0.0));
-  AddTestCase (new LteEarfcnUlTestCase ("UL EARFCN=50000", 50000, 0.0));
+  AddTestCase (new LteEarfcnUlTestCase ("UL EARFCN=18100", 18100, 1930e6), TestCase::QUICK);
+  AddTestCase (new LteEarfcnUlTestCase ("UL EARFCN=19000", 19000, 1890e6), TestCase::QUICK);
+  AddTestCase (new LteEarfcnUlTestCase ("UL EARFCN=19400", 19400, 1730e6), TestCase::QUICK);
+  AddTestCase (new LteEarfcnUlTestCase ("UL EARFCN=10", 10, 0.0), TestCase::QUICK);
+  AddTestCase (new LteEarfcnUlTestCase ("UL EARFCN=1000", 1000, 0.0), TestCase::QUICK);
+  AddTestCase (new LteEarfcnUlTestCase ("UL EARFCN=50000", 50000, 0.0), TestCase::QUICK);
 
-  AddTestCase (new LteEarfcnTestCase ("EARFCN=500", 500, 2160e6));
-  AddTestCase (new LteEarfcnTestCase ("EARFCN=1000", 1000, 1970e6));
-  AddTestCase (new LteEarfcnTestCase ("EARFCN=1301", 1301, 1815.1e6));
-  AddTestCase (new LteEarfcnTestCase ("EARFCN=8000", 8000, 0.0));
-  AddTestCase (new LteEarfcnTestCase ("EARFCN=50000", 50000, 0.0));
-  AddTestCase (new LteEarfcnTestCase ("EARFCN=18100", 18100, 1930e6));
-  AddTestCase (new LteEarfcnTestCase ("EARFCN=19000", 19000, 1890e6));
-  AddTestCase (new LteEarfcnTestCase ("EARFCN=19400", 19400, 1730e6));
-  AddTestCase (new LteEarfcnTestCase ("EARFCN=50000", 50000, 0.0));
+  AddTestCase (new LteEarfcnTestCase ("EARFCN=500", 500, 2160e6), TestCase::QUICK);
+  AddTestCase (new LteEarfcnTestCase ("EARFCN=1000", 1000, 1970e6), TestCase::QUICK);
+  AddTestCase (new LteEarfcnTestCase ("EARFCN=1301", 1301, 1815.1e6), TestCase::QUICK);
+  AddTestCase (new LteEarfcnTestCase ("EARFCN=8000", 8000, 0.0), TestCase::QUICK);
+  AddTestCase (new LteEarfcnTestCase ("EARFCN=50000", 50000, 0.0), TestCase::QUICK);
+  AddTestCase (new LteEarfcnTestCase ("EARFCN=18100", 18100, 1930e6), TestCase::QUICK);
+  AddTestCase (new LteEarfcnTestCase ("EARFCN=19000", 19000, 1890e6), TestCase::QUICK);
+  AddTestCase (new LteEarfcnTestCase ("EARFCN=19400", 19400, 1730e6), TestCase::QUICK);
+  AddTestCase (new LteEarfcnTestCase ("EARFCN=50000", 50000, 0.0), TestCase::QUICK);
 }
 
 

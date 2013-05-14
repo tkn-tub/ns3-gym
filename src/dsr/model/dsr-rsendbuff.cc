@@ -55,8 +55,8 @@ SendBuffer::Enqueue (SendBuffEntry & entry)
   for (std::vector<SendBuffEntry>::const_iterator i = m_sendBuffer.begin (); i
        != m_sendBuffer.end (); ++i)
     {
-      NS_LOG_INFO ("packet id " << i->GetPacket ()->GetUid () << " " << entry.GetPacket ()->GetUid ()
-                                << " dst " << i->GetDestination () << " " << entry.GetDestination ());
+//      NS_LOG_DEBUG ("packet id " << i->GetPacket ()->GetUid () << " " << entry.GetPacket ()->GetUid ()
+//                                << " dst " << i->GetDestination () << " " << entry.GetDestination ());
 
       if ((i->GetPacket ()->GetUid () == entry.GetPacket ()->GetUid ())
           && (i->GetDestination () == entry.GetDestination ()))
@@ -153,7 +153,7 @@ SendBuffer::Purge ()
   /*
    * Purge the buffer to eliminate expired entries
    */
-  NS_LOG_DEBUG ("The send buffer size " << m_sendBuffer.size ());
+  NS_LOG_INFO ("The send buffer size " << m_sendBuffer.size ());
   IsExpired pred;
   for (std::vector<SendBuffEntry>::iterator i = m_sendBuffer.begin (); i
        != m_sendBuffer.end (); ++i)

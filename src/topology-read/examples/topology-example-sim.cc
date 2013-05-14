@@ -39,12 +39,11 @@
 #include <list>
 
 using namespace ns3;
-using namespace std;
 
 NS_LOG_COMPONENT_DEFINE ("TopologyCreationExperiment");
 
 
-static list<unsigned int> data;
+static std::list<unsigned int> data;
 
 static void SinkRx (Ptr<const Packet> p, const Address &ad)
 {
@@ -60,8 +59,8 @@ static void SinkRx (Ptr<const Packet> p, const Address &ad)
 int main (int argc, char *argv[])
 {
 
-  string format ("Inet");
-  string input ("src/topology-read/examples/Inet_small_toposample.txt");
+  std::string format ("Inet");
+  std::string input ("src/topology-read/examples/Inet_small_toposample.txt");
 
   // Set up command line parameters used to control the experiment.
   CommandLine cmd;
@@ -77,15 +76,12 @@ int main (int argc, char *argv[])
   // --------------------------------------------
 
   // Pick a topology reader based in the requested format.
-
-  Ptr<TopologyReader> inFile = 0;
   TopologyReaderHelper topoHelp;
-
-  NodeContainer nodes;
-
   topoHelp.SetFileName (input);
   topoHelp.SetFileType (format);
-  inFile = topoHelp.GetTopologyReader ();
+  Ptr<TopologyReader> inFile = topoHelp.GetTopologyReader ();
+
+  NodeContainer nodes;
 
   if (inFile != 0)
     {

@@ -16,7 +16,7 @@ def build(bld):
         'test/dsdv-testcase.cc',
         ]
 
-    headers = bld.new_task_gen(features=['ns3header'])
+    headers = bld(features='ns3header')
     headers.module = 'dsdv'
     headers.source = [
         'model/dsdv-rtable.h',
@@ -26,6 +26,6 @@ def build(bld):
         'helper/dsdv-helper.h',
         ]
     if (bld.env['ENABLE_EXAMPLES']):
-      bld.add_subdirs('examples')
+      bld.recurse('examples')
 
     bld.ns3_python_bindings()

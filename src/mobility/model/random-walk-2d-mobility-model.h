@@ -56,9 +56,9 @@ public:
 private:
   void Rebound (Time timeLeft);
   void DoWalk (Time timeLeft);
-  void DoStartPrivate (void);
+  void DoInitializePrivate (void);
   virtual void DoDispose (void);
-  virtual void DoStart (void);
+  virtual void DoInitialize (void);
   virtual Vector DoGetPosition (void) const;
   virtual void DoSetPosition (const Vector &position);
   virtual Vector DoGetVelocity (void) const;

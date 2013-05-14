@@ -205,6 +205,7 @@ public:
 protected:
 
   virtual void NotifyConstructionCompleted ();
+  virtual void DoDispose (void);
 
 private:
 

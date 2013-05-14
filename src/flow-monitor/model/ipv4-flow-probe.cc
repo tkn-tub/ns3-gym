@@ -30,8 +30,6 @@
 
 namespace ns3 {
 
-using namespace std;
-
 NS_LOG_COMPONENT_DEFINE ("Ipv4FlowProbe");
 
 //////////////////////////////////////
@@ -187,6 +185,12 @@ Ipv4FlowProbe::Ipv4FlowProbe (Ptr<FlowMonitor> monitor,
 
 Ipv4FlowProbe::~Ipv4FlowProbe ()
 {
+}
+
+void
+Ipv4FlowProbe::DoDispose ()
+{
+  FlowProbe::DoDispose ();
 }
 
 void

@@ -77,7 +77,7 @@ WaypointMobilityModelNotifyTest::DoRun (void)
 
       // Add this mobility model to the stack.
       mobilityStack.push_back (model);
-      Simulator::Schedule (Seconds (0.0), &Object::Start, model);
+      Simulator::Schedule (Seconds (0.0), &Object::Initialize, model);
     } 
 
   Waypoint wpt (Seconds (0.0), Vector (0.0, 0.0, 0.0));
@@ -151,8 +151,8 @@ static struct WaypointMobilityModelTestSuite : public TestSuite
 {
   WaypointMobilityModelTestSuite () : TestSuite ("waypoint-mobility-model", UNIT)
   {
-    AddTestCase (new WaypointMobilityModelNotifyTest (true));
-    AddTestCase (new WaypointMobilityModelNotifyTest (false));
+    AddTestCase (new WaypointMobilityModelNotifyTest (true), TestCase::QUICK);
+    AddTestCase (new WaypointMobilityModelNotifyTest (false), TestCase::QUICK);
   }
 } g_waypointMobilityModelTestSuite;
 

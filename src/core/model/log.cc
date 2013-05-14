@@ -22,17 +22,16 @@
 #include <list>
 #include <utility>
 #include <iostream>
-#include <string.h>
 #include "assert.h"
 #include "ns3/core-config.h"
 #include "fatal-error.h"
 
 #ifdef HAVE_GETENV
-#include <string.h>
+#include <cstring>
 #endif
 
 #ifdef HAVE_STDLIB_H
-#include <stdlib.h>
+#include <cstdlib>
 #endif
 
 namespace ns3 {
@@ -128,7 +127,7 @@ LogComponent::EnvVarCheck (char const * name)
           component = tmp;
           if (component == myName || component == "*")
             {
-              int level = LOG_ALL | LOG_PREFIX_TIME | LOG_PREFIX_FUNC | LOG_PREFIX_NODE;
+              int level = LOG_LEVEL_ALL | LOG_PREFIX_ALL;
               Enable ((enum LogLevel)level);
               return;
             }
@@ -141,6 +140,7 @@ LogComponent::EnvVarCheck (char const * name)
               int level = 0;
               std::string::size_type cur_lev;
               std::string::size_type next_lev = equal;
+              bool pre_pipe = true;  // before the first '|', enables positional 'all', '*'
               do
                 {
                   cur_lev = next_lev + 1;
@@ -170,21 +170,31 @@ LogComponent::EnvVarCheck (char const * name)
                     {
                       level |= LOG_LOGIC;
                     }
-                  else if (lev == "all")
+                  else if ( pre_pipe && ( (lev == "all") || (lev == "*") ) )
                     {
-                      level |= LOG_ALL;
+                      level |= LOG_LEVEL_ALL;
                     }
-                  else if (lev == "prefix_func")
+                  else if ( (lev == "prefix_func") || (lev == "func") )
                     {
                       level |= LOG_PREFIX_FUNC;
                     }
-                  else if (lev == "prefix_time")
+                  else if ( (lev == "prefix_time") || (lev == "time") )
                     {
                       level |= LOG_PREFIX_TIME;
                     }
-                  else if (lev == "prefix_node")
+                  else if ( (lev == "prefix_node") || (lev == "node") )
                     {
                       level |= LOG_PREFIX_NODE;
+                    }
+                  else if ( (lev == "prefix_level") || (lev == "level") )
+                    {
+                      level |= LOG_PREFIX_LEVEL;
+                    }
+                  else if ( (lev == "prefix_all") ||
+                            (!pre_pipe && ( (lev == "all") || (lev == "*") ) )
+                            )
+                    {
+                      level |= LOG_PREFIX_ALL;
                     }
                   else if (lev == "level_error")
                     {
@@ -214,6 +224,12 @@ LogComponent::EnvVarCheck (char const * name)
                     {
                       level |= LOG_LEVEL_ALL;
                     }
+                  else if (lev == "**")
+                    {
+                      level |= LOG_LEVEL_ALL | LOG_PREFIX_ALL;
+                    }
+
+                  pre_pipe = false;
                 } while (next_lev != std::string::npos);
 
               Enable ((enum LogLevel)level);
@@ -256,6 +272,40 @@ LogComponent::Name (void) const
   return m_name;
 }
 
+std::string
+LogComponent::GetLevelLabel(const enum LogLevel level) const
+{
+  if (level == LOG_ERROR)
+    {
+      return "ERROR";
+    }
+  else if (level == LOG_WARN)
+    {
+      // whitespace left at the end for aligment
+      return "WARN ";
+    }
+  else if (level == LOG_DEBUG)
+    {
+      return "DEBUG";
+    }
+  else if (level == LOG_INFO)
+    {
+      // whitespace left at the end for aligment
+      return "INFO ";
+    }
+  else if (level == LOG_FUNCTION)
+    {
+      return "FUNCT";
+    }
+  else if (level == LOG_LOGIC)
+    {
+      return "LOGIC";
+    }
+  else
+    {
+      return "unknown";
+    }
+}
 
 void 
 LogComponentEnable (char const *name, enum LogLevel level)
@@ -335,33 +385,59 @@ LogComponentPrintList (void)
           std::cout << "0" << std::endl;
           continue;
         }
-      if (i->second->IsEnabled (LOG_ERROR))
+      if (i->second->IsEnabled (LOG_LEVEL_ALL))
         {
-          std::cout << "error";
+          std::cout << "all";
         }
-      if (i->second->IsEnabled (LOG_WARN))
+      else
         {
-          std::cout << "|warn";
+          if (i->second->IsEnabled (LOG_ERROR))
+            {
+              std::cout << "error";
+            }
+          if (i->second->IsEnabled (LOG_WARN))
+            {
+              std::cout << "|warn";
+            }
+          if (i->second->IsEnabled (LOG_DEBUG))
+            {
+              std::cout << "|debug";
+            }
+          if (i->second->IsEnabled (LOG_INFO))
+            {
+              std::cout << "|info";
+            }
+          if (i->second->IsEnabled (LOG_FUNCTION))
+            {
+              std::cout << "|function";
+            }
+          if (i->second->IsEnabled (LOG_LOGIC))
+            {
+              std::cout << "|logic";
+            }
         }
-      if (i->second->IsEnabled (LOG_DEBUG))
+      if (i->second->IsEnabled (LOG_PREFIX_ALL))
         {
-          std::cout << "|debug";
+          std::cout << "|prefix_all";
         }
-      if (i->second->IsEnabled (LOG_INFO))
+      else
         {
-          std::cout << "|info";
-        }
-      if (i->second->IsEnabled (LOG_FUNCTION))
-        {
-          std::cout << "|function";
-        }
-      if (i->second->IsEnabled (LOG_LOGIC))
-        {
-          std::cout << "|logic";
-        }
-      if (i->second->IsEnabled (LOG_ALL))
-        {
-          std::cout << "|all";
+          if (i->second->IsEnabled (LOG_PREFIX_FUNC))
+            {
+              std::cout << "|func";
+            }
+          if (i->second->IsEnabled (LOG_PREFIX_TIME))
+            {
+              std::cout << "|time";
+            }
+          if (i->second->IsEnabled (LOG_PREFIX_NODE))
+            {
+              std::cout << "|node";
+            }
+          if (i->second->IsEnabled (LOG_PREFIX_LEVEL))
+            {
+              std::cout << "|level";
+            }
         }
       std::cout << std::endl;
     }
@@ -390,7 +466,7 @@ static void CheckEnvironmentVariables (void)
 {
 #ifdef HAVE_GETENV
   char *envVar = getenv ("NS_LOG");
-  if (envVar == 0 || strlen(envVar) == 0)
+  if (envVar == 0 || std::strlen(envVar) == 0)
     {
       return;
     }
@@ -440,8 +516,14 @@ static void CheckEnvironmentVariables (void)
                       || lev == "logic"
                       || lev == "all"
                       || lev == "prefix_func"
+                      || lev == "func"
                       || lev == "prefix_time"
+                      || lev == "time"
                       || lev == "prefix_node"
+                      || lev == "node"
+                      || lev == "prefix_level"
+                      || lev == "level"
+                      || lev == "prefix_all"
                       || lev == "level_error"
                       || lev == "level_warn"
                       || lev == "level_debug"
@@ -450,6 +532,7 @@ static void CheckEnvironmentVariables (void)
                       || lev == "level_logic"
                       || lev == "level_all"
                       || lev == "*"
+                      || lev == "**"
 		     )
                     {
                       continue;

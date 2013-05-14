@@ -20,9 +20,12 @@
 
 #include "list-scheduler.h"
 #include "event-impl.h"
+#include "log.h"
 #include <utility>
 #include <string>
 #include "assert.h"
+
+NS_LOG_COMPONENT_DEFINE ("ListScheduler");
 
 namespace ns3 {
 
@@ -41,6 +44,7 @@ ListScheduler::GetTypeId (void)
 
 ListScheduler::ListScheduler ()
 {
+  NS_LOG_FUNCTION (this);
 }
 ListScheduler::~ListScheduler ()
 {
@@ -49,6 +53,7 @@ ListScheduler::~ListScheduler ()
 void
 ListScheduler::Insert (const Event &ev)
 {
+  NS_LOG_FUNCTION (this << &ev);
   for (EventsI i = m_events.begin (); i != m_events.end (); i++)
     {
       if (ev.key < i->key)
@@ -62,17 +67,20 @@ ListScheduler::Insert (const Event &ev)
 bool
 ListScheduler::IsEmpty (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_events.empty ();
 }
 Scheduler::Event
 ListScheduler::PeekNext (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_events.front ();
 }
 
 Scheduler::Event
 ListScheduler::RemoveNext (void)
 {
+  NS_LOG_FUNCTION (this);
   Event next = m_events.front ();
   m_events.pop_front ();
   return next;
@@ -81,6 +89,7 @@ ListScheduler::RemoveNext (void)
 void
 ListScheduler::Remove (const Event &ev)
 {
+  NS_LOG_FUNCTION (this << &ev);
   for (EventsI i = m_events.begin (); i != m_events.end (); i++)
     {
       if (i->key.m_uid == ev.key.m_uid)

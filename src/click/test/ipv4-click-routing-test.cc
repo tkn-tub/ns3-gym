@@ -76,7 +76,7 @@ ClickIfidFromNameTest::DoRun ()
   AddNetworkDevice (node, Mac48Address ("00:00:00:00:00:01"), Ipv4Address ("10.1.1.1"), Ipv4Mask ("255.255.255.0"));
   Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
   Ptr<Ipv4ClickRouting> click = DynamicCast<Ipv4ClickRouting> (ipv4->GetRoutingProtocol ());
-  click->DoStart ();
+  click->DoInitialize ();
 
   int ret;
 
@@ -120,7 +120,7 @@ ClickIpMacAddressFromNameTest::DoRun ()
   AddNetworkDevice (node, Mac48Address ("00:00:00:00:00:02"), Ipv4Address ("10.1.1.2"), Ipv4Mask ("255.255.255.0"));
   Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
   Ptr<Ipv4ClickRouting> click = DynamicCast<Ipv4ClickRouting> (ipv4->GetRoutingProtocol ());
-  click->DoStart ();
+  click->DoInitialize ();
 
   char *buf = NULL;
   buf = new char [255];
@@ -171,7 +171,7 @@ ClickTrivialTest::DoRun ()
   Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
   Ptr<Ipv4ClickRouting> click = DynamicCast<Ipv4ClickRouting> (ipv4->GetRoutingProtocol ());
   click->SetNodeName ("myNode");
-  click->DoStart ();
+  click->DoInitialize ();
 
   int ret = 0;
   char *buf = NULL;
@@ -197,9 +197,9 @@ class ClickIfidFromNameTestSuite : public TestSuite
 public:
   ClickIfidFromNameTestSuite () : TestSuite ("routing-click", UNIT)
   {
-    AddTestCase (new ClickTrivialTest);
-    AddTestCase (new ClickIfidFromNameTest);
-    AddTestCase (new ClickIpMacAddressFromNameTest);
+    AddTestCase (new ClickTrivialTest, TestCase::QUICK);
+    AddTestCase (new ClickIfidFromNameTest, TestCase::QUICK);
+    AddTestCase (new ClickIpMacAddressFromNameTest, TestCase::QUICK);
   }
 } g_ipv4ClickRoutingTestSuite;
 

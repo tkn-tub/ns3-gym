@@ -3,8 +3,8 @@
 DSR Routing
 -----------
 
-Dynamic Source Routing (DSR) protocol is a reactive routing protocol designed 
-specifically for use in multi-hop wireless ad hoc networks of mobile nodes.
+Dynamic Source Routing (DSR) protocol is a reactive routing protocol designed specifically 
+for use in multi-hop wireless ad hoc networks of mobile nodes.
 
 This model was developed by 
 `the ResiliNets research group <http://www.ittc.ku.edu/resilinets>`_
@@ -16,39 +16,28 @@ DSR Routing Overview
 This model implements the base specification of the Dynamic Source Routing 
 (DSR) protocol. Implementation is based on RFC4728.
 
-* ``Class dsr::DsrRouting`` implements all functionality of service packet exchange and inherits IpL4Protocol.
-* ``Class dsr::DsrOptions`` implements functionality of packet processing and talks to DsrRouting to send/receive packets
-* ``Class dsr::DsrFsHeader`` defines the fixed-size header and identifies the up-layer protocol
-* ``Class dsr::DsrOptionHeader`` takes care of different dsr options and processes different header according to the specification from the RFC 
-* ``Class dsr::DsrSendBuffer`` is a buffer to save data packets and route error packets when there is no route to forward the packets
-* ``Class dsr::DsrMaintainBuffer`` is a buffer to save data packets for next-hop notification when the data packet has already been sent out of send buffer
-* ``Class dsr::RouteCache`` is the essential part to save routes found for data packets.  DSR responds to several routes for a single destination
-* ``Class dsr::RreqTable`` implements the functions to avoid duplicate route requests and control route request rate for a single destination
- 
-Protocol operation depends on many adjustable parameters.  We support parameters, with their default values, from RFC and parameters that enable/disable 
-protocol features or tune for specific simulation scenarios, such as the max 
-size of the send buffer and its timeout value. The full parameter list is 
-found in the dsr-routing.cc file.
+DSR operates on a on-demand behavior. Therefore, our DSR model buffers all 
+packets while a route request packet (RREQ) is disseminated. We implement 
+a packet buffer in dsr-rsendbuff.cc. The packet queue implements 
+garbage collection of old packets and a queue size limit. When the packet 
+is sent out from the send buffer, it will be queued in maintenance buffer 
+for next hop acknowledgment.
 
-DSR discovers routes on-demand. Therefore, our DSR model buffers all packets, 
-while a route request packet (RREQ) is disseminated. We implement a packet 
-buffer in dsr-rsendbuff.cc. The packet queue implements garbage collection 
-of old packets and a queue size limit. When the packet is sent out from the 
-send buffer, it will be queued in maintenance buffer for next hop 
-acknowledgment.
+The maintenance buffer then buffers the already sent out packets and waits 
+for the notification of packet delivery.  Protocol operation strongly 
+depends on broken link detection mechanism. We implement the three heuristics 
+recommended based the RFC as follows:
 
-The Route Cache implementation support garbage collection of old entries 
-and state machine, as defined in the standard.  It implements as a STL 
-map container. The key is the destination IP address.
-
-Protocol operation strongly depends on broken link detection mechanism. 
-We implement the three heuristics recommended.
-    
-First, we use layer 2 feedback when possible. A link is considered to be 
+First, we use link layer feedback when possible, which is also the fastest 
+mechanism of these three to detect link errors. A link is considered to be 
 broken if frame transmission results in a transmission failure for all 
-retries. This mechanism is meant for active links and works much faster than 
-in its absence.  Layer 2 feedback implementation relies on TxErrHeader trace 
-source, currently it is supported in AdhocWifiMac only.
+retries. This mechanism is meant for active links and works much faster 
+than in its absence.  DSR is able to 
+detect the link layer transmission failure and notify that as broken.  
+Recalculation of routes will be triggered
+when needed.  If user does not want to use link layer acknowledgment, 
+it can be tuned by setting "LinkAcknowledgment" attribute to false in 
+"dsr-routing.cc".
 
 Second, passive acknowledgment should be used whenever possible. The node 
 turns on "promiscuous" receive mode, in which it can receive packets not 
@@ -57,6 +46,23 @@ packet to its destination, it cancels the passive acknowledgment timer.
 
 Last, we use a network layer acknowledge scheme to notify the receipt of 
 a packet. Route request packet will not be acknowledged or retransmitted.
+
+The Route Cache implementation support garbage collection of old entries 
+and state machine, as defined in the 
+standard.  It implements as a STL map container. The key is the 
+destination IP address.
+
+DSR operates with direct access to IP header, and operates between network 
+and transport layer.  When packet is sent out from transport layer, it 
+passes itself to DSR and DSR header is appended.
+
+We have two caching mechanisms: path cache and link cache.  The path cache 
+saves the whole path in the cache.  The paths are sorted based on the 
+hop count, and whenever one path is not able to be used, we change to the 
+next path.  The link cache is a slightly better design in the sense that it 
+uses different subpaths and uses Implemented Link Cache using 
+Dijsktra algorithm, and this part is implemented by 
+Song Luan <lsuper@mail.ustc.edu.cn>. 
 
 The following optional protocol optimizations aren't implemented:
 
@@ -67,25 +73,63 @@ The following optional protocol optimizations aren't implemented:
      1. flow state not supported option
      2. unsupported option (not going to happen in simulation)
 
-DSR operates with direct access to IP header, and operates between 
-network and transport layer.
+DSR update in ns-3.17
+=====================
 
-Implementation changes
-======================
+We originally used "TxErrHeader" in Ptr<WifiMac> to indicate the transmission 
+error of a specific packet in link layer, however, it was not working 
+quite correctly since even when the packet was dropped, this header was 
+not recorded in the trace file.  We used to a different path on implementing 
+the link layer notification mechanism.  We look into the trace file by 
+finding packet receive event.  If we find one receive event for the 
+data packet, we count that as the indicator for successful data delivery.
 
-* The DsrFsHeader has added 3 fields: message type, source id, destination id, 
-  and these changes only for post-processing
+Useful parameters
+=================
 
-  * message type is used to identify the data packet from control packet
-  * source id is used to identify the real source of the data packet since we have to deliver the packet hop-by-hop and the ipv4header is not carrying the real source and destination ip address as needed
-  * destination id is for same reason of above
-    
+:: 
+
+   +------------------------- +------------------------------------+-------------+
+   | Parameter                | Description                        | Default     |
+   +==========================+====================================+=============+
+   | MaxSendBuffLen           | Maximum number of packets that can | 64          |
+   |                          | be stored in send buffer           |             | 
+   +------------------------- +------------------------------------+-------------+
+   | MaxSendBuffTime          | Maximum time packets can be queued | Seconds(30) |
+   |                          | in the send buffer                 |             |
+   +------------------------- +------------------------------------+-------------+
+   | MaxMaintLen              | Maximum number of packets that can | 50          |
+   |                          | be stored in maintenance buffer    |             |
+   +------------------------- +------------------------------------+-------------+
+   | MaxMaintTime             | Maximum time packets can be queued | Seconds(30) |
+   |                          | in maintenance buffer              |             |
+   +------------------------- +------------------------------------+-------------+
+   | MaxCacheLen              | Maximum number of route entries    | 64          |
+   |                          | that can be stored in route cache  |             |
+   +------------------------- +------------------------------------+-------------+
+   | RouteCacheTimeout        | Maximum time the route cache can   | Seconds(300)|
+   |                          | be queued in route cache           |             |
+   +------------------------- +------------------------------------+-------------+
+   | RreqRetries              | Maximum number of retransmissions  | 16          |
+   |                          | for request discovery of a route   |             |
+   +------------------------- +------------------------------------+-------------+
+   | CacheType                | Use Link Cache or use Path Cache   | "LinkCache" |
+   |                          |                                    |             |
+   +------------------------- +------------------------------------+-------------+
+   | LinkAcknowledgment       | Enable Link layer acknowledgment   | True        |
+   |                          | mechanism                          |             | 
+   +------------------------- +------------------------------------+-------------+
+
+Implementation modification
+===========================
+
+* The DsrFsHeader has added 3 fields: message type, source id, destination id, and these changes only for post-processing
+	1. Message type is used to identify the data packet from control packet
+	2. source id is used to identify the real source of the data packet since we have to deliver the packet hop-by-hop and the ipv4header is not carrying the real source and destination ip address as needed
+	3. destination id is for same reason of above
 * Route Reply header is not word-aligned in DSR rfc, change it to word-aligned in implementation
 * DSR works as a shim header between transport and network protocol, it needs its own forwarding mechanism, we are changing the packet transmission to hop-by-hop delivery, so we added two fields in dsr fixed header to notify packet delivery
-  
-  # message type to notify the type of this packet: data packet or control one
-  # source id to identify the real source address of this packet
-  # destination id to identify the real destination
+
 
 Current Route Cache implementation
 ==================================
@@ -117,9 +161,8 @@ and DsrMainHelpers in your simulation script. For instance::
   DsrMainHelper dsrMain;
   dsrMain.Install (dsr, adhocNodes);
 
-The example scripts inside ``src/dsr/examples/`` demonstrate the use of 
-DSR based nodes
-in different scenarios. The helper source can be found inside ``src/dsr/helper/dsr-main-helper.{h,cc}`` 
+The example scripts inside ``src/dsr/examples/`` demonstrate the use of DSR based nodesin different scenarios. 
+The helper source can be found inside ``src/dsr/helper/dsr-main-helper.{h,cc}`` 
 and ``src/dsr/helper/dsr-helper.{h,cc}``
 
 Examples

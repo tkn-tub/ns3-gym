@@ -20,9 +20,8 @@
 //
 
 #include <iostream>
-
-#include <math.h>
-#include <stdlib.h>
+#include <cmath>
+#include <cstdlib>
 #include <sys/time.h>                   // for gettimeofday
 #include <unistd.h>
 #include <iostream>
@@ -37,8 +36,7 @@
 #include "rng-seed-manager.h"
 #include "rng-stream.h"
 #include "fatal-error.h"
-
-using namespace std;
+#include "log.h"
 
 namespace ns3 {
 
@@ -46,6 +44,7 @@ namespace ns3 {
 // -----------------------------------------------------------------------------
 // RandomVariableBase methods
 
+NS_LOG_COMPONENT_DEFINE ("RandomVariable");
 
 class RandomVariableBase
 {
@@ -64,11 +63,13 @@ private:
 RandomVariableBase::RandomVariableBase ()
   : m_generator (0)
 {
+  NS_LOG_FUNCTION (this);
 }
 
 RandomVariableBase::RandomVariableBase (const RandomVariableBase& r)
   : m_generator (0)
 {
+  NS_LOG_FUNCTION (this << &r);
   if (r.m_generator != 0)
     {
       m_generator = new RngStream (RngSeedManager::GetSeed (),
@@ -79,17 +80,20 @@ RandomVariableBase::RandomVariableBase (const RandomVariableBase& r)
 
 RandomVariableBase::~RandomVariableBase ()
 {
+  NS_LOG_FUNCTION (this);
   delete m_generator;
 }
 
 uint32_t RandomVariableBase::GetInteger ()
 {
+  NS_LOG_FUNCTION (this);
   return (uint32_t)GetValue ();
 }
 
 RngStream *
 RandomVariableBase::GetStream (void)
 {
+  NS_LOG_FUNCTION (this);
   if (m_generator == 0)
     {
       m_generator = new RngStream (RngSeedManager::GetSeed (),
@@ -104,6 +108,7 @@ RandomVariableBase::GetStream (void)
 RandomVariable::RandomVariable ()
   : m_variable (0)
 {
+  NS_LOG_FUNCTION (this);
 }
 RandomVariable::RandomVariable (const RandomVariable&o)
   : m_variable (o.m_variable->Copy ())
@@ -126,23 +131,27 @@ RandomVariable::operator = (const RandomVariable &o)
 }
 RandomVariable::~RandomVariable ()
 {
+  NS_LOG_FUNCTION (this);
   delete m_variable;
 }
 double
 RandomVariable::GetValue (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_variable->GetValue ();
 }
 
 uint32_t
 RandomVariable::GetInteger (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_variable->GetInteger ();
 }
 
 RandomVariableBase *
 RandomVariable::Peek (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_variable;
 }
 
@@ -196,12 +205,14 @@ UniformVariableImpl::UniformVariableImpl ()
   : m_min (0),
     m_max (1.0)
 {
+  NS_LOG_FUNCTION (this);
 }
 
 UniformVariableImpl::UniformVariableImpl (double s, double l)
   : m_min (s),
     m_max (l)
 {
+  NS_LOG_FUNCTION (this << s << l);
 }
 
 UniformVariableImpl::UniformVariableImpl (const UniformVariableImpl& c)
@@ -209,58 +220,69 @@ UniformVariableImpl::UniformVariableImpl (const UniformVariableImpl& c)
     m_min (c.m_min),
     m_max (c.m_max)
 {
+  NS_LOG_FUNCTION (this << &c);
 }
 
 double
 UniformVariableImpl::GetMin (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_min;
 }
 double
 UniformVariableImpl::GetMax (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_max;
 }
 
 
 double UniformVariableImpl::GetValue ()
 {
+  NS_LOG_FUNCTION (this);
   RngStream *generator = GetStream ();
   return m_min + generator->RandU01 () * (m_max - m_min);
 }
 
 double UniformVariableImpl::GetValue (double s, double l)
 {
+  NS_LOG_FUNCTION (this << s << l);
   RngStream *generator = GetStream ();
   return s + generator->RandU01 () * (l - s);
 }
 
 RandomVariableBase* UniformVariableImpl::Copy () const
 {
+  NS_LOG_FUNCTION (this);
   return new UniformVariableImpl (*this);
 }
 
 UniformVariable::UniformVariable ()
   : RandomVariable (UniformVariableImpl ())
 {
+  NS_LOG_FUNCTION (this);
 }
 UniformVariable::UniformVariable (double s, double l)
   : RandomVariable (UniformVariableImpl (s, l))
 {
+  NS_LOG_FUNCTION (this << s << l);
 }
 
 double UniformVariable::GetValue (void) const
 {
+  NS_LOG_FUNCTION (this);
   return this->RandomVariable::GetValue ();
 }
 
 double UniformVariable::GetValue (double s, double l)
 {
+  NS_LOG_FUNCTION (this << s << l);
   return ((UniformVariableImpl*)Peek ())->GetValue (s,l);
 }
 
 uint32_t UniformVariable::GetInteger (uint32_t s, uint32_t l)
 {
+  NS_LOG_FUNCTION (this << s << l);
   NS_ASSERT (s <= l);
   return static_cast<uint32_t> ( GetValue (s, l + 1) );
 }
@@ -307,50 +329,60 @@ private:
 ConstantVariableImpl::ConstantVariableImpl ()
   : m_const (0)
 {
+  NS_LOG_FUNCTION (this);
 }
 
 ConstantVariableImpl::ConstantVariableImpl (double c)
   : m_const (c)
 {
+  NS_LOG_FUNCTION (this << c);
 }
 
 ConstantVariableImpl::ConstantVariableImpl (const ConstantVariableImpl& c)
   : RandomVariableBase (c),
     m_const (c.m_const)
 {
+  NS_LOG_FUNCTION (this << &c);
 }
 
 void ConstantVariableImpl::NewConstant (double c)
 {
+  NS_LOG_FUNCTION (this << c);
   m_const = c;
 }
 
 double ConstantVariableImpl::GetValue ()
 {
+  NS_LOG_FUNCTION (this);
   return m_const;
 }
 
 uint32_t ConstantVariableImpl::GetInteger ()
 {
+  NS_LOG_FUNCTION (this);
   return (uint32_t)m_const;
 }
 
 RandomVariableBase* ConstantVariableImpl::Copy () const
 {
+  NS_LOG_FUNCTION (this);
   return new ConstantVariableImpl (*this);
 }
 
 ConstantVariable::ConstantVariable ()
   : RandomVariable (ConstantVariableImpl ())
 {
+  NS_LOG_FUNCTION (this);
 }
 ConstantVariable::ConstantVariable (double c)
   : RandomVariable (ConstantVariableImpl (c))
 {
+  NS_LOG_FUNCTION (this << c);
 }
 void
 ConstantVariable::SetConstant (double c)
 {
+  NS_LOG_FUNCTION (this << c);
   *this = ConstantVariable (c);
 }
 
@@ -413,6 +445,7 @@ SequentialVariableImpl::SequentialVariableImpl (double f, double l, double i, ui
     m_current (f),
     m_currentConsecutive (0)
 {
+  NS_LOG_FUNCTION (this << f << l << i << c);
 }
 
 SequentialVariableImpl::SequentialVariableImpl (double f, double l, const RandomVariable& i, uint32_t c)
@@ -423,6 +456,7 @@ SequentialVariableImpl::SequentialVariableImpl (double f, double l, const Random
     m_current (f),
     m_currentConsecutive (0)
 {
+  NS_LOG_FUNCTION (this << f << l << i << c);
 }
 
 SequentialVariableImpl::SequentialVariableImpl (const SequentialVariableImpl& c)
@@ -434,14 +468,17 @@ SequentialVariableImpl::SequentialVariableImpl (const SequentialVariableImpl& c)
     m_current (c.m_current),
     m_currentConsecutive (c.m_currentConsecutive)
 {
+  NS_LOG_FUNCTION (this << &c);
 }
 
 SequentialVariableImpl::~SequentialVariableImpl ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 double SequentialVariableImpl::GetValue ()
 { // Return a sequential series of values
+  NS_LOG_FUNCTION (this);
   double r = m_current;
   if (++m_currentConsecutive == m_consecutive)
     { // Time to advance to next
@@ -457,16 +494,19 @@ double SequentialVariableImpl::GetValue ()
 
 RandomVariableBase* SequentialVariableImpl::Copy () const
 {
+  NS_LOG_FUNCTION (this);
   return new SequentialVariableImpl (*this);
 }
 
 SequentialVariable::SequentialVariable (double f, double l, double i, uint32_t c)
   : RandomVariable (SequentialVariableImpl (f, l, i, c))
 {
+  NS_LOG_FUNCTION (this << f << l << i << c);
 }
 SequentialVariable::SequentialVariable (double f, double l, const RandomVariable& i, uint32_t c)
   : RandomVariable (SequentialVariableImpl (f, l, i, c))
 {
+  NS_LOG_FUNCTION (this << f << l << i << c);
 }
 
 // -----------------------------------------------------------------------------
@@ -519,18 +559,21 @@ ExponentialVariableImpl::ExponentialVariableImpl ()
   : m_mean (1.0),
     m_bound (0)
 {
+  NS_LOG_FUNCTION (this);
 }
 
 ExponentialVariableImpl::ExponentialVariableImpl (double m)
   : m_mean (m),
     m_bound (0)
 {
+  NS_LOG_FUNCTION (this << m);
 }
 
 ExponentialVariableImpl::ExponentialVariableImpl (double m, double b)
   : m_mean (m),
     m_bound (b)
 {
+  NS_LOG_FUNCTION (this << m << b);
 }
 
 ExponentialVariableImpl::ExponentialVariableImpl (const ExponentialVariableImpl& c)
@@ -538,14 +581,16 @@ ExponentialVariableImpl::ExponentialVariableImpl (const ExponentialVariableImpl&
     m_mean (c.m_mean),
     m_bound (c.m_bound)
 {
+  NS_LOG_FUNCTION (this << &c);
 }
 
 double ExponentialVariableImpl::GetValue ()
 {
+  NS_LOG_FUNCTION (this);
   RngStream *generator = GetStream ();
   while (1)
     {
-      double r = -m_mean*log (generator->RandU01 ());
+      double r = -m_mean*std::log (generator->RandU01 ());
       if (m_bound == 0 || r <= m_bound)
         {
           return r;
@@ -556,20 +601,24 @@ double ExponentialVariableImpl::GetValue ()
 
 RandomVariableBase* ExponentialVariableImpl::Copy () const
 {
+  NS_LOG_FUNCTION (this);
   return new ExponentialVariableImpl (*this);
 }
 
 ExponentialVariable::ExponentialVariable ()
   : RandomVariable (ExponentialVariableImpl ())
 {
+  NS_LOG_FUNCTION (this);
 }
 ExponentialVariable::ExponentialVariable (double m)
   : RandomVariable (ExponentialVariableImpl (m))
 {
+  NS_LOG_FUNCTION (this << m);
 }
 ExponentialVariable::ExponentialVariable (double m, double b)
   : RandomVariable (ExponentialVariableImpl (m, b))
 {
+  NS_LOG_FUNCTION (this << m << b);
 }
 
 // -----------------------------------------------------------------------------
@@ -656,6 +705,7 @@ ParetoVariableImpl::ParetoVariableImpl ()
     m_shape (1.5),
     m_bound (0)
 {
+  NS_LOG_FUNCTION (this);
 }
 
 ParetoVariableImpl::ParetoVariableImpl (double m)
@@ -663,6 +713,7 @@ ParetoVariableImpl::ParetoVariableImpl (double m)
     m_shape (1.5),
     m_bound (0)
 {
+  NS_LOG_FUNCTION (this << m);
 }
 
 ParetoVariableImpl::ParetoVariableImpl (double m, double s)
@@ -670,6 +721,7 @@ ParetoVariableImpl::ParetoVariableImpl (double m, double s)
     m_shape (s),
     m_bound (0)
 {
+  NS_LOG_FUNCTION (this << m << s);
 }
 
 ParetoVariableImpl::ParetoVariableImpl (double m, double s, double b)
@@ -677,6 +729,7 @@ ParetoVariableImpl::ParetoVariableImpl (double m, double s, double b)
     m_shape (s),
     m_bound (b)
 {
+  NS_LOG_FUNCTION (this << m << s << b);
 }
 
 ParetoVariableImpl::ParetoVariableImpl (std::pair<double, double> params)
@@ -684,6 +737,7 @@ ParetoVariableImpl::ParetoVariableImpl (std::pair<double, double> params)
     m_shape (params.second),
     m_bound (0)
 {
+  NS_LOG_FUNCTION (this << &params);
 }
 
 ParetoVariableImpl::ParetoVariableImpl (std::pair<double, double> params, double b)
@@ -691,6 +745,7 @@ ParetoVariableImpl::ParetoVariableImpl (std::pair<double, double> params, double
     m_shape (params.second),
     m_bound (b)
 {
+  NS_LOG_FUNCTION (this << &params << b);
 }
 
 ParetoVariableImpl::ParetoVariableImpl (const ParetoVariableImpl& c)
@@ -699,14 +754,16 @@ ParetoVariableImpl::ParetoVariableImpl (const ParetoVariableImpl& c)
     m_shape (c.m_shape),
     m_bound (c.m_bound)
 {
+  NS_LOG_FUNCTION (this << &c);
 }
 
 double ParetoVariableImpl::GetValue ()
 {
+  NS_LOG_FUNCTION (this);
   RngStream *generator = GetStream ();
   while (1)
     {
-      double r = (m_scale * ( 1.0 / pow (generator->RandU01 (), 1.0 / m_shape)));
+      double r = (m_scale * ( 1.0 / std::pow (generator->RandU01 (), 1.0 / m_shape)));
       if (m_bound == 0 || r <= m_bound)
         {
           return r;
@@ -717,32 +774,39 @@ double ParetoVariableImpl::GetValue ()
 
 RandomVariableBase* ParetoVariableImpl::Copy () const
 {
+  NS_LOG_FUNCTION (this);
   return new ParetoVariableImpl (*this);
 }
 
 ParetoVariable::ParetoVariable ()
   : RandomVariable (ParetoVariableImpl ())
 {
+  NS_LOG_FUNCTION (this);
 }
 ParetoVariable::ParetoVariable (double m)
   : RandomVariable (ParetoVariableImpl (m))
 {
+  NS_LOG_FUNCTION (this << m);
 }
 ParetoVariable::ParetoVariable (double m, double s)
   : RandomVariable (ParetoVariableImpl (m, s))
 {
+  NS_LOG_FUNCTION (this << m << s);
 }
 ParetoVariable::ParetoVariable (double m, double s, double b)
   : RandomVariable (ParetoVariableImpl (m, s, b))
 {
+  NS_LOG_FUNCTION (this << m << s << b);
 }
 ParetoVariable::ParetoVariable (std::pair<double, double> params)
   : RandomVariable (ParetoVariableImpl (params))
 {
+  NS_LOG_FUNCTION (this << &params);
 }
 ParetoVariable::ParetoVariable (std::pair<double, double> params, double b)
   : RandomVariable (ParetoVariableImpl (params, b))
 {
+  NS_LOG_FUNCTION (this << &params << b);
 }
 
 // -----------------------------------------------------------------------------
@@ -805,24 +869,28 @@ WeibullVariableImpl::WeibullVariableImpl () : m_mean (1.0),
                                               m_alpha (1),
                                               m_bound (0)
 {
+  NS_LOG_FUNCTION (this);
 }
 WeibullVariableImpl::WeibullVariableImpl (double m)
   : m_mean (m),
     m_alpha (1),
     m_bound (0)
 {
+  NS_LOG_FUNCTION (this << m);
 }
 WeibullVariableImpl::WeibullVariableImpl (double m, double s)
   : m_mean (m),
     m_alpha (s),
     m_bound (0)
 {
+  NS_LOG_FUNCTION (this << m << s);
 }
 WeibullVariableImpl::WeibullVariableImpl (double m, double s, double b)
   : m_mean (m),
     m_alpha (s),
     m_bound (b)
 {
+  NS_LOG_FUNCTION (this << m << s << b);
 }
 WeibullVariableImpl::WeibullVariableImpl (const WeibullVariableImpl& c)
   : RandomVariableBase (c),
@@ -830,15 +898,17 @@ WeibullVariableImpl::WeibullVariableImpl (const WeibullVariableImpl& c)
     m_alpha (c.m_alpha),
     m_bound (c.m_bound)
 {
+  NS_LOG_FUNCTION (this << &c);
 }
 
 double WeibullVariableImpl::GetValue ()
 {
+  NS_LOG_FUNCTION (this);
   RngStream *generator = GetStream ();
   double exponent = 1.0 / m_alpha;
   while (1)
     {
-      double r = m_mean * pow ( -log (generator->RandU01 ()), exponent);
+      double r = m_mean * std::pow ( -std::log (generator->RandU01 ()), exponent);
       if (m_bound == 0 || r <= m_bound)
         {
           return r;
@@ -849,24 +919,29 @@ double WeibullVariableImpl::GetValue ()
 
 RandomVariableBase* WeibullVariableImpl::Copy () const
 {
+  NS_LOG_FUNCTION (this);
   return new WeibullVariableImpl (*this);
 }
 
 WeibullVariable::WeibullVariable ()
   : RandomVariable (WeibullVariableImpl ())
 {
+  NS_LOG_FUNCTION (this);
 }
 WeibullVariable::WeibullVariable (double m)
   : RandomVariable (WeibullVariableImpl (m))
 {
+  NS_LOG_FUNCTION (this << m);
 }
 WeibullVariable::WeibullVariable (double m, double s)
   : RandomVariable (WeibullVariableImpl (m, s))
 {
+  NS_LOG_FUNCTION (this << m << s);
 }
 WeibullVariable::WeibullVariable (double m, double s, double b)
   : RandomVariable (WeibullVariableImpl (m, s, b))
 {
+  NS_LOG_FUNCTION (this << m << s << b);
 }
 
 // -----------------------------------------------------------------------------
@@ -920,6 +995,7 @@ NormalVariableImpl::NormalVariableImpl ()
     m_bound (INFINITE_VALUE),
     m_nextValid (false)
 {
+  NS_LOG_FUNCTION (this);
 }
 
 NormalVariableImpl::NormalVariableImpl (double m, double v, double b)
@@ -928,6 +1004,7 @@ NormalVariableImpl::NormalVariableImpl (double m, double v, double b)
     m_bound (b),
     m_nextValid (false)
 {
+  NS_LOG_FUNCTION (this << m << v << b);
 }
 
 NormalVariableImpl::NormalVariableImpl (const NormalVariableImpl& c)
@@ -937,10 +1014,12 @@ NormalVariableImpl::NormalVariableImpl (const NormalVariableImpl& c)
     m_bound (c.m_bound),
     m_nextValid (false)
 {
+  NS_LOG_FUNCTION (this << &c);
 }
 
 double NormalVariableImpl::GetValue ()
 {
+  NS_LOG_FUNCTION (this);
   RngStream *generator = GetStream ();
   if (m_nextValid)
     { // use previously generated
@@ -958,13 +1037,13 @@ double NormalVariableImpl::GetValue ()
       double w = v1 * v1 + v2 * v2;
       if (w <= 1.0)
         { // Got good pair
-          double y = sqrt ((-2 * log (w)) / w);
-          m_next = m_mean + v2 * y * sqrt (m_variance);
+          double y = std::sqrt ((-2 * std::log (w)) / w);
+          m_next = m_mean + v2 * y * std::sqrt (m_variance);
           // if next is in bounds, it is valid
-          m_nextValid = fabs (m_next - m_mean) <= m_bound;
-          double x1 = m_mean + v1 * y * sqrt (m_variance);
+          m_nextValid = std::fabs (m_next - m_mean) <= m_bound;
+          double x1 = m_mean + v1 * y * std::sqrt (m_variance);
           // if x1 is in bounds, return it
-          if (fabs (x1 - m_mean) <= m_bound)
+          if (std::fabs (x1 - m_mean) <= m_bound)
             {
               return x1;
             }
@@ -981,38 +1060,45 @@ double NormalVariableImpl::GetValue ()
 
 RandomVariableBase* NormalVariableImpl::Copy () const
 {
+  NS_LOG_FUNCTION (this);
   return new NormalVariableImpl (*this);
 }
 
 double
 NormalVariableImpl::GetMean (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_mean;
 }
 
 double
 NormalVariableImpl::GetVariance (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_variance;
 }
 
 double
 NormalVariableImpl::GetBound (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_bound;
 }
 
 NormalVariable::NormalVariable ()
   : RandomVariable (NormalVariableImpl ())
 {
+  NS_LOG_FUNCTION (this);
 }
 NormalVariable::NormalVariable (double m, double v)
   : RandomVariable (NormalVariableImpl (m, v))
 {
+  NS_LOG_FUNCTION (this << m << v);
 }
 NormalVariable::NormalVariable (double m, double v, double b)
   : RandomVariable (NormalVariableImpl (m, v, b))
 {
+  NS_LOG_FUNCTION (this << m << v << b);
 }
 
 // -----------------------------------------------------------------------------
@@ -1061,16 +1147,19 @@ EmpiricalVariableImpl::ValueCDF::ValueCDF ()
   : value (0.0),
     cdf (0.0)
 {
+  NS_LOG_FUNCTION (this);
 }
 EmpiricalVariableImpl::ValueCDF::ValueCDF (double v, double c)
   : value (v),
     cdf (c)
 {
+  NS_LOG_FUNCTION (this << v << c);
 }
 EmpiricalVariableImpl::ValueCDF::ValueCDF (const ValueCDF& c)
   : value (c.value),
     cdf (c.cdf)
 {
+  NS_LOG_FUNCTION (this << &c);
 }
 
 // -----------------------------------------------------------------------------
@@ -1079,6 +1168,7 @@ EmpiricalVariableImpl::ValueCDF::ValueCDF (const ValueCDF& c)
 EmpiricalVariableImpl::EmpiricalVariableImpl ()
   : validated (false)
 {
+  NS_LOG_FUNCTION (this);
 }
 
 EmpiricalVariableImpl::EmpiricalVariableImpl (const EmpiricalVariableImpl& c)
@@ -1086,15 +1176,18 @@ EmpiricalVariableImpl::EmpiricalVariableImpl (const EmpiricalVariableImpl& c)
     validated (c.validated),
     emp (c.emp)
 {
+  NS_LOG_FUNCTION (this << &c);
 }
 
 EmpiricalVariableImpl::~EmpiricalVariableImpl ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 double EmpiricalVariableImpl::GetValue ()
 { // Return a value from the empirical distribution
   // This code based (loosely) on code by Bruce Mah (Thanks Bruce!)
+  NS_LOG_FUNCTION (this);
   RngStream *generator = GetStream ();
   if (emp.size () == 0)
     {
@@ -1139,28 +1232,31 @@ double EmpiricalVariableImpl::GetValue ()
 
 RandomVariableBase* EmpiricalVariableImpl::Copy () const
 {
+  NS_LOG_FUNCTION (this);
   return new EmpiricalVariableImpl (*this);
 }
 
 void EmpiricalVariableImpl::CDF (double v, double c)
 { // Add a new empirical datapoint to the empirical cdf
   // NOTE.   These MUST be inserted in non-decreasing order
+  NS_LOG_FUNCTION (this << v << c);
   emp.push_back (ValueCDF (v, c));
 }
 
 void EmpiricalVariableImpl::Validate ()
 {
+  NS_LOG_FUNCTION (this);
   ValueCDF prior;
   for (std::vector<ValueCDF>::size_type i = 0; i < emp.size (); ++i)
     {
       ValueCDF& current = emp[i];
       if (current.value < prior.value || current.cdf < prior.cdf)
         { // Error
-          cerr << "Empirical Dist error,"
-               << " current value " << current.value
-               << " prior value "   << prior.value
-               << " current cdf "   << current.cdf
-               << " prior cdf "     << prior.cdf << endl;
+          std::cerr << "Empirical Dist error,"
+                    << " current value " << current.value
+                    << " prior value "   << prior.value
+                    << " current cdf "   << current.cdf
+                    << " prior cdf "     << prior.cdf << std::endl;
           NS_FATAL_ERROR ("Empirical Dist error");
         }
       prior = current;
@@ -1171,20 +1267,24 @@ void EmpiricalVariableImpl::Validate ()
 double EmpiricalVariableImpl::Interpolate (double c1, double c2,
                                            double v1, double v2, double r)
 { // Interpolate random value in range [v1..v2) based on [c1 .. r .. c2)
+  NS_LOG_FUNCTION (this << c1 << c2 << v1 << v2 << r);
   return (v1 + ((v2 - v1) / (c2 - c1)) * (r - c1));
 }
 
 EmpiricalVariable::EmpiricalVariable ()
   : RandomVariable (EmpiricalVariableImpl ())
 {
+  NS_LOG_FUNCTION (this);
 }
 EmpiricalVariable::EmpiricalVariable (const RandomVariableBase &variable)
   : RandomVariable (variable)
 {
+  NS_LOG_FUNCTION (this << &variable);
 }
 void
 EmpiricalVariable::CDF (double v, double c)
 {
+  NS_LOG_FUNCTION (this << v << c);
   EmpiricalVariableImpl *impl = dynamic_cast<EmpiricalVariableImpl *> (Peek ());
   NS_ASSERT (impl);
   impl->CDF (v, c);
@@ -1211,27 +1311,32 @@ private:
 
 IntEmpiricalVariableImpl::IntEmpiricalVariableImpl ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 uint32_t IntEmpiricalVariableImpl::GetInteger ()
 {
+  NS_LOG_FUNCTION (this);
   return (uint32_t)GetValue ();
 }
 
 RandomVariableBase* IntEmpiricalVariableImpl::Copy () const
 {
+  NS_LOG_FUNCTION (this);
   return new IntEmpiricalVariableImpl (*this);
 }
 
 double IntEmpiricalVariableImpl::Interpolate (double c1, double c2,
                                               double v1, double v2, double r)
 { // Interpolate random value in range [v1..v2) based on [c1 .. r .. c2)
-  return ceil (v1 + ((v2 - v1) / (c2 - c1)) * (r - c1));
+  NS_LOG_FUNCTION (this << c1 << c2 << v1 << v2 << r);
+  return std::ceil (v1 + ((v2 - v1) / (c2 - c1)) * (r - c1));
 }
 
 IntEmpiricalVariable::IntEmpiricalVariable ()
   : EmpiricalVariable (IntEmpiricalVariableImpl ())
 {
+  NS_LOG_FUNCTION (this);
 }
 
 // -----------------------------------------------------------------------------
@@ -1271,14 +1376,17 @@ DeterministicVariableImpl::DeterministicVariableImpl (double* d, uint32_t c)
     next (c),
     data (d)
 { // Nothing else needed
+  NS_LOG_FUNCTION (this << d << c);
 }
 
 DeterministicVariableImpl::~DeterministicVariableImpl ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 double DeterministicVariableImpl::GetValue ()
 {
+  NS_LOG_FUNCTION (this);
   if (next == count)
     {
       next = 0;
@@ -1288,12 +1396,14 @@ double DeterministicVariableImpl::GetValue ()
 
 RandomVariableBase* DeterministicVariableImpl::Copy () const
 {
+  NS_LOG_FUNCTION (this);
   return new DeterministicVariableImpl (*this);
 }
 
 DeterministicVariable::DeterministicVariable (double* d, uint32_t c)
   : RandomVariable (DeterministicVariableImpl (d, c))
 {
+  NS_LOG_FUNCTION (this << d << c);
 }
 
 // -----------------------------------------------------------------------------
@@ -1322,6 +1432,7 @@ private:
 
 RandomVariableBase* LogNormalVariableImpl::Copy () const
 {
+  NS_LOG_FUNCTION (this);
   return new LogNormalVariableImpl (*this);
 }
 
@@ -1329,6 +1440,7 @@ LogNormalVariableImpl::LogNormalVariableImpl (double mu, double sigma)
   : m_mu (mu),
     m_sigma (sigma)
 {
+  NS_LOG_FUNCTION (this << mu << sigma);
 }
 
 // The code from this function was adapted from the GNU Scientific
@@ -1360,6 +1472,7 @@ LogNormalVariableImpl::LogNormalVariableImpl (double mu, double sigma)
 double
 LogNormalVariableImpl::GetValue ()
 {
+  NS_LOG_FUNCTION (this);
   RngStream *generator = GetStream ();
   double u, v, r2, normal, z;
 
@@ -1375,9 +1488,9 @@ LogNormalVariableImpl::GetValue ()
     }
   while (r2 > 1.0 || r2 == 0);
 
-  normal = u * sqrt (-2.0 * log (r2) / r2);
+  normal = u * std::sqrt (-2.0 * std::log (r2) / r2);
 
-  z =  exp (m_sigma * normal + m_mu);
+  z = std::exp (m_sigma * normal + m_mu);
 
   return z;
 }
@@ -1385,6 +1498,7 @@ LogNormalVariableImpl::GetValue ()
 LogNormalVariable::LogNormalVariable (double mu, double sigma)
   : RandomVariable (LogNormalVariableImpl (mu, sigma))
 {
+  NS_LOG_FUNCTION (this << mu << sigma);
 }
 
 // -----------------------------------------------------------------------------
@@ -1421,6 +1535,7 @@ private:
 
 RandomVariableBase* GammaVariableImpl::Copy () const
 {
+  NS_LOG_FUNCTION (this);
   return new GammaVariableImpl (m_alpha, m_beta);
 }
 
@@ -1428,11 +1543,13 @@ GammaVariableImpl::GammaVariableImpl (double alpha, double beta)
   : m_alpha (alpha),
     m_beta (beta)
 {
+  NS_LOG_FUNCTION (this << alpha << beta);
 }
 
 double
 GammaVariableImpl::GetValue ()
 {
+  NS_LOG_FUNCTION (this);
   return GetValue (m_alpha, m_beta);
 }
 
@@ -1455,17 +1572,18 @@ GammaVariableImpl::GetValue ()
 double
 GammaVariableImpl::GetValue (double alpha, double beta)
 {
+  NS_LOG_FUNCTION (this << alpha << beta);
   RngStream *generator = GetStream ();
 
   if (alpha < 1)
     {
       double u = generator->RandU01 ();
-      return GetValue (1.0 + alpha, beta) * pow (u, 1.0 / alpha);
+      return GetValue (1.0 + alpha, beta) * std::pow (u, 1.0 / alpha);
     }
 
   double x, v, u;
   double d = alpha - 1.0 / 3.0;
-  double c = (1.0 / 3.0) / sqrt (d);
+  double c = (1.0 / 3.0) / std::sqrt (d);
 
   while (1)
     {
@@ -1482,7 +1600,7 @@ GammaVariableImpl::GetValue (double alpha, double beta)
         {
           break;
         }
-      if (log (u) < 0.5 * x * x + d * (1 - v + log (v)))
+      if (std::log (u) < 0.5 * x * x + d * (1 - v + std::log (v)))
         {
           break;
         }
@@ -1494,20 +1612,24 @@ GammaVariableImpl::GetValue (double alpha, double beta)
 GammaVariable::GammaVariable ()
   : RandomVariable (GammaVariableImpl (1.0, 1.0))
 {
+  NS_LOG_FUNCTION (this);
 }
 
 GammaVariable::GammaVariable (double alpha, double beta)
   : RandomVariable (GammaVariableImpl (alpha, beta))
 {
+  NS_LOG_FUNCTION (this << alpha << beta);
 }
 
 double GammaVariable::GetValue (void) const
 {
+  NS_LOG_FUNCTION (this);
   return this->RandomVariable::GetValue ();
 }
 
 double GammaVariable::GetValue (double alpha, double beta) const
 {
+  NS_LOG_FUNCTION (this << alpha << beta);
   return ((GammaVariableImpl*)Peek ())->GetValue (alpha, beta);
 }
 
@@ -1545,6 +1667,7 @@ private:
 
 RandomVariableBase* ErlangVariableImpl::Copy () const
 {
+  NS_LOG_FUNCTION (this);
   return new ErlangVariableImpl (m_k, m_lambda);
 }
 
@@ -1552,11 +1675,13 @@ ErlangVariableImpl::ErlangVariableImpl (unsigned int k, double lambda)
   : m_k (k),
     m_lambda (lambda)
 {
+  NS_LOG_FUNCTION (this << k << lambda);
 }
 
 double
 ErlangVariableImpl::GetValue ()
 {
+  NS_LOG_FUNCTION (this);
   return GetValue (m_k, m_lambda);
 }
 
@@ -1577,6 +1702,7 @@ ErlangVariableImpl::GetValue (unsigned int k, double lambda)
 {
   // XXX: Fixme: do not create a new 
   // RNG stream every time the function is called !
+  NS_LOG_FUNCTION (this << k << lambda);
   ExponentialVariable exponential (lambda);
 
   double result = 0;
@@ -1591,20 +1717,24 @@ ErlangVariableImpl::GetValue (unsigned int k, double lambda)
 ErlangVariable::ErlangVariable ()
   : RandomVariable (ErlangVariableImpl (1, 1.0))
 {
+  NS_LOG_FUNCTION (this);
 }
 
 ErlangVariable::ErlangVariable (unsigned int k, double lambda)
   : RandomVariable (ErlangVariableImpl (k, lambda))
 {
+  NS_LOG_FUNCTION (this << k << lambda);
 }
 
 double ErlangVariable::GetValue (void) const
 {
+  NS_LOG_FUNCTION (this);
   return this->RandomVariable::GetValue ();
 }
 
 double ErlangVariable::GetValue (unsigned int k, double lambda) const
 {
+  NS_LOG_FUNCTION (this << k << lambda);
   return ((ErlangVariableImpl*)Peek ())->GetValue (k, lambda);
 }
 
@@ -1649,6 +1779,7 @@ TriangularVariableImpl::TriangularVariableImpl ()
     m_max (1),
     m_mode (0.5)
 {
+  NS_LOG_FUNCTION (this);
 }
 
 TriangularVariableImpl::TriangularVariableImpl (double s, double l, double mean)
@@ -1656,6 +1787,7 @@ TriangularVariableImpl::TriangularVariableImpl (double s, double l, double mean)
     m_max (l),
     m_mode (3.0 * mean - s - l)
 {
+  NS_LOG_FUNCTION (this << s << l << mean);
 }
 
 TriangularVariableImpl::TriangularVariableImpl (const TriangularVariableImpl& c)
@@ -1664,34 +1796,39 @@ TriangularVariableImpl::TriangularVariableImpl (const TriangularVariableImpl& c)
     m_max (c.m_max),
     m_mode (c.m_mode)
 {
+  NS_LOG_FUNCTION (this << &c);
 }
 
 double TriangularVariableImpl::GetValue ()
 {
+  NS_LOG_FUNCTION (this);
   RngStream *generator = GetStream ();
   double u = generator->RandU01 ();
   if (u <= (m_mode - m_min) / (m_max - m_min) )
     {
-      return m_min + sqrt (u * (m_max - m_min) * (m_mode - m_min) );
+      return m_min + std::sqrt (u * (m_max - m_min) * (m_mode - m_min) );
     }
   else
     {
-      return m_max - sqrt ( (1 - u) * (m_max - m_min) * (m_max - m_mode) );
+      return m_max - std::sqrt ( (1 - u) * (m_max - m_min) * (m_max - m_mode) );
     }
 }
 
 RandomVariableBase* TriangularVariableImpl::Copy () const
 {
+  NS_LOG_FUNCTION (this);
   return new TriangularVariableImpl (*this);
 }
 
 TriangularVariable::TriangularVariable ()
   : RandomVariable (TriangularVariableImpl ())
 {
+  NS_LOG_FUNCTION (this);
 }
 TriangularVariable::TriangularVariable (double s, double l, double mean)
   : RandomVariable (TriangularVariableImpl (s,l,mean))
 {
+  NS_LOG_FUNCTION (this << s << l << mean);
 }
 
 // -----------------------------------------------------------------------------
@@ -1726,6 +1863,7 @@ private:
 
 RandomVariableBase* ZipfVariableImpl::Copy () const
 {
+  NS_LOG_FUNCTION (this);
   return new ZipfVariableImpl (m_n, m_alpha);
 }
 
@@ -1734,6 +1872,7 @@ ZipfVariableImpl::ZipfVariableImpl ()
     m_alpha (0),
     m_c (1)
 {
+  NS_LOG_FUNCTION (this);
 }
 
 
@@ -1743,9 +1882,10 @@ ZipfVariableImpl::ZipfVariableImpl (long n, double alpha)
     m_c (0)
 {
   // calculate the normalization constant c
+  NS_LOG_FUNCTION (this << n << alpha);
   for (int i = 1; i <= n; i++)
     {
-      m_c += (1.0 / pow ((double)i,alpha));
+      m_c += (1.0 / std::pow ((double)i, alpha));
     }
   m_c = 1.0 / m_c;
 }
@@ -1753,13 +1893,14 @@ ZipfVariableImpl::ZipfVariableImpl (long n, double alpha)
 double
 ZipfVariableImpl::GetValue ()
 {
+  NS_LOG_FUNCTION (this);
   RngStream *generator = GetStream ();
 
   double u = generator->RandU01 ();
   double sum_prob = 0,zipf_value = 0;
   for (int i = 1; i <= m_n; i++)
     {
-      sum_prob += m_c / pow ((double)i,m_alpha);
+      sum_prob += m_c / std::pow ((double)i, m_alpha);
       if (sum_prob > u)
         {
           zipf_value = i;
@@ -1772,11 +1913,13 @@ ZipfVariableImpl::GetValue ()
 ZipfVariable::ZipfVariable ()
   : RandomVariable (ZipfVariableImpl ())
 {
+  NS_LOG_FUNCTION (this);
 }
 
 ZipfVariable::ZipfVariable (long n, double alpha)
   : RandomVariable (ZipfVariableImpl (n, alpha))
 {
+  NS_LOG_FUNCTION (this << n << alpha);
 }
 
 
@@ -1810,20 +1953,23 @@ private:
 
 RandomVariableBase* ZetaVariableImpl::Copy () const
 {
+  NS_LOG_FUNCTION (this);
   return new ZetaVariableImpl (m_alpha);
 }
 
 ZetaVariableImpl::ZetaVariableImpl ()
   : m_alpha (3.14),
-    m_b (pow (2.0, 2.14))
+    m_b (std::pow (2.0, 2.14))
 {
+  NS_LOG_FUNCTION (this);
 }
 
 
 ZetaVariableImpl::ZetaVariableImpl (double alpha)
   : m_alpha (alpha),
-    m_b (pow (2.0, alpha - 1.0))
+    m_b (std::pow (2.0, alpha - 1.0))
 {
+  NS_LOG_FUNCTION (this << alpha);
 }
 
 /*
@@ -1834,6 +1980,7 @@ ZetaVariableImpl::ZetaVariableImpl (double alpha)
 double
 ZetaVariableImpl::GetValue ()
 {
+  NS_LOG_FUNCTION (this);
   RngStream *generator = GetStream ();
 
   double u, v;
@@ -1844,8 +1991,8 @@ ZetaVariableImpl::GetValue ()
     {
       u = generator->RandU01 ();
       v = generator->RandU01 ();
-      X = floor (pow (u, -1.0 / (m_alpha - 1.0)));
-      T = pow (1.0 + 1.0 / X, m_alpha - 1.0);
+      X = floor (std::pow (u, -1.0 / (m_alpha - 1.0)));
+      T = std::pow (1.0 + 1.0 / X, m_alpha - 1.0);
       test = v * X * (T - 1.0) / (m_b - 1.0);
     }
   while ( test > (T / m_b) );
@@ -1856,11 +2003,13 @@ ZetaVariableImpl::GetValue ()
 ZetaVariable::ZetaVariable ()
   : RandomVariable (ZetaVariableImpl ())
 {
+  NS_LOG_FUNCTION (this);
 }
 
 ZetaVariable::ZetaVariable (double alpha)
   : RandomVariable (ZetaVariableImpl (alpha))
 {
+  NS_LOG_FUNCTION (this << alpha);
 }
 
 
@@ -1909,7 +2058,7 @@ std::istream & operator >> (std::istream &is, RandomVariable &var)
   value = value.substr (tmp + 1, value.npos);
   if (type == "Constant")
     {
-      istringstream iss (value);
+      std::istringstream iss (value);
       double constant;
       iss >> constant;
       var = ConstantVariable (constant);
@@ -1927,8 +2076,8 @@ std::istream & operator >> (std::istream &is, RandomVariable &var)
             {
               NS_FATAL_ERROR ("bad Uniform value: " << value);
             }
-          istringstream issA (value.substr (0, tmp));
-          istringstream issB (value.substr (tmp + 1, value.npos));
+          std::istringstream issA (value.substr (0, tmp));
+          std::istringstream issB (value.substr (tmp + 1, value.npos));
           double a, b;
           issA >> a;
           issB >> b;
@@ -1953,8 +2102,8 @@ std::istream & operator >> (std::istream &is, RandomVariable &var)
           tmp2 = sub.find (":");
           if (tmp2 == value.npos)
             {
-              istringstream issA (value.substr (0, tmp));
-              istringstream issB (sub);
+              std::istringstream issA (value.substr (0, tmp));
+              std::istringstream issB (sub);
               double a, b;
               issA >> a;
               issB >> b;
@@ -1962,9 +2111,9 @@ std::istream & operator >> (std::istream &is, RandomVariable &var)
             }
           else
             {
-              istringstream issA (value.substr (0, tmp));
-              istringstream issB (sub.substr (0, tmp2));
-              istringstream issC (sub.substr (tmp2 + 1, value.npos));
+              std::istringstream issA (value.substr (0, tmp));
+              std::istringstream issB (sub.substr (0, tmp2));
+              std::istringstream issC (sub.substr (tmp2 + 1, value.npos));
               double a, b, c;
               issA >> a;
               issB >> b;

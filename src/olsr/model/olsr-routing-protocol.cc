@@ -66,7 +66,7 @@
 ///
 /// We only use this value in order to define OLSR_NEIGHB_HOLD_TIME.
 ///
-#define OLSR_REFRESH_INTERVAL   Seconds (2)
+#define OLSR_REFRESH_INTERVAL   m_helloInterval
 
 
 /********** Holding times **********/
@@ -273,7 +273,7 @@ RoutingProtocol::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
   m_hnaRoutingTable->PrintRoutingTable (stream);
 }
 
-void RoutingProtocol::DoStart ()
+void RoutingProtocol::DoInitialize ()
 {
   if (m_mainAddress == Ipv4Address ())
     {

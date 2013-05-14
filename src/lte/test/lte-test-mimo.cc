@@ -74,11 +74,10 @@ LenaTestMimoSuite::LenaTestMimoSuite ()
   estThrDl.push_back (119100); // interval 1 : estimated throughput for TxMode 1
   estThrDl.push_back (183600); // interval 2 : estimated throughput for TxMode 2
   estThrDl.push_back (193400); // interval 3 : estimated throughput for TxMode 3
-  AddTestCase (new LenaMimoTestCase(300, estThrDl, "ns3::RrFfMacScheduler", true));
-  AddTestCase (new LenaMimoTestCase(300, estThrDl, "ns3::PfFfMacScheduler", true));
-  AddTestCase (new LenaMimoTestCase(300, estThrDl, "ns3::RrFfMacScheduler", false));
-  AddTestCase (new LenaMimoTestCase(300, estThrDl, "ns3::PfFfMacScheduler", false));
- 
+  AddTestCase (new LenaMimoTestCase(300, estThrDl, "ns3::RrFfMacScheduler", true), TestCase::QUICK);
+  AddTestCase (new LenaMimoTestCase(300, estThrDl, "ns3::PfFfMacScheduler", true), TestCase::QUICK);
+  AddTestCase (new LenaMimoTestCase(300, estThrDl, "ns3::RrFfMacScheduler", false), TestCase::QUICK);
+  AddTestCase (new LenaMimoTestCase(300, estThrDl, "ns3::PfFfMacScheduler", false), TestCase::QUICK);
 
 }
 

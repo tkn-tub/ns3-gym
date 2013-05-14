@@ -99,7 +99,7 @@ public:
 private:
   friend class HwmpProtocolMac;
 
-  virtual void DoStart ();
+  virtual void DoInitialize ();
 
   HwmpProtocol& operator= (const HwmpProtocol &);
   HwmpProtocol (const HwmpProtocol &);

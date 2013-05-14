@@ -3,7 +3,7 @@
 import wutils
 
 # Required NetAnim version
-NETANIM_RELEASE_NAME = "netanim-3.101"
+NETANIM_RELEASE_NAME = "netanim-3.103"
 
 
 def build (bld) :
@@ -18,7 +18,7 @@ def build (bld) :
         	'test/netanim-test.cc',
         ]
 
-	headers = bld.new_task_gen (features=['ns3header'])
+	headers = bld(features='ns3header')
 	headers.module = 'netanim'
 	headers.source = [
 			  'model/animation-interface.h',
@@ -26,5 +26,5 @@ def build (bld) :
   			 ]
 
 	if (bld.env['ENABLE_EXAMPLES']) :
-		bld.add_subdirs ('examples')
+		bld.recurse('examples')
 

@@ -271,8 +271,8 @@ public:
 Ns3TcpSocketTestSuite::Ns3TcpSocketTestSuite ()
   : TestSuite ("ns3-tcp-socket", SYSTEM)
 {
-  AddTestCase (new Ns3TcpSocketTestCase1);
-  AddTestCase (new Ns3TcpSocketTestCase2);
+  AddTestCase (new Ns3TcpSocketTestCase1, TestCase::QUICK);
+  AddTestCase (new Ns3TcpSocketTestCase2, TestCase::QUICK);
 }
 
 static Ns3TcpSocketTestSuite ns3TcpSocketTestSuite;

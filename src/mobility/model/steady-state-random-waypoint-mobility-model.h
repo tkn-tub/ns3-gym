@@ -55,9 +55,9 @@ public:
   static TypeId GetTypeId (void);
   SteadyStateRandomWaypointMobilityModel ();
 protected:
-  virtual void DoStart (void);
+  virtual void DoInitialize (void);
 private:
-  void SteadyStateStart (void);
+  void DoInitializePrivate (void);
   void SteadyStateBeginWalk (const Vector &destination);
   void Start (void);
   void BeginWalk (void);

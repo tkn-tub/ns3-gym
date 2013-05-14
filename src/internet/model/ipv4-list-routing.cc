@@ -44,18 +44,18 @@ Ipv4ListRouting::GetTypeId (void)
 Ipv4ListRouting::Ipv4ListRouting () 
   : m_ipv4 (0)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 Ipv4ListRouting::~Ipv4ListRouting () 
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 void
 Ipv4ListRouting::DoDispose (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   for (Ipv4RoutingProtocolList::iterator rprotoIter = m_routingProtocols.begin ();
        rprotoIter != m_routingProtocols.end (); rprotoIter++)
     {
@@ -71,6 +71,7 @@ Ipv4ListRouting::DoDispose (void)
 void
 Ipv4ListRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
 {
+  NS_LOG_FUNCTION (this << stream);
   *stream->GetStream () << "Node: " << m_ipv4->GetObject<Node> ()->GetId () 
                         << " Time: " << Simulator::Now ().GetSeconds () << "s "
                         << "Ipv4ListRouting table" << std::endl;
@@ -84,22 +85,23 @@ Ipv4ListRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
 }
 
 void
-Ipv4ListRouting::DoStart (void)
+Ipv4ListRouting::DoInitialize (void)
 {
+  NS_LOG_FUNCTION (this);
   for (Ipv4RoutingProtocolList::iterator rprotoIter = m_routingProtocols.begin ();
        rprotoIter != m_routingProtocols.end (); rprotoIter++)
     {
       Ptr<Ipv4RoutingProtocol> protocol = (*rprotoIter).second;
-      protocol->Start ();
+      protocol->Initialize ();
     }
-  Ipv4RoutingProtocol::DoStart ();
+  Ipv4RoutingProtocol::DoInitialize ();
 }
 
 
 Ptr<Ipv4Route>
 Ipv4ListRouting::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDevice> oif, enum Socket::SocketErrno &sockerr)
 {
-  NS_LOG_FUNCTION (this << header.GetDestination () << " " << header.GetSource () << " " << oif);
+  NS_LOG_FUNCTION (this << p << header.GetDestination () << header.GetSource () << oif << sockerr);
   Ptr<Ipv4Route> route;
 
   for (Ipv4RoutingProtocolList::const_iterator i = m_routingProtocols.begin ();
@@ -127,8 +129,8 @@ Ipv4ListRouting::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<
                              UnicastForwardCallback ucb, MulticastForwardCallback mcb, 
                              LocalDeliverCallback lcb, ErrorCallback ecb)
 {
+  NS_LOG_FUNCTION (this << p << header << idev << &ucb << &mcb << &lcb << &ecb);
   bool retVal = false;
-  NS_LOG_FUNCTION (p << header << idev);
   NS_LOG_LOGIC ("RouteInput logic for node: " << m_ipv4->GetObject<Node> ()->GetId ());
 
   NS_ASSERT (m_ipv4 != 0);
@@ -268,7 +270,7 @@ Ipv4ListRouting::GetNRoutingProtocols (void) const
 Ptr<Ipv4RoutingProtocol> 
 Ipv4ListRouting::GetRoutingProtocol (uint32_t index, int16_t& priority) const
 {
-  NS_LOG_FUNCTION (index);
+  NS_LOG_FUNCTION (this << index << priority);
   if (index > m_routingProtocols.size ())
     {
       NS_FATAL_ERROR ("Ipv4ListRouting::GetRoutingProtocol():  index " << index << " out of range");
@@ -289,6 +291,7 @@ Ipv4ListRouting::GetRoutingProtocol (uint32_t index, int16_t& priority) const
 bool 
 Ipv4ListRouting::Compare (const Ipv4RoutingProtocolEntry& a, const Ipv4RoutingProtocolEntry& b)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   return a.first > b.first;
 }
 

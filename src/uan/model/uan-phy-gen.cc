@@ -144,9 +144,9 @@ UanPhyCalcSinrFhFsk::CalcSinrDb (Ptr<Packet> pkt,
   UanPdp::Iterator pit = pdp.GetBegin ();
   for (; pit != pdp.GetEnd (); pit++)
     {
-      if (abs (pit->GetAmp ()) > maxAmp)
+      if (std::abs (pit->GetAmp ()) > maxAmp)
         {
-          maxAmp = abs (pit->GetAmp ());
+          maxAmp = std::abs (pit->GetAmp ());
           maxTapDelay = pit->GetDelay ().GetSeconds ();
         }
     }
@@ -895,7 +895,7 @@ UanPhyGen::NotifyIntChange (void)
 double
 UanPhyGen::CalculateSinrDb (Ptr<Packet> pkt, Time arrTime, double rxPowerDb, UanTxMode mode, UanPdp pdp)
 {
-  double noiseDb = m_channel->GetNoiseDbHz ( (double) mode.GetCenterFreqHz () / 1000.0) + 10 * log10 (mode.GetBandwidthHz ());
+  double noiseDb = m_channel->GetNoiseDbHz ( (double) mode.GetCenterFreqHz () / 1000.0) + 10 * std::log10 (mode.GetBandwidthHz ());
   return m_sinr->CalcSinrDb (pkt, arrTime, rxPowerDb, noiseDb, mode, pdp, m_transducer->GetArrivalList ());
 }
 
@@ -924,12 +924,12 @@ UanPhyGen::GetInterferenceDb (Ptr<Packet> pkt)
 double
 UanPhyGen::DbToKp (double db)
 {
-  return pow (10, db / 10.0);
+  return std::pow (10, db / 10.0);
 }
 double
 UanPhyGen::KpToDb (double kp)
 {
-  return 10 * log10 (kp);
+  return 10 * std::log10 (kp);
 }
 
 void

@@ -24,7 +24,7 @@
 #include "ns3/mobility-model.h"
 #include "ns3/double.h"
 #include "ns3/pointer.h"
-#include <math.h>
+#include <cmath>
 #include "oh-buildings-propagation-loss-model.h"
 #include "ns3/buildings-mobility-model.h"
 #include "ns3/okumura-hata-propagation-loss-model.h"

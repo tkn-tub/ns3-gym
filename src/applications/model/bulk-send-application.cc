@@ -126,7 +126,15 @@ void BulkSendApplication::StartApplication (void) // Called at time specified by
                           "In other words, use TCP instead of UDP.");
         }
 
-      m_socket->Bind ();
+      if (Inet6SocketAddress::IsMatchingType (m_peer))
+        {
+          m_socket->Bind6 ();
+        }
+      else if (InetSocketAddress::IsMatchingType (m_peer))
+        {
+          m_socket->Bind ();
+        }
+
       m_socket->Connect (m_peer);
       m_socket->ShutdownRecv ();
       m_socket->SetConnectCallback (

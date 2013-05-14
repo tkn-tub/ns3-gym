@@ -159,7 +159,7 @@ Experiment::Run (UanHelper &uan)
       {
         double x = urv->GetValue (0, m_boundary);
         double y = urv->GetValue (0, m_boundary);
-        double newr = sqrt ((x - m_boundary / 2.0) * (x - m_boundary / 2.0)
+        double newr = std::sqrt ((x - m_boundary / 2.0) * (x - m_boundary / 2.0)
                             + (y - m_boundary / 2.0) * (y - m_boundary / 2.0));
         rsum += newr;
         minr = std::min (minr, newr);

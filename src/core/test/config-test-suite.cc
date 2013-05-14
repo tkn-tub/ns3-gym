@@ -34,7 +34,7 @@
 
 #include <sstream>
 
-namespace ns3 {
+using namespace ns3;
 
 // ===========================================================================
 // An object with some attributes that we can play with using config.
@@ -618,11 +618,9 @@ public:
 ConfigTestSuite::ConfigTestSuite ()
   : TestSuite ("config", UNIT)
 {
-  AddTestCase (new RootNamespaceConfigTestCase);
-  AddTestCase (new UnderRootNamespaceConfigTestCase);
-  AddTestCase (new ObjectVectorConfigTestCase);
+  AddTestCase (new RootNamespaceConfigTestCase, TestCase::QUICK);
+  AddTestCase (new UnderRootNamespaceConfigTestCase, TestCase::QUICK);
+  AddTestCase (new ObjectVectorConfigTestCase, TestCase::QUICK);
 }
 
 static ConfigTestSuite configTestSuite;
-
-} // namespace ns3

@@ -155,7 +155,7 @@ DsdvManetExample::ReceivePacket (Ptr <Socket> socket)
 {
   NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << " Received one packet!");
   Ptr <Packet> packet;
-  while (packet = socket->Recv ())
+  while ((packet = socket->Recv ()))
     {
       bytesTotal += packet->GetSize ();
       packetsReceived += 1;
@@ -250,7 +250,7 @@ DsdvManetExample::SetupMobility ()
   pos.Set ("X", StringValue ("ns3::UniformRandomVariable[Min=0.0|Max=1000.0]"));
   pos.Set ("Y", StringValue ("ns3::UniformRandomVariable[Min=0.0|Max=1000.0]"));
 
-  ostringstream speedConstantRandomVariableStream;
+  std::ostringstream speedConstantRandomVariableStream;
   speedConstantRandomVariableStream << "ns3::ConstantRandomVariable[Constant="
                                    << m_nodeSpeed
                                    << "]";

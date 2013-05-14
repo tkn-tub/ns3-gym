@@ -22,10 +22,11 @@ There are two important abstract base classes:
 * class :cpp:class:`TcpSocketFactory`:  This is used by the layer-4 protocol
   instance to create TCP sockets of the right type.
 
-There are presently two implementations of TCP available for |ns3|.
+There are presently three implementations of TCP available for |ns3|.
 
 * a natively implemented TCP for ns-3
 * support for the `Network Simulation Cradle (NSC) <http://www.wand.net.nz/~stj2/nsc/>`_
+* support for `Direct Code Exectution (DCE) <http://http://www.nsnam.org/~thehajime/ns-3-dce-doc/getting-started.html>`_
 
 It should also be mentioned that various ways of combining virtual machines
 with |ns3| makes available also some additional TCP implementations, but
@@ -51,14 +52,16 @@ The implementation of TCP is contained in the following files:::
     src/internet/model/tcp-rfc793.{cc,h}
     src/internet/model/tcp-tahoe.{cc,h}
     src/internet/model/tcp-reno.{cc,h}
+    src/internet/model/tcp-westwood.{cc,h}
     src/internet/model/tcp-newreno.{cc,h}
     src/internet/model/rtt-estimator.{cc,h}
     src/network/model/sequence-number.{cc,h}
 
 Different variants of TCP congestion control are supported by subclassing
 the common base class :cpp:class:`TcpSocketBase`.  Several variants
-are supported, including RFC 793 (no congestion control), Tahoe, Reno,
-and NewReno.  NewReno is used by default.
+are supported, including RFC 793 (no congestion control), Tahoe, Reno, Westwood,
+Westwood+, and NewReno.  NewReno is used by default.  See the Usage section of this
+document for on how to change the default TCP variant used in simulation.
 
 Usage
 +++++
@@ -150,8 +153,7 @@ describing this implementation.
 Current limitations
 +++++++++++++++++++
 
-* Only IPv4 is supported
-* Neither the Nagle algorithm nor SACK are supported
+* SACK is not supported
 
 Network Simulation Cradle
 *************************
@@ -269,6 +271,13 @@ can see the following configuration:::
   StringValue ("0"));
 
 These additional configuration variables are not available to native |ns3| TCP.
+
+Also note that default values for TCP attributes in |ns3| TCP may differ from the nsc TCP implementation.  Specifically in |ns3|::: 
+
+		1) TCP default MSS is 536
+		2) TCP Delayed Ack count is 2 
+		
+Therefore when making comparisons between results obtained using nsc and |ns3| TCP, care must be taken to ensure these values are set appropriately.  See /examples/tcp/tcp-nsc-comparision.cc for an example.
 
 NSC API
 +++++++

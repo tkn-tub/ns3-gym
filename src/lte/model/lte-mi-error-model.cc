@@ -388,7 +388,7 @@ LteMiErrorModel::Mib (const SpectrumValue& sinr, const std::vector<int>& map, ui
                 }
             }
         }
-      NS_LOG_LOGIC (" RB " << map.at (i) << "Minimum SNR = " << 10*log10 (sinrLin) << " dB, " << sinrLin << " V, MCS = " << (uint16_t)mcs << ", MI = " << MI);
+      NS_LOG_LOGIC (" RB " << map.at (i) << "Minimum SNR = " << 10 * std::log10 (sinrLin) << " dB, " << sinrLin << " V, MCS = " << (uint16_t)mcs << ", MI = " << MI);
       MIsum += MI;
     }
   MI = MIsum / map.size ();

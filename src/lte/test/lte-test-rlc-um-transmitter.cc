@@ -44,10 +44,10 @@ LteRlcUmTransmitterTestSuite::LteRlcUmTransmitterTestSuite ()
 
   // NS_LOG_INFO ("Creating LteRlcUmTransmitterTestSuite");
 
-  AddTestCase (new LteRlcUmTransmitterOneSduTestCase ("One SDU, one PDU"));
-  AddTestCase (new LteRlcUmTransmitterSegmentationTestCase ("Segmentation"));
-  AddTestCase (new LteRlcUmTransmitterConcatenationTestCase ("Concatenation"));
-  AddTestCase (new LteRlcUmTransmitterReportBufferStatusTestCase ("ReportBufferStatus primitive"));
+  AddTestCase (new LteRlcUmTransmitterOneSduTestCase ("One SDU, one PDU"), TestCase::QUICK);
+  AddTestCase (new LteRlcUmTransmitterSegmentationTestCase ("Segmentation"), TestCase::QUICK);
+  AddTestCase (new LteRlcUmTransmitterConcatenationTestCase ("Concatenation"), TestCase::QUICK);
+  AddTestCase (new LteRlcUmTransmitterReportBufferStatusTestCase ("ReportBufferStatus primitive"), TestCase::QUICK);
 
 }
 

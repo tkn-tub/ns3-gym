@@ -6,14 +6,8 @@ import shutil
 import types
 import warnings
 
+from waflib import TaskGen, Task, Options, Build, Utils
 from waflib.Errors import WafError
-
-import TaskGen
-import Task
-import Options
-import Build
-import Utils
-
 import wutils
 
 try:
@@ -47,18 +41,31 @@ def options(opt):
                    help=("Build only these modules (and dependencies)"),
                    dest='enable_modules')
 
-    for module in all_modules:
-        opt.sub_options(module, mandatory=False)
+    opt.load('boost', tooldir=['waf-tools'])
 
+    for module in all_modules:
+        opt.recurse(module, mandatory=False)
 
 def configure(conf):
+    conf.env['REQUIRED_BOOST_LIBS'] = []
     for module in all_modules:
-        conf.sub_config(module, mandatory=False)
+        conf.recurse (module, name="required_boost_libs", mandatory=False)
+
+    if conf.env['REQUIRED_BOOST_LIBS'] is not []:
+        conf.load('boost')
+        conf.check_boost(lib=' '.join (conf.env['REQUIRED_BOOST_LIBS']), mandatory=False)
+        if not conf.env['LIB_BOOST']:
+            conf.check_boost(lib=' '.join (conf.env['REQUIRED_BOOST_LIBS']), libpath="/usr/lib64", mandatory=False)
+            if not conf.env['LIB_BOOST']:
+                conf.env['LIB_BOOST'] = []
+
+    for module in all_modules:
+        conf.recurse(module, mandatory=False)
 
     blddir = os.path.abspath(os.path.join(conf.bldnode.abspath(), conf.variant))
     conf.env.append_value('NS3_MODULE_PATH', blddir)
     if Options.options.enable_rpath:
-        conf.env.append_value('RPATH', '-Wl,-rpath=%s' % (os.path.join(blddir),))
+        conf.env.append_value('RPATH', '-Wl,-rpath,%s' % (os.path.join(blddir),))
 
     ## Used to link the 'test-runner' program with all of ns-3 code
     conf.env['NS3_MODULES'] = ['ns3-' + module.split('/')[-1] for module in all_modules]
@@ -75,10 +82,10 @@ def create_ns3_module(bld, name, dependencies=(), test=False):
     static = bool(bld.env.ENABLE_STATIC_NS3)
     # Create a separate library for this module.
     if static:
-        module = bld.new_task_gen(features=['cxx', 'cxxstlib', 'ns3module'])
+        module = bld(features='cxx cxxstlib ns3module')
     else:
-        module = bld.new_task_gen(features=['cxx', 'cxxshlib', 'ns3module'])
-    module.target = '%s/ns%s-%s%s' % (bld.srcnode.relpath_gen(module.path), wutils.VERSION,
+        module = bld(features='cxx cxxshlib ns3module')
+    module.target = '%s/ns%s-%s%s' % (bld.srcnode.path_from(module.path), wutils.VERSION,
                                        name, bld.env.BUILD_SUFFIX)
     linkflags = []
     cxxflags = []
@@ -119,7 +126,7 @@ def create_ns3_module(bld, name, dependencies=(), test=False):
     module.use = ['ns3-' + dep for dep in dependencies]
     module.test = test
     module.is_ns3_module = True
-    module.ns3_dir_location = bld.path.relpath_gen(bld.srcnode)
+    module.ns3_dir_location = bld.path.path_from(bld.srcnode)
 
     module.env.append_value("INCLUDES", '#')
 
@@ -133,7 +140,7 @@ def create_ns3_module(bld, name, dependencies=(), test=False):
 def apply_incpaths_ns3testlib(self):
     if not self.source:
         return
-    testdir = self.source[-1].parent.relpath_gen(self.bld.srcnode)
+    testdir = self.source[-1].parent.path_from(self.bld.srcnode)
     self.env.append_value("DEFINES", 'NS_TEST_SOURCEDIR="%s"' % (testdir,))
 
 
@@ -142,7 +149,7 @@ def create_ns3_module_test_library(bld, name):
     # the module being tested.
     library_name = name + "-test"
     library = bld.create_ns3_module(library_name, [name], test=True)
-    library.features.append("ns3testlib")
+    library.features += " ns3testlib"
 
     # Modify attributes for the test library that are different from a
     # normal module.
@@ -154,7 +161,7 @@ def create_ns3_module_test_library(bld, name):
     bld.env.append_value('NS3_MODULES_WITH_TEST_LIBRARIES', [(library.module_name, library.name)])
 
     # Set the include path from the build directory to modules. 
-    relative_path_from_build_to_here = bld.path.relpath_gen(bld.bldnode)
+    relative_path_from_build_to_here = bld.path.path_from(bld.bldnode)
     include_flag = '-I' + relative_path_from_build_to_here
     library.env.append_value('CXXFLAGS', include_flag)
     library.env.append_value('CCFLAGS',  include_flag)
@@ -162,9 +169,9 @@ def create_ns3_module_test_library(bld, name):
     return library
 
 def create_obj(bld, *args):
-    warnings.warn("(in %s) Use bld.new_task_gen(...) now, instead of bld.create_obj(...)" % str(bld.path),
+    warnings.warn("(in %s) Use bld(...) call now, instead of bld.create_obj(...)" % str(bld.path),
                   DeprecationWarning, stacklevel=2)
-    return bld.new_task_gen(*args)
+    return bld(*args)
 
 
 def ns3_python_bindings(bld):
@@ -197,23 +204,24 @@ def ns3_python_bindings(bld):
 
     #debug = ('PYBINDGEN_DEBUG' in os.environ)
     debug = True # XXX
-    source = [bld.srcnode.find_resource('bindings/python/ns3modulegen-modular.py').relpath_gen(bld.path),
-              "bindings/modulegen__%s.py" % apidefs]
+    source = [bld.srcnode.find_resource('bindings/python/ns3modulegen-modular.py'),
+              bld.path.find_resource("bindings/modulegen__%s.py" % apidefs)]
 
-    if bindings_dir.find_resource("modulegen_customizations.py") is not None:
-        source.append("bindings/modulegen_customizations.py")
+    modulegen_customizations = bindings_dir.find_resource("modulegen_customizations.py")
+    if modulegen_customizations is not None:
+        source.append(modulegen_customizations)
 
+    modulegen_local = bld.path.find_resource("bindings/modulegen_local.py")
     # the local customization file may or not exist
-    if bld.path.find_resource("bindings/modulegen_local.py"):
+    if modulegen_local is not None:
         source.append("bindings/modulegen_local.py")
 
     module_py_name = module.replace('-', '_')
-    module_target_dir = bld.srcnode.find_dir("bindings/python/ns").relpath_gen(bld.path)
+    module_target_dir = bld.srcnode.find_dir("bindings/python/ns").path_from(bld.path)
 
     # if bindings/<module>.py exists, it becomes the module frontend, and the C extension befomes _<module>
     if bld.path.find_resource("bindings/%s.py" % (module_py_name,)) is not None:
-        bld.new_task_gen(
-            features='copy',
+        bld(features='copy',
             source=("bindings/%s.py" % (module_py_name,)),
             target=('%s/%s.py' % (module_target_dir, module_py_name)))
         extension_name = '_%s' % (module_py_name,)
@@ -240,7 +248,7 @@ def ns3_python_bindings(bld):
         if was_enabled:
             features.append(name)
 
-    bindgen = bld.new_task_gen(features=['command'], source=source, target=target, command=argv)
+    bindgen = bld(features='command', source=source, target=target, command=argv)
     bindgen.env['FEATURES'] = ','.join(features)
     bindgen.dep_vars = ['FEATURES', "GCC_RTTI_ABI_COMPLETE"]
     bindgen.before = 'cxx'
@@ -249,7 +257,7 @@ def ns3_python_bindings(bld):
     bindgen.install_path = None
 
     # generate the extension module
-    pymod = bld.new_task_gen(features='cxx cxxshlib pyext')
+    pymod = bld(features='cxx cxxshlib pyext')
     pymod.source = ['bindings/ns3module.cc']
     pymod.target = '%s/%s' % (module_target_dir, extension_name)
     pymod.name = 'ns3module_%s' % module
@@ -305,14 +313,14 @@ def build(bld):
         if not_built in all_modules:
             all_modules.remove(not_built)
 
-    bld.add_subdirs(list(all_modules))
+    bld.recurse(list(all_modules))
 
     for module in all_modules:
-        modheader = bld.new_task_gen(features=['ns3moduleheader'])
+        modheader = bld(features='ns3moduleheader')
         modheader.module = module.split('/')[-1]
 
 class ns3pcfile_task(Task.Task):
-    after = 'cc cxx'
+    after = 'cxx'
 
     def __str__(self):
         "string to display to the user"
@@ -448,7 +456,7 @@ def apply_ns3header(self):
 
 
 class ns3header_task(Task.Task):
-    before = 'cc cxx gen_ns3_module_header'
+    before = 'cxx gen_ns3_module_header'
     color = 'BLUE'
 
     def __str__(self):
@@ -517,7 +525,7 @@ class ns3header_task(Task.Task):
 
 
 class gen_ns3_module_header_task(Task.Task):
-    before = 'cc cxx'
+    before = 'cxx'
     after = 'ns3header'
     color = 'BLUE'
 

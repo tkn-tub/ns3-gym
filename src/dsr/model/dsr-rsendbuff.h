@@ -156,18 +156,13 @@ public:
   }
 
 private:
-  // / The send buffer to cache unsent packet
-  std::vector<SendBuffEntry> m_sendBuffer;
-  // / Remove all expired entries
-  void Purge ();
-  // / Notify that packet is dropped from queue by timeout
-  void Drop (SendBuffEntry en, std::string reason);
-  // / The maximum number of packets that we allow a routing protocol to buffer.
-  uint32_t m_maxLen;
-  // / The maximum period of time that a routing protocol is allowed to buffer a packet for, seconds.
-  Time m_sendBufferTimeout;
-  // / Check if the send buffer entry is the same or not
-  static bool IsEqual (SendBuffEntry en, const Ipv4Address dst)
+
+  std::vector<SendBuffEntry> m_sendBuffer;                      ///< The send buffer to cache unsent packet
+  void Purge ();                                                ///< Remove all expired entries
+  void Drop (SendBuffEntry en, std::string reason);             ///< Notify that packet is dropped from queue by timeout
+  uint32_t m_maxLen;                                            ///< The maximum number of packets that we allow a routing protocol to buffer.
+  Time m_sendBufferTimeout;                                     ///< The maximum period of time that a routing protocol is allowed to buffer a packet for, seconds.
+  static bool IsEqual (SendBuffEntry en, const Ipv4Address dst) ///< Check if the send buffer entry is the same or not
   {
     return (en.GetDestination () == dst);
   }

@@ -52,6 +52,7 @@ interesting_config_items = [
     "EXAMPLE_DIRECTORIES",
     "ENABLE_PYTHON_BINDINGS",
     "ENABLE_CLICK",
+    "ENABLE_BRITE",
     "ENABLE_OPENFLOW",
     "APPNAME",
     "BUILD_PROFILE",
@@ -65,6 +66,7 @@ ENABLE_THREADING = False
 ENABLE_EXAMPLES = True
 ENABLE_TESTS = True
 ENABLE_CLICK = False
+ENABLE_BRITE = False
 ENABLE_OPENFLOW = False
 EXAMPLE_DIRECTORIES = []
 APPNAME = ""
@@ -82,7 +84,7 @@ test_runner_name = "test-runner"
 # If the user has constrained us to run certain kinds of tests, we can tell waf
 # to only build
 #
-core_kinds = ["bvt", "core", "system", "unit"]
+core_kinds = ["bvt", "core", "performance", "system", "unit"]
 
 #
 # There are some special cases for test suites that kill valgrind.  This is
@@ -93,6 +95,16 @@ core_valgrind_skip_tests = [
     "nsc-tcp-loss",
     "ns3-tcp-interoperability",
     "routing-click",
+    "lte-rr-ff-mac-scheduler",
+    "lte-tdmt-ff-mac-scheduler",
+    "lte-fdmt-ff-mac-scheduler",
+    "lte-pf-ff-mac-scheduler",
+    "lte-tta-ff-mac-scheduler",
+    "lte-fdbet-ff-mac-scheduler",
+    "lte-ttbet-ff-mac-scheduler",
+    "lte-fdtbfq-ff-mac-scheduler",
+    "lte-tdtbfq-ff-mac-scheduler",
+    "lte-pss-ff-mac-scheduler",
 ]
 
 # 
@@ -116,6 +128,7 @@ def parse_examples_to_run_file(
     cpp_executable_dir,
     python_script_dir,
     example_tests,
+    example_names_original,
     python_tests):
 
     # Look for the examples-to-run file exists.
@@ -138,7 +151,9 @@ def parse_examples_to_run_file(
         #
         cpp_examples = get_list_from_file(examples_to_run_path, "cpp_examples")
         for example_name, do_run, do_valgrind_run in cpp_examples:
+
             # Seperate the example name from its arguments.
+            example_name_original = example_name
             example_name_parts = example_name.split(' ', 1)
             if len(example_name_parts) == 1:
                 example_name      = example_name_parts[0]
@@ -162,6 +177,7 @@ def parse_examples_to_run_file(
 
                 # Add this example.
                 example_tests.append((example_path, do_run, do_valgrind_run))
+                example_names_original.append(example_name_original)
     
         # Each tuple in the Python list of examples to run contains
         #
@@ -1044,7 +1060,9 @@ def run_tests():
     #
     make_paths()
 
+    #
     # Get the information from the build status file.
+    #
     build_status_file = os.path.join (NS3_BUILDDIR, 'build-status.py')
     if os.path.exists(build_status_file):
         ns3_runnable_programs = get_list_from_file(build_status_file, "ns3_runnable_programs")
@@ -1053,10 +1071,20 @@ def run_tests():
         print >> sys.stderr, 'The build status file was not found.  You must do waf build before running test.py.'
         sys.exit(2)
 
+    #
+    # Make a dictionary that maps the name of a program to its path.
+    #
+    ns3_runnable_programs_dictionary = {}
+    for program in ns3_runnable_programs:
+        # Remove any directory names from path.
+        program_name = os.path.basename(program)
+        ns3_runnable_programs_dictionary[program_name] = program
+
     # Generate the lists of examples to run as smoke tests in order to
     # ensure that they remain buildable and runnable over time.
     #
     example_tests = []
+    example_names_original = []
     python_tests = []
     for directory in EXAMPLE_DIRECTORIES:
         # Set the directories and paths for this example. 
@@ -1071,6 +1099,7 @@ def run_tests():
             cpp_executable_dir,
             python_script_dir,
             example_tests,
+            example_names_original,
             python_tests)
 
     for module in NS3_ENABLED_MODULES:
@@ -1090,6 +1119,7 @@ def run_tests():
             cpp_executable_dir,
             python_script_dir,
             example_tests,
+            example_names_original,
             python_tests)
 
     #
@@ -1111,10 +1141,22 @@ def run_tests():
         print standard_out
 
     if options.list:
-        path_cmd = os.path.join("utils", test_runner_name + " --print-test-name-list")
+        if len(options.constrain):
+            path_cmd = os.path.join("utils", test_runner_name + " --print-test-name-list --print-test-types --test-type=%s" % options.constrain)
+        else:
+            path_cmd = os.path.join("utils", test_runner_name + " --print-test-name-list --print-test-types")
         (rc, standard_out, standard_err, et) = run_job_synchronously(path_cmd, os.getcwd(), False, False)
         list_items = standard_out.split('\n')
-        print "\n".join(sorted(list_items))
+        list_items.sort()
+        print "Test Type    Test Name"
+        print "---------    ---------"
+        for item in list_items:
+            if len(item.strip()):
+                print item
+        example_names_original.sort()
+        for item in example_names_original:
+                print "example     ", item
+        print
 
     if options.kinds or options.list:
         return
@@ -1185,7 +1227,7 @@ def run_tests():
         # See if this is a valid test suite.
         path_cmd = os.path.join("utils", test_runner_name + " --print-test-name-list")
         (rc, suites, standard_err, et) = run_job_synchronously(path_cmd, os.getcwd(), False, False)
-        if options.suite in suites:
+        if options.suite in suites.split('\n'):
             suites = options.suite + "\n"
         else:
             print >> sys.stderr, 'The test suite was not run because an unknown test suite name was requested.'
@@ -1212,6 +1254,21 @@ def run_tests():
     suite_list = suites.split('\n')
 
     #
+    # Performance tests should only be run when they are requested,
+    # i.e. they are not run by default in test.py.
+    #
+    if options.constrain != 'performance':
+
+        # Get a list of all of the performance tests.
+        path_cmd = os.path.join("utils", test_runner_name + " --print-test-name-list --test-type=%s" % "performance")
+        (rc, performance_tests, standard_err, et) = run_job_synchronously(path_cmd, os.getcwd(), False, False)
+        performance_test_list = performance_tests.split('\n')
+
+        # Remove any performance tests from the suites list.
+        for performance_test in performance_test_list:
+            if performance_test in suite_list:
+                suite_list.remove(performance_test)
+
     # We now have a possibly large number of test suites to run, so we want to
     # run them in parallel.  We're going to spin up a number of worker threads
     # that will run our test jobs for us.
@@ -1277,8 +1334,14 @@ def run_tests():
                 multiple = ""
             else:
                 multiple = " --stop-on-failure"
+            if (len(options.fullness)):
+                fullness = options.fullness.upper()
+                fullness = " --fullness=%s" % fullness
+            else:
+                fullness = " --fullness=QUICK"
 
-            path_cmd = os.path.join("utils", test_runner_name + " --test-name=%s%s" % (test, multiple))
+            path_cmd = os.path.join("utils", test_runner_name + " --test-name=%s%s%s" % (test, multiple, fullness))
+
             job.set_shell_command(path_cmd)
 
             if options.valgrind and test in core_valgrind_skip_tests:
@@ -1326,15 +1389,13 @@ def run_tests():
     # This translates into allowing the following options with respect to the 
     # suites
     #
-    #  ./test,py:                                           run all of the examples
+    #  ./test.py:                                           run all of the examples
     #  ./test.py --constrain=unit                           run no examples
     #  ./test.py --constrain=example                        run all of the examples
     #  ./test.py --suite=some-test-suite:                   run no examples
     #  ./test.py --example=some-example:                    run the single example
     #  ./test.py --suite=some-suite --example=some-example: run the single example
     #
-    # XXX could use constrain to separate out examples used for performance 
-    # testing
     #
     if len(options.suite) == 0 and len(options.example) == 0 and len(options.pyexample) == 0:
         if len(options.constrain) == 0 or options.constrain == "example":
@@ -1345,7 +1406,7 @@ def run_tests():
                     test_name = os.path.basename(test_name)
 
                     # Don't try to run this example if it isn't runnable.
-                    if test_name in ns3_runnable_programs:
+                    if ns3_runnable_programs_dictionary.has_key(test_name):
                         if eval(do_run):
                             job = Job()
                             job.set_is_example(True)
@@ -1371,22 +1432,21 @@ def run_tests():
     elif len(options.example):
         # Add the proper prefix and suffix to the example name to
         # match what is done in the wscript file.
-        (example_path_without_name, example_name) = os.path.split(options.example)
-        example_name = "%s%s-%s-%s" % (APPNAME, VERSION, example_name, BUILD_PROFILE)
-        example_path = os.path.join(example_path_without_name, example_name)
+        example_name = "%s%s-%s-%s" % (APPNAME, VERSION, options.example, BUILD_PROFILE)
 
         # Don't try to run this example if it isn't runnable.
-        if example_name not in ns3_runnable_programs:
+        if not ns3_runnable_programs_dictionary.has_key(example_name):
             print "Example %s is not runnable." % example_name
         else:
             #
             # If you tell me to run an example, I will try and run the example
             # irrespective of any condition.
             #
+            example_path = ns3_runnable_programs_dictionary[example_name]
             job = Job()
             job.set_is_example(True)
             job.set_is_pyexample(False)
-            job.set_display_name(example_name)
+            job.set_display_name(example_path)
             job.set_tmp_file_name("")
             job.set_cwd(testpy_output_dir)
             job.set_basedir(os.getcwd())
@@ -1545,7 +1605,10 @@ def run_tests():
                 crashed_tests = crashed_tests + 1
                 status = "CRASH"
 
-        print "%s: %s %s" % (status, kind, job.display_name)
+        if options.duration or options.constrain == "performance":
+            print "%s (%.3f): %s %s" % (status, job.elapsed_time, kind, job.display_name)
+        else:
+            print "%s: %s %s" % (status, kind, job.display_name)
 
         if job.is_example or job.is_pyexample:
             #
@@ -1725,12 +1788,19 @@ def main(argv):
                       metavar="KIND",
                       help="constrain the test-runner by kind of test")
 
+    parser.add_option("-d", "--duration", action="store_true", dest="duration", default=False,
+                      help="print the duration of each test suite and example")
+
     parser.add_option("-e", "--example", action="store", type="string", dest="example", default="",
                       metavar="EXAMPLE",
-                      help="specify a single example to run (with relative path)")
+                      help="specify a single example to run (no relative path is needed)")
 
     parser.add_option("-u", "--update-data", action="store_true", dest="update_data", default=False,
                       help="If examples use reference data files, get them to re-generate them")
+
+    parser.add_option("-f", "--fullness", action="store", type="string", dest="fullness", default="QUICK",
+                      metavar="FULLNESS",
+                      help="choose the duration of tests to run: QUICK, EXTENSIVE, or TAKES_FOREVER, where EXTENSIVE includes QUICK and TAKES_FOREVER includes QUICK and EXTENSIVE (only QUICK tests are run by default)")
 
     parser.add_option("-g", "--grind", action="store_true", dest="valgrind", default=False,
                       help="run the test suites and examples using valgrind")

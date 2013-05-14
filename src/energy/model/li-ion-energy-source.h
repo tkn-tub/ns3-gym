@@ -151,7 +151,7 @@ public:
    */
   Time GetEnergyUpdateInterval (void) const;
 private:
-  void DoStart (void);
+  void DoInitialize (void);
   void DoDispose (void);
 
   /**

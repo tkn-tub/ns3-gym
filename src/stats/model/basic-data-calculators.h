@@ -50,7 +50,7 @@ public:
   double getMin () const { return m_min; }
   double getMax () const { return m_max; }
   double getMean () const { return m_meanCurr; }
-  double getStddev () const { return sqrt (m_varianceCurr); }
+  double getStddev () const { return std::sqrt (m_varianceCurr); }
   double getVariance () const { return m_varianceCurr; }
   double getSqrSum () const { return m_squareTotal; }
 

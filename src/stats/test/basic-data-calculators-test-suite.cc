@@ -18,7 +18,7 @@
  * Author: Mitch Watrous (watrous@u.washington.edu)
  */
 
-#include <math.h>
+#include <cmath>
 
 #include "ns3/test.h"
 #include "ns3/basic-data-calculators.h"
@@ -91,7 +91,7 @@ OneIntegerTestCase::DoRun (void)
     {
       variance = (count * sqrSum - sum * sum) / (count * (count - 1));
     }
-  stddev = sqrt (variance);
+  stddev = std::sqrt (variance);
 
   // Test the calculator.
   NS_TEST_ASSERT_MSG_EQ_TOL (calculator.getCount(),    count,    TOLERANCE, "Count value wrong");
@@ -169,7 +169,7 @@ FiveIntegersTestCase::DoRun (void)
     {
       variance = (count * sqrSum - sum * sum) / (count * (count - 1));
     }
-  stddev = sqrt (variance);
+  stddev = std::sqrt (variance);
 
   // Test the calculator.
   NS_TEST_ASSERT_MSG_EQ_TOL (calculator.getCount(),    count,    TOLERANCE, "Count value wrong");
@@ -247,7 +247,7 @@ FiveDoublesTestCase::DoRun (void)
     {
       variance = (count * sqrSum - sum * sum) / (count * (count - 1));
     }
-  stddev = sqrt (variance);
+  stddev = std::sqrt (variance);
 
   // Test the calculator.
   NS_TEST_ASSERT_MSG_EQ_TOL (calculator.getCount(),    count,    TOLERANCE, "Count value wrong");
@@ -270,9 +270,9 @@ public:
 BasicDataCalculatorsTestSuite::BasicDataCalculatorsTestSuite ()
   : TestSuite ("basic-data-calculators", UNIT)
 {
-  AddTestCase (new OneIntegerTestCase);
-  AddTestCase (new FiveIntegersTestCase);
-  AddTestCase (new FiveDoublesTestCase);
+  AddTestCase (new OneIntegerTestCase, TestCase::QUICK);
+  AddTestCase (new FiveIntegersTestCase, TestCase::QUICK);
+  AddTestCase (new FiveDoublesTestCase, TestCase::QUICK);
 }
 
 static BasicDataCalculatorsTestSuite basicDataCalculatorsTestSuite;

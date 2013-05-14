@@ -171,6 +171,11 @@ private:
  * This model is invalid for small distance values.
  * The current implementation returns the txpower as the rxpower
  * for any distance smaller than MinDistance.
+ * 
+ * In the implementation,  \f$ \lambda \f$ is calculated as 
+ * \f$ \frac{C}{f} \f$, where  \f$ C = 299792458\f$ m/s is the speed of light in
+ * vacuum, and \f$ f \f$ is the frequency in Hz which can be configured by
+ * the user via the Frequency attribute.
  */
 class FriisPropagationLossModel : public PropagationLossModel
 {
@@ -179,19 +184,11 @@ public:
   FriisPropagationLossModel ();
   /**
    * \param frequency (Hz)
-   * \param speed (m/s)
    *
-   * Set the main wavelength used in the Friis model 
+   * Set the carrier frequency used in the Friis model 
    * calculation.
    */
-  void SetLambda (double frequency, double speed);
-  /**
-   * \param lambda (m) the wavelength
-   *
-   * Set the main wavelength used in the Friis model 
-   * calculation.
-   */
-  void SetLambda (double lambda);
+  void SetFrequency (double frequency);
   /**
    * \param systemLoss (dimension-less)
    *
@@ -213,9 +210,9 @@ public:
   double GetMinDistance (void) const;
 
   /**
-   * \returns the current wavelength (m)
+   * \returns the current frequency (Hz)
    */
-  double GetLambda (void) const;
+  double GetFrequency (void) const;
   /**
    * \returns the current system loss (dimension-less)
    */
@@ -233,6 +230,7 @@ private:
 
   static const double PI;
   double m_lambda;
+  double m_frequency;
   double m_systemLoss;
   double m_minDistance;
 };
@@ -259,27 +257,26 @@ private:
  * The crossover distance, below which Friis is used, is calculated as follows:
  *
  * \f$ dCross = \frac{(4 * pi * Ht * Hr)}{lambda} \f$
+ *
+ * In the implementation,  \f$ \lambda \f$ is calculated as 
+ * \f$ \frac{C}{f} \f$, where  \f$ C = 299792458\f$ m/s is the speed of light in
+ * vacuum, and \f$ f \f$ is the frequency in Hz which can be configured by
+ * the user via the Frequency attribute.
  */
 class TwoRayGroundPropagationLossModel : public PropagationLossModel
 {
 public:
   static TypeId GetTypeId (void);
   TwoRayGroundPropagationLossModel ();
+
   /**
    * \param frequency (Hz)
-   * \param speed (m/s)
    *
-   * Set the main wavelength used in the TwoRayGround model 
+   * Set the carrier frequency used in the TwoRayGround model 
    * calculation.
    */
-  void SetLambda (double frequency, double speed);
-  /**
-   * \param lambda (m) the wavelength
-   *
-   * Set the main wavelength used in the TwoRayGround model 
-   * calculation.
-   */
-  void SetLambda (double lambda);
+  void SetFrequency (double frequency);
+
   /**
    * \param systemLoss (dimension-less)
    *
@@ -297,10 +294,12 @@ public:
    * \returns the minimum distance.
    */
   double GetMinDistance (void) const;
+
   /**
-   * \returns the current wavelength (m)
+   * \returns the current frequency (Hz)
    */
-  double GetLambda (void) const;
+  double GetFrequency (void) const;
+
   /**
    * \returns the current system loss (dimension-less)
    */
@@ -324,6 +323,7 @@ private:
 
   static const double PI;
   double m_lambda;
+  double m_frequency;
   double m_systemLoss;
   double m_minDistance;
   double m_heightAboveZ;

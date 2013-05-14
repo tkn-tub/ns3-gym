@@ -30,8 +30,8 @@
 #include "ns3/uinteger.h"
 #include "udp-client.h"
 #include "seq-ts-header.h"
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
 
 namespace ns3 {
 
@@ -74,7 +74,7 @@ UdpClient::GetTypeId (void)
 
 UdpClient::UdpClient ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   m_sent = 0;
   m_socket = 0;
   m_sendEvent = EventId ();
@@ -82,12 +82,13 @@ UdpClient::UdpClient ()
 
 UdpClient::~UdpClient ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 void
 UdpClient::SetRemote (Ipv4Address ip, uint16_t port)
 {
+  NS_LOG_FUNCTION (this << ip << port);
   m_peerAddress = Address(ip);
   m_peerPort = port;
 }
@@ -95,6 +96,7 @@ UdpClient::SetRemote (Ipv4Address ip, uint16_t port)
 void
 UdpClient::SetRemote (Ipv6Address ip, uint16_t port)
 {
+  NS_LOG_FUNCTION (this << ip << port);
   m_peerAddress = Address(ip);
   m_peerPort = port;
 }
@@ -102,6 +104,7 @@ UdpClient::SetRemote (Ipv6Address ip, uint16_t port)
 void
 UdpClient::SetRemote (Address ip, uint16_t port)
 {
+  NS_LOG_FUNCTION (this << ip << port);
   m_peerAddress = ip;
   m_peerPort = port;
 }
@@ -109,14 +112,14 @@ UdpClient::SetRemote (Address ip, uint16_t port)
 void
 UdpClient::DoDispose (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   Application::DoDispose ();
 }
 
 void
 UdpClient::StartApplication (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 
   if (m_socket == 0)
     {
@@ -139,16 +142,16 @@ UdpClient::StartApplication (void)
 }
 
 void
-UdpClient::StopApplication ()
+UdpClient::StopApplication (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   Simulator::Cancel (m_sendEvent);
 }
 
 void
 UdpClient::Send (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   NS_ASSERT (m_sendEvent.IsExpired ());
   SeqTsHeader seqTs;
   seqTs.SetSeq (m_sent);

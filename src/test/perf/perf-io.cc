@@ -14,11 +14,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <time.h>
+#include <ctime>
 #include <sys/time.h>
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 
 #include <iostream>
 #include <fstream>
@@ -28,7 +28,6 @@
 #include "ns3/abort.h"
 
 using namespace ns3;
-using namespace std;
 
 static const uint64_t US_PER_NS = (uint64_t)1000;
 static const uint64_t US_PER_SEC = (uint64_t)1000000;
@@ -49,7 +48,7 @@ PerfFile (FILE *file, uint32_t n, const char *buffer, uint32_t size)
 {
   for (uint32_t i = 0; i < n; ++i)
     {
-      if (fwrite (buffer, 1, size, file) !=  size)
+      if (std::fwrite (buffer, 1, size, file) !=  size)
         {
           NS_ABORT_MSG ("PerfFile():  fwrite error");
         }
@@ -110,7 +109,7 @@ main (int argc, char *argv[])
           uint64_t et = GetRealtimeInNs () - start;
           result = min (result, et);
           stream.close ();
-          cout << "."; std::cout.flush ();
+          std::cout << "."; std::cout.flush ();
         }
       cout << std::endl;
     }

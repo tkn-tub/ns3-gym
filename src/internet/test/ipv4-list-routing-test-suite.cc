@@ -21,7 +21,7 @@
 #include "ns3/ipv4-list-routing.h"
 #include "ns3/ipv4-routing-protocol.h"
 
-namespace ns3 {
+using namespace ns3;
 
 class Ipv4ARouting : public Ipv4RoutingProtocol {
 public:
@@ -118,12 +118,8 @@ public:
   Ipv4ListRoutingTestSuite()
     : TestSuite ("ipv4-list-routing", UNIT)
   {
-    AddTestCase (new Ipv4ListRoutingPositiveTestCase ());
-    AddTestCase (new Ipv4ListRoutingNegativeTestCase ());
+    AddTestCase (new Ipv4ListRoutingPositiveTestCase (), TestCase::QUICK);
+    AddTestCase (new Ipv4ListRoutingNegativeTestCase (), TestCase::QUICK);
   }
 
 } g_ipv4ListRoutingTestSuite;
-
-} // namespace ns3
-
-

@@ -27,8 +27,8 @@
 #include "ns3/spectrum-test.h"
 #include "ns3/boolean.h"
 #include "ns3/lte-phy-tag.h"
-#include "ns3/lte-test-ue-phy.h"
-#include "ns3/lte-test-sinr-chunk-processor.h"
+#include "lte-test-ue-phy.h"
+#include "lte-test-sinr-chunk-processor.h"
 #include "ns3/lte-spectrum-signal-parameters.h"
 
 #include "lte-test-downlink-sinr.h"
@@ -82,8 +82,8 @@ LteDownlinkSinrTestSuite::LteDownlinkSinrTestSuite ()
   (*theoreticalSinr1)[0] = 3.72589167251055;
   (*theoreticalSinr1)[1] = 3.72255684126076;
 
-  AddTestCase (new LteDownlinkDataSinrTestCase (rxPsd1, theoreticalSinr1, "sdBm = [-46 -48]"));
-  AddTestCase (new LteDownlinkCtrlSinrTestCase (rxPsd1, theoreticalSinr1, "sdBm = [-46 -48]"));
+  AddTestCase (new LteDownlinkDataSinrTestCase (rxPsd1, theoreticalSinr1, "sdBm = [-46 -48]"), TestCase::QUICK);
+  AddTestCase (new LteDownlinkCtrlSinrTestCase (rxPsd1, theoreticalSinr1, "sdBm = [-46 -48]"), TestCase::QUICK);
 
   /**
    * TX signal #2: Power Spectral Density (W/Hz) of the signal of interest = [-63 -61] dBm and BW = [20 22] MHz
@@ -96,8 +96,8 @@ LteDownlinkSinrTestSuite::LteDownlinkSinrTestSuite ()
   (*theoreticalSinr2)[0] = 0.0743413124381667;
   (*theoreticalSinr2)[1] = 0.1865697965291756;
 
-  AddTestCase (new LteDownlinkDataSinrTestCase (rxPsd2, theoreticalSinr2, "sdBm = [-63 -61]"));
-  AddTestCase (new LteDownlinkCtrlSinrTestCase (rxPsd2, theoreticalSinr2, "sdBm = [-63 -61]"));
+  AddTestCase (new LteDownlinkDataSinrTestCase (rxPsd2, theoreticalSinr2, "sdBm = [-63 -61]"), TestCase::QUICK);
+  AddTestCase (new LteDownlinkCtrlSinrTestCase (rxPsd2, theoreticalSinr2, "sdBm = [-63 -61]"), TestCase::QUICK);
   
 
 }
@@ -148,10 +148,10 @@ LteDownlinkDataSinrTestCase::DoRun (void)
    */
 
   // Number of packet bursts (1 data + 4 interferences)
-  int numOfPbs = 5;
+  const int numOfPbs = 5;
 
   // Number of packets in the packet bursts
-  int numOfPkts = 10;
+  const int numOfPkts = 10;
 
   // Packet bursts
   Ptr<PacketBurst> packetBursts[numOfPbs];
@@ -319,10 +319,10 @@ LteDownlinkCtrlSinrTestCase::DoRun (void)
   */
   
   // Number of ctrl bursts (1 data + 4 interferences)
-  int numOfUes = 5;
+  const int numOfUes = 5;
   
   // Number of control messages in the list
-  int numOfCtrlMsgs = 10;
+  const int numOfCtrlMsgs = 10;
   
   // control messages in the list
   std::list<Ptr<LteControlMessage> > ctrlMsgList[numOfUes];

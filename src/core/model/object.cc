@@ -18,6 +18,7 @@
  * Authors: Gustavo Carneiro <gjcarneiro@gmail.com>,
  *          Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
+
 #include "object.h"
 #include "object-factory.h"
 #include "assert.h"
@@ -27,8 +28,10 @@
 #include "string.h"
 #include <vector>
 #include <sstream>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstring>
+
+
 
 NS_LOG_COMPONENT_DEFINE ("Object");
 
@@ -44,16 +47,19 @@ Object::AggregateIterator::AggregateIterator ()
   : m_object (0),
     m_current (0)
 {
+  NS_LOG_FUNCTION (this);
 }
 
 bool
 Object::AggregateIterator::HasNext (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_current < m_object->m_aggregates->n;
 }
 Ptr<const Object>
 Object::AggregateIterator::Next (void)
 {
+  NS_LOG_FUNCTION (this);
   Object *object = m_object->m_aggregates->buffer[m_current];
   m_current++;
   return object;
@@ -62,12 +68,14 @@ Object::AggregateIterator::AggregateIterator (Ptr<const Object> object)
   : m_object (object),
     m_current (0)
 {
+  NS_LOG_FUNCTION (this << object);
 }
 
 
 TypeId
 Object::GetInstanceTypeId (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_tid;
 }
 
@@ -84,23 +92,25 @@ Object::GetTypeId (void)
 Object::Object ()
   : m_tid (Object::GetTypeId ()),
     m_disposed (false),
-    m_started (false),
-    m_aggregates ((struct Aggregates *) malloc (sizeof (struct Aggregates))),
+    m_initialized (false),
+    m_aggregates ((struct Aggregates *) std::malloc (sizeof (struct Aggregates))),
     m_getObjectCount (0)
 {
+  NS_LOG_FUNCTION (this);
   m_aggregates->n = 1;
   m_aggregates->buffer[0] = this;
 }
 Object::~Object () 
 {
   // remove this object from the aggregate list
+  NS_LOG_FUNCTION (this);
   uint32_t n = m_aggregates->n;
   for (uint32_t i = 0; i < n; i++)
     {
       Object *current = m_aggregates->buffer[i];
       if (current == this)
         {
-          memmove (&m_aggregates->buffer[i], 
+          std::memmove (&m_aggregates->buffer[i], 
                    &m_aggregates->buffer[i+1],
                    sizeof (Object *)*(m_aggregates->n - (i+1)));
           m_aggregates->n--;
@@ -110,15 +120,15 @@ Object::~Object ()
   // delete the aggregate list
   if (m_aggregates->n == 0)
     {
-      free (m_aggregates);
+      std::free (m_aggregates);
     }
   m_aggregates = 0;
 }
 Object::Object (const Object &o)
   : m_tid (o.m_tid),
     m_disposed (false),
-    m_started (false),
-    m_aggregates ((struct Aggregates *) malloc (sizeof (struct Aggregates))),
+    m_initialized (false),
+    m_aggregates ((struct Aggregates *) std::malloc (sizeof (struct Aggregates))),
     m_getObjectCount (0)
 {
   m_aggregates->n = 1;
@@ -127,12 +137,14 @@ Object::Object (const Object &o)
 void
 Object::Construct (const AttributeConstructionList &attributes)
 {
+  NS_LOG_FUNCTION (this << &attributes);
   ConstructSelf (attributes);
 }
 
 Ptr<Object>
 Object::DoGetObject (TypeId tid) const
 {
+  NS_LOG_FUNCTION (this << tid);
   NS_ASSERT (CheckLoose ());
 
   uint32_t n = m_aggregates->n;
@@ -164,25 +176,26 @@ Object::DoGetObject (TypeId tid) const
   return 0;
 }
 void
-Object::Start (void)
+Object::Initialize (void)
 {
   /**
    * Note: the code here is a bit tricky because we need to protect ourselves from
-   * modifications in the aggregate array while DoStart is called. The user's
-   * implementation of the DoStart method could call GetObject (which could
+   * modifications in the aggregate array while DoInitialize is called. The user's
+   * implementation of the DoInitialize method could call GetObject (which could
    * reorder the array) and it could call AggregateObject which would add an 
    * object at the end of the array. To be safe, we restart iteration over the 
    * array whenever we call some user code, just in case.
    */
+  NS_LOG_FUNCTION (this);
 restart:
   uint32_t n = m_aggregates->n;
   for (uint32_t i = 0; i < n; i++)
     {
       Object *current = m_aggregates->buffer[i];
-      if (!current->m_started)
+      if (!current->m_initialized)
         {
-          current->DoStart ();
-          current->m_started = true;
+          current->DoInitialize ();
+          current->m_initialized = true;
           goto restart;
         }
     }
@@ -198,6 +211,7 @@ Object::Dispose (void)
    * So, to be safe, we restart the iteration over the array whenever we call some
    * user code.
    */
+  NS_LOG_FUNCTION (this);
 restart:
   uint32_t n = m_aggregates->n;
   for (uint32_t i = 0; i < n; i++)
@@ -214,6 +228,7 @@ restart:
 void
 Object::UpdateSortedArray (struct Aggregates *aggregates, uint32_t j) const
 {
+  NS_LOG_FUNCTION (this << aggregates << j);
   while (j > 0 && 
          aggregates->buffer[j]->m_getObjectCount > aggregates->buffer[j-1]->m_getObjectCount)
     {
@@ -226,6 +241,7 @@ Object::UpdateSortedArray (struct Aggregates *aggregates, uint32_t j) const
 void 
 Object::AggregateObject (Ptr<Object> o)
 {
+  NS_LOG_FUNCTION (this << o);
   NS_ASSERT (!m_disposed);
   NS_ASSERT (!o->m_disposed);
   NS_ASSERT (CheckLoose ());
@@ -242,11 +258,11 @@ Object::AggregateObject (Ptr<Object> o)
   // first create the new aggregate buffer.
   uint32_t total = m_aggregates->n + other->m_aggregates->n;
   struct Aggregates *aggregates = 
-    (struct Aggregates *)malloc (sizeof(struct Aggregates)+(total-1)*sizeof(Object*));
+    (struct Aggregates *)std::malloc (sizeof(struct Aggregates)+(total-1)*sizeof(Object*));
   aggregates->n = total;
 
   // copy our buffer to the new buffer
-  memcpy (&aggregates->buffer[0], 
+  std::memcpy (&aggregates->buffer[0], 
           &m_aggregates->buffer[0], 
           m_aggregates->n*sizeof(Object*));
 
@@ -287,8 +303,8 @@ Object::AggregateObject (Ptr<Object> o)
     }
 
   // Now that we are done with them, we can free our old aggregate buffers
-  free (a);
-  free (b);
+  std::free (a);
+  std::free (b);
 }
 /**
  * This function must be implemented in the stack that needs to notify
@@ -297,18 +313,20 @@ Object::AggregateObject (Ptr<Object> o)
 void
 Object::NotifyNewAggregate ()
 {
-
+  NS_LOG_FUNCTION (this);
 }
 
 Object::AggregateIterator 
 Object::GetAggregateIterator (void) const
 {
+  NS_LOG_FUNCTION (this);
   return AggregateIterator (this);
 }
 
 void 
 Object::SetTypeId (TypeId tid)
 {
+  NS_LOG_FUNCTION (this << tid);
   NS_ASSERT (Check ());
   m_tid = tid;
 }
@@ -316,18 +334,21 @@ Object::SetTypeId (TypeId tid)
 void
 Object::DoDispose (void)
 {
+  NS_LOG_FUNCTION (this);
   NS_ASSERT (!m_disposed);
 }
 
 void
-Object::DoStart (void)
+Object::DoInitialize (void)
 {
-  NS_ASSERT (!m_started);
+  NS_LOG_FUNCTION (this);
+  NS_ASSERT (!m_initialized);
 }
 
 bool 
 Object::Check (void) const
 {
+  NS_LOG_FUNCTION (this);
   return (GetReferenceCount () > 0);
 }
 
@@ -341,6 +362,7 @@ Object::Check (void) const
 bool 
 Object::CheckLoose (void) const
 {
+  NS_LOG_FUNCTION (this);
   uint32_t refcount = 0;
   uint32_t n = m_aggregates->n;
   for (uint32_t i = 0; i < n; i++)
@@ -354,6 +376,7 @@ void
 Object::DoDelete (void)
 {
   // check if we really need to die
+  NS_LOG_FUNCTION (this);
   for (uint32_t i = 0; i < m_aggregates->n; i++)
     {
       Object *current = m_aggregates->buffer[i];

@@ -150,9 +150,9 @@ main (int argc, char *argv[])
 
   // Flow Monitor
   Ptr<FlowMonitor> flowmon;
+  FlowMonitorHelper flowmonHelper;
   if (enableFlowMonitor)
     {
-      FlowMonitorHelper flowmonHelper;
       flowmon = flowmonHelper.InstallAll ();
     }
 

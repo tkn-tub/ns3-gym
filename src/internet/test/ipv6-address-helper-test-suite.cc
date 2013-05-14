@@ -148,7 +148,7 @@ public:
 Ipv6AddressHelperTestSuite::Ipv6AddressHelperTestSuite ()
   : TestSuite ("ipv6-address-helper", UNIT)
 {
-  AddTestCase (new IpAddressHelperTestCasev6);
+  AddTestCase (new IpAddressHelperTestCasev6, TestCase::QUICK);
 }
 
 // Do not forget to allocate an instance of this TestSuite

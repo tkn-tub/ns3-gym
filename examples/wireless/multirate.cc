@@ -309,14 +309,14 @@ Experiment::SendMultiDestinations (Ptr<Node> sender, NodeContainer c)
     }
 }
 
-Vector
+static inline Vector
 GetPosition (Ptr<Node> node)
 {
   Ptr<MobilityModel> mobility = node->GetObject<MobilityModel> ();
   return mobility->GetPosition ();
 }
 
-std::string
+static inline std::string
 PrintPosition (Ptr<Node> client, Ptr<Node> server)
 {
   Vector serverPos = GetPosition (server);
@@ -507,10 +507,10 @@ Experiment::Run (const WifiHelper &wifi, const YansWifiPhyHelper &wifiPhy,
     }
 
   Ptr<FlowMonitor> flowmon;
+  FlowMonitorHelper flowmonHelper;
 
   if (enableFlowMon)
     {
-      FlowMonitorHelper flowmonHelper;
       flowmon = flowmonHelper.InstallAll ();
     }
 

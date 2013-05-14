@@ -1,0 +1,36 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    env = bld.env
+    if not env['ENABLE_FDNETDEV']:
+        return
+
+    obj = bld.create_ns3_program('dummy-network', ['fd-net-device', 'internet', 'applications'])
+    obj.source = 'dummy-network.cc'
+    obj = bld.create_ns3_program('fd2fd-onoff', ['fd-net-device', 'internet', 'applications'])
+    obj.source = 'fd2fd-onoff.cc'
+
+    if bld.env["ENABLE_REAL_TIME"]:
+        obj = bld.create_ns3_program('realtime-dummy-network', ['fd-net-device', 'internet', 'applications'])
+        obj.source = 'realtime-dummy-network.cc'
+        obj = bld.create_ns3_program('realtime-fd2fd-onoff', ['fd-net-device', 'internet', 'applications'])
+        obj.source = 'realtime-fd2fd-onoff.cc'
+
+    if bld.env['ENABLE_TAP']:
+        obj = bld.create_ns3_program('fd-emu-ping', ['fd-net-device', 'internet', 'applications'])
+        obj.source = 'fd-emu-ping.cc'
+        obj = bld.create_ns3_program('fd-emu-udp-echo', ['fd-net-device', 'internet', 'applications'])
+        obj.source = 'fd-emu-udp-echo.cc'
+        obj = bld.create_ns3_program('fd-emu-onoff', ['fd-net-device', 'internet', 'applications'])
+        obj.source = 'fd-emu-onoff.cc'
+
+    if bld.env['ENABLE_TAP']:
+        obj = bld.create_ns3_program('fd-tap-ping', ['fd-net-device', 'internet', 'applications'])
+        obj.source = 'fd-tap-ping.cc'
+        obj = bld.create_ns3_program('fd-tap-ping6', ['fd-net-device', 'internet', 'applications', 'csma'])
+        obj.source = 'fd-tap-ping6.cc'
+
+    if bld.env['ENABLE_PLANETLAB']:
+        obj = bld.create_ns3_program('fd-planetlab-ping', ['fd-net-device', 'internet', 'applications'])
+        obj.source = 'fd-planetlab-ping.cc'
+

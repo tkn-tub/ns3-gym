@@ -313,7 +313,7 @@ section, so go ahead and expand that documentation node.  Now, expand the
 ``Debugging`` book and then select the ``Logging`` page.
 
 You should now be looking at the Doxygen documentation for the Logging module.
-In the list of ``#define``s at the top of the page you will see the entry
+In the list of ``#define``'s at the top of the page you will see the entry
 for ``NS_LOG_COMPONENT_DEFINE``.  Before jumping in, it would probably be 
 good to look for the "Detailed Description" of the logging module to get a 
 feel for the overall operation.  You can either scroll down or select the
@@ -636,7 +636,7 @@ that is managed by an ``UdpEchoClientHelper``.
 
     UdpEchoClientHelper echoClient (interfaces.GetAddress (1), 9);
     echoClient.SetAttribute ("MaxPackets", UintegerValue (1));
-    echoClient.SetAttribute ("Interval", TimeValue (Seconds (1.)));
+    echoClient.SetAttribute ("Interval", TimeValue (Seconds (1.0)));
     echoClient.SetAttribute ("PacketSize", UintegerValue (1024));
 
     ApplicationContainer clientApps = echoClient.Install (nodes.Get (0));

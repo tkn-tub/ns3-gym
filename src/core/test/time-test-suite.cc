@@ -22,7 +22,7 @@
 #include "ns3/nstime.h"
 #include "ns3/test.h"
 
-namespace ns3 {
+using namespace ns3;
 
 class TimeSimpleTestCase : public TestCase
 {
@@ -139,9 +139,7 @@ public:
   TimeTestSuite ()
     : TestSuite ("time", UNIT)
   {
-    AddTestCase (new TimeSimpleTestCase (Time::US));
-    AddTestCase (new TimesWithSignsTestCase ());
+    AddTestCase (new TimeSimpleTestCase (Time::US), TestCase::QUICK);
+    AddTestCase (new TimesWithSignsTestCase (), TestCase::QUICK);
   }
 } g_timeTestSuite;
-
-} // namespace ns3

@@ -75,8 +75,7 @@ public:
                                  Ipv4Header const &header,
                                  Ptr<Ipv4Interface> incomingInterface) = 0;
   virtual enum RxStatus Receive (Ptr<Packet> p,
-                                 Ipv6Address &src,
-                                 Ipv6Address &dst,
+                                 Ipv6Header const &header,
                                  Ptr<Ipv6Interface> incomingInterface) = 0;
 
   /**

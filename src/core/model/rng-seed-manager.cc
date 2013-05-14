@@ -3,6 +3,9 @@
 #include "attribute-helper.h"
 #include "integer.h"
 #include "config.h"
+#include "log.h"
+
+NS_LOG_COMPONENT_DEFINE ("RngSeedManager");
 
 namespace ns3 {
 
@@ -19,6 +22,7 @@ static ns3::GlobalValue g_rngRun ("RngRun",
 
 uint32_t RngSeedManager::GetSeed (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   IntegerValue seedValue;
   g_rngSeed.GetValue (seedValue);
   return seedValue.Get ();
@@ -26,16 +30,19 @@ uint32_t RngSeedManager::GetSeed (void)
 void 
 RngSeedManager::SetSeed (uint32_t seed)
 {
+  NS_LOG_FUNCTION (seed);
   Config::SetGlobal ("RngSeed", IntegerValue(seed));
 }
 
 void RngSeedManager::SetRun (uint64_t run)
 {
+  NS_LOG_FUNCTION (run);
   Config::SetGlobal ("RngRun", IntegerValue (run));
 }
 
 uint64_t RngSeedManager::GetRun ()
 {
+  NS_LOG_FUNCTION_NOARGS ();
   IntegerValue value;
   g_rngRun.GetValue (value);
   int run = value.Get();
@@ -44,6 +51,7 @@ uint64_t RngSeedManager::GetRun ()
 
 uint64_t RngSeedManager::GetNextStreamIndex (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   uint64_t next = g_nextStreamIndex;
   g_nextStreamIndex++;
   return next;

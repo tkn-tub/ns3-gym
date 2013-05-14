@@ -175,7 +175,7 @@ public:
 
 private:
   /// Defined in ns3::Object
-  virtual void DoStart (void);
+  virtual void DoInitialize (void);
 
   /// Defined in ns3::Object
   virtual void DoDispose (void);

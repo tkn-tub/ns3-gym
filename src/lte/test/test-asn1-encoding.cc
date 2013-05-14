@@ -1017,17 +1017,17 @@ Asn1EncodingSuite::Asn1EncodingSuite ()
   : TestSuite ("test-asn1-encoding", UNIT)
 {
   NS_LOG_FUNCTION (this);
-  AddTestCase (new RrcConnectionRequestTestCase ());
-  AddTestCase (new RrcConnectionSetupTestCase ());
-  AddTestCase (new RrcConnectionSetupCompleteTestCase ());
-  AddTestCase (new RrcConnectionReconfigurationCompleteTestCase ());
-  AddTestCase (new RrcConnectionReconfigurationTestCase ());
-  AddTestCase (new HandoverPreparationInfoTestCase ());
-  AddTestCase (new RrcConnectionReestablishmentRequestTestCase ());
-  AddTestCase (new RrcConnectionReestablishmentTestCase ());
-  AddTestCase (new RrcConnectionReestablishmentCompleteTestCase ());
-  AddTestCase (new RrcConnectionRejectTestCase ());
-  AddTestCase (new MeasurementReportTestCase ());
+  AddTestCase (new RrcConnectionRequestTestCase (), TestCase::QUICK);
+  AddTestCase (new RrcConnectionSetupTestCase (), TestCase::QUICK);
+  AddTestCase (new RrcConnectionSetupCompleteTestCase (), TestCase::QUICK);
+  AddTestCase (new RrcConnectionReconfigurationCompleteTestCase (), TestCase::QUICK);
+  AddTestCase (new RrcConnectionReconfigurationTestCase (), TestCase::QUICK);
+  AddTestCase (new HandoverPreparationInfoTestCase (), TestCase::QUICK);
+  AddTestCase (new RrcConnectionReestablishmentRequestTestCase (), TestCase::QUICK);
+  AddTestCase (new RrcConnectionReestablishmentTestCase (), TestCase::QUICK);
+  AddTestCase (new RrcConnectionReestablishmentCompleteTestCase (), TestCase::QUICK);
+  AddTestCase (new RrcConnectionRejectTestCase (), TestCase::QUICK);
+  AddTestCase (new MeasurementReportTestCase (), TestCase::QUICK);
 }
 
 Asn1EncodingSuite asn1EncodingSuite;

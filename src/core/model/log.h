@@ -18,12 +18,13 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#ifndef LOG_H
-#define LOG_H
+#ifndef NS3_LOG_H
+#define NS3_LOG_H
 
 #include <string>
 #include <iostream>
 #include <stdint.h>
+#include <map>
 
 namespace ns3 {
 
@@ -48,12 +49,14 @@ enum LogLevel {
   LOG_LOGIC          = 0x00000020, // control flow tracing within functions
   LOG_LEVEL_LOGIC    = 0x0000003f,
 
-  LOG_ALL            = 0x1fffffff, // print everything
+  LOG_ALL            = 0x0fffffff, // print everything
   LOG_LEVEL_ALL      = LOG_ALL,
 
   LOG_PREFIX_FUNC    = 0x80000000, // prefix all trace prints with function
   LOG_PREFIX_TIME    = 0x40000000, // prefix all trace prints with simulation time
-  LOG_PREFIX_NODE    = 0x20000000  // prefix all trace prints with simulation node
+  LOG_PREFIX_NODE    = 0x20000000, // prefix all trace prints with simulation node
+  LOG_PREFIX_LEVEL   = 0x10000000, // prefix all trace prints with log level (severity)
+  LOG_PREFIX_ALL     = 0xf0000000  // all prefixes
 };
 
 /**
@@ -148,6 +151,13 @@ void LogComponentDisableAll (enum LogLevel level);
       __FUNCTION__ << "(): ";                                 \
     }                                                           \
 
+#define NS_LOG_APPEND_LEVEL_PREFIX(level)                       \
+  if (g_log.IsEnabled (ns3::LOG_PREFIX_LEVEL))                  \
+    {                                                           \
+      std::clog << "[" << g_log.GetLevelLabel (level) << "] ";  \
+    }                                                           \
+  
+
 #ifndef NS_LOG_APPEND_CONTEXT
 #define NS_LOG_APPEND_CONTEXT
 #endif /* NS_LOG_APPEND_CONTEXT */
@@ -212,6 +222,7 @@ void LogComponentDisableAll (enum LogLevel level);
           NS_LOG_APPEND_NODE_PREFIX;                            \
           NS_LOG_APPEND_CONTEXT;                                \
           NS_LOG_APPEND_FUNC_PREFIX;                            \
+          NS_LOG_APPEND_LEVEL_PREFIX (level);                   \
           std::clog << msg << std::endl;                        \
         }                                                       \
     }                                                           \
@@ -380,6 +391,7 @@ public:
   void Enable (enum LogLevel level);
   void Disable (enum LogLevel level);
   char const *Name (void) const;
+  std::string GetLevelLabel(const enum LogLevel level) const;
 private:
   int32_t     m_levels;
   char const *m_name;
@@ -412,4 +424,4 @@ public:
 } // namespace ns3
 
 
-#endif /* LOG_H */
+#endif /* NS3_LOG_H */

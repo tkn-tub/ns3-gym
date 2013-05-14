@@ -123,7 +123,7 @@ public:
 
 protected:
   // inherited from Object
-  virtual void DoStart (void);
+  virtual void DoInitialize (void);
 
 
 private:

@@ -587,7 +587,7 @@ PeerManagementProtocol::AssignStreams (int64_t stream)
 }
 
 void
-PeerManagementProtocol::DoStart ()
+PeerManagementProtocol::DoInitialize ()
 {
   // If beacon interval is equal to the neighbor's one and one o more beacons received
   // by my neighbor coincide with my beacon - apply random uniformly distributed shift from

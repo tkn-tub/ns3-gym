@@ -322,9 +322,6 @@ use command_is_external=True''') % (self.command,)
 
 	if self.cwd is None:
 		cwd = None
-	else:
-		assert isinstance(cwd, CmdDirArg)
-		self.cwd.find_node(self.path)
 
 	args = []
 	inputs = []

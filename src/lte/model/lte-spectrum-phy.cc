@@ -23,7 +23,7 @@
 
 #include <ns3/object-factory.h>
 #include <ns3/log.h>
-#include <math.h>
+#include <cmath>
 #include <ns3/simulator.h>
 #include <ns3/trace-source-accessor.h>
 #include <ns3/antenna-model.h>
@@ -474,7 +474,7 @@ LteSpectrumPhy::StartTxDataFrame (Ptr<PacketBurst> pb, std::list<Ptr<LteControlM
 bool
 LteSpectrumPhy::StartTxDlCtrlFrame (std::list<Ptr<LteControlMessage> > ctrlMsgList, bool pss)
 {
-  NS_LOG_FUNCTION (this << time << " PSS " << (uint16_t)pss);
+  NS_LOG_FUNCTION (this << " PSS " << (uint16_t)pss);
   NS_LOG_LOGIC (this << " state: " << m_state);
   
   
@@ -532,7 +532,7 @@ LteSpectrumPhy::StartTxDlCtrlFrame (std::list<Ptr<LteControlMessage> > ctrlMsgLi
 bool
 LteSpectrumPhy::StartTxUlSrsFrame ()
 {
-  NS_LOG_FUNCTION (this << time);
+  NS_LOG_FUNCTION (this);
   NS_LOG_LOGIC (this << " state: " << m_state);
   
   //   m_phyTxStartTrace (pb);
@@ -1160,7 +1160,7 @@ LteSpectrumPhy::SetTxModeGain (uint8_t txMode, double gain)
 {
   NS_LOG_FUNCTION (this << " txmode " << (uint16_t)txMode << " gain " << gain);
   // convert to linear
-  gain = pow (10.0, (gain / 10.0));
+  gain = std::pow (10.0, (gain / 10.0));
   if (m_txModeGain.size () < txMode)
   {
     m_txModeGain.resize (txMode);

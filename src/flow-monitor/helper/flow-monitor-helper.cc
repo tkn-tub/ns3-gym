@@ -35,6 +35,16 @@ FlowMonitorHelper::FlowMonitorHelper ()
   m_monitorFactory.SetTypeId ("ns3::FlowMonitor");
 }
 
+FlowMonitorHelper::~FlowMonitorHelper ()
+{
+  if (m_flowMonitor)
+    {
+      m_flowMonitor->Dispose ();
+      m_flowMonitor = 0;
+      m_flowClassifier = 0;
+    }
+}
+
 void 
 FlowMonitorHelper::SetMonitorAttribute (std::string n1, const AttributeValue &v1)
 {
