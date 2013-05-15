@@ -820,51 +820,51 @@ SimpleOfdmWimaxPhy::DoGetFrameDurationCode (void) const
 {
   uint16_t duration = 0;
   duration = (uint16_t)(GetFrameDuration ().GetSeconds () * 10000);
+  uint8_t retval = 0;
   switch (duration)
     {
     case 25:
       {
-        return FRAME_DURATION_2_POINT_5_MS;
+        retval = FRAME_DURATION_2_POINT_5_MS;
         break;
       }
     case 40:
       {
-        return FRAME_DURATION_4_MS;
+        retval = FRAME_DURATION_4_MS;
         break;
       }
     case 50:
       {
-        return FRAME_DURATION_5_MS;
+        retval = FRAME_DURATION_5_MS;
         break;
       }
     case 80:
       {
-        return FRAME_DURATION_8_MS;
+        retval = FRAME_DURATION_8_MS;
         break;
       }
     case 100:
       {
-        return FRAME_DURATION_10_MS;
+        retval = FRAME_DURATION_10_MS;
         break;
       }
     case 125:
       {
-        return FRAME_DURATION_12_POINT_5_MS;
+        retval = FRAME_DURATION_12_POINT_5_MS;
         break;
       }
     case 200:
       {
-        return FRAME_DURATION_20_MS;
+        retval = FRAME_DURATION_20_MS;
         break;
       }
     default:
       {
         NS_FATAL_ERROR ("Invalid frame duration = " << duration);
-        return 0;
+        retval = 0;
       }
     }
-  NS_FATAL_ERROR ("Invalid frame duration = " << duration);
-  return 0;
+  return retval;
 }
 
 Time

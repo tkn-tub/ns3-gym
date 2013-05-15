@@ -881,9 +881,11 @@ WifiMacHeader::GetSize (void) const
 const char *
 WifiMacHeader::GetTypeString (void) const
 {
+  std::string typeString;
+  
 #define FOO(x) \
 case WIFI_MAC_ ## x: \
-  return # x; \
+  typeString = # x; \
   break;
 
   switch (GetType ())
@@ -927,8 +929,7 @@ case WIFI_MAC_ ## x: \
       return "ERROR";
     }
 #undef FOO
-  // needed to make gcc 4.0.1 ppc darwin happy.
-  return "BIG_ERROR";
+  return typeString.c_str ();
 }
 
 TypeId
