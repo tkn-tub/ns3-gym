@@ -1705,6 +1705,7 @@ uint32_t Icmpv6OptionLinkLayerAddress::Deserialize (Buffer::Iterator start)
 
   SetType (i.ReadU8 ());
   SetLength (i.ReadU8 ());
+  NS_ASSERT (GetLength () * 8 - 2 <= 32);
   i.Read (mac, (GetLength () * 8) - 2);
 
   m_addr.CopyFrom (mac, (GetLength () * 8)-2);
