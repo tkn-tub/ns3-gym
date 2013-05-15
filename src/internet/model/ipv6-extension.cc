@@ -530,15 +530,24 @@ void Ipv6ExtensionFragment::GetFragments (Ptr<Packet> packet, uint32_t maxFragme
         {
           if (it->second == Ipv6Header::IPV6_EXT_HOP_BY_HOP)
             {
-              fragment->AddHeader (*dynamic_cast<Ipv6ExtensionHopByHopHeader *> (it->first));
+              Ipv6ExtensionHopByHopHeader * p =
+                dynamic_cast<Ipv6ExtensionHopByHopHeader *> (it->first);
+              NS_ASSERT (p != 0);
+              fragment->AddHeader (*p);
             }
           else if (it->second == Ipv6Header::IPV6_EXT_ROUTING)
             {
-              fragment->AddHeader (*dynamic_cast<Ipv6ExtensionLooseRoutingHeader *> (it->first));
+              Ipv6ExtensionLooseRoutingHeader * p =
+                dynamic_cast<Ipv6ExtensionLooseRoutingHeader *> (it->first);
+              NS_ASSERT (p != 0);
+              fragment->AddHeader (*p);
             }
           else if (it->second == Ipv6Header::IPV6_EXT_DESTINATION)
             {
-              fragment->AddHeader (*dynamic_cast<Ipv6ExtensionDestinationHeader *> (it->first));
+              Ipv6ExtensionDestinationHeader * p =
+                dynamic_cast<Ipv6ExtensionDestinationHeader *> (it->first);
+              NS_ASSERT (p != 0);
+              fragment->AddHeader (*p);
             }
         }
 

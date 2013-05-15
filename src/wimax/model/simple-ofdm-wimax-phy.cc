@@ -241,6 +241,7 @@ void
 SimpleOfdmWimaxPhy::Send (SendParams *params)
 {
   OfdmSendParams *o_params = dynamic_cast<OfdmSendParams*> (params);
+  NS_ASSERT (o_params !=0);
   Send (o_params->GetBurst (),
         (WimaxPhy::ModulationType) o_params->GetModulationType (),
         o_params->GetDirection ());
@@ -284,6 +285,7 @@ SimpleOfdmWimaxPhy::StartSendDummyFecBlock (bool isFirstBlock,
     }
 
   SimpleOfdmWimaxChannel *channel = dynamic_cast<SimpleOfdmWimaxChannel*> (PeekPointer (GetChannel ()));
+  NS_ASSERT (channel != 0);
 
   if (m_nrRemainingBlocksToSend==1)
     {

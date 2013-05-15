@@ -103,7 +103,7 @@ void PendingData::Clear ()
 void PendingData::Add (uint32_t s, const uint8_t* d)
 {
   NS_LOG_FUNCTION (this << s);
-  if (d == 0)
+  if (d != 0)
     {
       data.push_back (Create<Packet> (d,s));
     }

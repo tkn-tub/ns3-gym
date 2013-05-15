@@ -654,6 +654,7 @@ TestRunnerImpl::PrintTestNameList (std::list<TestCase *>::const_iterator begin,
   for (std::list<TestCase *>::const_iterator i = begin; i != end; ++i)
     {
       TestSuite * test= dynamic_cast<TestSuite *>(*i);
+      NS_ASSERT (test != 0);
       if (printTestType)
         {
           std::cout << label[test->GetTestType ()];
