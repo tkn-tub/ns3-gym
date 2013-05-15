@@ -221,12 +221,15 @@ WifiMacHeader::SetType (enum WifiMacType type)
     case WIFI_MAC_MGT_DEAUTHENTICATION:
       m_ctrlType = TYPE_MGT;
       m_ctrlSubtype = 12;
+      break;
     case WIFI_MAC_MGT_ACTION:
       m_ctrlType = TYPE_MGT;
       m_ctrlSubtype = 13;
+      break;
     case WIFI_MAC_MGT_ACTION_NO_ACK:
       m_ctrlType = TYPE_MGT;
       m_ctrlSubtype = 14;
+      break;
     case WIFI_MAC_MGT_MULTIHOP_ACTION:
       m_ctrlType = TYPE_MGT;
       m_ctrlSubtype = 15;
@@ -999,10 +1002,12 @@ WifiMacHeader::Print (std::ostream &os) const
       os << " Duration/ID=" << m_duration << "us"
          << "DA=" << m_addr1 << ", SA=" << m_addr2 << ", BSSID=" << m_addr3
          << ", FragNumber=" << std::hex << (int) m_seqFrag << std::dec << ", SeqNumber=" << m_seqSeq;
+      break;
     case WIFI_MAC_MGT_MULTIHOP_ACTION:
       os << " Duration/ID=" << m_duration << "us"
          << "RA=" << m_addr1 << ", TA=" << m_addr2 << ", DA=" << m_addr3
          << ", FragNumber=" << std::hex << (int) m_seqFrag << std::dec << ", SeqNumber=" << m_seqSeq;
+      break;
     case WIFI_MAC_DATA:
       PrintFrameControl (os);
       os << " Duration/ID=" << m_duration << "us";

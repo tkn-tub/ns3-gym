@@ -512,10 +512,13 @@ RegularWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
 
             default:
               NS_FATAL_ERROR ("Unsupported Action field in Block Ack Action frame");
+              return;
             }
+
 
         default:
           NS_FATAL_ERROR ("Unsupported Action frame received");
+          return;
         }
     }
   NS_FATAL_ERROR ("Don't know how to handle frame (type=" << hdr->GetType ());
