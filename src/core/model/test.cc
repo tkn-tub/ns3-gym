@@ -278,7 +278,7 @@ TestCase::CreateDataDirFilename (std::string filename)
 {
   NS_LOG_FUNCTION (this << filename);
   const TestCase *current = this;
-  while (current->m_dataDir == "" && current != 0)
+  while (current != 0 && current->m_dataDir == "")
     {
       current = current->m_parent;
     }

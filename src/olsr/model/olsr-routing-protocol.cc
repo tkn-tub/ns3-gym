@@ -2104,7 +2104,7 @@ RoutingProtocol::LinkSensing (const olsr::MessageHeader &msg,
     }
 
   // Schedules link tuple deletion
-  if (created && link_tuple != NULL)
+  if (created)
     {
       LinkTupleAdded (*link_tuple, hello.willingness);
       m_events.Track (Simulator::Schedule (DELAY (std::min (link_tuple->time, link_tuple->symTime)),
