@@ -297,7 +297,7 @@ bool BSSchedulerSimple::SelectConnection (Ptr<WimaxConnection> &connection)
       serviceFlows = GetBs ()->GetServiceFlowManager ()->GetServiceFlows (ServiceFlow::SF_TYPE_NRTPS);
       for (iter2 = serviceFlows.begin (); iter2 != serviceFlows.end (); ++iter2)
         {
-          serviceFlowRecord = (*iter2)->GetRecord ();
+          //unused: serviceFlowRecord = (*iter2)->GetRecord ();
           if ((*iter2)->HasPackets ())
             {
               NS_LOG_INFO ("Return NRTPS SF: CID = " << (*iter2)->GetCid () << "SFID = " << (*iter2)->GetSfid ());
@@ -309,7 +309,7 @@ bool BSSchedulerSimple::SelectConnection (Ptr<WimaxConnection> &connection)
       serviceFlows = GetBs ()->GetServiceFlowManager ()->GetServiceFlows (ServiceFlow::SF_TYPE_BE);
       for (iter2 = serviceFlows.begin (); iter2 != serviceFlows.end (); ++iter2)
         {
-          serviceFlowRecord = (*iter2)->GetRecord ();
+          //unused: serviceFlowRecord = (*iter2)->GetRecord ();
           if ((*iter2)->HasPackets ())
             {
               NS_LOG_INFO ("Return BE SF: CID = " << (*iter2)->GetCid () << "SFID = " << (*iter2)->GetSfid ());
