@@ -60,6 +60,7 @@ CommandLineTestCaseBase::Parse (const CommandLine &cmd, int n, ...)
       args[i+1] = arg;
       i++;
     }
+  va_end (ap);
   int argc = n + 1;
   cmd.Parse (argc, args);
   delete [] args;
