@@ -595,6 +595,8 @@ TestRunnerImpl::PrintReport (TestCase *test, std::ostream *os, bool xml, int lev
             }
         }
     }
+
+  os->unsetf(std::ios_base::floatfield);
 }
   
 void
