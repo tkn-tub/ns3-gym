@@ -2206,7 +2206,10 @@ DsrRouting::ScheduleNetworkPacketRetry (MaintainBuffEntry & mb,
       networkKey.m_destination = newEntry.GetDst ();
 
       m_addressForwardCnt[networkKey] = 0;
-      m_maintainBuffer.Enqueue (newEntry);
+      if (! m_maintainBuffer.Enqueue (newEntry))
+        {
+          NS_LOG_ERROR ("Failed to enqueue packet retry");
+        }
 
       if (m_addressForwardTimer.find (networkKey) == m_addressForwardTimer.end ())
         {

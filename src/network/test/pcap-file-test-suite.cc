@@ -22,10 +22,13 @@
 #include <sstream>
 #include <cstring>
 
+#include "ns3/log.h"
 #include "ns3/test.h"
 #include "ns3/pcap-file.h"
 
 using namespace ns3;
+
+NS_LOG_COMPONENT_DEFINE ("pcap-file-test-suite");
 
 // ===========================================================================
 // Some utility functions for the tests.
@@ -113,7 +116,10 @@ WriteModeCreateTestCase::DoSetup (void)
 void
 WriteModeCreateTestCase::DoTeardown (void)
 {
-  remove (m_testFilename.c_str ());
+  if (remove (m_testFilename.c_str ()))
+    {
+      NS_LOG_ERROR ("Failed to delete file " << m_testFilename);
+    }
 }
 
 void
@@ -225,7 +231,10 @@ ReadModeCreateTestCase::DoSetup (void)
 void
 ReadModeCreateTestCase::DoTeardown (void)
 {
-  remove (m_testFilename.c_str ());
+  if (remove (m_testFilename.c_str ()))
+    {
+      NS_LOG_ERROR ("Failed to delete file " << m_testFilename);
+    }
 }
 
 void
@@ -331,7 +340,10 @@ AppendModeCreateTestCase::DoSetup (void)
 void
 AppendModeCreateTestCase::DoTeardown (void)
 {
-  remove (m_testFilename.c_str ());
+  if (remove (m_testFilename.c_str ()))
+    {
+      NS_LOG_ERROR ("Failed to delete file " << m_testFilename);
+    }
 }
 
 void
@@ -437,7 +449,10 @@ FileHeaderTestCase::DoSetup (void)
 void
 FileHeaderTestCase::DoTeardown (void)
 {
-  remove (m_testFilename.c_str ());
+  if (remove (m_testFilename.c_str ()))
+    {
+      NS_LOG_ERROR ("Failed to delete file " << m_testFilename);
+    }
 }
 
 void
@@ -674,7 +689,10 @@ RecordHeaderTestCase::DoSetup (void)
 void
 RecordHeaderTestCase::DoTeardown (void)
 {
-  remove (m_testFilename.c_str ());
+  if (remove (m_testFilename.c_str ()))
+    {
+      NS_LOG_ERROR ("Failed to delete file " << m_testFilename);
+    }
 }
 
 void
