@@ -22,6 +22,7 @@
 
 #include <ns3/object-factory.h>
 #include <ns3/log.h>
+#include <cfloat>
 #include <cmath>
 #include <ns3/simulator.h>
 #include <ns3/double.h>
@@ -472,7 +473,7 @@ LteUePhy::CreateDlCqiFeedbackMessage (const SpectrumValue& sinr)
           sum += powerTxW;
           rbNum++;
         }
-      double rsrp = sum / (double)rbNum;
+      double rsrp = (rbNum > 0) ? (sum / rbNum) : DBL_MAX;
       // averaged SINR among RBs
       sum = 0.0;
       rbNum = 0;
@@ -481,7 +482,7 @@ LteUePhy::CreateDlCqiFeedbackMessage (const SpectrumValue& sinr)
           sum += (*it);
           rbNum++;
         }
-      double avSinr = sum / (double)rbNum;
+      double avSinr = (rbNum > 0) ? (sum / rbNum) : DBL_MAX;
       NS_LOG_INFO (this << " cellId " << m_cellId << " rnti " << m_rnti << " RSRP " << rsrp << " SINR " << avSinr);
  
       m_reportCurrentCellRsrpSinrTrace (m_cellId, m_rnti, rsrp, avSinr);

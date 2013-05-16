@@ -29,6 +29,7 @@
 #include <ns3/lte-vendor-specific-parameters.h>
 #include <ns3/boolean.h>
 #include <set>
+#include <cfloat>
 
 NS_LOG_COMPONENT_DEFINE ("TdBetFfMacScheduler");
 
@@ -1025,6 +1026,11 @@ TdBetFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sc
 
       uint16_t lcActives = LcActivePerFlow ((*itMap).first);
       NS_LOG_INFO (this << "Allocate user " << newEl.m_rnti << " rbg " << lcActives);
+      if (lcActives == 0)
+        {
+          // Set to max value, to avoid divide by 0 below
+          lcActives = UINT16_MAX;
+        }
       uint16_t RgbPerRnti = (*itMap).second.size ();
       std::map <uint16_t,uint8_t>::iterator itCqi;
       itCqi = m_p10CqiRxed.find ((*itMap).first);
@@ -1261,7 +1267,7 @@ TdBetFfMacScheduler::EstimateUlSinr (uint16_t rnti, uint16_t rb)
               sinrNum++;
             }
         }
-      double estimatedSinr = sinrSum / (double)sinrNum;
+      double estimatedSinr = (sinrNum > 0) ? (sinrSum / sinrNum) : DBL_MAX;
       // store the value
       (*itCqi).second.at (rb) = estimatedSinr;
       return (estimatedSinr);

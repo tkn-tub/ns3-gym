@@ -1323,6 +1323,11 @@ FdTbfqFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::S
 
       uint16_t lcActives = LcActivePerFlow ((*itMap).first);
       NS_LOG_INFO (this << "Allocate user " << newEl.m_rnti << " rbg " << lcActives);
+      if (lcActives == 0)
+        {
+          // Set to max value, to avoid divide by 0 below
+          lcActives = UINT16_MAX;
+        }
       uint16_t RgbPerRnti = (*itMap).second.size ();
       std::map <uint16_t,SbMeasResult_s>::iterator itCqi;
       itCqi = m_a30CqiRxed.find ((*itMap).first);

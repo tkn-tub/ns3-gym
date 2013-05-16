@@ -21,6 +21,7 @@
 
 #include <ns3/object-factory.h>
 #include <ns3/log.h>
+#include <cfloat>
 #include <cmath>
 #include <ns3/simulator.h>
 #include <ns3/attribute-accessor-helper.h>
@@ -832,7 +833,8 @@ LteEnbPhy::CreateSrsCqiReport (const SpectrumValue& sinr)
   vsp.m_value = rnti;
   ulcqi.m_vendorSpecificList.push_back (vsp);
   // call SRS tracing method
-  CreateSrsReport (m_srsUeOffset.at (m_currentSrsOffset), srsSum / i);
+  CreateSrsReport (m_srsUeOffset.at (m_currentSrsOffset),
+                   (i > 0) ? (srsSum / i) : DBL_MAX);
   return (ulcqi);
   
 }
