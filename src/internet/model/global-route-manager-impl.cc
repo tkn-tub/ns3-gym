@@ -837,6 +837,7 @@ GlobalRouteManagerImpl::SPFNext (SPFVertex* v, CandidateQueue& candidate)
 //
       if (v->GetLSA ()->GetLSType () == GlobalRoutingLSA::RouterLSA)
         {
+          NS_ASSERT (l != 0);
           distance = v->GetDistanceFromRoot () + l->GetMetric ();
         }
       else
