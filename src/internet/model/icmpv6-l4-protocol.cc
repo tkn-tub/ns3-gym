@@ -587,7 +587,10 @@ void Icmpv6L4Protocol::HandleNA (Ptr<Packet> packet, Ipv6Address const &src, Ipv
   if (!entry)
     {
       /* ouch!! we are victim of a DAD */
+      
       /*  Logically dead code (DEADCODE)
+       *  b/c loop test compares default Ipv6InterfaceAddress to target
+       
       Ipv6InterfaceAddress ifaddr;
       bool found = false;
       uint32_t i = 0;

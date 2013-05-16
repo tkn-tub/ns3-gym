@@ -92,7 +92,7 @@ WifiInformationElementVector::DeserializeSingleIe (Buffer::Iterator start)
       NS_FATAL_ERROR ("Information element " << (uint16_t) id << " is not implemented");
       return 0;
     }
-  /*  unreachable:
+  /*  unreachable:  b/c switch is guaranteed to return from this function
   if (GetSize () + length > m_maxSize)
     {
       NS_FATAL_ERROR ("Check max size for information element!");
