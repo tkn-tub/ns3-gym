@@ -894,7 +894,8 @@ RecordHeaderTestCase::DoRun (void)
   // starting there in the file.  We've tested this all before so we just assume
   // it's all right and just seek past it.
   //
-  std::fseek (p, 24, SEEK_SET);
+  result = std::fseek (p, 24, SEEK_SET);
+  NS_TEST_ASSERT_MSG_EQ (result, 0, "Failed seeking past pcap header");
 
   result = std::fread (&val32, sizeof(val32), 1, p);
   NS_TEST_ASSERT_MSG_EQ (result, 1, "Unable to fread() seconds timestamp");
