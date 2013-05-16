@@ -253,7 +253,7 @@ AsInt (std::string v)
   NS_LOG_FUNCTION_NOARGS ();
   std::istringstream iss;
   iss.str (v);
-  uint32_t retval;
+  uint8_t retval;
   iss >> std::hex >> retval >> std::dec;
   return retval;
 }
