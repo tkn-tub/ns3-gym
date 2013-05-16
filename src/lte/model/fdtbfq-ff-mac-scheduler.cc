@@ -30,6 +30,7 @@
 #include <ns3/boolean.h>
 #include <ns3/integer.h>
 #include <set>
+#include <cfloat>
 
 NS_LOG_COMPONENT_DEFINE ("FdTbfqFfMacScheduler");
 
@@ -1573,7 +1574,7 @@ FdTbfqFfMacScheduler::EstimateUlSinr (uint16_t rnti, uint16_t rb)
               sinrNum++;
             }
         }
-      double estimatedSinr = sinrSum / (double)sinrNum;
+      double estimatedSinr = (sinrNum > 0) ? (sinrSum / sinrNum) : DBL_MAX;
       // store the value
       (*itCqi).second.at (rb) = estimatedSinr;
       return (estimatedSinr);
