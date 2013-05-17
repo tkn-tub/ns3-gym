@@ -118,30 +118,42 @@ void Ipv6AutoconfiguredPrefix::FunctionValidTimeout ()
 
 void Ipv6AutoconfiguredPrefix::StartPreferredTimer ()
 {
-  NS_LOG_INFO ("Start PreferredTimer for " << m_prefix);
-  m_preferredTimer.SetFunction (&Ipv6AutoconfiguredPrefix::FunctionPreferredTimeout, this);
-  m_preferredTimer.SetDelay (Seconds (m_preferredLifeTime));
-  m_preferredTimer.Schedule ();
+  if (m_preferredLifeTime != 0xffffffff)
+    {
+      NS_LOG_INFO ("Start PreferredTimer for " << m_prefix);
+      m_preferredTimer.SetFunction (&Ipv6AutoconfiguredPrefix::FunctionPreferredTimeout, this);
+      m_preferredTimer.SetDelay (Seconds (m_preferredLifeTime));
+      m_preferredTimer.Schedule ();
+    }
 }
 
 void Ipv6AutoconfiguredPrefix::StartValidTimer ()
 {
-  NS_LOG_INFO ("Start ValidTimer for " << m_prefix);
-  m_validTimer.SetFunction (&Ipv6AutoconfiguredPrefix::FunctionValidTimeout, this);
-  m_validTimer.SetDelay (Seconds (m_validLifeTime - m_preferredLifeTime));
-  m_validTimer.Schedule ();
+  if (m_validLifeTime != 0xffffffff)
+    {
+      NS_LOG_INFO ("Start ValidTimer for " << m_prefix);
+      m_validTimer.SetFunction (&Ipv6AutoconfiguredPrefix::FunctionValidTimeout, this);
+      m_validTimer.SetDelay (Seconds (m_validLifeTime - m_preferredLifeTime));
+      m_validTimer.Schedule ();
+    }
 }
 
 void Ipv6AutoconfiguredPrefix::StopPreferredTimer ()
 {
-  NS_LOG_INFO ("Stop PreferredTimer for " << m_prefix);
-  m_preferredTimer.Cancel ();
+  if (m_preferredTimer.IsRunning())
+    {
+      NS_LOG_INFO ("Stop PreferredTimer for " << m_prefix);
+      m_preferredTimer.Cancel ();
+    }
 }
 
 void Ipv6AutoconfiguredPrefix::StopValidTimer ()
 {
-  NS_LOG_INFO ("Stop ValidTimer for " << m_prefix);
-  m_validTimer.Cancel ();
+  if (m_validTimer.IsRunning())
+    {
+      NS_LOG_INFO ("Stop ValidTimer for " << m_prefix);
+      m_validTimer.Cancel ();
+    }
 }
 
 void Ipv6AutoconfiguredPrefix::RemoveMe ()
