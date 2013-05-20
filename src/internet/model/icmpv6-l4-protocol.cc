@@ -1234,10 +1234,20 @@ bool Icmpv6L4Protocol::Lookup (Ipv6Address dst, Ptr<NetDevice> device, Ptr<Ndisc
   if (cache)
     {
       NdiscCache::Entry* entry = cache->Lookup (dst);
-      if (entry && !(entry->IsIncomplete() || entry->IsProbe()))
+      if (entry)
         {
-          *hardwareDestination = entry->GetMacAddress ();
-          return true;
+          if (entry->IsReachable () || entry->IsDelay ())
+            {
+              *hardwareDestination = entry->GetMacAddress ();
+              return true;
+            }
+          else if (entry->IsStale ())
+            {
+              entry->StartDelayTimer ();
+              entry->MarkDelay ();
+              *hardwareDestination = entry->GetMacAddress ();
+              return true;
+            }
         }
     }
   return false;
