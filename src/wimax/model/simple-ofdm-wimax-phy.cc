@@ -587,7 +587,7 @@ bvec
 SimpleOfdmWimaxPhy::RecreateBuffer ()
 {
 
-  bvec buffer (m_blockSize * m_nrBlocks);
+  bvec buffer (m_blockSize * (unsigned long)m_nrBlocks);
   bvec block (m_blockSize);
   uint32_t i = 0;
   for (uint32_t j = 0; j < m_nrBlocks; j++)
