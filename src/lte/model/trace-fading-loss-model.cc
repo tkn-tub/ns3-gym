@@ -88,8 +88,8 @@ TraceFadingLossModel::GetTypeId (void)
     .AddAttribute ("RngStreamSetSize",
                     "The number of RNG streams reserved for the fading model. The maximum number of streams that are needed for an LTE FDD scenario is 2 * numUEs * numeNBs.",
                     UintegerValue (200000),
-                   MakeUintegerAccessor (&TraceFadingLossModel::m_rbNum),
-                   MakeUintegerChecker<uint8_t> ())
+                   MakeUintegerAccessor (&TraceFadingLossModel::m_streamSetSize),
+                   MakeUintegerChecker<uint64_t> ())
   ;
   return tid;
 }
