@@ -225,7 +225,7 @@ bool
 RreqTable::MarkLinkAsUnidirectional (Ipv4Address neighbor, Time blacklistTimeout)
 {
   NS_LOG_LOGIC ("Add neighbor address in blacklist " << m_blackList.size ());
-  for (std::vector<BlackList>::iterator i = m_blackList.begin (); i != m_blackList.end (); i++)
+  for (std::vector<BlackList>::iterator i = m_blackList.begin (); i != m_blackList.end (); ++i)
     {
       if (i->m_neighborAddress == neighbor)
         {
