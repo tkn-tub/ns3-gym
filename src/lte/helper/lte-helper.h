@@ -46,7 +46,7 @@ class LteEnbPhy;
 class SpectrumChannel;
 class EpcHelper;
 class PropagationLossModel;
-
+class SpectrumPropagationLossModel;
 
 /**
  * Creation and configuration of LTE entities
@@ -422,6 +422,8 @@ private:
 
   std::string m_fadingModelType;
   ObjectFactory m_fadingModelFactory;
+  Ptr<SpectrumPropagationLossModel> m_fadingModule;
+  bool m_fadingStreamsAssigned;
 
   Ptr<PhyStatsCalculator> m_phyStats;
   Ptr<PhyTxStatsCalculator> m_phyTxStats;

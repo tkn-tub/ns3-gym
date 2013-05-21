@@ -123,6 +123,10 @@ private:
   uint8_t m_rbNum;
   mutable Time m_lastWindowUpdate;
   uint8_t m_timeGranularity;
+  mutable uint64_t m_currentStream;
+  mutable uint64_t m_lastStream;
+  uint64_t m_streamSetSize;
+  mutable bool m_streamsAssigned;
   
 };
 
