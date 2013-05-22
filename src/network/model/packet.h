@@ -43,7 +43,7 @@ namespace ns3 {
 
 /**
  * \ingroup packet
- * \brief Iterator over the set of tags in a packet
+ * \brief Iterator over the set of byte tags in a packet
  *
  * This is a java-style iterator.
  */
@@ -51,7 +51,7 @@ class ByteTagIterator
 {
 public:
   /**
-   * Identifies a tag and a set of bytes within a packet
+   * Identifies a byte tag and a set of bytes within a packet
    * to which the tag applies.
    */
   class Item
@@ -74,12 +74,12 @@ public:
      */
     uint32_t GetEnd (void) const;
     /**
+     * Read the requested tag and store it in the user-provided tag instance.
+     *
      * \param tag the user tag to which the data should be copied.
      *
-     * Read the requested tag and store it in the user-provided
-     * tag instance. This method will crash if the type of the
-     * tag provided by the user does not match the type of
-     * the underlying tag.
+     * This method will crash if the type of the tag provided
+     * by the user does not match the type of the underlying tag.
      */
     void GetTag (Tag &tag) const;
 private:
@@ -106,7 +106,7 @@ private:
 
 /**
  * \ingroup packet
- * \brief Iterator over the set of 'packet' tags in a packet
+ * \brief Iterator over the set of packet tags in a packet
  *
  * This is a java-style iterator.
  */
@@ -114,7 +114,7 @@ class PacketTagIterator
 {
 public:
   /**
-   * Identifies a tag within a packet.
+   * Identifies a packet tag within a packet.
    */
   class Item 
   {
@@ -124,12 +124,12 @@ public:
      */
     TypeId GetTypeId (void) const;
     /**
+     * Read the requested tag and store it in the user-provided tag instance.
+     *
      * \param tag the user tag to which the data should be copied.
      *
-     * Read the requested tag and store it in the user-provided
-     * tag instance. This method will crash if the type of the
-     * tag provided by the user does not match the type of
-     * the underlying tag.
+     * This method will crash if the type of the tag provided
+     * by the user does not match the type of the underlying tag.
      */
     void GetTag (Tag &tag) const;
 private:
@@ -197,8 +197,8 @@ private:
  * Implementing a new type of Tag requires roughly the same amount of
  * work and this work is described in the ns3::Tag API documentation.
  *
- * The performance aspects of the Packet API are discussed in 
- * \ref packetperf
+ * The performance aspects copy-on-write semantics of the
+ * Packet API are discussed in \ref packetperf
  */
 class Packet : public SimpleRefCount<Packet>
 {
@@ -320,7 +320,7 @@ public:
   void AddPaddingAtEnd (uint32_t size);
   /** 
    * Remove size bytes from the end of the current packet
-   * It is safe to remove more bytes that what is present in
+   * It is safe to remove more bytes than are present in
    * the packet.
    *
    * \param size number of bytes from remove
@@ -328,7 +328,7 @@ public:
   void RemoveAtEnd (uint32_t size);
   /** 
    * Remove size bytes from the start of the current packet.
-   * It is safe to remove more bytes that what is present in
+   * It is safe to remove more bytes than are present in
    * the packet.
    *
    * \param size number of bytes from remove
@@ -336,18 +336,21 @@ public:
   void RemoveAtStart (uint32_t size);
 
   /**
+   * \returns a pointer to the internal buffer of the packet.
+   *
    * If you try to change the content of the buffer
    * returned by this method, you will die.
    * Note that this method is now deprecated and will be removed in
-   * the next version of ns-3. If you need to get access to the content
-   * of the byte buffer of a packet, you need to call
-   * ns3::Packet::CopyData to perform an explicit copy.
+   * a future version of ns-3. To get access to the content
+   * of the byte buffer of a packet, call CopyData"()" to perform
+   * an explicit copy.
    *
-   * \returns a pointer to the internal buffer of the packet.
    */
   uint8_t const *PeekData (void) const NS_DEPRECATED;
 
   /**
+   * Copy the packet contents to a byte buffer.
+   *
    * \param buffer a pointer to a byte buffer where the packet data 
    *        should be copied.
    * \param size the size of the byte buffer. 
@@ -358,6 +361,8 @@ public:
   uint32_t CopyData (uint8_t *buffer, uint32_t size) const;
 
   /**
+   * Copy the packet contents to an output stream.
+   *
    * \param os pointer to output stream in which we want
    *        to write the packet data.
    * \param size the maximum number of bytes we want to write
@@ -432,30 +437,29 @@ public:
   static void EnableChecking (void);
 
   /**
-   * For packet serializtion, the total size is checked 
+   * \returns number of bytes required for packet
+   * serialization
+   *
+   * For packet serialization, the total size is checked
    * in order to determine the size of the buffer 
    * required for serialization
-   *
-   * \returns number of bytes required for packet 
-   * serialization
    */
   uint32_t GetSerializedSize (void) const;
 
-  /*
+  /**
+   * Serialize a packet, tags, and metadata into a byte buffer.
+   *
    * \param buffer a raw byte buffer to which the packet will be serialized
    * \param maxSize the max size of the buffer for bounds checking
    *
-   * A packet is completely serialized and placed into the raw byte buffer
-   *
-   * \returns zero if buffer size was too small
+   * \returns one if all data were serialized, zero if buffer size was too small.
    */
   uint32_t Serialize (uint8_t* buffer, uint32_t maxSize) const;
 
   /**
-   * \param tag the new tag to add to this packet
+   * Tag each byte included in this packet with a new byte tag.
    *
-   * Tag each byte included in this packet with the
-   * new tag.
+   * \param tag the new tag to add to this packet
    *
    * Note that adding a tag is a const operation which is pretty 
    * un-intuitive. The rationale is that the content and behavior of
@@ -474,7 +478,7 @@ public:
    */
   ByteTagIterator GetByteTagIterator (void) const;
   /**
-   * \param tag the tag to search in this packet
+   * \param tag the byte tag type to search in this packet
    * \returns true if the requested tag type was found, false otherwise.
    *
    * If the requested tag type is found, it is copied in the user's 
@@ -483,44 +487,54 @@ public:
   bool FindFirstMatchingByteTag (Tag &tag) const;
 
   /**
-   * Remove all the tags stored in this packet.
+   * Remove all byte tags stored in this packet.
    */
   void RemoveAllByteTags (void);
 
   /**
    * \param os output stream in which the data should be printed.
    *
-   * Iterate over the tags present in this packet, and
+   * Iterate over the byte tags present in this packet, and
    * invoke the Print method of each tag stored in the packet.
    */
   void PrintByteTags (std::ostream &os) const;
 
   /**
-   * \param tag the tag to store in this packet
+   * Add a packet tag.
    *
-   * Add a tag to this packet. This method calls the
-   * Tag::GetSerializedSize and, then, Tag::Serialize.
+   * \param tag the packet tag type to add.
    *
    * Note that this method is const, that is, it does not
    * modify the state of this packet, which is fairly
-   * un-intuitive.
+   * un-intuitive.  See AddByteTag"()" discussion.
    */
   void AddPacketTag (const Tag &tag) const;
   /**
-   * \param tag the tag to remove from this packet
+   * Remove a packet tag.
+   *
+   * \param tag the packet tag type to remove from this packet.
+   *        The tag parameter is set to the value of the tag found.
    * \returns true if the requested tag is found, false
    *          otherwise.
-   *
-   * Remove a tag from this packet. This method calls
-   * Tag::Deserialize if the tag is found.
    */
   bool RemovePacketTag (Tag &tag);
   /**
+   * Replace the value of a packet tag.
+   *
+   * \param tag the packet tag type to replace.  To get the old
+   *        value of the tag, use PeekPacketTag first.
+   * \returns true if the requested tag is found, false otherwise.
+   *        If the tag isn't found, Add is performed instead (so
+   *        the packet is guaranteed to have the new tag value
+   *        either way).
+   */
+  bool ReplacePacketTag (Tag & tag);
+  /**
+   * Search a matching tag and call Tag::Deserialize if it is found.
+   *
    * \param tag the tag to search in this packet
    * \returns true if the requested tag is found, false
    *          otherwise.
-   *
-   * Search a matching tag and call Tag::Deserialize if it is found.
    */
   bool PeekPacketTag (Tag &tag) const;
   /**
@@ -529,9 +543,9 @@ public:
   void RemoveAllPacketTags (void);
 
   /**
-   * \param os the stream in which we want to print data.
+   * Print the list of packet tags.
    *
-   * Print the list of 'packet' tags.
+   * \param os the stream on which to print the tags.
    *
    * \sa Packet::AddPacketTag, Packet::RemovePacketTag, Packet::PeekPacketTag,
    *  Packet::RemoveAllPacketTags
@@ -544,13 +558,22 @@ public:
    */
   PacketTagIterator GetPacketTagIterator (void) const;
 
-  /* Note: These functions support a temporary solution 
+  /**
+   * Set the packet nix-vector.
+   *
+   * Note: This function supports a temporary solution
    * to a specific problem in this generic class, i.e. 
    * how to associate something specific like nix-vector 
    * with a packet.  This design methodology 
    * should _not_ be followed, and is only here as an 
-   * impetus to fix this general issue. */
+   * impetus to fix this general issue.
+   */
   void SetNixVector (Ptr<NixVector>);
+  /**
+   * Get the packet nix-vector.
+   *
+   * See the comment on SetNixVector
+   */
   Ptr<NixVector> GetNixVector (void) const; 
 
 private:
@@ -590,6 +613,7 @@ std::ostream& operator<< (std::ostream& os, const Packet &packet);
  *   - ns3::Packet::AddTrailer
  *   - both versions of ns3::Packet::AddAtEnd
  *   - ns3::Packet::RemovePacketTag
+ *   - ns3::Packet::ReplacePacketTag
  *
  * Non-dirty operations:
  *   - ns3::Packet::AddPacketTag
@@ -613,6 +637,10 @@ std::ostream& operator<< (std::ostream& os, const Packet &packet);
  */
 
 } // namespace ns3
+
+/****************************************************
+ *  Implementation of inline methods for performance
+ ****************************************************/
 
 namespace ns3 {
 

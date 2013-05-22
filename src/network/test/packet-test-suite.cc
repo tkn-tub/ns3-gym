@@ -18,9 +18,14 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "ns3/packet.h"
+#include "ns3/packet-tag-list.h"
 #include "ns3/test.h"
+#include <limits>     // std:numeric_limits
 #include <string>
 #include <cstdarg>
+#include <iostream>
+#include <iomanip>
+#include <ctime>
 
 using namespace ns3;
 
@@ -32,8 +37,14 @@ namespace {
 class ATestTagBase : public Tag
 {
 public:
-  ATestTagBase () : m_error (false) {}
+  ATestTagBase () : m_error (false), m_data (0) {}
+  ATestTagBase (uint8_t data) : m_error (false), m_data (data) {}
+  virtual int GetData () const {
+    int result = (int)m_data;
+    return result;
+  }
   bool m_error;
+  uint8_t m_data;
 };
 
 template <int N>
@@ -54,15 +65,17 @@ public:
     return GetTypeId ();
   }
   virtual uint32_t GetSerializedSize (void) const {
-    return N;
+    return N + sizeof(m_data);
   }
   virtual void Serialize (TagBuffer buf) const {
+    buf.WriteU8 (m_data);
     for (uint32_t i = 0; i < N; ++i)
       {
         buf.WriteU8 (N);
       }
   }
   virtual void Deserialize (TagBuffer buf) {
+    m_data = buf.ReadU8 ();
     for (uint32_t i = 0; i < N; ++i)
       {
         uint8_t v = buf.ReadU8 ();
@@ -73,10 +86,12 @@ public:
       }
   }
   virtual void Print (std::ostream &os) const {
-    os << N;
+    os << N << "(" << m_data << ")";
   }
   ATestTag ()
     : ATestTagBase () {}
+  ATestTag (uint8_t data)
+    : ATestTagBase (data) {}
 };
 
 class ATestHeaderBase : public Header
@@ -435,6 +450,264 @@ PacketTest::DoRun (void)
 #endif
   }
 }
+//--------------------------------------
+class PacketTagListTest : public TestCase
+{
+public:
+  PacketTagListTest ();
+  virtual ~PacketTagListTest ();
+private:
+  void DoRun (void);
+  void CheckRef (const PacketTagList & ref,
+                 ATestTagBase & t,
+                 const char * msg,
+                 bool miss = false);
+  void CheckRefList (const PacketTagList & ref,
+                     const char * msg,
+                     int miss = 0);
+  int RemoveTime (const PacketTagList & ref,
+                  ATestTagBase & t,
+                  const char * msg = 0);
+  int AddRemoveTime (const bool verbose = false);
+};
+
+PacketTagListTest::PacketTagListTest ()
+  : TestCase ("PacketTagListTest: ")
+{
+}
+
+PacketTagListTest::~PacketTagListTest ()
+{
+}
+
+void
+PacketTagListTest::CheckRef (const PacketTagList & ref,
+                             ATestTagBase & t,
+                             const char * msg,
+                             bool miss)
+{
+  int expect = t.GetData ();  // the value we should find
+  bool found = ref.Peek (t); // rewrites t with actual value
+  NS_TEST_EXPECT_MSG_EQ (found, !miss,
+                         msg << ": ref contains "
+                         << t.GetTypeId ().GetName ());
+  if (found) {
+    NS_TEST_EXPECT_MSG_EQ (t.GetData (), expect,
+                           msg << ": ref " << t.GetTypeId ().GetName ()
+                           << " = " << expect);
+  }
+}
+
+  // A set of tags with data value 1, to check COW
+#define MAKE_TEST_TAGS \
+  ATestTag<1> t1 (1); \
+  ATestTag<2> t2 (1); \
+  ATestTag<3> t3 (1); \
+  ATestTag<4> t4 (1); \
+  ATestTag<5> t5 (1); \
+  ATestTag<6> t6 (1); \
+  ATestTag<7> t7 (1)
+  
+void
+PacketTagListTest::CheckRefList (const PacketTagList & ptl,
+                                 const char * msg,
+                                 int miss /* = 0 */)
+{
+  MAKE_TEST_TAGS ;
+  CheckRef (ptl, t1, msg, miss == 1);
+  CheckRef (ptl, t2, msg, miss == 2);
+  CheckRef (ptl, t3, msg, miss == 3);
+  CheckRef (ptl, t4, msg, miss == 4);
+  CheckRef (ptl, t5, msg, miss == 5);
+  CheckRef (ptl, t6, msg, miss == 6);
+  CheckRef (ptl, t7, msg, miss == 7);
+}
+  
+int
+PacketTagListTest::RemoveTime (const PacketTagList & ref,
+                               ATestTagBase & t,
+                               const char * msg /* = 0 */)
+{
+  const int reps = 10000;
+  std::vector< PacketTagList > ptv(reps, ref);
+  int start = clock ();
+  for (int i = 0; i < reps; ++i) {
+    ptv[i].Remove (t);
+  }
+  int stop = clock ();
+  int delta = stop - start;
+  if (msg) {
+    std::cout << GetName () << "remove time: " << msg << ": " << std::setw (8)
+              << delta      << " ticks to remove "
+              << reps       << " times"
+            << std::endl;
+  }
+  return delta;
+}
+
+int
+PacketTagListTest::AddRemoveTime (const bool verbose /* = false */)
+{
+  const int reps = 100000;
+  PacketTagList ptl;
+  ATestTag <2> t(2);
+  int start = clock ();
+  for (int i = 0; i < reps; ++i) {
+    ptl.Add (t);
+    ptl.Remove (t);
+  }
+  int stop = clock ();
+  int delta = stop - start;
+  if (verbose) {
+    std::cout << GetName () << "add/remove time: " << std::setw (8)
+              << delta      << " ticks to add+remove "
+              << reps       << " times"
+            << std::endl;
+  }
+  return delta;
+}
+
+void
+PacketTagListTest::DoRun (void)
+{
+  std::cout << GetName () << "begin" << std::endl;
+
+  MAKE_TEST_TAGS ;
+  
+  PacketTagList ref;  // empty list
+  ref.Add (t1);       // last
+  ref.Add (t2);       // post merge
+  ref.Add (t3);       // merge successor
+  ref.Add (t4);       // merge
+  ref.Add (t5);       // merge precursor
+  ref.Add (t6);       // pre-merge
+  ref.Add (t7);       // first
+  
+  { // Peek
+    std::cout << GetName () << "check Peek (missing tag) returns false"
+              << std::endl;;
+    ATestTag<10> t10;
+    NS_TEST_EXPECT_MSG_EQ (ref.Peek (t10), false, "missing tag");
+  }
+
+  { // Copy ctor, assignment
+    std::cout << GetName () << "check copy and assignment" << std::endl;
+    { PacketTagList ptl (ref);
+      CheckRefList (ref, "copy ctor orig");
+      CheckRefList (ptl, "copy ctor copy");
+    }
+    { PacketTagList ptl = ref;
+      CheckRefList (ref, "assignment orig");
+      CheckRefList (ptl, "assignment copy");
+    }
+  }
+  
+  { // Removal
+#   define RemoveCheck(n)                               \
+    { PacketTagList p ## n = ref;			\
+      p ## n .Remove ( t ## n );			\
+      CheckRefList (ref,     "remove " #n " orig");	\
+      CheckRefList (p ## n, "remove " #n " copy", n);   \
+    }
+    
+    { // Remove single tags from list
+      std::cout << GetName () << "check removal of each tag" << std::endl;
+      RemoveCheck (1);
+      RemoveCheck (2);
+      RemoveCheck (3);
+      RemoveCheck (4);
+      RemoveCheck (5);
+      RemoveCheck (6);
+      RemoveCheck (7);
+    }
+    
+    { // Remove in the presence of a merge
+      std::cout << GetName () << "check removal doesn't disturb merge "
+                << std::endl;
+      PacketTagList ptl = ref;
+      ptl.Remove (t7);
+      ptl.Remove (t6);
+      ptl.Remove (t5);
+      
+      PacketTagList mrg = ptl;  // merged list
+      ATestTag<8> m5 (1);
+      mrg.Add (m5);             // ptl and mrg differ
+      ptl.Add (t5);
+      ptl.Add (t6);
+      ptl.Add (t7);
+
+      CheckRefList (ref, "post merge, orig");
+      CheckRefList (ptl, "post merge, long chain");
+      const char * msg = "post merge, short chain";
+      CheckRef (mrg, t1, msg, false);
+      CheckRef (mrg, t2, msg, false);
+      CheckRef (mrg, t3, msg, false);
+      CheckRef (mrg, t4, msg, false);
+      CheckRef (mrg, m5, msg, false);
+    }
+#   undef RemoveCheck
+  }  // Removal
+
+  { // Replace
+
+    std::cout << GetName () << "check replacing each tag" << std::endl;
+      
+#   define ReplaceCheck(n)					\
+    t ## n .m_data = 2;						\
+    { PacketTagList p ## n = ref;				\
+      p ## n .Replace ( t ## n );				\
+      CheckRefList (ref,     "replace " #n " orig");		\
+      CheckRef     (p ## n, t ## n, "replace " #n " copy");	\
+    }
+    
+    ReplaceCheck (1);
+    ReplaceCheck (2);
+    ReplaceCheck (3);
+    ReplaceCheck (4);
+    ReplaceCheck (5);
+    ReplaceCheck (6);
+    ReplaceCheck (7);
+  }
+  
+  { // Timing
+    std::cout << GetName () << "add+remove timing" << std::endl;
+    int flm = std::numeric_limits<int>::max ();
+    for (int i = 0; i < 100; ++i) {
+      int now = AddRemoveTime ();
+      if (now < flm) flm = now;
+    }
+    std::cout << GetName () << "min add+remove time: "
+              << std::setw (8) << flm        << " ticks"
+              << std::endl;
+    
+    std::cout << GetName () << "remove timing" << std::endl;
+    std::vector <int> rmn (7, std::numeric_limits<int>::max ());
+    for (int i = 0; i < 100; ++i) {
+      for (int j = 1; j < 8; ++j) {
+	int now = 0;
+	switch (j) {
+        case 7:  now = RemoveTime (ref, t7);  break;
+        case 6:  now = RemoveTime (ref, t6);  break;
+        case 5:  now = RemoveTime (ref, t5);  break;
+        case 4:  now = RemoveTime (ref, t4);  break;
+        case 3:  now = RemoveTime (ref, t3);  break;
+        case 2:  now = RemoveTime (ref, t2);  break;
+        case 1:  now = RemoveTime (ref, t1);  break;
+	}  // switch
+	
+	if (now < rmn[j]) rmn[j] = now;
+      } // for tag j
+    } // for iteration i
+    for (int j = 7; j > 0; --j) {
+      std::cout << GetName () << "min remove time: t"
+		<< j          << ": "
+		<< std::setw (8) << rmn[j]     << " ticks"
+                << std::endl;
+    }
+  }  // Timing
+    
+}
+
 //-----------------------------------------------------------------------------
 class PacketTestSuite : public TestSuite
 {
@@ -445,7 +718,8 @@ public:
 PacketTestSuite::PacketTestSuite ()
   : TestSuite ("packet", UNIT)
 {
-  AddTestCase (new PacketTest, TestCase::QUICK);
+  AddTestCase (new PacketTest);
+  AddTestCase (new PacketTagListTest);
 }
 
 static PacketTestSuite g_packetTestSuite;

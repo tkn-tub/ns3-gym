@@ -617,19 +617,20 @@ DeviceNameTag::GetInstanceTypeId (void) const
 uint32_t
 DeviceNameTag::GetSerializedSize (void) const
 {
-  uint32_t s = 1 + m_deviceName.size();
-  return ( s >= PACKET_TAG_MAX_SIZE)?PACKET_TAG_MAX_SIZE:s;
+  uint32_t s = 1 + m_deviceName.size();  // +1 for name length field
+  s = std::min (s, (uint32_t)PacketTagList::TagData::MAX_SIZE);
+  return s;
 }
 void
 DeviceNameTag::Serialize (TagBuffer i) const
 {
   const char *n = m_deviceName.c_str();
-  uint8_t l = (uint8_t) strlen (n);
+  uint8_t l = (uint8_t) m_deviceName.size ();
 
-  if ( ( 1 + l ) > PACKET_TAG_MAX_SIZE ) l = PACKET_TAG_MAX_SIZE - 1;
+  l = std::min ((uint32_t)l, (uint32_t)PacketTagList::TagData::MAX_SIZE - 1);
 
   i.WriteU8 (l);
-  i.Write ( (uint8_t*) n , (uint32_t) l );
+  i.Write ( (uint8_t*) n , (uint32_t) l);
 }
 void
 DeviceNameTag::Deserialize (TagBuffer i)
