@@ -371,10 +371,6 @@ FdBetFfMacScheduler::DoCschedLcConfigReq (const struct FfMacCschedSapProvider::C
           flowStatsUl.lastAveragedThroughput = 1;
           m_flowStatsUl.insert (std::pair<uint16_t, fdbetsFlowPerf_t> (params.m_rnti, flowStatsUl));
         }
-      else
-        {
-          NS_LOG_ERROR ("RNTI already exists");
-        }
     }
 
   return;

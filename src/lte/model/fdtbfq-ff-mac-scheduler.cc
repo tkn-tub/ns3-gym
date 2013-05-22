@@ -409,8 +409,6 @@ FdTbfqFfMacScheduler::DoCschedLcConfigReq (const struct FfMacCschedSapProvider::
         }
       else
         {
-          //NS_LOG_ERROR ("RNTI already exists");
-
           // update MBR and GBR from UeManager::SetupDataRadioBearer ()
           uint64_t mbrDlInBytes = params.m_logicalChannelConfigList.at (i).m_eRabMaximulBitrateDl / 8;   // byte/s
           uint64_t mbrUlInBytes = params.m_logicalChannelConfigList.at (i).m_eRabMaximulBitrateUl / 8;   // byte/s
