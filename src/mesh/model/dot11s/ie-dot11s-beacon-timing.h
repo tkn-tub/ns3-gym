@@ -93,7 +93,7 @@ public:
   virtual uint8_t DeserializeInformationField (Buffer::Iterator i, uint8_t length);
   virtual void Print (std::ostream& os) const;
   ///\}
-  bool operator== (WifiInformationElement const & a);
+  bool operator== (WifiInformationElement const & a) const;
 private:
   /**
    * Converters:

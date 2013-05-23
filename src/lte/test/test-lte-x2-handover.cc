@@ -234,8 +234,8 @@ LteX2HandoverTestCase::DoRun ()
    
   if (m_epc)
     {
-      bool epcDl = true;
-      bool epcUl = true;
+      // always true: bool epcDl = true;
+      // always true: bool epcUl = true;
       // the rest of this block is copied from lena-dual-stripe
 
     
@@ -271,7 +271,7 @@ LteX2HandoverTestCase::DoRun ()
 
               if (m_useUdp)
                 {              
-                  if (epcDl)
+                  // always true: if (epcDl)
                     {
                       UdpClientHelper dlClientHelper (ueIpIfaces.GetAddress (u), dlPort);
                       clientApps.Add (dlClientHelper.Install (remoteHost));
@@ -282,7 +282,7 @@ LteX2HandoverTestCase::DoRun ()
                       serverApps.Add (sinkContainer);
                       
                     }
-                  if (epcUl)
+                  // always true: if (epcUl)
                     {      
                       UdpClientHelper ulClientHelper (remoteHostAddr, ulPort);
                       clientApps.Add (ulClientHelper.Install (ue));
@@ -295,7 +295,7 @@ LteX2HandoverTestCase::DoRun ()
                 }                    
               else // use TCP
                 {
-                  if (epcDl)
+                  // always true: if (epcDl)
                     {
                       BulkSendHelper dlClientHelper ("ns3::TcpSocketFactory",
                                                      InetSocketAddress (ueIpIfaces.GetAddress (u), dlPort));
@@ -307,7 +307,7 @@ LteX2HandoverTestCase::DoRun ()
                       bearerData.dlSink = sinkContainer.Get (0)->GetObject<PacketSink> ();
                       serverApps.Add (sinkContainer);
                     }
-                  if (epcUl)
+                  // always true: if (epcUl)
                     {     
                       BulkSendHelper ulClientHelper ("ns3::TcpSocketFactory",
                                                      InetSocketAddress (remoteHostAddr, ulPort));
@@ -322,14 +322,14 @@ LteX2HandoverTestCase::DoRun ()
                 } // end if (useUdp)
 
               Ptr<EpcTft> tft = Create<EpcTft> ();
-              if (epcDl)
+              // always true: if (epcDl)
                 {
                   EpcTft::PacketFilter dlpf;
                   dlpf.localPortStart = dlPort;
                   dlpf.localPortEnd = dlPort;
                   tft->Add (dlpf); 
                 }
-              if (epcUl)
+              // always true: if (epcUl)
                 {
                   EpcTft::PacketFilter ulpf;
                   ulpf.remotePortStart = ulPort;
@@ -337,7 +337,7 @@ LteX2HandoverTestCase::DoRun ()
                   tft->Add (ulpf);
                 }
 
-              if (epcDl || epcUl)
+              // always true: if (epcDl || epcUl)
                 {
                   EpsBearer bearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT);
                   m_lteHelper->ActivateDedicatedEpsBearer (ueDevices.Get (u), bearer, tft);

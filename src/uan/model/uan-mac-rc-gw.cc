@@ -32,6 +32,7 @@
 #include "ns3/double.h"
 #include "ns3/uinteger.h"
 
+#include <cfloat>
 #include <utility>
 #include <set>
 #include <map>
@@ -654,7 +655,8 @@ UanMacRcGw::CompExpMinIndex (uint32_t n, uint32_t k)
   double sum = 0;
   for (uint32_t i = 1; i <= n - k + 1; i++)
     {
-      double p = (double) NchooseK (n - i, k - 1) / NchooseK (n, k);
+      double nChK = NchooseK (n, k);
+      double p = (nChK > 0) ? (NchooseK (n - i, k - 1) / nChK) : DBL_MAX;
       sum += p * i;
     }
   return (uint32_t)(sum + 0.5);

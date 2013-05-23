@@ -189,7 +189,7 @@ operator== (const IeBeaconTimingUnit & a, const IeBeaconTimingUnit & b)
           && (a.GetBeaconInterval () == b.GetBeaconInterval ()));
 }
 bool
-IeBeaconTiming::operator== (WifiInformationElement const & a)
+IeBeaconTiming::operator== (WifiInformationElement const & a) const
 {
   try {
       IeBeaconTiming const & aa = dynamic_cast<IeBeaconTiming const &>(a);

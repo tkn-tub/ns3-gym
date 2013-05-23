@@ -278,7 +278,7 @@ TestCase::CreateDataDirFilename (std::string filename)
 {
   NS_LOG_FUNCTION (this << filename);
   const TestCase *current = this;
-  while (current->m_dataDir == "" && current != 0)
+  while (current != 0 && current->m_dataDir == "")
     {
       current = current->m_parent;
     }
@@ -595,6 +595,8 @@ TestRunnerImpl::PrintReport (TestCase *test, std::ostream *os, bool xml, int lev
             }
         }
     }
+
+  os->unsetf(std::ios_base::floatfield);
 }
   
 void
@@ -652,6 +654,7 @@ TestRunnerImpl::PrintTestNameList (std::list<TestCase *>::const_iterator begin,
   for (std::list<TestCase *>::const_iterator i = begin; i != end; ++i)
     {
       TestSuite * test= dynamic_cast<TestSuite *>(*i);
+      NS_ASSERT (test != 0);
       if (printTestType)
         {
           std::cout << label[test->GetTestType ()];

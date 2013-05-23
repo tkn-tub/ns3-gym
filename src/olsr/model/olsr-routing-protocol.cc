@@ -2033,7 +2033,9 @@ RoutingProtocol::LinkSensing (const olsr::MessageHeader &msg,
         case OLSR_ASYM_LINK: linkTypeName = "ASYM_LINK"; break;
         case OLSR_SYM_LINK: linkTypeName = "SYM_LINK"; break;
         case OLSR_LOST_LINK: linkTypeName = "LOST_LINK"; break;
+          /*  no default, since lt must be in 0..3, covered above
         default: linkTypeName = "(invalid value!)";
+          */
         }
 
       const char *neighborTypeName;
@@ -2104,7 +2106,7 @@ RoutingProtocol::LinkSensing (const olsr::MessageHeader &msg,
     }
 
   // Schedules link tuple deletion
-  if (created && link_tuple != NULL)
+  if (created)
     {
       LinkTupleAdded (*link_tuple, hello.willingness);
       m_events.Track (Simulator::Schedule (DELAY (std::min (link_tuple->time, link_tuple->symTime)),

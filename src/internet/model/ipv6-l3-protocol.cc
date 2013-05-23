@@ -814,6 +814,7 @@ void Ipv6L3Protocol::SendRealOut (Ptr<Ipv6Route> route, Ptr<Packet> packet, Ipv6
 
       // To get specific method GetFragments from Ipv6ExtensionFragmentation
       Ipv6ExtensionFragment *ipv6Fragment = dynamic_cast<Ipv6ExtensionFragment *> (PeekPointer (ipv6ExtensionDemux->GetExtension (Ipv6Header::IPV6_EXT_FRAGMENTATION)));
+      NS_ASSERT (ipv6Fragment != 0);
       ipv6Fragment->GetFragments (packet, outInterface->GetDevice ()->GetMtu (), fragments);
     }
 

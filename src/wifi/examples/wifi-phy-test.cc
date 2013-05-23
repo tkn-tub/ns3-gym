@@ -188,14 +188,16 @@ void
 CollisionExperiment::Receive (Ptr<Packet> p, double snr, WifiMode mode, enum WifiPreamble preamble)
 {
   FlowIdTag tag;
-  p->FindFirstMatchingByteTag (tag);
-  if (tag.GetFlowId () == m_flowIdA)
+  if (p->FindFirstMatchingByteTag (tag))
     {
-      m_output.receivedA++;
-    }
-  else if (tag.GetFlowId () == m_flowIdB)
-    {
-      m_output.receivedB++;
+      if (tag.GetFlowId () == m_flowIdA)
+        {
+          m_output.receivedA++;
+        }
+      else if (tag.GetFlowId () == m_flowIdB)
+        {
+          m_output.receivedB++;
+        }
     }
 }
 
