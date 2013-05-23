@@ -718,8 +718,8 @@ public:
 PacketTestSuite::PacketTestSuite ()
   : TestSuite ("packet", UNIT)
 {
-  AddTestCase (new PacketTest);
-  AddTestCase (new PacketTagListTest);
+  AddTestCase (new PacketTest, TestCase::QUICK);
+  AddTestCase (new PacketTagListTest, TestCase::QUICK);
 }
 
 static PacketTestSuite g_packetTestSuite;
