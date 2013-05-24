@@ -1327,7 +1327,7 @@ FdTbfqFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::S
       if (lcActives == 0)
         {
           // Set to max value, to avoid divide by 0 below
-          lcActives = 65535; // UINT16_MAX;
+          lcActives = (uint16_t)65535; // UINT16_MAX;
         }
       uint16_t RgbPerRnti = (*itMap).second.size ();
       std::map <uint16_t,SbMeasResult_s>::iterator itCqi;
