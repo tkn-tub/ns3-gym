@@ -360,10 +360,6 @@ TtaFfMacScheduler::DoCschedLcConfigReq (const struct FfMacCschedSapProvider::Csc
           m_flowStatsDl.insert (params.m_rnti);
           m_flowStatsUl.insert (params.m_rnti);
         }
-      else
-        {
-          NS_LOG_ERROR ("RNTI already exists");
-        }
     }
 
   return;
