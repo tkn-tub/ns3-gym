@@ -39,7 +39,7 @@ blank ()
 }
 function doo ()
 {
-    say "$"$*
+    say "$ "$*
     $* 2>&1 | tee -a $logf
 }
 
@@ -68,7 +68,8 @@ useremail=$(hg showconfig ui.username | \
 
 repoversion="$(basename $(dirname $PWD))@$(hg id -i)"
 
-description="Coverity mods"
+# curl complains if this contains white space
+description="Coverity-mods"
     
 doo curl \
      --form file=@$tarf \

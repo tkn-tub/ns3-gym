@@ -20,6 +20,7 @@
 #include "ns3/packet.h"
 #include "ns3/packet-tag-list.h"
 #include "ns3/test.h"
+#include "ns3/unused.h"
 #include <limits>     // std:numeric_limits
 #include <string>
 #include <cstdarg>
@@ -506,7 +507,11 @@ PacketTagListTest::CheckRef (const PacketTagList & ref,
   ATestTag<4> t4 (1); \
   ATestTag<5> t5 (1); \
   ATestTag<6> t6 (1); \
-  ATestTag<7> t7 (1)
+  ATestTag<7> t7 (1); \
+  const int tagLast = 7;  /* length of ref PacketTagList */ \
+  NS_UNUSED (tagLast) /* silence warnings */
+ 
+  
   
 void
 PacketTagListTest::CheckRefList (const PacketTagList & ptl,
@@ -672,7 +677,8 @@ PacketTagListTest::DoRun (void)
   { // Timing
     std::cout << GetName () << "add+remove timing" << std::endl;
     int flm = std::numeric_limits<int>::max ();
-    for (int i = 0; i < 100; ++i) {
+    const int nIterations = 100;
+    for (int i = 0; i < nIterations; ++i) {
       int now = AddRemoveTime ();
       if (now < flm) flm = now;
     }
@@ -681,9 +687,10 @@ PacketTagListTest::DoRun (void)
               << std::endl;
     
     std::cout << GetName () << "remove timing" << std::endl;
-    std::vector <int> rmn (7, std::numeric_limits<int>::max ());
-    for (int i = 0; i < 100; ++i) {
-      for (int j = 1; j < 8; ++j) {
+    // tags numbered from 1, so add one for (unused) entry at 0
+    std::vector <int> rmn (tagLast + 1, std::numeric_limits<int>::max ());
+    for (int i = 0; i < nIterations; ++i) {
+      for (int j = 1; j <= tagLast; ++j) {
 	int now = 0;
 	switch (j) {
         case 7:  now = RemoveTime (ref, t7);  break;
@@ -698,7 +705,7 @@ PacketTagListTest::DoRun (void)
 	if (now < rmn[j]) rmn[j] = now;
       } // for tag j
     } // for iteration i
-    for (int j = 7; j > 0; --j) {
+    for (int j = tagLast; j > 0; --j) {
       std::cout << GetName () << "min remove time: t"
 		<< j          << ": "
 		<< std::setw (8) << rmn[j]     << " ticks"
