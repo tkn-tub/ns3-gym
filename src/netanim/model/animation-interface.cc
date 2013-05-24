@@ -153,7 +153,7 @@ void AnimationInterface::RecursiveIpv4RoutePathSearch (std::string from, std::st
       NS_LOG_WARN ("Routing protocol object not found");
       return;
     }
-  Ptr<Packet> pkt = 0;
+  Ptr<Packet> pkt = Create<Packet> ();
   Ipv4Header header;
   header.SetDestination (Ipv4Address (to.c_str ()));
   Socket::SocketErrno sockerr;
