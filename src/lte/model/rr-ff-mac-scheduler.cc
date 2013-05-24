@@ -1217,8 +1217,7 @@ RrFfMacScheduler::DoSchedDlCqiInfoReq (const struct FfMacSchedSapProvider::Sched
 void
 RrFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::SchedUlTriggerReqParameters& params)
 {
-  NS_LOG_FUNCTION (this << " Ul - Frame no. " << (params.m_sfnSf >> 4) << " subframe no. " << (0xF & params.m_sfnSf));
-
+  NS_LOG_FUNCTION (this << " UL - Frame no. " << (params.m_sfnSf >> 4) << " subframe no. " << (0xF & params.m_sfnSf) << " size " << params.m_ulInfoList.size ());
 
   RefreshUlCqiMaps ();
 
@@ -1241,6 +1240,7 @@ RrFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
       if (rbgAllocationMap.at (i) != 0)
         {
           rbMap.at (i) = true;
+          NS_LOG_DEBUG (this << " Allocated for RACH " << i);
         }
     }
 
@@ -1401,6 +1401,7 @@ RrFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
       uldci.m_rnti = (*it).first;
       uldci.m_rbLen = rbPerFlow;
       bool allocated = false;
+      NS_LOG_INFO (this << " RB Allocated " << rbAllocated << " rbPerFlow " << rbPerFlow << " flows " << nflows);
       while ((!allocated)&&((rbAllocated + rbPerFlow - 1) < m_cschedCellConfig.m_ulBandwidth) && (rbPerFlow != 0))
         {
           // check availability
@@ -1486,7 +1487,12 @@ RrFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
                   // restart from the first
                   it = m_ceBsrRxed.begin ();
                 }
-              NS_LOG_INFO (this << " UE discarded for CQI = 0");
+              NS_LOG_DEBUG (this << " UE discared for CQI=0, RNTI " << uldci.m_rnti);
+              // remove UE from allocation map
+              for (uint16_t i = uldci.m_rbStart; i < uldci.m_rbStart + uldci.m_rbLen; i++)
+                {
+                  rbgAllocationMap.at (i) = 0;
+                }
               continue; // CQI == 0 means "out of range" (see table 7.2.3-1 of 36.213)
             }
           uldci.m_mcs = m_amc->GetMcsFromCqi (cqi);

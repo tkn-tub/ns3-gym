@@ -1843,6 +1843,7 @@ PssFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sche
       if ((itRnti != rntiAllocated.end ())||((*it).second == 0))
         {
           // UE already allocated for UL-HARQ -> skip it
+          NS_LOG_DEBUG (this << " UE already allocated in HARQ -> discared, RNTI " << (*it).first);
           it++;
           if (it == m_ceBsrRxed.end ())
             {
@@ -1867,7 +1868,7 @@ PssFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sche
       uldci.m_rnti = (*it).first;
       uldci.m_rbLen = rbPerFlow;
       bool allocated = false;
-      NS_LOG_INFO (this << " RB Allocated " << rbAllocated << " rbPerFlow " << rbPerFlow);
+      NS_LOG_INFO (this << " RB Allocated " << rbAllocated << " rbPerFlow " << rbPerFlow << " flows " << nflows);
       while ((!allocated)&&((rbAllocated + rbPerFlow - 1) < m_cschedCellConfig.m_ulBandwidth) && (rbPerFlow != 0))
         {
           // check availability
@@ -1961,6 +1962,12 @@ PssFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sche
                 {
                   // restart from the first
                   it = m_ceBsrRxed.begin ();
+                }
+              NS_LOG_DEBUG (this << " UE discared for CQI=0, RNTI " << uldci.m_rnti);
+              // remove UE from allocation map
+              for (uint16_t i = uldci.m_rbStart; i < uldci.m_rbStart + uldci.m_rbLen; i++)
+                {
+                  rbgAllocationMap.at (i) = 0;
                 }
               continue; // CQI == 0 means "out of range" (see table 7.2.3-1 of 36.213)
             }
