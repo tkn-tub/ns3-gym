@@ -24,6 +24,7 @@ New user-visible features
 
 Bugs fixed
 ----------
+- Bug 1678 - C++11 compliance problem with std::pair"
 
 Known issues
 ------------
