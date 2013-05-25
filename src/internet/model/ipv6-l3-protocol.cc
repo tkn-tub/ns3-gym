@@ -293,7 +293,10 @@ void Ipv6L3Protocol::AddAutoconfiguredAddress (uint32_t interface, Ipv6Address n
       /* add default router
        * if a previous default route exists, the new ones is simply added
        */
-      GetRoutingProtocol ()->NotifyAddRoute (Ipv6Address::GetAny (), Ipv6Prefix ((uint8_t)0), defaultRouter, interface, network);
+      if (!defaultRouter.IsAny())
+        {
+          GetRoutingProtocol ()->NotifyAddRoute (Ipv6Address::GetAny (), Ipv6Prefix ((uint8_t)0), defaultRouter, interface, network);
+        }
 
       Ptr<Ipv6AutoconfiguredPrefix> aPrefix = CreateObject<Ipv6AutoconfiguredPrefix> (m_node, interface, network, mask, preferredTime, validTime, defaultRouter);
       aPrefix->StartPreferredTimer ();

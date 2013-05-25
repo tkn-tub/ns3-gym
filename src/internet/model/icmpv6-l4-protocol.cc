@@ -292,8 +292,14 @@ void Icmpv6L4Protocol::HandleRA (Ptr<Packet> packet, Ipv6Address const &src, Ipv
   bool next = true;
   bool hasLla = false;
   bool hasMtu = false;
+  Ipv6Address defaultRouter = Ipv6Address::GetZero ();
 
   p->RemoveHeader (raHeader);
+
+  if (raHeader.GetLifeTime())
+    {
+      defaultRouter = src;
+    }
 
   while (next == true)
     {
@@ -305,7 +311,7 @@ void Icmpv6L4Protocol::HandleRA (Ptr<Packet> packet, Ipv6Address const &src, Ipv
         case Icmpv6Header::ICMPV6_OPT_PREFIX:
           p->RemoveHeader (prefixHdr);
           ipv6->AddAutoconfiguredAddress (ipv6->GetInterfaceForDevice (interface->GetDevice ()), prefixHdr.GetPrefix (), prefixHdr.GetPrefixLength (),
-                                          prefixHdr.GetFlags (), prefixHdr.GetValidTime (), prefixHdr.GetPreferredTime (), src);
+                                          prefixHdr.GetFlags (), prefixHdr.GetValidTime (), prefixHdr.GetPreferredTime (), defaultRouter);
           break;
         case Icmpv6Header::ICMPV6_OPT_MTU:
           /* take in account the first MTU option */

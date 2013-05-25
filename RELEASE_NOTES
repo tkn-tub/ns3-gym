@@ -29,6 +29,7 @@ Bugs fixed
 - Bug 1678 - C++11 compliance problem with std::pair"
 - Bug 1683 - IPv6 autoconfigured don't use *infinite* lifetimes
 - Bug 1669 - ns-3 should support binding two and three (possibly more) arguments
+- Bug 1689 - IPv6 shouldn't add a default gateway without checking the Router lifetime
 
 Known issues
 ------------
