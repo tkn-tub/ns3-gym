@@ -24,7 +24,10 @@ New user-visible features
 
 Bugs fixed
 ----------
+- Bug 1643 - NdiscCache creation and existence checks
+- Bug 1662 - m_type not set for Ipv6OptionRouterAlertHeader
 - Bug 1678 - C++11 compliance problem with std::pair"
+- Bug 1683 - IPv6 autoconfigured don't use *infinite* lifetimes
 
 Known issues
 ------------
