@@ -300,6 +300,24 @@ static int gMakeBoundCallbackTest1;
 static bool *gMakeBoundCallbackTest2;
 static bool *gMakeBoundCallbackTest3a;
 static int gMakeBoundCallbackTest3b;
+static int gMakeBoundCallbackTest4a;
+static int gMakeBoundCallbackTest4b;
+static int gMakeBoundCallbackTest5a;
+static int gMakeBoundCallbackTest5b;
+static int gMakeBoundCallbackTest5c;
+static int gMakeBoundCallbackTest6a;
+static int gMakeBoundCallbackTest6b;
+static int gMakeBoundCallbackTest6c;
+static int gMakeBoundCallbackTest7a;
+static int gMakeBoundCallbackTest7b;
+static int gMakeBoundCallbackTest7c;
+static int gMakeBoundCallbackTest8a;
+static int gMakeBoundCallbackTest8b;
+static int gMakeBoundCallbackTest8c;
+static int gMakeBoundCallbackTest9a;
+static int gMakeBoundCallbackTest9b;
+static int gMakeBoundCallbackTest9c;
+static int gMakeBoundCallbackTest9d;
 
 void 
 MakeBoundCallbackTarget1 (int a)
@@ -321,6 +339,57 @@ MakeBoundCallbackTarget3 (bool *a, int b)
   return 1234;
 }
 
+void
+MakeBoundCallbackTarget4 (int a, int b)
+{
+  gMakeBoundCallbackTest4a = a;
+  gMakeBoundCallbackTest4b = b;
+}
+
+int
+MakeBoundCallbackTarget5 (int a, int b)
+{
+  gMakeBoundCallbackTest5a = a;
+  gMakeBoundCallbackTest5b = b;
+  return 1234;
+}
+
+int
+MakeBoundCallbackTarget6 (int a, int b, int c)
+{
+  gMakeBoundCallbackTest6a = a;
+  gMakeBoundCallbackTest6b = b;
+  gMakeBoundCallbackTest6c = c;
+  return 1234;
+}
+
+void
+MakeBoundCallbackTarget7 (int a, int b, int c)
+{
+  gMakeBoundCallbackTest7a = a;
+  gMakeBoundCallbackTest7b = b;
+  gMakeBoundCallbackTest7c = c;
+}
+
+int
+MakeBoundCallbackTarget8 (int a, int b, int c)
+{
+  gMakeBoundCallbackTest8a = a;
+  gMakeBoundCallbackTest8b = b;
+  gMakeBoundCallbackTest8c = c;
+  return 1234;
+}
+
+int
+MakeBoundCallbackTarget9 (int a, int b, int c, int d)
+{
+  gMakeBoundCallbackTest9a = a;
+  gMakeBoundCallbackTest9b = b;
+  gMakeBoundCallbackTest9c = c;
+  gMakeBoundCallbackTest9d = d;
+  return 1234;
+}
+
 MakeBoundCallbackTestCase::MakeBoundCallbackTestCase ()
   : TestCase ("Check MakeBoundCallback() mechanism")
 {
@@ -333,6 +402,24 @@ MakeBoundCallbackTestCase::DoSetup (void)
   gMakeBoundCallbackTest2 = 0;
   gMakeBoundCallbackTest3a = 0;
   gMakeBoundCallbackTest3b = 0;
+  gMakeBoundCallbackTest4a = 0;
+  gMakeBoundCallbackTest4b = 0;
+  gMakeBoundCallbackTest5a = 0;
+  gMakeBoundCallbackTest5b = 0;
+  gMakeBoundCallbackTest5c = 0;
+  gMakeBoundCallbackTest6a = 0;
+  gMakeBoundCallbackTest6b = 0;
+  gMakeBoundCallbackTest6c = 0;
+  gMakeBoundCallbackTest7a = 0;
+  gMakeBoundCallbackTest7b = 0;
+  gMakeBoundCallbackTest7c = 0;
+  gMakeBoundCallbackTest8a = 0;
+  gMakeBoundCallbackTest8b = 0;
+  gMakeBoundCallbackTest8c = 0;
+  gMakeBoundCallbackTest9a = 0;
+  gMakeBoundCallbackTest9b = 0;
+  gMakeBoundCallbackTest9c = 0;
+  gMakeBoundCallbackTest9d = 0;
 }
 
 void
@@ -376,6 +463,51 @@ MakeBoundCallbackTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (result, 1234, "Return value of callback not correct");
   NS_TEST_ASSERT_MSG_EQ (gMakeBoundCallbackTest3a, &a, "Callback did not fire or binding not correct");
   NS_TEST_ASSERT_MSG_EQ (gMakeBoundCallbackTest3b, 2468, "Callback did not fire or argument not correct");
+
+  //
+  // Test the TwoBound variant
+  //
+  Callback<void> target4 = MakeBoundCallback (&MakeBoundCallbackTarget4, 3456, 5678);
+  target4 ();
+  NS_TEST_ASSERT_MSG_EQ (gMakeBoundCallbackTest4a, 3456, "Callback did not fire or binding not correct");
+  NS_TEST_ASSERT_MSG_EQ (gMakeBoundCallbackTest4b, 5678, "Callback did not fire or binding not correct");
+
+  Callback<int> target5 = MakeBoundCallback (&MakeBoundCallbackTarget5, 3456, 5678);
+  int resultTwoA = target5 ();
+  NS_TEST_ASSERT_MSG_EQ (resultTwoA, 1234, "Return value of callback not correct");
+  NS_TEST_ASSERT_MSG_EQ (gMakeBoundCallbackTest5a, 3456, "Callback did not fire or binding not correct");
+  NS_TEST_ASSERT_MSG_EQ (gMakeBoundCallbackTest5b, 5678, "Callback did not fire or binding not correct");
+
+  Callback<int, int> target6 = MakeBoundCallback (&MakeBoundCallbackTarget6, 3456, 5678);
+  int resultTwoB = target6 (6789);
+  NS_TEST_ASSERT_MSG_EQ (resultTwoB, 1234, "Return value of callback not correct");
+  NS_TEST_ASSERT_MSG_EQ (gMakeBoundCallbackTest6a, 3456, "Callback did not fire or binding not correct");
+  NS_TEST_ASSERT_MSG_EQ (gMakeBoundCallbackTest6b, 5678, "Callback did not fire or binding not correct");
+  NS_TEST_ASSERT_MSG_EQ (gMakeBoundCallbackTest6c, 6789, "Callback did not fire or argument not correct");
+
+  //
+  // Test the ThreeBound variant
+  //
+  Callback<void> target7 = MakeBoundCallback (&MakeBoundCallbackTarget7, 2345, 3456, 4567);
+  target7 ();
+  NS_TEST_ASSERT_MSG_EQ (gMakeBoundCallbackTest7a, 2345, "Callback did not fire or binding not correct");
+  NS_TEST_ASSERT_MSG_EQ (gMakeBoundCallbackTest7b, 3456, "Callback did not fire or binding not correct");
+  NS_TEST_ASSERT_MSG_EQ (gMakeBoundCallbackTest7c, 4567, "Callback did not fire or binding not correct");
+
+  Callback<int> target8 = MakeBoundCallback (&MakeBoundCallbackTarget8, 2345, 3456, 4567);
+  int resultThreeA = target8 ();
+  NS_TEST_ASSERT_MSG_EQ (resultThreeA, 1234, "Return value of callback not correct");
+  NS_TEST_ASSERT_MSG_EQ (gMakeBoundCallbackTest8a, 2345, "Callback did not fire or binding not correct");
+  NS_TEST_ASSERT_MSG_EQ (gMakeBoundCallbackTest8b, 3456, "Callback did not fire or binding not correct");
+  NS_TEST_ASSERT_MSG_EQ (gMakeBoundCallbackTest8c, 4567, "Callback did not fire or binding not correct");
+
+  Callback<int, int> target9 = MakeBoundCallback (&MakeBoundCallbackTarget9, 2345, 3456, 4567);
+  int resultThreeB = target9 (5678);
+  NS_TEST_ASSERT_MSG_EQ (resultThreeB, 1234, "Return value of callback not correct");
+  NS_TEST_ASSERT_MSG_EQ (gMakeBoundCallbackTest9a, 2345, "Callback did not fire or binding not correct");
+  NS_TEST_ASSERT_MSG_EQ (gMakeBoundCallbackTest9b, 3456, "Callback did not fire or binding not correct");
+  NS_TEST_ASSERT_MSG_EQ (gMakeBoundCallbackTest9c, 4567, "Callback did not fire or binding not correct");
+  NS_TEST_ASSERT_MSG_EQ (gMakeBoundCallbackTest9d, 5678, "Callback did not fire or binding not correct");
 }
 
 // ===========================================================================

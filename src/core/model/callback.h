@@ -319,6 +319,105 @@ private:
   typename TypeTraits<TX>::ReferencedType m_a;
 };
 
+template <typename T, typename R, typename TX1, typename TX2, typename T1, typename T2, typename T3, typename T4,typename T5, typename T6, typename T7>
+class TwoBoundFunctorCallbackImpl : public CallbackImpl<R,T1,T2,T3,T4,T5,T6,T7,empty,empty> {
+public:
+  template <typename FUNCTOR, typename ARG1, typename ARG2>
+  TwoBoundFunctorCallbackImpl (FUNCTOR functor, ARG1 arg1, ARG2 arg2)
+    : m_functor (functor), m_a1 (arg1), m_a2 (arg2) {}
+  virtual ~TwoBoundFunctorCallbackImpl () {}
+  R operator() (void) {
+    return m_functor (m_a1,m_a2);
+  }
+  R operator() (T1 a1) {
+    return m_functor (m_a1,m_a2,a1);
+  }
+  R operator() (T1 a1,T2 a2) {
+    return m_functor (m_a1,m_a2,a1,a2);
+  }
+  R operator() (T1 a1,T2 a2,T3 a3) {
+    return m_functor (m_a1,m_a2,a1,a2,a3);
+  }
+  R operator() (T1 a1,T2 a2,T3 a3,T4 a4) {
+    return m_functor (m_a1,m_a2,a1,a2,a3,a4);
+  }
+  R operator() (T1 a1,T2 a2,T3 a3,T4 a4,T5 a5) {
+    return m_functor (m_a1,m_a2,a1,a2,a3,a4,a5);
+  }
+  R operator() (T1 a1,T2 a2,T3 a3,T4 a4,T5 a5,T6 a6) {
+    return m_functor (m_a1,m_a2,a1,a2,a3,a4,a5,a6);
+  }
+  R operator() (T1 a1,T2 a2,T3 a3,T4 a4,T5 a5,T6 a6,T7 a7) {
+    return m_functor (m_a1,m_a2,a1,a2,a3,a4,a5,a6,a7);
+  }
+  virtual bool IsEqual (Ptr<const CallbackImplBase> other) const {
+    TwoBoundFunctorCallbackImpl<T,R,TX1,TX2,T1,T2,T3,T4,T5,T6,T7> const *otherDerived = 
+      dynamic_cast<TwoBoundFunctorCallbackImpl<T,R,TX1,TX2,T1,T2,T3,T4,T5,T6,T7> const *> (PeekPointer (other));
+    if (otherDerived == 0)
+      {
+        return false;
+      }
+    else if (otherDerived->m_functor != m_functor ||
+             otherDerived->m_a1 != m_a1 || otherDerived->m_a2 != m_a2)
+      {
+        return false;
+      }
+    return true;
+  }
+private:
+  T m_functor;
+  typename TypeTraits<TX1>::ReferencedType m_a1;
+  typename TypeTraits<TX2>::ReferencedType m_a2;
+};
+
+template <typename T, typename R, typename TX1, typename TX2, typename TX3, typename T1, typename T2, typename T3, typename T4,typename T5, typename T6>
+class ThreeBoundFunctorCallbackImpl : public CallbackImpl<R,T1,T2,T3,T4,T5,T6,empty,empty,empty> {
+public:
+  template <typename FUNCTOR, typename ARG1, typename ARG2, typename ARG3>
+  ThreeBoundFunctorCallbackImpl (FUNCTOR functor, ARG1 arg1, ARG2 arg2, ARG3 arg3)
+    : m_functor (functor), m_a1 (arg1), m_a2 (arg2), m_a3 (arg3) {}
+  virtual ~ThreeBoundFunctorCallbackImpl () {}
+  R operator() (void) {
+    return m_functor (m_a1,m_a2,m_a3);
+  }
+  R operator() (T1 a1) {
+    return m_functor (m_a1,m_a2,m_a3,a1);
+  }
+  R operator() (T1 a1,T2 a2) {
+    return m_functor (m_a1,m_a2,m_a3,a1,a2);
+  }
+  R operator() (T1 a1,T2 a2,T3 a3) {
+    return m_functor (m_a1,m_a2,m_a3,a1,a2,a3);
+  }
+  R operator() (T1 a1,T2 a2,T3 a3,T4 a4) {
+    return m_functor (m_a1,m_a2,m_a3,a1,a2,a3,a4);
+  }
+  R operator() (T1 a1,T2 a2,T3 a3,T4 a4,T5 a5) {
+    return m_functor (m_a1,m_a2,m_a3,a1,a2,a3,a4,a5);
+  }
+  R operator() (T1 a1,T2 a2,T3 a3,T4 a4,T5 a5,T6 a6) {
+    return m_functor (m_a1,m_a2,m_a3,a1,a2,a3,a4,a5,a6);
+  }
+  virtual bool IsEqual (Ptr<const CallbackImplBase> other) const {
+    ThreeBoundFunctorCallbackImpl<T,R,TX1,TX2,TX3,T1,T2,T3,T4,T5,T6> const *otherDerived = 
+      dynamic_cast<ThreeBoundFunctorCallbackImpl<T,R,TX1,TX2,TX3,T1,T2,T3,T4,T5,T6> const *> (PeekPointer (other));
+    if (otherDerived == 0)
+      {
+        return false;
+      }
+    else if (otherDerived->m_functor != m_functor ||
+             otherDerived->m_a1 != m_a1 || otherDerived->m_a2 != m_a2 || otherDerived->m_a3 != m_a3)
+      {
+        return false;
+      }
+    return true;
+  }
+private:
+  T m_functor;
+  typename TypeTraits<TX1>::ReferencedType m_a1;
+  typename TypeTraits<TX2>::ReferencedType m_a2;
+  typename TypeTraits<TX3>::ReferencedType m_a3;
+};
 
 class CallbackBase {
 public:
@@ -394,6 +493,26 @@ public:
           Callback<R,T1,T2,T3,T4,T5,T6,T7,T8,T9>,
           R,T1,T2,T3,T4,T5,T6,T7,T8,T9> (*this, a), false);
     return Callback<R,T2,T3,T4,T5,T6,T7,T8,T9> (impl);
+  }
+
+  template <typename TX1, typename TX2>
+  Callback<R,T3,T4,T5,T6,T7,T8,T9> TwoBind (TX1 a1, TX2 a2) {
+    Ptr<CallbackImpl<R,T3,T4,T5,T6,T7,T8,T9,empty,empty> > impl =
+      Ptr<CallbackImpl<R,T3,T4,T5,T6,T7,T8,T9,empty,empty> > (
+        new TwoBoundFunctorCallbackImpl<
+          Callback<R,T1,T2,T3,T4,T5,T6,T7,T8,T9>,
+          R,T1,T2,T3,T4,T5,T6,T7,T8,T9> (*this, a1, a2), false);
+    return Callback<R,T3,T4,T5,T6,T7,T8,T9> (impl);
+  }
+
+  template <typename TX1, typename TX2, typename TX3>
+  Callback<R,T4,T5,T6,T7,T8,T9> ThreeBind (TX1 a1, TX2 a2, TX3 a3) {
+    Ptr<CallbackImpl<R,T4,T5,T6,T7,T8,T9,empty,empty,empty> > impl =
+      Ptr<CallbackImpl<R,T4,T5,T6,T7,T8,T9,empty,empty,empty> > (
+        new ThreeBoundFunctorCallbackImpl<
+          Callback<R,T1,T2,T3,T4,T5,T6,T7,T8,T9>,
+          R,T1,T2,T3,T4,T5,T6,T7,T8,T9> (*this, a1, a2, a3), false);
+    return Callback<R,T4,T5,T6,T7,T8,T9> (impl);
   }
 
   bool IsNull (void) const {
@@ -954,6 +1073,114 @@ Callback<R,T1,T2,T3,T4,T5,T6,T7,T8> MakeBoundCallback (R (*fnPtr)(TX,T1,T2,T3,T4
     Create<BoundFunctorCallbackImpl<R (*)(TX,T1,T2,T3,T4,T5,T6,T7,T8),R,TX,T1,T2,T3,T4,T5,T6,T7,T8> > (fnPtr, a);
   return Callback<R,T1,T2,T3,T4,T5,T6,T7,T8> (impl);
 }
+
+template <typename R, typename TX1, typename TX2, typename ARG1, typename ARG2>
+Callback<R> MakeBoundCallback (R (*fnPtr)(TX1,TX2), ARG1 a1, ARG2 a2) {
+  Ptr<CallbackImpl<R,empty,empty,empty,empty,empty,empty,empty,empty,empty> > impl =
+    Create<TwoBoundFunctorCallbackImpl<R (*)(TX1,TX2),R,TX1,TX2,empty,empty,empty,empty,empty,empty,empty> >(fnPtr, a1, a2);
+  return Callback<R> (impl);
+}
+
+template <typename R, typename TX1, typename TX2, typename ARG1, typename ARG2,
+          typename T1>
+Callback<R,T1> MakeBoundCallback (R (*fnPtr)(TX1,TX2,T1), ARG1 a1, ARG2 a2) {
+  Ptr<CallbackImpl<R,T1,empty,empty,empty,empty,empty,empty,empty,empty> > impl =
+    Create<TwoBoundFunctorCallbackImpl<R (*)(TX1,TX2,T1),R,TX1,TX2,T1,empty,empty,empty,empty,empty,empty> > (fnPtr, a1, a2);
+  return Callback<R,T1> (impl);
+}
+template <typename R, typename TX1, typename TX2, typename ARG1, typename ARG2,
+          typename T1, typename T2>
+Callback<R,T1,T2> MakeBoundCallback (R (*fnPtr)(TX1,TX2,T1,T2), ARG1 a1, ARG2 a2) {
+  Ptr<CallbackImpl<R,T1,T2,empty,empty,empty,empty,empty,empty,empty> > impl =
+    Create<TwoBoundFunctorCallbackImpl<R (*)(TX1,TX2,T1,T2),R,TX1,TX2,T1,T2,empty,empty,empty,empty,empty> > (fnPtr, a1, a2);
+  return Callback<R,T1,T2> (impl);
+}
+template <typename R, typename TX1, typename TX2, typename ARG1, typename ARG2,
+          typename T1, typename T2,typename T3>
+Callback<R,T1,T2,T3> MakeBoundCallback (R (*fnPtr)(TX1,TX2,T1,T2,T3), ARG1 a1, ARG2 a2) {
+  Ptr<CallbackImpl<R,T1,T2,T3,empty,empty,empty,empty,empty,empty> > impl =
+    Create<TwoBoundFunctorCallbackImpl<R (*)(TX1,TX2,T1,T2,T3),R,TX1,TX2,T1,T2,T3,empty,empty,empty,empty> > (fnPtr, a1, a2);
+  return Callback<R,T1,T2,T3> (impl);
+}
+template <typename R, typename TX1, typename TX2, typename ARG1, typename ARG2,
+          typename T1, typename T2,typename T3,typename T4>
+Callback<R,T1,T2,T3,T4> MakeBoundCallback (R (*fnPtr)(TX1,TX2,T1,T2,T3,T4), ARG1 a1, ARG2 a2) {
+  Ptr<CallbackImpl<R,T1,T2,T3,T4,empty,empty,empty,empty,empty> > impl =
+    Create<TwoBoundFunctorCallbackImpl<R (*)(TX1,TX2,T1,T2,T3,T4),R,TX1,TX2,T1,T2,T3,T4,empty,empty,empty> > (fnPtr, a1, a2);
+  return Callback<R,T1,T2,T3,T4> (impl);
+}
+template <typename R, typename TX1, typename TX2, typename ARG1, typename ARG2,
+          typename T1, typename T2,typename T3,typename T4,typename T5>
+Callback<R,T1,T2,T3,T4,T5> MakeBoundCallback (R (*fnPtr)(TX1,TX2,T1,T2,T3,T4,T5), ARG1 a1, ARG2 a2) {
+  Ptr<CallbackImpl<R,T1,T2,T3,T4,T5,empty,empty,empty,empty> > impl =
+    Create<TwoBoundFunctorCallbackImpl<R (*)(TX1,TX2,T1,T2,T3,T4,T5),R,TX1,TX2,T1,T2,T3,T4,T5,empty,empty> > (fnPtr, a1, a2);
+  return Callback<R,T1,T2,T3,T4,T5> (impl);
+}
+template <typename R, typename TX1, typename TX2, typename ARG1, typename ARG2,
+          typename T1, typename T2,typename T3,typename T4,typename T5, typename T6>
+Callback<R,T1,T2,T3,T4,T5,T6> MakeBoundCallback (R (*fnPtr)(TX1,TX2,T1,T2,T3,T4,T5,T6), ARG1 a1, ARG2 a2) {
+  Ptr<CallbackImpl<R,T1,T2,T3,T4,T5,T6,empty,empty,empty> > impl =
+    Create<TwoBoundFunctorCallbackImpl<R (*)(TX1,TX2,T1,T2,T3,T4,T5,T6),R,TX1,TX2,T1,T2,T3,T4,T5,T6,empty> > (fnPtr, a1, a2);
+  return Callback<R,T1,T2,T3,T4,T5,T6> (impl);
+}
+template <typename R, typename TX1, typename TX2, typename ARG1, typename ARG2,
+          typename T1, typename T2,typename T3,typename T4,typename T5, typename T6, typename T7>
+Callback<R,T1,T2,T3,T4,T5,T6,T7> MakeBoundCallback (R (*fnPtr)(TX1,TX2,T1,T2,T3,T4,T5,T6,T7), ARG1 a1, ARG2 a2) {
+  Ptr<CallbackImpl<R,T1,T2,T3,T4,T5,T6,T7,empty,empty> > impl =
+    Create<TwoBoundFunctorCallbackImpl<R (*)(TX1,TX2,T1,T2,T3,T4,T5,T6,T7),R,TX1,TX2,T1,T2,T3,T4,T5,T6,T7> > (fnPtr, a1, a2);
+  return Callback<R,T1,T2,T3,T4,T5,T6,T7> (impl);
+}
+
+template <typename R, typename TX1, typename TX2, typename TX3, typename ARG1, typename ARG2, typename ARG3>
+Callback<R> MakeBoundCallback (R (*fnPtr)(TX1,TX2,TX3), ARG1 a1, ARG2 a2, ARG3 a3) {
+  Ptr<CallbackImpl<R,empty,empty,empty,empty,empty,empty,empty,empty,empty> > impl =
+    Create<ThreeBoundFunctorCallbackImpl<R (*)(TX1,TX2,TX3),R,TX1,TX2,TX3,empty,empty,empty,empty,empty,empty> >(fnPtr, a1, a2, a3);
+  return Callback<R> (impl);
+}
+
+template <typename R, typename TX1, typename TX2, typename TX3, typename ARG1, typename ARG2, typename ARG3,
+          typename T1>
+Callback<R,T1> MakeBoundCallback (R (*fnPtr)(TX1,TX2,TX3,T1), ARG1 a1, ARG2 a2, ARG3 a3) {
+  Ptr<CallbackImpl<R,T1,empty,empty,empty,empty,empty,empty,empty,empty> > impl =
+    Create<ThreeBoundFunctorCallbackImpl<R (*)(TX1,TX2,TX3,T1),R,TX1,TX2,TX3,T1,empty,empty,empty,empty,empty> > (fnPtr, a1, a2, a3);
+  return Callback<R,T1> (impl);
+}
+template <typename R, typename TX1, typename TX2, typename TX3, typename ARG1, typename ARG2, typename ARG3,
+          typename T1, typename T2>
+Callback<R,T1,T2> MakeBoundCallback (R (*fnPtr)(TX1,TX2,TX3,T1,T2), ARG1 a1, ARG2 a2, ARG3 a3) {
+  Ptr<CallbackImpl<R,T1,T2,empty,empty,empty,empty,empty,empty,empty> > impl =
+    Create<ThreeBoundFunctorCallbackImpl<R (*)(TX1,TX2,TX3,T1,T2),R,TX1,TX2,TX3,T1,T2,empty,empty,empty,empty> > (fnPtr, a1, a2, a3);
+  return Callback<R,T1,T2> (impl);
+}
+template <typename R, typename TX1, typename TX2, typename TX3, typename ARG1, typename ARG2, typename ARG3,
+          typename T1, typename T2,typename T3>
+Callback<R,T1,T2,T3> MakeBoundCallback (R (*fnPtr)(TX1,TX2,TX3,T1,T2,T3), ARG1 a1, ARG2 a2, ARG3 a3) {
+  Ptr<CallbackImpl<R,T1,T2,T3,empty,empty,empty,empty,empty,empty> > impl =
+    Create<ThreeBoundFunctorCallbackImpl<R (*)(TX1,TX2,TX3,T1,T2,T3),R,TX1,TX2,TX3,T1,T2,T3,empty,empty,empty> > (fnPtr, a1, a2, a3);
+  return Callback<R,T1,T2,T3> (impl);
+}
+template <typename R, typename TX1, typename TX2, typename TX3, typename ARG1, typename ARG2, typename ARG3,
+          typename T1, typename T2,typename T3,typename T4>
+Callback<R,T1,T2,T3,T4> MakeBoundCallback (R (*fnPtr)(TX1,TX2,TX3,T1,T2,T3,T4), ARG1 a1, ARG2 a2, ARG3 a3) {
+  Ptr<CallbackImpl<R,T1,T2,T3,T4,empty,empty,empty,empty,empty> > impl =
+    Create<ThreeBoundFunctorCallbackImpl<R (*)(TX1,TX2,TX3,T1,T2,T3,T4),R,TX1,TX2,TX3,T1,T2,T3,T4,empty,empty> > (fnPtr, a1, a2, a3);
+  return Callback<R,T1,T2,T3,T4> (impl);
+}
+template <typename R, typename TX1, typename TX2, typename TX3, typename ARG1, typename ARG2, typename ARG3,
+          typename T1, typename T2,typename T3,typename T4,typename T5>
+Callback<R,T1,T2,T3,T4,T5> MakeBoundCallback (R (*fnPtr)(TX1,TX2,TX3,T1,T2,T3,T4,T5), ARG1 a1, ARG2 a2, ARG3 a3) {
+  Ptr<CallbackImpl<R,T1,T2,T3,T4,T5,empty,empty,empty,empty> > impl =
+    Create<ThreeBoundFunctorCallbackImpl<R (*)(TX1,TX2,TX3,T1,T2,T3,T4,T5),R,TX1,TX2,TX3,T1,T2,T3,T4,T5,empty> > (fnPtr, a1, a2, a3);
+  return Callback<R,T1,T2,T3,T4,T5> (impl);
+}
+template <typename R, typename TX1, typename TX2, typename TX3, typename ARG1, typename ARG2, typename ARG3,
+          typename T1, typename T2,typename T3,typename T4,typename T5, typename T6>
+Callback<R,T1,T2,T3,T4,T5,T6> MakeBoundCallback (R (*fnPtr)(TX1,TX2,TX3,T1,T2,T3,T4,T5,T6), ARG1 a1, ARG2 a2, ARG3 a3) {
+  Ptr<CallbackImpl<R,T1,T2,T3,T4,T5,T6,empty,empty,empty> > impl =
+    Create<ThreeBoundFunctorCallbackImpl<R (*)(TX1,TX2,TX3,T1,T2,T3,T4,T5,T6),R,TX1,TX2,TX3,T1,T2,T3,T4,T5,T6> > (fnPtr, a1, a2, a3);
+  return Callback<R,T1,T2,T3,T4,T5,T6> (impl);
+}
+
 } // namespace ns3
 
 namespace ns3 {
