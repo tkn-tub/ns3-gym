@@ -71,7 +71,7 @@ public:
   /**
    * \brief Set channel number.
    *
-   * Channel center frequency = Channel starting frequency + 5 MHz * (nch - 1)
+   * Channel center frequency = Channel starting frequency + 5 MHz * nch
    *
    * where Starting channel frequency is standard-dependent, see SetStandard()
    * as defined in IEEE 802.11-2007 17.3.8.3.2.
