@@ -760,16 +760,8 @@ where:
    can be transmitted per TTI.
  - :math:`d^{cr}` is the delay required for eventually needed RRC
    CONNECTION RECONFIGURATION transactions. The number of transactions needed is
-   1 for each bearer activation plus a variable number for SRS
-   reconfiguration that depends on:math:`n`:
-    
-     + 0 for :math:`n \le 2`
-     + 1 for :math:`n \le 5`
-     + 2 for :math:`n \le 10`
-     + 3 for :math:`n \le 20`
-     + 4 for :math:`n > 20`
-
-   Similarly to what done for :math:`d^{ce}`, for each transaction we consider a round trip
+   1 for each bearer activation. Similarly to what done for
+   :math:`d^{ce}`, for each transaction we consider a round trip 
    delay of 10ms plus :math:`\lceil 2n/4 \rceil`.
    delay of 20ms.
 
