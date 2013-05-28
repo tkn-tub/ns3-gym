@@ -1633,9 +1633,8 @@ Re-segmentation
 
 The current model of the AM RLC entity does not support the
 re-segmentation of the retransmission buffer. Rather, the AM RLC
-entity just expects to receive a big enough transmission
-opportunity. An assertion fails if a too small transmission opportunity is 
-received.
+entity just waits to receive a big enough transmission
+opportunity. 
 
 
 Unsupported features
