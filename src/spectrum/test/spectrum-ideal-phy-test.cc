@@ -194,6 +194,8 @@ SpectrumIdealPhyTestCase::DoRun (void)
   Simulator::Run ();
   double throughputBps = (g_rxBytes * 8.0) / testDuration;
 
+  std::clog.unsetf(std::ios_base::floatfield);
+  
   if (m_rateIsAchievable)
     {
       NS_TEST_ASSERT_MSG_EQ_TOL (throughputBps, m_phyRate, m_phyRate*0.01, "throughput does not match PHY rate");
@@ -203,7 +205,6 @@ SpectrumIdealPhyTestCase::DoRun (void)
       NS_TEST_ASSERT_MSG_EQ (throughputBps, 0.0, "PHY rate is not achievable but throughput is non-zero");    
     }
 
-  std::clog.unsetf(std::ios_base::floatfield);
   Simulator::Destroy ();
 }
 

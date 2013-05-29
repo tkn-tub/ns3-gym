@@ -547,7 +547,7 @@ TestRunnerImpl::PrintReport (TestCase *test, std::ostream *os, bool xml, int lev
   double user = test->m_result->clock.GetElapsedUser () / MS_PER_SEC;
   double system = test->m_result->clock.GetElapsedSystem () / MS_PER_SEC;
 
-  (*os).precision (3);
+  std::streamsize oldPrecision = (*os).precision (3);
   *os << std::fixed;
 
   std::string statusString = test->IsFailed ()?"FAIL":"PASS";
@@ -604,7 +604,8 @@ TestRunnerImpl::PrintReport (TestCase *test, std::ostream *os, bool xml, int lev
         }
     }
 
-  os->unsetf(std::ios_base::floatfield);
+  (*os).unsetf(std::ios_base::floatfield);
+  (*os).precision (oldPrecision);
 }
   
 void
