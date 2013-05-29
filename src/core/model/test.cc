@@ -484,22 +484,30 @@ std::string
 TestRunnerImpl::ReplaceXmlSpecialCharacters (std::string xml) const
 {
   NS_LOG_FUNCTION (this << xml);
-  std::string specials = "<>&\"'";
-  std::string replacements[] = {"&lt;", "&gt;", "&amp;", "&#39;", "&quot;"};
+  typedef std::map <char, std::string> specials_map;
+  specials_map specials;
+  specials['<'] = "&lt;";
+  specials['>'] = "&gt;";
+  specials['&'] = "&amp;";
+  specials['"'] = "&#39;";
+  specials['\''] = "&quot;";
+
   std::string result;
-  std::size_t index, length = xml.length ();
+  std::size_t length = xml.length ();
 
   for (size_t i = 0; i < length; ++i)
     {
       char character = xml[i];
 
-      if ((index = specials.find (character)) == std::string::npos)
+      specials_map::const_iterator it = specials.find (character);
+
+      if (it == specials.end ())
         {
           result.push_back (character);
         }
       else
         {
-          result += replacements[index];
+          result += it->second;
         }
     }
   return result;
