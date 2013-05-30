@@ -369,7 +369,7 @@ at the given SNR, while reference throughput value for other UEs by zero.
 Let :math:`\tau` be the TTI duration, :math:`B` the transmission
 bandwidth configuration in number of RBs, :math:`M` the modulation and
 coding scheme in use at the given SNR and :math:`S(M, B)` be the
-transport block size as defined in [TS36.213]_. The reference
+transport block size as defined in [TS36213]_. The reference
 throughput :math:`T` in bit/s achieved by each UE is calculated as 
 
 .. math::
