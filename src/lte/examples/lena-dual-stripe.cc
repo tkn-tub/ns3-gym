@@ -222,7 +222,7 @@ PrintGnuplottableEnbListToFile (std::string filename)
 
 static ns3::GlobalValue g_nBlocks ("nBlocks", 
                                    "Number of femtocell blocks", 
-                                   ns3::UintegerValue (10),
+                                   ns3::UintegerValue (1),
                                    ns3::MakeUintegerChecker<uint32_t> ());
 static ns3::GlobalValue g_nApartmentsX ("nApartmentsX", 
                                         "Number of apartments along the X axis in a femtocell block",  
@@ -251,7 +251,7 @@ static ns3::GlobalValue g_areaMarginFactor ("areaMarginFactor",
                                             ns3::MakeDoubleChecker<double> ());
 static ns3::GlobalValue g_macroUeDensity ("macroUeDensity", 
                                           "How many macrocell UEs there are per square meter",   
-                                          ns3::DoubleValue (0.0001),
+                                          ns3::DoubleValue (0.00002),
                                           ns3::MakeDoubleChecker<double> ());
 static ns3::GlobalValue g_homeEnbDeploymentRatio ("homeEnbDeploymentRatio", 
                                                   "The HeNB deployment ratio as per 3GPP R4-092042",   

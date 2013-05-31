@@ -73,7 +73,7 @@ int main (int argc, char *argv[])
   EpsBearer bearer (q);
   lteHelper->ActivateDataRadioBearer (ueDevs, bearer);
 
-  Simulator::Stop (Seconds (2));
+  Simulator::Stop (Seconds (0.5));
 
   lteHelper->EnablePhyTraces ();
   lteHelper->EnableMacTraces ();
