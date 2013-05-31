@@ -135,7 +135,7 @@ RadioBearerStatsCalculator::UlTxPdu (uint16_t cellId, uint64_t imsi, uint16_t rn
 {
   NS_LOG_FUNCTION (this << "UlTxPDU" << cellId << imsi << rnti << (uint32_t) lcid << packetSize);
   ImsiLcidPair_t p (imsi, lcid);
-  if (Simulator::Now () > m_startTime)
+  if (Simulator::Now () >= m_startTime)
     {
       m_ulCellId[p] = cellId;
       m_flowId[p] = LteFlowId_t (rnti, lcid);
@@ -150,7 +150,7 @@ RadioBearerStatsCalculator::DlTxPdu (uint16_t cellId, uint64_t imsi, uint16_t rn
 {
   NS_LOG_FUNCTION (this << "DlTxPDU" << cellId << imsi << rnti << (uint32_t) lcid << packetSize);
   ImsiLcidPair_t p (imsi, lcid);
-  if (Simulator::Now () > m_startTime)
+  if (Simulator::Now () >= m_startTime)
     {
       m_dlCellId[p] = cellId;
       m_flowId[p] = LteFlowId_t (rnti, lcid);
@@ -166,7 +166,7 @@ RadioBearerStatsCalculator::UlRxPdu (uint16_t cellId, uint64_t imsi, uint16_t rn
 {
   NS_LOG_FUNCTION (this << "UlRxPDU" << cellId << imsi << rnti << (uint32_t) lcid << packetSize << delay);
   ImsiLcidPair_t p (imsi, lcid);
-  if (Simulator::Now () > m_startTime)
+  if (Simulator::Now () >= m_startTime)
     {
       m_ulCellId[p] = cellId;
       m_ulRxPackets[p]++;
@@ -190,7 +190,7 @@ RadioBearerStatsCalculator::DlRxPdu (uint16_t cellId, uint64_t imsi, uint16_t rn
 {
   NS_LOG_FUNCTION (this << "DlRxPDU" << cellId << imsi << rnti << (uint32_t) lcid << packetSize << delay);
   ImsiLcidPair_t p (imsi, lcid);
-  if (Simulator::Now () > m_startTime)
+  if (Simulator::Now () >= m_startTime)
     {
       m_dlCellId[p] = cellId;
       m_dlRxPackets[p]++;
