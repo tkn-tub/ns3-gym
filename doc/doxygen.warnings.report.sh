@@ -91,6 +91,9 @@ undocfiles=$( \
     sort -k 2               \
     )
 
+# Sorted by number, decreasing
+undocsort=$(echo "$undocfiles" | sort -r )
+
 # Total number of files
 filecount=$(                        \
     echo "$undocfiles"            | \
@@ -117,11 +120,20 @@ printf "%6d total warnings\n" $warncount
 printf "%6d directories with warnings\n" $modcount
 echo
 echo
-echo "Warnings by file"
+echo "Warnings by file (alphabetical)"
 echo
 echo "Count File" 
 echo "----- ----------------------------------"
 echo "$undocfiles"
+echo "----------------------------------------"
+printf "%6d files with warnings\n" $filecount
+echo
+echo
+echo "Warnings by file (numerical)"
+echo
+echo "Count File" 
+echo "----- ----------------------------------"
+echo "$undocsort"
 echo "----------------------------------------"
 printf "%6d files with warnings\n" $filecount
 echo
@@ -131,3 +143,5 @@ echo "----------------------------------------"
 printf "%6d directories\n" $modcount
 printf "%6d files\n" $filecount
 printf "%6d warnings\n" $warncount
+
+
