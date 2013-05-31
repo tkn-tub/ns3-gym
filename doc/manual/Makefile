@@ -28,12 +28,14 @@ IMAGES = $(IMAGES_EPS) $(IMAGES_PNG) $(IMAGES_PDF)
 
 IMAGES_TO_CLEAN = $(IMAGES_PNG_CONVERTED) $(IMAGES_PDF) $(IMAGES_EPS)
 
+RESCALE = $(shell hg root)/utils/rescale-pdf.sh
+
 %.eps : %.dia; $(DIA) -t eps $< -e $@
 %.png : %.dia; $(DIA) -t png $< -e $@
 %.png : %.eps; $(CONVERT) $< $@
 %.pdf : %.eps;
 	$(EPSTOPDF) $< -o=$@
-	if test x$($@_width) != x; then ./rescale-pdf.sh $($@_width) $@ ; fi
+	@if test x$($@_width) != x; then $(RESCALE) $($@_width) $@ ; fi
 
 
 # You can set these variables from the command line.
