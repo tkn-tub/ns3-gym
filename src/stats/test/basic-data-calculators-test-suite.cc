@@ -83,14 +83,7 @@ OneIntegerTestCase::DoRun (void)
   min = multiple;
   max = multiple * count;
   mean = sum / count;
-  if (count == 1)
-    {
-      variance = 0;
-    }
-  else
-    {
-      variance = (count * sqrSum - sum * sum) / (count * (count - 1));
-    }
+  variance = 0;
   stddev = std::sqrt (variance);
 
   // Test the calculator.
@@ -161,14 +154,7 @@ FiveIntegersTestCase::DoRun (void)
   min = multiple;
   max = multiple * count;
   mean = sum / count;
-  if (count == 1)
-    {
-      variance = 0;
-    }
-  else
-    {
-      variance = (count * sqrSum - sum * sum) / (count * (count - 1));
-    }
+  variance = (count * sqrSum - sum * sum) / (count * (count - 1));
   stddev = std::sqrt (variance);
 
   // Test the calculator.
@@ -239,14 +225,7 @@ FiveDoublesTestCase::DoRun (void)
   min = multiple;
   max = multiple * count;
   mean = sum / count;
-  if (count == 1)
-    {
-      variance = 0;
-    }
-  else
-    {
-      variance = (count * sqrSum - sum * sum) / (count * (count - 1));
-    }
+  variance = (count * sqrSum - sum * sum) / (count * (count - 1));
   stddev = std::sqrt (variance);
 
   // Test the calculator.

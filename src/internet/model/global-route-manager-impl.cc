@@ -772,6 +772,7 @@ GlobalRouteManagerImpl::SPFNext (SPFVertex* v, CandidateQueue& candidate)
 // shortest path calculation.
 //
           l = v->GetLSA ()->GetLinkRecord (i);
+          NS_ASSERT (l != 0);
           if (l->GetLinkType () == GlobalRoutingLinkRecord::StubNetwork)
             {
               NS_LOG_LOGIC ("Found a Stub record to " << l->GetLinkId ());
@@ -841,6 +842,7 @@ GlobalRouteManagerImpl::SPFNext (SPFVertex* v, CandidateQueue& candidate)
 //
       if (v->GetLSA ()->GetLSType () == GlobalRoutingLSA::RouterLSA)
         {
+          NS_ASSERT (l != 0);
           distance = v->GetDistanceFromRoot () + l->GetMetric ();
         }
       else

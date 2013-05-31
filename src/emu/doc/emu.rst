@@ -3,6 +3,10 @@
 Emu NetDevice
 -------------
 
+**Note:** The ``EmuNetDevice`` is being deprecated as of ns-3.17.  The
+``EmuFdNetDeviceHelper`` class replaces this functionality and API
+entirely.
+
 Behavior
 ********
 

@@ -82,7 +82,9 @@ WifiInformationElementVector::DeserializeSingleIe (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
   uint8_t id = i.ReadU8 ();
-  uint8_t length = i.ReadU8 ();
+  //unused: uint8_t length = i.ReadU8 ();
+  //but need side effects of read:
+  i.ReadU8 ();  
   Ptr<WifiInformationElement> newElement;
   switch (id)
     {
@@ -90,6 +92,7 @@ WifiInformationElementVector::DeserializeSingleIe (Buffer::Iterator start)
       NS_FATAL_ERROR ("Information element " << (uint16_t) id << " is not implemented");
       return 0;
     }
+  /*  unreachable:  b/c switch is guaranteed to return from this function
   if (GetSize () + length > m_maxSize)
     {
       NS_FATAL_ERROR ("Check max size for information element!");
@@ -98,6 +101,7 @@ WifiInformationElementVector::DeserializeSingleIe (Buffer::Iterator start)
   i.Next (length);
   m_elements.push_back (newElement);
   return i.GetDistanceFrom (start);
+  */
 }
 void
 WifiInformationElementVector::Print (std::ostream & os) const

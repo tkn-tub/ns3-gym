@@ -946,7 +946,7 @@ uint8_t DsrOptionRreq::Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Addres
           return rreq.GetSerializedSize ();
         }
     }
-  return rreq.GetSerializedSize ();
+  //unreachable:  return rreq.GetSerializedSize ();
 }
 
 NS_OBJECT_ENSURE_REGISTERED (DsrOptionRrep);

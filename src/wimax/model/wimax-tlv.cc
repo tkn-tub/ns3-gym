@@ -940,9 +940,9 @@ ProtocolTlvValue::ProtocolTlvValue ()
 }
 ProtocolTlvValue::~ProtocolTlvValue ()
 {
-  m_protocol->clear ();
   if (m_protocol != 0)
     {
+      m_protocol->clear ();
       delete m_protocol;
       m_protocol = 0;
     }
@@ -1013,9 +1013,9 @@ Ipv4AddressTlvValue::Ipv4AddressTlvValue ()
 
 Ipv4AddressTlvValue::~Ipv4AddressTlvValue ()
 {
-  m_ipv4Addr->clear ();
   if (m_ipv4Addr != 0)
     {
+      m_ipv4Addr->clear ();
       delete m_ipv4Addr;
       m_ipv4Addr = 0;
     }

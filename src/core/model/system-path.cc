@@ -308,11 +308,17 @@ MakeDirectories (std::string path)
     {
       std::string tmp = Join (elements.begin (), i);
 #if defined(HAVE_MKDIR_H)
-      mkdir (tmp.c_str (), S_IRWXU);
+      if (mkdir (tmp.c_str (), S_IRWXU))
+        {
+          NS_LOG_ERROR ("failed creating directory " << tmp);
+        }
 #endif
     }
 #if defined(HAVE_MKDIR_H)
-  mkdir (path.c_str (), S_IRWXU);
+      if (mkdir (path.c_str (), S_IRWXU))
+        {
+          NS_LOG_ERROR ("failed creating directory " << path);
+        }
 #endif
 
 }

@@ -24,6 +24,7 @@
 #include "ns3/snr-to-block-error-rate-record.h"
 #include "default-traces.h"
 #include "ns3/log.h"
+#include "ns3/assert.h"
 #include <fstream>
 
 NS_LOG_COMPONENT_DEFINE ("SNRToBlockErrorRateManager");
@@ -273,6 +274,8 @@ SNRToBlockErrorRateManager::ReLoadTraces (void)
 void
 SNRToBlockErrorRateManager::SetTraceFilePath (char *traceFilePath)
 {
+  NS_ASSERT_MSG (std::strlen (traceFilePath) < TRACE_FILE_PATH_SIZE,
+                 "char * traceFilePath too long");
   std::strcpy (m_traceFilePath, traceFilePath);
 }
 

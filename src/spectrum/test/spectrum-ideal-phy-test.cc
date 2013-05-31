@@ -202,7 +202,8 @@ SpectrumIdealPhyTestCase::DoRun (void)
     {
       NS_TEST_ASSERT_MSG_EQ (throughputBps, 0.0, "PHY rate is not achievable but throughput is non-zero");    
     }
-      
+
+  std::clog.unsetf(std::ios_base::floatfield);
   Simulator::Destroy ();
 }
 

@@ -94,7 +94,8 @@ private:
   void ClearRecords (void);
   double m_speed; // in m/s
   uint8_t m_activateLoss;
-  char m_traceFilePath[1024];
+  static const unsigned int TRACE_FILE_PATH_SIZE = 1024;
+  char m_traceFilePath[TRACE_FILE_PATH_SIZE];
 
   std::vector<SNRToBlockErrorRateRecord *> * m_recordModulation[7];
 

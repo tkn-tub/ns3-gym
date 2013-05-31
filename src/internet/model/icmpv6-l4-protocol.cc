@@ -292,8 +292,14 @@ void Icmpv6L4Protocol::HandleRA (Ptr<Packet> packet, Ipv6Address const &src, Ipv
   bool next = true;
   bool hasLla = false;
   bool hasMtu = false;
+  Ipv6Address defaultRouter = Ipv6Address::GetZero ();
 
   p->RemoveHeader (raHeader);
+
+  if (raHeader.GetLifeTime())
+    {
+      defaultRouter = src;
+    }
 
   while (next == true)
     {
@@ -305,7 +311,7 @@ void Icmpv6L4Protocol::HandleRA (Ptr<Packet> packet, Ipv6Address const &src, Ipv
         case Icmpv6Header::ICMPV6_OPT_PREFIX:
           p->RemoveHeader (prefixHdr);
           ipv6->AddAutoconfiguredAddress (ipv6->GetInterfaceForDevice (interface->GetDevice ()), prefixHdr.GetPrefix (), prefixHdr.GetPrefixLength (),
-                                          prefixHdr.GetFlags (), prefixHdr.GetValidTime (), prefixHdr.GetPreferredTime (), src);
+                                          prefixHdr.GetFlags (), prefixHdr.GetValidTime (), prefixHdr.GetPreferredTime (), defaultRouter);
           break;
         case Icmpv6Header::ICMPV6_OPT_MTU:
           /* take in account the first MTU option */
@@ -590,6 +596,10 @@ void Icmpv6L4Protocol::HandleNA (Ptr<Packet> packet, Ipv6Address const &src, Ipv
   if (!entry)
     {
       /* ouch!! we are victim of a DAD */
+      
+      /*  Logically dead code (DEADCODE)
+       *  b/c loop test compares default Ipv6InterfaceAddress to target
+       
       Ipv6InterfaceAddress ifaddr;
       bool found = false;
       uint32_t i = 0;
@@ -611,6 +621,7 @@ void Icmpv6L4Protocol::HandleNA (Ptr<Packet> packet, Ipv6Address const &src, Ipv
               interface->SetState (ifaddr.GetAddress (), Ipv6InterfaceAddress::INVALID);
             }
         }
+      */
       /* we have not initiated any communication with the target so... discard the NA */
       return;
     }
@@ -1231,8 +1242,26 @@ bool Icmpv6L4Protocol::Lookup (Ipv6Address dst, Ptr<NetDevice> device, Ptr<Ndisc
       /* try to find the cache */
       cache = FindCache (device);
     }
-
-  return cache->Lookup (dst);
+  if (cache)
+    {
+      NdiscCache::Entry* entry = cache->Lookup (dst);
+      if (entry)
+        {
+          if (entry->IsReachable () || entry->IsDelay ())
+            {
+              *hardwareDestination = entry->GetMacAddress ();
+              return true;
+            }
+          else if (entry->IsStale ())
+            {
+              entry->StartDelayTimer ();
+              entry->MarkDelay ();
+              *hardwareDestination = entry->GetMacAddress ();
+              return true;
+            }
+        }
+    }
+  return false;
 }
 
 bool Icmpv6L4Protocol::Lookup (Ptr<Packet> p, Ipv6Address dst, Ptr<NetDevice> device, Ptr<NdiscCache> cache, Address* hardwareDestination)
@@ -1243,6 +1272,10 @@ bool Icmpv6L4Protocol::Lookup (Ptr<Packet> p, Ipv6Address dst, Ptr<NetDevice> de
     {
       /* try to find the cache */
       cache = FindCache (device);
+    }
+  if (!cache)
+    {
+      return false;
     }
 
   NdiscCache::Entry* entry = cache->Lookup (dst);

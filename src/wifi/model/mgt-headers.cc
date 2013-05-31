@@ -484,42 +484,46 @@ WifiActionHeader::GetAction ()
         {
         case BLOCK_ACK_ADDBA_REQUEST:
           retval.blockAck = BLOCK_ACK_ADDBA_REQUEST;
-          return retval;
+          break ;
         case BLOCK_ACK_ADDBA_RESPONSE:
           retval.blockAck = BLOCK_ACK_ADDBA_RESPONSE;
-          return retval;
+          break ;
         case BLOCK_ACK_DELBA:
           retval.blockAck = BLOCK_ACK_DELBA;
-          return retval;
+          break ;
         }
+      break ;
+      
     case MESH_PEERING_MGT:
       switch (m_actionValue)
         {
         case PEER_LINK_OPEN:
           retval.peerLink = PEER_LINK_OPEN;
-          return retval;
+          break ;
         case PEER_LINK_CONFIRM:
           retval.peerLink = PEER_LINK_CONFIRM;
-          return retval;
+          break ;
         case PEER_LINK_CLOSE:
           retval.peerLink = PEER_LINK_CLOSE;
-          return retval;
+          break ;
         default:
           NS_FATAL_ERROR ("Unknown mesh peering management action code");
           retval.peerLink = PEER_LINK_OPEN; /* quiet compiler */
-          return retval;
         }
+      break ;
+      
     case MESH_PATH_SELECTION:
       switch (m_actionValue)
         {
         case PATH_SELECTION:
           retval.pathSelection = PATH_SELECTION;
-          return retval;
+          break ;
         default:
           NS_FATAL_ERROR ("Unknown mesh path selection action code");
           retval.peerLink = PEER_LINK_OPEN; /* quiet compiler */
-          return retval;
         }
+      break ;
+      
     case MESH_LINK_METRIC:
     // not yet supported
     case MESH_INTERWORKING:
@@ -529,8 +533,8 @@ WifiActionHeader::GetAction ()
     default:
       NS_FATAL_ERROR ("Unsupported mesh action");
       retval.peerLink = PEER_LINK_OPEN; /* quiet compiler */
-      return retval;
     }
+  return retval;
 }
 TypeId
 WifiActionHeader::GetTypeId ()

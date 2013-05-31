@@ -153,8 +153,7 @@ LteHexGridEnbTopologyHelper::SetPositionAndInstallEnbDevice (NodeContainer c)
 	  y -= m_offset*xydfactor;
 	  break;
 	
-	default:
-	  break;
+          // no default, n%3 = 0, 1, 2
 	}
       Ptr<Node> node = c.Get (n);
       Ptr<MobilityModel> mm = node->GetObject<MobilityModel> ();

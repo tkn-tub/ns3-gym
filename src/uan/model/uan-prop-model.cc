@@ -64,7 +64,7 @@ operator>> (std::istream &is, UanPdp &pdp)
 
   std::complex<double> amp;
   pdp.m_taps = std::vector<Tap> (ntaps);
-  for (uint32_t i = 0; i < ntaps; i++)
+  for (uint32_t i = 0; i < ntaps && !is.eof (); i++)
     {
       is >> amp >> c1;
       if (c1 != '|')

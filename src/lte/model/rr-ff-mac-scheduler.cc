@@ -21,6 +21,7 @@
 #include <ns3/log.h>
 #include <ns3/pointer.h>
 #include <ns3/math.h>
+#include <cfloat>
 #include <set>
 
 #include <ns3/lte-amc.h>
@@ -977,7 +978,7 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
   // Divide the resource equally among the active users according to
   // Resource allocation type 0 (see sec 7.1.6.1 of 36.213)
 
-  int rbgPerTb = (rbgNum - rbgAllocatedNum) / nTbs;
+  int rbgPerTb = (nTbs > 0) ? ((rbgNum - rbgAllocatedNum) / nTbs) : DBL_MAX;
   NS_LOG_INFO (this << " Flows to be transmitted " << nflows << " rbgPerTb " << rbgPerTb);
   if (rbgPerTb == 0)
     {

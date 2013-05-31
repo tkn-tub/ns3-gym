@@ -109,12 +109,12 @@ YansWifiPhy::GetTypeId (void)
                    MakePointerAccessor (&YansWifiPhy::m_state),
                    MakePointerChecker<WifiPhyStateHelper> ())
     .AddAttribute ("ChannelSwitchDelay",
-                   "Delay between two short frames transmitted on different frequencies. NOTE: Unused now.",
+                   "Delay between two short frames transmitted on different frequencies.",
                    TimeValue (MicroSeconds (250)),
                    MakeTimeAccessor (&YansWifiPhy::m_channelSwitchDelay),
                    MakeTimeChecker ())
     .AddAttribute ("ChannelNumber",
-                   "Channel center frequency = Channel starting frequency + 5 MHz * (nch - 1)",
+                   "Channel center frequency = Channel starting frequency + 5 MHz * nch",
                    UintegerValue (1),
                    MakeUintegerAccessor (&YansWifiPhy::SetChannelNumber,
                                          &YansWifiPhy::GetChannelNumber),

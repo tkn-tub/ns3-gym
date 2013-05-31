@@ -18,11 +18,52 @@ This release is not yet available.
 
 Supported platforms
 -------------------
-To be determined
+
+New user-visible features
+-------------------------
+
+Bugs fixed
+----------
+- Bug 1643 - NdiscCache creation and existence checks
+- Bug 1662 - m_type not set for Ipv6OptionRouterAlertHeader
+- Bug 1678 - C++11 compliance problem with std::pair"
+- Bug 1683 - IPv6 autoconfigured don't use *infinite* lifetimes
+- Bug 1669 - ns-3 should support binding two and three (possibly more) arguments
+- Bug 1689 - IPv6 shouldn't add a default gateway without checking the Router lifetime
+
+Known issues
+------------
+In general, known issues are tracked on the project tracker available
+at http://www.nsnam.org/bugzilla/
+
+Release 3.17
+============
+
+Availability
+------------
+This release is available from: 
+http://www.nsnam.org/release/ns-allinone-3.17.tar.bz2
+
+Supported platforms
+-------------------
+These platforms have been tested; others may work also:
+- Fedora Core 18 (32/64 bit) with g++-4.7.2
+- Fedora Core 17 (32/64 bit) with g++-4.7.0
+- Ubuntu 13.04 (32/64 bit) with g++-4.7.3
+- Ubuntu 12.10 (32/64 bit) with g++-4.6.3
+- Ubuntu 12.04 (32/64 bit) with g++-4.6.3
+- Ubuntu 10.04.4 LTS (64 bit) with g++-4.4.3
+- OS X Mountain Lion 10.8.3 with g++-4.2.1
+- FreeBSD 9.1-RELEASE (64 bit) with g++-4.2.1
 
 New user-visible features
 -------------------------
 - new TCP Westwood and Westwood+ models
+- new FdNetDevice model and associated helpers.  The FdNetDevice is able
+  to read and write from a file descriptor.  Various helpers are provided
+  to associate this descriptor with underlying devices or sockets on the 
+  host operating system, including a packet socket for emulation, and
+  tap devices including a version specialized for use on PlanetLab.
 - ns-3-click: it's now possible to (i) have Click pull random numbers from
   ns-3 and (ii) have ns-3 set "defines" in Click via the simulation file 
   (see src/click/examples/nsclick-defines.cc).

@@ -20,6 +20,11 @@
 #ifndef PACKET_TAG_LIST_H
 #define PACKET_TAG_LIST_H
 
+/**
+\file   packet-tag-list.h
+\brief  Defines a linked list of Packet tags, including copy-on-write semantics.
+*/
+
 #include <stdint.h>
 #include <ostream>
 #include "ns3/type-id.h"
@@ -29,44 +34,261 @@ namespace ns3 {
 class Tag;
 
 /**
- * \ingroup constants
- * \brief Tag maximum size
- * The maximum size (in bytes) of a Tag is stored
- * in this constant.
+ * \ingroup packet
+ *
+ * \brief List of the packet tags stored in a packet.
+ *
+ * This class is mostly private to the Packet implementation and users
+ * should never have to access it directly.
+ *
+ * \intern
+ *
+ * The implementation of this class is a bit tricky.  Refer to this
+ * diagram in the discussion that follows.
+ *
+ * \dot
+ *    digraph {
+ *        rankdir = "LR";
+ *        clusterrank = local;
+ *        node [ shape = record, fontname="FreeSans", fontsize="10" ];
+ *        oth  [ label="<l> Other branch | <n> next | <c> ..." ];
+ *        PTL1 [ label="<l> PacketTagList A | <n> m_next" , shape=Mrecord];
+ *        PTL2 [ label="<l> PacketTagList B | <n> m_next" , shape=Mrecord];
+ *        oth:n  -> T7:l ;
+ *        PTL2:n -> T6:l ;
+ *        PTL1:n -> T5:l ;
+ *        T1   [ label="<l> T1  | <n> next | <c> count = 1" ];
+ *        T2   [ label="<l> T2  | <n> next | <c> count = 1" ];
+ *        T3   [ label="<l> T3  | <n> next | <c> count = 2" ];
+ *        T4   [ label="<l> T4  | <n> next | <c> count = 1" ];
+ *        T5   [ label="<l> T5  | <n> next | <c> count = 2" ];
+ *        T6   [ label="<l> T6  | <n> next | <c> count = 1" ];
+ *        T7   [ label="<l> T7  | <n> next | <c> count = 1" ];
+ *        NULL [ label="0", shape = ellipse ];
+ *        subgraph cluster_list {
+ *          penwidth = 0;
+ *          T6:n -> T5:l ;
+ *          T5:n -> T4:l ;
+ *          T4:n -> T3:l ;
+ *          T7:n -> T3:l ;
+ *          T3:n -> T2:l ;
+ *          T2:n -> T1:l ;
+ *          T1:n -> NULL ;
+ *        };
+ *      };
+ * \enddot
+ *
+ *   - Tags are stored in serialized form in a tree of TagData
+ *     structures. (<tt>T1-T7</tt> in the diagram)
+ *
+ *   - Each TagData points (\c next pointers in the diagram)
+ *     toward the root of the tree, which is a null pointer.
+ *
+ *   - \c count is the number of incoming pointers to this
+ *     TagData.  Branch points, where branches merge or join, have
+ *     <tt>count \> 1</tt> (\c T3, \c T5); successive links along
+ *     a branch have <tt>count = 1</tt> (\c T1, \c T2, \c T4, \c T6, \c T7).
+ *
+ *   - Each PacketTagList points to a specific TagData,
+ *     which is the most recent Tag added to the packet. (<tt>T5-T7</tt>)
+ *
+ *   - Conceptually, therefore, each Packet has a PacketTagList which
+ *     points to a singly-linked list of TagData.
+ *
+ * \par <b> Copy-on-write </b> is implemented as follows:
+ *
+ *   - #Add prepends the new tag to the list (growing that branch of the tree,
+ *     as \c T6). This is a constant time operation, and does not affect
+ *     any other #PacketTagList's, hence this is a \c const function.
+ *
+ *   - Copy constructor (PacketTagList(const PacketTagList & o))
+ *     and assignment (#operator=(const PacketTagList & o)
+ *     simply join the tree at the same place as the original
+ *     PacketTagList \c o, incrementing the \c count.
+ *     For assignment, the old branch is deleted, up to
+ *     the first branch point, which has its \c count decremented.
+ *     (PacketTagList \c B started as a copy of PacketTagList \c A,
+ *     before \c T6 was added to \c B).
+ *
+ *   - #Remove and #Replace are a little tricky, depending on where the
+ *     target tag is found relative to the first branch point:
+ *     - \e Target before <em> the first branch point: </em> \n
+ *       The target is just dealt with in place (linked around and deleted,
+ *       in the case of #Remove; rewritten in the case of #Replace).
+ *     - \e Target at or after <em> the first branch point: </em> \n
+ *       The portion of the list between the first branch and the target is
+ *       shared. This portion is copied before the #Remove or #Replace is
+ *       performed.
+ *
+ * \par <b> Memory Management: </b>
+ * \n
+ * Packet tags must serialize to a finite maximum size, see TagData
+ *
+ * This documentation entitles the original author to a free beer.
  */
-#define PACKET_TAG_MAX_SIZE 20
-
 class PacketTagList 
 {
 public:
-  struct TagData {
-    uint8_t data[PACKET_TAG_MAX_SIZE];
-    struct TagData *next;
-    TypeId tid;
-    uint32_t count;
+  /**
+   * Tree node for sharing serialized tags.
+   *
+   * See PacketTagList for a discussion of the data structure.
+   *
+   * See TagData::TagData_e for a discussion of the size limit on
+   * tag serialization.
+   */
+  struct TagData
+  {
+    /**
+     * \brief Packet Tag maximum size
+     *
+     * The maximum size (in bytes) of a Tag is stored
+     * in this constant.
+     *
+     * \intern
+     * Ideally, TagData would be 32 bytes in size, so they require
+     * no padding on 64-bit architectures.  (The architecture
+     * affects the size because of the \c #next pointer.)
+     * This would leave 18 bytes for \c #data.  However,
+     * ns3:Ipv6PacketInfoTag needs 19 bytes!  The current
+     * implementation allows 20 bytes, which gives TagData
+     * a size of 30 bytes on 32-byte machines (which gets
+     * padded with 2 bytes), and 34 bytes on 64-bit machines, which
+     * gets padded to 40 bytes.
+     */
+    enum TagData_e
+    {
+      MAX_SIZE = 20           /**< Size of serialization buffer #data */
   };
 
+    uint8_t data[MAX_SIZE];   /**< Serialization buffer */
+    struct TagData * next;   /**< Pointer to next in list */
+    TypeId tid;               /**< Type of the tag serialized into #data */
+    uint32_t count;           /**< Number of incoming links */
+  };  /* struct TagData */
+
+  /**
+   * Create a new PacketTagList.
+   */
   inline PacketTagList ();
+  /**
+   * Copy constructor
+   *
+   * \param [in] o The PacketTagList to copy.
+   *
+   * This makes a light-weight copy by #RemoveAll, then
+   * pointing to the same #struct TagData as \pname{o}.
+   */
   inline PacketTagList (PacketTagList const &o);
+  /**
+   * Assignment
+   *
+   * \param [in] o The PacketTagList to copy.
+   *
+   * This makes a light-weight copy by #RemoveAll, then
+   * pointing to the same #struct TagData as \pname{o}.
+   */
   inline PacketTagList &operator = (PacketTagList const &o);
+  /**
+   * Destructor
+   *
+   * #RemoveAll's the tags up to the first merge.
+   */
   inline ~PacketTagList ();
 
+  /**
+   * Add a tag to the head of this branch.
+   *
+   * \param [in] tag The tag to add
+   */
   void Add (Tag const&tag) const;
+  /**
+   * Remove (the first instance of) tag from the list.
+   *
+   * \param [in,out] tag The tag type to remove.  If found,
+   *          \pname{tag} is set to the value of the tag found.
+   * \returns True if \pname{tag} is found, false otherwise.
+   */
   bool Remove (Tag &tag);
+  /**
+   * Replace the value of a tag.
+   *
+   * \param [in] tag The tag type to replace.  To get the old
+   *        value of the tag, use #Peek first.
+   * \returns True if \pname{tag} is found, false otherwise.
+   *        If \pname{tag} wasn't found, Add is performed instead (so
+   *        the list is guaranteed to have the new tag value either way).
+   */
+  bool Replace (Tag &tag);
+  /**
+   * Find a tag and return its value.
+   *
+   * \param [in,out] tag The tag type to find.  If found,
+   *          \pname{tag} is set to the value of the tag found.
+   * \returns True if \pname{tag} is found, false otherwise.
+   */
   bool Peek (Tag &tag) const;
+  /**
+   * Remove all tags from this list (up to the first merge).
+   */
   inline void RemoveAll (void);
-
+  /**
+   * \returns pointer to head of tag list
+   */
   const struct PacketTagList::TagData *Head (void) const;
 
 private:
+  /**
+   * Typedef of method function pointer for copy-on-write operations
+   *
+   * \param [in] tag The tag type to operate on.
+   * \param [in] preMerge True if \pname{tag} was found before the first merge,
+   *             false otherwise.
+   * \param [in] cur Pointer to the tag.
+   * \param [in] prevNext Pointer to the struct TagData.next pointer
+   *          pointing to \pname{cur}.
+   * \returns True if operation successful, false otherwise
+   */
+  typedef bool (PacketTagList::*COWWriter)
+    (Tag       & tag, bool         preMerge,
+    struct TagData * cur, struct TagData ** prevNext);
+  /**
+   * Traverse the list implementing copy-on-write, using \pname{Writer}.
+   *
+   * \param [in] tag The tag type to operate on.
+   * \param [in] Writer The copy-on-write function to use.
+   * \returns True if \pname{tag} found, false otherwise.
+   */
+  bool COWTraverse   (Tag & tag, PacketTagList::COWWriter Writer);
+  /**
+   * Copy-on-write implementing Remove.
+   *
+   * \param [in] tag The target tag type to remove.
+   * \param [in] preMerge True if \pname{tag} was found before the first merge,
+   *             false otherwise.
+   * \param [in] cur Pointer to the tag.
+   * \param [in] prevNext Pointer to the struct TagData.next pointer
+   *          pointing to \pname{cur}.
+   * \returns True, since tag will definitely be removed.
+   */
+  bool RemoveWriter  (Tag       & tag, bool         preMerge,
+                      struct TagData * cur, struct TagData ** prevNext);
+  /**
+   * Copy-on-write implementing Replace
+   *
+   * \param [in] tag The target tag type to replace
+   * \param [in] preMerge True if \pname{tag} was found before the first merge,
+   *          false otherwise.
+   * \param [in] cur Pointer to the tag
+   * \param [in] prevNext Pointer to the struct TagData.next pointer
+   *          pointing to \pname{cur}.
+   * \returns True, since tag value will definitely be replaced.
+   */
+  bool ReplaceWriter (Tag & tag, bool preMerge, struct TagData * cur, struct TagData ** prevNext);
 
-  bool Remove (TypeId tid);
-  struct PacketTagList::TagData *AllocData (void) const;
-  void FreeData (struct TagData *data) const;
-
-  static struct PacketTagList::TagData *g_free;
-  static uint32_t g_nfree;
-
+  /**
+   * Pointer to first #struct TagData on the list
+   */
   struct TagData *m_next;
 };
 
@@ -118,7 +340,7 @@ void
 PacketTagList::RemoveAll (void)
 {
   struct TagData *prev = 0;
-  for (struct TagData *cur = m_next; cur != 0; cur = cur->next) 
+  for (struct TagData *cur = m_next; cur != 0; cur = cur->next)
     {
       cur->count--;
       if (cur->count > 0) 
@@ -127,13 +349,13 @@ PacketTagList::RemoveAll (void)
         }
       if (prev != 0) 
         {
-          FreeData (prev);
+	  delete prev;
         }
       prev = cur;
     }
   if (prev != 0) 
     {
-      FreeData (prev);
+      delete prev;
     }
   m_next = 0;
 }

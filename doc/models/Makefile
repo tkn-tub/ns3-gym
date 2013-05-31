@@ -36,7 +36,7 @@ SOURCES = \
 	$(SRC)/dsr/doc/dsr.rst \
 	$(SRC)/mpi/doc/distributed.rst \
 	$(SRC)/energy/doc/energy.rst \
-	$(SRC)/emu/doc/emu.rst \
+	$(SRC)/fd-net-device/doc/fd-net-device.rst \
 	$(SRC)/tap-bridge/doc/tap.rst \
 	$(SRC)/mesh/doc/mesh.rst \
 	$(SRC)/lte/doc/source/lte.rst \
