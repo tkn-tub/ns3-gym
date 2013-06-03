@@ -19,6 +19,7 @@
  */
 #include "building-position-allocator.h"
 #include "ns3/buildings-mobility-model.h"
+#include "ns3/mobility-model.h"
 #include "ns3/buildings-helper.h"
 #include "ns3/random-variable-stream.h"
 #include "ns3/double.h"
@@ -209,9 +210,9 @@ SameRoomPositionAllocator::SameRoomPositionAllocator (NodeContainer c)
     {
       Ptr<MobilityModel> mm = (*it)->GetObject<MobilityModel> ();
       NS_ASSERT_MSG (mm, "no mobility model aggregated to this node");
-      Ptr<BuildingsMobilityModel> bmm = DynamicCast<BuildingsMobilityModel> (mm);
-      NS_ASSERT_MSG (bmm, "mobility model aggregated to this node is not a BuildingsMobilityModel");
-      BuildingsHelper::MakeConsistent (bmm);
+      Ptr<MobilityBuildingInfo> bmm = mm->GetObject <MobilityBuildingInfo> ();
+      NS_ASSERT_MSG (bmm, "MobilityBuildingInfo has not been aggregated to this node mobility model");
+      BuildingsHelper::MakeConsistent (mm);
     }
 }
 
@@ -239,8 +240,8 @@ SameRoomPositionAllocator::GetNext () const
   NS_LOG_LOGIC ("considering node " << (*m_nodeIt)->GetId ());
   Ptr<MobilityModel> mm = (*m_nodeIt)->GetObject<MobilityModel> ();
   NS_ASSERT_MSG (mm, "no mobility model aggregated to this node");
-  Ptr<BuildingsMobilityModel> bmm = DynamicCast<BuildingsMobilityModel> (mm);
-  NS_ASSERT_MSG (bmm, "mobility model aggregated to this node is not a BuildingsMobilityModel");
+  Ptr<MobilityBuildingInfo> bmm = mm->GetObject<MobilityBuildingInfo> ();
+  NS_ASSERT_MSG (bmm, "MobilityBuildingInfo has not been aggregated to this node mobility model");
 
   ++m_nodeIt;
   uint32_t roomx = bmm->GetRoomNumberX ();

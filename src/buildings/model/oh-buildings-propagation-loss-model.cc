@@ -66,9 +66,9 @@ OhBuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityMode
 {
   NS_LOG_FUNCTION (this << a << b);
 
-  // get the BuildingsMobilityModel pointers
-  Ptr<BuildingsMobilityModel> a1 = DynamicCast<BuildingsMobilityModel> (a);
-  Ptr<BuildingsMobilityModel> b1 = DynamicCast<BuildingsMobilityModel> (b);
+  // get the MobilityBuildingInfo pointers
+  Ptr<MobilityBuildingInfo> a1 = DynamicCast<MobilityBuildingInfo> (a);
+  Ptr<MobilityBuildingInfo> b1 = DynamicCast<MobilityBuildingInfo> (b);
   NS_ASSERT_MSG ((a1 != 0) && (b1 != 0), "OhBuildingsPropagationLossModel only works with BuildingsMobilityModel");
 
   double loss = 0.0;
@@ -77,13 +77,13 @@ OhBuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityMode
     {
       if (b1->IsOutdoor ())
         {
-          loss = m_okumuraHata->GetLoss (a1, b1);
+          loss = m_okumuraHata->GetLoss (a, b);
           NS_LOG_INFO (this << " O-O : " << loss);
         }
       else
         {
           // b indoor
-          loss = m_okumuraHata->GetLoss (a1, b1) + ExternalWallLoss (b1);
+          loss = m_okumuraHata->GetLoss (a, b) + ExternalWallLoss (b1);
           NS_LOG_INFO (this << " O-I : " << loss);
         } // end b1->isIndoor ()
     }
@@ -95,20 +95,20 @@ OhBuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityMode
           if (a1->GetBuilding () == b1->GetBuilding ())
             {
               // nodes are in same building -> indoor communication ITU-R P.1238
-              loss = m_okumuraHata->GetLoss (a1, b1) + InternalWallsLoss (a1, b1);;
+              loss = m_okumuraHata->GetLoss (a, b) + InternalWallsLoss (a1, b1);;
               NS_LOG_INFO (this << " I-I (same building)" << loss);
 
             }
           else
             {
               // nodes are in different buildings
-              loss = m_okumuraHata->GetLoss (a1, b1) + ExternalWallLoss (a1) + ExternalWallLoss (b1);
+              loss = m_okumuraHata->GetLoss (a, b) + ExternalWallLoss (a1) + ExternalWallLoss (b1);
               NS_LOG_INFO (this << " I-O-I (different buildings): " << loss);
             }
         }
       else
         {
-          loss = m_okumuraHata->GetLoss (a1, b1) + ExternalWallLoss (a1);
+          loss = m_okumuraHata->GetLoss (a, b) + ExternalWallLoss (a1);
           NS_LOG_INFO (this << " I-O : " << loss);
         } // end b1->IsIndoor ()
     } // end a1->IsOutdoor ()

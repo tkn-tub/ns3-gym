@@ -48,7 +48,8 @@ class JakesFadingLossModel;
  *  The distance-dependent component of propagation loss is deferred
  *  to derived classes which are expected to implement the GetLoss method.
  *  
- *  \warning This model works only with BuildingsMobilityModel
+ *  \warning This model works only when MobilityBuildingInfo is aggreegated
+ *  to the mobility model
  *
  */
 
@@ -70,9 +71,9 @@ public:
   virtual double DoCalcRxPower (double txPowerDbm, Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
 
 protected:
-  double ExternalWallLoss (Ptr<BuildingsMobilityModel> a) const;
-  double HeightLoss (Ptr<BuildingsMobilityModel> n) const;
-  double InternalWallsLoss (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const;
+  double ExternalWallLoss (Ptr<MobilityBuildingInfo> a) const;
+  double HeightLoss (Ptr<MobilityBuildingInfo> n) const;
+  double InternalWallsLoss (Ptr<MobilityBuildingInfo> a, Ptr<MobilityBuildingInfo> b) const;
   
   double GetShadowing (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
 
@@ -92,7 +93,7 @@ protected:
   };
 
   mutable std::map<Ptr<MobilityModel>,  std::map<Ptr<MobilityModel>, ShadowingLoss> > m_shadowingLossMap;
-  double EvaluateSigma (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const;
+  double EvaluateSigma (Ptr<MobilityBuildingInfo> a, Ptr<MobilityBuildingInfo> b) const;
 
 
   double m_shadowingSigmaExtWalls;

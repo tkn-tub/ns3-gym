@@ -30,13 +30,18 @@
 
 namespace ns3 {
 
-class BuildingsMobilityModel;
+class MobilityModel;
+class Building;
 
 class BuildingsHelper
 {
-public:  
+public:
+  static void Install (Ptr<Node> node);     // for outdoor nodes
+  static void Install (NodeContainer c);     // for outdoor nodes
+  static void Install (Ptr<Node> node, Ptr<Building> building);
+  static void Install (NodeContainer c, Ptr<Building> building);
   static void MakeMobilityModelConsistent ();
-  static void MakeConsistent (Ptr<BuildingsMobilityModel> bmm);
+  static void MakeConsistent (Ptr<MobilityModel> bmm);
   
 };
 

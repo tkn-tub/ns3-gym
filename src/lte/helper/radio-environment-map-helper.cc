@@ -31,6 +31,7 @@
 #include <ns3/config.h>
 #include <ns3/rem-spectrum-phy.h>
 #include <ns3/buildings-mobility-model.h>
+#include <ns3/constant-position-mobility-model.h>
 #include <ns3/simulator.h>
 #include <ns3/node.h>
 #include <ns3/buildings-helper.h>
@@ -210,9 +211,11 @@ RadioEnvironmentMapHelper::DelayedInstall ()
     {
       RemPoint p;
       p.phy = CreateObject<RemSpectrumPhy> ();
-      p.bmm = CreateObject<BuildingsMobilityModel> ();
+      p.bmm = CreateObject<ConstantPositionMobilityModel> ();
+      Ptr<MobilityBuildingInfo> buildingInfo = CreateObject<MobilityBuildingInfo> ();
+      p.bmm->AggregateObject (buildingInfo); // operation usually done by BuildingsHelper::Install
       p.phy->SetRxSpectrumModel (LteSpectrumValueHelper::GetSpectrumModel (m_earfcn, m_bandwidth));
-      p.phy->SetMobility (p.bmm); 
+      p.phy->SetMobility (p.bmm);
       m_channel->AddRx (p.phy);
       m_rem.push_back (p);
     }

@@ -47,6 +47,7 @@
 #include <ns3/enum.h>
 #include <ns3/unused.h>
 #include <ns3/ff-mac-scheduler.h>
+#include <ns3/buildings-helper.h>
 
 #include "lte-test-phy-error-model.h"
 
@@ -183,10 +184,12 @@ LenaDataPhyErrorModelTestCase::DoRun (void)
 
   // Install Mobility Model
   MobilityHelper mobility;
-  mobility.SetMobilityModel ("ns3::BuildingsMobilityModel");
+  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (enbNodes);
-  mobility.SetMobilityModel ("ns3::BuildingsMobilityModel");
+  BuildingsHelper::Install (enbNodes);
+  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (ueNodes);
+  BuildingsHelper::Install (ueNodes);
   
   // remove random shadowing component
   lena->SetAttribute ("PathlossModel", StringValue ("ns3::HybridBuildingsPropagationLossModel"));
@@ -217,13 +220,13 @@ LenaDataPhyErrorModelTestCase::DoRun (void)
   enbPhy->SetAttribute ("TxPower", DoubleValue (43.0));
   enbPhy->SetAttribute ("NoiseFigure", DoubleValue (5.0));
   // place the HeNB over the default rooftop level (20 mt.)
-  Ptr<BuildingsMobilityModel> mm = enbNodes.Get (0)->GetObject<BuildingsMobilityModel> ();
+  Ptr<MobilityModel> mm = enbNodes.Get (0)->GetObject<MobilityModel> ();
   mm->SetPosition (Vector (0.0, 0.0, 30.0));
 
   // Set UEs' position and power
   for (int i = 0; i < m_nUser; i++)
     {
-      Ptr<BuildingsMobilityModel> mm = ueNodes.Get (i)->GetObject<BuildingsMobilityModel> ();
+      Ptr<MobilityModel> mm = ueNodes.Get (i)->GetObject<MobilityModel> ();
       mm->SetPosition (Vector (m_dist, 0.0, 1.0));
       Ptr<LteUeNetDevice> lteUeDev = ueDevs.Get (i)->GetObject<LteUeNetDevice> ();
       Ptr<LteUePhy> uePhy = lteUeDev->GetPhy ();
@@ -368,10 +371,12 @@ LenaDlCtrlPhyErrorModelTestCase::DoRun (void)
   
   // Install Mobility Model
   MobilityHelper mobility;
-  mobility.SetMobilityModel ("ns3::BuildingsMobilityModel");
+  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (enbNodes);
-  mobility.SetMobilityModel ("ns3::BuildingsMobilityModel");
+  BuildingsHelper::Install (enbNodes);
+  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (ueNodes);
+  BuildingsHelper::Install (ueNodes);
   
   // remove random shadowing component
   lena->SetAttribute ("PathlossModel", StringValue ("ns3::HybridBuildingsPropagationLossModel"));
@@ -400,7 +405,7 @@ LenaDlCtrlPhyErrorModelTestCase::DoRun (void)
   for (int i = 0; i < m_nEnb; i++)
     {
       // place the HeNB over the default rooftop level (20 mt.)
-      Ptr<BuildingsMobilityModel> mm = enbNodes.Get (i)->GetObject<BuildingsMobilityModel> ();
+      Ptr<MobilityModel> mm = enbNodes.Get (i)->GetObject<MobilityModel> ();
       mm->SetPosition (Vector (0.0, 0.0, 30.0));
       Ptr<LteEnbNetDevice> lteEnbDev = enbDevs.Get (i)->GetObject<LteEnbNetDevice> ();
       Ptr<LteEnbPhy> enbPhy = lteEnbDev->GetPhy ();
@@ -409,7 +414,7 @@ LenaDlCtrlPhyErrorModelTestCase::DoRun (void)
     }
   
   // Set UEs' position and power
-  Ptr<BuildingsMobilityModel> mm = ueNodes.Get (0)->GetObject<BuildingsMobilityModel> ();
+  Ptr<MobilityModel> mm = ueNodes.Get (0)->GetObject<MobilityModel> ();
   mm->SetPosition (Vector (m_dist, 0.0, 1.0));
   Ptr<LteUeNetDevice> lteUeDev = ueDevs.Get (0)->GetObject<LteUeNetDevice> ();
   Ptr<LteUePhy> uePhy = lteUeDev->GetPhy ();

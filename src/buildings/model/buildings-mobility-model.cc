@@ -26,25 +26,25 @@
 #include <ns3/log.h>
 #include <ns3/assert.h>
 
-NS_LOG_COMPONENT_DEFINE ("BuildingsMobilityModel");
+NS_LOG_COMPONENT_DEFINE ("MobilityBuildingInfo");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (BuildingsMobilityModel);
+NS_OBJECT_ENSURE_REGISTERED (MobilityBuildingInfo);
 
 TypeId
-BuildingsMobilityModel::GetTypeId (void)
+MobilityBuildingInfo::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::BuildingsMobilityModel")
-    .SetParent<MobilityModel> ()
-    .SetGroupName ("Mobility")
-    .AddConstructor<BuildingsMobilityModel> ();
+  static TypeId tid = TypeId ("ns3::MobilityBuildingInfo")
+    .SetParent<Object> ()
+    .SetGroupName ("Building")
+    .AddConstructor<MobilityBuildingInfo> ();
 
   return tid;
 }
 
 
-BuildingsMobilityModel::BuildingsMobilityModel ()
+MobilityBuildingInfo::MobilityBuildingInfo ()
 {
   NS_LOG_FUNCTION (this);
   m_indoor = false;
@@ -53,49 +53,33 @@ BuildingsMobilityModel::BuildingsMobilityModel ()
   m_roomY = 1;
 }
 
-void
-BuildingsMobilityModel::DoDispose (void)
-{
-  NS_LOG_FUNCTION (this);
-  MobilityModel::DoDispose ();
-}
 
-Vector
-BuildingsMobilityModel::DoGetPosition (void) const
+MobilityBuildingInfo::MobilityBuildingInfo (Ptr<Building> building)
+  : m_myBuilding (building)
 {
   NS_LOG_FUNCTION (this);
-  m_helper.Update ();
-  return m_helper.GetCurrentPosition ();
-}
-void 
-BuildingsMobilityModel::DoSetPosition (const Vector &position)
-{
-  NS_LOG_FUNCTION (this);
-  m_helper.SetPosition (position);
-}
-Vector
-BuildingsMobilityModel::DoGetVelocity (void) const
-{
-  NS_LOG_FUNCTION (this);
-  return m_helper.GetVelocity ();
+  m_indoor = false;
+  m_nFloor = 1;
+  m_roomX = 1;
+  m_roomY = 1;
 }
 
 bool
-BuildingsMobilityModel::IsIndoor (void)
+MobilityBuildingInfo::IsIndoor (void)
 {
   NS_LOG_FUNCTION (this);
   return (m_indoor);
 }
 
 bool
-BuildingsMobilityModel::IsOutdoor (void)
+MobilityBuildingInfo::IsOutdoor (void)
 {
   NS_LOG_FUNCTION (this);
   return (!m_indoor);
 }
 
 void
-BuildingsMobilityModel::SetIndoor (Ptr<Building> building, uint8_t nfloor, uint8_t nroomx, uint8_t nroomy)
+MobilityBuildingInfo::SetIndoor (Ptr<Building> building, uint8_t nfloor, uint8_t nroomx, uint8_t nroomy)
 {
   NS_LOG_FUNCTION (this);
   m_indoor = true;
@@ -104,7 +88,7 @@ BuildingsMobilityModel::SetIndoor (Ptr<Building> building, uint8_t nfloor, uint8
   m_roomX = nroomx;
   m_roomY = nroomy;
   
-  NS_ASSERT_MSG (building->IsInside (m_helper.GetCurrentPosition ()), "Position of the node is outside of building bounds");
+
   NS_ASSERT (m_roomX > 0);
   NS_ASSERT (m_roomX <= building->GetNRoomsX ());
   NS_ASSERT (m_roomY > 0);
@@ -116,28 +100,48 @@ BuildingsMobilityModel::SetIndoor (Ptr<Building> building, uint8_t nfloor, uint8
 
 
 void
-BuildingsMobilityModel::SetOutdoor (void)
+MobilityBuildingInfo::SetIndoor (uint8_t nfloor, uint8_t nroomx, uint8_t nroomy)
+{
+  NS_LOG_FUNCTION (this);
+  m_indoor = true;
+  m_nFloor = nfloor;
+  m_roomX = nroomx;
+  m_roomY = nroomy;
+
+  NS_ASSERT_MSG (m_myBuilding, "Node does not have any building defined");
+  NS_ASSERT (m_roomX > 0);
+  NS_ASSERT (m_roomX <= m_myBuilding->GetNRoomsX ());
+  NS_ASSERT (m_roomY > 0);
+  NS_ASSERT (m_roomY <= m_myBuilding->GetNRoomsY ());
+  NS_ASSERT (m_nFloor > 0);
+  NS_ASSERT (m_nFloor <= m_myBuilding->GetNFloors ());
+
+}
+
+
+void
+MobilityBuildingInfo::SetOutdoor (void)
 {
   NS_LOG_FUNCTION (this);
   m_indoor = false;
 }
 
 uint8_t
-BuildingsMobilityModel::GetFloorNumber (void)
+MobilityBuildingInfo::GetFloorNumber (void)
 {
   NS_LOG_FUNCTION (this);
   return (m_nFloor);
 }
 
 uint8_t
-BuildingsMobilityModel::GetRoomNumberX (void)
+MobilityBuildingInfo::GetRoomNumberX (void)
 {
   NS_LOG_FUNCTION (this);
   return (m_roomX);
 }
 
 uint8_t
-BuildingsMobilityModel::GetRoomNumberY (void)
+MobilityBuildingInfo::GetRoomNumberY (void)
 {
   NS_LOG_FUNCTION (this);
   return (m_roomY);
@@ -145,7 +149,7 @@ BuildingsMobilityModel::GetRoomNumberY (void)
 
 
 Ptr<Building>
-BuildingsMobilityModel::GetBuilding ()
+MobilityBuildingInfo::GetBuilding ()
 {
   NS_LOG_FUNCTION (this);
   return (m_myBuilding);

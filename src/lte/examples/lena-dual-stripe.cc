@@ -464,7 +464,7 @@ main (int argc, char *argv[])
   macroUes.Create (nMacroUes);
 
   MobilityHelper mobility;
-  mobility.SetMobilityModel ("ns3::BuildingsMobilityModel");
+  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
 
 
   Ptr <LteHelper> lteHelper = CreateObject<LteHelper> ();
@@ -496,6 +496,7 @@ main (int argc, char *argv[])
   // Macro eNBs in 3-sector hex grid
   
   mobility.Install (macroEnbs);
+  BuildingsHelper::Install (macroEnbs);
   Ptr<LteHexGridEnbTopologyHelper> lteHexGridEnbTopologyHelper = CreateObject<LteHexGridEnbTopologyHelper> ();
   lteHexGridEnbTopologyHelper->SetLteHelper (lteHelper);
   lteHexGridEnbTopologyHelper->SetAttribute ("InterSiteDistance", DoubleValue (interSiteDistance));
@@ -517,6 +518,7 @@ main (int argc, char *argv[])
   Ptr<PositionAllocator> positionAlloc = CreateObject<RandomRoomPositionAllocator> ();
   mobility.SetPositionAllocator (positionAlloc);
   mobility.Install (homeEnbs);
+  BuildingsHelper::Install (homeEnbs);
   Config::SetDefault ("ns3::LteEnbPhy::TxPower", DoubleValue (homeEnbTxPowerDbm));
   lteHelper->SetEnbAntennaModelType ("ns3::IsotropicAntennaModel");
   lteHelper->SetEnbDeviceAttribute ("DlEarfcn", UintegerValue (homeEnbDlEarfcn));
@@ -543,6 +545,8 @@ main (int argc, char *argv[])
   positionAlloc->SetAttribute ("Z", PointerValue (zVal));
   mobility.SetPositionAllocator (positionAlloc);
   mobility.Install (macroUes);
+  BuildingsHelper::Install (macroUes);
+  
   NetDeviceContainer macroUeDevs = lteHelper->InstallUeDevice (macroUes);
 
 
@@ -550,6 +554,7 @@ main (int argc, char *argv[])
   positionAlloc = CreateObject<SameRoomPositionAllocator> (homeEnbs);
   mobility.SetPositionAllocator (positionAlloc);
   mobility.Install (homeUes);
+  BuildingsHelper::Install (homeUes);
   NetDeviceContainer homeUeDevs = lteHelper->InstallUeDevice (homeUes);
 
   Ipv4Address remoteHostAddr;

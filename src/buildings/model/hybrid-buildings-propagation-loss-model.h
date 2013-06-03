@@ -49,7 +49,7 @@ class Kun2600MhzPropagationLossModel;
  *  - Building penetretation loss
  *  - floors, etc...
  *
- *  \warning This model works only with BuildingsMobilityModel
+ *  \warning This model works only with MobilityBuildingInfo
  *
  */
 
@@ -100,9 +100,9 @@ public:
   
 private:
 
-  double OkumuraHata (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const;
-  double ItuR1411 (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const;
-  double ItuR1238 (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const;
+  double OkumuraHata (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
+  double ItuR1411 (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
+  double ItuR1238 (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
 
   Ptr<OkumuraHataPropagationLossModel> m_okumuraHata;
   Ptr<ItuR1411LosPropagationLossModel> m_ituR1411Los;

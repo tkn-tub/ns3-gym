@@ -91,8 +91,9 @@ main (int argc, char *argv[])
   building->SetNFloors (1);
   building->SetNRoomsX (nRooms);
   building->SetNRoomsY (nRooms);
-  mobility.SetMobilityModel ("ns3::BuildingsMobilityModel");
+  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (enbNodes);
+  BuildingsHelper::Install (enbNodes);
   uint32_t plantedEnb = 0;
   for (uint32_t row = 0; row < nRooms; row++)
     {
@@ -103,7 +104,7 @@ main (int argc, char *argv[])
                     nodeHeight );
           positionAlloc->Add (v);
           enbPosition.push_back (v);
-          Ptr<BuildingsMobilityModel> mmEnb = enbNodes.Get (plantedEnb)->GetObject<BuildingsMobilityModel> ();
+          Ptr<MobilityModel> mmEnb = enbNodes.Get (plantedEnb)->GetObject<MobilityModel> ();
           mmEnb->SetPosition (v);
         }
     }
@@ -159,6 +160,7 @@ main (int argc, char *argv[])
           mobility.SetPositionAllocator (positionAlloc);
         }
       mobility.Install (ueNodes.at(i));
+      BuildingsHelper::Install (ueNodes.at(i));
     }
 
   // Create Devices and install them in the Nodes (eNB and UE)
@@ -201,7 +203,6 @@ main (int argc, char *argv[])
       EpsBearer bearer (q);
       lteHelper->ActivateDataRadioBearer (ueDev, bearer);
     }
-
 
   BuildingsHelper::MakeMobilityModelConsistent ();
 
