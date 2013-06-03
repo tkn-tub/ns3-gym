@@ -432,7 +432,7 @@ LteEpcE2eDataTestSuite::LteEpcE2eDataTestSuite ()
 
   EnbTestData e8;
   UeTestData u8;
-  BearerTestData f8 (100, 15000, 0.001);
+  BearerTestData f8 (50, 8000, 0.02); // watch out for ns3::LteRlcUm::MaxTxBufferSize
   u8.bearers.push_back (f8);
   e8.ues.push_back (u8);
   std::vector<EnbTestData> v8;
