@@ -138,18 +138,24 @@ TypeId LteHelper::GetTypeId (void)
     .SetParent<Object> ()
     .AddConstructor<LteHelper> ()
     .AddAttribute ("Scheduler",
-                   "The type of scheduler to be used for eNBs",
+                   "The type of scheduler to be used for eNBs. "
+                   "The allowed values for this attributes are the type names "
+                   "of any class inheriting from ns3::FfMacScheduler.",
                    StringValue ("ns3::PfFfMacScheduler"),
                    MakeStringAccessor (&LteHelper::SetSchedulerType),
                    MakeStringChecker ())
     .AddAttribute ("PathlossModel",
-                   "The type of pathloss model to be used",
+                   "The type of pathloss model to be used. "
+                   "The allowed values for this attributes are the type names "
+                   "of any class inheriting from ns3::PropagationLossModel.",
                    StringValue ("ns3::FriisPropagationLossModel"),
                    MakeStringAccessor (&LteHelper::SetPathlossModelType),
                    MakeStringChecker ())
     .AddAttribute ("FadingModel",
-                   "The type of fading model to be used. If the type is set "
-                   "to an empty string, no fading model is used.",
+                   "The type of fading model to be used."
+                   "The allowed values for this attributes are the type names "
+                   "of any class inheriting from ns3::SpectrumPropagationLossModel."
+                   "If the type is set to an empty string, no fading model is used.",
                    StringValue (""),
                    MakeStringAccessor (&LteHelper::SetFadingModel),
                    MakeStringChecker ())
