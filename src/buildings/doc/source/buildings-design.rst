@@ -75,7 +75,7 @@ The ``MobilityBuildingInfo`` class, which inherits from the ns3 class ``Object``
 
 The class ``MobilityBuildingInfo`` is used by ``BuildingsPropagationLossModel`` class, which inherits from the ns3 class ``PropagationLossModel`` and manages the pathloss computation of the single components and their composition according to the nodes' positions. Moreover, it implements also the shadowing, that is the loss due to obstacles in the main path (i.e., vegetation, buildings, etc.).
 
-It is to be noted that, ``MobilityBuildingInfo`` can be used by any other propagation model. However, based on the information at the time of writing, only the ones defined in the building module are designed for considering the constraints introduced by the buildings.
+It is to be noted that, ``MobilityBuildingInfo`` can be used by any other propagation model. However, based on the information at the time of this writing, only the ones defined in the building module are designed for considering the constraints introduced by the buildings.
 
 
 
