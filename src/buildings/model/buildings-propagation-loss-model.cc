@@ -27,7 +27,7 @@
 #include "ns3/pointer.h"
 #include <cmath>
 #include "buildings-propagation-loss-model.h"
-#include "ns3/buildings-mobility-model.h"
+#include <ns3/mobility-building-info.h>
 #include "ns3/enum.h"
 
 

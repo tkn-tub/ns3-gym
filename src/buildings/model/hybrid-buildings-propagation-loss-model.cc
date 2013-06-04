@@ -31,7 +31,7 @@
 #include "ns3/itu-r-1411-nlos-over-rooftop-propagation-loss-model.h"
 #include "ns3/itu-r-1238-propagation-loss-model.h"
 #include "ns3/kun-2600-mhz-propagation-loss-model.h"
-#include "ns3/buildings-mobility-model.h"
+#include <ns3/mobility-building-info.h>
 #include "ns3/enum.h"
 
 #include "hybrid-buildings-propagation-loss-model.h"

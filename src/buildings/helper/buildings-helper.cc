@@ -24,7 +24,7 @@
 #include <ns3/building.h>
 #include <ns3/building-list.h>
 #include <ns3/mobility-model.h>
-#include <ns3/buildings-mobility-model.h>
+#include <ns3/mobility-building-info.h>
 #include <ns3/abort.h>
 #include <ns3/log.h>
 

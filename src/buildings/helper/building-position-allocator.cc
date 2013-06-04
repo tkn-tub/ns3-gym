@@ -18,7 +18,7 @@
  * Author: Nicola Baldo <nbaldo@cttc.es>
  */
 #include "building-position-allocator.h"
-#include "ns3/buildings-mobility-model.h"
+#include <ns3/mobility-building-info.h>
 #include "ns3/mobility-model.h"
 #include "ns3/buildings-helper.h"
 #include "ns3/random-variable-stream.h"

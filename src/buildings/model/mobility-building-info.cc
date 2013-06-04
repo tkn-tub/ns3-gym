@@ -21,7 +21,7 @@
 
 #include <ns3/simulator.h>
 #include <ns3/position-allocator.h>
-#include <ns3/buildings-mobility-model.h>
+#include <ns3/mobility-building-info.h>
 #include <ns3/pointer.h>
 #include <ns3/log.h>
 #include <ns3/assert.h>

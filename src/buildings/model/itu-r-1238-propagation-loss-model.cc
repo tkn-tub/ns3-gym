@@ -26,7 +26,7 @@
 #include <cmath>
 
 #include "itu-r-1238-propagation-loss-model.h"
-#include "buildings-mobility-model.h"
+#include <ns3/mobility-building-info.h>
 
 NS_LOG_COMPONENT_DEFINE ("ItuR1238PropagationLossModel");
 

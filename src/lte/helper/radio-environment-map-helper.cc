@@ -30,7 +30,7 @@
 #include <ns3/spectrum-channel.h>
 #include <ns3/config.h>
 #include <ns3/rem-spectrum-phy.h>
-#include <ns3/buildings-mobility-model.h>
+#include <ns3/mobility-building-info.h>
 #include <ns3/constant-position-mobility-model.h>
 #include <ns3/simulator.h>
 #include <ns3/node.h>

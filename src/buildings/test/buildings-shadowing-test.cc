@@ -28,7 +28,7 @@
 #include <ns3/enum.h>
 #include <ns3/buildings-helper.h>
 #include <ns3/mobility-model.h>
-#include <ns3/buildings-mobility-model.h>
+#include <ns3/mobility-building-info.h>
 #include <ns3/constant-position-mobility-model.h>
 
 #include "buildings-shadowing-test.h"

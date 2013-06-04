@@ -6,7 +6,7 @@ def build(bld):
     module.source = [
         'model/building.cc',
         'model/building-list.cc',
-        'model/buildings-mobility-model.cc',
+        'model/mobility-building-info.cc',
         'model/itu-r-1238-propagation-loss-model.cc',
         'model/buildings-propagation-loss-model.cc',
         'model/hybrid-buildings-propagation-loss-model.cc',
@@ -30,7 +30,7 @@ def build(bld):
     headers.source = [
         'model/building.h',
         'model/building-list.h',
-        'model/buildings-mobility-model.h',
+        'model/mobility-building-info.h',
         'model/itu-r-1238-propagation-loss-model.h',
         'model/buildings-propagation-loss-model.h',
         'model/hybrid-buildings-propagation-loss-model.h',

@@ -27,7 +27,8 @@
 #include "ns3/propagation-loss-model.h"
 #include "ns3/random-variable-stream.h"
 #include <ns3/building.h>
-#include <ns3/buildings-mobility-model.h>
+#include <ns3/mobility-building-info.h>
+
 
 
 namespace ns3 {
