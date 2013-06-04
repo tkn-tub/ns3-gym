@@ -85,7 +85,7 @@ LenaTestPfFfMacSchedulerSuite::LenaTestPfFfMacSchedulerSuite ()
   
  
   // DOWNLINK - DISTANCE 4800 -> MCS 16 -> Itbs 20 (from table 7.1.7.2.1-1 of 36.213)
-  // 1 user -> 24 PRB at Itbs 20 -> 903 -> 903000 bytes/sec
+  // 1 user -> 24 PRB at Itbs 15 -> 903 -> 903000 bytes/sec
   // 3 users -> 903000 among 3 users -> 301000 bytes/sec
   // 6 users -> 903000 among 6 users -> 150500 bytes/sec
   // 12 users -> 903000 among 12 users -> 75250 bytes/sec
@@ -104,7 +104,7 @@ LenaTestPfFfMacSchedulerSuite::LenaTestPfFfMacSchedulerSuite ()
   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (15,0,4800,60200,49600,errorModel), TestCase::EXTENSIVE);
   
   // DOWNLINK - DISTANCE 6000 -> MCS 14 -> Itbs 13 (from table 7.1.7.2.1-1 of 36.213)
-  // 1 user -> 24 PRB at Itbs 15 -> 775 -> 775000 bytes/sec
+  // 1 user -> 24 PRB at Itbs 13 -> 775 -> 775000 bytes/sec
   // 3 users -> 775000 among 3 users -> 258000 bytes/sec
   // 6 users -> 775000 among 6 users -> 129200 bytes/sec
   // 12 users -> 775000 among 12 users -> 64590 bytes/sec
