@@ -91,7 +91,7 @@ main (int argc, char *argv[])
     }
 
   MobilityHelper mobility;
-  mobility.SetMobilityModel ("ns3::BuildingsMobilityModel");
+  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   std::vector<Vector> enbPosition;
   Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
   Ptr<Building> building;
@@ -112,6 +112,7 @@ main (int argc, char *argv[])
         }
       mobility.SetPositionAllocator (positionAlloc);
       mobility.Install (enbNodes);
+      BuildingsHelper::Install (enbNodes);
 
       // Position of UEs attached to eNB
       for (uint32_t i = 0; i < nEnb; i++)
@@ -129,6 +130,7 @@ main (int argc, char *argv[])
               mobility.SetPositionAllocator (positionAlloc);
             }
           mobility.Install (ueNodes.at(i));
+          BuildingsHelper::Install (ueNodes.at(i));
         }
 
     }
@@ -144,6 +146,7 @@ main (int argc, char *argv[])
       building->SetNRoomsX (nRooms);
       building->SetNRoomsY (nRooms);
       mobility.Install (enbNodes);
+      BuildingsHelper::Install (enbNodes);
       uint32_t plantedEnb = 0;
       for (uint32_t floor = 0; floor < nFloors; floor++)
         {
@@ -157,14 +160,15 @@ main (int argc, char *argv[])
                             nodeHeight + roomHeight * floor);
                   positionAlloc->Add (v);
                   enbPosition.push_back (v);
-                  Ptr<BuildingsMobilityModel> mmEnb = enbNodes.Get (plantedEnb)->GetObject<BuildingsMobilityModel> ();
+                  Ptr<MobilityModel> mmEnb = enbNodes.Get (plantedEnb)->GetObject<MobilityModel> ();
                   mmEnb->SetPosition (v);
 
                   // Positioning UEs attached to eNB
                   mobility.Install (ueNodes.at(plantedEnb));
+                  BuildingsHelper::Install (ueNodes.at(plantedEnb));
                   for (uint32_t ue = 0; ue < nUe; ue++)
                     {
-                      Ptr<BuildingsMobilityModel> mmUe = ueNodes.at(plantedEnb).Get (ue)->GetObject<BuildingsMobilityModel> ();
+                      Ptr<MobilityModel> mmUe = ueNodes.at(plantedEnb).Get (ue)->GetObject<MobilityModel> ();
                       Vector vUe (v.x, v.y, v.z);
                       mmUe->SetPosition (vUe);
                     }

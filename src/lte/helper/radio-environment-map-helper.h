@@ -33,7 +33,8 @@ class RemSpectrumPhy;
 class Node;
 class NetDevice;
 class SpectrumChannel;
-class BuildingsMobilityModel;
+//class BuildingsMobilityModel;
+class MobilityModel;
 
 /** 
  * Generates a 2D map of the SINR from the strongest transmitter in the downlink of an LTE FDD system.
@@ -78,7 +79,7 @@ private:
   struct RemPoint 
   {
     Ptr<RemSpectrumPhy> phy;
-    Ptr<BuildingsMobilityModel> bmm;
+    Ptr<MobilityModel> bmm;
   };
 
   std::list<RemPoint> m_rem;

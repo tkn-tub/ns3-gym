@@ -61,10 +61,12 @@ int main (int argc, char *argv[])
 
   // Install Mobility Model
   MobilityHelper mobility;
-  mobility.SetMobilityModel ("ns3::BuildingsMobilityModel");
+  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (enbNodes);
-  mobility.SetMobilityModel ("ns3::BuildingsMobilityModel");
+  BuildingsHelper::Install (enbNodes);
+  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (ueNodes);
+  BuildingsHelper::Install (ueNodes);
 
   // Create Devices and install them in the Nodes (eNB and UE)
   NetDeviceContainer enbDevs;

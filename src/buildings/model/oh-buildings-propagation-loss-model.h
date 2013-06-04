@@ -33,7 +33,7 @@ class OkumuraHataPropagationLossModel;
  *
  *  this model combines the OkumuraHata model with the BuildingsPropagationLossModel
  * 
- *  \warning This model works with BuildingsMobilityModel only
+ *  \warning This model works with MobilityBuildingInfo only
  *
  */
 class OhBuildingsPropagationLossModel : public BuildingsPropagationLossModel

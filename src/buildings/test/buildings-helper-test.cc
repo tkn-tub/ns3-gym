@@ -22,7 +22,8 @@
 
 #include "ns3/log.h"
 #include "ns3/test.h"
-#include <ns3/buildings-mobility-model.h>
+#include <ns3/mobility-building-info.h>
+#include <ns3/constant-position-mobility-model.h>
 #include <ns3/building.h>
 #include <ns3/buildings-helper.h>
 #include <ns3/mobility-helper.h>
@@ -133,13 +134,13 @@ BuildingsHelperOneTestCase::DoRun ()
 {
   NS_LOG_FUNCTION (this << BuildNameString (m_pib, m_bd));
   MobilityHelper mobility;
-  mobility.SetMobilityModel ("ns3::BuildingsMobilityModel");
+  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
 
   NodeContainer nodes;
   nodes.Create (1);
   mobility.Install (nodes);
   
-  Ptr<BuildingsMobilityModel> bmm = nodes.Get (0)->GetObject<BuildingsMobilityModel> ();
+  Ptr<ConstantPositionMobilityModel> bmm = nodes.Get (0)->GetObject<ConstantPositionMobilityModel> ();
   bmm->SetPosition (m_pib.pos);
 
   NS_LOG_LOGIC ("create building");
@@ -148,19 +149,20 @@ BuildingsHelperOneTestCase::DoRun ()
   b->SetNFloors (m_bd.nf);
   b->SetNRoomsX (m_bd.nrx);
   b->SetNRoomsY (m_bd.nry);
-  
+  Ptr<MobilityBuildingInfo> buildingInfo = CreateObject<MobilityBuildingInfo> (b);
+  bmm->AggregateObject (buildingInfo); // operation usually done by BuildingsHelper::Install
   BuildingsHelper::MakeMobilityModelConsistent ();
 
   
-  NS_TEST_ASSERT_MSG_EQ (bmm->IsIndoor (), m_pib.indoor, "indoor/outdoor mismatch");
+  NS_TEST_ASSERT_MSG_EQ (buildingInfo->IsIndoor (), m_pib.indoor, "indoor/outdoor mismatch");
   if (m_pib.indoor)
     {
-      NS_LOG_LOGIC (" got bid=" << bmm->GetBuilding ()->GetId () << ", f=" << (uint32_t) bmm->GetFloorNumber () << ", rx=" << (uint32_t) bmm->GetRoomNumberX () << ", roomY=" << (uint32_t) bmm->GetRoomNumberY ());
+      NS_LOG_LOGIC (" got bid=" << buildingInfo->GetBuilding ()->GetId () << ", f=" << (uint32_t) buildingInfo->GetFloorNumber () << ", rx=" << (uint32_t) buildingInfo->GetRoomNumberX () << ", roomY=" << (uint32_t) buildingInfo->GetRoomNumberY ());
       // only one building in this test, so Id will be 0
-      NS_TEST_ASSERT_MSG_EQ (bmm->GetBuilding ()->GetId (), 0, "Building ID mismatch");
-      NS_TEST_ASSERT_MSG_EQ ((uint32_t) bmm->GetFloorNumber (), m_pib.fn, "floor number mismatch");
-      NS_TEST_ASSERT_MSG_EQ ((uint32_t) bmm->GetRoomNumberX (), m_pib.rx, "x room number mismatch");
-      NS_TEST_ASSERT_MSG_EQ ((uint32_t) bmm->GetRoomNumberY (), m_pib.ry, "y room number mismatch");
+      NS_TEST_ASSERT_MSG_EQ (buildingInfo->GetBuilding ()->GetId (), 0, "Building ID mismatch");
+      NS_TEST_ASSERT_MSG_EQ ((uint32_t) buildingInfo->GetFloorNumber (), m_pib.fn, "floor number mismatch");
+      NS_TEST_ASSERT_MSG_EQ ((uint32_t) buildingInfo->GetRoomNumberX (), m_pib.rx, "x room number mismatch");
+      NS_TEST_ASSERT_MSG_EQ ((uint32_t) buildingInfo->GetRoomNumberY (), m_pib.ry, "y room number mismatch");
     }
 
   Simulator::Destroy ();  
