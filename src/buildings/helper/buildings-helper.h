@@ -36,11 +36,29 @@ class Building;
 class BuildingsHelper
 {
 public:
-  static void Install (Ptr<Node> node);     // for outdoor nodes
-  static void Install (NodeContainer c);     // for outdoor nodes
-  static void Install (Ptr<Node> node, Ptr<Building> building);
-  static void Install (NodeContainer c, Ptr<Building> building);
+  /**
+  * Install the MobilityBuildingInfo to a node
+  *
+  * \param node the mobility model of the node to be updated
+  */
+  static void Install (Ptr<Node> node);     // for any nodes
+  /**
+  * Install the MobilityBuildingInfo to the set of nodes in a NodeContainer
+  *
+  * \param c the NodeContainer including the nodes to be updated
+  */
+  static void Install (NodeContainer c);     // for any nodes
+  /**
+  * Update the node in the simulation scenario MobilityBuildingInfo according 
+  * to the buildings created
+  *
+  */
   static void MakeMobilityModelConsistent ();
+  /**
+  * Update the MobilityBuildingInfo according to the buildings created
+  *
+  * \param bmm the mobility model of the node to be updated
+  */
   static void MakeConsistent (Ptr<MobilityModel> bmm);
   
 };

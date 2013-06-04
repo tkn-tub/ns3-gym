@@ -59,31 +59,6 @@ BuildingsHelper::Install (Ptr<Node> node)
 }
 
 
-  
-void
-BuildingsHelper::Install (NodeContainer c, Ptr<Building> building)
-{
-  for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
-    {
-      Install (*i, building);
-    }
-}
-
-
-void
-BuildingsHelper::Install (Ptr<Node> node, Ptr<Building> building)
-{
-  Ptr<Object> object = node;
-  Ptr<MobilityModel> model = object->GetObject<MobilityModel> ();
-  if (model == 0)
-    {
-      NS_ABORT_MSG_UNLESS (0 != model, "node " << node->GetId () << " does not have a MobilityModel");
-      
-    }
-  Ptr<MobilityBuildingInfo> buildingInfo = CreateObject<MobilityBuildingInfo> (building);
-  model->AggregateObject (buildingInfo);
-}
-
 void
 BuildingsHelper::MakeMobilityModelConsistent ()
 {
