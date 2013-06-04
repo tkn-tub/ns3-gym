@@ -12,7 +12,7 @@ Overview
 The Buildings module provides:
 
  #. a new class (``Building``) that models the presence of a building in a simulation scenario;  
- #. a new mobility model (``BuildingsMobilityModel``) that allows to specify the location, size and characteristics of buildings present in the simulated area, and allows the placement of nodes inside those buildings;
+ #. a new class (``MobilityBuildingInfo``) that allows to specify the location, size and characteristics of buildings present in the simulated area, and allows the placement of nodes inside those buildings;
  #. a container class with the definition of the most useful pathloss models and the correspondent variables called ``BuildingsPropagationLossModel``.
  #. a new propagation model (``HybridBuildingsPropagationLossModel``) working with the mobility model just introduced, that allows to model the phenomenon of indoor/outdoor propagation in the presence of buildings.
  #. a simplified model working only with Okumura Hata (``OhBuildingsPropagationLossModel``) considering the phenomenon of indoor/outdoor propagation in the presence of buildings.
@@ -62,10 +62,10 @@ The Building class is based on the following assumptions:
 
 
 
-The BuildingsMobilityModel class
-++++++++++++++++++++++++++++++++
+The MobilityBuildingInfo class
+++++++++++++++++++++++++++++++
 
-The ``BuildingsMobilityModel`` class, which inherits from the ns3 class ``MobilityModel``, is in charge of managing the standard mobility functionalities plus providing information about the position of a node with respect to building. The information managed by ``BuildingsMobilityModel`` is:
+The ``MobilityBuildingInfo`` class, which inherits from the ns3 class ``Object``, is in charge of maintaining information about the position of a node with respect to building. The information managed by ``MobilityBuildingInfo`` is:
 
   * whether the node is indoor or outdoor
   * if indoor:
@@ -73,7 +73,9 @@ The ``BuildingsMobilityModel`` class, which inherits from the ns3 class ``Mobili
     * in which building the node is
     * in which room the node is positioned (x, y and floor room indices)  
 
-The class ``BuildingsMobilityModel`` is used by ``BuildingsPropagationLossModel`` class, which inherits from the ns3 class ``PropagationLossModel`` and manages the pathloss computation of the single components and their composition according to the nodes' positions. Moreover, it implements also the shadowing, that is the loss due to obstacles in the main path (i.e., vegetation, buildings, etc.).
+The class ``MobilityBuildingInfo`` is used by ``BuildingsPropagationLossModel`` class, which inherits from the ns3 class ``PropagationLossModel`` and manages the pathloss computation of the single components and their composition according to the nodes' positions. Moreover, it implements also the shadowing, that is the loss due to obstacles in the main path (i.e., vegetation, buildings, etc.).
+
+It is to be noted that, ``MobilityBuildingInfo`` can be used by any other propagation model. However, based on the information at the time of writing, only the ones defined in the building module are designed for considering the constraints introduced by the buildings.
 
 
 
