@@ -912,6 +912,95 @@ That's all! You can now start your simulation as usual::
 
 
 
+.. _sec-configure-ue-measurements:
+
+Configure UE measurements
+-------------------------
+
+The active UE measurement configuration in a simulation is dictated by the
+selected so called "consumers", such as handover algorithm. Users may add their
+own configuration into action, and there are several ways to do so:
+
+ #. direct configuration in eNodeB RRC entity;
+ 
+ #. configuring existing handover algorithm; and
+ 
+ #. developing a new handover algorithm.
+ 
+This section will cover the first and second methods, while the third method is
+covered in :ref:`sec-custom-handover-algorithm`.
+
+Direct configuration in eNodeB RRC entity
+*****************************************
+
+Users may add their custom UE measurement configuration by creating a new
+``LteRrcSap::ReportConfigEutra`` and pass it to the
+``LteEnbRrc::AddUeMeasReportConfig`` function. The function will return the
+``measId`` which identifies the configuration. The user can capture the produced
+measurement reports by listening to the existing
+``LteEnbRrc::RecvMeasurementReport`` trace.
+
+The structure `ReportConfigEutra` is in accord with 3GPP specification.
+Definition of the structure and each member field can be found in Section 6.3.5
+of [TS36331]_.
+
+The code sample below configures Event A1 RSRP measurement to every eNodeB
+within the container ``devs``::
+
+  LteRrcSap::ReportConfigEutra config;
+  config.triggerType = LteRrcSap::ReportConfigEutra::EVENT;
+  config.eventId = LteRrcSap::ReportConfigEutra::EVENT_A1;
+  config.threshold1.choice = LteRrcSap::ThresholdEutra::THRESHOLD_RSRP;
+  config.threshold1.range = 41;
+  config.triggerQuantity = LteRrcSap::ReportConfigEutra::RSRP;
+  config.reportInterval = LteRrcSap::ReportConfigEutra::MS480;
+  
+  std::vector<uint8_t> measIdList;
+
+  NetDeviceContainer::iterator it;
+  for (it = devs.Begin (); it != devs.End (); it++)
+  {
+    Ptr<NetDevice> dev = *it;
+    Ptr<LteEnbNetDevice> enbDev = dev->GetObject<LteEnbNetDevice> ();
+    Ptr<LteEnbRrc> enbRrc = enbDev->GetRrc ();
+    
+    uint8_t measId = enbRrc->AddUeMeasReportConfig (config);
+    measIdList.push_back (measId); // remember the measId created
+    
+    enbRrc->TraceConnect ("RecvMeasurementReport",
+                          "context",
+                          MakeCallback (&RecvMeasurementReportCallback));
+  }
+
+The corresponding callback function would have a definition similar as below::
+
+  void
+  RecvMeasurementReportCallback (std::string context,
+                                 uint64_t imsi,
+                                 uint16_t cellId,
+                                 uint16_t rnti,
+                                 LteRrcSap::MeasurementReport measReport);
+
+The ``LteRrcSap::MeasurementReport`` argument contains the ``measId``, which can
+be used to tell whether the report is intended for her.
+
+Note that thresholds are expressed as range. In the example above, the range 41
+for RSRP corresponds to -100 dBm. The conversion from and to range is due to
+Section 9.1.4 and 9.1.7 of [TS36133]_.
+
+Configuring existing handover algorithm
+***************************************
+
+Each handover algorithm subclass has its own set of attributes. Similar with
+how FF MAC Scheduler is configured, custom values can be provided to these
+attributes by calling ``LteHelper::SetHandoverAlgorithmAttribute``.
+
+The updated attributes may change the measurement configuration that the
+handover algorithm requires from the UE. For example, the Strongest Cell
+handover algorithm has attributes for `A3Offset` and `TimeToTrigger`, and will
+request UE measurement according to the value of these attributes.
+
+
 X2-based handover
 -----------------
 
@@ -979,6 +1068,27 @@ of events A2 and A4::
 
 You can find more info about events A2 and A4 in Subsections 5.5.4.3 and 5.5.4.5
 of [TS36331]_.
+
+
+.. _sec-custom-handover-algorithm:
+
+Custom handover algorithm
+*************************
+
+When the existing handover algorithms are not flexible enough, (for instance,
+the Strongest Cell handover algorithm is limited to Event A3 only), users may
+develop a subclass of handover algorithm.
+
+In the implementation, users may submit one or more UE measurements
+configuration message to the eNodeB RRC entity via the Handover Algorithm SAP
+interface (``AddUeMeasReportConfig``). Later during the simulation, the
+requested measurement reports will be delivered using another method of Handover
+Algorithm SAP interface (``ReportUeMeas``).
+
+Note that the handover algorithm does not have to remember the `measId` of the
+requested measurement configuration, because the eNodeB RRC will maintain a list
+of the `measId` in question, and only submit the measurement reports which come
+from the listed `measId`.
 
 
 Handover traces

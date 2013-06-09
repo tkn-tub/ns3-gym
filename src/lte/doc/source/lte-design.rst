@@ -1990,73 +1990,181 @@ within the simulation program are supported (network-driven handovers
 based on UE measurements are planned only at a later stage).
 
 
-UE Measurements
-+++++++++++++++
+UE RRC Measurements Model
++++++++++++++++++++++++++
 
 
 UE RRC measurements support
 ---------------------------
 
-The UE RRC entity provides support for UE measurements; in
-particular, it implements the procedures described in Section 5.5 of
-[TS36331]_, with the following simplifying assumptions:
+The UE RRC entity provides support for UE measurements; in particular, it
+implements the procedures described in Section 5.5 of [TS36331]_, with the
+following simplifying assumptions:
 
- - only E-UTRA intra-frequency measurements are supported;
+ - only E-UTRA intra-frequency measurements are supported, which implies:
+   
+   - only one measurement object is used during the simulation;
+   - measurement gaps are not needed to perform the measurements;
+   - Event B1 and B2 are not implemented;
+   
+ - only `reportStrongestCells` purpose is supported, while `reportCGI` and
+   `reportStrongestCellsForSON` purposes are not supported;
 
- - measurement gaps are not needed to perform the measurements;
+ - since carrier aggregation is not supported in general, the following
+   assumptions in UE measurements hold true:
+   
+   - no notion of secondary cell (`SCell`);
+   - primary cell (`PCell`) simply means serving cell;
+   - Event A6 is not implemented;
+   
+ - `s-Measure` and `SpeedStatePars` are not supported;
 
- - only event-driven measurements are supported; the other type of
-   measurements are not supported;
+Overall design
+--------------
 
- - only the events A2 and A4 are to be supported; 
+The simulation defines an entity called *consumer*, which may request an eNodeB
+RRC entity to provide UE measurement reports. Consumers are, for example,
+handover algorithms, which compute handover decision based on UE measurement
+reports. Test cases and user's programs may also become consumers. Figure
+Figure :ref:`fig-ue-meas-consumer` depicts the relationship between these
+entities.
 
- - time-to-trigger is not supported, i.e., a time-to-trigger value
-   equal to zero is always assumed;
+.. _fig-ue-meas-consumer:
+   
+.. figure:: figures/ue-meas-consumer.png
+   :align: center
 
- - layer 3 filtering assumes that the periodicity of the measurements
-   reported by the PHY is equal to 200ms;
+   Relationship between UE measurements and its consumers
 
- - in measurement reports, the reportQuantity is always assumed to be
-   "both", i.e., both RSRP and RSRQ are always reported, regardless of
-   the trigger quantity.
+The whole UE measurements function in RRC level is generally divided into 4
+major parts:
 
+ #. Measurement configuration (handled by ``LteUeRrc::ApplyMeasConfig``)
+ 
+ #. Performing measurements (handled by ``LteUeRrc::DoReportUeMeasurements``)
+ 
+ #. Measurement report triggering (also handled by
+    ``LteUeRrc::DoReportUeMeasurements``)
+   
+ #. Measurement reporting (handled by ``LteUeRrc::SendMeasurementReport``)
 
-eNB RRC measurement configuration
----------------------------------
+The following sections will describe each of the parts above.
 
-The eNB RRC entity configures the UE measurements. The eNB RRC entity
-sends the configuration parameters to the UE RRC entity in the
-MeasConfig IE of the RRC Connection Reconfiguration message when the UE
-attaches to the eNB or the RRC Handover Request message when the target
-eNB initiates the handover procedure.
+Measurement configuration
+-------------------------
 
-The eNB RRC entity implements the configuration parameters and procedures
-described in Section 5.5 of [TS36331]_, with the following simplifying
-assumptions:
+The eNodeB RRC entity configures the UE measurements by sending the
+configuration parameters to the UE RRC entity within the ``MeasConfig`` IE of
+the RRC Connection Reconfiguration message. This message occurs when the UE
+attaches to the eNodeB or during the RRC Handover Request message when the
+target eNodeB initiates the handover procedure.
 
- - only E-UTRA intra-frequency measurements are configured, so only the
-   downlink carrier frequency of the serving cell is configured as
-   measurement object;
+The eNodeB RRC entity implements the configuration parameters and procedures
+described in Section 5.5.2 of [TS36331]_, with the following simplifying
+assumption:
 
- - only the events A2 and A4 are configured;
+ - it is assumed that there is a one-to-one mapping between the PCI and the
+   E-UTRAN Global Cell Identifier (EGCI). This is consistent with the PCI
+   modeling assumptions described in :ref:`phy-ue-measurements`.
 
- - only the RSRQ threshold is configured for both events;
+The configuration parameters in use are based on the consumers in stake. At the
+beginning of the simulation, each of these consumers will provide the eNodeB RRC
+entity with the UE measurements configuration that it requires. The eNodeB RRC
+entity will comply by distributing the configuration to attached UEs, and then
+relay the resulting measurement reports to the consumers.
 
- - the reportInterval parameter is configured to 480 ms, so once the
-   events are triggered, the UE will send the measurement reports with
-   this periodicity;
+Different consumers might have different needs of UE measurement. For example,
+the selection of UTPR handover algorithm (e.g. by calling
+``LteHelper->SetHandoverAlgorithmType``) will invoke different configuration
+parameters than the default Strongest Cell handover algorithm. 
 
- - the filterCoefficientRSRQ parameter is configured to fc4, it is the
-   default value specified in the protocol specification [TS36331]_;
+Users may customize the measurement configuration using several methods. More
+details are explained in user documentation
+(:ref:`sec-configure-ue-measurements`).
 
- - the hysteresis and timeToTrigger parameters are configured with
-   values equal to zero;
+Performing measurements
+-----------------------
 
- - it is assumed that there is a one-to-one mapping between the PCI
-   and the E-UTRAN Global Cell Identifier (EGCI). This is consistent
-   with the PCI modeling assumptions described in :ref:`phy-ue-measurements`.
+UE RRC receives measurements on periodic basis from UE PHY, as described in
+:ref:`phy-ue-measurements`. *Layer 3 filtering* will be applied to these
+received measurements. The implementation of the filtering follows Section
+5.5.3.2 of [TS36331]_:
 
+.. math::
 
+   F_n = (1 - a) \times F_{n-1} + a \times M_n
+
+where:
+
+ - :math:`M_n` is the latest received measurement result from the physical
+   layer;
+ - :math:`F_n` is the updated filtered measurement result;
+ - :math:`F_{n-1}` is the old filtered measurement result, where
+   :math:`F_0 = M_1` (i.e. the first measurement is not filtered); and
+ - :math:`a = (\frac{1}{2})^{\frac{k}{4}}`, where :math:`k` is the configurable
+   `filterCoefficent` provided by the ``QuantityConfig``;
+   
+:math:`k = 4` is the default value, but can be configured by setting the
+`L3FilteringRsrpCoefficient` and `L3FilteringRsrqCoefficient` attributes in
+``LteEnbRrc``.
+
+Measurement reporting triggering
+--------------------------------
+
+This part will go through the list of active measurement configuration and check
+whether the trigerring condition is fulfilled in accordance with Section 5.5.4
+of [TS36331]_. When at least one trigerring condition from all the active
+measurement configuration is fulfilled, the measurement reporting procedure (in
+the next subsection) will be initiated.
+
+There are 2 supported `triggerType`: periodical and event-based. In *periodical*
+criterion, the reporting is simply triggered when the timer expires. The
+periodicity of the timer can be selected from the options defined in
+``enum reportInterval`` within ``LteRrcSap::ReportConfigEutra``.
+
+While in *event-based* criterion, there are various events that can be selected,
+which are briefly described in the table below: 
+
+======== ======================================================
+Name     Description
+======== ======================================================
+Event A1 Serving cell becomes better than `threshold`
+Event A2 Serving cell becomes worse than `threshold`
+Event A3 Neighbour becomes `offset` dB better than serving cell
+Event A4 Neighbour becomes better than `threshold`
+Event A5 Serving becomes worse than `threshold1`
+         *AND* neighbour becomes better than `threshold2`
+======== ======================================================
+
+Two main conditions to be checked in an event-based trigger are *entering
+condition* and *leaving condition*. More details can be found in Section 5.5.4
+of [TS36331]_.
+
+Event-based trigger can be further configured by introducing hysteresis and
+time-to-trigger. *Hysteresis* (:math:`Hys`) defines the distance between the
+entering and leaving conditions in dB. In effect, it delays both conditions by
+half of the specified dB. Similarly, *time-to-trigger* introduces delay to both
+entering and leaving conditions, but as a unit of time.
+
+In contrast with 3GPP standard, the current model does not support cell-specific
+configuration, which is defined in measurement object. As a consequence,
+incorporating a list of black cells into the triggering process is not
+supported. Moreover, cell-specific offsets (i.e. :math:`O_{cn}` and
+:math:`O_{cp}` in Event A3, A4, and A5) are not supported as well. The value
+equal to zero is always assumed in place of them.
+
+Measurement reporting
+---------------------
+
+This part handles the submission of measurement report from the UE RRC entity
+to the serving eNodeB entity via RRC protocol. Several assumptions apply:
+
+ - `reportAmount` does *not* apply for event-based measurement (i.e. always
+   assumed to be infinite), but does apply for periodical measurement;
+   
+ - in measurement reports, the `reportQuantity` is always assumed to be `BOTH`,
+   i.e., both RSRP and RSRQ are always reported, regardless of the
+   `triggerQuantity`.
 
 Handover
 ++++++++
