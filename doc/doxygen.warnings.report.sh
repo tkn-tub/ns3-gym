@@ -16,6 +16,9 @@ log=$DIR/doxygen.warnings.log
 
 if [ "$skipdoxy" == "" ]; then
 
+    # Run introspection, which may require a build
+    cd $(hg root) && ./waf --run print-introspected-doxygen >doc/introspected-doxygen.h
+
     conf=$DIR/doxygen.conf
 
     sed -i.bak -E '/^EXTRACT_ALL |^HAVE_DOT |^WARNINGS /s/YES/no/' $conf
