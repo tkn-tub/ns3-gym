@@ -39,6 +39,10 @@ class Scheduler;
 
 /**
  * \ingroup core
+ * \defgroup simulator Simulator
+ */
+/**
+ * \ingroup simulator
  *
  * \brief Control the scheduling of simulation events. 
  *
