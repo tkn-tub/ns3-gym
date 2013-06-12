@@ -820,6 +820,10 @@ def build(bld):
     # build command.
     bld.env['PRINT_BUILT_MODULES_AT_END'] = True
 
+    # Do not print the modules built if build command was "clean"
+    if bld.cmd == 'clean':
+        bld.env['PRINT_BUILT_MODULES_AT_END'] = False
+
     if Options.options.run:
         # Check that the requested program name is valid
         program_name, dummy_program_argv = wutils.get_run_program(Options.options.run, wutils.get_command_template(env))
