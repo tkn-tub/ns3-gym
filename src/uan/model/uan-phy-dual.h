@@ -250,7 +250,7 @@ public:
 
   virtual void SetSleepMode (bool sleep)
   {
-    //TODO This method has to be implemented
+    /// \todo This method has to be implemented
   }
 
   /**

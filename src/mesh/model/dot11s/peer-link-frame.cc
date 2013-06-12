@@ -72,7 +72,7 @@ PeerLinkFrameStart::PlinkFrameStartFields
 PeerLinkFrameStart::GetFields () const
 {
   PlinkFrameStartFields retval;
-  //TODO: protocol version:
+  /// \todo protocol version:
   retval.subtype = m_subtype;
   retval.capability = m_capability;
   retval.aid = m_aid;

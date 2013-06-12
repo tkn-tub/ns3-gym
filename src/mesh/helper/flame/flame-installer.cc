@@ -55,7 +55,7 @@ void
 FlameStack::Report (const Ptr<MeshPointDevice> mp, std::ostream& os)
 {
   mp->Report (os);
-  // TODO report flame counters
+  /// \todo report flame counters
   Ptr<FlameProtocol> flame = mp->GetObject<FlameProtocol> ();
   NS_ASSERT (flame != 0);
   flame->Report (os);
@@ -64,7 +64,7 @@ void
 FlameStack::ResetStats (const Ptr<MeshPointDevice> mp)
 {
   mp->ResetStats ();
-  // TODO reset flame counters
+  /// \todo reset flame counters
   Ptr<FlameProtocol> flame = mp->GetObject<FlameProtocol> ();
   NS_ASSERT (flame != 0);
 

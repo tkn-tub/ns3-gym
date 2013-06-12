@@ -881,7 +881,7 @@ LteUeRrc::ApplyRadioResourceConfigDedicated (LteRrcSap::RadioResourceConfigDedic
         {
           NS_LOG_INFO ("request to modify existing DRBID");
           Ptr<LteDataRadioBearerInfo> drbInfo = drbMapIt->second;
-          // TODO: currently not implemented. Would need to modify drbInfo, and then propagate changes to the MAC
+          /// \todo currently not implemented. Would need to modify drbInfo, and then propagate changes to the MAC
         }
     }
   

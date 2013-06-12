@@ -52,7 +52,7 @@ public:
    *
    * This method will be called by ns3::InternetStackHelper::Install
    * 
-   * TODO: support installing AODV on the subset of all available IP interfaces
+   * \todo support installing AODV on the subset of all available IP interfaces
    */
   virtual Ptr<Ipv4RoutingProtocol> Create (Ptr<Node> node) const;
   /**

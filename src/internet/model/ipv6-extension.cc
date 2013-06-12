@@ -1036,7 +1036,7 @@ uint8_t Ipv6ExtensionESP::Process (Ptr<Packet>& packet, uint8_t offset, Ipv6Head
 {
   NS_LOG_FUNCTION (this << packet << offset << ipv6Header << dst << nextHeader << isDropped);
 
-  /* TODO */
+  /** \todo */
 
   return 0;
 }
@@ -1074,7 +1074,7 @@ uint8_t Ipv6ExtensionAH::Process (Ptr<Packet>& packet, uint8_t offset, Ipv6Heade
 {
   NS_LOG_FUNCTION (this << packet << offset << ipv6Header << dst << nextHeader << isDropped);
 
-  /* TODO */
+  /** \todo */
 
   return true;
 }

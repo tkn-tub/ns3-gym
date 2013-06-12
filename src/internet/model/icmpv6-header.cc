@@ -1470,7 +1470,7 @@ TypeId Icmpv6OptionHeader::GetInstanceTypeId () const
 Icmpv6OptionHeader::Icmpv6OptionHeader ()
 {
   NS_LOG_FUNCTION (this);
-  /* TODO */
+  /** \todo */
   m_type = 0;
   m_len = 0;
 }

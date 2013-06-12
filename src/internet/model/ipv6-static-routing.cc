@@ -565,7 +565,7 @@ bool Ipv6StaticRouting::RouteInput (Ptr<const Packet> p, const Ipv6Header &heade
         }
     }
 
-  // TODO:  Configurable option to enable RFC 1222 Strong End System Model
+  /// \todo  Configurable option to enable RFC 1222 Strong End System Model
   // Right now, we will be permissive and allow a source to send us
   // a packet to one of our other interface addresses; that is, the
   // destination unicast address does not match one of the iif addresses,

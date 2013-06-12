@@ -404,7 +404,7 @@ RedQueue::InitializeParams (void)
       m_qW = 1.0 - std::exp (-10.0 / m_ptc);
     }
 
-  // TODO: implement adaptive RED
+  /// \todo implement adaptive RED
 
   NS_LOG_DEBUG ("\tm_delay " << m_linkDelay.GetSeconds () << "; m_isWait " 
                              << m_isWait << "; m_qW " << m_qW << "; m_ptc " << m_ptc
@@ -430,7 +430,7 @@ RedQueue::Estimator (uint32_t nQueued, uint32_t m, double qAvg, double qW)
   newAve *= 1.0 - qW;
   newAve += qW * nQueued;
 
-  // TODO: implement adaptive RED
+  // implement adaptive RED
 
   return newAve;
 }
@@ -488,7 +488,7 @@ RedQueue::DropEarly (Ptr<Packet> p, uint32_t qSize)
       // DROP or MARK
       m_count = 0;
       m_countBytes = 0;
-      // TODO: Implement set bit to mark
+      /// \todo Implement set bit to mark
 
       return 1; // drop
     }
