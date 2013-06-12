@@ -30,6 +30,7 @@ namespace ns3 {
 /**
  * \brief A deprecated way to get reference-counting powers
  *
+ * \deprecated
  * Users who wish to use reference counting for a class of their own should use
  * instead the template \ref ns3::SimpleRefCount. This class is maintained
  * purely for compatibility to avoid breaking the code of users.

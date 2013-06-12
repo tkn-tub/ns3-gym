@@ -95,7 +95,8 @@ public:
   virtual void SetReceiveErrorCallback (RxErrCallback cb);
   virtual void SetRxGainDb (double gain);
   virtual void SetTxPowerDb (double txpwr);
-  virtual void SetRxThresholdDb (double thresh);
+  /** \deprecated Look at PER Functor attribute */
+  virtual void SetRxThresholdDb (double thresh) NS_DEPRECATED;
   virtual void SetCcaThresholdDb (double thresh);
   virtual double GetRxGainDb (void);
   virtual double GetTxPowerDb (void);

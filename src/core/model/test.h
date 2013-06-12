@@ -885,6 +885,7 @@ protected:
   void SetDataDir (std::string directory);
 
   /**
+   * \deprecated
    * This method is deprecated. IsStatusFailure replaces it.
    */
   bool GetErrorStatus (void) const NS_DEPRECATED;
