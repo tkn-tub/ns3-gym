@@ -11,7 +11,7 @@ FIGURES = $(SOURCE)/figures
 # specify dia figures from which .png and .pdf figures need to be built
 
 IMAGES_DIA = \
-        $(FIGURES)/epc-ctrl-arch.dia \
+    $(FIGURES)/epc-ctrl-arch.dia \
 	$(FIGURES)/epc-data-flow-dl.dia \
 	$(FIGURES)/epc-data-flow-ul.dia \
 	$(FIGURES)/epc-profiling-scenario.dia \
@@ -31,7 +31,8 @@ IMAGES_DIA = \
 	$(FIGURES)/lte-subframe-structure.dia \
 	$(FIGURES)/lte-epc-x2-interface.dia \
 	$(FIGURES)/lte-harq-architecture.dia \
-	$(FIGURES)/lte-harq-processes-scheme.dia
+	$(FIGURES)/lte-harq-processes-scheme.dia \
+	$(FIGURES)/lte-ue-meas-tx-power-timing.dia
 
 
 # specify eps figures from which .png and .pdf figures need to be built

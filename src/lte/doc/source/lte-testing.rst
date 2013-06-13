@@ -277,7 +277,7 @@ report from UE PHY.
 
 .. _fig-tx-power-timing:
    
-.. figure:: figures/tx-power-timing.png
+.. figure:: figures/lte-ue-meas-tx-power-timing.*
    :align: center
 
    Period of Tx Power on and off in constant measurement test case
