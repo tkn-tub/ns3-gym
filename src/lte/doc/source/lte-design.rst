@@ -2125,16 +2125,18 @@ periodicity of the timer can be selected from the options defined in
 While in *event-based* criterion, there are various events that can be selected,
 which are briefly described in the table below: 
 
-======== ======================================================
-Name     Description
-======== ======================================================
-Event A1 Serving cell becomes better than `threshold`
-Event A2 Serving cell becomes worse than `threshold`
-Event A3 Neighbour becomes `offset` dB better than serving cell
-Event A4 Neighbour becomes better than `threshold`
-Event A5 Serving becomes worse than `threshold1`
-         *AND* neighbour becomes better than `threshold2`
-======== ======================================================
+.. table:: List of supported event-based triggering criteria
+
+   ======== ======================================================
+   Name     Description
+   ======== ======================================================
+   Event A1 Serving cell becomes better than `threshold`
+   Event A2 Serving cell becomes worse than `threshold`
+   Event A3 Neighbour becomes `offset` dB better than serving cell
+   Event A4 Neighbour becomes better than `threshold`
+   Event A5 Serving becomes worse than `threshold1`
+            *AND* neighbour becomes better than `threshold2`
+   ======== ======================================================
 
 Two main conditions to be checked in an event-based trigger are *entering
 condition* and *leaving condition*. More details can be found in Section 5.5.4

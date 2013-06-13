@@ -211,48 +211,50 @@ test case, and outputs the resulting RSRP and RSRQ. The obtained values are then
 UE measurement configuration tests
 ----------------------------------
 
-The table below is the complete list of cases for testing the UE measurements
+The tables below are the complete list of cases for testing the UE measurements
 configuration function. Note that the asterisks mark means that the case
 consists of 4 subcases: plain, with hysteresis, with time-to-trigger, or both.
 
-+------+----------------------------+-------------------+-------------+
-| Test | Configuration              | Reporting         | Expected    |
-| #    |                            | Criteria          | Report      |
-|      |                            |                   | Occurrences |
-+======+============================+===================+=============+
-| 1    | Constant measurement,      | None              | *TBD*       |
-+------+ 1 eNodeB and 1 static UE   +-------------------+-------------+
-| 2    |                            | Event A1 *        | *TBD*       |
-+------+                            +-------------------+-------------+
-| 3    |                            | Event A2 *        | *TBD*       |
-+------+                            +-------------------+-------------+
-| 4    |                            | Event A3 *        | *TBD*       |
-+------+                            +-------------------+-------------+
-| 5    |                            | Event A4 *        | *TBD*       |
-+------+                            +-------------------+-------------+
-| 5    |                            | Event A5 *        | *TBD*       |
-+------+                            +-------------------+-------------+
-| 6    |                            | Periodical 120 ms | *TBD*       |
-+------+                            +-------------------+-------------+
-| 7    |                            | Periodical 480 ms | *TBD*       |
-+------+----------------------------+-------------------+-------------+
-| 8    | Constant measurement,      | None              | *TBD*       |
-+------+ 2 eNodeB and 1 static UE   +-------------------+-------------+
-| 9    |                            | Event A3 *        | *TBD*       |
-+------+                            +-------------------+-------------+
-| 10   |                            | Event A4 *        | *TBD*       |
-+------+                            +-------------------+-------------+
-| 11   |                            | Event A5 *        | *TBD*       |
-+------+----------------------------+-------------------+-------------+
-| 12   | Handover,                  | Event A3          | *TBD*       |
-|      | 2 eNodeB and 1 static UE   | to None           |             |
-+------+                            +-------------------+-------------+
-| 13   |                            | Periodical 480 ms | *TBD*       |
-|      |                            | to Event A2       |             |
-+------+                            +-------------------+-------------+
-| 14   |                            | None to           | *TBD*       |
-|      |                            | Periodical 480 ms |             |
-+------+----------------------------+-------------------+-------------+
+.. table:: UE measurement configuration test cases with constant measurement,
+           1 eNodeB, and 1 static UE
+
+   ====== ================== ===========================
+   Test # Reporting Criteria Expected Report Occurrences
+   ====== ================== ===========================
+   1      None               *TBD*
+   2      Event A1 *         *TBD*
+   3      Event A2 *         *TBD*
+   4      Event A3 *         *TBD*
+   5      Event A4 *         *TBD*
+   6      Event A5 *         *TBD*
+   7      Periodical 120 ms  *TBD*
+   8      Periodical 480 ms  *TBD*
+   ====== ================== ===========================
+
+.. table:: UE measurement configuration test cases with constant measurement,
+           2 eNodeB, and 1 static UE
+
+   ====== ================== ===========================
+   Test # Reporting Criteria Expected Report Occurrences
+   ====== ================== ===========================
+   9      None               *TBD*
+   10     Event A3 *         *TBD*
+   11     Event A4 *         *TBD*
+   12     Event A5 *         *TBD*
+   13     Periodical 120 ms  *TBD*
+   14     Periodical 480 ms  *TBD*
+   ====== ================== ===========================
+
+.. table:: UE measurement configuration test cases with handover, 2 eNodeB,
+           and 1 static UE
+
+   ====== ============================= ===========================
+   Test # Reporting Criteria            Expected Report Occurrences
+   ====== ============================= ===========================
+   12     Event A3 to None              *TBD*
+   13     Periodical 480 ms to Event A2 *TBD*
+   14     None to Periodical 480 ms     *TBD*
+   ====== ============================= ===========================
 
 The above list is implemented as 3 ``TestCase`` classes associated with
 ``LteUeMeasConfigTestSuite`` (*lte-ue-meas-config* test suite). These test cases
