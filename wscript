@@ -468,8 +468,10 @@ def configure(conf):
     conf.report_optional_feature("ENABLE_EXAMPLES", "Build examples", env['ENABLE_EXAMPLES'], 
                                  why_not_examples)
 
+    env['VALGRIND_FOUND'] = False
     try:
         conf.find_program('valgrind', var='VALGRIND')
+        env['VALGRIND_FOUND'] = True
     except WafError:
         pass
 
