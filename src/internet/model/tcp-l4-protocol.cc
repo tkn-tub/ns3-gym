@@ -188,6 +188,7 @@ TcpL4Protocol::CreateSocket (TypeId socketTypeId)
   socket->SetNode (m_node);
   socket->SetTcp (this);
   socket->SetRtt (rtt);
+  m_sockets.push_back (socket);
   return socket;
 }
 
