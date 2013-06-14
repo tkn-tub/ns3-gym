@@ -63,7 +63,7 @@ namespace ns3 {
  * The heart of that example is this code:
  *
  * \code
- *   int         val1 = 1;
+ *  int         val1 = 1;
  *  bool        val2 = false;
  *  std::string val3 = "";
  *  
@@ -73,7 +73,7 @@ namespace ns3 {
  *             "This little program demonstrates how to use CommandLine.");
  *  cmd.AddValue ("val1", "an int argument",          val1);
  *  cmd.AddValue ("val2", "a bool argument",          val2);
- *  cmd.AddValue ("val3", "a string argument",          val3);
+ *  cmd.AddValue ("val3", "a string argument",        val3);
  *  cmd.Parse (argc, argv);
  * \endcode
  *
