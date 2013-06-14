@@ -18,12 +18,15 @@
  * Authors: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#include <cstdlib> // for exit
+#include <algorithm>  // for transform
+#include <cctype>     // for tolower
+#include <cstdlib>    // for exit
 
 #include "command-line.h"
 #include "log.h"
 #include "config.h"
 #include "global-value.h"
+#include "system-path.h"
 #include "type-id.h"
 #include "string.h"
 
@@ -62,6 +65,8 @@ CommandLine::Copy (const CommandLine &cmd)
     {
       m_items.push_back (*i);
     }
+  m_usage = cmd.m_usage;
+  m_name  = cmd.m_name;
 }
 void
 CommandLine::Clear (void)
@@ -73,6 +78,20 @@ CommandLine::Clear (void)
       delete *i;
     }
   m_items.clear ();
+  m_usage = "";
+  m_name  = "";
+}
+
+void
+CommandLine::Usage (const std::string usage)
+{
+  m_usage = usage;
+}
+
+std::string
+CommandLine::GetName () const
+{
+  return m_name;
 }
 
 CommandLine::Item::~Item ()
@@ -81,10 +100,12 @@ CommandLine::Item::~Item ()
 }
 
 void
-CommandLine::Parse (int iargc, char *argv[]) const
+CommandLine::Parse (int iargc, char *argv[])
 {
   NS_LOG_FUNCTION (this << iargc << argv);
 
+  m_name = SystemPath::Split (argv[0]).back ();
+  
   int argc = iargc;
   for (argc--, argv++; argc > 0; argc--, argv++)
     {
@@ -129,20 +150,34 @@ CommandLine::PrintHelp (void) const
 {
   NS_LOG_FUNCTION (this);
 
-  std::cout << "--PrintHelp: Print this help message." << std::endl;
-  std::cout << "--PrintGroups: Print the list of groups." << std::endl;
-  std::cout << "--PrintTypeIds: Print all TypeIds." << std::endl;
-  std::cout << "--PrintGroup=[group]: Print all TypeIds of group." << std::endl;
-  std::cout << "--PrintAttributes=[typeid]: Print all attributes of typeid." << std::endl;
-  std::cout << "--PrintGlobals: Print the list of globals." << std::endl;
+  std::cout << m_name << " [Program Arguments] [General Arguments]" << std::endl;
+  
+  if (m_usage.length ())
+    {
+      std::cout << std::endl;
+      std::cout << m_usage << std::endl;
+    }
+  
   if (!m_items.empty ())
     {
-      std::cout << "User Arguments:" << std::endl;
+      std::cout << std::endl;
+      std::cout << "Program Arguments:" << std::endl;
       for (Items::const_iterator i = m_items.begin (); i != m_items.end (); ++i)
         {
-          std::cout << "    --" << (*i)->m_name << ": " << (*i)->m_help << std::endl;
+          std::cout << "    --" << (*i)->m_name << ":\t" << (*i)->m_help << std::endl;
         }
     }
+
+  std::cout << std::endl;
+  std::cout
+    << "General Arguments:\n"
+    << "    --PrintHelp:                 Print this help message.\n"
+    << "    --PrintGroups:               Print the list of groups.\n"
+    << "    --PrintTypeIds:              Print all TypeIds.\n"
+    << "    --PrintGroup=[group]:        Print all TypeIds of group.\n"
+    << "    --PrintAttributes=[typeid]:  Print all attributes of typeid.\n"
+    << "    --PrintGlobals:              Print the list of globals.\n"
+    << std::endl;
 }
 
 void
@@ -191,7 +226,7 @@ CommandLine::PrintGroup (std::string group) const
       TypeId tid = TypeId::GetRegistered (i);
       if (tid.GetGroupName () == group)
         {
-          std::cout << "    --PrintAttributes=" <<tid.GetName ()<<std::endl;
+          std::cout << "    --PrintGroup=" <<tid.GetName ()<<std::endl;
         }
     }
 }
@@ -204,7 +239,7 @@ CommandLine::PrintTypeIds (void) const
   for (uint32_t i = 0; i < TypeId::GetRegisteredN (); ++i)
     {
       TypeId tid = TypeId::GetRegistered (i);
-      std::cout << "    --PrintAttributes=" <<tid.GetName ()<<std::endl;
+      std::cout << "    --PrintTypeIds=" <<tid.GetName ()<<std::endl;
     }
 }
 
@@ -238,7 +273,7 @@ CommandLine::PrintGroups (void) const
     }
   for (std::list<std::string>::const_iterator k = groups.begin (); k != groups.end (); ++k)
     {
-      std::cout << "    --PrintGroup="<<*k<<std::endl;
+      std::cout << "    --PrintGroups="<<*k<<std::endl;
     }
 }
 
@@ -248,7 +283,7 @@ CommandLine::HandleArgument (std::string name, std::string value) const
   NS_LOG_FUNCTION (this << name << value);
 
   NS_LOG_DEBUG ("Handle arg name="<<name<<" value="<<value);
-  if (name == "PrintHelp")
+  if (name == "PrintHelp" || name == "help")
     {
       // method below never returns.
       PrintHelp ();
@@ -330,6 +365,27 @@ CommandLine::AddValue (const std::string &name,
   item->m_help = help;
   item->m_callback = callback;
   m_items.push_back (item);
+}
+
+template <>
+bool
+CommandLineHelper::UserItemParse<bool> (const std::string value, bool & val)
+{
+  std::string src = value;
+  std::transform(src.begin(), src.end(), src.begin(), ::tolower);
+  
+  if ( (value.length () == 0) || (value == "true") || (value == "t"))
+    {
+      val = true;
+      return true;
+    }
+  else
+    {
+      std::istringstream iss;
+      iss.str (value);
+      iss >> val;
+      return !iss.bad () && !iss.fail ();
+    }
 }
 
 } // namespace ns3

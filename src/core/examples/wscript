@@ -29,6 +29,10 @@ def build(bld):
                                  ['core'])
     obj.source = 'sample-random-variable-stream.cc'
 
+    obj = bld.create_ns3_program('command-line-example',
+                                 ['core'])
+    obj.source = 'command-line-example.cc'
+
     if bld.env['ENABLE_THREADING'] and bld.env["ENABLE_REAL_TIME"]:
         obj = bld.create_ns3_program('main-test-sync', ['network'])
         obj.source = 'main-test-sync.cc'
