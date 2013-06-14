@@ -58,6 +58,7 @@ interesting_config_items = [
     "BUILD_PROFILE",
     "VERSION",
     "PYTHON",
+    "VALGRIND_FOUND",
 ]
 
 NSC_ENABLED = False
@@ -73,6 +74,7 @@ APPNAME = ""
 BUILD_PROFILE = ""
 VERSION = ""
 PYTHON = ""
+VALGRIND_FOUND = True
 
 #
 # This will be given a prefix and a suffix when the waf config file is
@@ -1764,6 +1766,16 @@ def run_tests():
             print '***  Note: ns-3 examples are currently disabled. Enable them by adding'
             print '***  "--enable-examples" to ./waf configure or modifying your .ns3rc file.'
             print
+
+    #
+    # Let the user know if they tried to use valgrind but it was not
+    # present on their machine.
+    #
+    if options.valgrind and not VALGRIND_FOUND:
+        print
+        print '***  Note: you are trying to use valgrind, but valgrind could not be found'
+        print '***  on your machine.  All tests and examples will crash or be skipped.'
+        print
 
     #
     # If we have been asked to retain all of the little temporary files, we
