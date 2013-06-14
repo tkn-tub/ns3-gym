@@ -74,6 +74,7 @@ private:
   double m_maxX;
   double m_minY;
   double m_maxY;
+  double m_z;
   Ptr<RandomRectanglePositionAllocator> m_position;
   double m_minPause;
   double m_maxPause;
