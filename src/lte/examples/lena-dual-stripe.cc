@@ -338,6 +338,16 @@ static ns3::GlobalValue g_srsPeriodicity ("srsPeriodicity",
                                                ns3::UintegerValue (80),
                                                ns3::MakeUintegerChecker<uint16_t> ());
 
+static ns3::GlobalValue g_outdoorUeMinSpeed ("outdoorUeMinSpeed",
+                                   "Minimum speed value of macor UE with random waypoint model [m/s].",
+                                   ns3::DoubleValue (0.0),
+                                   ns3::MakeDoubleChecker<double> ());
+
+static ns3::GlobalValue g_outdoorUeMaxSpeed ("outdoorUeMaxSpeed",
+                                   "Maximum speed value of macor UE with random waypoint model [m/s].",
+                                   ns3::DoubleValue (0.0),
+                                   ns3::MakeDoubleChecker<double> ());
+
 int
 main (int argc, char *argv[])
 {
@@ -412,11 +422,15 @@ main (int argc, char *argv[])
   uint16_t numBearersPerUe = uintegerValue.Get ();
   GlobalValue::GetValueByName ("srsPeriodicity", uintegerValue);
   uint16_t srsPeriodicity = uintegerValue.Get ();
+  GlobalValue::GetValueByName ("outdoorUeMinSpeed", doubleValue);
+  uint16_t outdoorUeMinSpeed = doubleValue.Get ();
+  GlobalValue::GetValueByName ("outdoorUeMaxSpeed", doubleValue);
+  uint16_t outdoorUeMaxSpeed = doubleValue.Get ();
 
   Config::SetDefault ("ns3::LteEnbRrc::SrsPeriodicity", UintegerValue(srsPeriodicity));
 
   Box macroUeBox;
-
+  double ueZ = 1.5;
   if (nMacroEnbSites > 0)
     {
       uint32_t currentSite = nMacroEnbSites -1;
@@ -434,12 +448,12 @@ main (int argc, char *argv[])
                         (nMacroEnbSitesX + areaMarginFactor)*interSiteDistance, 
                         -areaMarginFactor*interSiteDistance, 
                         (nMacroEnbSitesY -1)*interSiteDistance*sqrt(0.75) + areaMarginFactor*interSiteDistance,
-                        1.0, 2.0);
+                        ueZ, ueZ);
     }
   else
     {
       // still need the box to place femtocell blocks
-      macroUeBox = Box (0, 150, 0, 150, 1.0, 2.0);
+      macroUeBox = Box (0, 150, 0, 150, ueZ, ueZ);
     }
   
   FemtocellBlockAllocator blockAllocator (macroUeBox, nApartmentsX, nFloors);
@@ -526,28 +540,6 @@ main (int argc, char *argv[])
   lteHelper->SetEnbDeviceAttribute ("DlBandwidth", UintegerValue (homeEnbBandwidth));
   lteHelper->SetEnbDeviceAttribute ("UlBandwidth", UintegerValue (homeEnbBandwidth));
   NetDeviceContainer homeEnbDevs  = lteHelper->InstallEnbDevice (homeEnbs);
-  
-
-  // macro Ues 
-  NS_LOG_LOGIC ("randomly allocating macro UEs in " << macroUeBox);
-  positionAlloc = CreateObject<RandomBoxPositionAllocator> ();
-  Ptr<UniformRandomVariable> xVal = CreateObject<UniformRandomVariable> ();
-  xVal->SetAttribute ("Min", DoubleValue (macroUeBox.xMin));
-  xVal->SetAttribute ("Max", DoubleValue (macroUeBox.xMax));
-  positionAlloc->SetAttribute ("X", PointerValue (xVal));
-  Ptr<UniformRandomVariable> yVal = CreateObject<UniformRandomVariable> ();
-  yVal->SetAttribute ("Min", DoubleValue (macroUeBox.yMin));
-  yVal->SetAttribute ("Max", DoubleValue (macroUeBox.yMax));
-  positionAlloc->SetAttribute ("Y", PointerValue (yVal));
-  Ptr<UniformRandomVariable> zVal = CreateObject<UniformRandomVariable> ();
-  zVal->SetAttribute ("Min", DoubleValue (macroUeBox.zMin));
-  zVal->SetAttribute ("Max", DoubleValue (macroUeBox.zMax));
-  positionAlloc->SetAttribute ("Z", PointerValue (zVal));
-  mobility.SetPositionAllocator (positionAlloc);
-  mobility.Install (macroUes);
-  BuildingsHelper::Install (macroUes);
-  
-  NetDeviceContainer macroUeDevs = lteHelper->InstallUeDevice (macroUes);
 
 
   // home UEs located in the same apartment in which there are the Home eNBs
@@ -556,6 +548,41 @@ main (int argc, char *argv[])
   mobility.Install (homeUes);
   BuildingsHelper::Install (homeUes);
   NetDeviceContainer homeUeDevs = lteHelper->InstallUeDevice (homeUes);
+
+  // macro Ues
+  NS_LOG_LOGIC ("randomly allocating macro UEs in " << macroUeBox << " speedMin " << outdoorUeMinSpeed << " speedMax " << outdoorUeMaxSpeed);
+  if (outdoorUeMaxSpeed!=0.0)
+    {
+      mobility.SetMobilityModel ("ns3::SteadyStateRandomWaypointMobilityModel");
+      Config::SetDefault ("ns3::SteadyStateRandomWaypointMobilityModel::MinX", DoubleValue (macroUeBox.xMin));
+      Config::SetDefault ("ns3::SteadyStateRandomWaypointMobilityModel::MinY", DoubleValue (macroUeBox.yMin));
+      Config::SetDefault ("ns3::SteadyStateRandomWaypointMobilityModel::MaxX", DoubleValue (macroUeBox.xMax));
+      Config::SetDefault ("ns3::SteadyStateRandomWaypointMobilityModel::MaxY", DoubleValue (macroUeBox.yMax));
+      Config::SetDefault ("ns3::SteadyStateRandomWaypointMobilityModel::Z", DoubleValue (ueZ));
+      Config::SetDefault ("ns3::SteadyStateRandomWaypointMobilityModel::MaxSpeed", DoubleValue (outdoorUeMaxSpeed));
+      Config::SetDefault ("ns3::SteadyStateRandomWaypointMobilityModel::MinSpeed", DoubleValue (outdoorUeMinSpeed));
+    }
+    else
+    {
+      positionAlloc = CreateObject<RandomBoxPositionAllocator> ();
+      Ptr<UniformRandomVariable> xVal = CreateObject<UniformRandomVariable> ();
+      xVal->SetAttribute ("Min", DoubleValue (macroUeBox.xMin));
+      xVal->SetAttribute ("Max", DoubleValue (macroUeBox.xMax));
+      positionAlloc->SetAttribute ("X", PointerValue (xVal));
+      Ptr<UniformRandomVariable> yVal = CreateObject<UniformRandomVariable> ();
+      yVal->SetAttribute ("Min", DoubleValue (macroUeBox.yMin));
+      yVal->SetAttribute ("Max", DoubleValue (macroUeBox.yMax));
+      positionAlloc->SetAttribute ("Y", PointerValue (yVal));
+      Ptr<UniformRandomVariable> zVal = CreateObject<UniformRandomVariable> ();
+      zVal->SetAttribute ("Min", DoubleValue (macroUeBox.zMin));
+      zVal->SetAttribute ("Max", DoubleValue (macroUeBox.zMax));
+      positionAlloc->SetAttribute ("Z", PointerValue (zVal));
+      mobility.SetPositionAllocator (positionAlloc);
+    }
+  mobility.Install (macroUes);
+  BuildingsHelper::Install (macroUes);
+
+  NetDeviceContainer macroUeDevs = lteHelper->InstallUeDevice (macroUes);
 
   Ipv4Address remoteHostAddr;
   NodeContainer ues;
