@@ -194,6 +194,8 @@ def register_types(module):
     module.add_class('PacketTagList', import_from_module='ns.network')
     ## packet-tag-list.h (module 'network'): ns3::PacketTagList::TagData [struct]
     module.add_class('TagData', import_from_module='ns.network', outer_class=root_module['ns3::PacketTagList'])
+    ## packet-tag-list.h (module 'network'): ns3::PacketTagList::TagData::TagData_e [enumeration]
+    module.add_enum('TagData_e', ['MAX_SIZE'], outer_class=root_module['ns3::PacketTagList::TagData'], import_from_module='ns.network')
     ## pcap-file.h (module 'network'): ns3::PcapFile [class]
     module.add_class('PcapFile', import_from_module='ns.network')
     ## trace-helper.h (module 'network'): ns3::PcapHelper [class]
@@ -3945,6 +3947,10 @@ def register_Ns3PacketTagList_methods(root_module, cls):
     cls.add_method('RemoveAll', 
                    'void', 
                    [])
+    ## packet-tag-list.h (module 'network'): bool ns3::PacketTagList::Replace(ns3::Tag & tag) [member function]
+    cls.add_method('Replace', 
+                   'bool', 
+                   [param('ns3::Tag &', 'tag')])
     return
 
 def register_Ns3PacketTagListTagData_methods(root_module, cls):
@@ -14230,6 +14236,10 @@ def register_Ns3Packet_methods(root_module, cls):
     cls.add_method('RemoveTrailer', 
                    'uint32_t', 
                    [param('ns3::Trailer &', 'trailer')])
+    ## packet.h (module 'network'): bool ns3::Packet::ReplacePacketTag(ns3::Tag & tag) [member function]
+    cls.add_method('ReplacePacketTag', 
+                   'bool', 
+                   [param('ns3::Tag &', 'tag')])
     ## packet.h (module 'network'): uint32_t ns3::Packet::Serialize(uint8_t * buffer, uint32_t maxSize) const [member function]
     cls.add_method('Serialize', 
                    'uint32_t', 
@@ -15297,10 +15307,10 @@ def register_Ns3Icmpv6L4Protocol_methods(root_module, cls):
     cls.add_method('SendRS', 
                    'void', 
                    [param('ns3::Ipv6Address', 'src'), param('ns3::Ipv6Address', 'dst'), param('ns3::Address', 'hardwareAddress')])
-    ## icmpv6-l4-protocol.h (module 'internet'): void ns3::Icmpv6L4Protocol::SendRedirection(ns3::Ptr<ns3::Packet> redirectedPacket, ns3::Ipv6Address dst, ns3::Ipv6Address redirTarget, ns3::Ipv6Address redirDestination, ns3::Address redirHardwareTarget) [member function]
+    ## icmpv6-l4-protocol.h (module 'internet'): void ns3::Icmpv6L4Protocol::SendRedirection(ns3::Ptr<ns3::Packet> redirectedPacket, ns3::Ipv6Address src, ns3::Ipv6Address dst, ns3::Ipv6Address redirTarget, ns3::Ipv6Address redirDestination, ns3::Address redirHardwareTarget) [member function]
     cls.add_method('SendRedirection', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'redirectedPacket'), param('ns3::Ipv6Address', 'dst'), param('ns3::Ipv6Address', 'redirTarget'), param('ns3::Ipv6Address', 'redirDestination'), param('ns3::Address', 'redirHardwareTarget')])
+                   [param('ns3::Ptr< ns3::Packet >', 'redirectedPacket'), param('ns3::Ipv6Address', 'src'), param('ns3::Ipv6Address', 'dst'), param('ns3::Ipv6Address', 'redirTarget'), param('ns3::Ipv6Address', 'redirDestination'), param('ns3::Address', 'redirHardwareTarget')])
     ## icmpv6-l4-protocol.h (module 'internet'): void ns3::Icmpv6L4Protocol::SetNode(ns3::Ptr<ns3::Node> node) [member function]
     cls.add_method('SetNode', 
                    'void', 
