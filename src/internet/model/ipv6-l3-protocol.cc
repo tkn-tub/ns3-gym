@@ -938,14 +938,15 @@ void Ipv6L3Protocol::IpForward (Ptr<Ipv6Route> rtentry, Ptr<const Packet> p, con
         }
 
       copy->AddHeader (header);
+      Ipv6Address linkLocal = GetInterface (GetInterfaceForDevice (rtentry->GetOutputDevice ()))->GetLinkLocalAddress ().GetAddress ();
 
       if (icmpv6->Lookup (target, rtentry->GetOutputDevice (), 0, &hardwareTarget))
         {
-          icmpv6->SendRedirection (copy, src, target, dst, hardwareTarget);
+          icmpv6->SendRedirection (copy, linkLocal, src, target, dst, hardwareTarget);
         }
       else
         {
-          icmpv6->SendRedirection (copy, src, target, dst, Address ());
+          icmpv6->SendRedirection (copy, linkLocal, src, target, dst, Address ());
         }
     }
 

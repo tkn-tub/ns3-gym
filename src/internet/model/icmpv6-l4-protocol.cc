@@ -1083,7 +1083,7 @@ void Icmpv6L4Protocol::SendErrorParameterError (Ptr<Packet> malformedPacket, Ipv
   SendMessage (p, dst, header, 255);
 }
 
-void Icmpv6L4Protocol::SendRedirection (Ptr<Packet> redirectedPacket, Ipv6Address dst, Ipv6Address redirTarget, Ipv6Address redirDestination, Address redirHardwareTarget)
+void Icmpv6L4Protocol::SendRedirection (Ptr<Packet> redirectedPacket, Ipv6Address src, Ipv6Address dst, Ipv6Address redirTarget, Ipv6Address redirDestination, Address redirHardwareTarget)
 {
   NS_LOG_FUNCTION (this << redirectedPacket << dst << redirTarget << redirDestination << redirHardwareTarget);
   uint32_t llaSize = 0;
@@ -1128,7 +1128,10 @@ void Icmpv6L4Protocol::SendRedirection (Ptr<Packet> redirectedPacket, Ipv6Addres
   Icmpv6Redirection redirectionHeader;
   redirectionHeader.SetTarget (redirTarget);
   redirectionHeader.SetDestination (redirDestination);
-  SendMessage (p, dst, redirectionHeader, 64);
+  redirectionHeader.CalculatePseudoHeaderChecksum (src, dst, p->GetSize () + redirectionHeader.GetSerializedSize (), PROT_NUMBER);
+  p->AddHeader (redirectionHeader);
+
+  SendMessage (p, src, dst, 64);
 }
 
 Ptr<Packet> Icmpv6L4Protocol::ForgeNA (Ipv6Address src, Ipv6Address dst, Address* hardwareAddress, uint8_t flags)
