@@ -302,7 +302,7 @@ Ptr<Ipv6Route> Ipv6StaticRouting::LookupStatic (Ipv6Address dst, Ptr<NetDevice> 
                 }
               else if (route->GetDest ().IsAny ()) /* default route */
                 {
-                  rtentry->SetSource (SourceAddressSelection (interfaceIdx, route->GetPrefixToUse ().IsAny () ? route->GetGateway () : route->GetPrefixToUse ()));
+                  rtentry->SetSource (SourceAddressSelection (interfaceIdx, route->GetPrefixToUse ().IsAny () ? dst : route->GetPrefixToUse ()));
                 }
               else
                 {
@@ -761,13 +761,14 @@ Ipv6Address Ipv6StaticRouting::SourceAddressSelection (uint32_t interface, Ipv6A
       return ret;
     }
 
-  /* useally IPv6 interfaces have one link-local address and one global address */
+  /* usually IPv6 interfaces have one link-local address and one global address */
 
   for (uint32_t i = 1; i < m_ipv6->GetNAddresses (interface); i++)
     {
       Ipv6InterfaceAddress test = m_ipv6->GetAddress (interface, i);
+      Ipv6InterfaceAddress dst(dest);
 
-      if (test.GetAddress ().CombinePrefix (test.GetPrefix ()) == dest.CombinePrefix (test.GetPrefix ()))
+      if (test.GetScope() == dst.GetScope())
         {
           return test.GetAddress ();
         }
