@@ -33,6 +33,7 @@ Bugs fixed
 - Bug 1689 - IPv6 shouldn't add a default gateway without checking the Router lifetime
 - Bug 1700 - Ipv6RawSocket does not honor the bound address when sending packets
 - Bug 1701 - Ipv6StaticRouting: the source address should match the destination scope
+- Bug 1703 - Nodes don't react to a DAD
 
 Known issues
 ------------
