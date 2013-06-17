@@ -142,7 +142,7 @@ TypeId LteHelper::GetTypeId (void)
                    "The allowed values for this attributes are the type names "
                    "of any class inheriting from ns3::FfMacScheduler.",
                    StringValue ("ns3::PfFfMacScheduler"),
-                   MakeStringAccessor (&LteHelper::SetSchedulerType),
+                   MakeStringAccessor (&LteHelper::SetSchedulerType, &LteHelper::GetSchedulerType),
                    MakeStringChecker ())
     .AddAttribute ("PathlossModel",
                    "The type of pathloss model to be used. "
@@ -193,6 +193,12 @@ LteHelper::SetSchedulerType (std::string type)
   m_schedulerFactory = ObjectFactory ();
   m_schedulerFactory.SetTypeId (type);
 }
+
+std::string
+LteHelper::GetSchedulerType () const
+{
+  return m_schedulerFactory.GetTypeId ().GetName ();
+} 
 
 void 
 LteHelper::SetSchedulerAttribute (std::string n, const AttributeValue &v)
