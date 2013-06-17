@@ -99,6 +99,12 @@ public:
   void SetSchedulerType (std::string type);
 
   /**
+   *
+   * \return the scheduler type
+   */
+  std::string GetSchedulerType () const; 
+
+  /**
    * set an attribute for the scheduler to be created
    * 
    * \param n the name of the attribute
