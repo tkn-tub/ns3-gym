@@ -526,6 +526,11 @@ main (int argc, char *argv[])
   lteHelper->SetEnbDeviceAttribute ("UlBandwidth", UintegerValue (macroEnbBandwidth));
   NetDeviceContainer macroEnbDevs = lteHexGridEnbTopologyHelper->SetPositionAndInstallEnbDevice (macroEnbs);
 
+  if (epc)
+    {
+      // this enables handover for macro eNBs
+      lteHelper->AddX2Interface (macroEnbs);
+    }
   
   // HomeEnbs randomly indoor
   
@@ -554,6 +559,7 @@ main (int argc, char *argv[])
   if (outdoorUeMaxSpeed!=0.0)
     {
       mobility.SetMobilityModel ("ns3::SteadyStateRandomWaypointMobilityModel");
+      
       Config::SetDefault ("ns3::SteadyStateRandomWaypointMobilityModel::MinX", DoubleValue (macroUeBox.xMin));
       Config::SetDefault ("ns3::SteadyStateRandomWaypointMobilityModel::MinY", DoubleValue (macroUeBox.yMin));
       Config::SetDefault ("ns3::SteadyStateRandomWaypointMobilityModel::MaxX", DoubleValue (macroUeBox.xMax));
@@ -561,6 +567,24 @@ main (int argc, char *argv[])
       Config::SetDefault ("ns3::SteadyStateRandomWaypointMobilityModel::Z", DoubleValue (ueZ));
       Config::SetDefault ("ns3::SteadyStateRandomWaypointMobilityModel::MaxSpeed", DoubleValue (outdoorUeMaxSpeed));
       Config::SetDefault ("ns3::SteadyStateRandomWaypointMobilityModel::MinSpeed", DoubleValue (outdoorUeMinSpeed));
+
+      // this is not used since SteadyStateRandomWaypointMobilityModel
+      // takes care of initializing the positions;  however we need to
+      // reset it since the previously used PositionAllocator
+      // (SameRoom) will cause an error when used with homeDeploymentRatio=0
+      positionAlloc = CreateObject<RandomBoxPositionAllocator> ();
+      mobility.SetPositionAllocator (positionAlloc);
+      mobility.Install (macroUes);
+      
+      // forcing initialization so we don't have to wait for Nodes to
+      // start before positions are assigned (which is needed to
+      // output node positions to file and to make AttachToClosestEnb work)
+      for (NodeContainer::Iterator it = macroUes.Begin ();
+           it != macroUes.End ();
+           ++it)
+        {
+          (*it)->Initialize ();
+        }
     }
     else
     {
@@ -578,8 +602,8 @@ main (int argc, char *argv[])
       zVal->SetAttribute ("Max", DoubleValue (macroUeBox.zMax));
       positionAlloc->SetAttribute ("Z", PointerValue (zVal));
       mobility.SetPositionAllocator (positionAlloc);
+      mobility.Install (macroUes);
     }
-  mobility.Install (macroUes);
   BuildingsHelper::Install (macroUes);
 
   NetDeviceContainer macroUeDevs = lteHelper->InstallUeDevice (macroUes);
