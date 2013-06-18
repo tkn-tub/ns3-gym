@@ -4,7 +4,6 @@ def build(bld):
 
     module = bld.create_ns3_module('tools', ['network', 'stats'])
     module.source = [
-        'model/event-garbage-collector.cc',
         'model/gnuplot.cc',
         'model/delay-jitter-estimation.cc',
         ]
@@ -12,14 +11,12 @@ def build(bld):
     module_test = bld.create_ns3_module_test_library('tools')
     module_test.source = [
         'test/average-test-suite.cc',
-        'test/event-garbage-collector-test-suite.cc',
         ]
     
     headers = bld(features='ns3header')
     headers.module = 'tools'
     headers.source = [
         'model/average.h',
-        'model/event-garbage-collector.h',
         'model/gnuplot.h',
         'model/delay-jitter-estimation.h',
         ]
