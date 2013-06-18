@@ -147,6 +147,7 @@ def build(bld):
         'model/vector.cc',
         'model/fatal-impl.cc',
         'model/system-path.cc',
+        'helper/random-variable-stream-helper.cc',
         ]
 
     core_test = bld.create_ns3_module_test_library('core')
@@ -246,6 +247,7 @@ def build(bld):
         'model/system-path.h',
         'model/unused.h',
         'model/math.h',
+        'helper/random-variable-stream-helper.h',
         ]
 
     if sys.platform == 'win32':

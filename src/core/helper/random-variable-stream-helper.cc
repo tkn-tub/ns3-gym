@@ -16,12 +16,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#include "random-variable-stream.h"
+#include "ns3/random-variable-stream.h"
+#include "ns3/config.h"
+#include "ns3/pointer.h"
+#include "ns3/log.h"
+#include "ns3/assert.h"
 #include "random-variable-stream-helper.h"
-#include "config.h"
-#include "pointer.h"
-#include "log.h"
-#include "assert.h"
 
 NS_LOG_COMPONENT_DEFINE ("RandomVariableStreamHelper");
 
