@@ -8,12 +8,10 @@ def build(bld):
 
     module_test = bld.create_ns3_module_test_library('tools')
     module_test.source = [
-        'test/average-test-suite.cc',
         ]
     
     headers = bld(features='ns3header')
     headers.module = 'tools'
     headers.source = [
-        'model/average.h',
         ]
 

@@ -26,6 +26,7 @@ def build(bld):
     module_test = bld.create_ns3_module_test_library('stats')
     module_test.source = [
         'test/basic-data-calculators-test-suite.cc',
+        'test/average-test-suite.cc',
         ]
 
     headers = bld(features='ns3header')
@@ -39,6 +40,7 @@ def build(bld):
         'model/omnet-data-output.h',
         'model/data-collector.h',
         'model/gnuplot.h',
+        'model/average.h',
         'helper/delay-jitter-estimation.h',
         ]
 

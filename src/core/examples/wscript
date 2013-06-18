@@ -15,10 +15,10 @@ def build(bld):
     obj = bld.create_ns3_program('main-ptr', ['core'] )
     obj.source = 'main-ptr.cc'
 
-    obj = bld.create_ns3_program('main-random-variable', ['core', 'config-store', 'tools'])
+    obj = bld.create_ns3_program('main-random-variable', ['core', 'config-store','stats'])
     obj.source = 'main-random-variable.cc'
 
-    obj = bld.create_ns3_program('main-random-variable-stream', ['core', 'config-store', 'tools'])
+    obj = bld.create_ns3_program('main-random-variable-stream', ['core', 'config-store','stats'])
     obj.source = 'main-random-variable-stream.cc'
 
     obj = bld.create_ns3_program('sample-random-variable',
