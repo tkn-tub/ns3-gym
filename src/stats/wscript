@@ -20,6 +20,7 @@ def build(bld):
         'model/omnet-data-output.cc',
         'model/data-collector.cc',
         'model/gnuplot.cc',
+        'helper/delay-jitter-estimation.cc',
         ]
 
     module_test = bld.create_ns3_module_test_library('stats')
@@ -38,6 +39,7 @@ def build(bld):
         'model/omnet-data-output.h',
         'model/data-collector.h',
         'model/gnuplot.h',
+        'helper/delay-jitter-estimation.h',
         ]
 
     if bld.env['SQLITE_STATS']:

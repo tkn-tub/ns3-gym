@@ -4,7 +4,6 @@ def build(bld):
 
     module = bld.create_ns3_module('tools', ['network', 'stats'])
     module.source = [
-        'model/delay-jitter-estimation.cc',
         ]
 
     module_test = bld.create_ns3_module_test_library('tools')
@@ -16,6 +15,5 @@ def build(bld):
     headers.module = 'tools'
     headers.source = [
         'model/average.h',
-        'model/delay-jitter-estimation.h',
         ]
 
