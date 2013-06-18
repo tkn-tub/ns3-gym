@@ -26,7 +26,7 @@
 namespace ns3 {
 
 /**
- * \ingroup tools
+ * \ingroup stats
  *
  * \brief quick and dirty delay and jitter estimation
  *
