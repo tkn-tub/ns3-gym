@@ -22,7 +22,7 @@
 #define UAN_CW_EXAMPLE_H
 
 #include "ns3/network-module.h"
-#include "ns3/tools-module.h"
+#include "ns3/stats-module.h"
 #include "ns3/uan-module.h"
 
 using namespace ns3;

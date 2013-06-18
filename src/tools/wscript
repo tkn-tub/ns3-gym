@@ -4,7 +4,6 @@ def build(bld):
 
     module = bld.create_ns3_module('tools', ['network', 'stats'])
     module.source = [
-        'model/gnuplot.cc',
         'model/delay-jitter-estimation.cc',
         ]
 
@@ -17,11 +16,6 @@ def build(bld):
     headers.module = 'tools'
     headers.source = [
         'model/average.h',
-        'model/gnuplot.h',
         'model/delay-jitter-estimation.h',
         ]
 
-    if (bld.env['ENABLE_EXAMPLES']):
-        bld.recurse('examples')
-
-    bld.ns3_python_bindings()

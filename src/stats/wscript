@@ -19,6 +19,7 @@ def build(bld):
         'model/data-output-interface.cc',
         'model/omnet-data-output.cc',
         'model/data-collector.cc',
+        'model/gnuplot.cc',
         ]
 
     module_test = bld.create_ns3_module_test_library('stats')
@@ -36,11 +37,15 @@ def build(bld):
         'model/data-output-interface.h',
         'model/omnet-data-output.h',
         'model/data-collector.h',
+        'model/gnuplot.h',
         ]
 
     if bld.env['SQLITE_STATS']:
         headers.source.append('model/sqlite-data-output.h')
         obj.source.append('model/sqlite-data-output.cc')
         obj.use.append('SQLITE3')
+
+    if (bld.env['ENABLE_EXAMPLES']):
+        bld.recurse('examples')
 
     bld.ns3_python_bindings()
