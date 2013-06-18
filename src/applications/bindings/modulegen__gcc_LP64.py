@@ -40,8 +40,8 @@ def register_types(module):
     module.add_class('AttributeConstructionList', import_from_module='ns.core')
     ## attribute-construction-list.h (module 'core'): ns3::AttributeConstructionList::Item [struct]
     module.add_class('Item', import_from_module='ns.core', outer_class=root_module['ns3::AttributeConstructionList'])
-    ## average.h (module 'tools'): ns3::Average<double> [class]
-    module.add_class('Average', import_from_module='ns.tools', template_parameters=['double'])
+    ## average.h (module 'stats'): ns3::Average<double> [class]
+    module.add_class('Average', import_from_module='ns.stats', template_parameters=['double'])
     ## buffer.h (module 'network'): ns3::Buffer [class]
     module.add_class('Buffer', import_from_module='ns.network')
     ## buffer.h (module 'network'): ns3::Buffer::Iterator [class]
@@ -136,6 +136,8 @@ def register_types(module):
     module.add_class('PacketTagList', import_from_module='ns.network')
     ## packet-tag-list.h (module 'network'): ns3::PacketTagList::TagData [struct]
     module.add_class('TagData', import_from_module='ns.network', outer_class=root_module['ns3::PacketTagList'])
+    ## packet-tag-list.h (module 'network'): ns3::PacketTagList::TagData::TagData_e [enumeration]
+    module.add_enum('TagData_e', ['MAX_SIZE'], outer_class=root_module['ns3::PacketTagList::TagData'], import_from_module='ns.network')
     ## packetbb.h (module 'network'): ns3::PbbAddressTlvBlock [class]
     module.add_class('PbbAddressTlvBlock', import_from_module='ns.network')
     ## packetbb.h (module 'network'): ns3::PbbTlvBlock [class]
@@ -1031,64 +1033,64 @@ def register_Ns3AttributeConstructionListItem_methods(root_module, cls):
     return
 
 def register_Ns3Average__Double_methods(root_module, cls):
-    ## average.h (module 'tools'): ns3::Average<double>::Average(ns3::Average<double> const & arg0) [copy constructor]
+    ## average.h (module 'stats'): ns3::Average<double>::Average(ns3::Average<double> const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::Average< double > const &', 'arg0')])
-    ## average.h (module 'tools'): ns3::Average<double>::Average() [constructor]
+    ## average.h (module 'stats'): ns3::Average<double>::Average() [constructor]
     cls.add_constructor([])
-    ## average.h (module 'tools'): double ns3::Average<double>::Avg() const [member function]
+    ## average.h (module 'stats'): double ns3::Average<double>::Avg() const [member function]
     cls.add_method('Avg', 
                    'double', 
                    [], 
                    is_const=True)
-    ## average.h (module 'tools'): uint32_t ns3::Average<double>::Count() const [member function]
+    ## average.h (module 'stats'): uint32_t ns3::Average<double>::Count() const [member function]
     cls.add_method('Count', 
                    'uint32_t', 
                    [], 
                    is_const=True)
-    ## average.h (module 'tools'): double ns3::Average<double>::Error90() const [member function]
+    ## average.h (module 'stats'): double ns3::Average<double>::Error90() const [member function]
     cls.add_method('Error90', 
                    'double', 
                    [], 
                    is_const=True)
-    ## average.h (module 'tools'): double ns3::Average<double>::Error95() const [member function]
+    ## average.h (module 'stats'): double ns3::Average<double>::Error95() const [member function]
     cls.add_method('Error95', 
                    'double', 
                    [], 
                    is_const=True)
-    ## average.h (module 'tools'): double ns3::Average<double>::Error99() const [member function]
+    ## average.h (module 'stats'): double ns3::Average<double>::Error99() const [member function]
     cls.add_method('Error99', 
                    'double', 
                    [], 
                    is_const=True)
-    ## average.h (module 'tools'): double ns3::Average<double>::Max() const [member function]
+    ## average.h (module 'stats'): double ns3::Average<double>::Max() const [member function]
     cls.add_method('Max', 
                    'double', 
                    [], 
                    is_const=True)
-    ## average.h (module 'tools'): double ns3::Average<double>::Mean() const [member function]
+    ## average.h (module 'stats'): double ns3::Average<double>::Mean() const [member function]
     cls.add_method('Mean', 
                    'double', 
                    [], 
                    is_const=True)
-    ## average.h (module 'tools'): double ns3::Average<double>::Min() const [member function]
+    ## average.h (module 'stats'): double ns3::Average<double>::Min() const [member function]
     cls.add_method('Min', 
                    'double', 
                    [], 
                    is_const=True)
-    ## average.h (module 'tools'): void ns3::Average<double>::Reset() [member function]
+    ## average.h (module 'stats'): void ns3::Average<double>::Reset() [member function]
     cls.add_method('Reset', 
                    'void', 
                    [])
-    ## average.h (module 'tools'): double ns3::Average<double>::Stddev() const [member function]
+    ## average.h (module 'stats'): double ns3::Average<double>::Stddev() const [member function]
     cls.add_method('Stddev', 
                    'double', 
                    [], 
                    is_const=True)
-    ## average.h (module 'tools'): void ns3::Average<double>::Update(double const & x) [member function]
+    ## average.h (module 'stats'): void ns3::Average<double>::Update(double const & x) [member function]
     cls.add_method('Update', 
                    'void', 
                    [param('double const &', 'x')])
-    ## average.h (module 'tools'): double ns3::Average<double>::Var() const [member function]
+    ## average.h (module 'stats'): double ns3::Average<double>::Var() const [member function]
     cls.add_method('Var', 
                    'double', 
                    [], 
@@ -2808,6 +2810,10 @@ def register_Ns3PacketTagList_methods(root_module, cls):
     cls.add_method('RemoveAll', 
                    'void', 
                    [])
+    ## packet-tag-list.h (module 'network'): bool ns3::PacketTagList::Replace(ns3::Tag & tag) [member function]
+    cls.add_method('Replace', 
+                   'bool', 
+                   [param('ns3::Tag &', 'tag')])
     return
 
 def register_Ns3PacketTagListTagData_methods(root_module, cls):
@@ -7759,6 +7765,10 @@ def register_Ns3Packet_methods(root_module, cls):
     cls.add_method('RemoveTrailer', 
                    'uint32_t', 
                    [param('ns3::Trailer &', 'trailer')])
+    ## packet.h (module 'network'): bool ns3::Packet::ReplacePacketTag(ns3::Tag & tag) [member function]
+    cls.add_method('ReplacePacketTag', 
+                   'bool', 
+                   [param('ns3::Tag &', 'tag')])
     ## packet.h (module 'network'): uint32_t ns3::Packet::Serialize(uint8_t * buffer, uint32_t maxSize) const [member function]
     cls.add_method('Serialize', 
                    'uint32_t', 

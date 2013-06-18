@@ -60,8 +60,8 @@ def register_types(module):
     module.add_class('DsrHelper')
     ## dsr-main-helper.h (module 'dsr'): ns3::DsrMainHelper [class]
     module.add_class('DsrMainHelper')
-    ## event-garbage-collector.h (module 'tools'): ns3::EventGarbageCollector [class]
-    module.add_class('EventGarbageCollector', import_from_module='ns.tools')
+    ## event-garbage-collector.h (module 'core'): ns3::EventGarbageCollector [class]
+    module.add_class('EventGarbageCollector', import_from_module='ns.core')
     ## event-id.h (module 'core'): ns3::EventId [class]
     module.add_class('EventId', import_from_module='ns.core')
     ## inet6-socket-address.h (module 'network'): ns3::Inet6SocketAddress [class]
@@ -1330,11 +1330,11 @@ def register_Ns3DsrMainHelper_methods(root_module, cls):
     return
 
 def register_Ns3EventGarbageCollector_methods(root_module, cls):
-    ## event-garbage-collector.h (module 'tools'): ns3::EventGarbageCollector::EventGarbageCollector(ns3::EventGarbageCollector const & arg0) [copy constructor]
+    ## event-garbage-collector.h (module 'core'): ns3::EventGarbageCollector::EventGarbageCollector(ns3::EventGarbageCollector const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::EventGarbageCollector const &', 'arg0')])
-    ## event-garbage-collector.h (module 'tools'): ns3::EventGarbageCollector::EventGarbageCollector() [constructor]
+    ## event-garbage-collector.h (module 'core'): ns3::EventGarbageCollector::EventGarbageCollector() [constructor]
     cls.add_constructor([])
-    ## event-garbage-collector.h (module 'tools'): void ns3::EventGarbageCollector::Track(ns3::EventId event) [member function]
+    ## event-garbage-collector.h (module 'core'): void ns3::EventGarbageCollector::Track(ns3::EventId event) [member function]
     cls.add_method('Track', 
                    'void', 
                    [param('ns3::EventId', 'event')])
