@@ -59,6 +59,13 @@ us a note on ns-developers mailing list.</p>
 
 <h2>Changes to existing API:</h2>
 <ul>
+  <li> The 'src/tools' module has been removed, and most files migrated to
+  'src/stats'.  For users of these programs (the statistics-processing 
+  in average.h, or the gnuplot support), the main change is likely to be
+  replacing the inclusion of "tools-module.h" with "stats-module.h".
+  Users of the event garbage collector, previously in tools, will now 
+  include it from the core module.
+  </li>
 </ul>
 
 <h2>Changes to build system:</h2>
