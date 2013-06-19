@@ -1422,26 +1422,16 @@ LteEnbRrc::GetTypeId (void)
                    TimeValue (MilliSeconds (500)),  
                    MakeTimeAccessor (&LteEnbRrc::m_handoverLeavingTimeoutDuration),
                    MakeTimeChecker ())
-   .AddAttribute ("AdmitHandoverRequest",
+    .AddAttribute ("AdmitHandoverRequest",
                    "Whether to admit an X2 handover request from another eNB",
-                   BooleanValue (true),  
+                   BooleanValue (true),
                    MakeBooleanAccessor (&LteEnbRrc::m_admitHandoverRequest),
-                   MakeBooleanChecker ()) 
-   .AddAttribute ("AdmitRrcConnectionRequest",
+                   MakeBooleanChecker ())
+    .AddAttribute ("AdmitRrcConnectionRequest",
                    "Whether to admit a connection request from a Ue",
-                   BooleanValue (true),  
+                   BooleanValue (true),
                    MakeBooleanAccessor (&LteEnbRrc::m_admitRrcConnectionRequest),
                    MakeBooleanChecker ())
-    .AddAttribute ("EventA2Threshold",
-                   "Threshold of the event A2 (Serving becomes worse than threshold)",
-                   UintegerValue (34),
-                   MakeUintegerAccessor (&LteEnbRrc::m_eventA2Threshold),
-                   MakeUintegerChecker<uint8_t> ())
-    .AddAttribute ("EventA4Threshold",
-                   "Threshold of the event A4 (Neighbour becomes better than threshold)",
-                   UintegerValue (0),
-                   MakeUintegerAccessor (&LteEnbRrc::m_eventA4Threshold),
-                   MakeUintegerChecker<uint8_t> ())
     .AddAttribute ("ServingCellHandoverThreshold",
                    "If serving cell is worse than this threshold, neighbour cells are consider for Handover",
                    UintegerValue (15),
