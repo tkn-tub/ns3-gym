@@ -17,7 +17,7 @@
  *
  * Author: Manuel Requena <manuel.requena@cttc.es>
  *         Nicola Baldo <nbaldo@cttc.es>
- *         Marco Miozzo <mmiozzo@cttc.es> 
+ *         Marco Miozzo <mmiozzo@cttc.es>
  *              adapt lte-test-interference.cc to lte-ue-measurements.cc
  */
 
@@ -26,13 +26,15 @@
 
 #include <ns3/test.h>
 #include <ns3/lte-rrc-sap.h>
+#include <ns3/nstime.h>
+#include <list>
 
 
 namespace ns3 {
 
 
 /**
- * Test that UE Measurements (see 36.214) calculation works fine in a 
+ * Test that UE Measurements (see 36.214) calculation works fine in a
  * multi-cell interference scenario.
  */
 class LteUeMeasurementsTestSuite : public TestSuite
@@ -62,7 +64,129 @@ private:
   double m_rsrpDbmUeNeighborCell;
   double m_rsrqDbUeServingCell;
   double m_rsrqDbUeNeighborCell;
-  
+
+};
+
+
+/**
+ * \brief Testing UE measurements in LTE with simulation of 1 eNodeB and 1 UE in
+ *        piecewise configuration.
+ */
+class LteUeMeasurementsPiecewiseTestCase1 : public TestCase
+{
+public:
+  LteUeMeasurementsPiecewiseTestCase1 (std::string name,
+                                       LteRrcSap::ReportConfigEutra config,
+                                       std::list<Time> expectedTime,
+                                       std::list<double> expectedRsrp);
+
+  virtual ~LteUeMeasurementsPiecewiseTestCase1 ();
+
+  /**
+   * \brief Triggers when eNodeB receives measurement report from UE, then
+   *        perform verification on it.
+   *
+   * The trigger is set up beforehand by connecting to the
+   * `LteUeRrc::RecvMeasurementReport` trace source.
+   */
+  void RecvMeasurementReportCallback (std::string context, uint64_t imsi,
+                                      uint16_t rnti, uint16_t cellId,
+                                      LteRrcSap::MeasurementReport report);
+
+private:
+  /**
+   * \brief Setup the simulation with the intended UE measurement reporting
+   *        configuration, run it, and connect the
+   *        `RecvMeasurementReportCallback` function to the
+   *        `LteUeRrc::RecvMeasurementReport` trace source.
+   */
+  virtual void DoRun ();
+
+  /**
+   * \brief Verify whether it occurs at the expected time or not, and whether it
+   *        carries the right value of RSRP or not.
+   */
+  void DoVerify (LteRrcSap::MeasurementReport report);
+
+  void TeleportNear ();
+  void TeleportFar ();
+  void TeleportVeryFar ();
+
+  /**
+   * \brief The active report triggering configuration
+   */
+  LteRrcSap::ReportConfigEutra m_config;
+
+  /**
+   * \brief The expected time when measurement reports are received by eNodeB.
+   */
+  std::list<Time> m_expectedTime;
+
+  /**
+   * \brief The expected value of RSRP from the measurement reports received.
+   */
+  std::list<double> m_expectedRsrp;
+
+  Ptr<Node> m_ueNode;
+};
+
+
+/**
+ * \brief Testing UE measurements in LTE with simulation of 2 eNodeB and 1 UE in
+ *        piecewise configuration.
+ */
+class LteUeMeasurementsPiecewiseTestCase2 : public TestCase
+{
+public:
+  LteUeMeasurementsPiecewiseTestCase2 (std::string name,
+                                       LteRrcSap::ReportConfigEutra config,
+                                       std::list<Time> expectedTime,
+                                       std::list<double> expectedRsrp);
+
+  virtual ~LteUeMeasurementsPiecewiseTestCase2 ();
+
+  /**
+   * \brief Triggers when eNodeB receives measurement report from UE, then
+   *        perform verification on it.
+   *
+   * The trigger is set up beforehand by connecting to the
+   * `LteUeRrc::RecvMeasurementReport` trace source.
+   */
+  void RecvMeasurementReportCallback (std::string context, uint64_t imsi,
+                                      uint16_t rnti, uint16_t cellId,
+                                      LteRrcSap::MeasurementReport report);
+
+private:
+  /**
+   * \brief Setup the simulation with the intended UE measurement reporting
+   *        configuration, run it, and connect the
+   *        `RecvMeasurementReportCallback` function to the
+   *        `LteUeRrc::RecvMeasurementReport` trace source.
+   */
+  virtual void DoRun ();
+
+  /**
+   * \brief Verify whether it occurs at the expected time or not, and whether it
+   *        carries the right value of RSRP or not.
+   */
+  void DoVerify (LteRrcSap::MeasurementReport report);
+
+  /**
+   * \brief The active report triggering configuration
+   */
+  LteRrcSap::ReportConfigEutra m_config;
+
+  /**
+   * \brief The expected time when measurement reports are received by eNodeB.
+   */
+  std::list<Time> m_expectedTime;
+
+  /**
+   * \brief The expected value of RSRP from the measurement reports received.
+   */
+  std::list<double> m_expectedRsrp;
+
+  // TODO
 };
 
 

@@ -48,15 +48,17 @@ namespace ns3 {
 
 
 void
-ReportUeMeasurementsCallback (LteUeMeasurementsTestCase *testcase, std::string path,
-                             uint16_t rnti, uint16_t cellId, double rsrp, double rsrq, bool servingCell)
+ReportUeMeasurementsCallback (LteUeMeasurementsTestCase *testcase,
+                              std::string path, uint16_t rnti, uint16_t cellId,
+                              double rsrp, double rsrq, bool servingCell)
 {
   testcase->ReportUeMeasurements (rnti, cellId, rsrp, rsrq, servingCell);
 }
 
 void
-RecvMeasurementReportCallback (LteUeMeasurementsTestCase *testcase, std::string path,
-                             uint64_t imsi, uint16_t rnti, uint16_t cellId, LteRrcSap::MeasurementReport meas)
+RecvMeasurementReportCallback (LteUeMeasurementsTestCase *testcase,
+                               std::string path, uint64_t imsi, uint16_t rnti,
+                               uint16_t cellId, LteRrcSap::MeasurementReport meas)
 {
   testcase->RecvMeasurementReport (imsi, rnti, cellId, meas);
 }
@@ -69,6 +71,8 @@ RecvMeasurementReportCallback (LteUeMeasurementsTestCase *testcase, std::string 
 LteUeMeasurementsTestSuite::LteUeMeasurementsTestSuite ()
   : TestSuite ("lte-ue-measurements", SYSTEM)
 {
+  //LogComponentEnable ("LteUeMeasurementsTest", LOG_LEVEL_ALL);
+  //LogComponentEnable ("LteUeMeasurementsTest", LOG_PREFIX_ALL);
 
   AddTestCase (new LteUeMeasurementsTestCase ("d1=10, d2=10000",  10.000000, 10000.000000, -53.739702, -113.739702, -3.010305, -63.010305), TestCase::EXTENSIVE);
   AddTestCase (new LteUeMeasurementsTestCase ("d1=20, d2=10000",  20.000000, 10000.000000, -59.760302, -113.739702, -3.010319, -56.989719), TestCase::EXTENSIVE);
@@ -89,8 +93,16 @@ LteUeMeasurementsTestSuite::LteUeMeasurementsTestSuite ()
   AddTestCase (new LteUeMeasurementsTestCase ("d1=500000, d2=10000",  500000.000000, 10000.000000, -147.719102, -113.739702, -37.453160, -3.473760), TestCase::EXTENSIVE);
   AddTestCase (new LteUeMeasurementsTestCase ("d1=1000000, d2=10000",  1000000.000000, 10000.000000, -153.739702, -113.739702, -43.472589, -3.472589), TestCase::EXTENSIVE);
 
+  // empty test case
+  LteRrcSap::ReportConfigEutra config;
+  std::list<Time> expectedTime;
+  std::list<double> expectedRsrp;
+  AddTestCase (new LteUeMeasurementsPiecewiseTestCase1 ("Empty test case",
+                                                        config, expectedTime,
+                                                        expectedRsrp),
+               TestCase::EXTENSIVE);
 
-}
+} // end of LteUeMeasurementsTestSuite::LteUeMeasurementsTestSuite ()
 
 static LteUeMeasurementsTestSuite lteUeMeasurementsTestSuite;
 
@@ -129,7 +141,7 @@ LteUeMeasurementsTestCase::DoRun (void)
   lteHelper->SetAttribute ("UseIdealRrc", BooleanValue (false));
 
   LogComponentEnable ("LteUeMeasurementsTest", LOG_LEVEL_ALL);
-  
+
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
   NodeContainer ueNodes1;
@@ -208,7 +220,7 @@ LteUeMeasurementsTestCase::DoRun (void)
   Config::Connect ("/NodeList/1/DeviceList/0/LteEnbRrc/RecvMeasurementReport",
                    MakeBoundCallback (&RecvMeasurementReportCallback, this));
 
-  
+
 // need to allow for RRC connection establishment + SRS
   Simulator::Stop (Seconds (0.800));
   Simulator::Run ();
@@ -228,13 +240,13 @@ LteUeMeasurementsTestCase::ReportUeMeasurements (uint16_t rnti, uint16_t cellId,
         {
           NS_LOG_DEBUG ("UE serving cellId " << cellId << " Rxed RSRP " << rsrp << " thr " << m_rsrpDbmUeServingCell << " RSRQ " << rsrq << " thr " << m_rsrqDbUeServingCell);
           NS_TEST_ASSERT_MSG_EQ_TOL (m_rsrpDbmUeServingCell, rsrp, 0.2, "Wrong RSRP UE 1");
-          NS_TEST_ASSERT_MSG_EQ_TOL (m_rsrqDbUeServingCell, rsrq, 0.2 , "Wrong RSRQ UE 1");
+          NS_TEST_ASSERT_MSG_EQ_TOL (m_rsrqDbUeServingCell, rsrq, 0.2, "Wrong RSRQ UE 1");
         }
       else
         {
           NS_LOG_DEBUG ("UE neighbor cellId " << cellId << " Rxed RSRP " << rsrp << " thr " << m_rsrpDbmUeNeighborCell << " RSRQ " << rsrq << " thr " << m_rsrqDbUeNeighborCell);
-          NS_TEST_ASSERT_MSG_EQ_TOL (m_rsrpDbmUeNeighborCell, rsrp, 0.2 , "Wrong RSRP UE 2");
-          NS_TEST_ASSERT_MSG_EQ_TOL (m_rsrqDbUeNeighborCell, rsrq, 0.2 , "Wrong RSRQ UE ");
+          NS_TEST_ASSERT_MSG_EQ_TOL (m_rsrpDbmUeNeighborCell, rsrp, 0.2, "Wrong RSRP UE 2");
+          NS_TEST_ASSERT_MSG_EQ_TOL (m_rsrqDbUeNeighborCell, rsrq, 0.2, "Wrong RSRQ UE ");
         }
     }
 }
@@ -248,18 +260,222 @@ LteUeMeasurementsTestCase::RecvMeasurementReport (uint64_t imsi, uint16_t cellId
     {
       if (cellId == imsi)
         {
-          NS_LOG_DEBUG ("Serving Cell: received IMSI " << imsi << " CellId " << cellId << " RNTI " << rnti  << " thr " << (uint16_t)EutranMeasurementMapping::Dbm2RsrpRange (m_rsrpDbmUeServingCell) << " RSRP " << (uint16_t)meas.measResults.rsrpResult << " RSRQ " << (uint16_t)meas.measResults.rsrqResult << " thr " << (uint16_t)EutranMeasurementMapping::Db2RsrqRange (m_rsrqDbUeServingCell));
+          NS_LOG_DEBUG (this << "Serving Cell: received IMSI " << imsi << " CellId " << cellId << " RNTI " << rnti
+                             << " thr " << (uint16_t) EutranMeasurementMapping::Dbm2RsrpRange (m_rsrpDbmUeServingCell)
+                             << " RSRP " << (uint16_t) meas.measResults.rsrpResult
+                             << " RSRQ " << (uint16_t)meas.measResults.rsrqResult
+                             << " thr " << (uint16_t) EutranMeasurementMapping::Db2RsrqRange (m_rsrqDbUeServingCell));
           NS_TEST_ASSERT_MSG_EQ (meas.measResults.rsrpResult, EutranMeasurementMapping::Dbm2RsrpRange (m_rsrpDbmUeServingCell), "Wrong RSRP ");
           NS_TEST_ASSERT_MSG_EQ (meas.measResults.rsrqResult, EutranMeasurementMapping::Db2RsrqRange (m_rsrqDbUeServingCell), "Wrong RSRQ ");
         }
       else
         {
-          NS_LOG_DEBUG ("Neighbor cell: received IMSI " << imsi << " CellId " << cellId << " RNTI " << rnti  << " thr " << (uint16_t)EutranMeasurementMapping::Dbm2RsrpRange (m_rsrpDbmUeNeighborCell) << " RSRP " << (uint16_t)meas.measResults.rsrpResult << " RSRQ " << (uint16_t)meas.measResults.rsrqResult << " thr " << (uint16_t)EutranMeasurementMapping::Db2RsrqRange (m_rsrqDbUeNeighborCell));
+          NS_LOG_DEBUG (this << "Neighbor cell: received IMSI " << imsi << " CellId " << cellId << " RNTI " << rnti
+                             << " thr " << (uint16_t) EutranMeasurementMapping::Dbm2RsrpRange (m_rsrpDbmUeNeighborCell)
+                             << " RSRP " << (uint16_t) meas.measResults.rsrpResult
+                             << " RSRQ " << (uint16_t)meas.measResults.rsrqResult
+                             << " thr " << (uint16_t) EutranMeasurementMapping::Db2RsrqRange (m_rsrqDbUeNeighborCell));
           NS_TEST_ASSERT_MSG_EQ (meas.measResults.rsrpResult, EutranMeasurementMapping::Dbm2RsrpRange (m_rsrpDbmUeNeighborCell), "Wrong RSRP ");
           NS_TEST_ASSERT_MSG_EQ (meas.measResults.rsrqResult, EutranMeasurementMapping::Db2RsrqRange (m_rsrqDbUeNeighborCell), "Wrong RSRQ ");
         }
     }
 }
+
+
+/*
+ * Piecewise configuration test case with 1 eNodeB and 1 UE
+ */
+
+LteUeMeasurementsPiecewiseTestCase1::LteUeMeasurementsPiecewiseTestCase1 (
+  std::string name, LteRrcSap::ReportConfigEutra config,
+  std::list<Time> expectedTime, std::list<double> expectedRsrp)
+  : TestCase (name),
+    m_config (config),
+    m_expectedTime (expectedTime),
+    m_expectedRsrp (expectedRsrp)
+{
+  // input sanity check
+  uint16_t size = m_expectedTime.size ();
+
+  if (size != m_expectedRsrp.size ())
+    {
+      NS_FATAL_ERROR ("Vectors of expected results are not of the same size");
+    }
+
+  NS_LOG_INFO (this << " name=" << name << " size=" << size);
+}
+
+
+LteUeMeasurementsPiecewiseTestCase1::~LteUeMeasurementsPiecewiseTestCase1 ()
+{
+  NS_LOG_FUNCTION (this);
+}
+
+
+void
+LteUeMeasurementsPiecewiseTestCase1::DoRun ()
+{
+  NS_LOG_INFO (this << GetName ());
+
+  Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
+  lteHelper->SetAttribute ("PathlossModel",
+                           StringValue ("ns3::FriisSpectrumPropagationLossModel"));
+  lteHelper->SetAttribute ("UseIdealRrc", BooleanValue (true));
+
+  // Create Nodes: eNodeB and UE
+  NodeContainer enbNodes;
+  NodeContainer ueNodes;
+  enbNodes.Create (1);
+  ueNodes.Create (1);
+
+  /*
+   * The topology is the following:
+   *
+   * eNodeB                      UE
+   *
+   *    x ----------------------- x
+   *              500 m
+   */
+
+  Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
+  positionAlloc->Add (Vector (0.0, 0.0, 0.0));   // eNodeB
+  positionAlloc->Add (Vector (500.0, 0.0, 0.0)); // UE
+  MobilityHelper mobility;
+  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
+  mobility.SetPositionAllocator (positionAlloc);
+  mobility.Install (enbNodes);
+  mobility.Install (ueNodes);
+
+  // Create Devices and install them in the Nodes (eNB and UE)
+  NetDeviceContainer enbDevs;
+  NetDeviceContainer ueDevs;
+  lteHelper->SetSchedulerType ("ns3::RrFfMacScheduler");
+  lteHelper->SetSchedulerAttribute ("UlCqiFilter", EnumValue (FfMacScheduler::PUSCH_UL_CQI));
+  enbDevs = lteHelper->InstallEnbDevice (enbNodes);
+  ueDevs = lteHelper->InstallUeDevice (ueNodes);
+
+  lteHelper->Attach (ueDevs.Get (0), enbDevs.Get (0));
+
+  // Activate an EPS bearer
+  enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
+  EpsBearer bearer (q);
+  lteHelper->ActivateDataRadioBearer (ueDevs, bearer);
+
+  // Connect to trace sources
+  Config::Connect ("/NodeList/0/DeviceList/0/LteEnbRrc/RecvMeasurementReport",
+                   MakeCallback (&LteUeMeasurementsPiecewiseTestCase1::RecvMeasurementReportCallback,
+                                 this));
+
+  // Schedule "teleports"
+  // TODO
+
+  // Run simulation
+  Simulator::Stop (Seconds (1.800)); // TODO
+  Simulator::Run ();
+  Simulator::Destroy ();
+
+} // end of void LteUeMeasurementsPiecewiseTestCase1::DoRun ()
+
+
+void
+LteUeMeasurementsPiecewiseTestCase1::RecvMeasurementReportCallback (
+  std::string context, uint64_t imsi, uint16_t rnti, uint16_t cellId,
+  LteRrcSap::MeasurementReport report)
+{
+  NS_LOG_FUNCTION (this);
+  DoVerify (report);
+}
+
+
+void
+LteUeMeasurementsPiecewiseTestCase1::DoVerify (LteRrcSap::MeasurementReport report)
+{
+  NS_LOG_FUNCTION (this);
+  // TODO
+}
+
+
+void
+LteUeMeasurementsPiecewiseTestCase1::TeleportNear ()
+{
+  NS_LOG_FUNCTION (this);
+  // TODO
+}
+
+
+void
+LteUeMeasurementsPiecewiseTestCase1::TeleportFar ()
+{
+  NS_LOG_FUNCTION (this);
+  // TODO
+}
+
+
+void
+LteUeMeasurementsPiecewiseTestCase1::TeleportVeryFar ()
+{
+  NS_LOG_FUNCTION (this);
+  // TODO
+}
+
+
+
+/*
+ * Piecewise configuration test case with 2 eNodeB and 1 UE
+ */
+
+LteUeMeasurementsPiecewiseTestCase2::LteUeMeasurementsPiecewiseTestCase2 (
+  std::string name, LteRrcSap::ReportConfigEutra config,
+  std::list<Time> expectedTime, std::list<double> expectedRsrp)
+  : TestCase (name),
+    m_config (config),
+    m_expectedTime (expectedTime),
+    m_expectedRsrp (expectedRsrp)
+{
+  // input sanity check
+  uint16_t size = m_expectedTime.size ();
+
+  if (size != m_expectedRsrp.size ())
+    {
+      NS_FATAL_ERROR ("Vectors of expected results are not of the same size");
+    }
+
+  NS_LOG_INFO (this << " name=" << name << " size=" << size);
+}
+
+
+LteUeMeasurementsPiecewiseTestCase2::~LteUeMeasurementsPiecewiseTestCase2 ()
+{
+  NS_LOG_FUNCTION (this);
+}
+
+
+void
+LteUeMeasurementsPiecewiseTestCase2::DoRun ()
+{
+  NS_LOG_FUNCTION (this);
+  // TODO
+} // end of void LteUeMeasurementsPiecewiseTestCase2::DoRun ()
+
+
+void
+LteUeMeasurementsPiecewiseTestCase2::RecvMeasurementReportCallback (
+  std::string context, uint64_t imsi, uint16_t rnti, uint16_t cellId,
+  LteRrcSap::MeasurementReport report)
+{
+  NS_LOG_FUNCTION (this);
+  DoVerify (report);
+}
+
+
+void
+LteUeMeasurementsPiecewiseTestCase2::DoVerify (LteRrcSap::MeasurementReport report)
+{
+  NS_LOG_FUNCTION (this);
+  // TODO
+}
+
+
 
 } // namespace ns3
 
