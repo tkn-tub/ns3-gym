@@ -71,8 +71,10 @@ RecvMeasurementReportCallback (LteUeMeasurementsTestCase *testcase,
 LteUeMeasurementsTestSuite::LteUeMeasurementsTestSuite ()
   : TestSuite ("lte-ue-measurements", SYSTEM)
 {
+  //LogComponentEnable ("LteEnbRrc", LOG_FUNCTION);
   //LogComponentEnable ("LteUeMeasurementsTest", LOG_LEVEL_ALL);
-  //LogComponentEnable ("LteUeMeasurementsTest", LOG_PREFIX_ALL);
+  //LogComponentEnableAll (LOG_PREFIX_ALL);
+
 
   AddTestCase (new LteUeMeasurementsTestCase ("d1=10, d2=10000",  10.000000, 10000.000000, -53.739702, -113.739702, -3.010305, -63.010305), TestCase::EXTENSIVE);
   AddTestCase (new LteUeMeasurementsTestCase ("d1=20, d2=10000",  20.000000, 10000.000000, -59.760302, -113.739702, -3.010319, -56.989719), TestCase::EXTENSIVE);
@@ -130,7 +132,7 @@ LteUeMeasurementsTestCase::~LteUeMeasurementsTestCase ()
 void
 LteUeMeasurementsTestCase::DoRun (void)
 {
-  NS_LOG_INFO (this << GetName ());
+  NS_LOG_INFO (this << " " << GetName ());
 
   Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue (false));
   Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));
@@ -149,7 +151,7 @@ LteUeMeasurementsTestCase::DoRun (void)
   enbNodes.Create (2);
   ueNodes1.Create (1);
   ueNodes2.Create (1);
-  NodeContainer allNodes = NodeContainer ( enbNodes, ueNodes1, ueNodes2);
+  NodeContainer allNodes = NodeContainer (enbNodes, ueNodes1, ueNodes2);
 
   // the topology is the following:
   //         d2
@@ -179,6 +181,45 @@ LteUeMeasurementsTestCase::DoRun (void)
   ueDevs1 = lteHelper->InstallUeDevice (ueNodes1);
   ueDevs2 = lteHelper->InstallUeDevice (ueNodes2);
 
+  // Setup pre-GSOC UE measurement configuration to the eNodeBs
+
+  // Event A2
+  LteRrcSap::ReportConfigEutra reportConfigA2;
+  reportConfigA2.triggerType = LteRrcSap::ReportConfigEutra::EVENT;
+  reportConfigA2.eventId = LteRrcSap::ReportConfigEutra::EVENT_A2;
+  reportConfigA2.threshold1.choice = LteRrcSap::ThresholdEutra::THRESHOLD_RSRQ;
+  reportConfigA2.threshold1.range = 34;
+  reportConfigA2.hysteresis = 0;
+  reportConfigA2.timeToTrigger = 0;
+  reportConfigA2.triggerQuantity = LteRrcSap::ReportConfigEutra::RSRQ;
+  reportConfigA2.reportQuantity = LteRrcSap::ReportConfigEutra::SAME_AS_TRIGGER_QUANTITY;
+  reportConfigA2.maxReportCells = LteRrcSap::MaxReportCells;
+  reportConfigA2.reportInterval = LteRrcSap::ReportConfigEutra::MS480;
+  reportConfigA2.reportAmount = 255;
+
+  // Event A4
+  LteRrcSap::ReportConfigEutra reportConfigA4;
+  reportConfigA4.triggerType = LteRrcSap::ReportConfigEutra::EVENT;
+  reportConfigA4.eventId = LteRrcSap::ReportConfigEutra::EVENT_A4;
+  reportConfigA4.threshold1.choice = LteRrcSap::ThresholdEutra::THRESHOLD_RSRQ;
+  reportConfigA4.threshold1.range = 0;
+  reportConfigA4.hysteresis = 0;
+  reportConfigA4.timeToTrigger = 0;
+  reportConfigA4.triggerQuantity = LteRrcSap::ReportConfigEutra::RSRQ;
+  reportConfigA4.reportQuantity = LteRrcSap::ReportConfigEutra::SAME_AS_TRIGGER_QUANTITY;
+  reportConfigA4.maxReportCells = LteRrcSap::MaxReportCells;
+  reportConfigA4.reportInterval = LteRrcSap::ReportConfigEutra::MS480;
+  reportConfigA4.reportAmount = 255;
+
+  Ptr<LteEnbRrc> enbRrc1 = enbDevs.Get (0)->GetObject<LteEnbNetDevice> ()->GetRrc ();
+  enbRrc1->AddUeMeasReportConfig (reportConfigA2);
+  enbRrc1->AddUeMeasReportConfig (reportConfigA4);
+
+  Ptr<LteEnbRrc> enbRrc2 = enbDevs.Get (1)->GetObject<LteEnbNetDevice> ()->GetRrc ();
+  enbRrc2->AddUeMeasReportConfig (reportConfigA2);
+  enbRrc2->AddUeMeasReportConfig (reportConfigA4);
+
+  // Attach UEs to eNodeBs
   lteHelper->Attach (ueDevs1, enbDevs.Get (0));
   lteHelper->Attach (ueDevs2, enbDevs.Get (1));
 
@@ -220,8 +261,7 @@ LteUeMeasurementsTestCase::DoRun (void)
   Config::Connect ("/NodeList/1/DeviceList/0/LteEnbRrc/RecvMeasurementReport",
                    MakeBoundCallback (&RecvMeasurementReportCallback, this));
 
-
-// need to allow for RRC connection establishment + SRS
+  // need to allow for RRC connection establishment + SRS
   Simulator::Stop (Seconds (0.800));
   Simulator::Run ();
 
@@ -302,7 +342,7 @@ LteUeMeasurementsPiecewiseTestCase1::LteUeMeasurementsPiecewiseTestCase1 (
       NS_FATAL_ERROR ("Vectors of expected results are not of the same size");
     }
 
-  NS_LOG_INFO (this << " name=" << name << " size=" << size);
+  NS_LOG_INFO (this << " name=" << name);
 }
 
 
@@ -315,7 +355,7 @@ LteUeMeasurementsPiecewiseTestCase1::~LteUeMeasurementsPiecewiseTestCase1 ()
 void
 LteUeMeasurementsPiecewiseTestCase1::DoRun ()
 {
-  NS_LOG_INFO (this << GetName ());
+  NS_LOG_INFO (this << " " << GetName ());
 
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
   lteHelper->SetAttribute ("PathlossModel",
@@ -440,7 +480,7 @@ LteUeMeasurementsPiecewiseTestCase2::LteUeMeasurementsPiecewiseTestCase2 (
       NS_FATAL_ERROR ("Vectors of expected results are not of the same size");
     }
 
-  NS_LOG_INFO (this << " name=" << name << " size=" << size);
+  NS_LOG_INFO (this << " name=" << name);
 }
 
 
@@ -453,7 +493,7 @@ LteUeMeasurementsPiecewiseTestCase2::~LteUeMeasurementsPiecewiseTestCase2 ()
 void
 LteUeMeasurementsPiecewiseTestCase2::DoRun ()
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_INFO (this << " " << GetName ());
   // TODO
 } // end of void LteUeMeasurementsPiecewiseTestCase2::DoRun ()
 
