@@ -1004,6 +1004,7 @@ def run_tests():
     #
     # Set the proper suffix.
     #
+    global BUILD_PROFILE_SUFFIX
     if BUILD_PROFILE == 'release': 
         BUILD_PROFILE_SUFFIX = ""
     else:
