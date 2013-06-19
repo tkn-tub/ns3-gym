@@ -72,6 +72,7 @@ ENABLE_OPENFLOW = False
 EXAMPLE_DIRECTORIES = []
 APPNAME = ""
 BUILD_PROFILE = ""
+BUILD_PROFILE_SUFFIX = ""
 VERSION = ""
 PYTHON = ""
 VALGRIND_FOUND = True
@@ -166,7 +167,7 @@ def parse_examples_to_run_file(
 
             # Add the proper prefix and suffix to the example name to
             # match what is done in the wscript file.
-            example_name = "%s%s-%s-%s" % (APPNAME, VERSION, example_name, BUILD_PROFILE)
+            example_name = "%s%s-%s%s" % (APPNAME, VERSION, example_name, BUILD_PROFILE_SUFFIX)
 
             # Set the full path for the example.
             example_path = os.path.join(cpp_executable_dir, example_name)
@@ -1001,10 +1002,18 @@ def run_tests():
     read_waf_config()
 
     #
+    # Set the proper suffix.
+    #
+    if BUILD_PROFILE == 'release': 
+        BUILD_PROFILE_SUFFIX = ""
+    else:
+        BUILD_PROFILE_SUFFIX = "-" + BUILD_PROFILE
+
+    #
     # Add the proper prefix and suffix to the test-runner name to
     # match what is done in the wscript file.
     #
-    test_runner_name = "%s%s-%s-%s" % (APPNAME, VERSION, "test-runner", BUILD_PROFILE)
+    test_runner_name = "%s%s-%s%s" % (APPNAME, VERSION, "test-runner", BUILD_PROFILE_SUFFIX)
 
     #
     # Run waf to make sure that everything is built, configured and ready to go
@@ -1434,7 +1443,7 @@ def run_tests():
     elif len(options.example):
         # Add the proper prefix and suffix to the example name to
         # match what is done in the wscript file.
-        example_name = "%s%s-%s-%s" % (APPNAME, VERSION, options.example, BUILD_PROFILE)
+        example_name = "%s%s-%s%s" % (APPNAME, VERSION, options.example, BUILD_PROFILE_SUFFIX)
 
         # Don't try to run this example if it isn't runnable.
         if not ns3_runnable_programs_dictionary.has_key(example_name):
