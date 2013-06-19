@@ -121,7 +121,25 @@ public:
    */
   void UlPhyReception (PhyReceptionStatParameters params);
 
+  /** 
+   * trace sink
+   * 
+   * \param phyRxStats 
+   * \param path 
+   * \param params 
+   */
+  static void DlPhyReceptionCallback (Ptr<PhyRxStatsCalculator> phyRxStats,
+                               std::string path, PhyReceptionStatParameters params);
 
+  /** 
+   * trace sink
+   * 
+   * \param phyRxStats 
+   * \param path 
+   * \param params 
+   */
+  static void UlPhyReceptionCallback (Ptr<PhyRxStatsCalculator> phyRxStats,
+                               std::string path, PhyReceptionStatParameters params);
 private:
 
   bool m_dlRxFirstWrite;

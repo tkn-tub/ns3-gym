@@ -121,6 +121,26 @@ public:
    */
   void UlPhyTransmission (PhyTransmissionStatParameters params);
 
+  
+  /** 
+   * trace sink
+   * 
+   * \param phyTxStats 
+   * \param path 
+   * \param params 
+   */
+  static void DlPhyTransmissionCallback (Ptr<PhyTxStatsCalculator> phyTxStats,
+                                  std::string path, PhyTransmissionStatParameters params);
+
+  /** 
+   * trace sink
+   * 
+   * \param phyTxStats 
+   * \param path 
+   * \param params 
+   */
+  static void UlPhyTransmissionCallback (Ptr<PhyTxStatsCalculator> phyTxStats,
+                                  std::string path, PhyTransmissionStatParameters params);
 
 private:
 

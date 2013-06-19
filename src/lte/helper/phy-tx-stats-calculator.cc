@@ -176,5 +176,50 @@ PhyTxStatsCalculator::UlPhyTransmission (PhyTransmissionStatParameters params)
   outFile.close ();
 }
 
+void
+PhyTxStatsCalculator::DlPhyTransmissionCallback (Ptr<PhyTxStatsCalculator> phyTxStats,
+                      std::string path, PhyTransmissionStatParameters params)
+{
+  NS_LOG_FUNCTION (phyTxStats << path);
+  uint64_t imsi = 0;
+  std::ostringstream pathAndRnti;
+  pathAndRnti << path << "/" << params.m_rnti;
+  if (phyTxStats->ExistsImsiPath (pathAndRnti.str ()) == true)
+    {
+      imsi = phyTxStats->GetImsiPath (pathAndRnti.str ());
+    }
+  else
+    {
+      imsi = FindImsiForEnb (path, params.m_rnti);
+      phyTxStats->SetImsiPath (pathAndRnti.str (), imsi);
+    }
+
+  params.m_imsi = imsi;
+  phyTxStats->DlPhyTransmission (params);
+}
+
+void
+PhyTxStatsCalculator::UlPhyTransmissionCallback (Ptr<PhyTxStatsCalculator> phyTxStats,
+                      std::string path, PhyTransmissionStatParameters params)
+{
+  NS_LOG_FUNCTION (phyTxStats << path);
+  uint64_t imsi = 0;
+  std::ostringstream pathAndRnti;
+  pathAndRnti << path << "/" << params.m_rnti;
+  if (phyTxStats->ExistsImsiPath (pathAndRnti.str ()) == true)
+    {
+      imsi = phyTxStats->GetImsiPath (pathAndRnti.str ());
+    }
+  else
+    {
+      imsi = FindImsiForUe (path, params.m_rnti);
+      phyTxStats->SetImsiPath (pathAndRnti.str (), imsi);
+    }
+
+  params.m_imsi = imsi;
+  phyTxStats->UlPhyTransmission (params);
+}
+
+
 } // namespace ns3
 

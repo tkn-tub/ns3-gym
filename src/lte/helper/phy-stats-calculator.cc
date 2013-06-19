@@ -217,4 +217,59 @@ PhyStatsCalculator::ReportInterference (uint16_t cellId, Ptr<SpectrumValue> inte
   outFile.close ();
 }
 
+
+void
+PhyStatsCalculator::ReportCurrentCellRsrpSinrCallback (Ptr<PhyStatsCalculator> phyStats,
+                      std::string path, uint16_t cellId, uint16_t rnti,
+                      double rsrp, double sinr)
+{
+  NS_LOG_FUNCTION (phyStats << path);
+  uint64_t imsi = 0;
+  std::string pathUePhy  = path.substr (0, path.find ("/ReportCurrentCellRsrpSinr"));
+  if (phyStats->ExistsImsiPath (pathUePhy) == true)
+    {
+      imsi = phyStats->GetImsiPath (pathUePhy);
+    }
+  else
+    {
+      imsi = FindImsiFromUePhy (pathUePhy);
+      phyStats->SetImsiPath (pathUePhy, imsi);
+    }
+
+  phyStats->ReportCurrentCellRsrpSinr (cellId, imsi, rnti, rsrp,sinr);
+}
+
+void
+PhyStatsCalculator::ReportUeSinr (Ptr<PhyStatsCalculator> phyStats, std::string path,
+              uint16_t cellId, uint16_t rnti, double sinrLinear)
+{
+  NS_LOG_FUNCTION (phyStats << path);
+
+  uint64_t imsi = 0;
+  std::ostringstream pathAndRnti;
+  pathAndRnti << path << "/" << rnti;
+  std::string pathEnbMac  = path.substr (0, path.find ("LteEnbPhy/ReportUeSinr"));
+  pathEnbMac += "LteEnbMac/DlScheduling";
+  if (phyStats->ExistsImsiPath (pathAndRnti.str ()) == true)
+    {
+      imsi = phyStats->GetImsiPath (pathAndRnti.str ());
+    }
+  else
+    {
+      imsi = FindImsiFromEnbMac (pathEnbMac, rnti);
+      phyStats->SetImsiPath (pathAndRnti.str (), imsi);
+    }
+
+  phyStats->ReportUeSinr (cellId, imsi, rnti, sinrLinear);
+}
+
+void
+PhyStatsCalculator::ReportInterference (Ptr<PhyStatsCalculator> phyStats, std::string path,
+                    uint16_t cellId, Ptr<SpectrumValue> interference)
+{
+  NS_LOG_FUNCTION (phyStats << path);
+  phyStats->ReportInterference (cellId, interference);
+}
+
+
 } // namespace ns3

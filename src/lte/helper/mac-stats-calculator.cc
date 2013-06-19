@@ -170,4 +170,72 @@ MacStatsCalculator::UlScheduling (uint16_t cellId, uint64_t imsi, uint32_t frame
   outFile.close ();
 }
 
+void
+MacStatsCalculator::DlSchedulingCallback (Ptr<MacStatsCalculator> macStats,
+                      std::string path, uint32_t frameNo, uint32_t subframeNo,
+                      uint16_t rnti, uint8_t mcsTb1, uint16_t sizeTb1,
+                      uint8_t mcsTb2, uint16_t sizeTb2)
+{
+  NS_LOG_FUNCTION (macStats << path);
+  uint64_t imsi = 0;
+  std::ostringstream pathAndRnti;
+  pathAndRnti << path << "/" << rnti;
+  if (macStats->ExistsImsiPath (pathAndRnti.str ()) == true)
+    {
+      imsi = macStats->GetImsiPath (pathAndRnti.str ());
+    }
+  else
+    {
+      imsi = FindImsiFromEnbMac (path, rnti);
+      macStats->SetImsiPath (pathAndRnti.str (), imsi);
+    }
+
+  uint16_t cellId = 0;
+  if (macStats->ExistsCellIdPath (pathAndRnti.str ()) == true)
+    {
+      cellId = macStats->GetCellIdPath (pathAndRnti.str ());
+    }
+  else
+    {
+      cellId = FindCellIdFromEnbMac (path, rnti);
+      macStats->SetCellIdPath (pathAndRnti.str (), cellId);
+    }
+
+  macStats->DlScheduling (cellId, imsi, frameNo, subframeNo, rnti, mcsTb1, sizeTb1, mcsTb2, sizeTb2);
+}
+
+void
+MacStatsCalculator::UlSchedulingCallback (Ptr<MacStatsCalculator> macStats, std::string path,
+                      uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
+                      uint8_t mcs, uint16_t size)
+{
+  NS_LOG_FUNCTION (macStats << path);
+
+  uint64_t imsi = 0;
+  std::ostringstream pathAndRnti;
+  pathAndRnti << path << "/" << rnti;
+  if (macStats->ExistsImsiPath (pathAndRnti.str ()) == true)
+    {
+      imsi = macStats->GetImsiPath (pathAndRnti.str ());
+    }
+  else
+    {
+      imsi = FindImsiFromEnbMac (path, rnti);
+      macStats->SetImsiPath (pathAndRnti.str (), imsi);
+    }
+  uint16_t cellId = 0;
+  if (macStats->ExistsCellIdPath (pathAndRnti.str ()) == true)
+    {
+      cellId = macStats->GetCellIdPath (pathAndRnti.str ());
+    }
+  else
+    {
+      cellId = FindCellIdFromEnbMac (path, rnti);
+      macStats->SetCellIdPath (pathAndRnti.str (), cellId);
+    }
+
+  macStats->UlScheduling (cellId, imsi, frameNo, subframeNo, rnti, mcs, size);
+}
+
+
 } // namespace ns3

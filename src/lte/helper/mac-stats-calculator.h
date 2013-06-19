@@ -110,6 +110,41 @@ public:
   void UlScheduling (uint16_t cellId, uint64_t imsi,uint32_t frameNo, uint32_t subframeNo,
                      uint16_t rnti, uint8_t mcs, uint16_t sizeTb);
 
+  
+  /** 
+   * Trace sink for the ns3::LteEnbMac::DlScheduling trace source
+   * 
+   * \param macStats 
+   * \param path 
+   * \param frameNo 
+   * \param subframeNo 
+   * \param rnti 
+   * \param mcsTb1 
+   * \param sizeTb1 
+   * \param mcsTb2 
+   * \param sizeTb2 
+   */
+  static void DlSchedulingCallback (Ptr<MacStatsCalculator> macStats,
+                             std::string path, uint32_t frameNo, uint32_t subframeNo,
+                             uint16_t rnti, uint8_t mcsTb1, uint16_t sizeTb1,
+                             uint8_t mcsTb2, uint16_t sizeTb2);
+
+  /** 
+   * Trace sink for the ns3::LteEnbMac::UlScheduling trace source
+   * 
+   * \param macStats 
+   * \param path 
+   * \param frameNo 
+   * \param subframeNo 
+   * \param rnti 
+   * \param mcs 
+   * \param size 
+   */
+  static void UlSchedulingCallback (Ptr<MacStatsCalculator> macStats, std::string path,
+                             uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
+                             uint8_t mcs, uint16_t size);
+
+
 private:
 
   bool m_dlFirstWrite;

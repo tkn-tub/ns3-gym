@@ -130,6 +130,44 @@ public:
    */
   void ReportInterference (uint16_t cellId, Ptr<SpectrumValue> interference);
 
+  /** 
+   * trace sink
+   * 
+   * \param phyStats 
+   * \param path 
+   * \param cellId 
+   * \param rnti 
+   * \param rsrp 
+   * \param sinr 
+   */
+  static void ReportCurrentCellRsrpSinrCallback (Ptr<PhyStatsCalculator> phyStats,
+                                          std::string path, uint16_t cellId, uint16_t rnti,
+                                          double rsrp, double sinr);
+  
+  /** 
+   * trace sink
+   * 
+   * \param phyStats 
+   * \param path 
+   * \param cellId 
+   * \param rnti 
+   * \param sinrLinear 
+   */
+  static void ReportUeSinr (Ptr<PhyStatsCalculator> phyStats, std::string path,
+                     uint16_t cellId, uint16_t rnti, double sinrLinear);
+
+  /** 
+   * trace sink
+   * 
+   * \param phyStats 
+   * \param path 
+   * \param cellId 
+   * \param interference 
+   */
+  static void ReportInterference (Ptr<PhyStatsCalculator> phyStats, std::string path,
+                           uint16_t cellId, Ptr<SpectrumValue> interference);
+
+
 private:
   bool m_RsrpSinrFirstWrite;
   bool m_UeSinrFirstWrite;
