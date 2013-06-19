@@ -66,6 +66,11 @@ us a note on ns-developers mailing list.</p>
   Users of the event garbage collector, previously in tools, will now 
   include it from the core module.
   </li>
+  <li> The Ipv6 UnicastForwardCallback and  MulticastForwardCallback 
+  have a new parmater, the NetDevice the packet has been received from.
+  Existing Ipv6RoutingProtocols should update their RouteInput function
+  accordingly. E.g., from ucb (rtentry, p, header); to ucb (idev, rtentry, p, header);
+  </li>
 </ul>
 
 <h2>Changes to build system:</h2>

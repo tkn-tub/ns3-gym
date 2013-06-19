@@ -559,7 +559,7 @@ bool Ipv6StaticRouting::RouteInput (Ptr<const Packet> p, const Ipv6Header &heade
       if (mrtentry)
         {
           NS_LOG_LOGIC ("Multicast route found");
-          mcb (mrtentry, p, header); // multicast forwarding callback
+          mcb (idev, mrtentry, p, header); // multicast forwarding callback
           return true;
         }
       else
@@ -611,7 +611,7 @@ bool Ipv6StaticRouting::RouteInput (Ptr<const Packet> p, const Ipv6Header &heade
   if (rtentry != 0)
     {
       NS_LOG_LOGIC ("Found unicast destination- calling unicast callback");
-      ucb (rtentry, p, header);  // unicast forwarding callback
+      ucb (idev, rtentry, p, header);  // unicast forwarding callback
       return true;
     }
   else

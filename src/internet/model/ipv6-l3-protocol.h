@@ -420,19 +420,21 @@ private:
 
   /**
    * \brief Forward a packet.
+   * \param idev Pointer to ingress network device
    * \param rtentry route 
    * \param p packet to forward
    * \param header IPv6 header to add to the packet
    */
-  void IpForward (Ptr<Ipv6Route> rtentry, Ptr<const Packet> p, const Ipv6Header& header);
+  void IpForward (Ptr<const NetDevice> idev, Ptr<Ipv6Route> rtentry, Ptr<const Packet> p, const Ipv6Header& header);
 
   /**
    * \brief Forward a packet in multicast.
+   * \param idev Pointer to ingress network device
    * \param mrtentry route 
    * \param p packet to forward
    * \param header IPv6 header to add to the packet
    */
-  void IpMulticastForward (Ptr<Ipv6MulticastRoute> mrtentry, Ptr<const Packet> p, const Ipv6Header& header);
+  void IpMulticastForward (Ptr<const NetDevice> idev, Ptr<Ipv6MulticastRoute> mrtentry, Ptr<const Packet> p, const Ipv6Header& header);
 
   /**
    * \brief Deliver a packet.

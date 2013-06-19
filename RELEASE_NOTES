@@ -24,6 +24,7 @@ New user-visible features
 
 Bugs fixed
 ----------
+- Bug 1390 - ICMPv6 Redirect are handled correctly only for /64 networks
 - Bug 1643 - NdiscCache creation and existence checks
 - Bug 1646 - ICMPv6 Redirect are sent from global address instead of link-local
 - Bug 1662 - m_type not set for Ipv6OptionRouterAlertHeader
@@ -32,6 +33,7 @@ Bugs fixed
 - Bug 1669 - ns-3 should support binding two and three (possibly more) arguments
 - Bug 1688 - Routers should advertise themselves from the link-local address
 - Bug 1689 - IPv6 shouldn't add a default gateway without checking the Router lifetime
+- Bug 1697 - ICMPv6 Redirect trigger contains multiple bugs
 - Bug 1700 - Ipv6RawSocket does not honor the bound address when sending packets
 - Bug 1701 - Ipv6StaticRouting: the source address should match the destination scope
 - Bug 1703 - Nodes don't react to a DAD
