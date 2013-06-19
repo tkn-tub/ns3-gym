@@ -2,31 +2,69 @@ EPSTOPDF = epstopdf
 DIA = dia
 CONVERT = convert
 
-FIGURES = figures
-VPATH = $(FIGURES)
+SRC = ../../src
+# Temporary source directory, for build
+SOURCETEMP = source-temp
+FIGURES = $(SOURCETEMP)/figures
+#VPATH = $(FIGURES)
 
+# list all manual .rst files that need to be copied to $SOURCETEMP
+SOURCES = \
+	source/conf.py \
+	source/_static \
+	source/index.rst \
+	source/replace.txt \
+	source/attributes.rst \
+	source/callbacks.rst \
+	source/enable-modules.rst \
+	source/enable-tests.rst \
+	source/events.rst \
+	source/gnuplot.rst \
+	source/helpers.rst \
+	source/how-to-write-tests.rst \
+	source/logging.rst \
+	source/new-models.rst \
+	source/new-modules.rst \
+	source/object-model.rst \
+	source/object-names.rst \
+	source/organization.rst \
+	source/python.rst \
+	source/random-variables.rst \
+	source/realtime.rst \
+	source/support.rst \
+	source/test-background.rst \
+	source/test-framework.rst \
+	source/test-overview.rst \
+	source/tests.rst \
+	source/tracing.rst \
+	source/troubleshoot.rst \
+
+# list all manual figure files that need to be copied to 
+# $SOURCETEMP/figures.  For each figure to be included in all
+# documentation formats (html, latex...) the following formats are supported: 
+#  1) a single .dia file (preferred option, because it can be edited)
+#  2) a single .eps file
+#  3) both a .pdf and .png file
+
+SOURCEFIGS = \
+        figures/software-organization.dia \
+	figures/plot-2d.png \
+	figures/plot-2d-with-error-bars.png \
+	figures/plot-3d.png \
+
+# specify figures from which .png and .pdf figures need to be
+# generated (all dia and eps figures)
 IMAGES_EPS = \
 	$(FIGURES)/software-organization.eps \
 
 # rescale pdf figures as necessary
 $(FIGURES)/software-organization.pdf_width = 5in
 
-# Do not delete/clean these png images upon make clean
-IMAGES_PNG_SAVED = \
-	$(FIGURES)/plot-2d.png \
-	$(FIGURES)/plot-2d-with-error-bars.png \
-	$(FIGURES)/plot-3d.png \
-
-IMAGES_PNG_CONVERTED = \
-	${IMAGES_EPS:.eps=.png}
-
-IMAGES_PNG = $(IMAGES_PNG_SAVED) $(IMAGES_PNG_CONVERTED)
+IMAGES_PNG = $(IMAGES_EPS:.eps=.png)
 
 IMAGES_PDF = ${IMAGES_EPS:.eps=.pdf}
 
 IMAGES = $(IMAGES_EPS) $(IMAGES_PNG) $(IMAGES_PDF)
-
-IMAGES_TO_CLEAN = $(IMAGES_PNG_CONVERTED) $(IMAGES_PDF) $(IMAGES_EPS)
 
 %.eps : %.dia; $(DIA) -t eps $< -e $@
 %.png : %.dia; $(DIA) -t png $< -e $@
@@ -45,7 +83,7 @@ BUILDDIR      = build
 # Internal variables.
 PAPEROPT_a4     = -D latex_paper_size=a4
 PAPEROPT_letter = -D latex_paper_size=letter
-ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) source
+ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) $(SOURCETEMP)
 
 .PHONY: help clean html dirhtml singlehtml pickle json htmlhelp qthelp devhelp epub latex latexpdf text man changes linkcheck doctest
 
@@ -70,47 +108,54 @@ help:
 	@echo "  linkcheck  to check all external links for integrity"
 	@echo "  doctest    to run all doctests embedded in the documentation (if enabled)"
 
+copy-sources:  $(SOURCES)
+	@rm -rf $(SOURCETEMP)
+	@mkdir -p $(SOURCETEMP) 
+	@mkdir -p $(FIGURES) 
+	@cp -r $(SOURCES) $(SOURCETEMP)
+	@cp -r $(SOURCEFIGS) $(FIGURES)
+
 clean:
 	-rm -rf $(BUILDDIR)
-	-rm -rf $(IMAGES_TO_CLEAN)
+	-rm -rf $(SOURCETEMP)
 
 frag: pickle
 	@if test ! -d $(BUILDDIR)/frag; then mkdir $(BUILDDIR)/frag; fi
 	pushd $(BUILDDIR)/frag && ../../pickle-to-xml.py ../pickle/index.fpickle  > navigation.xml && popd
 	cp -r $(BUILDDIR)/pickle/_images $(BUILDDIR)/frag
 
-html: $(IMAGES)
+html: copy-sources $(IMAGES)
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
 
-dirhtml: $(IMAGES)
+dirhtml: copy-sources $(IMAGES)
 	$(SPHINXBUILD) -b dirhtml $(ALLSPHINXOPTS) $(BUILDDIR)/dirhtml
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/dirhtml."
 
-singlehtml: $(IMAGES)
+singlehtml: copy-sources $(IMAGES)
 	$(SPHINXBUILD) -b singlehtml $(ALLSPHINXOPTS) $(BUILDDIR)/singlehtml
 	@echo
 	@echo "Build finished. The HTML page is in $(BUILDDIR)/singlehtml."
 
-pickle: $(IMAGES)
+pickle: copy-sources $(IMAGES)
 	$(SPHINXBUILD) -b pickle $(ALLSPHINXOPTS) $(BUILDDIR)/pickle
 	@echo
 	@echo "Build finished; now you can process the pickle files."
 
-json: $(IMAGES)
+json: copy-sources $(IMAGES)
 	$(SPHINXBUILD) -b json $(ALLSPHINXOPTS) $(BUILDDIR)/json
 	@echo
 	@echo "Build finished; now you can process the JSON files."
 
-htmlhelp: $(IMAGES)
+htmlhelp: copy-sources $(IMAGES)
 	$(SPHINXBUILD) -b htmlhelp $(ALLSPHINXOPTS) $(BUILDDIR)/htmlhelp
 	@echo
 	@echo "Build finished; now you can run HTML Help Workshop with the" \
 	      ".hhp project file in $(BUILDDIR)/htmlhelp."
 
-qthelp: $(IMAGES)
+qthelp: copy-sources $(IMAGES)
 	$(SPHINXBUILD) -b qthelp $(ALLSPHINXOPTS) $(BUILDDIR)/qthelp
 	@echo
 	@echo "Build finished; now you can run "qcollectiongenerator" with the" \
@@ -119,7 +164,7 @@ qthelp: $(IMAGES)
 	@echo "To view the help file:"
 	@echo "# assistant -collectionFile $(BUILDDIR)/qthelp/ns-3.qhc"
 
-devhelp: $(IMAGES)
+devhelp: copy-sources $(IMAGES)
 	$(SPHINXBUILD) -b devhelp $(ALLSPHINXOPTS) $(BUILDDIR)/devhelp
 	@echo
 	@echo "Build finished."
@@ -128,46 +173,46 @@ devhelp: $(IMAGES)
 	@echo "# ln -s $(BUILDDIR)/devhelp $$HOME/.local/share/devhelp/ns-3"
 	@echo "# devhelp"
 
-epub: $(IMAGES)
+epub: copy-sources $(IMAGES)
 	$(SPHINXBUILD) -b epub $(ALLSPHINXOPTS) $(BUILDDIR)/epub
 	@echo
 	@echo "Build finished. The epub file is in $(BUILDDIR)/epub."
 
-latex: $(IMAGES)
+latex: copy-sources $(IMAGES)
 	$(SPHINXBUILD) -b latex $(ALLSPHINXOPTS) $(BUILDDIR)/latex
 	@echo
 	@echo "Build finished; the LaTeX files are in $(BUILDDIR)/latex."
 	@echo "Run \`make' in that directory to run these through (pdf)latex" \
 	      "(use \`make latexpdf' here to do that automatically)."
 
-latexpdf: $(IMAGES)
+latexpdf: copy-sources $(IMAGES)
 	$(SPHINXBUILD) -b latex $(ALLSPHINXOPTS) $(BUILDDIR)/latex
 	@echo "Running LaTeX files through pdflatex..."
 	make -C $(BUILDDIR)/latex all-pdf
 	@echo "pdflatex finished; the PDF files are in $(BUILDDIR)/latex."
 
-text: $(IMAGES)
+text: copy-sources $(IMAGES)
 	$(SPHINXBUILD) -b text $(ALLSPHINXOPTS) $(BUILDDIR)/text
 	@echo
 	@echo "Build finished. The text files are in $(BUILDDIR)/text."
 
-man: $(IMAGES)
+man: copy-sources $(IMAGES)
 	$(SPHINXBUILD) -b man $(ALLSPHINXOPTS) $(BUILDDIR)/man
 	@echo
 	@echo "Build finished. The manual pages are in $(BUILDDIR)/man."
 
-changes: $(IMAGES)
+changes: copy-sources $(IMAGES)
 	$(SPHINXBUILD) -b changes $(ALLSPHINXOPTS) $(BUILDDIR)/changes
 	@echo
 	@echo "The overview file is in $(BUILDDIR)/changes."
 
-linkcheck: $(IMAGEs)
+linkcheck: copy-sources $(IMAGES)
 	$(SPHINXBUILD) -b linkcheck $(ALLSPHINXOPTS) $(BUILDDIR)/linkcheck
 	@echo
 	@echo "Link check complete; look for any errors in the above output " \
 	      "or in $(BUILDDIR)/linkcheck/output.txt."
 
-doctest: $(IMAGES)
+doctest: copy-sources $(IMAGES)
 	$(SPHINXBUILD) -b doctest $(ALLSPHINXOPTS) $(BUILDDIR)/doctest
 	@echo "Testing of doctests in the sources finished, look at the " \
 	      "results in $(BUILDDIR)/doctest/output.txt."
