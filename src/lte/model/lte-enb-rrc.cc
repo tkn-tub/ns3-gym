@@ -548,7 +548,7 @@ UeManager::PrepareHandover (uint16_t cellId)
         NS_LOG_LOGIC ("oldEnbUeX2apId = " << params.oldEnbUeX2apId);
         NS_LOG_LOGIC ("sourceCellId = " << params.sourceCellId);
         NS_LOG_LOGIC ("targetCellId = " << params.targetCellId);
-        NS_LOG_LOGIC ("mmmUeS1apId = " << params.oldEnbUeX2apId);
+        NS_LOG_LOGIC ("mmeUeS1apId = " << params.mmeUeS1apId);
         NS_LOG_LOGIC ("rrcContext   = " << params.rrcContext);
   
         m_rrc->m_x2SapProvider->SendHandoverRequest (params);
@@ -2023,7 +2023,7 @@ LteEnbRrc::AddUe (UeManager::State state)
   NS_LOG_FUNCTION (this);
   bool found = false;
   uint16_t rnti;
-  for (rnti = m_lastAllocatedRnti; 
+  for (rnti = m_lastAllocatedRnti + 1; 
        (rnti != m_lastAllocatedRnti - 1) && (!found);
        ++rnti)
     {
