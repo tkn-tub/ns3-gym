@@ -155,7 +155,7 @@ int main (int argc, char **argv)
   Ipv6InterfaceContainer iic2 = ipv6.Assign (ndc2);
   iic2.SetRouter (0, true);
 
-  stackHelper.AddHostRouteTo (r1, iic2.GetAddress (1, 1), iic1.GetAddress (2, 1), iic1.GetInterfaceIndex (1));
+  stackHelper.AddHostRouteTo (r1, iic2.GetAddress (1, 1), iic1.GetAddress (2, 0), iic1.GetInterfaceIndex (1));
 
   Simulator::Schedule (Seconds (0.0), &StackHelper::PrintRoutingTable, &stackHelper, r1);
   Simulator::Schedule (Seconds (3.0), &StackHelper::PrintRoutingTable, &stackHelper, sta1);

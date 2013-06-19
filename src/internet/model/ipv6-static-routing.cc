@@ -97,6 +97,8 @@ Ipv6StaticRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
 void Ipv6StaticRouting::AddHostRouteTo (Ipv6Address dst, Ipv6Address nextHop, uint32_t interface, Ipv6Address prefixToUse, uint32_t metric)
 {
   NS_LOG_FUNCTION (this << dst << nextHop << interface << prefixToUse << metric);
+  NS_ASSERT_MSG(nextHop.IsLinkLocal(), "Ipv6StaticRouting::AddHostRouteTo - Next hop must be link-local");
+
   AddNetworkRouteTo (dst, Ipv6Prefix::GetOnes (), nextHop, interface, prefixToUse, metric);
 }
 
@@ -117,6 +119,8 @@ void Ipv6StaticRouting::AddNetworkRouteTo (Ipv6Address network, Ipv6Prefix netwo
 void Ipv6StaticRouting::AddNetworkRouteTo (Ipv6Address network, Ipv6Prefix networkPrefix, Ipv6Address nextHop, uint32_t interface, Ipv6Address prefixToUse, uint32_t metric)
 {
   NS_LOG_FUNCTION (this << network << networkPrefix << nextHop << interface << prefixToUse << metric);
+  NS_ASSERT_MSG(nextHop.IsLinkLocal(), "Ipv6StaticRouting::AddNetworkRouteTo - Next hop must be link-local");
+
   Ipv6RoutingTableEntry* route = new Ipv6RoutingTableEntry ();
   *route = Ipv6RoutingTableEntry::CreateNetworkRouteTo (network, networkPrefix, nextHop, interface, prefixToUse);
   m_networkRoutes.push_back (std::make_pair (route, metric));
