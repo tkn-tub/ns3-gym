@@ -529,7 +529,7 @@ UeManager::PrepareHandover (uint16_t cellId)
         LteRrcSap::HandoverPreparationInfo hpi;
         hpi.asConfig.sourceUeIdentity = m_rnti;
         hpi.asConfig.sourceDlCarrierFreq = m_rrc->m_dlEarfcn;
-        hpi.asConfig.sourceMeasConfig = BuildMeasConfig ();
+        hpi.asConfig.sourceMeasConfig = m_rrc->m_ueMeasConfigList;
         hpi.asConfig.sourceRadioResourceConfig = GetRadioResourceConfigForHandoverPreparationInfo ();
         hpi.asConfig.sourceMasterInformationBlock.dlBandwidth = m_rrc->m_dlBandwidth;
         hpi.asConfig.sourceMasterInformationBlock.systemFrameNumber = 0;
@@ -1195,76 +1195,9 @@ UeManager::BuildRrcConnectionReconfiguration ()
   msg.radioResourceConfigDedicated = BuildRadioResourceConfigDedicated ();
   msg.haveMobilityControlInfo = false;
   msg.haveMeasConfig = true;
-  msg.measConfig = BuildMeasConfig ();
+  msg.measConfig = m_rrc->m_ueMeasConfigList;
 
   return msg;
-}
-
-LteRrcSap::MeasConfig
-UeManager::BuildMeasConfig ()
-{
-  // Just intra-frequency measurements are supported,
-  // so just one measurement object is created
-  LteRrcSap::MeasObjectToAddMod measObject;
-  measObject.measObjectId = 1;
-  measObject.measObjectEutra.carrierFreq = m_rrc->m_dlEarfcn;
-  measObject.measObjectEutra.allowedMeasBandwidth = m_rrc->m_dlBandwidth;
-  measObject.measObjectEutra.presenceAntennaPort1 = false;
-  measObject.measObjectEutra.neighCellConfig = 0;
-  measObject.measObjectEutra.offsetFreq = 0;
-  measObject.measObjectEutra.haveCellForWhichToReportCGI = false;
-
-  // Just event A2 and event A4 are supported
-  LteRrcSap::ReportConfigToAddMod reportConfigA2;
-  reportConfigA2.reportConfigId = 1;
-  reportConfigA2.reportConfigEutra.triggerType = LteRrcSap::ReportConfigEutra::EVENT;
-  reportConfigA2.reportConfigEutra.eventId = LteRrcSap::ReportConfigEutra::EVENT_A2;
-  reportConfigA2.reportConfigEutra.threshold1.choice = LteRrcSap::ThresholdEutra::THRESHOLD_RSRQ;
-  reportConfigA2.reportConfigEutra.threshold1.range = m_rrc->m_eventA2Threshold;
-  reportConfigA2.reportConfigEutra.hysteresis = 0;
-  reportConfigA2.reportConfigEutra.timeToTrigger = 0;
-  reportConfigA2.reportConfigEutra.triggerQuantity = LteRrcSap::ReportConfigEutra::RSRQ;
-  reportConfigA2.reportConfigEutra.reportQuantity = LteRrcSap::ReportConfigEutra::SAME_AS_TRIGGER_QUANTITY; 
-  reportConfigA2.reportConfigEutra.maxReportCells = LteRrcSap::MaxReportCells;
-  reportConfigA2.reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::MS480;
-  reportConfigA2.reportConfigEutra.reportAmount = 255;
-
-  LteRrcSap::ReportConfigToAddMod reportConfigA4;
-  reportConfigA4.reportConfigId = 2;
-  reportConfigA4.reportConfigEutra.triggerType = LteRrcSap::ReportConfigEutra::EVENT;
-  reportConfigA4.reportConfigEutra.eventId = LteRrcSap::ReportConfigEutra::EVENT_A4;
-  reportConfigA4.reportConfigEutra.threshold1.choice = LteRrcSap::ThresholdEutra::THRESHOLD_RSRQ;
-  reportConfigA4.reportConfigEutra.threshold1.range = m_rrc->m_eventA4Threshold;
-  reportConfigA4.reportConfigEutra.hysteresis = 0;
-  reportConfigA4.reportConfigEutra.timeToTrigger = 0;
-  reportConfigA4.reportConfigEutra.triggerQuantity = LteRrcSap::ReportConfigEutra::RSRQ;
-  reportConfigA4.reportConfigEutra.reportQuantity = LteRrcSap::ReportConfigEutra::SAME_AS_TRIGGER_QUANTITY; 
-  reportConfigA4.reportConfigEutra.maxReportCells = LteRrcSap::MaxReportCells;
-  reportConfigA4.reportConfigEutra.reportInterval = LteRrcSap::ReportConfigEutra::MS480;
-  reportConfigA4.reportConfigEutra.reportAmount = 255;
-
-  LteRrcSap::MeasIdToAddMod measId[2];
-  measId[0].measId = 1;
-  measId[0].measObjectId = 1;
-  measId[0].reportConfigId = 1;
-  measId[1].measId = 2;
-  measId[1].measObjectId = 1;
-  measId[1].reportConfigId = 2;
-
-  LteRrcSap::MeasConfig measConfig;
-  measConfig.measObjectToAddModList.push_back (measObject);
-  measConfig.reportConfigToAddModList.push_back (reportConfigA2);
-  measConfig.reportConfigToAddModList.push_back (reportConfigA4);
-  measConfig.measIdToAddModList.push_back (measId[0]);
-  measConfig.measIdToAddModList.push_back (measId[1]);
-  measConfig.haveQuantityConfig = true;
-  measConfig.quantityConfig.filterCoefficientRSRP = 4; // default = fc4 (See TS 36.331)
-  measConfig.quantityConfig.filterCoefficientRSRQ = 4; // default = fc4 (See TS 36.331)
-  measConfig.haveMeasGapConfig = false;
-  measConfig.haveSmeasure = false;
-  measConfig.haveSpeedStatePars = false;
-
-  return measConfig;
 }
 
 LteRrcSap::RadioResourceConfigDedicated
@@ -1412,7 +1345,7 @@ LteEnbRrc::LteEnbRrc ()
   m_s1SapUser = new MemberEpcEnbS1SapUser<LteEnbRrc> (this);
   m_cphySapUser = new MemberLteEnbCphySapUser<LteEnbRrc> (this);
 
- 
+  m_numOfUeMeasConfig = 0;
 }
 
 
@@ -1622,13 +1555,47 @@ LteEnbRrc::GetUeManager (uint16_t rnti)
 {
   NS_LOG_FUNCTION (this << (uint32_t) rnti);
   NS_ASSERT (0 != rnti);
-  std::map<uint16_t, Ptr<UeManager> >::iterator it = m_ueMap.find (rnti);  
+  std::map<uint16_t, Ptr<UeManager> >::iterator it = m_ueMap.find (rnti);
   NS_ASSERT_MSG (it != m_ueMap.end (), "RNTI " << rnti << " not found in eNB with cellId " << m_cellId);
   return it->second;
 }
 
+uint8_t
+LteEnbRrc::AddUeMeasReportConfig (LteRrcSap::ReportConfigEutra config)
+{
+  // sanity checks
+  NS_ASSERT_MSG (m_ueMeasConfigList.measIdToAddModList.size () == m_ueMeasConfigList.reportConfigToAddModList.size (),
+                 "Measurement identities and reporting configuration should not have different quantity");
+
+  if (Simulator::Now () != Seconds (0))
+    {
+      NS_FATAL_ERROR ("AddUeMeasReportConfig may not be called after the simulation has run");
+    }
+  // TODO more asserts to validate the input
+
+  m_numOfUeMeasConfig++;
+
+  // create the reporting configuration
+  LteRrcSap::ReportConfigToAddMod reportConfig;
+  reportConfig.reportConfigId = m_numOfUeMeasConfig;
+  reportConfig.reportConfigEutra = config;
+
+  // create the measurement identity
+  LteRrcSap::MeasIdToAddMod measId;
+  measId.measId = m_numOfUeMeasConfig;
+  measId.measObjectId = 1;
+  measId.reportConfigId = m_numOfUeMeasConfig;
+
+  // add both to the list of UE measurement configuration
+  m_ueMeasConfigList.reportConfigToAddModList.push_back (reportConfig);
+  m_ueMeasConfigList.measIdToAddModList.push_back (measId);
+
+  return m_numOfUeMeasConfig;
+}
+
 void
-LteEnbRrc::ConfigureCell (uint8_t ulBandwidth, uint8_t dlBandwidth, uint16_t ulEarfcn, uint16_t dlEarfcn, uint16_t cellId)
+LteEnbRrc::ConfigureCell (uint8_t ulBandwidth, uint8_t dlBandwidth,
+                          uint16_t ulEarfcn, uint16_t dlEarfcn, uint16_t cellId)
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT (!m_configured);
@@ -1641,13 +1608,40 @@ LteEnbRrc::ConfigureCell (uint8_t ulBandwidth, uint8_t dlBandwidth, uint16_t ulE
   m_ulBandwidth = ulBandwidth;
   m_cellId = cellId;
   m_cphySapProvider->SetCellId (cellId);
+
+  /*
+   * Initializing the list of UE measurement configuration (m_ueMeasConfigList).
+   * Only intra-frequency measurements are supported, so only one measurement
+   * object is created.
+   */
+
+  LteRrcSap::MeasObjectToAddMod measObject;
+  measObject.measObjectId = 1;
+  measObject.measObjectEutra.carrierFreq = m_dlEarfcn;
+  measObject.measObjectEutra.allowedMeasBandwidth = m_dlBandwidth;
+  measObject.measObjectEutra.presenceAntennaPort1 = false;
+  measObject.measObjectEutra.neighCellConfig = 0;
+  measObject.measObjectEutra.offsetFreq = 0;
+  measObject.measObjectEutra.haveCellForWhichToReportCGI = false;
+
+  m_ueMeasConfigList.measObjectToAddModList.push_back (measObject);
+  m_ueMeasConfigList.haveQuantityConfig = true;
+  m_ueMeasConfigList.quantityConfig.filterCoefficientRSRP = 4; // TODO attribute
+  m_ueMeasConfigList.quantityConfig.filterCoefficientRSRQ = 4; // TODO attribute
+  m_ueMeasConfigList.haveMeasGapConfig = false;
+  m_ueMeasConfigList.haveSmeasure = false;
+  m_ueMeasConfigList.haveSpeedStatePars = false;
+
+  // Enabling MIB transmission
   LteRrcSap::MasterInformationBlock mib;
   mib.dlBandwidth = m_dlBandwidth;
   m_cphySapProvider->SetMasterInformationBlock (mib);
+
+  // Enabling SIB transmission. The first time System Information is sent.
+  Simulator::Schedule (MilliSeconds (16), &LteEnbRrc::SendSystemInformation, this);
+
   m_configured = true;
 
-  // the first time System Information is sent
-  Simulator::Schedule (MilliSeconds (16), &LteEnbRrc::SendSystemInformation, this);
 }
 
 

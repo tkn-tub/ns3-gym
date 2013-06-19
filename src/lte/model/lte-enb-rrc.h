@@ -568,13 +568,41 @@ public:
   Ptr<UeManager> GetUeManager (uint16_t rnti);
 
   /**
-   * configure cell-specific parameters
+   * \brief Add a new UE measurement reporting configuration
+   * \param config the new reporting configuration
+   * \return the measurement ID (measId) referring to the newly added
+   *         reporting configuration
    *
+   * Assuming intra-frequency environment, the new measurement reporting
+   * configuration will be automatically associated to the only measurement
+   * object (i.e., a new measurement identity will be automatically created).
+   *
+   * Can only be called before the start of simulation.
+   */
+  uint8_t AddUeMeasReportConfig (LteRrcSap::ReportConfigEutra config);
+
+  /**
+   * \brief Configure cell-specific parameters.
    * \param ulBandwidth the uplink bandwidth in number of RB
    * \param dlBandwidth the downlink bandwidth in number of RB
    * \param ulEarfcn the UL EARFCN
    * \param dlEarfcn the DL EARFCN
    * \param cellId the ID of the cell
+   *
+   * Configure cell-specific parameters and propagate them to lower layers.
+   * The parameters include bandwidth, EARFCN (E-UTRA Absolute Radio Frequency
+   * Channel Number), and cell ID.
+   *
+   * In addition to parameter configuration, this function also performs several
+   * other tasks:
+   *  - Initializing UE measurement (i.e. measurement object and quantity
+   *    configuration), which is expected to be further configured through
+   *    `LteEnbRrc::AddUeMeasReportConfig`;
+   *  - Enabling MIB (Master Information Block) broadcast transmission
+   *  - Enabling SIB (System Information Block) broadcast transmission
+   *
+   * Typically runs when the eNodeB NetDevice is installed, for instance by
+   * `LteHelper::InstallEnbDevice` (i.e. before the simulation starts).
    */
   void ConfigureCell (uint8_t ulBandwidth,
                       uint8_t dlBandwidth,
@@ -823,17 +851,28 @@ private:
   uint16_t m_ulBandwidth;
   uint16_t m_lastAllocatedRnti;
 
-  std::map<uint16_t, Ptr<UeManager> > m_ueMap;  
+  std::map<uint16_t, Ptr<UeManager> > m_ueMap;
+
+  /**
+   * \brief List of measurement configuration which are active in every UE
+   *        attached to this eNodeB instance.
+   */
+  LteRrcSap::MeasConfig m_ueMeasConfigList;
+
+  /**
+   * \brief Number of measurement identities in `m_ueMeasConfigList`.
+   */
+  uint8_t m_numOfUeMeasConfig;
 
   struct X2uTeidInfo
   {
     uint16_t rnti;
     uint8_t drbid;
   };
-    
+
   //       TEID      RNTI, DRBID
-  std::map<uint32_t, X2uTeidInfo> m_x2uTeidInfoMap; 
-  
+  std::map<uint32_t, X2uTeidInfo> m_x2uTeidInfoMap;
+
   uint8_t m_defaultTransmissionMode;
 
   enum LteEpsBearerToRlcMapping_t m_epsBearerToRlcMapping;
