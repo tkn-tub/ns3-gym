@@ -1455,6 +1455,7 @@ def run_tests():
             # irrespective of any condition.
             #
             example_path = ns3_runnable_programs_dictionary[example_name]
+            example_path = os.path.abspath(example_path)
             job = Job()
             job.set_is_example(True)
             job.set_is_pyexample(False)
