@@ -1368,21 +1368,22 @@ LteUeRrc::ApplyMeasConfig (LteRrcSap::MeasConfig mc)
       // simplifying assumptions
       NS_ASSERT_MSG (it->reportConfigEutra.triggerType == LteRrcSap::ReportConfigEutra::EVENT,
                      "only trigger type EVENT is supported");
-      NS_ASSERT_MSG (it->reportConfigEutra.eventId == LteRrcSap::ReportConfigEutra::EVENT_A2
+      NS_ASSERT_MSG (it->reportConfigEutra.eventId == LteRrcSap::ReportConfigEutra::EVENT_A1
+                     || it->reportConfigEutra.eventId == LteRrcSap::ReportConfigEutra::EVENT_A2
                      || it->reportConfigEutra.eventId == LteRrcSap::ReportConfigEutra::EVENT_A4,
-                     "only events A2 and A4 are supported");
+                     "only events A1, A2, and A4 are supported");
       NS_ASSERT_MSG (it->reportConfigEutra.timeToTrigger == 0, "timeToTrigger > 0 is not supported");
-      
-      uint8_t reportConfigId = it->reportConfigId;         
-      std::map<uint8_t, LteRrcSap::ReportConfigToAddMod>::iterator reportConfigIt = m_varMeasConfig.reportConfigList.find (reportConfigId);      
+
+      uint8_t reportConfigId = it->reportConfigId;
+      std::map<uint8_t, LteRrcSap::ReportConfigToAddMod>::iterator reportConfigIt = m_varMeasConfig.reportConfigList.find (reportConfigId);
       if (reportConfigIt != m_varMeasConfig.reportConfigList.end ())
         {
           NS_LOG_LOGIC ("reportConfigId " << (uint32_t) reportConfigId << " exists, updating entry");
-          m_varMeasConfig.reportConfigList[reportConfigId] = *it;          
+          m_varMeasConfig.reportConfigList[reportConfigId] = *it;
           for (std::map<uint8_t, LteRrcSap::MeasIdToAddMod>::iterator measIdIt 
                  = m_varMeasConfig.measIdList.begin ();
                measIdIt != m_varMeasConfig.measIdList.end ();
-               ++measIdIt)               
+               ++measIdIt)
             {
               if (measIdIt->second.reportConfigId == reportConfigId)
                 {
