@@ -1585,29 +1585,69 @@ LteUeRrc::SendMeasurementReport (uint8_t measId)
         {
           NS_LOG_WARN (this << " cellsTriggeredList is empty");
         }
+
+      /*
+       * The current LteRrcSap implementation is broken in that it does not
+       * allow for infinite values of reportAmount, which is probably the most
+       * reasonable setting. So we just always assume infinite reportAmount.
+       */
       measReportIt->second.numberOfReportsSent++;
       measReportIt->second.periodicReportTimer.Cancel ();
-            
-      // the current LteRrcSap implementation is broken in that it does not allow for infinite values
-      // which is probably the most reasonable setting. So we just assume infinite reportAmount
-      // if (measReportIt->numberOfReportsSent < reportConfigEutra.reportAmount)
-      uint32_t intervalMs;
+
+      Time reportInterval;
       switch (reportConfigEutra.reportInterval)
         {
-        case LteRrcSap::ReportConfigEutra::MS480:
-          intervalMs = 480;
+        case LteRrcSap::ReportConfigEutra::MS120:
+          reportInterval = MilliSeconds (120);
           break;
-          
+        case LteRrcSap::ReportConfigEutra::MS240:
+          reportInterval = MilliSeconds (240);
+          break;
+        case LteRrcSap::ReportConfigEutra::MS480:
+          reportInterval = MilliSeconds (480);
+          break;
+        case LteRrcSap::ReportConfigEutra::MS640:
+          reportInterval = MilliSeconds (640);
+          break;
+        case LteRrcSap::ReportConfigEutra::MS1024:
+          reportInterval = MilliSeconds (1024);
+          break;
+        case LteRrcSap::ReportConfigEutra::MS2048:
+          reportInterval = MilliSeconds (2048);
+          break;
+        case LteRrcSap::ReportConfigEutra::MS5120:
+          reportInterval = MilliSeconds (5120);
+          break;
+        case LteRrcSap::ReportConfigEutra::MS10240:
+          reportInterval = MilliSeconds (10240);
+          break;
+        case LteRrcSap::ReportConfigEutra::MIN1:
+          reportInterval = Seconds (60);
+          break;
+        case LteRrcSap::ReportConfigEutra::MIN6:
+          reportInterval = Seconds (360);
+          break;
+        case LteRrcSap::ReportConfigEutra::MIN12:
+          reportInterval = Seconds (720);
+          break;
+        case LteRrcSap::ReportConfigEutra::MIN30:
+          reportInterval = Seconds (1800);
+          break;
+        case LteRrcSap::ReportConfigEutra::MIN60:
+          reportInterval = Seconds (3600);
+          break;
         default:
-          NS_FATAL_ERROR ("unsupported reportInterval");
-          break;          
+          NS_FATAL_ERROR ("Unsupported reportInterval " << (uint16_t) reportConfigEutra.reportInterval);
+          break;
         }
-      measReportIt->second.periodicReportTimer 
-        = Simulator::Schedule (MilliSeconds (intervalMs), 
-                               &LteUeRrc::SendMeasurementReport,
-                               this,
-                               measId);
 
+      // schedule the next measurement reporting
+      measReportIt->second.periodicReportTimer 
+        = Simulator::Schedule (reportInterval,
+                               &LteUeRrc::SendMeasurementReport,
+                               this, measId);
+
+      // send the measurement report to eNodeB
       m_rrcSapUser->SendMeasurementReport (measurementReport);
     } 
 }
@@ -1697,9 +1737,9 @@ LteUeRrc::SwitchToState (State newState)
       break;
     }
 }
-  
 
-    
-  
+
+
+
 } // namespace ns3
 
