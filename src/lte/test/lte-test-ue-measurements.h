@@ -27,7 +27,7 @@
 #include <ns3/test.h>
 #include <ns3/lte-rrc-sap.h>
 #include <ns3/nstime.h>
-#include <list>
+#include <vector>
 
 
 namespace ns3 {
@@ -77,8 +77,8 @@ class LteUeMeasurementsPiecewiseTestCase1 : public TestCase
 public:
   LteUeMeasurementsPiecewiseTestCase1 (std::string name,
                                        LteRrcSap::ReportConfigEutra config,
-                                       std::list<Time> expectedTime,
-                                       std::list<double> expectedRsrp);
+                                       std::vector<Time> expectedTime,
+                                       std::vector<uint8_t> expectedRsrp);
 
   virtual ~LteUeMeasurementsPiecewiseTestCase1 ();
 
@@ -88,9 +88,13 @@ public:
    *
    * The trigger is set up beforehand by connecting to the
    * `LteUeRrc::RecvMeasurementReport` trace source.
+   *
+   * Verification consists of
+   * checking whether the report carries the right value of RSRP or not, and
+   * whether it occurs at the expected time or not.
    */
   void RecvMeasurementReportCallback (std::string context, uint64_t imsi,
-                                      uint16_t rnti, uint16_t cellId,
+                                      uint16_t cellId, uint16_t rnti,
                                       LteRrcSap::MeasurementReport report);
 
 private:
@@ -102,12 +106,7 @@ private:
    */
   virtual void DoRun ();
 
-  /**
-   * \brief Verify whether it occurs at the expected time or not, and whether it
-   *        carries the right value of RSRP or not.
-   */
-  void DoVerify (LteRrcSap::MeasurementReport report);
-
+  void TeleportVeryNear ();
   void TeleportNear ();
   void TeleportFar ();
   void TeleportVeryFar ();
@@ -118,16 +117,30 @@ private:
   LteRrcSap::ReportConfigEutra m_config;
 
   /**
-   * \brief The expected time when measurement reports are received by eNodeB.
+   * \brief The list of expected time when measurement reports are received by
+   *        eNodeB.
    */
-  std::list<Time> m_expectedTime;
+  std::vector<Time> m_expectedTime;
 
   /**
-   * \brief The expected value of RSRP from the measurement reports received.
+   * \brief The list of expected values of RSRP (in 3GPP range unit) from the
+   *        measurement reports received.
    */
-  std::list<double> m_expectedRsrp;
+  std::vector<uint8_t> m_expectedRsrp;
 
-  Ptr<Node> m_ueNode;
+  /**
+   * \brief Pointer to the element of `m_expectedTime` which is expected to
+   *        occur next in the simulation.
+   */
+  std::vector<Time>::iterator m_itExpectedTime;
+
+  /**
+   * \brief Pointer to the element of `m_expectedRsrp` which is expected to
+   *        occur next in the simulation.
+   */
+  std::vector<uint8_t>::iterator m_itExpectedRsrp;
+
+  Ptr<MobilityModel> m_ueMobility;
 };
 
 
@@ -140,8 +153,8 @@ class LteUeMeasurementsPiecewiseTestCase2 : public TestCase
 public:
   LteUeMeasurementsPiecewiseTestCase2 (std::string name,
                                        LteRrcSap::ReportConfigEutra config,
-                                       std::list<Time> expectedTime,
-                                       std::list<double> expectedRsrp);
+                                       std::vector<Time> expectedTime,
+                                       std::vector<uint8_t> expectedRsrp);
 
   virtual ~LteUeMeasurementsPiecewiseTestCase2 ();
 
@@ -151,9 +164,13 @@ public:
    *
    * The trigger is set up beforehand by connecting to the
    * `LteUeRrc::RecvMeasurementReport` trace source.
+   *
+   * Verification consists of
+   * checking whether the report carries the right value of RSRP or not, and
+   * whether it occurs at the expected time or not.
    */
   void RecvMeasurementReportCallback (std::string context, uint64_t imsi,
-                                      uint16_t rnti, uint16_t cellId,
+                                      uint16_t cellId, uint16_t rnti,
                                       LteRrcSap::MeasurementReport report);
 
 private:
@@ -166,25 +183,33 @@ private:
   virtual void DoRun ();
 
   /**
-   * \brief Verify whether it occurs at the expected time or not, and whether it
-   *        carries the right value of RSRP or not.
-   */
-  void DoVerify (LteRrcSap::MeasurementReport report);
-
-  /**
    * \brief The active report triggering configuration
    */
   LteRrcSap::ReportConfigEutra m_config;
 
   /**
-   * \brief The expected time when measurement reports are received by eNodeB.
+   * \brief The list of expected time when measurement reports are received by
+   *        eNodeB.
    */
-  std::list<Time> m_expectedTime;
+  std::vector<Time> m_expectedTime;
 
   /**
-   * \brief The expected value of RSRP from the measurement reports received.
+   * \brief The list of expected values of RSRP (in 3GPP range unit) from the
+   *        measurement reports received.
    */
-  std::list<double> m_expectedRsrp;
+  std::vector<uint8_t> m_expectedRsrp;
+
+  /**
+   * \brief Pointer to the element of `m_expectedTime` which is expected to
+   *        occur next in the simulation.
+   */
+  std::vector<Time>::iterator m_itExpectedTime;
+
+  /**
+   * \brief Pointer to the element of `m_expectedRsrp` which is expected to
+   *        occur next in the simulation.
+   */
+  std::vector<uint8_t>::iterator m_itExpectedRsrp;
 
   // TODO
 };
