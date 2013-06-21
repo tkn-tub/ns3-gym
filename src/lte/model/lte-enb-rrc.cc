@@ -1379,10 +1379,10 @@ LteEnbRrc::GetTypeId (void)
                    MakeObjectMapAccessor (&LteEnbRrc::m_ueMap),
                    MakeObjectMapChecker<UeManager> ())
     .AddAttribute ("DefaultTransmissionMode",
-                  "The default UEs' transmission mode (0: SISO)",
-                  UintegerValue (0),  // default tx-mode
-                  MakeUintegerAccessor (&LteEnbRrc::m_defaultTransmissionMode),
-                  MakeUintegerChecker<uint8_t> ())
+                   "The default UEs' transmission mode (0: SISO)",
+                   UintegerValue (0),  // default tx-mode
+                   MakeUintegerAccessor (&LteEnbRrc::m_defaultTransmissionMode),
+                   MakeUintegerChecker<uint8_t> ())
     .AddAttribute ("EpsBearerToRlcMapping", 
                    "Specify which type of RLC will be used for each type of EPS bearer. ",
                    EnumValue (RLC_SM_ALWAYS),
@@ -1393,35 +1393,41 @@ LteEnbRrc::GetTypeId (void)
                                     PER_BASED,     "PacketErrorRateBased"))
     .AddAttribute ("SystemInformationPeriodicity",
                    "The interval for sending system information (Time value)",
-                   TimeValue (MilliSeconds (80)),  
+                   TimeValue (MilliSeconds (80)),
                    MakeTimeAccessor (&LteEnbRrc::m_systemInformationPeriodicity),
                    MakeTimeChecker ())
+
+    // SRS related attributes
     .AddAttribute ("SrsPeriodicity",
                    "The SRS periodicity in milliseconds",
-                   UintegerValue (40),  
+                   UintegerValue (40),
                    MakeUintegerAccessor (&LteEnbRrc::SetSrsPeriodicity, 
                                          &LteEnbRrc::GetSrsPeriodicity),
                    MakeUintegerChecker<uint32_t> ())
+
+    // Timeout related attributes
     .AddAttribute ("ConnectionTimeoutDuration",
                    "After a RA attempt, if no RRC Connection Request is received before this time, the UE context is destroyed. Must account for reception of RAR and transmission of RRC CONNECTION REQUEST over UL GRANT.",
-                   TimeValue (MilliSeconds (15)),  
+                   TimeValue (MilliSeconds (15)),
                    MakeTimeAccessor (&LteEnbRrc::m_connectionTimeoutDuration),
                    MakeTimeChecker ())
     .AddAttribute ("ConnectionRejectedTimeoutDuration",
                    "Time to wait between sending a RRC CONNECTION REJECT and destroying the UE context",
-                   TimeValue (MilliSeconds (30)),  
+                   TimeValue (MilliSeconds (30)),
                    MakeTimeAccessor (&LteEnbRrc::m_connectionRejectedTimeoutDuration),
                    MakeTimeChecker ())
     .AddAttribute ("HandoverJoiningTimeoutDuration",
                    "After accepting a handover request, if no RRC Connection Reconfiguration Completed is received before this time, the UE context is destroyed. Must account for reception of X2 HO REQ ACK by source eNB, transmission of the Handover Command, non-contention-based random access and reception of the RRC Connection Reconfiguration Completed message.",
-                   TimeValue (MilliSeconds (200)),  
+                   TimeValue (MilliSeconds (200)),
                    MakeTimeAccessor (&LteEnbRrc::m_handoverJoiningTimeoutDuration),
                    MakeTimeChecker ())
     .AddAttribute ("HandoverLeavingTimeoutDuration",
                    "After issuing a Handover Command, if neither RRC Connection Reestablishment nor X2 UE Context Release has been previously received, the UE context is destroyed.",
-                   TimeValue (MilliSeconds (500)),  
+                   TimeValue (MilliSeconds (500)),
                    MakeTimeAccessor (&LteEnbRrc::m_handoverLeavingTimeoutDuration),
                    MakeTimeChecker ())
+
+    // Handover related attributes
     .AddAttribute ("AdmitHandoverRequest",
                    "Whether to admit an X2 handover request from another eNB",
                    BooleanValue (true),
@@ -1442,6 +1448,26 @@ LteEnbRrc::GetTypeId (void)
                    UintegerValue (1),
                    MakeUintegerAccessor (&LteEnbRrc::m_neighbourCellHandoverOffset),
                    MakeUintegerChecker<uint8_t> ())
+
+    // UE measurements related attributes
+    .AddAttribute ("RsrpFilterCoefficient",
+                   "Determines the strength of smoothing effect induced by "
+                   "layer 3 filtering of RSRP in all attached UE; "
+                   "if set to 0, no layer 3 filtering is applicable",
+                   // i.e. the variable k in 3GPP TS 36.331 section 5.5.3.2
+                   UintegerValue (4),
+                   MakeUintegerAccessor (&LteEnbRrc::m_rsrpFilterCoefficient),
+                   MakeUintegerChecker<uint8_t> (0))
+    .AddAttribute ("RsrqFilterCoefficient",
+                   "Determines the strength of smoothing effect induced by "
+                   "layer 3 filtering of RSRQ in all attached UE; "
+                   "if set to 0, no layer 3 filtering is applicable",
+                   // i.e. the variable k in 3GPP TS 36.331 section 5.5.3.2
+                   UintegerValue (4),
+                   MakeUintegerAccessor (&LteEnbRrc::m_rsrqFilterCoefficient),
+                   MakeUintegerChecker<uint8_t> (0))
+
+    // Trace sources
     .AddTraceSource ("NewUeContext",
                      "trace fired upon creation of a new UE context",
                      MakeTraceSourceAccessor (&LteEnbRrc::m_newUeContextTrace))
@@ -1616,8 +1642,8 @@ LteEnbRrc::ConfigureCell (uint8_t ulBandwidth, uint8_t dlBandwidth,
 
   m_ueMeasConfigList.measObjectToAddModList.push_back (measObject);
   m_ueMeasConfigList.haveQuantityConfig = true;
-  m_ueMeasConfigList.quantityConfig.filterCoefficientRSRP = 4; // TODO attribute
-  m_ueMeasConfigList.quantityConfig.filterCoefficientRSRQ = 4; // TODO attribute
+  m_ueMeasConfigList.quantityConfig.filterCoefficientRSRP = m_rsrpFilterCoefficient;
+  m_ueMeasConfigList.quantityConfig.filterCoefficientRSRQ = m_rsrqFilterCoefficient;
   m_ueMeasConfigList.haveMeasGapConfig = false;
   m_ueMeasConfigList.haveSmeasure = false;
   m_ueMeasConfigList.haveSpeedStatePars = false;
@@ -1651,7 +1677,7 @@ LteEnbRrc::SendData (Ptr<Packet> packet)
   NS_ASSERT_MSG (found, "no EpsBearerTag found in packet to be sent");
   Ptr<UeManager> ueManager = GetUeManager (tag.GetRnti ());
   ueManager->SendData (tag.GetBid (), packet);
-  
+
   return true;
 }
 

@@ -878,7 +878,7 @@ private:
   enum LteEpsBearerToRlcMapping_t m_epsBearerToRlcMapping;
 
   Time m_systemInformationPeriodicity;
-  
+
   // SRS related attributes
   uint16_t m_srsCurrentPeriodicityId;
   std::set<uint16_t> m_ueSrsConfigurationIndexSet;
@@ -890,6 +890,10 @@ private:
   bool m_admitRrcConnectionRequest;
   uint8_t m_servingCellHandoverThreshold;
   uint8_t m_neighbourCellHandoverOffset;
+
+  // UE measurements related attributes
+  uint8_t m_rsrpFilterCoefficient;
+  uint8_t m_rsrqFilterCoefficient;
 
   // timeouts
   Time m_connectionTimeoutDuration;
