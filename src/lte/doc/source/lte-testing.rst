@@ -2,8 +2,8 @@
 
 
 +++++++++++++++++++++++++++
- Testing Documentation
-+++++++++++++++++++++++++++
+Testing Documentation
++++++++++++++++++++++
 
 
 Overview
@@ -195,7 +195,7 @@ contains separate values for uplink and downlink.
 
 
 UE Measurements Tests
------------------------------
+---------------------
 
 The test suite `lte-ue-measurements`` provides system tests recreating an
 inter-cell interference scenario identical of the one defined for `lte-interference`` test-suite. However, in this test the quantities to be tested are represented by RSRP and RSRQ measurements performed by the UE in two different points of the stack: the source, which is UE PHY layer, and the destination, that is the eNB RRC.
@@ -215,7 +215,7 @@ The tables below are the complete list of cases for testing the UE measurements
 configuration function. Note that the asterisks mark means that the case
 consists of 4 subcases: plain, with hysteresis, with time-to-trigger, or both.
 
-.. table:: UE measurement configuration test cases with constant measurement,
+.. table:: UE measurement configuration test cases with piecewise configuration,
            1 eNodeB, and 1 static UE
 
    ====== ================== ===========================
@@ -231,7 +231,7 @@ consists of 4 subcases: plain, with hysteresis, with time-to-trigger, or both.
    8      Periodical 480 ms  *TBD*
    ====== ================== ===========================
 
-.. table:: UE measurement configuration test cases with constant measurement,
+.. table:: UE measurement configuration test cases with piecewise configuration,
            2 eNodeB, and 1 static UE
 
    ====== ================== ===========================
@@ -258,22 +258,18 @@ consists of 4 subcases: plain, with hysteresis, with time-to-trigger, or both.
 
 The above list is implemented as 3 ``TestCase`` classes associated with
 ``LteUeMeasConfigTestSuite`` (*lte-ue-meas-config* test suite). These test cases
-only verifies the timing accuracy of the measurement reports. The contents of
-the report itself are not verified. The verification of the content is left to
-the existing ``LteUeMeasurementsTestSuite``. The following assumptions are used:
-RSRP report quantity, ideal RRC protocol.
+verify the timing and RSRP accuracy of the measurement reports. The following
+assumptions are used: ideal RRC protocol, and no layer 3 filtering.
 
-Constant measurement configuration
-++++++++++++++++++++++++++++++++++
+Piecewise configuration
++++++++++++++++++++++++
 
-In the constant measurement cases, the UE will have the same measurement
+In the piecewise configuration case, the UE will have the same measurement
 configuration throughout the simulation. The tests will attempt to provoke
-entering and leaving conditions at different time in the simulation by dropping
-and restoring the transmission power of the serving cell (on/off Tx Power) in an
-alternating way. The period of the the drops and restorations will be
-progressively increased, as illustrated in Figure :ref:`fig-tx-power-timing`
-below. The 200 ms period in the beginning is allocated to wait for the first
-report from UE PHY.
+entering and leaving conditions at different time in the simulation by moving
+the UE to different locations, thus varying the received power, as
+illustrated in Figure :ref:`fig-tx-power-timing` below. The 200 ms period in the
+beginning is allocated to wait for the first report from UE PHY.
 
 .. _fig-tx-power-timing:
    
@@ -282,25 +278,10 @@ report from UE PHY.
 
    Period of Tx Power on and off in constant measurement test case
 
-The motivation behind the on/off Tx power approach is to introduce drastic
-change which will guarantee the triggering of entering or leaving condition of
-the tested event. By performing drastic changes, the test can be run within
-shorter amount of time. However, the Layer 1 and Layer 3 filtering will still
-produce some smoothing effect and must be taken into account. "Teleporting" the
-UE between two fixed locations (very near and very far away from the eNodeB) can
-also be considered as an alternative to the on/off Tx power approach.
-
-The constructor definition of the ``TestCase`` classes will be as below::
-
-  LteUeMeasurementsConstantTestCase1 (LteRrcSap::ReportConfigEutra config,
-                                      std::vector<Time> expectedOccurrences);
-  LteUeMeasurementsConstantTestCase2 (LteRrcSap::ReportConfigEutra config,
-                                      std::vector<Time> expectedOccurrences);
-
-The input `config` will be passed as it is to the
-``LteEnbRrc::AddUeMeasReportConfig`` function during the simulation setup.
-``TestSuite`` will be responsible to create the correct `config` for each
-``TestCase``.
+The motivation behind the *"teleport"* is to introduce drastic change which will
+guarantee the triggering of entering or leaving condition of the tested event.
+By performing drastic changes, the test can be run within shorter amount of
+time.
 
 The case with 2 eNodeB (the second test case) exists for testing event-based
 triggering which is determined by neighbouring cells.

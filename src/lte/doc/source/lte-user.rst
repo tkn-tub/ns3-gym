@@ -2,8 +2,8 @@
 
 
 +++++++++++++++++++++++++++++++++
- User Documentation
-+++++++++++++++++++++++++++++++++
+User Documentation
+++++++++++++++++++
 
 
 Background
@@ -137,8 +137,8 @@ Here is the minimal simulation program that is needed to do an LTE-only simulati
 For how to compile and run simulation programs, please refer to [ns3tutorial]_.
 
 
-Configuration of LTE model parameters 
---------------------------------------
+Configuration of LTE model parameters
+-------------------------------------
 
 All the relevant LTE model parameters are managed through the ns-3
 attribute system. Please refer to the [ns3tutorial]_ and [ns3manual]_
@@ -503,7 +503,7 @@ The simulator provide natively three fading traces generated according to the co
    Excerpt of the fading trace included in the simulator for an urban  scenario (speed of 3 kmph).
 
 
-Mobility Model with Buildings 
+Mobility Model with Buildings
 -----------------------------
 
 We now explain by examples how to use the buildings model (in particular, the ``MobilityBuildingInfo`` and the ``BuildingPropagationModel`` classes) in an ns-3 simulation program to setup an LTE simulation scenario that includes buildings and indoor nodes.
@@ -934,11 +934,14 @@ Direct configuration in eNodeB RRC entity
 *****************************************
 
 Users may add their custom UE measurement configuration by creating a new
-``LteRrcSap::ReportConfigEutra`` and pass it to the
+``LteRrcSap::ReportConfigEutra`` instance and pass it to the
 ``LteEnbRrc::AddUeMeasReportConfig`` function. The function will return the
-``measId`` which identifies the configuration. The user can capture the produced
-measurement reports by listening to the existing
-``LteEnbRrc::RecvMeasurementReport`` trace.
+``measId`` (measurement identity) which is a unique reference of the
+configuration in the eNodeB instance. This function must be called before the
+simulation begins. The measurement configuration will be active in all UEs
+attached to the eNodeB throughout the duration of the simulation. During the
+simulation, user can capture the measurement reports produced by the UEs by
+listening to the existing ``LteEnbRrc::RecvMeasurementReport`` trace source.
 
 The structure `ReportConfigEutra` is in accord with 3GPP specification.
 Definition of the structure and each member field can be found in Section 6.3.5
@@ -948,7 +951,6 @@ The code sample below configures Event A1 RSRP measurement to every eNodeB
 within the container ``devs``::
 
   LteRrcSap::ReportConfigEutra config;
-  config.triggerType = LteRrcSap::ReportConfigEutra::EVENT;
   config.eventId = LteRrcSap::ReportConfigEutra::EVENT_A1;
   config.threshold1.choice = LteRrcSap::ThresholdEutra::THRESHOLD_RSRP;
   config.threshold1.range = 41;
@@ -972,6 +974,11 @@ within the container ``devs``::
                           MakeCallback (&RecvMeasurementReportCallback));
   }
 
+Note that thresholds are expressed as range. In the example above, the range 41
+for RSRP corresponds to -100 dBm. The conversion from and to range is due to
+Section 9.1.4 and 9.1.7 of [TS36133]_. The ``EutranMeasurementMapping`` class
+has several static functions that can be used for this purpose.
+
 The corresponding callback function would have a definition similar as below::
 
   void
@@ -981,12 +988,36 @@ The corresponding callback function would have a definition similar as below::
                                  uint16_t rnti,
                                  LteRrcSap::MeasurementReport measReport);
 
-The ``LteRrcSap::MeasurementReport`` argument contains the ``measId``, which can
-be used to tell whether the report is intended for her.
+This method will register the callback function as a consumer of UE
+measurements. In the case where there are more than one consumers in the
+simulation (e.g. handover algorithm), the measurements intended for other
+consumers will also be captured by this callback function. Users may utilize the
+the ``measId`` field, contained within the ``LteRrcSap::MeasurementReport``
+argument of the callback function, to tell which measurement configuration has
+triggered the report.
 
-Note that thresholds are expressed as range. In the example above, the range 41
-for RSRP corresponds to -100 dBm. The conversion from and to range is due to
-Section 9.1.4 and 9.1.7 of [TS36133]_.
+In general, this mechanism prevents one consumer to unknowingly intervene with
+another consumer's reporting configuration.
+
+Note that only the reporting configuration part (i.e.
+``LteRrcSap::ReportConfigEutra``) of the UE measurements parameter is open for
+consumers to configure, while the other parts are kept hidden. The
+intra-frequency limitation is the main motivation behind this API implementation
+decision:
+
+ - there is only one, unambiguous and definitive *measurement object*, thus
+   there is no need to configure it;
+   
+ - *measurement identities* are kept hidden because of the fact that there is
+   one-to-one mapping between reporting configuration and measurement identity,
+   thus a new measurement identity is set up automatically when a new reporting
+   configuration is created;
+
+ - *quantity configuration* is configured elsewhere, see
+   :ref:`sec-performing-measurements`; and
+   
+ - *measurement gaps* are not supported, because it is only applicable for
+   inter-frequency settings;
 
 Configuring existing handover algorithm
 ***************************************
@@ -1068,27 +1099,6 @@ of events A2 and A4::
 
 You can find more info about events A2 and A4 in Subsections 5.5.4.3 and 5.5.4.5
 of [TS36331]_.
-
-
-.. _sec-custom-handover-algorithm:
-
-Custom handover algorithm
-*************************
-
-When the existing handover algorithms are not flexible enough, (for instance,
-the Strongest Cell handover algorithm is limited to Event A3 only), users may
-develop a subclass of handover algorithm.
-
-In the implementation, users may submit one or more UE measurements
-configuration message to the eNodeB RRC entity via the Handover Algorithm SAP
-interface (``AddUeMeasReportConfig``). Later during the simulation, the
-requested measurement reports will be delivered using another method of Handover
-Algorithm SAP interface (``ReportUeMeas``).
-
-Note that the handover algorithm does not have to remember the `measId` of the
-requested measurement configuration, because the eNodeB RRC will maintain a list
-of the `measId` in question, and only submit the measurement reports which come
-from the listed `measId`.
 
 
 Handover traces

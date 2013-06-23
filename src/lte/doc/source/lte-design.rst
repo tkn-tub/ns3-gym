@@ -2,13 +2,13 @@
 
 
 ++++++++++++++++++++++++++
- Design Documentation
-++++++++++++++++++++++++++
+Design Documentation
+++++++++++++++++++++
 
 
----------
+--------
 Overview
----------
+--------
 
 
 An overview of the  LTE-EPC simulation model is depicted in
@@ -34,9 +34,9 @@ the figure :ref:`fig-epc-topology`. There are two main components:
 
 .. _sec-design-criteria:
 
------------------------
+---------------
 Design Criteria
------------------------
+---------------
 
 
 LTE Model
@@ -159,16 +159,16 @@ The following design choices have been made for the EPC model:
 
 .. _overall-architecture:
 
------------------------
+------------
 Architecture
------------------------
+------------
 
 
 
 
 
-LTE Model 
-++++++++++
+LTE Model
++++++++++
 
 
 
@@ -455,9 +455,9 @@ the IsotropicAntennaModel is used for both eNBs and UEs.
         \clearpage
 
 
-----
+---
 PHY
-----
+---
 
 
 Overview
@@ -776,9 +776,9 @@ where :math:`RSRP_i` is the RSRP of the neighbor cell :math:`i`, :math:`P_i(k)` 
 
 
 
-----------
-HARQ 
-----------
+----
+HARQ
+----
 
 The HARQ scheme implemented is based on a incremental redundancy (IR) solutions combined with multiple stop-and-wait processes for enabling a continuous data flow. In detail, the solution adopted is the *soft combining hybrid IR Full incremental redundancy* (also called IR Type II), which implies that the retransmissions contain only new information respect to the previous ones. The resource allocation algorithm of the HARQ has been implemented within the respective scheduler classes (i.e., ``RrFfMacScheduler`` and ``PfFfMacScheduler``, refer to their correspondent sections for more info), while the decodification part of the HARQ has been implemented in the ``LteSpectrumPhy`` and ``LteHarqPhy`` classes which will be detailed in this section.
 
@@ -821,9 +821,9 @@ Finally, the HARQ engine is always active both at MAC and PHY layer; however, in
    Interaction between HARQ and LTE protocol stack
 
 
-------
-MAC 
-------
+---
+MAC
+---
   
 
 Resource Allocation Model
@@ -1085,7 +1085,7 @@ For what concern the HARQ, PF implements the non adaptive version, which implies
 
 
 Maximum Throughput (MT) Scheduler
-----------------------------------
+---------------------------------
 
 The Maximum Throughput (MT) scheduler [FCapo2012]_ aims to maximize the overall throughput of eNB.
 It allocates each RB to the user that can achieve the maximum achievable rate in the current TTI.
@@ -1122,7 +1122,7 @@ fairness to UEs in poor channel condition.
 
 
 Throughput to Average (TTA) Scheduler
---------------------------------------
+-------------------------------------
 
 The Throughput to Average (TTA) scheduler [FCapo2012]_ can be considered as an intermediate between MT and PF. 
 The metric used in TTA is calculated as follows:
@@ -1347,9 +1347,9 @@ and the other entities.
         \clearpage
 
 
-----
-RLC 
-----
+---
+RLC
+---
 
 
 
@@ -1667,7 +1667,7 @@ with the difference that, following the specifications of [TS36322]_,
 retransmission are not performed, and there are no STATUS PDUs.
 
 Transmit operations in uplink
-------------------------------
+-----------------------------
 
 The transmit operations in the uplink are similar to those of the
 downlink, with the main difference that the Report_Buffer_Status is
@@ -1993,7 +1993,6 @@ based on UE measurements are planned only at a later stage).
 UE RRC Measurements Model
 +++++++++++++++++++++++++
 
-
 UE RRC measurements support
 ---------------------------
 
@@ -2063,6 +2062,9 @@ The eNodeB RRC entity implements the configuration parameters and procedures
 described in Section 5.5.2 of [TS36331]_, with the following simplifying
 assumption:
 
+ - all UEs attached to the eNodeB will be configured the same way, i.e. there is
+   no support for configuring specific measurement for specific UE; and
+   
  - it is assumed that there is a one-to-one mapping between the PCI and the
    E-UTRAN Global Cell Identifier (EGCI). This is consistent with the PCI
    modeling assumptions described in :ref:`phy-ue-measurements`.
@@ -2081,6 +2083,8 @@ parameters than the default Strongest Cell handover algorithm.
 Users may customize the measurement configuration using several methods. More
 details are explained in user documentation
 (:ref:`sec-configure-ue-measurements`).
+
+.. _sec-performing-measurements:
 
 Performing measurements
 -----------------------
@@ -2105,7 +2109,7 @@ where:
    `filterCoefficent` provided by the ``QuantityConfig``;
    
 :math:`k = 4` is the default value, but can be configured by setting the
-`L3FilteringRsrpCoefficient` and `L3FilteringRsrqCoefficient` attributes in
+`RsrpFilterCoefficient` and `RsrqFilterCoefficient` attributes in
 ``LteEnbRrc``.
 
 Measurement reporting triggering
@@ -2117,13 +2121,9 @@ of [TS36331]_. When at least one trigerring condition from all the active
 measurement configuration is fulfilled, the measurement reporting procedure (in
 the next subsection) will be initiated.
 
-There are 2 supported `triggerType`: periodical and event-based. In *periodical*
-criterion, the reporting is simply triggered when the timer expires. The
-periodicity of the timer can be selected from the options defined in
-``enum reportInterval`` within ``LteRrcSap::ReportConfigEutra``.
-
-While in *event-based* criterion, there are various events that can be selected,
-which are briefly described in the table below: 
+3GPP defines two kinds of `triggerType`: periodical and event-based. At the
+moment, only *event-based* criterion is supported. There are various events that
+can be selected, which are briefly described in the table below: 
 
 .. table:: List of supported event-based triggering criteria
 
@@ -2148,6 +2148,15 @@ entering and leaving conditions in dB. In effect, it delays both conditions by
 half of the specified dB. Similarly, *time-to-trigger* introduces delay to both
 entering and leaving conditions, but as a unit of time.
 
+*Periodical* type of reporting trigger is not supported, but can be easily
+replicated using event-based trigger. This can be done by configuring the
+measurement in such a way that the entering condition is always fulfilled, for
+example by setting the threshold of Event A1 to zero (the minimum level).
+As a result, the measurement report will be regularly triggered at every certain 
+interval, as determined by the `reportInterval` field within
+``LteRrcSap::ReportConfigEutra``, therefore producing the same behaviour as
+periodical reporting.
+
 In contrast with 3GPP standard, the current model does not support cell-specific
 configuration, which is defined in measurement object. As a consequence,
 incorporating a list of black cells into the triggering process is not
@@ -2161,12 +2170,12 @@ Measurement reporting
 This part handles the submission of measurement report from the UE RRC entity
 to the serving eNodeB entity via RRC protocol. Several assumptions apply:
 
- - `reportAmount` does *not* apply for event-based measurement (i.e. always
-   assumed to be infinite), but does apply for periodical measurement;
+ - `reportAmount` is *not* applicable (i.e. always assumed to be infinite);
    
  - in measurement reports, the `reportQuantity` is always assumed to be `BOTH`,
    i.e., both RSRP and RSRQ are always reported, regardless of the
    `triggerQuantity`.
+
 
 Handover
 ++++++++
@@ -2201,6 +2210,26 @@ The simulation user can set two parameters to control the handover decision:
  - neighbourHandoverOffset, if the difference between the best neighbour RSRQ
    and the serving cell RSRQ is greater or equal to the neighbourHandoverOffset
    parameter, then the handover procedure is triggered for this UE.
+   
+.. _sec-custom-handover-algorithm:
+
+Custom handover algorithm
+-------------------------
+
+When the existing handover algorithms are not flexible enough, (for instance,
+the Strongest Cell handover algorithm is limited to Event A3 only), users may
+develop a subclass of handover algorithm.
+
+In the implementation, users may submit one or more UE measurements
+configuration message to the eNodeB RRC entity via the Handover Algorithm SAP
+interface (``AddUeMeasReportConfig``). Later during the simulation, the
+requested measurement reports will be delivered using another method of Handover
+Algorithm SAP interface (``ReportUeMeas``).
+
+Note that the handover algorithm does not have to remember the `measId` of the
+requested measurement configuration, because the eNodeB RRC will maintain a list
+of the `measId` in question, and only submit the measurement reports which come
+from the listed `measId`.
 
 
 RRC sequence diagrams
@@ -2459,9 +2488,9 @@ The following RRC SAP have been implemented:
 
 
 
---------
+---
 NAS
---------
+---
 
 
 The focus of the LTE-EPC model is on the NAS Active state, which corresponds to EMM Registered, ECM connected, and RRC connected. Because of this, the following simplifications are made:
@@ -2502,12 +2531,12 @@ procedure.
 
 
 
------------------
+--
 S1
------------------
+--
 
-S1-U 
-+++++++++
+S1-U
+++++
 
 The S1-U interface is modeled in a realistic way by encapsulating
 data packets over GTP/UDP/IP, as done in real LTE-EPC systems. The
@@ -2663,7 +2692,7 @@ is sufficient to meet the QoS requirements of all bearers.
 
 
 S1AP
-+++++
+++++
 
 The S1-AP interface provides control plane interaction between the eNB
 and the MME. In the simulator, this interface is modeled in an ideal
@@ -2690,9 +2719,9 @@ The S1-AP primitives that are modeled are:
 
 
 
----
-X2 
----
+--
+X2
+--
 
 The X2 interface interconnects two eNBs [TS36420]_. From a logical
 point of view, the X2 interface is a point-to-point interface between
@@ -2941,9 +2970,9 @@ indication and Handover Report are not supported at this stage.
 
 
 
------------------
+---
 S11
------------------
+---
 
 The S11 interface provides control plane interaction between the SGW
 and the MME using the GTPv2-C protocol specified in [TS29274]_. In the
