@@ -46,8 +46,8 @@ struct CheckPointEvent
       checkInterval (interval),
       ueDeviceIndex (ueIndex),
       enbDeviceIndex (enbIndex)
-    {
-    }
+  {
+  }
 };
 
 
@@ -210,18 +210,49 @@ LteX2HandoverMeasuresTestCase::DoRun ()
       enbPositionAlloc->Add (enbPosition);
     }
   MobilityHelper enbMobility;
-  enbMobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
-  enbMobility.SetPositionAllocator(enbPositionAlloc);
-  enbMobility.Install(enbNodes);
+  enbMobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
+  enbMobility.SetPositionAllocator (enbPositionAlloc);
+  enbMobility.Install (enbNodes);
 
   // Install Mobility Model in UE
   // UE moves with a constant speed along the X axis
   MobilityHelper ueMobility;
   ueMobility.SetMobilityModel ("ns3::ConstantVelocityMobilityModel");
-  ueMobility.Install(ueNodes);
+  ueMobility.Install (ueNodes);
   ueNodes.Get (0)->GetObject<MobilityModel> ()->SetPosition (Vector (0, 0, 0));
   ueNodes.Get (0)->GetObject<ConstantVelocityMobilityModel> ()->SetVelocity (Vector (speed, 0, 0));
 
+  // Setup pre-GSOC UE measurement configuration to the eNodeBs
+
+  // Event A2
+  LteRrcSap::ReportConfigEutra reportConfigA2;
+  reportConfigA2.triggerType = LteRrcSap::ReportConfigEutra::EVENT;
+  reportConfigA2.eventId = LteRrcSap::ReportConfigEutra::EVENT_A2;
+  reportConfigA2.threshold1.choice = LteRrcSap::ThresholdEutra::THRESHOLD_RSRQ;
+  reportConfigA2.threshold1.range = 34;
+  reportConfigA2.hysteresis = 0;
+  reportConfigA2.timeToTrigger = 0;
+  reportConfigA2.triggerQuantity = LteRrcSap::ReportConfigEutra::RSRQ;
+  reportConfigA2.reportQuantity = LteRrcSap::ReportConfigEutra::SAME_AS_TRIGGER_QUANTITY;
+  reportConfigA2.maxReportCells = LteRrcSap::MaxReportCells;
+  reportConfigA2.reportInterval = LteRrcSap::ReportConfigEutra::MS480;
+  reportConfigA2.reportAmount = 255;
+
+  // Event A4
+  LteRrcSap::ReportConfigEutra reportConfigA4;
+  reportConfigA4.triggerType = LteRrcSap::ReportConfigEutra::EVENT;
+  reportConfigA4.eventId = LteRrcSap::ReportConfigEutra::EVENT_A4;
+  reportConfigA4.threshold1.choice = LteRrcSap::ThresholdEutra::THRESHOLD_RSRQ;
+  reportConfigA4.threshold1.range = 0;
+  reportConfigA4.hysteresis = 0;
+  reportConfigA4.timeToTrigger = 0;
+  reportConfigA4.triggerQuantity = LteRrcSap::ReportConfigEutra::RSRQ;
+  reportConfigA4.reportQuantity = LteRrcSap::ReportConfigEutra::SAME_AS_TRIGGER_QUANTITY;
+  reportConfigA4.maxReportCells = LteRrcSap::MaxReportCells;
+  reportConfigA4.reportInterval = LteRrcSap::ReportConfigEutra::MS480;
+  reportConfigA4.reportAmount = 255;
+
+  uint8_t measId;
 
   NetDeviceContainer enbDevices;
   enbDevices = m_lteHelper->InstallEnbDevice (enbNodes);
@@ -232,6 +263,11 @@ LteX2HandoverMeasuresTestCase::DoRun ()
     {
       Ptr<LteEnbRrc> enbRrc = (*it)->GetObject<LteEnbNetDevice> ()->GetRrc ();
       enbRrc->SetAttribute ("AdmitHandoverRequest", BooleanValue (m_admitHo));
+
+      measId = enbRrc->AddUeMeasReportConfig (reportConfigA2);
+      NS_ASSERT (measId == 1);
+      measId = enbRrc->AddUeMeasReportConfig (reportConfigA4);
+      NS_ASSERT (measId == 2);
     }
 
   NetDeviceContainer ueDevices;
