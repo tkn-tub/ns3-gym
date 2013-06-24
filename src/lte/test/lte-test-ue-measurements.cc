@@ -181,6 +181,52 @@ LteUeMeasurementsTestSuite::LteUeMeasurementsTestSuite ()
                                                         config, expectedTime, expectedRsrp),
                TestCase::EXTENSIVE);
 
+  /*
+   * Event A2 (serving cell becomes worse than threshold)
+   * with very low threshold
+   */
+  config.eventId = LteRrcSap::ReportConfigEutra::EVENT_A2;
+  config.threshold1.range = 0;
+  expectedTime.clear ();
+  expectedRsrp.clear ();
+  AddTestCase (new LteUeMeasurementsPiecewiseTestCase1 ("Event A2 with very low threshold",
+                                                        config, expectedTime, expectedRsrp),
+               TestCase::EXTENSIVE);
+
+  /*
+   * Event A2 (serving cell becomes worse than threshold)
+   * with normal threshold
+   */
+  config.threshold1.range = 54;
+  expectedTime.clear ();
+  expectedTime << 800 << 920 << 1400 << 1520 << 1640
+               << 1760 << 1880;
+  expectedRsrp.clear ();
+  expectedRsrp << 47 << 47 << 51 << 51 << 47
+               << 47 << 51;
+  AddTestCase (new LteUeMeasurementsPiecewiseTestCase1 ("Event A2 with normal threshold",
+                                                        config, expectedTime, expectedRsrp),
+               TestCase::EXTENSIVE);
+
+  /*
+   * Event A2 (serving cell becomes worse than threshold)
+   * with very high threshold
+   */
+  config.threshold1.range = 97;
+  expectedTime.clear ();
+  expectedTime << 200 << 320 << 440 << 560 << 680
+               << 800 << 920 << 1040 << 1160 << 1280
+               << 1400 << 1520 << 1640 << 1760 << 1880
+               << 2000 << 2120;
+  expectedRsrp.clear ();
+  expectedRsrp << 67 << 67 << 57 << 57 << 66
+               << 47 << 47 << 66 << 66 << 57
+               << 51 << 51 << 47 << 47 << 51
+               << 57 << 57;
+  AddTestCase (new LteUeMeasurementsPiecewiseTestCase1 ("Event A2 with very high threshold",
+                                                        config, expectedTime, expectedRsrp),
+               TestCase::EXTENSIVE);
+
 } // end of LteUeMeasurementsTestSuite::LteUeMeasurementsTestSuite ()
 
 static LteUeMeasurementsTestSuite lteUeMeasurementsTestSuite;
