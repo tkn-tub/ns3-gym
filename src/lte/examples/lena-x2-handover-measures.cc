@@ -69,17 +69,17 @@ main (int argc, char *argv[])
   // change some default attributes so that they are reasonable for
   // this scenario, but do this before processing command line
   // arguments, so that the user is allowed to override these settings 
-  Config::SetDefault ("ns3::UdpClient::Interval", TimeValue (MilliSeconds(10)));
-  Config::SetDefault ("ns3::UdpClient::MaxPackets", UintegerValue(1000000));
-  Config::SetDefault ("ns3::LteHelper::UseIdealRrc", BooleanValue(true));
+  Config::SetDefault ("ns3::UdpClient::Interval", TimeValue (MilliSeconds (10)));
+  Config::SetDefault ("ns3::UdpClient::MaxPackets", UintegerValue (1000000));
+  Config::SetDefault ("ns3::LteHelper::UseIdealRrc", BooleanValue (true));
 
   // Command line arguments
   CommandLine cmd;
-  cmd.AddValue("simTime", "Total duration of the simulation (in seconds)", simTime);
-  cmd.AddValue("speed", "Speed of the UE (default = 20 m/s)", speed);
-  cmd.AddValue("enbTxPowerDbm", "TX power [dBm] used by HeNBs (defalut = 20.0)", enbTxPowerDbm);
+  cmd.AddValue ("simTime", "Total duration of the simulation (in seconds)", simTime);
+  cmd.AddValue ("speed", "Speed of the UE (default = 20 m/s)", speed);
+  cmd.AddValue ("enbTxPowerDbm", "TX power [dBm] used by HeNBs (defalut = 20.0)", enbTxPowerDbm);
 
-  cmd.Parse(argc, argv);
+  cmd.Parse (argc, argv);
 
 
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
@@ -127,14 +127,14 @@ main (int argc, char *argv[])
       enbPositionAlloc->Add (enbPosition);
     }
   MobilityHelper enbMobility;
-  enbMobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
-  enbMobility.SetPositionAllocator(enbPositionAlloc);
-  enbMobility.Install(enbNodes);
+  enbMobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
+  enbMobility.SetPositionAllocator (enbPositionAlloc);
+  enbMobility.Install (enbNodes);
 
   // Install Mobility Model in UE
   MobilityHelper ueMobility;
   ueMobility.SetMobilityModel ("ns3::ConstantVelocityMobilityModel");
-  ueMobility.Install(ueNodes);
+  ueMobility.Install (ueNodes);
   ueNodes.Get (0)->GetObject<MobilityModel> ()->SetPosition (Vector (0, yForUe, 0));
   ueNodes.Get (0)->GetObject<ConstantVelocityMobilityModel> ()->SetVelocity (Vector (speed, 0, 0));
 
@@ -160,12 +160,12 @@ main (int argc, char *argv[])
   // Attach all UEs to the first eNodeB
   for (uint16_t i = 0; i < numberOfUes; i++)
     {
-      lteHelper->Attach (ueLteDevs.Get(i), enbLteDevs.Get(0));
+      lteHelper->Attach (ueLteDevs.Get (i), enbLteDevs.Get (0));
     }
 
 
   NS_LOG_LOGIC ("setting up applications");
-    
+
   // Install and start applications on UEs and remote host
   uint16_t dlPort = 10000;
   uint16_t ulPort = 20000;
@@ -176,7 +176,7 @@ main (int argc, char *argv[])
   Ptr<UniformRandomVariable> startTimeSeconds = CreateObject<UniformRandomVariable> ();
   startTimeSeconds->SetAttribute ("Min", DoubleValue (0));
   startTimeSeconds->SetAttribute ("Max", DoubleValue (0.010));
-     
+
   for (uint32_t u = 0; u < numberOfUes; ++u)
     {
       Ptr<Node> ue = ueNodes.Get (u);
@@ -204,7 +204,7 @@ main (int argc, char *argv[])
           clientApps.Add (ulClientHelper.Install (ue));
           PacketSinkHelper ulPacketSinkHelper ("ns3::UdpSocketFactory", 
                                                InetSocketAddress (Ipv4Address::GetAny (), ulPort));
-          serverApps.Add (ulPacketSinkHelper.Install (remoteHost));  
+          serverApps.Add (ulPacketSinkHelper.Install (remoteHost));
 
           Ptr<EpcTft> tft = Create<EpcTft> ();
           EpcTft::PacketFilter dlpf;
@@ -229,11 +229,10 @@ main (int argc, char *argv[])
   lteHelper->AddX2Interface (enbNodes);
 
   // X2-based Handover
-//   lteHelper->HandoverRequest (Seconds (0.100), ueLteDevs.Get (0), enbLteDevs.Get (0), enbLteDevs.Get (1));
-  
-  
+  //lteHelper->HandoverRequest (Seconds (0.100), ueLteDevs.Get (0), enbLteDevs.Get (0), enbLteDevs.Get (1));
+
   // Uncomment to enable PCAP tracing
-  //p2ph.EnablePcapAll("lena-x2-handover");
+  // p2ph.EnablePcapAll("lena-x2-handover-measures");
 
   lteHelper->EnablePhyTraces ();
   lteHelper->EnableMacTraces ();
@@ -245,13 +244,13 @@ main (int argc, char *argv[])
   pdcpStats->SetAttribute ("EpochDuration", TimeValue (Seconds (1.0)));
 
 
-  Simulator::Stop(Seconds(simTime));
-  Simulator::Run();
+  Simulator::Stop (Seconds (simTime));
+  Simulator::Run ();
 
   // GtkConfigStore config;
-  // config.ConfigureAttributes();
+  // config.ConfigureAttributes ();
 
-  Simulator::Destroy();
+  Simulator::Destroy ();
   return 0;
 
 }
