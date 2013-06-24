@@ -34,7 +34,7 @@
 #include "ipv4-static-routing.h"
 #include "ipv4-routing-table-entry.h"
 
-NS_LOG_COMPONENT_DEFINE ("Ipv4StaticRoung");
+NS_LOG_COMPONENT_DEFINE ("Ipv4StaticRouting");
 
 using std::make_pair;
 

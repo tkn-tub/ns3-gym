@@ -37,6 +37,7 @@ Bugs fixed
 - Bug 1700 - Ipv6RawSocket does not honor the bound address when sending packets
 - Bug 1701 - Ipv6StaticRouting: the source address should match the destination scope
 - Bug 1703 - Nodes don't react to a DAD
+- Bug 1718 - Ipv4StaticRouting log component is misspelled
 
 Known issues
 ------------
