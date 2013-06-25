@@ -797,22 +797,22 @@ void Ipv6L3Protocol::SendRealOut (Ptr<Ipv6Route> route, Ptr<Packet> packet, Ipv6
   // Check packet size
   std::list<Ptr<Packet> > fragments;
 
-  bool fromMe = false;
-  for (uint32_t i=0; i<GetNInterfaces(); i++ )
-    {
-      for (uint32_t j=0; j<GetNAddresses(i); j++ )
-        {
-          if (GetAddress(i,j).GetAddress() == ipHeader.GetSourceAddress())
-            {
-              fromMe = true;
-            }
-        }
-    }
-
   if (packet->GetSize () > (size_t)(dev->GetMtu () + 40)) /* 40 => size of IPv6 header */
     {
       // Router => drop
-      if (m_ipForward && !fromMe)
+
+      bool fromMe = false;
+      for (uint32_t i=0; i<GetNInterfaces(); i++ )
+        {
+          for (uint32_t j=0; j<GetNAddresses(i); j++ )
+            {
+              if (GetAddress(i,j).GetAddress() == ipHeader.GetSourceAddress())
+                {
+                  fromMe = true;
+                }
+            }
+        }
+      if (!fromMe)
         {
           Ptr<Icmpv6L4Protocol> icmpv6 = GetIcmpv6 ();
           if ( icmpv6 )
