@@ -809,6 +809,7 @@ void Ipv6L3Protocol::SendRealOut (Ptr<Ipv6Route> route, Ptr<Packet> packet, Ipv6
               if (GetAddress(i,j).GetAddress() == ipHeader.GetSourceAddress())
                 {
                   fromMe = true;
+                  break;
                 }
             }
         }
