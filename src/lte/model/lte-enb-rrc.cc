@@ -945,9 +945,13 @@ UeManager::RecvMeasurementReport (LteRrcSap::MeasurementReport msg)
 
   m_rrc->m_recvMeasurementReportTrace (m_imsi, m_rrc->m_cellId, m_rnti, msg);
 
-  // Just these two measId are supported
-  NS_ASSERT_MSG ((msg.measResults.measId == 1) || (msg.measResults.measId == 2),
-                 "Measure identity is unknown");
+  /*
+   * The code below assumes event A2 at measId 1 and A4 at measId 2, which is
+   * the default configuration from previous release of LENA. This section will
+   * be moved as a separate handover algorithm. To avoid automatically invoking
+   * handover, disable it by setting ns3::LteEnbRrc::AdmitHandoverRequest
+   * attribute to false.
+   */
 
   /// Event A2 (Serving becomes worse than threshold)
   if (msg.measResults.measId == 1)
