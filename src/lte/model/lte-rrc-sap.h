@@ -38,16 +38,20 @@ class LtePdcpSapProvider;
 class Packet;
 
 /**
- * Class holding definition common to all Ue/Enb SAP
- * Users/Providers. See 3GPP TS 36.331 for reference. 
+ * \ingroup lte
+ *
+ * \brief Class holding definition common to all UE/eNodeB SAP Users/Providers.
+ *
+ * See 3GPP TS 36.331 for reference.
+ *
  * Note that only those values that are (expected to be) used by the
  * ns-3 model are mentioned here. The naming of the variables that are
  * defined here is the same of 36.331, except for removal of "-" and
  * conversion to CamelCase or ALL_CAPS where needed in order to follow
- * the ns-3 coding style. Due to the 1-to-1 mapping with TS 36.331, 
+ * the ns-3 coding style. Due to the 1-to-1 mapping with TS 36.331,
  * detailed doxygen documentation is omitted, so please refer to
  * 36.331 for the meaning of these data structures / fields.
- * 
+ *
  */
 class LteRrcSap
 {
@@ -229,12 +233,13 @@ public:
   {
     enum
     {
-      THRESHOLD_RSRP,
-      THRESHOLD_RSRQ
-    } choice;
+      THRESHOLD_RSRP, ///< RSRP based threshold for event evaluation. The actual value is (value - 140) dBm.
+      THRESHOLD_RSRQ ///< RSRQ based threshold for event evaluation. The actual value is (value - 40) / 2 dB.
+    } choice; ///< Value range used in RSRP/RSRQ measurements and thresholds.
     uint8_t range;
   };
 
+  /// Specifies criteria for triggering of an E-UTRA measurement reporting event.
   struct ReportConfigEutra
   {
     enum
@@ -245,34 +250,50 @@ public:
 
     enum
     {
-      EVENT_A1,
-      EVENT_A2,
-      EVENT_A3,
-      EVENT_A4,
-      EVENT_A5
-    } eventId;
-    ThresholdEutra threshold1; // used for A1, A2, A4, A5
-    ThresholdEutra threshold2; // used for A5
-    bool reportOnLeave; // used for A3
-    int8_t a3Offset; // used for A3
+      EVENT_A1, ///< Event A1: Serving becomes better than absolute threshold.
+      EVENT_A2, ///< Event A2: Serving becomes worse than absolute threshold.
+      EVENT_A3, ///< Event A3: Neighbour becomes amount of offset better than PCell.
+      EVENT_A4, ///< Event A4: Neighbour becomes better than absolute threshold.
+      EVENT_A5 ///< Event A5: PCell becomes worse than absolute `threshold1` AND Neighbour becomes better than another absolute `threshold2`.
+
+    } eventId; ///< Choice of E-UTRA event triggered reporting criteria.
+
+    ThresholdEutra threshold1; ///< Threshold for event A1, A2, A4, and A5.
+    ThresholdEutra threshold2; ///< Threshold for event A5.
+
+    /// Indicates whether or not the UE shall initiate the measurement reporting procedure when the leaving condition is met for a cell in `cellsTriggeredList`, as specified in 5.5.4.1 of 3GPP TS 36.331.
+    bool reportOnLeave;
+
+    /// Offset value for Event A3. An integer between -30 and 30. The actual value is (value * 0.5) dB.
+    int8_t a3Offset;
+
+    /// Parameter used within the entry and leave condition of an event triggered reporting condition. The actual value is (value * 0.5) dB.
     uint8_t hysteresis;
+
+    /// Time during which specific criteria for the event needs to be met in order to trigger a measurement report.
     uint16_t timeToTrigger;
+
     enum
     {
       REPORT_STRONGEST_CELLS,
       REPORT_CGI
     } purpose;
+
     enum
     {
-      RSRP,
-      RSRQ
-    } triggerQuantity;
+      RSRP, ///< Reference Signal Received Power
+      RSRQ ///< Reference Signal Received Quality
+    } triggerQuantity; ///< The quantities used to evaluate the triggering condition for the event, see 3GPP TS 36.214.
+
     enum
     {
       SAME_AS_TRIGGER_QUANTITY,
-      BOTH
-    } reportQuantity;
+      BOTH ///< Both the RSRP and RSRQ quantities are to be included in the measurement report.
+    } reportQuantity; ///< The quantities to be included in the measurement report, always assumed to be BOTH.
+
+    /// Maximum number of cells, excluding the serving cell, to be included in the measurement report.
     uint8_t maxReportCells;
+
     enum
     {
       MS120,
@@ -291,8 +312,31 @@ public:
       SPARE3,
       SPARE2,
       SPARE1
-    } reportInterval;
+    } reportInterval; ///< Indicates the interval between periodical reports.
+
+    /// Number of measurement reports applicable, always assumed to be infinite.
     uint8_t reportAmount;
+
+    ReportConfigEutra ()
+    {
+      triggerType = EVENT;
+      eventId = EVENT_A1;
+      threshold1.choice = ThresholdEutra::THRESHOLD_RSRP;
+      threshold1.range = 0;
+      threshold2.choice = ThresholdEutra::THRESHOLD_RSRP;
+      threshold2.range = 0;
+      reportOnLeave = false;
+      a3Offset = 0;
+      hysteresis = 0;
+      timeToTrigger = 0;
+      purpose = REPORT_STRONGEST_CELLS;
+      triggerQuantity = RSRP;
+      reportQuantity = BOTH;
+      maxReportCells = MaxReportCells;
+      reportInterval = MS480;
+      reportAmount = 255;
+    }
+
   };
 
   struct MeasObjectToAddMod
