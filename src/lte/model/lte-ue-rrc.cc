@@ -627,7 +627,7 @@ LteUeRrc::DoReportUeMeasurements (LteUeCphySapUser::UeMeasurementsParameters par
              */
 
             double ms; // Ms, the measurement result of the serving cell
-            double thresh; // Tresh, the threshold parameter for this event
+            double thresh; // Thresh, the threshold parameter for this event
             double hys = (double) reportConfigEutra.hysteresis * 0.5; // Hys, the hysteresis parameter for this event. See 36.331 section 6.3.5 for the conversion.
 
             switch (reportConfigEutra.triggerQuantity)
@@ -691,7 +691,7 @@ LteUeRrc::DoReportUeMeasurements (LteUeCphySapUser::UeMeasurementsParameters par
              */
 
             double ms; // Ms, the measurement result of the serving cell
-            double thresh; // Tresh, the threshold parameter for this event
+            double thresh; // Thresh, the threshold parameter for this event
             double hys = (double) reportConfigEutra.hysteresis * 0.5; // Hys, the hysteresis parameter for this event. See 36.331 section 6.3.5 for the conversion.
 
             switch (reportConfigEutra.triggerQuantity)
@@ -851,7 +851,7 @@ LteUeRrc::DoReportUeMeasurements (LteUeCphySapUser::UeMeasurementsParameters par
             double mn; // Mn, the measurement result of the neighbouring cell
             double ofn = measObjectEutra.offsetFreq; // Ofn, the frequency specific offset of the frequency of the
             double ocn = 0.0; // Ocn, the cell specific offset of the neighbour cell
-            double thresh; // Tresh, the threshold parameter for this event
+            double thresh; // Thresh, the threshold parameter for this event
             double hys = (double) reportConfigEutra.hysteresis * 0.5; // Hys, the hysteresis parameter for this event. See 36.331 section 6.3.5 for the conversion.
 
             switch (reportConfigEutra.triggerQuantity)
