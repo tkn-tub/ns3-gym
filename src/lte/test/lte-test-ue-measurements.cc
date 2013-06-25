@@ -227,6 +227,74 @@ LteUeMeasurementsTestSuite::LteUeMeasurementsTestSuite ()
                                                         config, expectedTime, expectedRsrp),
                TestCase::EXTENSIVE);
 
+  /*
+   * Event A3 (neighbour becomes offset better than PCell)
+   * with positive offset
+   */
+  config.eventId = LteRrcSap::ReportConfigEutra::EVENT_A3;
+  config.a3Offset = 3;
+  expectedTime.clear ();
+  expectedRsrp.clear ();
+  AddTestCase (new LteUeMeasurementsPiecewiseTestCase1 ("Event A3 with positive offset",
+                                                        config, expectedTime, expectedRsrp),
+               TestCase::EXTENSIVE);
+
+  /*
+   * Event A3 (neighbour becomes offset better than PCell)
+   * with zero offset
+   */
+  config.a3Offset = 0;
+  expectedTime.clear ();
+  expectedRsrp.clear ();
+  AddTestCase (new LteUeMeasurementsPiecewiseTestCase1 ("Event A3 with zero offset",
+                                                        config, expectedTime, expectedRsrp),
+               TestCase::EXTENSIVE);
+
+  /*
+   * Event A3 (neighbour becomes offset better than PCell)
+   * with negative offset
+   */
+  config.a3Offset = -3;
+  expectedTime.clear ();
+  expectedRsrp.clear ();
+  AddTestCase (new LteUeMeasurementsPiecewiseTestCase1 ("Event A3 with negative offset",
+                                                        config, expectedTime, expectedRsrp),
+               TestCase::EXTENSIVE);
+
+  /*
+   * Event A4 (neighbour becomes better than threshold)
+   * with very low threshold
+   */
+  config.eventId = LteRrcSap::ReportConfigEutra::EVENT_A4;
+  config.threshold1.range = 0;
+  expectedTime.clear ();
+  expectedRsrp.clear ();
+  AddTestCase (new LteUeMeasurementsPiecewiseTestCase1 ("Event A4 with very low threshold",
+                                                        config, expectedTime, expectedRsrp),
+               TestCase::EXTENSIVE);
+
+  /*
+   * Event A4 (neighbour becomes better than threshold)
+   * with normal threshold
+   */
+  config.threshold1.range = 54;
+  expectedTime.clear ();
+  expectedRsrp.clear ();
+  AddTestCase (new LteUeMeasurementsPiecewiseTestCase1 ("Event A4 with normal threshold",
+                                                        config, expectedTime, expectedRsrp),
+               TestCase::EXTENSIVE);
+
+  /*
+   * Event A4 (neighbour becomes better than threshold)
+   * with very high threshold
+   */
+  config.a3Offset = 97;
+  expectedTime.clear ();
+  expectedRsrp.clear ();
+  AddTestCase (new LteUeMeasurementsPiecewiseTestCase1 ("Event A4 with very high threshold",
+                                                        config, expectedTime, expectedRsrp),
+               TestCase::EXTENSIVE);
+
 } // end of LteUeMeasurementsTestSuite::LteUeMeasurementsTestSuite ()
 
 static LteUeMeasurementsTestSuite lteUeMeasurementsTestSuite;
