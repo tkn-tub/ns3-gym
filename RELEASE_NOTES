@@ -39,6 +39,7 @@ Bugs fixed
 - Bug 1703 - Nodes don't react to a DAD
 - Bug 1718 - Ipv4StaticRouting log component is misspelled
 - Bug 1719 - IPv6 default state is set to not forward packets
+- Bug 1720 - IPv6 Fragmentation cause crashes
 
 Known issues
 ------------
