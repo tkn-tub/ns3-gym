@@ -750,7 +750,7 @@ EpcX2::DoSendUeData (EpcX2SapProvider::UeDataParams params)
 
   GtpuHeader gtpu;
   gtpu.SetTeid (params.gtpTeid);
-  gtpu.SetLength (params.ueData->GetSize () + gtpu.GetSerializedSize () - 8); // TODO This should be done in GtpuHeader
+  gtpu.SetLength (params.ueData->GetSize () + gtpu.GetSerializedSize () - 8); /// \todo This should be done in GtpuHeader
   NS_LOG_INFO ("GTP-U header: " << gtpu);
 
   Ptr<Packet> packet = params.ueData;

@@ -44,7 +44,7 @@ class Node;
  * From the level 3 point of view MeshPointDevice is similar to BridgeNetDevice, but the packets,
  * which going through may be changed (because L2 protocols may require their own headers or tags).
  *
- * Attributes: TODO
+ * Attributes: \todo
  */
 class MeshPointDevice : public NetDevice
 {
@@ -135,12 +135,13 @@ private:
   /**
    * \brief Response callback for L2 routing protocol. This will be executed when routing information is ready.
    *
-   * \param success     True is route found. TODO: diagnose routing errors
+   * \param success     True is route found. 
    * \param packet      Packet to send
    * \param src         Source MAC address
    * \param dst         Destination MAC address
    * \param protocol    Protocol ID
    * \param iface       Interface to use (ID) for send (decided by routing protocol). All interfaces will be used if outIface = 0xffffffff
+   * \todo diagnose routing errors
    */
   void
   DoSend (bool success, Ptr<Packet> packet, Mac48Address src, Mac48Address dst, uint16_t protocol,

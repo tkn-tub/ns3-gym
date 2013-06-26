@@ -1136,7 +1136,7 @@ class Ns3SphinxContext(Context.Context):
 
     def execute(self):
         _getVersion()
-        for sphinxdir in ["manual", "models", "tutorial", "tutorial-pt-br"] :
+        for sphinxdir in ["manual", "models", "tutorial"] :
             self.sphinx_build(os.path.join("doc", sphinxdir))
      
 

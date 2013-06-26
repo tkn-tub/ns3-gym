@@ -101,7 +101,7 @@ public:
 
 
 
-  // TODO MRE What is the sense to duplicate all the interfaces here???
+  /// \todo MRE What is the sense to duplicate all the interfaces here???
   // NB to avoid the use of multiple inheritance
   
 protected:

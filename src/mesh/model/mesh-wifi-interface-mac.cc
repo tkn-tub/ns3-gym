@@ -193,8 +193,8 @@ MeshWifiInterfaceMac::SwitchFrequencyChannel (uint16_t new_id)
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT (m_phy != 0); // need PHY to set/get channel
-  /* TODO
-   *
+  /**
+   * \todo
    * Correct channel switching is:
    *
    * 1. Interface down, e.g. to stop packets from layer 3
@@ -513,7 +513,7 @@ void
 MeshWifiInterfaceMac::Statistics::Print (std::ostream & os) const
 {
   os << "<Statistics "
-  // TODO txBeacons
+  /// \todo txBeacons
   "rxBeacons=\"" << recvBeacons << "\" "
   "txFrames=\"" << sentFrames << "\" "
   "txBytes=\"" << sentBytes << "\" "

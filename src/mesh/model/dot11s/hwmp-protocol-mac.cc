@@ -65,7 +65,7 @@ HwmpProtocolMac::ReceiveData (Ptr<Packet> packet, const WifiMacHeader & header)
   m_stats.rxData++;
   m_stats.rxDataBytes += packet->GetSize ();
 
-  //TODO: address extension
+  /// \todo address extension
   Mac48Address destination;
   Mac48Address source;
   switch (meshHdr.GetAddressExt ())

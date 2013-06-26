@@ -233,7 +233,7 @@ RoutingTable::Purge (std::map<Ipv4Address, RoutingTableEntry> & removedAddresses
           ++i;
           m_ipv4AddressEntry.erase (itmp);
         }
-      // TODO: Need to decide when to invalidate a route
+      /** \todo Need to decide when to invalidate a route */
       /*          else if (i->second.GetLifeTime() > m_holddownTime)
        {
        ++i;

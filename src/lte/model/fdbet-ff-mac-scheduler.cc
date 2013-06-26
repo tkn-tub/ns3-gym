@@ -1228,7 +1228,7 @@ FdBetFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sc
 
       itMap++;
     } // end while allocation
-  ret.m_nrOfPdcchOfdmSymbols = 1;   // TODO: check correct value according the DCIs txed
+  ret.m_nrOfPdcchOfdmSymbols = 1;   /// \todo check correct value according the DCIs txed
 
 
   // update UEs stats

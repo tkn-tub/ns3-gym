@@ -348,7 +348,7 @@ IePreq::AddDestinationAddressElement (bool doFlag, bool rfFlag, Mac48Address des
           return;
         }
     }
-  //TODO: check overflow
+  /// \todo check overflow
   Ptr<DestinationAddressUnit> new_element = Create<DestinationAddressUnit> ();
   new_element->SetFlags (doFlag, rfFlag, (dest_seq_number == 0));
   new_element->SetDestinationAddress (dest_address);

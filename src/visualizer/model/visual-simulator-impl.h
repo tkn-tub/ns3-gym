@@ -33,6 +33,7 @@ namespace ns3 {
 
 /**
  * \ingroup visualizer
+ * \ingroup simulator
  *
  * \brief A replacement simulator that starts the visualizer
  * \internal

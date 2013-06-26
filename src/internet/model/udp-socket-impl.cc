@@ -86,7 +86,7 @@ UdpSocketImpl::~UdpSocketImpl ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  // XXX todo:  leave any multicast groups that have been joined
+  /// \todo  leave any multicast groups that have been joined
   m_node = 0;
   /**
    * Note: actually this function is called AFTER

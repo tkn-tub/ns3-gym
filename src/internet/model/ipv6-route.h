@@ -200,6 +200,7 @@ public:
    * \brief Get output TTL for this route.
    * \param oif outgoing interface
    * \return TTL for this route
+   * \deprecated
    */
   uint32_t GetOutputTtl (uint32_t oif) NS_DEPRECATED;
 

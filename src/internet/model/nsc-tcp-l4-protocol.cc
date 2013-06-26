@@ -114,7 +114,7 @@ NscTcpL4Protocol::GetTypeId (void)
 
 int external_rand ()
 {
-  return 1;   // TODO
+  return 1;   /// \todo
 }
 
 NscTcpL4Protocol::NscTcpL4Protocol ()
@@ -384,7 +384,7 @@ void NscTcpL4Protocol::send_callback (const void* data, int datalen)
 
 void NscTcpL4Protocol::wakeup ()
 {
-  // TODO
+  /// \todo
   // this should schedule a timer to read from all tcp sockets now... this is
   // an indication that data might be waiting on the socket
 

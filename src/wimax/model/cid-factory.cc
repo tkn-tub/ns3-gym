@@ -118,7 +118,7 @@ CidFactory::IsBasic (Cid cid) const
 void
 CidFactory::FreeCid (Cid cid)
 {
-  // TODO:We need to update the cid bitmap properly here.
+  /// \todo We need to update the cid bitmap properly here.
   NS_FATAL_ERROR ("TODO: Update the cid bitmap properly here-- please implement and contribute a patch");
 }
 

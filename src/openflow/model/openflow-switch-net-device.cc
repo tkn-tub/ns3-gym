@@ -846,7 +846,7 @@ OpenFlowSwitchNetDevice::FillPortDesc (ofi::Port p, ofp_phy_port *desc)
   desc->config = htonl (p.config);
   desc->state = htonl (p.state);
 
-  // TODO: This should probably be fixed eventually to specify different available features.
+  /// \todo This should probably be fixed eventually to specify different available features.
   desc->curr = 0; // htonl(netdev_get_features(p->netdev, NETDEV_FEAT_CURRENT));
   desc->supported = 0; // htonl(netdev_get_features(p->netdev, NETDEV_FEAT_SUPPORTED));
   desc->advertised = 0; // htonl(netdev_get_features(p->netdev, NETDEV_FEAT_ADVERTISED));
@@ -1185,12 +1185,12 @@ OpenFlowSwitchNetDevice::ReceivePortMod (const void *msg)
           if ((opm->config & htonl (OFPPC_PORT_DOWN)) && (p.config & OFPPC_PORT_DOWN) == 0)
             {
               p.config |= OFPPC_PORT_DOWN;
-              // TODO: Possibly disable the Port's Net Device via the appropriate interface.
+              /// \todo Possibly disable the Port's Net Device via the appropriate interface.
             }
           else if ((opm->config & htonl (OFPPC_PORT_DOWN)) == 0 && (p.config & OFPPC_PORT_DOWN))
             {
               p.config &= ~OFPPC_PORT_DOWN;
-              // TODO: Possibly enable the Port's Net Device via the appropriate interface.
+              /// \todo Possibly enable the Port's Net Device via the appropriate interface.
             }
         }
     }

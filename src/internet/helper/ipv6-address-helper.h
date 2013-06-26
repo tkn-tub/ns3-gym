@@ -110,6 +110,7 @@ public:
    *  
    * \param network The IPv6 network
    * \param prefix The prefix
+   * \deprecated
    */
   void NewNetwork (Ipv6Address network, Ipv6Prefix prefix) NS_DEPRECATED;
 

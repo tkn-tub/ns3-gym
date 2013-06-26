@@ -35,6 +35,9 @@
 
 namespace ns3 {
 
+/**
+ * \ingroup simulator
+ */
 class RealtimeSimulatorImpl : public SimulatorImpl
 {
 public:

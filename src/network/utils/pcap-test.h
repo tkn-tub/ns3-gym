@@ -22,7 +22,7 @@
     std::string expected = CreateDataDirFilename (oss.str());           \
     std::string got = CreateTempDirFilename (oss.str());                \
     uint32_t sec(0), usec(0);                                           \
-    /* TODO support default PcapWriter snap length here */              \
+    /** \todo support default PcapWriter snap length here */			\
     bool diff = PcapFile::Diff (got, expected, sec, usec);              \
     NS_TEST_EXPECT_MSG_EQ (diff, false,                                 \
                            "PCAP traces " << got << " and " << expected \

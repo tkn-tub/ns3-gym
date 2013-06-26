@@ -482,7 +482,7 @@ RrcConnectionReconfigurationTestCase::DoRun (void)
   msg.measConfig.measIdToRemoveList.push_back (4);
   msg.measConfig.measIdToRemoveList.push_back (18);
  
-  // TODO: Test the following:
+  /// \todo Test the following:
   // std::list<MeasObjectToAddMod> measObjectToAddModList;
   // std::list<ReportConfigToAddMod> reportConfigToAddModList;
   // std::list<MeasIdToAddMod> measIdToAddModList;

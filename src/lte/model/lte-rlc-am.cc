@@ -835,7 +835,7 @@ LteRlcAm::DoReceivePdu (Ptr<Packet> p)
                ( (! IsInsideReceivingWindow (m_vrX)) && (m_vrX != m_vrMr) )
              )
             {
-              // TODO stop and reset the t-Reordering
+              /// \todo stop and reset the t-Reordering
               NS_LOG_LOGIC ("Stop reordering timer");
               m_reorderingTimer.Cancel ();
             }
@@ -861,7 +861,7 @@ LteRlcAm::DoReceivePdu (Ptr<Packet> p)
 
 
 
-      // TODO To remove
+      /// \todo To remove
 
       // 5.1.2.2.3 Actions when an UMD PDU is placed in the reception buffer
       // When an UMD PDU with SN = x is placed in the reception buffer, the receiving UM RLC entity shall:
@@ -1095,7 +1095,7 @@ LteRlcAm::ReassembleAndDeliver (Ptr<Packet> packet)
           if ( lengthIndicator >= packet->GetSize () )
             {
               NS_LOG_LOGIC ("INTERNAL ERROR: Not enough data in the packet (" << packet->GetSize () << "). Needed LI=" << lengthIndicator);
-              // TODO What to do in this case? Discard packet and continue? Or Assert?
+              /// \todo What to do in this case? Discard packet and continue? Or Assert?
             }
 
           // Split packet in two fragments
@@ -1471,7 +1471,7 @@ LteRlcAm::ReassembleAndDeliver (Ptr<Packet> packet)
 }
 
 
-// TODO To remove
+/// \todo To remove
 // void
 // LteRlcAm::ReassembleOutsideWindow (void)
 // {
@@ -1497,7 +1497,7 @@ LteRlcAm::ReassembleAndDeliver (Ptr<Packet> packet)
 // }
 
 
-// TODO To remove
+/// \todo To remove
 // void
 // LteRlcAm::ReassembleSnLessThan (uint16_t seqNumber)
 // {

@@ -146,6 +146,8 @@ IMAGES_BUILD = \
 
 IMAGES = $(IMAGES_NOBUILD) $(IMAGES_BUILD)
 
+RESCALE = $(shell hg root)/utils/rescale-pdf.sh
+
 %.eps : %.dia; $(DIA) -t eps $< -e $@
 %.png : %.dia; $(DIA) -t png $< -e $@
 %.png : %.seqdiag; $(SEQDIAG) -Tpng --no-transparency -o $@ $< 
@@ -153,19 +155,19 @@ IMAGES = $(IMAGES_NOBUILD) $(IMAGES_BUILD)
 %.png : %.eps; $(CONVERT) $< $@
 %.pdf : %.seqdiag
 	$(SEQDIAG) -Tpdf -o $@ $<
-	if test x$($@_width) != x; then ./rescale-pdf.sh $($@_width) $@ ; fi
+	if test x$($@_width) != x; then $(RESCALE) $($@_width) $@ ; fi
 %.pdf : %.dot
 	$(DOT) -Tpdf -o $@ $<
-	if test x$($@_width) != x; then ./rescale-pdf.sh $($@_width) $@ ; fi
+	if test x$($@_width) != x; then $(RESCALE) $($@_width) $@ ; fi
 %.pdf : %.eps
 	$(EPSTOPDF) $< -o=$@
-	if test x$($@_width) != x; ./rescale-pdf.sh $($@_width) $@ ; fi
+	if test x$($@_width) != x; then $(RESCALE) $($@_width) $@ ; fi
 
 
 %.png : %.eps; $(CONVERT) $< $@
 %.pdf : %.eps
 	$(EPSTOPDF) $< -o=$@
-	if test x$($@_width) != x; then ./rescale-pdf.sh $($@_width) $@ ; fi
+	if test x$($@_width) != x; then $(RESCALE) $($@_width) $@ ; fi
 
 # You can set these variables from the command line.
 SPHINXOPTS    =

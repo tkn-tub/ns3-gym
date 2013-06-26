@@ -168,7 +168,7 @@ void Icmpv6L4Protocol::DoDAD (Ipv6Address target, Ptr<Ipv6Interface> interface)
       return;
     }
 
-  /* TODO : disable multicast loopback to prevent NS probing to be received by the sender */
+  /** \todo disable multicast loopback to prevent NS probing to be received by the sender */
 
   Ptr<Packet> p = ForgeNS ("::",Ipv6Address::MakeSolicitedAddress (target), target, interface->GetDevice ()->GetAddress ());
 
@@ -222,7 +222,7 @@ enum IpL4Protocol::RxStatus Icmpv6L4Protocol::Receive (Ptr<Packet> packet, Ipv6H
     case Icmpv6Header::ICMPV6_ECHO_REPLY:
       // EchoReply does not contain any info about L4
       // so we can not forward it up.
-      // TODO: implement request / reply consistency check.
+      /// \todo implement request / reply consistency check.
       break;
     case Icmpv6Header::ICMPV6_ERROR_DESTINATION_UNREACHABLE:
       HandleDestinationUnreachable (p, header.GetSourceAddress (), header.GetDestinationAddress (), interface);
@@ -252,7 +252,7 @@ void Icmpv6L4Protocol::Forward (Ipv6Address source, Icmpv6Header icmp,
 
   Ptr<Ipv6L3Protocol> ipv6 = m_node->GetObject<Ipv6L3Protocol> ();
 
-  // TODO assuming the ICMP is carrying a extensionless IP packet
+  /// \todo assuming the ICMP is carrying a extensionless IP packet
 
   uint8_t nextHeader = ipHeader.GetNextHeader ();
 
@@ -1375,8 +1375,8 @@ void Icmpv6L4Protocol::FunctionDadTimeout (Ptr<Icmpv6L4Protocol> icmpv6, Ipv6Int
 
       if (!ipv6->IsForwarding (ipv6->GetInterfaceForDevice (interface->GetDevice ())) && addr.IsLinkLocal ())
         {
-          /* XXX because all nodes start at the same time, there will be many of RS arround 1 second of simulation time
-           * TODO Add random delays before sending RS
+          /* \todo Add random delays before sending RS
+           * because all nodes start at the same time, there will be many of RS arround 1 second of simulation time
            */
           Simulator::Schedule (Seconds (0.0), &Icmpv6L4Protocol::SendRS, PeekPointer (icmpv6), ifaddr.GetAddress (), Ipv6Address::GetAllRoutersMulticast (), interface->GetDevice ()->GetAddress ());
         }
