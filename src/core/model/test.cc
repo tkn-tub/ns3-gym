@@ -720,7 +720,7 @@ TestRunnerImpl::FilterTests (std::string testName,
               delete *j;
 
               // Remove this test case from the test suite.
-              test->m_children.erase (j);
+              j = test->m_children.erase (j);
             }
           else
             {

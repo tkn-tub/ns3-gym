@@ -1014,7 +1014,7 @@ void DsrRouting::CheckSendBuffer ()
           Ptr<Packet> cleanP = packet->Copy ();
           uint8_t protocol = i->GetProtocol ();
 
-          m_sendBuffer.GetBuffer ().erase (i);
+          i = m_sendBuffer.GetBuffer ().erase (i);
 
           DsrRoutingHeader dsrRoutingHeader;
           Ptr<Packet> copyP = packet->Copy ();

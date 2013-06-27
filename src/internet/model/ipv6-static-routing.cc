@@ -728,7 +728,7 @@ void Ipv6StaticRouting::NotifyRemoveRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv
   NS_LOG_FUNCTION (this << dst << mask << nextHop << interface);
   if (dst != Ipv6Address::GetZero ())
     {
-      for (NetworkRoutesI j = m_networkRoutes.begin (); j != m_networkRoutes.end (); j++)
+      for (NetworkRoutesI j = m_networkRoutes.begin (); j != m_networkRoutes.end ();)
         {
           Ipv6RoutingTableEntry* rtentry = j->first;
           Ipv6Prefix prefix = rtentry->GetDestNetworkPrefix ();
@@ -737,7 +737,11 @@ void Ipv6StaticRouting::NotifyRemoveRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv
           if (dst == entry && prefix == mask && rtentry->GetInterface () == interface)
             {
               delete j->first;
-              m_networkRoutes.erase (j);
+              j = m_networkRoutes.erase (j);
+            }
+          else
+            {
+              ++j;
             }
         }
     }
