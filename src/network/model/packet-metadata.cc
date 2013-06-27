@@ -1349,7 +1349,9 @@ PacketMetadata::Deserialize (const uint8_t* buffer, uint32_t size)
       UpdateTail (tmp);
     }
   NS_ASSERT (desSize == 0);
-  return (desSize !=0) ? 0 : 1;
+  // Return zero if entire meta data was not deserialized
+  // This check is obviated by prior assert
+  return 1;
 }
 
 uint8_t* 

@@ -311,7 +311,8 @@ NixVector::Deserialize (const uint32_t* buffer, uint32_t size)
 
   // return zero if an entire nix-vector was 
   // not deserialized
-  return (sizeCheck != 0) ? 0 : 1;
+  // This check is obviated by prior assert
+  return 1;
 }
 
 void

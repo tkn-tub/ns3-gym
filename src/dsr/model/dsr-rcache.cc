@@ -1141,13 +1141,17 @@ void
 RouteCache::AddNeighbor (std::vector<Ipv4Address> nodeList, Ipv4Address ownAddress, Time expire)
 {
   NS_LOG_LOGIC ("Add neighbor number " << nodeList.size ());
-  for (std::vector<Ipv4Address>::iterator j = nodeList.begin (); j != nodeList.end (); ++j)
+  for (std::vector<Ipv4Address>::iterator j = nodeList.begin (); j != nodeList.end ();)
     {
       Ipv4Address addr = *j;
       if (addr == ownAddress)
         {
-          nodeList.erase (j);
+          j = nodeList.erase (j);
           NS_LOG_DEBUG ("The node list size " << nodeList.size ());
+        }
+      else
+        {
+          ++j;
         }
       Neighbor neighbor (addr, LookupMacAddress (addr), expire + Simulator::Now ());
       m_nb.push_back (neighbor);
