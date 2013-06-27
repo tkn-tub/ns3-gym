@@ -760,7 +760,7 @@ LteUeRrc::DoReportUeMeasurements (LteUeCphySapUser::UeMeasurementsParameters par
             double mp; // Mp, the measurement result of the PCell
             double ofp = measObjectEutra.offsetFreq; // Ofp, the frequency specific offset of the primary frequency
             double ocp = 0.0; // Ocp, the cell specific offset of the PCell
-            double off = (double) reportConfigEutra.a3Offset; // Off, the offset parameter for this event
+            double off = (double) reportConfigEutra.a3Offset * 0.5; // Off, the offset parameter for this event. See 36.331 section 6.3.5 for the conversion.
             double hys = (double) reportConfigEutra.hysteresis * 0.5; // Hys, the hysteresis parameter for this event. See 36.331 section 6.3.5 for the conversion.
 
             switch (reportConfigEutra.triggerQuantity)
@@ -942,11 +942,11 @@ LteUeRrc::DoReportUeMeasurements (LteUeCphySapUser::UeMeasurementsParameters par
       bool initiateUeMeasurementReportingProcedure = false;
 
       if (eventEntryCondApplicable)
-        {          
+        {
           if (measReportIt == m_varMeasReportList.end ())
             {
               VarMeasReport r;
-              r.measId = measId;              
+              r.measId = measId;
               std::pair<uint8_t, VarMeasReport> val (measId, r);
               std::pair<std::map<uint8_t, VarMeasReport>::iterator, bool> 
                 ret = m_varMeasReportList.insert (val);

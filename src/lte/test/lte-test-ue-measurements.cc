@@ -107,7 +107,7 @@ LteUeMeasurementsTestSuite::LteUeMeasurementsTestSuite ()
   //LogComponentEnable ("LteUeRrc", LOG_WARN);
   //LogComponentEnable ("LteUeRrc", LOG_LOGIC);
 
-  RunOriginalTestCase ();
+  //RunOriginalTestCase ();
   RunPiecewiseTestCase1 ();
   RunPiecewiseTestCase2 ();
   RunHandoverTestCase ();
@@ -224,7 +224,7 @@ LteUeMeasurementsTestSuite::RunPiecewiseTestCase1 ()
   // With positive offset
   config.eventId = LteRrcSap::ReportConfigEutra::EVENT_A3;
   config.threshold1.range = 0;
-  config.a3Offset = 3;
+  config.a3Offset = 7;
   expectedTime.clear ();
   expectedRsrp.clear ();
   AddTestCase (new LteUeMeasurementsPiecewiseTestCase1 ("Piecewise test case 1 - Event A3 with positive offset",
@@ -238,7 +238,7 @@ LteUeMeasurementsTestSuite::RunPiecewiseTestCase1 ()
                TestCase::EXTENSIVE);
 
   // With negative offset
-  config.a3Offset = -3;
+  config.a3Offset = -7;
   AddTestCase (new LteUeMeasurementsPiecewiseTestCase1 ("Piecewise test case 1 - Event A3 with negative offset",
                                                         config, expectedTime, expectedRsrp),
                TestCase::EXTENSIVE);
@@ -355,7 +355,7 @@ LteUeMeasurementsTestSuite::RunPiecewiseTestCase2 ()
   // With positive offset
   config.eventId = LteRrcSap::ReportConfigEutra::EVENT_A3;
   config.threshold1.range = 0;
-  config.a3Offset = 4;
+  config.a3Offset = 7;
   expectedTime.clear ();
   expectedTime << 800 << 1600;
   expectedRsrp.clear ();
@@ -375,7 +375,7 @@ LteUeMeasurementsTestSuite::RunPiecewiseTestCase2 ()
                TestCase::EXTENSIVE);
 
   // With negative offset
-  config.a3Offset = -4;
+  config.a3Offset = -7;
   expectedTime.clear ();
   expectedTime << 400 << 800 << 1200 << 1440 << 1680 << 1920 << 2160;
   expectedRsrp.clear ();
