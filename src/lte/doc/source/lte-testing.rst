@@ -221,14 +221,11 @@ consists of 4 subcases: plain, with hysteresis, with time-to-trigger, or both.
    ====== ================== ===========================
    Test # Reporting Criteria Expected Report Occurrences
    ====== ================== ===========================
-   1      None               *TBD*
-   2      Event A1 *         *TBD*
-   3      Event A2 *         *TBD*
-   4      Event A3 *         *TBD*
-   5      Event A4 *         *TBD*
-   6      Event A5 *         *TBD*
-   7      Periodical 120 ms  *TBD*
-   8      Periodical 480 ms  *TBD*
+   1      Event A1 *         *TBD*
+   2      Event A2 *         *TBD*
+   3      Event A3 *         *TBD*
+   4      Event A4 *         *TBD*
+   5      Event A5 *         *TBD*
    ====== ================== ===========================
 
 .. table:: UE measurement configuration test cases with piecewise configuration,
@@ -237,12 +234,11 @@ consists of 4 subcases: plain, with hysteresis, with time-to-trigger, or both.
    ====== ================== ===========================
    Test # Reporting Criteria Expected Report Occurrences
    ====== ================== ===========================
-   9      None               *TBD*
-   10     Event A3 *         *TBD*
-   11     Event A4 *         *TBD*
-   12     Event A5 *         *TBD*
-   13     Periodical 120 ms  *TBD*
-   14     Periodical 480 ms  *TBD*
+   6      Event A1 *         *TBD*
+   7      Event A2 *         *TBD*
+   8      Event A3 *         *TBD*
+   9      Event A4 *         *TBD*
+   10     Event A5 *         *TBD*
    ====== ================== ===========================
 
 .. table:: UE measurement configuration test cases with handover, 2 eNodeB,
@@ -251,15 +247,14 @@ consists of 4 subcases: plain, with hysteresis, with time-to-trigger, or both.
    ====== ============================= ===========================
    Test # Reporting Criteria            Expected Report Occurrences
    ====== ============================= ===========================
-   12     Event A3 to None              *TBD*
-   13     Periodical 480 ms to Event A2 *TBD*
-   14     None to Periodical 480 ms     *TBD*
+   11     *TBD*                         *TBD*
    ====== ============================= ===========================
 
 The above list is implemented as 3 ``TestCase`` classes associated with
 ``LteUeMeasConfigTestSuite`` (*lte-ue-meas-config* test suite). These test cases
-verify the timing and RSRP accuracy of the measurement reports. The following
-assumptions are used: ideal RRC protocol, and no layer 3 filtering.
+verify the timing and serving cell's RSRP accuracy of the measurement reports.
+The following assumptions are used: ideal RRC protocol, and no layer 3
+filtering.
 
 Piecewise configuration
 +++++++++++++++++++++++
