@@ -271,8 +271,6 @@ LteUeMeasurementsTestSuite::RunPiecewiseTestCase1 ()
   config.eventId = LteRrcSap::ReportConfigEutra::EVENT_A5;
   config.threshold1.range = 0;
   config.threshold2.range = 0;
-  expectedTime.clear ();
-  expectedRsrp.clear ();
   AddTestCase (new LteUeMeasurementsPiecewiseTestCase1 ("Piecewise test case 1 - Event A5 with low-low threshold",
                                                         config, expectedTime, expectedRsrp),
                TestCase::EXTENSIVE);
@@ -507,12 +505,18 @@ LteUeMeasurementsTestSuite::RunPiecewiseTestCase2 ()
 
   // With normal-normal threshold
   config.threshold2.range = 58;
+  expectedTime.clear ();
+  expectedTime << 800 << 1400 << 1640 << 1880;
+  expectedRsrp.clear ();
+  expectedRsrp << 52 << 56 << 52 << 56;
   AddTestCase (new LteUeMeasurementsPiecewiseTestCase2 ("Piecewise test case 2 - Event A5 with normal-normal threshold",
                                                         config, expectedTime, expectedRsrp),
                TestCase::EXTENSIVE);
 
   // With normal-high threshold
   config.threshold2.range = 97;
+  expectedTime.clear ();
+  expectedRsrp.clear ();
   AddTestCase (new LteUeMeasurementsPiecewiseTestCase2 ("Piecewise test case 2 - Event A5 with normal-high threshold",
                                                         config, expectedTime, expectedRsrp),
                TestCase::EXTENSIVE);
@@ -555,7 +559,6 @@ LteUeMeasurementsTestSuite::RunHandoverTestCase ()
   NS_LOG_FUNCTION (this);
 
   // TODO
-
 } // end of void LteUeMeasurementsTestSuite::RunHandoverTestCase ()
 
 
@@ -937,7 +940,7 @@ LteUeMeasurementsPiecewiseTestCase1::DoRun ()
 void
 LteUeMeasurementsPiecewiseTestCase1::DoTeardown ()
 {
-
+  NS_LOG_FUNCTION (this);
   bool hasEnded = m_itExpectedTime == m_expectedTime.end ();
   NS_TEST_ASSERT_MSG_EQ (hasEnded, true,
                          "Reporting should have occurred at " << m_itExpectedTime->GetSeconds () << "s");
@@ -1174,6 +1177,18 @@ LteUeMeasurementsPiecewiseTestCase2::DoRun ()
 
 
 void
+LteUeMeasurementsPiecewiseTestCase2::DoTeardown ()
+{
+  NS_LOG_FUNCTION (this);
+  bool hasEnded = m_itExpectedTime == m_expectedTime.end ();
+  NS_TEST_ASSERT_MSG_EQ (hasEnded, true,
+                         "Reporting should have occurred at " << m_itExpectedTime->GetSeconds () << "s");
+  hasEnded = m_itExpectedRsrp == m_expectedRsrp.end ();
+  NS_ASSERT (hasEnded);
+}
+
+
+void
 LteUeMeasurementsPiecewiseTestCase2::RecvMeasurementReportCallback (
   std::string context, uint64_t imsi, uint16_t cellId, uint16_t rnti,
   LteRrcSap::MeasurementReport report)
@@ -1188,7 +1203,7 @@ LteUeMeasurementsPiecewiseTestCase2::RecvMeasurementReportCallback (
                          "Unexpected measurement identity");
   double rsrpDbm = EutranMeasurementMapping::RsrpRange2Dbm (measResults.rsrpResult);
   double rsrqDb = EutranMeasurementMapping::RsrqRange2Db (measResults.rsrqResult);
-  NS_LOG_DEBUG (this << " Serving cell:"
+  NS_LOG_DEBUG (this << " Serving cellId=" << cellId
                      << " rsrp=" << (uint16_t) measResults.rsrpResult
                      << " (" << rsrpDbm << " dBm)"
                      << " rsrq=" << (uint16_t) measResults.rsrqResult
@@ -1210,7 +1225,7 @@ LteUeMeasurementsPiecewiseTestCase2::RecvMeasurementReportCallback (
                              "Report does not contain measured RSRQ result");
       rsrpDbm = EutranMeasurementMapping::RsrpRange2Dbm (it->rsrpResult);
       rsrqDb = EutranMeasurementMapping::RsrqRange2Db (it->rsrqResult);
-      NS_LOG_DEBUG (this << " Neighbour cell:"
+      NS_LOG_DEBUG (this << " Neighbour cellId=" << it->physCellId
                          << " rsrp=" << (uint16_t) it->rsrpResult
                          << " (" << rsrpDbm << " dBm)"
                          << " rsrq=" << (uint16_t) it->rsrqResult
@@ -1241,7 +1256,7 @@ LteUeMeasurementsPiecewiseTestCase2::RecvMeasurementReportCallback (
       m_itExpectedRsrp++;
     }
 
-}
+} // end of void LteUeMeasurementsPiecewiseTestCase2::RecvMeasurementReportCallback
 
 
 void

@@ -93,9 +93,8 @@ public:
    * The trigger is set up beforehand by connecting to the
    * `LteUeRrc::RecvMeasurementReport` trace source.
    *
-   * Verification consists of
-   * checking whether the report carries the right value of RSRP or not, and
-   * whether it occurs at the expected time or not.
+   * Verification consists of checking whether the report carries the right
+   * value of RSRP or not, and whether it occurs at the expected time or not.
    */
   void RecvMeasurementReportCallback (std::string context, uint64_t imsi,
                                       uint16_t cellId, uint16_t rnti,
@@ -110,6 +109,10 @@ private:
    */
   virtual void DoRun ();
 
+  /**
+   * \brief Runs at the end of the simulation, verifying that all expected
+   *        measurement reports have been examined.
+   */
   virtual void DoTeardown ();
 
   void TeleportVeryNear ();
@@ -118,7 +121,7 @@ private:
   void TeleportVeryFar ();
 
   /**
-   * \brief The active report triggering configuration
+   * \brief The active report triggering configuration.
    */
   LteRrcSap::ReportConfigEutra m_config;
 
@@ -147,7 +150,8 @@ private:
   std::vector<uint8_t>::iterator m_itExpectedRsrp;
 
   Ptr<MobilityModel> m_ueMobility;
-};
+
+}; // end of class LteUeMeasurementsPiecewiseTestCase1
 
 
 /**
@@ -171,9 +175,8 @@ public:
    * The trigger is set up beforehand by connecting to the
    * `LteUeRrc::RecvMeasurementReport` trace source.
    *
-   * Verification consists of
-   * checking whether the report carries the right value of RSRP or not, and
-   * whether it occurs at the expected time or not.
+   * Verification consists of checking whether the report carries the right
+   * value of RSRP or not, and whether it occurs at the expected time or not.
    */
   void RecvMeasurementReportCallback (std::string context, uint64_t imsi,
                                       uint16_t cellId, uint16_t rnti,
@@ -188,13 +191,19 @@ private:
    */
   virtual void DoRun ();
 
+  /**
+   * \brief Runs at the end of the simulation, verifying that all expected
+   *        measurement reports have been examined.
+   */
+  virtual void DoTeardown ();
+
   void TeleportVeryNear ();
   void TeleportNear ();
   void TeleportFar ();
   void TeleportVeryFar ();
 
   /**
-   * \brief The active report triggering configuration
+   * \brief The active report triggering configuration.
    */
   LteRrcSap::ReportConfigEutra m_config;
 
@@ -223,7 +232,8 @@ private:
   std::vector<uint8_t>::iterator m_itExpectedRsrp;
 
   Ptr<MobilityModel> m_ueMobility;
-};
+
+}; // end of class LteUeMeasurementsPiecewiseTestCase2
 
 
 } // namespace ns3
