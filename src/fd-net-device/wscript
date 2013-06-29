@@ -21,11 +21,19 @@ def configure(conf):
 
         # Enable the FdNetDevice module. 
         # Our only requirement is threading support.
-        conf.env['ENABLE_FDNETDEV'] = True
-        conf.report_optional_feature("FdNetDevice", 
-            "File descriptor NetDevice",
-            True,
-            "FdNetDevice module enabled")
+        conf.env['ENABLE_FDNETDEV'] = conf.check_nonfatal(header_name='net/ethernet.h',
+                                                          define_name='HAVE_NET_ETHERNET_H')
+        if conf.env['ENABLE_FBDEV']:
+            conf.report_optional_feature("FdNetDevice", 
+                                         "File descriptor NetDevice",
+                                         True,
+                                         "FdNetDevice module enabled")
+        else:
+            conf.report_optional_feature("FdNetDevice", 
+                                         "File descriptor NetDevice",
+                                         False,
+                                         "<net/ethernet.h> include not detected")
+
     else:
         conf.report_optional_feature("FdNetDevice", 
             "File descriptor NetDevice",
