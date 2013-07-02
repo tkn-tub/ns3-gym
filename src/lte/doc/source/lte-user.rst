@@ -39,6 +39,8 @@ of practical examples.
 
 
 
+.. _sec-basic-simulation-program:
+
 Basic simulation program
 ------------------------
 
@@ -910,6 +912,110 @@ That's all! You can now start your simulation as usual::
   Simulator::Stop (Seconds (10.0));  
   Simulator::Run ();
 
+
+
+.. _sec-network-attachment:
+
+Network Attachment
+------------------
+
+As shown in the example in section :ref:`sec-basic-simulation-program`,
+attaching a UE to an eNodeB is done by calling ``LteHelper::Attach`` function.
+There are other methods of attachment as well, and this section will go through
+each of them.
+
+Manual attachment
+*****************
+
+This method uses the ``LteHelper::Attach`` function mentioned above, which had
+been the only available method in earlier versions of LTE module. It is
+typically invoked before the simulation begins::
+
+   lteHelper->Attach (ueDevs, enbDev); // attach one or more UEs to a single eNodeB
+
+``LteHelper::InstallEnbDevice`` and ``LteHelper::InstallUeDevice`` functions
+must have been called before attaching. In an EPC-enabled simulation, it is also
+required to have IPv4 properly pre-installed in the UE.
+
+This method is very simple, but requires you to know exactly which UE belongs to
+to which eNodeB before the simulation begins. This can be difficult when the UE
+initial position is randomly determined by the simulation script.
+
+In real life, UE will automatically evaluate certain criteria and select the
+best cell to attach to, without manual intervention from the user. Obviously
+this is not the case in this ``LteHelper::Attach`` function. The other network
+attachment methods use more `automatic` approach to network attachment, as will
+be described next.
+
+Attachment based on distance
+****************************
+
+Normally, UE aims to attach to the cell with the best received signal level
+(i.e. the `strongest cell`). In order to determine the strongest cell, the
+distance between the UE and the eNodeB may be used as a simple (at least from
+simulator point of view) and sometimes practical indicator.
+
+The ``LteHelper::AttachToClosestEnb`` function exists for this purpose. It takes
+a ``NetDeviceContainer`` of UEs and another ``NetDeviceContainer`` of eNodeB,
+and invokes an ``LteHelper::Attach`` to each UE and its closest eNodeB.
+
+Note that this function does *not* take into account the direction and beamwidth
+of the eNodeB receiver antenna. This can be problematic in scenarios such as
+three-sectorized cells, where multiple eNodeBs must share the same exact
+location.
+
+One trick to mitigate this issue in a three-sectorized cell is to use the
+``LteHexGridEnbTopologyHelper`` helper class to setup the eNodeB position and
+antenna direction. Each eNodeB within the same site will be positioned a bit
+away from the center of the site by a very small offset. This offset is by
+default 50 cm, but can be configured by the `SectorOffset` attribute. This small
+nudge will slightly vary the distance between the eNodeBs and the UE, making the
+eNodeB with the right antenna direction more favorable for
+``LteHelper::AttachToClosestEnb`` function.
+
+These functions are invoked before simulation begins, as shown in the example
+below (adapted from ``src/lte/examples/lena-dual-stripe.cc`` example):: 
+
+    Ptr<LteHexGridEnbTopologyHelper> topologyHelper = CreateObject<LteHexGridEnbTopologyHelper> ();
+    topologyHelper->SetAttribute ("InterSiteDistance", DoubleValue (500));
+    topologyHelper->SetAttribute ("SectorOffset", DoubleValue (0.5));
+    topologyHelper->SetAttribute ("SiteHeight", DoubleValue (30));
+    topologyHelper->SetAttribute ("MinX", DoubleValue (0));
+    topologyHelper->SetAttribute ("MinY", DoubleValue (0));
+    topologyHelper->SetAttribute ("GridWidth", UintegerValue (1));
+    topologyHelper->SetLteHelper (lteHelper);
+    NetDeviceContainer enbDevs = topologyHelper->SetPositionAndInstallEnbDevice (enbNodes);
+
+    lteHelper->SetEnbAntennaModelType ("ns3::ParabolicAntennaModel");
+    lteHelper->SetEnbAntennaModelAttribute ("Beamwidth", DoubleValue (70));
+    lteHelper->AttachToClosestEnb (ueDevs, enbDevs);
+
+Attachment based on received signal
+***********************************
+
+Sometimes distance does not make a correct criterion for determining the
+strongest cell, for instance when the channel condition is fluctuating
+because of the addition of fading or shadowing. In these kind of cases,
+network attachment should be based on the received signal.
+
+Such method in the current LTE module is implemented in the `initial cell
+selection` process. It is automatically triggered by the UE when the previously
+described network attachment methods are not invoked.
+
+In more details, it works as follow. When a UE starts the simulation without
+being attached to any eNodeB, it will spend some time to measure the signal
+strength of the surrounding cells, choose the one with the strongest RSRP, and
+then attempt to attach to it. 
+
+Even more details can be found in section :ref:`sec-initial-cell-selection` of
+design documentation.
+
+Multi-operator environment
+**************************
+
+An interesting use case of the initial cell selection process is to setup a
+simulation environment with multiple network operators. (To be added later).
+ 
 
 
 .. _sec-configure-ue-measurements:

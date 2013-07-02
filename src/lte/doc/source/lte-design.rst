@@ -1857,11 +1857,13 @@ The RRC model implemented in the simulator provides the following functionality:
 
  - generation (at the eNB) and interpretation (at the UE) of System
    Information (in particular the Master Information Block and, at the
-   time of this writing, only System Information Block Type 2)
+   time of this writing, only System Information Block Type 1 and 2)
+ - initial cell selection
  - RRC connection establishment procedure
  - RRC reconfiguration procedure, supporting the following use cases:
    + reconfiguration of the SRS configuration index
    + reconfiguration of the PHY TX mode (MIMO)
+   + reconfiguration of UE measurements
    + data radio bearer setup
    + handover
  - RRC connection re-establishment, supporting the following use
@@ -1942,6 +1944,87 @@ represented in Figure :ref:`fig-lte-enb-rrc-states`.
 
    ENB RRC State Machine for each UE
 
+
+Broadcast of System Information
++++++++++++++++++++++++++++++++
+
+System information blocks are broadcasted by eNodeB to all attached UEs at
+predefined time intervals. The supported system information blocks are:
+
+ - Master Information Block (MIB)
+      Contains parameters related to the PHY layer, generated during cell
+      configuration and broadcasted every 10 ms (but 40 ms in Section 5.2.1.2 of
+      [TS36331]_) as a control message.
+
+ - System Information Block Type 1 (SIB1)
+      Contains information regarding network access, broadcasted every 80 ms
+      via RRC protocol.
+      
+ - System Information Block Type 2 (SIB2)
+      Contains UL- and RACH-related settings, scheduled to transmit via RRC
+      protocol at 16 ms after cell configuration, and then repeats every 80 ms.
+
+Reception of system information is detrimental to the transition of UE RRC
+state. SIB1 is necessary for switching from `IDLE_CELL_SELECTION` to
+`IDLE_WAIT_SYSTEM_INFO`. After that, MIB and SIB2 are required to switch to
+`IDLE_CAMPED_NORMALLY`.
+
+
+.. _sec-initial-cell-selection:
+
+Initial Cell Selection
+++++++++++++++++++++++
+
+UE in `IDLE_CELL_SELECTION` state, e.g. in the beginning of simulation, will
+actively seek a suitable cell to attach to.
+
+UE will perform the selection among the surrounding eNodeBs based on several
+criteria:
+
+ - Rx level criterion;
+ 
+ - quality criterion;
+ 
+ - public land mobile network (PLMN), a.k.a. the network operator; and
+ 
+ - closed subscriber group (CSG).
+ 
+The first pair of criteria, Rx level and quality, are based on measured cell
+RSRP :math:`Q_{rxlevmeas}` and RSRQ :math:`Q_{qualmeas}`, respectively. These
+measurements are collected by the PHY layer, as described in
+:ref:`phy-ue-measurements`. In order to pass the criteria, both values must be
+higher than required minimum RSRP and RSRQ, which can also be expressed as
+below:
+
+.. math::
+
+   Q_{rxlevmeas} - Q_{rxlevmin} > 0 
+
+.. math::
+
+   Q_{qualmeas} - Q_{qualmin} > 0 
+
+where :math:`Q_{rxlevmin}` and :math:`Q_{qualmin}` are determined by each
+eNodeB, and are obtainable by UE from SIB1.
+
+The last pair of criteria, PLMN and CSG, are simple numbers associated with each
+eNodeB and UE. When these information are set to values beside their default
+values, for example to simulate an environment with multiple network operators,
+UE will restrict its cell selection attempts to target only eNodeBs with the
+same PLMN ID and CSG ID. The default value of zero disables these criteria.
+Section :ref:`sec-network-attachment` of user documentation provides more
+details on multi-operator simulation.
+
+When at least one suitable cells are found, the UE will choose the strongest one
+(based on RSRP) and connect to it. This is done by issuing a contention-based
+random access, followed by `RRCConnectionRequest`, thereby promptly switching
+from IDLE mode to CONNECTED mode. Hence, `cell reselection` procedure is *not*
+supported in this version of LTE module. (What happen if the eNodeB rejects the
+connection request?)
+
+On the other hand, when no suitable cell is found, the UE will stay in
+`IDLE_CELL_SELECTION` state, and repeat the cell selection attempt again when
+PHY layer provides another set of measurements.
 
 
 Radio Admission Control
