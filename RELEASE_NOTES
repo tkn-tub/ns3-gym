@@ -41,6 +41,7 @@ Bugs fixed
 - Bug 1718 - Ipv4StaticRouting log component is misspelled
 - Bug 1719 - IPv6 default state is set to not forward packets
 - Bug 1720 - IPv6 Fragmentation cause crashes
+- Bug 1727 - Ping6 should use a proper source address
 
 Known issues
 ------------
