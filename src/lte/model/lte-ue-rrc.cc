@@ -953,6 +953,8 @@ LteUeRrc::DoReportUeMeasurements (LteUeCphySapUser::UeMeasurementsParameters par
                 //mp = EutranMeasurementMapping::QuantizeRsrp (m_storedMeasValues[m_cellId].rsrp);
                 NS_ASSERT (reportConfigEutra.threshold1.choice
                            == LteRrcSap::ThresholdEutra::THRESHOLD_RSRP);
+                NS_ASSERT (reportConfigEutra.threshold2.choice
+                           == LteRrcSap::ThresholdEutra::THRESHOLD_RSRP);
                 thresh1 = EutranMeasurementMapping::RsrpRange2Dbm (reportConfigEutra.threshold1.range);
                 thresh2 = EutranMeasurementMapping::RsrpRange2Dbm (reportConfigEutra.threshold2.range);
                 break;
@@ -961,8 +963,10 @@ LteUeRrc::DoReportUeMeasurements (LteUeCphySapUser::UeMeasurementsParameters par
                 //mp = EutranMeasurementMapping::QuantizeRsrq (m_storedMeasValues[m_cellId].rsrq);
                 NS_ASSERT (reportConfigEutra.threshold1.choice
                            == LteRrcSap::ThresholdEutra::THRESHOLD_RSRQ);
+                NS_ASSERT (reportConfigEutra.threshold2.choice
+                           == LteRrcSap::ThresholdEutra::THRESHOLD_RSRQ);
                 thresh1 = EutranMeasurementMapping::RsrqRange2Db (reportConfigEutra.threshold1.range);
-                thresh2 = EutranMeasurementMapping::RsrpRange2Dbm (reportConfigEutra.threshold2.range);
+                thresh2 = EutranMeasurementMapping::RsrqRange2Db (reportConfigEutra.threshold2.range);
                 break;
               default:
                 NS_FATAL_ERROR ("unsupported triggerQuantity");
@@ -1869,19 +1873,19 @@ LteUeRrc::SendMeasurementReport (uint8_t measId)
             {
               uint16_t cellId = sortedNeighCellsIt->second;
               std::map<uint16_t, MeasValues>::iterator neighborMeasIt = m_storedMeasValues.find (cellId);
-              NS_ASSERT (neighborMeasIt != m_storedMeasValues.end ());            
+              NS_ASSERT (neighborMeasIt != m_storedMeasValues.end ());
               LteRrcSap::MeasResultEutra measResultEutra;
               measResultEutra.physCellId = cellId;
               measResultEutra.haveCgiInfo = false;
               measResultEutra.haveRsrpResult = true;
               measResultEutra.rsrpResult = EutranMeasurementMapping::Dbm2RsrpRange (neighborMeasIt->second.rsrp);
               measResultEutra.haveRsrqResult = true;
-              measResultEutra.rsrqResult = EutranMeasurementMapping::Db2RsrqRange (neighborMeasIt->second.rsrq);           
+              measResultEutra.rsrqResult = EutranMeasurementMapping::Db2RsrqRange (neighborMeasIt->second.rsrq);
               NS_LOG_INFO (this << " reporting neighbor cell " << (uint32_t) measResultEutra.physCellId 
-                           << " RSRP " << (uint32_t) measResultEutra.rsrpResult 
-                           << " (" << neighborMeasIt->second.rsrp << " dBm) "
-                           << " RSRQ " << (uint32_t) measResultEutra.rsrqResult 
-                           << " (" << neighborMeasIt->second.rsrq << " dB)"); 
+                                << " RSRP " << (uint32_t) measResultEutra.rsrpResult
+                                << " (" << neighborMeasIt->second.rsrp << " dBm)"
+                                << " RSRQ " << (uint32_t) measResultEutra.rsrqResult
+                                << " (" << neighborMeasIt->second.rsrq << " dB)");
               measResults.measResultListEutra.push_back (measResultEutra);
             }
         }
