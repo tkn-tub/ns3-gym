@@ -158,7 +158,7 @@ class EutranMeasurementMapping
 public:
   /** 
    * converts an RSRP range to dBm as per 
-   * 3GPP TS 36.133 section 9.1.4 RSRP Measurement Report Mapping  
+   * 3GPP TS 36.133 section 9.1.4 RSRP Measurement Report Mapping
    *
    * \param range the RSRP range value
    * 
@@ -168,7 +168,7 @@ public:
 
   /** 
    * convert an RSRP value in dBm to the corresponding range as per 
-   * 3GPP TS 36.133 section 9.1.4 RSRP Measurement Report Mapping 
+   * 3GPP TS 36.133 section 9.1.4 RSRP Measurement Report Mapping
    * 
    * \param dbm the RSRP value in dBm
    * 
@@ -194,7 +194,7 @@ public:
    * 
    * \return the corresponding range
    */
-  static uint8_t Db2RsrqRange (double db);  
+  static uint8_t Db2RsrqRange (double db);
 
   /** 
    * Quantize an RSRP value according to the measurement mapping of TS 36.133
@@ -212,7 +212,25 @@ public:
    * 
    * \return the quantized RSRQ value in dB
    */
-  static double QuantizeRsrq(double v);
+  static double QuantizeRsrq (double v);
+
+  /**
+   * \brief Returns the actual value of a hysteresis parameter.
+   * \param IE value of hysteresis
+   * \return hysteresis actual value in dB, which is IE value * 0.5 dB
+   *
+   * As per section 6.3.5 of 3GPP TS 36.331.
+   */
+  static double GetActualHysteresis (uint8_t hysteresis);
+
+  /**
+   * \brief Returns the actual value of an a3-Offset parameter.
+   * \param IE value of hysteresis
+   * \return a3-Offset actual value in dB, which is IE value * 0.5 dB
+   *
+   * As per section 6.3.5 of 3GPP TS 36.331.
+   */
+  static double GetActualA3Offset (int8_t a3Offset);
 
 };
 

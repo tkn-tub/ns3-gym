@@ -2199,8 +2199,8 @@ Measurement reporting triggering
 --------------------------------
 
 This part will go through the list of active measurement configuration and check
-whether the trigerring condition is fulfilled in accordance with Section 5.5.4
-of [TS36331]_. When at least one trigerring condition from all the active
+whether the triggering condition is fulfilled in accordance with Section 5.5.4
+of [TS36331]_. When at least one triggering condition from all the active
 measurement configuration is fulfilled, the measurement reporting procedure (in
 the next subsection) will be initiated.
 

@@ -210,7 +210,7 @@ uint8_t
 EutranMeasurementMapping::Dbm2RsrpRange (double dbm)
 {
   // 3GPP TS 36.133 section 9.1.4 RSRP Measurement Report Mapping
-  double range = std::min( std::max (std::floor(dbm + 141), 0.0), 97.0);
+  double range = std::min (std::max (std::floor (dbm + 141), 0.0), 97.0);
   return (uint8_t) range;
 }
 
@@ -241,6 +241,29 @@ EutranMeasurementMapping::QuantizeRsrq (double v)
 {
   return RsrqRange2Db (Db2RsrqRange (v));
 }
+
+double
+EutranMeasurementMapping::GetActualHysteresis (uint8_t hysteresis)
+{
+  if (hysteresis > 30)
+    {
+      NS_FATAL_ERROR ("The value " << hysteresis << " is out of the allowed range (0..30) for Hysteresis");
+    }
+
+  return (static_cast<double> (hysteresis) * 0.5);
+}
+
+double
+EutranMeasurementMapping::GetActualA3Offset (int8_t a3Offset)
+{
+  if ((a3Offset < -30) || (a3Offset > 30))
+    {
+      NS_FATAL_ERROR ("The value " << a3Offset << " is out of the allowed range (-30..30) for a3-Offset");
+    }
+
+  return (static_cast<double> (a3Offset) * 0.5);
+}
+
 
 }; // namespace ns3
 

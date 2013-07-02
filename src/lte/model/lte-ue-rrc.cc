@@ -572,10 +572,10 @@ LteUeRrc::DoReportUeMeasurements (LteUeCphySapUser::UeMeasurementsParameters par
         {
           // F_n = (1-a) F_{n-1} + a M_n
           storedMeasIt->second.rsrp = (1 - m_varMeasConfig.aRsrp) * storedMeasIt->second.rsrp 
-            + m_varMeasConfig.aRsrp * newMeasIt->m_rsrp;          
+            + m_varMeasConfig.aRsrp * newMeasIt->m_rsrp;
           storedMeasIt->second.rsrq = (1 - m_varMeasConfig.aRsrq) * storedMeasIt->second.rsrq 
-            + m_varMeasConfig.aRsrq * newMeasIt->m_rsrq;          
-        }  
+            + m_varMeasConfig.aRsrq * newMeasIt->m_rsrq;
+        }
       storedMeasIt->second.timestamp = Simulator::Now ();
     }
 
@@ -628,20 +628,19 @@ LteUeRrc::DoReportUeMeasurements (LteUeCphySapUser::UeMeasurementsParameters par
 
             double ms; // Ms, the measurement result of the serving cell
             double thresh; // Thresh, the threshold parameter for this event
-            double hys = (double) reportConfigEutra.hysteresis * 0.5; // Hys, the hysteresis parameter for this event. See 36.331 section 6.3.5 for the conversion.
+            // Hys, the hysteresis parameter for this event.
+            double hys = EutranMeasurementMapping::GetActualHysteresis (reportConfigEutra.hysteresis);
 
             switch (reportConfigEutra.triggerQuantity)
               {
               case LteRrcSap::ReportConfigEutra::RSRP:
                 ms = m_storedMeasValues[m_cellId].rsrp;
-                //ms = EutranMeasurementMapping::QuantizeRsrp (m_storedMeasValues[m_cellId].rsrp);
                 NS_ASSERT (reportConfigEutra.threshold1.choice
                            == LteRrcSap::ThresholdEutra::THRESHOLD_RSRP);
                 thresh = EutranMeasurementMapping::RsrpRange2Dbm (reportConfigEutra.threshold1.range);
                 break;
               case LteRrcSap::ReportConfigEutra::RSRQ:
                 ms = m_storedMeasValues[m_cellId].rsrq;
-                //ms = EutranMeasurementMapping::QuantizeRsrq (m_storedMeasValues[m_cellId].rsrq);
                 NS_ASSERT (reportConfigEutra.threshold1.choice
                            == LteRrcSap::ThresholdEutra::THRESHOLD_RSRQ);
                 thresh = EutranMeasurementMapping::RsrqRange2Db (reportConfigEutra.threshold1.range);
@@ -692,20 +691,19 @@ LteUeRrc::DoReportUeMeasurements (LteUeCphySapUser::UeMeasurementsParameters par
 
             double ms; // Ms, the measurement result of the serving cell
             double thresh; // Thresh, the threshold parameter for this event
-            double hys = (double) reportConfigEutra.hysteresis * 0.5; // Hys, the hysteresis parameter for this event. See 36.331 section 6.3.5 for the conversion.
+            // Hys, the hysteresis parameter for this event.
+            double hys = EutranMeasurementMapping::GetActualHysteresis (reportConfigEutra.hysteresis);
 
             switch (reportConfigEutra.triggerQuantity)
               {
               case LteRrcSap::ReportConfigEutra::RSRP:
                 ms = m_storedMeasValues[m_cellId].rsrp;
-                //ms = EutranMeasurementMapping::QuantizeRsrp (m_storedMeasValues[m_cellId].rsrp);
                 NS_ASSERT (reportConfigEutra.threshold1.choice
                            == LteRrcSap::ThresholdEutra::THRESHOLD_RSRP);
                 thresh = EutranMeasurementMapping::RsrpRange2Dbm (reportConfigEutra.threshold1.range);
                 break;
               case LteRrcSap::ReportConfigEutra::RSRQ:
                 ms = m_storedMeasValues[m_cellId].rsrq;
-                //ms = EutranMeasurementMapping::QuantizeRsrq (m_storedMeasValues[m_cellId].rsrq);
                 NS_ASSERT (reportConfigEutra.threshold1.choice
                            == LteRrcSap::ThresholdEutra::THRESHOLD_RSRQ);
                 thresh = EutranMeasurementMapping::RsrqRange2Db (reportConfigEutra.threshold1.range);
@@ -760,20 +758,20 @@ LteUeRrc::DoReportUeMeasurements (LteUeCphySapUser::UeMeasurementsParameters par
             double mp; // Mp, the measurement result of the PCell
             double ofp = measObjectEutra.offsetFreq; // Ofp, the frequency specific offset of the primary frequency
             double ocp = 0.0; // Ocp, the cell specific offset of the PCell
-            double off = (double) reportConfigEutra.a3Offset * 0.5; // Off, the offset parameter for this event. See 36.331 section 6.3.5 for the conversion.
-            double hys = (double) reportConfigEutra.hysteresis * 0.5; // Hys, the hysteresis parameter for this event. See 36.331 section 6.3.5 for the conversion.
+            // Off, the offset parameter for this event.
+            double off = EutranMeasurementMapping::GetActualA3Offset (reportConfigEutra.a3Offset);
+            // Hys, the hysteresis parameter for this event.
+            double hys = EutranMeasurementMapping::GetActualHysteresis (reportConfigEutra.hysteresis);
 
             switch (reportConfigEutra.triggerQuantity)
               {
               case LteRrcSap::ReportConfigEutra::RSRP:
                 mp = m_storedMeasValues[m_cellId].rsrp;
-                //mp = EutranMeasurementMapping::QuantizeRsrp (m_storedMeasValues[m_cellId].rsrp);
                 NS_ASSERT (reportConfigEutra.threshold1.choice
                            == LteRrcSap::ThresholdEutra::THRESHOLD_RSRP);
                 break;
               case LteRrcSap::ReportConfigEutra::RSRQ:
                 mp = m_storedMeasValues[m_cellId].rsrq;
-                //mp = EutranMeasurementMapping::QuantizeRsrq (m_storedMeasValues[m_cellId].rsrq);
                 NS_ASSERT (reportConfigEutra.threshold1.choice
                            == LteRrcSap::ThresholdEutra::THRESHOLD_RSRQ);
                 break;
@@ -796,11 +794,9 @@ LteUeRrc::DoReportUeMeasurements (LteUeCphySapUser::UeMeasurementsParameters par
                   {
                   case LteRrcSap::ReportConfigEutra::RSRP:
                     mn = storedMeasIt->second.rsrp;
-                    //mn = EutranMeasurementMapping::QuantizeRsrp (storedMeasIt->second.rsrp);
                     break;
                   case LteRrcSap::ReportConfigEutra::RSRQ:
                     mn = storedMeasIt->second.rsrq;
-                    //mn = EutranMeasurementMapping::QuantizeRsrq (storedMeasIt->second.rsrq);
                     break;
                   default:
                     NS_FATAL_ERROR ("unsupported triggerQuantity");
@@ -852,7 +848,8 @@ LteUeRrc::DoReportUeMeasurements (LteUeCphySapUser::UeMeasurementsParameters par
             double ofn = measObjectEutra.offsetFreq; // Ofn, the frequency specific offset of the frequency of the
             double ocn = 0.0; // Ocn, the cell specific offset of the neighbour cell
             double thresh; // Thresh, the threshold parameter for this event
-            double hys = (double) reportConfigEutra.hysteresis * 0.5; // Hys, the hysteresis parameter for this event. See 36.331 section 6.3.5 for the conversion.
+            // Hys, the hysteresis parameter for this event.
+            double hys = EutranMeasurementMapping::GetActualHysteresis (reportConfigEutra.hysteresis);
 
             switch (reportConfigEutra.triggerQuantity)
               {
@@ -885,11 +882,9 @@ LteUeRrc::DoReportUeMeasurements (LteUeCphySapUser::UeMeasurementsParameters par
                   {
                   case LteRrcSap::ReportConfigEutra::RSRP:
                     mn = storedMeasIt->second.rsrp;
-                    //mn = EutranMeasurementMapping::QuantizeRsrp (storedMeasIt->second.rsrp);
                     break;
                   case LteRrcSap::ReportConfigEutra::RSRQ:
                     mn = storedMeasIt->second.rsrq;
-                    //mn = EutranMeasurementMapping::QuantizeRsrq (storedMeasIt->second.rsrq);
                     break;
                   default:
                     NS_FATAL_ERROR ("unsupported triggerQuantity");
@@ -944,13 +939,13 @@ LteUeRrc::DoReportUeMeasurements (LteUeCphySapUser::UeMeasurementsParameters par
             double ocn = 0.0; // Ocn, the cell specific offset of the neighbour cell
             double thresh1; // Thresh1, the threshold parameter for this event
             double thresh2; // Thresh2, the threshold parameter for this event
-            double hys = (double) reportConfigEutra.hysteresis * 0.5; // Hys, the hysteresis parameter for this event. See 36.331 section 6.3.5 for the conversion.
+            // Hys, the hysteresis parameter for this event.
+            double hys = EutranMeasurementMapping::GetActualHysteresis (reportConfigEutra.hysteresis);
 
             switch (reportConfigEutra.triggerQuantity)
               {
               case LteRrcSap::ReportConfigEutra::RSRP:
                 mp = m_storedMeasValues[m_cellId].rsrp;
-                //mp = EutranMeasurementMapping::QuantizeRsrp (m_storedMeasValues[m_cellId].rsrp);
                 NS_ASSERT (reportConfigEutra.threshold1.choice
                            == LteRrcSap::ThresholdEutra::THRESHOLD_RSRP);
                 NS_ASSERT (reportConfigEutra.threshold2.choice
@@ -960,7 +955,6 @@ LteUeRrc::DoReportUeMeasurements (LteUeCphySapUser::UeMeasurementsParameters par
                 break;
               case LteRrcSap::ReportConfigEutra::RSRQ:
                 mp = m_storedMeasValues[m_cellId].rsrq;
-                //mp = EutranMeasurementMapping::QuantizeRsrq (m_storedMeasValues[m_cellId].rsrq);
                 NS_ASSERT (reportConfigEutra.threshold1.choice
                            == LteRrcSap::ThresholdEutra::THRESHOLD_RSRQ);
                 NS_ASSERT (reportConfigEutra.threshold2.choice
@@ -991,11 +985,9 @@ LteUeRrc::DoReportUeMeasurements (LteUeCphySapUser::UeMeasurementsParameters par
                       {
                       case LteRrcSap::ReportConfigEutra::RSRP:
                         mn = storedMeasIt->second.rsrp;
-                        //mn = EutranMeasurementMapping::QuantizeRsrp (storedMeasIt->second.rsrp);
                         break;
                       case LteRrcSap::ReportConfigEutra::RSRQ:
                         mn = storedMeasIt->second.rsrq;
-                        //mn = EutranMeasurementMapping::QuantizeRsrq (storedMeasIt->second.rsrq);
                         break;
                       default:
                         NS_FATAL_ERROR ("unsupported triggerQuantity");
@@ -1080,11 +1072,9 @@ LteUeRrc::DoReportUeMeasurements (LteUeCphySapUser::UeMeasurementsParameters par
                               {
                               case LteRrcSap::ReportConfigEutra::RSRP:
                                 mn = storedMeasIt->second.rsrp;
-                                //mn = EutranMeasurementMapping::QuantizeRsrp (storedMeasIt->second.rsrp);
                                 break;
                               case LteRrcSap::ReportConfigEutra::RSRQ:
                                 mn = storedMeasIt->second.rsrq;
-                                //mn = EutranMeasurementMapping::QuantizeRsrq (storedMeasIt->second.rsrq);
                                 break;
                               default:
                                 NS_FATAL_ERROR ("unsupported triggerQuantity");

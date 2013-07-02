@@ -229,14 +229,23 @@ public:
     uint8_t cellForWhichToReportCGI;
   };
 
+  /**
+   * \brief Threshold for event evaluation.
+   *
+   * For RSRP-based threshold, the actual value is (value - 140) dBm. While for
+   * RSRQ-based threshold, the actual value is (value - 40) / 2 dB. This is in
+   * accordance with section 9.1.4 and 9.1.7 of 3GPP TS 36.133.
+   *
+   * \sa ns3::EutranMeasurementMapping
+   */
   struct ThresholdEutra
   {
     enum
     {
-      THRESHOLD_RSRP, ///< RSRP based threshold for event evaluation. The actual value is (value - 140) dBm.
-      THRESHOLD_RSRQ ///< RSRQ based threshold for event evaluation. The actual value is (value - 40) / 2 dB.
-    } choice; ///< Value range used in RSRP/RSRQ measurements and thresholds.
-    uint8_t range;
+      THRESHOLD_RSRP, ///< RSRP is used for the threshold.
+      THRESHOLD_RSRQ ///< RSRQ is used for the threshold.
+    } choice;
+    uint8_t range; ///< Value range used in RSRP/RSRQ threshold.
   };
 
   /// Specifies criteria for triggering of an E-UTRA measurement reporting event.
@@ -317,27 +326,9 @@ public:
     /// Number of measurement reports applicable, always assumed to be infinite.
     uint8_t reportAmount;
 
-    ReportConfigEutra ()
-    {
-      triggerType = EVENT;
-      eventId = EVENT_A1;
-      threshold1.choice = ThresholdEutra::THRESHOLD_RSRP;
-      threshold1.range = 0;
-      threshold2.choice = ThresholdEutra::THRESHOLD_RSRP;
-      threshold2.range = 0;
-      reportOnLeave = false;
-      a3Offset = 0;
-      hysteresis = 0;
-      timeToTrigger = 0;
-      purpose = REPORT_STRONGEST_CELLS;
-      triggerQuantity = RSRP;
-      reportQuantity = BOTH;
-      maxReportCells = MaxReportCells;
-      reportInterval = MS480;
-      reportAmount = 255;
-    }
+    ReportConfigEutra ();
 
-  };
+  }; // end of struct ReportConfigEutra
 
   struct MeasObjectToAddMod
   {
