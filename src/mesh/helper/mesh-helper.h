@@ -119,7 +119,8 @@ public:
    * Set PHY standard
    */
   void SetStandard (enum WifiPhyStandard standard);
-  //void SetMeshId (std::string s); // XXX
+  /// \todo SetMeshId 
+  //void SetMeshId (std::string s);
   /** 
    *  \brief Spread/not spread frequency channels of MP interfaces. 
    * 

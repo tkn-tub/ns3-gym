@@ -230,7 +230,7 @@ Ipv4GlobalRouting::LookupGlobal (Ipv4Address dest, Ptr<NetDevice> oif)
       // create a Ipv4Route object from the selected routing table entry
       rtentry = Create<Ipv4Route> ();
       rtentry->SetDestination (route->GetDest ());
-      // XXX handle multi-address case
+      /// \todo handle multi-address case
       rtentry->SetSource (m_ipv4->GetAddress (route->GetInterface (), 0).GetLocal ());
       rtentry->SetGateway (route->GetGateway ());
       uint32_t interfaceIdx = route->GetInterface ();

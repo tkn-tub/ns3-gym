@@ -506,6 +506,7 @@ Ipv4ClickRouting::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetD
         }
       else
         {
+          /** \todo Implement IP aliasing and Click */
           NS_FATAL_ERROR ("XXX Not implemented yet:  IP aliasing and Click");
         }
       rtentry->SetSource (ifAddr.GetLocal ());

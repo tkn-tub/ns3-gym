@@ -323,7 +323,7 @@ void Ipv6Interface::Send (Ptr<Packet> p, Ipv6Address dest)
   /* check if destination is localhost (::1) */
   if (DynamicCast<LoopbackNetDevice> (m_device))
     {
-      /* XXX additional checks needed here (such as whether multicast
+      /** \todo additional checks needed here (such as whether multicast
        * goes to loopback)?
        */
       m_device->Send (p, m_device->GetBroadcast (), Ipv6L3Protocol::PROT_NUMBER);

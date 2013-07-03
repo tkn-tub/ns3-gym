@@ -612,7 +612,8 @@ TcpL4Protocol::SendPacket (Ptr<Packet> packet, const TcpHeader &outgoing,
 
   TcpHeader outgoingHeader = outgoing;
   outgoingHeader.SetLength (5); //header length in units of 32bit words
-  /* outgoingHeader.SetUrgentPointer (0); //XXX */
+  /** \todo UrgentPointer */
+  /* outgoingHeader.SetUrgentPointer (0); */
   if(Node::ChecksumEnabled ())
     {
       outgoingHeader.EnableChecksums ();
@@ -663,7 +664,8 @@ TcpL4Protocol::SendPacket (Ptr<Packet> packet, const TcpHeader &outgoing,
     }
   TcpHeader outgoingHeader = outgoing;
   outgoingHeader.SetLength (5); //header length in units of 32bit words
-  /* outgoingHeader.SetUrgentPointer (0); //XXX */
+  /** \todo UrgentPointer */
+  /* outgoingHeader.SetUrgentPointer (0); */
   if(Node::ChecksumEnabled ())
     {
       outgoingHeader.EnableChecksums ();

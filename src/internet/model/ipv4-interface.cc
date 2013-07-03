@@ -207,8 +207,8 @@ Ipv4Interface::Send (Ptr<Packet> p, Ipv4Address dest)
   // Check for a loopback device
   if (DynamicCast<LoopbackNetDevice> (m_device))
     {
-      // XXX additional checks needed here (such as whether multicast
-      // goes to loopback)?
+      /// \todo additional checks needed here (such as whether multicast
+      /// goes to loopback)?
       m_device->Send (p, m_device->GetBroadcast (), 
                       Ipv4L3Protocol::PROT_NUMBER);
       return;

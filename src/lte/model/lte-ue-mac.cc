@@ -690,8 +690,8 @@ LteUeMac::DoReceiveLteControlMessage (Ptr<LteControlMessage> msg)
                     {
                       RecvRaResponse (it->rarPayload);
                       /// \todo RRC generates the RecvRaResponse messaged
-                      // for avoiding holes in transmission at PHY layer
-                      // (which produce erroneous UL CQI evaluation)
+                      /// for avoiding holes in transmission at PHY layer
+                      /// (which produce erroneous UL CQI evaluation)
                     }
                 }
             }

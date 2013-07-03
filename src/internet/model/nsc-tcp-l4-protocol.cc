@@ -450,7 +450,7 @@ void NscTcpL4Protocol::AddInterface (void)
           // IP address of the subnet but this was found to fail for
           // some use cases in /30 subnets.
 
-          // XXX
+          /// \todo Bug 1398 NSC's limitation to single-interface nodes
           m_nscStack->add_default_gateway (addrOss.str ().c_str ());
         }
     }

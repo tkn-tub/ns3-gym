@@ -321,7 +321,7 @@ AmrrWifiManager::DoGetRtsMode (WifiRemoteStation *st)
   NS_LOG_FUNCTION (this << st);
   AmrrWifiRemoteStation *station = (AmrrWifiRemoteStation *)st;
   UpdateMode (station);
-  // XXX: can we implement something smarter ?
+  /// \todo can we implement something smarter ?
   return GetSupported (station, 0);
 }
 

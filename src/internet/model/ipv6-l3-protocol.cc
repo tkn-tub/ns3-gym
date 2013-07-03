@@ -263,7 +263,7 @@ void Ipv6L3Protocol::AddAutoconfiguredAddress (uint32_t interface, Ipv6Address n
 
   if (flags & (1 << 6)) /* auto flag */
     {
-      /* XXX : add other L2 address case */
+      /** \todo add other L2 address case */
       if (Mac48Address::IsMatchingType (addr))
         {
           address = Ipv6InterfaceAddress (Ipv6Address::MakeAutoconfiguredAddress (Mac48Address::ConvertFrom (addr), network));

@@ -843,7 +843,7 @@ NscTcpSocketImpl::GetNativeNs3Errno (int error) const
     case NSC_EAGAIN: return ERROR_AGAIN;
     case NSC_EISCONN:   // fallthrough
     case NSC_EALREADY: return ERROR_ISCONN;
-    case NSC_ECONNREFUSED: return ERROR_NOROUTETOHOST;   // XXX, better mapping?
+    case NSC_ECONNREFUSED: return ERROR_NOROUTETOHOST;   /// \todo better mapping?
     case NSC_ECONNRESET:   // for no, all of these fall through
     case NSC_EHOSTDOWN:
     case NSC_ENETUNREACH:
@@ -851,7 +851,7 @@ NscTcpSocketImpl::GetNativeNs3Errno (int error) const
     case NSC_EMSGSIZE: return ERROR_MSGSIZE;
     case NSC_ENOTCONN: return ERROR_NOTCONN;
     case NSC_ESHUTDOWN: return ERROR_SHUTDOWN;
-    case NSC_ETIMEDOUT: return ERROR_NOTCONN;   // XXX - this mapping isn't correct
+    case NSC_ETIMEDOUT: return ERROR_NOTCONN;   /// \todo this mapping isn't correct
     case NSC_ENOTDIR:   // used by eg. sysctl(2). Shouldn't happen normally,
     // but is triggered by e.g. show_config().
     case NSC_EUNKNOWN: return ERROR_INVAL;   // Catches stacks that 'return -1' without real mapping

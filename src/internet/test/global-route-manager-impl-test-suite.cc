@@ -200,7 +200,7 @@ GlobalRouteManagerImplTestCase::DoRun (void)
 
   Simulator::Run ();
 
-// XXX here we should do some verification of the routes built
+/// \todo here we should do some verification of the routes built
 
   Simulator::Destroy ();
 
@@ -208,7 +208,7 @@ GlobalRouteManagerImplTestCase::DoRun (void)
   // all of the LSAs, which each destroys the attached LinkRecords.
   delete srm;
 
-  // XXX
+  /// \todo Testing
   // No testing has actually been done other than making sure that this code
   // does not crash
 }

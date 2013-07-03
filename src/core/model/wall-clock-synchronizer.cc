@@ -203,7 +203,7 @@ WallClockSynchronizer::DoSynchronize (uint64_t nsCurrent, uint64_t nsDelay)
 // I'm not really sure about this number -- a boss of mine once said, "pick
 // a number and it'll be wrong."  But this works for now.
 //
-// XXX BUGBUG Hardcoded tunable parameter below.
+// \todo Hardcoded tunable parameter below.
 //
   if (numberJiffies > 3)
     {

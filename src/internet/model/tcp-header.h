@@ -47,7 +47,9 @@ public:
   virtual ~TcpHeader ();
 
   /**
-   * \brief Enable checksum calculation for TCP (XXX currently has no effect)
+   * \brief Enable checksum calculation for TCP
+   *
+   * \todo currently has no effect
    */
   void EnableChecksums (void);
 //Setters

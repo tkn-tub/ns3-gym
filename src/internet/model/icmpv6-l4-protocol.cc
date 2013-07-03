@@ -319,7 +319,7 @@ void Icmpv6L4Protocol::HandleRA (Ptr<Packet> packet, Ipv6Address const &src, Ipv
             {
               p->RemoveHeader (mtuHdr);
               hasMtu = true;
-              /* XXX case of multiple prefix on single interface */
+              /** \todo case of multiple prefix on single interface */
               /* interface->GetDevice ()->SetMtu (m.GetMtu ()); */
             }
           break;

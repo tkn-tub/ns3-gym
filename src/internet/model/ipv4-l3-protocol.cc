@@ -687,9 +687,9 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
     }
 }
 
-// XXX when should we set ip_id?   check whether we are incrementing
-// m_identification on packets that may later be dropped in this stack
-// and whether that deviates from Linux
+/// \todo when should we set ip_id?   check whether we are incrementing
+/// m_identification on packets that may later be dropped in this stack
+/// and whether that deviates from Linux
 Ipv4Header
 Ipv4L3Protocol::BuildHeader (
   Ipv4Address source,

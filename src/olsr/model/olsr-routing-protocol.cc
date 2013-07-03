@@ -3085,6 +3085,7 @@ RoutingProtocol::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDe
       if (numOifAddresses == 1) {
           ifAddr = m_ipv4->GetAddress (interfaceIdx, 0);
         } else {
+          /// \todo Implment IP aliasing and OLSR
           NS_FATAL_ERROR ("XXX Not implemented yet:  IP aliasing and OLSR");
         }
       rtentry->SetSource (ifAddr.GetLocal ());
@@ -3178,6 +3179,7 @@ bool RoutingProtocol::RouteInput  (Ptr<const Packet> p,
       if (numOifAddresses == 1) {
           ifAddr = m_ipv4->GetAddress (interfaceIdx, 0);
         } else {
+          /// \todo Implment IP aliasing and OLSR
           NS_FATAL_ERROR ("XXX Not implemented yet:  IP aliasing and OLSR");
         }
       rtentry->SetSource (ifAddr.GetLocal ());

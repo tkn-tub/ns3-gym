@@ -51,8 +51,8 @@ void Ipv6AddressHelper::SetBase (Ipv6Address network, Ipv6Prefix prefix,
                             Ipv6Address base)
 {
   NS_LOG_FUNCTION (this << network << prefix << base);
-  // XXX for now we do not enforce the prefix because the underlying
-  // Ipv6AddressGenerator does not handle prefixes well that are not 64 bits
+  /// \todo for now we do not enforce the prefix because the underlying
+  /// Ipv6AddressGenerator does not handle prefixes well that are not 64 bits
   Ipv6AddressGenerator::Init (network, Ipv6Prefix (64), base);
 }
 
