@@ -1657,7 +1657,12 @@ LteEnbRrc::ConfigureCell (uint8_t ulBandwidth, uint8_t dlBandwidth,
   mib.dlBandwidth = m_dlBandwidth;
   m_cphySapProvider->SetMasterInformationBlock (mib);
 
-  // Enabling SIB transmission. The first time System Information is sent.
+  /*
+   * Enabling SIB transmission. The first time System Information is transmitted
+   * is arbitrarily assumed to be at +0.016s, and then it will be regularly
+   * transmitted every 80 ms by default (set the SystemInformationPeriodicity
+   * attribute to configure this).
+   */
   Simulator::Schedule (MilliSeconds (16), &LteEnbRrc::SendSystemInformation, this);
 
   m_configured = true;
