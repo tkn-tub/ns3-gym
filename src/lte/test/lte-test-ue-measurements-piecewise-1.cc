@@ -139,7 +139,7 @@ LteUeMeasurementsPiecewiseTestSuite1::LteUeMeasurementsPiecewiseTestSuite1 ()
                << 67;
   AddTestCase (new LteUeMeasurementsPiecewiseTestCase1 ("Piecewise test case 1 - Event A1 with hysteresis",
                                                         config, expectedTime, expectedRsrp),
-               TestCase::EXTENSIVE);
+               TestCase::QUICK);
 
   // With very high threshold
   config.threshold1.range = 97;
@@ -148,7 +148,7 @@ LteUeMeasurementsPiecewiseTestSuite1::LteUeMeasurementsPiecewiseTestSuite1 ()
   expectedRsrp.clear ();
   AddTestCase (new LteUeMeasurementsPiecewiseTestCase1 ("Piecewise test case 1 - Event A1 with very high threshold",
                                                         config, expectedTime, expectedRsrp),
-               TestCase::EXTENSIVE);
+               TestCase::TAKES_FOREVER);
 
   // === Event A2 (serving cell becomes worse than threshold) ===
 
@@ -159,7 +159,7 @@ LteUeMeasurementsPiecewiseTestSuite1::LteUeMeasurementsPiecewiseTestSuite1 ()
   expectedRsrp.clear ();
   AddTestCase (new LteUeMeasurementsPiecewiseTestCase1 ("Piecewise test case 1 - Event A2 with very low threshold",
                                                         config, expectedTime, expectedRsrp),
-               TestCase::EXTENSIVE);
+               TestCase::TAKES_FOREVER);
 
   // With normal threshold
   config.threshold1.range = 54;
@@ -179,7 +179,7 @@ LteUeMeasurementsPiecewiseTestSuite1::LteUeMeasurementsPiecewiseTestSuite1 ()
   expectedRsrp << 47 << 47 << 47 << 47 << 51 << 51 << 57;
   AddTestCase (new LteUeMeasurementsPiecewiseTestCase1 ("Piecewise test case 1 - Event A2 with hysteresis",
                                                         config, expectedTime, expectedRsrp),
-               TestCase::EXTENSIVE);
+               TestCase::QUICK);
 
   // With very high threshold
   config.threshold1.range = 97;
@@ -194,109 +194,34 @@ LteUeMeasurementsPiecewiseTestSuite1::LteUeMeasurementsPiecewiseTestSuite1 ()
                                                         config, expectedTime, expectedRsrp),
                TestCase::EXTENSIVE);
 
-  // === Event A3 (neighbour becomes offset better than PCell) ===
+  /*
+   * Event A3, A4, and A5 are not tested intensively here because they depend on
+   * the existence of at least one neighbouring cell, which is not available in
+   * this configuration. Piecewise configuration #2 includes a neighbouring
+   * cell, hence more thorough tests on these events are performed there.
+   */
 
-  // With positive offset
-  config.eventId = LteRrcSap::ReportConfigEutra::EVENT_A3;
-  config.threshold1.range = 0;
-  config.a3Offset = 7;
-  expectedTime.clear ();
-  expectedRsrp.clear ();
-  AddTestCase (new LteUeMeasurementsPiecewiseTestCase1 ("Piecewise test case 1 - Event A3 with positive offset",
-                                                        config, expectedTime, expectedRsrp),
-               TestCase::EXTENSIVE);
+  // === Event A3 (neighbour becomes offset better than PCell) ===
 
   // With zero offset
   config.a3Offset = 0;
-  AddTestCase (new LteUeMeasurementsPiecewiseTestCase1 ("Piecewise test case 1 - Event A3 with zero offset",
-                                                        config, expectedTime, expectedRsrp),
-               TestCase::EXTENSIVE);
-
-  // With negative offset
-  config.a3Offset = -7;
-  AddTestCase (new LteUeMeasurementsPiecewiseTestCase1 ("Piecewise test case 1 - Event A3 with negative offset",
+  AddTestCase (new LteUeMeasurementsPiecewiseTestCase1 ("Piecewise test case 1 - Event A3",
                                                         config, expectedTime, expectedRsrp),
                TestCase::EXTENSIVE);
 
   // === Event A4 (neighbour becomes better than threshold) ===
 
-  // With very low threshold
-  config.eventId = LteRrcSap::ReportConfigEutra::EVENT_A4;
-  config.threshold1.range = 0;
-  config.a3Offset = 0;
-  AddTestCase (new LteUeMeasurementsPiecewiseTestCase1 ("Piecewise test case 1 - Event A4 with very low threshold",
-                                                        config, expectedTime, expectedRsrp),
-               TestCase::EXTENSIVE);
-
   // With normal threshold
   config.threshold1.range = 54;
-  AddTestCase (new LteUeMeasurementsPiecewiseTestCase1 ("Piecewise test case 1 - Event A4 with normal threshold",
-                                                        config, expectedTime, expectedRsrp),
-               TestCase::EXTENSIVE);
-
-  // With very high threshold
-  config.threshold1.range = 97;
-  AddTestCase (new LteUeMeasurementsPiecewiseTestCase1 ("Piecewise test case 1 - Event A4 with very high threshold",
+  AddTestCase (new LteUeMeasurementsPiecewiseTestCase1 ("Piecewise test case 1 - Event A4",
                                                         config, expectedTime, expectedRsrp),
                TestCase::EXTENSIVE);
 
   // === Event A5 (PCell becomes worse than absolute threshold1 AND neighbour becomes better than another absolute threshold2) ===
 
-  // With low-low threshold
-  config.eventId = LteRrcSap::ReportConfigEutra::EVENT_A5;
-  config.threshold1.range = 0;
-  config.threshold2.range = 0;
-  AddTestCase (new LteUeMeasurementsPiecewiseTestCase1 ("Piecewise test case 1 - Event A5 with low-low threshold",
-                                                        config, expectedTime, expectedRsrp),
-               TestCase::EXTENSIVE);
-
-  // With low-normal threshold
-  config.threshold2.range = 58;
-  AddTestCase (new LteUeMeasurementsPiecewiseTestCase1 ("Piecewise test case 1 - Event A5 with low-normal threshold",
-                                                        config, expectedTime, expectedRsrp),
-               TestCase::EXTENSIVE);
-
-  // With low-high threshold
-  config.threshold2.range = 97;
-  AddTestCase (new LteUeMeasurementsPiecewiseTestCase1 ("Piecewise test case 1 - Event A5 with low-high threshold",
-                                                        config, expectedTime, expectedRsrp),
-               TestCase::EXTENSIVE);
-
-  // With normal-low threshold
-  config.threshold1.range = 58;
-  config.threshold2.range = 0;
-  AddTestCase (new LteUeMeasurementsPiecewiseTestCase1 ("Piecewise test case 1 - Event A5 with normal-low threshold",
-                                                        config, expectedTime, expectedRsrp),
-               TestCase::EXTENSIVE);
-
   // With normal-normal threshold
   config.threshold2.range = 58;
-  AddTestCase (new LteUeMeasurementsPiecewiseTestCase1 ("Piecewise test case 1 - Event A5 with normal-normal threshold",
-                                                        config, expectedTime, expectedRsrp),
-               TestCase::EXTENSIVE);
-
-  // With normal-high threshold
-  config.threshold2.range = 97;
-  AddTestCase (new LteUeMeasurementsPiecewiseTestCase1 ("Piecewise test case 1 - Event A5 with normal-high threshold",
-                                                        config, expectedTime, expectedRsrp),
-               TestCase::EXTENSIVE);
-
-  // With high-low threshold
-  config.threshold1.range = 97;
-  config.threshold2.range = 0;
-  AddTestCase (new LteUeMeasurementsPiecewiseTestCase1 ("Piecewise test case 1 - Event A5 with high-low threshold",
-                                                        config, expectedTime, expectedRsrp),
-               TestCase::EXTENSIVE);
-
-  // With high-normal threshold
-  config.threshold2.range = 58;
-  AddTestCase (new LteUeMeasurementsPiecewiseTestCase1 ("Piecewise test case 1 - Event A5 with high-normal threshold",
-                                                        config, expectedTime, expectedRsrp),
-               TestCase::EXTENSIVE);
-
-  // With high-high threshold
-  config.threshold2.range = 97;
-  AddTestCase (new LteUeMeasurementsPiecewiseTestCase1 ("Piecewise test case 1 - Event A5 with high-high threshold",
+  AddTestCase (new LteUeMeasurementsPiecewiseTestCase1 ("Piecewise test case 1 - Event A5",
                                                         config, expectedTime, expectedRsrp),
                TestCase::EXTENSIVE);
 

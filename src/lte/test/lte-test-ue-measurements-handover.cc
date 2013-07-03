@@ -123,7 +123,7 @@ LteUeMeasurementsHandoverTestSuite::LteUeMeasurementsHandoverTestSuite ()
   AddTestCase (new LteUeMeasurementsHandoverTestCase ("Handover test case - decreasing report interval",
                                                       sourceConfig, targetConfig,
                                                       expectedTime, expectedRsrp),
-               TestCase::EXTENSIVE);
+               TestCase::TAKES_FOREVER);
 
   // increasing report interval
   sourceConfig.reportInterval = LteRrcSap::ReportConfigEutra::MS120;
@@ -135,7 +135,7 @@ LteUeMeasurementsHandoverTestSuite::LteUeMeasurementsHandoverTestSuite ()
   AddTestCase (new LteUeMeasurementsHandoverTestCase ("Handover test case - increasing report interval",
                                                       sourceConfig, targetConfig,
                                                       expectedTime, expectedRsrp),
-               TestCase::EXTENSIVE);
+               TestCase::QUICK);
 
   // === Event difference ===
 
@@ -168,7 +168,7 @@ LteUeMeasurementsHandoverTestSuite::LteUeMeasurementsHandoverTestSuite ()
   AddTestCase (new LteUeMeasurementsHandoverTestCase ("Handover test case - A2 to A1",
                                                       sourceConfig, targetConfig,
                                                       expectedTime, expectedRsrp),
-               TestCase::EXTENSIVE);
+               TestCase::TAKES_FOREVER);
 
   // Event A3 to Event A4
   sourceConfig.eventId = LteRrcSap::ReportConfigEutra::EVENT_A3;
@@ -180,7 +180,7 @@ LteUeMeasurementsHandoverTestSuite::LteUeMeasurementsHandoverTestSuite ()
   AddTestCase (new LteUeMeasurementsHandoverTestCase ("Handover test case - A3 to A4",
                                                       sourceConfig, targetConfig,
                                                       expectedTime, expectedRsrp),
-               TestCase::EXTENSIVE);
+               TestCase::TAKES_FOREVER);
 
   // Event A4 to Event A3
   sourceConfig.eventId = LteRrcSap::ReportConfigEutra::EVENT_A4;
@@ -192,7 +192,7 @@ LteUeMeasurementsHandoverTestSuite::LteUeMeasurementsHandoverTestSuite ()
   AddTestCase (new LteUeMeasurementsHandoverTestCase ("Handover test case - A4 to A3",
                                                       sourceConfig, targetConfig,
                                                       expectedTime, expectedRsrp),
-               TestCase::EXTENSIVE);
+               TestCase::QUICK);
 
   // Event A2 to Event A3
   sourceConfig.eventId = LteRrcSap::ReportConfigEutra::EVENT_A2;
@@ -216,7 +216,7 @@ LteUeMeasurementsHandoverTestSuite::LteUeMeasurementsHandoverTestSuite ()
   AddTestCase (new LteUeMeasurementsHandoverTestCase ("Handover test case - A3 to A2",
                                                       sourceConfig, targetConfig,
                                                       expectedTime, expectedRsrp),
-               TestCase::EXTENSIVE);
+               TestCase::TAKES_FOREVER);
 
   // Event A4 to Event A5
   sourceConfig.eventId = LteRrcSap::ReportConfigEutra::EVENT_A4;
@@ -228,7 +228,7 @@ LteUeMeasurementsHandoverTestSuite::LteUeMeasurementsHandoverTestSuite ()
   AddTestCase (new LteUeMeasurementsHandoverTestCase ("Handover test case - A4 to A5",
                                                       sourceConfig, targetConfig,
                                                       expectedTime, expectedRsrp),
-               TestCase::EXTENSIVE);
+               TestCase::TAKES_FOREVER);
 
   // Event A5 to Event A4
   sourceConfig.eventId = LteRrcSap::ReportConfigEutra::EVENT_A5;
@@ -269,7 +269,7 @@ LteUeMeasurementsHandoverTestSuite::LteUeMeasurementsHandoverTestSuite ()
   AddTestCase (new LteUeMeasurementsHandoverTestCase ("Handover test case - A2 threshold difference",
                                                       sourceConfig, targetConfig,
                                                       expectedTime, expectedRsrp),
-               TestCase::EXTENSIVE);
+               TestCase::QUICK);
 
   // Event A3
   sourceConfig.eventId = LteRrcSap::ReportConfigEutra::EVENT_A3;
@@ -283,7 +283,7 @@ LteUeMeasurementsHandoverTestSuite::LteUeMeasurementsHandoverTestSuite ()
   AddTestCase (new LteUeMeasurementsHandoverTestCase ("Handover test case - A3 offset difference",
                                                       sourceConfig, targetConfig,
                                                       expectedTime, expectedRsrp),
-               TestCase::EXTENSIVE);
+               TestCase::QUICK);
 
   // Event A4
   sourceConfig.eventId = LteRrcSap::ReportConfigEutra::EVENT_A4;
