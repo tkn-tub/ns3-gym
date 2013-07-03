@@ -166,6 +166,21 @@ public:
   explicit Time (const std::string & s);
 
   /**
+   * \brief Minimum representable Time
+   */
+  static Time MIN ()
+  {
+    return Time ((long long int)LLONG_MIN);
+  }
+  /**
+   * \brief Maximum representable Time
+   */
+  static Time MAX ()
+  {
+    return Time ((long long int)LLONG_MAX);
+  }
+  
+  /**
    * \return true if the time is zero, false otherwise.
    */
   inline bool IsZero (void) const
@@ -650,7 +665,37 @@ inline Time TimeStep (uint64_t ts)
 
 ATTRIBUTE_VALUE_DEFINE (Time);
 ATTRIBUTE_ACCESSOR_DEFINE (Time);
-ATTRIBUTE_CHECKER_DEFINE (Time);
+
+/**
+ * \brief Helper to make a Time checker with bounded range.
+ * Both limits are inclusive
+ *
+ * \return the AttributeChecker 
+ */
+Ptr<const AttributeChecker> MakeTimeChecker (const Time min, const Time max);
+
+/**
+ * \brief Helper to make an unbounded Time checker.
+ *
+ * \return the AttributeChecker
+ */
+inline
+Ptr<const AttributeChecker> MakeTimeChecker (void)
+{
+  return MakeTimeChecker (Time::MIN (), Time::MAX ());
+}
+
+/**
+ * \brief Helper to make a Time checker with an upper bound
+ *
+ * \return the AttributeChecker
+ */
+inline
+Ptr<const AttributeChecker> MakeTimeChecker (const Time min)
+{
+  return MakeTimeChecker (min, Time::MAX ());
+}
+
 
 } // namespace ns3
 

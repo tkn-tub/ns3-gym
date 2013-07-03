@@ -186,7 +186,61 @@ std::istream& operator>> (std::istream& is, Time & time)
 }
 
 ATTRIBUTE_VALUE_IMPLEMENT (Time);
-ATTRIBUTE_CHECKER_IMPLEMENT (Time);
+
+Ptr<const AttributeChecker>
+MakeTimeChecker (const Time min, const Time max)
+{
+  NS_LOG_FUNCTION (min << max);
+
+  struct Checker : public AttributeChecker
+  {
+    Checker (const Time minValue, const Time maxValue)
+      : m_minValue (minValue),
+        m_maxValue (maxValue) {}
+    virtual bool Check (const AttributeValue &value) const {
+      NS_LOG_FUNCTION (&value);
+      const TimeValue *v = dynamic_cast<const TimeValue *> (&value);
+      if (v == 0)
+        {
+          return false;
+        }
+      return v->Get () >= m_minValue && v->Get () <= m_maxValue;
+    }
+    virtual std::string GetValueTypeName (void) const {
+      NS_LOG_FUNCTION_NOARGS ();
+      return "ns3::TimeValue";
+    }
+    virtual bool HasUnderlyingTypeInformation (void) const {
+      NS_LOG_FUNCTION_NOARGS ();
+      return true;
+    }
+    virtual std::string GetUnderlyingTypeInformation (void) const {
+      NS_LOG_FUNCTION_NOARGS ();
+      std::ostringstream oss;
+      oss << "Time" << " " << m_minValue << ":" << m_maxValue;
+      return oss.str ();
+    }
+    virtual Ptr<AttributeValue> Create (void) const {
+      NS_LOG_FUNCTION_NOARGS ();
+      return ns3::Create<TimeValue> ();
+    }
+    virtual bool Copy (const AttributeValue &source, AttributeValue &destination) const {
+      NS_LOG_FUNCTION (&source << &destination);
+      const TimeValue *src = dynamic_cast<const TimeValue *> (&source);
+      TimeValue *dst = dynamic_cast<TimeValue *> (&destination);
+      if (src == 0 || dst == 0)
+        {
+          return false;
+        }
+      *dst = *src;
+      return true;
+    }
+    Time m_minValue;
+    Time m_maxValue;
+  } *checker = new Checker (min, max);
+  return Ptr<const AttributeChecker> (checker, false);
+}
+
 
 } // namespace ns3
 
