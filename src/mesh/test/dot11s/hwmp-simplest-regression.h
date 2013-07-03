@@ -75,7 +75,7 @@ public:
   void CheckResults ();
 
 private:
-  /// XXX It is important to have pointers here
+  /// \internal It is important to have pointers here
   NodeContainer * m_nodes;
   /// Simulation time
   Time m_time;

@@ -50,7 +50,7 @@ public:
   ~Bug772ChainTest ();
 
 private:
-  /// XXX It is important to have pointers here
+  /// \internal It is important to have pointers here
   NodeContainer * m_nodes;
 
   /// PCAP file names prefix
