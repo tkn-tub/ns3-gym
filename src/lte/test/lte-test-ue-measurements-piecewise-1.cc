@@ -129,8 +129,21 @@ LteUeMeasurementsPiecewiseTestSuite1::LteUeMeasurementsPiecewiseTestSuite1 ()
                                                         config, expectedTime, expectedRsrp),
                TestCase::EXTENSIVE);
 
+  // With hysteresis
+  config.hysteresis = 8;
+  expectedTime.clear ();
+  expectedTime << 200 << 320 << 440 << 560 << 680 << 1000 << 1120 << 1240 << 1360 << 1480
+               << 2200;
+  expectedRsrp.clear ();
+  expectedRsrp << 67 << 67 << 57 << 57 << 66 << 66 << 66 << 57 << 57 << 51
+               << 67;
+  AddTestCase (new LteUeMeasurementsPiecewiseTestCase1 ("Piecewise test case 1 - Event A1 with hysteresis",
+                                                        config, expectedTime, expectedRsrp),
+               TestCase::EXTENSIVE);
+
   // With very high threshold
   config.threshold1.range = 97;
+  config.hysteresis = 0;
   expectedTime.clear ();
   expectedRsrp.clear ();
   AddTestCase (new LteUeMeasurementsPiecewiseTestCase1 ("Piecewise test case 1 - Event A1 with very high threshold",
@@ -158,8 +171,19 @@ LteUeMeasurementsPiecewiseTestSuite1::LteUeMeasurementsPiecewiseTestSuite1 ()
                                                         config, expectedTime, expectedRsrp),
                TestCase::EXTENSIVE);
 
+  // With hysteresis
+  config.hysteresis = 8;
+  expectedTime.clear ();
+  expectedTime << 800 << 920 << 1600 << 1720 << 1840 << 1960 << 2080;
+  expectedRsrp.clear ();
+  expectedRsrp << 47 << 47 << 47 << 47 << 51 << 51 << 57;
+  AddTestCase (new LteUeMeasurementsPiecewiseTestCase1 ("Piecewise test case 1 - Event A2 with hysteresis",
+                                                        config, expectedTime, expectedRsrp),
+               TestCase::EXTENSIVE);
+
   // With very high threshold
   config.threshold1.range = 97;
+  config.hysteresis = 0;
   expectedTime.clear ();
   expectedTime << 200 << 320 << 440 << 560 << 680 << 800 << 920 << 1040 << 1160 << 1280
                << 1400 << 1520 << 1640 << 1760 << 1880 << 2000 << 2120;
