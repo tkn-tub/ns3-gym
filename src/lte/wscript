@@ -142,6 +142,9 @@ def build(bld):
         'test/test-lte-x2-handover-measures.cc',
         'test/test-asn1-encoding.cc',
         'test/lte-test-ue-measurements.cc',
+        #'test/lte-test-ue-measurements-piecewise-1.cc',
+        #'test/lte-test-ue-measurements-piecewise-2.cc',
+        'test/lte-test-ue-measurements-handover.cc',
         'test/test-lte-handover-delay.cc',
         ]
 
