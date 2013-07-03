@@ -21,6 +21,7 @@ Supported platforms
 
 New user-visible features
 -------------------------
+- Time attributes can now be bounded.  See attribute-test-suite.cc for an example.
 
 Bugs fixed
 ----------
