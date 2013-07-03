@@ -73,10 +73,10 @@ Ipv4ListRoutingNegativeTestCase::DoRun (void)
   lr->AddRoutingProtocol (bRouting, -5);
   int16_t first = 3;
   uint32_t num = lr->GetNRoutingProtocols ();
-  NS_TEST_ASSERT_MSG_EQ (num, 2, "XXX");
+  NS_TEST_ASSERT_MSG_EQ (num, 2, "100");
   Ptr<Ipv4RoutingProtocol> firstRp = lr->GetRoutingProtocol (0, first);
-  NS_TEST_ASSERT_MSG_EQ (-5, first, "XXX");
-  NS_TEST_ASSERT_MSG_EQ (firstRp, bRouting, "XXX");
+  NS_TEST_ASSERT_MSG_EQ (-5, first, "101");
+  NS_TEST_ASSERT_MSG_EQ (firstRp, bRouting, "102");
 }
 
 class Ipv4ListRoutingPositiveTestCase : public TestCase
@@ -103,13 +103,13 @@ Ipv4ListRoutingPositiveTestCase::DoRun (void)
   int16_t first = 3;
   int16_t second = 3;
   uint32_t num = lr->GetNRoutingProtocols ();
-  NS_TEST_ASSERT_MSG_EQ (num, 2, "XXX");
+  NS_TEST_ASSERT_MSG_EQ (num, 2, "200");
   Ptr<Ipv4RoutingProtocol> firstRp = lr->GetRoutingProtocol (0, first);
-  NS_TEST_ASSERT_MSG_EQ (10, first, "XXX");
-  NS_TEST_ASSERT_MSG_EQ (firstRp, aRouting, "XXX");
+  NS_TEST_ASSERT_MSG_EQ (10, first, "201");
+  NS_TEST_ASSERT_MSG_EQ (firstRp, aRouting, "202");
   Ptr<Ipv4RoutingProtocol> secondRp = lr->GetRoutingProtocol (1, second);
-  NS_TEST_ASSERT_MSG_EQ (5, second, "XXX");
-  NS_TEST_ASSERT_MSG_EQ (secondRp, bRouting, "XXX");
+  NS_TEST_ASSERT_MSG_EQ (5, second, "203");
+  NS_TEST_ASSERT_MSG_EQ (secondRp, bRouting, "204");
 }
 
 static class Ipv4ListRoutingTestSuite : public TestSuite

@@ -52,21 +52,21 @@ NetworkAllocatorHelperTestCase::DoRun (void)
 
   h.SetBase ("1.0.0.0", "255.0.0.0");
   network = h.NewNetwork ();
-  NS_TEST_EXPECT_MSG_EQ (network, Ipv4Address ("2.0.0.0"), "XXX");
+  NS_TEST_EXPECT_MSG_EQ (network, Ipv4Address ("2.0.0.0"), "100");
   address = h.NewAddress ();
-  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("2.0.0.1"), "XXX");
+  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("2.0.0.1"), "101");
 
   h.SetBase ("0.1.0.0", "255.255.0.0");
   network = h.NewNetwork ();
-  NS_TEST_EXPECT_MSG_EQ (network, Ipv4Address ("0.2.0.0"), "XXX");
+  NS_TEST_EXPECT_MSG_EQ (network, Ipv4Address ("0.2.0.0"), "102");
   address = h.NewAddress ();
-  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("0.2.0.1"), "XXX");
+  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("0.2.0.1"), "103");
 
   h.SetBase ("0.0.1.0", "255.255.255.0");
   network = h.NewNetwork ();
-  NS_TEST_EXPECT_MSG_EQ (network, Ipv4Address ("0.0.2.0"), "XXX");
+  NS_TEST_EXPECT_MSG_EQ (network, Ipv4Address ("0.0.2.0"), "104");
   address = h.NewAddress ();
-  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("0.0.2.1"), "XXX");
+  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("0.0.2.1"), "105");
 }
 
 class AddressAllocatorHelperTestCase : public TestCase
@@ -99,21 +99,21 @@ AddressAllocatorHelperTestCase::DoRun (void)
 
   h.SetBase ("1.0.0.0", "255.0.0.0", "0.0.0.3");
   address = h.NewAddress ();
-  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("1.0.0.3"), "XXX");
+  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("1.0.0.3"), "200");
   address = h.NewAddress ();
-  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("1.0.0.4"), "XXX");
+  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("1.0.0.4"), "201");
 
   h.SetBase ("0.1.0.0", "255.255.0.0", "0.0.0.3");
   address = h.NewAddress ();
-  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("0.1.0.3"), "XXX");
+  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("0.1.0.3"), "202");
   address = h.NewAddress ();
-  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("0.1.0.4"), "XXX");
+  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("0.1.0.4"), "203");
 
   h.SetBase ("0.0.1.0", "255.255.255.0", "0.0.0.3");
   address = h.NewAddress ();
-  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("0.0.1.3"), "XXX");
+  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("0.0.1.3"), "204");
   address = h.NewAddress ();
-  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("0.0.1.4"), "XXX");
+  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("0.0.1.4"), "205");
 }
 
 class ResetAllocatorHelperTestCase : public TestCase
@@ -143,33 +143,33 @@ ResetAllocatorHelperTestCase::DoRun (void)
 
   h.SetBase ("1.0.0.0", "255.0.0.0", "0.0.0.3");
   address = h.NewAddress ();
-  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("1.0.0.3"), "XXX");
+  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("1.0.0.3"), "301");
   address = h.NewAddress ();
-  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("1.0.0.4"), "XXX");
+  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("1.0.0.4"), "302");
   network = h.NewNetwork ();
-  NS_TEST_EXPECT_MSG_EQ (network, Ipv4Address ("2.0.0.0"), "XXX");
+  NS_TEST_EXPECT_MSG_EQ (network, Ipv4Address ("2.0.0.0"), "303");
   address = h.NewAddress ();
-  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("2.0.0.3"), "XXX");
+  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("2.0.0.3"), "304");
 
   h.SetBase ("0.1.0.0", "255.255.0.0", "0.0.0.3");
   address = h.NewAddress ();
-  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("0.1.0.3"), "XXX");
+  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("0.1.0.3"), "305");
   address = h.NewAddress ();
-  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("0.1.0.4"), "XXX");
+  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("0.1.0.4"), "306");
   network = h.NewNetwork ();
-  NS_TEST_EXPECT_MSG_EQ (network, Ipv4Address ("0.2.0.0"), "XXX");
+  NS_TEST_EXPECT_MSG_EQ (network, Ipv4Address ("0.2.0.0"), "307");
   address = h.NewAddress ();
-  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("0.2.0.3"), "XXX");
+  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("0.2.0.3"), "308");
 
   h.SetBase ("0.0.1.0", "255.255.255.0", "0.0.0.3");
   address = h.NewAddress ();
-  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("0.0.1.3"), "XXX");
+  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("0.0.1.3"), "309");
   address = h.NewAddress ();
-  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("0.0.1.4"), "XXX");
+  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("0.0.1.4"), "310");
   network = h.NewNetwork ();
-  NS_TEST_EXPECT_MSG_EQ (network, Ipv4Address ("0.0.2.0"), "XXX");
+  NS_TEST_EXPECT_MSG_EQ (network, Ipv4Address ("0.0.2.0"), "311");
   address = h.NewAddress ();
-  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("0.0.2.3"), "XXX");
+  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("0.0.2.3"), "312");
 }
 
 void
