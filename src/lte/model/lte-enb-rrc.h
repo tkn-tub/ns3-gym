@@ -341,21 +341,13 @@ private:
    * current configuration
    */
   LteRrcSap::RrcConnectionReconfiguration BuildRrcConnectionReconfiguration ();
-  
+
   /** 
    * 
    * \return a RadioResourceConfigDedicated struct built based on the
    * current configuration
    */
   LteRrcSap::RadioResourceConfigDedicated BuildRadioResourceConfigDedicated ();
-
-  /** 
-   * 
-   * \return a MeasConfig struct built based on the
-   * current configuration
-   */
-  LteRrcSap::MeasConfig BuildMeasConfig ();
-
 
   /** 
    * 
