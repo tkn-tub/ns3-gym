@@ -201,9 +201,12 @@ LteUeMeasurementsPiecewiseTestSuite1::LteUeMeasurementsPiecewiseTestSuite1 ()
    * cell, hence more thorough tests on these events are performed there.
    */
 
+  expectedTime.clear ();
+  expectedRsrp.clear ();
+
   // === Event A3 (neighbour becomes offset better than PCell) ===
 
-  // With zero offset
+  config.eventId = LteRrcSap::ReportConfigEutra::EVENT_A3;
   config.a3Offset = 0;
   AddTestCase (new LteUeMeasurementsPiecewiseTestCase1 ("Piecewise test case 1 - Event A3",
                                                         config, expectedTime, expectedRsrp),
@@ -211,7 +214,7 @@ LteUeMeasurementsPiecewiseTestSuite1::LteUeMeasurementsPiecewiseTestSuite1 ()
 
   // === Event A4 (neighbour becomes better than threshold) ===
 
-  // With normal threshold
+  config.eventId = LteRrcSap::ReportConfigEutra::EVENT_A4;
   config.threshold1.range = 54;
   AddTestCase (new LteUeMeasurementsPiecewiseTestCase1 ("Piecewise test case 1 - Event A4",
                                                         config, expectedTime, expectedRsrp),
@@ -219,7 +222,7 @@ LteUeMeasurementsPiecewiseTestSuite1::LteUeMeasurementsPiecewiseTestSuite1 ()
 
   // === Event A5 (PCell becomes worse than absolute threshold1 AND neighbour becomes better than another absolute threshold2) ===
 
-  // With normal-normal threshold
+  config.eventId = LteRrcSap::ReportConfigEutra::EVENT_A5;
   config.threshold2.range = 58;
   AddTestCase (new LteUeMeasurementsPiecewiseTestCase1 ("Piecewise test case 1 - Event A5",
                                                         config, expectedTime, expectedRsrp),
