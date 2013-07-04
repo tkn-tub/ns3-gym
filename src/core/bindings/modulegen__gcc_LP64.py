@@ -32,6 +32,8 @@ def register_types(module):
     module.add_class('CommandLine', allow_subclassing=True)
     ## system-mutex.h (module 'core'): ns3::CriticalSection [class]
     module.add_class('CriticalSection')
+    ## event-garbage-collector.h (module 'core'): ns3::EventGarbageCollector [class]
+    module.add_class('EventGarbageCollector')
     ## event-id.h (module 'core'): ns3::EventId [class]
     module.add_class('EventId')
     ## global-value.h (module 'core'): ns3::GlobalValue [class]
@@ -76,6 +78,8 @@ def register_types(module):
     module.add_class('ObjectFactory')
     ## random-variable.h (module 'core'): ns3::RandomVariable [class]
     module.add_class('RandomVariable')
+    ## random-variable-stream-helper.h (module 'core'): ns3::RandomVariableStreamHelper [class]
+    module.add_class('RandomVariableStreamHelper')
     ## rng-seed-manager.h (module 'core'): ns3::RngSeedManager [class]
     module.add_class('RngSeedManager')
     ## rng-stream.h (module 'core'): ns3::RngStream [class]
@@ -292,8 +296,6 @@ def register_types(module):
     module.add_class('StringChecker', parent=root_module['ns3::AttributeChecker'])
     ## string.h (module 'core'): ns3::StringValue [class]
     module.add_class('StringValue', parent=root_module['ns3::AttributeValue'])
-    ## nstime.h (module 'core'): ns3::TimeChecker [class]
-    module.add_class('TimeChecker', parent=root_module['ns3::AttributeChecker'])
     ## nstime.h (module 'core'): ns3::TimeValue [class]
     module.add_class('TimeValue', parent=root_module['ns3::AttributeValue'])
     ## type-id.h (module 'core'): ns3::TypeIdChecker [class]
@@ -310,6 +312,10 @@ def register_types(module):
     module.add_class('Vector3DChecker', parent=root_module['ns3::AttributeChecker'])
     ## vector.h (module 'core'): ns3::Vector3DValue [class]
     module.add_class('Vector3DValue', parent=root_module['ns3::AttributeValue'])
+    typehandlers.add_type_alias('ns3::Vector3D', 'ns3::Vector')
+    typehandlers.add_type_alias('ns3::Vector3D*', 'ns3::Vector*')
+    typehandlers.add_type_alias('ns3::Vector3D&', 'ns3::Vector&')
+    module.add_typedef(root_module['ns3::Vector3D'], 'Vector')
     typehandlers.add_type_alias('ns3::ObjectPtrContainerValue', 'ns3::ObjectVectorValue')
     typehandlers.add_type_alias('ns3::ObjectPtrContainerValue*', 'ns3::ObjectVectorValue*')
     typehandlers.add_type_alias('ns3::ObjectPtrContainerValue&', 'ns3::ObjectVectorValue&')
@@ -324,10 +330,6 @@ def register_types(module):
     typehandlers.add_type_alias('void ( * ) ( std::ostream & ) *', 'ns3::LogNodePrinter')
     typehandlers.add_type_alias('void ( * ) ( std::ostream & ) **', 'ns3::LogNodePrinter*')
     typehandlers.add_type_alias('void ( * ) ( std::ostream & ) *&', 'ns3::LogNodePrinter&')
-    typehandlers.add_type_alias('ns3::Vector3D', 'ns3::Vector')
-    typehandlers.add_type_alias('ns3::Vector3D*', 'ns3::Vector*')
-    typehandlers.add_type_alias('ns3::Vector3D&', 'ns3::Vector&')
-    module.add_typedef(root_module['ns3::Vector3D'], 'Vector')
     typehandlers.add_type_alias('ns3::Vector3DValue', 'ns3::VectorValue')
     typehandlers.add_type_alias('ns3::Vector3DValue*', 'ns3::VectorValue*')
     typehandlers.add_type_alias('ns3::Vector3DValue&', 'ns3::VectorValue&')
@@ -340,6 +342,12 @@ def register_types(module):
     typehandlers.add_type_alias('ns3::Vector3DChecker*', 'ns3::VectorChecker*')
     typehandlers.add_type_alias('ns3::Vector3DChecker&', 'ns3::VectorChecker&')
     module.add_typedef(root_module['ns3::Vector3DChecker'], 'VectorChecker')
+    
+    ## Register a nested module for the namespace CommandLineHelper
+    
+    nested_module = module.add_cpp_namespace('CommandLineHelper')
+    register_types_ns3_CommandLineHelper(nested_module)
+    
     
     ## Register a nested module for the namespace Config
     
@@ -363,6 +371,10 @@ def register_types(module):
     
     nested_module = module.add_cpp_namespace('internal')
     register_types_ns3_internal(nested_module)
+    
+
+def register_types_ns3_CommandLineHelper(module):
+    root_module = module.get_root()
     
 
 def register_types_ns3_Config(module):
@@ -392,6 +404,7 @@ def register_methods(root_module):
     register_Ns3CallbackBase_methods(root_module, root_module['ns3::CallbackBase'])
     register_Ns3CommandLine_methods(root_module, root_module['ns3::CommandLine'])
     register_Ns3CriticalSection_methods(root_module, root_module['ns3::CriticalSection'])
+    register_Ns3EventGarbageCollector_methods(root_module, root_module['ns3::EventGarbageCollector'])
     register_Ns3EventId_methods(root_module, root_module['ns3::EventId'])
     register_Ns3GlobalValue_methods(root_module, root_module['ns3::GlobalValue'])
     register_Ns3IntToType__0_methods(root_module, root_module['ns3::IntToType< 0 >'])
@@ -407,6 +420,7 @@ def register_methods(root_module):
     register_Ns3ObjectDeleter_methods(root_module, root_module['ns3::ObjectDeleter'])
     register_Ns3ObjectFactory_methods(root_module, root_module['ns3::ObjectFactory'])
     register_Ns3RandomVariable_methods(root_module, root_module['ns3::RandomVariable'])
+    register_Ns3RandomVariableStreamHelper_methods(root_module, root_module['ns3::RandomVariableStreamHelper'])
     register_Ns3RngSeedManager_methods(root_module, root_module['ns3::RngSeedManager'])
     register_Ns3RngStream_methods(root_module, root_module['ns3::RngStream'])
     register_Ns3SequentialVariable_methods(root_module, root_module['ns3::SequentialVariable'])
@@ -509,7 +523,6 @@ def register_methods(root_module):
     register_Ns3RefCountBase_methods(root_module, root_module['ns3::RefCountBase'])
     register_Ns3StringChecker_methods(root_module, root_module['ns3::StringChecker'])
     register_Ns3StringValue_methods(root_module, root_module['ns3::StringValue'])
-    register_Ns3TimeChecker_methods(root_module, root_module['ns3::TimeChecker'])
     register_Ns3TimeValue_methods(root_module, root_module['ns3::TimeValue'])
     register_Ns3TypeIdChecker_methods(root_module, root_module['ns3::TypeIdChecker'])
     register_Ns3TypeIdValue_methods(root_module, root_module['ns3::TypeIdValue'])
@@ -589,6 +602,19 @@ def register_Ns3CommandLine_methods(root_module, cls):
     cls.add_method('AddValue', 
                    'void', 
                    [param('std::string const &', 'name'), param('std::string const &', 'help'), param('ns3::Callback< bool, std::string, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')])
+    ## command-line.h (module 'core'): std::string ns3::CommandLine::GetName() const [member function]
+    cls.add_method('GetName', 
+                   'std::string', 
+                   [], 
+                   is_const=True)
+    ## command-line.h (module 'core'): void ns3::CommandLine::Parse(int argc, char * * argv) [member function]
+    cls.add_method('Parse', 
+                   'void', 
+                   [param('int', 'argc'), param('char * *', 'argv')])
+    ## command-line.h (module 'core'): void ns3::CommandLine::Usage(std::string const usage) [member function]
+    cls.add_method('Usage', 
+                   'void', 
+                   [param('std::string const', 'usage')])
     return
 
 def register_Ns3CriticalSection_methods(root_module, cls):
@@ -596,6 +622,17 @@ def register_Ns3CriticalSection_methods(root_module, cls):
     cls.add_constructor([param('ns3::CriticalSection const &', 'arg0')])
     ## system-mutex.h (module 'core'): ns3::CriticalSection::CriticalSection(ns3::SystemMutex & mutex) [constructor]
     cls.add_constructor([param('ns3::SystemMutex &', 'mutex')])
+    return
+
+def register_Ns3EventGarbageCollector_methods(root_module, cls):
+    ## event-garbage-collector.h (module 'core'): ns3::EventGarbageCollector::EventGarbageCollector(ns3::EventGarbageCollector const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::EventGarbageCollector const &', 'arg0')])
+    ## event-garbage-collector.h (module 'core'): ns3::EventGarbageCollector::EventGarbageCollector() [constructor]
+    cls.add_constructor([])
+    ## event-garbage-collector.h (module 'core'): void ns3::EventGarbageCollector::Track(ns3::EventId event) [member function]
+    cls.add_method('Track', 
+                   'void', 
+                   [param('ns3::EventId', 'event')])
     return
 
 def register_Ns3EventId_methods(root_module, cls):
@@ -973,6 +1010,18 @@ def register_Ns3RandomVariable_methods(root_module, cls):
                    'double', 
                    [], 
                    is_const=True)
+    return
+
+def register_Ns3RandomVariableStreamHelper_methods(root_module, cls):
+    ## random-variable-stream-helper.h (module 'core'): ns3::RandomVariableStreamHelper::RandomVariableStreamHelper() [constructor]
+    cls.add_constructor([])
+    ## random-variable-stream-helper.h (module 'core'): ns3::RandomVariableStreamHelper::RandomVariableStreamHelper(ns3::RandomVariableStreamHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::RandomVariableStreamHelper const &', 'arg0')])
+    ## random-variable-stream-helper.h (module 'core'): static int64_t ns3::RandomVariableStreamHelper::AssignStreams(std::string path, int64_t stream) [member function]
+    cls.add_method('AssignStreams', 
+                   'int64_t', 
+                   [param('std::string', 'path'), param('int64_t', 'stream')], 
+                   is_static=True)
     return
 
 def register_Ns3RngSeedManager_methods(root_module, cls):
@@ -2477,6 +2526,16 @@ def register_Ns3Time_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True)
+    ## nstime.h (module 'core'): static ns3::Time ns3::Time::MAX() [member function]
+    cls.add_method('MAX', 
+                   'ns3::Time', 
+                   [], 
+                   is_static=True)
+    ## nstime.h (module 'core'): static ns3::Time ns3::Time::MIN() [member function]
+    cls.add_method('MIN', 
+                   'ns3::Time', 
+                   [], 
+                   is_static=True)
     ## nstime.h (module 'core'): static void ns3::Time::SetResolution(ns3::Time::Unit resolution) [member function]
     cls.add_method('SetResolution', 
                    'void', 
@@ -4203,13 +4262,6 @@ def register_Ns3StringValue_methods(root_module, cls):
                    [param('std::string const &', 'value')])
     return
 
-def register_Ns3TimeChecker_methods(root_module, cls):
-    ## nstime.h (module 'core'): ns3::TimeChecker::TimeChecker() [constructor]
-    cls.add_constructor([])
-    ## nstime.h (module 'core'): ns3::TimeChecker::TimeChecker(ns3::TimeChecker const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::TimeChecker const &', 'arg0')])
-    return
-
 def register_Ns3TimeValue_methods(root_module, cls):
     ## nstime.h (module 'core'): ns3::TimeValue::TimeValue() [constructor]
     cls.add_constructor([])
@@ -4559,10 +4611,18 @@ def register_functions(root_module):
     module.add_function('MakeStringChecker', 
                         'ns3::Ptr< ns3::AttributeChecker const >', 
                         [])
-    ## nstime.h (module 'core'): extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeTimeChecker() [free function]
+    ## nstime.h (module 'core'): ns3::Ptr<ns3::AttributeChecker const> ns3::MakeTimeChecker() [free function]
     module.add_function('MakeTimeChecker', 
                         'ns3::Ptr< ns3::AttributeChecker const >', 
                         [])
+    ## nstime.h (module 'core'): ns3::Ptr<ns3::AttributeChecker const> ns3::MakeTimeChecker(ns3::Time const min) [free function]
+    module.add_function('MakeTimeChecker', 
+                        'ns3::Ptr< ns3::AttributeChecker const >', 
+                        [param('ns3::Time const', 'min')])
+    ## nstime.h (module 'core'): extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeTimeChecker(ns3::Time const min, ns3::Time const max) [free function]
+    module.add_function('MakeTimeChecker', 
+                        'ns3::Ptr< ns3::AttributeChecker const >', 
+                        [param('ns3::Time const', 'min'), param('ns3::Time const', 'max')])
     ## type-id.h (module 'core'): extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeTypeIdChecker() [free function]
     module.add_function('MakeTypeIdChecker', 
                         'ns3::Ptr< ns3::AttributeChecker const >', 
@@ -4697,10 +4757,19 @@ def register_functions(root_module):
                         'std::string', 
                         [], 
                         template_parameters=['unsigned char'])
+    register_functions_ns3_CommandLineHelper(module.get_submodule('CommandLineHelper'), root_module)
     register_functions_ns3_Config(module.get_submodule('Config'), root_module)
     register_functions_ns3_FatalImpl(module.get_submodule('FatalImpl'), root_module)
     register_functions_ns3_SystemPath(module.get_submodule('SystemPath'), root_module)
     register_functions_ns3_internal(module.get_submodule('internal'), root_module)
+    return
+
+def register_functions_ns3_CommandLineHelper(module, root_module):
+    ## command-line.h (module 'core'): extern bool ns3::CommandLineHelper::UserItemParse(std::string const value, bool & val) [free function]
+    module.add_function('UserItemParse', 
+                        'bool', 
+                        [param('std::string const', 'value'), param('bool &', 'val')], 
+                        template_parameters=['bool'])
     return
 
 def register_functions_ns3_Config(module, root_module):
