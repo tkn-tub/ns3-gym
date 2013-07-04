@@ -199,15 +199,15 @@ Ipv6ForwardingTest::DoRun (void)
 
   // Unicast test
   SendData (txSocket, "2001:1::2");
-  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 123, "IPv6 Forwarding on");
+  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 0, "IPv6 Forwarding off");
 
   m_receivedPacket->RemoveAllByteTags ();
   m_receivedPacket = 0;
 
   Ptr<Ipv6> ipv6 = fwNode->GetObject<Ipv6> ();
-  ipv6->SetAttribute("IpForward", BooleanValue (false));
+  ipv6->SetAttribute("IpForward", BooleanValue (true));
   SendData (txSocket, "2001:1::2");
-  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 0, "IPv6 Forwarding off");
+  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 123, "IPv6 Forwarding on");
 
   m_receivedPacket->RemoveAllByteTags ();
 
