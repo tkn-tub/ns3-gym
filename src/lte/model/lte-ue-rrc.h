@@ -260,7 +260,13 @@ private:
  
   // internal methods
   void ApplyRadioResourceConfigDedicated (LteRrcSap::RadioResourceConfigDedicated rrcd);
+  /// 3GPP TS 36.331 section 5.5.2 Measurement configuration
   void ApplyMeasConfig (LteRrcSap::MeasConfig mc);
+  ///  3GPP TS 36.331 section 5.5.3.2 Layer 3 filtering
+  void Layer3Filtering (uint16_t cellId, double rsrp, double rsrq);
+  /// 3GPP TS 36.331 section 5.5.4.1 Measurement report triggering - General
+  void MeasurementReportTriggering (uint8_t measId);
+  /// 3GPP TS 36.331 section 5.5.5 Measurement reporting
   void SendMeasurementReport (uint8_t measId);
   void StartConnection ();
   void LeaveConnectedMode ();
@@ -325,10 +331,11 @@ private:
 
 
   /**
-   * Includes the accumulated configuration of the measurements to be
-   * performed by the UE, see TS 36.331 section 7.1. Also note that some
-   * optional variables in the specs are omitted.
-   * 
+   * \brief Includes the accumulated configuration of the measurements to be
+   *        performed by the UE.
+   *
+   * Based on 3GPP TS 36.331 section 7.1. Also note that some optional variables
+   * in the specification are omitted.
    */
   struct VarMeasConfig
   {
@@ -339,20 +346,32 @@ private:
     double aRsrp;
     double aRsrq;
   };
-  
+
+  VarMeasConfig m_varMeasConfig;
+
+  /**
+   * \brief Includes information about a measurement for which the triggering
+   *        conditions have been met.
+   *
+   * Based on 3GPP TS 36.331 section 7.1.
+   */
   struct VarMeasReport
   {
     uint8_t measId;
-    std::set<uint16_t> cellsTriggeredList; // note: only EUTRA is
-                                            // supported
+    std::set<uint16_t> cellsTriggeredList; // note: only E-UTRA is supported.
     uint32_t numberOfReportsSent;
     EventId periodicReportTimer;
   };
-  
-  VarMeasConfig m_varMeasConfig;
+
   //       measId
   std::map<uint8_t, VarMeasReport> m_varMeasReportList;
-  
+
+  typedef std::list<uint16_t> ConcernedCells_t;
+
+  void VarMeasReportListAdd (uint8_t measId, ConcernedCells_t enteringCells);
+  void VarMeasReportListErase (uint8_t measId, ConcernedCells_t leavingCells,
+                               bool reportOnLeave);
+
   struct MeasValues
   {
     double rsrp;
@@ -362,9 +381,8 @@ private:
 
   /////////cellId
   std::map<uint16_t, MeasValues> m_storedMeasValues;
-  
 
-};
+}; // end of class LteUeRrc
 
 
 } // namespace ns3
