@@ -1170,8 +1170,6 @@ TriangularRandomVariable::GetTypeId (void)
   return tid;
 }
 TriangularRandomVariable::TriangularRandomVariable ()
-  :
-  m_mode (0.5)
 {
   // m_mean, m_min, and m_max are initialized after constructor by
   // attributes
