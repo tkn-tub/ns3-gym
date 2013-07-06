@@ -1,7 +1,6 @@
 #include <iostream>
 #include <algorithm>
 #include <map>
-#include <limits.h>
 
 #include "ns3/object.h"
 #include "ns3/pointer.h"

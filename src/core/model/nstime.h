@@ -25,7 +25,7 @@
 #include "attribute-helper.h"
 #include "int64x64.h"
 #include <stdint.h>
-#include <limits.h>
+#include <climits>
 #include <cmath>
 #include <ostream>
 
