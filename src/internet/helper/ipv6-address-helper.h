@@ -175,29 +175,6 @@ public:
    */
   Ipv6InterfaceContainer AssignWithoutAddress (const NetDeviceContainer &c);
 
-private:
-  /**
-   * \internal
-   * \brief The IPv6 network.
-   */
-  uint8_t m_network[16];
-
-  /**
-   * \internal
-   * \brief The prefix (mask).
-   */
-  uint8_t m_prefix[16];
-
-  /**
-   * \internal
-   * \brief The base interface ID
-   */
-  uint64_t m_base;
-  /**
-   * \internal
-   * \brief The current interface ID
-   */
-  uint64_t m_iid;
 };
 
 } /* namespace ns3 */
