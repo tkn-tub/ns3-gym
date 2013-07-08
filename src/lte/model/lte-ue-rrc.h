@@ -312,17 +312,17 @@ private:
   uint16_t m_dlEarfcn;  /**< downlink carrier frequency */
   uint16_t m_ulEarfcn;  /**< uplink carrier frequency */
 
-  //             imsi      cellid    rnti   
+  //             imsi      cellid    rnti
   TracedCallback<uint64_t, uint16_t, uint16_t, State, State> m_stateTransitionTrace;
-  //             imsi      cellid    rnti   
+  //             imsi      cellid    rnti
   TracedCallback<uint64_t, uint16_t, uint16_t> m_randomAccessSuccessfulTrace;
-  //             imsi      cellid    rnti   
+  //             imsi      cellid    rnti
   TracedCallback<uint64_t, uint16_t, uint16_t> m_connectionEstablishedTrace;
-  //             imsi      cellid    rnti   
+  //             imsi      cellid    rnti
   TracedCallback<uint64_t, uint16_t, uint16_t> m_connectionReconfigurationTrace;
   //             imsi      cellid    rnti     targetCellId
   TracedCallback<uint64_t, uint16_t, uint16_t, uint16_t> m_handoverStartTrace;
-  //             imsi      cellid    rnti    
+  //             imsi      cellid    rnti
   TracedCallback<uint64_t, uint16_t, uint16_t> m_handoverEndOkTrace;
 
   bool m_connectionPending; /**< true if a connection request by upper layers is pending */
@@ -381,6 +381,18 @@ private:
 
   /////////cellId
   std::map<uint16_t, MeasValues> m_storedMeasValues;
+
+  struct PendingTrigger_t
+  {
+    uint8_t measId;
+    ConcernedCells_t concernedCells;
+    EventId timer;
+  };
+
+  //       measId
+  std::map<uint8_t, std::list<PendingTrigger_t> > m_enteringTriggerQueue;
+  //       measId
+  std::map<uint8_t, std::list<PendingTrigger_t> > m_leavingTriggerQueue;
 
 }; // end of class LteUeRrc
 
