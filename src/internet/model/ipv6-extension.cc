@@ -54,7 +54,7 @@ TypeId Ipv6Extension::GetTypeId ()
                    UintegerValue (0),
                    MakeUintegerAccessor (&Ipv6Extension::GetExtensionNumber),
                    MakeUintegerChecker<uint8_t> ())
-    .AddTraceSource ("Drop", "Drop ipv6 packet",
+    .AddTraceSource ("Drop", "Drop IPv6 packet",
                      MakeTraceSourceAccessor (&Ipv6Extension::m_dropTrace))
   ;
   return tid;

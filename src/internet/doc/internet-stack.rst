@@ -14,48 +14,83 @@ of TCP/IPv4- and IPv6-related components. These include IPv4, ARP, UDP, TCP,
 IPv6, Neighbor Discovery, and other related protocols.
 
 Internet Nodes are not subclasses of class Node; they are simply Nodes that have
-had a bunch of IPv4-related objects aggregated to them. They can be put together
+had a bunch of IP-related objects aggregated to them. They can be put together
 by hand, or via a helper function :cpp:func:`InternetStackHelper::Install ()`
 which does the following to all nodes passed in as arguments:::
 
     void
     InternetStackHelper::Install (Ptr<Node> node) const
     {
-      if (node->GetObject<Ipv4> () != 0)
+      if (m_ipv4Enabled)
         {
-          NS_FATAL_ERROR ("InternetStackHelper::Install(): Aggregating "
-                          "an InternetStack to a node with an existing Ipv4 object");
-          return;
+          /* IPv4 stack */
+          if (node->GetObject<Ipv4> () != 0)
+            {
+              NS_FATAL_ERROR ("InternetStackHelper::Install (): Aggregating " 
+                              "an InternetStack to a node with an existing Ipv4 object");
+              return;
+            }
+
+          CreateAndAggregateObjectFromTypeId (node, "ns3::ArpL3Protocol");
+          CreateAndAggregateObjectFromTypeId (node, "ns3::Ipv4L3Protocol");
+          CreateAndAggregateObjectFromTypeId (node, "ns3::Icmpv4L4Protocol");
+          // Set routing
+          Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
+          Ptr<Ipv4RoutingProtocol> ipv4Routing = m_routing->Create (node);
+          ipv4->SetRoutingProtocol (ipv4Routing);
         }
 
-      CreateAndAggregateObjectFromTypeId (node, "ns3::ArpL3Protocol");
-      CreateAndAggregateObjectFromTypeId (node, "ns3::Ipv4L3Protocol");
-      CreateAndAggregateObjectFromTypeId (node, "ns3::Icmpv4L4Protocol");
-      CreateAndAggregateObjectFromTypeId (node, "ns3::UdpL4Protocol");
-      node->AggregateObject (m_tcpFactory.Create<Object> ());
-      Ptr<PacketSocketFactory> factory = CreateObject<PacketSocketFactory> ();
-      node->AggregateObject (factory);
-      // Set routing
-      Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
-      Ptr<Ipv4RoutingProtocol> ipv4Routing = m_routing->Create (node);
-      ipv4->SetRoutingProtocol (ipv4Routing);
+      if (m_ipv6Enabled)
+        {
+          /* IPv6 stack */
+          if (node->GetObject<Ipv6> () != 0)
+            {
+              NS_FATAL_ERROR ("InternetStackHelper::Install (): Aggregating " 
+                              "an InternetStack to a node with an existing Ipv6 object");
+              return;
+            }
+
+          CreateAndAggregateObjectFromTypeId (node, "ns3::Ipv6L3Protocol");
+          CreateAndAggregateObjectFromTypeId (node, "ns3::Icmpv6L4Protocol");
+          // Set routing
+          Ptr<Ipv6> ipv6 = node->GetObject<Ipv6> ();
+          Ptr<Ipv6RoutingProtocol> ipv6Routing = m_routingv6->Create (node);
+          ipv6->SetRoutingProtocol (ipv6Routing);
+
+          /* register IPv6 extensions and options */
+          ipv6->RegisterExtensions ();
+          ipv6->RegisterOptions ();
+        }
+
+      if (m_ipv4Enabled || m_ipv6Enabled)
+        {
+          /* UDP and TCP stacks */
+          CreateAndAggregateObjectFromTypeId (node, "ns3::UdpL4Protocol");
+          node->AggregateObject (m_tcpFactory.Create<Object> ());
+          Ptr<PacketSocketFactory> factory = CreateObject<PacketSocketFactory> ();
+          node->AggregateObject (factory);
+        }
     }
 
 Where multiple implementations exist in |ns3| (TCP, IP routing), these objects
 are added by a factory object (TCP) or by a routing helper (m_routing).
 
 Note that the routing protocol is configured and set outside this
-function. By default, the following protocols are added to Ipv4:::
+function. By default, the following protocols are added:::
 
-    InternetStackHelper::InternetStackHelper ()
+    void InternetStackHelper::Initialize ()
     {
       SetTcp ("ns3::TcpL4Protocol");
-      static Ipv4StaticRoutingHelper staticRouting;
-      static Ipv4GlobalRoutingHelper globalRouting;
-      static Ipv4ListRoutingHelper listRouting;
+      Ipv4StaticRoutingHelper staticRouting;
+      Ipv4GlobalRoutingHelper globalRouting;
+      Ipv4ListRoutingHelper listRouting;
+      Ipv6ListRoutingHelper listRoutingv6;
+      Ipv6StaticRoutingHelper staticRoutingv6;
       listRouting.Add (staticRouting, 0);
       listRouting.Add (globalRouting, -10);
+      listRoutingv6.Add (staticRoutingv6, 0);
       SetRoutingHelper (listRouting);
+      SetRoutingHelper (listRoutingv6);
     }
 
 By default, IPv4 and IPv6 are enabled.
@@ -63,14 +98,14 @@ By default, IPv4 and IPv6 are enabled.
 Internet Node structure
 +++++++++++++++++++++++
 
-An IPv4-capable Node (an |ns3| Node augmented by aggregation to have one or more
+An IP-capable Node (an |ns3| Node augmented by aggregation to have one or more
 IP stacks) has the following internal structure.
 
 Layer-3 protocols
 ~~~~~~~~~~~~~~~~~
 
 At the lowest layer, sitting above the NetDevices, are the "layer 3" protocols,
-including IPv4, IPv6, and ARP. The class
+including IPv4, IPv6, ARP and so on. The class
 :cpp:class:`Ipv4L3Protocol` is an implementation class whose public interface is
 typically class :cpp:class:`Ipv4`, but the
 Ipv4L3Protocol public API is also used internally at present.
@@ -211,11 +246,11 @@ To summarize, internally, the UDP implementation is organized as follows:
   local address, destination port, destination address) associated with the
   socket, and a receive callback for the socket.
 
-Ipv4-capable node interfaces
-++++++++++++++++++++++++++++
+IP-capable node interfaces
+++++++++++++++++++++++++++
 
 Many of the implementation details, or internal objects themselves, of
-Ipv4-capable Node objects are not exposed at the simulator public API. This
+IP-capable Node objects are not exposed at the simulator public API. This
 allows for different implementations; for instance, replacing the native |ns3|
 models with ported TCP/IP stack code. 
  
