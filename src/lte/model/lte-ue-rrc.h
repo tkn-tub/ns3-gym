@@ -414,6 +414,11 @@ private:
   //       measId
   std::map<uint8_t, std::list<PendingTrigger_t> > m_leavingTriggerQueue;
 
+  void CancelEnteringTrigger (uint8_t measId);
+  void CancelEnteringTrigger (uint8_t measId, uint16_t cellId);
+  void CancelLeavingTrigger (uint8_t measId);
+  void CancelLeavingTrigger (uint8_t measId, uint16_t cellId);
+
 }; // end of class LteUeRrc
 
 

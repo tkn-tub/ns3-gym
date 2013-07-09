@@ -428,6 +428,16 @@ LteUeMeasurementsPiecewiseTestSuite1::LteUeMeasurementsPiecewiseTestSuite1 ()
                                                         config, expectedTime, expectedRsrp),
                TestCase::EXTENSIVE);
 
+  // With super time-to-trigger
+  config.timeToTrigger = 256;
+  expectedTime.clear ();
+  expectedTime << 456 << 576 << 696 << 816 << 936 << 1056 << 1176 << 1296 << 1416 << 1536;
+  expectedRsrp.clear ();
+  expectedRsrp << 57 << 57 << 66 << 47 << 47 << 66 << 66 << 57 << 51 << 51;
+  AddTestCase (new LteUeMeasurementsPiecewiseTestCase1 ("Piecewise test case 1 - Event A1 with super time-to-trigger",
+                                                        config, expectedTime, expectedRsrp),
+               TestCase::EXTENSIVE);
+
   // With hysteresis
   config.hysteresis = 8;
   config.timeToTrigger = 0;
@@ -488,6 +498,16 @@ LteUeMeasurementsPiecewiseTestSuite1::LteUeMeasurementsPiecewiseTestSuite1 ()
   expectedRsrp.clear ();
   expectedRsrp << 47 << 66 << 51 << 47 << 47 << 51 << 57;
   AddTestCase (new LteUeMeasurementsPiecewiseTestCase1 ("Piecewise test case 1 - Event A2 with long time-to-trigger",
+                                                        config, expectedTime, expectedRsrp),
+               TestCase::TAKES_FOREVER);
+
+  // With super time-to-trigger
+  config.timeToTrigger = 256;
+  expectedTime.clear ();
+  expectedTime << 1656 << 1776 << 1896 << 2016 << 2136;
+  expectedRsrp.clear ();
+  expectedRsrp << 47 << 47 << 51 << 57 << 57;
+  AddTestCase (new LteUeMeasurementsPiecewiseTestCase1 ("Piecewise test case 1 - Event A2 with super time-to-trigger",
                                                         config, expectedTime, expectedRsrp),
                TestCase::QUICK);
 
@@ -910,15 +930,36 @@ LteUeMeasurementsPiecewiseTestSuite2::LteUeMeasurementsPiecewiseTestSuite2 ()
                                                         config, expectedTime, expectedRsrp),
                TestCase::EXTENSIVE);
 
+  // With short time-to-trigger
+  config.timeToTrigger = 160;
+  expectedTime.clear ();
+  expectedTime << 960 << 1560 << 1800 << 2040;
+  expectedRsrp.clear ();
+  expectedRsrp << 52 << 56 << 56 << 59;
+  AddTestCase (new LteUeMeasurementsPiecewiseTestCase2 ("Piecewise test case 2 - Event A3 with short time-to-trigger",
+                                                        config, expectedTime, expectedRsrp),
+               TestCase::EXTENSIVE);
+
+  // With super time-to-trigger
+  config.timeToTrigger = 320;
+  expectedTime.clear ();
+  expectedTime << 1720 << 1960 << 2200;
+  expectedRsrp.clear ();
+  expectedRsrp << 52 << 56 << 72;
+  AddTestCase (new LteUeMeasurementsPiecewiseTestCase2 ("Piecewise test case 2 - Event A3 with super time-to-trigger",
+                                                        config, expectedTime, expectedRsrp),
+               TestCase::QUICK);
+
   // With hysteresis
   config.hysteresis = 6;
+  config.timeToTrigger = 0;
   expectedTime.clear ();
   expectedTime << 800 << 1600 << 1840 << 2080;
   expectedRsrp.clear ();
   expectedRsrp << 52 << 52 << 56 << 59;
   AddTestCase (new LteUeMeasurementsPiecewiseTestCase2 ("Piecewise test case 2 - Event A3 with hysteresis",
                                                         config, expectedTime, expectedRsrp),
-               TestCase::QUICK);
+               TestCase::EXTENSIVE);
 
   // With negative offset
   config.a3Offset = -7;
@@ -955,8 +996,29 @@ LteUeMeasurementsPiecewiseTestSuite2::LteUeMeasurementsPiecewiseTestSuite2 ()
                                                         config, expectedTime, expectedRsrp),
                TestCase::EXTENSIVE);
 
+  // With short time-to-trigger
+  config.timeToTrigger = 160;
+  expectedTime.clear ();
+  expectedTime << 560 << 960 << 1560 << 1800 << 2040;
+  expectedRsrp.clear ();
+  expectedRsrp << 63 << 52 << 56 << 56 << 59;
+  AddTestCase (new LteUeMeasurementsPiecewiseTestCase2 ("Piecewise test case 2 - Event A4 with short time-to-trigger",
+                                                        config, expectedTime, expectedRsrp),
+               TestCase::QUICK);
+
+  // With super time-to-trigger
+  config.timeToTrigger = 320;
+  expectedTime.clear ();
+  expectedTime << 1720 << 1960 << 2200;
+  expectedRsrp.clear ();
+  expectedRsrp << 52 << 56 << 72;
+  AddTestCase (new LteUeMeasurementsPiecewiseTestCase2 ("Piecewise test case 2 - Event A4 with super time-to-trigger",
+                                                        config, expectedTime, expectedRsrp),
+               TestCase::TAKES_FOREVER);
+
   // With hysteresis
   config.hysteresis = 6;
+  config.timeToTrigger = 0;
   expectedTime.clear ();
   expectedTime << 400 << 800 << 1600 << 1840 << 2080;
   expectedRsrp.clear ();
@@ -1019,8 +1081,29 @@ LteUeMeasurementsPiecewiseTestSuite2::LteUeMeasurementsPiecewiseTestSuite2 ()
                                                         config, expectedTime, expectedRsrp),
                TestCase::EXTENSIVE);
 
+  // With short time-to-trigger
+  config.timeToTrigger = 160;
+  expectedTime.clear ();
+  expectedTime << 960 << 1560 << 1800 << 2040;
+  expectedRsrp.clear ();
+  expectedRsrp << 52 << 56 << 56 << 59;
+  AddTestCase (new LteUeMeasurementsPiecewiseTestCase2 ("Piecewise test case 2 - Event A5 with short time-to-trigger",
+                                                        config, expectedTime, expectedRsrp),
+               TestCase::TAKES_FOREVER);
+
+  // With super time-to-trigger
+  config.timeToTrigger = 320;
+  expectedTime.clear ();
+  expectedTime << 1720 << 1960 << 2200;
+  expectedRsrp.clear ();
+  expectedRsrp << 52 << 56 << 72;
+  AddTestCase (new LteUeMeasurementsPiecewiseTestCase2 ("Piecewise test case 2 - Event A5 with super time-to-trigger",
+                                                        config, expectedTime, expectedRsrp),
+               TestCase::QUICK);
+
   // With hysteresis
   config.hysteresis = 6;
+  config.timeToTrigger = 0;
   expectedTime.clear ();
   expectedTime << 800 << 1600 << 1840 << 2080;
   expectedRsrp.clear ();

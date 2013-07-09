@@ -1247,34 +1247,6 @@ LteUeRrc::MeasurementReportTriggering (uint8_t measId)
                  "only triggerType == event is supported");
   // only EUTRA is supported, no need to check for it
 
-  std::map<uint8_t, std::list<PendingTrigger_t> >::iterator
-    enteringTriggerIt = m_enteringTriggerQueue.find (measId);
-  NS_ASSERT (enteringTriggerIt != m_enteringTriggerQueue.end ());
-  std::map<uint8_t, std::list<PendingTrigger_t> >::iterator
-    leavingTriggerIt = m_leavingTriggerQueue.find (measId);
-  NS_ASSERT (leavingTriggerIt != m_leavingTriggerQueue.end ());
-
-  //  // TODO: remove this when debugging is finished
-  //  std::ostringstream oss;
-  //  oss << " enteringTriggerQueue=[";
-  //  std::list<PendingTrigger_t>::iterator it1;
-  //  for (it1 = enteringTriggerIt->second.begin ();
-  //    it1 != enteringTriggerIt->second.end ();
-  //    ++it1)
-  //    {
-  //      oss << " " << Simulator::GetDelayLeft (it1->timer).GetSeconds ();
-  //    }
-  //  oss << " ]" << " leavingTriggerQueue=[";
-  //  std::list<PendingTrigger_t>::iterator it2;
-  //  for (it2 = leavingTriggerIt->second.begin ();
-  //    it2 != leavingTriggerIt->second.end ();
-  //    ++it2)
-  //    {
-  //      oss << " " << Simulator::GetDelayLeft (it2->timer).GetSeconds ();
-  //    }
-  //  oss << " ]";
-  //  NS_LOG_DEBUG (this << oss.str ());
-
   bool eventEntryCondApplicable = false;
   bool eventLeavingCondApplicable = false;
 
@@ -1330,21 +1302,9 @@ LteUeRrc::MeasurementReportTriggering (uint8_t measId)
                            != measReportIt->second.cellsTriggeredList.end ());
               }
           }
-        else if (!enteringTriggerIt->second.empty ())
+        else if (reportConfigEutra.timeToTrigger > 0)
           {
-            // cancel all time-to-trigger timers
-            std::list<PendingTrigger_t>::iterator pendingTriggerIt;
-            for (pendingTriggerIt = enteringTriggerIt->second.begin ();
-                 pendingTriggerIt != enteringTriggerIt->second.end ();
-                 ++pendingTriggerIt)
-              {
-                NS_ASSERT (pendingTriggerIt->measId == measId);
-                NS_LOG_LOGIC (this << " canceling time-to-trigger event at "
-                                   << Simulator::GetDelayLeft (pendingTriggerIt->timer).GetSeconds ());
-                Simulator::Cancel (pendingTriggerIt->timer);
-              }
-
-            enteringTriggerIt->second.clear ();
+            CancelEnteringTrigger (measId);
           }
 
         // Inequality A1-2 (Leaving condition): Ms + Hys < Thresh
@@ -1360,21 +1320,9 @@ LteUeRrc::MeasurementReportTriggering (uint8_t measId)
                 eventLeavingCondApplicable = true;
               }
           }
-        else if (!leavingTriggerIt->second.empty ())
+        else if (reportConfigEutra.timeToTrigger > 0)
           {
-            // cancel all time-to-trigger timers
-            std::list<PendingTrigger_t>::iterator pendingTriggerIt;
-            for (pendingTriggerIt = leavingTriggerIt->second.begin ();
-                 pendingTriggerIt != leavingTriggerIt->second.end ();
-                 ++pendingTriggerIt)
-              {
-                NS_ASSERT (pendingTriggerIt->measId == measId);
-                NS_LOG_LOGIC (this << " canceling time-to-trigger event at "
-                                   << Simulator::GetDelayLeft (pendingTriggerIt->timer).GetSeconds ());
-                Simulator::Cancel (pendingTriggerIt->timer);
-              }
-
-            leavingTriggerIt->second.clear ();
+            CancelLeavingTrigger (measId);
           }
 
         NS_LOG_LOGIC (this << " event A1: serving cell " << m_cellId
@@ -1417,24 +1365,41 @@ LteUeRrc::MeasurementReportTriggering (uint8_t measId)
             break;
           }
 
-        bool hasTriggered = isMeasIdInReportList
-          && (measReportIt->second.cellsTriggeredList.find (m_cellId)
-              != measReportIt->second.cellsTriggeredList.end ());
-
         // Inequality A2-1 (Entering condition): Ms + Hys < Thresh
         bool entryCond = ms + hys < thresh;
-        if (entryCond && !hasTriggered)
+
+        if (entryCond)
           {
-            concernedCellsEntry.push_back (m_cellId);
-            eventEntryCondApplicable = true;
+            if (!isMeasIdInReportList)
+              {
+                concernedCellsEntry.push_back (m_cellId);
+                eventEntryCondApplicable = true;
+              }
+            else
+              {
+                NS_ASSERT (measReportIt->second.cellsTriggeredList.find (m_cellId)
+                           != measReportIt->second.cellsTriggeredList.end ());
+              }
+          }
+        else if (reportConfigEutra.timeToTrigger > 0)
+          {
+            CancelEnteringTrigger (measId);
           }
 
         // Inequality A2-2 (Leaving condition): Ms - Hys > Thresh
         bool leavingCond = ms - hys > thresh;
-        if (leavingCond && hasTriggered)
+
+        if (leavingCond)
           {
-            concernedCellsLeaving.push_back (m_cellId);
-            eventLeavingCondApplicable = true;
+            if (isMeasIdInReportList)
+              {
+                concernedCellsLeaving.push_back (m_cellId);
+                eventLeavingCondApplicable = true;
+              }
+          }
+        else if (reportConfigEutra.timeToTrigger > 0)
+          {
+            CancelLeavingTrigger (measId);
           }
 
         NS_LOG_LOGIC (this << " event A2: serving cell " << m_cellId
@@ -1510,18 +1475,34 @@ LteUeRrc::MeasurementReportTriggering (uint8_t measId)
 
             // Inequality A3-1 (Entering condition): Mn + Ofn + Ocn - Hys > Mp + Ofp + Ocp + Off
             bool entryCond = mn + ofn + ocn - hys > mp + ofp + ocp + off;
-            if (entryCond && !hasTriggered)
+
+            if (entryCond)
               {
-                concernedCellsEntry.push_back (cellId);
-                eventEntryCondApplicable = true;
+                if (!hasTriggered)
+                  {
+                    concernedCellsEntry.push_back (cellId);
+                    eventEntryCondApplicable = true;
+                  }
+              }
+            else if (reportConfigEutra.timeToTrigger > 0)
+              {
+                CancelEnteringTrigger (measId, cellId);
               }
 
             // Inequality A3-2 (Leaving condition): Mn + Ofn + Ocn + Hys < Mp + Ofp + Ocp + Off
             bool leavingCond = mn + ofn + ocn + hys < mp + ofp + ocp + off;
-            if (leavingCond && hasTriggered)
+
+            if (leavingCond)
               {
-                concernedCellsLeaving.push_back (cellId);
-                eventLeavingCondApplicable = true;
+                if (hasTriggered)
+                  {
+                    concernedCellsLeaving.push_back (cellId);
+                    eventLeavingCondApplicable = true;
+                  }
+              }
+            else if (reportConfigEutra.timeToTrigger > 0)
+              {
+                CancelLeavingTrigger (measId, cellId);
               }
 
             NS_LOG_LOGIC (this << " event A3: neighbor cell " << cellId
@@ -1595,18 +1576,34 @@ LteUeRrc::MeasurementReportTriggering (uint8_t measId)
 
             // Inequality A4-1 (Entering condition): Mn + Ofn + Ocn - Hys > Thresh
             bool entryCond = mn + ofn + ocn - hys > thresh;
-            if (entryCond && !hasTriggered)
+
+            if (entryCond)
               {
-                concernedCellsEntry.push_back (cellId);
-                eventEntryCondApplicable = true;
+                if (!hasTriggered)
+                  {
+                    concernedCellsEntry.push_back (cellId);
+                    eventEntryCondApplicable = true;
+                  }
+              }
+            else if (reportConfigEutra.timeToTrigger > 0)
+              {
+                CancelEnteringTrigger (measId, cellId);
               }
 
             // Inequality A4-2 (Leaving condition): Mn + Ofn + Ocn + Hys < Thresh
             bool leavingCond = mn + ofn + ocn + hys < thresh;
-            if (leavingCond && hasTriggered)
+
+            if (leavingCond)
               {
-                concernedCellsLeaving.push_back (cellId);
-                eventLeavingCondApplicable = true;
+                if (hasTriggered)
+                  {
+                    concernedCellsLeaving.push_back (cellId);
+                    eventLeavingCondApplicable = true;
+                  }
+              }
+            else if (reportConfigEutra.timeToTrigger > 0)
+              {
+                CancelLeavingTrigger (measId, cellId);
               }
 
             NS_LOG_LOGIC (this << " event A4: neighbor cell " << cellId
@@ -1664,6 +1661,7 @@ LteUeRrc::MeasurementReportTriggering (uint8_t measId)
 
         // Inequality A5-1 (Entering condition 1): Mp + Hys < Thresh1
         bool entryCond = mp + hys < thresh1;
+
         if (entryCond)
           {
             for (std::map<uint16_t, MeasValues>::iterator storedMeasIt = m_storedMeasValues.begin ();
@@ -1694,11 +1692,20 @@ LteUeRrc::MeasurementReportTriggering (uint8_t measId)
                       != measReportIt->second.cellsTriggeredList.end ());
 
                 // Inequality A5-2 (Entering condition 2): Mn + Ofn + Ocn - Hys > Thresh2
+
                 entryCond = mn + ofn + ocn - hys > thresh2;
-                if (entryCond && !hasTriggered)
+
+                if (entryCond)
                   {
-                    concernedCellsEntry.push_back (cellId);
-                    eventEntryCondApplicable = true;
+                    if (!hasTriggered)
+                      {
+                        concernedCellsEntry.push_back (cellId);
+                        eventEntryCondApplicable = true;
+                      }
+                  }
+                else if (reportConfigEutra.timeToTrigger > 0)
+                  {
+                    CancelEnteringTrigger (measId, cellId);
                   }
 
                 NS_LOG_LOGIC (this << " event A5: neighbor cell " << cellId
@@ -1715,33 +1722,101 @@ LteUeRrc::MeasurementReportTriggering (uint8_t measId)
             NS_LOG_LOGIC (this << " event A5: serving cell " << m_cellId
                                << " mp=" << mp << " thresh1=" << thresh1
                                << " entryCond=" << entryCond);
+
+            if (reportConfigEutra.timeToTrigger > 0)
+              {
+                CancelEnteringTrigger (measId);
+              }
           }
 
         if (isMeasIdInReportList)
           {
             // Inequality A5-3 (Leaving condition 1): Mp - Hys > Thresh1
             bool leavingCond = mp - hys > thresh1;
+
             if (leavingCond)
               {
-                // leaving condition 2 does not have to be checked
-
-                for (std::map<uint16_t, MeasValues>::iterator storedMeasIt = m_storedMeasValues.begin ();
-                     storedMeasIt != m_storedMeasValues.end ();
-                     ++storedMeasIt)
+                if (reportConfigEutra.timeToTrigger == 0)
                   {
-                    uint16_t cellId = storedMeasIt->first;
-                    if (cellId == m_cellId)
-                      {
-                        continue;
-                      }
+                    // leaving condition #2 does not have to be checked
 
-                    if (measReportIt->second.cellsTriggeredList.find (cellId)
-                        != measReportIt->second.cellsTriggeredList.end ())
+                    for (std::map<uint16_t, MeasValues>::iterator storedMeasIt = m_storedMeasValues.begin ();
+                         storedMeasIt != m_storedMeasValues.end ();
+                         ++storedMeasIt)
                       {
-                        concernedCellsLeaving.push_back (cellId);
-                        eventLeavingCondApplicable = true;
+                        uint16_t cellId = storedMeasIt->first;
+                        if (cellId == m_cellId)
+                          {
+                            continue;
+                          }
+
+                        if (measReportIt->second.cellsTriggeredList.find (cellId)
+                            != measReportIt->second.cellsTriggeredList.end ())
+                          {
+                            concernedCellsLeaving.push_back (cellId);
+                            eventLeavingCondApplicable = true;
+                          }
                       }
-                  }
+                  } // end of if (reportConfigEutra.timeToTrigger == 0)
+                else
+                  {
+                    // leaving condition #2 has to be checked to cancel time-to-trigger
+
+                    for (std::map<uint16_t, MeasValues>::iterator storedMeasIt = m_storedMeasValues.begin ();
+                         storedMeasIt != m_storedMeasValues.end ();
+                         ++storedMeasIt)
+                      {
+                        uint16_t cellId = storedMeasIt->first;
+                        if (cellId == m_cellId)
+                          {
+                            continue;
+                          }
+
+                        if (measReportIt->second.cellsTriggeredList.find (cellId)
+                            != measReportIt->second.cellsTriggeredList.end ())
+                          {
+                            switch (reportConfigEutra.triggerQuantity)
+                              {
+                              case LteRrcSap::ReportConfigEutra::RSRP:
+                                mn = storedMeasIt->second.rsrp;
+                                break;
+                              case LteRrcSap::ReportConfigEutra::RSRQ:
+                                mn = storedMeasIt->second.rsrq;
+                                break;
+                              default:
+                                NS_FATAL_ERROR ("unsupported triggerQuantity");
+                                break;
+                              }
+
+                            // Inequality A5-4 (Leaving condition 2): Mn + Ofn + Ocn + Hys < Thresh2
+
+                            leavingCond = mn + ofn + ocn + hys < thresh2;
+
+                            if (!leavingCond)
+                              {
+                                CancelLeavingTrigger (measId, cellId);
+                              }
+
+                            /*
+                             * Whatever the result of leaving condition #2, this
+                             * cell is still "in", because leaving condition #1
+                             * is already true.
+                             */
+                            concernedCellsLeaving.push_back (cellId);
+                            eventLeavingCondApplicable = true;
+
+                            NS_LOG_LOGIC (this << " event A5: neighbor cell " << cellId
+                                               << " mn=" << mn << " mp=" << mp
+                                               << " thresh2=" << thresh2
+                                               << " thresh1=" << thresh1
+                                               << " leavingCond=" << leavingCond);
+
+                          } // end of if (measReportIt->second.cellsTriggeredList.find (cellId)
+                            //            != measReportIt->second.cellsTriggeredList.end ())
+
+                      } // end of for (storedMeasIt)
+
+                  } // end of else of if (reportConfigEutra.timeToTrigger == 0)
 
                 NS_LOG_LOGIC (this << " event A5: serving cell " << m_cellId
                                    << " mp=" << mp << " thresh1=" << thresh1
@@ -1750,6 +1825,13 @@ LteUeRrc::MeasurementReportTriggering (uint8_t measId)
               } // end of if (leavingCond)
             else
               {
+                if (reportConfigEutra.timeToTrigger > 0)
+                  {
+                    CancelLeavingTrigger (measId);
+                  }
+
+                // check leaving condition #2
+
                 for (std::map<uint16_t, MeasValues>::iterator storedMeasIt = m_storedMeasValues.begin ();
                      storedMeasIt != m_storedMeasValues.end ();
                      ++storedMeasIt)
@@ -1778,6 +1860,7 @@ LteUeRrc::MeasurementReportTriggering (uint8_t measId)
 
                         // Inequality A5-4 (Leaving condition 2): Mn + Ofn + Ocn + Hys < Thresh2
                         leavingCond = mn + ofn + ocn + hys < thresh2;
+
                         if (leavingCond)
                           {
                             concernedCellsLeaving.push_back (cellId);
@@ -1795,7 +1878,7 @@ LteUeRrc::MeasurementReportTriggering (uint8_t measId)
 
                   } // end of for (storedMeasIt)
 
-              } // end of else of if (entryCond)
+              } // end of else of if (leavingCond)
 
           } // end of if (isMeasIdInReportList)
 
@@ -1826,6 +1909,9 @@ LteUeRrc::MeasurementReportTriggering (uint8_t measId)
           t.timer = Simulator::Schedule (MilliSeconds (reportConfigEutra.timeToTrigger),
                                          &LteUeRrc::VarMeasReportListAdd, this,
                                          measId, concernedCellsEntry);
+          std::map<uint8_t, std::list<PendingTrigger_t> >::iterator
+            enteringTriggerIt = m_enteringTriggerQueue.find (measId);
+          NS_ASSERT (enteringTriggerIt != m_enteringTriggerQueue.end ());
           enteringTriggerIt->second.push_back (t);
         }
     }
@@ -1848,11 +1934,128 @@ LteUeRrc::MeasurementReportTriggering (uint8_t measId)
           t.timer = Simulator::Schedule (MilliSeconds (reportConfigEutra.timeToTrigger),
                                          &LteUeRrc::VarMeasReportListErase, this,
                                          measId, concernedCellsLeaving, reportOnLeave);
+          std::map<uint8_t, std::list<PendingTrigger_t> >::iterator
+            leavingTriggerIt = m_leavingTriggerQueue.find (measId);
+          NS_ASSERT (leavingTriggerIt != m_leavingTriggerQueue.end ());
           leavingTriggerIt->second.push_back (t);
         }
     }
 
 } // end of void LteUeRrc::MeasurementReportTriggering (uint8_t measId)
+
+void
+LteUeRrc::CancelEnteringTrigger (uint8_t measId)
+{
+  std::map<uint8_t, std::list<PendingTrigger_t> >::iterator
+    it1 = m_enteringTriggerQueue.find (measId);
+  NS_ASSERT (it1 != m_enteringTriggerQueue.end ());
+
+  if (!it1->second.empty ())
+    {
+      std::list<PendingTrigger_t>::iterator it2;
+      for (it2 = it1->second.begin (); it2 != it1->second.end (); ++it2)
+        {
+          NS_ASSERT (it2->measId == measId);
+          NS_LOG_LOGIC (this << " canceling entering time-to-trigger event at "
+                             << Simulator::GetDelayLeft (it2->timer).GetSeconds ());
+          Simulator::Cancel (it2->timer);
+        }
+
+      it1->second.clear ();
+    }
+}
+
+void
+LteUeRrc::CancelEnteringTrigger (uint8_t measId, uint16_t cellId)
+{
+  std::map<uint8_t, std::list<PendingTrigger_t> >::iterator
+    it1 = m_enteringTriggerQueue.find (measId);
+  NS_ASSERT (it1 != m_enteringTriggerQueue.end ());
+
+  if (!it1->second.empty ())
+    {
+      std::list<PendingTrigger_t>::iterator it2;
+      for (it2 = it1->second.begin (); it2 != it1->second.end (); ++it2)
+        {
+          NS_ASSERT (it2->measId == measId);
+
+          ConcernedCells_t::iterator it3;
+          for (it3 = it2->concernedCells.begin ();
+               it3 != it2->concernedCells.end (); ++it3)
+            {
+              if (*it3 == cellId)
+                {
+                  it3 = it2->concernedCells.erase (it3);
+                }
+            }
+
+          if (it2->concernedCells.empty ())
+            {
+              NS_LOG_LOGIC (this << " canceling entering time-to-trigger event at "
+                                 << Simulator::GetDelayLeft (it2->timer).GetSeconds ());
+              Simulator::Cancel (it2->timer);
+              it2 = it1->second.erase (it2);
+            }
+        }
+    }
+}
+
+void
+LteUeRrc::CancelLeavingTrigger (uint8_t measId)
+{
+  std::map<uint8_t, std::list<PendingTrigger_t> >::iterator
+    it1 = m_leavingTriggerQueue.find (measId);
+  NS_ASSERT (it1 != m_leavingTriggerQueue.end ());
+
+  if (!it1->second.empty ())
+    {
+      std::list<PendingTrigger_t>::iterator it2;
+      for (it2 = it1->second.begin (); it2 != it1->second.end (); ++it2)
+        {
+          NS_ASSERT (it2->measId == measId);
+          NS_LOG_LOGIC (this << " canceling leaving time-to-trigger event at "
+                             << Simulator::GetDelayLeft (it2->timer).GetSeconds ());
+          Simulator::Cancel (it2->timer);
+        }
+
+      it1->second.clear ();
+    }
+}
+
+void
+LteUeRrc::CancelLeavingTrigger (uint8_t measId, uint16_t cellId)
+{
+  std::map<uint8_t, std::list<PendingTrigger_t> >::iterator
+    it1 = m_leavingTriggerQueue.find (measId);
+  NS_ASSERT (it1 != m_leavingTriggerQueue.end ());
+
+  if (!it1->second.empty ())
+    {
+      std::list<PendingTrigger_t>::iterator it2;
+      for (it2 = it1->second.begin (); it2 != it1->second.end (); ++it2)
+        {
+          NS_ASSERT (it2->measId == measId);
+
+          ConcernedCells_t::iterator it3;
+          for (it3 = it2->concernedCells.begin ();
+               it3 != it2->concernedCells.end (); ++it3)
+            {
+              if (*it3 == cellId)
+                {
+                  it3 = it2->concernedCells.erase (it3);
+                }
+            }
+
+          if (it2->concernedCells.empty ())
+            {
+              NS_LOG_LOGIC (this << " canceling leaving time-to-trigger event at "
+                                 << Simulator::GetDelayLeft (it2->timer).GetSeconds ());
+              Simulator::Cancel (it2->timer);
+              it2 = it1->second.erase (it2);
+            }
+        }
+    }
+}
 
 void
 LteUeRrc::VarMeasReportListAdd (uint8_t measId, ConcernedCells_t enteringCells)
@@ -1916,7 +2119,21 @@ LteUeRrc::VarMeasReportListAdd (uint8_t measId, ConcernedCells_t enteringCells)
       // the pending trigger is now confirmed match, remove it from the queue
       #endif /* NS3_ASSERT_ENABLE */
       enteringTriggerIt->second.pop_front ();
-    }
+
+      if (!enteringTriggerIt->second.empty ())
+        {
+          /*
+           * Clean up the queue in case the same cells are still lingering (e.g.
+           * when time-to-trigger > 200 ms).
+           */
+          for (ConcernedCells_t::const_iterator it = enteringCells.begin ();
+               it != enteringCells.end (); ++it)
+            {
+              CancelEnteringTrigger (measId, *it);
+            }
+        }
+
+    } // end of if (!enteringTriggerIt->second.empty ())
 
 } // end of LteUeRrc::VarMeasReportListAdd
 
@@ -1977,7 +2194,21 @@ LteUeRrc::VarMeasReportListErase (uint8_t measId, ConcernedCells_t leavingCells,
       // the pending trigger is now confirmed match, remove it from the queue
       #endif /* NS3_ASSERT_ENABLE */
       leavingTriggerIt->second.pop_front ();
-    }
+
+      if (!leavingTriggerIt->second.empty ())
+        {
+          /*
+           * Clean up the queue in case the same cells are still lingering (e.g.
+           * when time-to-trigger > 200 ms).
+           */
+          for (ConcernedCells_t::const_iterator it = leavingCells.begin ();
+               it != leavingCells.end (); ++it)
+            {
+              CancelLeavingTrigger (measId, *it);
+            }
+        }
+
+    } // end of if (!leavingTriggerIt->second.empty ())
 
 } // end of LteUeRrc::VarMeasReportListErase
 
