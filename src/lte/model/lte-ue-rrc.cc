@@ -2154,17 +2154,16 @@ LteUeRrc::VarMeasReportListErase (uint8_t measId, ConcernedCells_t leavingCells,
       measReportIt->second.cellsTriggeredList.erase (*it);
     }
 
+  if (reportOnLeave)
+    {
+      // runs immediately without UE_MEASUREMENTS_DELAY
+      SendMeasurementReport (measId);
+    }
+
   if (measReportIt->second.cellsTriggeredList.empty ())
     {
       measReportIt->second.periodicReportTimer.Cancel ();
       m_varMeasReportList.erase (measReportIt);
-    }
-
-  if (reportOnLeave)
-    {
-      // TODO: this might fail because the VarMeasReportList entry might have been deleted already
-      // TODO: this might produce unexpectedly repeating measurement report
-      SendMeasurementReport (measId);
     }
 
   std::map<uint8_t, std::list<PendingTrigger_t> >::iterator
@@ -2248,8 +2247,6 @@ LteUeRrc::SendMeasurementReport (uint8_t measId)
     {
       if (!(measReportIt->second.cellsTriggeredList.empty ()))
         {
-          measResults.haveMeasResultNeighCells = true;
-
           std::multimap<double, uint16_t> sortedNeighCells;
           for (std::set<uint16_t>::iterator cellsTriggeredIt = measReportIt->second.cellsTriggeredList.begin ();
                cellsTriggeredIt != measReportIt->second.cellsTriggeredList.end ();
@@ -2298,6 +2295,7 @@ LteUeRrc::SendMeasurementReport (uint8_t measId)
                                 << " RSRQ " << (uint32_t) measResultEutra.rsrqResult
                                 << " (" << neighborMeasIt->second.rsrq << " dB)");
               measResults.measResultListEutra.push_back (measResultEutra);
+              measResults.haveMeasResultNeighCells = true;
             }
         }
       else

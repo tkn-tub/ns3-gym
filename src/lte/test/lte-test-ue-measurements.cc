@@ -740,8 +740,8 @@ LteUeMeasurementsPiecewiseTestCase1::RecvMeasurementReportCallback (
                      << " (" << rsrpDbm << " dBm)"
                      << " rsrq=" << (uint16_t) measResults.rsrqResult
                      << " (" << rsrqDb << " dB)");
-  NS_TEST_ASSERT_MSG_EQ (measResults.haveMeasResultNeighCells, true,
-                         "Report does not have neighboring cells information");
+  NS_TEST_ASSERT_MSG_EQ (measResults.haveMeasResultNeighCells, false,
+                         "Report should not have neighboring cells information");
   NS_TEST_ASSERT_MSG_EQ (measResults.measResultListEutra.size (), 0,
                          "Unexpected report size");
 
@@ -950,20 +950,22 @@ LteUeMeasurementsPiecewiseTestSuite2::LteUeMeasurementsPiecewiseTestSuite2 ()
                                                         config, expectedTime, expectedRsrp),
                TestCase::QUICK);
 
-  // With hysteresis
+  // With hysteresis and reportOnLeave
   config.hysteresis = 6;
+  config.reportOnLeave = true;
   config.timeToTrigger = 0;
   expectedTime.clear ();
-  expectedTime << 800 << 1600 << 1840 << 2080;
+  expectedTime << 800 << 1000 << 1600 << 1840 << 2080 << 2200;
   expectedRsrp.clear ();
-  expectedRsrp << 52 << 52 << 56 << 59;
+  expectedRsrp << 52 << 72 << 52 << 56 << 59 << 72;
   AddTestCase (new LteUeMeasurementsPiecewiseTestCase2 ("Piecewise test case 2 - Event A3 with hysteresis",
                                                         config, expectedTime, expectedRsrp),
-               TestCase::EXTENSIVE);
+               TestCase::QUICK);
 
   // With negative offset
   config.a3Offset = -7;
   config.hysteresis = 0;
+  config.reportOnLeave = false;
   expectedTime.clear ();
   expectedTime << 400 << 800 << 1200 << 1440 << 1680 << 1920 << 2160;
   expectedRsrp.clear ();
@@ -1327,12 +1329,17 @@ LteUeMeasurementsPiecewiseTestCase2::RecvMeasurementReportCallback (
                      << " (" << rsrpDbm << " dBm)"
                      << " rsrq=" << (uint16_t) measResults.rsrqResult
                      << " (" << rsrqDb << " dB)");
-  NS_TEST_ASSERT_MSG_EQ (measResults.haveMeasResultNeighCells, true,
-                         "Report does not have neighboring cells information");
 
   // verifying reported best cells
-  if (measResults.measResultListEutra.size () == 1)
+  if (measResults.measResultListEutra.size () == 0)
     {
+      NS_TEST_ASSERT_MSG_EQ (measResults.haveMeasResultNeighCells, false,
+                             "Unexpected report content");
+    }
+  else
+    {
+      NS_TEST_ASSERT_MSG_EQ (measResults.haveMeasResultNeighCells, true,
+                             "Unexpected report content");
       std::list<LteRrcSap::MeasResultEutra>::iterator it = measResults.measResultListEutra.begin ();
       NS_ASSERT (it != measResults.measResultListEutra.end ());
       NS_ASSERT (it->physCellId == 2);
@@ -1477,7 +1484,7 @@ LteUeMeasurementsHandoverTestSuite::LteUeMeasurementsHandoverTestSuite ()
   expectedTime << 200 << 440 << 680 << 920 << 1200 << 1440 << 1680 << 1920;
   expectedRsrp.clear ();
   expectedRsrp << 55 << 55 << 55 << 55 << 53 << 53 << 53 << 53;
-  AddTestCase (new LteUeMeasurementsHandoverTestCase ("Handover test case - A1 to A2",
+  AddTestCase (new LteUeMeasurementsHandoverTestCase ("Handover test case - Event A1 to Event A2",
                                                       sourceConfig, targetConfig,
                                                       expectedTime, expectedRsrp),
                TestCase::EXTENSIVE);
@@ -1487,7 +1494,7 @@ LteUeMeasurementsHandoverTestSuite::LteUeMeasurementsHandoverTestSuite ()
   targetConfig.eventId = LteRrcSap::ReportConfigEutra::EVENT_A1;
   expectedTime.clear ();
   expectedRsrp.clear ();
-  AddTestCase (new LteUeMeasurementsHandoverTestCase ("Handover test case - A2 to A1",
+  AddTestCase (new LteUeMeasurementsHandoverTestCase ("Handover test case - Event A2 to Event A1",
                                                       sourceConfig, targetConfig,
                                                       expectedTime, expectedRsrp),
                TestCase::TAKES_FOREVER);
@@ -1499,7 +1506,7 @@ LteUeMeasurementsHandoverTestSuite::LteUeMeasurementsHandoverTestSuite ()
   expectedTime << 1200 << 1440 << 1680 << 1920;
   expectedRsrp.clear ();
   expectedRsrp << 53 << 53 << 53 << 53;
-  AddTestCase (new LteUeMeasurementsHandoverTestCase ("Handover test case - A3 to A4",
+  AddTestCase (new LteUeMeasurementsHandoverTestCase ("Handover test case - Event A3 to Event A4",
                                                       sourceConfig, targetConfig,
                                                       expectedTime, expectedRsrp),
                TestCase::TAKES_FOREVER);
@@ -1511,7 +1518,7 @@ LteUeMeasurementsHandoverTestSuite::LteUeMeasurementsHandoverTestSuite ()
   expectedTime << 1200 << 1440 << 1680 << 1920;
   expectedRsrp.clear ();
   expectedRsrp << 53 << 53 << 53 << 53;
-  AddTestCase (new LteUeMeasurementsHandoverTestCase ("Handover test case - A4 to A3",
+  AddTestCase (new LteUeMeasurementsHandoverTestCase ("Handover test case - Event A4 to Event A3",
                                                       sourceConfig, targetConfig,
                                                       expectedTime, expectedRsrp),
                TestCase::QUICK);
@@ -1523,7 +1530,7 @@ LteUeMeasurementsHandoverTestSuite::LteUeMeasurementsHandoverTestSuite ()
   expectedTime << 1200 << 1440 << 1680 << 1920;
   expectedRsrp.clear ();
   expectedRsrp << 53 << 53 << 53 << 53;
-  AddTestCase (new LteUeMeasurementsHandoverTestCase ("Handover test case - A2 to A3",
+  AddTestCase (new LteUeMeasurementsHandoverTestCase ("Handover test case - Event A2 to Event A3",
                                                       sourceConfig, targetConfig,
                                                       expectedTime, expectedRsrp),
                TestCase::EXTENSIVE);
@@ -1535,7 +1542,7 @@ LteUeMeasurementsHandoverTestSuite::LteUeMeasurementsHandoverTestSuite ()
   expectedTime << 1200 << 1440 << 1680 << 1920;
   expectedRsrp.clear ();
   expectedRsrp << 53 << 53 << 53 << 53;
-  AddTestCase (new LteUeMeasurementsHandoverTestCase ("Handover test case - A3 to A2",
+  AddTestCase (new LteUeMeasurementsHandoverTestCase ("Handover test case - Event A3 to Event A2",
                                                       sourceConfig, targetConfig,
                                                       expectedTime, expectedRsrp),
                TestCase::TAKES_FOREVER);
@@ -1547,7 +1554,7 @@ LteUeMeasurementsHandoverTestSuite::LteUeMeasurementsHandoverTestSuite ()
   expectedTime << 1200 << 1440 << 1680 << 1920;
   expectedRsrp.clear ();
   expectedRsrp << 53 << 53 << 53 << 53;
-  AddTestCase (new LteUeMeasurementsHandoverTestCase ("Handover test case - A4 to A5",
+  AddTestCase (new LteUeMeasurementsHandoverTestCase ("Handover test case - Event A4 to Event A5",
                                                       sourceConfig, targetConfig,
                                                       expectedTime, expectedRsrp),
                TestCase::TAKES_FOREVER);
@@ -1559,7 +1566,7 @@ LteUeMeasurementsHandoverTestSuite::LteUeMeasurementsHandoverTestSuite ()
   expectedTime << 1200 << 1440 << 1680 << 1920;
   expectedRsrp.clear ();
   expectedRsrp << 53 << 53 << 53 << 53;
-  AddTestCase (new LteUeMeasurementsHandoverTestCase ("Handover test case - A5 to A4",
+  AddTestCase (new LteUeMeasurementsHandoverTestCase ("Handover test case - Event A5 to Event A4",
                                                       sourceConfig, targetConfig,
                                                       expectedTime, expectedRsrp),
                TestCase::EXTENSIVE);
@@ -1576,7 +1583,7 @@ LteUeMeasurementsHandoverTestSuite::LteUeMeasurementsHandoverTestSuite ()
   expectedTime << 200 << 440 << 680 << 920;
   expectedRsrp.clear ();
   expectedRsrp << 55 << 55 << 55 << 55;
-  AddTestCase (new LteUeMeasurementsHandoverTestCase ("Handover test case - A1 threshold difference",
+  AddTestCase (new LteUeMeasurementsHandoverTestCase ("Handover test case - Event A1 threshold difference",
                                                       sourceConfig, targetConfig,
                                                       expectedTime, expectedRsrp),
                TestCase::EXTENSIVE);
@@ -1588,7 +1595,7 @@ LteUeMeasurementsHandoverTestSuite::LteUeMeasurementsHandoverTestSuite ()
   expectedTime << 1200 << 1440 << 1680 << 1920;
   expectedRsrp.clear ();
   expectedRsrp << 53 << 53 << 53 << 53;
-  AddTestCase (new LteUeMeasurementsHandoverTestCase ("Handover test case - A2 threshold difference",
+  AddTestCase (new LteUeMeasurementsHandoverTestCase ("Handover test case - Event A2 threshold difference",
                                                       sourceConfig, targetConfig,
                                                       expectedTime, expectedRsrp),
                TestCase::QUICK);
@@ -1602,7 +1609,7 @@ LteUeMeasurementsHandoverTestSuite::LteUeMeasurementsHandoverTestSuite ()
   expectedTime << 200 << 440 << 680 << 920;
   expectedRsrp.clear ();
   expectedRsrp << 55 << 55 << 55 << 55;
-  AddTestCase (new LteUeMeasurementsHandoverTestCase ("Handover test case - A3 offset difference",
+  AddTestCase (new LteUeMeasurementsHandoverTestCase ("Handover test case - Event A3 offset difference",
                                                       sourceConfig, targetConfig,
                                                       expectedTime, expectedRsrp),
                TestCase::QUICK);
@@ -1614,7 +1621,7 @@ LteUeMeasurementsHandoverTestSuite::LteUeMeasurementsHandoverTestSuite ()
   expectedTime << 200 << 440 << 680 << 920;
   expectedRsrp.clear ();
   expectedRsrp << 55 << 55 << 55 << 55;
-  AddTestCase (new LteUeMeasurementsHandoverTestCase ("Handover test case - A4 threshold difference",
+  AddTestCase (new LteUeMeasurementsHandoverTestCase ("Handover test case - Event A4 threshold difference",
                                                       sourceConfig, targetConfig,
                                                       expectedTime, expectedRsrp),
                TestCase::EXTENSIVE);
@@ -1626,7 +1633,7 @@ LteUeMeasurementsHandoverTestSuite::LteUeMeasurementsHandoverTestSuite ()
   targetConfig.threshold2.range = 56;
   expectedTime.clear ();
   expectedRsrp.clear ();
-  AddTestCase (new LteUeMeasurementsHandoverTestCase ("Handover test case - A5 threshold difference",
+  AddTestCase (new LteUeMeasurementsHandoverTestCase ("Handover test case - Event A5 threshold difference",
                                                       sourceConfig, targetConfig,
                                                       expectedTime, expectedRsrp),
                TestCase::EXTENSIVE);
@@ -1827,12 +1834,17 @@ LteUeMeasurementsHandoverTestCase::RecvMeasurementReportCallback (
                      << " (" << rsrpDbm << " dBm)"
                      << " rsrq=" << (uint16_t) measResults.rsrqResult
                      << " (" << rsrqDb << " dB)");
-  NS_TEST_ASSERT_MSG_EQ (measResults.haveMeasResultNeighCells, true,
-                         "Report does not have neighboring cells information");
 
   // verifying reported best cells
-  if (measResults.measResultListEutra.size () == 1)
+  if (measResults.measResultListEutra.size () == 0)
     {
+      NS_TEST_ASSERT_MSG_EQ (measResults.haveMeasResultNeighCells, false,
+                             "Unexpected report content");
+    }
+  else
+    {
+      NS_TEST_ASSERT_MSG_EQ (measResults.haveMeasResultNeighCells, true,
+                             "Unexpected report content");
       std::list<LteRrcSap::MeasResultEutra>::iterator it = measResults.measResultListEutra.begin ();
       NS_ASSERT (it != measResults.measResultListEutra.end ());
       NS_ASSERT (it->physCellId != cellId);
