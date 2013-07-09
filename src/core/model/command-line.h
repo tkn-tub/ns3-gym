@@ -71,9 +71,10 @@ namespace ns3 {
  *  cmd.Usage ("CommandLine example program.\n"
  *             "\n"
  *             "This little program demonstrates how to use CommandLine.");
- *  cmd.AddValue ("val1", "an int argument",          val1);
- *  cmd.AddValue ("val2", "a bool argument",          val2);
- *  cmd.AddValue ("val3", "a string argument",        val3);
+ *  cmd.AddValue ("val1", "an int argument",       val1);
+ *  cmd.AddValue ("val2", "a bool argument",       val2);
+ *  cmd.AddValue ("val3", "a string argument",     val3);
+ *  cmd.AddValue ("val4", "a string via callback", MakeCallback (SetVal4));
  *  cmd.Parse (argc, argv);
  * \endcode
  *
@@ -83,12 +84,14 @@ namespace ns3 {
  *   $ ./waf --run="command-line-example"
  *   val1:   1
  *   val2:   0
- *   val3:   ""
+ *   val3:   "val3 default"
+ *   val4:   "val4 default"
  *
- *   $ ./waf --run="command-line-example --val1=2 --val2 --val3=Hello"
+ *   $ ./waf --run="command-line-example --val1=2 --val2 --val3=Hello --val4=World"
  *   val1:   2
  *   val2:   1
  *   val3:   "Hello"
+ *   val4:   "World"
  *   
  *   $ ./waf --run="command-line-example --help"
  *   ns3-dev-command-line-example-debug [Program Arguments] [General Arguments]
@@ -98,17 +101,18 @@ namespace ns3 {
  *   This little program demonstrates how to use CommandLine.
  *   
  *   Program Arguments:
- *       --val1:     an int argument
- *       --val2:     a bool argument
- *       --val3:     a string argument
+ *       --val1: an int argument
+ *       --val2: a bool argument
+ *       --val3: a string argument
+ *       --val4: a string via callback
  *   
  *   General Arguments:
- *       --PrintHelp:                 Print this help message.
- *       --PrintGroups:               Print the list of groups.
- *       --PrintTypeIds:              Print all TypeIds.
- *       --PrintGroup=[group]:        Print all TypeIds of group.
- *       --PrintAttributes=[typeid]:  Print all attributes of typeid.
  *       --PrintGlobals:              Print the list of globals.
+ *       --PrintGroups:               Print the list of groups.
+ *       --PrintGroup=[group]:        Print all TypeIds of group.
+ *       --PrintTypeIds:              Print all TypeIds.
+ *       --PrintAttributes=[typeid]:  Print all attributes of typeid.
+ *       --PrintHelp:                 Print this help message.
  * \endcode
  */
 class CommandLine
@@ -208,6 +212,14 @@ private:
      * \return true if parsing the value succeeded
      */
     virtual bool Parse (std::string value) = 0;
+    /**
+     * \return true if this item have a default value?
+     */
+    virtual bool HasDefault () const;
+    /**
+     * \return the default value
+     */
+    virtual std::string GetDefault () const;
   };
 
   /**
@@ -225,7 +237,12 @@ private:
      * \return true if parsing the value succeeded
      */
     virtual bool Parse (std::string value);
+
+    bool HasDefault () const;
+    std::string GetDefault () const;
+      
     T *m_valuePtr;            /**< Pointer to the POD location */
+    std::string m_default;    /**< String representation of default value */
   };
 
   /**
@@ -329,8 +346,31 @@ CommandLine::AddValue (const std::string &name,
   item->m_name = name;
   item->m_help = help;
   item->m_valuePtr = &value;
+  
+  std::stringstream ss;
+  ss << value;
+  ss >> item->m_default;
+    
   m_items.push_back (item);
 }
+
+
+template <typename T>
+bool
+CommandLine::UserItem<T>::HasDefault () const
+{
+  return true;
+}
+
+template <typename T>
+std::string
+CommandLine::UserItem<T>::GetDefault () const
+{
+  std::ostringstream oss;
+  oss << *m_valuePtr;
+  return oss.str ();
+}
+
 
 template <typename T>
 bool

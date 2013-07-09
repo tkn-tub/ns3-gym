@@ -18,31 +18,46 @@
  * Author: Peter D. Barnes, Jr. <pdbarnes@llnl.gov>
  */
 
+#include <iostream>  // boolalpha
 #include <string>
 
 #include "ns3/core-module.h"
 
+
 using namespace ns3;
+
+
+std::string g_val4="val4 default";
+
+bool SetVal4 (std::string val)
+{
+  g_val4 = val;
+  return true;
+}
+
 
 int main (int argc, char *argv[])
 {
 
   int         val1 = 1;
   bool        val2 = false;
-  std::string val3 = "";
+  std::string val3 = "val3 default";
   
   CommandLine cmd;
   cmd.Usage ("CommandLine example program.\n"
              "\n"
              "This little program demonstrates how to use CommandLine.");
-  cmd.AddValue ("val1", "an int argument",          val1);
-  cmd.AddValue ("val2", "a bool argument",          val2);
-  cmd.AddValue ("val3", "a string argument",        val3);
+  cmd.AddValue ("val1", "an int argument",       val1);
+  cmd.AddValue ("val2", "a bool argument",       val2);
+  cmd.AddValue ("val3", "a string argument",     val3);
+  cmd.AddValue ("val4", "a string via callback", MakeCallback (SetVal4));
   cmd.Parse (argc, argv);
 
-  std::cout << "val1:\t" << val1 << std::endl;
-  std::cout << "val2:\t" << val2 << std::endl;
+  std::cout << "val1:\t"   << val1 << std::endl;
+  std::cout << "val2:\t"   << std::boolalpha << val2
+            << std::noboolalpha << std::endl;
   std::cout << "val3:\t\"" << val3 << "\"" << std::endl;
+  std::cout << "val4:\t\"" << g_val4 << "\"" << std::endl;
 
   return 0;
 }
