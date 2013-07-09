@@ -103,6 +103,7 @@ private:
 
   double totalTime; 
   double expMean;
+  double samplingPeriod;
 
   uint32_t bytesTotal;
   uint32_t packetSize;
@@ -129,6 +130,7 @@ Experiment::Experiment (std::string name) :
   m_output (name),
   totalTime (0.3),
   expMean (0.1), //flows being exponentially distributed
+  samplingPeriod(0.1),
   bytesTotal (0),
   packetSize (2000),
   gridSize (10), //10x10 grid  for a total of 100 nodes
@@ -172,12 +174,12 @@ Experiment::ReceivePacket (Ptr<Socket> socket)
 void
 Experiment::CheckThroughput ()
 {
-  double mbs = ((bytesTotal * 8.0) /1000000);
+  double mbs = ((bytesTotal * 8.0) /1000000 /samplingPeriod);
   bytesTotal = 0;
   m_output.Add ((Simulator::Now ()).GetSeconds (), mbs);
 
-  //check throughput every 1/10 of a second 
-  Simulator::Schedule (Seconds (0.1), &Experiment::CheckThroughput, this);
+  //check throughput every samplingPeriod second
+  Simulator::Schedule (Seconds (samplingPeriod), &Experiment::CheckThroughput, this);
 }
 
 /**
@@ -534,6 +536,17 @@ Experiment::CommandSetup (int argc, char **argv)
   CommandLine cmd;
   cmd.AddValue ("packetSize", "packet size", packetSize);
   cmd.AddValue ("totalTime", "simulation time", totalTime);
+  // according to totalTime, select an appropriate samplingPeriod automatically.
+  if (totalTime < 1.0)
+    {
+	  samplingPeriod = 0.1;
+    }
+  else
+    {
+	  samplingPeriod = 1.0;
+    }
+  // or user selects a samplingPeriod.
+  cmd.AddValue ("samplingPeriod", "sampling period", samplingPeriod);
   cmd.AddValue ("rtsThreshold", "rts threshold", rtsThreshold);
   cmd.AddValue ("rateManager", "type of rate", rateManager);
   cmd.AddValue ("outputFileName", "output filename", outputFileName);
