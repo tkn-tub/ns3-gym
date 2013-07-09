@@ -110,6 +110,18 @@ public:
    */
   void PrintRoutingTableEvery (Time printInterval, Ptr<Node> node, Ptr<OutputStreamWrapper> stream) const;
 
+  /**
+   * \brief Request a specified routing protocol <T> from Ipv6RoutingProtocol protocol
+   *
+   * If protocol is Ipv6ListRouting, then protocol will be searched in the list,
+   * otherwise a simple DynamicCast will be performed
+   *
+   * \param protocol Smart pointer to Ipv6RoutingProtocol object
+   * \return a Smart Pointer to the requested protocol (zero if the protocol can't be found)
+   */
+  template<class T>
+  static Ptr<T> GetRouting (Ptr<Ipv6RoutingProtocol> protocol);
+  
 private:
   void Print (Ptr<Node> node, Ptr<OutputStreamWrapper> stream) const;
   void PrintEvery (Time printInterval, Ptr<Node> node, Ptr<OutputStreamWrapper> stream) const;
