@@ -213,6 +213,12 @@ public:
   bool IsAny () const;
 
   /**
+   * \brief If the IPv6 address is a documentation address (2001:DB8::/32).
+   * \return true if the address is documentation, false otherwise
+   */
+  bool IsDocumentation () const;
+
+  /**
    * \brief Combine this address with a prefix.
    * \param prefix a IPv6 prefix
    * \return an IPv6 address that is this address combined

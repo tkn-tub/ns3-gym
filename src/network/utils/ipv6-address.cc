@@ -522,6 +522,19 @@ bool Ipv6Address::IsAny () const
   return (*this == any);
 }
 
+
+bool Ipv6Address::IsDocumentation () const
+{
+  NS_LOG_FUNCTION (this);
+  Ipv6Address documentation ("2001:db8::0");
+  if (((Ipv6Address*)this)->CombinePrefix (Ipv6Prefix (32)) == documentation)
+    {
+      return true;
+    }
+  return false;
+}
+
+
 bool Ipv6Address::IsMatchingType (const Address& address)
 {
   NS_LOG_FUNCTION (address);

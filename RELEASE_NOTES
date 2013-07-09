@@ -22,6 +22,7 @@ Supported platforms
 New user-visible features
 -------------------------
 - Time attributes can now be bounded.  See attribute-test-suite.cc for an example.
+- IPv6 addrss class 2001:db8::/32 is now dropped by routers (RFC 3849).
 
 Bugs fixed
 ----------
