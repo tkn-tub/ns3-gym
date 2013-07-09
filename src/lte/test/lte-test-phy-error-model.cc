@@ -1,6 +1,6 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2011 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
+ * Copyright (c) 2011-2013 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Marco Miozzo <marco.miozzo@cttc.es>
+ *         Nicola Baldo <nbaldo@cttc.es>
  */
 
 #include <ns3/object.h>
@@ -62,28 +63,35 @@ LenaTestPhyErrorModelrSuite::LenaTestPhyErrorModelrSuite ()
   
   
   // Tests on DL Control Channels (PCFICH+PDDCH)
-  // 1 interfering eNB SINR -2.0 BER 0.007 TB size 217
+  // 1 interfering eNB SINR -2.0 BLER 0.007 TB size 217
   AddTestCase (new LenaDlCtrlPhyErrorModelTestCase (2, 1078, 217, 0.007), TestCase::QUICK);
-  // 2 interfering eNBs SINR -4.0 BER 0.037 TB size 217
+  // 2 interfering eNBs SINR -4.0 BLER 0.037 TB size 217
   AddTestCase (new LenaDlCtrlPhyErrorModelTestCase (3, 1040, 217, 0.045), TestCase::EXTENSIVE);
-  // 3 interfering eNBs SINR -6.0 BER 0.21 TB size 133
+  // 3 interfering eNBs SINR -6.0 BLER 0.21 TB size 133
   AddTestCase (new LenaDlCtrlPhyErrorModelTestCase (4, 1250, 133, 0.206), TestCase::EXTENSIVE);
-  // 4 interfering eNBs SINR -7.0 BER 0.34 TB size 133
+  // 4 interfering eNBs SINR -7.0 BLER 0.34 TB size 133
   AddTestCase (new LenaDlCtrlPhyErrorModelTestCase (5, 1260, 81, 0.343), TestCase::EXTENSIVE);
 
-  // Tests on DL/UL Data channels (PDSCH, PUSCH)
-  // MCS 2 TB size of 256 bits BER 0.33 SINR -5.51
-  AddTestCase (new LenaDataPhyErrorModelTestCase (4, 1800, 32, 0.33, 50), TestCase::QUICK);
-// MCS 2 TB size of 528 bits BER 0.11 SINR -5.51
-  AddTestCase (new LenaDataPhyErrorModelTestCase (2, 1800, 66, 0.11, 34), TestCase::EXTENSIVE);
-// MCS 2 TB size of 1088 bits BER 0.02 SINR -5.51
-  AddTestCase (new LenaDataPhyErrorModelTestCase (1, 1800, 136, 0.02, 16), TestCase::EXTENSIVE);
-  // MCS 12 TB size of 4800 bits  BER 0.3  SINR 4.43
-  AddTestCase (new LenaDataPhyErrorModelTestCase (1, 600, 600, 0.3, 48), TestCase::EXTENSIVE);
-// MCS 12 TB size of 1632 bits  BER 0.55  SINR 4.43
-  AddTestCase (new LenaDataPhyErrorModelTestCase (3, 600, 204, 0.55, 52), TestCase::EXTENSIVE);
-// MCS 16 TB size of 7272 bits (3648 x 3584) BER 0.14 SINR 8.48
-// BER 0.14 = 1 - ((1-0.075)*(1-0.075))
+  // Tests on DL Data channels (PDSCH)
+  // the tolerance is calculated with the following octave code:
+  //
+  // n =  1000;
+  // for p=1-[0.33 0.11 0.2 0.3 0.55 0.14]
+  //    tol = n*p - binoinv(0.005, n, p)
+  // endfor
+
+  // MCS 2 TB size of 256 bits BLER 0.33 SINR -5.51
+  AddTestCase (new LenaDataPhyErrorModelTestCase (4, 1800, 32, 0.33, 39), TestCase::QUICK);
+// MCS 2 TB size of 528 bits BLER 0.11 SINR -5.51
+  AddTestCase (new LenaDataPhyErrorModelTestCase (2, 1800, 66, 0.11, 26), TestCase::EXTENSIVE);
+// MCS 2 TB size of 1088 bits BLER 0.02 SINR -5.51
+  AddTestCase (new LenaDataPhyErrorModelTestCase (1, 1800, 136, 0.02, 33), TestCase::EXTENSIVE);
+  // MCS 12 TB size of 4800 bits  BLER 0.3  SINR 4.43
+  AddTestCase (new LenaDataPhyErrorModelTestCase (1, 600, 600, 0.3, 38), TestCase::EXTENSIVE);
+// MCS 12 TB size of 1632 bits  BLER 0.55  SINR 4.43
+  AddTestCase (new LenaDataPhyErrorModelTestCase (3, 600, 204, 0.55, 40), TestCase::EXTENSIVE);
+// MCS 16 TB size of 7272 bits (3648 x 3584) BLER 0.14 SINR 8.48
+// BLER 0.14 = 1 - ((1-0.075)*(1-0.075))
   AddTestCase (new LenaDataPhyErrorModelTestCase (1, 470, 781, 0.14, 29), TestCase::EXTENSIVE);
 
  
@@ -100,13 +108,13 @@ LenaDataPhyErrorModelTestCase::BuildNameString (uint16_t nUser, uint16_t dist)
   return oss.str ();
 }
 
-LenaDataPhyErrorModelTestCase::LenaDataPhyErrorModelTestCase (uint16_t nUser, uint16_t dist, uint16_t tbSize, double berRef, uint16_t bernQuantile)
+LenaDataPhyErrorModelTestCase::LenaDataPhyErrorModelTestCase (uint16_t nUser, uint16_t dist, uint16_t tbSize, double blerRef, uint16_t toleranceRxPackets)
   : TestCase (BuildNameString (nUser, dist)),              
     m_nUser (nUser),
     m_dist (dist),
     m_tbSize (tbSize),
-    m_berRef (berRef),
-    m_bernQuantile (bernQuantile)
+    m_blerRef (blerRef),
+    m_toleranceRxPackets (toleranceRxPackets)
 {
 }
 
@@ -118,55 +126,12 @@ void
 LenaDataPhyErrorModelTestCase::DoRun (void)
 {
   
-   double ber = 0.03;
+  double ber = 0.03;
   Config::SetDefault ("ns3::LteAmc::Ber", DoubleValue (ber));
   Config::SetDefault ("ns3::LteAmc::AmcModel", EnumValue (LteAmc::PiroEW2010));
   Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue (false));
   Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (true));
   Config::SetDefault ("ns3::RrFfMacScheduler::HarqEnabled", BooleanValue (false));
-//   LogComponentEnable ("LteEnbRrc", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteUeRrc", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteEnbMac", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteUeMac", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteRlc", LOG_LEVEL_ALL);
-// 
-//   LogComponentEnable ("LtePhy", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteEnbPhy", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteUePhy", LOG_LEVEL_ALL);
-
-//   LogComponentEnable ("LteSpectrumPhy", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteInterference", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteSinrChunkProcessor", LOG_LEVEL_ALL);
-// 
-//   LogComponentEnable ("LtePropagationLossModel", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LossModel", LOG_LEVEL_ALL);
-//   LogComponentEnable ("ShadowingLossModel", LOG_LEVEL_ALL);
-//   LogComponentEnable ("PenetrationLossModel", LOG_LEVEL_ALL);
-//   LogComponentEnable ("MultipathLossModel", LOG_LEVEL_ALL);
-//   LogComponentEnable ("PathLossModel", LOG_LEVEL_ALL);
-// 
-//   LogComponentEnable ("LteNetDevice", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteUeNetDevice", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteEnbNetDevice", LOG_LEVEL_ALL);
-
-//   LogComponentEnable ("RrFfMacScheduler", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LenaHelper", LOG_LEVEL_ALL);
-//   LogComponentEnable ("RlcStatsCalculator", LOG_LEVEL_ALL);
-
-
-//   LogComponentEnable ("LteSpectrumPhy", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteEnbMac", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteEnbPhy", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteUePhy", LOG_LEVEL_ALL);
-//   LogComponentEnable ("RrFfMacScheduler", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LenaHelper", LOG_LEVEL_ALL);
-//   LogComponentEnable ("BuildingsPropagationLossModel", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteMiErrorModel", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteAmc", LOG_LEVEL_ALL);
-//   
-//   LogComponentDisableAll (LOG_LEVEL_ALL);
-
-  LogComponentEnable ("LenaTestPhyErrorModel", LOG_LEVEL_ALL);
 
 
   /**
@@ -232,42 +197,47 @@ LenaDataPhyErrorModelTestCase::DoRun (void)
     }
     
   lena->EnableRlcTraces ();
-  double simulationTime = 1.000;
+  Time simulationTime = Seconds (1.000);
 
-  Simulator::Stop (Seconds (simulationTime));
+  Simulator::Stop (simulationTime);
 
   Ptr<RadioBearerStatsCalculator> rlcStats = lena->GetRlcStats ();
-  rlcStats->SetAttribute ("EpochDuration", TimeValue (Seconds (simulationTime)));
+  rlcStats->SetAttribute ("EpochDuration", TimeValue (simulationTime));
 
 
   Simulator::Run ();
 
-  /**
-   * Check that the assignation is done in a RR fashion
-   */
-  NS_LOG_INFO ("\tTest downlink/uplink data shared channels (PDSCH and PUSCH)");
-  NS_LOG_INFO ("Test with " << m_nUser << " user(s) at distance " << m_dist << " expected BER " << m_berRef);
-  std::vector <uint64_t> dlDataRxed;
+  NS_LOG_INFO ("\tTest downlink data shared channels (PDSCH)");
+  NS_LOG_INFO ("Test with " << m_nUser << " user(s) at distance " << m_dist << " expected BLER " << m_blerRef);
   for (int i = 0; i < m_nUser; i++)
     {
       // get the imsi
       uint64_t imsi = ueDevs.Get (i)->GetObject<LteUeNetDevice> ()->GetImsi ();
-      // get the lcId
-      uint8_t lcId = 1;
-      dlDataRxed.push_back (rlcStats->GetDlRxData (imsi, lcId));
-      double txed = rlcStats->GetDlTxData (imsi, lcId);
-      int n = txed / m_tbSize;
-      int lambda = (double)dlDataRxed.at (i) / m_tbSize;
-      double ber = 1.0 - ((double)dlDataRxed.at (i)/txed);
-      double np = n-n*m_berRef;
-      NS_LOG_INFO ("\tUser " << i << " imsi " << imsi << " bytes rxed " << (double)dlDataRxed.at (i) << " txed " << txed 
-                   << " BER " << ber << " Err " << std::fabs (m_berRef - ber) << " lambda " << lambda 
-                   << " np " << np << " difference " << std::abs (lambda - np) << " quantile " << m_bernQuantile);
-      NS_UNUSED (ber);
+      uint8_t lcId = 3;
+
+      double dlRxPackets = rlcStats->GetDlRxPackets (imsi, lcId);
+      double dlTxPackets = rlcStats->GetDlTxPackets (imsi, lcId);
+      double dlBler =  1.0 - (dlRxPackets/dlTxPackets);
+      double expectedDlRxPackets = dlTxPackets -dlTxPackets*m_blerRef;
+      NS_LOG_INFO ("\tUser " << i << " imsi " << imsi << " DOWNLINK"
+                   << " pkts rx " << dlRxPackets << " tx " << dlTxPackets
+                   << " BLER " << dlBler << " Err " << std::fabs (m_blerRef - dlBler) 
+                   << " expected rx " << expectedDlRxPackets 
+                   << " difference " << std::abs (expectedDlRxPackets - dlRxPackets) 
+                   << " tolerance " << m_toleranceRxPackets);
+      NS_UNUSED (dlBler);
+
+      // sanity check for whether the tx packets reported by the stats are correct 
+      // we expect one packet per TTI, excluding the initial RRC connection establishment period
+      double expectedDlMinTxPackets = simulationTime.GetMilliSeconds () - 50;
+      NS_TEST_ASSERT_MSG_GT (dlTxPackets, expectedDlMinTxPackets, " too few DL TX packets reported");
+
       // the quantiles are evaluated offline according to a Bernoulli 
       // ditribution with n equal to the number of packet sent and p equal 
-      // to the BER (see /reference/bernuolliDistribution.m for details)
-      NS_TEST_ASSERT_MSG_EQ_TOL (lambda, np, m_bernQuantile, " Unexpected BER distribution!");
+      // to the BLER (see /reference/bernuolliDistribution.m for details)
+      NS_TEST_ASSERT_MSG_EQ_TOL (dlRxPackets, expectedDlRxPackets, m_toleranceRxPackets, " Unexpected DL BLER distribution!");
+
+
     }
 
 
@@ -286,12 +256,12 @@ LenaDlCtrlPhyErrorModelTestCase::BuildNameString (uint16_t nEnb, uint16_t dist)
 }
 
 
-LenaDlCtrlPhyErrorModelTestCase::LenaDlCtrlPhyErrorModelTestCase (uint16_t nEnb, uint16_t dist, uint16_t tbSize, double berRef)
+LenaDlCtrlPhyErrorModelTestCase::LenaDlCtrlPhyErrorModelTestCase (uint16_t nEnb, uint16_t dist, uint16_t tbSize, double blerRef)
 : TestCase (BuildNameString (nEnb, dist)),              
 m_nEnb (nEnb),
 m_dist (dist),
 m_tbSize (tbSize),
-m_berRef (berRef)
+m_blerRef (blerRef)
 {
 }
 
@@ -309,50 +279,6 @@ LenaDlCtrlPhyErrorModelTestCase::DoRun (void)
   Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue (true));
   Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));
   Config::SetDefault ("ns3::RrFfMacScheduler::HarqEnabled", BooleanValue (false));
-  //   LogComponentEnable ("LteEnbRrc", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteUeRrc", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteEnbMac", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteUeMac", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteRlc", LOG_LEVEL_ALL);
-  // 
-  //   LogComponentEnable ("LtePhy", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteEnbPhy", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteUePhy", LOG_LEVEL_ALL);
-  
-  //   LogComponentEnable ("LteSpectrumPhy", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteInterference", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteSinrChunkProcessor", LOG_LEVEL_ALL);
-  // 
-  //   LogComponentEnable ("LtePropagationLossModel", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LossModel", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("ShadowingLossModel", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("PenetrationLossModel", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("MultipathLossModel", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("PathLossModel", LOG_LEVEL_ALL);
-  // 
-  //   LogComponentEnable ("LteNetDevice", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteUeNetDevice", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteEnbNetDevice", LOG_LEVEL_ALL);
-  
-//     LogComponentEnable ("RrFfMacScheduler", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LenaHelper", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("RlcStatsCalculator", LOG_LEVEL_ALL);
-  
-  
-  //   LogComponentEnable ("LteSpectrumPhy", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteEnbMac", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteEnbPhy", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteUePhy", LOG_LEVEL_ALL);
-//     LogComponentEnable ("RrFfMacScheduler", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LenaHelper", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("BuildingsPropagationLossModel", LOG_LEVEL_ALL);
-//     LogComponentEnable ("LteMiErrorModel", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteAmc", LOG_LEVEL_ALL);
-  //   
-//   LogComponentDisableAll (LOG_LEVEL_ALL);
-  
-  LogComponentEnable ("LenaTestPhyErrorModel", LOG_LEVEL_ALL);
-  
   
   /**
   * Initialize Simulation Scenario: 1 eNB and m_nUser UEs
@@ -418,38 +344,39 @@ LenaDlCtrlPhyErrorModelTestCase::DoRun (void)
   
   
   lena->EnableRlcTraces ();
-  double simulationTime = 1.000;
+  Time simulationTime = Seconds (1.000);
   
-  Simulator::Stop (Seconds (simulationTime));
+  Simulator::Stop (simulationTime);
   
   Ptr<RadioBearerStatsCalculator> rlcStats = lena->GetRlcStats ();
-  rlcStats->SetAttribute ("EpochDuration", TimeValue (Seconds (simulationTime)));
+  rlcStats->SetAttribute ("EpochDuration", TimeValue (simulationTime));
   
   
   Simulator::Run ();
   
-  /**
-  * Check that the assignation is done in a RR fashion
-  */
   NS_LOG_INFO ("\tTest downlink control channels (PCFICH+PDCCH)");
-  NS_LOG_INFO ("Test with " << m_nEnb << " eNB(s) at distance " << m_dist << " expected BER " << m_berRef);
-  std::vector <uint64_t> dlDataRxed;
+  NS_LOG_INFO ("Test with " << m_nEnb << " eNB(s) at distance " << m_dist << " expected BLER " << m_blerRef);
   int nUser = 1;
   for (int i = 0; i < nUser; i++)
-  {
-    // get the imsi
-    uint64_t imsi = ueDevs.Get (i)->GetObject<LteUeNetDevice> ()->GetImsi ();
-    // get the lcId
-    uint8_t lcId = 1;
-    dlDataRxed.push_back (rlcStats->GetDlRxData (imsi, lcId));
-    double txed = rlcStats->GetDlTxData (imsi, lcId);
-    double ber = 1.0 - ((double)dlDataRxed.at (i)/txed);
-    NS_LOG_INFO ("\tUser " << i << " imsi " << imsi << " bytes rxed " << (double)dlDataRxed.at (i) << " txed " << txed 
-    << " BER " << ber << " Err " << fabs (m_berRef - ber));
-    NS_UNUSED (ber);
-    NS_TEST_ASSERT_MSG_EQ_TOL (ber, m_berRef, 0.1, " Unexpected BER distribution!");
-  }
-  
+    {
+      // get the imsi
+      uint64_t imsi = ueDevs.Get (i)->GetObject<LteUeNetDevice> ()->GetImsi ();
+      uint8_t lcId = 3;
+      double dlRxPackets = rlcStats->GetDlRxPackets (imsi, lcId);
+      double dlTxPackets = rlcStats->GetDlTxPackets (imsi, lcId);
+      double bler = 1.0 - (dlRxPackets/dlTxPackets);
+      NS_LOG_INFO ("\tUser " << i << " imsi " << imsi 
+                   << " pkts rx " << dlRxPackets << " tx " << dlTxPackets
+                   << " BLER " << bler << " Err " << fabs (m_blerRef - bler));
+      NS_UNUSED (bler);
+
+      // sanity check for whether the tx packets reported by the stats are correct 
+      // we expect one packet per TTI, excluding the initial RRC connection establishment period
+      double expectedMinDlTxPackets = simulationTime.GetMilliSeconds () - 50;
+      NS_TEST_ASSERT_MSG_GT (dlTxPackets, expectedMinDlTxPackets, " too few TX packets reported");
+
+      NS_TEST_ASSERT_MSG_EQ_TOL (bler, m_blerRef, 0.1, " Unexpected BLER distribution!");
+    }  
   
   Simulator::Destroy ();
 }

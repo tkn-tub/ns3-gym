@@ -559,16 +559,16 @@ Physical Error Model
 --------------------
 
 
-The test suite ``lte-phy-error-model`` generates different test cases for evaluating both data and control error models. For what concern the data, the test consists of nine test cases with single eNB and a various number of UEs, all having the same Radio Bearer specification. Each test is designed for evaluating the error rate perceived by a specific TB size in order to verify that it corresponds to the expected values according to the BLER generated for CB size analog to the TB size. This means that, for instance, the test will check that the performance of a TB of :math:`N` bits is analogous to the one of a a CB size of :math:`N` bits by collecting the performance of a user which has been forced the generation of a such TB size according to the distance to eNB. In order to significantly test the BER at MAC level, we modified the Adaptive Modulation and Coding (AMC) module, the ``LteAmc`` class, for making it less robust to channel conditions by adding a configurable BER parameter (called ``Ber`` in the ns3 attribute system) which enable the selection of the desired BER at MAC level when choosing the MCS to be used. In detail, the AMC module has been forced to select the AMC considering a BER of 0.01 (instead of the standard value equal to 0.00005). We note that, these values do not reflect actual BER since they come from an analytical bound which do not consider all the transmission chain aspects; therefore the resulted BER might be different. 
+The test suite ``lte-phy-error-model`` generates different test cases for evaluating both data and control error models. For what concern the data, the test consists of nine test cases with single eNB and a various number of UEs, all having the same Radio Bearer specification. Each test is designed for evaluating the error rate perceived by a specific TB size in order to verify that it corresponds to the expected values according to the BLER generated for CB size analog to the TB size. This means that, for instance, the test will check that the performance of a TB of :math:`N` bits is analogous to the one of a a CB size of :math:`N` bits by collecting the performance of a user which has been forced the generation of a such TB size according to the distance to eNB. In order to significantly test the BLER at MAC level, we configured the Adaptive Modulation and Coding (AMC) module, the ``LteAmc`` class, for making it less robust to channel conditions by using the PiroEW2010 AMC model and configuring it to select the MCS considering a target BER of 0.03 (instead of the default value of 0.00005). We note that these values do not reflect the actual BER, since they come from an analytical bound which does not consider all the transmission chain aspects; therefore the BER and BLER actually experienced at the reception of a TB is in general different. 
 
 The parameters of the nine test cases are reported in the following:
 
- #. 4 UEs placed 1800 meters far from the eNB, which implies the use of MCS 2 (SINR of -5.51 dB) and a TB of 256 bits, that in turns produce a BER of 0.33 (see point A in figure :ref:`fig-mcs-2-test`).
- #. 2 UEs placed 1800 meters far from the eNB, which implies the use of MCS 2 (SINR of -5.51 dB) and a TB of 528 bits, that in turns produce a BER of 0.11 (see point B in figure :ref:`fig-mcs-2-test`).
- #. 1 UE placed 1800 meters far from the eNB, which implies the use of MCS 2 (SINR of -5.51 dB) and a TB of 1088 bits, that in turns produce a BER of 0.02 (see point C in figure :ref:`fig-mcs-2-test`).
- #. 1 UE placed 600 meters far from the eNB, which implies the use of MCS 12 (SINR of 4.43 dB) and a TB of 4800 bits, that in turns produce a BER of 0.3 (see point D in figure :ref:`fig-mcs-12-test`).
- #. 3 UEs placed 600 meters far from the eNB, which implies the use of MCS 12 (SINR of 4.43 dB) and a TB of 1632 bits, that in turns produce a BER of 0.55 (see point E in figure :ref:`fig-mcs-12-test`).
- #. 1 UE placed 470 meters far from the eNB, which implies the use of MCS 16 (SINR of 8.48 dB) and a TB of 7272 bits (segmented in 2 CBs of 3648 and 3584 bits), that in turns produce a BER of 0.14, since each CB has CBLER equal to 0.075 (see point F in figure :ref:`fig-mcs-14-test`).
+ #. 4 UEs placed 1800 meters far from the eNB, which implies the use of MCS 2 (SINR of -5.51 dB) and a TB of 256 bits, that in turns produce a BLER of 0.33 (see point A in figure :ref:`fig-mcs-2-test`).
+ #. 2 UEs placed 1800 meters far from the eNB, which implies the use of MCS 2 (SINR of -5.51 dB) and a TB of 528 bits, that in turns produce a BLER of 0.11 (see point B in figure :ref:`fig-mcs-2-test`).
+ #. 1 UE placed 1800 meters far from the eNB, which implies the use of MCS 2 (SINR of -5.51 dB) and a TB of 1088 bits, that in turns produce a BLER of 0.02 (see point C in figure :ref:`fig-mcs-2-test`).
+ #. 1 UE placed 600 meters far from the eNB, which implies the use of MCS 12 (SINR of 4.43 dB) and a TB of 4800 bits, that in turns produce a BLER of 0.3 (see point D in figure :ref:`fig-mcs-12-test`).
+ #. 3 UEs placed 600 meters far from the eNB, which implies the use of MCS 12 (SINR of 4.43 dB) and a TB of 1632 bits, that in turns produce a BLER of 0.55 (see point E in figure :ref:`fig-mcs-12-test`).
+ #. 1 UE placed 470 meters far from the eNB, which implies the use of MCS 16 (SINR of 8.48 dB) and a TB of 7272 bits (segmented in 2 CBs of 3648 and 3584 bits), that in turns produce a BLER of 0.14, since each CB has CBLER equal to 0.075 (see point F in figure :ref:`fig-mcs-14-test`).
 
 
 .. _fig-mcs-2-test:
@@ -594,14 +594,14 @@ The parameters of the nine test cases are reported in the following:
    BLER for test 6.
 
 
-The test verifies that in each case the expected number of packets received correct corresponds to a Bernoulli distribution with a confidence interval of 95%, where the probability of success in each trail is :math:`1-BER` and :math:`n` is the total number of packet sent.
+The test verifies that in each case the expected number of packets received correct corresponds to a Bernoulli distribution with a confidence interval of 99%, where the probability of success in each trail is :math:`p=1-BER` and :math:`n` is the total number of packet sent.
 
 The error model of PCFICH-PDDCH channels consists of 4 test cases with a single UE and several eNBs, where the UE is connected to only one eNB in order to have the remaining acting as interfering ones. The errors on data are disabled in order to verify only the ones due to erroneous decodification of PCFICH-PDCCH. The test verifies that the error on the data received respects the decodification error probability of the PCFICH-PDCCH with a tolerance of 0.1 due to the errors that might be produced in quantizing the MI and the error curve. As before, the system has been forced on working in a less conservative fashion in the AMC module for appreciating the results in border situations. The parameters of the 4 tests cases are reported in the following:
 
- #. 2 eNBs placed 1078 meters far from the UE, which implies a SINR of -2.00 dB and a TB of 217 bits, that in turns produce a BER of 0.007.
- #. 3 eNBs placed 1078 meters far from the UE, which implies a SINR of -4.00 dB and a TB of 217 bits, that in turns produce a BER of 0.045.
- #. 4 eNBs placed 1078 meters far from the UE, which implies a SINR of -6.00 dB and a TB of 133 bits, that in turns produce a BER of 0.206.
- #. 5 eNBs placed 1078 meters far from the UE, which implies a SINR of -7.00 dB and a TB of 81 bits, that in turns produce a BER of 0.343.
+ #. 2 eNBs placed 1078 meters far from the UE, which implies a SINR of -2.00 dB and a TB of 217 bits, that in turns produce a BLER of 0.007.
+ #. 3 eNBs placed 1078 meters far from the UE, which implies a SINR of -4.00 dB and a TB of 217 bits, that in turns produce a BLER of 0.045.
+ #. 4 eNBs placed 1078 meters far from the UE, which implies a SINR of -6.00 dB and a TB of 133 bits, that in turns produce a BLER of 0.206.
+ #. 5 eNBs placed 1078 meters far from the UE, which implies a SINR of -7.00 dB and a TB of 81 bits, that in turns produce a BLER of 0.343.
 
 
 HARQ Model
