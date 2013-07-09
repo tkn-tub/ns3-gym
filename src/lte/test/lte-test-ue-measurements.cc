@@ -47,6 +47,7 @@
 #include <ns3/lte-enb-rrc.h>
 #include <ns3/lte-ue-net-device.h>
 #include <ns3/lte-ue-phy.h>
+#include <ns3/lte-ue-rrc.h>
 
 #include "lte-test-ue-measurements.h"
 #include "lte-test-sinr-chunk-processor.h"
@@ -351,7 +352,7 @@ operator<< (std::vector<Time>& v, const uint64_t& ms)
    * Prior attempt to use seconds as unit of choice resulted in precision lost.
    * Therefore milliseconds are used now instead.
    */
-  v.push_back (MilliSeconds (ms));
+  v.push_back (MilliSeconds (ms) + UE_MEASUREMENTS_DELAY);
   return v;
 }
 
@@ -405,8 +406,31 @@ LteUeMeasurementsPiecewiseTestSuite1::LteUeMeasurementsPiecewiseTestSuite1 ()
                                                         config, expectedTime, expectedRsrp),
                TestCase::EXTENSIVE);
 
+  // With short time-to-trigger
+  config.timeToTrigger = 64;
+  expectedTime.clear ();
+  expectedTime << 264 << 384 << 504 << 624 << 744 << 1064 << 1184 << 1304 << 1424 << 2064
+               << 2184;
+  expectedRsrp.clear ();
+  expectedRsrp << 67 << 67 << 57 << 66 << 66 << 66 << 66 << 57 << 51 << 57
+               << 57;
+  AddTestCase (new LteUeMeasurementsPiecewiseTestCase1 ("Piecewise test case 1 - Event A1 with short time-to-trigger",
+                                                        config, expectedTime, expectedRsrp),
+               TestCase::QUICK);
+
+  // With long time-to-trigger
+  config.timeToTrigger = 128;
+  expectedTime.clear ();
+  expectedTime << 328 << 448 << 568 << 688 << 808 << 1128 << 1248 << 1368 << 1488 << 2128;
+  expectedRsrp.clear ();
+  expectedRsrp << 67 << 57 << 57 << 66 << 47 << 66 << 57 << 57 << 51 << 57;
+  AddTestCase (new LteUeMeasurementsPiecewiseTestCase1 ("Piecewise test case 1 - Event A1 with long time-to-trigger",
+                                                        config, expectedTime, expectedRsrp),
+               TestCase::EXTENSIVE);
+
   // With hysteresis
   config.hysteresis = 8;
+  config.timeToTrigger = 0;
   expectedTime.clear ();
   expectedTime << 200 << 320 << 440 << 560 << 680 << 1000 << 1120 << 1240 << 1360 << 1480
                << 2200;
@@ -445,17 +469,38 @@ LteUeMeasurementsPiecewiseTestSuite1::LteUeMeasurementsPiecewiseTestSuite1 ()
   expectedRsrp << 47 << 47 << 51 << 51 << 47 << 47 << 51;
   AddTestCase (new LteUeMeasurementsPiecewiseTestCase1 ("Piecewise test case 1 - Event A2 with normal threshold",
                                                         config, expectedTime, expectedRsrp),
+               TestCase::QUICK);
+
+  // With short time-to-trigger
+  config.timeToTrigger = 64;
+  expectedTime.clear ();
+  expectedTime << 864 << 984 << 1464 << 1584 << 1704 << 1824 << 1944;
+  expectedRsrp.clear ();
+  expectedRsrp << 47 << 47 << 51 << 51 << 47 << 51 << 51;
+  AddTestCase (new LteUeMeasurementsPiecewiseTestCase1 ("Piecewise test case 1 - Event A2 with short time-to-trigger",
+                                                        config, expectedTime, expectedRsrp),
                TestCase::EXTENSIVE);
+
+  // With long time-to-trigger
+  config.timeToTrigger = 128;
+  expectedTime.clear ();
+  expectedTime << 928 << 1048 << 1528 << 1648 << 1768 << 1888 << 2008;
+  expectedRsrp.clear ();
+  expectedRsrp << 47 << 66 << 51 << 47 << 47 << 51 << 57;
+  AddTestCase (new LteUeMeasurementsPiecewiseTestCase1 ("Piecewise test case 1 - Event A2 with long time-to-trigger",
+                                                        config, expectedTime, expectedRsrp),
+               TestCase::QUICK);
 
   // With hysteresis
   config.hysteresis = 8;
+  config.timeToTrigger = 0;
   expectedTime.clear ();
   expectedTime << 800 << 920 << 1600 << 1720 << 1840 << 1960 << 2080;
   expectedRsrp.clear ();
   expectedRsrp << 47 << 47 << 47 << 47 << 51 << 51 << 57;
   AddTestCase (new LteUeMeasurementsPiecewiseTestCase1 ("Piecewise test case 1 - Event A2 with hysteresis",
                                                         config, expectedTime, expectedRsrp),
-               TestCase::QUICK);
+               TestCase::EXTENSIVE);
 
   // With very high threshold
   config.threshold1.range = 97;
@@ -680,28 +725,28 @@ LteUeMeasurementsPiecewiseTestCase1::RecvMeasurementReportCallback (
   NS_TEST_ASSERT_MSG_EQ (measResults.measResultListEutra.size (), 0,
                          "Unexpected report size");
 
-  // verifying the report timing
   bool hasEnded = m_itExpectedTime == m_expectedTime.end ();
   NS_TEST_ASSERT_MSG_EQ (hasEnded, false,
                          "Reporting should not have occurred at "
                          << Simulator::Now ().GetSeconds () << "s");
   if (!hasEnded)
     {
-      // comparison with milliseconds to avoid floating-point comparison
-      uint64_t timeNowMs = Simulator::Now ().GetMilliSeconds ();
-      uint64_t timeExpectedMs = m_itExpectedTime->GetMilliSeconds ();
-      NS_TEST_ASSERT_MSG_EQ (timeNowMs, timeExpectedMs,
-                             "Reporting should not have occurred at this time");
-      m_itExpectedTime++;
-
-      // verifying the report RSRP content
       hasEnded = m_itExpectedRsrp == m_expectedRsrp.end ();
       NS_ASSERT (!hasEnded);
+
+      // using milliseconds to avoid floating-point comparison
+      uint64_t timeNowMs = Simulator::Now ().GetMilliSeconds ();
+      uint64_t timeExpectedMs = m_itExpectedTime->GetMilliSeconds ();
+      m_itExpectedTime++;
+
       uint16_t observedRsrp = measResults.rsrpResult;
       uint16_t referenceRsrp = *m_itExpectedRsrp;
+      m_itExpectedRsrp++;
+
+      NS_TEST_ASSERT_MSG_EQ (timeNowMs, timeExpectedMs,
+                             "Reporting should not have occurred at this time");
       NS_TEST_ASSERT_MSG_EQ (observedRsrp, referenceRsrp,
                              "The RSRP observed differs with the reference RSRP");
-      m_itExpectedRsrp++;
     }
 
 } // end of LteUeMeasurementsPiecewiseTestCase1::RecvMeasurementReportCallback
@@ -765,7 +810,7 @@ LteUeMeasurementsPiecewiseTestSuite2::LteUeMeasurementsPiecewiseTestSuite2 ()
   expectedTime.clear ();
   expectedTime << 200 << 440 << 680 << 920 << 1160 << 1400 << 1640 << 1880 << 2120;
   expectedRsrp.clear ();
-  expectedRsrp << 73 << 63 << 72 << 52 << 72 << 59 << 52 << 56 << 59;
+  expectedRsrp << 73 << 63 << 72 << 52 << 72 << 56 << 52 << 56 << 59;
   AddTestCase (new LteUeMeasurementsPiecewiseTestCase2 ("Piecewise test case 2 - Event A1 with very low threshold",
                                                         config, expectedTime, expectedRsrp),
                TestCase::EXTENSIVE);
@@ -836,7 +881,7 @@ LteUeMeasurementsPiecewiseTestSuite2::LteUeMeasurementsPiecewiseTestSuite2 ()
   expectedTime.clear ();
   expectedTime << 200 << 440 << 680 << 920 << 1160 << 1400 << 1640 << 1880 << 2120;
   expectedRsrp.clear ();
-  expectedRsrp << 73 << 63 << 72 << 52 << 72 << 59 << 52 << 56 << 59;
+  expectedRsrp << 73 << 63 << 72 << 52 << 72 << 56 << 52 << 56 << 59;
   AddTestCase (new LteUeMeasurementsPiecewiseTestCase2 ("Piecewise test case 2 - Event A2 with very high threshold",
                                                         config, expectedTime, expectedRsrp),
                TestCase::TAKES_FOREVER);
@@ -895,7 +940,7 @@ LteUeMeasurementsPiecewiseTestSuite2::LteUeMeasurementsPiecewiseTestSuite2 ()
   expectedTime.clear ();
   expectedTime << 200 << 440 << 680 << 920 << 1160 << 1400 << 1640 << 1880 << 2120;
   expectedRsrp.clear ();
-  expectedRsrp << 73 << 63 << 72 << 52 << 72 << 59 << 52 << 56 << 59;
+  expectedRsrp << 73 << 63 << 72 << 52 << 72 << 56 << 52 << 56 << 59;
   AddTestCase (new LteUeMeasurementsPiecewiseTestCase2 ("Piecewise test case 2 - Event A4 with very low threshold",
                                                         config, expectedTime, expectedRsrp),
                TestCase::QUICK);
@@ -999,7 +1044,7 @@ LteUeMeasurementsPiecewiseTestSuite2::LteUeMeasurementsPiecewiseTestSuite2 ()
   expectedTime.clear ();
   expectedTime << 200 << 440 << 680 << 920 << 1160 << 1400 << 1640 << 1880 << 2120;
   expectedRsrp.clear ();
-  expectedRsrp << 73 << 63 << 72 << 52 << 72 << 59 << 52 << 56 << 59;
+  expectedRsrp << 73 << 63 << 72 << 52 << 72 << 56 << 52 << 56 << 59;
   AddTestCase (new LteUeMeasurementsPiecewiseTestCase2 ("Piecewise test case 2 - Event A5 with high-low threshold",
                                                         config, expectedTime, expectedRsrp),
                TestCase::EXTENSIVE);
@@ -1230,21 +1275,22 @@ LteUeMeasurementsPiecewiseTestCase2::RecvMeasurementReportCallback (
                          << Simulator::Now ().GetSeconds () << "s");
   if (!hasEnded)
     {
-      // comparison with milliseconds to avoid floating-point comparison
-      uint64_t timeNowMs = Simulator::Now ().GetMilliSeconds ();
-      uint64_t timeExpectedMs = m_itExpectedTime->GetMilliSeconds ();
-      NS_TEST_ASSERT_MSG_EQ (timeNowMs, timeExpectedMs,
-                             "Reporting should not have occurred at this time");
-      m_itExpectedTime++;
-
-      // verifying the report RSRP content
       hasEnded = m_itExpectedRsrp == m_expectedRsrp.end ();
       NS_ASSERT (!hasEnded);
+
+      // using milliseconds to avoid floating-point comparison
+      uint64_t timeNowMs = Simulator::Now ().GetMilliSeconds ();
+      uint64_t timeExpectedMs = m_itExpectedTime->GetMilliSeconds ();
+      m_itExpectedTime++;
+
       uint16_t observedRsrp = measResults.rsrpResult;
       uint16_t referenceRsrp = *m_itExpectedRsrp;
+      m_itExpectedRsrp++;
+
+      NS_TEST_ASSERT_MSG_EQ (timeNowMs, timeExpectedMs,
+                             "Reporting should not have occurred at this time");
       NS_TEST_ASSERT_MSG_EQ (observedRsrp, referenceRsrp,
                              "The RSRP observed differs with the reference RSRP");
-      m_itExpectedRsrp++;
     }
 
 } // end of void LteUeMeasurementsPiecewiseTestCase2::RecvMeasurementReportCallback
@@ -1730,21 +1776,22 @@ LteUeMeasurementsHandoverTestCase::RecvMeasurementReportCallback (
                          << Simulator::Now ().GetSeconds () << "s");
   if (!hasEnded)
     {
-      // comparison with milliseconds to avoid floating-point comparison
-      uint64_t timeNowMs = Simulator::Now ().GetMilliSeconds ();
-      uint64_t timeExpectedMs = m_itExpectedTime->GetMilliSeconds ();
-      NS_TEST_ASSERT_MSG_EQ (timeNowMs, timeExpectedMs,
-                             "Reporting should not have occurred at this time");
-      m_itExpectedTime++;
-
-      // verifying the report RSRP content
       hasEnded = m_itExpectedRsrp == m_expectedRsrp.end ();
       NS_ASSERT (!hasEnded);
+
+      // using milliseconds to avoid floating-point comparison
+      uint64_t timeNowMs = Simulator::Now ().GetMilliSeconds ();
+      uint64_t timeExpectedMs = m_itExpectedTime->GetMilliSeconds ();
+      m_itExpectedTime++;
+
       uint16_t observedRsrp = measResults.rsrpResult;
       uint16_t referenceRsrp = *m_itExpectedRsrp;
+      m_itExpectedRsrp++;
+
+      NS_TEST_ASSERT_MSG_EQ (timeNowMs, timeExpectedMs,
+                             "Reporting should not have occurred at this time");
       NS_TEST_ASSERT_MSG_EQ (observedRsrp, referenceRsrp,
                              "The RSRP observed differs with the reference RSRP");
-      m_itExpectedRsrp++;
     }
 
 } // end of void LteUeMeasurementsHandoverTestCase::RecvMeasurementReportCallback
