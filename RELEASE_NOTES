@@ -35,6 +35,7 @@ Bugs fixed
 - Bug 1688 - Routers should advertise themselves from the link-local address
 - Bug 1689 - IPv6 shouldn't add a default gateway without checking the Router lifetime
 - Bug 1697 - ICMPv6 Redirect trigger contains multiple bugs
+- Bug 1698 - mobility.SetPositionAllocator misses prefix "ns3::"
 - Bug 1700 - Ipv6RawSocket does not honor the bound address when sending packets
 - Bug 1701 - Ipv6StaticRouting: the source address should match the destination scope
 - Bug 1703 - Nodes don't react to a DAD
@@ -42,6 +43,7 @@ Bugs fixed
 - Bug 1718 - Ipv4StaticRouting log component is misspelled
 - Bug 1720 - IPv6 Fragmentation cause crashes
 - Bug 1727 - Ping6 should use a proper source address
+- Bug 1731 - lte-phy-error-model passes unexpectedly
 
 Known issues
 ------------
