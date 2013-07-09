@@ -45,7 +45,6 @@ NS_LOG_COMPONENT_DEFINE ("LteUeRrc");
 namespace ns3 {
 
 
-
 /////////////////////////////
 // CMAC SAP forwarder
 /////////////////////////////
@@ -1885,7 +1884,10 @@ LteUeRrc::VarMeasReportListAdd (uint8_t measId, ConcernedCells_t enteringCells)
 
   NS_ASSERT (!measReportIt->second.cellsTriggeredList.empty ());
   measReportIt->second.numberOfReportsSent = 0;
-  SendMeasurementReport (measId);
+  measReportIt->second.periodicReportTimer
+    = Simulator::Schedule (UE_MEASUREMENTS_DELAY,
+                           &LteUeRrc::SendMeasurementReport,
+                           this, measId);
 
   std::map<uint8_t, std::list<PendingTrigger_t> >::iterator
     enteringTriggerIt = m_enteringTriggerQueue.find (measId);
@@ -1943,6 +1945,8 @@ LteUeRrc::VarMeasReportListErase (uint8_t measId, ConcernedCells_t leavingCells,
 
   if (reportOnLeave)
     {
+      // TODO: this might fail because the VarMeasReportList entry might have been deleted already
+      // TODO: this might produce unexpectedly repeating measurement report
       SendMeasurementReport (measId);
     }
 
