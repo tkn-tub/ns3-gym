@@ -291,6 +291,29 @@ Ipv6InterfaceAddress Ipv6Interface::RemoveAddress (uint32_t index)
   return addr;  /* quiet compiler */
 }
 
+Ipv6InterfaceAddress 
+Ipv6Interface::RemoveAddress(Ipv6Address address)
+{
+  NS_LOG_FUNCTION(this << address);
+
+  if (address == address.GetLoopback())
+    {
+      NS_LOG_WARN ("Cannot remove loopback address.");
+      return Ipv6InterfaceAddress();
+    }
+
+  for (Ipv6InterfaceAddressListI it = m_addresses.begin (); it != m_addresses.end (); ++it)
+    {
+      if((*it).GetAddress() == address)
+        {
+          Ipv6InterfaceAddress iface = (*it);
+          m_addresses.erase(it);
+          return iface;
+        }
+    }
+  return Ipv6InterfaceAddress();
+}
+
 Ipv6InterfaceAddress Ipv6Interface::GetAddressMatchingDestination (Ipv6Address dst)
 {
   NS_LOG_FUNCTION (this << dst);

@@ -381,6 +381,29 @@ bool Ipv6L3Protocol::RemoveAddress (uint32_t i, uint32_t addressIndex)
   return false;
 }
 
+bool 
+Ipv6L3Protocol::RemoveAddress (uint32_t i, Ipv6Address address)
+{
+  NS_LOG_FUNCTION (this << i << address);
+
+  if (address == Ipv6Address::GetLoopback())
+    {
+      NS_LOG_WARN ("Cannot remove loopback address.");
+      return false;
+    }
+  Ptr<Ipv6Interface> interface = GetInterface (i);
+  Ipv6InterfaceAddress ifAddr = interface->RemoveAddress (address);
+  if (ifAddr != Ipv6InterfaceAddress ())
+  {
+    if (m_routingProtocol != 0)
+    {
+      m_routingProtocol->NotifyRemoveAddress (i, ifAddr);
+    }
+    return true;
+  }
+  return false;
+}
+
 void Ipv6L3Protocol::SetMetric (uint32_t i, uint16_t metric)
 {
   NS_LOG_FUNCTION (this << i << metric);

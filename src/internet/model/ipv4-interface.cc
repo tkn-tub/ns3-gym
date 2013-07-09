@@ -346,5 +346,28 @@ Ipv4Interface::RemoveAddress (uint32_t index)
   return (addr);  // quiet compiler
 }
 
+Ipv4InterfaceAddress
+Ipv4Interface::RemoveAddress(Ipv4Address address)
+{
+  NS_LOG_FUNCTION(this << address);
+
+  if (address == address.GetLoopback())
+    {
+      NS_LOG_WARN ("Cannot remove loopback address.");
+      return Ipv4InterfaceAddress();
+    }
+
+  for(Ipv4InterfaceAddressListI it = m_ifaddrs.begin(); it != m_ifaddrs.end(); it++)
+    {
+      if((*it).GetLocal() == address)
+        {
+          Ipv4InterfaceAddress ifAddr = *it;
+          m_ifaddrs.erase(it);
+          return ifAddr;
+        }
+    }
+  return Ipv4InterfaceAddress();
+}
+
 } // namespace ns3
 

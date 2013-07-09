@@ -249,6 +249,14 @@ public:
   bool RemoveAddress (uint32_t interfaceIndex, uint32_t addressIndex);
 
   /**
+   * \brief Remove a specified Ipv6 address from an interface.
+   * \param interfaceIndex interface index
+   * \param address Ipv6Address to be removed from the interface
+   * \returns true if the operation succeeded
+   */
+  bool RemoveAddress (uint32_t interface, Ipv6Address address);
+
+  /**
    * \brief Set metric for an interface.
    * \param i index
    * \param metric

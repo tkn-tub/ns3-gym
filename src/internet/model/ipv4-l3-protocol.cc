@@ -979,6 +979,29 @@ Ipv4L3Protocol::RemoveAddress (uint32_t i, uint32_t addressIndex)
   return false;
 }
 
+bool
+Ipv4L3Protocol::RemoveAddress (uint32_t i, Ipv4Address address)
+{
+  NS_LOG_FUNCTION (this << i << address);
+
+  if (address == Ipv4Address::GetLoopback())
+    {
+      NS_LOG_WARN ("Cannot remove loopback address.");
+      return false;
+    }
+  Ptr<Ipv4Interface> interface = GetInterface (i);
+  Ipv4InterfaceAddress ifAddr = interface->RemoveAddress (address);
+  if (ifAddr != Ipv4InterfaceAddress ())
+    {
+      if (m_routingProtocol != 0)
+        {
+          m_routingProtocol->NotifyRemoveAddress (i, ifAddr);
+        }
+      return true;
+    }
+  return false;
+}
+
 Ipv4Address 
 Ipv4L3Protocol::SelectSourceAddress (Ptr<const NetDevice> device,
                                      Ipv4Address dst, Ipv4InterfaceAddress::InterfaceAddressScope_e scope)

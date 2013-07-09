@@ -25,6 +25,7 @@ New user-visible features
 
 Bugs fixed
 ----------
+- Bug 760 - IP address removal can be painful
 - Bug 1390 - ICMPv6 Redirect are handled correctly only for /64 networks
 - Bug 1643 - NdiscCache creation and existence checks
 - Bug 1646 - ICMPv6 Redirect are sent from global address instead of link-local

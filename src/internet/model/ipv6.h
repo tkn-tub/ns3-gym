@@ -218,6 +218,15 @@ public:
   virtual bool RemoveAddress (uint32_t interface, uint32_t addressIndex) = 0;
 
   /**
+   * \brief Remove the given address on named Ipv6 interface
+   *
+   * \param interface Interface number of an IPv6 interface
+   * \param address the address to remove
+   * \returns true if the operation succeeded
+   */
+  virtual bool RemoveAddress (uint32_t interface, Ipv6Address address) = 0;
+
+  /**
    * \brief Set metric on specified Ipv6 interface.
    *
    * \param interface The interface number of an IPv6 interface
