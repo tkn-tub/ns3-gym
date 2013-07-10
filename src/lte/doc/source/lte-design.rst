@@ -1,7 +1,7 @@
 .. include:: replace.txt
 
 
-++++++++++++++++++++++++++
+++++++++++++++++++++
 Design Documentation
 ++++++++++++++++++++
 
@@ -1083,6 +1083,9 @@ where :math:`|\cdot|` indicates the cardinality of the set; finally,
 
 For what concern the HARQ, PF implements the non adaptive version, which implies that in allocating the retransmission attempts the scheduler uses the same allocation configuration of the original block, which means maintaining the same RBGs and MCS. UEs that are allocated for HARQ retransmissions are not considered for the transmission of new data in case they have a transmission opportunity available in the same TTI. Finally, HARQ can be disabled with ns3 attribute system for maintaining backward compatibility with old test cases and code, in detail::
 
+   Config::SetDefault ("ns3::PfFfMacScheduler::HarqEnabled", BooleanValue (false));
+
+
 
 Maximum Throughput (MT) Scheduler
 ---------------------------------
@@ -1098,7 +1101,7 @@ Let :math:`i,j` denote generic users; let :math:`t` be the
 subframe index, and :math:`k` be the resource block index; let :math:`M_{i,k}(t)` be MCS
 usable by user :math:`i` on resource block :math:`k` according to what reported by the AMC
 model (see `Adaptive Modulation and Coding`_); finally, let :math:`S(M, B)` be the TB
-size in bits as defined in [TS36.213]_ for the case where a number :math:`B` of
+size in bits as defined in [TS36213]_ for the case where a number :math:`B` of
 resource blocks is used. The achievable rate :math:`R_{i}(k,t)` in bit/s for user :math:`i`
 on resource block :math:`k` at subframe :math:`t` is defined as 
 
@@ -2108,13 +2111,13 @@ The simulation defines an entity called *consumer*, which may request an eNodeB
 RRC entity to provide UE measurement reports. Consumers are, for example,
 handover algorithms, which compute handover decision based on UE measurement
 reports. Test cases and user's programs may also become consumers. Figure
-Figure :ref:`fig-ue-meas-consumer` depicts the relationship between these
+:ref:`fig-ue-meas-consumer` depicts the relationship between these
 entities.
 
 .. _fig-ue-meas-consumer:
    
-.. figure:: figures/ue-meas-consumer.png
-   :align: center
+.. figure:: figures/ue-meas-consumer.*
+   :align: center   
 
    Relationship between UE measurements and its consumers
 

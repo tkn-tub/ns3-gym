@@ -111,6 +111,9 @@ SOURCEFIGS = \
 	$(SRC)/lte/doc/source/figures/lte-epc-x2-interface.dia \
 	$(SRC)/lte/doc/source/figures/lte-harq-architecture.dia \
 	$(SRC)/lte/doc/source/figures/lte-harq-processes-scheme.dia \
+	$(SRC)/lte/doc/source/figures/ue-meas-piecewise-motion.dia \
+	$(SRC)/lte/doc/source/figures/ue-meas-piecewise-a1.dia \
+	$(SRC)/lte/doc/source/figures/ue-meas-piecewise-a1-hys.dia \
 	$(SRC)/lte/doc/source/figures/lena-dual-stripe.eps \
 	$(SRC)/lte/doc/source/figures/lte-mcs-index.eps \
 	$(SRC)/lte/doc/source/figures/lenaThrTestCase1.eps \
@@ -129,6 +132,7 @@ SOURCEFIGS = \
 	$(SRC)/lte/doc/source/figures/lte-rlc-data-retx-ul.eps \
 	$(SRC)/lte/doc/source/figures/lte-epc-x2-handover-seq-diagram.eps \
 	$(SRC)/lte/doc/source/figures/lte-epc-x2-entity-saps.eps \
+	$(SRC)/lte/doc/source/figures/ue-meas-consumer.eps \
 	$(SRC)/lte/doc/source/figures/fading_pedestrian.png \
 	$(SRC)/lte/doc/source/figures/fading_vehicular.png \
 	$(SRC)/lte/doc/source/figures/fading_urban_3kmph.png \
@@ -243,6 +247,9 @@ IMAGES_EPS = \
 	$(FIGURES)/lte-epc-x2-interface.eps \
 	$(FIGURES)/lte-harq-architecture.eps \
 	$(FIGURES)/lte-harq-processes-scheme.eps \
+	$(FIGURES)/ue-meas-piecewise-motion.eps \
+	$(FIGURES)/ue-meas-piecewise-a1.eps \
+	$(FIGURES)/ue-meas-piecewise-a1-hys.eps \
 	$(FIGURES)/lena-dual-stripe.eps \
 	$(FIGURES)/lte-mcs-index.eps \
 	$(FIGURES)/lenaThrTestCase1.eps \
@@ -261,6 +268,7 @@ IMAGES_EPS = \
 	$(FIGURES)/lte-rlc-data-retx-ul.eps \
 	$(FIGURES)/lte-epc-x2-handover-seq-diagram.eps \
 	$(FIGURES)/lte-epc-x2-entity-saps.eps \
+	$(FIGURES)/ue-meas-consumer.eps \
 	$(FIGURES)/auvmobility-classes.eps \
 
 # rescale pdf figures as necessary

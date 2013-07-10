@@ -1,7 +1,7 @@
 .. include:: replace.txt
 
 
-+++++++++++++++++++++++++++
++++++++++++++++++++++
 Testing Documentation
 +++++++++++++++++++++
 
@@ -198,103 +198,238 @@ UE Measurements Tests
 ---------------------
 
 The test suite `lte-ue-measurements`` provides system tests recreating an
-inter-cell interference scenario identical of the one defined for `lte-interference`` test-suite. However, in this test the quantities to be tested are represented by RSRP and RSRQ measurements performed by the UE in two different points of the stack: the source, which is UE PHY layer, and the destination, that is the eNB RRC.
+inter-cell interference scenario identical of the one defined for
+`lte-interference`` test-suite. However, in this test the quantities to be
+tested are represented by RSRP and RSRQ measurements performed by the UE in two
+different points of the stack: the source, which is UE PHY layer, and the
+destination, that is the eNB RRC.
 
-The test vectors are obtained by use of a dedicated octave script
-(available in
-`src/lte/test/reference/lte-ue-measurements.m`), which does
-the link budget calculations (including interference) corresponding to the topology of each
-test case, and outputs the resulting RSRP and RSRQ. The obtained values are then used for checking the correctness of the UE Measurements at PHY layer, while they have to converted according to 3GPP formatting for checking they correctness at eNB RRC level.
+The test vectors are obtained by the use of a dedicated octave script (available
+in `src/lte/test/reference/lte-ue-measurements.m`), which does the link budget
+calculations (including interference) corresponding to the topology of each
+test case, and outputs the resulting RSRP and RSRQ. The obtained values are then
+used for checking the correctness of the UE Measurements at PHY layer. After
+that, they have to be converted according to 3GPP formatting for the purpose of
+checking their correctness at eNB RRC level.
 
 
 
 UE measurement configuration tests
 ----------------------------------
 
-The tables below are the complete list of cases for testing the UE measurements
-configuration function. Note that the asterisks mark means that the case
-consists of 4 subcases: plain, with hysteresis, with time-to-trigger, or both.
+Besides the previously mentioned test suite, there are 3 other test suites for
+testing UE measurements: `lte-ue-measurements-piecewise-1`,
+`lte-ue-measurements-piecewise-2`, and `lte-ue-measurements-handover`. These
+test suites are more focused on the reporting trigger procedure, i.e. the
+correctness of the implementation of the event-based triggering criteria is
+verified here.
 
-.. table:: UE measurement configuration test cases with piecewise configuration,
-           1 eNodeB, and 1 static UE
+In more specific, the tests verify the *timing* and the *content* of each
+measurement reports received by eNodeB. Each test case is an stand-alone LTE
+simulation and the test case will pass if measurement report(s) only occurs at
+the prescribed time and shows the correct level of RSRP (RSRQ is not verified at
+the moment).
 
-   ====== ================== ===========================
-   Test # Reporting Criteria Expected Report Occurrences
-   ====== ================== ===========================
-   1      Event A1 *         *TBD*
-   2      Event A2 *         *TBD*
-   3      Event A3 *         *TBD*
-   4      Event A4 *         *TBD*
-   5      Event A5 *         *TBD*
-   ====== ================== ===========================
-
-.. table:: UE measurement configuration test cases with piecewise configuration,
-           2 eNodeB, and 1 static UE
-
-   ====== ================== ===========================
-   Test # Reporting Criteria Expected Report Occurrences
-   ====== ================== ===========================
-   6      Event A1 *         *TBD*
-   7      Event A2 *         *TBD*
-   8      Event A3 *         *TBD*
-   9      Event A4 *         *TBD*
-   10     Event A5 *         *TBD*
-   ====== ================== ===========================
-
-.. table:: UE measurement configuration test cases with handover, 2 eNodeB,
-           and 1 static UE
-
-   ====== ============================= ===========================
-   Test # Reporting Criteria            Expected Report Occurrences
-   ====== ============================= ===========================
-   11     *TBD*                         *TBD*
-   ====== ============================= ===========================
-
-The above list is implemented as 3 ``TestCase`` classes associated with
-``LteUeMeasConfigTestSuite`` (*lte-ue-meas-config* test suite). These test cases
-verify the timing and serving cell's RSRP accuracy of the measurement reports.
-The following assumptions are used: ideal RRC protocol, and no layer 3
-filtering.
 
 Piecewise configuration
 +++++++++++++++++++++++
 
-In the piecewise configuration case, the UE will have the same measurement
-configuration throughout the simulation. The tests will attempt to provoke
-entering and leaving conditions at different time in the simulation by moving
-the UE to different locations, thus varying the received power, as
-illustrated in Figure :ref:`fig-tx-power-timing` below. The 200 ms period in the
-beginning is allocated to wait for the first report from UE PHY.
+The piecewise configuration aims to test a particular UE measurements
+configuration. The simulation script will setup the corresponding measurements
+configuration to the UE, which will be active throughout the simulation.
 
-.. _fig-tx-power-timing:
+Since the reference values are precalculated by hands, several assumptions are
+made to simplify the simulation. Firstly, the channel is only affected by path
+loss model (in this case, Friis model is used). Secondly, the ideal RRC protocol
+is used, and layer 3 filtering is disabled. Finally, the UE moves in a
+predefined motion pattern between 4 distinct spots, as depicted in Figure
+:ref:`fig-ue-meas-piecewise-motion` below. Therefore the fluctuation of the
+measured RSRP can be determined more easily.
+
+.. _fig-ue-meas-piecewise-motion:
    
-.. figure:: figures/lte-ue-meas-tx-power-timing.*
+.. figure:: figures/ue-meas-piecewise-motion.*
+   :scale: 80 %
    :align: center
 
-   Period of Tx Power on and off in constant measurement test case
+   UE movement trace throughout the simulation in piecewise configuration
 
-The motivation behind the *"teleport"* is to introduce drastic change which will
-guarantee the triggering of entering or leaving condition of the tested event.
-By performing drastic changes, the test can be run within shorter amount of
-time.
+The motivation behind the *"teleport"* between the predefined spots is to
+introduce drastic change of RSRP level, which will guarantee the triggering of
+entering or leaving condition of the tested event. By performing drastic
+changes, the test can be run within shorter amount of time.
 
-The case with 2 eNodeB (the second test case) exists for testing event-based
-triggering which is determined by neighbouring cells.
+Figure :ref:`fig-ue-meas-piecewise-a1` below shows the measured RSRP after
+layer 1 filtering by the PHY layer during the simulation with a piecewise
+configuration. Because layer 3 filtering is disabled, these are the exact values
+used by the UE RRC instance to evaluate reporting trigger procedure. Notice that
+the values are refreshed every 200 ms, which is the default filtering period of
+PHY layer measurements report. The figure also shows the time when entering and
+leaving conditions of an example instance of Event A1 (serving cell becomes
+better than threshold) occur during the simulation.
+
+.. _fig-ue-meas-piecewise-a1:
+   
+.. figure:: figures/ue-meas-piecewise-a1.*
+   :scale: 80 %
+   :align: center
+
+   Measured RSRP trace of an example Event A1 test case in piecewise
+   configuration
+
+Each reporting criterion is tested several times with different threshold/offset
+parameters. Some test scenarios also take hysteresis and time-to-trigger into
+account. Figure :ref:`fig-ue-meas-piecewise-a1-hys` depicts the effect of
+hysteresis in another example of Event A1 test.
+
+.. _fig-ue-meas-piecewise-a1-hys:
+   
+.. figure:: figures/ue-meas-piecewise-a1-hys.*
+   :scale: 80 %
+   :align: center
+
+   Measured RSRP trace of an example Event A1 with hysteresis test case in
+   piecewise configuration
+
+Piecewise configuration is used in two test suites of UE measurements. The first
+one is `lte-ue-measurements-piecewise-1`, henceforth Piecewise test #1, which
+simulates 1 UE and 1 eNodeB. The other one is `lte-ue-measurements-piecewise-2`,
+which has 1 UE and 2 eNodeBs in the simulation.
+
+Piecewise test #1 is intended to test the event-based criteria which are not
+dependent on the existence of a neighbouring cell. These criteria include Event
+A1 and A2. The other events are also briefly tested to verify that they are
+still working correctly (albeit not reporting anything) in the absence of any
+neighbouring cell. Table :ref:`tab-ue-meas-piecewise-1` below lists the
+scenarios tested in piecewise test #1. 
+
+.. _tab-ue-meas-piecewise-1:
+
+.. table:: UE measurements test scenarios using piecewise configuration #1
+
+   ====== ================== ================ ========== ===============
+   Test # Reporting Criteria Threshold/Offset Hysteresis Time-to-Trigger
+   ====== ================== ================ ========== ===============
+   1      Event A1           Low              No         No
+   2      Event A1           Normal           No         No
+   3      Event A1           Normal           No         Short
+   4      Event A1           Normal           No         Long
+   5      Event A1           Normal           No         Super
+   6      Event A1           Normal           Yes        No
+   7      Event A1           High             No         No
+   8      Event A2           Low              No         No
+   9      Event A2           Normal           No         No
+   10     Event A2           Normal           No         Short
+   11     Event A2           Normal           No         Long
+   12     Event A2           Normal           No         Super
+   13     Event A2           Normal           Yes        No
+   14     Event A2           High             No         No
+   15     Event A3           Zero             No         No
+   16     Event A4           Normal           No         No
+   17     Event A5           Normal-Normal    No         No
+   ====== ================== ================ ========== ===============
+
+Other events such as Event A3, A4, and A5 depend on measurements of neighbouring
+cell, so they are more thoroughly tested in Piecewise test #2. The simulation
+places the nodes on a straight line and instruct the UE to *"jump"* in a similar
+manner as in Piecewise test #1. Handover is disabled in the simulation, so the
+role of serving and neighbouring cells do not switch during the simulation.
+Table :ref:`tab-ue-meas-piecewise-2` below lists the scenarios tested in
+Piecewise test #2.
+
+.. _tab-ue-meas-piecewise-2:
+
+.. table:: UE measurements test scenarios using piecewise configuration #2
+
+   ====== ================== ================ ========== ===============
+   Test # Reporting Criteria Threshold/Offset Hysteresis Time-to-Trigger
+   ====== ================== ================ ========== ===============
+   1      Event A1           Low              No         No
+   2      Event A1           Normal           No         No
+   3      Event A1           High             No         No
+   4      Event A2           Low              No         No
+   5      Event A2           Normal           No         No
+   6      Event A2           High             No         No
+   7      Event A3           Positive         No         No
+   8      Event A3           Zero             No         No
+   9      Event A3           Zero             No         Short
+   10     Event A3           Zero             No         Super
+   11     Event A3           Zero             Yes        No
+   12     Event A3           Negative         No         No
+   13     Event A4           Low              No         No
+   14     Event A4           Normal           No         No
+   15     Event A4           Normal           No         Short
+   16     Event A4           Normal           No         Super
+   17     Event A4           Normal           Yes        No
+   18     Event A4           High             No         No
+   19     Event A5           Low-Low          No         No
+   20     Event A5           Low-Normal       No         No
+   21     Event A5           Low-High         No         No
+   22     Event A5           Normal-Low       No         No
+   23     Event A5           Normal-Normal    No         No
+   24     Event A5           Normal-Normal    No         Short
+   25     Event A5           Normal-Normal    No         Super
+   26     Event A5           Normal-Normal    Yes        No
+   27     Event A5           Normal-High      No         No
+   28     Event A5           High-Low         No         No
+   29     Event A5           High-Normal      No         No
+   30     Event A5           High-High        No         No
+   ====== ================== ================ ========== ===============
+
+One note about the tests with time-to-trigger, they are tested using 3 different
+values of time-to-trigger: *short* (shorter than report interval), *long*
+(shorter than the filter measurement period of 200 ms), and *super* (longer than
+200 ms). The first two ensure that time-to-trigger evaluation always use the
+latest measurement reports received from PHY layer. While the last one is
+responsible for verifying time-to-trigger cancellation, for example when a
+measurement report from PHY shows that the entering/leaving condition is no
+longer true before the first trigger is fired.
 
 Handover configuration
 ++++++++++++++++++++++
 
-The purpose of the handover test case is to verify whether the UE measurement
-configuration is updated properly after handover happens. For this purpose, the
-simulation will construct 2 eNodeBs with different UE measurement configuration,
-and the UE will perform handover from one to another. The UE will be located at
-the middle point between the 2 eNodeBs, and handover will be invoked manually.
+The purpose of the handover configuration is to verify whether UE measurement
+configuration is updated properly after a succesful handover takes place. For
+this purpose, the simulation will construct 2 eNodeBs with different UE
+measurement configuration, and the UE will perform handover from one cell to
+another. The UE will be located on a straight line between the 2 eNodeBs, and
+the handover will be invoked manually.
 
-The constructor definition of the ``TestCase`` class will be as below::
+The `lte-ue-measurements-handover` test suite covers various types of
+configuration differences. The first one is the difference in report interval:
+the first eNodeB is configured with 480 ms report interval, while the second
+eNodeB is configured with 240 ms report interval. Therefore, when the UE
+performed handover to the second cell, the new report interval must take effect.
+As in piecewise configuration, the timing and the content of each measurement
+report received by the eNodeB will be verified.
 
-  LteUeMeasurementsHandoverTestCase (LteRrcSap::ReportConfigEutra sourceconfig,
-                                     LteRrcSap::ReportConfigEutra destinationconfig,
-                                     std::vector<Time> expectedOccurrences);
+Other types of differences covered by the test suite are differences in event
+and differences in threshold/offset. Table :ref:`tab-ue-meas-handover` below
+lists the tested scenarios. 
+
+.. _tab-ue-meas-handover:
+
+.. table:: UE measurements test scenarios using handover configuration
+
+   ====== ================ =========================== ===========================
+   Test # Test Subject     Initial Configuration       Post-Handover Configuration
+   ====== ================ =========================== ===========================
+   1      Report interval  480 ms                      240 ms
+   2      Report interval  120 ms                      640 ms
+   3      Event            Event A1                    Event A2
+   4      Event            Event A2                    Event A1
+   5      Event            Event A3                    Event A4
+   6      Event            Event A4                    Event A3
+   7      Event            Event A2                    Event A3
+   8      Event            Event A3                    Event A2
+   9      Event            Event A4                    Event A5
+   10     Event            Event A5                    Event A4
+   11     Threshold/offset RSRP range 52 (Event A1)    RSRP range 56 (Event A1)
+   12     Threshold/offset RSRP range 52 (Event A2)    RSRP range 56 (Event A2)
+   13     Threshold/offset A3 offset -30 (Event A3)    A3 offset +30 (Event A3)
+   14     Threshold/offset RSRP range 52 (Event A4)    RSRP range 56 (Event A4)
+   15     Threshold/offset RSRP range 52-52 (Event A5) RSRP range 56-56 (Event A5)
+   ====== ================ =========================== ===========================
 
 
 
@@ -473,7 +608,7 @@ at the given SNR, while reference throughput value for other UEs by zero.
 Let :math:`\tau` be the TTI duration, :math:`B` the transmission
 bandwidth configuration in number of RBs, :math:`M` the modulation and
 coding scheme in use at the given SNR and :math:`S(M, B)` be the
-transport block size as defined in [TS36.213]_. The reference
+transport block size as defined in [TS36213]_. The reference
 throughput :math:`T` in bit/s achieved by each UE is calculated as 
 
 .. math::
