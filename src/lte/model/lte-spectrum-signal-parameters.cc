@@ -97,11 +97,13 @@ LteSpectrumSignalParametersDlCtrlFrame::LteSpectrumSignalParametersDlCtrlFrame (
 }
 
 LteSpectrumSignalParametersDlCtrlFrame::LteSpectrumSignalParametersDlCtrlFrame (const LteSpectrumSignalParametersDlCtrlFrame& p)
-: SpectrumSignalParameters (p)
+  : SpectrumSignalParameters (p)
 {
   NS_LOG_FUNCTION (this << &p);
   cellId = p.cellId;
   pss = p.pss;
+  mib = p.mib;
+  sib1 = p.sib1;
   ctrlMsgList = p.ctrlMsgList;
 }
 
@@ -115,7 +117,7 @@ LteSpectrumSignalParametersDlCtrlFrame::Copy ()
   //   return Copy<LteSpectrumSignalParametersDlCtrlFrame> (this);
   // but it causes a double creation of the object, hence it is less efficient.
   // The solution below is copied from the implementation of Copy<> (Ptr<>) in ptr.h
-  Ptr<LteSpectrumSignalParametersDlCtrlFrame> lssp (new LteSpectrumSignalParametersDlCtrlFrame (*this), false);  
+  Ptr<LteSpectrumSignalParametersDlCtrlFrame> lssp (new LteSpectrumSignalParametersDlCtrlFrame (*this), false);
   return lssp;
 }
 

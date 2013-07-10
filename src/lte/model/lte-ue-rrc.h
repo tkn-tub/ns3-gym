@@ -333,6 +333,8 @@ private:
   uint16_t m_ulEarfcn;  /**< uplink carrier frequency */
 
   //             imsi      cellid    rnti
+  TracedCallback<uint64_t, uint16_t, uint16_t> m_mibReceivedTrace;
+  //             imsi      cellid    rnti
   TracedCallback<uint64_t, uint16_t, uint16_t, State, State> m_stateTransitionTrace;
   //             imsi      cellid    rnti
   TracedCallback<uint64_t, uint16_t, uint16_t> m_randomAccessSuccessfulTrace;

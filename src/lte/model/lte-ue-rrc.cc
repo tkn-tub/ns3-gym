@@ -187,6 +187,9 @@ LteUeRrc::GetTypeId (void)
                    UintegerValue (0), // unused, read-only attribute
                    MakeUintegerAccessor (&LteUeRrc::GetRnti),
                    MakeUintegerChecker<uint16_t> ())
+    .AddTraceSource ("MasterInformationBlockReceived",
+                     "trace fired upon reception of MIB (typically every 10 ms)",
+                     MakeTraceSourceAccessor (&LteUeRrc::m_mibReceivedTrace))
     .AddTraceSource ("StateTransition",
                      "trace fired upon every UE RRC state transition",
                      MakeTraceSourceAccessor (&LteUeRrc::m_stateTransitionTrace))
@@ -205,7 +208,7 @@ LteUeRrc::GetTypeId (void)
     .AddTraceSource ("HandoverEndOk",
                      "trace fired upon successful termination of a handover procedure",
                      MakeTraceSourceAccessor (&LteUeRrc::m_handoverEndOkTrace))
-    ;
+  ;
   return tid;
 }
 
@@ -355,7 +358,7 @@ LteUeRrc::DoInitialize (void)
   rlc->SetRnti (m_rnti);
   rlc->SetLcId (lcid);
 
-  m_srb0 = CreateObject<LteSignalingRadioBearerInfo> ();  
+  m_srb0 = CreateObject<LteSignalingRadioBearerInfo> ();
   m_srb0->m_rlc = rlc;
   m_srb0->m_srbIdentity = 0;
   LteUeRrcSapUser::SetupParameters ueParams;
@@ -535,9 +538,11 @@ void
 LteUeRrc::DoRecvMasterInformationBlock (LteRrcSap::MasterInformationBlock msg)  
 { 
   NS_LOG_FUNCTION (this);
+  // TODO may speed up a bit if only execute the following when bandwidth changes?
   m_dlBandwidth = msg.dlBandwidth;
   m_cphySapProvider->SetDlBandwidth (msg.dlBandwidth);
   m_receivedMib = true;
+  m_mibReceivedTrace (m_imsi, m_cellId, m_rnti);
   if (m_state == IDLE_WAIT_SYSTEM_INFO && m_receivedMib && m_receivedSib2)
     {
       SwitchToState (IDLE_CAMPED_NORMALLY);

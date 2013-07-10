@@ -825,11 +825,9 @@ LteUePhy::ReceiveLteControlMessageList (std::list<Ptr<LteControlMessage> > msgLi
               }
           }
       }
-    else if (msg->GetMessageType () == LteControlMessage::MIB) 
+    else if (msg->GetMessageType () == LteControlMessage::MIB)
       {
-        NS_LOG_INFO ("received MIB");
-        Ptr<MibLteControlMessage> msg2 = DynamicCast<MibLteControlMessage> (msg);
-        m_ueCphySapUser->RecvMasterInformationBlock (msg2->GetMib ());
+        // ignore
       }
     else
     {
@@ -872,6 +870,22 @@ LteUePhy::ReceivePss (uint16_t cellId, Ptr<SpectrumValue> p)
 
 
 void
+LteUePhy::ReceiveMib (uint16_t cellId, std::list<Ptr<LteControlMessage> > ctrlMsgList)
+{
+  std::list<Ptr<LteControlMessage> >::const_iterator it;
+  for (it = ctrlMsgList.begin (); it != ctrlMsgList.end (); ++it)
+    {
+      if ((*it)->GetMessageType () == LteControlMessage::MIB)
+        {
+          NS_LOG_INFO ("received MIB from cellId=" << cellId);
+          Ptr<MibLteControlMessage> msg = DynamicCast<MibLteControlMessage> (*it);
+          m_ueCphySapUser->RecvMasterInformationBlock (msg->GetMib ());
+        }
+    }
+}
+
+
+void
 LteUePhy::QueueSubChannelsForTransmission (std::vector <int> rbMap)
 {
   m_subChannelsForTransmissionQueue.at (m_macChTtiDelay - 1) = rbMap;
@@ -884,7 +898,7 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
   NS_LOG_FUNCTION (this << frameNo << subframeNo);
 
   NS_ASSERT_MSG (frameNo > 0, "the SRS index check code assumes that frameNo starts at 1");
-  
+
   // refresh internal variables
   m_rsReceivedPowerUpdated = false;
   m_rsInterferencePowerUpdated = false;
@@ -1005,6 +1019,20 @@ LteUePhy::DoReset ()
   m_sendSrsEvent.Cancel ();
   m_downlinkSpectrumPhy->Reset ();
   m_uplinkSpectrumPhy->Reset ();
+
+  // configure DL for receiving the BCH with the minimum bandwidth
+  m_dlEarfcn = 100;
+  m_dlBandwidth = 6;
+  m_noiseFigure = 9.0;
+  // TODO any better way to define those default values?
+  Ptr<SpectrumValue> noisePsd =
+    LteSpectrumValueHelper::CreateNoisePowerSpectralDensity (m_dlEarfcn,
+                                                             m_dlBandwidth,
+                                                             m_noiseFigure);
+  m_downlinkSpectrumPhy->SetNoisePowerSpectralDensity (noisePsd);
+  NS_ASSERT (m_downlinkSpectrumPhy->GetChannel () != 0);
+  m_downlinkSpectrumPhy->GetChannel ()->AddRx (m_downlinkSpectrumPhy);
+
 }
 
 void
@@ -1016,11 +1044,11 @@ LteUePhy::DoSyncronizeWithEnb (uint16_t cellId, uint16_t dlEarfcn)
   m_downlinkSpectrumPhy->SetCellId (cellId);
   m_uplinkSpectrumPhy->SetCellId (cellId);
 
-  // configure DL for receing the BCH with the minimum bandwith
+  // configure DL for receiving the BCH with the minimum bandwidth
   m_dlBandwidth = 6;
   Ptr<SpectrumValue> noisePsd = LteSpectrumValueHelper::CreateNoisePowerSpectralDensity (m_dlEarfcn, m_dlBandwidth, m_noiseFigure);
   m_downlinkSpectrumPhy->SetNoisePowerSpectralDensity (noisePsd);
-  m_downlinkSpectrumPhy->GetChannel ()->AddRx (m_downlinkSpectrumPhy);  
+  m_downlinkSpectrumPhy->GetChannel ()->AddRx (m_downlinkSpectrumPhy);
   
   m_dlConfigured = false;
   m_ulConfigured = false;

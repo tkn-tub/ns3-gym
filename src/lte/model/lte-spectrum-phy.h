@@ -127,6 +127,12 @@ typedef Callback< void > LtePhyRxCtrlEndErrorCallback;
 */
 typedef Callback< void, uint16_t, Ptr<SpectrumValue> > LtePhyRxPssCallback;
 
+/**
+* This method is used by the LteSpectrumPhy to notify the UE PHY that an
+* MIB has been received
+*/
+typedef Callback< void, uint16_t, std::list<Ptr<LteControlMessage> > > LtePhyRxMibCallback;
+
 
 /**
 * This method is used by the LteSpectrumPhy to notify the PHY about
@@ -228,12 +234,15 @@ public:
   *
   *
   * @param ctrlMsgList the burst of contrl messages to be transmitted
-  * @param pss the flag for transmitting the primary synchronization signal
+  * @param pss the flag for transmitting the Primary Synchronization Signal
+  * @param mib the flag for transmitting the Master Information Block
+  * @param sib1 the flag for transmitting the System Information Block Type 1
   *
   * @return true if an error occurred and the transmission was not
   * started, false otherwise.
   */
-  bool StartTxDlCtrlFrame (std::list<Ptr<LteControlMessage> > ctrlMsgList, bool pss);
+  bool StartTxDlCtrlFrame (std::list<Ptr<LteControlMessage> > ctrlMsgList,
+                           bool pss, bool mib, bool sib1);
   
   
   /**
@@ -271,7 +280,7 @@ public:
    * @param c the callback
    */
   void SetLtePhyRxDataEndOkCallback (LtePhyRxDataEndOkCallback c);
-  
+
   /**
   * set the callback for the successful end of a RX ctrl frame, as part 
   * of the interconnections betweenthe LteSpectrumPhy and the PHY
@@ -279,7 +288,7 @@ public:
   * @param c the callback
   */
   void SetLtePhyRxCtrlEndOkCallback (LtePhyRxCtrlEndOkCallback c);
-  
+
   /**
   * set the callback for the erroneous end of a RX ctrl frame, as part 
   * of the interconnections betweenthe LteSpectrumPhy and the PHY
@@ -295,6 +304,14 @@ public:
   * @param c the callback
   */
   void SetLtePhyRxPssCallback (LtePhyRxPssCallback c);
+
+  /**
+  * set the callback for the reception of the MIB as part
+  * of the interconnections between the LteSpectrumPhy and the UE PHY
+  *
+  * @param c the callback
+  */
+  void SetLtePhyRxMibCallback (LtePhyRxMibCallback c);
 
   /**
   * set the callback for the DL HARQ feedback as part of the 
@@ -455,6 +472,7 @@ private:
   LtePhyRxCtrlEndOkCallback     m_ltePhyRxCtrlEndOkCallback;
   LtePhyRxCtrlEndErrorCallback  m_ltePhyRxCtrlEndErrorCallback;
   LtePhyRxPssCallback  m_ltePhyRxPssCallback;
+  LtePhyRxMibCallback  m_ltePhyRxMibCallback;
 
   Ptr<LteInterference> m_interferenceData;
   Ptr<LteInterference> m_interferenceCtrl;
