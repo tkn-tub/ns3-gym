@@ -33,6 +33,7 @@ Bugs fixed
 - Bug 1646 - ICMPv6 Redirect are sent from global address instead of link-local
 - Bug 1662 - m_type not set for Ipv6OptionRouterAlertHeader
 - Bug 1678 - C++11 compliance problem with std::pair"
+- Bug 1682 - ./waf crashes on FC10
 - Bug 1683 - IPv6 autoconfigured don't use *infinite* lifetimes
 - Bug 1669 - ns-3 should support binding two and three (possibly more) arguments
 - Bug 1675 - Throughput computation error in Wireless examples
