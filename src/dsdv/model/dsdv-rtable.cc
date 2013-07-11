@@ -39,9 +39,9 @@ namespace ns3 {
 namespace dsdv {
 RoutingTableEntry::RoutingTableEntry (Ptr<NetDevice> dev,
                                       Ipv4Address dst,
-                                      u_int32_t seqNo,
+                                      uint32_t seqNo,
                                       Ipv4InterfaceAddress iface,
-                                      u_int32_t hops,
+                                      uint32_t hops,
                                       Ipv4Address nextHop,
                                       Time lifetime,
                                       Time SettlingTime,

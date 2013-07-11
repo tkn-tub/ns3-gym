@@ -57,8 +57,8 @@ class RoutingTableEntry
 {
 public:
   /// c-tor
-  RoutingTableEntry (Ptr<NetDevice> dev = 0, Ipv4Address dst = Ipv4Address (), u_int32_t m_seqNo = 0,
-                     Ipv4InterfaceAddress iface = Ipv4InterfaceAddress (), u_int32_t hops = 0, Ipv4Address nextHop = Ipv4Address (),
+  RoutingTableEntry (Ptr<NetDevice> dev = 0, Ipv4Address dst = Ipv4Address (), uint32_t m_seqNo = 0,
+                     Ipv4InterfaceAddress iface = Ipv4InterfaceAddress (), uint32_t hops = 0, Ipv4Address nextHop = Ipv4Address (),
                      Time lifetime = Simulator::Now (), Time SettlingTime = Simulator::Now (), bool changedEntries = false);
 
   ~RoutingTableEntry ();

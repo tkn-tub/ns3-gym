@@ -691,7 +691,7 @@ RoutingProtocol::RecvDsdv (Ptr<Socket> socket)
                       /*Received update with same seq number but with same or greater hop count.
                        * Discard that update.
                        */
-                      if (not m_advRoutingTable.AnyRunningEvent (dsdvHeader.GetDst ()))
+                      if (!m_advRoutingTable.AnyRunningEvent (dsdvHeader.GetDst ()))
                         {
                           /*update the timer only if nexthop address matches thus discarding
                            * updates to that destination from other nodes.
@@ -711,7 +711,7 @@ RoutingProtocol::RecvDsdv (Ptr<Socket> socket)
               else
                 {
                   // Received update with an old sequence number. Discard the update
-                  if (not m_advRoutingTable.AnyRunningEvent (dsdvHeader.GetDst ()))
+                  if (!m_advRoutingTable.AnyRunningEvent (dsdvHeader.GetDst ()))
                     {
                       m_advRoutingTable.DeleteRoute (dsdvHeader.GetDst ());
                     }
@@ -743,7 +743,7 @@ RoutingProtocol::RecvDsdv (Ptr<Socket> socket)
                 }
               else
                 {
-                  if (not m_advRoutingTable.AnyRunningEvent (dsdvHeader.GetDst ()))
+                  if (!m_advRoutingTable.AnyRunningEvent (dsdvHeader.GetDst ()))
                     {
                       m_advRoutingTable.DeleteRoute (dsdvHeader.GetDst ());
                     }
@@ -786,7 +786,7 @@ RoutingProtocol::SendTriggeredUpdate ()
                                         << " SeqNo:" << i->second.GetSeqNo () << " HopCount:"
                                         << i->second.GetHop () + 1);
           RoutingTableEntry temp = i->second;
-          if ((i->second.GetEntriesChanged () == true) && (not m_advRoutingTable.AnyRunningEvent (temp.GetDestination ())))
+          if ((i->second.GetEntriesChanged () == true) && (!m_advRoutingTable.AnyRunningEvent (temp.GetDestination ())))
             {
               dsdvHeader.SetDst (i->second.GetDestination ());
               dsdvHeader.SetDstSeqno (i->second.GetSeqNo ());
@@ -1189,7 +1189,7 @@ RoutingProtocol::MergeTriggerPeriodicUpdates ()
       for (std::map<Ipv4Address, RoutingTableEntry>::const_iterator i = allRoutes.begin (); i != allRoutes.end (); ++i)
         {
           RoutingTableEntry advEntry = i->second;
-          if ((advEntry.GetEntriesChanged () == true) && (not m_advRoutingTable.AnyRunningEvent (advEntry.GetDestination ())))
+          if ((advEntry.GetEntriesChanged () == true) && (!m_advRoutingTable.AnyRunningEvent (advEntry.GetDestination ())))
             {
               if (!(advEntry.GetSeqNo () % 2))
                 {
