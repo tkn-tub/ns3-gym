@@ -1,0 +1,152 @@
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+/*
+ * Copyright (c) 2012 Lawrence Livermore National Laboratory
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Author: Peter D. Barnes, Jr. <pdbarnes@llnl.gov>
+ */
+
+#ifndef HASHFUNCTION_H
+#define HASHFUNCTION_H
+
+#include "simple-ref-count.h"
+
+namespace ns3 {
+
+namespace Hash {
+
+/**
+ *  \ingroup hash
+ *
+ *  \brief Hash function implementation base class
+ */
+class Implementation : public SimpleRefCount<Implementation>
+{
+public:
+  /**
+   * Compute 32-bit hash of a byte buffer
+   *
+   * Call clear () between calls to GetHash32() to reset the
+   * internal state and hash each buffer separately.
+   *
+   * If you don't call clear() between calls to GetHash32,
+   * you can hash successive buffers.  The final return value
+   * will be the cumulative hash across all calls.
+   *
+   * \param [in] buffer pointer to the beginning of the buffer
+   * \param [in] size length of the buffer, in bytes
+   * \return 32-bit hash of the buffer
+   */
+  virtual uint32_t  GetHash32  (const char * buffer, const size_t size) = 0;
+  /**
+   * Compute 64-bit hash of a byte buffer.
+   *
+   * Default implementation returns 32-bit hash, with a warning.
+   *
+   * Call clear () between calls to GetHash64() to reset the
+   * internal state and hash each buffer separately.
+   *
+   * If you don't call clear() between calls to GetHash64,
+   * you can hash successive buffers.  The final return value
+   * will be the cumulative hash across all calls.
+   *
+   * \param [in] buffer pointer to the beginning of the buffer
+   * \param [in] size length of the buffer, in bytes
+   * \return 64-bit hash of the buffer
+   */
+  virtual uint64_t  GetHash64  (const char * buffer, const size_t size);
+  /**
+   * Restore initial state
+   */
+  virtual void clear (void) = 0;
+  /**
+   * Constructor
+   */
+  Implementation () { };
+  /**
+   * Destructor
+   */
+  virtual ~Implementation () { };
+};  // Hashfunction
+
+  
+/*--------------------------------------
+ *  Hash function implementation
+ *  by function pointers and templates
+ */
+
+/**
+ *
+ * \ingroup hash
+ *
+ * \brief Basic hash function typedefs.
+ *
+ * See Hash32Implementation<> or Hash64Implementation<>
+ */
+typedef uint32_t (*Hash32Function_ptr) (const char *, const size_t);
+typedef uint64_t (*Hash64Function_ptr) (const char *, const size_t);
+
+namespace Function {
+
+/**
+ * \ingroup hash
+ *
+ * \brief Template for Hashfunctions from 32-bit hash functions
+ */
+class Hash32 : public Implementation
+{
+public:
+  Hash32 (Hash32Function_ptr hp) : m_fp (hp) { };
+  uint32_t GetHash32 (const char * buffer, const size_t size)
+  {
+    return (*m_fp) (buffer, size);
+  }
+  void clear () { };
+private:
+  Hash32Function_ptr m_fp;
+};  // Hash32
+
+/**
+ * \ingroup hash
+ *
+ * \brief Template for Hashfunctions from 64-bit hash functions
+ */
+class Hash64 : public Implementation
+{
+public:
+  Hash64 (Hash64Function_ptr hp) : m_fp (hp) { };
+  uint64_t GetHash64 (const char * buffer, const size_t size)
+  {
+    return (*m_fp) (buffer, size);
+  }
+  uint32_t GetHash32 (const char * buffer, const size_t size)
+  {
+    uint64_t hash = GetHash64 (buffer, size);
+    return *(uint32_t *)(void *)(&hash);
+  }
+  void clear () { };
+private:
+  Hash64Function_ptr m_fp;
+};  // Hash64<Hash64Function_ptr>
+
+
+}  // namespace Function
+
+}  // namespace Hash
+
+}  // namespace ns3
+
+#endif /* HASHFUNCTION_H */
+
