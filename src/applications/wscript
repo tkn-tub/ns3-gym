@@ -26,6 +26,7 @@ def build(bld):
         'helper/udp-client-server-helper.cc',
         'helper/udp-echo-helper.cc',
         'helper/v4ping-helper.cc',
+        'helper/radvd-helper.cc',
         ]
 
     applications_test = bld.create_ns3_module_test_library('applications')
@@ -59,6 +60,7 @@ def build(bld):
         'helper/udp-client-server-helper.h',
         'helper/udp-echo-helper.h',
         'helper/v4ping-helper.h',
+        'helper/radvd-helper.h',
         ]
 
     bld.ns3_python_bindings()

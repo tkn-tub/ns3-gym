@@ -108,24 +108,15 @@ int main (int argc, char** argv)
   iic2.Add (iicr2);
 
   /* radvd configuration */
-  Ipv6Address prefix ("2001:1::0"); /* create the prefix */
-  Ipv6Address prefix2 ("2001:2::0"); /* create the prefix */
-  uint32_t indexRouter = iic1.GetInterfaceIndex (1); /* R interface (n0 - R) */
-  uint32_t indexRouter2 = iic2.GetInterfaceIndex (1); /* R interface (R - n1) */
-  Ptr<Radvd> radvd = CreateObject<Radvd> ();
-  Ptr<RadvdInterface> routerInterface = Create<RadvdInterface> (indexRouter, 5000, 1000);
-  Ptr<RadvdPrefix> routerPrefix = Create<RadvdPrefix> (prefix, 64, 3, 5);
-  Ptr<RadvdInterface> routerInterface2 = Create<RadvdInterface> (indexRouter2, 5000, 1000);
-  Ptr<RadvdPrefix> routerPrefix2 = Create<RadvdPrefix> (prefix2, 64, 3, 5);
+  RadvdHelper radvdHelper;
+  /* R interface (n0 - R) */
+  radvdHelper.AddAnnouncedPrefix(iic1.GetInterfaceIndex (1), Ipv6Address("2001:1::0"), 64);
+  /* R interface (R - n1) */
+  radvdHelper.AddAnnouncedPrefix(iic2.GetInterfaceIndex (1), Ipv6Address("2001:2::0"), 64);
 
-  routerInterface->AddPrefix (routerPrefix);
-  routerInterface2->AddPrefix (routerPrefix2);
-  radvd->AddConfiguration (routerInterface);
-  radvd->AddConfiguration (routerInterface2);
-
-  r->AddApplication (radvd);
-  radvd->SetStartTime (Seconds (1.0));
-  radvd->SetStopTime (Seconds (10.0));
+  ApplicationContainer radvdApps = radvdHelper.Install (r);
+  radvdApps.Start (Seconds (1.0));
+  radvdApps.Stop (Seconds (10.0));
 
   /* Create a Ping6 application to send ICMPv6 echo request from n0 to n1 via R */
   uint32_t packetSize = 1024;
