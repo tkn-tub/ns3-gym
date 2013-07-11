@@ -21,8 +21,12 @@ Supported platforms
 
 New user-visible features
 -------------------------
-- Time attributes can now be bounded.  See attribute-test-suite.cc for an example.
+- Time attributes can now be bounded.  See attribute-test-suite.cc for an
+  example.
 - IPv6 addrss class 2001:db8::/32 is now dropped by routers (RFC 3849).
+- New generic hash function interface.  Two hash functions are provided:
+  murmur3 (default), and the venerable FNV1a.  See the Hash Functions
+  section in the Manual.
 
 Bugs fixed
 ----------
