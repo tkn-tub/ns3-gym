@@ -26,6 +26,9 @@
 
 namespace ns3 {
 
+/**
+ * Base class for hash tests
+ */
 class HashTestCase : public TestCase
 {
 public:
@@ -246,6 +249,9 @@ gnu_sum64 (const char * buffer, const size_t size)
   return (uint64_t)( (h << 32) + h);
 }
 
+/**
+ * Test 32-bit function pointer
+ */
 class Hash32FunctionPtrTestCase : public HashTestCase
 {
 public:
@@ -272,6 +278,9 @@ Hash32FunctionPtrTestCase::DoRun (void)
   Check ( "gnu_sum32", hasher.clear ().GetHash32 (key));
 }
 
+/**
+ * Test 64-bit function pointer
+ */
 class Hash64FunctionPtrTestCase : public HashTestCase
 {
 public:
@@ -298,6 +307,9 @@ Hash64FunctionPtrTestCase::DoRun (void)
   Check ( "gnu_sum64", hasher.clear ().GetHash64 (key));
 }
 
+/**
+ * Test incremental hashing
+ */  
 class IncrementalTestCase : public HashTestCase
 {
 public:
@@ -351,10 +363,10 @@ IncrementalTestCase::DoRun (void)
   DoHash ( "FNV1a",   Hasher ( Create<Hash::Function::Fnv1a> () ) );
 }
 
-//----------------------------
-//
-// Hash tester
 
+/**
+ * Hash functions test suite
+ */
 class HashTestSuite : public TestSuite
 {
 public:
@@ -364,12 +376,12 @@ public:
 HashTestSuite::HashTestSuite ()
   : TestSuite ("hash", UNIT)
 {
-  AddTestCase (new DefaultHashTestCase);
-  AddTestCase (new Murmur3TestCase);
-  AddTestCase (new Fnv1aTestCase);
-  AddTestCase (new Hash32FunctionPtrTestCase);
-  AddTestCase (new Hash64FunctionPtrTestCase);
-  AddTestCase (new IncrementalTestCase);
+  AddTestCase (new DefaultHashTestCase, QUICK);
+  AddTestCase (new Murmur3TestCase, QUICK);
+  AddTestCase (new Fnv1aTestCase, QUICK);
+  AddTestCase (new Hash32FunctionPtrTestCase, QUICK);
+  AddTestCase (new Hash64FunctionPtrTestCase, QUICK);
+  AddTestCase (new IncrementalTestCase, QUICK);
 }
 
 static HashTestSuite g_hashTestSuite;

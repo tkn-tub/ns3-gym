@@ -33,6 +33,10 @@ def build(bld):
                                  ['core'])
     obj.source = 'command-line-example.cc'
 
+    obj = bld.create_ns3_program('hash-example',
+                                 ['core'])
+    obj.source = 'hash-example.cc'
+
     if bld.env['ENABLE_THREADING'] and bld.env["ENABLE_REAL_TIME"]:
         obj = bld.create_ns3_program('main-test-sync', ['network'])
         obj.source = 'main-test-sync.cc'
