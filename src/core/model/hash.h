@@ -33,6 +33,10 @@
 namespace ns3 {
 
 /**
+ * \ingroup core
+ * \defgroup hash Hash Functions
+ */
+/**
  *  \ingroup hash
  *
  *  \brief Generic Hash function interface
@@ -40,7 +44,7 @@ namespace ns3 {
  *  This class provides a generic interface for computing hashes
  *  of buffers.  Various getters return hashes of different lengths.
  *
- *  Call clear () between calls to the getter to reset the
+ *  Call clear() between calls to the getter to reset the
  *  internal state and hash each buffer separately.
  *
  *  If you don't call clear() between calls to the getter

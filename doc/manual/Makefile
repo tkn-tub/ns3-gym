@@ -20,6 +20,7 @@ SOURCES = \
 	source/enable-tests.rst \
 	source/events.rst \
 	source/gnuplot.rst \
+	source/hash-functions.rst \
 	source/helpers.rst \
 	source/how-to-write-tests.rst \
 	source/logging.rst \

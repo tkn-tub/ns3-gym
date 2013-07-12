@@ -27,12 +27,18 @@
 
 NS_LOG_COMPONENT_DEFINE ("Hasher");
 
-using namespace ns3;
+namespace ns3
+{
+namespace Hash
+{
 
-
-/** Namespace for hasher-example */
-namespace HashExample {
-
+/**
+ * \ingroup hash
+ *  Namespace for hasher-example
+*/
+namespace Example
+{
+  
 /**
  * Keep track of collisions
  */
@@ -439,10 +445,15 @@ private:
 
 };  // class DictFiles
 
+}  // namespace Example
 
-}  // namespace HashExample
+}  // namespace Hash
 
-using namespace HashExample;
+}  // namespace ns3
+
+
+using namespace ns3;
+using namespace ns3::Hash::Example;
 
 int 
 main (int argc, char *argv[])

@@ -42,7 +42,7 @@ as if they had been joined together.  (For example, you might want
 the hash of a packet stream, but not want to assemble a single buffer
 with the combined contents of all the packets.)
 
-This is almost as straight-forward as the first example:
+This is almost as straight-forward as the first example::
 
   #include "ns3/hash.h"
 
@@ -55,7 +55,7 @@ This is almost as straight-forward as the first example:
 
   for (<every buffer>)
     {
-	buffer = <get next buffer>;
+	buffer = get_next_buffer ();
 	hasher (buffer, buffer_size);
     }
   uint32_t combined_hash = hasher.GetHash32 ();
@@ -64,7 +64,7 @@ By default ``Hasher`` preserves internal state to enable incremental
 hashing.  If you want to reuse a ``Hasher`` object (for example
 because it's configured with a non-default hash function), but don't
 want to add to the previously computed hash, you need to ``clear()``
-first:
+first::
 
   hasher.clear ().GetHash32 (buffer, buffer_size);
 
@@ -75,7 +75,7 @@ Using an Alternative Hash Function
 **********************************
 
 The default hash function is murmur3_.  FNV1a_ is also available.  To specify
-the hash function explicitly, use this contructor:
+the hash function explicitly, use this contructor::
 
   Hasher hasher = Hasher ( Create<Hash::Function::Fnv1a> () );
 
@@ -89,8 +89,8 @@ To add the hash function ``foo``, follow the ``hash-murmur3.h``/``.cc`` pattern:
    from ``Hash::Implementation``.
  * ``include`` the declaration in ``hash.h`` (at the point where
    ``hash-murmur3.h`` is included.
- * In your own code, instantiate a ``Hash`` object via the constructor
-   ``Hash (Ptr<Hash::Function::Foo> ())``
+ * In your own code, instantiate a ``Hasher`` object via the constructor
+   ``Hasher (Ptr<Hash::Function::Foo> ())``
    
 
 If your hash function is a single function, e.g. ``hashf``, you don't

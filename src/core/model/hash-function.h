@@ -25,6 +25,10 @@
 
 namespace ns3 {
 
+/**
+ * \ingroup hash
+ * Hash function implementations
+ */
 namespace Hash {
 
 /**
@@ -94,10 +98,16 @@ public:
  * \brief Basic hash function typedefs.
  *
  * See Hash32Implementation<> or Hash64Implementation<>
+ * @{
  */
 typedef uint32_t (*Hash32Function_ptr) (const char *, const size_t);
 typedef uint64_t (*Hash64Function_ptr) (const char *, const size_t);
+/**@}*/
 
+/**
+ * \ingroup hash
+ * Hash functions
+ */
 namespace Function {
 
 /**
