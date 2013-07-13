@@ -33,7 +33,9 @@
 namespace ns3 { 
 
 class Ipv6Prefix;
+class Mac16Address;
 class Mac48Address;
+class Mac64Address;
 
 /**
  * \ingroup address
@@ -136,6 +138,14 @@ public:
   Ipv4Address GetIpv4MappedAddress () const;
 
   /**
+   * \brief Make the autoconfigured IPv6 address with Mac16Address.
+   * \param addr the MAC address (16 bits).
+   * \param prefix the IPv6 prefix
+   * \return autoconfigured IPv6 address
+   */
+  static Ipv6Address MakeAutoconfiguredAddress (Mac16Address addr, Ipv6Address prefix);
+
+  /**
    * \brief Make the autoconfigured IPv6 address with Mac48Address.
    * \param addr the MAC address (48 bits).
    * \param prefix the IPv6 prefix
@@ -144,11 +154,33 @@ public:
   static Ipv6Address MakeAutoconfiguredAddress (Mac48Address addr, Ipv6Address prefix);
 
   /**
+   * \brief Make the autoconfigured IPv6 address with Mac48Address.
+   * \param addr the MAC address (64 bits).
+   * \param prefix the IPv6 prefix
+   * \return autoconfigured IPv6 address
+   */
+  static Ipv6Address MakeAutoconfiguredAddress (Mac64Address addr, Ipv6Address prefix);
+
+  /**
+   * \brief Make the autoconfigured link-local IPv6 address with Mac16Address.
+   * \param mac the MAC address (16 bits).
+   * \return autoconfigured link-local IPv6 address
+   */
+  static Ipv6Address MakeAutoconfiguredLinkLocalAddress (Mac16Address mac);
+
+  /**
    * \brief Make the autoconfigured link-local IPv6 address with Mac48Address.
    * \param mac the MAC address (48 bits).
    * \return autoconfigured link-local IPv6 address
    */
   static Ipv6Address MakeAutoconfiguredLinkLocalAddress (Mac48Address mac);
+
+  /**
+   * \brief Make the autoconfigured link-local IPv6 address with Mac48Address.
+   * \param mac the MAC address (64 bits).
+   * \return autoconfigured link-local IPv6 address
+   */
+  static Ipv6Address MakeAutoconfiguredLinkLocalAddress (Mac64Address mac);
 
   /**
    * \brief Print this address to the given output stream.

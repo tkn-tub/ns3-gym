@@ -28,6 +28,8 @@
 #include "ns3/object-vector.h"
 #include "ns3/ipv6-routing-protocol.h"
 #include "ns3/ipv6-route.h"
+#include "ns3/mac16-address.h"
+#include "ns3/mac64-address.h"
 
 #include "loopback-net-device.h"
 #include "ipv6-l3-protocol.h"
@@ -263,10 +265,18 @@ void Ipv6L3Protocol::AddAutoconfiguredAddress (uint32_t interface, Ipv6Address n
 
   if (flags & (1 << 6)) /* auto flag */
     {
-      /** \todo add other L2 address case */
-      if (Mac48Address::IsMatchingType (addr))
+      // In case of new MacAddress types, remember to change Ipv6L3Protocol::RemoveAutoconfiguredAddress as well
+      if (Mac16Address::IsMatchingType (addr))
+        {
+          address = Ipv6InterfaceAddress (Ipv6Address::MakeAutoconfiguredAddress (Mac16Address::ConvertFrom (addr), network));
+        }
+      else if (Mac48Address::IsMatchingType (addr))
         {
           address = Ipv6InterfaceAddress (Ipv6Address::MakeAutoconfiguredAddress (Mac48Address::ConvertFrom (addr), network));
+        }
+      else if (Mac64Address::IsMatchingType (addr))
+        {
+          address = Ipv6InterfaceAddress (Ipv6Address::MakeAutoconfiguredAddress (Mac64Address::ConvertFrom (addr), network));
         }
       else
         {
@@ -312,7 +322,25 @@ void Ipv6L3Protocol::RemoveAutoconfiguredAddress (uint32_t interface, Ipv6Addres
   Address addr = iface->GetDevice ()->GetAddress ();
   uint32_t max = iface->GetNAddresses ();
   uint32_t i = 0;
-  Ipv6Address toFound = Ipv6Address::MakeAutoconfiguredAddress (Mac48Address::ConvertFrom (addr), network);
+  Ipv6Address toFound;
+
+  if (Mac16Address::IsMatchingType (addr))
+    {
+      toFound = Ipv6Address::MakeAutoconfiguredAddress (Mac16Address::ConvertFrom (addr), network);
+    }
+  else if (Mac48Address::IsMatchingType (addr))
+    {
+      toFound = Ipv6Address::MakeAutoconfiguredAddress (Mac48Address::ConvertFrom (addr), network);
+    }
+  else if (Mac64Address::IsMatchingType (addr))
+    {
+      toFound = Ipv6Address::MakeAutoconfiguredAddress (Mac64Address::ConvertFrom (addr), network);
+    }
+  else
+    {
+      NS_FATAL_ERROR ("Unknown method to make autoconfigured address for this kind of device.");
+      return;
+    }
 
   for (i = 0; i < max; i++)
     {

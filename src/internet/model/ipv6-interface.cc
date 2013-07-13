@@ -25,6 +25,8 @@
 #include "ipv6-interface.h"
 #include "ns3/net-device.h"
 #include "loopback-net-device.h"
+#include "ns3/mac16-address.h"
+#include "ns3/mac64-address.h"
 #include "ipv6-l3-protocol.h"
 #include "icmpv6-l4-protocol.h"
 #include "ndisc-cache.h"
@@ -87,9 +89,19 @@ void Ipv6Interface::DoSetup ()
     {
       Address addr = GetDevice ()->GetAddress ();
 
-      if (Mac48Address::IsMatchingType (addr))
+      if (Mac16Address::IsMatchingType (addr))
+        {
+          Ipv6InterfaceAddress ifaddr = Ipv6InterfaceAddress (Ipv6Address::MakeAutoconfiguredLinkLocalAddress (Mac16Address::ConvertFrom (addr)), Ipv6Prefix (64));
+          AddAddress (ifaddr);
+        }
+      else if (Mac48Address::IsMatchingType (addr))
         {
           Ipv6InterfaceAddress ifaddr = Ipv6InterfaceAddress (Ipv6Address::MakeAutoconfiguredLinkLocalAddress (Mac48Address::ConvertFrom (addr)), Ipv6Prefix (64));
+          AddAddress (ifaddr);
+        }
+      else if (Mac64Address::IsMatchingType (addr))
+        {
+          Ipv6InterfaceAddress ifaddr = Ipv6InterfaceAddress (Ipv6Address::MakeAutoconfiguredLinkLocalAddress (Mac64Address::ConvertFrom (addr)), Ipv6Prefix (64));
           AddAddress (ifaddr);
         }
       else

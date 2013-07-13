@@ -27,6 +27,8 @@ New user-visible features
 - New generic hash function interface.  Two hash functions are provided:
   murmur3 (default), and the venerable FNV1a.  See the Hash Functions
   section in the Manual.
+- New Mac16Address has been added, Mac64Address is now in-line with 
+  Mac48Address and all the three can be used in IPv6 autoconfigure. 
 
 Bugs fixed
 ----------

@@ -24,7 +24,9 @@
 #include "ns3/log.h"
 #include "ns3/assert.h"
 
+#include "mac16-address.h"
 #include "mac48-address.h"
+#include "mac64-address.h"
 #include "ipv6-address.h"
 
 NS_LOG_COMPONENT_DEFINE ("Ipv6Address");
@@ -332,6 +334,24 @@ Ipv4Address Ipv6Address::GetIpv4MappedAddress() const
     return (v4Addr);
 }
 
+Ipv6Address Ipv6Address::MakeAutoconfiguredAddress (Mac16Address addr, Ipv6Address prefix)
+{
+  NS_LOG_FUNCTION (addr << prefix);
+  Ipv6Address ret;
+  uint8_t buf[2];
+  uint8_t buf2[16];
+
+  addr.CopyTo (buf);
+  prefix.GetBytes (buf2);
+
+  memcpy (buf2 + 14, buf, 2);
+  buf2[11] = 0xff;
+  buf2[12] = 0xfe;
+
+  ret.Set (buf2);
+  return ret;
+}
+
 Ipv6Address Ipv6Address::MakeAutoconfiguredAddress (Mac48Address addr, Ipv6Address prefix)
 {
   NS_LOG_FUNCTION (addr << prefix);
@@ -347,6 +367,42 @@ Ipv6Address Ipv6Address::MakeAutoconfiguredAddress (Mac48Address addr, Ipv6Addre
   buf2[12] = 0xfe;
   memcpy (buf2 + 13, buf + 3, 3);
   buf2[8] |= 0x02;
+
+  ret.Set (buf2);
+  return ret;
+}
+
+Ipv6Address Ipv6Address::MakeAutoconfiguredAddress (Mac64Address addr, Ipv6Address prefix)
+{
+  NS_LOG_FUNCTION (addr << prefix);
+  Ipv6Address ret;
+  uint8_t buf[8];
+  uint8_t buf2[16];
+
+  addr.CopyTo (buf);
+  prefix.GetBytes (buf2);
+
+  memcpy (buf2 + 8, buf, 8);
+
+  ret.Set (buf2);
+  return ret;
+}
+
+Ipv6Address Ipv6Address::MakeAutoconfiguredLinkLocalAddress (Mac16Address addr)
+{
+  NS_LOG_FUNCTION (addr);
+  Ipv6Address ret;
+  uint8_t buf[2];
+  uint8_t buf2[16];
+
+  addr.CopyTo (buf);
+
+  memset (buf2, 0x00, sizeof (buf2));
+  buf2[0] = 0xfe;
+  buf2[1] = 0x80;
+  memcpy (buf2 + 14, buf, 2);
+  buf2[11] = 0xff;
+  buf2[12] = 0xfe;
 
   ret.Set (buf2);
   return ret;
@@ -369,6 +425,24 @@ Ipv6Address Ipv6Address::MakeAutoconfiguredLinkLocalAddress (Mac48Address addr)
   buf2[12] = 0xfe;
   memcpy (buf2 + 13, buf + 3, 3);
   buf2[8] |= 0x02;
+
+  ret.Set (buf2);
+  return ret;
+}
+
+Ipv6Address Ipv6Address::MakeAutoconfiguredLinkLocalAddress (Mac64Address addr)
+{
+  NS_LOG_FUNCTION (addr);
+  Ipv6Address ret;
+  uint8_t buf[8];
+  uint8_t buf2[16];
+
+  addr.CopyTo (buf);
+
+  memset (buf2, 0x00, sizeof (buf2));
+  buf2[0] = 0xfe;
+  buf2[1] = 0x80;
+  memcpy (buf2 + 8, buf, 8);
 
   ret.Set (buf2);
   return ret;
