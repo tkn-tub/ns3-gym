@@ -21,6 +21,7 @@
 #ifndef HASHFUNCTION_H
 #define HASHFUNCTION_H
 
+#include <cstring>  // memcpy
 #include "simple-ref-count.h"
 
 namespace ns3 {
@@ -143,8 +144,11 @@ public:
   }
   uint32_t GetHash32 (const char * buffer, const size_t size)
   {
-    uint64_t hash = GetHash64 (buffer, size);
-    return *(uint32_t *)(void *)(&hash);
+    uint32_t hash32;
+    uint64_t hash64 = GetHash64 (buffer, size);
+
+    memcpy (&hash32, &hash64, sizeof (hash32));
+    return hash32;
   }
   void clear () { };
 private:
