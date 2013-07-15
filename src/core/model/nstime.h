@@ -25,7 +25,7 @@
 #include "attribute-helper.h"
 #include "int64x64.h"
 #include <stdint.h>
-#include <climits>
+#include <limits>
 #include <cmath>
 #include <ostream>
 
@@ -169,16 +169,16 @@ public:
   /**
    * \brief Minimum representable Time
    */
-  static Time MIN ()
+  static Time Min ()
   {
-    return Time ((long long int)LLONG_MIN);
+    return Time (std::numeric_limits<int64_t>::min ());
   }
   /**
    * \brief Maximum representable Time
    */
-  static Time MAX ()
+  static Time Max ()
   {
-    return Time ((long long int)LLONG_MAX);
+    return Time (std::numeric_limits<int64_t>::max ());
   }
   
   /**
@@ -683,7 +683,7 @@ Ptr<const AttributeChecker> MakeTimeChecker (const Time min, const Time max);
 inline
 Ptr<const AttributeChecker> MakeTimeChecker (void)
 {
-  return MakeTimeChecker (Time::MIN (), Time::MAX ());
+  return MakeTimeChecker (Time::Min (), Time::Max ());
 }
 
 /**
@@ -694,7 +694,7 @@ Ptr<const AttributeChecker> MakeTimeChecker (void)
 inline
 Ptr<const AttributeChecker> MakeTimeChecker (const Time min)
 {
-  return MakeTimeChecker (min, Time::MAX ());
+  return MakeTimeChecker (min, Time::Max ());
 }
 
 
