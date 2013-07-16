@@ -38,6 +38,8 @@ def register_types(module):
     module.add_class('EventId')
     ## global-value.h (module 'core'): ns3::GlobalValue [class]
     module.add_class('GlobalValue')
+    ## hash.h (module 'core'): ns3::Hasher [class]
+    module.add_class('Hasher')
     ## int-to-type.h (module 'core'): ns3::IntToType<0> [struct]
     module.add_class('IntToType', template_parameters=['0'])
     ## int-to-type.h (module 'core'): ns3::IntToType<0>::v_e [enumeration]
@@ -178,6 +180,8 @@ def register_types(module):
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, template_parameters=['ns3::EventImpl', 'ns3::empty', 'ns3::DefaultDeleter<ns3::EventImpl>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::FdReader, ns3::empty, ns3::DefaultDeleter<ns3::FdReader> > [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, template_parameters=['ns3::FdReader', 'ns3::empty', 'ns3::DefaultDeleter<ns3::FdReader>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Hash::Implementation, ns3::empty, ns3::DefaultDeleter<ns3::Hash::Implementation> > [class]
+    module.add_class('SimpleRefCount', automatic_type_narrowing=True, template_parameters=['ns3::Hash::Implementation', 'ns3::empty', 'ns3::DefaultDeleter<ns3::Hash::Implementation>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::RefCountBase, ns3::empty, ns3::DefaultDeleter<ns3::RefCountBase> > [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, template_parameters=['ns3::RefCountBase', 'ns3::empty', 'ns3::DefaultDeleter<ns3::RefCountBase>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::SystemThread, ns3::empty, ns3::DefaultDeleter<ns3::SystemThread> > [class]
@@ -361,6 +365,12 @@ def register_types(module):
     register_types_ns3_FatalImpl(nested_module)
     
     
+    ## Register a nested module for the namespace Hash
+    
+    nested_module = module.add_cpp_namespace('Hash')
+    register_types_ns3_Hash(nested_module)
+    
+    
     ## Register a nested module for the namespace SystemPath
     
     nested_module = module.add_cpp_namespace('SystemPath')
@@ -389,6 +399,36 @@ def register_types_ns3_FatalImpl(module):
     root_module = module.get_root()
     
 
+def register_types_ns3_Hash(module):
+    root_module = module.get_root()
+    
+    ## hash-function.h (module 'core'): ns3::Hash::Implementation [class]
+    module.add_class('Implementation', parent=root_module['ns3::SimpleRefCount< ns3::Hash::Implementation, ns3::empty, ns3::DefaultDeleter<ns3::Hash::Implementation> >'])
+    typehandlers.add_type_alias('uint32_t ( * ) ( char const *, size_t ) *', 'ns3::Hash::Hash32Function_ptr')
+    typehandlers.add_type_alias('uint32_t ( * ) ( char const *, size_t ) **', 'ns3::Hash::Hash32Function_ptr*')
+    typehandlers.add_type_alias('uint32_t ( * ) ( char const *, size_t ) *&', 'ns3::Hash::Hash32Function_ptr&')
+    typehandlers.add_type_alias('uint64_t ( * ) ( char const *, size_t ) *', 'ns3::Hash::Hash64Function_ptr')
+    typehandlers.add_type_alias('uint64_t ( * ) ( char const *, size_t ) **', 'ns3::Hash::Hash64Function_ptr*')
+    typehandlers.add_type_alias('uint64_t ( * ) ( char const *, size_t ) *&', 'ns3::Hash::Hash64Function_ptr&')
+    
+    ## Register a nested module for the namespace Function
+    
+    nested_module = module.add_cpp_namespace('Function')
+    register_types_ns3_Hash_Function(nested_module)
+    
+
+def register_types_ns3_Hash_Function(module):
+    root_module = module.get_root()
+    
+    ## hash-fnv.h (module 'core'): ns3::Hash::Function::Fnv1a [class]
+    module.add_class('Fnv1a', parent=root_module['ns3::Hash::Implementation'])
+    ## hash-function.h (module 'core'): ns3::Hash::Function::Hash32 [class]
+    module.add_class('Hash32', parent=root_module['ns3::Hash::Implementation'])
+    ## hash-function.h (module 'core'): ns3::Hash::Function::Hash64 [class]
+    module.add_class('Hash64', parent=root_module['ns3::Hash::Implementation'])
+    ## hash-murmur3.h (module 'core'): ns3::Hash::Function::Murmur3 [class]
+    module.add_class('Murmur3', parent=root_module['ns3::Hash::Implementation'])
+
 def register_types_ns3_SystemPath(module):
     root_module = module.get_root()
     
@@ -407,6 +447,7 @@ def register_methods(root_module):
     register_Ns3EventGarbageCollector_methods(root_module, root_module['ns3::EventGarbageCollector'])
     register_Ns3EventId_methods(root_module, root_module['ns3::EventId'])
     register_Ns3GlobalValue_methods(root_module, root_module['ns3::GlobalValue'])
+    register_Ns3Hasher_methods(root_module, root_module['ns3::Hasher'])
     register_Ns3IntToType__0_methods(root_module, root_module['ns3::IntToType< 0 >'])
     register_Ns3IntToType__1_methods(root_module, root_module['ns3::IntToType< 1 >'])
     register_Ns3IntToType__2_methods(root_module, root_module['ns3::IntToType< 2 >'])
@@ -467,6 +508,7 @@ def register_methods(root_module):
     register_Ns3SimpleRefCount__Ns3CallbackImplBase_Ns3Empty_Ns3DefaultDeleter__lt__ns3CallbackImplBase__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::CallbackImplBase, ns3::empty, ns3::DefaultDeleter<ns3::CallbackImplBase> >'])
     register_Ns3SimpleRefCount__Ns3EventImpl_Ns3Empty_Ns3DefaultDeleter__lt__ns3EventImpl__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::EventImpl, ns3::empty, ns3::DefaultDeleter<ns3::EventImpl> >'])
     register_Ns3SimpleRefCount__Ns3FdReader_Ns3Empty_Ns3DefaultDeleter__lt__ns3FdReader__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::FdReader, ns3::empty, ns3::DefaultDeleter<ns3::FdReader> >'])
+    register_Ns3SimpleRefCount__Ns3HashImplementation_Ns3Empty_Ns3DefaultDeleter__lt__ns3HashImplementation__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::Hash::Implementation, ns3::empty, ns3::DefaultDeleter<ns3::Hash::Implementation> >'])
     register_Ns3SimpleRefCount__Ns3RefCountBase_Ns3Empty_Ns3DefaultDeleter__lt__ns3RefCountBase__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::RefCountBase, ns3::empty, ns3::DefaultDeleter<ns3::RefCountBase> >'])
     register_Ns3SimpleRefCount__Ns3SystemThread_Ns3Empty_Ns3DefaultDeleter__lt__ns3SystemThread__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::SystemThread, ns3::empty, ns3::DefaultDeleter<ns3::SystemThread> >'])
     register_Ns3SimpleRefCount__Ns3TraceSourceAccessor_Ns3Empty_Ns3DefaultDeleter__lt__ns3TraceSourceAccessor__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor> >'])
@@ -532,6 +574,11 @@ def register_methods(root_module):
     register_Ns3Vector3DChecker_methods(root_module, root_module['ns3::Vector3DChecker'])
     register_Ns3Vector3DValue_methods(root_module, root_module['ns3::Vector3DValue'])
     register_Ns3ConfigMatchContainer_methods(root_module, root_module['ns3::Config::MatchContainer'])
+    register_Ns3HashImplementation_methods(root_module, root_module['ns3::Hash::Implementation'])
+    register_Ns3HashFunctionFnv1a_methods(root_module, root_module['ns3::Hash::Function::Fnv1a'])
+    register_Ns3HashFunctionHash32_methods(root_module, root_module['ns3::Hash::Function::Hash32'])
+    register_Ns3HashFunctionHash64_methods(root_module, root_module['ns3::Hash::Function::Hash64'])
+    register_Ns3HashFunctionMurmur3_methods(root_module, root_module['ns3::Hash::Function::Murmur3'])
     return
 
 def register_Ns3AttributeConstructionList_methods(root_module, cls):
@@ -743,6 +790,35 @@ def register_Ns3GlobalValue_methods(root_module, cls):
     cls.add_method('SetValue', 
                    'bool', 
                    [param('ns3::AttributeValue const &', 'value')])
+    return
+
+def register_Ns3Hasher_methods(root_module, cls):
+    ## hash.h (module 'core'): ns3::Hasher::Hasher(ns3::Hasher const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Hasher const &', 'arg0')])
+    ## hash.h (module 'core'): ns3::Hasher::Hasher() [constructor]
+    cls.add_constructor([])
+    ## hash.h (module 'core'): ns3::Hasher::Hasher(ns3::Ptr<ns3::Hash::Implementation> hp) [constructor]
+    cls.add_constructor([param('ns3::Ptr< ns3::Hash::Implementation >', 'hp')])
+    ## hash.h (module 'core'): uint32_t ns3::Hasher::GetHash32(char const * buffer, size_t const size) [member function]
+    cls.add_method('GetHash32', 
+                   'uint32_t', 
+                   [param('char const *', 'buffer'), param('size_t const', 'size')])
+    ## hash.h (module 'core'): uint32_t ns3::Hasher::GetHash32(std::string const s) [member function]
+    cls.add_method('GetHash32', 
+                   'uint32_t', 
+                   [param('std::string const', 's')])
+    ## hash.h (module 'core'): uint64_t ns3::Hasher::GetHash64(char const * buffer, size_t const size) [member function]
+    cls.add_method('GetHash64', 
+                   'uint64_t', 
+                   [param('char const *', 'buffer'), param('size_t const', 'size')])
+    ## hash.h (module 'core'): uint64_t ns3::Hasher::GetHash64(std::string const s) [member function]
+    cls.add_method('GetHash64', 
+                   'uint64_t', 
+                   [param('std::string const', 's')])
+    ## hash.h (module 'core'): ns3::Hasher & ns3::Hasher::clear() [member function]
+    cls.add_method('clear', 
+                   'ns3::Hasher &', 
+                   [])
     return
 
 def register_Ns3IntToType__0_methods(root_module, cls):
@@ -2132,6 +2208,18 @@ def register_Ns3SimpleRefCount__Ns3FdReader_Ns3Empty_Ns3DefaultDeleter__lt__ns3F
                    is_static=True)
     return
 
+def register_Ns3SimpleRefCount__Ns3HashImplementation_Ns3Empty_Ns3DefaultDeleter__lt__ns3HashImplementation__gt___methods(root_module, cls):
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Hash::Implementation, ns3::empty, ns3::DefaultDeleter<ns3::Hash::Implementation> >::SimpleRefCount() [constructor]
+    cls.add_constructor([])
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Hash::Implementation, ns3::empty, ns3::DefaultDeleter<ns3::Hash::Implementation> >::SimpleRefCount(ns3::SimpleRefCount<ns3::Hash::Implementation, ns3::empty, ns3::DefaultDeleter<ns3::Hash::Implementation> > const & o) [copy constructor]
+    cls.add_constructor([param('ns3::SimpleRefCount< ns3::Hash::Implementation, ns3::empty, ns3::DefaultDeleter< ns3::Hash::Implementation > > const &', 'o')])
+    ## simple-ref-count.h (module 'core'): static void ns3::SimpleRefCount<ns3::Hash::Implementation, ns3::empty, ns3::DefaultDeleter<ns3::Hash::Implementation> >::Cleanup() [member function]
+    cls.add_method('Cleanup', 
+                   'void', 
+                   [], 
+                   is_static=True)
+    return
+
 def register_Ns3SimpleRefCount__Ns3RefCountBase_Ns3Empty_Ns3DefaultDeleter__lt__ns3RefCountBase__gt___methods(root_module, cls):
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::RefCountBase, ns3::empty, ns3::DefaultDeleter<ns3::RefCountBase> >::SimpleRefCount() [constructor]
     cls.add_constructor([])
@@ -2526,13 +2614,13 @@ def register_Ns3Time_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True)
-    ## nstime.h (module 'core'): static ns3::Time ns3::Time::MAX() [member function]
-    cls.add_method('MAX', 
+    ## nstime.h (module 'core'): static ns3::Time ns3::Time::Max() [member function]
+    cls.add_method('Max', 
                    'ns3::Time', 
                    [], 
                    is_static=True)
-    ## nstime.h (module 'core'): static ns3::Time ns3::Time::MIN() [member function]
-    cls.add_method('MIN', 
+    ## nstime.h (module 'core'): static ns3::Time ns3::Time::Min() [member function]
+    cls.add_method('Min', 
                    'ns3::Time', 
                    [], 
                    is_static=True)
@@ -4507,6 +4595,111 @@ def register_Ns3ConfigMatchContainer_methods(root_module, cls):
                    [param('std::string', 'name'), param('ns3::AttributeValue const &', 'value')])
     return
 
+def register_Ns3HashImplementation_methods(root_module, cls):
+    ## hash-function.h (module 'core'): ns3::Hash::Implementation::Implementation(ns3::Hash::Implementation const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Hash::Implementation const &', 'arg0')])
+    ## hash-function.h (module 'core'): ns3::Hash::Implementation::Implementation() [constructor]
+    cls.add_constructor([])
+    ## hash-function.h (module 'core'): uint32_t ns3::Hash::Implementation::GetHash32(char const * buffer, size_t const size) [member function]
+    cls.add_method('GetHash32', 
+                   'uint32_t', 
+                   [param('char const *', 'buffer'), param('size_t const', 'size')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## hash-function.h (module 'core'): uint64_t ns3::Hash::Implementation::GetHash64(char const * buffer, size_t const size) [member function]
+    cls.add_method('GetHash64', 
+                   'uint64_t', 
+                   [param('char const *', 'buffer'), param('size_t const', 'size')], 
+                   is_virtual=True)
+    ## hash-function.h (module 'core'): void ns3::Hash::Implementation::clear() [member function]
+    cls.add_method('clear', 
+                   'void', 
+                   [], 
+                   is_pure_virtual=True, is_virtual=True)
+    return
+
+def register_Ns3HashFunctionFnv1a_methods(root_module, cls):
+    ## hash-fnv.h (module 'core'): ns3::Hash::Function::Fnv1a::Fnv1a(ns3::Hash::Function::Fnv1a const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Hash::Function::Fnv1a const &', 'arg0')])
+    ## hash-fnv.h (module 'core'): ns3::Hash::Function::Fnv1a::Fnv1a() [constructor]
+    cls.add_constructor([])
+    ## hash-fnv.h (module 'core'): uint32_t ns3::Hash::Function::Fnv1a::GetHash32(char const * buffer, size_t const size) [member function]
+    cls.add_method('GetHash32', 
+                   'uint32_t', 
+                   [param('char const *', 'buffer'), param('size_t const', 'size')], 
+                   is_virtual=True)
+    ## hash-fnv.h (module 'core'): uint64_t ns3::Hash::Function::Fnv1a::GetHash64(char const * buffer, size_t const size) [member function]
+    cls.add_method('GetHash64', 
+                   'uint64_t', 
+                   [param('char const *', 'buffer'), param('size_t const', 'size')], 
+                   is_virtual=True)
+    ## hash-fnv.h (module 'core'): void ns3::Hash::Function::Fnv1a::clear() [member function]
+    cls.add_method('clear', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    return
+
+def register_Ns3HashFunctionHash32_methods(root_module, cls):
+    ## hash-function.h (module 'core'): ns3::Hash::Function::Hash32::Hash32(ns3::Hash::Function::Hash32 const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Hash::Function::Hash32 const &', 'arg0')])
+    ## hash-function.h (module 'core'): ns3::Hash::Function::Hash32::Hash32(ns3::Hash::Hash32Function_ptr hp) [constructor]
+    cls.add_constructor([param('ns3::Hash::Hash32Function_ptr', 'hp')])
+    ## hash-function.h (module 'core'): uint32_t ns3::Hash::Function::Hash32::GetHash32(char const * buffer, size_t const size) [member function]
+    cls.add_method('GetHash32', 
+                   'uint32_t', 
+                   [param('char const *', 'buffer'), param('size_t const', 'size')], 
+                   is_virtual=True)
+    ## hash-function.h (module 'core'): void ns3::Hash::Function::Hash32::clear() [member function]
+    cls.add_method('clear', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    return
+
+def register_Ns3HashFunctionHash64_methods(root_module, cls):
+    ## hash-function.h (module 'core'): ns3::Hash::Function::Hash64::Hash64(ns3::Hash::Function::Hash64 const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Hash::Function::Hash64 const &', 'arg0')])
+    ## hash-function.h (module 'core'): ns3::Hash::Function::Hash64::Hash64(ns3::Hash::Hash64Function_ptr hp) [constructor]
+    cls.add_constructor([param('ns3::Hash::Hash64Function_ptr', 'hp')])
+    ## hash-function.h (module 'core'): uint32_t ns3::Hash::Function::Hash64::GetHash32(char const * buffer, size_t const size) [member function]
+    cls.add_method('GetHash32', 
+                   'uint32_t', 
+                   [param('char const *', 'buffer'), param('size_t const', 'size')], 
+                   is_virtual=True)
+    ## hash-function.h (module 'core'): uint64_t ns3::Hash::Function::Hash64::GetHash64(char const * buffer, size_t const size) [member function]
+    cls.add_method('GetHash64', 
+                   'uint64_t', 
+                   [param('char const *', 'buffer'), param('size_t const', 'size')], 
+                   is_virtual=True)
+    ## hash-function.h (module 'core'): void ns3::Hash::Function::Hash64::clear() [member function]
+    cls.add_method('clear', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    return
+
+def register_Ns3HashFunctionMurmur3_methods(root_module, cls):
+    ## hash-murmur3.h (module 'core'): ns3::Hash::Function::Murmur3::Murmur3(ns3::Hash::Function::Murmur3 const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Hash::Function::Murmur3 const &', 'arg0')])
+    ## hash-murmur3.h (module 'core'): ns3::Hash::Function::Murmur3::Murmur3() [constructor]
+    cls.add_constructor([])
+    ## hash-murmur3.h (module 'core'): uint32_t ns3::Hash::Function::Murmur3::GetHash32(char const * buffer, size_t const size) [member function]
+    cls.add_method('GetHash32', 
+                   'uint32_t', 
+                   [param('char const *', 'buffer'), param('size_t const', 'size')], 
+                   is_virtual=True)
+    ## hash-murmur3.h (module 'core'): uint64_t ns3::Hash::Function::Murmur3::GetHash64(char const * buffer, size_t const size) [member function]
+    cls.add_method('GetHash64', 
+                   'uint64_t', 
+                   [param('char const *', 'buffer'), param('size_t const', 'size')], 
+                   is_virtual=True)
+    ## hash-murmur3.h (module 'core'): void ns3::Hash::Function::Murmur3::clear() [member function]
+    cls.add_method('clear', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    return
+
 def register_functions(root_module):
     module = root_module
     ## nstime.h (module 'core'): ns3::Time ns3::Abs(ns3::Time const & time) [free function]
@@ -4547,6 +4740,22 @@ def register_functions(root_module):
     module.add_function('FemtoSeconds', 
                         'ns3::Time', 
                         [param('uint64_t', 'fs')])
+    ## hash.h (module 'core'): uint32_t ns3::Hash32(std::string const s) [free function]
+    module.add_function('Hash32', 
+                        'uint32_t', 
+                        [param('std::string const', 's')])
+    ## hash.h (module 'core'): uint32_t ns3::Hash32(char const * buffer, size_t const size) [free function]
+    module.add_function('Hash32', 
+                        'uint32_t', 
+                        [param('char const *', 'buffer'), param('size_t const', 'size')])
+    ## hash.h (module 'core'): uint64_t ns3::Hash64(std::string const s) [free function]
+    module.add_function('Hash64', 
+                        'uint64_t', 
+                        [param('std::string const', 's')])
+    ## hash.h (module 'core'): uint64_t ns3::Hash64(char const * buffer, size_t const size) [free function]
+    module.add_function('Hash64', 
+                        'uint64_t', 
+                        [param('char const *', 'buffer'), param('size_t const', 'size')])
     ## log.h (module 'core'): extern void ns3::LogComponentDisable(char const * name, ns3::LogLevel level) [free function]
     module.add_function('LogComponentDisable', 
                         'void', 
@@ -4760,6 +4969,7 @@ def register_functions(root_module):
     register_functions_ns3_CommandLineHelper(module.get_submodule('CommandLineHelper'), root_module)
     register_functions_ns3_Config(module.get_submodule('Config'), root_module)
     register_functions_ns3_FatalImpl(module.get_submodule('FatalImpl'), root_module)
+    register_functions_ns3_Hash(module.get_submodule('Hash'), root_module)
     register_functions_ns3_SystemPath(module.get_submodule('SystemPath'), root_module)
     register_functions_ns3_internal(module.get_submodule('internal'), root_module)
     return
@@ -4848,6 +5058,13 @@ def register_functions_ns3_FatalImpl(module, root_module):
     module.add_function('UnregisterStream', 
                         'void', 
                         [param('std::ostream *', 'stream')])
+    return
+
+def register_functions_ns3_Hash(module, root_module):
+    register_functions_ns3_Hash_Function(module.get_submodule('Function'), root_module)
+    return
+
+def register_functions_ns3_Hash_Function(module, root_module):
     return
 
 def register_functions_ns3_SystemPath(module, root_module):
