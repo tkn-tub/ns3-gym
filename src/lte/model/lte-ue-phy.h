@@ -32,6 +32,7 @@
 #include <ns3/lte-ue-cphy-sap.h>
 #include <ns3/ptr.h>
 #include <ns3/lte-amc.h>
+#include <set>
 
 
 namespace ns3 {
@@ -53,6 +54,17 @@ class LteUePhy : public LtePhy
   friend class MemberLteUeCphySapProvider<LteUePhy>;
 
 public:
+  /**
+   * \brief The states of the UE PHY entity
+   */
+  enum State
+  {
+    CELL_SEARCH = 0,
+    DECODING_BCH,
+    ATTACHED,
+    NUM_STATES
+  };
+
   /**
    * @warning the default constructor should not be used
    */
@@ -179,8 +191,6 @@ public:
   // callbacks for LteSpectrumPhy
   virtual void ReceiveLteControlMessageList (std::list<Ptr<LteControlMessage> >);
   virtual void ReceivePss (uint16_t cellId, Ptr<SpectrumValue> p);
-  
-  
 
 
 
@@ -214,6 +224,10 @@ public:
   */
   void SetHarqPhyModule (Ptr<LteHarqPhy> harq);
 
+  /**
+   * \return The current state
+   */
+  State GetState ();
 
 
 
@@ -232,8 +246,12 @@ private:
 
   void ReportUeMeasurements ();
 
+  void SwitchToState (State s);
+
   // UE CPHY SAP methods
   void DoReset ();  
+  void DoRetryCellSearch ();
+  void DoAttach ();
   void DoSyncronizeWithEnb (uint16_t cellId, uint16_t dlEarfcn);  
   void DoSetDlBandwidth (uint8_t ulBandwidth);
   void DoConfigureUplink (uint16_t ulEarfcn, uint8_t ulBandwidth);
@@ -281,6 +299,10 @@ private:
   bool m_dlConfigured;
   bool m_ulConfigured;
 
+  State m_state;
+  //             cellid    rnti
+  TracedCallback<uint16_t, uint16_t, State, State> m_stateTransitionTrace;
+
   uint8_t m_subframeNo;
 
   bool m_rsReceivedPowerUpdated;
@@ -311,6 +333,16 @@ private:
   std::map <uint16_t, UeMeasurementsElement> m_UeMeasurementsMap;
   Time m_ueMeasurementsFilterPeriod;
   Time m_ueMeasurementsFilterLast;
+
+  /**
+   * \brief List of cell ID which MIB has been decoded by this UE PHY instance.
+   */
+  std::set<uint16_t> m_cellHasDecodedMib;
+
+  /**
+   * \brief List of cell ID which SIB1 has been decoded by this UE PHY instance.
+   */
+  std::set<uint16_t> m_cellHasDecodedSib1;
 
   Ptr<LteHarqPhy> m_harqPhyModule;
 

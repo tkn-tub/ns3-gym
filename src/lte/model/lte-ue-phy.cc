@@ -106,6 +106,18 @@ UeMemberLteUePhySapProvider::SendRachPreamble (uint32_t prachId, uint32_t raRnti
 // LteUePhy methods
 ////////////////////////////////////////
 
+const char* g_uePhyStateName[LteUePhy::NUM_STATES] =
+  {
+    "CELL_SEARCH",
+    "DECODING_BCH",
+    "ATTACHED"
+  };
+
+std::string ToString (LteUePhy::State s)
+{
+  return std::string (g_uePhyStateName[s]);
+}
+
 
 NS_OBJECT_ENSURE_REGISTERED (LteUePhy);
 
@@ -122,6 +134,7 @@ LteUePhy::LteUePhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy)
     m_a30CqiPeriocity (MilliSeconds (1)),  // ideal behavior
     m_uePhySapUser (0),
     m_ueCphySapUser (0),
+    m_state (CELL_SEARCH),
     m_subframeNo (0),
     m_rsReceivedPowerUpdated (false),
     m_rsInterferencePowerUpdated (false),
@@ -255,6 +268,9 @@ LteUePhy::GetTypeId (void)
     .AddTraceSource ("ReportUeMeasurements",
                      "Report UE measurements RSRP (dBm) and RSRQ (dB).",
                      MakeTraceSourceAccessor (&LteUePhy::m_reportUeMeasurements))
+    .AddTraceSource ("StateTransition",
+                     "Trace fired upon every UE PHY state transition",
+                     MakeTraceSourceAccessor (&LteUePhy::m_stateTransitionTrace))
   ;
   return tid;
 }
@@ -408,12 +424,8 @@ LteUePhy::GenerateCtrlCqiReport (const SpectrumValue& sinr)
 {
   NS_LOG_FUNCTION (this);
 
-  if ((!(m_dlConfigured && m_ulConfigured)) || (m_rnti == 0))
-    {
-      // abort method, the UE is still not registered
-      m_pssList.clear ();
-      return;
-    }
+  NS_ASSERT (m_state != CELL_SEARCH);
+  NS_ASSERT (m_cellId > 0);
 
   // check periodic wideband CQI
   if (Simulator::Now () > m_p10CqiLast + m_p10CqiPeriocity)
@@ -528,7 +540,7 @@ LteUePhy::GenerateCtrlCqiReport (const SpectrumValue& sinr)
     }
 
 
-  
+
 }
 
 void
@@ -660,27 +672,67 @@ LteUePhy::ReportUeMeasurements ()
 {
   NS_LOG_FUNCTION (this << Simulator::Now ());
   NS_LOG_DEBUG (this << " Report UE Measurements ");
+
   LteUeCphySapUser::UeMeasurementsParameters ret;
+  double maxRsrp = -std::numeric_limits<double>::infinity ();
+  uint16_t maxRsrpCellId = 0;
+
   std::map <uint16_t, UeMeasurementsElement>::iterator it;
   for (it = m_UeMeasurementsMap.begin (); it != m_UeMeasurementsMap.end (); it++)
     {
       double avg_rsrp = (*it).second.rsrpSum / (double)(*it).second.rsrpNum;
       double avg_rsrq = (*it).second.rsrqSum / (double)(*it).second.rsrqNum;
-      NS_LOG_DEBUG (this << " CellId " << (*it).first << " RSRP " << avg_rsrp << " (nSamples " << (*it).second.rsrpNum << ") RSRQ " << avg_rsrq << " (nSamples " << (*it).second.rsrpNum << ")");
+      NS_LOG_DEBUG (this << " CellId " << (*it).first
+                    << " RSRP " << avg_rsrp << " (nSamples " << (uint16_t)(*it).second.rsrpNum
+                    << ") RSRQ " << avg_rsrq << " (nSamples " << (uint16_t)(*it).second.rsrpNum << ")");
+
+      if ((m_state == CELL_SEARCH) && (maxRsrp < avg_rsrp))
+        {
+          std::set<uint16_t>::const_iterator itSib1 = m_cellHasDecodedSib1.find (it->first);
+          if (itSib1 == m_cellHasDecodedSib1.end ())
+            {
+              std::set<uint16_t>::const_iterator itMib = m_cellHasDecodedMib.find (it->first);
+              if (itMib == m_cellHasDecodedMib.end ())
+                {
+                  maxRsrp = avg_rsrp;
+                  maxRsrpCellId = it->first;
+                  /*
+                   * The end result of this nested if block is to find a cell
+                   * with strongest RSRP which MIB and SIB1 have not been
+                   * received yet.
+                   */
+                }
+            }
+        }
+
       LteUeCphySapUser::UeMeasurementsElement newEl;
       newEl.m_cellId = (*it).first;
       newEl.m_rsrp = avg_rsrp;
       newEl.m_rsrq = avg_rsrq;
       ret.m_ueMeasurementsList.push_back (newEl);
+
       // report to UE measurements trace
       m_reportUeMeasurements (m_rnti, m_cellId, avg_rsrp, avg_rsrq, ((*it).first == m_cellId ? 1 : 0));
     }
-  m_ueCphySapUser-> ReportUeMeasurements(ret);
+
+  if (m_state == CELL_SEARCH)
+    {
+      if (maxRsrpCellId == 0)
+        {
+          NS_LOG_WARN (this << " Cell search has detected no surrounding cell");
+        }
+      else
+        {
+          DoSyncronizeWithEnb (maxRsrpCellId, m_dlEarfcn);
+        }
+    }
+
+  // report to RRC
+  m_ueCphySapUser-> ReportUeMeasurements (ret);
+
   m_UeMeasurementsMap.clear ();
   Simulator::Schedule (m_ueMeasurementsFilterPeriod, &LteUePhy::ReportUeMeasurements, this);
 }
-
-
 
 void
 LteUePhy::DoSendLteControlMessage (Ptr<LteControlMessage> msg)
@@ -828,8 +880,24 @@ LteUePhy::ReceiveLteControlMessageList (std::list<Ptr<LteControlMessage> > msgLi
     else if (msg->GetMessageType () == LteControlMessage::MIB) 
       {
         NS_LOG_INFO ("received MIB");
+        NS_ASSERT (m_cellId > 0);
+        if (m_state == DECODING_BCH)
+          {
+            m_cellHasDecodedMib.insert (m_cellId);
+          }
         Ptr<MibLteControlMessage> msg2 = DynamicCast<MibLteControlMessage> (msg);
         m_ueCphySapUser->RecvMasterInformationBlock (msg2->GetMib ());
+      }
+    else if (msg->GetMessageType () == LteControlMessage::SIB1)
+      {
+        NS_LOG_INFO ("received SIB1");
+        NS_ASSERT (m_cellId > 0);
+        if (m_state == DECODING_BCH)
+          {
+            m_cellHasDecodedSib1.insert (m_cellId);
+          }
+        Ptr<Sib1LteControlMessage> msg2 = DynamicCast<Sib1LteControlMessage> (msg);
+        m_ueCphySapUser->RecvSystemInformationBlockType1 (msg2->GetSib1 ());
       }
     else
     {
@@ -847,14 +915,7 @@ void
 LteUePhy::ReceivePss (uint16_t cellId, Ptr<SpectrumValue> p)
 {
   NS_LOG_FUNCTION (this << cellId << (*p));
-  if (!m_dlConfigured)
-    {
-      // LteUePhy not yet configured -> skip measurement
-      return;
-    }
-  m_pssReceived = true;
-  PssElement el;
-  el.cellId = cellId;
+
   double sum = 0.0;
   uint16_t nRB = 0;
   Values::const_iterator itPi;
@@ -865,10 +926,57 @@ LteUePhy::ReceivePss (uint16_t cellId, Ptr<SpectrumValue> p)
       sum += powerTxW;
       nRB++;
     }
-  el.pssPsdSum = sum;
-  el.nRB = nRB;
-  m_pssList.push_back (el);
-}
+
+  if (m_cellId == 0)
+    {
+      /*
+       * PHY is not synchronized to any cell, no RX is running, so interference
+       * value is not available and GenerateCtrlCqiReport will not be called.
+       * Utilize the PSS now for calculating RSRP measurements.
+       */
+      NS_LOG_DEBUG (this << " Process PSS RNTI 0 cellId 0");
+      double rsrp_dBm = 10 * log10 (1000 * (sum / (double)nRB));
+      NS_LOG_INFO (this << " PSS received from CellId " << cellId
+                        << " has RSRP " << rsrp_dBm << " and RBnum " << nRB);
+      // Note that m_pssReceptionThreshold does not apply here
+
+      // store measurements
+      std::map <uint16_t, UeMeasurementsElement>::iterator itMeasMap = m_UeMeasurementsMap.find (cellId);
+      if (itMeasMap == m_UeMeasurementsMap.end ())
+        {
+          // insert new entry
+          UeMeasurementsElement newEl;
+          newEl.rsrpSum = rsrp_dBm;
+          newEl.rsrpNum = 1;
+          newEl.rsrqSum = 0; // RSRQ is not available
+          newEl.rsrqNum = 1;
+          m_UeMeasurementsMap.insert (std::pair <uint16_t, UeMeasurementsElement> (cellId, newEl));
+        }
+      else
+        {
+          (*itMeasMap).second.rsrpSum += rsrp_dBm;
+          (*itMeasMap).second.rsrpNum++;
+          (*itMeasMap).second.rsrqSum += 0; // RSRQ is not available
+          (*itMeasMap).second.rsrqNum++;
+        }
+
+    } // end of if (m_cellId == 0)
+  else
+    {
+      /*
+       * Collect the PSS for later processing in GenerateCtrlCqiReport
+       * (to be called from ChunkProcessor after RX is finished).
+       */
+      m_pssReceived = true;
+      PssElement el;
+      el.cellId = cellId;
+      el.pssPsdSum = sum;
+      el.nRB = nRB;
+      m_pssList.push_back (el);
+
+    } // end of else of if (m_cellId == 0)
+
+} // end of void LteUePhy::ReceivePss (uint16_t cellId, Ptr<SpectrumValue> p)
 
 
 void
@@ -1005,25 +1113,50 @@ LteUePhy::DoReset ()
   m_sendSrsEvent.Cancel ();
   m_downlinkSpectrumPhy->Reset ();
   m_uplinkSpectrumPhy->Reset ();
+
+  // configure DL for receiving PSS
+  m_dlEarfcn = 100; // TODO hardcoded value
+  m_noiseFigure = 9.0; // TODO hardcoded value
+  NS_ASSERT (m_downlinkSpectrumPhy->GetChannel () != 0);
+  DoSetDlBandwidth (6);
+
+  SwitchToState (CELL_SEARCH);
+
+} // end of void LteUePhy::DoReset ()
+
+void
+LteUePhy::DoRetryCellSearch ()
+{
+  NS_LOG_FUNCTION (this);
+  SwitchToState (CELL_SEARCH);
+}
+
+void
+LteUePhy::DoAttach ()
+{
+  NS_ASSERT_MSG (m_state == DECODING_BCH, "Unable to attach from state " << ToString (m_state));
+  m_cellHasDecodedMib.clear ();
+  m_cellHasDecodedSib1.clear ();
+  SwitchToState (ATTACHED);
 }
 
 void
 LteUePhy::DoSyncronizeWithEnb (uint16_t cellId, uint16_t dlEarfcn)
 {
-  NS_LOG_FUNCTION (this << cellId);
+  NS_LOG_FUNCTION (this << cellId << dlEarfcn);
+
   m_cellId = cellId;
   m_dlEarfcn = dlEarfcn;
   m_downlinkSpectrumPhy->SetCellId (cellId);
   m_uplinkSpectrumPhy->SetCellId (cellId);
 
-  // configure DL for receing the BCH with the minimum bandwith
-  m_dlBandwidth = 6;
-  Ptr<SpectrumValue> noisePsd = LteSpectrumValueHelper::CreateNoisePowerSpectralDensity (m_dlEarfcn, m_dlBandwidth, m_noiseFigure);
-  m_downlinkSpectrumPhy->SetNoisePowerSpectralDensity (noisePsd);
-  m_downlinkSpectrumPhy->GetChannel ()->AddRx (m_downlinkSpectrumPhy);  
-  
+  // configure DL for receiving the BCH with the minimum bandwidth
+  DoSetDlBandwidth (6);
+
   m_dlConfigured = false;
   m_ulConfigured = false;
+
+  SwitchToState (DECODING_BCH);
 }
 
 void
@@ -1183,6 +1316,27 @@ void
 LteUePhy::SetHarqPhyModule (Ptr<LteHarqPhy> harq)
 {
   m_harqPhyModule = harq;
+}
+
+
+LteUePhy::State
+LteUePhy::GetState ()
+{
+  NS_LOG_FUNCTION (this);
+  return m_state;
+}
+
+
+void
+LteUePhy::SwitchToState (State newState)
+{
+  NS_LOG_FUNCTION (this << newState);
+  State oldState = m_state;
+  m_state = newState;
+  NS_LOG_INFO (this << " cellId=" << m_cellId << " rnti=" << m_rnti
+                    << " UePhy " << ToString (oldState)
+                    << " --> " << ToString (newState));
+  m_stateTransitionTrace (m_cellId, m_rnti, oldState, newState);
 }
 
 

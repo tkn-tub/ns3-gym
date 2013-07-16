@@ -525,6 +525,21 @@ LteEnbPhy::StartSubFrame (void)
   NS_LOG_FUNCTION (this);
 
   ++m_nrSubFrames;
+
+  /*
+   * Send SIB1 at 6th subframe of every odd-numbered radio frame. This is
+   * equivalent with Section 5.2.1.2 of 3GPP TS 36.331, where it is specified
+   * "repetitions are scheduled in subframe #5 of all other radio frames for
+   * which SFN mod 2 = 0," except that 3GPP counts frames and subframes starting
+   * from 0, while ns-3 counts starting from 1.
+   */
+  if ((m_nrSubFrames == 6) && ((m_nrFrames % 2) == 1))
+    {
+      Ptr<Sib1LteControlMessage> msg = Create<Sib1LteControlMessage> ();
+      msg->SetSib1 (m_sib1);
+      m_controlMessagesQueue.at (0).push_back (msg);
+    }
+
   if (m_srsPeriodicity>0)
     { 
       // might be 0 in case the eNB has no UEs attached
@@ -970,6 +985,14 @@ LteEnbPhy::DoSetMasterInformationBlock (LteRrcSap::MasterInformationBlock mib)
 {
   NS_LOG_FUNCTION (this);
   m_mib = mib;
+}
+
+
+void
+LteEnbPhy::DoSetSystemInformationBlockType1 (LteRrcSap::SystemInformationBlockType1 sib1)
+{
+  NS_LOG_FUNCTION (this);
+  m_sib1 = sib1;
 }
 
 

@@ -114,6 +114,7 @@ NS_OBJECT_ENSURE_REGISTERED (LteSpectrumPhy);
 
 LteSpectrumPhy::LteSpectrumPhy ()
   : m_state (IDLE),
+    m_cellId (0),
   m_transmissionMode (0),
   m_layersNum (1)
 {

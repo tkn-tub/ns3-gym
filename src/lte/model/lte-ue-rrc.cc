@@ -187,6 +187,17 @@ LteUeRrc::GetTypeId (void)
                    UintegerValue (0), // unused, read-only attribute
                    MakeUintegerAccessor (&LteUeRrc::GetRnti),
                    MakeUintegerChecker<uint16_t> ())
+    .AddAttribute ("CellSearchRetryTimeout",
+                   "Maximum number of retry attempts during the initial cell selection procedure to find a suitable cell",
+                   UintegerValue (3),
+                   MakeUintegerAccessor (&LteUeRrc::m_cellSearchRetryTimeout),
+                   MakeUintegerChecker<uint16_t> (0))
+    .AddTraceSource ("MibReceived",
+                     "trace fired upon reception of Master Information Block",
+                     MakeTraceSourceAccessor (&LteUeRrc::m_mibReceivedTrace))
+    .AddTraceSource ("Sib1Received",
+                     "trace fired upon reception of System Information Block Type 1",
+                     MakeTraceSourceAccessor (&LteUeRrc::m_sib1ReceivedTrace))
     .AddTraceSource ("StateTransition",
                      "trace fired upon every UE RRC state transition",
                      MakeTraceSourceAccessor (&LteUeRrc::m_stateTransitionTrace))
@@ -489,7 +500,8 @@ LteUeRrc::DoForceCampedOnEnb (uint16_t cellId, uint16_t earfcn)
     
   m_cellId = cellId;
   m_dlEarfcn = earfcn;
-  m_cphySapProvider->SyncronizeWithEnb (m_cellId, m_dlEarfcn); 
+  m_cphySapProvider->SyncronizeWithEnb (m_cellId, m_dlEarfcn);
+  m_cphySapProvider->Attach ();
   SwitchToState (IDLE_WAIT_SYSTEM_INFO);
 }
 
@@ -535,9 +547,36 @@ void
 LteUeRrc::DoRecvMasterInformationBlock (LteRrcSap::MasterInformationBlock msg)  
 { 
   NS_LOG_FUNCTION (this);
+  // TODO may speed up a bit if only execute the following when bandwidth changes?
   m_dlBandwidth = msg.dlBandwidth;
   m_cphySapProvider->SetDlBandwidth (msg.dlBandwidth);
   m_receivedMib = true;
+  m_mibReceivedTrace (m_imsi, m_cellId, m_rnti);
+
+  if (m_state == IDLE_CELL_SELECTION && m_receivedMib && m_receivedSib1)
+    {
+      InitialCellSelection ();
+    }
+
+  if (m_state == IDLE_WAIT_SYSTEM_INFO && m_receivedMib && m_receivedSib2)
+    {
+      SwitchToState (IDLE_CAMPED_NORMALLY);
+    }
+}
+
+void
+LteUeRrc::DoRecvSystemInformationBlockType1 (LteRrcSap::SystemInformationBlockType1 msg)
+{
+  NS_LOG_FUNCTION (this);
+  m_receivedSib1 = true;
+  m_lastSib1 = msg;
+  m_sib1ReceivedTrace (m_imsi, m_cellId, m_rnti);
+
+  if (m_state == IDLE_CELL_SELECTION && m_receivedMib && m_receivedSib1)
+    {
+      InitialCellSelection ();
+    }
+
   if (m_state == IDLE_WAIT_SYSTEM_INFO && m_receivedMib && m_receivedSib2)
     {
       SwitchToState (IDLE_CAMPED_NORMALLY);
@@ -580,14 +619,6 @@ LteUeRrc::DoCompleteSetup (LteUeRrcSapProvider::CompleteSetupParameters params)
 }
 
 
-void 
-LteUeRrc::DoRecvSystemInformationBlockType1 (LteRrcSap::SystemInformationBlockType1 msg)
-{
-  NS_LOG_FUNCTION (this);
-  // to be implemented
-}
-
- 
 void 
 LteUeRrc::DoRecvSystemInformation (LteRrcSap::SystemInformation msg)
 {
@@ -754,6 +785,25 @@ LteUeRrc::DoRecvRrcConnectionReject (LteRrcSap::RrcConnectionReject msg)
   SwitchToState (IDLE_CAMPED_NORMALLY);
 }
 
+
+
+void
+LteUeRrc::InitialCellSelection ()
+{
+  NS_LOG_FUNCTION (this);
+  uint16_t cellId = m_lastSib1.cellAccessRelatedInfo.cellIdentity;
+  // TODO evaluate cell selection criteria
+  // TODO if passed, camp to that cell and switch to IDLE_CAMPED_NORMALLY
+  // TODO if not, call m_cphySapProvider->RetryCellSearch
+  // TODO if retry timeout is exceeded, stop the procedure here (in reality UE will connect to an acceptable cell, but we don't model it here)
+
+  m_cellId = cellId;
+  m_cphySapProvider->SyncronizeWithEnb (m_cellId, 100); // TODO hardcoded value
+  m_cphySapProvider->SetDlBandwidth (m_dlBandwidth);
+  m_cphySapProvider->Attach ();
+  SwitchToState (IDLE_CAMPED_NORMALLY);
+
+}
 
 
 void 

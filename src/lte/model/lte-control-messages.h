@@ -58,6 +58,7 @@ public:
     RACH_PREAMBLE, // Random Access Preamble
     RAR, // Random Access Response
     MIB, // Master Information Block
+    SIB1, // System Information Block Type 1
   };
 
   LteControlMessage (void);
@@ -465,3 +466,36 @@ private:
 } // namespace ns3
 
 #endif  // MIB_LTE_CONTROL_MESSAGES_H
+
+
+
+#ifndef SIB1_LTE_CONTROL_MESSAGES_H
+#define SIB1_LTE_CONTROL_MESSAGES_H
+
+#include <ns3/lte-rrc-sap.h>
+
+namespace ns3 {
+
+/**
+ * \ingroup lte
+ * \brief Model for broadcasting the System Information Block Type 1
+ */
+class Sib1LteControlMessage : public LteControlMessage
+{
+public:
+
+  Sib1LteControlMessage (void);
+
+  void SetSib1 (LteRrcSap::SystemInformationBlockType1 sib1);
+
+  LteRrcSap::SystemInformationBlockType1 GetSib1 () const;
+
+private:
+
+  LteRrcSap::SystemInformationBlockType1 m_sib1;
+
+};
+
+} // namespace ns3
+
+#endif  // SIB1_LTE_CONTROL_MESSAGES_H

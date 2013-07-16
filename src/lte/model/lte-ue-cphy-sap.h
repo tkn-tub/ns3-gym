@@ -54,7 +54,25 @@ public:
   virtual void Reset () = 0;
 
   /** 
-   * tell the PHY to synchronize with a given eNB for communication purposes
+   * \brief Tell the PHY to retry the cell search procedure with a different
+   *        cell.
+   */
+  virtual void RetryCellSearch () = 0;
+
+  /**
+   * \brief Tell the PHY to perform normal communication with the cell that it
+   *        is currently synchronized to.
+   *
+   * \sa SyncronizeWithEnb, SetDlBandwidth
+   */
+  virtual void Attach () = 0;
+
+  /**
+   * \brief Tell the PHY to synchronize with a given eNB for communication
+   *        purposes. Initially, the PHY will be configured to listen to 6 RBs
+   *        for BCH.
+   *
+   * SetDlBandwidth can be called afterwards to change the bandwidth.
    * 
    * \param cellId the ID of the eNB
    * \param dlEarfcn  the carrier frequency (EARFCN) in downlink
@@ -133,6 +151,12 @@ public:
 
   /**
    *
+   * \param sib1 the System Information Block Type 1 received on the BCH
+   */
+  virtual void RecvSystemInformationBlockType1 (LteRrcSap::SystemInformationBlockType1 sib1) = 0;
+
+  /**
+   *
    * \param params the structure containing the vector of cellId, SRSP and RSRQ
    */
   virtual void ReportUeMeasurements (UeMeasurementsParameters params) = 0;
@@ -154,6 +178,8 @@ public:
 
   // inherited from LteUeCphySapProvider
   virtual void Reset ();
+  virtual void RetryCellSearch ();
+  virtual void Attach ();
   virtual void SyncronizeWithEnb (uint16_t cellId, uint16_t dlEarfcn);  
   virtual void SetDlBandwidth (uint8_t ulBandwidth);
   virtual void ConfigureUplink (uint16_t ulEarfcn, uint8_t ulBandwidth);
@@ -186,6 +212,20 @@ MemberLteUeCphySapProvider<C>::Reset ()
 
 template <class C>
 void 
+MemberLteUeCphySapProvider<C>::RetryCellSearch ()
+{
+  m_owner->DoRetryCellSearch ();
+}
+
+template <class C>
+void
+MemberLteUeCphySapProvider<C>::Attach ()
+{
+  m_owner->DoAttach ();
+}
+
+template <class C>
+void
 MemberLteUeCphySapProvider<C>::SyncronizeWithEnb (uint16_t cellId, uint16_t dlEarfcn)
 {
   m_owner->DoSyncronizeWithEnb (cellId, dlEarfcn);
@@ -241,7 +281,7 @@ public:
 
   // methods inherited from LteUeCphySapUser go here
   virtual void RecvMasterInformationBlock (LteRrcSap::MasterInformationBlock mib);
-
+  virtual void RecvSystemInformationBlockType1 (LteRrcSap::SystemInformationBlockType1 sib1);
   virtual void ReportUeMeasurements (LteUeCphySapUser::UeMeasurementsParameters params);
 
 private:
@@ -265,6 +305,13 @@ void
 MemberLteUeCphySapUser<C>::RecvMasterInformationBlock (LteRrcSap::MasterInformationBlock mib)
 {
   m_owner->DoRecvMasterInformationBlock (mib);
+}
+
+template <class C>
+void
+MemberLteUeCphySapUser<C>::RecvSystemInformationBlockType1 (LteRrcSap::SystemInformationBlockType1 sib1)
+{
+  m_owner->DoRecvSystemInformationBlockType1 (sib1);
 }
 
 template <class C>

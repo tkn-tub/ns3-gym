@@ -96,6 +96,12 @@ public:
    * \param mib the Master Information Block to be sent on the BCH
    */
   virtual void SetMasterInformationBlock (LteRrcSap::MasterInformationBlock mib) = 0;
+
+  /**
+   *
+   * \param sib1 the System Information Block Type 1 to be sent on the BCH
+   */
+  virtual void SetSystemInformationBlockType1 (LteRrcSap::SystemInformationBlockType1 sib1) = 0;
 };
 
 
@@ -137,6 +143,7 @@ public:
   virtual void SetTransmissionMode (uint16_t  rnti, uint8_t txMode);
   virtual void SetSrsConfigurationIndex (uint16_t  rnti, uint16_t srsCi);
   virtual void SetMasterInformationBlock (LteRrcSap::MasterInformationBlock mib);
+  virtual void SetSystemInformationBlockType1 (LteRrcSap::SystemInformationBlockType1 sib1);
   
 private:
   MemberLteEnbCphySapProvider ();
@@ -209,6 +216,13 @@ void
 MemberLteEnbCphySapProvider<C>::SetMasterInformationBlock (LteRrcSap::MasterInformationBlock mib)
 {
   m_owner->DoSetMasterInformationBlock (mib);
+}
+
+template <class C>
+void
+MemberLteEnbCphySapProvider<C>::SetSystemInformationBlockType1 (LteRrcSap::SystemInformationBlockType1 sib1)
+{
+  m_owner->DoSetSystemInformationBlockType1 (sib1);
 }
 
 

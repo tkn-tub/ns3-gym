@@ -77,6 +77,12 @@ public:
     uint32_t csgIdentity;
   };
 
+  struct CellSelectionInfo
+  {
+    int8_t qRxLevMin; ///< INTEGER (-70..-22), actual value = IE value * 2 [dBm].
+    int8_t qQualMin; ///< INTEGER (-34..-3), actual value = IE value [dB].
+  };
+
   struct FreqInfo
   {
     uint16_t ulCarrierFreq;
@@ -459,6 +465,7 @@ public:
   struct SystemInformationBlockType1
   {
     CellAccessRelatedInfo cellAccessRelatedInfo;
+    CellSelectionInfo cellSelectionInfo;
   };
 
   struct SystemInformationBlockType2
@@ -633,8 +640,6 @@ public:
   };
 
   virtual void CompleteSetup (CompleteSetupParameters params) = 0;
-  virtual void RecvMasterInformationBlock (MasterInformationBlock msg) = 0;
-  virtual void RecvSystemInformationBlockType1 (SystemInformationBlockType1 msg) = 0;
   virtual void RecvSystemInformation (SystemInformation msg) = 0;
   virtual void RecvRrcConnectionSetup (RrcConnectionSetup msg) = 0;
   virtual void RecvRrcConnectionReconfiguration (RrcConnectionReconfiguration msg) = 0;
@@ -663,7 +668,6 @@ public:
 
   virtual void SetupUe (uint16_t rnti, SetupUeParameters params) = 0;
   virtual void RemoveUe (uint16_t rnti) = 0;
-  virtual void SendSystemInformationBlockType1 (SystemInformationBlockType1 msg) = 0;
   virtual void SendSystemInformation (SystemInformation msg) = 0;
   virtual void SendRrcConnectionSetup (uint16_t rnti, RrcConnectionSetup msg) = 0;
   virtual void SendRrcConnectionReconfiguration (uint16_t rnti, RrcConnectionReconfiguration msg) = 0;
@@ -812,8 +816,6 @@ public:
 
   // methods inherited from LteUeRrcSapProvider go here
   virtual void CompleteSetup (CompleteSetupParameters params);
-  virtual void RecvMasterInformationBlock (MasterInformationBlock msg);
-  virtual void RecvSystemInformationBlockType1 (SystemInformationBlockType1 msg);
   virtual void RecvSystemInformation (SystemInformation msg);
   virtual void RecvRrcConnectionSetup (RrcConnectionSetup msg);
   virtual void RecvRrcConnectionReconfiguration (RrcConnectionReconfiguration msg);
@@ -843,20 +845,6 @@ void
 MemberLteUeRrcSapProvider<C>::CompleteSetup (CompleteSetupParameters params)
 {
   m_owner->DoCompleteSetup (params);
-}
-
-template <class C>
-void
-MemberLteUeRrcSapProvider<C>::RecvMasterInformationBlock (MasterInformationBlock msg)
-{
-  Simulator::ScheduleNow (&C::DoRecvMasterInformationBlock, m_owner, msg);
-}
-
-template <class C>
-void
-MemberLteUeRrcSapProvider<C>::RecvSystemInformationBlockType1 (SystemInformationBlockType1 msg)
-{
-  Simulator::ScheduleNow (&C::DoRecvSystemInformationBlockType1, m_owner, msg);
 }
 
 template <class C>
@@ -924,8 +912,6 @@ public:
 
   virtual void SetupUe (uint16_t rnti, SetupUeParameters params);
   virtual void RemoveUe (uint16_t rnti);
-  virtual void SendMasterInformationBlock (MasterInformationBlock msg);
-  virtual void SendSystemInformationBlockType1 (SystemInformationBlockType1 msg);
   virtual void SendSystemInformation (SystemInformation msg);
   virtual void SendRrcConnectionSetup (uint16_t rnti, RrcConnectionSetup msg);
   virtual void SendRrcConnectionReconfiguration (uint16_t rnti, RrcConnectionReconfiguration msg);
@@ -966,20 +952,6 @@ void
 MemberLteEnbRrcSapUser<C>::RemoveUe (uint16_t rnti)
 {
   m_owner->DoRemoveUe (rnti);
-}
-
-template <class C>
-void
-MemberLteEnbRrcSapUser<C>::SendMasterInformationBlock (MasterInformationBlock msg)
-{
-  m_owner->DoSendMasterInformationBlock (msg);
-}
-
-template <class C>
-void
-MemberLteEnbRrcSapUser<C>::SendSystemInformationBlockType1 (SystemInformationBlockType1 msg)
-{
-  m_owner->DoSendSystemInformationBlockType1 (msg);
 }
 
 template <class C>

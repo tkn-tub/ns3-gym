@@ -264,11 +264,11 @@ private:
 
   // CPHY SAP methods
   void DoRecvMasterInformationBlock (LteRrcSap::MasterInformationBlock msg);
+  void DoRecvSystemInformationBlockType1 (LteRrcSap::SystemInformationBlockType1 msg);
   void DoReportUeMeasurements (LteUeCphySapUser::UeMeasurementsParameters params);
 
   // RRC SAP methods
   void DoCompleteSetup (LteUeRrcSapProvider::CompleteSetupParameters params);
-  void DoRecvSystemInformationBlockType1 (LteRrcSap::SystemInformationBlockType1 msg);
   void DoRecvSystemInformation (LteRrcSap::SystemInformation msg);
   void DoRecvRrcConnectionSetup (LteRrcSap::RrcConnectionSetup msg);
   void DoRecvRrcConnectionReconfiguration (LteRrcSap::RrcConnectionReconfiguration msg);
@@ -279,6 +279,7 @@ private:
 
  
   // internal methods
+  void InitialCellSelection ();
   void ApplyRadioResourceConfigDedicated (LteRrcSap::RadioResourceConfigDedicated rrcd);
   /// 3GPP TS 36.331 section 5.5.2 Measurement configuration
   void ApplyMeasConfig (LteRrcSap::MeasConfig mc);
@@ -322,6 +323,8 @@ private:
   Ptr<LteSignalingRadioBearerInfo> m_srb1Old;
   std::map <uint8_t, Ptr<LteDataRadioBearerInfo> > m_drbMap;
   
+  uint8_t m_cellSearchRetryTimeout;
+
   bool m_useRlcSm;
 
   uint8_t m_lastRrcTransactionIdentifier;
@@ -332,6 +335,10 @@ private:
   uint16_t m_dlEarfcn;  /**< downlink carrier frequency */
   uint16_t m_ulEarfcn;  /**< uplink carrier frequency */
 
+  //             imsi      cellid    rnti
+  TracedCallback<uint64_t, uint16_t, uint16_t> m_mibReceivedTrace;
+  //             imsi      cellid    rnti
+  TracedCallback<uint64_t, uint16_t, uint16_t> m_sib1ReceivedTrace;
   //             imsi      cellid    rnti
   TracedCallback<uint64_t, uint16_t, uint16_t, State, State> m_stateTransitionTrace;
   //             imsi      cellid    rnti
@@ -347,8 +354,10 @@ private:
 
   bool m_connectionPending; /**< true if a connection request by upper layers is pending */
   bool m_receivedMib; /**< true if MIB was received for the current cell  */
+  bool m_receivedSib1; /**< true if SIB1 was received for the current cell  */
   bool m_receivedSib2; /**< true if SIB2 was received for the current cell  */
 
+  LteRrcSap::SystemInformationBlockType1 m_lastSib1;
 
   /**
    * \brief Includes the accumulated configuration of the measurements to be
