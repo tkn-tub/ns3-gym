@@ -214,7 +214,7 @@ void AnimationInterface::TrackIpv4RoutePaths ()
           continue;
         }
       NS_LOG_INFO ("Begin Track Route for: " << trackElement.destination.c_str () << " From:" << trackElement.fromNodeId);
-      Ptr<Packet> pkt = 0;
+      Ptr<Packet> pkt = Create<Packet> ();
       Ipv4Header header;
       header.SetDestination (Ipv4Address (trackElement.destination.c_str ()));
       Socket::SocketErrno sockerr;
