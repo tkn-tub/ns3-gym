@@ -147,6 +147,12 @@ def build(bld):
         'model/vector.cc',
         'model/fatal-impl.cc',
         'model/system-path.cc',
+        'helper/random-variable-stream-helper.cc',
+        'helper/event-garbage-collector.cc',
+        'model/hash-function.cc',
+        'model/hash-murmur3.cc',
+        'model/hash-fnv.cc',
+        'model/hash.cc',
         ]
 
     core_test = bld.create_ns3_module_test_library('core')
@@ -161,6 +167,7 @@ def build(bld):
         'test/object-test-suite.cc',
         'test/ptr-test-suite.cc',
         'test/random-variable-test-suite.cc',
+        'test/event-garbage-collector-test-suite.cc',
         'test/many-uniform-random-variables-one-get-value-call-test-suite.cc',
         'test/one-uniform-random-variable-many-get-value-calls-test-suite.cc',
         'test/sample-test-suite.cc',
@@ -170,6 +177,7 @@ def build(bld):
         'test/traced-callback-test-suite.cc',
         'test/type-traits-test-suite.cc',
         'test/watchdog-test-suite.cc',
+        'test/hash-test-suite.cc',
         ]
 
     headers = bld(features='ns3header')
@@ -246,6 +254,12 @@ def build(bld):
         'model/system-path.h',
         'model/unused.h',
         'model/math.h',
+        'helper/event-garbage-collector.h',
+        'helper/random-variable-stream-helper.h',
+        'model/hash-function.h',
+        'model/hash-murmur3.h',
+        'model/hash-fnv.h',
+        'model/hash.h',
         ]
 
     if sys.platform == 'win32':

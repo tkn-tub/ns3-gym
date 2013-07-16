@@ -148,7 +148,6 @@ private:
 
   Callback<void> m_callback;
   pthread_t m_thread;
-  void *    m_ret;
 #endif 
 };
 

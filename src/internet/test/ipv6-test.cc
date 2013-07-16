@@ -136,6 +136,48 @@ Ipv6L3ProtocolTestCase::DoRun ()
 
   index = ipv6->GetInterfaceForAddress ("2001:ffff:5678:9000::1"); /* address we just remove */
   NS_TEST_ASSERT_MSG_EQ (index, (uint32_t) -1, "Address should not be found??");
+
+  /* Test Ipv6Interface()::RemoveAddress(address) */
+  output = interface->RemoveAddress (Ipv6Address ("2001:1234:5678:9000::1"));
+  NS_TEST_ASSERT_MSG_EQ (ifaceAddr1, output, "Wrong Interface Address Removed??");
+  num = interface->GetNAddresses ();
+  NS_TEST_ASSERT_MSG_EQ (num, 1, "Number of addresses should be 1??");
+  
+  /* Remove a non-existent Address */
+  output = interface->RemoveAddress (Ipv6Address ("2001:1234:5678:9000::1"));
+  NS_TEST_ASSERT_MSG_EQ (Ipv6InterfaceAddress (), output, 
+                         "Removed non-existent address??");
+  num = interface->GetNAddresses ();
+  NS_TEST_ASSERT_MSG_EQ (num, 1, "Number of addresses should be 1??");
+
+  /* Remove a loopback Address */
+  output = interface->RemoveAddress (Ipv6Address::GetLoopback ());
+  NS_TEST_ASSERT_MSG_EQ (Ipv6InterfaceAddress (), output, 
+                         "Able to remove loopback address??");
+  num = interface->GetNAddresses ();
+  NS_TEST_ASSERT_MSG_EQ (num, 1, "Number of addresses should be 1??");
+
+  /* Test Ipv6Address::RemoveAddress(index, addresss) */
+  index = ipv6->GetInterfaceForAddress ("2001:ffff:5678:9001::2");
+  bool result = ipv6->RemoveAddress (index, Ipv6Address 
+                                     ("2001:ffff:5678:9001::2"));
+  NS_TEST_ASSERT_MSG_EQ (result, true, "Unable to remove Address??");
+  num = interface2->GetNAddresses ();
+  NS_TEST_ASSERT_MSG_EQ (num, 1, "Number of addresses should be 1??");
+
+  /* Remove a non-existent Address */
+  result = ipv6->RemoveAddress (index, Ipv6Address  
+                                ("2001:ffff:5678:9001::2"));
+  NS_TEST_ASSERT_MSG_EQ (result, false, "Removed Non-existent address??");
+  num = interface2->GetNAddresses ();
+  NS_TEST_ASSERT_MSG_EQ (num, 1, "Number of addresses should be 1??");
+ 
+  /* Remove a loopback Address */
+  result = ipv6->RemoveAddress (index, Ipv6Address::GetLoopback ());
+  NS_TEST_ASSERT_MSG_EQ (result, false, "Able to remove loopback address??");
+  num = interface2->GetNAddresses ();
+  NS_TEST_ASSERT_MSG_EQ (num, 1, "Number of addresses should be 1??");
+
   Simulator::Destroy ();
 } //end DoRun
 static class IPv6L3ProtocolTestSuite : public TestSuite

@@ -383,15 +383,6 @@ public:
    */
   void SendErrorRequest (DsrOptionRerrUnreachHeader &rerr, uint8_t protocol);
   /**
-   * \brief Send the route request and increment the request count
-   * \param the original packet
-   * \param source address
-   * \param destination address
-   */
-  void SendRequestAndIncrement (Ptr<Packet> packet,
-                                Ipv4Address source,
-                                Ipv4Address destination);
-  /**
    * \brief Forward the route request if the node is not the destination
    * \param the original packet
    * \param source address
@@ -474,11 +465,6 @@ public:
   void SetDownTarget6 (IpL4Protocol::DownTargetCallback6 callback);
   IpL4Protocol::DownTargetCallback GetDownTarget (void) const;
   IpL4Protocol::DownTargetCallback6 GetDownTarget6 (void) const;
-  /**
-   * \brief Get the extension number.
-   * \return extension number
-   */
-  uint8_t GetExtensionNumber () const;
   /**
    * \brief Process method
    * Called from Ipv4L3Protocol::Receive.

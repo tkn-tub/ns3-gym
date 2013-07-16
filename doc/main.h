@@ -57,7 +57,6 @@
  *     - stats
  *     - tap-bridge
  *     - test
- *     - tools
  *     - topology-read
  *     - uan
  *     - virtual-net-device

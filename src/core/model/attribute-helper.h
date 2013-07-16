@@ -92,7 +92,7 @@ MakeSimpleAttributeChecker (std::string name, std::string underlying)
  * \param type the name of the class
  *
  * This macro defines and generates the code for the implementation 
- * of the MakeXXXAccessor template functions. This macro is typically
+ * of the \c Make<type>Accessor template functions. This macro is typically
  * invoked in a class header to allow users of this class to view and
  * use the template functions defined here. This macro is implemented
  * through the helper templates functions ns3::MakeAccessorHelper<>.
@@ -134,8 +134,8 @@ private:                                                              \
  * \ingroup AttributeHelper
  * \param type the name of the class.
  *
- * This macro defines the class XXXValue associated to class XXX.
- * This macro is typically invoked in a class header.
+ * This macro defines the class \c typeValue associated to class \c type.
+ * This macro is typically invoked in the class header file.
  */
 #define ATTRIBUTE_VALUE_DEFINE(type)                                    \
   ATTRIBUTE_VALUE_DEFINE_WITH_NAME (type,type)
@@ -145,9 +145,9 @@ private:                                                              \
  * \ingroup AttributeHelper
  * \param type the name of the class
  *
- * This macro defines the conversion operators for class XXX to and
+ * This macro defines the conversion operators for class \c type to and
  * from instances of type Attribute.
- * Typically invoked from xxx.h.
+ * Typically invoked in the class header file.
  */
 #define ATTRIBUTE_CONVERTER_DEFINE(type)
 
@@ -155,9 +155,9 @@ private:                                                              \
  * \ingroup AttributeHelper
  * \param type the name of the class
  *
- * This macro defines the XXXChecker class and the associated
- * MakeXXXChecker function.
- * Typically invoked from xxx.h.
+ * This macro defines the \c typeChecker class and the associated
+ * \c Make<type>Checker function.
+ * Typically invoked in the class header file..
  */
 #define ATTRIBUTE_CHECKER_DEFINE(type)                          \
   class type ## Checker : public AttributeChecker {};             \
@@ -197,10 +197,10 @@ private:                                                              \
  * \ingroup AttributeHelper
  * \param type the name of the class.
  *
- * This macro implements the XXXValue class (including the 
- * XXXValue::SerializeToString and XXXValue::DeserializeFromString 
+ * This macro implements the \c typeValue class (including the 
+ * \c typeValue::SerializeToString and \c typeValue::DeserializeFromString 
  * methods).
- * Typically invoked from xxx.cc.
+ * Typically invoked in the source file.
  */
 #define ATTRIBUTE_VALUE_IMPLEMENT(type)                                 \
   ATTRIBUTE_VALUE_IMPLEMENT_WITH_NAME (type,type)
@@ -210,8 +210,8 @@ private:                                                              \
  * \ingroup AttributeHelper
  * \param type the name of the class
  *
- * This macro implements the MakeXXXChecker function.
- * Typically invoked from xxx.cc.
+ * This macro implements the \c Make<type>Checker function.
+ * Typically invoked in the source file..
  */
 #define ATTRIBUTE_CHECKER_IMPLEMENT(type)                               \
   Ptr<const AttributeChecker> Make ## type ## Checker (void)                \

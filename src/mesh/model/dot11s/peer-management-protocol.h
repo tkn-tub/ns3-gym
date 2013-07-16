@@ -137,7 +137,8 @@ public:
   std::vector < Ptr<PeerLink> > GetPeerLinks () const;
   /// Get list of active peers of my given interface
   std::vector<Mac48Address> GetPeers (uint32_t interface) const;
-  /// Get mesh point address. TODO this used by plugins only. Now MAC plugins can ask MP addrress directly from main MAC
+  /// Get mesh point address.
+  /// \todo this used by plugins only. Now MAC plugins can ask MP addrress directly from main MAC
   Mac48Address GetAddress ();
   uint8_t GetNumberOfLinks ();
   void SetMeshId (std::string s);

@@ -110,8 +110,8 @@ std::string FindSelfDirectory (void)
   }
 #elif defined (__win32__)
   {
-    // XXX: untested. it should work if code is compiled with
-    // LPTSTR = char *
+    /// \todo untested. it should work if code is compiled with
+    /// LPTSTR = char *
     DWORD size = 1024;
     LPTSTR lpFilename = (LPTSTR) malloc (sizeof(TCHAR) * size);
     DWORD status = GetModuleFilename (0, lpFilename, size);
@@ -232,7 +232,7 @@ std::list<std::string> ReadFiles (std::string path)
     }
   closedir (dp);
 #elif defined (HAVE_FIND_FIRST_FILE)
-  // XXX: untested
+  /// \todo untested
   HANDLE hFind;
   WIN32_FIND_DATA fileData;
   

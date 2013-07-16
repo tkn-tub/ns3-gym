@@ -17,10 +17,12 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
+
 #include "ns3/node.h"
 #include "ns3/node-list.h"
 #include "ns3/simulator.h"
 #include "ns3/ipv4-routing-protocol.h"
+#include "ns3/ipv4-list-routing.h"
 #include "ipv4-routing-helper.h"
 
 namespace ns3 {
@@ -78,6 +80,29 @@ Ipv4RoutingHelper::PrintEvery (Time printInterval, Ptr<Node> node, Ptr<OutputStr
   NS_ASSERT (rp);
   rp->PrintRoutingTable (stream);
   Simulator::Schedule (printInterval, &Ipv4RoutingHelper::PrintEvery, this, printInterval, node, stream);
+}
+
+template<class T>
+Ptr<T> Ipv4RoutingHelper::GetRouting (Ptr<Ipv4RoutingProtocol> protocol)
+{
+  Ptr<T> ret = DynamicCast<T> (protocol);
+  if (ret == 0)
+    {
+      // trying to check if protocol is a list routing
+      Ptr<Ipv4ListRouting> lrp = DynamicCast<Ipv4ListRouting> (protocol);
+      if (lrp != 0)
+        {
+          for (uint32_t i = 0; i < lrp->GetNRoutingProtocols ();  i++)
+            {
+              int16_t priority;
+              ret = GetRouting<T> (lrp->GetRoutingProtocol (i, priority)); // potential recursion, if inside ListRouting is ListRouting
+              if (ret != 0)
+                break;
+            }
+        }
+    }
+
+  return ret;
 }
 
 } // namespace ns3

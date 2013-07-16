@@ -201,8 +201,9 @@ fi
 # by Sphinx when rebuilding
 cd doc 2>&1 >/dev/null
 for d in {manual,models,tutorial{,-pt-br}}/build/{single,}html/_static/ ; do
-    # expect the copy to fail if the destination dir
-    # hasn't been created by a prior doc build
+    if [ ! -d $d ]; then
+	mkdir -p $d
+    fi
     cp ns3_html_theme/static/ns3_version.js $d
 done
 cd - 2>&1 >/dev/null

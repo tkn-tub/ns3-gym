@@ -106,7 +106,7 @@ WifiInformationElementVector::DeserializeSingleIe (Buffer::Iterator start)
 void
 WifiInformationElementVector::Print (std::ostream & os) const
 {
-  //TODO
+  /// \todo
 }
 void
 WifiInformationElementVector::SetMaxSize (uint16_t size)

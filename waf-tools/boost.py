@@ -356,7 +356,7 @@ def check_boost(self, *k, **kw):
 					self.end_msg("ok: winning cxxflags combination: %s" % (self.env["CXXFLAGS_%s" % var]))
 					e = None
 					break
-				except Errors.ConfigurationError as exc:
+				except Errors.ConfigurationError, exc:
 					self.env.revert()
 					e = exc
 
@@ -368,7 +368,7 @@ def check_boost(self, *k, **kw):
 		self.start_msg('Checking for boost linkage')
 		try:
 			try_link()
-		except Errors.ConfigurationError as e:
+		except Errors.ConfigurationError, e:
 			self.fatal("Could not link against boost libraries using supplied options")
 		self.end_msg('ok')
 

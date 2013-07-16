@@ -114,7 +114,7 @@ Ipv4PacketInfoTagTest::DoSendData (Ptr<Socket> socket, std::string to)
   if (DynamicCast<UdpSocket> (socket) != 0)
     {
       NS_TEST_EXPECT_MSG_EQ (socket->SendTo (Create<Packet> (123), 0, realTo),
-                             123, "XXX");
+                             123, "100");
     }
   // Should only Ipv4RawSock
   else

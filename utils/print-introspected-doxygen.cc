@@ -1,6 +1,7 @@
 #include <iostream>
 #include <algorithm>
 #include <map>
+
 #include "ns3/object.h"
 #include "ns3/pointer.h"
 #include "ns3/object-vector.h"
@@ -711,7 +712,7 @@ int main (int argc, char *argv[])
 		<<       anchor
 		<< "GlobalValue" << (*i)->GetName () << " " << (*i)->GetName ()
 		<<     boldStop
-		<< ": " << (*i)->GetHelp () << "(" << val.Get () << ")"
+		<< ": " << (*i)->GetHelp () << ".  Default value: " << val.Get () << "."
 		<<   listLineStop << std::endl;
     }
   std::cout << listStop    << std::endl

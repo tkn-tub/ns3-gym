@@ -227,8 +227,8 @@ WifiMode
 AarfWifiManager::DoGetRtsMode (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-  // XXX: we could/should implement the Aarf algorithm for
-  // RTS only by picking a single rate within the BasicRateSet.
+  /// \todo we could/should implement the Aarf algorithm for
+  /// RTS only by picking a single rate within the BasicRateSet.
   AarfWifiRemoteStation *station = (AarfWifiRemoteStation *) st;
   return GetSupported (station, 0);
 }

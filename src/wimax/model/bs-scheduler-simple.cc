@@ -162,7 +162,7 @@ void BSSchedulerSimple::Schedule (void)
 
               if (availableSymbols <= BurstSizeSymbols)
                 {
-                  availableSymbols -= BurstSizeSymbols; // XXX: Overflows but don't know how to fix
+                  availableSymbols -= BurstSizeSymbols; /// \todo Overflows but don't know how to fix
                   break;
                 }
             }

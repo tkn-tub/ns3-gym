@@ -230,7 +230,7 @@ Ipv4GlobalRouting::LookupGlobal (Ipv4Address dest, Ptr<NetDevice> oif)
       // create a Ipv4Route object from the selected routing table entry
       rtentry = Create<Ipv4Route> ();
       rtentry->SetDestination (route->GetDest ());
-      // XXX handle multi-address case
+      /// \todo handle multi-address case
       rtentry->SetSource (m_ipv4->GetAddress (route->GetInterface (), 0).GetLocal ());
       rtentry->SetGateway (route->GetGateway ());
       uint32_t interfaceIdx = route->GetInterface ();
@@ -489,11 +489,11 @@ Ipv4GlobalRouting::RouteInput  (Ptr<const Packet> p, const Ipv4Header &header, P
   if (header.GetDestination ().IsBroadcast ())
     {
       NS_LOG_LOGIC ("For me (Ipv4Addr broadcast address)");
-      // TODO:  Local Deliver for broadcast
-      // TODO:  Forward broadcast
+      /// \todo  Local Deliver for broadcast
+      /// \todo  Forward broadcast
     }
 
-  // TODO:  Configurable option to enable RFC 1222 Strong End System Model
+  /// \todo  Configurable option to enable RFC 1222 Strong End System Model
   // Right now, we will be permissive and allow a source to send us
   // a packet to one of our other interface addresses; that is, the
   // destination unicast address does not match one of the iif addresses,

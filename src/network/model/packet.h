@@ -340,6 +340,8 @@ public:
    *
    * If you try to change the content of the buffer
    * returned by this method, you will die.
+   *
+   * \deprecated
    * Note that this method is now deprecated and will be removed in
    * a future version of ns-3. To get access to the content
    * of the byte buffer of a packet, call CopyData"()" to perform

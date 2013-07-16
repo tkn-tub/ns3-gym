@@ -613,23 +613,23 @@ Ipv6ExtensionESPHeader::~Ipv6ExtensionESPHeader ()
 
 void Ipv6ExtensionESPHeader::Print (std::ostream &os) const
 {
-  /* TODO */
+  /** \todo */
 }
 
 uint32_t Ipv6ExtensionESPHeader::GetSerializedSize () const
 {
-  /* TODO */
+  /** \todo */
   return 0;
 }
 
 void Ipv6ExtensionESPHeader::Serialize (Buffer::Iterator start) const
 {
-  /* TODO */
+  /** \todo */
 }
 
 uint32_t Ipv6ExtensionESPHeader::Deserialize (Buffer::Iterator start) 
 {
-  /* TODO */
+  /** \todo */
   return 0;
 }
 
@@ -659,23 +659,23 @@ Ipv6ExtensionAHHeader::~Ipv6ExtensionAHHeader ()
 
 void Ipv6ExtensionAHHeader::Print (std::ostream &os) const
 {
-  /* TODO */
+  /** \todo */
 }
 
 uint32_t Ipv6ExtensionAHHeader::GetSerializedSize () const
 {
-  /* TODO */
+  /** \todo */
   return 0;
 }
 
 void Ipv6ExtensionAHHeader::Serialize (Buffer::Iterator start) const
 {
-  /* TODO */
+  /** \todo */
 }
 
 uint32_t Ipv6ExtensionAHHeader::Deserialize (Buffer::Iterator start) 
 {
-  /* TODO */ 
+  /** \todo */ 
   return 0;
 }
 

@@ -121,7 +121,7 @@ void Ipv6RawSocketImplTest::ReceivePkt2 (Ptr<Socket> socket)
   m_receivedPacket2 = socket->RecvFrom (std::numeric_limits<uint32_t>::max (), 0, addr);
   NS_ASSERT (availableData == m_receivedPacket2->GetSize ());
   Inet6SocketAddress v6addr = Inet6SocketAddress::ConvertFrom (addr);
-  NS_TEST_EXPECT_MSG_EQ (v6addr.GetIpv6 (),Ipv6Address ("fe80:0000:0000:0000:0200:00ff:fe00:0003"), "recvfrom");
+  NS_TEST_EXPECT_MSG_EQ (v6addr.GetIpv6 (),Ipv6Address ("2001:0db8:0000:0000:0000:0000:0000:0002"), "recvfrom");
 }
 
 void

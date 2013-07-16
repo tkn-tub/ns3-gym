@@ -97,6 +97,8 @@ Ipv6StaticRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
 void Ipv6StaticRouting::AddHostRouteTo (Ipv6Address dst, Ipv6Address nextHop, uint32_t interface, Ipv6Address prefixToUse, uint32_t metric)
 {
   NS_LOG_FUNCTION (this << dst << nextHop << interface << prefixToUse << metric);
+  NS_ASSERT_MSG(nextHop.IsLinkLocal(), "Ipv6StaticRouting::AddHostRouteTo - Next hop must be link-local");
+
   AddNetworkRouteTo (dst, Ipv6Prefix::GetOnes (), nextHop, interface, prefixToUse, metric);
 }
 
@@ -117,6 +119,8 @@ void Ipv6StaticRouting::AddNetworkRouteTo (Ipv6Address network, Ipv6Prefix netwo
 void Ipv6StaticRouting::AddNetworkRouteTo (Ipv6Address network, Ipv6Prefix networkPrefix, Ipv6Address nextHop, uint32_t interface, Ipv6Address prefixToUse, uint32_t metric)
 {
   NS_LOG_FUNCTION (this << network << networkPrefix << nextHop << interface << prefixToUse << metric);
+  NS_ASSERT_MSG(nextHop.IsLinkLocal(), "Ipv6StaticRouting::AddNetworkRouteTo - Next hop must be link-local");
+
   Ipv6RoutingTableEntry* route = new Ipv6RoutingTableEntry ();
   *route = Ipv6RoutingTableEntry::CreateNetworkRouteTo (network, networkPrefix, nextHop, interface, prefixToUse);
   m_networkRoutes.push_back (std::make_pair (route, metric));
@@ -302,7 +306,7 @@ Ptr<Ipv6Route> Ipv6StaticRouting::LookupStatic (Ipv6Address dst, Ptr<NetDevice> 
                 }
               else if (route->GetDest ().IsAny ()) /* default route */
                 {
-                  rtentry->SetSource (SourceAddressSelection (interfaceIdx, route->GetPrefixToUse ().IsAny () ? route->GetGateway () : route->GetPrefixToUse ()));
+                  rtentry->SetSource (SourceAddressSelection (interfaceIdx, route->GetPrefixToUse ().IsAny () ? dst : route->GetPrefixToUse ()));
                 }
               else
                 {
@@ -555,7 +559,7 @@ bool Ipv6StaticRouting::RouteInput (Ptr<const Packet> p, const Ipv6Header &heade
       if (mrtentry)
         {
           NS_LOG_LOGIC ("Multicast route found");
-          mcb (mrtentry, p, header); // multicast forwarding callback
+          mcb (idev, mrtentry, p, header); // multicast forwarding callback
           return true;
         }
       else
@@ -565,7 +569,7 @@ bool Ipv6StaticRouting::RouteInput (Ptr<const Packet> p, const Ipv6Header &heade
         }
     }
 
-  // TODO:  Configurable option to enable RFC 1222 Strong End System Model
+  /// \todo  Configurable option to enable RFC 1222 Strong End System Model
   // Right now, we will be permissive and allow a source to send us
   // a packet to one of our other interface addresses; that is, the
   // destination unicast address does not match one of the iif addresses,
@@ -607,7 +611,7 @@ bool Ipv6StaticRouting::RouteInput (Ptr<const Packet> p, const Ipv6Header &heade
   if (rtentry != 0)
     {
       NS_LOG_LOGIC ("Found unicast destination- calling unicast callback");
-      ucb (rtentry, p, header);  // unicast forwarding callback
+      ucb (idev, rtentry, p, header);  // unicast forwarding callback
       return true;
     }
   else
@@ -728,7 +732,7 @@ void Ipv6StaticRouting::NotifyRemoveRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv
   NS_LOG_FUNCTION (this << dst << mask << nextHop << interface);
   if (dst != Ipv6Address::GetZero ())
     {
-      for (NetworkRoutesI j = m_networkRoutes.begin (); j != m_networkRoutes.end (); j++)
+      for (NetworkRoutesI j = m_networkRoutes.begin (); j != m_networkRoutes.end ();)
         {
           Ipv6RoutingTableEntry* rtentry = j->first;
           Ipv6Prefix prefix = rtentry->GetDestNetworkPrefix ();
@@ -737,7 +741,11 @@ void Ipv6StaticRouting::NotifyRemoveRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv
           if (dst == entry && prefix == mask && rtentry->GetInterface () == interface)
             {
               delete j->first;
-              m_networkRoutes.erase (j);
+              j = m_networkRoutes.erase (j);
+            }
+          else
+            {
+              ++j;
             }
         }
     }
@@ -761,13 +769,14 @@ Ipv6Address Ipv6StaticRouting::SourceAddressSelection (uint32_t interface, Ipv6A
       return ret;
     }
 
-  /* useally IPv6 interfaces have one link-local address and one global address */
+  /* usually IPv6 interfaces have one link-local address and one global address */
 
   for (uint32_t i = 1; i < m_ipv6->GetNAddresses (interface); i++)
     {
       Ipv6InterfaceAddress test = m_ipv6->GetAddress (interface, i);
+      Ipv6InterfaceAddress dst(dest);
 
-      if (test.GetAddress ().CombinePrefix (test.GetPrefix ()) == dest.CombinePrefix (test.GetPrefix ()))
+      if (test.GetScope() == dst.GetScope())
         {
           return test.GetAddress ();
         }

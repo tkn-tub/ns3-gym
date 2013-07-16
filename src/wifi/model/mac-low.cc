@@ -1012,8 +1012,8 @@ MacLow::NotifyNav (const WifiMacHeader &hdr, WifiMode txMode, WifiPreamble pream
       DoNavResetNow (duration);
       return;
     }
-  // XXX Note that we should also handle CF_END specially here
-  // but we don't for now because we do not generate them.
+  /// \todo We should also handle CF_END specially here
+  /// but we don't for now because we do not generate them.
   else if (hdr.GetAddr1 () != m_self)
     {
       // see section 9.2.5.4 802.11-1999
@@ -1128,9 +1128,9 @@ MacLow::CtsTimeout (void)
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_DEBUG ("cts timeout");
-  // XXX: should check that there was no rx start before now.
-  // we should restart a new cts timeout now until the expected
-  // end of rx if there was a rx start before now.
+  /// \todo should check that there was no rx start before now.
+  /// we should restart a new cts timeout now until the expected
+  /// end of rx if there was a rx start before now.
   m_stationManager->ReportRtsFailed (m_currentHdr.GetAddr1 (), &m_currentHdr);
   m_currentPacket = 0;
   MacLowTransmissionListener *listener = m_listener;
@@ -1142,9 +1142,9 @@ MacLow::NormalAckTimeout (void)
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_DEBUG ("normal ack timeout");
-  // XXX: should check that there was no rx start before now.
-  // we should restart a new ack timeout now until the expected
-  // end of rx if there was a rx start before now.
+  /// \todo should check that there was no rx start before now.
+  /// we should restart a new ack timeout now until the expected
+  /// end of rx if there was a rx start before now.
   m_stationManager->ReportDataFailed (m_currentHdr.GetAddr1 (), &m_currentHdr);
   MacLowTransmissionListener *listener = m_listener;
   m_listener = 0;

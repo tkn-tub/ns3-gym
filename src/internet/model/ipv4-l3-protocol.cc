@@ -687,9 +687,9 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
     }
 }
 
-// XXX when should we set ip_id?   check whether we are incrementing
-// m_identification on packets that may later be dropped in this stack
-// and whether that deviates from Linux
+/// \todo when should we set ip_id?   check whether we are incrementing
+/// m_identification on packets that may later be dropped in this stack
+/// and whether that deviates from Linux
 Ipv4Header
 Ipv4L3Protocol::BuildHeader (
   Ipv4Address source,
@@ -973,6 +973,29 @@ Ipv4L3Protocol::RemoveAddress (uint32_t i, uint32_t addressIndex)
       if (m_routingProtocol != 0)
         {
           m_routingProtocol->NotifyRemoveAddress (i, address);
+        }
+      return true;
+    }
+  return false;
+}
+
+bool
+Ipv4L3Protocol::RemoveAddress (uint32_t i, Ipv4Address address)
+{
+  NS_LOG_FUNCTION (this << i << address);
+
+  if (address == Ipv4Address::GetLoopback())
+    {
+      NS_LOG_WARN ("Cannot remove loopback address.");
+      return false;
+    }
+  Ptr<Ipv4Interface> interface = GetInterface (i);
+  Ipv4InterfaceAddress ifAddr = interface->RemoveAddress (address);
+  if (ifAddr != Ipv4InterfaceAddress ())
+    {
+      if (m_routingProtocol != 0)
+        {
+          m_routingProtocol->NotifyRemoveAddress (i, ifAddr);
         }
       return true;
     }

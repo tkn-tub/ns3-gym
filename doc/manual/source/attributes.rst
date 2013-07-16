@@ -426,7 +426,7 @@ the helper and low-level APIs; either from the constructors themselves:::
 
 or from the higher-level helper APIs, such as:::
 
-    mobility.SetPositionAllocator ("GridPositionAllocator",
+    mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
                                    "MinX", DoubleValue (-100.0),
                                    "MinY", DoubleValue (-100.0),
                                    "DeltaX", DoubleValue (5.0),

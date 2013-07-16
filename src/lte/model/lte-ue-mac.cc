@@ -486,7 +486,7 @@ void
 LteUeMac::DoRemoveLc (uint8_t lcId)
 {
   NS_LOG_FUNCTION (this << " lcId" << lcId);
-  NS_ASSERT_MSG (m_lcInfoMap.find (lcId) == m_lcInfoMap.end (), "could not find LCID " << lcId);
+  NS_ASSERT_MSG (m_lcInfoMap.find (lcId) != m_lcInfoMap.end (), "could not find LCID " << lcId);
   m_lcInfoMap.erase (lcId);
 }
 
@@ -704,9 +704,9 @@ LteUeMac::DoReceiveLteControlMessage (Ptr<LteControlMessage> msg)
                   if (it->rapId == m_raPreambleId) // RAR is for me
                     {
                       RecvRaResponse (it->rarPayload);
-                      // TODO:: RRC generates the RecvRaResponse messaged
-                      // for avoiding holes in transmission at PHY layer
-                      // (which produce erroneous UL CQI evaluation)
+                      /// \todo RRC generates the RecvRaResponse messaged
+                      /// for avoiding holes in transmission at PHY layer
+                      /// (which produce erroneous UL CQI evaluation)
                     }
                 }
             }

@@ -95,6 +95,12 @@ void Ipv6InterfaceAddress::SetAddress (Ipv6Address address)
       /* link-local address is always /64 prefix */
       m_prefix = Ipv6Prefix (64);
     }
+  else if (address.IsLinkLocalMulticast ())
+    {
+      m_scope = LINKLOCAL;
+      /* link-local multicast address is always /16 prefix */
+      m_prefix = Ipv6Prefix (16);
+    }
   else
     {
       m_scope = GLOBAL;

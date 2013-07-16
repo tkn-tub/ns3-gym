@@ -537,6 +537,30 @@ function call::
 
   (*m_p.*m_pmi)(m_boundArg, arg);
 
+It's possible to bind two or three arguments as well.  Say we have a function with
+signature::
+
+  static void NotifyEvent (Ptr<A> a, Ptr<B> b, MyEventType e);
+
+One can create bound callback binding first two arguments like::
+
+  MakeBoundCallback (&NotifyEvent, a1, b1);
+
+assuming `a1` and `b1` are objects of type `A` and `B` respectively.  Similarly for
+three arguments one would have function with a signature::
+
+  static void NotifyEvent (Ptr<A> a, Ptr<B> b, MyEventType e);
+
+Binding three arguments in done with::
+
+  MakeBoundCallback (&NotifyEvent, a1, b1, c1);
+
+again assuming `a1`, `b1` and `c1` are objects of type `A`, `B` and `C` respectively.
+
+This kind of binding can be used for exchanging information between objects in
+simulation; specifically, bound callbacks can be used as traced callbacks, which will
+be described in the next section.
+
 Traced Callbacks
 ****************
 *Placeholder subsection*

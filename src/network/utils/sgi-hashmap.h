@@ -21,6 +21,9 @@ namespace sgi = ::__gnu_cxx;       // GCC 3.1 and later
        #endif
      #else  // gcc 4.x and later
        #if __GNUC_MINOR__ < 3
+         #ifdef __clang__
+           #undef __DEPRECATED
+         #endif
        #include <ext/hash_map>
 namespace sgi = ::__gnu_cxx;
        #else

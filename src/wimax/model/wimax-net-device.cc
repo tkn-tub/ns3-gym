@@ -633,7 +633,7 @@ WimaxNetDevice::GetMulticast (Ipv6Address addr) const
 void
 WimaxNetDevice::AddLinkChangeCallback (Callback<void> callback)
 {
-  /* TODO: Add a callback invoked whenever the link
+  /* \todo Add a callback invoked whenever the link
    * status changes to UP. This callback is typically used
    * by the IP/ARP layer to flush the ARP cache and by IPv6 stack
    * to flush NDISC cache whenever the link goes up.

@@ -33,6 +33,7 @@
 #include "ns3/trace-source-accessor.h"
 #include "ns3/pointer.h"
 #include "ns3/object-factory.h"
+#include "ns3/nstime.h"
 
 using namespace ns3;
 
@@ -190,6 +191,10 @@ public:
                      CallbackValue (),
                      MakeCallbackAccessor (&AttributeObjectTest::m_cbValue),
                      MakeCallbackChecker ())
+      .AddAttribute ("TestTimeWithBounds", "help text",
+                     TimeValue (Seconds (-2)),
+                     MakeTimeAccessor (&AttributeObjectTest::m_timeWithBounds),
+                     MakeTimeChecker (Seconds (-5), Seconds (10)))
     ;
 
     return tid;
@@ -243,6 +248,7 @@ private:
   TracedValue<enum Test_e> m_enumSrc;
   TracedValue<double> m_doubleSrc;
   TracedValue<bool> m_boolSrc;
+  Time m_timeWithBounds;
 };
 
 NS_OBJECT_ENSURE_REGISTERED (AttributeObjectTest);
@@ -640,6 +646,73 @@ AttributeTestCase<EnumValue>::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (ok, false, "Unexpectedly could SetAttributeFailSafe() to 5");
 
   ok = CheckGetCodePaths (p, "TestEnum", "TestB", EnumValue (AttributeObjectTest::TEST_B));
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Error in SetAttributeFailSafe() but value changes");
+}
+
+template <> void
+AttributeTestCase<TimeValue>::DoRun (void)
+{
+  Ptr<AttributeObjectTest> p;
+  bool ok;
+
+  p = CreateObject<AttributeObjectTest> ();
+  NS_TEST_ASSERT_MSG_NE (p, 0, "Unable to CreateObject");
+
+  //
+  // Set value
+  //
+  ok = p->SetAttributeFailSafe ("TestTimeWithBounds", TimeValue (Seconds (5)));
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() via TimeValue to 5s");
+
+  ok = CheckGetCodePaths (p, "TestTimeWithBounds", "+5000000000.0ns", TimeValue (Seconds (5)));
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Attribute not set properly by SetAttributeFailSafe() (5s) via TimeValue");
+
+  ok = p->SetAttributeFailSafe ("TestTimeWithBounds", StringValue ("3s"));
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() via TimeValue to 5s");
+
+  ok = CheckGetCodePaths (p, "TestTimeWithBounds", "+3000000000.0ns", TimeValue (Seconds (3)));
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Attribute not set properly by SetAttributeFailSafe() (3s) via StringValue");
+
+  
+  //
+  // Attributes can have limits other than the intrinsic limits of the
+  // underlying data types.  These limits are specified in the Object.
+  //
+
+  //
+  // Set the Attribute at the positive limit
+  //
+  ok = p->SetAttributeFailSafe ("TestTimeWithBounds", TimeValue (Seconds (10)));
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() via TimeValue to 10");
+
+  ok = CheckGetCodePaths (p, "TestTimeWithBounds", "+10000000000.0ns", TimeValue (Seconds (10)));
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Attribute not set properly by SetAttributeFailSafe() (positive limit) via StringValue");
+
+  //
+  // Set the Attribute past the positive limit.
+  //
+  ok = p->SetAttributeFailSafe ("TestTimeWithBounds", TimeValue (Seconds (11)));
+  NS_TEST_ASSERT_MSG_EQ (ok, false, "Unexpectedly could SetAttributeFailSafe() via TimeValue to 11");
+
+  ok = CheckGetCodePaths (p, "TestTimeWithBounds", "+10000000000.0ns", TimeValue (Seconds (10)));
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Error in SetAttributeFailSafe() but value changes");
+
+  //
+  // Set the Attribute at the negative limit.
+  //
+  ok = p->SetAttributeFailSafe ("TestTimeWithBounds", TimeValue (Seconds (-5)));
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() via TimeValue to -5");
+
+  ok = CheckGetCodePaths (p, "TestTimeWithBounds", "-5000000000.0ns", TimeValue (Seconds (-5)));
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Attribute not set properly by SetAttributeFailSafe() (negative limit) via StringValue");
+
+  //
+  // Set the Attribute past the negative limit.
+  //
+  ok = p->SetAttributeFailSafe ("TestTimeWithBounds", TimeValue (Seconds (-6)));
+  NS_TEST_ASSERT_MSG_EQ (ok, false, "Unexpectedly could SetAttributeFailSafe() via TimeValue to -6");
+
+  ok = CheckGetCodePaths (p, "TestTimeWithBounds", "-5000000000.0ns", TimeValue (Seconds (-5)));
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Error in SetAttributeFailSafe() but value changes");
 }
 
@@ -1279,14 +1352,15 @@ AttributesTestSuite::AttributesTestSuite ()
   AddTestCase (new AttributeTestCase<UintegerValue> ("Check Attributes of type UintegerValue"), TestCase::QUICK);
   AddTestCase (new AttributeTestCase<DoubleValue> ("Check Attributes of type DoubleValue"), TestCase::QUICK);
   AddTestCase (new AttributeTestCase<EnumValue> ("Check Attributes of type EnumValue"), TestCase::QUICK);
+  AddTestCase (new AttributeTestCase<TimeValue> ("Check Attributes of type TimeValue"), TestCase::QUICK);
   AddTestCase (new RandomVariableStreamAttributeTestCase ("Check Attributes of type RandomVariableStream"), TestCase::QUICK);
   AddTestCase (new ObjectVectorAttributeTestCase ("Check Attributes of type ObjectVectorValue"), TestCase::QUICK);
   AddTestCase (new ObjectMapAttributeTestCase ("Check Attributes of type ObjectMapValue"), TestCase::QUICK);
+  AddTestCase (new PointerAttributeTestCase ("Check Attributes of type PointerValue"), TestCase::QUICK);
+  AddTestCase (new CallbackValueTestCase ("Check Attributes of type CallbackValue"), TestCase::QUICK);
   AddTestCase (new IntegerTraceSourceAttributeTestCase ("Ensure TracedValue<uint8_t> can be set like IntegerValue"), TestCase::QUICK);
   AddTestCase (new IntegerTraceSourceTestCase ("Ensure TracedValue<uint8_t> also works as trace source"), TestCase::QUICK);
   AddTestCase (new TracedCallbackTestCase ("Ensure TracedCallback<double, int, float> works as trace source"), TestCase::QUICK);
-  AddTestCase (new PointerAttributeTestCase ("Check Attributes of type PointerValue"), TestCase::QUICK);
-  AddTestCase (new CallbackValueTestCase ("Check Attributes of type CallbackValue"), TestCase::QUICK);
 }
 
 static AttributesTestSuite attributesTestSuite;

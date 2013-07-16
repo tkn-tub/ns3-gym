@@ -706,7 +706,7 @@ public:
  * @brief Delete all static routes on all nodes that have a
  * GlobalRouterInterface
  *
- * TODO:  separate manually assigned static routes from static routes that
+ * \todo  separate manually assigned static routes from static routes that
  * the global routing code injects, and only delete the latter
  * @internal
  *

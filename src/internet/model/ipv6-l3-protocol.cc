@@ -28,6 +28,8 @@
 #include "ns3/object-vector.h"
 #include "ns3/ipv6-routing-protocol.h"
 #include "ns3/ipv6-route.h"
+#include "ns3/mac16-address.h"
+#include "ns3/mac64-address.h"
 
 #include "loopback-net-device.h"
 #include "ipv6-l3-protocol.h"
@@ -263,10 +265,18 @@ void Ipv6L3Protocol::AddAutoconfiguredAddress (uint32_t interface, Ipv6Address n
 
   if (flags & (1 << 6)) /* auto flag */
     {
-      /* XXX : add other L2 address case */
-      if (Mac48Address::IsMatchingType (addr))
+      // In case of new MacAddress types, remember to change Ipv6L3Protocol::RemoveAutoconfiguredAddress as well
+      if (Mac16Address::IsMatchingType (addr))
+        {
+          address = Ipv6InterfaceAddress (Ipv6Address::MakeAutoconfiguredAddress (Mac16Address::ConvertFrom (addr), network));
+        }
+      else if (Mac48Address::IsMatchingType (addr))
         {
           address = Ipv6InterfaceAddress (Ipv6Address::MakeAutoconfiguredAddress (Mac48Address::ConvertFrom (addr), network));
+        }
+      else if (Mac64Address::IsMatchingType (addr))
+        {
+          address = Ipv6InterfaceAddress (Ipv6Address::MakeAutoconfiguredAddress (Mac64Address::ConvertFrom (addr), network));
         }
       else
         {
@@ -312,7 +322,25 @@ void Ipv6L3Protocol::RemoveAutoconfiguredAddress (uint32_t interface, Ipv6Addres
   Address addr = iface->GetDevice ()->GetAddress ();
   uint32_t max = iface->GetNAddresses ();
   uint32_t i = 0;
-  Ipv6Address toFound = Ipv6Address::MakeAutoconfiguredAddress (Mac48Address::ConvertFrom (addr), network);
+  Ipv6Address toFound;
+
+  if (Mac16Address::IsMatchingType (addr))
+    {
+      toFound = Ipv6Address::MakeAutoconfiguredAddress (Mac16Address::ConvertFrom (addr), network);
+    }
+  else if (Mac48Address::IsMatchingType (addr))
+    {
+      toFound = Ipv6Address::MakeAutoconfiguredAddress (Mac48Address::ConvertFrom (addr), network);
+    }
+  else if (Mac64Address::IsMatchingType (addr))
+    {
+      toFound = Ipv6Address::MakeAutoconfiguredAddress (Mac64Address::ConvertFrom (addr), network);
+    }
+  else
+    {
+      NS_FATAL_ERROR ("Unknown method to make autoconfigured address for this kind of device.");
+      return;
+    }
 
   for (i = 0; i < max; i++)
     {
@@ -378,6 +406,29 @@ bool Ipv6L3Protocol::RemoveAddress (uint32_t i, uint32_t addressIndex)
         }
       return true;
     }
+  return false;
+}
+
+bool 
+Ipv6L3Protocol::RemoveAddress (uint32_t i, Ipv6Address address)
+{
+  NS_LOG_FUNCTION (this << i << address);
+
+  if (address == Ipv6Address::GetLoopback())
+    {
+      NS_LOG_WARN ("Cannot remove loopback address.");
+      return false;
+    }
+  Ptr<Ipv6Interface> interface = GetInterface (i);
+  Ipv6InterfaceAddress ifAddr = interface->RemoveAddress (address);
+  if (ifAddr != Ipv6InterfaceAddress ())
+  {
+    if (m_routingProtocol != 0)
+    {
+      m_routingProtocol->NotifyRemoveAddress (i, ifAddr);
+    }
+    return true;
+  }
   return false;
 }
 
@@ -800,7 +851,20 @@ void Ipv6L3Protocol::SendRealOut (Ptr<Ipv6Route> route, Ptr<Packet> packet, Ipv6
   if (packet->GetSize () > (size_t)(dev->GetMtu () + 40)) /* 40 => size of IPv6 header */
     {
       // Router => drop
-      if (m_ipForward)
+
+      bool fromMe = false;
+      for (uint32_t i=0; i<GetNInterfaces(); i++ )
+        {
+          for (uint32_t j=0; j<GetNAddresses(i); j++ )
+            {
+              if (GetAddress(i,j).GetAddress() == ipHeader.GetSourceAddress())
+                {
+                  fromMe = true;
+                  break;
+                }
+            }
+        }
+      if (!fromMe)
         {
           Ptr<Icmpv6L4Protocol> icmpv6 = GetIcmpv6 ();
           if ( icmpv6 )
@@ -883,10 +947,18 @@ void Ipv6L3Protocol::SendRealOut (Ptr<Ipv6Route> route, Ptr<Packet> packet, Ipv6
     }
 }
 
-void Ipv6L3Protocol::IpForward (Ptr<Ipv6Route> rtentry, Ptr<const Packet> p, const Ipv6Header& header)
+void Ipv6L3Protocol::IpForward (Ptr<const NetDevice> idev, Ptr<Ipv6Route> rtentry, Ptr<const Packet> p, const Ipv6Header& header)
 {
   NS_LOG_FUNCTION (this << rtentry << p << header);
   NS_LOG_LOGIC ("Forwarding logic for node: " << m_node->GetId ());
+
+  // Drop RFC 3849 packets: 2001:db8::/32
+  if (header.GetDestinationAddress().IsDocumentation())
+    {
+      NS_LOG_WARN ("Received a packet for 2001:db8::/32 (documentation class).  Drop.");
+      m_dropTrace (header, p, DROP_ROUTE_ERROR, m_node->GetObject<Ipv6> (), 0);
+      return;
+    }
 
   // Forwarding
   Ipv6Header ipHeader = header;
@@ -920,9 +992,12 @@ void Ipv6L3Protocol::IpForward (Ptr<Ipv6Route> rtentry, Ptr<const Packet> p, con
    * exists.
    */
 
-  if (m_sendIcmpv6Redirect &&
-      ((!rtentry->GetGateway ().IsAny () && rtentry->GetGateway ().CombinePrefix (Ipv6Prefix (64)) == header.GetSourceAddress ().CombinePrefix (Ipv6Prefix (64)))
-      || (rtentry->GetDestination ().CombinePrefix (Ipv6Prefix (64)) == header.GetSourceAddress ().CombinePrefix (Ipv6Prefix (64)))))
+  /* Theoretically we should also check if the redirect target is on the same network
+   * as the source node. On the other hand, we are sure that the router we're redirecting to
+   * used a link-local address. As a consequence, they MUST be on the same network, the link-local net.
+   */
+
+  if (m_sendIcmpv6Redirect && (rtentry->GetOutputDevice ()==idev))
     {
       NS_LOG_LOGIC ("ICMPv6 redirect!");
       Ptr<Icmpv6L4Protocol> icmpv6 = GetIcmpv6 ();
@@ -938,21 +1013,22 @@ void Ipv6L3Protocol::IpForward (Ptr<Ipv6Route> rtentry, Ptr<const Packet> p, con
         }
 
       copy->AddHeader (header);
+      Ipv6Address linkLocal = GetInterface (GetInterfaceForDevice (rtentry->GetOutputDevice ()))->GetLinkLocalAddress ().GetAddress ();
 
       if (icmpv6->Lookup (target, rtentry->GetOutputDevice (), 0, &hardwareTarget))
         {
-          icmpv6->SendRedirection (copy, src, target, dst, hardwareTarget);
+          icmpv6->SendRedirection (copy, linkLocal, src, target, dst, hardwareTarget);
         }
       else
         {
-          icmpv6->SendRedirection (copy, src, target, dst, Address ());
+          icmpv6->SendRedirection (copy, linkLocal, src, target, dst, Address ());
         }
     }
 
   SendRealOut (rtentry, packet, ipHeader);
 }
 
-void Ipv6L3Protocol::IpMulticastForward (Ptr<Ipv6MulticastRoute> mrtentry, Ptr<const Packet> p, const Ipv6Header& header)
+void Ipv6L3Protocol::IpMulticastForward (Ptr<const NetDevice> idev, Ptr<Ipv6MulticastRoute> mrtentry, Ptr<const Packet> p, const Ipv6Header& header)
 {
   NS_LOG_FUNCTION (this << mrtentry << p << header);
   NS_LOG_LOGIC ("Multicast forwarding logic for node: " << m_node->GetId ());

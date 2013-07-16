@@ -393,8 +393,8 @@ DefaultSimulatorImpl::IsExpired (const EventId &ev) const
 Time 
 DefaultSimulatorImpl::GetMaximumSimulationTime (void) const
 {
-  // XXX: I am fairly certain other compilers use other non-standard
-  // post-fixes to indicate 64 bit constants.
+  /// \todo I am fairly certain other compilers use other non-standard
+  /// post-fixes to indicate 64 bit constants.
   return TimeStep (0x7fffffffffffffffLL);
 }
 

@@ -18,7 +18,7 @@ def build(bld):
     obj.source = 'wireless-animation.cc'
     
     obj = bld.create_ns3_program('uan-animation',
-                                 ['netanim', 'internet', 'mobility', 'tools', 'applications', 'uan'])
+                                 ['netanim', 'internet', 'mobility', 'applications', 'uan'])
     obj.source = 'uan-animation.cc'
 
     obj = bld.create_ns3_program('dynamic_linknode',

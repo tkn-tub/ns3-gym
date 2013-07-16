@@ -130,7 +130,7 @@ PacketHeader::GetSerializedSize (void) const
 void 
 PacketHeader::Print (std::ostream &os) const
 {
-  // TODO
+  /// \todo
 }
 
 void
@@ -207,7 +207,7 @@ MessageHeader::GetSerializedSize (void) const
 void 
 MessageHeader::Print (std::ostream &os) const
 {
-  // TODO
+  /// \todo
 }
 
 void
@@ -288,7 +288,7 @@ MessageHeader::Mid::GetSerializedSize (void) const
 void 
 MessageHeader::Mid::Print (std::ostream &os) const
 {
-  // TODO
+  /// \todo
 }
 
 void
@@ -340,7 +340,7 @@ MessageHeader::Hello::GetSerializedSize (void) const
 void 
 MessageHeader::Hello::Print (std::ostream &os) const
 {
-  // TODO
+  /// \todo
 }
 
 void
@@ -423,7 +423,7 @@ MessageHeader::Tc::GetSerializedSize (void) const
 void 
 MessageHeader::Tc::Print (std::ostream &os) const
 {
-  // TODO
+  /// \todo
 }
 
 void
@@ -473,7 +473,7 @@ MessageHeader::Hna::GetSerializedSize (void) const
 void 
 MessageHeader::Hna::Print (std::ostream &os) const
 {
-  // TODO
+  /// \todo
 }
 
 void
