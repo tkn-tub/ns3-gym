@@ -107,11 +107,11 @@ UeMemberLteUePhySapProvider::SendRachPreamble (uint32_t prachId, uint32_t raRnti
 ////////////////////////////////////////
 
 const char* g_uePhyStateName[LteUePhy::NUM_STATES] =
-  {
-    "CELL_SEARCH",
-    "DECODING_BCH",
-    "ATTACHED"
-  };
+{
+  "CELL_SEARCH",
+  "DECODING_BCH",
+  "ATTACHED"
+};
 
 std::string ToString (LteUePhy::State s)
 {
@@ -280,6 +280,8 @@ LteUePhy::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
   LtePhy::DoInitialize ();
+  DoSetDlBandwidth (6); // configure DL for receiving PSS
+  SwitchToState (CELL_SEARCH);
 }
 
 void
@@ -417,6 +419,12 @@ LteUePhy::CreateTxPowerSpectralDensity ()
   Ptr<SpectrumValue> psd = psdHelper.CreateTxPowerSpectralDensity (m_ulEarfcn, m_ulBandwidth, m_txPower, GetSubChannelsForTransmission ());
 
   return psd;
+}
+
+void
+LteUePhy::SetDlEarfcn (uint16_t earfcn)
+{
+  m_dlEarfcn = earfcn;
 }
 
 void
@@ -683,8 +691,8 @@ LteUePhy::ReportUeMeasurements ()
       double avg_rsrp = (*it).second.rsrpSum / (double)(*it).second.rsrpNum;
       double avg_rsrq = (*it).second.rsrqSum / (double)(*it).second.rsrqNum;
       NS_LOG_DEBUG (this << " CellId " << (*it).first
-                    << " RSRP " << avg_rsrp << " (nSamples " << (uint16_t)(*it).second.rsrpNum
-                    << ") RSRQ " << avg_rsrq << " (nSamples " << (uint16_t)(*it).second.rsrpNum << ")");
+                         << " RSRP " << avg_rsrp << " (nSamples " << (uint16_t)(*it).second.rsrpNum
+                         << ") RSRQ " << avg_rsrq << " (nSamples " << (uint16_t)(*it).second.rsrpNum << ")");
 
       if ((m_state == CELL_SEARCH) && (maxRsrp < avg_rsrp))
         {
@@ -1114,20 +1122,13 @@ LteUePhy::DoReset ()
   m_downlinkSpectrumPhy->Reset ();
   m_uplinkSpectrumPhy->Reset ();
 
-  // configure DL for receiving PSS
-  m_dlEarfcn = 100; // TODO hardcoded value
-  m_noiseFigure = 9.0; // TODO hardcoded value
-  NS_ASSERT (m_downlinkSpectrumPhy->GetChannel () != 0);
-  DoSetDlBandwidth (6);
-
-  SwitchToState (CELL_SEARCH);
-
 } // end of void LteUePhy::DoReset ()
 
 void
 LteUePhy::DoRetryCellSearch ()
 {
   NS_LOG_FUNCTION (this);
+  DoSetDlBandwidth (6); // configure DL for receiving PSS
   SwitchToState (CELL_SEARCH);
 }
 

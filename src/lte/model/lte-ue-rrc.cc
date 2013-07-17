@@ -324,10 +324,16 @@ LteUeRrc::GetDlBandwidth () const
   return m_dlBandwidth;
 }
 
-uint16_t 
+uint16_t
 LteUeRrc::GetDlEarfcn () const
 {
   return m_dlEarfcn;
+}
+
+void
+LteUeRrc::SetDlEarfcn (uint16_t earfcn)
+{
+  m_dlEarfcn = earfcn;
 }
 
 uint16_t 
@@ -337,6 +343,11 @@ LteUeRrc::GetUlEarfcn () const
   return m_ulEarfcn;
 }
 
+void
+LteUeRrc::SetUlEarfcn (uint16_t earfcn)
+{
+  m_ulEarfcn = earfcn;
+}
 
 LteUeRrc::State
 LteUeRrc::GetState (void)
@@ -544,10 +555,9 @@ LteUeRrc::DoConnect ()
 // CPHY SAP methods
 
 void 
-LteUeRrc::DoRecvMasterInformationBlock (LteRrcSap::MasterInformationBlock msg)  
+LteUeRrc::DoRecvMasterInformationBlock (LteRrcSap::MasterInformationBlock msg)
 { 
   NS_LOG_FUNCTION (this);
-  // TODO may speed up a bit if only execute the following when bandwidth changes?
   m_dlBandwidth = msg.dlBandwidth;
   m_cphySapProvider->SetDlBandwidth (msg.dlBandwidth);
   m_receivedMib = true;
@@ -590,14 +600,14 @@ LteUeRrc::DoReportUeMeasurements (LteUeCphySapUser::UeMeasurementsParameters par
 
   std::vector <LteUeCphySapUser::UeMeasurementsElement>::iterator newMeasIt;
   for (newMeasIt = params.m_ueMeasurementsList.begin ();
-    newMeasIt != params.m_ueMeasurementsList.end (); ++newMeasIt)
+       newMeasIt != params.m_ueMeasurementsList.end (); ++newMeasIt)
     {
       Layer3Filtering (newMeasIt->m_cellId, newMeasIt->m_rsrp, newMeasIt->m_rsrq);
     }
 
   std::map<uint8_t, LteRrcSap::MeasIdToAddMod>::iterator measIdIt;
   for (measIdIt = m_varMeasConfig.measIdList.begin ();
-    measIdIt != m_varMeasConfig.measIdList.end (); ++measIdIt)
+       measIdIt != m_varMeasConfig.measIdList.end (); ++measIdIt)
     {
       MeasurementReportTriggering (measIdIt->first);
     }
@@ -637,14 +647,14 @@ LteUeRrc::DoRecvSystemInformation (LteRrcSap::SystemInformation msg)
     }
   if (m_state == IDLE_WAIT_SYSTEM_INFO && m_receivedMib && m_receivedSib2)
     {
-       SwitchToState (IDLE_CAMPED_NORMALLY);
+      SwitchToState (IDLE_CAMPED_NORMALLY);
     }
 }
 
 
 void 
 LteUeRrc::DoRecvRrcConnectionSetup (LteRrcSap::RrcConnectionSetup msg)
-{    
+{
   NS_LOG_FUNCTION (this);
   switch (m_state)
     {

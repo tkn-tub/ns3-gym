@@ -143,6 +143,10 @@ public:
    */
   Ptr<LteSpectrumPhy> GetUlSpectrumPhy () const;
 
+  /**
+   * \param bw the downlink carrier frequency (EARFCN)
+   */
+  void SetDlEarfcn (uint16_t earfcn);
 
   /**
    * \brief Create the PSD for the TX
@@ -210,18 +214,18 @@ public:
 
 
   /**
-  * \brief Send the SRS signal in the last symbols of the frame
-  */
+   * \brief Send the SRS signal in the last symbols of the frame
+   */
   void SendSrs ();
   
-    /**
-  * \brief PhySpectrum generated a new DL HARQ feedback
-  */
+  /**
+   * \brief PhySpectrum generated a new DL HARQ feedback
+   */
   virtual void ReceiveLteDlHarqFeedback (DlInfoListElement_s mes);
 
   /**
-  * \brief Set the HARQ PHY module
-  */
+   * \brief Set the HARQ PHY module
+   */
   void SetHarqPhyModule (Ptr<LteHarqPhy> harq);
 
   /**
@@ -249,10 +253,10 @@ private:
   void SwitchToState (State s);
 
   // UE CPHY SAP methods
-  void DoReset ();  
+  void DoReset ();
   void DoRetryCellSearch ();
   void DoAttach ();
-  void DoSyncronizeWithEnb (uint16_t cellId, uint16_t dlEarfcn);  
+  void DoSyncronizeWithEnb (uint16_t cellId, uint16_t dlEarfcn);
   void DoSetDlBandwidth (uint8_t ulBandwidth);
   void DoConfigureUplink (uint16_t ulEarfcn, uint8_t ulBandwidth);
   void DoSetRnti (uint16_t rnti);

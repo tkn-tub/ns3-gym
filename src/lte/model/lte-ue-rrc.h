@@ -221,15 +221,25 @@ public:
    */
   uint8_t GetDlBandwidth () const;
 
-  /** 
+  /**
    * \return the downlink carrier frequency (EARFCN)
    */
   uint16_t GetDlEarfcn () const;
+
+  /**
+   * \param bw the downlink carrier frequency (EARFCN)
+   */
+  void SetDlEarfcn (uint16_t earfcn);
 
   /** 
    * \return the uplink carrier frequency (EARFCN)
    */
   uint16_t GetUlEarfcn () const;
+
+  /**
+   * \param bw the uplink carrier frequency (EARFCN)
+   */
+  void SetUlEarfcn (uint16_t earfcn);
 
   /** 
    * 

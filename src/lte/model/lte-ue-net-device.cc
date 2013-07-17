@@ -78,6 +78,13 @@ TypeId LteUeNetDevice::GetTypeId (void)
                    UintegerValue (0), // not used because the attribute is read-only
                    MakeUintegerAccessor (&LteUeNetDevice::m_imsi),
                    MakeUintegerChecker<uint64_t> ())
+    .AddAttribute ("DlEarfcn",
+                   "Downlink E-UTRA Absolute Radio Frequency Channel Number (EARFCN) "
+                   "as per 3GPP 36.101 Section 5.7.3. ",
+                   UintegerValue (100),
+                   MakeUintegerAccessor (&LteUeNetDevice::SetDlEarfcn,
+                                         &LteUeNetDevice::GetDlEarfcn),
+                   MakeUintegerChecker<uint16_t> (0, 6149))
   ;
 
   return tid;
@@ -91,7 +98,7 @@ LteUeNetDevice::LteUeNetDevice (void)
 }
 
 
-  LteUeNetDevice::LteUeNetDevice (Ptr<Node> node, Ptr<LteUePhy> phy, Ptr<LteUeMac> mac, Ptr<LteUeRrc> rrc, Ptr<EpcUeNas> nas, uint64_t imsi)
+LteUeNetDevice::LteUeNetDevice (Ptr<Node> node, Ptr<LteUePhy> phy, Ptr<LteUeMac> mac, Ptr<LteUeRrc> rrc, Ptr<EpcUeNas> nas, uint64_t imsi)
 {
   NS_LOG_FUNCTION (this);
   m_phy = phy;
@@ -129,7 +136,7 @@ LteUeNetDevice::UpdateConfig (void)
   NS_LOG_FUNCTION (this);
   m_nas->SetImsi (m_imsi);
   m_rrc->SetImsi (m_imsi);
-  
+
 }
 
 
@@ -171,6 +178,20 @@ LteUeNetDevice::GetImsi () const
   return m_imsi;
 }
 
+uint16_t
+LteUeNetDevice::GetDlEarfcn () const
+{
+  return m_dlEarfcn;
+}
+
+void
+LteUeNetDevice::SetDlEarfcn (uint16_t earfcn)
+{
+  m_rrc->SetDlEarfcn (earfcn);
+  m_phy->SetDlEarfcn (earfcn);
+  m_dlEarfcn = earfcn;
+}
+
 void
 LteUeNetDevice::SetTargetEnb (Ptr<LteEnbNetDevice> enb)
 {
@@ -201,7 +222,7 @@ LteUeNetDevice::Send (Ptr<Packet> packet, const Address& dest, uint16_t protocol
 {
   NS_LOG_FUNCTION (this << dest << protocolNumber);
   NS_ASSERT_MSG (protocolNumber == Ipv4L3Protocol::PROT_NUMBER, "unsupported protocol " << protocolNumber << ", only IPv4 is supported");
-  
+
   return m_nas->Send (packet);
 }
 

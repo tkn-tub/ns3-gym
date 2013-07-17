@@ -73,25 +73,40 @@ public:
 
   // inherited from NetDevice
   virtual bool Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber);
-  
+
 
   Ptr<LteUeMac> GetMac (void) const;
 
-  Ptr<LteUeRrc> GetRrc () const ;
+  Ptr<LteUeRrc> GetRrc () const;
 
   Ptr<LteUePhy> GetPhy (void) const;
-  
+
   Ptr<EpcUeNas> GetNas (void) const;
 
   uint64_t GetImsi () const;
 
- 
+  /**
+   * \return the downlink carrier frequency (EARFCN)
+   *
+   * Note that real-life handset typically supports more than one EARFCN, but
+   * the sake of simplicity we assume only one EARFCN is supported.
+   */
+  uint16_t GetDlEarfcn () const;
+
+  /**
+   * \param bw the downlink carrier frequency (EARFCN)
+   *
+   * Note that real-life handset typically supports more than one EARFCN, but
+   * the sake of simplicity we assume only one EARFCN is supported.
+   */
+  void SetDlEarfcn (uint16_t earfcn);
+
   /**
    * \brief Set the targer eNB where the UE is registered
    * \param enb
    */
   void SetTargetEnb (Ptr<LteEnbNetDevice> enb);
-  
+
   /**
    * \brief Get the targer eNB where the UE is registered
    * \return the pointer to the enb
@@ -124,7 +139,9 @@ private:
   Ptr<EpcUeNas> m_nas;
 
   uint64_t m_imsi;
-  
+
+  uint16_t m_dlEarfcn; /**< downlink carrier frequency */
+
 };
 
 } // namespace ns3
