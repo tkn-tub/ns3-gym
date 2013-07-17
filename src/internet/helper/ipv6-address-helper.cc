@@ -62,10 +62,10 @@ void Ipv6AddressHelper::SetBase (Ipv6Address network, Ipv6Prefix prefix,
 Ipv6Address Ipv6AddressHelper::NewAddress (Address addr)
 {
   NS_LOG_FUNCTION (this << addr);
-  if (Mac16Address::IsMatchingType (addr))
+  if (Mac64Address::IsMatchingType (addr))
     {
       Ipv6Address network = Ipv6AddressGenerator::GetNetwork (Ipv6Prefix (64));
-      Ipv6Address address = Ipv6Address::MakeAutoconfiguredAddress (Mac16Address::ConvertFrom (addr), network);
+      Ipv6Address address = Ipv6Address::MakeAutoconfiguredAddress (Mac64Address::ConvertFrom (addr), network);
       Ipv6AddressGenerator::AddAllocated (address);
       return address;
     }
@@ -76,10 +76,10 @@ Ipv6Address Ipv6AddressHelper::NewAddress (Address addr)
       Ipv6AddressGenerator::AddAllocated (address);
       return address;
     }
-  else if (Mac64Address::IsMatchingType (addr))
+  else if (Mac16Address::IsMatchingType (addr))
     {
       Ipv6Address network = Ipv6AddressGenerator::GetNetwork (Ipv6Prefix (64));
-      Ipv6Address address = Ipv6Address::MakeAutoconfiguredAddress (Mac64Address::ConvertFrom (addr), network);
+      Ipv6Address address = Ipv6Address::MakeAutoconfiguredAddress (Mac16Address::ConvertFrom (addr), network);
       Ipv6AddressGenerator::AddAllocated (address);
       return address;
     }
