@@ -1,5 +1,7 @@
 .. include:: replace.txt
-
+.. highlight:: cpp
+.. role:: raw-role(raw)
+   :format: html latex
 
 Tracing
 -------
@@ -426,14 +428,14 @@ called with the parameters provided by the source.
 
 If you now build and run this example,
 
-::
+.. sourcecode:: bash
 
-  ./waf --run fourth
+  $ ./waf --run fourth
 
 you will see the output from the ``IntTrace`` function execute as soon as the
 trace source is hit:
 
-::
+.. sourcecode:: bash
 
   Traced 0 to 1234
 
@@ -679,9 +681,9 @@ The easiest way to do this is to grep around in the |ns3| codebase for someone
 who has already figured it out,  You should always try to copy someone else's
 working code before you start to write your own.  Try something like:
 
-::
+.. sourcecode:: bash
 
-  find . -name '*.cc' | xargs grep CourseChange | grep Connect
+  $ find . -name '*.cc' | xargs grep CourseChange | grep Connect
 
 and you may find your answer along with working code.  For example, in this
 case, ``./ns-3-dev/examples/wireless/mixed-wireless.cc`` has something
@@ -732,7 +734,7 @@ connect.
 You are looking at the same information for the RandomWalk2dMobilityModel; and
 the information you want is now right there in front of you in the Doxygen:
 
-::
+.. sourcecode:: bash
 
   This object is accessible through the following paths with Config::Set and Config::Connect: 
 
@@ -756,7 +758,7 @@ going to be looking for is found in the base class as we have seen.
 
 Look further down in the ``GetTypeId`` doxygen.  You will find,
 
-::
+.. sourcecode:: bash
 
   No TraceSources defined for this type.
   TraceSources defined in parent class ns3::MobilityModel:
@@ -788,9 +790,9 @@ The easiest way to do this is to grep around in the |ns3| codebase for someone
 who has already figured it out,  You should always try to copy someone else's
 working code.  Try something like:
 
-::
+.. sourcecode:: bash
 
-  find . -name '*.cc' | xargs grep CourseChange | grep Connect
+  $ find . -name '*.cc' | xargs grep CourseChange | grep Connect
 
 and you may find your answer along with working code.  For example, in this
 case, ``./ns-3-dev/examples/wireless/mixed-wireless.cc`` has something
@@ -812,7 +814,7 @@ there is a callback function there which you can use.  Sure enough, there is:
     ...
   }
 
-Take my Word for It
+Take My Word for It
 ~~~~~~~~~~~~~~~~~~~
 
 If there are no examples to work from, this can be, well, challenging to 
@@ -899,9 +901,9 @@ We are probably going to be interested in some kind of declaration in the
 we know this declaration is going to have to be in some kind of header file,
 so just grep for it using:
 
-::
+.. sourcecode:: bash
 
-  find . -name '*.h' | xargs grep TracedCallback
+  $ find . -name '*.h' | xargs grep TracedCallback
 
 You'll see 124 lines fly by (I piped this through wc to see how bad it was).
 Although that may seem like it, that's not really a lot.  Just pipe the output
@@ -943,7 +945,7 @@ in your favorite editor to see what is happening.
 
 You will see a comment at the top of the file that should be comforting:
 
-::
+.. sourcecode:: text
 
   An ns3::TracedCallback has almost exactly the same API as a normal ns3::Callback but
   instead of forwarding calls to a single function (as an ns3::Callback normally does),
@@ -1019,7 +1021,7 @@ If you look down through the file, you will see a lot of probably almost
 incomprehensible template code.  You will eventually come to some Doxygen for
 the Callback template class, though.  Fortunately, there is some English:
 
-::
+.. sourcecode:: text
 
   This class template implements the Functor Design Pattern.
   It is used to declare the type of a Callback:
@@ -1179,7 +1181,7 @@ trace sources" to see what we have to work with.  Recall that this is found
 in the |ns3| Doxygen in the "C++ Constructs Used by All Modules" Module section.  If you scroll
 through the list, you will eventually find:
 
-::
+.. sourcecode:: bash
 
   ns3::TcpNewReno
   CongestionWindow: The TCP connection's congestion window
@@ -1189,9 +1191,9 @@ file ``src/internet/model/tcp-socket-base.cc`` while congestion control
 variants are in files such as ``src/internet/model/tcp-newreno.cc``.  
 If you don't know this a priori, you can use the recursive grep trick:
 
-::
+.. sourcecode:: bash
 
-  find . -name '*.cc' | xargs grep -i tcp
+  $ find . -name '*.cc' | xargs grep -i tcp
 
 You will find page after page of instances of tcp pointing you to that file. 
 
@@ -1247,9 +1249,9 @@ modify, rather than starting from scratch.  So the first order of business now
 is to find some code that already hooks the "CongestionWindow" trace source
 and see if we can modify it.  As usual, grep is your friend:
 
-::
+.. sourcecode:: bash
 
-  find . -name '*.cc' | xargs grep CongestionWindow
+  $ find . -name '*.cc' | xargs grep CongestionWindow
 
 This will point out a couple of promising candidates: 
 ``examples/tcp/tcp-large-transfer.cc`` and 
@@ -1954,10 +1956,10 @@ Since we have provided the file ``fifth.cc`` for you, if you have built
 your distribution (in debug mode since it uses NS_LOG -- recall that optimized
 builds optimize out NS_LOGs) it will be waiting for you to run.
 
-::
+.. sourcecode:: bash
 
-  ./waf --run fifth
-  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-dev/ns-3-dev/build
+  $ ./waf --run fifth
+  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-dev/ns-3-dev/build'
   Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-dev/ns-3-dev/build'
   'build' finished successfully (0.684s)
   1.20919 1072
@@ -1976,9 +1978,9 @@ information along with those RxDrop messages.  We will remedy that soon, but I'm
 sure you can't wait to see the results of all of this work.  Let's redirect that
 output to a file called ``cwnd.dat``:
 
-::
+.. sourcecode:: bash
 
-  ./waf --run fifth > cwnd.dat 2>&1
+  $ ./waf --run fifth > cwnd.dat 2>&1
 
 Now edit up "cwnd.dat" in your favorite editor and remove the waf build status
 and drop lines, leaving only the traced data (you could also comment out the
@@ -1988,8 +1990,9 @@ script to get rid of the drop prints just as easily.
 You can now run gnuplot (if you have it installed) and tell it to generate some 
 pretty pictures:
 
-::
+.. sourcecode:: bash
 
+  $ gnuplot
   gnuplot> set terminal png size 640,480
   gnuplot> set output "cwnd.png"
   gnuplot> plot "cwnd.dat" using 1:2 title 'Congestion Window' with linespoints
@@ -2187,21 +2190,21 @@ mean that "something" is an |ns3| Object on which you can hang |ns3|
 
 Now, back to the example.  If you now build and run this example,
 
-::
+.. sourcecode:: bash
 
-  ./waf --run sixth
+  $ ./waf --run sixth
 
 you will see the same messages appear as when you ran "fifth", but two new 
 files will appear in the top-level directory of your |ns3| distribution.
 
-::
+.. sourcecode:: bash
 
   sixth.cwnd  sixth.pcap
 
 Since "sixth.cwnd" is an ASCII text file, you can view it with ``cat``
 or your favorite file viewer.
 
-::
+.. sourcecode:: bash
 
   1.20919 536     1072
   1.21511 1072    1608
@@ -2215,7 +2218,7 @@ There are no extraneous prints in the file, no parsing or editing is required.
 
 Since "sixth.pcap" is a pcap file, you can fiew it with ``tcpdump``.
 
-::
+.. sourcecode:: bash
 
   reading from file ../../sixth.pcap, link-type PPP (PPP)
   1.251507 IP 10.1.1.1.49153 > 10.1.1.2.8080: . 17689:18225(536) ack 1 win 65535
@@ -2305,14 +2308,13 @@ There are subtleties that prevent all four classes from behaving identically,
 but we do strive to make them all work as similarly as possible; and whenever
 possible there are analogs for all methods in all classes.
 
-::
-
-                   | pcap | ascii |
-  -----------------+------+-------|
-  Device Helper    |      |       |
-  -----------------+------+-------|
-  Protocol Helper  |      |       |
-  -----------------+------+-------|
+  +-----------------+----------------------+----------------------+
+  | \               |  pcap                |  ascii               |
+  +=================+======================+======================+
+  | Device Helper   | :raw-role:`&#x2713;` | :raw-role:`&#x2713;` | 
+  +-----------------+----------------------+----------------------+
+  | Protocol Helper | :raw-role:`&#x2713;` | :raw-role:`&#x2713;` |
+  +-----------------+----------------------+----------------------+
 
 We use an approach called a ``mixin`` to add tracing functionality to our 
 helper classes.  A ``mixin`` is a class that provides functionality to that

@@ -25,6 +25,11 @@ div.body h6 {
   background-image: url('nav_f.png');
 }
 
+/* Sphinx figure captions */
+p.caption {
+  font-weight: bold;
+}
+
 /* Doxygen side bar */
 #nav-tree {
   font-size: 12px;

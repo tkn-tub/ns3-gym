@@ -1,5 +1,5 @@
-	.. include:: replace.txt
-
+.. include:: replace.txt
+.. highlight:: bash
 
 Getting Started
 ---------------
@@ -89,11 +89,11 @@ get a copy of a release by typing the following into your Linux shell
 
 ::
 
-  cd
-  mkdir workspace
-  cd workspace
-  wget http://www.nsnam.org/releases/ns-allinone-3.17.tar.bz2
-  tar xjf ns-allinone-3.17.tar.bz2
+  $ cd
+  $ mkdir workspace
+  $ cd workspace
+  $ wget http://www.nsnam.org/releases/ns-allinone-3.17.tar.bz2
+  $ tar xjf ns-allinone-3.17.tar.bz2
 
 If you change into the directory ``ns-allinone-3.17`` you should see a
 number of files:
@@ -123,10 +123,10 @@ following into your Linux shell (assuming you have installed Mercurial):
 
 ::
 
-  cd
-  mkdir workspace
-  cd workspace
-  hg clone http://code.nsnam.org/bake
+  $ cd
+  $ mkdir workspace
+  $ cd workspace
+  $ hg clone http://code.nsnam.org/bake
 
 As the hg (Mercurial) command executes, you should see something like the 
 following displayed,
@@ -191,9 +191,9 @@ to put bake into your path, such as follows (Linux bash shell example):
 
 ::
 
-   export BAKE_HOME=`pwd`/bake
-   export PATH=$PATH:$BAKE_HOME
-   export PYTHONPATH=$PYTHONPATH:$BAKE_HOME
+  $ export BAKE_HOME=`pwd`/bake
+  $ export PATH=$PATH:$BAKE_HOME
+  $ export PYTHONPATH=$PYTHONPATH:$BAKE_HOME
 
 However, setting environment variables is not strictly necessary to
 complete this tutorial, so we'll call bake directly by specifying the path 
@@ -203,14 +203,14 @@ Step into the workspace directory and type the following into your shell:
 
 ::
 
-  ./bake.py configure -e ns-3-dev
+  $ ./bake.py configure -e ns-3-dev
 
 Next, we'l ask bake to check whether we have enough tools to download
 various components.  Type:
 
 ::
 
-  ./bake.py check
+  $ ./bake.py check
 
 You should see something like the following,
 
@@ -232,7 +232,9 @@ You should see something like the following,
    > patch tool - OK
    > autoreconf tool - OK
 
-   > Path searched for tools: /usr/lib64/qt-3.3/bin /usr/lib64/ccache /usr/local/bin /bin /usr/bin /usr/local/sbin /usr/sbin /sbin /home/tomh/bin bin
+   > Path searched for tools: /usr/lib64/qt-3.3/bin /usr/lib64/ccache
+   /usr/local/bin /bin /usr/bin /usr/local/sbin /usr/sbin /sbin
+   /home/tomh/bin bin
 
 In particular, download tools such as Mercurial, CVS, GIT, and Bazaar
 are our principal concerns at this point, since they allow us to fetch
@@ -286,7 +288,7 @@ Type the following:
 
 ::
 
-  ./build.py --enable-examples --enable-tests
+  $ ./build.py --enable-examples --enable-tests
 
 Because we are working with examples and tests in this tutorial, and
 because they are not built by default in |ns3|, the arguments for
@@ -323,7 +325,7 @@ following magic words:
    brite                     click                     openflow                 
    visualizer               
 
-   Leaving directory `./ns-3.17`
+   Leaving directory `./ns-3.17'
 
 Regarding the portion about modules not built:
 
@@ -347,7 +349,7 @@ may continue to use it to build |ns3|.  Type
 
 ::
 
-  ./bake.py build
+  $ ./bake.py build
 
 and you should see something like:
 
@@ -364,7 +366,7 @@ command tells you; it may give a hint as to a missing dependency:
 
 ::
 
-  ./bake.py show
+  $ ./bake.py show
 
 This will list out the various dependencies of the packages you are
 trying to build.
@@ -392,8 +394,8 @@ following commands,
 
 ::
 
-  ./waf clean
-  ./waf -d optimized --enable-examples --enable-tests configure
+  $ ./waf clean
+  $ ./waf -d optimized --enable-examples --enable-tests configure
 
 This runs Waf out of the local directory (which is provided as a convenience
 for you).  The first command to clean out the previous build is not 
@@ -476,15 +478,15 @@ Now go ahead and switch back to the debug build that includes the examples and t
 
 ::
 
-  ./waf clean
-  ./waf -d debug --enable-examples --enable-tests configure
+  $ ./waf clean
+  $ ./waf -d debug --enable-examples --enable-tests configure
 
 The build system is now configured and you can build the debug versions of 
 the |ns3| programs by simply typing
 
 ::
 
-  ./waf
+  $ ./waf
 
 Okay, sorry, I made you build the |ns3| part of the system twice,
 but now you know how to change the configuration and build optimized code.
@@ -498,7 +500,7 @@ you could reconfigure using the following command that also includes the example
 
 ::
 
-  ./waf configure -d debug --enable-sudo --enable-examples --enable-tests
+  $ ./waf configure -d debug --enable-sudo --enable-examples --enable-tests
 
 If you do this, waf will have run sudo to change the socket creator programs of the
 emulation code to run as root.  There are many other configure- and build-time options
@@ -506,7 +508,7 @@ available in waf.  To explore these options, type:
 
 ::
 
-  ./waf --help
+  $ ./waf --help
 
 We'll use some of the testing-related commands in the next section.
 
@@ -517,7 +519,7 @@ the ``-o`` option to configure; e.g.
 
 ::
 
-  ./waf configure -d debug -o build/debug --enable-examples --enable-tests
+  $ ./waf configure -d debug -o build/debug --enable-examples --enable-tests
 
 This allows users to work with multiple builds rather than always
 overwriting the last build.
@@ -528,16 +530,16 @@ Say one wants to use Clang C++ compiler, command ``clang++``; it's done by
 
 ::
 
-  CXX="clang++" ./waf configure
-  ./waf build
+  $ CXX="clang++" ./waf configure
+  $ ./waf build
 
 One can also set up waf to do distributed compilation with ``distcc`` in
 a similar way:
 
 ::
 
-  CXX="distcc g++" ./waf configure
-  ./waf build
+  $ CXX="distcc g++" ./waf configure
+  $ ./waf build
 
 More info on distcc and distributed compilation can be found on it's
 `project page
@@ -552,7 +554,7 @@ You can run the unit tests of the |ns3| distribution by running the
 
 ::
 
-  ./test.py -c core
+  $ ./test.py -c core
 
 These tests are run in parallel by waf. You should eventually
 see a report saying that,
@@ -617,7 +619,7 @@ ubiquitous hello world program by typing the following:
 
 ::
 
-  ./waf --run hello-simulator
+  $ ./waf --run hello-simulator
 
 Waf first checks to make sure that the program is built correctly and 
 executes a build if required.  Waf then executes the program, which 
@@ -644,7 +646,7 @@ type the following,
 
 ::
 
-  ./waf configure -d debug --enable-examples --enable-tests
+  $ ./waf configure -d debug --enable-examples --enable-tests
 
 to tell ``waf`` to build the debug versions of the |ns3| 
 programs that includes the examples and tests.  You must still build 
@@ -652,7 +654,7 @@ the actual debug version of the code by typing,
 
 ::
 
-  ./waf
+  $ ./waf
 
 Now, if you run the ``hello-simulator`` program, you should see the 
 expected output.
