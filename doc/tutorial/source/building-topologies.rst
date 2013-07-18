@@ -1,5 +1,5 @@
 .. include:: replace.txt
-
+.. highlight:: cpp
 
 Building Topologies
 -------------------
@@ -337,10 +337,10 @@ the scratch directory and use waf to build just as you did with
 the ``first.cc`` example.  If you are in the top-level directory of the
 repository you just type,
 
-::
+.. sourcecode:: bash
 
-  cp examples/tutorial/second.cc scratch/mysecond.cc
-  ./waf
+  $ cp examples/tutorial/second.cc scratch/mysecond.cc
+  $ ./waf
 
 Warning:  We use the file ``second.cc`` as one of our regression tests to
 verify that it works exactly as we think it should in order to make your
@@ -353,15 +353,15 @@ If you are following the tutorial religiously (you are, aren't you) you will
 still have the NS_LOG variable set, so go ahead and clear that variable and
 run the program.
 
-::
+.. sourcecode:: bash
 
-  export NS_LOG=
-  ./waf --run scratch/mysecond
+  $ export NS_LOG=
+  $ ./waf --run scratch/mysecond
 
 Since we have set up the UDP echo applications to log just as we did in 
 ``first.cc``, you will see similar output when you run the script.
 
-::
+.. sourcecode:: text
 
   Waf: Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
@@ -381,7 +381,7 @@ the server.
 If you now go and look in the top level directory, you will find three trace 
 files:
 
-::
+.. sourcecode:: text
 
   second-0-0.pcap  second-1-0.pcap  second-2-0.pcap
 
@@ -403,13 +403,13 @@ promiscuous-mode trace.
 Now, let's follow the echo packet through the internetwork.  First, do a 
 tcpdump of the trace file for the leftmost point-to-point node --- node zero.
 
-::
+.. sourcecode:: bash
 
-  tcpdump -nn -tt -r second-0-0.pcap
+  $ tcpdump -nn -tt -r second-0-0.pcap
 
 You should see the contents of the pcap file displayed:
 
-::
+.. sourcecode:: text
 
   reading from file second-0-0.pcap, link-type PPP (PPP)
   2.000000 IP 10.1.1.1.49153 > 10.1.2.4.9: UDP, length 1024
@@ -422,14 +422,14 @@ device associated with IP address 10.1.1.1 headed for IP address
 point-to-point link and be received by the point-to-point net device on node 
 one.  Let's take a look:
 
-::
+.. sourcecode:: bash
 
-  tcpdump -nn -tt -r second-1-0.pcap
+  $ tcpdump -nn -tt -r second-1-0.pcap
 
 You should now see the pcap trace output of the other side of the point-to-point
 link:
 
-::
+.. sourcecode:: text
 
   reading from file second-1-0.pcap, link-type PPP (PPP)
   2.003686 IP 10.1.1.1.49153 > 10.1.2.4.9: UDP, length 1024
@@ -444,13 +444,13 @@ pop out on that device headed for its ultimate destination.
 Remember that we selected node 2 as the promiscuous sniffer node for the CSMA
 network so let's then look at second-2-0.pcap and see if its there.
 
-::
+.. sourcecode:: bash
 
-  tcpdump -nn -tt -r second-2-0.pcap
+  $ tcpdump -nn -tt -r second-2-0.pcap
 
 You should now see the promiscuous dump of node two, device zero:
 
-::
+.. sourcecode:: text
 
   reading from file second-2-0.pcap, link-type EN10MB (Ethernet)
   2.003696 arp who-has 10.1.2.4 (ff:ff:ff:ff:ff:ff) tell 10.1.2.1
@@ -471,7 +471,7 @@ exchange, but is sniffing the network and reporting all of the traffic it sees.
 
 This exchange is seen in the following lines,
 
-::
+.. sourcecode:: text
 
   2.003696 arp who-has 10.1.2.4 (ff:ff:ff:ff:ff:ff) tell 10.1.2.1
   2.003707 arp reply 10.1.2.4 is-at 00:00:00:00:00:06
@@ -479,7 +479,7 @@ This exchange is seen in the following lines,
 Then node one, device one goes ahead and sends the echo packet to the UDP echo
 server at IP address 10.1.2.4. 
 
-::
+.. sourcecode:: text
 
   2.003801 IP 10.1.1.1.49153 > 10.1.2.4.9: UDP, length 1024
 
@@ -490,40 +490,41 @@ routing and it has figured all of this out for us.  But, the echo server node
 doesn't know the MAC address of the first CSMA node, so it has to ARP for it
 just like the first CSMA node had to do.
 
-::
+.. sourcecode:: text
 
   2.003811 arp who-has 10.1.2.1 (ff:ff:ff:ff:ff:ff) tell 10.1.2.4
   2.003822 arp reply 10.1.2.1 is-at 00:00:00:00:00:03
 
 The server then sends the echo back to the forwarding node.
 
-::
+.. sourcecode:: text
 
   2.003915 IP 10.1.2.4.9 > 10.1.1.1.49153: UDP, length 1024
 
 Looking back at the rightmost node of the point-to-point link,
 
-::
+.. sourcecode:: bash
 
-  tcpdump -nn -tt -r second-1-0.pcap
+  $ tcpdump -nn -tt -r second-1-0.pcap
 
 You can now see the echoed packet coming back onto the point-to-point link as
 the last line of the trace dump.
 
-::
+.. sourcecode:: text
 
   reading from file second-1-0.pcap, link-type PPP (PPP)
   2.003686 IP 10.1.1.1.49153 > 10.1.2.4.9: UDP, length 1024
   2.003915 IP 10.1.2.4.9 > 10.1.1.1.49153: UDP, length 1024
 
 Lastly, you can look back at the node that originated the echo
-::
 
-  tcpdump -nn -tt -r second-0-0.pcap
+.. sourcecode:: bash
+
+  $ tcpdump -nn -tt -r second-0-0.pcap
 
 and see that the echoed packet arrives back at the source at 2.007602 seconds,
 
-::
+.. sourcecode:: text
 
   reading from file second-0-0.pcap, link-type PPP (PPP)
   2.000000 IP 10.1.1.1.49153 > 10.1.2.4.9: UDP, length 1024
@@ -535,13 +536,13 @@ the same way as when we looked at changing the number of packets echoed in the
 ``first.cc`` example.  Try running the program with the number of "extra" 
 devices set to four:
 
-::
+.. sourcecode:: bash
 
-  ./waf --run "scratch/mysecond --nCsma=4"
+  $ ./waf --run "scratch/mysecond --nCsma=4"
 
 You should now see,
 
-::
+.. sourcecode:: text
 
   Waf: Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
@@ -602,20 +603,20 @@ determining node numbers much easier in complex topologies.
 Let's clear the old trace files out of the top-level directory to avoid confusion
 about what is going on,
 
-::
+.. sourcecode:: bash
 
-  rm *.pcap
-  rm *.tr
+  $ rm *.pcap
+  $ rm *.tr
 
 If you build the new script and run the simulation setting ``nCsma`` to 100,
 
-::
+.. sourcecode:: bash
 
-  ./waf --run "scratch/mysecond --nCsma=100"
+  $ ./waf --run "scratch/mysecond --nCsma=100"
 
 you will see the following output:
 
-::
+.. sourcecode:: text
 
   Waf: Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
@@ -628,7 +629,7 @@ Note that the echo server is now located at 10.1.2.101 which corresponds to
 having 100 "extra" CSMA nodes with the echo server on the last one.  If you
 list the pcap files in the top level directory you will see,
 
-::
+.. sourcecode:: text
 
   second-0-0.pcap  second-100-0.pcap  second-101-0.pcap
 
@@ -643,15 +644,15 @@ To illustrate the difference between promiscuous and non-promiscuous traces, we
 also requested a non-promiscuous trace for the next-to-last node.  Go ahead and
 take a look at the ``tcpdump`` for ``second-100-0.pcap``.
 
-::
+.. sourcecode:: bash
 
-  tcpdump -nn -tt -r second-100-0.pcap
+  $ tcpdump -nn -tt -r second-100-0.pcap
 
 You can now see that node 100 is really a bystander in the echo exchange.  The
 only packets that it receives are the ARP requests which are broadcast to the
 entire CSMA network.
 
-::
+.. sourcecode:: text
 
   reading from file second-100-0.pcap, link-type EN10MB (Ethernet)
   2.003696 arp who-has 10.1.2.101 (ff:ff:ff:ff:ff:ff) tell 10.1.2.1
@@ -659,13 +660,13 @@ entire CSMA network.
 
 Now take a look at the ``tcpdump`` for ``second-101-0.pcap``.
 
-::
+.. sourcecode:: bash
 
-  tcpdump -nn -tt -r second-101-0.pcap
+  $ tcpdump -nn -tt -r second-101-0.pcap
 
 You can now see that node 101 is really the participant in the echo exchange.
 
-::
+.. sourcecode:: text
 
   reading from file second-101-0.pcap, link-type EN10MB (Ethernet)
   2.003696 arp who-has 10.1.2.101 (ff:ff:ff:ff:ff:ff) tell 10.1.2.1
@@ -1180,16 +1181,16 @@ script into the scratch directory and use Waf to build just as you did with
 the ``second.cc`` example.  If you are in the top-level directory of the
 repository you would type,
 
-::
+.. sourcecode:: bash
 
-  cp examples/third.cc scratch/mythird.cc
-  ./waf
-  ./waf --run scratch/mythird
+  $ cp examples/third.cc scratch/mythird.cc
+  $ ./waf
+  $ ./waf --run scratch/mythird
 
 Again, since we have set up the UDP echo applications just as we did in the 
 ``second.cc`` script, you will see similar output.
 
-::
+.. sourcecode:: text
 
   Waf: Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
@@ -1209,7 +1210,7 @@ that it has received its echo back from the server.
 If you now go and look in the top level directory, you will find four trace 
 files from this simulation, two from node zero and two from node one:
 
-::
+.. sourcecode:: text
 
   third-0-0.pcap  third-0-1.pcap  third-1-0.pcap  third-1-1.pcap
 
@@ -1224,13 +1225,13 @@ the code?
 Since the echo client is on the Wifi network, let's start there.  Let's take
 a look at the promiscuous (monitor mode) trace we captured on that network.
 
-::
+.. sourcecode:: bash
 
-  tcpdump -nn -tt -r third-0-1.pcap
+  $ tcpdump -nn -tt -r third-0-1.pcap
 
 You should see some wifi-looking contents you haven't seen here before:
 
-::
+.. sourcecode:: text
 
   reading from file third-0-1.pcap, link-type IEEE802_11 (802.11)
   0.000025 Beacon (ns-3-ssid) [6.0* 9.0 12.0 18.0 24.0 36.0 48.0 54.0 Mbit] IBSS
@@ -1258,13 +1259,13 @@ trace dump.
 
 Now, look at the pcap file of the right side of the point-to-point link,
 
-::
+.. sourcecode:: bash
 
-  tcpdump -nn -tt -r third-0-0.pcap
+  $ tcpdump -nn -tt -r third-0-0.pcap
 
 Again, you should see some familiar looking contents:
 
-::
+.. sourcecode:: text
 
   reading from file third-0-0.pcap, link-type PPP (PPP)
   2.002160 IP 10.1.3.3.49153 > 10.1.2.4.9: UDP, length 1024
@@ -1275,13 +1276,13 @@ again across the point-to-point link.
 
 Now, look at the pcap file of the right side of the point-to-point link,
 
-::
+.. sourcecode:: bash
 
-  tcpdump -nn -tt -r third-1-0.pcap
+  $ tcpdump -nn -tt -r third-1-0.pcap
 
 Again, you should see some familiar looking contents:
 
-::
+.. sourcecode:: text
 
   reading from file third-1-0.pcap, link-type PPP (PPP)
   2.005846 IP 10.1.3.3.49153 > 10.1.2.4.9: UDP, length 1024
@@ -1294,13 +1295,13 @@ as you might expect.
 The echo server is on the CSMA network, let's look at the promiscuous trace 
 there:
 
-::
+.. sourcecode:: bash
 
-  tcpdump -nn -tt -r third-1-1.pcap
+  $ tcpdump -nn -tt -r third-1-1.pcap
 
 You should see some familiar looking contents:
 
-::
+.. sourcecode:: text
 
   reading from file third-1-1.pcap, link-type EN10MB (Ethernet)
   2.005846 ARP, Request who-has 10.1.2.4 (ff:ff:ff:ff:ff:ff) tell 10.1.2.1, length 50
@@ -1382,7 +1383,7 @@ trace sink, which will in turn print out the new position.
 If you now run the simulation, you will see the course changes displayed as 
 they happen.
 
-::
+.. sourcecode:: text
 
   Build finished successfully (00:00:01)
   /NodeList/7/$ns3::MobilityModel/CourseChange x = 10, y = 0

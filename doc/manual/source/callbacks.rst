@@ -1,4 +1,5 @@
 .. include:: replace.txt
+.. highlight:: cpp
 
 Callbacks
 ---------
@@ -364,11 +365,11 @@ Now, we need to tie together this callback instance and the actual target functi
 callback-- this is important.  We can pass in any such properly-typed function 
 to this callback.  Let's look at this more closely::
 
-  static double CbOne (double a, double b) {}
-            ^           ^          ^
-            |        ---|    ------|
-            |        |       | 
-  Callback<double, double, double> one;
+  static   double CbOne (double a, double b) {}
+             ^             ^         ^
+             |             |         |
+             |             |         | 
+  Callback<double,       double,   double> one;
 
 You can only bind a function to a callback if they have the matching signature.
 The first template argument is the return type, and the additional template 

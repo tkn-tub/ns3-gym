@@ -1,4 +1,6 @@
 .. include:: replace.txt
+.. highlight:: bash
+
 
 Enabling/disabling |ns3| Tests and Examples
 -------------------------------------------
@@ -26,18 +28,22 @@ By default, examples and tests are not built in |ns3|.
 From the ns-3-allinone directory, you can build |ns3| without any
 examples or tests simply by doing: ::
 
-  ./build.py
+  $ ./build.py
 
-Running test.py in the top level |ns3| directory now will cause no examples or tests to be run: ::
+Running test.py in the top level |ns3| directory now will cause no examples or tests to be run:
  
+.. sourcecode:: text
+
   0 of 0 tests passed (0 passed, 0 skipped, 0 failed, 0 crashed, 0 valgrind errors)
 
 If you would like build |ns3| with examples and tests, then do the following from the ns-3-allinone directory: ::
 
-  ./build.py --enable-examples --enable-tests
+  $ ./build.py --enable-examples --enable-tests
 
-Running test.py in the top level |ns3| directory will cause all of the examples and tests to be run: ::
+Running test.py in the top level |ns3| directory will cause all of the examples and tests to be run:
  
+.. sourcecode:: text
+
   170 of 170 tests passed (170 passed, 0 skipped, 0 failed, 0 crashed, 0 valgrind errors)
 
 Enable/disable examples and tests using waf
@@ -50,20 +56,24 @@ By default, examples and tests are not built in |ns3|.
 From the top level |ns3| directory, you can build |ns3| without any
 examples or tests simply by doing: ::
 
-  ./waf configure
-  ./waf build
+  $ ./waf configure
+  $ ./waf build
 
-Running test.py now will cause no examples or tests to be run: ::
+Running test.py now will cause no examples or tests to be run:
  
+.. sourcecode:: text
+
   0 of 0 tests passed (0 passed, 0 skipped, 0 failed, 0 crashed, 0 valgrind errors)
 
 If you would like build |ns3| with examples and tests, then do the following from the top level |ns3| directory: ::
 
-  ./waf configure --enable-examples --enable-tests
-  ./waf build
+  $ ./waf configure --enable-examples --enable-tests
+  $ ./waf build
 
-Running test.py will cause all of the examples and tests to be run: ::
+Running test.py will cause all of the examples and tests to be run:
  
+.. sourcecode:: text
+
   170 of 170 tests passed (170 passed, 0 skipped, 0 failed, 0 crashed, 0 valgrind errors)
 
 Enable/disable examples and tests using the |ns3| configuration file
@@ -84,9 +94,11 @@ The maintained version of the .ns3rc file in the |ns3| source code repository re
 
 Assuming that you are in the top level |ns3| directory, you can get a copy of the .ns3rc file that is in the ``utils`` directory as follows: ::
 
-    cp utils/.ns3rc .
+  $ cp utils/.ns3rc .
 
-The .ns3rc file should now be in your top level |ns3| directory, and it contains the following: ::
+The .ns3rc file should now be in your top level |ns3| directory, and it contains the following:
+
+.. sourcecode:: python
 
   #! /usr/bin/env python
   
@@ -105,16 +117,20 @@ The .ns3rc file should now be in your top level |ns3| directory, and it contains
 From the top level |ns3| directory, you can build |ns3| without any
 examples or tests simply by doing: ::
 
-  ./waf configure
-  ./waf build
+  $ ./waf configure
+  $ ./waf build
 
-Running test.py now will cause no examples or tests to be run: ::
+Running test.py now will cause no examples or tests to be run:
  
+.. sourcecode:: text
+
   0 of 0 tests passed (0 passed, 0 skipped, 0 failed, 0 crashed, 0 valgrind errors)
 
 If you would like build |ns3| with examples and tests, use your
 favorite editor to change the values in the .ns3rc file for
-examples_enabled and tests_enabled file to be True: ::
+examples_enabled and tests_enabled file to be True:
+
+.. sourcecode:: python
 
   #! /usr/bin/env python
   
@@ -133,9 +149,11 @@ examples_enabled and tests_enabled file to be True: ::
 From the top level |ns3| directory, you can build |ns3| with examples
 and tests simply by doing: ::
 
-  ./waf configure
-  ./waf build
+  $ ./waf configure
+  $ ./waf build
 
-Running test.py will cause all of the examples and tests to be run: ::
+Running test.py will cause all of the examples and tests to be run:
  
+.. sourcecode:: text
+
   170 of 170 tests passed (170 passed, 0 skipped, 0 failed, 0 crashed, 0 valgrind errors)

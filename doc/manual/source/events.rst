@@ -1,4 +1,6 @@
 .. include:: replace.txt
+.. highlight:: cpp
+
 
 .. heading hierarchy:
    ------------- Chapter
@@ -42,7 +44,7 @@ Simulator
 The Simulator class is the public entry point to access event scheduling
 facilities. Once a couple of events have been scheduled to start the
 simulation, the user can start to execute them by entering the simulator
-main loop (call Simulator::Run). Once the main loop starts running, it
+main loop (call ``Simulator::Run``). Once the main loop starts running, it
 will sequentially execute all scheduled events in order from oldest to
 most recent until there are either no more events left in the event
 queue or Simulator::Stop has been called.
@@ -70,7 +72,7 @@ might write this:
 
 Which will output:
 
-::
+.. sourcecode:: text
 
    handler called with argument arg0=10 and arg1=5
 

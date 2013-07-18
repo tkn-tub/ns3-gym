@@ -1,4 +1,5 @@
 .. include:: replace.txt
+.. highlight:: cpp
 
 How to write tests
 ------------------
@@ -46,7 +47,7 @@ more descriptive test case name.
 You also need to add a block into your wscript to get this test to
 compile:
 
-::
+.. sourcecode:: python
 
     module_test.source = [
         'test/router-test-suite.cc',
@@ -64,13 +65,13 @@ is called "router" such as here:
 
 Try this command:
 
-::
+.. sourcecode:: bash
 
-  ./test.py -s router
+  $ ./test.py -s router
 
 Output such as below should be produced:
 
-::
+.. sourcecode:: text
 
   PASS: TestSuite router
   1 of 1 tests passed (1 passed, 0 skipped, 0 failed, 0 crashed, 0 valgrind errors)

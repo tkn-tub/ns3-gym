@@ -1,4 +1,7 @@
 .. include:: replace.txt
+.. highlight:: cpp
+.. role:: raw-role(raw)
+   :format: html latex
 
 Tracing
 -------
@@ -269,7 +272,7 @@ aggregation model. The next path segment begins with the "$" character which
 indicates a ``GetObject`` call should be made looking for the type that follows.
 When a node is initialized by an ``InternetStackHelper`` a number of interfaces
 are aggregated to the node. One of these is the TCP level four protocol. The
-runtime type of this protocol object is "ns3::TcpL4Protocol". When the
+runtime type of this protocol object is ``ns3::TcpL4Protocol''. When the
 ``GetObject`` is executed, it returns a pointer to the object of this type.
 
 The ``TcpL4Protocol`` class defines an Attribute called "SocketList" which is a
@@ -342,14 +345,15 @@ stack helpers. Naturally, the trace files should follow a
 The trace helpers therefore fall naturally into a two-dimensional taxonomy.
 There are subtleties that prevent all four classes from behaving identically,
 but we do strive to make them all work as similarly as possible; and whenever
-possible there are analogs for all methods in all classes.::
+possible there are analogs for all methods in all classes.
 
-                   | pcap | ascii |
-  -----------------+------+-------|
-  Device Helper    |      |       |
-  -----------------+------+-------|
-  Protocol Helper  |      |       |
-  -----------------+------+-------|
+  +-----------------+----------------------+----------------------+
+  | \               |  pcap                |  ascii               |
+  +=================+======================+======================+
+  | Device Helper   | :raw-role:`&#x2713;` | :raw-role:`&#x2713;` | 
+  +-----------------+----------------------+----------------------+
+  | Protocol Helper | :raw-role:`&#x2713;` | :raw-role:`&#x2713;` |
+  +-----------------+----------------------+----------------------+
 
 We use an approach called a ``mixin`` to add tracing functionality to our helper
 classes. A ``mixin`` is a class that provides functionality to that is
@@ -393,11 +397,16 @@ Pcap Tracing Device Helper Methods
 
 ::
 
-  void EnablePcap (std::string prefix, Ptr<NetDevice> nd, bool promiscuous = false, bool explicitFilename = false);
-  void EnablePcap (std::string prefix, std::string ndName, bool promiscuous = false, bool explicitFilename = false);
-  void EnablePcap (std::string prefix, NetDeviceContainer d, bool promiscuous = false);
-  void EnablePcap (std::string prefix, NodeContainer n, bool promiscuous = false);
-  void EnablePcap (std::string prefix, uint32_t nodeid, uint32_t deviceid, bool promiscuous = false);
+  void EnablePcap (std::string prefix, Ptr<NetDevice> nd,
+                   bool promiscuous = false, bool explicitFilename = false);
+  void EnablePcap (std::string prefix, std::string ndName,
+                   bool promiscuous = false, bool explicitFilename = false);
+  void EnablePcap (std::string prefix, NetDeviceContainer d,
+                   bool promiscuous = false);
+  void EnablePcap (std::string prefix, NodeContainer n,
+                   bool promiscuous = false);
+  void EnablePcap (std::string prefix, uint32_t nodeid, uint32_t deviceid,
+                   bool promiscuous = false);
   void EnablePcapAll (std::string prefix, bool promiscuous = false);
 
 In each of the methods shown above, there is a default parameter called

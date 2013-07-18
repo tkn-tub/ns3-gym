@@ -1,5 +1,6 @@
 .. include:: replace.txt
-
+.. highlight:: cpp
+ 
 Making Plots using the Gnuplot Class
 ------------------------------------
 
@@ -25,39 +26,51 @@ See the code from the example plots that are discussed below for details on step
 An Example Program that Uses the Gnuplot Class
 **********************************************
 
-An example program that uses |ns3|'s Gnuplot class can be found here: ::
+An example program that uses |ns3|'s Gnuplot class can be found here:
+
+.. sourcecode:: bash
 
   src/stats/examples/gnuplot-example.cc
 
-In order to run this example, do the following: ::
+In order to run this example, do the following:
 
-  ./waf shell
-  cd build/debug/src/stats/examples
-  ./gnuplot-example 
+.. sourcecode:: bash
 
-This should produce the following gnuplot control files in the directory where the example is located: ::
+  $ ./waf shell
+  $ cd build/debug/src/stats/examples
+  $ ./gnuplot-example 
+
+This should produce the following gnuplot control files in the directory where the example is located:
+
+.. sourcecode:: text
 
   plot-2d.plt 
   plot-2d-with-error-bars.plt
   plot-3d.plt 
 
-In order to process these gnuplot control files, do the following: ::
+In order to process these gnuplot control files, do the following:
 
-  gnuplot plot-2d.plt 
-  gnuplot plot-2d-with-error-bars.plt
-  gnuplot plot-3d.plt 
+.. sourcecode:: bash
 
-This should produce the following graphics files in the directory where the example is located: ::
+  $ gnuplot plot-2d.plt 
+  $ gnuplot plot-2d-with-error-bars.plt
+  $ gnuplot plot-3d.plt 
+
+This should produce the following graphics files in the directory where the example is located:
+
+.. sourcecode:: text
 
   plot-2d.png 
   plot-2d-with-error-bars.png
   plot-3d.png 
 
-You can view these graphics files in your favorite graphics viewer.  If you have gimp installed on your machine, for example, you can do this: ::
+You can view these graphics files in your favorite graphics viewer.  If you have gimp installed on your machine, for example, you can do this:
 
-  gimp plot-2d.png 
-  gimp plot-2d-with-error-bars.png
-  gimp plot-3d.png 
+.. sourcecode:: bash
+
+  $ gimp plot-2d.png 
+  $ gimp plot-2d-with-error-bars.png
+  $ gimp plot-3d.png 
 
 An Example 2-Dimensional Plot
 *****************************

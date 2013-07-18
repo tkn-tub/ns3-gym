@@ -1,4 +1,6 @@
 .. include:: replace.txt
+.. highlight:: cpp
+
 
 .. _Attributes:
 
@@ -405,7 +407,9 @@ Object Name Service-based access
 Another way to get at the attribute is to use the object name service facility.
 Here, this attribute is found using a name string. This approach is useful if
 one doesn't have access to the underlying pointers and it is difficult to
-determine the required concrete configuration namespaced path.::
+determine the required concrete configuration namespaced path.
+
+::
 
     Names::Add ("server", serverNode);
     Names::Add ("server/eth0", serverDevice);
@@ -414,7 +418,7 @@ determine the required concrete configuration namespaced path.::
 
     Config::Set ("/Names/server/eth0/TxQueue/MaxPackets", UintegerValue (25));
 
-:ref:`Object-names` for a fuller treatment of the |ns3| configuration namespace.
+See :ref:`Object-names` for a fuller treatment of the |ns3| configuration namespace.
 
 Setting through constructors helper classes
 +++++++++++++++++++++++++++++++++++++++++++
@@ -737,7 +741,9 @@ The example shows:::
     
       Simulator::Destroy ();
     
-After running, you can open the output-attributes.txt file and see:::
+After running, you can open the output-attributes.txt file and see:
+
+.. sourcecode:: text
 
     default ns3::RealtimeSimulatorImpl::SynchronizationMode "BestEffort"
     default ns3::RealtimeSimulatorImpl::HardLimit "+100000000.0ns"
@@ -769,7 +775,9 @@ are recorded.  Finally, the value of the instance of A that was rooted
 in the configuration namespace is shown.  In a real ns-3 program, many
 more models, attributes, and defaults would be shown.
 
-An XML version also exists in ``output-attributes.xml``:::
+An XML version also exists in ``output-attributes.xml``:
+
+.. sourcecode:: xml
 
     <?xml version="1.0" encoding="UTF-8"?>
     <ns3>
@@ -858,13 +866,17 @@ in the `|ns3| Overview <http://www.nsnam.org/docs/ns-3-overview.pdf>`_
 presentation.
 
 To use this feature, one must install libgtk and libgtk-dev; an example
-Ubuntu installation command is:::
+Ubuntu installation command is:
 
-  sudo apt-get install libgtk2.0-0 libgtk2.0-dev
+.. sourcecode:: bash
 
-To check whether it is configured or not, check the output of the step:::
+  $ sudo apt-get install libgtk2.0-0 libgtk2.0-dev
 
-  ./waf configure --enable-examples --enable-tests
+To check whether it is configured or not, check the output of the step:
+
+.. sourcecode:: bash
+
+  $ ./waf configure --enable-examples --enable-tests
 
   ---- Summary of optional NS-3 features:
   Python Bindings               : enabled
@@ -873,10 +885,12 @@ To check whether it is configured or not, check the output of the step:::
   GtkConfigStore                : not enabled (library 'gtk+-2.0 >= 2.12' not found)
 
 In the above example, it was not enabled, so it cannot be used until a suitable
-version is installed and::
+version is installed and:
 
-  ./waf configure --enable-examples --enable-tests
-  ./waf
+.. sourcecode:: bash
+
+  $ ./waf configure --enable-examples --enable-tests
+  $ ./waf
 
 is rerun.
 
@@ -895,6 +909,7 @@ when you are done.
 Future work
 +++++++++++
 There are a couple of possible improvements:
+
 * save a unique version number with date and time at start of file
 * save rng initial seed somewhere.
 * make each RandomVariable serialize its own initial seed and re-read it later

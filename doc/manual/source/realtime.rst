@@ -1,4 +1,5 @@
 .. include:: replace.txt
+.. highlight:: cpp
 
 RealTime
 --------
@@ -61,9 +62,11 @@ perspective.  Users just need to set the attribute
     StringValue ("ns3::RealtimeSimulatorImpl"));
 
 There is a script in ``examples/realtime/realtime-udp-echo.cc`` that
-has an example of how to configure the realtime behavior.  Try: ::
+has an example of how to configure the realtime behavior.  Try:
 
-    ./waf --run realtime-udp-echo
+.. sourcecode:: bash
+
+    $ ./waf --run realtime-udp-echo
 
 Whether the simulator will work in a best effort or hard limit policy fashion is
 governed by the attributes explained in the previous section.

@@ -1,4 +1,5 @@
 .. include:: replace.txt
+.. highlight:: python
 
 Using Python to Run |ns3|
 -------------------------
@@ -74,30 +75,30 @@ Running Python Scripts
 
 waf contains some options that automatically update the python path to find the ns3 module.  To run example programs, there are two ways to use waf to take care of this.  One is to run a waf shell; e.g.:
 
-::
+.. sourcecode:: bash
 
- ./waf --shell
- python examples/wireless/mixed-wireless.py
+  $ ./waf --shell
+  $ python examples/wireless/mixed-wireless.py
 
 and the other is to use the --pyrun option to waf:
 
-::
+.. sourcecode:: bash
 
- ./waf --pyrun examples/wireless/mixed-wireless.py
+  $ ./waf --pyrun examples/wireless/mixed-wireless.py
 
 To run a python script under the C debugger:
 
-::
+.. sourcecode:: bash
 
- ./waf --shell
- gdb --args python examples/wireless/mixed-wireless.py
+  $ ./waf --shell
+  $ gdb --args python examples/wireless/mixed-wireless.py
 
 To run your own Python script that calls |ns3| and that has this path, ``/path/to/your/example/my-script.py``, do the following:
 
-::
+.. sourcecode:: bash
 
- ./waf --shell
- python /path/to/your/example/my-script.py
+  $ ./waf --shell
+  $ python /path/to/your/example/my-script.py
 
 Caveats
 *******
@@ -118,9 +119,9 @@ Most of the missing APIs can be wrapped, given enough time, patience, and expert
 Conversion Constructors
 +++++++++++++++++++++++
 
-Conversion constructors (http://publib.boulder.ibm.com/infocenter/compbgpl/v9v111/topic/com.ibm.xlcpp9.bg.doc/language_ref/cplr384.htm) are not fully supported yet by PyBindGen, and they always act as explicit constructors when translating an API into Python.  For example, in C++ you can do this:
+`Conversion constructors <http://publib.boulder.ibm.com/infocenter/compbgpl/v9v111/topic/com.ibm.xlcpp9.bg.doc/language_ref/cplr384.htm>`_ are not fully supported yet by PyBindGen, and they always act as explicit constructors when translating an API into Python.  For example, in C++ you can do this:
 
-::
+.. sourcecode:: cpp
 
  Ipv4AddressHelper ipAddrs;
  ipAddrs.SetBase ("192.168.0.0", "255.255.255.0");
@@ -188,9 +189,9 @@ will probably have to be that we disable python bindings in CygWin.
 If you really care about Python bindings on Windows, try building with mingw and native
 python instead.  Or else, to build without python bindings, disable python bindings in the configuration stage:  
 
-::
+.. sourcecode:: bash
 
-  ./waf configure --disable-python
+  $ ./waf configure --disable-python
 
 Working with Python Bindings
 ****************************
@@ -211,9 +212,9 @@ The process by which Python bindings are handled is the following:
 
 If something goes wrong with compiling Python bindings and you just want to ignore them and move on with C++, you can disable Python with:
 
-::
+.. sourcecode:: bash
 
- ./waf --disable-python
+  $ ./waf --disable-python
 
 Instructions for Handling New Files or Changed API's
 ****************************************************
@@ -230,9 +231,9 @@ Scanning the Monolithic Python Bindings
 
 To scan the monolithic Python bindings do the following:
 
-::
+.. sourcecode:: bash
 
-  ./waf --python-scan  
+  $ ./waf --python-scan  
 
 Organization of the Monolithic Python Bindings
 ++++++++++++++++++++++++++++++++++++++++++++++
@@ -269,15 +270,15 @@ Scanning the Modular Python Bindings
 
 To scan the modular Python bindings for the core module, for example, do the following:
 
-::
+.. sourcecode:: bash
 
-  ./waf --apiscan=core
+  $ ./waf --apiscan=core
 
 To scan the modular Python bindings for all of the modules, do the following:
 
-::
+.. sourcecode:: bash
 
-  ./waf --apiscan=all
+  $ ./waf --apiscan=all
 
 Creating a New Module
 +++++++++++++++++++++
@@ -311,5 +312,4 @@ The ``src/<module>/bindings`` directory may contain the following files, some of
 More Information for Developers
 *******************************
 
-If you are a developer and need more information on |ns3|'s Python bindings, please see the Python Bindings wiki page at
-`<http://www.nsnam.org/wiki/index.php/NS-3_Python_Bindings>`_.
+If you are a developer and need more information on |ns3|'s Python bindings, please see the `Python Bindings wiki page <http://www.nsnam.org/wiki/index.php/NS-3_Python_Bindings>`_.

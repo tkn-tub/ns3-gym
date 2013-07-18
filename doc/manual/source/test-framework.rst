@@ -1,4 +1,5 @@
 .. include:: replace.txt
+.. highlight::  bash
 
 Testing framework
 -----------------
@@ -27,7 +28,9 @@ properly on all of its supported systems.
 Users (and developers) typically will not interact with the buildbot system other 
 than to read its messages regarding test results.  If a failure is detected in 
 one of the automated build and test jobs, the buildbot will send an email to the
-*ns-developers* mailing list.  This email will look something like::
+*ns-developers* mailing list.  This email will look something like
+
+.. sourcecode:  text
 
   The Buildbot has detected a new failure of osx-ppc-g++-4.2 on NsNam.
   Full details are available at:
@@ -69,20 +72,20 @@ have been built by doing the following
 
 ::
 
-  ./waf configure --enable-examples --enable-tests
-  ./waf
+  $ ./waf configure --enable-examples --enable-tests
+  $ ./waf
 
 By default, ``test.py`` will run all available tests and report status
 back in a very concise form.  Running the command
 
 ::
 
-  ./test.py
+  $ ./test.py
 
 will result in a number of ``PASS``, ``FAIL``, ``CRASH`` or ``SKIP``
 indications followed by the kind of test that was run and its display name.
  
-::
+.. sourcecode:: text
 
   Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-test/ns-3-dev/build'
   Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-test/ns-3-dev/build'
@@ -103,7 +106,7 @@ in determining if changes they have made have caused any regressions.
 There are a number of options available to control the behavior of ``test.py``.
 if you run ``test.py --help`` you should see a command summary like:
 
-::
+.. sourcecode:: text
 
   Usage: test.py [options]
   
@@ -145,7 +148,7 @@ nightly builds using
 
 ::
 
-  ./test.py --html=nightly.html
+  $ ./test.py --html=nightly.html
 
 In this case, an HTML file named ''nightly.html'' would be created with a pretty
 summary of the testing done.  A ''human readable'' format is available for users
@@ -153,7 +156,7 @@ interested in the details.
 
 ::
 
-  ./test.py --text=results.txt
+  $ ./test.py --text=results.txt
 
 In the example above, the test suite checking the |ns3| wireless
 device propagation loss models failed.  By default no further information is
@@ -164,17 +167,17 @@ to be specified.  Running the command
 
 ::
 
-  ./test.py --suite=ns3-wifi-propagation-loss-models
+  $ ./test.py --suite=ns3-wifi-propagation-loss-models
 
 or equivalently
 
 ::
 
-  ./test.py -s ns3-wifi-propagation-loss-models
+  $ ./test.py -s ns3-wifi-propagation-loss-models
 
 results in that single test suite being run.
 
-::
+.. sourcecode:: text
 
   FAIL: TestSuite ns3-wifi-propagation-loss-models
 
@@ -182,13 +185,14 @@ To find detailed information regarding the failure, one must specify the kind
 of output desired.  For example, most people will probably be interested in
 a text file::
 
-  ./test.py --suite=ns3-wifi-propagation-loss-models --text=results.txt
+  $ ./test.py --suite=ns3-wifi-propagation-loss-models --text=results.txt
 
 This will result in that single test suite being run with the test status written to 
 the file ''results.txt''.
 
-You should find something similar to the following in that file::
+You should find something similar to the following in that file
 
+.. sourcecode:: text
 
   FAIL: Test Suite ''ns3-wifi-propagation-loss-models'' (real 0.02 user 0.01 system 0.00)
   PASS: Test Case "Check ... Friis ... model ..." (real 0.01 user 0.00 system 0.00)
@@ -222,21 +226,23 @@ changes to a repository.  In this case, ``test.py`` can be told to constrain
 the types of tests being run to a particular class of tests.  The following
 command will result in only the unit tests being run::
 
-  ./test.py --constrain=unit
+  $ ./test.py --constrain=unit
 
 Similarly, the following command will result in only the example smoke tests
 being run::
 
-  ./test.py --constrain=unit
+  $ ./test.py --constrain=unit
 
 To see a quick list of the legal kinds of constraints, you can ask for them
 to be listed.  The following command
 
 ::
 
-  ./test.py --kinds
+  $ ./test.py --kinds
 
-will result in the following list being displayed::
+will result in the following list being displayed:
+
+.. sourcecode:: text
 
   Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-test/ns-3-dev/build'
   Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-test/ns-3-dev/build'
@@ -256,9 +262,11 @@ to be listed.  The following command,
 
 ::
 
-  ./test.py --list
+  $ ./test.py --list
 
-will result in a list of the test suite being displayed, similar to::
+will result in a list of the test suite being displayed, similar to
+
+.. sourcecode:: text
 
   Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-test/ns-3-dev/build'
   Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-test/ns-3-dev/build'
@@ -291,11 +299,11 @@ for C++ examples do not have extensions.  Entering
 
 ::
 
-  ./test.py --example=udp-echo
+  $ ./test.py --example=udp-echo
 
 results in that single example being run.
 
-::
+.. sourcecode:: text
 
   PASS: Example examples/udp/udp-echo
 
@@ -304,7 +312,7 @@ You can specify the directory where ns-3 was built using the
 
 ::
 
-  ./test.py --buildpath=/home/craigdo/repos/ns-3-allinone-test/ns-3-dev/build/debug --example=wifi-simple-adhoc
+  $ ./test.py --buildpath=/home/craigdo/repos/ns-3-allinone-test/ns-3-dev/build/debug --example=wifi-simple-adhoc
 
 One can run a single Python example program using the ``--pyexample``
 option.  Note that the relative path for the example must be included
@@ -312,11 +320,11 @@ and that Python examples do need their extensions.  Entering
 
 ::
 
-  ./test.py --pyexample=examples/tutorial/first.py
+  $ ./test.py --pyexample=examples/tutorial/first.py
 
 results in that single example being run.
 
-::
+.. sourcecode:: text
 
   PASS: Example examples/tutorial/first.py
 
@@ -344,9 +352,11 @@ option.
 
 ::
 
-  ./test.py --list --nowaf
+  $ ./test.py --list --nowaf
 
-will result in a list of the currently built test suites being displayed, similar to::
+will result in a list of the currently built test suites being displayed, similar to:
+
+.. sourcecode:: text
 
   ns3-wifi-propagation-loss-models
   ns3-tcp-cwnd
@@ -366,7 +376,7 @@ leaks.  This can be selected by using the ``--grind`` option.
 
 ::
 
-  ./test.py --grind
+  $ ./test.py --grind
 
 As it runs, ``test.py`` and the programs that it runs indirectly, generate large
 numbers of temporary files.  Usually, the content of these files is not interesting,
@@ -378,7 +388,7 @@ Universal Time (also known as Greenwich Mean Time).
 
 ::
 
-  ./test.py --retain
+  $ ./test.py --retain
 
 Finally, ``test.py`` provides a ``--verbose`` option which will print
 large amounts of information about its progress.  It is not expected that this
@@ -386,13 +396,13 @@ will be terribly useful unless there is an error.  In this case, you can get
 access to the standard output and standard error reported by running test suites
 and examples.  Select verbose in the following way::
 
-  ./test.py --verbose
+  $ ./test.py --verbose
 
 All of these options can be mixed and matched.  For example, to run all of the 
 ns-3 core test suites under valgrind, in verbose mode, while generating an HTML
 output file, one would do::
 
-  ./test.py --verbose --grind --constrain=core --html=results.html 
+  $ ./test.py --verbose --grind --constrain=core --html=results.html 
 
 TestTaxonomy
 ************
@@ -480,7 +490,7 @@ stage, and also (optionally) examples if examples are to be checked:
 
 ::
 
-   ./waf --configure --enable-examples --enable-tests
+   $ ./waf --configure --enable-examples --enable-tests
 
 Then, build ns-3, and after it is built, just run ``test.py``.  ``test.py -h``
 will show a number of configuration options that modify the behavior
@@ -501,9 +511,11 @@ The main reason why ``test.py`` is not suitable for debugging is that it is not 
 In order to execute the test-runner, you run it like any other ns-3 executable
 -- using ``waf``.  To get a list of available options, you can type::
 
-  ./waf --run "test-runner --help"
+  $ ./waf --run "test-runner --help"
 
-You should see something like the following::
+You should see something like the following
+
+.. sourcecode:: text
 
   Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-test/ns-3-dev/build'
   Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-test/ns-3-dev/build'
@@ -537,10 +549,10 @@ option something like,
 
 ::
 
-  ./waf shell
-  cd build/debug/utils
-  gdb test-runner
-  run --suite=global-value --assert
+  $ ./waf shell
+  $ cd build/debug/utils
+  $ gdb test-runner
+  $ run --suite=global-value --assert
 
 If an error is then found in the global-value test suite, a segfault would be 
 generated and the (source level) debugger would stop at the ``NS_TEST_ASSERT_MSG``
@@ -556,7 +568,7 @@ option for you.  To run one of the tests directly from the test-runner
 using ``waf``, you will need to specify the test suite to run along with 
 the base directory.  So you could use the shell and do::
 
-  ./waf --run "test-runner --basedir=`pwd` --suite=pcap-file-object"
+  $ ./waf --run "test-runner --basedir=`pwd` --suite=pcap-file-object"
 
 Note the ''backward'' quotation marks on the ``pwd`` command.  
 
@@ -601,7 +613,7 @@ output, run ``test.py`` with the "retain" option:
 
 ::
 
-   ./test.py -r
+   $ ./test.py -r
 
 and test output can be found in the ``testpy-output/`` directory.
 
@@ -619,11 +631,11 @@ Try,
 
 ::
 
-  ./waf --run "test-runner --basedir=`pwd` --suite=pcap-file-object --out=myfile.xml"
+  $ ./waf --run "test-runner --basedir=`pwd` --suite=pcap-file-object --out=myfile.xml"
 
 If you look at the file ``myfile.xml`` you should see something like,
 
-::
+.. sourcecode:: xml
 
   <TestSuite>
     <SuiteName>pcap-file-object</SuiteName>
@@ -669,7 +681,9 @@ section.
 Debugging test suite failures
 +++++++++++++++++++++++++++++
 
-To debug test crashes, such as::
+To debug test crashes, such as
+
+.. sourcecode:: text
 
   CRASH: TestSuite ns3-wifi-interference
 
@@ -677,7 +691,7 @@ You can access the underlying test-runner program via gdb as follows, and
 then pass the "--basedir=`pwd`" argument to run (you can also pass other
 arguments as needed, but basedir is the minimum needed)::
 
-  ./waf --command-template="gdb %s" --run "test-runner"
+  $ ./waf --command-template="gdb %s" --run "test-runner"
   Waf: Entering directory `/home/tomh/hg/sep09/ns-3-allinone/ns-3-dev-678/build'
   Waf: Leaving directory `/home/tomh/hg/sep09/ns-3-allinone/ns-3-dev-678/build'
   'build' finished successfully (0.380s)
@@ -699,7 +713,7 @@ such as::
 
   VALGR: TestSuite devices-mesh-dot11s-regression
 
-  ./waf --command-template="valgrind %s --basedir=`pwd` --suite=devices-mesh-dot11s-regression" --run test-runner
+  $ ./waf --command-template="valgrind %s --basedir=`pwd` --suite=devices-mesh-dot11s-regression" --run test-runner
 
 Class TestRunner
 ****************
@@ -736,7 +750,7 @@ and perform these two duties.
 The following code will define a new class that can be run by ``test.py``
 as a ''unit'' test with the display name, ``my-test-suite-name``.
 
-::
+.. sourcecode:: cpp
 
   class MySuite : public TestSuite
   {
@@ -766,7 +780,7 @@ In order to create a new test case in the system, all one has to do is to inheri
 from the  ``TestCase`` base class, override the constructor to give the test 
 case a name and override the ``DoRun`` method to run the test.
 
-::
+.. sourcecode:: cpp
 
   class MyTestCase : public TestCase
   {

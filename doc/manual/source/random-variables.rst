@@ -1,4 +1,5 @@
 .. include:: replace.txt
+.. highlight:: cpp
 
 Random Variables
 ----------------
@@ -125,7 +126,7 @@ run number behavior.  This seeding and substream state setting must be called
 before any random variables are created; e.g::
 
   RngSeedManager::SetSeed (3);  // Changes seed from default of 1 to 3
-  RngSeedManager::SetRun (7);  // Changes run number from default of 1 to 7
+  RngSeedManager::SetRun (7);   // Changes run number from default of 1 to 7
   // Now, create random variables
   Ptr<UniformRandomVariable> x = CreateObject<UniformRandomVariable> ();
   Ptr<ExponentialRandomVariable> y = CreateObject<ExponentialRandomVarlable> ();
@@ -143,18 +144,24 @@ independent replications using the substreams.
 
 For ease of use, it is not necessary to control the seed and run number from
 within the program; the user can set the ``NS_GLOBAL_VALUE`` environment
-variable as follows::
+variable as follows:
 
-  NS_GLOBAL_VALUE="RngRun=3" ./waf --run program-name
+.. sourcecode:: bash
+
+  $ NS_GLOBAL_VALUE="RngRun=3" ./waf --run program-name
 
 Another way to control this is by passing a command-line argument; since this is
-an |ns3| GlobalValue instance, it is equivalently done such as follows::
+an |ns3| GlobalValue instance, it is equivalently done such as follows:
 
-  ./waf --command-template="%s --RngRun=3" --run program-name
+.. sourcecode:: bash
 
-or, if you are running programs directly outside of waf::
+  $ ./waf --command-template="%s --RngRun=3" --run program-name
 
-  ./build/optimized/scratch/program-name --RngRun=3
+or, if you are running programs directly outside of waf:
+
+.. sourcecode:: bash
+
+  $ ./build/optimized/scratch/program-name --RngRun=3
 
 The above command-line variants make it easy to run lots of different
 runs from a shell script by just passing a different RngRun index.
@@ -177,7 +184,9 @@ Base class public API
 *********************
 
 Below are excerpted a few public methods of class :cpp:class:`RandomVariableStream`
-that access the next value in the substream.::
+that access the next value in the substream.
+
+::
 
   /**
    * \brief Returns a random double from the underlying distribution
@@ -226,7 +235,7 @@ handled by smart pointers.
 
 RandomVariableStream instances can also be used in |ns3| attributes, which means
 that values can be set for them through the |ns3| attribute system.
-An example is in the propagation models for WifiNetDevice:::
+An example is in the propagation models for WifiNetDevice::
 
     TypeId
     RandomPropagationDelayModel::GetTypeId (void)
@@ -278,20 +287,20 @@ of the base class RandomVariableStream.
 
 By partitioning the existing sequence of streams from before:
 
-::
+.. sourcecode:: text
 
    <-------------------------------------------------------------------------->
-   stream 0                                                     stream (2^64 - 1)
+   stream 0                                                   stream (2^64 - 1)
 
 into two equal-sized sets:
 
-::
+.. sourcecode:: text
 
-   <--------------------------------------------------------------------------->
-    ^                             ^^                                    ^
-    |                             ||                                    |
-   stream 0       stream (2^63 - 1) stream 2^63          stream (2^64 - 1)
-   <- automatically assigned -----><-------- assigned by user----------->
+   <--------------------------------------------------------------------------> 
+   ^                                    ^^                                    ^
+   |                                    ||                                    |
+   stream 0            stream (2^63 - 1)  stream 2^63         stream (2^64 - 1)
+   <- automatically assigned -----------><- assigned by user ----------------->
 
 The first 2^63 streams continue to be automatically assigned, while
 the last 2^63 are given stream indices starting with zero up to

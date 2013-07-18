@@ -1,4 +1,5 @@
 .. include:: replace.txt
+.. highlight:: cpp
 
 
 Tweaking
@@ -80,16 +81,16 @@ Let's use the NS_LOG environment variable to turn on some more logging, but
 first, just to get our bearings, go ahead and run the last script just as you 
 did previously,
 
-::
+.. sourcecode:: bash
 
-  ./waf --run scratch/myfirst
+  $ ./waf --run scratch/myfirst
 
 You should see the now familiar output of the first |ns3| example
 program
 
-::
+.. sourcecode:: bash
 
-  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
+  $ Waf: Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   'build' finished successfully (0.413s)
   Sent 1024 bytes to 10.1.1.2
@@ -121,13 +122,13 @@ all lower levels.  In this case, we have enabled ``NS_LOG_INFO``,
 increase the logging level and get more information without changing the
 script and recompiling by setting the NS_LOG environment variable like this:
 
-::
+.. sourcecode:: bash
 
-  export NS_LOG=UdpEchoClientApplication=level_all
+  $ export NS_LOG=UdpEchoClientApplication=level_all
 
 This sets the shell environment variable ``NS_LOG`` to the string,
 
-::
+.. sourcecode:: bash
 
   UdpEchoClientApplication=level_all
 
@@ -137,9 +138,9 @@ we are going to turn on all of the debugging levels for the application.  If
 you run the script with NS_LOG set this way, the |ns3| logging 
 system will pick up the change and you should see the following output:
 
-::
+.. sourcecode:: bash
 
-  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build
+  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   'build' finished successfully (0.404s)
   UdpEchoClientApplication:UdpEchoClient()
@@ -183,9 +184,9 @@ wonder where the string "``Received 1024 bytes from 10.1.1.2``" comes
 from.  You can resolve this by OR'ing the ``prefix_func`` level into the
 ``NS_LOG`` environment variable.  Try doing the following,
 
-::
+.. sourcecode:: bash
 
-  export 'NS_LOG=UdpEchoClientApplication=level_all|prefix_func'
+  $ export 'NS_LOG=UdpEchoClientApplication=level_all|prefix_func'
 
 Note that the quotes are required since the vertical bar we use to indicate an
 OR operation is also a Unix pipe connector.
@@ -194,7 +195,7 @@ Now, if you run the script you will see that the logging system makes sure
 that every message from the given log component is prefixed with the component
 name.
 
-::
+.. sourcecode:: bash
 
   Waf: Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
@@ -219,9 +220,9 @@ remaining message must be coming from the UDP echo server application.  We
 can enable that component by entering a colon separated list of components in
 the NS_LOG environment variable.
 
-::
+.. sourcecode:: bash
 
-  export 'NS_LOG=UdpEchoClientApplication=level_all|prefix_func:
+  $ export 'NS_LOG=UdpEchoClientApplication=level_all|prefix_func:
                  UdpEchoServerApplication=level_all|prefix_func'
 
 Warning:  You will need to remove the newline after the ``:`` in the
@@ -231,7 +232,7 @@ Now, if you run the script you will see all of the log messages from both the
 echo client and server applications.  You may see that this can be very useful
 in debugging problems.
 
-::
+.. sourcecode:: bash
 
   Waf: Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
@@ -258,15 +259,15 @@ in debugging problems.
 It is also sometimes useful to be able to see the simulation time at which a
 log message is generated.  You can do this by ORing in the prefix_time bit.
 
-::
+.. sourcecode:: bash
 
-  export 'NS_LOG=UdpEchoClientApplication=level_all|prefix_func|prefix_time:
+  $ export 'NS_LOG=UdpEchoClientApplication=level_all|prefix_func|prefix_time:
                  UdpEchoServerApplication=level_all|prefix_func|prefix_time'
 
 Again, you will have to remove the newline above.  If you run the script now,
 you should see the following output:
 
-::
+.. sourcecode:: bash
 
   Waf: Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
@@ -314,9 +315,9 @@ are not seeing as well.  You can very easily follow the entire process by
 turning on all of the logging components in the system.  Try setting the 
 ``NS_LOG`` variable to the following,
 
-::
+.. sourcecode:: bash
 
-  export 'NS_LOG=*=level_all|prefix_func|prefix_time'
+  $ export 'NS_LOG=*=level_all|prefix_func|prefix_time'
 
 The asterisk above is the logging component wildcard.  This will turn on all 
 of the logging in all of the components used in the simulation.  I won't 
@@ -324,9 +325,9 @@ reproduce the output here (as of this writing it produces 1265 lines of output
 for the single packet echo) but you can redirect this information into a file 
 and look through it with your favorite editor if you like,
 
-::
+.. sourcecode:: bash
 
-  ./waf --run scratch/myfirst > log.out 2>&1
+  $ ./waf --run scratch/myfirst > log.out 2>&1
 
 I personally use this extremely verbose version of logging when I am presented 
 with a problem and I have no idea where things are going wrong.  I can follow the 
@@ -374,16 +375,16 @@ right before the lines,
 Now build the script using waf and clear the ``NS_LOG`` variable to turn 
 off the torrent of logging we previously enabled:
 
-::
+.. sourcecode:: bash
 
-  ./waf
-  export NS_LOG=
+  $ ./waf
+  $ export NS_LOG=
 
 Now, if you run the script, 
 
-::
+.. sourcecode:: bash
 
-  ./waf --run scratch/myfirst
+  $ ./waf --run scratch/myfirst
 
 you will ``not`` see your new message since its associated logging 
 component (``FirstScriptExample``) has not been enabled.  In order to see your
@@ -391,14 +392,14 @@ message you will have to enable the ``FirstScriptExample`` logging component
 with a level greater than or equal to ``NS_LOG_INFO``.  If you just want to 
 see this particular level of logging, you can enable it by,
 
-::
+.. sourcecode:: bash
 
-  export NS_LOG=FirstScriptExample=info
+  $ export NS_LOG=FirstScriptExample=info
 
 If you now run the script you will see your new "Creating Topology" log
 message,
 
-::
+.. sourcecode:: bash
 
   Waf: Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
@@ -441,16 +442,16 @@ ahead and add that two lines of code to the ``scratch/myfirst.cc`` script at
 the start of ``main``.  Go ahead and build the script and run it, but ask 
 the script for help in the following way,
 
-::
+.. sourcecode:: bash
 
-  ./waf --run "scratch/myfirst --PrintHelp"
+  $ ./waf --run "scratch/myfirst --PrintHelp"
 
 This will ask Waf to run the ``scratch/myfirst`` script and pass the command
 line argument ``--PrintHelp`` to the script.  The quotes are required to 
 sort out which program gets which argument.  The command line parser will
 now see the ``--PrintHelp`` argument and respond with,
 
-::
+.. sourcecode:: bash
 
   Waf: Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
@@ -481,14 +482,14 @@ listing says that we should provide a ``TypeId``.  This corresponds to the
 class name of the class to which the ``Attributes`` belong.  In this case it
 will be ``ns3::PointToPointNetDevice``.  Let's go ahead and type in,
 
-::
+.. sourcecode:: bash
 
-  ./waf --run "scratch/myfirst --PrintAttributes=ns3::PointToPointNetDevice"
+  $ ./waf --run "scratch/myfirst --PrintAttributes=ns3::PointToPointNetDevice"
 
 The system will print out all of the ``Attributes`` of this kind of net device.
 Among the ``Attributes`` you will see listed is,
 
-::
+.. sourcecode:: bash
 
   --ns3::PointToPointNetDevice::DataRate=[32768bps]:
     The default data rate for point to point links
@@ -521,13 +522,13 @@ Go ahead and build the new script with Waf (``./waf``) and let's go back
 and enable some logging from the UDP echo server application and turn on the 
 time prefix.
 
-::
+.. sourcecode:: bash
 
-  export 'NS_LOG=UdpEchoServerApplication=level_all|prefix_time'
+  $ export 'NS_LOG=UdpEchoServerApplication=level_all|prefix_time'
 
 If you run the script, you should now see the following output,
 
-::
+.. sourcecode:: bash
 
   Waf: Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
@@ -545,7 +546,7 @@ If you run the script, you should now see the following output,
 Recall that the last time we looked at the simulation time at which the packet
 was received by the echo server, it was at 2.00369 seconds.
 
-::
+.. sourcecode:: bash
 
   2.00369s UdpEchoServerApplication:HandleRead(): Received 1024 bytes from 10.1.1.1
 
@@ -557,9 +558,9 @@ If we were to provide a new ``DataRate`` using the command line, we could
 speed our simulation up again.  We do this in the following way, according to
 the formula implied by the help item:
 
-::
+.. sourcecode:: bash
 
-  ./waf --run "scratch/myfirst --ns3::PointToPointNetDevice::DataRate=5Mbps"
+  $ ./waf --run "scratch/myfirst --ns3::PointToPointNetDevice::DataRate=5Mbps"
 
 This will set the default value of the ``DataRate`` ``Attribute`` back to 
 five megabits per second.  Are you surprised by the result?  It turns out that
@@ -568,30 +569,30 @@ the speed-of-light delay of the channel as well.  We can ask the command line
 system to print out the ``Attributes`` of the channel just like we did for
 the net device:
 
-::
+.. sourcecode:: bash
 
-  ./waf --run "scratch/myfirst --PrintAttributes=ns3::PointToPointChannel"
+  $ ./waf --run "scratch/myfirst --PrintAttributes=ns3::PointToPointChannel"
 
 We discover the ``Delay`` ``Attribute`` of the channel is set in the following
 way:
 
-::
+.. sourcecode:: bash
 
   --ns3::PointToPointChannel::Delay=[0ns]:
     Transmission delay through the channel
 
 We can then set both of these default values through the command line system,
 
-::
+.. sourcecode:: bash
 
-  ./waf --run "scratch/myfirst
+  $ ./waf --run "scratch/myfirst
     --ns3::PointToPointNetDevice::DataRate=5Mbps
     --ns3::PointToPointChannel::Delay=2ms"
 
 in which case we recover the timing we had when we explicitly set the
 ``DataRate`` and ``Delay`` in the script:
 
-::
+.. sourcecode:: bash
 
   Waf: Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
@@ -620,9 +621,9 @@ you should be able to control the number of packets echoed from the command
 line.  Since we're nice folks, we'll tell you that your command line should 
 end up looking something like,
 
-::
+.. sourcecode:: bash
 
-  ./waf --run "scratch/myfirst 
+  $ ./waf --run "scratch/myfirst 
     --ns3::PointToPointNetDevice::DataRate=5Mbps 
     --ns3::PointToPointChannel::Delay=2ms 
     --ns3::UdpEchoClient::MaxPackets=2"
@@ -666,11 +667,11 @@ should see your new ``User Argument`` listed in the help display.
 
 Try,
 
-::
+.. sourcecode:: bash
 
-  ./waf --run "scratch/myfirst --PrintHelp"
+  $ ./waf --run "scratch/myfirst --PrintHelp"
 
-::
+.. sourcecode:: bash
 
   Waf: Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
@@ -687,13 +688,13 @@ Try,
 If you want to specify the number of packets to echo, you can now do so by
 setting the ``--nPackets`` argument in the command line,
 
-::
+.. sourcecode:: bash
 
-  ./waf --run "scratch/myfirst --nPackets=2"
+  $ ./waf --run "scratch/myfirst --nPackets=2"
 
 You should now see
 
-::
+.. sourcecode:: bash
 
   Waf: Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
@@ -821,9 +822,9 @@ the popular trace points that log "+", "-", "d", and "r" events.
 
 You can now build the script and run it from the command line:
 
-::
+.. sourcecode:: bash
 
-  ./waf --run scratch/myfirst
+  $ ./waf --run scratch/myfirst
 
 Just as you have seen many times before, you will see some messages from Waf and then
 "'build' finished successfully" with some number of messages from 
@@ -856,31 +857,32 @@ space after it).  This character will have the following meaning:
 * ``r``: A packet was received by the net device.
 
 Let's take a more detailed view of the first line in the trace file.  I'll 
-break it down into sections (indented for clarity) with a two digit reference
+break it down into sections (indented for clarity) with a reference
 number on the left side:
 
-::
+.. sourcecode:: text
+  :linenos:
 
-  00 + 
-  01 2 
-  02 /NodeList/0/DeviceList/0/$ns3::PointToPointNetDevice/TxQueue/Enqueue 
-  03 ns3::PppHeader (
-  04   Point-to-Point Protocol: IP (0x0021)) 
-  05   ns3::Ipv4Header (
-  06     tos 0x0 ttl 64 id 0 protocol 17 offset 0 flags [none] 
-  07     length: 1052 10.1.1.1 > 10.1.1.2)
-  08     ns3::UdpHeader (
-  09       length: 1032 49153 > 9) 
-  10       Payload (size=1024)
+  + 
+  2 
+  /NodeList/0/DeviceList/0/$ns3::PointToPointNetDevice/TxQueue/Enqueue 
+  ns3::PppHeader (
+    Point-to-Point Protocol: IP (0x0021)) 
+    ns3::Ipv4Header (
+      tos 0x0 ttl 64 id 0 protocol 17 offset 0 flags [none] 
+      length: 1052 10.1.1.1 > 10.1.1.2)
+      ns3::UdpHeader (
+        length: 1032 49153 > 9) 
+        Payload (size=1024)
 
-The first line of this expanded trace event (reference number 00) is the 
+The first section of this expanded trace event (reference number 0) is the 
 operation.  We have a ``+`` character, so this corresponds to an
-*enqueue* operation on the transmit queue.  The second line (reference 01)
+*enqueue* operation on the transmit queue.  The second section (reference 1)
 is the simulation time expressed in seconds.  You may recall that we asked the 
 ``UdpEchoClientApplication`` to start sending packets at two seconds.  Here
 we see confirmation that this is, indeed, happening.
 
-The next line of the example trace (reference 02) tell us which trace source
+The next section of the example trace (reference 2) tell us which trace source
 originated this event (expressed in the tracing namespace).  You can think
 of the tracing namespace somewhat like you would a filesystem namespace.  The 
 root of the namespace is the ``NodeList``.  This corresponds to a container
@@ -899,11 +901,11 @@ Recall that the operation ``+`` found at reference 00 meant that an enqueue
 operation happened on the transmit queue of the device.  This is reflected in 
 the final segments of the "trace path" which are ``TxQueue/Enqueue``.
 
-The remaining lines in the trace should be fairly intuitive.  References 03-04
+The remaining sections in the trace should be fairly intuitive.  References 3-4
 indicate that the packet is encapsulated in the point-to-point protocol.  
-References 05-07 show that the packet has an IP version four header and has
+References 5-7 show that the packet has an IP version four header and has
 originated from IP address 10.1.1.1 and is destined for 10.1.1.2.  References
-08-09 show that this packet has a UDP header and, finally, reference 10 shows
+8-9 show that this packet has a UDP header and, finally, reference 10 shows
 that the payload is the expected 1024 bytes.
 
 The next line in the trace file shows the same packet being dequeued from the
@@ -912,17 +914,18 @@ transmit queue on the same node.
 The Third line in the trace file shows the packet being received by the net
 device on the node with the echo server. I have reproduced that event below.
 
-::
+.. sourcecode:: text
+  :linenos:
 
-  00 r 
-  01 2.25732 
-  02 /NodeList/1/DeviceList/0/$ns3::PointToPointNetDevice/MacRx 
-  03   ns3::Ipv4Header (
-  04     tos 0x0 ttl 64 id 0 protocol 17 offset 0 flags [none]
-  05     length: 1052 10.1.1.1 > 10.1.1.2)
-  06     ns3::UdpHeader (
-  07       length: 1032 49153 > 9) 
-  08       Payload (size=1024)
+  r 
+  2.25732 
+  /NodeList/1/DeviceList/0/$ns3::PointToPointNetDevice/MacRx 
+    ns3::Ipv4Header (
+      tos 0x0 ttl 64 id 0 protocol 17 offset 0 flags [none]
+      length: 1052 10.1.1.1 > 10.1.1.2)
+      ns3::UdpHeader (
+        length: 1032 49153 > 9) 
+        Payload (size=1024)
 
 Notice that the trace operation is now ``r`` and the simulation time has
 increased to 2.25732 seconds.  If you have been following the tutorial steps
@@ -968,9 +971,9 @@ node 1-device 0, respectively.
 Once you have added the line of code to enable pcap tracing, you can run the
 script in the usual way:
 
-::
+.. sourcecode:: bash
 
-  ./waf --run scratch/myfirst
+  $ ./waf --run scratch/myfirst
 
 If you look at the top level directory of your distribution, you should now
 see three log files:  ``myfirst.tr`` is the ASCII trace file we have 
@@ -982,9 +985,9 @@ Reading output with tcpdump
 The easiest thing to do at this point will be to use ``tcpdump`` to look
 at the ``pcap`` files.  
 
-::
+.. sourcecode:: bash
 
-  tcpdump -nn -tt -r myfirst-0-0.pcap
+  $ tcpdump -nn -tt -r myfirst-0-0.pcap
   reading from file myfirst-0-0.pcap, link-type PPP (PPP)
   2.000000 IP 10.1.1.1.49153 > 10.1.1.2.9: UDP, length 1024
   2.514648 IP 10.1.1.2.9 > 10.1.1.1.49153: UDP, length 1024
