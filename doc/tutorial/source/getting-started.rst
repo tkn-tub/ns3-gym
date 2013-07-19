@@ -203,7 +203,7 @@ Step into the workspace directory and type the following into your shell:
 
 ::
 
-  $ ./bake.py configure -e ns-3-dev
+  $ ./bake.py configure -e ns-3.17
 
 Next, we'l ask bake to check whether we have enough tools to download
 various components.  Type:
