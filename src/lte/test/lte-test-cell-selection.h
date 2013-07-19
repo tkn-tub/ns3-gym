@@ -1,6 +1,6 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2013 University of Jyväskylä
+ * Copyright (c) 2013 University of Jyvaskyla
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -23,8 +23,10 @@
 #define LTE_TEST_CELL_SELECTION_H
 
 #include <ns3/test.h>
+#include <ns3/nstime.h>
 #include <ns3/node-container.h>
 #include <ns3/vector.h>
+#include <ns3/lte-ue-rrc.h>
 #include <vector>
 
 namespace ns3 {
@@ -41,6 +43,7 @@ class LteCellSelectionTestSuite : public TestSuite
 public:
   LteCellSelectionTestSuite ();
 };
+
 
 
 /**
@@ -68,9 +71,10 @@ public:
    * \param name name of this test
    * \param isEpcMode set to true for setting up simulation with EPC enabled
    * \param ueSetupList an array of UE setup parameters
+   * \param duration length of simulation
    */
   LteCellSelectionTestCase (std::string name, bool isEpcMode,
-                            std::vector<UeSetup_t> ueSetupList);
+                            std::vector<UeSetup_t> ueSetupList, Time duration);
 
   virtual ~LteCellSelectionTestCase ();
 
@@ -84,7 +88,14 @@ private:
   void MibReceivedCallback (std::string context, uint64_t imsi,
                             uint16_t cellId, uint16_t rnti);
   void Sib1ReceivedCallback (std::string context, uint64_t imsi,
-                             uint16_t cellId, uint16_t rnti);
+                             uint16_t cellId, uint16_t rnti, uint16_t sourceCellId);
+  void StateTransitionCallback (std::string context, uint64_t imsi,
+                                uint16_t cellId, uint16_t rnti,
+                                LteUeRrc::State oldState, LteUeRrc::State newState);
+  void InitialCellSelectionEndOkCallback (std::string context, uint64_t imsi,
+                                          uint16_t cellId);
+  void InitialCellSelectionEndErrorCallback (std::string context, uint64_t imsi,
+                                             uint16_t cellId);
 
   /**
    * \brief If true, then the simulation should be set up with EPC enabled.
@@ -95,6 +106,16 @@ private:
    * \brief The list of UE setups to be used during the test execution.
    */
   std::vector<UeSetup_t> m_ueSetupList;
+
+  /**
+   * \brief The length of the simulation.
+   *
+   * Typical simulation length is 206 milliseconds, which is the minimum time
+   * required for initial cell selection in default settings. Scenarios which
+   * expect failure in initial cell selection procedure might want to extend
+   * this to give the UE the chance to retry the procedure.
+   */
+  Time m_duration;
 
 }; // end of class LteCellSelectionTestCase
 

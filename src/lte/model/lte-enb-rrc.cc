@@ -1657,11 +1657,24 @@ LteEnbRrc::ConfigureCell (uint8_t ulBandwidth, uint8_t dlBandwidth,
   mib.dlBandwidth = m_dlBandwidth;
   m_cphySapProvider->SetMasterInformationBlock (mib);
 
+  // Enabling SIB1 transmission
+  LteRrcSap::SystemInformationBlockType1 sib1;
+  sib1.cellAccessRelatedInfo.cellIdentity = cellId;
+  sib1.cellAccessRelatedInfo.csgIndication = false;
+  sib1.cellAccessRelatedInfo.csgIdentity = 0;
+  LteRrcSap::PlmnIdentityInfo plmnIdentityInfo;
+  plmnIdentityInfo.plmnIdentity = 0;
+  sib1.cellAccessRelatedInfo.plmnIdentityInfo = plmnIdentityInfo;
+  sib1.cellSelectionInfo.qQualMin = -34;
+  sib1.cellSelectionInfo.qRxLevMin = -70;
+  // TODO the above fields should not be hardcoded like this
+  m_cphySapProvider->SetSystemInformationBlockType1 (sib1);
+
   /*
-   * Enabling SIB transmission. The first time System Information is transmitted
-   * is arbitrarily assumed to be at +0.016s, and then it will be regularly
-   * transmitted every 80 ms by default (set the SystemInformationPeriodicity
-   * attribute to configure this).
+   * Enabling transmission of other SIB. The first time System Information is
+   * transmitted is arbitrarily assumed to be at +0.016s, and then it will be
+   * regularly transmitted every 80 ms by default (set the
+   * SystemInformationPeriodicity attribute to configure this).
    */
   Simulator::Schedule (MilliSeconds (16), &LteEnbRrc::SendSystemInformation, this);
 

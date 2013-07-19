@@ -345,27 +345,31 @@ private:
   uint16_t m_dlEarfcn;  /**< downlink carrier frequency */
   uint16_t m_ulEarfcn;  /**< uplink carrier frequency */
 
-  //             imsi      cellid    rnti
+  //             imsi      cellId    rnti
   TracedCallback<uint64_t, uint16_t, uint16_t> m_mibReceivedTrace;
-  //             imsi      cellid    rnti
-  TracedCallback<uint64_t, uint16_t, uint16_t> m_sib1ReceivedTrace;
-  //             imsi      cellid    rnti
+  //             imsi      cellId    rnti,     sourceCellId
+  TracedCallback<uint64_t, uint16_t, uint16_t, uint16_t> m_sib1ReceivedTrace;
+  //             imsi      cellId    rnti
   TracedCallback<uint64_t, uint16_t, uint16_t, State, State> m_stateTransitionTrace;
-  //             imsi      cellid    rnti
+  //             imsi      cellId
+  TracedCallback<uint64_t, uint16_t> m_initialCellSelectionEndOkTrace;
+  //             imsi      cellId
+  TracedCallback<uint64_t, uint16_t> m_initialCellSelectionEndErrorTrace;
+  //             imsi      cellId    rnti
   TracedCallback<uint64_t, uint16_t, uint16_t> m_randomAccessSuccessfulTrace;
-  //             imsi      cellid    rnti
+  //             imsi      cellId    rnti
   TracedCallback<uint64_t, uint16_t, uint16_t> m_connectionEstablishedTrace;
-  //             imsi      cellid    rnti
+  //             imsi      cellId    rnti
   TracedCallback<uint64_t, uint16_t, uint16_t> m_connectionReconfigurationTrace;
-  //             imsi      cellid    rnti     targetCellId
+  //             imsi      cellId    rnti      targetCellId
   TracedCallback<uint64_t, uint16_t, uint16_t, uint16_t> m_handoverStartTrace;
-  //             imsi      cellid    rnti
+  //             imsi      cellId    rnti
   TracedCallback<uint64_t, uint16_t, uint16_t> m_handoverEndOkTrace;
 
   bool m_connectionPending; /**< true if a connection request by upper layers is pending */
-  bool m_receivedMib; /**< true if MIB was received for the current cell  */
-  bool m_receivedSib1; /**< true if SIB1 was received for the current cell  */
-  bool m_receivedSib2; /**< true if SIB2 was received for the current cell  */
+  bool m_hasReceivedMib; /**< true if MIB was received for the current cell  */
+  bool m_hasReceivedSib1; /**< true if SIB1 was received for the current cell  */
+  bool m_hasReceivedSib2; /**< true if SIB2 was received for the current cell  */
 
   LteRrcSap::SystemInformationBlockType1 m_lastSib1;
 

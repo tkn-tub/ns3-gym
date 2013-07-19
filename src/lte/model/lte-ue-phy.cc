@@ -198,40 +198,40 @@ LteUePhy::GetTypeId (void)
                                        &LteUePhy::GetNoiseFigure),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("TxMode1Gain",
-                  "Transmission mode 1 gain in dB",
-                  DoubleValue (0.0),
-                   MakeDoubleAccessor (&LteUePhy::SetTxMode1Gain                       ),
-                  MakeDoubleChecker<double> ())
+                   "Transmission mode 1 gain in dB",
+                   DoubleValue (0.0),
+                   MakeDoubleAccessor (&LteUePhy::SetTxMode1Gain),
+                   MakeDoubleChecker<double> ())
     .AddAttribute ("TxMode2Gain",
-                    "Transmission mode 2 gain in dB",
-                    DoubleValue (4.2),
-                   MakeDoubleAccessor (&LteUePhy::SetTxMode2Gain                       ),
-                    MakeDoubleChecker<double> ())
+                   "Transmission mode 2 gain in dB",
+                   DoubleValue (4.2),
+                   MakeDoubleAccessor (&LteUePhy::SetTxMode2Gain),
+                   MakeDoubleChecker<double> ())
     .AddAttribute ("TxMode3Gain",
-                    "Transmission mode 3 gain in dB",
-                    DoubleValue (-2.8),
-                   MakeDoubleAccessor (&LteUePhy::SetTxMode3Gain                       ),
-                    MakeDoubleChecker<double> ())
+                   "Transmission mode 3 gain in dB",
+                   DoubleValue (-2.8),
+                   MakeDoubleAccessor (&LteUePhy::SetTxMode3Gain),
+                   MakeDoubleChecker<double> ())
     .AddAttribute ("TxMode4Gain",
-                    "Transmission mode 4 gain in dB",
-                    DoubleValue (0.0),
-                   MakeDoubleAccessor (&LteUePhy::SetTxMode4Gain                       ),
-                    MakeDoubleChecker<double> ())
+                   "Transmission mode 4 gain in dB",
+                   DoubleValue (0.0),
+                   MakeDoubleAccessor (&LteUePhy::SetTxMode4Gain),
+                   MakeDoubleChecker<double> ())
     .AddAttribute ("TxMode5Gain",
-                  "Transmission mode 5 gain in dB",
-                  DoubleValue (0.0),
-                   MakeDoubleAccessor (&LteUePhy::SetTxMode5Gain                       ),
-                  MakeDoubleChecker<double> ())
+                   "Transmission mode 5 gain in dB",
+                   DoubleValue (0.0),
+                   MakeDoubleAccessor (&LteUePhy::SetTxMode5Gain),
+                   MakeDoubleChecker<double> ())
     .AddAttribute ("TxMode6Gain",
-                    "Transmission mode 6 gain in dB",
-                    DoubleValue (0.0),
-                   MakeDoubleAccessor (&LteUePhy::SetTxMode6Gain                       ),
-                    MakeDoubleChecker<double> ())
+                   "Transmission mode 6 gain in dB",
+                   DoubleValue (0.0),
+                   MakeDoubleAccessor (&LteUePhy::SetTxMode6Gain),
+                   MakeDoubleChecker<double> ())
     .AddAttribute ("TxMode7Gain",
-                  "Transmission mode 7 gain in dB",
-                  DoubleValue (0.0),
-                   MakeDoubleAccessor (&LteUePhy::SetTxMode7Gain                       ),
-                  MakeDoubleChecker<double> ())
+                   "Transmission mode 7 gain in dB",
+                   DoubleValue (0.0),
+                   MakeDoubleAccessor (&LteUePhy::SetTxMode7Gain),
+                   MakeDoubleChecker<double> ())
     .AddTraceSource ("ReportCurrentCellRsrpSinr",
                      "RSRP and SINR statistics.",
                      MakeTraceSourceAccessor (&LteUePhy::m_reportCurrentCellRsrpSinrTrace))
@@ -256,15 +256,15 @@ LteUePhy::GetTypeId (void)
                    MakePointerAccessor (&LteUePhy::GetUlSpectrumPhy),
                    MakePointerChecker <LteSpectrumPhy> ())
     .AddAttribute ("RsrqUeMeasThreshold",
-                  "Receive threshold for PSS on RSRQ [dB]",
-                  DoubleValue (-1000.0),
-                   MakeDoubleAccessor (&LteUePhy::m_pssReceptionThreshold                    ),
-                  MakeDoubleChecker<double> ())
+                   "Receive threshold for PSS on RSRQ [dB]",
+                   DoubleValue (-1000.0),
+                   MakeDoubleAccessor (&LteUePhy::m_pssReceptionThreshold),
+                   MakeDoubleChecker<double> ())
     .AddAttribute ("UeMeasurementsFilterPeriod",
-                  "Time period for reporting UE measurements (default 200 ms.) ",
-                  TimeValue (MilliSeconds (200)),
-                  MakeTimeAccessor (&LteUePhy::m_ueMeasurementsFilterPeriod),
-                  MakeTimeChecker ())
+                   "Time period for reporting UE measurements (default 200 ms.) ",
+                   TimeValue (MilliSeconds (200)),
+                   MakeTimeAccessor (&LteUePhy::m_ueMeasurementsFilterPeriod),
+                   MakeTimeChecker ())
     .AddTraceSource ("ReportUeMeasurements",
                      "Report UE measurements RSRP (dBm) and RSRQ (dB).",
                      MakeTraceSourceAccessor (&LteUePhy::m_reportUeMeasurements))
@@ -1092,7 +1092,7 @@ void
 LteUePhy::DoReset ()
 {
   NS_LOG_FUNCTION (this);
-  
+
   m_rnti = 0;
   m_transmissionMode = 0;
   m_srsPeriodicity = 0;
@@ -1145,6 +1145,11 @@ void
 LteUePhy::DoSyncronizeWithEnb (uint16_t cellId, uint16_t dlEarfcn)
 {
   NS_LOG_FUNCTION (this << cellId << dlEarfcn);
+
+  if (cellId == 0)
+    {
+      NS_FATAL_ERROR ("Cell ID shall not be zero");
+    }
 
   m_cellId = cellId;
   m_dlEarfcn = dlEarfcn;

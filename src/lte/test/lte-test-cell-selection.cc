@@ -1,6 +1,6 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2013 University of Jyväskylä
+ * Copyright (c) 2013 University of Jyvaskyla
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -24,6 +24,7 @@
 #include <ns3/simulator.h>
 #include <ns3/log.h>
 #include <ns3/boolean.h>
+#include <ns3/double.h>
 
 #include <ns3/mobility-helper.h>
 #include <ns3/lte-helper.h>
@@ -59,22 +60,37 @@ LteCellSelectionTestSuite::LteCellSelectionTestSuite ()
   //LogComponentEnable ("LteUePhy", LOG_WARN);
   //LogComponentEnable ("LteUePhy", LOG_DEBUG);
   //LogComponentEnable ("LteUePhy", LOG_FUNCTION);
+  //LogComponentEnable ("LteSpectrumValueHelper", LOG_FUNCTION);
   //LogComponentEnable ("LteSpectrumPhy", LOG_LOGIC);
   //LogComponentEnable ("LteSpectrumPhy", LOG_FUNCTION);
   //LogComponentEnable ("LteEnbPhy", LOG_FUNCTION);
-  LogComponentEnable ("LteUeRrc", LOG_FUNCTION);
+  //LogComponentEnable ("LteUeRrc", LOG_FUNCTION);
 
   std::vector<LteCellSelectionTestCase::UeSetup_t> x;
 
-  x.clear ();
-  x.push_back (LteCellSelectionTestCase::UeSetup_t (Vector (0, 0, 0), 0, 0, 1));
-  AddTestCase (new LteCellSelectionTestCase ("First test with EPC", true, x),
+  x.clear ();                                    // position x   y  z,  plmn csg expectedCellId
+  x.push_back (LteCellSelectionTestCase::UeSetup_t (Vector (80, 10, 0), 0,   0,  1));
+  AddTestCase (new LteCellSelectionTestCase ("[EPC] In front of cell 1",
+                                             true, x, MilliSeconds (206)),
                TestCase::QUICK);
 
-//  x.clear ();
-//  x.push_back (LteCellSelectionTestCase::UeSetup_t (Vector (0, 0, 0), 0, 0, 1));
-//  AddTestCase (new LteCellSelectionTestCase ("First test without EPC", false, x),
-//               TestCase::QUICK);
+  x.clear ();                                    // position  x   y  z,  plmn csg expectedCellId
+  x.push_back (LteCellSelectionTestCase::UeSetup_t (Vector (-80, 20, 0), 0,   0,  2));
+  AddTestCase (new LteCellSelectionTestCase ("[EPC] In front of cell 2",
+                                             true, x, MilliSeconds (206)),
+               TestCase::QUICK);
+
+  x.clear ();                                    // position  x   y  z,  plmn csg expectedCellId
+  x.push_back (LteCellSelectionTestCase::UeSetup_t (Vector (-80, 10, 0), 0,   0,  2));
+  AddTestCase (new LteCellSelectionTestCase ("[EPC] Behind cell 1",
+                                             true, x, MilliSeconds (206)),
+               TestCase::QUICK);
+
+  x.clear ();                                    // position x   y  z,  plmn csg expectedCellId
+  x.push_back (LteCellSelectionTestCase::UeSetup_t (Vector (80, 20, 0), 0,   0,  1));
+  AddTestCase (new LteCellSelectionTestCase ("[EPC] Behind cell 2",
+                                             true, x, MilliSeconds (206)),
+               TestCase::QUICK);
 
 } // end of LteCellSelectionTestSuite::LteCellSelectionTestSuite ()
 
@@ -99,8 +115,10 @@ LteCellSelectionTestCase::UeSetup_t::UeSetup_t (Vector position,
 
 
 LteCellSelectionTestCase::LteCellSelectionTestCase (
-  std::string name, bool isEpcMode, std::vector<UeSetup_t> ueSetupList)
-  : TestCase (name), m_isEpcMode (isEpcMode), m_ueSetupList (ueSetupList)
+  std::string name, bool isEpcMode, std::vector<UeSetup_t> ueSetupList,
+  Time duration)
+  : TestCase (name), m_isEpcMode (isEpcMode), m_ueSetupList (ueSetupList),
+    m_duration (duration)
 {
   NS_LOG_FUNCTION (this << GetName ());
 }
@@ -141,40 +159,46 @@ LteCellSelectionTestCase::DoRun ()
    *                         - UEs do not move during simulation
    */
 
-  // Create Nodes: eNodeB
+  // Create Nodes
   NodeContainer enbNodes;
   enbNodes.Create (2);
+  NodeContainer ueNodes;
+  uint16_t nUe = m_ueSetupList.size ();
+  ueNodes.Create (nUe);
 
+  // Assign nodes to position
   Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
   positionAlloc->Add (Vector (0.0, 10.0, 0.0));
   positionAlloc->Add (Vector (0.0, 20.0, 0.0));
+
+  std::vector<UeSetup_t>::const_iterator itSetup;
+  for (itSetup = m_ueSetupList.begin (); itSetup != m_ueSetupList.end (); itSetup++)
+    {
+      positionAlloc->Add (itSetup->position);
+    }
 
   MobilityHelper mobility;
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.SetPositionAllocator (positionAlloc);
   mobility.Install (enbNodes);
-
-  // Create Nodes: UE
-  NodeContainer ueNodes;
-  uint16_t nUe = m_ueSetupList.size ();
-  ueNodes.Create (nUe);
-
-  std::vector<UeSetup_t>::const_iterator it;
-  for (it = m_ueSetupList.begin (); it != m_ueSetupList.end (); it++)
-    {
-      positionAlloc->Add (it->position);
-    }
-
   mobility.Install (ueNodes);
 
   // Create Devices and install them in the Nodes (eNB and UE)
+  lteHelper->SetEnbAntennaModelType ("ns3::ParabolicAntennaModel");
+  lteHelper->SetEnbAntennaModelAttribute ("Beamwidth", DoubleValue (70));
+  lteHelper->SetEnbAntennaModelAttribute ("MaxAttenuation", DoubleValue (20.0));
   NetDeviceContainer enbDevs;
+  lteHelper->SetEnbAntennaModelAttribute ("Orientation", DoubleValue (0));
+  enbDevs.Add (lteHelper->InstallEnbDevice (enbNodes.Get (0)));
+  lteHelper->SetEnbAntennaModelAttribute ("Orientation", DoubleValue (180));
+  enbDevs.Add (lteHelper->InstallEnbDevice (enbNodes.Get (1)));
+
   NetDeviceContainer ueDevs;
-  enbDevs = lteHelper->InstallEnbDevice (enbNodes);
   ueDevs = lteHelper->InstallUeDevice (ueNodes);
 
   // Set the PLMN and CSG ID
-  for (it = m_ueSetupList.begin (); it != m_ueSetupList.end (); it++)
+  NetDeviceContainer::Iterator itDev;
+  for (itSetup = m_ueSetupList.begin (); itSetup != m_ueSetupList.end (); itSetup++)
     {
       // TODO
     }
@@ -220,8 +244,7 @@ LteCellSelectionTestCase::DoRun ()
           ueStaticRouting->SetDefaultRoute (epcHelper->GetUeDefaultGatewayAddress (), 1);
         }
 
-      // // TODO remove this
-      //lteHelper->Attach (ueDevs, enbDevs.Get (0));
+      // TODO call LteHelper::Attach (ueDevs)
 
     } // end of if (m_isEpcMode)
   else
@@ -237,22 +260,35 @@ LteCellSelectionTestCase::DoRun ()
 
   // Connect to trace sources in UEs
   Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/MibReceived",
-                   MakeCallback (&LteCellSelectionTestCase::MibReceivedCallback,
-                                 this));
-
-  // Connect to trace sources in UEs
+                   MakeCallback (&LteCellSelectionTestCase::MibReceivedCallback, this));
   Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/Sib1Received",
-                   MakeCallback (&LteCellSelectionTestCase::Sib1ReceivedCallback,
-                                 this));
+                   MakeCallback (&LteCellSelectionTestCase::Sib1ReceivedCallback, this));
+  Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/StateTransition",
+                   MakeCallback (&LteCellSelectionTestCase::StateTransitionCallback, this));
+  Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/InitialCellSelectionEndOk",
+                   MakeCallback (&LteCellSelectionTestCase::InitialCellSelectionEndOkCallback, this));
+  Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/InitialCellSelectionEndError",
+                   MakeCallback (&LteCellSelectionTestCase::InitialCellSelectionEndErrorCallback, this));
 
   // Run simulation
-  Simulator::Stop (MilliSeconds (400));
+  Simulator::Stop (m_duration);
   Simulator::Run ();
-  Simulator::Destroy ();
 
   // Tests
+  NS_ASSERT (m_ueSetupList.size () == ueDevs.GetN ());
+  for (itSetup = m_ueSetupList.begin (), itDev = ueDevs.Begin ();
+       itSetup != m_ueSetupList.end () || itDev != ueDevs.End ();
+       itSetup++, itDev++)
+    {
+      Ptr<LteUeNetDevice> ueDev = (*itDev)->GetObject<LteUeNetDevice> ();
+      NS_ASSERT (ueDev != 0);
+      uint16_t actualCellId = ueDev->GetRrc ()->GetCellId ();
+      uint16_t expectedCellId = itSetup->expectedCellId;
+      NS_TEST_ASSERT_MSG_EQ (actualCellId, expectedCellId,
+                             "UE has attached to an unexpected cell (or not attached at all)");
+    }
 
-  // TODO
+  Simulator::Destroy ();
 
 } // end of void LteCellSelectionTestCase::DoRun ()
 
@@ -267,10 +303,41 @@ LteCellSelectionTestCase::MibReceivedCallback (
 
 void
 LteCellSelectionTestCase::Sib1ReceivedCallback (
-  std::string context, uint64_t imsi, uint16_t cellId, uint16_t rnti)
+  std::string context, uint64_t imsi, uint16_t cellId, uint16_t rnti,
+  uint16_t sourceCellId)
 {
-  NS_LOG_FUNCTION (this << context << imsi << cellId << rnti);
+  NS_LOG_FUNCTION (this << context << imsi << cellId << rnti << sourceCellId);
 }
+
+
+void
+LteCellSelectionTestCase::StateTransitionCallback (std::string context,
+                                                   uint64_t imsi,
+                                                   uint16_t cellId,
+                                                   uint16_t rnti,
+                                                   LteUeRrc::State oldState,
+                                                   LteUeRrc::State newState)
+{
+  NS_LOG_FUNCTION (this << context << imsi << cellId << rnti
+                        << oldState << newState);
+}
+
+
+void
+LteCellSelectionTestCase::InitialCellSelectionEndOkCallback (
+  std::string context, uint64_t imsi, uint16_t cellId)
+{
+  NS_LOG_FUNCTION (this << context << imsi << cellId);
+}
+
+
+void
+LteCellSelectionTestCase::InitialCellSelectionEndErrorCallback (
+  std::string context, uint64_t imsi, uint16_t cellId)
+{
+  NS_LOG_FUNCTION (this << context << imsi << cellId);
+}
+
 
 
 } // end of namespace ns3
