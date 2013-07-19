@@ -100,27 +100,25 @@ struct LteSpectrumSignalParametersDataFrame : public SpectrumSignalParameters
 */
 struct LteSpectrumSignalParametersDlCtrlFrame : public SpectrumSignalParameters
 {
-
+  
   // inherited from SpectrumSignalParameters
   virtual Ptr<SpectrumSignalParameters> Copy ();
-
+  
   /**
   * default constructor
   */
   LteSpectrumSignalParametersDlCtrlFrame ();
-
+  
   /**
   * copy constructor
   */
   LteSpectrumSignalParametersDlCtrlFrame (const LteSpectrumSignalParametersDlCtrlFrame& p);
 
 
-  std::list<Ptr<LteControlMessage> > ctrlMsgList; ///< control message list
-
-  uint16_t cellId; ///< cell ID of the eNodeB where the signal originates from
-  bool pss; ///< true when this signal contains Primary Synchronization Signal
-  bool mib; ///< true when the control message list contains Master Information Block
-  bool sib1; ///< true when the control message list contains System Information Block Type 1
+  std::list<Ptr<LteControlMessage> > ctrlMsgList;
+  
+  uint16_t cellId;
+  bool pss; // primary synchronization signal
 };
 
 

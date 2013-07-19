@@ -114,7 +114,6 @@ NS_OBJECT_ENSURE_REGISTERED (LteSpectrumPhy);
 
 LteSpectrumPhy::LteSpectrumPhy ()
   : m_state (IDLE),
-  m_cellId (0),
   m_transmissionMode (0),
   m_layersNum (1)
 {
@@ -157,7 +156,6 @@ void LteSpectrumPhy::DoDispose ()
   m_ltePhyDlHarqFeedbackCallback = MakeNullCallback< void, DlInfoListElement_s > ();
   m_ltePhyUlHarqFeedbackCallback = MakeNullCallback< void, UlInfoListElement_s > ();
   m_ltePhyRxPssCallback = MakeNullCallback< void, uint16_t, Ptr<SpectrumValue> > ();
-  m_ltePhyRxMibCallback = MakeNullCallback< void, uint16_t, std::list<Ptr<LteControlMessage> > > ();
   SpectrumPhy::DoDispose ();
 } 
 
@@ -366,13 +364,6 @@ LteSpectrumPhy::SetLtePhyRxPssCallback (LtePhyRxPssCallback c)
 }
 
 void
-LteSpectrumPhy::SetLtePhyRxMibCallback (LtePhyRxMibCallback c)
-{
-  NS_LOG_FUNCTION (this);
-  m_ltePhyRxMibCallback = c;
-}
-
-void
 LteSpectrumPhy::SetLtePhyDlHarqFeedbackCallback (LtePhyDlHarqFeedbackCallback c)
 {
   NS_LOG_FUNCTION (this);
@@ -481,15 +472,13 @@ LteSpectrumPhy::StartTxDataFrame (Ptr<PacketBurst> pb, std::list<Ptr<LteControlM
 }
 
 bool
-LteSpectrumPhy::StartTxDlCtrlFrame (std::list<Ptr<LteControlMessage> > ctrlMsgList,
-                                    bool pss, bool mib, bool sib1)
+LteSpectrumPhy::StartTxDlCtrlFrame (std::list<Ptr<LteControlMessage> > ctrlMsgList, bool pss)
 {
-  NS_LOG_FUNCTION (this << " PSS " << (uint16_t) pss
-                        << " MIB " << (uint16_t) mib
-                        << " SIB1 " << (uint16_t) sib1);
+  NS_LOG_FUNCTION (this << " PSS " << (uint16_t)pss);
   NS_LOG_LOGIC (this << " state: " << m_state);
-
-  // m_phyTxStartTrace (pb);
+  
+  
+//   m_phyTxStartTrace (pb);
   
   switch (m_state)
   {
@@ -525,8 +514,6 @@ LteSpectrumPhy::StartTxDlCtrlFrame (std::list<Ptr<LteControlMessage> > ctrlMsgLi
       txParams->psd = m_txPsd;
       txParams->cellId = m_cellId;
       txParams->pss = pss;
-      txParams->mib = mib;
-      txParams->sib1 = sib1;
       txParams->ctrlMsgList = ctrlMsgList;
       m_channel->StartTx (txParams);
       m_endTxEvent = Simulator::Schedule (DL_CTRL_DURATION, &LteSpectrumPhy::EndTx, this);
@@ -745,7 +732,7 @@ LteSpectrumPhy::StartRxCtrl (Ptr<SpectrumSignalParameters> params)
       NS_FATAL_ERROR ("cannot RX while TX: according to FDD channel access, the physical layer for transmission cannot be used for reception");
       break;
     case RX_DATA:
-      NS_FATAL_ERROR ("cannot RX control while receiving data");
+      NS_FATAL_ERROR ("cannot RX data while receing control");
       break;
     case IDLE:
     case RX_CTRL:
@@ -770,8 +757,19 @@ LteSpectrumPhy::StartRxCtrl (Ptr<SpectrumSignalParameters> params)
             cellId = lteUlSrsRxParams->cellId;
             dl = false;
           }
-
-        if (cellId == m_cellId)
+        if (dl)
+            {
+              // check presence of PSS for UE measuerements
+              if (lteDlCtrlRxParams->pss == true)
+                {
+                  SpectrumValue pssPsd = *params->psd;
+                  if (!m_ltePhyRxPssCallback.IsNull ())
+                    {
+                      m_ltePhyRxPssCallback (cellId, params->psd);
+                    }
+                }
+            }
+        if (cellId  == m_cellId)
         {
           NS_LOG_LOGIC (this << " synchronized with this signal (cellId=" << cellId << ")");
           if (m_state == IDLE)
@@ -799,67 +797,27 @@ LteSpectrumPhy::StartRxCtrl (Ptr<SpectrumSignalParameters> params)
             // should occur at the same time and have the same
             // duration, otherwise the interference calculation
             // won't be correct
-            NS_ASSERT ((m_firstRxStart == Simulator::Now ())
+            NS_ASSERT ((m_firstRxStart == Simulator::Now ()) 
             && (m_firstRxDuration == params->duration));
           }
-
+          
           ChangeState (RX_CTRL);
           m_interferenceCtrl->StartRx (params->psd);
-
-          // NS_LOG_LOGIC (this << " numSimultaneousRxEvents = " << m_rxPacketBurstList.size ());
-
-        } // end of if (m_state == IDLE)
+          
+//           NS_LOG_LOGIC (this << " numSimultaneousRxEvents = " << m_rxPacketBurstList.size ());
+        }
         else
         {
-          NS_LOG_LOGIC (this << " not in sync with this signal (cellId="
-          << cellId  << ", m_cellId=" << m_cellId << ")");
+          NS_LOG_LOGIC (this << " not in sync with this signal (cellId=" 
+          << cellId  << ", m_cellId=" << m_cellId << ")");          
         }
-
-        if (dl)
-          {
-            // check the presence of PSS for UE measurements
-            if (lteDlCtrlRxParams->pss == true)
-              {
-                SpectrumValue pssPsd = *params->psd;
-                if (!m_ltePhyRxPssCallback.IsNull ())
-                  {
-                    m_ltePhyRxPssCallback (cellId, params->psd);
-                  }
-              }
-
-            // check the presence of MIB
-            if ((lteDlCtrlRxParams->mib == true)
-              && !m_ltePhyRxMibCallback.IsNull ()
-              && ((m_cellId == cellId) || (m_cellId == 0)))
-              {
-                /*
-                 * i.e. if UE is attached, then only consider MIB which comes
-                 * from the serving cell. Else if UE is NOT attached, then
-                 * MIB from any cell is considered.
-                 */
-                Simulator::Schedule (params->duration,
-                                     &LteSpectrumPhy::m_ltePhyRxMibCallback,
-                                     this, cellId,
-                                     lteDlCtrlRxParams->ctrlMsgList);
-                /*
-                 * The upper layer will enforce a bandwidth change upon
-                 * receiving MIB, which will disturb the currently running RX
-                 * and interference calculation. That's why the above callback
-                 * is scheduled here, so that it will run after EndRxDlCtrl.
-                 */
-              }
-
-          } // end of if (dl)
-
-      } // end of case IDLE or RX_CTRL
-
+      }
       break;
       
-    default:
-      NS_FATAL_ERROR ("unknown state");
-      break;
-
-  } // end of switch (m_state)
+      default:
+        NS_FATAL_ERROR ("unknown state");
+        break;
+  }
   
   NS_LOG_LOGIC (this << " state: " << m_state);
 }

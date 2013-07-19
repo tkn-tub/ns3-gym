@@ -179,7 +179,8 @@ public:
   // callbacks for LteSpectrumPhy
   virtual void ReceiveLteControlMessageList (std::list<Ptr<LteControlMessage> >);
   virtual void ReceivePss (uint16_t cellId, Ptr<SpectrumValue> p);
-  virtual void ReceiveMib (uint16_t cellId, std::list<Ptr<LteControlMessage> > ctrlMsgList);
+  
+  
 
 
 

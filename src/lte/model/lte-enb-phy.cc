@@ -509,6 +509,12 @@ LteEnbPhy::StartFrame (void)
   NS_LOG_INFO ("-----frame " << m_nrFrames << "-----");
   m_nrSubFrames = 0;
 
+  // send MIB at beginning of every frame
+  m_mib.systemFrameNumber = m_nrSubFrames;
+  Ptr<MibLteControlMessage> mibMsg = Create<MibLteControlMessage> ();
+  mibMsg->SetMib (m_mib);
+  m_controlMessagesQueue.at (0).push_back (mibMsg);
+
   StartSubFrame ();
 }
 
@@ -682,18 +688,8 @@ LteEnbPhy::SendControlChannels (std::list<Ptr<LteControlMessage> > ctrlMsgList)
     {
       pss = true;
     }
-  // send MIB at beginning of every frame
-  bool mib = false;
-  if (m_nrSubFrames == 1)
-    {
-      m_mib.systemFrameNumber = m_nrFrames;
-      Ptr<MibLteControlMessage> mibMsg = Create<MibLteControlMessage> ();
-      mibMsg->SetMib (m_mib);
-      ctrlMsgList.push_back (mibMsg);
-      mib = true;
-    }
-  m_downlinkSpectrumPhy->StartTxDlCtrlFrame (ctrlMsgList, pss, mib, false);
-
+  m_downlinkSpectrumPhy->StartTxDlCtrlFrame (ctrlMsgList, pss);
+  
 }
 
 void
