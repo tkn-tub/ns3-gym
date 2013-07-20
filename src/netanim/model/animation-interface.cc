@@ -219,14 +219,18 @@ void AnimationInterface::TrackIpv4RoutePaths ()
       header.SetDestination (Ipv4Address (trackElement.destination.c_str ()));
       Socket::SocketErrno sockerr;
       Ptr <Ipv4Route> rt = rp->RouteOutput (pkt, header, 0, sockerr);
+      Ipv4RoutePathElements rpElements;
       if (!rt)
         {
           NS_LOG_INFO ("No route to :" << trackElement.destination.c_str ());
+          Ipv4RoutePathElement elem = { trackElement.fromNodeId, "-1" };
+          rpElements.push_back (elem);
+          WriteRoutePath (trackElement.fromNodeId, trackElement.destination, rpElements);
+          continue;
         }
       std::ostringstream oss;
       oss << rt->GetGateway ();
       NS_LOG_INFO ("Node:" << trackElement.fromNodeId << "-->" << rt->GetGateway ()); 
-      Ipv4RoutePathElements rpElements;
       if (rt->GetGateway () == "0.0.0.0")
         {
           Ipv4RoutePathElement elem = { trackElement.fromNodeId, "C" };
