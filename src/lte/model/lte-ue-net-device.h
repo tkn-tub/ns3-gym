@@ -55,18 +55,6 @@ public:
   static TypeId GetTypeId (void);
 
   LteUeNetDevice (void);
-  /**
-   * \brief Create an UE net device
-   * \param node the node to which the device belongs
-   * \param phy the PHY entity
-   * \param mac the MAC entity
-   * \param rrc the RRC entity
-   * \param nas the NAS entity
-   * \param imsi the unique UE identifier
-   * 
-   */
-  LteUeNetDevice (Ptr<Node> node, Ptr<LteUePhy> phy, Ptr<LteUeMac> mac, Ptr<LteUeRrc> rrc, Ptr<EpcUeNas> nas, uint64_t imsi);
-
   virtual ~LteUeNetDevice (void);
   virtual void DoDispose ();
 

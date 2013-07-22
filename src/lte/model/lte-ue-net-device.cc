@@ -57,6 +57,12 @@ TypeId LteUeNetDevice::GetTypeId (void)
     tid =
     TypeId ("ns3::LteUeNetDevice")
     .SetParent<LteNetDevice> ()
+    .AddConstructor<LteUeNetDevice> ()
+    .AddAttribute ("EpcUeNas",
+                   "The NAS associated to this UeNetDevice",
+                   PointerValue (),
+                   MakePointerAccessor (&LteUeNetDevice::m_nas),
+                   MakePointerChecker <EpcUeNas> ())
     .AddAttribute ("LteUeRrc",
                    "The RRC associated to this UeNetDevice",
                    PointerValue (),
@@ -74,8 +80,7 @@ TypeId LteUeNetDevice::GetTypeId (void)
                    MakePointerChecker <LteUePhy> ())
     .AddAttribute ("Imsi",
                    "International Mobile Subscriber Identity assigned to this UE",
-                   TypeId::ATTR_GET,
-                   UintegerValue (0), // not used because the attribute is read-only
+                   UintegerValue (0),
                    MakeUintegerAccessor (&LteUeNetDevice::m_imsi),
                    MakeUintegerChecker<uint64_t> ())
     .AddAttribute ("DlEarfcn",
@@ -94,19 +99,6 @@ TypeId LteUeNetDevice::GetTypeId (void)
 LteUeNetDevice::LteUeNetDevice (void)
 {
   NS_LOG_FUNCTION (this);
-  NS_FATAL_ERROR ("This constructor should not be called");
-}
-
-
-LteUeNetDevice::LteUeNetDevice (Ptr<Node> node, Ptr<LteUePhy> phy, Ptr<LteUeMac> mac, Ptr<LteUeRrc> rrc, Ptr<EpcUeNas> nas, uint64_t imsi)
-{
-  NS_LOG_FUNCTION (this);
-  m_phy = phy;
-  m_mac = mac;
-  m_rrc = rrc;
-  m_nas = nas;
-  SetNode (node);
-  m_imsi = imsi;
 }
 
 LteUeNetDevice::~LteUeNetDevice (void)
@@ -136,7 +128,8 @@ LteUeNetDevice::UpdateConfig (void)
   NS_LOG_FUNCTION (this);
   m_nas->SetImsi (m_imsi);
   m_rrc->SetImsi (m_imsi);
-
+  m_rrc->SetDlEarfcn (m_dlEarfcn);
+  m_phy->SetDlEarfcn (m_dlEarfcn);
 }
 
 
@@ -187,8 +180,6 @@ LteUeNetDevice::GetDlEarfcn () const
 void
 LteUeNetDevice::SetDlEarfcn (uint16_t earfcn)
 {
-  m_rrc->SetDlEarfcn (earfcn);
-  m_phy->SetDlEarfcn (earfcn);
   m_dlEarfcn = earfcn;
 }
 

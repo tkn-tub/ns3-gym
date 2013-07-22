@@ -70,6 +70,7 @@ LteHelper::LteHelper (void)
   NS_LOG_FUNCTION (this);
   m_enbNetDeviceFactory.SetTypeId (LteEnbNetDevice::GetTypeId ());
   m_enbAntennaModelFactory.SetTypeId (IsotropicAntennaModel::GetTypeId ());
+  m_ueNetDeviceFactory.SetTypeId (LteUeNetDevice::GetTypeId ());
   m_ueAntennaModelFactory.SetTypeId (IsotropicAntennaModel::GetTypeId ());
   m_channelFactory.SetTypeId (MultiModelSpectrumChannel::GetTypeId ());
 }
@@ -240,6 +241,13 @@ LteHelper::SetEnbAntennaModelAttribute (std::string n, const AttributeValue &v)
 {
   NS_LOG_FUNCTION (this);
   m_enbAntennaModelFactory.Set (n, v);
+}
+
+void
+LteHelper::SetUeDeviceAttribute (std::string n, const AttributeValue &v)
+{
+  NS_LOG_FUNCTION (this);
+  m_ueNetDeviceFactory.Set (n, v);
 }
 
 void 
@@ -484,7 +492,7 @@ LteHelper::InstallSingleUeDevice (Ptr<Node> n)
 
   Ptr<LteInterferencePowerChunkProcessor> pInterf = Create<LteInterferencePowerChunkProcessor> (phy);
   dlPhy->AddInterferenceCtrlChunkProcessor (pInterf); // for RSRQ evaluation of UE Measurements
-  
+
   Ptr<LteCtrlSinrChunkProcessor> pCtrl = Create<LteCtrlSinrChunkProcessor> (phy->GetObject<LtePhy> (), dlPhy);
   dlPhy->AddCtrlSinrChunkProcessor (pCtrl);
 
@@ -508,20 +516,20 @@ LteHelper::InstallSingleUeDevice (Ptr<Node> n)
   Ptr<LteUeRrc> rrc = CreateObject<LteUeRrc> ();
 
   if (m_useIdealRrc)
-    {      
-      Ptr<LteUeRrcProtocolIdeal> rrcProtocol = CreateObject<LteUeRrcProtocolIdeal> ();      
+    {
+      Ptr<LteUeRrcProtocolIdeal> rrcProtocol = CreateObject<LteUeRrcProtocolIdeal> ();
       rrcProtocol->SetUeRrc (rrc);
       rrc->AggregateObject (rrcProtocol);
       rrcProtocol->SetLteUeRrcSapProvider (rrc->GetLteUeRrcSapProvider ());
-      rrc->SetLteUeRrcSapUser (rrcProtocol->GetLteUeRrcSapUser ());      
+      rrc->SetLteUeRrcSapUser (rrcProtocol->GetLteUeRrcSapUser ());
     }
   else
     {
-      Ptr<LteUeRrcProtocolReal> rrcProtocol = CreateObject<LteUeRrcProtocolReal> ();      
+      Ptr<LteUeRrcProtocolReal> rrcProtocol = CreateObject<LteUeRrcProtocolReal> ();
       rrcProtocol->SetUeRrc (rrc);
       rrc->AggregateObject (rrcProtocol);
       rrcProtocol->SetLteUeRrcSapProvider (rrc->GetLteUeRrcSapProvider ());
-      rrc->SetLteUeRrcSapUser (rrcProtocol->GetLteUeRrcSapUser ());      
+      rrc->SetLteUeRrcSapUser (rrcProtocol->GetLteUeRrcSapUser ());
     }
 
   if (m_epcHelper != 0)
@@ -543,9 +551,17 @@ LteHelper::InstallSingleUeDevice (Ptr<Node> n)
   phy->SetLteUeCphySapUser (rrc->GetLteUeCphySapUser ());
   rrc->SetLteUeCphySapProvider (phy->GetLteUeCphySapProvider ());
 
-  NS_ABORT_MSG_IF (m_imsiCounter >= 0xFFFFFFFF, "max num UEs exceeded");  
+  NS_ABORT_MSG_IF (m_imsiCounter >= 0xFFFFFFFF, "max num UEs exceeded");
   uint64_t imsi = ++m_imsiCounter;
-  Ptr<LteUeNetDevice> dev = CreateObject<LteUeNetDevice> (n, phy, mac, rrc, nas, imsi);
+
+  Ptr<LteUeNetDevice> dev = m_ueNetDeviceFactory.Create<LteUeNetDevice> ();
+  dev->SetNode (n);
+  dev->SetAttribute ("Imsi", UintegerValue (imsi));
+  dev->SetAttribute ("LteUePhy", PointerValue (phy));
+  dev->SetAttribute ("LteUeMac", PointerValue (mac));
+  dev->SetAttribute ("LteUeRrc", PointerValue (rrc));
+  dev->SetAttribute ("EpcUeNas", PointerValue (nas));
+
   phy->SetDevice (dev);
   dlPhy->SetDevice (dev);
   ulPhy->SetDevice (dev);

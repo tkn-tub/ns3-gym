@@ -128,6 +128,14 @@ public:
    */
   void SetEnbAntennaModelAttribute (std::string n, const AttributeValue &v);
 
+  /**
+   * set an attribute for the LteUeNetDevice to be created
+   *
+   * \param n the name of the attribute
+   * \param v the value of the attribute
+   */
+  void SetUeDeviceAttribute (std::string n, const AttributeValue &v);
+
   /** 
    * 
    * \param type the type of AntennaModel to be used for the UEs
@@ -453,6 +461,7 @@ private:
   ObjectFactory m_propagationModelFactory;
   ObjectFactory m_enbNetDeviceFactory;
   ObjectFactory m_enbAntennaModelFactory;
+  ObjectFactory m_ueNetDeviceFactory;
   ObjectFactory m_ueAntennaModelFactory;
 
   ObjectFactory m_dlPathlossModelFactory;

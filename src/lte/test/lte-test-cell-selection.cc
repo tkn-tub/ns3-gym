@@ -54,8 +54,8 @@ namespace ns3 {
 LteCellSelectionTestSuite::LteCellSelectionTestSuite ()
   : TestSuite ("lte-cell-selection", SYSTEM)
 {
-  LogComponentEnableAll (LOG_PREFIX_ALL);
-  LogComponentEnable ("LteCellSelectionTest", LOG_FUNCTION);
+  //LogComponentEnableAll (LOG_PREFIX_ALL);
+  //LogComponentEnable ("LteCellSelectionTest", LOG_FUNCTION);
   //LogComponentEnable ("LteUePhy", LOG_INFO);
   //LogComponentEnable ("LteUePhy", LOG_WARN);
   //LogComponentEnable ("LteUePhy", LOG_DEBUG);
@@ -118,7 +118,7 @@ LteCellSelectionTestCase::LteCellSelectionTestCase (
   std::string name, bool isEpcMode, std::vector<UeSetup_t> ueSetupList,
   Time duration)
   : TestCase (name), m_isEpcMode (isEpcMode), m_ueSetupList (ueSetupList),
-    m_duration (duration)
+    m_duration (duration), m_lastState (LteUeRrc::NUM_STATES)
 {
   NS_LOG_FUNCTION (this << GetName ());
 }
