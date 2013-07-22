@@ -328,9 +328,6 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
   Ptr<LteSpectrumPhy> dlPhy = CreateObject<LteSpectrumPhy> ();
   Ptr<LteSpectrumPhy> ulPhy = CreateObject<LteSpectrumPhy> ();
 
-  dlPhy->SetChannel (m_downlinkChannel);
-  ulPhy->SetChannel (m_uplinkChannel);
-
   Ptr<LteEnbPhy> phy = CreateObject<LteEnbPhy> (dlPhy, ulPhy);
 
   Ptr<LteHarqPhy> harq = Create<LteHarqPhy> ();
@@ -346,6 +343,9 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
 
   Ptr<LteInterferencePowerChunkProcessor> pInterf = Create<LteInterferencePowerChunkProcessor> (phy);
   ulPhy->AddInterferenceDataChunkProcessor (pInterf); // for interference power tracing
+
+  dlPhy->SetChannel (m_downlinkChannel);
+  ulPhy->SetChannel (m_uplinkChannel);
 
   Ptr<MobilityModel> mm = n->GetObject<MobilityModel> ();
   NS_ASSERT_MSG (mm, "MobilityModel needs to be set on node before calling LteHelper::InstallUeDevice ()");
@@ -472,9 +472,6 @@ LteHelper::InstallSingleUeDevice (Ptr<Node> n)
   Ptr<LteSpectrumPhy> dlPhy = CreateObject<LteSpectrumPhy> ();
   Ptr<LteSpectrumPhy> ulPhy = CreateObject<LteSpectrumPhy> ();
 
-  dlPhy->SetChannel (m_downlinkChannel);
-  ulPhy->SetChannel (m_uplinkChannel);
-
   Ptr<LteUePhy> phy = CreateObject<LteUePhy> (dlPhy, ulPhy);
 
   Ptr<LteHarqPhy> harq = Create<LteHarqPhy> ();
@@ -493,6 +490,9 @@ LteHelper::InstallSingleUeDevice (Ptr<Node> n)
 
   Ptr<LteDataSinrChunkProcessor> pData = Create<LteDataSinrChunkProcessor> (dlPhy);
   dlPhy->AddDataSinrChunkProcessor (pData);
+
+  dlPhy->SetChannel (m_downlinkChannel);
+  ulPhy->SetChannel (m_uplinkChannel);
 
   Ptr<MobilityModel> mm = n->GetObject<MobilityModel> ();
   NS_ASSERT_MSG (mm, "MobilityModel needs to be set on node before calling LteHelper::InstallUeDevice ()");
