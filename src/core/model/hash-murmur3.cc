@@ -44,6 +44,9 @@ namespace Function {
 
 namespace Murmur3Implementation {
 
+// Changes from Murmur3 distribution are marked with `//PDB'
+//
+
 /*************************************************
  **  class Murmur3HashImplementation
  ************************************************/
@@ -177,7 +180,8 @@ void MurmurHash3_x86_32_incr ( const void * key, int len,
           k1 *= c1; k1 = rotl32(k1,15); k1 *= c2; h1 ^= k1;
   };
 
-  *(uint32_t*)out = h1;
+  uint32_t * res = (uint32_t *)out;  //PDB: strict aliasing
+  *res = h1;
 }
 
 //PDB - incremental hashing - finalization
@@ -193,7 +197,8 @@ void MurmurHash3_x86_32_fin ( int len,
 
   h1 = fmix(h1);
 
-  *(uint32_t*)out = h1;
+  uint32_t * res = (uint32_t *)out;  //PDB: strict aliasing
+  *res = h1;
 } 
 
 //-----------------------------------------------------------------------------
@@ -296,10 +301,11 @@ void MurmurHash3_x86_128_incr ( const void * key, const int len,
            k1 *= c1; k1  = rotl32(k1,15); k1 *= c2; h1 ^= k1;
   };
 
-  ((uint32_t*)out)[0] = h1;
-  ((uint32_t*)out)[1] = h2;
-  ((uint32_t*)out)[2] = h3;
-  ((uint32_t*)out)[3] = h4;
+  uint32_t * res = (uint32_t *)out;  //PDB: strict aliasing
+  res[0] = h1;
+  res[1] = h2;
+  res[2] = h3;
+  res[3] = h4;
 }
 
 //PDB - incremental hashing - finalization
@@ -327,10 +333,11 @@ void MurmurHash3_x86_128_fin ( const int len,
   h1 += h2; h1 += h3; h1 += h4;
   h2 += h1; h3 += h1; h4 += h1;
 
-  ((uint32_t*)out)[0] = h1;
-  ((uint32_t*)out)[1] = h2;
-  ((uint32_t*)out)[2] = h3;
-  ((uint32_t*)out)[3] = h4;
+  uint32_t * res = (uint32_t *)out;  //PDB: strict aliasing
+  res[0] = h1;
+  res[1] = h2;
+  res[2] = h3;
+  res[3] = h4;
 }
 
 //-----------------------------------------------------------------------------
@@ -410,8 +417,9 @@ void MurmurHash3_x64_128 ( const void * key, const int len,
   h1 += h2;
   h2 += h1;
 
-  ((uint64_t*)out)[0] = h1;
-  ((uint64_t*)out)[1] = h2;
+  uint32_t * res = (uint32_t *)out;  //PDB: strict aliasing
+  res[0] = h1;
+  res[1] = h2;
 }
 
 
@@ -419,13 +427,14 @@ void MurmurHash3_x64_128 ( const void * key, const int len,
 
 #undef BIG_CONSTANT
 
+  
 //-----------------------------------------------------------------------------
 
 
 }  // namespace Murmur3Implementation
 
 
-Murmur3::  Murmur3 ()
+Murmur3::Murmur3 ()
 {
   clear ();
 }
