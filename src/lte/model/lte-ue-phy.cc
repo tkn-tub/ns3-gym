@@ -109,8 +109,7 @@ UeMemberLteUePhySapProvider::SendRachPreamble (uint32_t prachId, uint32_t raRnti
 const char* g_uePhyStateName[LteUePhy::NUM_STATES] =
 {
   "CELL_SEARCH",
-  "DECODING_BCH",
-  "ATTACHED"
+  "SYNCHRONIZED"
 };
 
 std::string ToString (LteUePhy::State s)
@@ -130,7 +129,7 @@ LteUePhy::LteUePhy ()
 
 LteUePhy::LteUePhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy)
   : LtePhy (dlPhy, ulPhy),
-    m_p10CqiPeriocity (MilliSeconds (1)),  // ideal behavior  
+    m_p10CqiPeriocity (MilliSeconds (1)),  // ideal behavior
     m_a30CqiPeriocity (MilliSeconds (1)),  // ideal behavior
     m_uePhySapUser (0),
     m_ueCphySapUser (0),
@@ -544,7 +543,7 @@ LteUePhy::GenerateCtrlCqiReport (const SpectrumValue& sinr)
             }
           itPss++;
         }
-        m_pssList.clear ();
+      m_pssList.clear ();
     }
 
 
@@ -562,7 +561,7 @@ LteUePhy::ReportInterference (const SpectrumValue& interf)
 {
   NS_LOG_FUNCTION (this << interf);
   m_rsInterferencePowerUpdated = true;
-  m_rsIntereferencePower = interf; 
+  m_rsIntereferencePower = interf;
 }
 
 void
@@ -570,7 +569,7 @@ LteUePhy::ReportRsReceivedPower (const SpectrumValue& power)
 {
   NS_LOG_FUNCTION (this << power);
   m_rsReceivedPowerUpdated = true;
-  m_rsReceivedPower = power;  
+  m_rsReceivedPower = power;
 }
 
 
@@ -579,7 +578,7 @@ Ptr<DlCqiLteControlMessage>
 LteUePhy::CreateDlCqiFeedbackMessage (const SpectrumValue& sinr)
 {
   NS_LOG_FUNCTION (this);
-  
+
 
   // apply transmission mode gain
   NS_ASSERT (m_transmissionMode < m_txModeGain.size ());
@@ -682,8 +681,6 @@ LteUePhy::ReportUeMeasurements ()
   NS_LOG_DEBUG (this << " Report UE Measurements ");
 
   LteUeCphySapUser::UeMeasurementsParameters ret;
-  double maxRsrp = -std::numeric_limits<double>::infinity ();
-  uint16_t maxRsrpCellId = 0;
 
   std::map <uint16_t, UeMeasurementsElement>::iterator it;
   for (it = m_UeMeasurementsMap.begin (); it != m_UeMeasurementsMap.end (); it++)
@@ -693,25 +690,6 @@ LteUePhy::ReportUeMeasurements ()
       NS_LOG_DEBUG (this << " CellId " << (*it).first
                          << " RSRP " << avg_rsrp << " (nSamples " << (uint16_t)(*it).second.rsrpNum
                          << ") RSRQ " << avg_rsrq << " (nSamples " << (uint16_t)(*it).second.rsrpNum << ")");
-
-      if ((m_state == CELL_SEARCH) && (maxRsrp < avg_rsrp))
-        {
-          std::set<uint16_t>::const_iterator itSib1 = m_cellHasDecodedSib1.find (it->first);
-          if (itSib1 == m_cellHasDecodedSib1.end ())
-            {
-              std::set<uint16_t>::const_iterator itMib = m_cellHasDecodedMib.find (it->first);
-              if (itMib == m_cellHasDecodedMib.end ())
-                {
-                  maxRsrp = avg_rsrp;
-                  maxRsrpCellId = it->first;
-                  /*
-                   * The end result of this nested if block is to find a cell
-                   * with strongest RSRP which MIB and SIB1 have not been
-                   * received yet.
-                   */
-                }
-            }
-        }
 
       LteUeCphySapUser::UeMeasurementsElement newEl;
       newEl.m_cellId = (*it).first;
@@ -723,20 +701,8 @@ LteUePhy::ReportUeMeasurements ()
       m_reportUeMeasurements (m_rnti, m_cellId, avg_rsrp, avg_rsrq, ((*it).first == m_cellId ? 1 : 0));
     }
 
-  if (m_state == CELL_SEARCH)
-    {
-      if (maxRsrpCellId == 0)
-        {
-          NS_LOG_WARN (this << " Cell search has detected no surrounding cell");
-        }
-      else
-        {
-          DoSyncronizeWithEnb (maxRsrpCellId, m_dlEarfcn);
-        }
-    }
-
   // report to RRC
-  m_ueCphySapUser-> ReportUeMeasurements (ret);
+  m_ueCphySapUser->ReportUeMeasurements (ret);
 
   m_UeMeasurementsMap.clear ();
   Simulator::Schedule (m_ueMeasurementsFilterPeriod, &LteUePhy::ReportUeMeasurements, this);
@@ -768,7 +734,7 @@ void
 LteUePhy::ReceiveLteControlMessageList (std::list<Ptr<LteControlMessage> > msgList)
 {
   NS_LOG_FUNCTION (this);
-  
+
   std::list<Ptr<LteControlMessage> >::iterator it;
   for (it = msgList.begin (); it != msgList.end(); it++)
   {
@@ -820,7 +786,7 @@ LteUePhy::ReceiveLteControlMessageList (std::list<Ptr<LteControlMessage> > msgLi
     }
     else if (msg->GetMessageType () == LteControlMessage::UL_DCI) 
     {
-      // set the uplink bandwidht according to the UL-CQI
+      // set the uplink bandwidth according to the UL-CQI
       Ptr<UlDciLteControlMessage> msg2 = DynamicCast<UlDciLteControlMessage> (msg);
       UlDciListElement_s dci = msg2->GetDci ();
       if (dci.m_rnti != m_rnti)
@@ -889,23 +855,15 @@ LteUePhy::ReceiveLteControlMessageList (std::list<Ptr<LteControlMessage> > msgLi
       {
         NS_LOG_INFO ("received MIB");
         NS_ASSERT (m_cellId > 0);
-        if (m_state == DECODING_BCH)
-          {
-            m_cellHasDecodedMib.insert (m_cellId);
-          }
         Ptr<MibLteControlMessage> msg2 = DynamicCast<MibLteControlMessage> (msg);
-        m_ueCphySapUser->RecvMasterInformationBlock (msg2->GetMib ());
+        m_ueCphySapUser->RecvMasterInformationBlock (m_cellId, msg2->GetMib ());
       }
     else if (msg->GetMessageType () == LteControlMessage::SIB1)
       {
         NS_LOG_INFO ("received SIB1");
         NS_ASSERT (m_cellId > 0);
-        if (m_state == DECODING_BCH)
-          {
-            m_cellHasDecodedSib1.insert (m_cellId);
-          }
         Ptr<Sib1LteControlMessage> msg2 = DynamicCast<Sib1LteControlMessage> (msg);
-        m_ueCphySapUser->RecvSystemInformationBlockType1 (msg2->GetSib1 ());
+        m_ueCphySapUser->RecvSystemInformationBlockType1 (m_cellId, msg2->GetSib1 ());
       }
     else
     {
@@ -1125,23 +1083,6 @@ LteUePhy::DoReset ()
 } // end of void LteUePhy::DoReset ()
 
 void
-LteUePhy::DoRetryCellSearch ()
-{
-  NS_LOG_FUNCTION (this);
-  DoSetDlBandwidth (6); // configure DL for receiving PSS
-  SwitchToState (CELL_SEARCH);
-}
-
-void
-LteUePhy::DoAttach ()
-{
-  NS_ASSERT_MSG (m_state == DECODING_BCH, "Unable to attach from state " << ToString (m_state));
-  m_cellHasDecodedMib.clear ();
-  m_cellHasDecodedSib1.clear ();
-  SwitchToState (ATTACHED);
-}
-
-void
 LteUePhy::DoSyncronizeWithEnb (uint16_t cellId, uint16_t dlEarfcn)
 {
   NS_LOG_FUNCTION (this << cellId << dlEarfcn);
@@ -1162,7 +1103,7 @@ LteUePhy::DoSyncronizeWithEnb (uint16_t cellId, uint16_t dlEarfcn)
   m_dlConfigured = false;
   m_ulConfigured = false;
 
-  SwitchToState (DECODING_BCH);
+  SwitchToState (SYNCHRONIZED);
 }
 
 void
@@ -1190,7 +1131,7 @@ LteUePhy::DoSetDlBandwidth (uint8_t dlBandwidth)
   
       Ptr<SpectrumValue> noisePsd = LteSpectrumValueHelper::CreateNoisePowerSpectralDensity (m_dlEarfcn, m_dlBandwidth, m_noiseFigure);
       m_downlinkSpectrumPhy->SetNoisePowerSpectralDensity (noisePsd);
-      m_downlinkSpectrumPhy->GetChannel ()->AddRx (m_downlinkSpectrumPhy);  
+      m_downlinkSpectrumPhy->GetChannel ()->AddRx (m_downlinkSpectrumPhy);
     }
   m_dlConfigured = true;
 }

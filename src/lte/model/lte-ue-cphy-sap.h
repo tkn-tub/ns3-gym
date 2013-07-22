@@ -53,24 +53,10 @@ public:
    */
   virtual void Reset () = 0;
 
-  /** 
-   * \brief Tell the PHY to retry the cell search procedure with a different
-   *        cell.
-   */
-  virtual void RetryCellSearch () = 0;
-
-  /**
-   * \brief Tell the PHY to perform normal communication with the cell that it
-   *        is currently synchronized to.
-   *
-   * \sa SyncronizeWithEnb, SetDlBandwidth
-   */
-  virtual void Attach () = 0;
-
   /**
    * \brief Tell the PHY to synchronize with a given eNB for communication
    *        purposes. Initially, the PHY will be configured to listen to 6 RBs
-   *        for BCH.
+   *        of BCH.
    *
    * SetDlBandwidth can be called afterwards to change the bandwidth.
    * 
@@ -78,7 +64,7 @@ public:
    * \param dlEarfcn  the carrier frequency (EARFCN) in downlink
    */
   virtual void SyncronizeWithEnb (uint16_t cellId, uint16_t dlEarfcn) = 0;
-  
+
   /**
    * \param dlBandwidth the DL bandwidth in PRBs
    */
@@ -120,13 +106,13 @@ public:
 class LteUeCphySapUser
 {
 public:
-  
+
   /** 
    * destructor
    */
   virtual ~LteUeCphySapUser ();
 
-  
+
   /**
    * Parameters of the ReportUeMeasurements primitive: RSRP [dBm] and RSRQ [dB]
    * See section 5.1.1 and 5.1.3 of TS 36.214
@@ -147,17 +133,19 @@ public:
    * 
    * \param mib the Master Information Block received on the BCH
    */
-  virtual void RecvMasterInformationBlock (LteRrcSap::MasterInformationBlock mib) = 0;
+  virtual void RecvMasterInformationBlock (uint16_t cellId,
+                                           LteRrcSap::MasterInformationBlock mib) = 0;
 
   /**
    *
    * \param sib1 the System Information Block Type 1 received on the BCH
    */
-  virtual void RecvSystemInformationBlockType1 (LteRrcSap::SystemInformationBlockType1 sib1) = 0;
+  virtual void RecvSystemInformationBlockType1 (uint16_t cellId,
+                                                LteRrcSap::SystemInformationBlockType1 sib1) = 0;
 
   /**
    *
-   * \param params the structure containing the vector of cellId, SRSP and RSRQ
+   * \param params the structure containing the vector of cellId, RSRP and RSRQ
    */
   virtual void ReportUeMeasurements (UeMeasurementsParameters params) = 0;
 };
@@ -178,9 +166,7 @@ public:
 
   // inherited from LteUeCphySapProvider
   virtual void Reset ();
-  virtual void RetryCellSearch ();
-  virtual void Attach ();
-  virtual void SyncronizeWithEnb (uint16_t cellId, uint16_t dlEarfcn);  
+  virtual void SyncronizeWithEnb (uint16_t cellId, uint16_t dlEarfcn);
   virtual void SetDlBandwidth (uint8_t ulBandwidth);
   virtual void ConfigureUplink (uint16_t ulEarfcn, uint8_t ulBandwidth);
   virtual void SetRnti (uint16_t rnti);
@@ -208,20 +194,6 @@ void
 MemberLteUeCphySapProvider<C>::Reset ()
 {
   m_owner->DoReset ();
-}
-
-template <class C>
-void 
-MemberLteUeCphySapProvider<C>::RetryCellSearch ()
-{
-  m_owner->DoRetryCellSearch ();
-}
-
-template <class C>
-void
-MemberLteUeCphySapProvider<C>::Attach ()
-{
-  m_owner->DoAttach ();
 }
 
 template <class C>
@@ -280,8 +252,10 @@ public:
   MemberLteUeCphySapUser (C* owner);
 
   // methods inherited from LteUeCphySapUser go here
-  virtual void RecvMasterInformationBlock (LteRrcSap::MasterInformationBlock mib);
-  virtual void RecvSystemInformationBlockType1 (LteRrcSap::SystemInformationBlockType1 sib1);
+  virtual void RecvMasterInformationBlock (uint16_t cellId,
+                                           LteRrcSap::MasterInformationBlock mib);
+  virtual void RecvSystemInformationBlockType1 (uint16_t cellId,
+                                                LteRrcSap::SystemInformationBlockType1 sib1);
   virtual void ReportUeMeasurements (LteUeCphySapUser::UeMeasurementsParameters params);
 
 private:
@@ -302,16 +276,18 @@ MemberLteUeCphySapUser<C>::MemberLteUeCphySapUser ()
 
 template <class C> 
 void 
-MemberLteUeCphySapUser<C>::RecvMasterInformationBlock (LteRrcSap::MasterInformationBlock mib)
+MemberLteUeCphySapUser<C>::RecvMasterInformationBlock (uint16_t cellId,
+                                                       LteRrcSap::MasterInformationBlock mib)
 {
-  m_owner->DoRecvMasterInformationBlock (mib);
+  m_owner->DoRecvMasterInformationBlock (cellId, mib);
 }
 
 template <class C>
 void
-MemberLteUeCphySapUser<C>::RecvSystemInformationBlockType1 (LteRrcSap::SystemInformationBlockType1 sib1)
+MemberLteUeCphySapUser<C>::RecvSystemInformationBlockType1 (uint16_t cellId,
+                                                            LteRrcSap::SystemInformationBlockType1 sib1)
 {
-  m_owner->DoRecvSystemInformationBlockType1 (sib1);
+  m_owner->DoRecvSystemInformationBlockType1 (cellId, sib1);
 }
 
 template <class C>

@@ -60,8 +60,7 @@ public:
   enum State
   {
     CELL_SEARCH = 0,
-    DECODING_BCH,
-    ATTACHED,
+    SYNCHRONIZED,
     NUM_STATES
   };
 
@@ -254,8 +253,6 @@ private:
 
   // UE CPHY SAP methods
   void DoReset ();
-  void DoRetryCellSearch ();
-  void DoAttach ();
   void DoSyncronizeWithEnb (uint16_t cellId, uint16_t dlEarfcn);
   void DoSetDlBandwidth (uint8_t ulBandwidth);
   void DoConfigureUplink (uint16_t ulEarfcn, uint8_t ulBandwidth);
@@ -272,8 +269,8 @@ private:
   std::vector <int> m_subChannelsForReception;
   
   std::vector< std::vector <int> > m_subChannelsForTransmissionQueue;
-  
-  
+
+
   Ptr<LteAmc> m_amc;
 
   Time m_p10CqiPeriocity; /**< Wideband Periodic CQI: 2, 5, 10, 16, 20, 32, 40, 64, 80 or 160 ms */
@@ -337,16 +334,6 @@ private:
   std::map <uint16_t, UeMeasurementsElement> m_UeMeasurementsMap;
   Time m_ueMeasurementsFilterPeriod;
   Time m_ueMeasurementsFilterLast;
-
-  /**
-   * \brief List of cell ID which MIB has been decoded by this UE PHY instance.
-   */
-  std::set<uint16_t> m_cellHasDecodedMib;
-
-  /**
-   * \brief List of cell ID which SIB1 has been decoded by this UE PHY instance.
-   */
-  std::set<uint16_t> m_cellHasDecodedSib1;
 
   Ptr<LteHarqPhy> m_harqPhyModule;
 

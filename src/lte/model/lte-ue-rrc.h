@@ -273,8 +273,10 @@ private:
   void DoDisconnect ();
 
   // CPHY SAP methods
-  void DoRecvMasterInformationBlock (LteRrcSap::MasterInformationBlock msg);
-  void DoRecvSystemInformationBlockType1 (LteRrcSap::SystemInformationBlockType1 msg);
+  void DoRecvMasterInformationBlock (uint16_t cellId,
+                                     LteRrcSap::MasterInformationBlock msg);
+  void DoRecvSystemInformationBlockType1 (uint16_t cellId,
+                                          LteRrcSap::SystemInformationBlockType1 msg);
   void DoReportUeMeasurements (LteUeCphySapUser::UeMeasurementsParameters params);
 
   // RRC SAP methods
@@ -332,8 +334,6 @@ private:
   Ptr<LteSignalingRadioBearerInfo> m_srb1;
   Ptr<LteSignalingRadioBearerInfo> m_srb1Old;
   std::map <uint8_t, Ptr<LteDataRadioBearerInfo> > m_drbMap;
-  
-  uint8_t m_cellSearchRetryTimeout;
 
   bool m_useRlcSm;
 
@@ -345,8 +345,8 @@ private:
   uint16_t m_dlEarfcn;  /**< downlink carrier frequency */
   uint16_t m_ulEarfcn;  /**< uplink carrier frequency */
 
-  //             imsi      cellId    rnti
-  TracedCallback<uint64_t, uint16_t, uint16_t> m_mibReceivedTrace;
+  //             imsi      cellId    rnti,     sourceCellId
+  TracedCallback<uint64_t, uint16_t, uint16_t, uint16_t> m_mibReceivedTrace;
   //             imsi      cellId    rnti,     sourceCellId
   TracedCallback<uint64_t, uint16_t, uint16_t, uint16_t> m_sib1ReceivedTrace;
   //             imsi      cellId    rnti
@@ -371,7 +371,11 @@ private:
   bool m_hasReceivedSib1; /**< true if SIB1 was received for the current cell  */
   bool m_hasReceivedSib2; /**< true if SIB2 was received for the current cell  */
 
+  /// Stored content of the last SIB1 received.
   LteRrcSap::SystemInformationBlockType1 m_lastSib1;
+
+  /// List of cell ID of acceptable cells for cell selection that have been detected.
+  std::set<uint16_t> m_acceptableCell;
 
   /**
    * \brief Includes the accumulated configuration of the measurements to be

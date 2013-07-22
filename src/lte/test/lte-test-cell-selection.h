@@ -86,9 +86,11 @@ private:
   virtual void DoRun ();
 
   void MibReceivedCallback (std::string context, uint64_t imsi,
-                            uint16_t cellId, uint16_t rnti);
+                            uint16_t cellId, uint16_t rnti,
+                            uint16_t sourceCellId);
   void Sib1ReceivedCallback (std::string context, uint64_t imsi,
-                             uint16_t cellId, uint16_t rnti, uint16_t sourceCellId);
+                             uint16_t cellId, uint16_t rnti,
+                             uint16_t sourceCellId);
   void StateTransitionCallback (std::string context, uint64_t imsi,
                                 uint16_t cellId, uint16_t rnti,
                                 LteUeRrc::State oldState, LteUeRrc::State newState);

@@ -295,9 +295,10 @@ LteCellSelectionTestCase::DoRun ()
 
 void
 LteCellSelectionTestCase::MibReceivedCallback (
-  std::string context, uint64_t imsi, uint16_t cellId, uint16_t rnti)
+  std::string context, uint64_t imsi, uint16_t cellId, uint16_t rnti,
+  uint16_t sourceCellId)
 {
-  NS_LOG_FUNCTION (this << context << imsi << cellId << rnti);
+  NS_LOG_FUNCTION (this << context << imsi << cellId << rnti << sourceCellId);
 }
 
 

@@ -187,11 +187,6 @@ LteUeRrc::GetTypeId (void)
                    UintegerValue (0), // unused, read-only attribute
                    MakeUintegerAccessor (&LteUeRrc::GetRnti),
                    MakeUintegerChecker<uint16_t> ())
-    .AddAttribute ("CellSearchRetryTimeout",
-                   "Maximum number of retry attempts during the initial cell selection procedure to find a suitable cell",
-                   UintegerValue (3),
-                   MakeUintegerAccessor (&LteUeRrc::m_cellSearchRetryTimeout),
-                   MakeUintegerChecker<uint16_t> (0))
     .AddTraceSource ("MibReceived",
                      "trace fired upon reception of Master Information Block",
                      MakeTraceSourceAccessor (&LteUeRrc::m_mibReceivedTrace))
@@ -518,7 +513,6 @@ LteUeRrc::DoForceCampedOnEnb (uint16_t cellId, uint16_t earfcn)
   m_cellId = cellId;
   m_dlEarfcn = earfcn;
   m_cphySapProvider->SyncronizeWithEnb (m_cellId, m_dlEarfcn);
-  m_cphySapProvider->Attach ();
   SwitchToState (IDLE_WAIT_SYSTEM_INFO);
 }
 
@@ -561,42 +555,41 @@ LteUeRrc::DoConnect ()
 // CPHY SAP methods
 
 void
-LteUeRrc::DoRecvMasterInformationBlock (LteRrcSap::MasterInformationBlock msg)
+LteUeRrc::DoRecvMasterInformationBlock (uint16_t cellId,
+                                        LteRrcSap::MasterInformationBlock msg)
 { 
   NS_LOG_FUNCTION (this);
   m_dlBandwidth = msg.dlBandwidth;
   m_cphySapProvider->SetDlBandwidth (msg.dlBandwidth);
   m_hasReceivedMib = true;
-  m_mibReceivedTrace (m_imsi, m_cellId, m_rnti);
+  m_mibReceivedTrace (m_imsi, m_cellId, m_rnti, cellId);
 
-  if (m_state == IDLE_CELL_SELECTION && m_hasReceivedMib && m_hasReceivedSib1)
+  if ((m_state == IDLE_CELL_SELECTION) && m_hasReceivedSib1)
     {
       InitialCellSelection ();
     }
 
   // manual attachment procedure may camp without SIB1
-  if (m_state == IDLE_WAIT_SYSTEM_INFO && m_hasReceivedMib && m_hasReceivedSib2)
+  if (m_state == IDLE_WAIT_SYSTEM_INFO && m_hasReceivedSib2)
     {
       SwitchToState (IDLE_CAMPED_NORMALLY);
     }
 }
 
 void
-LteUeRrc::DoRecvSystemInformationBlockType1 (LteRrcSap::SystemInformationBlockType1 msg)
+LteUeRrc::DoRecvSystemInformationBlockType1 (uint16_t cellId,
+                                             LteRrcSap::SystemInformationBlockType1 msg)
 {
   NS_LOG_FUNCTION (this);
+  NS_ASSERT_MSG (cellId == msg.cellAccessRelatedInfo.cellIdentity,
+                 "Cell identity in SIB1 does not match with the originating cell");
   m_hasReceivedSib1 = true;
   m_lastSib1 = msg;
-  m_sib1ReceivedTrace (m_imsi, m_cellId, m_rnti, msg.cellAccessRelatedInfo.cellIdentity);
+  m_sib1ReceivedTrace (m_imsi, m_cellId, m_rnti, cellId);
 
-  if (m_state == IDLE_CELL_SELECTION && m_hasReceivedMib && m_hasReceivedSib1)
+  if (m_state == IDLE_CELL_SELECTION && m_hasReceivedMib)
     {
       InitialCellSelection ();
-    }
-
-  if (m_state == IDLE_WAIT_SYSTEM_INFO && m_hasReceivedMib && m_hasReceivedSib2)
-    {
-      SwitchToState (IDLE_CAMPED_NORMALLY);
     }
 }
 
@@ -605,20 +598,60 @@ LteUeRrc::DoReportUeMeasurements (LteUeCphySapUser::UeMeasurementsParameters par
 {
   NS_LOG_FUNCTION (this);
 
-  std::vector <LteUeCphySapUser::UeMeasurementsElement>::iterator newMeasIt;
-  for (newMeasIt = params.m_ueMeasurementsList.begin ();
-       newMeasIt != params.m_ueMeasurementsList.end (); ++newMeasIt)
+  if (m_state == IDLE_CELL_SELECTION)
     {
-      Layer3Filtering (newMeasIt->m_cellId, newMeasIt->m_rsrp, newMeasIt->m_rsrq);
+      double maxRsrp = -std::numeric_limits<double>::infinity ();
+      uint16_t maxRsrpCellId = 0;
+
+      std::vector <LteUeCphySapUser::UeMeasurementsElement>::iterator newMeasIt;
+      for (newMeasIt = params.m_ueMeasurementsList.begin ();
+           newMeasIt != params.m_ueMeasurementsList.end (); ++newMeasIt)
+        {
+          /*
+           * This block attempts to find a cell with strongest RSRP and has not
+           * yet been identified as "acceptable cell".
+           */
+          if (maxRsrp < newMeasIt->m_rsrp)
+            {
+              std::set<uint16_t>::const_iterator itCell;
+              itCell = m_acceptableCell.find (newMeasIt->m_cellId);
+              if (itCell == m_acceptableCell.end ())
+                {
+                  maxRsrp = newMeasIt->m_rsrp;
+                  maxRsrpCellId = newMeasIt->m_cellId;
+                }
+            }
+        }
+
+      if (maxRsrpCellId == 0)
+        {
+          NS_LOG_WARN (this << " Cell search has detected no surrounding cell");
+        }
+      else
+        {
+          m_cphySapProvider->SyncronizeWithEnb (maxRsrpCellId, m_dlEarfcn);
+        }
+
+    } // end of if (m_state == IDLE_CELL_SELECTION)
+  else
+    {
+      std::vector <LteUeCphySapUser::UeMeasurementsElement>::iterator newMeasIt;
+      for (newMeasIt = params.m_ueMeasurementsList.begin ();
+           newMeasIt != params.m_ueMeasurementsList.end (); ++newMeasIt)
+        {
+          Layer3Filtering (newMeasIt->m_cellId, newMeasIt->m_rsrp,
+                           newMeasIt->m_rsrq);
+        }
+
+      std::map<uint8_t, LteRrcSap::MeasIdToAddMod>::iterator measIdIt;
+      for (measIdIt = m_varMeasConfig.measIdList.begin ();
+           measIdIt != m_varMeasConfig.measIdList.end (); ++measIdIt)
+        {
+          MeasurementReportTriggering (measIdIt->first);
+        }
     }
 
-  std::map<uint8_t, LteRrcSap::MeasIdToAddMod>::iterator measIdIt;
-  for (measIdIt = m_varMeasConfig.measIdList.begin ();
-       measIdIt != m_varMeasConfig.measIdList.end (); ++measIdIt)
-    {
-      MeasurementReportTriggering (measIdIt->first);
-    }
-}
+} // end of LteUeRrc::DoReportUeMeasurements
 
 
 
@@ -705,7 +738,6 @@ LteUeRrc::DoRecvRrcConnectionReconfiguration (LteRrcSap::RrcConnectionReconfigur
           NS_ASSERT (mci.haveCarrierBandwidth);
           m_cphySapProvider->SyncronizeWithEnb (m_cellId, mci.carrierFreq.dlCarrierFreq); 
           m_cphySapProvider->SetDlBandwidth ( mci.carrierBandwidth.dlBandwidth);
-          m_cphySapProvider->Attach ();
           m_cphySapProvider->ConfigureUplink (mci.carrierFreq.ulCarrierFreq, mci.carrierBandwidth.ulBandwidth); 
           m_rnti = msg.mobilityControlInfo.newUeIdentity;
           m_srb0->m_rlc->SetRnti (m_rnti);
@@ -784,7 +816,7 @@ LteUeRrc::DoRecvRrcConnectionReestablishmentReject (LteRrcSap::RrcConnectionRees
         LeaveConnectedMode ();
       }
       break;
-      
+
     default:
       NS_FATAL_ERROR ("method unexpected in state " << ToString (m_state));
       break;
@@ -811,31 +843,40 @@ void
 LteUeRrc::InitialCellSelection ()
 {
   NS_LOG_FUNCTION (this);
+  NS_ASSERT (m_state == IDLE_CELL_SELECTION);
   NS_ASSERT (m_hasReceivedMib);
   NS_ASSERT (m_hasReceivedSib1);
   uint16_t cellId = m_lastSib1.cellAccessRelatedInfo.cellIdentity;
 
-  // TODO evaluate cell selection criteria
-  // TODO if not pass, call m_cphySapProvider->RetryCellSearch
-  // TODO call m_initialCellSelectionEndErrorTrace (m_imsi, cellId);
-  // TODO if retry timeout is exceeded, stop the procedure here (in reality UE will connect to an acceptable cell, but we don't model it here)
+  bool isSuitableCell = true; // TODO evaluate cell selection criteria
 
-  m_cellId = cellId;
-  m_cphySapProvider->SyncronizeWithEnb (cellId, m_dlEarfcn);
-  m_cphySapProvider->SetDlBandwidth (m_dlBandwidth);
-  m_cphySapProvider->Attach ();
-  m_initialCellSelectionEndOkTrace (m_imsi, cellId);
-
-  if (m_hasReceivedSib2)
+  if (isSuitableCell)
     {
-      SwitchToState (IDLE_CAMPED_NORMALLY);
+      m_cellId = cellId;
+      m_cphySapProvider->SyncronizeWithEnb (cellId, m_dlEarfcn);
+      m_cphySapProvider->SetDlBandwidth (m_dlBandwidth);
+      m_initialCellSelectionEndOkTrace (m_imsi, cellId);
+
+      if (m_hasReceivedSib2)
+        {
+          SwitchToState (IDLE_CAMPED_NORMALLY);
+        }
+      else
+        {
+          SwitchToState (IDLE_WAIT_SYSTEM_INFO);
+        }
     }
   else
     {
-      SwitchToState (IDLE_WAIT_SYSTEM_INFO);
+      m_acceptableCell.insert (cellId);
+      m_initialCellSelectionEndErrorTrace (m_imsi, cellId);
+      /*
+       * As long as RRC state stays at IDLE_CELL_SELECTION, the cell selection
+       * process will repeat again after another call to DoReportUeMeasurements.
+       */
     }
 
-}
+} // end of void LteUeRrc::InitialCellSelection ()
 
 
 void 
