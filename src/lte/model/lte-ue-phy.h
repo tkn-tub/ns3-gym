@@ -177,6 +177,15 @@ public:
 
 
   /**
+   * \brief Listen to PSS from surrounding cells and measure the RSRP.
+   *
+   * This function will instruct this PHY instance to listen to the DL channel
+   * over the bandwidth of 6 RB. After this, it will start to receive Primary
+   * Synchronization Signal (PSS).
+   */
+  void CellSearch ();
+
+  /**
   * \brief Create the DL CQI feedback from SINR values perceived at
   * the physical layer with the signal received from eNB
   * \param sinr SINR values vector
@@ -216,7 +225,7 @@ public:
    * \brief Send the SRS signal in the last symbols of the frame
    */
   void SendSrs ();
-  
+
   /**
    * \brief PhySpectrum generated a new DL HARQ feedback
    */

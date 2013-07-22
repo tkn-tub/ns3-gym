@@ -120,6 +120,15 @@ EpcUeNas::SetForwardUpCallback (Callback <void, Ptr<Packet> > cb)
 }
 
 void 
+EpcUeNas::Connect ()
+{
+  NS_LOG_FUNCTION (this);
+
+  // tell RRC to go into connected mode
+  m_asSapProvider->Connect ();
+}
+
+void
 EpcUeNas::Connect (uint16_t cellId, uint16_t earfcn)
 {
   NS_LOG_FUNCTION (this);
@@ -165,7 +174,7 @@ bool
 EpcUeNas::Send (Ptr<Packet> packet)
 {
   NS_LOG_FUNCTION (this << packet);
-  
+
   switch (m_state)
     {
     case ACTIVE:
@@ -181,15 +190,15 @@ EpcUeNas::Send (Ptr<Packet> packet)
           {
             m_asSapProvider->SendData (packet, bid); 
             return true;
-        }
+          }
       }
       break;
 
-    default:      
+    default:
       NS_LOG_WARN (this << " NAS OFF, discarding packet");
       return false;
       break;
-    }        
+    }
 }
 
 void 

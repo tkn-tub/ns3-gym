@@ -570,6 +570,30 @@ LteHelper::InstallSingleUeDevice (Ptr<Node> n)
 
 
 void
+LteHelper::Attach (NetDeviceContainer ueDevices)
+{
+  NS_LOG_FUNCTION (this);
+  for (NetDeviceContainer::Iterator i = ueDevices.Begin (); i != ueDevices.End (); ++i)
+    {
+      Attach (*i);
+    }
+}
+
+void
+LteHelper::Attach (Ptr<NetDevice> ueDevice)
+{
+  NS_LOG_FUNCTION (this);
+
+  Ptr<LteUeNetDevice> ueLteDevice = ueDevice->GetObject<LteUeNetDevice> ();
+  if (ueLteDevice == 0)
+    {
+      NS_FATAL_ERROR ("The passed NetDevice must be an LteUeNetDevice");
+    }
+  Ptr<LteUePhy> uePhy = ueLteDevice->GetPhy ();
+  uePhy->CellSearch ();
+}
+
+void
 LteHelper::Attach (NetDeviceContainer ueDevices, Ptr<NetDevice> enbDevice)
 {
   NS_LOG_FUNCTION (this);
@@ -596,7 +620,7 @@ LteHelper::Attach (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice)
       // activate default EPS bearer
       m_epcHelper->ActivateEpsBearer (ueDevice, ueLteDevice->GetImsi (), EpcTft::Default (), EpsBearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT));
     }
-  
+
   // tricks needed for the simplified LTE-only simulations 
   if (m_epcHelper == 0)
     {
@@ -634,6 +658,43 @@ LteHelper::AttachToClosestEnb (Ptr<NetDevice> ueDevice, NetDeviceContainer enbDe
     }
   NS_ASSERT (closestEnbDevice != 0);
   Attach (ueDevice, closestEnbDevice);
+}
+
+void
+LteHelper::Connect (NetDeviceContainer ueDevices)
+{
+  NS_LOG_FUNCTION (this);
+  for (NetDeviceContainer::Iterator i = ueDevices.Begin (); i != ueDevices.End (); ++i)
+    {
+      Connect (*i);
+    }
+}
+
+void
+LteHelper::Connect (Ptr<NetDevice> ueDevice)
+{
+  NS_LOG_FUNCTION (this);
+
+  Ptr<LteUeNetDevice> ueLteDevice = ueDevice->GetObject<LteUeNetDevice> ();
+  if (ueLteDevice == 0)
+    {
+      NS_FATAL_ERROR ("The passed NetDevice must be an LteUeNetDevice");
+    }
+
+  Ptr<EpcUeNas> ueNas = ueLteDevice->GetNas ();
+  NS_ASSERT (ueNas != 0);
+  ueNas->Connect ();
+
+  if (m_epcHelper == 0)
+    {
+      // TODO activate bearer for without-EPC simulation
+    }
+  else
+    {
+      // activate default EPS bearer
+      m_epcHelper->ActivateEpsBearer (ueDevice, ueLteDevice->GetImsi (), EpcTft::Default (),
+                                      EpsBearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT));
+    }
 }
 
 void

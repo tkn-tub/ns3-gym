@@ -71,25 +71,25 @@ LteCellSelectionTestSuite::LteCellSelectionTestSuite ()
   x.clear ();                                    // position x   y  z,  plmn csg expectedCellId
   x.push_back (LteCellSelectionTestCase::UeSetup_t (Vector (80, 10, 0), 0,   0,  1));
   AddTestCase (new LteCellSelectionTestCase ("[EPC] In front of cell 1",
-                                             true, x, MilliSeconds (206)),
+                                             true, x, MilliSeconds (261)),
                TestCase::QUICK);
 
   x.clear ();                                    // position  x   y  z,  plmn csg expectedCellId
   x.push_back (LteCellSelectionTestCase::UeSetup_t (Vector (-80, 20, 0), 0,   0,  2));
   AddTestCase (new LteCellSelectionTestCase ("[EPC] In front of cell 2",
-                                             true, x, MilliSeconds (206)),
+                                             true, x, MilliSeconds (261)),
                TestCase::QUICK);
 
   x.clear ();                                    // position  x   y  z,  plmn csg expectedCellId
   x.push_back (LteCellSelectionTestCase::UeSetup_t (Vector (-80, 10, 0), 0,   0,  2));
   AddTestCase (new LteCellSelectionTestCase ("[EPC] Behind cell 1",
-                                             true, x, MilliSeconds (206)),
+                                             true, x, MilliSeconds (261)),
                TestCase::QUICK);
 
   x.clear ();                                    // position x   y  z,  plmn csg expectedCellId
   x.push_back (LteCellSelectionTestCase::UeSetup_t (Vector (80, 20, 0), 0,   0,  1));
   AddTestCase (new LteCellSelectionTestCase ("[EPC] Behind cell 2",
-                                             true, x, MilliSeconds (206)),
+                                             true, x, MilliSeconds (261)),
                TestCase::QUICK);
 
 } // end of LteCellSelectionTestSuite::LteCellSelectionTestSuite ()
@@ -244,7 +244,8 @@ LteCellSelectionTestCase::DoRun ()
           ueStaticRouting->SetDefaultRoute (epcHelper->GetUeDefaultGatewayAddress (), 1);
         }
 
-      // TODO call LteHelper::Attach (ueDevs)
+      lteHelper->Attach (ueDevs);
+      lteHelper->Connect (ueDevs);
 
     } // end of if (m_isEpcMode)
   else
@@ -285,8 +286,10 @@ LteCellSelectionTestCase::DoRun ()
       uint16_t actualCellId = ueDev->GetRrc ()->GetCellId ();
       uint16_t expectedCellId = itSetup->expectedCellId;
       NS_TEST_ASSERT_MSG_EQ (actualCellId, expectedCellId,
-                             "UE has attached to an unexpected cell (or not attached at all)");
+                             "UE has attached to an unexpected cell");
     }
+
+  NS_TEST_ASSERT_MSG_EQ (m_lastState, 5, "UE is not at CONNECTED_NORMALLY state");
 
   Simulator::Destroy ();
 
@@ -321,6 +324,7 @@ LteCellSelectionTestCase::StateTransitionCallback (std::string context,
 {
   NS_LOG_FUNCTION (this << context << imsi << cellId << rnti
                         << oldState << newState);
+  m_lastState = newState;
 }
 
 

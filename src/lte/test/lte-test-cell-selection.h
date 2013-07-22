@@ -112,12 +112,17 @@ private:
   /**
    * \brief The length of the simulation.
    *
-   * Typical simulation length is 206 milliseconds, which is the minimum time
-   * required for initial cell selection in default settings. Scenarios which
-   * expect failure in initial cell selection procedure might want to extend
-   * this to give the UE the chance to retry the procedure.
+   * The shortest possible simulation length for testing initial cell selection
+   * is 206 milliseconds. If RRC_CONNECTED state is required, then the length
+   * should be extended to 261 milliseconds in ideal RRC protocol, or at least
+   * 277 milliseconds in real RRC protocol. Moreover, scenarios which expect
+   * failure in initial cell selection procedure might want to extend this even
+   * further to give the UE the chance to retry the procedure.
    */
   Time m_duration;
+
+  /// The current UE RRC state.
+  LteUeRrc::State m_lastState;
 
 }; // end of class LteCellSelectionTestCase
 

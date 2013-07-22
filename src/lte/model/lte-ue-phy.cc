@@ -279,8 +279,6 @@ LteUePhy::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
   LtePhy::DoInitialize ();
-  DoSetDlBandwidth (6); // configure DL for receiving PSS
-  SwitchToState (CELL_SEARCH);
 }
 
 void
@@ -671,6 +669,14 @@ LteUePhy::CreateDlCqiFeedbackMessage (const SpectrumValue& sinr)
 
   msg->SetDlCqi (dlcqi);
   return msg;
+}
+
+
+void
+LteUePhy::CellSearch ()
+{
+  DoSetDlBandwidth (6); // configure DL for receiving PSS
+  SwitchToState (CELL_SEARCH);
 }
 
 
@@ -1128,7 +1134,7 @@ LteUePhy::DoSetDlBandwidth (uint8_t dlBandwidth)
               break;
             }
         }
-  
+
       Ptr<SpectrumValue> noisePsd = LteSpectrumValueHelper::CreateNoisePowerSpectralDensity (m_dlEarfcn, m_dlBandwidth, m_noiseFigure);
       m_downlinkSpectrumPhy->SetNoisePowerSpectralDensity (noisePsd);
       m_downlinkSpectrumPhy->GetChannel ()->AddRx (m_downlinkSpectrumPhy);

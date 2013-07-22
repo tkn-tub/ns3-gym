@@ -174,6 +174,24 @@ public:
   NetDeviceContainer InstallUeDevice (NodeContainer c);
 
   /**
+   * \brief Instruct a set of UE devices to attach to a suitable cell.
+   * \param ueDevices
+   *
+   * By calling this, the UE will start the initial cell selection procedure at
+   * the beginning of simulation.
+   */
+  void Attach (NetDeviceContainer ueDevices);
+
+  /**
+   * \brief Instruct a UE device to attach to a suitable cell.
+   * \param ueDevice
+   *
+   * By calling this, the UE will start the initial cell selection procedure at
+   * the beginning of simulation.
+   */
+  void Attach (Ptr<NetDevice> ueDevice);
+
+  /**
    * Attach a set of UE devices to a single eNB device
    *
    * \param ueDevices
@@ -210,6 +228,28 @@ public:
    * \param enbDevices the set of eNBs
    */
   void AttachToClosestEnb (Ptr<NetDevice> ueDevice, NetDeviceContainer enbDevices);
+
+  /**
+   * \brief Instruct a set of UE devices to switch to ACTIVE/CONNECTED state.
+   * \param ueDevices
+   *
+   * If this function is called when the UE is in a situation where performing
+   * a call is not possible (e.g. before the simulation begin), then the UE will
+   * attempt to connect at the earliest possible time (e.g. after it camps to a
+   * suitable cell).
+   */
+  void Connect (NetDeviceContainer ueDevices);
+
+  /**
+   * \brief Instruct a UE device to switch to ACTIVE/CONNECTED state.
+   * \param ueDevice
+   *
+   * If this function is called when the UE is in a situation where performing
+   * a call is not possible (e.g. before the simulation begin), then the UE will
+   * attempt to connect at the earliest possible time (e.g. after it camps to a
+   * suitable cell).
+   */
+  void Connect (Ptr<NetDevice> ueDevice);
 
   /**
    * Activate a dedicated EPS bearer on a given set of UE devices
@@ -317,7 +357,7 @@ public:
    * Enable trace sinks for UL PHY layer
    */
   void EnableUlPhyTraces (void);
-  
+
   /**
    * Enable trace sinks for DL transmission PHY layer
    */
