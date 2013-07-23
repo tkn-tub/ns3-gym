@@ -296,8 +296,8 @@ TypeIdTestSuite::TypeIdTestSuite ()
   // UniqueIdTestCase, the artificial collisions added by
   // CollisionTestCase will show up in the list of TypeIds
   // as chained.
-  AddTestCase (new UniqueTypeIdTestCase);
-  AddTestCase (new CollisionTestCase);
+  AddTestCase (new UniqueTypeIdTestCase, QUICK);
+  AddTestCase (new CollisionTestCase, QUICK);
 }
 
 static TypeIdTestSuite g_TypeIdTestSuite;  
@@ -312,7 +312,7 @@ public:
 TypeIdPerformanceSuite::TypeIdPerformanceSuite ()
   : TestSuite ("type-id-perf", PERFORMANCE)
 {
-  AddTestCase (new LookupTimeTestCase);
+  AddTestCase (new LookupTimeTestCase, QUICK);
 }
 
 static TypeIdPerformanceSuite g_TypeIdPerformanceSuite;  
