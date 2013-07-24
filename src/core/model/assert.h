@@ -28,7 +28,7 @@
 #include "fatal-error.h"
 
 /**
- * \ingroup constructs
+ * \ingroup core
  * \defgroup debugging Debugging
  */
 /**
