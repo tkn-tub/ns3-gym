@@ -219,8 +219,11 @@ LteX2HandoverMeasuresTestCase::DoRun ()
   MobilityHelper ueMobility;
   ueMobility.SetMobilityModel ("ns3::ConstantVelocityMobilityModel");
   ueMobility.Install (ueNodes);
-  ueNodes.Get (0)->GetObject<MobilityModel> ()->SetPosition (Vector (0, 0, 0));
-  ueNodes.Get (0)->GetObject<ConstantVelocityMobilityModel> ()->SetVelocity (Vector (speed, 0, 0));
+  for (uint16_t i = 0; i < m_nUes; i++)
+    {
+      ueNodes.Get (i)->GetObject<MobilityModel> ()->SetPosition (Vector (0, 0, 0));
+      ueNodes.Get (i)->GetObject<ConstantVelocityMobilityModel> ()->SetVelocity (Vector (speed, 0, 0));
+    }
 
   // Setup pre-GSOC UE measurement configuration to the eNodeBs
 
@@ -235,7 +238,7 @@ LteX2HandoverMeasuresTestCase::DoRun ()
   reportConfigA2.triggerQuantity = LteRrcSap::ReportConfigEutra::RSRQ;
   reportConfigA2.reportQuantity = LteRrcSap::ReportConfigEutra::SAME_AS_TRIGGER_QUANTITY;
   reportConfigA2.maxReportCells = LteRrcSap::MaxReportCells;
-  reportConfigA2.reportInterval = LteRrcSap::ReportConfigEutra::MS480;
+  reportConfigA2.reportInterval = LteRrcSap::ReportConfigEutra::MS240;
   reportConfigA2.reportAmount = 255;
 
   // Event A4
