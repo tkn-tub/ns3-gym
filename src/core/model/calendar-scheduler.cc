@@ -131,7 +131,11 @@ CalendarScheduler::PeekNext (void) const
   NS_ASSERT (!IsEmpty ());
   uint32_t i = m_lastBucket;
   uint64_t bucketTop = m_bucketTop;
-  Scheduler::Event minEvent = { static_cast<uint64_t>(0), { static_cast<uint32_t>(~0), static_cast<uint32_t>(~0)}};
+  Scheduler::Event minEvent;
+  minEvent.impl = 0;
+  minEvent.key.m_ts = ~0;
+  minEvent.key.m_uid = ~0;
+  minEvent.key.m_context = 0;
   do
     {
       if (!m_buckets[i].empty ())

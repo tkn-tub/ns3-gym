@@ -175,8 +175,8 @@ WifiMode
 CaraWifiManager::DoGetRtsMode (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-  // XXX: we could/should implement the Arf algorithm for
-  // RTS only by picking a single rate within the BasicRateSet.
+  /// \todo we could/should implement the Arf algorithm for
+  /// RTS only by picking a single rate within the BasicRateSet.
   return GetSupported (st, 0);
 }
 

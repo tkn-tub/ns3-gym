@@ -284,9 +284,9 @@ FdNetDevice::ReceiveCallback (uint8_t *buf, ssize_t len)
    }
 }
 
-// XXX: Consider having a instance member m_packetBuffer and using memmove
-//	instead of memcpy to add the PI header.
-//      It might be faster in this case to use memmove and avoid the extra mallocs.
+/// \todo Consider having a instance member m_packetBuffer and using memmove
+///  instead of memcpy to add the PI header.
+///  It might be faster in this case to use memmove and avoid the extra mallocs.
 static void
 AddPIHeader (uint8_t *&buf, ssize_t &len)
 {

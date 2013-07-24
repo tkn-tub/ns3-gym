@@ -27,12 +27,12 @@ An Example Program that Uses the Gnuplot Class
 
 An example program that uses |ns3|'s Gnuplot class can be found here: ::
 
-  src/tools/examples/gnuplot-example.cc
+  src/stats/examples/gnuplot-example.cc
 
 In order to run this example, do the following: ::
 
   ./waf shell
-  cd build/debug/src/tools/examples
+  cd build/debug/src/stats/examples
   ./gnuplot-example 
 
 This should produce the following gnuplot control files in the directory where the example is located: ::

@@ -33,7 +33,7 @@ namespace aodv {
  * 
  * \brief AODV deferred route lookup test case (see bug 772)
  * 
- * TODO: describe expected packet trace 
+ * \todo describe expected packet trace 
  */
 class Bug772ChainTest : public TestCase
 {
@@ -50,7 +50,7 @@ public:
   ~Bug772ChainTest ();
 
 private:
-  /// XXX It is important to have pointers here
+  /// \internal It is important to have pointers here
   NodeContainer * m_nodes;
 
   /// PCAP file names prefix

@@ -1982,10 +1982,6 @@ private:
 
   /// The upper bound on values that can be returned by this RNG stream.
   double m_max;
-
-  /// It's easier to work with the mode internally instead of the
-  /// mean.  They are related by the simple: mean = (min+max+mode)/3.
-  double m_mode;
 };
 
 /**

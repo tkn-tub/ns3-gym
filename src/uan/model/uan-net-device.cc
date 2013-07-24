@@ -226,7 +226,7 @@ UanNetDevice::GetAddress () const
 bool
 UanNetDevice::SetMtu (uint16_t mtu)
 {
-  // TODO:  Check this in MAC
+  /// \todo  Check this in MAC
   NS_LOG_WARN ("UanNetDevice:  MTU is not implemented");
   m_mtu = mtu;
   return true;

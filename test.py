@@ -58,6 +58,7 @@ interesting_config_items = [
     "BUILD_PROFILE",
     "VERSION",
     "PYTHON",
+    "VALGRIND_FOUND",
 ]
 
 NSC_ENABLED = False
@@ -71,8 +72,10 @@ ENABLE_OPENFLOW = False
 EXAMPLE_DIRECTORIES = []
 APPNAME = ""
 BUILD_PROFILE = ""
+BUILD_PROFILE_SUFFIX = ""
 VERSION = ""
 PYTHON = ""
+VALGRIND_FOUND = True
 
 #
 # This will be given a prefix and a suffix when the waf config file is
@@ -164,7 +167,7 @@ def parse_examples_to_run_file(
 
             # Add the proper prefix and suffix to the example name to
             # match what is done in the wscript file.
-            example_name = "%s%s-%s-%s" % (APPNAME, VERSION, example_name, BUILD_PROFILE)
+            example_name = "%s%s-%s%s" % (APPNAME, VERSION, example_name, BUILD_PROFILE_SUFFIX)
 
             # Set the full path for the example.
             example_path = os.path.join(cpp_executable_dir, example_name)
@@ -999,10 +1002,19 @@ def run_tests():
     read_waf_config()
 
     #
+    # Set the proper suffix.
+    #
+    global BUILD_PROFILE_SUFFIX
+    if BUILD_PROFILE == 'release': 
+        BUILD_PROFILE_SUFFIX = ""
+    else:
+        BUILD_PROFILE_SUFFIX = "-" + BUILD_PROFILE
+
+    #
     # Add the proper prefix and suffix to the test-runner name to
     # match what is done in the wscript file.
     #
-    test_runner_name = "%s%s-%s-%s" % (APPNAME, VERSION, "test-runner", BUILD_PROFILE)
+    test_runner_name = "%s%s-%s%s" % (APPNAME, VERSION, "test-runner", BUILD_PROFILE_SUFFIX)
 
     #
     # Run waf to make sure that everything is built, configured and ready to go
@@ -1432,7 +1444,7 @@ def run_tests():
     elif len(options.example):
         # Add the proper prefix and suffix to the example name to
         # match what is done in the wscript file.
-        example_name = "%s%s-%s-%s" % (APPNAME, VERSION, options.example, BUILD_PROFILE)
+        example_name = "%s%s-%s%s" % (APPNAME, VERSION, options.example, BUILD_PROFILE_SUFFIX)
 
         # Don't try to run this example if it isn't runnable.
         if not ns3_runnable_programs_dictionary.has_key(example_name):
@@ -1443,6 +1455,7 @@ def run_tests():
             # irrespective of any condition.
             #
             example_path = ns3_runnable_programs_dictionary[example_name]
+            example_path = os.path.abspath(example_path)
             job = Job()
             job.set_is_example(True)
             job.set_is_pyexample(False)
@@ -1764,6 +1777,17 @@ def run_tests():
             print '***  Note: ns-3 examples are currently disabled. Enable them by adding'
             print '***  "--enable-examples" to ./waf configure or modifying your .ns3rc file.'
             print
+
+    #
+    # Let the user know if they tried to use valgrind but it was not
+    # present on their machine.
+    #
+    if options.valgrind and not VALGRIND_FOUND:
+        print
+        print '***  Note: you are trying to use valgrind, but valgrind could not be found'
+        print '***  on your machine.  All tests and examples will crash or be skipped.'
+        print
+
     #
     # If we have been asked to retain all of the little temporary files, we
     # don't delete tm.  If we do delete the temporary files, delete only the

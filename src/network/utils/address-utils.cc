@@ -44,12 +44,27 @@ void WriteTo (Buffer::Iterator &i, const Address &ad)
   ad.CopyTo (mac);
   i.Write (mac, ad.GetLength ());
 }
+void WriteTo (Buffer::Iterator &i, Mac64Address ad)
+{
+  NS_LOG_FUNCTION (&i << &ad);
+  uint8_t mac[8];
+  ad.CopyTo (mac);
+  i.Write (mac, 8);
+}
 void WriteTo (Buffer::Iterator &i, Mac48Address ad)
 {
   NS_LOG_FUNCTION (&i << &ad);
   uint8_t mac[6];
   ad.CopyTo (mac);
   i.Write (mac, 6);
+}
+void WriteTo (Buffer::Iterator &i, Mac16Address ad)
+{
+  NS_LOG_FUNCTION (&i << &ad);
+  uint8_t mac[2];
+  ad.CopyTo (mac);
+  i.Write (mac+1, 1);
+  i.Write (mac, 1);
 }
 
 void ReadFrom (Buffer::Iterator &i, Ipv4Address &ad)
@@ -71,11 +86,26 @@ void ReadFrom (Buffer::Iterator &i, Address &ad, uint32_t len)
   i.Read (mac, len);
   ad.CopyFrom (mac, len);
 }
+void ReadFrom (Buffer::Iterator &i, Mac64Address &ad)
+{
+  NS_LOG_FUNCTION (&i << &ad);
+  uint8_t mac[8];
+  i.Read (mac, 8);
+  ad.CopyFrom (mac);
+}
 void ReadFrom (Buffer::Iterator &i, Mac48Address &ad)
 {
   NS_LOG_FUNCTION (&i << &ad);
   uint8_t mac[6];
   i.Read (mac, 6);
+  ad.CopyFrom (mac);
+}
+void ReadFrom (Buffer::Iterator &i, Mac16Address &ad)
+{
+  NS_LOG_FUNCTION (&i << &ad);
+  uint8_t mac[2];
+  i.Read (mac+1, 1);
+  i.Read (mac, 1);
   ad.CopyFrom (mac);
 }
 

@@ -38,7 +38,7 @@ namespace ns3 {
 class LenaDataPhyErrorModelTestCase : public TestCase
 {
 public:
-  LenaDataPhyErrorModelTestCase (uint16_t nUser, uint16_t dist, uint16_t tbSize, double refBer, uint16_t bernQuantile);
+  LenaDataPhyErrorModelTestCase (uint16_t nUser, uint16_t dist, uint16_t tbSize, double refBler, uint16_t toleranceRxPackets);
   virtual ~LenaDataPhyErrorModelTestCase ();
 
 private:
@@ -47,8 +47,8 @@ private:
   uint16_t m_nUser;
   uint16_t m_dist;
   uint16_t m_tbSize;
-  double m_berRef;
-  uint16_t m_bernQuantile;
+  double m_blerRef;
+  uint16_t m_toleranceRxPackets;
 
 };
 
@@ -57,7 +57,7 @@ private:
 class LenaDlCtrlPhyErrorModelTestCase : public TestCase
 {
   public:
-    LenaDlCtrlPhyErrorModelTestCase (uint16_t nEnbr, uint16_t dist, uint16_t tbSize, double refBer);
+    LenaDlCtrlPhyErrorModelTestCase (uint16_t nEnbr, uint16_t dist, uint16_t tbSize, double refBler);
     virtual ~LenaDlCtrlPhyErrorModelTestCase ();
     
   private:
@@ -66,7 +66,7 @@ class LenaDlCtrlPhyErrorModelTestCase : public TestCase
     uint16_t m_nEnb;
     uint16_t m_dist;
     uint16_t m_tbSize;
-    double m_berRef;
+    double m_blerRef;
     
 };
 

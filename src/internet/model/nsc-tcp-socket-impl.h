@@ -102,7 +102,7 @@ private:
   void ConnectionSucceeded ();
 
   // Manage data tx/rx
-  // XXX This should be virtual and overridden
+  /// \todo This should be virtual and overridden
   Ptr<NscTcpSocketImpl> Copy ();
 
   // attribute related

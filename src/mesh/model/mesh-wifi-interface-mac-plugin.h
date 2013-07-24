@@ -36,7 +36,7 @@ class MeshWifiInterfaceMac;
  * 
  * \brief Common interface for mesh point interface MAC plugins
  * 
- * TODO: plugins description
+ * \todo plugins description
  */
 class MeshWifiInterfaceMacPlugin : public SimpleRefCount<MeshWifiInterfaceMacPlugin>
 {
@@ -49,20 +49,20 @@ public:
    * \brief Process received frame
    * 
    * \return false if (and only if) frame should be dropped
-   * TODO define when MAC call this
+   * \todo define when MAC call this
    */
   virtual bool Receive (Ptr<Packet> packet, const WifiMacHeader & header) = 0;
   /**
    * \brief Update frame before it will be forwarded down
    * 
    * \return false if (and only if) frame should be dropped
-   * TODO define when MAC call this, preconditions & postconditions
+   * \todo define when MAC call this, preconditions & postconditions
    */
   virtual bool UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from, Mac48Address to) = 0;
   /**
    * \brief Update beacon before it will be formed and sent
    *
-   * TODO define when MAC call this
+   * \todo define when MAC call this
    */
   virtual void UpdateBeacon (MeshWifiBeacon & beacon) const = 0;
   /**

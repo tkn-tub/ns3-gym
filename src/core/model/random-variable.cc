@@ -1700,8 +1700,8 @@ ErlangVariableImpl::GetValue ()
 double
 ErlangVariableImpl::GetValue (unsigned int k, double lambda)
 {
-  // XXX: Fixme: do not create a new 
-  // RNG stream every time the function is called !
+  /// \todo do not create a new 
+  /// RNG stream every time the function is called !
   NS_LOG_FUNCTION (this << k << lambda);
   ExponentialVariable exponential (lambda);
 
@@ -2039,7 +2039,7 @@ std::ostream & operator << (std::ostream &os, const RandomVariable &var)
         }
       return os;
     }
-  // XXX: support other distributions
+  /// \todo support other distributions
   os.setstate (std::ios_base::badbit);
   return os;
 }
@@ -2125,7 +2125,7 @@ std::istream & operator >> (std::istream &is, RandomVariable &var)
   else
     {
       NS_FATAL_ERROR ("RandomVariable deserialization not implemented for " << type);
-      // XXX: support other distributions.
+      /// \todo support other distributions.
     }
   return is;
 }

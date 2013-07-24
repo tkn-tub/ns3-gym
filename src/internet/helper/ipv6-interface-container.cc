@@ -88,7 +88,7 @@ void Ipv6InterfaceContainer::SetRouter (uint32_t i, bool router)
     {
       uint32_t other;
       /* assume first global address is index 1 (0 is link-local) */
-      Ipv6Address routerAddress = ipv6->GetAddress (m_interfaces[i].second, 1).GetAddress ();
+      Ipv6Address routerAddress = ipv6->GetAddress (m_interfaces[i].second, 0).GetAddress ();
 
       for (other = 0; other < m_interfaces.size (); other++)
         {
@@ -109,7 +109,7 @@ void Ipv6InterfaceContainer::SetDefaultRoute (uint32_t i, uint32_t router)
 {
   Ptr<Ipv6> ipv6 = m_interfaces[i].first;
   Ptr<Ipv6> ipv6Router = m_interfaces[router].first;
-  Ipv6Address routerAddress = ipv6Router->GetAddress (m_interfaces[router].second, 1).GetAddress ();
+  Ipv6Address routerAddress = ipv6Router->GetAddress (m_interfaces[router].second, 0).GetAddress ();
   Ptr<Ipv6StaticRouting> routing = 0;
   Ipv6StaticRoutingHelper routingHelper;
 

@@ -84,6 +84,7 @@ private:
 };
 
 /**
+ * \ingroup simulator
  * \ingroup mpi
  *
  * \brief distributed simulator implementation using lookahead

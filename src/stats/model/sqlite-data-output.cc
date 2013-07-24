@@ -106,7 +106,7 @@ SqliteDataOutput::Output (DataCollector &dc)
       NS_LOG_ERROR ("Could not open sqlite3 database \"" << m_dbFile << "\"");
       NS_LOG_ERROR ("sqlite3 error \"" << sqlite3_errmsg (m_db) << "\"");
       sqlite3_close (m_db);
-      // TODO: Better error reporting, management!
+      /// \todo Better error reporting, management!
       return;
     }
 

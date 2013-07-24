@@ -201,6 +201,7 @@ def build(bld):
         'test/ipv4-raw-test.cc',
         'test/ipv4-header-test.cc',
         'test/ipv4-fragmentation-test.cc',
+        'test/ipv4-forwarding-test.cc',
         'test/error-channel.cc',
         'test/error-net-device.cc',
         'test/ipv4-test.cc',
@@ -214,6 +215,7 @@ def build(bld):
         'test/ipv6-address-generator-test-suite.cc',
         'test/ipv6-dual-stack-test-suite.cc',
         'test/ipv6-fragmentation-test.cc',
+        'test/ipv6-forwarding-test.cc',
         'test/ipv6-address-helper-test-suite.cc',
         'test/rtt-test.cc',
         ]

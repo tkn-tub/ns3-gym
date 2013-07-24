@@ -15,7 +15,7 @@ def build(bld):
     if 'test' in bld.env['MODULES_NOT_BUILT']:
         return
 
-    test = bld.create_ns3_module('test', ['internet', 'mobility', 'applications', 'csma', 'bridge', 'config-store', 'tools', 'point-to-point', 'csma-layout', 'flow-monitor', 'wifi'])
+    test = bld.create_ns3_module('test', ['internet', 'mobility', 'applications', 'csma', 'bridge', 'config-store', 'point-to-point', 'csma-layout', 'flow-monitor', 'wifi'])
     headers = bld(features='ns3header')
     headers.module = 'test'
 

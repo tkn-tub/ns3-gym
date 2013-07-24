@@ -468,8 +468,10 @@ def configure(conf):
     conf.report_optional_feature("ENABLE_EXAMPLES", "Build examples", env['ENABLE_EXAMPLES'], 
                                  why_not_examples)
 
+    env['VALGRIND_FOUND'] = False
     try:
         conf.find_program('valgrind', var='VALGRIND')
+        env['VALGRIND_FOUND'] = True
     except WafError:
         pass
 
@@ -820,6 +822,10 @@ def build(bld):
     # build command.
     bld.env['PRINT_BUILT_MODULES_AT_END'] = True
 
+    # Do not print the modules built if build command was "clean"
+    if bld.cmd == 'clean':
+        bld.env['PRINT_BUILT_MODULES_AT_END'] = False
+
     if Options.options.run:
         # Check that the requested program name is valid
         program_name, dummy_program_argv = wutils.get_run_program(Options.options.run, wutils.get_command_template(env))
@@ -849,8 +855,9 @@ def _cleandir(name):
 def _cleandocs():
     _cleandir('doc/html')
     _cleandir('doc/manual/build')
+    _cleandir('doc/manual/source-temp')
     _cleandir('doc/tutorial/build')
-    _cleandir('doc/tutorial-pt/build')
+    _cleandir('doc/tutorial-pt-br/build')
     _cleandir('doc/models/build')
     _cleandir('doc/models/source-temp')
 

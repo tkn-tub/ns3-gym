@@ -94,9 +94,53 @@ Ipv4L3ProtocolTestCase::DoRun (void)
   Ipv4InterfaceAddress output = interface->GetAddress (2);
   NS_TEST_ASSERT_MSG_EQ (ifaceAddr4, output,
                          "The addresses should be identical");
+
+  /* Test Ipv4Interface()::RemoveAddress(address) */
+  output = interface->RemoveAddress (Ipv4Address ("250.0.0.1"));
+  NS_TEST_ASSERT_MSG_EQ (ifaceAddr4, output,
+                         "Wrong Interface Address Removed??");
+  num = interface->GetNAddresses ();
+  NS_TEST_ASSERT_MSG_EQ (num, 2, "Should find 2 addresses??");
+  
+  /* Remove a non-existent Address */
+  output = interface->RemoveAddress (Ipv4Address ("253.123.9.81"));
+  NS_TEST_ASSERT_MSG_EQ (Ipv4InterfaceAddress (), output,
+                         "Removed non-existent address??");
+  num = interface->GetNAddresses ();
+  NS_TEST_ASSERT_MSG_EQ (num, 2, "Should find 2 addresses??");
+  
+  /* Remove a Loopback Address */
+  output = interface->RemoveAddress (Ipv4Address::GetLoopback ());
+  NS_TEST_ASSERT_MSG_EQ (Ipv4InterfaceAddress (), output,
+                         "Able to remove loopback address??");
+  num = interface->GetNAddresses ();
+  NS_TEST_ASSERT_MSG_EQ (num, 2, "Should find 2 addresses??");
+
+  /* Test Ipv4Address::RemoveAddress(i, addresss) */
+  bool result = ipv4->RemoveAddress (index, Ipv4Address
+("192.168.0.2"));
+  NS_TEST_ASSERT_MSG_EQ (true, result, "Unable to remove Address??");
+  num = interface->GetNAddresses ();
+  NS_TEST_ASSERT_MSG_EQ (num, 1, "Should find 1 addresses??");
+
+  /* Remove a non-existent Address */
+  result = ipv4->RemoveAddress (index, Ipv4Address ("189.0.0.1"));
+  NS_TEST_ASSERT_MSG_EQ (false, result,
+                         "Removed non-existent address??");
+  num = interface->GetNAddresses ();
+  NS_TEST_ASSERT_MSG_EQ (num, 1, "Should find 1 addresses??");
+
+  /* Remove a loopback Address */
+  result = ipv4->RemoveAddress (index, Ipv4Address::GetLoopback ());
+  NS_TEST_ASSERT_MSG_EQ (false, result,
+                         "Able to remove loopback address??");
+  num = interface->GetNAddresses ();
+  NS_TEST_ASSERT_MSG_EQ (num, 1, "Should find 1 addresses??");
+
   Simulator::Destroy ();
 }
 
+  
 static class IPv4L3ProtocolTestSuite : public TestSuite
 {
 public:

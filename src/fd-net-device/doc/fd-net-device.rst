@@ -273,7 +273,7 @@ It is always up to the user to determine that using these MAC addresses is okay
 on your network and won't conflict with anything else (including another
 simulation using such devices) on your network. If you are using the emulated
 FdNetDevice configuration in separate simulations,
- you must consider global MAC address
+you must consider global MAC address
 assignment issues and ensure that MAC addresses are unique across all
 simulations. The emulated net device respects the MAC address provided in the
 ``Address`` attribute so you can do this manually. For larger simulations, you

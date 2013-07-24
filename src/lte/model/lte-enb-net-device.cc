@@ -97,13 +97,13 @@ TypeId LteEnbNetDevice::GetTypeId (void)
                    "as per 3GPP 36.101 Section 5.7.3. ",
                    UintegerValue (100),
                    MakeUintegerAccessor (&LteEnbNetDevice::m_dlEarfcn),
-                   MakeUintegerChecker<uint16_t> (0, 6149))
+                   MakeUintegerChecker<uint16_t> (0, 6599))
     .AddAttribute ("UlEarfcn",
                    "Uplink E-UTRA Absolute Radio Frequency Channel Number (EARFCN) "
                    "as per 3GPP 36.101 Section 5.7.3. ",
                    UintegerValue (18100),
                    MakeUintegerAccessor (&LteEnbNetDevice::m_ulEarfcn),
-                   MakeUintegerChecker<uint16_t> (18000, 24149))
+                   MakeUintegerChecker<uint16_t> (18000, 24599))
   ;
   return tid;
 }

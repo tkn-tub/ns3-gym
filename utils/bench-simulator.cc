@@ -18,193 +18,257 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#include "ns3/core-module.h"
+#include <iomanip>
 #include <iostream>
 #include <fstream>
 #include <vector>
 #include <string.h>
+
+#include "ns3/core-module.h"
 
 using namespace ns3;
 
 
 bool g_debug = false;
 
+std::string g_me;
+#define LOG(x)   std::cout << x << std::endl
+#define LOGME(x) LOG (g_me << x)
+#define DEB(x) if (g_debug) { LOGME (x) ; }
+
+// Output field width
+int g_fwidth = 6;
+
 class Bench 
 {
 public:
-  Bench ();
-  void ReadDistribution (std::istream &istream);
-  void SetTotal (uint32_t total);
+  Bench (const uint32_t population, const uint32_t total)
+  : m_population (population),
+    m_total (total),
+    m_count (0)
+  { };
+  
+  void SetRandomStream (Ptr<RandomVariableStream> stream)
+  {
+    m_rand = stream;
+  }
+    
+  void SetPopulation (const uint32_t population)
+  {
+    m_population = population;
+  }
+    
+  void SetTotal (const uint32_t total)
+  {
+    m_total = total;
+  }
+    
   void RunBench (void);
 private:
   void Cb (void);
-  std::vector<uint64_t> m_distribution;
-  std::vector<uint64_t>::const_iterator m_current;
-  uint32_t m_n;
+  
+  Ptr<RandomVariableStream> m_rand;
+  uint32_t m_population;
   uint32_t m_total;
+  uint32_t m_count;
 };
-
-Bench::Bench ()
-  : m_n (0),
-    m_total (0)
-{}
-
-void 
-Bench::SetTotal (uint32_t total)
-{
-  m_total = total;
-}
-
-void
-Bench::ReadDistribution (std::istream &input)
-{
-  double data;
-  while (!input.eof ()) 
-    {
-      if (input >> data) 
-        {
-          uint64_t ns = (uint64_t) (data * 1000000000);
-          m_distribution.push_back (ns);
-        } 
-      else 
-        {
-          input.clear ();
-          std::string line;
-          input >> line;
-        }
-    }
-}
 
 void
 Bench::RunBench (void) 
 {
   SystemWallClockMs time;
   double init, simu;
+
+  DEB ("initializing");
+
   time.Start ();
-  for (std::vector<uint64_t>::const_iterator i = m_distribution.begin ();
-       i != m_distribution.end (); i++) 
+  for (uint32_t i = 0; i < m_population; ++i)
     {
-      Simulator::Schedule (NanoSeconds (*i), &Bench::Cb, this);
+      Time at = NanoSeconds (m_rand->GetValue ());
+      Simulator::Schedule (at, &Bench::Cb, this);
     }
   init = time.End ();
   init /= 1000;
+  DEB ("initialization took " << init << "s");
 
-  m_current = m_distribution.begin ();
-
+  DEB ("running");
   time.Start ();
   Simulator::Run ();
   simu = time.End ();
   simu /= 1000;
+  DEB ("run took " << simu << "s");
 
-  std::cout <<
-      "init n=" << m_distribution.size () << ", time=" << init << "s" << std::endl <<
-      "simu n=" << m_n << ", time=" <<simu << "s" << std::endl <<
-      "init " << ((double)m_distribution.size ()) / init << " insert/s, avg insert=" <<
-      init / ((double)m_distribution.size ())<< "s" << std::endl <<
-      "simu " << ((double)m_n) / simu<< " hold/s, avg hold=" << 
-      simu / ((double)m_n) << "s" << std::endl
-      ;
+  LOG (std::setw (g_fwidth) << init <<
+       std::setw (g_fwidth) << (m_population / init) <<
+       std::setw (g_fwidth) << (init / m_population) <<
+       std::setw (g_fwidth) << simu <<
+       std::setw (g_fwidth) << (m_count / simu) <<
+       std::setw (g_fwidth) << (simu / m_count));
+
+  // Clean up scheduler
+  Simulator::Destroy ();
 }
 
 void
 Bench::Cb (void)
 {
-  if (m_n > m_total) 
+  if (m_count > m_total) 
     {
       return;
     }
-  if (m_current == m_distribution.end ()) 
-    {
-      m_current = m_distribution.begin ();
-    }
-  if (g_debug) 
-    {
-      std::cerr << "event at " << Simulator::Now ().GetSeconds () << "s" << std::endl;
-    }
-  Simulator::Schedule (NanoSeconds (*m_current), &Bench::Cb, this);
-  m_current++;
-  m_n++;
+  DEB ("event at " << Simulator::Now ().GetSeconds () << "s");
+
+  Time after = NanoSeconds (m_rand->GetValue ());
+  Simulator::Schedule (after, &Bench::Cb, this);
+  ++m_count;
 }
 
-void
-PrintHelp (void)
+
+Ptr<RandomVariableStream>
+GetRandomStream (std::string filename)
 {
-  std::cout << "bench-simulator filename [options]"<<std::endl;
-  std::cout << "  filename: a string which identifies the input distribution. \"-\" represents stdin." << std::endl;
-  std::cout << "  Options:"<<std::endl;
-  std::cout << "      --list: use std::list scheduler"<<std::endl;
-  std::cout << "      --map: use std::map cheduler"<<std::endl;
-  std::cout << "      --heap: use Binary Heap scheduler"<<std::endl;
-  std::cout << "      --debug: enable some debugging"<<std::endl;
+  Ptr<RandomVariableStream> stream = 0;
+  
+  if (filename == "")
+    {
+      LOGME ("using default exponential distribution");
+      Ptr<ExponentialRandomVariable> erv = CreateObject<ExponentialRandomVariable> ();
+      erv->SetAttribute ("Mean", DoubleValue (100));
+      stream = erv;
+    }
+  else
+    {
+      std::istream *input; 
+
+      if (filename == "-") 
+        {
+          LOGME ("using event distribution from stdin");
+          input = &std::cin;
+        } 
+      else
+        {
+          LOGME ("using event distribution from " << filename);
+          input = new std::ifstream (filename.c_str ());
+        }
+
+      double value;
+      std::vector<double> nsValues;
+      
+      while (!input->eof ()) 
+        {
+          if (*input >> value) 
+            {
+              uint64_t ns = (uint64_t) (value * 1000000000);
+              nsValues.push_back (ns);
+            } 
+          else 
+            {
+              input->clear ();
+              std::string line;
+              *input >> line;
+            }
+        }
+      LOGME ("found " << nsValues.size () << " entries");
+      Ptr<DeterministicRandomVariable> drv = CreateObject<DeterministicRandomVariable> ();
+      drv->SetValueArray (&nsValues[0], nsValues.size ());
+      stream = drv;
+    }
+  
+  return stream;
 }
+
+
 
 int main (int argc, char *argv[])
 {
-  char const *filename = argv[1];
-  std::istream *input;
-  uint32_t n = 1;
-  uint32_t total = 20000;
-  if (argc == 1)
-    {
-      PrintHelp ();
-      return 0;
-    }
-  argc-=2;
-  argv+= 2;
-  if (strcmp (filename, "-") == 0) 
-    {
-      input = &std::cin;
-    } 
-  else 
-    {
-      input = new std::ifstream (filename);
-    }
-  while (argc > 0) 
-    {
-      ObjectFactory factory;
-      if (strcmp ("--list", argv[0]) == 0) 
-        {
-          factory.SetTypeId ("ns3::ListScheduler");
-          Simulator::SetScheduler (factory);
-        } 
-      else if (strcmp ("--heap", argv[0]) == 0) 
-        {
-          factory.SetTypeId ("ns3::HeapScheduler");
-          Simulator::SetScheduler (factory);
-        } 
-      else if (strcmp ("--map", argv[0]) == 0) 
-        {
-          factory.SetTypeId ("ns3::HeapScheduler");
-          Simulator::SetScheduler (factory);
-        } 
-      else if (strcmp ("--calendar", argv[0]) == 0)
-        {
-          factory.SetTypeId ("ns3::CalendarScheduler");
-          Simulator::SetScheduler (factory);
-        }
-      else if (strcmp ("--debug", argv[0]) == 0) 
-        {
-          g_debug = true;
-        } 
-      else if (strncmp ("--total=", argv[0], strlen("--total=")) == 0) 
-        {
-          total = atoi (argv[0]+strlen ("--total="));
-        } 
-      else if (strncmp ("--n=", argv[0], strlen("--n=")) == 0) 
-        {
-          n = atoi (argv[0]+strlen ("--n="));
-        } 
 
-      argc--;
-      argv++;
-  }
-  Bench *bench = new Bench ();
-  bench->ReadDistribution (*input);
+  bool schedCal  = false;
+  bool schedHeap = false;
+  bool schedList = false;
+  bool schedMap  = true;
+
+  uint32_t pop   =  100000;
+  uint32_t total = 1000000;
+  uint32_t runs  =       1;
+  std::string filename = "";
+  
+  CommandLine cmd;
+  cmd.Usage ("Benchmark the simulator scheduler.\n"
+             "\n"
+             "Event intervals are taken from one of:\n"
+             "  an exponential distribution, with mean 100 ns,\n"
+             "  an ascii file, given by the --file=\"<filename>\" argument,\n"
+             "  or standard input, by the argument --file=\"-\"\n"
+             "In the case of either --file form, the input is expected\n"
+             "to be ascii, giving the relative event times in ns.");
+  cmd.AddValue ("cal",   "use CalendarSheduler",          schedCal);
+  cmd.AddValue ("heap",  "use HeapScheduler",             schedHeap);
+  cmd.AddValue ("list",  "use ListSheduler",              schedList);
+  cmd.AddValue ("map",   "use MapScheduler (default)",    schedMap);
+  cmd.AddValue ("debug", "enable debugging output",       g_debug);
+  cmd.AddValue ("pop",   "event population size (default 1E5)",         pop);
+  cmd.AddValue ("total", "total number of events to run (default 1E6)", total);
+  cmd.AddValue ("runs",  "number of runs (default 1)",    runs);
+  cmd.AddValue ("file",  "file of relative event times",  filename);
+  cmd.AddValue ("prec",  "printed output precision",      g_fwidth);
+  cmd.Parse (argc, argv);
+  g_me = cmd.GetName () + ": ";
+  g_fwidth += 6;  // 5 extra chars in '2.000002e+07 ': . e+0 _
+
+  ObjectFactory factory ("ns3::MapScheduler");
+  if (schedCal)  { factory.SetTypeId ("ns3::CalendarScheduler"); }
+  if (schedHeap) { factory.SetTypeId ("ns3::HeapScheduler");     }
+  if (schedList) { factory.SetTypeId ("ns3::ListScheduler");     }  
+  Simulator::SetScheduler (factory);
+
+  LOGME (std::setprecision (g_fwidth - 6));
+  DEB ("debugging is ON");
+
+  LOGME ("scheduler: " << factory.GetTypeId ().GetName ());
+  LOGME ("population: " << pop);
+  LOGME ("total events: " << total);
+  LOGME ("runs: " << runs);
+  
+  Bench *bench = new Bench (pop, total);
+  bench->SetRandomStream (GetRandomStream (filename));
+
+  // table header
+  LOG ("");
+  LOG (std::left << std::setw (g_fwidth) << "Run #" <<
+       std::left << std::setw (3 * g_fwidth) << "Inititialization:" <<
+       std::left << std::setw (3 * g_fwidth) << "Simulation:");
+  LOG (std::left << std::setw (g_fwidth) << "" <<
+       std::left << std::setw (g_fwidth) << "Time (s)" <<
+       std::left << std::setw (g_fwidth) << "Rate (ev/s)" <<
+       std::left << std::setw (g_fwidth) << "Per (s/ev)" <<
+       std::left << std::setw (g_fwidth) << "Time (s)" <<
+       std::left << std::setw (g_fwidth) << "Rate (ev/s)" <<
+       std::left << std::setw (g_fwidth) << "Per (s/ev)" );
+  LOG (std::setfill ('-') <<
+       std::right << std::setw (g_fwidth) << " " <<
+       std::right << std::setw (g_fwidth) << " " <<       
+       std::right << std::setw (g_fwidth) << " " <<       
+       std::right << std::setw (g_fwidth) << " " <<       
+       std::right << std::setw (g_fwidth) << " " <<       
+       std::right << std::setw (g_fwidth) << " " <<       
+       std::right << std::setw (g_fwidth) << " " <<
+       std::setfill (' ')
+       );
+       
+  // prime
+  DEB ("priming");
+  std::cout << std::left << std::setw (g_fwidth) << "(prime)";
+  bench->RunBench ();
+
+  bench->SetPopulation (pop);
   bench->SetTotal (total);
-  for (uint32_t i = 0; i < n; i++)
+  for (uint32_t i = 0; i < runs; i++)
     {
+      std::cout << std::setw (g_fwidth) << i;
+      
       bench->RunBench ();
     }
 
+  LOG ("");
   return 0;
 }

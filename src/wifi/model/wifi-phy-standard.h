@@ -45,9 +45,9 @@ enum WifiPhyStandard
    *  ACM MOBICOM, 2001.
    */
   WIFI_PHY_STANDARD_holland,
-  /** deprecated, see <A HREF="http://www.nsnam.org/bugzilla/show_bug.cgi?id=945">bug 945</A> */
+  /** \deprecated see <A HREF="http://www.nsnam.org/bugzilla/show_bug.cgi?id=945">bug 945</A> */
   WIFI_PHY_STANDARD_80211p_CCH,
-  /** deprecated, see <A HREF="http://www.nsnam.org/bugzilla/show_bug.cgi?id=945">bug 945</A> */
+  /** \deprecated see <A HREF="http://www.nsnam.org/bugzilla/show_bug.cgi?id=945">bug 945</A> */
   WIFI_PHY_STANDARD_80211p_SCH
 };
 

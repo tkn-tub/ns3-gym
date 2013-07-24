@@ -56,8 +56,8 @@ class Ipv6RoutingProtocol : public Object
 public:
   static TypeId GetTypeId (void);
 
-  typedef Callback<void, Ptr<Ipv6Route>, Ptr<const Packet>, const Ipv6Header &> UnicastForwardCallback;
-  typedef Callback<void, Ptr<Ipv6MulticastRoute>, Ptr<const Packet>, const Ipv6Header &> MulticastForwardCallback;
+  typedef Callback<void, Ptr<const NetDevice>, Ptr<Ipv6Route>, Ptr<const Packet>, const Ipv6Header &> UnicastForwardCallback;
+  typedef Callback<void, Ptr<const NetDevice>, Ptr<Ipv6MulticastRoute>, Ptr<const Packet>, const Ipv6Header &> MulticastForwardCallback;
   typedef Callback<void, Ptr<const Packet>, const Ipv6Header &, uint32_t > LocalDeliverCallback;
   typedef Callback<void, Ptr<const Packet>, const Ipv6Header &, Socket::SocketErrno > ErrorCallback;
 

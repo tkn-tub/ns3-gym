@@ -74,7 +74,7 @@ public:
   /**
    * \brief Add route to host.
    * \param dest destination address
-   * \param nextHop next hop address to route the packet
+   * \param nextHop next hop address to route the packet. Must be a link-local address
    * \param interface interface index
    * \param prefixToUse prefix that should be used for source address for this destination
    * \param metric metric of route in case of multiple routes to same destination
@@ -103,7 +103,7 @@ public:
    * \brief Add route to network.
    * \param network network address
    * \param networkPrefix network prefix*
-   * \param nextHop next hop address to route the packet
+   * \param nextHop next hop address to route the packet. Must be a link-local address
    * \param interface interface index
    * \param prefixToUse prefix that should be used for source address for this destination
    * \param metric metric of route in case of multiple routes to same destination

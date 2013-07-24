@@ -265,12 +265,7 @@ Ptr<Packet> Ipv6FragmentationTest::SendClient (void)
 void
 Ipv6FragmentationTest::DoRun (void)
 {
-  // set the arp cache to something quite high
-  // we shouldn't need because the NetDevice used doesn't need arp, but still
-  // Config::SetDefault ("ns3::ArpCache::PendingQueueSize", UintegerValue (100));
-//  LogComponentEnable ("ErrorNetDevice", LOG_LEVEL_ALL);
-// LogComponentEnableAll(LOG_LEVEL_ALL);
-// Create topology
+  // Create topology
 
   // Receiver Node
   Ptr<Node> serverNode = CreateObject<Node> ();

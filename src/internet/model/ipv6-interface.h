@@ -228,6 +228,15 @@ public:
   Ipv6InterfaceAddress RemoveAddress (uint32_t index);
 
   /**
+   * \brief Remove the given Ipv6 address from the interface.
+   * \param address The Ipv6 address to remove
+   * \returns The removed Ipv6 interface address 
+   * \returns The null interface address if the interface did not contain the 
+   * address or if loopback address was passed as argument
+   */
+  Ipv6InterfaceAddress RemoveAddress (Ipv6Address address);
+
+  /**
    * \brief Update state of an interface address.
    * \param address IPv6 address
    * \param state new state

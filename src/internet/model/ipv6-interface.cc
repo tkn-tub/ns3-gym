@@ -25,6 +25,8 @@
 #include "ipv6-interface.h"
 #include "ns3/net-device.h"
 #include "loopback-net-device.h"
+#include "ns3/mac16-address.h"
+#include "ns3/mac64-address.h"
 #include "ipv6-l3-protocol.h"
 #include "icmpv6-l4-protocol.h"
 #include "ndisc-cache.h"
@@ -87,9 +89,19 @@ void Ipv6Interface::DoSetup ()
     {
       Address addr = GetDevice ()->GetAddress ();
 
-      if (Mac48Address::IsMatchingType (addr))
+      if (Mac16Address::IsMatchingType (addr))
+        {
+          Ipv6InterfaceAddress ifaddr = Ipv6InterfaceAddress (Ipv6Address::MakeAutoconfiguredLinkLocalAddress (Mac16Address::ConvertFrom (addr)), Ipv6Prefix (64));
+          AddAddress (ifaddr);
+        }
+      else if (Mac48Address::IsMatchingType (addr))
         {
           Ipv6InterfaceAddress ifaddr = Ipv6InterfaceAddress (Ipv6Address::MakeAutoconfiguredLinkLocalAddress (Mac48Address::ConvertFrom (addr)), Ipv6Prefix (64));
+          AddAddress (ifaddr);
+        }
+      else if (Mac64Address::IsMatchingType (addr))
+        {
+          Ipv6InterfaceAddress ifaddr = Ipv6InterfaceAddress (Ipv6Address::MakeAutoconfiguredLinkLocalAddress (Mac64Address::ConvertFrom (addr)), Ipv6Prefix (64));
           AddAddress (ifaddr);
         }
       else
@@ -291,6 +303,29 @@ Ipv6InterfaceAddress Ipv6Interface::RemoveAddress (uint32_t index)
   return addr;  /* quiet compiler */
 }
 
+Ipv6InterfaceAddress 
+Ipv6Interface::RemoveAddress(Ipv6Address address)
+{
+  NS_LOG_FUNCTION(this << address);
+
+  if (address == address.GetLoopback())
+    {
+      NS_LOG_WARN ("Cannot remove loopback address.");
+      return Ipv6InterfaceAddress();
+    }
+
+  for (Ipv6InterfaceAddressListI it = m_addresses.begin (); it != m_addresses.end (); ++it)
+    {
+      if((*it).GetAddress() == address)
+        {
+          Ipv6InterfaceAddress iface = (*it);
+          m_addresses.erase(it);
+          return iface;
+        }
+    }
+  return Ipv6InterfaceAddress();
+}
+
 Ipv6InterfaceAddress Ipv6Interface::GetAddressMatchingDestination (Ipv6Address dst)
 {
   NS_LOG_FUNCTION (this << dst);
@@ -323,7 +358,7 @@ void Ipv6Interface::Send (Ptr<Packet> p, Ipv6Address dest)
   /* check if destination is localhost (::1) */
   if (DynamicCast<LoopbackNetDevice> (m_device))
     {
-      /* XXX additional checks needed here (such as whether multicast
+      /** \todo additional checks needed here (such as whether multicast
        * goes to loopback)?
        */
       m_device->Send (p, m_device->GetBroadcast (), Ipv6L3Protocol::PROT_NUMBER);

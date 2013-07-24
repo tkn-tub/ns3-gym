@@ -1597,10 +1597,10 @@ RandomVariableStreamLogNormalTestCase::DoRun (void)
 
   // Test that values have approximately the right mean value.
   //
-  // XXX This test fails sometimes if the required tolerance is less
-  // than 3%, which may be because there is a bug in the
-  // implementation or that the mean of this distribution is more
-  // senstive to its parameters than the others are.
+  /// \todo This test fails sometimes if the required tolerance is less
+  /// than 3%, which may be because there is a bug in the
+  /// implementation or that the mean of this distribution is more
+  /// senstive to its parameters than the others are.
   double TOLERANCE = expectedMean * 3e-2;
   NS_TEST_ASSERT_MSG_EQ_TOL (valueMean, expectedMean, TOLERANCE, "Wrong mean value."); 
 }
@@ -1740,10 +1740,10 @@ RandomVariableStreamLogNormalAntitheticTestCase::DoRun (void)
 
   // Test that values have approximately the right mean value.
   //
-  // XXX This test fails sometimes if the required tolerance is less
-  // than 3%, which may be because there is a bug in the
-  // implementation or that the mean of this distribution is more
-  // senstive to its parameters than the others are.
+  /// \todo This test fails sometimes if the required tolerance is less
+  /// than 3%, which may be because there is a bug in the
+  /// implementation or that the mean of this distribution is more
+  /// senstive to its parameters than the others are.
   double TOLERANCE = expectedMean * 3e-2;
   NS_TEST_ASSERT_MSG_EQ_TOL (valueMean, expectedMean, TOLERANCE, "Wrong mean value."); 
 }
@@ -2798,16 +2798,16 @@ RandomVariableStreamTestSuite::RandomVariableStreamTestSuite ()
   AddTestCase (new RandomVariableStreamWeibullTestCase, TestCase::QUICK);
   AddTestCase (new RandomVariableStreamWeibullAntitheticTestCase, TestCase::QUICK);
   AddTestCase (new RandomVariableStreamLogNormalTestCase, TestCase::QUICK);
-  // XXX This test is currently disabled because it fails sometimes.
-  // A possible reason for the failure is that the antithetic code is
-  // not implemented properly for this log-normal case.
+  /// \todo This test is currently disabled because it fails sometimes.
+  /// A possible reason for the failure is that the antithetic code is
+  /// not implemented properly for this log-normal case.
   /*
   AddTestCase (new RandomVariableStreamLogNormalAntitheticTestCase, TestCase::QUICK);
   */
   AddTestCase (new RandomVariableStreamGammaTestCase, TestCase::QUICK);
-  // XXX This test is currently disabled because it fails sometimes.
-  // A possible reason for the failure is that the antithetic code is
-  // not implemented properly for this gamma case.
+  /// \todo This test is currently disabled because it fails sometimes.
+  /// A possible reason for the failure is that the antithetic code is
+  /// not implemented properly for this gamma case.
   /*
   AddTestCase (new RandomVariableStreamGammaAntitheticTestCase, TestCase::QUICK);
   */

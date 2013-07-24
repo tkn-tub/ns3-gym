@@ -152,6 +152,15 @@ public:
    */
   Ipv4InterfaceAddress RemoveAddress (uint32_t index);
 
+  /**
+   * \brief Remove the given Ipv4 address from the interface.
+   * \param address The Ipv4 address to remove
+   * \returns The removed Ipv4 interface address 
+   * \returns The null interface address if the interface did not contain the 
+   * address or if loopback address was passed as argument
+   */
+  Ipv4InterfaceAddress RemoveAddress (Ipv4Address address);
+
 protected:
   virtual void DoDispose (void);
 private:

@@ -502,7 +502,7 @@ RouteCache::UpdateNetGraph ()
   for (std::map<Link, LinkStab>::iterator i = m_linkCache.begin (); i != m_linkCache.end (); ++i)
     {
       // Here the weight is set as 1
-      // May need to set different weight for different link here later TODO
+      /// \todo May need to set different weight for different link here later
       uint32_t weight = 1;
       m_netGraph[i->first.m_low][i->first.m_high] = weight;
       m_netGraph[i->first.m_high][i->first.m_low] = weight;
@@ -523,7 +523,7 @@ RouteCache::IncStability (Ipv4Address node)
     }
   else
     {
-      /// TODO get rid of the debug here
+      /// \todo get rid of the debug here
       NS_LOG_INFO ("The node stability " << i->second.GetNodeStability ().GetSeconds ());
       NS_LOG_INFO ("The stability here " << Time (i->second.GetNodeStability () * m_stabilityIncrFactor).GetSeconds ());
       NodeStab ns (Time (i->second.GetNodeStability () * m_stabilityIncrFactor));
@@ -546,7 +546,7 @@ RouteCache::DecStability (Ipv4Address node)
     }
   else
     {
-      // TODO remove it here
+      /// \todo remove it here
       NS_LOG_INFO ("The stability here " << i->second.GetNodeStability ().GetSeconds ());
       NS_LOG_INFO ("The stability here " << Time (i->second.GetNodeStability () / m_stabilityDecrFactor).GetSeconds ());
       NodeStab ns (Time (i->second.GetNodeStability () / m_stabilityDecrFactor));
@@ -624,7 +624,7 @@ RouteCache::UseExtends (RouteCacheEntry::IP_VECTOR rt)
           if (m_linkCache[link].GetLinkStability () < m_useExtends)
             {
               m_linkCache[link].SetLinkStability (m_useExtends);
-              /// TODO remove after debug
+              /// \todo remove after debug
               NS_LOG_INFO ("The time of the link " << m_linkCache[link].GetLinkStability ().GetSeconds ());
             }
         }
@@ -785,7 +785,7 @@ RouteCache::DeleteAllRoutesIncludeLink (Ipv4Address errorSrc, Ipv4Address unreac
       // erase the two kind of links to make sure the link is removed from the link cache
       NS_LOG_DEBUG ("Erase the route");
       m_linkCache.erase (link1);
-      /// TODO get rid of this one
+      /// \todo get rid of this one
       NS_LOG_DEBUG ("The link cache size " << m_linkCache.size());
       m_linkCache.erase (link2);
       NS_LOG_DEBUG ("The link cache size " << m_linkCache.size());
@@ -1141,13 +1141,17 @@ void
 RouteCache::AddNeighbor (std::vector<Ipv4Address> nodeList, Ipv4Address ownAddress, Time expire)
 {
   NS_LOG_LOGIC ("Add neighbor number " << nodeList.size ());
-  for (std::vector<Ipv4Address>::iterator j = nodeList.begin (); j != nodeList.end (); ++j)
+  for (std::vector<Ipv4Address>::iterator j = nodeList.begin (); j != nodeList.end ();)
     {
       Ipv4Address addr = *j;
       if (addr == ownAddress)
         {
-          nodeList.erase (j);
+          j = nodeList.erase (j);
           NS_LOG_DEBUG ("The node list size " << nodeList.size ());
+        }
+      else
+        {
+          ++j;
         }
       Neighbor neighbor (addr, LookupMacAddress (addr), expire + Simulator::Now ());
       m_nb.push_back (neighbor);
@@ -1179,7 +1183,7 @@ RouteCache::PurgeMac ()
           if (pred (*j))
             {
               NS_LOG_LOGIC ("Close link to " << j->m_neighborAddress);
-              // disable temporarily TODO
+              /// \todo disable temporarily
 //              m_handleLinkFailure (j->m_neighborAddress);
             }
         }

@@ -25,6 +25,7 @@
 #include "attribute-helper.h"
 #include "int64x64.h"
 #include <stdint.h>
+#include <limits>
 #include <cmath>
 #include <ostream>
 
@@ -36,61 +37,12 @@ namespace ns3 {
  */
 /**
  * \ingroup time
- * \brief keep track of time unit.
- *
- * This template class is used to keep track of the value
- * of a specific time unit: the type TimeUnit<1> is used to
- * keep track of seconds, the type TimeUnit<2> is used to keep
- * track of seconds squared, the type TimeUnit<-1> is used to
- * keep track of 1/seconds, etc.
- *
- * This base class defines all the functionality shared by all
- * these time unit objects: it defines all the classic arithmetic
- * operators +, -, *, /, and all the classic comparison operators:
- * ==, !=, <, >, <=, >=. It is thus easy to add, substract, or
- * multiply multiple TimeUnit objects. The return type of any such
- * arithmetic expression is always a TimeUnit object.
- *
- * The ns3::uint64_t, ns3::Time, ns3::TimeSquare, and ns3::TimeInvert classes
- * are aliases for the TimeUnit<0>, TimeUnit<1>, TimeUnit<2> and TimeUnit<-1>
- * types respectively.
- *
- * For example:
- * \code
- * Time<1> t1 = Seconds (10.0);
- * Time<1> t2 = Seconds (10.0);
- * Time<2> t3 = t1 * t2;
- * Time<0> t4 = t1 / t2;
- * Time<3> t5 = t3 * t1;
- * Time<-2> t6 = t1 / t5;
- * TimeSquare t7 = t3;
- * uint64_t s = t4;
- * \endcode
- *
- * If you try to assign the result of an expression which does not
- * match the type of the variable it is assigned to, you will get a
- * compiler error. For example, the following will not compile:
- * \code
- * Time<1> = Seconds (10.0) * Seconds (1.5);
- * \endcode
- *
- * You can also use the following non-member functions to manipulate
- * any of these ns3::TimeUnit object:
- *  - \ref ns3-Time-Abs ns3::Abs
- *  - \ref ns3-Time-Max ns3::Max
- *  - \ref ns3-Time-Min ns3::Min
- */
-/**
- * \ingroup time
  * \brief keep track of time values and allow control of global simulation resolution
  *
  * This class defines all the classic C++ arithmetic
  * operators +, -, *, /, and all the classic comparison operators:
  * ==, !=, <, >, <=, >=. It is thus easy to add, substract, or
- * multiply multiple Time objects.
- *
- * The ns3::uint64_t, ns3::TimeSquare, and ns3::TimeInvert classes
- * are backward-compatibility aliases for ns3::Time.
+ * multiply Time objects.
  *
  * For example:
  * \code
@@ -214,6 +166,21 @@ public:
    */
   explicit Time (const std::string & s);
 
+  /**
+   * \brief Minimum representable Time
+   */
+  static Time Min ()
+  {
+    return Time (std::numeric_limits<int64_t>::min ());
+  }
+  /**
+   * \brief Maximum representable Time
+   */
+  static Time Max ()
+  {
+    return Time (std::numeric_limits<int64_t>::max ());
+  }
+  
   /**
    * \return true if the time is zero, false otherwise.
    */
@@ -699,7 +666,37 @@ inline Time TimeStep (uint64_t ts)
 
 ATTRIBUTE_VALUE_DEFINE (Time);
 ATTRIBUTE_ACCESSOR_DEFINE (Time);
-ATTRIBUTE_CHECKER_DEFINE (Time);
+
+/**
+ * \brief Helper to make a Time checker with bounded range.
+ * Both limits are inclusive
+ *
+ * \return the AttributeChecker 
+ */
+Ptr<const AttributeChecker> MakeTimeChecker (const Time min, const Time max);
+
+/**
+ * \brief Helper to make an unbounded Time checker.
+ *
+ * \return the AttributeChecker
+ */
+inline
+Ptr<const AttributeChecker> MakeTimeChecker (void)
+{
+  return MakeTimeChecker (Time::Min (), Time::Max ());
+}
+
+/**
+ * \brief Helper to make a Time checker with an upper bound
+ *
+ * \return the AttributeChecker
+ */
+inline
+Ptr<const AttributeChecker> MakeTimeChecker (const Time min)
+{
+  return MakeTimeChecker (min, Time::Max ());
+}
+
 
 } // namespace ns3
 

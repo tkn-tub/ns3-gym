@@ -21,15 +21,40 @@ Supported platforms
 
 New user-visible features
 -------------------------
+- Time attributes can now be bounded.  See attribute-test-suite.cc for an
+  example.
+- IPv6 addrss class 2001:db8::/32 is now dropped by routers (RFC 3849).
+- New generic hash function interface.  Two hash functions are provided:
+  murmur3 (default), and the venerable FNV1a.  See the Hash Functions
+  section in the Manual.
+- New Mac16Address has been added, Mac64Address is now in-line with 
+  Mac48Address and all the three can be used in IPv6 autoconfigure. 
 
 Bugs fixed
 ----------
+- Bug 760 - IP address removal can be painful
+- Bug 1296 - Enhancement in Ipv[4,6]RoutingHelper
+- Bug 1390 - ICMPv6 Redirect are handled correctly only for /64 networks
 - Bug 1643 - NdiscCache creation and existence checks
+- Bug 1646 - ICMPv6 Redirect are sent from global address instead of link-local
 - Bug 1662 - m_type not set for Ipv6OptionRouterAlertHeader
 - Bug 1678 - C++11 compliance problem with std::pair"
+- Bug 1682 - ./waf crashes on FC10
 - Bug 1683 - IPv6 autoconfigured don't use *infinite* lifetimes
 - Bug 1669 - ns-3 should support binding two and three (possibly more) arguments
+- Bug 1675 - Throughput computation error in Wireless examples
+- Bug 1688 - Routers should advertise themselves from the link-local address
 - Bug 1689 - IPv6 shouldn't add a default gateway without checking the Router lifetime
+- Bug 1697 - ICMPv6 Redirect trigger contains multiple bugs
+- Bug 1698 - mobility.SetPositionAllocator misses prefix "ns3::"
+- Bug 1700 - Ipv6RawSocket does not honor the bound address when sending packets
+- Bug 1701 - Ipv6StaticRouting: the source address should match the destination scope
+- Bug 1703 - Nodes don't react to a DAD
+- Bug 1712 - The IP (v4 and v6) forwarding needs a test
+- Bug 1718 - Ipv4StaticRouting log component is misspelled
+- Bug 1720 - IPv6 Fragmentation cause crashes
+- Bug 1727 - Ping6 should use a proper source address
+- Bug 1731 - lte-phy-error-model passes unexpectedly
 
 Known issues
 ------------

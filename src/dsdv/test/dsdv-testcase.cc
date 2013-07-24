@@ -78,22 +78,22 @@ DsdvHeaderTestCase::DoRun ()
     hdr2.SetDstSeqno (4);
     hdr2.SetHopCount (1);
     packet->AddHeader (hdr2);
-    NS_TEST_ASSERT_MSG_EQ (packet->GetSize (), 24, "XXX");
+    NS_TEST_ASSERT_MSG_EQ (packet->GetSize (), 24, "001");
   }
 
   {
     dsdv::DsdvHeader hdr2;
     packet->RemoveHeader (hdr2);
-    NS_TEST_ASSERT_MSG_EQ (hdr2.GetSerializedSize (),12,"XXX");
-    NS_TEST_ASSERT_MSG_EQ (hdr2.GetDst (),Ipv4Address ("10.1.1.3"),"XXX");
-    NS_TEST_ASSERT_MSG_EQ (hdr2.GetDstSeqno (),4,"XXX");
-    NS_TEST_ASSERT_MSG_EQ (hdr2.GetHopCount (),1,"XXX");
+    NS_TEST_ASSERT_MSG_EQ (hdr2.GetSerializedSize (),12,"002");
+    NS_TEST_ASSERT_MSG_EQ (hdr2.GetDst (),Ipv4Address ("10.1.1.3"),"003");
+    NS_TEST_ASSERT_MSG_EQ (hdr2.GetDstSeqno (),4,"004");
+    NS_TEST_ASSERT_MSG_EQ (hdr2.GetHopCount (),1,"005");
     dsdv::DsdvHeader hdr1;
     packet->RemoveHeader (hdr1);
-    NS_TEST_ASSERT_MSG_EQ (hdr1.GetSerializedSize (),12,"XXX");
-    NS_TEST_ASSERT_MSG_EQ (hdr1.GetDst (),Ipv4Address ("10.1.1.2"),"XXX");
-    NS_TEST_ASSERT_MSG_EQ (hdr1.GetDstSeqno (),2,"XXX");
-    NS_TEST_ASSERT_MSG_EQ (hdr1.GetHopCount (),2,"XXX");
+    NS_TEST_ASSERT_MSG_EQ (hdr1.GetSerializedSize (),12,"006");
+    NS_TEST_ASSERT_MSG_EQ (hdr1.GetDst (),Ipv4Address ("10.1.1.2"),"008");
+    NS_TEST_ASSERT_MSG_EQ (hdr1.GetDstSeqno (),2,"009");
+    NS_TEST_ASSERT_MSG_EQ (hdr1.GetHopCount (),2,"010");
   }
 }
 
@@ -156,28 +156,28 @@ DsdvTableTestCase::DoRun ()
     dsdv::RoutingTableEntry rEntry;
     if (rtable.LookupRoute (Ipv4Address ("10.1.1.4"), rEntry))
       {
-        NS_TEST_ASSERT_MSG_EQ (rEntry.GetDestination (),Ipv4Address ("10.1.1.4"),"XXX");
-        NS_TEST_ASSERT_MSG_EQ (rEntry.GetSeqNo (),2,"XXX");
-        NS_TEST_ASSERT_MSG_EQ (rEntry.GetHop (),2,"XXX");
+        NS_TEST_ASSERT_MSG_EQ (rEntry.GetDestination (),Ipv4Address ("10.1.1.4"),"100");
+        NS_TEST_ASSERT_MSG_EQ (rEntry.GetSeqNo (),2,"101");
+        NS_TEST_ASSERT_MSG_EQ (rEntry.GetHop (),2,"102");
       }
     if (rtable.LookupRoute (Ipv4Address ("10.1.1.2"), rEntry))
       {
-        NS_TEST_ASSERT_MSG_EQ (rEntry.GetDestination (),Ipv4Address ("10.1.1.2"),"XXX");
-        NS_TEST_ASSERT_MSG_EQ (rEntry.GetSeqNo (),4,"XXX");
-        NS_TEST_ASSERT_MSG_EQ (rEntry.GetHop (),1,"XXX");
+        NS_TEST_ASSERT_MSG_EQ (rEntry.GetDestination (),Ipv4Address ("10.1.1.2"),"103");
+        NS_TEST_ASSERT_MSG_EQ (rEntry.GetSeqNo (),4,"104");
+        NS_TEST_ASSERT_MSG_EQ (rEntry.GetHop (),1,"105");
       }
     if (rtable.LookupRoute (Ipv4Address ("10.1.1.3"), rEntry))
       {
-        NS_TEST_ASSERT_MSG_EQ (rEntry.GetDestination (),Ipv4Address ("10.1.1.3"),"XXX");
-        NS_TEST_ASSERT_MSG_EQ (rEntry.GetSeqNo (),4,"XXX");
-        NS_TEST_ASSERT_MSG_EQ (rEntry.GetHop (),1,"XXX");
+        NS_TEST_ASSERT_MSG_EQ (rEntry.GetDestination (),Ipv4Address ("10.1.1.3"),"106");
+        NS_TEST_ASSERT_MSG_EQ (rEntry.GetSeqNo (),4,"107");
+        NS_TEST_ASSERT_MSG_EQ (rEntry.GetHop (),1,"108");
       }
     if (rtable.LookupRoute (Ipv4Address ("10.1.1.255"), rEntry))
       {
-        NS_TEST_ASSERT_MSG_EQ (rEntry.GetDestination (),Ipv4Address ("10.1.1.255"),"XXX");
+        NS_TEST_ASSERT_MSG_EQ (rEntry.GetDestination (),Ipv4Address ("10.1.1.255"),"109");
       }
-    NS_TEST_ASSERT_MSG_EQ (rEntry.GetInterface ().GetLocal (),Ipv4Address ("10.1.1.1"),"XXX");
-    NS_TEST_ASSERT_MSG_EQ (rEntry.GetInterface ().GetBroadcast (),Ipv4Address ("10.1.1.255"),"XXX");
+    NS_TEST_ASSERT_MSG_EQ (rEntry.GetInterface ().GetLocal (),Ipv4Address ("10.1.1.1"),"110");
+    NS_TEST_ASSERT_MSG_EQ (rEntry.GetInterface ().GetBroadcast (),Ipv4Address ("10.1.1.255"),"111");
     NS_TEST_ASSERT_MSG_EQ (rtable.RoutingTableSize (),4,"Rtable size incorrect");
   }
   Simulator::Destroy ();

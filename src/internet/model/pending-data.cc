@@ -124,7 +124,7 @@ uint32_t PendingData::SizeFromSeq (const SequenceNumber32& seqFront, const Seque
 uint32_t PendingData::SizeFromOffset (uint32_t offset)
 { // Find out how much data is available from offset
   NS_LOG_FUNCTION (this << offset);
-  // XXX should this return zero, or error out?
+  /// \todo should this return zero, or error out?
   if (offset > size) return 0;     // No data at requested offset
   return size - offset;            // Available data after offset
 }

@@ -584,7 +584,7 @@ uint32_t Packet::GetSerializedSize (void) const
     }
 
   //Tag size
-  //XXX
+  /// \todo Serialze Tags size
   //size += m_tags.GetSerializedSize ();
 
   // increment total size by size of meta-data 
@@ -658,7 +658,7 @@ Packet::Serialize (uint8_t* buffer, uint32_t maxSize) const
     }
 
   // Serialize Tags
-  // XXX
+  /// \todo Serialize Tags
 
   // Serialize Metadata
   uint32_t metaSize = m_metadata.GetSerializedSize ();
@@ -756,7 +756,7 @@ Packet::Deserialize (const uint8_t* buffer, uint32_t size)
     }
 
   // read tags
-  //XXX
+  /// \todo Deserialize Tags
   //uint32_t tagsDeserialized = m_tags.Deserialize (buffer.Begin ());
   //buffer.RemoveAtStart (tagsDeserialized);
 

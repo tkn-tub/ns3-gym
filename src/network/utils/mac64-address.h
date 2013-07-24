@@ -22,6 +22,10 @@
 
 #include <stdint.h>
 #include <ostream>
+#include "ns3/attribute.h"
+#include "ns3/attribute-helper.h"
+#include "ipv4-address.h"
+#include "ipv6-address.h"
 
 namespace ns3 {
 
@@ -89,12 +93,36 @@ private:
    */
   Address ConvertTo (void) const;
   static uint8_t GetType (void);
+  friend bool operator < (const Mac64Address &a, const Mac64Address &b);
+  friend bool operator == (const Mac64Address &a, const Mac64Address &b);
+  friend bool operator != (const Mac64Address &a, const Mac64Address &b);
+  friend std::istream& operator>> (std::istream& is, Mac64Address & address);
+
   uint8_t m_address[8];
 };
 
-bool operator == (const Mac64Address &a, const Mac64Address &b);
-bool operator != (const Mac64Address &a, const Mac64Address &b);
+/**
+ * \class ns3::Mac64AddressValue
+ * \brief hold objects of type ns3::Mac64Address
+ */
+
+ATTRIBUTE_HELPER_HEADER (Mac64Address);
+
+inline bool operator == (const Mac64Address &a, const Mac64Address &b)
+{
+  return memcmp (a.m_address, b.m_address, 8) == 0;
+}
+inline bool operator != (const Mac64Address &a, const Mac64Address &b)
+{
+  return memcmp (a.m_address, b.m_address, 8) != 0;
+}
+inline bool operator < (const Mac64Address &a, const Mac64Address &b)
+{
+  return memcmp (a.m_address, b.m_address, 8) < 0;
+}
+
 std::ostream& operator<< (std::ostream& os, const Mac64Address & address);
+std::istream& operator>> (std::istream& is, Mac64Address & address);
 
 } // namespace ns3
 

@@ -229,7 +229,7 @@ int main (int argc, char *argv[])
     gnuplots.AddPlot (plot);
   }
 
-  // XXX Turn this plot back on once its distribution has been finished.
+  /// \todo Turn this plot back on once its distribution has been finished.
   /*
   {
     Gnuplot plot;
@@ -249,10 +249,9 @@ int main (int argc, char *argv[])
 
     gnuplots.AddPlot (plot);
   }
-  // XXX Turn the above plot back on once its distribution has been finished.
   */
 
-  // XXX Turn this plot back on once its distribution has been finished.
+  /// \todo Turn this plot back on once its distribution has been finished.
   /*
   {
     Gnuplot plot;
@@ -267,7 +266,6 @@ int main (int argc, char *argv[])
 
     gnuplots.AddPlot (plot);
   }
-  // XXX Turn the above plot back on once its distribution has been finished.
   */
 
   {

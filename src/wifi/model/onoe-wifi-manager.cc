@@ -267,7 +267,7 @@ OnoeWifiManager::DoGetRtsMode (WifiRemoteStation *st)
 {
   OnoeWifiRemoteStation *station = (OnoeWifiRemoteStation *)st;
   UpdateMode (station);
-  // XXX: can we implement something smarter ?
+  /// \todo can we implement something smarter ?
   return GetSupported (station, 0);
 }
 

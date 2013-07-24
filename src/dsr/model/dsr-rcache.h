@@ -327,18 +327,6 @@ public:
    * \brief Define the vector of route entries.
    */
   typedef std::list<RouteCacheEntry::IP_VECTOR> routeVector;
-  /**
-   * \brief Get the destination address of the route.
-   */
-  Ipv4Address GetDestination (void) const;
-  /**
-   * \brief Remove all packets with destination IP address dst
-   */
-  void DropPathWithDst (Ipv4Address dst);
-  /**
-   * \brief To know if the two entries are the same
-   */
-  bool IsEqual (RouteCacheEntry ca);
   // /\name Fields
   // \{
   bool GetSubRoute () const

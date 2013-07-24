@@ -171,8 +171,17 @@ void Ping6::Send ()
       /* hack to have ifIndex in Ipv6RawSocketImpl
        * maybe add a SetIfIndex in Ipv6RawSocketImpl directly 
        */
-      src = GetNode ()->GetObject<Ipv6> ()->GetAddress (m_ifIndex, 0).GetAddress ();
-    }
+      Ipv6InterfaceAddress dstIa (m_peerAddress);
+      for (uint32_t i = 0; i < GetNode ()->GetObject<Ipv6> ()->GetNAddresses (m_ifIndex); i++)
+        {
+          src = GetNode ()->GetObject<Ipv6> ()->GetAddress (m_ifIndex, i).GetAddress ();
+          Ipv6InterfaceAddress srcIa (src);
+          if ( srcIa.GetScope() == dstIa.GetScope() )
+            {
+              break;
+            }
+        }
+     }
   else
     {
       src = m_localAddress;

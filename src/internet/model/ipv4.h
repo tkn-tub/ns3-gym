@@ -248,6 +248,15 @@ public:
    */
   virtual bool RemoveAddress (uint32_t interface, uint32_t addressIndex) = 0;
 
+   /**
+   * \brief Remove the given address on named Ipv4 interface
+   *
+   * \param interface Interface number of an Ipv4 interface
+   * \param address The address to remove
+   * \returns true if the operation succeeded
+   */
+  virtual bool RemoveAddress (uint32_t interface, Ipv4Address address) = 0;
+
   /**
    * \brief Return the first primary source address with scope less than 
    * or equal to the requested scope, to use in sending a packet to 

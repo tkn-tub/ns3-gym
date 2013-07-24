@@ -24,6 +24,7 @@
 ^doc/doxygen.warnings.log$
 ^doc/(manual|models|tutorial|tutorial-pt-br)/build
 ^doc/(manual|models|tutorial|tutorial-pt-br)/figures/.*\.(eps|pdf|png)$
+^doc/manual/source-temp
 ^doc/models/source-temp
 ^doc/ns3_html_theme/static/ns3_version.js$
 ^src/.*/doc/build

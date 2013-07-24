@@ -244,7 +244,14 @@ int Ipv6RawSocketImpl::SendTo (Ptr<Packet> p, uint32_t flags, const Address& toA
                 }
             }
 
-          ipv6->Send (p, route->GetSource (), dst, m_protocol, route);
+          if (m_src.IsAny ())
+            {
+              ipv6->Send (p, route->GetSource (), dst, m_protocol, route);
+            }
+          else
+            {
+              ipv6->Send (p, m_src, dst, m_protocol, route);
+            }
           // Return only payload size (as Linux does).
           return p->GetSize () - hdr.GetSerializedSize ();
         }

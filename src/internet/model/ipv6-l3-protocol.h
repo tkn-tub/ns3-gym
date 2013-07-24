@@ -249,6 +249,14 @@ public:
   bool RemoveAddress (uint32_t interfaceIndex, uint32_t addressIndex);
 
   /**
+   * \brief Remove a specified Ipv6 address from an interface.
+   * \param interfaceIndex interface index
+   * \param address Ipv6Address to be removed from the interface
+   * \returns true if the operation succeeded
+   */
+  bool RemoveAddress (uint32_t interface, Ipv6Address address);
+
+  /**
    * \brief Set metric for an interface.
    * \param i index
    * \param metric
@@ -420,19 +428,21 @@ private:
 
   /**
    * \brief Forward a packet.
+   * \param idev Pointer to ingress network device
    * \param rtentry route 
    * \param p packet to forward
    * \param header IPv6 header to add to the packet
    */
-  void IpForward (Ptr<Ipv6Route> rtentry, Ptr<const Packet> p, const Ipv6Header& header);
+  void IpForward (Ptr<const NetDevice> idev, Ptr<Ipv6Route> rtentry, Ptr<const Packet> p, const Ipv6Header& header);
 
   /**
    * \brief Forward a packet in multicast.
+   * \param idev Pointer to ingress network device
    * \param mrtentry route 
    * \param p packet to forward
    * \param header IPv6 header to add to the packet
    */
-  void IpMulticastForward (Ptr<Ipv6MulticastRoute> mrtentry, Ptr<const Packet> p, const Ipv6Header& header);
+  void IpMulticastForward (Ptr<const NetDevice> idev, Ptr<Ipv6MulticastRoute> mrtentry, Ptr<const Packet> p, const Ipv6Header& header);
 
   /**
    * \brief Deliver a packet.

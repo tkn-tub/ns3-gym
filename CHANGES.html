@@ -55,10 +55,34 @@ us a note on ns-developers mailing list.</p>
 
 <h2>New API:</h2>
 <ul>
+  <li>Time attributes can now be bounded.  See attribute-test-suite.cc
+      for an example.</li>
+  <li>New generic hash function interface.  Two hash functions are provided:
+      murmur3 (default), and the venerable FNV1a.  See the Hash Functions
+      section in the Manual.</li>
+  <li>New Mac16Address has been added. It can be used with IPv6 to make
+      an Autoconfigured address.</li>
+  <li>Mac64Address support has been extended. It can now be used with 
+      IPv6 to make an Autoconfigured address.</li>
 </ul>
 
 <h2>Changes to existing API:</h2>
 <ul>
+  <li> The documentation's IPv6 addresses (2001:db8::/32, RFC 3849) are now
+  dropped by routers.
+  </li>
+  <li> The 'src/tools' module has been removed, and most files migrated to
+  'src/stats'.  For users of these programs (the statistics-processing 
+  in average.h, or the gnuplot support), the main change is likely to be
+  replacing the inclusion of "tools-module.h" with "stats-module.h".
+  Users of the event garbage collector, previously in tools, will now 
+  include it from the core module.
+  </li>
+  <li> The Ipv6 UnicastForwardCallback and  MulticastForwardCallback 
+  have a new parmater, the NetDevice the packet has been received from.
+  Existing Ipv6RoutingProtocols should update their RouteInput function
+  accordingly. E.g., from ucb (rtentry, p, header); to ucb (idev, rtentry, p, header);
+  </li>
 </ul>
 
 <h2>Changes to build system:</h2>

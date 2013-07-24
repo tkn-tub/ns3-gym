@@ -23,7 +23,9 @@
 #include "ns3/ptr.h"
 #include "ns3/node.h"
 #include "ns3/net-device.h"
+#include "ns3/mac16-address.h"
 #include "ns3/mac48-address.h"
+#include "ns3/mac64-address.h"
 #include "ns3/ipv6.h"
 #include "ns3/ipv6-address-generator.h"
 
@@ -51,8 +53,8 @@ void Ipv6AddressHelper::SetBase (Ipv6Address network, Ipv6Prefix prefix,
                             Ipv6Address base)
 {
   NS_LOG_FUNCTION (this << network << prefix << base);
-  // XXX for now we do not enforce the prefix because the underlying
-  // Ipv6AddressGenerator does not handle prefixes well that are not 64 bits
+  /// \todo for now we do not enforce the prefix because the underlying
+  /// Ipv6AddressGenerator does not handle prefixes well that are not 64 bits
   Ipv6AddressGenerator::Init (network, Ipv6Prefix (64), base);
 }
 
@@ -60,16 +62,30 @@ void Ipv6AddressHelper::SetBase (Ipv6Address network, Ipv6Prefix prefix,
 Ipv6Address Ipv6AddressHelper::NewAddress (Address addr)
 {
   NS_LOG_FUNCTION (this << addr);
-  if (Mac48Address::IsMatchingType (addr))
+  if (Mac16Address::IsMatchingType (addr))
+    {
+      Ipv6Address network = Ipv6AddressGenerator::GetNetwork (Ipv6Prefix (64));
+      Ipv6Address address = Ipv6Address::MakeAutoconfiguredAddress (Mac16Address::ConvertFrom (addr), network);
+      Ipv6AddressGenerator::AddAllocated (address);
+      return address;
+    }
+  else if (Mac48Address::IsMatchingType (addr))
     {
       Ipv6Address network = Ipv6AddressGenerator::GetNetwork (Ipv6Prefix (64));
       Ipv6Address address = Ipv6Address::MakeAutoconfiguredAddress (Mac48Address::ConvertFrom (addr), network);
       Ipv6AddressGenerator::AddAllocated (address);
       return address;
-    } 
+    }
+  else if (Mac64Address::IsMatchingType (addr))
+    {
+      Ipv6Address network = Ipv6AddressGenerator::GetNetwork (Ipv6Prefix (64));
+      Ipv6Address address = Ipv6Address::MakeAutoconfiguredAddress (Mac64Address::ConvertFrom (addr), network);
+      Ipv6AddressGenerator::AddAllocated (address);
+      return address;
+    }
   else
     {
-      NS_FATAL_ERROR ("Did not pass in a Mac48Address");
+      NS_FATAL_ERROR ("Did not pass in a valid Mac Address (16, 48 or 64 bits)");
     }
   /* never reached */
   return Ipv6Address ("::");

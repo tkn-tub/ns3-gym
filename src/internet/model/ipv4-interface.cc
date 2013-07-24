@@ -207,8 +207,8 @@ Ipv4Interface::Send (Ptr<Packet> p, Ipv4Address dest)
   // Check for a loopback device
   if (DynamicCast<LoopbackNetDevice> (m_device))
     {
-      // XXX additional checks needed here (such as whether multicast
-      // goes to loopback)?
+      /// \todo additional checks needed here (such as whether multicast
+      /// goes to loopback)?
       m_device->Send (p, m_device->GetBroadcast (), 
                       Ipv4L3Protocol::PROT_NUMBER);
       return;
@@ -344,6 +344,29 @@ Ipv4Interface::RemoveAddress (uint32_t index)
   NS_ASSERT_MSG (false, "Address " << index << " not found");
   Ipv4InterfaceAddress addr;
   return (addr);  // quiet compiler
+}
+
+Ipv4InterfaceAddress
+Ipv4Interface::RemoveAddress(Ipv4Address address)
+{
+  NS_LOG_FUNCTION(this << address);
+
+  if (address == address.GetLoopback())
+    {
+      NS_LOG_WARN ("Cannot remove loopback address.");
+      return Ipv4InterfaceAddress();
+    }
+
+  for(Ipv4InterfaceAddressListI it = m_ifaddrs.begin(); it != m_ifaddrs.end(); it++)
+    {
+      if((*it).GetLocal() == address)
+        {
+          Ipv4InterfaceAddress ifAddr = *it;
+          m_ifaddrs.erase(it);
+          return ifAddr;
+        }
+    }
+  return Ipv4InterfaceAddress();
 }
 
 } // namespace ns3

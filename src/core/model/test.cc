@@ -484,22 +484,30 @@ std::string
 TestRunnerImpl::ReplaceXmlSpecialCharacters (std::string xml) const
 {
   NS_LOG_FUNCTION (this << xml);
-  std::string specials = "<>&\"'";
-  std::string replacements[] = {"&lt;", "&gt;", "&amp;", "&#39;", "&quot;"};
+  typedef std::map <char, std::string> specials_map;
+  specials_map specials;
+  specials['<'] = "&lt;";
+  specials['>'] = "&gt;";
+  specials['&'] = "&amp;";
+  specials['"'] = "&#39;";
+  specials['\''] = "&quot;";
+
   std::string result;
-  std::size_t index, length = xml.length ();
+  std::size_t length = xml.length ();
 
   for (size_t i = 0; i < length; ++i)
     {
       char character = xml[i];
 
-      if ((index = specials.find (character)) == std::string::npos)
+      specials_map::const_iterator it = specials.find (character);
+
+      if (it == specials.end ())
         {
           result.push_back (character);
         }
       else
         {
-          result += replacements[index];
+          result += it->second;
         }
     }
   return result;
@@ -539,7 +547,7 @@ TestRunnerImpl::PrintReport (TestCase *test, std::ostream *os, bool xml, int lev
   double user = test->m_result->clock.GetElapsedUser () / MS_PER_SEC;
   double system = test->m_result->clock.GetElapsedSystem () / MS_PER_SEC;
 
-  (*os).precision (3);
+  std::streamsize oldPrecision = (*os).precision (3);
   *os << std::fixed;
 
   std::string statusString = test->IsFailed ()?"FAIL":"PASS";
@@ -596,7 +604,8 @@ TestRunnerImpl::PrintReport (TestCase *test, std::ostream *os, bool xml, int lev
         }
     }
 
-  os->unsetf(std::ios_base::floatfield);
+  (*os).unsetf(std::ios_base::floatfield);
+  (*os).precision (oldPrecision);
 }
   
 void
@@ -711,7 +720,7 @@ TestRunnerImpl::FilterTests (std::string testName,
               delete *j;
 
               // Remove this test case from the test suite.
-              test->m_children.erase (j);
+              j = test->m_children.erase (j);
             }
           else
             {

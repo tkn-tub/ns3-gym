@@ -168,7 +168,7 @@ void Icmpv6L4Protocol::DoDAD (Ipv6Address target, Ptr<Ipv6Interface> interface)
       return;
     }
 
-  /* TODO : disable multicast loopback to prevent NS probing to be received by the sender */
+  /** \todo disable multicast loopback to prevent NS probing to be received by the sender */
 
   Ptr<Packet> p = ForgeNS ("::",Ipv6Address::MakeSolicitedAddress (target), target, interface->GetDevice ()->GetAddress ());
 
@@ -222,7 +222,7 @@ enum IpL4Protocol::RxStatus Icmpv6L4Protocol::Receive (Ptr<Packet> packet, Ipv6H
     case Icmpv6Header::ICMPV6_ECHO_REPLY:
       // EchoReply does not contain any info about L4
       // so we can not forward it up.
-      // TODO: implement request / reply consistency check.
+      /// \todo implement request / reply consistency check.
       break;
     case Icmpv6Header::ICMPV6_ERROR_DESTINATION_UNREACHABLE:
       HandleDestinationUnreachable (p, header.GetSourceAddress (), header.GetDestinationAddress (), interface);
@@ -252,7 +252,7 @@ void Icmpv6L4Protocol::Forward (Ipv6Address source, Icmpv6Header icmp,
 
   Ptr<Ipv6L3Protocol> ipv6 = m_node->GetObject<Ipv6L3Protocol> ();
 
-  // TODO assuming the ICMP is carrying a extensionless IP packet
+  /// \todo assuming the ICMP is carrying a extensionless IP packet
 
   uint8_t nextHeader = ipHeader.GetNextHeader ();
 
@@ -319,7 +319,7 @@ void Icmpv6L4Protocol::HandleRA (Ptr<Packet> packet, Ipv6Address const &src, Ipv
             {
               p->RemoveHeader (mtuHdr);
               hasMtu = true;
-              /* XXX case of multiple prefix on single interface */
+              /** \todo case of multiple prefix on single interface */
               /* interface->GetDevice ()->SetMtu (m.GetMtu ()); */
             }
           break;
@@ -595,18 +595,16 @@ void Icmpv6L4Protocol::HandleNA (Ptr<Packet> packet, Ipv6Address const &src, Ipv
 
   if (!entry)
     {
-      /* ouch!! we are victim of a DAD */
+      /* ouch!! we might be victim of a DAD */
       
-      /*  Logically dead code (DEADCODE)
-       *  b/c loop test compares default Ipv6InterfaceAddress to target
-       
       Ipv6InterfaceAddress ifaddr;
       bool found = false;
       uint32_t i = 0;
-      uint32_t nb = 0;
+      uint32_t nb = interface->GetNAddresses ();
 
       for (i = 0; i < nb; i++)
         {
+          ifaddr = interface->GetAddress (i);
           if (ifaddr.GetAddress () == target)
             {
               found = true;
@@ -621,7 +619,7 @@ void Icmpv6L4Protocol::HandleNA (Ptr<Packet> packet, Ipv6Address const &src, Ipv
               interface->SetState (ifaddr.GetAddress (), Ipv6InterfaceAddress::INVALID);
             }
         }
-      */
+
       /* we have not initiated any communication with the target so... discard the NA */
       return;
     }
@@ -1083,7 +1081,7 @@ void Icmpv6L4Protocol::SendErrorParameterError (Ptr<Packet> malformedPacket, Ipv
   SendMessage (p, dst, header, 255);
 }
 
-void Icmpv6L4Protocol::SendRedirection (Ptr<Packet> redirectedPacket, Ipv6Address dst, Ipv6Address redirTarget, Ipv6Address redirDestination, Address redirHardwareTarget)
+void Icmpv6L4Protocol::SendRedirection (Ptr<Packet> redirectedPacket, Ipv6Address src, Ipv6Address dst, Ipv6Address redirTarget, Ipv6Address redirDestination, Address redirHardwareTarget)
 {
   NS_LOG_FUNCTION (this << redirectedPacket << dst << redirTarget << redirDestination << redirHardwareTarget);
   uint32_t llaSize = 0;
@@ -1128,7 +1126,10 @@ void Icmpv6L4Protocol::SendRedirection (Ptr<Packet> redirectedPacket, Ipv6Addres
   Icmpv6Redirection redirectionHeader;
   redirectionHeader.SetTarget (redirTarget);
   redirectionHeader.SetDestination (redirDestination);
-  SendMessage (p, dst, redirectionHeader, 64);
+  redirectionHeader.CalculatePseudoHeaderChecksum (src, dst, p->GetSize () + redirectionHeader.GetSerializedSize (), PROT_NUMBER);
+  p->AddHeader (redirectionHeader);
+
+  SendMessage (p, src, dst, 64);
 }
 
 Ptr<Packet> Icmpv6L4Protocol::ForgeNA (Ipv6Address src, Ipv6Address dst, Address* hardwareAddress, uint8_t flags)
@@ -1374,8 +1375,8 @@ void Icmpv6L4Protocol::FunctionDadTimeout (Ptr<Icmpv6L4Protocol> icmpv6, Ipv6Int
 
       if (!ipv6->IsForwarding (ipv6->GetInterfaceForDevice (interface->GetDevice ())) && addr.IsLinkLocal ())
         {
-          /* XXX because all nodes start at the same time, there will be many of RS arround 1 second of simulation time
-           * TODO Add random delays before sending RS
+          /* \todo Add random delays before sending RS
+           * because all nodes start at the same time, there will be many of RS arround 1 second of simulation time
            */
           Simulator::Schedule (Seconds (0.0), &Icmpv6L4Protocol::SendRS, PeekPointer (icmpv6), ifaddr.GetAddress (), Ipv6Address::GetAllRoutersMulticast (), interface->GetDevice ()->GetAddress ());
         }

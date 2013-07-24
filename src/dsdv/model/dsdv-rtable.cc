@@ -39,9 +39,9 @@ namespace ns3 {
 namespace dsdv {
 RoutingTableEntry::RoutingTableEntry (Ptr<NetDevice> dev,
                                       Ipv4Address dst,
-                                      u_int32_t seqNo,
+                                      uint32_t seqNo,
                                       Ipv4InterfaceAddress iface,
-                                      u_int32_t hops,
+                                      uint32_t hops,
                                       Ipv4Address nextHop,
                                       Time lifetime,
                                       Time SettlingTime,
@@ -233,7 +233,7 @@ RoutingTable::Purge (std::map<Ipv4Address, RoutingTableEntry> & removedAddresses
           ++i;
           m_ipv4AddressEntry.erase (itmp);
         }
-      // TODO: Need to decide when to invalidate a route
+      /** \todo Need to decide when to invalidate a route */
       /*          else if (i->second.GetLifeTime() > m_holddownTime)
        {
        ++i;

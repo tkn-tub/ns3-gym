@@ -49,8 +49,8 @@ public:
 
   void SerializeToXmlStream (std::ostream &os, int indent, std::string elementName) const;
 
-  // TODO: add method(s) to estimate N, µ, and s² from the histogram,
-  // see http://www.dspguide.com/ch2/4.htm
+  /// \todo add method(s) to estimate N, µ, and s² from the histogram,
+  /// see http://www.dspguide.com/ch2/4.htm
 
 private:
   std::vector<uint32_t> m_histogram;

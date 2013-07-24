@@ -86,7 +86,7 @@ UdpSocketImpl::~UdpSocketImpl ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  // XXX todo:  leave any multicast groups that have been joined
+  /// \todo  leave any multicast groups that have been joined
   m_node = 0;
   /**
    * Note: actually this function is called AFTER
@@ -734,8 +734,10 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv6Address dest, uint16_t port)
   return 0;
 }
 
-// XXX maximum message size for UDP broadcast is limited by MTU
+
+//  maximum message size for UDP broadcast is limited by MTU
 // size of underlying link; we are not checking that now.
+/// \todo Check MTU size of underlying link
 uint32_t
 UdpSocketImpl::GetTxAvailable (void) const
 {

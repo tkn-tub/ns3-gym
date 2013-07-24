@@ -27,7 +27,7 @@ public:
   inline int64x64_t (unsigned long long int v)
     : _v (v) {}
   inline int64x64_t (int64_t hi, uint64_t lo)
-    : _v (hi) { /* XXX */}
+    : _v (hi) { /** \todo add in lo? */}
 
   inline int64x64_t (const int64x64_t &o)
     : _v (o._v) {}
@@ -47,7 +47,7 @@ public:
   }
   inline uint64_t GetLow (void) const
   {
-    // XXX
+    /// \todo Generate lo?
     return 0;
   }
 
