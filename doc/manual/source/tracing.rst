@@ -1,7 +1,5 @@
 .. include:: replace.txt
 .. highlight:: cpp
-.. role:: raw-role(raw)
-   :format: html latex
 
 Tracing
 -------
@@ -347,13 +345,13 @@ There are subtleties that prevent all four classes from behaving identically,
 but we do strive to make them all work as similarly as possible; and whenever
 possible there are analogs for all methods in all classes.
 
-  +-----------------+----------------------+----------------------+
-  | \               |  pcap                |  ascii               |
-  +=================+======================+======================+
-  | Device Helper   | :raw-role:`&#x2713;` | :raw-role:`&#x2713;` | 
-  +-----------------+----------------------+----------------------+
-  | Protocol Helper | :raw-role:`&#x2713;` | :raw-role:`&#x2713;` |
-  +-----------------+----------------------+----------------------+
+  +-----------------+---------+---------+
+  |                 |  pcap   |  ascii  |
+  +=================+=========+=========+
+  | Device Helper   | |check| | |check| |
+  +-----------------+---------+---------+
+  | Protocol Helper | |check| | |check| |
+  +-----------------+---------+---------+
 
 We use an approach called a ``mixin`` to add tracing functionality to our helper
 classes. A ``mixin`` is a class that provides functionality to that is

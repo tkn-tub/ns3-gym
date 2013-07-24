@@ -197,7 +197,7 @@ latex_logo = '../../ns3_html_theme/static/ns-3.png'
 #latex_show_urls = False
 
 # Additional stuff for the LaTeX preamble.
-#latex_preamble = ''
+latex_preamble = '\usepackage{amssymb}'
 
 # Documents to append as an appendix to all manuals.
 #latex_appendices = []
