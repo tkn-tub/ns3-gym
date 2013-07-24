@@ -632,15 +632,15 @@ where :math:`P_s^i` is the probability of receiving with success the HARQ block 
 
 .. math::
 
-   \mathrm{T_{test-1}} = 0.0 \times 1 + 0.77 \times 2 + 0.23 \times 3 = 2.23
+   \mathrm{T_{test-1}} = 0.0 \times 1 + 0.926 \times 2 + 0.074 \times 3 = 2.074
 
-   \mathrm{T_{test-2}} = 0.0 \times 1 + 0.995 \times 2 + 0.005 \times 3 = 2.005
+   \mathrm{T_{test-2}} = 0.0 \times 1 + 0.752 \times 2 + 0.248 \times 3 = 2.248
 
 The expected throughput is calculted by counting the number of transmission slots available during the simulation (e.g., the number of TTIs) and the size of the TB in the simulation, in detail:
 
 .. math::
 
-   \mathrm{Thr_{test-i}} = \frac{TTI_{NUM}}{T_{test-i}} TB_{size} = \left\{ \begin{array}{lll} \dfrac{1000}{2.23}41 = 18375\mbox{ bps} & \mbox{ for test-1} \\ & \\ \dfrac{1000}{2.005}597 = 297755\mbox{ bps} & \mbox{ for test-2}\end{array} \right.
+   \mathrm{Thr_{test-i}} = \frac{TTI_{NUM}}{T_{test-i}} TB_{size} = \left\{ \begin{array}{lll} \dfrac{1000}{2.074}66 = 31822\mbox{ bps} & \mbox{ for test-1} \\ & \\ \dfrac{1000}{2.248}472 = 209964\mbox{ bps} & \mbox{ for test-2}\end{array} \right.
 
 where :math:`TTI_{NUM}` is the total number of TTIs in 1 second.
 The test is performed both for Round Robin scheduler. The test passes if the measured throughput matches with the reference throughput within a relative tolerance of 0.1. This tolerance is needed to account for the transient behavior at the beginning of the simulation and the on-fly blocks at the end of the simulation.

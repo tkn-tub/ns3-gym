@@ -64,16 +64,16 @@ LenaTestHarqSuite::LenaTestHarqSuite ()
 
 
   // Tests on DL/UL Data channels (PDSCH, PUSCH)
-  // MCS 0 TB size of 41 bytes SINR -17 expected throughput 18375 bytes/s
+  // MCS 0 TB size of 66 bytes SINR -9.91 dB expected throughput 31822 bytes/s
   // TBLER 1st tx 1.0
-  // TBLER 2nd tx 0.23
-  AddTestCase (new LenaHarqTestCase (2, 4000, 41, 0.17, 18375), TestCase::QUICK);
+  // TBLER 2nd tx 0.074
+  AddTestCase (new LenaHarqTestCase (2, 2400, 66, 0.12, 31822), TestCase::QUICK);
 
   // Tests on DL/UL Data channels (PDSCH, PUSCH)
-  // MCS 12 TB size of 597 bytes SINR 4 expected throughput 297755 bytes/s
+  // MCS 10 TB size of 472 bytes SINR 0.3 dB expected throughput 209964 bytes/s
   // TBLER 1st tx 1.0
-  // TBLER 2nd tx 0.005
-  AddTestCase (new LenaHarqTestCase (1, 640, 597, 0.06, 297755), TestCase::QUICK);
+  // TBLER 2nd tx 0.248
+  AddTestCase (new LenaHarqTestCase (1, 770, 472, 0.06, 209964), TestCase::QUICK);
 
 
 
@@ -225,7 +225,7 @@ LenaHarqTestCase::DoRun (void)
 
 
   double statsStartTime = 0.050; // need to allow for RRC connection establishment + SRS 
-  double statsDuration = 4.0;
+  double statsDuration = 2.0;
   Simulator::Stop (Seconds (statsStartTime + statsDuration - 0.0001));
 
   lena->EnableRlcTraces ();
