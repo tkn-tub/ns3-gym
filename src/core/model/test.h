@@ -41,6 +41,11 @@
 // defining a robust macro.
 //
 
+/**
+ * \internal
+ *
+ * Check if we should assert on errors, and do so
+ */
 #define ASSERT_ON_FAILURE                       \
   do {                                          \
     if (MustAssertOnFailure ())                 \
@@ -49,6 +54,11 @@
       }                                         \
   } while (false)
 
+/**
+ * \internal
+ *
+ * If we shouldn't continue on errors, return
+ */
 #define CONTINUE_ON_FAILURE                                             \
   do {                                                                  \
     if (!MustContinueOnFailure ())                                      \
@@ -57,6 +67,11 @@
       }                                                                 \
   } while (false)
 
+/**
+ * \internal
+ *
+ * If we shouldn't continue on errors, return test status
+ */
 #define CONTINUE_ON_FAILURE_RETURNS_BOOL                                \
   do {                                                                  \
     if (!MustContinueOnFailure ())                                      \
@@ -839,23 +854,26 @@ public:
    * \brief How long the test takes to execute.
    */
   enum TestDuration {
-    QUICK         = 1,  /// Fast test.
-    EXTENSIVE     = 2,  /// Medium length test.
-    TAKES_FOREVER = 3   /// Very long running test.
+    QUICK         = 1,  //!< Fast test.
+    EXTENSIVE     = 2,  //!< Medium length test.
+    TAKES_FOREVER = 3   //!< Very long running test.
   };
 
+  /**
+   *  Destructor
+   */
   virtual ~TestCase ();
 
 protected:
   /**
-   * \param name the name of the new test created
+   * \param name the name of the new TestCase created
    */
   TestCase (std::string name);
 
   /**
-   * \brief Add an individual test case to this test suite.
+   * \brief Add an individual child TestCase case to this TestCase.
    *
-   * \param testCase Pointer to the test case object to be added.
+   * \param testCase Pointer to the TestCase object to be added.
    *
    * \deprecated this method will go away in future versions of 
    * ns-3. Please use instead AddTestCase (TestCase, TestDuration)  
@@ -863,9 +881,9 @@ protected:
   void AddTestCase (TestCase *testCase) NS_DEPRECATED;
 
   /**
-   * \brief Add an individual test case to this test suite.
+   * \brief Add an individual child TestCase to this test suite.
    *
-   * \param testCase Pointer to the test case object to be added.
+   * \param testCase Pointer to the TestCase object to be added.
    * \param duration Amount of time this test takes to execute.
    */
   void AddTestCase (TestCase *testCase, enum TestDuration duration);
@@ -905,18 +923,46 @@ protected:
   
   // The methods below are used only by test macros and should not
   // be used by normal users.
+
+  /**
+   * \internal
+   *
+   * Log the failure of this TestCase.
+   */
   void ReportTestFailure (std::string cond, std::string actual, 
                       std::string limit, std::string message, 
                       std::string file, int32_t line);
+  /**
+   * \internal
+   *
+   * \return should we assert on failure, per the TestSuite configuration
+   */
   bool MustAssertOnFailure (void) const;
+  /**
+   * \internal
+   *
+   * \return should we continue on failure, per the TestSuite configuration
+   */
   bool MustContinueOnFailure (void) const;
+  /**
+   * \internal
+   * \param filename the bare (no path) file name
+   * \return the full path to filename in the data directory
+   */
   std::string CreateDataDirFilename (std::string filename);
+  /**
+   * \internal
+   * \param filename the bare (no path) file name
+   * \return the full path to filename in the temporary directory.
+   *  If the TestRunner is invoked with "--update-data", this will be
+   *  the data directory instead.
+   */
   std::string CreateTempDirFilename (std::string filename);
 private:
   friend class TestRunnerImpl;
 
   /**
-   * \brief Implementation to do any local setup required for this test case.
+   * \brief Implementation to do any local setup required for this TestCase.
    *
    * Subclasses should override this method to perform any costly per-test setup
    * before DoRun is invoked.
@@ -924,37 +970,53 @@ private:
   virtual void DoSetup (void);
 
   /**
-   * \brief Implementation to actually run this test case.
+   * \brief Implementation to actually run this TestCase.
    *
    * Subclasses should override this method to conduct their tests.
    */
   virtual void DoRun (void) = 0;
 
   /**
-   * \brief Implementation to do any local setup required for this test case.
+   * \brief Implementation to do any local setup required for this TestCase.
    *
    * Subclasses should override this method to perform any costly per-test teardown
    */
   virtual void DoTeardown (void);
 
   // forbid copying objects
+  /**
+   * \internal
+   * Private, to block copying
+   */
   TestCase (TestCase& tc);
+  /**
+   * \internal
+   * Private, to block copying
+   */
   TestCase& operator= (TestCase& tc);
 
   // methods called by TestRunnerImpl
+  /**
+   * \internal
+   * Actually run this TestCase
+   */
   void Run (TestRunnerImpl *runner);
+  /**
+   * \internal
+   * \return the failure status of this TestCase and all it's children
+   */
   bool IsFailed (void) const;
 
-
+  // Forward declaration is enough, since we only include a pointer here
   struct Result;
 
-  TestCase *m_parent;
-  std::vector<TestCase *> m_children;
-  std::string m_dataDir;
-  TestRunnerImpl *m_runner;
-  struct Result *m_result;
-  std::string m_name;
-  enum TestDuration m_duration;
+  TestCase *m_parent;                   //!< Pointer to my parent TestCase
+  std::vector<TestCase *> m_children;   //!< Vector of my children
+  std::string m_dataDir;                //!< My data directory
+  TestRunnerImpl *m_runner;             //!< Pointer to the TestRunner
+  struct Result *m_result;              //!< Results data
+  std::string m_name;                   //!< TestCase name
+  enum TestDuration m_duration;         //!< TestCase duration
 };
 
 /**
@@ -968,12 +1030,12 @@ public:
    * \brief Type of test.
    */
   enum Type {
-    ALL = 0,
-    BVT = 1,    /**< This test suite implements a Build Verification Test */
-    UNIT,       /**< This test suite implements a Unit Test */
-    SYSTEM,     /**< This test suite implements a System Test */
-    EXAMPLE,    /**< This test suite implements an Example Test */
-    PERFORMANCE /**< This test suite implements a Performance Test */
+    ALL = 0,    //!<
+    BVT = 1,    //!< This test suite implements a Build Verification Test
+    UNIT,       //!< This test suite implements a Unit Test
+    SYSTEM,     //!< This test suite implements a System Test
+    EXAMPLE,    //!< This test suite implements an Example Test
+    PERFORMANCE //!< This test suite implements a Performance Test
   };
 
   /**
@@ -995,7 +1057,7 @@ private:
   virtual void DoRun (void);
 
 
-  TestSuite::Type m_type;  
+  TestSuite::Type m_type;               //!< Type of this TestSuite
 };
 
 /**
@@ -1004,6 +1066,13 @@ private:
 class TestRunner
 {
 public:
+  /**
+   * Run the requested suite of tests.
+   *
+   * \param list of command line arguments
+   * \param argc number of elements in argv
+   * \returns success status
+   */
   static int Run (int argc, char *argv[]);
 };
 
@@ -1014,23 +1083,53 @@ template <typename T>
 class TestVectors
 {
 public:
+  /**
+   * Constructor
+   */
   TestVectors ();
+  /**
+   * Virtual desctructor
+   */
   virtual ~TestVectors ();
 
+  /**
+   * \param reserve the number of entries to reserve
+   */
   void Reserve (uint32_t reserve);
 
+  /**
+   * \param vector the test vector to add
+   * \returns the new test vector index
+   */
   uint32_t Add (T vector);
 
+  /**
+   * \return the number of test vectors
+   */
   uint32_t GetN (void) const;
+  /**
+   * Get the i'th test vector
+   * \param i the requested vector index
+   * \return the requested vector
+   */
   T Get (uint32_t i) const;
 
 private:
+  /**
+   * Copy constructor, private to block copying
+   */
   TestVectors (const TestVectors& tv);
+  /**
+   * Assignment, private to prevent copying
+   */
   TestVectors& operator= (const TestVectors& tv);
+  /**
+   * Comparison (unimplemented?)
+   */
   bool operator== (const TestVectors& tv) const;
 
-  typedef std::vector<T> TestVector;
-  TestVector m_vectors;
+  typedef std::vector<T> TestVector;    //!< Container type
+  TestVector m_vectors;                 //!< The list of test vectors
 };
 
 template <typename T>
