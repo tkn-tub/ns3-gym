@@ -414,7 +414,7 @@ private:
   {
     bool toMul;
     bool fromMul;
-    uint64_t factor;
+    int64_t factor;
     int64x64_t timeTo;
     int64x64_t timeFrom;
   };
