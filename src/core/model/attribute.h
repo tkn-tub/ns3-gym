@@ -35,7 +35,12 @@ class ObjectBase;
 /**
  *
  * \ingroup core
- * \defgroup attribute Attribute
+ * \defgroup attribute Attributes
+ *
+ * The \c ns-3 attribute system is the mechanism used in \c ns-3 to
+ * organize, document, and modify the *values* used by the various
+ * component models.  Attributes also enable the tracing and statistics
+ * gathering in the simulator.
  */
 
 /**
@@ -152,6 +157,13 @@ public:
   AttributeChecker ();
   virtual ~AttributeChecker ();
 
+  /**
+   * Create a valid value from the argument value,
+   * or reinterpret the argument as a string.
+   *
+   * \param value the AttributeValue to check
+   * \return Ptr to a valid value
+   */
   Ptr<AttributeValue> CreateValidValue (const AttributeValue &value) const;
   /**
    * \param value a pointer to the value to check
@@ -190,7 +202,13 @@ public:
    * to calling Attribute::DeserializeFromString.
    */
   virtual Ptr<AttributeValue> Create (void) const = 0;
+  /**
+   * Copy the source to the destination
 
+   * \param source source AttributeValue
+   * \param destination destination AttributeValue
+   * \return true if copy was successful
+   */
   virtual bool Copy (const AttributeValue &source, AttributeValue &destination) const = 0;
 
   

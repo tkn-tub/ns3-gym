@@ -27,6 +27,34 @@
 
 namespace ns3 {
 
+/**
+ * \ingroup attribute
+ * \defgroup attributehelper Attribute Helper
+ *
+ * All these macros can be used to generate automatically the code
+ * for subclasses of AttributeValue, AttributeAccessor, and, AttributeChecker,
+ * which can be used to give attribute powers to a normal class. i.e.,
+ * the user class can then effectively be made an attribute.
+ *
+ * There are two kinds of helper macros:
+ *  1) The simple macros.
+ *    - ATTRIBUTE_HELPER_HEADER(type)
+ *    - ATTRIBUTE_HELPER_CPP
+ *  2) The more complex macros.
+ *
+ * The simple macros are implemented in terms of the complex
+ * macros and should generally be preferred over the complex macros.
+ */
+  
+/**
+ * \ingroup attributehelper
+ *
+ * A simple string-based attribute checker
+ *
+ * \param name value type of the attribute
+ * \param underlying underlying type name
+ * \return Ptr to AttributeChecker
+ */
 template <typename T, typename BASE>
 Ptr<AttributeChecker>
 MakeSimpleAttributeChecker (std::string name, std::string underlying)
@@ -69,26 +97,7 @@ MakeSimpleAttributeChecker (std::string name, std::string underlying)
 }
 
 /**
- * \ingroup core
- * \defgroup AttributeHelper Attribute Helper
- *
- * All these macros can be used to generate automatically the code
- * for subclasses of AttributeValue, AttributeAccessor, and, AttributeChecker,
- * which can be used to give attribute powers to a normal class. i.e.,
- * the user class can then effectively be made an attribute.
- *
- * There are two kinds of helper macros:
- *  1) The simple macros.
- *  2) The more complex macros.
- *
- * The simple macros are implemented in terms of the complex
- * macros and should generally be preferred over the complex macros:
- *    - \ref ATTRIBUTE_HELPER_HEADER, and,
- *    - \ref ATTRIBUTE_HELPER_CPP,
- */
-
-/**
- * \ingroup AttributeHelper
+ * \ingroup attributehelper
  * \param type the name of the class
  *
  * This macro defines and generates the code for the implementation 
@@ -109,6 +118,10 @@ MakeSimpleAttributeChecker (std::string name, std::string underlying)
     return MakeAccessorHelper<type ## Value> (a1, a2);                    \
   }
 
+/**
+ * \ingroup attributehelper
+ * \internal
+ */
 #define ATTRIBUTE_VALUE_DEFINE_WITH_NAME(type,name)                     \
   class name ## Value : public AttributeValue                             \
   {                                                                     \
@@ -131,7 +144,7 @@ private:                                                              \
 
 
 /**
- * \ingroup AttributeHelper
+ * \ingroup attributehelper
  * \param type the name of the class.
  *
  * This macro defines the class \c typeValue associated to class \c type.
@@ -142,7 +155,7 @@ private:                                                              \
 
 
 /**
- * \ingroup AttributeHelper
+ * \ingroup attributehelper
  * \param type the name of the class
  *
  * This macro defines the conversion operators for class \c type to and
@@ -152,7 +165,7 @@ private:                                                              \
 #define ATTRIBUTE_CONVERTER_DEFINE(type)
 
 /**
- * \ingroup AttributeHelper
+ * \ingroup attributehelper
  * \param type the name of the class
  *
  * This macro defines the \c typeChecker class and the associated
@@ -164,6 +177,10 @@ private:                                                              \
   Ptr<const AttributeChecker> Make ## type ## Checker (void);       \
 
 
+/**
+ * \ingroup attributehelper
+ * \internal
+ */
 #define ATTRIBUTE_VALUE_IMPLEMENT_WITH_NAME(type,name)                  \
   name ## Value::name ## Value ()                                           \
     : m_value () {}                                                     \
@@ -194,7 +211,7 @@ private:                                                              \
   }
 
 /**
- * \ingroup AttributeHelper
+ * \ingroup attributehelper
  * \param type the name of the class.
  *
  * This macro implements the \c typeValue class (including the 
@@ -207,7 +224,7 @@ private:                                                              \
 
 
 /**
- * \ingroup AttributeHelper
+ * \ingroup attributehelper
  * \param type the name of the class
  *
  * This macro implements the \c Make<type>Checker function.
@@ -219,6 +236,10 @@ private:                                                              \
     return MakeSimpleAttributeChecker<type ## Value,type ## Checker> (# type "Value", # type); \
   }                                                                     \
 
+/**
+ * \ingroup attributehelper
+ * \internal
+ */
 #define ATTRIBUTE_CHECKER_IMPLEMENT_WITH_NAME(type,name)                    \
   Ptr<const AttributeChecker> Make ## type ## Checker (void)                \
   {                                                                     \
@@ -226,7 +247,7 @@ private:                                                              \
   }                                                                     \
 
 /**
- * \ingroup AttributeHelper
+ * \ingroup attributehelper
  * \param type the name of the class
  *
  * This macro should be invoked outside of the class
@@ -238,7 +259,7 @@ private:                                                              \
   ATTRIBUTE_CHECKER_DEFINE (type);
 
 /**
- * \ingroup AttributeHelper
+ * \ingroup attributehelper
  * \param type the name of the class
  *
  * This macro should be invoked from the class implementation file.
