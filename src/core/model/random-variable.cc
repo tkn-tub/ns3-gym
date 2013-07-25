@@ -46,6 +46,7 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("RandomVariable");
 
+/** \ingroup legacyrandom */
 class RandomVariableBase
 {
 public:
@@ -163,6 +164,7 @@ ATTRIBUTE_CHECKER_IMPLEMENT (RandomVariable);
 // -----------------------------------------------------------------------------
 // UniformVariableImpl
 
+/** \ingroup legacyrandom */
 class UniformVariableImpl : public RandomVariableBase
 {
 public:
@@ -291,6 +293,7 @@ uint32_t UniformVariable::GetInteger (uint32_t s, uint32_t l)
 // -----------------------------------------------------------------------------
 // ConstantVariableImpl methods
 
+/** \ingroup legacyrandom */
 class ConstantVariableImpl : public RandomVariableBase
 {
 
@@ -391,6 +394,7 @@ ConstantVariable::SetConstant (double c)
 // SequentialVariableImpl methods
 
 
+/** \ingroup legacyrandom */
 class SequentialVariableImpl : public RandomVariableBase
 {
 
@@ -513,6 +517,7 @@ SequentialVariable::SequentialVariable (double f, double l, const RandomVariable
 // -----------------------------------------------------------------------------
 // ExponentialVariableImpl methods
 
+/** \ingroup legacyrandom */
 class ExponentialVariableImpl : public RandomVariableBase
 {
 public:
@@ -624,6 +629,7 @@ ExponentialVariable::ExponentialVariable (double m, double b)
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 // ParetoVariableImpl methods
+/** \ingroup legacyrandom */
 class ParetoVariableImpl : public RandomVariableBase
 {
 public:
@@ -813,6 +819,7 @@ ParetoVariable::ParetoVariable (std::pair<double, double> params, double b)
 // -----------------------------------------------------------------------------
 // WeibullVariableImpl methods
 
+/** \ingroup legacyrandom */
 class WeibullVariableImpl : public RandomVariableBase
 {
 public:
@@ -948,6 +955,7 @@ WeibullVariable::WeibullVariable (double m, double s, double b)
 // -----------------------------------------------------------------------------
 // NormalVariableImpl methods
 
+/** \ingroup legacyrandom */
 class NormalVariableImpl : public RandomVariableBase   // Normally Distributed random var
 
 {
@@ -1103,6 +1111,7 @@ NormalVariable::NormalVariable (double m, double v, double b)
 
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
+/** \ingroup legacyrandom */
 class EmpiricalVariableImpl : public RandomVariableBase
 {
 public:
@@ -1294,6 +1303,7 @@ EmpiricalVariable::CDF (double v, double c)
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 // IntegerValue EmpiricalVariableImpl methods
+/** \ingroup legacyrandom */
 class IntEmpiricalVariableImpl : public EmpiricalVariableImpl
 {
 public:
@@ -1342,6 +1352,7 @@ IntEmpiricalVariable::IntEmpiricalVariable ()
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 // DeterministicVariableImpl
+/** \ingroup legacyrandom */
 class DeterministicVariableImpl : public RandomVariableBase
 {
 
@@ -1409,6 +1420,7 @@ DeterministicVariable::DeterministicVariable (double* d, uint32_t c)
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 // LogNormalVariableImpl
+/** \ingroup legacyrandom */
 class LogNormalVariableImpl : public RandomVariableBase
 {
 public:
@@ -1504,6 +1516,7 @@ LogNormalVariable::LogNormalVariable (double mu, double sigma)
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 // GammaVariableImpl
+/** \ingroup legacyrandom */
 class GammaVariableImpl : public RandomVariableBase
 {
 public:
@@ -1637,6 +1650,7 @@ double GammaVariable::GetValue (double alpha, double beta) const
 // -----------------------------------------------------------------------------
 // ErlangVariableImpl
 
+/** \ingroup legacyrandom */
 class ErlangVariableImpl : public RandomVariableBase
 {
 public:
@@ -1741,6 +1755,7 @@ double ErlangVariable::GetValue (unsigned int k, double lambda) const
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 // TriangularVariableImpl methods
+/** \ingroup legacyrandom */
 class TriangularVariableImpl : public RandomVariableBase
 {
 public:
@@ -1834,6 +1849,7 @@ TriangularVariable::TriangularVariable (double s, double l, double mean)
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 // ZipfVariableImpl
+/** \ingroup legacyrandom */
 class ZipfVariableImpl : public RandomVariableBase
 {
 public:
@@ -1926,6 +1942,7 @@ ZipfVariable::ZipfVariable (long n, double alpha)
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 // ZetaVariableImpl
+/** \ingroup legacyrandom */
 class ZetaVariableImpl : public RandomVariableBase
 {
 public:

@@ -25,7 +25,6 @@
 namespace ns3 {
 
 /**
- * \ingroup core
  * \ingroup randomvariable 
  *
  * \brief Combined Multiple-Recursive Generator MRG32k3a
