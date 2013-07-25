@@ -47,36 +47,49 @@ namespace ns3 {
  * arguments: programs can register new arguments with
  * CommandLine::AddValue.
  *
+ * In use, arguments are given in the form
+ * \code
+ *   --arg=value --toggle
+ * \endcode
+ * Most arguments expect a value, as in the first form, \c --arg=value.
+ * Toggles, corresponding to boolean arguments, can be given in any of
+ * the forms
+ * \code
+ *   --toggle-1 --toggle-2=1 --toggle-3=t --toggle-4=true
+ * \endcode
+ * all of which set the corresponding boolean variable to true.
+ *
  * In addition, this class can be used to set the
- * 'initial value' of every attribute in the system with the
+ * initial value of every attribute in the system with the 
+ * \c --TypeIdName::AttributeName=value syntax, for example
  * \code
- *   --TypeIdName::AttributeName=value
+ *   --Application::StartTime=3s
  * \endcode
- * syntax, and it can be used to set the value of every GlobalValue
- * in the system with the
+ *
+ * This class can also be used to set the value of every GlobalValue
+ * in the system with the \c --GlobalValueName=value syntax, for example
  * \code
- *   --GlobalValueName=value
+ *   --SchedulerType=HeapScheduler
  * \endcode
- * syntax.
  *
  * A simple example is in \c src/core/example/command-line-example.cc
  * The heart of that example is this code:
  *
  * \code
- *  int         val1 = 1;
- *  bool        val2 = false;
- *  std::string val3 = "";
+ *  int         var1 = 1;
+ *  bool        var2 = false;
+ *  std::string var3 = "";
  *  
  *  CommandLine cmd;
  *  cmd.Usage ("CommandLine example program.\n"
  *             "\n"
  *             "This little program demonstrates how to use CommandLine.");
- *  cmd.AddValue ("val1", "an int argument",       val1);
- *  cmd.AddValue ("val2", "a bool argument",       val2);
- *  cmd.AddValue ("val3", "a string argument",     val3);
- *  cmd.AddValue ("val4", "a string via callback", MakeCallback (SetVal4));
+ *  cmd.AddValue ("val1", "an int argument",          val1);
+ *  cmd.AddValue ("val2", "a bool argument",          val2);
+ *  cmd.AddValue ("val3", "a string argument",        val3);
  *  cmd.Parse (argc, argv);
  * \endcode
+ * after which it prints the values of each variable.
  *
  * Here is the output from a few runs of that program:
  *
@@ -84,14 +97,12 @@ namespace ns3 {
  *   $ ./waf --run="command-line-example"
  *   val1:   1
  *   val2:   0
- *   val3:   "val3 default"
- *   val4:   "val4 default"
+ *   val3:   ""
  *
- *   $ ./waf --run="command-line-example --val1=2 --val2 --val3=Hello --val4=World"
+ *   $ ./waf --run="command-line-example --val1=2 --val2 --val3=Hello"
  *   val1:   2
  *   val2:   1
  *   val3:   "Hello"
- *   val4:   "World"
  *   
  *   $ ./waf --run="command-line-example --help"
  *   ns3-dev-command-line-example-debug [Program Arguments] [General Arguments]
@@ -101,10 +112,9 @@ namespace ns3 {
  *   This little program demonstrates how to use CommandLine.
  *   
  *   Program Arguments:
- *       --val1: an int argument
- *       --val2: a bool argument
- *       --val3: a string argument
- *       --val4: a string via callback
+ *       --val1:     an int argument
+ *       --val2:     a bool argument
+ *       --val3:     a string argument
  *   
  *   General Arguments:
  *       --PrintGlobals:              Print the list of globals.

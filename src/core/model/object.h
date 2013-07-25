@@ -63,6 +63,9 @@ struct ObjectDeleter
 class Object : public SimpleRefCount<Object,ObjectBase,ObjectDeleter>
 {
 public:
+  /**
+   * Get the type ID.
+   */
   static TypeId GetTypeId (void);
 
   /**
@@ -90,9 +93,9 @@ public:
     Ptr<const Object> Next (void);
 private:
     friend class Object;
-    AggregateIterator (Ptr<const Object> object);
-    Ptr<const Object> m_object;
-    uint32_t m_current;
+    AggregateIterator (Ptr<const Object> object);  //!< Constructor
+    Ptr<const Object> m_object;                    //!< Parent Object
+    uint32_t m_current;                            //!< Current position in parent's aggegrates
   };
 
   Object ();
@@ -241,8 +244,27 @@ private:
     Object *buffer[1];
   };
 
+  /**
+   * Find an object of TypeId tid in the aggregates of this Object.
+   *
+   * \param tid the TypeId we're looking for
+   * \return the matching Object, if it is found
+   */
   Ptr<Object> DoGetObject (TypeId tid) const;
+  /**
+   * \return is reference count non zero
+   */
   bool Check (void) const;
+  /**
+   * \return Do any of our aggregates have non zero reference count?
+   *
+   * In some cases, when an event is scheduled against a subclass of
+   * Object, and if no one owns a reference directly to this object, the
+   * object is alive, has a refcount of zero and the method ran when the
+   * event expires runs against the raw pointer which means that we are
+   * manipulating an object with a refcount of zero.  So, instead we
+   * check the aggregate reference count.
+   */
   bool CheckLoose (void) const;
   /**
    * \param tid an TypeId
@@ -262,6 +284,12 @@ private:
   */
   void Construct (const AttributeConstructionList &attributes);
 
+  /**
+   * Keep the list of aggregates in most-recently-used order
+   *
+   * \param aggregates the list of aggregated objects
+   * \param i the most recently used entry in the list
+   */
   void UpdateSortedArray (struct Aggregates *aggregates, uint32_t i) const;
   /**
    * Attempt to delete this object. This method iterates
