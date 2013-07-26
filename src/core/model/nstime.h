@@ -692,9 +692,9 @@ Ptr<const AttributeChecker> MakeTimeChecker (void)
  * \return the AttributeChecker
  */
 inline
-Ptr<const AttributeChecker> MakeTimeChecker (const Time min)
+Ptr<const AttributeChecker> MakeTimeChecker (const Time max)
 {
-  return MakeTimeChecker (min, Time::Max ());
+  return MakeTimeChecker (Time::Min (), max);
 }
 
 
