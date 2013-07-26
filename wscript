@@ -288,6 +288,8 @@ def configure(conf):
     conf.env['NS3_OPTIONAL_FEATURES'] = []
 
     conf.load('compiler_c')
+    cc_string='.'.join(conf.env['CC_VERSION'])
+    conf.msg('Checking for cc version',cc_string,'GREEN')
     conf.load('compiler_cxx')
     conf.load('cflags', tooldir=['waf-tools'])
     conf.load('command', tooldir=['waf-tools'])
