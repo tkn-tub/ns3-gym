@@ -687,14 +687,14 @@ Ptr<const AttributeChecker> MakeTimeChecker (void)
 }
 
 /**
- * \brief Helper to make a Time checker with an upper bound
+ * \brief Helper to make a Time checker with a lower bound.
  *
  * \return the AttributeChecker
  */
 inline
-Ptr<const AttributeChecker> MakeTimeChecker (const Time max)
+Ptr<const AttributeChecker> MakeTimeChecker (const Time min)
 {
-  return MakeTimeChecker (Time::Min (), max);
+  return MakeTimeChecker (min, Time::Max ());
 }
 
 
