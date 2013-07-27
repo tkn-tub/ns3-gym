@@ -24,6 +24,7 @@
 #include "ns3/ptr.h"
 #include "ns3/nstime.h"
 #include "ns3/output-stream-wrapper.h"
+#include "ns3/ipv6-list-routing.h"
 
 namespace ns3 {
 
@@ -126,6 +127,29 @@ private:
   void Print (Ptr<Node> node, Ptr<OutputStreamWrapper> stream) const;
   void PrintEvery (Time printInterval, Ptr<Node> node, Ptr<OutputStreamWrapper> stream) const;
 };
+
+template<class T>
+Ptr<T> Ipv6RoutingHelper::GetRouting (Ptr<Ipv6RoutingProtocol> protocol)
+{
+  Ptr<T> ret = DynamicCast<T> (protocol);
+  if (ret == 0)
+    {
+      // trying to check if protocol is a list routing
+      Ptr<Ipv6ListRouting> lrp = DynamicCast<Ipv6ListRouting> (protocol);
+      if (lrp != 0)
+        {
+          for (uint32_t i = 0; i < lrp->GetNRoutingProtocols ();  i++)
+            {
+              int16_t priority;
+              ret = GetRouting<T> (lrp->GetRoutingProtocol (i, priority)); // potential recursion, if inside ListRouting is ListRouting
+              if (ret != 0)
+                break;
+            }
+        }
+    }
+
+  return ret;
+}
 
 } // namespace ns3
 
