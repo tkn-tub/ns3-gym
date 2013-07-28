@@ -181,8 +181,10 @@ SOURCEFIGS = \
 	$(SRC)/lte/doc/source/figures/nas-attach.pdf \
 	$(SRC)/lte/doc/source/figures/lte-enb-rrc-states.png \
 	$(SRC)/lte/doc/source/figures/lte-ue-rrc-states.png \
+	$(SRC)/lte/doc/source/figures/lte-handover-algorithm.png \
 	$(SRC)/lte/doc/source/figures/lte-enb-rrc-states.pdf \
 	$(SRC)/lte/doc/source/figures/lte-ue-rrc-states.pdf \
+	$(SRC)/lte/doc/source/figures/lte-handover-algorithm.pdf \
 	$(SRC)/uan/doc/auvmobility-classes.dia \
 	$(SRC)/stats/doc/Stat-framework-arch.png \
 	$(SRC)/stats/doc/Wifi-default.png \

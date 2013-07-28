@@ -346,34 +346,36 @@ Piecewise test #2.
    ====== ================== ================ ========== ===============
    1      Event A1           Low              No         No
    2      Event A1           Normal           No         No
-   3      Event A1           High             No         No
-   4      Event A2           Low              No         No
-   5      Event A2           Normal           No         No
-   6      Event A2           High             No         No
-   7      Event A3           Positive         No         No
-   8      Event A3           Zero             No         No
-   9      Event A3           Zero             No         Short
-   10     Event A3           Zero             No         Super
-   11     Event A3           Zero             Yes        No
-   12     Event A3           Negative         No         No
-   13     Event A4           Low              No         No
-   14     Event A4           Normal           No         No
-   15     Event A4           Normal           No         Short
-   16     Event A4           Normal           No         Super
-   17     Event A4           Normal           Yes        No
-   18     Event A4           High             No         No
-   19     Event A5           Low-Low          No         No
-   20     Event A5           Low-Normal       No         No
-   21     Event A5           Low-High         No         No
-   22     Event A5           Normal-Low       No         No
-   23     Event A5           Normal-Normal    No         No
-   24     Event A5           Normal-Normal    No         Short
-   25     Event A5           Normal-Normal    No         Super
-   26     Event A5           Normal-Normal    Yes        No
-   27     Event A5           Normal-High      No         No
-   28     Event A5           High-Low         No         No
-   29     Event A5           High-Normal      No         No
-   30     Event A5           High-High        No         No
+   3      Event A1           Normal           Yes        No
+   4      Event A1           High             No         No
+   5      Event A2           Low              No         No
+   6      Event A2           Normal           No         No
+   7      Event A2           Normal           Yes        No
+   8      Event A2           High             No         No
+   9      Event A3           Positive         No         No
+   10     Event A3           Zero             No         No
+   11     Event A3           Zero             No         Short
+   12     Event A3           Zero             No         Super
+   13     Event A3           Zero             Yes        No
+   14     Event A3           Negative         No         No
+   15     Event A4           Low              No         No
+   16     Event A4           Normal           No         No
+   17     Event A4           Normal           No         Short
+   18     Event A4           Normal           No         Super
+   19     Event A4           Normal           Yes        No
+   20     Event A4           High             No         No
+   21     Event A5           Low-Low          No         No
+   22     Event A5           Low-Normal       No         No
+   23     Event A5           Low-High         No         No
+   24     Event A5           Normal-Low       No         No
+   25     Event A5           Normal-Normal    No         No
+   26     Event A5           Normal-Normal    No         Short
+   27     Event A5           Normal-Normal    No         Super
+   28     Event A5           Normal-Normal    Yes        No
+   29     Event A5           Normal-High      No         No
+   30     Event A5           High-Low         No         No
+   31     Event A5           High-Normal      No         No
+   32     Event A5           High-High        No         No
    ====== ================== ================ ========== ===============
 
 One note about the tests with time-to-trigger, they are tested using 3 different

@@ -919,17 +919,20 @@ That's all! You can now start your simulation as usual::
 Network Attachment
 ------------------
 
-As shown in the example in section :ref:`sec-basic-simulation-program`,
+As shown in the basic example in ,
 attaching a UE to an eNodeB is done by calling ``LteHelper::Attach`` function.
-This is the *"manual"* method of network attachment, and there is the
-*"automatic"* method as well. Each of them will be covered in this section.
+
+There are 2 possible ways of network attachment. The first method is the
+*"manual"* one, while the second one has a more *"automatic"* sense on it. Each
+of them will be covered in this section.
 
 Manual attachment
 *****************
 
-This method uses the ``LteHelper::Attach`` function mentioned above, which had
-been the only available method in earlier versions of LTE module. It is
-typically invoked before the simulation begins::
+This method uses the ``LteHelper::Attach`` function as demonstrated in section
+:ref:`sec-basic-simulation-program`. It has been the only available network
+attachment method in earlier versions of LTE module. It is typically invoked
+before the simulation begins::
 
    lteHelper->Attach (ueDevs, enbDev); // attach one or more UEs to a single eNodeB
 
@@ -941,8 +944,8 @@ This method is very simple, but requires you to know exactly which UE belongs to
 to which eNodeB before the simulation begins. This can be difficult when the UE
 initial position is randomly determined by the simulation script.
 
-One may choose the distance between the UE and the eNodeB may be used as a
-criterion for selecting the appropriate cell. It is simple (at least from the
+One may choose the distance between the UE and the eNodeB as a criterion for
+selecting the appropriate cell. It is quite simple (at least from the
 simulator's point of view) and sometimes practical. But it is important to note
 that sometimes distance does not make a single correct criterion. For instance,
 the eNodeB antenna direction should be considered as well. Besides that, we
@@ -975,19 +978,41 @@ neighbouring cells, and then attempt to connect to the best one. More details
 can be found in section :ref:`sec-initial-cell-selection` of design
 documentation.
 
-Multi-operator environment
-**************************
+Closed Subscriber Group
+***********************
 
 An interesting use case of the initial cell selection process is to setup a
-simulation environment with multiple network operators.
+simulation environment with Closed Subscriber Group (CSG).
 
-(To be expanded)
+For example, a certain eNodeB, typically a smaller version such as femtocell,
+might belong to a private owner (a household or business), allowing access only
+for some UEs which have been previously registered by the owner. The eNodeB and
+the registered UEs altogether form a CSG.
 
-Note that the manual network attachment method does not take the PLMN and CSG
-criteria into account, and thus can be regarded as the *"force attach"* method.
-In other words, UE and eNodeB with incompatible PLMN or CSG can still attach
-successfully using the manual network attachment method. 
+The access restriction can be simulated by "labeling" the CSG members with the
+same CSG ID. This function is available from ``LteHelper`` class::
 
+   lteHelper->SetCsgId (enbDevs, 1); // label one or more eNodeBs with CSG ID of 1
+   lteHelper->SetCsgId (ueDevs, 1); // label one or more UEs with CSG ID of 1
+
+Then enable the initial cell selection procedure on the UEs:: 
+
+   lteHelper->Attach (ueDevs);
+
+This is necessary because the CSG restriction only works with initial cell
+selection, and not in the manual method.
+
+Note that setting the CSG ID of an eNodeB as 0 (the default value) will disable
+the restriction, i.e. any UEs can connect to this eNodeB. On the other hand,
+setting the CSG ID of a UE to 0 (also the default value) does not remove the
+restriction, i.e. it can only attach to an eNodeB with CSG ID of 0.
+
+Besides differences in CSG, we can also introduce differences in Public Land
+Mobile Network (PLMN). ``LteHelper`` also has similar functions for this purpose
+and the restricting behaviour is exactly the same as in CSG::
+
+   lteHelper->SetPlmnId (enbDevs, 1); // label one or more eNodeBs with PLMN ID of 1
+   lteHelper->SetPlmnId (ueDevs, 1); // label one or more UEs with PLMN ID of 1
 
 
 .. _sec-configure-ue-measurements:

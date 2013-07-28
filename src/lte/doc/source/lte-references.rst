@@ -20,11 +20,11 @@ References
 
 .. [TS36213] 3GPP TS 36.213 "E-UTRA Physical layer procedures"
 
-.. [TS36214] 3GPP TS 36.213 "E-UTRA Physical layer – Measurements"
+.. [TS36214] 3GPP TS 36.214 "E-UTRA Physical layer – Measurements"
 
 .. [TS36300] 3GPP TS 36.300 "E-UTRA and E-UTRAN; Overall description; Stage 2"
 
-.. [TS36304] 3GPP TS 36.104 "E-UTRA User Equipment (UE) procedures in idle mode"
+.. [TS36304] 3GPP TS 36.304 "E-UTRA User Equipment (UE) procedures in idle mode"
 
 .. [TS36321] 3GPP TS 36.321 "E-UTRA Medium Access Control (MAC) protocol specification"
 

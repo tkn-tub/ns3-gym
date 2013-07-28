@@ -1267,6 +1267,8 @@ The scheduler implements the filtering of the uplink CQIs according to their nat
   - ``ALL_UL_CQI``: all CQIs are stored in the same internal attibute (i.e., the last CQI received is stored independently from its nature).
 
 
+.. _sec-random-access:
+
 Random Access
 +++++++++++++
 
@@ -1948,6 +1950,40 @@ represented in Figure :ref:`fig-lte-enb-rrc-states`.
    ENB RRC State Machine for each UE
 
 
+.. _sec-cell-search:
+
+Cell Search
++++++++++++
+
+Cell search is one of the first steps performed by every UE in the beginning of
+simulation, particularly when the UE has not yet camped or attached to an
+eNodeB. The objective of the procedure is to detect surrounding cells and
+measure the strength of received signal from each of these cells. One of these
+cells will become the UE's entry point to join the cellular network.
+
+The measurements are based on the RSRP of the received PSS, averaged by Layer 1
+filtering, and performed by the PHY layer. This is described in more detail in
+section :ref:`phy-ue-measurements`. PSS is transmitted by eNodeB over the
+central 72 sub-carriers of the DL channel (Section 5.1.7.3 [TS36300]_), hence
+we model cell search to operate using a DL bandwidth of 6 RBs. Note that
+measurements of RSRQ are not available at this point of time in simulation. As
+a consequence, the ``LteUePhy::RsrqUeMeasThreshold`` attribute does not apply
+during cell search.
+
+Using the measured RSRP, the PHY entity is able to generate a list of detected
+cells, each with its corresponding cell ID and averaged RSRP. This list is
+periodically pushed via CPHY SAP to the RRC entity as a measurement report.
+
+The RRC entity inspects the report and simply choose the cell with the strongest
+RSRP, as also indicated in Section 5.2.3.1 of [TS36304]_. Then it instructs the
+PHY entity to synchronize to this particular cell. The actual operating
+bandwidth of the cell is still unknown at this time, so the PHY entity listens
+only to the minimum bandwidth of 6 RBs. Nevertheless the PHY entity will be
+able to receive system broadcast message from this particular eNodeB, which is
+the topic of the next section.
+
+
+
 Broadcast of System Information
 +++++++++++++++++++++++++++++++
 
@@ -1966,10 +2002,11 @@ intervals. The supported system information blocks are:
       Contains UL- and RACH-related settings, scheduled to transmit via RRC
       protocol at 16 ms after cell configuration, and then repeats every 80 ms.
 
-Reception of system information is detrimental to the transition of UE RRC
-state. SIB1 is necessary for switching from `IDLE_CELL_SELECTION` to
-`IDLE_WAIT_SYSTEM_INFO`. After that, MIB and SIB2 are required to switch to
-`IDLE_CAMPED_NORMALLY`.
+Reception of system information is detrimental to a UE in order to advance in
+its lifecycle. MIB enables the UE to increase the initial DL bandwidth of 6 RBs
+to the actual operating bandwidth of the network. SIB1 provides information
+necessary for initial cell selection procedure (explained in the next section).
+And finally SIB2 is necessary before the UE can switch to CONNECTED state.
 
 
 .. _sec-initial-cell-selection:
@@ -1977,59 +2014,72 @@ state. SIB1 is necessary for switching from `IDLE_CELL_SELECTION` to
 Initial Cell Selection
 ++++++++++++++++++++++
 
-UE in `IDLE_CELL_SELECTION` state, e.g. in the beginning of simulation, will
-actively seek a suitable cell to attach to.
+Performed by UE RRC, the initial cell selection procedure reviews the
+measurement report produced in :ref:`sec-cell-search` and the cell access
+information provided by SIB1. Once both information is available for a specific
+cell, the UE triggers the evaluation process. The purpose of this process is to
+determine if the cell is a suitable cell to camp to.
 
-UE will perform the selection among the surrounding eNodeBs based on several
-criteria:
+The evaluation process is a slightly simplified version of Section 5.2.3.2 of
+[TS36304]_. It consists of the following 3 criteria:
 
  - Rx level criterion;
- 
- - quality criterion;
  
  - public land mobile network (PLMN), a.k.a. the network operator; and
  
  - closed subscriber group (CSG).
  
-The first pair of criteria, Rx level and quality, are based on measured cell
-RSRP :math:`Q_{rxlevmeas}` and RSRQ :math:`Q_{qualmeas}`, respectively. These
-measurements are collected by the PHY layer, as described in
-:ref:`phy-ue-measurements`. In order to pass the criteria, both values must be
-higher than required minimum RSRP and RSRQ, which can also be expressed as
-below:
+The first criterion, Rx level, is based on the cell's measured RSRP
+:math:`Q_{rxlevmeas}`, which has to be higher than the required minimum in order
+to pass the criterion:
 
 .. math::
 
    Q_{rxlevmeas} - Q_{rxlevmin} > 0 
 
-.. math::
-
-   Q_{qualmeas} - Q_{qualmin} > 0 
-
-where :math:`Q_{rxlevmin}` and :math:`Q_{qualmin}` are determined by each
-eNodeB, and are obtainable by UE from SIB1.
+where :math:`Q_{rxlevmin}` is determined by each eNodeB and is obtainable by UE
+from SIB1.
 
 The last pair of criteria, PLMN and CSG, are simple numbers associated with each
-eNodeB and UE. When these information are set to values beside their default
-values, for example to simulate an environment with multiple network operators,
-UE will restrict its cell selection attempts to target only eNodeBs with the
-same PLMN ID and CSG ID. The default value of zero disables these criteria. Only
+eNodeB and UE. The basic rule is that UE will not camp to eNodeBs with different
+PLMN ID and/or CSG ID. The default value of zero disables these criteria. Only
 at most one PLMN ID and one CSG ID can be associated to each eNodeB or UE.
 Section :ref:`sec-network-attachment` of user documentation provides more
-details on multi-operator simulation.
+details on this.
 
-When at least one suitable cells are found, the UE will choose the strongest one
-(based on RSRP) and connect to it. This is done by issuing a contention-based
-random access, followed by `RRCConnectionRequest`, thereby promptly switching
-from IDLE mode to CONNECTED mode. Hence, `cell reselection` procedure is *not*
-supported in this version of LTE module.
+When the cell passes all the above criteria, then the cell is deemed as
+*suitable*. Next, UE camps to it, switching its RRC state to
+`IDLE_CAMPED_NORMALLY`. After this, the UE may request to enter CONNECTED mode,
+which can be done by calling ``LteHelper::Connect`` function; please refer to
+section :ref:`sec-rrc-connection-establishment` for details on this.
 
-On the other hand, when no suitable cell is found, or when the selected cell
-rejects the connection request, then the UE will stop the attempt and stay in
-`IDLE_CELL_SELECTION` state until the end of the simulation. In real LTE system,
-the UE would enter "any cell selection" state, camp to any cell, and then
-perform cell reselection. But these are not modeled in this version of LTE
-module.
+On the other hand, when the cell does not pass either the PLMN or CSG criteria,
+then the cell is labeled as *acceptable* (Section 10.1.1.1 [TS36300]_). In this
+case, the RRC entity will tell the PHY entity to synchronize to a different
+cell. As long as no suitable cell is found, the UE will repeat these steps while
+avoiding cells that have been identified as acceptable.
+
+The above behaviour is based on the following simplifying assumptions:
+
+ - multiple carrier frequency is not supported;
+ 
+ - as mentioned in section :ref:`sec-cell-search`, RSRQ is not available during
+   cell search;
+ 
+ - stored information cell selection is not supported;
+
+ - "Any Cell Selection" state and camping to an acceptable cell is not
+   supported;
+ 
+ - marking a cell as barred or reserved is not supported; and
+
+ - cell reselection is not supported, hence it is not possible for UE to camp to
+   a different cell after the initial camp has been placed.
+   
+Also note that both cell search and initial cell selection are only available
+for EPC-enabled simulation. EPC-only simulation must use the manual attachment
+method. See section :ref:`sec-network-attachment` of user documentation for more
+information on their difference in usage.
 
 
 Radio Admission Control
@@ -2097,6 +2147,8 @@ following simplifying assumptions:
  - only `reportStrongestCells` purpose is supported, while `reportCGI` and
    `reportStrongestCellsForSON` purposes are not supported;
 
+ - `s-Measure` is not supported;
+ 
  - since carrier aggregation is not supported in general, the following
    assumptions in UE measurements hold true:
    
@@ -2104,7 +2156,8 @@ following simplifying assumptions:
    - primary cell (`PCell`) simply means serving cell;
    - Event A6 is not implemented;
    
- - `s-Measure` and `SpeedStatePars` are not supported;
+ - speed dependant scaling of time-to-trigger (Section 5.5.6.2 of [TS36331]_) is
+   not supported.
 
 Overall design
 --------------
@@ -2140,11 +2193,10 @@ The following sections will describe each of the parts above.
 Measurement configuration
 -------------------------
 
-The eNodeB RRC entity configures the UE measurements by sending the
-configuration parameters to the UE RRC entity within the ``MeasConfig`` IE of
-the RRC Connection Reconfiguration message. This message occurs when the UE
-attaches to the eNodeB or during the RRC Handover Request message when the
-target eNodeB initiates the handover procedure.
+An eNodeB RRC entity configures UE measurements by sending the configuration
+parameters to the UE RRC entity. This set of parameters are defined within the
+``MeasConfig`` Information Element (IE) of the RRC Connection Reconfiguration
+message (:ref:`sec-rrc-connection-reconfiguration`).
 
 The eNodeB RRC entity implements the configuration parameters and procedures
 described in Section 5.5.2 of [TS36331]_, with the following simplifying
@@ -2158,7 +2210,7 @@ assumption:
    modeling assumptions described in :ref:`phy-ue-measurements`.
 
 The eNodeB RRC instance here acts as an intermediary between the consumers and
-the attached UEs. At the beginning of simulation, each consumer provide the
+the attached UEs. At the beginning of simulation, each consumer provides the
 eNodeB RRC instance with the UE measurements configuration that it requires.
 After that, the eNodeB RRC distributes the configuration to attached UEs.
 
@@ -2171,10 +2223,10 @@ details are explained in user documentation
 Performing measurements
 -----------------------
 
-UE RRC receives measurements on periodic basis from UE PHY, as described in
-:ref:`phy-ue-measurements`. *Layer 3 filtering* will be applied to these
-received measurements. The implementation of the filtering follows Section
-5.5.3.2 of [TS36331]_:
+UE RRC receives both RSRP and RSRQ measurements on periodical basis from UE PHY,
+as described in :ref:`phy-ue-measurements`. *Layer 3 filtering* will be applied
+to these received measurements. The implementation of the filtering follows
+Section 5.5.3.2 of [TS36331]_:
 
 .. math::
 
@@ -2194,17 +2246,21 @@ where:
 `RsrpFilterCoefficient` and `RsrqFilterCoefficient` attributes in
 ``LteEnbRrc``.
 
+Therefore :math:`k = 0` will disable Layer 3 filtering, i.e. the maximum
+forgetting factor. On the other hand, past measurements can be granted more
+influence on the filtering results by using larger value of :math:`k`.
+
 Measurement reporting triggering
 --------------------------------
 
-This part will go through the list of active measurement configuration and check
-whether the triggering condition is fulfilled in accordance with Section 5.5.4
-of [TS36331]_. When at least one triggering condition from all the active
-measurement configuration is fulfilled, the measurement reporting procedure (in
-the next subsection) will be initiated.
+In this part, UE RRC will go through the list of active measurement
+configuration and check whether the triggering condition is fulfilled in
+accordance with Section 5.5.4 of [TS36331]_. When at least one triggering
+condition from all the active measurement configuration is fulfilled, the
+measurement reporting procedure (in the next subsection) will be initiated.
 
-3GPP defines two kinds of `triggerType`: periodical and event-based. At the
-moment, only *event-based* criterion is supported. There are various events that
+3GPP defines two kinds of `triggerType`: *periodical* and *event-based*. At the
+moment, only event-based criterion is supported. There are various events that
 can be selected, which are briefly described in the table below: 
 
 .. table:: List of supported event-based triggering criteria
@@ -2221,29 +2277,30 @@ can be selected, which are briefly described in the table below:
    ======== ======================================================
 
 Two main conditions to be checked in an event-based trigger are *entering
-condition* and *leaving condition*. More details can be found in Section 5.5.4
-of [TS36331]_.
+condition* and *leaving condition*. More details on these two can be found in
+Section 5.5.4 of [TS36331]_.
 
 Event-based trigger can be further configured by introducing hysteresis and
 time-to-trigger. *Hysteresis* (:math:`Hys`) defines the distance between the
 entering and leaving conditions in dB. Similarly, *time-to-trigger* introduces
-delay to both entering and leaving conditions, but as a unit of time.
+delay to both entering and leaving conditions, but as a unit of time. Section
+
 
 *Periodical* type of reporting trigger is not supported, but can be easily
 replicated using event-based trigger. This can be done by configuring the
 measurement in such a way that the entering condition is always fulfilled, for
 example by setting the threshold of Event A1 to zero (the minimum level).
-As a result, the measurement reports will be regularly triggered at every
-certain interval, as determined by the `reportInterval` field within
+As a result, the measurement reports will always be triggered at every certain
+interval, as determined by the `reportInterval` field within
 ``LteRrcSap::ReportConfigEutra``, therefore producing the same behaviour as
 periodical reporting.
 
-In contrast with 3GPP standard, the current model does not support cell-specific
-configuration, which is defined in measurement object. As a consequence,
-incorporating a list of black cells into the triggering process is not
-supported. Moreover, cell-specific offsets (i.e. :math:`O_{cn}` and
-:math:`O_{cp}` in Event A3, A4, and A5) are not supported as well. The value
-equal to zero is always assumed in place of them.
+In contrast with 3GPP standard, the current model does not support any
+cell-specific configuration. These configuration parameters are defined in
+measurement object. As a consequence, incorporating a list of black cells into
+the triggering process is not supported. Moreover, cell-specific offset
+(i.e. :math:`O_{cn}` and :math:`O_{cp}` in Event A3, A4, and A5) are not
+supported as well. The value equal to zero is always assumed in place of them.
 
 Measurement reporting
 ---------------------
@@ -2319,6 +2376,8 @@ RRC sequence diagrams
 In this section we provide some sequence diagrams that explain the
 most important RRC procedures being modeled.
 
+.. _sec-rrc-connection-establishment:
+
 RRC connection establishment
 ----------------------------
 
@@ -2335,6 +2394,8 @@ interaction with the other layers.
    Sequence diagram of the RRC Connection Establishment procedure
 
 
+
+.. _sec-rrc-connection-reconfiguration:
 
 RRC connection reconfiguration
 ------------------------------
