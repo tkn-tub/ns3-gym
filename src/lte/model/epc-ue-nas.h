@@ -65,27 +65,51 @@ public:
   void SetImsi (uint64_t imsi);
 
   /** 
+   *
+   * \param plmnId Public Land Mobile Network identity
+   */
+  void SetPlmnId (uint32_t plmnId);
+
+  /**
+   *
+   * \return plmnId Public Land Mobile Network identity
+   */
+  uint32_t GetPlmnId () const;
+
+  /**
+   *
+   * \param csgId Closed Subscriber Group identity
+   */
+  void SetCsgId (uint32_t csgId);
+
+  /**
+   *
+   * \return csgId Closed Subscriber Group identity
+   */
+  uint32_t GetCsgId () const;
+
+  /**
    * Set the AS SAP provider to interact with the NAS entity
-   * 
+   *
    * \param s the AS SAP provider
    */
   void SetAsSapProvider (LteAsSapProvider* s);
 
-  /** 
-   * 
-   * 
+  /**
+   *
+   *
    * \return the AS SAP user exported by this RRC
    */
   LteAsSapUser* GetAsSapUser ();
 
-  /** 
+  /**
    * set the callback used to forward data packets up the stack
-   * 
+   *
    * \param cb the callback
    */
   void SetForwardUpCallback (Callback <void, Ptr<Packet> > cb);
- 
-  /** 
+
+  /**
    * \brief Instruct the NAS to go to ACTIVE state
    * 
    * The end result is equivalent with EMM Registered + ECM Connected states.
@@ -167,6 +191,9 @@ private:
   Ptr<NetDevice> m_device;
 
   uint64_t m_imsi;
+
+  uint32_t m_plmnId;
+  uint32_t m_csgId;
 
   LteAsSapProvider* m_asSapProvider;
   LteAsSapUser* m_asSapUser;

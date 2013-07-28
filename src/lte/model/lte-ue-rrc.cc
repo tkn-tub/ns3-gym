@@ -131,7 +131,9 @@ LteUeRrc::LteUeRrc ()
     m_connectionPending (false),
     m_hasReceivedMib (false),
     m_hasReceivedSib1 (false),
-    m_hasReceivedSib2 (false)
+    m_hasReceivedSib2 (false),
+    m_selectedPlmn (0),
+    m_csgWhiteList (0)
 {
   NS_LOG_FUNCTION (this);
   m_cphySapUser = new MemberLteUeCphySapUser<LteUeRrc> (this);
@@ -505,6 +507,20 @@ LteUeRrc::DoNotifyRandomAccessFailed ()
 }
 
 
+void
+LteUeRrc::DoSetSelectedPlmn (uint32_t plmnId)
+{
+  NS_LOG_FUNCTION (this << plmnId);
+  m_selectedPlmn = plmnId;
+}
+
+void
+LteUeRrc::DoSetCsgWhiteList (uint32_t csgId)
+{
+  NS_LOG_FUNCTION (this << csgId);
+  m_csgWhiteList = csgId;
+}
+
 void 
 LteUeRrc::DoForceCampedOnEnb (uint16_t cellId, uint16_t earfcn)
 {
@@ -566,7 +582,7 @@ LteUeRrc::DoRecvMasterInformationBlock (uint16_t cellId,
 
   if ((m_state == IDLE_CELL_SELECTION) && m_hasReceivedSib1)
     {
-      InitialCellSelection ();
+      EvaluateCellForSelection ();
     }
 
   // manual attachment procedure may camp without SIB1
@@ -589,7 +605,7 @@ LteUeRrc::DoRecvSystemInformationBlockType1 (uint16_t cellId,
 
   if (m_state == IDLE_CELL_SELECTION && m_hasReceivedMib)
     {
-      InitialCellSelection ();
+      EvaluateCellForSelection ();
     }
 }
 
@@ -598,51 +614,23 @@ LteUeRrc::DoReportUeMeasurements (LteUeCphySapUser::UeMeasurementsParameters par
 {
   NS_LOG_FUNCTION (this);
 
+  bool useLayer3Filtering = (m_state == CONNECTED_NORMALLY);
+
+  std::vector <LteUeCphySapUser::UeMeasurementsElement>::iterator newMeasIt;
+  for (newMeasIt = params.m_ueMeasurementsList.begin ();
+       newMeasIt != params.m_ueMeasurementsList.end (); ++newMeasIt)
+    {
+      SaveUeMeasurements (newMeasIt->m_cellId, newMeasIt->m_rsrp,
+                          newMeasIt->m_rsrq, useLayer3Filtering);
+    }
+
   if (m_state == IDLE_CELL_SELECTION)
     {
-      double maxRsrp = -std::numeric_limits<double>::infinity ();
-      uint16_t maxRsrpCellId = 0;
-
-      std::vector <LteUeCphySapUser::UeMeasurementsElement>::iterator newMeasIt;
-      for (newMeasIt = params.m_ueMeasurementsList.begin ();
-           newMeasIt != params.m_ueMeasurementsList.end (); ++newMeasIt)
-        {
-          /*
-           * This block attempts to find a cell with strongest RSRP and has not
-           * yet been identified as "acceptable cell".
-           */
-          if (maxRsrp < newMeasIt->m_rsrp)
-            {
-              std::set<uint16_t>::const_iterator itCell;
-              itCell = m_acceptableCell.find (newMeasIt->m_cellId);
-              if (itCell == m_acceptableCell.end ())
-                {
-                  maxRsrp = newMeasIt->m_rsrp;
-                  maxRsrpCellId = newMeasIt->m_cellId;
-                }
-            }
-        }
-
-      if (maxRsrpCellId == 0)
-        {
-          NS_LOG_WARN (this << " Cell search has detected no surrounding cell");
-        }
-      else
-        {
-          m_cphySapProvider->SyncronizeWithEnb (maxRsrpCellId, m_dlEarfcn);
-        }
-
-    } // end of if (m_state == IDLE_CELL_SELECTION)
+      // start decoding BCH
+      SynchronizeToStrongestCell ();
+    }
   else
     {
-      std::vector <LteUeCphySapUser::UeMeasurementsElement>::iterator newMeasIt;
-      for (newMeasIt = params.m_ueMeasurementsList.begin ();
-           newMeasIt != params.m_ueMeasurementsList.end (); ++newMeasIt)
-        {
-          Layer3Filtering (newMeasIt->m_cellId, newMeasIt->m_rsrp,
-                           newMeasIt->m_rsrq);
-        }
-
       std::map<uint8_t, LteRrcSap::MeasIdToAddMod>::iterator measIdIt;
       for (measIdIt = m_varMeasConfig.measIdList.begin ();
            measIdIt != m_varMeasConfig.measIdList.end (); ++measIdIt)
@@ -840,7 +828,46 @@ LteUeRrc::DoRecvRrcConnectionReject (LteRrcSap::RrcConnectionReject msg)
 
 
 void
-LteUeRrc::InitialCellSelection ()
+LteUeRrc::SynchronizeToStrongestCell ()
+{
+  uint16_t maxRsrpCellId = 0;
+  double maxRsrp = -std::numeric_limits<double>::infinity ();
+
+  std::map<uint16_t, MeasValues>::iterator it;
+  for (it = m_storedMeasValues.begin (); it != m_storedMeasValues.end (); it++)
+    {
+      /*
+       * This block attempts to find a cell with strongest RSRP and has not
+       * yet been identified as "acceptable cell".
+       */
+      if (maxRsrp < it->second.rsrp)
+        {
+          std::set<uint16_t>::const_iterator itCell;
+          itCell = m_acceptableCell.find (it->first);
+          if (itCell == m_acceptableCell.end ())
+            {
+              maxRsrpCellId = it->first;
+              maxRsrp = it->second.rsrp;
+            }
+        }
+    }
+
+  if (maxRsrpCellId == 0)
+    {
+      NS_LOG_WARN (this << " Cell search is unable to detect surrounding cell to attach to");
+    }
+  else
+    {
+      NS_LOG_LOGIC (this << " cell " << maxRsrpCellId
+                         << " is the strongest untried surrounding cell");
+      m_cphySapProvider->SyncronizeWithEnb (maxRsrpCellId, m_dlEarfcn);
+    }
+
+} // end of void LteUeRrc::SynchronizeToStrongestCell ()
+
+
+void
+LteUeRrc::EvaluateCellForSelection ()
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT (m_state == IDLE_CELL_SELECTION);
@@ -848,7 +875,36 @@ LteUeRrc::InitialCellSelection ()
   NS_ASSERT (m_hasReceivedSib1);
   uint16_t cellId = m_lastSib1.cellAccessRelatedInfo.cellIdentity;
 
-  bool isSuitableCell = true; // TODO evaluate cell selection criteria
+  // Cell selection criteria evaluation
+
+  bool isSuitableCell = false;
+  bool isAcceptableCell = false;
+  std::map<uint16_t, MeasValues>::iterator storedMeasIt = m_storedMeasValues.find (cellId);
+  double qRxLevMeas = storedMeasIt->second.rsrp;
+  double qRxLevMin = EutranMeasurementMapping::GetActualQRxLevMin (m_lastSib1.cellSelectionInfo.qRxLevMin);
+  NS_LOG_LOGIC (this << " cell selection to cellId=" << cellId
+                     << " qrxlevmeas=" << qRxLevMeas << " dBm"
+                     << " qrxlevmin=" << qRxLevMin << " dBm");
+
+  if (qRxLevMeas - qRxLevMin > 0)
+    {
+      isAcceptableCell = true;
+
+      uint32_t cellPlmnId = m_lastSib1.cellAccessRelatedInfo.plmnIdentityInfo.plmnIdentity;
+      uint32_t cellCsgId = m_lastSib1.cellAccessRelatedInfo.csgIdentity;
+      bool cellCsgIndication = m_lastSib1.cellAccessRelatedInfo.csgIndication;
+
+      bool isPlmnMatch = (cellPlmnId == m_selectedPlmn);
+      bool isCsgMatch = (cellCsgIndication == false)
+        || (cellCsgId == m_csgWhiteList);
+      isSuitableCell = (isPlmnMatch && isCsgMatch);
+
+      NS_LOG_LOGIC (this << " plmn(ue/cell)=" << m_selectedPlmn << "/" << cellPlmnId
+                         << " csg(ue/cell/indication)=" << m_csgWhiteList << "/"
+                         << cellCsgId << "/" << cellCsgIndication);
+    }
+
+  // Cell selection decision
 
   if (isSuitableCell)
     {
@@ -868,15 +924,21 @@ LteUeRrc::InitialCellSelection ()
     }
   else
     {
-      m_acceptableCell.insert (cellId);
+      // ignore the MIB and SIB1 received from this cell
+      m_hasReceivedMib = false;
+      m_hasReceivedSib1 = false;
+
       m_initialCellSelectionEndErrorTrace (m_imsi, cellId);
-      /*
-       * As long as RRC state stays at IDLE_CELL_SELECTION, the cell selection
-       * process will repeat again after another call to DoReportUeMeasurements.
-       */
+
+      if (isAcceptableCell)
+        {
+          m_acceptableCell.insert (cellId);
+        }
+
+      SynchronizeToStrongestCell (); // retry to a different cell
     }
 
-} // end of void LteUeRrc::InitialCellSelection ()
+} // end of void LteUeRrc::EvaluateCellForSelection ()
 
 
 void 
@@ -1310,14 +1372,32 @@ LteUeRrc::ApplyMeasConfig (LteRrcSap::MeasConfig mc)
 }
 
 void
-LteUeRrc::Layer3Filtering (uint16_t cellId, double rsrp, double rsrq)
+LteUeRrc::SaveUeMeasurements (uint16_t cellId, double rsrp, double rsrq,
+                              bool useLayer3Filtering)
 {
   NS_LOG_LOGIC (this << " CellId " << cellId << " RSRP " << rsrp << " RSRQ " << rsrq);
 
-  std::map<uint16_t, MeasValues>::iterator storedMeasIt = m_storedMeasValues.find (cellId);
-  if (storedMeasIt == m_storedMeasValues.end ())
+  std::map<uint16_t, MeasValues>::iterator storedMeasIt = m_storedMeasValues.find (cellId);;
+
+  if (storedMeasIt != m_storedMeasValues.end ())
     {
-      // first value is unfiltered
+      if (useLayer3Filtering)
+        {
+          // F_n = (1-a) F_{n-1} + a M_n
+          storedMeasIt->second.rsrp = (1 - m_varMeasConfig.aRsrp) * storedMeasIt->second.rsrp
+            + m_varMeasConfig.aRsrp * rsrp;
+          storedMeasIt->second.rsrq = (1 - m_varMeasConfig.aRsrq) * storedMeasIt->second.rsrq
+            + m_varMeasConfig.aRsrq * rsrq;
+        }
+      else
+        {
+          storedMeasIt->second.rsrp = rsrp;
+          storedMeasIt->second.rsrq = rsrq;
+        }
+    }
+  else
+    {
+      // first value is always unfiltered
       MeasValues v;
       v.rsrp = rsrp;
       v.rsrq = rsrq;
@@ -1327,17 +1407,10 @@ LteUeRrc::Layer3Filtering (uint16_t cellId, double rsrp, double rsrq)
       NS_ASSERT_MSG (ret.second == true, "element already existed");
       storedMeasIt = ret.first;
     }
-  else
-    {
-      // F_n = (1-a) F_{n-1} + a M_n
-      storedMeasIt->second.rsrp = (1 - m_varMeasConfig.aRsrp) * storedMeasIt->second.rsrp
-        + m_varMeasConfig.aRsrp * rsrp;
-      storedMeasIt->second.rsrq = (1 - m_varMeasConfig.aRsrq) * storedMeasIt->second.rsrq
-        + m_varMeasConfig.aRsrq * rsrq;
-    }
 
   storedMeasIt->second.timestamp = Simulator::Now ();
-}
+
+} // end of void SaveUeMeasurements
 
 void
 LteUeRrc::MeasurementReportTriggering (uint8_t measId)
@@ -2183,6 +2256,7 @@ LteUeRrc::CancelLeavingTrigger (uint8_t measId, uint16_t cellId)
 void
 LteUeRrc::VarMeasReportListAdd (uint8_t measId, ConcernedCells_t enteringCells)
 {
+  NS_LOG_FUNCTION (this << (uint16_t) measId);
   NS_ASSERT (!enteringCells.empty ());
 
   std::map<uint8_t, VarMeasReport>::iterator
@@ -2264,6 +2338,7 @@ void
 LteUeRrc::VarMeasReportListErase (uint8_t measId, ConcernedCells_t leavingCells,
                                   bool reportOnLeave)
 {
+  NS_LOG_FUNCTION (this << (uint16_t) measId);
   NS_ASSERT (!leavingCells.empty ());
 
   std::map<uint8_t, VarMeasReport>::iterator

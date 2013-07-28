@@ -766,6 +766,18 @@ public:
    */
   uint32_t GetSrsPeriodicity () const;
 
+  /**
+   *
+   * \param sib1 System Information Block Type 1 to be broadcasted over BCH
+   */
+  void SetSystemInformationBlockType1 (LteRrcSap::SystemInformationBlockType1 sib1);
+
+  /**
+   *
+   * \return the System Information Block Type 1 that is currently broadcasted over BCH
+   */
+  LteRrcSap::SystemInformationBlockType1 GetSystemInformationBlockType1 () const;
+
 private:
 
   /** 
@@ -842,6 +854,9 @@ private:
   uint16_t m_dlBandwidth;
   uint16_t m_ulBandwidth;
   uint16_t m_lastAllocatedRnti;
+
+  /// the System Information Block Type 1 that is currently broadcasted over BCH
+  LteRrcSap::SystemInformationBlockType1 m_sib1;
 
   std::map<uint16_t, Ptr<UeManager> > m_ueMap;
 

@@ -264,6 +264,27 @@ EutranMeasurementMapping::GetActualA3Offset (int8_t a3Offset)
   return (static_cast<double> (a3Offset) * 0.5);
 }
 
+double
+EutranMeasurementMapping::GetActualQRxLevMin (int8_t qRxLevMin)
+{
+  if ((qRxLevMin < -70) || (qRxLevMin > -22))
+    {
+      NS_FATAL_ERROR ("The value " << qRxLevMin << " is out of the allowed range (-70..-22) for Q-RxLevMin");
+    }
+
+  return (static_cast<double> (qRxLevMin) * 2);
+}
+
+double
+EutranMeasurementMapping::GetActualQQualMin (int8_t qQualMin)
+{
+  if ((qQualMin < -34) || (qQualMin > -3))
+    {
+      NS_FATAL_ERROR ("The value " << qQualMin << " is out of the allowed range (-34..-3) for Q-QualMin");
+    }
+
+  return (static_cast<double> (qQualMin));
+}
 
 }; // namespace ns3
 

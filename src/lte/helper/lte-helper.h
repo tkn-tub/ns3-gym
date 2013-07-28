@@ -49,8 +49,8 @@ class PropagationLossModel;
 class SpectrumPropagationLossModel;
 
 /**
- * Creation and configuration of LTE entities
- *
+ * \ingroup lte
+ * \brief Creation and configuration of LTE entities
  */
 class LteHelper : public Object
 {
@@ -163,6 +163,7 @@ public:
    * \param v the value of the attribute
    */
   void SetSpectrumChannelAttribute (std::string n, const AttributeValue &v);
+
   /**
    * create a set of eNB devices
    *
@@ -183,10 +184,11 @@ public:
 
   /**
    * \brief Instruct a set of UE devices to attach to a suitable cell.
-   * \param ueDevices
+   * \param ueDevices the set of UE devices to be attached
    *
-   * By calling this, the UE will start the initial cell selection procedure at
-   * the beginning of simulation.
+   * By calling this, the UE will start the cell search and initial cell
+   * selection procedure at the beginning of simulation. Note that this function
+   * can only be used in EPC-enabled simulation.
    */
   void Attach (NetDeviceContainer ueDevices);
 
@@ -194,8 +196,9 @@ public:
    * \brief Instruct a UE device to attach to a suitable cell.
    * \param ueDevice
    *
-   * By calling this, the UE will start the initial cell selection procedure at
-   * the beginning of simulation.
+   * By calling this, the UE will start the cell search and initial cell
+   * selection procedure at the beginning of simulation. Note that this function
+   * can only be used in EPC-enabled simulation.
    */
   void Attach (Ptr<NetDevice> ueDevice);
 
@@ -335,6 +338,206 @@ public:
    * set an attribute of the fading model
    */
   void SetFadingModelAttribute (std::string n, const AttributeValue &v);
+
+  /**
+   * \brief Associate the eNodeB devices with a particular network operator.
+   * \param enbDevices the set of eNodeB devices to be updated
+   * \param plmnId the intended Public Land Mobile Network identity
+   *
+   * PLMN identity is a number identifying a cellular network of one operator in
+   * one country. eNodeB is associated with a single PLMN identity, which will
+   * be used to limit access of UE to it, so that only UE with the same value of
+   * PLMN identity is allowed.
+   *
+   * If not set, eNodeB devices bear a default PLMN identity of 0.
+   *
+   * This restriction only applies to initial cell selection and EPC-enabled
+   * simulation.
+   *
+   * \sa SetUePlmnId(NetDeviceContainer, uint32_t)
+   */
+  void SetEnbPlmnId (NetDeviceContainer enbDevices, uint32_t plmnId);
+
+  /**
+   * \brief Associate the eNodeB device with a particular network operator.
+   * \param enbDevice
+   * \param plmnId the intended Public Land Mobile Network identity
+   *
+   * PLMN identity is a number identifying a cellular network of one operator in
+   * one country. eNodeB is associated with a single PLMN identity, which will
+   * be used to limit access of UE to it, so that only UE with the same value of
+   * PLMN identity is allowed.
+   *
+   * If not set, eNodeB devices bear a default PLMN identity of 0.
+   *
+   * This restriction only applies to initial cell selection and EPC-enabled
+   * simulation.
+   *
+   * \sa SetUePlmnId(Ptr<NetDevice>, uint32_t)
+   */
+  void SetEnbPlmnId (Ptr<NetDevice> enbDevice, uint32_t plmnId);
+
+  /**
+   * \brief Associate the eNodeB devices with a particular CSG information.
+   * \param enbDevices the set of eNodeB devices to be updated
+   * \param csgId the intended Closed Subscriber Group identity
+   * \param csgIndication if TRUE, only CSG members are allowed to access the
+   *                      cell
+   *
+   * CSG identity is a number identifying a Closed Subscriber Group which the
+   * cell belongs to. eNodeB is associated with a single CSG identity.
+   *
+   * The same CSG identity can also be associated to several UEs, which is
+   * equivalent as enlisting these UEs as the members of this particular CSG.
+   * When the CSG indication field is set to TRUE, only UEs which are members of
+   * the CSG (i.e. same CSG ID) can gain access to the eNodeB, therefore
+   * enforcing closed access mode. Otherwise, the eNodeB operates as a non-CSG
+   * cell and implements open access mode.
+   *
+   * If not set, eNodeB devices are non-CSG cells and bear a CSG identity of 0
+   * by default.
+   *
+   * This restriction only applies to initial cell selection and EPC-enabled
+   * simulation.
+   *
+   * \sa SetUeCsgId(NetDeviceContainer, uint32_t)
+   */
+  void SetEnbCsgId (NetDeviceContainer enbDevices, uint32_t csgId,
+                    bool csgIndication);
+
+  /**
+   * \brief Associate the eNodeB devices with a particular CSG information.
+   * \param enbDevice
+   * \param csgId the intended Closed Subscriber Group identity
+   * \param csgIndication if TRUE, only CSG members are allowed to access the
+   *                      cell
+   *
+   * CSG identity is a number identifying a Closed Subscriber Group which the
+   * cell belongs to. eNodeB is associated with a single CSG identity.
+   *
+   * The same CSG identity can also be associated to several UEs, which is
+   * equivalent as enlisting these UEs as the members of this particular CSG.
+   * When the CSG indication field is set to TRUE, only UEs which are members of
+   * the CSG (i.e. same CSG ID) can gain access to the eNodeB, therefore
+   * enforcing closed access mode. Otherwise, the eNodeB operates as a non-CSG
+   * cell and implements open access mode.
+   *
+   * If not set, eNodeB devices are non-CSG cells and bear a CSG identity of 0
+   * by default.
+   *
+   * This restriction only applies to initial cell selection and EPC-enabled
+   * simulation.
+   *
+   * \sa SetUeCsgId(Ptr<NetDevice>, uint32_t)
+   */
+  void SetEnbCsgId (Ptr<NetDevice> enbDevice, uint32_t csgId,
+                    bool csgIndication);
+
+  /**
+   * \brief Set the Q-RxLevMin parameter of the eNodeB devices to be used in
+   *        cell selection.
+   * \param enbDevices the set of eNodeB devices to be updated
+   * \param qRxLevMin the IE value of Q-RxLevMin parameter, which is
+   *
+   * The Q-RxLevMin is a network parameter and is the required minimum RSRP
+   * level that UE must receive before it may gain access to this cell. The
+   * actual value of Q-RxLevMin is IE value * 2 [dBm].
+   *
+   * If not set, the default value is -70, which is the minimum possible value.
+   * This translates to a minimum RSRP of -140 dBm.
+   *
+   * This restriction only applies to initial cell selection and EPC-enabled
+   * simulation.
+   */
+  void SetEnbQRxLevMin (NetDeviceContainer enbDevices, int8_t qRxLevMin);
+
+  /**
+   * \brief Set the Q-RxLevMin parameter of the eNodeB device to be used in
+   *        cell selection.
+   * \param enbDevice
+   * \param qRxLevMin the IE value of Q-RxLevMin parameter, which is
+   *
+   * The Q-RxLevMin is a network parameter and is the required minimum RSRP
+   * level that UE must receive before it may gain access to this cell. The
+   * actual value of Q-RxLevMin is IE value * 2 [dBm].
+   *
+   * If not set, the default value is -70, which is the minimum possible value.
+   * This translates to a minimum RSRP of -140 dBm.
+   *
+   * This restriction only applies to initial cell selection and EPC-enabled
+   * simulation.
+   */
+  void SetEnbQRxLevMin (Ptr<NetDevice> enbDevice, int8_t qRxLevMin);
+
+  /**
+   * \brief Associate the UE devices with a particular network operator.
+   * \param ueDevices the set of UE devices to be updated
+   * \param plmnId the intended Public Land Mobile Network identity
+   *
+   * UE is associated with a single PLMN identity. UE can only gain access to
+   * cells which bear the same PLMN identity.
+   *
+   * If not set, UE devices bear a default PLMN identity of 0.
+   *
+   * This restriction only applies to initial cell selection and EPC-enabled
+   * simulation.
+   *
+   * \sa SetEnbPlmnId(NetDeviceContainer, uint32_t)
+   */
+  void SetUePlmnId (NetDeviceContainer ueDevices, uint32_t plmnId);
+
+  /**
+   * \brief Associate the UE device with a particular network operator.
+   * \param ueDevice
+   * \param plmnId the intended Public Land Mobile Network identity
+   *
+   * UE is associated with a single PLMN identity. UE can only gain access to
+   * cells which bear the same PLMN identity.
+   *
+   * If not set, UE devices bear a default PLMN identity of 0.
+   *
+   * This restriction only applies to initial cell selection and EPC-enabled
+   * simulation.
+   *
+   * \sa SetEnbPlmnId(Ptr<NetDevice>, uint32_t)
+   */
+  void SetUePlmnId (Ptr<NetDevice> ueDevice, uint32_t plmnId);
+
+  /**
+   * \brief Enlist the UE devices as members of a particular CSG.
+   * \param ueDevices the set of UE devices to be updated
+   * \param csgId the intended Closed Subscriber Group identity
+   *
+   * UE is associated with a single CSG identity, and thus becoming a member of
+   * this particular CSG. As a result, the UE may gain access to cells which
+   * belong to this CSG. This does not revoke the UE's access to non-CSG cells.
+   *
+   * If not set, UE devices bear a default CSG identity of 0.
+   *
+   * This restriction only applies to initial cell selection and EPC-enabled
+   * simulation.
+   *
+   * \sa SetEnbCsgId(NetDeviceContainer, uint32_t, bool)
+   */
+  void SetUeCsgId (NetDeviceContainer ueDevices, uint32_t csgId);
+
+  /**
+   * \brief Enlist the UE device as a member of a particular CSG.
+   * \param ueDevice
+   * \param csgId the intended Closed Subscriber Group identity
+   *
+   * UE is associated with a single CSG identity, and thus becoming a member of
+   * this particular CSG. As a result, the UE may gain access to cells which
+   * belong to this CSG. This does not revoke the UE's access to non-CSG cells.
+   *
+   * If not set, UE devices bear a default CSG identity of 0.
+   *
+   * This restriction only applies to initial cell selection and EPC-enabled
+   * simulation.
+   *
+   * \sa SetEnbCsgId(Ptr<NetDevice>, uint32_t, bool)
+   */
+  void SetUeCsgId (Ptr<NetDevice> ueDevice, uint32_t csgId);
 
   /**
    * Enables logging for all components of the LENA architecture

@@ -241,8 +241,8 @@ public:
    */
   void SetUlEarfcn (uint16_t earfcn);
 
-  /** 
-   * 
+  /**
+   *
    * \return the current state
    */
   State GetState ();
@@ -267,6 +267,8 @@ private:
   void DoNotifyRandomAccessFailed ();
  
   // LTE AS SAP methods
+  void DoSetSelectedPlmn (uint32_t plmnId);
+  void DoSetCsgWhiteList (uint32_t csgId);
   void DoForceCampedOnEnb (uint16_t cellId, uint16_t earfcn);
   void DoConnect ();
   void DoSendData (Ptr<Packet> packet, uint8_t bid);
@@ -291,7 +293,10 @@ private:
 
  
   // internal methods
-  void InitialCellSelection ();
+  void SaveUeMeasurements (uint16_t cellId, double rsrp, double rsrq,
+                           bool useLayer3Filtering);
+  void SynchronizeToStrongestCell ();
+  void EvaluateCellForSelection ();
   void ApplyRadioResourceConfigDedicated (LteRrcSap::RadioResourceConfigDedicated rrcd);
   /// 3GPP TS 36.331 section 5.5.2 Measurement configuration
   void ApplyMeasConfig (LteRrcSap::MeasConfig mc);
@@ -376,6 +381,9 @@ private:
 
   /// List of cell ID of acceptable cells for cell selection that have been detected.
   std::set<uint16_t> m_acceptableCell;
+
+  uint32_t m_selectedPlmn;
+  uint32_t m_csgWhiteList;
 
   /**
    * \brief Includes the accumulated configuration of the measurements to be

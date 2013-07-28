@@ -74,6 +74,7 @@ public:
    * \param duration length of simulation
    */
   LteCellSelectionTestCase (std::string name, bool isEpcMode,
+                            bool hasPlmnDiversity, bool hasCsgDiversity,
                             std::vector<UeSetup_t> ueSetupList, Time duration);
 
   virtual ~LteCellSelectionTestCase ();
@@ -103,6 +104,17 @@ private:
    * \brief If true, then the simulation should be set up with EPC enabled.
    */
   bool m_isEpcMode;
+
+  /**
+   * \brief If true, then the north and south cells will be on their own PLMN.
+   */
+  bool m_hasPlmnDiversity;
+
+  /**
+   * \brief If true, then the west cells in the simulation will be CSG cell,
+   *        while the east cells will be non-CSG cells.
+   */
+  bool m_hasCsgDiversity;
 
   /**
    * \brief The list of UE setups to be used during the test execution.

@@ -220,19 +220,45 @@ public:
    * \return hysteresis actual value in dB, which is IE value * 0.5 dB
    *
    * As per section 6.3.5 of 3GPP TS 36.331.
+   *
+   * \sa LteRrcSap::ReportConfigEutra
    */
   static double GetActualHysteresis (uint8_t hysteresis);
 
   /**
    * \brief Returns the actual value of an a3-Offset parameter.
-   * \param IE value of hysteresis
+   * \param IE value of a3-offset
    * \return a3-Offset actual value in dB, which is IE value * 0.5 dB
    *
    * As per section 6.3.5 of 3GPP TS 36.331.
+   *
+   * \sa LteRrcSap::ReportConfigEutra
    */
   static double GetActualA3Offset (int8_t a3Offset);
 
-};
+  /**
+   * \brief Returns the actual value of an Q-RxLevMin parameter.
+   * \param IE value of Q-RxLevMin
+   * \return Q-RxLevMin actual value in dBm, which is IE value * 2 dBm
+   *
+   * As per section 6.3.4 of 3GPP TS 36.331.
+   *
+   * \sa LteRrcSap::CellSelectionInfo
+   */
+  static double GetActualQRxLevMin (int8_t qRxLevMin);
+
+  /**
+   * \brief Returns the actual value of an Q-QualMin parameter.
+   * \param IE value of Q-QualMin
+   * \return Q-QualMin actual value in dB, which is IE value dB
+   *
+   * As per section 6.3.4 of 3GPP TS 36.331.
+   *
+   * \sa LteRrcSap::CellSelectionInfo
+   */
+  static double GetActualQQualMin (int8_t qQualMin);
+
+}; // end of class EutranMeasurementMapping
 
 }; // namespace ns3
 

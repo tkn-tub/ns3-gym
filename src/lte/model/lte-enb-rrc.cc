@@ -533,10 +533,10 @@ UeManager::PrepareHandover (uint16_t cellId)
         hpi.asConfig.sourceRadioResourceConfig = GetRadioResourceConfigForHandoverPreparationInfo ();
         hpi.asConfig.sourceMasterInformationBlock.dlBandwidth = m_rrc->m_dlBandwidth;
         hpi.asConfig.sourceMasterInformationBlock.systemFrameNumber = 0;
-        hpi.asConfig.sourceSystemInformationBlockType1.cellAccessRelatedInfo.plmnIdentityInfo.plmnIdentity = 0;
+        hpi.asConfig.sourceSystemInformationBlockType1.cellAccessRelatedInfo.plmnIdentityInfo.plmnIdentity = m_rrc->m_sib1.cellAccessRelatedInfo.plmnIdentityInfo.plmnIdentity;
         hpi.asConfig.sourceSystemInformationBlockType1.cellAccessRelatedInfo.cellIdentity = m_rrc->m_cellId;
-        hpi.asConfig.sourceSystemInformationBlockType1.cellAccessRelatedInfo.csgIndication = 0;
-        hpi.asConfig.sourceSystemInformationBlockType1.cellAccessRelatedInfo.csgIdentity = 0;
+        hpi.asConfig.sourceSystemInformationBlockType1.cellAccessRelatedInfo.csgIndication = m_rrc->m_sib1.cellAccessRelatedInfo.csgIndication;
+        hpi.asConfig.sourceSystemInformationBlockType1.cellAccessRelatedInfo.csgIdentity = m_rrc->m_sib1.cellAccessRelatedInfo.csgIdentity;
         LteEnbCmacSapProvider::RachConfig rc = m_rrc->m_cmacSapProvider->GetRachConfig ();
         hpi.asConfig.sourceSystemInformationBlockType2.radioResourceConfigCommon.rachConfigCommon.preambleInfo.numberOfRaPreambles = rc.numberOfRaPreambles;
         hpi.asConfig.sourceSystemInformationBlockType2.radioResourceConfigCommon.rachConfigCommon.raSupervisionInfo.preambleTransMax = rc.preambleTransMax;
@@ -1657,18 +1657,14 @@ LteEnbRrc::ConfigureCell (uint8_t ulBandwidth, uint8_t dlBandwidth,
   mib.dlBandwidth = m_dlBandwidth;
   m_cphySapProvider->SetMasterInformationBlock (mib);
 
-  // Enabling SIB1 transmission
-  LteRrcSap::SystemInformationBlockType1 sib1;
-  sib1.cellAccessRelatedInfo.cellIdentity = cellId;
-  sib1.cellAccessRelatedInfo.csgIndication = false;
-  sib1.cellAccessRelatedInfo.csgIdentity = 0;
-  LteRrcSap::PlmnIdentityInfo plmnIdentityInfo;
-  plmnIdentityInfo.plmnIdentity = 0;
-  sib1.cellAccessRelatedInfo.plmnIdentityInfo = plmnIdentityInfo;
-  sib1.cellSelectionInfo.qQualMin = -34;
-  sib1.cellSelectionInfo.qRxLevMin = -70;
-  // TODO the above fields should not be hardcoded like this
-  m_cphySapProvider->SetSystemInformationBlockType1 (sib1);
+  // Enabling SIB1 transmission with default values
+  m_sib1.cellAccessRelatedInfo.cellIdentity = cellId;
+  m_sib1.cellAccessRelatedInfo.csgIndication = false;
+  m_sib1.cellAccessRelatedInfo.csgIdentity = 0;
+  m_sib1.cellAccessRelatedInfo.plmnIdentityInfo.plmnIdentity = 0;
+  m_sib1.cellSelectionInfo.qQualMin = -34; // not used, set as minimum value
+  m_sib1.cellSelectionInfo.qRxLevMin = -70; // set as minimum value
+  m_cphySapProvider->SetSystemInformationBlockType1 (m_sib1);
 
   /*
    * Enabling transmission of other SIB. The first time System Information is
@@ -1687,6 +1683,10 @@ void
 LteEnbRrc::SetCellId (uint16_t cellId)
 {
   m_cellId = cellId;
+
+  // update SIB1 too
+  m_sib1.cellAccessRelatedInfo.cellIdentity = cellId;
+  m_cphySapProvider->SetSystemInformationBlockType1 (m_sib1);
 }
 
 bool
@@ -2145,6 +2145,19 @@ LteEnbRrc::AddX2Neighbour (uint16_t cellId)
   m_neighbourRelationTable[cellId] = neighbourRelation;
 }
 
+LteRrcSap::SystemInformationBlockType1
+LteEnbRrc::GetSystemInformationBlockType1 () const
+{
+  return m_sib1;
+}
+
+void
+LteEnbRrc::SetSystemInformationBlockType1 (LteRrcSap::SystemInformationBlockType1 sib1)
+{
+  m_sib1 = sib1;
+  m_cphySapProvider->SetSystemInformationBlockType1 (sib1);
+}
+
 
 // from 3GPP TS 36.213 table 8.2-1 UE Specific SRS Periodicity
 const uint8_t SRS_ENTRIES = 9;
@@ -2286,6 +2299,7 @@ LteEnbRrc::SendSystemInformation ()
   m_rrcSapUser->SendSystemInformation (si);
   Simulator::Schedule (m_systemInformationPeriodicity, &LteEnbRrc::SendSystemInformation, this);
 }
+
 
 } // namespace ns3
 

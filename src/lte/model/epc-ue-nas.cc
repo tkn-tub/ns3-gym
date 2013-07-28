@@ -56,6 +56,8 @@ NS_OBJECT_ENSURE_REGISTERED (EpcUeNas);
 
 EpcUeNas::EpcUeNas ()
   : m_state (OFF),
+    m_plmnId (0),
+    m_csgId (0),
     m_asSapProvider (0),
     m_bidCounter (0)
 {
@@ -73,7 +75,7 @@ void
 EpcUeNas::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  delete m_asSapUser;  
+  delete m_asSapUser;
 }
 
 TypeId
@@ -102,18 +104,44 @@ EpcUeNas::SetImsi (uint64_t imsi)
 }
 
 void
+EpcUeNas::SetPlmnId (uint32_t plmnId)
+{
+  m_plmnId = plmnId;
+  m_asSapProvider->SetSelectedPlmn (plmnId);
+}
+
+uint32_t
+EpcUeNas::GetPlmnId () const
+{
+  return m_plmnId;
+}
+
+void
+EpcUeNas::SetCsgId (uint32_t csgId)
+{
+  m_csgId = csgId;
+  m_asSapProvider->SetCsgWhiteList (csgId);
+}
+
+uint32_t
+EpcUeNas::GetCsgId () const
+{
+  return m_csgId;
+}
+
+void
 EpcUeNas::SetAsSapProvider (LteAsSapProvider* s)
 {
   m_asSapProvider = s;
 }
 
-LteAsSapUser* 
+LteAsSapUser*
 EpcUeNas::GetAsSapUser ()
 {
   return m_asSapUser;
 }
 
-void 
+void
 EpcUeNas::SetForwardUpCallback (Callback <void, Ptr<Packet> > cb)
 {
   m_forwardUpCallback = cb;

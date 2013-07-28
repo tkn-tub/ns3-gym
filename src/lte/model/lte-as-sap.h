@@ -33,7 +33,7 @@ class LteEnbNetDevice;
 /**
  * This class implements the Access Stratum (AS) Service Access Point
  * (SAP), i.e., the interface between the EpcUeNas and the LteUeRrc.
- * In particular, this class implements the  
+ * In particular, this class implements the
  * Provider part of the SAP, i.e., the methods exported by the
  * LteUeRrc and called by the EpcUeNas.
  * 
@@ -43,6 +43,22 @@ class LteAsSapProvider
 public:
   virtual ~LteAsSapProvider ();
 
+  /**
+   * \brief Set the selected Public Land Mobile Network identity to be used for
+   *        cell selection.
+   *
+   * \param plmnId identity of the selected PLMN
+   */
+  virtual void SetSelectedPlmn (uint32_t plmnId) = 0;
+
+  /**
+   * \brief Set the selected Closed Subscriber Group subscription list to be
+   *        used for cell selection
+   *
+   * \param csgId identity of the subscribed CSG
+   */
+  virtual void SetCsgWhiteList (uint32_t csgId) = 0;
+
   /** 
    * Force the RRC to stay camped on a certain eNB
    * 
@@ -51,7 +67,7 @@ public:
    * \param cellId the Cell ID identifying the eNB
    */
   virtual void ForceCampedOnEnb (uint16_t cellId, uint16_t earfcn) = 0;
-  
+
   /** 
    * Tell the RRC to go into Connected Mode
    * 
@@ -74,7 +90,7 @@ public:
   virtual void Disconnect () = 0;
 
 };
-  
+
 
 /**
  * This class implements the Access Stratum (AS) Service Access Point
@@ -132,8 +148,10 @@ public:
   MemberLteAsSapProvider (C* owner);
 
   // inherited from LteAsSapProvider
-  virtual void Connect (void);
+  virtual void SetSelectedPlmn (uint32_t plmnId);
+  virtual void SetCsgWhiteList (uint32_t csgId);
   virtual void ForceCampedOnEnb (uint16_t cellId, uint16_t earfcn);
+  virtual void Connect (void);
   virtual void SendData (Ptr<Packet> packet, uint8_t bid);
   virtual void Disconnect ();
 
@@ -155,11 +173,24 @@ MemberLteAsSapProvider<C>::MemberLteAsSapProvider ()
 
 template <class C>
 void 
+MemberLteAsSapProvider<C>::SetSelectedPlmn (uint32_t plmnId)
+{
+  m_owner->DoSetSelectedPlmn (plmnId);
+}
+
+template <class C>
+void
+MemberLteAsSapProvider<C>::SetCsgWhiteList (uint32_t csgId)
+{
+  m_owner->DoSetCsgWhiteList (csgId);
+}
+
+template <class C>
+void
 MemberLteAsSapProvider<C>::ForceCampedOnEnb (uint16_t cellId, uint16_t earfcn)
 {
   m_owner->DoForceCampedOnEnb (cellId, earfcn);
 }
-
 
 template <class C>
 void 
