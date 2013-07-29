@@ -354,6 +354,8 @@ private:
   //             imsi      cellId    rnti,     sourceCellId
   TracedCallback<uint64_t, uint16_t, uint16_t, uint16_t> m_sib1ReceivedTrace;
   //             imsi      cellId    rnti
+  TracedCallback<uint64_t, uint16_t, uint16_t> m_sib2ReceivedTrace;
+  //             imsi      cellId    rnti
   TracedCallback<uint64_t, uint16_t, uint16_t, State, State> m_stateTransitionTrace;
   //             imsi      cellId
   TracedCallback<uint64_t, uint16_t> m_initialCellSelectionEndOkTrace;

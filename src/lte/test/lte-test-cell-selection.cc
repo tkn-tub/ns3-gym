@@ -129,7 +129,7 @@ LteCellSelectionTestSuite::LteCellSelectionTestSuite ()
   x.push_back (LteCellSelectionTestCase::UeSetup_t (Vector (240, 10, 0), 1, 2));
   AddTestCase (new LteCellSelectionTestCase ("[EPC] Some CSG 2",
                                              true, true, x, MilliSeconds (361)),
-               TestCase::QUICK);
+               TestCase::EXTENSIVE);
 
 } // end of LteCellSelectionTestSuite::LteCellSelectionTestSuite ()
 
@@ -318,6 +318,8 @@ LteCellSelectionTestCase::DoRun ()
                    MakeCallback (&LteCellSelectionTestCase::MibReceivedCallback, this));
   Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/Sib1Received",
                    MakeCallback (&LteCellSelectionTestCase::Sib1ReceivedCallback, this));
+  Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/Sib2Received",
+                   MakeCallback (&LteCellSelectionTestCase::Sib2ReceivedCallback, this));
   Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/StateTransition",
                    MakeCallback (&LteCellSelectionTestCase::StateTransitionCallback, this));
   Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/InitialCellSelectionEndOk",
@@ -366,6 +368,14 @@ LteCellSelectionTestCase::Sib1ReceivedCallback (
   uint16_t sourceCellId)
 {
   NS_LOG_FUNCTION (this << context << imsi << cellId << rnti << sourceCellId);
+}
+
+
+void
+LteCellSelectionTestCase::Sib2ReceivedCallback (
+  std::string context, uint64_t imsi, uint16_t cellId, uint16_t rnti)
+{
+  NS_LOG_FUNCTION (this << context << imsi << cellId << rnti);
 }
 
 

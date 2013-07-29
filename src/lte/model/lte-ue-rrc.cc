@@ -194,6 +194,9 @@ LteUeRrc::GetTypeId (void)
     .AddTraceSource ("Sib1Received",
                      "trace fired upon reception of System Information Block Type 1",
                      MakeTraceSourceAccessor (&LteUeRrc::m_sib1ReceivedTrace))
+    .AddTraceSource ("Sib2Received",
+                     "trace fired upon reception of System Information Block Type 2",
+                     MakeTraceSourceAccessor (&LteUeRrc::m_sib2ReceivedTrace))
     .AddTraceSource ("StateTransition",
                      "trace fired upon every UE RRC state transition",
                      MakeTraceSourceAccessor (&LteUeRrc::m_stateTransitionTrace))
@@ -395,7 +398,7 @@ LteUeRrc::DoInitialize (void)
   lcConfig.logicalChannelGroup = 0; // all SRBs mapped to LCG 0
 
   m_cmacSapProvider->AddLc (lcid, lcConfig, rlc->GetLteMacSapUser ());
-    
+
 }
 
 
@@ -658,6 +661,7 @@ LteUeRrc::DoRecvSystemInformation (LteRrcSap::SystemInformation msg)
       m_hasReceivedSib2 = true;
       m_ulBandwidth = msg.sib2.freqInfo.ulBandwidth;
       m_ulEarfcn = msg.sib2.freqInfo.ulCarrierFreq;
+      m_sib2ReceivedTrace (m_imsi, m_cellId, m_rnti);
       LteUeCmacSapProvider::RachConfig rc;
       rc.numberOfRaPreambles = msg.sib2.radioResourceConfigCommon.rachConfigCommon.preambleInfo.numberOfRaPreambles;
       rc.preambleTransMax = msg.sib2.radioResourceConfigCommon.rachConfigCommon.raSupervisionInfo.preambleTransMax;
