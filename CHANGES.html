@@ -83,6 +83,14 @@ us a note on ns-developers mailing list.</p>
   Existing Ipv6RoutingProtocols should update their RouteInput function
   accordingly. E.g., from ucb (rtentry, p, header); to ucb (idev, rtentry, p, header);
   </li>
+  <li> The previous buildings module relied on a specific MobilityModel called
+    BuildingsMobilityModel, which supported buildings but only allowed
+    static positions. This mobility model has been removed. Now, the
+    Buildings module instead relies on a new class called
+    MobilityBuildingInfo which can be aggregated to any MobilityModel. This
+    allows having moving nodes in presence of buildings with any of
+    the existing MobilityModels. 
+  </li>
 </ul>
 
 <h2>Changes to build system:</h2>

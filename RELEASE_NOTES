@@ -29,6 +29,9 @@ New user-visible features
   section in the Manual.
 - New Mac16Address has been added, Mac64Address is now in-line with 
   Mac48Address and all the three can be used in IPv6 autoconfigure. 
+- Previously, the use of Building models was limited to the use of the
+  companion BuildingsMobilityModel. Now, any MobilityModel can be
+  used with Building models. 
 
 Bugs fixed
 ----------

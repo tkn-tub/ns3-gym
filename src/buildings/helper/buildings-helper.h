@@ -49,15 +49,18 @@ public:
   */
   static void Install (NodeContainer c);     // for any nodes
   /**
-  * Update the node in the simulation scenario MobilityBuildingInfo according 
-  * to the buildings created
+  * This method goes through the whole NodeList and, for each node in
+  * the list, calls BuildingsHelper::MakeConsistent() passing to it
+  * the MobilityModel of that node. 
   *
   */
   static void MakeMobilityModelConsistent ();
   /**
-  * Update the MobilityBuildingInfo according to the buildings created
+  * Make the given mobility model consistent, by determining whether
+  * its position falls inside any of the building in BuildingList, and
+  * updating accordingly the BuildingInfo aggregated with the MobilityModel.
   *
-  * \param bmm the mobility model of the node to be updated
+  * \param bmm the mobility model to be made consistent
   */
   static void MakeConsistent (Ptr<MobilityModel> bmm);
   
