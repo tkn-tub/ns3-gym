@@ -267,7 +267,6 @@ private:
   void DoNotifyRandomAccessFailed ();
  
   // LTE AS SAP methods
-  void DoSetSelectedPlmn (uint32_t plmnId);
   void DoSetCsgWhiteList (uint32_t csgId);
   void DoForceCampedOnEnb (uint16_t cellId, uint16_t earfcn);
   void DoConnect ();
@@ -382,7 +381,6 @@ private:
   /// List of cell ID of acceptable cells for cell selection that have been detected.
   std::set<uint16_t> m_acceptableCell;
 
-  uint32_t m_selectedPlmn;
   uint32_t m_csgWhiteList;
 
   /**

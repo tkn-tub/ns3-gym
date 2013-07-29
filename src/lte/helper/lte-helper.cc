@@ -676,7 +676,7 @@ LteHelper::AttachToClosestEnb (Ptr<NetDevice> ueDevice, NetDeviceContainer enbDe
         {
           minDistance = distance;
           closestEnbDevice = *i;
-        }      
+        }
     }
   NS_ASSERT (closestEnbDevice != 0);
   Attach (ueDevice, closestEnbDevice);
@@ -874,33 +874,6 @@ LteHelper::ActivateDataRadioBearer (NetDeviceContainer ueDevices, EpsBearer bear
 }
 
 void
-LteHelper::SetEnbPlmnId (NetDeviceContainer enbDevices, uint32_t plmnId)
-{
-  for (NetDeviceContainer::Iterator i = enbDevices.Begin ();
-       i != enbDevices.End (); ++i)
-    {
-      SetEnbPlmnId (*i, plmnId);
-    }
-}
-
-void
-LteHelper::SetEnbPlmnId (Ptr<NetDevice> enbDevice, uint32_t plmnId)
-{
-  NS_LOG_FUNCTION (this << enbDevice << plmnId);
-
-  Ptr<LteEnbNetDevice> enbLteDevice = enbDevice->GetObject<LteEnbNetDevice> ();
-  if (enbLteDevice == 0)
-    {
-      NS_FATAL_ERROR ("The passed NetDevice must be an LteEnbNetDevice");
-    }
-
-  Ptr<LteEnbRrc> rrc = enbLteDevice->GetRrc ();
-  LteRrcSap::SystemInformationBlockType1 sib1 = rrc->GetSystemInformationBlockType1 ();
-  sib1.cellAccessRelatedInfo.plmnIdentityInfo.plmnIdentity = plmnId;
-  rrc->SetSystemInformationBlockType1 (sib1);
-}
-
-void
 LteHelper::SetEnbCsgId (NetDeviceContainer enbDevices, uint32_t csgId,
                         bool csgIndication)
 {
@@ -955,30 +928,6 @@ LteHelper::SetEnbQRxLevMin (Ptr<NetDevice> enbDevice, int8_t qRxLevMin)
   LteRrcSap::SystemInformationBlockType1 sib1 = rrc->GetSystemInformationBlockType1 ();
   sib1.cellSelectionInfo.qRxLevMin = qRxLevMin;
   rrc->SetSystemInformationBlockType1 (sib1);
-}
-
-void
-LteHelper::SetUePlmnId (NetDeviceContainer ueDevices, uint32_t plmnId)
-{
-  for (NetDeviceContainer::Iterator i = ueDevices.Begin ();
-       i != ueDevices.End (); ++i)
-    {
-      SetUePlmnId (*i, plmnId);
-    }
-}
-
-void
-LteHelper::SetUePlmnId (Ptr<NetDevice> ueDevice, uint32_t plmnId)
-{
-  NS_LOG_FUNCTION (this << ueDevice << plmnId);
-
-  Ptr<LteUeNetDevice> ueLteDevice = ueDevice->GetObject<LteUeNetDevice> ();
-  if (ueLteDevice == 0)
-    {
-      NS_FATAL_ERROR ("The passed NetDevice must be an LteUeNetDevice");
-    }
-
-  ueLteDevice->GetNas ()->SetPlmnId (plmnId);
 }
 
 void

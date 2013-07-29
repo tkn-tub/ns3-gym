@@ -64,18 +64,6 @@ public:
    */
   void SetImsi (uint64_t imsi);
 
-  /** 
-   *
-   * \param plmnId Public Land Mobile Network identity
-   */
-  void SetPlmnId (uint32_t plmnId);
-
-  /**
-   *
-   * \return plmnId Public Land Mobile Network identity
-   */
-  uint32_t GetPlmnId () const;
-
   /**
    *
    * \param csgId Closed Subscriber Group identity
@@ -162,14 +150,14 @@ public:
    * 
    */
   enum State 
-    {
-      OFF = 0,
-      ATTACHING,
-      IDLE_REGISTERED,
-      CONNECTING_TO_EPC,
-      ACTIVE,
-      NUM_STATES
-    };
+  {
+    OFF = 0,
+    ATTACHING,
+    IDLE_REGISTERED,
+    CONNECTING_TO_EPC,
+    ACTIVE,
+    NUM_STATES
+  };
 
  
 private:
@@ -192,7 +180,6 @@ private:
 
   uint64_t m_imsi;
 
-  uint32_t m_plmnId;
   uint32_t m_csgId;
 
   LteAsSapProvider* m_asSapProvider;

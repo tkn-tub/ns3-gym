@@ -1661,7 +1661,7 @@ LteEnbRrc::ConfigureCell (uint8_t ulBandwidth, uint8_t dlBandwidth,
   m_sib1.cellAccessRelatedInfo.cellIdentity = cellId;
   m_sib1.cellAccessRelatedInfo.csgIndication = false;
   m_sib1.cellAccessRelatedInfo.csgIdentity = 0;
-  m_sib1.cellAccessRelatedInfo.plmnIdentityInfo.plmnIdentity = 0;
+  m_sib1.cellAccessRelatedInfo.plmnIdentityInfo.plmnIdentity = 0; // not used
   m_sib1.cellSelectionInfo.qQualMin = -34; // not used, set as minimum value
   m_sib1.cellSelectionInfo.qRxLevMin = -70; // set as minimum value
   m_cphySapProvider->SetSystemInformationBlockType1 (m_sib1);
@@ -2288,7 +2288,7 @@ LteEnbRrc::SendSystemInformation ()
   si.haveSib2 = true;
   si.sib2.freqInfo.ulCarrierFreq = m_ulEarfcn;
   si.sib2.freqInfo.ulBandwidth = m_ulBandwidth;
-  
+
   LteEnbCmacSapProvider::RachConfig rc = m_cmacSapProvider->GetRachConfig ();
   LteRrcSap::RachConfigCommon rachConfigCommon;
   rachConfigCommon.preambleInfo.numberOfRaPreambles = rc.numberOfRaPreambles;

@@ -44,16 +44,8 @@ public:
   virtual ~LteAsSapProvider ();
 
   /**
-   * \brief Set the selected Public Land Mobile Network identity to be used for
-   *        cell selection.
-   *
-   * \param plmnId identity of the selected PLMN
-   */
-  virtual void SetSelectedPlmn (uint32_t plmnId) = 0;
-
-  /**
    * \brief Set the selected Closed Subscriber Group subscription list to be
-   *        used for cell selection
+   *        used for cell selection.
    *
    * \param csgId identity of the subscribed CSG
    */
@@ -104,7 +96,7 @@ class LteAsSapUser
 {
 public:
   virtual ~LteAsSapUser ();
-  
+
   /** 
    * Notify the NAS that RRC Connection Establishment was successful
    * 
@@ -130,9 +122,9 @@ public:
    * \param packet the packet
    */
   virtual void RecvData (Ptr<Packet> packet) = 0;
-  
+
 };
-  
+
 
 
 
@@ -148,7 +140,6 @@ public:
   MemberLteAsSapProvider (C* owner);
 
   // inherited from LteAsSapProvider
-  virtual void SetSelectedPlmn (uint32_t plmnId);
   virtual void SetCsgWhiteList (uint32_t csgId);
   virtual void ForceCampedOnEnb (uint16_t cellId, uint16_t earfcn);
   virtual void Connect (void);
@@ -169,13 +160,6 @@ MemberLteAsSapProvider<C>::MemberLteAsSapProvider (C* owner)
 template <class C>
 MemberLteAsSapProvider<C>::MemberLteAsSapProvider ()
 {
-}
-
-template <class C>
-void 
-MemberLteAsSapProvider<C>::SetSelectedPlmn (uint32_t plmnId)
-{
-  m_owner->DoSetSelectedPlmn (plmnId);
 }
 
 template <class C>

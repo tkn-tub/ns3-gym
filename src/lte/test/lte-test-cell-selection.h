@@ -59,11 +59,9 @@ public:
   struct UeSetup_t
   {
     Vector position; ///< The position where the UE will be spawned in the simulation.
-    uint32_t plmnIdentity; ///< Public Land Mobile Network identity of the UE.
     uint32_t csgIdentity; ///< Closed Subscriber Group identity of the UE.
     uint16_t expectedCellId; ///< The cell ID that the UE is expected to attach to (0 means that the UE should not attach to any cell).
-    UeSetup_t (Vector position, uint32_t plmnIdentity, uint32_t csgIdentity,
-               uint16_t expectedCellId);
+    UeSetup_t (Vector position, uint32_t csgIdentity, uint16_t expectedCellId);
   };
 
   /**
@@ -73,8 +71,7 @@ public:
    * \param ueSetupList an array of UE setup parameters
    * \param duration length of simulation
    */
-  LteCellSelectionTestCase (std::string name, bool isEpcMode,
-                            bool hasPlmnDiversity, bool hasCsgDiversity,
+  LteCellSelectionTestCase (std::string name, bool isEpcMode, bool hasCsgDiversity,
                             std::vector<UeSetup_t> ueSetupList, Time duration);
 
   virtual ~LteCellSelectionTestCase ();
@@ -104,11 +101,6 @@ private:
    * \brief If true, then the simulation should be set up with EPC enabled.
    */
   bool m_isEpcMode;
-
-  /**
-   * \brief If true, then the north and south cells will be on their own PLMN.
-   */
-  bool m_hasPlmnDiversity;
 
   /**
    * \brief If true, then the west cells in the simulation will be CSG cell,

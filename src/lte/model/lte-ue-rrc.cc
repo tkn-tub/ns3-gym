@@ -57,7 +57,7 @@ public:
   virtual void SetTemporaryCellRnti (uint16_t rnti);
   virtual void NotifyRandomAccessSuccessful ();
   virtual void NotifyRandomAccessFailed ();
-  
+
 private:
   LteUeRrc* m_rrc;
 };
@@ -132,7 +132,6 @@ LteUeRrc::LteUeRrc ()
     m_hasReceivedMib (false),
     m_hasReceivedSib1 (false),
     m_hasReceivedSib2 (false),
-    m_selectedPlmn (0),
     m_csgWhiteList (0)
 {
   NS_LOG_FUNCTION (this);
@@ -483,7 +482,7 @@ LteUeRrc::DoNotifyRandomAccessSuccessful ()
         m_rrcSapUser->SendRrcConnectionRequest (msg); 
       }
       break;
-      
+
     case CONNECTED_HANDOVER:     
       {
         LteRrcSap::RrcConnectionReconfigurationCompleted msg;
@@ -506,13 +505,6 @@ LteUeRrc::DoNotifyRandomAccessFailed ()
   NS_LOG_FUNCTION (this);
 }
 
-
-void
-LteUeRrc::DoSetSelectedPlmn (uint32_t plmnId)
-{
-  NS_LOG_FUNCTION (this << plmnId);
-  m_selectedPlmn = plmnId;
-}
 
 void
 LteUeRrc::DoSetCsgWhiteList (uint32_t csgId)
@@ -890,17 +882,12 @@ LteUeRrc::EvaluateCellForSelection ()
     {
       isAcceptableCell = true;
 
-      uint32_t cellPlmnId = m_lastSib1.cellAccessRelatedInfo.plmnIdentityInfo.plmnIdentity;
       uint32_t cellCsgId = m_lastSib1.cellAccessRelatedInfo.csgIdentity;
       bool cellCsgIndication = m_lastSib1.cellAccessRelatedInfo.csgIndication;
 
-      bool isPlmnMatch = (cellPlmnId == m_selectedPlmn);
-      bool isCsgMatch = (cellCsgIndication == false)
-        || (cellCsgId == m_csgWhiteList);
-      isSuitableCell = (isPlmnMatch && isCsgMatch);
+      isSuitableCell = (cellCsgIndication == false) || (cellCsgId == m_csgWhiteList);
 
-      NS_LOG_LOGIC (this << " plmn(ue/cell)=" << m_selectedPlmn << "/" << cellPlmnId
-                         << " csg(ue/cell/indication)=" << m_csgWhiteList << "/"
+      NS_LOG_LOGIC (this << " csg(ue/cell/indication)=" << m_csgWhiteList << "/"
                          << cellCsgId << "/" << cellCsgIndication);
     }
 
