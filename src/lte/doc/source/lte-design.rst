@@ -2085,11 +2085,13 @@ The simulation user can set two parameters to control the handover decision:
    serving cell is less or equal to the servingHandoverThreshold parameter
    (i.e. the conditions of the UE in the serving cell are getting bad or
    not good enough), then the eNB considers this UE to hand it over to a new
-   neighbour eNB. The handover will really triggered depending on the 
+   neighbour eNB. The handover will eventually be triggered depending on the 
    measurements of the neighbour cells.
 
- - neighbourHandoverOffset, if the difference between the best neighbour RSRQ
-   and the serving cell RSRQ is greater or equal to the neighbourHandoverOffset
+ - neighbourHandoverOffset, if the UE is considered for handover, and
+   the difference between the best neighbour RSRQ 
+   and the RSRQ difference between the neighbor and the serving cell
+   is greater or equal to the neighbourHandoverOffset 
    parameter, then the handover procedure is triggered for this UE.
 
 

@@ -564,8 +564,8 @@ It is to be noted that any mobility model can be used; however, based on the inf
     BuildingsHelper::Install (ueNodes);
     NetDeviceContainer ueDevs;
     ueDevs = lteHelper->InstallUeDevice (ueNodes);
-    Ptr<BuildingsMobilityModel> mm0 = enbNodes.Get (0)->GetObject<ConstantPositionMobilityModel> ();
-    Ptr<BuildingsMobilityModel> mm1 = enbNodes.Get (1)->GetObject<ConstantPositionMobilityModel> ();   
+    Ptr<ConstantPositionMobilityModel> mm0 = enbNodes.Get (0)->GetObject<ConstantPositionMobilityModel> ();
+    Ptr<ConstantPositionMobilityModel> mm1 = enbNodes.Get (1)->GetObject<ConstantPositionMobilityModel> ();
     mm0->SetPosition (Vector (5.0, 5.0, 1.5));
     mm1->SetPosition (Vector (30.0, 40.0, 1.5));
 
