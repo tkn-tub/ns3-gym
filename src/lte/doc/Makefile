@@ -34,7 +34,8 @@ IMAGES_DIA = \
 	$(FIGURES)/lte-harq-processes-scheme.dia \
 	$(FIGURES)/ue-meas-piecewise-motion.dia \
 	$(FIGURES)/ue-meas-piecewise-a1.dia \
-	$(FIGURES)/ue-meas-piecewise-a1-hys.dia
+	$(FIGURES)/ue-meas-piecewise-a1-hys.dia \
+	$(FIGURES)/lte-cell-selection.dia
 
 
 # specify eps figures from which .png and .pdf figures need to be built

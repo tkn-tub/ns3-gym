@@ -1950,88 +1950,136 @@ represented in Figure :ref:`fig-lte-enb-rrc-states`.
    ENB RRC State Machine for each UE
 
 
-.. _sec-cell-search:
-
-Cell Search
-+++++++++++
-
-Cell search is one of the first steps performed by every UE in the beginning of
-simulation, particularly when the UE has not yet camped or attached to an
-eNodeB. The objective of the procedure is to detect surrounding cells and
-measure the strength of received signal from each of these cells. One of these
-cells will become the UE's entry point to join the cellular network.
-
-The measurements are based on the RSRP of the received PSS, averaged by Layer 1
-filtering, and performed by the PHY layer. This is described in more detail in
-section :ref:`phy-ue-measurements`. PSS is transmitted by eNodeB over the
-central 72 sub-carriers of the DL channel (Section 5.1.7.3 [TS36300]_), hence
-we model cell search to operate using a DL bandwidth of 6 RBs. Note that
-measurements of RSRQ are not available at this point of time in simulation. As
-a consequence, the ``LteUePhy::RsrqUeMeasThreshold`` attribute does not apply
-during cell search.
-
-Using the measured RSRP, the PHY entity is able to generate a list of detected
-cells, each with its corresponding cell ID and averaged RSRP. This list is
-periodically pushed via CPHY SAP to the RRC entity as a measurement report.
-
-The RRC entity inspects the report and simply choose the cell with the strongest
-RSRP, as also indicated in Section 5.2.3.1 of [TS36304]_. Then it instructs the
-PHY entity to synchronize to this particular cell. The actual operating
-bandwidth of the cell is still unknown at this time, so the PHY entity listens
-only to the minimum bandwidth of 6 RBs. Nevertheless the PHY entity will be
-able to receive system broadcast message from this particular eNodeB, which is
-the topic of the next section.
-
-
-
-Broadcast of System Information
-+++++++++++++++++++++++++++++++
-
-System information blocks are broadcasted by eNodeB to UEs at predefined time
-intervals. The supported system information blocks are:
-
- - Master Information Block (MIB)
-      Contains parameters related to the PHY layer, generated during cell
-      configuration and broadcasted every 10 ms as a control message.
-
- - System Information Block Type 1 (SIB1)
-      Contains information regarding network access, broadcasted every 20 ms as
-      a control message.
-      
- - System Information Block Type 2 (SIB2)
-      Contains UL- and RACH-related settings, scheduled to transmit via RRC
-      protocol at 16 ms after cell configuration, and then repeats every 80 ms.
-
-Reception of system information is detrimental to a UE in order to advance in
-its lifecycle. MIB enables the UE to increase the initial DL bandwidth of 6 RBs
-to the actual operating bandwidth of the network. SIB1 provides information
-necessary for initial cell selection procedure (explained in the next section).
-And finally SIB2 is necessary before the UE can switch to CONNECTED state.
-
-
 .. _sec-initial-cell-selection:
 
 Initial Cell Selection
 ++++++++++++++++++++++
 
-Performed by UE RRC, the initial cell selection procedure reviews the
-measurement report produced in :ref:`sec-cell-search` and the cell access
-information provided by SIB1. Once both information is available for a specific
-cell, the UE triggers the evaluation process. The purpose of this process is to
-determine if the cell is a suitable cell to camp to.
+Initial cell selection is an IDLE mode procedure, performed by UE when it has
+not yet camped or attached to an eNodeB. The objective of the procedure is to
+find a suitable cell and attach to it to gain access to the cellular network.
+
+It is typically done at the beginning of simulation, as depicted in Figure
+:ref:`fig-lte-cell-selection` below. The time diagram on the left side is
+illustrating the case where initial cell selection succeed on first try, while
+the diagram on the right side is for the case where it fails on the first try
+and succeed on the second try. The timing assumes the use of real RRC protocol
+model (see :ref:`sec-rrc-protocol-models`) and no transmission error.
+
+.. _fig-lte-cell-selection:
+
+.. figure:: figures/lte-cell-selection.*
+   :align: center
+
+   Sample runs of initial cell selection in UE and timing of related events
+
+The functionality is based on 3GPP IDLE mode specifications, such as in
+[TS36300]_, [TS36304]_, and [TS36331]_. However, a proper implementation of IDLE
+mode is still missing in the simulator, so we reserve several simplifying
+assumptions:
+
+ - multiple carrier frequency is not supported;
+ 
+ - multiple Public Land Mobile Network (PLMN) identities (i.e. multiple network
+   operators) is not supported;
+ 
+ - RSRQ measurements are not utilized;
+ 
+ - stored information cell selection is not supported;
+
+ - "Any Cell Selection" state and camping to an acceptable cell is not
+   supported;
+ 
+ - marking a cell as barred or reserved is not supported;
+
+ - cell reselection is not supported, hence it is not possible for UE to camp to
+   a different cell after the initial camp has been placed; and
+ 
+ - UE's Closed Subscriber Group (CSG) white list contains only one CSG identity.
+   
+Also note that initial cell selection is only available for EPC-enabled
+simulations. LTE-only simulations must use the manual attachment method. See
+section :ref:`sec-network-attachment` of user documentation for more information
+on their differences in usage.
+
+The next subsections cover different parts of initial cell selection, namely
+*cell search*, *broadcast of system information*, and *cell selection evaluation*.
+
+.. _sec-cell-search:
+
+Cell Search
+-----------
+
+Cell search aims to detect surrounding cells and measure the strength of
+received signal from each of these cells. One of these cells will become the
+UE's entry point to join the cellular network.
+
+The measurements are based on the RSRP of the received PSS, averaged by Layer 1
+filtering, and performed by the PHY layer, as previously described in more
+detail in section :ref:`phy-ue-measurements`. PSS is transmitted by eNodeB over
+the central 72 sub-carriers of the DL channel (Section 5.1.7.3 [TS36300]_),
+hence we model cell search to operate using a DL bandwidth of 6 RBs. Note that
+measurements of RSRQ are not available at this point of time in simulation. As
+a consequence, the ``LteUePhy::RsrqUeMeasThreshold`` attribute does not apply
+during cell search.
+
+By using the measured RSRP, the PHY entity is able to generate a list of
+detected cells, each with its corresponding cell ID and averaged RSRP. This list
+is periodically pushed via CPHY SAP to the RRC entity as a measurement report.
+
+The RRC entity inspects the report and simply choose the cell with the strongest
+RSRP, as also indicated in Section 5.2.3.1 of [TS36304]_. Then it instructs back
+the PHY entity to synchronize to this particular cell. The actual operating
+bandwidth of the cell is still unknown at this time, so the PHY entity listens
+only to the minimum bandwidth of 6 RBs. Nevertheless, the PHY entity will be
+able to receive system broadcast message from this particular eNodeB, which is
+the topic of the next subsection.
+
+Broadcast of System Information
+-------------------------------
+
+System information blocks are broadcasted by eNodeB to UEs at predefined time
+intervals, adapted from Section 5.2.1.2 of [TS36331]_. The supported system
+information blocks are:
+
+ - Master Information Block (MIB)
+      Contains parameters related to the PHY layer, generated during cell
+      configuration and broadcasted every 10 ms at the beginning of radio frame
+      as a control message.
+
+ - System Information Block Type 1 (SIB1)
+      Contains information regarding network access, broadcasted every 20 ms at
+      the middle of radio frame as a control message.
+      
+ - System Information Block Type 2 (SIB2)
+      Contains UL- and RACH-related settings, scheduled to transmit via RRC
+      protocol at 16 ms after cell configuration, and then repeats every 80 ms
+      (configurable through `LteEnbRrc::SystemInformationPeriodicity` attribute.
+
+Reception of system information is fundamental for UE to advance in its
+lifecycle. MIB enables the UE to increase the initial DL bandwidth of 6 RBs to
+the actual operating bandwidth of the network. SIB1 provides information
+necessary for cell selection evaluation (explained in the next section). And
+finally SIB2 is required before the UE is allowed to switch to CONNECTED state.
+
+Cell Selection Evaluation
+-------------------------
+
+UE RRC reviews the measurement report produced in :ref:`sec-cell-search` and the
+cell access information provided by SIB1. Once both information is available for
+a specific cell, the UE triggers the evaluation process. The purpose of this
+process is to determine whether the cell is a suitable cell to camp to.
 
 The evaluation process is a slightly simplified version of Section 5.2.3.2 of
-[TS36304]_. It consists of the following 3 criteria:
+[TS36304]_. It consists of the following criteria:
 
- - Rx level criterion;
+ - Rx level criterion; and
  
- - public land mobile network (PLMN), a.k.a. the network operator; and
- 
- - closed subscriber group (CSG).
+ - closed subscriber group (CSG) criterion.
  
 The first criterion, Rx level, is based on the cell's measured RSRP
-:math:`Q_{rxlevmeas}`, which has to be higher than the required minimum in order
-to pass the criterion:
+:math:`Q_{rxlevmeas}`, which has to be higher than a required minimum
+:math:`Q_{rxlevmin}` in order to pass the criterion:
 
 .. math::
 
@@ -2040,47 +2088,27 @@ to pass the criterion:
 where :math:`Q_{rxlevmin}` is determined by each eNodeB and is obtainable by UE
 from SIB1.
 
-The last pair of criteria, PLMN and CSG, are simple numbers associated with each
-eNodeB and UE. The basic rule is that UE will not camp to eNodeBs with different
-PLMN ID and/or CSG ID. The default value of zero disables these criteria. Only
-at most one PLMN ID and one CSG ID can be associated to each eNodeB or UE.
-Section :ref:`sec-network-attachment` of user documentation provides more
-details on this.
+The last criterion, CSG, is a combination of a true-or-false parameter called
+*CSG indication* and a simple number *CSG identity*. The basic rule is that UE
+shall not camp to eNodeB with a different CSG identity. But this rule is only
+enforced when CSG indication is valued as true. More details are provided in
+Section :ref:`sec-network-attachment` of user documentation.
 
 When the cell passes all the above criteria, then the cell is deemed as
 *suitable*. Next, UE camps to it, switching its RRC state to
-`IDLE_CAMPED_NORMALLY`. After this, the UE may request to enter CONNECTED mode,
-which can be done by calling ``LteHelper::Connect`` function; please refer to
-section :ref:`sec-rrc-connection-establishment` for details on this.
+`IDLE_WAIT_SYSTEM_INFO`, or to `IDLE_CAMPED_NORMALLY` if SIB2 has been received.
+After this, the UE may request to enter CONNECTED mode, which can be done by
+calling ``LteHelper::Connect`` function; please refer to section
+:ref:`sec-rrc-connection-establishment` for details on this.
 
-On the other hand, when the cell does not pass either the PLMN or CSG criteria,
-then the cell is labeled as *acceptable* (Section 10.1.1.1 [TS36300]_). In this
-case, the RRC entity will tell the PHY entity to synchronize to a different
-cell. As long as no suitable cell is found, the UE will repeat these steps while
-avoiding cells that have been identified as acceptable.
+On the other hand, when the cell does not pass the CSG criterion, then the cell
+is labeled as *acceptable* (Section 10.1.1.1 [TS36300]_). In this case, the RRC
+entity will tell the PHY entity to synchronize to the second strongest cell and
+repeat the initial cell selection procedure using that cell. As long as no
+suitable cell is found, the UE will repeat these steps while avoiding cells that
+have been identified as acceptable.
 
-The above behaviour is based on the following simplifying assumptions:
-
- - multiple carrier frequency is not supported;
- 
- - as mentioned in section :ref:`sec-cell-search`, RSRQ is not available during
-   cell search;
- 
- - stored information cell selection is not supported;
-
- - "Any Cell Selection" state and camping to an acceptable cell is not
-   supported;
- 
- - marking a cell as barred or reserved is not supported; and
-
- - cell reselection is not supported, hence it is not possible for UE to camp to
-   a different cell after the initial camp has been placed.
    
-Also note that both cell search and initial cell selection are only available
-for EPC-enabled simulation. EPC-only simulation must use the manual attachment
-method. See section :ref:`sec-network-attachment` of user documentation for more
-information on their difference in usage.
-
 
 Radio Admission Control
 +++++++++++++++++++++++
@@ -2149,8 +2177,8 @@ following simplifying assumptions:
 
  - `s-Measure` is not supported;
  
- - since carrier aggregation is not supported in general, the following
-   assumptions in UE measurements hold true:
+ - since carrier aggregation is not supported in by the LTE module, the
+   following assumptions in UE measurements hold true:
    
    - no notion of secondary cell (`SCell`);
    - primary cell (`PCell`) simply means serving cell;

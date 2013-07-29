@@ -114,6 +114,7 @@ SOURCEFIGS = \
 	$(SRC)/lte/doc/source/figures/ue-meas-piecewise-motion.dia \
 	$(SRC)/lte/doc/source/figures/ue-meas-piecewise-a1.dia \
 	$(SRC)/lte/doc/source/figures/ue-meas-piecewise-a1-hys.dia \
+	$(SRC)/lte/doc/source/figures/lte-cell-selection.dia \
 	$(SRC)/lte/doc/source/figures/lena-dual-stripe.eps \
 	$(SRC)/lte/doc/source/figures/lte-mcs-index.eps \
 	$(SRC)/lte/doc/source/figures/lenaThrTestCase1.eps \
@@ -252,6 +253,7 @@ IMAGES_EPS = \
 	$(FIGURES)/ue-meas-piecewise-motion.eps \
 	$(FIGURES)/ue-meas-piecewise-a1.eps \
 	$(FIGURES)/ue-meas-piecewise-a1-hys.eps \
+	$(FIGURES)/lte-cell-selection.eps \
 	$(FIGURES)/lena-dual-stripe.eps \
 	$(FIGURES)/lte-mcs-index.eps \
 	$(FIGURES)/lenaThrTestCase1.eps \

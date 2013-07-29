@@ -232,7 +232,7 @@ the moment).
 
 
 Piecewise configuration
-+++++++++++++++++++++++
+#######################
 
 The piecewise configuration aims to test a particular UE measurements
 configuration. The simulation script will setup the corresponding measurements
@@ -388,7 +388,7 @@ measurement report from PHY shows that the entering/leaving condition is no
 longer true before the first trigger is fired.
 
 Handover configuration
-++++++++++++++++++++++
+######################
 
 The purpose of the handover configuration is to verify whether UE measurement
 configuration is updated properly after a succesful handover takes place. For
@@ -1008,6 +1008,11 @@ each UE:
    the UE and the eNB: EPS bearer id, DRB id, LCID
 
  
+
+Initial cell selection
+----------------------
+
+(to be expanded)
 
 
 

@@ -919,7 +919,7 @@ That's all! You can now start your simulation as usual::
 Network Attachment
 ------------------
 
-As shown in the basic example in ,
+As shown in the basic example in section :ref:`sec-basic-simulation-program`,
 attaching a UE to an eNodeB is done by calling ``LteHelper::Attach`` function.
 
 There are 2 possible ways of network attachment. The first method is the
@@ -929,10 +929,9 @@ of them will be covered in this section.
 Manual attachment
 *****************
 
-This method uses the ``LteHelper::Attach`` function as demonstrated in section
-:ref:`sec-basic-simulation-program`. It has been the only available network
-attachment method in earlier versions of LTE module. It is typically invoked
-before the simulation begins::
+This method uses the ``LteHelper::Attach`` function mentioned above. It has been
+the only available network attachment method in earlier versions of LTE module.
+It is typically invoked before the simulation begins::
 
    lteHelper->Attach (ueDevs, enbDev); // attach one or more UEs to a single eNodeB
 
@@ -948,7 +947,7 @@ One may choose the distance between the UE and the eNodeB as a criterion for
 selecting the appropriate cell. It is quite simple (at least from the
 simulator's point of view) and sometimes practical. But it is important to note
 that sometimes distance does not make a single correct criterion. For instance,
-the eNodeB antenna direction should be considered as well. Besides that, we
+the eNodeB antenna directivity should be considered as well. Besides that, one
 should also take into account the channel condition, which might be fluctuating
 if there is fading or shadowing in effect. In these kind of cases, network
 attachment should not be based on distance alone.
@@ -959,8 +958,8 @@ this is not the case in this ``LteHelper::Attach`` function. The other network
 attachment method uses more *"automatic"* approach to network attachment, as
 will be described next.
 
-Attachment based on received signal
-***********************************
+Automatic attachment using Idle mode cell selection procedure
+*************************************************************
 
 The strength of the received signal is the standard criterion used for selecting
 the best cell to attach to. The use of this criterion is implemented in the
@@ -973,10 +972,12 @@ The difference with the manual method is that the destination eNodeB is not
 specified. The procedure will find the best cell for the UEs, based on several
 criteria, including the strength of the received signal (RSRP).
 
-After the method is called, the UE will spend 200 ms (by default) to measure the
-neighbouring cells, and then attempt to connect to the best one. More details
-can be found in section :ref:`sec-initial-cell-selection` of design
-documentation.
+After the method is called, the UE will spend some time to measure the
+neighbouring cells, and then attempt to attach to the best one. More details can
+be found in section :ref:`sec-initial-cell-selection` of design documentation.
+
+It is important to note that this method only works in EPC-enabled simulations.
+LTE-only simulations must resort to manual attachment method.
 
 Closed Subscriber Group
 ***********************
@@ -985,34 +986,29 @@ An interesting use case of the initial cell selection process is to setup a
 simulation environment with Closed Subscriber Group (CSG).
 
 For example, a certain eNodeB, typically a smaller version such as femtocell,
-might belong to a private owner (a household or business), allowing access only
-for some UEs which have been previously registered by the owner. The eNodeB and
-the registered UEs altogether form a CSG.
+might belong to a private owner (e.g. a household or business), allowing access
+only to some UEs which have been previously registered by the owner. The eNodeB
+and the registered UEs altogether form a CSG.
 
 The access restriction can be simulated by "labeling" the CSG members with the
 same CSG ID. This function is available from ``LteHelper`` class::
 
-   lteHelper->SetCsgId (enbDevs, 1); // label one or more eNodeBs with CSG ID of 1
-   lteHelper->SetCsgId (ueDevs, 1); // label one or more UEs with CSG ID of 1
+   // label one or more eNodeBs with CSG identity of 1 and CSG indication enabled
+   lteHelper->SetEnbCsgId (enbDevs, 1, true);
+   
+   // label one or more UEs with CSG identity of 1
+   lteHelper->SetUeCsgId (ueDevs, 1);
 
 Then enable the initial cell selection procedure on the UEs:: 
 
    lteHelper->Attach (ueDevs);
 
-This is necessary because the CSG restriction only works with initial cell
-selection, and not in the manual method.
+This is necessary because the CSG restriction only works with automatic method
+of network attachment, but not in the manual method.
 
-Note that setting the CSG ID of an eNodeB as 0 (the default value) will disable
-the restriction, i.e. any UEs can connect to this eNodeB. On the other hand,
-setting the CSG ID of a UE to 0 (also the default value) does not remove the
-restriction, i.e. it can only attach to an eNodeB with CSG ID of 0.
+Note that setting the CSG indication of an eNodeB as false (the default value)
+will disable the restriction, i.e. any UEs can connect to this eNodeB.
 
-Besides differences in CSG, we can also introduce differences in Public Land
-Mobile Network (PLMN). ``LteHelper`` also has similar functions for this purpose
-and the restricting behaviour is exactly the same as in CSG::
-
-   lteHelper->SetPlmnId (enbDevs, 1); // label one or more eNodeBs with PLMN ID of 1
-   lteHelper->SetPlmnId (ueDevs, 1); // label one or more UEs with PLMN ID of 1
 
 
 .. _sec-configure-ue-measurements:
@@ -1053,7 +1049,7 @@ of [TS36331]_.
 The code sample below configures Event A1 RSRP measurement to every eNodeB
 within the container ``devs``::
 
-  LteRrcSap::ReportConfigEutra config;
+  LteRrcSap::ReportConfigEutra config; 
   config.eventId = LteRrcSap::ReportConfigEutra::EVENT_A1;
   config.threshold1.choice = LteRrcSap::ThresholdEutra::THRESHOLD_RSRP;
   config.threshold1.range = 41;
