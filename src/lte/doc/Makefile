@@ -35,7 +35,9 @@ IMAGES_DIA = \
 	$(FIGURES)/ue-meas-piecewise-motion.dia \
 	$(FIGURES)/ue-meas-piecewise-a1.dia \
 	$(FIGURES)/ue-meas-piecewise-a1-hys.dia \
-	$(FIGURES)/lte-cell-selection.dia
+	$(FIGURES)/lte-cell-selection.dia \
+	$(FIGURES)/lte-cell-selection-open-access.dia \
+	$(FIGURES)/lte-cell-selection-closed-access.dia
 
 
 # specify eps figures from which .png and .pdf figures need to be built

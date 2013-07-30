@@ -1969,6 +1969,7 @@ model (see :ref:`sec-rrc-protocol-models`) and no transmission error.
 .. _fig-lte-cell-selection:
 
 .. figure:: figures/lte-cell-selection.*
+   :scale: 80 %
    :align: center
 
    Sample runs of initial cell selection in UE and timing of related events
@@ -2311,8 +2312,7 @@ Section 5.5.4 of [TS36331]_.
 Event-based trigger can be further configured by introducing hysteresis and
 time-to-trigger. *Hysteresis* (:math:`Hys`) defines the distance between the
 entering and leaving conditions in dB. Similarly, *time-to-trigger* introduces
-delay to both entering and leaving conditions, but as a unit of time. Section
-
+delay to both entering and leaving conditions, but as a unit of time.
 
 *Periodical* type of reporting trigger is not supported, but can be easily
 replicated using event-based trigger. This can be done by configuring the

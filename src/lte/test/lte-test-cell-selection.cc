@@ -304,13 +304,7 @@ LteCellSelectionTestCase::DoRun ()
     } // end of if (m_isEpcMode)
   else
     {
-      // // TODO remove this
-      // lteHelper->Attach (ueDevs, enbDevs.Get (0));
-      //
-      // // Activate an EPS bearer
-      // enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
-      // EpsBearer bearer (q);
-      // lteHelper->ActivateDataRadioBearer (ueDevs, bearer);
+      NS_FATAL_ERROR ("No support yet for LTE_only simulations");
     }
 
   // Connect to trace sources in UEs

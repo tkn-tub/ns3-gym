@@ -1012,7 +1012,70 @@ each UE:
 Initial cell selection
 ----------------------
 
-(to be expanded)
+The test suite `lte-cell-selection` is responsible for verifying the
+:ref:`sec-initial-cell-selection` procedure. 3 short test cases are included in
+the suite.
+
+Each test case is a simulation of a small network of 4 cells. Each eNodeB is
+equipped with directional antenna (parabolic model) and is arranged so that some
+of their coverage are overlapping with other eNodeB. They are configured using
+the same Tx Power. Several static UEs are then placed at predefined locations
+and with initial cell selection procedure enabled. Thus the UEs enters the
+simulation without being attached to any cell.
+
+At the end of the simulation, the test verifies that every UE is attached to the
+right cell. Moreover, the test also ensures that the UE is properly connected
+(i.e. its final state is `CONNECTED_NORMALLY`).
+
+The first test case is a scenario with open access cells, i.e. without Closed
+Subscriber Group (CSG). The result shows that the UEs are attaching to the
+expected cells, as shown in Figure :ref:`fig-lte-cell-selection-open-access`
+below. Note that the grey area below each eNodeB only indicates the rough
+directivity of the antenna, while the actual cell coverage is much wider and
+larger.
+
+.. _fig-lte-cell-selection-open-access:
+
+.. figure:: figures/lte-cell-selection-open-access.*
+   :scale: 80 %
+   :align: center
+
+   Sample result of cell selection in open access scenario
+
+The second and third cases incorporate CSG into the simulation. 2 out of 4 cells
+become a single CSG and implement closed access, while the other 2 cells stay
+open. In a similar way, half of the UEs are configured as members of the CSG,
+while the rest are not. The resulting simulation is depicted in Figure
+:ref:`fig-lte-cell-selection-closed-access` below.
+
+.. _fig-lte-cell-selection-closed-access:
+
+.. figure:: figures/lte-cell-selection-closed-access.*
+   :scale: 80 %
+   :align: center
+
+   Sample result of cell selection in closed access scenario
+
+It shows that CSG members may attach to either CSG or non-CSG cells, and simply
+choose the stronger one. On the other hand, non-members can only attach to
+non-CSG cells, even when they are actually receive stronger signal from a CSG
+cell.
+
+Note that a real life CSG deployment typically implements interference
+coordination. Section 5.1 of [TS36922]_ describes frequency, time, and spatial
+partitioning as possible approaches to interference coordination. However, none
+of these approaches are implemented in this test suite.
+
+As "expected", interference issues occur in the simulation. The issue is more
+apparent in the CSG scenario, as experienced by the UE (highlighted in Figure
+:ref:`fig-lte-cell-selection-closed-access` above) which is well positioned
+within the coverage of a CSG cell but not a member of the CSG. After the UE
+fails to attach to the CSG cell, the cell becomes a major interference to the UE
+and causing difficulties to the UE in attempting to attach to the closest
+non-CSG cell. In other words, the UE is experiencing low SINR when receiving
+transmission from the non-CSG cell. As a result, the UE takes longer time to
+attach to the non-CSG cell because it often fails to receive system information
+messages (e.g. MIB, SIB1, and SIB2) from the non-CSG cell.
 
 
 

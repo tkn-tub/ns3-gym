@@ -11,7 +11,7 @@ CONNECTED_HANDOVER [shape="box",width=4]
 
 
 IDLE_CELL_SELECTION -> IDLE_WAIT_SYSTEM_INFO [label="cell ID enforced\nby upper layers"]
-IDLE_CELL_SELECTION -> IDLE_CAMPED_NORMALLY [label="cell selection\nsuccessful"]
+IDLE_CELL_SELECTION -> IDLE_WAIT_SYSTEM_INFO [label="cell selection\nsuccessful"]
 IDLE_WAIT_SYSTEM_INFO -> IDLE_CAMPED_NORMALLY [label="rx MIB + SIB2"]
 IDLE_CAMPED_NORMALLY -> IDLE_RANDOM_ACCESS [label="connection request\nby upper layers"]
 IDLE_RANDOM_ACCESS -> IDLE_CONNECTING [label="random access\nsuccessful"]

@@ -40,6 +40,7 @@ References
 
 .. [TS36423] 3GPP TS 36.423 "E-UTRAN X2 application protocol (X2AP)"
 
+.. [TS36922] 3GPP TS 36.922 "E-UTRA TDD Home eNode B (HeNB) Radio Frequency (RF) requirements analysis"
 
 .. [R1-081483] 3GPP R1-081483 `Conveying MCS and TB size via PDCCH <http://www.3gpp.org/ftp/tsg_ran/WG1_RL1/TSGR1_52b/Docs/R1-081483.zip>`_
 
