@@ -162,7 +162,7 @@ void AnimationInterface::RecursiveIpv4RoutePathSearch (std::string from, std::st
     {
       return;
     }
-  NS_LOG_UNCOND ("Node: " << fromNode->GetId () << " G:" << rt->GetGateway ());
+  NS_LOG_DEBUG ("Node: " << fromNode->GetId () << " G:" << rt->GetGateway ());
   std::ostringstream oss;
   oss << rt->GetGateway ();
   if (oss.str () == "0.0.0.0" && (sockerr != Socket::ERROR_NOROUTETOHOST))
@@ -1999,7 +1999,7 @@ std::string AnimationInterface::GetXMLOpenClose_rp (uint32_t nodeId, std::string
       Ipv4RoutePathElement rpElement = *i;
       oss << "<rpe" << " n=\"" << rpElement.nodeId << "\"" << " nH=\"" << rpElement.nextHop.c_str () << "\"" << "/>" << std::endl;
     }
-  oss << "<rp/>" << std::endl;
+  oss << "</rp>" << std::endl;
   return oss.str ();
 }
 
