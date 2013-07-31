@@ -319,7 +319,7 @@ private:
   SpectrumValue m_rsReceivedPower;
 
   bool m_rsInterferencePowerUpdated;
-  SpectrumValue m_rsIntereferencePower;
+  SpectrumValue m_rsInterferencePower;
 
   bool m_pssReceived;
   struct PssElement
@@ -340,7 +340,7 @@ private:
       uint8_t rsrqNum;
     };
 
-  std::map <uint16_t, UeMeasurementsElement> m_UeMeasurementsMap;
+  std::map <uint16_t, UeMeasurementsElement> m_ueMeasurementsMap;
   Time m_ueMeasurementsFilterPeriod;
   Time m_ueMeasurementsFilterLast;
 

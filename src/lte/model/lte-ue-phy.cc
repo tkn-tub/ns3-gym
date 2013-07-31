@@ -500,7 +500,7 @@ LteUePhy::GenerateCtrlCqiReport (const SpectrumValue& sinr)
         {
           uint8_t rbNum = 0;
           double rsrqSum = 0.0;
-          Values::const_iterator itIntN = m_rsIntereferencePower.ConstValuesBegin ();
+          Values::const_iterator itIntN = m_rsInterferencePower.ConstValuesBegin ();
           Values::const_iterator itPj = m_rsReceivedPower.ConstValuesBegin ();
           for (itPj = m_rsReceivedPower.ConstValuesBegin (); itPj != m_rsReceivedPower.ConstValuesEnd (); itIntN++, itPj++)
             {
@@ -519,8 +519,8 @@ LteUePhy::GenerateCtrlCqiReport (const SpectrumValue& sinr)
               // report UE Measurements to upper layers
               NS_LOG_INFO (this << " PSS received from CellId " << (*itPss).cellId << " has RSRP " << rsrp_dBm << " and RSRQ " << rsrq_dB << " RBnum " << (uint16_t)rbNum);
               // store measurements
-              std::map <uint16_t, UeMeasurementsElement>::iterator itMeasMap =  m_UeMeasurementsMap.find ((*itPss).cellId);
-              if (itMeasMap == m_UeMeasurementsMap.end ())
+              std::map <uint16_t, UeMeasurementsElement>::iterator itMeasMap =  m_ueMeasurementsMap.find ((*itPss).cellId);
+              if (itMeasMap == m_ueMeasurementsMap.end ())
                 {
                   // insert new entry
                   UeMeasurementsElement newEl;
@@ -528,7 +528,7 @@ LteUePhy::GenerateCtrlCqiReport (const SpectrumValue& sinr)
                   newEl.rsrpNum = 1;
                   newEl.rsrqSum = rsrq_dB;
                   newEl.rsrqNum = 1;
-                  m_UeMeasurementsMap.insert (std::pair <uint16_t, UeMeasurementsElement> ((*itPss).cellId, newEl));
+                  m_ueMeasurementsMap.insert (std::pair <uint16_t, UeMeasurementsElement> ((*itPss).cellId, newEl));
                 }
               else
                 {
@@ -559,7 +559,7 @@ LteUePhy::ReportInterference (const SpectrumValue& interf)
 {
   NS_LOG_FUNCTION (this << interf);
   m_rsInterferencePowerUpdated = true;
-  m_rsIntereferencePower = interf;
+  m_rsInterferencePower = interf;
 }
 
 void
@@ -689,7 +689,7 @@ LteUePhy::ReportUeMeasurements ()
   LteUeCphySapUser::UeMeasurementsParameters ret;
 
   std::map <uint16_t, UeMeasurementsElement>::iterator it;
-  for (it = m_UeMeasurementsMap.begin (); it != m_UeMeasurementsMap.end (); it++)
+  for (it = m_ueMeasurementsMap.begin (); it != m_ueMeasurementsMap.end (); it++)
     {
       double avg_rsrp = (*it).second.rsrpSum / (double)(*it).second.rsrpNum;
       double avg_rsrq = (*it).second.rsrqSum / (double)(*it).second.rsrqNum;
@@ -710,7 +710,7 @@ LteUePhy::ReportUeMeasurements ()
   // report to RRC
   m_ueCphySapUser->ReportUeMeasurements (ret);
 
-  m_UeMeasurementsMap.clear ();
+  m_ueMeasurementsMap.clear ();
   Simulator::Schedule (m_ueMeasurementsFilterPeriod, &LteUePhy::ReportUeMeasurements, this);
 }
 
@@ -913,8 +913,8 @@ LteUePhy::ReceivePss (uint16_t cellId, Ptr<SpectrumValue> p)
       // Note that m_pssReceptionThreshold does not apply here
 
       // store measurements
-      std::map <uint16_t, UeMeasurementsElement>::iterator itMeasMap = m_UeMeasurementsMap.find (cellId);
-      if (itMeasMap == m_UeMeasurementsMap.end ())
+      std::map <uint16_t, UeMeasurementsElement>::iterator itMeasMap = m_ueMeasurementsMap.find (cellId);
+      if (itMeasMap == m_ueMeasurementsMap.end ())
         {
           // insert new entry
           UeMeasurementsElement newEl;
@@ -922,7 +922,7 @@ LteUePhy::ReceivePss (uint16_t cellId, Ptr<SpectrumValue> p)
           newEl.rsrpNum = 1;
           newEl.rsrqSum = 0; // RSRQ is not available
           newEl.rsrqNum = 1;
-          m_UeMeasurementsMap.insert (std::pair <uint16_t, UeMeasurementsElement> (cellId, newEl));
+          m_ueMeasurementsMap.insert (std::pair <uint16_t, UeMeasurementsElement> (cellId, newEl));
         }
       else
         {
