@@ -256,6 +256,13 @@ private:
 
   void QueueSubChannelsForTransmission (std::vector <int> rbMap);
 
+  /**
+   * \brief Layer-1 filtering of RSRP and RSRQ measurements and reporting to
+   *        the RRC entity.
+   *
+   * Initially executed at +0.200s, and then repeatedly executed with
+   * periodicity as indicated by the UeMeasurementsFilterPeriod attribute.
+   */
   void ReportUeMeasurements ();
 
   void SwitchToState (State s);
@@ -300,7 +307,7 @@ private:
  
   uint8_t m_transmissionMode;
   std::vector <double> m_txModeGain;
-  
+
   uint16_t m_srsPeriodicity;
   uint16_t m_srsSubframeOffset;
   uint16_t m_srsConfigured;
@@ -323,22 +330,22 @@ private:
 
   bool m_pssReceived;
   struct PssElement
-    {
-      uint16_t cellId;
-      double pssPsdSum;
-      uint16_t nRB;
-    };
+  {
+    uint16_t cellId;
+    double pssPsdSum;
+    uint16_t nRB;
+  };
   std::list <PssElement> m_pssList;
 
   double m_pssReceptionThreshold; // on RSRQ [W]
 
   struct UeMeasurementsElement
-    {
-      double rsrpSum;
-      uint8_t rsrpNum;
-      double rsrqSum;
-      uint8_t rsrqNum;
-    };
+  {
+    double rsrpSum;
+    uint8_t rsrpNum;
+    double rsrqSum;
+    uint8_t rsrqNum;
+  };
 
   std::map <uint16_t, UeMeasurementsElement> m_ueMeasurementsMap;
   Time m_ueMeasurementsFilterPeriod;

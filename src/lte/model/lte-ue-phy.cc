@@ -489,20 +489,22 @@ LteUePhy::GenerateCtrlCqiReport (const SpectrumValue& sinr)
       m_rsrpSinrSampleCounter = 0;
     }
 
-  // Generate UE Measurements for upper layers
   if (m_pssReceived)
     {
+      // measure instantaneous RSRQ now
       NS_ASSERT_MSG (m_rsInterferencePowerUpdated, " RS interference power info obsolete");
-      // PSSs received
-      NS_LOG_DEBUG (this << " Process PSS RNTI " << m_rnti << " cellId " << m_cellId << " PSS num " << m_pssList.size ());
+
       std::list <PssElement>::iterator itPss = m_pssList.begin ();
       while (itPss != m_pssList.end ())
         {
-          uint8_t rbNum = 0;
+          uint16_t rbNum = 0;
           double rsrqSum = 0.0;
+
           Values::const_iterator itIntN = m_rsInterferencePower.ConstValuesBegin ();
           Values::const_iterator itPj = m_rsReceivedPower.ConstValuesBegin ();
-          for (itPj = m_rsReceivedPower.ConstValuesBegin (); itPj != m_rsReceivedPower.ConstValuesEnd (); itIntN++, itPj++)
+          for (itPj = m_rsReceivedPower.ConstValuesBegin ();
+               itPj != m_rsReceivedPower.ConstValuesEnd ();
+               itIntN++, itPj++)
             {
               rbNum++;
               // convert PSD [W/Hz] to linear power [W] for the single RE
@@ -510,43 +512,31 @@ LteUePhy::GenerateCtrlCqiReport (const SpectrumValue& sinr)
               double intPowerTxW = ((*itPj) * 180000.0) / 12.0;
               rsrqSum += (2 * (noisePowerTxW + intPowerTxW));
             }
+
           NS_ASSERT (rbNum == (*itPss).nRB);
-          double rsrp_dBm = 10 * log10 (1000 * ((*itPss).pssPsdSum / (double)rbNum));
           double rsrq_dB = 10 * log10 ((*itPss).pssPsdSum / rsrqSum);
 
           if (rsrq_dB > m_pssReceptionThreshold)
             {
-              // report UE Measurements to upper layers
-              NS_LOG_INFO (this << " PSS received from CellId " << (*itPss).cellId << " has RSRP " << rsrp_dBm << " and RSRQ " << rsrq_dB << " RBnum " << (uint16_t)rbNum);
+              NS_LOG_INFO (this << " PSS RNTI " << m_rnti << " cellId " << m_cellId
+                                << " has RSRQ " << rsrq_dB << " and RBnum " << rbNum);
               // store measurements
-              std::map <uint16_t, UeMeasurementsElement>::iterator itMeasMap =  m_ueMeasurementsMap.find ((*itPss).cellId);
-              if (itMeasMap == m_ueMeasurementsMap.end ())
-                {
-                  // insert new entry
-                  UeMeasurementsElement newEl;
-                  newEl.rsrpSum = rsrp_dBm;
-                  newEl.rsrpNum = 1;
-                  newEl.rsrqSum = rsrq_dB;
-                  newEl.rsrqNum = 1;
-                  m_ueMeasurementsMap.insert (std::pair <uint16_t, UeMeasurementsElement> ((*itPss).cellId, newEl));
-                }
-              else
-                {
-                  (*itMeasMap).second.rsrpSum += rsrp_dBm;
-                  (*itMeasMap).second.rsrpNum++;
-                  (*itMeasMap).second.rsrqSum += rsrq_dB;
-                  (*itMeasMap).second.rsrqNum++;
-                }
-
+              std::map <uint16_t, UeMeasurementsElement>::iterator itMeasMap;
+              itMeasMap = m_ueMeasurementsMap.find ((*itPss).cellId);
+              NS_ASSERT (itMeasMap != m_ueMeasurementsMap.end ());
+              (*itMeasMap).second.rsrqSum += rsrq_dB;
+              (*itMeasMap).second.rsrqNum++;
             }
+
           itPss++;
-        }
+
+        } // end of while (itPss != m_pssList.end ())
+
       m_pssList.clear ();
-    }
 
+    } // end of if (m_pssReceived)
 
-
-}
+} // end of void LteUePhy::GenerateCtrlCqiReport (const SpectrumValue& sinr)
 
 void
 LteUePhy::GenerateDataCqiReport (const SpectrumValue& sinr)
@@ -899,54 +889,40 @@ LteUePhy::ReceivePss (uint16_t cellId, Ptr<SpectrumValue> p)
       nRB++;
     }
 
-  if (m_cellId == 0)
+  // measure instantaneous RSRP now
+  double rsrp_dBm = 10 * log10 (1000 * (sum / (double)nRB));
+  NS_LOG_INFO (this << " PSS RNTI " << m_rnti << " cellId " << m_cellId
+                    << " has RSRP " << rsrp_dBm << " and RBnum " << nRB);
+  // note that m_pssReceptionThreshold does not apply here
+
+  // store measurements
+  std::map <uint16_t, UeMeasurementsElement>::iterator itMeasMap = m_ueMeasurementsMap.find (cellId);
+  if (itMeasMap == m_ueMeasurementsMap.end ())
     {
-      /*
-       * PHY is not synchronized to any cell, no RX is running, so interference
-       * value is not available and GenerateCtrlCqiReport will not be called.
-       * Utilize the PSS now for calculating RSRP measurements.
-       */
-      NS_LOG_DEBUG (this << " Process PSS RNTI 0 cellId 0");
-      double rsrp_dBm = 10 * log10 (1000 * (sum / (double)nRB));
-      NS_LOG_INFO (this << " PSS received from CellId " << cellId
-                        << " has RSRP " << rsrp_dBm << " and RBnum " << nRB);
-      // Note that m_pssReceptionThreshold does not apply here
-
-      // store measurements
-      std::map <uint16_t, UeMeasurementsElement>::iterator itMeasMap = m_ueMeasurementsMap.find (cellId);
-      if (itMeasMap == m_ueMeasurementsMap.end ())
-        {
-          // insert new entry
-          UeMeasurementsElement newEl;
-          newEl.rsrpSum = rsrp_dBm;
-          newEl.rsrpNum = 1;
-          newEl.rsrqSum = 0; // RSRQ is not available
-          newEl.rsrqNum = 1;
-          m_ueMeasurementsMap.insert (std::pair <uint16_t, UeMeasurementsElement> (cellId, newEl));
-        }
-      else
-        {
-          (*itMeasMap).second.rsrpSum += rsrp_dBm;
-          (*itMeasMap).second.rsrpNum++;
-          (*itMeasMap).second.rsrqSum += 0; // RSRQ is not available
-          (*itMeasMap).second.rsrqNum++;
-        }
-
-    } // end of if (m_cellId == 0)
+      // insert new entry
+      UeMeasurementsElement newEl;
+      newEl.rsrpSum = rsrp_dBm;
+      newEl.rsrpNum = 1;
+      newEl.rsrqSum = 0;
+      newEl.rsrqNum = 0;
+      m_ueMeasurementsMap.insert (std::pair <uint16_t, UeMeasurementsElement> (cellId, newEl));
+    }
   else
     {
-      /*
-       * Collect the PSS for later processing in GenerateCtrlCqiReport
-       * (to be called from ChunkProcessor after RX is finished).
-       */
-      m_pssReceived = true;
-      PssElement el;
-      el.cellId = cellId;
-      el.pssPsdSum = sum;
-      el.nRB = nRB;
-      m_pssList.push_back (el);
+      (*itMeasMap).second.rsrpSum += rsrp_dBm;
+      (*itMeasMap).second.rsrpNum++;
+    }
 
-    } // end of else of if (m_cellId == 0)
+  /*
+   * Collect the PSS for later processing in GenerateCtrlCqiReport()
+   * (to be called from ChunkProcessor after RX is finished).
+   */
+  m_pssReceived = true;
+  PssElement el;
+  el.cellId = cellId;
+  el.pssPsdSum = sum;
+  el.nRB = nRB;
+  m_pssList.push_back (el);
 
 } // end of void LteUePhy::ReceivePss (uint16_t cellId, Ptr<SpectrumValue> p)
 
@@ -964,17 +940,17 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
   NS_LOG_FUNCTION (this << frameNo << subframeNo);
 
   NS_ASSERT_MSG (frameNo > 0, "the SRS index check code assumes that frameNo starts at 1");
-  
+
   // refresh internal variables
   m_rsReceivedPowerUpdated = false;
   m_rsInterferencePowerUpdated = false;
   m_pssReceived = false;
-  
+
   if (m_ulConfigured)
     {
       // update uplink transmission mask according to previous UL-CQIs
       SetSubChannelsForTransmission (m_subChannelsForTransmissionQueue.at (0));
-   
+
       // shift the queue
       for (uint8_t i = 1; i < m_macChTtiDelay; i++)
         {
