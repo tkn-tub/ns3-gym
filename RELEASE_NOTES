@@ -32,6 +32,11 @@ New user-visible features
 - Previously, the use of Building models was limited to the use of the
   companion BuildingsMobilityModel. Now, any MobilityModel can be
   used with Building models. 
+- The latest LTE module code by the LENA project has been merged,
+  including the following new features: 
+   - PHY support for UE measurements (RSRP and RSRQ)
+   - RRC support for UE measurements (configuration, execution, reporting)
+   - Automatic Handover trigger based on RRC UE measurement reports
 
 Bugs fixed
 ----------
