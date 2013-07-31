@@ -529,7 +529,7 @@ UeManager::PrepareHandover (uint16_t cellId)
         LteRrcSap::HandoverPreparationInfo hpi;
         hpi.asConfig.sourceUeIdentity = m_rnti;
         hpi.asConfig.sourceDlCarrierFreq = m_rrc->m_dlEarfcn;
-        hpi.asConfig.sourceMeasConfig = m_rrc->m_ueMeasConfigList;
+        hpi.asConfig.sourceMeasConfig = m_rrc->m_ueMeasConfig;
         hpi.asConfig.sourceRadioResourceConfig = GetRadioResourceConfigForHandoverPreparationInfo ();
         hpi.asConfig.sourceMasterInformationBlock.dlBandwidth = m_rrc->m_dlBandwidth;
         hpi.asConfig.sourceMasterInformationBlock.systemFrameNumber = 0;
@@ -1199,7 +1199,7 @@ UeManager::BuildRrcConnectionReconfiguration ()
   msg.radioResourceConfigDedicated = BuildRadioResourceConfigDedicated ();
   msg.haveMobilityControlInfo = false;
   msg.haveMeasConfig = true;
-  msg.measConfig = m_rrc->m_ueMeasConfigList;
+  msg.measConfig = m_rrc->m_ueMeasConfig;
 
   return msg;
 }
@@ -1348,8 +1348,6 @@ LteEnbRrc::LteEnbRrc ()
   m_x2SapUser = new EpcX2SpecificEpcX2SapUser<LteEnbRrc> (this);
   m_s1SapUser = new MemberEpcEnbS1SapUser<LteEnbRrc> (this);
   m_cphySapUser = new MemberLteEnbCphySapUser<LteEnbRrc> (this);
-
-  m_numOfUeMeasConfig = 0;
 }
 
 
@@ -1584,8 +1582,10 @@ uint8_t
 LteEnbRrc::AddUeMeasReportConfig (LteRrcSap::ReportConfigEutra config)
 {
   // sanity checks
-  NS_ASSERT_MSG (m_ueMeasConfigList.measIdToAddModList.size () == m_ueMeasConfigList.reportConfigToAddModList.size (),
+  NS_ASSERT_MSG (m_ueMeasConfig.measIdToAddModList.size () == m_ueMeasConfig.reportConfigToAddModList.size (),
                  "Measurement identities and reporting configuration should not have different quantity");
+
+  uint8_t nextId = m_ueMeasConfig.reportConfigToAddModList.size () + 1;
 
   if (Simulator::Now () != Seconds (0))
     {
@@ -1593,24 +1593,22 @@ LteEnbRrc::AddUeMeasReportConfig (LteRrcSap::ReportConfigEutra config)
     }
   // TODO more asserts to validate the input
 
-  m_numOfUeMeasConfig++;
-
   // create the reporting configuration
   LteRrcSap::ReportConfigToAddMod reportConfig;
-  reportConfig.reportConfigId = m_numOfUeMeasConfig;
+  reportConfig.reportConfigId = nextId;
   reportConfig.reportConfigEutra = config;
 
   // create the measurement identity
   LteRrcSap::MeasIdToAddMod measId;
-  measId.measId = m_numOfUeMeasConfig;
+  measId.measId = nextId;
   measId.measObjectId = 1;
-  measId.reportConfigId = m_numOfUeMeasConfig;
+  measId.reportConfigId = nextId;
 
   // add both to the list of UE measurement configuration
-  m_ueMeasConfigList.reportConfigToAddModList.push_back (reportConfig);
-  m_ueMeasConfigList.measIdToAddModList.push_back (measId);
+  m_ueMeasConfig.reportConfigToAddModList.push_back (reportConfig);
+  m_ueMeasConfig.measIdToAddModList.push_back (measId);
 
-  return m_numOfUeMeasConfig;
+  return nextId;
 }
 
 void
@@ -1630,7 +1628,7 @@ LteEnbRrc::ConfigureCell (uint8_t ulBandwidth, uint8_t dlBandwidth,
   m_cphySapProvider->SetCellId (cellId);
 
   /*
-   * Initializing the list of UE measurement configuration (m_ueMeasConfigList).
+   * Initializing the list of UE measurement configuration (m_ueMeasConfig).
    * Only intra-frequency measurements are supported, so only one measurement
    * object is created.
    */
@@ -1644,13 +1642,13 @@ LteEnbRrc::ConfigureCell (uint8_t ulBandwidth, uint8_t dlBandwidth,
   measObject.measObjectEutra.offsetFreq = 0;
   measObject.measObjectEutra.haveCellForWhichToReportCGI = false;
 
-  m_ueMeasConfigList.measObjectToAddModList.push_back (measObject);
-  m_ueMeasConfigList.haveQuantityConfig = true;
-  m_ueMeasConfigList.quantityConfig.filterCoefficientRSRP = m_rsrpFilterCoefficient;
-  m_ueMeasConfigList.quantityConfig.filterCoefficientRSRQ = m_rsrqFilterCoefficient;
-  m_ueMeasConfigList.haveMeasGapConfig = false;
-  m_ueMeasConfigList.haveSmeasure = false;
-  m_ueMeasConfigList.haveSpeedStatePars = false;
+  m_ueMeasConfig.measObjectToAddModList.push_back (measObject);
+  m_ueMeasConfig.haveQuantityConfig = true;
+  m_ueMeasConfig.quantityConfig.filterCoefficientRSRP = m_rsrpFilterCoefficient;
+  m_ueMeasConfig.quantityConfig.filterCoefficientRSRQ = m_rsrqFilterCoefficient;
+  m_ueMeasConfig.haveMeasGapConfig = false;
+  m_ueMeasConfig.haveSmeasure = false;
+  m_ueMeasConfig.haveSpeedStatePars = false;
 
   // Enabling MIB transmission
   LteRrcSap::MasterInformationBlock mib;

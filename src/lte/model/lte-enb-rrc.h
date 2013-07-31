@@ -864,12 +864,7 @@ private:
    * \brief List of measurement configuration which are active in every UE
    *        attached to this eNodeB instance.
    */
-  LteRrcSap::MeasConfig m_ueMeasConfigList;
-
-  /**
-   * \brief Number of measurement identities in `m_ueMeasConfigList`.
-   */
-  uint8_t m_numOfUeMeasConfig;
+  LteRrcSap::MeasConfig m_ueMeasConfig;
 
   struct X2uTeidInfo
   {
