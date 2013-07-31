@@ -128,14 +128,14 @@ LteFfConverter::getMinFpS11dot3Value ()
 
 
 uint32_t BufferSizeLevelBsrTable[64] = {
-  
+
   0, 10, 12, 14, 17, 19, 22, 26, 31, 36, 42, 49, 57, 67, 78, 91, 
   107, 125, 146, 171, 200, 234, 274, 321, 376, 440, 515, 603, 
   706, 826, 967, 1132, 1326, 1552, 1817, 2127, 2490, 2915, 3413,
   3995, 4677, 5476, 6411, 7505, 8787, 10287, 12043, 14099, 16507,
   19325, 22624, 26487, 31009, 36304, 42502, 49759, 58255,
   68201, 79846, 93749, 109439, 128125, 150000, 150000
-  
+
 };
 
 uint32_t
@@ -161,7 +161,7 @@ BufferSizeLevelBsr::BufferSize2BsrId (uint32_t val)
           index++;
         }
     }
-    
+
   return (index);
 }
 
@@ -243,7 +243,7 @@ EutranMeasurementMapping::QuantizeRsrq (double v)
 }
 
 double
-EutranMeasurementMapping::GetActualHysteresis (uint8_t hysteresis)
+EutranMeasurementMapping::IeValue2ActualHysteresis (uint8_t hysteresis)
 {
   if (hysteresis > 30)
     {
@@ -254,7 +254,7 @@ EutranMeasurementMapping::GetActualHysteresis (uint8_t hysteresis)
 }
 
 double
-EutranMeasurementMapping::GetActualA3Offset (int8_t a3Offset)
+EutranMeasurementMapping::IeValue2ActualA3Offset (int8_t a3Offset)
 {
   if ((a3Offset < -30) || (a3Offset > 30))
     {
@@ -265,7 +265,7 @@ EutranMeasurementMapping::GetActualA3Offset (int8_t a3Offset)
 }
 
 double
-EutranMeasurementMapping::GetActualQRxLevMin (int8_t qRxLevMin)
+EutranMeasurementMapping::IeValue2ActualQRxLevMin (int8_t qRxLevMin)
 {
   if ((qRxLevMin < -70) || (qRxLevMin > -22))
     {
@@ -276,7 +276,7 @@ EutranMeasurementMapping::GetActualQRxLevMin (int8_t qRxLevMin)
 }
 
 double
-EutranMeasurementMapping::GetActualQQualMin (int8_t qQualMin)
+EutranMeasurementMapping::IeValue2ActualQQualMin (int8_t qQualMin)
 {
   if ((qQualMin < -34) || (qQualMin > -3))
     {

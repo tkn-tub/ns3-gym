@@ -382,7 +382,7 @@ LteUeRrc::DoInitialize (void)
   rlc->SetRnti (m_rnti);
   rlc->SetLcId (lcid);
 
-  m_srb0 = CreateObject<LteSignalingRadioBearerInfo> ();  
+  m_srb0 = CreateObject<LteSignalingRadioBearerInfo> ();
   m_srb0->m_rlc = rlc;
   m_srb0->m_srbIdentity = 0;
   LteUeRrcSapUser::SetupParameters ueParams;
@@ -877,7 +877,7 @@ LteUeRrc::EvaluateCellForSelection ()
   bool isAcceptableCell = false;
   std::map<uint16_t, MeasValues>::iterator storedMeasIt = m_storedMeasValues.find (cellId);
   double qRxLevMeas = storedMeasIt->second.rsrp;
-  double qRxLevMin = EutranMeasurementMapping::GetActualQRxLevMin (m_lastSib1.cellSelectionInfo.qRxLevMin);
+  double qRxLevMin = EutranMeasurementMapping::IeValue2ActualQRxLevMin (m_lastSib1.cellSelectionInfo.qRxLevMin);
   NS_LOG_LOGIC (this << " cell selection to cellId=" << cellId
                      << " qrxlevmeas=" << qRxLevMeas << " dBm"
                      << " qrxlevmin=" << qRxLevMin << " dBm");
@@ -1452,7 +1452,7 @@ LteUeRrc::MeasurementReportTriggering (uint8_t measId)
         double ms; // Ms, the measurement result of the serving cell
         double thresh; // Thresh, the threshold parameter for this event
         // Hys, the hysteresis parameter for this event.
-        double hys = EutranMeasurementMapping::GetActualHysteresis (reportConfigEutra.hysteresis);
+        double hys = EutranMeasurementMapping::IeValue2ActualHysteresis (reportConfigEutra.hysteresis);
 
         switch (reportConfigEutra.triggerQuantity)
           {
@@ -1531,7 +1531,7 @@ LteUeRrc::MeasurementReportTriggering (uint8_t measId)
         double ms; // Ms, the measurement result of the serving cell
         double thresh; // Thresh, the threshold parameter for this event
         // Hys, the hysteresis parameter for this event.
-        double hys = EutranMeasurementMapping::GetActualHysteresis (reportConfigEutra.hysteresis);
+        double hys = EutranMeasurementMapping::IeValue2ActualHysteresis (reportConfigEutra.hysteresis);
 
         switch (reportConfigEutra.triggerQuantity)
           {
@@ -1612,9 +1612,9 @@ LteUeRrc::MeasurementReportTriggering (uint8_t measId)
         double ofp = measObjectEutra.offsetFreq; // Ofp, the frequency specific offset of the primary frequency
         double ocp = 0.0; // Ocp, the cell specific offset of the PCell
         // Off, the offset parameter for this event.
-        double off = EutranMeasurementMapping::GetActualA3Offset (reportConfigEutra.a3Offset);
+        double off = EutranMeasurementMapping::IeValue2ActualA3Offset (reportConfigEutra.a3Offset);
         // Hys, the hysteresis parameter for this event.
-        double hys = EutranMeasurementMapping::GetActualHysteresis (reportConfigEutra.hysteresis);
+        double hys = EutranMeasurementMapping::IeValue2ActualHysteresis (reportConfigEutra.hysteresis);
 
         switch (reportConfigEutra.triggerQuantity)
           {
@@ -1715,7 +1715,7 @@ LteUeRrc::MeasurementReportTriggering (uint8_t measId)
         double ocn = 0.0; // Ocn, the cell specific offset of the neighbour cell
         double thresh; // Thresh, the threshold parameter for this event
         // Hys, the hysteresis parameter for this event.
-        double hys = EutranMeasurementMapping::GetActualHysteresis (reportConfigEutra.hysteresis);
+        double hys = EutranMeasurementMapping::IeValue2ActualHysteresis (reportConfigEutra.hysteresis);
 
         switch (reportConfigEutra.triggerQuantity)
           {
@@ -1819,7 +1819,7 @@ LteUeRrc::MeasurementReportTriggering (uint8_t measId)
         double thresh1; // Thresh1, the threshold parameter for this event
         double thresh2; // Thresh2, the threshold parameter for this event
         // Hys, the hysteresis parameter for this event.
-        double hys = EutranMeasurementMapping::GetActualHysteresis (reportConfigEutra.hysteresis);
+        double hys = EutranMeasurementMapping::IeValue2ActualHysteresis (reportConfigEutra.hysteresis);
 
         switch (reportConfigEutra.triggerQuantity)
           {

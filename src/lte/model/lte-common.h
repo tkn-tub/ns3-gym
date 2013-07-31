@@ -76,12 +76,12 @@ struct LteUeConfig_t
   * Srs Configuration index for UE specific SRS, see section 8.2 of TS 36.213
   */
   uint16_t  m_srsConfigurationIndex;
-  
-  public:
-    LteUeConfig_t ();
-    
-    friend bool operator == (const LteUeConfig_t &a, const LteUeConfig_t &b);
-    friend bool operator < (const LteUeConfig_t &a, const LteUeConfig_t &b);
+
+public:
+  LteUeConfig_t ();
+
+  friend bool operator == (const LteUeConfig_t &a, const LteUeConfig_t &b);
+  friend bool operator < (const LteUeConfig_t &a, const LteUeConfig_t &b);
 };
 
 
@@ -95,24 +95,22 @@ public:
 
   //static const double MIN_FP_S11DOT3_VALUE = -4096;
 
-
 };
 
 class BufferSizeLevelBsr
 {
-  
-  public:
-    static uint32_t BsrId2BufferSize (uint8_t val);
-    static uint8_t BufferSize2BsrId (uint32_t val);
-    
-    static int  m_bufferSizeLevelBsr[64];
-    
-    
+
+public:
+  static uint32_t BsrId2BufferSize (uint8_t val);
+  static uint8_t BufferSize2BsrId (uint32_t val);
+
+  static int  m_bufferSizeLevelBsr[64];
+
 };
 
 class TransmissionModesLayers
 {
-  public:
+public:
   static uint8_t TxMode2LayerNum (uint8_t txMode);
 };
 
@@ -216,25 +214,25 @@ public:
 
   /**
    * \brief Returns the actual value of a hysteresis parameter.
-   * \param IE value of hysteresis
-   * \return hysteresis actual value in dB, which is IE value * 0.5 dB
+   * \param hysteresis IE value of hysteresis
+   * \return actual value in dB, which is IE value * 0.5 dB
    *
    * As per section 6.3.5 of 3GPP TS 36.331.
    *
    * \sa LteRrcSap::ReportConfigEutra
    */
-  static double GetActualHysteresis (uint8_t hysteresis);
+  static double IeValue2ActualHysteresis (uint8_t hysteresis);
 
   /**
    * \brief Returns the actual value of an a3-Offset parameter.
-   * \param IE value of a3-offset
-   * \return a3-Offset actual value in dB, which is IE value * 0.5 dB
+   * \param a3-Offset IE value of a3-offset
+   * \return actual value in dB, which is IE value * 0.5 dB
    *
    * As per section 6.3.5 of 3GPP TS 36.331.
    *
    * \sa LteRrcSap::ReportConfigEutra
    */
-  static double GetActualA3Offset (int8_t a3Offset);
+  static double IeValue2ActualA3Offset (int8_t a3Offset);
 
   /**
    * \brief Returns the actual value of an Q-RxLevMin parameter.
@@ -245,7 +243,7 @@ public:
    *
    * \sa LteRrcSap::CellSelectionInfo
    */
-  static double GetActualQRxLevMin (int8_t qRxLevMin);
+  static double IeValue2ActualQRxLevMin (int8_t qRxLevMin);
 
   /**
    * \brief Returns the actual value of an Q-QualMin parameter.
@@ -256,7 +254,7 @@ public:
    *
    * \sa LteRrcSap::CellSelectionInfo
    */
-  static double GetActualQQualMin (int8_t qQualMin);
+  static double IeValue2ActualQQualMin (int8_t qQualMin);
 
 }; // end of class EutranMeasurementMapping
 
