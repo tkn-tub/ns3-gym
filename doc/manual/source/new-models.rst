@@ -1,4 +1,5 @@
 .. include:: replace.txt
+.. highlight:: cpp
 
 Creating a new ns-3 model
 -------------------------
@@ -408,7 +409,7 @@ Add basic support in the class
 
 ::
 
-    point-to-point-net-device.h
+    /* point-to-point-net-device.h */
       class ErrorModel;
       
       /**
@@ -473,7 +474,7 @@ Create null functional script
 
 ::
 
-    simple-error-model.cc
+    /* simple-error-model.cc */
 
       // Error model
       // We want to add an error model to node 3's NetDevice

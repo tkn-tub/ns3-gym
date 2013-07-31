@@ -1,8 +1,8 @@
 /**
  * @anchor modules_anchor
  *
- * @defgroup constructs C++ Constructs Used by All Modules
- * \brief These are C++ constructs defined by the modules.
+ * @defgroup constructs Introspected Lists
+ * \brief These are lists of useful items found by examining the type system.
  *
  * @defgroup constants Constants
  * @brief Constants you can change

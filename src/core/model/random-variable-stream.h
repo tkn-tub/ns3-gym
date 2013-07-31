@@ -33,6 +33,36 @@
 
 namespace ns3 {
 
+/**
+ * \ingroup core
+ * \defgroup randomvariable Random Variables
+ *
+ * \brief ns-3 random numbers are provided via instances of
+ * ns3::RandomVariableStream.
+ *
+ * - By default, ns-3 simulations use a fixed seed; if there is any
+ *   randomness in the simulation, each run of the program will yield
+ *   identical results unless the seed and/or run number is changed.
+ * - In ns-3.3 and earlier, ns-3 simulations used a random seed by default;
+ *   this marks a change in policy starting with ns-3.4.
+ * - In ns-3.14 and earlier, ns-3 simulations used a different wrapper
+ *   class called ns3::RandomVariable.  This implementation is documented
+ *   above under Legacy Random Variables. As of ns-3.15, this class has 
+ *   been replaced by ns3::RandomVariableStream; the underlying 
+ *   pseudo-random number generator has not changed.
+ * - To obtain randomness across multiple simulation runs, you must
+ *   either set the seed differently or set the run number differently.
+ *   To set a seed, call ns3::RngSeedManager::SetSeed() at the beginning
+ *   of the program; to set a run number with the same seed, call 
+ *   ns3::RngSeedManager::SetRun() at the beginning of the program.
+ * - Each RandomVariableStream used in ns-3 has a virtual random number 
+ *   generator associated with it; all random variables use either 
+ *   a fixed or random seed based on the use of the global seed. 
+ * - If you intend to perform multiple runs of the same scenario, 
+ *   with different random numbers, please be sure to read the manual 
+ *   section on how to perform independent replications.
+ */
+  
 class RngStream;
 
 /**
@@ -1982,6 +2012,10 @@ private:
 
   /// The upper bound on values that can be returned by this RNG stream.
   double m_max;
+
+  /// It's easier to work with the mode internally instead of the
+  /// mean.  They are related by the simple: mean = (min+max+mode)/3.
+  double m_mode;
 };
 
 /**

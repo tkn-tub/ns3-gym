@@ -30,7 +30,11 @@ class EventImpl;
 
 /**
  * \ingroup core
- * \defgroup scheduler Scheduler
+ * \defgroup scheduler Scheduler and Events
+ */
+/**
+ * \ingroup scheduler
+ * \defgroup events Events
  */
 /**
  * \ingroup scheduler
@@ -55,12 +59,14 @@ class Scheduler : public Object
 public:
   static TypeId GetTypeId (void);
 
+  /** \ingroup events */
   struct EventKey
   {
     uint64_t m_ts;
     uint32_t m_uid;
     uint32_t m_context;
   };
+  /** \ingroup events */
   struct Event
   {
     EventImpl *impl;

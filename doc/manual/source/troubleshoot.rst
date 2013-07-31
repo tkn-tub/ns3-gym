@@ -1,4 +1,5 @@
 .. include:: replace.txt
+.. highlight:: bash
 
 Troubleshooting
 ---------------
@@ -22,18 +23,20 @@ values are unexpectedly null.
 
 Here is an example of what might occur:::
 
-    ns-old:~/ns-3-nsc$ ./waf --run tcp-point-to-point
-    Entering directory `/home/tomh/ns-3-nsc/build'
+    $ ./waf --run tcp-point-to-point
+    Entering directory '/home/tomh/ns-3-nsc/build'
     Compilation finished successfully 
     Command ['/home/tomh/ns-3-nsc/build/debug/examples/tcp-point-to-point'] exited with code -11 
 
 The error message says that the program terminated unsuccessfully, but it is
 not clear from this information what might be wrong. To examine more
 closely, try running it under the `gdb debugger
-<http://sources.redhat.com/gdb/>`_:::
+<http://sources.redhat.com/gdb/>`_:
 
-    ns-old:~/ns-3-nsc$ ./waf --run tcp-point-to-point --command-template="gdb %s"
-    Entering directory `/home/tomh/ns-3-nsc/build'
+.. sourcecode:: bash
+
+    $ ./waf --run tcp-point-to-point --command-template="gdb %s"
+    Entering directory '/home/tomh/ns-3-nsc/build'
     Compilation finished successfully 
     GNU gdb Red Hat Linux (6.3.0.0-1.134.fc5rh)
     Copyright 2004 Free Software Foundation, Inc.
@@ -66,7 +69,9 @@ argument to the command template "gdb %s".
 This tells us that there was an attempt to dereference a null pointer
 socketFactory.
 
-Let's look around line 136 of tcp-point-to-point, as gdb suggests:::
+Let's look around line 136 of tcp-point-to-point, as gdb suggests:
+
+.. sourcecode:: cpp
 
   Ptr<SocketFactory> socketFactory = n2->GetObject<SocketFactory> (Tcp::iid);
   Ptr<Socket> localSocket = socketFactory->CreateSocket ();
@@ -77,6 +82,6 @@ may be null.
 
 Sometimes you may need to use the `valgrind memory checker
 <http://valgrind.org>`_ for more subtle errors. Again, you invoke the use of
-valgrind similarly:::
+valgrind similarly::
 
-    ns-old:~/ns-3-nsc$ ./waf --run tcp-point-to-point --command-template="valgrind %s"
+    $ ./waf --run tcp-point-to-point --command-template="valgrind %s"

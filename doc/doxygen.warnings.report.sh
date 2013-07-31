@@ -2,7 +2,7 @@
 
 # Process doxygen.warnings.log to generate sorted list of top offenders
 
-# Flag to skip running doxygen
+# Flag to skip the build and running doxygen, and just analyze the log
 skipdoxy=${1:-""}
 
 DIR=`dirname $0`

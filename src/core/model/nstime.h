@@ -414,7 +414,7 @@ private:
   {
     bool toMul;
     bool fromMul;
-    uint64_t factor;
+    int64_t factor;
     int64x64_t timeTo;
     int64x64_t timeFrom;
   };
@@ -687,7 +687,7 @@ Ptr<const AttributeChecker> MakeTimeChecker (void)
 }
 
 /**
- * \brief Helper to make a Time checker with an upper bound
+ * \brief Helper to make a Time checker with a lower bound.
  *
  * \return the AttributeChecker
  */

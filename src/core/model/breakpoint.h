@@ -57,6 +57,8 @@ namespace ns3 {
 #endif
 
 /**
+ * \ingroup debugging
+ *
  * \brief fallback breakpoint function
  *
  * This function is used by the NS_BREAKPOINT() macro as a fallback

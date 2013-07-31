@@ -41,7 +41,7 @@ class Tag;
  * This class is mostly private to the Packet implementation and users
  * should never have to access it directly.
  *
- * \intern
+ * \internal
  *
  * The implementation of this class is a bit tricky.  Refer to this
  * diagram in the discussion that follows.
@@ -145,7 +145,7 @@ public:
      * The maximum size (in bytes) of a Tag is stored
      * in this constant.
      *
-     * \intern
+     * \internal
      * Ideally, TagData would be 32 bytes in size, so they require
      * no padding on 64-bit architectures.  (The architecture
      * affects the size because of the \c #next pointer.)

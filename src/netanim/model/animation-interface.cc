@@ -162,7 +162,7 @@ void AnimationInterface::RecursiveIpv4RoutePathSearch (std::string from, std::st
     {
       return;
     }
-  NS_LOG_UNCOND ("Node: " << fromNode->GetId () << " G:" << rt->GetGateway ());
+  NS_LOG_DEBUG ("Node: " << fromNode->GetId () << " G:" << rt->GetGateway ());
   std::ostringstream oss;
   oss << rt->GetGateway ();
   if (oss.str () == "0.0.0.0" && (sockerr != Socket::ERROR_NOROUTETOHOST))
@@ -219,14 +219,18 @@ void AnimationInterface::TrackIpv4RoutePaths ()
       header.SetDestination (Ipv4Address (trackElement.destination.c_str ()));
       Socket::SocketErrno sockerr;
       Ptr <Ipv4Route> rt = rp->RouteOutput (pkt, header, 0, sockerr);
+      Ipv4RoutePathElements rpElements;
       if (!rt)
         {
           NS_LOG_INFO ("No route to :" << trackElement.destination.c_str ());
+          Ipv4RoutePathElement elem = { trackElement.fromNodeId, "-1" };
+          rpElements.push_back (elem);
+          WriteRoutePath (trackElement.fromNodeId, trackElement.destination, rpElements);
+          continue;
         }
       std::ostringstream oss;
       oss << rt->GetGateway ();
       NS_LOG_INFO ("Node:" << trackElement.fromNodeId << "-->" << rt->GetGateway ()); 
-      Ipv4RoutePathElements rpElements;
       if (rt->GetGateway () == "0.0.0.0")
         {
           Ipv4RoutePathElement elem = { trackElement.fromNodeId, "C" };
@@ -1995,7 +1999,7 @@ std::string AnimationInterface::GetXMLOpenClose_rp (uint32_t nodeId, std::string
       Ipv4RoutePathElement rpElement = *i;
       oss << "<rpe" << " n=\"" << rpElement.nodeId << "\"" << " nH=\"" << rpElement.nextHop.c_str () << "\"" << "/>" << std::endl;
     }
-  oss << "<rp/>" << std::endl;
+  oss << "</rp>" << std::endl;
   return oss.str ();
 }
 

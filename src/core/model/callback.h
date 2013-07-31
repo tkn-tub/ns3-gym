@@ -883,7 +883,7 @@ protected:
  * as well as the function templates \ref MakeCallback :
  * \include src/core/examples/main-callback.cc
  *
- * \intern
+ * \internal
  * This code was originally written based on the techniques 
  * described in http://www.codeproject.com/cpp/TTLFunction.asp
  * It was subsequently rewritten to follow the architecture
@@ -926,7 +926,7 @@ public:
    *
    * \param functor the functor to run on this callback
    *
-   * \intern
+   * \internal
    * There are two dummy args below to ensure that this constructor is
    * always properly disambiguated by the c++ compiler.
    */
@@ -1445,7 +1445,7 @@ Callback<R,T1,T2,T3,T4,T5,T6,T7,T8,T9> MakeNullCallback (void) {
  * Build bound Callbacks which take varying numbers of arguments,
  * and potentially returning a value.
  *
- * \intern
+ * \internal
  *
  * The following is experimental code. It works but we have
  * not yet determined whether or not it is really useful and whether

@@ -82,27 +82,4 @@ Ipv4RoutingHelper::PrintEvery (Time printInterval, Ptr<Node> node, Ptr<OutputStr
   Simulator::Schedule (printInterval, &Ipv4RoutingHelper::PrintEvery, this, printInterval, node, stream);
 }
 
-template<class T>
-Ptr<T> Ipv4RoutingHelper::GetRouting (Ptr<Ipv4RoutingProtocol> protocol)
-{
-  Ptr<T> ret = DynamicCast<T> (protocol);
-  if (ret == 0)
-    {
-      // trying to check if protocol is a list routing
-      Ptr<Ipv4ListRouting> lrp = DynamicCast<Ipv4ListRouting> (protocol);
-      if (lrp != 0)
-        {
-          for (uint32_t i = 0; i < lrp->GetNRoutingProtocols ();  i++)
-            {
-              int16_t priority;
-              ret = GetRouting<T> (lrp->GetRoutingProtocol (i, priority)); // potential recursion, if inside ListRouting is ListRouting
-              if (ret != 0)
-                break;
-            }
-        }
-    }
-
-  return ret;
-}
-
 } // namespace ns3

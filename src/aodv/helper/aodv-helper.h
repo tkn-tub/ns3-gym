@@ -38,9 +38,9 @@ public:
   AodvHelper();
 
   /**
-   * \internal
    * \returns pointer to clone of this OlsrHelper 
    * 
+   * \internal
    * This method is mainly for internal use by the other helpers;
    * clients are expected to free the dynamic memory allocated by this method
    */
@@ -76,6 +76,7 @@ public:
   int64_t AssignStreams (NodeContainer c, int64_t stream);
 
 private:
+  /** the factory to create AODV routing object */
   ObjectFactory m_agentFactory;
 };
 

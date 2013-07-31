@@ -1,4 +1,5 @@
 .. include:: replace.txt
+.. highlight:: cpp
 
 Adding a New Module to |ns3|
 ----------------------------
@@ -20,7 +21,9 @@ example, the spectrum module can be found here: ::
   src/spectrum
 
 A prototypical module has the following directory structure and
-required files: ::
+required files:
+
+.. sourcecode:: text
 
   src/
         module-name/
@@ -39,29 +42,39 @@ Not all directories will be present in each module.
 Step 2 - Create your new module based on the template module
 ************************************************************
 
-A python program is provided in the source directory that will create a skeleton for a new module ::
+A python program is provided in the source directory that will create a skeleton for a new module
 
-  src/create-module.py
+.. sourcecode:: bash
 
-For the purposes of this discussion we will assume that your new module is called "new-module".  From the ``src`` directory, do the following to create the new module: ::
+  $ src/create-module.py
 
-  ./create-module.py new-module
+For the purposes of this discussion we will assume that your new module is called "new-module".  From the ``src`` directory, do the following to create the new module:
 
-Next, cd into ``new-module``; you will find this directory layout: ::
+.. sourcecode:: bash
 
-  examples  helper  model  test  wscript
+  $ ./create-module.py new-module
+
+Next, cd into ``new-module``; you will find this directory layout:
+
+.. sourcecode:: text
+
+  $ examples  helper  model  test  wscript
 
 We next walk through how to customize this module.  All |ns3| modules
 depend on the 'core' module and usually on other modules.  This 
 dependency is specified in the wscript file.  
 Let's assume that 'new-module' depends on the internet,
 mobility, and aodv modules.  Then the call to the function that will
-create this module should look like this before editing: ::
+create this module should look like this before editing:
+
+.. sourcecode:: python
 
   def build(bld):
       module = bld.create_ns3_module('new-module', ['core'])
 
-and after editing: ::
+and after editing:
+
+.. sourcecode:: python
 
   def build(bld):
       module = bld.create_ns3_module('new-module', ['internet', 'mobility', 'aodv'])
@@ -82,18 +95,24 @@ Step 3 - Adding to your module's source files
 *********************************************
 
 If your new module has model and/or helper source files, then they
-must be specified in your  ::
+must be specified in your
+
+.. sourcecode:: text
 
   src/new-module/wscript
 
 file by modifying it with your text editor.
 
 As an example, the source files for the spectrum module are specified
-in ::
+in
+
+.. sourcecode:: text
 
   src/spectrum/wscript
 
-with the following list of source files: ::
+with the following list of source files:
+
+.. sourcecode:: python
 
     module.source = [
         'model/spectrum-model.cc',
@@ -112,20 +131,26 @@ Step 4 - Specify your module's header files
 *******************************************
 
 If your new module has model and/or helper header files, then they
-must be specified in your  ::
+must be specified in your
+
+.. sourcecode:: text
 
   src/new-module/wscript
 
 file by modifying it with your text editor.
 
 As an example, the header files for the spectrum module are specified
-in  ::
+in
+
+.. sourcecode:: text
 
   src/spectrum/wscript
 
 with the following function call, module name, and list of header
 files.  Note that the argument for the function new_task_gen() tells
-waf to install this module's headers with the other |ns3| headers: ::
+waf to install this module's headers with the other |ns3| headers:
+
+.. sourcecode:: python
 
     headers = bld.new_task_gen(features=['ns3header'])
 
@@ -147,17 +172,23 @@ waf to install this module's headers with the other |ns3| headers: ::
 Step 5 - Specify your module's tests
 ************************************
 
-If your new module has tests, then they must be specified in your ::
+If your new module has tests, then they must be specified in your
+
+.. sourcecode:: text
 
   src/new-module/wscript
 
 file by modifying it with your text editor.
 
-As an example, the tests for the spectrum module are specified in ::
+As an example, the tests for the spectrum module are specified in
+
+.. sourcecode:: text
 
   src/spectrum/wscript
 
-with the following function call and list of test suites: ::
+with the following function call and list of test suites:
+
+.. sourcecode:: python
 
     module_test = bld.create_ns3_module_test_library('spectrum')
 
@@ -170,20 +201,26 @@ with the following function call and list of test suites: ::
 Step 6 - Specify your module's examples
 ***************************************
 
-If your new module has examples, then they must be specified in your ::
+If your new module has examples, then they must be specified in your
+
+.. sourcecode:: text
 
   src/new-module/examples/wscript
 
 file by modifying it with your text editor.
 
-As an example, the examples for the core module are specified in ::
+As an example, the examples for the core module are specified in
+
+.. sourcecode:: text
 
   src/core/examples/wscript
 
 The core module's C++ examples are specified using the following
 function calls and source file names.  Note that the second argument
 for the function ``create_ns3_program()`` is the list of modules that the
-program being created depends on: ::
+program being created depends on:
+
+.. sourcecode:: python
 
     obj = bld.create_ns3_program('main-callback', ['core'])
     obj.source = 'main-callback.cc'
@@ -194,7 +231,9 @@ program being created depends on: ::
 The core module's Python examples are specified using the following
 function call.  Note that the second argument for the function
 register_ns3_script() is the list of modules that the Python example
-depends on: ::
+depends on:
+
+.. sourcecode:: python
 
     bld.register_ns3_script('sample-simulator.py', ['core'])
 
@@ -207,11 +246,15 @@ are suitable for regression tests.  A file called ``examples-to-run.py``
 that exists in each module's test directory can control the invocation
 of the examples when the test framework runs.
 
-As an example, the examples that are run by ``test.py`` for the core module are specified in  ::
+As an example, the examples that are run by ``test.py`` for the core module are specified in
+
+.. sourcecode:: text
 
   src/core/test/examples-to-run.py
 
-using the following two lists of C++ and Python examples: ::
+using the following two lists of C++ and Python examples:
+
+.. sourcecode:: python
 
   # A list of C++ examples to run in order to ensure that they remain
   # buildable and runnable over time.  Each tuple in the list contains
@@ -238,7 +281,9 @@ using the following two lists of C++ and Python examples: ::
       ("sample-simulator.py", "True"),
   ]
 
-Each tuple in the C++ list of examples to run contains ::
+Each tuple in the C++ list of examples to run contains
+
+.. sourcecode:: python
 
     (example_name, do_run, do_valgrind_run)
 
@@ -249,11 +294,15 @@ is needed because NSC causes illegal instruction crashes with
 some tests when they are run under valgrind.
 
 Note that the two conditions are Python statements that
-can depend on waf configuration variables.  For example, ::
+can depend on waf configuration variables.  For example,
+
+.. sourcecode:: python
 
     ("tcp-nsc-lfn", "NSC_ENABLED == True", "NSC_ENABLED == False"),
 
-Each tuple in the Python list of examples to run contains ::
+Each tuple in the Python list of examples to run contains
+
+.. sourcecode:: python
 
     (example_name, do_run)
 
@@ -261,12 +310,16 @@ where example_name is the Python script to be run and
 do_run is a condition under which to run the example.
 
 Note that the condition is a Python statement that can
-depend on waf configuration variables.  For example, ::
+depend on waf configuration variables.  For example,
+
+.. sourcecode:: python
 
     ("realtime-udp-echo.py", "ENABLE_REAL_TIME == False"),
 
 If your new module has examples, then you must specify which of them
-should be run in your ::
+should be run in your
+
+.. sourcecode:: text
 
   src/new-module/test/examples-to-run.py
 
@@ -276,10 +329,12 @@ test.py.
 Step 8 - Build and test your new module
 ***************************************
 
-You can now build and test your module as normal: ::
+You can now build and test your module as normal:
 
-  ./waf configure --enable-examples --enable-tests
-  ./waf build
-  ./test.py
+.. sourcecode:: bash
+
+  $ ./waf configure --enable-examples --enable-tests
+  $ ./waf build
+  $ ./test.py
 
 and look for your new module's test suite (and example programs, if enabled) in the test output.

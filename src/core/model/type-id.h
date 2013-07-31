@@ -25,6 +25,7 @@
 #include "trace-source-accessor.h"
 #include "attribute-helper.h"
 #include "callback.h"
+#include "hash.h"
 #include <string>
 #include <stdint.h>
 
@@ -40,6 +41,10 @@ class ObjectBase;
  *  - the base class of the subclass
  *  - the set of accessible constructors in the subclass
  *  - the set of 'attributes' accessible in the subclass
+ *
+ * \internal
+ *  See the discussion in IidManager about hash chaining of TypeId's.
+ *
  */
 class TypeId
 {
@@ -57,16 +62,21 @@ public:
     std::string name;
     std::string help;
     uint32_t flags;
-    ns3::Ptr<const ns3::AttributeValue> originalInitialValue;
-    ns3::Ptr<const ns3::AttributeValue> initialValue;
-    ns3::Ptr<const ns3::AttributeAccessor> accessor;
-    ns3::Ptr<const ns3::AttributeChecker> checker;
+    Ptr<const AttributeValue> originalInitialValue;
+    Ptr<const AttributeValue> initialValue;
+    Ptr<const AttributeAccessor> accessor;
+    Ptr<const AttributeChecker> checker;
   };
   struct TraceSourceInformation {
     std::string name;
     std::string help;
-    ns3::Ptr<const ns3::TraceSourceAccessor> accessor;
+    Ptr<const TraceSourceAccessor> accessor;
   };
+
+  /**
+   * Type of hash values
+   */
+  typedef uint32_t hash_t;
 
   /**
    * \param name the name of the requested TypeId
@@ -84,6 +94,21 @@ public:
    * \returns true if the requested name was found, false otherwise.
    */
   static bool LookupByNameFailSafe (std::string name, TypeId *tid);
+  /**
+   * \param hash the hash to lookup
+   * \returns the unique id associated with the requested hash.
+   *
+   * This method cannot fail: it will crash if the input 
+   * hash does not match an existing TypeId.
+   */
+  static TypeId LookupByHash (hash_t hash);
+  /**
+   * \param hash the hash of the requested TypeId
+   * \param tid a pointer to the TypeId instance where the 
+   *        result of this function should be stored.
+   * \returns true if the requested hash was found, false otherwise.
+   */
+  static bool LookupByHashFailSafe (hash_t hash, TypeId *tid);
 
   /**
    * \returns the number of TypeId instances registered.
@@ -136,6 +161,11 @@ public:
    * \returns the name of this interface.
    */
   std::string GetName (void) const;
+
+  /**
+   * \returns the hash of this interface.
+   */
+  hash_t GetHash (void) const;
 
   /**
    * \returns true if this TypeId has a constructor

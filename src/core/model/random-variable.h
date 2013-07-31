@@ -32,18 +32,20 @@
 #include "rng-seed-manager.h"
 
 /**
- * \ingroup core
- * \defgroup randomvariable Random Variable Distributions
- *
+ * \ingroup randomvariable
+ * \defgroup legacyrandom Legacy Random Variables
  */
 
 namespace ns3 {
 
+/**
+ * \ingroup legacyrandom
+ */
 class RandomVariableBase;
 
 /**
  * \brief The basic RNG for NS-3.
- * \ingroup randomvariable
+ * \ingroup legacyrandom
  *
  * Note: The underlying random number generation method used
  * by NS-3 is the RngStream code by Pierre L'Ecuyer at
@@ -87,7 +89,7 @@ protected:
 
 /**
  * \brief The uniform distribution RNG for NS-3.
- * \ingroup randomvariable
+ * \ingroup legacyrandom
  *
  * This class supports the creation of objects that return random numbers
  * from a fixed uniform distribution.  It also supports the generation of
@@ -146,7 +148,7 @@ public:
 
 /**
  * \brief A random variable that returns a constant
- * \ingroup randomvariable
+ * \ingroup legacyrandom
  *
  * Class ConstantVariable defines a random number generator that
  * returns the same value every sample.
@@ -177,7 +179,7 @@ public:
 
 /**
  * \brief Return a sequential list of values
- * \ingroup randomvariable
+ * \ingroup legacyrandom
  *
  * Class SequentialVariable defines a random number generator that
  * returns a sequential sequence.  The sequence monotonically
@@ -216,7 +218,7 @@ public:
 
 /**
  * \brief Exponentially Distributed random var
- * \ingroup randomvariable
+ * \ingroup legacyrandom
  *
  * This class supports the creation of objects that return random numbers
  * from a fixed exponential distribution.  It also supports the generation of
@@ -269,7 +271,7 @@ public:
 
 /**
  * \brief ParetoVariable distributed random var
- * \ingroup randomvariable
+ * \ingroup legacyrandom
  *
  * This class supports the creation of objects that return random numbers
  * from a fixed pareto distribution.  It also supports the generation of
@@ -353,7 +355,7 @@ public:
 
 /**
  * \brief WeibullVariable distributed random var
- * \ingroup randomvariable
+ * \ingroup legacyrandom
  *
  * This class supports the creation of objects that return random numbers
  * from a fixed weibull distribution.  It also supports the generation of
@@ -408,7 +410,7 @@ public:
 /**
  * \brief Class NormalVariable defines a random variable with a
  * normal (Gaussian) distribution.
- * \ingroup randomvariable
+ * \ingroup legacyrandom
  *
  * This class supports the creation of objects that return random numbers
  * from a fixed normal distribution.  It also supports the generation of
@@ -447,7 +449,7 @@ public:
 
 /**
  * \brief EmpiricalVariable distribution random var
- * \ingroup randomvariable
+ * \ingroup legacyrandom
  *
  * Defines a random variable  that has a specified, empirical
  * distribution.  The distribution is specified by a
@@ -480,7 +482,7 @@ protected:
 
 /**
  * \brief Integer-based empirical distribution
- * \ingroup randomvariable
+ * \ingroup legacyrandom
  *
  * Defines an empirical distribution where all values are integers.
  * Indentical to EmpiricalVariable, except that the inverse transform
@@ -495,7 +497,7 @@ public:
 
 /**
  * \brief a non-random variable
- * \ingroup randomvariable
+ * \ingroup legacyrandom
  *
  * Defines a random variable  that has a specified, predetermined
  * sequence.  This would be useful when trying to force
@@ -521,7 +523,7 @@ public:
 
 /**
  * \brief Log-normal Distributed random var
- * \ingroup randomvariable
+ * \ingroup legacyrandom
  *
  * LogNormalVariable defines a random variable with log-normal
  * distribution.  If one takes the natural logarithm of random
@@ -553,7 +555,7 @@ public:
 
 /**
  * \brief Gamma Distributed Random Variable
- * \ingroup randomvariable
+ * \ingroup legacyrandom
  *
  * GammaVariable defines a random variable with gamma distribution.
  *
@@ -602,7 +604,7 @@ public:
 
 /**
  * \brief Erlang Distributed Random Variable
- * \ingroup randomvariable
+ * \ingroup legacyrandom
  *
  * ErlangVariable defines a random variable with Erlang distribution.
  *
@@ -655,7 +657,7 @@ public:
 
 /**
  * \brief Zipf Distributed Random Variable
- * \ingroup randomvariable
+ * \ingroup legacyrandom
  *
  * ZipfVariable defines a discrete random variable with Zipf distribution.
  *
@@ -685,7 +687,7 @@ public:
 
 /**
  * \brief Zeta Distributed Distributed Random Variable
- * \ingroup randomvariable
+ * \ingroup legacyrandom
  *
  * ZetaVariable defines a discrete random variable with Zeta distribution.
  *
@@ -711,7 +713,7 @@ public:
 
 /**
  * \brief Triangularly Distributed random var
- * \ingroup randomvariable
+ * \ingroup legacyrandom
  *
  * This distribution is a triangular distribution.  The probability density
  * is in the shape of a triangle.

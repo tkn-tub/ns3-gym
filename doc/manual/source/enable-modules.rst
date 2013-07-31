@@ -1,4 +1,5 @@
 .. include:: replace.txt
+.. highlight:: bash
 
 Enabling Subsets of |ns3| Modules
 ---------------------------------
@@ -10,11 +11,15 @@ This chapter discusses how to enable only the |ns3| modules that you are interst
 How to enable a subset of |ns3|'s modules
 *****************************************
 
-If shared libraries are being built, then enabling a module will cause at least one library to be built: ::
+If shared libraries are being built, then enabling a module will cause at least one library to be built:
+
+.. sourcecode:: text
 
   libns3-modulename.so
 
-If the module has a test library and test libraries are being built, then ::
+If the module has a test library and test libraries are being built, then
+
+.. sourcecode:: text
 
   libns3-modulename-test.so
 
@@ -31,29 +36,37 @@ Enable modules using waf's --enable-modules option
 To enable only the core module with example and tests, for example,
 try these commands: ::
 
-  ./waf clean
-  ./waf configure --enable-examples --enable-tests --enable-modules=core
-  ./waf build
-  cd build/debug/
-  ls
+  $ ./waf clean
+  $ ./waf configure --enable-examples --enable-tests --enable-modules=core
+  $ ./waf build
+  $ cd build/debug/
+  $ ls
 
-and the following libraries should be present: ::
+and the following libraries should be present:
+
+.. sourcecode:: text
 
   bindings  libns3-core.so       ns3      scratch  utils
   examples  libns3-core-test.so  samples  src
 
 Note the ``./waf clean`` step is done here only to make it more obvious which module libraries were built.  You don't have to do ``./waf clean`` in order to enable subsets of modules.
 
-Running test.py will cause only those tests that depend on module core to be run: ::
+Running test.py will cause only those tests that depend on module core to be run:
  
+.. sourcecode:: text
+
   24 of 24 tests passed (24 passed, 0 skipped, 0 failed, 0 crashed, 0 valgrind errors)
 
-Repeat the above steps for the "network" module instead of the "core" module, and the following will be built, since network depends on core: ::
+Repeat the above steps for the "network" module instead of the "core" module, and the following will be built, since network depends on core:
+
+.. sourcecode:: text
 
   bindings  libns3-core.so       libns3-network.so       ns3      scratch  utils
   examples  libns3-core-test.so  libns3-network-test.so  samples  src
 
-Running test.py will cause those tests that depend on only the core and network modules to be run: ::
+Running test.py will cause those tests that depend on only the core and network modules to be run:
+
+.. sourcecode:: text
 
   31 of 31 tests passed (31 passed, 0 skipped, 0 failed, 0 crashed, 0 valgrind errors)
 
@@ -74,9 +87,11 @@ The maintained version of the .ns3rc file in the |ns3| source code repository re
 
 Assuming that you are in the top level |ns3| directory, you can get a copy of the .ns3rc file that is in the ``utils`` directory as follows: ::
 
-    cp utils/.ns3rc .
+    $ cp utils/.ns3rc .
 
-The .ns3rc file should now be in your top level |ns3| directory, and it contains the following: ::
+The .ns3rc file should now be in your top level |ns3| directory, and it contains the following:
+
+.. sourcecode:: python
 
   #! /usr/bin/env python
   
@@ -92,7 +107,9 @@ The .ns3rc file should now be in your top level |ns3| directory, and it contains
   # Set this equal to true if you want tests to be run.
   tests_enabled = False
 
-Use your favorite editor to modify the .ns3rc file to only enable the core module with examples and tests like this: ::
+Use your favorite editor to modify the .ns3rc file to only enable the core module with examples and tests like this:
+
+.. sourcecode:: python
 
   #! /usr/bin/env python
   
@@ -110,28 +127,36 @@ Use your favorite editor to modify the .ns3rc file to only enable the core modul
 
 Only the core module will be enabled now if you try these commands: ::
 
-  ./waf clean
-  ./waf configure
-  ./waf build
-  cd build/debug/
-  ls
+  $ ./waf clean
+  $ ./waf configure
+  $ ./waf build
+  $ cd build/debug/
+  $ ls
 
-and the following libraries should be present: ::
+and the following libraries should be present:
+
+.. sourcecode:: text
 
   bindings  libns3-core.so       ns3      scratch  utils
   examples  libns3-core-test.so  samples  src
 
 Note the ``./waf clean`` step is done here only to make it more obvious which module libraries were built.  You don't have to do ``./waf clean`` in order to enable subsets of modules.
 
-Running test.py will cause only those tests that depend on module core to be run: ::
+Running test.py will cause only those tests that depend on module core to be run:
  
+.. sourcecode:: text
+
   24 of 24 tests passed (24 passed, 0 skipped, 0 failed, 0 crashed, 0 valgrind errors)
 
-Repeat the above steps for the "network" module instead of the "core" module, and the following will be built, since network depends on core: ::
+Repeat the above steps for the "network" module instead of the "core" module, and the following will be built, since network depends on core:
+
+.. sourcecode:: text
 
   bindings  libns3-core.so       libns3-network.so       ns3      scratch  utils
   examples  libns3-core-test.so  libns3-network-test.so  samples  src
 
-Running test.py will cause those tests that depend on only the core and network modules to be run: ::
+Running test.py will cause those tests that depend on only the core and network modules to be run:
+
+.. sourcecode:: text
 
   31 of 31 tests passed (31 passed, 0 skipped, 0 failed, 0 crashed, 0 valgrind errors)

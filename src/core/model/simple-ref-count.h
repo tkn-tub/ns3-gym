@@ -31,6 +31,7 @@
 namespace ns3 {
 
 /**
+ * \ingroup ptr
  * \brief A template-based reference counting class
  *
  * This template can be used to give reference-counting powers
@@ -63,12 +64,21 @@ template <typename T, typename PARENT = empty, typename DELETER = DefaultDeleter
 class SimpleRefCount : public PARENT
 {
 public:
+  /**
+   * Constructor
+   */
   SimpleRefCount ()
     : m_count (1)
   {}
+  /**
+   * Copy constructor
+   */
   SimpleRefCount (const SimpleRefCount &o)
     : m_count (1)
   {}
+  /**
+   * Assignment
+   */
   SimpleRefCount &operator = (const SimpleRefCount &o)
   {
     return *this;
@@ -108,6 +118,9 @@ public:
     return m_count;
   }
 
+  /**
+   *  Noop
+   */
   static void Cleanup (void) {}
 private:
   // Note we make this mutable so that the const methods can still

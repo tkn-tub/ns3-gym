@@ -89,9 +89,9 @@ void Ipv6Interface::DoSetup ()
     {
       Address addr = GetDevice ()->GetAddress ();
 
-      if (Mac16Address::IsMatchingType (addr))
+      if (Mac64Address::IsMatchingType (addr))
         {
-          Ipv6InterfaceAddress ifaddr = Ipv6InterfaceAddress (Ipv6Address::MakeAutoconfiguredLinkLocalAddress (Mac16Address::ConvertFrom (addr)), Ipv6Prefix (64));
+          Ipv6InterfaceAddress ifaddr = Ipv6InterfaceAddress (Ipv6Address::MakeAutoconfiguredLinkLocalAddress (Mac64Address::ConvertFrom (addr)), Ipv6Prefix (64));
           AddAddress (ifaddr);
         }
       else if (Mac48Address::IsMatchingType (addr))
@@ -99,9 +99,9 @@ void Ipv6Interface::DoSetup ()
           Ipv6InterfaceAddress ifaddr = Ipv6InterfaceAddress (Ipv6Address::MakeAutoconfiguredLinkLocalAddress (Mac48Address::ConvertFrom (addr)), Ipv6Prefix (64));
           AddAddress (ifaddr);
         }
-      else if (Mac64Address::IsMatchingType (addr))
+      else if (Mac16Address::IsMatchingType (addr))
         {
-          Ipv6InterfaceAddress ifaddr = Ipv6InterfaceAddress (Ipv6Address::MakeAutoconfiguredLinkLocalAddress (Mac64Address::ConvertFrom (addr)), Ipv6Prefix (64));
+          Ipv6InterfaceAddress ifaddr = Ipv6InterfaceAddress (Ipv6Address::MakeAutoconfiguredLinkLocalAddress (Mac16Address::ConvertFrom (addr)), Ipv6Prefix (64));
           AddAddress (ifaddr);
         }
       else

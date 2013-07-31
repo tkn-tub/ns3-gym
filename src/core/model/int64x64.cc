@@ -1,6 +1,7 @@
 #include "int64x64.h"
 #include <stdint.h>
 #include <iostream>
+#include <iomanip>  // showpos
 #include <sstream>
 #include "assert.h"
 #include "log.h"
@@ -38,7 +39,7 @@ static uint64_t PowerOfTen (uint8_t n)
 std::ostream &operator << (std::ostream &os, const int64x64_t &value)
 {
   int64_t hi = value.GetHigh ();
-  os << ((hi<0) ? "-" : "+") << ((hi<0) ? -hi : hi) << ".";
+  os << std::showpos << hi << std::noshowpos << ".";
   uint64_t low = value.GetLow ();
   uint8_t msd = MostSignificantDigit (~((uint64_t)0));
   do

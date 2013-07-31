@@ -1,4 +1,5 @@
 .. include:: replace.txt
+.. highlight:: cpp
 
 .. heading hierarchy:
    ------------- Chapter
@@ -71,7 +72,7 @@ Logging prefixes
 
 This section still needs documentation; bug 1496 is open on this:
 
-::
+.. sourcecode:: bash
 
    $ NS_LOG="*=all|prefix_all" ./waf --run scratch-simulator
    Scratch Simulator
@@ -88,16 +89,16 @@ Enabling logging output
 There are two ways that users typically control logging output.  The
 first is by setting an ``NS_LOG`` environment variable; e.g.:
 
-::
+.. sourcecode:: bash
 
-   NS_LOG="*" ./waf --run first
+   $ NS_LOG="*" ./waf --run first
 
 will run the first tutorial program with all logging output.  This can
 be made more granular by selecting individual components:
 
-::
+.. sourcecode:: bash
 
-   NS_LOG="Ipv4L3Protocol" ./waf --run first
+   $ NS_LOG="Ipv4L3Protocol" ./waf --run first
   
 The second way to enable this is to use explicit statements in your
 program, such as in the first tutorial program:

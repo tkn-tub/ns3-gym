@@ -55,8 +55,14 @@ class AttributeConstructionList;
 class ObjectBase
 {
 public:
+  /**
+   * Get the type ID.
+   */
   static TypeId GetTypeId (void);
 
+  /**
+   * Virtual destructor
+   */
   virtual ~ObjectBase ();
 
   /**

@@ -47,13 +47,13 @@ int main (int argc, char *argv[])
   cmd.Usage ("CommandLine example program.\n"
              "\n"
              "This little program demonstrates how to use CommandLine.");
-  cmd.AddValue ("val1", "an int argument",       val1);
-  cmd.AddValue ("val2", "a bool argument",       val2);
-  cmd.AddValue ("val3", "a string argument",     val3);
+  cmd.AddValue ("val1", "an int argument",          val1);
+  cmd.AddValue ("val2", "a bool argument",          val2);
+  cmd.AddValue ("val3", "a string argument",        val3);
   cmd.AddValue ("val4", "a string via callback", MakeCallback (SetVal4));
   cmd.Parse (argc, argv);
 
-  std::cout << "val1:\t"   << val1 << std::endl;
+  std::cout << "val1:\t" << val1 << std::endl;
   std::cout << "val2:\t"   << std::boolalpha << val2
             << std::noboolalpha << std::endl;
   std::cout << "val3:\t\"" << val3 << "\"" << std::endl;
