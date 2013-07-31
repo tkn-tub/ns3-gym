@@ -183,40 +183,53 @@ public:
   NetDeviceContainer InstallUeDevice (NodeContainer c);
 
   /**
-   * \brief Instruct a set of UE devices to attach to a suitable cell.
+   * \brief Enables automatic attachment of a set of UE devices to a suitable
+   *        cell using Idle mode initial cell selection procedure.
    * \param ueDevices the set of UE devices to be attached
    *
-   * By calling this, the UE will start the cell search and initial cell
-   * selection procedure at the beginning of simulation. Note that this function
-   * can only be used in EPC-enabled simulation.
+   * By calling this, the UE will start the initial cell selection procedure at
+   * the beginning of simulation. Note that this function can only be used in
+   * EPC-enabled simulation.
    */
   void Attach (NetDeviceContainer ueDevices);
 
   /**
-   * \brief Instruct a UE device to attach to a suitable cell.
-   * \param ueDevice
+   * \brief Enables automatic attachment of a UE device to a suitable cell
+   *        using Idle mode initial cell selection procedure.
+   * \param ueDevice the UE device to be attached
    *
-   * By calling this, the UE will start the cell search and initial cell
-   * selection procedure at the beginning of simulation. Note that this function
-   * can only be used in EPC-enabled simulation.
+   * By calling this, the UE will start the initial cell selection procedure at
+   * the beginning of simulation. Note that this function can only be used in
+   * EPC-enabled simulation.
    */
   void Attach (Ptr<NetDevice> ueDevice);
 
   /**
-   * Attach a set of UE devices to a single eNB device
+   * \brief Manual attachment of a set of UE devices to the network via a given
+   *        eNodeB.
+   * \param ueDevices the set of UE devices to be attached
+   * \param enbDevice the destination eNodeB device
    *
-   * \param ueDevices
-   * \param enbDevice
+   * In addition, the function also instructs each UE to immediately enter
+   * CONNECTED mode and activates the default EPS bearer.
+   *
+   * The function can be used in both LTE-only and EPC-enabled simulations.
+   * Note that this function will disable Idle mode initial cell selection
+   * procedure.
    */
   void Attach (NetDeviceContainer ueDevices, Ptr<NetDevice> enbDevice);
 
   /**
-   * Attach a UE to the network
+   * \brief Manual attachment of a UE device to the network via a given eNodeB.
+   * \param ueDevice the UE device to be attached
+   * \param enbDevice the destination eNodeB device
    *
-   * Attach a UE device to the network via a given eNB, and activate the default EPS bearer.
+   * In addition, the function also instructs the UE to immediately enter
+   * CONNECTED mode and activates the default EPS bearer.
    *
-   * \param ueDevice
-   * \param enbDevice
+   * The function can be used in both LTE-only and EPC-enabled simulations.
+   * Note that this function will disable Idle mode initial cell selection
+   * procedure.
    */
   void Attach (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice);
 
