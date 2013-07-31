@@ -69,12 +69,12 @@ main (int argc, char *argv[])
   mmEnb->SetPosition (Vector (0.0, 0.0, hEnb));
   if (enbIndoor)
     {
-      Ptr<Building> building1 = Create<Building> (-2, 2, -2, 2, 0.0, 20.0);
+      Ptr<Building> building1 = CreateObject<Building> (-2, 2, -2, 2, 0.0, 20.0);
       building1->SetBuildingType (Building::Residential);
       building1->SetExtWallsType (Building::ConcreteWithWindows);
     }
   
-  Ptr<MobilityBuildingInfo> buildingInfoEnb = Create<MobilityBuildingInfo> ();
+  Ptr<MobilityBuildingInfo> buildingInfoEnb = CreateObject<MobilityBuildingInfo> ();
   mmEnb->AggregateObject (buildingInfoEnb); // operation usually done by BuildingsHelper::Install
   BuildingsHelper::MakeConsistent (mmEnb);
   
@@ -91,8 +91,8 @@ main (int argc, char *argv[])
     {
       Ptr<ConstantPositionMobilityModel> mmUe = CreateObject<ConstantPositionMobilityModel> ();
       mmUe->SetPosition (Vector (i, 0.0, hUe));
-      Ptr<MobilityBuildingInfo> buildingInfoUe = Create<MobilityBuildingInfo> ();
-      mmEnb->AggregateObject (buildingInfoUe); // operation usually done by BuildingsHelper::Install
+      Ptr<MobilityBuildingInfo> buildingInfoUe = CreateObject<MobilityBuildingInfo> ();
+      mmUe->AggregateObject (buildingInfoUe); // operation usually done by BuildingsHelper::Install
       BuildingsHelper::MakeConsistent (mmUe);
       double loss = propagationLossModel->GetLoss (mmEnb, mmUe);
       outFile << i << "\t"
