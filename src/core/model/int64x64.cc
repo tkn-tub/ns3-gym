@@ -39,7 +39,24 @@ static uint64_t PowerOfTen (uint8_t n)
 std::ostream &operator << (std::ostream &os, const int64x64_t &value)
 {
   int64_t hi = value.GetHigh ();
-  os << std::showpos << hi << std::noshowpos << ".";
+
+  // Save stream format flags
+  std::ios_base::fmtflags ff = os.flags ();
+
+  { // See bug 1737:  gcc libstc++ 4.2 bug
+    if (hi == 0)
+      { 
+	os << '+';
+      }
+    else
+      {
+	os << std::showpos;
+      }
+  }
+  
+  os << hi << ".";
+  os.flags (ff);  // Restore stream flags
+
   uint64_t low = value.GetLow ();
   uint8_t msd = MostSignificantDigit (~((uint64_t)0));
   do
