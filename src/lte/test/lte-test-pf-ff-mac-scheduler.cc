@@ -84,12 +84,12 @@ LenaTestPfFfMacSchedulerSuite::LenaTestPfFfMacSchedulerSuite ()
   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (15,0,0,146400,147730,errorModel), TestCase::EXTENSIVE);
   
  
-  // DOWNLINK - DISTANCE 4800 -> MCS 16 -> Itbs 20 (from table 7.1.7.2.1-1 of 36.213)
-  // 1 user -> 24 PRB at Itbs 15 -> 903 -> 903000 bytes/sec
-  // 3 users -> 903000 among 3 users -> 301000 bytes/sec
-  // 6 users -> 903000 among 6 users -> 150500 bytes/sec
-  // 12 users -> 903000 among 12 users -> 75250 bytes/sec
-  // 15 users -> 903000 among 15 users -> 60200 bytes/sec
+  // DOWNLINK - DISTANCE 4800 -> MCS 22 -> Itbs 20 (from table 7.1.7.2.1-1 of 36.213)
+  // 1 user -> 24 PRB at Itbs 15 -> 1383 -> 1383000 bytes/sec
+  // 3 users -> 1383000 among 3 users -> 461000 bytes/sec
+  // 6 users -> 1383000 among 6 users -> 230500 bytes/sec
+  // 12 users -> 1383000 among 12 users -> 115250 bytes/sec
+  // 15 users -> 1383000 among 15 users -> 92200 bytes/sec
   // UPLINK - DISTANCE 4800 -> MCS 14 -> Itbs 13 (from table 7.1.7.2.1-1 of 36.213)
   // 1 user -> 25 PRB at Itbs 13 -> 807 -> 807000 bytes/sec
   // 3 users -> 8 PRB at Itbs 13 -> 253 -> 253000 bytes/sec
@@ -97,18 +97,18 @@ LenaTestPfFfMacSchedulerSuite::LenaTestPfFfMacSchedulerSuite ()
   // after the patch enforcing min 3 PRBs per UE:
   // 12 users -> 3 PRB at Itbs 13 -> 93  bytes * 8/12 UE/TTI  -> 62000 bytes/sec
   // 15 users -> 3 PRB at Itbs 13 -> 93  bytes * 8/15 UE/TTI  -> 49600 bytes/sec
-  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (1,0,4800,903000,807000,errorModel), TestCase::EXTENSIVE);
-  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (3,0,4800,301000,253000,errorModel), TestCase::EXTENSIVE);
-  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (6,0,4800,150500,125000,errorModel), TestCase::EXTENSIVE);
-  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (12,0,4800,75250,62000,errorModel), TestCase::EXTENSIVE);
-  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (15,0,4800,60200,49600,errorModel), TestCase::EXTENSIVE);
+  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (1,0,4800,1383000,807000,errorModel), TestCase::EXTENSIVE);
+  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (3,0,4800,461000,253000,errorModel), TestCase::EXTENSIVE);
+  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (6,0,4800,230500,125000,errorModel), TestCase::EXTENSIVE);
+  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (12,0,4800,115250,62000,errorModel), TestCase::EXTENSIVE);
+  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (15,0,4800,92200,49600,errorModel), TestCase::EXTENSIVE);
   
-  // DOWNLINK - DISTANCE 6000 -> MCS 14 -> Itbs 13 (from table 7.1.7.2.1-1 of 36.213)
-  // 1 user -> 24 PRB at Itbs 13 -> 775 -> 775000 bytes/sec
-  // 3 users -> 775000 among 3 users -> 258000 bytes/sec
-  // 6 users -> 775000 among 6 users -> 129200 bytes/sec
-  // 12 users -> 775000 among 12 users -> 64590 bytes/sec
-  // 15 users -> 775000 among 15 users -> 51700 bytes/sec
+  // DOWNLINK - DISTANCE 6000 -> MCS 20 -> Itbs 18 (from table 7.1.7.2.1-1 of 36.213)
+  // 1 user -> 24 PRB at Itbs 20 -> 1191 -> 1191000 bytes/sec
+  // 3 users -> 1191000 among 3 users -> 397000 bytes/sec
+  // 6 users -> 1191000 among 6 users -> 198500 bytes/sec
+  // 12 users -> 1191000 among 12 users -> 99250 bytes/sec
+  // 15 users -> 1191000 among 15 users -> 79400 bytes/sec
   // UPLINK - DISTANCE 6000 -> MCS 12 -> Itbs 11 (from table 7.1.7.2.1-1 of 36.213)
   // 1 user -> 25 PRB at Itbs 11 -> 621 -> 621000 bytes/sec
   // 3 users -> 8 PRB at Itbs 11 -> 201 -> 201000 bytes/sec
@@ -116,18 +116,18 @@ LenaTestPfFfMacSchedulerSuite::LenaTestPfFfMacSchedulerSuite ()
   // after the patch enforcing min 3 PRBs per UE:
   // 12 users -> 3 PRB at Itbs 11 -> 73 bytes * 8/12 UE/TTI -> 48667 bytes/sec
   // 15 users -> 3 PRB at Itbs 11 -> 73 bytes * 8/15 UE/TTI -> 38993 bytes/sec
-  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (1,0,6000,775000,621000,errorModel), TestCase::EXTENSIVE);
-  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (3,0,6000,258000,201000,errorModel), TestCase::EXTENSIVE);
-  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (6,0,6000,129200,97000,errorModel), TestCase::EXTENSIVE);
-  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (12,0,6000,64590,48667,errorModel), TestCase::EXTENSIVE);
-  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (15,0,6000,51700,38993,errorModel), TestCase::EXTENSIVE);
+  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (1,0,6000,1191000,621000,errorModel), TestCase::EXTENSIVE);
+  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (3,0,6000,397000,201000,errorModel), TestCase::EXTENSIVE);
+  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (6,0,6000,198500,97000,errorModel), TestCase::EXTENSIVE);
+  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (12,0,6000,99250,48667,errorModel), TestCase::EXTENSIVE);
+  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (15,0,6000,79400,38993,errorModel), TestCase::EXTENSIVE);
 
-  // DOWNLINK - DISTANCE 10000 -> MCS 8 -> Itbs 8 (from table 7.1.7.2.1-1 of 36.213)
-  // 1 user -> 24 PRB at Itbs 8 -> 421 -> 421000 bytes/sec
-  // 3 users -> 421000 among 3 users -> 140333 bytes/sec
-  // 6 users -> 421000 among 6 users -> 70167 bytes/sec
-  // 12 users -> 421000 among 12 users -> 35083 bytes/sec
-  // 15 users -> 421000 among 15 users -> 28067 bytes/sec
+  // DOWNLINK - DISTANCE 10000 -> MCS 14 -> Itbs 13 (from table 7.1.7.2.1-1 of 36.213)
+  // 1 user -> 24 PRB at Itbs 13 -> 871 -> 775000 bytes/sec
+  // 3 users -> 775000 among 3 users -> 258333 bytes/sec
+  // 6 users -> 775000 among 6 users -> 129167 bytes/sec
+  // 12 users -> 775000 among 12 users -> 64583 bytes/sec
+  // 15 users -> 775000 among 15 users -> 51667 bytes/sec
   // UPLINK - DISTANCE 10000 -> MCS 8 -> Itbs 8 (from table 7.1.7.2.1-1 of 36.213)
   // 1 user -> 24 PRB at Itbs 8 -> 437 -> 437000 bytes/sec
   // 3 users -> 8 PRB at Itbs 8 -> 137 -> 137000 bytes/sec
@@ -135,11 +135,11 @@ LenaTestPfFfMacSchedulerSuite::LenaTestPfFfMacSchedulerSuite ()
   // after the patch enforcing min 3 PRBs per UE:
   // 12 users -> 3 PRB at Itbs 8 -> 49 bytes * 8/12 UE/TTI -> 32667 bytes/sec
   // 15 users -> 3 PRB at Itbs 8 -> 49 bytes * 8/15 UE/TTI -> 26133 bytes/sec
-  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (1,0,10000,421000,437000,errorModel), TestCase::EXTENSIVE);
-  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (3,0,10000,140333,137000,errorModel), TestCase::EXTENSIVE);
-  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (6,0,10000,70167,67000,errorModel), TestCase::EXTENSIVE);
-  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (12,0,10000,35083,32667,errorModel), TestCase::EXTENSIVE);
-  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (15,0,10000,28067,26133,errorModel), TestCase::EXTENSIVE);
+  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (1,0,10000,775000,437000,errorModel), TestCase::EXTENSIVE);
+  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (3,0,10000,258333,137000,errorModel), TestCase::EXTENSIVE);
+  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (6,0,10000,129167,67000,errorModel), TestCase::EXTENSIVE);
+  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (12,0,10000,64583,32667,errorModel), TestCase::EXTENSIVE);
+  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (15,0,10000,51667,26133,errorModel), TestCase::EXTENSIVE);
  
   // DONWLINK - DISTANCE 20000 -> MCS 8 -> Itbs 8 (from table 7.1.7.2.1-1 of 36.213)
   // 1 user -> 24 PRB at Itbs 8 -> 421 -> 421000 bytes/sec
