@@ -146,7 +146,7 @@ LteUePhy::LteUePhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy)
   m_uePhySapProvider = new UeMemberLteUePhySapProvider (this);
   m_ueCphySapProvider = new MemberLteUeCphySapProvider<LteUePhy> (this);
   m_macChTtiDelay = UL_PUSCH_TTIS_DELAY;
-  
+
   NS_ASSERT_MSG (Simulator::Now ().GetNanoSeconds () == 0,
                  "Cannot create UE devices after simulation started");
   Simulator::ScheduleNow (&LteUePhy::SubframeIndication, this, 1, 1);
@@ -432,27 +432,30 @@ LteUePhy::GenerateCtrlCqiReport (const SpectrumValue& sinr)
   NS_ASSERT (m_state != CELL_SEARCH);
   NS_ASSERT (m_cellId > 0);
 
-  // check periodic wideband CQI
-  if (Simulator::Now () > m_p10CqiLast + m_p10CqiPeriocity)
+  if (m_dlConfigured && m_ulConfigured && (m_rnti > 0))
     {
-      Ptr<LteUeNetDevice> thisDevice = GetDevice ()->GetObject<LteUeNetDevice> ();
-      Ptr<DlCqiLteControlMessage> msg = CreateDlCqiFeedbackMessage (sinr);
-      if (msg)
+      // check periodic wideband CQI
+      if (Simulator::Now () > m_p10CqiLast + m_p10CqiPeriocity)
         {
-          DoSendLteControlMessage (msg);
+          Ptr<LteUeNetDevice> thisDevice = GetDevice ()->GetObject<LteUeNetDevice> ();
+          Ptr<DlCqiLteControlMessage> msg = CreateDlCqiFeedbackMessage (sinr);
+          if (msg)
+            {
+              DoSendLteControlMessage (msg);
+            }
+          m_p10CqiLast = Simulator::Now ();
         }
-      m_p10CqiLast = Simulator::Now ();
-    }
-  // check aperiodic high-layer configured subband CQI
-  if  (Simulator::Now () > m_a30CqiLast + m_a30CqiPeriocity)
-    {
-      Ptr<LteUeNetDevice> thisDevice = GetDevice ()->GetObject<LteUeNetDevice> ();
-      Ptr<DlCqiLteControlMessage> msg = CreateDlCqiFeedbackMessage (sinr);
-      if (msg)
+      // check aperiodic high-layer configured subband CQI
+      if  (Simulator::Now () > m_a30CqiLast + m_a30CqiPeriocity)
         {
-          DoSendLteControlMessage (msg);
+          Ptr<LteUeNetDevice> thisDevice = GetDevice ()->GetObject<LteUeNetDevice> ();
+          Ptr<DlCqiLteControlMessage> msg = CreateDlCqiFeedbackMessage (sinr);
+          if (msg)
+            {
+              DoSendLteControlMessage (msg);
+            }
+          m_a30CqiLast = Simulator::Now ();
         }
-      m_a30CqiLast = Simulator::Now ();
     }
 
   // Generate PHY trace
@@ -580,7 +583,7 @@ LteUePhy::CreateDlCqiFeedbackMessage (const SpectrumValue& sinr)
   if (Simulator::Now () > m_p10CqiLast + m_p10CqiPeriocity)
     {
       cqi = m_amc->CreateCqiFeedbacks (newSinr, m_dlBandwidth);
-      
+
       int nLayer = TransmissionModesLayers::TxMode2LayerNum (m_transmissionMode);
       int nbSubChannels = cqi.size ();
       double cqiSum = 0.0;
