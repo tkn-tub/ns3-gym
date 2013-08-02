@@ -2098,9 +2098,9 @@ Section :ref:`sec-network-attachment` of user documentation.
 When the cell passes all the above criteria, then the cell is deemed as
 *suitable*. Next, UE camps to it, switching its RRC state to
 `IDLE_WAIT_SYSTEM_INFO`, or to `IDLE_CAMPED_NORMALLY` if SIB2 has been received.
-After this, the UE may request to enter CONNECTED mode, which can be done by
-calling ``LteHelper::Connect`` function; please refer to section
-:ref:`sec-rrc-connection-establishment` for details on this.
+
+After this, upper layer may request UE to enter CONNECTED mode. Please refer to
+section :ref:`sec-rrc-connection-establishment` for details on this.
 
 On the other hand, when the cell does not pass the CSG criterion, then the cell
 is labeled as *acceptable* (Section 10.1.1.1 [TS36300]_). In this case, the RRC

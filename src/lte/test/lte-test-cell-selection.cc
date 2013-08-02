@@ -298,8 +298,8 @@ LteCellSelectionTestCase::DoRun ()
           ueStaticRouting->SetDefaultRoute (epcHelper->GetUeDefaultGatewayAddress (), 1);
         }
 
+      // Enable Idle mode cell selection
       lteHelper->Attach (ueDevs);
-      lteHelper->Connect (ueDevs);
 
     } // end of if (m_isEpcMode)
   else

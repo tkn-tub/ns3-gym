@@ -188,8 +188,16 @@ public:
    * \param ueDevices the set of UE devices to be attached
    *
    * By calling this, the UE will start the initial cell selection procedure at
-   * the beginning of simulation. Note that this function can only be used in
-   * EPC-enabled simulation.
+   * the beginning of simulation. In addition, the function also instructs each
+   * UE to immediately enter CONNECTED mode and activates the default EPS
+   * bearer.
+   *
+   * If this function is called when the UE is in a situation where entering
+   * CONNECTED mode is not possible (e.g. before the simulation begin), then the
+   * UE will attempt to connect at the earliest possible time (e.g. after it
+   * camps to a suitable cell).
+   *
+   * Note that this function can only be used in EPC-enabled simulation.
    */
   void Attach (NetDeviceContainer ueDevices);
 
@@ -199,8 +207,16 @@ public:
    * \param ueDevice the UE device to be attached
    *
    * By calling this, the UE will start the initial cell selection procedure at
-   * the beginning of simulation. Note that this function can only be used in
-   * EPC-enabled simulation.
+   * the beginning of simulation. In addition, the function also instructs the
+   * UE to immediately enter CONNECTED mode and activates the default EPS
+   * bearer.
+   *
+   * If this function is called when the UE is in a situation where entering
+   * CONNECTED mode is not possible (e.g. before the simulation begin), then the
+   * UE will attempt to connect at the earliest possible time (e.g. after it
+   * camps to a suitable cell).
+   *
+   * Note that this function can only be used in EPC-enabled simulation.
    */
   void Attach (Ptr<NetDevice> ueDevice);
 
@@ -234,22 +250,34 @@ public:
   void Attach (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice);
 
   /** 
-   * Attach each UE in a set to the closest (w.r.t. distance) eNB among those in a set.
+   * \brief Manual attachment of a set of UE devices to the network via the
+   *        closest eNodeB (with respect to distance) among those in the set.
+   * \param ueDevices the set of UE devices to be attached
+   * \param enbDevices the set of eNodeB devices to be considered
    * 
+   * This function finds among the eNodeB set the closest eNodeB for each UE,
+   * and then invokes manual attachment between the pair.
    * 
+   * Users are encouraged to use automatic attachment (Idle mode cell selection)
+   * instead of this function.
    * 
-   * \param ueDevices the set of UEs
-   * \param enbDevices the set of eNBs
+   * \sa LteHelper::Attach(NetDeviceContainer ueDevices);
    */
   void AttachToClosestEnb (NetDeviceContainer ueDevices, NetDeviceContainer enbDevices);
 
   /** 
-   * Attach an UE ito the closest (w.r.t. distance) eNB among those in a set
-   * Will call LteHelper::Attach () passing to it the single eNB
-   * instance which resulted to be the closest to the UE 
+   * \brief Manual attachment of a UE device to the network via the closest
+   *        eNodeB (with respect to distance) among those in the set.
+   * \param ueDevices the set UE device to be attached
+   * \param enbDevices the set of eNodeB devices to be considered
+   *
+   * This function finds among the eNodeB set the closest eNodeB for the UE,
+   * and then invokes manual attachment between the pair.
    * 
-   * \param ueDevice the UE
-   * \param enbDevices the set of eNBs
+   * Users are encouraged to use automatic attachment (Idle mode cell selection)
+   * instead of this function.
+   *
+   * \sa LteHelper::Attach(Ptr<NetDevice> ueDevice);
    */
   void AttachToClosestEnb (Ptr<NetDevice> ueDevice, NetDeviceContainer enbDevices);
 

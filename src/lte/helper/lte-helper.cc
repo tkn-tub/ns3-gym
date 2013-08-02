@@ -611,8 +611,19 @@ LteHelper::Attach (Ptr<NetDevice> ueDevice)
       NS_FATAL_ERROR ("The passed NetDevice must be an LteUeNetDevice");
     }
 
+  // execute cell search
   Ptr<LteUePhy> uePhy = ueLteDevice->GetPhy ();
   uePhy->CellSearch ();
+
+  // instruct UE to immediately enter CONNECTED mode after camping
+  Ptr<EpcUeNas> ueNas = ueLteDevice->GetNas ();
+  NS_ASSERT (ueNas != 0);
+  ueNas->Connect ();
+
+  // activate default EPS bearer
+  m_epcHelper->ActivateEpsBearer (ueDevice, ueLteDevice->GetImsi (),
+                                  EpcTft::Default (),
+                                  EpsBearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT));
 }
 
 void
@@ -683,43 +694,6 @@ LteHelper::AttachToClosestEnb (Ptr<NetDevice> ueDevice, NetDeviceContainer enbDe
 }
 
 void
-LteHelper::Connect (NetDeviceContainer ueDevices)
-{
-  NS_LOG_FUNCTION (this);
-  for (NetDeviceContainer::Iterator i = ueDevices.Begin (); i != ueDevices.End (); ++i)
-    {
-      Connect (*i);
-    }
-}
-
-void
-LteHelper::Connect (Ptr<NetDevice> ueDevice)
-{
-  NS_LOG_FUNCTION (this);
-
-  Ptr<LteUeNetDevice> ueLteDevice = ueDevice->GetObject<LteUeNetDevice> ();
-  if (ueLteDevice == 0)
-    {
-      NS_FATAL_ERROR ("The passed NetDevice must be an LteUeNetDevice");
-    }
-
-  Ptr<EpcUeNas> ueNas = ueLteDevice->GetNas ();
-  NS_ASSERT (ueNas != 0);
-  ueNas->Connect ();
-
-  if (m_epcHelper == 0)
-    {
-      // TODO activate bearer for without-EPC simulation
-    }
-  else
-    {
-      // activate default EPS bearer
-      m_epcHelper->ActivateEpsBearer (ueDevice, ueLteDevice->GetImsi (), EpcTft::Default (),
-                                      EpsBearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT));
-    }
-}
-
-void
 LteHelper::ActivateDedicatedEpsBearer (NetDeviceContainer ueDevices, EpsBearer bearer, Ptr<EpcTft> tft)
 {
   NS_LOG_FUNCTION (this);
@@ -736,7 +710,7 @@ LteHelper::ActivateDedicatedEpsBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer
   NS_LOG_FUNCTION (this);
 
   NS_ASSERT_MSG (m_epcHelper != 0, "dedicated EPS bearers cannot be set up when EPC is not used");
-  
+
   uint64_t imsi = ueDevice->GetObject<LteUeNetDevice> ()->GetImsi ();
   m_epcHelper->ActivateEpsBearer (ueDevice, imsi, tft, bearer);
 }
