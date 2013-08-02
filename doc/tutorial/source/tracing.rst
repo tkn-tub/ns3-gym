@@ -2143,7 +2143,7 @@ is going to contain packets prefixed with point to point headers.  This is true
 since the packets are coming from our point-to-point device driver.  Other
 common data link types are DLT_EN10MB (10 MB Ethernet) appropriate for csma
 devices and DLT_IEEE802_11 (IEEE 802.11) appropriate for wifi devices.  These
-are defined in ``src/network/helper/trace-helper.h"`` if you are interested in seeing
+are defined in ``src/network/helper/trace-helper.h`` if you are interested in seeing 
 the list.  The entries in the list match those in ``bpf.h`` but we duplicate
 them to avoid a pcap source dependence.
 
@@ -2308,13 +2308,13 @@ There are subtleties that prevent all four classes from behaving identically,
 but we do strive to make them all work as similarly as possible; and whenever
 possible there are analogs for all methods in all classes.
 
-  +-----------------+----------------------+----------------------+
-  | \               |  pcap                |  ascii               |
-  +=================+======================+======================+
-  | Device Helper   | :raw-role:`&#x2713;` | :raw-role:`&#x2713;` | 
-  +-----------------+----------------------+----------------------+
-  | Protocol Helper | :raw-role:`&#x2713;` | :raw-role:`&#x2713;` |
-  +-----------------+----------------------+----------------------+
+  +-----------------+---------+---------+
+  |                 |  pcap   |  ascii  |
+  +=================+=========+=========+
+  | Device Helper   | |check| | |check| |
+  +-----------------+---------+---------+
+  | Protocol Helper | |check| | |check| |
+  +-----------------+---------+---------+
 
 We use an approach called a ``mixin`` to add tracing functionality to our 
 helper classes.  A ``mixin`` is a class that provides functionality to that
