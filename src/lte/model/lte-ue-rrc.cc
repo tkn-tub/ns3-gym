@@ -335,23 +335,11 @@ LteUeRrc::GetDlEarfcn () const
   return m_dlEarfcn;
 }
 
-void
-LteUeRrc::SetDlEarfcn (uint16_t earfcn)
-{
-  m_dlEarfcn = earfcn;
-}
-
 uint16_t 
 LteUeRrc::GetUlEarfcn () const
 {
   NS_LOG_FUNCTION (this);
   return m_ulEarfcn;
-}
-
-void
-LteUeRrc::SetUlEarfcn (uint16_t earfcn)
-{
-  m_ulEarfcn = earfcn;
 }
 
 LteUeRrc::State
@@ -417,9 +405,9 @@ LteUeRrc::DoSendData (Ptr<Packet> packet, uint8_t bid)
   params.pdcpSdu = packet;
   params.rnti = m_rnti;
   params.lcid = it->second->m_logicalChannelIdentity;
-  
+
   NS_LOG_LOGIC (this << " RNTI=" << m_rnti << " sending " << packet << "on DRBID " << (uint32_t) drbid << " (LCID" << params.lcid << ")" << " (" << packet->GetSize () << " bytes)");
-  it->second->m_pdcp->GetLtePdcpSapProvider ()->TransmitPdcpSdu (params);  
+  it->second->m_pdcp->GetLtePdcpSapProvider ()->TransmitPdcpSdu (params);
 }
 
 void
@@ -517,17 +505,26 @@ LteUeRrc::DoSetCsgWhiteList (uint32_t csgId)
 }
 
 void 
-LteUeRrc::DoForceCampedOnEnb (uint16_t cellId, uint16_t earfcn)
+LteUeRrc::DoStartCellSelection (uint16_t dlEarfcn)
 {
-  NS_LOG_FUNCTION (this << cellId << earfcn);
+  NS_LOG_FUNCTION (this << dlEarfcn);
 
-  m_cellId = cellId;
-  m_dlEarfcn = earfcn;
-  m_cphySapProvider->SyncronizeWithEnb (m_cellId, m_dlEarfcn);
-  SwitchToState (IDLE_WAIT_SYSTEM_INFO);
+  m_dlEarfcn = dlEarfcn;
+  m_cphySapProvider->StartCellSearch (dlEarfcn);
 }
 
 void 
+LteUeRrc::DoForceCampedOnEnb (uint16_t cellId, uint16_t dlEarfcn)
+{
+  NS_LOG_FUNCTION (this << cellId << dlEarfcn);
+
+  m_cellId = cellId;
+  m_dlEarfcn = dlEarfcn;
+  m_cphySapProvider->SynchronizeWithEnb (m_cellId, m_dlEarfcn);
+  SwitchToState (IDLE_WAIT_SYSTEM_INFO);
+}
+
+void
 LteUeRrc::DoConnect ()
 {
   NS_LOG_FUNCTION (this);
@@ -720,7 +717,7 @@ LteUeRrc::DoRecvRrcConnectionReconfiguration (LteRrcSap::RrcConnectionReconfigur
           m_cellId = mci.targetPhysCellId;
           NS_ASSERT (mci.haveCarrierFreq);
           NS_ASSERT (mci.haveCarrierBandwidth);
-          m_cphySapProvider->SyncronizeWithEnb (m_cellId, mci.carrierFreq.dlCarrierFreq); 
+          m_cphySapProvider->SynchronizeWithEnb (m_cellId, mci.carrierFreq.dlCarrierFreq);
           m_cphySapProvider->SetDlBandwidth ( mci.carrierBandwidth.dlBandwidth);
           m_cphySapProvider->ConfigureUplink (mci.carrierFreq.ulCarrierFreq, mci.carrierBandwidth.ulBandwidth); 
           m_rnti = msg.mobilityControlInfo.newUeIdentity;
@@ -856,7 +853,7 @@ LteUeRrc::SynchronizeToStrongestCell ()
     {
       NS_LOG_LOGIC (this << " cell " << maxRsrpCellId
                          << " is the strongest untried surrounding cell");
-      m_cphySapProvider->SyncronizeWithEnb (maxRsrpCellId, m_dlEarfcn);
+      m_cphySapProvider->SynchronizeWithEnb (maxRsrpCellId, m_dlEarfcn);
     }
 
 } // end of void LteUeRrc::SynchronizeToStrongestCell ()
@@ -900,7 +897,7 @@ LteUeRrc::EvaluateCellForSelection ()
   if (isSuitableCell)
     {
       m_cellId = cellId;
-      m_cphySapProvider->SyncronizeWithEnb (cellId, m_dlEarfcn);
+      m_cphySapProvider->SynchronizeWithEnb (cellId, m_dlEarfcn);
       m_cphySapProvider->SetDlBandwidth (m_dlBandwidth);
       m_initialCellSelectionEndOkTrace (m_imsi, cellId);
 

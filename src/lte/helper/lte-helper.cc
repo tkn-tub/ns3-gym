@@ -611,13 +611,13 @@ LteHelper::Attach (Ptr<NetDevice> ueDevice)
       NS_FATAL_ERROR ("The passed NetDevice must be an LteUeNetDevice");
     }
 
-  // execute cell search
-  Ptr<LteUePhy> uePhy = ueLteDevice->GetPhy ();
-  uePhy->CellSearch ();
-
-  // instruct UE to immediately enter CONNECTED mode after camping
+  // initiate cell selection
   Ptr<EpcUeNas> ueNas = ueLteDevice->GetNas ();
   NS_ASSERT (ueNas != 0);
+  uint16_t dlEarfcn = ueLteDevice->GetDlEarfcn ();
+  ueNas->StartCellSelection (dlEarfcn);
+
+  // instruct UE to immediately enter CONNECTED mode after camping
   ueNas->Connect ();
 
   // activate default EPS bearer
@@ -1195,7 +1195,7 @@ FindImsiForUe (std::string path, uint16_t rnti)
 
 void
 DlPhyTransmissionCallback (Ptr<PhyTxStatsCalculator> phyTxStats,
-                      std::string path, PhyTransmissionStatParameters params)
+                           std::string path, PhyTransmissionStatParameters params)
 {
   NS_LOG_FUNCTION (phyTxStats << path);
   uint64_t imsi = 0;
@@ -1217,7 +1217,7 @@ DlPhyTransmissionCallback (Ptr<PhyTxStatsCalculator> phyTxStats,
 
 void
 UlPhyTransmissionCallback (Ptr<PhyTxStatsCalculator> phyTxStats,
-                      std::string path, PhyTransmissionStatParameters params)
+                           std::string path, PhyTransmissionStatParameters params)
 {
   NS_LOG_FUNCTION (phyTxStats << path);
   uint64_t imsi = 0;
@@ -1240,7 +1240,7 @@ UlPhyTransmissionCallback (Ptr<PhyTxStatsCalculator> phyTxStats,
 
 void
 DlPhyReceptionCallback (Ptr<PhyRxStatsCalculator> phyRxStats,
-                      std::string path, PhyReceptionStatParameters params)
+                        std::string path, PhyReceptionStatParameters params)
 {
   NS_LOG_FUNCTION (phyRxStats << path);
   uint64_t imsi = 0;
@@ -1262,7 +1262,7 @@ DlPhyReceptionCallback (Ptr<PhyRxStatsCalculator> phyRxStats,
 
 void
 UlPhyReceptionCallback (Ptr<PhyRxStatsCalculator> phyRxStats,
-                      std::string path, PhyReceptionStatParameters params)
+                        std::string path, PhyReceptionStatParameters params)
 {
   NS_LOG_FUNCTION (phyRxStats << path);
   uint64_t imsi = 0;
@@ -1418,8 +1418,8 @@ LteHelper::EnableUlMacTraces (void)
 
 void
 ReportCurrentCellRsrpSinrCallback (Ptr<PhyStatsCalculator> phyStats,
-                      std::string path, uint16_t cellId, uint16_t rnti,
-                      double rsrp, double sinr)
+                                   std::string path, uint16_t cellId, uint16_t rnti,
+                                   double rsrp, double sinr)
 {
   NS_LOG_FUNCTION (phyStats << path);
   uint64_t imsi = 0;

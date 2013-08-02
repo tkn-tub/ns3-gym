@@ -54,27 +54,63 @@ public:
   virtual void Reset () = 0;
 
   /**
-   * \brief Tell the PHY to synchronize with a given eNB for communication
-   *        purposes. Initially, the PHY will be configured to listen to 6 RBs
-   *        of BCH.
+   * \brief Tell the PHY entity to listen to PSS from surrounding cells and
+   *        measure the RSRP.
    *
-   * SetDlBandwidth can be called afterwards to change the bandwidth.
-   * 
-   * \param cellId the ID of the eNB
-   * \param dlEarfcn  the carrier frequency (EARFCN) in downlink
+   * This function will instruct this PHY instance to listen to the DL channel
+   * over the bandwidth of 6 RB.
+   *
+   * After this, it will start receiving Primary Synchronization Signal (PSS)
+   * and periodically returning measurement reports to RRC via
+   * LteUeCphySapUser::ReportUeMeasurements function.
    */
-  virtual void SyncronizeWithEnb (uint16_t cellId, uint16_t dlEarfcn) = 0;
+  virtual void StartCellSearch (uint16_t dlEarfcn) = 0;
 
   /**
-   * \param dlBandwidth the DL bandwidth in PRBs
+   * \brief Tell the PHY entity to synchronize with a given eNodeB over the
+   *        currently active EARFCN for communication purposes.
+   * \param cellId the ID of the eNodeB
+   *
+   * By synchronizing, the PHY will start receiving various information
+   * transmitted by the eNodeB. For instance, when receiving system information,
+   * the message will be relayed to RRC via
+   * LteUeCphySapUser::RecvMasterInformationBlock and
+   * LteUeCphySapUser::RecvSystemInformationBlockType1 functions.
+   *
+   * Initially, the PHY will be configured to listen to 6 RBs of BCH.
+   * LteUeCphySapProvider::SetDlBandwidth can be called afterwards to increase
+   * the bandwidth.
+   */
+  virtual void SynchronizeWithEnb (uint16_t cellId) = 0;
+
+  /**
+   * \brief Tell the PHY entity to align to the given EARFCN and synchronize
+   *        with a given eNodeB for communication purposes.
+   * \param cellId the ID of the eNodeB
+   * \param dlEarfcn the downlink carrier frequency (EARFCN)
+   *
+   * By synchronizing, the PHY will start receiving various information
+   * transmitted by the eNodeB. For instance, when receiving system information,
+   * the message will be relayed to RRC via
+   * LteUeCphySapUser::RecvMasterInformationBlock and
+   * LteUeCphySapUser::RecvSystemInformationBlockType1 functions.
+   *
+   * Initially, the PHY will be configured to listen to 6 RBs of BCH.
+   * LteUeCphySapProvider::SetDlBandwidth can be called afterwards to increase
+   * the bandwidth.
+   */
+  virtual void SynchronizeWithEnb (uint16_t cellId, uint16_t dlEarfcn) = 0;
+
+  /**
+   * \param dlBandwidth the DL bandwidth in number of PRBs
    */
   virtual void SetDlBandwidth (uint8_t dlBandwidth) = 0;
 
   /** 
-   * Configure uplink (normally done after reception of SIB2)
+   * \brief Configure uplink (normally done after reception of SIB2)
    * 
-   * \param ulEarfcn the carrier frequency (EARFCN) in uplink
-   * \param ulBandwidth the UL bandwidth in PRBs
+   * \param ulEarfcn the uplink carrier frequency (EARFCN)
+   * \param ulBandwidth the UL bandwidth in number of PRBs
    */
   virtual void ConfigureUplink (uint16_t ulEarfcn, uint8_t ulBandwidth) = 0;
 
@@ -118,15 +154,16 @@ public:
    * See section 5.1.1 and 5.1.3 of TS 36.214
    */
   struct UeMeasurementsElement
-    {
-      uint16_t m_cellId;
-      double m_rsrp;  // [dBm]
-      double m_rsrq;  // [dB]
-    };
+  {
+    uint16_t m_cellId;
+    double m_rsrp;  // [dBm]
+    double m_rsrq;  // [dB]
+  };
+
   struct UeMeasurementsParameters
-    {
-      std::vector <struct UeMeasurementsElement> m_ueMeasurementsList;
-    };
+  {
+    std::vector <struct UeMeasurementsElement> m_ueMeasurementsList;
+  };
 
 
   /** 
@@ -166,8 +203,10 @@ public:
 
   // inherited from LteUeCphySapProvider
   virtual void Reset ();
-  virtual void SyncronizeWithEnb (uint16_t cellId, uint16_t dlEarfcn);
-  virtual void SetDlBandwidth (uint8_t ulBandwidth);
+  virtual void StartCellSearch (uint16_t dlEarfcn);
+  virtual void SynchronizeWithEnb (uint16_t cellId);
+  virtual void SynchronizeWithEnb (uint16_t cellId, uint16_t dlEarfcn);
+  virtual void SetDlBandwidth (uint8_t dlBandwidth);
   virtual void ConfigureUplink (uint16_t ulEarfcn, uint8_t ulBandwidth);
   virtual void SetRnti (uint16_t rnti);
   virtual void SetTransmissionMode (uint8_t txMode);
@@ -198,13 +237,27 @@ MemberLteUeCphySapProvider<C>::Reset ()
 
 template <class C>
 void
-MemberLteUeCphySapProvider<C>::SyncronizeWithEnb (uint16_t cellId, uint16_t dlEarfcn)
+MemberLteUeCphySapProvider<C>::StartCellSearch (uint16_t dlEarfcn)
 {
-  m_owner->DoSyncronizeWithEnb (cellId, dlEarfcn);
+  m_owner->DoStartCellSearch (dlEarfcn);
 }
 
 template <class C>
-void 
+void
+MemberLteUeCphySapProvider<C>::SynchronizeWithEnb (uint16_t cellId)
+{
+  m_owner->DoSynchronizeWithEnb (cellId);
+}
+
+template <class C>
+void
+MemberLteUeCphySapProvider<C>::SynchronizeWithEnb (uint16_t cellId, uint16_t dlEarfcn)
+{
+  m_owner->DoSynchronizeWithEnb (cellId, dlEarfcn);
+}
+
+template <class C>
+void
 MemberLteUeCphySapProvider<C>::SetDlBandwidth (uint8_t dlBandwidth)
 {
   m_owner->DoSetDlBandwidth (dlBandwidth);

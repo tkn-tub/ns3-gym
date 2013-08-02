@@ -51,24 +51,34 @@ public:
    */
   virtual void SetCsgWhiteList (uint32_t csgId) = 0;
 
-  /** 
-   * Force the RRC to stay camped on a certain eNB
-   * 
-   * \param enbDevice the eNB device (wild hack, might go away in
-   * future versions)
-   * \param cellId the Cell ID identifying the eNB
+  /**
+   * \brief Initiate Idle mode cell selection procedure.
+   *
+   * \param dlEarfcn the downlink carrier frequency (EARFCN)
    */
-  virtual void ForceCampedOnEnb (uint16_t cellId, uint16_t earfcn) = 0;
+  virtual void StartCellSelection (uint16_t dlEarfcn) = 0;
 
   /** 
-   * Tell the RRC to go into Connected Mode
-   * 
+   * \brief Force the RRC entity to stay camped on a certain eNodeB.
+   *
+   * \param cellId the cell ID identifying the eNodeB
+   * \param dlEarfcn the downlink carrier frequency (EARFCN)
+   */
+  virtual void ForceCampedOnEnb (uint16_t cellId, uint16_t dlEarfcn) = 0;
+
+  /**
+   * \brief Tell the RRC entity to enter Connected mode.
+   *
+   * If this function is called when the UE is in a situation where connecting
+   * is not possible (e.g. before the simulation begin), then the UE will
+   * attempt to connect at the earliest possible time (e.g. after it camps to a
+   * suitable cell).
    */
   virtual void Connect (void) = 0;
 
   /** 
-   * Send a data packet
-   * 
+   * \brief Send a data packet.
+   *
    * \param packet the packet
    * \param bid the EPS bearer ID
    */
@@ -76,8 +86,8 @@ public:
 
 
   /** 
-   * Tell the RRC to release the connection
-   * 
+   * \brief Tell the RRC entity to release the connection.
+   *
    */
   virtual void Disconnect () = 0;
 
@@ -98,13 +108,13 @@ public:
   virtual ~LteAsSapUser ();
 
   /** 
-   * Notify the NAS that RRC Connection Establishment was successful
+   * \brief Notify the NAS that RRC Connection Establishment was successful.
    * 
    */
   virtual void NotifyConnectionSuccessful () = 0;
 
   /** 
-   * Notify the NAS that RRC Connection Establishment failed
+   * \brief Notify the NAS that RRC Connection Establishment failed.
    * 
    */
   virtual void NotifyConnectionFailed () = 0;
@@ -141,7 +151,8 @@ public:
 
   // inherited from LteAsSapProvider
   virtual void SetCsgWhiteList (uint32_t csgId);
-  virtual void ForceCampedOnEnb (uint16_t cellId, uint16_t earfcn);
+  virtual void StartCellSelection (uint16_t dlEarfcn);
+  virtual void ForceCampedOnEnb (uint16_t cellId, uint16_t dlEarfcn);
   virtual void Connect (void);
   virtual void SendData (Ptr<Packet> packet, uint8_t bid);
   virtual void Disconnect ();
@@ -171,9 +182,16 @@ MemberLteAsSapProvider<C>::SetCsgWhiteList (uint32_t csgId)
 
 template <class C>
 void
-MemberLteAsSapProvider<C>::ForceCampedOnEnb (uint16_t cellId, uint16_t earfcn)
+MemberLteAsSapProvider<C>::StartCellSelection (uint16_t dlEarfcn)
 {
-  m_owner->DoForceCampedOnEnb (cellId, earfcn);
+  m_owner->DoStartCellSelection (dlEarfcn);
+}
+
+template <class C>
+void
+MemberLteAsSapProvider<C>::ForceCampedOnEnb (uint16_t cellId, uint16_t dlEarfcn)
+{
+  m_owner->DoForceCampedOnEnb (cellId, dlEarfcn);
 }
 
 template <class C>

@@ -128,8 +128,6 @@ LteUeNetDevice::UpdateConfig (void)
   NS_LOG_FUNCTION (this);
   m_nas->SetImsi (m_imsi);
   m_rrc->SetImsi (m_imsi);
-  m_rrc->SetDlEarfcn (m_dlEarfcn);
-  m_phy->SetDlEarfcn (m_dlEarfcn);
 }
 
 

@@ -98,26 +98,30 @@ public:
   void SetForwardUpCallback (Callback <void, Ptr<Packet> > cb);
 
   /**
-   * \brief Instruct the NAS to go to ACTIVE state
+   * \brief Causes NAS to tell AS to find a suitable cell and camp to it.
+   *
+   * \param dlEarfcn the DL frequency of the eNB
+   */
+  void StartCellSelection (uint16_t dlEarfcn);
+
+  /**
+   * \brief Causes NAS to tell AS to go to ACTIVE state.
    * 
    * The end result is equivalent with EMM Registered + ECM Connected states.
-   * If this function is called when the UE is in a situation where connecting
-   * is not possible (e.g. before the simulation begin), then the UE will
-   * attempt to connect at the earliest possible time (e.g. after it camps to a
-   * suitable cell).
    */
   void Connect ();
 
   /**
-   * \brief Instruct the NAS to camp to a specific cell and go to ACTIVE state.
+   * \brief Causes NAS to tell AS to camp to a specific cell and go to ACTIVE
+   *        state.
    * \param cellId the id of the eNB to camp on
-   * \param earfcn the DL frequency of the eNB
+   * \param dlEarfcn the DL frequency of the eNB
    *
    * The end result is equivalent with EMM Registered + ECM Connected states.
    * Since RRC Idle Mode cell selection is not supported yet, we force the UE
    * RRC to be camped on a specific eNB.
    */
-  void Connect (uint16_t cellId, uint16_t earfcn);
+  void Connect (uint16_t cellId, uint16_t dlEarfcn);
  
   /** 
    * instruct the NAS to disconnect

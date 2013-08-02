@@ -143,11 +143,6 @@ public:
   Ptr<LteSpectrumPhy> GetUlSpectrumPhy () const;
 
   /**
-   * \param bw the downlink carrier frequency (EARFCN)
-   */
-  void SetDlEarfcn (uint16_t earfcn);
-
-  /**
    * \brief Create the PSD for the TX
    * \return the pointer to the PSD
    */
@@ -174,16 +169,6 @@ public:
    * \return a list of sub channels
    */
   std::vector <int> GetSubChannelsForReception (void);
-
-
-  /**
-   * \brief Listen to PSS from surrounding cells and measure the RSRP.
-   *
-   * This function will instruct this PHY instance to listen to the DL channel
-   * over the bandwidth of 6 RB. After this, it will start to receive Primary
-   * Synchronization Signal (PSS).
-   */
-  void CellSearch ();
 
   /**
   * \brief Create the DL CQI feedback from SINR values perceived at
@@ -244,7 +229,7 @@ public:
 
 
 private:
-  
+
   void SetTxMode1Gain (double gain);
   void SetTxMode2Gain (double gain);
   void SetTxMode3Gain (double gain);
@@ -269,7 +254,9 @@ private:
 
   // UE CPHY SAP methods
   void DoReset ();
-  void DoSyncronizeWithEnb (uint16_t cellId, uint16_t dlEarfcn);
+  void DoStartCellSearch (uint16_t dlEarfcn);
+  void DoSynchronizeWithEnb (uint16_t cellId);
+  void DoSynchronizeWithEnb (uint16_t cellId, uint16_t dlEarfcn);
   void DoSetDlBandwidth (uint8_t ulBandwidth);
   void DoConfigureUplink (uint16_t ulEarfcn, uint8_t ulBandwidth);
   void DoSetRnti (uint16_t rnti);
@@ -277,13 +264,13 @@ private:
   void DoSetSrsConfigurationIndex (uint16_t srcCi);
 
   // UE PHY SAP methods 
-  virtual void DoSendMacPdu (Ptr<Packet> p);  
+  virtual void DoSendMacPdu (Ptr<Packet> p);
   virtual void DoSendLteControlMessage (Ptr<LteControlMessage> msg);
   virtual void DoSendRachPreamble (uint32_t prachId, uint32_t raRnti);
-  
+
   std::vector <int> m_subChannelsForTransmission;
   std::vector <int> m_subChannelsForReception;
-  
+
   std::vector< std::vector <int> > m_subChannelsForTransmissionQueue;
 
 

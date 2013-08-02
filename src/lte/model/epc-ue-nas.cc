@@ -133,6 +133,13 @@ EpcUeNas::SetForwardUpCallback (Callback <void, Ptr<Packet> > cb)
   m_forwardUpCallback = cb;
 }
 
+void
+EpcUeNas::StartCellSelection (uint16_t dlEarfcn)
+{
+  NS_LOG_FUNCTION (this);
+  m_asSapProvider->StartCellSelection (dlEarfcn);
+}
+
 void 
 EpcUeNas::Connect ()
 {
@@ -143,13 +150,12 @@ EpcUeNas::Connect ()
 }
 
 void
-EpcUeNas::Connect (uint16_t cellId, uint16_t earfcn)
+EpcUeNas::Connect (uint16_t cellId, uint16_t dlEarfcn)
 {
   NS_LOG_FUNCTION (this);
 
-  // since RRC Idle Mode cell selection is not supported yet, we
   // force the UE RRC to be camped on a specific eNB
-  m_asSapProvider->ForceCampedOnEnb (cellId, earfcn);
+  m_asSapProvider->ForceCampedOnEnb (cellId, dlEarfcn);
 
   // tell RRC to go into connected mode
   m_asSapProvider->Connect ();

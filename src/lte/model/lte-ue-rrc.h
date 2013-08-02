@@ -226,20 +226,10 @@ public:
    */
   uint16_t GetDlEarfcn () const;
 
-  /**
-   * \param bw the downlink carrier frequency (EARFCN)
-   */
-  void SetDlEarfcn (uint16_t earfcn);
-
   /** 
    * \return the uplink carrier frequency (EARFCN)
    */
   uint16_t GetUlEarfcn () const;
-
-  /**
-   * \param bw the uplink carrier frequency (EARFCN)
-   */
-  void SetUlEarfcn (uint16_t earfcn);
 
   /**
    *
@@ -268,7 +258,8 @@ private:
  
   // LTE AS SAP methods
   void DoSetCsgWhiteList (uint32_t csgId);
-  void DoForceCampedOnEnb (uint16_t cellId, uint16_t earfcn);
+  void DoForceCampedOnEnb (uint16_t cellId, uint16_t dlEarfcn);
+  void DoStartCellSelection (uint16_t dlEarfcn);
   void DoConnect ();
   void DoSendData (Ptr<Packet> packet, uint8_t bid);
   void DoDisconnect ();

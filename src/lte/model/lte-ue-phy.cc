@@ -419,12 +419,6 @@ LteUePhy::CreateTxPowerSpectralDensity ()
 }
 
 void
-LteUePhy::SetDlEarfcn (uint16_t earfcn)
-{
-  m_dlEarfcn = earfcn;
-}
-
-void
 LteUePhy::GenerateCtrlCqiReport (const SpectrumValue& sinr)
 {
   NS_LOG_FUNCTION (this);
@@ -662,14 +656,6 @@ LteUePhy::CreateDlCqiFeedbackMessage (const SpectrumValue& sinr)
 
   msg->SetDlCqi (dlcqi);
   return msg;
-}
-
-
-void
-LteUePhy::CellSearch ()
-{
-  DoSetDlBandwidth (6); // configure DL for receiving PSS
-  SwitchToState (CELL_SEARCH);
 }
 
 
@@ -985,7 +971,7 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
         }
       else
         {
-      // send only PUCCH (ideal: fake null bandwidth signal)
+          // send only PUCCH (ideal: fake null bandwidth signal)
           if (ctrlMsg.size ()>0)
             {
               NS_LOG_LOGIC (this << " UE - start TX PUCCH (NO PUSCH)");
@@ -1068,9 +1054,26 @@ LteUePhy::DoReset ()
 } // end of void LteUePhy::DoReset ()
 
 void
-LteUePhy::DoSyncronizeWithEnb (uint16_t cellId, uint16_t dlEarfcn)
+LteUePhy::DoStartCellSearch (uint16_t dlEarfcn)
+{
+  NS_LOG_FUNCTION (this << dlEarfcn);
+  m_dlEarfcn = dlEarfcn;
+  DoSetDlBandwidth (6); // configure DL for receiving PSS
+  SwitchToState (CELL_SEARCH);
+}
+
+void
+LteUePhy::DoSynchronizeWithEnb (uint16_t cellId, uint16_t dlEarfcn)
 {
   NS_LOG_FUNCTION (this << cellId << dlEarfcn);
+  m_dlEarfcn = dlEarfcn;
+  DoSynchronizeWithEnb (cellId);
+}
+
+void
+LteUePhy::DoSynchronizeWithEnb (uint16_t cellId)
+{
+  NS_LOG_FUNCTION (this << cellId);
 
   if (cellId == 0)
     {
@@ -1078,7 +1081,6 @@ LteUePhy::DoSyncronizeWithEnb (uint16_t cellId, uint16_t dlEarfcn)
     }
 
   m_cellId = cellId;
-  m_dlEarfcn = dlEarfcn;
   m_downlinkSpectrumPhy->SetCellId (cellId);
   m_uplinkSpectrumPhy->SetCellId (cellId);
 
