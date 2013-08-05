@@ -76,12 +76,12 @@ FemtocellBlockAllocator::FemtocellBlockAllocator (Box area, uint32_t nApartments
     m_xSize (nApartmentsX*10 + 20),
     m_ySize (70)
 {
-    m_xMinVar = CreateObject<UniformRandomVariable> ();
-    m_xMinVar->SetAttribute ("Min", DoubleValue (area.xMin));
-    m_xMinVar->SetAttribute ("Max", DoubleValue (area.xMax - m_xSize));
-    m_yMinVar = CreateObject<UniformRandomVariable> ();
-    m_yMinVar->SetAttribute ("Min", DoubleValue (area.yMin));
-    m_yMinVar->SetAttribute ("Max", DoubleValue (area.yMax - m_ySize));
+  m_xMinVar = CreateObject<UniformRandomVariable> ();
+  m_xMinVar->SetAttribute ("Min", DoubleValue (area.xMin));
+  m_xMinVar->SetAttribute ("Max", DoubleValue (area.xMax - m_xSize));
+  m_yMinVar = CreateObject<UniformRandomVariable> ();
+  m_yMinVar->SetAttribute ("Min", DoubleValue (area.yMin));
+  m_yMinVar->SetAttribute ("Max", DoubleValue (area.yMax - m_ySize));
 }
 
 void 
@@ -324,19 +324,20 @@ static ns3::GlobalValue g_useUdp ("useUdp",
                                   ns3::BooleanValue (true),
                                   ns3::MakeBooleanChecker ());
 static ns3::GlobalValue g_fadingTrace ("fadingTrace", 
-                                           "The path of the fading trace (by default no fading trace "
-                                           "is loaded, i.e., fading is not considered)",  
-                                           ns3::StringValue (""),
-                                           ns3::MakeStringChecker ());
+                                       "The path of the fading trace (by default no fading trace "
+                                       "is loaded, i.e., fading is not considered)",
+                                       ns3::StringValue (""),
+                                       ns3::MakeStringChecker ());
 static ns3::GlobalValue g_numBearersPerUe ("numBearersPerUe",
-                                               "How many bearers per UE there are in the simulation",
-                                               ns3::UintegerValue (1),
-                                               ns3::MakeUintegerChecker<uint16_t> ());
+                                           "How many bearers per UE there are in the simulation",
+                                           ns3::UintegerValue (1),
+                                           ns3::MakeUintegerChecker<uint16_t> ());
 
 static ns3::GlobalValue g_srsPeriodicity ("srsPeriodicity",
-                                               "SRS Periodicity (has to be at least greater than the number of UEs per eNB)",
-                                               ns3::UintegerValue (80),
-                                               ns3::MakeUintegerChecker<uint16_t> ());
+                                          "SRS Periodicity (has to be at least "
+                                          "greater than the number of UEs per eNB)",
+                                          ns3::UintegerValue (80),
+                                          ns3::MakeUintegerChecker<uint16_t> ());
 
 int
 main (int argc, char *argv[])
@@ -482,7 +483,7 @@ main (int argc, char *argv[])
   if (!fadingTrace.empty ())
     {
       lteHelper->SetAttribute ("FadingModel", StringValue ("ns3::TraceFadingLossModel"));
-      lteHelper->SetFadingModelAttribute("TraceFilename", StringValue (fadingTrace));
+      lteHelper->SetFadingModelAttribute ("TraceFilename", StringValue (fadingTrace));
     }
 
   Ptr<EpcHelper> epcHelper;
@@ -557,12 +558,19 @@ main (int argc, char *argv[])
   BuildingsHelper::Install (homeUes);
   NetDeviceContainer homeUeDevs = lteHelper->InstallUeDevice (homeUes);
 
+  // configure CSG in home eNodeBs and UEs
+  lteHelper->SetEnbCsgId (homeEnbDevs, 1, true);
+  lteHelper->SetUeCsgId (homeUeDevs, 1);
+
   Ipv4Address remoteHostAddr;
   NodeContainer ues;
   Ipv4StaticRoutingHelper ipv4RoutingHelper;
   Ipv4InterfaceContainer ueIpIfaces;
   Ptr<Node> remoteHost;
   NetDeviceContainer ueDevs;
+  NetDeviceContainer::Iterator ueDevIt;
+  NetDeviceContainer::Iterator enbDevIt;
+
   if (epc)
     {
       NS_LOG_LOGIC ("setting up internet and remote host");
@@ -600,28 +608,30 @@ main (int argc, char *argv[])
       // Install the IP stack on the UEs      
       internet.Install (ues);
       ueIpIfaces = epcHelper->AssignUeIpv4Address (NetDeviceContainer (ueDevs));
+
+      // attachment (needs to be done after IP stack configuration)
+      // using initial cell selection
+      lteHelper->Attach (macroUeDevs);
+      lteHelper->Attach (homeUeDevs);
     }
-
-  // attachment (needs to be done after IP stack configuration)
-  // macro UEs attached to the closest macro eNB
-  lteHelper->AttachToClosestEnb (macroUeDevs, macroEnbDevs);
-  // each home UE is ttach explicitly to its home eNB
-  NetDeviceContainer::Iterator ueDevIt;
-  NetDeviceContainer::Iterator enbDevIt = homeEnbDevs.Begin ();
-
-  for (ueDevIt = homeUeDevs.Begin ();
-       ueDevIt != homeUeDevs.End ();
-       ++ueDevIt, ++enbDevIt)
+  else
     {
-      // this because of the order in which SameRoomPositionAllocator
-      // will place the UEs
-      if (enbDevIt == homeEnbDevs.End ())
-        {
-          enbDevIt = homeEnbDevs.Begin ();
-        }
-      lteHelper->Attach (*ueDevIt, *enbDevIt);
-    }
+      // macro UEs attached to the closest macro eNB
+      lteHelper->AttachToClosestEnb (macroUeDevs, macroEnbDevs);
 
+      // each home UE is attached explicitly to its home eNB
+      for (ueDevIt = homeUeDevs.Begin (), enbDevIt = homeEnbDevs.Begin ();
+           ueDevIt != homeUeDevs.End (); ++ueDevIt, ++enbDevIt)
+        {
+          // this because of the order in which SameRoomPositionAllocator
+          // will place the UEs
+          if (enbDevIt == homeEnbDevs.End ())
+            {
+              enbDevIt = homeEnbDevs.Begin ();
+            }
+          lteHelper->Attach (*ueDevIt, *enbDevIt);
+        }
+    }
 
   if (epc)
     {
