@@ -63,6 +63,7 @@ Bugs fixed
 - Bug 1720 - IPv6 Fragmentation cause crashes
 - Bug 1727 - Ping6 should use a proper source address
 - Bug 1731 - lte-phy-error-model passes unexpectedly
+- Bug 1742 - IPv6 HbH and Dst Extension Header size is not correctly calculated
 
 Known issues
 ------------
