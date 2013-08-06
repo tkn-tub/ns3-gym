@@ -129,12 +129,34 @@ SOURCEFIGS = \
 	$(SRC)/lte/doc/source/figures/lte-rlc-data-retx-ul.eps \
 	$(SRC)/lte/doc/source/figures/lte-epc-x2-handover-seq-diagram.eps \
 	$(SRC)/lte/doc/source/figures/lte-epc-x2-entity-saps.eps \
-	$(SRC)/lte/doc/source/figures/fading_pedestrian.png \
-	$(SRC)/lte/doc/source/figures/fading_vehicular.png \
-	$(SRC)/lte/doc/source/figures/fading_urban_3kmph.png \
+	$(SRC)/lte/doc/source/figures/lte-phy-interference.pdf \
+	$(SRC)/lte/doc/source/figures/lte-phy-interference.png \
+	$(SRC)/lte/doc/source/figures/helpers.pdf \
+	$(SRC)/lte/doc/source/figures/helpers.png \
+	$(SRC)/lte/doc/source/figures/mac-random-access-contention.pdf \
+	$(SRC)/lte/doc/source/figures/mac-random-access-contention.png \
+	$(SRC)/lte/doc/source/figures/mac-random-access-noncontention.pdf \
+	$(SRC)/lte/doc/source/figures/mac-random-access-noncontention.png \
+	$(SRC)/lte/doc/source/figures/rrc-connection-establishment.pdf \
+	$(SRC)/lte/doc/source/figures/rrc-connection-establishment.png \
+	$(SRC)/lte/doc/source/figures/rrc-connection-reconfiguration.pdf \
+	$(SRC)/lte/doc/source/figures/rrc-connection-reconfiguration.png \
+	$(SRC)/lte/doc/source/figures/rrc-connection-reconfiguration-handover.pdf \
+	$(SRC)/lte/doc/source/figures/rrc-connection-reconfiguration-handover.png \
+	$(SRC)/lte/doc/source/figures/nas-attach.pdf \
+	$(SRC)/lte/doc/source/figures/nas-attach.png \
+	$(SRC)/lte/doc/source/figures/lte-enb-rrc-states.pdf \
+	$(SRC)/lte/doc/source/figures/lte-enb-rrc-states.png \
+	$(SRC)/lte/doc/source/figures/lte-ue-rrc-states.pdf \
+	$(SRC)/lte/doc/source/figures/lte-ue-rrc-states.png \
+	$(SRC)/lte/doc/source/figures/lte-handover-algorithm.pdf \
+	$(SRC)/lte/doc/source/figures/lte-handover-algorithm.png \
 	$(SRC)/lte/doc/source/figures/fading_pedestrian.pdf \
+	$(SRC)/lte/doc/source/figures/fading_pedestrian.png \
 	$(SRC)/lte/doc/source/figures/fading_vehicular.pdf \
+	$(SRC)/lte/doc/source/figures/fading_vehicular.png \
 	$(SRC)/lte/doc/source/figures/fading_urban_3kmph.pdf \
+	$(SRC)/lte/doc/source/figures/fading_urban_3kmph.png \
 	$(SRC)/lte/doc/source/figures/MCS_1_4.pdf \
 	$(SRC)/lte/doc/source/figures/MCS_1_4.png \
 	$(SRC)/lte/doc/source/figures/MCS_5_8.pdf \
@@ -159,26 +181,6 @@ SOURCEFIGS = \
 	$(SRC)/lte/doc/source/figures/MCS_16_test.pdf \
 	$(SRC)/lte/doc/source/figures/miesm_scheme.pdf \
 	$(SRC)/lte/doc/source/figures/miesm_scheme.png \
-	$(SRC)/lte/doc/source/figures/lte-phy-interference.png \
-	$(SRC)/lte/doc/source/figures/helpers.png \
-	$(SRC)/lte/doc/source/figures/mac-random-access-contention.png \
-	$(SRC)/lte/doc/source/figures/mac-random-access-noncontention.png \
-	$(SRC)/lte/doc/source/figures/rrc-connection-establishment.png \
-	$(SRC)/lte/doc/source/figures/rrc-connection-reconfiguration.png \
-	$(SRC)/lte/doc/source/figures/rrc-connection-reconfiguration-handover.png \
-	$(SRC)/lte/doc/source/figures/nas-attach.png \
-	$(SRC)/lte/doc/source/figures/lte-phy-interference.pdf \
-	$(SRC)/lte/doc/source/figures/helpers.pdf \
-	$(SRC)/lte/doc/source/figures/mac-random-access-contention.pdf \
-	$(SRC)/lte/doc/source/figures/mac-random-access-noncontention.pdf \
-	$(SRC)/lte/doc/source/figures/rrc-connection-establishment.pdf \
-	$(SRC)/lte/doc/source/figures/rrc-connection-reconfiguration.pdf \
-	$(SRC)/lte/doc/source/figures/rrc-connection-reconfiguration-handover.pdf \
-	$(SRC)/lte/doc/source/figures/nas-attach.pdf \
-	$(SRC)/lte/doc/source/figures/lte-enb-rrc-states.png \
-	$(SRC)/lte/doc/source/figures/lte-ue-rrc-states.png \
-	$(SRC)/lte/doc/source/figures/lte-enb-rrc-states.pdf \
-	$(SRC)/lte/doc/source/figures/lte-ue-rrc-states.pdf \
 	$(SRC)/uan/doc/auvmobility-classes.dia \
 	$(SRC)/stats/doc/Stat-framework-arch.png \
 	$(SRC)/stats/doc/Wifi-default.png \
@@ -210,11 +212,11 @@ SOURCEFIGS = \
 IMAGES_EPS = \
 	$(FIGURES)/testbed.eps \
 	$(FIGURES)/emulated-channel.eps \
+	$(FIGURES)/antenna-coordinate-system.eps \
 	$(FIGURES)/packet.eps \
 	$(FIGURES)/node.eps \
 	$(FIGURES)/buffer.eps \
 	$(FIGURES)/sockets-overview.eps \
-	$(FIGURES)/antenna-coordinate-system.eps \
 	$(FIGURES)/internet-node-send.eps \
 	$(FIGURES)/internet-node-recv.eps \
 	$(FIGURES)/routing.eps \
@@ -277,17 +279,28 @@ $(FIGURES)/routing.pdf_width = 6in
 $(FIGURES)/routing-specialization.pdf_width = 5in
 $(FIGURES)/snir.pdf_width = 3in
 $(FIGURES)/lte-interference-test-scenario.pdf_width = 3in
+$(FIGURES)/epc-ctrl-arch.pdf_width = 8cm
 $(FIGURES)/epc-topology.pdf_width = 4in
+$(FIGURES)/epc-topology-x2-enhanced.pdf_width = 14cm
 $(FIGURES)/lte-arch-data-rrc-pdcp-rlc.pdf_width = 3in
 $(FIGURES)/lte-epc-e2e-data-protocol-stack.pdf_width = 15cm
 $(FIGURES)/ff-mac-saps.pdf_width = 5in
 $(FIGURES)/ff-example.pdf_width = 5in
+$(FIGURES)/lte-arch-enb-data.pdf_width = 6cm 
+$(FIGURES)/lte-arch-enb-ctrl.pdf_width = 10cm
+$(FIGURES)/lte-arch-ue-data.pdf_width = 6cm
+$(FIGURES)/lte-arch-ue-ctrl.pdf_width = 10cm
 $(FIGURES)/lte-rlc-implementation-model.pdf_width = 20in
 $(FIGURES)/lte-rlc-data-txon-dl.pdf_width = 10cm
 $(FIGURES)/lte-rlc-data-txon-ul.pdf_width = 10cm
 $(FIGURES)/lte-rlc-data-retx-ul.pdf_width = 10cm
 $(FIGURES)/lte-phy-interference.pdf_width = 12cm
 $(FIGURES)/lte-subframe-structure.pdf_width = 2in
+$(FIGURES)/mac-random-access-contention.pdf_width = 10cm
+$(FIGURES)/mac-random-access-noncontention.pdf_width = 15cm
+$(FIGURES)/lte-ue-rrc-states.pdf_width = 7cm
+$(FIGURES)/lte-handover-algorithm.pdf_width = 10cm
+$(FIGURES)/helpers.pdf_width = 8cm
 $(FIGURES)/auvmobility-classes.pdf_width = 10cm
 
 IMAGES_PNG = ${IMAGES_EPS:.eps=.png}
