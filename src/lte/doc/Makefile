@@ -166,11 +166,6 @@ RESCALE = $(shell hg root)/utils/rescale-pdf.sh
 	if test x$($@_width) != x; then $(RESCALE) $($@_width) $@ ; fi
 
 
-%.png : %.eps; $(CONVERT) $< $@
-%.pdf : %.eps
-	$(EPSTOPDF) $< -o=$@
-	if test x$($@_width) != x; then $(RESCALE) $($@_width) $@ ; fi
-
 # You can set these variables from the command line.
 SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
