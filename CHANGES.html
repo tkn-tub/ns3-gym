@@ -77,6 +77,11 @@ us a note on ns-developers mailing list.</p>
 
 <h2>Changes to existing API:</h2>
 <ul>
+  <li> The Ipv6InterfaceContainer functions to set a node in forwarding state (i.e., a router) 
+  and to install a default router in a group of nodes have been extensively changed.
+  The old function "void Ipv6InterfaceContainer::SetRouter (uint32_t i, bool router)"
+  is now DEPRECATED.
+  </li>
   <li> The documentation's IPv6 addresses (2001:db8::/32, RFC 3849) are now
   dropped by routers.
   </li>
@@ -88,7 +93,7 @@ us a note on ns-developers mailing list.</p>
   include it from the core module.
   </li>
   <li> The Ipv6 UnicastForwardCallback and  MulticastForwardCallback 
-  have a new parmater, the NetDevice the packet has been received from.
+  have a new parameter, the NetDevice the packet has been received from.
   Existing Ipv6RoutingProtocols should update their RouteInput function
   accordingly. E.g., from ucb (rtentry, p, header); to ucb (idev, rtentry, p, header);
   </li>

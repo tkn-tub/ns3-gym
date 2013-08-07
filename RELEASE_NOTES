@@ -63,6 +63,7 @@ Bugs fixed
 - Bug 1698 - mobility.SetPositionAllocator misses prefix "ns3::"
 - Bug 1700 - Ipv6RawSocket does not honor the bound address when sending packets
 - Bug 1701 - Ipv6StaticRouting: the source address should match the destination scope
+- Bug 1702 - Ipv6InterfaceContainer::SetRouter should not always add the router as the default router.
 - Bug 1703 - Nodes don't react to a DAD
 - Bug 1712 - The IP (v4 and v6) forwarding needs a test
 - Bug 1718 - Ipv4StaticRouting log component is misspelled

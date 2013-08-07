@@ -148,12 +148,14 @@ int main (int argc, char **argv)
 
   ipv6.SetBase (Ipv6Address ("2001:1::"), Ipv6Prefix (64));
   Ipv6InterfaceContainer iic1 = ipv6.Assign (ndc1);
-  iic1.SetRouter (2, true);
-  iic1.SetRouter (1, true);
+  iic1.SetForwarding (2, true);
+  iic1.SetForwarding (1, true);
+  iic1.SetDefaultRouteInAllNodes (1);
 
   ipv6.SetBase (Ipv6Address ("2001:2::"), Ipv6Prefix (64));
   Ipv6InterfaceContainer iic2 = ipv6.Assign (ndc2);
-  iic2.SetRouter (0, true);
+  iic2.SetForwarding (0, true);
+  iic2.SetDefaultRouteInAllNodes (0);
 
   stackHelper.AddHostRouteTo (r1, iic2.GetAddress (1, 1), iic1.GetAddress (2, 0), iic1.GetInterfaceIndex (1));
 
