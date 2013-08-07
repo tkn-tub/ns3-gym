@@ -94,19 +94,19 @@ public:
    * 
    */
   enum State
-    {
-      INITIAL_RANDOM_ACCESS = 0,
-      CONNECTION_SETUP,
-      CONNECTION_REJECTED,
-      CONNECTED_NORMALLY,
-      CONNECTION_RECONFIGURATION,
-      CONNECTION_REESTABLISHMENT,
-      HANDOVER_PREPARATION,
-      HANDOVER_JOINING,
-      HANDOVER_PATH_SWITCH,
-      HANDOVER_LEAVING,
-      NUM_STATES
-    };
+  {
+    INITIAL_RANDOM_ACCESS = 0,
+    CONNECTION_SETUP,
+    CONNECTION_REJECTED,
+    CONNECTED_NORMALLY,
+    CONNECTION_RECONFIGURATION,
+    CONNECTION_REESTABLISHMENT,
+    HANDOVER_PREPARATION,
+    HANDOVER_JOINING,
+    HANDOVER_PATH_SWITCH,
+    HANDOVER_LEAVING,
+    NUM_STATES
+  };
 
   UeManager ();
  
@@ -437,6 +437,11 @@ private:
 };
 
 
+
+class HandoverManagementSapProvider;
+class HandoverManagementSapUser;
+
+
 /**
  * \ingroup lte
  * 
@@ -446,6 +451,7 @@ class LteEnbRrc : public Object
 {
 
   friend class EnbRrcMemberLteEnbCmacSapUser;
+  friend class EnbRrcMemberHandoverManagementSapUser;
   friend class MemberLteEnbRrcSapProvider<LteEnbRrc>;
   friend class MemberEpcEnbS1SapUser<LteEnbRrc>;
   friend class EpcX2SpecificEpcX2SapUser<LteEnbRrc>;
@@ -496,6 +502,21 @@ public:
    * \return s the CMAC SAP User interface offered to the MAC by this RRC
    */
   LteEnbCmacSapUser* GetLteEnbCmacSapUser ();
+
+
+  /**
+   * set the Handover Management SAP this RRC should interact with
+   *
+   * \param s the Handover Management SAP Provider to be used by this RRC
+   */
+  void SetHandoverManagementSapProvider (HandoverManagementSapProvider * s);
+
+  /**
+   * Get the Handover Management SAP offered by this RRC
+   * \return s the Handover Management SAP User interface offered to the
+   *           handover algorithm by this RRC
+   */
+  HandoverManagementSapUser* GetHandoverManagementSapUser ();
 
 
   /**
@@ -683,7 +704,7 @@ public:
 private:
 
 
-  // methods forwarded from RRC SAP
+  // RRC SAP methods
   
   void DoCompleteSetupUe (uint16_t rnti, LteEnbRrcSapProvider::CompleteSetupUeParameters params);
   void DoRecvRrcConnectionRequest (uint16_t rnti, LteRrcSap::RrcConnectionRequest msg);
@@ -693,11 +714,13 @@ private:
   void DoRecvRrcConnectionReestablishmentComplete (uint16_t rnti, LteRrcSap::RrcConnectionReestablishmentComplete msg);
   void DoRecvMeasurementReport (uint16_t rnti, LteRrcSap::MeasurementReport msg);
 
-
   // S1 SAP methods
+
   void DoDataRadioBearerSetupRequest (EpcEnbS1SapUser::DataRadioBearerSetupRequestParameters params);
-  void DoPathSwitchRequestAcknowledge (EpcEnbS1SapUser::PathSwitchRequestAcknowledgeParameters params);       
+  void DoPathSwitchRequestAcknowledge (EpcEnbS1SapUser::PathSwitchRequestAcknowledgeParameters params);
+
   // X2 SAP methods
+
   void DoRecvHandoverRequest (EpcX2SapUser::HandoverRequestParams params);
   void DoRecvHandoverRequestAck (EpcX2SapUser::HandoverRequestAckParams params);
   void DoRecvHandoverPreparationFailure (EpcX2SapUser::HandoverPreparationFailureParams params);
@@ -707,12 +730,17 @@ private:
   void DoRecvResourceStatusUpdate (EpcX2SapUser::ResourceStatusUpdateParams params);
   void DoRecvUeData (EpcX2SapUser::UeDataParams params);
 
-
   // CMAC SAP methods
+
   uint16_t DoAllocateTemporaryCellRnti ();
   void DoNotifyLcConfigResult (uint16_t rnti, uint8_t lcid, bool success);
   void DoRrcConfigurationUpdateInd (LteEnbCmacSapUser::UeConfig params);
   
+  // Handover Management SAP methods
+
+  uint8_t DoAddUeMeasReportConfig (LteRrcSap::ReportConfigEutra reportConfig);
+  void DoTriggerHandover (uint16_t rnti, uint16_t targetCellId);
+
 
   // Internal methods
 
@@ -836,6 +864,9 @@ private:
   LteEnbCmacSapUser* m_cmacSapUser;
   LteEnbCmacSapProvider* m_cmacSapProvider;
 
+  HandoverManagementSapUser* m_handoverManagementSapUser;
+  HandoverManagementSapProvider* m_handoverManagementSapProvider;
+
   LteEnbRrcSapUser* m_rrcSapUser;
   LteEnbRrcSapProvider* m_rrcSapProvider;
 
@@ -890,8 +921,6 @@ private:
   // Handover related attributes
   bool m_admitHandoverRequest;
   bool m_admitRrcConnectionRequest;
-  uint8_t m_servingCellHandoverThreshold;
-  uint8_t m_neighbourCellHandoverOffset;
 
   // UE measurements related attributes
   uint8_t m_rsrpFilterCoefficient;

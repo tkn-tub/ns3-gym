@@ -173,8 +173,6 @@ LteX2HandoverMeasuresTestCase::DoRun ()
   Config::SetDefault ("ns3::UdpClient::Interval", TimeValue (m_udpClientInterval));
   Config::SetDefault ("ns3::UdpClient::MaxPackets", UintegerValue (1000000));
   Config::SetDefault ("ns3::UdpClient::PacketSize", UintegerValue (m_udpClientPktSize));
-  Config::SetDefault ("ns3::LteEnbRrc::ServingCellHandoverThreshold", UintegerValue (30));
-  Config::SetDefault ("ns3::LteEnbRrc::NeighbourCellHandoverOffset", UintegerValue (1));
   Config::SetDefault ("ns3::LteEnbRrc::HandoverJoiningTimeoutDuration", TimeValue (MilliSeconds (200)));
   Config::SetDefault ("ns3::LteEnbPhy::TxPower", DoubleValue (20));
 
@@ -183,8 +181,13 @@ LteX2HandoverMeasuresTestCase::DoRun ()
 
   m_lteHelper = CreateObject<LteHelper> ();
   m_lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
-  m_lteHelper->SetSchedulerType (m_schedulerType);
   m_lteHelper->SetAttribute ("UseIdealRrc", BooleanValue (m_useIdealRrc));
+  m_lteHelper->SetSchedulerType (m_schedulerType);
+  m_lteHelper->SetHandoverAlgorithmType ("ns3::A2RsrqHandoverAlgorithm");
+  m_lteHelper->SetHandoverAlgorithmAttribute ("ServingCellThreshold",
+                                              UintegerValue (30));
+  m_lteHelper->SetHandoverAlgorithmAttribute ("NeighbourCellOffset",
+                                              UintegerValue (1));
 
 
   double distance = 1000.0; // m
@@ -225,38 +228,6 @@ LteX2HandoverMeasuresTestCase::DoRun ()
       ueNodes.Get (i)->GetObject<ConstantVelocityMobilityModel> ()->SetVelocity (Vector (speed, 0, 0));
     }
 
-  // Setup pre-GSOC UE measurement configuration to the eNodeBs
-
-  // Event A2
-  LteRrcSap::ReportConfigEutra reportConfigA2;
-  reportConfigA2.triggerType = LteRrcSap::ReportConfigEutra::EVENT;
-  reportConfigA2.eventId = LteRrcSap::ReportConfigEutra::EVENT_A2;
-  reportConfigA2.threshold1.choice = LteRrcSap::ThresholdEutra::THRESHOLD_RSRQ;
-  reportConfigA2.threshold1.range = 34;
-  reportConfigA2.hysteresis = 0;
-  reportConfigA2.timeToTrigger = 0;
-  reportConfigA2.triggerQuantity = LteRrcSap::ReportConfigEutra::RSRQ;
-  reportConfigA2.reportQuantity = LteRrcSap::ReportConfigEutra::SAME_AS_TRIGGER_QUANTITY;
-  reportConfigA2.maxReportCells = LteRrcSap::MaxReportCells;
-  reportConfigA2.reportInterval = LteRrcSap::ReportConfigEutra::MS240;
-  reportConfigA2.reportAmount = 255;
-
-  // Event A4
-  LteRrcSap::ReportConfigEutra reportConfigA4;
-  reportConfigA4.triggerType = LteRrcSap::ReportConfigEutra::EVENT;
-  reportConfigA4.eventId = LteRrcSap::ReportConfigEutra::EVENT_A4;
-  reportConfigA4.threshold1.choice = LteRrcSap::ThresholdEutra::THRESHOLD_RSRQ;
-  reportConfigA4.threshold1.range = 0;
-  reportConfigA4.hysteresis = 0;
-  reportConfigA4.timeToTrigger = 0;
-  reportConfigA4.triggerQuantity = LteRrcSap::ReportConfigEutra::RSRQ;
-  reportConfigA4.reportQuantity = LteRrcSap::ReportConfigEutra::SAME_AS_TRIGGER_QUANTITY;
-  reportConfigA4.maxReportCells = LteRrcSap::MaxReportCells;
-  reportConfigA4.reportInterval = LteRrcSap::ReportConfigEutra::MS480;
-  reportConfigA4.reportAmount = 255;
-
-  uint8_t measId;
-
   NetDeviceContainer enbDevices;
   enbDevices = m_lteHelper->InstallEnbDevice (enbNodes);
   stream += m_lteHelper->AssignStreams (enbDevices, stream);
@@ -266,11 +237,6 @@ LteX2HandoverMeasuresTestCase::DoRun ()
     {
       Ptr<LteEnbRrc> enbRrc = (*it)->GetObject<LteEnbNetDevice> ()->GetRrc ();
       enbRrc->SetAttribute ("AdmitHandoverRequest", BooleanValue (m_admitHo));
-
-      measId = enbRrc->AddUeMeasReportConfig (reportConfigA2);
-      NS_ASSERT (measId == 1);
-      measId = enbRrc->AddUeMeasReportConfig (reportConfigA4);
-      NS_ASSERT (measId == 2);
     }
 
   NetDeviceContainer ueDevices;

@@ -40,6 +40,7 @@ class LteEnbPhy;
 class LteEnbMac;
 class LteEnbRrc;
 class FfMacScheduler;
+class HandoverAlgorithm;
 
 
 /**
@@ -145,6 +146,8 @@ private:
   Ptr<LteEnbRrc> m_rrc;
 
   Ptr<FfMacScheduler> m_scheduler;
+
+  Ptr<HandoverAlgorithm> m_handoverAlgorithm;
 
   uint16_t m_cellId; /**< Cell Identifer. Part of the CGI, see TS 29.274, section 8.21.1  */
 

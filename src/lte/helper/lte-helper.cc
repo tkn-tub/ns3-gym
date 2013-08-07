@@ -43,6 +43,7 @@
 #include <ns3/lte-enb-net-device.h>
 #include <ns3/lte-ue-net-device.h>
 #include <ns3/ff-mac-scheduler.h>
+#include <ns3/handover-algorithm.h>
 #include <ns3/lte-rlc.h>
 #include <ns3/lte-rlc-um.h>
 #include <ns3/lte-rlc-am.h>
@@ -63,9 +64,9 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (LteHelper);
 
 LteHelper::LteHelper (void)
-  :  m_fadingStreamsAssigned (false),
-     m_imsiCounter (0),
-     m_cellIdCounter (0)
+  : m_fadingStreamsAssigned (false),
+    m_imsiCounter (0),
+    m_cellIdCounter (0)
 {
   NS_LOG_FUNCTION (this);
   m_enbNetDeviceFactory.SetTypeId (LteEnbNetDevice::GetTypeId ());
@@ -145,6 +146,13 @@ TypeId LteHelper::GetTypeId (void)
                    StringValue ("ns3::PfFfMacScheduler"),
                    MakeStringAccessor (&LteHelper::SetSchedulerType),
                    MakeStringChecker ())
+    .AddAttribute ("HandoverAlgorithm",
+                   "The type of handover algorithm to be used for eNBs. "
+                   "The allowed values for this attributes are the type names "
+                   "of any class inheriting from ns3::HandoverAlgorithm.",
+                   StringValue ("ns3::A2RsrqHandoverAlgorithm"),
+                   MakeStringAccessor (&LteHelper::SetHandoverAlgorithmType),
+                   MakeStringChecker ())
     .AddAttribute ("PathlossModel",
                    "The type of pathloss model to be used. "
                    "The allowed values for this attributes are the type names "
@@ -200,6 +208,21 @@ LteHelper::SetSchedulerAttribute (std::string n, const AttributeValue &v)
 {
   NS_LOG_FUNCTION (this << n);
   m_schedulerFactory.Set (n, v);
+}
+
+void
+LteHelper::SetHandoverAlgorithmType (std::string type)
+{
+  NS_LOG_FUNCTION (this << type);
+  m_handoverAlgorithmFactory = ObjectFactory ();
+  m_handoverAlgorithmFactory.SetTypeId (type);
+}
+
+void
+LteHelper::SetHandoverAlgorithmAttribute (std::string n, const AttributeValue &v)
+{
+  NS_LOG_FUNCTION (this << n);
+  m_handoverAlgorithmFactory.Set (n, v);
 }
 
 
@@ -367,6 +390,7 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
 
   Ptr<LteEnbMac> mac = CreateObject<LteEnbMac> ();
   Ptr<FfMacScheduler> sched = m_schedulerFactory.Create<FfMacScheduler> ();
+  Ptr<HandoverAlgorithm> handoverAlgorithm = m_handoverAlgorithmFactory.Create<HandoverAlgorithm> ();
   Ptr<LteEnbRrc> rrc = CreateObject<LteEnbRrc> ();
 
   if (m_useIdealRrc)
@@ -401,6 +425,9 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
   mac->SetLteEnbCmacSapUser (rrc->GetLteEnbCmacSapUser ());
   rrc->SetLteMacSapProvider (mac->GetLteMacSapProvider ());
 
+  rrc->SetHandoverManagementSapProvider (handoverAlgorithm->GetHandoverManagementSapProvider ());
+  handoverAlgorithm->SetHandoverManagementSapUser (rrc->GetHandoverManagementSapUser ());
+
   mac->SetFfMacSchedSapProvider (sched->GetFfMacSchedSapProvider ());
   mac->SetFfMacCschedSapProvider (sched->GetFfMacCschedSapProvider ());
 
@@ -421,6 +448,7 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
   dev->SetAttribute ("LteEnbMac", PointerValue (mac));
   dev->SetAttribute ("FfMacScheduler", PointerValue (sched));
   dev->SetAttribute ("LteEnbRrc", PointerValue (rrc)); 
+  dev->SetAttribute ("HandoverAlgorithm", PointerValue (handoverAlgorithm));
 
   phy->SetDevice (dev);
   dlPhy->SetDevice (dev);
@@ -447,7 +475,7 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
     {
       NS_LOG_WARN ("UL propagation model does not have a Frequency attribute");
     }
-  
+
 
   dev->Initialize ();
 
@@ -463,7 +491,7 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
       // S1 SAPs
       rrc->SetS1SapProvider (enbApp->GetS1SapProvider ());
       enbApp->SetS1SapUser (rrc->GetS1SapUser ());
-      
+
       // X2 SAPs
       Ptr<EpcX2> x2 = n->GetObject<EpcX2> ();
       x2->SetEpcX2SapUser (rrc->GetEpcX2SapUser ());

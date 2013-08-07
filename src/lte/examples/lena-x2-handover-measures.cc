@@ -124,7 +124,7 @@ NotifyHandoverEndOkEnb (std::string context,
 int
 main (int argc, char *argv[])
 {
-  // LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
+  // LogLevel logLevel = (LogLevel)(LOG_PREFIX_ALL | LOG_LEVEL_ALL);
 
   // LogComponentEnable ("LteHelper", logLevel);
   // LogComponentEnable ("EpcHelper", logLevel);
@@ -136,15 +136,16 @@ main (int argc, char *argv[])
   // LogComponentEnable ("LteEnbNetDevice", logLevel);
   // LogComponentEnable ("LteUeRrc", logLevel);
   // LogComponentEnable ("LteUeNetDevice", logLevel);
+  // LogComponentEnable ("A2RsrqHandoverAlgorithm", logLevel);
 
   uint16_t numberOfUes = 1;
   uint16_t numberOfEnbs = 2;
   uint16_t numBearersPerUe = 0;
-  double distance = 1000.0; // m
-  double yForUe = 1000.0;   // m
-  double speed = 20;        // m/s
-  double simTime = 3.0 * distance / speed; // 3000 m / 20 m/s = 150 secs
-  double enbTxPowerDbm = 20.0;
+  double distance = 500.0; // m
+  double yForUe = 500.0;   // m
+  double speed = 20;       // m/s
+  double simTime = (double)(numberOfEnbs + 1) * distance / speed; // 1500 m / 20 m/s = 75 secs
+  double enbTxPowerDbm = 46.0;
 
   // change some default attributes so that they are reasonable for
   // this scenario, but do this before processing command line
@@ -157,7 +158,7 @@ main (int argc, char *argv[])
   CommandLine cmd;
   cmd.AddValue ("simTime", "Total duration of the simulation (in seconds)", simTime);
   cmd.AddValue ("speed", "Speed of the UE (default = 20 m/s)", speed);
-  cmd.AddValue ("enbTxPowerDbm", "TX power [dBm] used by HeNBs (defalut = 20.0)", enbTxPowerDbm);
+  cmd.AddValue ("enbTxPowerDbm", "TX power [dBm] used by HeNBs (defalut = 46.0)", enbTxPowerDbm);
 
   cmd.Parse (argc, argv);
 
@@ -166,6 +167,11 @@ main (int argc, char *argv[])
   Ptr<EpcHelper> epcHelper = CreateObject<EpcHelper> ();
   lteHelper->SetEpcHelper (epcHelper);
   lteHelper->SetSchedulerType ("ns3::RrFfMacScheduler");
+  lteHelper->SetHandoverAlgorithmType ("ns3::A2RsrqHandoverAlgorithm");
+  lteHelper->SetHandoverAlgorithmAttribute ("ServingCellThreshold",
+                                            UintegerValue (15));
+  lteHelper->SetHandoverAlgorithmAttribute ("NeighbourCellOffset",
+                                            UintegerValue (1));
 
   Ptr<Node> pgw = epcHelper->GetPgwNode ();
 
@@ -193,6 +199,21 @@ main (int argc, char *argv[])
   Ptr<Ipv4StaticRouting> remoteHostStaticRouting = ipv4RoutingHelper.GetStaticRouting (remoteHost->GetObject<Ipv4> ());
   // interface 0 is localhost, 1 is the p2p device
   remoteHostStaticRouting->AddNetworkRouteTo (Ipv4Address ("7.0.0.0"), Ipv4Mask ("255.0.0.0"), 1);
+
+  /*
+   * Network topology:
+   *
+   *      |     + --------------------------------------------------------->
+   *      |     UE
+   *      |
+   *      |               d                   d                   d
+   *    y |     |-------------------x-------------------x-------------------
+   *      |     |                 eNodeB              eNodeB
+   *      |   d |
+   *      |     |
+   *      |     |                                             d = distance
+   *            o (0, 0, 0)                                   y = yForUe
+   */
 
   NodeContainer ueNodes;
   NodeContainer enbNodes;
@@ -222,49 +243,6 @@ main (int argc, char *argv[])
   Config::SetDefault ("ns3::LteEnbPhy::TxPower", DoubleValue (enbTxPowerDbm));
   NetDeviceContainer enbLteDevs = lteHelper->InstallEnbDevice (enbNodes);
   NetDeviceContainer ueLteDevs = lteHelper->InstallUeDevice (ueNodes);
-
-  // Setup pre-GSOC UE measurement configuration to the eNodeBs
-
-  // Event A2
-  LteRrcSap::ReportConfigEutra reportConfigA2;
-  reportConfigA2.triggerType = LteRrcSap::ReportConfigEutra::EVENT;
-  reportConfigA2.eventId = LteRrcSap::ReportConfigEutra::EVENT_A2;
-  reportConfigA2.threshold1.choice = LteRrcSap::ThresholdEutra::THRESHOLD_RSRQ;
-  reportConfigA2.threshold1.range = 34;
-  reportConfigA2.hysteresis = 0;
-  reportConfigA2.timeToTrigger = 0;
-  reportConfigA2.triggerQuantity = LteRrcSap::ReportConfigEutra::RSRQ;
-  reportConfigA2.reportQuantity = LteRrcSap::ReportConfigEutra::SAME_AS_TRIGGER_QUANTITY;
-  reportConfigA2.maxReportCells = LteRrcSap::MaxReportCells;
-  reportConfigA2.reportInterval = LteRrcSap::ReportConfigEutra::MS480;
-  reportConfigA2.reportAmount = 255;
-
-  // Event A4
-  LteRrcSap::ReportConfigEutra reportConfigA4;
-  reportConfigA4.triggerType = LteRrcSap::ReportConfigEutra::EVENT;
-  reportConfigA4.eventId = LteRrcSap::ReportConfigEutra::EVENT_A4;
-  reportConfigA4.threshold1.choice = LteRrcSap::ThresholdEutra::THRESHOLD_RSRQ;
-  reportConfigA4.threshold1.range = 0;
-  reportConfigA4.hysteresis = 0;
-  reportConfigA4.timeToTrigger = 0;
-  reportConfigA4.triggerQuantity = LteRrcSap::ReportConfigEutra::RSRQ;
-  reportConfigA4.reportQuantity = LteRrcSap::ReportConfigEutra::SAME_AS_TRIGGER_QUANTITY;
-  reportConfigA4.maxReportCells = LteRrcSap::MaxReportCells;
-  reportConfigA4.reportInterval = LteRrcSap::ReportConfigEutra::MS480;
-  reportConfigA4.reportAmount = 255;
-
-  uint8_t measId;
-
-  for (NetDeviceContainer::Iterator it = enbLteDevs.Begin ();
-       it != enbLteDevs.End ();
-       ++it)
-    {
-      Ptr<LteEnbRrc> enbRrc = (*it)->GetObject<LteEnbNetDevice> ()->GetRrc ();
-      measId = enbRrc->AddUeMeasReportConfig (reportConfigA2);
-      NS_ASSERT (measId == 1);
-      measId = enbRrc->AddUeMeasReportConfig (reportConfigA4);
-      NS_ASSERT (measId == 2);
-    }
 
   // Install the IP stack on the UEs
   internet.Install (ueNodes);

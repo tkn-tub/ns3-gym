@@ -34,6 +34,7 @@
 #include "lte-radio-bearer-info.h"
 #include "eps-bearer-tag.h"
 #include "ff-mac-csched-sap.h"
+#include <ns3/handover-management-sap.h>
 #include "epc-enb-s1-sap.h"
 
 #include "lte-rlc.h"
@@ -54,10 +55,13 @@ NS_LOG_COMPONENT_DEFINE ("LteEnbRrc");
 namespace ns3 {
 
 
-// ///////////////////////////
+///////////////////////////////////////////
 // CMAC SAP forwarder
-// ///////////////////////////
+///////////////////////////////////////////
 
+/**
+ * \brief Class for forwarding CMAC SAP User functions.
+ */
 class EnbRrcMemberLteEnbCmacSapUser : public LteEnbCmacSapUser
 {
 public:
@@ -95,19 +99,60 @@ EnbRrcMemberLteEnbCmacSapUser::RrcConfigurationUpdateInd (UeConfig params)
 }
 
 
+
+///////////////////////////////////////////
+// Handover Management SAP forwarder
+///////////////////////////////////////////
+
+/**
+ * \brief Class for forwarding Handover Management SAP User functions.
+ */
+class EnbRrcMemberHandoverManagementSapUser : public HandoverManagementSapUser
+{
+public:
+  EnbRrcMemberHandoverManagementSapUser (LteEnbRrc* rrc);
+
+  // methods inherited from HandoverManagementSapUser go here
+  virtual uint8_t AddUeMeasReportConfig (LteRrcSap::ReportConfigEutra reportConfig);
+  virtual void TriggerHandover (uint16_t rnti, uint16_t targetCellId);
+
+private:
+  LteEnbRrc* m_rrc;
+};
+
+EnbRrcMemberHandoverManagementSapUser::EnbRrcMemberHandoverManagementSapUser (LteEnbRrc* rrc)
+  : m_rrc (rrc)
+{
+}
+
+uint8_t
+EnbRrcMemberHandoverManagementSapUser::AddUeMeasReportConfig (LteRrcSap::ReportConfigEutra reportConfig)
+{
+  return m_rrc->DoAddUeMeasReportConfig (reportConfig);
+}
+
+void
+EnbRrcMemberHandoverManagementSapUser::TriggerHandover (uint16_t rnti,
+                                                        uint16_t targetCellId)
+{
+  m_rrc->DoTriggerHandover (rnti, targetCellId);
+}
+
+
+
 const char* g_ueManagerStateName[UeManager::NUM_STATES] = 
-  {
-    "INITIAL_RANDOM_ACCESS",
-    "CONNECTION_SETUP",
-    "CONNECTION_REJECTED",
-    "CONNECTED_NORMALLY",
-    "CONNECTION_RECONFIGURATION",
-    "CONNECTION_REESTABLISHMENT",
-    "HANDOVER_PREPARATION",
-    "HANDOVER_JOINING",
-    "HANDOVER_PATH_SWITCH",
-    "HANDOVER_LEAVING",
-  };
+{
+  "INITIAL_RANDOM_ACCESS",
+  "CONNECTION_SETUP",
+  "CONNECTION_REJECTED",
+  "CONNECTED_NORMALLY",
+  "CONNECTION_RECONFIGURATION",
+  "CONNECTION_REESTABLISHMENT",
+  "HANDOVER_PREPARATION",
+  "HANDOVER_JOINING",
+  "HANDOVER_PATH_SWITCH",
+  "HANDOVER_LEAVING",
+};
 
 std::string ToString (UeManager::State s)
 {
@@ -490,8 +535,8 @@ UeManager::ScheduleRrcConnectionReconfiguration ()
       // a previous reconfiguration still ongoing, we need to wait for it to be finished
       m_pendingRrcConnectionReconfiguration = true;
       break;
-      
-    case CONNECTED_NORMALLY:      
+
+    case CONNECTED_NORMALLY:
       {
         m_pendingRrcConnectionReconfiguration = false;
         LteRrcSap::RrcConnectionReconfiguration msg = BuildRrcConnectionReconfiguration ();
@@ -499,8 +544,8 @@ UeManager::ScheduleRrcConnectionReconfiguration ()
         RecordDataRadioBearersToBeStarted ();
         SwitchToState (CONNECTION_RECONFIGURATION);
       }
-      break;      
-      
+      break;
+
     default:
       NS_FATAL_ERROR ("method unexpected in state " << ToString (m_state));
       break;      
@@ -509,11 +554,11 @@ UeManager::ScheduleRrcConnectionReconfiguration ()
 
 void 
 UeManager::PrepareHandover (uint16_t cellId)
-{  
-  NS_LOG_FUNCTION (this << cellId);  
+{
+  NS_LOG_FUNCTION (this << cellId);
   switch (m_state)
     {
-    case CONNECTED_NORMALLY:      
+    case CONNECTED_NORMALLY:
       {
         m_targetCellId = cellId;
         EpcX2SapProvider::HandoverRequestParams params;
@@ -943,68 +988,12 @@ UeManager::RecvMeasurementReport (LteRrcSap::MeasurementReport msg)
                     << " RSRQ " << (it->haveRsrqResult ? (uint16_t) it->rsrqResult : 255));
     }
 
-  m_rrc->m_recvMeasurementReportTrace (m_imsi, m_rrc->m_cellId, m_rnti, msg);
-
-  /*
-   * The code below assumes event A2 at measId 1 and A4 at measId 2, which is
-   * the default configuration from previous release of LENA. This section will
-   * be moved as a separate handover algorithm. To avoid automatically invoking
-   * handover, disable it by setting ns3::LteEnbRrc::AdmitHandoverRequest
-   * attribute to false.
-   */
-
-  /// Event A2 (Serving becomes worse than threshold)
-  if (msg.measResults.measId == 1)
-    {
-      // Keep new RSRQ value reported for the serving cell
-      m_servingCellMeasures->m_rsrq = msg.measResults.rsrqResult;
-      m_servingCellMeasures->m_rsrp = msg.measResults.rsrpResult;
-
-      // Serving cell is worse than a handover threshold.
-      // This handover threshold is independent from the event A2 threshold
-      if (m_servingCellMeasures->m_rsrq <= m_rrc->m_servingCellHandoverThreshold)
-        {
-          // Find the best neighbour cell (eNB)
-          Ptr<UeMeasure> bestNeighbour = 0;
-          uint8_t bestNeighbourRsrq = 0;
-          NS_LOG_LOGIC ("Number of neighbour cells = " << m_neighbourCellMeasures.size ());
-          for (std::map <uint16_t, Ptr<UeMeasure> >::iterator it = m_neighbourCellMeasures.begin ();
-               it != m_neighbourCellMeasures.end ();
-               ++it)
-            {
-              if (it->second->m_rsrq > bestNeighbourRsrq)
-                {
-                  Ptr<NeighbourRelation> neighbourRelation = m_rrc->m_neighbourRelationTable[it->second->m_cellId];
-                  if ((neighbourRelation->m_noHo == false) &&
-                      (neighbourRelation->m_noX2 == false))
-                    {
-                      bestNeighbour = it->second;
-                      bestNeighbourRsrq = it->second->m_rsrq;
-                    }
-                }
-            }
-
-          // Trigger Handover, if needed
-          if (bestNeighbour)
-            {
-              uint16_t targetCellId = bestNeighbour->m_cellId;
-              NS_LOG_LOGIC ("Best neighbour cellId " << targetCellId);
-              if ( (bestNeighbour->m_rsrq - m_servingCellMeasures->m_rsrq >= m_rrc->m_neighbourCellHandoverOffset) &&
-                   (m_state == CONNECTED_NORMALLY) )
-                {
-                  NS_LOG_LOGIC ("Trigger Handover to cellId " << targetCellId);
-                  NS_LOG_LOGIC ("target cell RSRQ " << (uint16_t) bestNeighbour->m_rsrq);
-                  NS_LOG_LOGIC ("serving cell RSRQ " << (uint16_t) m_servingCellMeasures->m_rsrq);
-                  PrepareHandover (targetCellId);
-                }
-            }
-        }
-    }
   /// Event A4 (Neighbour becomes better than threshold)
-  else if (msg.measResults.measId == 2)
+  if (msg.measResults.measId == 2) // TODO remove this hardcode
     {
       // Update the NRT
-      if (msg.measResults.haveMeasResultNeighCells && ! (msg.measResults.measResultListEutra.empty ()))
+      if (msg.measResults.haveMeasResultNeighCells
+          && !(msg.measResults.measResultListEutra.empty ()))
         {
           for (std::list <LteRrcSap::MeasResultEutra>::iterator it = msg.measResults.measResultListEutra.begin ();
                it != msg.measResults.measResultListEutra.end ();
@@ -1037,34 +1026,24 @@ UeManager::RecvMeasurementReport (LteRrcSap::MeasurementReport msg)
                   neighbourRelation->m_detectedAsNeighbour = true;
                   m_rrc->m_neighbourRelationTable[it->physCellId] = neighbourRelation;
                 }
-
-              // Update measure info of the neighbour cell
-              Ptr<UeMeasure> neighbourCellMeasures;
-              if (m_neighbourCellMeasures.find (it->physCellId) != m_neighbourCellMeasures.end ())
-                {
-                  neighbourCellMeasures = m_neighbourCellMeasures[it->physCellId];
-                  neighbourCellMeasures->m_cellId = it->physCellId;
-                  neighbourCellMeasures->m_rsrq = it->rsrqResult;
-                  neighbourCellMeasures->m_rsrp = 0;
-                }
-              else
-                {
-                  neighbourCellMeasures = CreateObject <UeMeasure> ();
-                  neighbourCellMeasures->m_cellId = it->physCellId;
-                  neighbourCellMeasures->m_rsrq = it->rsrqResult;
-                  neighbourCellMeasures->m_rsrp = 0;
-                  m_neighbourCellMeasures[it->physCellId] = neighbourCellMeasures;
-                }
             }
         }
       else
         {
-           NS_LOG_LOGIC ("WARNING");
-//            NS_ASSERT_MSG ("Event A4 received without measure results for neighbour cells");
-           // TODO Remove neighbours in the neighbourCellMeasures table
+          NS_LOG_LOGIC ("WARNING");
+          // NS_ASSERT_MSG ("Event A4 received without measure results for neighbour cells");
+          // TODO Remove neighbours in the neighbourCellMeasures table
         }
     }
-}
+
+  // forward the UE measurements report to the active handover algorithm
+  m_rrc->m_handoverManagementSapProvider->ReportUeMeas (m_rnti,
+                                                        msg.measResults);
+
+  // fire a trace source
+  m_rrc->m_recvMeasurementReportTrace (m_imsi, m_rrc->m_cellId, m_rnti, msg);
+
+} // end of UeManager::RecvMeasurementReport
 
 
 // methods forwarded from CMAC SAP
@@ -1322,16 +1301,17 @@ UeManager::SwitchToState (State newState)
 }
 
 
-  
-// ///////////////////////////
+
+///////////////////////////////////////////
 // eNB RRC methods
-// ///////////////////////////
+///////////////////////////////////////////
 
 NS_OBJECT_ENSURE_REGISTERED (LteEnbRrc);
 
 LteEnbRrc::LteEnbRrc ()
   : m_x2SapProvider (0),
     m_cmacSapProvider (0),
+    m_handoverManagementSapProvider (0),
     m_rrcSapUser (0),
     m_macSapProvider (0),
     m_s1SapProvider (0),
@@ -1344,6 +1324,7 @@ LteEnbRrc::LteEnbRrc ()
 {
   NS_LOG_FUNCTION (this);
   m_cmacSapUser = new EnbRrcMemberLteEnbCmacSapUser (this);
+  m_handoverManagementSapUser = new EnbRrcMemberHandoverManagementSapUser (this);
   m_rrcSapProvider = new MemberLteEnbRrcSapProvider<LteEnbRrc> (this);
   m_x2SapUser = new EpcX2SpecificEpcX2SapUser<LteEnbRrc> (this);
   m_s1SapUser = new MemberEpcEnbS1SapUser<LteEnbRrc> (this);
@@ -1363,6 +1344,7 @@ LteEnbRrc::DoDispose ()
   NS_LOG_FUNCTION (this);
   m_ueMap.clear ();
   delete m_cmacSapUser;
+  delete m_handoverManagementSapUser;
   delete m_rrcSapProvider;
   delete m_x2SapUser;
   delete m_s1SapUser;
@@ -1440,16 +1422,6 @@ LteEnbRrc::GetTypeId (void)
                    BooleanValue (true),
                    MakeBooleanAccessor (&LteEnbRrc::m_admitRrcConnectionRequest),
                    MakeBooleanChecker ())
-    .AddAttribute ("ServingCellHandoverThreshold",
-                   "If serving cell is worse than this threshold, neighbour cells are consider for Handover",
-                   UintegerValue (15),
-                   MakeUintegerAccessor (&LteEnbRrc::m_servingCellHandoverThreshold),
-                   MakeUintegerChecker<uint8_t> ())
-    .AddAttribute ("NeighbourCellHandoverOffset",
-                   "Minimum offset between serving and best neighbour cell to trigger the Handover",
-                   UintegerValue (1),
-                   MakeUintegerAccessor (&LteEnbRrc::m_neighbourCellHandoverOffset),
-                   MakeUintegerChecker<uint8_t> ())
 
     // UE measurements related attributes
     .AddAttribute ("RsrpFilterCoefficient",
@@ -1521,6 +1493,20 @@ LteEnbRrc::GetLteEnbCmacSapUser ()
 }
 
 void
+LteEnbRrc::SetHandoverManagementSapProvider (HandoverManagementSapProvider * s)
+{
+  NS_LOG_FUNCTION (this << s);
+  m_handoverManagementSapProvider = s;
+}
+
+HandoverManagementSapUser*
+LteEnbRrc::GetHandoverManagementSapUser ()
+{
+  NS_LOG_FUNCTION (this);
+  return m_handoverManagementSapUser;
+}
+
+void
 LteEnbRrc::SetLteEnbRrcSapUser (LteEnbRrcSapUser * s)
 {
   NS_LOG_FUNCTION (this << s);
@@ -1585,13 +1571,13 @@ LteEnbRrc::AddUeMeasReportConfig (LteRrcSap::ReportConfigEutra config)
   NS_ASSERT_MSG (m_ueMeasConfig.measIdToAddModList.size () == m_ueMeasConfig.reportConfigToAddModList.size (),
                  "Measurement identities and reporting configuration should not have different quantity");
 
-  uint8_t nextId = m_ueMeasConfig.reportConfigToAddModList.size () + 1;
-
   if (Simulator::Now () != Seconds (0))
     {
       NS_FATAL_ERROR ("AddUeMeasReportConfig may not be called after the simulation has run");
     }
   // TODO more asserts to validate the input
+
+  uint8_t nextId = m_ueMeasConfig.reportConfigToAddModList.size () + 1;
 
   // create the reporting configuration
   LteRrcSap::ReportConfigToAddMod reportConfig;
@@ -2043,6 +2029,23 @@ LteEnbRrc::DoNotifyLcConfigResult (uint16_t rnti, uint8_t lcid, bool success)
 {
   NS_LOG_FUNCTION (this << (uint32_t) rnti);
   NS_FATAL_ERROR ("not implemented");
+}
+
+
+uint8_t
+LteEnbRrc::DoAddUeMeasReportConfig (LteRrcSap::ReportConfigEutra reportConfig)
+{
+  NS_LOG_FUNCTION (this);
+  return AddUeMeasReportConfig (reportConfig);
+}
+
+void
+LteEnbRrc::DoTriggerHandover (uint16_t rnti, uint16_t targetCellId)
+{
+  NS_LOG_FUNCTION (this << rnti << targetCellId);
+  Ptr<UeManager> ueManager = GetUeManager (rnti);
+  NS_ASSERT_MSG (ueManager != 0, "Cannot find UE context with RNTI " << rnti);
+  ueManager->PrepareHandover (targetCellId);
 }
 
 

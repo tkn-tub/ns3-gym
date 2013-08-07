@@ -38,6 +38,7 @@
 #include <ns3/lte-ue-net-device.h>
 #include <ns3/lte-enb-phy.h>
 #include <ns3/ff-mac-scheduler.h>
+#include <ns3/handover-algorithm.h>
 #include <ns3/ipv4-l3-protocol.h>
 #include <ns3/abort.h>
 #include <ns3/log.h>
@@ -60,6 +61,11 @@ TypeId LteEnbNetDevice::GetTypeId (void)
                    PointerValue (),
                    MakePointerAccessor (&LteEnbNetDevice::m_rrc),
                    MakePointerChecker <LteEnbRrc> ())
+    .AddAttribute ("HandoverAlgorithm",
+                   "The handover algorithm associated to this EnbNetDevice",
+                   PointerValue (),
+                   MakePointerAccessor (&LteEnbNetDevice::m_handoverAlgorithm),
+                   MakePointerChecker <HandoverAlgorithm> ())
     .AddAttribute ("LteEnbMac",
                    "The MAC associated to this EnbNetDevice",
                    PointerValue (),
@@ -131,6 +137,9 @@ LteEnbNetDevice::DoDispose ()
 
   m_rrc->Dispose ();
   m_rrc = 0;
+
+  m_handoverAlgorithm->Dispose ();
+  m_handoverAlgorithm = 0;
 
   m_phy->Dispose ();
   m_phy = 0;
@@ -253,6 +262,7 @@ LteEnbNetDevice::DoInitialize (void)
   m_phy->Initialize ();
   m_mac->Initialize ();
   m_rrc->Initialize ();
+  m_handoverAlgorithm->Initialize ();
 }
 
 

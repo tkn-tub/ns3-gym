@@ -107,6 +107,20 @@ public:
   void SetSchedulerAttribute (std::string n, const AttributeValue &v);
 
   /**
+   *
+   * \param type the type of handover algorithm to be used for the eNBs
+   */
+  void SetHandoverAlgorithmType (std::string type);
+
+  /**
+   * set an attribute for the handover algorithm to be created
+   *
+   * \param n the name of the attribute
+   * \param v the value of the attribute
+   */
+  void SetHandoverAlgorithmAttribute (std::string n, const AttributeValue &v);
+
+  /**
    * set an attribute for the LteEnbNetDevice to be created
    * 
    * \param n the name of the attribute
@@ -630,6 +644,7 @@ private:
   Ptr<Object> m_uplinkPathlossModel;
 
   ObjectFactory m_schedulerFactory;
+  ObjectFactory m_handoverAlgorithmFactory;
   ObjectFactory m_propagationModelFactory;
   ObjectFactory m_enbNetDeviceFactory;
   ObjectFactory m_enbAntennaModelFactory;
