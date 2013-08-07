@@ -21,7 +21,7 @@
 #include <algorithm>  // for transform
 #include <cctype>     // for tolower
 #include <cstdlib>    // for exit
-#include <iomanip>    // for setw
+#include <iomanip>    // for setw, boolalpha
 
 #include "command-line.h"
 #include "log.h"
@@ -152,7 +152,7 @@ CommandLine::PrintHelp (std::ostream &os) const
   NS_LOG_FUNCTION (this);
 
   os << m_name << " [Program Arguments] [General Arguments]"
-     << std::endl;
+            << std::endl;
   
   if (m_usage.length ())
     {
@@ -174,16 +174,16 @@ CommandLine::PrintHelp (std::ostream &os) const
       for (Items::const_iterator i = m_items.begin (); i != m_items.end (); ++i)
         {
           os << "    --"
-             << std::left << std::setw (width) << ( (*i)->m_name + ":")
-             << std::right
-             << (*i)->m_help;
+                    << std::left << std::setw (width) << ( (*i)->m_name + ":")
+                    << std::right
+                    << (*i)->m_help;
 
           if ( (*i)->HasDefault ())
             {
               os << " [" << (*i)->GetDefault () << "]";
-    }
+            }
           os << std::endl;
-}
+        }
     }
 
   os << std::endl;
@@ -226,7 +226,7 @@ CommandLine::PrintAttributes (std::ostream &os, const std::string &type) const
   TypeId tid;
   if (!TypeId::LookupByNameFailSafe (type, &tid))
     {
-      NS_FATAL_ERROR ("Unknown type="<<type<<" in --PrintAttributes");
+      NS_FATAL_ERROR ("Unknown type=" << type << " in --PrintAttributes");
     }
 
   os << "Attributes for TypeId " << tid.GetName () << std::endl;
@@ -317,7 +317,7 @@ CommandLine::HandleArgument (const std::string &name, const std::string &value) 
 {
   NS_LOG_FUNCTION (this << name << value);
 
-  NS_LOG_DEBUG ("Handle arg name="<<name<<" value="<<value);
+  NS_LOG_DEBUG ("Handle arg name=" << name << " value=" << value);
   if (name == "PrintHelp" || name == "help")
     {
       // method below never returns.
@@ -384,7 +384,7 @@ CommandLine::HandleArgument (const std::string &name, const std::string &value) 
 }
 
 bool
-CommandLine::CallbackItem::Parse (std::string value)
+CommandLine::CallbackItem::Parse (const std::string value)
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_DEBUG ("CommandLine::CallbackItem::Parse \"" << value << "\"");
@@ -418,13 +418,27 @@ CommandLine::Item::GetDefault () const
 }
 
 template <>
+std::string
+CommandLineHelper::GetDefault<bool> (const bool & val)
+{
+  std::ostringstream oss;
+  oss << std::boolalpha << val;
+  return oss.str ();
+}
+
+template <>
 bool
 CommandLineHelper::UserItemParse<bool> (const std::string value, bool & val)
 {
   std::string src = value;
   std::transform(src.begin(), src.end(), src.begin(), ::tolower);
   
-  if ( (src.length () == 0) || (src == "true") || (src == "t"))
+  if (src.length () == 0)
+    {
+      val = ! val;
+      return true;
+    }
+  else if ( (src == "true") || (src == "t") )
     {
       val = true;
       return true;

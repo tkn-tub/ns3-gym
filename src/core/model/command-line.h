@@ -44,8 +44,25 @@ namespace ns3 {
  * \brief Parse command-line arguments
  *
  * Instances of this class can be used to parse command-line 
- * arguments: programs can register new arguments with
- * CommandLine::AddValue.
+ * arguments.  Programs can register a general usage message with
+ * CommandLine::Usage, and arguments with CommandLine::AddValue.
+ * POD argument variables will be set directly; more general arguments
+ * can be processed via a Callback.
+ *
+ * CommandLine also provides handlers for these standard arguments:
+ * \code
+ *   --PrintGlobals:              Print the list of globals.
+ *   --PrintGroups:               Print the list of groups.
+ *   --PrintGroup=[group]:        Print all TypeIds of group.
+ *   --PrintTypeIds:              Print all TypeIds.
+ *   --PrintAttributes=[typeid]:  Print all attributes of typeid.
+ *   --PrintHelp:                 Print this help message.
+ * \endcode
+ * 
+ * The more common \c --help is a synonym for \c --PrintHelp; an example
+ * is given below.
+ *
+ * Finally, CommandLine processes Attribute and GlobalValue arguments.
  *
  * In use, arguments are given in the form
  * \code
@@ -55,18 +72,20 @@ namespace ns3 {
  * Toggles, corresponding to boolean arguments, can be given in any of
  * the forms
  * \code
- *   --toggle-1 --toggle-2=1 --toggle-3=t --toggle-4=true
+ *   --toggle1 --toggle2=1 --toggle3=t --toggle4=true
  * \endcode
- * all of which set the corresponding boolean variable to true.
+ * The first form changes the state of toggle1 from its default; 
+ * all the rest set the corresponding boolean variable to true.
+ * \c 0, \c f and \c false are accepted to set the variable to false.
  *
- * In addition, this class can be used to set the
- * initial value of every attribute in the system with the 
+ * CommandLine can set the initial value of every attribute in the system
+ * with the 
  * \c --TypeIdName::AttributeName=value syntax, for example
  * \code
  *   --Application::StartTime=3s
  * \endcode
  *
- * This class can also be used to set the value of every GlobalValue
+ * CommandLine can also set the value of every GlobalValue
  * in the system with the \c --GlobalValueName=value syntax, for example
  * \code
  *   --SchedulerType=HeapScheduler
@@ -76,33 +95,37 @@ namespace ns3 {
  * The heart of that example is this code:
  *
  * \code
- *  int         var1 = 1;
- *  bool        var2 = false;
- *  std::string var3 = "";
+ *    int         intArg  = 1;
+ *    bool        boolArg = false;
+ *    std::string strArg  = "strArg default";
  *  
  *  CommandLine cmd;
  *  cmd.Usage ("CommandLine example program.\n"
  *             "\n"
  *             "This little program demonstrates how to use CommandLine.");
- *  cmd.AddValue ("val1", "an int argument",          val1);
- *  cmd.AddValue ("val2", "a bool argument",          val2);
- *  cmd.AddValue ("val3", "a string argument",        val3);
+ *    cmd.AddValue ("intArg",  "an int argument",       intArg);
+ *    cmd.AddValue ("boolArg", "a bool argument",       boolArg);
+ *    cmd.AddValue ("strArg",  "a string argument",     strArg);
+ *    cmd.AddValue ("cbArg",   "a string via callback", MakeCallback (SetCbArg));
  *  cmd.Parse (argc, argv);
  * \endcode
- * after which it prints the values of each variable.
+ * after which it prints the values of each variable.  (The \c SetCbArg function
+ * is not shown.)
  *
  * Here is the output from a few runs of that program:
  *
  * \code
  *   $ ./waf --run="command-line-example"
- *   val1:   1
- *   val2:   0
- *   val3:   ""
+ *   intArg:   1
+ *   boolArg:  false
+ *   strArg:   "strArg default"
+ *   cbArg:    "cbArg default"
  *
- *   $ ./waf --run="command-line-example --val1=2 --val2 --val3=Hello"
- *   val1:   2
- *   val2:   1
- *   val3:   "Hello"
+ *   $ ./waf --run="command-line-example --intArg=2 --boolArg --strArg=Hello --cbArg=World"
+ *   intArg:   2
+ *   boolArg:  true
+ *   strArg:   "Hello"
+ *   cbArg:    "World"
  *   
  *   $ ./waf --run="command-line-example --help"
  *   ns3-dev-command-line-example-debug [Program Arguments] [General Arguments]
@@ -112,9 +135,10 @@ namespace ns3 {
  *   This little program demonstrates how to use CommandLine.
  *   
  *   Program Arguments:
- *       --val1:     an int argument
- *       --val2:     a bool argument
- *       --val3:     a string argument
+ *       --intArg:   an int argument [1]
+ *       --boolArg:  a bool argument [false]
+ *       --strArg:   a string argument [strArg default]
+ *       --cbArg:    a string via callback
  *   
  *   General Arguments:
  *       --PrintGlobals:              Print the list of globals.
@@ -149,7 +173,7 @@ public:
   /**
    * Supply the program usage and documentation.
    *
-   * \param usage Program usage message to write with help.
+   * \param usage Program usage message to write with \c --help.
    */
   void Usage (const std::string usage);
   
@@ -172,9 +196,12 @@ public:
    * Add a program argument, using a Callback to parse the value
    *
    * \param name the name of the program-supplied argument
-   * \param help the help text used by \c \-\-PrintHelp
-   * \param callback a Callback function that will be invoked to parse
-   * and collect the value.  This is normally used by language bindings.
+   * \param help the help text used by \c --help
+   * \param callback a Callback function that will be invoked to parse and
+   *   store the value.
+   *
+   * The callback should have the signature
+   * <tt>bool callback (const std::string value)</tt>
    */
   void AddValue (const std::string &name,
                  const std::string &help,
@@ -237,7 +264,7 @@ private:
      * \param value the string representation
      * \return true if parsing the value succeeded
      */
-    virtual bool Parse (std::string value) = 0;
+    virtual bool Parse (const std::string value) = 0;
     /**
      * \return true if this item have a default value?
      */
@@ -262,7 +289,7 @@ private:
      * \param value the string representation
      * \return true if parsing the value succeeded
      */
-    virtual bool Parse (std::string value);
+    virtual bool Parse (const std::string value);
 
     bool HasDefault () const;
     std::string GetDefault () const;
@@ -284,7 +311,7 @@ private:
      * \param value the string representation
      * \return true if parsing the value succeeded
      */
-    virtual bool Parse (std::string value);
+    virtual bool Parse (const std::string value);
     Callback<bool, std::string> m_callback;  /**< The Callback */
   };
 
@@ -329,15 +356,19 @@ private:
   std::string m_name;                   /**< The program name */
 };  // class CommandLine
 
+
+/** \ingroup commandline
+ *  \defgroup commandlinehelper Helpers to specialize on bool
+ */
 /**
- * \ingroup commandline
- * Helpers for CommandLine
+ * \ingroup commandlinehelper
+ * \brief Helpers for CommandLine to specialize on bool
  */
 namespace CommandLineHelper {
 
   /**
-   * \ingroup commandline
-   * \brief Helper to specialize UserItem on bool
+   * \ingroup commandlinehelper
+   * \brief Helper to specialize UserItem::Parse on bool
    *
    * \param value the argument name
    * \param val the argument location
@@ -348,6 +379,20 @@ namespace CommandLineHelper {
   bool UserItemParse (const std::string value, T & val);
   template <>
   bool UserItemParse<bool> (const std::string value, bool & val);
+  /**@}*/
+
+  /**
+   * \ingroup commandlinehelper
+   * \brief Helper to specialize UserItem::GetDefault on bool
+   *
+   * \param val the argument value
+   * \return the string representation of value
+   * @{
+   */
+  template <typename T>
+  std::string GetDefault (const T & val);
+  template <>
+  std::string GetDefault<bool> (const bool & val);
   /**@}*/
 
 }  // namespace CommandLineHelper
@@ -388,15 +433,22 @@ template <typename T>
 std::string
 CommandLine::UserItem<T>::GetDefault () const
 {
+  return CommandLineHelper::GetDefault<T> (*m_valuePtr);
+}
+
+template <typename T>
+std::string
+CommandLineHelper::GetDefault (const T & val)
+{
   std::ostringstream oss;
-  oss << *m_valuePtr;
+  oss << val;
   return oss.str ();
 }
 
 
 template <typename T>
 bool
-CommandLine::UserItem<T>::Parse (std::string value)
+CommandLine::UserItem<T>::Parse (const std::string value)
 {
   return CommandLineHelper::UserItemParse<T> (value, *m_valuePtr);
 }
@@ -409,26 +461,6 @@ CommandLineHelper::UserItemParse (const std::string value, T & val)
   iss.str (value);
   iss >> val;
   return !iss.bad () && !iss.fail ();
-}
-
-/**
- * \brief Overloaded operator << to print program usage (shortcut for CommandLine::PrintHelper)
- * \see CommandLine::PrintHelper
- *
- * Example usage:
- * @code
- *       CommandLine cmd;
- *       cmd.Parse (argc, argv);
- *       ...
- *
- *       std::cerr << cmd;
- * @endcode
- */
-inline std::ostream &
-operator << (std::ostream &os, const CommandLine &cmd)
-{
-  cmd.PrintHelp (os);
-  return os;
 }
 
 } // namespace ns3
