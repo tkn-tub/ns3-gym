@@ -38,7 +38,8 @@ NS_OBJECT_ENSURE_REGISTERED (A2RsrqHandoverAlgorithm);
 ///////////////////////////////////////////
 
 /**
- * \brief Class for forwarding Handover Management SAP Provider functions.
+ * \brief Class for forwarding Handover Management SAP Provider functions, used
+ *        by ns3::A2RsrqHandoverAlgorithm.
  */
 class A2RsrqMemberHandoverManagementSapProvider : public HandoverManagementSapProvider
 {

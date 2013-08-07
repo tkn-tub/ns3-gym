@@ -23,6 +23,7 @@
 #define HANDOVER_ALGORITHM_H
 
 #include <ns3/object.h>
+#include <ns3/lte-rrc-sap.h>
 
 namespace ns3 {
 
@@ -61,6 +62,44 @@ public:
   virtual HandoverManagementSapProvider* GetHandoverManagementSapProvider () = 0;
 
 }; // end of class HandoverAlgorithm
+
+
+
+/**
+ * \brief A sample implementation of the Handover Management SAP which simply
+ *        does nothing.
+ */
+class BareHandoverAlgorithm : public HandoverAlgorithm
+{
+public:
+  BareHandoverAlgorithm ();
+  virtual ~BareHandoverAlgorithm ();
+
+  // inherited from Object
+  virtual void DoDispose (void);
+  static TypeId GetTypeId (void);
+
+  // inherited from HandoverAlgorithm
+  virtual void SetHandoverManagementSapUser (HandoverManagementSapUser* s);
+  virtual HandoverManagementSapProvider* GetHandoverManagementSapProvider ();
+
+  friend class BareMemberHandoverManagementSapProvider;
+
+protected:
+  // inherited from Object
+  virtual void DoInitialize ();
+
+private:
+
+  // Handover Management SAP implementation
+  void DoReportUeMeas (uint16_t rnti, LteRrcSap::MeasResults measResults);
+
+  // Handover Management SAPs
+  HandoverManagementSapUser* m_handoverManagementSapUser;
+  HandoverManagementSapProvider* m_handoverManagementSapProvider;
+
+}; // end of class BareHandoverAlgorithm
+
 
 
 } // end of namespace ns3

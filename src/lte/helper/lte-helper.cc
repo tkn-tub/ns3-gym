@@ -150,7 +150,7 @@ TypeId LteHelper::GetTypeId (void)
                    "The type of handover algorithm to be used for eNBs. "
                    "The allowed values for this attributes are the type names "
                    "of any class inheriting from ns3::HandoverAlgorithm.",
-                   StringValue ("ns3::A2RsrqHandoverAlgorithm"),
+                   StringValue ("ns3::BareHandoverAlgorithm"),
                    MakeStringAccessor (&LteHelper::SetHandoverAlgorithmType),
                    MakeStringChecker ())
     .AddAttribute ("PathlossModel",

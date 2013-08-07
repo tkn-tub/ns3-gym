@@ -20,6 +20,7 @@
  */
 
 #include "handover-algorithm.h"
+#include <ns3/handover-management-sap.h>
 #include <ns3/log.h>
 
 NS_LOG_COMPONENT_DEFINE ("HandoverAlgorithm");
@@ -53,6 +54,108 @@ HandoverAlgorithm::GetTypeId (void)
   ;
   return tid;
 }
+
+
+
+///////////////////////////////////////////
+// Handover Management SAP forwarder
+///////////////////////////////////////////
+
+NS_OBJECT_ENSURE_REGISTERED (BareHandoverAlgorithm);
+
+
+/**
+ * \brief Class for forwarding Handover Management SAP Provider functions, used
+ *        by ns3::BareHandoverAlgorithm.
+ */
+class BareMemberHandoverManagementSapProvider : public HandoverManagementSapProvider
+{
+public:
+  BareMemberHandoverManagementSapProvider (BareHandoverAlgorithm* handoverAlgorithm);
+
+  // methods inherited from HandoverManagementSapProvider go here
+  virtual void ReportUeMeas (uint16_t rnti, LteRrcSap::MeasResults measResults);
+
+private:
+  BareHandoverAlgorithm* m_handoverAlgorithm;
+};
+
+BareMemberHandoverManagementSapProvider::BareMemberHandoverManagementSapProvider (BareHandoverAlgorithm* handoverAlgorithm)
+  : m_handoverAlgorithm (handoverAlgorithm)
+{
+}
+
+void
+BareMemberHandoverManagementSapProvider::ReportUeMeas (uint16_t rnti,
+                                                       LteRrcSap::MeasResults measResults)
+{
+  m_handoverAlgorithm->DoReportUeMeas (rnti, measResults);
+}
+
+
+
+///////////////////////////////////////////
+// Bare Handover Algorithm
+///////////////////////////////////////////
+
+
+BareHandoverAlgorithm::BareHandoverAlgorithm ()
+  : m_handoverManagementSapUser (0)
+{
+  m_handoverManagementSapProvider = new BareMemberHandoverManagementSapProvider (this);
+}
+
+
+BareHandoverAlgorithm::~BareHandoverAlgorithm ()
+{
+}
+
+
+void
+BareHandoverAlgorithm::DoDispose ()
+{
+  delete m_handoverManagementSapProvider;
+}
+
+
+TypeId
+BareHandoverAlgorithm::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::BareHandoverAlgorithm")
+    .SetParent<HandoverAlgorithm> ()
+    .AddConstructor<BareHandoverAlgorithm> ()
+  ;
+  return tid;
+}
+
+
+void
+BareHandoverAlgorithm::SetHandoverManagementSapUser (HandoverManagementSapUser* s)
+{
+  m_handoverManagementSapUser = s;
+}
+
+
+HandoverManagementSapProvider*
+BareHandoverAlgorithm::GetHandoverManagementSapProvider ()
+{
+  return m_handoverManagementSapProvider;
+}
+
+
+void
+BareHandoverAlgorithm::DoInitialize ()
+{
+  HandoverAlgorithm::DoInitialize ();
+}
+
+
+void
+BareHandoverAlgorithm::DoReportUeMeas (uint16_t rnti,
+                                       LteRrcSap::MeasResults measResults)
+{
+}
+
 
 
 } // end of namespace ns3
