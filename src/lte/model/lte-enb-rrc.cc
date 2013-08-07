@@ -2043,9 +2043,19 @@ void
 LteEnbRrc::DoTriggerHandover (uint16_t rnti, uint16_t targetCellId)
 {
   NS_LOG_FUNCTION (this << rnti << targetCellId);
-  Ptr<UeManager> ueManager = GetUeManager (rnti);
-  NS_ASSERT_MSG (ueManager != 0, "Cannot find UE context with RNTI " << rnti);
-  ueManager->PrepareHandover (targetCellId);
+
+  std::map<uint16_t, Ptr<NeighbourRelation> >::iterator it;
+  it = m_neighbourRelationTable.find (targetCellId);
+  NS_ASSERT_MSG (it != m_neighbourRelationTable.end (),
+                 "Unable to find neighbouring cell with cell ID " << targetCellId);
+
+  // ensure that proper neighbour relationship exists between source and target cells
+  if ((it->second->m_noHo == false) && (it->second->m_noX2 == false))
+   {
+      Ptr<UeManager> ueManager = GetUeManager (rnti);
+      NS_ASSERT_MSG (ueManager != 0, "Cannot find UE context with RNTI " << rnti);
+      ueManager->PrepareHandover (targetCellId);
+   }
 }
 
 

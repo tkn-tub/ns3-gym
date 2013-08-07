@@ -165,6 +165,13 @@ private:
    */
   std::vector<uint8_t>::iterator m_itExpectedRsrp;
 
+  /**
+   * \brief The measurement identity being tested. Measurement reports with
+   *        different measurement identity (e.g. from handover algorithm) will
+   *        be ignored.
+   */
+  uint8_t m_expectedMeasId;
+
   Ptr<MobilityModel> m_ueMobility;
 
 }; // end of class LteUeMeasurementsPiecewiseTestCase1
@@ -261,6 +268,13 @@ private:
    *        occur next in the simulation.
    */
   std::vector<uint8_t>::iterator m_itExpectedRsrp;
+
+  /**
+   * \brief The measurement identity being tested. Measurement reports with
+   *        different measurement identity (e.g. from handover algorithm) will
+   *        be ignored.
+   */
+  uint8_t m_expectedMeasId;
 
   Ptr<MobilityModel> m_ueMobility;
 
@@ -362,6 +376,20 @@ private:
    *        occur next in the simulation.
    */
   std::vector<uint8_t>::iterator m_itExpectedRsrp;
+
+  /**
+   * \brief The measurement identity being tested in source cell. Measurement
+   *        reports with different measurement identity (e.g. from handover
+   *        algorithm) will be ignored.
+   */
+  uint8_t m_expectedSourceCellMeasId;
+
+  /**
+   * \brief The measurement identity being tested in target cell. Measurement
+   *        reports with different measurement identity (e.g. from handover
+   *        algorithm) will be ignored.
+   */
+  uint8_t m_expectedTargetCellMeasId;
 
 }; // end of class LteUeMeasurementsHandoverTestCase
 
