@@ -3198,6 +3198,8 @@ RrcAsn1Header::DeserializeMeasConfig (LteRrcSap::MeasConfig * measConfig, Buffer
                       blackCellsToAddMod.physCellIdRange.start = n;
 
                       blackCellsToAddMod.physCellIdRange.haveRange = isRangePresent[0];
+                      // initialize range to silence compiler warning
+                      blackCellsToAddMod.physCellIdRange.range = 0;
                       if (blackCellsToAddMod.physCellIdRange.haveRange)
                         {
                           // range
