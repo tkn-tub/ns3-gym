@@ -4,7 +4,22 @@ def build(bld):
     if not bld.env['ENABLE_EXAMPLES']:
         return;
 
-    obj = bld.create_ns3_program('gnuplot-example', ['stats'])
+    obj = bld.create_ns3_program('gnuplot-example', ['network', 'stats'])
     obj.source = 'gnuplot-example.cc'
+
+    program = bld.create_ns3_program('double-probe-example', ['network', 'stats'])
+    program.source = 'double-probe-example.cc'
+
+    program = bld.create_ns3_program('gnuplot-aggregator-example', ['network', 'stats'])
+    program.source = 'gnuplot-aggregator-example.cc'
+
+    program = bld.create_ns3_program('gnuplot-helper-example', ['network', 'stats'])
+    program.source = 'gnuplot-helper-example.cc'
+
+    program = bld.create_ns3_program('file-aggregator-example', ['network', 'stats'])
+    program.source = 'file-aggregator-example.cc'
+
+    program = bld.create_ns3_program('file-helper-example', ['network', 'stats'])
+    program.source = 'file-helper-example.cc'
 
 

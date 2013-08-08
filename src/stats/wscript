@@ -11,29 +11,44 @@ def configure(conf):
                                  "library 'sqlite3' not found")
 
 def build(bld):
-    obj = bld.create_ns3_module('stats', ['network'])
+    obj = bld.create_ns3_module('stats', ['core'])
     obj.source = [
+        'helper/delay-jitter-estimation.cc',
+        'helper/file-helper.cc',
+        'helper/gnuplot-helper.cc',
         'model/data-calculator.cc',
-        'model/packet-data-calculators.cc',
         'model/time-data-calculators.cc',
         'model/data-output-interface.cc',
         'model/omnet-data-output.cc',
         'model/data-collector.cc',
         'model/gnuplot.cc',
-        'helper/delay-jitter-estimation.cc',
+        'model/data-collection-object.cc',
+        'model/probe.cc',
+        'model/boolean-probe.cc',
+        'model/double-probe.cc',
+        'model/uinteger-8-probe.cc',
+        'model/uinteger-16-probe.cc',
+        'model/uinteger-32-probe.cc',
+        'model/time-series-adaptor.cc',
+        'model/file-aggregator.cc',
+        'model/gnuplot-aggregator.cc',
+        'model/get-wildcard-matches.cc', 
         ]
 
     module_test = bld.create_ns3_module_test_library('stats')
     module_test.source = [
         'test/basic-data-calculators-test-suite.cc',
         'test/average-test-suite.cc',
+        'test/double-probe-test-suite.cc',
         ]
 
     headers = bld(features='ns3header')
     headers.module = 'stats'
     headers.source = [
+        'helper/delay-jitter-estimation.h',
+        'helper/file-helper.h',
+        'helper/gnuplot-helper.h',
         'model/data-calculator.h',
-        'model/packet-data-calculators.h',
         'model/time-data-calculators.h',
         'model/basic-data-calculators.h',
         'model/data-output-interface.h',
@@ -41,7 +56,17 @@ def build(bld):
         'model/data-collector.h',
         'model/gnuplot.h',
         'model/average.h',
-        'helper/delay-jitter-estimation.h',
+        'model/data-collection-object.h',
+        'model/probe.h',
+        'model/boolean-probe.h',
+        'model/double-probe.h',
+        'model/uinteger-8-probe.h',
+        'model/uinteger-16-probe.h',
+        'model/uinteger-32-probe.h',
+        'model/time-series-adaptor.h',
+        'model/file-aggregator.h',
+        'model/gnuplot-aggregator.h',
+        'model/get-wildcard-matches.h',
         ]
 
     if bld.env['SQLITE_STATS']:

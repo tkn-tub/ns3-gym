@@ -352,6 +352,13 @@ public:
   Gnuplot (const std::string& outputFilename="", const std::string& title = "");
 
   /**
+   * \param outputFilename the name of the file where the rendering of the
+   *        graph will be generated if you feed the command stream output by
+   *        Gnuplot::GenerateOutput to the gnuplot program.
+   */
+  void SetOutputFilename (const std::string& outputFilename);
+
+  /**
    * Crude attempt to auto-detect the correct terminal setting by inspecting
    * the filename's extension.
    * \param filename output file name
@@ -391,10 +398,37 @@ public:
   void AddDataset (const GnuplotDataset& dataset);
 
   /**
-   * \param os the output stream on which the relevant gnuplot commands should
-   * be generated. Including output file and terminal headers.
+   * \param os the output stream on which the relevant gnuplot
+   * commands should be generated. Including output file and terminal
+   * headers.
+   *
+   * \brief Writes gnuplot commands and data values to a single
+   * output stream.
    */
-  void GenerateOutput (std::ostream &os) const;
+  void GenerateOutput (std::ostream &os);
+
+  /**
+   * \param osControl the output stream on which the relevant gnuplot
+   * contol commands should be generated. Including output file and
+   * terminal headers.
+   * \param osData the output stream on which the relevant gnuplot
+   * data values should be generated.
+   * \param dataFileName the name for the data file that will be
+   * written.
+   *
+   * \brief Writes gnuplot commands and data values to two
+   * different outputs streams.
+   */
+  void GenerateOutput (std::ostream &osControl,
+                       std::ostream &osData,
+                       std::string dataFileName);
+
+  /**
+   * \param index the index for the data stream in the data file.
+   *
+   * \brief Sets the current data stream index in the data file.
+   */
+  void SetDataFileDatasetIndex (unsigned int index);
 
 private:
   typedef std::vector<GnuplotDataset> Datasets;
@@ -408,6 +442,10 @@ private:
   std::string m_xLegend;
   std::string m_yLegend;
   std::string m_extra;
+
+  bool m_generateOneOutputFile;
+
+  unsigned int m_dataFileDatasetIndex;
 };
 
 /**
@@ -446,8 +484,21 @@ public:
    * \param os the output stream on which the relevant gnuplot commands should
    * be generated.
    */
-  void GenerateOutput (std::ostream &os) const;
+  void GenerateOutput (std::ostream &os);
  
+  /**
+   * \param osControl the output stream on which the relevant gnuplot
+   * contol commands should be generated. Including output file and
+   * terminal headers.
+   * \param osData the output stream on which the relevant gnuplot
+   * data values should be generated.
+   * \param dataFileName the name for the data file that will be
+   * written.
+   */
+  void GenerateOutput (std::ostream &osControl,
+                       std::ostream &osData,
+                       std::string dataFileName);
+
 private:
   typedef std::vector<Gnuplot> Plots;
 

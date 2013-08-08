@@ -8,7 +8,12 @@
 #
 # See test.py for more information.
 cpp_examples = [
+    ("double-probe-example", "True", "True"),
+    ("file-aggregator-example", "True", "True"),
+    ("file-helper-example", "True", "True"),
+    ("gnuplot-aggregator-example", "True", "True"),
     ("gnuplot-example", "False", "False"),
+    ("gnuplot-helper-example", "True", "True"),
 ]
 
 # A list of Python examples to run in order to ensure that they remain

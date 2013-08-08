@@ -36,6 +36,10 @@ massif.*
 \.patch$
 \.diff$
 \.tr$
+\.txt$
+\.sh$
+\.dat$
+\.plt$
 \#[^\#/]+\#$
 ^coverity
 syntax: glob
