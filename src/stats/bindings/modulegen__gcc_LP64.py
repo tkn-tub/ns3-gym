@@ -20,92 +20,50 @@ def module_init():
 def register_types(module):
     root_module = module.get_root()
     
-    ## address.h (module 'network'): ns3::Address [class]
-    module.add_class('Address', import_from_module='ns.network')
-    ## address.h (module 'network'): ns3::Address::MaxSize_e [enumeration]
-    module.add_enum('MaxSize_e', ['MAX_SIZE'], outer_class=root_module['ns3::Address'], import_from_module='ns.network')
     ## attribute-construction-list.h (module 'core'): ns3::AttributeConstructionList [class]
     module.add_class('AttributeConstructionList', import_from_module='ns.core')
     ## attribute-construction-list.h (module 'core'): ns3::AttributeConstructionList::Item [struct]
     module.add_class('Item', import_from_module='ns.core', outer_class=root_module['ns3::AttributeConstructionList'])
-    ## buffer.h (module 'network'): ns3::Buffer [class]
-    module.add_class('Buffer', import_from_module='ns.network')
-    ## buffer.h (module 'network'): ns3::Buffer::Iterator [class]
-    module.add_class('Iterator', import_from_module='ns.network', outer_class=root_module['ns3::Buffer'])
-    ## packet.h (module 'network'): ns3::ByteTagIterator [class]
-    module.add_class('ByteTagIterator', import_from_module='ns.network')
-    ## packet.h (module 'network'): ns3::ByteTagIterator::Item [class]
-    module.add_class('Item', import_from_module='ns.network', outer_class=root_module['ns3::ByteTagIterator'])
-    ## byte-tag-list.h (module 'network'): ns3::ByteTagList [class]
-    module.add_class('ByteTagList', import_from_module='ns.network')
-    ## byte-tag-list.h (module 'network'): ns3::ByteTagList::Iterator [class]
-    module.add_class('Iterator', import_from_module='ns.network', outer_class=root_module['ns3::ByteTagList'])
-    ## byte-tag-list.h (module 'network'): ns3::ByteTagList::Iterator::Item [struct]
-    module.add_class('Item', import_from_module='ns.network', outer_class=root_module['ns3::ByteTagList::Iterator'])
     ## callback.h (module 'core'): ns3::CallbackBase [class]
     module.add_class('CallbackBase', import_from_module='ns.core')
     ## data-output-interface.h (module 'stats'): ns3::DataOutputCallback [class]
     module.add_class('DataOutputCallback', allow_subclassing=True)
-    ## delay-jitter-estimation.h (module 'stats'): ns3::DelayJitterEstimation [class]
-    module.add_class('DelayJitterEstimation')
     ## event-id.h (module 'core'): ns3::EventId [class]
     module.add_class('EventId', import_from_module='ns.core')
+    ## file-helper.h (module 'stats'): ns3::FileHelper [class]
+    module.add_class('FileHelper')
     ## gnuplot.h (module 'stats'): ns3::Gnuplot [class]
     module.add_class('Gnuplot')
     ## gnuplot.h (module 'stats'): ns3::GnuplotCollection [class]
     module.add_class('GnuplotCollection')
     ## gnuplot.h (module 'stats'): ns3::GnuplotDataset [class]
     module.add_class('GnuplotDataset')
-    ## ipv4-address.h (module 'network'): ns3::Ipv4Address [class]
-    module.add_class('Ipv4Address', import_from_module='ns.network')
-    ## ipv4-address.h (module 'network'): ns3::Ipv4Address [class]
-    root_module['ns3::Ipv4Address'].implicitly_converts_to(root_module['ns3::Address'])
-    ## ipv4-address.h (module 'network'): ns3::Ipv4Mask [class]
-    module.add_class('Ipv4Mask', import_from_module='ns.network')
-    ## ipv6-address.h (module 'network'): ns3::Ipv6Address [class]
-    module.add_class('Ipv6Address', import_from_module='ns.network')
-    ## ipv6-address.h (module 'network'): ns3::Ipv6Address [class]
-    root_module['ns3::Ipv6Address'].implicitly_converts_to(root_module['ns3::Address'])
-    ## ipv6-address.h (module 'network'): ns3::Ipv6Prefix [class]
-    module.add_class('Ipv6Prefix', import_from_module='ns.network')
-    ## mac48-address.h (module 'network'): ns3::Mac48Address [class]
-    module.add_class('Mac48Address', import_from_module='ns.network')
-    ## mac48-address.h (module 'network'): ns3::Mac48Address [class]
-    root_module['ns3::Mac48Address'].implicitly_converts_to(root_module['ns3::Address'])
+    ## gnuplot-helper.h (module 'stats'): ns3::GnuplotHelper [class]
+    module.add_class('GnuplotHelper')
+    ## hash.h (module 'core'): ns3::Hasher [class]
+    module.add_class('Hasher', import_from_module='ns.core')
     ## object-base.h (module 'core'): ns3::ObjectBase [class]
     module.add_class('ObjectBase', allow_subclassing=True, import_from_module='ns.core')
     ## object.h (module 'core'): ns3::ObjectDeleter [struct]
     module.add_class('ObjectDeleter', import_from_module='ns.core')
     ## object-factory.h (module 'core'): ns3::ObjectFactory [class]
     module.add_class('ObjectFactory', import_from_module='ns.core')
-    ## packet-metadata.h (module 'network'): ns3::PacketMetadata [class]
-    module.add_class('PacketMetadata', import_from_module='ns.network')
-    ## packet-metadata.h (module 'network'): ns3::PacketMetadata::Item [struct]
-    module.add_class('Item', import_from_module='ns.network', outer_class=root_module['ns3::PacketMetadata'])
-    ## packet-metadata.h (module 'network'): ns3::PacketMetadata::Item [enumeration]
-    module.add_enum('', ['PAYLOAD', 'HEADER', 'TRAILER'], outer_class=root_module['ns3::PacketMetadata::Item'], import_from_module='ns.network')
-    ## packet-metadata.h (module 'network'): ns3::PacketMetadata::ItemIterator [class]
-    module.add_class('ItemIterator', import_from_module='ns.network', outer_class=root_module['ns3::PacketMetadata'])
-    ## packet.h (module 'network'): ns3::PacketTagIterator [class]
-    module.add_class('PacketTagIterator', import_from_module='ns.network')
-    ## packet.h (module 'network'): ns3::PacketTagIterator::Item [class]
-    module.add_class('Item', import_from_module='ns.network', outer_class=root_module['ns3::PacketTagIterator'])
-    ## packet-tag-list.h (module 'network'): ns3::PacketTagList [class]
-    module.add_class('PacketTagList', import_from_module='ns.network')
-    ## packet-tag-list.h (module 'network'): ns3::PacketTagList::TagData [struct]
-    module.add_class('TagData', import_from_module='ns.network', outer_class=root_module['ns3::PacketTagList'])
-    ## packet-tag-list.h (module 'network'): ns3::PacketTagList::TagData::TagData_e [enumeration]
-    module.add_enum('TagData_e', ['MAX_SIZE'], outer_class=root_module['ns3::PacketTagList::TagData'], import_from_module='ns.network')
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Object, ns3::ObjectBase, ns3::ObjectDeleter> [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', template_parameters=['ns3::Object', 'ns3::ObjectBase', 'ns3::ObjectDeleter'], parent=root_module['ns3::ObjectBase'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## simulator.h (module 'core'): ns3::Simulator [class]
     module.add_class('Simulator', destructor_visibility='private', import_from_module='ns.core')
     ## data-calculator.h (module 'stats'): ns3::StatisticalSummary [class]
     module.add_class('StatisticalSummary', allow_subclassing=True)
-    ## tag.h (module 'network'): ns3::Tag [class]
-    module.add_class('Tag', import_from_module='ns.network', parent=root_module['ns3::ObjectBase'])
-    ## tag-buffer.h (module 'network'): ns3::TagBuffer [class]
-    module.add_class('TagBuffer', import_from_module='ns.network')
+    ## traced-value.h (module 'core'): ns3::TracedValue<bool> [class]
+    module.add_class('TracedValue', import_from_module='ns.core', template_parameters=['bool'])
+    ## traced-value.h (module 'core'): ns3::TracedValue<double> [class]
+    module.add_class('TracedValue', import_from_module='ns.core', template_parameters=['double'])
+    ## traced-value.h (module 'core'): ns3::TracedValue<unsigned char> [class]
+    module.add_class('TracedValue', import_from_module='ns.core', template_parameters=['unsigned char'])
+    ## traced-value.h (module 'core'): ns3::TracedValue<unsigned int> [class]
+    module.add_class('TracedValue', import_from_module='ns.core', template_parameters=['unsigned int'])
+    ## traced-value.h (module 'core'): ns3::TracedValue<unsigned short> [class]
+    module.add_class('TracedValue', import_from_module='ns.core', template_parameters=['unsigned short'])
     ## type-id.h (module 'core'): ns3::TypeId [class]
     module.add_class('TypeId', import_from_module='ns.core')
     ## type-id.h (module 'core'): ns3::TypeId::AttributeFlag [enumeration]
@@ -118,8 +76,6 @@ def register_types(module):
     module.add_class('empty', import_from_module='ns.core')
     ## int64x64-double.h (module 'core'): ns3::int64x64_t [class]
     module.add_class('int64x64_t', import_from_module='ns.core')
-    ## chunk.h (module 'network'): ns3::Chunk [class]
-    module.add_class('Chunk', import_from_module='ns.network', parent=root_module['ns3::ObjectBase'])
     ## gnuplot.h (module 'stats'): ns3::Gnuplot2dDataset [class]
     module.add_class('Gnuplot2dDataset', parent=root_module['ns3::GnuplotDataset'])
     ## gnuplot.h (module 'stats'): ns3::Gnuplot2dDataset::Style [enumeration]
@@ -132,8 +88,6 @@ def register_types(module):
     module.add_class('Gnuplot3dDataset', parent=root_module['ns3::GnuplotDataset'])
     ## gnuplot.h (module 'stats'): ns3::Gnuplot3dFunction [class]
     module.add_class('Gnuplot3dFunction', parent=root_module['ns3::GnuplotDataset'])
-    ## header.h (module 'network'): ns3::Header [class]
-    module.add_class('Header', import_from_module='ns.network', parent=root_module['ns3::Chunk'])
     ## object.h (module 'core'): ns3::Object [class]
     module.add_class('Object', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::Object, ns3::ObjectBase, ns3::ObjectDeleter >'])
     ## object.h (module 'core'): ns3::Object::AggregateIterator [class]
@@ -148,10 +102,8 @@ def register_types(module):
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', template_parameters=['ns3::CallbackImplBase', 'ns3::empty', 'ns3::DefaultDeleter<ns3::CallbackImplBase>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::EventImpl, ns3::empty, ns3::DefaultDeleter<ns3::EventImpl> > [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', template_parameters=['ns3::EventImpl', 'ns3::empty', 'ns3::DefaultDeleter<ns3::EventImpl>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::NixVector, ns3::empty, ns3::DefaultDeleter<ns3::NixVector> > [class]
-    module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', template_parameters=['ns3::NixVector', 'ns3::empty', 'ns3::DefaultDeleter<ns3::NixVector>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet> > [class]
-    module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', template_parameters=['ns3::Packet', 'ns3::empty', 'ns3::DefaultDeleter<ns3::Packet>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Hash::Implementation, ns3::empty, ns3::DefaultDeleter<ns3::Hash::Implementation> > [class]
+    module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', template_parameters=['ns3::Hash::Implementation', 'ns3::empty', 'ns3::DefaultDeleter<ns3::Hash::Implementation>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor> > [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', template_parameters=['ns3::TraceSourceAccessor', 'ns3::empty', 'ns3::DefaultDeleter<ns3::TraceSourceAccessor>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## nstime.h (module 'core'): ns3::Time [class]
@@ -162,14 +114,16 @@ def register_types(module):
     root_module['ns3::Time'].implicitly_converts_to(root_module['ns3::int64x64_t'])
     ## trace-source-accessor.h (module 'core'): ns3::TraceSourceAccessor [class]
     module.add_class('TraceSourceAccessor', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor> >'])
-    ## trailer.h (module 'network'): ns3::Trailer [class]
-    module.add_class('Trailer', import_from_module='ns.network', parent=root_module['ns3::Chunk'])
     ## attribute.h (module 'core'): ns3::AttributeAccessor [class]
     module.add_class('AttributeAccessor', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor> >'])
     ## attribute.h (module 'core'): ns3::AttributeChecker [class]
     module.add_class('AttributeChecker', allow_subclassing=False, automatic_type_narrowing=True, import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter<ns3::AttributeChecker> >'])
     ## attribute.h (module 'core'): ns3::AttributeValue [class]
     module.add_class('AttributeValue', allow_subclassing=False, automatic_type_narrowing=True, import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::AttributeValue, ns3::empty, ns3::DefaultDeleter<ns3::AttributeValue> >'])
+    ## boolean.h (module 'core'): ns3::BooleanChecker [class]
+    module.add_class('BooleanChecker', import_from_module='ns.core', parent=root_module['ns3::AttributeChecker'])
+    ## boolean.h (module 'core'): ns3::BooleanValue [class]
+    module.add_class('BooleanValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
     ## callback.h (module 'core'): ns3::CallbackChecker [class]
     module.add_class('CallbackChecker', import_from_module='ns.core', parent=root_module['ns3::AttributeChecker'])
     ## callback.h (module 'core'): ns3::CallbackImplBase [class]
@@ -178,68 +132,66 @@ def register_types(module):
     module.add_class('CallbackValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
     ## data-calculator.h (module 'stats'): ns3::DataCalculator [class]
     module.add_class('DataCalculator', parent=root_module['ns3::Object'])
+    ## data-collection-object.h (module 'stats'): ns3::DataCollectionObject [class]
+    module.add_class('DataCollectionObject', parent=root_module['ns3::Object'])
     ## data-collector.h (module 'stats'): ns3::DataCollector [class]
     module.add_class('DataCollector', parent=root_module['ns3::Object'])
     ## data-output-interface.h (module 'stats'): ns3::DataOutputInterface [class]
     module.add_class('DataOutputInterface', parent=root_module['ns3::Object'])
+    ## double.h (module 'core'): ns3::DoubleValue [class]
+    module.add_class('DoubleValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
     ## attribute.h (module 'core'): ns3::EmptyAttributeValue [class]
     module.add_class('EmptyAttributeValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
+    ## enum.h (module 'core'): ns3::EnumChecker [class]
+    module.add_class('EnumChecker', import_from_module='ns.core', parent=root_module['ns3::AttributeChecker'])
+    ## enum.h (module 'core'): ns3::EnumValue [class]
+    module.add_class('EnumValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
     ## event-impl.h (module 'core'): ns3::EventImpl [class]
     module.add_class('EventImpl', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::EventImpl, ns3::empty, ns3::DefaultDeleter<ns3::EventImpl> >'])
-    ## ipv4-address.h (module 'network'): ns3::Ipv4AddressChecker [class]
-    module.add_class('Ipv4AddressChecker', import_from_module='ns.network', parent=root_module['ns3::AttributeChecker'])
-    ## ipv4-address.h (module 'network'): ns3::Ipv4AddressValue [class]
-    module.add_class('Ipv4AddressValue', import_from_module='ns.network', parent=root_module['ns3::AttributeValue'])
-    ## ipv4-address.h (module 'network'): ns3::Ipv4MaskChecker [class]
-    module.add_class('Ipv4MaskChecker', import_from_module='ns.network', parent=root_module['ns3::AttributeChecker'])
-    ## ipv4-address.h (module 'network'): ns3::Ipv4MaskValue [class]
-    module.add_class('Ipv4MaskValue', import_from_module='ns.network', parent=root_module['ns3::AttributeValue'])
-    ## ipv6-address.h (module 'network'): ns3::Ipv6AddressChecker [class]
-    module.add_class('Ipv6AddressChecker', import_from_module='ns.network', parent=root_module['ns3::AttributeChecker'])
-    ## ipv6-address.h (module 'network'): ns3::Ipv6AddressValue [class]
-    module.add_class('Ipv6AddressValue', import_from_module='ns.network', parent=root_module['ns3::AttributeValue'])
-    ## ipv6-address.h (module 'network'): ns3::Ipv6PrefixChecker [class]
-    module.add_class('Ipv6PrefixChecker', import_from_module='ns.network', parent=root_module['ns3::AttributeChecker'])
-    ## ipv6-address.h (module 'network'): ns3::Ipv6PrefixValue [class]
-    module.add_class('Ipv6PrefixValue', import_from_module='ns.network', parent=root_module['ns3::AttributeValue'])
-    ## mac48-address.h (module 'network'): ns3::Mac48AddressChecker [class]
-    module.add_class('Mac48AddressChecker', import_from_module='ns.network', parent=root_module['ns3::AttributeChecker'])
-    ## mac48-address.h (module 'network'): ns3::Mac48AddressValue [class]
-    module.add_class('Mac48AddressValue', import_from_module='ns.network', parent=root_module['ns3::AttributeValue'])
+    ## file-aggregator.h (module 'stats'): ns3::FileAggregator [class]
+    module.add_class('FileAggregator', parent=root_module['ns3::DataCollectionObject'])
+    ## file-aggregator.h (module 'stats'): ns3::FileAggregator::FileType [enumeration]
+    module.add_enum('FileType', ['FORMATTED', 'SPACE_SEPARATED', 'COMMA_SEPARATED', 'TAB_SEPARATED'], outer_class=root_module['ns3::FileAggregator'])
+    ## gnuplot-aggregator.h (module 'stats'): ns3::GnuplotAggregator [class]
+    module.add_class('GnuplotAggregator', parent=root_module['ns3::DataCollectionObject'])
+    ## gnuplot-aggregator.h (module 'stats'): ns3::GnuplotAggregator::KeyLocation [enumeration]
+    module.add_enum('KeyLocation', ['NO_KEY', 'KEY_INSIDE', 'KEY_ABOVE', 'KEY_BELOW'], outer_class=root_module['ns3::GnuplotAggregator'])
+    ## integer.h (module 'core'): ns3::IntegerValue [class]
+    module.add_class('IntegerValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
     ## basic-data-calculators.h (module 'stats'): ns3::MinMaxAvgTotalCalculator<double> [class]
     module.add_class('MinMaxAvgTotalCalculator', template_parameters=['double'], parent=[root_module['ns3::DataCalculator'], root_module['ns3::StatisticalSummary']])
-    ## basic-data-calculators.h (module 'stats'): ns3::MinMaxAvgTotalCalculator<unsigned int> [class]
-    module.add_class('MinMaxAvgTotalCalculator', template_parameters=['unsigned int'], parent=[root_module['ns3::DataCalculator'], root_module['ns3::StatisticalSummary']])
-    ## nix-vector.h (module 'network'): ns3::NixVector [class]
-    module.add_class('NixVector', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::NixVector, ns3::empty, ns3::DefaultDeleter<ns3::NixVector> >'])
     ## object-factory.h (module 'core'): ns3::ObjectFactoryChecker [class]
     module.add_class('ObjectFactoryChecker', import_from_module='ns.core', parent=root_module['ns3::AttributeChecker'])
     ## object-factory.h (module 'core'): ns3::ObjectFactoryValue [class]
     module.add_class('ObjectFactoryValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
     ## omnet-data-output.h (module 'stats'): ns3::OmnetDataOutput [class]
     module.add_class('OmnetDataOutput', parent=root_module['ns3::DataOutputInterface'])
-    ## packet.h (module 'network'): ns3::Packet [class]
-    module.add_class('Packet', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet> >'])
-    ## packet-data-calculators.h (module 'stats'): ns3::PacketSizeMinMaxAvgTotalCalculator [class]
-    module.add_class('PacketSizeMinMaxAvgTotalCalculator', parent=root_module['ns3::MinMaxAvgTotalCalculator< unsigned int >'])
+    ## probe.h (module 'stats'): ns3::Probe [class]
+    module.add_class('Probe', parent=root_module['ns3::DataCollectionObject'])
     ## sqlite-data-output.h (module 'stats'): ns3::SqliteDataOutput [class]
     module.add_class('SqliteDataOutput', parent=root_module['ns3::DataOutputInterface'])
     ## time-data-calculators.h (module 'stats'): ns3::TimeMinMaxAvgTotalCalculator [class]
     module.add_class('TimeMinMaxAvgTotalCalculator', parent=root_module['ns3::DataCalculator'])
+    ## time-series-adaptor.h (module 'stats'): ns3::TimeSeriesAdaptor [class]
+    module.add_class('TimeSeriesAdaptor', parent=root_module['ns3::DataCollectionObject'])
     ## nstime.h (module 'core'): ns3::TimeValue [class]
     module.add_class('TimeValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
     ## type-id.h (module 'core'): ns3::TypeIdChecker [class]
     module.add_class('TypeIdChecker', import_from_module='ns.core', parent=root_module['ns3::AttributeChecker'])
     ## type-id.h (module 'core'): ns3::TypeIdValue [class]
     module.add_class('TypeIdValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
-    ## address.h (module 'network'): ns3::AddressChecker [class]
-    module.add_class('AddressChecker', import_from_module='ns.network', parent=root_module['ns3::AttributeChecker'])
-    ## address.h (module 'network'): ns3::AddressValue [class]
-    module.add_class('AddressValue', import_from_module='ns.network', parent=root_module['ns3::AttributeValue'])
-    ## basic-data-calculators.h (module 'stats'): ns3::CounterCalculator<unsigned int> [class]
-    module.add_class('CounterCalculator', template_parameters=['unsigned int'], parent=root_module['ns3::DataCalculator'])
-    ## packet-data-calculators.h (module 'stats'): ns3::PacketCounterCalculator [class]
-    module.add_class('PacketCounterCalculator', parent=root_module['ns3::CounterCalculator< unsigned int >'])
+    ## uinteger-16-probe.h (module 'stats'): ns3::Uinteger16Probe [class]
+    module.add_class('Uinteger16Probe', parent=root_module['ns3::Probe'])
+    ## uinteger-32-probe.h (module 'stats'): ns3::Uinteger32Probe [class]
+    module.add_class('Uinteger32Probe', parent=root_module['ns3::Probe'])
+    ## uinteger-8-probe.h (module 'stats'): ns3::Uinteger8Probe [class]
+    module.add_class('Uinteger8Probe', parent=root_module['ns3::Probe'])
+    ## uinteger.h (module 'core'): ns3::UintegerValue [class]
+    module.add_class('UintegerValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
+    ## boolean-probe.h (module 'stats'): ns3::BooleanProbe [class]
+    module.add_class('BooleanProbe', parent=root_module['ns3::Probe'])
+    ## double-probe.h (module 'stats'): ns3::DoubleProbe [class]
+    module.add_class('DoubleProbe', parent=root_module['ns3::Probe'])
     typehandlers.add_type_alias('std::list< ns3::Ptr< ns3::DataCalculator >, std::allocator< ns3::Ptr< ns3::DataCalculator > > >', 'ns3::DataCalculatorList')
     typehandlers.add_type_alias('std::list< ns3::Ptr< ns3::DataCalculator >, std::allocator< ns3::Ptr< ns3::DataCalculator > > >*', 'ns3::DataCalculatorList*')
     typehandlers.add_type_alias('std::list< ns3::Ptr< ns3::DataCalculator >, std::allocator< ns3::Ptr< ns3::DataCalculator > > >&', 'ns3::DataCalculatorList&')
@@ -252,60 +204,89 @@ def register_types(module):
     nested_module = module.add_cpp_namespace('FatalImpl')
     register_types_ns3_FatalImpl(nested_module)
     
+    
+    ## Register a nested module for the namespace Hash
+    
+    nested_module = module.add_cpp_namespace('Hash')
+    register_types_ns3_Hash(nested_module)
+    
+    
+    ## Register a nested module for the namespace internal
+    
+    nested_module = module.add_cpp_namespace('internal')
+    register_types_ns3_internal(nested_module)
+    
 
 def register_types_ns3_FatalImpl(module):
     root_module = module.get_root()
     
 
+def register_types_ns3_Hash(module):
+    root_module = module.get_root()
+    
+    ## hash-function.h (module 'core'): ns3::Hash::Implementation [class]
+    module.add_class('Implementation', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::Hash::Implementation, ns3::empty, ns3::DefaultDeleter<ns3::Hash::Implementation> >'])
+    typehandlers.add_type_alias('uint32_t ( * ) ( char const *, size_t ) *', 'ns3::Hash::Hash32Function_ptr')
+    typehandlers.add_type_alias('uint32_t ( * ) ( char const *, size_t ) **', 'ns3::Hash::Hash32Function_ptr*')
+    typehandlers.add_type_alias('uint32_t ( * ) ( char const *, size_t ) *&', 'ns3::Hash::Hash32Function_ptr&')
+    typehandlers.add_type_alias('uint64_t ( * ) ( char const *, size_t ) *', 'ns3::Hash::Hash64Function_ptr')
+    typehandlers.add_type_alias('uint64_t ( * ) ( char const *, size_t ) **', 'ns3::Hash::Hash64Function_ptr*')
+    typehandlers.add_type_alias('uint64_t ( * ) ( char const *, size_t ) *&', 'ns3::Hash::Hash64Function_ptr&')
+    
+    ## Register a nested module for the namespace Function
+    
+    nested_module = module.add_cpp_namespace('Function')
+    register_types_ns3_Hash_Function(nested_module)
+    
+
+def register_types_ns3_Hash_Function(module):
+    root_module = module.get_root()
+    
+    ## hash-fnv.h (module 'core'): ns3::Hash::Function::Fnv1a [class]
+    module.add_class('Fnv1a', import_from_module='ns.core', parent=root_module['ns3::Hash::Implementation'])
+    ## hash-function.h (module 'core'): ns3::Hash::Function::Hash32 [class]
+    module.add_class('Hash32', import_from_module='ns.core', parent=root_module['ns3::Hash::Implementation'])
+    ## hash-function.h (module 'core'): ns3::Hash::Function::Hash64 [class]
+    module.add_class('Hash64', import_from_module='ns.core', parent=root_module['ns3::Hash::Implementation'])
+    ## hash-murmur3.h (module 'core'): ns3::Hash::Function::Murmur3 [class]
+    module.add_class('Murmur3', import_from_module='ns.core', parent=root_module['ns3::Hash::Implementation'])
+
+def register_types_ns3_internal(module):
+    root_module = module.get_root()
+    
+
 def register_methods(root_module):
-    register_Ns3Address_methods(root_module, root_module['ns3::Address'])
     register_Ns3AttributeConstructionList_methods(root_module, root_module['ns3::AttributeConstructionList'])
     register_Ns3AttributeConstructionListItem_methods(root_module, root_module['ns3::AttributeConstructionList::Item'])
-    register_Ns3Buffer_methods(root_module, root_module['ns3::Buffer'])
-    register_Ns3BufferIterator_methods(root_module, root_module['ns3::Buffer::Iterator'])
-    register_Ns3ByteTagIterator_methods(root_module, root_module['ns3::ByteTagIterator'])
-    register_Ns3ByteTagIteratorItem_methods(root_module, root_module['ns3::ByteTagIterator::Item'])
-    register_Ns3ByteTagList_methods(root_module, root_module['ns3::ByteTagList'])
-    register_Ns3ByteTagListIterator_methods(root_module, root_module['ns3::ByteTagList::Iterator'])
-    register_Ns3ByteTagListIteratorItem_methods(root_module, root_module['ns3::ByteTagList::Iterator::Item'])
     register_Ns3CallbackBase_methods(root_module, root_module['ns3::CallbackBase'])
     register_Ns3DataOutputCallback_methods(root_module, root_module['ns3::DataOutputCallback'])
-    register_Ns3DelayJitterEstimation_methods(root_module, root_module['ns3::DelayJitterEstimation'])
     register_Ns3EventId_methods(root_module, root_module['ns3::EventId'])
+    register_Ns3FileHelper_methods(root_module, root_module['ns3::FileHelper'])
     register_Ns3Gnuplot_methods(root_module, root_module['ns3::Gnuplot'])
     register_Ns3GnuplotCollection_methods(root_module, root_module['ns3::GnuplotCollection'])
     register_Ns3GnuplotDataset_methods(root_module, root_module['ns3::GnuplotDataset'])
-    register_Ns3Ipv4Address_methods(root_module, root_module['ns3::Ipv4Address'])
-    register_Ns3Ipv4Mask_methods(root_module, root_module['ns3::Ipv4Mask'])
-    register_Ns3Ipv6Address_methods(root_module, root_module['ns3::Ipv6Address'])
-    register_Ns3Ipv6Prefix_methods(root_module, root_module['ns3::Ipv6Prefix'])
-    register_Ns3Mac48Address_methods(root_module, root_module['ns3::Mac48Address'])
+    register_Ns3GnuplotHelper_methods(root_module, root_module['ns3::GnuplotHelper'])
+    register_Ns3Hasher_methods(root_module, root_module['ns3::Hasher'])
     register_Ns3ObjectBase_methods(root_module, root_module['ns3::ObjectBase'])
     register_Ns3ObjectDeleter_methods(root_module, root_module['ns3::ObjectDeleter'])
     register_Ns3ObjectFactory_methods(root_module, root_module['ns3::ObjectFactory'])
-    register_Ns3PacketMetadata_methods(root_module, root_module['ns3::PacketMetadata'])
-    register_Ns3PacketMetadataItem_methods(root_module, root_module['ns3::PacketMetadata::Item'])
-    register_Ns3PacketMetadataItemIterator_methods(root_module, root_module['ns3::PacketMetadata::ItemIterator'])
-    register_Ns3PacketTagIterator_methods(root_module, root_module['ns3::PacketTagIterator'])
-    register_Ns3PacketTagIteratorItem_methods(root_module, root_module['ns3::PacketTagIterator::Item'])
-    register_Ns3PacketTagList_methods(root_module, root_module['ns3::PacketTagList'])
-    register_Ns3PacketTagListTagData_methods(root_module, root_module['ns3::PacketTagList::TagData'])
     register_Ns3SimpleRefCount__Ns3Object_Ns3ObjectBase_Ns3ObjectDeleter_methods(root_module, root_module['ns3::SimpleRefCount< ns3::Object, ns3::ObjectBase, ns3::ObjectDeleter >'])
     register_Ns3Simulator_methods(root_module, root_module['ns3::Simulator'])
     register_Ns3StatisticalSummary_methods(root_module, root_module['ns3::StatisticalSummary'])
-    register_Ns3Tag_methods(root_module, root_module['ns3::Tag'])
-    register_Ns3TagBuffer_methods(root_module, root_module['ns3::TagBuffer'])
+    register_Ns3TracedValue__Bool_methods(root_module, root_module['ns3::TracedValue< bool >'])
+    register_Ns3TracedValue__Double_methods(root_module, root_module['ns3::TracedValue< double >'])
+    register_Ns3TracedValue__Unsigned_char_methods(root_module, root_module['ns3::TracedValue< unsigned char >'])
+    register_Ns3TracedValue__Unsigned_int_methods(root_module, root_module['ns3::TracedValue< unsigned int >'])
+    register_Ns3TracedValue__Unsigned_short_methods(root_module, root_module['ns3::TracedValue< unsigned short >'])
     register_Ns3TypeId_methods(root_module, root_module['ns3::TypeId'])
     register_Ns3TypeIdAttributeInformation_methods(root_module, root_module['ns3::TypeId::AttributeInformation'])
     register_Ns3TypeIdTraceSourceInformation_methods(root_module, root_module['ns3::TypeId::TraceSourceInformation'])
     register_Ns3Empty_methods(root_module, root_module['ns3::empty'])
     register_Ns3Int64x64_t_methods(root_module, root_module['ns3::int64x64_t'])
-    register_Ns3Chunk_methods(root_module, root_module['ns3::Chunk'])
     register_Ns3Gnuplot2dDataset_methods(root_module, root_module['ns3::Gnuplot2dDataset'])
     register_Ns3Gnuplot2dFunction_methods(root_module, root_module['ns3::Gnuplot2dFunction'])
     register_Ns3Gnuplot3dDataset_methods(root_module, root_module['ns3::Gnuplot3dDataset'])
     register_Ns3Gnuplot3dFunction_methods(root_module, root_module['ns3::Gnuplot3dFunction'])
-    register_Ns3Header_methods(root_module, root_module['ns3::Header'])
     register_Ns3Object_methods(root_module, root_module['ns3::Object'])
     register_Ns3ObjectAggregateIterator_methods(root_module, root_module['ns3::Object::AggregateIterator'])
     register_Ns3SimpleRefCount__Ns3AttributeAccessor_Ns3Empty_Ns3DefaultDeleter__lt__ns3AttributeAccessor__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor> >'])
@@ -313,120 +294,52 @@ def register_methods(root_module):
     register_Ns3SimpleRefCount__Ns3AttributeValue_Ns3Empty_Ns3DefaultDeleter__lt__ns3AttributeValue__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::AttributeValue, ns3::empty, ns3::DefaultDeleter<ns3::AttributeValue> >'])
     register_Ns3SimpleRefCount__Ns3CallbackImplBase_Ns3Empty_Ns3DefaultDeleter__lt__ns3CallbackImplBase__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::CallbackImplBase, ns3::empty, ns3::DefaultDeleter<ns3::CallbackImplBase> >'])
     register_Ns3SimpleRefCount__Ns3EventImpl_Ns3Empty_Ns3DefaultDeleter__lt__ns3EventImpl__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::EventImpl, ns3::empty, ns3::DefaultDeleter<ns3::EventImpl> >'])
-    register_Ns3SimpleRefCount__Ns3NixVector_Ns3Empty_Ns3DefaultDeleter__lt__ns3NixVector__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::NixVector, ns3::empty, ns3::DefaultDeleter<ns3::NixVector> >'])
-    register_Ns3SimpleRefCount__Ns3Packet_Ns3Empty_Ns3DefaultDeleter__lt__ns3Packet__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet> >'])
+    register_Ns3SimpleRefCount__Ns3HashImplementation_Ns3Empty_Ns3DefaultDeleter__lt__ns3HashImplementation__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::Hash::Implementation, ns3::empty, ns3::DefaultDeleter<ns3::Hash::Implementation> >'])
     register_Ns3SimpleRefCount__Ns3TraceSourceAccessor_Ns3Empty_Ns3DefaultDeleter__lt__ns3TraceSourceAccessor__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor> >'])
     register_Ns3Time_methods(root_module, root_module['ns3::Time'])
     register_Ns3TraceSourceAccessor_methods(root_module, root_module['ns3::TraceSourceAccessor'])
-    register_Ns3Trailer_methods(root_module, root_module['ns3::Trailer'])
     register_Ns3AttributeAccessor_methods(root_module, root_module['ns3::AttributeAccessor'])
     register_Ns3AttributeChecker_methods(root_module, root_module['ns3::AttributeChecker'])
     register_Ns3AttributeValue_methods(root_module, root_module['ns3::AttributeValue'])
+    register_Ns3BooleanChecker_methods(root_module, root_module['ns3::BooleanChecker'])
+    register_Ns3BooleanValue_methods(root_module, root_module['ns3::BooleanValue'])
     register_Ns3CallbackChecker_methods(root_module, root_module['ns3::CallbackChecker'])
     register_Ns3CallbackImplBase_methods(root_module, root_module['ns3::CallbackImplBase'])
     register_Ns3CallbackValue_methods(root_module, root_module['ns3::CallbackValue'])
     register_Ns3DataCalculator_methods(root_module, root_module['ns3::DataCalculator'])
+    register_Ns3DataCollectionObject_methods(root_module, root_module['ns3::DataCollectionObject'])
     register_Ns3DataCollector_methods(root_module, root_module['ns3::DataCollector'])
     register_Ns3DataOutputInterface_methods(root_module, root_module['ns3::DataOutputInterface'])
+    register_Ns3DoubleValue_methods(root_module, root_module['ns3::DoubleValue'])
     register_Ns3EmptyAttributeValue_methods(root_module, root_module['ns3::EmptyAttributeValue'])
+    register_Ns3EnumChecker_methods(root_module, root_module['ns3::EnumChecker'])
+    register_Ns3EnumValue_methods(root_module, root_module['ns3::EnumValue'])
     register_Ns3EventImpl_methods(root_module, root_module['ns3::EventImpl'])
-    register_Ns3Ipv4AddressChecker_methods(root_module, root_module['ns3::Ipv4AddressChecker'])
-    register_Ns3Ipv4AddressValue_methods(root_module, root_module['ns3::Ipv4AddressValue'])
-    register_Ns3Ipv4MaskChecker_methods(root_module, root_module['ns3::Ipv4MaskChecker'])
-    register_Ns3Ipv4MaskValue_methods(root_module, root_module['ns3::Ipv4MaskValue'])
-    register_Ns3Ipv6AddressChecker_methods(root_module, root_module['ns3::Ipv6AddressChecker'])
-    register_Ns3Ipv6AddressValue_methods(root_module, root_module['ns3::Ipv6AddressValue'])
-    register_Ns3Ipv6PrefixChecker_methods(root_module, root_module['ns3::Ipv6PrefixChecker'])
-    register_Ns3Ipv6PrefixValue_methods(root_module, root_module['ns3::Ipv6PrefixValue'])
-    register_Ns3Mac48AddressChecker_methods(root_module, root_module['ns3::Mac48AddressChecker'])
-    register_Ns3Mac48AddressValue_methods(root_module, root_module['ns3::Mac48AddressValue'])
+    register_Ns3FileAggregator_methods(root_module, root_module['ns3::FileAggregator'])
+    register_Ns3GnuplotAggregator_methods(root_module, root_module['ns3::GnuplotAggregator'])
+    register_Ns3IntegerValue_methods(root_module, root_module['ns3::IntegerValue'])
     register_Ns3MinMaxAvgTotalCalculator__Double_methods(root_module, root_module['ns3::MinMaxAvgTotalCalculator< double >'])
-    register_Ns3MinMaxAvgTotalCalculator__Unsigned_int_methods(root_module, root_module['ns3::MinMaxAvgTotalCalculator< unsigned int >'])
-    register_Ns3NixVector_methods(root_module, root_module['ns3::NixVector'])
     register_Ns3ObjectFactoryChecker_methods(root_module, root_module['ns3::ObjectFactoryChecker'])
     register_Ns3ObjectFactoryValue_methods(root_module, root_module['ns3::ObjectFactoryValue'])
     register_Ns3OmnetDataOutput_methods(root_module, root_module['ns3::OmnetDataOutput'])
-    register_Ns3Packet_methods(root_module, root_module['ns3::Packet'])
-    register_Ns3PacketSizeMinMaxAvgTotalCalculator_methods(root_module, root_module['ns3::PacketSizeMinMaxAvgTotalCalculator'])
+    register_Ns3Probe_methods(root_module, root_module['ns3::Probe'])
     register_Ns3SqliteDataOutput_methods(root_module, root_module['ns3::SqliteDataOutput'])
     register_Ns3TimeMinMaxAvgTotalCalculator_methods(root_module, root_module['ns3::TimeMinMaxAvgTotalCalculator'])
+    register_Ns3TimeSeriesAdaptor_methods(root_module, root_module['ns3::TimeSeriesAdaptor'])
     register_Ns3TimeValue_methods(root_module, root_module['ns3::TimeValue'])
     register_Ns3TypeIdChecker_methods(root_module, root_module['ns3::TypeIdChecker'])
     register_Ns3TypeIdValue_methods(root_module, root_module['ns3::TypeIdValue'])
-    register_Ns3AddressChecker_methods(root_module, root_module['ns3::AddressChecker'])
-    register_Ns3AddressValue_methods(root_module, root_module['ns3::AddressValue'])
-    register_Ns3CounterCalculator__Unsigned_int_methods(root_module, root_module['ns3::CounterCalculator< unsigned int >'])
-    register_Ns3PacketCounterCalculator_methods(root_module, root_module['ns3::PacketCounterCalculator'])
-    return
-
-def register_Ns3Address_methods(root_module, cls):
-    cls.add_binary_comparison_operator('<')
-    cls.add_binary_comparison_operator('!=')
-    cls.add_output_stream_operator()
-    cls.add_binary_comparison_operator('==')
-    ## address.h (module 'network'): ns3::Address::Address() [constructor]
-    cls.add_constructor([])
-    ## address.h (module 'network'): ns3::Address::Address(uint8_t type, uint8_t const * buffer, uint8_t len) [constructor]
-    cls.add_constructor([param('uint8_t', 'type'), param('uint8_t const *', 'buffer'), param('uint8_t', 'len')])
-    ## address.h (module 'network'): ns3::Address::Address(ns3::Address const & address) [copy constructor]
-    cls.add_constructor([param('ns3::Address const &', 'address')])
-    ## address.h (module 'network'): bool ns3::Address::CheckCompatible(uint8_t type, uint8_t len) const [member function]
-    cls.add_method('CheckCompatible', 
-                   'bool', 
-                   [param('uint8_t', 'type'), param('uint8_t', 'len')], 
-                   is_const=True)
-    ## address.h (module 'network'): uint32_t ns3::Address::CopyAllFrom(uint8_t const * buffer, uint8_t len) [member function]
-    cls.add_method('CopyAllFrom', 
-                   'uint32_t', 
-                   [param('uint8_t const *', 'buffer'), param('uint8_t', 'len')])
-    ## address.h (module 'network'): uint32_t ns3::Address::CopyAllTo(uint8_t * buffer, uint8_t len) const [member function]
-    cls.add_method('CopyAllTo', 
-                   'uint32_t', 
-                   [param('uint8_t *', 'buffer'), param('uint8_t', 'len')], 
-                   is_const=True)
-    ## address.h (module 'network'): uint32_t ns3::Address::CopyFrom(uint8_t const * buffer, uint8_t len) [member function]
-    cls.add_method('CopyFrom', 
-                   'uint32_t', 
-                   [param('uint8_t const *', 'buffer'), param('uint8_t', 'len')])
-    ## address.h (module 'network'): uint32_t ns3::Address::CopyTo(uint8_t * buffer) const [member function]
-    cls.add_method('CopyTo', 
-                   'uint32_t', 
-                   [param('uint8_t *', 'buffer')], 
-                   is_const=True)
-    ## address.h (module 'network'): void ns3::Address::Deserialize(ns3::TagBuffer buffer) [member function]
-    cls.add_method('Deserialize', 
-                   'void', 
-                   [param('ns3::TagBuffer', 'buffer')])
-    ## address.h (module 'network'): uint8_t ns3::Address::GetLength() const [member function]
-    cls.add_method('GetLength', 
-                   'uint8_t', 
-                   [], 
-                   is_const=True)
-    ## address.h (module 'network'): uint32_t ns3::Address::GetSerializedSize() const [member function]
-    cls.add_method('GetSerializedSize', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True)
-    ## address.h (module 'network'): bool ns3::Address::IsInvalid() const [member function]
-    cls.add_method('IsInvalid', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## address.h (module 'network'): bool ns3::Address::IsMatchingType(uint8_t type) const [member function]
-    cls.add_method('IsMatchingType', 
-                   'bool', 
-                   [param('uint8_t', 'type')], 
-                   is_const=True)
-    ## address.h (module 'network'): static uint8_t ns3::Address::Register() [member function]
-    cls.add_method('Register', 
-                   'uint8_t', 
-                   [], 
-                   is_static=True)
-    ## address.h (module 'network'): void ns3::Address::Serialize(ns3::TagBuffer buffer) const [member function]
-    cls.add_method('Serialize', 
-                   'void', 
-                   [param('ns3::TagBuffer', 'buffer')], 
-                   is_const=True)
+    register_Ns3Uinteger16Probe_methods(root_module, root_module['ns3::Uinteger16Probe'])
+    register_Ns3Uinteger32Probe_methods(root_module, root_module['ns3::Uinteger32Probe'])
+    register_Ns3Uinteger8Probe_methods(root_module, root_module['ns3::Uinteger8Probe'])
+    register_Ns3UintegerValue_methods(root_module, root_module['ns3::UintegerValue'])
+    register_Ns3BooleanProbe_methods(root_module, root_module['ns3::BooleanProbe'])
+    register_Ns3DoubleProbe_methods(root_module, root_module['ns3::DoubleProbe'])
+    register_Ns3HashImplementation_methods(root_module, root_module['ns3::Hash::Implementation'])
+    register_Ns3HashFunctionFnv1a_methods(root_module, root_module['ns3::Hash::Function::Fnv1a'])
+    register_Ns3HashFunctionHash32_methods(root_module, root_module['ns3::Hash::Function::Hash32'])
+    register_Ns3HashFunctionHash64_methods(root_module, root_module['ns3::Hash::Function::Hash64'])
+    register_Ns3HashFunctionMurmur3_methods(root_module, root_module['ns3::Hash::Function::Murmur3'])
     return
 
 def register_Ns3AttributeConstructionList_methods(root_module, cls):
@@ -466,355 +379,6 @@ def register_Ns3AttributeConstructionListItem_methods(root_module, cls):
     cls.add_instance_attribute('name', 'std::string', is_const=False)
     ## attribute-construction-list.h (module 'core'): ns3::AttributeConstructionList::Item::value [variable]
     cls.add_instance_attribute('value', 'ns3::Ptr< ns3::AttributeValue >', is_const=False)
-    return
-
-def register_Ns3Buffer_methods(root_module, cls):
-    ## buffer.h (module 'network'): ns3::Buffer::Buffer() [constructor]
-    cls.add_constructor([])
-    ## buffer.h (module 'network'): ns3::Buffer::Buffer(uint32_t dataSize) [constructor]
-    cls.add_constructor([param('uint32_t', 'dataSize')])
-    ## buffer.h (module 'network'): ns3::Buffer::Buffer(uint32_t dataSize, bool initialize) [constructor]
-    cls.add_constructor([param('uint32_t', 'dataSize'), param('bool', 'initialize')])
-    ## buffer.h (module 'network'): ns3::Buffer::Buffer(ns3::Buffer const & o) [copy constructor]
-    cls.add_constructor([param('ns3::Buffer const &', 'o')])
-    ## buffer.h (module 'network'): bool ns3::Buffer::AddAtEnd(uint32_t end) [member function]
-    cls.add_method('AddAtEnd', 
-                   'bool', 
-                   [param('uint32_t', 'end')])
-    ## buffer.h (module 'network'): void ns3::Buffer::AddAtEnd(ns3::Buffer const & o) [member function]
-    cls.add_method('AddAtEnd', 
-                   'void', 
-                   [param('ns3::Buffer const &', 'o')])
-    ## buffer.h (module 'network'): bool ns3::Buffer::AddAtStart(uint32_t start) [member function]
-    cls.add_method('AddAtStart', 
-                   'bool', 
-                   [param('uint32_t', 'start')])
-    ## buffer.h (module 'network'): ns3::Buffer::Iterator ns3::Buffer::Begin() const [member function]
-    cls.add_method('Begin', 
-                   'ns3::Buffer::Iterator', 
-                   [], 
-                   is_const=True)
-    ## buffer.h (module 'network'): void ns3::Buffer::CopyData(std::ostream * os, uint32_t size) const [member function]
-    cls.add_method('CopyData', 
-                   'void', 
-                   [param('std::ostream *', 'os'), param('uint32_t', 'size')], 
-                   is_const=True)
-    ## buffer.h (module 'network'): uint32_t ns3::Buffer::CopyData(uint8_t * buffer, uint32_t size) const [member function]
-    cls.add_method('CopyData', 
-                   'uint32_t', 
-                   [param('uint8_t *', 'buffer'), param('uint32_t', 'size')], 
-                   is_const=True)
-    ## buffer.h (module 'network'): ns3::Buffer ns3::Buffer::CreateFragment(uint32_t start, uint32_t length) const [member function]
-    cls.add_method('CreateFragment', 
-                   'ns3::Buffer', 
-                   [param('uint32_t', 'start'), param('uint32_t', 'length')], 
-                   is_const=True)
-    ## buffer.h (module 'network'): ns3::Buffer ns3::Buffer::CreateFullCopy() const [member function]
-    cls.add_method('CreateFullCopy', 
-                   'ns3::Buffer', 
-                   [], 
-                   is_const=True)
-    ## buffer.h (module 'network'): uint32_t ns3::Buffer::Deserialize(uint8_t const * buffer, uint32_t size) [member function]
-    cls.add_method('Deserialize', 
-                   'uint32_t', 
-                   [param('uint8_t const *', 'buffer'), param('uint32_t', 'size')])
-    ## buffer.h (module 'network'): ns3::Buffer::Iterator ns3::Buffer::End() const [member function]
-    cls.add_method('End', 
-                   'ns3::Buffer::Iterator', 
-                   [], 
-                   is_const=True)
-    ## buffer.h (module 'network'): int32_t ns3::Buffer::GetCurrentEndOffset() const [member function]
-    cls.add_method('GetCurrentEndOffset', 
-                   'int32_t', 
-                   [], 
-                   is_const=True)
-    ## buffer.h (module 'network'): int32_t ns3::Buffer::GetCurrentStartOffset() const [member function]
-    cls.add_method('GetCurrentStartOffset', 
-                   'int32_t', 
-                   [], 
-                   is_const=True)
-    ## buffer.h (module 'network'): uint32_t ns3::Buffer::GetSerializedSize() const [member function]
-    cls.add_method('GetSerializedSize', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True)
-    ## buffer.h (module 'network'): uint32_t ns3::Buffer::GetSize() const [member function]
-    cls.add_method('GetSize', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True)
-    ## buffer.h (module 'network'): uint8_t const * ns3::Buffer::PeekData() const [member function]
-    cls.add_method('PeekData', 
-                   'uint8_t const *', 
-                   [], 
-                   is_const=True)
-    ## buffer.h (module 'network'): void ns3::Buffer::RemoveAtEnd(uint32_t end) [member function]
-    cls.add_method('RemoveAtEnd', 
-                   'void', 
-                   [param('uint32_t', 'end')])
-    ## buffer.h (module 'network'): void ns3::Buffer::RemoveAtStart(uint32_t start) [member function]
-    cls.add_method('RemoveAtStart', 
-                   'void', 
-                   [param('uint32_t', 'start')])
-    ## buffer.h (module 'network'): uint32_t ns3::Buffer::Serialize(uint8_t * buffer, uint32_t maxSize) const [member function]
-    cls.add_method('Serialize', 
-                   'uint32_t', 
-                   [param('uint8_t *', 'buffer'), param('uint32_t', 'maxSize')], 
-                   is_const=True)
-    return
-
-def register_Ns3BufferIterator_methods(root_module, cls):
-    ## buffer.h (module 'network'): ns3::Buffer::Iterator::Iterator(ns3::Buffer::Iterator const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::Buffer::Iterator const &', 'arg0')])
-    ## buffer.h (module 'network'): ns3::Buffer::Iterator::Iterator() [constructor]
-    cls.add_constructor([])
-    ## buffer.h (module 'network'): uint16_t ns3::Buffer::Iterator::CalculateIpChecksum(uint16_t size) [member function]
-    cls.add_method('CalculateIpChecksum', 
-                   'uint16_t', 
-                   [param('uint16_t', 'size')])
-    ## buffer.h (module 'network'): uint16_t ns3::Buffer::Iterator::CalculateIpChecksum(uint16_t size, uint32_t initialChecksum) [member function]
-    cls.add_method('CalculateIpChecksum', 
-                   'uint16_t', 
-                   [param('uint16_t', 'size'), param('uint32_t', 'initialChecksum')])
-    ## buffer.h (module 'network'): uint32_t ns3::Buffer::Iterator::GetDistanceFrom(ns3::Buffer::Iterator const & o) const [member function]
-    cls.add_method('GetDistanceFrom', 
-                   'uint32_t', 
-                   [param('ns3::Buffer::Iterator const &', 'o')], 
-                   is_const=True)
-    ## buffer.h (module 'network'): uint32_t ns3::Buffer::Iterator::GetSize() const [member function]
-    cls.add_method('GetSize', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True)
-    ## buffer.h (module 'network'): bool ns3::Buffer::Iterator::IsEnd() const [member function]
-    cls.add_method('IsEnd', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## buffer.h (module 'network'): bool ns3::Buffer::Iterator::IsStart() const [member function]
-    cls.add_method('IsStart', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## buffer.h (module 'network'): void ns3::Buffer::Iterator::Next() [member function]
-    cls.add_method('Next', 
-                   'void', 
-                   [])
-    ## buffer.h (module 'network'): void ns3::Buffer::Iterator::Next(uint32_t delta) [member function]
-    cls.add_method('Next', 
-                   'void', 
-                   [param('uint32_t', 'delta')])
-    ## buffer.h (module 'network'): void ns3::Buffer::Iterator::Prev() [member function]
-    cls.add_method('Prev', 
-                   'void', 
-                   [])
-    ## buffer.h (module 'network'): void ns3::Buffer::Iterator::Prev(uint32_t delta) [member function]
-    cls.add_method('Prev', 
-                   'void', 
-                   [param('uint32_t', 'delta')])
-    ## buffer.h (module 'network'): void ns3::Buffer::Iterator::Read(uint8_t * buffer, uint32_t size) [member function]
-    cls.add_method('Read', 
-                   'void', 
-                   [param('uint8_t *', 'buffer'), param('uint32_t', 'size')])
-    ## buffer.h (module 'network'): uint16_t ns3::Buffer::Iterator::ReadLsbtohU16() [member function]
-    cls.add_method('ReadLsbtohU16', 
-                   'uint16_t', 
-                   [])
-    ## buffer.h (module 'network'): uint32_t ns3::Buffer::Iterator::ReadLsbtohU32() [member function]
-    cls.add_method('ReadLsbtohU32', 
-                   'uint32_t', 
-                   [])
-    ## buffer.h (module 'network'): uint64_t ns3::Buffer::Iterator::ReadLsbtohU64() [member function]
-    cls.add_method('ReadLsbtohU64', 
-                   'uint64_t', 
-                   [])
-    ## buffer.h (module 'network'): uint16_t ns3::Buffer::Iterator::ReadNtohU16() [member function]
-    cls.add_method('ReadNtohU16', 
-                   'uint16_t', 
-                   [])
-    ## buffer.h (module 'network'): uint32_t ns3::Buffer::Iterator::ReadNtohU32() [member function]
-    cls.add_method('ReadNtohU32', 
-                   'uint32_t', 
-                   [])
-    ## buffer.h (module 'network'): uint64_t ns3::Buffer::Iterator::ReadNtohU64() [member function]
-    cls.add_method('ReadNtohU64', 
-                   'uint64_t', 
-                   [])
-    ## buffer.h (module 'network'): uint16_t ns3::Buffer::Iterator::ReadU16() [member function]
-    cls.add_method('ReadU16', 
-                   'uint16_t', 
-                   [])
-    ## buffer.h (module 'network'): uint32_t ns3::Buffer::Iterator::ReadU32() [member function]
-    cls.add_method('ReadU32', 
-                   'uint32_t', 
-                   [])
-    ## buffer.h (module 'network'): uint64_t ns3::Buffer::Iterator::ReadU64() [member function]
-    cls.add_method('ReadU64', 
-                   'uint64_t', 
-                   [])
-    ## buffer.h (module 'network'): uint8_t ns3::Buffer::Iterator::ReadU8() [member function]
-    cls.add_method('ReadU8', 
-                   'uint8_t', 
-                   [])
-    ## buffer.h (module 'network'): void ns3::Buffer::Iterator::Write(uint8_t const * buffer, uint32_t size) [member function]
-    cls.add_method('Write', 
-                   'void', 
-                   [param('uint8_t const *', 'buffer'), param('uint32_t', 'size')])
-    ## buffer.h (module 'network'): void ns3::Buffer::Iterator::Write(ns3::Buffer::Iterator start, ns3::Buffer::Iterator end) [member function]
-    cls.add_method('Write', 
-                   'void', 
-                   [param('ns3::Buffer::Iterator', 'start'), param('ns3::Buffer::Iterator', 'end')])
-    ## buffer.h (module 'network'): void ns3::Buffer::Iterator::WriteHtolsbU16(uint16_t data) [member function]
-    cls.add_method('WriteHtolsbU16', 
-                   'void', 
-                   [param('uint16_t', 'data')])
-    ## buffer.h (module 'network'): void ns3::Buffer::Iterator::WriteHtolsbU32(uint32_t data) [member function]
-    cls.add_method('WriteHtolsbU32', 
-                   'void', 
-                   [param('uint32_t', 'data')])
-    ## buffer.h (module 'network'): void ns3::Buffer::Iterator::WriteHtolsbU64(uint64_t data) [member function]
-    cls.add_method('WriteHtolsbU64', 
-                   'void', 
-                   [param('uint64_t', 'data')])
-    ## buffer.h (module 'network'): void ns3::Buffer::Iterator::WriteHtonU16(uint16_t data) [member function]
-    cls.add_method('WriteHtonU16', 
-                   'void', 
-                   [param('uint16_t', 'data')])
-    ## buffer.h (module 'network'): void ns3::Buffer::Iterator::WriteHtonU32(uint32_t data) [member function]
-    cls.add_method('WriteHtonU32', 
-                   'void', 
-                   [param('uint32_t', 'data')])
-    ## buffer.h (module 'network'): void ns3::Buffer::Iterator::WriteHtonU64(uint64_t data) [member function]
-    cls.add_method('WriteHtonU64', 
-                   'void', 
-                   [param('uint64_t', 'data')])
-    ## buffer.h (module 'network'): void ns3::Buffer::Iterator::WriteU16(uint16_t data) [member function]
-    cls.add_method('WriteU16', 
-                   'void', 
-                   [param('uint16_t', 'data')])
-    ## buffer.h (module 'network'): void ns3::Buffer::Iterator::WriteU32(uint32_t data) [member function]
-    cls.add_method('WriteU32', 
-                   'void', 
-                   [param('uint32_t', 'data')])
-    ## buffer.h (module 'network'): void ns3::Buffer::Iterator::WriteU64(uint64_t data) [member function]
-    cls.add_method('WriteU64', 
-                   'void', 
-                   [param('uint64_t', 'data')])
-    ## buffer.h (module 'network'): void ns3::Buffer::Iterator::WriteU8(uint8_t data) [member function]
-    cls.add_method('WriteU8', 
-                   'void', 
-                   [param('uint8_t', 'data')])
-    ## buffer.h (module 'network'): void ns3::Buffer::Iterator::WriteU8(uint8_t data, uint32_t len) [member function]
-    cls.add_method('WriteU8', 
-                   'void', 
-                   [param('uint8_t', 'data'), param('uint32_t', 'len')])
-    return
-
-def register_Ns3ByteTagIterator_methods(root_module, cls):
-    ## packet.h (module 'network'): ns3::ByteTagIterator::ByteTagIterator(ns3::ByteTagIterator const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::ByteTagIterator const &', 'arg0')])
-    ## packet.h (module 'network'): bool ns3::ByteTagIterator::HasNext() const [member function]
-    cls.add_method('HasNext', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## packet.h (module 'network'): ns3::ByteTagIterator::Item ns3::ByteTagIterator::Next() [member function]
-    cls.add_method('Next', 
-                   'ns3::ByteTagIterator::Item', 
-                   [])
-    return
-
-def register_Ns3ByteTagIteratorItem_methods(root_module, cls):
-    ## packet.h (module 'network'): ns3::ByteTagIterator::Item::Item(ns3::ByteTagIterator::Item const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::ByteTagIterator::Item const &', 'arg0')])
-    ## packet.h (module 'network'): uint32_t ns3::ByteTagIterator::Item::GetEnd() const [member function]
-    cls.add_method('GetEnd', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True)
-    ## packet.h (module 'network'): uint32_t ns3::ByteTagIterator::Item::GetStart() const [member function]
-    cls.add_method('GetStart', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True)
-    ## packet.h (module 'network'): void ns3::ByteTagIterator::Item::GetTag(ns3::Tag & tag) const [member function]
-    cls.add_method('GetTag', 
-                   'void', 
-                   [param('ns3::Tag &', 'tag')], 
-                   is_const=True)
-    ## packet.h (module 'network'): ns3::TypeId ns3::ByteTagIterator::Item::GetTypeId() const [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_const=True)
-    return
-
-def register_Ns3ByteTagList_methods(root_module, cls):
-    ## byte-tag-list.h (module 'network'): ns3::ByteTagList::ByteTagList() [constructor]
-    cls.add_constructor([])
-    ## byte-tag-list.h (module 'network'): ns3::ByteTagList::ByteTagList(ns3::ByteTagList const & o) [copy constructor]
-    cls.add_constructor([param('ns3::ByteTagList const &', 'o')])
-    ## byte-tag-list.h (module 'network'): ns3::TagBuffer ns3::ByteTagList::Add(ns3::TypeId tid, uint32_t bufferSize, int32_t start, int32_t end) [member function]
-    cls.add_method('Add', 
-                   'ns3::TagBuffer', 
-                   [param('ns3::TypeId', 'tid'), param('uint32_t', 'bufferSize'), param('int32_t', 'start'), param('int32_t', 'end')])
-    ## byte-tag-list.h (module 'network'): void ns3::ByteTagList::Add(ns3::ByteTagList const & o) [member function]
-    cls.add_method('Add', 
-                   'void', 
-                   [param('ns3::ByteTagList const &', 'o')])
-    ## byte-tag-list.h (module 'network'): void ns3::ByteTagList::AddAtEnd(int32_t adjustment, int32_t appendOffset) [member function]
-    cls.add_method('AddAtEnd', 
-                   'void', 
-                   [param('int32_t', 'adjustment'), param('int32_t', 'appendOffset')])
-    ## byte-tag-list.h (module 'network'): void ns3::ByteTagList::AddAtStart(int32_t adjustment, int32_t prependOffset) [member function]
-    cls.add_method('AddAtStart', 
-                   'void', 
-                   [param('int32_t', 'adjustment'), param('int32_t', 'prependOffset')])
-    ## byte-tag-list.h (module 'network'): ns3::ByteTagList::Iterator ns3::ByteTagList::Begin(int32_t offsetStart, int32_t offsetEnd) const [member function]
-    cls.add_method('Begin', 
-                   'ns3::ByteTagList::Iterator', 
-                   [param('int32_t', 'offsetStart'), param('int32_t', 'offsetEnd')], 
-                   is_const=True)
-    ## byte-tag-list.h (module 'network'): void ns3::ByteTagList::RemoveAll() [member function]
-    cls.add_method('RemoveAll', 
-                   'void', 
-                   [])
-    return
-
-def register_Ns3ByteTagListIterator_methods(root_module, cls):
-    ## byte-tag-list.h (module 'network'): ns3::ByteTagList::Iterator::Iterator(ns3::ByteTagList::Iterator const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::ByteTagList::Iterator const &', 'arg0')])
-    ## byte-tag-list.h (module 'network'): uint32_t ns3::ByteTagList::Iterator::GetOffsetStart() const [member function]
-    cls.add_method('GetOffsetStart', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True)
-    ## byte-tag-list.h (module 'network'): bool ns3::ByteTagList::Iterator::HasNext() const [member function]
-    cls.add_method('HasNext', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## byte-tag-list.h (module 'network'): ns3::ByteTagList::Iterator::Item ns3::ByteTagList::Iterator::Next() [member function]
-    cls.add_method('Next', 
-                   'ns3::ByteTagList::Iterator::Item', 
-                   [])
-    return
-
-def register_Ns3ByteTagListIteratorItem_methods(root_module, cls):
-    ## byte-tag-list.h (module 'network'): ns3::ByteTagList::Iterator::Item::Item(ns3::ByteTagList::Iterator::Item const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::ByteTagList::Iterator::Item const &', 'arg0')])
-    ## byte-tag-list.h (module 'network'): ns3::ByteTagList::Iterator::Item::Item(ns3::TagBuffer buf) [constructor]
-    cls.add_constructor([param('ns3::TagBuffer', 'buf')])
-    ## byte-tag-list.h (module 'network'): ns3::ByteTagList::Iterator::Item::buf [variable]
-    cls.add_instance_attribute('buf', 'ns3::TagBuffer', is_const=False)
-    ## byte-tag-list.h (module 'network'): ns3::ByteTagList::Iterator::Item::end [variable]
-    cls.add_instance_attribute('end', 'int32_t', is_const=False)
-    ## byte-tag-list.h (module 'network'): ns3::ByteTagList::Iterator::Item::size [variable]
-    cls.add_instance_attribute('size', 'uint32_t', is_const=False)
-    ## byte-tag-list.h (module 'network'): ns3::ByteTagList::Iterator::Item::start [variable]
-    cls.add_instance_attribute('start', 'int32_t', is_const=False)
-    ## byte-tag-list.h (module 'network'): ns3::ByteTagList::Iterator::Item::tid [variable]
-    cls.add_instance_attribute('tid', 'ns3::TypeId', is_const=False)
     return
 
 def register_Ns3CallbackBase_methods(root_module, cls):
@@ -874,32 +438,6 @@ def register_Ns3DataOutputCallback_methods(root_module, cls):
                    is_pure_virtual=True, is_virtual=True)
     return
 
-def register_Ns3DelayJitterEstimation_methods(root_module, cls):
-    ## delay-jitter-estimation.h (module 'stats'): ns3::DelayJitterEstimation::DelayJitterEstimation(ns3::DelayJitterEstimation const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::DelayJitterEstimation const &', 'arg0')])
-    ## delay-jitter-estimation.h (module 'stats'): ns3::DelayJitterEstimation::DelayJitterEstimation() [constructor]
-    cls.add_constructor([])
-    ## delay-jitter-estimation.h (module 'stats'): ns3::Time ns3::DelayJitterEstimation::GetLastDelay() const [member function]
-    cls.add_method('GetLastDelay', 
-                   'ns3::Time', 
-                   [], 
-                   is_const=True)
-    ## delay-jitter-estimation.h (module 'stats'): uint64_t ns3::DelayJitterEstimation::GetLastJitter() const [member function]
-    cls.add_method('GetLastJitter', 
-                   'uint64_t', 
-                   [], 
-                   is_const=True)
-    ## delay-jitter-estimation.h (module 'stats'): static void ns3::DelayJitterEstimation::PrepareTx(ns3::Ptr<const ns3::Packet> packet) [member function]
-    cls.add_method('PrepareTx', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Packet const >', 'packet')], 
-                   is_static=True)
-    ## delay-jitter-estimation.h (module 'stats'): void ns3::DelayJitterEstimation::RecordRx(ns3::Ptr<const ns3::Packet> packet) [member function]
-    cls.add_method('RecordRx', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Packet const >', 'packet')])
-    return
-
 def register_Ns3EventId_methods(root_module, cls):
     cls.add_binary_comparison_operator('!=')
     cls.add_binary_comparison_operator('==')
@@ -945,6 +483,92 @@ def register_Ns3EventId_methods(root_module, cls):
                    is_const=True)
     return
 
+def register_Ns3FileHelper_methods(root_module, cls):
+    ## file-helper.h (module 'stats'): ns3::FileHelper::FileHelper(ns3::FileHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::FileHelper const &', 'arg0')])
+    ## file-helper.h (module 'stats'): ns3::FileHelper::FileHelper() [constructor]
+    cls.add_constructor([])
+    ## file-helper.h (module 'stats'): ns3::FileHelper::FileHelper(std::string const & outputFileNameWithoutExtension, ns3::FileAggregator::FileType fileType=::ns3::FileAggregator::SPACE_SEPARATED) [constructor]
+    cls.add_constructor([param('std::string const &', 'outputFileNameWithoutExtension'), param('ns3::FileAggregator::FileType', 'fileType', default_value='::ns3::FileAggregator::SPACE_SEPARATED')])
+    ## file-helper.h (module 'stats'): void ns3::FileHelper::AddAggregator(std::string const & aggregatorName, std::string const & outputFileName, bool onlyOneAggregator) [member function]
+    cls.add_method('AddAggregator', 
+                   'void', 
+                   [param('std::string const &', 'aggregatorName'), param('std::string const &', 'outputFileName'), param('bool', 'onlyOneAggregator')])
+    ## file-helper.h (module 'stats'): void ns3::FileHelper::AddProbe(std::string const & typeId, std::string const & probeName, std::string const & path) [member function]
+    cls.add_method('AddProbe', 
+                   'void', 
+                   [param('std::string const &', 'typeId'), param('std::string const &', 'probeName'), param('std::string const &', 'path')])
+    ## file-helper.h (module 'stats'): void ns3::FileHelper::AddTimeSeriesAdaptor(std::string const & adaptorName) [member function]
+    cls.add_method('AddTimeSeriesAdaptor', 
+                   'void', 
+                   [param('std::string const &', 'adaptorName')])
+    ## file-helper.h (module 'stats'): void ns3::FileHelper::ConfigureFile(std::string const & outputFileNameWithoutExtension, ns3::FileAggregator::FileType fileType=::ns3::FileAggregator::SPACE_SEPARATED) [member function]
+    cls.add_method('ConfigureFile', 
+                   'void', 
+                   [param('std::string const &', 'outputFileNameWithoutExtension'), param('ns3::FileAggregator::FileType', 'fileType', default_value='::ns3::FileAggregator::SPACE_SEPARATED')])
+    ## file-helper.h (module 'stats'): ns3::Ptr<ns3::FileAggregator> ns3::FileHelper::GetAggregatorMultiple(std::string const & aggregatorName, std::string const & outputFileName) [member function]
+    cls.add_method('GetAggregatorMultiple', 
+                   'ns3::Ptr< ns3::FileAggregator >', 
+                   [param('std::string const &', 'aggregatorName'), param('std::string const &', 'outputFileName')])
+    ## file-helper.h (module 'stats'): ns3::Ptr<ns3::FileAggregator> ns3::FileHelper::GetAggregatorSingle() [member function]
+    cls.add_method('GetAggregatorSingle', 
+                   'ns3::Ptr< ns3::FileAggregator >', 
+                   [])
+    ## file-helper.h (module 'stats'): ns3::Ptr<ns3::Probe> ns3::FileHelper::GetProbe(std::string probeName) const [member function]
+    cls.add_method('GetProbe', 
+                   'ns3::Ptr< ns3::Probe >', 
+                   [param('std::string', 'probeName')], 
+                   is_const=True)
+    ## file-helper.h (module 'stats'): void ns3::FileHelper::Set10dFormat(std::string const & format) [member function]
+    cls.add_method('Set10dFormat', 
+                   'void', 
+                   [param('std::string const &', 'format')])
+    ## file-helper.h (module 'stats'): void ns3::FileHelper::Set1dFormat(std::string const & format) [member function]
+    cls.add_method('Set1dFormat', 
+                   'void', 
+                   [param('std::string const &', 'format')])
+    ## file-helper.h (module 'stats'): void ns3::FileHelper::Set2dFormat(std::string const & format) [member function]
+    cls.add_method('Set2dFormat', 
+                   'void', 
+                   [param('std::string const &', 'format')])
+    ## file-helper.h (module 'stats'): void ns3::FileHelper::Set3dFormat(std::string const & format) [member function]
+    cls.add_method('Set3dFormat', 
+                   'void', 
+                   [param('std::string const &', 'format')])
+    ## file-helper.h (module 'stats'): void ns3::FileHelper::Set4dFormat(std::string const & format) [member function]
+    cls.add_method('Set4dFormat', 
+                   'void', 
+                   [param('std::string const &', 'format')])
+    ## file-helper.h (module 'stats'): void ns3::FileHelper::Set5dFormat(std::string const & format) [member function]
+    cls.add_method('Set5dFormat', 
+                   'void', 
+                   [param('std::string const &', 'format')])
+    ## file-helper.h (module 'stats'): void ns3::FileHelper::Set6dFormat(std::string const & format) [member function]
+    cls.add_method('Set6dFormat', 
+                   'void', 
+                   [param('std::string const &', 'format')])
+    ## file-helper.h (module 'stats'): void ns3::FileHelper::Set7dFormat(std::string const & format) [member function]
+    cls.add_method('Set7dFormat', 
+                   'void', 
+                   [param('std::string const &', 'format')])
+    ## file-helper.h (module 'stats'): void ns3::FileHelper::Set8dFormat(std::string const & format) [member function]
+    cls.add_method('Set8dFormat', 
+                   'void', 
+                   [param('std::string const &', 'format')])
+    ## file-helper.h (module 'stats'): void ns3::FileHelper::Set9dFormat(std::string const & format) [member function]
+    cls.add_method('Set9dFormat', 
+                   'void', 
+                   [param('std::string const &', 'format')])
+    ## file-helper.h (module 'stats'): void ns3::FileHelper::SetHeading(std::string const & heading) [member function]
+    cls.add_method('SetHeading', 
+                   'void', 
+                   [param('std::string const &', 'heading')])
+    ## file-helper.h (module 'stats'): void ns3::FileHelper::WriteProbe(std::string const & typeId, std::string const & path, std::string const & probeTraceSource) [member function]
+    cls.add_method('WriteProbe', 
+                   'void', 
+                   [param('std::string const &', 'typeId'), param('std::string const &', 'path'), param('std::string const &', 'probeTraceSource')])
+    return
+
 def register_Ns3Gnuplot_methods(root_module, cls):
     ## gnuplot.h (module 'stats'): ns3::Gnuplot::Gnuplot(ns3::Gnuplot const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::Gnuplot const &', 'arg0')])
@@ -963,11 +587,18 @@ def register_Ns3Gnuplot_methods(root_module, cls):
                    'std::string', 
                    [param('std::string const &', 'filename')], 
                    is_static=True)
-    ## gnuplot.h (module 'stats'): void ns3::Gnuplot::GenerateOutput(std::ostream & os) const [member function]
+    ## gnuplot.h (module 'stats'): void ns3::Gnuplot::GenerateOutput(std::ostream & os) [member function]
     cls.add_method('GenerateOutput', 
                    'void', 
-                   [param('std::ostream &', 'os')], 
-                   is_const=True)
+                   [param('std::ostream &', 'os')])
+    ## gnuplot.h (module 'stats'): void ns3::Gnuplot::GenerateOutput(std::ostream & osControl, std::ostream & osData, std::string dataFileName) [member function]
+    cls.add_method('GenerateOutput', 
+                   'void', 
+                   [param('std::ostream &', 'osControl'), param('std::ostream &', 'osData'), param('std::string', 'dataFileName')])
+    ## gnuplot.h (module 'stats'): void ns3::Gnuplot::SetDataFileDatasetIndex(unsigned int index) [member function]
+    cls.add_method('SetDataFileDatasetIndex', 
+                   'void', 
+                   [param('unsigned int', 'index')])
     ## gnuplot.h (module 'stats'): void ns3::Gnuplot::SetExtra(std::string const & extra) [member function]
     cls.add_method('SetExtra', 
                    'void', 
@@ -976,6 +607,10 @@ def register_Ns3Gnuplot_methods(root_module, cls):
     cls.add_method('SetLegend', 
                    'void', 
                    [param('std::string const &', 'xLegend'), param('std::string const &', 'yLegend')])
+    ## gnuplot.h (module 'stats'): void ns3::Gnuplot::SetOutputFilename(std::string const & outputFilename) [member function]
+    cls.add_method('SetOutputFilename', 
+                   'void', 
+                   [param('std::string const &', 'outputFilename')])
     ## gnuplot.h (module 'stats'): void ns3::Gnuplot::SetTerminal(std::string const & terminal) [member function]
     cls.add_method('SetTerminal', 
                    'void', 
@@ -995,11 +630,14 @@ def register_Ns3GnuplotCollection_methods(root_module, cls):
     cls.add_method('AddPlot', 
                    'void', 
                    [param('ns3::Gnuplot const &', 'plot')])
-    ## gnuplot.h (module 'stats'): void ns3::GnuplotCollection::GenerateOutput(std::ostream & os) const [member function]
+    ## gnuplot.h (module 'stats'): void ns3::GnuplotCollection::GenerateOutput(std::ostream & os) [member function]
     cls.add_method('GenerateOutput', 
                    'void', 
-                   [param('std::ostream &', 'os')], 
-                   is_const=True)
+                   [param('std::ostream &', 'os')])
+    ## gnuplot.h (module 'stats'): void ns3::GnuplotCollection::GenerateOutput(std::ostream & osControl, std::ostream & osData, std::string dataFileName) [member function]
+    cls.add_method('GenerateOutput', 
+                   'void', 
+                   [param('std::ostream &', 'osControl'), param('std::ostream &', 'osData'), param('std::string', 'dataFileName')])
     ## gnuplot.h (module 'stats'): ns3::Gnuplot & ns3::GnuplotCollection::GetPlot(unsigned int id) [member function]
     cls.add_method('GetPlot', 
                    'ns3::Gnuplot &', 
@@ -1031,478 +669,67 @@ def register_Ns3GnuplotDataset_methods(root_module, cls):
                         visibility='protected')
     return
 
-def register_Ns3Ipv4Address_methods(root_module, cls):
-    cls.add_binary_comparison_operator('<')
-    cls.add_binary_comparison_operator('!=')
-    cls.add_output_stream_operator()
-    cls.add_binary_comparison_operator('==')
-    ## ipv4-address.h (module 'network'): ns3::Ipv4Address::Ipv4Address(ns3::Ipv4Address const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::Ipv4Address const &', 'arg0')])
-    ## ipv4-address.h (module 'network'): ns3::Ipv4Address::Ipv4Address() [constructor]
+def register_Ns3GnuplotHelper_methods(root_module, cls):
+    ## gnuplot-helper.h (module 'stats'): ns3::GnuplotHelper::GnuplotHelper(ns3::GnuplotHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::GnuplotHelper const &', 'arg0')])
+    ## gnuplot-helper.h (module 'stats'): ns3::GnuplotHelper::GnuplotHelper() [constructor]
     cls.add_constructor([])
-    ## ipv4-address.h (module 'network'): ns3::Ipv4Address::Ipv4Address(uint32_t address) [constructor]
-    cls.add_constructor([param('uint32_t', 'address')])
-    ## ipv4-address.h (module 'network'): ns3::Ipv4Address::Ipv4Address(char const * address) [constructor]
-    cls.add_constructor([param('char const *', 'address')])
-    ## ipv4-address.h (module 'network'): ns3::Ipv4Address ns3::Ipv4Address::CombineMask(ns3::Ipv4Mask const & mask) const [member function]
-    cls.add_method('CombineMask', 
-                   'ns3::Ipv4Address', 
-                   [param('ns3::Ipv4Mask const &', 'mask')], 
-                   is_const=True)
-    ## ipv4-address.h (module 'network'): static ns3::Ipv4Address ns3::Ipv4Address::ConvertFrom(ns3::Address const & address) [member function]
-    cls.add_method('ConvertFrom', 
-                   'ns3::Ipv4Address', 
-                   [param('ns3::Address const &', 'address')], 
-                   is_static=True)
-    ## ipv4-address.h (module 'network'): static ns3::Ipv4Address ns3::Ipv4Address::Deserialize(uint8_t const * buf) [member function]
-    cls.add_method('Deserialize', 
-                   'ns3::Ipv4Address', 
-                   [param('uint8_t const *', 'buf')], 
-                   is_static=True)
-    ## ipv4-address.h (module 'network'): uint32_t ns3::Ipv4Address::Get() const [member function]
-    cls.add_method('Get', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True)
-    ## ipv4-address.h (module 'network'): static ns3::Ipv4Address ns3::Ipv4Address::GetAny() [member function]
-    cls.add_method('GetAny', 
-                   'ns3::Ipv4Address', 
-                   [], 
-                   is_static=True)
-    ## ipv4-address.h (module 'network'): static ns3::Ipv4Address ns3::Ipv4Address::GetBroadcast() [member function]
-    cls.add_method('GetBroadcast', 
-                   'ns3::Ipv4Address', 
-                   [], 
-                   is_static=True)
-    ## ipv4-address.h (module 'network'): static ns3::Ipv4Address ns3::Ipv4Address::GetLoopback() [member function]
-    cls.add_method('GetLoopback', 
-                   'ns3::Ipv4Address', 
-                   [], 
-                   is_static=True)
-    ## ipv4-address.h (module 'network'): ns3::Ipv4Address ns3::Ipv4Address::GetSubnetDirectedBroadcast(ns3::Ipv4Mask const & mask) const [member function]
-    cls.add_method('GetSubnetDirectedBroadcast', 
-                   'ns3::Ipv4Address', 
-                   [param('ns3::Ipv4Mask const &', 'mask')], 
-                   is_const=True)
-    ## ipv4-address.h (module 'network'): static ns3::Ipv4Address ns3::Ipv4Address::GetZero() [member function]
-    cls.add_method('GetZero', 
-                   'ns3::Ipv4Address', 
-                   [], 
-                   is_static=True)
-    ## ipv4-address.h (module 'network'): bool ns3::Ipv4Address::IsBroadcast() const [member function]
-    cls.add_method('IsBroadcast', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## ipv4-address.h (module 'network'): bool ns3::Ipv4Address::IsEqual(ns3::Ipv4Address const & other) const [member function]
-    cls.add_method('IsEqual', 
-                   'bool', 
-                   [param('ns3::Ipv4Address const &', 'other')], 
-                   is_const=True)
-    ## ipv4-address.h (module 'network'): bool ns3::Ipv4Address::IsLocalMulticast() const [member function]
-    cls.add_method('IsLocalMulticast', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## ipv4-address.h (module 'network'): static bool ns3::Ipv4Address::IsMatchingType(ns3::Address const & address) [member function]
-    cls.add_method('IsMatchingType', 
-                   'bool', 
-                   [param('ns3::Address const &', 'address')], 
-                   is_static=True)
-    ## ipv4-address.h (module 'network'): bool ns3::Ipv4Address::IsMulticast() const [member function]
-    cls.add_method('IsMulticast', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## ipv4-address.h (module 'network'): bool ns3::Ipv4Address::IsSubnetDirectedBroadcast(ns3::Ipv4Mask const & mask) const [member function]
-    cls.add_method('IsSubnetDirectedBroadcast', 
-                   'bool', 
-                   [param('ns3::Ipv4Mask const &', 'mask')], 
-                   is_const=True)
-    ## ipv4-address.h (module 'network'): void ns3::Ipv4Address::Print(std::ostream & os) const [member function]
-    cls.add_method('Print', 
+    ## gnuplot-helper.h (module 'stats'): ns3::GnuplotHelper::GnuplotHelper(std::string const & outputFileNameWithoutExtension, std::string const & title, std::string const & xLegend, std::string const & yLegend, std::string const & terminalType="png") [constructor]
+    cls.add_constructor([param('std::string const &', 'outputFileNameWithoutExtension'), param('std::string const &', 'title'), param('std::string const &', 'xLegend'), param('std::string const &', 'yLegend'), param('std::string const &', 'terminalType', default_value='"png"')])
+    ## gnuplot-helper.h (module 'stats'): void ns3::GnuplotHelper::AddProbe(std::string const & typeId, std::string const & probeName, std::string const & path) [member function]
+    cls.add_method('AddProbe', 
                    'void', 
-                   [param('std::ostream &', 'os')], 
-                   is_const=True)
-    ## ipv4-address.h (module 'network'): void ns3::Ipv4Address::Serialize(uint8_t * buf) const [member function]
-    cls.add_method('Serialize', 
+                   [param('std::string const &', 'typeId'), param('std::string const &', 'probeName'), param('std::string const &', 'path')])
+    ## gnuplot-helper.h (module 'stats'): void ns3::GnuplotHelper::AddTimeSeriesAdaptor(std::string const & adaptorName) [member function]
+    cls.add_method('AddTimeSeriesAdaptor', 
                    'void', 
-                   [param('uint8_t *', 'buf')], 
-                   is_const=True)
-    ## ipv4-address.h (module 'network'): void ns3::Ipv4Address::Set(uint32_t address) [member function]
-    cls.add_method('Set', 
+                   [param('std::string const &', 'adaptorName')])
+    ## gnuplot-helper.h (module 'stats'): void ns3::GnuplotHelper::ConfigurePlot(std::string const & outputFileNameWithoutExtension, std::string const & title, std::string const & xLegend, std::string const & yLegend, std::string const & terminalType=".png") [member function]
+    cls.add_method('ConfigurePlot', 
                    'void', 
-                   [param('uint32_t', 'address')])
-    ## ipv4-address.h (module 'network'): void ns3::Ipv4Address::Set(char const * address) [member function]
-    cls.add_method('Set', 
-                   'void', 
-                   [param('char const *', 'address')])
-    return
-
-def register_Ns3Ipv4Mask_methods(root_module, cls):
-    cls.add_binary_comparison_operator('!=')
-    cls.add_output_stream_operator()
-    cls.add_binary_comparison_operator('==')
-    ## ipv4-address.h (module 'network'): ns3::Ipv4Mask::Ipv4Mask(ns3::Ipv4Mask const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::Ipv4Mask const &', 'arg0')])
-    ## ipv4-address.h (module 'network'): ns3::Ipv4Mask::Ipv4Mask() [constructor]
-    cls.add_constructor([])
-    ## ipv4-address.h (module 'network'): ns3::Ipv4Mask::Ipv4Mask(uint32_t mask) [constructor]
-    cls.add_constructor([param('uint32_t', 'mask')])
-    ## ipv4-address.h (module 'network'): ns3::Ipv4Mask::Ipv4Mask(char const * mask) [constructor]
-    cls.add_constructor([param('char const *', 'mask')])
-    ## ipv4-address.h (module 'network'): uint32_t ns3::Ipv4Mask::Get() const [member function]
-    cls.add_method('Get', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True)
-    ## ipv4-address.h (module 'network'): uint32_t ns3::Ipv4Mask::GetInverse() const [member function]
-    cls.add_method('GetInverse', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True)
-    ## ipv4-address.h (module 'network'): static ns3::Ipv4Mask ns3::Ipv4Mask::GetLoopback() [member function]
-    cls.add_method('GetLoopback', 
-                   'ns3::Ipv4Mask', 
-                   [], 
-                   is_static=True)
-    ## ipv4-address.h (module 'network'): static ns3::Ipv4Mask ns3::Ipv4Mask::GetOnes() [member function]
-    cls.add_method('GetOnes', 
-                   'ns3::Ipv4Mask', 
-                   [], 
-                   is_static=True)
-    ## ipv4-address.h (module 'network'): uint16_t ns3::Ipv4Mask::GetPrefixLength() const [member function]
-    cls.add_method('GetPrefixLength', 
-                   'uint16_t', 
-                   [], 
-                   is_const=True)
-    ## ipv4-address.h (module 'network'): static ns3::Ipv4Mask ns3::Ipv4Mask::GetZero() [member function]
-    cls.add_method('GetZero', 
-                   'ns3::Ipv4Mask', 
-                   [], 
-                   is_static=True)
-    ## ipv4-address.h (module 'network'): bool ns3::Ipv4Mask::IsEqual(ns3::Ipv4Mask other) const [member function]
-    cls.add_method('IsEqual', 
-                   'bool', 
-                   [param('ns3::Ipv4Mask', 'other')], 
-                   is_const=True)
-    ## ipv4-address.h (module 'network'): bool ns3::Ipv4Mask::IsMatch(ns3::Ipv4Address a, ns3::Ipv4Address b) const [member function]
-    cls.add_method('IsMatch', 
-                   'bool', 
-                   [param('ns3::Ipv4Address', 'a'), param('ns3::Ipv4Address', 'b')], 
-                   is_const=True)
-    ## ipv4-address.h (module 'network'): void ns3::Ipv4Mask::Print(std::ostream & os) const [member function]
-    cls.add_method('Print', 
-                   'void', 
-                   [param('std::ostream &', 'os')], 
-                   is_const=True)
-    ## ipv4-address.h (module 'network'): void ns3::Ipv4Mask::Set(uint32_t mask) [member function]
-    cls.add_method('Set', 
-                   'void', 
-                   [param('uint32_t', 'mask')])
-    return
-
-def register_Ns3Ipv6Address_methods(root_module, cls):
-    cls.add_binary_comparison_operator('<')
-    cls.add_binary_comparison_operator('!=')
-    cls.add_output_stream_operator()
-    cls.add_binary_comparison_operator('==')
-    ## ipv6-address.h (module 'network'): ns3::Ipv6Address::Ipv6Address() [constructor]
-    cls.add_constructor([])
-    ## ipv6-address.h (module 'network'): ns3::Ipv6Address::Ipv6Address(char const * address) [constructor]
-    cls.add_constructor([param('char const *', 'address')])
-    ## ipv6-address.h (module 'network'): ns3::Ipv6Address::Ipv6Address(uint8_t * address) [constructor]
-    cls.add_constructor([param('uint8_t *', 'address')])
-    ## ipv6-address.h (module 'network'): ns3::Ipv6Address::Ipv6Address(ns3::Ipv6Address const & addr) [copy constructor]
-    cls.add_constructor([param('ns3::Ipv6Address const &', 'addr')])
-    ## ipv6-address.h (module 'network'): ns3::Ipv6Address::Ipv6Address(ns3::Ipv6Address const * addr) [constructor]
-    cls.add_constructor([param('ns3::Ipv6Address const *', 'addr')])
-    ## ipv6-address.h (module 'network'): ns3::Ipv6Address ns3::Ipv6Address::CombinePrefix(ns3::Ipv6Prefix const & prefix) [member function]
-    cls.add_method('CombinePrefix', 
-                   'ns3::Ipv6Address', 
-                   [param('ns3::Ipv6Prefix const &', 'prefix')])
-    ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::ConvertFrom(ns3::Address const & address) [member function]
-    cls.add_method('ConvertFrom', 
-                   'ns3::Ipv6Address', 
-                   [param('ns3::Address const &', 'address')], 
-                   is_static=True)
-    ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::Deserialize(uint8_t const * buf) [member function]
-    cls.add_method('Deserialize', 
-                   'ns3::Ipv6Address', 
-                   [param('uint8_t const *', 'buf')], 
-                   is_static=True)
-    ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::GetAllHostsMulticast() [member function]
-    cls.add_method('GetAllHostsMulticast', 
-                   'ns3::Ipv6Address', 
-                   [], 
-                   is_static=True)
-    ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::GetAllNodesMulticast() [member function]
-    cls.add_method('GetAllNodesMulticast', 
-                   'ns3::Ipv6Address', 
-                   [], 
-                   is_static=True)
-    ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::GetAllRoutersMulticast() [member function]
-    cls.add_method('GetAllRoutersMulticast', 
-                   'ns3::Ipv6Address', 
-                   [], 
-                   is_static=True)
-    ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::GetAny() [member function]
-    cls.add_method('GetAny', 
-                   'ns3::Ipv6Address', 
-                   [], 
-                   is_static=True)
-    ## ipv6-address.h (module 'network'): void ns3::Ipv6Address::GetBytes(uint8_t * buf) const [member function]
-    cls.add_method('GetBytes', 
-                   'void', 
-                   [param('uint8_t *', 'buf')], 
-                   is_const=True)
-    ## ipv6-address.h (module 'network'): ns3::Ipv4Address ns3::Ipv6Address::GetIpv4MappedAddress() const [member function]
-    cls.add_method('GetIpv4MappedAddress', 
-                   'ns3::Ipv4Address', 
-                   [], 
-                   is_const=True)
-    ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::GetLoopback() [member function]
-    cls.add_method('GetLoopback', 
-                   'ns3::Ipv6Address', 
-                   [], 
-                   is_static=True)
-    ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::GetOnes() [member function]
-    cls.add_method('GetOnes', 
-                   'ns3::Ipv6Address', 
-                   [], 
-                   is_static=True)
-    ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::GetZero() [member function]
-    cls.add_method('GetZero', 
-                   'ns3::Ipv6Address', 
-                   [], 
-                   is_static=True)
-    ## ipv6-address.h (module 'network'): bool ns3::Ipv6Address::IsAllHostsMulticast() const [member function]
-    cls.add_method('IsAllHostsMulticast', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## ipv6-address.h (module 'network'): bool ns3::Ipv6Address::IsAllNodesMulticast() const [member function]
-    cls.add_method('IsAllNodesMulticast', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## ipv6-address.h (module 'network'): bool ns3::Ipv6Address::IsAllRoutersMulticast() const [member function]
-    cls.add_method('IsAllRoutersMulticast', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## ipv6-address.h (module 'network'): bool ns3::Ipv6Address::IsAny() const [member function]
-    cls.add_method('IsAny', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## ipv6-address.h (module 'network'): bool ns3::Ipv6Address::IsEqual(ns3::Ipv6Address const & other) const [member function]
-    cls.add_method('IsEqual', 
-                   'bool', 
-                   [param('ns3::Ipv6Address const &', 'other')], 
-                   is_const=True)
-    ## ipv6-address.h (module 'network'): bool ns3::Ipv6Address::IsIpv4MappedAddress() [member function]
-    cls.add_method('IsIpv4MappedAddress', 
-                   'bool', 
+                   [param('std::string const &', 'outputFileNameWithoutExtension'), param('std::string const &', 'title'), param('std::string const &', 'xLegend'), param('std::string const &', 'yLegend'), param('std::string const &', 'terminalType', default_value='".png"')])
+    ## gnuplot-helper.h (module 'stats'): ns3::Ptr<ns3::GnuplotAggregator> ns3::GnuplotHelper::GetAggregator() [member function]
+    cls.add_method('GetAggregator', 
+                   'ns3::Ptr< ns3::GnuplotAggregator >', 
                    [])
-    ## ipv6-address.h (module 'network'): bool ns3::Ipv6Address::IsLinkLocal() const [member function]
-    cls.add_method('IsLinkLocal', 
-                   'bool', 
-                   [], 
+    ## gnuplot-helper.h (module 'stats'): ns3::Ptr<ns3::Probe> ns3::GnuplotHelper::GetProbe(std::string probeName) const [member function]
+    cls.add_method('GetProbe', 
+                   'ns3::Ptr< ns3::Probe >', 
+                   [param('std::string', 'probeName')], 
                    is_const=True)
-    ## ipv6-address.h (module 'network'): bool ns3::Ipv6Address::IsLinkLocalMulticast() const [member function]
-    cls.add_method('IsLinkLocalMulticast', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## ipv6-address.h (module 'network'): bool ns3::Ipv6Address::IsLocalhost() const [member function]
-    cls.add_method('IsLocalhost', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## ipv6-address.h (module 'network'): static bool ns3::Ipv6Address::IsMatchingType(ns3::Address const & address) [member function]
-    cls.add_method('IsMatchingType', 
-                   'bool', 
-                   [param('ns3::Address const &', 'address')], 
-                   is_static=True)
-    ## ipv6-address.h (module 'network'): bool ns3::Ipv6Address::IsMulticast() const [member function]
-    cls.add_method('IsMulticast', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## ipv6-address.h (module 'network'): bool ns3::Ipv6Address::IsSolicitedMulticast() const [member function]
-    cls.add_method('IsSolicitedMulticast', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::MakeAutoconfiguredAddress(ns3::Mac48Address addr, ns3::Ipv6Address prefix) [member function]
-    cls.add_method('MakeAutoconfiguredAddress', 
-                   'ns3::Ipv6Address', 
-                   [param('ns3::Mac48Address', 'addr'), param('ns3::Ipv6Address', 'prefix')], 
-                   is_static=True)
-    ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::MakeAutoconfiguredLinkLocalAddress(ns3::Mac48Address mac) [member function]
-    cls.add_method('MakeAutoconfiguredLinkLocalAddress', 
-                   'ns3::Ipv6Address', 
-                   [param('ns3::Mac48Address', 'mac')], 
-                   is_static=True)
-    ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::MakeIpv4MappedAddress(ns3::Ipv4Address addr) [member function]
-    cls.add_method('MakeIpv4MappedAddress', 
-                   'ns3::Ipv6Address', 
-                   [param('ns3::Ipv4Address', 'addr')], 
-                   is_static=True)
-    ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::MakeSolicitedAddress(ns3::Ipv6Address addr) [member function]
-    cls.add_method('MakeSolicitedAddress', 
-                   'ns3::Ipv6Address', 
-                   [param('ns3::Ipv6Address', 'addr')], 
-                   is_static=True)
-    ## ipv6-address.h (module 'network'): void ns3::Ipv6Address::Print(std::ostream & os) const [member function]
-    cls.add_method('Print', 
+    ## gnuplot-helper.h (module 'stats'): void ns3::GnuplotHelper::PlotProbe(std::string const & typeId, std::string const & path, std::string const & probeTraceSource, std::string const & title, ns3::GnuplotAggregator::KeyLocation keyLocation=::ns3::GnuplotAggregator::KEY_INSIDE) [member function]
+    cls.add_method('PlotProbe', 
                    'void', 
-                   [param('std::ostream &', 'os')], 
-                   is_const=True)
-    ## ipv6-address.h (module 'network'): void ns3::Ipv6Address::Serialize(uint8_t * buf) const [member function]
-    cls.add_method('Serialize', 
-                   'void', 
-                   [param('uint8_t *', 'buf')], 
-                   is_const=True)
-    ## ipv6-address.h (module 'network'): void ns3::Ipv6Address::Set(char const * address) [member function]
-    cls.add_method('Set', 
-                   'void', 
-                   [param('char const *', 'address')])
-    ## ipv6-address.h (module 'network'): void ns3::Ipv6Address::Set(uint8_t * address) [member function]
-    cls.add_method('Set', 
-                   'void', 
-                   [param('uint8_t *', 'address')])
+                   [param('std::string const &', 'typeId'), param('std::string const &', 'path'), param('std::string const &', 'probeTraceSource'), param('std::string const &', 'title'), param('ns3::GnuplotAggregator::KeyLocation', 'keyLocation', default_value='::ns3::GnuplotAggregator::KEY_INSIDE')])
     return
 
-def register_Ns3Ipv6Prefix_methods(root_module, cls):
-    cls.add_binary_comparison_operator('!=')
-    cls.add_output_stream_operator()
-    cls.add_binary_comparison_operator('==')
-    ## ipv6-address.h (module 'network'): ns3::Ipv6Prefix::Ipv6Prefix() [constructor]
+def register_Ns3Hasher_methods(root_module, cls):
+    ## hash.h (module 'core'): ns3::Hasher::Hasher(ns3::Hasher const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Hasher const &', 'arg0')])
+    ## hash.h (module 'core'): ns3::Hasher::Hasher() [constructor]
     cls.add_constructor([])
-    ## ipv6-address.h (module 'network'): ns3::Ipv6Prefix::Ipv6Prefix(uint8_t * prefix) [constructor]
-    cls.add_constructor([param('uint8_t *', 'prefix')])
-    ## ipv6-address.h (module 'network'): ns3::Ipv6Prefix::Ipv6Prefix(char const * prefix) [constructor]
-    cls.add_constructor([param('char const *', 'prefix')])
-    ## ipv6-address.h (module 'network'): ns3::Ipv6Prefix::Ipv6Prefix(uint8_t prefix) [constructor]
-    cls.add_constructor([param('uint8_t', 'prefix')])
-    ## ipv6-address.h (module 'network'): ns3::Ipv6Prefix::Ipv6Prefix(ns3::Ipv6Prefix const & prefix) [copy constructor]
-    cls.add_constructor([param('ns3::Ipv6Prefix const &', 'prefix')])
-    ## ipv6-address.h (module 'network'): ns3::Ipv6Prefix::Ipv6Prefix(ns3::Ipv6Prefix const * prefix) [constructor]
-    cls.add_constructor([param('ns3::Ipv6Prefix const *', 'prefix')])
-    ## ipv6-address.h (module 'network'): void ns3::Ipv6Prefix::GetBytes(uint8_t * buf) const [member function]
-    cls.add_method('GetBytes', 
-                   'void', 
-                   [param('uint8_t *', 'buf')], 
-                   is_const=True)
-    ## ipv6-address.h (module 'network'): static ns3::Ipv6Prefix ns3::Ipv6Prefix::GetLoopback() [member function]
-    cls.add_method('GetLoopback', 
-                   'ns3::Ipv6Prefix', 
-                   [], 
-                   is_static=True)
-    ## ipv6-address.h (module 'network'): static ns3::Ipv6Prefix ns3::Ipv6Prefix::GetOnes() [member function]
-    cls.add_method('GetOnes', 
-                   'ns3::Ipv6Prefix', 
-                   [], 
-                   is_static=True)
-    ## ipv6-address.h (module 'network'): uint8_t ns3::Ipv6Prefix::GetPrefixLength() const [member function]
-    cls.add_method('GetPrefixLength', 
-                   'uint8_t', 
-                   [], 
-                   is_const=True)
-    ## ipv6-address.h (module 'network'): static ns3::Ipv6Prefix ns3::Ipv6Prefix::GetZero() [member function]
-    cls.add_method('GetZero', 
-                   'ns3::Ipv6Prefix', 
-                   [], 
-                   is_static=True)
-    ## ipv6-address.h (module 'network'): bool ns3::Ipv6Prefix::IsEqual(ns3::Ipv6Prefix const & other) const [member function]
-    cls.add_method('IsEqual', 
-                   'bool', 
-                   [param('ns3::Ipv6Prefix const &', 'other')], 
-                   is_const=True)
-    ## ipv6-address.h (module 'network'): bool ns3::Ipv6Prefix::IsMatch(ns3::Ipv6Address a, ns3::Ipv6Address b) const [member function]
-    cls.add_method('IsMatch', 
-                   'bool', 
-                   [param('ns3::Ipv6Address', 'a'), param('ns3::Ipv6Address', 'b')], 
-                   is_const=True)
-    ## ipv6-address.h (module 'network'): void ns3::Ipv6Prefix::Print(std::ostream & os) const [member function]
-    cls.add_method('Print', 
-                   'void', 
-                   [param('std::ostream &', 'os')], 
-                   is_const=True)
-    return
-
-def register_Ns3Mac48Address_methods(root_module, cls):
-    cls.add_binary_comparison_operator('<')
-    cls.add_binary_comparison_operator('!=')
-    cls.add_output_stream_operator()
-    cls.add_binary_comparison_operator('==')
-    ## mac48-address.h (module 'network'): ns3::Mac48Address::Mac48Address(ns3::Mac48Address const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::Mac48Address const &', 'arg0')])
-    ## mac48-address.h (module 'network'): ns3::Mac48Address::Mac48Address() [constructor]
-    cls.add_constructor([])
-    ## mac48-address.h (module 'network'): ns3::Mac48Address::Mac48Address(char const * str) [constructor]
-    cls.add_constructor([param('char const *', 'str')])
-    ## mac48-address.h (module 'network'): static ns3::Mac48Address ns3::Mac48Address::Allocate() [member function]
-    cls.add_method('Allocate', 
-                   'ns3::Mac48Address', 
-                   [], 
-                   is_static=True)
-    ## mac48-address.h (module 'network'): static ns3::Mac48Address ns3::Mac48Address::ConvertFrom(ns3::Address const & address) [member function]
-    cls.add_method('ConvertFrom', 
-                   'ns3::Mac48Address', 
-                   [param('ns3::Address const &', 'address')], 
-                   is_static=True)
-    ## mac48-address.h (module 'network'): void ns3::Mac48Address::CopyFrom(uint8_t const * buffer) [member function]
-    cls.add_method('CopyFrom', 
-                   'void', 
-                   [param('uint8_t const *', 'buffer')])
-    ## mac48-address.h (module 'network'): void ns3::Mac48Address::CopyTo(uint8_t * buffer) const [member function]
-    cls.add_method('CopyTo', 
-                   'void', 
-                   [param('uint8_t *', 'buffer')], 
-                   is_const=True)
-    ## mac48-address.h (module 'network'): static ns3::Mac48Address ns3::Mac48Address::GetBroadcast() [member function]
-    cls.add_method('GetBroadcast', 
-                   'ns3::Mac48Address', 
-                   [], 
-                   is_static=True)
-    ## mac48-address.h (module 'network'): static ns3::Mac48Address ns3::Mac48Address::GetMulticast(ns3::Ipv4Address address) [member function]
-    cls.add_method('GetMulticast', 
-                   'ns3::Mac48Address', 
-                   [param('ns3::Ipv4Address', 'address')], 
-                   is_static=True)
-    ## mac48-address.h (module 'network'): static ns3::Mac48Address ns3::Mac48Address::GetMulticast(ns3::Ipv6Address address) [member function]
-    cls.add_method('GetMulticast', 
-                   'ns3::Mac48Address', 
-                   [param('ns3::Ipv6Address', 'address')], 
-                   is_static=True)
-    ## mac48-address.h (module 'network'): static ns3::Mac48Address ns3::Mac48Address::GetMulticast6Prefix() [member function]
-    cls.add_method('GetMulticast6Prefix', 
-                   'ns3::Mac48Address', 
-                   [], 
-                   is_static=True)
-    ## mac48-address.h (module 'network'): static ns3::Mac48Address ns3::Mac48Address::GetMulticastPrefix() [member function]
-    cls.add_method('GetMulticastPrefix', 
-                   'ns3::Mac48Address', 
-                   [], 
-                   is_static=True)
-    ## mac48-address.h (module 'network'): bool ns3::Mac48Address::IsBroadcast() const [member function]
-    cls.add_method('IsBroadcast', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## mac48-address.h (module 'network'): bool ns3::Mac48Address::IsGroup() const [member function]
-    cls.add_method('IsGroup', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## mac48-address.h (module 'network'): static bool ns3::Mac48Address::IsMatchingType(ns3::Address const & address) [member function]
-    cls.add_method('IsMatchingType', 
-                   'bool', 
-                   [param('ns3::Address const &', 'address')], 
-                   is_static=True)
+    ## hash.h (module 'core'): ns3::Hasher::Hasher(ns3::Ptr<ns3::Hash::Implementation> hp) [constructor]
+    cls.add_constructor([param('ns3::Ptr< ns3::Hash::Implementation >', 'hp')])
+    ## hash.h (module 'core'): uint32_t ns3::Hasher::GetHash32(char const * buffer, size_t const size) [member function]
+    cls.add_method('GetHash32', 
+                   'uint32_t', 
+                   [param('char const *', 'buffer'), param('size_t const', 'size')])
+    ## hash.h (module 'core'): uint32_t ns3::Hasher::GetHash32(std::string const s) [member function]
+    cls.add_method('GetHash32', 
+                   'uint32_t', 
+                   [param('std::string const', 's')])
+    ## hash.h (module 'core'): uint64_t ns3::Hasher::GetHash64(char const * buffer, size_t const size) [member function]
+    cls.add_method('GetHash64', 
+                   'uint64_t', 
+                   [param('char const *', 'buffer'), param('size_t const', 'size')])
+    ## hash.h (module 'core'): uint64_t ns3::Hasher::GetHash64(std::string const s) [member function]
+    cls.add_method('GetHash64', 
+                   'uint64_t', 
+                   [param('std::string const', 's')])
+    ## hash.h (module 'core'): ns3::Hasher & ns3::Hasher::clear() [member function]
+    cls.add_method('clear', 
+                   'ns3::Hasher &', 
+                   [])
     return
 
 def register_Ns3ObjectBase_methods(root_module, cls):
@@ -1612,197 +839,6 @@ def register_Ns3ObjectFactory_methods(root_module, cls):
     cls.add_method('SetTypeId', 
                    'void', 
                    [param('std::string', 'tid')])
-    return
-
-def register_Ns3PacketMetadata_methods(root_module, cls):
-    ## packet-metadata.h (module 'network'): ns3::PacketMetadata::PacketMetadata(uint64_t uid, uint32_t size) [constructor]
-    cls.add_constructor([param('uint64_t', 'uid'), param('uint32_t', 'size')])
-    ## packet-metadata.h (module 'network'): ns3::PacketMetadata::PacketMetadata(ns3::PacketMetadata const & o) [copy constructor]
-    cls.add_constructor([param('ns3::PacketMetadata const &', 'o')])
-    ## packet-metadata.h (module 'network'): void ns3::PacketMetadata::AddAtEnd(ns3::PacketMetadata const & o) [member function]
-    cls.add_method('AddAtEnd', 
-                   'void', 
-                   [param('ns3::PacketMetadata const &', 'o')])
-    ## packet-metadata.h (module 'network'): void ns3::PacketMetadata::AddHeader(ns3::Header const & header, uint32_t size) [member function]
-    cls.add_method('AddHeader', 
-                   'void', 
-                   [param('ns3::Header const &', 'header'), param('uint32_t', 'size')])
-    ## packet-metadata.h (module 'network'): void ns3::PacketMetadata::AddPaddingAtEnd(uint32_t end) [member function]
-    cls.add_method('AddPaddingAtEnd', 
-                   'void', 
-                   [param('uint32_t', 'end')])
-    ## packet-metadata.h (module 'network'): void ns3::PacketMetadata::AddTrailer(ns3::Trailer const & trailer, uint32_t size) [member function]
-    cls.add_method('AddTrailer', 
-                   'void', 
-                   [param('ns3::Trailer const &', 'trailer'), param('uint32_t', 'size')])
-    ## packet-metadata.h (module 'network'): ns3::PacketMetadata::ItemIterator ns3::PacketMetadata::BeginItem(ns3::Buffer buffer) const [member function]
-    cls.add_method('BeginItem', 
-                   'ns3::PacketMetadata::ItemIterator', 
-                   [param('ns3::Buffer', 'buffer')], 
-                   is_const=True)
-    ## packet-metadata.h (module 'network'): ns3::PacketMetadata ns3::PacketMetadata::CreateFragment(uint32_t start, uint32_t end) const [member function]
-    cls.add_method('CreateFragment', 
-                   'ns3::PacketMetadata', 
-                   [param('uint32_t', 'start'), param('uint32_t', 'end')], 
-                   is_const=True)
-    ## packet-metadata.h (module 'network'): uint32_t ns3::PacketMetadata::Deserialize(uint8_t const * buffer, uint32_t size) [member function]
-    cls.add_method('Deserialize', 
-                   'uint32_t', 
-                   [param('uint8_t const *', 'buffer'), param('uint32_t', 'size')])
-    ## packet-metadata.h (module 'network'): static void ns3::PacketMetadata::Enable() [member function]
-    cls.add_method('Enable', 
-                   'void', 
-                   [], 
-                   is_static=True)
-    ## packet-metadata.h (module 'network'): static void ns3::PacketMetadata::EnableChecking() [member function]
-    cls.add_method('EnableChecking', 
-                   'void', 
-                   [], 
-                   is_static=True)
-    ## packet-metadata.h (module 'network'): uint32_t ns3::PacketMetadata::GetSerializedSize() const [member function]
-    cls.add_method('GetSerializedSize', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True)
-    ## packet-metadata.h (module 'network'): uint64_t ns3::PacketMetadata::GetUid() const [member function]
-    cls.add_method('GetUid', 
-                   'uint64_t', 
-                   [], 
-                   is_const=True)
-    ## packet-metadata.h (module 'network'): void ns3::PacketMetadata::RemoveAtEnd(uint32_t end) [member function]
-    cls.add_method('RemoveAtEnd', 
-                   'void', 
-                   [param('uint32_t', 'end')])
-    ## packet-metadata.h (module 'network'): void ns3::PacketMetadata::RemoveAtStart(uint32_t start) [member function]
-    cls.add_method('RemoveAtStart', 
-                   'void', 
-                   [param('uint32_t', 'start')])
-    ## packet-metadata.h (module 'network'): void ns3::PacketMetadata::RemoveHeader(ns3::Header const & header, uint32_t size) [member function]
-    cls.add_method('RemoveHeader', 
-                   'void', 
-                   [param('ns3::Header const &', 'header'), param('uint32_t', 'size')])
-    ## packet-metadata.h (module 'network'): void ns3::PacketMetadata::RemoveTrailer(ns3::Trailer const & trailer, uint32_t size) [member function]
-    cls.add_method('RemoveTrailer', 
-                   'void', 
-                   [param('ns3::Trailer const &', 'trailer'), param('uint32_t', 'size')])
-    ## packet-metadata.h (module 'network'): uint32_t ns3::PacketMetadata::Serialize(uint8_t * buffer, uint32_t maxSize) const [member function]
-    cls.add_method('Serialize', 
-                   'uint32_t', 
-                   [param('uint8_t *', 'buffer'), param('uint32_t', 'maxSize')], 
-                   is_const=True)
-    return
-
-def register_Ns3PacketMetadataItem_methods(root_module, cls):
-    ## packet-metadata.h (module 'network'): ns3::PacketMetadata::Item::Item() [constructor]
-    cls.add_constructor([])
-    ## packet-metadata.h (module 'network'): ns3::PacketMetadata::Item::Item(ns3::PacketMetadata::Item const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::PacketMetadata::Item const &', 'arg0')])
-    ## packet-metadata.h (module 'network'): ns3::PacketMetadata::Item::current [variable]
-    cls.add_instance_attribute('current', 'ns3::Buffer::Iterator', is_const=False)
-    ## packet-metadata.h (module 'network'): ns3::PacketMetadata::Item::currentSize [variable]
-    cls.add_instance_attribute('currentSize', 'uint32_t', is_const=False)
-    ## packet-metadata.h (module 'network'): ns3::PacketMetadata::Item::currentTrimedFromEnd [variable]
-    cls.add_instance_attribute('currentTrimedFromEnd', 'uint32_t', is_const=False)
-    ## packet-metadata.h (module 'network'): ns3::PacketMetadata::Item::currentTrimedFromStart [variable]
-    cls.add_instance_attribute('currentTrimedFromStart', 'uint32_t', is_const=False)
-    ## packet-metadata.h (module 'network'): ns3::PacketMetadata::Item::isFragment [variable]
-    cls.add_instance_attribute('isFragment', 'bool', is_const=False)
-    ## packet-metadata.h (module 'network'): ns3::PacketMetadata::Item::tid [variable]
-    cls.add_instance_attribute('tid', 'ns3::TypeId', is_const=False)
-    return
-
-def register_Ns3PacketMetadataItemIterator_methods(root_module, cls):
-    ## packet-metadata.h (module 'network'): ns3::PacketMetadata::ItemIterator::ItemIterator(ns3::PacketMetadata::ItemIterator const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::PacketMetadata::ItemIterator const &', 'arg0')])
-    ## packet-metadata.h (module 'network'): ns3::PacketMetadata::ItemIterator::ItemIterator(ns3::PacketMetadata const * metadata, ns3::Buffer buffer) [constructor]
-    cls.add_constructor([param('ns3::PacketMetadata const *', 'metadata'), param('ns3::Buffer', 'buffer')])
-    ## packet-metadata.h (module 'network'): bool ns3::PacketMetadata::ItemIterator::HasNext() const [member function]
-    cls.add_method('HasNext', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## packet-metadata.h (module 'network'): ns3::PacketMetadata::Item ns3::PacketMetadata::ItemIterator::Next() [member function]
-    cls.add_method('Next', 
-                   'ns3::PacketMetadata::Item', 
-                   [])
-    return
-
-def register_Ns3PacketTagIterator_methods(root_module, cls):
-    ## packet.h (module 'network'): ns3::PacketTagIterator::PacketTagIterator(ns3::PacketTagIterator const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::PacketTagIterator const &', 'arg0')])
-    ## packet.h (module 'network'): bool ns3::PacketTagIterator::HasNext() const [member function]
-    cls.add_method('HasNext', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## packet.h (module 'network'): ns3::PacketTagIterator::Item ns3::PacketTagIterator::Next() [member function]
-    cls.add_method('Next', 
-                   'ns3::PacketTagIterator::Item', 
-                   [])
-    return
-
-def register_Ns3PacketTagIteratorItem_methods(root_module, cls):
-    ## packet.h (module 'network'): ns3::PacketTagIterator::Item::Item(ns3::PacketTagIterator::Item const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::PacketTagIterator::Item const &', 'arg0')])
-    ## packet.h (module 'network'): void ns3::PacketTagIterator::Item::GetTag(ns3::Tag & tag) const [member function]
-    cls.add_method('GetTag', 
-                   'void', 
-                   [param('ns3::Tag &', 'tag')], 
-                   is_const=True)
-    ## packet.h (module 'network'): ns3::TypeId ns3::PacketTagIterator::Item::GetTypeId() const [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_const=True)
-    return
-
-def register_Ns3PacketTagList_methods(root_module, cls):
-    ## packet-tag-list.h (module 'network'): ns3::PacketTagList::PacketTagList() [constructor]
-    cls.add_constructor([])
-    ## packet-tag-list.h (module 'network'): ns3::PacketTagList::PacketTagList(ns3::PacketTagList const & o) [copy constructor]
-    cls.add_constructor([param('ns3::PacketTagList const &', 'o')])
-    ## packet-tag-list.h (module 'network'): void ns3::PacketTagList::Add(ns3::Tag const & tag) const [member function]
-    cls.add_method('Add', 
-                   'void', 
-                   [param('ns3::Tag const &', 'tag')], 
-                   is_const=True)
-    ## packet-tag-list.h (module 'network'): ns3::PacketTagList::TagData const * ns3::PacketTagList::Head() const [member function]
-    cls.add_method('Head', 
-                   'ns3::PacketTagList::TagData const *', 
-                   [], 
-                   is_const=True)
-    ## packet-tag-list.h (module 'network'): bool ns3::PacketTagList::Peek(ns3::Tag & tag) const [member function]
-    cls.add_method('Peek', 
-                   'bool', 
-                   [param('ns3::Tag &', 'tag')], 
-                   is_const=True)
-    ## packet-tag-list.h (module 'network'): bool ns3::PacketTagList::Remove(ns3::Tag & tag) [member function]
-    cls.add_method('Remove', 
-                   'bool', 
-                   [param('ns3::Tag &', 'tag')])
-    ## packet-tag-list.h (module 'network'): void ns3::PacketTagList::RemoveAll() [member function]
-    cls.add_method('RemoveAll', 
-                   'void', 
-                   [])
-    ## packet-tag-list.h (module 'network'): bool ns3::PacketTagList::Replace(ns3::Tag & tag) [member function]
-    cls.add_method('Replace', 
-                   'bool', 
-                   [param('ns3::Tag &', 'tag')])
-    return
-
-def register_Ns3PacketTagListTagData_methods(root_module, cls):
-    ## packet-tag-list.h (module 'network'): ns3::PacketTagList::TagData::TagData() [constructor]
-    cls.add_constructor([])
-    ## packet-tag-list.h (module 'network'): ns3::PacketTagList::TagData::TagData(ns3::PacketTagList::TagData const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::PacketTagList::TagData const &', 'arg0')])
-    ## packet-tag-list.h (module 'network'): ns3::PacketTagList::TagData::count [variable]
-    cls.add_instance_attribute('count', 'uint32_t', is_const=False)
-    ## packet-tag-list.h (module 'network'): ns3::PacketTagList::TagData::data [variable]
-    cls.add_instance_attribute('data', 'uint8_t [ 20 ]', is_const=False)
-    ## packet-tag-list.h (module 'network'): ns3::PacketTagList::TagData::next [variable]
-    cls.add_instance_attribute('next', 'ns3::PacketTagList::TagData *', is_const=False)
-    ## packet-tag-list.h (module 'network'): ns3::PacketTagList::TagData::tid [variable]
-    cls.add_instance_attribute('tid', 'ns3::TypeId', is_const=False)
     return
 
 def register_Ns3SimpleRefCount__Ns3Object_Ns3ObjectBase_Ns3ObjectDeleter_methods(root_module, cls):
@@ -1944,99 +980,174 @@ def register_Ns3StatisticalSummary_methods(root_module, cls):
                    is_pure_virtual=True, is_const=True, is_virtual=True)
     return
 
-def register_Ns3Tag_methods(root_module, cls):
-    ## tag.h (module 'network'): ns3::Tag::Tag() [constructor]
+def register_Ns3TracedValue__Bool_methods(root_module, cls):
+    ## traced-value.h (module 'core'): ns3::TracedValue<bool>::TracedValue() [constructor]
     cls.add_constructor([])
-    ## tag.h (module 'network'): ns3::Tag::Tag(ns3::Tag const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::Tag const &', 'arg0')])
-    ## tag.h (module 'network'): void ns3::Tag::Deserialize(ns3::TagBuffer i) [member function]
-    cls.add_method('Deserialize', 
+    ## traced-value.h (module 'core'): ns3::TracedValue<bool>::TracedValue(ns3::TracedValue<bool> const & o) [copy constructor]
+    cls.add_constructor([param('ns3::TracedValue< bool > const &', 'o')])
+    ## traced-value.h (module 'core'): ns3::TracedValue<bool>::TracedValue(bool const & v) [constructor]
+    cls.add_constructor([param('bool const &', 'v')])
+    ## traced-value.h (module 'core'): void ns3::TracedValue<bool>::Connect(ns3::CallbackBase const & cb, std::basic_string<char,std::char_traits<char>,std::allocator<char> > path) [member function]
+    cls.add_method('Connect', 
                    'void', 
-                   [param('ns3::TagBuffer', 'i')], 
-                   is_pure_virtual=True, is_virtual=True)
-    ## tag.h (module 'network'): uint32_t ns3::Tag::GetSerializedSize() const [member function]
-    cls.add_method('GetSerializedSize', 
-                   'uint32_t', 
+                   [param('ns3::CallbackBase const &', 'cb'), param('std::string', 'path')])
+    ## traced-value.h (module 'core'): void ns3::TracedValue<bool>::ConnectWithoutContext(ns3::CallbackBase const & cb) [member function]
+    cls.add_method('ConnectWithoutContext', 
+                   'void', 
+                   [param('ns3::CallbackBase const &', 'cb')])
+    ## traced-value.h (module 'core'): void ns3::TracedValue<bool>::Disconnect(ns3::CallbackBase const & cb, std::basic_string<char,std::char_traits<char>,std::allocator<char> > path) [member function]
+    cls.add_method('Disconnect', 
+                   'void', 
+                   [param('ns3::CallbackBase const &', 'cb'), param('std::string', 'path')])
+    ## traced-value.h (module 'core'): void ns3::TracedValue<bool>::DisconnectWithoutContext(ns3::CallbackBase const & cb) [member function]
+    cls.add_method('DisconnectWithoutContext', 
+                   'void', 
+                   [param('ns3::CallbackBase const &', 'cb')])
+    ## traced-value.h (module 'core'): bool ns3::TracedValue<bool>::Get() const [member function]
+    cls.add_method('Get', 
+                   'bool', 
                    [], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
-    ## tag.h (module 'network'): static ns3::TypeId ns3::Tag::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
-    ## tag.h (module 'network'): void ns3::Tag::Print(std::ostream & os) const [member function]
-    cls.add_method('Print', 
+                   is_const=True)
+    ## traced-value.h (module 'core'): void ns3::TracedValue<bool>::Set(bool const & v) [member function]
+    cls.add_method('Set', 
                    'void', 
-                   [param('std::ostream &', 'os')], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
-    ## tag.h (module 'network'): void ns3::Tag::Serialize(ns3::TagBuffer i) const [member function]
-    cls.add_method('Serialize', 
-                   'void', 
-                   [param('ns3::TagBuffer', 'i')], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
+                   [param('bool const &', 'v')])
     return
 
-def register_Ns3TagBuffer_methods(root_module, cls):
-    ## tag-buffer.h (module 'network'): ns3::TagBuffer::TagBuffer(ns3::TagBuffer const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::TagBuffer const &', 'arg0')])
-    ## tag-buffer.h (module 'network'): ns3::TagBuffer::TagBuffer(uint8_t * start, uint8_t * end) [constructor]
-    cls.add_constructor([param('uint8_t *', 'start'), param('uint8_t *', 'end')])
-    ## tag-buffer.h (module 'network'): void ns3::TagBuffer::CopyFrom(ns3::TagBuffer o) [member function]
-    cls.add_method('CopyFrom', 
+def register_Ns3TracedValue__Double_methods(root_module, cls):
+    ## traced-value.h (module 'core'): ns3::TracedValue<double>::TracedValue() [constructor]
+    cls.add_constructor([])
+    ## traced-value.h (module 'core'): ns3::TracedValue<double>::TracedValue(ns3::TracedValue<double> const & o) [copy constructor]
+    cls.add_constructor([param('ns3::TracedValue< double > const &', 'o')])
+    ## traced-value.h (module 'core'): ns3::TracedValue<double>::TracedValue(double const & v) [constructor]
+    cls.add_constructor([param('double const &', 'v')])
+    ## traced-value.h (module 'core'): void ns3::TracedValue<double>::Connect(ns3::CallbackBase const & cb, std::basic_string<char,std::char_traits<char>,std::allocator<char> > path) [member function]
+    cls.add_method('Connect', 
                    'void', 
-                   [param('ns3::TagBuffer', 'o')])
-    ## tag-buffer.h (module 'network'): void ns3::TagBuffer::Read(uint8_t * buffer, uint32_t size) [member function]
-    cls.add_method('Read', 
+                   [param('ns3::CallbackBase const &', 'cb'), param('std::string', 'path')])
+    ## traced-value.h (module 'core'): void ns3::TracedValue<double>::ConnectWithoutContext(ns3::CallbackBase const & cb) [member function]
+    cls.add_method('ConnectWithoutContext', 
                    'void', 
-                   [param('uint8_t *', 'buffer'), param('uint32_t', 'size')])
-    ## tag-buffer.h (module 'network'): double ns3::TagBuffer::ReadDouble() [member function]
-    cls.add_method('ReadDouble', 
+                   [param('ns3::CallbackBase const &', 'cb')])
+    ## traced-value.h (module 'core'): void ns3::TracedValue<double>::Disconnect(ns3::CallbackBase const & cb, std::basic_string<char,std::char_traits<char>,std::allocator<char> > path) [member function]
+    cls.add_method('Disconnect', 
+                   'void', 
+                   [param('ns3::CallbackBase const &', 'cb'), param('std::string', 'path')])
+    ## traced-value.h (module 'core'): void ns3::TracedValue<double>::DisconnectWithoutContext(ns3::CallbackBase const & cb) [member function]
+    cls.add_method('DisconnectWithoutContext', 
+                   'void', 
+                   [param('ns3::CallbackBase const &', 'cb')])
+    ## traced-value.h (module 'core'): double ns3::TracedValue<double>::Get() const [member function]
+    cls.add_method('Get', 
                    'double', 
-                   [])
-    ## tag-buffer.h (module 'network'): uint16_t ns3::TagBuffer::ReadU16() [member function]
-    cls.add_method('ReadU16', 
-                   'uint16_t', 
-                   [])
-    ## tag-buffer.h (module 'network'): uint32_t ns3::TagBuffer::ReadU32() [member function]
-    cls.add_method('ReadU32', 
-                   'uint32_t', 
-                   [])
-    ## tag-buffer.h (module 'network'): uint64_t ns3::TagBuffer::ReadU64() [member function]
-    cls.add_method('ReadU64', 
-                   'uint64_t', 
-                   [])
-    ## tag-buffer.h (module 'network'): uint8_t ns3::TagBuffer::ReadU8() [member function]
-    cls.add_method('ReadU8', 
-                   'uint8_t', 
-                   [])
-    ## tag-buffer.h (module 'network'): void ns3::TagBuffer::TrimAtEnd(uint32_t trim) [member function]
-    cls.add_method('TrimAtEnd', 
+                   [], 
+                   is_const=True)
+    ## traced-value.h (module 'core'): void ns3::TracedValue<double>::Set(double const & v) [member function]
+    cls.add_method('Set', 
                    'void', 
-                   [param('uint32_t', 'trim')])
-    ## tag-buffer.h (module 'network'): void ns3::TagBuffer::Write(uint8_t const * buffer, uint32_t size) [member function]
-    cls.add_method('Write', 
+                   [param('double const &', 'v')])
+    return
+
+def register_Ns3TracedValue__Unsigned_char_methods(root_module, cls):
+    ## traced-value.h (module 'core'): ns3::TracedValue<unsigned char>::TracedValue() [constructor]
+    cls.add_constructor([])
+    ## traced-value.h (module 'core'): ns3::TracedValue<unsigned char>::TracedValue(ns3::TracedValue<unsigned char> const & o) [copy constructor]
+    cls.add_constructor([param('ns3::TracedValue< unsigned char > const &', 'o')])
+    ## traced-value.h (module 'core'): ns3::TracedValue<unsigned char>::TracedValue(unsigned char const & v) [constructor]
+    cls.add_constructor([param('unsigned char const &', 'v')])
+    ## traced-value.h (module 'core'): void ns3::TracedValue<unsigned char>::Connect(ns3::CallbackBase const & cb, std::basic_string<char,std::char_traits<char>,std::allocator<char> > path) [member function]
+    cls.add_method('Connect', 
                    'void', 
-                   [param('uint8_t const *', 'buffer'), param('uint32_t', 'size')])
-    ## tag-buffer.h (module 'network'): void ns3::TagBuffer::WriteDouble(double v) [member function]
-    cls.add_method('WriteDouble', 
+                   [param('ns3::CallbackBase const &', 'cb'), param('std::string', 'path')])
+    ## traced-value.h (module 'core'): void ns3::TracedValue<unsigned char>::ConnectWithoutContext(ns3::CallbackBase const & cb) [member function]
+    cls.add_method('ConnectWithoutContext', 
                    'void', 
-                   [param('double', 'v')])
-    ## tag-buffer.h (module 'network'): void ns3::TagBuffer::WriteU16(uint16_t data) [member function]
-    cls.add_method('WriteU16', 
+                   [param('ns3::CallbackBase const &', 'cb')])
+    ## traced-value.h (module 'core'): void ns3::TracedValue<unsigned char>::Disconnect(ns3::CallbackBase const & cb, std::basic_string<char,std::char_traits<char>,std::allocator<char> > path) [member function]
+    cls.add_method('Disconnect', 
                    'void', 
-                   [param('uint16_t', 'data')])
-    ## tag-buffer.h (module 'network'): void ns3::TagBuffer::WriteU32(uint32_t data) [member function]
-    cls.add_method('WriteU32', 
+                   [param('ns3::CallbackBase const &', 'cb'), param('std::string', 'path')])
+    ## traced-value.h (module 'core'): void ns3::TracedValue<unsigned char>::DisconnectWithoutContext(ns3::CallbackBase const & cb) [member function]
+    cls.add_method('DisconnectWithoutContext', 
                    'void', 
-                   [param('uint32_t', 'data')])
-    ## tag-buffer.h (module 'network'): void ns3::TagBuffer::WriteU64(uint64_t v) [member function]
-    cls.add_method('WriteU64', 
+                   [param('ns3::CallbackBase const &', 'cb')])
+    ## traced-value.h (module 'core'): unsigned char ns3::TracedValue<unsigned char>::Get() const [member function]
+    cls.add_method('Get', 
+                   'unsigned char', 
+                   [], 
+                   is_const=True)
+    ## traced-value.h (module 'core'): void ns3::TracedValue<unsigned char>::Set(unsigned char const & v) [member function]
+    cls.add_method('Set', 
                    'void', 
-                   [param('uint64_t', 'v')])
-    ## tag-buffer.h (module 'network'): void ns3::TagBuffer::WriteU8(uint8_t v) [member function]
-    cls.add_method('WriteU8', 
+                   [param('unsigned char const &', 'v')])
+    return
+
+def register_Ns3TracedValue__Unsigned_int_methods(root_module, cls):
+    ## traced-value.h (module 'core'): ns3::TracedValue<unsigned int>::TracedValue() [constructor]
+    cls.add_constructor([])
+    ## traced-value.h (module 'core'): ns3::TracedValue<unsigned int>::TracedValue(ns3::TracedValue<unsigned int> const & o) [copy constructor]
+    cls.add_constructor([param('ns3::TracedValue< unsigned int > const &', 'o')])
+    ## traced-value.h (module 'core'): ns3::TracedValue<unsigned int>::TracedValue(unsigned int const & v) [constructor]
+    cls.add_constructor([param('unsigned int const &', 'v')])
+    ## traced-value.h (module 'core'): void ns3::TracedValue<unsigned int>::Connect(ns3::CallbackBase const & cb, std::basic_string<char,std::char_traits<char>,std::allocator<char> > path) [member function]
+    cls.add_method('Connect', 
                    'void', 
-                   [param('uint8_t', 'v')])
+                   [param('ns3::CallbackBase const &', 'cb'), param('std::string', 'path')])
+    ## traced-value.h (module 'core'): void ns3::TracedValue<unsigned int>::ConnectWithoutContext(ns3::CallbackBase const & cb) [member function]
+    cls.add_method('ConnectWithoutContext', 
+                   'void', 
+                   [param('ns3::CallbackBase const &', 'cb')])
+    ## traced-value.h (module 'core'): void ns3::TracedValue<unsigned int>::Disconnect(ns3::CallbackBase const & cb, std::basic_string<char,std::char_traits<char>,std::allocator<char> > path) [member function]
+    cls.add_method('Disconnect', 
+                   'void', 
+                   [param('ns3::CallbackBase const &', 'cb'), param('std::string', 'path')])
+    ## traced-value.h (module 'core'): void ns3::TracedValue<unsigned int>::DisconnectWithoutContext(ns3::CallbackBase const & cb) [member function]
+    cls.add_method('DisconnectWithoutContext', 
+                   'void', 
+                   [param('ns3::CallbackBase const &', 'cb')])
+    ## traced-value.h (module 'core'): unsigned int ns3::TracedValue<unsigned int>::Get() const [member function]
+    cls.add_method('Get', 
+                   'unsigned int', 
+                   [], 
+                   is_const=True)
+    ## traced-value.h (module 'core'): void ns3::TracedValue<unsigned int>::Set(unsigned int const & v) [member function]
+    cls.add_method('Set', 
+                   'void', 
+                   [param('unsigned int const &', 'v')])
+    return
+
+def register_Ns3TracedValue__Unsigned_short_methods(root_module, cls):
+    ## traced-value.h (module 'core'): ns3::TracedValue<unsigned short>::TracedValue() [constructor]
+    cls.add_constructor([])
+    ## traced-value.h (module 'core'): ns3::TracedValue<unsigned short>::TracedValue(ns3::TracedValue<unsigned short> const & o) [copy constructor]
+    cls.add_constructor([param('ns3::TracedValue< unsigned short > const &', 'o')])
+    ## traced-value.h (module 'core'): ns3::TracedValue<unsigned short>::TracedValue(short unsigned int const & v) [constructor]
+    cls.add_constructor([param('short unsigned int const &', 'v')])
+    ## traced-value.h (module 'core'): void ns3::TracedValue<unsigned short>::Connect(ns3::CallbackBase const & cb, std::basic_string<char,std::char_traits<char>,std::allocator<char> > path) [member function]
+    cls.add_method('Connect', 
+                   'void', 
+                   [param('ns3::CallbackBase const &', 'cb'), param('std::string', 'path')])
+    ## traced-value.h (module 'core'): void ns3::TracedValue<unsigned short>::ConnectWithoutContext(ns3::CallbackBase const & cb) [member function]
+    cls.add_method('ConnectWithoutContext', 
+                   'void', 
+                   [param('ns3::CallbackBase const &', 'cb')])
+    ## traced-value.h (module 'core'): void ns3::TracedValue<unsigned short>::Disconnect(ns3::CallbackBase const & cb, std::basic_string<char,std::char_traits<char>,std::allocator<char> > path) [member function]
+    cls.add_method('Disconnect', 
+                   'void', 
+                   [param('ns3::CallbackBase const &', 'cb'), param('std::string', 'path')])
+    ## traced-value.h (module 'core'): void ns3::TracedValue<unsigned short>::DisconnectWithoutContext(ns3::CallbackBase const & cb) [member function]
+    cls.add_method('DisconnectWithoutContext', 
+                   'void', 
+                   [param('ns3::CallbackBase const &', 'cb')])
+    ## traced-value.h (module 'core'): short unsigned int ns3::TracedValue<unsigned short>::Get() const [member function]
+    cls.add_method('Get', 
+                   'short unsigned int', 
+                   [], 
+                   is_const=True)
+    ## traced-value.h (module 'core'): void ns3::TracedValue<unsigned short>::Set(short unsigned int const & v) [member function]
+    cls.add_method('Set', 
+                   'void', 
+                   [param('short unsigned int const &', 'v')])
     return
 
 def register_Ns3TypeId_methods(root_module, cls):
@@ -2085,6 +1196,11 @@ def register_Ns3TypeId_methods(root_module, cls):
     ## type-id.h (module 'core'): std::string ns3::TypeId::GetGroupName() const [member function]
     cls.add_method('GetGroupName', 
                    'std::string', 
+                   [], 
+                   is_const=True)
+    ## type-id.h (module 'core'): uint32_t ns3::TypeId::GetHash() const [member function]
+    cls.add_method('GetHash', 
+                   'uint32_t', 
                    [], 
                    is_const=True)
     ## type-id.h (module 'core'): std::string ns3::TypeId::GetName() const [member function]
@@ -2146,6 +1262,16 @@ def register_Ns3TypeId_methods(root_module, cls):
                    'bool', 
                    [param('std::string', 'name'), param('ns3::TypeId::AttributeInformation *', 'info', transfer_ownership=False)], 
                    is_const=True)
+    ## type-id.h (module 'core'): static ns3::TypeId ns3::TypeId::LookupByHash(uint32_t hash) [member function]
+    cls.add_method('LookupByHash', 
+                   'ns3::TypeId', 
+                   [param('uint32_t', 'hash')], 
+                   is_static=True)
+    ## type-id.h (module 'core'): static bool ns3::TypeId::LookupByHashFailSafe(uint32_t hash, ns3::TypeId * tid) [member function]
+    cls.add_method('LookupByHashFailSafe', 
+                   'bool', 
+                   [param('uint32_t', 'hash'), param('ns3::TypeId *', 'tid')], 
+                   is_static=True)
     ## type-id.h (module 'core'): static ns3::TypeId ns3::TypeId::LookupByName(std::string name) [member function]
     cls.add_method('LookupByName', 
                    'ns3::TypeId', 
@@ -2327,28 +1453,6 @@ def register_Ns3Int64x64_t_methods(root_module, cls):
                    [param('ns3::int64x64_t const &', 'o')])
     return
 
-def register_Ns3Chunk_methods(root_module, cls):
-    ## chunk.h (module 'network'): ns3::Chunk::Chunk() [constructor]
-    cls.add_constructor([])
-    ## chunk.h (module 'network'): ns3::Chunk::Chunk(ns3::Chunk const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::Chunk const &', 'arg0')])
-    ## chunk.h (module 'network'): uint32_t ns3::Chunk::Deserialize(ns3::Buffer::Iterator start) [member function]
-    cls.add_method('Deserialize', 
-                   'uint32_t', 
-                   [param('ns3::Buffer::Iterator', 'start')], 
-                   is_pure_virtual=True, is_virtual=True)
-    ## chunk.h (module 'network'): static ns3::TypeId ns3::Chunk::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
-    ## chunk.h (module 'network'): void ns3::Chunk::Print(std::ostream & os) const [member function]
-    cls.add_method('Print', 
-                   'void', 
-                   [param('std::ostream &', 'os')], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
-    return
-
 def register_Ns3Gnuplot2dDataset_methods(root_module, cls):
     ## gnuplot.h (module 'stats'): ns3::Gnuplot2dDataset::Gnuplot2dDataset(ns3::Gnuplot2dDataset const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::Gnuplot2dDataset const &', 'arg0')])
@@ -2434,39 +1538,6 @@ def register_Ns3Gnuplot3dFunction_methods(root_module, cls):
     cls.add_method('SetFunction', 
                    'void', 
                    [param('std::string const &', 'function')])
-    return
-
-def register_Ns3Header_methods(root_module, cls):
-    cls.add_output_stream_operator()
-    ## header.h (module 'network'): ns3::Header::Header() [constructor]
-    cls.add_constructor([])
-    ## header.h (module 'network'): ns3::Header::Header(ns3::Header const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::Header const &', 'arg0')])
-    ## header.h (module 'network'): uint32_t ns3::Header::Deserialize(ns3::Buffer::Iterator start) [member function]
-    cls.add_method('Deserialize', 
-                   'uint32_t', 
-                   [param('ns3::Buffer::Iterator', 'start')], 
-                   is_pure_virtual=True, is_virtual=True)
-    ## header.h (module 'network'): uint32_t ns3::Header::GetSerializedSize() const [member function]
-    cls.add_method('GetSerializedSize', 
-                   'uint32_t', 
-                   [], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
-    ## header.h (module 'network'): static ns3::TypeId ns3::Header::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
-    ## header.h (module 'network'): void ns3::Header::Print(std::ostream & os) const [member function]
-    cls.add_method('Print', 
-                   'void', 
-                   [param('std::ostream &', 'os')], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
-    ## header.h (module 'network'): void ns3::Header::Serialize(ns3::Buffer::Iterator start) const [member function]
-    cls.add_method('Serialize', 
-                   'void', 
-                   [param('ns3::Buffer::Iterator', 'start')], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
     return
 
 def register_Ns3Object_methods(root_module, cls):
@@ -2595,24 +1666,12 @@ def register_Ns3SimpleRefCount__Ns3EventImpl_Ns3Empty_Ns3DefaultDeleter__lt__ns3
                    is_static=True)
     return
 
-def register_Ns3SimpleRefCount__Ns3NixVector_Ns3Empty_Ns3DefaultDeleter__lt__ns3NixVector__gt___methods(root_module, cls):
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::NixVector, ns3::empty, ns3::DefaultDeleter<ns3::NixVector> >::SimpleRefCount() [constructor]
+def register_Ns3SimpleRefCount__Ns3HashImplementation_Ns3Empty_Ns3DefaultDeleter__lt__ns3HashImplementation__gt___methods(root_module, cls):
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Hash::Implementation, ns3::empty, ns3::DefaultDeleter<ns3::Hash::Implementation> >::SimpleRefCount() [constructor]
     cls.add_constructor([])
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::NixVector, ns3::empty, ns3::DefaultDeleter<ns3::NixVector> >::SimpleRefCount(ns3::SimpleRefCount<ns3::NixVector, ns3::empty, ns3::DefaultDeleter<ns3::NixVector> > const & o) [copy constructor]
-    cls.add_constructor([param('ns3::SimpleRefCount< ns3::NixVector, ns3::empty, ns3::DefaultDeleter< ns3::NixVector > > const &', 'o')])
-    ## simple-ref-count.h (module 'core'): static void ns3::SimpleRefCount<ns3::NixVector, ns3::empty, ns3::DefaultDeleter<ns3::NixVector> >::Cleanup() [member function]
-    cls.add_method('Cleanup', 
-                   'void', 
-                   [], 
-                   is_static=True)
-    return
-
-def register_Ns3SimpleRefCount__Ns3Packet_Ns3Empty_Ns3DefaultDeleter__lt__ns3Packet__gt___methods(root_module, cls):
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet> >::SimpleRefCount() [constructor]
-    cls.add_constructor([])
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet> >::SimpleRefCount(ns3::SimpleRefCount<ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet> > const & o) [copy constructor]
-    cls.add_constructor([param('ns3::SimpleRefCount< ns3::Packet, ns3::empty, ns3::DefaultDeleter< ns3::Packet > > const &', 'o')])
-    ## simple-ref-count.h (module 'core'): static void ns3::SimpleRefCount<ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet> >::Cleanup() [member function]
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Hash::Implementation, ns3::empty, ns3::DefaultDeleter<ns3::Hash::Implementation> >::SimpleRefCount(ns3::SimpleRefCount<ns3::Hash::Implementation, ns3::empty, ns3::DefaultDeleter<ns3::Hash::Implementation> > const & o) [copy constructor]
+    cls.add_constructor([param('ns3::SimpleRefCount< ns3::Hash::Implementation, ns3::empty, ns3::DefaultDeleter< ns3::Hash::Implementation > > const &', 'o')])
+    ## simple-ref-count.h (module 'core'): static void ns3::SimpleRefCount<ns3::Hash::Implementation, ns3::empty, ns3::DefaultDeleter<ns3::Hash::Implementation> >::Cleanup() [member function]
     cls.add_method('Cleanup', 
                    'void', 
                    [], 
@@ -2765,13 +1824,13 @@ def register_Ns3Time_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True)
-    ## nstime.h (module 'core'): static ns3::Time ns3::Time::MAX() [member function]
-    cls.add_method('MAX', 
+    ## nstime.h (module 'core'): static ns3::Time ns3::Time::Max() [member function]
+    cls.add_method('Max', 
                    'ns3::Time', 
                    [], 
                    is_static=True)
-    ## nstime.h (module 'core'): static ns3::Time ns3::Time::MIN() [member function]
-    cls.add_method('MIN', 
+    ## nstime.h (module 'core'): static ns3::Time ns3::Time::Min() [member function]
+    cls.add_method('Min', 
                    'ns3::Time', 
                    [], 
                    is_static=True)
@@ -2821,39 +1880,6 @@ def register_Ns3TraceSourceAccessor_methods(root_module, cls):
     cls.add_method('DisconnectWithoutContext', 
                    'bool', 
                    [param('ns3::ObjectBase *', 'obj', transfer_ownership=False), param('ns3::CallbackBase const &', 'cb')], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
-    return
-
-def register_Ns3Trailer_methods(root_module, cls):
-    cls.add_output_stream_operator()
-    ## trailer.h (module 'network'): ns3::Trailer::Trailer() [constructor]
-    cls.add_constructor([])
-    ## trailer.h (module 'network'): ns3::Trailer::Trailer(ns3::Trailer const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::Trailer const &', 'arg0')])
-    ## trailer.h (module 'network'): uint32_t ns3::Trailer::Deserialize(ns3::Buffer::Iterator end) [member function]
-    cls.add_method('Deserialize', 
-                   'uint32_t', 
-                   [param('ns3::Buffer::Iterator', 'end')], 
-                   is_pure_virtual=True, is_virtual=True)
-    ## trailer.h (module 'network'): uint32_t ns3::Trailer::GetSerializedSize() const [member function]
-    cls.add_method('GetSerializedSize', 
-                   'uint32_t', 
-                   [], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
-    ## trailer.h (module 'network'): static ns3::TypeId ns3::Trailer::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
-    ## trailer.h (module 'network'): void ns3::Trailer::Print(std::ostream & os) const [member function]
-    cls.add_method('Print', 
-                   'void', 
-                   [param('std::ostream &', 'os')], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
-    ## trailer.h (module 'network'): void ns3::Trailer::Serialize(ns3::Buffer::Iterator start) const [member function]
-    cls.add_method('Serialize', 
-                   'void', 
-                   [param('ns3::Buffer::Iterator', 'start')], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
     return
 
@@ -2946,6 +1972,47 @@ def register_Ns3AttributeValue_methods(root_module, cls):
                    'std::string', 
                    [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
+    return
+
+def register_Ns3BooleanChecker_methods(root_module, cls):
+    ## boolean.h (module 'core'): ns3::BooleanChecker::BooleanChecker() [constructor]
+    cls.add_constructor([])
+    ## boolean.h (module 'core'): ns3::BooleanChecker::BooleanChecker(ns3::BooleanChecker const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::BooleanChecker const &', 'arg0')])
+    return
+
+def register_Ns3BooleanValue_methods(root_module, cls):
+    cls.add_output_stream_operator()
+    ## boolean.h (module 'core'): ns3::BooleanValue::BooleanValue(ns3::BooleanValue const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::BooleanValue const &', 'arg0')])
+    ## boolean.h (module 'core'): ns3::BooleanValue::BooleanValue() [constructor]
+    cls.add_constructor([])
+    ## boolean.h (module 'core'): ns3::BooleanValue::BooleanValue(bool value) [constructor]
+    cls.add_constructor([param('bool', 'value')])
+    ## boolean.h (module 'core'): ns3::Ptr<ns3::AttributeValue> ns3::BooleanValue::Copy() const [member function]
+    cls.add_method('Copy', 
+                   'ns3::Ptr< ns3::AttributeValue >', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## boolean.h (module 'core'): bool ns3::BooleanValue::DeserializeFromString(std::string value, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
+    cls.add_method('DeserializeFromString', 
+                   'bool', 
+                   [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_virtual=True)
+    ## boolean.h (module 'core'): bool ns3::BooleanValue::Get() const [member function]
+    cls.add_method('Get', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## boolean.h (module 'core'): std::string ns3::BooleanValue::SerializeToString(ns3::Ptr<ns3::AttributeChecker const> checker) const [member function]
+    cls.add_method('SerializeToString', 
+                   'std::string', 
+                   [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_const=True, is_virtual=True)
+    ## boolean.h (module 'core'): void ns3::BooleanValue::Set(bool value) [member function]
+    cls.add_method('Set', 
+                   'void', 
+                   [param('bool', 'value')])
     return
 
 def register_Ns3CallbackChecker_methods(root_module, cls):
@@ -3053,6 +2120,40 @@ def register_Ns3DataCalculator_methods(root_module, cls):
                    visibility='protected', is_virtual=True)
     return
 
+def register_Ns3DataCollectionObject_methods(root_module, cls):
+    ## data-collection-object.h (module 'stats'): ns3::DataCollectionObject::DataCollectionObject(ns3::DataCollectionObject const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::DataCollectionObject const &', 'arg0')])
+    ## data-collection-object.h (module 'stats'): ns3::DataCollectionObject::DataCollectionObject() [constructor]
+    cls.add_constructor([])
+    ## data-collection-object.h (module 'stats'): void ns3::DataCollectionObject::Disable() [member function]
+    cls.add_method('Disable', 
+                   'void', 
+                   [])
+    ## data-collection-object.h (module 'stats'): void ns3::DataCollectionObject::Enable() [member function]
+    cls.add_method('Enable', 
+                   'void', 
+                   [])
+    ## data-collection-object.h (module 'stats'): std::string ns3::DataCollectionObject::GetName() const [member function]
+    cls.add_method('GetName', 
+                   'std::string', 
+                   [], 
+                   is_const=True)
+    ## data-collection-object.h (module 'stats'): static ns3::TypeId ns3::DataCollectionObject::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## data-collection-object.h (module 'stats'): bool ns3::DataCollectionObject::IsEnabled() const [member function]
+    cls.add_method('IsEnabled', 
+                   'bool', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## data-collection-object.h (module 'stats'): void ns3::DataCollectionObject::SetName(std::string name) [member function]
+    cls.add_method('SetName', 
+                   'void', 
+                   [param('std::string', 'name')])
+    return
+
 def register_Ns3DataCollector_methods(root_module, cls):
     ## data-collector.h (module 'stats'): ns3::DataCollector::DataCollector(ns3::DataCollector const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::DataCollector const &', 'arg0')])
@@ -3152,6 +2253,39 @@ def register_Ns3DataOutputInterface_methods(root_module, cls):
                    visibility='protected', is_virtual=True)
     return
 
+def register_Ns3DoubleValue_methods(root_module, cls):
+    ## double.h (module 'core'): ns3::DoubleValue::DoubleValue() [constructor]
+    cls.add_constructor([])
+    ## double.h (module 'core'): ns3::DoubleValue::DoubleValue(ns3::DoubleValue const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::DoubleValue const &', 'arg0')])
+    ## double.h (module 'core'): ns3::DoubleValue::DoubleValue(double const & value) [constructor]
+    cls.add_constructor([param('double const &', 'value')])
+    ## double.h (module 'core'): ns3::Ptr<ns3::AttributeValue> ns3::DoubleValue::Copy() const [member function]
+    cls.add_method('Copy', 
+                   'ns3::Ptr< ns3::AttributeValue >', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## double.h (module 'core'): bool ns3::DoubleValue::DeserializeFromString(std::string value, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
+    cls.add_method('DeserializeFromString', 
+                   'bool', 
+                   [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_virtual=True)
+    ## double.h (module 'core'): double ns3::DoubleValue::Get() const [member function]
+    cls.add_method('Get', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## double.h (module 'core'): std::string ns3::DoubleValue::SerializeToString(ns3::Ptr<ns3::AttributeChecker const> checker) const [member function]
+    cls.add_method('SerializeToString', 
+                   'std::string', 
+                   [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_const=True, is_virtual=True)
+    ## double.h (module 'core'): void ns3::DoubleValue::Set(double const & value) [member function]
+    cls.add_method('Set', 
+                   'void', 
+                   [param('double const &', 'value')])
+    return
+
 def register_Ns3EmptyAttributeValue_methods(root_module, cls):
     ## attribute.h (module 'core'): ns3::EmptyAttributeValue::EmptyAttributeValue(ns3::EmptyAttributeValue const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::EmptyAttributeValue const &', 'arg0')])
@@ -3172,6 +2306,84 @@ def register_Ns3EmptyAttributeValue_methods(root_module, cls):
                    'std::string', 
                    [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
                    is_const=True, visibility='private', is_virtual=True)
+    return
+
+def register_Ns3EnumChecker_methods(root_module, cls):
+    ## enum.h (module 'core'): ns3::EnumChecker::EnumChecker(ns3::EnumChecker const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::EnumChecker const &', 'arg0')])
+    ## enum.h (module 'core'): ns3::EnumChecker::EnumChecker() [constructor]
+    cls.add_constructor([])
+    ## enum.h (module 'core'): void ns3::EnumChecker::Add(int v, std::string name) [member function]
+    cls.add_method('Add', 
+                   'void', 
+                   [param('int', 'v'), param('std::string', 'name')])
+    ## enum.h (module 'core'): void ns3::EnumChecker::AddDefault(int v, std::string name) [member function]
+    cls.add_method('AddDefault', 
+                   'void', 
+                   [param('int', 'v'), param('std::string', 'name')])
+    ## enum.h (module 'core'): bool ns3::EnumChecker::Check(ns3::AttributeValue const & value) const [member function]
+    cls.add_method('Check', 
+                   'bool', 
+                   [param('ns3::AttributeValue const &', 'value')], 
+                   is_const=True, is_virtual=True)
+    ## enum.h (module 'core'): bool ns3::EnumChecker::Copy(ns3::AttributeValue const & src, ns3::AttributeValue & dst) const [member function]
+    cls.add_method('Copy', 
+                   'bool', 
+                   [param('ns3::AttributeValue const &', 'src'), param('ns3::AttributeValue &', 'dst')], 
+                   is_const=True, is_virtual=True)
+    ## enum.h (module 'core'): ns3::Ptr<ns3::AttributeValue> ns3::EnumChecker::Create() const [member function]
+    cls.add_method('Create', 
+                   'ns3::Ptr< ns3::AttributeValue >', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## enum.h (module 'core'): std::string ns3::EnumChecker::GetUnderlyingTypeInformation() const [member function]
+    cls.add_method('GetUnderlyingTypeInformation', 
+                   'std::string', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## enum.h (module 'core'): std::string ns3::EnumChecker::GetValueTypeName() const [member function]
+    cls.add_method('GetValueTypeName', 
+                   'std::string', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## enum.h (module 'core'): bool ns3::EnumChecker::HasUnderlyingTypeInformation() const [member function]
+    cls.add_method('HasUnderlyingTypeInformation', 
+                   'bool', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    return
+
+def register_Ns3EnumValue_methods(root_module, cls):
+    ## enum.h (module 'core'): ns3::EnumValue::EnumValue(ns3::EnumValue const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::EnumValue const &', 'arg0')])
+    ## enum.h (module 'core'): ns3::EnumValue::EnumValue() [constructor]
+    cls.add_constructor([])
+    ## enum.h (module 'core'): ns3::EnumValue::EnumValue(int v) [constructor]
+    cls.add_constructor([param('int', 'v')])
+    ## enum.h (module 'core'): ns3::Ptr<ns3::AttributeValue> ns3::EnumValue::Copy() const [member function]
+    cls.add_method('Copy', 
+                   'ns3::Ptr< ns3::AttributeValue >', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## enum.h (module 'core'): bool ns3::EnumValue::DeserializeFromString(std::string value, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
+    cls.add_method('DeserializeFromString', 
+                   'bool', 
+                   [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_virtual=True)
+    ## enum.h (module 'core'): int ns3::EnumValue::Get() const [member function]
+    cls.add_method('Get', 
+                   'int', 
+                   [], 
+                   is_const=True)
+    ## enum.h (module 'core'): std::string ns3::EnumValue::SerializeToString(ns3::Ptr<ns3::AttributeChecker const> checker) const [member function]
+    cls.add_method('SerializeToString', 
+                   'std::string', 
+                   [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_const=True, is_virtual=True)
+    ## enum.h (module 'core'): void ns3::EnumValue::Set(int v) [member function]
+    cls.add_method('Set', 
+                   'void', 
+                   [param('int', 'v')])
     return
 
 def register_Ns3EventImpl_methods(root_module, cls):
@@ -3198,204 +2410,222 @@ def register_Ns3EventImpl_methods(root_module, cls):
                    is_pure_virtual=True, visibility='protected', is_virtual=True)
     return
 
-def register_Ns3Ipv4AddressChecker_methods(root_module, cls):
-    ## ipv4-address.h (module 'network'): ns3::Ipv4AddressChecker::Ipv4AddressChecker() [constructor]
-    cls.add_constructor([])
-    ## ipv4-address.h (module 'network'): ns3::Ipv4AddressChecker::Ipv4AddressChecker(ns3::Ipv4AddressChecker const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::Ipv4AddressChecker const &', 'arg0')])
+def register_Ns3FileAggregator_methods(root_module, cls):
+    ## file-aggregator.h (module 'stats'): static ns3::TypeId ns3::FileAggregator::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## file-aggregator.h (module 'stats'): ns3::FileAggregator::FileAggregator(std::string const & outputFileName, ns3::FileAggregator::FileType fileType=::ns3::FileAggregator::SPACE_SEPARATED) [constructor]
+    cls.add_constructor([param('std::string const &', 'outputFileName'), param('ns3::FileAggregator::FileType', 'fileType', default_value='::ns3::FileAggregator::SPACE_SEPARATED')])
+    ## file-aggregator.h (module 'stats'): void ns3::FileAggregator::SetFileType(ns3::FileAggregator::FileType fileType) [member function]
+    cls.add_method('SetFileType', 
+                   'void', 
+                   [param('ns3::FileAggregator::FileType', 'fileType')])
+    ## file-aggregator.h (module 'stats'): void ns3::FileAggregator::SetHeading(std::string const & heading) [member function]
+    cls.add_method('SetHeading', 
+                   'void', 
+                   [param('std::string const &', 'heading')])
+    ## file-aggregator.h (module 'stats'): void ns3::FileAggregator::Set1dFormat(std::string const & format) [member function]
+    cls.add_method('Set1dFormat', 
+                   'void', 
+                   [param('std::string const &', 'format')])
+    ## file-aggregator.h (module 'stats'): void ns3::FileAggregator::Set2dFormat(std::string const & format) [member function]
+    cls.add_method('Set2dFormat', 
+                   'void', 
+                   [param('std::string const &', 'format')])
+    ## file-aggregator.h (module 'stats'): void ns3::FileAggregator::Set3dFormat(std::string const & format) [member function]
+    cls.add_method('Set3dFormat', 
+                   'void', 
+                   [param('std::string const &', 'format')])
+    ## file-aggregator.h (module 'stats'): void ns3::FileAggregator::Set4dFormat(std::string const & format) [member function]
+    cls.add_method('Set4dFormat', 
+                   'void', 
+                   [param('std::string const &', 'format')])
+    ## file-aggregator.h (module 'stats'): void ns3::FileAggregator::Set5dFormat(std::string const & format) [member function]
+    cls.add_method('Set5dFormat', 
+                   'void', 
+                   [param('std::string const &', 'format')])
+    ## file-aggregator.h (module 'stats'): void ns3::FileAggregator::Set6dFormat(std::string const & format) [member function]
+    cls.add_method('Set6dFormat', 
+                   'void', 
+                   [param('std::string const &', 'format')])
+    ## file-aggregator.h (module 'stats'): void ns3::FileAggregator::Set7dFormat(std::string const & format) [member function]
+    cls.add_method('Set7dFormat', 
+                   'void', 
+                   [param('std::string const &', 'format')])
+    ## file-aggregator.h (module 'stats'): void ns3::FileAggregator::Set8dFormat(std::string const & format) [member function]
+    cls.add_method('Set8dFormat', 
+                   'void', 
+                   [param('std::string const &', 'format')])
+    ## file-aggregator.h (module 'stats'): void ns3::FileAggregator::Set9dFormat(std::string const & format) [member function]
+    cls.add_method('Set9dFormat', 
+                   'void', 
+                   [param('std::string const &', 'format')])
+    ## file-aggregator.h (module 'stats'): void ns3::FileAggregator::Set10dFormat(std::string const & format) [member function]
+    cls.add_method('Set10dFormat', 
+                   'void', 
+                   [param('std::string const &', 'format')])
+    ## file-aggregator.h (module 'stats'): void ns3::FileAggregator::Write1d(std::string context, double v1) [member function]
+    cls.add_method('Write1d', 
+                   'void', 
+                   [param('std::string', 'context'), param('double', 'v1')])
+    ## file-aggregator.h (module 'stats'): void ns3::FileAggregator::Write2d(std::string context, double v1, double v2) [member function]
+    cls.add_method('Write2d', 
+                   'void', 
+                   [param('std::string', 'context'), param('double', 'v1'), param('double', 'v2')])
+    ## file-aggregator.h (module 'stats'): void ns3::FileAggregator::Write3d(std::string context, double v1, double v2, double v3) [member function]
+    cls.add_method('Write3d', 
+                   'void', 
+                   [param('std::string', 'context'), param('double', 'v1'), param('double', 'v2'), param('double', 'v3')])
+    ## file-aggregator.h (module 'stats'): void ns3::FileAggregator::Write4d(std::string context, double v1, double v2, double v3, double v4) [member function]
+    cls.add_method('Write4d', 
+                   'void', 
+                   [param('std::string', 'context'), param('double', 'v1'), param('double', 'v2'), param('double', 'v3'), param('double', 'v4')])
+    ## file-aggregator.h (module 'stats'): void ns3::FileAggregator::Write5d(std::string context, double v1, double v2, double v3, double v4, double v5) [member function]
+    cls.add_method('Write5d', 
+                   'void', 
+                   [param('std::string', 'context'), param('double', 'v1'), param('double', 'v2'), param('double', 'v3'), param('double', 'v4'), param('double', 'v5')])
+    ## file-aggregator.h (module 'stats'): void ns3::FileAggregator::Write6d(std::string context, double v1, double v2, double v3, double v4, double v5, double v6) [member function]
+    cls.add_method('Write6d', 
+                   'void', 
+                   [param('std::string', 'context'), param('double', 'v1'), param('double', 'v2'), param('double', 'v3'), param('double', 'v4'), param('double', 'v5'), param('double', 'v6')])
+    ## file-aggregator.h (module 'stats'): void ns3::FileAggregator::Write7d(std::string context, double v1, double v2, double v3, double v4, double v5, double v6, double v7) [member function]
+    cls.add_method('Write7d', 
+                   'void', 
+                   [param('std::string', 'context'), param('double', 'v1'), param('double', 'v2'), param('double', 'v3'), param('double', 'v4'), param('double', 'v5'), param('double', 'v6'), param('double', 'v7')])
+    ## file-aggregator.h (module 'stats'): void ns3::FileAggregator::Write8d(std::string context, double v1, double v2, double v3, double v4, double v5, double v6, double v7, double v8) [member function]
+    cls.add_method('Write8d', 
+                   'void', 
+                   [param('std::string', 'context'), param('double', 'v1'), param('double', 'v2'), param('double', 'v3'), param('double', 'v4'), param('double', 'v5'), param('double', 'v6'), param('double', 'v7'), param('double', 'v8')])
+    ## file-aggregator.h (module 'stats'): void ns3::FileAggregator::Write9d(std::string context, double v1, double v2, double v3, double v4, double v5, double v6, double v7, double v8, double v9) [member function]
+    cls.add_method('Write9d', 
+                   'void', 
+                   [param('std::string', 'context'), param('double', 'v1'), param('double', 'v2'), param('double', 'v3'), param('double', 'v4'), param('double', 'v5'), param('double', 'v6'), param('double', 'v7'), param('double', 'v8'), param('double', 'v9')])
+    ## file-aggregator.h (module 'stats'): void ns3::FileAggregator::Write10d(std::string context, double v1, double v2, double v3, double v4, double v5, double v6, double v7, double v8, double v9, double v10) [member function]
+    cls.add_method('Write10d', 
+                   'void', 
+                   [param('std::string', 'context'), param('double', 'v1'), param('double', 'v2'), param('double', 'v3'), param('double', 'v4'), param('double', 'v5'), param('double', 'v6'), param('double', 'v7'), param('double', 'v8'), param('double', 'v9'), param('double', 'v10')])
     return
 
-def register_Ns3Ipv4AddressValue_methods(root_module, cls):
-    ## ipv4-address.h (module 'network'): ns3::Ipv4AddressValue::Ipv4AddressValue() [constructor]
+def register_Ns3GnuplotAggregator_methods(root_module, cls):
+    ## gnuplot-aggregator.h (module 'stats'): ns3::GnuplotAggregator::GnuplotAggregator(ns3::GnuplotAggregator const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::GnuplotAggregator const &', 'arg0')])
+    ## gnuplot-aggregator.h (module 'stats'): ns3::GnuplotAggregator::GnuplotAggregator(std::string const & outputFileNameWithoutExtension) [constructor]
+    cls.add_constructor([param('std::string const &', 'outputFileNameWithoutExtension')])
+    ## gnuplot-aggregator.h (module 'stats'): void ns3::GnuplotAggregator::Add2dDataset(std::string const & dataset, std::string const & title) [member function]
+    cls.add_method('Add2dDataset', 
+                   'void', 
+                   [param('std::string const &', 'dataset'), param('std::string const &', 'title')])
+    ## gnuplot-aggregator.h (module 'stats'): void ns3::GnuplotAggregator::AppendExtra(std::string const & extra) [member function]
+    cls.add_method('AppendExtra', 
+                   'void', 
+                   [param('std::string const &', 'extra')])
+    ## gnuplot-aggregator.h (module 'stats'): static ns3::TypeId ns3::GnuplotAggregator::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## gnuplot-aggregator.h (module 'stats'): static void ns3::GnuplotAggregator::Set2dDatasetDefaultErrorBars(ns3::Gnuplot2dDataset::ErrorBars errorBars) [member function]
+    cls.add_method('Set2dDatasetDefaultErrorBars', 
+                   'void', 
+                   [param('ns3::Gnuplot2dDataset::ErrorBars', 'errorBars')], 
+                   is_static=True)
+    ## gnuplot-aggregator.h (module 'stats'): static void ns3::GnuplotAggregator::Set2dDatasetDefaultExtra(std::string const & extra) [member function]
+    cls.add_method('Set2dDatasetDefaultExtra', 
+                   'void', 
+                   [param('std::string const &', 'extra')], 
+                   is_static=True)
+    ## gnuplot-aggregator.h (module 'stats'): static void ns3::GnuplotAggregator::Set2dDatasetDefaultStyle(ns3::Gnuplot2dDataset::Style style) [member function]
+    cls.add_method('Set2dDatasetDefaultStyle', 
+                   'void', 
+                   [param('ns3::Gnuplot2dDataset::Style', 'style')], 
+                   is_static=True)
+    ## gnuplot-aggregator.h (module 'stats'): void ns3::GnuplotAggregator::Set2dDatasetErrorBars(std::string const & dataset, ns3::Gnuplot2dDataset::ErrorBars errorBars) [member function]
+    cls.add_method('Set2dDatasetErrorBars', 
+                   'void', 
+                   [param('std::string const &', 'dataset'), param('ns3::Gnuplot2dDataset::ErrorBars', 'errorBars')])
+    ## gnuplot-aggregator.h (module 'stats'): void ns3::GnuplotAggregator::Set2dDatasetExtra(std::string const & dataset, std::string const & extra) [member function]
+    cls.add_method('Set2dDatasetExtra', 
+                   'void', 
+                   [param('std::string const &', 'dataset'), param('std::string const &', 'extra')])
+    ## gnuplot-aggregator.h (module 'stats'): void ns3::GnuplotAggregator::Set2dDatasetStyle(std::string const & dataset, ns3::Gnuplot2dDataset::Style style) [member function]
+    cls.add_method('Set2dDatasetStyle', 
+                   'void', 
+                   [param('std::string const &', 'dataset'), param('ns3::Gnuplot2dDataset::Style', 'style')])
+    ## gnuplot-aggregator.h (module 'stats'): void ns3::GnuplotAggregator::SetExtra(std::string const & extra) [member function]
+    cls.add_method('SetExtra', 
+                   'void', 
+                   [param('std::string const &', 'extra')])
+    ## gnuplot-aggregator.h (module 'stats'): void ns3::GnuplotAggregator::SetKeyLocation(ns3::GnuplotAggregator::KeyLocation keyLocation) [member function]
+    cls.add_method('SetKeyLocation', 
+                   'void', 
+                   [param('ns3::GnuplotAggregator::KeyLocation', 'keyLocation')])
+    ## gnuplot-aggregator.h (module 'stats'): void ns3::GnuplotAggregator::SetLegend(std::string const & xLegend, std::string const & yLegend) [member function]
+    cls.add_method('SetLegend', 
+                   'void', 
+                   [param('std::string const &', 'xLegend'), param('std::string const &', 'yLegend')])
+    ## gnuplot-aggregator.h (module 'stats'): void ns3::GnuplotAggregator::SetTerminal(std::string const & terminal) [member function]
+    cls.add_method('SetTerminal', 
+                   'void', 
+                   [param('std::string const &', 'terminal')])
+    ## gnuplot-aggregator.h (module 'stats'): void ns3::GnuplotAggregator::SetTitle(std::string const & title) [member function]
+    cls.add_method('SetTitle', 
+                   'void', 
+                   [param('std::string const &', 'title')])
+    ## gnuplot-aggregator.h (module 'stats'): void ns3::GnuplotAggregator::Write2d(std::string context, double x, double y) [member function]
+    cls.add_method('Write2d', 
+                   'void', 
+                   [param('std::string', 'context'), param('double', 'x'), param('double', 'y')])
+    ## gnuplot-aggregator.h (module 'stats'): void ns3::GnuplotAggregator::Write2dDatasetEmptyLine(std::string const & dataset) [member function]
+    cls.add_method('Write2dDatasetEmptyLine', 
+                   'void', 
+                   [param('std::string const &', 'dataset')])
+    ## gnuplot-aggregator.h (module 'stats'): void ns3::GnuplotAggregator::Write2dWithXErrorDelta(std::string context, double x, double y, double errorDelta) [member function]
+    cls.add_method('Write2dWithXErrorDelta', 
+                   'void', 
+                   [param('std::string', 'context'), param('double', 'x'), param('double', 'y'), param('double', 'errorDelta')])
+    ## gnuplot-aggregator.h (module 'stats'): void ns3::GnuplotAggregator::Write2dWithXYErrorDelta(std::string context, double x, double y, double xErrorDelta, double yErrorDelta) [member function]
+    cls.add_method('Write2dWithXYErrorDelta', 
+                   'void', 
+                   [param('std::string', 'context'), param('double', 'x'), param('double', 'y'), param('double', 'xErrorDelta'), param('double', 'yErrorDelta')])
+    ## gnuplot-aggregator.h (module 'stats'): void ns3::GnuplotAggregator::Write2dWithYErrorDelta(std::string context, double x, double y, double errorDelta) [member function]
+    cls.add_method('Write2dWithYErrorDelta', 
+                   'void', 
+                   [param('std::string', 'context'), param('double', 'x'), param('double', 'y'), param('double', 'errorDelta')])
+    return
+
+def register_Ns3IntegerValue_methods(root_module, cls):
+    ## integer.h (module 'core'): ns3::IntegerValue::IntegerValue() [constructor]
     cls.add_constructor([])
-    ## ipv4-address.h (module 'network'): ns3::Ipv4AddressValue::Ipv4AddressValue(ns3::Ipv4AddressValue const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::Ipv4AddressValue const &', 'arg0')])
-    ## ipv4-address.h (module 'network'): ns3::Ipv4AddressValue::Ipv4AddressValue(ns3::Ipv4Address const & value) [constructor]
-    cls.add_constructor([param('ns3::Ipv4Address const &', 'value')])
-    ## ipv4-address.h (module 'network'): ns3::Ptr<ns3::AttributeValue> ns3::Ipv4AddressValue::Copy() const [member function]
+    ## integer.h (module 'core'): ns3::IntegerValue::IntegerValue(ns3::IntegerValue const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::IntegerValue const &', 'arg0')])
+    ## integer.h (module 'core'): ns3::IntegerValue::IntegerValue(int64_t const & value) [constructor]
+    cls.add_constructor([param('int64_t const &', 'value')])
+    ## integer.h (module 'core'): ns3::Ptr<ns3::AttributeValue> ns3::IntegerValue::Copy() const [member function]
     cls.add_method('Copy', 
                    'ns3::Ptr< ns3::AttributeValue >', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## ipv4-address.h (module 'network'): bool ns3::Ipv4AddressValue::DeserializeFromString(std::string value, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
+    ## integer.h (module 'core'): bool ns3::IntegerValue::DeserializeFromString(std::string value, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
     cls.add_method('DeserializeFromString', 
                    'bool', 
                    [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
                    is_virtual=True)
-    ## ipv4-address.h (module 'network'): ns3::Ipv4Address ns3::Ipv4AddressValue::Get() const [member function]
+    ## integer.h (module 'core'): int64_t ns3::IntegerValue::Get() const [member function]
     cls.add_method('Get', 
-                   'ns3::Ipv4Address', 
+                   'int64_t', 
                    [], 
                    is_const=True)
-    ## ipv4-address.h (module 'network'): std::string ns3::Ipv4AddressValue::SerializeToString(ns3::Ptr<ns3::AttributeChecker const> checker) const [member function]
+    ## integer.h (module 'core'): std::string ns3::IntegerValue::SerializeToString(ns3::Ptr<ns3::AttributeChecker const> checker) const [member function]
     cls.add_method('SerializeToString', 
                    'std::string', 
                    [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
                    is_const=True, is_virtual=True)
-    ## ipv4-address.h (module 'network'): void ns3::Ipv4AddressValue::Set(ns3::Ipv4Address const & value) [member function]
+    ## integer.h (module 'core'): void ns3::IntegerValue::Set(int64_t const & value) [member function]
     cls.add_method('Set', 
                    'void', 
-                   [param('ns3::Ipv4Address const &', 'value')])
-    return
-
-def register_Ns3Ipv4MaskChecker_methods(root_module, cls):
-    ## ipv4-address.h (module 'network'): ns3::Ipv4MaskChecker::Ipv4MaskChecker() [constructor]
-    cls.add_constructor([])
-    ## ipv4-address.h (module 'network'): ns3::Ipv4MaskChecker::Ipv4MaskChecker(ns3::Ipv4MaskChecker const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::Ipv4MaskChecker const &', 'arg0')])
-    return
-
-def register_Ns3Ipv4MaskValue_methods(root_module, cls):
-    ## ipv4-address.h (module 'network'): ns3::Ipv4MaskValue::Ipv4MaskValue() [constructor]
-    cls.add_constructor([])
-    ## ipv4-address.h (module 'network'): ns3::Ipv4MaskValue::Ipv4MaskValue(ns3::Ipv4MaskValue const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::Ipv4MaskValue const &', 'arg0')])
-    ## ipv4-address.h (module 'network'): ns3::Ipv4MaskValue::Ipv4MaskValue(ns3::Ipv4Mask const & value) [constructor]
-    cls.add_constructor([param('ns3::Ipv4Mask const &', 'value')])
-    ## ipv4-address.h (module 'network'): ns3::Ptr<ns3::AttributeValue> ns3::Ipv4MaskValue::Copy() const [member function]
-    cls.add_method('Copy', 
-                   'ns3::Ptr< ns3::AttributeValue >', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## ipv4-address.h (module 'network'): bool ns3::Ipv4MaskValue::DeserializeFromString(std::string value, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
-    cls.add_method('DeserializeFromString', 
-                   'bool', 
-                   [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_virtual=True)
-    ## ipv4-address.h (module 'network'): ns3::Ipv4Mask ns3::Ipv4MaskValue::Get() const [member function]
-    cls.add_method('Get', 
-                   'ns3::Ipv4Mask', 
-                   [], 
-                   is_const=True)
-    ## ipv4-address.h (module 'network'): std::string ns3::Ipv4MaskValue::SerializeToString(ns3::Ptr<ns3::AttributeChecker const> checker) const [member function]
-    cls.add_method('SerializeToString', 
-                   'std::string', 
-                   [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_const=True, is_virtual=True)
-    ## ipv4-address.h (module 'network'): void ns3::Ipv4MaskValue::Set(ns3::Ipv4Mask const & value) [member function]
-    cls.add_method('Set', 
-                   'void', 
-                   [param('ns3::Ipv4Mask const &', 'value')])
-    return
-
-def register_Ns3Ipv6AddressChecker_methods(root_module, cls):
-    ## ipv6-address.h (module 'network'): ns3::Ipv6AddressChecker::Ipv6AddressChecker() [constructor]
-    cls.add_constructor([])
-    ## ipv6-address.h (module 'network'): ns3::Ipv6AddressChecker::Ipv6AddressChecker(ns3::Ipv6AddressChecker const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::Ipv6AddressChecker const &', 'arg0')])
-    return
-
-def register_Ns3Ipv6AddressValue_methods(root_module, cls):
-    ## ipv6-address.h (module 'network'): ns3::Ipv6AddressValue::Ipv6AddressValue() [constructor]
-    cls.add_constructor([])
-    ## ipv6-address.h (module 'network'): ns3::Ipv6AddressValue::Ipv6AddressValue(ns3::Ipv6AddressValue const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::Ipv6AddressValue const &', 'arg0')])
-    ## ipv6-address.h (module 'network'): ns3::Ipv6AddressValue::Ipv6AddressValue(ns3::Ipv6Address const & value) [constructor]
-    cls.add_constructor([param('ns3::Ipv6Address const &', 'value')])
-    ## ipv6-address.h (module 'network'): ns3::Ptr<ns3::AttributeValue> ns3::Ipv6AddressValue::Copy() const [member function]
-    cls.add_method('Copy', 
-                   'ns3::Ptr< ns3::AttributeValue >', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## ipv6-address.h (module 'network'): bool ns3::Ipv6AddressValue::DeserializeFromString(std::string value, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
-    cls.add_method('DeserializeFromString', 
-                   'bool', 
-                   [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_virtual=True)
-    ## ipv6-address.h (module 'network'): ns3::Ipv6Address ns3::Ipv6AddressValue::Get() const [member function]
-    cls.add_method('Get', 
-                   'ns3::Ipv6Address', 
-                   [], 
-                   is_const=True)
-    ## ipv6-address.h (module 'network'): std::string ns3::Ipv6AddressValue::SerializeToString(ns3::Ptr<ns3::AttributeChecker const> checker) const [member function]
-    cls.add_method('SerializeToString', 
-                   'std::string', 
-                   [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_const=True, is_virtual=True)
-    ## ipv6-address.h (module 'network'): void ns3::Ipv6AddressValue::Set(ns3::Ipv6Address const & value) [member function]
-    cls.add_method('Set', 
-                   'void', 
-                   [param('ns3::Ipv6Address const &', 'value')])
-    return
-
-def register_Ns3Ipv6PrefixChecker_methods(root_module, cls):
-    ## ipv6-address.h (module 'network'): ns3::Ipv6PrefixChecker::Ipv6PrefixChecker() [constructor]
-    cls.add_constructor([])
-    ## ipv6-address.h (module 'network'): ns3::Ipv6PrefixChecker::Ipv6PrefixChecker(ns3::Ipv6PrefixChecker const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::Ipv6PrefixChecker const &', 'arg0')])
-    return
-
-def register_Ns3Ipv6PrefixValue_methods(root_module, cls):
-    ## ipv6-address.h (module 'network'): ns3::Ipv6PrefixValue::Ipv6PrefixValue() [constructor]
-    cls.add_constructor([])
-    ## ipv6-address.h (module 'network'): ns3::Ipv6PrefixValue::Ipv6PrefixValue(ns3::Ipv6PrefixValue const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::Ipv6PrefixValue const &', 'arg0')])
-    ## ipv6-address.h (module 'network'): ns3::Ipv6PrefixValue::Ipv6PrefixValue(ns3::Ipv6Prefix const & value) [constructor]
-    cls.add_constructor([param('ns3::Ipv6Prefix const &', 'value')])
-    ## ipv6-address.h (module 'network'): ns3::Ptr<ns3::AttributeValue> ns3::Ipv6PrefixValue::Copy() const [member function]
-    cls.add_method('Copy', 
-                   'ns3::Ptr< ns3::AttributeValue >', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## ipv6-address.h (module 'network'): bool ns3::Ipv6PrefixValue::DeserializeFromString(std::string value, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
-    cls.add_method('DeserializeFromString', 
-                   'bool', 
-                   [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_virtual=True)
-    ## ipv6-address.h (module 'network'): ns3::Ipv6Prefix ns3::Ipv6PrefixValue::Get() const [member function]
-    cls.add_method('Get', 
-                   'ns3::Ipv6Prefix', 
-                   [], 
-                   is_const=True)
-    ## ipv6-address.h (module 'network'): std::string ns3::Ipv6PrefixValue::SerializeToString(ns3::Ptr<ns3::AttributeChecker const> checker) const [member function]
-    cls.add_method('SerializeToString', 
-                   'std::string', 
-                   [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_const=True, is_virtual=True)
-    ## ipv6-address.h (module 'network'): void ns3::Ipv6PrefixValue::Set(ns3::Ipv6Prefix const & value) [member function]
-    cls.add_method('Set', 
-                   'void', 
-                   [param('ns3::Ipv6Prefix const &', 'value')])
-    return
-
-def register_Ns3Mac48AddressChecker_methods(root_module, cls):
-    ## mac48-address.h (module 'network'): ns3::Mac48AddressChecker::Mac48AddressChecker() [constructor]
-    cls.add_constructor([])
-    ## mac48-address.h (module 'network'): ns3::Mac48AddressChecker::Mac48AddressChecker(ns3::Mac48AddressChecker const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::Mac48AddressChecker const &', 'arg0')])
-    return
-
-def register_Ns3Mac48AddressValue_methods(root_module, cls):
-    ## mac48-address.h (module 'network'): ns3::Mac48AddressValue::Mac48AddressValue() [constructor]
-    cls.add_constructor([])
-    ## mac48-address.h (module 'network'): ns3::Mac48AddressValue::Mac48AddressValue(ns3::Mac48AddressValue const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::Mac48AddressValue const &', 'arg0')])
-    ## mac48-address.h (module 'network'): ns3::Mac48AddressValue::Mac48AddressValue(ns3::Mac48Address const & value) [constructor]
-    cls.add_constructor([param('ns3::Mac48Address const &', 'value')])
-    ## mac48-address.h (module 'network'): ns3::Ptr<ns3::AttributeValue> ns3::Mac48AddressValue::Copy() const [member function]
-    cls.add_method('Copy', 
-                   'ns3::Ptr< ns3::AttributeValue >', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## mac48-address.h (module 'network'): bool ns3::Mac48AddressValue::DeserializeFromString(std::string value, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
-    cls.add_method('DeserializeFromString', 
-                   'bool', 
-                   [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_virtual=True)
-    ## mac48-address.h (module 'network'): ns3::Mac48Address ns3::Mac48AddressValue::Get() const [member function]
-    cls.add_method('Get', 
-                   'ns3::Mac48Address', 
-                   [], 
-                   is_const=True)
-    ## mac48-address.h (module 'network'): std::string ns3::Mac48AddressValue::SerializeToString(ns3::Ptr<ns3::AttributeChecker const> checker) const [member function]
-    cls.add_method('SerializeToString', 
-                   'std::string', 
-                   [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_const=True, is_virtual=True)
-    ## mac48-address.h (module 'network'): void ns3::Mac48AddressValue::Set(ns3::Mac48Address const & value) [member function]
-    cls.add_method('Set', 
-                   'void', 
-                   [param('ns3::Mac48Address const &', 'value')])
+                   [param('int64_t const &', 'value')])
     return
 
 def register_Ns3MinMaxAvgTotalCalculator__Double_methods(root_module, cls):
@@ -3463,115 +2693,6 @@ def register_Ns3MinMaxAvgTotalCalculator__Double_methods(root_module, cls):
                    visibility='protected', is_virtual=True)
     return
 
-def register_Ns3MinMaxAvgTotalCalculator__Unsigned_int_methods(root_module, cls):
-    ## basic-data-calculators.h (module 'stats'): ns3::MinMaxAvgTotalCalculator<unsigned int>::MinMaxAvgTotalCalculator(ns3::MinMaxAvgTotalCalculator<unsigned int> const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::MinMaxAvgTotalCalculator< unsigned int > const &', 'arg0')])
-    ## basic-data-calculators.h (module 'stats'): ns3::MinMaxAvgTotalCalculator<unsigned int>::MinMaxAvgTotalCalculator() [constructor]
-    cls.add_constructor([])
-    ## basic-data-calculators.h (module 'stats'): void ns3::MinMaxAvgTotalCalculator<unsigned int>::Output(ns3::DataOutputCallback & callback) const [member function]
-    cls.add_method('Output', 
-                   'void', 
-                   [param('ns3::DataOutputCallback &', 'callback')], 
-                   is_const=True, is_virtual=True)
-    ## basic-data-calculators.h (module 'stats'): void ns3::MinMaxAvgTotalCalculator<unsigned int>::Reset() [member function]
-    cls.add_method('Reset', 
-                   'void', 
-                   [])
-    ## basic-data-calculators.h (module 'stats'): void ns3::MinMaxAvgTotalCalculator<unsigned int>::Update(unsigned int const i) [member function]
-    cls.add_method('Update', 
-                   'void', 
-                   [param('unsigned int const', 'i')])
-    ## basic-data-calculators.h (module 'stats'): long int ns3::MinMaxAvgTotalCalculator<unsigned int>::getCount() const [member function]
-    cls.add_method('getCount', 
-                   'long int', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## basic-data-calculators.h (module 'stats'): double ns3::MinMaxAvgTotalCalculator<unsigned int>::getMax() const [member function]
-    cls.add_method('getMax', 
-                   'double', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## basic-data-calculators.h (module 'stats'): double ns3::MinMaxAvgTotalCalculator<unsigned int>::getMean() const [member function]
-    cls.add_method('getMean', 
-                   'double', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## basic-data-calculators.h (module 'stats'): double ns3::MinMaxAvgTotalCalculator<unsigned int>::getMin() const [member function]
-    cls.add_method('getMin', 
-                   'double', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## basic-data-calculators.h (module 'stats'): double ns3::MinMaxAvgTotalCalculator<unsigned int>::getSqrSum() const [member function]
-    cls.add_method('getSqrSum', 
-                   'double', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## basic-data-calculators.h (module 'stats'): double ns3::MinMaxAvgTotalCalculator<unsigned int>::getStddev() const [member function]
-    cls.add_method('getStddev', 
-                   'double', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## basic-data-calculators.h (module 'stats'): double ns3::MinMaxAvgTotalCalculator<unsigned int>::getSum() const [member function]
-    cls.add_method('getSum', 
-                   'double', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## basic-data-calculators.h (module 'stats'): double ns3::MinMaxAvgTotalCalculator<unsigned int>::getVariance() const [member function]
-    cls.add_method('getVariance', 
-                   'double', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## basic-data-calculators.h (module 'stats'): void ns3::MinMaxAvgTotalCalculator<unsigned int>::DoDispose() [member function]
-    cls.add_method('DoDispose', 
-                   'void', 
-                   [], 
-                   visibility='protected', is_virtual=True)
-    return
-
-def register_Ns3NixVector_methods(root_module, cls):
-    cls.add_output_stream_operator()
-    ## nix-vector.h (module 'network'): ns3::NixVector::NixVector() [constructor]
-    cls.add_constructor([])
-    ## nix-vector.h (module 'network'): ns3::NixVector::NixVector(ns3::NixVector const & o) [copy constructor]
-    cls.add_constructor([param('ns3::NixVector const &', 'o')])
-    ## nix-vector.h (module 'network'): void ns3::NixVector::AddNeighborIndex(uint32_t newBits, uint32_t numberOfBits) [member function]
-    cls.add_method('AddNeighborIndex', 
-                   'void', 
-                   [param('uint32_t', 'newBits'), param('uint32_t', 'numberOfBits')])
-    ## nix-vector.h (module 'network'): uint32_t ns3::NixVector::BitCount(uint32_t numberOfNeighbors) const [member function]
-    cls.add_method('BitCount', 
-                   'uint32_t', 
-                   [param('uint32_t', 'numberOfNeighbors')], 
-                   is_const=True)
-    ## nix-vector.h (module 'network'): ns3::Ptr<ns3::NixVector> ns3::NixVector::Copy() const [member function]
-    cls.add_method('Copy', 
-                   'ns3::Ptr< ns3::NixVector >', 
-                   [], 
-                   is_const=True)
-    ## nix-vector.h (module 'network'): uint32_t ns3::NixVector::Deserialize(uint32_t const * buffer, uint32_t size) [member function]
-    cls.add_method('Deserialize', 
-                   'uint32_t', 
-                   [param('uint32_t const *', 'buffer'), param('uint32_t', 'size')])
-    ## nix-vector.h (module 'network'): uint32_t ns3::NixVector::ExtractNeighborIndex(uint32_t numberOfBits) [member function]
-    cls.add_method('ExtractNeighborIndex', 
-                   'uint32_t', 
-                   [param('uint32_t', 'numberOfBits')])
-    ## nix-vector.h (module 'network'): uint32_t ns3::NixVector::GetRemainingBits() [member function]
-    cls.add_method('GetRemainingBits', 
-                   'uint32_t', 
-                   [])
-    ## nix-vector.h (module 'network'): uint32_t ns3::NixVector::GetSerializedSize() const [member function]
-    cls.add_method('GetSerializedSize', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True)
-    ## nix-vector.h (module 'network'): uint32_t ns3::NixVector::Serialize(uint32_t * buffer, uint32_t maxSize) const [member function]
-    cls.add_method('Serialize', 
-                   'uint32_t', 
-                   [param('uint32_t *', 'buffer'), param('uint32_t', 'maxSize')], 
-                   is_const=True)
-    return
-
 def register_Ns3ObjectFactoryChecker_methods(root_module, cls):
     ## object-factory.h (module 'core'): ns3::ObjectFactoryChecker::ObjectFactoryChecker() [constructor]
     cls.add_constructor([])
@@ -3629,209 +2750,31 @@ def register_Ns3OmnetDataOutput_methods(root_module, cls):
                    visibility='protected', is_virtual=True)
     return
 
-def register_Ns3Packet_methods(root_module, cls):
-    cls.add_output_stream_operator()
-    ## packet.h (module 'network'): ns3::Packet::Packet() [constructor]
+def register_Ns3Probe_methods(root_module, cls):
+    ## probe.h (module 'stats'): ns3::Probe::Probe(ns3::Probe const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Probe const &', 'arg0')])
+    ## probe.h (module 'stats'): ns3::Probe::Probe() [constructor]
     cls.add_constructor([])
-    ## packet.h (module 'network'): ns3::Packet::Packet(ns3::Packet const & o) [copy constructor]
-    cls.add_constructor([param('ns3::Packet const &', 'o')])
-    ## packet.h (module 'network'): ns3::Packet::Packet(uint32_t size) [constructor]
-    cls.add_constructor([param('uint32_t', 'size')])
-    ## packet.h (module 'network'): ns3::Packet::Packet(uint8_t const * buffer, uint32_t size, bool magic) [constructor]
-    cls.add_constructor([param('uint8_t const *', 'buffer'), param('uint32_t', 'size'), param('bool', 'magic')])
-    ## packet.h (module 'network'): ns3::Packet::Packet(uint8_t const * buffer, uint32_t size) [constructor]
-    cls.add_constructor([param('uint8_t const *', 'buffer'), param('uint32_t', 'size')])
-    ## packet.h (module 'network'): void ns3::Packet::AddAtEnd(ns3::Ptr<const ns3::Packet> packet) [member function]
-    cls.add_method('AddAtEnd', 
+    ## probe.h (module 'stats'): bool ns3::Probe::ConnectByObject(std::string traceSource, ns3::Ptr<ns3::Object> obj) [member function]
+    cls.add_method('ConnectByObject', 
+                   'bool', 
+                   [param('std::string', 'traceSource'), param('ns3::Ptr< ns3::Object >', 'obj')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## probe.h (module 'stats'): void ns3::Probe::ConnectByPath(std::string path) [member function]
+    cls.add_method('ConnectByPath', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Packet const >', 'packet')])
-    ## packet.h (module 'network'): void ns3::Packet::AddByteTag(ns3::Tag const & tag) const [member function]
-    cls.add_method('AddByteTag', 
-                   'void', 
-                   [param('ns3::Tag const &', 'tag')], 
-                   is_const=True)
-    ## packet.h (module 'network'): void ns3::Packet::AddHeader(ns3::Header const & header) [member function]
-    cls.add_method('AddHeader', 
-                   'void', 
-                   [param('ns3::Header const &', 'header')])
-    ## packet.h (module 'network'): void ns3::Packet::AddPacketTag(ns3::Tag const & tag) const [member function]
-    cls.add_method('AddPacketTag', 
-                   'void', 
-                   [param('ns3::Tag const &', 'tag')], 
-                   is_const=True)
-    ## packet.h (module 'network'): void ns3::Packet::AddPaddingAtEnd(uint32_t size) [member function]
-    cls.add_method('AddPaddingAtEnd', 
-                   'void', 
-                   [param('uint32_t', 'size')])
-    ## packet.h (module 'network'): void ns3::Packet::AddTrailer(ns3::Trailer const & trailer) [member function]
-    cls.add_method('AddTrailer', 
-                   'void', 
-                   [param('ns3::Trailer const &', 'trailer')])
-    ## packet.h (module 'network'): ns3::PacketMetadata::ItemIterator ns3::Packet::BeginItem() const [member function]
-    cls.add_method('BeginItem', 
-                   'ns3::PacketMetadata::ItemIterator', 
-                   [], 
-                   is_const=True)
-    ## packet.h (module 'network'): ns3::Ptr<ns3::Packet> ns3::Packet::Copy() const [member function]
-    cls.add_method('Copy', 
-                   'ns3::Ptr< ns3::Packet >', 
-                   [], 
-                   is_const=True)
-    ## packet.h (module 'network'): uint32_t ns3::Packet::CopyData(uint8_t * buffer, uint32_t size) const [member function]
-    cls.add_method('CopyData', 
-                   'uint32_t', 
-                   [param('uint8_t *', 'buffer'), param('uint32_t', 'size')], 
-                   is_const=True)
-    ## packet.h (module 'network'): void ns3::Packet::CopyData(std::ostream * os, uint32_t size) const [member function]
-    cls.add_method('CopyData', 
-                   'void', 
-                   [param('std::ostream *', 'os'), param('uint32_t', 'size')], 
-                   is_const=True)
-    ## packet.h (module 'network'): ns3::Ptr<ns3::Packet> ns3::Packet::CreateFragment(uint32_t start, uint32_t length) const [member function]
-    cls.add_method('CreateFragment', 
-                   'ns3::Ptr< ns3::Packet >', 
-                   [param('uint32_t', 'start'), param('uint32_t', 'length')], 
-                   is_const=True)
-    ## packet.h (module 'network'): static void ns3::Packet::EnableChecking() [member function]
-    cls.add_method('EnableChecking', 
-                   'void', 
+                   [param('std::string', 'path')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## probe.h (module 'stats'): static ns3::TypeId ns3::Probe::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## packet.h (module 'network'): static void ns3::Packet::EnablePrinting() [member function]
-    cls.add_method('EnablePrinting', 
-                   'void', 
-                   [], 
-                   is_static=True)
-    ## packet.h (module 'network'): bool ns3::Packet::FindFirstMatchingByteTag(ns3::Tag & tag) const [member function]
-    cls.add_method('FindFirstMatchingByteTag', 
+    ## probe.h (module 'stats'): bool ns3::Probe::IsEnabled() const [member function]
+    cls.add_method('IsEnabled', 
                    'bool', 
-                   [param('ns3::Tag &', 'tag')], 
-                   is_const=True)
-    ## packet.h (module 'network'): ns3::ByteTagIterator ns3::Packet::GetByteTagIterator() const [member function]
-    cls.add_method('GetByteTagIterator', 
-                   'ns3::ByteTagIterator', 
                    [], 
-                   is_const=True)
-    ## packet.h (module 'network'): ns3::Ptr<ns3::NixVector> ns3::Packet::GetNixVector() const [member function]
-    cls.add_method('GetNixVector', 
-                   'ns3::Ptr< ns3::NixVector >', 
-                   [], 
-                   is_const=True)
-    ## packet.h (module 'network'): ns3::PacketTagIterator ns3::Packet::GetPacketTagIterator() const [member function]
-    cls.add_method('GetPacketTagIterator', 
-                   'ns3::PacketTagIterator', 
-                   [], 
-                   is_const=True)
-    ## packet.h (module 'network'): uint32_t ns3::Packet::GetSerializedSize() const [member function]
-    cls.add_method('GetSerializedSize', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True)
-    ## packet.h (module 'network'): uint32_t ns3::Packet::GetSize() const [member function]
-    cls.add_method('GetSize', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True)
-    ## packet.h (module 'network'): uint64_t ns3::Packet::GetUid() const [member function]
-    cls.add_method('GetUid', 
-                   'uint64_t', 
-                   [], 
-                   is_const=True)
-    ## packet.h (module 'network'): uint8_t const * ns3::Packet::PeekData() const [member function]
-    cls.add_method('PeekData', 
-                   'uint8_t const *', 
-                   [], 
-                   deprecated=True, is_const=True)
-    ## packet.h (module 'network'): uint32_t ns3::Packet::PeekHeader(ns3::Header & header) const [member function]
-    cls.add_method('PeekHeader', 
-                   'uint32_t', 
-                   [param('ns3::Header &', 'header')], 
-                   is_const=True)
-    ## packet.h (module 'network'): bool ns3::Packet::PeekPacketTag(ns3::Tag & tag) const [member function]
-    cls.add_method('PeekPacketTag', 
-                   'bool', 
-                   [param('ns3::Tag &', 'tag')], 
-                   is_const=True)
-    ## packet.h (module 'network'): uint32_t ns3::Packet::PeekTrailer(ns3::Trailer & trailer) [member function]
-    cls.add_method('PeekTrailer', 
-                   'uint32_t', 
-                   [param('ns3::Trailer &', 'trailer')])
-    ## packet.h (module 'network'): void ns3::Packet::Print(std::ostream & os) const [member function]
-    cls.add_method('Print', 
-                   'void', 
-                   [param('std::ostream &', 'os')], 
-                   is_const=True)
-    ## packet.h (module 'network'): void ns3::Packet::PrintByteTags(std::ostream & os) const [member function]
-    cls.add_method('PrintByteTags', 
-                   'void', 
-                   [param('std::ostream &', 'os')], 
-                   is_const=True)
-    ## packet.h (module 'network'): void ns3::Packet::PrintPacketTags(std::ostream & os) const [member function]
-    cls.add_method('PrintPacketTags', 
-                   'void', 
-                   [param('std::ostream &', 'os')], 
-                   is_const=True)
-    ## packet.h (module 'network'): void ns3::Packet::RemoveAllByteTags() [member function]
-    cls.add_method('RemoveAllByteTags', 
-                   'void', 
-                   [])
-    ## packet.h (module 'network'): void ns3::Packet::RemoveAllPacketTags() [member function]
-    cls.add_method('RemoveAllPacketTags', 
-                   'void', 
-                   [])
-    ## packet.h (module 'network'): void ns3::Packet::RemoveAtEnd(uint32_t size) [member function]
-    cls.add_method('RemoveAtEnd', 
-                   'void', 
-                   [param('uint32_t', 'size')])
-    ## packet.h (module 'network'): void ns3::Packet::RemoveAtStart(uint32_t size) [member function]
-    cls.add_method('RemoveAtStart', 
-                   'void', 
-                   [param('uint32_t', 'size')])
-    ## packet.h (module 'network'): uint32_t ns3::Packet::RemoveHeader(ns3::Header & header) [member function]
-    cls.add_method('RemoveHeader', 
-                   'uint32_t', 
-                   [param('ns3::Header &', 'header')])
-    ## packet.h (module 'network'): bool ns3::Packet::RemovePacketTag(ns3::Tag & tag) [member function]
-    cls.add_method('RemovePacketTag', 
-                   'bool', 
-                   [param('ns3::Tag &', 'tag')])
-    ## packet.h (module 'network'): uint32_t ns3::Packet::RemoveTrailer(ns3::Trailer & trailer) [member function]
-    cls.add_method('RemoveTrailer', 
-                   'uint32_t', 
-                   [param('ns3::Trailer &', 'trailer')])
-    ## packet.h (module 'network'): bool ns3::Packet::ReplacePacketTag(ns3::Tag & tag) [member function]
-    cls.add_method('ReplacePacketTag', 
-                   'bool', 
-                   [param('ns3::Tag &', 'tag')])
-    ## packet.h (module 'network'): uint32_t ns3::Packet::Serialize(uint8_t * buffer, uint32_t maxSize) const [member function]
-    cls.add_method('Serialize', 
-                   'uint32_t', 
-                   [param('uint8_t *', 'buffer'), param('uint32_t', 'maxSize')], 
-                   is_const=True)
-    ## packet.h (module 'network'): void ns3::Packet::SetNixVector(ns3::Ptr<ns3::NixVector> arg0) [member function]
-    cls.add_method('SetNixVector', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::NixVector >', 'arg0')])
-    return
-
-def register_Ns3PacketSizeMinMaxAvgTotalCalculator_methods(root_module, cls):
-    ## packet-data-calculators.h (module 'stats'): ns3::PacketSizeMinMaxAvgTotalCalculator::PacketSizeMinMaxAvgTotalCalculator(ns3::PacketSizeMinMaxAvgTotalCalculator const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::PacketSizeMinMaxAvgTotalCalculator const &', 'arg0')])
-    ## packet-data-calculators.h (module 'stats'): ns3::PacketSizeMinMaxAvgTotalCalculator::PacketSizeMinMaxAvgTotalCalculator() [constructor]
-    cls.add_constructor([])
-    ## packet-data-calculators.h (module 'stats'): void ns3::PacketSizeMinMaxAvgTotalCalculator::FrameUpdate(std::string path, ns3::Ptr<const ns3::Packet> packet, ns3::Mac48Address realto) [member function]
-    cls.add_method('FrameUpdate', 
-                   'void', 
-                   [param('std::string', 'path'), param('ns3::Ptr< ns3::Packet const >', 'packet'), param('ns3::Mac48Address', 'realto')])
-    ## packet-data-calculators.h (module 'stats'): void ns3::PacketSizeMinMaxAvgTotalCalculator::PacketUpdate(std::string path, ns3::Ptr<const ns3::Packet> packet) [member function]
-    cls.add_method('PacketUpdate', 
-                   'void', 
-                   [param('std::string', 'path'), param('ns3::Ptr< ns3::Packet const >', 'packet')])
-    ## packet-data-calculators.h (module 'stats'): void ns3::PacketSizeMinMaxAvgTotalCalculator::DoDispose() [member function]
-    cls.add_method('DoDispose', 
-                   'void', 
-                   [], 
-                   visibility='protected', is_virtual=True)
+                   is_const=True, is_virtual=True)
     return
 
 def register_Ns3SqliteDataOutput_methods(root_module, cls):
@@ -3870,6 +2813,38 @@ def register_Ns3TimeMinMaxAvgTotalCalculator_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
+    return
+
+def register_Ns3TimeSeriesAdaptor_methods(root_module, cls):
+    ## time-series-adaptor.h (module 'stats'): ns3::TimeSeriesAdaptor::TimeSeriesAdaptor(ns3::TimeSeriesAdaptor const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::TimeSeriesAdaptor const &', 'arg0')])
+    ## time-series-adaptor.h (module 'stats'): ns3::TimeSeriesAdaptor::TimeSeriesAdaptor() [constructor]
+    cls.add_constructor([])
+    ## time-series-adaptor.h (module 'stats'): static ns3::TypeId ns3::TimeSeriesAdaptor::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## time-series-adaptor.h (module 'stats'): void ns3::TimeSeriesAdaptor::TraceSinkBoolean(bool oldData, bool newData) [member function]
+    cls.add_method('TraceSinkBoolean', 
+                   'void', 
+                   [param('bool', 'oldData'), param('bool', 'newData')])
+    ## time-series-adaptor.h (module 'stats'): void ns3::TimeSeriesAdaptor::TraceSinkDouble(double oldData, double newData) [member function]
+    cls.add_method('TraceSinkDouble', 
+                   'void', 
+                   [param('double', 'oldData'), param('double', 'newData')])
+    ## time-series-adaptor.h (module 'stats'): void ns3::TimeSeriesAdaptor::TraceSinkUinteger16(uint16_t oldData, uint16_t newData) [member function]
+    cls.add_method('TraceSinkUinteger16', 
+                   'void', 
+                   [param('uint16_t', 'oldData'), param('uint16_t', 'newData')])
+    ## time-series-adaptor.h (module 'stats'): void ns3::TimeSeriesAdaptor::TraceSinkUinteger32(uint32_t oldData, uint32_t newData) [member function]
+    cls.add_method('TraceSinkUinteger32', 
+                   'void', 
+                   [param('uint32_t', 'oldData'), param('uint32_t', 'newData')])
+    ## time-series-adaptor.h (module 'stats'): void ns3::TimeSeriesAdaptor::TraceSinkUinteger8(uint8_t oldData, uint8_t newData) [member function]
+    cls.add_method('TraceSinkUinteger8', 
+                   'void', 
+                   [param('uint8_t', 'oldData'), param('uint8_t', 'newData')])
     return
 
 def register_Ns3TimeValue_methods(root_module, cls):
@@ -3945,106 +2920,350 @@ def register_Ns3TypeIdValue_methods(root_module, cls):
                    [param('ns3::TypeId const &', 'value')])
     return
 
-def register_Ns3AddressChecker_methods(root_module, cls):
-    ## address.h (module 'network'): ns3::AddressChecker::AddressChecker() [constructor]
+def register_Ns3Uinteger16Probe_methods(root_module, cls):
+    ## uinteger-16-probe.h (module 'stats'): ns3::Uinteger16Probe::Uinteger16Probe(ns3::Uinteger16Probe const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Uinteger16Probe const &', 'arg0')])
+    ## uinteger-16-probe.h (module 'stats'): ns3::Uinteger16Probe::Uinteger16Probe() [constructor]
     cls.add_constructor([])
-    ## address.h (module 'network'): ns3::AddressChecker::AddressChecker(ns3::AddressChecker const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::AddressChecker const &', 'arg0')])
+    ## uinteger-16-probe.h (module 'stats'): bool ns3::Uinteger16Probe::ConnectByObject(std::string traceSource, ns3::Ptr<ns3::Object> obj) [member function]
+    cls.add_method('ConnectByObject', 
+                   'bool', 
+                   [param('std::string', 'traceSource'), param('ns3::Ptr< ns3::Object >', 'obj')], 
+                   is_virtual=True)
+    ## uinteger-16-probe.h (module 'stats'): void ns3::Uinteger16Probe::ConnectByPath(std::string path) [member function]
+    cls.add_method('ConnectByPath', 
+                   'void', 
+                   [param('std::string', 'path')], 
+                   is_virtual=True)
+    ## uinteger-16-probe.h (module 'stats'): static ns3::TypeId ns3::Uinteger16Probe::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## uinteger-16-probe.h (module 'stats'): uint16_t ns3::Uinteger16Probe::GetValue() const [member function]
+    cls.add_method('GetValue', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## uinteger-16-probe.h (module 'stats'): void ns3::Uinteger16Probe::SetValue(uint16_t value) [member function]
+    cls.add_method('SetValue', 
+                   'void', 
+                   [param('uint16_t', 'value')])
+    ## uinteger-16-probe.h (module 'stats'): static void ns3::Uinteger16Probe::SetValueByPath(std::string path, uint16_t value) [member function]
+    cls.add_method('SetValueByPath', 
+                   'void', 
+                   [param('std::string', 'path'), param('uint16_t', 'value')], 
+                   is_static=True)
     return
 
-def register_Ns3AddressValue_methods(root_module, cls):
-    ## address.h (module 'network'): ns3::AddressValue::AddressValue() [constructor]
+def register_Ns3Uinteger32Probe_methods(root_module, cls):
+    ## uinteger-32-probe.h (module 'stats'): ns3::Uinteger32Probe::Uinteger32Probe(ns3::Uinteger32Probe const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Uinteger32Probe const &', 'arg0')])
+    ## uinteger-32-probe.h (module 'stats'): ns3::Uinteger32Probe::Uinteger32Probe() [constructor]
     cls.add_constructor([])
-    ## address.h (module 'network'): ns3::AddressValue::AddressValue(ns3::AddressValue const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::AddressValue const &', 'arg0')])
-    ## address.h (module 'network'): ns3::AddressValue::AddressValue(ns3::Address const & value) [constructor]
-    cls.add_constructor([param('ns3::Address const &', 'value')])
-    ## address.h (module 'network'): ns3::Ptr<ns3::AttributeValue> ns3::AddressValue::Copy() const [member function]
+    ## uinteger-32-probe.h (module 'stats'): bool ns3::Uinteger32Probe::ConnectByObject(std::string traceSource, ns3::Ptr<ns3::Object> obj) [member function]
+    cls.add_method('ConnectByObject', 
+                   'bool', 
+                   [param('std::string', 'traceSource'), param('ns3::Ptr< ns3::Object >', 'obj')], 
+                   is_virtual=True)
+    ## uinteger-32-probe.h (module 'stats'): void ns3::Uinteger32Probe::ConnectByPath(std::string path) [member function]
+    cls.add_method('ConnectByPath', 
+                   'void', 
+                   [param('std::string', 'path')], 
+                   is_virtual=True)
+    ## uinteger-32-probe.h (module 'stats'): static ns3::TypeId ns3::Uinteger32Probe::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## uinteger-32-probe.h (module 'stats'): uint32_t ns3::Uinteger32Probe::GetValue() const [member function]
+    cls.add_method('GetValue', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## uinteger-32-probe.h (module 'stats'): void ns3::Uinteger32Probe::SetValue(uint32_t value) [member function]
+    cls.add_method('SetValue', 
+                   'void', 
+                   [param('uint32_t', 'value')])
+    ## uinteger-32-probe.h (module 'stats'): static void ns3::Uinteger32Probe::SetValueByPath(std::string path, uint32_t value) [member function]
+    cls.add_method('SetValueByPath', 
+                   'void', 
+                   [param('std::string', 'path'), param('uint32_t', 'value')], 
+                   is_static=True)
+    return
+
+def register_Ns3Uinteger8Probe_methods(root_module, cls):
+    ## uinteger-8-probe.h (module 'stats'): ns3::Uinteger8Probe::Uinteger8Probe(ns3::Uinteger8Probe const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Uinteger8Probe const &', 'arg0')])
+    ## uinteger-8-probe.h (module 'stats'): ns3::Uinteger8Probe::Uinteger8Probe() [constructor]
+    cls.add_constructor([])
+    ## uinteger-8-probe.h (module 'stats'): bool ns3::Uinteger8Probe::ConnectByObject(std::string traceSource, ns3::Ptr<ns3::Object> obj) [member function]
+    cls.add_method('ConnectByObject', 
+                   'bool', 
+                   [param('std::string', 'traceSource'), param('ns3::Ptr< ns3::Object >', 'obj')], 
+                   is_virtual=True)
+    ## uinteger-8-probe.h (module 'stats'): void ns3::Uinteger8Probe::ConnectByPath(std::string path) [member function]
+    cls.add_method('ConnectByPath', 
+                   'void', 
+                   [param('std::string', 'path')], 
+                   is_virtual=True)
+    ## uinteger-8-probe.h (module 'stats'): static ns3::TypeId ns3::Uinteger8Probe::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## uinteger-8-probe.h (module 'stats'): uint8_t ns3::Uinteger8Probe::GetValue() const [member function]
+    cls.add_method('GetValue', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## uinteger-8-probe.h (module 'stats'): void ns3::Uinteger8Probe::SetValue(uint8_t value) [member function]
+    cls.add_method('SetValue', 
+                   'void', 
+                   [param('uint8_t', 'value')])
+    ## uinteger-8-probe.h (module 'stats'): static void ns3::Uinteger8Probe::SetValueByPath(std::string path, uint8_t value) [member function]
+    cls.add_method('SetValueByPath', 
+                   'void', 
+                   [param('std::string', 'path'), param('uint8_t', 'value')], 
+                   is_static=True)
+    return
+
+def register_Ns3UintegerValue_methods(root_module, cls):
+    ## uinteger.h (module 'core'): ns3::UintegerValue::UintegerValue() [constructor]
+    cls.add_constructor([])
+    ## uinteger.h (module 'core'): ns3::UintegerValue::UintegerValue(ns3::UintegerValue const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::UintegerValue const &', 'arg0')])
+    ## uinteger.h (module 'core'): ns3::UintegerValue::UintegerValue(uint64_t const & value) [constructor]
+    cls.add_constructor([param('uint64_t const &', 'value')])
+    ## uinteger.h (module 'core'): ns3::Ptr<ns3::AttributeValue> ns3::UintegerValue::Copy() const [member function]
     cls.add_method('Copy', 
                    'ns3::Ptr< ns3::AttributeValue >', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## address.h (module 'network'): bool ns3::AddressValue::DeserializeFromString(std::string value, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
+    ## uinteger.h (module 'core'): bool ns3::UintegerValue::DeserializeFromString(std::string value, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
     cls.add_method('DeserializeFromString', 
                    'bool', 
                    [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
                    is_virtual=True)
-    ## address.h (module 'network'): ns3::Address ns3::AddressValue::Get() const [member function]
+    ## uinteger.h (module 'core'): uint64_t ns3::UintegerValue::Get() const [member function]
     cls.add_method('Get', 
-                   'ns3::Address', 
+                   'uint64_t', 
                    [], 
                    is_const=True)
-    ## address.h (module 'network'): std::string ns3::AddressValue::SerializeToString(ns3::Ptr<ns3::AttributeChecker const> checker) const [member function]
+    ## uinteger.h (module 'core'): std::string ns3::UintegerValue::SerializeToString(ns3::Ptr<ns3::AttributeChecker const> checker) const [member function]
     cls.add_method('SerializeToString', 
                    'std::string', 
                    [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
                    is_const=True, is_virtual=True)
-    ## address.h (module 'network'): void ns3::AddressValue::Set(ns3::Address const & value) [member function]
+    ## uinteger.h (module 'core'): void ns3::UintegerValue::Set(uint64_t const & value) [member function]
     cls.add_method('Set', 
                    'void', 
-                   [param('ns3::Address const &', 'value')])
+                   [param('uint64_t const &', 'value')])
     return
 
-def register_Ns3CounterCalculator__Unsigned_int_methods(root_module, cls):
-    ## basic-data-calculators.h (module 'stats'): ns3::CounterCalculator<unsigned int>::CounterCalculator(ns3::CounterCalculator<unsigned int> const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::CounterCalculator< unsigned int > const &', 'arg0')])
-    ## basic-data-calculators.h (module 'stats'): ns3::CounterCalculator<unsigned int>::CounterCalculator() [constructor]
+def register_Ns3BooleanProbe_methods(root_module, cls):
+    ## boolean-probe.h (module 'stats'): ns3::BooleanProbe::BooleanProbe(ns3::BooleanProbe const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::BooleanProbe const &', 'arg0')])
+    ## boolean-probe.h (module 'stats'): ns3::BooleanProbe::BooleanProbe() [constructor]
     cls.add_constructor([])
-    ## basic-data-calculators.h (module 'stats'): unsigned int ns3::CounterCalculator<unsigned int>::GetCount() const [member function]
-    cls.add_method('GetCount', 
-                   'unsigned int', 
+    ## boolean-probe.h (module 'stats'): bool ns3::BooleanProbe::ConnectByObject(std::string traceSource, ns3::Ptr<ns3::Object> obj) [member function]
+    cls.add_method('ConnectByObject', 
+                   'bool', 
+                   [param('std::string', 'traceSource'), param('ns3::Ptr< ns3::Object >', 'obj')], 
+                   is_virtual=True)
+    ## boolean-probe.h (module 'stats'): void ns3::BooleanProbe::ConnectByPath(std::string path) [member function]
+    cls.add_method('ConnectByPath', 
+                   'void', 
+                   [param('std::string', 'path')], 
+                   is_virtual=True)
+    ## boolean-probe.h (module 'stats'): static ns3::TypeId ns3::BooleanProbe::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## boolean-probe.h (module 'stats'): bool ns3::BooleanProbe::GetValue() const [member function]
+    cls.add_method('GetValue', 
+                   'bool', 
                    [], 
                    is_const=True)
-    ## basic-data-calculators.h (module 'stats'): void ns3::CounterCalculator<unsigned int>::Output(ns3::DataOutputCallback & callback) const [member function]
-    cls.add_method('Output', 
+    ## boolean-probe.h (module 'stats'): void ns3::BooleanProbe::SetValue(bool value) [member function]
+    cls.add_method('SetValue', 
                    'void', 
-                   [param('ns3::DataOutputCallback &', 'callback')], 
-                   is_const=True, is_virtual=True)
-    ## basic-data-calculators.h (module 'stats'): void ns3::CounterCalculator<unsigned int>::Update() [member function]
-    cls.add_method('Update', 
+                   [param('bool', 'value')])
+    ## boolean-probe.h (module 'stats'): static void ns3::BooleanProbe::SetValueByPath(std::string path, bool value) [member function]
+    cls.add_method('SetValueByPath', 
                    'void', 
-                   [])
-    ## basic-data-calculators.h (module 'stats'): void ns3::CounterCalculator<unsigned int>::Update(unsigned int const i) [member function]
-    cls.add_method('Update', 
-                   'void', 
-                   [param('unsigned int const', 'i')])
-    ## basic-data-calculators.h (module 'stats'): void ns3::CounterCalculator<unsigned int>::DoDispose() [member function]
-    cls.add_method('DoDispose', 
-                   'void', 
-                   [], 
-                   visibility='protected', is_virtual=True)
+                   [param('std::string', 'path'), param('bool', 'value')], 
+                   is_static=True)
     return
 
-def register_Ns3PacketCounterCalculator_methods(root_module, cls):
-    ## packet-data-calculators.h (module 'stats'): ns3::PacketCounterCalculator::PacketCounterCalculator(ns3::PacketCounterCalculator const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::PacketCounterCalculator const &', 'arg0')])
-    ## packet-data-calculators.h (module 'stats'): ns3::PacketCounterCalculator::PacketCounterCalculator() [constructor]
+def register_Ns3DoubleProbe_methods(root_module, cls):
+    ## double-probe.h (module 'stats'): ns3::DoubleProbe::DoubleProbe(ns3::DoubleProbe const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::DoubleProbe const &', 'arg0')])
+    ## double-probe.h (module 'stats'): ns3::DoubleProbe::DoubleProbe() [constructor]
     cls.add_constructor([])
-    ## packet-data-calculators.h (module 'stats'): void ns3::PacketCounterCalculator::FrameUpdate(std::string path, ns3::Ptr<const ns3::Packet> packet, ns3::Mac48Address realto) [member function]
-    cls.add_method('FrameUpdate', 
+    ## double-probe.h (module 'stats'): bool ns3::DoubleProbe::ConnectByObject(std::string traceSource, ns3::Ptr<ns3::Object> obj) [member function]
+    cls.add_method('ConnectByObject', 
+                   'bool', 
+                   [param('std::string', 'traceSource'), param('ns3::Ptr< ns3::Object >', 'obj')], 
+                   is_virtual=True)
+    ## double-probe.h (module 'stats'): void ns3::DoubleProbe::ConnectByPath(std::string path) [member function]
+    cls.add_method('ConnectByPath', 
                    'void', 
-                   [param('std::string', 'path'), param('ns3::Ptr< ns3::Packet const >', 'packet'), param('ns3::Mac48Address', 'realto')])
-    ## packet-data-calculators.h (module 'stats'): void ns3::PacketCounterCalculator::PacketUpdate(std::string path, ns3::Ptr<const ns3::Packet> packet) [member function]
-    cls.add_method('PacketUpdate', 
+                   [param('std::string', 'path')], 
+                   is_virtual=True)
+    ## double-probe.h (module 'stats'): static ns3::TypeId ns3::DoubleProbe::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## double-probe.h (module 'stats'): double ns3::DoubleProbe::GetValue() const [member function]
+    cls.add_method('GetValue', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## double-probe.h (module 'stats'): void ns3::DoubleProbe::SetValue(double value) [member function]
+    cls.add_method('SetValue', 
                    'void', 
-                   [param('std::string', 'path'), param('ns3::Ptr< ns3::Packet const >', 'packet')])
-    ## packet-data-calculators.h (module 'stats'): void ns3::PacketCounterCalculator::DoDispose() [member function]
-    cls.add_method('DoDispose', 
+                   [param('double', 'value')])
+    ## double-probe.h (module 'stats'): static void ns3::DoubleProbe::SetValueByPath(std::string path, double value) [member function]
+    cls.add_method('SetValueByPath', 
+                   'void', 
+                   [param('std::string', 'path'), param('double', 'value')], 
+                   is_static=True)
+    return
+
+def register_Ns3HashImplementation_methods(root_module, cls):
+    ## hash-function.h (module 'core'): ns3::Hash::Implementation::Implementation(ns3::Hash::Implementation const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Hash::Implementation const &', 'arg0')])
+    ## hash-function.h (module 'core'): ns3::Hash::Implementation::Implementation() [constructor]
+    cls.add_constructor([])
+    ## hash-function.h (module 'core'): uint32_t ns3::Hash::Implementation::GetHash32(char const * buffer, size_t const size) [member function]
+    cls.add_method('GetHash32', 
+                   'uint32_t', 
+                   [param('char const *', 'buffer'), param('size_t const', 'size')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## hash-function.h (module 'core'): uint64_t ns3::Hash::Implementation::GetHash64(char const * buffer, size_t const size) [member function]
+    cls.add_method('GetHash64', 
+                   'uint64_t', 
+                   [param('char const *', 'buffer'), param('size_t const', 'size')], 
+                   is_virtual=True)
+    ## hash-function.h (module 'core'): void ns3::Hash::Implementation::clear() [member function]
+    cls.add_method('clear', 
                    'void', 
                    [], 
-                   visibility='protected', is_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
+    return
+
+def register_Ns3HashFunctionFnv1a_methods(root_module, cls):
+    ## hash-fnv.h (module 'core'): ns3::Hash::Function::Fnv1a::Fnv1a(ns3::Hash::Function::Fnv1a const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Hash::Function::Fnv1a const &', 'arg0')])
+    ## hash-fnv.h (module 'core'): ns3::Hash::Function::Fnv1a::Fnv1a() [constructor]
+    cls.add_constructor([])
+    ## hash-fnv.h (module 'core'): uint32_t ns3::Hash::Function::Fnv1a::GetHash32(char const * buffer, size_t const size) [member function]
+    cls.add_method('GetHash32', 
+                   'uint32_t', 
+                   [param('char const *', 'buffer'), param('size_t const', 'size')], 
+                   is_virtual=True)
+    ## hash-fnv.h (module 'core'): uint64_t ns3::Hash::Function::Fnv1a::GetHash64(char const * buffer, size_t const size) [member function]
+    cls.add_method('GetHash64', 
+                   'uint64_t', 
+                   [param('char const *', 'buffer'), param('size_t const', 'size')], 
+                   is_virtual=True)
+    ## hash-fnv.h (module 'core'): void ns3::Hash::Function::Fnv1a::clear() [member function]
+    cls.add_method('clear', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    return
+
+def register_Ns3HashFunctionHash32_methods(root_module, cls):
+    ## hash-function.h (module 'core'): ns3::Hash::Function::Hash32::Hash32(ns3::Hash::Function::Hash32 const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Hash::Function::Hash32 const &', 'arg0')])
+    ## hash-function.h (module 'core'): ns3::Hash::Function::Hash32::Hash32(ns3::Hash::Hash32Function_ptr hp) [constructor]
+    cls.add_constructor([param('ns3::Hash::Hash32Function_ptr', 'hp')])
+    ## hash-function.h (module 'core'): uint32_t ns3::Hash::Function::Hash32::GetHash32(char const * buffer, size_t const size) [member function]
+    cls.add_method('GetHash32', 
+                   'uint32_t', 
+                   [param('char const *', 'buffer'), param('size_t const', 'size')], 
+                   is_virtual=True)
+    ## hash-function.h (module 'core'): void ns3::Hash::Function::Hash32::clear() [member function]
+    cls.add_method('clear', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    return
+
+def register_Ns3HashFunctionHash64_methods(root_module, cls):
+    ## hash-function.h (module 'core'): ns3::Hash::Function::Hash64::Hash64(ns3::Hash::Function::Hash64 const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Hash::Function::Hash64 const &', 'arg0')])
+    ## hash-function.h (module 'core'): ns3::Hash::Function::Hash64::Hash64(ns3::Hash::Hash64Function_ptr hp) [constructor]
+    cls.add_constructor([param('ns3::Hash::Hash64Function_ptr', 'hp')])
+    ## hash-function.h (module 'core'): uint32_t ns3::Hash::Function::Hash64::GetHash32(char const * buffer, size_t const size) [member function]
+    cls.add_method('GetHash32', 
+                   'uint32_t', 
+                   [param('char const *', 'buffer'), param('size_t const', 'size')], 
+                   is_virtual=True)
+    ## hash-function.h (module 'core'): uint64_t ns3::Hash::Function::Hash64::GetHash64(char const * buffer, size_t const size) [member function]
+    cls.add_method('GetHash64', 
+                   'uint64_t', 
+                   [param('char const *', 'buffer'), param('size_t const', 'size')], 
+                   is_virtual=True)
+    ## hash-function.h (module 'core'): void ns3::Hash::Function::Hash64::clear() [member function]
+    cls.add_method('clear', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    return
+
+def register_Ns3HashFunctionMurmur3_methods(root_module, cls):
+    ## hash-murmur3.h (module 'core'): ns3::Hash::Function::Murmur3::Murmur3(ns3::Hash::Function::Murmur3 const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Hash::Function::Murmur3 const &', 'arg0')])
+    ## hash-murmur3.h (module 'core'): ns3::Hash::Function::Murmur3::Murmur3() [constructor]
+    cls.add_constructor([])
+    ## hash-murmur3.h (module 'core'): uint32_t ns3::Hash::Function::Murmur3::GetHash32(char const * buffer, size_t const size) [member function]
+    cls.add_method('GetHash32', 
+                   'uint32_t', 
+                   [param('char const *', 'buffer'), param('size_t const', 'size')], 
+                   is_virtual=True)
+    ## hash-murmur3.h (module 'core'): uint64_t ns3::Hash::Function::Murmur3::GetHash64(char const * buffer, size_t const size) [member function]
+    cls.add_method('GetHash64', 
+                   'uint64_t', 
+                   [param('char const *', 'buffer'), param('size_t const', 'size')], 
+                   is_virtual=True)
+    ## hash-murmur3.h (module 'core'): void ns3::Hash::Function::Murmur3::clear() [member function]
+    cls.add_method('clear', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
     return
 
 def register_functions(root_module):
     module = root_module
+    ## get-wildcard-matches.h (module 'stats'): extern std::string ns3::GetWildcardMatches(std::string const & configPath, std::string const & matchedPath, std::string const & wildcardSeparator=" ") [free function]
+    module.add_function('GetWildcardMatches', 
+                        'std::string', 
+                        [param('std::string const &', 'configPath'), param('std::string const &', 'matchedPath'), param('std::string const &', 'wildcardSeparator', default_value='" "')])
     ## data-calculator.h (module 'stats'): bool ns3::isNaN(double x) [free function]
     module.add_function('isNaN', 
                         'bool', 
                         [param('double', 'x')])
     register_functions_ns3_FatalImpl(module.get_submodule('FatalImpl'), root_module)
+    register_functions_ns3_Hash(module.get_submodule('Hash'), root_module)
+    register_functions_ns3_internal(module.get_submodule('internal'), root_module)
     return
 
 def register_functions_ns3_FatalImpl(module, root_module):
+    return
+
+def register_functions_ns3_Hash(module, root_module):
+    register_functions_ns3_Hash_Function(module.get_submodule('Function'), root_module)
+    return
+
+def register_functions_ns3_Hash_Function(module, root_module):
+    return
+
+def register_functions_ns3_internal(module, root_module):
     return
 
 def main():
