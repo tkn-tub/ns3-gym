@@ -100,7 +100,7 @@ FileHelper::WriteProbe (const std::string &typeId,
   bool pathHasNoWildcards = path.find ("*") == std::string::npos;
 
   // Remove the last token from the path.
-  unsigned lastSlash = path.find_last_of ("/");
+  size_t lastSlash = path.find_last_of ("/");
   if (lastSlash == std::string::npos)
     {
       pathWithoutLastToken = path;
