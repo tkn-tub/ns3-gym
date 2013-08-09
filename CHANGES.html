@@ -55,6 +55,11 @@ us a note on ns-developers mailing list.</p>
 
 <h2>New API:</h2>
 <ul>
+  <li>Data collection components have been added in the src/stats module.
+      Data collection includes a Probe class that attaches to ns-3 trace
+      sources to filter their output, and two Aggregator classes for 
+      marshaling probed data into text files or gnuplot plots.  The ns-3
+      tutorial has been extended to illustrate basic functionality. </li>
   <li>Time attributes can now be bounded.  See attribute-test-suite.cc
       for an example.</li>
   <li>New generic hash function interface.  Two hash functions are provided:
