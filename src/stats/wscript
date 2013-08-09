@@ -13,7 +13,6 @@ def configure(conf):
 def build(bld):
     obj = bld.create_ns3_module('stats', ['core'])
     obj.source = [
-        'helper/delay-jitter-estimation.cc',
         'helper/file-helper.cc',
         'helper/gnuplot-helper.cc',
         'model/data-calculator.cc',
@@ -45,7 +44,6 @@ def build(bld):
     headers = bld(features='ns3header')
     headers.module = 'stats'
     headers.source = [
-        'helper/delay-jitter-estimation.h',
         'helper/file-helper.h',
         'helper/gnuplot-helper.h',
         'model/data-calculator.h',
