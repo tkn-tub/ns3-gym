@@ -39,6 +39,15 @@ SOURCES = \
 	source/tests.rst \
 	source/tracing.rst \
 	source/troubleshoot.rst \
+	${SRC}/stats/doc/data-collection.rst \
+	${SRC}/stats/doc/data-collection-overview.rst \
+	${SRC}/stats/doc/statistics.rst \
+	${SRC}/stats/doc/data-collection-helpers.rst \
+	${SRC}/stats/doc/probe.rst \
+	${SRC}/stats/doc/collector.rst \
+	${SRC}/stats/doc/aggregator.rst \
+	${SRC}/stats/doc/adaptor.rst \
+	${SRC}/stats/doc/scope-and-limitations.rst \
 
 # list all manual figure files that need to be copied to 
 # $SOURCETEMP/figures.  For each figure to be included in all
@@ -52,11 +61,22 @@ SOURCEFIGS = \
 	figures/plot-2d.png \
 	figures/plot-2d-with-error-bars.png \
 	figures/plot-3d.png \
+	${SRC}/stats/doc/Stat-framework-arch.png \
+	${SRC}/stats/doc/Wifi-default.png \
+	${SRC}/stats/doc/dcf-overview.dia \
+	${SRC}/stats/doc/dcf-overview-with-aggregation.dia \
+	${SRC}/stats/doc/gnuplot-example.png \
+	${SRC}/stats/doc/file-example.png \
+	${SRC}/stats/doc/seventh-packet-byte-count.png \
+	${SRC}/stats/doc/gnuplot-helper-example.png \
+	${SRC}/stats/doc/gnuplot-aggregator.png \
 
 # specify figures from which .png and .pdf figures need to be
 # generated (all dia and eps figures)
 IMAGES_EPS = \
 	$(FIGURES)/software-organization.eps \
+	$(FIGURES)/dcf-overview.eps \
+	$(FIGURES)/dcf-overview-with-aggregation.eps \
 
 # rescale pdf figures as necessary
 $(FIGURES)/software-organization.pdf_width = 5in
