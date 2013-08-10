@@ -90,7 +90,7 @@ public:
                       const std::string &title,
                       const std::string &xLegend,
                       const std::string &yLegend,
-                      const std::string &terminalType = ".png");
+                      const std::string &terminalType = "png");
 
   /**
    * \param typeId the type ID for the probe used when it is created.
