@@ -190,6 +190,7 @@ def build(bld):
         'helper/ipv6-routing-helper.cc',
         'model/ipv6-address-generator.cc',
         'model/ipv4-packet-probe.cc',
+        'model/ipv6-packet-probe.cc',
         ]
 
     internet_test = bld.create_ns3_module_test_library('internet')
@@ -302,6 +303,7 @@ def build(bld):
         'model/tcp-rx-buffer.h',
         'model/rtt-estimator.h',
         'model/ipv4-packet-probe.h',
+        'model/ipv6-packet-probe.h',
        ]
 
     if bld.env['NSC_ENABLED']:

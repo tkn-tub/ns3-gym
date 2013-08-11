@@ -19,59 +19,60 @@
  *          Tiago G. Rodrigues (tgr002@bucknell.edu)
  *
  * Modified by: Mitch Watrous (watrous@u.washington.edu)
+ * Adapted to Ipv6 by: Tommaso Pecorella (tommaso.pecorella@unifi.it)
  */
 
-#include "ns3/ipv4-packet-probe.h"
+#include "ns3/ipv6-packet-probe.h"
 #include "ns3/object.h"
 #include "ns3/log.h"
 #include "ns3/names.h"
 #include "ns3/config.h"
 #include "ns3/trace-source-accessor.h"
 
-NS_LOG_COMPONENT_DEFINE ("Ipv4PacketProbe");
+NS_LOG_COMPONENT_DEFINE ("Ipv6PacketProbe");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv4PacketProbe);
+NS_OBJECT_ENSURE_REGISTERED (Ipv6PacketProbe);
 
 TypeId
-Ipv4PacketProbe::GetTypeId ()
+Ipv6PacketProbe::GetTypeId ()
 {
-  static TypeId tid = TypeId ("ns3::Ipv4PacketProbe")
+  static TypeId tid = TypeId ("ns3::Ipv6PacketProbe")
     .SetParent<Probe> ()
-    .AddConstructor<Ipv4PacketProbe> ()
+    .AddConstructor<Ipv6PacketProbe> ()
     .AddTraceSource ( "Output",
-                      "The packet plus its IPv4 object and interface that serve as the output for this probe",
-                      MakeTraceSourceAccessor (&Ipv4PacketProbe::m_output))
+                      "The packet plus its IPv6 object and interface that serve as the output for this probe",
+                      MakeTraceSourceAccessor (&Ipv6PacketProbe::m_output))
     .AddTraceSource ( "OutputBytes",
                       "The number of bytes in the packet",
-                      MakeTraceSourceAccessor (&Ipv4PacketProbe::m_outputBytes))
+                      MakeTraceSourceAccessor (&Ipv6PacketProbe::m_outputBytes))
   ;
   return tid;
 }
 
-Ipv4PacketProbe::Ipv4PacketProbe ()
+Ipv6PacketProbe::Ipv6PacketProbe ()
 {
   NS_LOG_FUNCTION (this);
   m_packet    = 0;
   m_packetSizeOld = 0;
-  m_ipv4      = 0;
+  m_ipv6      = 0;
   m_interface = 0;
 }
 
-Ipv4PacketProbe::~Ipv4PacketProbe ()
+Ipv6PacketProbe::~Ipv6PacketProbe ()
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-Ipv4PacketProbe::SetValue (Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface)
+Ipv6PacketProbe::SetValue (Ptr<const Packet> packet, Ptr<Ipv6> ipv6, uint32_t interface)
 {
-  NS_LOG_FUNCTION (this << packet << ipv4 << interface);
+  NS_LOG_FUNCTION (this << packet << ipv6 << interface);
   m_packet    = packet;
-  m_ipv4      = ipv4;
+  m_ipv6      = ipv6;
   m_interface = interface;
-  m_output (packet, ipv4, interface);
+  m_output (packet, ipv6, interface);
 
   uint32_t packetSizeNew = packet->GetSize ();
   m_outputBytes (m_packetSizeOld, packetSizeNew);
@@ -79,41 +80,41 @@ Ipv4PacketProbe::SetValue (Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t in
 }
 
 void
-Ipv4PacketProbe::SetValueByPath (std::string path, Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface)
+Ipv6PacketProbe::SetValueByPath (std::string path, Ptr<const Packet> packet, Ptr<Ipv6> ipv6, uint32_t interface)
 {
-  NS_LOG_FUNCTION (path << packet << ipv4 << interface);
-  Ptr<Ipv4PacketProbe> probe = Names::Find<Ipv4PacketProbe> (path);
+  NS_LOG_FUNCTION (path << packet << ipv6 << interface);
+  Ptr<Ipv6PacketProbe> probe = Names::Find<Ipv6PacketProbe> (path);
   NS_ASSERT_MSG (probe, "Error:  Can't find probe for path " << path);
-  probe->SetValue (packet, ipv4, interface);
+  probe->SetValue (packet, ipv6, interface);
 }
 
 bool
-Ipv4PacketProbe::ConnectByObject (std::string traceSource, Ptr<Object> obj)
+Ipv6PacketProbe::ConnectByObject (std::string traceSource, Ptr<Object> obj)
 {
   NS_LOG_FUNCTION (this << traceSource << obj);
   NS_LOG_DEBUG ("Name of probe (if any) in names database: " << Names::FindPath (obj));
-  bool connected = obj->TraceConnectWithoutContext (traceSource, MakeCallback (&ns3::Ipv4PacketProbe::TraceSink, this));
+  bool connected = obj->TraceConnectWithoutContext (traceSource, MakeCallback (&ns3::Ipv6PacketProbe::TraceSink, this));
   return connected;
 }
 
 void
-Ipv4PacketProbe::ConnectByPath (std::string path)
+Ipv6PacketProbe::ConnectByPath (std::string path)
 {
   NS_LOG_FUNCTION (this << path);
   NS_LOG_DEBUG ("Name of probe to search for in config database: " << path);
-  Config::ConnectWithoutContext (path, MakeCallback (&ns3::Ipv4PacketProbe::TraceSink, this));
+  Config::ConnectWithoutContext (path, MakeCallback (&ns3::Ipv6PacketProbe::TraceSink, this));
 }
 
 void
-Ipv4PacketProbe::TraceSink (Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface)
+Ipv6PacketProbe::TraceSink (Ptr<const Packet> packet, Ptr<Ipv6> ipv6, uint32_t interface)
 {
-  NS_LOG_FUNCTION (this << packet << ipv4 << interface);
+  NS_LOG_FUNCTION (this << packet << ipv6 << interface);
   if (IsEnabled ())
     {
       m_packet    = packet;
-      m_ipv4      = ipv4;
+      m_ipv6      = ipv6;
       m_interface = interface;
-      m_output (packet, ipv4, interface);
+      m_output (packet, ipv6, interface);
 
       uint32_t packetSizeNew = packet->GetSize ();
       m_outputBytes (m_packetSizeOld, packetSizeNew);

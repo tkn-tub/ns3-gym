@@ -372,6 +372,13 @@ GnuplotHelper::ConnectProbeToAggregator (const std::string &typeId,
         MakeCallback (&TimeSeriesAdaptor::TraceSinkUinteger32,
                       m_timeSeriesAdaptorMap[probeContext]));
     }
+  else if (m_probeMap[probeName].second == "ns3::Ipv6PacketProbe")
+    {
+      m_probeMap[probeName].first->TraceConnectWithoutContext
+        (probeTraceSource,
+        MakeCallback (&TimeSeriesAdaptor::TraceSinkUinteger32,
+                      m_timeSeriesAdaptorMap[probeContext]));
+    }
   else if (m_probeMap[probeName].second == "ns3::Uinteger8Probe")
     {
       m_probeMap[probeName].first->TraceConnectWithoutContext

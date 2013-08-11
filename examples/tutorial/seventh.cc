@@ -117,7 +117,14 @@ MyApp::StartApplication (void)
 {
   m_running = true;
   m_packetsSent = 0;
-  m_socket->Bind ();
+  if (InetSocketAddress::IsMatchingType (m_peer))
+    {
+      m_socket->Bind ();
+    }
+  else
+    {
+      m_socket->Bind6 ();
+    }
   m_socket->Connect (m_peer);
   SendPacket ();
 }
@@ -177,6 +184,12 @@ RxDrop (Ptr<PcapFileWrapper> file, Ptr<const Packet> p)
 int
 main (int argc, char *argv[])
 {
+  bool useV6 = false;
+
+  CommandLine cmd;
+  cmd.AddValue ("useIpv6", "Use Ipv6", useV6);
+  cmd.Parse (argc, argv);
+
   NodeContainer nodes;
   nodes.Create (2);
 
@@ -194,13 +207,33 @@ main (int argc, char *argv[])
   InternetStackHelper stack;
   stack.Install (nodes);
 
-  Ipv4AddressHelper address;
-  address.SetBase ("10.1.1.0", "255.255.255.252");
-  Ipv4InterfaceContainer interfaces = address.Assign (devices);
-
   uint16_t sinkPort = 8080;
-  Address sinkAddress (InetSocketAddress (interfaces.GetAddress (1), sinkPort));
-  PacketSinkHelper packetSinkHelper ("ns3::TcpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), sinkPort));
+  Address sinkAddress;
+  Address anyAddress;
+  std::string probeName;
+  std::string probeTrace;
+  if (useV6 == false)
+    {
+      Ipv4AddressHelper address;
+      address.SetBase ("10.1.1.0", "255.255.255.0");
+      Ipv4InterfaceContainer interfaces = address.Assign (devices);
+      sinkAddress = InetSocketAddress (interfaces.GetAddress (1), sinkPort);
+      anyAddress = InetSocketAddress (Ipv4Address::GetAny (), sinkPort);
+      probeName = "ns3::Ipv4PacketProbe";
+      probeTrace = "/NodeList/*/$ns3::Ipv4L3Protocol/Tx";
+    }
+  else
+    {
+      Ipv6AddressHelper address;
+      address.SetBase ("2001:0000:f00d:cafe::", Ipv6Prefix (64));
+      Ipv6InterfaceContainer interfaces = address.Assign (devices);
+      sinkAddress = Inet6SocketAddress (interfaces.GetAddress (1,1), sinkPort);
+      anyAddress = Inet6SocketAddress (Ipv6Address::GetAny (), sinkPort);
+      probeName = "ns3::Ipv6PacketProbe";
+      probeTrace = "/NodeList/*/$ns3::Ipv6L3Protocol/Tx";
+    }
+
+  PacketSinkHelper packetSinkHelper ("ns3::TcpSocketFactory", anyAddress);
   ApplicationContainer sinkApps = packetSinkHelper.Install (nodes.Get (1));
   sinkApps.Start (Seconds (0.));
   sinkApps.Stop (Seconds (20.));
@@ -236,8 +269,8 @@ main (int argc, char *argv[])
   // probe output trace source ("OutputBytes") to plot.  The fourth argument
   // specifies the name of the data series label on the plot.  The last
   // argument formats the plot by specifying where the key should be placed.
-  plotHelper.PlotProbe ("ns3::Ipv4PacketProbe",
-                        "/NodeList/*/$ns3::Ipv4L3Protocol/Tx",
+  plotHelper.PlotProbe (probeName,
+                        probeTrace,
                         "OutputBytes",
                         "Packet Byte Count",
                         GnuplotAggregator::KEY_BELOW);
@@ -254,8 +287,8 @@ main (int argc, char *argv[])
 
   // Specify the probe type, probe path (in configuration namespace), and
   // probe output trace source ("OutputBytes") to write.
-  fileHelper.WriteProbe ("ns3::Ipv4PacketProbe",
-                         "/NodeList/*/$ns3::Ipv4L3Protocol/Tx",
+  fileHelper.WriteProbe (probeName,
+                         probeTrace,
                          "OutputBytes");
 
   Simulator::Stop (Seconds (20));
