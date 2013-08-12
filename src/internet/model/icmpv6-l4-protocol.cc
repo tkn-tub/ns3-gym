@@ -835,6 +835,10 @@ void Icmpv6L4Protocol::HandlePacketTooBig (Ptr<Packet> p, Ipv6Address const &src
   origPkt->RemoveHeader (ipHeader);
   uint8_t payload[8];
   origPkt->CopyData (payload, 8);
+
+  Ptr<Ipv6L3Protocol> ipv6 = m_node->GetObject<Ipv6L3Protocol> ();
+  ipv6->SetPmtu(ipHeader.GetDestinationAddress(), tooBig.GetMtu ());
+
   Forward (src, tooBig, tooBig.GetMtu (), ipHeader, payload);
 }
 

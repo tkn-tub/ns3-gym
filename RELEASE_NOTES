@@ -39,6 +39,8 @@ New user-visible features
    - PHY support for UE measurements (RSRP and RSRQ)
    - RRC support for UE measurements (configuration, execution, reporting)
    - Automatic Handover trigger based on RRC UE measurement reports
+- IPv6 can now detect and use Path-MTU. See 
+  examples/ipv6/fragmentation-ipv6-two-MTU.cc for an example.
 
 Bugs fixed
 ----------
@@ -63,6 +65,7 @@ Bugs fixed
 - Bug 1712 - The IP (v4 and v6) forwarding needs a test
 - Bug 1718 - Ipv4StaticRouting log component is misspelled
 - Bug 1720 - IPv6 Fragmentation cause crashes
+- Bug 1721 - Path MTU isn't handled properly
 - Bug 1727 - Ping6 should use a proper source address
 - Bug 1731 - lte-phy-error-model passes unexpectedly
 - Bug 1742 - IPv6 HbH and Dst Extension Header size is not correctly calculated
