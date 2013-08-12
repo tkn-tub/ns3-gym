@@ -42,7 +42,7 @@ class LteNeighbourRelation;
 class LteAnr : public Object
 {
 public:
-  LteAnr ();
+  LteAnr (uint16_t servingCellId);
   virtual ~LteAnr ();
 
   // inherited from Object
@@ -58,7 +58,7 @@ public:
    * 3GPP TS 36.300.
    *
    * An entry added by this function will have NoRemove flag set to TRUE and
-   * NoHo flag set to TRUE. Hence, the cell may not act as the targel cell of a
+   * NoHo flag set to TRUE. Hence, the cell may not act as the target cell of a
    * handover, unless a measurement report of the cell is received, which will
    * update the NoHo flag to FALSE.
    */
@@ -130,6 +130,8 @@ private:
 
   // The expected measurement identity
   uint8_t m_measId;
+
+  uint16_t m_servingCellId;
 
 }; // end of class LteAnr
 

@@ -269,6 +269,7 @@ LteEnbNetDevice::DoInitialize (void)
   m_mac->Initialize ();
   m_rrc->Initialize ();
   m_handoverAlgorithm->Initialize ();
+  m_anr->Initialize ();
 }
 
 

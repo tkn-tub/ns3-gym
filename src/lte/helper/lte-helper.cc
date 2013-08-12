@@ -392,7 +392,7 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
   Ptr<LteEnbMac> mac = CreateObject<LteEnbMac> ();
   Ptr<FfMacScheduler> sched = m_schedulerFactory.Create<FfMacScheduler> ();
   Ptr<HandoverAlgorithm> handoverAlgorithm = m_handoverAlgorithmFactory.Create<HandoverAlgorithm> ();
-  Ptr<LteAnr> anr = CreateObject<LteAnr> ();
+  Ptr<LteAnr> anr = CreateObject<LteAnr> (cellId);
   Ptr<LteEnbRrc> rrc = CreateObject<LteEnbRrc> ();
 
   if (m_useIdealRrc)

@@ -988,14 +988,16 @@ UeManager::RecvMeasurementReport (LteRrcSap::MeasurementReport msg)
                     << " RSRQ " << (it->haveRsrqResult ? (uint16_t) it->rsrqResult : 255));
     }
 
-  if (m_rrc->m_handoverMeasIds.find (measId) != m_rrc->m_handoverMeasIds.end ())
+  if ((m_rrc->m_handoverManagementSapProvider != 0)
+      && (m_rrc->m_handoverMeasIds.find (measId) != m_rrc->m_handoverMeasIds.end ()))
     {
       // this measurement was requested by the handover algorithm
       m_rrc->m_handoverManagementSapProvider->ReportUeMeas (m_rnti,
                                                             msg.measResults);
     }
 
-  if (m_rrc->m_anrMeasIds.find (measId) != m_rrc->m_anrMeasIds.end ())
+  if ((m_rrc->m_anrSapProvider != 0)
+      && (m_rrc->m_anrMeasIds.find (measId) != m_rrc->m_anrMeasIds.end ()))
     {
       // this measurement was requested by the ANR function
       m_rrc->m_anrSapProvider->ReportUeMeas (msg.measResults);
@@ -2024,9 +2026,20 @@ LteEnbRrc::DoTriggerHandover (uint16_t rnti, uint16_t targetCellId)
 {
   NS_LOG_FUNCTION (this << rnti << targetCellId);
 
-  // ensure that proper neighbour relationship exists between source and target cells
-  if ((m_anrSapProvider->GetNoHo (targetCellId) == false)
-      && (m_anrSapProvider->GetNoX2 (targetCellId) == false))
+  bool isHandoverAllowed = true;
+
+  if (m_anrSapProvider != 0)
+    {
+      // ensure that proper neighbour relationship exists between source and target cells
+      bool noHo = m_anrSapProvider->GetNoHo (targetCellId);
+      bool noX2 = m_anrSapProvider->GetNoX2 (targetCellId);
+      NS_LOG_DEBUG (this << " cellId=" << m_cellId
+                         << " targetCellId=" << targetCellId
+                         << " NRT.NoHo=" << noHo << " NRT.NoX2=" << noX2);
+      isHandoverAllowed = (noHo == false) && (noX2 == false);
+    }
+
+  if (isHandoverAllowed)
     {
       Ptr<UeManager> ueManager = GetUeManager (rnti);
       NS_ASSERT_MSG (ueManager != 0, "Cannot find UE context with RNTI " << rnti);
@@ -2268,9 +2281,12 @@ LteEnbRrc::GetLogicalChannelPriority (EpsBearer bearer)
 void
 LteEnbRrc::SendSystemInformation ()
 {
-//   NS_LOG_FUNCTION (this);
-  // for simplicity, we use the same periodicity for all sibs
-  // note that in real systems the periodicy of each sibs could be different
+  // NS_LOG_FUNCTION (this);
+
+  /*
+   * For simplicity, we use the same periodicity for all SIBs. Note that in real
+   * systems the periodicy of each SIBs could be different.
+   */
   LteRrcSap::SystemInformation si;
   si.haveSib2 = true;
   si.sib2.freqInfo.ulCarrierFreq = m_ulEarfcn;

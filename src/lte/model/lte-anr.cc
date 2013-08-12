@@ -30,17 +30,20 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (LteAnr);
 
 
-LteAnr::LteAnr ()
+LteAnr::LteAnr (uint16_t servingCellId)
   : m_anrSapUser (0),
     m_threshold (0),
-    m_measId (0)
+    m_measId (0),
+    m_servingCellId (servingCellId)
 {
+  NS_LOG_FUNCTION (this << servingCellId);
   m_anrSapProvider = new MemberLteAnrSapProvider<LteAnr> (this);
 }
 
 
 LteAnr::~LteAnr ()
 {
+  NS_LOG_FUNCTION (this << m_servingCellId);
 }
 
 
@@ -57,7 +60,6 @@ LteAnr::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LteAnr")
     .SetParent<Object> ()
-    .AddConstructor<LteAnr> ()
     .AddAttribute ("Threshold",
                    "Minimum RSRQ range value required for detecting a neighbour cell",
                    UintegerValue (0),
@@ -71,7 +73,12 @@ LteAnr::GetTypeId (void)
 void
 LteAnr::AddNeighbourRelation (uint16_t cellId)
 {
-  NS_LOG_FUNCTION (this << cellId);
+  NS_LOG_FUNCTION (this << m_servingCellId << cellId);
+
+  if (cellId == m_servingCellId)
+    {
+      NS_FATAL_ERROR ("Serving cell ID " << cellId << " may not be added into NRT");
+    }
 
   if (m_neighbourRelationTable.find (cellId) != m_neighbourRelationTable.end ())
     {
@@ -90,7 +97,7 @@ LteAnr::AddNeighbourRelation (uint16_t cellId)
 void
 LteAnr::RemoveNeighbourRelation (uint16_t cellId)
 {
-  NS_LOG_FUNCTION (this << cellId);
+  NS_LOG_FUNCTION (this << m_servingCellId << cellId);
 
   NeighbourRelationTable_t::iterator it = m_neighbourRelationTable.find (cellId);
   if (it != m_neighbourRelationTable.end ())
@@ -119,6 +126,8 @@ LteAnr::GetLteAnrSapProvider ()
 void
 LteAnr::DoInitialize ()
 {
+  NS_LOG_LOGIC (this << " requesting Event A4 measurements"
+                     << " (threshold=" << (uint8_t) m_threshold << ")");
   LteRrcSap::ReportConfigEutra reportConfig;
   reportConfig.eventId = LteRrcSap::ReportConfigEutra::EVENT_A4;
   reportConfig.threshold1.choice = LteRrcSap::ThresholdEutra::THRESHOLD_RSRQ;
@@ -133,7 +142,7 @@ void
 LteAnr::DoReportUeMeas (LteRrcSap::MeasResults measResults)
 {
   uint8_t measId = measResults.measId;
-  NS_LOG_FUNCTION (this << (uint16_t) measId);
+  NS_LOG_FUNCTION (this << m_servingCellId << (uint16_t) measId);
 
   if (measId != m_measId)
     {
@@ -153,19 +162,27 @@ LteAnr::DoReportUeMeas (LteRrcSap::MeasResults measResults)
                              "RSRQ measure missing for cellId " << it->physCellId);
 
               // Update Neighbour Relation Table
-              if (m_neighbourRelationTable.find (it->physCellId) != m_neighbourRelationTable.end ())
+              NeighbourRelationTable_t::iterator itNrt = m_neighbourRelationTable.find (it->physCellId);
+              if (itNrt != m_neighbourRelationTable.end ())
                 {
-                  // Update neighbour info
-                  NeighbourRelation_t neighbourRelation = m_neighbourRelationTable[it->physCellId];
-
-                  if (neighbourRelation.noX2 == false)
+                  // Update neighbour relation entry
+                  NS_LOG_LOGIC (this << " updating NRT of cell " << m_servingCellId
+                                     << " with entry of cell " << it->physCellId);
+                  if (itNrt->second.noX2 == false)
                     {
-                      neighbourRelation.noHo = false;
+                      NS_LOG_LOGIC (this << " enabling handover"
+                                         << " from cell " << m_servingCellId
+                                         << " to cell " << it->physCellId);
+                      itNrt->second.noHo = false;
                     }
-                  neighbourRelation.detectedAsNeighbour = true;
+                  itNrt->second.detectedAsNeighbour = true;
                 }
-              else // new neighbour
+              else
                 {
+                  // Discovered new neighbour
+                  NS_LOG_LOGIC (this << " inserting NRT of cell " << m_servingCellId
+                                     << " with newly discovered neighbouring cell "
+                                     << it->physCellId);
                   NeighbourRelation_t neighbourRelation;
                   neighbourRelation.noRemove = false;
                   neighbourRelation.noHo = true;
@@ -179,9 +196,8 @@ LteAnr::DoReportUeMeas (LteRrcSap::MeasResults measResults)
         } // end of if (measResults.haveMeasResultNeighCells && !(measResults.measResultListEutra.empty ()))
       else
         {
-          NS_LOG_LOGIC ("WARNING");
-          // NS_ASSERT_MSG ("Event A4 received without measure results for neighbour cells");
-          // TODO Remove neighbours in the neighbourCellMeasures table
+          NS_LOG_WARN (this << " Event A4 received without measurement results from neighbouring cells");
+          // TODO Remove neighbours in the NRT
         }
 
     } // end of else of if (measId != m_measId)
@@ -199,7 +215,7 @@ LteAnr::DoAddNeighbourRelation (uint16_t cellId)
 bool
 LteAnr::DoGetNoRemove (uint16_t cellId)
 {
-  NS_LOG_FUNCTION (this << cellId);
+  NS_LOG_FUNCTION (this << m_servingCellId << cellId);
   return Find (cellId)->noRemove;
 }
 
@@ -207,7 +223,7 @@ LteAnr::DoGetNoRemove (uint16_t cellId)
 bool
 LteAnr::DoGetNoHo (uint16_t cellId)
 {
-  NS_LOG_FUNCTION (this << cellId);
+  NS_LOG_FUNCTION (this << m_servingCellId << cellId);
   return Find (cellId)->noHo;
 }
 
@@ -215,7 +231,7 @@ LteAnr::DoGetNoHo (uint16_t cellId)
 bool
 LteAnr::DoGetNoX2 (uint16_t cellId)
 {
-  NS_LOG_FUNCTION (this << cellId);
+  NS_LOG_FUNCTION (this << m_servingCellId << cellId);
   return Find (cellId)->noX2;
 }
 
