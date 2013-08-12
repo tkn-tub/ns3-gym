@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef A2_RSRQ_HANDOVER_ALGORITHM_H
-#define A2_RSRQ_HANDOVER_ALGORITHM_H
+#ifndef A2_A4_RSRQ_HANDOVER_ALGORITHM_H
+#define A2_A4_RSRQ_HANDOVER_ALGORITHM_H
 
 #include <ns3/lte-handover-algorithm.h>
 #include <ns3/lte-handover-management-sap.h>
@@ -32,17 +32,27 @@ namespace ns3 {
 
 /**
  * \brief Implements the Handover Management SAP for a handover algorithm based
- *        on RSRQ and Event A2 (serving cell's RSRQ becomes worse than a
- *        threshold).
+ *        on RSRQ, Event A2 and Event A4.
  *
- * The threshold used by the algorithm can be configured in the
- * `ServingCellThreshold` attribute.
+ * Handover decision is primarily based on Event A2 measurements (serving cell's
+ * RSRQ becomes worse than threshold). The threshold used can be configured in
+ * the `ServingCellThreshold` attribute. When the event is triggered, the first
+ * condition of handover is fulfilled.
+ *
+ * Event A4 measurements (neighbour cell's RSRQ becomes better than threshold)
+ * are used to detect neighbouring cells and their respective RSRQ. When a
+ * neighbouring cell's RSRQ is higher than the serving cell's RSRQ by a certain
+ * offset (configurable in the `NeighbourCellOffset` attribute), then the second
+ * condition of handover is fulfilled.
+ *
+ * When the first and second conditions above are fulfilled, the algorithm
+ * triggers a handover.
  */
-class A2RsrqHandoverAlgorithm : public LteHandoverAlgorithm
+class A2A4RsrqHandoverAlgorithm : public LteHandoverAlgorithm
 {
 public:
-  A2RsrqHandoverAlgorithm ();
-  virtual ~A2RsrqHandoverAlgorithm ();
+  A2A4RsrqHandoverAlgorithm ();
+  virtual ~A2A4RsrqHandoverAlgorithm ();
 
   // inherited from Object
   virtual void DoDispose (void);
@@ -52,7 +62,7 @@ public:
   virtual void SetLteHandoverManagementSapUser (LteHandoverManagementSapUser* s);
   virtual LteHandoverManagementSapProvider* GetLteHandoverManagementSapProvider ();
 
-  friend class MemberLteHandoverManagementSapProvider<A2RsrqHandoverAlgorithm>;
+  friend class MemberLteHandoverManagementSapProvider<A2A4RsrqHandoverAlgorithm>;
 
 protected:
   // inherited from Object
@@ -101,10 +111,10 @@ private:
   LteHandoverManagementSapUser* m_handoverManagementSapUser;
   LteHandoverManagementSapProvider* m_handoverManagementSapProvider;
 
-}; // end of class A2RsrqHandoverAlgorithm
+}; // end of class A2A4RsrqHandoverAlgorithm
 
 
 } // end of namespace ns3
 
 
-#endif /* A2_RSRQ_HANDOVER_ALGORITHM_H */
+#endif /* A2_A4_RSRQ_HANDOVER_ALGORITHM_H */

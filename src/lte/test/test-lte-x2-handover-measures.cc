@@ -183,7 +183,7 @@ LteX2HandoverMeasuresTestCase::DoRun ()
   m_lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
   m_lteHelper->SetAttribute ("UseIdealRrc", BooleanValue (m_useIdealRrc));
   m_lteHelper->SetSchedulerType (m_schedulerType);
-  m_lteHelper->SetHandoverAlgorithmType ("ns3::A2RsrqHandoverAlgorithm");
+  m_lteHelper->SetHandoverAlgorithmType ("ns3::A2A4RsrqHandoverAlgorithm");
   m_lteHelper->SetHandoverAlgorithmAttribute ("ServingCellThreshold",
                                               UintegerValue (30));
   m_lteHelper->SetHandoverAlgorithmAttribute ("NeighbourCellOffset",
