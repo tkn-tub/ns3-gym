@@ -140,7 +140,7 @@ void Ipv6InterfaceContainer::SetDefaultRouteInAllNodes (uint32_t router)
 
 void Ipv6InterfaceContainer::SetDefaultRouteInAllNodes (Ipv6Address routerAddress)
 {
-  uint32_t routerIndex;
+  uint32_t routerIndex = 0;
   bool found = false;
   for (uint32_t index = 0; index < m_interfaces.size (); index++)
     {
@@ -196,7 +196,7 @@ void Ipv6InterfaceContainer::SetDefaultRoute (uint32_t i, uint32_t router)
 
 void Ipv6InterfaceContainer::SetDefaultRoute (uint32_t i, Ipv6Address routerAddr)
 {
-  uint32_t routerIndex;
+  uint32_t routerIndex = 0;
   bool found = false;
   for (uint32_t index = 0; index < m_interfaces.size (); index++)
     {
@@ -252,7 +252,7 @@ Ipv6Address Ipv6InterfaceContainer::GetLinkLocalAddress (Ipv6Address address)
       return address;
     }
 
-  uint32_t nodeIndex;
+  uint32_t nodeIndex = 0;
   bool found = false;
   for (uint32_t index = 0; index < m_interfaces.size (); index++)
     {
