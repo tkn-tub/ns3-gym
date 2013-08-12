@@ -23,6 +23,7 @@
 
 #include <stdint.h>
 #include <list>
+#include <map>
 
 #include "ns3/object-factory.h"
 #include "ns3/ipv6-address.h"
