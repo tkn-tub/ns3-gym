@@ -20,7 +20,6 @@
  */
 
 #include "lte-handover-algorithm.h"
-#include <ns3/lte-handover-management-sap.h>
 #include <ns3/log.h>
 
 NS_LOG_COMPONENT_DEFINE ("LteHandoverAlgorithm");
@@ -54,73 +53,6 @@ LteHandoverAlgorithm::GetTypeId (void)
   ;
   return tid;
 }
-
-
-
-///////////////////////////////////////////
-// Bare Handover Algorithm
-///////////////////////////////////////////
-
-NS_OBJECT_ENSURE_REGISTERED (BareHandoverAlgorithm);
-
-
-BareHandoverAlgorithm::BareHandoverAlgorithm ()
-  : m_handoverManagementSapUser (0)
-{
-  m_handoverManagementSapProvider = new MemberLteHandoverManagementSapProvider<BareHandoverAlgorithm> (this);
-}
-
-
-BareHandoverAlgorithm::~BareHandoverAlgorithm ()
-{
-}
-
-
-void
-BareHandoverAlgorithm::DoDispose ()
-{
-  delete m_handoverManagementSapProvider;
-}
-
-
-TypeId
-BareHandoverAlgorithm::GetTypeId (void)
-{
-  static TypeId tid = TypeId ("ns3::BareHandoverAlgorithm")
-    .SetParent<LteHandoverAlgorithm> ()
-    .AddConstructor<BareHandoverAlgorithm> ()
-  ;
-  return tid;
-}
-
-
-void
-BareHandoverAlgorithm::SetLteHandoverManagementSapUser (LteHandoverManagementSapUser* s)
-{
-  m_handoverManagementSapUser = s;
-}
-
-
-LteHandoverManagementSapProvider*
-BareHandoverAlgorithm::GetLteHandoverManagementSapProvider ()
-{
-  return m_handoverManagementSapProvider;
-}
-
-
-void
-BareHandoverAlgorithm::DoInitialize ()
-{
-  LteHandoverAlgorithm::DoInitialize ();
-}
-
-
-void
-BareHandoverAlgorithm::DoReportUeMeas (uint16_t rnti,
-                                       LteRrcSap::MeasResults measResults)
-{
-}
-
 
 
 } // end of namespace ns3

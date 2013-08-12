@@ -151,7 +151,7 @@ TypeId LteHelper::GetTypeId (void)
                    "The type of handover algorithm to be used for eNBs. "
                    "The allowed values for this attributes are the type names "
                    "of any class inheriting from ns3::HandoverAlgorithm.",
-                   StringValue ("ns3::BareHandoverAlgorithm"),
+                   StringValue ("ns3::NoOpHandoverAlgorithm"),
                    MakeStringAccessor (&LteHelper::SetHandoverAlgorithmType),
                    MakeStringChecker ())
     .AddAttribute ("PathlossModel",
@@ -783,8 +783,8 @@ DrbActivator::ActivateDrb (uint64_t imsi, uint16_t cellId, uint16_t rnti)
   if ((!m_active) && (imsi == m_imsi))
     {
       Ptr<LteUeRrc> ueRrc = m_ueDevice->GetObject<LteUeNetDevice> ()->GetRrc ();
-      NS_ASSERT (ueRrc->GetState () == LteUeRrc::CONNECTED_NORMALLY);      
-      uint16_t rnti = ueRrc->GetRnti();
+      NS_ASSERT (ueRrc->GetState () == LteUeRrc::CONNECTED_NORMALLY);
+      uint16_t rnti = ueRrc->GetRnti ();
       Ptr<LteEnbNetDevice> enbLteDevice = m_ueDevice->GetObject<LteUeNetDevice> ()->GetTargetEnb ();
       Ptr<LteEnbRrc> enbRrc = enbLteDevice->GetObject<LteEnbNetDevice> ()->GetRrc ();
       NS_ASSERT (ueRrc->GetCellId () == enbLteDevice->GetCellId ());
@@ -800,14 +800,14 @@ DrbActivator::ActivateDrb (uint64_t imsi, uint16_t cellId, uint16_t rnti)
       m_active = true;
     }
 }
-  
+
 
 void 
 LteHelper::ActivateDataRadioBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer)
 {
   NS_LOG_FUNCTION (this << ueDevice);
-  NS_ASSERT_MSG (m_epcHelper == 0, "this method must not be used when EPC is being used");  
-  
+  NS_ASSERT_MSG (m_epcHelper == 0, "this method must not be used when EPC is being used");
+
   // Normally it is the EPC that takes care of activating DRBs
   // when the UE gets connected. When the EPC is not used, we achieve
   // the same behavior by hooking a dedicated DRB activation function
@@ -819,7 +819,7 @@ LteHelper::ActivateDataRadioBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer)
   std::ostringstream path;
   path << "/NodeList/" << enbLteDevice->GetNode ()->GetId () 
        << "/DeviceList/" << enbLteDevice->GetIfIndex ()
-       << "/LteEnbRrc/ConnectionEstablished";  
+       << "/LteEnbRrc/ConnectionEstablished";
   Ptr<DrbActivator> arg = Create<DrbActivator> (ueDevice, bearer);
   Config::Connect (path.str (), MakeBoundCallback (&DrbActivator::ActivateCallback, arg));
 }

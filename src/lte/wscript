@@ -101,6 +101,7 @@ def build(bld):
         'model/lte-handover-management-sap.cc',
         'model/lte-handover-algorithm.cc',
         'model/a2-rsrq-handover-algorithm.cc',
+        'model/no-op-handover-algorithm.cc',
         'model/lte-anr-sap.cc',
         'model/lte-anr.cc',
         ]
@@ -251,6 +252,7 @@ def build(bld):
         'model/lte-handover-management-sap.h',
         'model/lte-handover-algorithm.h',
         'model/a2-rsrq-handover-algorithm.h',
+        'model/no-op-handover-algorithm.h',
         'model/lte-anr-sap.h',
         'model/lte-anr.h',
         ]

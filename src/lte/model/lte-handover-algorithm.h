@@ -24,9 +24,13 @@
 
 #include <ns3/object.h>
 #include <ns3/lte-rrc-sap.h>
-#include <ns3/lte-handover-management-sap.h>
 
 namespace ns3 {
+
+
+class LteHandoverManagementSapUser;
+class LteHandoverManagementSapProvider;
+
 
 /**
  * \brief This abstract base class identifies the interface by means of which
@@ -59,44 +63,6 @@ public:
   virtual LteHandoverManagementSapProvider* GetLteHandoverManagementSapProvider () = 0;
 
 }; // end of class LteHandoverAlgorithm
-
-
-
-/**
- * \brief A sample implementation of the Handover Management SAP which simply
- *        does nothing.
- */
-class BareHandoverAlgorithm : public LteHandoverAlgorithm
-{
-public:
-  BareHandoverAlgorithm ();
-  virtual ~BareHandoverAlgorithm ();
-
-  // inherited from Object
-  virtual void DoDispose (void);
-  static TypeId GetTypeId (void);
-
-  // inherited from LteHandoverAlgorithm
-  virtual void SetLteHandoverManagementSapUser (LteHandoverManagementSapUser* s);
-  virtual LteHandoverManagementSapProvider* GetLteHandoverManagementSapProvider ();
-
-  friend class MemberLteHandoverManagementSapProvider<BareHandoverAlgorithm>;
-
-protected:
-  // inherited from Object
-  virtual void DoInitialize ();
-
-private:
-
-  // Handover Management SAP implementation
-  void DoReportUeMeas (uint16_t rnti, LteRrcSap::MeasResults measResults);
-
-  // Handover Management SAPs
-  LteHandoverManagementSapUser* m_handoverManagementSapUser;
-  LteHandoverManagementSapProvider* m_handoverManagementSapProvider;
-
-}; // end of class BareHandoverAlgorithm
-
 
 
 } // end of namespace ns3
