@@ -127,7 +127,7 @@ void
 LteAnr::DoInitialize ()
 {
   NS_LOG_LOGIC (this << " requesting Event A4 measurements"
-                     << " (threshold=" << (uint8_t) m_threshold << ")");
+                     << " (threshold=" << (uint16_t) m_threshold << ")");
   LteRrcSap::ReportConfigEutra reportConfig;
   reportConfig.eventId = LteRrcSap::ReportConfigEutra::EVENT_A4;
   reportConfig.threshold1.choice = LteRrcSap::ThresholdEutra::THRESHOLD_RSRQ;

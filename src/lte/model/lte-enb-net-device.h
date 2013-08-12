@@ -40,7 +40,7 @@ class LteEnbPhy;
 class LteEnbMac;
 class LteEnbRrc;
 class FfMacScheduler;
-class HandoverAlgorithm;
+class LteHandoverAlgorithm;
 class LteAnr;
 
 
@@ -148,7 +148,7 @@ private:
 
   Ptr<FfMacScheduler> m_scheduler;
 
-  Ptr<HandoverAlgorithm> m_handoverAlgorithm;
+  Ptr<LteHandoverAlgorithm> m_handoverAlgorithm;
 
   Ptr<LteAnr> m_anr;
 

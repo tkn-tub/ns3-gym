@@ -19,9 +19,7 @@
  *
  */
 
-
 #include "a2-rsrq-handover-algorithm.h"
-#include <ns3/handover-management-sap.h>
 #include <ns3/log.h>
 #include <ns3/uinteger.h>
 
@@ -37,46 +35,14 @@ NS_OBJECT_ENSURE_REGISTERED (A2RsrqHandoverAlgorithm);
 // Handover Management SAP forwarder
 ///////////////////////////////////////////
 
-/**
- * \brief Class for forwarding Handover Management SAP Provider functions, used
- *        by ns3::A2RsrqHandoverAlgorithm.
- */
-class A2RsrqMemberHandoverManagementSapProvider : public HandoverManagementSapProvider
-{
-public:
-  A2RsrqMemberHandoverManagementSapProvider (A2RsrqHandoverAlgorithm* handoverAlgorithm);
-
-  // methods inherited from HandoverManagementSapProvider go here
-  virtual void ReportUeMeas (uint16_t rnti, LteRrcSap::MeasResults measResults);
-
-private:
-  A2RsrqHandoverAlgorithm* m_handoverAlgorithm;
-};
-
-A2RsrqMemberHandoverManagementSapProvider::A2RsrqMemberHandoverManagementSapProvider (A2RsrqHandoverAlgorithm* handoverAlgorithm)
-  : m_handoverAlgorithm (handoverAlgorithm)
-{
-}
-
-void
-A2RsrqMemberHandoverManagementSapProvider::ReportUeMeas (uint16_t rnti,
-                                                         LteRrcSap::MeasResults measResults)
-{
-  m_handoverAlgorithm->DoReportUeMeas (rnti, measResults);
-}
-
-
-
-///////////////////////////////////////////
-// A2 Based Handover Algorithm
-///////////////////////////////////////////
-
 
 A2RsrqHandoverAlgorithm::A2RsrqHandoverAlgorithm ()
-  : m_handoverManagementSapUser (0)
+  : m_a2MeasId (0),
+    m_a4MeasId (0),
+    m_handoverManagementSapUser (0)
 {
   NS_LOG_FUNCTION (this);
-  m_handoverManagementSapProvider = new A2RsrqMemberHandoverManagementSapProvider (this);
+  m_handoverManagementSapProvider = new MemberLteHandoverManagementSapProvider<A2RsrqHandoverAlgorithm> (this);
 }
 
 
@@ -98,7 +64,7 @@ TypeId
 A2RsrqHandoverAlgorithm::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::A2RsrqHandoverAlgorithm")
-    .SetParent<HandoverAlgorithm> ()
+    .SetParent<LteHandoverAlgorithm> ()
     .AddConstructor<A2RsrqHandoverAlgorithm> ()
     .AddAttribute ("ServingCellThreshold",
                    "If the RSRQ of the serving cell is worse than this threshold, "
@@ -117,15 +83,15 @@ A2RsrqHandoverAlgorithm::GetTypeId (void)
 
 
 void
-A2RsrqHandoverAlgorithm::SetHandoverManagementSapUser (HandoverManagementSapUser* s)
+A2RsrqHandoverAlgorithm::SetLteHandoverManagementSapUser (LteHandoverManagementSapUser* s)
 {
   NS_LOG_FUNCTION (this << s);
   m_handoverManagementSapUser = s;
 }
 
 
-HandoverManagementSapProvider*
-A2RsrqHandoverAlgorithm::GetHandoverManagementSapProvider ()
+LteHandoverManagementSapProvider*
+A2RsrqHandoverAlgorithm::GetLteHandoverManagementSapProvider ()
 {
   NS_LOG_FUNCTION (this);
   return m_handoverManagementSapProvider;
@@ -137,23 +103,27 @@ A2RsrqHandoverAlgorithm::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
 
+  NS_LOG_LOGIC (this << " requesting Event A2 measurements"
+                     << " (threshold=" << (uint16_t) m_servingCellThreshold << ")");
   LteRrcSap::ReportConfigEutra reportConfigA2;
   reportConfigA2.eventId = LteRrcSap::ReportConfigEutra::EVENT_A2;
   reportConfigA2.threshold1.choice = LteRrcSap::ThresholdEutra::THRESHOLD_RSRQ;
   reportConfigA2.threshold1.range = m_servingCellThreshold;
   reportConfigA2.triggerQuantity = LteRrcSap::ReportConfigEutra::RSRQ;
   reportConfigA2.reportInterval = LteRrcSap::ReportConfigEutra::MS240;
-  m_a2measId = m_handoverManagementSapUser->AddUeMeasReportConfigForHandover (reportConfigA2);
+  m_a2MeasId = m_handoverManagementSapUser->AddUeMeasReportConfigForHandover (reportConfigA2);
 
+  NS_LOG_LOGIC (this << " requesting Event A4 measurements"
+                     << " (threshold=0)");
   LteRrcSap::ReportConfigEutra reportConfigA4;
   reportConfigA4.eventId = LteRrcSap::ReportConfigEutra::EVENT_A4;
   reportConfigA4.threshold1.choice = LteRrcSap::ThresholdEutra::THRESHOLD_RSRQ;
   reportConfigA4.threshold1.range = 0; // intentionally very low threshold
   reportConfigA4.triggerQuantity = LteRrcSap::ReportConfigEutra::RSRQ;
   reportConfigA4.reportInterval = LteRrcSap::ReportConfigEutra::MS480;
-  m_a4measId = m_handoverManagementSapUser->AddUeMeasReportConfigForHandover (reportConfigA4);
+  m_a4MeasId = m_handoverManagementSapUser->AddUeMeasReportConfigForHandover (reportConfigA4);
 
-  HandoverAlgorithm::DoInitialize ();
+  LteHandoverAlgorithm::DoInitialize ();
 }
 
 
@@ -163,13 +133,13 @@ A2RsrqHandoverAlgorithm::DoReportUeMeas (uint16_t rnti,
 {
   NS_LOG_FUNCTION (this << rnti << (uint16_t) measResults.measId);
 
-  if (measResults.measId == m_a2measId)
+  if (measResults.measId == m_a2MeasId)
     {
       NS_ASSERT_MSG (measResults.rsrqResult <= m_servingCellThreshold,
                      "Invalid UE measurement report");
       EvaluateHandover (rnti, measResults.rsrqResult);
     }
-  else if (measResults.measId == m_a4measId)
+  else if (measResults.measId == m_a4MeasId)
     {
       if (measResults.haveMeasResultNeighCells
           && !measResults.measResultListEutra.empty ())
@@ -185,9 +155,7 @@ A2RsrqHandoverAlgorithm::DoReportUeMeas (uint16_t rnti,
         }
       else
         {
-          NS_LOG_LOGIC ("WARNING");
-          // NS_ASSERT_MSG ("Event A4 received without measure results for neighbour cells");
-          // TODO Remove neighbours in the neighbourCellMeasures table
+          NS_LOG_WARN (this << " Event A4 received without measurement results from neighbouring cells");
         }
     }
   else
@@ -255,15 +223,7 @@ A2RsrqHandoverAlgorithm::IsValidNeighbour (uint16_t cellId)
 {
   NS_LOG_FUNCTION (this << cellId);
 
-  // Ptr<NeighbourRelation> neighbourRelation = m_rrc->m_neighbourRelationTable[it->second->m_cellId];
-  // if ((neighbourRelation->m_noHo == false) &&
-  //     (neighbourRelation->m_noX2 == false))
-  //   {
-  //     bestNeighbour = it->second;
-  //     bestNeighbourRsrq = it->second->m_rsrq;
-  //   }
-  // TODO
-
+  // TOD
   return true;
 }
 

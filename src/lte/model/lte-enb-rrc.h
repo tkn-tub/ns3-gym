@@ -32,6 +32,7 @@
 #include <ns3/lte-pdcp-sap.h>
 #include <ns3/epc-x2-sap.h>
 #include <ns3/epc-enb-s1-sap.h>
+#include <ns3/lte-handover-management-sap.h>
 #include <ns3/lte-enb-cphy-sap.h>
 #include <ns3/lte-rrc-sap.h>
 #include <ns3/lte-anr-sap.h>
@@ -426,8 +427,8 @@ private:
 
 
 
-class HandoverManagementSapProvider;
-class HandoverManagementSapUser;
+class LteHandoverManagementSapProvider;
+class LteHandoverManagementSapUser;
 class LteAnrSapProvider;
 class LteAnrSapUser;
 
@@ -441,7 +442,7 @@ class LteEnbRrc : public Object
 {
 
   friend class EnbRrcMemberLteEnbCmacSapUser;
-  friend class EnbRrcMemberHandoverManagementSapUser;
+  friend class MemberLteHandoverManagementSapUser<LteEnbRrc>;
   friend class MemberLteAnrSapUser<LteEnbRrc>;
   friend class MemberLteEnbRrcSapProvider<LteEnbRrc>;
   friend class MemberEpcEnbS1SapUser<LteEnbRrc>;
@@ -500,14 +501,14 @@ public:
    *
    * \param s the Handover Management SAP Provider to be used by this RRC
    */
-  void SetHandoverManagementSapProvider (HandoverManagementSapProvider * s);
+  void SetLteHandoverManagementSapProvider (LteHandoverManagementSapProvider * s);
 
   /**
    * Get the Handover Management SAP offered by this RRC
    * \return s the Handover Management SAP User interface offered to the
    *           handover algorithm by this RRC
    */
-  HandoverManagementSapUser* GetHandoverManagementSapUser ();
+  LteHandoverManagementSapUser* GetLteHandoverManagementSapUser ();
 
 
   /**
@@ -874,8 +875,8 @@ private:
   LteEnbCmacSapUser* m_cmacSapUser;
   LteEnbCmacSapProvider* m_cmacSapProvider;
 
-  HandoverManagementSapUser* m_handoverManagementSapUser;
-  HandoverManagementSapProvider* m_handoverManagementSapProvider;
+  LteHandoverManagementSapUser* m_handoverManagementSapUser;
+  LteHandoverManagementSapProvider* m_handoverManagementSapProvider;
 
   LteAnrSapUser* m_anrSapUser;
   LteAnrSapProvider* m_anrSapProvider;

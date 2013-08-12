@@ -34,7 +34,6 @@
 #include "lte-radio-bearer-info.h"
 #include "eps-bearer-tag.h"
 #include "ff-mac-csched-sap.h"
-#include <ns3/handover-management-sap.h>
 #include "epc-enb-s1-sap.h"
 
 #include "lte-rlc.h"
@@ -96,46 +95,6 @@ void
 EnbRrcMemberLteEnbCmacSapUser::RrcConfigurationUpdateInd (UeConfig params)
 {
   m_rrc->DoRrcConfigurationUpdateInd (params);
-}
-
-
-
-///////////////////////////////////////////
-// Handover Management SAP forwarder
-///////////////////////////////////////////
-
-/**
- * \brief Class for forwarding Handover Management SAP User functions.
- */
-class EnbRrcMemberHandoverManagementSapUser : public HandoverManagementSapUser
-{
-public:
-  EnbRrcMemberHandoverManagementSapUser (LteEnbRrc* rrc);
-
-  // methods inherited from HandoverManagementSapUser go here
-  virtual uint8_t AddUeMeasReportConfigForHandover (LteRrcSap::ReportConfigEutra reportConfig);
-  virtual void TriggerHandover (uint16_t rnti, uint16_t targetCellId);
-
-private:
-  LteEnbRrc* m_rrc;
-};
-
-EnbRrcMemberHandoverManagementSapUser::EnbRrcMemberHandoverManagementSapUser (LteEnbRrc* rrc)
-  : m_rrc (rrc)
-{
-}
-
-uint8_t
-EnbRrcMemberHandoverManagementSapUser::AddUeMeasReportConfigForHandover (LteRrcSap::ReportConfigEutra reportConfig)
-{
-  return m_rrc->DoAddUeMeasReportConfigForHandover (reportConfig);
-}
-
-void
-EnbRrcMemberHandoverManagementSapUser::TriggerHandover (uint16_t rnti,
-                                                        uint16_t targetCellId)
-{
-  m_rrc->DoTriggerHandover (rnti, targetCellId);
 }
 
 
@@ -1288,7 +1247,7 @@ LteEnbRrc::LteEnbRrc ()
 {
   NS_LOG_FUNCTION (this);
   m_cmacSapUser = new EnbRrcMemberLteEnbCmacSapUser (this);
-  m_handoverManagementSapUser = new EnbRrcMemberHandoverManagementSapUser (this);
+  m_handoverManagementSapUser = new MemberLteHandoverManagementSapUser<LteEnbRrc> (this);
   m_anrSapUser = new MemberLteAnrSapUser<LteEnbRrc> (this);
   m_rrcSapProvider = new MemberLteEnbRrcSapProvider<LteEnbRrc> (this);
   m_x2SapUser = new EpcX2SpecificEpcX2SapUser<LteEnbRrc> (this);
@@ -1459,14 +1418,14 @@ LteEnbRrc::GetLteEnbCmacSapUser ()
 }
 
 void
-LteEnbRrc::SetHandoverManagementSapProvider (HandoverManagementSapProvider * s)
+LteEnbRrc::SetLteHandoverManagementSapProvider (LteHandoverManagementSapProvider * s)
 {
   NS_LOG_FUNCTION (this << s);
   m_handoverManagementSapProvider = s;
 }
 
-HandoverManagementSapUser*
-LteEnbRrc::GetHandoverManagementSapUser ()
+LteHandoverManagementSapUser*
+LteEnbRrc::GetLteHandoverManagementSapUser ()
 {
   NS_LOG_FUNCTION (this);
   return m_handoverManagementSapUser;

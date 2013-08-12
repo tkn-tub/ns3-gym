@@ -19,49 +19,46 @@
  *
  */
 
-#ifndef HANDOVER_ALGORITHM_H
-#define HANDOVER_ALGORITHM_H
+#ifndef LTE_HANDOVER_ALGORITHM_H
+#define LTE_HANDOVER_ALGORITHM_H
 
 #include <ns3/object.h>
 #include <ns3/lte-rrc-sap.h>
+#include <ns3/lte-handover-management-sap.h>
 
 namespace ns3 {
-
-class HandoverManagementSapProvider;
-class HandoverManagementSapUser;
-
 
 /**
  * \brief This abstract base class identifies the interface by means of which
  *        the helper object can plug on the eNodeB RRC a handover algorithm
  *        implementation.
  */
-class HandoverAlgorithm : public Object
+class LteHandoverAlgorithm : public Object
 {
 public:
-  HandoverAlgorithm ();
-  virtual ~HandoverAlgorithm ();
+  LteHandoverAlgorithm ();
+  virtual ~LteHandoverAlgorithm ();
 
   // inherited from Object
   virtual void DoDispose (void);
   static TypeId GetTypeId (void);
 
   /**
-   * \brief Set the user part of the HandoverManagementSap that this handover
+   * \brief Set the user part of the Handover Management SAP that this handover
    *        algorithm will interact with. Normally this part of the SAP is
    *        exported by the eNodeB RRC.
    * \param s
    */
-  virtual void SetHandoverManagementSapUser (HandoverManagementSapUser* s) = 0;
+  virtual void SetLteHandoverManagementSapUser (LteHandoverManagementSapUser* s) = 0;
 
   /**
    *
-   * \return the Provider part of the HandoverManagementSap provided by the
+   * \return the Provider part of the Handover Management SAP provided by the
    *         handover algorithm
    */
-  virtual HandoverManagementSapProvider* GetHandoverManagementSapProvider () = 0;
+  virtual LteHandoverManagementSapProvider* GetLteHandoverManagementSapProvider () = 0;
 
-}; // end of class HandoverAlgorithm
+}; // end of class LteHandoverAlgorithm
 
 
 
@@ -69,7 +66,7 @@ public:
  * \brief A sample implementation of the Handover Management SAP which simply
  *        does nothing.
  */
-class BareHandoverAlgorithm : public HandoverAlgorithm
+class BareHandoverAlgorithm : public LteHandoverAlgorithm
 {
 public:
   BareHandoverAlgorithm ();
@@ -79,11 +76,11 @@ public:
   virtual void DoDispose (void);
   static TypeId GetTypeId (void);
 
-  // inherited from HandoverAlgorithm
-  virtual void SetHandoverManagementSapUser (HandoverManagementSapUser* s);
-  virtual HandoverManagementSapProvider* GetHandoverManagementSapProvider ();
+  // inherited from LteHandoverAlgorithm
+  virtual void SetLteHandoverManagementSapUser (LteHandoverManagementSapUser* s);
+  virtual LteHandoverManagementSapProvider* GetLteHandoverManagementSapProvider ();
 
-  friend class BareMemberHandoverManagementSapProvider;
+  friend class MemberLteHandoverManagementSapProvider<BareHandoverAlgorithm>;
 
 protected:
   // inherited from Object
@@ -95,8 +92,8 @@ private:
   void DoReportUeMeas (uint16_t rnti, LteRrcSap::MeasResults measResults);
 
   // Handover Management SAPs
-  HandoverManagementSapUser* m_handoverManagementSapUser;
-  HandoverManagementSapProvider* m_handoverManagementSapProvider;
+  LteHandoverManagementSapUser* m_handoverManagementSapUser;
+  LteHandoverManagementSapProvider* m_handoverManagementSapProvider;
 
 }; // end of class BareHandoverAlgorithm
 
@@ -105,4 +102,4 @@ private:
 } // end of namespace ns3
 
 
-#endif /* HANDOVER_ALGORITHM_H */
+#endif /* LTE_HANDOVER_ALGORITHM_H */

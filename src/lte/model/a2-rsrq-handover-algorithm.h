@@ -22,15 +22,12 @@
 #ifndef A2_RSRQ_HANDOVER_ALGORITHM_H
 #define A2_RSRQ_HANDOVER_ALGORITHM_H
 
-#include <ns3/handover-algorithm.h>
+#include <ns3/lte-handover-algorithm.h>
+#include <ns3/lte-handover-management-sap.h>
 #include <ns3/lte-rrc-sap.h>
 #include <map>
 
 namespace ns3 {
-
-
-class HandoverManagementSapProvider;
-class HandoverManagementSapUser;
 
 
 /**
@@ -41,7 +38,7 @@ class HandoverManagementSapUser;
  * The threshold used by the algorithm can be configured in the
  * `ServingCellThreshold` attribute.
  */
-class A2RsrqHandoverAlgorithm : public HandoverAlgorithm
+class A2RsrqHandoverAlgorithm : public LteHandoverAlgorithm
 {
 public:
   A2RsrqHandoverAlgorithm ();
@@ -52,10 +49,10 @@ public:
   static TypeId GetTypeId (void);
 
   // inherited from HandoverAlgorithm
-  virtual void SetHandoverManagementSapUser (HandoverManagementSapUser* s);
-  virtual HandoverManagementSapProvider* GetHandoverManagementSapProvider ();
+  virtual void SetLteHandoverManagementSapUser (LteHandoverManagementSapUser* s);
+  virtual LteHandoverManagementSapProvider* GetLteHandoverManagementSapProvider ();
 
-  friend class A2RsrqMemberHandoverManagementSapProvider;
+  friend class MemberLteHandoverManagementSapProvider<A2RsrqHandoverAlgorithm>;
 
 protected:
   // inherited from Object
@@ -73,8 +70,8 @@ private:
                                     uint8_t rsrq);
 
   // The expected measurement identities
-  uint8_t m_a2measId;
-  uint8_t m_a4measId;
+  uint8_t m_a2MeasId;
+  uint8_t m_a4MeasId;
 
   /**
    * \brief Measurements reported by a UE for a cell ID.
@@ -101,8 +98,8 @@ private:
   uint8_t m_neighbourCellOffset;
 
   // Handover Management SAPs
-  HandoverManagementSapUser* m_handoverManagementSapUser;
-  HandoverManagementSapProvider* m_handoverManagementSapProvider;
+  LteHandoverManagementSapUser* m_handoverManagementSapUser;
+  LteHandoverManagementSapProvider* m_handoverManagementSapProvider;
 
 }; // end of class A2RsrqHandoverAlgorithm
 

@@ -19,17 +19,17 @@
  *
  */
 
-#include "handover-management-sap.h"
+#include "lte-handover-management-sap.h"
 
 namespace ns3 {
 
 
-HandoverManagementSapProvider::~HandoverManagementSapProvider ()
+LteHandoverManagementSapProvider::~LteHandoverManagementSapProvider ()
 {
 }
 
 
-HandoverManagementSapUser::~HandoverManagementSapUser ()
+LteHandoverManagementSapUser::~LteHandoverManagementSapUser ()
 {
 }
 

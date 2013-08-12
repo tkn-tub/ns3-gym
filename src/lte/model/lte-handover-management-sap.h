@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef HANDOVER_MANAGEMENT_SAP_H
-#define HANDOVER_MANAGEMENT_SAP_H
+#ifndef LTE_HANDOVER_MANAGEMENT_SAP_H
+#define LTE_HANDOVER_MANAGEMENT_SAP_H
 
 #include <ns3/lte-rrc-sap.h>
 
@@ -31,10 +31,10 @@ namespace ns3 {
  * \brief Service Access Point (SAP) used by the eNodeB RRC instance to send
  *        messages to the handover algorithm instance.
  */
-class HandoverManagementSapProvider
+class LteHandoverManagementSapProvider
 {
 public:
-  virtual ~HandoverManagementSapProvider ();
+  virtual ~LteHandoverManagementSapProvider ();
 
   /**
    * \brief Send a UE measurement report to handover algorithm.
@@ -44,23 +44,23 @@ public:
    *
    * The received measurement report is a result of the UE measurement
    * configuration previously configured by calling
-   * HandoverManagementSapUser::AddUeMeasReportConfigForHandover. The report
+   * LteHandoverManagementSapUser::AddUeMeasReportConfigForHandover. The report
    * may be stored and utilized for the purpose of making handover decision.
    */
   virtual void ReportUeMeas (uint16_t rnti,
                              LteRrcSap::MeasResults measResults) = 0;
 
-}; // end of class HandoverManagementSapProvider
+}; // end of class LteHandoverManagementSapProvider
 
 
 /**
  * \brief Service Access Point (SAP) used by the handover algorithm instance to
  *        send messages to the eNodeB RRC instance.
  */
-class HandoverManagementSapUser
+class LteHandoverManagementSapUser
 {
 public:
-  virtual ~HandoverManagementSapUser ();
+  virtual ~LteHandoverManagementSapUser ();
 
   /**
    * \brief Request a certain reporting configuration to be fulfilled by the UEs
@@ -73,7 +73,7 @@ public:
    * configuration in each of the attached UEs. When later in the simulation a
    * UE measurement report is received from a UE as a result of this
    * configuration, the eNodeB RRC entity shall forward this report to the
-   * handover algorithm through the HandoverManagementSapProvider::ReportUeMeas
+   * handover algorithm through the LteHandoverManagementSapProvider::ReportUeMeas
    * SAP function.
    *
    * This function is only valid before the simulation begins.
@@ -91,14 +91,97 @@ public:
    *
    * The process to produce the decision is up to the implementation of handover
    * algorithm. It is typically based on the reported UE measurements, which are
-   * received through the HandoverManagementSapProvider::ReportUeMeas function.
+   * received through the LteHandoverManagementSapProvider::ReportUeMeas function.
    */
   virtual void TriggerHandover (uint16_t rnti, uint16_t targetCellId) = 0;
 
-}; // end of class HandoverManagementSapUser
+}; // end of class LteHandoverManagementSapUser
+
+
+
+/**
+ * \brief Template for the implementation of the LteHandoverManagementSapProvider
+ *        as a member of an owner class of type C to which all methods are
+ *        forwarded.
+ */
+template <class C>
+class MemberLteHandoverManagementSapProvider : public LteHandoverManagementSapProvider
+{
+public:
+  MemberLteHandoverManagementSapProvider (C* owner);
+
+  // inherited from LteHandoverManagemenrSapProvider
+  virtual void ReportUeMeas (uint16_t rnti, LteRrcSap::MeasResults measResults);
+
+private:
+  MemberLteHandoverManagementSapProvider ();
+  C* m_owner;
+
+}; // end of class MemberLteHandoverManagementSapProvider
+
+
+template <class C>
+MemberLteHandoverManagementSapProvider<C>::MemberLteHandoverManagementSapProvider (C* owner)
+  : m_owner (owner)
+{
+}
+
+
+template <class C>
+void
+MemberLteHandoverManagementSapProvider<C>::ReportUeMeas (uint16_t rnti, LteRrcSap::MeasResults measResults)
+{
+  m_owner->DoReportUeMeas (rnti, measResults);
+}
+
+
+
+/**
+ * \brief Template for the implementation of the LteHandoverManagementSapUser
+ *        as a member of an owner class of type C to which all methods are
+ *        forwarded.
+ */
+template <class C>
+class MemberLteHandoverManagementSapUser : public LteHandoverManagementSapUser
+{
+public:
+  MemberLteHandoverManagementSapUser (C* owner);
+
+  // inherited from LteHandoverManagementSapUser
+  virtual uint8_t AddUeMeasReportConfigForHandover (LteRrcSap::ReportConfigEutra reportConfig);
+  virtual void TriggerHandover (uint16_t rnti, uint16_t targetCellId);
+
+private:
+  MemberLteHandoverManagementSapUser ();
+  C* m_owner;
+
+}; // end of class MemberLteAnrSapUser
+
+
+template <class C>
+MemberLteHandoverManagementSapUser<C>::MemberLteHandoverManagementSapUser (C* owner)
+  : m_owner (owner)
+{
+}
+
+
+template <class C>
+uint8_t
+MemberLteHandoverManagementSapUser<C>::AddUeMeasReportConfigForHandover (LteRrcSap::ReportConfigEutra reportConfig)
+{
+  return m_owner->DoAddUeMeasReportConfigForHandover (reportConfig);
+}
+
+
+template <class C>
+void
+MemberLteHandoverManagementSapUser<C>::TriggerHandover (uint16_t rnti, uint16_t targetCellId)
+{
+  return m_owner->DoTriggerHandover (rnti, targetCellId);
+}
 
 
 } // end of namespace ns3
 
 
-#endif /* HANDOVER_MANAGEMENT_SAP_H */
+#endif /* LTE_HANDOVER_MANAGEMENT_SAP_H */

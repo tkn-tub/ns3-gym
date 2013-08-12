@@ -43,7 +43,7 @@
 #include <ns3/lte-enb-net-device.h>
 #include <ns3/lte-ue-net-device.h>
 #include <ns3/ff-mac-scheduler.h>
-#include <ns3/handover-algorithm.h>
+#include <ns3/lte-handover-algorithm.h>
 #include <ns3/lte-anr.h>
 #include <ns3/lte-rlc.h>
 #include <ns3/lte-rlc-um.h>
@@ -391,7 +391,7 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
 
   Ptr<LteEnbMac> mac = CreateObject<LteEnbMac> ();
   Ptr<FfMacScheduler> sched = m_schedulerFactory.Create<FfMacScheduler> ();
-  Ptr<HandoverAlgorithm> handoverAlgorithm = m_handoverAlgorithmFactory.Create<HandoverAlgorithm> ();
+  Ptr<LteHandoverAlgorithm> handoverAlgorithm = m_handoverAlgorithmFactory.Create<LteHandoverAlgorithm> ();
   Ptr<LteAnr> anr = CreateObject<LteAnr> (cellId);
   Ptr<LteEnbRrc> rrc = CreateObject<LteEnbRrc> ();
 
@@ -427,8 +427,8 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
   mac->SetLteEnbCmacSapUser (rrc->GetLteEnbCmacSapUser ());
   rrc->SetLteMacSapProvider (mac->GetLteMacSapProvider ());
 
-  rrc->SetHandoverManagementSapProvider (handoverAlgorithm->GetHandoverManagementSapProvider ());
-  handoverAlgorithm->SetHandoverManagementSapUser (rrc->GetHandoverManagementSapUser ());
+  rrc->SetLteHandoverManagementSapProvider (handoverAlgorithm->GetLteHandoverManagementSapProvider ());
+  handoverAlgorithm->SetLteHandoverManagementSapUser (rrc->GetLteHandoverManagementSapUser ());
 
   rrc->SetLteAnrSapProvider (anr->GetLteAnrSapProvider ());
   anr->SetLteAnrSapUser (rrc->GetLteAnrSapUser ());
@@ -452,7 +452,7 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
   dev->SetAttribute ("LteEnbMac", PointerValue (mac));
   dev->SetAttribute ("FfMacScheduler", PointerValue (sched));
   dev->SetAttribute ("LteEnbRrc", PointerValue (rrc)); 
-  dev->SetAttribute ("HandoverAlgorithm", PointerValue (handoverAlgorithm));
+  dev->SetAttribute ("LteHandoverAlgorithm", PointerValue (handoverAlgorithm));
   dev->SetAttribute ("LteAnr", PointerValue (anr));
 
   phy->SetDevice (dev);
