@@ -58,6 +58,8 @@ FileAggregator::FileAggregator (const std::string &outputFileName,
     m_9dFormat          ("%e %e %e %e %e %e %e %e %e"),
     m_10dFormat         ("%e %e %e %e %e %e %e %e %e %e")
 {
+  NS_LOG_FUNCTION (this << outputFileName << fileType);
+
   // Set the values separator.
   switch (m_fileType)
     {
@@ -73,25 +75,26 @@ FileAggregator::FileAggregator (const std::string &outputFileName,
       break;
     }
 
-  // Open the output file.
   m_file.open (m_outputFileName.c_str ());
 }
 
 FileAggregator::~FileAggregator ()
 {
-  // Close the output file.
+  NS_LOG_FUNCTION (this);
   m_file.close ();
 }
 
 void
 FileAggregator::SetFileType (enum FileType fileType)
 {
+  NS_LOG_FUNCTION (this << fileType);
   m_fileType = fileType;
 }
 
 void
 FileAggregator::SetHeading (const std::string &heading)
 {
+  NS_LOG_FUNCTION (this << heading);
   if (!m_hasHeadingBeenSet)
     {
       m_heading = heading;
@@ -105,60 +108,70 @@ FileAggregator::SetHeading (const std::string &heading)
 void
 FileAggregator::Set1dFormat (const std::string &format)
 {
+  NS_LOG_FUNCTION (this << format);
   m_1dFormat = format;
 }
 
 void
 FileAggregator::Set2dFormat (const std::string &format)
 {
+  NS_LOG_FUNCTION (this << format);
   m_2dFormat = format;
 }
 
 void
 FileAggregator::Set3dFormat (const std::string &format)
 {
+  NS_LOG_FUNCTION (this << format);
   m_3dFormat = format;
 }
 
 void
 FileAggregator::Set4dFormat (const std::string &format)
 {
+  NS_LOG_FUNCTION (this << format);
   m_4dFormat = format;
 }
 
 void
 FileAggregator::Set5dFormat (const std::string &format)
 {
+  NS_LOG_FUNCTION (this << format);
   m_5dFormat = format;
 }
 
 void
 FileAggregator::Set6dFormat (const std::string &format)
 {
+  NS_LOG_FUNCTION (this << format);
   m_6dFormat = format;
 }
 
 void
 FileAggregator::Set7dFormat (const std::string &format)
 {
+  NS_LOG_FUNCTION (this << format);
   m_7dFormat = format;
 }
 
 void
 FileAggregator::Set8dFormat (const std::string &format)
 {
+  NS_LOG_FUNCTION (this << format);
   m_8dFormat = format;
 }
 
 void
 FileAggregator::Set9dFormat (const std::string &format)
 {
+  NS_LOG_FUNCTION (this << format);
   m_9dFormat = format;
 }
 
 void
 FileAggregator::Set10dFormat (const std::string &format)
 {
+  NS_LOG_FUNCTION (this << format);
   m_10dFormat = format;
 }
 
@@ -166,6 +179,8 @@ void
 FileAggregator::Write1d (std::string context,
                          double v1)
 {
+  NS_LOG_FUNCTION (this << context << v1);
+
   if (m_enabled)
     {
       // Write the 1D data point to the file.
@@ -203,6 +218,8 @@ FileAggregator::Write2d (std::string context,
                          double v1,
                          double v2)
 {
+  NS_LOG_FUNCTION (this << context << v1 << v2);
+
   if (m_enabled)
     {
       // Write the 2D data point to the file.
@@ -243,6 +260,8 @@ FileAggregator::Write3d (std::string context,
                          double v2,
                          double v3)
 {
+  NS_LOG_FUNCTION (this << context << v1 << v2 << v3);
+
   if (m_enabled)
     {
       // Write the 3D data point to the file.
@@ -286,6 +305,8 @@ FileAggregator::Write4d (std::string context,
                          double v3,
                          double v4)
 {
+  NS_LOG_FUNCTION (this << context << v1 << v2 << v3 << v4);
+
   if (m_enabled)
     {
       // Write the 4D data point to the file.
@@ -332,6 +353,8 @@ FileAggregator::Write5d (std::string context,
                          double v4,
                          double v5)
 {
+  NS_LOG_FUNCTION (this << context << v1 << v2 << v3 << v4 << v5);
+
   if (m_enabled)
     {
       // Write the 5D data point to the file.
@@ -381,6 +404,8 @@ FileAggregator::Write6d (std::string context,
                          double v5,
                          double v6)
 {
+  NS_LOG_FUNCTION (this << context << v1 << v2 << v3 << v4 << v5 << v6);
+
   if (m_enabled)
     {
       // Write the 6D data point to the file.
@@ -433,6 +458,8 @@ FileAggregator::Write7d (std::string context,
                          double v6,
                          double v7)
 {
+  NS_LOG_FUNCTION (this << context << v1 << v2 << v3 << v4 << v5 << v6 << v7);
+
   if (m_enabled)
     {
       // Write the 7D data point to the file.
@@ -488,6 +515,8 @@ FileAggregator::Write8d (std::string context,
                          double v7,
                          double v8)
 {
+  NS_LOG_FUNCTION (this << context << v1 << v2 << v3 << v4 << v5 << v6 << v7 << v8);
+
   if (m_enabled)
     {
       // Write the 8D data point to the file.
@@ -546,6 +575,7 @@ FileAggregator::Write9d (std::string context,
                          double v8,
                          double v9)
 {
+  NS_LOG_FUNCTION (this << context << v1 << v2 << v3 << v4 << v5 << v6 << v7 << v8 << v9);
   if (m_enabled)
     {
       // Write the 9D data point to the file.
@@ -607,6 +637,7 @@ FileAggregator::Write10d (std::string context,
                           double v9,
                           double v10)
 {
+  NS_LOG_FUNCTION (this << context << v1 << v2 << v3 << v4 << v5 << v6 << v7 << v8 << v9 << v10);
   if (m_enabled)
     {
       // Write the 10D data point to the file.

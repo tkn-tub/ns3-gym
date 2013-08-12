@@ -51,18 +51,19 @@ GnuplotAggregator::GnuplotAggregator (const std::string &outputFileNameWithoutEx
     m_xAndYLegendsSet                (false),
     m_gnuplot                        (m_graphicsFileName)
 {
+  NS_LOG_FUNCTION (this);
 }
 
 GnuplotAggregator::~GnuplotAggregator ()
 {
-  // Give any warnings that should be issued.
+  NS_LOG_FUNCTION (this);
   if (!m_titleSet)
     {
-      NS_LOG_UNCOND ("Warning: The plot title was not set for the gnuplot aggregator");
+      NS_LOG_WARN ("Warning: The plot title was not set for the gnuplot aggregator");
     }
   if (!m_xAndYLegendsSet)
     {
-      NS_LOG_UNCOND ("Warning: The axis legends were not set for the gnuplot aggregator");
+      NS_LOG_WARN ("Warning: The axis legends were not set for the gnuplot aggregator");
     }
 
   std::string dataFileName     = m_outputFileNameWithoutExtension + ".dat";
@@ -101,10 +102,11 @@ GnuplotAggregator::~GnuplotAggregator ()
 void
 GnuplotAggregator::Write2d (std::string context, double x, double y)
 {
+  NS_LOG_FUNCTION (this << context << x << y);
+
   if (m_2dDatasetMap.count (context) == 0)
     {
-      NS_ABORT_MSG ("That 2D data set has not been added");
-      return;
+      NS_ABORT_MSG ("Dataset " << context << " has not been added");
     }
 
   if (m_enabled)
@@ -120,11 +122,11 @@ GnuplotAggregator::Write2dWithXErrorDelta (std::string context,
                                            double y,
                                            double errorDelta)
 {
-  // See if this dataset has been added.
+  NS_LOG_FUNCTION (this << context << x << y << errorDelta);
+
   if (m_2dDatasetMap.count (context) == 0)
     {
-      NS_ABORT_MSG ("That 2D data set has not been added");
-      return;
+      NS_ABORT_MSG ("Dataset " << context << " has not been added");
     }
 
   if (m_enabled)
@@ -140,11 +142,11 @@ GnuplotAggregator::Write2dWithYErrorDelta (std::string context,
                                            double y,
                                            double errorDelta)
 {
-  // See if this dataset has been added.
+  NS_LOG_FUNCTION (this << context << x << y << errorDelta);
+
   if (m_2dDatasetMap.count (context) == 0)
     {
-      NS_ABORT_MSG ("That 2D data set has not been added");
-      return;
+      NS_ABORT_MSG ("Dataset " << context << " has not been added");
     }
 
   if (m_enabled)
@@ -161,11 +163,11 @@ GnuplotAggregator::Write2dWithXYErrorDelta (std::string context,
                                             double xErrorDelta,
                                             double yErrorDelta)
 {
-  // See if this dataset has been added.
+  NS_LOG_FUNCTION (this << context << x << y << xErrorDelta << yErrorDelta);
+
   if (m_2dDatasetMap.count (context) == 0)
     {
-      NS_ABORT_MSG ("That 2D data set has not been added");
-      return;
+      NS_ABORT_MSG ("Dataset " << context << " has not been added");
     }
 
   if (m_enabled)
@@ -189,6 +191,7 @@ GnuplotAggregator::SetTerminal (const std::string &terminal)
 void
 GnuplotAggregator::SetTitle (const std::string &title)
 {
+  NS_LOG_FUNCTION (this << title);
   m_gnuplot.SetTitle (title);
   m_titleSet = true;
 }
@@ -196,6 +199,7 @@ GnuplotAggregator::SetTitle (const std::string &title)
 void
 GnuplotAggregator::SetLegend (const std::string &xLegend, const std::string &yLegend)
 {
+  NS_LOG_FUNCTION (this << xLegend << yLegend);
   m_gnuplot.SetLegend (xLegend, yLegend);
   m_xAndYLegendsSet = true;
 }
@@ -203,22 +207,25 @@ GnuplotAggregator::SetLegend (const std::string &xLegend, const std::string &yLe
 void
 GnuplotAggregator::SetExtra (const std::string &extra)
 {
+  NS_LOG_FUNCTION (this << extra);
   m_gnuplot.SetExtra (extra);
 }
 
 void
 GnuplotAggregator::AppendExtra (const std::string &extra)
 {
+  NS_LOG_FUNCTION (this << extra);
   m_gnuplot.AppendExtra (extra);
 }
 
 void
 GnuplotAggregator::Add2dDataset (const std::string &dataset, const std::string &title)
 {
-  // See if this dataset had already been added.
+  NS_LOG_FUNCTION (this << dataset << title);
+
   if (m_2dDatasetMap.count (dataset) > 0)
     {
-      NS_ABORT_MSG ("That 2D data set has already been added");
+      NS_ABORT_MSG ("Dataset " << dataset << " has already been added");
     }
 
   // Add this dataset to the map so that its values can be saved.
@@ -232,16 +239,17 @@ GnuplotAggregator::Add2dDataset (const std::string &dataset, const std::string &
 void
 GnuplotAggregator::Set2dDatasetDefaultExtra (const std::string &extra)
 {
+  NS_LOG_FUNCTION (extra);
   Gnuplot2dDataset::SetDefaultExtra (extra);
 }
 
 void
 GnuplotAggregator::Set2dDatasetExtra (const std::string &dataset, const std::string &extra)
 {
+  NS_LOG_FUNCTION (this << dataset << extra);
   if (m_2dDatasetMap.count (dataset) == 0)
     {
-      NS_ABORT_MSG ("That 2D data set has not been added");
-      return;
+      NS_ABORT_MSG ("Dataset " << dataset << " has not been added");
     }
 
   // Set the extra parameters for the dataset.
@@ -251,10 +259,10 @@ GnuplotAggregator::Set2dDatasetExtra (const std::string &dataset, const std::str
 void
 GnuplotAggregator::Write2dDatasetEmptyLine (const std::string &dataset)
 {
+  NS_LOG_FUNCTION (this << dataset);
   if (m_2dDatasetMap.count (dataset) == 0)
     {
-      NS_ABORT_MSG ("That 2D data set has not been added");
-      return;
+      NS_ABORT_MSG ("Dataset " << dataset << " has not been added");
     }
 
   if (m_enabled)
@@ -267,16 +275,17 @@ GnuplotAggregator::Write2dDatasetEmptyLine (const std::string &dataset)
 void
 GnuplotAggregator::Set2dDatasetDefaultStyle (enum Gnuplot2dDataset::Style style)
 {
+  NS_LOG_FUNCTION (style);
   Gnuplot2dDataset::SetDefaultStyle (style);
 }
 
 void
 GnuplotAggregator::Set2dDatasetStyle (const std::string &dataset, enum Gnuplot2dDataset::Style style)
 {
+  NS_LOG_FUNCTION (this << dataset << style);
   if (m_2dDatasetMap.count (dataset) == 0)
     {
-      NS_ABORT_MSG ("That 2D data set has not been added");
-      return;
+      NS_ABORT_MSG ("Dataset " << dataset << " has not been added");
     }
 
   // Set the style for the dataset.
@@ -286,16 +295,17 @@ GnuplotAggregator::Set2dDatasetStyle (const std::string &dataset, enum Gnuplot2d
 void
 GnuplotAggregator::Set2dDatasetDefaultErrorBars (enum Gnuplot2dDataset::ErrorBars errorBars)
 {
+  NS_LOG_FUNCTION (errorBars);
   Gnuplot2dDataset::SetDefaultErrorBars (errorBars);
 }
 
 void
 GnuplotAggregator::Set2dDatasetErrorBars (const std::string &dataset, enum Gnuplot2dDataset::ErrorBars errorBars)
 {
+  NS_LOG_FUNCTION (this << dataset << errorBars);
   if (m_2dDatasetMap.count (dataset) == 0)
     {
-      NS_ABORT_MSG ("That 2D data set has not been added");
-      return;
+      NS_ABORT_MSG ("Dataset " << dataset << " has not been added");
     }
 
   // Set the error bars for the dataset.
@@ -305,6 +315,7 @@ GnuplotAggregator::Set2dDatasetErrorBars (const std::string &dataset, enum Gnupl
 void
 GnuplotAggregator::SetKeyLocation (enum GnuplotAggregator::KeyLocation keyLocation)
 {
+  NS_LOG_FUNCTION (this << keyLocation);
   // Set the specifed key location.
   switch (keyLocation)
     {
