@@ -25,10 +25,13 @@
 
 #include <ns3/nstime.h>
 #include <ns3/object.h>
-#include <ns3/packet.h>
+#include <ns3/traced-callback.h>
+#include <ns3/event-id.h>
+
 #include <ns3/lte-enb-cmac-sap.h>
 #include <ns3/lte-mac-sap.h>
 #include <ns3/ff-mac-sched-sap.h>
+#include <ns3/ff-mac-csched-sap.h>
 #include <ns3/lte-pdcp-sap.h>
 #include <ns3/epc-x2-sap.h>
 #include <ns3/epc-enb-s1-sap.h>
@@ -36,8 +39,6 @@
 #include <ns3/lte-enb-cphy-sap.h>
 #include <ns3/lte-rrc-sap.h>
 #include <ns3/lte-anr-sap.h>
-#include <ns3/traced-callback.h>
-#include <ns3/event-id.h>
 
 #include <map>
 #include <set>
@@ -47,24 +48,9 @@ namespace ns3 {
 class LteRadioBearerInfo;
 class LteSignalingRadioBearerInfo;
 class LteDataRadioBearerInfo;
-class EpcEnbS1SapUser;
-class EpcEnbS1SapProvider;
-class LteUeRrc;
 class LteEnbRrc;
+class Packet;
 
-
-
-/**
- * Measurements reported by a UE for a cellId
- * The values are quantized according 3GPP TS XXXXX
- */
-class UeMeasure : public Object
-{
-public:
-  uint16_t  m_cellId;
-  uint8_t   m_rsrp;
-  uint8_t   m_rsrq;
-};
 
 
 /**
@@ -419,18 +405,8 @@ private:
   EventId m_handoverJoiningTimeout;
   EventId m_handoverLeavingTimeout;
 
-  Ptr<UeMeasure> m_servingCellMeasures;
-  //       cellid
-  std::map<uint16_t, Ptr<UeMeasure> > m_neighbourCellMeasures;
-
 };
 
-
-
-class LteHandoverManagementSapProvider;
-class LteHandoverManagementSapUser;
-class LteAnrSapProvider;
-class LteAnrSapUser;
 
 
 /**
@@ -629,7 +605,7 @@ public:
                       uint16_t ulEarfcn, 
                       uint16_t dlEarfcn,
                       uint16_t cellId);
-  
+
   /** 
    * set the cell id of this eNB
    * 

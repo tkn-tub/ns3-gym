@@ -20,30 +20,27 @@
  *         Manuel Requena <manuel.requena@cttc.es>
  */
 
-#include "ns3/fatal-error.h"
-#include "ns3/log.h"
-#include "ns3/abort.h"
-#include "ns3/pointer.h"
-#include "ns3/object-map.h"
-#include "ns3/object-factory.h"
-#include "ns3/simulator.h"
-
 #include "lte-enb-rrc.h"
 
-#include "lte-enb-net-device.h"
-#include "lte-radio-bearer-info.h"
-#include "eps-bearer-tag.h"
-#include "ff-mac-csched-sap.h"
-#include "epc-enb-s1-sap.h"
+#include <ns3/fatal-error.h>
+#include <ns3/log.h>
+#include <ns3/abort.h>
 
-#include "lte-rlc.h"
-#include "lte-rlc-tm.h"
-#include "lte-rlc-um.h"
-#include "lte-rlc-am.h"
-#include "lte-pdcp.h"
-#include "lte-pdcp-sap.h"
-
+#include <ns3/pointer.h>
+#include <ns3/object-map.h>
+#include <ns3/object-factory.h>
 #include <ns3/simulator.h>
+
+#include <ns3/lte-radio-bearer-info.h>
+#include <ns3/eps-bearer-tag.h>
+#include <ns3/packet.h>
+
+#include <ns3/lte-rlc.h>
+#include <ns3/lte-rlc-tm.h>
+#include <ns3/lte-rlc-um.h>
+#include <ns3/lte-rlc-am.h>
+#include <ns3/lte-pdcp.h>
+#include <ns3/lte-pdcp-sap.h>
 
 
 
@@ -260,11 +257,6 @@ UeManager::DoInitialize ()
       break;      
     }  
 
-  m_servingCellMeasures = CreateObject<UeMeasure> ();
-  m_servingCellMeasures->m_cellId = m_rrc->m_cellId;
-  m_servingCellMeasures->m_rsrp = 0;
-  m_servingCellMeasures->m_rsrq = 0;
-
 }
 
 
@@ -284,7 +276,6 @@ UeManager::DoDispose ()
       m_rrc->m_x2uTeidInfoMap.erase (it->second->m_gtpTeid);
     }
 
-  m_servingCellMeasures = 0;
 }
 
 TypeId UeManager::GetTypeId (void)
@@ -313,7 +304,7 @@ TypeId UeManager::GetTypeId (void)
     .AddTraceSource ("StateTransition",
                      "fired upon every UE state transition seen by the UeManager at the eNB RRC",
                      MakeTraceSourceAccessor (&UeManager::m_stateTransitionTrace))
-    ;
+  ;
   return tid;
 }
 
