@@ -69,6 +69,7 @@ Bugs fixed
 - Bug 1727 - Ping6 should use a proper source address
 - Bug 1731 - lte-phy-error-model passes unexpectedly
 - Bug 1742 - IPv6 HbH and Dst Extension Header size is not correctly calculated
+- Bug 1752 - RadvdInterface m_defaultLifeTime is set to milliseconds instead of seconds
 
 Known issues
 ------------

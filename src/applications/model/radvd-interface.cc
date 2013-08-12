@@ -41,7 +41,7 @@ RadvdInterface::RadvdInterface (uint32_t interface)
   m_reachableTime = 0; /* means unspecified for the router */
   m_retransTimer = 0; /* means unspecified for the router */
   m_curHopLimit = 64;
-  m_defaultLifeTime = 3 * m_maxRtrAdvInterval;
+  m_defaultLifeTime = (3 * m_maxRtrAdvInterval) / 1000;
   m_defaultPreference = 1;
   m_sourceLLAddress = true;
   m_homeAgentFlag = false;
