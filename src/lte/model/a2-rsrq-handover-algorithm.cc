@@ -101,10 +101,11 @@ A2RsrqHandoverAlgorithm::GetTypeId (void)
     .SetParent<HandoverAlgorithm> ()
     .AddConstructor<A2RsrqHandoverAlgorithm> ()
     .AddAttribute ("ServingCellThreshold",
-                   "If serving cell is worse than this threshold, neighbour cells are consider for Handover",
+                   "If the RSRQ of the serving cell is worse than this threshold, "
+                   "neighbour cells are consider for handover",
                    UintegerValue (30),
                    MakeUintegerAccessor (&A2RsrqHandoverAlgorithm::m_servingCellThreshold),
-                   MakeUintegerChecker<uint8_t> ())
+                   MakeUintegerChecker<uint8_t> (0, 34)) // RSRQ range is [0..34] as per Section 9.1.7 of 3GPP TS 36.133
     .AddAttribute ("NeighbourCellOffset",
                    "Minimum offset between serving and best neighbour cell to trigger the Handover",
                    UintegerValue (1),
@@ -142,7 +143,7 @@ A2RsrqHandoverAlgorithm::DoInitialize ()
   reportConfigA2.threshold1.range = m_servingCellThreshold;
   reportConfigA2.triggerQuantity = LteRrcSap::ReportConfigEutra::RSRQ;
   reportConfigA2.reportInterval = LteRrcSap::ReportConfigEutra::MS240;
-  m_a2measId = m_handoverManagementSapUser->AddUeMeasReportConfig (reportConfigA2);
+  m_a2measId = m_handoverManagementSapUser->AddUeMeasReportConfigForHandover (reportConfigA2);
 
   LteRrcSap::ReportConfigEutra reportConfigA4;
   reportConfigA4.eventId = LteRrcSap::ReportConfigEutra::EVENT_A4;
@@ -150,7 +151,7 @@ A2RsrqHandoverAlgorithm::DoInitialize ()
   reportConfigA4.threshold1.range = 0; // intentionally very low threshold
   reportConfigA4.triggerQuantity = LteRrcSap::ReportConfigEutra::RSRQ;
   reportConfigA4.reportInterval = LteRrcSap::ReportConfigEutra::MS480;
-  m_a4measId = m_handoverManagementSapUser->AddUeMeasReportConfig (reportConfigA4);
+  m_a4measId = m_handoverManagementSapUser->AddUeMeasReportConfigForHandover (reportConfigA4);
 
   HandoverAlgorithm::DoInitialize ();
 }

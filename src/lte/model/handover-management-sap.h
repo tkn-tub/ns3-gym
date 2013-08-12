@@ -42,8 +42,10 @@ public:
    *             where the report originates from
    * \param measResults a single report of one measurement identity
    *
-   * The received measurement report may be stored and utilized for the purpose
-   * of making handover decision.
+   * The received measurement report is a result of the UE measurement
+   * configuration previously configured by calling
+   * HandoverManagementSapUser::AddUeMeasReportConfigForHandover. The report
+   * may be stored and utilized for the purpose of making handover decision.
    */
   virtual void ReportUeMeas (uint16_t rnti,
                              LteRrcSap::MeasResults measResults) = 0;
@@ -76,7 +78,7 @@ public:
    *
    * This function is only valid before the simulation begins.
    */
-  virtual uint8_t AddUeMeasReportConfig (LteRrcSap::ReportConfigEutra reportConfig) = 0;
+  virtual uint8_t AddUeMeasReportConfigForHandover (LteRrcSap::ReportConfigEutra reportConfig) = 0;
 
   /**
    * \brief Instruct the eNodeB RRC entity to prepare a handover.

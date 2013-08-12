@@ -113,7 +113,7 @@ public:
   EnbRrcMemberHandoverManagementSapUser (LteEnbRrc* rrc);
 
   // methods inherited from HandoverManagementSapUser go here
-  virtual uint8_t AddUeMeasReportConfig (LteRrcSap::ReportConfigEutra reportConfig);
+  virtual uint8_t AddUeMeasReportConfigForHandover (LteRrcSap::ReportConfigEutra reportConfig);
   virtual void TriggerHandover (uint16_t rnti, uint16_t targetCellId);
 
 private:
@@ -126,9 +126,9 @@ EnbRrcMemberHandoverManagementSapUser::EnbRrcMemberHandoverManagementSapUser (Lt
 }
 
 uint8_t
-EnbRrcMemberHandoverManagementSapUser::AddUeMeasReportConfig (LteRrcSap::ReportConfigEutra reportConfig)
+EnbRrcMemberHandoverManagementSapUser::AddUeMeasReportConfigForHandover (LteRrcSap::ReportConfigEutra reportConfig)
 {
-  return m_rrc->DoAddUeMeasReportConfig (reportConfig);
+  return m_rrc->DoAddUeMeasReportConfigForHandover (reportConfig);
 }
 
 void
@@ -138,6 +138,11 @@ EnbRrcMemberHandoverManagementSapUser::TriggerHandover (uint16_t rnti,
   m_rrc->DoTriggerHandover (rnti, targetCellId);
 }
 
+
+
+///////////////////////////////////////////
+// UeManager
+///////////////////////////////////////////
 
 
 const char* g_ueManagerStateName[UeManager::NUM_STATES] = 
@@ -158,12 +163,6 @@ std::string ToString (UeManager::State s)
 {
   return std::string (g_ueManagerStateName[s]);
 }
-
-
-
-///////////////////////////////////////////
-// UeManager 
-///////////////////////////////////////////
 
 
 NS_OBJECT_ENSURE_REGISTERED (UeManager);
@@ -971,8 +970,9 @@ UeManager::RecvRrcConnectionReestablishmentComplete (LteRrcSap::RrcConnectionRee
 void 
 UeManager::RecvMeasurementReport (LteRrcSap::MeasurementReport msg)
 {
-  NS_LOG_FUNCTION (this);
-  NS_LOG_LOGIC ("measId " << (uint16_t) msg.measResults.measId
+  uint8_t measId = msg.measResults.measId;
+  NS_LOG_FUNCTION (this << (uint16_t) measId);
+  NS_LOG_LOGIC ("measId " << (uint16_t) measId
                 << " haveMeasResultNeighCells " << msg.measResults.haveMeasResultNeighCells
                 << " measResultListEutra " << msg.measResults.measResultListEutra.size ());
   NS_LOG_LOGIC ("serving cellId " << m_rrc->m_cellId
@@ -988,57 +988,18 @@ UeManager::RecvMeasurementReport (LteRrcSap::MeasurementReport msg)
                     << " RSRQ " << (it->haveRsrqResult ? (uint16_t) it->rsrqResult : 255));
     }
 
-  /// Event A4 (Neighbour becomes better than threshold)
-  if (msg.measResults.measId == 2) // TODO remove this hardcode
+  if (m_rrc->m_handoverMeasIds.find (measId) != m_rrc->m_handoverMeasIds.end ())
     {
-      // Update the NRT
-      if (msg.measResults.haveMeasResultNeighCells
-          && !(msg.measResults.measResultListEutra.empty ()))
-        {
-          for (std::list <LteRrcSap::MeasResultEutra>::iterator it = msg.measResults.measResultListEutra.begin ();
-               it != msg.measResults.measResultListEutra.end ();
-               ++it)
-            {
-              // Keep new RSRQ value reported for the neighbour cell
-              NS_ASSERT_MSG (it->haveRsrqResult == true, "RSRQ measure missing for cellId " << it->physCellId);
-
-              // Update Neighbour Relation Table
-              if (m_rrc->m_neighbourRelationTable.find (it->physCellId) != m_rrc->m_neighbourRelationTable.end ())
-                {
-                  // Update neighbour info
-                  Ptr<NeighbourRelation> neighbourRelation = m_rrc->m_neighbourRelationTable[it->physCellId];
-                  NS_ASSERT_MSG (neighbourRelation->m_physCellId == it->physCellId,
-                                 "Wrong cellId " << neighbourRelation->m_physCellId);
-
-                  if (neighbourRelation->m_noX2 == false)
-                    {
-                      neighbourRelation->m_noHo = false;
-                    }
-                  neighbourRelation->m_detectedAsNeighbour = true;
-                }
-              else // new neighbour
-                {
-                  Ptr<NeighbourRelation> neighbourRelation = CreateObject <NeighbourRelation> ();
-                  neighbourRelation->m_physCellId = it->physCellId;
-                  neighbourRelation->m_noRemove = false;
-                  neighbourRelation->m_noHo = true;
-                  neighbourRelation->m_noX2 = true;
-                  neighbourRelation->m_detectedAsNeighbour = true;
-                  m_rrc->m_neighbourRelationTable[it->physCellId] = neighbourRelation;
-                }
-            }
-        }
-      else
-        {
-          NS_LOG_LOGIC ("WARNING");
-          // NS_ASSERT_MSG ("Event A4 received without measure results for neighbour cells");
-          // TODO Remove neighbours in the neighbourCellMeasures table
-        }
+      // this measurement was requested by the handover algorithm
+      m_rrc->m_handoverManagementSapProvider->ReportUeMeas (m_rnti,
+                                                            msg.measResults);
     }
 
-  // forward the UE measurements report to the active handover algorithm
-  m_rrc->m_handoverManagementSapProvider->ReportUeMeas (m_rnti,
-                                                        msg.measResults);
+  if (m_rrc->m_anrMeasIds.find (measId) != m_rrc->m_anrMeasIds.end ())
+    {
+      // this measurement was requested by the ANR function
+      m_rrc->m_anrSapProvider->ReportUeMeas (msg.measResults);
+    }
 
   // fire a trace source
   m_rrc->m_recvMeasurementReportTrace (m_imsi, m_rrc->m_cellId, m_rnti, msg);
@@ -1312,6 +1273,7 @@ LteEnbRrc::LteEnbRrc ()
   : m_x2SapProvider (0),
     m_cmacSapProvider (0),
     m_handoverManagementSapProvider (0),
+    m_anrSapProvider (0),
     m_rrcSapUser (0),
     m_macSapProvider (0),
     m_s1SapProvider (0),
@@ -1325,6 +1287,7 @@ LteEnbRrc::LteEnbRrc ()
   NS_LOG_FUNCTION (this);
   m_cmacSapUser = new EnbRrcMemberLteEnbCmacSapUser (this);
   m_handoverManagementSapUser = new EnbRrcMemberHandoverManagementSapUser (this);
+  m_anrSapUser = new MemberLteAnrSapUser<LteEnbRrc> (this);
   m_rrcSapProvider = new MemberLteEnbRrcSapProvider<LteEnbRrc> (this);
   m_x2SapUser = new EpcX2SpecificEpcX2SapUser<LteEnbRrc> (this);
   m_s1SapUser = new MemberEpcEnbS1SapUser<LteEnbRrc> (this);
@@ -1345,6 +1308,7 @@ LteEnbRrc::DoDispose ()
   m_ueMap.clear ();
   delete m_cmacSapUser;
   delete m_handoverManagementSapUser;
+  delete m_anrSapUser;
   delete m_rrcSapProvider;
   delete m_x2SapUser;
   delete m_s1SapUser;
@@ -1504,6 +1468,20 @@ LteEnbRrc::GetHandoverManagementSapUser ()
 {
   NS_LOG_FUNCTION (this);
   return m_handoverManagementSapUser;
+}
+
+void
+LteEnbRrc::SetLteAnrSapProvider (LteAnrSapProvider * s)
+{
+  NS_LOG_FUNCTION (this << s);
+  m_anrSapProvider = s;
+}
+
+LteAnrSapUser*
+LteEnbRrc::GetLteAnrSapUser ()
+{
+  NS_LOG_FUNCTION (this);
+  return m_anrSapUser;
 }
 
 void
@@ -2033,10 +2011,12 @@ LteEnbRrc::DoNotifyLcConfigResult (uint16_t rnti, uint8_t lcid, bool success)
 
 
 uint8_t
-LteEnbRrc::DoAddUeMeasReportConfig (LteRrcSap::ReportConfigEutra reportConfig)
+LteEnbRrc::DoAddUeMeasReportConfigForHandover (LteRrcSap::ReportConfigEutra reportConfig)
 {
   NS_LOG_FUNCTION (this);
-  return AddUeMeasReportConfig (reportConfig);
+  uint8_t measId = AddUeMeasReportConfig (reportConfig);
+  m_handoverMeasIds.insert (measId);
+  return measId;
 }
 
 void
@@ -2044,18 +2024,23 @@ LteEnbRrc::DoTriggerHandover (uint16_t rnti, uint16_t targetCellId)
 {
   NS_LOG_FUNCTION (this << rnti << targetCellId);
 
-  std::map<uint16_t, Ptr<NeighbourRelation> >::iterator it;
-  it = m_neighbourRelationTable.find (targetCellId);
-  NS_ASSERT_MSG (it != m_neighbourRelationTable.end (),
-                 "Unable to find neighbouring cell with cell ID " << targetCellId);
-
   // ensure that proper neighbour relationship exists between source and target cells
-  if ((it->second->m_noHo == false) && (it->second->m_noX2 == false))
-   {
+  if ((m_anrSapProvider->GetNoHo (targetCellId) == false)
+      && (m_anrSapProvider->GetNoX2 (targetCellId) == false))
+    {
       Ptr<UeManager> ueManager = GetUeManager (rnti);
       NS_ASSERT_MSG (ueManager != 0, "Cannot find UE context with RNTI " << rnti);
       ueManager->PrepareHandover (targetCellId);
-   }
+    }
+}
+
+uint8_t
+LteEnbRrc::DoAddUeMeasReportConfigForAnr (LteRrcSap::ReportConfigEutra reportConfig)
+{
+  NS_LOG_FUNCTION (this);
+  uint8_t measId = AddUeMeasReportConfig (reportConfig);
+  m_anrMeasIds.insert (measId);
+  return measId;
 }
 
 
@@ -2073,7 +2058,7 @@ LteEnbRrc::AddUe (UeManager::State state)
       if ((rnti != 0) && (m_ueMap.find (rnti) == m_ueMap.end ()))
         {
           found = true;
-          break;        
+          break;
         }
     }
 
@@ -2103,7 +2088,7 @@ LteEnbRrc::RemoveUe (uint16_t rnti)
     }
   // need to do this after UeManager has been deleted
   RemoveSrsConfigurationIndex (srsCi); 
- }
+}
 
 TypeId
 LteEnbRrc::GetRlcType (EpsBearer bearer)
@@ -2143,17 +2128,8 @@ LteEnbRrc::GetRlcType (EpsBearer bearer)
 void
 LteEnbRrc::AddX2Neighbour (uint16_t cellId)
 {
-  NS_LOG_FUNCTION (cellId);
-  NS_ASSERT_MSG (m_neighbourRelationTable.find (cellId) == m_neighbourRelationTable.end (),
-                 "There is already an entry in the Neighbour Relation Table for cellId " << cellId);
-
-  Ptr<NeighbourRelation> neighbourRelation = CreateObject <NeighbourRelation> ();
-  neighbourRelation->m_physCellId = cellId;
-  neighbourRelation->m_noRemove = true;
-  neighbourRelation->m_noHo = true;
-  neighbourRelation->m_noX2 = false;
-  neighbourRelation->m_detectedAsNeighbour = false;
-  m_neighbourRelationTable[cellId] = neighbourRelation;
+  NS_LOG_FUNCTION (this << cellId);
+  m_anrSapProvider->AddNeighbourRelation (cellId);
 }
 
 LteRrcSap::SystemInformationBlockType1

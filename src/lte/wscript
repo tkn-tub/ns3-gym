@@ -101,6 +101,8 @@ def build(bld):
         'model/handover-management-sap.cc',
         'model/handover-algorithm.cc',
         'model/a2-rsrq-handover-algorithm.cc',
+        'model/lte-anr-sap.cc',
+        'model/lte-anr.cc',
         ]
 
     module_test = bld.create_ns3_module_test_library('lte')
@@ -249,6 +251,8 @@ def build(bld):
         'model/handover-management-sap.h',
         'model/handover-algorithm.h',
         'model/a2-rsrq-handover-algorithm.h',
+        'model/lte-anr-sap.h',
+        'model/lte-anr.h',
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):

@@ -34,6 +34,7 @@
 #include <ns3/epc-enb-s1-sap.h>
 #include <ns3/lte-enb-cphy-sap.h>
 #include <ns3/lte-rrc-sap.h>
+#include <ns3/lte-anr-sap.h>
 #include <ns3/traced-callback.h>
 #include <ns3/event-id.h>
 
@@ -51,19 +52,6 @@ class LteUeRrc;
 class LteEnbRrc;
 
 
-/**
- * Neighbour Relation between two eNBs (serving eNB and neighbour eNB)
- * See XXXXX for more info
- */
-class NeighbourRelation : public Object
-{
-public:
-  uint16_t  m_physCellId;
-  bool      m_noRemove;
-  bool      m_noHo;
-  bool      m_noX2;
-  bool      m_detectedAsNeighbour;
-};
 
 /**
  * Measurements reported by a UE for a cellId
@@ -440,6 +428,8 @@ private:
 
 class HandoverManagementSapProvider;
 class HandoverManagementSapUser;
+class LteAnrSapProvider;
+class LteAnrSapUser;
 
 
 /**
@@ -452,6 +442,7 @@ class LteEnbRrc : public Object
 
   friend class EnbRrcMemberLteEnbCmacSapUser;
   friend class EnbRrcMemberHandoverManagementSapUser;
+  friend class MemberLteAnrSapUser<LteEnbRrc>;
   friend class MemberLteEnbRrcSapProvider<LteEnbRrc>;
   friend class MemberEpcEnbS1SapUser<LteEnbRrc>;
   friend class EpcX2SpecificEpcX2SapUser<LteEnbRrc>;
@@ -517,6 +508,21 @@ public:
    *           handover algorithm by this RRC
    */
   HandoverManagementSapUser* GetHandoverManagementSapUser ();
+
+
+  /**
+   * set the ANR SAP this RRC should interact with
+   *
+   * \param s the ANR SAP Provider to be used by this RRC
+   */
+  void SetLteAnrSapProvider (LteAnrSapProvider * s);
+
+  /**
+   * Get the ANR SAP offered by this RRC
+   * \return s the ANR SAP User interface offered to the ANR instance by this
+   *           RRC
+   */
+  LteAnrSapUser* GetLteAnrSapUser ();
 
 
   /**
@@ -705,7 +711,7 @@ private:
 
 
   // RRC SAP methods
-  
+
   void DoCompleteSetupUe (uint16_t rnti, LteEnbRrcSapProvider::CompleteSetupUeParameters params);
   void DoRecvRrcConnectionRequest (uint16_t rnti, LteRrcSap::RrcConnectionRequest msg);
   void DoRecvRrcConnectionSetupCompleted (uint16_t rnti, LteRrcSap::RrcConnectionSetupCompleted msg);
@@ -735,11 +741,15 @@ private:
   uint16_t DoAllocateTemporaryCellRnti ();
   void DoNotifyLcConfigResult (uint16_t rnti, uint8_t lcid, bool success);
   void DoRrcConfigurationUpdateInd (LteEnbCmacSapUser::UeConfig params);
-  
+
   // Handover Management SAP methods
 
-  uint8_t DoAddUeMeasReportConfig (LteRrcSap::ReportConfigEutra reportConfig);
+  uint8_t DoAddUeMeasReportConfigForHandover (LteRrcSap::ReportConfigEutra reportConfig);
   void DoTriggerHandover (uint16_t rnti, uint16_t targetCellId);
+
+  // ANR SAP methods
+
+  uint8_t DoAddUeMeasReportConfigForAnr (LteRrcSap::ReportConfigEutra reportConfig);
 
 
   // Internal methods
@@ -867,6 +877,9 @@ private:
   HandoverManagementSapUser* m_handoverManagementSapUser;
   HandoverManagementSapProvider* m_handoverManagementSapProvider;
 
+  LteAnrSapUser* m_anrSapUser;
+  LteAnrSapProvider* m_anrSapProvider;
+
   LteEnbRrcSapUser* m_rrcSapUser;
   LteEnbRrcSapProvider* m_rrcSapProvider;
 
@@ -896,6 +909,9 @@ private:
    *        attached to this eNodeB instance.
    */
   LteRrcSap::MeasConfig m_ueMeasConfig;
+
+  std::set<uint8_t> m_handoverMeasIds;
+  std::set<uint8_t> m_anrMeasIds;
 
   struct X2uTeidInfo
   {
@@ -931,10 +947,6 @@ private:
   Time m_connectionRejectedTimeoutDuration;
   Time m_handoverJoiningTimeoutDuration;
   Time m_handoverLeavingTimeoutDuration;
-
-  //       cellid
-  std::map<uint16_t, Ptr<NeighbourRelation> > m_neighbourRelationTable;
-
 
   //             cellid    rnti   
   TracedCallback<uint16_t, uint16_t> m_newUeContextTrace;

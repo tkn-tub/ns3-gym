@@ -44,6 +44,7 @@
 #include <ns3/lte-ue-net-device.h>
 #include <ns3/ff-mac-scheduler.h>
 #include <ns3/handover-algorithm.h>
+#include <ns3/lte-anr.h>
 #include <ns3/lte-rlc.h>
 #include <ns3/lte-rlc-um.h>
 #include <ns3/lte-rlc-am.h>
@@ -391,6 +392,7 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
   Ptr<LteEnbMac> mac = CreateObject<LteEnbMac> ();
   Ptr<FfMacScheduler> sched = m_schedulerFactory.Create<FfMacScheduler> ();
   Ptr<HandoverAlgorithm> handoverAlgorithm = m_handoverAlgorithmFactory.Create<HandoverAlgorithm> ();
+  Ptr<LteAnr> anr = CreateObject<LteAnr> ();
   Ptr<LteEnbRrc> rrc = CreateObject<LteEnbRrc> ();
 
   if (m_useIdealRrc)
@@ -428,6 +430,9 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
   rrc->SetHandoverManagementSapProvider (handoverAlgorithm->GetHandoverManagementSapProvider ());
   handoverAlgorithm->SetHandoverManagementSapUser (rrc->GetHandoverManagementSapUser ());
 
+  rrc->SetLteAnrSapProvider (anr->GetLteAnrSapProvider ());
+  anr->SetLteAnrSapUser (rrc->GetLteAnrSapUser ());
+
   mac->SetFfMacSchedSapProvider (sched->GetFfMacSchedSapProvider ());
   mac->SetFfMacCschedSapProvider (sched->GetFfMacCschedSapProvider ());
 
@@ -436,7 +441,6 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
 
   phy->SetLteEnbPhySapUser (mac->GetLteEnbPhySapUser ());
   mac->SetLteEnbPhySapProvider (phy->GetLteEnbPhySapProvider ());
-
 
   phy->SetLteEnbCphySapUser (rrc->GetLteEnbCphySapUser ());
   rrc->SetLteEnbCphySapProvider (phy->GetLteEnbCphySapProvider ());
@@ -449,6 +453,7 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
   dev->SetAttribute ("FfMacScheduler", PointerValue (sched));
   dev->SetAttribute ("LteEnbRrc", PointerValue (rrc)); 
   dev->SetAttribute ("HandoverAlgorithm", PointerValue (handoverAlgorithm));
+  dev->SetAttribute ("LteAnr", PointerValue (anr));
 
   phy->SetDevice (dev);
   dlPhy->SetDevice (dev);
@@ -858,7 +863,7 @@ LteHelper::DoHandoverRequest (Ptr<NetDevice> ueDev, Ptr<NetDevice> sourceEnbDev,
   uint16_t targetCellId = targetEnbDev->GetObject<LteEnbNetDevice> ()->GetCellId ();
   Ptr<LteEnbRrc> sourceRrc = sourceEnbDev->GetObject<LteEnbNetDevice> ()->GetRrc ();
   uint16_t rnti = ueDev->GetObject<LteUeNetDevice> ()->GetRrc ()->GetRnti ();
-  sourceRrc->SendHandoverRequest (rnti, targetCellId);  
+  sourceRrc->SendHandoverRequest (rnti, targetCellId);
 }
 
 
@@ -869,7 +874,7 @@ void
 LteHelper::ActivateDataRadioBearer (NetDeviceContainer ueDevices, EpsBearer bearer)
 {
   NS_LOG_FUNCTION (this);
-   for (NetDeviceContainer::Iterator i = ueDevices.Begin (); i != ueDevices.End (); ++i)
+  for (NetDeviceContainer::Iterator i = ueDevices.Begin (); i != ueDevices.End (); ++i)
     {
       ActivateDataRadioBearer (*i, bearer);
     }
