@@ -160,6 +160,8 @@ def register_types(module):
     module.add_class('PcapHelperForDevice', allow_subclassing=True, import_from_module='ns.network')
     ## ping6-helper.h (module 'applications'): ns3::Ping6Helper [class]
     module.add_class('Ping6Helper')
+    ## radvd-helper.h (module 'applications'): ns3::RadvdHelper [class]
+    module.add_class('RadvdHelper')
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Object, ns3::ObjectBase, ns3::ObjectDeleter> [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', template_parameters=['ns3::Object', 'ns3::ObjectBase', 'ns3::ObjectDeleter'], parent=root_module['ns3::ObjectBase'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## simulator.h (module 'core'): ns3::Simulator [class]
@@ -662,6 +664,7 @@ def register_methods(root_module):
     register_Ns3PcapHelper_methods(root_module, root_module['ns3::PcapHelper'])
     register_Ns3PcapHelperForDevice_methods(root_module, root_module['ns3::PcapHelperForDevice'])
     register_Ns3Ping6Helper_methods(root_module, root_module['ns3::Ping6Helper'])
+    register_Ns3RadvdHelper_methods(root_module, root_module['ns3::RadvdHelper'])
     register_Ns3SimpleRefCount__Ns3Object_Ns3ObjectBase_Ns3ObjectDeleter_methods(root_module, root_module['ns3::SimpleRefCount< ns3::Object, ns3::ObjectBase, ns3::ObjectDeleter >'])
     register_Ns3Simulator_methods(root_module, root_module['ns3::Simulator'])
     register_Ns3StatisticalSummary_methods(root_module, root_module['ns3::StatisticalSummary'])
@@ -3440,6 +3443,41 @@ def register_Ns3Ping6Helper_methods(root_module, cls):
     cls.add_method('SetRoutersAddress', 
                    'void', 
                    [param('std::vector< ns3::Ipv6Address >', 'routers')])
+    return
+
+def register_Ns3RadvdHelper_methods(root_module, cls):
+    ## radvd-helper.h (module 'applications'): ns3::RadvdHelper::RadvdHelper(ns3::RadvdHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::RadvdHelper const &', 'arg0')])
+    ## radvd-helper.h (module 'applications'): ns3::RadvdHelper::RadvdHelper() [constructor]
+    cls.add_constructor([])
+    ## radvd-helper.h (module 'applications'): void ns3::RadvdHelper::AddAnnouncedPrefix(uint32_t interface, ns3::Ipv6Address prefix, uint32_t prefixLength) [member function]
+    cls.add_method('AddAnnouncedPrefix', 
+                   'void', 
+                   [param('uint32_t', 'interface'), param('ns3::Ipv6Address', 'prefix'), param('uint32_t', 'prefixLength')])
+    ## radvd-helper.h (module 'applications'): void ns3::RadvdHelper::ClearPrefixes() [member function]
+    cls.add_method('ClearPrefixes', 
+                   'void', 
+                   [])
+    ## radvd-helper.h (module 'applications'): void ns3::RadvdHelper::DisableDefaultRouterForInterface(uint32_t interface) [member function]
+    cls.add_method('DisableDefaultRouterForInterface', 
+                   'void', 
+                   [param('uint32_t', 'interface')])
+    ## radvd-helper.h (module 'applications'): void ns3::RadvdHelper::EnableDefaultRouterForInterface(uint32_t interface) [member function]
+    cls.add_method('EnableDefaultRouterForInterface', 
+                   'void', 
+                   [param('uint32_t', 'interface')])
+    ## radvd-helper.h (module 'applications'): ns3::Ptr<ns3::RadvdInterface> ns3::RadvdHelper::GetRadvdInterface(uint32_t interface) [member function]
+    cls.add_method('GetRadvdInterface', 
+                   'ns3::Ptr< ns3::RadvdInterface >', 
+                   [param('uint32_t', 'interface')])
+    ## radvd-helper.h (module 'applications'): ns3::ApplicationContainer ns3::RadvdHelper::Install(ns3::Ptr<ns3::Node> node) [member function]
+    cls.add_method('Install', 
+                   'ns3::ApplicationContainer', 
+                   [param('ns3::Ptr< ns3::Node >', 'node')])
+    ## radvd-helper.h (module 'applications'): void ns3::RadvdHelper::SetAttribute(std::string name, ns3::AttributeValue const & value) [member function]
+    cls.add_method('SetAttribute', 
+                   'void', 
+                   [param('std::string', 'name'), param('ns3::AttributeValue const &', 'value')])
     return
 
 def register_Ns3SimpleRefCount__Ns3Object_Ns3ObjectBase_Ns3ObjectDeleter_methods(root_module, cls):
