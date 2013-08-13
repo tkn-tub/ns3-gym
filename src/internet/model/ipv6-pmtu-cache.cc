@@ -20,6 +20,7 @@
 
 #include "ipv6-pmtu-cache.h"
 #include "ns3/log.h"
+#include "ns3/simulator.h"
 
 NS_LOG_COMPONENT_DEFINE ("Ipv6PmtuCache");
 

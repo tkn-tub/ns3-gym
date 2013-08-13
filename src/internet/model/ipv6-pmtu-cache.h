@@ -23,7 +23,10 @@
 
 #include <map>
 
-#include "ns3/core-module.h"
+#include "ns3/object.h"
+#include "ns3/nstime.h"
+#include "ns3/type-id.h"
+#include "ns3/event-id.h"
 #include "ns3/ipv6-address.h"
 
 namespace ns3 {
