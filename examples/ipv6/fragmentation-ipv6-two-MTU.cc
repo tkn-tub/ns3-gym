@@ -45,16 +45,20 @@ NS_LOG_COMPONENT_DEFINE ("FragmentationIpv6TwoMtuExample");
 
 int main (int argc, char** argv)
 {
-#if 0 
-  LogComponentEnable ("Ipv6L3Protocol", LOG_LEVEL_ALL);
-  LogComponentEnable ("Icmpv6L4Protocol", LOG_LEVEL_ALL);
-  LogComponentEnable ("Ipv6StaticRouting", LOG_LEVEL_ALL);
-  LogComponentEnable ("Ipv6Interface", LOG_LEVEL_ALL);
-  LogComponentEnable ("Ping6Application", LOG_LEVEL_ALL);
-#endif
+  bool verbose = false;
 
   CommandLine cmd;
+  cmd.AddValue ("verbose", "turn on log components", verbose);
   cmd.Parse (argc, argv);
+
+  if (verbose)
+    {
+      LogComponentEnable ("Ipv6L3Protocol", LOG_LEVEL_ALL);
+      LogComponentEnable ("Icmpv6L4Protocol", LOG_LEVEL_ALL);
+      LogComponentEnable ("Ipv6StaticRouting", LOG_LEVEL_ALL);
+      LogComponentEnable ("Ipv6Interface", LOG_LEVEL_ALL);
+      LogComponentEnable ("Ping6Application", LOG_LEVEL_ALL);
+    }
 
   NS_LOG_INFO ("Create nodes.");
   Ptr<Node> n0 = CreateObject<Node> ();

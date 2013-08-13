@@ -55,18 +55,22 @@ NS_LOG_COMPONENT_DEFINE ("Icmpv6RedirectExample");
 
 int main (int argc, char **argv)
 {
-#if 0 
-  LogComponentEnable ("Icmpv6RedirectExample", LOG_LEVEL_INFO);
-  LogComponentEnable ("Icmpv6L4Protocol", LOG_LEVEL_INFO);
-  LogComponentEnable ("Ipv6L3Protocol", LOG_LEVEL_ALL);
-  LogComponentEnable ("Ipv6StaticRouting", LOG_LEVEL_ALL);
-  LogComponentEnable ("Ipv6Interface", LOG_LEVEL_ALL);
-  LogComponentEnable ("Icmpv6L4Protocol", LOG_LEVEL_ALL);
-  LogComponentEnable ("NdiscCache", LOG_LEVEL_ALL);
-#endif
+  bool verbose = false;
 
   CommandLine cmd;
+  cmd.AddValue ("verbose", "turn on log components", verbose);
   cmd.Parse (argc, argv);
+
+  if (verbose)
+    {
+      LogComponentEnable ("Icmpv6RedirectExample", LOG_LEVEL_INFO);
+      LogComponentEnable ("Icmpv6L4Protocol", LOG_LEVEL_INFO);
+      LogComponentEnable ("Ipv6L3Protocol", LOG_LEVEL_ALL);
+      LogComponentEnable ("Ipv6StaticRouting", LOG_LEVEL_ALL);
+      LogComponentEnable ("Ipv6Interface", LOG_LEVEL_ALL);
+      LogComponentEnable ("Icmpv6L4Protocol", LOG_LEVEL_ALL);
+      LogComponentEnable ("NdiscCache", LOG_LEVEL_ALL);
+    }
 
   NS_LOG_INFO ("Create nodes.");
   Ptr<Node> sta1 = CreateObject<Node> ();
