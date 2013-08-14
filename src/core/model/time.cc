@@ -38,7 +38,7 @@ namespace ns3 {
 // static
 Time::MarkedTimes * Time::g_markingTimes = 0;
 
-// Function called to force static initialization  
+// Function called to force static initialization
 // static
 bool Time::StaticInit ()
 {
@@ -50,7 +50,7 @@ bool Time::StaticInit ()
 	{
 	  g_markingTimes = new Time::MarkedTimes;
 	}
-      
+
       // Schedule the cleanup.
       // We'd really like:
       //   NS_LOG_LOGIC ("scheduling ClearMarkedTimes()");
@@ -61,11 +61,11 @@ bool Time::StaticInit ()
       // Instead, we call ClearMarkedTimes directly from Simulator::Run ()
       firstTime = false;
     }
-  
+
   return firstTime;
 }
 
-  
+
 Time::Time (const std::string& s)
 {
   NS_LOG_FUNCTION (this << &s);
@@ -115,7 +115,7 @@ Time::Time (const std::string& s)
       iss >> v;
       *this = Time::FromDouble (v, Time::S);
     }
-  
+
   if (g_markingTimes)
     {
       Mark (this);
@@ -133,7 +133,7 @@ Time::SetDefaultNsResolution (void)
 }
 
 // static
-void 
+void
 Time::SetResolution (enum Unit resolution)
 {
   NS_LOG_FUNCTION (resolution);
@@ -142,7 +142,7 @@ Time::SetResolution (enum Unit resolution)
 
 
 // static
-void 
+void
 Time::SetResolution (enum Unit unit, struct Resolution *resolution,
                      const bool convert /* = true */)
 {
@@ -151,7 +151,7 @@ Time::SetResolution (enum Unit unit, struct Resolution *resolution,
     { // We have to convert old values
       ConvertTimes (unit);
     }
-  
+
   int8_t power [LAST] = { 15, 12, 9, 6, 3, 0};
   for (int i = 0; i < Time::LAST; i++)
     {
@@ -198,7 +198,7 @@ Time::ClearMarkedTimes ()
       g_markingTimes = 0;
     }
 }  // Time::ClearMarkedTimes
-  
+
 
 // static
 void
@@ -213,7 +213,7 @@ Time::Mark (Time * const time)
 
       ret = g_markingTimes->insert ( time);
       NS_LOG_LOGIC ("\t[" << g_markingTimes->size () << "] recording " << time);
-  
+
       if (ret.second == false)
         {
           NS_LOG_WARN ("already recorded " << time << "!");
@@ -228,7 +228,7 @@ Time::Clear (Time * const time)
 {
   NS_LOG_FUNCTION (time);
   NS_ASSERT (time != 0);
-  
+
   if (g_markingTimes)
     {
       NS_ASSERT_MSG (g_markingTimes->count (time) == 1,
@@ -259,26 +259,32 @@ Time::ConvertTimes (const enum Unit unit)
   NS_ASSERT_MSG (g_markingTimes != 0,
 		 "No MarkedTimes registry. "
 		 "Time::SetResolution () called more than once?");
-  
+
   for ( MarkedTimes::iterator it = g_markingTimes->begin();
 	it != g_markingTimes->end();
 	it++ )
     {
       Time * const tp = *it;
+      if ( ! (    (tp->m_data == std::numeric_limits<int64_t>::min ())
+               || (tp->m_data == std::numeric_limits<int64_t>::max ())
+             )
+         )
+        {
       tp->m_data = tp->ToInteger (unit);
     }
-  
+    }
+
   NS_LOG_LOGIC ("logged " << g_markingTimes->size () << " Time objects.");
-  
+
   ClearMarkedTimes ();
 }  // Time::ConvertTimes ()
- 
+
 
 // static
 enum Time::Unit
 Time::GetResolution (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  // No function log b/c it interferes with operator<<
   return PeekResolution ()->unit;
 }
 
@@ -287,7 +293,8 @@ std::ostream&
 operator<< (std::ostream& os, const Time & time)
 {
   std::string unit;
-  switch (Time::GetResolution ())
+  Time::Unit res = Time::GetResolution ();
+  switch (res)
     {
     case Time::S:
       unit = "s";
@@ -312,7 +319,7 @@ operator<< (std::ostream& os, const Time & time)
       unit = "unreachable";
       break;
     }
-  int64x64_t v = time;
+  int64_t v = time.ToInteger (res);
   os << v << unit;
   return os;
 }
