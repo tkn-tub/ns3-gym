@@ -30,9 +30,41 @@
 #include <cmath>
 #include <sstream>
 
+NS_LOG_COMPONENT_DEFINE ("Time");
+
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("Time");
+// The set of marked times
+// static
+Time::MarkedTimes * Time::g_markingTimes = 0;
+
+// Function called to force static initialization  
+// static
+bool Time::StaticInit ()
+{
+  static bool firstTime = true;
+
+  if (firstTime)
+    {
+      if (! g_markingTimes)
+	{
+	  g_markingTimes = new Time::MarkedTimes;
+	}
+      
+      // Schedule the cleanup.
+      // We'd really like:
+      //   NS_LOG_LOGIC ("scheduling ClearMarkedTimes()");
+      //   Simulator::Schedule ( Seconds (0), & ClearMarkedTimes);
+      //   [or even better:  Simulator::AtStart ( & ClearMarkedTimes ); ]
+      // But this triggers a static initialization order error,
+      // since the Simulator static initialization may not have occurred.
+      // Instead, we call ClearMarkedTimes directly from Simulator::Run ()
+      firstTime = false;
+    }
+  
+  return firstTime;
+}
+
 
 Time::Time (const std::string& s)
 {
@@ -48,36 +80,34 @@ Time::Time (const std::string& s)
       if (trailer == std::string ("s"))
         {
           *this = Time::FromDouble (r, Time::S);
-          return;
         }
-      if (trailer == std::string ("ms"))
+      else if (trailer == std::string ("ms"))
         {
           *this = Time::FromDouble (r, Time::MS);
-          return;
         }
-      if (trailer == std::string ("us"))
+      else if (trailer == std::string ("us"))
         {
           *this = Time::FromDouble (r, Time::US);
-          return;
         }
-      if (trailer == std::string ("ns"))
+      else if (trailer == std::string ("ns"))
         {
           *this = Time::FromDouble (r, Time::NS);
-          return;
         }
-      if (trailer == std::string ("ps"))
+      else if (trailer == std::string ("ps"))
         {
           *this = Time::FromDouble (r, Time::PS);
-          return;
         }
-      if (trailer == std::string ("fs"))
+      else if (trailer == std::string ("fs"))
         {
           *this = Time::FromDouble (r, Time::FS);
-          return;
         }
+      else
+        {
       NS_ABORT_MSG ("Can't Parse Time " << s);
     }
-  // else
+    }
+  else
+    {
   // they didn't provide units, assume seconds
   std::istringstream iss;
   iss.str (s);
@@ -86,24 +116,42 @@ Time::Time (const std::string& s)
   *this = Time::FromDouble (v, Time::S);
 }
 
+  if (g_markingTimes)
+    {
+      Mark (this);
+    }
+}
+
+// static
 struct Time::Resolution
-Time::GetNsResolution (void)
+Time::SetDefaultNsResolution (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   struct Resolution resolution;
-  SetResolution (Time::NS, &resolution);
+  SetResolution (Time::NS, &resolution, false);
   return resolution;
 }
+
+// static
 void 
 Time::SetResolution (enum Unit resolution)
 {
   NS_LOG_FUNCTION (resolution);
   SetResolution (resolution, PeekResolution ());
 }
+
+
+// static
 void 
-Time::SetResolution (enum Unit unit, struct Resolution *resolution)
+Time::SetResolution (enum Unit unit, struct Resolution *resolution,
+                     const bool convert /* = true */)
 {
-  NS_LOG_FUNCTION (unit << resolution);
+  NS_LOG_FUNCTION (resolution);
+  if (convert)
+    { // We have to convert old values
+      ConvertTimes (unit);
+    }
+  
   int8_t power [LAST] = { 15, 12, 9, 6, 3, 0};
   for (int i = 0; i < Time::LAST; i++)
     {
@@ -136,6 +184,97 @@ Time::SetResolution (enum Unit unit, struct Resolution *resolution)
     }
   resolution->unit = unit;
 }
+
+
+// static
+void
+Time::ClearMarkedTimes ()
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  if (g_markingTimes)
+    {
+      NS_LOG_LOGIC ("clearing MarkedTimes");
+      delete g_markingTimes;
+      g_markingTimes = 0;
+    }
+}  // Time::ClearMarkedTimes
+  
+
+// static
+void
+Time::Mark (Time * const time)
+{
+  NS_LOG_FUNCTION (time);
+  NS_ASSERT (time != 0);
+
+  if (g_markingTimes)
+    {
+      std::pair< MarkedTimes::iterator, bool> ret;
+
+      ret = g_markingTimes->insert ( time);
+      NS_LOG_LOGIC ("\t[" << g_markingTimes->size () << "] recording " << time);
+  
+      if (ret.second == false)
+        {
+          NS_LOG_WARN ("already recorded " << time << "!");
+        }
+   }
+}  // Time::Mark ()
+
+
+// static
+void
+Time::Clear (Time * const time)
+{
+  NS_LOG_FUNCTION (time);
+  NS_ASSERT (time != 0);
+  
+  if (g_markingTimes)
+    {
+      NS_ASSERT_MSG (g_markingTimes->count (time) == 1,
+		     "Time object " << time <<
+		     " registered " << g_markingTimes->count (time) <<
+		     " times (should be 1)." );
+
+      MarkedTimes::size_type num = g_markingTimes->erase (time);
+      if (num != 1)
+	{
+	  NS_LOG_WARN ("unexpected result erasing " << time << "!");
+	  NS_LOG_WARN ("got " << num << ", expected 1");
+	}
+      else
+	{
+	  NS_LOG_LOGIC ("\t[" << g_markingTimes->size () << "] removing  " << time);
+	}
+    }
+}  // Time::Clear ()
+
+
+// static
+void
+Time::ConvertTimes (const enum Unit unit)
+{
+  NS_LOG_FUNCTION_NOARGS();
+
+  NS_ASSERT_MSG (g_markingTimes != 0,
+		 "No MarkedTimes registry. "
+		 "Time::SetResolution () called more than once?");
+  
+  for ( MarkedTimes::iterator it = g_markingTimes->begin();
+	it != g_markingTimes->end();
+	it++ )
+    {
+      Time * const tp = *it;
+      tp->m_data = tp->ToInteger (unit);
+    }
+  
+  NS_LOG_LOGIC ("logged " << g_markingTimes->size () << " Time objects.");
+  
+  ClearMarkedTimes ();
+}  // Time::ConvertTimes ()
+ 
+
+// static
 enum Time::Unit
 Time::GetResolution (void)
 {

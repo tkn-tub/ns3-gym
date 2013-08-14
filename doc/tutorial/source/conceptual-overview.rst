@@ -340,6 +340,21 @@ Just as in any C++ program, you need to define a main function that will be
 the first function run.  There is nothing at all special here.  Your 
 |ns3| script is just a C++ program.
 
+The next line sets the time resolution to one nanosecond, which happens
+to be the default value:
+
+::
+
+    Time::SetResolution (Time::NS);
+
+The resolution is the smallest time value that can be represented (as well as
+the smallest representable difference between two time values).
+You can change the resolution exactly once.  The mechanism enabling this
+flexibility is somewhat memory hungry, so once the resolution has been
+set explicitly we release the memory, preventing further updates.   (If
+you don't set the resolution explicitly, it will default to one nanosecond,
+and the memory will be released when the simulation starts.)
+
 The next two lines of the script are used to enable two logging components that
 are built into the Echo Client and Echo Server applications:
 

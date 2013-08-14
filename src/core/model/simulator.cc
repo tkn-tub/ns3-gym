@@ -157,6 +157,7 @@ void
 Simulator::Run (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
+  Time::ClearMarkedTimes ();
   GetImpl ()->Run ();
 }
 
