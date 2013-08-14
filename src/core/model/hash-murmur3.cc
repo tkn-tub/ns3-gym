@@ -34,6 +34,33 @@
 
 #include <iomanip>
 
+/*
+ * \brief Silence erroneous strict alias warning from a gcc 4.4 bug
+ *
+ * Casting \c (void*) triggers a strict alias warning bug
+ * in gcc 4.4 (see http://gcc.gnu.org/bugzilla/show_bug.cgi?id=39390).
+ *
+ * In the murmur3 code, data is returned by
+ * \code
+ *   void Function (... , void * out)
+ *   {
+ *     ...
+ *     *(uint32_t *)out = ...
+ *   }
+ * \endcode
+ *
+ * which triggers the erroneous warning.
+ *
+ * We suppress strict-alias warnings in this compilation unit.
+ * (gcc 4.4 doesn't support the <tt>diagnostic push/pop</tt> pragmas,
+ * so we can't narrow down the suppression any further.)
+ */
+// Test for gcc 4.4.x
+#define GCC_VERSION (__GNUC__ * 100 + __GNUC_MINOR__)
+#if (GCC_VERSION == 404)
+#  pragma GCC diagnostic ignored "-Wstrict-aliasing"
+#endif
+ 
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("Hash-Murmur3");
