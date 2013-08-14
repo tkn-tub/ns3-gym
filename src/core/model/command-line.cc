@@ -147,17 +147,17 @@ CommandLine::Parse (int iargc, char *argv[])
 }
 
 void
-CommandLine::PrintHelp (void) const
+CommandLine::PrintHelp (std::ostream &os) const
 {
   NS_LOG_FUNCTION (this);
 
-  std::cout << m_name << " [Program Arguments] [General Arguments]"
-            << std::endl;
+  os << m_name << " [Program Arguments] [General Arguments]"
+     << std::endl;
   
   if (m_usage.length ())
     {
-      std::cout << std::endl;
-      std::cout << m_usage << std::endl;
+      os << std::endl;
+      os << m_usage << std::endl;
     }
   
   if (!m_items.empty ())
@@ -169,25 +169,25 @@ CommandLine::PrintHelp (void) const
         }
       width += 3;
 
-      std::cout << std::endl;
-      std::cout << "Program Arguments:" << std::endl;
+      os << std::endl;
+      os << "Program Arguments:" << std::endl;
       for (Items::const_iterator i = m_items.begin (); i != m_items.end (); ++i)
         {
-          std::cout << "    --"
-                    << std::left << std::setw (width) << ( (*i)->m_name + ":")
-                    << std::right
-                    << (*i)->m_help;
+          os << "    --"
+             << std::left << std::setw (width) << ( (*i)->m_name + ":")
+             << std::right
+             << (*i)->m_help;
 
           if ( (*i)->HasDefault ())
             {
-              std::cout << " [" << (*i)->GetDefault () << "]";
-            }
-          std::cout << std::endl;
-        }
+              os << " [" << (*i)->GetDefault () << "]";
+    }
+          os << std::endl;
+}
     }
 
-  std::cout << std::endl;
-  std::cout
+  os << std::endl;
+  os
     << "General Arguments:\n"
     << "    --PrintGlobals:              Print the list of globals.\n"
     << "    --PrintGroups:               Print the list of groups.\n"
@@ -199,80 +199,80 @@ CommandLine::PrintHelp (void) const
 }
 
 void
-CommandLine::PrintGlobals (void) const
+CommandLine::PrintGlobals (std::ostream &os) const
 {
   NS_LOG_FUNCTION (this);
 
-  std::cout << "Global values:" << std::endl;
+  os << "Global values:" << std::endl;
   
   for (GlobalValue::Iterator i = GlobalValue::Begin ();
        i != GlobalValue::End ();
        ++i)
     {
-      std::cout << "    --" << (*i)->GetName () << "=[";
+      os << "    --" << (*i)->GetName () << "=[";
       Ptr<const AttributeChecker> checker = (*i)->GetChecker ();
       StringValue v;
       (*i)->GetValue (v);
-      std::cout << v.Get () << "]" << std::endl;
-      std::cout << "        " << (*i)->GetHelp () << std::endl;
+      os << v.Get () << "]" << std::endl;
+      os << "        " << (*i)->GetHelp () << std::endl;
     }
 }
 
 void
-CommandLine::PrintAttributes (std::string type) const
+CommandLine::PrintAttributes (std::ostream &os, const std::string &type) const
 {
   NS_LOG_FUNCTION (this);
 
   TypeId tid;
   if (!TypeId::LookupByNameFailSafe (type, &tid))
     {
-      NS_FATAL_ERROR ("Unknown type=" << type << " in --PrintAttributes");
+      NS_FATAL_ERROR ("Unknown type="<<type<<" in --PrintAttributes");
     }
 
-  std::cout << "Attributes for TypeId " << tid.GetName () << std::endl;
+  os << "Attributes for TypeId " << tid.GetName () << std::endl;
   
   for (uint32_t i = 0; i < tid.GetAttributeN (); ++i)
     {
-      std::cout << "    --" << tid.GetAttributeFullName (i) << "=[";
+      os << "    --" << tid.GetAttributeFullName (i) << "=[";
       struct TypeId::AttributeInformation info = tid.GetAttribute (i);
-      std::cout << info.initialValue->SerializeToString (info.checker) << "]"
+      os << info.initialValue->SerializeToString (info.checker) << "]"
                 << std::endl;
-      std::cout << "        " << info.help << std::endl;
+      os << "        " << info.help << std::endl;
     }
 }
 
 
 void
-CommandLine::PrintGroup (std::string group) const
+CommandLine::PrintGroup (std::ostream &os, const std::string &group) const
 {
   NS_LOG_FUNCTION (this);
 
-  std::cout << "TypeIds in group " << group << ":" << std::endl;
+  os << "TypeIds in group " << group << ":" << std::endl;
   
   for (uint32_t i = 0; i < TypeId::GetRegisteredN (); ++i)
     {
       TypeId tid = TypeId::GetRegistered (i);
       if (tid.GetGroupName () == group)
         {
-          std::cout << "    " <<tid.GetName () << std::endl;
+          os << "    " <<tid.GetName () << std::endl;
         }
     }
 }
 
 void
-CommandLine::PrintTypeIds (void) const
+CommandLine::PrintTypeIds (std::ostream &os) const
 {
   NS_LOG_FUNCTION (this);
-  std::cout << "Registered TypeIds:" << std::endl;
+  os << "Registered TypeIds:" << std::endl;
   for (uint32_t i = 0; i < TypeId::GetRegisteredN (); ++i)
     {
       TypeId tid = TypeId::GetRegistered (i);
-      std::cout << "    " << tid.GetName () << std::endl;
+      os << "    " << tid.GetName () << std::endl;
     }
 }
 
 void
-CommandLine::PrintGroups (void) const
+CommandLine::PrintGroups (std::ostream &os) const
 {
   NS_LOG_FUNCTION (this);
 
@@ -302,56 +302,56 @@ CommandLine::PrintGroups (void) const
         }
     }
   
-  std::cout << "Registered TypeId groups:" << std::endl;
+  os << "Registered TypeId groups:" << std::endl;
   
   for (std::list<std::string>::const_iterator k = groups.begin ();
        k != groups.end ();
        ++k)
     {
-      std::cout << "    " << *k << std::endl;
+      os << "    " << *k << std::endl;
     }
 }
 
 void
-CommandLine::HandleArgument (std::string name, std::string value) const
+CommandLine::HandleArgument (const std::string &name, const std::string &value) const
 {
   NS_LOG_FUNCTION (this << name << value);
 
-  NS_LOG_DEBUG ("Handle arg name=" << name << " value=" << value);
+  NS_LOG_DEBUG ("Handle arg name="<<name<<" value="<<value);
   if (name == "PrintHelp" || name == "help")
     {
       // method below never returns.
-      PrintHelp ();
+      PrintHelp (std::cout);
       std::exit (0);
     } 
   else if (name == "PrintGroups")
     {
       // method below never returns.
-      PrintGroups ();
+      PrintGroups (std::cout);
       std::exit (0);
     }
   else if (name == "PrintTypeIds")
     {
       // method below never returns.
-      PrintTypeIds ();
+      PrintTypeIds (std::cout);
       std::exit (0);
     }
   else if (name == "PrintGlobals")
     {
       // method below never returns.
-      PrintGlobals ();
+      PrintGlobals (std::cout);
       std::exit (0);
     }
   else if (name == "PrintGroup")
     {
       // method below never returns.
-      PrintGroup (value);
+      PrintGroup (std::cout, value);
       std::exit (0);
     }
   else if (name == "PrintAttributes")
     {
       // method below never returns.
-      PrintAttributes (value);
+      PrintAttributes (std::cout, value);
       std::exit (0);
     }
   else
@@ -378,7 +378,7 @@ CommandLine::HandleArgument (std::string name, std::string value) const
     {
       std::cerr << "Invalid command-line arguments: --"
                 << name << "=" << value << std::endl;
-      PrintHelp ();
+      PrintHelp (std::cerr);
       std::exit (1);
     }
 }

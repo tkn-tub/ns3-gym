@@ -44,6 +44,8 @@ New user-visible features
 - Radvd application have a new Helper. See the updated 
   examples/ipv6/radvd.cc for an example.
 - 11n- It is now possible to create a high throughput (HT) node that used the new 11n data rates and preambles.
+- It is now possible to request printing command line arguments to the
+  desired output stream using PrintHelp or operator <<
 
 Bugs fixed
 ----------
@@ -75,6 +77,7 @@ Bugs fixed
 - Bug 1731 - lte-phy-error-model passes unexpectedly
 - Bug 1742 - IPv6 HbH and Dst Extension Header size is not correctly calculated
 - Bug 1752 - RadvdInterface m_defaultLifeTime is set to milliseconds instead of seconds
+- Bug 1754 - Missing GIL lock in generated callback destructor
 
 Known issues
 ------------

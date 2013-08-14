@@ -113,6 +113,20 @@ us a note on ns-developers mailing list.</p>
 
 <h2>Changed behavior:</h2>
 <ul>
+  <li> Now it is possible to request printing command line arguments to the
+desired output stream using PrintHelp or operator &lt;&lt;
+<pre>
+  CommandLine cmd;
+  cmd.Parse (argc, argv);
+...
+
+  std::cerr << cmd;
+</pre>
+or
+<pre>
+  cmd.PrintHelp (std::cerr);
+</pre>
+   </li>
 </ul>
 
 <hr>

@@ -203,6 +203,22 @@ public:
    */
   std::string GetName () const;
 
+  /**
+   * \brief Print program usage to the desired output stream
+   *
+   * Handler for \c \-\-PrintHelp and \c \-\-help:  print Usage(), argument names, and help strings
+   *
+   * Alternatively, an overloaded operator << can be used:
+   * @code
+   *       CommandLine cmd;
+   *       cmd.Parse (argc, argv);
+   *     ...
+   *
+   *       std::cerr << cmd;
+   * @endcode
+   */
+  void PrintHelp (std::ostream &os) const;
+
 private:
 
   /**
@@ -279,29 +295,25 @@ private:
    * \param name the argument name
    * \param value the command line value
    */
-  void HandleArgument (std::string name, std::string value) const;
-  /**
-   * Handler for \c \-\-PrintHelp and \c \-\-help:  print Usage(), argument names, and help strings
-   */
-  void PrintHelp (void) const;
+  void HandleArgument (const std::string &name, const std::string &value) const;
   /** Handler for \c \-\-PrintGlobals:  print all global variables and values */
-  void PrintGlobals (void) const;
+  void PrintGlobals (std::ostream &os) const;
   /**
    * Handler for \c \-\-PrintAttributes:  print the attributes for a given type.
    *
    * \param type the TypeId whose Attributes should be displayed
    */
-  void PrintAttributes (std::string type) const;
+  void PrintAttributes (std::ostream &os, const std::string &type) const;
   /**
    * Handler for \c \-\-PrintGroup:  print all types belonging to a given group.
    *
    * \param group the name of the TypeId group to display
    */
-  void PrintGroup (std::string group) const;
+  void PrintGroup (std::ostream &os, const std::string &group) const;
   /** Handler for \c \-\-PrintTypeIds:  print all TypeId names. */
-  void PrintTypeIds (void) const;
+  void PrintTypeIds (std::ostream &os) const;
   /** Handler for \c \-\-PrintGroups:  print all TypeId group names */
-  void PrintGroups (void) const;
+  void PrintGroups (std::ostream &os) const;
   /**
    * Copy constructor
    *
@@ -397,6 +409,26 @@ CommandLineHelper::UserItemParse (const std::string value, T & val)
   iss.str (value);
   iss >> val;
   return !iss.bad () && !iss.fail ();
+}
+
+/**
+ * \brief Overloaded operator << to print program usage (shortcut for CommandLine::PrintHelper)
+ * \see CommandLine::PrintHelper
+ *
+ * Example usage:
+ * @code
+ *       CommandLine cmd;
+ *       cmd.Parse (argc, argv);
+ *       ...
+ *
+ *       std::cerr << cmd;
+ * @endcode
+ */
+inline std::ostream &
+operator << (std::ostream &os, const CommandLine &cmd)
+{
+  cmd.PrintHelp (os);
+  return os;
 }
 
 } // namespace ns3
