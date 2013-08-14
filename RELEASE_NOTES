@@ -75,6 +75,7 @@ Bugs fixed
 - Bug 1727 - Ping6 should use a proper source address
 - Bug 1728 - Radvd application is missing an Helper
 - Bug 1731 - lte-phy-error-model passes unexpectedly
+- Bug 1738 - strict aliasing compiler bug
 - Bug 1742 - IPv6 HbH and Dst Extension Header size is not correctly calculated
 - Bug 1752 - RadvdInterface m_defaultLifeTime is set to milliseconds instead of seconds
 - Bug 1754 - Missing GIL lock in generated callback destructor
