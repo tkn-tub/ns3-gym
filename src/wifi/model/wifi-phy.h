@@ -31,7 +31,7 @@
 #include "wifi-preamble.h"
 #include "wifi-phy-standard.h"
 #include "ns3/traced-callback.h"
-
+#include "wifi-tx-vector.h"
 
 namespace ns3 {
 
@@ -184,10 +184,10 @@ public:
    * \param packet the packet to send
    * \param mode the transmission mode to use to send this packet
    * \param preamble the type of preamble to use to send this packet.
-   * \param txPowerLevel a power level to use to send this packet. The real
+   * \param txvector the txvector that has tx parameters as txPowerLevel a power level to use to send this packet. The real
    *        transmission power is calculated as txPowerMin + txPowerLevel * (txPowerMax - txPowerMin) / nTxLevels
    */
-  virtual void SendPacket (Ptr<const Packet> packet, WifiMode mode, enum WifiPreamble preamble, uint8_t txPowerLevel) = 0;
+  virtual void SendPacket (Ptr<const Packet> packet, WifiMode mode, enum WifiPreamble preamble, WifiTxVector txvector) = 0;
 
   /**
    * \param listener the new listener
@@ -237,12 +237,36 @@ public:
 
   /**
    * \param size the number of bytes in the packet to send
-   * \param payloadMode the transmission mode to use for this packet
+   * \param txvector the transmission parameters used for this packet
    * \param preamble the type of preamble to use for this packet.
    * \return the total amount of time this PHY will stay busy for
    *          the transmission of these bytes.
    */
-  static Time CalculateTxDuration (uint32_t size, WifiMode payloadMode, enum WifiPreamble preamble);
+  static Time CalculateTxDuration (uint32_t size, WifiTxVector txvector, enum WifiPreamble preamble);
+
+/** 
+   * \param payloadMode the WifiMode use for the transmission of the payload
+   * \param preamble the type of preamble
+   * \param txvector the transmission parameters used for this packet
+
+   * \return the training symbol duration
+   */
+  static uint32_t GetPlcpHtTrainingSymbolDurationMicroSeconds (WifiMode payloadMode, WifiPreamble preamble, WifiTxVector txvector);
+/** 
+   * \param payloadMode the WifiMode use for the transmission of the payload
+   * \param preamble the type of preamble
+   * 
+   * \return the WifiMode used for the transmission of the HT-SIG in Mixed Format and greenfield format PLCP header 
+   */
+  static WifiMode GetMFPlcpHeaderMode (WifiMode payloadMode, WifiPreamble preamble);
+/** 
+   * \param payloadMode the WifiMode use for the transmission of the payload
+   * \param preamble the type of preamble
+   * 
+   * \return the duration of the GT-SIG in Mixed Format and greenfield format PLCP header 
+   */
+  static uint32_t GetPlcpHtSigHeaderDurationMicroSeconds (WifiMode payloadMode, WifiPreamble preamble);
+
 
   /** 
    * \param payloadMode the WifiMode use for the transmission of the payload
@@ -270,11 +294,11 @@ public:
 
   /** 
    * \param size the number of bytes in the packet to send
-   * \param payloadMode the WifiMode use for the transmission of the payload
+   * \param txvector the transmission parameters used for this packet
    * 
    * \return the duration of the payload in microseconds
    */
-  static uint32_t GetPayloadDurationMicroSeconds (uint32_t size, WifiMode payloadMode);
+  static double GetPayloadDurationMicroSeconds (uint32_t size, WifiTxVector txvector);
 
   /**
    * The WifiPhy::GetNModes() and WifiPhy::GetMode() methods are used
@@ -320,7 +344,60 @@ public:
    *          the requested ber for the specified transmission mode. (W/W)
    */
   virtual double CalculateSnr (WifiMode txMode, double ber) const = 0;
+   /**
+   * The WifiPhy::NBssMembershipSelectors() and WifiPhy::BssMembershipSelector() methods are used
+   * (e.g., by a WifiRemoteStationManager) to determine the set of
+   * transmission/reception modes that this WifiPhy(-derived class)
+   * can support - a set of WifiMode objects which we call the
+   * BssMemebershipSelectorSet, and which is stored as WifiPhy::m_bssMembershipSelectorSet.
+   *
+   * This was introduced with 11n
+   *
+   * \param selector index in array of supported memeberships
+   * \returns the memebership selector whose index is specified.
+   *
+   * \sa WifiPhy::NBssMembershipSelectors()
+   */
+  virtual uint32_t GetNBssMembershipSelectors (void) const=0;
 
+  virtual uint32_t GetBssMembershipSelector (uint32_t selector) const=0;
+  /**
+   * The WifiPhy::GetMembershipSelectorModes() method is used
+   * (e.g., by a WifiRemoteStationManager) to determine the set of
+   * transmission/reception modes that this WifiPhy(-derived class)
+   * can support - a set of WifiMode objects which we call the
+   * BssMemebershipSelectorSet, and which is stored as WifiPhy::m_bssMembershipSelectorSet.
+   *
+   * This was introduced with 11n
+   *
+   * \param selector index in array of supported memeberships
+   * \returns a WifiModeList that contains the WifiModes associrated with the selected index.
+   *
+   * \sa WifiPhy::GetMembershipSelectorModes()
+   */
+  virtual WifiModeList GetMembershipSelectorModes(uint32_t selector)=0;
+  /**
+   * The WifiPhy::GetNMcs() and  WifiPhy::GetMcs() methods are used
+   * (e.g., by a WifiRemoteStationManager) to determine the set of
+   * transmission/reception MCS indexes that this WifiPhy(-derived class)
+   * can support - a set of Mcs indexes which we call the
+   * DeviceMcsSet, and which is stored as WifiPhy::m_deviceMcsSet.
+   *
+   * This was introduced with 11n
+   *
+   * \param Mcs index in array of supported Mcs
+   * \returns the Mcs index whose index is specified.
+   *
+   * \sa WifiPhy::GetNMcs()
+   */
+  virtual uint8_t GetNMcs (void) const=0;
+  virtual uint8_t GetMcs (uint8_t mcs) const=0;
+
+  /* Converts from DataRate to MCS index and vice versa */
+  virtual uint32_t WifiModeToMcs (WifiMode mode)=0;
+  virtual WifiMode McsToWifiMode (uint8_t mcs)=0;
+
+  
   /**
    * \brief Set channel number.
    *
@@ -373,6 +450,39 @@ public:
   static WifiMode GetOfdmRate9MbpsBW5MHz ();
   static WifiMode GetOfdmRate12MbpsBW5MHz ();
   static WifiMode GetOfdmRate13_5MbpsBW5MHz ();
+  static WifiMode GetOfdmRate6_5MbpsBW20MHz ();
+  static WifiMode GetOfdmRate13MbpsBW20MHz ();
+  static WifiMode GetOfdmRate19_5MbpsBW20MHz ();
+  static WifiMode GetOfdmRate26MbpsBW20MHz ();
+  static WifiMode GetOfdmRate39MbpsBW20MHz ();
+  static WifiMode GetOfdmRate52MbpsBW20MHz ();
+  static WifiMode GetOfdmRate58_5MbpsBW20MHz ();
+  static WifiMode GetOfdmRate65MbpsBW20MHz ();
+  static WifiMode GetOfdmRate13_5MbpsBW40MHz ();
+  static WifiMode GetOfdmRate27MbpsBW40MHz (); 
+  static WifiMode GetOfdmRate40_5MbpsBW40MHz ();
+  static WifiMode GetOfdmRate54MbpsBW40MHz ();
+  static WifiMode GetOfdmRate81MbpsBW40MHz ();
+  static WifiMode GetOfdmRate108MbpsBW40MHz ();
+  static WifiMode GetOfdmRate121_5MbpsBW40MHz ();
+  static WifiMode GetOfdmRate135MbpsBW40MHz ();
+  //Rates for clause 20 with short guard interval
+  static WifiMode GetOfdmRate7_2MbpsBW20MHz ();
+  static WifiMode GetOfdmRate14_4MbpsBW20MHz ();
+  static WifiMode GetOfdmRate21_7MbpsBW20MHz ();
+  static WifiMode GetOfdmRate28_9MbpsBW20MHz ();
+  static WifiMode GetOfdmRate43_3MbpsBW20MHz ();
+  static WifiMode GetOfdmRate57_8MbpsBW20MHz ();
+  static WifiMode GetOfdmRate65MbpsBW20MHzShGi ();
+  static WifiMode GetOfdmRate72_2MbpsBW20MHz ();
+  static WifiMode GetOfdmRate15MbpsBW40MHz ();
+  static WifiMode GetOfdmRate30MbpsBW40MHz (); 
+  static WifiMode GetOfdmRate45MbpsBW40MHz ();
+  static WifiMode GetOfdmRate60MbpsBW40MHz ();
+  static WifiMode GetOfdmRate90MbpsBW40MHz ();
+  static WifiMode GetOfdmRate120MbpsBW40MHz ();
+  static WifiMode GetOfdmRate135MbpsBW40MHzShGi ();
+  static WifiMode GetOfdmRate150MbpsBW40MHz ();
 
 
   /**
@@ -447,7 +557,7 @@ public:
    * units used both for the radiotap and for the prism header)
    * @param isShortPreamble true if short preamble is used, false otherwise
    */
-  void NotifyMonitorSniffTx (Ptr<const Packet> packet, uint16_t channelFreqMhz, uint16_t channelNumber, uint32_t rate, bool isShortPreamble);
+  void NotifyMonitorSniffTx (Ptr<const Packet> packet, uint16_t channelFreqMhz, uint16_t channelNumber, uint32_t rate, bool isShortPreamble, uint8_t txPower);
 
  /**
   * Assign a fixed random variable stream number to the random variables
@@ -459,6 +569,66 @@ public:
   */
   virtual int64_t AssignStreams (int64_t stream) = 0;
 
+  /**
+   * \param the operating frequency on this node.
+   */
+  virtual void SetFrequency (uint32_t freq)=0;
+  virtual uint32_t GetFrequency (void) const=0;
+  /**
+   * \param the number of transmitters on this node.
+   */
+  virtual void SetNumberOfTransmitAntennas (uint32_t tx)=0;
+
+  virtual uint32_t GetNumberOfTransmitAntennas (void) const=0;
+   /**
+   * \param the number of recievers on this node.
+   */
+  virtual void SetNumberOfReceiveAntennas (uint32_t rx)=0 ;
+  /**
+   * \returns the number of recievers on this node.
+   */
+  virtual uint32_t GetNumberOfReceiveAntennas (void) const=0;
+  /**
+   * \paramif short guard interval is supported or not
+   */
+   virtual void SetGuardInterval (bool GuardInterval)=0;
+   /**
+   *  \returns if short guard interval is supported or not
+   */
+  virtual bool GetGuardInterval (void) const = 0;
+  /**
+   * \paramif LDPC is supported or not
+   */
+  virtual void SetLdpc (bool Ldpc)=0;
+  /**
+   * \returns if LDPC is supported or not
+   */
+  virtual bool GetLdpc (void) const=0;
+  /**
+   * \paramif STBC is supported or not
+   */
+  virtual void SetStbc (bool stbc)=0;
+  /**
+   *  \returns if STBC is supported or not
+   */
+  virtual bool GetStbc (void) const=0;
+   
+  /**
+   * \paramif GreenField is supported or not
+   */
+  virtual void SetGreenfield (bool greenfield)=0;
+  /**
+   *  \returns if Green field is supported or not
+   */
+  virtual bool GetGreenfield (void) const=0;
+  /**
+   * \paramif channel bonding 40 MHz is supported or not
+   */
+  virtual bool GetChannelBonding (void) const = 0;
+  /**
+   *  \returns if channel bonding is supported or not
+   */
+  virtual void SetChannelBonding (bool channelbonding) = 0 ;
 
 private:
   /**
@@ -530,7 +700,7 @@ private:
    *
    * \see class CallBackTraceSource
    */
-  TracedCallback<Ptr<const Packet>, uint16_t, uint16_t, uint32_t, bool> m_phyMonitorSniffTxTrace;
+  TracedCallback<Ptr<const Packet>, uint16_t, uint16_t, uint32_t, bool,uint8_t> m_phyMonitorSniffTxTrace;
 
 };
 

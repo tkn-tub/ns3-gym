@@ -57,7 +57,7 @@ beacons, and that accepts every attempt to associate.
 These three MAC high models share a common parent in
 ``ns3::RegularWifiMac``, which exposes, among other MAC
 configuration, an attribute ``QosSupported`` that allows
-configuration of 802.11e/WMM-style QoS support. With QoS-enabled MAC
+configuration of 802.11e/WMM-style QoS support and an attribute "HtSupported" that allows configuration og 802.11n High Throughput style support. With QoS-enabled MAC
 models it is possible to work with traffic belonging to four different
 Access Categories (ACs): **AC_VO** for voice traffic,
 **AC_VI** for video traffic, **AC_BE** for best-effort
@@ -183,6 +183,10 @@ Note that we haven't actually created any WifiPhy objects yet; we've just
 prepared the YansWifiPhyHelper by telling it which channel it is connected to.
 The phy objects are created in the next step.
 
+To enable 802.11n High Throughput style parameters the following line of code could be used
+ wifiPhyHelper.Set ("ShortGuardEnabled",BooleanValue(true));
+ wifiPhyHelper.Set ("GreenfieldEnabled",BooleanValue(true));
+
 NqosWifiMacHelper and QosWifiMacHelper
 ++++++++++++++++++++++++++++++++++++++
 
@@ -224,6 +228,25 @@ create an AP with QoS enabled, aggregation on AC_VO, and Block Ack on AC_BE:::
                                         "MaxAmsduSize", UintegerValue (3839));
   wifiMacHelper.SetBlockAckThresholdForAc (AC_BE, 10);
   wifiMacHelper.SetBlockAckInactivityTimeoutForAc (AC_BE, 5);
+
+HtWifiMacHelper
++++++++++++++++
+
+The ``ns3::HtWifiMacHelper``configures an
+object factory to create instances of a ``ns3::WifiMac``. It is used to
+supports creation of MAC instances that have 802.11n-style High throughput (Ht) and QoS support enabled.  
+
+For example the following user code configures a HT MAC that
+will be a non-AP STA in an infrastructure network where the AP has
+SSID ``ns-3-ssid``:::
+
+    HtWifiMacHelper wifiMacHelper = HtWifiMacHelper::Default ();
+    Ssid ssid = Ssid ("ns-3-ssid");
+    wifiMacHelper.SetType ("ns3::StaWifiMac",
+                          "Ssid", SsidValue (ssid),
+                          "ActiveProbing", BooleanValue (false));
+
+This object can be also used to set in the same way as ``ns3::QosWifiMacHelper``
 
 WifiHelper
 ++++++++++

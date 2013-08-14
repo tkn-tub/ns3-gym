@@ -427,7 +427,6 @@ Bug555TestCase::DoRun (void)
 }
 
 //-----------------------------------------------------------------------------
-
 class WifiTestSuite : public TestSuite
 {
 public:

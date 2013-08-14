@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ * Author: Ghada Badawy <gbadawy@gmail.com>
  */
 
 #include "yans-wifi-phy.h"
@@ -34,6 +35,7 @@
 #include "ns3/pointer.h"
 #include "ns3/net-device.h"
 #include "ns3/trace-source-accessor.h"
+#include "ns3/boolean.h"
 #include <cmath>
 
 NS_LOG_COMPONENT_DEFINE ("YansWifiPhy");
@@ -119,6 +121,47 @@ YansWifiPhy::GetTypeId (void)
                    MakeUintegerAccessor (&YansWifiPhy::SetChannelNumber,
                                          &YansWifiPhy::GetChannelNumber),
                    MakeUintegerChecker<uint16_t> ())
+    .AddAttribute ("Frequency", "The operating frequency.",
+                   UintegerValue (2407),
+                   MakeUintegerAccessor (&YansWifiPhy::GetFrequency,
+                                        &YansWifiPhy::SetFrequency),
+                   MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("Transmitters", "The number of transmitters.",
+                   UintegerValue (1),
+                   MakeUintegerAccessor (&YansWifiPhy::GetNumberOfTransmitAntennas,
+                                        &YansWifiPhy::SetNumberOfTransmitAntennas),
+                   MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("Recievers", "The number of recievers.",
+                   UintegerValue (1),
+                   MakeUintegerAccessor (&YansWifiPhy::GetNumberOfReceiveAntennas,
+                                        &YansWifiPhy::SetNumberOfReceiveAntennas),
+                   MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("ShortGuardEnabled", "Whether or not short guard interval is enabled.",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&YansWifiPhy::GetGuardInterval,
+                                        &YansWifiPhy::SetGuardInterval),
+                   MakeBooleanChecker ())
+    .AddAttribute ("LdpcEnabled", "Whether or not LDPC is enabled.",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&YansWifiPhy::GetLdpc,
+                                        &YansWifiPhy::SetLdpc),
+                   MakeBooleanChecker ())
+    .AddAttribute ("STBCEnabled", "Whether or not STBC is enabled.",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&YansWifiPhy::GetStbc,
+                                        &YansWifiPhy::SetStbc),
+                   MakeBooleanChecker ())
+    .AddAttribute ("GreenfieldEnabled", "Whether or not STBC is enabled.",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&YansWifiPhy::GetGreenfield,
+                                        &YansWifiPhy::SetGreenfield),
+                   MakeBooleanChecker ())
+    .AddAttribute ("ChannelBonding", "Whether 20MHz or 40MHz.",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&YansWifiPhy::GetChannelBonding,
+                                        &YansWifiPhy::SetChannelBonding),
+                   MakeBooleanChecker ())
+
 
   ;
   return tid;
@@ -145,6 +188,7 @@ YansWifiPhy::DoDispose (void)
   NS_LOG_FUNCTION (this);
   m_channel = 0;
   m_deviceRateSet.clear ();
+  m_deviceMcsSet.clear();
   m_device = 0;
   m_mobility = 0;
   m_state = 0;
@@ -180,6 +224,15 @@ YansWifiPhy::ConfigureStandard (enum WifiPhyStandard standard)
     case WIFI_PHY_STANDARD_80211p_SCH:
       Configure80211p_SCH ();
       break;
+    case WIFI_PHY_STANDARD_80211n_2_4GHZ:
+      m_channelStartingFrequency=2407;
+      Configure80211n ();
+      break;
+    case WIFI_PHY_STANDARD_80211n_5GHZ:
+      m_channelStartingFrequency=5e3;
+      Configure80211n ();
+      break;
+
     default:
       NS_ASSERT (false);
       break;
@@ -397,13 +450,14 @@ YansWifiPhy::SetReceiveErrorCallback (RxErrorCallback callback)
 void
 YansWifiPhy::StartReceivePacket (Ptr<Packet> packet,
                                  double rxPowerDbm,
-                                 WifiMode txMode,
+                                 WifiTxVector txVector,
                                  enum WifiPreamble preamble)
 {
-  NS_LOG_FUNCTION (this << packet << rxPowerDbm << txMode << preamble);
+  NS_LOG_FUNCTION (this << packet << rxPowerDbm << txVector.GetMode()<< preamble);
   rxPowerDbm += m_rxGainDb;
   double rxPowerW = DbmToW (rxPowerDbm);
-  Time rxDuration = CalculateTxDuration (packet->GetSize (), txMode, preamble);
+  Time rxDuration = CalculateTxDuration (packet->GetSize (), txVector, preamble);
+WifiMode txMode=txVector.GetMode();
   Time endRx = Simulator::Now () + rxDuration;
 
   Ptr<InterferenceHelper::Event> event;
@@ -411,7 +465,8 @@ YansWifiPhy::StartReceivePacket (Ptr<Packet> packet,
                               txMode,
                               preamble,
                               rxDuration,
-                              rxPowerW);
+                              rxPowerW,
+		          txVector);  // we need it to calculate duration of HT training symbols
 
   switch (m_state->GetState ())
     {
@@ -495,9 +550,9 @@ maybeCcaBusy:
 }
 
 void
-YansWifiPhy::SendPacket (Ptr<const Packet> packet, WifiMode txMode, WifiPreamble preamble, uint8_t txPower)
+YansWifiPhy::SendPacket (Ptr<const Packet> packet, WifiMode txMode, WifiPreamble preamble, WifiTxVector txVector)
 {
-  NS_LOG_FUNCTION (this << packet << txMode << preamble << (uint32_t)txPower);
+  NS_LOG_FUNCTION (this << packet << txMode << preamble << (uint32_t)txVector.GetTxPowerLevel());
   /* Transmission can happen if:
    *  - we are syncing on a packet. It is the responsability of the
    *    MAC layer to avoid doing this but the PHY does nothing to
@@ -506,18 +561,18 @@ YansWifiPhy::SendPacket (Ptr<const Packet> packet, WifiMode txMode, WifiPreamble
    */
   NS_ASSERT (!m_state->IsStateTx () && !m_state->IsStateSwitching ());
 
-  Time txDuration = CalculateTxDuration (packet->GetSize (), txMode, preamble);
+  Time txDuration = CalculateTxDuration (packet->GetSize (), txVector, preamble);
   if (m_state->IsStateRx ())
     {
       m_endRxEvent.Cancel ();
       m_interference.NotifyRxEnd ();
     }
   NotifyTxBegin (packet);
-  uint32_t dataRate500KbpsUnits = txMode.GetDataRate () / 500000;
+  uint32_t dataRate500KbpsUnits = txVector.GetMode().GetDataRate () * txVector.GetNss() / 500000;
   bool isShortPreamble = (WIFI_PREAMBLE_SHORT == preamble);
-  NotifyMonitorSniffTx (packet, (uint16_t)GetChannelFrequencyMhz (), GetChannelNumber (), dataRate500KbpsUnits, isShortPreamble);
-  m_state->SwitchToTx (txDuration, packet, txMode, preamble, txPower);
-  m_channel->Send (this, packet, GetPowerDbm (txPower) + m_txGainDb, txMode, preamble);
+  NotifyMonitorSniffTx (packet, (uint16_t)GetChannelFrequencyMhz (), GetChannelNumber (), dataRate500KbpsUnits, isShortPreamble, txVector.GetTxPowerLevel());
+  m_state->SwitchToTx (txDuration, packet, txVector.GetMode(), preamble,  txVector.GetTxPowerLevel());
+  m_channel->Send (this, packet, GetPowerDbm ( txVector.GetTxPowerLevel()) + m_txGainDb, txVector, preamble);
 }
 
 uint32_t
@@ -782,7 +837,7 @@ YansWifiPhy::EndReceive (Ptr<Packet> packet, Ptr<InterferenceHelper::Event> even
   if (m_random->GetValue () > snrPer.per)
     {
       NotifyRxEnd (packet);
-      uint32_t dataRate500KbpsUnits = event->GetPayloadMode ().GetDataRate () / 500000;
+      uint32_t dataRate500KbpsUnits = event->GetPayloadMode ().GetDataRate () * event->GetTxVector().GetNss()/ 500000;
       bool isShortPreamble = (WIFI_PREAMBLE_SHORT == event->GetPreambleType ());
       double signalDbm = RatioToDb (event->GetRxPowerW ()) + 30;
       double noiseDbm = RatioToDb (event->GetRxPowerW () / snrPer.snr) - GetRxNoiseFigure () + 30;
@@ -803,5 +858,390 @@ YansWifiPhy::AssignStreams (int64_t stream)
   NS_LOG_FUNCTION (this << stream);
   m_random->SetStream (stream);
   return 1;
+}
+
+void
+YansWifiPhy::SetFrequency (uint32_t freq)
+{
+  m_channelStartingFrequency = freq;
+}
+
+void
+YansWifiPhy::SetNumberOfTransmitAntennas (uint32_t tx)
+{
+  m_numberOfTransmitters = tx;
+}
+void
+YansWifiPhy::SetNumberOfReceiveAntennas (uint32_t rx)
+{
+  m_numberOfReceivers = rx;
+}
+
+void
+YansWifiPhy::SetLdpc (bool Ldpc)
+{
+  m_ldpc = Ldpc;
+}
+
+void
+YansWifiPhy::SetStbc (bool stbc)
+{
+  m_stbc = stbc;
+}
+
+void
+YansWifiPhy::SetGreenfield (bool greenfield)
+{
+  m_greenfield = greenfield;
+}
+bool
+YansWifiPhy::GetGuardInterval (void) const
+{
+  return m_guardInterval;
+}
+void
+YansWifiPhy::SetGuardInterval (bool GuardInterval)
+{
+  m_guardInterval = GuardInterval;
+}
+
+uint32_t
+YansWifiPhy::GetFrequency (void) const
+{
+  return m_channelStartingFrequency;
+}
+
+uint32_t
+YansWifiPhy::GetNumberOfTransmitAntennas (void) const
+{
+  return m_numberOfTransmitters;
+}
+uint32_t
+YansWifiPhy::GetNumberOfReceiveAntennas (void) const
+{
+  return m_numberOfReceivers;
+}
+
+bool
+YansWifiPhy::GetLdpc (void) const
+{
+  return m_ldpc;
+}
+bool
+YansWifiPhy::GetStbc (void) const
+{
+  return m_stbc;
+}
+
+bool
+YansWifiPhy::GetGreenfield (void) const
+{
+  return m_greenfield;
+}
+
+bool
+YansWifiPhy::GetChannelBonding(void) const
+{
+  return m_channelBonding;
+}
+
+void
+YansWifiPhy::SetChannelBonding(bool channelbonding) 
+{
+  m_channelBonding= channelbonding;
+}
+
+void
+YansWifiPhy::Configure80211n (void)
+{
+  NS_LOG_FUNCTION (this);
+  m_deviceRateSet.push_back (WifiPhy::GetDsssRate1Mbps ());
+  m_deviceRateSet.push_back (WifiPhy::GetDsssRate2Mbps ());
+  m_deviceRateSet.push_back (WifiPhy::GetDsssRate5_5Mbps ());
+  m_deviceRateSet.push_back (WifiPhy::GetErpOfdmRate6Mbps ());
+  m_deviceRateSet.push_back (WifiPhy::GetDsssRate11Mbps ());
+  m_deviceRateSet.push_back (WifiPhy::GetErpOfdmRate12Mbps ());
+  m_deviceRateSet.push_back (WifiPhy::GetErpOfdmRate24Mbps ());
+  m_bssMembershipSelectorSet.push_back(HT_PHY);
+  for (uint8_t i=0; i <8; i++)
+    {
+      m_deviceMcsSet.push_back(i);
+    }
+
+}
+uint32_t
+YansWifiPhy::GetNBssMembershipSelectors (void) const
+{
+  return  m_bssMembershipSelectorSet.size ();
+}
+uint32_t
+YansWifiPhy::GetBssMembershipSelector (uint32_t selector) const
+{
+  return  m_bssMembershipSelectorSet[selector];
+}
+WifiModeList
+YansWifiPhy::GetMembershipSelectorModes(uint32_t selector)
+{
+  uint32_t id=GetBssMembershipSelector(selector);
+  WifiModeList supportedmodes;
+  if (id == HT_PHY)
+  {
+    //mandatory MCS 0 to 7
+     supportedmodes.push_back (WifiPhy::GetOfdmRate6_5MbpsBW20MHz ());
+     supportedmodes.push_back (WifiPhy::GetOfdmRate13MbpsBW20MHz ());
+     supportedmodes.push_back (WifiPhy::GetOfdmRate19_5MbpsBW20MHz ());
+     supportedmodes.push_back (WifiPhy::GetOfdmRate26MbpsBW20MHz ());
+     supportedmodes.push_back (WifiPhy::GetOfdmRate39MbpsBW20MHz ());
+     supportedmodes.push_back (WifiPhy::GetOfdmRate52MbpsBW20MHz ());
+     supportedmodes.push_back (WifiPhy::GetOfdmRate58_5MbpsBW20MHz ());
+     supportedmodes.push_back (WifiPhy::GetOfdmRate65MbpsBW20MHz ());
+  }
+  return supportedmodes;
+}
+uint8_t
+YansWifiPhy::GetNMcs (void) const
+{
+  return  m_deviceMcsSet.size ();
+}
+uint8_t
+YansWifiPhy::GetMcs (uint8_t mcs) const
+{
+  return  m_deviceMcsSet[mcs];
+}
+uint32_t 
+YansWifiPhy::WifiModeToMcs (WifiMode mode)
+{
+    uint32_t mcs = 0;
+   if (mode.GetUniqueName() == "OfdmRate135MbpsBW40MHzShGi" || mode.GetUniqueName() == "OfdmRate65MbpsBW20MHzShGi" )
+     {
+             mcs=6;
+     }
+  else
+    {
+     switch (mode.GetDataRate())
+       {
+         case 6500000:
+         case 7200000:
+         case 13500000:
+         case 15000000:
+           mcs=0;
+           break;
+         case 13000000:
+         case 14400000:
+         case 27000000:
+         case 30000000:
+           mcs=1;
+           break;
+         case 19500000:
+         case 21700000:
+         case 40500000:
+         case 45000000:
+           mcs=2;
+           break;
+         case 26000000:
+         case 28900000:
+         case 54000000:
+         case 60000000:
+           mcs=3;
+           break;
+         case 39000000:
+         case 43300000:
+         case 81000000:
+         case 90000000:        
+           mcs=4;
+           break;
+         case 52000000:
+         case 57800000:
+         case 108000000:
+         case 120000000:
+           mcs=5;
+           break; 
+         case 58500000:
+         case 121500000:
+           mcs=6;
+           break;
+         case 65000000:
+         case 72200000:
+         case 135000000:
+         case 150000000:
+           mcs=7;
+           break;     
+       }
+    }
+  return mcs;
+}
+WifiMode
+YansWifiPhy::McsToWifiMode (uint8_t mcs)
+{
+   WifiMode mode;
+   switch (mcs)
+     { 
+       case 7:
+          if (!GetGuardInterval() && !GetChannelBonding())
+           {
+              mode =  WifiPhy::GetOfdmRate65MbpsBW20MHz ();
+            }
+         else if(GetGuardInterval() && !GetChannelBonding())
+            {
+              mode = WifiPhy::GetOfdmRate72_2MbpsBW20MHz ();
+            }
+          else if (!GetGuardInterval() && GetChannelBonding())
+            {
+              mode = WifiPhy::GetOfdmRate135MbpsBW40MHz ();
+            }
+          else
+            {
+              mode = WifiPhy::GetOfdmRate150MbpsBW40MHz ();
+            }
+          break;
+       case 6:
+          if (!GetGuardInterval() && !GetChannelBonding())
+           {
+              mode = WifiPhy::GetOfdmRate58_5MbpsBW20MHz ();
+ 
+            }
+         else if(GetGuardInterval() && !GetChannelBonding())
+            {
+              mode =  WifiPhy::GetOfdmRate65MbpsBW20MHzShGi ();
+       
+            }
+          else if (!GetGuardInterval() && GetChannelBonding())
+            {
+              mode = WifiPhy::GetOfdmRate121_5MbpsBW40MHz ();
+     
+            }
+          else
+            {
+              mode= WifiPhy::GetOfdmRate135MbpsBW40MHzShGi ();
+          
+            }
+          break;
+       case 5:
+          if (!GetGuardInterval() && !GetChannelBonding())
+           {
+              mode = WifiPhy::GetOfdmRate52MbpsBW20MHz ();
+  
+            }
+         else if(GetGuardInterval() && !GetChannelBonding())
+            {
+              mode = WifiPhy::GetOfdmRate57_8MbpsBW20MHz ();
+            }
+          else if (!GetGuardInterval() && GetChannelBonding())
+            {
+              mode = WifiPhy::GetOfdmRate108MbpsBW40MHz ();
+     
+            }
+          else
+            {
+              mode = WifiPhy::GetOfdmRate120MbpsBW40MHz ();
+       
+            }
+          break;
+       case 4:
+          if (!GetGuardInterval() && !GetChannelBonding())
+           {
+              mode = WifiPhy::GetOfdmRate39MbpsBW20MHz ();
+            }
+         else if(GetGuardInterval() && !GetChannelBonding())
+            {
+              mode = WifiPhy::GetOfdmRate43_3MbpsBW20MHz ();
+            }
+          else if (!GetGuardInterval() && GetChannelBonding())
+            {
+              mode = WifiPhy::GetOfdmRate81MbpsBW40MHz ();
+  
+            }
+          else
+            {
+              mode = WifiPhy::GetOfdmRate90MbpsBW40MHz ();
+         
+            }
+          break;
+       case 3:
+          if (!GetGuardInterval() && !GetChannelBonding())
+           {
+              mode =  WifiPhy::GetOfdmRate26MbpsBW20MHz ();
+  
+            }
+         else if(GetGuardInterval() && !GetChannelBonding())
+            {
+              mode = WifiPhy::GetOfdmRate28_9MbpsBW20MHz ();
+      
+            }
+          else if (!GetGuardInterval() && GetChannelBonding())
+            {
+              mode = WifiPhy::GetOfdmRate54MbpsBW40MHz ();
+     
+            }
+          else
+            {
+              mode = WifiPhy::GetOfdmRate60MbpsBW40MHz ();
+            }
+          break;
+       case 2:
+          if (!GetGuardInterval() && !GetChannelBonding())
+           {
+              mode = WifiPhy::GetOfdmRate19_5MbpsBW20MHz ();
+ 
+            }
+         else if(GetGuardInterval() && !GetChannelBonding())
+            {
+              mode = WifiPhy::GetOfdmRate21_7MbpsBW20MHz ();
+     
+            }
+          else if (!GetGuardInterval() && GetChannelBonding())
+            {
+              mode =  WifiPhy::GetOfdmRate40_5MbpsBW40MHz ();
+  
+            }
+          else
+            {
+              mode = WifiPhy::GetOfdmRate45MbpsBW40MHz ();
+           
+            }
+          break;
+       case 1:
+          if (!GetGuardInterval() && !GetChannelBonding())
+           {
+            mode = WifiPhy::GetOfdmRate13MbpsBW20MHz ();
+  
+            }
+         else if(GetGuardInterval() && !GetChannelBonding())
+            {
+              mode =  WifiPhy::GetOfdmRate14_4MbpsBW20MHz ();
+            }
+          else if (!GetGuardInterval() && GetChannelBonding())
+            {
+              mode = WifiPhy::GetOfdmRate27MbpsBW40MHz ();
+     
+            }
+          else
+            {
+              mode = WifiPhy::GetOfdmRate30MbpsBW40MHz ();
+            }
+          break;
+       case 0:
+       default:
+         if (!GetGuardInterval() && !GetChannelBonding())
+           {
+              mode = WifiPhy::GetOfdmRate6_5MbpsBW20MHz ();
+              
+            }
+         else if(GetGuardInterval() && !GetChannelBonding())
+            {
+              mode = WifiPhy::GetOfdmRate7_2MbpsBW20MHz ();
+            }
+          else if (!GetGuardInterval() && GetChannelBonding())
+            {
+              mode = WifiPhy::GetOfdmRate13_5MbpsBW40MHz ();
+ 
+            }
+          else
+            {
+              mode = WifiPhy::GetOfdmRate15MbpsBW40MHz ();
+            }
+         break;
+        }
+ return mode;
 }
 } // namespace ns3

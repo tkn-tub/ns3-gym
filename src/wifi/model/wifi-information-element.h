@@ -77,7 +77,7 @@ typedef uint8_t WifiInformationElementId;
 #define IE_ERP_INFORMATION                     ((WifiInformationElementId)42)
 #define IE_TS_DELAY                            ((WifiInformationElementId)43)
 #define IE_TCLAS_PROCESSING                    ((WifiInformationElementId)44)
-// 45 is reserved in 802.11-2007
+#define IE_HT_CAPABILITIES                     ((WifiInformationElementId)45)
 #define IE_QOS_CAPABILITY                      ((WifiInformationElementId)46)
 // 47 is reserved in 802.11-2007
 #define IE_RSN                                 ((WifiInformationElementId)48)

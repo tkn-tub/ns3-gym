@@ -44,6 +44,12 @@ WifiMac::GetDefaultSifs (void)
   // 802.11-a specific
   return MicroSeconds (16);
 }
+Time 
+WifiMac::GetDefaultRifs (void)
+{
+  //802.11n specific
+  return MicroSeconds (2);
+}
 Time
 WifiMac::GetDefaultEifsNoDifs (void)
 {
@@ -78,8 +84,9 @@ WifiMac::GetDefaultBasicBlockAckDelay (void)
 Time
 WifiMac::GetDefaultCompressedBlockAckDelay (void)
 {
-  // This value must be rivisited
-  return MicroSeconds (68);
+  // This value must be rivisited was 68. 
+ //CompressedBlockAckSize 32* 8*time it takes to transfer at the lowest rate (6Mb/s)+ aPhy-StartDelay(33)
+  return MicroSeconds (76);
 }
 Time
 WifiMac::GetDefaultBasicBlockAckTimeout (void)
@@ -171,6 +178,12 @@ WifiMac::GetTypeId (void)
                    MakeTimeAccessor (&WifiMac::SetPifs,
                                      &WifiMac::GetPifs),
                    MakeTimeChecker ())
+.AddAttribute ("Rifs", "The value of the RIFS constant.",
+                   TimeValue (GetDefaultRifs ()),
+                   MakeTimeAccessor (&WifiMac::SetRifs,
+                                     &WifiMac::GetRifs),
+                   MakeTimeChecker ())
+
     .AddAttribute ("MaxPropagationDelay", "The maximum propagation delay. Unused for now.",
                    TimeValue (GetDefaultMaxPropagationDelay ()),
                    MakeTimeAccessor (&WifiMac::m_maxPropagationDelay),
@@ -286,6 +299,12 @@ WifiMac::ConfigureStandard (enum WifiPhyStandard standard)
     case WIFI_PHY_STANDARD_80211p_SCH:
       Configure80211p_SCH ();
       break;
+    case WIFI_PHY_STANDARD_80211n_2_4GHZ:
+      Configure80211n_2_4Ghz ();
+      break;
+    case WIFI_PHY_STANDARD_80211n_5GHZ:
+      Configure80211n_5Ghz ();
+      break;
     default:
       NS_ASSERT (false);
       break;
@@ -359,6 +378,22 @@ void
 WifiMac::Configure80211p_SCH (void)
 {
   Configure80211_10Mhz ();
+}
+void
+WifiMac::Configure80211n_2_4Ghz (void)
+{
+  Configure80211g ();
+  SetRifs(MicroSeconds (2));
+  SetCtsTimeout (MicroSeconds (10 + 52 + 20 + GetDefaultMaxPropagationDelay ().GetMicroSeconds () * 2));
+  SetAckTimeout (MicroSeconds (10 + 52 + 20 + GetDefaultMaxPropagationDelay ().GetMicroSeconds () * 2));
+}
+void
+WifiMac::Configure80211n_5Ghz (void)
+{
+  Configure80211a ();
+  SetRifs(MicroSeconds (2));
+  SetCtsTimeout (MicroSeconds (10 + 52 + 20 + GetDefaultMaxPropagationDelay ().GetMicroSeconds () * 2));
+  SetAckTimeout (MicroSeconds (10 + 52 + 20 + GetDefaultMaxPropagationDelay ().GetMicroSeconds () * 2));
 }
 
 void

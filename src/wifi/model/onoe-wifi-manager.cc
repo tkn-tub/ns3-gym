@@ -23,6 +23,8 @@
 #include "ns3/log.h"
 #include "ns3/uinteger.h"
 
+#define Min(a,b) ((a < b) ? a : b)
+
 NS_LOG_COMPONENT_DEFINE ("OnoeWifiRemoteStation");
 
 namespace ns3 {
@@ -215,8 +217,8 @@ OnoeWifiManager::UpdateMode (OnoeWifiRemoteStation *station)
 
 }
 
-WifiMode
-OnoeWifiManager::DoGetDataMode (WifiRemoteStation *st,
+WifiTxVector
+OnoeWifiManager::DoGetDataTxVector (WifiRemoteStation *st,
                                 uint32_t size)
 {
   OnoeWifiRemoteStation *station = (OnoeWifiRemoteStation *)st;
@@ -260,15 +262,15 @@ OnoeWifiManager::DoGetDataMode (WifiRemoteStation *st,
           rateIndex = station->m_txrate;
         }
     }
-  return GetSupported (station, rateIndex);
+  return WifiTxVector (GetSupported (station, rateIndex), GetDefaultTxPowerLevel (), GetLongRetryCount (station), GetShortGuardInterval (station), Min (GetNumberOfReceiveAntennas (station),GetNumberOfTransmitAntennas()), GetNumberOfTransmitAntennas (station), GetStbc (station));
 }
-WifiMode
-OnoeWifiManager::DoGetRtsMode (WifiRemoteStation *st)
+WifiTxVector
+OnoeWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
 {
   OnoeWifiRemoteStation *station = (OnoeWifiRemoteStation *)st;
   UpdateMode (station);
   /// \todo can we implement something smarter ?
-  return GetSupported (station, 0);
+  return WifiTxVector (GetSupported (station, 0), GetDefaultTxPowerLevel (), GetShortRetryCount (station), GetShortGuardInterval (station), Min (GetNumberOfReceiveAntennas (station),GetNumberOfTransmitAntennas()), GetNumberOfTransmitAntennas (station), GetStbc (station));
 }
 
 bool

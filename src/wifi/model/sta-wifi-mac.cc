@@ -37,6 +37,7 @@
 #include "msdu-aggregator.h"
 #include "amsdu-subframe-header.h"
 #include "mgt-headers.h"
+#include "ht-capabilities.h"
 
 NS_LOG_COMPONENT_DEFINE ("StaWifiMac");
 
@@ -168,6 +169,12 @@ StaWifiMac::SendProbeRequest (void)
   MgtProbeRequestHeader probe;
   probe.SetSsid (GetSsid ());
   probe.SetSupportedRates (GetSupportedRates ());
+  if (m_htSupported)
+    {
+      probe.SetHtCapabilities (GetHtCapabilities());
+      hdr.SetNoOrder();
+    }
+
   packet->AddHeader (probe);
 
   // The standard is not clear on the correct queue for management
@@ -195,6 +202,12 @@ StaWifiMac::SendAssociationRequest (void)
   MgtAssocRequestHeader assoc;
   assoc.SetSsid (GetSsid ());
   assoc.SetSupportedRates (GetSupportedRates ());
+  if (m_htSupported)
+    {
+      assoc.SetHtCapabilities (GetHtCapabilities());
+      hdr.SetNoOrder();
+    }
+
   packet->AddHeader (assoc);
 
   // The standard is not clear on the correct queue for management
@@ -351,6 +364,10 @@ StaWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
     {
       hdr.SetTypeData ();
     }
+if (m_htSupported)
+    {
+      hdr.SetNoOrder();
+    }
 
   hdr.SetAddr1 (GetBssid ());
   hdr.SetAddr2 (m_low->GetAddress ());
@@ -444,6 +461,15 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
         {
           goodBeacon = true;
         }
+      SupportedRates rates = beacon.GetSupportedRates ();
+      for (uint32_t i = 0; i < m_phy->GetNBssMembershipSelectors (); i++)
+        {
+           uint32_t selector = m_phy->GetBssMembershipSelector (i);
+           if (!rates.IsSupportedRate (selector))
+             {
+                goodBeacon = false;
+             }
+         }
       if ((IsWaitAssocResp () || IsAssociated ()) && hdr->GetAddr3 () != GetBssid ())
         {
           goodBeacon = false;
@@ -472,6 +498,15 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
               //not a probe resp for our ssid.
               return;
             }
+          SupportedRates rates = probeResp.GetSupportedRates ();
+          for (uint32_t i = 0; i < m_phy->GetNBssMembershipSelectors (); i++)
+            {
+             uint32_t selector = m_phy->GetBssMembershipSelector (i);
+             if (!rates.IsSupportedRate (selector))
+               {
+                 return;
+               }
+            }
           SetBssid (hdr->GetAddr3 ());
           Time delay = MicroSeconds (probeResp.GetBeaconIntervalUs () * m_maxMissedBeacons);
           RestartBeaconWatchdog (delay);
@@ -499,6 +534,12 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
               SetState (ASSOCIATED);
               NS_LOG_DEBUG ("assoc completed");
               SupportedRates rates = assocResp.GetSupportedRates ();
+              if (m_htSupported)
+                {
+                  HtCapabilities htcapabilities = assocResp.GetHtCapabilities ();
+                  m_stationManager->AddStationHtCapabilities (hdr->GetAddr2 (),htcapabilities);
+                }
+
               for (uint32_t i = 0; i < m_phy->GetNModes (); i++)
                 {
                   WifiMode mode = m_phy->GetMode (i);
@@ -509,6 +550,19 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                         {
                           m_stationManager->AddBasicMode (mode);
                         }
+                    }
+                }
+              if(m_htSupported)
+                {
+                  HtCapabilities htcapabilities = assocResp.GetHtCapabilities ();
+                  for (uint32_t i = 0; i < m_phy->GetNMcs(); i++)
+                    {
+                       uint8_t mcs=m_phy->GetMcs(i);
+                       if (htcapabilities.IsSupportedMcs (mcs))
+                         {
+                           m_stationManager->AddSupportedMcs (hdr->GetAddr2 (), mcs);
+                          //here should add a control to add basic MCS when it is implemented
+                         }
                     }
                 }
               if (!m_linkUp.IsNull ())
@@ -535,6 +589,13 @@ SupportedRates
 StaWifiMac::GetSupportedRates (void) const
 {
   SupportedRates rates;
+  if(m_htSupported)
+    {
+      for (uint32_t i = 0; i < m_phy->GetNBssMembershipSelectors(); i++)
+        {
+          rates.SetBasicRate(m_phy->GetBssMembershipSelector(i));
+        }
+    }
   for (uint32_t i = 0; i < m_phy->GetNModes (); i++)
     {
       WifiMode mode = m_phy->GetMode (i);
@@ -542,7 +603,20 @@ StaWifiMac::GetSupportedRates (void) const
     }
   return rates;
 }
-
+HtCapabilities
+StaWifiMac::GetHtCapabilities (void) const
+{
+ HtCapabilities capabilities;
+ capabilities.SetHtSupported(1);
+ capabilities.SetLdpc (m_phy->GetLdpc());
+ capabilities.SetShortGuardInterval20 (m_phy->GetGuardInterval());
+ capabilities.SetGreenfield (m_phy->GetGreenfield());
+for (uint8_t i =0 ; i < m_phy->GetNMcs();i++)
+  {
+     capabilities.SetRxMcsBitmask(m_phy->GetMcs(i));
+  }
+ return capabilities;
+}
 void
 StaWifiMac::SetState (MacState value)
 {

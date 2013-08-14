@@ -43,6 +43,7 @@ New user-visible features
   examples/ipv6/fragmentation-ipv6-two-MTU.cc for an example.
 - Radvd application have a new Helper. See the updated 
   examples/ipv6/radvd.cc for an example.
+- 11n- It is now possible to create a high throughput (HT) node that used the new 11n data rates and preambles.
 
 Bugs fixed
 ----------

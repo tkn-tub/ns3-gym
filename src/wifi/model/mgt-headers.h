@@ -29,6 +29,7 @@
 #include "capability-information.h"
 #include "supported-rates.h"
 #include "ssid.h"
+#include "ht-capabilities.h"
 
 namespace ns3 {
 
@@ -45,7 +46,9 @@ public:
   void SetSsid (Ssid ssid);
   void SetSupportedRates (SupportedRates rates);
   void SetListenInterval (uint16_t interval);
-
+  void SetHtCapabilities(HtCapabilities htcapabilities);
+  
+  HtCapabilities GetHtCapabilities (void) const;
   Ssid GetSsid (void) const;
   SupportedRates GetSupportedRates (void) const;
   uint16_t GetListenInterval (void) const;
@@ -61,6 +64,7 @@ private:
   Ssid m_ssid;
   SupportedRates m_rates;
   CapabilityInformation m_capability;
+  HtCapabilities m_htCapability;
   uint16_t m_listenInterval;
 };
 
@@ -77,7 +81,9 @@ public:
 
   StatusCode GetStatusCode (void);
   SupportedRates GetSupportedRates (void);
+  HtCapabilities GetHtCapabilities (void) const;
 
+  void SetHtCapabilities(HtCapabilities htcapabilities);
   void SetSupportedRates (SupportedRates rates);
   void SetStatusCode (StatusCode code);
 
@@ -93,6 +99,7 @@ private:
   CapabilityInformation m_capability;
   StatusCode m_code;
   uint16_t m_aid;
+  HtCapabilities m_htCapability;
 };
 
 
@@ -109,7 +116,9 @@ public:
   void SetSupportedRates (SupportedRates rates);
   Ssid GetSsid (void) const;
   SupportedRates GetSupportedRates (void) const;
+ HtCapabilities GetHtCapabilities (void) const;
 
+  void SetHtCapabilities(HtCapabilities htcapabilities);
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
   virtual void Print (std::ostream &os) const;
@@ -119,6 +128,7 @@ public:
 private:
   Ssid m_ssid;
   SupportedRates m_rates;
+  HtCapabilities m_htCapability;
 };
 
 
@@ -135,7 +145,9 @@ public:
   Ssid GetSsid (void) const;
   uint64_t GetBeaconIntervalUs (void) const;
   SupportedRates GetSupportedRates (void) const;
+ HtCapabilities GetHtCapabilities (void) const;
 
+  void SetHtCapabilities(HtCapabilities htcapabilities);
   void SetSsid (Ssid ssid);
   void SetBeaconIntervalUs (uint64_t us);
   void SetSupportedRates (SupportedRates rates);
@@ -153,6 +165,7 @@ private:
   uint64_t m_beaconInterval;
   SupportedRates m_rates;
   CapabilityInformation m_capability;
+  HtCapabilities m_htCapability;
 };
 
 

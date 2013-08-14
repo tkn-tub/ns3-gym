@@ -41,6 +41,7 @@
 #include "ns3/nstime.h"
 #include "qos-utils.h"
 #include "block-ack-cache.h"
+#include "wifi-tx-vector.h"
 
 namespace ns3 {
 
@@ -391,12 +392,15 @@ public:
   void SetAckTimeout (Time ackTimeout);
   void SetBasicBlockAckTimeout (Time blockAckTimeout);
   void SetCompressedBlockAckTimeout (Time blockAckTimeout);
+  void SetCtsToSelfSupported (bool enable);
   void SetCtsTimeout (Time ctsTimeout);
   void SetSifs (Time sifs);
+  void SetRifs (Time rifs);
   void SetSlotTime (Time slotTime);
   void SetPifs (Time pifs);
   void SetBssid (Mac48Address ad);
   void SetPromisc (void);
+  bool GetCtsToSelfSupported () const;
   Mac48Address GetAddress (void) const;
   Time GetAckTimeout (void) const;
   Time GetBasicBlockAckTimeout () const;
@@ -405,6 +409,7 @@ public:
   Time GetSifs (void) const;
   Time GetSlotTime (void) const;
   Time GetPifs (void) const;
+  Time GetRifs (void) const;
   Mac48Address GetBssid (void) const;
 
   /**
@@ -515,20 +520,31 @@ private:
   uint32_t GetCtsSize (void) const;
   uint32_t GetSize (Ptr<const Packet> packet, const WifiMacHeader *hdr) const;
   Time NowUs (void) const;
-  void ForwardDown (Ptr<const Packet> packet, const WifiMacHeader *hdr,
-                    WifiMode txMode);
+void ForwardDown (Ptr<const Packet> packet, const WifiMacHeader *hdr,
+                    WifiTxVector txVector, WifiPreamble preamble);
+  WifiTxVector GetRtsTxVector (Ptr<const Packet> packet, const WifiMacHeader *hdr) const;
+  WifiTxVector GetDataTxVector (Ptr<const Packet> packet, const WifiMacHeader *hdr) const;
+  WifiTxVector GetCtsTxVector (Mac48Address to, WifiMode rtsTxMode) const;
+  WifiTxVector GetAckTxVector (Mac48Address to, WifiMode dataTxMode) const;
+  WifiTxVector GetBlockAckTxVector (Mac48Address to, WifiMode dataTxMode) const;
+
+  WifiTxVector GetCtsToSelfTxVector (Ptr<const Packet> packet, const WifiMacHeader *hdr) const;
+
+  WifiTxVector GetCtsTxVectorForRts (Mac48Address to, WifiMode rtsTxMode) const;
+  WifiTxVector GetAckTxVectorForData (Mac48Address to, WifiMode dataTxMode) const;
+
+  Time GetCtsDuration (WifiTxVector ctsTxVector) const;
+  Time GetCtsDuration (Mac48Address to, WifiTxVector rtsTxVector) const;
+  Time GetAckDuration (WifiTxVector ackTxVector) const;
+  Time GetAckDuration (Mac48Address to, WifiTxVector dataTxVector) const;
+  Time GetBlockAckDuration (Mac48Address to, WifiTxVector blockAckReqTxVector, enum BlockAckType type) const;
+
+  bool NeedCtsToSelf (void);
+  
   Time CalculateOverallTxTime (Ptr<const Packet> packet,
                                const WifiMacHeader* hdr,
                                const MacLowTransmissionParameters &params) const;
-  WifiMode GetRtsTxMode (Ptr<const Packet> packet, const WifiMacHeader *hdr) const;
-  WifiMode GetDataTxMode (Ptr<const Packet> packet, const WifiMacHeader *hdr) const;
-  WifiMode GetCtsTxModeForRts (Mac48Address to, WifiMode rtsTxMode) const;
-  WifiMode GetAckTxModeForData (Mac48Address to, WifiMode dataTxMode) const;
-
-  Time GetCtsDuration (Mac48Address to, WifiMode rtsTxMode) const;
-  Time GetAckDuration (Mac48Address to, WifiMode dataTxMode) const;
-  Time GetBlockAckDuration (Mac48Address to, WifiMode blockAckReqTxMode, enum BlockAckType type) const;
-  void NotifyNav (const WifiMacHeader &hdr, WifiMode txMode, WifiPreamble preamble);
+  void NotifyNav (Ptr<const Packet> packet,const WifiMacHeader &hdr, WifiMode txMode, WifiPreamble preamble);
   void DoNavResetNow (Time duration);
   bool DoNavStartNow (Time duration);
   bool IsNavZero (void) const;
@@ -545,6 +561,7 @@ private:
   void FastAckFailedTimeout (void);
   void BlockAckTimeout (void);
   void CtsTimeout (void);
+  void SendCtsToSelf (void);
   void SendCtsAfterRts (Mac48Address source, Time duration, WifiMode txMode, double rtsSnr);
   void SendAckAfterData (Mac48Address source, Time duration, WifiMode txMode, double rtsSnr);
   void SendDataAfterCts (Mac48Address source, Time duration, WifiMode txMode);
@@ -554,7 +571,7 @@ private:
   void SendRtsForPacket (void);
   void SendDataPacket (void);
   void SendCurrentTxPacket (void);
-  void StartDataTxTimers (void);
+  void StartDataTxTimers (WifiTxVector dataTxVector);
   virtual void DoDispose (void);
   /**
    * \param originator Address of peer participating in Block Ack mechanism.
@@ -625,6 +642,7 @@ private:
   EventId m_waitSifsEvent;
   EventId m_endTxNoAckEvent;
   EventId m_navCounterResetCtsMissed;
+  EventId m_waitRifsEvent;
 
   Ptr<Packet> m_currentPacket;
   WifiMacHeader m_currentHdr;
@@ -639,6 +657,7 @@ private:
   Time m_sifs;
   Time m_slotTime;
   Time m_pifs;
+  Time m_rifs;
 
   Time m_lastNavStart;
   Time m_lastNavDuration;
@@ -668,6 +687,7 @@ private:
 
   typedef std::map<AcIndex, MacLowBlockAckEventListener*> QueueListeners;
   QueueListeners m_edcaListeners;
+  bool m_ctsToSelfSupported;
 };
 
 } // namespace ns3

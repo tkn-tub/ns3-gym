@@ -116,6 +116,28 @@ us a note on ns-developers mailing list.</p>
 </ul>
 
 <hr>
+<h1>Changes from ns-3.17 to ns-3.18</h1>
+<h2>New API:</h2>
+<ul>
+  <li>In Wifi:
+    <ul>
+      <li>A new helper (HtWifiMacHelper) was added. The user can use this helper to set up a high throughput (HT) MAC entity</li>
+    </ul>
+  </li>
+    <ul>
+      <li>New attributes are added to help the use setup a high throughpt (HT) PHY entity. These attributes can be set using the YansWifiPhyHelper</li>
+      <li>A new standard has been added that uses the new 11n data rates.</li>
+    </ul>
+    <ul>
+      <li>New 11n preambles has been added (Mixed format and greenfiled). To be able to change Tx duration according to the preamble used a new class txVector has been added to carry the transmission parameters (mode, preamle, stbc,..).Several functions have been updated to allow the passage of TxVector instead of WifiMode in MacLow, WifiRemoteStationManager, WifiPhy, YansWifiPhy,.. </li>
+    </ul>
+    <ul>
+      <li>All functions in WifiRemoteStationManager named GetXxxMode has been changed to GetXxxTxVector </li>
+    </ul>
+    <ul>
+      <li>New Information element has been added HTCapabilities. This information element is add to the MAC frame header if the node is an HT node. This HTCapabilites information element is used to advertise the HT capabilites of the node to other nodes in the network</li>
+    </ul>
+<hr>
 <h1>Changes from ns-3.16 to ns-3.17</h1>
 
 <h2>New API:</h2>

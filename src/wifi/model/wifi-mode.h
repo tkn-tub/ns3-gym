@@ -73,7 +73,10 @@ enum WifiCodeRate
   /** Rate 2/3 */
   WIFI_CODE_RATE_2_3,
   /** Rate 1/2 */
-  WIFI_CODE_RATE_1_2
+  WIFI_CODE_RATE_1_2,
+ /** Rate 5/6 */
+ WIFI_CODE_RATE_5_6
+
 };
 
 /**
@@ -173,6 +176,9 @@ ATTRIBUTE_HELPER_HEADER (WifiMode);
  */
 typedef std::vector<WifiMode> WifiModeList;
 typedef WifiModeList::const_iterator WifiModeListIterator;
+
+typedef std::vector<uint8_t> WifiMcsList;
+typedef WifiMcsList::const_iterator WifiMcsListIterator;
 
 /**
  * \brief create WifiMode class instances and keep track of them.

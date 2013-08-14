@@ -227,6 +227,8 @@ ApWifiMac::ForwardDown (Ptr<const Packet> packet, Mac48Address from,
       hdr.SetTypeData ();
     }
 
+  if (m_htSupported)
+   hdr.SetNoOrder();
   hdr.SetAddr1 (to);
   hdr.SetAddr2 (GetAddress ());
   hdr.SetAddr3 (from);
@@ -276,9 +278,20 @@ SupportedRates
 ApWifiMac::GetSupportedRates (void) const
 {
   NS_LOG_FUNCTION (this);
+  SupportedRates rates;
+  // If it is an HT-AP then add the BSSMembershipSelectorSet 
+  // which only includes 127 for HT now. The standard says that the BSSMembershipSelectorSet
+  // must have its MSB set to 1 (must be treated as a Basic Rate)
+  // Also the standard mentioned that at leat 1 element should be included in the SupportedRates the rest can be in the ExtendedSupportedRates
+  if (m_htSupported)
+    {
+      for (uint32_t i = 0; i < m_phy->GetNBssMembershipSelectors(); i++)
+        {
+          rates.SetBasicRate(m_phy->GetBssMembershipSelector(i));
+        }
+    }
   // send the set of supported rates and make sure that we indicate
   // the Basic Rate set in this set of supported rates.
-  SupportedRates rates;
   for (uint32_t i = 0; i < m_phy->GetNModes (); i++)
     {
       WifiMode mode = m_phy->GetMode (i);
@@ -290,9 +303,23 @@ ApWifiMac::GetSupportedRates (void) const
       WifiMode mode = m_stationManager->GetBasicMode (j);
       rates.SetBasicRate (mode.GetDataRate ());
     }
+  
   return rates;
 }
-
+HtCapabilities
+ApWifiMac::GetHtCapabilities (void) const
+{
+ HtCapabilities capabilities;
+ capabilities.SetHtSupported(1);
+ capabilities.SetLdpc (m_phy->GetLdpc());
+ capabilities.SetShortGuardInterval20 (m_phy->GetGuardInterval());
+ capabilities.SetGreenfield (m_phy->GetGreenfield());
+ for (uint8_t i =0 ; i < m_phy->GetNMcs();i++)
+  {
+     capabilities.SetRxMcsBitmask(m_phy->GetMcs(i));
+  }
+ return capabilities;
+}
 void
 ApWifiMac::SendProbeResp (Mac48Address to)
 {
@@ -309,6 +336,11 @@ ApWifiMac::SendProbeResp (Mac48Address to)
   probe.SetSsid (GetSsid ());
   probe.SetSupportedRates (GetSupportedRates ());
   probe.SetBeaconIntervalUs (m_beaconInterval.GetMicroSeconds ());
+if (m_htSupported)
+    {
+      probe.SetHtCapabilities (GetHtCapabilities());
+      hdr.SetNoOrder();
+    }
   packet->AddHeader (probe);
 
   // The standard is not clear on the correct queue for management
@@ -342,6 +374,12 @@ ApWifiMac::SendAssocResp (Mac48Address to, bool success)
     }
   assoc.SetSupportedRates (GetSupportedRates ());
   assoc.SetStatusCode (code);
+
+ if (m_htSupported)
+    {
+      assoc.SetHtCapabilities (GetHtCapabilities());
+      hdr.SetNoOrder();
+    }
   packet->AddHeader (assoc);
 
   // The standard is not clear on the correct queue for management
@@ -367,7 +405,11 @@ ApWifiMac::SendOneBeacon (void)
   beacon.SetSsid (GetSsid ());
   beacon.SetSupportedRates (GetSupportedRates ());
   beacon.SetBeaconIntervalUs (m_beaconInterval.GetMicroSeconds ());
-
+  if (m_htSupported)
+    {
+      beacon.SetHtCapabilities (GetHtCapabilities());
+      hdr.SetNoOrder();
+    }
   packet->AddHeader (beacon);
 
   // The beacon has it's own special queue, so we load it in there
@@ -506,6 +548,20 @@ ApWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                       break;
                     }
                 }
+               if (m_htSupported)
+                    {//check that the STA supports all MCSs in Basic MCS Set
+                      HtCapabilities htcapabilities = assocReq.GetHtCapabilities ();
+                      for (uint32_t i = 0; i < m_stationManager->GetNBasicMcs (); i++)
+                        {
+                          uint8_t mcs = m_stationManager->GetBasicMcs (i);
+                          if (!htcapabilities.IsSupportedMcs (mcs))
+                            {
+                              problem = true;
+                              break;
+                            }
+                         }
+                      
+                     }
               if (problem)
                 {
                   // one of the Basic Rate set mode is not
@@ -525,6 +581,19 @@ ApWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                           m_stationManager->AddSupportedMode (from, mode);
                         }
                     }
+                   if (m_htSupported)
+                    {
+                      HtCapabilities htcapabilities = assocReq.GetHtCapabilities ();
+                      m_stationManager->AddStationHtCapabilities (from,htcapabilities);
+                      for (uint32_t j = 0; j < m_phy->GetNMcs (); j++)
+                       {
+                         uint8_t mcs = m_phy->GetMcs (j);
+                         if (htcapabilities.IsSupportedMcs (mcs))
+                           {
+                             m_stationManager->AddSupportedMcs (from, mcs);
+                           }
+                        }
+                     }
                   m_stationManager->RecordWaitAssocTxOk (from);
                   // send assoc response with success status.
                   SendAssocResp (hdr->GetAddr2 (), true);
