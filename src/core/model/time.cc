@@ -323,7 +323,17 @@ operator<< (std::ostream& os, const Time & time)
   int64_t v = time.ToInteger (res);
   
   std::ios_base::fmtflags ff = os.flags ();
-  os << std::showpos << v << ".0" << unit;
+  { // See bug 1737:  gcc libstc++ 4.2 bug
+    if (v == 0)
+      { 
+	os << '+';
+      }
+    else
+      {
+	os << std::showpos;
+      }
+  }
+  os << v << ".0" << unit;
   os.flags (ff);  // Restore stream flags
   return os;
 }
