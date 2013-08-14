@@ -65,7 +65,6 @@ public:
   uint8_t GetGreenfield (void) const;
   uint8_t GetShortGuardInterval20 (void) const;
   uint8_t GetSupportedChannelWidth (void) const; //2040 supported or not
-  uint8_t ConvertToUint8 () const;
   uint8_t* GetRxMcsBitmask();
   
   WifiInformationElementId ElementId () const;
