@@ -49,7 +49,7 @@ New user-visible features
 
 Bugs fixed
 ----------
-- Bug 760 - IP address removal can be painful
+- Bug  760 - IP address removal can be painful
 - Bug 1296 - Enhancement in Ipv[4,6]RoutingHelper
 - Bug 1390 - ICMPv6 Redirect are handled correctly only for /64 networks
 - Bug 1643 - NdiscCache creation and existence checks
@@ -60,6 +60,7 @@ Bugs fixed
 - Bug 1683 - IPv6 autoconfigured don't use *infinite* lifetimes
 - Bug 1669 - ns-3 should support binding two and three (possibly more) arguments
 - Bug 1675 - Throughput computation error in Wireless examples
+- Bug 1687 - wscript features report doesn't respect NOCOLOR
 - Bug 1688 - Routers should advertise themselves from the link-local address
 - Bug 1689 - IPv6 shouldn't add a default gateway without checking the Router lifetime
 - Bug 1697 - ICMPv6 Redirect trigger contains multiple bugs
