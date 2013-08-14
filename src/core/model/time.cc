@@ -28,6 +28,7 @@
 #include "config.h"
 #include "log.h"
 #include <cmath>
+#include <iomanip>  // showpos
 #include <sstream>
 
 NS_LOG_COMPONENT_DEFINE ("Time");
@@ -320,7 +321,10 @@ operator<< (std::ostream& os, const Time & time)
       break;
     }
   int64_t v = time.ToInteger (res);
-  os << v << unit;
+  
+  std::ios_base::fmtflags ff = os.flags ();
+  os << std::showpos << v << ".0" << unit;
+  os.flags (ff);  // Restore stream flags
   return os;
 }
 std::istream& operator>> (std::istream& is, Time & time)
