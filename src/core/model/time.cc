@@ -65,7 +65,7 @@ bool Time::StaticInit ()
   return firstTime;
 }
 
-
+  
 Time::Time (const std::string& s)
 {
   NS_LOG_FUNCTION (this << &s);
@@ -103,19 +103,19 @@ Time::Time (const std::string& s)
         }
       else
         {
-      NS_ABORT_MSG ("Can't Parse Time " << s);
-    }
+          NS_ABORT_MSG ("Can't Parse Time " << s);
+        }
     }
   else
     {
-  // they didn't provide units, assume seconds
-  std::istringstream iss;
-  iss.str (s);
-  double v;
-  iss >> v;
-  *this = Time::FromDouble (v, Time::S);
-}
-
+      // they didn't provide units, assume seconds
+      std::istringstream iss;
+      iss.str (s);
+      double v;
+      iss >> v;
+      *this = Time::FromDouble (v, Time::S);
+    }
+  
   if (g_markingTimes)
     {
       Mark (this);

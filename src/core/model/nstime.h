@@ -478,11 +478,11 @@ private:
    */
   struct Information
   {
-    bool toMul;
-    bool fromMul;
-    int64_t factor;
-    int64x64_t timeTo;
-    int64x64_t timeFrom;
+    bool toMul;                     //!< Multiply when converting To, otherwise divide  
+    bool fromMul;                   //!< Multiple when converting From, otherwise divide
+    int64_t factor;                 //!< Ratio of this unit / current unit		  
+    int64x64_t timeTo;              //!< Multiplier to convert to this unit		  
+    int64x64_t timeFrom;            //!< Multiplier to convert from this unit		  
   };
   /**
    * Current time unit, and conversion info.
