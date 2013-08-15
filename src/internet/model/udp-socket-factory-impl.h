@@ -32,7 +32,7 @@ class UdpL4Protocol;
  * \defgroup udp Udp
  *
  * This  is  an  implementation of the User Datagram Protocol described in
- * RFC 768.  It implements a connectionless,  unreliable  datagram  packet
+ * \RFC{768}.  It implements a connectionless,  unreliable  datagram  packet
  * service.   Packets  may  be reordered or duplicated before they arrive.
  * UDP generates and checks checksums to catch transmission errors.
  *

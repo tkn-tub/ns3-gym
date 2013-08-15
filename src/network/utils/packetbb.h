@@ -359,7 +359,7 @@ private:
  * A PacketBB packet is made up of zero or more packet TLVs (PbbTlv), and zero
  * or more messages (PbbMessage).
  *
- * See: http://tools.ietf.org/html/rfc5444 for details.
+ * See: \RFC{5444} for details.
  */
 class PbbPacket : public SimpleRefCount<PbbPacket,Header>
 {

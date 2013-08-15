@@ -246,14 +246,14 @@ private:
  * 
  * Roughly equivalent to a global incarnation of the OSPF link state header
  * combined with a list of Link Records.  Since it's global, there's
- * no need for age or sequence number.  See RFC 2328, Appendix A.
+ * no need for age or sequence number.  See \RFC{2328}, Appendix A.
  */
 class GlobalRoutingLSA
 {
 public:
 /**
  * @enum LSType
- * @brief corresponds to LS type field of RFC 2328 OSPF LSA header
+ * @brief corresponds to LS type field of \RFC{2328} OSPF LSA header
  */
   enum LSType {
     Unknown = 0,        /**< Uninitialized Type */

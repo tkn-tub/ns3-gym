@@ -61,7 +61,7 @@ public:
    */
   Time GetLastDelay (void) const;
   /**
-   * The jitter is calculated using the RFC 1889 (RTP) jitter
+   * The jitter is calculated using the \RFC{1889} (RTP) jitter
    * definition.
    *
    * \returns the updated jitter.

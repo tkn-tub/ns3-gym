@@ -37,7 +37,7 @@ namespace ns3 {
  * http://inst.eecs.berkeley.edu/~ee122/fa05/projects/Project2/proj2_spec_files/sacks.pdf
  * In summary, we have slow start, congestion avoidance, and fast retransmit.
  * The implementation of these algorithms are based on W. R. Stevens's book and
- * also RFC2001.
+ * also \RFC{2001}.
  */
 class TcpTahoe : public TcpSocketBase
 {

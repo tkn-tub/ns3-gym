@@ -31,7 +31,7 @@ namespace ns3 {
  *
  * \brief An implementation of a stream socket using TCP.
  *
- * This class contains the Reno implementation of TCP, according to RFC2581,
+ * This class contains the Reno implementation of TCP, according to \RFC{2581},
  * except sec.4.1 "re-starting idle connections", which we do not detect for
  * idleness and thus no slow start upon resumption.
  */

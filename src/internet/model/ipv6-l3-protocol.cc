@@ -44,7 +44,7 @@
 #include "icmpv6-l4-protocol.h"
 #include "ndisc-cache.h"
 
-// Minimum IPv6 MTU, as defined by RFC 2460
+/// Minimum IPv6 MTU, as defined by \RFC{2460}
 #define IPV6_MIN_MTU 1280
 
 namespace ns3 {

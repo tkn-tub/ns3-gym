@@ -74,7 +74,7 @@ public:
     /// relatively to the last packet of the stream,
     /// i.e. \f$Jitter\left\{P_N\right\} = \left|Delay\left\{P_N\right\} - Delay\left\{P_{N-1}\right\}\right|\f$.
     /// This definition is in accordance with the Type-P-One-way-ipdv
-    /// as defined in IETF RFC 3393.
+    /// as defined in IETF \RFC{3393}.
     Time     jitterSum; // jitterCount == rxPackets - 1
 
     Time     lastDelay;

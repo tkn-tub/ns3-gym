@@ -31,7 +31,7 @@ namespace ns3 {
  *
  * \brief An implementation of a stream socket using TCP.
  *
- * This class contains an RFC793 implementation of TCP, as well as a sockets
+ * This class contains an \RFC{793} implementation of TCP, as well as a sockets
  * interface for talking to TCP.  This serves as a base for other TCP functions
  * where the sliding window mechanism is handled here.  This class provides
  * connection orientation and sliding window flow control.

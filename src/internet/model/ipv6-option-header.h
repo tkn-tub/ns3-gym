@@ -40,7 +40,7 @@ public:
    * \struct Alignment
    * \brief represents the alignment requirements of an option header
    *
-   * Represented as factor*n+offset (eg. 8n+2) See RFC 2460.
+   * Represented as factor*n+offset (eg. 8n+2) See \RFC{2460}.
    * No alignment is represented as 1n+0.
    */
   struct Alignment

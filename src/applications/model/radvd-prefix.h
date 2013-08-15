@@ -165,7 +165,7 @@ private:
   bool m_onLinkFlag;
 
   /**
-   * \brief Autonomous flag, it is used for autonomous address configuration (RFC 2462).
+   * \brief Autonomous flag, it is used for autonomous address configuration (\RFC{2462}).
    */
   bool m_autonomousFlag;
 

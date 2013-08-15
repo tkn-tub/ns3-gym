@@ -57,9 +57,9 @@ public:
    * \enum DscpType
    * \brief DiffServ Code Points 
    * Code Points defined in
-   * Assured Forwarding (AF) RFC 2597
-   * Expedited Forwarding (EF) RFC 2598
-   * Default and Class Selector (CS) RFC 2474
+   * Assured Forwarding (AF) \RFC{2597}
+   * Expedited Forwarding (EF) \RFC{2598}
+   * Default and Class Selector (CS) \RFC{2474}
    */
   enum DscpType
     {
@@ -100,7 +100,7 @@ public:
 
   /**
    * \enum EcnType
-   * \brief ECN Type defined in RFC 3168
+   * \brief ECN Type defined in \RFC{3168}
    */
   enum EcnType
     {

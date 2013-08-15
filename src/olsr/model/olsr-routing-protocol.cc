@@ -356,7 +356,7 @@ void RoutingProtocol::SetInterfaceExclusions (std::set<uint32_t> exceptions)
 }
 
 //
-// \brief Processes an incoming %OLSR packet following RFC 3626 specification.
+// \brief Processes an incoming %OLSR packet following \RFC{3626} specification.
 void
 RoutingProtocol::RecvOlsr (Ptr<Socket> socket)
 {
@@ -506,7 +506,7 @@ RoutingProtocol::RecvOlsr (Ptr<Socket> socket)
 }
 
 ///
-/// \brief This auxiliary function (defined in RFC 3626) is used for calculating the MPR Set.
+/// \brief This auxiliary function (defined in \RFC{3626}) is used for calculating the MPR Set.
 ///
 /// \param tuple the neighbor tuple which has the main address of the node we are going to calculate its degree to.
 /// \return the degree of the node.
@@ -562,7 +562,7 @@ CoverTwoHopNeighbors (Ipv4Address neighborMainAddr, TwoHopNeighborSet & N2)
 } // anonymous namespace
 
 ///
-/// \brief Computates MPR set of a node following RFC 3626 hints.
+/// \brief Computates MPR set of a node following \RFC{3626} hints.
 ///
 void
 RoutingProtocol::MprComputation ()
@@ -870,7 +870,7 @@ RoutingProtocol::GetMainAddress (Ipv4Address iface_addr) const
 }
 
 ///
-/// \brief Creates the routing table of the node following RFC 3626 hints.
+/// \brief Creates the routing table of the node following \RFC{3626} hints.
 ///
 void
 RoutingProtocol::RoutingTableComputation ()
@@ -1188,7 +1188,7 @@ RoutingProtocol::RoutingTableComputation ()
 
 
 ///
-/// \brief Processes a HELLO message following RFC 3626 specification.
+/// \brief Processes a HELLO message following \RFC{3626} specification.
 ///
 /// Link sensing and population of the Neighbor Set, 2-hop Neighbor Set and MPR
 /// Selector Set are performed.
@@ -1252,7 +1252,7 @@ RoutingProtocol::ProcessHello (const olsr::MessageHeader &msg,
 }
 
 ///
-/// \brief Processes a TC message following RFC 3626 specification.
+/// \brief Processes a TC message following \RFC{3626} specification.
 ///
 /// The Topology Set is updated (if needed) with the information of
 /// the received TC message.
@@ -1347,7 +1347,7 @@ RoutingProtocol::ProcessTc (const olsr::MessageHeader &msg,
 }
 
 ///
-/// \brief Processes a MID message following RFC 3626 specification.
+/// \brief Processes a MID message following \RFC{3626} specification.
 ///
 /// The Interface Association Set is updated (if needed) with the information
 /// of the received MID message.
@@ -1426,7 +1426,7 @@ RoutingProtocol::ProcessMid (const olsr::MessageHeader &msg,
 }
 
 ///
-/// \brief Processes a HNA message following RFC 3626 specification.
+/// \brief Processes a HNA message following \RFC{3626} specification.
 ///
 /// The Host Network Association Set is updated (if needed) with the information
 /// of the received HNA message.
@@ -1494,7 +1494,7 @@ RoutingProtocol::ProcessHna (const olsr::MessageHeader &msg,
 ///
 /// \brief OLSR's default forwarding algorithm.
 ///
-/// See RFC 3626 for details.
+/// See \RFC{3626} for details.
 ///
 /// \param p the %OLSR packet which has been received.
 /// \param msg the %OLSR message which must be forwarded.
@@ -1982,7 +1982,7 @@ RoutingProtocol::UsesNonOlsrOutgoingInterface (const Ipv4RoutingTableEntry &rout
 
 ///
 /// \brief Updates Link Set according to a new received HELLO message
-/// (following RFC 3626 specification). Neighbor Set is also updated if needed.
+/// (following \RFC{3626} specification). Neighbor Set is also updated if needed.
 void
 RoutingProtocol::LinkSensing (const olsr::MessageHeader &msg,
                               const olsr::MessageHeader::Hello &hello,
@@ -2119,7 +2119,7 @@ RoutingProtocol::LinkSensing (const olsr::MessageHeader &msg,
 
 ///
 /// \brief Updates the Neighbor Set according to the information contained in
-/// a new received HELLO message (following RFC 3626).
+/// a new received HELLO message (following \RFC{3626}).
 void
 RoutingProtocol::PopulateNeighborSet (const olsr::MessageHeader &msg,
                                       const olsr::MessageHeader::Hello &hello)
@@ -2134,7 +2134,7 @@ RoutingProtocol::PopulateNeighborSet (const olsr::MessageHeader &msg,
 
 ///
 /// \brief Updates the 2-hop Neighbor Set according to the information contained
-/// in a new received HELLO message (following RFC 3626).
+/// in a new received HELLO message (following \RFC{3626}).
 void
 RoutingProtocol::PopulateTwoHopNeighborSet (const olsr::MessageHeader &msg,
                                             const olsr::MessageHeader::Hello &hello)
@@ -2246,7 +2246,7 @@ RoutingProtocol::PopulateTwoHopNeighborSet (const olsr::MessageHeader &msg,
 
 ///
 /// \brief Updates the MPR Selector Set according to the information contained in
-/// a new received HELLO message (following RFC 3626).
+/// a new received HELLO message (following \RFC{3626}).
 void
 RoutingProtocol::PopulateMprSelectorSet (const olsr::MessageHeader &msg,
                                          const olsr::MessageHeader::Hello &hello)

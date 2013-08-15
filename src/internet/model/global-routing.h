@@ -73,7 +73,7 @@
  * concerning the links to which it is attached.
  *
  * The format of the data exported conforms to the OSPFv2 standard
- * (http://www.ietf.org/rfc/rfc2328.txt).  In particular, the
+ * \RFC{2328}.  In particular, the
  * information is exported in the form of ns3::GlobalLSA objects that
  * semantically match the Link State Advertisements of OSPF.
  *
