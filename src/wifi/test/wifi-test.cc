@@ -178,6 +178,10 @@ public:
 };
 
 //-----------------------------------------------------------------------------
+/**
+ * \internal
+ * See \bugid{991}
+ */
 class InterferenceHelperSequenceTest : public TestCase
 {
 public:
@@ -312,6 +316,9 @@ InterferenceHelperSequenceTest::DoRun (void)
  * backoff again. As a result, the _actual_ backoff experience by frame 2 is less likely to be 0
  * since that would require two successions of 0 backoff (one that generates the virtual collision and
  * one after the virtual collision).
+ *
+ * \internal
+ * See \bugid{555}
  */
 
 class Bug555TestCase : public TestCase

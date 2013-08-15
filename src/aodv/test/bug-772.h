@@ -31,7 +31,7 @@ namespace aodv {
 /**
  * \ingroup aodv
  * 
- * \brief AODV deferred route lookup test case (see bug 772)
+ * \brief AODV deferred route lookup test case (see \bugid{772})
  * 
  * \todo describe expected packet trace 
  */

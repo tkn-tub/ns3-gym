@@ -27,6 +27,7 @@ namespace ns3
 {
 namespace olsr
 {
+  /** See \bugid{780} */
 class Bug780Test : public TestCase
 {
 public:
