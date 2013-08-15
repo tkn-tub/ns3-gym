@@ -174,6 +174,7 @@
 #include "ns3/ipv6-extension.h"
 #include "ns3/ipv6-extension-demux.h"
 #include "ns3/ipv6-extension-header.h"
+#include "ns3/icmpv6-l4-protocol.h"
 #include "ns3/global-router-interface.h"
 #include <limits>
 #include <map>
@@ -341,6 +342,24 @@ InternetStackHelper::AssignStreams (NodeContainer c, int64_t stream)
           Ptr<Ipv6Extension> fe = demux->GetExtension (Ipv6ExtensionFragment::EXT_NUMBER);
           NS_ASSERT (fe);  // should always exist in the demux
           currentStream += fe->AssignStreams (currentStream);
+        }
+      Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
+      if (ipv4 != 0)
+        {
+          Ptr<ArpL3Protocol> arpL3Protocol = ipv4->GetObject<ArpL3Protocol> ();
+          if (arpL3Protocol != 0)
+            {
+              currentStream += arpL3Protocol->AssignStreams (currentStream);
+            }
+        }
+      Ptr<Ipv6> ipv6 = node->GetObject<Ipv6> ();
+      if (ipv6 != 0)
+        {
+          Ptr<Icmpv6L4Protocol> icmpv6L4Protocol = ipv6->GetObject<Icmpv6L4Protocol> ();
+          if (icmpv6L4Protocol != 0)
+            {
+              currentStream += icmpv6L4Protocol->AssignStreams (currentStream);
+            }
         }
     }
   return (currentStream - stream);

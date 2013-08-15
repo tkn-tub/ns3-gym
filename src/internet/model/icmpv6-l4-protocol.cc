@@ -28,6 +28,8 @@
 #include "ns3/boolean.h"
 #include "ns3/ipv6-routing-protocol.h"
 #include "ns3/ipv6-route.h"
+#include "ns3/pointer.h"
+#include "ns3/string.h"
 
 #include "ipv6-raw-socket-factory-impl.h"
 #include "ipv6-l3-protocol.h"
@@ -72,6 +74,11 @@ TypeId Icmpv6L4Protocol::GetTypeId ()
                    BooleanValue (true),
                    MakeBooleanAccessor (&Icmpv6L4Protocol::m_alwaysDad),
                    MakeBooleanChecker ())
+    .AddAttribute ("SolicitationJitter", "The jitter in ms a node is allowed to wait before sending any solicitation . Some jitter aims to prevent collisions. By default, the model will wait for a duration in ms defined by a uniform random-variable between 0 and SolicitationJitter",
+                   StringValue ("ns3::UniformRandomVariable[Min=0.0|Max=10.0]"),
+                   MakePointerAccessor (&Icmpv6L4Protocol::m_solicitationJitter),
+                   MakePointerChecker<RandomVariableStream> ())
+
   ;
   return tid;
 }
@@ -101,6 +108,13 @@ void Icmpv6L4Protocol::DoDispose ()
 
   m_node = 0;
   IpL4Protocol::DoDispose ();
+}
+
+int64_t Icmpv6L4Protocol::AssignStreams (int64_t stream)
+{
+  NS_LOG_FUNCTION (this << stream);
+  m_solicitationJitter->SetStream (stream);
+  return 1;
 }
 
 void Icmpv6L4Protocol::NotifyNewAggregate ()
@@ -174,7 +188,7 @@ void Icmpv6L4Protocol::DoDAD (Ipv6Address target, Ptr<Ipv6Interface> interface)
 
   /* update last packet UID */
   interface->SetNsDadUid (target, p->GetUid ());
-  interface->Send (p, Ipv6Address::MakeSolicitedAddress (target));
+  Simulator::Schedule (Time (MilliSeconds (m_solicitationJitter->GetValue ())), &Ipv6Interface::Send, interface, p, Ipv6Address::MakeSolicitedAddress (target));
 }
 
 enum IpL4Protocol::RxStatus Icmpv6L4Protocol::Receive (Ptr<Packet> packet, Ipv4Header const &header,  Ptr<Ipv4Interface> interface)
@@ -870,6 +884,12 @@ void Icmpv6L4Protocol::SendMessage (Ptr<Packet> packet, Ipv6Address src, Ipv6Add
   m_downTarget (packet, src, dst, PROT_NUMBER, 0);
 }
 
+void Icmpv6L4Protocol::DelayedSendMessage (Ptr<Packet> packet, Ipv6Address src, Ipv6Address dst, uint8_t ttl)
+{
+  NS_LOG_FUNCTION (this << packet << src << dst << (uint32_t)ttl);
+  SendMessage (packet, src, dst, ttl);
+}
+
 void Icmpv6L4Protocol::SendMessage (Ptr<Packet> packet, Ipv6Address dst, Icmpv6Header& icmpv6Hdr, uint8_t ttl)
 {
   NS_LOG_FUNCTION (this << packet << dst << icmpv6Hdr << (uint32_t)ttl);
@@ -964,7 +984,15 @@ void Icmpv6L4Protocol::SendNS (Ipv6Address src, Ipv6Address dst, Ipv6Address tar
   p->AddHeader (llOption);
   ns.CalculatePseudoHeaderChecksum (src, dst, p->GetSize () + ns.GetSerializedSize (), PROT_NUMBER);
   p->AddHeader (ns);
-  SendMessage (p, src, dst, 255);
+  if (!dst.IsMulticast ())
+    {
+      SendMessage (p, src, dst, 255);
+    }
+  else
+    {
+      NS_LOG_LOGIC ("Destination is Multicast, using DelayedSendMessage");
+      Simulator::Schedule (Time (MilliSeconds (m_solicitationJitter->GetValue ())), &Icmpv6L4Protocol::DelayedSendMessage, this, p, src, dst, 255);
+    }
 }
 
 void Icmpv6L4Protocol::SendRS (Ipv6Address src, Ipv6Address dst,  Address hardwareAddress)
@@ -984,7 +1012,15 @@ void Icmpv6L4Protocol::SendRS (Ipv6Address src, Ipv6Address dst,  Address hardwa
 
   rs.CalculatePseudoHeaderChecksum (src, dst, p->GetSize () + rs.GetSerializedSize (), PROT_NUMBER);
   p->AddHeader (rs);
-  SendMessage (p, src, dst, 255);
+  if (!dst.IsMulticast ())
+    {
+      SendMessage (p, src, dst, 255);
+    }
+  else
+    {
+      NS_LOG_LOGIC ("Destination is Multicast, using DelayedSendMessage");
+      Simulator::Schedule (Time (MilliSeconds (m_solicitationJitter->GetValue ())), &Icmpv6L4Protocol::DelayedSendMessage, this, p, src, dst, 255);
+    }
 }
 
 void Icmpv6L4Protocol::SendErrorDestinationUnreachable (Ptr<Packet> malformedPacket, Ipv6Address dst, uint8_t code)

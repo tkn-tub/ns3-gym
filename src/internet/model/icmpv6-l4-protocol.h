@@ -26,6 +26,8 @@
 #include <list>
 
 #include "ns3/ipv6-address.h"
+#include "ns3/random-variable-stream.h"
+
 #include "icmpv6-header.h"
 #include "ip-l4-protocol.h"
 
@@ -188,6 +190,15 @@ public:
    * \param ttl next hop limit
    */
   void SendMessage (Ptr<Packet> packet, Ipv6Address src, Ipv6Address dst, uint8_t ttl);
+
+  /**
+   * \brief Helper function used during delayed solicitation. Calls SendMessage internally
+   * \param packet the packet to send which contains ICMPv6 header
+   * \param src source address
+   * \param dst destination address
+   * \param ttl next hop limit
+   */
+  void DelayedSendMessage (Ptr<Packet> packet, Ipv6Address src, Ipv6Address dst, uint8_t ttl);
 
   /**
    * \brief Send a packet via ICMPv6.
@@ -396,6 +407,16 @@ public:
    */
   bool IsAlwaysDad () const;
 
+  /**
+   * Assign a fixed random variable stream number to the random variables
+   * used by this model.  Return the number of streams (possibly zero) that
+   * have been assigned.
+   *
+   * \param stream first stream index to use
+   * \return the number of stream indices assigned by this model
+   */
+  int64_t AssignStreams (int64_t stream);
+
 protected:
   /**
    * \brief Dispose this object.
@@ -419,6 +440,11 @@ private:
    * \brief Always do DAD ?
    */
   bool m_alwaysDad;
+
+  /**
+   * \brief Random jitter before sending solicitations
+   */
+  Ptr<RandomVariableStream> m_solicitationJitter;
 
   /**
    * \brief Notify an ICMPv6 reception to upper layers (if requested).
