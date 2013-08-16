@@ -26,6 +26,7 @@
 #include "string.h"
 #include "object.h"
 #include "config.h"
+#include "system-mutex.h"
 #include "log.h"
 #include <cmath>
 #include <iomanip>  // showpos
@@ -39,18 +40,37 @@ namespace ns3 {
 // static
 Time::MarkedTimes * Time::g_markingTimes = 0;
 
+/**
+ * Get mutex for critical sections around modification of Time::g_markingTimes
+ *
+ * \relates Time
+ */
+SystemMutex &
+GetMarkingMutex ()
+{
+  static SystemMutex * g_markingMutex = new SystemMutex;
+  return *g_markingMutex;
+}
+
+
 // Function called to force static initialization
 // static
 bool Time::StaticInit ()
 {
   static bool firstTime = true;
 
+  CriticalSection critical (GetMarkingMutex ());
+
   if (firstTime)
     {
       if (! g_markingTimes)
-	{
-	  g_markingTimes = new Time::MarkedTimes;
-	}
+        {
+          g_markingTimes = new Time::MarkedTimes;
+        }
+      else
+        {
+          NS_LOG_ERROR ("firstTime but g_markingTimes != 0");
+        }
 
       // Schedule the cleanup.
       // We'd really like:
@@ -149,7 +169,9 @@ Time::SetResolution (enum Unit unit, struct Resolution *resolution,
 {
   NS_LOG_FUNCTION (resolution);
   if (convert)
-    { // We have to convert old values
+    {
+      // We have to convert existing Times with the old
+      // conversion values, so do it first
       ConvertTimes (unit);
     }
 
@@ -191,6 +213,23 @@ Time::SetResolution (enum Unit unit, struct Resolution *resolution,
 void
 Time::ClearMarkedTimes ()
 {
+  /**
+   * \internal
+   *
+   * We're called by Simulator::Run, which knows nothing about the mutex,
+   * so we need a critical section here.
+   *
+   * It would seem natural to use this function at the end of
+   * ConvertTimes, but that function already has the mutex.
+   * Our SystemMutex throws a fatal error if we try to lock it more than
+   * once in the same thread (at least in the unix implementation),
+   * so calling this function from ConvertTimes is a bad idea.
+   *
+   * Instead, we copy this body into ConvertTimes.
+   */
+
+  CriticalSection critical (GetMarkingMutex ());
+
   NS_LOG_FUNCTION_NOARGS ();
   if (g_markingTimes)
     {
@@ -205,9 +244,13 @@ Time::ClearMarkedTimes ()
 void
 Time::Mark (Time * const time)
 {
+  CriticalSection critical (GetMarkingMutex ());
+
   NS_LOG_FUNCTION (time);
   NS_ASSERT (time != 0);
 
+  // Repeat the g_markingTimes test here inside the CriticalSection,
+  // since earlier test was outside and might be stale.
   if (g_markingTimes)
     {
       std::pair< MarkedTimes::iterator, bool> ret;
@@ -227,26 +270,28 @@ Time::Mark (Time * const time)
 void
 Time::Clear (Time * const time)
 {
+  CriticalSection critical (GetMarkingMutex ());
+
   NS_LOG_FUNCTION (time);
   NS_ASSERT (time != 0);
 
   if (g_markingTimes)
     {
       NS_ASSERT_MSG (g_markingTimes->count (time) == 1,
-		     "Time object " << time <<
-		     " registered " << g_markingTimes->count (time) <<
-		     " times (should be 1)." );
+                     "Time object " << time <<
+                     " registered " << g_markingTimes->count (time) <<
+                     " times (should be 1)." );
 
       MarkedTimes::size_type num = g_markingTimes->erase (time);
       if (num != 1)
-	{
-	  NS_LOG_WARN ("unexpected result erasing " << time << "!");
-	  NS_LOG_WARN ("got " << num << ", expected 1");
-	}
+        {
+          NS_LOG_WARN ("unexpected result erasing " << time << "!");
+          NS_LOG_WARN ("got " << num << ", expected 1");
+        }
       else
-	{
-	  NS_LOG_LOGIC ("\t[" << g_markingTimes->size () << "] removing  " << time);
-	}
+        {
+          NS_LOG_LOGIC ("\t[" << g_markingTimes->size () << "] removing  " << time);
+        }
     }
 }  // Time::Clear ()
 
@@ -255,15 +300,17 @@ Time::Clear (Time * const time)
 void
 Time::ConvertTimes (const enum Unit unit)
 {
+  CriticalSection critical (GetMarkingMutex ());
+
   NS_LOG_FUNCTION_NOARGS();
 
   NS_ASSERT_MSG (g_markingTimes != 0,
-		 "No MarkedTimes registry. "
-		 "Time::SetResolution () called more than once?");
+                 "No MarkedTimes registry. "
+                 "Time::SetResolution () called more than once?");
 
   for ( MarkedTimes::iterator it = g_markingTimes->begin();
-	it != g_markingTimes->end();
-	it++ )
+        it != g_markingTimes->end();
+        it++ )
     {
       Time * const tp = *it;
       if ( ! (    (tp->m_data == std::numeric_limits<int64_t>::min ())
@@ -277,7 +324,12 @@ Time::ConvertTimes (const enum Unit unit)
 
   NS_LOG_LOGIC ("logged " << g_markingTimes->size () << " Time objects.");
 
-  ClearMarkedTimes ();
+  // Body of ClearMarkedTimes
+  // Assert above already guarantees g_markingTimes != 0
+  NS_LOG_LOGIC ("clearing MarkedTimes");
+  delete g_markingTimes;
+  g_markingTimes = 0;
+
 }  // Time::ConvertTimes ()
 
 
@@ -321,16 +373,16 @@ operator<< (std::ostream& os, const Time & time)
       break;
     }
   int64_t v = time.ToInteger (res);
-  
+
   std::ios_base::fmtflags ff = os.flags ();
   { // See bug 1737:  gcc libstc++ 4.2 bug
     if (v == 0)
-      { 
-	os << '+';
+      {
+        os << '+';
       }
     else
       {
-	os << std::showpos;
+        os << std::showpos;
       }
   }
   os << v << ".0" << unit;

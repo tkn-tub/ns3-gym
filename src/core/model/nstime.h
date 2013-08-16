@@ -69,17 +69,17 @@ namespace ns3 {
  * 1. It is possible to either increase or decrease the resolution and the
  * code tries really hard to make this easy.
  *
- * If your resolution is X (say, nanoseconds) and if you create Time objects 
- * with a lower resolution (say, picoseconds), don't expect that this 
- * code will return 1: PicoSeconds (1).GetPicoSeconds (). It will most 
- * likely return 0 because the Time object has only 64 bits of fractional 
+ * If your resolution is X (say, nanoseconds) and if you create Time objects
+ * with a lower resolution (say, picoseconds), don't expect that this
+ * code will return 1: PicoSeconds (1).GetPicoSeconds (). It will most
+ * likely return 0 because the Time object has only 64 bits of fractional
  * precision which means that PicoSeconds (1) is stored as a 64-bit aproximation
- * of 1/1000 in the Time object. If you later multiply it again by the exact 
+ * of 1/1000 in the Time object. If you later multiply it again by the exact
  * value 1000, the result is unlikely to be 1 exactly. It will be close to
  * 1 but not exactly 1.
- * 
+ *
  * In general, it is thus a really bad idea to try to use time objects of a
- * resolution higher than the global resolution controlled through 
+ * resolution higher than the global resolution controlled through
  * Time::SetResolution. If you do need to use picoseconds, it's thus best
  * to switch the global resolution to picoseconds to avoid nasty surprises.
  *
@@ -87,7 +87,7 @@ namespace ns3 {
  * global resolution, you also implicitely decrease the range of your simulation.
  * i.e., the global simulation time is stored in a 64 bit integer whose interpretation
  * will depend on the global resolution so, 2^64 picoseconds which is the maximum
- * duration of your simulation if the global resolution is picoseconds 
+ * duration of your simulation if the global resolution is picoseconds
  * is smaller than 2^64 nanoseconds which is the maximum duration of your simulation
  * if the global resolution is nanoseconds.
  *
@@ -226,7 +226,7 @@ public:
   {
     return Time (std::numeric_limits<int64_t>::max ());
   }
-  
+
   /**
    *  Destructor
    */
@@ -237,7 +237,7 @@ public:
         Clear (this);
       }
   }
-  
+
   /**
    * \return true if the time is zero, false otherwise.
    */
@@ -350,7 +350,7 @@ public:
   /**
    * \param resolution the new resolution to use
    *
-   * Change the global resolution used to convert all 
+   * Change the global resolution used to convert all
    * user-provided time values in Time objects and Time objects
    * in user-expected time units.
    */
@@ -399,7 +399,7 @@ public:
       }
     else
       {
-        v /= info->factor; 
+        v /= info->factor;
       }
     return v;
   }
@@ -430,7 +430,7 @@ public:
     struct Information *info = PeekInformation (timeUnit);
     // DO NOT REMOVE this temporary variable. It's here
     // to work around a compiler bug in gcc 3.4
-    int64x64_t retval = from; 
+    int64x64_t retval = from;
     if (info->fromMul)
       {
         retval *= info->timeFrom;
@@ -478,11 +478,11 @@ private:
    */
   struct Information
   {
-    bool toMul;                     //!< Multiply when converting To, otherwise divide  
+    bool toMul;                     //!< Multiply when converting To, otherwise divide
     bool fromMul;                   //!< Multiple when converting From, otherwise divide
-    int64_t factor;                 //!< Ratio of this unit / current unit		  
-    int64x64_t timeTo;              //!< Multiplier to convert to this unit		  
-    int64x64_t timeFrom;            //!< Multiplier to convert from this unit		  
+    int64_t factor;                 //!< Ratio of this unit / current unit
+    int64x64_t timeTo;              //!< Multiplier to convert to this unit
+    int64x64_t timeFrom;            //!< Multiplier to convert from this unit
   };
   /**
    * Current time unit, and conversion info.
@@ -534,7 +534,7 @@ private:
    *  \intern
    *
    *  Use a classic static variable so we can check in Time ctors
-   *  without a function call.  
+   *  without a function call.
    *
    *  We'd really like to initialize this here, but we don't want to require
    *  C++0x, so we init in time.cc.  To ensure that happens before first use,
@@ -587,11 +587,11 @@ private:
   friend Time Max (const Time &ta, const Time &tb);
   friend Time Min (const Time &ta, const Time &tb);
 
-  
+
   int64_t m_data;                   //!< Virtual time value, in the current unit.
-  
+
 };  // class Time
-  
+
 
 // Force static initialization of Time
 static bool NS_UNUSED_GLOBAL (g_TimeStaticInit) = Time::StaticInit ();
@@ -789,7 +789,7 @@ inline Time FemtoSeconds (uint64_t fs)
 /**
  * \see Seconds(double)
  * \relates ns3::Time
- */ 
+ */
 inline Time Seconds (int64x64_t seconds)
 {
   return Time::From (seconds, Time::S);
@@ -797,7 +797,7 @@ inline Time Seconds (int64x64_t seconds)
 /**
  * \see MilliSeconds(uint64_t)
  * \relates ns3::Time
- */ 
+ */
 inline Time MilliSeconds (int64x64_t ms)
 {
   return Time::From (ms, Time::MS);
@@ -805,7 +805,7 @@ inline Time MilliSeconds (int64x64_t ms)
 /**
  * \see MicroSeconds(uint64_t)
  * \relates ns3::Time
- */ 
+ */
 inline Time MicroSeconds (int64x64_t us)
 {
   return Time::From (us, Time::US);
@@ -813,7 +813,7 @@ inline Time MicroSeconds (int64x64_t us)
 /**
  * \see NanoSeconds(uint64_t)
  * \relates ns3::Time
- */ 
+ */
 inline Time NanoSeconds (int64x64_t ns)
 {
   return Time::From (ns, Time::NS);
@@ -821,7 +821,7 @@ inline Time NanoSeconds (int64x64_t ns)
 /**
  * \see PicoSeconds(uint64_t)
  * \relates ns3::Time
- */ 
+ */
 inline Time PicoSeconds (int64x64_t ps)
 {
   return Time::From (ps, Time::PS);
@@ -829,7 +829,7 @@ inline Time PicoSeconds (int64x64_t ps)
 /**
  * \see FemtoSeconds(uint64_t)
  * \relates ns3::Time
- */ 
+ */
 inline Time FemtoSeconds (int64x64_t fs)
 {
   return Time::From (fs, Time::FS);
@@ -854,7 +854,7 @@ ATTRIBUTE_ACCESSOR_DEFINE (Time);
  * \brief Helper to make a Time checker with bounded range.
  * Both limits are inclusive
  *
- * \return the AttributeChecker 
+ * \return the AttributeChecker
  */
 Ptr<const AttributeChecker> MakeTimeChecker (const Time min, const Time max);
 
