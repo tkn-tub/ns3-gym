@@ -54,6 +54,7 @@ Bugs fixed
 - Bug 1296 - Enhancement in Ipv[4,6]RoutingHelper
 - Bug 1390 - ICMPv6 Redirect are handled correctly only for /64 networks
 - Bug 1522 - Hidden node scenario leads to ARP failure
+- Bug 1629 - Make AODV Default to Disable Hello
 - Bug 1643 - NdiscCache creation and existence checks
 - Bug 1646 - ICMPv6 Redirect are sent from global address instead of link-local
 - Bug 1662 - m_type not set for Ipv6OptionRouterAlertHeader
