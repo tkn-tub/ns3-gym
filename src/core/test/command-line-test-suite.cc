@@ -102,8 +102,10 @@ CommandLineBooleanTestCase::DoRun (void)
 {
   CommandLine cmd;
   bool myBool = true;
+  bool myDefaultFalseBool = false;
 
   cmd.AddValue ("my-bool", "help", myBool);
+  cmd.AddValue ("my-false-bool", "help", myDefaultFalseBool);
 
   Parse (cmd, 1, "--my-bool=0");
   NS_TEST_ASSERT_MSG_EQ (myBool, false, "Command parser did not correctly set a boolean value to false");
@@ -112,7 +114,10 @@ CommandLineBooleanTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (myBool, true, "Command parser did not correctly set a boolean value to true, given integer argument");
 
   Parse (cmd, 1, "--my-bool");
-  NS_TEST_ASSERT_MSG_EQ (myBool, true, "Command parser did not correctly set a boolean value to true, given no argument");
+  NS_TEST_ASSERT_MSG_EQ (myBool, false, "Command parser did not correctly toggle a default true boolean value to false, given no argument");
+
+  Parse (cmd, 1, "--my-false-bool");
+  NS_TEST_ASSERT_MSG_EQ (myDefaultFalseBool, true, "Command parser did not correctly toggle a default false boolean value to true, given no argument");
 
   Parse (cmd, 1, "--my-bool=t");
   NS_TEST_ASSERT_MSG_EQ (myBool, true, "Command parser did not correctly set a boolean value to true, given 't' argument");

@@ -133,15 +133,18 @@ or
 <pre>
   cmd.PrintHelp (std::cerr);
 </pre>
-   </li>
-   <li>IPv4's ARP Request and IPv6's NS/RS are now transmitted with a random delay.
-       The delay is, by default, a uniform random variable in time between 0 and 10ms.
-       This is aimed at preventing reception errors due to collisions during wifi broadcasts.
-       This behaviour can be modified by using ArpL3Protocol's 
-       <tt>RequestJitter</tt> and Icmpv6L4Protocol's <tt>SolicitationJitter</tt>
-       attributes or by using the new InternetStackHelper functions.
-       </li>
-   
+  </li>
+  <li>IPv4's ARP Request and IPv6's NS/RS are now transmitted with a random delay.
+      The delay is, by default, a uniform random variable in time between 0 and 10ms.
+      This is aimed at preventing reception errors due to collisions during wifi broadcasts.
+      This behaviour can be modified by using ArpL3Protocol's 
+      <tt>RequestJitter</tt> and Icmpv6L4Protocol's <tt>SolicitationJitter</tt>
+      attributes or by using the new InternetStackHelper functions.
+  </li>
+  <li>Command line boolean arguments specified with no integer value (e.g. 
+      "--boolArg") will toggle the value from the default, instead of 
+      always setting the value to true.
+  </li>
 </ul>
 
 <hr>
