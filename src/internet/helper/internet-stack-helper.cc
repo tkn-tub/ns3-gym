@@ -236,7 +236,7 @@ InternetStackHelper::InternetStackHelper ()
     m_ipv4Enabled (true),
     m_ipv6Enabled (true),
     m_ipv4ArpJitterEnabled (true),
-    m_ipv6NsRsEnabled (true)
+    m_ipv6NsRsJitterEnabled (true)
 
 {
   Initialize ();
@@ -273,7 +273,7 @@ InternetStackHelper::InternetStackHelper (const InternetStackHelper &o)
   m_ipv6Enabled = o.m_ipv6Enabled;
   m_tcpFactory = o.m_tcpFactory;
   m_ipv4ArpJitterEnabled = o.m_ipv4ArpJitterEnabled;
-  m_ipv6NsRsEnabled = o.m_ipv6NsRsEnabled;
+  m_ipv6NsRsJitterEnabled = o.m_ipv6NsRsJitterEnabled;
 }
 
 InternetStackHelper &
@@ -298,7 +298,7 @@ InternetStackHelper::Reset (void)
   m_ipv4Enabled = true;
   m_ipv6Enabled = true;
   m_ipv4ArpJitterEnabled = true;
-  m_ipv6NsRsEnabled = true;
+  m_ipv6NsRsJitterEnabled = true;
   Initialize ();
 }
 
@@ -334,7 +334,7 @@ void InternetStackHelper::SetIpv4ArpJitter (bool enable)
 
 void InternetStackHelper::SetIpv6NsRsJitter (bool enable)
 {
-  m_ipv6NsRsEnabled = enable;
+  m_ipv6NsRsJitterEnabled = enable;
 }
 
 int64_t
@@ -437,6 +437,7 @@ InternetStackHelper::Install (Ptr<Node> node) const
       if (m_ipv4ArpJitterEnabled == false)
         {
           Ptr<ArpL3Protocol> arp = node->GetObject<ArpL3Protocol> ();
+          NS_ASSERT (arp);
           arp->SetAttribute ("RequestJitter", StringValue ("ns3::ConstantRandomVariable[Constant=0.0]"));
         }
       // Set routing
@@ -457,9 +458,10 @@ InternetStackHelper::Install (Ptr<Node> node) const
 
       CreateAndAggregateObjectFromTypeId (node, "ns3::Ipv6L3Protocol");
       CreateAndAggregateObjectFromTypeId (node, "ns3::Icmpv6L4Protocol");
-      if (m_ipv6NsRsEnabled == false)
+      if (m_ipv6NsRsJitterEnabled == false)
         {
           Ptr<Icmpv6L4Protocol> icmpv6l4 = node->GetObject<Icmpv6L4Protocol> ();
+          NS_ASSERT (icmpv6l4);
           icmpv6l4->SetAttribute ("SolicitationJitter", StringValue ("ns3::ConstantRandomVariable[Constant=0.0]"));
         }
       // Set routing

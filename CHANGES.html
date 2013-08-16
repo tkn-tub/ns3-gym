@@ -71,11 +71,11 @@ us a note on ns-developers mailing list.</p>
       IPv6 to make an Autoconfigured address.</li>
   <li>IPv6 can now detect and use Path-MTU. See 
       examples/ipv6/fragmentation-ipv6-two-MTU.cc for an example.</li>
-  <li>Radvd application have a new Helper. See the updated 
+  <li>Radvd application has a new Helper. See the updated 
       examples/ipv6/radvd.cc for an example.</li>
-  <li>InternetStackHelper have two new functions:<tt>SetIpv4ArpJitter (bool enable)</tt>
+  <li>InternetStackHelper has two new functions:<tt>SetIpv4ArpJitter (bool enable)</tt>
       and <tt>SetIpv6NsRsJitter (bool enable)</tt> to enable/disable
-      the random jitter on IPv4's ARP and IPv6's NS/RS.</li>
+      the random jitter on the tranmission of IPv4 ARP Request and IPv6 NS/RS. </li>
 </ul>
 
 <h2>Changes to existing API:</h2>
@@ -134,9 +134,10 @@ or
   cmd.PrintHelp (std::cerr);
 </pre>
    </li>
-   <li>IPv4's ARP and IPv6's NS/RS are now issued with a random delay.
-       The delay is, by default, between 0 and 10ms.
-       This behaviour can be modify by using ArpL3Protocol's 
+   <li>IPv4's ARP Request and IPv6's NS/RS are now transmitted with a random delay.
+       The delay is, by default, a uniform random variable in time between 0 and 10ms.
+       This is aimed at preventing reception errors due to collisions during wifi broadcasts.
+       This behaviour can be modified by using ArpL3Protocol's 
        <tt>RequestJitter</tt> and Icmpv6L4Protocol's <tt>SolicitationJitter</tt>
        attributes or by using the new InternetStackHelper functions.
        </li>

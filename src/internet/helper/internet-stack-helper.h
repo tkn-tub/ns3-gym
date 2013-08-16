@@ -324,7 +324,7 @@ private:
   /**
    * \brief IPv6 IPv6 NS and RS Jitter state (enabled/disabled) ?
    */
-  bool m_ipv6NsRsEnabled;
+  bool m_ipv6NsRsJitterEnabled;
 };
 
 } // namespace ns3
