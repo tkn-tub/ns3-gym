@@ -178,7 +178,19 @@ public:
    */
   void SetIpv6StackInstall (bool enable);
 
- /**
+  /**
+   * \brief Enable/disable IPv4 ARP Jitter.
+   * \param enable enable state
+   */
+  void SetIpv4ArpJitter (bool enable);
+
+  /**
+   * \brief Enable/disable IPv6 NS and RS Jitter.
+   * \param enable enable state
+   */
+  void SetIpv6NsRsJitter (bool enable);
+
+  /**
   * Assign a fixed random variable stream number to the random variables
   * used by this model.  Return the number of streams (possibly zero) that
   * have been assigned.  The Install() method should have previously been
@@ -303,6 +315,16 @@ private:
    * \brief IPv6 install state (enabled/disabled) ?
    */
   bool m_ipv6Enabled;
+
+  /**
+   * \brief IPv4 ARP Jitter state (enabled/disabled) ?
+   */
+  bool m_ipv4ArpJitterEnabled;
+
+  /**
+   * \brief IPv6 IPv6 NS and RS Jitter state (enabled/disabled) ?
+   */
+  bool m_ipv6NsRsEnabled;
 };
 
 } // namespace ns3

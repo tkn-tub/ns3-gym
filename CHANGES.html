@@ -73,6 +73,9 @@ us a note on ns-developers mailing list.</p>
       examples/ipv6/fragmentation-ipv6-two-MTU.cc for an example.</li>
   <li>Radvd application have a new Helper. See the updated 
       examples/ipv6/radvd.cc for an example.</li>
+  <li>InternetStackHelper have two new functions:<tt>SetIpv4ArpJitter (bool enable)</tt>
+      and <tt>SetIpv6NsRsJitter (bool enable)</tt> to enable/disable
+      the random jitter on IPv4's ARP and IPv6's NS/RS.</li>
 </ul>
 
 <h2>Changes to existing API:</h2>
@@ -131,6 +134,13 @@ or
   cmd.PrintHelp (std::cerr);
 </pre>
    </li>
+   <li>IPv4's ARP and IPv6's NS/RS are now issued with a random delay.
+       The delay is, by default, between 0 and 10ms.
+       This behaviour can be modify by using ArpL3Protocol's 
+       <tt>RequestJitter</tt> and Icmpv6L4Protocol's <tt>SolicitationJitter</tt>
+       attributes or by using the new InternetStackHelper functions.
+       </li>
+   
 </ul>
 
 <hr>

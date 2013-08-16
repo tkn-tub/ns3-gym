@@ -234,7 +234,10 @@ InternetStackHelper::InternetStackHelper ()
   : m_routing (0),
     m_routingv6 (0),
     m_ipv4Enabled (true),
-    m_ipv6Enabled (true)
+    m_ipv6Enabled (true),
+    m_ipv4ArpJitterEnabled (true),
+    m_ipv6NsRsEnabled (true)
+
 {
   Initialize ();
 }
@@ -269,6 +272,8 @@ InternetStackHelper::InternetStackHelper (const InternetStackHelper &o)
   m_ipv4Enabled = o.m_ipv4Enabled;
   m_ipv6Enabled = o.m_ipv6Enabled;
   m_tcpFactory = o.m_tcpFactory;
+  m_ipv4ArpJitterEnabled = o.m_ipv4ArpJitterEnabled;
+  m_ipv6NsRsEnabled = o.m_ipv6NsRsEnabled;
 }
 
 InternetStackHelper &
@@ -292,6 +297,8 @@ InternetStackHelper::Reset (void)
   m_routingv6 = 0;
   m_ipv4Enabled = true;
   m_ipv6Enabled = true;
+  m_ipv4ArpJitterEnabled = true;
+  m_ipv6NsRsEnabled = true;
   Initialize ();
 }
 
@@ -318,6 +325,16 @@ InternetStackHelper::SetIpv4StackInstall (bool enable)
 void InternetStackHelper::SetIpv6StackInstall (bool enable)
 {
   m_ipv6Enabled = enable;
+}
+
+void InternetStackHelper::SetIpv4ArpJitter (bool enable)
+{
+  m_ipv4ArpJitterEnabled = enable;
+}
+
+void InternetStackHelper::SetIpv6NsRsJitter (bool enable)
+{
+  m_ipv6NsRsEnabled = enable;
 }
 
 int64_t
@@ -417,6 +434,11 @@ InternetStackHelper::Install (Ptr<Node> node) const
       CreateAndAggregateObjectFromTypeId (node, "ns3::ArpL3Protocol");
       CreateAndAggregateObjectFromTypeId (node, "ns3::Ipv4L3Protocol");
       CreateAndAggregateObjectFromTypeId (node, "ns3::Icmpv4L4Protocol");
+      if (m_ipv4ArpJitterEnabled == false)
+        {
+          Ptr<ArpL3Protocol> arp = node->GetObject<ArpL3Protocol> ();
+          arp->SetAttribute ("RequestJitter", StringValue ("ns3::ConstantRandomVariable[Constant=0.0]"));
+        }
       // Set routing
       Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
       Ptr<Ipv4RoutingProtocol> ipv4Routing = m_routing->Create (node);
@@ -435,6 +457,11 @@ InternetStackHelper::Install (Ptr<Node> node) const
 
       CreateAndAggregateObjectFromTypeId (node, "ns3::Ipv6L3Protocol");
       CreateAndAggregateObjectFromTypeId (node, "ns3::Icmpv6L4Protocol");
+      if (m_ipv6NsRsEnabled == false)
+        {
+          Ptr<Icmpv6L4Protocol> icmpv6l4 = node->GetObject<Icmpv6L4Protocol> ();
+          icmpv6l4->SetAttribute ("SolicitationJitter", StringValue ("ns3::ConstantRandomVariable[Constant=0.0]"));
+        }
       // Set routing
       Ptr<Ipv6> ipv6 = node->GetObject<Ipv6> ();
       Ptr<Ipv6RoutingProtocol> ipv6Routing = m_routingv6->Create (node);
