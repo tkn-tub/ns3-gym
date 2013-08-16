@@ -135,7 +135,7 @@ RoutingProtocol::RoutingProtocol () :
   MaxQueueTime (Seconds (30)),
   DestinationOnly (false),
   GratuitousReply (true),
-  EnableHello (true),
+  EnableHello (false),
   m_routingTable (DeletePeriod),
   m_queue (MaxQueueLen, MaxQueueTime),
   m_requestId (0),
