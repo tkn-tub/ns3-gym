@@ -66,6 +66,7 @@ Bugs fixed
 - Bug 1687 - wscript features report doesn't respect NOCOLOR
 - Bug 1688 - Routers should advertise themselves from the link-local address
 - Bug 1689 - IPv6 shouldn't add a default gateway without checking the Router lifetime
+- Bug 1690 - missing header files from wifi wscript
 - Bug 1697 - ICMPv6 Redirect trigger contains multiple bugs
 - Bug 1698 - mobility.SetPositionAllocator misses prefix "ns3::"
 - Bug 1700 - Ipv6RawSocket does not honor the bound address when sending packets
@@ -76,6 +77,7 @@ Bugs fixed
 - Bug 1718 - Ipv4StaticRouting log component is misspelled
 - Bug 1720 - IPv6 Fragmentation cause crashes
 - Bug 1721 - Path MTU isn't handled properly
+- Bug 1723 - name clash in ipv4-header.h with <termios.h>
 - Bug 1727 - Ping6 should use a proper source address
 - Bug 1728 - Radvd application is missing an Helper
 - Bug 1731 - lte-phy-error-model passes unexpectedly
