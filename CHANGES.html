@@ -55,34 +55,48 @@ us a note on ns-developers mailing list.</p>
 
 <h2>New API:</h2>
 <ul>
-  <li>Data collection components have been added in the src/stats module.
+  <li>New features have been added to the LTE module:
+  <ul>
+    <li>PHY support for UE measurements (RSRP and RSRQ)</li>
+    <li>RRC support for UE measurements (configuration, execution, reporting)</li>
+    <li>Automatic Handover trigger based on RRC UE measurement reports</li>
+  </ul>
+  <li>Data collection components have been added in the 'src/stats' module.
       Data collection includes a Probe class that attaches to ns-3 trace
       sources to filter their output, and two Aggregator classes for 
       marshaling probed data into text files or gnuplot plots.  The ns-3
       tutorial has been extended to illustrate basic functionality. </li>
-  <li>Time attributes can now be bounded.  See attribute-test-suite.cc
-      for an example.</li>
-  <li>New generic hash function interface.  Two hash functions are provided:
-      murmur3 (default), and the venerable FNV1a.  See the Hash Functions
-      section in the Manual.</li>
+  <li>In 'src/wifi', several changes were made to enable partial 802.11n support:
+    <ul>
+      <li>A new helper (HtWifiMacHelper) was added to set up a high throughput (HT) MAC entity</li>
+      <li>New attributes were added to help the user setup a high throughpt (HT) PHY entity. These attributes can be set using the YansWifiPhyHelper</li>
+      <li>A new standard value has been added that enables the new 11n data rates.</li>
+      <li>New 11n preambles has been added (Mixed format and greenfield). To be able to change Tx duration according to the preamble used, a new class TxVector has been added to carry the transmission parameters (mode, preamble, stbc,..).  Several functions have been updated to allow the passage of TxVector instead of WifiMode in MacLow, WifiRemoteStationManager, WifiPhy, YansWifiPhy,.. </li>
+      <li>A new information element has been added:  HTCapabilities. This information element is added to the MAC frame header if the node is an HT node. This HTCapabilites information element is used to advertise the HT capabilites of the node to other nodes in the network</li>
+    </ul>
+  <li>InternetStackHelper has two new functions:<tt>SetIpv4ArpJitter (bool enable)</tt>
+      and <tt>SetIpv6NsRsJitter (bool enable)</tt> to enable/disable
+      the random jitter on the tranmission of IPv4 ARP Request and IPv6 NS/RS. </li>
+  <li>Bounds on valid time inputs for time attributes can now be enabled.  
+      See <tt>attribute-test-suite.cc</tt> for an example.</li>
+  <li>New generic hash function interface provided in the simulation core.  
+      Two hash functions are provided: murmur3 (default), and the venerable 
+      FNV1a.  See the Hash Functions section in the ns-3 manual.</li>
   <li>New Mac16Address has been added. It can be used with IPv6 to make
       an Autoconfigured address.</li>
   <li>Mac64Address support has been extended. It can now be used with 
       IPv6 to make an Autoconfigured address.</li>
   <li>IPv6 can now detect and use Path-MTU. See 
-      examples/ipv6/fragmentation-ipv6-two-MTU.cc for an example.</li>
+      <tt>examples/ipv6/fragmentation-ipv6-two-MTU.cc</tt> for an example.</li>
   <li>Radvd application has a new Helper. See the updated 
-      examples/ipv6/radvd.cc for an example.</li>
-  <li>InternetStackHelper has two new functions:<tt>SetIpv4ArpJitter (bool enable)</tt>
-      and <tt>SetIpv6NsRsJitter (bool enable)</tt> to enable/disable
-      the random jitter on the tranmission of IPv4 ARP Request and IPv6 NS/RS. </li>
+      <tt>examples/ipv6/radvd.cc</tt> for an example.</li>
 </ul>
 
 <h2>Changes to existing API:</h2>
 <ul>
   <li> The Ipv6InterfaceContainer functions to set a node in forwarding state (i.e., a router) 
   and to install a default router in a group of nodes have been extensively changed.
-  The old function "void Ipv6InterfaceContainer::SetRouter (uint32_t i, bool router)"
+  The old function <tt>void Ipv6InterfaceContainer::SetRouter (uint32_t i, bool router)</tt>
   is now DEPRECATED.
   </li>
   <li> The documentation's IPv6 addresses (2001:db8::/32, RFC 3849) are now
@@ -98,7 +112,7 @@ us a note on ns-developers mailing list.</p>
   <li> The Ipv6 UnicastForwardCallback and  MulticastForwardCallback 
   have a new parameter, the NetDevice the packet has been received from.
   Existing Ipv6RoutingProtocols should update their RouteInput function
-  accordingly. E.g., from ucb (rtentry, p, header); to ucb (idev, rtentry, p, header);
+  accordingly, e.g., from <tt>ucb (rtentry, p, header);</tt> to <tt>ucb (idev, rtentry, p, header);</tt>
   </li>
   <li> The previous buildings module relied on a specific MobilityModel called
     BuildingsMobilityModel, which supported buildings but only allowed
@@ -108,6 +122,7 @@ us a note on ns-developers mailing list.</p>
     allows having moving nodes in presence of buildings with any of
     the existing MobilityModels. 
   </li>
+  <li>All functions in WifiRemoteStationManager named GetXxxMode have been changed to GetXxxTxVector </li>
 </ul>
 
 <h2>Changes to build system:</h2>
@@ -134,42 +149,18 @@ or
   cmd.PrintHelp (std::cerr);
 </pre>
   </li>
+  <li>Command line boolean arguments specified with no integer value (e.g. <tt>"--boolArg"</tt>) will toggle the value from the default, instead of always setting the value to true.
+  </li>
   <li>IPv4's ARP Request and IPv6's NS/RS are now transmitted with a random delay.
       The delay is, by default, a uniform random variable in time between 0 and 10ms.
-      This is aimed at preventing reception errors due to collisions during wifi broadcasts.
+      This is aimed at preventing reception errors due to collisions during wifi broadcasts when the sending behavior is synchronized (e.g. due to applications starting at the same time on several different nodes).
       This behaviour can be modified by using ArpL3Protocol's 
       <tt>RequestJitter</tt> and Icmpv6L4Protocol's <tt>SolicitationJitter</tt>
       attributes or by using the new InternetStackHelper functions.
   </li>
-  <li>Command line boolean arguments specified with no integer value (e.g. 
-      "--boolArg") will toggle the value from the default, instead of 
-      always setting the value to true.
-  </li>
+  <li>AODV Hellos are disabled by default. The performance with Hellos enabled and disabled are almost identical. With Hellos enabled, AODV will suppress hellos from transmission, if any recent broadcast such as RREQ was transmitted. The attribute <tt>ns3::aodv::RoutingProtocol::EnableHello</tt> can be used to enable/disable Hellos.
 </ul>
 
-<hr>
-<h1>Changes from ns-3.17 to ns-3.18</h1>
-<h2>New API:</h2>
-<ul>
-  <li>In Wifi:
-    <ul>
-      <li>A new helper (HtWifiMacHelper) was added. The user can use this helper to set up a high throughput (HT) MAC entity</li>
-    </ul>
-  </li>
-    <ul>
-      <li>New attributes are added to help the use setup a high throughpt (HT) PHY entity. These attributes can be set using the YansWifiPhyHelper</li>
-      <li>A new standard has been added that uses the new 11n data rates.</li>
-    </ul>
-    <ul>
-      <li>New 11n preambles has been added (Mixed format and greenfiled). To be able to change Tx duration according to the preamble used a new class txVector has been added to carry the transmission parameters (mode, preamle, stbc,..).Several functions have been updated to allow the passage of TxVector instead of WifiMode in MacLow, WifiRemoteStationManager, WifiPhy, YansWifiPhy,.. </li>
-    </ul>
-    <ul>
-      <li>All functions in WifiRemoteStationManager named GetXxxMode has been changed to GetXxxTxVector </li>
-    </ul>
-    <ul>
-      <li>New Information element has been added HTCapabilities. This information element is add to the MAC frame header if the node is an HT node. This HTCapabilites information element is used to advertise the HT capabilites of the node to other nodes in the network</li>
-    </ul>
-<hr>
 <h1>Changes from ns-3.16 to ns-3.17</h1>
 
 <h2>New API:</h2>
