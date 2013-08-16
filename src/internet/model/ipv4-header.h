@@ -65,31 +65,32 @@ public:
     {
       DscpDefault = 0x00,
 
-      CS1 = 0x20,
-      AF11 = 0x28,
-      AF12 = 0x30,
-      AF13 = 0x38,
+      // Prefixed with "DSCP" to avoid name clash (bug 1723)
+      DSCP_CS1 = 0x20,
+      DSCP_AF11 = 0x28,
+      DSCP_AF12 = 0x30,
+      DSCP_AF13 = 0x38,
 
-      CS2 = 0x40,
-      AF21 = 0x48,
-      AF22 = 0x50,
-      AF23 = 0x58,
+      DSCP_CS2 = 0x40,
+      DSCP_AF21 = 0x48,
+      DSCP_AF22 = 0x50,
+      DSCP_AF23 = 0x58,
 
-      CS3 = 0x60,
-      AF31 = 0x68,
-      AF32 = 0x70,
-      AF33 = 0x78,
+      DSCP_CS3 = 0x60,
+      DSCP_AF31 = 0x68,
+      DSCP_AF32 = 0x70,
+      DSCP_AF33 = 0x78,
 
-      CS4 = 0x80,
-      AF41 = 0x88,
-      AF42 = 0x90,
-      AF43 = 0x98,
+      DSCP_CS4 = 0x80,
+      DSCP_AF41 = 0x88,
+      DSCP_AF42 = 0x90,
+      DSCP_AF43 = 0x98,
 
-      CS5 = 0xA0,
-      EF = 0xB8,
+      DSCP_CS5 = 0xA0,
+      DSCP_EF = 0xB8,
       
-      CS6 = 0xC0,
-      CS7 = 0xE0
+      DSCP_CS6 = 0xC0,
+      DSCP_CS7 = 0xE0
       
     };
   /**
@@ -104,10 +105,11 @@ public:
    */
   enum EcnType
     {
-      NotECT = 0x00,
-      ECT1 = 0x01,
-      ECT0 = 0x02,
-      CE = 0x03
+      // Prefixed with "ECN" to avoid name clash (bug 1723)
+      ECN_NotECT = 0x00,
+      ECN_ECT1 = 0x01,
+      ECN_ECT0 = 0x02,
+      ECN_CE = 0x03
     }; 
   /**
    * \brief Set ECN Field
