@@ -243,47 +243,87 @@ EutranMeasurementMapping::QuantizeRsrq (double v)
 }
 
 double
-EutranMeasurementMapping::IeValue2ActualHysteresis (uint8_t hysteresis)
+EutranMeasurementMapping::IeValue2ActualHysteresis (uint8_t hysteresisIeValue)
 {
-  if (hysteresis > 30)
+  if (hysteresisIeValue > 30)
     {
-      NS_FATAL_ERROR ("The value " << hysteresis << " is out of the allowed range (0..30) for Hysteresis");
+      NS_FATAL_ERROR ("The value " << (uint16_t) hysteresisIeValue
+                                   << " is out of the allowed range (0..30)"
+                                   << " for Hysteresis IE value");
     }
 
-  return (static_cast<double> (hysteresis) * 0.5);
+  return (static_cast<double> (hysteresisIeValue) * 0.5);
+}
+
+uint8_t
+EutranMeasurementMapping::ActualHysteresis2IeValue (double hysteresisDb)
+{
+  if ((hysteresisDb < 0.0) || (hysteresisDb > 15.0))
+    {
+      NS_FATAL_ERROR ("The value " << hysteresisDb
+                                   << " is out of the allowed range (0..15) dB"
+                                   << " for hysteresis");
+    }
+
+  uint8_t ieValue = lround (hysteresisDb * 2.0);
+  NS_ASSERT (ieValue >= 0);
+  NS_ASSERT (ieValue <= 15);
+  return ieValue;
 }
 
 double
-EutranMeasurementMapping::IeValue2ActualA3Offset (int8_t a3Offset)
+EutranMeasurementMapping::IeValue2ActualA3Offset (int8_t a3OffsetIeValue)
 {
-  if ((a3Offset < -30) || (a3Offset > 30))
+  if ((a3OffsetIeValue < -30) || (a3OffsetIeValue > 30))
     {
-      NS_FATAL_ERROR ("The value " << a3Offset << " is out of the allowed range (-30..30) for a3-Offset");
+      NS_FATAL_ERROR ("The value " << (int16_t) a3OffsetIeValue
+                                   << " is out of the allowed range (-30..30)"
+                                   << " for a3-Offset IE value");
     }
 
-  return (static_cast<double> (a3Offset) * 0.5);
+  return (static_cast<double> (a3OffsetIeValue) * 0.5);
+}
+
+int8_t
+EutranMeasurementMapping::ActualA3Offset2IeValue (double a3OffsetDb)
+{
+  if ((a3OffsetDb < -15.0) || (a3OffsetDb > 15.0))
+    {
+      NS_FATAL_ERROR ("The value " << a3OffsetDb
+                                   << " is out of the allowed range (-15..15) dB"
+                                   << " for A3 Offset");
+    }
+
+  uint8_t ieValue = lround (a3OffsetDb * 2.0);
+  NS_ASSERT (ieValue >= -15);
+  NS_ASSERT (ieValue <= 15);
+  return ieValue;
 }
 
 double
-EutranMeasurementMapping::IeValue2ActualQRxLevMin (int8_t qRxLevMin)
+EutranMeasurementMapping::IeValue2ActualQRxLevMin (int8_t qRxLevMinIeValue)
 {
-  if ((qRxLevMin < -70) || (qRxLevMin > -22))
+  if ((qRxLevMinIeValue < -70) || (qRxLevMinIeValue > -22))
     {
-      NS_FATAL_ERROR ("The value " << qRxLevMin << " is out of the allowed range (-70..-22) for Q-RxLevMin");
+      NS_FATAL_ERROR ("The value " << (int16_t) qRxLevMinIeValue
+                                   << " is out of the allowed range (-70..-22)"
+                                   << " for Q-RxLevMin IE value");
     }
 
-  return (static_cast<double> (qRxLevMin) * 2);
+  return (static_cast<double> (qRxLevMinIeValue) * 2);
 }
 
 double
-EutranMeasurementMapping::IeValue2ActualQQualMin (int8_t qQualMin)
+EutranMeasurementMapping::IeValue2ActualQQualMin (int8_t qQualMinIeValue)
 {
-  if ((qQualMin < -34) || (qQualMin > -3))
+  if ((qQualMinIeValue < -34) || (qQualMinIeValue > -3))
     {
-      NS_FATAL_ERROR ("The value " << qQualMin << " is out of the allowed range (-34..-3) for Q-QualMin");
+      NS_FATAL_ERROR ("The value " << (int16_t) qQualMinIeValue
+                                   << " is out of the allowed range (-34..-3)"
+                                   << " for Q-QualMin IE value");
     }
 
-  return (static_cast<double> (qQualMin));
+  return (static_cast<double> (qQualMinIeValue));
 }
 
 }; // namespace ns3
