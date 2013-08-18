@@ -47,6 +47,11 @@ namespace ns3 {
  *
  * When the first and second conditions above are fulfilled, the algorithm
  * triggers a handover.
+ *
+ * Note that the attributes must be set before the handover algorithm object is
+ * instantiated in order for them to take effect, i.e. before calling
+ * LteHelper::InstallSingleEnbDevice. Subsequent changes to the attribute values
+ * after that will not have any effect.
  */
 class A2A4RsrqHandoverAlgorithm : public LteHandoverAlgorithm
 {

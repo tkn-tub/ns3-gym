@@ -137,6 +137,7 @@ main (int argc, char *argv[])
   // LogComponentEnable ("LteUeRrc", logLevel);
   // LogComponentEnable ("LteUeNetDevice", logLevel);
   // LogComponentEnable ("A2A4RsrqHandoverAlgorithm", logLevel);
+  // LogComponentEnable ("A3RsrpHandoverAlgorithm", logLevel);
 
   uint16_t numberOfUes = 1;
   uint16_t numberOfEnbs = 2;
@@ -167,11 +168,18 @@ main (int argc, char *argv[])
   Ptr<EpcHelper> epcHelper = CreateObject<EpcHelper> ();
   lteHelper->SetEpcHelper (epcHelper);
   lteHelper->SetSchedulerType ("ns3::RrFfMacScheduler");
+
   lteHelper->SetHandoverAlgorithmType ("ns3::A2A4RsrqHandoverAlgorithm");
   lteHelper->SetHandoverAlgorithmAttribute ("ServingCellThreshold",
-                                            UintegerValue (15));
+                                            UintegerValue (30));
   lteHelper->SetHandoverAlgorithmAttribute ("NeighbourCellOffset",
                                             UintegerValue (1));
+
+  //  lteHelper->SetHandoverAlgorithmType ("ns3::A3RsrpHandoverAlgorithm");
+  //  lteHelper->SetHandoverAlgorithmAttribute ("Hysteresis",
+  //                                            DoubleValue (3.0));
+  //  lteHelper->SetHandoverAlgorithmAttribute ("TimeToTrigger",
+  //                                            TimeValue (MilliSeconds (256)));
 
   Ptr<Node> pgw = epcHelper->GetPgwNode ();
 

@@ -39,6 +39,8 @@ NS_OBJECT_ENSURE_REGISTERED (A2A4RsrqHandoverAlgorithm);
 A2A4RsrqHandoverAlgorithm::A2A4RsrqHandoverAlgorithm ()
   : m_a2MeasId (0),
     m_a4MeasId (0),
+    m_servingCellThreshold (30),
+    m_neighbourCellOffset (1),
     m_handoverManagementSapUser (0)
 {
   NS_LOG_FUNCTION (this);
@@ -149,7 +151,7 @@ A2A4RsrqHandoverAlgorithm::DoReportUeMeas (uint16_t rnti,
                ++it)
             {
               NS_ASSERT_MSG (it->haveRsrqResult == true,
-                             "RSRQ measure missing for cellId " << it->physCellId);
+                             "RSRQ measurement is missing from cellId " << it->physCellId);
               UpdateNeighbourMeasurements (rnti, it->physCellId, it->rsrqResult);
             }
         }
