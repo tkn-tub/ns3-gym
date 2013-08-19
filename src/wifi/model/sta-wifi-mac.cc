@@ -183,6 +183,10 @@ StaWifiMac::SendProbeRequest (void)
   // association or not.
   m_dca->Queue (packet, hdr);
 
+  if (m_assocRequestEvent.IsRunning ())
+    {
+      m_assocRequestEvent.Cancel ();
+    }
   m_probeRequestEvent = Simulator::Schedule (m_probeRequestTimeout,
                                              &StaWifiMac::ProbeRequestTimeout, this);
 }
@@ -216,6 +220,10 @@ StaWifiMac::SendAssociationRequest (void)
   // association or not.
   m_dca->Queue (packet, hdr);
 
+  if (m_assocRequestEvent.IsRunning ())
+    {
+      m_assocRequestEvent.Cancel ();
+    }
   m_assocRequestEvent = Simulator::Schedule (m_assocRequestTimeout,
                                              &StaWifiMac::AssocRequestTimeout, this);
 }
@@ -283,6 +291,10 @@ StaWifiMac::MissedBeacons (void)
   NS_LOG_FUNCTION (this);
   if (m_beaconWatchdogEnd > Simulator::Now ())
     {
+      if (m_beaconWatchdog.IsRunning ())
+        {
+          m_beaconWatchdog.Cancel ();
+        }
       m_beaconWatchdog = Simulator::Schedule (m_beaconWatchdogEnd - Simulator::Now (),
                                               &StaWifiMac::MissedBeacons, this);
       return;
