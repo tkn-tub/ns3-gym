@@ -183,9 +183,9 @@ StaWifiMac::SendProbeRequest (void)
   // association or not.
   m_dca->Queue (packet, hdr);
 
-  if (m_assocRequestEvent.IsRunning ())
+  if (m_probeRequestEvent.IsRunning ())
     {
-      m_assocRequestEvent.Cancel ();
+      m_probeRequestEvent.Cancel ();
     }
   m_probeRequestEvent = Simulator::Schedule (m_probeRequestTimeout,
                                              &StaWifiMac::ProbeRequestTimeout, this);
