@@ -48,8 +48,8 @@ Time::MarkedTimes * Time::g_markingTimes = 0;
 SystemMutex &
 GetMarkingMutex ()
 {
-  static SystemMutex * g_markingMutex = new SystemMutex;
-  return *g_markingMutex;
+  static SystemMutex g_markingMutex;
+  return g_markingMutex;
 }
 
 
@@ -65,7 +65,8 @@ bool Time::StaticInit ()
     {
       if (! g_markingTimes)
         {
-          g_markingTimes = new Time::MarkedTimes;
+          static MarkedTimes markingTimes;
+          g_markingTimes = & markingTimes;
         }
       else
         {
@@ -234,7 +235,7 @@ Time::ClearMarkedTimes ()
   if (g_markingTimes)
     {
       NS_LOG_LOGIC ("clearing MarkedTimes");
-      delete g_markingTimes;
+      g_markingTimes->erase (g_markingTimes->begin(), g_markingTimes->end ());
       g_markingTimes = 0;
     }
 }  // Time::ClearMarkedTimes
@@ -327,7 +328,7 @@ Time::ConvertTimes (const enum Unit unit)
   // Body of ClearMarkedTimes
   // Assert above already guarantees g_markingTimes != 0
   NS_LOG_LOGIC ("clearing MarkedTimes");
-  delete g_markingTimes;
+  g_markingTimes->erase (g_markingTimes->begin(), g_markingTimes->end ());
   g_markingTimes = 0;
 
 }  // Time::ConvertTimes ()
