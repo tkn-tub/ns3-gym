@@ -121,6 +121,7 @@ TypeId LteEnbNetDevice::GetTypeId (void)
 }
 
 LteEnbNetDevice::LteEnbNetDevice ()
+  : m_anr (0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -146,6 +147,12 @@ LteEnbNetDevice::DoDispose ()
 
   m_handoverAlgorithm->Dispose ();
   m_handoverAlgorithm = 0;
+
+  if (m_anr != 0)
+    {
+      m_anr->Dispose ();
+      m_anr = 0;
+    }
 
   m_phy->Dispose ();
   m_phy = 0;
@@ -269,7 +276,11 @@ LteEnbNetDevice::DoInitialize (void)
   m_mac->Initialize ();
   m_rrc->Initialize ();
   m_handoverAlgorithm->Initialize ();
-  m_anr->Initialize ();
+
+  if (m_anr != 0)
+    {
+      m_anr->Initialize ();
+    }
 }
 
 

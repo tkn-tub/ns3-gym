@@ -175,6 +175,11 @@ TypeId LteHelper::GetTypeId (void)
                    BooleanValue (true), 
                    MakeBooleanAccessor (&LteHelper::m_useIdealRrc),
                    MakeBooleanChecker ())
+    .AddAttribute ("AnrEnabled",
+                   "Activate or deactivate Automatic Neighbour Relation function",
+                   BooleanValue (true),
+                   MakeBooleanAccessor (&LteHelper::m_isAnrEnabled),
+                   MakeBooleanChecker ())
   ;
   return tid;
 }
@@ -392,8 +397,8 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
   Ptr<LteEnbMac> mac = CreateObject<LteEnbMac> ();
   Ptr<FfMacScheduler> sched = m_schedulerFactory.Create<FfMacScheduler> ();
   Ptr<LteHandoverAlgorithm> handoverAlgorithm = m_handoverAlgorithmFactory.Create<LteHandoverAlgorithm> ();
-  Ptr<LteAnr> anr = CreateObject<LteAnr> (cellId);
   Ptr<LteEnbRrc> rrc = CreateObject<LteEnbRrc> ();
+
 
   if (m_useIdealRrc)
     {
@@ -430,9 +435,6 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
   rrc->SetLteHandoverManagementSapProvider (handoverAlgorithm->GetLteHandoverManagementSapProvider ());
   handoverAlgorithm->SetLteHandoverManagementSapUser (rrc->GetLteHandoverManagementSapUser ());
 
-  rrc->SetLteAnrSapProvider (anr->GetLteAnrSapProvider ());
-  anr->SetLteAnrSapUser (rrc->GetLteAnrSapUser ());
-
   mac->SetFfMacSchedSapProvider (sched->GetFfMacSchedSapProvider ());
   mac->SetFfMacCschedSapProvider (sched->GetFfMacCschedSapProvider ());
 
@@ -453,7 +455,14 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
   dev->SetAttribute ("FfMacScheduler", PointerValue (sched));
   dev->SetAttribute ("LteEnbRrc", PointerValue (rrc)); 
   dev->SetAttribute ("LteHandoverAlgorithm", PointerValue (handoverAlgorithm));
-  dev->SetAttribute ("LteAnr", PointerValue (anr));
+
+  if (m_isAnrEnabled)
+    {
+      Ptr<LteAnr> anr = CreateObject<LteAnr> (cellId);
+      rrc->SetLteAnrSapProvider (anr->GetLteAnrSapProvider ());
+      anr->SetLteAnrSapUser (rrc->GetLteAnrSapUser ());
+      dev->SetAttribute ("LteAnr", PointerValue (anr));
+    }
 
   phy->SetDevice (dev);
   dlPhy->SetDevice (dev);

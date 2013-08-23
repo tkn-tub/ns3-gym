@@ -2092,7 +2092,11 @@ void
 LteEnbRrc::AddX2Neighbour (uint16_t cellId)
 {
   NS_LOG_FUNCTION (this << cellId);
-  m_anrSapProvider->AddNeighbourRelation (cellId);
+
+  if (m_anrSapProvider != 0)
+    {
+      m_anrSapProvider->AddNeighbourRelation (cellId);
+    }
 }
 
 LteRrcSap::SystemInformationBlockType1

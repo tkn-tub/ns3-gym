@@ -675,6 +675,7 @@ private:
   uint16_t m_cellIdCounter;
 
   bool m_useIdealRrc;
+  bool m_isAnrEnabled;
 };
 
 
