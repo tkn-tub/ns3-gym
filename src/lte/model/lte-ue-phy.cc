@@ -683,7 +683,7 @@ LteUePhy::ReportUeMeasurements ()
       ret.m_ueMeasurementsList.push_back (newEl);
 
       // report to UE measurements trace
-      m_reportUeMeasurements (m_rnti, m_cellId, avg_rsrp, avg_rsrq, ((*it).first == m_cellId ? 1 : 0));
+      m_reportUeMeasurements (m_rnti, (*it).first, avg_rsrp, avg_rsrq, ((*it).first == m_cellId ? 1 : 0));
     }
 
   // report to RRC
@@ -998,9 +998,10 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
     }
   
   // schedule next subframe indication
-  Simulator::Schedule (Seconds (GetTti ()), &LteUePhy::SubframeIndication, this, frameNo, subframeNo);  
+  Simulator::Schedule (Seconds (GetTti ()), &LteUePhy::SubframeIndication, this, frameNo, subframeNo);
 }
-  
+
+
 void
 LteUePhy::SendSrs ()
 {
