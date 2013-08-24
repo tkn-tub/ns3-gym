@@ -391,6 +391,8 @@ Please refer to the documentation of the Buildings module for details
 on the actual models used in each case. 
 
 
+.. _sec-fading-model:
+
 Fading Model
 ++++++++++++
 
@@ -914,6 +916,7 @@ performs a functionality which is partially equivalent to that of the
 MAC headers specified by 3GPP. 
 
 
+.. _sec-ff-mac-scheduler:
 
 The FemtoForum MAC Scheduler Interface
 ++++++++++++++++++++++++++++++++++++++
@@ -2157,6 +2160,8 @@ within the simulation program are supported (network-driven handovers
 based on UE measurements are planned only at a later stage).
 
 
+.. _sec-ue-measurements:
+
 UE RRC Measurements Model
 +++++++++++++++++++++++++
 
@@ -2193,15 +2198,15 @@ Overall design
 
 The simulation defines an entity called *consumer*, which may request an eNodeB
 RRC entity to provide UE measurement reports. Consumers are, for example,
-handover algorithms, which compute handover decision based on UE measurement
-reports. Test cases and user's programs may also become consumers. Figure
-:ref:`fig-ue-meas-consumer` depicts the relationship between these
+:ref:`sec-handover-algorithm`, which compute handover decision based on UE
+measurement reports. Test cases and user's programs may also become consumers.
+Figure :ref:`fig-ue-meas-consumer` depicts the relationship between these
 entities.
 
 .. _fig-ue-meas-consumer:
    
 .. figure:: figures/ue-meas-consumer.*
-   :align: center   
+   :align: center
 
    Relationship between UE measurements and its consumers
 
@@ -2231,6 +2236,9 @@ The eNodeB RRC entity implements the configuration parameters and procedures
 described in Section 5.5.2 of [TS36331]_, with the following simplifying
 assumption:
 
+ - configuration (i.e. addition, modification, and removal) can only be done
+   before the simulation begins;
+   
  - all UEs attached to the eNodeB will be configured the same way, i.e. there is
    no support for configuring specific measurement for specific UE; and
    
@@ -2343,59 +2351,236 @@ to the serving eNodeB entity via RRC protocol. Several assumptions apply:
    `triggerQuantity`.
 
 
+.. _sec-handover:
+
 Handover
 ++++++++
 
-The RRC model support the execution of an X2-based handover procedure.
-There are 2 ways to trigger the handover procedure:
+The RRC model support UE mobility in CONNECTED mode by invoking X2-based
+handover procedure. The model is intra-EUTRAN and intra-frequency based on
+Section 10.1.2.1 of [TS36300]_.
 
- - the handover could be triggered explicitly by the simulation program
-   by scheduling an execution of the method ``LteEnbRrc::SendHandoverRequest ()``
+This section focuses on the process of triggering a handover. The handover
+procedure itself is covered in Section :ref:`sec-x2`.
 
- - the handover could be triggered automatically by the eNB RRC entity.
-   The eNB executes the following algorithm :ref:`fig-lte-handover-algorithm` 
-   to trigger the handover procedure for a UE providing measurements in its
-   serving cell and the neighbour cells the UE measures:
+There are two ways to trigger the handover procedure:
 
-.. _fig-lte-handover-algorithm:
+ - *explicitly* (or manually) triggered by the simulation program by scheduling
+   an execution of the method ``LteEnbRrc::SendHandoverRequest ()``; or
 
-.. figure:: figures/lte-handover-algorithm.*
-   :align: center
+ - *automatically* triggered by the eNodeB RRC entity based on UE measurements
+   and according to the selected handover algorithm.
 
-   Algorithm to automatically trigger the Handover procedure
+Section :ref:`sec-x2-based-handover` of user documentation provides some
+examples on using both explicit and automatic handover triggers in simulation.
+The next subsection will take a closer look on the automatic method, by
+describing the design aspect of handover algorithm.
 
-The simulation user can set two parameters to control the handover decision:
+.. _sec-handover-algorithm:
 
- - servingHandoverThreshold, if the RSRQ value measured by the UE in its
-   serving cell is less or equal to the servingHandoverThreshold parameter
-   (i.e. the conditions of the UE in the serving cell are getting bad or
-   not good enough), then the eNB considers this UE to hand it over to a new
-   neighbour eNB. The handover will really triggered depending on the 
-   measurements of the neighbour cells.
+Handover algorithm
+------------------
 
- - neighbourHandoverOffset, if the difference between the best neighbour RSRQ
-   and the serving cell RSRQ is greater or equal to the neighbourHandoverOffset
-   parameter, then the handover procedure is triggered for this UE.
+Handover in 3GPP LTE has the following properties:
+
+ - UE-assisted
+     UE provides input to the network in the form of measurement reports. This
+     is handled by the :ref:`sec-ue-measurements`.
    
-.. _sec-custom-handover-algorithm:
+ - Network-controlled
+     The network (i.e. the source eNodeB and the target eNodeB) decide and
+     oversee the handover.
 
-Custom handover algorithm
+*Handover algorithm* assists the source eNodeB in making handover decisions in
+an "automatic" manner. It interacts with an eNodeB RRC instance via *Handover
+Management SAP* interface. These relationships are illustrated in Figure
+:ref:`fig-ue-meas-consumer` from the previous section.
+
+The interface consists of the following methods:
+
+ - ``AddUeMeasReportConfigForHandover``
+     (Handover Algorithm -> eNodeB RRC) Used by the handover algorithm to
+     request measurement reports from the eNodeB RRC entity, by passing the
+     desired reporting configuration. The eNodeB RRC entity is expected to
+     enforce this reporting configuration to all the attached UEs. Due to
+     limitation of the UE measurements function, this method can only be used
+     before the simulation begins.
+
+ - ``ReportUeMeas``
+     (eNodeB RRC -> Handover Algorithm) Based on the UE measurements configured
+     earlier in ``AddUeMeasReportConfigForHandover``, UE may submit measurement
+     reports to the eNodeB. The eNodeB RRC entity uses the ``ReportUeMeas``
+     interface to forward these measurement reports to the handover algorithm.
+     
+ - ``TriggerHandover``
+     (Handover Algorithm -> eNodeB RRC) After examining the measurement
+     reports, the handover algorithm may declare a handover. This method is
+     used to notify the eNodeB RRC entity about this decision, which will then
+     proceed to commence the handover procedure. 
+
+One note for the ``AddUeMeasReportConfigForHandover``. The method will return
+the ``measId`` (measurement identity) of the newly created measurement
+configuration. Typically a handover algorithm would store this unique number. It
+may be useful in the ``ReportUeMeas`` method, for example when more than one
+configuration has been requested and the handover algorithm needs to
+differentiate incoming reports based on the configuration that triggered them.
+
+Handover algorithm is implemented by writing a subclass of the
+``LteHandoverAlgorithm`` abstract superclass and overriding each of the above
+mentioned SAP interface methods. Users may develop their own handover algorithm
+this way, and then make it into use in simulation by following the steps
+outlined in Section :ref:`sec-x2-based-handover` of user documentation.
+
+Alternatively, users may choose to use one of the 3 built-in handover algorithms
+provided by the LTE module: no-op, legacy, and strongest cell handover
+algorithm. They are ready to be used in simulations or can be
+taken as an example of implementing a handover algorithm. Each of these built-in
+algorithms are covered in the following subsections.
+
+No-op handover algorithm
+------------------------
+
+The *no-op handover algorithm* (``NoOpHandoverAlgorithm`` class) is the simplest
+possible implementation of handover algorithm. It basically does nothing, i.e.
+does not call any of the Handover Management SAP interface methods. Users may
+choose this handover algorithm if they wish to disable automatic handover
+trigger in their simulation.
+
+Legacy handover algorithm
 -------------------------
 
-When the existing handover algorithms are not flexible enough, (for instance,
-the Strongest Cell handover algorithm is limited to Event A3 only), users may
-develop a subclass of handover algorithm.
+The *legacy handover algorithm* is based on the automatic handover trigger from
+an earlier version of the LTE module. It is now implemented according to the
+Handover Management SAP interface as ``A2A4RsrqHandoverAlgorithm`` class.
 
-In the implementation, users may submit one or more UE measurements
-configuration message to the eNodeB RRC entity via the Handover Algorithm SAP
-interface (``AddUeMeasReportConfig``). Later during the simulation, the
-requested measurement reports will be delivered using another method of Handover
-Algorithm SAP interface (``ReportUeMeas``).
+The algorithm utilizes the Reference Signal Received Quality (RSRQ) measurements
+acquired from Event A2 and Event A4. Thus, the algorithm will add 2 measurement
+configuration to the corresponding eNodeB RRC instance. *Event A2* (serving
+cell's RSRQ becomes worse than `threshold`) is configured to indicate that the
+UE is experiencing poor signal quality and may benefit from a handover. While
+*Event A4* (neighbour cell's RSRQ becomes better than `threshold`) is configured
+with very low threshold, so that the trigger criteria are always true. The
+purpose of this Event A4 arrangement is to detect neighbouring cells and acquire
+their corresponding RSRQ from every attached UE, which are then stored
+internally by the algorithm. Figure :ref:`fig-lte-legacy-handover-algorithm`
+below summarizes this procedure.
 
-Note that the handover algorithm does not have to remember the `measId` of the
-requested measurement configuration, because the eNodeB RRC will maintain a list
-of the `measId` in question, and only submit the measurement reports which come
-from the listed `measId`.
+.. _fig-lte-legacy-handover-algorithm:
+
+.. figure:: figures/lte-legacy-handover-algorithm.*
+   :scale: 60 %
+   :align: center
+
+   Legacy handover algorithm
+ 
+Two attributes can be set to tune the algorithm behaviour:
+
+ - ``ServingCellThreshold``
+     The `threshold` for Event A2, i.e. a UE must have an RSRQ lower than this
+     threshold to be considered for a handover.
+
+ - ``NeighbourCellOffset``
+     The `offset` that aims to ensure that the UE would receive better signal
+     quality after the handover. A neighbouring cell is considered as a target
+     cell for the handover only if its RSRQ is higher than the serving cell's
+     RSRQ by the amount of this `offset`.
+
+The value of both attributes are expressed as RSRQ range (Section 9.1.7 of
+[TS36133]_), which is an integer between 0 and 34, with 0 as the lowest RSRQ.
+
+Strongest cell handover algorithm
+---------------------------------
+
+The *strongest cell handover algorithm*, or also sometimes known as the
+*traditional power budget (PBGT) algorithm*, is developed using [Dimou2009]_ as
+reference. The idea is to provide each UE with the best possible Reference
+Signal Received Power (RSRP). This is done by performing a handover as soon as
+a better cell (i.e. with stronger RSRP) is detected.
+
+*Event A3* (neighbour cell's RSRP becomes better than serving cell's RSRP) is
+chosen to realize this concept. The ``A3RsrpHandoverAlgorithm`` class is the
+result of the implementation. Handover is triggered for the UE to the best cell
+in the measurement report.
+
+Simulation which uses this algorithm is usually more vulnerable to ping-pong
+handover (consecutive handover to the previous source eNodeB within short period
+of time), especially when :ref:`sec-fading-model` is enabled. This problem is
+typically tackled by introducing a certain delay to the handover. The algorithm
+does this by including hysteresis and time-to-trigger parameters (Section 6.3.5
+of [TS36331]_) to the UE measurements configuration.
+
+*Hysteresis* (a.k.a. handover margin) delays the handover in regard of RSRP
+(in dB). While *time-to-trigger* delays the handover in regard of time
+(typically in milliseconds). Both can be configured through the ``Hysteresis``
+and ``TimeToTrigger`` attributes of the ``A3RsrpHandoverAlgorithm`` class.
+
+The difference between hysteresis and time-to-trigger is illustrated in Figure
+:ref:`fig-lte-strongest-cell-handover-algorithm` below, which is taken from the
+`lena-x2-handover-measures` example. It depicts the perceived RSRP of serving
+cell and a neighbouring cell by a UE which moves pass the border of the cells.
+
+.. _fig-lte-strongest-cell-handover-algorithm:
+
+.. figure:: figures/lte-strongest-cell-handover-algorithm.*
+   :align: center
+
+   Effect of hysteresis and time-to-trigger in strongest cell handover algorithm
+
+
+Neighbour Relation
+++++++++++++++++++
+
+LTE module supports a simplified *Automatic Neighbour Relation* (ANR) function.
+This is handled by the ``LteAnr`` class, which interacts with an eNodeB RRC
+instance through the ANR SAP interface.
+
+The ANR holds a *Neighbour Relation Table* (NRT), similar to the description in
+Section 22.3.2a of [TS36300]_. Each entry in the table is called a *Neighbour
+Relation* (NR) and represents a detected neighbouring cell, which contains the
+following boolean fields:
+
+ - No Remove
+     Indicates that the NR shall *not* be removed from the NRT. This is `true`
+     by default for user-provided NR and `false` otherwise.
+     
+ - No X2
+     Indicates that the NR shall *not* use an X2 interface in order to initiate
+     procedures towards the eNodeB parenting the target cell. This is `false` by
+     default for user-provided NR, and `true` otherwise.
+
+ - No HO
+     Indicates that the NR shall *not* be used by the eNodeB for handover
+     reasons. This is `true` in most cases, except when the NR is both
+     user-provided and network-detected.
+     
+The ANR SAP interface provides methods for adding a new NR entry into the NRT
+and for querying the above fields from an existing NR entry. The query uses the
+physical cell ID of the neighbour cell as the search key.
+
+Each NR entry may have at least one of the following properties:
+
+ - User-provided
+     This type of NR is created as instructed by the simulation user. For
+     example, a NR is created automatically upon a user-initiated establishment
+     of X2 connection between 2 eNodeBs, e.g. as described in Section
+     :ref:`sec-x2-based-handover`. Another way to create a user-provided NR is
+     to call the ``AddNeighbourRelation`` function.
+
+ - Network-detected
+     This type of NR is automatically created during the simulation as a result
+     of the discovery of a nearby cell.
+
+In order to automatically create network-detected NR, ANR utilizes UE
+measurements. In other words, ANR is a consumer of UE measurements, as depicted
+in Figure :ref:`fig-ue-meas-consumer`. RSRQ and Event A4 (neighbour becomes
+better than `threshold`) are used for the reporting configuration. The default
+Event A4 `threshold` is set to the lowest possible, i.e. maximum detection
+capability, but can be changed by setting the ``Threshold`` attribute of
+``LteAnr`` class.
+
+ANR is enabled by default in every eNodeB instance in the simulation. It can be
+disabled by setting the ``AnrEnabled`` attribute in ``LteHelper`` class to
+`false`.
 
 
 RRC sequence diagrams
@@ -2887,7 +3072,7 @@ The S1-AP primitives that are modeled are:
 
 
 
-
+.. _sec-x2:
 
 --
 X2

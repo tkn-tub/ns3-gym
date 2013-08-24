@@ -606,6 +606,7 @@ LteUeRrc::DoReportUeMeasurements (LteUeCphySapUser::UeMeasurementsParameters par
 {
   NS_LOG_FUNCTION (this);
 
+  // layer 3 filtering does not apply in IDLE mode
   bool useLayer3Filtering = (m_state == CONNECTED_NORMALLY);
 
   std::vector <LteUeCphySapUser::UeMeasurementsElement>::iterator newMeasIt;

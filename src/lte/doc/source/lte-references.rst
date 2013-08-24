@@ -118,7 +118,7 @@ References
 .. [R4-081920] 3GPP R4-081920 `"LTE PDCCH/PCFICH Demodulation Performance Results with Implementation Margin"
    <http://www.3gpp.org/ftp/tsg_ran/wg4_radio/TSGR4_48/Documents/R4-081920.zip>`_
 
-.. [FCapo2012] F.Capozzi, G.Piro L.A.Grieco, G.Boggia, P.Camarda,
+.. [FCapo2012] F.Capozzi, G.Piro, L.A. Grieco, G.Boggia, P.Camarda,
    "Downlink Packet Scheduling in LTE Cellular Networks: Key Design Issues and a Survey",
    IEEE Comm. Surveys and Tutorials, vol.2012, no.99, pp.1-23, Jun. 2012
 
@@ -133,3 +133,7 @@ References
 .. [GMonghal2008] G. Mongha, K.I. Pedersen, I.Z. Kovacs, P.E. Mogensen,
    "QoS Oriented Time and Frequency Domain Packet Schedulers for The UTRAN Long Term Evolution",
    In Proc. IEEE VTC, 2008.
+
+.. [Dimou2009] K. Dimou, M. Wang, Y. Yang; M. Kazmi, A. Larmo, J. Pettersson, W. Muller, Y. Timner,
+   "Handover within 3GPP LTE: Design Principles and Performance",
+   Vehicular Technology Conference Fall (VTC 2009-Fall), 2009 IEEE 70th, pp.1,5, 20-23 Sept. 2009

@@ -32,6 +32,7 @@ IMAGES_DIA = \
 	$(FIGURES)/lte-epc-x2-interface.dia \
 	$(FIGURES)/lte-harq-architecture.dia \
 	$(FIGURES)/lte-harq-processes-scheme.dia \
+	$(FIGURES)/ue-meas-consumer.dia \
 	$(FIGURES)/ue-meas-piecewise-motion.dia \
 	$(FIGURES)/ue-meas-piecewise-a1.dia \
 	$(FIGURES)/ue-meas-piecewise-a1-hys.dia \
@@ -61,8 +62,7 @@ IMAGES_EPS = \
 	$(FIGURES)/lte-rlc-data-retx-ul.eps \
 	$(FIGURES)/lte-epc-x2-handover-seq-diagram.eps \
 	$(FIGURES)/lte-epc-x2-entity-saps.eps \
-	$(FIGURES)/ue-meas-consumer.eps
-
+	$(FIGURES)/lte-strongest-cell-handover-algorithm.eps
 
 # rescale pdf figures as necessary
 $(FIGURES)/lte-interference-test-scenario.pdf_width = 3in
@@ -86,7 +86,7 @@ $(FIGURES)/lte-subframe-structure.pdf_width = 2in
 $(FIGURES)/mac-random-access-contention.pdf_width = 10cm
 $(FIGURES)/mac-random-access-noncontention.pdf_width = 15cm
 $(FIGURES)/lte-ue-rrc-states.pdf_width = 7cm
-$(FIGURES)/lte-handover-algorithm.pdf_width = 10cm
+$(FIGURES)/lte-legacy-handover-algorithm.pdf_width = 10cm
 $(FIGURES)/helpers.pdf_width = 8cm
 
 IMAGES_SEQDIAG = \
@@ -102,7 +102,7 @@ IMAGES_SEQDIAG = \
 IMAGES_DOT = \
 	$(FIGURES)/lte-enb-rrc-states.dot \
 	$(FIGURES)/lte-ue-rrc-states.dot \
-	$(FIGURES)/lte-handover-algorithm.dot
+	$(FIGURES)/lte-legacy-handover-algorithm.dot
 
 IMAGES_NOBUILD = $(FIGURES)/fading_pedestrian.png \
 	$(FIGURES)/fading_vehicular.png \

@@ -353,7 +353,7 @@ private:
 
   /**
    * Trace information regarding RSRP and RSRQ (see TS 36.214)
-   * uint16_t rnti, uint16_t cellId, double rsrp, double sinr, bool servingCell
+   * uint16_t rnti, uint16_t cellId, double rsrpDbm, double rsrqDb, bool isServingCell
    */
   TracedCallback<uint16_t, uint16_t, double, double, bool> m_reportUeMeasurements;
 

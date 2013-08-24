@@ -1205,6 +1205,7 @@ X-axes going from the neighbourhood of one eNB to the next eNB. Each test case i
 instance of this scenario defined by the following parameters:
 
  - the number of eNBs in the X-axes
+ - the number of UEs
  - the number of EPS bearers activated for the UE
  - a list of check point events to be triggered, where each event is defined by:
    + the time of the first check point event
@@ -1212,9 +1213,22 @@ instance of this scenario defined by the following parameters:
    + interval time between two check point events
    + the index of the UE doing the handover
    + the index of the eNB where the UE must be connected
+ - a boolean flag indicating whether UDP traffic is to be used instead of TCP traffic
+ - the type of scheduler to be used
+ - the type of handover algorithm to be used
+ - a boolean flag indicating whether handover is admitted by default 
  - a boolean flag indicating whether the ideal RRC protocol is to be used instead of the
    real RRC protocol
- - the type of scheduler to be used (RR or PF)
+
+The test suite consists of many test cases. In fact, it has been one of the most
+time-consuming test suite in ns-3. The test cases run with *some* combination of
+the following variable parameters:
+
+ - number of eNBs: 2, 3, 4;
+ - number of EPS bearers: 0, 1, 2;
+ - RRC: ideal, real (see :ref:`sec-rrc-protocol-models`);
+ - MAC scheduler: round robin, proportional fair (see :ref:`sec-ff-mac-scheduler`); and
+ - handover algorithm: legacy, strongest cell (see :ref:`sec-handover-algorithm`).
 
 Each test case passes if the following conditions are true:
 

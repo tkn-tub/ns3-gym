@@ -111,6 +111,7 @@ SOURCEFIGS = \
 	$(SRC)/lte/doc/source/figures/lte-epc-x2-interface.dia \
 	$(SRC)/lte/doc/source/figures/lte-harq-architecture.dia \
 	$(SRC)/lte/doc/source/figures/lte-harq-processes-scheme.dia \
+	$(SRC)/lte/doc/source/figures/ue-meas-consumer.dia \
 	$(SRC)/lte/doc/source/figures/ue-meas-piecewise-motion.dia \
 	$(SRC)/lte/doc/source/figures/ue-meas-piecewise-a1.dia \
 	$(SRC)/lte/doc/source/figures/ue-meas-piecewise-a1-hys.dia \
@@ -135,7 +136,7 @@ SOURCEFIGS = \
 	$(SRC)/lte/doc/source/figures/lte-rlc-data-retx-ul.eps \
 	$(SRC)/lte/doc/source/figures/lte-epc-x2-handover-seq-diagram.eps \
 	$(SRC)/lte/doc/source/figures/lte-epc-x2-entity-saps.eps \
-	$(SRC)/lte/doc/source/figures/ue-meas-consumer.eps \
+	$(SRC)/lte/doc/source/figures/lte-strongest-cell-handover-algorithm.eps \
 	$(SRC)/lte/doc/source/figures/fading_pedestrian.png \
 	$(SRC)/lte/doc/source/figures/fading_vehicular.png \
 	$(SRC)/lte/doc/source/figures/fading_urban_3kmph.png \
@@ -184,10 +185,10 @@ SOURCEFIGS = \
 	$(SRC)/lte/doc/source/figures/nas-attach.pdf \
 	$(SRC)/lte/doc/source/figures/lte-enb-rrc-states.png \
 	$(SRC)/lte/doc/source/figures/lte-ue-rrc-states.png \
-	$(SRC)/lte/doc/source/figures/lte-handover-algorithm.png \
+	$(SRC)/lte/doc/source/figures/lte-legacy-handover-algorithm.png \
 	$(SRC)/lte/doc/source/figures/lte-enb-rrc-states.pdf \
 	$(SRC)/lte/doc/source/figures/lte-ue-rrc-states.pdf \
-	$(SRC)/lte/doc/source/figures/lte-handover-algorithm.pdf \
+	$(SRC)/lte/doc/source/figures/lte-legacy-handover-algorithm.pdf \
 	$(SRC)/uan/doc/auvmobility-classes.dia \
 	$(SRC)/stats/doc/Stat-framework-arch.png \
 	$(SRC)/stats/doc/Wifi-default.png \
@@ -252,6 +253,7 @@ IMAGES_EPS = \
 	$(FIGURES)/lte-epc-x2-interface.eps \
 	$(FIGURES)/lte-harq-architecture.eps \
 	$(FIGURES)/lte-harq-processes-scheme.eps \
+	$(FIGURES)/ue-meas-consumer.eps \
 	$(FIGURES)/ue-meas-piecewise-motion.eps \
 	$(FIGURES)/ue-meas-piecewise-a1.eps \
 	$(FIGURES)/ue-meas-piecewise-a1-hys.eps \
@@ -276,7 +278,7 @@ IMAGES_EPS = \
 	$(FIGURES)/lte-rlc-data-retx-ul.eps \
 	$(FIGURES)/lte-epc-x2-handover-seq-diagram.eps \
 	$(FIGURES)/lte-epc-x2-entity-saps.eps \
-	$(FIGURES)/ue-meas-consumer.eps \
+	$(FIGURES)/lte-strongest-cell-handover-algorithm.eps \
 	$(FIGURES)/auvmobility-classes.eps \
 
 # rescale pdf figures as necessary

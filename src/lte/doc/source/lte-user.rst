@@ -1027,7 +1027,7 @@ own configuration into action, and there are several ways to do so:
  #. developing a new handover algorithm.
  
 This section will cover the first and second methods, while the third method is
-covered in :ref:`sec-custom-handover-algorithm`.
+covered in :ref:`sec-handover-algorithm`.
 
 Direct configuration in eNodeB RRC entity
 *****************************************
@@ -1058,7 +1058,7 @@ within the container ``devs``::
   
   std::vector<uint8_t> measIdList;
 
-  NetDeviceContainer::iterator it;
+  NetDeviceContainer::Iterator it;
   for (it = devs.Begin (); it != devs.End (); it++)
   {
     Ptr<NetDevice> dev = *it;
@@ -1074,9 +1074,9 @@ within the container ``devs``::
   }
 
 Note that thresholds are expressed as range. In the example above, the range 41
-for RSRP corresponds to -100 dBm. The conversion from and to range is due to
-Section 9.1.4 and 9.1.7 of [TS36133]_. The ``EutranMeasurementMapping`` class
-has several static functions that can be used for this purpose.
+for RSRP corresponds to -100 dBm. The conversion from and to the range format is
+due to Section 9.1.4 and 9.1.7 of [TS36133]_. The ``EutranMeasurementMapping``
+class has several static functions that can be used for this purpose.
 
 The corresponding callback function would have a definition similar as below::
 
@@ -1130,6 +1130,9 @@ handover algorithm requires from the UE. For example, the Strongest Cell
 handover algorithm has attributes for `A3Offset` and `TimeToTrigger`, and will
 request UE measurement according to the value of these attributes.
 
+
+
+.. _sec-x2-based-handover:
 
 X2-based handover
 -----------------
