@@ -759,6 +759,7 @@ Finally, the required efficiency of the ``PiroEW2010`` AMC module can be tuned t
 
 
 
+.. _sec-evolved-packet-core:
 
 Evolved Packet Core (EPC)
 -------------------------
@@ -1026,14 +1027,12 @@ own configuration into action, and there are several ways to do so:
  
  #. developing a new handover algorithm.
  
-This section will cover the first and second methods, while the third method is
-covered in :ref:`sec-handover-algorithm`.
+This section will cover the first method only. The second method is covered in
+:ref:`sec-automatic-handover`, while the third method is explained in length in
+Section :ref:`sec-handover-algorithm` of the design documentation.
 
-Direct configuration in eNodeB RRC entity
-*****************************************
-
-Users may add their custom UE measurement configuration by creating a new
-``LteRrcSap::ReportConfigEutra`` instance and pass it to the
+Direct configuration in eNodeB RRC works as follows. User begins by creating a
+new ``LteRrcSap::ReportConfigEutra`` instance and pass it to the
 ``LteEnbRrc::AddUeMeasReportConfig`` function. The function will return the
 ``measId`` (measurement identity) which is a unique reference of the
 configuration in the eNodeB instance. This function must be called before the
@@ -1049,29 +1048,29 @@ of [TS36331]_.
 The code sample below configures Event A1 RSRP measurement to every eNodeB
 within the container ``devs``::
 
-  LteRrcSap::ReportConfigEutra config; 
-  config.eventId = LteRrcSap::ReportConfigEutra::EVENT_A1;
-  config.threshold1.choice = LteRrcSap::ThresholdEutra::THRESHOLD_RSRP;
-  config.threshold1.range = 41;
-  config.triggerQuantity = LteRrcSap::ReportConfigEutra::RSRP;
-  config.reportInterval = LteRrcSap::ReportConfigEutra::MS480;
-  
-  std::vector<uint8_t> measIdList;
+   LteRrcSap::ReportConfigEutra config;        
+   config.eventId = LteRrcSap::ReportConfigEutra::EVENT_A1;
+   config.threshold1.choice = LteRrcSap::ThresholdEutra::THRESHOLD_RSRP;
+   config.threshold1.range = 41;
+   config.triggerQuantity = LteRrcSap::ReportConfigEutra::RSRP;
+   config.reportInterval = LteRrcSap::ReportConfigEutra::MS480;
+   
+   std::vector<uint8_t> measIdList;
 
-  NetDeviceContainer::Iterator it;
-  for (it = devs.Begin (); it != devs.End (); it++)
-  {
-    Ptr<NetDevice> dev = *it;
-    Ptr<LteEnbNetDevice> enbDev = dev->GetObject<LteEnbNetDevice> ();
-    Ptr<LteEnbRrc> enbRrc = enbDev->GetRrc ();
+   NetDeviceContainer::Iterator it;
+   for (it = devs.Begin (); it != devs.End (); it++)
+   {
+     Ptr<NetDevice> dev = *it;
+     Ptr<LteEnbNetDevice> enbDev = dev->GetObject<LteEnbNetDevice> ();
+     Ptr<LteEnbRrc> enbRrc = enbDev->GetRrc ();
     
-    uint8_t measId = enbRrc->AddUeMeasReportConfig (config);
-    measIdList.push_back (measId); // remember the measId created
+     uint8_t measId = enbRrc->AddUeMeasReportConfig (config);
+     measIdList.push_back (measId); // remember the measId created
     
-    enbRrc->TraceConnect ("RecvMeasurementReport",
-                          "context",
-                          MakeCallback (&RecvMeasurementReportCallback));
-  }
+     enbRrc->TraceConnect ("RecvMeasurementReport",
+                           "context",
+                           MakeCallback (&RecvMeasurementReportCallback));
+   }
 
 Note that thresholds are expressed as range. In the example above, the range 41
 for RSRP corresponds to -100 dBm. The conversion from and to the range format is
@@ -1080,12 +1079,12 @@ class has several static functions that can be used for this purpose.
 
 The corresponding callback function would have a definition similar as below::
 
-  void
-  RecvMeasurementReportCallback (std::string context,
-                                 uint64_t imsi,
-                                 uint16_t cellId,
-                                 uint16_t rnti,
-                                 LteRrcSap::MeasurementReport measReport);
+   void
+   RecvMeasurementReportCallback (std::string context,
+                                  uint64_t imsi,
+                                  uint16_t cellId,
+                                  uint16_t rnti,
+                                  LteRrcSap::MeasurementReport measReport);
 
 This method will register the callback function as a consumer of UE
 measurements. In the case where there are more than one consumers in the
@@ -1118,18 +1117,6 @@ decision:
  - *measurement gaps* are not supported, because it is only applicable for
    inter-frequency settings;
 
-Configuring existing handover algorithm
-***************************************
-
-Each handover algorithm subclass has its own set of attributes. Similar with
-how FF MAC Scheduler is configured, custom values can be provided to these
-attributes by calling ``LteHelper::SetHandoverAlgorithmAttribute``.
-
-The updated attributes may change the measurement configuration that the
-handover algorithm requires from the UE. For example, the Strongest Cell
-handover algorithm has attributes for `A3Offset` and `TimeToTrigger`, and will
-request UE measurement according to the value of these attributes.
-
 
 
 .. _sec-x2-based-handover:
@@ -1137,70 +1124,120 @@ request UE measurement according to the value of these attributes.
 X2-based handover
 -----------------
 
-The execution of an X2-based handover between two eNBs requires the
-configuration of an X2 interface between the two eNBs. This needs to
-be done explicitly within the simulation program like this::
+As defined by 3GPP, handover is a procedure for changing the serving cell of a
+UE in CONNECTED mode. The two eNodeBs involved in the process are typically
+called the *source eNodeB* and the *target eNodeB*.
 
-     lteHelper->AddX2Interface (enbNodes);
+In order to enable the execution of X2-based handover in simulation, there are
+two requirements that must be met. Firstly, EPC must be enabled in the
+simulation (see :ref:`sec-evolved-packet-core`).
 
-where ``enbNodes`` is a ``NodeContainer`` that contains the two eNBs
-between which the X2 interface is to be configured.
+Secondly, an X2 interface must be configured between the two eNodeBs, which
+needs to be done explicitly within the simulation program::
+
+   lteHelper->AddX2Interface (enbNodes);
+
+where ``enbNodes`` is a ``NodeContainer`` that contains the two eNodeBs between
+which the X2 interface is to be configured. If the container has more than two
+eNodeBs, the function will create an X2 interface between every pair of eNodeBs
+in the container.
+
+Lastly, the target eNodeB must be configured as "open" to X2 HANDOVER REQUEST.
+Every eNodeB is open by default, so no extra instruction is needed in most
+cases. However, users may set the eNodeB to "closed" by setting the boolean
+attribute ``LteEnbRrc::AdmitHandoverRequest`` to `false`. As an example, you can
+run the ``lena-x2-handover`` program and setting the attribute in this way::
+
+   NS_LOG=EpcX2:LteEnbRrc ./waf --run lena-x2-handover --command="%s --ns3::LteEnbRrc::AdmitHandoverRequest=false"
+
+After the above three requirements are fulfilled, the handover procedure can be
+triggered manually or automatically. Each will be presented in the following
+subsections.
 
 
 Manual handover trigger
 ***********************
 
-Handover event can be triggered "manually" within the simulation
-program by scheduling an  explicit handover event. The ``LteHelper``
-provides a convenient method for the scheduling of a handover
-event. As an example, let us assume that ``ueLteDevs``` is a
-``NetDeviceContainer`` that contains the UE that is to be handed over,
-and that ``enbLteDevs`` is another ``NetDeviceContainer`` that
-contains the source and the target eNB. Then, an handover at 0.1s can be
+Handover event can be triggered "manually" within the simulation program by
+scheduling an explicit handover event. The ``LteHelper`` object provides a
+convenient method for the scheduling of a handover event. As an example, let us
+assume that ``ueLteDevs`` is a ``NetDeviceContainer`` that contains the UE that
+is to be handed over, and that ``enbLteDevs`` is another ``NetDeviceContainer``
+that contains the source and the target eNB. Then, a handover at 0.1s can be
 scheduled like this::
 
-     lteHelper->HandoverRequest (Seconds (0.100), 
-                                 ueLteDevs.Get (0), 
-                                 enbLteDevs.Get (0), 
-                                 enbLteDevs.Get (1));
+   lteHelper->HandoverRequest (Seconds (0.100), 
+                               ueLteDevs.Get (0), 
+                               enbLteDevs.Get (0), 
+                               enbLteDevs.Get (1));
 
+Note that the UE needs to be already connected to the source eNB, otherwise the
+simulation will terminate with an error message. 
 
-Note that the UE needs to be already connected to the source eNB,
-otherwise the simulation will terminate with an error message.
+For an example with full source code, please refer to the ``lena-x2-handover``
+example program.
 
 
 Automatic handover trigger
 **************************
 
-Handover procedure can be triggered "automatically" by the serving eNB of 
-the UE. It is also known as the source eNB in the handover procedure. In
-order to control when the handover procedure is initiated, you can configure
-the parameters of the handover algorithm in your simulation program 
-through the ns-3 attributes of the eNB RRC entity::
+Handover procedure can also be triggered "automatically" by the serving eNodeB 
+of the UE. The logic behind the trigger depends on the handover algorithm
+currently active in the eNodeB RRC entity. Users may select and configure the
+handover algorithm that will be used in the simulation, which will be explained
+shortly in this section. Users may also opt to write their own implementation of
+handover algorithm, as described in Section :ref:`sec-handover-algorithm` of the
+design documentation.
 
+Selecting a handover algorithm is done via the ``LteHelper`` object and its
+``SetHandoverAlgorithmType`` method as shown below::
 
-  Config::SetDefault ("ns3::LteEnbRrc::ServingCellHandoverThreshold",
-                      UintegerValue (30));
+   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
+   lteHelper->SetHandoverAlgorithmType ("ns3::A2A4RsrqHandoverAlgorithm");
+ 
+The selected handover algorithm may also provide several configurable
+attributes, which can be set as follows::
 
-  Config::SetDefault ("ns3::LteEnbRrc::NeighbourCellHandoverOffset",
-                      UintegerValue (1));
+   lteHelper->SetHandoverAlgorithmAttribute ("ServingCellThreshold",
+                                             UintegerValue (30));
+   lteHelper->SetHandoverAlgorithmAttribute ("NeighbourCellOffset",
+                                             UintegerValue (1));
 
+Three options of handover algorithm are included in the LTE module. The *legacy*
+handover algorithm (named as ``ns3::A2A4RsrqHandoverAlgorithm``) is the default
+option, and the usage has already been shown above.
 
-The UE measurements are used in the automatic handover algorithm. You can
-configure the parameters of the UE measurements in your simulation program
-through the ns-3 attributes of the eNB RRC entity. You can set the thresholds
-of events A2 and A4::
+Another option is the *strongest cell* handover algorithm (named as
+``ns3::A3RsrpHandoverAlgorithm``), which can be selected and configured by the
+following code::
 
+   lteHelper->SetHandoverAlgorithmType ("ns3::A3RsrpHandoverAlgorithm");
+   lteHelper->SetHandoverAlgorithmAttribute ("Hysteresis",
+                                             DoubleValue (3.0));
+   lteHelper->SetHandoverAlgorithmAttribute ("TimeToTrigger",
+                                             TimeValue (MilliSeconds (256)));
 
-  Config::SetDefault ("ns3::LteEnbRrc::EventA2Threshold",
-                      UintegerValue (32));
+The last option is a special one, called the *no-op* handover algorithm, which
+basically disables automatic handover trigger. This is useful for example in
+cases where manual handover trigger need an exclusive control of all handover
+decision. It does not have any configurable attributes. The usage is as
+follows::
 
-  Config::SetDefault ("ns3::LteEnbRrc::EventA4Threshold",
-                      UintegerValue (2));
+   lteHelper->SetHandoverAlgorithmType ("ns3::NoOpHandoverAlgorithm");
 
+For more information on each handover algorithm's decision policy and their
+attributes, please refer to their respective subsections in Section
+:ref:`sec-handover-algorithm` of the design documentation.
 
-You can find more info about events A2 and A4 in Subsections 5.5.4.3 and 5.5.4.5
-of [TS36331]_.
+Finally, the ``InstallEnbDevice`` function of ``LteHelper`` will instantiate one
+instance of the selected handover algorithm for each eNodeB device. In other
+words, make sure to select the right handover algorithm before finalizing it in
+the following line of code::
+
+   NetDeviceContainer enbLteDevs = lteHelper->InstallEnbDevice (enbNodes); 
+
+Example with full source code of using automatic handover trigger can be found
+in the ``lena-x2-handover-measures`` example program.
 
 
 Handover traces
@@ -1212,76 +1249,73 @@ custom functions so that they are called upon start and end of the
 handover execution phase at both the UE and eNB side. As an example,
 in your simulation program you can declare the following methods::
 
-
-  void 
-  NotifyHandoverStartUe (std::string context, 
-                         uint64_t imsi, 
-                         uint16_t cellid, 
-                         uint16_t rnti, 
-                         uint16_t targetCellId)
-  {
-    std::cout << context 
-              << " UE IMSI " << imsi 
-              << ": previously connected to CellId " << cellid 
-              << " with RNTI " << rnti 
-              << ", doing handover to CellId " << targetCellId 
-              << std::endl;
-  }
-
-  void 
-  NotifyHandoverEndOkUe (std::string context, 
-                         uint64_t imsi, 
-                         uint16_t cellid, 
-                         uint16_t rnti)
-  {
-    std::cout << context 
-              << " UE IMSI " << imsi 
-              << ": successful handover to CellId " << cellid 
-              << " with RNTI " << rnti 
-              << std::endl;
-  }
-
-  void 
-  NotifyHandoverStartEnb (std::string context, 
+   void 
+   NotifyHandoverStartUe (std::string context, 
                           uint64_t imsi, 
                           uint16_t cellid, 
                           uint16_t rnti, 
                           uint16_t targetCellId)
-  {
-    std::cout << context 
-              << " eNB CellId " << cellid 
-              << ": start handover of UE with IMSI " << imsi 
-              << " RNTI " << rnti 
-              << " to CellId " << targetCellId 
-              << std::endl;
-  }
+   {
+     std::cout << Simulator::Now ().GetSeconds () << " " << context 
+               << " UE IMSI " << imsi 
+               << ": previously connected to CellId " << cellid 
+               << " with RNTI " << rnti 
+               << ", doing handover to CellId " << targetCellId 
+               << std::endl;
+   }
 
-  void 
-  NotifyHandoverEndOkEnb (std::string context, 
+   void 
+   NotifyHandoverEndOkUe (std::string context, 
                           uint64_t imsi, 
                           uint16_t cellid, 
                           uint16_t rnti)
-  {
-    std::cout << context 
-              << " eNB CellId " << cellid 
-              << ": completed handover of UE with IMSI " << imsi 
-              << " RNTI " << rnti 
-              << std::endl;
-  }
+   {
+     std::cout << Simulator::Now ().GetSeconds () << " " << context 
+               << " UE IMSI " << imsi 
+               << ": successful handover to CellId " << cellid 
+               << " with RNTI " << rnti 
+               << std::endl;
+   }
 
+   void 
+   NotifyHandoverStartEnb (std::string context, 
+                           uint64_t imsi, 
+                           uint16_t cellid, 
+                           uint16_t rnti, 
+                           uint16_t targetCellId)
+   {
+     std::cout << Simulator::Now ().GetSeconds () << " " << context 
+               << " eNB CellId " << cellid 
+               << ": start handover of UE with IMSI " << imsi 
+               << " RNTI " << rnti 
+               << " to CellId " << targetCellId 
+               << std::endl;
+   }
+
+   void 
+   NotifyHandoverEndOkEnb (std::string context, 
+                           uint64_t imsi, 
+                           uint16_t cellid, 
+                           uint16_t rnti)
+   {
+     std::cout << Simulator::Now ().GetSeconds () << " " << context 
+               << " eNB CellId " << cellid 
+               << ": completed handover of UE with IMSI " << imsi 
+               << " RNTI " << rnti 
+               << std::endl;
+   }
 
 Then, you can hook up these methods to the corresponding trace sources
 like this::
 
-  Config::Connect ("/NodeList/*/DeviceList/*/LteEnbRrc/HandoverStart",
-                   MakeCallback (&NotifyHandoverStartEnb));
-  Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/HandoverStart",
-                   MakeCallback (&NotifyHandoverStartUe));
-  Config::Connect ("/NodeList/*/DeviceList/*/LteEnbRrc/HandoverEndOk",
-                   MakeCallback (&NotifyHandoverEndOkEnb));
-  Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/HandoverEndOk",
-                   MakeCallback (&NotifyHandoverEndOkUe));
-
+   Config::Connect ("/NodeList/*/DeviceList/*/LteEnbRrc/HandoverStart",
+                    MakeCallback (&NotifyHandoverStartEnb));
+   Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/HandoverStart",
+                    MakeCallback (&NotifyHandoverStartUe));
+   Config::Connect ("/NodeList/*/DeviceList/*/LteEnbRrc/HandoverEndOk",
+                    MakeCallback (&NotifyHandoverEndOkEnb));
+   Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/HandoverEndOk",
+                    MakeCallback (&NotifyHandoverEndOkUe));
 
 The example program ``src/lte/examples/lena-x2-handover.cc``
 illustrates how the all above instructions can be integrated in a
@@ -1296,14 +1330,6 @@ information, you can run the program like this::
     NS_LOG=LteEnbRrc:LteUeRrc:EpcX2 ./waf --run lena-x2-handover
 
 
-Whether a target eNB will accept or not an incoming X2 HANDOVER
-REQUEST is controlled by the boolean attribute
-``LteEnbRrc::AdmitHandoverRequest`` (default: true). As an example,
-you can run the ``lena-x2-handover`` program setting the attribute to
-false in this way::
-
-   NS_LOG=EpcX2:LteEnbRrc ./waf --run lena-x2-handover 
-     --command="%s --ns3::LteEnbRrc::AdmitHandoverRequest=false"
 
 
 
