@@ -62,7 +62,7 @@ Here is the minimal simulation program that is needed to do an LTE-only simulati
       // the rest of the simulation program follows
 
 
-#. Create a LteHelper object::
+#. Create an ``LteHelper`` object::
 
       Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
 
@@ -70,7 +70,7 @@ Here is the minimal simulation program that is needed to do an LTE-only simulati
    objects (e.g., the Channel object) and provide the methods to add
    eNBs and UEs and configure them.
 
-#. Create Node objects for the eNB(s) and the UEs::
+#. Create ``Node`` objects for the eNB(s) and the UEs::
 
       NodeContainer enbNodes;
       enbNodes.Create (1);
@@ -657,7 +657,7 @@ with different antenna orientations to be installed on each node.
 Radio Environment Maps
 ----------------------
 
-By using the class RadioEnvironmentMapHelper it is possible to output
+By using the class ``RadioEnvironmentMapHelper`` it is possible to output
 to a file a Radio Environment Map (REM), i.e., a uniform 2D grid of values
 that represent the Signal-to-noise ratio in the downlink with respect
 to the eNB that has the strongest signal at each point. 
@@ -677,9 +677,9 @@ program towards the end, right before the call to Simulator::Run ()::
   remHelper->SetAttribute ("Z", DoubleValue (0.0));
   remHelper->Install ();
 
-By configuring the attributes of the RadioEnvironmentMapHelper object
+By configuring the attributes of the ``RadioEnvironmentMapHelper`` object
 as shown above, you can tune the parameters of the REM to be
-generated. Note that each RadioEnvironmentMapHelper instance can
+generated. Note that each ``RadioEnvironmentMapHelper`` instance can
 generate only one REM; if you want to generate more REMs, you need to
 create one separate instance for each REM. 
 
@@ -796,7 +796,7 @@ created will have the ``EpsBearerToRlcMapping`` attribute set to
 the default; otherwise, the attribute won't be changed (e.g., if
 you changed the default to ``RLC_AM_ALWAYS``, it won't be touched).
 
-It is to be noted that, upon construction, the EpcHelper will also
+It is to be noted that, upon construction, the ``EpcHelper`` will also
 create and configure the PGW node. Its configuration in particular
 is very complex, and hence is done automatically by the Helper. Still,
 it is allowed to access the PGW node in order to connect it to other

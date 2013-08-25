@@ -61,7 +61,7 @@ have been considered:
     The reason is that, since packet scheduling is done on
     a per-RB basis, an eNB might transmit on a subset only of all the available
     RBs, hence interfering with other eNBs only on those RBs where it is
-    trasmitting.
+    transmitting.
     Note that this requirement rules out the adoption of a system level simulation
     approach, which evaluates resource allocation only at the granularity of
     call/bearer establishment.
@@ -114,10 +114,9 @@ EPC Model
 The main objective of the EPC model is to provides means for the
 simulation of end-to-end IP connectivity over the LTE model. 
 To this aim, it supports for the
-interconnection of multiple UEs to the internet, via a radio access
+interconnection of multiple UEs to the Internet, via a radio access
 network of multiple eNBs connected to a single SGW/PGW node, as shown
 in Figure :ref:`fig-epc-topology`.
-
 
 The following design choices have been made for the EPC model:
 
@@ -157,7 +156,7 @@ The following design choices have been made for the EPC model:
 
 
 
-.. _overall-architecture:
+.. _sec-overall-architecture:
 
 ------------
 Architecture
@@ -441,12 +440,12 @@ hence :math:`N_{scenarios} = 3`. All traces have :math:`T_{trace} = 10` s and :m
 Antennas
 ++++++++
 
-Being based on the SpectrumPhy, the LTE PHY model supports antenna
-modeling via the ns-3 AntennaModel class. Hence, any model based on
+Being based on the ``SpectrumPhy``, the LTE PHY model supports antenna
+modeling via the ns-3 ``AntennaModel`` class. Hence, any model based on
 this class can be associated with any eNB or UE instance. For
-instance, the use of the CosineAntennaModel associated with an eNB
+instance, the use of the ``CosineAntennaModel`` associated with an eNB
 device allows to model one sector of a macro base station. By default,
-the IsotropicAntennaModel is used for both eNBs and UEs. 
+the ``IsotropicAntennaModel`` is used for both eNBs and UEs. 
 
 
 
@@ -480,7 +479,7 @@ The subframe is divided into control and data part as described in Figure :ref:`
 .. figure:: figures/lte-subframe-structure.*
    :width: 50px
 
-   Lte subframe division.
+   LTE subframe division.
 
 
 Considering the granularity of the simulator based on RB, the control and the reference signaling have to be consequently modeled considering this constraint.  According to the standard [TS36211]_, the downlink control frame starts at the beginning of each subframe and lasts up to three symbols across the whole system bandwidth, where the actual duration is provided by the Physical Control Format Indicator Channel (PCFICH). The information on the allocation are then mapped in the remaining resource up to the duration defined by the PCFICH, in the so called Physical Downlink Control Channel (PDCCH). A PDCCH transports a single message called Downlink Control Information (DCI) coming from the MAC layer, where the scheduler indicates the resource allocation for a specific user.
@@ -727,7 +726,7 @@ According to the considerations above, a model more flexible can be obtained con
 Therefore the PHY layer implements the MIMO model as the gain perceived by the receiver when using a MIMO scheme respect to the one obtained using SISO one. We note that, these gains referred to a case where there is no correlation between the antennas in MIMO scheme; therefore do not model degradation due to paths correlation.
 
 
-.. _phy-ue-measurements:
+.. _sec-phy-ue-measurements:
 
 UE PHY Measurements Model
 +++++++++++++++++++++++++
@@ -834,7 +833,7 @@ Resource Allocation Model
 
 We now briefly describe how resource allocation is handled in LTE,
 clarifying how it is modeled in the simulator. The scheduler is in
-charge of generating specific structures calles Data Control Indication (DCI)
+charge of generating specific structures called *Data Control Indication* (DCI)
 which are then transmitted by the PHY of the eNB to the connected UEs, in order
 to inform them of the resource allocation on a per subframe basis. In doing this
 in the downlink direction, the scheduler has to fill some specific fields of the
@@ -1006,7 +1005,7 @@ available resources among the active flows, i.e., those logical channels which h
 
 For what concern the HARQ, RR implements the non adaptive version, which implies that in allocating the retransmission attempts RR uses the same allocation configuration of the original block, which means maintaining the same RBGs and MCS. UEs that are allocated for HARQ retransmissions are not considered for the transmission of new data in case they have a transmission opportunity available in the same TTI. Finally, HARQ can be disabled with ns3 attribute system for maintaining backward compatibility with old test cases and code, in detail::
 
-  Config::SetDefault ("ns3::RrFfMacScheduler::HarqEnabled", BooleanValue (false));
+   Config::SetDefault ("ns3::RrFfMacScheduler::HarqEnabled", BooleanValue (false));
 
 The scheduler implements the filtering of the uplink CQIs according to their nature with ``UlCqiFilter`` attibute, in detail:
 
@@ -1449,7 +1448,7 @@ The following list specifies which service primitives are provided by the MAC se
           in the receiver peer
 
 
-.. _am_data_transfer:
+.. _sec-am_data_transfer:
 
 AM RLC
 ++++++
@@ -2020,8 +2019,8 @@ UE's entry point to join the cellular network.
 
 The measurements are based on the RSRP of the received PSS, averaged by Layer 1
 filtering, and performed by the PHY layer, as previously described in more
-detail in section :ref:`phy-ue-measurements`. PSS is transmitted by eNodeB over
-the central 72 sub-carriers of the DL channel (Section 5.1.7.3 [TS36300]_),
+detail in section :ref:`sec-phy-ue-measurements`. PSS is transmitted by eNodeB
+over the central 72 sub-carriers of the DL channel (Section 5.1.7.3 [TS36300]_),
 hence we model cell search to operate using a DL bandwidth of 6 RBs. Note that
 measurements of RSRQ are not available at this point of time in simulation. As
 a consequence, the ``LteUePhy::RsrqUeMeasThreshold`` attribute does not apply
@@ -2244,7 +2243,7 @@ assumption:
    
  - it is assumed that there is a one-to-one mapping between the PCI and the
    E-UTRAN Global Cell Identifier (EGCI). This is consistent with the PCI
-   modeling assumptions described in :ref:`phy-ue-measurements`.
+   modeling assumptions described in :ref:`sec-phy-ue-measurements`.
 
 The eNodeB RRC instance here acts as an intermediary between the consumers and
 the attached UEs. At the beginning of simulation, each consumer provides the
@@ -2261,9 +2260,9 @@ Performing measurements
 -----------------------
 
 UE RRC receives both RSRP and RSRQ measurements on periodical basis from UE PHY,
-as described in :ref:`phy-ue-measurements`. *Layer 3 filtering* will be applied
-to these received measurements. The implementation of the filtering follows
-Section 5.5.3.2 of [TS36331]_:
+as described in :ref:`sec-phy-ue-measurements`. *Layer 3 filtering* will be
+applied to these received measurements. The implementation of the filtering
+follows Section 5.5.3.2 of [TS36331]_:
 
 .. math::
 
@@ -3089,8 +3088,7 @@ point-to-point devices are attached to the point-to-point link.
 
 For a representation of how the X2 interface fits in the overall
 architecture of the LENA simulation model, the reader is referred to
-the figure :ref:`overall-architecture`.
-
+the figure :ref:`fig-epc-topology`.
 
 The X2 interface implemented in the simulator provides detailed implementation of the following elementary procedures of the Mobility Management functionality [TS36423]_:
 
@@ -3367,19 +3365,19 @@ Two helper objects are use to setup simulations and configure the
 various components. These objects are:
 
 
- * LteHelper, which takes care of the configuration of the LTE radio
+ * ``LteHelper``, which takes care of the configuration of the LTE radio
    access network, as well as of coordinating the setup and release of
    EPS bearers 
- * EpcHelper, which takes care of the configuratio of the Evolved
+ * ``EpcHelper``, which takes care of the configuration of the Evolved
    Packet Core
 
 It is possible to create a simple LTE-only simulations by
-using LteHelper alone, or to create complete LTE-EPC simulations by
-using both LteHelper and EpcHelper. When both helpers are used, they
-interact in a master-slave fashion, with LteHelper being the Master
-that interacts directly with the user program, and EpcHelper working
+using ``LteHelper`` alone, or to create complete LTE-EPC simulations by
+using both ``LteHelper`` and ``EpcHelper``. When both helpers are used, they
+interact in a master-slave fashion, with ``LteHelper`` being the Master
+that interacts directly with the user program, and ``EpcHelper`` working
 "under the hood" to configure the EPC upon explicit methods called by
-LteHelper. The exact interactions are displayed in the Figure :ref:`fig-helpers`.
+``LteHelper``. The exact interactions are displayed in the Figure :ref:`fig-helpers`.
 
 .. _fig-helpers:
    
