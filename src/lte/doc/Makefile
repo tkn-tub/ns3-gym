@@ -26,6 +26,7 @@ IMAGES_DIA = \
 	$(FIGURES)/lte-arch-ue-ctrl.dia \
 	$(FIGURES)/lte-enb-phy.dia \
 	$(FIGURES)/lte-ue-phy.dia \
+	$(FIGURES)/lte-epc-x2-handover-seq-diagram.dia \
 	$(FIGURES)/lte-epc-e2e-data-protocol-stack.dia \
 	$(FIGURES)/lte-interference-test-scenario.dia \
 	$(FIGURES)/lte-subframe-structure.dia \
@@ -60,7 +61,6 @@ IMAGES_EPS = \
 	$(FIGURES)/lte-rlc-data-retx-dl.eps \
 	$(FIGURES)/lte-rlc-data-txon-ul.eps \
 	$(FIGURES)/lte-rlc-data-retx-ul.eps \
-	$(FIGURES)/lte-epc-x2-handover-seq-diagram.eps \
 	$(FIGURES)/lte-epc-x2-entity-saps.eps \
 	$(FIGURES)/lte-strongest-cell-handover-algorithm.eps
 

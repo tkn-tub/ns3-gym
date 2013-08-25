@@ -3107,16 +3107,33 @@ the *seamless handover* as defined in Section 2.6.3.1 of [Sesia2009]_;
 in particular, *lossless handover* as described in Section 2.6.3.2 of
 [Sesia2009]_ is not supported at the time of this writing.
 
-Figure :ref:`fig-x2-based-handover-seq-diagram` shows the interaction of the entities of the X2 model in the simulator.
+Figure :ref:`fig-x2-based-handover-seq-diagram` below shows the interaction of
+the entities of the X2 model in the simulator. The green labels show the
+transition to UE and eNodeB RRC states.
 
 .. _fig-x2-based-handover-seq-diagram:
 
 .. figure:: figures/lte-epc-x2-handover-seq-diagram.*
-    :width: 700px
-    :align: center
+   :align: center
 
-    Sequence diagram of the X2-based handover
+   Sequence diagram of the X2-based handover
 
+The figure also shows two timers within the handover procedure: the *handover
+leaving timer* is maintained by the source eNodeB, while the *handover joining
+timer* by the target eNodeB. The duration of the timers can be configured in
+the ``HandoverLeavingTimeoutDuration`` and ``HandoverJoiningTimeoutDuration``
+attributes of the respective ``LteEnbRrc`` instances. When one of these timers
+expire, the handover procedure is considered as failed.
+
+However, there is no proper handling of handover failure in the current version
+of LTE module. Users should tune the simulation properly in order to avoid
+handover failure, otherwise unexpected behaviour may occur. The extreme way to
+do this is to disable the error model in the control plane by setting the
+``CtrlErrorModelEnabled`` attribute of every ``LteSpectrumPhy`` instances to
+`false`::
+
+   Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled",
+                       BooleanValue (false));
 
 The X2 model is an entity that uses services from:
 

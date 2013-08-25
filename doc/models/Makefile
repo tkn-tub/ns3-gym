@@ -105,6 +105,7 @@ SOURCEFIGS = \
 	$(SRC)/lte/doc/source/figures/lte-arch-ue-ctrl.dia \
 	$(SRC)/lte/doc/source/figures/lte-enb-phy.dia \
 	$(SRC)/lte/doc/source/figures/lte-ue-phy.dia \
+	$(SRC)/lte/doc/source/figures/lte-epc-x2-handover-seq-diagram.dia \
 	$(SRC)/lte/doc/source/figures/lte-epc-e2e-data-protocol-stack.dia \
 	$(SRC)/lte/doc/source/figures/lte-interference-test-scenario.dia \
 	$(SRC)/lte/doc/source/figures/lte-subframe-structure.dia \
@@ -134,7 +135,6 @@ SOURCEFIGS = \
 	$(SRC)/lte/doc/source/figures/lte-rlc-data-retx-dl.eps \
 	$(SRC)/lte/doc/source/figures/lte-rlc-data-txon-ul.eps \
 	$(SRC)/lte/doc/source/figures/lte-rlc-data-retx-ul.eps \
-	$(SRC)/lte/doc/source/figures/lte-epc-x2-handover-seq-diagram.eps \
 	$(SRC)/lte/doc/source/figures/lte-epc-x2-entity-saps.eps \
 	$(SRC)/lte/doc/source/figures/lte-strongest-cell-handover-algorithm.eps \
 	$(SRC)/lte/doc/source/figures/fading_pedestrian.png \
