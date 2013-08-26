@@ -17,12 +17,13 @@ somehow developing an output mechanism that conveys exactly (and perhaps only)
 the information wanted.
 
 Using pre-defined bulk output mechanisms has the advantage of not requiring any
-changes to |ns3|, but it does require programming.  Often, pcap or NS_LOG
+changes to |ns3|, but it may require writing scripts to parse and filter
+for data of interest.  Often, pcap or NS_LOG
 output messages are gathered during simulation runs and separately run through 
 scripts that use grep, sed or awk to parse the messages and reduce and transform
 the data to a manageable form.  Programs must be written to do the 
 transformation, so this does not come for free.  Of course, if the information
-of interest in does not exist in any of the pre-defined output mechanisms,
+of interest does not exist in any of the pre-defined output mechanisms,
 this approach fails.
 
 If you need to add some tidbit of information to the pre-defined bulk mechanisms,
@@ -258,11 +259,11 @@ trace source invokes its ``operator()`` providing zero or more parameters.
 The ``operator()`` eventually wanders down into the system and does something
 remarkably like the indirect call you just saw.  It provides zero or more 
 parameters (the call to "pfi" above passed one parameter to the target function
-``MyFunction``.
+``MyFunction``).
 
 The important difference that the tracing system adds is that for each trace
 source there is an internal list of Callbacks.  Instead of just making one 
-indirect call, a trace source may invoke any number of Callbacks.  When a trace
+indirect call, a trace source may invoke multiple.  When a trace
 sink expresses interest in notifications from a trace source, it basically just
 arranges to add its own function to the callback list.
 
@@ -311,7 +312,8 @@ illustrates how simple this all really is.
 
 The file, ``traced-value.h`` brings in the required declarations for tracing
 of data that obeys value semantics.  In general, value semantics just means that
-you can pass the object around, not an address.  In order to use value semantics
+you can pass the object itself around, rather than passing the address of the
+object.  In order to use value semantics
 at all you have to have an object with an associated copy constructor and 
 assignment operator available.  We extend the requirements to talk about the set
 of operators that are pre-defined for plain-old-data (POD) types.  Operator=, 
@@ -441,8 +443,7 @@ trace source is hit:
 
 When we executed the code, ``myObject->m_myInt = 1234;``, the trace source 
 fired and automatically provided the before and after values to the trace sink.
-The function ``IntTrace`` then printed this to the standard output.  No 
-problem.
+The function ``IntTrace`` then printed this to the standard output.  
 
 Using the Config Subsystem to Connect to Trace Sources
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -451,7 +452,7 @@ The ``TraceConnectWithoutContext`` call shown above in the simple example is
 actually very rarely used in the system.  More typically, the ``Config``
 subsystem is used to allow selecting a trace source in the system using what is
 called a *config path*.  We saw an example of this in the previous section
-where we hooked the "CourseChange" event when we were playing with 
+where we hooked the "CourseChange" event when we were experimenting with 
 ``third.cc``.
 
 Recall that we defined a trace sink to print course change information from the
