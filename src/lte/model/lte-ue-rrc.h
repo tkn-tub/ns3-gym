@@ -61,7 +61,6 @@ class LteUeCmacSapUser;
 class LteUeCmacSapProvider;
 class LteDataRadioBearerInfo;
 class LteSignalingRadioBearerInfo;
-class LteEnbRrc;
 
 /**
  *
@@ -84,17 +83,22 @@ public:
    * 
    */
   enum State
-    {
-      IDLE_CELL_SELECTION = 0,
-      IDLE_WAIT_SYSTEM_INFO,
-      IDLE_CAMPED_NORMALLY,
-      IDLE_RANDOM_ACCESS,
-      IDLE_CONNECTING,
-      CONNECTED_NORMALLY,
-      CONNECTED_REESTABLISHING,
-      CONNECTED_HANDOVER,
-      NUM_STATES
-    };
+  {
+    IDLE_START = 0,
+    IDLE_CELL_SEARCH,
+    IDLE_WAIT_MIB_SIB1,
+    IDLE_WAIT_MIB,
+    IDLE_WAIT_SIB1,
+    IDLE_CAMPED_NORMALLY,
+    IDLE_RANDOM_ACCESS,
+    IDLE_WAIT_SIB2,
+    IDLE_CONNECTING,
+    CONNECTED_NORMALLY,
+    CONNECTED_HANDOVER,
+    CONNECTED_PHY_PROBLEM,
+    CONNECTED_REESTABLISHING,
+    NUM_STATES
+  };
 
 
   /**
@@ -355,6 +359,8 @@ private:
   //             imsi      cellId    rnti
   TracedCallback<uint64_t, uint16_t, uint16_t> m_randomAccessSuccessfulTrace;
   //             imsi      cellId    rnti
+  TracedCallback<uint64_t, uint16_t, uint16_t> m_randomAccessErrorTrace;
+  //             imsi      cellId    rnti
   TracedCallback<uint64_t, uint16_t, uint16_t> m_connectionEstablishedTrace;
   //             imsi      cellId    rnti
   TracedCallback<uint64_t, uint16_t, uint16_t> m_connectionReconfigurationTrace;
@@ -362,6 +368,8 @@ private:
   TracedCallback<uint64_t, uint16_t, uint16_t, uint16_t> m_handoverStartTrace;
   //             imsi      cellId    rnti
   TracedCallback<uint64_t, uint16_t, uint16_t> m_handoverEndOkTrace;
+  //             imsi      cellId    rnti
+  TracedCallback<uint64_t, uint16_t, uint16_t> m_handoverEndErrorTrace;
 
   bool m_connectionPending; /**< true if a connection request by upper layers is pending */
   bool m_hasReceivedMib; /**< true if MIB was received for the current cell  */
