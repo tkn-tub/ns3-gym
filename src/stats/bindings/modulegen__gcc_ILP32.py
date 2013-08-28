@@ -684,10 +684,10 @@ def register_Ns3GnuplotHelper_methods(root_module, cls):
     cls.add_method('AddTimeSeriesAdaptor', 
                    'void', 
                    [param('std::string const &', 'adaptorName')])
-    ## gnuplot-helper.h (module 'stats'): void ns3::GnuplotHelper::ConfigurePlot(std::string const & outputFileNameWithoutExtension, std::string const & title, std::string const & xLegend, std::string const & yLegend, std::string const & terminalType=".png") [member function]
+    ## gnuplot-helper.h (module 'stats'): void ns3::GnuplotHelper::ConfigurePlot(std::string const & outputFileNameWithoutExtension, std::string const & title, std::string const & xLegend, std::string const & yLegend, std::string const & terminalType="png") [member function]
     cls.add_method('ConfigurePlot', 
                    'void', 
-                   [param('std::string const &', 'outputFileNameWithoutExtension'), param('std::string const &', 'title'), param('std::string const &', 'xLegend'), param('std::string const &', 'yLegend'), param('std::string const &', 'terminalType', default_value='".png"')])
+                   [param('std::string const &', 'outputFileNameWithoutExtension'), param('std::string const &', 'title'), param('std::string const &', 'xLegend'), param('std::string const &', 'yLegend'), param('std::string const &', 'terminalType', default_value='"png"')])
     ## gnuplot-helper.h (module 'stats'): ns3::Ptr<ns3::GnuplotAggregator> ns3::GnuplotHelper::GetAggregator() [member function]
     cls.add_method('GetAggregator', 
                    'ns3::Ptr< ns3::GnuplotAggregator >', 
@@ -1838,6 +1838,11 @@ def register_Ns3Time_methods(root_module, cls):
     cls.add_method('SetResolution', 
                    'void', 
                    [param('ns3::Time::Unit', 'resolution')], 
+                   is_static=True)
+    ## nstime.h (module 'core'): static bool ns3::Time::StaticInit() [member function]
+    cls.add_method('StaticInit', 
+                   'bool', 
+                   [], 
                    is_static=True)
     ## nstime.h (module 'core'): ns3::int64x64_t ns3::Time::To(ns3::Time::Unit timeUnit) const [member function]
     cls.add_method('To', 

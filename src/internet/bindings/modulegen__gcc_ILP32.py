@@ -9692,6 +9692,11 @@ def register_Ns3Time_methods(root_module, cls):
                    'void', 
                    [param('ns3::Time::Unit', 'resolution')], 
                    is_static=True)
+    ## nstime.h (module 'core'): static bool ns3::Time::StaticInit() [member function]
+    cls.add_method('StaticInit', 
+                   'bool', 
+                   [], 
+                   is_static=True)
     ## nstime.h (module 'core'): ns3::int64x64_t ns3::Time::To(ns3::Time::Unit timeUnit) const [member function]
     cls.add_method('To', 
                    'ns3::int64x64_t', 
