@@ -113,6 +113,12 @@ public:
   void SetHandoverAlgorithmType (std::string type);
 
   /**
+   *
+   * \return the handover algorithm type
+   */
+  std::string GetHandoverAlgorithmType () const;
+
+  /**
    * set an attribute for the handover algorithm to be created
    *
    * \param n the name of the attribute

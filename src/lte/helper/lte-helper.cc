@@ -216,6 +216,12 @@ LteHelper::SetSchedulerAttribute (std::string n, const AttributeValue &v)
   m_schedulerFactory.Set (n, v);
 }
 
+std::string
+LteHelper::GetHandoverAlgorithmType () const
+{
+  return m_handoverAlgorithmFactory.GetTypeId ().GetName ();
+}
+
 void
 LteHelper::SetHandoverAlgorithmType (std::string type)
 {
