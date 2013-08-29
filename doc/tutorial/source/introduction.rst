@@ -22,21 +22,55 @@ into the workings of the system.
 
 A few key points are worth noting at the onset:
 
-* Ns-3 is not an extension of `ns-2
+* |ns3| is open-source, and the project strives to maintain an 
+  open environment for researchers to contribute and share their software.  
+* |ns3| is not a backwards-compatible extension of `ns-2
   <http://www.isi.edu/nsnam/ns>`_; 
   it is a new simulator.  The two simulators are both written in C++ but 
   |ns3| is a new simulator that does not support the |ns2| APIs.  Some 
   models from |ns2| have already been ported from |ns2| to |ns3|. The 
   project will continue to maintain |ns2| while |ns3| is being built,
   and will study transition and integration mechanisms.
-* |ns3| is open-source, and the project strives to maintain an 
-  open environment for researchers to contribute and share their software.  
 
+About |ns3|
+***********
+
+|ns3| has been developed to provide an open, extensible network simulation
+platform, for networking research and education.  In brief, |ns3| provides
+models of how packet data networks work and perform, and provides a
+simulation engine for users to conduct simulation experiments.  Some of the
+reasons to use |ns3| include to perform studies that are more difficult
+or not possible to perform with real systems, to study system behavior in
+a highly controllled, reproducible environment, and to learn about how
+networks work.  Users will note that the available model set in |ns3| 
+focuses on modeling how Internet protocols and networks work, but
+|ns3| is not limited to Internet systems; several users are using
+|ns3| to model non-Internet-based systems.
+
+Many simulation tools exist for network simulation studies.  Below are
+a few distinguishing features of |ns3| in contrast to other tools.
+
+* |ns3| is designed as a set of libraries that can be combined together
+  and also with other external software libraries.  While some simulation
+  platforms provide users with a single, integrated graphical user 
+  interface environment in which all tasks are carried out, |ns3| is 
+  more modular in this regard.  Several external animators and
+  data analysis and visualization tools can be used with |ns3|.  However,
+  users should expect to work at the command line and with C++ and/or
+  Python software development tools. 
+* |ns3| is primarily used on Linux systems, although support exists
+  for FreeBSD, Cygwin (for Windows), and native Windows Visual Studio
+  support is in the process of being developed. 
+* |ns3| is not an officially supported software product of any company.
+  Support for |ns3| is done on a best-effort basis on the 
+  ns-3-users mailing list.
+ 
  
 For |ns2| Users
 ***************
 
-For those familiar with |ns2|, the most visible outward change when moving to 
+For those familiar with |ns2| (a popular tool that preceded |ns3|), 
+the most visible outward change when moving to 
 |ns3| is the choice of scripting language.  Programs in |ns2| are 
 scripted in OTcl and results of simulations can be visualized using the 
 Network Animator nam.  It is not possible to run a simulation
@@ -57,17 +91,38 @@ We will try to highlight differences between |ns2| and |ns3|
 as we proceed in this tutorial.
 
 A question that we often hear is "Should I still use |ns2| or move to
-|ns3|?"  The answer is that it depends.  |ns3| does not have
-all of the models that |ns2| currently has, but on the other hand, |ns3|
-does have new capabilities (such as handling multiple interfaces on nodes 
-correctly, use of IP addressing and more alignment with Internet
-protocols and designs, more detailed 802.11 models, etc.).  |ns2|
-models can sometimes be ported to |ns3| (a porting guide is under
-development).  The support available on the user mailing list, and the
-developer and maintainer activity, is higher for |ns3|.  A good guideline
-would be to look at both simulators, and in particular the models available
-for your research, but when in doubt or when starting new simulation 
-projects, choose the tool that is under more active development (|ns3|).
+|ns3|?"  In this author's opinion, unless the user is somehow vested
+in |ns2| (either based on existing personal comfort with and knowledge
+of |ns2|, or based on a specific simulation model that is only available
+in |ns2|), a user will be more productive with |ns3| for the following
+reasons:
+
+* |ns3| is actively maintained with an active, responsive users mailing 
+  list, while |ns2| is only lightly maintained and has not seen
+  significant development in its main code tree for over a decade.
+* |ns3| provides features not available in |ns2|, such as a implementation
+  code execution environment (allowing users to run real implementation
+  code in the simulator)
+* |ns3| provides a lower base level of abstraction compared with |ns2|,
+  allowing it to align better with how real systems are put together.
+  Some limitations found in |ns2| (such as supporting multiple types of
+  interfaces on nodes correctly) have been remedied in |ns3|.
+
+|ns2| has a more diverse set of contributed modules than does |ns3|, owing to
+its long history.  However, |ns3| has more detailed models in several
+popular areas of research (including sophisticated LTE and WiFi models),
+and its support of implementation code admits a very wide spectrum
+of high-fidelity models.  Users may be surprised to learn that the
+whole Linux networking stack can be encapsulated in an |ns3| node,
+using the Direct Code Execution (DCE) framework.  |ns2|
+models can sometimes be ported to |ns3|, particularly if they have been
+implemented in C++.  
+
+If in doubt, a good guideline would be to look at both simulators (as
+well as other simulators), and in particular the models available
+for your research, but keep in mind that your experience may be better
+in using the tool that is being actively developed and 
+maintained (|ns3|).
 
 Contributing
 ************
