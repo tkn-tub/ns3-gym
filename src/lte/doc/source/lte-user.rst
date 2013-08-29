@@ -367,7 +367,7 @@ the ns-3 attributes ``ns3::MacStatsCalculator::DlOutputFilename`` and
 
 PHY KPIs are distributed in seven different files, configurable through the attributes
 
-  1. ``ns3::PhyStatsCalculator::RsrpSinrFilename``
+  1. ``ns3::PhyStatsCalculator::DlRsrpSinrFilename``
   2. ``ns3::PhyStatsCalculator::UeSinrFilename``
   3. ``ns3::PhyStatsCalculator::InterferenceFilename``
   4. ``ns3::PhyStatsCalculator::DlTxOutputFilename``
