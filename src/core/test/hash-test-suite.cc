@@ -376,22 +376,10 @@ public:
 HashTestSuite::HashTestSuite ()
   : TestSuite ("hash", UNIT)
 {
-// The below tests fail for static optimized builds in gcc-4.4.3 (64-bit)
-// This is likely due to a compiler bug (see also the strict alias
-// warning issue mentioned in hash-murmur3.cc).  It does not impact
-// most users of the code, so we silence the test failure while we
-// continue to use gcc-4.4.3 (python bindings) for other purposes
-//
-// This code can be removed once gcc-4.4.3 is no longer supported
-//
-// Test for gcc 4.4.x
-#define GCC_VERSION (__GNUC__ * 100 + __GNUC_MINOR__)
-#if (GCC_VERSION != 404)
   AddTestCase (new DefaultHashTestCase, QUICK);
   AddTestCase (new Murmur3TestCase, QUICK);
   AddTestCase (new Fnv1aTestCase, QUICK);
   AddTestCase (new IncrementalTestCase, QUICK);
-#endif
   AddTestCase (new Hash32FunctionPtrTestCase, QUICK);
   AddTestCase (new Hash64FunctionPtrTestCase, QUICK);
 }

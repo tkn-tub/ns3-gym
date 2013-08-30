@@ -34,33 +34,6 @@
 
 #include <iomanip>
 
-/*
- * \brief Silence erroneous strict alias warning from a gcc 4.4 bug
- *
- * Casting \c (void*) triggers a strict alias warning bug
- * in gcc 4.4 (see http://gcc.gnu.org/bugzilla/show_bug.cgi?id=39390).
- *
- * In the murmur3 code, data is returned by
- * \code
- *   void Function (... , void * out)
- *   {
- *     ...
- *     *(uint32_t *)out = ...
- *   }
- * \endcode
- *
- * which triggers the erroneous warning.
- *
- * We suppress strict-alias warnings in this compilation unit.
- * (gcc 4.4 doesn't support the <tt>diagnostic push/pop</tt> pragmas,
- * so we can't narrow down the suppression any further.)
- */
-// Test for gcc 4.4.x
-#define GCC_VERSION (__GNUC__ * 100 + __GNUC_MINOR__)
-#if (GCC_VERSION == 404)
-#  pragma GCC diagnostic ignored "-Wstrict-aliasing"
-#endif
- 
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("Hash-Murmur3");
@@ -479,12 +452,28 @@ Murmur3::GetHash64  (const char * buffer, const size_t size)
 {
   using namespace Murmur3Implementation;
   MurmurHash3_x86_128_incr (buffer, size,
-                            (uint32_t *)(void *)m_hash64, (void *)(m_hash64));
+                            (uint32_t *)(void *)m_hash64, m_hash64);
   m_size64 += size;
-  uint64_t hash[2];
+
+  // Simpler would be:
+  //
+  //   uint64_t hash[2];
+  //   MurmurHash3_x86_128_fin (m_size64, m_hash64, hash);
+  //   return hash[0];
+  //
+  // but this triggers an aliasing bug in gcc-4.4 (perhaps related to
+  // http://gcc.gnu.org/bugzilla/show_bug.cgi?id=39390).
+  // In ns-3, this bug produces incorrect results in static optimized
+  // builds only.
+  //
+  // Using uint32_t here avoids the bug, and continues to works with newer gcc.
+  uint32_t hash[4];
+  
   MurmurHash3_x86_128_fin (m_size64,
-                           (uint32_t*)(void *)m_hash64, (void *)hash);
-  return hash[0];
+                           (uint32_t *)(void *)m_hash64, hash);
+  uint64_t result = hash[1];
+  result = (result << 32) | hash[0];
+  return result;
 }
 
 void
@@ -492,8 +481,7 @@ Murmur3::clear (void)
 {
   m_hash32 = (uint32_t)SEED;
   m_size32 = 0;
-  m_hash64[0] = ((uint64_t)(SEED) << 32) + (uint64_t)SEED;
-  m_hash64[1] = ((uint64_t)(SEED) << 32) + (uint64_t)SEED;
+  m_hash64[0] = m_hash64[1] = ((uint64_t)(SEED) << 32) + (uint64_t)SEED;
   m_size64 = 0;
 }
 
