@@ -102,7 +102,7 @@ do not plan to further touch ns-3-dev, tag ns-3-dev
    - change the string 3-dev in the VERSION file to the real version 
      (e.g. 3.14)  This must agree with the version name you chose in the clone.
    - change the version and release string for the documentation in 
-     doc/manual/source, doc/tutorial/source, doc/tutorial-pt/source, 
+     doc/manual/source, doc/tutorial/source, doc/tutorial-pt-br/source, 
      and doc/models/source conf.py files
      This should hopefully be updated in the future to simply pull from the
      VERSION file.
@@ -155,6 +155,7 @@ http://www.nsnam.org/ns-3.x
 - Documentation
 
 2. Repoint http://www.nsnam.org/releases/latest to the new page
+   Repoint http://www.nsnam.org/documentation/latest to the new page
    Repoint /var/www/html/doxygen-release to the new release doxygen.
 
 3. Update the Older Releases page to create an entry for the previous

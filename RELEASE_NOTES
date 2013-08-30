@@ -21,6 +21,31 @@ Supported platforms
 
 New user-visible features
 -------------------------
+
+Bugs fixed
+----------
+
+Release 3.18
+=============
+
+Availability
+------------
+This release is available from: 
+http://www.nsnam.org/release/ns-allinone-3.18.tar.bz2
+
+Supported platforms
+-------------------
+These platforms have been tested; others may work also:
+- Fedora Core 18 (32/64 bit) with g++-4.7.2
+- Fedora Core 17 (32/64 bit) with g++-4.7.0
+- Ubuntu 13.04 (32/64 bit) with g++-4.7.3
+- Ubuntu 12.04 (32/64 bit) with g++-4.6.3
+- Ubuntu 10.04.4 LTS (64 bit) with g++-4.4.3
+- OS X Mountain Lion 10.8.3 with g++-4.2.1
+- FreeBSD 9.1-RELEASE (64 bit) with g++-4.2.1
+
+New user-visible features
+-------------------------
 - Time attributes can now be bounded.  See attribute-test-suite.cc for an
   example.
 - Data collection components have been added to the stats module.  These
