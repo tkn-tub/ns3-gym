@@ -299,9 +299,6 @@ LteCellSelectionTestCase::DoRun ()
           ueStaticRouting->SetDefaultRoute (epcHelper->GetUeDefaultGatewayAddress (), 1);
         }
 
-      // Enable Idle mode cell selection
-      lteHelper->Attach (ueDevs);
-
     } // end of if (m_isEpcMode)
   else
     {
@@ -321,6 +318,9 @@ LteCellSelectionTestCase::DoRun ()
                    MakeCallback (&LteCellSelectionTestCase::InitialCellSelectionEndOkCallback, this));
   Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/InitialCellSelectionEndError",
                    MakeCallback (&LteCellSelectionTestCase::InitialCellSelectionEndErrorCallback, this));
+
+  // Enable Idle mode cell selection
+  lteHelper->Attach (ueDevs);
 
   // Run simulation
   Simulator::Stop (m_duration);

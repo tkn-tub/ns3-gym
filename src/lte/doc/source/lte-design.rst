@@ -2052,12 +2052,14 @@ information blocks are:
 
  - System Information Block Type 1 (SIB1)
       Contains information regarding network access, broadcasted every 20 ms at
-      the middle of radio frame as a control message.
+      the middle of radio frame as a control message. Not used in manual
+      attachment method. UE must have decoded MIB before it can receive SIB1.
       
  - System Information Block Type 2 (SIB2)
       Contains UL- and RACH-related settings, scheduled to transmit via RRC
       protocol at 16 ms after cell configuration, and then repeats every 80 ms
       (configurable through `LteEnbRrc::SystemInformationPeriodicity` attribute.
+      UE must be camped to a cell in order to be able to receive its SIB2.
 
 Reception of system information is fundamental for UE to advance in its
 lifecycle. MIB enables the UE to increase the initial DL bandwidth of 6 RBs to
@@ -2097,9 +2099,8 @@ shall not camp to eNodeB with a different CSG identity. But this rule is only
 enforced when CSG indication is valued as true. More details are provided in
 Section :ref:`sec-network-attachment` of user documentation.
 
-When the cell passes all the above criteria, then the cell is deemed as
-*suitable*. Next, UE camps to it, switching its RRC state to
-`IDLE_WAIT_SYSTEM_INFO`, or to `IDLE_CAMPED_NORMALLY` if SIB2 has been received.
+When the cell passes all the above criteria, the cell is deemed as *suitable*.
+Then UE camps to it (`IDLE_CAMPED_NORMALLY` state).
 
 After this, upper layer may request UE to enter CONNECTED mode. Please refer to
 section :ref:`sec-rrc-connection-establishment` for details on this.

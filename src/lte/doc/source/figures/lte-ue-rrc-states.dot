@@ -12,8 +12,6 @@ IDLE_RANDOM_ACCESS [shape="box",width=3]
 IDLE_CONNECTING [shape="box",width=3]
 CONNECTED_NORMALLY [shape="box",width=3]
 CONNECTED_HANDOVER [shape="box",width=3]
-CONNECTED_PHY_PROBLEM [shape="box",width=3]
-CONNECTED_REESTABLISHING [shape="box",width=3]
 
 
 // Network attachment
@@ -29,21 +27,12 @@ IDLE_CAMPED_NORMALLY -> IDLE_WAIT_SIB2 [label="connection request\nby upper laye
 // Connection establishment
 IDLE_WAIT_SIB2 -> IDLE_RANDOM_ACCESS [label="rx SIB2"]
 IDLE_RANDOM_ACCESS -> IDLE_CONNECTING [label="random access\nsuccessful"]
-IDLE_RANDOM_ACCESS -> IDLE_CAMPED_NORMALLY [label="random access\nfailure",
-  style=dashed] // dashed because this has not been implemented yet
+IDLE_RANDOM_ACCESS -> IDLE_CAMPED_NORMALLY [label="random access\nfailure"]
 IDLE_CONNECTING -> CONNECTED_NORMALLY [label="rx RRC CONN SETUP"]
 IDLE_CONNECTING -> IDLE_CAMPED_NORMALLY [label="rx RRC CONN\nREJECT"]
 
 // Handover
 CONNECTED_NORMALLY -> CONNECTED_HANDOVER [label="rx RRC CONN RECONF\nwith MobilityCtrlInfo"]
 CONNECTED_HANDOVER -> CONNECTED_NORMALLY [label="random access\nsuccessful"]
-CONNECTED_HANDOVER -> CONNECTED_REESTABLISHING [label="handover\nfailure", style=dashed]
-
-// Connection re-establishment (not implemented yet)
-CONNECTED_NORMALLY -> CONNECTED_PHY_PROBLEM [label="PHY problems\ndetected", style=dashed]
-CONNECTED_PHY_PROBLEM -> CONNECTED_REESTABLISHING [label="RLF", style=dashed]
-CONNECTED_REESTABLISHING -> CONNECTED_NORMALLY [label="rx RRC CONN\nRE-EST", style=dashed]
-CONNECTED_REESTABLISHING -> IDLE_CAMPED_NORMALLY [label="rx RRC CONN\nRE-EST\nREJECT", style=dashed]
-
 
 }
