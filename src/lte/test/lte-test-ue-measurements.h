@@ -26,14 +26,15 @@
 
 #include <ns3/test.h>
 #include <ns3/lte-rrc-sap.h>
+#include <ns3/nstime.h>
+#include <list>
+#include <set>
 #include <vector>
-
 
 namespace ns3 {
 
 
 class MobilityModel;
-class Time;
 
 
 // ===== LTE-UE-MEASUREMENTS TEST SUITE ==================================== //
@@ -300,17 +301,18 @@ public:
  * \brief Testing UE measurements in LTE with simulation of 2 eNodeB and 1 UE in
  *        a handover configuration.
  *
- * The simulation will run for 2 seconds, while the handover command will be
- * issued at second +1s.
+ * The simulation will run for the specified duration, while the handover
+ * command will be issued exactly at the middle of simulation.
  */
 class LteUeMeasurementsHandoverTestCase : public TestCase
 {
 public:
   LteUeMeasurementsHandoverTestCase (std::string name,
-                                     LteRrcSap::ReportConfigEutra sourceConfig,
-                                     LteRrcSap::ReportConfigEutra targetConfig,
+                                     std::list<LteRrcSap::ReportConfigEutra> sourceConfigList,
+                                     std::list<LteRrcSap::ReportConfigEutra> targetConfigList,
                                      std::vector<Time> expectedTime,
-                                     std::vector<uint8_t> expectedRsrp);
+                                     std::vector<uint8_t> expectedRsrp,
+                                     Time duration);
 
   virtual ~LteUeMeasurementsHandoverTestCase ();
 
@@ -344,14 +346,16 @@ private:
   virtual void DoTeardown ();
 
   /**
-   * \brief The active report triggering configuration for the source eNodeB.
+   * \brief The list of active report triggering configuration for the source
+   *        eNodeB.
    */
-  LteRrcSap::ReportConfigEutra m_sourceConfig;
+  std::list<LteRrcSap::ReportConfigEutra> m_sourceConfigList;
 
   /**
-   * \brief The active report triggering configuration for the target eNodeB.
+   * \brief The list of active report triggering configuration for the target
+   *        eNodeB.
    */
-  LteRrcSap::ReportConfigEutra m_targetConfig;
+  std::list<LteRrcSap::ReportConfigEutra> m_targetConfigList;
 
   /**
    * \brief The list of expected time when measurement reports are received by
@@ -378,18 +382,23 @@ private:
   std::vector<uint8_t>::iterator m_itExpectedRsrp;
 
   /**
-   * \brief The measurement identity being tested in source cell. Measurement
-   *        reports with different measurement identity (e.g. from handover
-   *        algorithm) will be ignored.
+   * \brief Duration of simulation.
    */
-  uint8_t m_expectedSourceCellMeasId;
+  Time m_duration;
 
   /**
-   * \brief The measurement identity being tested in target cell. Measurement
-   *        reports with different measurement identity (e.g. from handover
-   *        algorithm) will be ignored.
+   * \brief The list of measurement identities being tested in the source cell.
+   *        Measurement reports with different measurement identity (e.g. from
+   *        handover algorithm and ANR) will be ignored.
    */
-  uint8_t m_expectedTargetCellMeasId;
+  std::set<uint8_t> m_expectedSourceCellMeasId;
+
+  /**
+   * \brief The list of measurement identities being tested in the target cell.
+   *        Measurement reports with different measurement identity (e.g. from
+   *        handover algorithm and ANR) will be ignored.
+   */
+  std::set<uint8_t> m_expectedTargetCellMeasId;
 
 }; // end of class LteUeMeasurementsHandoverTestCase
 

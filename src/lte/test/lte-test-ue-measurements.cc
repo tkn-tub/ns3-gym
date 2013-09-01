@@ -1379,10 +1379,10 @@ LteUeMeasurementsPiecewiseTestCase2::TeleportVeryFar ()
 LteUeMeasurementsHandoverTestSuite::LteUeMeasurementsHandoverTestSuite ()
   : TestSuite ("lte-ue-measurements-handover", SYSTEM)
 {
+  std::list<LteRrcSap::ReportConfigEutra> sourceConfigList;
+  std::list<LteRrcSap::ReportConfigEutra> targetConfigList;
   std::vector<Time> expectedTime;
   std::vector<uint8_t> expectedRsrp;
-
-  // === Report interval difference ===
 
   LteRrcSap::ReportConfigEutra sourceConfig;
   sourceConfig.triggerType = LteRrcSap::ReportConfigEutra::EVENT;
@@ -1390,6 +1390,8 @@ LteUeMeasurementsHandoverTestSuite::LteUeMeasurementsHandoverTestSuite ()
   sourceConfig.threshold1.choice = LteRrcSap::ThresholdEutra::THRESHOLD_RSRP;
   sourceConfig.threshold1.range = 0;
   sourceConfig.triggerQuantity = LteRrcSap::ReportConfigEutra::RSRP;
+  sourceConfig.reportInterval = LteRrcSap::ReportConfigEutra::MS240;
+  sourceConfigList.push_back (sourceConfig);
 
   LteRrcSap::ReportConfigEutra targetConfig;
   targetConfig.triggerType = LteRrcSap::ReportConfigEutra::EVENT;
@@ -1397,201 +1399,220 @@ LteUeMeasurementsHandoverTestSuite::LteUeMeasurementsHandoverTestSuite ()
   targetConfig.threshold1.choice = LteRrcSap::ThresholdEutra::THRESHOLD_RSRP;
   targetConfig.threshold1.range = 0;
   targetConfig.triggerQuantity = LteRrcSap::ReportConfigEutra::RSRP;
+  targetConfig.reportInterval = LteRrcSap::ReportConfigEutra::MS240;
+  targetConfigList.push_back (targetConfig);
+
+  // === Report interval difference ===
 
   // decreasing report interval
-  sourceConfig.reportInterval = LteRrcSap::ReportConfigEutra::MS480;
-  targetConfig.reportInterval = LteRrcSap::ReportConfigEutra::MS240;
+  sourceConfigList.front ().reportInterval = LteRrcSap::ReportConfigEutra::MS480;
+  targetConfigList.front ().reportInterval = LteRrcSap::ReportConfigEutra::MS240;
   expectedTime.clear ();
   expectedTime << 200 << 680 << 1200 << 1440 << 1680 << 1920;
   expectedRsrp.clear ();
   expectedRsrp << 55 << 55 << 53 << 53 << 53 << 53;
   AddTestCase (new LteUeMeasurementsHandoverTestCase ("Handover test case - decreasing report interval",
-                                                      sourceConfig, targetConfig,
-                                                      expectedTime, expectedRsrp),
+                                                      sourceConfigList, targetConfigList,
+                                                      expectedTime, expectedRsrp,
+                                                      Seconds (2)),
                TestCase::TAKES_FOREVER);
 
   // increasing report interval
-  sourceConfig.reportInterval = LteRrcSap::ReportConfigEutra::MS120;
-  targetConfig.reportInterval = LteRrcSap::ReportConfigEutra::MS640;
+  sourceConfigList.front ().reportInterval = LteRrcSap::ReportConfigEutra::MS120;
+  targetConfigList.front ().reportInterval = LteRrcSap::ReportConfigEutra::MS640;
   expectedTime.clear ();
   expectedTime << 200 << 320 << 440 << 560 << 680 << 800 << 920 << 1200 << 1840;
   expectedRsrp.clear ();
   expectedRsrp << 55 << 55 << 55 << 55 << 55 << 55 << 55 << 53 << 53;
   AddTestCase (new LteUeMeasurementsHandoverTestCase ("Handover test case - increasing report interval",
-                                                      sourceConfig, targetConfig,
-                                                      expectedTime, expectedRsrp),
+                                                      sourceConfigList, targetConfigList,
+                                                      expectedTime, expectedRsrp,
+                                                      Seconds (2)),
                TestCase::QUICK);
 
   // === Event difference ===
 
-  sourceConfig.reportInterval = LteRrcSap::ReportConfigEutra::MS240;
-  targetConfig.reportInterval = LteRrcSap::ReportConfigEutra::MS240;
-  sourceConfig.threshold1.range = 54;
-  sourceConfig.threshold2.range = 54;
-  sourceConfig.a3Offset = 1;
-  targetConfig.threshold1.range = 54;
-  targetConfig.threshold2.range = 54;
-  targetConfig.a3Offset = 1;
+  sourceConfigList.front ().reportInterval = LteRrcSap::ReportConfigEutra::MS240;
+  targetConfigList.front ().reportInterval = LteRrcSap::ReportConfigEutra::MS240;
+  sourceConfigList.front ().threshold1.range = 54;
+  sourceConfigList.front ().threshold2.range = 54;
+  sourceConfigList.front ().a3Offset = 1;
+  targetConfigList.front ().threshold1.range = 54;
+  targetConfigList.front ().threshold2.range = 54;
+  targetConfigList.front ().a3Offset = 1;
 
   // Event A1 to Event A2
-  sourceConfig.eventId = LteRrcSap::ReportConfigEutra::EVENT_A1;
-  targetConfig.eventId = LteRrcSap::ReportConfigEutra::EVENT_A2;
+  sourceConfigList.front ().eventId = LteRrcSap::ReportConfigEutra::EVENT_A1;
+  targetConfigList.front ().eventId = LteRrcSap::ReportConfigEutra::EVENT_A2;
   expectedTime.clear ();
   expectedTime << 200 << 440 << 680 << 920 << 1200 << 1440 << 1680 << 1920;
   expectedRsrp.clear ();
   expectedRsrp << 55 << 55 << 55 << 55 << 53 << 53 << 53 << 53;
   AddTestCase (new LteUeMeasurementsHandoverTestCase ("Handover test case - Event A1 to Event A2",
-                                                      sourceConfig, targetConfig,
-                                                      expectedTime, expectedRsrp),
+                                                      sourceConfigList, targetConfigList,
+                                                      expectedTime, expectedRsrp,
+                                                      Seconds (2)),
                TestCase::EXTENSIVE);
 
   // Event A2 to Event A1
-  sourceConfig.eventId = LteRrcSap::ReportConfigEutra::EVENT_A2;
-  targetConfig.eventId = LteRrcSap::ReportConfigEutra::EVENT_A1;
+  sourceConfigList.front ().eventId = LteRrcSap::ReportConfigEutra::EVENT_A2;
+  targetConfigList.front ().eventId = LteRrcSap::ReportConfigEutra::EVENT_A1;
   expectedTime.clear ();
   expectedRsrp.clear ();
   AddTestCase (new LteUeMeasurementsHandoverTestCase ("Handover test case - Event A2 to Event A1",
-                                                      sourceConfig, targetConfig,
-                                                      expectedTime, expectedRsrp),
+                                                      sourceConfigList, targetConfigList,
+                                                      expectedTime, expectedRsrp,
+                                                      Seconds (2)),
                TestCase::TAKES_FOREVER);
 
   // Event A3 to Event A4
-  sourceConfig.eventId = LteRrcSap::ReportConfigEutra::EVENT_A3;
-  targetConfig.eventId = LteRrcSap::ReportConfigEutra::EVENT_A4;
+  sourceConfigList.front ().eventId = LteRrcSap::ReportConfigEutra::EVENT_A3;
+  targetConfigList.front ().eventId = LteRrcSap::ReportConfigEutra::EVENT_A4;
   expectedTime.clear ();
   expectedTime << 1200 << 1440 << 1680 << 1920;
   expectedRsrp.clear ();
   expectedRsrp << 53 << 53 << 53 << 53;
   AddTestCase (new LteUeMeasurementsHandoverTestCase ("Handover test case - Event A3 to Event A4",
-                                                      sourceConfig, targetConfig,
-                                                      expectedTime, expectedRsrp),
+                                                      sourceConfigList, targetConfigList,
+                                                      expectedTime, expectedRsrp,
+                                                      Seconds (2)),
                TestCase::TAKES_FOREVER);
 
   // Event A4 to Event A3
-  sourceConfig.eventId = LteRrcSap::ReportConfigEutra::EVENT_A4;
-  targetConfig.eventId = LteRrcSap::ReportConfigEutra::EVENT_A3;
+  sourceConfigList.front ().eventId = LteRrcSap::ReportConfigEutra::EVENT_A4;
+  targetConfigList.front ().eventId = LteRrcSap::ReportConfigEutra::EVENT_A3;
   expectedTime.clear ();
   expectedTime << 1200 << 1440 << 1680 << 1920;
   expectedRsrp.clear ();
   expectedRsrp << 53 << 53 << 53 << 53;
   AddTestCase (new LteUeMeasurementsHandoverTestCase ("Handover test case - Event A4 to Event A3",
-                                                      sourceConfig, targetConfig,
-                                                      expectedTime, expectedRsrp),
+                                                      sourceConfigList, targetConfigList,
+                                                      expectedTime, expectedRsrp,
+                                                      Seconds (2)),
                TestCase::QUICK);
 
   // Event A2 to Event A3
-  sourceConfig.eventId = LteRrcSap::ReportConfigEutra::EVENT_A2;
-  targetConfig.eventId = LteRrcSap::ReportConfigEutra::EVENT_A3;
+  sourceConfigList.front ().eventId = LteRrcSap::ReportConfigEutra::EVENT_A2;
+  targetConfigList.front ().eventId = LteRrcSap::ReportConfigEutra::EVENT_A3;
   expectedTime.clear ();
   expectedTime << 1200 << 1440 << 1680 << 1920;
   expectedRsrp.clear ();
   expectedRsrp << 53 << 53 << 53 << 53;
   AddTestCase (new LteUeMeasurementsHandoverTestCase ("Handover test case - Event A2 to Event A3",
-                                                      sourceConfig, targetConfig,
-                                                      expectedTime, expectedRsrp),
+                                                      sourceConfigList, targetConfigList,
+                                                      expectedTime, expectedRsrp,
+                                                      Seconds (2)),
                TestCase::EXTENSIVE);
 
   // Event A3 to Event A2
-  sourceConfig.eventId = LteRrcSap::ReportConfigEutra::EVENT_A3;
-  targetConfig.eventId = LteRrcSap::ReportConfigEutra::EVENT_A2;
+  sourceConfigList.front ().eventId = LteRrcSap::ReportConfigEutra::EVENT_A3;
+  targetConfigList.front ().eventId = LteRrcSap::ReportConfigEutra::EVENT_A2;
   expectedTime.clear ();
   expectedTime << 1200 << 1440 << 1680 << 1920;
   expectedRsrp.clear ();
   expectedRsrp << 53 << 53 << 53 << 53;
   AddTestCase (new LteUeMeasurementsHandoverTestCase ("Handover test case - Event A3 to Event A2",
-                                                      sourceConfig, targetConfig,
-                                                      expectedTime, expectedRsrp),
+                                                      sourceConfigList, targetConfigList,
+                                                      expectedTime, expectedRsrp,
+                                                      Seconds (2)),
                TestCase::TAKES_FOREVER);
 
   // Event A4 to Event A5
-  sourceConfig.eventId = LteRrcSap::ReportConfigEutra::EVENT_A4;
-  targetConfig.eventId = LteRrcSap::ReportConfigEutra::EVENT_A5;
+  sourceConfigList.front ().eventId = LteRrcSap::ReportConfigEutra::EVENT_A4;
+  targetConfigList.front ().eventId = LteRrcSap::ReportConfigEutra::EVENT_A5;
   expectedTime.clear ();
   expectedTime << 1200 << 1440 << 1680 << 1920;
   expectedRsrp.clear ();
   expectedRsrp << 53 << 53 << 53 << 53;
   AddTestCase (new LteUeMeasurementsHandoverTestCase ("Handover test case - Event A4 to Event A5",
-                                                      sourceConfig, targetConfig,
-                                                      expectedTime, expectedRsrp),
+                                                      sourceConfigList, targetConfigList,
+                                                      expectedTime, expectedRsrp,
+                                                      Seconds (2)),
                TestCase::TAKES_FOREVER);
 
   // Event A5 to Event A4
-  sourceConfig.eventId = LteRrcSap::ReportConfigEutra::EVENT_A5;
-  targetConfig.eventId = LteRrcSap::ReportConfigEutra::EVENT_A4;
+  sourceConfigList.front ().eventId = LteRrcSap::ReportConfigEutra::EVENT_A5;
+  targetConfigList.front ().eventId = LteRrcSap::ReportConfigEutra::EVENT_A4;
   expectedTime.clear ();
   expectedTime << 1200 << 1440 << 1680 << 1920;
   expectedRsrp.clear ();
   expectedRsrp << 53 << 53 << 53 << 53;
   AddTestCase (new LteUeMeasurementsHandoverTestCase ("Handover test case - Event A5 to Event A4",
-                                                      sourceConfig, targetConfig,
-                                                      expectedTime, expectedRsrp),
+                                                      sourceConfigList, targetConfigList,
+                                                      expectedTime, expectedRsrp,
+                                                      Seconds (2)),
                TestCase::EXTENSIVE);
 
   // === Threshold/offset difference ===
 
-  sourceConfig.threshold1.range = 52;
-  targetConfig.threshold1.range = 56;
+  sourceConfigList.front ().threshold1.range = 52;
+  targetConfigList.front ().threshold1.range = 56;
 
   // Event A1
-  sourceConfig.eventId = LteRrcSap::ReportConfigEutra::EVENT_A1;
-  targetConfig.eventId = LteRrcSap::ReportConfigEutra::EVENT_A1;
+  sourceConfigList.front ().eventId = LteRrcSap::ReportConfigEutra::EVENT_A1;
+  targetConfigList.front ().eventId = LteRrcSap::ReportConfigEutra::EVENT_A1;
   expectedTime.clear ();
   expectedTime << 200 << 440 << 680 << 920;
   expectedRsrp.clear ();
   expectedRsrp << 55 << 55 << 55 << 55;
   AddTestCase (new LteUeMeasurementsHandoverTestCase ("Handover test case - Event A1 threshold difference",
-                                                      sourceConfig, targetConfig,
-                                                      expectedTime, expectedRsrp),
+                                                      sourceConfigList, targetConfigList,
+                                                      expectedTime, expectedRsrp,
+                                                      Seconds (2)),
                TestCase::EXTENSIVE);
 
   // Event A2
-  sourceConfig.eventId = LteRrcSap::ReportConfigEutra::EVENT_A2;
-  targetConfig.eventId = LteRrcSap::ReportConfigEutra::EVENT_A2;
+  sourceConfigList.front ().eventId = LteRrcSap::ReportConfigEutra::EVENT_A2;
+  targetConfigList.front ().eventId = LteRrcSap::ReportConfigEutra::EVENT_A2;
   expectedTime.clear ();
   expectedTime << 1200 << 1440 << 1680 << 1920;
   expectedRsrp.clear ();
   expectedRsrp << 53 << 53 << 53 << 53;
   AddTestCase (new LteUeMeasurementsHandoverTestCase ("Handover test case - Event A2 threshold difference",
-                                                      sourceConfig, targetConfig,
-                                                      expectedTime, expectedRsrp),
+                                                      sourceConfigList, targetConfigList,
+                                                      expectedTime, expectedRsrp,
+                                                      Seconds (2)),
                TestCase::QUICK);
 
   // Event A3
-  sourceConfig.eventId = LteRrcSap::ReportConfigEutra::EVENT_A3;
-  sourceConfig.a3Offset = -30;
-  targetConfig.eventId = LteRrcSap::ReportConfigEutra::EVENT_A3;
-  targetConfig.a3Offset = 30;
+  sourceConfigList.front ().eventId = LteRrcSap::ReportConfigEutra::EVENT_A3;
+  sourceConfigList.front ().a3Offset = -30;
+  targetConfigList.front ().eventId = LteRrcSap::ReportConfigEutra::EVENT_A3;
+  targetConfigList.front ().a3Offset = 30;
   expectedTime.clear ();
   expectedTime << 200 << 440 << 680 << 920;
   expectedRsrp.clear ();
   expectedRsrp << 55 << 55 << 55 << 55;
   AddTestCase (new LteUeMeasurementsHandoverTestCase ("Handover test case - Event A3 offset difference",
-                                                      sourceConfig, targetConfig,
-                                                      expectedTime, expectedRsrp),
+                                                      sourceConfigList, targetConfigList,
+                                                      expectedTime, expectedRsrp,
+                                                      Seconds (2)),
                TestCase::QUICK);
 
   // Event A4
-  sourceConfig.eventId = LteRrcSap::ReportConfigEutra::EVENT_A4;
-  targetConfig.eventId = LteRrcSap::ReportConfigEutra::EVENT_A4;
+  sourceConfigList.front ().eventId = LteRrcSap::ReportConfigEutra::EVENT_A4;
+  targetConfigList.front ().eventId = LteRrcSap::ReportConfigEutra::EVENT_A4;
   expectedTime.clear ();
   expectedTime << 200 << 440 << 680 << 920;
   expectedRsrp.clear ();
   expectedRsrp << 55 << 55 << 55 << 55;
   AddTestCase (new LteUeMeasurementsHandoverTestCase ("Handover test case - Event A4 threshold difference",
-                                                      sourceConfig, targetConfig,
-                                                      expectedTime, expectedRsrp),
+                                                      sourceConfigList, targetConfigList,
+                                                      expectedTime, expectedRsrp,
+                                                      Seconds (2)),
                TestCase::EXTENSIVE);
 
   // Event A5
-  sourceConfig.eventId = LteRrcSap::ReportConfigEutra::EVENT_A5;
-  sourceConfig.threshold2.range = 52;
-  targetConfig.eventId = LteRrcSap::ReportConfigEutra::EVENT_A5;
-  targetConfig.threshold2.range = 56;
+  sourceConfigList.front ().eventId = LteRrcSap::ReportConfigEutra::EVENT_A5;
+  sourceConfigList.front ().threshold2.range = 52;
+  targetConfigList.front ().eventId = LteRrcSap::ReportConfigEutra::EVENT_A5;
+  targetConfigList.front ().threshold2.range = 56;
   expectedTime.clear ();
   expectedRsrp.clear ();
   AddTestCase (new LteUeMeasurementsHandoverTestCase ("Handover test case - Event A5 threshold difference",
-                                                      sourceConfig, targetConfig,
-                                                      expectedTime, expectedRsrp),
+                                                      sourceConfigList, targetConfigList,
+                                                      expectedTime, expectedRsrp,
+                                                      Seconds (2)),
                TestCase::EXTENSIVE);
 
 } // end of LteUeMeasurementsHandoverTestSuite::LteUeMeasurementsHandoverTestSuite
@@ -1605,15 +1626,16 @@ static LteUeMeasurementsHandoverTestSuite lteUeMeasurementsHandoverTestSuite;
 
 LteUeMeasurementsHandoverTestCase::LteUeMeasurementsHandoverTestCase (
   std::string name,
-  LteRrcSap::ReportConfigEutra sourceConfig,
-  LteRrcSap::ReportConfigEutra targetConfig,
-  std::vector<Time> expectedTime,
-  std::vector<uint8_t> expectedRsrp)
+  std::list<LteRrcSap::ReportConfigEutra> sourceConfigList,
+  std::list<LteRrcSap::ReportConfigEutra> targetConfigList,
+  std::vector<Time> expectedTime, std::vector<uint8_t> expectedRsrp,
+  Time duration)
   : TestCase (name),
-    m_sourceConfig (sourceConfig),
-    m_targetConfig (targetConfig),
+    m_sourceConfigList (sourceConfigList),
+    m_targetConfigList (targetConfigList),
     m_expectedTime (expectedTime),
-    m_expectedRsrp (expectedRsrp)
+    m_expectedRsrp (expectedRsrp),
+    m_duration (duration)
 {
   // input sanity check
   uint16_t size = m_expectedTime.size ();
@@ -1710,13 +1732,25 @@ LteUeMeasurementsHandoverTestCase::DoRun ()
   enbDevs = lteHelper->InstallEnbDevice (enbNodes);
   ueDevs = lteHelper->InstallUeDevice (ueNodes);
 
-  // Setup UE measurement configuration in source eNodeB
+  // Setup UE measurement configuration in eNodeBs
+  uint8_t measId;
+  std::list<LteRrcSap::ReportConfigEutra>::const_iterator itReportConfig;
   Ptr<LteEnbRrc> enbRrc1 = enbDevs.Get (0)->GetObject<LteEnbNetDevice> ()->GetRrc ();
-  m_expectedSourceCellMeasId = enbRrc1->AddUeMeasReportConfig (m_sourceConfig);
-
-  // Setup UE measurement configuration in target eNodeB
   Ptr<LteEnbRrc> enbRrc2 = enbDevs.Get (1)->GetObject<LteEnbNetDevice> ()->GetRrc ();
-  m_expectedTargetCellMeasId = enbRrc2->AddUeMeasReportConfig (m_targetConfig);
+
+  for (itReportConfig = m_sourceConfigList.begin ();
+       itReportConfig != m_sourceConfigList.end (); itReportConfig++)
+    {
+      measId = enbRrc1->AddUeMeasReportConfig (*itReportConfig);
+      m_expectedSourceCellMeasId.insert (measId);
+    }
+
+  for (itReportConfig = m_targetConfigList.begin ();
+       itReportConfig != m_targetConfigList.end (); itReportConfig++)
+    {
+      measId = enbRrc2->AddUeMeasReportConfig (*itReportConfig);
+      m_expectedTargetCellMeasId.insert (measId);
+    }
 
   // Install the IP stack on the UEs
   internet.Install (ueNodes);
@@ -1749,11 +1783,11 @@ LteUeMeasurementsHandoverTestCase::DoRun ()
                                  this));
 
   // Schedule handover
-  lteHelper->HandoverRequest (Seconds (1), ueDevs.Get (0), enbDevs.Get (0),
-                              enbDevs.Get (1));
+  lteHelper->HandoverRequest (MilliSeconds (m_duration.GetMilliSeconds () / 2),
+                              ueDevs.Get (0), enbDevs.Get (0), enbDevs.Get (1));
 
   // Run simulation
-  Simulator::Stop (Seconds (2));
+  Simulator::Stop (m_duration);
   Simulator::Run ();
   Simulator::Destroy ();
 
@@ -1775,23 +1809,26 @@ LteUeMeasurementsHandoverTestCase::RecvMeasurementReportCallback (
   std::string context, uint64_t imsi, uint16_t cellId, uint16_t rnti,
   LteRrcSap::MeasurementReport report)
 {
-  NS_LOG_FUNCTION (this << context);
+  uint8_t measId = report.measResults.measId;
+  NS_LOG_FUNCTION (this << context << (uint16_t) measId);
 
-  uint8_t correctMeasId;
+  bool isCorrectMeasId;
   if (cellId == 1)
     {
-      correctMeasId = m_expectedSourceCellMeasId;
+      std::set<uint8_t>::iterator itMeasId = m_expectedSourceCellMeasId.find (measId);
+      isCorrectMeasId = (itMeasId != m_expectedSourceCellMeasId.end ());
     }
   else if (cellId == 2)
     {
-      correctMeasId = m_expectedTargetCellMeasId;
+      std::set<uint8_t>::iterator itMeasId = m_expectedTargetCellMeasId.find (measId);
+      isCorrectMeasId = (itMeasId != m_expectedTargetCellMeasId.end ());
     }
   else
     {
       NS_FATAL_ERROR ("Invalid cell ID " << cellId);
     }
 
-  if (report.measResults.measId == correctMeasId)
+  if (isCorrectMeasId)
     {
       // verifying the report completeness
       LteRrcSap::MeasResults measResults = report.measResults;

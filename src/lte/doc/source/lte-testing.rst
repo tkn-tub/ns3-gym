@@ -161,7 +161,7 @@ passes if both the following conditions are satisfied:
 Inter-cell Interference Tests
 -----------------------------
 
-The test suite `lte-interference`` provides system tests recreating an
+The test suite `lte-interference` provides system tests recreating an
 inter-cell interference scenario with two eNBs, each having a single
 UE attached to it and employing Adaptive Modulation and Coding both in
 the downlink and in the uplink. The topology of the scenario
@@ -197,9 +197,9 @@ contains separate values for uplink and downlink.
 UE Measurements Tests
 ---------------------
 
-The test suite `lte-ue-measurements`` provides system tests recreating an
+The test suite `lte-ue-measurements` provides system tests recreating an
 inter-cell interference scenario identical of the one defined for
-`lte-interference`` test-suite. However, in this test the quantities to be
+`lte-interference` test-suite. However, in this test the quantities to be
 tested are represented by RSRP and RSRQ measurements performed by the UE in two
 different points of the stack: the source, which is UE PHY layer, and the
 destination, that is the eNB RRC.
@@ -395,12 +395,13 @@ configuration is updated properly after a succesful handover takes place. For
 this purpose, the simulation will construct 2 eNodeBs with different UE
 measurement configuration, and the UE will perform handover from one cell to
 another. The UE will be located on a straight line between the 2 eNodeBs, and
-the handover will be invoked manually.
+the handover will be invoked manually. The simulation duration is 2 seconds and
+the handover is triggered at +1.0s.
 
 The `lte-ue-measurements-handover` test suite covers various types of
-configuration differences. The first one is the difference in report interval:
-the first eNodeB is configured with 480 ms report interval, while the second
-eNodeB is configured with 240 ms report interval. Therefore, when the UE
+configuration differences. The first one is the difference in report interval,
+e.g. the first eNodeB is configured with 480 ms report interval, while the
+second eNodeB is configured with 240 ms report interval. Therefore, when the UE
 performed handover to the second cell, the new report interval must take effect.
 As in piecewise configuration, the timing and the content of each measurement
 report received by the eNodeB will be verified.
