@@ -385,7 +385,7 @@ private:
    */
   struct VarMeasConfig
   {
-    std::map<uint8_t, LteRrcSap::MeasIdToAddMod>   measIdList;
+    std::map<uint8_t, LteRrcSap::MeasIdToAddMod> measIdList;
     std::map<uint8_t, LteRrcSap::MeasObjectToAddMod> measObjectList;
     std::map<uint8_t, LteRrcSap::ReportConfigToAddMod> reportConfigList;
     LteRrcSap::QuantityConfig quantityConfig; 
@@ -417,6 +417,7 @@ private:
   void VarMeasReportListAdd (uint8_t measId, ConcernedCells_t enteringCells);
   void VarMeasReportListErase (uint8_t measId, ConcernedCells_t leavingCells,
                                bool reportOnLeave);
+  void VarMeasReportListClear (uint8_t measId);
 
   struct MeasValues
   {

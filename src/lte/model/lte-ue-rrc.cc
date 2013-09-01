@@ -479,6 +479,16 @@ LteUeRrc::DoNotifyRandomAccessSuccessful ()
         LteRrcSap::RrcConnectionReconfigurationCompleted msg;
         msg.rrcTransactionIdentifier = m_lastRrcTransactionIdentifier;
         m_rrcSapUser->SendRrcConnectionReconfigurationCompleted (msg);
+
+        // 3GPP TS 36.331 section 5.5.6.1 Measurements related actions upon handover
+        std::map<uint8_t, LteRrcSap::MeasIdToAddMod>::iterator measIdIt;
+        for (measIdIt = m_varMeasConfig.measIdList.begin ();
+             measIdIt != m_varMeasConfig.measIdList.end ();
+             ++measIdIt)
+          {
+            VarMeasReportListClear (measIdIt->second.measId);
+          }
+
         SwitchToState (CONNECTED_NORMALLY);
         m_handoverEndOkTrace (m_imsi, m_cellId, m_rnti);
       }
@@ -1129,13 +1139,7 @@ LteUeRrc::ApplyMeasConfig (LteRrcSap::MeasConfig mc)
               NS_LOG_LOGIC (this << " deleting measId " << (uint32_t) measId << " because referring to measObjectId " << (uint32_t)  measObjectId);
               // note: postfix operator preserves iterator validity
               m_varMeasConfig.measIdList.erase (measIdIt++);
-              std::map<uint8_t, VarMeasReport>::iterator measReportIt = m_varMeasReportList.find (measId);
-              if (measReportIt != m_varMeasReportList.end ())
-                {
-                  NS_LOG_LOGIC (this << " deleting existing report for measId " << (uint32_t) measId << " because referring to measObjectId " << (uint32_t)  measObjectId);
-                  measReportIt->second.periodicReportTimer.Cancel ();
-                  m_varMeasReportList.erase (measReportIt);
-                }
+              VarMeasReportListClear (measId);
             }
           else
             {
@@ -1172,13 +1176,7 @@ LteUeRrc::ApplyMeasConfig (LteRrcSap::MeasConfig mc)
                 {
                   uint8_t measId = measIdIt->second.measId;
                   NS_LOG_LOGIC (this << " found measId " << (uint32_t) measId << " referring to measObjectId " << (uint32_t)  measObjectId);
-                  std::map<uint8_t, VarMeasReport>::iterator measReportIt = m_varMeasReportList.find (measId);
-                  if (measReportIt != m_varMeasReportList.end ())
-                    {
-                      NS_LOG_LOGIC (this << " deleting existing report for measId " << (uint32_t) measId << " because referring to measObjectId " << (uint32_t)  measObjectId);
-                      measReportIt->second.periodicReportTimer.Cancel ();
-                      m_varMeasReportList.erase (measReportIt);
-                    }
+                  VarMeasReportListClear (measId);
                 }
             }
         }
@@ -1208,13 +1206,7 @@ LteUeRrc::ApplyMeasConfig (LteRrcSap::MeasConfig mc)
               NS_LOG_LOGIC (this << " deleting measId " << (uint32_t) measId << " because referring to reportConfigId " << (uint32_t)  reportConfigId);
               // note: postfix operator preserves iterator validity
               m_varMeasConfig.measIdList.erase (measIdIt++);
-              std::map<uint8_t, VarMeasReport>::iterator measReportIt = m_varMeasReportList.find (measId);
-              if (measReportIt != m_varMeasReportList.end ())
-                {
-                  NS_LOG_LOGIC (this << " deleting existing report for measId" << (uint32_t) measId << " because referring to reportConfigId " << (uint32_t)  reportConfigId);
-                  measReportIt->second.periodicReportTimer.Cancel ();
-                  m_varMeasReportList.erase (measReportIt);
-                }
+              VarMeasReportListClear (measId);
             }
           else
             {
@@ -1248,13 +1240,7 @@ LteUeRrc::ApplyMeasConfig (LteRrcSap::MeasConfig mc)
                 {
                   uint8_t measId = measIdIt->second.measId;
                   NS_LOG_LOGIC (this << " found measId " << (uint32_t) measId << " referring to reportConfigId " << (uint32_t)  reportConfigId);
-                  std::map<uint8_t, VarMeasReport>::iterator measReportIt = m_varMeasReportList.find (measId);
-                  if (measReportIt != m_varMeasReportList.end ())
-                    {
-                      NS_LOG_LOGIC (this << " deleting existing report for measId " << (uint32_t) measId << " because referring to reportConfigId " << (uint32_t)  reportConfigId);
-                      measReportIt->second.periodicReportTimer.Cancel ();
-                      m_varMeasReportList.erase (measReportIt);
-                    }
+                  VarMeasReportListClear (measId);
                 }
             }
         }
@@ -1279,13 +1265,7 @@ LteUeRrc::ApplyMeasConfig (LteRrcSap::MeasConfig mc)
           NS_LOG_LOGIC (this << " deleting measId " << (uint32_t) measId);
           // note: postfix operator preserves iterator validity
           m_varMeasConfig.measIdList.erase (measIdIt++);
-          std::map<uint8_t, VarMeasReport>::iterator measReportIt = m_varMeasReportList.find (measId);
-          if (measReportIt != m_varMeasReportList.end ())
-            {
-              NS_LOG_LOGIC (this << " deleting existing report for measId" << (uint32_t) measId);
-              measReportIt->second.periodicReportTimer.Cancel ();
-              m_varMeasReportList.erase (measReportIt);
-            }
+          VarMeasReportListClear (measId);
         }
       // we calculate here the coefficient a used for Layer 3 filtering, see 3GPP TS 36.331 section 5.5.3.2
       m_varMeasConfig.aRsrp = std::pow (0.5, mc.quantityConfig.filterCoefficientRSRP/4.0);
@@ -1302,13 +1282,7 @@ LteUeRrc::ApplyMeasConfig (LteRrcSap::MeasConfig mc)
       uint8_t measId = *it;
       NS_LOG_LOGIC (this << " deleting measId " << (uint32_t) measId);
       m_varMeasConfig.measIdList.erase (measId);
-      std::map<uint8_t, VarMeasReport>::iterator measReportIt = m_varMeasReportList.find (measId);
-      if (measReportIt != m_varMeasReportList.end ())
-        {
-          NS_LOG_LOGIC (this << " deleting existing report for measId" << (uint32_t) measId);
-          measReportIt->second.periodicReportTimer.Cancel ();
-          m_varMeasReportList.erase (measReportIt);
-        }
+      VarMeasReportListClear (measId);
 
       // removing time-to-trigger queues
       m_enteringTriggerQueue.erase (measId);
@@ -2397,6 +2371,25 @@ LteUeRrc::VarMeasReportListErase (uint8_t measId, ConcernedCells_t leavingCells,
     } // end of if (!leavingTriggerIt->second.empty ())
 
 } // end of LteUeRrc::VarMeasReportListErase
+
+void
+LteUeRrc::VarMeasReportListClear (uint8_t measId)
+{
+  NS_LOG_FUNCTION (this << (uint16_t) measId);
+
+  // remove the measurement reporting entry for this measId from the VarMeasReportList
+  std::map<uint8_t, VarMeasReport>::iterator
+    measReportIt = m_varMeasReportList.find (measId);
+  if (measReportIt != m_varMeasReportList.end ())
+    {
+      NS_LOG_LOGIC (this << " deleting existing report for measId " << (uint16_t) measId);
+      measReportIt->second.periodicReportTimer.Cancel ();
+      m_varMeasReportList.erase (measReportIt);
+    }
+
+  CancelEnteringTrigger (measId);
+  CancelLeavingTrigger (measId);
+}
 
 void 
 LteUeRrc::SendMeasurementReport (uint8_t measId)
