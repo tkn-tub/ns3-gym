@@ -2131,30 +2131,31 @@ LteUeRrc::CancelEnteringTrigger (uint8_t measId, uint16_t cellId)
     it1 = m_enteringTriggerQueue.find (measId);
   NS_ASSERT (it1 != m_enteringTriggerQueue.end ());
 
-  if (!it1->second.empty ())
+  std::list<PendingTrigger_t>::iterator it2 = it1->second.begin ();
+  while (it2 != it1->second.end ())
     {
-      std::list<PendingTrigger_t>::iterator it2;
-      for (it2 = it1->second.begin (); it2 != it1->second.end (); ++it2)
+      NS_ASSERT (it2->measId == measId);
+
+      ConcernedCells_t::iterator it3;
+      for (it3 = it2->concernedCells.begin ();
+           it3 != it2->concernedCells.end (); ++it3)
         {
-          NS_ASSERT (it2->measId == measId);
-
-          ConcernedCells_t::iterator it3;
-          for (it3 = it2->concernedCells.begin ();
-               it3 != it2->concernedCells.end (); ++it3)
+          if (*it3 == cellId)
             {
-              if (*it3 == cellId)
-                {
-                  it3 = it2->concernedCells.erase (it3);
-                }
+              it3 = it2->concernedCells.erase (it3);
             }
+        }
 
-          if (it2->concernedCells.empty ())
-            {
-              NS_LOG_LOGIC (this << " canceling entering time-to-trigger event at "
-                                 << Simulator::GetDelayLeft (it2->timer).GetSeconds ());
-              Simulator::Cancel (it2->timer);
-              it2 = it1->second.erase (it2);
-            }
+      if (it2->concernedCells.empty ())
+        {
+          NS_LOG_LOGIC (this << " canceling entering time-to-trigger event at "
+                             << Simulator::GetDelayLeft (it2->timer).GetSeconds ());
+          Simulator::Cancel (it2->timer);
+          it2 = it1->second.erase (it2);
+        }
+      else
+        {
+          it2++;
         }
     }
 }
@@ -2188,30 +2189,31 @@ LteUeRrc::CancelLeavingTrigger (uint8_t measId, uint16_t cellId)
     it1 = m_leavingTriggerQueue.find (measId);
   NS_ASSERT (it1 != m_leavingTriggerQueue.end ());
 
-  if (!it1->second.empty ())
+  std::list<PendingTrigger_t>::iterator it2 = it1->second.begin ();
+  while (it2 != it1->second.end ())
     {
-      std::list<PendingTrigger_t>::iterator it2;
-      for (it2 = it1->second.begin (); it2 != it1->second.end (); ++it2)
+      NS_ASSERT (it2->measId == measId);
+
+      ConcernedCells_t::iterator it3;
+      for (it3 = it2->concernedCells.begin ();
+           it3 != it2->concernedCells.end (); ++it3)
         {
-          NS_ASSERT (it2->measId == measId);
-
-          ConcernedCells_t::iterator it3;
-          for (it3 = it2->concernedCells.begin ();
-               it3 != it2->concernedCells.end (); ++it3)
+          if (*it3 == cellId)
             {
-              if (*it3 == cellId)
-                {
-                  it3 = it2->concernedCells.erase (it3);
-                }
+              it3 = it2->concernedCells.erase (it3);
             }
+        }
 
-          if (it2->concernedCells.empty ())
-            {
-              NS_LOG_LOGIC (this << " canceling leaving time-to-trigger event at "
-                                 << Simulator::GetDelayLeft (it2->timer).GetSeconds ());
-              Simulator::Cancel (it2->timer);
-              it2 = it1->second.erase (it2);
-            }
+      if (it2->concernedCells.empty ())
+        {
+          NS_LOG_LOGIC (this << " canceling leaving time-to-trigger event at "
+                             << Simulator::GetDelayLeft (it2->timer).GetSeconds ());
+          Simulator::Cancel (it2->timer);
+          it2 = it1->second.erase (it2);
+        }
+      else
+        {
+          it2++;
         }
     }
 }
@@ -2283,8 +2285,9 @@ LteUeRrc::VarMeasReportListAdd (uint8_t measId, ConcernedCells_t enteringCells)
       if (!enteringTriggerIt->second.empty ())
         {
           /*
-           * Clean up the queue in case the same cells are still lingering (e.g.
-           * when time-to-trigger > 200 ms).
+           * To prevent the same set of cells triggering again in the future,
+           * we clean up the time-to-trigger queue. This case might occur when
+           * time-to-trigger > 200 ms.
            */
           for (ConcernedCells_t::const_iterator it = enteringCells.begin ();
                it != enteringCells.end (); ++it)
@@ -2358,8 +2361,9 @@ LteUeRrc::VarMeasReportListErase (uint8_t measId, ConcernedCells_t leavingCells,
       if (!leavingTriggerIt->second.empty ())
         {
           /*
-           * Clean up the queue in case the same cells are still lingering (e.g.
-           * when time-to-trigger > 200 ms).
+           * To prevent the same set of cells triggering again in the future,
+           * we clean up the time-to-trigger queue. This case might occur when
+           * time-to-trigger > 200 ms.
            */
           for (ConcernedCells_t::const_iterator it = leavingCells.begin ();
                it != leavingCells.end (); ++it)

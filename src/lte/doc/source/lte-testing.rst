@@ -395,8 +395,9 @@ configuration is updated properly after a succesful handover takes place. For
 this purpose, the simulation will construct 2 eNodeBs with different UE
 measurement configuration, and the UE will perform handover from one cell to
 another. The UE will be located on a straight line between the 2 eNodeBs, and
-the handover will be invoked manually. The simulation duration is 2 seconds and
-the handover is triggered at +1.0s.
+the handover will be invoked manually. The duration of each simulation is
+2 seconds (except the last test case) and the handover is triggered exactly at
+halfway of simulation.
 
 The `lte-ue-measurements-handover` test suite covers various types of
 configuration differences. The first one is the difference in report interval,
@@ -432,6 +433,8 @@ lists the tested scenarios.
    13     Threshold/offset A3 offset -30 (Event A3)    A3 offset +30 (Event A3)
    14     Threshold/offset RSRP range 52 (Event A4)    RSRP range 56 (Event A4)
    15     Threshold/offset RSRP range 52-52 (Event A5) RSRP range 56-56 (Event A5)
+   16     Time-to-trigger  1024 ms                     100 ms
+   17     Time-to-trigger  1024 ms                     640 ms
    ====== ================ =========================== ===========================
 
 

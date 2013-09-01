@@ -1615,6 +1615,43 @@ LteUeMeasurementsHandoverTestSuite::LteUeMeasurementsHandoverTestSuite ()
                                                       Seconds (2)),
                TestCase::EXTENSIVE);
 
+  // === Time-to-trigger (TTT) difference ===
+
+  sourceConfigList.front ().eventId = LteRrcSap::ReportConfigEutra::EVENT_A1;
+  sourceConfigList.front ().a3Offset = 1;
+  sourceConfigList.front ().threshold1.range = 0;
+  sourceConfigList.front ().threshold2.range = 0;
+  targetConfigList.front ().eventId = LteRrcSap::ReportConfigEutra::EVENT_A1;
+  targetConfigList.front ().a3Offset = 1;
+  targetConfigList.front ().threshold1.range = 0;
+  targetConfigList.front ().threshold2.range = 0;
+
+  // decreasing time-to-trigger (short duration)
+  sourceConfigList.front ().timeToTrigger = 1024;
+  targetConfigList.front ().timeToTrigger = 100;
+  expectedTime.clear ();
+  expectedTime << 1300 << 1540 << 1780;
+  expectedRsrp.clear ();
+  expectedRsrp << 53 << 53 << 53;
+  AddTestCase (new LteUeMeasurementsHandoverTestCase ("Handover test case - decreasing TTT (short)",
+                                                      sourceConfigList, targetConfigList,
+                                                      expectedTime, expectedRsrp,
+                                                      Seconds (2)),
+               TestCase::QUICK);
+
+  // decreasing time-to-trigger (longer duration)
+  sourceConfigList.front ().timeToTrigger = 1024;
+  targetConfigList.front ().timeToTrigger = 640;
+  expectedTime.clear ();
+  expectedTime << 1224 << 1464 << 1704 << 1944 << 2840 << 3080 << 3320 << 3560 << 3800 << 4040;
+  expectedRsrp.clear ();
+  expectedRsrp << 55 << 55 << 55 << 55 << 53 << 53 << 53 << 53 << 53 << 53;
+  AddTestCase (new LteUeMeasurementsHandoverTestCase ("Handover test case - decreasing TTT (long)",
+                                                      sourceConfigList, targetConfigList,
+                                                      expectedTime, expectedRsrp,
+                                                      Seconds (4.2)),
+               TestCase::EXTENSIVE);
+
 } // end of LteUeMeasurementsHandoverTestSuite::LteUeMeasurementsHandoverTestSuite
 
 static LteUeMeasurementsHandoverTestSuite lteUeMeasurementsHandoverTestSuite;
