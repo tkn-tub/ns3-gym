@@ -146,7 +146,7 @@ LteUeMeasurementsTestCase::DoRun (void)
   lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
   lteHelper->SetAttribute ("UseIdealRrc", BooleanValue (false));
 
-  LogComponentEnable ("LteUeMeasurementsTest", LOG_LEVEL_ALL);
+  // LogComponentEnable ("LteUeMeasurementsTest", LOG_LEVEL_ALL);
 
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
