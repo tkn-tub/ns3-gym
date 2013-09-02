@@ -232,7 +232,10 @@ EpcUeNas::DoNotifyConnectionSuccessful ()
 void 
 EpcUeNas::DoNotifyConnectionFailed ()
 {
-  NS_FATAL_ERROR ("connection failed, it should not happen with the current model");
+  NS_LOG_FUNCTION (this);
+
+  SwitchToState (OFF);
+  // TODO
 }
 
 void

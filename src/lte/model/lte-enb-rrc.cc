@@ -40,7 +40,6 @@
 #include <ns3/lte-rlc-um.h>
 #include <ns3/lte-rlc-am.h>
 #include <ns3/lte-pdcp.h>
-#include <ns3/lte-pdcp-sap.h>
 
 
 
@@ -1174,10 +1173,11 @@ UeManager::Bid2Drbid (uint8_t bid)
 void 
 UeManager::SwitchToState (State newState)
 {
-  NS_LOG_FUNCTION (this << newState);
+  NS_LOG_FUNCTION (this << ToString (newState));
   State oldState = m_state;
   m_state = newState;
-  NS_LOG_INFO ("IMSI " << m_imsi << " RNTI " << m_rnti << " UeManager " << ToString (oldState) << " --> " << ToString (newState));
+  NS_LOG_INFO (this << "IMSI " << m_imsi << " RNTI " << m_rnti << " UeManager "
+                    << ToString (oldState) << " --> " << ToString (newState));
   m_stateTransitionTrace (m_imsi, m_rrc->m_cellId, m_rnti, oldState, newState);
   
   switch (newState)

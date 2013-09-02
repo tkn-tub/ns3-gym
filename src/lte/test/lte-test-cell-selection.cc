@@ -39,6 +39,7 @@
 #include <ns3/ipv4-interface-container.h>
 
 #include <ns3/lte-ue-net-device.h>
+#include <ns3/lte-ue-rrc.h>
 #include <ns3/lte-enb-net-device.h>
 #include <ns3/lte-enb-phy.h>
 
@@ -298,9 +299,6 @@ LteCellSelectionTestCase::DoRun ()
           ueStaticRouting->SetDefaultRoute (epcHelper->GetUeDefaultGatewayAddress (), 1);
         }
 
-      // Enable Idle mode cell selection
-      lteHelper->Attach (ueDevs);
-
     } // end of if (m_isEpcMode)
   else
     {
@@ -321,6 +319,9 @@ LteCellSelectionTestCase::DoRun ()
   Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/InitialCellSelectionEndError",
                    MakeCallback (&LteCellSelectionTestCase::InitialCellSelectionEndErrorCallback, this));
 
+  // Enable Idle mode cell selection
+  lteHelper->Attach (ueDevs);
+
   // Run simulation
   Simulator::Stop (m_duration);
   Simulator::Run ();
@@ -340,7 +341,8 @@ LteCellSelectionTestCase::DoRun ()
                                      << " has attached to an unexpected cell");
     }
 
-  NS_TEST_ASSERT_MSG_EQ (m_lastState, 5, "UE is not at CONNECTED_NORMALLY state");
+  NS_TEST_ASSERT_MSG_EQ (m_lastState, LteUeRrc::CONNECTED_NORMALLY,
+                         "UE is not at CONNECTED_NORMALLY state");
 
   Simulator::Destroy ();
 
