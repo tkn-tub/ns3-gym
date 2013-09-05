@@ -151,6 +151,7 @@ def build(bld):
         'test/lte-test-ue-measurements.cc',
         'test/lte-test-cell-selection.cc',
         'test/test-lte-handover-delay.cc',
+        'test/test-lte-handover-target.cc',
         ]
 
     headers = bld(features='ns3header')
