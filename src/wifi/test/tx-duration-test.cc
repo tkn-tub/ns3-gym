@@ -60,7 +60,7 @@ private:
    *
    * @return true if values correspond, false otherwise
    */
-  bool CheckTxDuration (uint32_t size, WifiMode payloadMode,  WifiPreamble preamble, uint32_t knownDurationMicroSeconds);
+  bool CheckTxDuration (uint32_t size, WifiMode payloadMode,  WifiPreamble preamble, double knownDurationMicroSeconds);
 
 };
 
@@ -78,7 +78,9 @@ TxDurationTest::~TxDurationTest ()
 bool
 TxDurationTest::CheckPayloadDuration (uint32_t size, WifiMode payloadMode, uint32_t knownDurationMicroSeconds)
 {
-  uint32_t calculatedDurationMicroSeconds = WifiPhy::GetPayloadDurationMicroSeconds (size, payloadMode);
+  WifiTxVector txVector;
+  txVector.SetMode (payloadMode);
+  uint32_t calculatedDurationMicroSeconds = WifiPhy::GetPayloadDurationMicroSeconds (size, txVector);
   if (calculatedDurationMicroSeconds != knownDurationMicroSeconds)
     {
       std::cerr << " size=" << size
@@ -92,9 +94,14 @@ TxDurationTest::CheckPayloadDuration (uint32_t size, WifiMode payloadMode, uint3
 }
 
 bool
-TxDurationTest::CheckTxDuration (uint32_t size, WifiMode payloadMode, WifiPreamble preamble, uint32_t knownDurationMicroSeconds)
+TxDurationTest::CheckTxDuration (uint32_t size, WifiMode payloadMode, WifiPreamble preamble, double knownDurationMicroSeconds)
 {
-  uint32_t calculatedDurationMicroSeconds = WifiPhy::CalculateTxDuration (size, payloadMode, preamble).GetMicroSeconds ();
+  WifiTxVector txVector;
+  txVector.SetMode (payloadMode);
+  txVector.SetNss(1);
+  txVector.SetStbc(0);
+  txVector.SetNess(0);
+  double calculatedDurationMicroSeconds = WifiPhy::CalculateTxDuration (size, txVector, preamble).GetMicroSeconds ();
   if (calculatedDurationMicroSeconds != knownDurationMicroSeconds)
     {
       std::cerr << " size=" << size
@@ -112,6 +119,7 @@ void
 TxDurationTest::DoRun (void)
 {
   bool retval = true;
+  
 
   // IEEE Std 802.11-2007 Table 18-2 "Example of LENGTH calculations for CCK"
   retval = retval
@@ -177,6 +185,16 @@ TxDurationTest::DoRun (void)
     && CheckTxDuration (1536, WifiPhy::GetErpOfdmRate54Mbps (), WIFI_PREAMBLE_LONG, 254)
     && CheckTxDuration (76, WifiPhy::GetErpOfdmRate54Mbps (), WIFI_PREAMBLE_LONG, 38)
     && CheckTxDuration (14, WifiPhy::GetErpOfdmRate54Mbps (), WIFI_PREAMBLE_LONG, 30);
+
+  //802.11n durations
+  retval = retval
+    && CheckTxDuration (1536,WifiPhy::GetOfdmRate65MbpsBW20MHz (), WIFI_PREAMBLE_HT_MF,228) 
+    && CheckTxDuration (76, WifiPhy::GetOfdmRate65MbpsBW20MHz (), WIFI_PREAMBLE_HT_MF,48)
+    && CheckTxDuration (14, WifiPhy::GetOfdmRate65MbpsBW20MHz (), WIFI_PREAMBLE_HT_MF,40 )
+    //should be 218.8, 38,8 and 31.6  but microseconds are only represented as integers will have to change Time to change that
+    && CheckTxDuration (1536, WifiPhy::GetOfdmRate65MbpsBW20MHzShGi (), WIFI_PREAMBLE_HT_GF,218)
+    && CheckTxDuration (76, WifiPhy::GetOfdmRate65MbpsBW20MHzShGi (), WIFI_PREAMBLE_HT_GF,38)
+    && CheckTxDuration (14, WifiPhy::GetOfdmRate65MbpsBW20MHzShGi (), WIFI_PREAMBLE_HT_GF,31);
 }
 
 class TxDurationTestSuite : public TestSuite

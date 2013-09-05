@@ -28,6 +28,7 @@
 #include "ns3/ipv6.h"
 #include "ns3/ipv6-address.h"
 #include "ns3/ipv6-header.h"
+#include "ns3/ipv6-pmtu-cache.h"
 
 namespace ns3
 {
@@ -278,6 +279,13 @@ public:
   uint16_t GetMtu (uint32_t i) const;
 
   /**
+   * \brief Set the Path MTU for the specified IPv6 destination address.
+   * \param dst Ipv6 destination address
+   * \param pmtu the Path MTU
+   */
+  virtual void SetPmtu (Ipv6Address dst, uint32_t pmtu);
+
+  /**
    * \brief Is specified interface up ?
    * \param i interface index
    */
@@ -485,6 +493,18 @@ private:
   virtual bool GetIpForward () const;
 
   /**
+   * \brief Set IPv6 MTU discover state.
+   * \param mtuDiscover IPv6 MTU discover enabled or not
+   */
+  virtual void SetMtuDiscover (bool mtuDiscover);
+
+  /**
+   * \brief Get IPv6 MTU discover state.
+   * \return MTU discover state (enabled or not)
+   */
+  virtual bool GetMtuDiscover (void) const;
+
+  /**
    * \brief Set the ICMPv6 Redirect sending state.
    * \param sendIcmpv6Redirect ICMPv6 Redirect sending enabled or not
    */
@@ -505,6 +525,16 @@ private:
    * \brief Forwarding packets (i.e. router mode) state.
    */
   bool m_ipForward;
+
+  /**
+   * \brief MTU Discover (i.e. Path MTU) state.
+   */
+  bool m_mtuDiscover;
+
+  /**
+   * \brief Path MTU Cache.
+   */
+  Ptr<Ipv6PmtuCache> m_pmtuCache;
 
   /**
    * \brief List of transport protocol.

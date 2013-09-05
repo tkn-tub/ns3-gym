@@ -239,7 +239,7 @@ void Ipv6ExtensionHopByHopHeader::Serialize (Buffer::Iterator start) const
   Buffer::Iterator i = start;
 
   i.WriteU8 (GetNextHeader ());
-  i.WriteU8 ((GetLength () >> 3) - 1);
+  i.WriteU8 ((GetSerializedSize () >> 3) - 1);
   OptionField::Serialize (i);
 }
 
@@ -294,8 +294,7 @@ void Ipv6ExtensionDestinationHeader::Serialize (Buffer::Iterator start) const
   Buffer::Iterator i = start;
 
   i.WriteU8 (GetNextHeader ());
-  i.WriteU8 ((GetLength () >> 3) - 1);
-
+  i.WriteU8 ((GetSerializedSize () >> 3) - 1);
   OptionField::Serialize (i);
 }
 

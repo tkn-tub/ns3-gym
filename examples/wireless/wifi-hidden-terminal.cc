@@ -109,19 +109,19 @@ void experiment (bool enableCtsRts)
   cbrApps.Add (onOffHelper.Install (nodes.Get (0))); 
 
   // flow 2:  node 2 -> node 1
-  // The slightly different start times and data rates are a workround
-  // for Bug 388 and Bug 912
-  // http://www.nsnam.org/bugzilla/show_bug.cgi?id=912
-  // http://www.nsnam.org/bugzilla/show_bug.cgi?id=388
+  /** \internal
+   * The slightly different start times and data rates are a workaround
+   * for \bugid{388} and \bugid{912}
+   */
   onOffHelper.SetAttribute ("DataRate", StringValue ("3001100bps"));
   onOffHelper.SetAttribute ("StartTime", TimeValue (Seconds (1.001)));
   cbrApps.Add (onOffHelper.Install (nodes.Get (2))); 
 
-  // we also use separate UDP applications that will send a single
-  // packet before the CBR flows start. 
-  // This is a workround for the lack of perfect ARP, see Bug 187
-  // http://www.nsnam.org/bugzilla/show_bug.cgi?id=187
-
+  /** \internal
+   * We also use separate UDP applications that will send a single
+   * packet before the CBR flows start. 
+   * This is a workaround for the lack of perfect ARP, see \bugid{187}
+   */
   uint16_t  echoPort = 9;
   UdpEchoClientHelper echoClientHelper (Ipv4Address ("10.0.0.2"), echoPort);
   echoClientHelper.SetAttribute ("MaxPackets", UintegerValue (1));

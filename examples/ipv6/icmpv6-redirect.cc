@@ -53,74 +53,24 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("Icmpv6RedirectExample");
 
-/**
- * \class StackHelper
- * \brief Helper to set or get some IPv6 information about nodes.
- */
-class StackHelper
-{
-public:
-  /**
-   * \brief Print the routing table.
-   * \param n the node
-   */
-  inline void PrintRoutingTable (Ptr<Node>& n)
-  {
-    Ptr<Ipv6StaticRouting> routing = 0;
-    Ipv6StaticRoutingHelper routingHelper;
-    Ptr<Ipv6> ipv6 = n->GetObject<Ipv6> ();
-    uint32_t nbRoutes = 0;
-    Ipv6RoutingTableEntry route;
-
-    routing = routingHelper.GetStaticRouting (ipv6);
-
-    std::cout << "Routing table of " << n << " : " << std::endl;
-    std::cout << "Destination\t\t\t\t" << "Gateway\t\t\t\t\t" << "Interface\t" << "Prefix to use" << std::endl;
-
-    nbRoutes = routing->GetNRoutes ();
-    for(uint32_t i = 0; i < nbRoutes; i++)
-      {
-        route = routing->GetRoute (i);
-        std::cout << route.GetDest () << "\t"
-                  << route.GetGateway () << "\t"
-                  << route.GetInterface () << "\t"
-                  << route.GetPrefixToUse () << "\t"
-                  << std::endl;
-      }
-  }
-
-  /**
-   * \brief Add an host route.
-   * \param n node 
-   * \param dst destination address
-   * \param nextHop next hop for destination
-   * \param interface output interface
-   */
-  inline void AddHostRouteTo (Ptr<Node>& n, Ipv6Address dst, Ipv6Address nextHop, uint32_t interface)
-  {
-    Ptr<Ipv6StaticRouting> routing = 0;
-    Ipv6StaticRoutingHelper routingHelper;
-    Ptr<Ipv6> ipv6 = n->GetObject<Ipv6> ();
-
-    routing = routingHelper.GetStaticRouting (ipv6);
-    routing->AddHostRouteTo (dst, nextHop, interface);
-  }
-};
-
 int main (int argc, char **argv)
 {
-#if 0 
-  LogComponentEnable ("Icmpv6RedirectExample", LOG_LEVEL_INFO);
-  LogComponentEnable ("Icmpv6L4Protocol", LOG_LEVEL_INFO);
-  LogComponentEnable ("Ipv6L3Protocol", LOG_LEVEL_ALL);
-  LogComponentEnable ("Ipv6StaticRouting", LOG_LEVEL_ALL);
-  LogComponentEnable ("Ipv6Interface", LOG_LEVEL_ALL);
-  LogComponentEnable ("Icmpv6L4Protocol", LOG_LEVEL_ALL);
-  LogComponentEnable ("NdiscCache", LOG_LEVEL_ALL);
-#endif
+  bool verbose = false;
 
   CommandLine cmd;
+  cmd.AddValue ("verbose", "turn on log components", verbose);
   cmd.Parse (argc, argv);
+
+  if (verbose)
+    {
+      LogComponentEnable ("Icmpv6RedirectExample", LOG_LEVEL_INFO);
+      LogComponentEnable ("Icmpv6L4Protocol", LOG_LEVEL_INFO);
+      LogComponentEnable ("Ipv6L3Protocol", LOG_LEVEL_ALL);
+      LogComponentEnable ("Ipv6StaticRouting", LOG_LEVEL_ALL);
+      LogComponentEnable ("Ipv6Interface", LOG_LEVEL_ALL);
+      LogComponentEnable ("Icmpv6L4Protocol", LOG_LEVEL_ALL);
+      LogComponentEnable ("NdiscCache", LOG_LEVEL_ALL);
+    }
 
   NS_LOG_INFO ("Create nodes.");
   Ptr<Node> sta1 = CreateObject<Node> ();
@@ -130,8 +80,6 @@ int main (int argc, char **argv)
   NodeContainer net1 (sta1, r1, r2);
   NodeContainer net2 (r2, sta2);
   NodeContainer all (sta1, r1, r2, sta2);
-
-  StackHelper stackHelper;
 
   InternetStackHelper internetv6;
   internetv6.Install (all);
@@ -148,17 +96,24 @@ int main (int argc, char **argv)
 
   ipv6.SetBase (Ipv6Address ("2001:1::"), Ipv6Prefix (64));
   Ipv6InterfaceContainer iic1 = ipv6.Assign (ndc1);
-  iic1.SetRouter (2, true);
-  iic1.SetRouter (1, true);
+  iic1.SetForwarding (2, true);
+  iic1.SetForwarding (1, true);
+  iic1.SetDefaultRouteInAllNodes (1);
 
   ipv6.SetBase (Ipv6Address ("2001:2::"), Ipv6Prefix (64));
   Ipv6InterfaceContainer iic2 = ipv6.Assign (ndc2);
-  iic2.SetRouter (0, true);
+  iic2.SetForwarding (0, true);
+  iic2.SetDefaultRouteInAllNodes (0);
 
-  stackHelper.AddHostRouteTo (r1, iic2.GetAddress (1, 1), iic1.GetAddress (2, 0), iic1.GetInterfaceIndex (1));
+  Ipv6StaticRoutingHelper routingHelper;
 
-  Simulator::Schedule (Seconds (0.0), &StackHelper::PrintRoutingTable, &stackHelper, r1);
-  Simulator::Schedule (Seconds (3.0), &StackHelper::PrintRoutingTable, &stackHelper, sta1);
+  // manually inject a static route to the second router.
+  Ptr<Ipv6StaticRouting> routing = routingHelper.GetStaticRouting (r1->GetObject<Ipv6> ());
+  routing->AddHostRouteTo (iic2.GetAddress (1, 1), iic1.GetAddress (2, 0), iic1.GetInterfaceIndex (1));
+
+  Ptr<OutputStreamWrapper> routingStream = Create<OutputStreamWrapper> (&std::cout);
+  routingHelper.PrintRoutingTableAt (Seconds (0.0), r1, routingStream);
+  routingHelper.PrintRoutingTableAt (Seconds (3.0), sta1, routingStream);
 
   NS_LOG_INFO ("Create Applications.");
   uint32_t packetSize = 1024;

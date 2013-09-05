@@ -14,6 +14,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: George Riley <riley@ece.gatech.edu>
+ *
+ * Some updates to this code were developed under a research contract
+ * sponsored by the Army Research Laboratory. (April 30, 2013)
  */
 
 #ifndef DISTRIBUTED_SIMULATOR_IMPL_H
@@ -39,7 +42,8 @@ public:
   LbtsMessage ()
     : m_txCount (0),
       m_rxCount (0),
-      m_myId (0)
+      m_myId (0),
+      m_isFinished (false)
   {
   }
 
@@ -49,11 +53,12 @@ public:
    * \param id mpi rank
    * \param t smallest time
    */
-  LbtsMessage (uint32_t rxc, uint32_t txc, uint32_t id, const Time& t)
+  LbtsMessage (uint32_t rxc, uint32_t txc, uint32_t id, bool isFinished, const Time& t)
     : m_txCount (txc),
       m_rxCount (rxc),
       m_myId (id),
-      m_smallestTime (t)
+      m_smallestTime (t),
+      m_isFinished (isFinished)
   {
   }
 
@@ -76,11 +81,14 @@ public:
    */
   uint32_t GetMyId ();
 
+  bool IsFinished ();
+
 private:
   uint32_t m_txCount;
   uint32_t m_rxCount;
   uint32_t m_myId;
   Time     m_smallestTime;
+  bool     m_isFinished;
 };
 
 /**
@@ -120,6 +128,7 @@ public:
 private:
   virtual void DoDispose (void);
   void CalculateLookAhead (void);
+  bool IsLocalFinished (void) const;
 
   void ProcessOneEvent (void);
   uint64_t NextTs (void) const;
@@ -128,6 +137,7 @@ private:
 
   DestroyEvents m_destroyEvents;
   bool m_stop;
+  bool m_globalFinished;     // Are all parallel instances completed.
   Ptr<Scheduler> m_events;
   uint32_t m_uid;
   uint32_t m_currentUid;

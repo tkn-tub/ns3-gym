@@ -1,7 +1,7 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def build(bld):
-    network = bld.create_ns3_module('network', ['core'])
+    network = bld.create_ns3_module('network', ['core', 'stats'])
     network.source = [
         'model/address.cc',
         'model/application.cc',
@@ -52,11 +52,14 @@ def build(bld):
         'utils/red-queue.cc',
         'utils/simple-channel.cc',
         'utils/simple-net-device.cc',
+        'utils/packet-data-calculators.cc',
+        'utils/packet-probe.cc',
         'helper/application-container.cc',
         'helper/net-device-container.cc',
         'helper/node-container.cc',
         'helper/packet-socket-helper.cc',
         'helper/trace-helper.cc',
+        'helper/delay-jitter-estimation.cc',
         ]
 
     network_test = bld.create_ns3_module_test_library('network')
@@ -130,11 +133,14 @@ def build(bld):
         'utils/simple-channel.h',
         'utils/simple-net-device.h',
         'utils/pcap-test.h',
+        'utils/packet-data-calculators.h',
+        'utils/packet-probe.h',
         'helper/application-container.h',
         'helper/net-device-container.h',
         'helper/node-container.h',
         'helper/packet-socket-helper.h',
         'helper/trace-helper.h',
+        'helper/delay-jitter-estimation.h',
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):

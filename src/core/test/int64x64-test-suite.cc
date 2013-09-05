@@ -170,6 +170,9 @@ Int64x64ArithmeticTestCase::DoRun (void)
   CHECK_EXPECTED (V (2000000000) / V (3) * V (3), 1999999999);
 }
 
+/**
+ * See \bugid{455}
+ */
 class Int64x64Bug455TestCase : public TestCase
 {
 public:
@@ -201,6 +204,9 @@ Int64x64Bug455TestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (a.GetDouble (), -2.5, "only second operand negative");
 }
 
+/**
+ * See \bugid{863}
+ */
 class Int64x64Bug863TestCase : public TestCase
 {
 public:

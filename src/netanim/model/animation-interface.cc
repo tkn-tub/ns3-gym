@@ -1468,6 +1468,12 @@ void AnimationInterface::CsmaPhyRxEndTrace (std::string context, Ptr<const Packe
   m_pendingCsmaPackets[AnimUid].ProcessRxBegin (ndev, Simulator::Now ());
   pktInfo.ProcessRxEnd (ndev, Simulator::Now (), UpdatePosition (n));
   NS_LOG_INFO ("CsmaPhyRxEndTrace for packet:" << AnimUid);
+  AnimRxInfo pktrxInfo = pktInfo.GetRxInfo (ndev);
+  if (pktrxInfo.IsPhyRxComplete ())
+    {
+      NS_LOG_INFO ("CsmaPhyRxEndTrace for packet:" << AnimUid << " complete");
+      OutputCsmaPacket (p, pktInfo, pktrxInfo);
+    }
 }
 
 

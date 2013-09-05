@@ -43,7 +43,8 @@ std::ostream &operator << (std::ostream &os, const int64x64_t &value)
   // Save stream format flags
   std::ios_base::fmtflags ff = os.flags ();
 
-  { // See bug 1737:  gcc libstc++ 4.2 bug
+  { /// \internal
+    /// See \bugid{1737}:  gcc libstc++ 4.2 bug
     if (hi == 0)
       { 
 	os << '+';

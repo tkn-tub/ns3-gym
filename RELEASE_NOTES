@@ -21,9 +21,36 @@ Supported platforms
 
 New user-visible features
 -------------------------
+
+Bugs fixed
+----------
+
+Release 3.18
+=============
+
+Availability
+------------
+This release is available from: 
+http://www.nsnam.org/release/ns-allinone-3.18.tar.bz2
+
+Supported platforms
+-------------------
+These platforms have been tested; others may work also:
+- Fedora Core 18 (32/64 bit) with g++-4.7.2
+- Fedora Core 17 (32/64 bit) with g++-4.7.0
+- Ubuntu 13.04 (32/64 bit) with g++-4.7.3
+- Ubuntu 12.04 (32/64 bit) with g++-4.6.3
+- Ubuntu 10.04.4 LTS (64 bit) with g++-4.4.3
+- OS X Mountain Lion 10.8.3 with g++-4.2.1
+- FreeBSD 9.1-RELEASE (64 bit) with g++-4.2.1
+
+New user-visible features
+-------------------------
 - Time attributes can now be bounded.  See attribute-test-suite.cc for an
   example.
-- IPv6 addrss class 2001:db8::/32 is now dropped by routers (RFC 3849).
+- Data collection components have been added to the stats module.  These
+  components can be used to generate time series data in files and plots.
+- IPv6 address class 2001:db8::/32 is now dropped by routers (RFC 3849).
 - New generic hash function interface.  Two hash functions are provided:
   murmur3 (default), and the venerable FNV1a.  See the Hash Functions
   section in the Manual.
@@ -37,12 +64,23 @@ New user-visible features
    - PHY support for UE measurements (RSRP and RSRQ)
    - RRC support for UE measurements (configuration, execution, reporting)
    - Automatic Handover trigger based on RRC UE measurement reports
+- IPv6 can now detect and use Path-MTU. See 
+  examples/ipv6/fragmentation-ipv6-two-MTU.cc for an example.
+- Radvd application have a new Helper. See the updated 
+  examples/ipv6/radvd.cc for an example.
+- 11n- It is now possible to create a high throughput (HT) node that used the new 11n data rates and preambles.
+- It is now possible to request printing command line arguments to the
+  desired output stream using PrintHelp or operator <<
 
 Bugs fixed
 ----------
-- Bug 760 - IP address removal can be painful
+- Bug  760 - IP address removal can be painful
+- Bug 1190 - Suppress hello if bcast was sent within the last hello interval
 - Bug 1296 - Enhancement in Ipv[4,6]RoutingHelper
 - Bug 1390 - ICMPv6 Redirect are handled correctly only for /64 networks
+- Bug 1522 - Hidden node scenario leads to ARP failure
+- Bug 1584 - Old Association Request Timeouts are not canceled
+- Bug 1629 - Make AODV Default to Disable Hello
 - Bug 1643 - NdiscCache creation and existence checks
 - Bug 1646 - ICMPv6 Redirect are sent from global address instead of link-local
 - Bug 1662 - m_type not set for Ipv6OptionRouterAlertHeader
@@ -51,18 +89,29 @@ Bugs fixed
 - Bug 1683 - IPv6 autoconfigured don't use *infinite* lifetimes
 - Bug 1669 - ns-3 should support binding two and three (possibly more) arguments
 - Bug 1675 - Throughput computation error in Wireless examples
+- Bug 1687 - wscript features report doesn't respect NOCOLOR
 - Bug 1688 - Routers should advertise themselves from the link-local address
 - Bug 1689 - IPv6 shouldn't add a default gateway without checking the Router lifetime
+- Bug 1690 - missing header files from wifi wscript
 - Bug 1697 - ICMPv6 Redirect trigger contains multiple bugs
 - Bug 1698 - mobility.SetPositionAllocator misses prefix "ns3::"
 - Bug 1700 - Ipv6RawSocket does not honor the bound address when sending packets
 - Bug 1701 - Ipv6StaticRouting: the source address should match the destination scope
+- Bug 1702 - Ipv6InterfaceContainer::SetRouter should not always add the router as the default router.
 - Bug 1703 - Nodes don't react to a DAD
 - Bug 1712 - The IP (v4 and v6) forwarding needs a test
 - Bug 1718 - Ipv4StaticRouting log component is misspelled
 - Bug 1720 - IPv6 Fragmentation cause crashes
+- Bug 1721 - Path MTU isn't handled properly
+- Bug 1723 - name clash in ipv4-header.h with <termios.h>
 - Bug 1727 - Ping6 should use a proper source address
+- Bug 1728 - Radvd application is missing an Helper
 - Bug 1731 - lte-phy-error-model passes unexpectedly
+- Bug 1738 - strict aliasing compiler bug
+- Bug 1742 - IPv6 HbH and Dst Extension Header size is not correctly calculated
+- Bug 1752 - RadvdInterface m_defaultLifeTime is set to milliseconds instead of seconds
+- Bug 1753 - Halting Issue with DistributedSimulatorImpl
+- Bug 1754 - Missing GIL lock in generated callback destructor
 
 Known issues
 ------------

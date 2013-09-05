@@ -174,6 +174,7 @@
 #include "ns3/ipv6-extension.h"
 #include "ns3/ipv6-extension-demux.h"
 #include "ns3/ipv6-extension-header.h"
+#include "ns3/icmpv6-l4-protocol.h"
 #include "ns3/global-router-interface.h"
 #include <limits>
 #include <map>
@@ -233,7 +234,10 @@ InternetStackHelper::InternetStackHelper ()
   : m_routing (0),
     m_routingv6 (0),
     m_ipv4Enabled (true),
-    m_ipv6Enabled (true)
+    m_ipv6Enabled (true),
+    m_ipv4ArpJitterEnabled (true),
+    m_ipv6NsRsJitterEnabled (true)
+
 {
   Initialize ();
 }
@@ -268,6 +272,8 @@ InternetStackHelper::InternetStackHelper (const InternetStackHelper &o)
   m_ipv4Enabled = o.m_ipv4Enabled;
   m_ipv6Enabled = o.m_ipv6Enabled;
   m_tcpFactory = o.m_tcpFactory;
+  m_ipv4ArpJitterEnabled = o.m_ipv4ArpJitterEnabled;
+  m_ipv6NsRsJitterEnabled = o.m_ipv6NsRsJitterEnabled;
 }
 
 InternetStackHelper &
@@ -291,6 +297,8 @@ InternetStackHelper::Reset (void)
   m_routingv6 = 0;
   m_ipv4Enabled = true;
   m_ipv6Enabled = true;
+  m_ipv4ArpJitterEnabled = true;
+  m_ipv6NsRsJitterEnabled = true;
   Initialize ();
 }
 
@@ -319,6 +327,16 @@ void InternetStackHelper::SetIpv6StackInstall (bool enable)
   m_ipv6Enabled = enable;
 }
 
+void InternetStackHelper::SetIpv4ArpJitter (bool enable)
+{
+  m_ipv4ArpJitterEnabled = enable;
+}
+
+void InternetStackHelper::SetIpv6NsRsJitter (bool enable)
+{
+  m_ipv6NsRsJitterEnabled = enable;
+}
+
 int64_t
 InternetStackHelper::AssignStreams (NodeContainer c, int64_t stream)
 {
@@ -341,6 +359,24 @@ InternetStackHelper::AssignStreams (NodeContainer c, int64_t stream)
           Ptr<Ipv6Extension> fe = demux->GetExtension (Ipv6ExtensionFragment::EXT_NUMBER);
           NS_ASSERT (fe);  // should always exist in the demux
           currentStream += fe->AssignStreams (currentStream);
+        }
+      Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
+      if (ipv4 != 0)
+        {
+          Ptr<ArpL3Protocol> arpL3Protocol = ipv4->GetObject<ArpL3Protocol> ();
+          if (arpL3Protocol != 0)
+            {
+              currentStream += arpL3Protocol->AssignStreams (currentStream);
+            }
+        }
+      Ptr<Ipv6> ipv6 = node->GetObject<Ipv6> ();
+      if (ipv6 != 0)
+        {
+          Ptr<Icmpv6L4Protocol> icmpv6L4Protocol = ipv6->GetObject<Icmpv6L4Protocol> ();
+          if (icmpv6L4Protocol != 0)
+            {
+              currentStream += icmpv6L4Protocol->AssignStreams (currentStream);
+            }
         }
     }
   return (currentStream - stream);
@@ -398,6 +434,12 @@ InternetStackHelper::Install (Ptr<Node> node) const
       CreateAndAggregateObjectFromTypeId (node, "ns3::ArpL3Protocol");
       CreateAndAggregateObjectFromTypeId (node, "ns3::Ipv4L3Protocol");
       CreateAndAggregateObjectFromTypeId (node, "ns3::Icmpv4L4Protocol");
+      if (m_ipv4ArpJitterEnabled == false)
+        {
+          Ptr<ArpL3Protocol> arp = node->GetObject<ArpL3Protocol> ();
+          NS_ASSERT (arp);
+          arp->SetAttribute ("RequestJitter", StringValue ("ns3::ConstantRandomVariable[Constant=0.0]"));
+        }
       // Set routing
       Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
       Ptr<Ipv4RoutingProtocol> ipv4Routing = m_routing->Create (node);
@@ -416,6 +458,12 @@ InternetStackHelper::Install (Ptr<Node> node) const
 
       CreateAndAggregateObjectFromTypeId (node, "ns3::Ipv6L3Protocol");
       CreateAndAggregateObjectFromTypeId (node, "ns3::Icmpv6L4Protocol");
+      if (m_ipv6NsRsJitterEnabled == false)
+        {
+          Ptr<Icmpv6L4Protocol> icmpv6l4 = node->GetObject<Icmpv6L4Protocol> ();
+          NS_ASSERT (icmpv6l4);
+          icmpv6l4->SetAttribute ("SolicitationJitter", StringValue ("ns3::ConstantRandomVariable[Constant=0.0]"));
+        }
       // Set routing
       Ptr<Ipv6> ipv6 = node->GetObject<Ipv6> ();
       Ptr<Ipv6RoutingProtocol> ipv6Routing = m_routingv6->Create (node);

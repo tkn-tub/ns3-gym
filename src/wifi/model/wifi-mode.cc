@@ -139,6 +139,9 @@ WifiModeFactory::CreateWifiMode (std::string uniqueName,
 
   switch (codingRate)
     {
+    case WIFI_CODE_RATE_5_6:
+      item->phyRate = dataRate * 6 / 5;
+      break;
     case WIFI_CODE_RATE_3_4:
       item->phyRate = dataRate * 4 / 3;
       break;

@@ -26,6 +26,7 @@
 #include "ns3/address.h"
 #include "ns3/ptr.h"
 #include "ns3/traced-callback.h"
+#include "ns3/random-variable-stream.h"
 
 namespace ns3 {
 
@@ -76,6 +77,17 @@ public:
                Ptr<NetDevice> device,
                Ptr<ArpCache> cache,
                Address *hardwareDestination);
+
+  /**
+   * Assign a fixed random variable stream number to the random variables
+   * used by this model.  Return the number of streams (possibly zero) that
+   * have been assigned.
+   *
+   * \param stream first stream index to use
+   * \return the number of stream indices assigned by this model
+   */
+  int64_t AssignStreams (int64_t stream);
+
 protected:
   virtual void DoDispose (void);
   /*
@@ -93,6 +105,8 @@ private:
   CacheList m_cacheList;
   Ptr<Node> m_node;
   TracedCallback<Ptr<const Packet> > m_dropTrace;
+  Ptr<RandomVariableStream> m_requestJitter;
+
 };
 
 } // namespace ns3

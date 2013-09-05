@@ -201,9 +201,9 @@ void Create3DPlotFile ()
   plot.AppendExtra ("set ticslevel 0");
 
   // Set the labels for each axis.
-  plot.AppendExtra ("set xlabel 'X Values'");
-  plot.AppendExtra ("set ylabel 'Y Values'");
-  plot.AppendExtra ("set zlabel 'Z Values'");
+  plot.AppendExtra ("set xlabel \"X Values\"");
+  plot.AppendExtra ("set ylabel \"Y Values\"");
+  plot.AppendExtra ("set zlabel \"Z Values\"");
 
   // Set the ranges for the x and y axis.
   plot.AppendExtra ("set xrange [-5:+5]");

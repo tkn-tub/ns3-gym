@@ -146,7 +146,7 @@ public:
    * \brief Make and return a MAC multicast address using the provided
    *        multicast group
    *
-   * RFC 1112 says that an Ipv4 host group address is mapped to an Ethernet 
+   * \RFC{1112} says that an Ipv4 host group address is mapped to an Ethernet 
    * multicast address by placing the low-order 23-bits of the IP address into 
    * the low-order 23 bits of the Ethernet multicast address 
    * 01-00-5E-00-00-00 (hex).

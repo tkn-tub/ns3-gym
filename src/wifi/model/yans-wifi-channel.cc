@@ -76,7 +76,7 @@ YansWifiChannel::SetPropagationDelayModel (Ptr<PropagationDelayModel> delay)
 
 void
 YansWifiChannel::Send (Ptr<YansWifiPhy> sender, Ptr<const Packet> packet, double txPowerDbm,
-                       WifiMode wifiMode, WifiPreamble preamble) const
+                       WifiTxVector txVector, WifiPreamble preamble) const
 {
   Ptr<MobilityModel> senderMobility = sender->GetMobility ()->GetObject<MobilityModel> ();
   NS_ASSERT (senderMobility != 0);
@@ -109,16 +109,16 @@ YansWifiChannel::Send (Ptr<YansWifiPhy> sender, Ptr<const Packet> packet, double
             }
           Simulator::ScheduleWithContext (dstNode,
                                           delay, &YansWifiChannel::Receive, this,
-                                          j, copy, rxPowerDbm, wifiMode, preamble);
+                                          j, copy, rxPowerDbm, txVector, preamble);
         }
     }
 }
 
 void
 YansWifiChannel::Receive (uint32_t i, Ptr<Packet> packet, double rxPowerDbm,
-                          WifiMode txMode, WifiPreamble preamble) const
+                          WifiTxVector txVector, WifiPreamble preamble) const
 {
-  m_phyList[i]->StartReceivePacket (packet, rxPowerDbm, txMode, preamble);
+  m_phyList[i]->StartReceivePacket (packet, rxPowerDbm, txVector, preamble);
 }
 
 uint32_t

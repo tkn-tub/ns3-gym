@@ -23,4 +23,5 @@ This document is written in `reStructuredText <http://docutils.sourceforge.net/r
    tweaking
    building-topologies
    tracing
+   data-collection
    conclusion

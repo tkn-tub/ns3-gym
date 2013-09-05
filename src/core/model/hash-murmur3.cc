@@ -180,8 +180,7 @@ void MurmurHash3_x86_32_incr ( const void * key, int len,
           k1 *= c1; k1 = rotl32(k1,15); k1 *= c2; h1 ^= k1;
   };
 
-  uint32_t * res = (uint32_t *)out;  //PDB: strict aliasing
-  *res = h1;
+  *(uint32_t *)out = h1;
 }
 
 //PDB - incremental hashing - finalization
@@ -197,8 +196,7 @@ void MurmurHash3_x86_32_fin ( int len,
 
   h1 = fmix(h1);
 
-  uint32_t * res = (uint32_t *)out;  //PDB: strict aliasing
-  *res = h1;
+  *(uint32_t *)out = h1;
 } 
 
 //-----------------------------------------------------------------------------
@@ -301,11 +299,10 @@ void MurmurHash3_x86_128_incr ( const void * key, const int len,
            k1 *= c1; k1  = rotl32(k1,15); k1 *= c2; h1 ^= k1;
   };
 
-  uint32_t * res = (uint32_t *)out;  //PDB: strict aliasing
-  res[0] = h1;
-  res[1] = h2;
-  res[2] = h3;
-  res[3] = h4;
+  ((uint32_t *)out)[0] = h1;
+  ((uint32_t *)out)[1] = h2;
+  ((uint32_t *)out)[2] = h3;
+  ((uint32_t *)out)[3] = h4;
 }
 
 //PDB - incremental hashing - finalization
@@ -333,11 +330,10 @@ void MurmurHash3_x86_128_fin ( const int len,
   h1 += h2; h1 += h3; h1 += h4;
   h2 += h1; h3 += h1; h4 += h1;
 
-  uint32_t * res = (uint32_t *)out;  //PDB: strict aliasing
-  res[0] = h1;
-  res[1] = h2;
-  res[2] = h3;
-  res[3] = h4;
+  ((uint32_t *)out)[0] = h1;
+  ((uint32_t *)out)[1] = h2;
+  ((uint32_t *)out)[2] = h3;
+  ((uint32_t *)out)[3] = h4;
 }
 
 //-----------------------------------------------------------------------------
@@ -417,9 +413,8 @@ void MurmurHash3_x64_128 ( const void * key, const int len,
   h1 += h2;
   h2 += h1;
 
-  uint32_t * res = (uint32_t *)out;  //PDB: strict aliasing
-  res[0] = h1;
-  res[1] = h2;
+  ((uint32_t *)out)[0] = h1;
+  ((uint32_t *)out)[1] = h2;
 }
 
 
@@ -457,12 +452,28 @@ Murmur3::GetHash64  (const char * buffer, const size_t size)
 {
   using namespace Murmur3Implementation;
   MurmurHash3_x86_128_incr (buffer, size,
-                            (uint32_t *)(void *)m_hash64, (void *)(m_hash64));
+                            (uint32_t *)(void *)m_hash64, m_hash64);
   m_size64 += size;
-  uint64_t hash[2];
+
+  // Simpler would be:
+  //
+  //   uint64_t hash[2];
+  //   MurmurHash3_x86_128_fin (m_size64, m_hash64, hash);
+  //   return hash[0];
+  //
+  // but this triggers an aliasing bug in gcc-4.4 (perhaps related to
+  // http://gcc.gnu.org/bugzilla/show_bug.cgi?id=39390).
+  // In ns-3, this bug produces incorrect results in static optimized
+  // builds only.
+  //
+  // Using uint32_t here avoids the bug, and continues to works with newer gcc.
+  uint32_t hash[4];
+  
   MurmurHash3_x86_128_fin (m_size64,
-                           (uint32_t*)(void *)m_hash64, (void *)hash);
-  return hash[0];
+                           (uint32_t *)(void *)m_hash64, hash);
+  uint64_t result = hash[1];
+  result = (result << 32) | hash[0];
+  return result;
 }
 
 void
@@ -470,8 +481,7 @@ Murmur3::clear (void)
 {
   m_hash32 = (uint32_t)SEED;
   m_size32 = 0;
-  m_hash64[0] = ((uint64_t)(SEED) << 32) + (uint64_t)SEED;
-  m_hash64[1] = ((uint64_t)(SEED) << 32) + (uint64_t)SEED;
+  m_hash64[0] = m_hash64[1] = ((uint64_t)(SEED) << 32) + (uint64_t)SEED;
   m_size64 = 0;
 }
 

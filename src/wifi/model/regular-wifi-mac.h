@@ -74,6 +74,8 @@ public:
    * \param pifs the pifs duration.
    */
   void SetPifs (Time pifs);
+
+  void SetRifs (Time rifs);
   /**
    * \param ctsTimeout the duration of a CTS timeout.
    */
@@ -82,6 +84,8 @@ public:
    * \param ackTimeout the duration of an ACK timeout.
    */
   void SetAckTimeout (Time ackTimeout);
+
+  Time GetRifs (void) const;
   /**
    * \returns the current PIFS duration.
    */
@@ -106,6 +110,10 @@ public:
    * \returns the current ACK timeout duration.
    */
   Time GetAckTimeout (void) const;
+
+  void SetCtsToSelfSupported (bool enable);
+ 
+  bool GetCtsToSelfSupported () const;
   /**
    * \returns the MAC address associated to this MAC layer.
    */
@@ -321,6 +329,26 @@ protected:
   void SetQosSupported (bool enable);
   /** Get accessor for the \c m_qosSupported member */
   bool GetQosSupported () const;
+
+ /**
+   * This Boolean is set \c true iff this WifiMac is to model
+   * 802.11n. It is exposed through the
+   * attribute system.
+   *
+   * At the moment, this flag is the sole selection between HT and
+   * non-HT operation for the STA (whether IBSS, AP, or
+   * non-AP). Ultimately, we will want a HT-enabled STA to be able to
+   * fall back to non-HT operation with a non-HT peer. This'll
+   * require further intelligence - i.e., per-association HT
+   * state. Having a big switch seems like a good intermediate stage,
+   * however.
+   */
+  bool m_htSupported;
+  /** Set accessor for the \c m_htSupported member */
+  void SetHtSupported (bool enable);
+  /** Get accessor for the \c m_htSupported member */
+  bool GetHtSupported () const;
+
 private:
   RegularWifiMac (const RegularWifiMac &);
   RegularWifiMac & operator= (const RegularWifiMac &);

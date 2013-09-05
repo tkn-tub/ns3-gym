@@ -177,8 +177,11 @@ public:
     }
     virtual ~%s()
     {
+        PyGILState_STATE __py_gil_state;
+        __py_gil_state = (PyEval_ThreadsInitialized() ? PyGILState_Ensure() : (PyGILState_STATE) 0);
         Py_DECREF(m_callback);
         m_callback = NULL;
+        PyGILState_Release(__py_gil_state);
     }
 
     virtual bool IsEqual(ns3::Ptr<const ns3::CallbackImplBase> other_base) const

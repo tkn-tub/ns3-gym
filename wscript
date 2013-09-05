@@ -531,7 +531,7 @@ def configure(conf):
         else:
             status = 'not enabled (%s)' % reason_not_enabled
             color = 'RED'
-        print "%-30s: %s%s%s" % (caption, Logs.colors_lst[color], status, Logs.colors_lst['NORMAL'])
+        print "%-30s: %s%s%s" % (caption, Logs.colors(color), status, Logs.colors('NORMAL'))
 
 
 class SuidBuild_task(Task.Task):

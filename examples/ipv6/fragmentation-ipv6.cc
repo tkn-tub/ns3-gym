@@ -41,69 +41,23 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("FragmentationIpv6Example");
 
-/**
- * \class StackHelper
- * \brief Helper to set or get some IPv6 information about nodes.
- */
-class StackHelper
-{
-public:
-  /**
-   * \brief Add an address to a IPv6 node.
-   * \param n node
-   * \param interface interface index
-   * \param address IPv6 address to add
-   */
-  inline void AddAddress (Ptr<Node>& n, uint32_t interface, Ipv6Address address)
-  {
-    Ptr<Ipv6> ipv6 = n->GetObject<Ipv6> ();
-    ipv6->AddAddress (interface, address);
-  }
-
-  /**
-   * \brief Print the routing table.
-   * \param n the node
-   */
-  inline void PrintRoutingTable (Ptr<Node>& n)
-  {
-    Ptr<Ipv6StaticRouting> routing = 0;
-    Ipv6StaticRoutingHelper routingHelper;
-    Ptr<Ipv6> ipv6 = n->GetObject<Ipv6> ();
-    uint32_t nbRoutes = 0;
-    Ipv6RoutingTableEntry route;
-
-    routing = routingHelper.GetStaticRouting (ipv6);
-
-    std::cout << "Routing table of " << n << " : " << std::endl;
-    std::cout << "Destination\t\t\t\t" << "Gateway\t\t\t\t\t" << "Interface\t" <<  "Prefix to use" << std::endl;
-
-    nbRoutes = routing->GetNRoutes ();
-    for (uint32_t i = 0; i < nbRoutes; i++)
-      {
-        route = routing->GetRoute (i);
-        std::cout << route.GetDest () << "\t"
-                  << route.GetGateway () << "\t"
-                  << route.GetInterface () << "\t"
-                  << route.GetPrefixToUse () << "\t"
-                  << std::endl;
-      }
-  } 
-};
 
 int main (int argc, char** argv)
 {
-#if 0 
-  LogComponentEnable ("Ipv6L3Protocol", LOG_LEVEL_ALL);
-  LogComponentEnable ("Icmpv6L4Protocol", LOG_LEVEL_ALL);
-  LogComponentEnable ("Ipv6StaticRouting", LOG_LEVEL_ALL);
-  LogComponentEnable ("Ipv6Interface", LOG_LEVEL_ALL);
-  LogComponentEnable ("Ping6Application", LOG_LEVEL_ALL);
-#endif
+  bool verbose = false;
 
   CommandLine cmd;
+  cmd.AddValue ("verbose", "turn on log components", verbose);
   cmd.Parse (argc, argv);
 
-  StackHelper stackHelper;
+  if (verbose)
+    {
+      LogComponentEnable ("Ipv6L3Protocol", LOG_LEVEL_ALL);
+      LogComponentEnable ("Icmpv6L4Protocol", LOG_LEVEL_ALL);
+      LogComponentEnable ("Ipv6StaticRouting", LOG_LEVEL_ALL);
+      LogComponentEnable ("Ipv6Interface", LOG_LEVEL_ALL);
+      LogComponentEnable ("Ping6Application", LOG_LEVEL_ALL);
+    }
 
   NS_LOG_INFO ("Create nodes.");
   Ptr<Node> n0 = CreateObject<Node> ();
@@ -129,12 +83,16 @@ int main (int argc, char** argv)
   Ipv6AddressHelper ipv6;
   ipv6.SetBase (Ipv6Address ("2001:1::"), Ipv6Prefix (64));
   Ipv6InterfaceContainer i1 = ipv6.Assign (d1);
-  i1.SetRouter (1, true);
+  i1.SetForwarding (1, true);
+  i1.SetDefaultRouteInAllNodes (1);
   ipv6.SetBase (Ipv6Address ("2001:2::"), Ipv6Prefix (64));
   Ipv6InterfaceContainer i2 = ipv6.Assign (d2);
-  i2.SetRouter (0, true);
+  i2.SetForwarding (0, true);
+  i2.SetDefaultRouteInAllNodes (0);
 
-  stackHelper.PrintRoutingTable (n0);
+  Ipv6StaticRoutingHelper routingHelper;
+  Ptr<OutputStreamWrapper> routingStream = Create<OutputStreamWrapper> (&std::cout);
+  routingHelper.PrintRoutingTableAt (Seconds (0), n0, routingStream);
 
   /* Create a Ping6 application to send ICMPv6 echo request from n0 to n1 via r */
   uint32_t packetSize = 4096;

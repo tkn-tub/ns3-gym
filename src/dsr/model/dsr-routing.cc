@@ -489,11 +489,11 @@ void DsrRouting::NotifyDataReceipt (std::string context, Ptr<const Packet> p)
     return;
   }
   newP->RemoveHeader(llc);
-  /*
+  /** \internal
    * Tried to use peekheader here, but for ipv4 header here,
    * dsr removes the Ipv4Header and then pass the packet and the header
    * separately to Ipv4L3Protocol. Ipv4L3Protocol then re-adds them
-   * together, which causes the problem.  Check Bug 1479
+   * together, which causes the problem.  Check \bugid{1479}
    */
   ArpHeader arp;
   if(newP->PeekHeader (arp))

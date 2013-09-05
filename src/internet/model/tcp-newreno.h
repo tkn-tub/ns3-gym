@@ -31,7 +31,7 @@ namespace ns3 {
  *
  * \brief An implementation of a stream socket using TCP.
  *
- * This class contains the NewReno implementation of TCP, as of RFC2582.
+ * This class contains the NewReno implementation of TCP, as of \RFC{2582}.
  */
 class TcpNewReno : public TcpSocketBase
 {

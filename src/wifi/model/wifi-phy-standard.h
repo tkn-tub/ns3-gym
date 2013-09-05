@@ -48,7 +48,11 @@ enum WifiPhyStandard
   /** \deprecated see <A HREF="http://www.nsnam.org/bugzilla/show_bug.cgi?id=945">bug 945</A> */
   WIFI_PHY_STANDARD_80211p_CCH,
   /** \deprecated see <A HREF="http://www.nsnam.org/bugzilla/show_bug.cgi?id=945">bug 945</A> */
-  WIFI_PHY_STANDARD_80211p_SCH
+  WIFI_PHY_STANDARD_80211p_SCH,
+  // 11n support
+  WIFI_PHY_STANDARD_80211n_2_4GHZ,
+  // needed for different mac parameters
+  WIFI_PHY_STANDARD_80211n_5GHZ
 };
 
 } // namespace ns3

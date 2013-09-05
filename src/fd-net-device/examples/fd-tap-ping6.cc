@@ -102,7 +102,8 @@ main (int argc, char *argv[])
  
   ipv6.SetBase (Ipv6Address ("2001:0DB8:1::"), Ipv6Prefix (64));
   Ipv6InterfaceContainer i1 = ipv6.Assign (devs);
-  i1.SetRouter (1, true);
+  i1.SetForwarding (1, true);
+  i1.SetDefaultRouteInAllNodes (1);
   
   ipv6.SetBase (Ipv6Address ("2001:0DB8:2::"), Ipv6Prefix (64));
   Ipv6Address tapAddr = ipv6.NewAddress ();
@@ -124,7 +125,8 @@ main (int argc, char *argv[])
   Ptr<FdNetDevice> fdevice = device->GetObject<FdNetDevice> ();
   fdevice-> SetIsMulticast (true);
   Ipv6InterfaceContainer i2 = ipv6.Assign (fdevs);
-  i2.SetRouter (0, true);
+  i2.SetForwarding (0, true);
+  i2.SetDefaultRouteInAllNodes (0);
 
   //
   // Create the Ping6 application.

@@ -57,11 +57,14 @@ public:
     SetDataDir (NS_TEST_SOURCEDIR);
     // General RREQ-RREP-RRER test case
     AddTestCase (new ChainRegressionTest ("aodv-chain-regression-test"), TestCase::QUICK);
-    // Bug 606 test case, should crash if bug is not fixed
+    /// \internal
+    /// \bugid{606} test case, should crash if bug is not fixed
     AddTestCase (new ChainRegressionTest ("bug-606-test", Seconds (10), 3, Seconds (1)), TestCase::QUICK);
-    // Bug 772 UDP test case
+    /// \internal
+    /// \bugid{772} UDP test case
     AddTestCase (new Bug772ChainTest ("udp-chain-test", "ns3::UdpSocketFactory", Seconds (3), 10), TestCase::QUICK);
-    // Bug 772 TCP test case
+    /// \internal
+    /// \bugid{772} TCP test case
     AddTestCase (new Bug772ChainTest ("tcp-chain-test", "ns3::TcpSocketFactory", Seconds (3), 10), TestCase::QUICK);
     // Ping loopback test case
     AddTestCase (new LoopbackTestCase (), TestCase::QUICK);
@@ -161,10 +164,10 @@ ChainRegressionTest::CreateDevices ()
   internetStack.Install (*m_nodes);
   streamsUsed += internetStack.AssignStreams (*m_nodes, streamsUsed);
   // InternetStack uses m_size more streams
-  NS_TEST_ASSERT_MSG_EQ (streamsUsed, (devices.GetN () * 6) + m_size, "Stream assignment mismatch");
+  NS_TEST_ASSERT_MSG_EQ (streamsUsed, (devices.GetN () * 8) + m_size, "Stream assignment mismatch");
   streamsUsed += aodv.AssignStreams (*m_nodes, streamsUsed);
   // AODV uses m_size more streams
-  NS_TEST_ASSERT_MSG_EQ (streamsUsed, ((devices.GetN () * 6) + (2*m_size)), "Stream assignment mismatch");
+  NS_TEST_ASSERT_MSG_EQ (streamsUsed, ((devices.GetN () * 8) + (2*m_size)), "Stream assignment mismatch");
 
   Ipv4AddressHelper address;
   address.SetBase ("10.1.1.0", "255.255.255.0");

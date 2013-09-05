@@ -248,6 +248,8 @@ private:
   void SendRerrWhenNoRouteToForward (Ipv4Address dst, uint32_t dstSeqNo, Ipv4Address origin);
   //\}
 
+  void SendTo (Ptr<Socket> socket, Ptr<Packet> packet, Ipv4Address destination);
+
   /// Hello timer
   Timer m_htimer;
   /// Schedule next send of hello message
@@ -269,6 +271,8 @@ private:
 
   /// Provides uniform random variables.
   Ptr<UniformRandomVariable> m_uniformRandomVariable;  
+  /// Keep track of the last bcast time
+  Time m_lastBcastTime;
 };
 
 }

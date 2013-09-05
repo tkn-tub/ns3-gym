@@ -49,68 +49,55 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE ("RadvdTwoPrefixExample");
 
 /**
- * \class StackHelper
- * \brief Helper to set or get some IPv6 information about nodes.
+ * \class IpAddressHelper
+ * \brief Helper to print a node's IP addresses.
  */
-class StackHelper
+class IpAddressHelper
 {
 public:
   /**
-   * \brief Add an address to a IPv6 node.
-   * \param n node
-   * \param interface interface index
-   * \param address IPv6 address to add
-   */
-  inline void AddAddress (Ptr<Node>& n, uint32_t interface, Ipv6Address address)
-  {
-    Ptr<Ipv6> ipv6 = n->GetObject<Ipv6> ();
-    ipv6->AddAddress (interface, address);
-  }
-
-  /**
-   * \brief Print the routing table.
+   * \brief Print the node's IP addresses.
    * \param n the node
    */
-  inline void PrintRoutingTable (Ptr<Node>& n)
+  inline void PrintIpAddresses (Ptr<Node>& n)
   {
-    Ptr<Ipv6StaticRouting> routing = 0;
-    Ipv6StaticRoutingHelper routingHelper;
     Ptr<Ipv6> ipv6 = n->GetObject<Ipv6> ();
-    uint32_t nbRoutes = 0;
-    Ipv6RoutingTableEntry route;
+    uint32_t nInterfaces = ipv6->GetNInterfaces();
 
-    routing = routingHelper.GetStaticRouting (ipv6);
+    std::cout << "Node: " << ipv6->GetObject<Node> ()->GetId ()
+        << " Time: " << Simulator::Now ().GetSeconds () << "s "
+        << "IPv6 addresses" << std::endl;
+    std::cout << "(Interface index, Address index)\t" << "IPv6 Address" << std::endl;
 
-    std::cout << "Routing table of " << n << " : " << std::endl;
-    std::cout << "Destination\t\t\t\t" << "Gateway\t\t\t\t\t" << "Interface\t" << "Prefix to use" << std::endl;
-
-    nbRoutes = routing->GetNRoutes ();
-    for (uint32_t i = 0; i < nbRoutes; i++)
+    for (uint32_t i = 0; i < nInterfaces; i++)
       {
-        route = routing->GetRoute (i);
-        std::cout << route.GetDest () << "\t"
-                  << route.GetGateway () << "\t"
-                  << route.GetInterface () << "\t"
-                  << route.GetPrefixToUse () << "\t"
-                  << std::endl;
+        for (uint32_t j = 0; j < ipv6->GetNAddresses(i); j++)
+          {
+            std::cout << "(" << int(i) << "," << int(j) << ")\t" << ipv6->GetAddress(i,j) << std::endl;
+          }
       }
+    std::cout << std::endl;
   }
 };
 
 int main (int argc, char** argv)
 {
-#if 0 
-  LogComponentEnable ("Ipv6L3Protocol", LOG_LEVEL_ALL);
-  LogComponentEnable ("Ipv6RawSocketImpl", LOG_LEVEL_ALL);
-  LogComponentEnable ("Icmpv6L4Protocol", LOG_LEVEL_ALL);
-  LogComponentEnable ("Ipv6StaticRouting", LOG_LEVEL_ALL);
-  LogComponentEnable ("Ipv6Interface", LOG_LEVEL_ALL);
-  LogComponentEnable ("RadvdApplication", LOG_LEVEL_ALL);
-  LogComponentEnable ("Ping6Application", LOG_LEVEL_ALL);
-#endif
+  bool verbose = false;
 
   CommandLine cmd;
+  cmd.AddValue ("verbose", "turn on log components", verbose);
   cmd.Parse (argc, argv);
+
+  if (verbose)
+    {
+      LogComponentEnable ("Ipv6L3Protocol", LOG_LEVEL_ALL);
+      LogComponentEnable ("Ipv6RawSocketImpl", LOG_LEVEL_ALL);
+      LogComponentEnable ("Icmpv6L4Protocol", LOG_LEVEL_ALL);
+      LogComponentEnable ("Ipv6StaticRouting", LOG_LEVEL_ALL);
+      LogComponentEnable ("Ipv6Interface", LOG_LEVEL_ALL);
+      LogComponentEnable ("RadvdApplication", LOG_LEVEL_ALL);
+      LogComponentEnable ("Ping6Application", LOG_LEVEL_ALL);
+    }
 
   NS_LOG_INFO ("Create nodes.");
   Ptr<Node> n0 = CreateObject<Node> ();
@@ -120,7 +107,6 @@ int main (int argc, char** argv)
   NodeContainer net1 (n0, r);
   NodeContainer net2 (r, n1);
   NodeContainer all (n0, r, n1);
-  StackHelper stackHelper;
 
   NS_LOG_INFO ("Create IPv6 Internet Stack");
   InternetStackHelper internetv6;
@@ -145,18 +131,21 @@ int main (int argc, char** argv)
   NetDeviceContainer tmp2;
   tmp2.Add (d1.Get (1)); /* R */
   Ipv6InterfaceContainer iicr1 = ipv6.Assign (tmp2); /* R interface to the first subnet is just statically assigned */
-  iicr1.SetRouter (0, true);
+  iicr1.SetForwarding (0, true);
+  iicr1.SetDefaultRouteInAllNodes (0);
   iic1.Add (iicr1);
 
   /* add another IPv6 address for second prefix advertised on first subnet */
-  stackHelper.AddAddress (r, iic1.GetInterfaceIndex (1), Ipv6Address ("2001:ABCD::2"));
+  ipv6.SetBase (Ipv6Address ("2001:ABCD::2"), Ipv6Prefix (64));
+  ipv6.Assign (tmp2);
 
   /* second subnet R - n1 */
   ipv6.SetBase (Ipv6Address ("2001:2::"), Ipv6Prefix (64));
   NetDeviceContainer tmp3;
   tmp3.Add (d2.Get (0)); /* R */
   Ipv6InterfaceContainer iicr2 = ipv6.Assign (tmp3); /* R interface */
-  iicr2.SetRouter (0, true);
+  iicr2.SetForwarding (0, true);
+  iicr2.SetDefaultRouteInAllNodes (0);
 
   NetDeviceContainer tmp4;
   tmp4.Add (d2.Get (1)); /* n1 */
@@ -164,29 +153,39 @@ int main (int argc, char** argv)
   iic2.Add (iicr2);
 
   /* radvd configuration */
-  Ipv6Address prefix ("2001:ABCD::0"); /* create the prefix */
-  Ipv6Address prefixBis ("2001:1::0"); /* create the prefix */
-  Ipv6Address prefix2 ("2001:2::0"); /* create the prefix */
-  uint32_t indexRouter = iic1.GetInterfaceIndex (1); /* R interface (n0 - R) */
-  uint32_t indexRouter2 = iic2.GetInterfaceIndex (1); /* R interface (R - n1) */
-  Ptr<Radvd> radvd = CreateObject<Radvd> ();
-  Ptr<RadvdInterface> routerInterface = Create<RadvdInterface> (indexRouter, 2000, 1000);
-  Ptr<RadvdPrefix> routerPrefix = Create<RadvdPrefix> (prefix, 64, 3, 5);
-  Ptr<RadvdPrefix> routerPrefixBis = Create<RadvdPrefix> (prefixBis, 64, 3, 5);
-  Ptr<RadvdInterface> routerInterface2 = Create<RadvdInterface> (indexRouter2, 2000, 1000);
-  Ptr<RadvdPrefix> routerPrefix2 = Create<RadvdPrefix> (prefix2, 64, 3, 5);
+  RadvdHelper radvdHelper;
+  /* R interface (n0 - R) */
+  radvdHelper.AddAnnouncedPrefix(iic1.GetInterfaceIndex (1), Ipv6Address("2001:ABCD::0"), 64);
+  radvdHelper.AddAnnouncedPrefix(iic1.GetInterfaceIndex (1), Ipv6Address("2001:1::0"), 64);
 
-  /* first interface advertise two prefixes (2001:1::/64 and 2001:ABCD::/64) */
-  /* prefix is added in the inverse order in packet */
-  routerInterface->AddPrefix (routerPrefix);
-  routerInterface->AddPrefix (routerPrefixBis);
-  routerInterface2->AddPrefix (routerPrefix2);
-  radvd->AddConfiguration (routerInterface);
-  radvd->AddConfiguration (routerInterface2);
+  // Set some non-standard timers so the simulation is not taking ages
+  Ptr<RadvdInterface> routerInterface = radvdHelper.GetRadvdInterface(iic1.GetInterfaceIndex (1));
+  routerInterface->SetMaxRtrAdvInterval (2000);
+  routerInterface->SetMinRtrAdvInterval (1000);
+  RadvdInterface::RadvdPrefixList prefixList = routerInterface->GetPrefixes ();
+  for (RadvdInterface::RadvdPrefixListI iter = prefixList.begin(); iter != prefixList.end(); iter++)
+    {
+      (*iter)->SetPreferredLifeTime (3);
+      (*iter)->SetValidLifeTime (5);
+    }
 
-  r->AddApplication (radvd);
-  radvd->SetStartTime (Seconds (1.0));
-  radvd->SetStopTime (Seconds (2.0));
+  /* R interface (R - n1) */
+  radvdHelper.AddAnnouncedPrefix(iic2.GetInterfaceIndex (1), Ipv6Address("2001:2::0"), 64);
+
+  // Set some non-standard timers so the simulation is not taking ages
+  routerInterface = radvdHelper.GetRadvdInterface(iic2.GetInterfaceIndex (1));
+  routerInterface->SetMaxRtrAdvInterval (2000);
+  routerInterface->SetMinRtrAdvInterval (1000);
+  prefixList = routerInterface->GetPrefixes ();
+  for (RadvdInterface::RadvdPrefixListI iter = prefixList.begin(); iter != prefixList.end(); iter++)
+    {
+      (*iter)->SetPreferredLifeTime (3);
+      (*iter)->SetValidLifeTime (5);
+    }
+
+  ApplicationContainer radvdApps = radvdHelper.Install(r);
+  radvdApps.Start (Seconds (1.0));
+  radvdApps.Stop (Seconds (2.0));
 
   /* Create a Ping6 application to send ICMPv6 echo request from n0 to n1 via R */
   uint32_t packetSize = 1024;
@@ -205,10 +204,16 @@ int main (int argc, char** argv)
   apps.Start (Seconds (2.0));
   apps.Stop (Seconds (9.0));
 
+  Ipv6StaticRoutingHelper routingHelper;
+  Ptr<OutputStreamWrapper> routingStream = Create<OutputStreamWrapper> (&std::cout);
+  routingHelper.PrintRoutingTableAt (Seconds (2.0), n0, routingStream);
+  routingHelper.PrintRoutingTableAt (Seconds (10.0), n0, routingStream);
+
+  IpAddressHelper ipAddressHelper;
   /* RA should be received, two prefixes + routes + default route should be present */
-  Simulator::Schedule (Seconds (2.0), &StackHelper::PrintRoutingTable, &stackHelper, n0); 
+  Simulator::Schedule (Seconds (2.0), &IpAddressHelper::PrintIpAddresses, &ipAddressHelper, n0);
   /* at the end, RA addresses and routes should be cleared */
-  Simulator::Schedule (Seconds (10.0), &StackHelper::PrintRoutingTable, &stackHelper, n0); 
+  Simulator::Schedule (Seconds (10.0), &IpAddressHelper::PrintIpAddresses, &ipAddressHelper, n0);
 
   AsciiTraceHelper ascii;
   csma.EnableAsciiAll (ascii.CreateFileStream ("radvd-two-prefix.tr"));

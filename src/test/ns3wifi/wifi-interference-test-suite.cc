@@ -61,7 +61,7 @@ private:
   static void GenerateTraffic (Ptr<Socket> socket, uint32_t pktSize, uint32_t pktCount, Time pktInterval);
   void PrintEndSync (std::string context, uint32_t dataRate, double snr, double per);
   double WifiSimpleInterference (std::string phyMode, double Prss, double Irss, double delta, uint32_t PpacketSize, 
-                                 uint32_t IpacketSize, bool verbose, InternetStackHelper internet);
+                                 uint32_t IpacketSize, bool verbose, InternetStackHelper internet, WifiPhyStandard wifiStandard);
   double m_PER;
   double m_SNR;
   uint32_t m_DataRate;
@@ -120,7 +120,7 @@ WifiInterferenceTestCase::PrintEndSync (std::string context, uint32_t dataRate, 
 }
 
 double 
-WifiInterferenceTestCase::WifiSimpleInterference (std::string phyMode,double Prss, double Irss, double delta, uint32_t PpacketSize, uint32_t IpacketSize, bool verbose, InternetStackHelper internet)
+WifiInterferenceTestCase::WifiSimpleInterference (std::string phyMode,double Prss, double Irss, double delta, uint32_t PpacketSize, uint32_t IpacketSize, bool verbose, InternetStackHelper internet, WifiPhyStandard wifiStandard)
 {
 
   uint32_t numPackets = 1;
@@ -151,7 +151,7 @@ WifiInterferenceTestCase::WifiSimpleInterference (std::string phyMode,double Prs
 
   // The below set of helpers will help us to put together the wifi NICs we want
   WifiHelper wifi;
-  wifi.SetStandard (WIFI_PHY_STANDARD_80211b);
+  wifi.SetStandard (wifiStandard);
 
   YansWifiPhyHelper wifiPhy =  YansWifiPhyHelper::Default ();
   // This is one parameter that matters when using FixedRssLossModel
@@ -241,6 +241,7 @@ WifiInterferenceTestCase::DoRun (void)
 {
 
   std::string phyMode ("DsssRate1Mbps");
+  WifiPhyStandard wifiStandard=WIFI_PHY_STANDARD_80211b;
   double Prss = -90;  // -dBm
   double Irss = -90;  // -dBm
   double delta = 0;  // microseconds
@@ -253,17 +254,17 @@ WifiInterferenceTestCase::DoRun (void)
   // Compute the packet error rate (PER) when delta=0 microseconds.  This
   // means that the interferer arrives at exactly the same time as the
   // intended packet
-  PER = WifiSimpleInterference (phyMode,Prss,Irss,delta,PpacketSize,IpacketSize,verbose,internet);
+  PER = WifiSimpleInterference (phyMode,Prss,Irss,delta,PpacketSize,IpacketSize,verbose,internet,wifiStandard);
 
   // Now rerun this test case and compute the PER when the delta time between
   // arrival of the intended frame and interferer is 1 microsecond.
   delta = 1;
-  PER1 = WifiSimpleInterference (phyMode,Prss,Irss,delta,PpacketSize,IpacketSize,verbose,internet);
+  PER1 = WifiSimpleInterference (phyMode,Prss,Irss,delta,PpacketSize,IpacketSize,verbose,internet,wifiStandard);
 
   // Now rerun this test case and compute the PER when the delta time between
   // arrival of the intended frame and interferer is 2 microseconds.
   delta = 2;
-  PER2 = WifiSimpleInterference (phyMode,Prss,Irss,delta,PpacketSize,IpacketSize,verbose,internet);
+  PER2 = WifiSimpleInterference (phyMode,Prss,Irss,delta,PpacketSize,IpacketSize,verbose,internet,wifiStandard);
 
   double PERDiff1 = PER - PER1;
 
@@ -271,6 +272,30 @@ WifiInterferenceTestCase::DoRun (void)
 
   NS_TEST_ASSERT_MSG_EQ (PERDiff1, PERDiff2, 
                          "The PER difference due to 1 microsecond difference in arrival shouldn't depend on absolute arrival");
+  //Now rerun for 11n
+  wifiStandard=WIFI_PHY_STANDARD_80211n_2_4GHZ;
+  // Compute the packet error rate (PER) when delta=0 microseconds.  This
+  // means that the interferer arrives at exactly the same time as the
+  // intended packet
+  PER = WifiSimpleInterference (phyMode,Prss,Irss,delta,PpacketSize,IpacketSize,verbose,internet,wifiStandard);
+
+  // Now rerun this test case and compute the PER when the delta time between
+  // arrival of the intended frame and interferer is 1 microsecond.
+  delta = 1;
+  PER1 = WifiSimpleInterference (phyMode,Prss,Irss,delta,PpacketSize,IpacketSize,verbose,internet,wifiStandard);
+
+  // Now rerun this test case and compute the PER when the delta time between
+  // arrival of the intended frame and interferer is 2 microseconds.
+  delta = 2;
+  PER2 = WifiSimpleInterference (phyMode,Prss,Irss,delta,PpacketSize,IpacketSize,verbose,internet,wifiStandard);
+
+  PERDiff1 = PER - PER1;
+
+  PERDiff2 = PER1 - PER2;
+
+  NS_TEST_ASSERT_MSG_EQ (PERDiff1, PERDiff2, 
+                         "The PER difference due to 1 microsecond difference in arrival shouldn't depend on absolute arrival");
+
 }
 
 class WifiInterferenceTestSuite : public TestSuite

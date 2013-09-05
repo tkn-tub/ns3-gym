@@ -193,7 +193,7 @@ double
 NistErrorRateModel::GetChunkSuccessRate (WifiMode mode, double snr, uint32_t nbits) const
 {
   if (mode.GetModulationClass () == WIFI_MOD_CLASS_ERP_OFDM
-      || mode.GetModulationClass () == WIFI_MOD_CLASS_OFDM)
+      || mode.GetModulationClass () == WIFI_MOD_CLASS_OFDM|| mode.GetModulationClass()==WIFI_MOD_CLASS_HT)
     {
       if (mode.GetConstellationSize () == 2)
         {

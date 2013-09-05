@@ -31,7 +31,7 @@ namespace ns3 {
  * network address; used in topology code. It also keeps track of all
  * addresses assigned to perform duplicate detection.
  *
- * Global unicast IPv6 addresses based on RFC 4291 definition:
+ * Global unicast IPv6 addresses based on \RFC{4291} definition:
  *
  *     |         n bits          |   m bits  |       128-n-m bits         |
  *     +-------------------------+-----------+----------------------------+
@@ -48,7 +48,7 @@ namespace ns3 {
  * the subnet ID.
  *
  * The interface ID is often an EUI-64 address derived from the MAC address,
- * but can also be a pseudo-random value (RFC 3041).  This implementation
+ * but can also be a pseudo-random value (\RFC{3041}).  This implementation
  * does not generate EUI-64-based interface IDs.
  */
 class Ipv6AddressGenerator

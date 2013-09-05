@@ -437,7 +437,8 @@ PacketTest::DoRun (void)
   }
 
   {
-    // bug 572
+    /// \internal
+    /// See \bugid{572}
     Ptr<Packet> tmp = Create<Packet> (1000);
     tmp->AddByteTag (ATestTag<20> ());
     CHECK (tmp, 1, E (20, 0, 1000));

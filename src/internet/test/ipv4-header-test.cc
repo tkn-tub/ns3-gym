@@ -200,30 +200,30 @@ Ipv4HeaderTest::DoRun (void)
 
   std::vector <Ipv4Header::DscpType> vDscpTypes;
   vDscpTypes.push_back (Ipv4Header::DscpDefault);
-  vDscpTypes.push_back (Ipv4Header::CS1);
-  vDscpTypes.push_back (Ipv4Header::AF11);
-  vDscpTypes.push_back (Ipv4Header::AF12);
-  vDscpTypes.push_back (Ipv4Header::AF13);
-  vDscpTypes.push_back (Ipv4Header::CS2);
-  vDscpTypes.push_back (Ipv4Header::AF21);
-  vDscpTypes.push_back (Ipv4Header::AF22);
-  vDscpTypes.push_back (Ipv4Header::AF23);
-  vDscpTypes.push_back (Ipv4Header::CS3);
-  vDscpTypes.push_back (Ipv4Header::AF31);
-  vDscpTypes.push_back (Ipv4Header::AF32);
-  vDscpTypes.push_back (Ipv4Header::AF33);
-  vDscpTypes.push_back (Ipv4Header::CS4);
-  vDscpTypes.push_back (Ipv4Header::AF41);
-  vDscpTypes.push_back (Ipv4Header::AF42);
-  vDscpTypes.push_back (Ipv4Header::AF43);
-  vDscpTypes.push_back (Ipv4Header::CS5);
-  vDscpTypes.push_back (Ipv4Header::EF);
-  vDscpTypes.push_back (Ipv4Header::CS6);
-  vDscpTypes.push_back (Ipv4Header::CS7);
+  vDscpTypes.push_back (Ipv4Header::DSCP_CS1);
+  vDscpTypes.push_back (Ipv4Header::DSCP_AF11);
+  vDscpTypes.push_back (Ipv4Header::DSCP_AF12);
+  vDscpTypes.push_back (Ipv4Header::DSCP_AF13);
+  vDscpTypes.push_back (Ipv4Header::DSCP_CS2);
+  vDscpTypes.push_back (Ipv4Header::DSCP_AF21);
+  vDscpTypes.push_back (Ipv4Header::DSCP_AF22);
+  vDscpTypes.push_back (Ipv4Header::DSCP_AF23);
+  vDscpTypes.push_back (Ipv4Header::DSCP_CS3);
+  vDscpTypes.push_back (Ipv4Header::DSCP_AF31);
+  vDscpTypes.push_back (Ipv4Header::DSCP_AF32);
+  vDscpTypes.push_back (Ipv4Header::DSCP_AF33);
+  vDscpTypes.push_back (Ipv4Header::DSCP_CS4);
+  vDscpTypes.push_back (Ipv4Header::DSCP_AF41);
+  vDscpTypes.push_back (Ipv4Header::DSCP_AF42);
+  vDscpTypes.push_back (Ipv4Header::DSCP_AF43);
+  vDscpTypes.push_back (Ipv4Header::DSCP_CS5);
+  vDscpTypes.push_back (Ipv4Header::DSCP_EF);
+  vDscpTypes.push_back (Ipv4Header::DSCP_CS6);
+  vDscpTypes.push_back (Ipv4Header::DSCP_CS7);
 
   for (uint32_t i = 0; i < vDscpTypes.size (); i++)
     {
-      SendData_IpHdr_Dscp (txSocket, "10.0.0.1", vDscpTypes [i], Ipv4Header::ECT1);
+      SendData_IpHdr_Dscp (txSocket, "10.0.0.1", vDscpTypes [i], Ipv4Header::ECN_ECT1);
       NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 143, "recv(hdrincl): 10.0.0.1");
       NS_TEST_EXPECT_MSG_EQ (m_receivedHeader.GetDscp (), vDscpTypes [i], "recv(hdrincl): 10.0.0.1");
       m_receivedHeader.Print (std::cout);
@@ -235,10 +235,10 @@ Ipv4HeaderTest::DoRun (void)
   // Ecn tests
   std::cout << "Ecn Test\n";
   std::vector <Ipv4Header::EcnType> vEcnTypes;
-  vEcnTypes.push_back (Ipv4Header::NotECT);
-  vEcnTypes.push_back (Ipv4Header::ECT1);
-  vEcnTypes.push_back (Ipv4Header::ECT0);
-  vEcnTypes.push_back (Ipv4Header::CE);
+  vEcnTypes.push_back (Ipv4Header::ECN_NotECT);
+  vEcnTypes.push_back (Ipv4Header::ECN_ECT1);
+  vEcnTypes.push_back (Ipv4Header::ECN_ECT0);
+  vEcnTypes.push_back (Ipv4Header::ECN_CE);
   
   for (uint32_t i = 0; i < vEcnTypes.size (); i++)
     {

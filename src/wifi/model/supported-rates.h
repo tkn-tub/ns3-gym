@@ -29,11 +29,11 @@ namespace ns3 {
 
 /**
  * This defines the maximum number of supported rates that a STA is
- * allowed to have. Currently this number is set for IEEE 802.11b/g
+ * allowed to have. Currently this number is set for IEEE 802.11b/g and SISO IEE 802.11n
  * stations which need 2 rates each from Clauses 15 and 18, and then 8
  * from Clause 19.
  */
-#define MAX_SUPPORTED_RATES (12)
+#define MAX_SUPPORTED_RATES (32)
 
 class SupportedRates;
 

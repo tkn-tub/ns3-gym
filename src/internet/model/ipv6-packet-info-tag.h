@@ -33,8 +33,7 @@ class Packet;
 /**
  * \brief This class implements a tag that carries socket ancillary 
  * data to the socket interface. This is used like 
- * socket option of IP_PKTINFO/IPV6_PKTINFO in RFC 3542
- * See: http://tools.ietf.org/html/rfc3542
+ * socket option of IP_PKTINFO/IPV6_PKTINFO in \RFC{3542}
  *
  * This tag in the send direction is presently not enabled but we
  * would accept a patch along those lines in the future. To include

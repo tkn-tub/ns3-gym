@@ -45,7 +45,7 @@ The simple ``OhBuildingMobilityLossModel`` overcome this problem by using only t
 Helper Functionalities
 ----------------------
 
-The ``BuildingsHelper`` class defines a set of static function for assisting in the definition of the scenario with building module. In detail, it provides the method ``Install`` for installing the building information included in  ``MobilityBuildingInfo`` to a specific node (or set of nodes, i.e.,  the ``NodeContainer``). In order to synchronize the nodes information with their position, this helper provides the function ``MakeMobilityModelConsistent`` that puts all the ``Node``s presents in the simulation in the right position (i.e., outdoor or indoor, in the latter also updating in terms of building, floor and room number).
+The ``BuildingsHelper`` class defines a set of static function for assisting in the definition of the scenario with building module. In detail, it provides the method ``Install`` for installing the building information included in  ``MobilityBuildingInfo`` to a specific node (or set of nodes, i.e.,  the ``NodeContainer``). In order to synchronize the nodes information with their position, this helper provides the function ``MakeMobilityModelConsistent`` that puts all the ``Node``\s presents in the simulation in the right position (i.e., outdoor or indoor, in the latter also updating in terms of building, floor and room number).
 
 
 

@@ -252,7 +252,8 @@ PcapSniffTxEvent (
   uint16_t            channelFreqMhz,
   uint16_t            channelNumber,
   uint32_t            rate,
-  bool                isShortPreamble)
+  bool                isShortPreamble,
+  uint8_t             txPower)
 {
   uint32_t dlt = file->GetDataLinkType ();
 
@@ -309,6 +310,7 @@ PcapSniffTxEvent (
           }
 
         header.SetChannelFrequencyAndFlags (channelFreqMhz, channelFlags);
+        
 
         p->AddHeader (header);
         file->Write (Simulator::Now (), p);

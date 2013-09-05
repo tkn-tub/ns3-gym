@@ -379,9 +379,9 @@ HashTestSuite::HashTestSuite ()
   AddTestCase (new DefaultHashTestCase, QUICK);
   AddTestCase (new Murmur3TestCase, QUICK);
   AddTestCase (new Fnv1aTestCase, QUICK);
+  AddTestCase (new IncrementalTestCase, QUICK);
   AddTestCase (new Hash32FunctionPtrTestCase, QUICK);
   AddTestCase (new Hash64FunctionPtrTestCase, QUICK);
-  AddTestCase (new IncrementalTestCase, QUICK);
 }
 
 static HashTestSuite g_hashTestSuite;

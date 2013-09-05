@@ -14,6 +14,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: George Riley <riley@ece.gatech.edu>
+ *
+ * Some updates to this code were developed under a research contract
+ * sponsored by the Army Research Laboratory. (April 30, 2013)
  */
 
 #include "distributed-simulator-impl.h"
@@ -66,6 +69,12 @@ uint32_t
 LbtsMessage::GetMyId ()
 {
   return m_myId;
+}
+
+bool
+LbtsMessage::IsFinished ()
+{
+  return m_isFinished;
 }
 
 Time DistributedSimulatorImpl::m_lookAhead = Seconds (0);
@@ -153,6 +162,9 @@ DistributedSimulatorImpl::CalculateLookAhead (void)
     }
   else
     {
+      DistributedSimulatorImpl::m_lookAhead = GetMaximumSimulationTime ();
+      m_grantedTime = GetMaximumSimulationTime ();
+
       NodeContainer c = NodeContainer::GetGlobal ();
       for (NodeContainer::Iterator iter = c.Begin (); iter != c.End (); ++iter)
         {
@@ -197,11 +209,7 @@ DistributedSimulatorImpl::CalculateLookAhead (void)
               // it the new lookAhead.
               TimeValue delay;
               channel->GetAttribute ("Delay", delay);
-              if (DistributedSimulatorImpl::m_lookAhead.IsZero ())
-                {
-                  DistributedSimulatorImpl::m_lookAhead = delay.Get ();
-                  m_grantedTime = delay.Get ();
-                }
+
               if (delay.Get ().GetSeconds () < DistributedSimulatorImpl::m_lookAhead.GetSeconds ())
                 {
                   DistributedSimulatorImpl::m_lookAhead = delay.Get ();
@@ -210,6 +218,49 @@ DistributedSimulatorImpl::CalculateLookAhead (void)
             }
         }
     }
+
+  /*
+   * Compute the maximum inter-task latency and use that value
+   * for tasks with no inter-task links.
+   *
+   * Special processing for edge cases.  For tasks that have no
+   * nodes need to determine a reasonable lookAhead value.  Infinity
+   * would work correctly but introduces a performance issue; tasks
+   * with an infinite lookAhead would execute all their events
+   * before doing an AllGather resulting in very bad load balance
+   * during the first time window.  Since all tasks participate in
+   * the AllGather it is desirable to have all the tasks advance in
+   * simulation time at a similar rate assuming roughly equal events
+   * per unit of simulation time in order to equalize the amount of
+   * work per time window.
+   */
+  long sendbuf;
+  long recvbuf;
+
+  /* Tasks with no inter-task links do not contribute to max */
+  if (m_lookAhead == GetMaximumSimulationTime ()) 
+    {
+      sendbuf = 0;
+    }
+  else
+    {
+      sendbuf  = m_lookAhead.GetInteger ();
+    }
+
+  MPI_Allreduce (&sendbuf, &recvbuf, 1, MPI_LONG, MPI_MAX, MPI_COMM_WORLD);
+
+  /* For nodes that did not compute a lookahead use max from ranks
+   * that did compute a value.  An edge case occurs if all nodes have
+   * no inter-task links (max will be 0 in this case). Use infinity so all tasks
+   * will proceed without synchronization until a single AllGather
+   * occurs when all tasks have finished.
+   */
+  if (m_lookAhead == GetMaximumSimulationTime () && recvbuf != 0) 
+    {
+      m_lookAhead = Time (recvbuf);
+      m_grantedTime = m_lookAhead;
+    }
+
 #else
   NS_FATAL_ERROR ("Can't use distributed simulator without MPI compiled in");
 #endif
@@ -250,15 +301,26 @@ DistributedSimulatorImpl::ProcessOneEvent (void)
 bool
 DistributedSimulatorImpl::IsFinished (void) const
 {
+  return m_globalFinished;
+}
+
+bool
+DistributedSimulatorImpl::IsLocalFinished (void) const
+{
   return m_events->IsEmpty () || m_stop;
 }
 
 uint64_t
 DistributedSimulatorImpl::NextTs (void) const
 {
-  NS_ASSERT (!m_events->IsEmpty ());
-  Scheduler::Event ev = m_events->PeekNext ();
-  return ev.key.m_ts;
+  // If local MPI task is has no more events or stop was called 
+  // next event time is infinity.
+  if (IsLocalFinished ()) {
+      return GetMaximumSimulationTime ().GetTimeStep ();
+    } else  {
+      Scheduler::Event ev = m_events->PeekNext ();
+      return ev.key.m_ts;
+    }
 }
 
 Time
@@ -273,11 +335,19 @@ DistributedSimulatorImpl::Run (void)
 #ifdef NS3_MPI
   CalculateLookAhead ();
   m_stop = false;
-  while (!m_events->IsEmpty () && !m_stop)
+  while (!m_globalFinished)
     {
       Time nextTime = Next ();
-      if (nextTime > m_grantedTime)
-        { // Can't process, calculate a new LBTS
+
+      // If local event is beyond grantedTime then need to synchronize
+      // with other tasks to determine new time window. If local task
+      // is finished then continue to participate in allgather
+      // synchronizations with other tasks until all tasks have
+      // completed.
+      if (nextTime > m_grantedTime || IsLocalFinished () )
+        { 
+
+          // Can't process next event, calculate a new LBTS
           // First receive any pending messages
           MpiInterface::ReceiveMessages ();
           // reset next time
@@ -285,7 +355,7 @@ DistributedSimulatorImpl::Run (void)
           // And check for send completes
           MpiInterface::TestSendComplete ();
           // Finally calculate the lbts
-          LbtsMessage lMsg (MpiInterface::GetRxCount (), MpiInterface::GetTxCount (), m_myId, nextTime);
+          LbtsMessage lMsg (MpiInterface::GetRxCount (), MpiInterface::GetTxCount (), m_myId, IsLocalFinished (), nextTime);
           m_pLBTS[m_myId] = lMsg;
           MPI_Allgather (&lMsg, sizeof (LbtsMessage), MPI_BYTE, m_pLBTS,
                          sizeof (LbtsMessage), MPI_BYTE, MPI_COMM_WORLD);
@@ -295,6 +365,7 @@ DistributedSimulatorImpl::Run (void)
           // so we don't update the granted time.
           uint32_t totRx = m_pLBTS[0].GetRxCount ();
           uint32_t totTx = m_pLBTS[0].GetTxCount ();
+          m_globalFinished = m_pLBTS[0].IsFinished ();
 
           for (uint32_t i = 1; i < m_systemCount; ++i)
             {
@@ -304,15 +375,29 @@ DistributedSimulatorImpl::Run (void)
                 }
               totRx += m_pLBTS[i].GetRxCount ();
               totTx += m_pLBTS[i].GetTxCount ();
-
+              m_globalFinished &= m_pLBTS[i].IsFinished ();
             }
           if (totRx == totTx)
             {
-              m_grantedTime = smallestTime + DistributedSimulatorImpl::m_lookAhead;
+              // If lookahead is infinite then granted time should be as well.
+              // Covers the edge case if all the tasks have no inter tasks 
+              // links, prevents overflow of granted time.
+              if (m_lookAhead == GetMaximumSimulationTime ())
+                {
+                  m_grantedTime = GetMaximumSimulationTime ();
+                }
+              else
+                {
+                  // Overflow is possible here if near end of representable time.
+                  m_grantedTime = smallestTime + m_lookAhead;
+                }
             }
         }
-      if (nextTime <= m_grantedTime)
-        { // Save to process
+
+      // Execute next event if it is within the current time window.
+      // Local task may be completed.
+      if ( (nextTime <= m_grantedTime) && (!IsLocalFinished ()) )
+        { // Safe to process
           ProcessOneEvent ();
         }
     }

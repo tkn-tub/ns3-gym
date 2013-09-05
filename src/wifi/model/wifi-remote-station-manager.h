@@ -28,6 +28,8 @@
 #include "ns3/object.h"
 #include "ns3/nstime.h"
 #include "wifi-mode.h"
+#include "wifi-tx-vector.h"
+#include "ht-capabilities.h"
 
 namespace ns3 {
 
@@ -96,6 +98,9 @@ public:
   void SetMaxSlrc (uint32_t maxSlrc);
   void SetRtsCtsThreshold (uint32_t threshold);
   void SetFragmentationThreshold (uint32_t threshold);
+  void AddStationHtCapabilities (Mac48Address from,HtCapabilities     htcapabilities);
+  void SetHtSupported (bool enable);
+  bool HasHtSupported (void) const;
 
   // Invoked in a STA upon dis-association
   // or in an AP upon reboot
@@ -110,6 +115,13 @@ public:
   WifiMode GetDefaultMode (void) const;
   uint32_t GetNBasicModes (void) const;
   WifiMode GetBasicMode (uint32_t i) const;
+  bool GetGreenfieldSupported (Mac48Address address) const;
+  void AddBasicMcs (uint8_t mcs);
+
+  uint8_t GetDefaultMcs (void) const;
+  uint32_t GetNBasicMcs (void) const;
+  uint8_t GetBasicMcs (uint32_t i) const;
+  void AddSupportedMcs (Mac48Address address, uint8_t mcs);
 
   WifiMode GetNonUnicastMode (void) const;
 
@@ -127,6 +139,7 @@ public:
    * the BSSBasicRateSet.
    */
   void AddSupportedMode (Mac48Address address, WifiMode mode);
+  //void  AddBssMembershipParameters(Mac48Address address, uint32_t selector);
 
   bool IsBrandNew (Mac48Address address) const;
   bool IsAssociated (Mac48Address address) const;
@@ -149,6 +162,7 @@ public:
    */
   void PrepareForQueue (Mac48Address address, const WifiMacHeader *header,
                         Ptr<const Packet> packet, uint32_t fullPacketSize);
+  
   /**
    * \param address remote address
    * \param header MAC header
@@ -156,7 +170,7 @@ public:
    * \param fullPacketSize the size of the packet after its 802.11 MAC header has been added.
    * \returns the transmission mode to use to send this packet
    */
-  WifiMode GetDataMode (Mac48Address address, const WifiMacHeader *header,
+  WifiTxVector GetDataTxVector (Mac48Address address, const WifiMacHeader *header,
                         Ptr<const Packet> packet, uint32_t fullPacketSize);
   /**
    * \param address remote address
@@ -165,8 +179,16 @@ public:
    * \returns the transmission mode to use to send the RTS prior to the
    *          transmission of the data packet itself.
    */
-  WifiMode GetRtsMode (Mac48Address address, const WifiMacHeader *header,
+  WifiTxVector GetRtsTxVector (Mac48Address address, const WifiMacHeader *header,
                        Ptr<const Packet> packet);
+
+  WifiTxVector GetCtsToSelfTxVector (const WifiMacHeader *header,
+                       Ptr<const Packet> packet);
+
+  //Since CTS to Self parameters don't depened on the station it is implemented in wifiremote station manager
+  WifiTxVector DoGetCtsToSelfTxVector (void);
+
+
   /**
    * Should be invoked whenever the RtsTimeout associated to a transmission
    * attempt expires.
@@ -220,6 +242,8 @@ public:
    */
   bool NeedRts (Mac48Address address, const WifiMacHeader *header,
                 Ptr<const Packet> packet);
+  bool NeedCtsToSelf (WifiTxVector txVector);
+
   /**
    * \param address remote address
    * \param header MAC header
@@ -281,21 +305,54 @@ public:
    * \returns the transmission mode to use for the CTS to complete the RTS/CTS
    *          handshake.
    */
-  WifiMode GetCtsMode (Mac48Address address, WifiMode rtsMode);
+  WifiTxVector GetCtsTxVector (Mac48Address address, WifiMode rtsMode);
   /**
    * \param address
    * \param dataMode the transmission mode used to send an ACK we just received
    * \returns the transmission mode to use for the ACK to complete the data/ACK
    *          handshake.
    */
-  WifiMode GetAckMode (Mac48Address address, WifiMode dataMode);
-
+  WifiTxVector GetAckTxVector (Mac48Address address, WifiMode dataMode);
+  /**
+   * \param address
+   * \param dataMode the transmission mode used to send an ACK we just received
+   * \returns the transmission mode to use for the ACK to complete the data/ACK
+   *          handshake.
+   */
+  WifiTxVector GetBlockAckTxVector (Mac48Address address, WifiMode dataMode);
+  /**
+   * \returns the default transmission power
+   */ 
+  uint8_t GetDefaultTxPowerLevel (void) const;
+  /**
+   * \param address of the remote station
+   * \returns information regarding the remote station associated with the given address
+   */
   WifiRemoteStationInfo GetInfo (Mac48Address address);
-protected:
+  /**
+   * Set the default transmission power level
+   */
+  void SetDefaultTxPowerLevel (uint8_t txPower);
+ /**
+  * \returns the number of transmit antennas supported by the phy layer
+  */
+ uint32_t GetNumberOfTransmitAntennas (void);
+
+ protected:
   virtual void DoDispose (void);
   // for convenience
   WifiMode GetSupported (const WifiRemoteStation *station, uint32_t i) const;
   uint32_t GetNSupported (const WifiRemoteStation *station) const;
+  uint8_t GetMcsSupported (const WifiRemoteStation *station, uint32_t i) const;
+  uint32_t GetNMcsSupported (const WifiRemoteStation *station) const;
+
+  bool GetShortGuardInterval (const WifiRemoteStation *station) const;
+  bool GetStbc (const WifiRemoteStation *station) const;
+  bool GetGreenfield (const WifiRemoteStation *station) const;
+  uint32_t GetNumberOfReceiveAntennas (const WifiRemoteStation *station) const;
+  uint32_t GetNumberOfTransmitAntennas (const WifiRemoteStation *station) const;
+  uint32_t GetLongRetryCount (const WifiRemoteStation *station) const;
+  uint32_t GetShortRetryCount (const WifiRemoteStation *station) const;
 private:
   /**
    * \param station the station with which we need to communicate
@@ -359,7 +416,7 @@ private:
    * \return a new station data structure
    */
   virtual WifiRemoteStation* DoCreateStation (void) const = 0;
-  /**
+ /**
    * \param station the station with which we need to communicate
    * \param size size of the packet or fragment we want to send
    * \returns the transmission mode to use to send a packet to the station
@@ -367,7 +424,7 @@ private:
    * Note: This method is called before sending a unicast packet or a fragment
    *       of a unicast packet to decide which transmission mode to use.
    */
-  virtual WifiMode DoGetDataMode (WifiRemoteStation *station,
+  virtual WifiTxVector DoGetDataTxVector (WifiRemoteStation *station,
                                   uint32_t size) = 0;
   /**
    * \param station the station with which we need to communicate
@@ -376,7 +433,47 @@ private:
    * Note: This method is called before sending an rts to a station
    *       to decide which transmission mode to use for the rts.
    */
-  virtual WifiMode DoGetRtsMode (WifiRemoteStation *station) = 0;
+  virtual WifiTxVector DoGetRtsTxVector (WifiRemoteStation *station) = 0;
+
+  
+  /** 
+   * \param address the address of the recipient of the CTS
+   * \param ctsMode the mode to be used for the CTS 
+   * 
+   * \return the power level to be used to send the CTS
+   */
+  virtual uint8_t DoGetCtsTxPowerLevel (Mac48Address address, WifiMode ctsMode);
+
+  /** 
+   * \param address the address of the recipient of the ACK
+   * \param ctsMode the mode to be used for the ACK 
+   * 
+   * \return the power level to be used to send the ACK
+   */  
+  virtual uint8_t DoGetAckTxPowerLevel (Mac48Address address, WifiMode ackMode);
+
+  /** 
+   * \param address the address of the recipient of the Block ACK
+   * \param ctsMode the mode to be used for the Block ACK 
+   * 
+   * \return the power level to be used to send the Block ACK
+   */  
+  virtual uint8_t DoGetBlockAckTxPowerLevel (Mac48Address address, WifiMode blockAckMode);
+
+  virtual bool DoGetCtsTxGuardInterval (Mac48Address address, WifiMode ctsMode);
+
+  virtual uint8_t DoGetCtsTxNss(Mac48Address address, WifiMode ctsMode);
+  virtual uint8_t DoGetCtsTxNess(Mac48Address address, WifiMode ctsMode);
+  virtual bool  DoGetCtsTxStbc(Mac48Address address, WifiMode ctsMode);
+  virtual bool DoGetAckTxGuardInterval(Mac48Address address, WifiMode ackMode);
+  virtual uint8_t DoGetAckTxNss(Mac48Address address, WifiMode ackMode);
+  virtual uint8_t DoGetAckTxNess(Mac48Address address, WifiMode ackMode);
+  virtual bool DoGetAckTxStbc(Mac48Address address, WifiMode ackMode);
+  virtual bool DoGetBlockAckTxGuardInterval(Mac48Address address, WifiMode blockAckMode);
+  virtual uint8_t DoGetBlockAckTxNss(Mac48Address address, WifiMode blockAckMode);
+  virtual uint8_t DoGetBlockAckTxNess(Mac48Address address, WifiMode blockAckMode);
+  virtual bool DoGetBlockAckTxStbc(Mac48Address address, WifiMode blockAckMode);
+
   virtual void DoReportRtsFailed (WifiRemoteStation *station) = 0;
   virtual void DoReportDataFailed (WifiRemoteStation *station) = 0;
   virtual void DoReportRtsOk (WifiRemoteStation *station,
@@ -413,6 +510,7 @@ private:
    */
   Ptr<WifiPhy> m_wifiPhy;
   WifiMode m_defaultTxMode;
+  uint8_t m_defaultTxMcs;
 
   /**
    * This member is the list of WifiMode objects that comprise the
@@ -423,12 +521,15 @@ private:
    * WifiRemoteStationManager::GetBasicMode().
    */
   WifiModeList m_bssBasicRateSet;
+  WifiMcsList m_bssBasicMcsSet;
 
+  bool m_htSupported;
   bool m_isLowLatency;
   uint32_t m_maxSsrc;
   uint32_t m_maxSlrc;
   uint32_t m_rtsCtsThreshold;
   uint32_t m_fragmentationThreshold;
+  uint8_t m_defaultTxPowerLevel;
   WifiMode m_nonUnicastMode;
   double m_avgSlrcCoefficient;
   /**
@@ -472,9 +573,15 @@ struct WifiRemoteStationState
    * WifiRemoteStationManager::GetSupported().
    */
   WifiModeList m_operationalRateSet;
-
+  WifiMcsList m_operationalMcsSet;
   Mac48Address m_address;
   WifiRemoteStationInfo m_info;
+  bool m_shortGuardInterval;
+  uint32_t m_rx;
+  uint32_t m_tx;
+  bool m_stbc;
+  bool m_greenfield;
+
 };
 
 /**

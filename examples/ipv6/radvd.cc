@@ -47,18 +47,22 @@ NS_LOG_COMPONENT_DEFINE ("RadvdExample");
 
 int main (int argc, char** argv)
 {
-#if 0 
-  LogComponentEnable ("Ipv6L3Protocol", LOG_LEVEL_ALL);
-  LogComponentEnable ("Ipv6RawSocketImpl", LOG_LEVEL_ALL);
-  LogComponentEnable ("Icmpv6L4Protocol", LOG_LEVEL_ALL);
-  LogComponentEnable ("Ipv6StaticRouting", LOG_LEVEL_ALL);
-  LogComponentEnable ("Ipv6Interface", LOG_LEVEL_ALL);
-  LogComponentEnable ("RadvdApplication", LOG_LEVEL_ALL);
-  LogComponentEnable ("Ping6Application", LOG_LEVEL_ALL);
-#endif
+  bool verbose = false;
 
   CommandLine cmd;
+  cmd.AddValue ("verbose", "turn on log components", verbose);
   cmd.Parse (argc, argv);
+
+  if (verbose)
+    {
+      LogComponentEnable ("Ipv6L3Protocol", LOG_LEVEL_ALL);
+      LogComponentEnable ("Ipv6RawSocketImpl", LOG_LEVEL_ALL);
+      LogComponentEnable ("Icmpv6L4Protocol", LOG_LEVEL_ALL);
+      LogComponentEnable ("Ipv6StaticRouting", LOG_LEVEL_ALL);
+      LogComponentEnable ("Ipv6Interface", LOG_LEVEL_ALL);
+      LogComponentEnable ("RadvdApplication", LOG_LEVEL_ALL);
+      LogComponentEnable ("Ping6Application", LOG_LEVEL_ALL);
+    }
 
   NS_LOG_INFO ("Create nodes.");
   Ptr<Node> n0 = CreateObject<Node> ();
@@ -92,7 +96,8 @@ int main (int argc, char** argv)
   NetDeviceContainer tmp2;
   tmp2.Add (d1.Get (1)); /* R */
   Ipv6InterfaceContainer iicr1 = ipv6.Assign (tmp2); /* R interface to the first subnet is just statically assigned */
-  iicr1.SetRouter (0, true);
+  iicr1.SetForwarding (0, true);
+  iicr1.SetDefaultRouteInAllNodes (0);
   iic1.Add (iicr1);
 
   /* second subnet R - n1 */
@@ -100,7 +105,8 @@ int main (int argc, char** argv)
   NetDeviceContainer tmp3;
   tmp3.Add (d2.Get (0)); /* R */
   Ipv6InterfaceContainer iicr2 = ipv6.Assign (tmp3); /* R interface */
-  iicr2.SetRouter (0, true);
+  iicr2.SetForwarding (0, true);
+  iicr2.SetDefaultRouteInAllNodes (0);
 
   NetDeviceContainer tmp4;
   tmp4.Add (d2.Get (1)); /* n1 */
@@ -108,24 +114,15 @@ int main (int argc, char** argv)
   iic2.Add (iicr2);
 
   /* radvd configuration */
-  Ipv6Address prefix ("2001:1::0"); /* create the prefix */
-  Ipv6Address prefix2 ("2001:2::0"); /* create the prefix */
-  uint32_t indexRouter = iic1.GetInterfaceIndex (1); /* R interface (n0 - R) */
-  uint32_t indexRouter2 = iic2.GetInterfaceIndex (1); /* R interface (R - n1) */
-  Ptr<Radvd> radvd = CreateObject<Radvd> ();
-  Ptr<RadvdInterface> routerInterface = Create<RadvdInterface> (indexRouter, 5000, 1000);
-  Ptr<RadvdPrefix> routerPrefix = Create<RadvdPrefix> (prefix, 64, 3, 5);
-  Ptr<RadvdInterface> routerInterface2 = Create<RadvdInterface> (indexRouter2, 5000, 1000);
-  Ptr<RadvdPrefix> routerPrefix2 = Create<RadvdPrefix> (prefix2, 64, 3, 5);
+  RadvdHelper radvdHelper;
+  /* R interface (n0 - R) */
+  radvdHelper.AddAnnouncedPrefix(iic1.GetInterfaceIndex (1), Ipv6Address("2001:1::0"), 64);
+  /* R interface (R - n1) */
+  radvdHelper.AddAnnouncedPrefix(iic2.GetInterfaceIndex (1), Ipv6Address("2001:2::0"), 64);
 
-  routerInterface->AddPrefix (routerPrefix);
-  routerInterface2->AddPrefix (routerPrefix2);
-  radvd->AddConfiguration (routerInterface);
-  radvd->AddConfiguration (routerInterface2);
-
-  r->AddApplication (radvd);
-  radvd->SetStartTime (Seconds (1.0));
-  radvd->SetStopTime (Seconds (10.0));
+  ApplicationContainer radvdApps = radvdHelper.Install (r);
+  radvdApps.Start (Seconds (1.0));
+  radvdApps.Stop (Seconds (10.0));
 
   /* Create a Ping6 application to send ICMPv6 echo request from n0 to n1 via R */
   uint32_t packetSize = 1024;

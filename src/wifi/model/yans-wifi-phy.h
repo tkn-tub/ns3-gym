@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ * Author: ghada Badawy <gbadawy@gmail.com>
  */
 
 #ifndef YANS_WIFI_PHY_H
@@ -38,6 +39,8 @@
 
 
 namespace ns3 {
+
+#define HT_PHY 127
 
 class YansWifiChannel;
 class WifiPhyStateHelper;
@@ -91,7 +94,7 @@ public:
 
   void StartReceivePacket (Ptr<Packet> packet,
                            double rxPowerDbm,
-                           WifiMode mode,
+                           WifiTxVector txVector,
                            WifiPreamble preamble);
 
   void SetRxNoiseFigure (double noiseFigureDb);
@@ -122,7 +125,7 @@ public:
   virtual uint32_t GetNTxPower (void) const;
   virtual void SetReceiveOkCallback (WifiPhy::RxOkCallback callback);
   virtual void SetReceiveErrorCallback (WifiPhy::RxErrorCallback callback);
-  virtual void SendPacket (Ptr<const Packet> packet, WifiMode mode, enum WifiPreamble preamble, uint8_t txPowerLevel);
+  virtual void SendPacket (Ptr<const Packet> packet, WifiMode mode, enum WifiPreamble preamble, WifiTxVector txvector);
   virtual void RegisterListener (WifiPhyListener *listener);
   virtual bool IsStateCcaBusy (void);
   virtual bool IsStateIdle (void);
@@ -149,6 +152,90 @@ public:
   */
   int64_t AssignStreams (int64_t stream);
 
+  /**
+   * \param the operating frequency on this node (2.4 GHz or 5GHz).
+   */
+  virtual void SetFrequency (uint32_t freq);
+  /**
+   * \returns the operating frequency on this node
+   */
+  virtual uint32_t GetFrequency (void) const;
+  /**
+   * \param the number of transmitters on this node.
+   */
+  virtual void SetNumberOfTransmitAntennas (uint32_t tx);
+  virtual uint32_t GetNumberOfTransmitAntennas (void) const;
+  /**
+   * \param the number of recievers on this node.
+   */
+  virtual void SetNumberOfReceiveAntennas (uint32_t rx) ;
+  /**
+   * \returns the number of recievers on this node.
+   */
+  virtual uint32_t GetNumberOfReceiveAntennas (void) const;
+  /**
+   * \param set short/long guard interval.
+   */
+  virtual void SetGuardInterval (bool GuardInterval);
+   virtual bool GetGuardInterval (void) const;
+  /**
+   * \param sets LDPC is supported or not
+   */
+  virtual void SetLdpc (bool Ldpc);
+  /**
+   * \returns if LDPC is supported or not
+   */
+  virtual bool GetLdpc (void) const;
+  /**
+   * \param sets STBC is supported or not
+   */
+  virtual void SetStbc (bool stbc);
+ /**
+   * \returns if STBC is supported or not
+   */
+  virtual bool GetStbc (void) const;
+  /**
+   * \param sets Greenfield is supported or not
+   */
+  virtual void SetGreenfield (bool greenfield);
+  /**
+   * \returns if Greenfield is supported or not
+   */
+  virtual bool GetGreenfield (void) const;
+  /**
+   * \param sets channel bonding is supported or not
+   */
+  virtual bool GetChannelBonding (void) const ;
+  /**
+   * \returns if channel bonding is supported or not
+   */
+  virtual void SetChannelBonding (bool channelbonding) ;
+
+  virtual uint32_t GetNBssMembershipSelectors (void) const;
+  virtual uint32_t GetBssMembershipSelector (uint32_t selector) const;
+  virtual WifiModeList GetMembershipSelectorModes(uint32_t selector);
+  /**
+   * \returns the number of MCS supported by this phy
+   */
+  virtual uint8_t GetNMcs (void) const;
+  virtual uint8_t GetMcs (uint8_t mcs) const;
+  /**
+  * For a given WifiMode finds the corresponding MCS value and returns it 
+  * as defined in the IEEE 802.11n standard 
+  *
+  * \param mode the WifiMode
+  * \returns the MCS number that corresponds to the given WifiMode
+  */
+  virtual uint32_t WifiModeToMcs (WifiMode mode);
+ /**
+  * For a given MCS finds the corresponding WifiMode and returns it 
+  * as defined in the IEEE 802.11n standard. 
+  * 
+  * \param mcs the MCS number 
+  * \returns the WifiMode that corresponds to the given mcs number
+  */
+  virtual WifiMode McsToWifiMode (uint8_t mcs);
+
 private:
   YansWifiPhy (const YansWifiPhy &o);
   virtual void DoDispose (void);
@@ -160,6 +247,7 @@ private:
   void ConfigureHolland (void);
   void Configure80211p_CCH (void);
   void Configure80211p_SCH (void);
+  void Configure80211n (void);
   double GetEdThresholdW (void) const;
   double DbmToW (double dbm) const;
   double DbToRatio (double db) const;
@@ -178,9 +266,25 @@ private:
   uint32_t m_nTxPower;
 
   Ptr<YansWifiChannel> m_channel;
-  uint16_t m_channelNumber;
-  Ptr<Object> m_device;
-  Ptr<Object> m_mobility;
+  uint16_t             m_channelNumber;
+  Ptr<Object>          m_device;
+  Ptr<Object>          m_mobility;
+
+  // number of transmitters
+  uint32_t m_numberOfTransmitters;
+  // number of recievers
+  uint32_t m_numberOfReceivers;
+  //if true use LDPC
+  bool     m_ldpc;
+  // True if STBC is used
+  bool     m_stbc;
+  //True if GreenField format is supported
+  bool     m_greenfield;
+  //True is short guard interval is used
+  bool     m_guardInterval;
+  //True if channel bonding is used
+  bool     m_channelBonding;
+
 
   /**
    * This vector holds the set of transmission modes that this
@@ -219,7 +323,9 @@ private:
    * mandatory rates".
    */
   WifiModeList m_deviceRateSet;
-
+  
+  std::vector<uint32_t> m_bssMembershipSelectorSet;
+  std::vector<uint8_t> m_deviceMcsSet;
   EventId m_endRxEvent;
   /// Provides uniform random variables.
   Ptr<UniformRandomVariable> m_random;

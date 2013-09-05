@@ -13,7 +13,7 @@ from waflib.Errors import WafError
 # after = TaskGen.after
 
 ## https://launchpad.net/pybindgen/
-REQUIRED_PYBINDGEN_VERSION = (0, 16, 0, 825)
+REQUIRED_PYBINDGEN_VERSION = (0, 16, 0, 831)
 REQUIRED_PYGCCXML_VERSION = (0, 9, 5)
 
 

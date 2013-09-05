@@ -18,6 +18,9 @@ def build(bld):
     
     obj = bld.create_ns3_program('fragmentation-ipv6', ['csma', 'internet'])
     obj.source = 'fragmentation-ipv6.cc'
+    
+    obj = bld.create_ns3_program('fragmentation-ipv6-two-MTU', ['csma', 'internet'])
+    obj.source = 'fragmentation-ipv6-two-MTU.cc'
 
     obj = bld.create_ns3_program('loose-routing-ipv6', ['csma', 'internet'])
     obj.source = 'loose-routing-ipv6.cc'

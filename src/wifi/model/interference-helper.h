@@ -28,6 +28,7 @@
 #include "wifi-phy-standard.h"
 #include "ns3/nstime.h"
 #include "ns3/simple-ref-count.h"
+#include "ns3/wifi-tx-vector.h"
 
 namespace ns3 {
 
@@ -45,7 +46,7 @@ public:
 public:
     Event (uint32_t size, WifiMode payloadMode,
            enum WifiPreamble preamble,
-           Time duration, double rxPower);
+           Time duration, double rxPower, WifiTxVector txvector);
     ~Event ();
 
     Time GetDuration (void) const;
@@ -55,6 +56,7 @@ public:
     uint32_t GetSize (void) const;
     WifiMode GetPayloadMode (void) const;
     enum WifiPreamble GetPreambleType (void) const;
+    WifiTxVector GetTxVector (void) const;
 private:
     uint32_t m_size;
     WifiMode m_payloadMode;
@@ -62,6 +64,7 @@ private:
     Time m_startTime;
     Time m_endTime;
     double m_rxPowerW;
+    WifiTxVector m_txVector;
   };
   struct SnrPer
   {
@@ -90,7 +93,7 @@ private:
 
   Ptr<InterferenceHelper::Event> Add (uint32_t size, WifiMode payloadMode,
                                       enum WifiPreamble preamble,
-                                      Time duration, double rxPower);
+                                      Time duration, double rxPower, WifiTxVector txvector);
 
   struct InterferenceHelper::SnrPer CalculateSnrPer (Ptr<InterferenceHelper::Event> event);
   void NotifyRxStart ();

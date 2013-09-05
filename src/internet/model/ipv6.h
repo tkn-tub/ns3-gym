@@ -253,6 +253,13 @@ public:
   virtual uint16_t GetMtu (uint32_t interface) const = 0;
 
   /**
+   * \brief Set the Path MTU for the specified IPv6 destination address.
+   * \param dst Ipv6 destination address
+   * \param pmtu the Path MTU
+   */
+  virtual void SetPmtu (Ipv6Address dst, uint32_t pmtu) = 0;
+
+  /**
    * \brief If the specified interface index is in "up" state.
    * \param interface Interface number of IPv6 interface
    * \returns true if the underlying interface is in the "up" state,
@@ -320,6 +327,18 @@ private:
    * \return forwarding state (enabled or not)
    */
   virtual bool GetIpForward (void) const = 0;
+
+  /**
+   * \brief Set IPv6 MTU discover state.
+   * \param mtuDiscover IPv6 MTU discover enabled or not
+   */
+  virtual void SetMtuDiscover (bool mtuDiscover) = 0;
+
+  /**
+   * \brief Get IPv6 MTU discover state.
+   * \return MTU discover state (enabled or not)
+   */
+  virtual bool GetMtuDiscover (void) const = 0;
 };
 
 } // namespace ns3 

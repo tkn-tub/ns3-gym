@@ -25,6 +25,8 @@
 #include "ns3/uinteger.h"
 #include "ns3/simulator.h"
 
+#define Min(a,b) ((a < b) ? a : b)
+
 NS_LOG_COMPONENT_DEFINE ("Cara");
 
 
@@ -163,21 +165,21 @@ CaraWifiManager::DoReportFinalDataFailed (WifiRemoteStation *st)
   NS_LOG_FUNCTION (this << st);
 }
 
-WifiMode
-CaraWifiManager::DoGetDataMode (WifiRemoteStation *st,
-                                uint32_t size)
+WifiTxVector
+CaraWifiManager::DoGetDataTxVector (WifiRemoteStation *st,
+                                    uint32_t size)
 {
   NS_LOG_FUNCTION (this << st << size);
   CaraWifiRemoteStation *station = (CaraWifiRemoteStation *) st;
-  return GetSupported (station, station->m_rate);
+  return WifiTxVector (GetSupported (station, station->m_rate), GetDefaultTxPowerLevel (), GetLongRetryCount (station), GetShortGuardInterval (station), Min (GetNumberOfReceiveAntennas (station),GetNumberOfTransmitAntennas()), GetNumberOfTransmitAntennas (station), GetStbc (station));
 }
-WifiMode
-CaraWifiManager::DoGetRtsMode (WifiRemoteStation *st)
+WifiTxVector
+CaraWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
   /// \todo we could/should implement the Arf algorithm for
   /// RTS only by picking a single rate within the BasicRateSet.
-  return GetSupported (st, 0);
+  return WifiTxVector (GetSupported (st, 0), GetDefaultTxPowerLevel (), GetLongRetryCount (st), GetShortGuardInterval (st), Min (GetNumberOfReceiveAntennas (st),GetNumberOfTransmitAntennas()), GetNumberOfTransmitAntennas (st), GetStbc (st));
 }
 
 bool

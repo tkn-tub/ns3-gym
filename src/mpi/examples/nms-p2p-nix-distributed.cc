@@ -62,6 +62,11 @@ typedef struct timeval TIMER_TYPE;
 
 NS_LOG_COMPONENT_DEFINE ("CampusNetworkModelDistributed");
 
+  /**
+   *  \internal
+   *  \c #defines for \c nCN and \c nLANClients are a temporary fix,
+   *  see \bugid{1560}
+   */
 int
 main (int argc, char *argv[])
 {

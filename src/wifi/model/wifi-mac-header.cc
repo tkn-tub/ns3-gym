@@ -40,7 +40,9 @@ enum
   SUBTYPE_CTL_BACKRESP = 9,
   SUBTYPE_CTL_RTS = 11,
   SUBTYPE_CTL_CTS = 12,
-  SUBTYPE_CTL_ACK = 13
+  SUBTYPE_CTL_ACK = 13,
+  SUBTYPE_CTL_CTLWRAPPER=7
+
 };
 
 WifiMacHeader::WifiMacHeader ()
@@ -181,6 +183,10 @@ WifiMacHeader::SetType (enum WifiMacType type)
     case WIFI_MAC_CTL_ACK:
       m_ctrlType = TYPE_CTL;
       m_ctrlSubtype = SUBTYPE_CTL_ACK;
+      break;
+    case WIFI_MAC_CTL_CTLWRAPPER: 
+      m_ctrlType = TYPE_CTL;
+      m_ctrlSubtype = SUBTYPE_CTL_CTLWRAPPER;
       break;
     case WIFI_MAC_MGT_ASSOCIATION_REQUEST:
       m_ctrlType = TYPE_MGT;
@@ -331,6 +337,14 @@ void WifiMacHeader::SetNoMoreFragments (void)
 void WifiMacHeader::SetMoreFragments (void)
 {
   m_ctrlMoreFrag = 1;
+}
+void WifiMacHeader::SetOrder (void)
+{
+  m_ctrlOrder = 1;
+}
+void WifiMacHeader::SetNoOrder (void)
+{
+  m_ctrlOrder = 0;
 }
 void WifiMacHeader::SetRetry (void)
 {
@@ -865,6 +879,9 @@ WifiMacHeader::GetSize (void) const
         case SUBTYPE_CTL_BACKRESP:
           size = 2 + 2 + 6 + 6;
           break;
+        case SUBTYPE_CTL_CTLWRAPPER:
+          size = 2 +2 +6 +2 +4;
+          break;
         }
       break;
     case TYPE_DATA:
@@ -977,6 +994,8 @@ WifiMacHeader::Print (std::ostream &os) const
     case WIFI_MAC_CTL_BACKREQ:
       break;
     case WIFI_MAC_CTL_BACKRESP:
+      break;
+    case WIFI_MAC_CTL_CTLWRAPPER:
       break;
 
     case WIFI_MAC_MGT_BEACON:

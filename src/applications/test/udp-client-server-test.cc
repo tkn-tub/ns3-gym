@@ -257,7 +257,7 @@ void PacketLossCounterTestCase::DoRun (void)
 }
 
 /**
- * Test fix for bug 1378
+ * Test fix for \bugid{1378}
  */
 
 class UdpEchoClientSetFillTestCase : public TestCase

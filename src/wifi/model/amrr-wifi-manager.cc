@@ -24,6 +24,8 @@
 #include "ns3/uinteger.h"
 #include "ns3/double.h"
 
+#define Min(a,b) ((a < b) ? a : b)
+
 NS_LOG_COMPONENT_DEFINE ("AmrrWifiRemoteStation");
 
 namespace ns3 {
@@ -267,8 +269,8 @@ AmrrWifiManager::UpdateMode (AmrrWifiRemoteStation *station)
       ResetCnt (station);
     }
 }
-WifiMode
-AmrrWifiManager::DoGetDataMode (WifiRemoteStation *st, uint32_t size)
+WifiTxVector
+AmrrWifiManager::DoGetDataTxVector (WifiRemoteStation *st, uint32_t size)
 {
   NS_LOG_FUNCTION (this << st << size);
   AmrrWifiRemoteStation *station = (AmrrWifiRemoteStation *)st;
@@ -313,16 +315,16 @@ AmrrWifiManager::DoGetDataMode (WifiRemoteStation *st, uint32_t size)
         }
     }
 
-  return GetSupported (station, rateIndex);
+  return WifiTxVector (GetSupported (station, rateIndex), GetDefaultTxPowerLevel (), GetLongRetryCount (station), GetShortGuardInterval (station), Min (GetNumberOfReceiveAntennas (station),GetNumberOfTransmitAntennas()), GetNumberOfTransmitAntennas (station), GetStbc (station));
 }
-WifiMode
-AmrrWifiManager::DoGetRtsMode (WifiRemoteStation *st)
+WifiTxVector
+AmrrWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
   AmrrWifiRemoteStation *station = (AmrrWifiRemoteStation *)st;
   UpdateMode (station);
   /// \todo can we implement something smarter ?
-  return GetSupported (station, 0);
+  return WifiTxVector (GetSupported (station, 0), GetDefaultTxPowerLevel (), GetLongRetryCount (station), GetShortGuardInterval (station), Min (GetNumberOfReceiveAntennas (station),GetNumberOfTransmitAntennas()), GetNumberOfTransmitAntennas (station), GetStbc (station));
 }
 
 
