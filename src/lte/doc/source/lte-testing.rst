@@ -1305,3 +1305,39 @@ by Random Access during the handover procedure. The test cases verify this
 computation, utilizing the fact that the handover will be delayed when this
 computation is broken. In the default simulation configuration, the handover
 delay observed because of a broken RA-RNTI computation is typically 6 ms.
+
+
+Selection of target cell in handover algorithm
+----------------------------------------------
+
+eNodeB may utilize :ref:`sec-handover-algorithm` to automatically create
+handover decisions during simulation. The decision includes the UE which should
+do the handover and the target cell where the UE should perform handover to.
+
+The test suite ``lte-handover-target`` verifies that the handover algorithm is
+making the right decision, in particular, in choosing the right target cell. It
+consists of several short test cases for different network topology (2x2 grid
+and 3x2 grid) and types of handover algorithm (legacy handover algorithm and
+strongest cell handover algorithm).
+
+Each test case is a simulation of a micro-cell environment with the following
+parameter:
+
+ - EPC is enabled
+ - several circular (isotropic antenna) micro-cell eNodeBs in a rectangular grid
+   layout, with 130 m distance between each adjacent point 
+ - 1 static UE, positioned close to and attached to the source cell
+ - no control channel error model
+ - no application installed
+ - no channel fading
+ - default path loss model (Friis)
+ - 1s simulation duration
+
+To trigger a handover, the test case "shutdowns" the source cell at +0.5s
+simulation time. This is done by setting the source cell's Tx power to a very
+low value. As a result, the handover algorithm notices that the UE deserves a
+handover and several neighbouring cells become candidates of target cell at the
+same time.
+
+The test case then verifies that the handover algorithm, when faced with more
+than one options of target cells, is able to choose the right one.

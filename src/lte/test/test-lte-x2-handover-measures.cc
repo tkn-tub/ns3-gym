@@ -715,10 +715,35 @@ static LteX2HandoverMeasuresTestSuite g_lteX2HandoverMeasuresTestSuiteInstance;
 /**
  * \brief Testing a handover algorithm, verifying that it selects the right
  *        target cell when more than one options available.
+ *
+ * Part of the `lte-handover-target` test suite.
+ *
+ * The test case will run a 1-second LTE-EPC simulation using the parameters
+ * provided to the constructor function.
+ *
+ * \sa ns3::LteX2HandoverTargetTestSuite
  */
 class LteX2HandoverTargetTestCase : public TestCase
 {
 public:
+  /**
+   * \brief Construct a new test case and providing input parameters for the
+   *        simulation.
+   * \param name the name of the test case, to be displayed in the test result
+   * \param uePosition the point in (x, y, z) coordinate where the UE will be
+   *                   placed in the simulation
+   * \param gridSizeX number of eNodeBs in a row
+   * \param gridSizeY number of eNodeBs in a column
+   * \param sourceCellId the cell ID of the eNodeB which the UE will be
+   *                     initially attached to in the beginning of simulation,
+   *                     and also the eNodeB which will "shutdown" in the
+   *                     middle of simulation
+   * \param targetCellId the cell ID of the expected eNodeB where the UE will
+   *                     perform handover to after the "shutdown" of the source
+   *                     cell
+   * \param handoverAlgorithmType the type of handover algorithm to be used in
+   *                              all eNodeBs
+   */
   LteX2HandoverTargetTestCase (std::string name, Vector uePosition,
                                uint8_t gridSizeX, uint8_t gridSizeY,
                                uint16_t sourceCellId, uint16_t targetCellId,
@@ -727,7 +752,8 @@ public:
   virtual ~LteX2HandoverTargetTestCase ();
 
   /**
-   * \brief Triggers when eNodeB starts a handover.
+   * \brief Triggers when an eNodeB starts a handover and then verifies that
+   *        the handover has the right source and target cells.
    *
    * The trigger is set up beforehand by connecting to the
    * `LteEnbRrc::HandoverStart` trace source.
@@ -736,14 +762,23 @@ public:
                               uint16_t sourceCellId, uint16_t rnti,
                               uint16_t targetCellId);
 
+  /**
+   * \brief A trigger that can be scheduled to "shutdown" the cell pointed by
+   *        `m_sourceCellId` by reducing its power to 1 dB.
+   */
   void CellShutdownCallback ();
 
 private:
   /**
-   * \brief Simulate a micro-cell network in a rectangular grid.
+   * \brief Run a simulation of a micro-cell network using the parameters
+   *        provided to the constructor function.
    */
   virtual void DoRun ();
 
+  /**
+   * \brief Called at the end of simulation and verifies that a handover has
+   *        occurred in the simulation.
+   */
   virtual void DoTeardown ();
 
   // simulation parameters
@@ -771,6 +806,20 @@ LteX2HandoverTargetTestCase::LteX2HandoverTargetTestCase (std::string name, Vect
     m_hasHandoverOccurred (false)
 {
   NS_LOG_INFO (this << " name=" << name);
+
+  // SANITY CHECK
+
+  uint16_t nEnb = gridSizeX * gridSizeY;
+
+  if ((sourceCellId < 0) && (sourceCellId > nEnb))
+    {
+      NS_FATAL_ERROR ("Invalid source cell ID " << sourceCellId);
+    }
+
+  if ((targetCellId < 0) && (targetCellId > nEnb))
+    {
+      NS_FATAL_ERROR ("Invalid target cell ID " << targetCellId);
+    }
 }
 
 
@@ -984,7 +1033,7 @@ public:
 
 
 LteX2HandoverTargetTestSuite::LteX2HandoverTargetTestSuite ()
-  : TestSuite ("lte-x2-handover-target", SYSTEM)
+  : TestSuite ("lte-handover-target", SYSTEM)
 {
   // LogComponentEnable ("LteX2HandoverMeasuresTest", LOG_PREFIX_ALL);
   // LogComponentEnable ("LteX2HandoverMeasuresTest", LOG_LEVEL_ALL);
