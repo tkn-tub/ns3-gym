@@ -1,4 +1,4 @@
-digraph LteRrcStates {
+digraph LteUeRrcStates {
 
 
 IDLE_START [shape="box",width=3]

@@ -85,8 +85,6 @@ $(FIGURES)/lte-phy-interference.pdf_width = 12cm
 $(FIGURES)/lte-subframe-structure.pdf_width = 2in
 $(FIGURES)/mac-random-access-contention.pdf_width = 10cm
 $(FIGURES)/mac-random-access-noncontention.pdf_width = 15cm
-$(FIGURES)/lte-ue-rrc-states.pdf_width = 7cm
-$(FIGURES)/lte-legacy-handover-algorithm.pdf_width = 10cm
 $(FIGURES)/helpers.pdf_width = 8cm
 
 IMAGES_SEQDIAG = \

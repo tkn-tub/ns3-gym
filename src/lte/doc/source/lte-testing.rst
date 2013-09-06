@@ -1232,7 +1232,7 @@ the following variable parameters:
  - number of EPS bearers: 0, 1, 2;
  - RRC: ideal, real (see :ref:`sec-rrc-protocol-models`);
  - MAC scheduler: round robin, proportional fair (see :ref:`sec-ff-mac-scheduler`); and
- - handover algorithm: legacy, strongest cell (see :ref:`sec-handover-algorithm`).
+ - handover algorithm: A2-A4-RSRQ, strongest cell (see :ref:`sec-handover-algorithm`).
 
 Each test case passes if the following conditions are true:
 
@@ -1317,8 +1317,8 @@ do the handover and the target cell where the UE should perform handover to.
 The test suite ``lte-handover-target`` verifies that the handover algorithm is
 making the right decision, in particular, in choosing the right target cell. It
 consists of several short test cases for different network topology (2x2 grid
-and 3x2 grid) and types of handover algorithm (legacy handover algorithm and
-strongest cell handover algorithm).
+and 3x2 grid) and types of handover algorithm (the A2-A4-RSRQ handover algorithm
+and the strongest cell handover algorithm).
 
 Each test case is a simulation of a micro-cell environment with the following
 parameter:

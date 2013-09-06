@@ -375,7 +375,7 @@ LteHandoverTargetTestCase::DoTeardown ()
  *        algorithms are able to select the right target cell.
  *
  * Handover algorithm tested in this test suite:
- * - Legacy handover algorithm (ns3::A2A4RsrqHandoverAlgorithm)
+ * - A2-A4-RSRQ handover algorithm (ns3::A2A4RsrqHandoverAlgorithm)
  * - Strongest cell handover algorithm (ns3::A3RsrpHandoverAlgorithm)
  */
 class LteHandoverTargetTestSuite : public TestSuite
@@ -401,7 +401,7 @@ LteHandoverTargetTestSuite::LteHandoverTargetTestSuite ()
    *    |o    |
    *    1 --- 2   o = UE
    */
-  AddTestCase (new LteHandoverTargetTestCase ("4 cells and legacy algorithm",
+  AddTestCase (new LteHandoverTargetTestCase ("4 cells and A2-A4-RSRQ algorithm",
                                               Vector (20, 40, 0), 2, 2, 1, 3,
                                               "ns3::A2A4RsrqHandoverAlgorithm"),
                TestCase::QUICK);
@@ -416,7 +416,7 @@ LteHandoverTargetTestSuite::LteHandoverTargetTestSuite ()
    *    |     |     |
    *    1 --- 2 --- 3   o = UE
    */
-  AddTestCase (new LteHandoverTargetTestCase ("6 cells and legacy algorithm",
+  AddTestCase (new LteHandoverTargetTestCase ("6 cells and A2-A4-RSRQ algorithm",
                                               Vector (150, 90, 0), 3, 2, 5, 2,
                                               "ns3::A2A4RsrqHandoverAlgorithm"),
                TestCase::EXTENSIVE);

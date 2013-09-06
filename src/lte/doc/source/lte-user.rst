@@ -975,7 +975,8 @@ criteria, including the strength of the received signal (RSRP).
 
 After the method is called, the UE will spend some time to measure the
 neighbouring cells, and then attempt to attach to the best one. More details can
-be found in section :ref:`sec-initial-cell-selection` of design documentation.
+be found in section :ref:`sec-initial-cell-selection` of the Design
+Documentation.
 
 It is important to note that this method only works in EPC-enabled simulations.
 LTE-only simulations must resort to manual attachment method.
@@ -1029,7 +1030,7 @@ own configuration into action, and there are several ways to do so:
  
 This section will cover the first method only. The second method is covered in
 :ref:`sec-automatic-handover`, while the third method is explained in length in
-Section :ref:`sec-handover-algorithm` of the design documentation.
+Section :ref:`sec-handover-algorithm` of the Design Documentation.
 
 Direct configuration in eNodeB RRC works as follows. User begins by creating a
 new ``LteRrcSap::ReportConfigEutra`` instance and pass it to the
@@ -1187,7 +1188,7 @@ currently active in the eNodeB RRC entity. Users may select and configure the
 handover algorithm that will be used in the simulation, which will be explained
 shortly in this section. Users may also opt to write their own implementation of
 handover algorithm, as described in Section :ref:`sec-handover-algorithm` of the
-design documentation.
+Design Documentation.
 
 Selecting a handover algorithm is done via the ``LteHelper`` object and its
 ``SetHandoverAlgorithmType`` method as shown below::
@@ -1203,9 +1204,9 @@ attributes, which can be set as follows::
    lteHelper->SetHandoverAlgorithmAttribute ("NeighbourCellOffset",
                                              UintegerValue (1));
 
-Three options of handover algorithm are included in the LTE module. The *legacy*
-handover algorithm (named as ``ns3::A2A4RsrqHandoverAlgorithm``) is the default
-option, and the usage has already been shown above.
+Three options of handover algorithm are included in the LTE module. The
+*A2-A4-RSRQ* handover algorithm (named as ``ns3::A2A4RsrqHandoverAlgorithm``) is
+the default option, and the usage has already been shown above.
 
 Another option is the *strongest cell* handover algorithm (named as
 ``ns3::A3RsrpHandoverAlgorithm``), which can be selected and configured by the
@@ -1227,7 +1228,7 @@ follows::
 
 For more information on each handover algorithm's decision policy and their
 attributes, please refer to their respective subsections in Section
-:ref:`sec-handover-algorithm` of the design documentation.
+:ref:`sec-handover-algorithm` of the Design Documentation.
 
 Finally, the ``InstallEnbDevice`` function of ``LteHelper`` will instantiate one
 instance of the selected handover algorithm for each eNodeB device. In other
@@ -1239,6 +1240,66 @@ the following line of code::
 Example with full source code of using automatic handover trigger can be found
 in the ``lena-x2-handover-measures`` example program.
 
+
+.. _sec-tuning-handover-simulation:
+
+Tuning simulation with handover
+*******************************
+
+As mentioned in the Design Documentation, the current implementation of handover
+model may produce unpredicted behaviour when handover failure occurs. This
+subsection will focus on the steps that should be taken into account by users
+if they plan to use handover in their simulations.
+
+The major cause of handover failure that we will tackle is the error in
+transmitting handover-related signaling messages during the execution of a
+handover procedure. As apparent from the Figure
+:ref:`fig-x2-based-handover-seq-diagram` from the Design Documentation, there
+are many of them and they use different interfaces and protocols. For the sake
+of simplicity, we can safely assume that the X2 interface (between the source
+eNodeB and the target eNodeB) and the S1 interface (between the target eNodeB
+and the SGW/PGW) are quite stable. Therefore we will focus our attention to the
+RRC protocol (between the UE and the eNodeBs) and the Random Access procedure,
+which are normally transmitted through the air and susceptible to degradation of
+channel condition. 
+
+A general tips to reduce transmission error is to *ensure high enough SINR*
+level in every UE. This can be done by a proper planning of the network topology
+that *minimizes network coverage hole*. If the topology has a known coverage
+hole, then the UE should be configured not to venture to that area.
+
+Another approach to keep in mind is to *avoid too-late handovers*. In other
+words, handover should happen before the UE's SINR becomes too low, otherwise
+the UE may fail to receive the handover command from the source eNodeB. Handover
+algorithms have the means to control how early or late a handover decision is
+made. For example, A2-A4-RSRQ handover algorithm can be configured with a higher
+threshold to make it decide a handover earlier. Similarly, smaller hysteresis
+and/or shorter time-to-trigger in the strongest cell handover algorithm
+typically results in earlier handovers. In order to find the right values for
+these parameters, one of the factors that should be considered is the UE
+movement speed. Generally, a faster moving UE requires the handover to be
+executed earlier. Some research work have suggested recommended values, such as
+in [Lee2010]_.
+
+The above tips should be enough in normal simulation uses, but in the case some
+special needs arise then an extreme measure can be taken into consideration.
+For instance, users may consider *disabling the channel error models*. This will
+ensure that all handover-related signaling messages will be transmitted
+successfully, regardless of distance and channel condition. However, it will
+also affect all other data or control packets not related to handover, which may
+be an unwanted side effect. Otherwise, it can be done as follows::
+
+   Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled");
+   Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled");
+   
+By using the above code, we disable the error model in both control and data
+channels and in both directions (downlink and uplink). This is necessary because
+handover-related signaling messages are transmitted using these channels. An
+exception is when the simulation uses the ideal RRC protocol. In this case, only
+the Random Access procedure is left to be considered. The procedure consists of
+control messages, therefore we only need to disable the control channel's error
+model.
+      
 
 Handover traces
 ***************

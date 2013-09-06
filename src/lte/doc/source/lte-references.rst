@@ -134,6 +134,10 @@ References
    "QoS Oriented Time and Frequency Domain Packet Schedulers for The UTRAN Long Term Evolution",
    In Proc. IEEE VTC, 2008.
 
-.. [Dimou2009] K. Dimou, M. Wang, Y. Yang; M. Kazmi, A. Larmo, J. Pettersson, W. Muller, Y. Timner,
+.. [Dimou2009] K. Dimou, M. Wang, Y. Yang, M. Kazmi, A. Larmo, J. Pettersson, W. Muller, Y. Timner,
    "Handover within 3GPP LTE: Design Principles and Performance",
-   Vehicular Technology Conference Fall (VTC 2009-Fall), 2009 IEEE 70th, pp.1,5, 20-23 Sept. 2009
+   Vehicular Technology Conference Fall (VTC 2009-Fall), 2009 IEEE 70th, pp.1-5, 20-23 Sept. 2009
+
+.. [Lee2010] Y.J. Lee, B.J. Shin, J.C. Lim, D.H. Hong,
+   "Effects of time-to-trigger parameter on handover performance in SON-based LTE systems",
+   Communications (APCC), 2010 16th Asia-Pacific Conference on, pp.492-496, Oct. 31 2010--Nov. 3 2010
