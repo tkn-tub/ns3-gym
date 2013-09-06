@@ -64,10 +64,6 @@ struct tdbetsFlowPerf_t
 
 /**
  * \ingroup ff-api
- * \defgroup FF-API TdBetFfMacScheduler
- */
-/**
- * \ingroup TdBetFfMacScheduler
  * \brief Implements the SCHED SAP and CSCHED SAP for a Time Domain Blind Equal Throughput scheduler
  *
  * This class implements the interface defined by the FfMacScheduler abstract class

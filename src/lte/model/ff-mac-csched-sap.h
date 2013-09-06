@@ -30,10 +30,6 @@ namespace ns3 {
 
 /**
  * \ingroup ff-api
- * \defgroup FF-API FfMacCschedSap
- */
-/**
- * \ingroup FfMacCschedSap
  * \brief Provides the CSCHED SAP
  *
  * This abstract class defines the MAC Scheduler interface specified in the

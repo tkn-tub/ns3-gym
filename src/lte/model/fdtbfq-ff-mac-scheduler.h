@@ -71,10 +71,6 @@ struct fdtbfqsFlowPerf_t
 
 /**
  * \ingroup ff-api
- * \defgroup FF-API FdTbfqFfMacScheduler
- */
-/**
- * \ingroup FdTbfqFfMacScheduler
  * \brief Implements the SCHED SAP and CSCHED SAP for a Frequency Domain Token Bank Fair Queue  scheduler
  *
  * This class implements the interface defined by the FfMacScheduler abstract class

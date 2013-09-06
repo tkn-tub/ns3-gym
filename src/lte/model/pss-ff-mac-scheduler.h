@@ -72,10 +72,6 @@ struct pssFlowPerf_t
 
 /**
  * \ingroup ff-api
- * \defgroup FF-API PssFfMacScheduler
- */
-/**
- * \ingroup PssFfMacScheduler
  * \brief Implements the SCHED SAP and CSCHED SAP for a Priority Set scheduler
  *
  * This class implements the interface defined by the FfMacScheduler abstract class

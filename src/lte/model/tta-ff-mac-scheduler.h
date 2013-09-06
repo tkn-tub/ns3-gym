@@ -56,10 +56,6 @@ typedef std::vector < uint8_t > UlHarqProcessesStatus_t;
 
 /**
  * \ingroup ff-api
- * \defgroup FF-API TtaFfMacScheduler
- */
-/**
- * \ingroup TtaFfMacScheduler
  * \brief Implements the SCHED SAP and CSCHED SAP for a Throughput to Average scheduler
  *
  * This class implements the interface defined by the FfMacScheduler abstract class

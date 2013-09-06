@@ -56,10 +56,6 @@ typedef std::vector < uint8_t > UlHarqProcessesStatus_t;
 
 /**
  * \ingroup ff-api
- * \defgroup FF-API TdMtFfMacScheduler
- */
-/**
- * \ingroup TdMtFfMacScheduler
  * \brief Implements the SCHED SAP and CSCHED SAP for a Time Domain Maximize Throughput scheduler
  *
  * This class implements the interface defined by the FfMacScheduler abstract class

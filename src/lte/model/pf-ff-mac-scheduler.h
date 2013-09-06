@@ -63,10 +63,6 @@ struct pfsFlowPerf_t
 
 /**
  * \ingroup ff-api
- * \defgroup FF-API PfFfMacScheduler
- */
-/**
- * \ingroup PfFfMacScheduler
  * \brief Implements the SCHED SAP and CSCHED SAP for a Proportional Fair scheduler
  *
  * This class implements the interface defined by the FfMacScheduler abstract class

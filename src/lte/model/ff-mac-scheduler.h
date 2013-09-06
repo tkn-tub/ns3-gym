@@ -35,6 +35,13 @@ class FfMacCschedSapProvider;
 class FfMacSchedSapProvider;
 
 /**
+ * \ingroup lte
+ * \defgroup ff-api FF MAC Schedulers
+ */
+     
+/**
+ * \ingroup ff-api
+ *
  * This abstract base class identifies the interface by means of which
  * the helper object can plug on the MAC a scheduler implementation based on the
  * FF MAC Sched API.
