@@ -19,6 +19,7 @@
  *         Nicola Baldo <nbaldo@cttc.es>
  *         Marco Miozzo <mmiozzo@cttc.es>
  *              adapt lte-test-interference.cc to lte-ue-measurements.cc
+ *         Budiarto Herman <budiarto.herman@magister.fi>
  */
 
 #ifndef LTE_TEST_UE_MEASUREMENTS_H

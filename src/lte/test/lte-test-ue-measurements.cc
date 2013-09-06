@@ -18,6 +18,7 @@
  * Author: Manuel Requena <manuel.requena@cttc.es>
  *         Nicola Baldo <nbaldo@cttc.es>
  *         Marco Miozzo <mmiozzo@cttc.es>
+ *         Budiarto Herman <budiarto.herman@magister.fi>
  */
 
 #include <ns3/simulator.h>
