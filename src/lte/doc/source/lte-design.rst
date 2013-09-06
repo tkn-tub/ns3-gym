@@ -1910,7 +1910,7 @@ as implemented in the RRC UE entity.
 .. _fig-lte-ue-rrc-states:
 
 .. figure:: figures/lte-ue-rrc-states.*
-   :scale: 60 %
+   :scale: 70 %
    :align: center
 
    UE RRC State Machine
@@ -1948,6 +1948,7 @@ represented in Figure :ref:`fig-lte-enb-rrc-states`.
 .. _fig-lte-enb-rrc-states:
 
 .. figure:: figures/lte-enb-rrc-states.*
+   :scale: 70 %
    :align: center
 
    ENB RRC State Machine for each UE
@@ -2476,7 +2477,7 @@ Figure :ref:`fig-lte-legacy-handover-algorithm` below summarizes this procedure.
 .. _fig-lte-legacy-handover-algorithm:
 
 .. figure:: figures/lte-legacy-handover-algorithm.*
-   :scale: 60 %
+   :scale: 70 %
    :align: center
 
    A2-A4-RSRQ handover algorithm
