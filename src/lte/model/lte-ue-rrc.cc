@@ -1385,21 +1385,18 @@ LteUeRrc::ApplyMeasConfig (LteRrcSap::MeasConfig mc)
     {
       NS_LOG_LOGIC (this << " setting quantityConfig");
       m_varMeasConfig.quantityConfig = mc.quantityConfig;
-      std::map<uint8_t, LteRrcSap::MeasIdToAddMod>::iterator measIdIt = m_varMeasConfig.measIdList.begin ();
-      while (measIdIt != m_varMeasConfig.measIdList.end ())
-        {
-          uint8_t measId = measIdIt->second.measId;
-          NS_ASSERT (measId == measIdIt->first);
-          NS_LOG_LOGIC (this << " deleting measId " << (uint32_t) measId);
-          // note: postfix operator preserves iterator validity
-          m_varMeasConfig.measIdList.erase (measIdIt++);
-          VarMeasReportListClear (measId);
-        }
       // we calculate here the coefficient a used for Layer 3 filtering, see 3GPP TS 36.331 section 5.5.3.2
       m_varMeasConfig.aRsrp = std::pow (0.5, mc.quantityConfig.filterCoefficientRSRP/4.0);
       m_varMeasConfig.aRsrq = std::pow (0.5, mc.quantityConfig.filterCoefficientRSRQ/4.0);
       NS_LOG_LOGIC (this << " new filter coefficients: aRsrp=" << m_varMeasConfig.aRsrp << ", aRsrq=" << m_varMeasConfig.aRsrq);
 
+      for (std::map<uint8_t, LteRrcSap::MeasIdToAddMod>::iterator measIdIt
+             = m_varMeasConfig.measIdList.begin ();
+           measIdIt != m_varMeasConfig.measIdList.end ();
+           ++measIdIt)
+        {
+          VarMeasReportListClear (measIdIt->second.measId);
+        }
     }
 
   // 3GPP TS 36.331 section 5.5.2.2 Measurement identity removal
