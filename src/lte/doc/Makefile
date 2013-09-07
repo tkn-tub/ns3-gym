@@ -148,7 +148,7 @@ IMAGES_BUILD = \
 
 IMAGES = $(IMAGES_NOBUILD) $(IMAGES_BUILD)
 
-RESCALE = $(shell hg root)/utils/rescale-pdf.sh
+RESCALE = ../../../utils/rescale-pdf.sh
 
 %.eps : %.dia; $(DIA) -t eps $< -e $@
 %.png : %.dia; $(DIA) -t png $< -e $@
