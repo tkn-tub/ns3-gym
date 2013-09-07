@@ -568,8 +568,6 @@ main (int argc, char *argv[])
   Ipv4InterfaceContainer ueIpIfaces;
   Ptr<Node> remoteHost;
   NetDeviceContainer ueDevs;
-  NetDeviceContainer::Iterator ueDevIt;
-  NetDeviceContainer::Iterator enbDevIt;
 
   if (epc)
     {
@@ -620,6 +618,8 @@ main (int argc, char *argv[])
       lteHelper->AttachToClosestEnb (macroUeDevs, macroEnbDevs);
 
       // each home UE is attached explicitly to its home eNB
+      NetDeviceContainer::Iterator ueDevIt;
+      NetDeviceContainer::Iterator enbDevIt;
       for (ueDevIt = homeUeDevs.Begin (), enbDevIt = homeEnbDevs.Begin ();
            ueDevIt != homeUeDevs.End (); ++ueDevIt, ++enbDevIt)
         {
