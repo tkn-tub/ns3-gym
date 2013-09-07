@@ -152,7 +152,8 @@ TypeId LteHelper::GetTypeId (void)
                    "The allowed values for this attributes are the type names "
                    "of any class inheriting from ns3::HandoverAlgorithm.",
                    StringValue ("ns3::NoOpHandoverAlgorithm"),
-                   MakeStringAccessor (&LteHelper::SetHandoverAlgorithmType),
+                   MakeStringAccessor (&LteHelper::SetHandoverAlgorithmType,
+                                       &LteHelper::GetHandoverAlgorithmType),
                    MakeStringChecker ())
     .AddAttribute ("PathlossModel",
                    "The type of pathloss model to be used. "
