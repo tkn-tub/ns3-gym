@@ -608,14 +608,17 @@ The parameters of the nine test cases are reported in the following:
    BLER for test 6.
 
 
-The test verifies that in each case the expected number of packets received correct corresponds to a Bernoulli distribution with a confidence interval of 99%, where the probability of success in each trail is :math:`p=1-BER` and :math:`n` is the total number of packet sent.
+The test condition verifies that in each test case the expected number of packets received correct corresponds to a Bernoulli distribution with a confidence interval of 99%, where the probability of success in each trail is :math:`p=1-BER` and :math:`n` is the total number of packet sent.
 
-The error model of PCFICH-PDDCH channels consists of 4 test cases with a single UE and several eNBs, where the UE is connected to only one eNB in order to have the remaining acting as interfering ones. The errors on data are disabled in order to verify only the ones due to erroneous decodification of PCFICH-PDCCH. The test verifies that the error on the data received respects the decodification error probability of the PCFICH-PDCCH with a tolerance of 0.1 due to the errors that might be produced in quantizing the MI and the error curve. As before, the system has been forced on working in a less conservative fashion in the AMC module for appreciating the results in border situations. The parameters of the 4 tests cases are reported in the following:
+The error model of PCFICH-PDCCH channels consists of 4 test cases with a single UE and several eNBs, where the UE is connected to only one eNB in order to have the remaining acting as interfering ones. The errors on data are disabled in order to verify only the ones due to erroneous decodification of PCFICH-PDCCH. As before, the system has been forced on working in a less conservative fashion in the AMC module for appreciating the results in border situations. The parameters of the 4 tests cases are reported in the following:
 
  #. 2 eNBs placed 1078 meters far from the UE, which implies a SINR of -2.00 dB and a TB of 217 bits, that in turns produce a BLER of 0.007.
  #. 3 eNBs placed 1078 meters far from the UE, which implies a SINR of -4.00 dB and a TB of 217 bits, that in turns produce a BLER of 0.045.
  #. 4 eNBs placed 1078 meters far from the UE, which implies a SINR of -6.00 dB and a TB of 133 bits, that in turns produce a BLER of 0.206.
  #. 5 eNBs placed 1078 meters far from the UE, which implies a SINR of -7.00 dB and a TB of 81 bits, that in turns produce a BLER of 0.343.
+
+
+The test condition verifies that in each test case the expected number of packets received correct corresponds to a Bernoulli distribution with a confidence interval of 99.8%, where the probability of success in each trail is :math:`p=1-BER` and :math:`n` is the total number of packet sent. The larger confidence interval is due to the errors that might be produced in quantizing the MI and the error curve. 
 
 
 HARQ Model

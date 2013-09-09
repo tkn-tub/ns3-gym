@@ -38,17 +38,18 @@ namespace ns3 {
 class LenaDataPhyErrorModelTestCase : public TestCase
 {
 public:
-  LenaDataPhyErrorModelTestCase (uint16_t nUser, uint16_t dist, uint16_t tbSize, double refBler, uint16_t toleranceRxPackets);
+  LenaDataPhyErrorModelTestCase (uint16_t nUser, uint16_t dist, uint16_t tbSize, double refBler, uint16_t toleranceRxPackets, uint32_t rngRun);
   virtual ~LenaDataPhyErrorModelTestCase ();
 
 private:
   virtual void DoRun (void);
-  static std::string BuildNameString (uint16_t nUser, uint16_t dist);
+  static std::string BuildNameString (uint16_t nUser, uint16_t dist, uint32_t rngRun);
   uint16_t m_nUser;
   uint16_t m_dist;
   uint16_t m_tbSize;
   double m_blerRef;
   uint16_t m_toleranceRxPackets;
+  uint32_t m_rngRun;
 
 };
 
@@ -56,18 +57,20 @@ private:
 
 class LenaDlCtrlPhyErrorModelTestCase : public TestCase
 {
-  public:
-    LenaDlCtrlPhyErrorModelTestCase (uint16_t nEnbr, uint16_t dist, uint16_t tbSize, double refBler);
-    virtual ~LenaDlCtrlPhyErrorModelTestCase ();
-    
-  private:
-    virtual void DoRun (void);
-    static std::string BuildNameString (uint16_t nUser, uint16_t dist);
-    uint16_t m_nEnb;
-    uint16_t m_dist;
-    uint16_t m_tbSize;
-    double m_blerRef;
-    
+public:
+  LenaDlCtrlPhyErrorModelTestCase (uint16_t nEnbr, uint16_t dist, uint16_t tbSize, double refBler, uint16_t toleranceRxPackets, uint32_t rngRun);
+  virtual ~LenaDlCtrlPhyErrorModelTestCase ();
+  
+private:
+  virtual void DoRun (void);
+  static std::string BuildNameString (uint16_t nUser, uint16_t dist, uint32_t rngRun);
+  uint16_t m_nEnb;
+  uint16_t m_dist;
+  uint16_t m_tbSize;
+  double m_blerRef;
+  uint16_t m_toleranceRxPackets;
+  uint32_t m_rngRun;
+
 };
 
 
