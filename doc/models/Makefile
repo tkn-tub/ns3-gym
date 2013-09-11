@@ -119,6 +119,7 @@ SOURCEFIGS = \
 	$(SRC)/lte/doc/source/figures/lte-cell-selection.dia \
 	$(SRC)/lte/doc/source/figures/lte-cell-selection-open-access.dia \
 	$(SRC)/lte/doc/source/figures/lte-cell-selection-closed-access.dia \
+	$(SRC)/lte/doc/source/figures/lte-handover-target-scenario.dia \
 	$(SRC)/lte/doc/source/figures/lena-dual-stripe.eps \
 	$(SRC)/lte/doc/source/figures/lte-mcs-index.eps \
 	$(SRC)/lte/doc/source/figures/lenaThrTestCase1.eps \
@@ -260,6 +261,7 @@ IMAGES_EPS = \
 	$(FIGURES)/lte-cell-selection.eps \
 	$(FIGURES)/lte-cell-selection-open-access.eps \
 	$(FIGURES)/lte-cell-selection-closed-access.eps \
+	$(FIGURES)/lte-handover-target-scenario.eps \
 	$(FIGURES)/lena-dual-stripe.eps \
 	$(FIGURES)/lte-mcs-index.eps \
 	$(FIGURES)/lenaThrTestCase1.eps \

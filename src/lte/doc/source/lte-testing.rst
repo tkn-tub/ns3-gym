@@ -1312,8 +1312,8 @@ do the handover and the target cell where the UE should perform handover to.
 
 The test suite ``lte-handover-target`` verifies that the handover algorithm is
 making the right decision, in particular, in choosing the right target cell. It
-consists of several short test cases for different network topology (2x2 grid
-and 3x2 grid) and types of handover algorithm (the A2-A4-RSRQ handover algorithm
+consists of several short test cases for different network topology (2×2 grid
+and 3×2 grid) and types of handover algorithm (the A2-A4-RSRQ handover algorithm
 and the strongest cell handover algorithm).
 
 Each test case is a simulation of a micro-cell environment with the following
@@ -1330,10 +1330,19 @@ parameter:
  - 1s simulation duration
 
 To trigger a handover, the test case "shutdowns" the source cell at +0.5s
-simulation time. This is done by setting the source cell's Tx power to a very
-low value. As a result, the handover algorithm notices that the UE deserves a
-handover and several neighbouring cells become candidates of target cell at the
-same time.
+simulation time. Figure :ref:`fig-lte-handover-target-scenario` below
+illustrates the process. This is done by setting the source cell's Tx power to
+a very low value. As a result, the handover algorithm notices that the UE
+deserves a handover and several neighbouring cells become candidates of target
+cell at the same time.
+
+.. _fig-lte-handover-target-scenario:
+
+.. figure:: figures/lte-handover-target-scenario.*
+   :scale: 80 %
+   :align: center
+
+   ``lte-handover-target`` test scenario in a 2×2 grid
 
 The test case then verifies that the handover algorithm, when faced with more
 than one options of target cells, is able to choose the right one.
