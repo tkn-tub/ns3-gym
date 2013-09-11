@@ -1710,6 +1710,8 @@ void AnimationInterface::SetBoundary (double minX, double minY, double maxX, dou
 {
   if (initialized)
     NS_FATAL_ERROR ("SetBoundary must be used prior to creating the AnimationInterface object");
+  NS_ASSERT (minX < maxX);
+  NS_ASSERT (minY < maxY);
   if (!userBoundary)
     {
       userBoundary = new Rectangle;
