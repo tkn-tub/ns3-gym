@@ -157,6 +157,7 @@ main (int argc, char *argv[])
   AnimationInterface::SetNodeColor (wifiApNode, 0, 255, 0); // Optional
   AnimationInterface::SetNodeColor (wifiStaNodes, 255, 0, 0); // Optional
   AnimationInterface::SetNodeColor (csmaNodes, 0, 0, 255); // Optional
+  AnimationInterface::SetBoundary (0, 0, 35, 35); // Optional
 
   AnimationInterface anim ("wireless-animation.xml"); // Mandatory
 
