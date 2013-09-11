@@ -71,7 +71,8 @@ public:
    * \param ueSetupList an array of UE setup parameters
    * \param duration length of simulation
    */
-  LteCellSelectionTestCase (std::string name, bool isEpcMode, bool hasCsgDiversity,
+  LteCellSelectionTestCase (std::string name, bool isEpcMode,
+                            bool isIdealRrc, bool hasCsgDiversity,
                             std::vector<UeSetup_t> ueSetupList, Time duration);
 
   virtual ~LteCellSelectionTestCase ();
@@ -98,11 +99,19 @@ private:
                                           uint16_t cellId);
   void InitialCellSelectionEndErrorCallback (std::string context, uint64_t imsi,
                                              uint16_t cellId);
+  void ConnectionEstablishedCallback (std::string context, uint64_t imsi,
+                                      uint16_t cellId, uint16_t rnti);
 
   /**
    * \brief If true, then the simulation should be set up with EPC enabled.
    */
   bool m_isEpcMode;
+
+  /**
+   * \brief If true, then the simulation should be set up with ideal RRC
+   *        protocol, otherwise real RRC protocol is used.
+   */
+  bool m_isIdealRrc;
 
   /**
    * \brief If true, then the west cells in the simulation will be CSG cell,
@@ -121,14 +130,14 @@ private:
    * The shortest possible simulation length for testing initial cell selection
    * is 206 milliseconds. If RRC_CONNECTED state is required, then the length
    * should be extended to 261 milliseconds in ideal RRC protocol, or at least
-   * 277 milliseconds in real RRC protocol. Moreover, scenarios which expect
+   * 278 milliseconds in real RRC protocol. Moreover, scenarios which expect
    * failure in initial cell selection procedure might want to extend this even
    * further to give the UE the chance to retry the procedure.
    */
   Time m_duration;
 
   /// The current UE RRC state.
-  LteUeRrc::State m_lastState;
+  std::vector<LteUeRrc::State> m_lastState;
 
 }; // end of class LteCellSelectionTestCase
 
