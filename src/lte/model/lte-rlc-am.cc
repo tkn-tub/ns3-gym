@@ -962,6 +962,10 @@ LteRlcAm::DoReceivePdu (Ptr<Packet> p)
       NS_LOG_INFO ("ackSn     = " << ackSn);
       NS_LOG_INFO ("VT(A)     = " << m_vtA);
       NS_LOG_INFO ("VT(S)     = " << m_vtS);
+
+      m_vtA.SetModulusBase (m_vtA);
+      m_vtS.SetModulusBase (m_vtA);
+      ackSn.SetModulusBase (m_vtA);
       while (m_vtA < ackSn && m_vtA < m_vtS)
         {
 //           NS_LOG_INFO ("seqNumber = " << seqNumber);
@@ -985,6 +989,9 @@ LteRlcAm::DoReceivePdu (Ptr<Packet> p)
             }
 
           m_vtA++;
+          m_vtA.SetModulusBase (m_vtA);
+          m_vtS.SetModulusBase (m_vtA);
+          ackSn.SetModulusBase (m_vtA);
         }
 
       NS_LOG_INFO ("New VT(A) = " << m_vtA);
