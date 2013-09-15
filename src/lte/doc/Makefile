@@ -37,7 +37,7 @@ IMAGES_DIA = \
 	$(FIGURES)/ue-meas-piecewise-motion.dia \
 	$(FIGURES)/ue-meas-piecewise-a1.dia \
 	$(FIGURES)/ue-meas-piecewise-a1-hys.dia \
-	$(FIGURES)/lte-cell-selection.dia \
+	$(FIGURES)/lte-cell-selection-timeline.dia \
 	$(FIGURES)/lte-cell-selection-scenario.dia \
 	$(FIGURES)/lte-handover-target-scenario.dia
 

@@ -1964,15 +1964,15 @@ not yet camped or attached to an eNodeB. The objective of the procedure is to
 find a suitable cell and attach to it to gain access to the cellular network.
 
 It is typically done at the beginning of simulation, as depicted in Figure
-:ref:`fig-lte-cell-selection` below. The time diagram on the left side is
-illustrating the case where initial cell selection succeed on first try, while
-the diagram on the right side is for the case where it fails on the first try
-and succeed on the second try. The timing assumes the use of real RRC protocol
-model (see :ref:`sec-rrc-protocol-models`) and no transmission error.
+:ref:`fig-lte-cell-selection-timeline` below. The time diagram on the left side
+is illustrating the case where initial cell selection succeed on first try,
+while the diagram on the right side is for the case where it fails on the first
+try and succeed on the second try. The timing assumes the use of real RRC
+protocol model (see :ref:`sec-rrc-protocol-models`) and no transmission error.
 
-.. _fig-lte-cell-selection:
+.. _fig-lte-cell-selection-timeline:
 
-.. figure:: figures/lte-cell-selection.*
+.. figure:: figures/lte-cell-selection-timeline.*
    :scale: 80 %
    :align: center
 
