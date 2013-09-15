@@ -75,7 +75,11 @@ public:
    * \param isEpcMode set to true for setting up simulation with EPC enabled
    * \param isIdealRrc if true, simulation uses Ideal RRC protocol, otherwise
    *                   simulation uses Real RRC protocol
-   * TODO
+   * \param interSiteDistance the distance between eNodeB in meters
+   * \param enbTxPower the transmitting power of eNodeBs in dBm
+   * \param ueSetupList a list of UE configuration to be installed in the
+   *                    simulation
+   * \param rngRun the number of run to be used by the random number generator
    */
   LteCellSelectionTestCase (std::string name, bool isEpcMode, bool isIdealRrc,
                             double interSiteDistance, double enbTxPower,
@@ -91,6 +95,10 @@ private:
    */
   virtual void DoRun ();
 
+  /**
+   * \brief Verifies if the given UE is attached to either of the given two
+   *        cells and in a CONNECTED_NORMALLY state.
+   */
   void CheckPoint (Ptr<LteUeNetDevice> ueDev, uint16_t expectedCellId1,
                    uint16_t expectedCellId2);
 

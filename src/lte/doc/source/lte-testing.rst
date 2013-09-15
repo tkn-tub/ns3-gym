@@ -1028,7 +1028,8 @@ At predefined check point times during the simulation, the test verifies that
 every UE is attached to the right cell. Moreover, the test also ensures that the
 UE is properly connected, i.e., its final state is `CONNECTED_NORMALLY`. Figure
 :ref:`fig-lte-cell-selection-scenario` depicts the network layout and the
-expected result.
+expected result. When a UE is depicted as having 2 successful cell selections,
+any of them is accepted by the test case.
 
 .. _fig-lte-cell-selection-scenario:
 
@@ -1042,6 +1043,27 @@ It shows that CSG members may attach to either CSG or non-CSG cells, and simply
 choose the stronger one. On the other hand, non-members can only attach to
 non-CSG cells, even when they are actually receiving stronger signal from a CSG
 cell.
+
+For reference purpose, the error rate at each UE when receiving transmission of
+control messages are shown in Table :ref:`tab-cell-selection-error-rate` below.
+
+.. _tab-cell-selection-error-rate:
+
+.. table:: UE error rate in Initial Cell Selection test
+
+   ==== ==========
+   UE # Error rate
+   ==== ==========
+   1     0.00%
+   2     1.44%
+   3    12.39%
+   4     0.33%
+   5     0.00%
+   6     0.00%
+   ==== ==========
+
+The test uses the default Friis path loss model and without channel fading
+enabled.
 
 
 GTP-U protocol

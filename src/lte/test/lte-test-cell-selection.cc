@@ -62,44 +62,53 @@ LteCellSelectionTestSuite::LteCellSelectionTestSuite ()
   //LogComponentEnable ("LteSpectrumPhy", LOG_PREFIX_ALL);
   //LogComponentEnable ("LteSpectrumPhy", LOG_DEBUG);
 
-  std::ostringstream oss;
   std::vector<LteCellSelectionTestCase::UeSetup_t> w;
 
-  w.clear ();
-  //                                                     x     y    csgMember
-  //                                                     checkPoint     cell1, cell2
-  w.push_back (LteCellSelectionTestCase::UeSetup_t (0.0, 1.55, false,
-                                                    MilliSeconds (266), 1, 0));
-  w.push_back (LteCellSelectionTestCase::UeSetup_t (0.0, 1.45, false,
-                                                    MilliSeconds (266), 1, 0));
-  w.push_back (LteCellSelectionTestCase::UeSetup_t (0.5, 2.0,  false,
-                                                    MilliSeconds (266), 1, 4));
-  w.push_back (LteCellSelectionTestCase::UeSetup_t (0.5, 1.45, false,
-                                                    MilliSeconds (341), 1, 4));
-  w.push_back (LteCellSelectionTestCase::UeSetup_t (0.5, 0.55, true,
-                                                    MilliSeconds (266), 2, 5));
-  w.push_back (LteCellSelectionTestCase::UeSetup_t (0.5, 0.0,  true,
-                                                    MilliSeconds (266), 3, 6));
-  w.push_back (LteCellSelectionTestCase::UeSetup_t (1.0, 0.55, true,
-                                                    MilliSeconds (266), 5, 0));
-  w.push_back (LteCellSelectionTestCase::UeSetup_t (1.0, 0.45, true,
-                                                    MilliSeconds (266), 6, 0));
+  // REAL RRC PROTOCOL
 
-  AddTestCase (new LteCellSelectionTestCase ("EPC, ideal RRC, RngNum=1",
-                                             true, true,
-                                             60.0, 20.0, w, 1),
-                                          // isd   txpow    rngrun
+  w.clear ();
+  //                                                x     y    csgMember
+  //                                                checkPoint     cell1, cell2
+  w.push_back (LteCellSelectionTestCase::UeSetup_t (0.0, 0.55, false,
+                                                    MilliSeconds (283), 1, 0));
+  w.push_back (LteCellSelectionTestCase::UeSetup_t (0.0, 0.45, false,
+                                                    MilliSeconds (283), 1, 0));
+  w.push_back (LteCellSelectionTestCase::UeSetup_t (0.5, 0.45, false,
+                                                    MilliSeconds (363), 1, 3));
+  w.push_back (LteCellSelectionTestCase::UeSetup_t (0.5, 0.0,  true,
+                                                    MilliSeconds (283), 2, 4));
+  w.push_back (LteCellSelectionTestCase::UeSetup_t (1.0, 0.55, true,
+                                                    MilliSeconds (283), 3, 0));
+  w.push_back (LteCellSelectionTestCase::UeSetup_t (1.0, 0.45, true,
+                                                    MilliSeconds (283), 4, 0));
+
+  AddTestCase (new LteCellSelectionTestCase ("EPC, real RRC, RngNum=1",
+                                             true, false, 60.0, 20.0, w, 1),
+               //                                        isd   txpow    rngrun
                TestCase::QUICK);
 
-  for (int64_t i = 2; i <= 4; i++)
-    {
-      oss.str ("");
-      oss << "EPC, ideal RRC, RngNum=" << i;
-      AddTestCase (new LteCellSelectionTestCase (oss.str (), true, true,
-                                                 60.0, 20.0, w, 1),
-                                              // isd   txpow    rngrun
-                   TestCase::TAKES_FOREVER);
-    }
+  // IDEAL RRC PROTOCOL
+
+  w.clear ();
+  //                                                x     y    csgMember
+  //                                                checkPoint     cell1, cell2
+  w.push_back (LteCellSelectionTestCase::UeSetup_t (0.0, 0.55, false,
+                                                    MilliSeconds (266), 1, 0));
+  w.push_back (LteCellSelectionTestCase::UeSetup_t (0.0, 0.45, false,
+                                                    MilliSeconds (266), 1, 0));
+  w.push_back (LteCellSelectionTestCase::UeSetup_t (0.5, 0.45, false,
+                                                    MilliSeconds (346), 1, 3));
+  w.push_back (LteCellSelectionTestCase::UeSetup_t (0.5, 0.0,  true,
+                                                    MilliSeconds (266), 2, 4));
+  w.push_back (LteCellSelectionTestCase::UeSetup_t (1.0, 0.55, true,
+                                                    MilliSeconds (266), 3, 0));
+  w.push_back (LteCellSelectionTestCase::UeSetup_t (1.0, 0.45, true,
+                                                    MilliSeconds (266), 4, 0));
+
+  AddTestCase (new LteCellSelectionTestCase ("EPC, ideal RRC, RngNum=1",
+                                             true, true, 60.0, 20.0, w, 1),
+               //                                        isd   txpow    rngrun
+               TestCase::QUICK);
 
 } // end of LteCellSelectionTestSuite::LteCellSelectionTestSuite ()
 
@@ -109,7 +118,7 @@ static LteCellSelectionTestSuite g_lteCellSelectionTestSuite;
 
 
 /*
- * 6-cell Test Case
+ * Test Case
  */
 
 
@@ -169,14 +178,21 @@ LteCellSelectionTestCase::DoRun ()
     }
 
   /*
-   * The topology is the following:
+   * The topology is the following (the number on the node indicate the cell ID)
    *
-   * TODO
+   *      [1]        [3]
+   *    non-CSG -- non-CSG
+   *       |          |
+   *       |          | 60 m
+   *       |          |
+   *      [2]        [4]
+   *      CSG ------ CSG
+   *           60 m
    */
 
   // Create Nodes
   NodeContainer enbNodes;
-  enbNodes.Create (6);
+  enbNodes.Create (4);
   NodeContainer ueNodes;
   uint16_t nUe = m_ueSetupList.size ();
   ueNodes.Create (nUe);
@@ -184,12 +200,10 @@ LteCellSelectionTestCase::DoRun ()
   // Assign nodes to position
   Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
   // eNodeB
-  positionAlloc->Add (Vector (                0.0, 2 * m_interSiteDistance, 0.0));
-  positionAlloc->Add (Vector (                0.0,     m_interSiteDistance, 0.0));
-  positionAlloc->Add (Vector (                0.0,                     0.0, 0.0));
-  positionAlloc->Add (Vector (m_interSiteDistance, 2 * m_interSiteDistance, 0.0));
-  positionAlloc->Add (Vector (m_interSiteDistance,     m_interSiteDistance, 0.0));
-  positionAlloc->Add (Vector (m_interSiteDistance,                     0.0, 0.0));
+  positionAlloc->Add (Vector (                0.0, m_interSiteDistance, 0.0));
+  positionAlloc->Add (Vector (                0.0,                 0.0, 0.0));
+  positionAlloc->Add (Vector (m_interSiteDistance, m_interSiteDistance, 0.0));
+  positionAlloc->Add (Vector (m_interSiteDistance,                 0.0, 0.0));
   // UE
   std::vector<UeSetup_t>::const_iterator itSetup;
   for (itSetup = m_ueSetupList.begin ();
@@ -215,7 +229,7 @@ LteCellSelectionTestCase::DoRun ()
   stream += lteHelper->AssignStreams (enbDevs, stream);
 
   lteHelper->SetEnbCsgId (enbDevs.Get (1), 1, true); // cell ID 2
-  lteHelper->SetEnbCsgId (enbDevs.Get (4), 1, true); // cell ID 5
+  lteHelper->SetEnbCsgId (enbDevs.Get (3), 1, true); // cell ID 4
 
   NetDeviceContainer ueDevs;
   ueDevs = lteHelper->InstallUeDevice (ueNodes);
@@ -299,7 +313,7 @@ LteCellSelectionTestCase::DoRun ()
     } // end of if (m_isEpcMode)
   else
     {
-      NS_FATAL_ERROR ("No support yet for LTE_only simulations");
+      NS_FATAL_ERROR ("No support yet for LTE-only simulations");
     }
 
   // Connect to trace sources in UEs
