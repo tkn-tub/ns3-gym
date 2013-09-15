@@ -1019,66 +1019,29 @@ Initial cell selection
 ----------------------
 
 The test suite `lte-cell-selection` is responsible for verifying the
-:ref:`sec-initial-cell-selection` procedure. Included in the suite are 3 short
-test cases using ideal RRC protocol and the same test cases but using real RRC
-protocol.
+:ref:`sec-initial-cell-selection` procedure. The test is a simulation of a small 
+etwork of 4 non-CSG cells and 2 non-CSG cells. Several static UEs are then
+placed at predefined locations and with initial cell selection procedure
+enabled. Thus the UEs enters the simulation without being attached to any cell.
 
-Each test case is a simulation of a small network of 4 cells. Each eNodeB is
-equipped with directional antenna (parabolic model) and is arranged so that some
-of their coverage are overlapping with other eNodeB. They are configured using
-the same Tx Power. Several static UEs are then placed at predefined locations
-and with initial cell selection procedure enabled. Thus the UEs enters the
-simulation without being attached to any cell.
+At predefined check point times during the simulation, the test verifies that
+every UE is attached to the right cell. Moreover, the test also ensures that the
+UE is properly connected, i.e., its final state is `CONNECTED_NORMALLY`. Figure
+:ref:`fig-lte-cell-selection-scenario` depicts the network layout and the
+expected result.
 
-At the end of the simulation, the test verifies that every UE is attached to the
-right cell. Moreover, the test also ensures that the UE is properly connected
-(i.e. its final state is `CONNECTED_NORMALLY`).
+.. _fig-lte-cell-selection-scenario:
 
-The first test case is a scenario with open access cells, i.e. without Closed
-Subscriber Group (CSG). The result shows that the UEs are attaching to the
-expected cells, as shown in Figure :ref:`fig-lte-cell-selection-open-access`
-below. Note that the grey area below each eNodeB only indicates the rough
-directivity of the antenna, while the actual cell coverage is much wider and
-larger.
-
-.. _fig-lte-cell-selection-open-access:
-
-.. figure:: figures/lte-cell-selection-open-access.*
+.. figure:: figures/lte-cell-selection-scenario.*
    :scale: 80 %
    :align: center
 
-   Sample result of cell selection in open access scenario
-
-The second and third cases incorporate CSG into the simulation. 2 out of 4 cells
-become a single CSG and implement closed access, while the other 2 cells stay
-open. In a similar way, half of the UEs are configured as members of the CSG,
-while the rest are not. The resulting simulation is depicted in Figure
-:ref:`fig-lte-cell-selection-closed-access` below.
-
-.. _fig-lte-cell-selection-closed-access:
-
-.. figure:: figures/lte-cell-selection-closed-access.*
-   :scale: 80 %
-   :align: center
-
-   Sample result of cell selection in closed access scenario
+   Sample result of cell selection test
 
 It shows that CSG members may attach to either CSG or non-CSG cells, and simply
 choose the stronger one. On the other hand, non-members can only attach to
 non-CSG cells, even when they are actually receiving stronger signal from a CSG
 cell.
-
-The CSG scenario reveals an interference issue experienced by the UE highlighted
-in the figure above. The UE is positioned within the coverage of a CSG cell but
-it is not a member of the CSG. The CSG cell becomes a source of major
-interference to the UE and causing difficulties (i.e. low SINR) to the UE in its
-attempt to attach (i.e. receiving MIB and SIB1) to the closest non-CSG cell.
-
-A real life CSG deployment typically implements interference coordination to
-remedy such issue. Section 5.1 of [TS36922]_ describes frequency, time, and
-spatial partitioning as possible approaches to interference coordination.
-However, none of these approaches are implemented in this test suite.
-
 
 
 GTP-U protocol

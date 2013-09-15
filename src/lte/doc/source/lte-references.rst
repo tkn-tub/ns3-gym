@@ -42,8 +42,6 @@ References
 
 .. [TR36814] 3GPP TR 36.814 "E-UTRA Further advancements for E-UTRA physical layer aspects"
 
-.. [TS36922] 3GPP TS 36.922 "E-UTRA TDD Home eNode B (HeNB) Radio Frequency (RF) requirements analysis"
-
 .. [R1-081483] 3GPP R1-081483 `"Conveying MCS and TB size via PDCCH"
    <http://www.3gpp.org/ftp/tsg_ran/WG1_RL1/TSGR1_52b/Docs/R1-081483.zip>`_
 

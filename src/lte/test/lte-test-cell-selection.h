@@ -46,6 +46,8 @@ public:
 
 
 
+class LteUeNetDevice;
+
 /**
  * \brief Testing the initial cell selection procedure by UE at IDLE state in
  *        the beginning of simulation.
@@ -58,22 +60,27 @@ public:
    */
   struct UeSetup_t
   {
-    Vector position; ///< The position where the UE will be spawned in the simulation.
-    uint32_t csgIdentity; ///< Closed Subscriber Group identity of the UE.
-    uint16_t expectedCellId; ///< The cell ID that the UE is expected to attach to (0 means that the UE should not attach to any cell).
-    UeSetup_t (Vector position, uint32_t csgIdentity, uint16_t expectedCellId);
+    Vector position; ///< The position, relative to the inter site distance, where the UE will be spawned in the simulation.
+    bool isCsgMember; ///< Whether UE is allowed access to CSG cell.
+    Time checkPoint; ///< The time in simulation when the UE is verified by the test script.
+    uint16_t expectedCellId1; ///< The cell ID that the UE is expected to attach to (0 means that the UE should not attach to any cell).
+    uint16_t expectedCellId2; ///< An alternative cell ID that the UE is expected to attach to (0 means that this no alternative cell is expected).
+    UeSetup_t (double relPosX, double relPosY, bool isCsgMember, Time checkPoint,
+               uint16_t expectedCellId1, uint16_t expectedCellId2);
   };
 
   /**
    * \brief Creates an instance of the initial cell selection test case.
    * \param name name of this test
    * \param isEpcMode set to true for setting up simulation with EPC enabled
-   * \param ueSetupList an array of UE setup parameters
-   * \param duration length of simulation
+   * \param isIdealRrc if true, simulation uses Ideal RRC protocol, otherwise
+   *                   simulation uses Real RRC protocol
+   * TODO
    */
-  LteCellSelectionTestCase (std::string name, bool isEpcMode,
-                            bool isIdealRrc, bool hasCsgDiversity,
-                            std::vector<UeSetup_t> ueSetupList, Time duration);
+  LteCellSelectionTestCase (std::string name, bool isEpcMode, bool isIdealRrc,
+                            double interSiteDistance, double enbTxPower,
+                            std::vector<UeSetup_t> ueSetupList,
+                            int64_t rngRun);
 
   virtual ~LteCellSelectionTestCase ();
 
@@ -84,14 +91,9 @@ private:
    */
   virtual void DoRun ();
 
-  void MibReceivedCallback (std::string context, uint64_t imsi,
-                            uint16_t cellId, uint16_t rnti,
-                            uint16_t sourceCellId);
-  void Sib1ReceivedCallback (std::string context, uint64_t imsi,
-                             uint16_t cellId, uint16_t rnti,
-                             uint16_t sourceCellId);
-  void Sib2ReceivedCallback (std::string context, uint64_t imsi,
-                             uint16_t cellId, uint16_t rnti);
+  void CheckPoint (Ptr<LteUeNetDevice> ueDev, uint16_t expectedCellId1,
+                   uint16_t expectedCellId2);
+
   void StateTransitionCallback (std::string context, uint64_t imsi,
                                 uint16_t cellId, uint16_t rnti,
                                 LteUeRrc::State oldState, LteUeRrc::State newState);
@@ -102,44 +104,18 @@ private:
   void ConnectionEstablishedCallback (std::string context, uint64_t imsi,
                                       uint16_t cellId, uint16_t rnti);
 
-  /**
-   * \brief If true, then the simulation should be set up with EPC enabled.
-   */
   bool m_isEpcMode;
-
-  /**
-   * \brief If true, then the simulation should be set up with ideal RRC
-   *        protocol, otherwise real RRC protocol is used.
-   */
   bool m_isIdealRrc;
-
-  /**
-   * \brief If true, then the west cells in the simulation will be CSG cell,
-   *        while the east cells will be non-CSG cells.
-   */
-  bool m_hasCsgDiversity;
-
-  /**
-   * \brief The list of UE setups to be used during the test execution.
-   */
+  double m_interSiteDistance;
+  double m_enbTxPower;
   std::vector<UeSetup_t> m_ueSetupList;
-
-  /**
-   * \brief The length of the simulation.
-   *
-   * The shortest possible simulation length for testing initial cell selection
-   * is 206 milliseconds. If RRC_CONNECTED state is required, then the length
-   * should be extended to 261 milliseconds in ideal RRC protocol, or at least
-   * 278 milliseconds in real RRC protocol. Moreover, scenarios which expect
-   * failure in initial cell selection procedure might want to extend this even
-   * further to give the UE the chance to retry the procedure.
-   */
-  Time m_duration;
+  int64_t m_rngRun;
 
   /// The current UE RRC state.
   std::vector<LteUeRrc::State> m_lastState;
 
 }; // end of class LteCellSelectionTestCase
+
 
 
 } // end of namespace ns3

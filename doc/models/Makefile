@@ -117,8 +117,7 @@ SOURCEFIGS = \
 	$(SRC)/lte/doc/source/figures/ue-meas-piecewise-a1.dia \
 	$(SRC)/lte/doc/source/figures/ue-meas-piecewise-a1-hys.dia \
 	$(SRC)/lte/doc/source/figures/lte-cell-selection.dia \
-	$(SRC)/lte/doc/source/figures/lte-cell-selection-open-access.dia \
-	$(SRC)/lte/doc/source/figures/lte-cell-selection-closed-access.dia \
+	$(SRC)/lte/doc/source/figures/lte-cell-selection-scenario.dia \
 	$(SRC)/lte/doc/source/figures/lte-handover-target-scenario.dia \
 	$(SRC)/lte/doc/source/figures/lena-dual-stripe.eps \
 	$(SRC)/lte/doc/source/figures/lte-mcs-index.eps \
@@ -259,8 +258,7 @@ IMAGES_EPS = \
 	$(FIGURES)/ue-meas-piecewise-a1.eps \
 	$(FIGURES)/ue-meas-piecewise-a1-hys.eps \
 	$(FIGURES)/lte-cell-selection.eps \
-	$(FIGURES)/lte-cell-selection-open-access.eps \
-	$(FIGURES)/lte-cell-selection-closed-access.eps \
+	$(FIGURES)/lte-cell-selection-scenario.eps \
 	$(FIGURES)/lte-handover-target-scenario.eps \
 	$(FIGURES)/lena-dual-stripe.eps \
 	$(FIGURES)/lte-mcs-index.eps \
