@@ -382,14 +382,14 @@ In the RSRP/SINR file, the following content is available:
   2. Cell ID
   3. unique UE ID (IMSI)
   4. RSRP
-  5. Linear average of the SINR peceived by the RBs
+  5. Linear average over all RBs of the downlink SINR in linear units
 
 The contents in the UE SINR file are:
 
   1. Simulation time in seconds at which the allocation is indicated by the scheduler
   2. Cell ID
   3. unique UE ID (IMSI)
-  4. SINR in linear units for the UE
+  4. uplink SINR in linear units for the UE
 
 In the interference filename the content is:
 
