@@ -339,6 +339,10 @@ LteUeMac::SendReportBufferStatus (void)
       std::map <uint8_t, LcInfo>::iterator lcInfoMapIt;
       lcInfoMapIt = m_lcInfoMap.find (lcid);
       NS_ASSERT (lcInfoMapIt !=  m_lcInfoMap.end ());
+      NS_ASSERT_MSG ((lcid != 0) || (((*it).second.txQueueSize == 0)
+                                     && ((*it).second.retxQueueSize == 0)
+                                     && ((*it).second.statusPduSize == 0)),
+                     "BSR should not be used for LCID 0");
       uint8_t lcg = lcInfoMapIt->second.lcConfig.logicalChannelGroup;
       queue.at (lcg) += ((*it).second.txQueueSize + (*it).second.retxQueueSize + (*it).second.statusPduSize);
     }
@@ -411,6 +415,21 @@ LteUeMac::RecvRaResponse (BuildRarListElement_s raResponse)
   // preambles are sent no one is received, so there is no need
   // for contention resolution
   m_cmacSapUser->NotifyRandomAccessSuccessful ();
+  // trigger tx opportunity for Message 3 over LC 0
+  // this is needed since Message 3's UL GRANT is in the RAR, not in UL-DCIs
+  const uint8_t lc0Lcid = 0;
+  std::map <uint8_t, LcInfo>::iterator lc0InfoIt = m_lcInfoMap.find (lc0Lcid);
+  NS_ASSERT (lc0InfoIt != m_lcInfoMap.end ());
+  std::map <uint8_t, LteMacSapProvider::ReportBufferStatusParameters>::iterator lc0BsrIt
+    = m_ulBsrReceived.find (lc0Lcid);
+  if ((lc0BsrIt != m_ulBsrReceived.end ())
+      && (lc0BsrIt->second.txQueueSize > 0))
+    {
+      NS_ASSERT_MSG (raResponse.m_grant.m_tbSize > lc0BsrIt->second.txQueueSize, 
+                     "segmentation of Message 3 is not allowed");
+      lc0InfoIt->second.macSapUser->NotifyTxOpportunity (raResponse.m_grant.m_tbSize, 0, 0); 
+      lc0BsrIt->second.txQueueSize = 0;
+    }
 }
 
 void 

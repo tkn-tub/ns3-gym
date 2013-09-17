@@ -130,7 +130,6 @@ LteRlcTm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId)
 
   if (bytes < packet->GetSize ())
     {
-      // Stingy MAC: Header fix part is 2 bytes, we need more bytes for the data
       NS_LOG_WARN ("TX opportunity too small = " << bytes << " (PDU size: " << packet->GetSize () << ")");
       return;
     }
