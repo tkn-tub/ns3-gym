@@ -672,9 +672,16 @@ LteUePhy::ReportUeMeasurements ()
     {
       double avg_rsrp = (*it).second.rsrpSum / (double)(*it).second.rsrpNum;
       double avg_rsrq = (*it).second.rsrqSum / (double)(*it).second.rsrqNum;
+      /*
+       * In CELL_SEARCH state, this may result in avg_rsrq = 0/0 = -nan.
+       * UE RRC must take this into account when receiving measurement reports.
+       * TODO remove this shortcoming by calculating RSRQ during CELL_SEARCH
+       */
       NS_LOG_DEBUG (this << " CellId " << (*it).first
-                         << " RSRP " << avg_rsrp << " (nSamples " << (uint16_t)(*it).second.rsrpNum
-                         << ") RSRQ " << avg_rsrq << " (nSamples " << (uint16_t)(*it).second.rsrpNum << ")");
+                         << " RSRP " << avg_rsrp
+                         << " (nSamples " << (uint16_t)(*it).second.rsrpNum << ")"
+                         << " RSRQ " << avg_rsrq
+                         << " (nSamples " << (uint16_t)(*it).second.rsrqNum << ")");
 
       LteUeCphySapUser::UeMeasurementsElement newEl;
       newEl.m_cellId = (*it).first;
@@ -1098,7 +1105,7 @@ void
 LteUePhy::DoSetDlBandwidth (uint8_t dlBandwidth)
 {
   NS_LOG_FUNCTION (this << (uint32_t) dlBandwidth);
-  if (m_dlBandwidth != dlBandwidth)
+  if (m_dlBandwidth != dlBandwidth or !m_dlConfigured)
     {
       m_dlBandwidth = dlBandwidth;
 

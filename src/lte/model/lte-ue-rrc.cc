@@ -402,7 +402,6 @@ LteUeRrc::DoSendData (Ptr<Packet> packet, uint8_t bid)
 {
   NS_LOG_FUNCTION (this << packet);
 
-
   uint8_t drbid = Bid2Drbid (bid);
 
   std::map<uint8_t, Ptr<LteDataRadioBearerInfo> >::iterator it =   m_drbMap.find (drbid);
@@ -413,9 +412,13 @@ LteUeRrc::DoSendData (Ptr<Packet> packet, uint8_t bid)
   params.rnti = m_rnti;
   params.lcid = it->second->m_logicalChannelIdentity;
 
-  NS_LOG_LOGIC (this << " RNTI=" << m_rnti << " sending " << packet << "on DRBID " << (uint32_t) drbid << " (LCID" << params.lcid << ")" << " (" << packet->GetSize () << " bytes)");
+  NS_LOG_LOGIC (this << " RNTI=" << m_rnti << " sending packet " << packet
+                     << " on DRBID " << (uint32_t) drbid
+                     << " (LCID " << (uint32_t) params.lcid << ")"
+                     << " (" << packet->GetSize () << " bytes)");
   it->second->m_pdcp->GetLtePdcpSapProvider ()->TransmitPdcpSdu (params);
 }
+
 
 void
 LteUeRrc::DoDisconnect ()
@@ -1223,7 +1226,7 @@ LteUeRrc::ApplyRadioResourceConfigDedicated (LteRrcSap::RadioResourceConfigDedic
         {
           NS_LOG_INFO ("request to modify existing DRBID");
           Ptr<LteDataRadioBearerInfo> drbInfo = drbMapIt->second;
-          // TODO: currently not implemented. Would need to modify drbInfo, and then propagate changes to the MAC
+          /// \todo currently not implemented. Would need to modify drbInfo, and then propagate changes to the MAC
         }
     }
   
@@ -1474,8 +1477,17 @@ LteUeRrc::SaveUeMeasurements (uint16_t cellId, double rsrp, double rsrq,
           // F_n = (1-a) F_{n-1} + a M_n
           storedMeasIt->second.rsrp = (1 - m_varMeasConfig.aRsrp) * storedMeasIt->second.rsrp
             + m_varMeasConfig.aRsrp * rsrp;
-          storedMeasIt->second.rsrq = (1 - m_varMeasConfig.aRsrq) * storedMeasIt->second.rsrq
-            + m_varMeasConfig.aRsrq * rsrq;
+
+          if (std::isnan (storedMeasIt->second.rsrq))
+            {
+              // the previous RSRQ measurements provided UE PHY are invalid
+              storedMeasIt->second.rsrq = rsrq; // replace it with unfiltered value
+            }
+          else
+            {
+              storedMeasIt->second.rsrq = (1 - m_varMeasConfig.aRsrq) * storedMeasIt->second.rsrq
+                + m_varMeasConfig.aRsrq * rsrq;
+            }
         }
       else
         {
