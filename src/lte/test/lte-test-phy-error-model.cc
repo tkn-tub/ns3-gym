@@ -61,7 +61,7 @@ namespace ns3 {
 LenaTestPhyErrorModelSuite::LenaTestPhyErrorModelSuite ()
   : TestSuite ("lte-phy-error-model", SYSTEM)
 {
-  LogComponentEnable ("LteTestPhyErrorModel", LOG_INFO);
+  //LogComponentEnable ("LteTestPhyErrorModel", LOG_INFO);
   NS_LOG_INFO ("creating LenaTestPhyErrorModelTestCase");
   
   

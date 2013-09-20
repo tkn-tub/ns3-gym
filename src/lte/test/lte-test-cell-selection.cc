@@ -340,7 +340,7 @@ LteCellSelectionTestCase::DoRun ()
   NS_LOG_INFO ("Simulation ends");
   Simulator::Destroy ();
 
-} // end of void LteCellSelection6CellTestCase::DoRun ()
+} // end of void LteCellSelectionTestCase::DoRun ()
 
 
 void
