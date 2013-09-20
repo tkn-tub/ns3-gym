@@ -247,14 +247,14 @@ UeManager::DoInitialize ()
 
     case HANDOVER_JOINING:
       m_handoverJoiningTimeout = Simulator::Schedule (m_rrc->m_handoverJoiningTimeoutDuration, 
-                                                 &LteEnbRrc::HandoverJoiningTimeout, 
-                                                 m_rrc, m_rnti);
+                                                      &LteEnbRrc::HandoverJoiningTimeout,
+                                                      m_rrc, m_rnti);
       break;      
 
     default:
       NS_FATAL_ERROR ("unexpected state " << ToString (m_state));
-      break;      
-    }  
+      break;
+    }
 
 }
 
@@ -496,7 +496,7 @@ UeManager::ScheduleRrcConnectionReconfiguration ()
 
     default:
       NS_FATAL_ERROR ("method unexpected in state " << ToString (m_state));
-      break;      
+      break;
     }
 }
 
@@ -551,7 +551,7 @@ UeManager::PrepareHandover (uint16_t cellId)
       
     default:
       NS_FATAL_ERROR ("method unexpected in state " << ToString (m_state));
-      break;      
+      break;
     }
 
 }
@@ -576,8 +576,8 @@ UeManager::RecvHandoverRequestAck (EpcX2SapUser::HandoverRequestAckParams params
   SwitchToState (HANDOVER_LEAVING);
   m_handoverLeavingTimeout = Simulator::Schedule (m_rrc->m_handoverLeavingTimeoutDuration, 
                                                   &LteEnbRrc::HandoverLeavingTimeout, 
-                                                  m_rrc, m_rnti);  
-  NS_ASSERT (handoverCommand.haveMobilityControlInfo);  
+                                                  m_rrc, m_rnti);
+  NS_ASSERT (handoverCommand.haveMobilityControlInfo);
   m_rrc->m_handoverStartTrace (m_imsi, m_rrc->m_cellId, m_rnti, handoverCommand.mobilityControlInfo.targetPhysCellId);
 
   EpcX2SapProvider::SnStatusTransferParams sst;
@@ -621,7 +621,7 @@ void
 UeManager::SendData (uint8_t bid, Ptr<Packet> p)
 {
   NS_LOG_FUNCTION (this << p << (uint16_t) bid);
-   switch (m_state)
+  switch (m_state)
     {
     case INITIAL_RANDOM_ACCESS:
     case CONNECTION_SETUP:
@@ -1986,13 +1986,29 @@ LteEnbRrc::DoTriggerHandover (uint16_t rnti, uint16_t targetCellId)
       NS_LOG_DEBUG (this << " cellId=" << m_cellId
                          << " targetCellId=" << targetCellId
                          << " NRT.NoHo=" << noHo << " NRT.NoX2=" << noX2);
-      isHandoverAllowed = (noHo == false) && (noX2 == false);
+
+      if (noHo || noX2)
+        {
+          isHandoverAllowed = false;
+          NS_LOG_LOGIC (this << " handover to cell " << targetCellId
+                             << " is not allowed by ANR");
+        }
+    }
+
+  Ptr<UeManager> ueManager = GetUeManager (rnti);
+  NS_ASSERT_MSG (ueManager != 0, "Cannot find UE context with RNTI " << rnti);
+
+  if (ueManager->GetState () != UeManager::CONNECTED_NORMALLY)
+    {
+      isHandoverAllowed = false;
+      NS_LOG_LOGIC (this << " handover is not allowed because the UE"
+                         << " rnti=" << rnti << " is in "
+                         << ToString (ueManager->GetState ()) << " state");
     }
 
   if (isHandoverAllowed)
     {
-      Ptr<UeManager> ueManager = GetUeManager (rnti);
-      NS_ASSERT_MSG (ueManager != 0, "Cannot find UE context with RNTI " << rnti);
+      // initiate handover execution
       ueManager->PrepareHandover (targetCellId);
     }
 }
