@@ -45,16 +45,20 @@ References
 .. [R1-081483] 3GPP R1-081483 `"Conveying MCS and TB size via PDCCH"
    <http://www.3gpp.org/ftp/tsg_ran/WG1_RL1/TSGR1_52b/Docs/R1-081483.zip>`_
 
-.. [R4-092042] 3GPP R4-092042 "Simulation assumptions and parameters for FDD HeNB RF requirements"
+.. [R4-092042] 3GPP R4-092042 `"Simulation assumptions and parameters for FDD HeNB RF requirements"
+   <http://www.3gpp.org/ftp/tsg_ran/wg4_radio/TSGR4_51/Documents/R4-092042.zip>`_
 
 .. [FFAPI] FemtoForum `"LTE MAC Scheduler Interface Specification v1.11"
    <http://www.smallcellforum.org/smallcellforum_resources/pdfsend05.php?file=LTE%20MAC%20Scheduler%20Interface%20Specification.pdf>`_
 
-.. [ns3tutorial] `"The ns-3 Tutorial" <http://www.nsnam.org/docs/tutorial/singlehtml/index.html>`_
+.. [ns3tutorial] `"The ns-3 Tutorial"
+   <http://www.nsnam.org/docs/tutorial/singlehtml/index.html>`_
 
-.. [ns3manual] `"The ns-3 Manual" <http://www.nsnam.org/docs/manual/singlehtml/index.html>`_
+.. [ns3manual] `"The ns-3 Manual"
+   <http://www.nsnam.org/docs/manual/singlehtml/index.html>`_
 
-.. [Sesia2009] S. Sesia, I. Toufik and M. Baker, "LTE - The UMTS Long Term Evolution - from theory to practice", 
+.. [Sesia2009] S. Sesia, I. Toufik and M. Baker,
+   "LTE - The UMTS Long Term Evolution - from theory to practice",
    Wiley, 2009
 
 .. [Baldo2009] N. Baldo and M. Miozzo, "Spectrum-aware Channel and PHY layer modeling for ns3", 

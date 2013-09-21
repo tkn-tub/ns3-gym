@@ -267,6 +267,8 @@ You can try also with other LTE and EPC objects, like this::
  
 
 
+.. _sec-simulation-output:
+
 Simulation Output
 -----------------
 
@@ -1301,6 +1303,8 @@ control messages, therefore we only need to disable the control channel's error
 model.
       
 
+.. _sec-handover-traces:
+
 Handover traces
 ***************
 
@@ -1313,13 +1317,13 @@ in your simulation program you can declare the following methods::
    void 
    NotifyHandoverStartUe (std::string context, 
                           uint64_t imsi, 
-                          uint16_t cellid, 
+                          uint16_t cellId, 
                           uint16_t rnti, 
                           uint16_t targetCellId)
    {
      std::cout << Simulator::Now ().GetSeconds () << " " << context 
                << " UE IMSI " << imsi 
-               << ": previously connected to CellId " << cellid 
+               << ": previously connected to CellId " << cellId 
                << " with RNTI " << rnti 
                << ", doing handover to CellId " << targetCellId 
                << std::endl;
@@ -1328,12 +1332,12 @@ in your simulation program you can declare the following methods::
    void 
    NotifyHandoverEndOkUe (std::string context, 
                           uint64_t imsi, 
-                          uint16_t cellid, 
+                          uint16_t cellId, 
                           uint16_t rnti)
    {
      std::cout << Simulator::Now ().GetSeconds () << " " << context 
                << " UE IMSI " << imsi 
-               << ": successful handover to CellId " << cellid 
+               << ": successful handover to CellId " << cellId 
                << " with RNTI " << rnti 
                << std::endl;
    }
@@ -1341,12 +1345,12 @@ in your simulation program you can declare the following methods::
    void 
    NotifyHandoverStartEnb (std::string context, 
                            uint64_t imsi, 
-                           uint16_t cellid, 
+                           uint16_t cellId, 
                            uint16_t rnti, 
                            uint16_t targetCellId)
    {
      std::cout << Simulator::Now ().GetSeconds () << " " << context 
-               << " eNB CellId " << cellid 
+               << " eNB CellId " << cellId 
                << ": start handover of UE with IMSI " << imsi 
                << " RNTI " << rnti 
                << " to CellId " << targetCellId 
@@ -1356,11 +1360,11 @@ in your simulation program you can declare the following methods::
    void 
    NotifyHandoverEndOkEnb (std::string context, 
                            uint64_t imsi, 
-                           uint16_t cellid, 
+                           uint16_t cellId, 
                            uint16_t rnti)
    {
      std::cout << Simulator::Now ().GetSeconds () << " " << context 
-               << " eNB CellId " << cellid 
+               << " eNB CellId " << cellId 
                << ": completed handover of UE with IMSI " << imsi 
                << " RNTI " << rnti 
                << std::endl;
@@ -1401,28 +1405,257 @@ The directory ``src/lte/examples/`` contains some example simulation programs th
 show how to simulate different LTE scenarios. 
 
 
+
 Reference scenarios
 -------------------
 
 There is a vast amount of reference LTE simulation scenarios which can
 be found in the literature. Here we list some of them: 
 
- * The dual stripe model [R4-092042]_, which is partially implemented
-   in the example program
-   ``src/lte/examples/lena-dual-stripe.cc``. This example program
-   features a lot of configurable parameters which can be customize by
-   changing the corresponding global variable. To get a list of all these
-   parameters, you can run this command::
+ * The system simulation scenarios mentioned in section A.2 of [TR36814]_.
+
+ * The dual stripe model [R4-092042]_, which is partially implemented in the
+   example program ``src/lte/examples/lena-dual-stripe.cc``. This example
+   program features a lot of configurable parameters which can be customized by
+   changing the corresponding global variables. To get a list of all these
+   global variables, you can run this command::
 
      ./waf --run lena-dual-stripe --command-template="%s --PrintGlobals"
+     
+   The following subsection presents an example of running a simulation
+   campaign using this example program.
 
 
+Handover simulation campaign
+****************************
 
- * The system simulation scenarios mentioned in section A.2 of [TR36814]_
+In this subsection, we will demonstrate an example of running a simulation
+campaign using the LTE module of |ns3|. The objective of the campaign is to
+compare the effect of each built-in handover algorithm of the LTE module.
 
+The campaign will use the ``lena-dual-stripe`` example program. First, we have
+to modify the example program to produce the output that we need. In this
+occassion, we want to produce the number of handovers, user average throughput,
+and average SINR.
 
+The number of handovers can be obtained by counting the number of times the
+`HandoverEndOk` :ref:`sec-handover-traces` is fired. Then the user average
+throughput can be obtained by enabling the RLC :ref:`sec-simulation-output`.
+Finally, SINR can be obtained by enabling the PHY simulation output. The
+following sample code snippet shows one possible way to obtain the above::
 
+   void
+   NotifyHandoverEndOkUe (std::string context, uint64_t imsi,
+                          uint16_t cellId, uint16_t rnti)
+   {
+     std::cout << "Handover IMSI " << imsi << std::endl;
+   }
 
+   int
+   main (int argc, char *argv[])
+   {
+     /*** SNIP ***/
 
+     Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/HandoverEndOk",
+                      MakeCallback (&NotifyHandoverEndOkUe));
 
+     lteHelper->EnablePhyTraces ();
+     lteHelper->EnableRlcTraces ();
+     Ptr<RadioBearerStatsCalculator> rlcStats = lteHelper->GetRlcStats ();
+     rlcStats->SetAttribute ("StartTime", TimeValue (Seconds (0)));
+     rlcStats->SetAttribute ("EpochDuration", TimeValue (Seconds (simTime)));
 
+     Simulator::Run ();
+     Simulator::Destroy ();
+     return 0;
+   }
+
+Then we have to configure the parameters of the program to suit our simulation
+needs. We are looking for the following assumptions in our simulation:
+
+ * 7 sites of tri-sectored macro eNodeBs (i.e. 21 macrocells) deployed in
+   hexagonal layout with 500 m inter-site distance.
+
+ * Although ``lena-dual-stripe`` is originally intended for a two-tier
+   (macrocell and femtocell) simulation, we will simplify our simulation to
+   one-tier (macrocell) simulation only.
+
+ * UEs are randomly distributed around the sites and attach to the network
+   automatically using Idle mode cell selection. After that, UE will roam the
+   simulation environment with 60 kmph movement speed.
+
+ * 50 seconds simulation duration, so UEs would have traveled far enough to
+   trigger some handovers.
+
+ * 46 dBm macrocell Tx power and 10 dBm UE Tx power.
+
+ * EPC mode will be used because the X2 handover procedure requires it to be
+   enabled.
+
+ * Full-buffer downlink and uplink traffic, both in 5 MHz bandwidth, using TCP
+   protocol and Proportional Fair scheduler.
+
+ * Ideal RRC protocol.
+
+Table :ref:`tab-handover-campaign-program-parameter` below shows how we
+configure the parameters of ``lena-dual-stripe`` to achieve the above
+assumptions.
+
+.. _tab-handover-campaign-program-parameter:
+
+.. table:: ``lena-dual-stripe`` parameter configuration for handover campaign
+
+   ================== ========== ===============================================
+   Parameter name     Value      Description
+   ================== ========== ===============================================
+   simTime            50         50 seconds simulation duration
+   nBlocks            0          Disabling apartment buildings and femtocells
+   nMacroEnbSites     7          Number of macrocell sites (each site has 3
+                                 cells)
+   nMacroEnbSitesX    2          The macrocell sites will be positioned in a
+                                 2-3-2 formation
+   interSiteDistance  500        500 m distance between adjacent macrocell sites
+   macroEnbTxPowerDbm 46         46 dBm Tx power for each macrocell
+   epc                1          Enable EPC mode
+   epcDl              1          Enable full-buffer DL traffic
+   epcUl              1          Enable full-buffer UL traffic
+   useUdp             0          Disable UDP traffic and enable TCP instead
+   macroUeDensity     0.00002    Determines number of UEs (translates to 48 UEs
+                                 in our simulation)
+   outdoorUeMinSpeed  16.6667    Minimum UE movement speed in m/s (60 kmph)
+   outdoorUeMaxSpeed  16.6667    Maximum UE movement speed in m/s (60 kmph)
+   macroEnbBandwidth  25         5 MHz DL and UL bandwidth
+   generateRem        1          (Optional) For plotting the Radio Environment
+                                 Map
+   ================== ========== ===============================================
+
+Some of the required assumptions are not available as parameters of
+``lena-dual-stripe``. In this case, we override the default attributes, as
+shown in Table :ref:`tab-handover-campaign-default-values` below.
+
+.. _tab-handover-campaign-default-values:
+
+.. table:: Overriding default attributes for handover campaign
+
+   ==================================================== ================================== ==============================================
+   Default value name                                   Value                              Description
+   ==================================================== ================================== ==============================================
+   ns3::LteHelper::HandoverAlgorithm                    `ns3::NoOpHandoverAlgorithm`,      Choice of handover algorithm
+                                                        `ns3::A3RsrpHandoverAlgorithm`, or
+                                                        `ns3::A2A4RsrqHandoverAlgorithm`
+   ns3::LteHelper::Scheduler                            `ns3::PfFfMacScheduler`            Proportional Fair scheduler
+   ns3::LteHelper::UseIdealRrc                           1                                 Ideal RRC protocol
+   ns3::RadioBearerStatsCalculator::DlRlcOutputFilename `<run>`-DlRlcStats.txt             File name for DL RLC trace output
+   ns3::RadioBearerStatsCalculator::UlRlcOutputFilename `<run>`-UlRlcStats.txt             File name for UL RLC trace output
+   ns3::PhyStatsCalculator::DlRsrpSinrFilename          `<run>`-DlRsrpSinrStats.txt        File name for DL PHY RSRP/SINR trace output
+   ns3::PhyStatsCalculator::UlSinrFilename              `<run>`-UlSinrStats.txt            File name for UL PHY SINR trace output
+   ==================================================== ================================== ==============================================
+
+|ns3| provides many ways for passing configuration values into a simulation. In
+this example, we will use the command line arguments. It is basically done by
+appending the parameters and their values to the ``waf`` call when starting each
+individual simulation. So the ``waf`` calls for invoking our 3 simulations would
+look as below::
+
+   $ ./waf --run="lena-dual-stripe
+     --simTime=50 --nBlocks=0 --nMacroEnbSites=7 --nMacroEnbSitesX=2
+     --epc=1 --useUdp=0 --outdoorUeMinSpeed=16.6667 --outdoorUeMaxSpeed=16.6667
+     --ns3::LteHelper::HandoverAlgorithm=ns3::NoOpHandoverAlgorithm
+     --ns3::RadioBearerStatsCalculator::DlRlcOutputFilename=no-op-DlRlcStats.txt
+     --ns3::RadioBearerStatsCalculator::UlRlcOutputFilename=no-op-UlRlcStats.txt
+     --ns3::PhyStatsCalculator::DlRsrpSinrFilename=no-op-DlRsrpSinrStats.txt
+     --ns3::PhyStatsCalculator::UlSinrFilename=no-op-UlSinrStats.txt
+     --RngRun=1 > no-op.txt
+
+   $ ./waf --run="lena-dual-stripe
+     --simTime=50 --nBlocks=0 --nMacroEnbSites=7 --nMacroEnbSitesX=2
+     --epc=1 --useUdp=0 --outdoorUeMinSpeed=16.6667 --outdoorUeMaxSpeed=16.6667
+     --ns3::LteHelper::HandoverAlgorithm=ns3::A3RsrpHandoverAlgorithm
+     --ns3::RadioBearerStatsCalculator::DlRlcOutputFilename=a3-rsrp-DlRlcStats.txt
+     --ns3::RadioBearerStatsCalculator::UlRlcOutputFilename=a3-rsrp-UlRlcStats.txt
+     --ns3::PhyStatsCalculator::DlRsrpSinrFilename=a3-rsrp-DlRsrpSinrStats.txt
+     --ns3::PhyStatsCalculator::UlSinrFilename=a3-rsrp-UlSinrStats.txt
+     --RngRun=1 > a3-rsrp.txt
+
+   $ ./waf --run="lena-dual-stripe
+     --simTime=50 --nBlocks=0 --nMacroEnbSites=7 --nMacroEnbSitesX=2
+     --epc=1 --useUdp=0 --outdoorUeMinSpeed=16.6667 --outdoorUeMaxSpeed=16.6667
+     --ns3::LteHelper::HandoverAlgorithm=ns3::A2A4RsrqHandoverAlgorithm
+     --ns3::RadioBearerStatsCalculator::DlRlcOutputFilename=a2-a4-rsrq-DlRlcStats.txt
+     --ns3::RadioBearerStatsCalculator::UlRlcOutputFilename=a2-a4-rsrq-UlRlcStats.txt
+     --ns3::PhyStatsCalculator::DlRsrpSinrFilename=a2-a4-rsrq-DlRsrpSinrStats.txt
+     --ns3::PhyStatsCalculator::UlSinrFilename=a2-a4-rsrq-UlSinrStats.txt
+     --RngRun=1 > a2-a4-rsrq.txt
+
+Some notes on the execution:
+
+ * Notice that some arguments are not specified because they are already the
+   same as the default values. We also keep the handover algorithms on each own
+   default settings.
+
+ * Note the file names of simulation output, e.g. RLC traces and PHY traces,
+   because we have to make sure that they are not overwritten by the next
+   simulation run. In this example, we specify the names one by one using the
+   command line arguments.
+
+ * The ``--RngRun=1`` argument at the end is used for setting the run number
+   used by the random number generator used in the simulation. We re-run the
+   same simulations with different `RngRun` values, hence creating several
+   independent replications of the same simulations. Then we average the
+   results obtained from these replications to achieve some statistical
+   confidence.
+
+After hours of running, the simulation campaign will eventually end. Next we
+will perform some post-processing on the produced simulation output to obtain
+meaningful information out of it.
+
+In this example, we use GNU Octave to assist the processing of throughput and
+SINR data, as demonstrated in a sample GNU Octave script below::
+
+   % RxBytes is the 10th column
+   DlRxBytes = load ("no-op-DlRlcStats.txt") (:,10);
+   DlAverageThroughputKbps = sum (DlRxBytes) * 8 / 1000 / 50
+
+   % RxBytes is the 10th column
+   UlRxBytes = load ("no-op-UlRlcStats.txt") (:,10);
+   UlAverageThroughputKbps = sum (UlRxBytes) * 8 / 1000 / 50
+
+   % Sinr is the 6th column
+   DlSinr = load ("no-op-DlRsrpSinrStats.txt") (:,6);
+   % eliminate NaN values
+   idx = isnan (DlSinr);
+   DlSinr (idx) = 0;
+   DlAverageSinrDb = 10 * log10 (mean (DlSinr)) % convert to dB
+
+   % Sinr is the 5th column
+   UlSinr = load ("no-op-UlSinrStats.txt") (:,5);
+   % eliminate NaN values
+   idx = isnan (UlSinr);
+   UlSinr (idx) = 0;
+   UlAverageSinrDb = 10 * log10 (mean (UlSinr)) % convert to dB
+
+As for the number of handovers, we can use simple shell scripting to count the
+number of occurrences of string "Handover" in the log file::
+
+   $ grep "Handover" no-op.txt | wc -l
+
+Table :ref:`tab-handover-campaign-results` below shows the complete statistics
+after we are done with post-processing on every individual simulation run. The
+values shown are obtained from ``RngRun = 1``.
+
+.. _tab-handover-campaign-results:
+
+.. table:: Results of handover campaign
+
+   ===================================== ========= ========== ==============
+   Statistics                            No-op     A2-A4-RSRQ Strongest cell
+   ===================================== ========= ========== ==============
+   Average DL system throughput          8476 kbps 21575 kbps 20349 kbps
+   Average UL system throughput          4923 kbps 6039 kbps  6491 kbps
+   Average DL SINR                       0.40 dB   5.31 dB    5.24 dB
+   Average UL SINR                       7.93 dB   84.2 dB    83.62 dB
+   Number of handovers per UE per second 0         0.05458    0.04625
+   ===================================== ========= ========== ==============
+
+TODO: double the UE number, average system throughput for A2-A4-RSRQ, average
+SINR, topology diagram (REM).
