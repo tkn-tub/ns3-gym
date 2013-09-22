@@ -167,6 +167,8 @@ SOURCEFIGS = \
 	$(SRC)/lte/doc/source/figures/MCS_16_test.pdf \
 	$(SRC)/lte/doc/source/figures/miesm_scheme.pdf \
 	$(SRC)/lte/doc/source/figures/miesm_scheme.png \
+	$(SRC)/lte/doc/source/figures/lte-handover-campaign-rem.pdf \
+	$(SRC)/lte/doc/source/figures/lte-handover-campaign-rem.png \
 	$(SRC)/lte/doc/source/figures/lte-phy-interference.png \
 	$(SRC)/lte/doc/source/figures/helpers.png \
 	$(SRC)/lte/doc/source/figures/mac-random-access-contention.png \

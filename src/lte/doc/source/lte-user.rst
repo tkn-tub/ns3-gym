@@ -656,6 +656,8 @@ placed at the same position, and to configure separate ``EnbNetDevice``
 with different antenna orientations to be installed on each node.
 
 
+.. _sec-radio-environment-maps:
+
 Radio Environment Maps
 ----------------------
 
@@ -1565,7 +1567,7 @@ look as below::
      --ns3::RadioBearerStatsCalculator::UlRlcOutputFilename=no-op-UlRlcStats.txt
      --ns3::PhyStatsCalculator::DlRsrpSinrFilename=no-op-DlRsrpSinrStats.txt
      --ns3::PhyStatsCalculator::UlSinrFilename=no-op-UlSinrStats.txt
-     --RngRun=1 > no-op.txt
+     --RngRun=1" > no-op.txt
 
    $ ./waf --run="lena-dual-stripe
      --simTime=50 --nBlocks=0 --nMacroEnbSites=7 --nMacroEnbSitesX=2
@@ -1575,7 +1577,7 @@ look as below::
      --ns3::RadioBearerStatsCalculator::UlRlcOutputFilename=a3-rsrp-UlRlcStats.txt
      --ns3::PhyStatsCalculator::DlRsrpSinrFilename=a3-rsrp-DlRsrpSinrStats.txt
      --ns3::PhyStatsCalculator::UlSinrFilename=a3-rsrp-UlSinrStats.txt
-     --RngRun=1 > a3-rsrp.txt
+     --RngRun=1" > a3-rsrp.txt
 
    $ ./waf --run="lena-dual-stripe
      --simTime=50 --nBlocks=0 --nMacroEnbSites=7 --nMacroEnbSitesX=2
@@ -1585,7 +1587,7 @@ look as below::
      --ns3::RadioBearerStatsCalculator::UlRlcOutputFilename=a2-a4-rsrq-UlRlcStats.txt
      --ns3::PhyStatsCalculator::DlRsrpSinrFilename=a2-a4-rsrq-DlRsrpSinrStats.txt
      --ns3::PhyStatsCalculator::UlSinrFilename=a2-a4-rsrq-UlSinrStats.txt
-     --RngRun=1 > a2-a4-rsrq.txt
+     --RngRun=1" > a2-a4-rsrq.txt
 
 Some notes on the execution:
 
@@ -1604,6 +1606,21 @@ Some notes on the execution:
    independent replications of the same simulations. Then we average the
    results obtained from these replications to achieve some statistical
    confidence.
+
+ * We can add a ``--generateRem=1`` argument to generate the files necessary for
+   generating the Radio Environment Map (REM) of the simulation. The result is
+   Figure :ref:`fig-lte-handover-campaign-rem` below, which can be produced by
+   following the steps described in Section :ref:`sec-radio-environment-maps`.
+   This figure also shows the position of eNodeBs and UEs at the beginning of a
+   simulation using ``RngRun = 1``. Other values of `RngRun` may produce
+   different UE position.
+   
+.. _fig-lte-handover-campaign-rem:
+
+.. figure:: figures/lte-handover-campaign-rem.*
+   :align: center
+
+   REM obtained from a simulation in handover campaign
 
 After hours of running, the simulation campaign will eventually end. Next we
 will perform some post-processing on the produced simulation output to obtain
@@ -1641,21 +1658,60 @@ number of occurrences of string "Handover" in the log file::
 
 Table :ref:`tab-handover-campaign-results` below shows the complete statistics
 after we are done with post-processing on every individual simulation run. The
-values shown are obtained from ``RngRun = 1``.
+values shown are the average of the results obtained from ``RngRun`` of 1, 2, 3,
+and 4.
 
 .. _tab-handover-campaign-results:
 
 .. table:: Results of handover campaign
 
-   ===================================== ========= ========== ==============
-   Statistics                            No-op     A2-A4-RSRQ Strongest cell
-   ===================================== ========= ========== ==============
-   Average DL system throughput          8476 kbps 21575 kbps 20349 kbps
-   Average UL system throughput          4923 kbps 6039 kbps  6491 kbps
-   Average DL SINR                       0.40 dB   5.31 dB    5.24 dB
-   Average UL SINR                       7.93 dB   84.2 dB    83.62 dB
-   Number of handovers per UE per second 0         0.05458    0.04625
-   ===================================== ========= ========== ==============
+   ===================================== ========== =========== ==============
+   Statistics                            No-op      A2-A4-RSRQ  Strongest cell
+   ===================================== ========== =========== ==============
+   Average DL system throughput          6 615 kbps 20 509 kbps 19 709 kbps
+   Average UL system throughput          4 095 kbps 5 705 kbps  6 627 kbps
+   Average DL SINR                       -0.10 dB   5.19 dB     5.24 dB
+   Average UL SINR                       9.54 dB    81.57 dB    79.65 dB
+   Number of handovers per UE per second 0          0.05694     0.04771
+   ===================================== ========== =========== ==============
 
-TODO: double the UE number, average system throughput for A2-A4-RSRQ, average
-SINR, topology diagram (REM).
+.. Below are the detailed datasheets from the campaign, for informational
+   purpose, but hidden from the published document.
+
+.. ======================= ========== ========== ========== ========== =======
+   NoOp                    RngRun = 1 RngRun = 2 RngRun = 3 RngRun = 4 Average
+   ======================= ========== ========== ========== ========== =======
+   DlAverageThroughputKbps 8 476      4 478      6 913      6 593      6 615
+   UlAverageThroughputKbps 4 923      2 962      4 715      3 779      4 095
+   DlAverageSinrDb         0.40       -0.99      0.84       -0.64      -0.10
+   UlAverageSinrDb         7.93       8.06       12.52      9.65       9.54
+   NumHandoverPerUePerSec  0          0          0          0          0
+   ======================= ========== ========== ========== ========== =======
+
+.. ======================= ========== ========== ========== ========== =======
+   A2A4Rsrq                RngRun = 1 RngRun = 2 RngRun = 3 RngRun = 4 Average
+   ======================= ========== ========== ========== ========== =======
+   DlAverageThroughputKbps 21 575     18 500     n/a        21 451     20 509
+   UlAverageThroughputKbps 6 039      5 320      n/a        5 757      5 705
+   DlAverageSinrDb         5.31       5.16       n/a        5.09       5.19
+   UlAverageSinrDb         84.17      79.18      n/a        81.37      81.57
+   NumHandoverPerUePerSec  0.05458    0.06000    n/a        0.05625    0.05694
+   ======================= ========== ========== ========== ========== =======
+   RngRun = 3 simulation got a segmentation fault as around +15.2s. The cause is
+   unknown at the moment.
+
+.. ======================= ========== ========== ========== ========== =======
+   A3Rsrp                  RngRun = 1 RngRun = 2 RngRun = 3 RngRun = 4 Average
+   ======================= ========== ========== ========== ========== =======
+   DlAverageThroughputKbps 20 349     17 781     20 229     20 478     19 709
+   UlAverageThroughputKbps 6 491      6 397      7 555      6 064      6 627
+   DlAverageSinrDb         5.24       5.08       5.63       5.01       5.24
+   UlAverageSinrDb         83.62      81.94      78.84      74.19      79.65
+   NumHandoverPerUePerSec  0.04625    0.04917    0.04958    0.04583    0.04771
+   ======================= ========== ========== ========== ========== =======
+
+The results show that having a handover algorithm in a mobility simulation
+improves both user throughput and SINR significantly. There is little difference
+between the two handover algorithms in this campaign scenario. It would be
+interesting to see their performance in different scenarios, such as scenarios
+with home eNodeBs deployment.

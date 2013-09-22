@@ -136,6 +136,8 @@ IMAGES_NOBUILD = $(FIGURES)/fading_pedestrian.png \
 	$(FIGURES)/helpers.pdf \
 	$(FIGURES)/miesm_scheme.pdf \
 	$(FIGURES)/miesm_scheme.png \
+	$(FIGURES)/lte-handover-campaign-rem.pdf \
+	$(FIGURES)/lte-handover-campaign-rem.png \
 	${IMAGES_SEQDIAG:.seqdiag=.png} \
 	${IMAGES_SEQDIAG:.seqdiag=.pdf} \
 	${IMAGES_DOT:.dot=.png} \
