@@ -225,7 +225,12 @@ A2A4RsrqHandoverAlgorithm::IsValidNeighbour (uint16_t cellId)
 {
   NS_LOG_FUNCTION (this << cellId);
 
-  // TODO
+  /**
+   * \todo In the future, this function can be expanded to validate whether the
+   *       neighbour cell is a valid target cell, e.g., taking into account the
+   *       NRT in ANR and whether it is a CSG cell with closed access.
+   */
+
   return true;
 }
 

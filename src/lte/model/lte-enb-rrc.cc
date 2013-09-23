@@ -1505,7 +1505,7 @@ LteEnbRrc::AddUeMeasReportConfig (LteRrcSap::ReportConfigEutra config)
     {
       NS_FATAL_ERROR ("AddUeMeasReportConfig may not be called after the simulation has run");
     }
-  // TODO more asserts to validate the input
+  /// \todo More asserts to validate the input.
 
   uint8_t nextId = m_ueMeasConfig.reportConfigToAddModList.size () + 1;
 

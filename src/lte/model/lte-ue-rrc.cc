@@ -534,8 +534,11 @@ LteUeRrc::DoNotifyRandomAccessFailed ()
     case CONNECTED_HANDOVER:
       {
         m_handoverEndErrorTrace (m_imsi, m_cellId, m_rnti);
-        // TODO Send RRC Connection Re-establishment
-        // TODO Switch to CONNECTED_REESTABLISHING
+        /**
+         * \todo After a handover failure because of a random access failure,
+         *       send an RRC Connection Re-establishment and switch to
+         *       CONNECTED_REESTABLISHING state.
+         */
       }
       break;
 
@@ -912,10 +915,13 @@ LteUeRrc::DoRecvRrcConnectionReestablishment (LteRrcSap::RrcConnectionReestablis
     {
     case CONNECTED_REESTABLISHING:
       {
-        // TODO Stop T301
-        // TODO Fire trace source Connection Re-established
-        // TODO Send RRC Connection Re-establishment Complete
-        // TODO Switch to CONNECTED_NORMALLY
+        /**
+         * \todo After receiving RRC Connection Re-establishment, stop timer
+         *       T301, fire a new trace source, reply with RRC Connection
+         *       Re-establishment Complete, and finally switch to
+         *       CONNECTED_NORMALLY state. See Section 5.3.7.5 of 3GPP TS
+         *       36.331.
+         */
       }
       break;
 
@@ -933,7 +939,10 @@ LteUeRrc::DoRecvRrcConnectionReestablishmentReject (LteRrcSap::RrcConnectionRees
     {
     case CONNECTED_REESTABLISHING:
       {
-        // TODO Stop T301
+        /**
+         * \todo After receiving RRC Connection Re-establishment Reject, stop
+         *       timer T301. See Section 5.3.7.8 of 3GPP TS 36.331.
+         */
         LeaveConnectedMode ();
       }
       break;
@@ -948,7 +957,7 @@ void
 LteUeRrc::DoRecvRrcConnectionRelease (LteRrcSap::RrcConnectionRelease msg)
 {
   NS_LOG_FUNCTION (this << " RNTI " << m_rnti);
-  // TODO
+  /// \todo Currently not implemented, see Section 5.3.8 of 3GPP TS 36.331.
 }
 
 void 

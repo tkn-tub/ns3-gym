@@ -235,7 +235,11 @@ EpcUeNas::DoNotifyConnectionFailed ()
   NS_LOG_FUNCTION (this);
 
   SwitchToState (OFF);
-  // TODO
+  /**
+   * \todo Currently not implemented, action by NAS and upper layers after UE
+   *       fails to switch to CONNNECTED mode. Maybe a retry, or just stop here
+   *       and fire a trace to let user know.
+   */
 }
 
 void

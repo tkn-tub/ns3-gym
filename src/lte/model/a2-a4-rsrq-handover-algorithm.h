@@ -100,7 +100,7 @@ private:
     uint8_t m_rsrp;
     uint8_t m_rsrq;
   };
-  // TODO instead of class, try using struct or SimpleRefCount
+  /// \todo Instead of class, try using struct or SimpleRefCount for UeMeasure.
 
   //               cellId
   typedef std::map<uint16_t, Ptr<UeMeasure> > MeasurementRow_t;
