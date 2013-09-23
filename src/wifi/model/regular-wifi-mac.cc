@@ -92,26 +92,26 @@ RegularWifiMac::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   delete m_rxMiddle;
-  m_rxMiddle = NULL;
+  m_rxMiddle = 0;
 
   delete m_txMiddle;
-  m_txMiddle = NULL;
+  m_txMiddle = 0;
 
   delete m_dcfManager;
-  m_dcfManager = NULL;
+  m_dcfManager = 0;
 
   m_low->Dispose ();
-  m_low = NULL;
+  m_low = 0;
 
-  m_phy = NULL;
-  m_stationManager = NULL;
+  m_phy = 0;
+  m_stationManager = 0;
 
   m_dca->Dispose ();
-  m_dca = NULL;
+  m_dca = 0;
 
   for (EdcaQueues::iterator i = m_edca.begin (); i != m_edca.end (); ++i)
     {
-      i->second = NULL;
+      i->second = 0;
     }
 }
 
