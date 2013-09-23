@@ -1603,6 +1603,10 @@ LteUeRrc::MeasurementReportTriggering (uint8_t measId)
               }
             else
               {
+                /*
+                 * This is to check that the triggered cell recorded in the
+                 * VarMeasReportList is the serving cell.
+                 */
                 NS_ASSERT (measReportIt->second.cellsTriggeredList.find (m_cellId)
                            != measReportIt->second.cellsTriggeredList.end ());
               }
@@ -1619,6 +1623,10 @@ LteUeRrc::MeasurementReportTriggering (uint8_t measId)
           {
             if (isMeasIdInReportList)
               {
+                /*
+                 * This is to check that the triggered cell recorded in the
+                 * VarMeasReportList is the serving cell.
+                 */
                 NS_ASSERT (measReportIt->second.cellsTriggeredList.find (m_cellId)
                            != measReportIt->second.cellsTriggeredList.end ());
                 concernedCellsLeaving.push_back (m_cellId);
@@ -1682,6 +1690,10 @@ LteUeRrc::MeasurementReportTriggering (uint8_t measId)
               }
             else
               {
+                /*
+                 * This is to check that the triggered cell recorded in the
+                 * VarMeasReportList is the serving cell.
+                 */
                 NS_ASSERT (measReportIt->second.cellsTriggeredList.find (m_cellId)
                            != measReportIt->second.cellsTriggeredList.end ());
               }
@@ -1698,6 +1710,12 @@ LteUeRrc::MeasurementReportTriggering (uint8_t measId)
           {
             if (isMeasIdInReportList)
               {
+                /*
+                 * This is to check that the triggered cell recorded in the
+                 * VarMeasReportList is the serving cell.
+                 */
+                NS_ASSERT (measReportIt->second.cellsTriggeredList.find (m_cellId)
+                           != measReportIt->second.cellsTriggeredList.end ());
                 concernedCellsLeaving.push_back (m_cellId);
                 eventLeavingCondApplicable = true;
               }
@@ -2411,21 +2429,6 @@ LteUeRrc::VarMeasReportListAdd (uint8_t measId, ConcernedCells_t enteringCells)
        *  - the time-to-trigger delay is fixed (not adaptive/dynamic); and
        *  - the first element in the list is associated with this function call.
        */
-      #ifdef NS3_ASSERT_ENABLE
-      NS_ASSERT_MSG (Simulator::IsExpired (enteringTriggerIt->second.front ().timer),
-                     "Unexpected trigger queue content");
-      NS_ASSERT_MSG (enteringTriggerIt->second.front ().concernedCells.size () == enteringCells.size (),
-                     "Unexpected trigger queue content");
-      ConcernedCells_t::const_iterator it1, it2;
-      for (it1 = enteringTriggerIt->second.front ().concernedCells.begin (),
-           it2 = enteringCells.begin ();
-           it1 != enteringTriggerIt->second.front ().concernedCells.end ();
-           ++it1, ++it2)
-        {
-          NS_ASSERT_MSG ((*it1) == (*it2), "Unexpected trigger queue content");
-        }
-      // the pending trigger is now confirmed match, remove it from the queue
-      #endif /* NS3_ASSERT_ENABLE */
       enteringTriggerIt->second.pop_front ();
 
       if (!enteringTriggerIt->second.empty ())
@@ -2487,21 +2490,6 @@ LteUeRrc::VarMeasReportListErase (uint8_t measId, ConcernedCells_t leavingCells,
        *  - the time-to-trigger delay is fixed (not adaptive/dynamic); and
        *  - the first element in the list is associated with this function call.
        */
-      #ifdef NS3_ASSERT_ENABLE
-      NS_ASSERT_MSG (Simulator::IsExpired (leavingTriggerIt->second.front ().timer),
-                     "Unexpected trigger queue content");
-      NS_ASSERT_MSG (leavingTriggerIt->second.front ().concernedCells.size () == leavingCells.size (),
-                     "Unexpected trigger queue content");
-      ConcernedCells_t::const_iterator it1, it2;
-      for (it1 = leavingTriggerIt->second.front ().concernedCells.begin (),
-           it2 = leavingCells.begin ();
-           it1 != leavingTriggerIt->second.front ().concernedCells.end ();
-           ++it1, ++it2)
-        {
-          NS_ASSERT_MSG ((*it1) == (*it2), "Unexpected trigger queue content");
-        }
-      // the pending trigger is now confirmed match, remove it from the queue
-      #endif /* NS3_ASSERT_ENABLE */
       leavingTriggerIt->second.pop_front ();
 
       if (!leavingTriggerIt->second.empty ())

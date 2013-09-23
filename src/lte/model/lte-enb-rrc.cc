@@ -1497,7 +1497,8 @@ LteEnbRrc::GetUeManager (uint16_t rnti)
 uint8_t
 LteEnbRrc::AddUeMeasReportConfig (LteRrcSap::ReportConfigEutra config)
 {
-  // sanity checks
+  // SANITY CHECK
+
   NS_ASSERT_MSG (m_ueMeasConfig.measIdToAddModList.size () == m_ueMeasConfig.reportConfigToAddModList.size (),
                  "Measurement identities and reporting configuration should not have different quantity");
 
@@ -1505,7 +1506,59 @@ LteEnbRrc::AddUeMeasReportConfig (LteRrcSap::ReportConfigEutra config)
     {
       NS_FATAL_ERROR ("AddUeMeasReportConfig may not be called after the simulation has run");
     }
-  /// \todo More asserts to validate the input.
+
+  // INPUT VALIDATION
+
+  switch (config.triggerQuantity)
+    {
+    case LteRrcSap::ReportConfigEutra::RSRP:
+      if ((config.eventId == LteRrcSap::ReportConfigEutra::EVENT_A5)
+          && (config.threshold2.choice != LteRrcSap::ThresholdEutra::THRESHOLD_RSRP))
+        {
+          NS_FATAL_ERROR ("The given triggerQuantity (RSRP) does not match with the given threshold2.choice");
+        }
+
+      if (((config.eventId == LteRrcSap::ReportConfigEutra::EVENT_A1)
+           || (config.eventId == LteRrcSap::ReportConfigEutra::EVENT_A2)
+           || (config.eventId == LteRrcSap::ReportConfigEutra::EVENT_A4)
+           || (config.eventId == LteRrcSap::ReportConfigEutra::EVENT_A5))
+          && (config.threshold1.choice != LteRrcSap::ThresholdEutra::THRESHOLD_RSRP))
+        {
+          NS_FATAL_ERROR ("The given triggerQuantity (RSRP) does not match with the given threshold1.choice");
+        }
+      break;
+
+    case LteRrcSap::ReportConfigEutra::RSRQ:
+      if ((config.eventId == LteRrcSap::ReportConfigEutra::EVENT_A5)
+          && (config.threshold2.choice != LteRrcSap::ThresholdEutra::THRESHOLD_RSRQ))
+        {
+          NS_FATAL_ERROR ("The given triggerQuantity (RSRQ) does not match with the given threshold2.choice");
+        }
+
+      if (((config.eventId == LteRrcSap::ReportConfigEutra::EVENT_A1)
+           || (config.eventId == LteRrcSap::ReportConfigEutra::EVENT_A2)
+           || (config.eventId == LteRrcSap::ReportConfigEutra::EVENT_A4)
+           || (config.eventId == LteRrcSap::ReportConfigEutra::EVENT_A5))
+          && (config.threshold1.choice != LteRrcSap::ThresholdEutra::THRESHOLD_RSRQ))
+        {
+          NS_FATAL_ERROR ("The given triggerQuantity (RSRQ) does not match with the given threshold1.choice");
+        }
+      break;
+
+    default:
+      NS_FATAL_ERROR ("unsupported triggerQuantity");
+      break;
+    }
+
+  if (config.purpose != LteRrcSap::ReportConfigEutra::REPORT_STRONGEST_CELLS)
+    {
+      NS_FATAL_ERROR ("Only REPORT_STRONGEST_CELLS purpose is supported");
+    }
+
+  if (config.reportQuantity != LteRrcSap::ReportConfigEutra::BOTH)
+    {
+      NS_LOG_WARN ("reportQuantity = BOTH will be used instead of the given reportQuantity");
+    }
 
   uint8_t nextId = m_ueMeasConfig.reportConfigToAddModList.size () + 1;
 
