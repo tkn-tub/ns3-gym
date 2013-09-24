@@ -302,28 +302,6 @@ public:
   void AttachToClosestEnb (Ptr<NetDevice> ueDevice, NetDeviceContainer enbDevices);
 
   /**
-   * \brief Instruct a set of UE devices to switch to ACTIVE/CONNECTED state.
-   * \param ueDevices
-   *
-   * If this function is called when the UE is in a situation where performing
-   * a call is not possible (e.g. before the simulation begin), then the UE will
-   * attempt to connect at the earliest possible time (e.g. after it camps to a
-   * suitable cell).
-   */
-  void Connect (NetDeviceContainer ueDevices);
-
-  /**
-   * \brief Instruct a UE device to switch to ACTIVE/CONNECTED state.
-   * \param ueDevice
-   *
-   * If this function is called when the UE is in a situation where performing
-   * a call is not possible (e.g. before the simulation begin), then the UE will
-   * attempt to connect at the earliest possible time (e.g. after it camps to a
-   * suitable cell).
-   */
-  void Connect (Ptr<NetDevice> ueDevice);
-
-  /**
    * Activate a dedicated EPS bearer on a given set of UE devices
    *
    * \param ueDevices the set of UE devices
