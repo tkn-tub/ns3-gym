@@ -1183,6 +1183,8 @@ For an example with full source code, please refer to the ``lena-x2-handover``
 example program.
 
 
+.. _sec-automatic-handover:
+
 Automatic handover trigger
 **************************
 
