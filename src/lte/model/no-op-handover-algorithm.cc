@@ -32,18 +32,21 @@ NS_OBJECT_ENSURE_REGISTERED (NoOpHandoverAlgorithm);
 NoOpHandoverAlgorithm::NoOpHandoverAlgorithm ()
   : m_handoverManagementSapUser (0)
 {
+  NS_LOG_FUNCTION (this);
   m_handoverManagementSapProvider = new MemberLteHandoverManagementSapProvider<NoOpHandoverAlgorithm> (this);
 }
 
 
 NoOpHandoverAlgorithm::~NoOpHandoverAlgorithm ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 
 void
 NoOpHandoverAlgorithm::DoDispose ()
 {
+  NS_LOG_FUNCTION (this);
   delete m_handoverManagementSapProvider;
 }
 
@@ -62,6 +65,7 @@ NoOpHandoverAlgorithm::GetTypeId (void)
 void
 NoOpHandoverAlgorithm::SetLteHandoverManagementSapUser (LteHandoverManagementSapUser* s)
 {
+  NS_LOG_FUNCTION (this << s);
   m_handoverManagementSapUser = s;
 }
 
@@ -69,6 +73,7 @@ NoOpHandoverAlgorithm::SetLteHandoverManagementSapUser (LteHandoverManagementSap
 LteHandoverManagementSapProvider*
 NoOpHandoverAlgorithm::GetLteHandoverManagementSapProvider ()
 {
+  NS_LOG_FUNCTION (this);
   return m_handoverManagementSapProvider;
 }
 
@@ -76,6 +81,7 @@ NoOpHandoverAlgorithm::GetLteHandoverManagementSapProvider ()
 void
 NoOpHandoverAlgorithm::DoInitialize ()
 {
+  NS_LOG_FUNCTION (this);
   LteHandoverAlgorithm::DoInitialize ();
 }
 
@@ -84,6 +90,7 @@ void
 NoOpHandoverAlgorithm::DoReportUeMeas (uint16_t rnti,
                                        LteRrcSap::MeasResults measResults)
 {
+  NS_LOG_FUNCTION (this << rnti << (uint16_t) measResults.measId);
 }
 
 

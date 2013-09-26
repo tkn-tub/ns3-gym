@@ -172,12 +172,14 @@ LteUeNetDevice::GetImsi () const
 uint16_t
 LteUeNetDevice::GetDlEarfcn () const
 {
+  NS_LOG_FUNCTION (this);
   return m_dlEarfcn;
 }
 
 void
 LteUeNetDevice::SetDlEarfcn (uint16_t earfcn)
 {
+  NS_LOG_FUNCTION (this << earfcn);
   m_dlEarfcn = earfcn;
 }
 

@@ -1497,6 +1497,8 @@ LteEnbRrc::GetUeManager (uint16_t rnti)
 uint8_t
 LteEnbRrc::AddUeMeasReportConfig (LteRrcSap::ReportConfigEutra config)
 {
+  NS_LOG_FUNCTION (this);
+
   // SANITY CHECK
 
   NS_ASSERT_MSG (m_ueMeasConfig.measIdToAddModList.size () == m_ueMeasConfig.reportConfigToAddModList.size (),
@@ -1584,7 +1586,8 @@ void
 LteEnbRrc::ConfigureCell (uint8_t ulBandwidth, uint8_t dlBandwidth,
                           uint16_t ulEarfcn, uint16_t dlEarfcn, uint16_t cellId)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << (uint16_t) ulBandwidth << (uint16_t) dlBandwidth
+                        << ulEarfcn << dlEarfcn << cellId);
   NS_ASSERT (!m_configured);
   m_cmacSapProvider->ConfigureMac (ulBandwidth, dlBandwidth);
   m_cphySapProvider->SetBandwidth (ulBandwidth, dlBandwidth);

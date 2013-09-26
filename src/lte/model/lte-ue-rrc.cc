@@ -1475,7 +1475,7 @@ void
 LteUeRrc::SaveUeMeasurements (uint16_t cellId, double rsrp, double rsrq,
                               bool useLayer3Filtering)
 {
-  NS_LOG_LOGIC (this << " CellId " << cellId << " RSRP " << rsrp << " RSRQ " << rsrq);
+  NS_LOG_FUNCTION (this << cellId << rsrp << rsrq << useLayer3Filtering);
 
   std::map<uint16_t, MeasValues>::iterator storedMeasIt = m_storedMeasValues.find (cellId);;
 
@@ -1487,7 +1487,7 @@ LteUeRrc::SaveUeMeasurements (uint16_t cellId, double rsrp, double rsrq,
           storedMeasIt->second.rsrp = (1 - m_varMeasConfig.aRsrp) * storedMeasIt->second.rsrp
             + m_varMeasConfig.aRsrp * rsrp;
 
-          if (std::isnan (storedMeasIt->second.rsrq))
+          if (isnan (storedMeasIt->second.rsrq))
             {
               // the previous RSRQ measurements provided UE PHY are invalid
               storedMeasIt->second.rsrq = rsrq; // replace it with unfiltered value
@@ -1517,6 +1517,10 @@ LteUeRrc::SaveUeMeasurements (uint16_t cellId, double rsrp, double rsrq,
       storedMeasIt = ret.first;
     }
 
+  NS_LOG_DEBUG (this << " IMSI " << m_imsi << " state " << ToString (m_state)
+                     << ", measured cell " << m_cellId
+                     << ", new RSRP " << rsrp << " stored " << storedMeasIt->second.rsrp
+                     << ", new RSRQ " << rsrq << " stored " << storedMeasIt->second.rsrq);
   storedMeasIt->second.timestamp = Simulator::Now ();
 
 } // end of void SaveUeMeasurements
@@ -1524,7 +1528,7 @@ LteUeRrc::SaveUeMeasurements (uint16_t cellId, double rsrp, double rsrq,
 void
 LteUeRrc::MeasurementReportTriggering (uint8_t measId)
 {
-  NS_LOG_LOGIC (this << " considering measId " << (uint32_t) measId);
+  NS_LOG_FUNCTION (this << (uint16_t) measId);
 
   std::map<uint8_t, LteRrcSap::MeasIdToAddMod>::iterator measIdIt =
     m_varMeasConfig.measIdList.find (measId);
@@ -1552,9 +1556,9 @@ LteUeRrc::MeasurementReportTriggering (uint8_t measId)
                  "only triggerType == event is supported");
   // only EUTRA is supported, no need to check for it
 
+  NS_LOG_LOGIC (this << " considering measId " << (uint32_t) measId);
   bool eventEntryCondApplicable = false;
   bool eventLeavingCondApplicable = false;
-
   ConcernedCells_t concernedCellsEntry;
   ConcernedCells_t concernedCellsLeaving;
 
@@ -2269,6 +2273,8 @@ LteUeRrc::MeasurementReportTriggering (uint8_t measId)
 void
 LteUeRrc::CancelEnteringTrigger (uint8_t measId)
 {
+  NS_LOG_FUNCTION (this << (uint16_t) measId);
+
   std::map<uint8_t, std::list<PendingTrigger_t> >::iterator
     it1 = m_enteringTriggerQueue.find (measId);
   NS_ASSERT (it1 != m_enteringTriggerQueue.end ());
@@ -2291,6 +2297,8 @@ LteUeRrc::CancelEnteringTrigger (uint8_t measId)
 void
 LteUeRrc::CancelEnteringTrigger (uint8_t measId, uint16_t cellId)
 {
+  NS_LOG_FUNCTION (this << (uint16_t) measId << cellId);
+
   std::map<uint8_t, std::list<PendingTrigger_t> >::iterator
     it1 = m_enteringTriggerQueue.find (measId);
   NS_ASSERT (it1 != m_enteringTriggerQueue.end ());
@@ -2327,6 +2335,8 @@ LteUeRrc::CancelEnteringTrigger (uint8_t measId, uint16_t cellId)
 void
 LteUeRrc::CancelLeavingTrigger (uint8_t measId)
 {
+  NS_LOG_FUNCTION (this << (uint16_t) measId);
+
   std::map<uint8_t, std::list<PendingTrigger_t> >::iterator
     it1 = m_leavingTriggerQueue.find (measId);
   NS_ASSERT (it1 != m_leavingTriggerQueue.end ());
@@ -2349,6 +2359,8 @@ LteUeRrc::CancelLeavingTrigger (uint8_t measId)
 void
 LteUeRrc::CancelLeavingTrigger (uint8_t measId, uint16_t cellId)
 {
+  NS_LOG_FUNCTION (this << (uint16_t) measId << cellId);
+
   std::map<uint8_t, std::list<PendingTrigger_t> >::iterator
     it1 = m_leavingTriggerQueue.find (measId);
   NS_ASSERT (it1 != m_leavingTriggerQueue.end ());
@@ -2532,7 +2544,7 @@ LteUeRrc::VarMeasReportListClear (uint8_t measId)
 void 
 LteUeRrc::SendMeasurementReport (uint8_t measId)
 {
-  NS_LOG_FUNCTION (this << (uint32_t) measId);
+  NS_LOG_FUNCTION (this << (uint16_t) measId);
   //  3GPP TS 36.331 section 5.5.5 Measurement reporting
 
   std::map<uint8_t, LteRrcSap::MeasIdToAddMod>::iterator 

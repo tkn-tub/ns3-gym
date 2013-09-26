@@ -35,18 +35,21 @@ NS_OBJECT_ENSURE_REGISTERED (A3RsrpHandoverAlgorithm);
 A3RsrpHandoverAlgorithm::A3RsrpHandoverAlgorithm ()
   : m_handoverManagementSapUser (0)
 {
+  NS_LOG_FUNCTION (this);
   m_handoverManagementSapProvider = new MemberLteHandoverManagementSapProvider<A3RsrpHandoverAlgorithm> (this);
 }
 
 
 A3RsrpHandoverAlgorithm::~A3RsrpHandoverAlgorithm ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 
 void
 A3RsrpHandoverAlgorithm::DoDispose ()
 {
+  NS_LOG_FUNCTION (this);
   delete m_handoverManagementSapProvider;
 }
 
@@ -78,6 +81,7 @@ A3RsrpHandoverAlgorithm::GetTypeId (void)
 void
 A3RsrpHandoverAlgorithm::SetLteHandoverManagementSapUser (LteHandoverManagementSapUser* s)
 {
+  NS_LOG_FUNCTION (this << s);
   m_handoverManagementSapUser = s;
 }
 
@@ -85,6 +89,7 @@ A3RsrpHandoverAlgorithm::SetLteHandoverManagementSapUser (LteHandoverManagementS
 LteHandoverManagementSapProvider*
 A3RsrpHandoverAlgorithm::GetLteHandoverManagementSapProvider ()
 {
+  NS_LOG_FUNCTION (this);
   return m_handoverManagementSapProvider;
 }
 

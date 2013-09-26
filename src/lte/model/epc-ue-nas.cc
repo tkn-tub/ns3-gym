@@ -93,18 +93,21 @@ EpcUeNas::GetTypeId (void)
 void 
 EpcUeNas::SetDevice (Ptr<NetDevice> dev)
 {
+  NS_LOG_FUNCTION (this << dev);
   m_device = dev;
 }
 
 void 
 EpcUeNas::SetImsi (uint64_t imsi)
 {
+  NS_LOG_FUNCTION (this << imsi);
   m_imsi = imsi;
 }
 
 void
 EpcUeNas::SetCsgId (uint32_t csgId)
 {
+  NS_LOG_FUNCTION (this << csgId);
   m_csgId = csgId;
   m_asSapProvider->SetCsgWhiteList (csgId);
 }
@@ -112,31 +115,35 @@ EpcUeNas::SetCsgId (uint32_t csgId)
 uint32_t
 EpcUeNas::GetCsgId () const
 {
+  NS_LOG_FUNCTION (this);
   return m_csgId;
 }
 
 void
 EpcUeNas::SetAsSapProvider (LteAsSapProvider* s)
 {
+  NS_LOG_FUNCTION (this << s);
   m_asSapProvider = s;
 }
 
 LteAsSapUser*
 EpcUeNas::GetAsSapUser ()
 {
+  NS_LOG_FUNCTION (this);
   return m_asSapUser;
 }
 
 void
 EpcUeNas::SetForwardUpCallback (Callback <void, Ptr<Packet> > cb)
 {
+  NS_LOG_FUNCTION (this);
   m_forwardUpCallback = cb;
 }
 
 void
 EpcUeNas::StartCellSelection (uint16_t dlEarfcn)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << dlEarfcn);
   m_asSapProvider->StartCellSelection (dlEarfcn);
 }
 
@@ -152,7 +159,7 @@ EpcUeNas::Connect ()
 void
 EpcUeNas::Connect (uint16_t cellId, uint16_t dlEarfcn)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << cellId << dlEarfcn);
 
   // force the UE RRC to be camped on a specific eNB
   m_asSapProvider->ForceCampedOnEnb (cellId, dlEarfcn);
@@ -245,7 +252,7 @@ EpcUeNas::DoNotifyConnectionFailed ()
 void
 EpcUeNas::DoRecvData (Ptr<Packet> packet)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << packet);
   m_forwardUpCallback (packet);
 }
 
@@ -268,7 +275,7 @@ EpcUeNas::DoActivateEpsBearer (EpsBearer bearer, Ptr<EpcTft> tft)
 void 
 EpcUeNas::SwitchToState (State newState)
 {
-  NS_LOG_FUNCTION (this << newState);
+  NS_LOG_FUNCTION (this << ToString (newState));
   State oldState = m_state;
   m_state = newState;
   NS_LOG_INFO ("IMSI " << m_imsi << " NAS " << ToString (oldState) << " --> " << ToString (newState));

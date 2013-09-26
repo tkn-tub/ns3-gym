@@ -50,6 +50,7 @@ LteAnr::~LteAnr ()
 void
 LteAnr::DoDispose ()
 {
+  NS_LOG_FUNCTION (this);
   delete m_anrSapProvider;
   m_neighbourRelationTable.clear ();
 }
@@ -112,6 +113,7 @@ LteAnr::RemoveNeighbourRelation (uint16_t cellId)
 void
 LteAnr::SetLteAnrSapUser (LteAnrSapUser* s)
 {
+  NS_LOG_FUNCTION (this << s);
   m_anrSapUser = s;
 }
 
@@ -119,6 +121,7 @@ LteAnr::SetLteAnrSapUser (LteAnrSapUser* s)
 LteAnrSapProvider*
 LteAnr::GetLteAnrSapProvider ()
 {
+  NS_LOG_FUNCTION (this);
   return m_anrSapProvider;
 }
 
@@ -126,6 +129,7 @@ LteAnr::GetLteAnrSapProvider ()
 void
 LteAnr::DoInitialize ()
 {
+  NS_LOG_FUNCTION (this);
   NS_LOG_LOGIC (this << " requesting Event A4 measurements"
                      << " (threshold=" << (uint16_t) m_threshold << ")");
   LteRrcSap::ReportConfigEutra reportConfig;
@@ -208,6 +212,7 @@ LteAnr::DoReportUeMeas (LteRrcSap::MeasResults measResults)
 void
 LteAnr::DoAddNeighbourRelation (uint16_t cellId)
 {
+  NS_LOG_FUNCTION (this << cellId);
   AddNeighbourRelation (cellId);
 }
 
