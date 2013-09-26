@@ -994,19 +994,19 @@ UeManager::DoReceivePdcpSdu (LtePdcpSapUser::ReceivePdcpSduParameters params)
 
 
 uint16_t
-UeManager::GetRnti (void)
+UeManager::GetRnti (void) const
 {
   return m_rnti;
 }
 
 uint64_t
-UeManager::GetImsi (void)
+UeManager::GetImsi (void) const
 {
   return m_imsi;
 }
 
 uint16_t
-UeManager::GetSrsConfigurationIndex (void)
+UeManager::GetSrsConfigurationIndex (void) const
 {
   return m_physicalConfigDedicated.soundingRsUlConfigDedicated.srsConfigIndex;
 }
@@ -1031,7 +1031,7 @@ UeManager::SetSrsConfigurationIndex (uint16_t srsConfIndex)
 }
 
 UeManager::State
-UeManager::GetState (void)
+UeManager::GetState (void) const
 {
   return m_state;
 }

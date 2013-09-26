@@ -62,7 +62,7 @@ public:
    * \param cellId the Physical Cell ID of the neighbouring cell of interest
    * \return if true, the Neighbour Relation shall *not* be removed from the NRT
    */
-  virtual bool GetNoRemove (uint16_t cellId) = 0;
+  virtual bool GetNoRemove (uint16_t cellId) const = 0;
 
   /**
    * \brief Get the value of *No HO* field of a neighbouring cell from the
@@ -71,7 +71,7 @@ public:
    * \return if true, the Neighbour Relation shall *not* be used by the eNodeB
    *         for handover reasons
    */
-  virtual bool GetNoHo (uint16_t cellId) = 0;
+  virtual bool GetNoHo (uint16_t cellId) const = 0;
 
   /**
    * \brief Get the value of *No X2* field of a neighbouring cell from the
@@ -81,7 +81,7 @@ public:
    *         order to initiate procedures towards the eNodeB parenting the
    *         target cell
    */
-  virtual bool GetNoX2 (uint16_t cellId) = 0;
+  virtual bool GetNoX2 (uint16_t cellId) const = 0;
 
 }; // end of class LteAnrSapProvider
 
@@ -133,9 +133,9 @@ public:
   // inherited from LteAnrSapProvider
   virtual void ReportUeMeas (LteRrcSap::MeasResults measResults);
   virtual void AddNeighbourRelation (uint16_t cellId);
-  virtual bool GetNoRemove (uint16_t cellId);
-  virtual bool GetNoHo (uint16_t cellId);
-  virtual bool GetNoX2 (uint16_t cellId);
+  virtual bool GetNoRemove (uint16_t cellId) const;
+  virtual bool GetNoHo (uint16_t cellId) const;
+  virtual bool GetNoX2 (uint16_t cellId) const;
 
 private:
   MemberLteAnrSapProvider ();
@@ -169,7 +169,7 @@ MemberLteAnrSapProvider<C>::AddNeighbourRelation (uint16_t cellId)
 
 template <class C>
 bool
-MemberLteAnrSapProvider<C>::GetNoRemove (uint16_t cellId)
+MemberLteAnrSapProvider<C>::GetNoRemove (uint16_t cellId) const
 {
   return m_owner->DoGetNoRemove (cellId);
 }
@@ -177,7 +177,7 @@ MemberLteAnrSapProvider<C>::GetNoRemove (uint16_t cellId)
 
 template <class C>
 bool
-MemberLteAnrSapProvider<C>::GetNoHo (uint16_t cellId)
+MemberLteAnrSapProvider<C>::GetNoHo (uint16_t cellId) const
 {
   return m_owner->DoGetNoHo (cellId);
 }
@@ -185,7 +185,7 @@ MemberLteAnrSapProvider<C>::GetNoHo (uint16_t cellId)
 
 template <class C>
 bool
-MemberLteAnrSapProvider<C>::GetNoX2 (uint16_t cellId)
+MemberLteAnrSapProvider<C>::GetNoX2 (uint16_t cellId) const
 {
   return m_owner->DoGetNoX2 (cellId);
 }

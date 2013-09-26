@@ -97,9 +97,9 @@ private:
   // ANR SAP provider implementation
   void DoReportUeMeas (LteRrcSap::MeasResults measResults);
   void DoAddNeighbourRelation (uint16_t cellId);
-  bool DoGetNoRemove (uint16_t cellId);
-  bool DoGetNoHo (uint16_t cellId);
-  bool DoGetNoX2 (uint16_t cellId);
+  bool DoGetNoRemove (uint16_t cellId) const;
+  bool DoGetNoHo (uint16_t cellId) const;
+  bool DoGetNoX2 (uint16_t cellId) const;
 
   // ANR SAPs
   LteAnrSapUser* m_anrSapUser;
@@ -126,7 +126,7 @@ private:
   NeighbourRelationTable_t m_neighbourRelationTable;
 
   // internal methods
-  NeighbourRelation_t* Find (uint16_t cellId);
+  const NeighbourRelation_t* Find (uint16_t cellId) const;
 
   // The expected measurement identity
   uint8_t m_measId;

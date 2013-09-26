@@ -199,8 +199,7 @@ public:
    *
    * \return imsi the unique UE identifier
    */
-  uint64_t GetImsi (void);
-
+  uint64_t GetImsi (void) const;
 
   /**
    *
@@ -208,13 +207,11 @@ public:
    */
   uint16_t GetRnti () const;
 
-
   /**
    *
    * \return the CellId of the attached Enb
    */
   uint16_t GetCellId () const;
-
 
   /** 
    * \return the uplink bandwidth in RBs
@@ -240,7 +237,7 @@ public:
    *
    * \return the current state
    */
-  State GetState ();
+  State GetState () const;
 
   /** 
    * 

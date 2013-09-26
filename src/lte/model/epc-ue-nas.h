@@ -163,6 +163,11 @@ public:
     NUM_STATES
   };
 
+  /**
+   * \return The current state
+   */
+  State GetState () const;
+
  
 private:
 

@@ -272,6 +272,13 @@ EpcUeNas::DoActivateEpsBearer (EpsBearer bearer, Ptr<EpcTft> tft)
   m_tftClassifier.Add (tft, bid);
 }
 
+EpcUeNas::State
+EpcUeNas::GetState () const
+{
+  NS_LOG_FUNCTION (this);
+  return m_state;
+}
+
 void 
 EpcUeNas::SwitchToState (State newState)
 {

@@ -257,19 +257,19 @@ public:
    * \return the RNTI, i.e., an UE identifier that is unique within
    * the cell
    */
-  uint16_t GetRnti (void);
+  uint16_t GetRnti (void) const;
 
   /** 
    *
    * \return the IMSI, i.e., a globally unique UE identifier
    */
-  uint64_t GetImsi (void);
+  uint64_t GetImsi (void) const;
 
   /** 
    * 
    * \return the SRS Configuration Index
    */
-  uint16_t GetSrsConfigurationIndex (void);  
+  uint16_t GetSrsConfigurationIndex (void) const;
 
   /** 
    * Set the SRS configuration index and do the necessary reconfiguration
@@ -282,7 +282,7 @@ public:
    * 
    * \return the current state
    */
-  State GetState ();
+  State GetState () const;
 
 
 private:

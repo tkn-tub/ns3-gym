@@ -218,7 +218,7 @@ LteAnr::DoAddNeighbourRelation (uint16_t cellId)
 
 
 bool
-LteAnr::DoGetNoRemove (uint16_t cellId)
+LteAnr::DoGetNoRemove (uint16_t cellId) const
 {
   NS_LOG_FUNCTION (this << m_servingCellId << cellId);
   return Find (cellId)->noRemove;
@@ -226,7 +226,7 @@ LteAnr::DoGetNoRemove (uint16_t cellId)
 
 
 bool
-LteAnr::DoGetNoHo (uint16_t cellId)
+LteAnr::DoGetNoHo (uint16_t cellId) const
 {
   NS_LOG_FUNCTION (this << m_servingCellId << cellId);
   return Find (cellId)->noHo;
@@ -234,17 +234,17 @@ LteAnr::DoGetNoHo (uint16_t cellId)
 
 
 bool
-LteAnr::DoGetNoX2 (uint16_t cellId)
+LteAnr::DoGetNoX2 (uint16_t cellId) const
 {
   NS_LOG_FUNCTION (this << m_servingCellId << cellId);
   return Find (cellId)->noX2;
 }
 
 
-LteAnr::NeighbourRelation_t *
-LteAnr::Find (uint16_t cellId)
+const LteAnr::NeighbourRelation_t *
+LteAnr::Find (uint16_t cellId) const
 {
-  NeighbourRelationTable_t::iterator it = m_neighbourRelationTable.find (cellId);
+  NeighbourRelationTable_t::const_iterator it = m_neighbourRelationTable.find (cellId);
   if (it == m_neighbourRelationTable.end ())
     {
       NS_FATAL_ERROR ("Cell ID " << cellId << " cannot be found in NRT");

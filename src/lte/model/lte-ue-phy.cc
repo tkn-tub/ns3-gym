@@ -1262,7 +1262,7 @@ LteUePhy::SetHarqPhyModule (Ptr<LteHarqPhy> harq)
 
 
 LteUePhy::State
-LteUePhy::GetState ()
+LteUePhy::GetState () const
 {
   NS_LOG_FUNCTION (this);
   return m_state;

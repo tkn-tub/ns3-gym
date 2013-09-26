@@ -224,7 +224,7 @@ public:
   /**
    * \return The current state
    */
-  State GetState ();
+  State GetState () const;
 
 
 

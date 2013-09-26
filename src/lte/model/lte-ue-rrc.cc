@@ -302,7 +302,7 @@ LteUeRrc::SetImsi (uint64_t imsi)
 }
 
 uint64_t
-LteUeRrc::GetImsi (void)
+LteUeRrc::GetImsi (void) const
 {
   return m_imsi;
 }
@@ -350,7 +350,7 @@ LteUeRrc::GetUlEarfcn () const
 }
 
 LteUeRrc::State
-LteUeRrc::GetState (void)
+LteUeRrc::GetState (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_state;
