@@ -39,6 +39,8 @@
 #include "ns3/pointer.h"
 #include "ns3/rng-seed-manager.h"
 #include "ns3/edca-txop-n.h"
+#include "ns3/config.h"
+#include "ns3/boolean.h"
 
 namespace ns3 {
 
@@ -415,6 +417,10 @@ Bug555TestCase::DoRun (void)
   // WiFi random variables, so that the first backoff used is zero slots
   RngSeedManager::SetSeed (1);
   RngSeedManager::SetRun (17);
+
+  // Disable the initial jitter of AP beacons (test case was written before
+  // beacon jitter was added)
+  Config::SetDefault ("ns3::ApWifiMac::EnableBeaconJitter", BooleanValue (false));
 
   Ptr<YansWifiChannel> channel = CreateObject<YansWifiChannel> ();
   Ptr<PropagationDelayModel> propDelay = m_propDelay.Create<PropagationDelayModel> ();
