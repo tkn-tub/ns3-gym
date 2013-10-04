@@ -871,27 +871,27 @@ WifiRemoteStationManager::GetControlAnswerMode (Mac48Address address, WifiMode r
     }
   if(HasHtSupported())
       {
-  if (!found)
-    {
-     uint8_t mcs = GetDefaultMcs (); 
-      mode=  m_wifiPhy->McsToWifiMode (mcs); 
-    }
-  for (WifiMcsListIterator i = m_bssBasicMcsSet.begin ();
-       i != m_bssBasicMcsSet.end (); i++)
-    {
-       WifiMode thismode=  m_wifiPhy->McsToWifiMode (*i); 
-      if ((!found || thismode.GetPhyRate () > mode.GetPhyRate ())
-          && thismode.GetPhyRate () <= reqMode.GetPhyRate ()
-          && thismode.GetModulationClass () == reqMode.GetModulationClass ())
-        {
-          mode = thismode;
-          // We've found a potentially-suitable transmit rate, but we
-          // need to continue and consider all the basic rates before
-          // we can be sure we've got the right one.
-          found = true;
-        }
-    }
-}
+        if (!found)
+          {
+            uint8_t mcs = GetDefaultMcs (); 
+            mode=  m_wifiPhy->McsToWifiMode (mcs); 
+          }
+        for (WifiMcsListIterator i = m_bssBasicMcsSet.begin ();
+             i != m_bssBasicMcsSet.end (); i++)
+          {
+            WifiMode thismode=  m_wifiPhy->McsToWifiMode (*i); 
+            if ((!found || thismode.GetPhyRate () > mode.GetPhyRate ())
+                && thismode.GetPhyRate () <= reqMode.GetPhyRate ()
+                && thismode.GetModulationClass () == reqMode.GetModulationClass ())
+              {
+                mode = thismode;
+                // We've found a potentially-suitable transmit rate, but we
+                // need to continue and consider all the basic rates before
+                // we can be sure we've got the right one.
+                found = true;
+              }
+          }
+      }
   // If we found a suitable rate in the BSSBasicRateSet, then we are
   // done and can return that mode.
   if (found)
@@ -942,27 +942,27 @@ WifiRemoteStationManager::GetControlAnswerMode (Mac48Address address, WifiMode r
           found = true;
         }
     }
-    if(HasHtSupported())
-      {
-        for (uint32_t idx = 0; idx < m_wifiPhy->GetNMcs (); idx++)
-          {
-            uint8_t thismcs = m_wifiPhy->GetMcs (idx);
-            WifiMode thismode=  m_wifiPhy->McsToWifiMode (thismcs);
-             if (thismode.IsMandatory ()
-          && (!found || thismode.GetPhyRate () > mode.GetPhyRate ())
-          && thismode.GetPhyRate () <= reqMode.GetPhyRate ()
-          && thismode.GetModulationClass () == reqMode.GetModulationClass ())
+  if(HasHtSupported())
+    {
+      for (uint32_t idx = 0; idx < m_wifiPhy->GetNMcs (); idx++)
         {
-          mode = thismode;
-          // As above; we've found a potentially-suitable transmit
-          // rate, but we need to continue and consider all the
-          // mandatory rates before we can be sure we've got the right
-          // one.
-          found = true;
-        }
+          uint8_t thismcs = m_wifiPhy->GetMcs (idx);
+          WifiMode thismode=  m_wifiPhy->McsToWifiMode (thismcs);
+          if (thismode.IsMandatory ()
+              && (!found || thismode.GetPhyRate () > mode.GetPhyRate ())
+              && thismode.GetPhyRate () <= reqMode.GetPhyRate ()
+              && thismode.GetModulationClass () == reqMode.GetModulationClass ())
+            {
+              mode = thismode;
+              // As above; we've found a potentially-suitable transmit
+              // rate, but we need to continue and consider all the
+              // mandatory rates before we can be sure we've got the right
+              // one.
+              found = true;
+            }
             
-          }
-      }
+        }
+    }
 
   /**
    * If we still haven't found a suitable rate for the response then
@@ -977,7 +977,7 @@ WifiRemoteStationManager::GetControlAnswerMode (Mac48Address address, WifiMode r
   if (!found)
     {
       NS_FATAL_ERROR ("Can't find response rate for " << reqMode
-                                                      << ". Check standard and selected rates match.");
+                      << ". Check standard and selected rates match.");
     }
 
   return mode;
