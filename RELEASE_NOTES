@@ -21,9 +21,12 @@ Supported platforms
 
 New user-visible features
 -------------------------
+- It is now possible to randomize the time of the first beacon from an access point.
+  Use an attribute "EnableBeaconJitter" to enable/disable this feature.
 
 Bugs fixed
 ----------
+- Bug 1722 - beacons transmitted concurrently
 
 Release 3.18
 =============
