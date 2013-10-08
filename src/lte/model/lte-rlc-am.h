@@ -150,6 +150,8 @@ private:
   uint16_t m_maxRetxThreshold;  /// \todo How these parameters are configured???
   uint16_t m_pollPdu;
   uint16_t m_pollByte;
+  
+  bool m_txOpportunityForRetxAlwaysBigEnough;
 
   /**
    * SDU Reassembling state

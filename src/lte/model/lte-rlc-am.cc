@@ -93,6 +93,14 @@ LteRlcAm::GetTypeId (void)
                    TimeValue (MilliSeconds (100)),
                    MakeTimeAccessor (&LteRlcAm::m_pollRetransmitTimerValue),
                    MakeTimeChecker ())
+    .AddAttribute ("TxOpportunityForRetxAlwaysBigEnough",
+                   "If true, always pretend that the size of a TxOpportunity is big enough "
+                   "for retransmission. If false (default and realistic behavior), no retx "
+                   "is performed unless the corresponding TxOpportunity is big enough.",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&LteRlcAm::m_txOpportunityForRetxAlwaysBigEnough),
+                   MakeBooleanChecker ())
+
     ;
   return tid;
 }
@@ -211,7 +219,8 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId)
 
       Ptr<Packet> packet = m_retxBuffer.at (m_vtA.GetValue ()).m_pdu->Copy ();
 
-      if ( packet->GetSize () <= bytes )
+      if (( packet->GetSize () <= bytes )
+          || m_txOpportunityForRetxAlwaysBigEnough)
         {
           LteRlcAmHeader rlcAmHeader;
           packet->PeekHeader (rlcAmHeader);
@@ -258,7 +267,8 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId)
       uint16_t vta = m_vtA.GetValue ();
       Ptr<Packet> packet = m_txedBuffer.at (vta)->Copy ();
 
-      if ( packet->GetSize () <= bytes )
+      if (( packet->GetSize () <= bytes )
+          || m_txOpportunityForRetxAlwaysBigEnough)
         {
           NS_LOG_INFO ("Move SN = " << vta << " to retxBuffer");
           m_retxBuffer.at (vta).m_pdu = m_txedBuffer.at (vta)->Copy ();
@@ -972,6 +982,12 @@ LteRlcAm::DoReceivePdu (Ptr<Packet> p)
 //           NS_LOG_INFO ("m_txedBuffer( VT(A) ).size = " << m_txedBuffer.size ());
 
           uint16_t seqNumberValue = m_vtA.GetValue ();
+          if (m_pollRetransmitTimer.IsRunning () 
+              && (seqNumberValue == m_pollSn.GetValue ()))
+            {
+              m_pollRetransmitTimer.Cancel ();
+            }
+
           if (m_txedBuffer.at (seqNumberValue))
             {
               NS_LOG_INFO ("ACKed SN = " << seqNumberValue << " from txedBuffer");
