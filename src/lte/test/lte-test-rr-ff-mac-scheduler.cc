@@ -60,7 +60,7 @@ LenaTestRrFfMacSchedulerSuite::LenaTestRrFfMacSchedulerSuite ()
 
   bool errorModel = true;
 
-  
+
   // DOWNLINK- DISTANCE 0 -> MCS 28 -> Itbs 26 (from table 7.1.7.2.1-1 of 36.213)
   // 1 user -> 24 PRB at Itbs 26 -> 2196 -> 2196000 bytes/sec
   // 3 users -> 8 PRB at Itbs 26 -> 749 -> 749000 bytes/sec
@@ -185,8 +185,9 @@ LenaRrFfMacSchedulerTestCase::DoRun (void)
       Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));
     }
   Config::SetDefault ("ns3::LteHelper::UseIdealRrc", BooleanValue (false));
-//   LogComponentDisableAll (LOG_LEVEL_ALL);
-  //LogComponentEnable ("LenaTestRrFfMacCheduler", LOG_LEVEL_ALL);
+
+  // This is needed as the RR scheduler does not allocate resources properly for retransmission
+  Config::SetDefault ("ns3::LteRlcAm::TxOpportunityForRetxAlwaysBigEnough", BooleanValue (true));
 
   /**
    * Initialize Simulation Scenario: 1 eNB and m_nUser UEs
@@ -247,6 +248,8 @@ LenaRrFfMacSchedulerTestCase::DoRun (void)
   double tolerance = 0.1;
   Simulator::Stop (Seconds (statsStartTime + statsDuration - 0.0001));
 
+  lteHelper->EnablePhyTraces ();
+  lteHelper->EnableMacTraces ();
   lteHelper->EnableRlcTraces ();
   Ptr<RadioBearerStatsCalculator> rlcStats = lteHelper->GetRlcStats ();
   rlcStats->SetAttribute ("StartTime", TimeValue (Seconds (statsStartTime)));
