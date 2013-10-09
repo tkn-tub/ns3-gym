@@ -420,7 +420,10 @@ WifiPhyStateHelper::SwitchMaybeToCcaBusy (Time duration)
     case WifiPhy::TX:
       break;
     }
-  m_startCcaBusy = now;
+  if (GetState () != WifiPhy::CCA_BUSY)
+    {
+      m_startCcaBusy = now;
+    }
   m_endCcaBusy = std::max (m_endCcaBusy, now + duration);
 }
 
