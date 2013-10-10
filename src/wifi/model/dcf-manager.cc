@@ -756,7 +756,7 @@ void
 DcfManager::NotifyNavStartNow (Time duration)
 {
   NS_LOG_FUNCTION (this << duration);
-  NS_ASSERT (m_lastNavStart < Simulator::Now ());
+  NS_ASSERT (m_lastNavStart <= Simulator::Now ());
   MY_DEBUG ("nav start for=" << duration);
   UpdateBackoff ();
   Time newNavEnd = Simulator::Now () + duration;
