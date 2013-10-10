@@ -2472,9 +2472,9 @@ the following operations:
  #. it removes the GTP header and retrieves the TEID which is
     contained in it;
  #. leveraging on the one-to-one mapping between S1-U bearers and
-    Radio Bearers (which is a 3GPP requirement), it determines the Radio
-    Bearer ID (RBID) to which the packet belongs;
- #. it records the RBID in a dedicated tag called LteRadioBearerTag,
+    Radio Bearers (which is a 3GPP requirement), it determines the 
+    Bearer ID (BID) to which the packet belongs;
+ #. it records the BID in a dedicated tag called EpsBearerTag,
     which is added to the packet; 
  #. it forwards the packet to the LteEnbNetDevice of the eNB node via
     a raw packet socket
@@ -2483,7 +2483,7 @@ Note that, at this point, the outmost header of the packet is the
 end-to-end IP header, since the IP/UDP/GTP headers of the S1 protocol
 stack have already been stripped. Upon reception of
 the packet from the EpcEnbApplication, the LteEnbNetDevice will
-retrieve the RBID from the LteRadioBearerTag, and based on the RBID
+retrieve the BID from the EpsBearerTag, and based on the BID
 will determine the Radio Bearer instance (and the corresponding PDCP
 and RLC protocol instances) which are then used to forward the packet
 to the UE over the LTE radio interface. Finally, the LteUeNetDevice of
@@ -2515,15 +2515,15 @@ UE. The LteUeNetDevice then performs the following operations:
 
 The eNB receives the packet via its LteEnbNetDevice. Since there is a
 single PDCP and RLC protocol instance for each Radio Bearer, the
-LteEnbNetDevice is able to determine the RBID of the packet. This RBID
-is then recorded onto an LteRadioBearerTag, which is added to the
+LteEnbNetDevice is able to determine the BID of the packet. This BID
+is then recorded onto an EpsBearerTag, which is added to the
 packet. The LteEnbNetDevice then forwards the packet to the
 EpcEnbApplication via a raw packet socket.
 
 Upon receiving the packet, the EpcEnbApplication performs the
 following operations:
 
- #. it retrieves the RBID from the LteRadioBearerTag in the packet;
+ #. it retrieves the BID from the EpsBearerTag in the packet;
  #. it determines the corresponding EPS Bearer instance and GTP-U TEID by
     leveraging on the one-to-one mapping between S1-U bearers and Radio
     Bearers;
