@@ -161,8 +161,7 @@ private:
 
   // Status PDU fields
   SequenceNumber10 m_ackSn;
-  SequenceNumber10 m_nackSn;
-  std::list <int> m_my_nackSNs;
+  std::list <int> m_nackSnList;
 
   std::list <uint8_t> m_extensionBits1; // Includes E1 after ACK_SN
   std::list <uint8_t> m_extensionBits2;

@@ -39,8 +39,7 @@ LteRlcAmHeader::LteRlcAmHeader ()
     m_segmentOffset (0xffff),
     m_lastOffset (0xffff),
     m_controlPduType (0xff),
-    m_ackSn (0xffff),
-    m_nackSn (0xffff)
+    m_ackSn (0xffff)
 {
 }
 
@@ -56,7 +55,6 @@ LteRlcAmHeader::~LteRlcAmHeader ()
     m_lastOffset = 0xffff;
     m_controlPduType = 0xff;
     m_ackSn = 0xffff;
-    m_nackSn = 0xffff;
 }
 
 void
@@ -218,9 +216,9 @@ LteRlcAmHeader::SetAckSn (SequenceNumber10 ackSn)
 void
 LteRlcAmHeader::PushNack (int nack)
 {
-  m_my_nackSNs.push_back (nack);
+  m_nackSnList.push_back (nack);
 
-  if (m_my_nackSNs.size () % 2 == 0)
+  if (m_nackSnList.size () % 2 != 0)
     {
       m_headerLength++;
     }
@@ -234,13 +232,13 @@ LteRlcAmHeader::PushNack (int nack)
 int
 LteRlcAmHeader::PopNack (void)
 {
-  if ( m_my_nackSNs.empty () )
+  if ( m_nackSnList.empty () )
     {
       return -1;
     }
 
-  int nack = m_my_nackSNs.front ();
-  m_my_nackSNs.pop_front ();
+  int nack = m_nackSnList.front ();
+  m_nackSnList.pop_front ();
 
   return nack;
 }
@@ -275,7 +273,7 @@ LteRlcAmHeader::Print (std::ostream &os)  const
 {
   std::list <uint8_t>::const_iterator it1 = m_extensionBits.begin ();
   std::list <uint16_t>::const_iterator it2 = m_lengthIndicators.begin ();
-  std::list <int>::const_iterator it3 = m_my_nackSNs.begin ();
+  std::list <int>::const_iterator it3 = m_nackSnList.begin ();
 
   os << "Len=" << m_headerLength;
   os << " D/C=" << (uint16_t)m_dataControlBit;
@@ -315,7 +313,7 @@ LteRlcAmHeader::Print (std::ostream &os)  const
     {
       os << " ACK_SN=" << m_ackSn;
 
-       while ( it3 != m_my_nackSNs.end () )
+       while ( it3 != m_nackSnList.end () )
         {
           os << " NACK_SN=" << (int)(*it3);
           it3++;
@@ -336,7 +334,7 @@ void LteRlcAmHeader::Serialize (Buffer::Iterator start) const
 
   std::list <uint8_t>::const_iterator it1 = m_extensionBits.begin ();
   std::list <uint16_t>::const_iterator it2 = m_lengthIndicators.begin ();
-  std::list <int>::const_iterator it3 = m_my_nackSNs.begin ();
+  std::list <int>::const_iterator it3 = m_nackSnList.begin ();
 
   if ( m_dataControlBit == DATA_PDU )
     {
@@ -389,11 +387,12 @@ void LteRlcAmHeader::Serialize (Buffer::Iterator start) const
       i.WriteU8 ( ((CONTROL_PDU << 7) & 0x80) |
                   ((m_controlPduType << 4) & 0x70) |
                   ((m_ackSn.GetValue () >> 6) & 0x0F) );
-//      i.WriteU8 ( ((m_ackSn.GetValue () << 2) & 0xFC) );
+      // note: second part of ackSn will be written later
 
-      // Brett - Add code to serialize the NACKs
-      if ( it3 == m_my_nackSNs.end () ) 
+      // serialize the NACKs
+      if ( it3 == m_nackSnList.end () ) 
         {
+          NS_LOG_LOGIC (this << " no NACKs");
            // If there are no NACKs then this line adds the rest of the ACK
            // along with 0x00, indicating an E1 value of 0 or no NACKs follow.
            i.WriteU8 ( ((m_ackSn.GetValue () << 2) & 0xFC) );
@@ -413,7 +412,7 @@ void LteRlcAmHeader::Serialize (Buffer::Iterator start) const
             | (0x02)
             | ((*it3 >> 9) & 0x01));
 
-          while ( it3 != m_my_nackSNs.end () )
+          while ( it3 != m_nackSnList.end () )
             {
               // The variable oddNack has the current NACK value to write, also
               // either the setup to enter this loop or the previous loop would
@@ -424,7 +423,7 @@ void LteRlcAmHeader::Serialize (Buffer::Iterator start) const
               // Next check to see if there is going to be another NACK after
               // this
               it3++;
-              if ( it3 != m_my_nackSNs.end () )
+              if ( it3 != m_nackSnList.end () )
                 {
                   // Yes there will be another NACK after this, so E1 will be 1
                   evenNack = *it3;
@@ -436,7 +435,7 @@ void LteRlcAmHeader::Serialize (Buffer::Iterator start) const
                   // NACK and another E1, E2. Check to see if there will be
                   // one more NACK after this.
                   it3++;
-                  if ( it3 != m_my_nackSNs.end () )
+                  if ( it3 != m_nackSnList.end () )
                     {
                       // Yes there is at least one more NACK. Finish writing
                       // this octet and the next iteration will do the rest.
@@ -551,7 +550,7 @@ uint32_t LteRlcAmHeader::Deserialize (Buffer::Iterator start)
           byte_4 = i.ReadU8 ();
           m_headerLength = 4;
 
-          m_my_nackSNs.push_back (
+          m_nackSnList.push_back (
             ((byte_2 & 0x01) << 9)
             | (byte_3 << 1)
             | ((byte_4 & 0x80) >> 7)
@@ -566,7 +565,7 @@ uint32_t LteRlcAmHeader::Deserialize (Buffer::Iterator start)
            {
              // Ignore E2, read next NACK
              nextByte = i.ReadU8 ();
-             m_my_nackSNs.push_back (
+             m_nackSnList.push_back (
               ((byte & 0x1F) << 5)
               | ((nextByte & 0xF8) >> 3)
             );
@@ -580,7 +579,7 @@ uint32_t LteRlcAmHeader::Deserialize (Buffer::Iterator start)
                 nextByte = i.ReadU8 ();
                 finalByte = i.ReadU8 ();
 
-                 m_my_nackSNs.push_back (
+                 m_nackSnList.push_back (
                    ((byte & 0x01) << 9)
                    | (nextByte << 1)
                    | ((finalByte & 0x80) >> 7)

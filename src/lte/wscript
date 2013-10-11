@@ -124,6 +124,7 @@ def build(bld):
         'test/lte-test-entities.cc',
         'test/lte-simple-helper.cc',
         'test/lte-simple-net-device.cc',
+        'test/test-lte-rlc-header.cc',
         'test/lte-test-rlc-um-transmitter.cc',
         'test/lte-test-rlc-am-transmitter.cc',
         'test/lte-test-rlc-um-e2e.cc',
