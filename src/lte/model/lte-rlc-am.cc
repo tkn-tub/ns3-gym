@@ -25,12 +25,19 @@
 #include "ns3/lte-rlc-am.h"
 #include "ns3/lte-rlc-sdu-status-tag.h"
 #include "ns3/lte-rlc-tag.h"
+#include "ns3/random-variable.h"
 
 NS_LOG_COMPONENT_DEFINE ("LteRlcAm");
 
 namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (LteRlcAm);
+
+// Brett
+// Used to keep track of when the RLC AM sliding window wraps back around. This
+// is required for knowning when a small ACK SN also ACKs a larger SN from the
+// before the window wrapped around.
+bool m_windowWrap = false;
 
 LteRlcAm::LteRlcAm ()
 {
@@ -192,9 +199,45 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId)
       NS_LOG_LOGIC ("Sending STATUS PDU");
 
       Ptr<Packet> packet = Create<Packet> ();
+      NS_LOG_LOGIC ( "Brett -- About to make AM header for STATUS PDU" );
       LteRlcAmHeader rlcAmHeader;
       rlcAmHeader.SetControlPdu (LteRlcAmHeader::STATUS_PDU);
-      rlcAmHeader.SetAckSn (m_vrR);
+//      rlcAmHeader.SetAckSn (m_vrR); // Brett, need to change this
+      rlcAmHeader.SetAckSn (m_vrH); // Brett, is this right?
+
+      //=======================================================================
+      // Brett
+      // Check the reception buffer and find which Sequence Numbers are missing
+      // based on what is being ACKed. All SNs missing from the reception
+      // buffer that come before the SN number that is being ACKed are going to
+      // be NACKed packets.
+       
+      NS_LOG_LOGIC ("Brett - Receiver Side - Check for SNs to NACK");
+      NS_LOG_LOGIC ("Brett - Receiver Side - Check SNs from " << m_vrR.GetValue() << " to " << m_vrH.GetValue());
+      for ( int i = m_vrR.GetValue(); i < m_vrH.GetValue(); i++ ) {
+        // NS_LOG_LOGIC ("Brett - Receiver Side - Checking SN " << i );
+        // Need a different check but similar idea
+      /* struct PduBuffer
+        {
+          SequenceNumber10  m_seqNumber;
+          std::list < Ptr<Packet> >  m_byteSegments;
+
+          bool      m_pduComplete;
+          uint16_t  m_totalSize;
+          uint16_t  m_currSize;
+        };*/
+
+        int test =  m_rxonBuffer[ i ].m_pduComplete;
+        //NS_LOG_LOGIC("Brett - Is PDU complete: " <<  m_rxonBuffer[ i ].m_pduComplete);
+        if ( test == 0 ) {
+//          NS_LOG_LOGIC("Brett - NACK " << i );
+//          rlcAmHeader.EnqueueNAckSn( SequenceNumber10( i ) );
+          rlcAmHeader.PushNack( SequenceNumber10( i ).GetValue() );
+        }
+      }
+      //=======================================================================
+
+
 
       NS_LOG_LOGIC ("RLC header: " << rlcAmHeader);
       packet->AddHeader (rlcAmHeader);
@@ -219,8 +262,7 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId)
 
       Ptr<Packet> packet = m_retxBuffer.at (m_vtA.GetValue ()).m_pdu->Copy ();
 
-      if (( packet->GetSize () <= bytes )
-          || m_txOpportunityForRetxAlwaysBigEnough)
+      if ( packet->GetSize () <= bytes )
         {
           LteRlcAmHeader rlcAmHeader;
           packet->PeekHeader (rlcAmHeader);
@@ -257,7 +299,7 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId)
 
       NS_LOG_LOGIC ("Sending data from Transmission Buffer");
     }
-  else if ( m_txedBufferSize > 0 )
+ /* else if ( m_txedBufferSize > 0 )
     {
       NS_LOG_LOGIC ("Sending data from Transmitted Buffer");
 
@@ -267,9 +309,9 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId)
       uint16_t vta = m_vtA.GetValue ();
       Ptr<Packet> packet = m_txedBuffer.at (vta)->Copy ();
 
-      if (( packet->GetSize () <= bytes )
-          || m_txOpportunityForRetxAlwaysBigEnough)
+      if ( packet->GetSize () <= bytes )
         {
+         // Brett - Move to retransmission buffer
           NS_LOG_INFO ("Move SN = " << vta << " to retxBuffer");
           m_retxBuffer.at (vta).m_pdu = m_txedBuffer.at (vta)->Copy ();
           m_retxBuffer.at (vta).m_retxCount = 1;
@@ -300,7 +342,7 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId)
           return;
         }
     }
-  else
+*/  else
     {
       NS_LOG_LOGIC ("No data pending");
       return;
@@ -430,7 +472,7 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId)
 
           // nextSegmentSize MUST be zero (only if segment is smaller or equal to 2047)
 
-          // (NO more segments) → exit
+          // (NO more segments) ? exit
           // break;
         }
       else if ( (nextSegmentSize - firstSegment->GetSize () <= 2) || (m_txonBuffer.size () == 0) )
@@ -461,7 +503,7 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId)
 
           // nextSegmentSize <= 2 (only if txBuffer is not empty)
 
-          // (NO more segments) → exit
+          // (NO more segments) ? exit
           // break;
         }
       else // (firstSegment->GetSize () < m_nextSegmentSize) && (m_txBuffer.size () > 0)
@@ -623,6 +665,7 @@ LteRlcAm::DoNotifyHarqDeliveryFailure ()
 {
   NS_LOG_FUNCTION (this);
 }
+
 
 void
 LteRlcAm::DoReceivePdu (Ptr<Packet> p)
@@ -973,73 +1016,130 @@ LteRlcAm::DoReceivePdu (Ptr<Packet> p)
       NS_LOG_INFO ("VT(A)     = " << m_vtA);
       NS_LOG_INFO ("VT(S)     = " << m_vtS);
 
-      m_vtA.SetModulusBase (m_vtA);
-      m_vtS.SetModulusBase (m_vtA);
-      ackSn.SetModulusBase (m_vtA);
-      while (m_vtA < ackSn && m_vtA < m_vtS)
+
+
+      // Check for the first NACK
+      uint16_t nackSN = rlcAmHeader.PopNack ();
+      // Flag to indicate if any NACKs exist in the header. This is used to
+      // determine when VT(A) should stop incrementing as it is the lower
+      // bound of the transmission window and should equal the highest ACKed
+      // SN in sequence (no NACKs previous).
+      bool foundNack = false;
+      // Used to iterate over the transmission window to apply the ACKs and
+      // NACKs from the control PDU.
+      uint16_t loopCount = m_vtA.GetValue ();
+
+      // Brett - Check to see if the transmission window needs to wrap around.
+      // This window needs to wrap if the current VT(A) (last ACKed PDU) plus
+      // the window size is larger than 1023 and the SN just received is for
+      // a PDU that somwhere in the range of 0 to the top of the window. If
+      // this is the case then set the window wrap flag.
+      if ((m_vtA.GetValue() + m_windowSize > 1023) 
+          && 0 <= ackSn.GetValue() && ackSn.GetValue() < m_vtA.GetValue() + m_windowSize - 1023)
         {
+          m_windowWrap = true;
+        } 
+
+      // Brett - There is a problem with the transmitting window wrapping back
+      // to the beginning. An ACK is for the next sequence number expected, but
+      // the largest sequence number that can be sent is 1023. We cannot send
+      // 1024 or anything higher than this to ACK an SN of 1023. To resolve I
+      // am adding the OR condition to this while loop. In the situation that
+      // the check above finds that it is time for the window to wrap then the
+      // window wrap flag allows this loop to execute. The loop will ACK all
+      // SNs from VT(A) to SN 1023 before resetting the window wrap flag to
+      // false and resetting the last ACKed SN to 0.
+      NS_LOG_INFO("Brett - Check - Look at transmit window from " << loopCount << " to " << m_vtS.GetValue ());
+      while (( loopCount < ackSn.GetValue() && loopCount < m_vtS.GetValue ())
+              || m_windowWrap)
+       {
+           NS_LOG_INFO("Brett - Current NACK is " << nackSN);
 //           NS_LOG_INFO ("seqNumber = " << seqNumber);
 //           NS_LOG_INFO ("m_txedBuffer( VT(A) ).size = " << m_txedBuffer.size ());
 
-          uint16_t seqNumberValue = m_vtA.GetValue ();
-          if (m_pollRetransmitTimer.IsRunning () 
-              && (seqNumberValue == m_pollSn.GetValue ()))
-            {
-              m_pollRetransmitTimer.Cancel ();
-            }
+          //uint16_t seqNumberValue = m_vtA.GetValue ();
+          uint16_t seqNumberValue = loopCount;
+          if ( nackSN != seqNumberValue )
+          {
 
-          if (m_txedBuffer.at (seqNumberValue))
-            {
-              NS_LOG_INFO ("ACKed SN = " << seqNumberValue << " from txedBuffer");
-//               NS_LOG_INFO ("m_txedBuffer( " << m_vtA << " )->GetSize = " << m_txedBuffer.at (m_vtA.GetValue ())->GetSize ());
-              m_txedBufferSize -= m_txedBuffer.at (seqNumberValue)->GetSize ();
-              m_txedBuffer.at (seqNumberValue) = 0;
-            }
+            if (m_txedBuffer.at (seqNumberValue))
+              {
+                NS_LOG_INFO ("ACKed SN = " << seqNumberValue << " from txedBuffer");
+//                 NS_LOG_INFO ("m_txedBuffer( " << m_vtA << " )->GetSize = " << m_txedBuffer.at (m_vtA.GetValue ())->GetSize ());
+                m_txedBufferSize -= m_txedBuffer.at (seqNumberValue)->GetSize ();
+                m_txedBuffer.at (seqNumberValue) = 0;
+              }
 
-          if (m_retxBuffer.at (seqNumberValue).m_pdu)
-            {
-              NS_LOG_INFO ("ACKed SN = " << seqNumberValue << " from retxBuffer");
-              m_retxBufferSize -= m_retxBuffer.at (seqNumberValue).m_pdu->GetSize ();
-              m_retxBuffer.at (seqNumberValue).m_pdu = 0;
-              m_retxBuffer.at (seqNumberValue).m_retxCount = 0;
-            }
+            if (m_retxBuffer.at (seqNumberValue).m_pdu)
+              {
+                NS_LOG_INFO ("ACKed SN = " << seqNumberValue << " from retxBuffer");
+                m_retxBufferSize -= m_retxBuffer.at (seqNumberValue).m_pdu->GetSize ();
+                m_retxBuffer.at (seqNumberValue).m_pdu = 0;
+                m_retxBuffer.at (seqNumberValue).m_retxCount = 0;
+              }
 
           m_vtA++;
           m_vtA.SetModulusBase (m_vtA);
           m_vtS.SetModulusBase (m_vtA);
           ackSn.SetModulusBase (m_vtA);
+            }
+          else
+            {
+              foundNack = true;
+              if (m_txedBuffer.at (nackSN))
+               {
+                 NS_LOG_INFO ("NACKed SN = " << seqNumberValue << " from txedBuffer");
+                 // Brett - Move to Retransmission Buffer
+                  NS_LOG_INFO ("Move SN = " << nackSN << " to retxBuffer");
+                  m_retxBuffer.at (nackSN).m_pdu = m_txedBuffer.at (nackSN)->Copy ();
+                  m_retxBuffer.at (nackSN).m_retxCount = 0;
+                  m_retxBufferSize += m_retxBuffer.at (nackSN).m_pdu->GetSize ();
+
+                  m_txedBufferSize -= m_txedBuffer.at (nackSN)->GetSize ();
+                  m_txedBuffer.at (nackSN) = 0;
+               }
+              else if (m_retxBuffer.at (nackSN).m_pdu)
+               {
+                 NS_LOG_INFO ("NACKed SN = " << seqNumberValue << " from retxBuffer");
+                 m_retxBuffer.at (nackSN).m_retxCount++;
+                 NS_LOG_INFO ("Incr RETX_COUNT for SN = " << nackSN);
+                 if (m_retxBuffer.at (nackSN).m_retxCount >= m_maxRetxThreshold)
+                   {
+                     NS_LOG_INFO ("Max RETX_COUNT for SN = " << nackSN);
+                   }
+               }
+
+            }
+            // Check to see if it is time to find the next NACK
+            if ( seqNumberValue == nackSN )
+              {
+                nackSN = rlcAmHeader.PopNack ();
+              }
+
+
+            // If m_vtA has an SN of 1023 and the window wrap flag is true then
+            // it is time to reset m_vtA to 0 an reset the window wrap flag.
+            if ( m_vtA.GetValue() == 1023 && m_windowWrap )
+              {
+                loopCount = 0;
+                m_vtA = 0;
+                m_windowWrap = false;
+             
+                // Wrap around with the transmission window.
+                //nackSN = rlcAmHeader.PopNack ();
+                //NS_LOG_INFO( "Brett - Tx window wrap, new NACK is " << nackSN );
+              }
+            else
+              {
+                loopCount++;
+                if (!foundNack)
+                  {
+                    m_vtA++;
+                  }
+              }
         }
 
       NS_LOG_INFO ("New VT(A) = " << m_vtA);
-
-      SequenceNumber10 seqNumber = m_vtA;
-      uint16_t seqNumberValue;
-      while (seqNumber < m_vtS)
-        {
-          seqNumberValue = seqNumber.GetValue ();
-          if (m_txedBuffer.at (seqNumberValue))
-            {
-              NS_LOG_INFO ("Move SN = " << seqNumberValue << " to retxBuffer");
-              m_retxBuffer.at (seqNumberValue).m_pdu = m_txedBuffer.at (seqNumberValue)->Copy ();
-              m_retxBuffer.at (seqNumberValue).m_retxCount = 0;
-              m_retxBufferSize += m_retxBuffer.at (seqNumberValue).m_pdu->GetSize ();
-
-              m_txedBufferSize -= m_txedBuffer.at (seqNumberValue)->GetSize ();
-              m_txedBuffer.at (seqNumberValue) = 0;
-            }
-          else if (m_retxBuffer.at (seqNumberValue).m_pdu)
-            {
-              m_retxBuffer.at (seqNumberValue).m_retxCount++;
-              NS_LOG_INFO ("Incr RETX_COUNT for SN = " << seqNumberValue);
-              if (m_retxBuffer.at (seqNumberValue).m_retxCount >= m_maxRetxThreshold)
-                {
-                  NS_LOG_INFO ("Max RETX_COUNT for SN = " << seqNumberValue);
-                }
-            }
-
-          seqNumber++;
-        }
-
       return;
     }
   else

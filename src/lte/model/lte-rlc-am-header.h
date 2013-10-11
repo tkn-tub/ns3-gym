@@ -136,6 +136,10 @@ public:
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
 
+  // Brett - Methods to handle NACKs
+  void PushNack (int nack);
+  int PopNack (void);
+
 private:
   uint16_t m_headerLength;
   uint8_t  m_dataControlBit;
@@ -158,6 +162,7 @@ private:
   // Status PDU fields
   SequenceNumber10 m_ackSn;
   SequenceNumber10 m_nackSn;
+  std::list <int> m_my_nackSNs;
 
   std::list <uint8_t> m_extensionBits1; // Includes E1 after ACK_SN
   std::list <uint8_t> m_extensionBits2;

@@ -26,6 +26,7 @@ NS_LOG_COMPONENT_DEFINE ("LteRlcAmHeader");
 
 namespace ns3 {
 
+
 NS_OBJECT_ENSURE_REGISTERED (LteRlcAmHeader);
 
 LteRlcAmHeader::LteRlcAmHeader ()
@@ -214,6 +215,38 @@ LteRlcAmHeader::SetAckSn (SequenceNumber10 ackSn)
   m_ackSn = ackSn;
 }
 
+void
+LteRlcAmHeader::PushNack (int nack)
+{
+  m_my_nackSNs.push_back (nack);
+
+  if (m_my_nackSNs.size () % 2 == 0)
+    {
+      m_headerLength++;
+    }
+  else
+    {
+      m_headerLength+=2;
+    }
+}
+
+
+int
+LteRlcAmHeader::PopNack (void)
+{
+  if ( m_my_nackSNs.empty () )
+    {
+      return -1;
+    }
+
+  int nack = m_my_nackSNs.front ();
+  m_my_nackSNs.pop_front ();
+
+  return nack;
+}
+
+
+
 SequenceNumber10
 LteRlcAmHeader::GetAckSn (void) const
 {
@@ -242,6 +275,7 @@ LteRlcAmHeader::Print (std::ostream &os)  const
 {
   std::list <uint8_t>::const_iterator it1 = m_extensionBits.begin ();
   std::list <uint16_t>::const_iterator it2 = m_lengthIndicators.begin ();
+  std::list <int>::const_iterator it3 = m_my_nackSNs.begin ();
 
   os << "Len=" << m_headerLength;
   os << " D/C=" << (uint16_t)m_dataControlBit;
@@ -280,7 +314,14 @@ LteRlcAmHeader::Print (std::ostream &os)  const
   else // if ( m_dataControlBit == CONTROL_PDU )
     {
       os << " ACK_SN=" << m_ackSn;
-      os << " NACK_SN=" << m_nackSn;
+
+       while ( it3 != m_my_nackSNs.end () )
+        {
+          os << " NACK_SN=" << (int)(*it3);
+          it3++;
+        }
+
+ 
     }
 }
 
@@ -295,6 +336,7 @@ void LteRlcAmHeader::Serialize (Buffer::Iterator start) const
 
   std::list <uint8_t>::const_iterator it1 = m_extensionBits.begin ();
   std::list <uint16_t>::const_iterator it2 = m_lengthIndicators.begin ();
+  std::list <int>::const_iterator it3 = m_my_nackSNs.begin ();
 
   if ( m_dataControlBit == DATA_PDU )
     {
@@ -347,7 +389,76 @@ void LteRlcAmHeader::Serialize (Buffer::Iterator start) const
       i.WriteU8 ( ((CONTROL_PDU << 7) & 0x80) |
                   ((m_controlPduType << 4) & 0x70) |
                   ((m_ackSn.GetValue () >> 6) & 0x0F) );
-      i.WriteU8 ( ((m_ackSn.GetValue () << 2) & 0xFC) );
+//      i.WriteU8 ( ((m_ackSn.GetValue () << 2) & 0xFC) );
+
+      // Brett - Add code to serialize the NACKs
+      if ( it3 == m_my_nackSNs.end () ) 
+        {
+           // If there are no NACKs then this line adds the rest of the ACK
+           // along with 0x00, indicating an E1 value of 0 or no NACKs follow.
+           i.WriteU8 ( ((m_ackSn.GetValue () << 2) & 0xFC) );
+        }
+      else
+        {
+          int oddNack = *it3;
+          int evenNack = -1;
+          // Else write out a series of E1 = 1 and NACK values. Note since we
+          // are not supporting SO start/end the value of E2 will always be 0.
+
+
+          // First write out the ACK along with the very first NACK
+          // And the remaining NACK with 0x02 or 10 in binary to set
+          // E1 to 1, then Or in the first bit of the NACK
+          i.WriteU8 ( ((m_ackSn.GetValue () << 2) & 0xFC)
+            | (0x02)
+            | ((*it3 >> 9) & 0x01));
+
+          while ( it3 != m_my_nackSNs.end () )
+            {
+              // The variable oddNack has the current NACK value to write, also
+              // either the setup to enter this loop or the previous loop would
+              // have written the highest order bit to the previouse octet.
+              // Write the next set of bits (2 - 9) into the next octet
+              i.WriteU8( ((oddNack >> 1) & 0xFF) );
+
+              // Next check to see if there is going to be another NACK after
+              // this
+              it3++;
+              if ( it3 != m_my_nackSNs.end () )
+                {
+                  // Yes there will be another NACK after this, so E1 will be 1
+                  evenNack = *it3;
+                  i.WriteU8( ((oddNack << 7) & 0x80)
+                   | (0x40)  // E1 = 1 E2 = 0, more NACKs
+                   | ( (evenNack >> 5) & 0x1F) );
+
+                  // The final octet of this loop will have the rest of the
+                  // NACK and another E1, E2. Check to see if there will be
+                  // one more NACK after this.
+                  it3++;
+                  if ( it3 != m_my_nackSNs.end () )
+                    {
+                      // Yes there is at least one more NACK. Finish writing
+                      // this octet and the next iteration will do the rest.
+                      oddNack = *it3;
+                      i.WriteU8 ( ((evenNack << 3) & 0xF8)
+                        | (0x04)
+                        | ((oddNack >> 9) & 0x01));
+                    }
+                  else
+                    {
+                      // No, there are no more NACKs
+                      i.WriteU8 ( ((evenNack << 3) & 0xF8) );
+                    }
+                }
+              else
+                {
+                  // No, this is the last NACK so E1 will be 0
+                  i.WriteU8 ( ((oddNack << 7) & 0x80) );
+                }
+            }
+        }
+
     }
 }
 
@@ -431,7 +542,65 @@ uint32_t LteRlcAmHeader::Deserialize (Buffer::Iterator start)
       m_controlPduType = (byte_1 & 0x70) >> 4;
       m_ackSn = ((byte_1 & 0x0F) << 6 ) | ((byte_2 & 0xFC) >> 2);
 
-      m_headerLength++;
+      int moreNacks = (byte_2 & 0x02) >> 1;
+      // Get the first NACK outside the loop as it is not preceded by an E2
+      // field but all following NACKs will.
+      if ( moreNacks == 1 )
+        {
+          byte_3 = i.ReadU8 ();
+          byte_4 = i.ReadU8 ();
+          m_headerLength = 4;
+
+          m_my_nackSNs.push_back (
+            ((byte_2 & 0x01) << 9)
+            | (byte_3 << 1)
+            | ((byte_4 & 0x80) >> 7)
+          );
+
+         // Loop until all NACKs are found
+         moreNacks = ((byte_4 & 0x40) >> 6);
+         uint8_t byte = byte_4;
+         uint8_t nextByte;
+         uint8_t finalByte;
+         while (moreNacks == 1)
+           {
+             // Ignore E2, read next NACK
+             nextByte = i.ReadU8 ();
+             m_my_nackSNs.push_back (
+              ((byte & 0x1F) << 5)
+              | ((nextByte & 0xF8) >> 3)
+            );
+
+            // Check for another NACK, after this any following NACKs will
+            // be aligned properly for the next iteration of this loop.
+            moreNacks = (nextByte & 0x04) >> 2;
+            byte = nextByte;
+            if (moreNacks == 1)
+              {
+                nextByte = i.ReadU8 ();
+                finalByte = i.ReadU8 ();
+
+                 m_my_nackSNs.push_back (
+                   ((byte & 0x01) << 9)
+                   | (nextByte << 1)
+                   | ((finalByte & 0x80) >> 7)
+                 );
+
+                moreNacks = ((finalByte & 0x40) >> 6);
+                byte = finalByte;
+                m_headerLength+=3;
+              }
+            else
+              {
+                m_headerLength++;
+              }
+
+           }
+        }
+      else
+        {
+          m_headerLength++;
+        }
     }
 
   return GetSerializedSize ();
