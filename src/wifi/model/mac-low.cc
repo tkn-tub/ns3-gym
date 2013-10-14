@@ -1159,7 +1159,7 @@ MacLow::NotifyNav (Ptr<const Packet> packet,const WifiMacHeader &hdr, WifiMode t
 void
 MacLow::NavCounterResetCtsMissed (Time rtsEndRxTime)
 {
-  if (m_phy->GetLastRxStartTime () > rtsEndRxTime)
+  if (m_phy->GetLastRxStartTime () < rtsEndRxTime)
     {
       DoNavResetNow (Seconds (0.0));
     }

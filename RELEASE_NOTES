@@ -29,6 +29,7 @@ Bugs fixed
 - Bug 1722 - beacons transmitted concurrently
 - Bug 1616 - WifiPhyStateHelper reports false CCA_BUSY times at State trace source
 - Bug 1011 - assert failed. file=../src/devices/wifi/dcf-manager.cc
+- Bug 1691 - RTS/CTS NAV reset prematurely
 
 Release 3.18
 =============
