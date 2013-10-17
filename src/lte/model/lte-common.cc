@@ -252,7 +252,10 @@ EutranMeasurementMapping::IeValue2ActualHysteresis (uint8_t hysteresisIeValue)
                                    << " for Hysteresis IE value");
     }
 
-  return (static_cast<double> (hysteresisIeValue) * 0.5);
+  double actual = static_cast<double> (hysteresisIeValue) * 0.5;
+  NS_ASSERT (actual >= 0.0);
+  NS_ASSERT (actual <= 15.0);
+  return actual;
 }
 
 uint8_t
@@ -265,7 +268,10 @@ EutranMeasurementMapping::ActualHysteresis2IeValue (double hysteresisDb)
                                    << " for hysteresis");
     }
 
-  return lround (hysteresisDb * 2.0);
+  uint8_t ieValue = lround (hysteresisDb * 2.0);
+  NS_ASSERT (ieValue >= 0);
+  NS_ASSERT (ieValue <= 30);
+  return ieValue;
 }
 
 double
@@ -278,7 +284,10 @@ EutranMeasurementMapping::IeValue2ActualA3Offset (int8_t a3OffsetIeValue)
                                    << " for a3-Offset IE value");
     }
 
-  return (static_cast<double> (a3OffsetIeValue) * 0.5);
+  double actual = static_cast<double> (a3OffsetIeValue) * 0.5;
+  NS_ASSERT (actual >= -15.0);
+  NS_ASSERT (actual <= 15.0);
+  return actual;
 }
 
 int8_t
@@ -291,7 +300,10 @@ EutranMeasurementMapping::ActualA3Offset2IeValue (double a3OffsetDb)
                                    << " for A3 Offset");
     }
 
-  return lround (a3OffsetDb * 2.0);
+  uint8_t ieValue = lround (a3OffsetDb * 2.0);
+  NS_ASSERT (ieValue >= -30);
+  NS_ASSERT (ieValue <= 30);
+  return ieValue;
 }
 
 double
@@ -304,7 +316,10 @@ EutranMeasurementMapping::IeValue2ActualQRxLevMin (int8_t qRxLevMinIeValue)
                                    << " for Q-RxLevMin IE value");
     }
 
-  return (static_cast<double> (qRxLevMinIeValue) * 2);
+  double actual = static_cast<double> (qRxLevMinIeValue) * 2;
+  NS_ASSERT (actual >= -140.0);
+  NS_ASSERT (actual <= -44.0);
+  return actual;
 }
 
 double
@@ -317,7 +332,10 @@ EutranMeasurementMapping::IeValue2ActualQQualMin (int8_t qQualMinIeValue)
                                    << " for Q-QualMin IE value");
     }
 
-  return (static_cast<double> (qQualMinIeValue));
+  double actual = static_cast<double> (qQualMinIeValue);
+  NS_ASSERT (actual >= -34.0);
+  NS_ASSERT (actual <= -3.0);
+  return actual;
 }
 
 }; // namespace ns3
