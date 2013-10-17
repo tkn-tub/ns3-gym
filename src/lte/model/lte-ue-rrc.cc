@@ -2426,7 +2426,7 @@ LteUeRrc::VarMeasReportListAdd (uint8_t measId, ConcernedCells_t enteringCells)
   NS_ASSERT (!measReportIt->second.cellsTriggeredList.empty ());
   measReportIt->second.numberOfReportsSent = 0;
   measReportIt->second.periodicReportTimer
-    = Simulator::Schedule (UE_MEASUREMENTS_DELAY,
+    = Simulator::Schedule (UE_MEASUREMENT_REPORT_DELAY,
                            &LteUeRrc::SendMeasurementReport,
                            this, measId);
 
@@ -2481,7 +2481,7 @@ LteUeRrc::VarMeasReportListErase (uint8_t measId, ConcernedCells_t leavingCells,
 
   if (reportOnLeave)
     {
-      // runs immediately without UE_MEASUREMENTS_DELAY
+      // runs immediately without UE_MEASUREMENT_REPORT_DELAY
       SendMeasurementReport (measId);
     }
 

@@ -53,7 +53,7 @@ namespace ns3 {
  *  - time-to-trigger check is always performed before the reporting, so there
  *    would still be chance for it to cancel the reporting if necessary.
  */
-static const Time UE_MEASUREMENTS_DELAY = MicroSeconds (1);
+static const Time UE_MEASUREMENT_REPORT_DELAY = MicroSeconds (1);
 
 
 class LteRlc;

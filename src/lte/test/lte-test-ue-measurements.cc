@@ -311,7 +311,7 @@ operator<< (std::vector<Time>& v, const uint64_t& ms)
    * Prior attempt to use seconds as unit of choice resulted in precision lost.
    * Therefore milliseconds are used now instead.
    */
-  v.push_back (MilliSeconds (ms) + UE_MEASUREMENTS_DELAY);
+  v.push_back (MilliSeconds (ms) + UE_MEASUREMENT_REPORT_DELAY);
   return v;
 }
 
