@@ -275,7 +275,7 @@ A2A4RsrqHandoverAlgorithm::UpdateNeighbourMeasurements (uint16_t rnti,
   else
     {
       // insert a new cell entry
-      neighbourCellMeasures = CreateObject<UeMeasure> ();
+      neighbourCellMeasures = Create<UeMeasure> ();
       neighbourCellMeasures->m_cellId = cellId;
       neighbourCellMeasures->m_rsrp = 0;
       neighbourCellMeasures->m_rsrq = rsrq;

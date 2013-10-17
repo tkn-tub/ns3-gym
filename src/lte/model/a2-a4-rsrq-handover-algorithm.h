@@ -31,6 +31,8 @@
 #include <ns3/lte-handover-algorithm.h>
 #include <ns3/lte-handover-management-sap.h>
 #include <ns3/lte-rrc-sap.h>
+#include <ns3/simple-ref-count.h>
+#include <ns3/ptr.h>
 #include <map>
 
 namespace ns3 {
@@ -118,10 +120,8 @@ private:
    * \brief Measurements reported by a UE for a cell ID.
    *
    * The values are quantized according 3GPP TS 36.133 section 9.1.4 and 9.1.7.
-   *
-   * \todo Instead of class, try using struct or SimpleRefCount.
    */
-  class UeMeasure : public Object
+  class UeMeasure : public SimpleRefCount<UeMeasure>
   {
   public:
     uint16_t m_cellId;
