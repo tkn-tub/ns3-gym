@@ -49,8 +49,7 @@ public:
   virtual ~NoOpHandoverAlgorithm ();
 
   // inherited from Object
-  virtual void DoDispose (void);
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   // inherited from LteHandoverAlgorithm
   virtual void SetLteHandoverManagementSapUser (LteHandoverManagementSapUser* s);
@@ -62,6 +61,7 @@ public:
 protected:
   // inherited from Object
   virtual void DoInitialize ();
+  virtual void DoDispose ();
 
   // inherited from LteHandoverAlgorithm as a Handover Management SAP implementation
   void DoReportUeMeas (uint16_t rnti, LteRrcSap::MeasResults measResults);

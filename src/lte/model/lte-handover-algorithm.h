@@ -70,8 +70,7 @@ public:
   virtual ~LteHandoverAlgorithm ();
 
   // inherited from Object
-  virtual void DoDispose (void);
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief Set the "user" part of the Handover Management SAP interface that
@@ -89,6 +88,9 @@ public:
   virtual LteHandoverManagementSapProvider* GetLteHandoverManagementSapProvider () = 0;
 
 protected:
+
+  // inherited from Object
+  virtual void DoDispose ();
 
   // HANDOVER MANAGEMENT SAP PROVIDER IMPLEMENTATION
 

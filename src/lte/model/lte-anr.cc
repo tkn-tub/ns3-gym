@@ -53,17 +53,8 @@ LteAnr::~LteAnr ()
 }
 
 
-void
-LteAnr::DoDispose ()
-{
-  NS_LOG_FUNCTION (this);
-  delete m_anrSapProvider;
-  m_neighbourRelationTable.clear ();
-}
-
-
 TypeId
-LteAnr::GetTypeId (void)
+LteAnr::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::LteAnr")
     .SetParent<Object> ()
@@ -145,6 +136,15 @@ LteAnr::DoInitialize ()
   reportConfig.triggerQuantity = LteRrcSap::ReportConfigEutra::RSRQ;
   reportConfig.reportInterval = LteRrcSap::ReportConfigEutra::MS480;
   m_measId = m_anrSapUser->AddUeMeasReportConfigForAnr (reportConfig);
+}
+
+
+void
+LteAnr::DoDispose ()
+{
+  NS_LOG_FUNCTION (this);
+  delete m_anrSapProvider;
+  m_neighbourRelationTable.clear ();
 }
 
 

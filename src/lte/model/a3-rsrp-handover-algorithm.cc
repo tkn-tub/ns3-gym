@@ -46,16 +46,8 @@ A3RsrpHandoverAlgorithm::~A3RsrpHandoverAlgorithm ()
 }
 
 
-void
-A3RsrpHandoverAlgorithm::DoDispose ()
-{
-  NS_LOG_FUNCTION (this);
-  delete m_handoverManagementSapProvider;
-}
-
-
 TypeId
-A3RsrpHandoverAlgorithm::GetTypeId (void)
+A3RsrpHandoverAlgorithm::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::A3RsrpHandoverAlgorithm")
     .SetParent<LteHandoverAlgorithm> ()
@@ -115,6 +107,14 @@ A3RsrpHandoverAlgorithm::DoInitialize ()
   m_measId = m_handoverManagementSapUser->AddUeMeasReportConfigForHandover (reportConfig);
 
   LteHandoverAlgorithm::DoInitialize ();
+}
+
+
+void
+A3RsrpHandoverAlgorithm::DoDispose ()
+{
+  NS_LOG_FUNCTION (this);
+  delete m_handoverManagementSapProvider;
 }
 
 

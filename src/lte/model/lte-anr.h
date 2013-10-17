@@ -89,8 +89,7 @@ public:
   virtual ~LteAnr ();
 
   // inherited from Object
-  virtual void DoDispose (void);
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief Provide an advance information about a related neighbouring cell
@@ -139,6 +138,7 @@ public:
 protected:
   // inherited from Object
   virtual void DoInitialize ();
+  virtual void DoDispose ();
 
 private:
 

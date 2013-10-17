@@ -39,20 +39,21 @@ LteHandoverAlgorithm::~LteHandoverAlgorithm ()
 }
 
 
-void
-LteHandoverAlgorithm::DoDispose ()
-{
-}
-
-
 TypeId
-LteHandoverAlgorithm::GetTypeId (void)
+LteHandoverAlgorithm::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::LteHandoverAlgorithm")
     .SetParent<Object> ()
   ;
   return tid;
 }
+
+
+void
+LteHandoverAlgorithm::DoDispose ()
+{
+}
+
 
 
 } // end of namespace ns3

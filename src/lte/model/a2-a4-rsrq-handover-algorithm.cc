@@ -60,16 +60,8 @@ A2A4RsrqHandoverAlgorithm::~A2A4RsrqHandoverAlgorithm ()
 }
 
 
-void
-A2A4RsrqHandoverAlgorithm::DoDispose ()
-{
-  NS_LOG_FUNCTION (this);
-  delete m_handoverManagementSapProvider;
-}
-
-
 TypeId
-A2A4RsrqHandoverAlgorithm::GetTypeId (void)
+A2A4RsrqHandoverAlgorithm::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::A2A4RsrqHandoverAlgorithm")
     .SetParent<LteHandoverAlgorithm> ()
@@ -132,6 +124,14 @@ A2A4RsrqHandoverAlgorithm::DoInitialize ()
   m_a4MeasId = m_handoverManagementSapUser->AddUeMeasReportConfigForHandover (reportConfigA4);
 
   LteHandoverAlgorithm::DoInitialize ();
+}
+
+
+void
+A2A4RsrqHandoverAlgorithm::DoDispose ()
+{
+  NS_LOG_FUNCTION (this);
+  delete m_handoverManagementSapProvider;
 }
 
 

@@ -52,7 +52,7 @@ NoOpHandoverAlgorithm::DoDispose ()
 
 
 TypeId
-NoOpHandoverAlgorithm::GetTypeId (void)
+NoOpHandoverAlgorithm::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::NoOpHandoverAlgorithm")
     .SetParent<LteHandoverAlgorithm> ()
