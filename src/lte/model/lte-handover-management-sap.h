@@ -28,8 +28,12 @@ namespace ns3 {
 
 
 /**
- * \brief Service Access Point (SAP) used by the eNodeB RRC instance to send
- *        messages to the handover algorithm instance.
+ * \brief Service Access Point (SAP) offered by the handover algorithm instance
+ *        to the eNodeB RRC instance.
+ *
+ * This is the *Handover Management SAP Provider*, i.e., the part of the SAP
+ * that contains the handover algorithm methods called by the eNodeB RRC
+ * instance.
  */
 class LteHandoverManagementSapProvider
 {
@@ -45,7 +49,7 @@ public:
    * The received measurement report is a result of the UE measurement
    * configuration previously configured by calling
    * LteHandoverManagementSapUser::AddUeMeasReportConfigForHandover. The report
-   * may be stored and utilized for the purpose of making handover decision.
+   * may be stored and utilised for the purpose of making handover decision.
    */
   virtual void ReportUeMeas (uint16_t rnti,
                              LteRrcSap::MeasResults measResults) = 0;
@@ -54,8 +58,11 @@ public:
 
 
 /**
- * \brief Service Access Point (SAP) used by the handover algorithm instance to
- *        send messages to the eNodeB RRC instance.
+ * \brief Service Access Point (SAP) offered by the eNodeB RRC instance to the
+ *        handover algorithm instance.
+ *
+ * This is the *Handover Management SAP User*, i.e., the part of the SAP that
+ * contains the eNodeB RRC methods called by the handover algorithm instance.
  */
 class LteHandoverManagementSapUser
 {
@@ -76,7 +83,7 @@ public:
    * handover algorithm through the LteHandoverManagementSapProvider::ReportUeMeas
    * SAP function.
    *
-   * This function is only valid before the simulation begins.
+   * \note This function is only valid before the simulation begins.
    */
   virtual uint8_t AddUeMeasReportConfigForHandover (LteRrcSap::ReportConfigEutra reportConfig) = 0;
 

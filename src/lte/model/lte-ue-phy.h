@@ -246,7 +246,7 @@ private:
    *        the RRC entity.
    *
    * Initially executed at +0.200s, and then repeatedly executed with
-   * periodicity as indicated by the UeMeasurementsFilterPeriod attribute.
+   * periodicity as indicated by the *UeMeasurementsFilterPeriod* attribute.
    */
   void ReportUeMeasurements ();
 

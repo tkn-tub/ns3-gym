@@ -30,13 +30,22 @@ namespace ns3 {
 
 
 /**
- * \brief A sample implementation of the Handover Management SAP which simply
- *        does nothing.
+ * \brief Handover algorithm implementation which simply does nothing.
+ *
+ * Selecting this handover algorithm is equivalent to disabling automatic
+ * triggering of handover. This is the default choice.
+ *
+ * To enable automatic handover, please select another handover algorithm, i.e.,
+ * another child class of LteHandoverAlgorithm.
  */
 class NoOpHandoverAlgorithm : public LteHandoverAlgorithm
 {
 public:
+  /**
+   * \brief Creates a No-op handover algorithm instance.
+   */
   NoOpHandoverAlgorithm ();
+
   virtual ~NoOpHandoverAlgorithm ();
 
   // inherited from Object
@@ -47,17 +56,17 @@ public:
   virtual void SetLteHandoverManagementSapUser (LteHandoverManagementSapUser* s);
   virtual LteHandoverManagementSapProvider* GetLteHandoverManagementSapProvider ();
 
+  // let the forwarder class access the protected and private members
   friend class MemberLteHandoverManagementSapProvider<NoOpHandoverAlgorithm>;
 
 protected:
   // inherited from Object
   virtual void DoInitialize ();
 
-private:
-
-  // Handover Management SAP implementation
+  // inherited from LteHandoverAlgorithm as a Handover Management SAP implementation
   void DoReportUeMeas (uint16_t rnti, LteRrcSap::MeasResults measResults);
 
+private:
   // Handover Management SAPs
   LteHandoverManagementSapUser* m_handoverManagementSapUser;
   LteHandoverManagementSapProvider* m_handoverManagementSapProvider;

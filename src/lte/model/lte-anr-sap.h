@@ -28,11 +28,11 @@ namespace ns3 {
 
 
 /**
- * \brief Service Access Point (SAP) offered by the Automatic Neighbour Relation
- *        (ANR) function to the eNodeB RRC instance.
+ * \brief Service Access Point (SAP) offered by the ANR instance to the eNodeB
+ *        RRC instance.
  *
- * This is the ANR SAP Provider, i.e., the part of the SAP that contains the ANR
- * methods called by the eNodeB RRC.
+ * This is the *ANR SAP Provider*, i.e., the part of the SAP that contains the
+ * ANR (Automatic Neighbour Relation) methods called by the eNodeB RRC instance.
  */
 class LteAnrSapProvider
 {
@@ -89,10 +89,10 @@ public:
 
 /**
  * \brief Service Access Point (SAP) offered by the eNodeB RRC instance to the
- *        Automatic Neighbour Relation (ANR) function.
+ *        ANR instance.
  *
- * This is the ANR SAP User, i.e., the part of the SAP that contains the eNodeB
- * RRC methods called by the ANR.
+ * This is the *ANR SAP User*, i.e., the part of the SAP that contains the
+ * eNodeB RRC methods called by the ANR (Automatic Neighbour Relation) instance.
  */
 class LteAnrSapUser
 {
@@ -112,7 +112,7 @@ public:
    * configuration, the eNodeB RRC entity shall forward this report to the ANC
    * instance through the LteAnrSapProvider::ReportUeMeas SAP function.
    *
-   * This function is only valid before the simulation begins.
+   * \note This function is only valid before the simulation begins.
    */
   virtual uint8_t AddUeMeasReportConfigForAnr (LteRrcSap::ReportConfigEutra reportConfig) = 0;
 

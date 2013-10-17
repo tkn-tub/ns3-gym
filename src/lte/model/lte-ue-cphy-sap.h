@@ -56,9 +56,11 @@ public:
   /**
    * \brief Tell the PHY entity to listen to PSS from surrounding cells and
    *        measure the RSRP.
+   * \param dlEarfcn the downlink carrier frequency (EARFCN) to listen to
    *
    * This function will instruct this PHY instance to listen to the DL channel
-   * over the bandwidth of 6 RB.
+   * over the bandwidth of 6 RB at the frequency associated with the given
+   * EARFCN.
    *
    * After this, it will start receiving Primary Synchronization Signal (PSS)
    * and periodically returning measurement reports to RRC via
@@ -69,7 +71,7 @@ public:
   /**
    * \brief Tell the PHY entity to synchronize with a given eNodeB over the
    *        currently active EARFCN for communication purposes.
-   * \param cellId the ID of the eNodeB
+   * \param cellId the ID of the eNodeB to synchronize with
    *
    * By synchronizing, the PHY will start receiving various information
    * transmitted by the eNodeB. For instance, when receiving system information,
@@ -86,7 +88,7 @@ public:
   /**
    * \brief Tell the PHY entity to align to the given EARFCN and synchronize
    *        with a given eNodeB for communication purposes.
-   * \param cellId the ID of the eNodeB
+   * \param cellId the ID of the eNodeB to synchronize with
    * \param dlEarfcn the downlink carrier frequency (EARFCN)
    *
    * By synchronizing, the PHY will start receiving various information
@@ -166,25 +168,35 @@ public:
   };
 
 
-  /** 
+  /**
+   * \brief Relay an MIB message from the PHY entity to the RRC layer.
+   * \param cellId the ID of the eNodeB where the message originates from
+   * \param mib the Master Information Block message
    * 
-   * \param mib the Master Information Block received on the BCH
+   * This function is typically called after PHY receives an MIB message over
+   * the BCH.
    */
   virtual void RecvMasterInformationBlock (uint16_t cellId,
                                            LteRrcSap::MasterInformationBlock mib) = 0;
 
   /**
+   * \brief Relay an SIB1 message from the PHY entity to the RRC layer.
+   * \param cellId the ID of the eNodeB where the message originates from
+   * \param mib the System Information Block Type 1 message
    *
-   * \param sib1 the System Information Block Type 1 received on the BCH
+   * This function is typically called after PHY receives an SIB1 message over
+   * the BCH.
    */
   virtual void RecvSystemInformationBlockType1 (uint16_t cellId,
                                                 LteRrcSap::SystemInformationBlockType1 sib1) = 0;
 
   /**
-   *
-   * \param params the structure containing the vector of cellId, RSRP and RSRQ
+   * \brief Send a report of RSRP and RSRQ values perceived from PSS by the PHY
+   *        entity (after applying layer-1 filtering) to the RRC layer.
+   * \param params the structure containing a vector of cellId, RSRP and RSRQ
    */
   virtual void ReportUeMeasurements (UeMeasurementsParameters params) = 0;
+
 };
 
 

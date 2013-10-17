@@ -31,53 +31,73 @@ namespace ns3 {
 
 
 /**
- * \brief Implements the Handover Management SAP for a handover algorithm based
- *        on RSRQ, Event A2 and Event A4.
+ * \brief Handover algorithm implementation based on RSRQ measurements, Event
+ *        A2 and Event A4.
  *
- * Handover decision is primarily based on Event A2 measurements (serving cell's
- * RSRQ becomes worse than threshold). The threshold used can be configured in
- * the `ServingCellThreshold` attribute. When the event is triggered, the first
- * condition of handover is fulfilled.
+ * Handover decision made by this algorithm is primarily based on Event A2
+ * measurements (serving cell's RSRQ becomes worse than threshold). When the
+ * event is triggered, the first condition of handover is fulfilled.
  *
  * Event A4 measurements (neighbour cell's RSRQ becomes better than threshold)
  * are used to detect neighbouring cells and their respective RSRQ. When a
  * neighbouring cell's RSRQ is higher than the serving cell's RSRQ by a certain
- * offset (configurable in the `NeighbourCellOffset` attribute), then the second
- * condition of handover is fulfilled.
+ * offset, then the second condition of handover is fulfilled.
  *
  * When the first and second conditions above are fulfilled, the algorithm
- * triggers a handover.
+ * informs the eNodeB RRC to trigger a handover.
  *
- * Note that the attributes must be set before the handover algorithm object is
- * instantiated in order for them to take effect, i.e. before calling
- * LteHelper::InstallSingleEnbDevice. Subsequent changes to the attribute values
- * after that will not have any effect.
+ * The threshold for Event A2 can be configured in the `ServingCellThreshold`
+ * attribute. The offset used in the second condition can also be configured by
+ * setting the `NeighbourCellOffset` attribute.
+ *
+ * The following code snippet is an example of using and configuring the
+ * handover algorithm in a simulation program:
+ *
+ *     Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
+ *
+ *     NodeContainer enbNodes;
+ *     // configure the nodes here...
+ *
+ *     lteHelper->SetHandoverAlgorithmType ("ns3::A2A4RsrqHandoverAlgorithm");
+ *     lteHelper->SetHandoverAlgorithmAttribute ("ServingCellThreshold",
+ *                                               UintegerValue (30));
+ *     lteHelper->SetHandoverAlgorithmAttribute ("NeighbourCellOffset",
+ *                                               UintegerValue (1));
+ *     NetDeviceContainer enbLteDevs = lteHelper->InstallEnbDevice (enbNodes);
+ *
+ * \note Setting the handover algorithm type and attributes after the call to
+ *       LteHelper::InstallEnbDevice does not have any effect to the devices
+ *       that have already been installed.
  */
 class A2A4RsrqHandoverAlgorithm : public LteHandoverAlgorithm
 {
 public:
+  /**
+   * \brief Creates an A2-A4-RSRQ handover algorithm instance.
+   */
   A2A4RsrqHandoverAlgorithm ();
+
   virtual ~A2A4RsrqHandoverAlgorithm ();
 
   // inherited from Object
   virtual void DoDispose (void);
   static TypeId GetTypeId (void);
 
-  // inherited from HandoverAlgorithm
+  // inherited from LteHandoverAlgorithm
   virtual void SetLteHandoverManagementSapUser (LteHandoverManagementSapUser* s);
   virtual LteHandoverManagementSapProvider* GetLteHandoverManagementSapProvider ();
 
+  // let the forwarder class access the protected and private members
   friend class MemberLteHandoverManagementSapProvider<A2A4RsrqHandoverAlgorithm>;
 
 protected:
   // inherited from Object
   virtual void DoInitialize ();
 
-private:
-
-  // Handover Management SAP implementation
+  // inherited from LteHandoverAlgorithm as a Handover Management SAP implementation
   void DoReportUeMeas (uint16_t rnti, LteRrcSap::MeasResults measResults);
 
+private:
   // Internal methods
   void EvaluateHandover (uint16_t rnti, uint8_t servingCellRsrq);
   bool IsValidNeighbour (uint16_t cellId);
@@ -92,6 +112,8 @@ private:
    * \brief Measurements reported by a UE for a cell ID.
    *
    * The values are quantized according 3GPP TS 36.133 section 9.1.4 and 9.1.7.
+   *
+   * \todo Instead of class, try using struct or SimpleRefCount.
    */
   class UeMeasure : public Object
   {
@@ -100,7 +122,6 @@ private:
     uint8_t m_rsrp;
     uint8_t m_rsrq;
   };
-  /// \todo Instead of class, try using struct or SimpleRefCount for UeMeasure.
 
   //               cellId
   typedef std::map<uint16_t, Ptr<UeMeasure> > MeasurementRow_t;

@@ -31,7 +31,8 @@ namespace ns3 {
 
 
 /**
- * \brief A handover algorithm based on RSRP and Event A3.
+ * \brief Implementation of the strongest cell handover algorithm, based on RSRP
+ *        measurements and Event A3.
  *
  * The algorithm utilizes Event A3 (Section 5.5.4.4 of 3GPP TS 36.331) UE
  * measurements and the Reference Signal Reference Power (RSRP). It is defined
@@ -40,15 +41,35 @@ namespace ns3 {
  *
  * Handover margin (a.k.a. hysteresis) and time-to-trigger (TTT) can be
  * configured to delay the event triggering. The values of these parameters
- * apply to all attached UEs. Note that these attributes must be set before the
- * handover algorithm object is instantiated in order for them to take effect,
- * i.e. before calling LteHelper::InstallSingleEnbDevice. Subsequent changes to
- * the attribute values after that will not have any effect.
+ * apply to all attached UEs.
+ *
+ * The following code snippet is an example of using and configuring the
+ * handover algorithm in a simulation program:
+ *
+ *     Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
+ *
+ *     NodeContainer enbNodes;
+ *     // configure the nodes here...
+ *
+ *     lteHelper->SetHandoverAlgorithmType ("ns3::A3RsrpHandoverAlgorithm");
+ *     lteHelper->SetHandoverAlgorithmAttribute ("Hysteresis",
+ *                                               DoubleValue (3.0));
+ *     lteHelper->SetHandoverAlgorithmAttribute ("TimeToTrigger",
+ *                                               TimeValue (MilliSeconds (256)));
+ *     NetDeviceContainer enbLteDevs = lteHelper->InstallEnbDevice (enbNodes);
+ *
+ * \note Setting the handover algorithm type and attributes after the call to
+ *       LteHelper::InstallEnbDevice does not have any effect to the devices
+ *       that have already been installed.
  */
 class A3RsrpHandoverAlgorithm : public LteHandoverAlgorithm
 {
 public:
+  /**
+   * \brief Creates a strongest cell handover algorithm instance.
+   */
   A3RsrpHandoverAlgorithm ();
+
   virtual ~A3RsrpHandoverAlgorithm ();
 
   // inherited from Object
@@ -59,17 +80,17 @@ public:
   virtual void SetLteHandoverManagementSapUser (LteHandoverManagementSapUser* s);
   virtual LteHandoverManagementSapProvider* GetLteHandoverManagementSapProvider ();
 
+  // let the forwarder class access the protected and private members
   friend class MemberLteHandoverManagementSapProvider<A3RsrpHandoverAlgorithm>;
 
 protected:
   // inherited from Object
   virtual void DoInitialize ();
 
-private:
-
-  // Handover Management SAP implementation
+  // inherited from LteHandoverAlgorithm as a Handover Management SAP implementation
   void DoReportUeMeas (uint16_t rnti, LteRrcSap::MeasResults measResults);
 
+private:
   // Internal method
   bool IsValidNeighbour (uint16_t cellId);
 
