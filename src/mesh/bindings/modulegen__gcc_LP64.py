@@ -27,7 +27,7 @@ def register_types(module):
     ## wifi-mode.h (module 'wifi'): ns3::WifiModulationClass [enumeration]
     module.add_enum('WifiModulationClass', ['WIFI_MOD_CLASS_UNKNOWN', 'WIFI_MOD_CLASS_IR', 'WIFI_MOD_CLASS_FHSS', 'WIFI_MOD_CLASS_DSSS', 'WIFI_MOD_CLASS_ERP_PBCC', 'WIFI_MOD_CLASS_DSSS_OFDM', 'WIFI_MOD_CLASS_ERP_OFDM', 'WIFI_MOD_CLASS_OFDM', 'WIFI_MOD_CLASS_HT'], import_from_module='ns.wifi')
     ## wifi-phy-standard.h (module 'wifi'): ns3::WifiPhyStandard [enumeration]
-    module.add_enum('WifiPhyStandard', ['WIFI_PHY_STANDARD_80211a', 'WIFI_PHY_STANDARD_80211b', 'WIFI_PHY_STANDARD_80211g', 'WIFI_PHY_STANDARD_80211_10MHZ', 'WIFI_PHY_STANDARD_80211_5MHZ', 'WIFI_PHY_STANDARD_holland', 'WIFI_PHY_STANDARD_80211p_CCH', 'WIFI_PHY_STANDARD_80211p_SCH', 'WIFI_PHY_STANDARD_80211n_2_4GHZ', 'WIFI_PHY_STANDARD_80211n_5GHZ'], import_from_module='ns.wifi')
+    module.add_enum('WifiPhyStandard', ['WIFI_PHY_STANDARD_80211a', 'WIFI_PHY_STANDARD_80211b', 'WIFI_PHY_STANDARD_80211g', 'WIFI_PHY_STANDARD_80211_10MHZ', 'WIFI_PHY_STANDARD_80211_5MHZ', 'WIFI_PHY_STANDARD_holland', 'WIFI_PHY_STANDARD_80211n_2_4GHZ', 'WIFI_PHY_STANDARD_80211n_5GHZ'], import_from_module='ns.wifi')
     ## wifi-mode.h (module 'wifi'): ns3::WifiCodeRate [enumeration]
     module.add_enum('WifiCodeRate', ['WIFI_CODE_RATE_UNDEFINED', 'WIFI_CODE_RATE_3_4', 'WIFI_CODE_RATE_2_3', 'WIFI_CODE_RATE_1_2', 'WIFI_CODE_RATE_5_6'], import_from_module='ns.wifi')
     ## qos-utils.h (module 'wifi'): ns3::AcIndex [enumeration]
@@ -500,14 +500,14 @@ def register_types_ns3_dot11s(module):
     module.add_enum('dot11sSynchronizationProtocolIdentifier', ['SYNC_NEIGHBOUR_OFFSET', 'SYNC_NULL'])
     ## ie-dot11s-configuration.h (module 'mesh'): ns3::dot11s::dot11sCongestionControlMode [enumeration]
     module.add_enum('dot11sCongestionControlMode', ['CONGESTION_SIGNALING', 'CONGESTION_NULL'])
+    ## ie-dot11s-configuration.h (module 'mesh'): ns3::dot11s::dot11sAuthenticationProtocol [enumeration]
+    module.add_enum('dot11sAuthenticationProtocol', ['AUTH_NULL', 'AUTH_SAE'])
     ## ie-dot11s-configuration.h (module 'mesh'): ns3::dot11s::dot11sPathSelectionMetric [enumeration]
     module.add_enum('dot11sPathSelectionMetric', ['METRIC_AIRTIME'])
     ## ie-dot11s-peer-management.h (module 'mesh'): ns3::dot11s::PmpReasonCode [enumeration]
     module.add_enum('PmpReasonCode', ['REASON11S_PEERING_CANCELLED', 'REASON11S_MESH_MAX_PEERS', 'REASON11S_MESH_CAPABILITY_POLICY_VIOLATION', 'REASON11S_MESH_CLOSE_RCVD', 'REASON11S_MESH_MAX_RETRIES', 'REASON11S_MESH_CONFIRM_TIMEOUT', 'REASON11S_MESH_INVALID_GTK', 'REASON11S_MESH_INCONSISTENT_PARAMETERS', 'REASON11S_MESH_INVALID_SECURITY_CAPABILITY', 'REASON11S_RESERVED'])
     ## ie-dot11s-configuration.h (module 'mesh'): ns3::dot11s::dot11sPathSelectionProtocol [enumeration]
     module.add_enum('dot11sPathSelectionProtocol', ['PROTOCOL_HWMP'])
-    ## ie-dot11s-configuration.h (module 'mesh'): ns3::dot11s::dot11sAuthenticationProtocol [enumeration]
-    module.add_enum('dot11sAuthenticationProtocol', ['AUTH_NULL', 'AUTH_SAE'])
     ## ie-dot11s-preq.h (module 'mesh'): ns3::dot11s::DestinationAddressUnit [class]
     module.add_class('DestinationAddressUnit', parent=root_module['ns3::SimpleRefCount< ns3::dot11s::DestinationAddressUnit, ns3::empty, ns3::DefaultDeleter<ns3::dot11s::DestinationAddressUnit> >'])
     ## ie-dot11s-configuration.h (module 'mesh'): ns3::dot11s::Dot11sMeshCapability [class]
@@ -3615,6 +3615,7 @@ def register_Ns3Empty_methods(root_module, cls):
     return
 
 def register_Ns3Int64x64_t_methods(root_module, cls):
+    cls.add_binary_comparison_operator('<=')
     cls.add_binary_comparison_operator('!=')
     cls.add_inplace_numeric_operator('+=', param('ns3::int64x64_t const &', 'right'))
     cls.add_binary_numeric_operator('*', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('long long unsigned int const', 'right'))
@@ -3672,7 +3673,6 @@ def register_Ns3Int64x64_t_methods(root_module, cls):
     cls.add_inplace_numeric_operator('-=', param('ns3::int64x64_t const &', 'right'))
     cls.add_inplace_numeric_operator('/=', param('ns3::int64x64_t const &', 'right'))
     cls.add_output_stream_operator()
-    cls.add_binary_comparison_operator('<=')
     cls.add_binary_comparison_operator('==')
     cls.add_binary_comparison_operator('>=')
     ## int64x64-double.h (module 'core'): ns3::int64x64_t::int64x64_t() [constructor]
@@ -4612,6 +4612,7 @@ def register_Ns3SimpleRefCount__Ns3Dot11sIeBeaconTimingUnit_Ns3Empty_Ns3DefaultD
     return
 
 def register_Ns3Time_methods(root_module, cls):
+    cls.add_binary_comparison_operator('<=')
     cls.add_binary_comparison_operator('!=')
     cls.add_inplace_numeric_operator('+=', param('ns3::Time const &', 'right'))
     cls.add_binary_numeric_operator('+', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::Time const &', 'right'))
@@ -4620,7 +4621,6 @@ def register_Ns3Time_methods(root_module, cls):
     cls.add_binary_comparison_operator('>')
     cls.add_inplace_numeric_operator('-=', param('ns3::Time const &', 'right'))
     cls.add_output_stream_operator()
-    cls.add_binary_comparison_operator('<=')
     cls.add_binary_comparison_operator('==')
     cls.add_binary_comparison_operator('>=')
     ## nstime.h (module 'core'): ns3::Time::Time() [constructor]
@@ -5239,11 +5239,6 @@ def register_Ns3WifiMac_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
-    ## wifi-mac.h (module 'wifi'): void ns3::WifiMac::ConfigureCCHDcf(ns3::Ptr<ns3::Dcf> dcf, uint32_t cwmin, uint32_t cwmax, ns3::AcIndex ac) [member function]
-    cls.add_method('ConfigureCCHDcf', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Dcf >', 'dcf'), param('uint32_t', 'cwmin'), param('uint32_t', 'cwmax'), param('ns3::AcIndex', 'ac')], 
-                   visibility='protected')
     ## wifi-mac.h (module 'wifi'): void ns3::WifiMac::ConfigureDcf(ns3::Ptr<ns3::Dcf> dcf, uint32_t cwmin, uint32_t cwmax, ns3::AcIndex ac) [member function]
     cls.add_method('ConfigureDcf', 
                    'void', 
@@ -11502,8 +11497,8 @@ def register_Ns3FlameFlameProtocol_methods(root_module, cls):
 def register_Ns3FlameFlameProtocolMac_methods(root_module, cls):
     ## flame-protocol-mac.h (module 'mesh'): ns3::flame::FlameProtocolMac::FlameProtocolMac(ns3::flame::FlameProtocolMac const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::flame::FlameProtocolMac const &', 'arg0')])
-    ## flame-protocol-mac.h (module 'mesh'): ns3::flame::FlameProtocolMac::FlameProtocolMac(uint32_t arg0, ns3::Ptr<ns3::flame::FlameProtocol> arg1) [constructor]
-    cls.add_constructor([param('uint32_t', 'arg0'), param('ns3::Ptr< ns3::flame::FlameProtocol >', 'arg1')])
+    ## flame-protocol-mac.h (module 'mesh'): ns3::flame::FlameProtocolMac::FlameProtocolMac(ns3::Ptr<ns3::flame::FlameProtocol> arg0) [constructor]
+    cls.add_constructor([param('ns3::Ptr< ns3::flame::FlameProtocol >', 'arg0')])
     ## flame-protocol-mac.h (module 'mesh'): int64_t ns3::flame::FlameProtocolMac::AssignStreams(int64_t stream) [member function]
     cls.add_method('AssignStreams', 
                    'int64_t', 
