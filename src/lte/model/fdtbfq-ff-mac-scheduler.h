@@ -252,8 +252,6 @@ private:
   FfMacCschedSapProvider::CschedCellConfigReqParameters m_cschedCellConfig;
 
 
-  double m_timeWindow;
-
   uint16_t m_nextRntiUl; // RNTI of the next user to be served next scheduling in UL
 
   uint32_t m_cqiTimersThreshold; // # of TTIs for which a CQI canbe considered valid

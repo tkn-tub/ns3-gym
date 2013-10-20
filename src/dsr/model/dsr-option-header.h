@@ -377,10 +377,6 @@ public:
 
 private:
   /**
-   * \brief The data length.
-   */
-  uint32_t m_dataLength;
-  /**
    * \brief Identifier of the packet.
    */
   uint16_t m_identification;
@@ -817,17 +813,9 @@ public:
 
 private:
   /**
-   * \brief option data length
-   */
-  uint8_t        m_optDataLen;
-  /**
    * \brief The error type or route error option
    */
   uint8_t        m_errorType;
-  /**
-   * \brief The reserved field
-   */
-  uint8_t        m_reserved;
   /**
    * \brief The salavage field
    */
@@ -980,17 +968,9 @@ public:
 
 private:
   /**
-   * \brief option data length
-   */
-  uint8_t        m_optDataLen;
-  /**
    * \brief The error type or route error option
    */
   uint8_t        m_errorType;
-  /**
-   * \brief The reserved field
-   */
-  uint8_t        m_reserved;
   /**
    * \brief The salavage field
    */
@@ -1011,10 +991,6 @@ private:
    * \brief The original destination address
    */
   Ipv4Address    m_originalDst;
-  /**
-   * \brief The specific error type
-   */
-  uint16_t       m_typeSpecific;
 };
 
 /**
@@ -1138,17 +1114,9 @@ public:
 
 private:
   /**
-   * \brief option data length
-   */
-  uint8_t        m_optDataLen;
-  /**
    * \brief The error type or route error option
    */
   uint8_t        m_errorType;
-  /**
-   * \brief The reserved field
-   */
-  uint8_t        m_reserved;
   /**
    * \brief The salavage field
    */
@@ -1244,10 +1212,6 @@ public:
   virtual Alignment GetAlignment () const;
 
 private:
-  /*
-   * The option data length
-   */
-  uint8_t  m_optDataLen;
   /*
    * The identification field
    */
@@ -1355,10 +1319,6 @@ public:
   virtual Alignment GetAlignment () const;
 
 private:
-  /**
-   * \brief option data length
-   */
-  uint8_t m_optDataLen;
   /**
    * \brief identification field
    */

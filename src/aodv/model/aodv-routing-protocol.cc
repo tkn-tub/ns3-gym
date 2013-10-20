@@ -129,7 +129,6 @@ RoutingProtocol::RoutingProtocol () :
   AllowedHelloLoss (2),
   DeletePeriod (Time (5 * std::max (ActiveRouteTimeout, HelloInterval))),
   NextHopWait (NodeTraversalTime + MilliSeconds (10)),
-  TimeoutBuffer (2),
   BlackListTimeout (Time (RreqRetries * NetTraversalTime)),
   MaxQueueLen (64),
   MaxQueueTime (Seconds (30)),
@@ -202,11 +201,6 @@ RoutingProtocol::GetTypeId (void)
                    TimeValue (Seconds (15)),
                    MakeTimeAccessor (&RoutingProtocol::DeletePeriod),
                    MakeTimeChecker ())
-    .AddAttribute ("TimeoutBuffer", "Its purpose is to provide a buffer for the timeout so that if the RREP is delayed"
-                   " due to congestion, a timeout is less likely to occur while the RREP is still en route back to the source.",
-                   UintegerValue (2),
-                   MakeUintegerAccessor (&RoutingProtocol::TimeoutBuffer),
-                   MakeUintegerChecker<uint16_t> ())
     .AddAttribute ("NetDiameter", "Net diameter measures the maximum possible number of hops between two nodes in the network",
                    UintegerValue (35),
                    MakeUintegerAccessor (&RoutingProtocol::NetDiameter),

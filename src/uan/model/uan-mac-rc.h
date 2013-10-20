@@ -185,7 +185,6 @@ private:
   Time m_sifs;
   Time m_learnedProp;
 
-  uint16_t m_numRetryRates;
   double m_minRetryRate;
   double m_retryStep;
 

@@ -204,8 +204,6 @@ private:
   Ipv4Address m_dst;
   // / The data ack id
   uint16_t m_ackId;
-  // / The ipv4 id
-  uint16_t m_id;
   // / The segments left field
   uint8_t m_segsLeft;
   // / Expire time for queue entry

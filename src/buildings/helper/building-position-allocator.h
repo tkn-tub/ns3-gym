@@ -95,8 +95,7 @@ public:
   int64_t AssignStreams (int64_t stream);
 
 private:
-  
-  bool m_withReplacement;
+
   struct RoomInfo 
   {
     Ptr<Building> b;

@@ -97,6 +97,7 @@ LenaHarqTestCase::LenaHarqTestCase (uint16_t nUser, uint16_t dist, uint16_t tbSi
     m_amcBer (amcBer),
     m_throughputRef (thrRef)
 {
+  NS_UNUSED (m_tbSize);
 }
 
 LenaHarqTestCase::~LenaHarqTestCase ()

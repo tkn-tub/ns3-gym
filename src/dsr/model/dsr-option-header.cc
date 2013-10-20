@@ -675,7 +675,6 @@ TypeId DsrOptionRerrHeader::GetInstanceTypeId () const
 
 DsrOptionRerrHeader::DsrOptionRerrHeader ()
   : m_errorType (0),
-    m_reserved (0),
     m_salvage (0),
     m_errorLength (4)
 {
@@ -797,7 +796,7 @@ TypeId DsrOptionRerrUnreachHeader::GetInstanceTypeId () const
 }
 
 DsrOptionRerrUnreachHeader::DsrOptionRerrUnreachHeader ()
-  :    m_reserved (0),
+  :
     m_salvage (0)
 {
   SetType (3);
@@ -925,7 +924,7 @@ TypeId DsrOptionRerrUnsupportHeader::GetInstanceTypeId () const
 }
 
 DsrOptionRerrUnsupportHeader::DsrOptionRerrUnsupportHeader ()
-  :    m_reserved (0),
+  :
     m_salvage (0)
 {
   SetType (3);

@@ -174,7 +174,6 @@ Experiment::Run (uint32_t param)
               "NumberOfRates", UintegerValue (m_numRates),
               "NumberOfNodes", UintegerValue (nNodes),
               "MaxReservations", UintegerValue (a),
-              "RetryRate", DoubleValue (1/30.0),
               "SIFS", TimeValue (m_sifs),
               "MaxPropDelay", TimeValue (pDelay),
               "FrameSize", UintegerValue (m_pktSize));
@@ -186,8 +185,7 @@ Experiment::Run (uint32_t param)
 
   uan.SetMac ("ns3::UanMacRc",
               "NumberOfRates", UintegerValue (m_numRates),
-              "MaxPropDelay", TimeValue (pDelay),
-              "RetryRate", DoubleValue (1.0/100.0));
+              "MaxPropDelay", TimeValue (pDelay));
   NodeContainer nodes;
   nodes.Create (nNodes);
   NetDeviceContainer devices = uan.Install (nodes, chan);

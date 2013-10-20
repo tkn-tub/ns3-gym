@@ -191,6 +191,7 @@ LenaFdBetFfMacSchedulerTestCase1::LenaFdBetFfMacSchedulerTestCase1 (uint16_t nUs
     m_thrRefUl (thrRefUl),
     m_errorModelEnabled (errorModelEnabled)
 {
+  NS_UNUSED (m_nLc);
 }
 
 LenaFdBetFfMacSchedulerTestCase1::~LenaFdBetFfMacSchedulerTestCase1 ()

@@ -225,13 +225,13 @@ private:
   int8_t DoGetIntSrc (void) const { return m_intSrc2; }
 
   bool m_boolTestA;
-  bool m_boolTest;
-  int16_t m_int16;
-  int16_t m_int16WithBounds;
+  bool NS_UNUSED_GLOBAL (m_boolTest);
+  int16_t NS_UNUSED_GLOBAL (m_int16);
+  int16_t NS_UNUSED_GLOBAL (m_int16WithBounds);
   int16_t m_int16SetGet;
-  uint8_t m_uint8;
-  float m_float;
-  enum Test_e m_enum;
+  uint8_t NS_UNUSED_GLOBAL (m_uint8);
+  float NS_UNUSED_GLOBAL (m_float);
+  enum Test_e NS_UNUSED_GLOBAL (m_enum);
   Ptr<RandomVariableStream> m_random;
   std::vector<Ptr<Derived> > m_vector1;
   std::vector<Ptr<Derived> > m_vector2;

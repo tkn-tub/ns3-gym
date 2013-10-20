@@ -249,6 +249,7 @@ LenaPssFfMacSchedulerTestCase1::LenaPssFfMacSchedulerTestCase1 (uint16_t nUser, 
     m_thrRefUl (thrRefUl),
     m_errorModelEnabled (errorModelEnabled)
 {
+  NS_UNUSED (m_nLc);
 }
 
 LenaPssFfMacSchedulerTestCase1::~LenaPssFfMacSchedulerTestCase1 ()

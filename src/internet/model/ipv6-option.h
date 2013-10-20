@@ -225,12 +225,6 @@ public:
    * \return the processed size
    */
   virtual uint8_t Process (Ptr<Packet> packet, uint8_t offset, Ipv6Header const& ipv6Header, bool& isDropped);
-
-private:
-  /**
-   * \brief The length of the packet.
-   */
-  uint32_t m_length;
 };
 
 /**

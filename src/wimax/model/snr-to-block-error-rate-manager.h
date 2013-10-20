@@ -92,7 +92,6 @@ public:
   void ActivateLoss (bool loss);
 private:
   void ClearRecords (void);
-  double m_speed; // in m/s
   uint8_t m_activateLoss;
   static const unsigned int TRACE_FILE_PATH_SIZE = 1024;
   char m_traceFilePath[TRACE_FILE_PATH_SIZE];

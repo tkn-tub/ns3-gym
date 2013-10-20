@@ -96,6 +96,7 @@ DistributedSimulatorImpl::DistributedSimulatorImpl ()
   m_pLBTS = new LbtsMessage[m_systemCount];
   m_grantedTime = Seconds (0);
 #else
+  NS_UNUSED (m_systemCount);
   NS_FATAL_ERROR ("Can't use distributed simulator without MPI compiled in");
 #endif
 

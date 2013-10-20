@@ -82,6 +82,7 @@ protected:
   Buffer::Iterator DeserializeQoffsetRange (int8_t * qOffsetRange, Buffer::Iterator bIterator);
   Buffer::Iterator DeserializeThresholdEutra (LteRrcSap::ThresholdEutra * thresholdEutra, Buffer::Iterator bIterator);
 
+  void Print (std::ostream &os) const;
   /**
    * This function prints RadioResourceConfigDedicated IE, for debugging purposes.
    * @param os The output stream to use (i.e. std::cout)

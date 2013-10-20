@@ -330,7 +330,7 @@ Ipv4L3ClickProtocol::SetupLoopback (void)
   // First check whether an existing LoopbackNetDevice exists on the node
   for (uint32_t i = 0; i < m_node->GetNDevices (); i++)
     {
-      if (device = DynamicCast<LoopbackNetDevice> (m_node->GetDevice (i)))
+      if ((device = DynamicCast<LoopbackNetDevice> (m_node->GetDevice (i))))
         {
           break;
         }

@@ -92,7 +92,7 @@ int main (int argc, char *argv[])
  
 
     Ssid ssid = Ssid ("ns380211n");
-    double datarate;
+    double datarate = 0;
     StringValue DataRate;
     if (i==0)
       {

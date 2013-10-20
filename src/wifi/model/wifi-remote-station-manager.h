@@ -524,14 +524,13 @@ private:
   WifiMcsList m_bssBasicMcsSet;
 
   bool m_htSupported;
-  bool m_isLowLatency;
   uint32_t m_maxSsrc;
   uint32_t m_maxSlrc;
   uint32_t m_rtsCtsThreshold;
   uint32_t m_fragmentationThreshold;
   uint8_t m_defaultTxPowerLevel;
   WifiMode m_nonUnicastMode;
-  double m_avgSlrcCoefficient;
+
   /**
    * The trace source fired when the transmission of a single RTS has failed
    */

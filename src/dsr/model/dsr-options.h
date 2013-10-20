@@ -431,10 +431,6 @@ private:
    */
   Ptr<dsr::RouteCache> m_routeCache;
   /**
-   * \brief The length of the packet.
-   */
-  uint32_t m_length;
-  /**
    * \brief The ip layer 3.
    */
   Ptr<Ipv4> m_ipv4;
@@ -488,10 +484,6 @@ public:
   virtual uint8_t Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Address ipv4Address, Ipv4Address source, Ipv4Header const& ipv4Header, uint8_t protocol, bool& isPromisc, Ipv4Address promiscSource);
 
 private:
-  /**
-   * \brief The length of the packet.
-   */
-  uint32_t m_length;
   /**
    * \brief The ip layer 3.
    */
@@ -562,10 +554,6 @@ private:
    */
   Ptr<dsr::RouteCache> m_routeCache;
   /**
-   * \brief The length of the packet.
-   */
-  uint32_t m_length;
-  /**
    * \brief The ipv4 layer 3.
    */
   Ptr<Ipv4> m_ipv4;
@@ -624,10 +612,6 @@ private:
    */
   Ptr<dsr::RouteCache> m_routeCache;
   /**
-   * \brief The length of the packet.
-   */
-  uint32_t m_length;
-  /**
    * \brief The ipv4 layer 3.
    */
   Ptr<Ipv4> m_ipv4;
@@ -685,10 +669,6 @@ private:
    * \brief The route cache.
    */
   Ptr<dsr::RouteCache> m_routeCache;
-  /**
-   * \brief The length of the packet.
-   */
-  uint32_t m_length;
   /**
    * \brief The ipv4 layer 3.
    */

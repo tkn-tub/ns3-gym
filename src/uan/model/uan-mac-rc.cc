@@ -244,11 +244,6 @@ UanMacRc::GetTypeId (void)
                    DoubleValue (0.01),
                    MakeDoubleAccessor (&UanMacRc::m_retryStep),
                    MakeDoubleChecker<double> ())
-    .AddAttribute ("NumberOfRetryRates",
-                   "Number of retry rates",
-                   UintegerValue (100),
-                   MakeUintegerAccessor (&UanMacRc::m_numRetryRates),
-                   MakeUintegerChecker<uint16_t> ())
     .AddAttribute ("MaxPropDelay",
                    "Maximum possible propagation delay to gateway",
                    TimeValue (Seconds (2)),

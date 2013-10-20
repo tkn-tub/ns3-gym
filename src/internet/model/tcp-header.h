@@ -173,7 +173,6 @@ private:
   Address m_destination;
   uint8_t m_protocol;
 
-  uint16_t m_initialChecksum;
   bool m_calcChecksum;
   bool m_goodChecksum;
 };

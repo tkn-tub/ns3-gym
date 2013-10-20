@@ -117,6 +117,7 @@ LenaDataPhyErrorModelTestCase::LenaDataPhyErrorModelTestCase (uint16_t nUser, ui
     m_blerRef (blerRef),
     m_toleranceRxPackets (toleranceRxPackets)
 {
+  NS_UNUSED (m_tbSize);
 }
 
 LenaDataPhyErrorModelTestCase::~LenaDataPhyErrorModelTestCase ()
@@ -266,6 +267,7 @@ m_dist (dist),
 m_tbSize (tbSize),
 m_blerRef (blerRef)
 {
+  NS_UNUSED (m_tbSize);
 }
 
 LenaDlCtrlPhyErrorModelTestCase::~LenaDlCtrlPhyErrorModelTestCase ()

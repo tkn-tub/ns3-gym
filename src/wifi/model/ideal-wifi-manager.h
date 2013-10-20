@@ -77,8 +77,6 @@ private:
 
   double m_ber;
   Thresholds m_thresholds;
-  double m_minSnr;
-  double m_maxSnr;
 };
 
 } // namespace ns3

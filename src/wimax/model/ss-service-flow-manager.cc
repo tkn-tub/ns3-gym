@@ -44,7 +44,6 @@ namespace ns3 {
 
 SsServiceFlowManager::SsServiceFlowManager (Ptr<SubscriberStationNetDevice> device)
   : m_device (device),
-    m_sfidIndex (100),
     m_maxDsaReqRetries (100),
     m_dsaReq (DsaReq ()),
     m_dsaAck (DsaAck ()),

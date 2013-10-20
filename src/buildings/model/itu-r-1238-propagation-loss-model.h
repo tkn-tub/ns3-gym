@@ -60,14 +60,6 @@ private:
   virtual int64_t DoAssignStreams (int64_t stream);
   
   double m_frequency; ///< frequency in MHz
-  double m_lambda; ///< wavelength
-  EnvironmentType m_environment;
-  CitySize m_citySize;
-  double m_rooftopHeight; ///< in meters
-  double m_streetsOrientation; ///< in degrees [0,90]
-  double m_streetsWidth; ///< in meters
-  double m_buildingsExtend; ///< in meters
-  double m_buildingSeparation; ///< in meters
 
 };
 

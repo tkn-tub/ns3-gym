@@ -103,6 +103,8 @@ LteInterferenceTestCase::LteInterferenceTestCase (std::string name, double d1, d
     m_dlMcs (dlMcs),
     m_ulMcs (ulMcs)
 {
+  NS_UNUSED (m_dlSe);
+  NS_UNUSED (m_ulSe);
 }
 
 LteInterferenceTestCase::~LteInterferenceTestCase ()
