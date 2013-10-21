@@ -182,9 +182,43 @@ LteRlcHeaderTestSuite::LteRlcHeaderTestSuite ()
     SequenceNumber10 ackSn (2);
     std::list<SequenceNumber10> nackSnList;
     nackSnList.push_back (SequenceNumber10 (873));
-    std::string hex ("000ada40");
+    std::string hex ("000bb480");
     AddTestCase (new RlcAmStatusPduTestCase (ackSn, nackSnList, hex), TestCase::QUICK);
   }
+
+
+  {
+    SequenceNumber10 ackSn (2);
+    std::list<SequenceNumber10> nackSnList;
+    nackSnList.push_back (SequenceNumber10 (1021));
+    nackSnList.push_back (SequenceNumber10 (754));
+    std::string hex ("000bfed790");
+    AddTestCase (new RlcAmStatusPduTestCase (ackSn, nackSnList, hex), TestCase::QUICK);
+  }
+
+
+  {
+    SequenceNumber10 ackSn (2);
+    std::list<SequenceNumber10> nackSnList;
+    nackSnList.push_back (SequenceNumber10 (1021));
+    nackSnList.push_back (SequenceNumber10 (754));
+    nackSnList.push_back (SequenceNumber10 (947));
+    std::string hex ("000bfed795d980");
+    AddTestCase (new RlcAmStatusPduTestCase (ackSn, nackSnList, hex), TestCase::QUICK);
+  }
+
+
+  {
+    SequenceNumber10 ackSn (2);
+    std::list<SequenceNumber10> nackSnList;
+    nackSnList.push_back (SequenceNumber10 (1021));
+    nackSnList.push_back (SequenceNumber10 (754));
+    nackSnList.push_back (SequenceNumber10 (947));
+    nackSnList.push_back (SequenceNumber10 (347));
+    std::string hex ("000bfed795d9cad8");
+    AddTestCase (new RlcAmStatusPduTestCase (ackSn, nackSnList, hex), TestCase::QUICK);
+  }
+
 }
 
 
