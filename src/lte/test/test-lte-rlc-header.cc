@@ -28,6 +28,7 @@
 
 #include <list>
 #include <bitset>
+#include <iomanip>
 
 
 NS_LOG_COMPONENT_DEFINE ("TestLteRlcHeader");
@@ -42,13 +43,13 @@ public:
   {
     uint32_t psize = pkt->GetSize ();
     uint8_t buffer[psize];
-    char sbuffer[psize * 3];
+    std::ostringstream oss (std::ostringstream::out);
     pkt->CopyData (buffer, psize);
     for (uint32_t i = 0; i < psize; i++)
       {
-        sprintf (&sbuffer[i * 3],"%02x ",buffer[i]);
+        oss << std::setfill ('0') << std::setw (2) << std::hex << (uint32_t) buffer[i];
       }
-    return std::string (sbuffer);
+    return oss.str ();
   }
 
   // Function to convert packet contents in binary format
@@ -120,6 +121,7 @@ RlcAmStatusPduTestCase::DoRun ()
   
   Ptr<Packet> p = Create<Packet> ();
   LteRlcAmHeader h;
+  h.SetControlPdu (LteRlcAmHeader::STATUS_PDU);
   h.SetAckSn (m_ackSn);
   for (std::list<SequenceNumber10>::iterator it = m_nackSnList.begin ();
        it != m_nackSnList.end ();
@@ -131,7 +133,7 @@ RlcAmStatusPduTestCase::DoRun ()
 
   TestUtils::LogPacketContents (p);
   std::string hex = TestUtils::sprintPacketContentsHex (p);
-  NS_TEST_ASSERT_MSG_EQ (hex, m_hex, "serialized packet content differs from test vector");
+  NS_TEST_ASSERT_MSG_EQ (m_hex, hex, "serialized packet content " << hex << " differs from test vector " << m_hex);
   
   LteRlcAmHeader h2;
   p->RemoveHeader (h2);
@@ -169,6 +171,20 @@ LteRlcHeaderTestSuite::LteRlcHeaderTestSuite ()
     AddTestCase (new RlcAmStatusPduTestCase (ackSn, nackSnList, hex), TestCase::QUICK);
   }
 
+  {
+    SequenceNumber10 ackSn (873);
+    std::list<SequenceNumber10> nackSnList;
+    std::string hex ("0da4");
+    AddTestCase (new RlcAmStatusPduTestCase (ackSn, nackSnList, hex), TestCase::QUICK);
+  }
+
+  {
+    SequenceNumber10 ackSn (2);
+    std::list<SequenceNumber10> nackSnList;
+    nackSnList.push_back (SequenceNumber10 (873));
+    std::string hex ("000ada40");
+    AddTestCase (new RlcAmStatusPduTestCase (ackSn, nackSnList, hex), TestCase::QUICK);
+  }
 }
 
 
