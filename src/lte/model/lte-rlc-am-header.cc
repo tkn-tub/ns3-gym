@@ -218,7 +218,7 @@ LteRlcAmHeader::PushNack (int nack)
 {
   m_nackSnList.push_back (nack);
 
-  if (m_nackSnList.size () % 2 != 0)
+  if (m_nackSnList.size () % 2 == 0)
     {
       m_headerLength++;
     }
