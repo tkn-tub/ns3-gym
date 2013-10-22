@@ -784,16 +784,25 @@ public:
   uint32_t GetSrsPeriodicity () const;
 
   /**
+   * \brief Associate this RRC entity with a particular CSG information.
+   * \param csgId the intended Closed Subscriber Group identity
+   * \param csgIndication if TRUE, only CSG members are allowed to access the
+   *                      cell
    *
-   * \param sib1 System Information Block Type 1 to be broadcasted over BCH
-   */
-  void SetSystemInformationBlockType1 (LteRrcSap::SystemInformationBlockType1 sib1);
-
-  /**
+   * CSG identity is a number identifying a Closed Subscriber Group which the
+   * cell belongs to. eNodeB is associated with a single CSG identity.
    *
-   * \return the System Information Block Type 1 that is currently broadcasted over BCH
+   * The same CSG identity can also be associated to several UEs, which is
+   * equivalent as enlisting these UEs as the members of this particular CSG.
+   * When the CSG indication field is set to TRUE, only UEs which are members of
+   * the CSG (i.e. same CSG ID) can gain access to the eNodeB, therefore
+   * enforcing closed access mode. Otherwise, the eNodeB operates as a non-CSG
+   * cell and implements open access mode.
+   *
+   * This restriction only applies to initial cell selection and EPC-enabled
+   * simulation.
    */
-  LteRrcSap::SystemInformationBlockType1 GetSystemInformationBlockType1 () const;
+  void SetCsgId (uint32_t csgId, bool csgIndication);
 
 private:
 

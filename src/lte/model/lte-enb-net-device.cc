@@ -356,10 +356,7 @@ LteEnbNetDevice::UpdateConfig (void)
       NS_LOG_LOGIC (this << " Updating SIB1 of cell " << m_cellId
                          << " with CSG ID " << m_csgId
                          << " and CSG indication " << m_csgIndication);
-      LteRrcSap::SystemInformationBlockType1 sib1 = m_rrc->GetSystemInformationBlockType1 ();
-      sib1.cellAccessRelatedInfo.csgIdentity = m_csgId;
-      sib1.cellAccessRelatedInfo.csgIndication = m_csgIndication;
-      m_rrc->SetSystemInformationBlockType1 (sib1);
+      m_rrc->SetCsgId (m_csgId, m_csgIndication);
     }
   else
     {

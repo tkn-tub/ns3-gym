@@ -2185,17 +2185,12 @@ LteEnbRrc::AddX2Neighbour (uint16_t cellId)
     }
 }
 
-LteRrcSap::SystemInformationBlockType1
-LteEnbRrc::GetSystemInformationBlockType1 () const
-{
-  return m_sib1;
-}
-
 void
-LteEnbRrc::SetSystemInformationBlockType1 (LteRrcSap::SystemInformationBlockType1 sib1)
+LteEnbRrc::SetCsgId (uint32_t csgId, bool csgIndication)
 {
-  m_sib1 = sib1;
-  m_cphySapProvider->SetSystemInformationBlockType1 (sib1);
+  NS_LOG_FUNCTION (this << csgId << csgIndication);
+  m_sib1.cellAccessRelatedInfo.csgIdentity = csgId;
+  m_sib1.cellAccessRelatedInfo.csgIndication = csgIndication;
 }
 
 
