@@ -2191,6 +2191,7 @@ LteEnbRrc::SetCsgId (uint32_t csgId, bool csgIndication)
   NS_LOG_FUNCTION (this << csgId << csgIndication);
   m_sib1.cellAccessRelatedInfo.csgIdentity = csgId;
   m_sib1.cellAccessRelatedInfo.csgIndication = csgIndication;
+  m_cphySapProvider->SetSystemInformationBlockType1 (m_sib1);
 }
 
 
