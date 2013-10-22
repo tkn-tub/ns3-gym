@@ -185,13 +185,11 @@ LenaFdBetFfMacSchedulerTestCase1::BuildNameString (uint16_t nUser, uint16_t dist
 LenaFdBetFfMacSchedulerTestCase1::LenaFdBetFfMacSchedulerTestCase1 (uint16_t nUser, uint16_t nLc, uint16_t dist, double thrRefDl, double thrRefUl, bool errorModelEnabled)
   : TestCase (BuildNameString (nUser, dist)),
     m_nUser (nUser),
-    m_nLc (nLc),
     m_dist (dist),
     m_thrRefDl (thrRefDl),
     m_thrRefUl (thrRefUl),
     m_errorModelEnabled (errorModelEnabled)
 {
-  NS_UNUSED (m_nLc);
 }
 
 LenaFdBetFfMacSchedulerTestCase1::~LenaFdBetFfMacSchedulerTestCase1 ()

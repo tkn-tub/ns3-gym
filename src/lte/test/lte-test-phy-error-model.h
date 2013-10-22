@@ -46,7 +46,6 @@ private:
   static std::string BuildNameString (uint16_t nUser, uint16_t dist);
   uint16_t m_nUser;
   uint16_t m_dist;
-  uint16_t m_tbSize;
   double m_blerRef;
   uint16_t m_toleranceRxPackets;
 
@@ -65,7 +64,6 @@ class LenaDlCtrlPhyErrorModelTestCase : public TestCase
     static std::string BuildNameString (uint16_t nUser, uint16_t dist);
     uint16_t m_nEnb;
     uint16_t m_dist;
-    uint16_t m_tbSize;
     double m_blerRef;
     
 };

@@ -49,7 +49,6 @@ private:
   static std::string BuildNameString (uint16_t nUser, uint16_t dist);
   virtual void DoRun (void);
   uint16_t m_nUser;
-  uint16_t m_nLc;
   uint16_t m_dist;
   uint16_t m_packetSize;  // byte
   uint16_t m_interval;    // ms

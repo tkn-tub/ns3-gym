@@ -240,7 +240,6 @@ LenaFdTbfqFfMacSchedulerTestCase1::BuildNameString (uint16_t nUser, uint16_t dis
 LenaFdTbfqFfMacSchedulerTestCase1::LenaFdTbfqFfMacSchedulerTestCase1 (uint16_t nUser, uint16_t nLc, uint16_t dist, double thrRefDl, double thrRefUl, uint16_t packetSize, uint16_t interval,bool errorModelEnabled)
   : TestCase (BuildNameString (nUser, dist)),
     m_nUser (nUser),
-    m_nLc (nLc),
     m_dist (dist),
     m_packetSize (packetSize),
     m_interval (interval),
@@ -248,7 +247,6 @@ LenaFdTbfqFfMacSchedulerTestCase1::LenaFdTbfqFfMacSchedulerTestCase1 (uint16_t n
     m_thrRefUl (thrRefUl),
     m_errorModelEnabled (errorModelEnabled)
 {
-  NS_UNUSED (m_nLc);
 }
 
 LenaFdTbfqFfMacSchedulerTestCase1::~LenaFdTbfqFfMacSchedulerTestCase1 ()
