@@ -1078,10 +1078,14 @@ LteRlcAm::DoReceivePdu (Ptr<Packet> p)
                 m_retxBuffer.at (seqNumberValue).m_retxCount = 0;
               }
 
-          m_vtA++;
-          m_vtA.SetModulusBase (m_vtA);
-          m_vtS.SetModulusBase (m_vtA);
-          ackSn.SetModulusBase (m_vtA);
+            if ( !foundNack )
+              {
+                m_vtA++;
+                NS_LOG_INFO ("Brett -- Updated VT(A) = " << m_vtA);
+                m_vtA.SetModulusBase (m_vtA);
+                m_vtS.SetModulusBase (m_vtA);
+                ackSn.SetModulusBase (m_vtA);
+              }
             }
           else
             {
@@ -1131,11 +1135,7 @@ LteRlcAm::DoReceivePdu (Ptr<Packet> p)
               }
             else
               {
-                loopCount++;
-                if (!foundNack)
-                  {
-                    m_vtA++;
-                  }
+                loopCount++;               
               }
         }
 
