@@ -56,12 +56,6 @@ namespace ns3 {
 LteCellSelectionTestSuite::LteCellSelectionTestSuite ()
   : TestSuite ("lte-cell-selection", SYSTEM)
 {
-  //LogComponentEnable ("LteCellSelectionTest", LOG_PREFIX_ALL);
-  //LogComponentEnable ("LteCellSelectionTest", LOG_FUNCTION);
-  //LogComponentEnable ("LteCellSelectionTest", LOG_INFO);
-  //LogComponentEnable ("LteSpectrumPhy", LOG_PREFIX_ALL);
-  //LogComponentEnable ("LteSpectrumPhy", LOG_DEBUG);
-
   std::vector<LteCellSelectionTestCase::UeSetup_t> w;
 
   // REAL RRC PROTOCOL
@@ -225,30 +219,48 @@ LteCellSelectionTestCase::DoRun ()
   // Create Devices and install them in the Nodes (eNB and UE)
   int64_t stream = 1;
   NetDeviceContainer enbDevs;
-  enbDevs = lteHelper->InstallEnbDevice (enbNodes);
-  stream += lteHelper->AssignStreams (enbDevs, stream);
 
-  lteHelper->SetEnbCsgId (enbDevs.Get (1), 1, true); // cell ID 2
-  lteHelper->SetEnbCsgId (enbDevs.Get (3), 1, true); // cell ID 4
+  // cell ID 1 is a non-CSG cell
+  lteHelper->SetEnbDeviceAttribute ("CsgId", UintegerValue (0));
+  lteHelper->SetEnbDeviceAttribute ("CsgIndication", BooleanValue (false));
+  enbDevs.Add (lteHelper->InstallEnbDevice (enbNodes.Get (0)));
+
+  // cell ID 2 is a CSG cell
+  lteHelper->SetEnbDeviceAttribute ("CsgId", UintegerValue (1));
+  lteHelper->SetEnbDeviceAttribute ("CsgIndication", BooleanValue (true));
+  enbDevs.Add (lteHelper->InstallEnbDevice (enbNodes.Get (1)));
+
+  // cell ID 3 is a non-CSG cell
+  lteHelper->SetEnbDeviceAttribute ("CsgId", UintegerValue (0));
+  lteHelper->SetEnbDeviceAttribute ("CsgIndication", BooleanValue (false));
+  enbDevs.Add (lteHelper->InstallEnbDevice (enbNodes.Get (2)));
+
+  // cell ID 4 is a CSG cell
+  lteHelper->SetEnbDeviceAttribute ("CsgId", UintegerValue (1));
+  lteHelper->SetEnbDeviceAttribute ("CsgIndication", BooleanValue (true));
+  enbDevs.Add (lteHelper->InstallEnbDevice (enbNodes.Get (3)));
 
   NetDeviceContainer ueDevs;
-  ueDevs = lteHelper->InstallUeDevice (ueNodes);
-  stream += lteHelper->AssignStreams (ueDevs, stream);
-
   Time lastCheckPoint = MilliSeconds (0);
-  NS_ASSERT (m_ueSetupList.size () == ueDevs.GetN ());
-  NetDeviceContainer::Iterator itDev;
-  for (itSetup = m_ueSetupList.begin (), itDev = ueDevs.Begin ();
-       itSetup != m_ueSetupList.end () || itDev != ueDevs.End ();
-       itSetup++, itDev++)
+  NS_ASSERT (m_ueSetupList.size () == ueNodes.GetN ());
+  NodeContainer::Iterator itNode;
+  for (itSetup = m_ueSetupList.begin (), itNode = ueNodes.Begin ();
+       itSetup != m_ueSetupList.end () || itNode != ueNodes.End ();
+       itSetup++, itNode++)
     {
       if (itSetup->isCsgMember)
         {
-          lteHelper->SetUeCsgId (*itDev, 1);
+          lteHelper->SetUeDeviceAttribute ("CsgId", UintegerValue (1));
+        }
+      else
+        {
+          lteHelper->SetUeDeviceAttribute ("CsgId", UintegerValue (0));
         }
 
-      Ptr<LteUeNetDevice> ueDev = (*itDev)->GetObject<LteUeNetDevice> ();
+      NetDeviceContainer devs = lteHelper->InstallUeDevice (*itNode);
+      Ptr<LteUeNetDevice> ueDev = devs.Get (0)->GetObject<LteUeNetDevice> ();
       NS_ASSERT (ueDev != 0);
+      ueDevs.Add (devs);
       Simulator::Schedule (itSetup->checkPoint,
                            &LteCellSelectionTestCase::CheckPoint,
                            this, ueDev,
@@ -260,8 +272,12 @@ LteCellSelectionTestCase::DoRun ()
         }
     }
 
+  stream += lteHelper->AssignStreams (enbDevs, stream);
+  stream += lteHelper->AssignStreams (ueDevs, stream);
+
   // Tests
   NS_ASSERT (m_ueSetupList.size () == ueDevs.GetN ());
+  NetDeviceContainer::Iterator itDev;
   for (itSetup = m_ueSetupList.begin (), itDev = ueDevs.Begin ();
        itSetup != m_ueSetupList.end () || itDev != ueDevs.End ();
        itSetup++, itDev++)

@@ -379,42 +379,6 @@ public:
   void SetFadingModelAttribute (std::string n, const AttributeValue &v);
 
   /**
-   * \brief Set the Q-RxLevMin parameter of the eNodeB devices to be used in
-   *        cell selection.
-   * \param enbDevices the set of eNodeB devices to be updated
-   * \param qRxLevMin the IE value of Q-RxLevMin parameter, which is
-   *
-   * The Q-RxLevMin is a network parameter and is the required minimum RSRP
-   * level that UE must receive before it may gain access to this cell. The
-   * actual value of Q-RxLevMin is IE value * 2 [dBm].
-   *
-   * If not set, the default value is -70, which is the minimum possible value.
-   * This translates to a minimum RSRP of -140 dBm.
-   *
-   * This restriction only applies to initial cell selection and EPC-enabled
-   * simulation.
-   */
-  void SetEnbQRxLevMin (NetDeviceContainer enbDevices, int8_t qRxLevMin);
-
-  /**
-   * \brief Set the Q-RxLevMin parameter of the eNodeB device to be used in
-   *        cell selection.
-   * \param enbDevice
-   * \param qRxLevMin the IE value of Q-RxLevMin parameter, which is
-   *
-   * The Q-RxLevMin is a network parameter and is the required minimum RSRP
-   * level that UE must receive before it may gain access to this cell. The
-   * actual value of Q-RxLevMin is IE value * 2 [dBm].
-   *
-   * If not set, the default value is -70, which is the minimum possible value.
-   * This translates to a minimum RSRP of -140 dBm.
-   *
-   * This restriction only applies to initial cell selection and EPC-enabled
-   * simulation.
-   */
-  void SetEnbQRxLevMin (Ptr<NetDevice> enbDevice, int8_t qRxLevMin);
-
-  /**
    * Enables logging for all components of the LENA architecture
    *
    */

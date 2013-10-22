@@ -1327,6 +1327,20 @@ LteEnbRrc::GetTypeId (void)
                    MakeTimeAccessor (&LteEnbRrc::m_handoverLeavingTimeoutDuration),
                    MakeTimeChecker ())
 
+    // Cell selection related attribute
+   .AddAttribute ("QRxLevMin",
+                  "One of information transmitted within the SIB1 message, "
+                  "indicating the required minimum RSRP level that any UE must "
+                  "receive from this cell before it is allowed to camp to this "
+                  "cell. The default value -70 corresponds to -140 dBm and is "
+                  "the lowest possible value as defined by Section 6.3.4 of "
+                  "3GPP TS 36.133. This restriction, however, only applies to "
+                  "initial cell selection and EPC-enabled simulation.",
+                  TypeId::ATTR_GET | TypeId::ATTR_CONSTRUCT,
+                  IntegerValue (-70),
+                  MakeIntegerAccessor (&LteEnbRrc::m_qRxLevMin),
+                  MakeIntegerChecker<int8_t> (-70, -22))
+
     // Handover related attributes
     .AddAttribute ("AdmitHandoverRequest",
                    "Whether to admit an X2 handover request from another eNB",
@@ -1334,7 +1348,7 @@ LteEnbRrc::GetTypeId (void)
                    MakeBooleanAccessor (&LteEnbRrc::m_admitHandoverRequest),
                    MakeBooleanChecker ())
     .AddAttribute ("AdmitRrcConnectionRequest",
-                   "Whether to admit a connection request from a Ue",
+                   "Whether to admit a connection request from a UE",
                    BooleanValue (true),
                    MakeBooleanAccessor (&LteEnbRrc::m_admitRrcConnectionRequest),
                    MakeBooleanChecker ())
@@ -1633,7 +1647,7 @@ LteEnbRrc::ConfigureCell (uint8_t ulBandwidth, uint8_t dlBandwidth,
   m_sib1.cellAccessRelatedInfo.csgIdentity = 0;
   m_sib1.cellAccessRelatedInfo.plmnIdentityInfo.plmnIdentity = 0; // not used
   m_sib1.cellSelectionInfo.qQualMin = -34; // not used, set as minimum value
-  m_sib1.cellSelectionInfo.qRxLevMin = -70; // set as minimum value
+  m_sib1.cellSelectionInfo.qRxLevMin = m_qRxLevMin; // set as minimum value
   m_cphySapProvider->SetSystemInformationBlockType1 (m_sib1);
 
   /*

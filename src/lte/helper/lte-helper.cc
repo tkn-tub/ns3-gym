@@ -897,33 +897,6 @@ LteHelper::ActivateDataRadioBearer (NetDeviceContainer ueDevices, EpsBearer bear
 }
 
 void
-LteHelper::SetEnbQRxLevMin (NetDeviceContainer enbDevices, int8_t qRxLevMin)
-{
-  for (NetDeviceContainer::Iterator i = enbDevices.Begin ();
-       i != enbDevices.End (); ++i)
-    {
-      SetEnbQRxLevMin (*i, qRxLevMin);
-    }
-}
-
-void
-LteHelper::SetEnbQRxLevMin (Ptr<NetDevice> enbDevice, int8_t qRxLevMin)
-{
-  NS_LOG_FUNCTION (this << enbDevice << (int16_t) qRxLevMin);
-
-  Ptr<LteEnbNetDevice> enbLteDevice = enbDevice->GetObject<LteEnbNetDevice> ();
-  if (enbLteDevice == 0)
-    {
-      NS_FATAL_ERROR ("The passed NetDevice must be an LteEnbNetDevice");
-    }
-
-  Ptr<LteEnbRrc> rrc = enbLteDevice->GetRrc ();
-  LteRrcSap::SystemInformationBlockType1 sib1 = rrc->GetSystemInformationBlockType1 ();
-  sib1.cellSelectionInfo.qRxLevMin = qRxLevMin;
-  rrc->SetSystemInformationBlockType1 (sib1);
-}
-
-void
 LteHelper::EnableLogComponents (void)
 {
   LogComponentEnable ("LteHelper", LOG_LEVEL_ALL);

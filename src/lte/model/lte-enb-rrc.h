@@ -913,6 +913,9 @@ private:
   uint16_t m_lastAllocatedConfigurationIndex;
   bool m_reconfigureUes;
 
+  // Cell selection related attribute
+  int8_t m_qRxLevMin;
+
   // Handover related attributes
   bool m_admitHandoverRequest;
   bool m_admitRrcConnectionRequest;
