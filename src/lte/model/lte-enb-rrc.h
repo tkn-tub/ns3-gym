@@ -599,6 +599,8 @@ public:
    *
    * Typically runs when the eNodeB NetDevice is installed, for instance by
    * `LteHelper::InstallEnbDevice` (i.e. before the simulation starts).
+   *
+   * \warning Raises an error when executed more than once.
    */
   void ConfigureCell (uint8_t ulBandwidth,
                       uint8_t dlBandwidth,

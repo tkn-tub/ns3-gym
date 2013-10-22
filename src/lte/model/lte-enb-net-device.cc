@@ -116,12 +116,28 @@ TypeId LteEnbNetDevice::GetTypeId (void)
                    UintegerValue (18100),
                    MakeUintegerAccessor (&LteEnbNetDevice::m_ulEarfcn),
                    MakeUintegerChecker<uint16_t> (18000, 24149))
+    .AddAttribute ("CsgId",
+                   "The Closed Subscriber Group (CSG) identity that this eNodeB belongs to",
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&LteEnbNetDevice::SetCsgId,
+                                         &LteEnbNetDevice::GetCsgId),
+                   MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("CsgIndication",
+                   "If true, only UEs which are members of the CSG (i.e. same CSG ID) "
+                   "can gain access to the eNodeB, therefore enforcing closed access mode. "
+                   "Otherwise, the eNodeB operates as a non-CSG cell and implements open access mode.",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&LteEnbNetDevice::SetCsgIndication,
+                                        &LteEnbNetDevice::GetCsgIndication),
+                   MakeBooleanChecker ())
   ;
   return tid;
 }
 
 LteEnbNetDevice::LteEnbNetDevice ()
-  : m_anr (0)
+  : m_isConstructed (false),
+    m_isConfigured (false),
+    m_anr (0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -163,20 +179,16 @@ LteEnbNetDevice::DoDispose ()
 
 
 Ptr<LteEnbMac>
-LteEnbNetDevice::GetMac (void) const
+LteEnbNetDevice::GetMac () const
 {
-  NS_LOG_FUNCTION (this);
   return m_mac;
 }
 
-
 Ptr<LteEnbPhy>
-LteEnbNetDevice::GetPhy (void) const
+LteEnbNetDevice::GetPhy () const
 {
-  NS_LOG_FUNCTION (this);
   return m_phy;
 }
-
 
 Ptr<LteEnbRrc>
 LteEnbNetDevice::GetRrc () const
@@ -199,6 +211,7 @@ LteEnbNetDevice::GetUlBandwidth () const
 void 
 LteEnbNetDevice::SetUlBandwidth (uint8_t bw)
 { 
+  NS_LOG_FUNCTION (this << uint16_t (bw));
   switch (bw)
     { 
     case 6:
@@ -225,6 +238,7 @@ LteEnbNetDevice::GetDlBandwidth () const
 void 
 LteEnbNetDevice::SetDlBandwidth (uint8_t bw)
 {
+  NS_LOG_FUNCTION (this << uint16_t (bw));
   switch (bw)
     { 
     case 6:
@@ -251,6 +265,7 @@ LteEnbNetDevice::GetDlEarfcn () const
 void 
 LteEnbNetDevice::SetDlEarfcn (uint16_t earfcn)
 { 
+  NS_LOG_FUNCTION (this << earfcn);
   m_dlEarfcn = earfcn;
 }
 
@@ -263,14 +278,44 @@ LteEnbNetDevice::GetUlEarfcn () const
 void 
 LteEnbNetDevice::SetUlEarfcn (uint16_t earfcn)
 { 
+  NS_LOG_FUNCTION (this << earfcn);
   m_ulEarfcn = earfcn;
+}
+
+uint32_t
+LteEnbNetDevice::GetCsgId () const
+{
+  return m_csgId;
+}
+
+void
+LteEnbNetDevice::SetCsgId (uint32_t csgId)
+{
+  NS_LOG_FUNCTION (this << csgId);
+  m_csgId = csgId;
+  UpdateConfig (); // propagate the change to RRC level
+}
+
+bool
+LteEnbNetDevice::GetCsgIndication () const
+{
+  return m_csgIndication;
+}
+
+void
+LteEnbNetDevice::SetCsgIndication (bool csgIndication)
+{
+  NS_LOG_FUNCTION (this << csgIndication);
+  m_csgIndication = csgIndication;
+  UpdateConfig (); // propagate the change to RRC level
 }
 
 
 void 
 LteEnbNetDevice::DoInitialize (void)
 {
-
+  NS_LOG_FUNCTION (this);
+  m_isConstructed = true;
   UpdateConfig ();
   m_phy->Initialize ();
   m_mac->Initialize ();
@@ -284,7 +329,6 @@ LteEnbNetDevice::DoInitialize (void)
 }
 
 
-
 bool
 LteEnbNetDevice::Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber)
 {
@@ -294,16 +338,36 @@ LteEnbNetDevice::Send (Ptr<Packet> packet, const Address& dest, uint16_t protoco
 }
 
 
-
-
 void
 LteEnbNetDevice::UpdateConfig (void)
 {
   NS_LOG_FUNCTION (this);
 
-  m_rrc->ConfigureCell (m_ulBandwidth, m_dlBandwidth, m_ulEarfcn, m_dlEarfcn, m_cellId);
-  m_rrc->SetCellId (m_cellId);
+  if (m_isConstructed)
+    {
+      if (!m_isConfigured)
+        {
+          NS_LOG_LOGIC (this << " Configure cell " << m_cellId);
+          // we have to make sure that this function is called only once
+          m_rrc->ConfigureCell (m_ulBandwidth, m_dlBandwidth, m_ulEarfcn, m_dlEarfcn, m_cellId);
+          m_isConfigured = true;
+        }
 
+      NS_LOG_LOGIC (this << " Updating SIB1 of cell " << m_cellId
+                         << " with CSG ID " << m_csgId
+                         << " and CSG indication " << m_csgIndication);
+      LteRrcSap::SystemInformationBlockType1 sib1 = m_rrc->GetSystemInformationBlockType1 ();
+      sib1.cellAccessRelatedInfo.csgIdentity = m_csgId;
+      sib1.cellAccessRelatedInfo.csgIndication = m_csgIndication;
+      m_rrc->SetSystemInformationBlockType1 (sib1);
+    }
+  else
+    {
+      /*
+       * Lower layers are not ready yet, so do nothing now and expect
+       * ``DoInitialize`` to re-invoke this function.
+       */
+    }
 }
 
 

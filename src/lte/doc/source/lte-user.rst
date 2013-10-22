@@ -997,23 +997,29 @@ only to some UEs which have been previously registered by the owner. The eNodeB
 and the registered UEs altogether form a CSG.
 
 The access restriction can be simulated by "labeling" the CSG members with the
-same CSG ID. This function is available from ``LteHelper`` class::
+same CSG ID. This is done through the attributes in both eNodeB and UE, for
+example using the following ``LteHelper`` functions::
 
-   // label one or more eNodeBs with CSG identity of 1 and CSG indication enabled
-   lteHelper->SetEnbCsgId (enbDevs, 1, true);
-   
+   // label the following eNodeBs with CSG identity of 1 and CSG indication enabled
+   lteHelper->SetEnbDeviceAttribute ("CsgId", UintegerValue (1));
+   lteHelper->SetEnbDeviceAttribute ("CsgIndication", BooleanValue (true));
+
    // label one or more UEs with CSG identity of 1
-   lteHelper->SetUeCsgId (ueDevs, 1);
+   lteHelper->SetUeDeviceAttribute ("CsgId", UintegerValue (1));
+   
+   // install the eNodeBs and UEs
+   NetDeviceContainer csgEnbDevs = lteHelper->InstallEnbDevice (csgEnbNodes);
+   NetDeviceContainer csgUeDevs = lteHelper->InstallUeDevice (csgUeNodes);
 
 Then enable the initial cell selection procedure on the UEs:: 
 
-   lteHelper->Attach (ueDevs);
+   lteHelper->Attach (csgUeDevs);
 
 This is necessary because the CSG restriction only works with automatic method
 of network attachment, but not in the manual method.
 
 Note that setting the CSG indication of an eNodeB as false (the default value)
-will disable the restriction, i.e. any UEs can connect to this eNodeB.
+will disable the restriction, i.e., any UEs can connect to this eNodeB.
 
 
 

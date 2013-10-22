@@ -1020,16 +1020,17 @@ Initial cell selection
 
 The test suite `lte-cell-selection` is responsible for verifying the
 :ref:`sec-initial-cell-selection` procedure. The test is a simulation of a small 
-etwork of 4 non-CSG cells and 2 non-CSG cells. Several static UEs are then
-placed at predefined locations and with initial cell selection procedure
-enabled. Thus the UEs enters the simulation without being attached to any cell.
+network of 2 non-CSG cells and 2 non-CSG cells. Several static UEs are then
+placed at predefined locations. The UEs enter the simulation without being
+attached to any cell. Initial cell selection is enabled for these UEs, so each
+UE will find the best cell and attach to it by themselves.
 
-At predefined check point times during the simulation, the test verifies that
+At predefined check points time during the simulation, the test verifies that
 every UE is attached to the right cell. Moreover, the test also ensures that the
 UE is properly connected, i.e., its final state is `CONNECTED_NORMALLY`. Figure
 :ref:`fig-lte-cell-selection-scenario` depicts the network layout and the
-expected result. When a UE is depicted as having 2 successful cell selections,
-any of them is accepted by the test case.
+expected result. When a UE is depicted as having 2 successful cell selections
+(e.g., UE #3 and #4), any of them is accepted by the test case.
 
 .. _fig-lte-cell-selection-scenario:
 
@@ -1039,13 +1040,15 @@ any of them is accepted by the test case.
 
    Sample result of cell selection test
 
-It shows that CSG members may attach to either CSG or non-CSG cells, and simply
-choose the stronger one. On the other hand, non-members can only attach to
-non-CSG cells, even when they are actually receiving stronger signal from a CSG
-cell.
+The figure shows that CSG members may attach to either CSG or non-CSG cells, and
+simply choose the stronger one. On the other hand, non-members can only attach
+to non-CSG cells, even when they are actually receiving stronger signal from a
+CSG cell.
 
-For reference purpose, the error rate at each UE when receiving transmission of
-control messages are shown in Table :ref:`tab-cell-selection-error-rate` below.
+For reference purpose, Table :ref:`tab-cell-selection-error-rate` shows the
+error rate of each UE when receiving transmission from the control channel.
+Based on this information, the check point time for UE #3 is done at a later
+time than the others to compensate for its higher risk of failure.
 
 .. _tab-cell-selection-error-rate:
 
@@ -1062,8 +1065,8 @@ control messages are shown in Table :ref:`tab-cell-selection-error-rate` below.
    6     0.00%
    ==== ==========
 
-The test uses the default Friis path loss model and without channel fading
-enabled.
+The test uses the default Friis path loss model and without any channel fading
+model.
 
 
 GTP-U protocol

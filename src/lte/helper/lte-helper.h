@@ -379,62 +379,6 @@ public:
   void SetFadingModelAttribute (std::string n, const AttributeValue &v);
 
   /**
-   * \brief Associate the eNodeB devices with a particular CSG information.
-   * \param enbDevices the set of eNodeB devices to be updated
-   * \param csgId the intended Closed Subscriber Group identity
-   * \param csgIndication if TRUE, only CSG members are allowed to access the
-   *                      cell
-   *
-   * CSG identity is a number identifying a Closed Subscriber Group which the
-   * cell belongs to. eNodeB is associated with a single CSG identity.
-   *
-   * The same CSG identity can also be associated to several UEs, which is
-   * equivalent as enlisting these UEs as the members of this particular CSG.
-   * When the CSG indication field is set to TRUE, only UEs which are members of
-   * the CSG (i.e. same CSG ID) can gain access to the eNodeB, therefore
-   * enforcing closed access mode. Otherwise, the eNodeB operates as a non-CSG
-   * cell and implements open access mode.
-   *
-   * If not set, eNodeB devices are non-CSG cells and bear a CSG identity of 0
-   * by default.
-   *
-   * This restriction only applies to initial cell selection and EPC-enabled
-   * simulation.
-   *
-   * \sa SetUeCsgId(NetDeviceContainer, uint32_t)
-   */
-  void SetEnbCsgId (NetDeviceContainer enbDevices, uint32_t csgId,
-                    bool csgIndication);
-
-  /**
-   * \brief Associate the eNodeB devices with a particular CSG information.
-   * \param enbDevice
-   * \param csgId the intended Closed Subscriber Group identity
-   * \param csgIndication if TRUE, only CSG members are allowed to access the
-   *                      cell
-   *
-   * CSG identity is a number identifying a Closed Subscriber Group which the
-   * cell belongs to. eNodeB is associated with a single CSG identity.
-   *
-   * The same CSG identity can also be associated to several UEs, which is
-   * equivalent as enlisting these UEs as the members of this particular CSG.
-   * When the CSG indication field is set to TRUE, only UEs which are members of
-   * the CSG (i.e. same CSG ID) can gain access to the eNodeB, therefore
-   * enforcing closed access mode. Otherwise, the eNodeB operates as a non-CSG
-   * cell and implements open access mode.
-   *
-   * If not set, eNodeB devices are non-CSG cells and bear a CSG identity of 0
-   * by default.
-   *
-   * This restriction only applies to initial cell selection and EPC-enabled
-   * simulation.
-   *
-   * \sa SetUeCsgId(Ptr<NetDevice>, uint32_t)
-   */
-  void SetEnbCsgId (Ptr<NetDevice> enbDevice, uint32_t csgId,
-                    bool csgIndication);
-
-  /**
    * \brief Set the Q-RxLevMin parameter of the eNodeB devices to be used in
    *        cell selection.
    * \param enbDevices the set of eNodeB devices to be updated
@@ -469,42 +413,6 @@ public:
    * simulation.
    */
   void SetEnbQRxLevMin (Ptr<NetDevice> enbDevice, int8_t qRxLevMin);
-
-  /**
-   * \brief Enlist the UE devices as members of a particular CSG.
-   * \param ueDevices the set of UE devices to be updated
-   * \param csgId the intended Closed Subscriber Group identity
-   *
-   * UE is associated with a single CSG identity, and thus becoming a member of
-   * this particular CSG. As a result, the UE may gain access to cells which
-   * belong to this CSG. This does not revoke the UE's access to non-CSG cells.
-   *
-   * If not set, UE devices bear a default CSG identity of 0.
-   *
-   * This restriction only applies to initial cell selection and EPC-enabled
-   * simulation.
-   *
-   * \sa SetEnbCsgId(NetDeviceContainer, uint32_t, bool)
-   */
-  void SetUeCsgId (NetDeviceContainer ueDevices, uint32_t csgId);
-
-  /**
-   * \brief Enlist the UE device as a member of a particular CSG.
-   * \param ueDevice
-   * \param csgId the intended Closed Subscriber Group identity
-   *
-   * UE is associated with a single CSG identity, and thus becoming a member of
-   * this particular CSG. As a result, the UE may gain access to cells which
-   * belong to this CSG. This does not revoke the UE's access to non-CSG cells.
-   *
-   * If not set, UE devices bear a default CSG identity of 0.
-   *
-   * This restriction only applies to initial cell selection and EPC-enabled
-   * simulation.
-   *
-   * \sa SetEnbCsgId(Ptr<NetDevice>, uint32_t, bool)
-   */
-  void SetUeCsgId (Ptr<NetDevice> ueDevice, uint32_t csgId);
 
   /**
    * Enables logging for all components of the LENA architecture

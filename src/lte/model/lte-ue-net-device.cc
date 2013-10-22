@@ -90,6 +90,15 @@ TypeId LteUeNetDevice::GetTypeId (void)
                    MakeUintegerAccessor (&LteUeNetDevice::SetDlEarfcn,
                                          &LteUeNetDevice::GetDlEarfcn),
                    MakeUintegerChecker<uint16_t> (0, 6149))
+    .AddAttribute ("CsgId",
+                   "The Closed Subscriber Group (CSG) identity that this UE is associated with, "
+                   "i.e., giving the UE access to cells which belong to this particular CSG. "
+                   "This restriction only applies to initial cell selection and EPC-enabled simulation. "
+                   "This does not revoke the UE's access to non-CSG cells. ",
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&LteUeNetDevice::SetCsgId,
+                                         &LteUeNetDevice::GetCsgId),
+                   MakeUintegerChecker<uint32_t> ())
   ;
 
   return tid;
@@ -97,6 +106,7 @@ TypeId LteUeNetDevice::GetTypeId (void)
 
 
 LteUeNetDevice::LteUeNetDevice (void)
+  : m_isConstructed (false)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -126,8 +136,22 @@ void
 LteUeNetDevice::UpdateConfig (void)
 {
   NS_LOG_FUNCTION (this);
-  m_nas->SetImsi (m_imsi);
-  m_rrc->SetImsi (m_imsi);
+
+  if (m_isConstructed)
+    {
+      NS_LOG_LOGIC (this << " Updating configuration: IMSI " << m_imsi
+                         << " CSG ID " << m_csgId);
+      m_nas->SetImsi (m_imsi);
+      m_rrc->SetImsi (m_imsi);
+      m_nas->SetCsgId (m_csgId); // this also handles propagation to RRC
+    }
+  else
+    {
+      /*
+       * NAS and RRC instances are not be ready yet, so do nothing now and
+       * expect ``DoInitialize`` to re-invoke this function.
+       */
+    }
 }
 
 
@@ -183,6 +207,21 @@ LteUeNetDevice::SetDlEarfcn (uint16_t earfcn)
   m_dlEarfcn = earfcn;
 }
 
+uint32_t
+LteUeNetDevice::GetCsgId () const
+{
+  NS_LOG_FUNCTION (this);
+  return m_csgId;
+}
+
+void
+LteUeNetDevice::SetCsgId (uint32_t csgId)
+{
+  NS_LOG_FUNCTION (this << csgId);
+  m_csgId = csgId;
+  UpdateConfig (); // propagate the change down to NAS and RRC
+}
+
 void
 LteUeNetDevice::SetTargetEnb (Ptr<LteEnbNetDevice> enb)
 {
@@ -202,6 +241,7 @@ void
 LteUeNetDevice::DoInitialize (void)
 {
   NS_LOG_FUNCTION (this);
+  m_isConstructed = true;
   UpdateConfig ();
   m_phy->Initialize ();
   m_mac->Initialize ();

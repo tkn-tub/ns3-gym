@@ -526,6 +526,8 @@ main (int argc, char *argv[])
   lteHelper->SetEnbDeviceAttribute ("UlEarfcn", UintegerValue (homeEnbDlEarfcn + 18000));
   lteHelper->SetEnbDeviceAttribute ("DlBandwidth", UintegerValue (homeEnbBandwidth));
   lteHelper->SetEnbDeviceAttribute ("UlBandwidth", UintegerValue (homeEnbBandwidth));
+  lteHelper->SetEnbDeviceAttribute ("CsgId", UintegerValue (1));
+  lteHelper->SetEnbDeviceAttribute ("CsgIndication", BooleanValue (true));
   NetDeviceContainer homeEnbDevs  = lteHelper->InstallEnbDevice (homeEnbs);
 
 
@@ -547,7 +549,6 @@ main (int argc, char *argv[])
   mobility.SetPositionAllocator (positionAlloc);
   mobility.Install (macroUes);
   BuildingsHelper::Install (macroUes);
-
   NetDeviceContainer macroUeDevs = lteHelper->InstallUeDevice (macroUes);
 
 
@@ -556,11 +557,9 @@ main (int argc, char *argv[])
   mobility.SetPositionAllocator (positionAlloc);
   mobility.Install (homeUes);
   BuildingsHelper::Install (homeUes);
+  // set the home UE as a CSG member of the home eNodeBs
+  lteHelper->SetUeDeviceAttribute ("CsgId", UintegerValue (1));
   NetDeviceContainer homeUeDevs = lteHelper->InstallUeDevice (homeUes);
-
-  // configure CSG in home eNodeBs and UEs
-  lteHelper->SetEnbCsgId (homeEnbDevs, 1, true);
-  lteHelper->SetUeCsgId (homeUeDevs, 1);
 
   Ipv4Address remoteHostAddr;
   NodeContainer ues;

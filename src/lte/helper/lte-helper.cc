@@ -897,36 +897,6 @@ LteHelper::ActivateDataRadioBearer (NetDeviceContainer ueDevices, EpsBearer bear
 }
 
 void
-LteHelper::SetEnbCsgId (NetDeviceContainer enbDevices, uint32_t csgId,
-                        bool csgIndication)
-{
-  for (NetDeviceContainer::Iterator i = enbDevices.Begin ();
-       i != enbDevices.End (); ++i)
-    {
-      SetEnbCsgId (*i, csgId, csgIndication);
-    }
-}
-
-void
-LteHelper::SetEnbCsgId (Ptr<NetDevice> enbDevice, uint32_t csgId,
-                        bool csgIndication)
-{
-  NS_LOG_FUNCTION (this << enbDevice << csgId << csgIndication);
-
-  Ptr<LteEnbNetDevice> enbLteDevice = enbDevice->GetObject<LteEnbNetDevice> ();
-  if (enbLteDevice == 0)
-    {
-      NS_FATAL_ERROR ("The passed NetDevice must be an LteEnbNetDevice");
-    }
-
-  Ptr<LteEnbRrc> rrc = enbLteDevice->GetRrc ();
-  LteRrcSap::SystemInformationBlockType1 sib1 = rrc->GetSystemInformationBlockType1 ();
-  sib1.cellAccessRelatedInfo.csgIdentity = csgId;
-  sib1.cellAccessRelatedInfo.csgIndication = csgIndication;
-  rrc->SetSystemInformationBlockType1 (sib1);
-}
-
-void
 LteHelper::SetEnbQRxLevMin (NetDeviceContainer enbDevices, int8_t qRxLevMin)
 {
   for (NetDeviceContainer::Iterator i = enbDevices.Begin ();
@@ -952,31 +922,6 @@ LteHelper::SetEnbQRxLevMin (Ptr<NetDevice> enbDevice, int8_t qRxLevMin)
   sib1.cellSelectionInfo.qRxLevMin = qRxLevMin;
   rrc->SetSystemInformationBlockType1 (sib1);
 }
-
-void
-LteHelper::SetUeCsgId (NetDeviceContainer ueDevices, uint32_t csgId)
-{
-  for (NetDeviceContainer::Iterator i = ueDevices.Begin ();
-       i != ueDevices.End (); ++i)
-    {
-      SetUeCsgId (*i, csgId);
-    }
-}
-
-void
-LteHelper::SetUeCsgId (Ptr<NetDevice> ueDevice, uint32_t csgId)
-{
-  NS_LOG_FUNCTION (this << ueDevice << csgId);
-
-  Ptr<LteUeNetDevice> ueLteDevice = ueDevice->GetObject<LteUeNetDevice> ();
-  if (ueLteDevice == 0)
-    {
-      NS_FATAL_ERROR ("The passed NetDevice must be an LteUeNetDevice");
-    }
-
-  ueLteDevice->GetNas ()->SetCsgId (csgId);
-}
-
 
 void
 LteHelper::EnableLogComponents (void)

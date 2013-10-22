@@ -427,18 +427,29 @@ private:
    * \param measId the measurement identity which report is to be submitted.
    *
    * Implements Section 5.5.5 "Measurement reporting" of 3GPP TS 36.331.
-   * Producing a *measurement report* involves several tasks such as including
-   * the latest *measurement results* (RSRP and RSRQ) of the serving cells and
-   * some of the neighbouring cells, including the list of cells that triggered
-   * the reporting, and finally sorting the lists.
+   * Producing a *measurement report* involves several tasks such as:
+   * - including the measurement results of the serving cell into the report;
+   * - selecting some neighbour cells which triggered the reporting (i.e., those
+   *   in *cellsTriggeredList*) to be included in the report;
+   * - sorting the order of neighbour cells in the report by their RSRP or RSRQ
+   *   measurement results (the highest comes first); and
+   * - ensuring the number of neighbour cells in the report is under the
+   *   *maxReportCells* limit defined by the measurement identity's reporting
+   *   configuration.
+   *
+   * The RSRP and RSRQ measurement results included in the report are expressed
+   * in 3GPP-specified range format. They are converted from dBm and dB units
+   * using EutranMeasurementMapping::Dbm2RsrpRange and
+   * EutranMeasurementMapping::Db2RsrqRange functions.
    *
    * Measurement report is submitted to the serving eNodeB through the *RRC
    * protocol*. The LteUeRrcSapUser::SendMeasurementReport method of the *UE RRC
    * SAP* facilitates this submission.
    *
-   * After the submission, the function schedules the next execution of the same
-   * function. The period is determined by the *report interval* specified by
-   * the measurement identity's *reporting configuration*.
+   * After the submission, the function will repeat itself after a certain
+   * interval. The interval length may vary from 120 ms to 60 minutes and is
+   * determined by the *report interval* parameter specified by the measurement
+   * identity's reporting configuration.
    */
   void SendMeasurementReport (uint8_t measId);
 
