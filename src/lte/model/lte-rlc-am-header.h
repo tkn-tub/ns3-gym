@@ -136,9 +136,40 @@ public:
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
 
-  // Brett - Methods to handle NACKs
+  /** 
+   * 
+   * 
+   * \param bytes max allowed CONTROL PDU size
+   * 
+   * \return true if one more NACK would fit in the CONTROL PDU; false otherwise
+   */
+  bool OneMoreNackWouldFitIn (uint16_t bytes);
+
+  /** 
+   * Add one more NACK to the CONTROL PDU
+   * 
+   * \param nack 
+   */
   void PushNack (int nack);
+
+  /** 
+   * 
+   * 
+   * \param nack SN of the NACK
+   * 
+   * \return true if the NACK is present in the STATUS PDU, false otherwise
+   */
+  bool IsNackPresent (SequenceNumber10 nack);
+
+
+  /** 
+   * Retrieve one NACK from the CONTROL PDU
+   * 
+   * 
+   * \return the SN  >= 0 of the next nack; returns -1 if no NACK is left
+   */
   int PopNack (void);
+
 
 private:
   uint16_t m_headerLength;

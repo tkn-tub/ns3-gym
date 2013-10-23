@@ -213,9 +213,28 @@ LteRlcAmHeader::SetAckSn (SequenceNumber10 ackSn)
   m_ackSn = ackSn;
 }
 
+bool
+LteRlcAmHeader::OneMoreNackWouldFitIn (uint16_t bytes)
+{
+  NS_LOG_FUNCTION (this << bytes);
+  NS_ASSERT_MSG (m_dataControlBit == CONTROL_PDU && m_controlPduType == LteRlcAmHeader::STATUS_PDU,
+                 "method allowed only for STATUS PDUs");
+  if (m_nackSnList.size () % 2 == 0)
+    {
+      return (m_headerLength + 1 <= bytes);
+    }
+  else
+    {
+      return (m_headerLength + 2 <= bytes);
+    }
+}
+
 void
 LteRlcAmHeader::PushNack (int nack)
 {
+  NS_LOG_FUNCTION (this << nack);
+  NS_ASSERT_MSG (m_dataControlBit == CONTROL_PDU && m_controlPduType == LteRlcAmHeader::STATUS_PDU,
+                 "method allowed only for STATUS PDUs");
   m_nackSnList.push_back (nack);
 
   if (m_nackSnList.size () % 2 == 0)
@@ -228,10 +247,30 @@ LteRlcAmHeader::PushNack (int nack)
     }
 }
 
+bool
+LteRlcAmHeader::IsNackPresent (SequenceNumber10 nack)
+{
+  NS_LOG_FUNCTION (this);
+  NS_ASSERT_MSG (m_dataControlBit == CONTROL_PDU && m_controlPduType == LteRlcAmHeader::STATUS_PDU,
+                 "method allowed only for STATUS PDUs");
+  for (std::list<int>::iterator nackIt = m_nackSnList.begin ();
+       nackIt != m_nackSnList.end ();
+       ++nackIt)
+    {
+      if ((*nackIt) == nack.GetValue ())
+        {
+          return true;
+        }
+    }
+  return false;  
+}
 
 int
 LteRlcAmHeader::PopNack (void)
 {
+  NS_LOG_FUNCTION (this);
+  NS_ASSERT_MSG (m_dataControlBit == CONTROL_PDU && m_controlPduType == LteRlcAmHeader::STATUS_PDU,
+                 "method allowed only for STATUS PDUs");
   if ( m_nackSnList.empty () )
     {
       return -1;
@@ -242,7 +281,6 @@ LteRlcAmHeader::PopNack (void)
 
   return nack;
 }
-
 
 
 SequenceNumber10

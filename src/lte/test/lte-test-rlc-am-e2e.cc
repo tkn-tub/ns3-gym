@@ -55,6 +55,8 @@ LteRlcAmE2eTestSuite::LteRlcAmE2eTestSuite ()
 {
   // NS_LOG_INFO ("Creating LteRlcAmE2eTestSuite");
 
+  AddTestCase (new LteRlcAmE2eTestCase ("the one that fails", 1111, 0.10), TestCase::QUICK);
+  
   double losses[] = {0.0, 0.10, 0.25, 0.50, 0.75, 0.90, 0.95};
   uint32_t seeds[] = {1111, 2222, 3333, 4444, 5555, 6666, 7777, 8888, 9999, 10101};
 
