@@ -23,6 +23,9 @@ New user-visible features
 -------------------------
 - It is now possible to randomize the time of the first beacon from an access point.
   Use an attribute "EnableBeaconJitter" to enable/disable this feature.
+- a new FixedRoomPositionAllocator helper class is available, it
+  allows to generate a random position uniformly distributed in the
+  volume of a chosen room inside a chosen building. 
 
 Bugs fixed
 ----------

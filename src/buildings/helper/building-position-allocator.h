@@ -148,13 +148,22 @@ private:
 };
 
 /**
- * x, y , z - specify the room - x,y are indexex of room by x and y axis, and z is number of the floor,
- *
- * and then select randomly position inside of specified room
+ * Generate a random position uniformly distributed in the volume of a
+ * chosen room inside a chosen building.  
  */
 class FixedRoomPositionAllocator : public PositionAllocator
 {
 public:
+
+  /** 
+   * 
+   * 
+   * \param x index of the room on the x-axis 
+   * \param y index of the room on the y-axis 
+   * \param z index of the room on the z-axis (i.e., floor number)
+   * \param b pointer to the chosen building
+   * 
+   */
   FixedRoomPositionAllocator (uint32_t x,
                               uint32_t y,
                               uint32_t z,
