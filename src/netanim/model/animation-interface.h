@@ -59,7 +59,7 @@ typedef struct
 
 struct LinkPairCompare
 {
-  bool operator () (P2pLinkNodeIdPair first, P2pLinkNodeIdPair second)
+  bool operator () (P2pLinkNodeIdPair first, P2pLinkNodeIdPair second) const
     {
       //Check if they are the same node pairs but flipped
       if (  ((first.fromNode == second.fromNode) && (first.toNode == second.toNode)) ||
