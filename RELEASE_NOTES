@@ -27,6 +27,7 @@ New user-visible features
   allows to generate a random position uniformly distributed in the
   volume of a chosen room inside a chosen building.
 - Logging wildcards:  allow "***" as synonym for "*=**" to turn on all logging.
+- The log component list ("NS_LOG=print-list") is now printed alphabetically.
 
 Bugs fixed
 ----------

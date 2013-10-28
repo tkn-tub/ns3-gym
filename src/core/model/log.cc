@@ -39,8 +39,8 @@ namespace ns3 {
 LogTimePrinter g_logTimePrinter = 0;
 LogNodePrinter g_logNodePrinter = 0;
 
-typedef std::list<std::pair <std::string, LogComponent *> > ComponentList;
-typedef std::list<std::pair <std::string, LogComponent *> >::iterator ComponentListI;
+typedef std::map<std::string, LogComponent *> ComponentList;
+typedef std::map<std::string, LogComponent *>::iterator ComponentListI;
 
 static class PrintList
 {
@@ -99,7 +99,7 @@ LogComponent::LogComponent (const std::string & name)
           NS_FATAL_ERROR ("Log component \""<<name<<"\" has already been registered once.");
         }
     }
-  components->push_back (std::make_pair (name, this));
+  components->insert (std::make_pair (name, this));
 }
 
 void
