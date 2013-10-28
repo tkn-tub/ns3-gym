@@ -125,7 +125,7 @@ LogComponent::EnvVarCheck (const std::string & name)
       if (equal == std::string::npos)
         {
           component = tmp;
-          if (component == myName || component == "*")
+          if (component == myName || component == "*" || component == "***")
             {
               int level = LOG_LEVEL_ALL | LOG_PREFIX_ALL;
               Enable ((enum LogLevel)level);
@@ -485,7 +485,7 @@ static void CheckEnvironmentVariables (void)
         {
           // ie no '=' characters found 
           component = tmp;
-          if (ComponentExists(component) || component == "*")
+          if (ComponentExists(component) || component == "*" || component == "***")
             {
               return;
             }

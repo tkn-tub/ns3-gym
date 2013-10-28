@@ -25,7 +25,8 @@ New user-visible features
   Use an attribute "EnableBeaconJitter" to enable/disable this feature.
 - a new FixedRoomPositionAllocator helper class is available, it
   allows to generate a random position uniformly distributed in the
-  volume of a chosen room inside a chosen building. 
+  volume of a chosen room inside a chosen building.
+- Logging wildcards:  allow "***" as synonym for "*=**" to turn on all logging.
 
 Bugs fixed
 ----------
