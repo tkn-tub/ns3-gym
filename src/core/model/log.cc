@@ -84,7 +84,7 @@ PrintList::PrintList ()
 }
 
 
-LogComponent::LogComponent (char const * name)
+LogComponent::LogComponent (const std::string & name)
   : m_levels (0), m_name (name)
 {
   EnvVarCheck (name);
@@ -103,7 +103,7 @@ LogComponent::LogComponent (char const * name)
 }
 
 void
-LogComponent::EnvVarCheck (char const * name)
+LogComponent::EnvVarCheck (const std::string & name)
 {
 #ifdef HAVE_GETENV
   char *envVar = getenv ("NS_LOG");
@@ -269,7 +269,7 @@ LogComponent::Disable (enum LogLevel level)
 char const *
 LogComponent::Name (void) const
 {
-  return m_name;
+  return m_name.c_str ();
 }
 
 std::string

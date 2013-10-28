@@ -384,8 +384,8 @@ LogNodePrinter LogGetNodePrinter (void);
 
 class LogComponent {
 public:
-  LogComponent (char const *name);
-  void EnvVarCheck (char const *name);
+  LogComponent (const std::string & name);
+  void EnvVarCheck (const std::string & name);
   bool IsEnabled (enum LogLevel level) const;
   bool IsNoneEnabled (void) const;
   void Enable (enum LogLevel level);
@@ -394,7 +394,7 @@ public:
   std::string GetLevelLabel(const enum LogLevel level) const;
 private:
   int32_t     m_levels;
-  char const *m_name;
+  std::string m_name;
 };
 
 class ParameterLogger : public std::ostream
