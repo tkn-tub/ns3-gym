@@ -55,17 +55,17 @@ LteRlcAmE2eTestSuite::LteRlcAmE2eTestSuite ()
 {
   // NS_LOG_INFO ("Creating LteRlcAmE2eTestSuite");
 
-  AddTestCase (new LteRlcAmE2eTestCase ("the one that fails", 1111, 0.10), TestCase::QUICK);
+  AddTestCase (new LteRlcAmE2eTestCase ("the one that fails", 6666, 0.25), TestCase::QUICK);
   
   double losses[] = {0.0, 0.10, 0.25, 0.50, 0.75, 0.90, 0.95};
-  uint32_t seeds[] = {1111, 2222, 3333, 4444, 5555, 6666, 7777, 8888, 9999, 10101};
+  uint32_t runs[] = {1111, 2222, 3333, 4444, 5555, 6666, 7777, 8888, 9999, 10101};
 
   for ( uint32_t l = 0 ; l < (sizeof (losses) / sizeof (double)) ; l++ )
     {
-      for ( uint32_t s = 0 ; s < (sizeof (seeds) / sizeof (uint32_t)) ; s++ )
+      for ( uint32_t s = 0 ; s < (sizeof (runs) / sizeof (uint32_t)) ; s++ )
         {
           std::ostringstream name;
-          name << " Losses = " << losses[l] * 100 << "%. Seed = " << seeds[s];
+          name << " Losses = " << losses[l] * 100 << "%. Run = " << runs[s];
           TestCase::TestDuration testDuration;
           if (l == 1 && s == 0)
             {
@@ -75,7 +75,7 @@ LteRlcAmE2eTestSuite::LteRlcAmE2eTestSuite ()
             {
               testDuration = TestCase::EXTENSIVE;
             }
-          AddTestCase (new LteRlcAmE2eTestCase (name.str (), seeds[s], losses[l]), testDuration);
+          AddTestCase (new LteRlcAmE2eTestCase (name.str (), runs[s], losses[l]), testDuration);
         }
     }
 }
@@ -87,12 +87,12 @@ static LteRlcAmE2eTestSuite lteRlcAmE2eTestSuite;
  * TestCase
  */
 
-LteRlcAmE2eTestCase::LteRlcAmE2eTestCase (std::string name, uint32_t seed, double losses)
+LteRlcAmE2eTestCase::LteRlcAmE2eTestCase (std::string name, uint32_t run, double losses)
   : TestCase (name)
 {
   // NS_LOG_UNCOND ("Creating LteRlcAmTestingTestCase: " + name);
 
-  m_seed = seed;
+  m_run = run;
   m_losses = losses;
 
   m_dlDrops = 0;
@@ -136,7 +136,7 @@ LteRlcAmE2eTestCase::DoRun (void)
   // LogComponentEnable ("LteRlcUm", level);
   // LogComponentEnable ("LteRlcAm", level);
 
-  RngSeedManager::SetSeed (m_seed);
+  Config::SetGlobal ("RngRun", IntegerValue (m_run));
 
   Ptr<LteSimpleHelper> lteSimpleHelper = CreateObject<LteSimpleHelper> ();
   // lteSimpleHelper->EnableLogComponents ();
@@ -198,25 +198,27 @@ LteRlcAmE2eTestCase::DoRun (void)
   Simulator::Schedule (Seconds (0.100), &LteTestRrc::Start, lteSimpleHelper->m_enbRrc);
   Simulator::Schedule (Seconds (10.100), &LteTestRrc::Stop, lteSimpleHelper->m_enbRrc);
 
-
-  Simulator::Stop (Seconds (100.000));
+  double throughput = (150.0/0.005) * (1.0-m_losses);
+  double totBytes = ((100 + 4) * 10.0 / 0.010);
+  Time stopTime = Seconds (std::max (totBytes/throughput, 10.0) + 10);
+  NS_LOG_INFO ("throughput=" << throughput << ", totBytes=" << totBytes << ", stopTime=" << stopTime);
+  
+  Simulator::Stop (stopTime);
   Simulator::Run ();
 
   uint32_t txEnbRrcPdus = lteSimpleHelper->m_enbRrc->GetTxPdus ();
   uint32_t rxUeRrcPdus = lteSimpleHelper->m_ueRrc->GetRxPdus ();
 
-  // NS_LOG_INFO ("Seed = " << m_seed);
-  // NS_LOG_INFO ("Losses (%) = " << uint32_t (m_losses * 100));
+  NS_LOG_INFO ("Run = " << m_run);
+  NS_LOG_INFO ("Losses (%) = " << uint32_t (m_losses * 100));
 
-  // NS_LOG_INFO ("dl dev drops = " << m_dlDrops);
-  // NS_LOG_INFO ("ul dev drops = " << m_ulDrops);
+  NS_LOG_INFO ("dl dev drops = " << m_dlDrops);
+  NS_LOG_INFO ("ul dev drops = " << m_ulDrops);
 
-  // NS_LOG_INFO ("eNB tx RRC count = " << txEnbRrcPdus);
-  // NS_LOG_INFO ("eNB rx RRC count = " << rxEnbRrcPdus);
-  // NS_LOG_INFO ("UE tx RRC count = " << txUeRrcPdus);
-  // NS_LOG_INFO ("UE rx RRC count = " << rxUeRrcPdus);
+  NS_LOG_INFO ("eNB tx RRC count = " << txEnbRrcPdus);
+  NS_LOG_INFO ("UE rx RRC count = " << rxUeRrcPdus);
 
-  NS_LOG_INFO (m_seed << "\t" << m_losses << "\t" << txEnbRrcPdus << "\t" << rxUeRrcPdus << "\t" << m_dlDrops);
+  NS_LOG_INFO (m_run << "\t" << m_losses << "\t" << txEnbRrcPdus << "\t" << rxUeRrcPdus << "\t" << m_dlDrops);
 
   NS_TEST_ASSERT_MSG_EQ (txEnbRrcPdus, rxUeRrcPdus,
                          "TX PDUs (" << txEnbRrcPdus << ") != RX PDUs (" << rxUeRrcPdus << ")");

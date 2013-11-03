@@ -202,6 +202,7 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId)
       std::map<uint16_t, PduBuffer>::iterator pduIt;
       for (sn = m_vrR; sn < m_vrMs; sn++) 
         {
+          NS_LOG_LOGIC ("SN = " << sn);          
           if (!rlcAmHeader.OneMoreNackWouldFitIn (bytes))
             {
               NS_LOG_LOGIC ("Can't fit more NACKs in STATUS PDU");
@@ -214,22 +215,21 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId)
               rlcAmHeader.PushNack (sn.GetValue ());              
             }          
         }
-
+      NS_LOG_LOGIC ("SN at end of NACK loop = " << sn);
       // 3GPP TS 36.322 section 6.2.2.1.4 ACK SN
       // find the  SN of the next not received RLC Data PDU 
       // which is not reported as missing in the STATUS PDU. 
-      do
+      pduIt = m_rxonBuffer.find (sn.GetValue ());
+      while ((sn < m_vrMs) && (pduIt != m_rxonBuffer.end ()) && (pduIt->second.m_pduComplete))            
         {
+          NS_LOG_LOGIC ("SN = " << sn << " < " << m_vrMs << " = " << (sn < m_vrMs));
           sn++;
+          NS_LOG_LOGIC ("SN = " << sn);
           pduIt = m_rxonBuffer.find (sn.GetValue ());
         }
-      while (pduIt != m_rxonBuffer.end () && (pduIt->second.m_pduComplete) && (sn < m_vrH));      
       
-      if (sn != m_vrMs)
-        {
-          NS_LOG_WARN ("SN=" << sn << ", VR(MS)=" << m_vrMs);
-        }      
-      rlcAmHeader.SetAckSn (m_vrMs); 
+      NS_ASSERT_MSG (sn <= m_vrMs, "first SN not reported as missing = " << sn << ", VR(MS) = " << m_vrMs);      
+      rlcAmHeader.SetAckSn (sn); 
 
 
       NS_LOG_LOGIC ("RLC header: " << rlcAmHeader);
@@ -293,7 +293,7 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId)
 
       NS_LOG_LOGIC ("Sending data from Transmission Buffer");
     }
-  /* else if ( m_txedBufferSize > 0 )
+  else if ( m_txedBufferSize > 0 )
     {
       NS_LOG_LOGIC ("Sending data from Transmitted Buffer");
 
@@ -335,7 +335,7 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId)
           NS_LOG_LOGIC ("Waiting for bigger TxOpportunity");
           return;
         }
-    } */
+    } 
   else
     {
       NS_LOG_LOGIC ("No data pending");
@@ -734,6 +734,7 @@ LteRlcAm::DoReceivePdu (Ptr<Packet> p)
 
 
       SequenceNumber10 seqNumber = rlcAmHeader.GetSequenceNumber ();
+      seqNumber.SetModulusBase (m_vrR);
 
       if ( rlcAmHeader.GetResegmentationFlag () == LteRlcAmHeader::SEGMENT )
         {
@@ -854,12 +855,17 @@ LteRlcAm::DoReceivePdu (Ptr<Packet> p)
                   m_rxonBuffer.erase (m_vrR.GetValue ());
 
                   m_vrR++;
+                  m_vrR.SetModulusBase (m_vrR);
+                  m_vrX.SetModulusBase (m_vrR);
+                  m_vrMs.SetModulusBase (m_vrR);
+                  m_vrH.SetModulusBase (m_vrR);
                   it = m_rxonBuffer.find (m_vrR.GetValue ());
 
                   NS_ASSERT_MSG (firstVrR != m_vrR.GetValue (), "Infinite loop in RxonBuffer");
                 }
               NS_LOG_LOGIC ("New VR(R)  = " << m_vrR);
               m_vrMr = m_vrR + m_windowSize;
+
               NS_LOG_LOGIC ("New VR(MR) = " << m_vrMr);
             }
 

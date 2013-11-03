@@ -53,7 +53,7 @@ class LteRlcAmE2eTestCase : public TestCase
     uint32_t m_dlDrops;
     uint32_t m_ulDrops;
 
-    uint32_t m_seed;
+    uint32_t m_run;
     double   m_losses;
 };
 
