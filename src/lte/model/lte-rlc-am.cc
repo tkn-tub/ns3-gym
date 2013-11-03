@@ -196,11 +196,11 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId)
       LteRlcAmHeader rlcAmHeader;
       rlcAmHeader.SetControlPdu (LteRlcAmHeader::STATUS_PDU);
      
-      NS_LOG_LOGIC ("Check for SNs to NACK from " << m_vrR.GetValue() << " to " << m_vrH.GetValue());
+      NS_LOG_LOGIC ("Check for SNs to NACK from " << m_vrR.GetValue() << " to " << m_vrMs.GetValue());
       SequenceNumber10 sn;
       sn.SetModulusBase (m_vrR);
       std::map<uint16_t, PduBuffer>::iterator pduIt;
-      for (sn = m_vrR; sn < m_vrH; sn++) 
+      for (sn = m_vrR; sn < m_vrMs; sn++) 
         {
           if (!rlcAmHeader.OneMoreNackWouldFitIn (bytes))
             {
@@ -224,12 +224,12 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId)
           pduIt = m_rxonBuffer.find (sn.GetValue ());
         }
       while (pduIt != m_rxonBuffer.end () && (pduIt->second.m_pduComplete) && (sn < m_vrH));      
-
+      
       if (sn != m_vrMs)
         {
           NS_LOG_WARN ("SN=" << sn << ", VR(MS)=" << m_vrMs);
         }      
-      rlcAmHeader.SetAckSn (m_vrR); 
+      rlcAmHeader.SetAckSn (m_vrMs); 
 
 
       NS_LOG_LOGIC ("RLC header: " << rlcAmHeader);
@@ -1080,6 +1080,7 @@ LteRlcAm::DoReceivePdu (Ptr<Packet> p)
 
           if (incrementVtA)
             {
+              m_vtA++;
               NS_LOG_INFO ("New VT(A) = " << m_vtA);
               m_vtA.SetModulusBase (m_vtA);
               m_vtS.SetModulusBase (m_vtA);
