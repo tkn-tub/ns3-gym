@@ -21,21 +21,48 @@ Supported platforms
 
 New user-visible features
 -------------------------
-- It is now possible to randomize the time of the first beacon from an access point.
-  Use an attribute "EnableBeaconJitter" to enable/disable this feature.
-- a new FixedRoomPositionAllocator helper class is available, it
-  allows to generate a random position uniformly distributed in the
+
+Bugs fixed
+----------
+
+Release 3.18.1
+==============
+
+Availability
+------------
+This release is not yet available.
+
+Supported platforms
+-------------------
+
+New user-visible features
+-------------------------
+- It is now possible to randomize the time of the first beacon from an 
+  access point.  Use an attribute "EnableBeaconJitter" to enable/disable 
+  this feature.
+- A new FixedRoomPositionAllocator helper class is available; it
+  allows one to generate a random position uniformly distributed in the
   volume of a chosen room inside a chosen building.
 - Logging wildcards:  allow "***" as synonym for "*=**" to turn on all logging.
 - The log component list ("NS_LOG=print-list") is now printed alphabetically.
 
 Bugs fixed
 ----------
-- Bug 1552 - Storing log name inside LogComponent class (NS_LOG) as std::string
-- Bug 1722 - beacons transmitted concurrently
-- Bug 1616 - WifiPhyStateHelper reports false CCA_BUSY times at State trace source
-- Bug 1011 - assert failed. file=../src/devices/wifi/dcf-manager.cc
+- Bug 1779 - NS_UNUSED_GLOBAL not working in attribute test class declaration
+- Bug 1766 - Fixes to wifi-hidden-terminal.cc example
+- Bug 1722 - Avoid transmitting beacons concurrently
 - Bug 1691 - RTS/CTS NAV reset prematurely
+- Bug 1622 - Avoid waf hanging during apiscan
+- Bug 1616 - WifiPhyStateHelper reports false CCA_BUSY times at State trace source
+- Bug 1552 - Storing log name inside LogComponent class (NS_LOG) as std::string
+- Bug 1011 - assert failed. file=../src/devices/wifi/dcf-manager.cc
+- bug 945 - remove deprecated IEEE 802.11p code from wifi module
+- Fix aliasing bug in optimized static builds
+- Fix memory leak due to circular reference in MPI module
+- Make wifi tests more robust to random variable perturbations
+- Fix Time class doxygen
+- Fix compilation with Clang 3.2 and newer versions, including Apple Xcode 5
+- Miscellaneous NetAnim fixes
 
 Release 3.18
 =============
