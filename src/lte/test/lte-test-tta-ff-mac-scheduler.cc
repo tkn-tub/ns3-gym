@@ -185,7 +185,7 @@ void
 LenaTtaFfMacSchedulerTestCase::DoRun (void)
 {
 
-  NS_LOG_FUNCTION (this << m_nUser << m_nLc << m_dist);
+  NS_LOG_FUNCTION (this << m_nUser << m_dist);
 
   if (!m_errorModelEnabled)
     {
