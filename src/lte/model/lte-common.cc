@@ -128,14 +128,14 @@ LteFfConverter::getMinFpS11dot3Value ()
 
 
 uint32_t BufferSizeLevelBsrTable[64] = {
-  
+
   0, 10, 12, 14, 17, 19, 22, 26, 31, 36, 42, 49, 57, 67, 78, 91, 
   107, 125, 146, 171, 200, 234, 274, 321, 376, 440, 515, 603, 
   706, 826, 967, 1132, 1326, 1552, 1817, 2127, 2490, 2915, 3413,
   3995, 4677, 5476, 6411, 7505, 8787, 10287, 12043, 14099, 16507,
   19325, 22624, 26487, 31009, 36304, 42502, 49759, 58255,
   68201, 79846, 93749, 109439, 128125, 150000, 150000
-  
+
 };
 
 uint32_t
@@ -161,7 +161,7 @@ BufferSizeLevelBsr::BufferSize2BsrId (uint32_t val)
           index++;
         }
     }
-    
+
   return (index);
 }
 
@@ -210,7 +210,7 @@ uint8_t
 EutranMeasurementMapping::Dbm2RsrpRange (double dbm)
 {
   // 3GPP TS 36.133 section 9.1.4 RSRP Measurement Report Mapping
-  double range = std::min( std::max (std::floor(dbm + 141), 0.0), 97.0);
+  double range = std::min (std::max (std::floor (dbm + 141), 0.0), 97.0);
   return (uint8_t) range;
 }
 
@@ -240,6 +240,102 @@ double
 EutranMeasurementMapping::QuantizeRsrq (double v)
 {
   return RsrqRange2Db (Db2RsrqRange (v));
+}
+
+double
+EutranMeasurementMapping::IeValue2ActualHysteresis (uint8_t hysteresisIeValue)
+{
+  if (hysteresisIeValue > 30)
+    {
+      NS_FATAL_ERROR ("The value " << (uint16_t) hysteresisIeValue
+                                   << " is out of the allowed range (0..30)"
+                                   << " for Hysteresis IE value");
+    }
+
+  double actual = static_cast<double> (hysteresisIeValue) * 0.5;
+  NS_ASSERT (actual >= 0.0);
+  NS_ASSERT (actual <= 15.0);
+  return actual;
+}
+
+uint8_t
+EutranMeasurementMapping::ActualHysteresis2IeValue (double hysteresisDb)
+{
+  if ((hysteresisDb < 0.0) || (hysteresisDb > 15.0))
+    {
+      NS_FATAL_ERROR ("The value " << hysteresisDb
+                                   << " is out of the allowed range (0..15) dB"
+                                   << " for hysteresis");
+    }
+
+  uint8_t ieValue = lround (hysteresisDb * 2.0);
+  NS_ASSERT (ieValue >= 0);
+  NS_ASSERT (ieValue <= 30);
+  return ieValue;
+}
+
+double
+EutranMeasurementMapping::IeValue2ActualA3Offset (int8_t a3OffsetIeValue)
+{
+  if ((a3OffsetIeValue < -30) || (a3OffsetIeValue > 30))
+    {
+      NS_FATAL_ERROR ("The value " << (int16_t) a3OffsetIeValue
+                                   << " is out of the allowed range (-30..30)"
+                                   << " for a3-Offset IE value");
+    }
+
+  double actual = static_cast<double> (a3OffsetIeValue) * 0.5;
+  NS_ASSERT (actual >= -15.0);
+  NS_ASSERT (actual <= 15.0);
+  return actual;
+}
+
+int8_t
+EutranMeasurementMapping::ActualA3Offset2IeValue (double a3OffsetDb)
+{
+  if ((a3OffsetDb < -15.0) || (a3OffsetDb > 15.0))
+    {
+      NS_FATAL_ERROR ("The value " << a3OffsetDb
+                                   << " is out of the allowed range (-15..15) dB"
+                                   << " for A3 Offset");
+    }
+
+  uint8_t ieValue = lround (a3OffsetDb * 2.0);
+  NS_ASSERT (ieValue >= -30);
+  NS_ASSERT (ieValue <= 30);
+  return ieValue;
+}
+
+double
+EutranMeasurementMapping::IeValue2ActualQRxLevMin (int8_t qRxLevMinIeValue)
+{
+  if ((qRxLevMinIeValue < -70) || (qRxLevMinIeValue > -22))
+    {
+      NS_FATAL_ERROR ("The value " << (int16_t) qRxLevMinIeValue
+                                   << " is out of the allowed range (-70..-22)"
+                                   << " for Q-RxLevMin IE value");
+    }
+
+  double actual = static_cast<double> (qRxLevMinIeValue) * 2;
+  NS_ASSERT (actual >= -140.0);
+  NS_ASSERT (actual <= -44.0);
+  return actual;
+}
+
+double
+EutranMeasurementMapping::IeValue2ActualQQualMin (int8_t qQualMinIeValue)
+{
+  if ((qQualMinIeValue < -34) || (qQualMinIeValue > -3))
+    {
+      NS_FATAL_ERROR ("The value " << (int16_t) qQualMinIeValue
+                                   << " is out of the allowed range (-34..-3)"
+                                   << " for Q-QualMin IE value");
+    }
+
+  double actual = static_cast<double> (qQualMinIeValue);
+  NS_ASSERT (actual >= -34.0);
+  NS_ASSERT (actual <= -3.0);
+  return actual;
 }
 
 }; // namespace ns3

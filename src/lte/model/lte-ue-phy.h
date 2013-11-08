@@ -32,6 +32,7 @@
 #include <ns3/lte-ue-cphy-sap.h>
 #include <ns3/ptr.h>
 #include <ns3/lte-amc.h>
+#include <set>
 
 
 namespace ns3 {
@@ -53,6 +54,16 @@ class LteUePhy : public LtePhy
   friend class MemberLteUeCphySapProvider<LteUePhy>;
 
 public:
+  /**
+   * \brief The states of the UE PHY entity
+   */
+  enum State
+  {
+    CELL_SEARCH = 0,
+    SYNCHRONIZED,
+    NUM_STATES
+  };
+
   /**
    * @warning the default constructor should not be used
    */
@@ -131,7 +142,6 @@ public:
    */
   Ptr<LteSpectrumPhy> GetUlSpectrumPhy () const;
 
-
   /**
    * \brief Create the PSD for the TX
    * \return the pointer to the PSD
@@ -160,7 +170,6 @@ public:
    */
   std::vector <int> GetSubChannelsForReception (void);
 
-
   /**
   * \brief Create the DL CQI feedback from SINR values perceived at
   * the physical layer with the signal received from eNB
@@ -179,8 +188,6 @@ public:
   // callbacks for LteSpectrumPhy
   virtual void ReceiveLteControlMessageList (std::list<Ptr<LteControlMessage> >);
   virtual void ReceivePss (uint16_t cellId, Ptr<SpectrumValue> p);
-  
-  
 
 
 
@@ -200,25 +207,29 @@ public:
 
 
   /**
-  * \brief Send the SRS signal in the last symbols of the frame
-  */
+   * \brief Send the SRS signal in the last symbols of the frame
+   */
   void SendSrs ();
-  
-    /**
-  * \brief PhySpectrum generated a new DL HARQ feedback
-  */
+
+  /**
+   * \brief PhySpectrum generated a new DL HARQ feedback
+   */
   virtual void ReceiveLteDlHarqFeedback (DlInfoListElement_s mes);
 
   /**
-  * \brief Set the HARQ PHY module
-  */
+   * \brief Set the HARQ PHY module
+   */
   void SetHarqPhyModule (Ptr<LteHarqPhy> harq);
 
+  /**
+   * \return The current state
+   */
+  State GetState () const;
 
 
 
 private:
-  
+
   void SetTxMode1Gain (double gain);
   void SetTxMode2Gain (double gain);
   void SetTxMode3Gain (double gain);
@@ -230,11 +241,22 @@ private:
 
   void QueueSubChannelsForTransmission (std::vector <int> rbMap);
 
+  /**
+   * \brief Layer-1 filtering of RSRP and RSRQ measurements and reporting to
+   *        the RRC entity.
+   *
+   * Initially executed at +0.200s, and then repeatedly executed with
+   * periodicity as indicated by the *UeMeasurementsFilterPeriod* attribute.
+   */
   void ReportUeMeasurements ();
 
+  void SwitchToState (State s);
+
   // UE CPHY SAP methods
-  void DoReset ();  
-  void DoSyncronizeWithEnb (uint16_t cellId, uint16_t dlEarfcn);  
+  void DoReset ();
+  void DoStartCellSearch (uint16_t dlEarfcn);
+  void DoSynchronizeWithEnb (uint16_t cellId);
+  void DoSynchronizeWithEnb (uint16_t cellId, uint16_t dlEarfcn);
   void DoSetDlBandwidth (uint8_t ulBandwidth);
   void DoConfigureUplink (uint16_t ulEarfcn, uint8_t ulBandwidth);
   void DoSetRnti (uint16_t rnti);
@@ -242,16 +264,16 @@ private:
   void DoSetSrsConfigurationIndex (uint16_t srcCi);
 
   // UE PHY SAP methods 
-  virtual void DoSendMacPdu (Ptr<Packet> p);  
+  virtual void DoSendMacPdu (Ptr<Packet> p);
   virtual void DoSendLteControlMessage (Ptr<LteControlMessage> msg);
   virtual void DoSendRachPreamble (uint32_t prachId, uint32_t raRnti);
-  
+
   std::vector <int> m_subChannelsForTransmission;
   std::vector <int> m_subChannelsForReception;
-  
+
   std::vector< std::vector <int> > m_subChannelsForTransmissionQueue;
-  
-  
+
+
   Ptr<LteAmc> m_amc;
 
   Time m_p10CqiPeriocity; /**< Wideband Periodic CQI: 2, 5, 10, 16, 20, 32, 40, 64, 80 or 160 ms */
@@ -272,7 +294,7 @@ private:
  
   uint8_t m_transmissionMode;
   std::vector <double> m_txModeGain;
-  
+
   uint16_t m_srsPeriodicity;
   uint16_t m_srsSubframeOffset;
   uint16_t m_srsConfigured;
@@ -281,34 +303,38 @@ private:
   bool m_dlConfigured;
   bool m_ulConfigured;
 
+  State m_state;
+  //             cellid    rnti
+  TracedCallback<uint16_t, uint16_t, State, State> m_stateTransitionTrace;
+
   uint8_t m_subframeNo;
 
   bool m_rsReceivedPowerUpdated;
   SpectrumValue m_rsReceivedPower;
 
   bool m_rsInterferencePowerUpdated;
-  SpectrumValue m_rsIntereferencePower;
+  SpectrumValue m_rsInterferencePower;
 
   bool m_pssReceived;
   struct PssElement
-    {
-      uint16_t cellId;
-      double pssPsdSum;
-      uint16_t nRB;
-    };
+  {
+    uint16_t cellId;
+    double pssPsdSum;
+    uint16_t nRB;
+  };
   std::list <PssElement> m_pssList;
 
   double m_pssReceptionThreshold; // on RSRQ [W]
 
   struct UeMeasurementsElement
-    {
-      double rsrpSum;
-      uint8_t rsrpNum;
-      double rsrqSum;
-      uint8_t rsrqNum;
-    };
+  {
+    double rsrpSum;
+    uint8_t rsrpNum;
+    double rsrqSum;
+    uint8_t rsrqNum;
+  };
 
-  std::map <uint16_t, UeMeasurementsElement> m_UeMeasurementsMap;
+  std::map <uint16_t, UeMeasurementsElement> m_ueMeasurementsMap;
   Time m_ueMeasurementsFilterPeriod;
   Time m_ueMeasurementsFilterLast;
 
@@ -327,7 +353,7 @@ private:
 
   /**
    * Trace information regarding RSRP and RSRQ (see TS 36.214)
-   * uint16_t rnti, uint16_t cellId, double rsrp, double sinr, bool servingCell
+   * uint16_t rnti, uint16_t cellId, double rsrpDbm, double rsrqDb, bool isServingCell
    */
   TracedCallback<uint16_t, uint16_t, double, double, bool> m_reportUeMeasurements;
 

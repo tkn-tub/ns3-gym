@@ -55,6 +55,14 @@ ApWifiMac::GetTypeId (void)
                    MakeTimeAccessor (&ApWifiMac::GetBeaconInterval,
                                      &ApWifiMac::SetBeaconInterval),
                    MakeTimeChecker ())
+    .AddAttribute ("BeaconJitter", "A uniform random variable to cause the initial beacon starting time (after simulation time 0) to be distributed between 0 and the BeaconInterval.",
+                   StringValue ("ns3::UniformRandomVariable"),
+                   MakePointerAccessor (&ApWifiMac::m_beaconJitter),
+                   MakePointerChecker<UniformRandomVariable> ())
+    .AddAttribute ("EnableBeaconJitter", "If beacons are enabled, whether to jitter the initial send event.",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&ApWifiMac::m_enableBeaconJitter),
+                   MakeBooleanChecker ())
     .AddAttribute ("BeaconGeneration", "Whether or not beacons are generated.",
                    BooleanValue (true),
                    MakeBooleanAccessor (&ApWifiMac::SetBeaconGeneration,
@@ -170,6 +178,14 @@ ApWifiMac::StartBeaconing (void)
 {
   NS_LOG_FUNCTION (this);
   SendOneBeacon ();
+}
+
+int64_t
+ApWifiMac::AssignStreams (int64_t stream)
+{
+  NS_LOG_FUNCTION (this << stream);
+  m_beaconJitter->SetStream (stream);
+  return 1;
 }
 
 void
@@ -648,7 +664,17 @@ ApWifiMac::DoInitialize (void)
   m_beaconEvent.Cancel ();
   if (m_enableBeaconGeneration)
     {
-      m_beaconEvent = Simulator::ScheduleNow (&ApWifiMac::SendOneBeacon, this);
+      if (m_enableBeaconJitter)
+        {
+          int64_t jitter = m_beaconJitter->GetValue (0, m_beaconInterval.GetMicroSeconds ());
+          NS_LOG_DEBUG ("Scheduling initial beacon for access point " << GetAddress() << " at time " << jitter << " microseconds");
+          m_beaconEvent = Simulator::Schedule (MicroSeconds (jitter), &ApWifiMac::SendOneBeacon, this);
+        }
+      else
+        {
+          NS_LOG_DEBUG ("Scheduling initial beacon for access point " << GetAddress() << " at time 0");
+          m_beaconEvent = Simulator::ScheduleNow (&ApWifiMac::SendOneBeacon, this);
+        }
     }
   RegularWifiMac::DoInitialize ();
 }

@@ -218,12 +218,6 @@ YansWifiPhy::ConfigureStandard (enum WifiPhyStandard standard)
     case WIFI_PHY_STANDARD_holland:
       ConfigureHolland ();
       break;
-    case WIFI_PHY_STANDARD_80211p_CCH:
-      Configure80211p_CCH ();
-      break;
-    case WIFI_PHY_STANDARD_80211p_SCH:
-      Configure80211p_SCH ();
-      break;
     case WIFI_PHY_STANDARD_80211n_2_4GHZ:
       m_channelStartingFrequency=2407;
       Configure80211n ();
@@ -682,38 +676,6 @@ YansWifiPhy::ConfigureHolland (void)
   m_deviceRateSet.push_back (WifiPhy::GetOfdmRate18Mbps ());
   m_deviceRateSet.push_back (WifiPhy::GetOfdmRate36Mbps ());
   m_deviceRateSet.push_back (WifiPhy::GetOfdmRate54Mbps ());
-}
-
-void
-YansWifiPhy::Configure80211p_CCH (void)
-{
-  NS_LOG_FUNCTION (this);
-  m_channelStartingFrequency = 5e3; // 802.11p works over the 5Ghz freq range
-
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate3MbpsBW10MHz ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate4_5MbpsBW10MHz ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate6MbpsBW10MHz ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate9MbpsBW10MHz ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate12MbpsBW10MHz ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate18MbpsBW10MHz ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate24MbpsBW10MHz ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate27MbpsBW10MHz ());
-}
-
-void
-YansWifiPhy::Configure80211p_SCH (void)
-{
-  NS_LOG_FUNCTION (this);
-  m_channelStartingFrequency = 5e3; // 802.11p works over the 5Ghz freq range
-
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate3MbpsBW10MHz ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate4_5MbpsBW10MHz ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate6MbpsBW10MHz ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate9MbpsBW10MHz ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate12MbpsBW10MHz ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate18MbpsBW10MHz ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate24MbpsBW10MHz ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate27MbpsBW10MHz ());
 }
 
 void

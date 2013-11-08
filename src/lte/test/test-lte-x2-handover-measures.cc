@@ -46,8 +46,8 @@ struct CheckPointEvent
       checkInterval (interval),
       ueDeviceIndex (ueIndex),
       enbDeviceIndex (enbIndex)
-    {
-    }
+  {
+  }
 };
 
 
@@ -63,17 +63,26 @@ public:
    * \param checkPointEventList
    * \param checkPointEventListName
    * \param useUdp true if UDP is to be used, false if TCP is to be used
+   * \param schedulerType type of scheduler to be used (e.g. "ns3::PfFfMacScheduler")
+   * \param handoverAlgorithmType type of handover algorithm to be used (e.g. "ns3::A3RsrpHandoverAlgorithm")
+   * \param admitHo
+   * \param useIdealRrc true if ideal RRC is to be used, false if real RRC is to be used
    *
    * \return
    */
   LteX2HandoverMeasuresTestCase (uint32_t nEnbs, uint32_t nUes, uint32_t nDedicatedBearers,
-                                 std::list<CheckPointEvent> checkPointEventList, std::string checkPointEventListName,
-                                 bool useUdp, std::string schedulerType, bool admitHo, bool useIdealRrc);
+                                 std::list<CheckPointEvent> checkPointEventList,
+                                 std::string checkPointEventListName,
+                                 bool useUdp, std::string schedulerType,
+                                 std::string handoverAlgorithmType, bool admitHo,
+                                 bool useIdealRrc);
 
 private:
   static std::string BuildNameString (uint32_t nEnbs, uint32_t nUes, uint32_t nDedicatedBearers,
                                       std::string checkPointEventListName,
-                                      bool useUdp, std::string schedulerType, bool admitHo, bool useIdealRrc);
+                                      bool useUdp, std::string schedulerType,
+                                      std::string handoverAlgorithmType, bool admitHo,
+                                      bool useIdealRrc);
   virtual void DoRun (void);
   void CheckConnected (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice);
 
@@ -85,6 +94,7 @@ private:
   bool m_epc;
   bool m_useUdp;
   std::string m_schedulerType;
+  std::string m_handoverAlgorithmType;
   bool m_admitHo;
   bool m_useIdealRrc;
   Ptr<LteHelper> m_lteHelper;
@@ -120,7 +130,9 @@ private:
 std::string
 LteX2HandoverMeasuresTestCase::BuildNameString (uint32_t nEnbs, uint32_t nUes, uint32_t nDedicatedBearers,
                                                 std::string checkPointEventListName,
-                                                bool useUdp, std::string schedulerType, bool admitHo, bool useIdealRrc)
+                                                bool useUdp, std::string schedulerType,
+                                                std::string handoverAlgorithmType, bool admitHo,
+                                                bool useIdealRrc)
 {
   std::ostringstream oss;
   oss << "nEnbs=" << nEnbs
@@ -128,6 +140,7 @@ LteX2HandoverMeasuresTestCase::BuildNameString (uint32_t nEnbs, uint32_t nUes, u
       << " nDedicatedBearers=" << nDedicatedBearers
       << " udp=" << useUdp
       << " " << schedulerType
+      << " " << handoverAlgorithmType
       << " admitHo=" << admitHo
       << " hoList: " << checkPointEventListName;
   if (useIdealRrc)
@@ -142,9 +155,14 @@ LteX2HandoverMeasuresTestCase::BuildNameString (uint32_t nEnbs, uint32_t nUes, u
 }
 
 LteX2HandoverMeasuresTestCase::LteX2HandoverMeasuresTestCase (uint32_t nEnbs, uint32_t nUes, uint32_t nDedicatedBearers,
-                                                              std::list<CheckPointEvent> checkPointEventList, std::string checkPointEventListName,
-                                                              bool useUdp, std::string schedulerType, bool admitHo, bool useIdealRrc)
-  : TestCase (BuildNameString (nEnbs, nUes, nDedicatedBearers, checkPointEventListName, useUdp, schedulerType, admitHo, useIdealRrc)),
+                                                              std::list<CheckPointEvent> checkPointEventList,
+                                                              std::string checkPointEventListName,
+                                                              bool useUdp, std::string schedulerType,
+                                                              std::string handoverAlgorithmType, bool admitHo,
+                                                              bool useIdealRrc)
+  : TestCase (BuildNameString (nEnbs, nUes, nDedicatedBearers,
+                               checkPointEventListName, useUdp, schedulerType,
+                               handoverAlgorithmType, admitHo, useIdealRrc)),
     m_nEnbs (nEnbs),
     m_nUes (nUes),
     m_nDedicatedBearers (nDedicatedBearers),
@@ -153,6 +171,7 @@ LteX2HandoverMeasuresTestCase::LteX2HandoverMeasuresTestCase (uint32_t nEnbs, ui
     m_epc (true),
     m_useUdp (useUdp),
     m_schedulerType (schedulerType),
+    m_handoverAlgorithmType (handoverAlgorithmType),
     m_admitHo (admitHo),
     m_useIdealRrc (useIdealRrc),
     m_maxHoDuration (Seconds (0.1)),
@@ -167,14 +186,14 @@ LteX2HandoverMeasuresTestCase::DoRun ()
 {
   NS_LOG_FUNCTION (this << BuildNameString (m_nEnbs, m_nUes, m_nDedicatedBearers,
                                             m_checkPointEventListName,
-                                            m_useUdp, m_schedulerType, m_admitHo, m_useIdealRrc));
+                                            m_useUdp, m_schedulerType,
+                                            m_handoverAlgorithmType, m_admitHo,
+                                            m_useIdealRrc));
 
   Config::Reset ();
   Config::SetDefault ("ns3::UdpClient::Interval", TimeValue (m_udpClientInterval));
   Config::SetDefault ("ns3::UdpClient::MaxPackets", UintegerValue (1000000));
   Config::SetDefault ("ns3::UdpClient::PacketSize", UintegerValue (m_udpClientPktSize));
-  Config::SetDefault ("ns3::LteEnbRrc::ServingCellHandoverThreshold", UintegerValue (30));
-  Config::SetDefault ("ns3::LteEnbRrc::NeighbourCellHandoverOffset", UintegerValue (1));
   Config::SetDefault ("ns3::LteEnbRrc::HandoverJoiningTimeoutDuration", TimeValue (MilliSeconds (200)));
   Config::SetDefault ("ns3::LteEnbPhy::TxPower", DoubleValue (20));
 
@@ -183,9 +202,29 @@ LteX2HandoverMeasuresTestCase::DoRun ()
 
   m_lteHelper = CreateObject<LteHelper> ();
   m_lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
-  m_lteHelper->SetSchedulerType (m_schedulerType);
   m_lteHelper->SetAttribute ("UseIdealRrc", BooleanValue (m_useIdealRrc));
+  m_lteHelper->SetSchedulerType (m_schedulerType);
 
+  if (m_handoverAlgorithmType == "ns3::A2A4RsrqHandoverAlgorithm")
+    {
+      m_lteHelper->SetHandoverAlgorithmType ("ns3::A2A4RsrqHandoverAlgorithm");
+      m_lteHelper->SetHandoverAlgorithmAttribute ("ServingCellThreshold",
+                                                  UintegerValue (30));
+      m_lteHelper->SetHandoverAlgorithmAttribute ("NeighbourCellOffset",
+                                                  UintegerValue (1));
+    }
+  else if (m_handoverAlgorithmType == "ns3::A3RsrpHandoverAlgorithm")
+    {
+      m_lteHelper->SetHandoverAlgorithmType ("ns3::A3RsrpHandoverAlgorithm");
+      m_lteHelper->SetHandoverAlgorithmAttribute ("Hysteresis",
+                                                  DoubleValue (1.5));
+      m_lteHelper->SetHandoverAlgorithmAttribute ("TimeToTrigger",
+                                                  TimeValue (MilliSeconds (128)));
+    }
+  else
+    {
+      NS_FATAL_ERROR ("Unknown handover algorithm " << m_handoverAlgorithmType);
+    }
 
   double distance = 1000.0; // m
   double speed = 150;       // m/s
@@ -210,18 +249,20 @@ LteX2HandoverMeasuresTestCase::DoRun ()
       enbPositionAlloc->Add (enbPosition);
     }
   MobilityHelper enbMobility;
-  enbMobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
-  enbMobility.SetPositionAllocator(enbPositionAlloc);
-  enbMobility.Install(enbNodes);
+  enbMobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
+  enbMobility.SetPositionAllocator (enbPositionAlloc);
+  enbMobility.Install (enbNodes);
 
   // Install Mobility Model in UE
   // UE moves with a constant speed along the X axis
   MobilityHelper ueMobility;
   ueMobility.SetMobilityModel ("ns3::ConstantVelocityMobilityModel");
-  ueMobility.Install(ueNodes);
-  ueNodes.Get (0)->GetObject<MobilityModel> ()->SetPosition (Vector (0, 0, 0));
-  ueNodes.Get (0)->GetObject<ConstantVelocityMobilityModel> ()->SetVelocity (Vector (speed, 0, 0));
-
+  ueMobility.Install (ueNodes);
+  for (uint16_t i = 0; i < m_nUes; i++)
+    {
+      ueNodes.Get (i)->GetObject<MobilityModel> ()->SetPosition (Vector (0, 0, 0));
+      ueNodes.Get (i)->GetObject<ConstantVelocityMobilityModel> ()->SetVelocity (Vector (speed, 0, 0));
+    }
 
   NetDeviceContainer enbDevices;
   enbDevices = m_lteHelper->InstallEnbDevice (enbNodes);
@@ -604,64 +645,72 @@ LteX2HandoverMeasuresTestSuite::LteX2HandoverMeasuresTestSuite ()
   std::string cel1name ("ho: 0 -> 1");
   std::list<CheckPointEvent> cel1;
   cel1.push_back (CheckPointEvent (Seconds (1), Seconds (10.1), checkInterval, 0, 0));
-  cel1.push_back (CheckPointEvent (Seconds (11), Seconds (37), checkInterval, 0, 1));
+  cel1.push_back (CheckPointEvent (Seconds (11), Seconds (17), checkInterval, 0, 1));
 
   std::string cel2name ("ho: 0 -> 1 -> 2");
   std::list<CheckPointEvent> cel2;
-  cel2.push_back (CheckPointEvent (Seconds (1), Seconds (10.1), Seconds (1), 0, 0));
-  cel2.push_back (CheckPointEvent (Seconds (11), Seconds (17.1), Seconds (1), 0, 1));
-  cel2.push_back (CheckPointEvent (Seconds (18), Seconds (37), Seconds (1), 0, 2));
+  cel2.push_back (CheckPointEvent (Seconds (1), Seconds (10.1), checkInterval, 0, 0));
+  cel2.push_back (CheckPointEvent (Seconds (11), Seconds (17.1), checkInterval, 0, 1));
+  cel2.push_back (CheckPointEvent (Seconds (18), Seconds (24), checkInterval, 0, 2));
 
   std::string cel3name ("ho: 0 -> 1 -> 2 -> 3");
   std::list<CheckPointEvent> cel3;
-  cel3.push_back (CheckPointEvent (Seconds (1), Seconds (10.1), Seconds (1),  0, 0));
-  cel3.push_back (CheckPointEvent (Seconds (11), Seconds (17.1), Seconds (1), 0, 1));
-  cel3.push_back (CheckPointEvent (Seconds (18), Seconds (24.1), Seconds (1), 0, 2));
-  cel3.push_back (CheckPointEvent (Seconds (25), Seconds (37), Seconds (1), 0, 3));
+  cel3.push_back (CheckPointEvent (Seconds (1), Seconds (10.1), checkInterval,  0, 0));
+  cel3.push_back (CheckPointEvent (Seconds (11), Seconds (17.1), checkInterval, 0, 1));
+  cel3.push_back (CheckPointEvent (Seconds (18), Seconds (24.1), checkInterval, 0, 2));
+  cel3.push_back (CheckPointEvent (Seconds (25), Seconds (37), checkInterval, 0, 3));
 
 
   int32_t useIdealRrc;
-  std::vector<std::string> schedulers;
-  schedulers.push_back ("ns3::PfFfMacScheduler");
-  for (std::vector<std::string>::iterator schedIt = schedulers.begin (); schedIt != schedulers.end (); ++schedIt)
+  std::string sched = "ns3::PfFfMacScheduler";
+  std::string ho = "ns3::A2A4RsrqHandoverAlgorithm";
+  for (useIdealRrc = 1; useIdealRrc >= 0; --useIdealRrc)
     {
-      for (useIdealRrc = 1; useIdealRrc >= 0; --useIdealRrc)
-        {
-          //                                             nEnbs, nUes, nDBearers, celist, name, useUdp, sched, admitHo, idealRrc
-          AddTestCase (new LteX2HandoverMeasuresTestCase (  2,   1,    0,      cel1, cel1name, true, *schedIt, true,  useIdealRrc), TestCase::EXTENSIVE);
-          AddTestCase (new LteX2HandoverMeasuresTestCase (  2,   1,    1,      cel1, cel1name, true, *schedIt, true,  useIdealRrc), TestCase::QUICK);
-          AddTestCase (new LteX2HandoverMeasuresTestCase (  2,   1,    2,      cel1, cel1name, true, *schedIt, true,  useIdealRrc), TestCase::EXTENSIVE);
-          AddTestCase (new LteX2HandoverMeasuresTestCase (  3,   1,    0,      cel2, cel2name, true, *schedIt, true,  useIdealRrc), TestCase::EXTENSIVE);
-          AddTestCase (new LteX2HandoverMeasuresTestCase (  3,   1,    1,      cel2, cel2name, true, *schedIt, true,  useIdealRrc), TestCase::EXTENSIVE);
-          AddTestCase (new LteX2HandoverMeasuresTestCase (  3,   1,    2,      cel2, cel2name, true, *schedIt, true,  useIdealRrc), TestCase::EXTENSIVE);
-          AddTestCase (new LteX2HandoverMeasuresTestCase (  4,   1,    0,      cel3, cel3name, true, *schedIt, true,  useIdealRrc), TestCase::EXTENSIVE);
-          AddTestCase (new LteX2HandoverMeasuresTestCase (  4,   1,    1,      cel3, cel3name, true, *schedIt, true,  useIdealRrc), TestCase::EXTENSIVE);
-          AddTestCase (new LteX2HandoverMeasuresTestCase (  4,   1,    2,      cel3, cel3name, true, *schedIt, true,  useIdealRrc), TestCase::EXTENSIVE);
-        }
+      //                                          nEnbs, nUes, nDBearers, celist, name, useUdp, sched, ho, admitHo, idealRrc
+      AddTestCase (new LteX2HandoverMeasuresTestCase (2,   1,    0,    cel1, cel1name, true, sched, ho, true, useIdealRrc), TestCase::TAKES_FOREVER);
+      AddTestCase (new LteX2HandoverMeasuresTestCase (2,   1,    1,    cel1, cel1name, true, sched, ho, true, useIdealRrc), TestCase::QUICK);
+      AddTestCase (new LteX2HandoverMeasuresTestCase (2,   1,    2,    cel1, cel1name, true, sched, ho, true, useIdealRrc), TestCase::TAKES_FOREVER);
+      AddTestCase (new LteX2HandoverMeasuresTestCase (3,   1,    0,    cel2, cel2name, true, sched, ho, true, useIdealRrc), TestCase::TAKES_FOREVER);
+      AddTestCase (new LteX2HandoverMeasuresTestCase (3,   1,    1,    cel2, cel2name, true, sched, ho, true, useIdealRrc), TestCase::TAKES_FOREVER);
+      AddTestCase (new LteX2HandoverMeasuresTestCase (3,   1,    2,    cel2, cel2name, true, sched, ho, true, useIdealRrc), TestCase::EXTENSIVE);
+      AddTestCase (new LteX2HandoverMeasuresTestCase (4,   1,    0,    cel3, cel3name, true, sched, ho, true, useIdealRrc), TestCase::EXTENSIVE);
+      AddTestCase (new LteX2HandoverMeasuresTestCase (4,   1,    1,    cel3, cel3name, true, sched, ho, true, useIdealRrc), TestCase::TAKES_FOREVER);
+      AddTestCase (new LteX2HandoverMeasuresTestCase (4,   1,    2,    cel3, cel3name, true, sched, ho, true, useIdealRrc), TestCase::TAKES_FOREVER);
     }
 
-  schedulers.resize (0);
-  schedulers.push_back ("ns3::RrFfMacScheduler");
-  for (std::vector<std::string>::iterator schedIt = schedulers.begin (); schedIt != schedulers.end (); ++schedIt)
+  sched = "ns3::RrFfMacScheduler";
+  for (useIdealRrc = 1; useIdealRrc >= 0; --useIdealRrc)
     {
-      for (useIdealRrc = 1; useIdealRrc >= 0; --useIdealRrc)
-        {
-          //                                             nEnbs, nUes, nDBearers, celist, name, useUdp, sched, admitHo, idealRrc
-          AddTestCase (new LteX2HandoverMeasuresTestCase (  2,   1,    0,      cel1, cel1name, true, *schedIt, true,  useIdealRrc), TestCase::EXTENSIVE);
-//           AddTestCase (new LteX2HandoverMeasuresTestCase (  2,   1,    1,      cel1b, cel1bname, true, *schedIt, true,  useIdealRrc), TestCase::EXTENSIVE);
-//           AddTestCase (new LteX2HandoverMeasuresTestCase (  2,   1,    2,      cel1, cel1name, true, *schedIt, true,  useIdealRrc), TestCase::EXTENSIVE);
-          AddTestCase (new LteX2HandoverMeasuresTestCase (  3,   1,    0,      cel2, cel2name, true, *schedIt, true,  useIdealRrc), TestCase::EXTENSIVE);
-//           AddTestCase (new LteX2HandoverMeasuresTestCase (  3,   1,    1,      cel2, cel2name, true, *schedIt, true,  useIdealRrc), TestCase::EXTENSIVE);
-//           AddTestCase (new LteX2HandoverMeasuresTestCase (  3,   1,    2,      cel2, cel2name, true, *schedIt, true,  useIdealRrc), TestCase::EXTENSIVE);
-          AddTestCase (new LteX2HandoverMeasuresTestCase (  4,   1,    0,      cel3, cel3name, true, *schedIt, true,  useIdealRrc), TestCase::EXTENSIVE);
-//           AddTestCase (new LteX2HandoverMeasuresTestCase (  4,   1,    1,      cel3, cel3name, true, *schedIt, true,  useIdealRrc), TestCase::QUICK);
-//           AddTestCase (new LteX2HandoverMeasuresTestCase (  4,   1,    2,      cel3, cel3name, true, *schedIt, true,  useIdealRrc), TestCase::QUICK);
-        }
+      //                                          nEnbs, nUes, nDBearers, celist, name, useUdp, sched, admitHo, idealRrc
+      AddTestCase (new LteX2HandoverMeasuresTestCase (2,   1,    0,    cel1, cel1name, true, sched, ho, true, useIdealRrc), TestCase::EXTENSIVE);
+      AddTestCase (new LteX2HandoverMeasuresTestCase (3,   1,    0,    cel2, cel2name, true, sched, ho, true, useIdealRrc), TestCase::TAKES_FOREVER);
+      AddTestCase (new LteX2HandoverMeasuresTestCase (4,   1,    0,    cel3, cel3name, true, sched, ho, true, useIdealRrc), TestCase::TAKES_FOREVER);
     }
 
-}
+  ho = "ns3::A3RsrpHandoverAlgorithm";
+  sched = "ns3::PfFfMacScheduler";
+  for (useIdealRrc = 1; useIdealRrc >= 0; --useIdealRrc)
+    {
+      //                                          nEnbs, nUes, nDBearers, celist, name, useUdp, sched, admitHo, idealRrc
+      AddTestCase (new LteX2HandoverMeasuresTestCase (2,   1,    0,    cel1, cel1name, true, sched, ho, true, useIdealRrc), TestCase::EXTENSIVE);
+      AddTestCase (new LteX2HandoverMeasuresTestCase (3,   1,    0,    cel2, cel2name, true, sched, ho, true, useIdealRrc), TestCase::TAKES_FOREVER);
+      AddTestCase (new LteX2HandoverMeasuresTestCase (4,   1,    0,    cel3, cel3name, true, sched, ho, true, useIdealRrc), TestCase::TAKES_FOREVER);
+    }
+
+  sched = "ns3::RrFfMacScheduler";
+  for (useIdealRrc = 1; useIdealRrc >= 0; --useIdealRrc)
+    {
+      //                                          nEnbs, nUes, nDBearers, celist, name, useUdp, sched, admitHo, idealRrc
+      AddTestCase (new LteX2HandoverMeasuresTestCase (2,   1,    0,    cel1, cel1name, true, sched, ho, true, useIdealRrc), TestCase::QUICK);
+      AddTestCase (new LteX2HandoverMeasuresTestCase (3,   1,    0,    cel2, cel2name, true, sched, ho, true, useIdealRrc), TestCase::TAKES_FOREVER);
+      AddTestCase (new LteX2HandoverMeasuresTestCase (4,   1,    0,    cel3, cel3name, true, sched, ho, true, useIdealRrc), TestCase::EXTENSIVE);
+    }
+
+} // end of LteX2HandoverMeasuresTestSuite ()
 
 static LteX2HandoverMeasuresTestSuite g_lteX2HandoverMeasuresTestSuiteInstance;
 
 
+
 } // namespace ns3
+

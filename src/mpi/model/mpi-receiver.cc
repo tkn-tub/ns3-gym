@@ -46,4 +46,10 @@ MpiReceiver::Receive (Ptr<Packet> p)
   m_rxCallback (p);
 }
 
+void
+MpiReceiver::DoDispose(void)
+{
+  m_rxCallback = MakeNullCallback<void, Ptr<Packet> >();
+}
+
 } // namespace ns3

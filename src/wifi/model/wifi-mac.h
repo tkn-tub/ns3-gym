@@ -238,7 +238,6 @@ public:
 
 protected:
   void ConfigureDcf (Ptr<Dcf> dcf, uint32_t cwmin, uint32_t cwmax, enum AcIndex ac);
-  void ConfigureCCHDcf (Ptr<Dcf> dcf, uint32_t cwmin, uint32_t cwmax, enum AcIndex ac);
 private:
   static Time GetDefaultMaxPropagationDelay (void);
   static Time GetDefaultSlot (void);
@@ -268,8 +267,6 @@ private:
   void Configure80211g (void);
   void Configure80211_10Mhz (void);
   void Configure80211_5Mhz ();
-  void Configure80211p_CCH (void);
-  void Configure80211p_SCH (void);
   void Configure80211n_2_4Ghz (void);
   void Configure80211n_5Ghz (void);
 

@@ -166,11 +166,11 @@ public:
   virtual void SetNumberOfTransmitAntennas (uint32_t tx);
   virtual uint32_t GetNumberOfTransmitAntennas (void) const;
   /**
-   * \param the number of recievers on this node.
+   * \param the number of receivers on this node.
    */
   virtual void SetNumberOfReceiveAntennas (uint32_t rx) ;
   /**
-   * \returns the number of recievers on this node.
+   * \returns the number of receivers on this node.
    */
   virtual uint32_t GetNumberOfReceiveAntennas (void) const;
   /**
@@ -245,8 +245,6 @@ private:
   void Configure80211_10Mhz (void);
   void Configure80211_5Mhz ();
   void ConfigureHolland (void);
-  void Configure80211p_CCH (void);
-  void Configure80211p_SCH (void);
   void Configure80211n (void);
   double GetEdThresholdW (void) const;
   double DbmToW (double dbm) const;
@@ -272,7 +270,7 @@ private:
 
   // number of transmitters
   uint32_t m_numberOfTransmitters;
-  // number of recievers
+  // number of receivers
   uint32_t m_numberOfReceivers;
   //if true use LDPC
   bool     m_ldpc;

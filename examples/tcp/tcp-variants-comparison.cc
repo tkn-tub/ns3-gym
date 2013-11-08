@@ -300,7 +300,6 @@ int main (int argc, char *argv[])
           ApplicationContainer sourceApp = ftp.Install (sources.Get(i));
           sourceApp.Start (Seconds (start_time*i));
           sourceApp.Stop (Seconds (stop_time - 3));
-          Time check_start (Seconds((start_time*i)+3));
 
           sinkHelper.SetAttribute ("Protocol", TypeIdValue (TcpSocketFactory::GetTypeId ()));
           ApplicationContainer sinkApp = sinkHelper.Install (sinks);

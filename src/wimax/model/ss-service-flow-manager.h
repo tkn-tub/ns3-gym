@@ -91,8 +91,6 @@ public:
 private:
   Ptr<SubscriberStationNetDevice> m_device;
 
-  uint32_t m_sfidIndex;
-
   uint8_t m_maxDsaReqRetries;
 
   EventId m_dsaRspTimeoutEvent;

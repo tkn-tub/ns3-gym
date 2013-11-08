@@ -42,14 +42,13 @@ using namespace ns3;
 class LenaTtaFfMacSchedulerTestCase : public TestCase
 {
 public:
-  LenaTtaFfMacSchedulerTestCase (uint16_t nUser, uint16_t nLc, uint16_t dist, double thrRefDl, double thrRefUl,bool errorModelEnabled);
+  LenaTtaFfMacSchedulerTestCase (uint16_t nUser, uint16_t dist, double thrRefDl, double thrRefUl,bool errorModelEnabled);
   virtual ~LenaTtaFfMacSchedulerTestCase ();
 
 private:
   static std::string BuildNameString (uint16_t nUser, uint16_t dist);
   virtual void DoRun (void);
   uint16_t m_nUser;
-  uint16_t m_nLc;
   uint16_t m_dist;
   double m_thrRefDl;
   double m_thrRefUl;

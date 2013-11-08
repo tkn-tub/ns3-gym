@@ -14,9 +14,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: George Riley <riley@ece.gatech.edu>
- *
- * Some updates to this code were developed under a research contract
- * sponsored by the Army Research Laboratory. (April 30, 2013)
  */
 
 #include "distributed-simulator-impl.h"
@@ -99,6 +96,7 @@ DistributedSimulatorImpl::DistributedSimulatorImpl ()
   m_pLBTS = new LbtsMessage[m_systemCount];
   m_grantedTime = Seconds (0);
 #else
+  NS_UNUSED (m_systemCount);
   NS_FATAL_ERROR ("Can't use distributed simulator without MPI compiled in");
 #endif
 

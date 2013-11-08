@@ -39,8 +39,8 @@ namespace ns3 {
 LogTimePrinter g_logTimePrinter = 0;
 LogNodePrinter g_logNodePrinter = 0;
 
-typedef std::list<std::pair <std::string, LogComponent *> > ComponentList;
-typedef std::list<std::pair <std::string, LogComponent *> >::iterator ComponentListI;
+typedef std::map<std::string, LogComponent *> ComponentList;
+typedef std::map<std::string, LogComponent *>::iterator ComponentListI;
 
 static class PrintList
 {
@@ -84,7 +84,7 @@ PrintList::PrintList ()
 }
 
 
-LogComponent::LogComponent (char const * name)
+LogComponent::LogComponent (const std::string & name)
   : m_levels (0), m_name (name)
 {
   EnvVarCheck (name);
@@ -99,11 +99,11 @@ LogComponent::LogComponent (char const * name)
           NS_FATAL_ERROR ("Log component \""<<name<<"\" has already been registered once.");
         }
     }
-  components->push_back (std::make_pair (name, this));
+  components->insert (std::make_pair (name, this));
 }
 
 void
-LogComponent::EnvVarCheck (char const * name)
+LogComponent::EnvVarCheck (const std::string & name)
 {
 #ifdef HAVE_GETENV
   char *envVar = getenv ("NS_LOG");
@@ -125,7 +125,7 @@ LogComponent::EnvVarCheck (char const * name)
       if (equal == std::string::npos)
         {
           component = tmp;
-          if (component == myName || component == "*")
+          if (component == myName || component == "*" || component == "***")
             {
               int level = LOG_LEVEL_ALL | LOG_PREFIX_ALL;
               Enable ((enum LogLevel)level);
@@ -269,7 +269,7 @@ LogComponent::Disable (enum LogLevel level)
 char const *
 LogComponent::Name (void) const
 {
-  return m_name;
+  return m_name.c_str ();
 }
 
 std::string
@@ -485,7 +485,7 @@ static void CheckEnvironmentVariables (void)
         {
           // ie no '=' characters found 
           component = tmp;
-          if (ComponentExists(component) || component == "*")
+          if (ComponentExists(component) || component == "*" || component == "***")
             {
               return;
             }

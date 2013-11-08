@@ -38,6 +38,7 @@
 #include "ns3/lte-ue-net-device.h"
 #include "ns3/lte-enb-net-device.h"
 #include "ns3/uan-phy-gen.h"
+#include "ns3/rectangle.h"
 
 namespace ns3 {
 
@@ -58,7 +59,7 @@ typedef struct
 
 struct LinkPairCompare
 {
-  bool operator () (P2pLinkNodeIdPair first, P2pLinkNodeIdPair second)
+  bool operator () (P2pLinkNodeIdPair first, P2pLinkNodeIdPair second) const
     {
       //Check if they are the same node pairs but flipped
       if (  ((first.fromNode == second.fromNode) && (first.toNode == second.toNode)) ||
@@ -226,6 +227,16 @@ public:
    *
    */
   static void SetConstantPosition (Ptr <Node> n, double x, double y, double z=0);
+
+  /**
+   * \brief Helper function to set the topology boundary rectangle
+   * \param minX X value of the lower left corner
+   * \param minY Y value of the lower left corner
+   * \param maxX X value of the upper right corner
+   * \param maxX Y value of the upper right corner
+   *
+   */
+  static void SetBoundary (double minX, double minY, double maxX, double maxY);
 
   /**
    * \brief Helper function to set a brief description for a given node
@@ -618,6 +629,7 @@ private:
   double m_topoMinY;
   double m_topoMaxX;
   double m_topoMaxY;
+  static Rectangle * userBoundary;
 
   std::string GetPacketMetadata (Ptr<const Packet> p);
 

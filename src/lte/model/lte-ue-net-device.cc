@@ -57,6 +57,12 @@ TypeId LteUeNetDevice::GetTypeId (void)
     tid =
     TypeId ("ns3::LteUeNetDevice")
     .SetParent<LteNetDevice> ()
+    .AddConstructor<LteUeNetDevice> ()
+    .AddAttribute ("EpcUeNas",
+                   "The NAS associated to this UeNetDevice",
+                   PointerValue (),
+                   MakePointerAccessor (&LteUeNetDevice::m_nas),
+                   MakePointerChecker <EpcUeNas> ())
     .AddAttribute ("LteUeRrc",
                    "The RRC associated to this UeNetDevice",
                    PointerValue (),
@@ -74,10 +80,25 @@ TypeId LteUeNetDevice::GetTypeId (void)
                    MakePointerChecker <LteUePhy> ())
     .AddAttribute ("Imsi",
                    "International Mobile Subscriber Identity assigned to this UE",
-                   TypeId::ATTR_GET,
-                   UintegerValue (0), // not used because the attribute is read-only
+                   UintegerValue (0),
                    MakeUintegerAccessor (&LteUeNetDevice::m_imsi),
                    MakeUintegerChecker<uint64_t> ())
+    .AddAttribute ("DlEarfcn",
+                   "Downlink E-UTRA Absolute Radio Frequency Channel Number (EARFCN) "
+                   "as per 3GPP 36.101 Section 5.7.3. ",
+                   UintegerValue (100),
+                   MakeUintegerAccessor (&LteUeNetDevice::SetDlEarfcn,
+                                         &LteUeNetDevice::GetDlEarfcn),
+                   MakeUintegerChecker<uint16_t> (0, 6149))
+    .AddAttribute ("CsgId",
+                   "The Closed Subscriber Group (CSG) identity that this UE is associated with, "
+                   "i.e., giving the UE access to cells which belong to this particular CSG. "
+                   "This restriction only applies to initial cell selection and EPC-enabled simulation. "
+                   "This does not revoke the UE's access to non-CSG cells. ",
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&LteUeNetDevice::SetCsgId,
+                                         &LteUeNetDevice::GetCsgId),
+                   MakeUintegerChecker<uint32_t> ())
   ;
 
   return tid;
@@ -85,21 +106,9 @@ TypeId LteUeNetDevice::GetTypeId (void)
 
 
 LteUeNetDevice::LteUeNetDevice (void)
+  : m_isConstructed (false)
 {
   NS_LOG_FUNCTION (this);
-  NS_FATAL_ERROR ("This constructor should not be called");
-}
-
-
-  LteUeNetDevice::LteUeNetDevice (Ptr<Node> node, Ptr<LteUePhy> phy, Ptr<LteUeMac> mac, Ptr<LteUeRrc> rrc, Ptr<EpcUeNas> nas, uint64_t imsi)
-{
-  NS_LOG_FUNCTION (this);
-  m_phy = phy;
-  m_mac = mac;
-  m_rrc = rrc;
-  m_nas = nas;
-  SetNode (node);
-  m_imsi = imsi;
 }
 
 LteUeNetDevice::~LteUeNetDevice (void)
@@ -127,9 +136,22 @@ void
 LteUeNetDevice::UpdateConfig (void)
 {
   NS_LOG_FUNCTION (this);
-  m_nas->SetImsi (m_imsi);
-  m_rrc->SetImsi (m_imsi);
-  
+
+  if (m_isConstructed)
+    {
+      NS_LOG_LOGIC (this << " Updating configuration: IMSI " << m_imsi
+                         << " CSG ID " << m_csgId);
+      m_nas->SetImsi (m_imsi);
+      m_rrc->SetImsi (m_imsi);
+      m_nas->SetCsgId (m_csgId); // this also handles propagation to RRC
+    }
+  else
+    {
+      /*
+       * NAS and RRC instances are not be ready yet, so do nothing now and
+       * expect ``DoInitialize`` to re-invoke this function.
+       */
+    }
 }
 
 
@@ -171,6 +193,35 @@ LteUeNetDevice::GetImsi () const
   return m_imsi;
 }
 
+uint16_t
+LteUeNetDevice::GetDlEarfcn () const
+{
+  NS_LOG_FUNCTION (this);
+  return m_dlEarfcn;
+}
+
+void
+LteUeNetDevice::SetDlEarfcn (uint16_t earfcn)
+{
+  NS_LOG_FUNCTION (this << earfcn);
+  m_dlEarfcn = earfcn;
+}
+
+uint32_t
+LteUeNetDevice::GetCsgId () const
+{
+  NS_LOG_FUNCTION (this);
+  return m_csgId;
+}
+
+void
+LteUeNetDevice::SetCsgId (uint32_t csgId)
+{
+  NS_LOG_FUNCTION (this << csgId);
+  m_csgId = csgId;
+  UpdateConfig (); // propagate the change down to NAS and RRC
+}
+
 void
 LteUeNetDevice::SetTargetEnb (Ptr<LteEnbNetDevice> enb)
 {
@@ -190,6 +241,7 @@ void
 LteUeNetDevice::DoInitialize (void)
 {
   NS_LOG_FUNCTION (this);
+  m_isConstructed = true;
   UpdateConfig ();
   m_phy->Initialize ();
   m_mac->Initialize ();

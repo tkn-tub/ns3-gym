@@ -26,6 +26,7 @@
 #include "ns3/dca-txop.h"
 #include "ns3/edca-txop-n.h"
 #include "ns3/minstrel-wifi-manager.h"
+#include "ns3/ap-wifi-mac.h"
 #include "ns3/wifi-phy.h"
 #include "ns3/wifi-remote-station-manager.h"
 #include "ns3/wifi-channel.h"
@@ -215,6 +216,13 @@ WifiHelper::AssignStreams (NetDeviceContainer c, int64_t stream)
               rmac->GetAttribute ("BK_EdcaTxopN", ptr);
               Ptr<EdcaTxopN> bk_edcaTxopN = ptr.Get<EdcaTxopN> ();
               currentStream += bk_edcaTxopN->AssignStreams (currentStream);
+
+              // if an AP, handle any beacon jitter
+              Ptr<ApWifiMac> apmac = DynamicCast<ApWifiMac> (rmac);
+              if (apmac)
+                {
+                  currentStream += apmac->AssignStreams (currentStream);
+                }
             }
         }
     }

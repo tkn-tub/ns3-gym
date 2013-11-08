@@ -1053,21 +1053,27 @@ MacLow::CalculateOverallTxTime (Ptr<const Packet> packet,
 {
   WifiPreamble preamble;
   Time txTime = Seconds (0);
-  WifiTxVector rtsTxVector = GetRtsTxVector (packet, hdr);
-  WifiTxVector dataTxVector = GetDataTxVector (packet, hdr);
-   //standard says RTS packets can have GF format sec 9.6.0e.1 page 110 bullet b 2
-  if ( m_phy->GetGreenfield()&& m_stationManager->GetGreenfieldSupported (m_currentHdr.GetAddr1 ()))
-    preamble= WIFI_PREAMBLE_HT_GF;
-  else if (rtsTxVector.GetMode().GetModulationClass () == WIFI_MOD_CLASS_HT)
-    preamble= WIFI_PREAMBLE_HT_MF;
-  else
-    preamble=WIFI_PREAMBLE_LONG;
   if (params.MustSendRts ())
     {
+      WifiTxVector rtsTxVector = GetRtsTxVector (packet, hdr);
+      //standard says RTS packets can have GF format sec 9.6.0e.1 page 110 bullet b 2
+      if (m_phy->GetGreenfield () && m_stationManager->GetGreenfieldSupported (m_currentHdr.GetAddr1 ()))
+        {
+          preamble = WIFI_PREAMBLE_HT_GF;
+        }
+      else if (rtsTxVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HT)
+        {
+          preamble = WIFI_PREAMBLE_HT_MF;
+        }
+      else
+        {
+          preamble = WIFI_PREAMBLE_LONG;
+        }
       txTime += m_phy->CalculateTxDuration (GetRtsSize (), rtsTxVector, preamble);
       txTime += GetCtsDuration (hdr->GetAddr1 (), rtsTxVector);
       txTime += Time (GetSifs () * 2);
     }
+  WifiTxVector dataTxVector = GetDataTxVector (packet, hdr);
   //standard says RTS packets can have GF format sec 9.6.0e.1 page 110 bullet b 2
   if ( m_phy->GetGreenfield()&& m_stationManager->GetGreenfieldSupported (m_currentHdr.GetAddr1 ()))
     preamble= WIFI_PREAMBLE_HT_GF;
@@ -1153,7 +1159,7 @@ MacLow::NotifyNav (Ptr<const Packet> packet,const WifiMacHeader &hdr, WifiMode t
 void
 MacLow::NavCounterResetCtsMissed (Time rtsEndRxTime)
 {
-  if (m_phy->GetLastRxStartTime () > rtsEndRxTime)
+  if (m_phy->GetLastRxStartTime () < rtsEndRxTime)
     {
       DoNavResetNow (Seconds (0.0));
     }

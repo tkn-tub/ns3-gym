@@ -92,26 +92,26 @@ RegularWifiMac::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   delete m_rxMiddle;
-  m_rxMiddle = NULL;
+  m_rxMiddle = 0;
 
   delete m_txMiddle;
-  m_txMiddle = NULL;
+  m_txMiddle = 0;
 
   delete m_dcfManager;
-  m_dcfManager = NULL;
+  m_dcfManager = 0;
 
   m_low->Dispose ();
-  m_low = NULL;
+  m_low = 0;
 
-  m_phy = NULL;
-  m_stationManager = NULL;
+  m_phy = 0;
+  m_stationManager = 0;
 
   m_dca->Dispose ();
-  m_dca = NULL;
+  m_dca = 0;
 
   for (EdcaQueues::iterator i = m_edca.begin (); i != m_edca.end (); ++i)
     {
-      i->second = NULL;
+      i->second = 0;
     }
 }
 
@@ -701,12 +701,6 @@ RegularWifiMac::FinishConfigureStandard (enum WifiPhyStandard standard)
 
   switch (standard)
     {
-    case WIFI_PHY_STANDARD_80211p_CCH:
-    case WIFI_PHY_STANDARD_80211p_SCH:
-      cwmin = 15;
-      cwmax = 511;
-      break;
-
     case WIFI_PHY_STANDARD_holland:
     case WIFI_PHY_STANDARD_80211a:
     case WIFI_PHY_STANDARD_80211g:
@@ -734,15 +728,7 @@ RegularWifiMac::FinishConfigureStandard (enum WifiPhyStandard standard)
   // Now we configure the EDCA functions
   for (EdcaQueues::iterator i = m_edca.begin (); i != m_edca.end (); ++i)
     {
-      // Special configuration for 802.11p CCH
-      if (standard == WIFI_PHY_STANDARD_80211p_CCH)
-        {
-          ConfigureCCHDcf (i->second, cwmin, cwmax, i->first);
-        }
-      else
-        {
-          ConfigureDcf (i->second, cwmin, cwmax, i->first);
-        }
+      ConfigureDcf (i->second, cwmin, cwmax, i->first);
     }
 }
 

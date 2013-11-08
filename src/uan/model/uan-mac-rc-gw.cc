@@ -122,11 +122,6 @@ UanMacRcGw::GetTypeId (void)
                    UintegerValue (1023),
                    MakeUintegerAccessor (&UanMacRcGw::m_numRates),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("RetryRate",
-                   "Number of retry rates per second at non-gateway nodes",
-                   DoubleValue (1 / 10.0),
-                   MakeDoubleAccessor (&UanMacRcGw::m_retryRate),
-                   MakeDoubleChecker<double> ())
     .AddAttribute ("MaxPropDelay",
                    "Maximum propagation delay between gateway and non-gateway nodes",
                    TimeValue (Seconds (2)),
@@ -152,11 +147,6 @@ UanMacRcGw::GetTypeId (void)
                    DoubleValue (0.01),
                    MakeDoubleAccessor (&UanMacRcGw::m_retryStep),
                    MakeDoubleChecker<double> ())
-    .AddAttribute ("NumberOfRetryRates",
-                   "Number of retry rates",
-                   UintegerValue (100),
-                   MakeUintegerAccessor (&UanMacRcGw::m_numRetryRates),
-                   MakeUintegerChecker<uint16_t> ())
     .AddAttribute ("TotalRate",
                    "Total available channel rate in bps (for a single channel, without splitting reservation channel)",
                    UintegerValue (4096),

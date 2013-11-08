@@ -38,8 +38,43 @@
 #include "ns3/mac-rx-middle.h"
 #include "ns3/pointer.h"
 #include "ns3/rng-seed-manager.h"
+#include "ns3/edca-txop-n.h"
+#include "ns3/config.h"
+#include "ns3/boolean.h"
 
 namespace ns3 {
+
+// helper function to assign streams to random variables, to control 
+// randomness in the tests
+static void
+AssignWifiRandomStreams (Ptr<WifiMac> mac, int64_t stream)
+{
+  int64_t currentStream = stream;
+  Ptr<RegularWifiMac> rmac = DynamicCast<RegularWifiMac> (mac);
+  if (rmac)
+    {
+      PointerValue ptr;
+      rmac->GetAttribute ("DcaTxop", ptr);
+      Ptr<DcaTxop> dcaTxop = ptr.Get<DcaTxop> ();
+      currentStream += dcaTxop->AssignStreams (currentStream);
+
+      rmac->GetAttribute ("VO_EdcaTxopN", ptr);
+      Ptr<EdcaTxopN> vo_edcaTxopN = ptr.Get<EdcaTxopN> ();
+      currentStream += vo_edcaTxopN->AssignStreams (currentStream);
+
+      rmac->GetAttribute ("VI_EdcaTxopN", ptr);
+      Ptr<EdcaTxopN> vi_edcaTxopN = ptr.Get<EdcaTxopN> ();
+      currentStream += vi_edcaTxopN->AssignStreams (currentStream);
+
+      rmac->GetAttribute ("BE_EdcaTxopN", ptr);
+      Ptr<EdcaTxopN> be_edcaTxopN = ptr.Get<EdcaTxopN> ();
+      currentStream += be_edcaTxopN->AssignStreams (currentStream);
+
+      rmac->GetAttribute ("BK_EdcaTxopN", ptr);
+      Ptr<EdcaTxopN> bk_edcaTxopN = ptr.Get<EdcaTxopN> ();
+      currentStream += bk_edcaTxopN->AssignStreams (currentStream);
+    }
+}
 
 class WifiTest : public TestCase
 {
@@ -378,9 +413,14 @@ Bug555TestCase::DoRun (void)
   m_propDelay.SetTypeId ("ns3::ConstantSpeedPropagationDelayModel");
   m_manager.SetTypeId ("ns3::ConstantRateWifiManager");
 
-  //The simulation with the following seed and run numbers expe
+  // Assign a seed and run number, and later fix the assignment of streams to
+  // WiFi random variables, so that the first backoff used is zero slots
   RngSeedManager::SetSeed (1);
   RngSeedManager::SetRun (17);
+
+  // Disable the initial jitter of AP beacons (test case was written before
+  // beacon jitter was added)
+  Config::SetDefault ("ns3::ApWifiMac::EnableBeaconJitter", BooleanValue (false));
 
   Ptr<YansWifiChannel> channel = CreateObject<YansWifiChannel> ();
   Ptr<PropagationDelayModel> propDelay = m_propDelay.Create<PropagationDelayModel> ();
@@ -392,6 +432,11 @@ Bug555TestCase::DoRun (void)
   Ptr<WifiNetDevice> txDev = CreateObject<WifiNetDevice> ();
   Ptr<WifiMac> txMac = m_mac.Create<WifiMac> ();
   txMac->ConfigureStandard (WIFI_PHY_STANDARD_80211a);
+  // Fix the stream assignment to the Dcf Txop objects (backoffs)
+  // The below stream assignment will result in the DcaTxop object
+  // using a backoff value of zero for this test when the 
+  // DcaTxop::EndTxNoAck() calls to StartBackoffNow()
+  AssignWifiRandomStreams (txMac, 23);
 
   Ptr<ConstantPositionMobilityModel> txMobility = CreateObject<ConstantPositionMobilityModel> ();
   Ptr<YansWifiPhy> txPhy = CreateObject<YansWifiPhy> ();

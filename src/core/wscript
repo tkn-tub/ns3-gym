@@ -12,6 +12,10 @@ def options(opt):
                          'with the configure command.'),
                    action="store_true", default=False,
                    dest='int64x64_as_double')
+    opt.add_option('--disable-pthread',
+                   help=('Whether to enable the use of POSIX threads'),
+                   action="store_true", default=False,
+                   dest='disable_pthread')
 
 
 
@@ -62,9 +66,15 @@ int main ()
    return 0;
 }
 """
-    have_pthread = conf.check_nonfatal(header_name='pthread.h', define_name='HAVE_PTHREAD_H',
-                                       env=test_env, fragment=fragment,
-                                       errmsg='Could not find pthread support (build/config.log for details)')
+    if Options.options.disable_pthread:
+        conf.report_optional_feature("Threading", "Threading Primitives",
+                                     False,
+                                     "Disabled by user request (--disable-pthread)")
+        have_pthread = False
+    else:
+        have_pthread = conf.check_nonfatal(header_name='pthread.h', define_name='HAVE_PTHREAD_H',
+                                           env=test_env, fragment=fragment,
+                                           errmsg='Could not find pthread support (build/config.log for details)')
     if have_pthread:
         # darwin accepts -pthread but prints a warning saying it is ignored
         if Options.platform != 'darwin' and Options.platform != 'cygwin':

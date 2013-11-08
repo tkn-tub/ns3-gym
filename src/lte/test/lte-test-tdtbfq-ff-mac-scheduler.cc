@@ -91,10 +91,10 @@ LenaTestTdTbfqFfMacSchedulerSuite::LenaTestTdTbfqFfMacSchedulerSuite ()
   // 3 users -> 8 PRB at Itbs 26 -> 749 -> 749000 > 232000 -> throughput = 232000 bytes/sec 
   // 6 users -> 4 PRB at Itbs 26 -> 373 -> 373000 > 232000 -> throughput = 232000 bytes/sec
   // 12 users -> 2 PRB at Itbs 26 -> 185 -> 185000 < 232000 -> throughput = 185000 bytes/sec
-  AddTestCase (new LenaTdTbfqFfMacSchedulerTestCase1 (1,0,0,232000,232000,200,1,errorModel), TestCase::EXTENSIVE);
-  AddTestCase (new LenaTdTbfqFfMacSchedulerTestCase1 (3,0,0,232000,232000,200,1,errorModel), TestCase::EXTENSIVE);
-  AddTestCase (new LenaTdTbfqFfMacSchedulerTestCase1 (6,0,0,232000,232000,200,1,errorModel), TestCase::EXTENSIVE);
-  //AddTestCase (new LenaTdTbfqFfMacSchedulerTestCase1 (12,0,0,183000,185000,200,1,errorModel));// simulation time = 1.5, otherwise, ul test will fail
+  AddTestCase (new LenaTdTbfqFfMacSchedulerTestCase1 (1,0,232000,232000,200,1,errorModel), TestCase::EXTENSIVE);
+  AddTestCase (new LenaTdTbfqFfMacSchedulerTestCase1 (3,0,232000,232000,200,1,errorModel), TestCase::EXTENSIVE);
+  AddTestCase (new LenaTdTbfqFfMacSchedulerTestCase1 (6,0,232000,232000,200,1,errorModel), TestCase::EXTENSIVE);
+  //AddTestCase (new LenaTdTbfqFfMacSchedulerTestCase1 (12,0,183000,185000,200,1,errorModel));// simulation time = 1.5, otherwise, ul test will fail
 
   // DOWNLINK - DISTANCE 4800 -> MCS 22 -> Itbs 20 (from table 7.1.7.2.1-1 of 36.213)
   // Traffic info
@@ -111,10 +111,10 @@ LenaTestTdTbfqFfMacSchedulerSuite::LenaTestTdTbfqFfMacSchedulerSuite ()
   // 6 users -> 4 PRB at Itbs 13 -> 125 -> 125000 < 232000 -> throughput = 125000 bytes/sec
   // after the patch enforcing min 3 PRBs per UE:
   // 12 users -> 3 PRB at Itbs 13 -> 93  bytes * 8/12 UE/TTI  -> 62000 < 232000 -> throughput = 62000  bytes/sec
-  AddTestCase (new LenaTdTbfqFfMacSchedulerTestCase1 (1,0,4800,232000,232000,200,1,errorModel), TestCase::EXTENSIVE);
-  AddTestCase (new LenaTdTbfqFfMacSchedulerTestCase1 (3,0,4800,232000,232000,200,1,errorModel), TestCase::EXTENSIVE);
-  AddTestCase (new LenaTdTbfqFfMacSchedulerTestCase1 (6,0,4800,230500,125000,200,1,errorModel), TestCase::EXTENSIVE);
-  //AddTestCase (new LenaTdTbfqFfMacSchedulerTestCase1 (12,0,4800,115250,62000,200,1,errorModel)); // simulation time = 1.5, otherwise, ul test will fail
+  AddTestCase (new LenaTdTbfqFfMacSchedulerTestCase1 (1,4800,232000,232000,200,1,errorModel), TestCase::EXTENSIVE);
+  AddTestCase (new LenaTdTbfqFfMacSchedulerTestCase1 (3,4800,232000,232000,200,1,errorModel), TestCase::EXTENSIVE);
+  AddTestCase (new LenaTdTbfqFfMacSchedulerTestCase1 (6,4800,230500,125000,200,1,errorModel), TestCase::EXTENSIVE);
+  //AddTestCase (new LenaTdTbfqFfMacSchedulerTestCase1 (12,4800,115250,62000,200,1,errorModel)); // simulation time = 1.5, otherwise, ul test will fail
 
   // DOWNLINK - DISTANCE 6000 -> MCS 20 -> Itbs 18 (from table 7.1.7.2.1-1 of 36.213)
   // Traffic info
@@ -132,10 +132,10 @@ LenaTestTdTbfqFfMacSchedulerSuite::LenaTestTdTbfqFfMacSchedulerSuite ()
   // 6 users -> 4 PRB at Itbs 11 -> 97 -> 97000 < 232000 -> throughput = 97000 bytes/sec
   // after the patch enforcing min 3 PRBs per UE:
   // 12 users -> 3 PRB at Itbs 11 -> 73 bytes * 8/12 UE/TTI -> 48667 < 232000 -> throughput = 48667 bytes/sec
-  AddTestCase (new LenaTdTbfqFfMacSchedulerTestCase1 (1,0,6000,232000,232000,200,1,errorModel), TestCase::EXTENSIVE);
-  AddTestCase (new LenaTdTbfqFfMacSchedulerTestCase1 (3,0,6000,232000,201000,200,1,errorModel), TestCase::EXTENSIVE);
-  AddTestCase (new LenaTdTbfqFfMacSchedulerTestCase1 (6,0,6000,198500,97000,200,1,errorModel), TestCase::EXTENSIVE);
-  //AddTestCase (new LenaTdTbfqFfMacSchedulerTestCase1 (12,0,6000,99250,48667,200,1, errorModel)); // simulation time = 1.5, otherwise, ul test will fail
+  AddTestCase (new LenaTdTbfqFfMacSchedulerTestCase1 (1,6000,232000,232000,200,1,errorModel), TestCase::EXTENSIVE);
+  AddTestCase (new LenaTdTbfqFfMacSchedulerTestCase1 (3,6000,232000,201000,200,1,errorModel), TestCase::EXTENSIVE);
+  AddTestCase (new LenaTdTbfqFfMacSchedulerTestCase1 (6,6000,198500,97000,200,1,errorModel), TestCase::EXTENSIVE);
+  //AddTestCase (new LenaTdTbfqFfMacSchedulerTestCase1 (12,6000,99250,48667,200,1, errorModel)); // simulation time = 1.5, otherwise, ul test will fail
 
   // DOWNLINK - DISTANCE 10000 -> MCS 14 -> Itbs 13 (from table 7.1.7.2.1-1 of 36.213)
   // Traffic info
@@ -152,10 +152,10 @@ LenaTestTdTbfqFfMacSchedulerSuite::LenaTestTdTbfqFfMacSchedulerSuite ()
   // 6 users -> 4 PRB at Itbs 8 -> 67 -> 67000 < 232000 -> throughput = 67000 bytes/sec
   // after the patch enforcing min 3 PRBs per UE:
   // 12 users -> 3 PRB at Itbs 8 -> 49 bytes * 8/12 UE/TTI -> 32667 < 232000 -> throughput = 32667  bytes/sec
-  AddTestCase (new LenaTdTbfqFfMacSchedulerTestCase1 (1,0,10000,232000,232000,200,1,errorModel), TestCase::EXTENSIVE);
-  AddTestCase (new LenaTdTbfqFfMacSchedulerTestCase1 (3,0,10000,232000,137000,200,1,errorModel), TestCase::EXTENSIVE);
-  AddTestCase (new LenaTdTbfqFfMacSchedulerTestCase1 (6,0,10000,129166,67000,200,1,errorModel), TestCase::EXTENSIVE);
-  //AddTestCase (new LenaTdTbfqFfMacSchedulerTestCase1 (12,0,10000,64583,32667,200,1,errorModel));// simulation time = 1.5, otherwise, ul test will fail
+  AddTestCase (new LenaTdTbfqFfMacSchedulerTestCase1 (1,10000,232000,232000,200,1,errorModel), TestCase::EXTENSIVE);
+  AddTestCase (new LenaTdTbfqFfMacSchedulerTestCase1 (3,10000,232000,137000,200,1,errorModel), TestCase::EXTENSIVE);
+  AddTestCase (new LenaTdTbfqFfMacSchedulerTestCase1 (6,10000,129166,67000,200,1,errorModel), TestCase::EXTENSIVE);
+  //AddTestCase (new LenaTdTbfqFfMacSchedulerTestCase1 (12,10000,64583,32667,200,1,errorModel));// simulation time = 1.5, otherwise, ul test will fail
 
   // Test Case 2: homogeneous flow test in TDTBFQ (different distance)
   // Traffic1 info
@@ -237,10 +237,9 @@ LenaTdTbfqFfMacSchedulerTestCase1::BuildNameString (uint16_t nUser, uint16_t dis
 }
 
 
-LenaTdTbfqFfMacSchedulerTestCase1::LenaTdTbfqFfMacSchedulerTestCase1 (uint16_t nUser, uint16_t nLc, uint16_t dist, double thrRefDl, double thrRefUl, uint16_t packetSize, uint16_t interval,bool errorModelEnabled)
+LenaTdTbfqFfMacSchedulerTestCase1::LenaTdTbfqFfMacSchedulerTestCase1 (uint16_t nUser, uint16_t dist, double thrRefDl, double thrRefUl, uint16_t packetSize, uint16_t interval,bool errorModelEnabled)
   : TestCase (BuildNameString (nUser, dist)),
     m_nUser (nUser),
-    m_nLc (nLc),
     m_dist (dist),
     m_packetSize (packetSize),
     m_interval (interval),

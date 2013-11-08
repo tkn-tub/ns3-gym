@@ -258,9 +258,31 @@ MibLteControlMessage::GetMib () const
 }
 
 
+// ----------------------------------------------------------------------------------------------------------
+
+
+
+Sib1LteControlMessage::Sib1LteControlMessage (void)
+{
+  SetMessageType (LteControlMessage::SIB1);
+}
+
+
+void
+Sib1LteControlMessage::SetSib1 (LteRrcSap::SystemInformationBlockType1 sib1)
+{
+  m_sib1 = sib1;
+}
+
+LteRrcSap::SystemInformationBlockType1
+Sib1LteControlMessage::GetSib1 () const
+{
+  return m_sib1;
+}
 
 
 // ---------------------------------------------------------------------------
+
 
 
 DlHarqFeedbackLteControlMessage::DlHarqFeedbackLteControlMessage (void)

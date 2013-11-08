@@ -35,14 +35,14 @@ namespace ns3 {
 
 
 
-const char* g_ueNasStateName[EpcUeNas::NUM_STATES] = 
-  {
-      "OFF",
-      "ATTACHING",
-      "IDLE_REGISTERED",
-      "CONNECTING_TO_EPC",
-      "ACTIVE "    
-  };
+const char* g_ueNasStateName[EpcUeNas::NUM_STATES] =
+{
+  "OFF",
+  "ATTACHING",
+  "IDLE_REGISTERED",
+  "CONNECTING_TO_EPC",
+  "ACTIVE"
+};
 
 std::string ToString (EpcUeNas::State s)
 {
@@ -56,6 +56,7 @@ NS_OBJECT_ENSURE_REGISTERED (EpcUeNas);
 
 EpcUeNas::EpcUeNas ()
   : m_state (OFF),
+    m_csgId (0),
     m_asSapProvider (0),
     m_bidCounter (0)
 {
@@ -73,7 +74,7 @@ void
 EpcUeNas::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  delete m_asSapUser;  
+  delete m_asSapUser;
 }
 
 TypeId
@@ -92,41 +93,76 @@ EpcUeNas::GetTypeId (void)
 void 
 EpcUeNas::SetDevice (Ptr<NetDevice> dev)
 {
+  NS_LOG_FUNCTION (this << dev);
   m_device = dev;
 }
 
 void 
 EpcUeNas::SetImsi (uint64_t imsi)
 {
+  NS_LOG_FUNCTION (this << imsi);
   m_imsi = imsi;
+}
+
+void
+EpcUeNas::SetCsgId (uint32_t csgId)
+{
+  NS_LOG_FUNCTION (this << csgId);
+  m_csgId = csgId;
+  m_asSapProvider->SetCsgWhiteList (csgId);
+}
+
+uint32_t
+EpcUeNas::GetCsgId () const
+{
+  NS_LOG_FUNCTION (this);
+  return m_csgId;
 }
 
 void
 EpcUeNas::SetAsSapProvider (LteAsSapProvider* s)
 {
+  NS_LOG_FUNCTION (this << s);
   m_asSapProvider = s;
 }
 
-LteAsSapUser* 
+LteAsSapUser*
 EpcUeNas::GetAsSapUser ()
 {
+  NS_LOG_FUNCTION (this);
   return m_asSapUser;
 }
 
-void 
+void
 EpcUeNas::SetForwardUpCallback (Callback <void, Ptr<Packet> > cb)
 {
+  NS_LOG_FUNCTION (this);
   m_forwardUpCallback = cb;
 }
 
+void
+EpcUeNas::StartCellSelection (uint16_t dlEarfcn)
+{
+  NS_LOG_FUNCTION (this << dlEarfcn);
+  m_asSapProvider->StartCellSelection (dlEarfcn);
+}
+
 void 
-EpcUeNas::Connect (uint16_t cellId, uint16_t earfcn)
+EpcUeNas::Connect ()
 {
   NS_LOG_FUNCTION (this);
 
-  // since RRC Idle Mode cell selection is not supported yet, we
+  // tell RRC to go into connected mode
+  m_asSapProvider->Connect ();
+}
+
+void
+EpcUeNas::Connect (uint16_t cellId, uint16_t dlEarfcn)
+{
+  NS_LOG_FUNCTION (this << cellId << dlEarfcn);
+
   // force the UE RRC to be camped on a specific eNB
-  m_asSapProvider->ForceCampedOnEnb (cellId, earfcn);
+  m_asSapProvider->ForceCampedOnEnb (cellId, dlEarfcn);
 
   // tell RRC to go into connected mode
   m_asSapProvider->Connect ();
@@ -165,7 +201,7 @@ bool
 EpcUeNas::Send (Ptr<Packet> packet)
 {
   NS_LOG_FUNCTION (this << packet);
-  
+
   switch (m_state)
     {
     case ACTIVE:
@@ -181,15 +217,15 @@ EpcUeNas::Send (Ptr<Packet> packet)
           {
             m_asSapProvider->SendData (packet, bid); 
             return true;
-        }
+          }
       }
       break;
 
-    default:      
+    default:
       NS_LOG_WARN (this << " NAS OFF, discarding packet");
       return false;
       break;
-    }        
+    }
 }
 
 void 
@@ -203,13 +239,20 @@ EpcUeNas::DoNotifyConnectionSuccessful ()
 void 
 EpcUeNas::DoNotifyConnectionFailed ()
 {
-  NS_FATAL_ERROR ("connection failed, it should not happen with the current model");
+  NS_LOG_FUNCTION (this);
+
+  SwitchToState (OFF);
+  /**
+   * \todo Currently not implemented, action by NAS and upper layers after UE
+   *       fails to switch to CONNNECTED mode. Maybe a retry, or just stop here
+   *       and fire a trace to let user know.
+   */
 }
 
 void
 EpcUeNas::DoRecvData (Ptr<Packet> packet)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << packet);
   m_forwardUpCallback (packet);
 }
 
@@ -229,10 +272,17 @@ EpcUeNas::DoActivateEpsBearer (EpsBearer bearer, Ptr<EpcTft> tft)
   m_tftClassifier.Add (tft, bid);
 }
 
+EpcUeNas::State
+EpcUeNas::GetState () const
+{
+  NS_LOG_FUNCTION (this);
+  return m_state;
+}
+
 void 
 EpcUeNas::SwitchToState (State newState)
 {
-  NS_LOG_FUNCTION (this << newState);
+  NS_LOG_FUNCTION (this << ToString (newState));
   State oldState = m_state;
   m_state = newState;
   NS_LOG_INFO ("IMSI " << m_imsi << " NAS " << ToString (oldState) << " --> " << ToString (newState));

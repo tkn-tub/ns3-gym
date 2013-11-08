@@ -200,6 +200,18 @@ public:
     return tid;
   }
 
+  AttributeObjectTest (void)
+  {
+    NS_UNUSED (m_boolTest);
+    NS_UNUSED (m_int16);
+    NS_UNUSED (m_int16WithBounds);
+    NS_UNUSED (m_uint8);
+    NS_UNUSED (m_float);
+    NS_UNUSED (m_enum);
+  }
+
+  virtual ~AttributeObjectTest (void) {};
+
   void AddToVector1 (void) { m_vector1.push_back (CreateObject<Derived> ()); }
   void AddToVector2 (void) { m_vector2.push_back (CreateObject<Derived> ()); }
 

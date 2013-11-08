@@ -33,7 +33,7 @@ class LteEnbNetDevice;
 /**
  * This class implements the Access Stratum (AS) Service Access Point
  * (SAP), i.e., the interface between the EpcUeNas and the LteUeRrc.
- * In particular, this class implements the  
+ * In particular, this class implements the
  * Provider part of the SAP, i.e., the methods exported by the
  * LteUeRrc and called by the EpcUeNas.
  * 
@@ -43,24 +43,42 @@ class LteAsSapProvider
 public:
   virtual ~LteAsSapProvider ();
 
-  /** 
-   * Force the RRC to stay camped on a certain eNB
-   * 
-   * \param enbDevice the eNB device (wild hack, might go away in
-   * future versions)
-   * \param cellId the Cell ID identifying the eNB
+  /**
+   * \brief Set the selected Closed Subscriber Group subscription list to be
+   *        used for cell selection.
+   *
+   * \param csgId identity of the subscribed CSG
    */
-  virtual void ForceCampedOnEnb (uint16_t cellId, uint16_t earfcn) = 0;
-  
+  virtual void SetCsgWhiteList (uint32_t csgId) = 0;
+
+  /**
+   * \brief Initiate Idle mode cell selection procedure.
+   *
+   * \param dlEarfcn the downlink carrier frequency (EARFCN)
+   */
+  virtual void StartCellSelection (uint16_t dlEarfcn) = 0;
+
   /** 
-   * Tell the RRC to go into Connected Mode
-   * 
+   * \brief Force the RRC entity to stay camped on a certain eNodeB.
+   *
+   * \param cellId the cell ID identifying the eNodeB
+   * \param dlEarfcn the downlink carrier frequency (EARFCN)
+   */
+  virtual void ForceCampedOnEnb (uint16_t cellId, uint16_t dlEarfcn) = 0;
+
+  /**
+   * \brief Tell the RRC entity to enter Connected mode.
+   *
+   * If this function is called when the UE is in a situation where connecting
+   * is not possible (e.g. before the simulation begin), then the UE will
+   * attempt to connect at the earliest possible time (e.g. after it camps to a
+   * suitable cell).
    */
   virtual void Connect (void) = 0;
 
   /** 
-   * Send a data packet
-   * 
+   * \brief Send a data packet.
+   *
    * \param packet the packet
    * \param bid the EPS bearer ID
    */
@@ -68,13 +86,13 @@ public:
 
 
   /** 
-   * Tell the RRC to release the connection
-   * 
+   * \brief Tell the RRC entity to release the connection.
+   *
    */
   virtual void Disconnect () = 0;
 
 };
-  
+
 
 /**
  * This class implements the Access Stratum (AS) Service Access Point
@@ -88,15 +106,15 @@ class LteAsSapUser
 {
 public:
   virtual ~LteAsSapUser ();
-  
+
   /** 
-   * Notify the NAS that RRC Connection Establishment was successful
+   * \brief Notify the NAS that RRC Connection Establishment was successful.
    * 
    */
   virtual void NotifyConnectionSuccessful () = 0;
 
   /** 
-   * Notify the NAS that RRC Connection Establishment failed
+   * \brief Notify the NAS that RRC Connection Establishment failed.
    * 
    */
   virtual void NotifyConnectionFailed () = 0;
@@ -114,9 +132,9 @@ public:
    * \param packet the packet
    */
   virtual void RecvData (Ptr<Packet> packet) = 0;
-  
+
 };
-  
+
 
 
 
@@ -132,8 +150,10 @@ public:
   MemberLteAsSapProvider (C* owner);
 
   // inherited from LteAsSapProvider
+  virtual void SetCsgWhiteList (uint32_t csgId);
+  virtual void StartCellSelection (uint16_t dlEarfcn);
+  virtual void ForceCampedOnEnb (uint16_t cellId, uint16_t dlEarfcn);
   virtual void Connect (void);
-  virtual void ForceCampedOnEnb (uint16_t cellId, uint16_t earfcn);
   virtual void SendData (Ptr<Packet> packet, uint8_t bid);
   virtual void Disconnect ();
 
@@ -154,12 +174,25 @@ MemberLteAsSapProvider<C>::MemberLteAsSapProvider ()
 }
 
 template <class C>
-void 
-MemberLteAsSapProvider<C>::ForceCampedOnEnb (uint16_t cellId, uint16_t earfcn)
+void
+MemberLteAsSapProvider<C>::SetCsgWhiteList (uint32_t csgId)
 {
-  m_owner->DoForceCampedOnEnb (cellId, earfcn);
+  m_owner->DoSetCsgWhiteList (csgId);
 }
 
+template <class C>
+void
+MemberLteAsSapProvider<C>::StartCellSelection (uint16_t dlEarfcn)
+{
+  m_owner->DoStartCellSelection (dlEarfcn);
+}
+
+template <class C>
+void
+MemberLteAsSapProvider<C>::ForceCampedOnEnb (uint16_t cellId, uint16_t dlEarfcn)
+{
+  m_owner->DoForceCampedOnEnb (cellId, dlEarfcn);
+}
 
 template <class C>
 void 

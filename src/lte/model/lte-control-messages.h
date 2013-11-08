@@ -22,8 +22,10 @@
 #ifndef LTE_CONTROL_MESSAGES_H
 #define LTE_CONTROL_MESSAGES_H
 
-#include "ns3/ptr.h"
-#include "ns3/simple-ref-count.h"
+#include <ns3/ptr.h>
+#include <ns3/simple-ref-count.h>
+#include <ns3/ff-mac-common.h>
+#include <ns3/lte-rrc-sap.h>
 #include <list>
 
 namespace ns3 {
@@ -58,6 +60,7 @@ public:
     RACH_PREAMBLE, // Random Access Preamble
     RAR, // Random Access Response
     MIB, // Master Information Block
+    SIB1, // System Information Block Type 1
   };
 
   LteControlMessage (void);
@@ -77,23 +80,9 @@ public:
 private:
   MessageType m_type;
 };
-} // namespace ns3
-
-#endif /* LTE_CONTROL_MESSAGES_H */
-
-
 
 
 // -----------------------------------------------------------------------
-
-
-#ifndef DL_DCI_LTE_CONTROL_MESSAGES_H
-#define DL_DCI_LTE_CONTROL_MESSAGES_H
-
-#include <ns3/object.h>
-#include <ns3/ff-mac-common.h>
-
-namespace ns3 {
 
 /**
  * \ingroup lte
@@ -118,25 +107,12 @@ public:
   */
   DlDciListElement_s GetDci (void);
 
-
 private:
   DlDciListElement_s m_dci;
 };
-} // namespace ns3
-
-#endif /* DL_DCI_LTE_CONTROL_MESSAGES_H */
 
 
 // ---------------------------------------------------------------------------
-
-
-#ifndef UL_DCI_LTE_CONTROL_MESSAGES_H
-#define UL_DCI_LTE_CONTROL_MESSAGES_H
-
-#include <ns3/object.h>
-#include <ns3/ff-mac-common.h>
-
-namespace ns3 {
 
 /**
  * \ingroup lte
@@ -161,29 +137,12 @@ public:
   */
   UlDciListElement_s GetDci (void);
 
-
 private:
   UlDciListElement_s m_dci;
 };
-} // namespace ns3
-
-#endif /* UL_DCI_LTE_CONTROL_MESSAGES_H */
-
 
 
 // ---------------------------------------------------------------------------
-
-
-
-#ifndef DLCQI_LTE_CONTROL_MESSAGES_H
-#define DLCQI_LTE_CONTROL_MESSAGES_H
-
-#include <ns3/object.h>
-#include <ns3/ff-mac-common.h>
-
-namespace ns3 {
-
-class LteNetDevice;
 
 /**
  * \ingroup lte
@@ -208,26 +167,12 @@ public:
   */
   CqiListElement_s GetDlCqi (void);
 
-
 private:
   CqiListElement_s m_dlCqi;
 };
-} // namespace ns3
-
-#endif /* DLCQI_LTE_CONTROL_MESSAGES_H */
 
 
 // ---------------------------------------------------------------------------
-
-#ifndef BSR_LTE_CONTROL_MESSAGES_H
-#define BSR_LTE_CONTROL_MESSAGES_H
-
-#include <ns3/object.h>
-#include <ns3/ff-mac-common.h>
-
-namespace ns3 {
-
-class LteNetDevice;
 
 /**
  * \ingroup lte
@@ -252,27 +197,13 @@ public:
   */
   MacCeListElement_s GetBsr (void);
 
-
 private:
   MacCeListElement_s m_bsr;
 
-
 };
-
-} // namespace ns3
-
-#endif /* BSR_LTE_CONTROL_MESSAGES_H */
 
 
 // ---------------------------------------------------------------------------
-
-#ifndef DL_HARQ_LTE_CONTROL_MESSAGES_H
-#define DL_HARQ_LTE_CONTROL_MESSAGES_H
-
-#include <ns3/object.h>
-#include <ns3/ff-mac-common.h>
-
-namespace ns3 {
 
 /**
  * \ingroup lte
@@ -297,26 +228,13 @@ public:
   */
   DlInfoListElement_s GetDlHarqFeedback (void);
 
-
 private:
   DlInfoListElement_s m_dlInfoListElement;
 
-
 };
-} // namespace ns3
-
-#endif /* DL_HARQ_LTE_CONTROL_MESSAGES_H */
 
 
-#ifndef RACH_PREAMBLE_LTE_CONTROL_MESSAGES_H
-#define RACH_PREAMBLE_LTE_CONTROL_MESSAGES_H
-
-#include <ns3/object.h>
-#include <ns3/ff-mac-common.h>
-
-namespace ns3 {
-
-class LteNetDevice;
+// ---------------------------------------------------------------------------
 
 /**
  * \ingroup lte
@@ -327,7 +245,6 @@ class RachPreambleLteControlMessage : public LteControlMessage
 {
 public:
   RachPreambleLteControlMessage (void);
-
   
   /** 
    * Set the Random Access Preamble Identifier (RAPID), see 3GPP TS 36.321 6.2.2
@@ -343,26 +260,12 @@ public:
   uint32_t GetRapId () const;
 
 private:
-  
   uint32_t m_rapId;
-
 
 };
 
-} // namespace ns3
 
-#endif  // RACH_PREAMBLE_LTE_CONTROL_MESSAGES_H
-
-
-#ifndef RAR_LTE_CONTROL_MESSAGES_H
-#define RAR_LTE_CONTROL_MESSAGES_H
-
-#include <ns3/object.h>
-#include <ns3/ff-mac-common.h>
-
-namespace ns3 {
-
-class LteNetDevice;
+// ---------------------------------------------------------------------------
 
 /**
  * \ingroup lte
@@ -414,54 +317,92 @@ public:
    * \return a const iterator to the end of the RAR list
    */
   std::list<Rar>::const_iterator RarListEnd () const;
-  
-  
+
 private:
-  
   std::list<Rar> m_rarList;
   uint16_t m_raRnti;
 
 };
 
-} // namespace ns3
 
-#endif  // RAR_LTE_CONTROL_MESSAGES_H
-
-
-
-
-#ifndef MIB_LTE_CONTROL_MESSAGES_H
-#define MIB_LTE_CONTROL_MESSAGES_H
-
-#include <ns3/object.h>
-#include <ns3/ff-mac-common.h>
-#include <ns3/lte-rrc-sap.h>
-
-namespace ns3 {
-
-class LteNetDevice;
+// ---------------------------------------------------------------------------
 
 /**
  * \ingroup lte
+ * \brief Abstract model for broadcasting the Master Information Block (MIB)
+ *        within the control channel (BCCH).
  *
- * abstract model for broadcasting the Master Information Block
+ * MIB is transmitted by eNodeB RRC and received by UE RRC at every radio frame,
+ * i.e., every 10 milliseconds.
+ *
+ * \sa LteEnbRrc::ConfigureCell, LteEnbPhy::StartFrame,
+ *     LteUeRrc::DoRecvMasterInformationBlock
  */
 class MibLteControlMessage : public LteControlMessage
 {
 public:
-
+  /**
+   * \brief Create a new instance of MIB control message.
+   */
   MibLteControlMessage (void);
 
+  /**
+   * \brief Replace the MIB content of this control message.
+   * \param mib the desired MIB content
+   */
   void SetMib (LteRrcSap::MasterInformationBlock mib);
 
+  /**
+   * \brief Retrieve the MIB content from this control message.
+   * \return the current MIB content that this control message holds
+   */
   LteRrcSap::MasterInformationBlock GetMib () const;
-  
+
 private:
-  
   LteRrcSap::MasterInformationBlock m_mib;
 
-};
+}; // end of class MibLteControlMessage
+
+
+// ---------------------------------------------------------------------------
+
+/**
+ * \ingroup lte
+ * \brief Abstract model for broadcasting the System Information Block Type 1
+ *        (SIB1) within the control channel (BCCH).
+ *
+ * SIB1 is transmitted by eNodeB RRC and received by UE RRC at the 6th subframe
+ * of every odd-numbered radio frame, i.e., every 20 milliseconds.
+ *
+ * \sa LteEnbRrc::SetSystemInformationBlockType1, LteEnbPhy::StartSubFrame,
+ *     LteUeRrc::DoRecvSystemInformationBlockType1
+ */
+class Sib1LteControlMessage : public LteControlMessage
+{
+public:
+  /**
+   * \brief Create a new instance of SIB1 control message.
+   */
+  Sib1LteControlMessage (void);
+
+  /**
+   * \brief Replace the SIB1 content of this control message.
+   * \param sib the desired SIB1 content
+   */
+  void SetSib1 (LteRrcSap::SystemInformationBlockType1 sib1);
+
+  /**
+   * \brief Retrieve the SIB1 content from this control message.
+   * \return the current SIB1 content that this control message holds
+   */
+  LteRrcSap::SystemInformationBlockType1 GetSib1 () const;
+
+private:
+  LteRrcSap::SystemInformationBlockType1 m_sib1;
+
+}; // end of class Sib1LteControlMessage
+
 
 } // namespace ns3
 
-#endif  // MIB_LTE_CONTROL_MESSAGES_H
+#endif  // LTE_CONTROL_MESSAGES_H

@@ -38,16 +38,20 @@ class LtePdcpSapProvider;
 class Packet;
 
 /**
- * Class holding definition common to all Ue/Enb SAP
- * Users/Providers. See 3GPP TS 36.331 for reference. 
+ * \ingroup lte
+ *
+ * \brief Class holding definition common to all UE/eNodeB SAP Users/Providers.
+ *
+ * See 3GPP TS 36.331 for reference.
+ *
  * Note that only those values that are (expected to be) used by the
  * ns-3 model are mentioned here. The naming of the variables that are
  * defined here is the same of 36.331, except for removal of "-" and
  * conversion to CamelCase or ALL_CAPS where needed in order to follow
- * the ns-3 coding style. Due to the 1-to-1 mapping with TS 36.331, 
+ * the ns-3 coding style. Due to the 1-to-1 mapping with TS 36.331,
  * detailed doxygen documentation is omitted, so please refer to
  * 36.331 for the meaning of these data structures / fields.
- * 
+ *
  */
 class LteRrcSap
 {
@@ -71,6 +75,12 @@ public:
     uint32_t cellIdentity;
     bool csgIndication;
     uint32_t csgIdentity;
+  };
+
+  struct CellSelectionInfo
+  {
+    int8_t qRxLevMin; ///< INTEGER (-70..-22), actual value = IE value * 2 [dBm].
+    int8_t qQualMin; ///< INTEGER (-34..-3), actual value = IE value [dB].
   };
 
   struct FreqInfo
@@ -225,16 +235,26 @@ public:
     uint8_t cellForWhichToReportCGI;
   };
 
+  /**
+   * \brief Threshold for event evaluation.
+   *
+   * For RSRP-based threshold, the actual value is (value - 140) dBm. While for
+   * RSRQ-based threshold, the actual value is (value - 40) / 2 dB. This is in
+   * accordance with section 9.1.4 and 9.1.7 of 3GPP TS 36.133.
+   *
+   * \sa ns3::EutranMeasurementMapping
+   */
   struct ThresholdEutra
   {
     enum
     {
-      THRESHOLD_RSRP,
-      THRESHOLD_RSRQ
+      THRESHOLD_RSRP, ///< RSRP is used for the threshold.
+      THRESHOLD_RSRQ ///< RSRQ is used for the threshold.
     } choice;
-    uint8_t range;
+    uint8_t range; ///< Value range used in RSRP/RSRQ threshold.
   };
 
+  /// Specifies criteria for triggering of an E-UTRA measurement reporting event.
   struct ReportConfigEutra
   {
     enum
@@ -245,34 +265,50 @@ public:
 
     enum
     {
-      EVENT_A1,
-      EVENT_A2,
-      EVENT_A3,
-      EVENT_A4,
-      EVENT_A5
-    } eventId;
-    ThresholdEutra threshold1; // used for A1, A2, A4, A5
-    ThresholdEutra threshold2; // used for A5
-    bool reportOnLeave; // used for A3
-    int8_t a3Offset; // used for A3
+      EVENT_A1, ///< Event A1: Serving becomes better than absolute threshold.
+      EVENT_A2, ///< Event A2: Serving becomes worse than absolute threshold.
+      EVENT_A3, ///< Event A3: Neighbour becomes amount of offset better than PCell.
+      EVENT_A4, ///< Event A4: Neighbour becomes better than absolute threshold.
+      EVENT_A5 ///< Event A5: PCell becomes worse than absolute `threshold1` AND Neighbour becomes better than another absolute `threshold2`.
+
+    } eventId; ///< Choice of E-UTRA event triggered reporting criteria.
+
+    ThresholdEutra threshold1; ///< Threshold for event A1, A2, A4, and A5.
+    ThresholdEutra threshold2; ///< Threshold for event A5.
+
+    /// Indicates whether or not the UE shall initiate the measurement reporting procedure when the leaving condition is met for a cell in `cellsTriggeredList`, as specified in 5.5.4.1 of 3GPP TS 36.331.
+    bool reportOnLeave;
+
+    /// Offset value for Event A3. An integer between -30 and 30. The actual value is (value * 0.5) dB.
+    int8_t a3Offset;
+
+    /// Parameter used within the entry and leave condition of an event triggered reporting condition. The actual value is (value * 0.5) dB.
     uint8_t hysteresis;
+
+    /// Time during which specific criteria for the event needs to be met in order to trigger a measurement report.
     uint16_t timeToTrigger;
+
     enum
     {
       REPORT_STRONGEST_CELLS,
       REPORT_CGI
     } purpose;
+
     enum
     {
-      RSRP,
-      RSRQ
-    } triggerQuantity;
+      RSRP, ///< Reference Signal Received Power
+      RSRQ ///< Reference Signal Received Quality
+    } triggerQuantity; ///< The quantities used to evaluate the triggering condition for the event, see 3GPP TS 36.214.
+
     enum
     {
       SAME_AS_TRIGGER_QUANTITY,
-      BOTH
-    } reportQuantity;
+      BOTH ///< Both the RSRP and RSRQ quantities are to be included in the measurement report.
+    } reportQuantity; ///< The quantities to be included in the measurement report, always assumed to be BOTH.
+
+    /// Maximum number of cells, excluding the serving cell, to be included in the measurement report.
     uint8_t maxReportCells;
+
     enum
     {
       MS120,
@@ -291,9 +327,14 @@ public:
       SPARE3,
       SPARE2,
       SPARE1
-    } reportInterval;
+    } reportInterval; ///< Indicates the interval between periodical reports.
+
+    /// Number of measurement reports applicable, always assumed to be infinite.
     uint8_t reportAmount;
-  };
+
+    ReportConfigEutra ();
+
+  }; // end of struct ReportConfigEutra
 
   struct MeasObjectToAddMod
   {
@@ -424,6 +465,7 @@ public:
   struct SystemInformationBlockType1
   {
     CellAccessRelatedInfo cellAccessRelatedInfo;
+    CellSelectionInfo cellSelectionInfo;
   };
 
   struct SystemInformationBlockType2
@@ -598,8 +640,6 @@ public:
   };
 
   virtual void CompleteSetup (CompleteSetupParameters params) = 0;
-  virtual void RecvMasterInformationBlock (MasterInformationBlock msg) = 0;
-  virtual void RecvSystemInformationBlockType1 (SystemInformationBlockType1 msg) = 0;
   virtual void RecvSystemInformation (SystemInformation msg) = 0;
   virtual void RecvRrcConnectionSetup (RrcConnectionSetup msg) = 0;
   virtual void RecvRrcConnectionReconfiguration (RrcConnectionReconfiguration msg) = 0;
@@ -628,7 +668,6 @@ public:
 
   virtual void SetupUe (uint16_t rnti, SetupUeParameters params) = 0;
   virtual void RemoveUe (uint16_t rnti) = 0;
-  virtual void SendSystemInformationBlockType1 (SystemInformationBlockType1 msg) = 0;
   virtual void SendSystemInformation (SystemInformation msg) = 0;
   virtual void SendRrcConnectionSetup (uint16_t rnti, RrcConnectionSetup msg) = 0;
   virtual void SendRrcConnectionReconfiguration (uint16_t rnti, RrcConnectionReconfiguration msg) = 0;
@@ -777,8 +816,6 @@ public:
 
   // methods inherited from LteUeRrcSapProvider go here
   virtual void CompleteSetup (CompleteSetupParameters params);
-  virtual void RecvMasterInformationBlock (MasterInformationBlock msg);
-  virtual void RecvSystemInformationBlockType1 (SystemInformationBlockType1 msg);
   virtual void RecvSystemInformation (SystemInformation msg);
   virtual void RecvRrcConnectionSetup (RrcConnectionSetup msg);
   virtual void RecvRrcConnectionReconfiguration (RrcConnectionReconfiguration msg);
@@ -808,20 +845,6 @@ void
 MemberLteUeRrcSapProvider<C>::CompleteSetup (CompleteSetupParameters params)
 {
   m_owner->DoCompleteSetup (params);
-}
-
-template <class C>
-void
-MemberLteUeRrcSapProvider<C>::RecvMasterInformationBlock (MasterInformationBlock msg)
-{
-  Simulator::ScheduleNow (&C::DoRecvMasterInformationBlock, m_owner, msg);
-}
-
-template <class C>
-void
-MemberLteUeRrcSapProvider<C>::RecvSystemInformationBlockType1 (SystemInformationBlockType1 msg)
-{
-  Simulator::ScheduleNow (&C::DoRecvSystemInformationBlockType1, m_owner, msg);
 }
 
 template <class C>
@@ -889,8 +912,6 @@ public:
 
   virtual void SetupUe (uint16_t rnti, SetupUeParameters params);
   virtual void RemoveUe (uint16_t rnti);
-  virtual void SendMasterInformationBlock (MasterInformationBlock msg);
-  virtual void SendSystemInformationBlockType1 (SystemInformationBlockType1 msg);
   virtual void SendSystemInformation (SystemInformation msg);
   virtual void SendRrcConnectionSetup (uint16_t rnti, RrcConnectionSetup msg);
   virtual void SendRrcConnectionReconfiguration (uint16_t rnti, RrcConnectionReconfiguration msg);
@@ -931,20 +952,6 @@ void
 MemberLteEnbRrcSapUser<C>::RemoveUe (uint16_t rnti)
 {
   m_owner->DoRemoveUe (rnti);
-}
-
-template <class C>
-void
-MemberLteEnbRrcSapUser<C>::SendMasterInformationBlock (MasterInformationBlock msg)
-{
-  m_owner->DoSendMasterInformationBlock (msg);
-}
-
-template <class C>
-void
-MemberLteEnbRrcSapUser<C>::SendSystemInformationBlockType1 (SystemInformationBlockType1 msg)
-{
-  m_owner->DoSendSystemInformationBlockType1 (msg);
 }
 
 template <class C>

@@ -29,91 +29,89 @@
 
 using namespace ns3;
 
+NS_LOG_COMPONENT_DEFINE ("LenaX2HandoverExample");
 
-
-void 
-NotifyConnectionEstablishedUe (std::string context, 
-                               uint64_t imsi, 
-                               uint16_t cellid, 
+void
+NotifyConnectionEstablishedUe (std::string context,
+                               uint64_t imsi,
+                               uint16_t cellid,
                                uint16_t rnti)
 {
-  std::cout << context 
-            << " UE IMSI " << imsi 
-            << ": connected to CellId " << cellid 
-            << " with RNTI " << rnti 
+  std::cout << Simulator::Now ().GetSeconds () << " " << context
+            << " UE IMSI " << imsi
+            << ": connected to CellId " << cellid
+            << " with RNTI " << rnti
             << std::endl;
 }
 
-void 
-NotifyHandoverStartUe (std::string context, 
-                       uint64_t imsi, 
-                       uint16_t cellid, 
-                       uint16_t rnti, 
+void
+NotifyHandoverStartUe (std::string context,
+                       uint64_t imsi,
+                       uint16_t cellid,
+                       uint16_t rnti,
                        uint16_t targetCellId)
 {
-  std::cout << context 
-            << " UE IMSI " << imsi 
-            << ": previously connected to CellId " << cellid 
-            << " with RNTI " << rnti 
-            << ", doing handover to CellId " << targetCellId 
+  std::cout << Simulator::Now ().GetSeconds () << " " << context
+            << " UE IMSI " << imsi
+            << ": previously connected to CellId " << cellid
+            << " with RNTI " << rnti
+            << ", doing handover to CellId " << targetCellId
             << std::endl;
 }
 
-void 
-NotifyHandoverEndOkUe (std::string context, 
-                       uint64_t imsi, 
-                       uint16_t cellid, 
+void
+NotifyHandoverEndOkUe (std::string context,
+                       uint64_t imsi,
+                       uint16_t cellid,
                        uint16_t rnti)
 {
-  std::cout << context 
-            << " UE IMSI " << imsi 
-            << ": successful handover to CellId " << cellid 
-            << " with RNTI " << rnti 
+  std::cout << Simulator::Now ().GetSeconds () << " " << context
+            << " UE IMSI " << imsi
+            << ": successful handover to CellId " << cellid
+            << " with RNTI " << rnti
             << std::endl;
 }
 
-void 
-NotifyConnectionEstablishedEnb (std::string context, 
-                                uint64_t imsi, 
-                                uint16_t cellid, 
+void
+NotifyConnectionEstablishedEnb (std::string context,
+                                uint64_t imsi,
+                                uint16_t cellid,
                                 uint16_t rnti)
 {
-  std::cout << context 
-            << " eNB CellId " << cellid 
-            << ": successful connection of UE with IMSI " << imsi 
-            << " RNTI " << rnti 
+  std::cout << Simulator::Now ().GetSeconds () << " " << context
+            << " eNB CellId " << cellid
+            << ": successful connection of UE with IMSI " << imsi
+            << " RNTI " << rnti
             << std::endl;
 }
 
-void 
-NotifyHandoverStartEnb (std::string context, 
-                        uint64_t imsi, 
-                        uint16_t cellid, 
-                        uint16_t rnti, 
+void
+NotifyHandoverStartEnb (std::string context,
+                        uint64_t imsi,
+                        uint16_t cellid,
+                        uint16_t rnti,
                         uint16_t targetCellId)
 {
-  std::cout << context 
-            << " eNB CellId " << cellid 
-            << ": start handover of UE with IMSI " << imsi 
-            << " RNTI " << rnti 
-            << " to CellId " << targetCellId 
+  std::cout << Simulator::Now ().GetSeconds () << " " << context
+            << " eNB CellId " << cellid
+            << ": start handover of UE with IMSI " << imsi
+            << " RNTI " << rnti
+            << " to CellId " << targetCellId
             << std::endl;
 }
 
-void 
-NotifyHandoverEndOkEnb (std::string context, 
-                        uint64_t imsi, 
-                        uint16_t cellid, 
+void
+NotifyHandoverEndOkEnb (std::string context,
+                        uint64_t imsi,
+                        uint16_t cellid,
                         uint16_t rnti)
 {
-  std::cout << context 
-            << " eNB CellId " << cellid 
-            << ": completed handover of UE with IMSI " << imsi 
-            << " RNTI " << rnti 
+  std::cout << Simulator::Now ().GetSeconds () << " " << context
+            << " eNB CellId " << cellid
+            << ": completed handover of UE with IMSI " << imsi
+            << " RNTI " << rnti
             << std::endl;
 }
- 
-
 
 
 /**
@@ -121,7 +119,6 @@ NotifyHandoverEndOkEnb (std::string context,
  * It instantiates two eNodeB, attaches one UE to the 'source' eNB and
  * triggers a handover of the UE towards the 'target' eNB.
  */
-NS_LOG_COMPONENT_DEFINE ("EpcX2HandoverExample");
 int
 main (int argc, char *argv[])
 {
@@ -146,23 +143,24 @@ main (int argc, char *argv[])
 
   // change some default attributes so that they are reasonable for
   // this scenario, but do this before processing command line
-  // arguments, so that the user is allowed to override these settings 
-  Config::SetDefault ("ns3::UdpClient::Interval", TimeValue (MilliSeconds(10)));
-  Config::SetDefault ("ns3::UdpClient::MaxPackets", UintegerValue(1000000));
-  Config::SetDefault ("ns3::LteHelper::UseIdealRrc", BooleanValue(false));
+  // arguments, so that the user is allowed to override these settings
+  Config::SetDefault ("ns3::UdpClient::Interval", TimeValue (MilliSeconds (10)));
+  Config::SetDefault ("ns3::UdpClient::MaxPackets", UintegerValue (1000000));
+  Config::SetDefault ("ns3::LteHelper::UseIdealRrc", BooleanValue (false));
 
   // Command line arguments
   CommandLine cmd;
-  cmd.AddValue("numberOfUes", "Number of UEs", numberOfUes);
-  cmd.AddValue("numberOfEnbs", "Number of eNodeBs", numberOfEnbs);
-  cmd.AddValue("simTime", "Total duration of the simulation (in seconds)",simTime);
-  cmd.Parse(argc, argv);
+  cmd.AddValue ("numberOfUes", "Number of UEs", numberOfUes);
+  cmd.AddValue ("numberOfEnbs", "Number of eNodeBs", numberOfEnbs);
+  cmd.AddValue ("simTime", "Total duration of the simulation (in seconds)", simTime);
+  cmd.Parse (argc, argv);
 
 
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
   Ptr<EpcHelper> epcHelper = CreateObject<EpcHelper> ();
   lteHelper->SetEpcHelper (epcHelper);
-  lteHelper->SetSchedulerType("ns3::RrFfMacScheduler");
+  lteHelper->SetSchedulerType ("ns3::RrFfMacScheduler");
+  lteHelper->SetHandoverAlgorithmType ("ns3::NoOpHandoverAlgorithm"); // disable automatic handover
 
   Ptr<Node> pgw = epcHelper->GetPgwNode ();
 
@@ -193,24 +191,24 @@ main (int argc, char *argv[])
 
   NodeContainer ueNodes;
   NodeContainer enbNodes;
-  enbNodes.Create(numberOfEnbs);
-  ueNodes.Create(numberOfUes);
+  enbNodes.Create (numberOfEnbs);
+  ueNodes.Create (numberOfUes);
 
   // Install Mobility Model
   Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
   for (uint16_t i = 0; i < numberOfEnbs; i++)
     {
-      positionAlloc->Add (Vector(distance * 2*i - distance, 0, 0));
+      positionAlloc->Add (Vector (distance * 2 * i - distance, 0, 0));
     }
   for (uint16_t i = 0; i < numberOfUes; i++)
     {
-      positionAlloc->Add (Vector(0, 0, 0));
+      positionAlloc->Add (Vector (0, 0, 0));
     }
   MobilityHelper mobility;
-  mobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
-  mobility.SetPositionAllocator(positionAlloc);
-  mobility.Install(enbNodes);
-  mobility.Install(ueNodes);
+  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
+  mobility.SetPositionAllocator (positionAlloc);
+  mobility.Install (enbNodes);
+  mobility.Install (ueNodes);
 
   // Install LTE Devices in eNB and UEs
   NetDeviceContainer enbLteDevs = lteHelper->InstallEnbDevice (enbNodes);
@@ -233,23 +231,23 @@ main (int argc, char *argv[])
   // Attach all UEs to the first eNodeB
   for (uint16_t i = 0; i < numberOfUes; i++)
     {
-      lteHelper->Attach (ueLteDevs.Get(i), enbLteDevs.Get(0));
+      lteHelper->Attach (ueLteDevs.Get (i), enbLteDevs.Get (0));
     }
 
 
   NS_LOG_LOGIC ("setting up applications");
-    
+
   // Install and start applications on UEs and remote host
   uint16_t dlPort = 10000;
   uint16_t ulPort = 20000;
 
   // randomize a bit start times to avoid simulation artifacts
   // (e.g., buffer overflows due to packet transmissions happening
-  // exactly at the same time) 
+  // exactly at the same time)
   Ptr<UniformRandomVariable> startTimeSeconds = CreateObject<UniformRandomVariable> ();
   startTimeSeconds->SetAttribute ("Min", DoubleValue (0));
   startTimeSeconds->SetAttribute ("Max", DoubleValue (0.010));
-     
+
   for (uint32_t u = 0; u < numberOfUes; ++u)
     {
       Ptr<Node> ue = ueNodes.Get (u);
@@ -264,33 +262,33 @@ main (int argc, char *argv[])
 
           ApplicationContainer clientApps;
           ApplicationContainer serverApps;
-          
+
           NS_LOG_LOGIC ("installing UDP DL app for UE " << u);
           UdpClientHelper dlClientHelper (ueIpIfaces.GetAddress (u), dlPort);
           clientApps.Add (dlClientHelper.Install (remoteHost));
-          PacketSinkHelper dlPacketSinkHelper ("ns3::UdpSocketFactory", 
+          PacketSinkHelper dlPacketSinkHelper ("ns3::UdpSocketFactory",
                                                InetSocketAddress (Ipv4Address::GetAny (), dlPort));
           serverApps.Add (dlPacketSinkHelper.Install (ue));
-              
+
           NS_LOG_LOGIC ("installing UDP UL app for UE " << u);
           UdpClientHelper ulClientHelper (remoteHostAddr, ulPort);
           clientApps.Add (ulClientHelper.Install (ue));
-          PacketSinkHelper ulPacketSinkHelper ("ns3::UdpSocketFactory", 
+          PacketSinkHelper ulPacketSinkHelper ("ns3::UdpSocketFactory",
                                                InetSocketAddress (Ipv4Address::GetAny (), ulPort));
-          serverApps.Add (ulPacketSinkHelper.Install (remoteHost));  
-             
+          serverApps.Add (ulPacketSinkHelper.Install (remoteHost));
+
           Ptr<EpcTft> tft = Create<EpcTft> ();
           EpcTft::PacketFilter dlpf;
           dlpf.localPortStart = dlPort;
           dlpf.localPortEnd = dlPort;
-          tft->Add (dlpf); 
+          tft->Add (dlpf);
           EpcTft::PacketFilter ulpf;
           ulpf.remotePortStart = ulPort;
           ulpf.remotePortEnd = ulPort;
           tft->Add (ulpf);
           EpsBearer bearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT);
           lteHelper->ActivateDedicatedEpsBearer (ueLteDevs.Get (u), bearer, tft);
-          
+
           Time startTime = Seconds (startTimeSeconds->GetValue ());
           serverApps.Start (startTime);
           clientApps.Start (startTime);
@@ -304,11 +302,11 @@ main (int argc, char *argv[])
 
   // X2-based Handover
   lteHelper->HandoverRequest (Seconds (0.100), ueLteDevs.Get (0), enbLteDevs.Get (0), enbLteDevs.Get (1));
-  
-  
+
   // Uncomment to enable PCAP tracing
   //p2ph.EnablePcapAll("lena-x2-handover");
 
+  lteHelper->EnablePhyTraces ();
   lteHelper->EnableMacTraces ();
   lteHelper->EnableRlcTraces ();
   lteHelper->EnablePdcpTraces ();
@@ -333,13 +331,13 @@ main (int argc, char *argv[])
                    MakeCallback (&NotifyHandoverEndOkUe));
 
 
-  Simulator::Stop(Seconds(simTime));
-  Simulator::Run();
+  Simulator::Stop (Seconds (simTime));
+  Simulator::Run ();
 
   // GtkConfigStore config;
-  // config.ConfigureAttributes();
+  // config.ConfigureAttributes ();
 
-  Simulator::Destroy();
+  Simulator::Destroy ();
   return 0;
 
 }

@@ -46,18 +46,10 @@ AirtimeLinkMetricCalculator::GetTypeId ()
                       &AirtimeLinkMetricCalculator::SetHeaderTid),
                     MakeUintegerChecker<uint8_t> (0)
                     )
-    .AddAttribute ( "Dot11sMeshHeaderLength",
-                    "Length of the mesh header",
-                    UintegerValue (6),
-                    MakeUintegerAccessor (
-                      &AirtimeLinkMetricCalculator::m_meshHeaderLength),
-                    MakeUintegerChecker<uint16_t> (0)
-                    )
   ;
   return tid;
 }
-AirtimeLinkMetricCalculator::AirtimeLinkMetricCalculator () :
-  m_overheadNanosec (0)
+AirtimeLinkMetricCalculator::AirtimeLinkMetricCalculator ()
 {
 }
 void

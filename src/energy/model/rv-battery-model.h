@@ -225,7 +225,6 @@ private:
   std::vector<double> m_load;     // load profile
   std::vector<Time> m_timeStamps; // time stamps of load profile
   Time m_lastSampleTime;
-  uint64_t m_counter;
 
   int m_numOfTerms; // # of terms for infinite sum in battery level estimation
 

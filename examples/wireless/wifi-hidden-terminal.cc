@@ -82,10 +82,10 @@ void experiment (bool enableCtsRts)
 
   // uncomment the following to have athstats output
   // AthstatsHelper athstats;
-  // athstats.EnableAthstats(enableCtsRts ? "basic-athstats-node" : "rtscts-athstats-node", nodes);
+  // athstats.EnableAthstats(enableCtsRts ? "rtscts-athstats-node" : "basic-athstats-node" , nodes);
 
   // uncomment the following to have pcap output
-  //wifiPhy.EnablePcap (enableCtsRts ? "basic-pcap-node" : "rtscts-pcap-node", nodes);
+  // wifiPhy.EnablePcap (enableCtsRts ? "rtscts-pcap-node" : "basic-pcap-node" , nodes);
 
 
   // 6. Install TCP/IP stack & assign IP addresses
@@ -99,7 +99,7 @@ void experiment (bool enableCtsRts)
   ApplicationContainer cbrApps;
   uint16_t cbrPort = 12345;
   OnOffHelper onOffHelper ("ns3::UdpSocketFactory", InetSocketAddress (Ipv4Address ("10.0.0.2"), cbrPort));
-  onOffHelper.SetAttribute ("PacketSize", UintegerValue (200));
+  onOffHelper.SetAttribute ("PacketSize", UintegerValue (1400));
   onOffHelper.SetAttribute ("OnTime",  StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
   onOffHelper.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
 
@@ -153,13 +153,21 @@ void experiment (bool enableCtsRts)
   for (std::map<FlowId, FlowMonitor::FlowStats>::const_iterator i = stats.begin (); i != stats.end (); ++i)
     {
       // first 2 FlowIds are for ECHO apps, we don't want to display them
+      //
+      // Duration for throughput measurement is 9.0 seconds, since 
+      //   StartTime of the OnOffApplication is at about "second 1"
+      // and 
+      //   Simulator::Stops at "second 10".
       if (i->first > 2)
         {
           Ipv4FlowClassifier::FiveTuple t = classifier->FindFlow (i->first);
           std::cout << "Flow " << i->first - 2 << " (" << t.sourceAddress << " -> " << t.destinationAddress << ")\n";
+          std::cout << "  Tx Packets: " << i->second.txPackets << "\n";
           std::cout << "  Tx Bytes:   " << i->second.txBytes << "\n";
+          std::cout << "  TxOffered:  " << i->second.txBytes * 8.0 / 9.0 / 1000 / 1000  << " Mbps\n";
+          std::cout << "  Rx Packets: " << i->second.rxPackets << "\n";
           std::cout << "  Rx Bytes:   " << i->second.rxBytes << "\n";
-          std::cout << "  Throughput: " << i->second.rxBytes * 8.0 / 10.0 / 1000 / 1000  << " Mbps\n";
+          std::cout << "  Throughput: " << i->second.rxBytes * 8.0 / 9.0 / 1000 / 1000  << " Mbps\n";
         }
     }
 

@@ -119,7 +119,6 @@ private:
   void ForwardUp (Ptr<Packet> packet, Mac48Address from, Mac48Address to);
   void LinkUp (void);
   void LinkDown (void);
-  void Setup (void);
   Ptr<WifiChannel> DoGetChannel (void) const;
   void CompleteConfig (void);
 

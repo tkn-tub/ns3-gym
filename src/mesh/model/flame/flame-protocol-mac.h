@@ -34,7 +34,7 @@ class FlameProtocol;
 class FlameProtocolMac : public MeshWifiInterfaceMacPlugin
 {
 public:
-  FlameProtocolMac (uint32_t, Ptr<FlameProtocol>);
+  FlameProtocolMac (Ptr<FlameProtocol>);
   ~FlameProtocolMac ();
   ///\name Inherited from MAC plugin
   //\{
@@ -56,7 +56,6 @@ private:
    * \{
    */
   Ptr<FlameProtocol> m_protocol;
-  uint32_t m_ifIndex;
   Ptr<MeshWifiInterfaceMac> m_parent;
   ///\}
   ///\name Statistics:

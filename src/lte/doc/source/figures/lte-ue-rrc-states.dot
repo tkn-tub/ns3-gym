@@ -1,23 +1,38 @@
-digraph LteRrcStates {
+digraph LteUeRrcStates {
 
 
-IDLE_CELL_SELECTION [shape="box",width=5]
-IDLE_WAIT_SYSTEM_INFO [shape="box",width=5]
-IDLE_CAMPED_NORMALLY [shape="box",width=5]
-IDLE_RANDOM_ACCESS [shape="box",width=5]
-IDLE_CONNECTING [shape="box",width=5]
-CONNECTED_NORMALLY [shape="box",width=5]
-CONNECTED_HANDOVER [shape="box",width=5]
+IDLE_START [shape="box",width=3]
+IDLE_CELL_SEARCH [shape="box",width=3]
+IDLE_WAIT_MIB_SIB1 [shape="box",width=3]
+IDLE_WAIT_MIB [shape="box",width=3]
+IDLE_WAIT_SIB1 [shape="box",width=3]
+IDLE_CAMPED_NORMALLY [shape="box",width=3]
+IDLE_WAIT_SIB2 [shape="box",width=3]
+IDLE_RANDOM_ACCESS [shape="box",width=3]
+IDLE_CONNECTING [shape="box",width=3]
+CONNECTED_NORMALLY [shape="box",width=3]
+CONNECTED_HANDOVER [shape="box",width=3]
 
 
-IDLE_CELL_SELECTION -> IDLE_WAIT_SYSTEM_INFO  [label="eNB CellId enforced by upper layers"]
-IDLE_WAIT_SYSTEM_INFO -> IDLE_CAMPED_NORMALLY [label="rx MIB + SIB2"]
-IDLE_CAMPED_NORMALLY -> IDLE_RANDOM_ACCESS [label="connection request by upper layers"]
-IDLE_RANDOM_ACCESS -> IDLE_CONNECTING  [label="random access successful"]
-IDLE_RANDOM_ACCESS -> IDLE_CAMPED_NORMALLY  [label="random access failure"]
+// Network attachment
+IDLE_START -> IDLE_WAIT_MIB [label="manual\nattachment"]
+IDLE_START -> IDLE_CELL_SEARCH [label="automatic attachment\nby cell selection"]
+IDLE_CELL_SEARCH -> IDLE_WAIT_MIB_SIB1 [label="synchronized to a cell"]
+IDLE_WAIT_MIB_SIB1 -> IDLE_WAIT_SIB1 [label="rx MIB"]
+IDLE_WAIT_SIB1 -> IDLE_CAMPED_NORMALLY [label="rx SIB1 and\ncell selection successful"]
+IDLE_WAIT_SIB1 -> IDLE_CELL_SEARCH [label="rx SIB1 and\ncell selection failed"]
+IDLE_WAIT_MIB -> IDLE_CAMPED_NORMALLY [label="rx MIB"]
+IDLE_CAMPED_NORMALLY -> IDLE_WAIT_SIB2 [label="connection request\nby upper layer"]
+
+// Connection establishment
+IDLE_WAIT_SIB2 -> IDLE_RANDOM_ACCESS [label="rx SIB2"]
+IDLE_RANDOM_ACCESS -> IDLE_CONNECTING [label="random access\nsuccessful"]
+IDLE_RANDOM_ACCESS -> IDLE_CAMPED_NORMALLY [label="random access\nfailure"]
 IDLE_CONNECTING -> CONNECTED_NORMALLY [label="rx RRC CONN SETUP"]
-IDLE_CONNECTING -> IDLE_CAMPED_NORMALLY [label="rx RRC CONN REJECT"]
-CONNECTED_NORMALLY -> CONNECTED_HANDOVER [label="rx RRC CONN RECONF with MobilityCltrInfo"]
-CONNECTED_HANDOVER -> CONNECTED_NORMALLY [label="random access successful"]
+IDLE_CONNECTING -> IDLE_CAMPED_NORMALLY [label="rx RRC CONN\nREJECT"]
+
+// Handover
+CONNECTED_NORMALLY -> CONNECTED_HANDOVER [label="rx RRC CONN RECONF\nwith MobilityCtrlInfo"]
+CONNECTED_HANDOVER -> CONNECTED_NORMALLY [label="random access\nsuccessful"]
 
 }

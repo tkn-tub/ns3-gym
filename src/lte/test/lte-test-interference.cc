@@ -98,8 +98,6 @@ LteInterferenceTestCase::LteInterferenceTestCase (std::string name, double d1, d
     m_d2 (d2),
     m_dlSinrDb (10 * std::log10 (dlSinr)),
     m_ulSinrDb (10 * std::log10 (ulSinr)),
-    m_dlSe (dlSe),
-    m_ulSe (ulSe),
     m_dlMcs (dlMcs),
     m_ulMcs (ulMcs)
 {

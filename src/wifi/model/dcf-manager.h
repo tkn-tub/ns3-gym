@@ -324,7 +324,6 @@ private:
   Time m_lastSwitchingStart;
   Time m_lastSwitchingDuration;
   bool m_rxing;
-  bool m_sleeping;
   Time m_eifsNoDifs;
   EventId m_accessTimeout;
   uint32_t m_slotTimeUs;

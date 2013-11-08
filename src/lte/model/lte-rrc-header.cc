@@ -2224,6 +2224,13 @@ RrcAsn1Header::DeserializePhysicalConfigDedicated (LteRrcSap::PhysicalConfigDedi
 }
 
 void
+RrcAsn1Header::Print (std::ostream &os) const
+{
+  NS_LOG_FUNCTION (this << &os);
+  NS_FATAL_ERROR ("RrcAsn1Header Print() function must also specify LteRrcSap::RadioResourceConfigDedicated as a second argument");
+}
+
+void
 RrcAsn1Header::Print (std::ostream &os, LteRrcSap::RadioResourceConfigDedicated radioResourceConfigDedicated) const
 {
   os << "   srbToAddModList: " << std::endl;

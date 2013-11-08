@@ -47,14 +47,6 @@ public:
   void SetTestLength (uint16_t testLength);
   void SetHeaderTid (uint8_t tid);
 private:
-  /// Overhead expressed in nanoseconds:DIFS + SIFS + 2 * PREAMBLE + ACK
-  uint32_t m_overheadNanosec;
-  /// Bt value
-  uint32_t m_testLength;
-  /// header length (used in overhead)
-  uint16_t m_headerLength;
-  /// meshHeader length (minimum 6 octets)
-  uint16_t m_meshHeaderLength;
   Ptr<Packet> m_testFrame;
   WifiMacHeader m_testHeader;
 };

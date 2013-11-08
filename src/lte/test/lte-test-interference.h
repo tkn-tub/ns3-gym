@@ -58,8 +58,6 @@ private:
   double m_d2;
   double m_dlSinrDb;
   double m_ulSinrDb;
-  double m_dlSe;
-  double m_ulSe;
   uint16_t m_dlMcs;
   uint16_t m_ulMcs;
 };

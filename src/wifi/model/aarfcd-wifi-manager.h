@@ -77,7 +77,6 @@ private:
   // aarf-cd fields below
   uint32_t m_minRtsWnd;
   uint32_t m_maxRtsWnd;
-  bool m_rtsFailsAsDataFails;
   bool m_turnOffRtsAfterRateDecrease;
   bool m_turnOnRtsAfterRateIncrease;
 };

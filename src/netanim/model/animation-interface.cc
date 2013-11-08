@@ -59,6 +59,7 @@ static bool initialized = false;
 std::map <uint32_t, std::string> AnimationInterface::nodeDescriptions;
 std::map <uint32_t, Rgb> AnimationInterface::nodeColors;
 std::map <P2pLinkNodeIdPair, LinkProperties, LinkPairCompare> AnimationInterface::linkProperties;
+Rectangle * AnimationInterface::userBoundary = 0;
 
 
 AnimationInterface::AnimationInterface (const std::string fn, uint64_t maxPktsPerFile, bool usingXML)
@@ -78,6 +79,10 @@ AnimationInterface::AnimationInterface (const std::string fn, uint64_t maxPktsPe
 
 AnimationInterface::~AnimationInterface ()
 {
+  if (userBoundary)
+    {
+      delete userBoundary;
+    }
   StopAnimation ();
 }
 
@@ -1701,6 +1706,22 @@ void AnimationInterface::SetConstantPosition (Ptr <Node> n, double x, double y, 
 
 }
 
+void AnimationInterface::SetBoundary (double minX, double minY, double maxX, double maxY)
+{
+  if (initialized)
+    NS_FATAL_ERROR ("SetBoundary must be used prior to creating the AnimationInterface object");
+  NS_ASSERT (minX < maxX);
+  NS_ASSERT (minY < maxY);
+  if (!userBoundary)
+    {
+      userBoundary = new Rectangle;
+    }
+  userBoundary->xMax = maxX;
+  userBoundary->yMax = maxY;
+  userBoundary->xMin = minX;
+  userBoundary->yMin = minY;
+}
+
 void AnimationInterface::SetNodeColor (Ptr <Node> n, uint8_t r, uint8_t g, uint8_t b)
 {
   if (initialized)
@@ -1855,6 +1876,13 @@ std::string AnimationInterface::GetXMLOpen_anim (uint32_t lp)
 }
 std::string AnimationInterface::GetXMLOpen_topology (double minX, double minY, double maxX, double maxY)
 {
+  if (userBoundary)
+    {
+      minX = userBoundary->xMin;
+      minY = userBoundary->yMin;
+      maxX = userBoundary->xMax;
+      maxY = userBoundary->yMax;
+    }
   std::ostringstream oss;
   oss << "<topology minX = \"" << minX << "\" minY = \"" << minY
       << "\" maxX = \"" << maxX << "\" maxY = \"" << maxY

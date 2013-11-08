@@ -1,9 +1,9 @@
 .. include:: replace.txt
 
 
-+++++++++++++++++++++++++++
- Testing Documentation
-+++++++++++++++++++++++++++
++++++++++++++++++++++
+Testing Documentation
++++++++++++++++++++++
 
 
 Overview
@@ -161,7 +161,7 @@ passes if both the following conditions are satisfied:
 Inter-cell Interference Tests
 -----------------------------
 
-The test suite `lte-interference`` provides system tests recreating an
+The test suite `lte-interference` provides system tests recreating an
 inter-cell interference scenario with two eNBs, each having a single
 UE attached to it and employing Adaptive Modulation and Coding both in
 the downlink and in the uplink. The topology of the scenario
@@ -195,16 +195,247 @@ contains separate values for uplink and downlink.
 
 
 UE Measurements Tests
------------------------------
+---------------------
 
-The test suite `lte-ue-measurements`` provides system tests recreating an
-inter-cell interference scenario identical of the one defined for `lte-interference`` test-suite. However, in this test the quantities to be tested are represented by RSRP and RSRQ measurements performed by the UE in two different points of the stack: the source, which is UE PHY layer, and the destination, that is the eNB RRC.
+The test suite `lte-ue-measurements` provides system tests recreating an
+inter-cell interference scenario identical of the one defined for
+`lte-interference` test-suite. However, in this test the quantities to be
+tested are represented by RSRP and RSRQ measurements performed by the UE in two
+different points of the stack: the source, which is UE PHY layer, and the
+destination, that is the eNB RRC.
 
-The test vectors are obtained by use of a dedicated octave script
-(available in
-`src/lte/test/reference/lte-ue-measurements.m`), which does
-the link budget calculations (including interference) corresponding to the topology of each
-test case, and outputs the resulting RSRP and RSRQ. The obtained values are then used for checking the correctness of the UE Measurements at PHY layer, while they have to converted according to 3GPP formatting for checking they correctness at eNB RRC level.
+The test vectors are obtained by the use of a dedicated octave script (available
+in `src/lte/test/reference/lte-ue-measurements.m`), which does the link budget
+calculations (including interference) corresponding to the topology of each
+test case, and outputs the resulting RSRP and RSRQ. The obtained values are then
+used for checking the correctness of the UE Measurements at PHY layer. After
+that, they have to be converted according to 3GPP formatting for the purpose of
+checking their correctness at eNB RRC level.
+
+
+
+UE measurement configuration tests
+----------------------------------
+
+Besides the previously mentioned test suite, there are 3 other test suites for
+testing UE measurements: `lte-ue-measurements-piecewise-1`,
+`lte-ue-measurements-piecewise-2`, and `lte-ue-measurements-handover`. These
+test suites are more focused on the reporting trigger procedure, i.e. the
+correctness of the implementation of the event-based triggering criteria is
+verified here.
+
+In more specific, the tests verify the *timing* and the *content* of each
+measurement reports received by eNodeB. Each test case is an stand-alone LTE
+simulation and the test case will pass if measurement report(s) only occurs at
+the prescribed time and shows the correct level of RSRP (RSRQ is not verified at
+the moment).
+
+
+Piecewise configuration
+#######################
+
+The piecewise configuration aims to test a particular UE measurements
+configuration. The simulation script will setup the corresponding measurements
+configuration to the UE, which will be active throughout the simulation.
+
+Since the reference values are precalculated by hands, several assumptions are
+made to simplify the simulation. Firstly, the channel is only affected by path
+loss model (in this case, Friis model is used). Secondly, the ideal RRC protocol
+is used, and layer 3 filtering is disabled. Finally, the UE moves in a
+predefined motion pattern between 4 distinct spots, as depicted in Figure
+:ref:`fig-ue-meas-piecewise-motion` below. Therefore the fluctuation of the
+measured RSRP can be determined more easily.
+
+.. _fig-ue-meas-piecewise-motion:
+   
+.. figure:: figures/ue-meas-piecewise-motion.*
+   :scale: 80 %
+   :align: center
+
+   UE movement trace throughout the simulation in piecewise configuration
+
+The motivation behind the *"teleport"* between the predefined spots is to
+introduce drastic change of RSRP level, which will guarantee the triggering of
+entering or leaving condition of the tested event. By performing drastic
+changes, the test can be run within shorter amount of time.
+
+Figure :ref:`fig-ue-meas-piecewise-a1` below shows the measured RSRP after
+layer 1 filtering by the PHY layer during the simulation with a piecewise
+configuration. Because layer 3 filtering is disabled, these are the exact values
+used by the UE RRC instance to evaluate reporting trigger procedure. Notice that
+the values are refreshed every 200 ms, which is the default filtering period of
+PHY layer measurements report. The figure also shows the time when entering and
+leaving conditions of an example instance of Event A1 (serving cell becomes
+better than threshold) occur during the simulation.
+
+.. _fig-ue-meas-piecewise-a1:
+   
+.. figure:: figures/ue-meas-piecewise-a1.*
+   :scale: 80 %
+   :align: center
+
+   Measured RSRP trace of an example Event A1 test case in piecewise
+   configuration
+
+Each reporting criterion is tested several times with different threshold/offset
+parameters. Some test scenarios also take hysteresis and time-to-trigger into
+account. Figure :ref:`fig-ue-meas-piecewise-a1-hys` depicts the effect of
+hysteresis in another example of Event A1 test.
+
+.. _fig-ue-meas-piecewise-a1-hys:
+   
+.. figure:: figures/ue-meas-piecewise-a1-hys.*
+   :scale: 80 %
+   :align: center
+
+   Measured RSRP trace of an example Event A1 with hysteresis test case in
+   piecewise configuration
+
+Piecewise configuration is used in two test suites of UE measurements. The first
+one is `lte-ue-measurements-piecewise-1`, henceforth Piecewise test #1, which
+simulates 1 UE and 1 eNodeB. The other one is `lte-ue-measurements-piecewise-2`,
+which has 1 UE and 2 eNodeBs in the simulation.
+
+Piecewise test #1 is intended to test the event-based criteria which are not
+dependent on the existence of a neighbouring cell. These criteria include Event
+A1 and A2. The other events are also briefly tested to verify that they are
+still working correctly (albeit not reporting anything) in the absence of any
+neighbouring cell. Table :ref:`tab-ue-meas-piecewise-1` below lists the
+scenarios tested in piecewise test #1. 
+
+.. _tab-ue-meas-piecewise-1:
+
+.. table:: UE measurements test scenarios using piecewise configuration #1
+
+   ====== ================== ================ ========== ===============
+   Test # Reporting Criteria Threshold/Offset Hysteresis Time-to-Trigger
+   ====== ================== ================ ========== ===============
+   1      Event A1           Low              No         No
+   2      Event A1           Normal           No         No
+   3      Event A1           Normal           No         Short
+   4      Event A1           Normal           No         Long
+   5      Event A1           Normal           No         Super
+   6      Event A1           Normal           Yes        No
+   7      Event A1           High             No         No
+   8      Event A2           Low              No         No
+   9      Event A2           Normal           No         No
+   10     Event A2           Normal           No         Short
+   11     Event A2           Normal           No         Long
+   12     Event A2           Normal           No         Super
+   13     Event A2           Normal           Yes        No
+   14     Event A2           High             No         No
+   15     Event A3           Zero             No         No
+   16     Event A4           Normal           No         No
+   17     Event A5           Normal-Normal    No         No
+   ====== ================== ================ ========== ===============
+
+Other events such as Event A3, A4, and A5 depend on measurements of neighbouring
+cell, so they are more thoroughly tested in Piecewise test #2. The simulation
+places the nodes on a straight line and instruct the UE to *"jump"* in a similar
+manner as in Piecewise test #1. Handover is disabled in the simulation, so the
+role of serving and neighbouring cells do not switch during the simulation.
+Table :ref:`tab-ue-meas-piecewise-2` below lists the scenarios tested in
+Piecewise test #2.
+
+.. _tab-ue-meas-piecewise-2:
+
+.. table:: UE measurements test scenarios using piecewise configuration #2
+
+   ====== ================== ================ ========== ===============
+   Test # Reporting Criteria Threshold/Offset Hysteresis Time-to-Trigger
+   ====== ================== ================ ========== ===============
+   1      Event A1           Low              No         No
+   2      Event A1           Normal           No         No
+   3      Event A1           Normal           Yes        No
+   4      Event A1           High             No         No
+   5      Event A2           Low              No         No
+   6      Event A2           Normal           No         No
+   7      Event A2           Normal           Yes        No
+   8      Event A2           High             No         No
+   9      Event A3           Positive         No         No
+   10     Event A3           Zero             No         No
+   11     Event A3           Zero             No         Short
+   12     Event A3           Zero             No         Super
+   13     Event A3           Zero             Yes        No
+   14     Event A3           Negative         No         No
+   15     Event A4           Low              No         No
+   16     Event A4           Normal           No         No
+   17     Event A4           Normal           No         Short
+   18     Event A4           Normal           No         Super
+   19     Event A4           Normal           Yes        No
+   20     Event A4           High             No         No
+   21     Event A5           Low-Low          No         No
+   22     Event A5           Low-Normal       No         No
+   23     Event A5           Low-High         No         No
+   24     Event A5           Normal-Low       No         No
+   25     Event A5           Normal-Normal    No         No
+   26     Event A5           Normal-Normal    No         Short
+   27     Event A5           Normal-Normal    No         Super
+   28     Event A5           Normal-Normal    Yes        No
+   29     Event A5           Normal-High      No         No
+   30     Event A5           High-Low         No         No
+   31     Event A5           High-Normal      No         No
+   32     Event A5           High-High        No         No
+   ====== ================== ================ ========== ===============
+
+One note about the tests with time-to-trigger, they are tested using 3 different
+values of time-to-trigger: *short* (shorter than report interval), *long*
+(shorter than the filter measurement period of 200 ms), and *super* (longer than
+200 ms). The first two ensure that time-to-trigger evaluation always use the
+latest measurement reports received from PHY layer. While the last one is
+responsible for verifying time-to-trigger cancellation, for example when a
+measurement report from PHY shows that the entering/leaving condition is no
+longer true before the first trigger is fired.
+
+Handover configuration
+######################
+
+The purpose of the handover configuration is to verify whether UE measurement
+configuration is updated properly after a succesful handover takes place. For
+this purpose, the simulation will construct 2 eNodeBs with different UE
+measurement configuration, and the UE will perform handover from one cell to
+another. The UE will be located on a straight line between the 2 eNodeBs, and
+the handover will be invoked manually. The duration of each simulation is
+2 seconds (except the last test case) and the handover is triggered exactly at
+halfway of simulation.
+
+The `lte-ue-measurements-handover` test suite covers various types of
+configuration differences. The first one is the difference in report interval,
+e.g. the first eNodeB is configured with 480 ms report interval, while the
+second eNodeB is configured with 240 ms report interval. Therefore, when the UE
+performed handover to the second cell, the new report interval must take effect.
+As in piecewise configuration, the timing and the content of each measurement
+report received by the eNodeB will be verified.
+
+Other types of differences covered by the test suite are differences in event
+and differences in threshold/offset. Table :ref:`tab-ue-meas-handover` below
+lists the tested scenarios. 
+
+.. _tab-ue-meas-handover:
+
+.. table:: UE measurements test scenarios using handover configuration
+
+   ====== ================ =========================== ===========================
+   Test # Test Subject     Initial Configuration       Post-Handover Configuration
+   ====== ================ =========================== ===========================
+   1      Report interval  480 ms                      240 ms
+   2      Report interval  120 ms                      640 ms
+   3      Event            Event A1                    Event A2
+   4      Event            Event A2                    Event A1
+   5      Event            Event A3                    Event A4
+   6      Event            Event A4                    Event A3
+   7      Event            Event A2                    Event A3
+   8      Event            Event A3                    Event A2
+   9      Event            Event A4                    Event A5
+   10     Event            Event A5                    Event A4
+   11     Threshold/offset RSRP range 52 (Event A1)    RSRP range 56 (Event A1)
+   12     Threshold/offset RSRP range 52 (Event A2)    RSRP range 56 (Event A2)
+   13     Threshold/offset A3 offset -30 (Event A3)    A3 offset +30 (Event A3)
+   14     Threshold/offset RSRP range 52 (Event A4)    RSRP range 56 (Event A4)
+   15     Threshold/offset RSRP range 52-52 (Event A5) RSRP range 56-56 (Event A5)
+   16     Time-to-trigger  1024 ms                     100 ms
+   17     Time-to-trigger  1024 ms                     640 ms
+   ====== ================ =========================== ===========================
 
 
 
@@ -573,23 +804,51 @@ Physical Error Model
 --------------------
 
 
-The test suite ``lte-phy-error-model`` generates different test cases for evaluating both data and control error models. For what concern the data, the test consists of nine test cases with single eNB and a various number of UEs, all having the same Radio Bearer specification. Each test is designed for evaluating the error rate perceived by a specific TB size in order to verify that it corresponds to the expected values according to the BLER generated for CB size analog to the TB size. This means that, for instance, the test will check that the performance of a TB of :math:`N` bits is analogous to the one of a a CB size of :math:`N` bits by collecting the performance of a user which has been forced the generation of a such TB size according to the distance to eNB. In order to significantly test the BLER at MAC level, we configured the Adaptive Modulation and Coding (AMC) module, the ``LteAmc`` class, for making it less robust to channel conditions by using the PiroEW2010 AMC model and configuring it to select the MCS considering a target BER of 0.03 (instead of the default value of 0.00005). We note that these values do not reflect the actual BER, since they come from an analytical bound which does not consider all the transmission chain aspects; therefore the BER and BLER actually experienced at the reception of a TB is in general different. 
+The test suite ``lte-phy-error-model`` generates different test cases for
+evaluating both data and control error models. For what concern the data, the
+test consists of six test cases with single eNB and a various number of UEs,
+all having the same Radio Bearer specification. Each test is designed for
+evaluating the error rate perceived by a specific TB size in order to verify
+that it corresponds to the expected values according to the BLER generated for
+CB size analog to the TB size. This means that, for instance, the test will
+check that the performance of a TB of :math:`N` bits is analogous to the one of
+a CB size of :math:`N` bits by collecting the performance of a user which has
+been forced the generation of a such TB size according to the distance to eNB.
+In order to significantly test the BLER at MAC level, we configured the Adaptive
+Modulation and Coding (AMC) module, the ``LteAmc`` class, for making it less
+robust to channel conditions by using the PiroEW2010 AMC model and configuring
+it to select the MCS considering a target BER of 0.03 (instead of the default
+value of 0.00005). We note that these values do not reflect the actual BER,
+since they come from an analytical bound which does not consider all the
+transmission chain aspects; therefore the BER and BLER actually experienced at
+the reception of a TB is in general different.
 
-The parameters of the nine test cases are reported in the following:
+The parameters of the six test cases are reported in the following:
 
- #. 4 UEs placed 1800 meters far from the eNB, which implies the use of MCS 2 (SINR of -5.51 dB) and a TB of 256 bits, that in turns produce a BLER of 0.33 (see point A in figure :ref:`fig-mcs-2-test`).
- #. 2 UEs placed 1800 meters far from the eNB, which implies the use of MCS 2 (SINR of -5.51 dB) and a TB of 528 bits, that in turns produce a BLER of 0.11 (see point B in figure :ref:`fig-mcs-2-test`).
- #. 1 UE placed 1800 meters far from the eNB, which implies the use of MCS 2 (SINR of -5.51 dB) and a TB of 1088 bits, that in turns produce a BLER of 0.02 (see point C in figure :ref:`fig-mcs-2-test`).
- #. 1 UE placed 600 meters far from the eNB, which implies the use of MCS 12 (SINR of 4.43 dB) and a TB of 4800 bits, that in turns produce a BLER of 0.3 (see point D in figure :ref:`fig-mcs-12-test`).
- #. 3 UEs placed 600 meters far from the eNB, which implies the use of MCS 12 (SINR of 4.43 dB) and a TB of 1632 bits, that in turns produce a BLER of 0.55 (see point E in figure :ref:`fig-mcs-12-test`).
- #. 1 UE placed 470 meters far from the eNB, which implies the use of MCS 16 (SINR of 8.48 dB) and a TB of 7272 bits (segmented in 2 CBs of 3648 and 3584 bits), that in turns produce a BLER of 0.14, since each CB has CBLER equal to 0.075 (see point F in figure :ref:`fig-mcs-14-test`).
-
+#. 4 UEs placed 1800 meters far from the eNB, which implies the use of MCS 2
+   (SINR of -5.51 dB) and a TB of 256 bits, that in turns produce a BLER of 0.33
+   (see point A in figure :ref:`fig-mcs-2-test`).
+#. 2 UEs placed 1800 meters far from the eNB, which implies the use of MCS 2
+   (SINR of -5.51 dB) and a TB of 528 bits, that in turns produce a BLER of 0.11
+   (see point B in figure :ref:`fig-mcs-2-test`).
+#. 1 UE placed 1800 meters far from the eNB, which implies the use of MCS 2
+   (SINR of -5.51 dB) and a TB of 1088 bits, that in turns produce a BLER of
+   0.02 (see point C in figure :ref:`fig-mcs-2-test`).
+#. 1 UE placed 600 meters far from the eNB, which implies the use of MCS 12
+   (SINR of 4.43 dB) and a TB of 4800 bits, that in turns produce a BLER of 0.3
+   (see point D in figure :ref:`fig-mcs-12-test`).
+#. 3 UEs placed 600 meters far from the eNB, which implies the use of MCS 12
+   (SINR of 4.43 dB) and a TB of 1632 bits, that in turns produce a BLER of 0.55
+   (see point E in figure :ref:`fig-mcs-12-test`).
+#. 1 UE placed 470 meters far from the eNB, which implies the use of MCS 16
+   (SINR of 8.48 dB) and a TB of 7272 bits (segmented in 2 CBs of 3648 and 3584
+   bits), that in turns produce a BLER of 0.14, since each CB has CBLER equal to
+   0.075 (see point F in figure :ref:`fig-mcs-14-test`).
 
 .. _fig-mcs-2-test:
 
 .. figure:: figures/MCS_2_test.*
    :align: center
-
 
    BLER for tests 1, 2, 3.
 
@@ -607,18 +866,34 @@ The parameters of the nine test cases are reported in the following:
 
    BLER for test 6.
 
+The test condition verifies that in each test case the expected number of
+packets received correctly corresponds to a Bernoulli distribution with a
+confidence interval of 99%, where the probability of success in each trail is
+:math:`p=1-BER` and :math:`n` is the total number of packets sent.
 
-The test condition verifies that in each test case the expected number of packets received correct corresponds to a Bernoulli distribution with a confidence interval of 99%, where the probability of success in each trail is :math:`p=1-BER` and :math:`n` is the total number of packet sent.
+The error model of PCFICH-PDCCH channels consists of 4 test cases with a single
+UE and several eNBs, where the UE is connected to only one eNB in order to have
+the remaining acting as interfering ones. The errors on data are disabled in
+order to verify only the ones due to erroneous decodification of PCFICH-PDCCH.
+As before, the system has been forced on working in a less conservative fashion
+in the AMC module for appreciating the results in border situations. The
+parameters of the 4 tests cases are reported in the following:
 
-The error model of PCFICH-PDCCH channels consists of 4 test cases with a single UE and several eNBs, where the UE is connected to only one eNB in order to have the remaining acting as interfering ones. The errors on data are disabled in order to verify only the ones due to erroneous decodification of PCFICH-PDCCH. As before, the system has been forced on working in a less conservative fashion in the AMC module for appreciating the results in border situations. The parameters of the 4 tests cases are reported in the following:
+#. 2 eNBs placed 1078 meters far from the UE, which implies a SINR of -2.00 dB
+   and a TB of 217 bits, that in turns produce a BLER of 0.007.
+#. 3 eNBs placed 1040 meters far from the UE, which implies a SINR of -4.00 dB
+   and a TB of 217 bits, that in turns produce a BLER of 0.045.
+#. 4 eNBs placed 1250 meters far from the UE, which implies a SINR of -6.00 dB
+   and a TB of 133 bits, that in turns produce a BLER of 0.206.
+#. 5 eNBs placed 1260 meters far from the UE, which implies a SINR of -7.00 dB
+   and a TB of 81 bits, that in turns produce a BLER of 0.343.
 
- #. 2 eNBs placed 1078 meters far from the UE, which implies a SINR of -2.00 dB and a TB of 217 bits, that in turns produce a BLER of 0.007.
- #. 3 eNBs placed 1078 meters far from the UE, which implies a SINR of -4.00 dB and a TB of 217 bits, that in turns produce a BLER of 0.045.
- #. 4 eNBs placed 1078 meters far from the UE, which implies a SINR of -6.00 dB and a TB of 133 bits, that in turns produce a BLER of 0.206.
- #. 5 eNBs placed 1078 meters far from the UE, which implies a SINR of -7.00 dB and a TB of 81 bits, that in turns produce a BLER of 0.343.
-
-
-The test condition verifies that in each test case the expected number of packets received correct corresponds to a Bernoulli distribution with a confidence interval of 99.8%, where the probability of success in each trail is :math:`p=1-BER` and :math:`n` is the total number of packet sent. The larger confidence interval is due to the errors that might be produced in quantizing the MI and the error curve. 
+The test condition verifies that in each test case the expected number
+of packets received correct corresponds to a Bernoulli distribution
+with a confidence interval of 99.8%, where the probability of success
+in each trail is :math:`p=1-BER` and :math:`n` is the total number of
+packet sent. The larger confidence interval is due to the errors that
+might be produced in quantizing the MI and the error curve.  
 
 
 HARQ Model
@@ -785,6 +1060,58 @@ each UE:
 
  
 
+Initial cell selection
+----------------------
+
+The test suite `lte-cell-selection` is responsible for verifying the
+:ref:`sec-initial-cell-selection` procedure. The test is a simulation of a small 
+network of 2 non-CSG cells and 2 non-CSG cells. Several static UEs are then
+placed at predefined locations. The UEs enter the simulation without being
+attached to any cell. Initial cell selection is enabled for these UEs, so each
+UE will find the best cell and attach to it by themselves.
+
+At predefined check points time during the simulation, the test verifies that
+every UE is attached to the right cell. Moreover, the test also ensures that the
+UE is properly connected, i.e., its final state is `CONNECTED_NORMALLY`. Figure
+:ref:`fig-lte-cell-selection-scenario` depicts the network layout and the
+expected result. When a UE is depicted as having 2 successful cell selections
+(e.g., UE #3 and #4), any of them is accepted by the test case.
+
+.. _fig-lte-cell-selection-scenario:
+
+.. figure:: figures/lte-cell-selection-scenario.*
+   :scale: 80 %
+   :align: center
+
+   Sample result of cell selection test
+
+The figure shows that CSG members may attach to either CSG or non-CSG cells, and
+simply choose the stronger one. On the other hand, non-members can only attach
+to non-CSG cells, even when they are actually receiving stronger signal from a
+CSG cell.
+
+For reference purpose, Table :ref:`tab-cell-selection-error-rate` shows the
+error rate of each UE when receiving transmission from the control channel.
+Based on this information, the check point time for UE #3 is done at a later
+time than the others to compensate for its higher risk of failure.
+
+.. _tab-cell-selection-error-rate:
+
+.. table:: UE error rate in Initial Cell Selection test
+
+   ==== ==========
+   UE # Error rate
+   ==== ==========
+   1     0.00%
+   2     1.44%
+   3    12.39%
+   4     0.33%
+   5     0.00%
+   6     0.00%
+   ==== ==========
+
+The test uses the default Friis path loss model and without any channel fading
+model.
 
 
 GTP-U protocol
@@ -913,6 +1240,7 @@ X-axes going from the neighbourhood of one eNB to the next eNB. Each test case i
 instance of this scenario defined by the following parameters:
 
  - the number of eNBs in the X-axes
+ - the number of UEs
  - the number of EPS bearers activated for the UE
  - a list of check point events to be triggered, where each event is defined by:
    + the time of the first check point event
@@ -920,9 +1248,22 @@ instance of this scenario defined by the following parameters:
    + interval time between two check point events
    + the index of the UE doing the handover
    + the index of the eNB where the UE must be connected
+ - a boolean flag indicating whether UDP traffic is to be used instead of TCP traffic
+ - the type of scheduler to be used
+ - the type of handover algorithm to be used
+ - a boolean flag indicating whether handover is admitted by default 
  - a boolean flag indicating whether the ideal RRC protocol is to be used instead of the
    real RRC protocol
- - the type of scheduler to be used (RR or PF)
+
+The test suite consists of many test cases. In fact, it has been one of the most
+time-consuming test suite in ns-3. The test cases run with *some* combination of
+the following variable parameters:
+
+ - number of eNBs: 2, 3, 4;
+ - number of EPS bearers: 0, 1, 2;
+ - RRC: ideal, real (see :ref:`sec-rrc-protocol-models`);
+ - MAC scheduler: round robin, proportional fair (see :ref:`sec-ff-mac-scheduler`); and
+ - handover algorithm: A2-A4-RSRQ, strongest cell (see :ref:`sec-handover-algorithm`).
 
 Each test case passes if the following conditions are true:
 
@@ -995,3 +1336,48 @@ by Random Access during the handover procedure. The test cases verify this
 computation, utilizing the fact that the handover will be delayed when this
 computation is broken. In the default simulation configuration, the handover
 delay observed because of a broken RA-RNTI computation is typically 6 ms.
+
+
+Selection of target cell in handover algorithm
+----------------------------------------------
+
+eNodeB may utilize :ref:`sec-handover-algorithm` to automatically create
+handover decisions during simulation. The decision includes the UE which should
+do the handover and the target cell where the UE should perform handover to.
+
+The test suite ``lte-handover-target`` verifies that the handover algorithm is
+making the right decision, in particular, in choosing the right target cell. It
+consists of several short test cases for different network topology (2×2 grid
+and 3×2 grid) and types of handover algorithm (the A2-A4-RSRQ handover algorithm
+and the strongest cell handover algorithm).
+
+Each test case is a simulation of a micro-cell environment with the following
+parameter:
+
+ - EPC is enabled
+ - several circular (isotropic antenna) micro-cell eNodeBs in a rectangular grid
+   layout, with 130 m distance between each adjacent point 
+ - 1 static UE, positioned close to and attached to the source cell
+ - no control channel error model
+ - no application installed
+ - no channel fading
+ - default path loss model (Friis)
+ - 1s simulation duration
+
+To trigger a handover, the test case "shutdowns" the source cell at +0.5s
+simulation time. Figure :ref:`fig-lte-handover-target-scenario` below
+illustrates the process. This is done by setting the source cell's Tx power to
+a very low value. As a result, the handover algorithm notices that the UE
+deserves a handover and several neighbouring cells become candidates of target
+cell at the same time.
+
+.. _fig-lte-handover-target-scenario:
+
+.. figure:: figures/lte-handover-target-scenario.*
+   :scale: 80 %
+   :align: center
+
+   ``lte-handover-target`` test scenario in a 2×2 grid
+
+The test case then verifies that the handover algorithm, when faced with more
+than one options of target cells, is able to choose the right one.

@@ -141,7 +141,6 @@ private:
   };
 
   PacketQueue m_queue;
-  WifiMacParameters *m_parameters;
   uint32_t m_size;
   uint32_t m_maxSize;
   Time m_maxDelay;

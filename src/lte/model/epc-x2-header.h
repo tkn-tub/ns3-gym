@@ -69,8 +69,6 @@ public:
   };
 
 private:
-  uint32_t m_headerLength;
-
   uint8_t m_messageType;
   uint8_t m_procedureCode;
 

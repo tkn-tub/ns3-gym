@@ -238,9 +238,6 @@ public:
   bool FindSourceEntry (Ipv4Address src, Ipv4Address dst, uint16_t id);
 
 private:
-
-  // / The max # of requests to retransmit
-  uint32_t MaxRequestRexmt;
   // / The max request period among requests
   Time  MaxRequestPeriod;
   // / The original request period

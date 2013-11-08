@@ -2533,6 +2533,11 @@ def register_Ns3MpiReceiver_methods(root_module, cls):
     cls.add_method('SetReceiveCallback', 
                    'void', 
                    [param('ns3::Callback< void, ns3::Ptr< ns3::Packet >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')])
+    ## mpi-receiver.h (module 'mpi'): void ns3::MpiReceiver::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3NixVector_methods(root_module, cls):

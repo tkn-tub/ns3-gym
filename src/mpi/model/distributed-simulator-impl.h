@@ -14,9 +14,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: George Riley <riley@ece.gatech.edu>
- *
- * Some updates to this code were developed under a research contract
- * sponsored by the Army Research Laboratory. (April 30, 2013)
  */
 
 #ifndef DISTRIBUTED_SIMULATOR_IMPL_H

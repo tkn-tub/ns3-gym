@@ -41,64 +41,42 @@ namespace ns3 {
  * \ingroup time
  * \brief keep track of time values and allow control of global simulation resolution
  *
- * This class defines all the classic C++ arithmetic
- * operators +, -, *, /, and all the classic comparison operators:
+ * This class defines all the classic C++ addition/subtraction
+ * operators: +, -, +=, -=; and all the classic comparison operators:
  * ==, !=, <, >, <=, >=. It is thus easy to add, substract, or
- * multiply Time objects.
+ * compare Time objects.
  *
  * For example:
  * \code
  * Time t1 = Seconds (10.0);
  * Time t2 = Seconds (10.0);
- * Time t3 = t1 * t2;
- * Time t4 = t1 / t2;
- * Time t5 = t3 * t1;
- * Time t6 = t1 / t5;
- * Time t7 = t3;
+ * Time t3 = t1;
+ * t3 += t2;
  * \endcode
  *
  * You can also use the following non-member functions to manipulate
  * any of these ns3::Time object:
- *  - \ref ns3-Time-Abs ns3::Abs
- *  - \ref ns3-Time-Max ns3::Max
- *  - \ref ns3-Time-Min ns3::Min
+ *  - \ref Abs()
+ *  - \ref Max()
+ *  - \ref Min()
  *
- * This class also controls
- * the resolution of the underlying time value . The default resolution
- * is nanoseconds. That is, TimeStep (1).GetNanoSeconds () will return
- * 1. It is possible to either increase or decrease the resolution and the
- * code tries really hard to make this easy.
+ * This class also controls the resolution of the underlying time value.
+ * The resolution is the smallest representable time interval.
+ * The default resolution is nanoseconds.
  *
- * If your resolution is X (say, nanoseconds) and if you create Time objects
- * with a lower resolution (say, picoseconds), don't expect that this
- * code will return 1: PicoSeconds (1).GetPicoSeconds (). It will most
- * likely return 0 because the Time object has only 64 bits of fractional
- * precision which means that PicoSeconds (1) is stored as a 64-bit aproximation
- * of 1/1000 in the Time object. If you later multiply it again by the exact
- * value 1000, the result is unlikely to be 1 exactly. It will be close to
- * 1 but not exactly 1.
+ * To change the resolution, use SetResolution().  All Time objects created
+ * before the call to SetResolution() will be updated to the new resolution.
+ * This can only be done once!  (Tracking each Time object uses 4 pointers.
+ * For speed, once we convert the existing instances we discard the recording
+ * data structure and stop tracking new instances, so we have no way
+ * to do a second conversion.)
  *
- * In general, it is thus a really bad idea to try to use time objects of a
- * resolution higher than the global resolution controlled through
- * Time::SetResolution. If you do need to use picoseconds, it's thus best
- * to switch the global resolution to picoseconds to avoid nasty surprises.
- *
- * Another important issue to keep in mind is that if you increase the
- * global resolution, you also implicitely decrease the range of your simulation.
- * i.e., the global simulation time is stored in a 64 bit integer whose interpretation
- * will depend on the global resolution so, 2^64 picoseconds which is the maximum
- * duration of your simulation if the global resolution is picoseconds
- * is smaller than 2^64 nanoseconds which is the maximum duration of your simulation
- * if the global resolution is nanoseconds.
- *
- * Finally, don't even think about ever changing the global resolution after
- * creating Time objects: all Time objects created before the call to SetResolution
- * will contain values which are not updated to the new resolution. In practice,
- * the default value for the attributes of many models is indeed calculated
- * before the main function of the main program enters. Because of this, if you
- * use one of these models (and it's likely), it's going to be hard to change
- * the global simulation resolution in a way which gives reasonable results. This
- * issue has been filed as bug 954 in the ns-3 bugzilla installation.
+ * If you increase the global resolution, you also implicitly decrease
+ * the range of your simulation.  The global simulation time is stored
+ * in a 64 bit integer, whose interpretation will depend on the global
+ * resolution.  Therefore the maximum duration of your simulation,
+ * if you use picoseconds, is 2^64 ps = 2^24 s = 7 months, whereas,
+ * had you used nanoseconds, you could have run for 584 years.
  */
 class Time
 {

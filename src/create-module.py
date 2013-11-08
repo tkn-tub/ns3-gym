@@ -331,7 +331,8 @@ def main(argv):
         print >> sys.stderr, "Module %r already exists" % (modname,)
         return 2
 
-    print "Creating module %r" % (modname,)
+    print("Creating module %r, "
+          "run './waf configure' to include it in the build" % (modname,))
 
     os.mkdir(moduledir)
     wscript = file(os.path.join(moduledir, "wscript"), "wt")

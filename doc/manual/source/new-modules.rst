@@ -152,7 +152,7 @@ waf to install this module's headers with the other |ns3| headers:
 
 .. sourcecode:: python
 
-    headers = bld.new_task_gen(features=['ns3header'])
+    headers = bld(features='ns3header')
 
     headers.module = 'spectrum'
 
@@ -329,7 +329,9 @@ test.py.
 Step 8 - Build and test your new module
 ***************************************
 
-You can now build and test your module as normal:
+You can now build and test your module as normal.  You must reconfigure
+the project as a first step or else your new module will not be included
+in the build.
 
 .. sourcecode:: bash
 
@@ -338,3 +340,19 @@ You can now build and test your module as normal:
   $ ./test.py
 
 and look for your new module's test suite (and example programs, if enabled) in the test output.
+
+Step 9 - Python bindings
+************************
+
+Adding Python bindings to your module is optional, and the step is
+commented out by default in the ``create-module.py`` script.
+
+.. sourcecode:: python
+
+    # bld.ns3_python_bindings()
+
+If you want to include Python bindings (needed only if you want
+to write Python ns-3 programs instead of C++ ns-3 programs), you
+should uncomment the above and install the Python API scanning
+system (covered elsewhere in this manual) and scan your module to
+generate new bindings.

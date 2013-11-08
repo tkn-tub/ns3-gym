@@ -1301,8 +1301,8 @@ PacketMetadata::Deserialize (const uint8_t* buffer, uint32_t size)
   buffer = ReadFromRawU64 (m_packetUid, start, buffer, size);
   desSize -= 8;
 
-  struct PacketMetadata::SmallItem item;
-  struct PacketMetadata::ExtraItem extraItem;
+  struct PacketMetadata::SmallItem item = {0};
+  struct PacketMetadata::ExtraItem extraItem = {0};
   while (desSize > 0)
     {
       uint32_t uidStringSize = 0;

@@ -519,8 +519,7 @@ private:
   uint32_t GetRtsSize (void) const;
   uint32_t GetCtsSize (void) const;
   uint32_t GetSize (Ptr<const Packet> packet, const WifiMacHeader *hdr) const;
-  Time NowUs (void) const;
-void ForwardDown (Ptr<const Packet> packet, const WifiMacHeader *hdr,
+  void ForwardDown (Ptr<const Packet> packet, const WifiMacHeader *hdr,
                     WifiTxVector txVector, WifiPreamble preamble);
   WifiTxVector GetRtsTxVector (Ptr<const Packet> packet, const WifiMacHeader *hdr) const;
   WifiTxVector GetDataTxVector (Ptr<const Packet> packet, const WifiMacHeader *hdr) const;
@@ -552,7 +551,6 @@ void ForwardDown (Ptr<const Packet> packet, const WifiMacHeader *hdr,
   void NotifyAckTimeoutResetNow ();
   void NotifyCtsTimeoutStartNow (Time duration);
   void NotifyCtsTimeoutResetNow ();
-  void MaybeCancelPrevious (void);
 
   void NavCounterResetCtsMissed (Time rtsEndRxTime);
   void NormalAckTimeout (void);
@@ -570,7 +568,6 @@ void ForwardDown (Ptr<const Packet> packet, const WifiMacHeader *hdr,
 
   void SendRtsForPacket (void);
   void SendDataPacket (void);
-  void SendCurrentTxPacket (void);
   void StartDataTxTimers (WifiTxVector dataTxVector);
   virtual void DoDispose (void);
   /**

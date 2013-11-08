@@ -116,7 +116,6 @@ private:
   uint32_t m_ctsSizeN;
   uint32_t m_ctsSizeG;
   uint32_t m_ackSize;
-  double m_retryRate;
   uint16_t m_currentRetryRate;
   uint32_t m_currentRateNum;
   uint32_t m_numNodes;
@@ -124,7 +123,6 @@ private:
   uint32_t m_rateStep;
   uint32_t m_frameSize;
 
-  uint16_t m_numRetryRates;
   double m_minRetryRate;
   double m_retryStep;
 

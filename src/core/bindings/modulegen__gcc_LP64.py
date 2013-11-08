@@ -316,10 +316,10 @@ def register_types(module):
     module.add_class('Vector3DChecker', parent=root_module['ns3::AttributeChecker'])
     ## vector.h (module 'core'): ns3::Vector3DValue [class]
     module.add_class('Vector3DValue', parent=root_module['ns3::AttributeValue'])
-    typehandlers.add_type_alias('ns3::Vector3D', 'ns3::Vector')
-    typehandlers.add_type_alias('ns3::Vector3D*', 'ns3::Vector*')
-    typehandlers.add_type_alias('ns3::Vector3D&', 'ns3::Vector&')
-    module.add_typedef(root_module['ns3::Vector3D'], 'Vector')
+    typehandlers.add_type_alias('ns3::RngSeedManager', 'ns3::SeedManager')
+    typehandlers.add_type_alias('ns3::RngSeedManager*', 'ns3::SeedManager*')
+    typehandlers.add_type_alias('ns3::RngSeedManager&', 'ns3::SeedManager&')
+    module.add_typedef(root_module['ns3::RngSeedManager'], 'SeedManager')
     typehandlers.add_type_alias('ns3::ObjectPtrContainerValue', 'ns3::ObjectVectorValue')
     typehandlers.add_type_alias('ns3::ObjectPtrContainerValue*', 'ns3::ObjectVectorValue*')
     typehandlers.add_type_alias('ns3::ObjectPtrContainerValue&', 'ns3::ObjectVectorValue&')
@@ -327,13 +327,13 @@ def register_types(module):
     typehandlers.add_type_alias('void ( * ) ( std::ostream & ) *', 'ns3::LogTimePrinter')
     typehandlers.add_type_alias('void ( * ) ( std::ostream & ) **', 'ns3::LogTimePrinter*')
     typehandlers.add_type_alias('void ( * ) ( std::ostream & ) *&', 'ns3::LogTimePrinter&')
-    typehandlers.add_type_alias('ns3::RngSeedManager', 'ns3::SeedManager')
-    typehandlers.add_type_alias('ns3::RngSeedManager*', 'ns3::SeedManager*')
-    typehandlers.add_type_alias('ns3::RngSeedManager&', 'ns3::SeedManager&')
-    module.add_typedef(root_module['ns3::RngSeedManager'], 'SeedManager')
     typehandlers.add_type_alias('void ( * ) ( std::ostream & ) *', 'ns3::LogNodePrinter')
     typehandlers.add_type_alias('void ( * ) ( std::ostream & ) **', 'ns3::LogNodePrinter*')
     typehandlers.add_type_alias('void ( * ) ( std::ostream & ) *&', 'ns3::LogNodePrinter&')
+    typehandlers.add_type_alias('ns3::Vector3D', 'ns3::Vector')
+    typehandlers.add_type_alias('ns3::Vector3D*', 'ns3::Vector*')
+    typehandlers.add_type_alias('ns3::Vector3D&', 'ns3::Vector&')
+    module.add_typedef(root_module['ns3::Vector3D'], 'Vector')
     typehandlers.add_type_alias('ns3::Vector3DValue', 'ns3::VectorValue')
     typehandlers.add_type_alias('ns3::Vector3DValue*', 'ns3::VectorValue*')
     typehandlers.add_type_alias('ns3::Vector3DValue&', 'ns3::VectorValue&')
@@ -878,8 +878,8 @@ def register_Ns3IntToType__6_methods(root_module, cls):
 def register_Ns3LogComponent_methods(root_module, cls):
     ## log.h (module 'core'): ns3::LogComponent::LogComponent(ns3::LogComponent const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::LogComponent const &', 'arg0')])
-    ## log.h (module 'core'): ns3::LogComponent::LogComponent(char const * name) [constructor]
-    cls.add_constructor([param('char const *', 'name')])
+    ## log.h (module 'core'): ns3::LogComponent::LogComponent(std::string const & name) [constructor]
+    cls.add_constructor([param('std::string const &', 'name')])
     ## log.h (module 'core'): void ns3::LogComponent::Disable(ns3::LogLevel level) [member function]
     cls.add_method('Disable', 
                    'void', 
@@ -888,10 +888,10 @@ def register_Ns3LogComponent_methods(root_module, cls):
     cls.add_method('Enable', 
                    'void', 
                    [param('ns3::LogLevel', 'level')])
-    ## log.h (module 'core'): void ns3::LogComponent::EnvVarCheck(char const * name) [member function]
+    ## log.h (module 'core'): void ns3::LogComponent::EnvVarCheck(std::string const & name) [member function]
     cls.add_method('EnvVarCheck', 
                    'void', 
-                   [param('char const *', 'name')])
+                   [param('std::string const &', 'name')])
     ## log.h (module 'core'): std::string ns3::LogComponent::GetLevelLabel(ns3::LogLevel const level) const [member function]
     cls.add_method('GetLevelLabel', 
                    'std::string', 
@@ -5003,7 +5003,7 @@ def register_functions_ns3_CommandLineHelper(module, root_module):
     ## command-line.h (module 'core'): extern std::string ns3::CommandLineHelper::GetDefault(bool const & val) [free function]
     module.add_function('GetDefault', 
                         'std::string', 
-                        [param('bool &', 'val')], 
+                        [param('bool const &', 'val')], 
                         template_parameters=['bool'])
     ## command-line.h (module 'core'): extern bool ns3::CommandLineHelper::UserItemParse(std::string const value, bool & val) [free function]
     module.add_function('UserItemParse', 

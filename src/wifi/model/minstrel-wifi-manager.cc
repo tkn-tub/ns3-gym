@@ -101,11 +101,6 @@ MinstrelWifiManager::GetTypeId (void)
                    DoubleValue (75),
                    MakeDoubleAccessor (&MinstrelWifiManager::m_ewmaLevel),
                    MakeDoubleChecker<double> ())
-    .AddAttribute ("SegmentSize",
-                   "The largest allowable segment size packet",
-                   DoubleValue (6000),
-                   MakeDoubleAccessor (&MinstrelWifiManager::m_segmentSize),
-                   MakeDoubleChecker <double> ())
     .AddAttribute ("SampleColumn",
                    "The number of columns used for sampling",
                    DoubleValue (10),

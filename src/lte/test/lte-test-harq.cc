@@ -82,18 +82,17 @@ LenaTestHarqSuite::LenaTestHarqSuite ()
 static LenaTestHarqSuite lenaTestHarqSuite;
 
 std::string
-LenaHarqTestCase::BuildNameString (uint16_t nUser, uint16_t dist)
+LenaHarqTestCase::BuildNameString (uint16_t nUser, uint16_t dist, uint16_t tbSize)
 {
   std::ostringstream oss;
-  oss << nUser << " UEs, distance " << dist << " m";
+  oss << nUser << " UEs, distance " << dist << " m, TB size " << tbSize;
   return oss.str ();
 }
 
 LenaHarqTestCase::LenaHarqTestCase (uint16_t nUser, uint16_t dist, uint16_t tbSize, double amcBer, double thrRef)
-  : TestCase (BuildNameString (nUser, dist)),
+  : TestCase (BuildNameString (nUser, dist, tbSize)),
     m_nUser (nUser),
     m_dist (dist),
-    m_tbSize (tbSize),
     m_amcBer (amcBer),
     m_throughputRef (thrRef)
 {

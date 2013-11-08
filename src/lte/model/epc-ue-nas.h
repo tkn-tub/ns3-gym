@@ -64,36 +64,64 @@ public:
    */
   void SetImsi (uint64_t imsi);
 
-  /** 
+  /**
+   *
+   * \param csgId Closed Subscriber Group identity
+   */
+  void SetCsgId (uint32_t csgId);
+
+  /**
+   *
+   * \return csgId Closed Subscriber Group identity
+   */
+  uint32_t GetCsgId () const;
+
+  /**
    * Set the AS SAP provider to interact with the NAS entity
-   * 
+   *
    * \param s the AS SAP provider
    */
   void SetAsSapProvider (LteAsSapProvider* s);
 
-  /** 
-   * 
-   * 
+  /**
+   *
+   *
    * \return the AS SAP user exported by this RRC
    */
   LteAsSapUser* GetAsSapUser ();
 
-  /** 
+  /**
    * set the callback used to forward data packets up the stack
-   * 
+   *
    * \param cb the callback
    */
   void SetForwardUpCallback (Callback <void, Ptr<Packet> > cb);
- 
-  /** 
-   * instruct the NAS to go to ACTIVE state, i.e., EMM Registered + ECM Connected
-   * Since RRC Idle Mode cell selection is not supported yet, we
-   * force the UE RRC to be camped on a specific eNB.
-   * 
-   * \param cellId the id of the eNB to camp on
-   * \param earfcn the DL frequency of the eNB
+
+  /**
+   * \brief Causes NAS to tell AS to find a suitable cell and camp to it.
+   *
+   * \param dlEarfcn the DL frequency of the eNB
    */
-  void Connect (uint16_t cellId, uint16_t earfcn);
+  void StartCellSelection (uint16_t dlEarfcn);
+
+  /**
+   * \brief Causes NAS to tell AS to go to ACTIVE state.
+   * 
+   * The end result is equivalent with EMM Registered + ECM Connected states.
+   */
+  void Connect ();
+
+  /**
+   * \brief Causes NAS to tell AS to camp to a specific cell and go to ACTIVE
+   *        state.
+   * \param cellId the id of the eNB to camp on
+   * \param dlEarfcn the DL frequency of the eNB
+   *
+   * The end result is equivalent with EMM Registered + ECM Connected states.
+   * Since RRC Idle Mode cell selection is not supported yet, we force the UE
+   * RRC to be camped on a specific eNB.
+   */
+  void Connect (uint16_t cellId, uint16_t dlEarfcn);
  
   /** 
    * instruct the NAS to disconnect
@@ -126,18 +154,23 @@ public:
    * 
    */
   enum State 
-    {
-      OFF = 0,
-      ATTACHING,
-      IDLE_REGISTERED,
-      CONNECTING_TO_EPC,
-      ACTIVE,
-      NUM_STATES
-    };
+  {
+    OFF = 0,
+    ATTACHING,
+    IDLE_REGISTERED,
+    CONNECTING_TO_EPC,
+    ACTIVE,
+    NUM_STATES
+  };
+
+  /**
+   * \return The current state
+   */
+  State GetState () const;
 
  
 private:
-  
+
   // LTE AS SAP methods
   void DoNotifyConnectionSuccessful ();
   void DoNotifyConnectionFailed ();
@@ -155,7 +188,9 @@ private:
   Ptr<NetDevice> m_device;
 
   uint64_t m_imsi;
-  
+
+  uint32_t m_csgId;
+
   LteAsSapProvider* m_asSapProvider;
   LteAsSapUser* m_asSapUser;
 

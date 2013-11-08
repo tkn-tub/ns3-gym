@@ -188,6 +188,8 @@ def register_types(module):
     module.add_class('ErlangRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
     ## random-variable-stream.h (module 'core'): ns3::ExponentialRandomVariable [class]
     module.add_class('ExponentialRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
+    ## building-position-allocator.h (module 'buildings'): ns3::FixedRoomPositionAllocator [class]
+    module.add_class('FixedRoomPositionAllocator', parent=root_module['ns3::PositionAllocator'])
     ## propagation-loss-model.h (module 'propagation'): ns3::FixedRssLossModel [class]
     module.add_class('FixedRssLossModel', import_from_module='ns.propagation', parent=root_module['ns3::PropagationLossModel'])
     ## propagation-loss-model.h (module 'propagation'): ns3::FriisPropagationLossModel [class]
@@ -266,14 +268,14 @@ def register_types(module):
     module.add_class('AddressChecker', import_from_module='ns.network', parent=root_module['ns3::AttributeChecker'])
     ## address.h (module 'network'): ns3::AddressValue [class]
     module.add_class('AddressValue', import_from_module='ns.network', parent=root_module['ns3::AttributeValue'])
-    typehandlers.add_type_alias('ns3::Vector3DValue', 'ns3::VectorValue')
-    typehandlers.add_type_alias('ns3::Vector3DValue*', 'ns3::VectorValue*')
-    typehandlers.add_type_alias('ns3::Vector3DValue&', 'ns3::VectorValue&')
-    module.add_typedef(root_module['ns3::Vector3DValue'], 'VectorValue')
     typehandlers.add_type_alias('ns3::Vector3D', 'ns3::Vector')
     typehandlers.add_type_alias('ns3::Vector3D*', 'ns3::Vector*')
     typehandlers.add_type_alias('ns3::Vector3D&', 'ns3::Vector&')
     module.add_typedef(root_module['ns3::Vector3D'], 'Vector')
+    typehandlers.add_type_alias('ns3::Vector3DValue', 'ns3::VectorValue')
+    typehandlers.add_type_alias('ns3::Vector3DValue*', 'ns3::VectorValue*')
+    typehandlers.add_type_alias('ns3::Vector3DValue&', 'ns3::VectorValue&')
+    module.add_typedef(root_module['ns3::Vector3DValue'], 'VectorValue')
     typehandlers.add_type_alias('ns3::Vector3DChecker', 'ns3::VectorChecker')
     typehandlers.add_type_alias('ns3::Vector3DChecker*', 'ns3::VectorChecker*')
     typehandlers.add_type_alias('ns3::Vector3DChecker&', 'ns3::VectorChecker&')
@@ -399,6 +401,7 @@ def register_methods(root_module):
     register_Ns3EmptyAttributeValue_methods(root_module, root_module['ns3::EmptyAttributeValue'])
     register_Ns3ErlangRandomVariable_methods(root_module, root_module['ns3::ErlangRandomVariable'])
     register_Ns3ExponentialRandomVariable_methods(root_module, root_module['ns3::ExponentialRandomVariable'])
+    register_Ns3FixedRoomPositionAllocator_methods(root_module, root_module['ns3::FixedRoomPositionAllocator'])
     register_Ns3FixedRssLossModel_methods(root_module, root_module['ns3::FixedRssLossModel'])
     register_Ns3FriisPropagationLossModel_methods(root_module, root_module['ns3::FriisPropagationLossModel'])
     register_Ns3GammaRandomVariable_methods(root_module, root_module['ns3::GammaRandomVariable'])
@@ -3310,6 +3313,28 @@ def register_Ns3ExponentialRandomVariable_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_virtual=True)
+    return
+
+def register_Ns3FixedRoomPositionAllocator_methods(root_module, cls):
+    ## building-position-allocator.h (module 'buildings'): ns3::FixedRoomPositionAllocator::FixedRoomPositionAllocator(ns3::FixedRoomPositionAllocator const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::FixedRoomPositionAllocator const &', 'arg0')])
+    ## building-position-allocator.h (module 'buildings'): ns3::FixedRoomPositionAllocator::FixedRoomPositionAllocator(uint32_t x, uint32_t y, uint32_t z, ns3::Ptr<ns3::Building> b) [constructor]
+    cls.add_constructor([param('uint32_t', 'x'), param('uint32_t', 'y'), param('uint32_t', 'z'), param('ns3::Ptr< ns3::Building >', 'b')])
+    ## building-position-allocator.h (module 'buildings'): int64_t ns3::FixedRoomPositionAllocator::AssignStreams(int64_t arg0) [member function]
+    cls.add_method('AssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'arg0')], 
+                   is_virtual=True)
+    ## building-position-allocator.h (module 'buildings'): ns3::Vector ns3::FixedRoomPositionAllocator::GetNext() const [member function]
+    cls.add_method('GetNext', 
+                   'ns3::Vector', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## building-position-allocator.h (module 'buildings'): static ns3::TypeId ns3::FixedRoomPositionAllocator::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     return
 
 def register_Ns3FixedRssLossModel_methods(root_module, cls):

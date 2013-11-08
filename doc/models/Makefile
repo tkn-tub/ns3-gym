@@ -106,12 +106,20 @@ SOURCEFIGS = \
 	$(SRC)/lte/doc/source/figures/lte-arch-ue-ctrl.dia \
 	$(SRC)/lte/doc/source/figures/lte-enb-phy.dia \
 	$(SRC)/lte/doc/source/figures/lte-ue-phy.dia \
+	$(SRC)/lte/doc/source/figures/lte-epc-x2-handover-seq-diagram.dia \
 	$(SRC)/lte/doc/source/figures/lte-epc-e2e-data-protocol-stack.dia \
 	$(SRC)/lte/doc/source/figures/lte-interference-test-scenario.dia \
 	$(SRC)/lte/doc/source/figures/lte-subframe-structure.dia \
 	$(SRC)/lte/doc/source/figures/lte-epc-x2-interface.dia \
 	$(SRC)/lte/doc/source/figures/lte-harq-architecture.dia \
 	$(SRC)/lte/doc/source/figures/lte-harq-processes-scheme.dia \
+	$(SRC)/lte/doc/source/figures/ue-meas-consumer.dia \
+	$(SRC)/lte/doc/source/figures/ue-meas-piecewise-motion.dia \
+	$(SRC)/lte/doc/source/figures/ue-meas-piecewise-a1.dia \
+	$(SRC)/lte/doc/source/figures/ue-meas-piecewise-a1-hys.dia \
+	$(SRC)/lte/doc/source/figures/lte-cell-selection-timeline.dia \
+	$(SRC)/lte/doc/source/figures/lte-cell-selection-scenario.dia \
+	$(SRC)/lte/doc/source/figures/lte-handover-target-scenario.dia \
 	$(SRC)/lte/doc/source/figures/lena-dual-stripe.eps \
 	$(SRC)/lte/doc/source/figures/lte-mcs-index.eps \
 	$(SRC)/lte/doc/source/figures/lenaThrTestCase1.eps \
@@ -128,8 +136,8 @@ SOURCEFIGS = \
 	$(SRC)/lte/doc/source/figures/lte-rlc-data-retx-dl.eps \
 	$(SRC)/lte/doc/source/figures/lte-rlc-data-txon-ul.eps \
 	$(SRC)/lte/doc/source/figures/lte-rlc-data-retx-ul.eps \
-	$(SRC)/lte/doc/source/figures/lte-epc-x2-handover-seq-diagram.eps \
 	$(SRC)/lte/doc/source/figures/lte-epc-x2-entity-saps.eps \
+	$(SRC)/lte/doc/source/figures/lte-strongest-cell-handover-algorithm.eps \
 	$(SRC)/lte/doc/source/figures/lte-phy-interference.pdf \
 	$(SRC)/lte/doc/source/figures/lte-phy-interference.png \
 	$(SRC)/lte/doc/source/figures/helpers.pdf \
@@ -150,8 +158,6 @@ SOURCEFIGS = \
 	$(SRC)/lte/doc/source/figures/lte-enb-rrc-states.png \
 	$(SRC)/lte/doc/source/figures/lte-ue-rrc-states.pdf \
 	$(SRC)/lte/doc/source/figures/lte-ue-rrc-states.png \
-	$(SRC)/lte/doc/source/figures/lte-handover-algorithm.pdf \
-	$(SRC)/lte/doc/source/figures/lte-handover-algorithm.png \
 	$(SRC)/lte/doc/source/figures/fading_pedestrian.pdf \
 	$(SRC)/lte/doc/source/figures/fading_pedestrian.png \
 	$(SRC)/lte/doc/source/figures/fading_vehicular.pdf \
@@ -182,6 +188,10 @@ SOURCEFIGS = \
 	$(SRC)/lte/doc/source/figures/MCS_16_test.pdf \
 	$(SRC)/lte/doc/source/figures/miesm_scheme.pdf \
 	$(SRC)/lte/doc/source/figures/miesm_scheme.png \
+	$(SRC)/lte/doc/source/figures/lte-handover-campaign-rem.pdf \
+	$(SRC)/lte/doc/source/figures/lte-handover-campaign-rem.png \
+	$(SRC)/lte/doc/source/figures/lte-legacy-handover-algorithm.pdf \
+	$(SRC)/lte/doc/source/figures/lte-legacy-handover-algorithm.png \
 	$(SRC)/uan/doc/auvmobility-classes.dia \
 	$(SRC)/stats/doc/Stat-framework-arch.png \
 	$(SRC)/stats/doc/Wifi-default.png \
@@ -246,6 +256,13 @@ IMAGES_EPS = \
 	$(FIGURES)/lte-epc-x2-interface.eps \
 	$(FIGURES)/lte-harq-architecture.eps \
 	$(FIGURES)/lte-harq-processes-scheme.eps \
+	$(FIGURES)/ue-meas-consumer.eps \
+	$(FIGURES)/ue-meas-piecewise-motion.eps \
+	$(FIGURES)/ue-meas-piecewise-a1.eps \
+	$(FIGURES)/ue-meas-piecewise-a1-hys.eps \
+	$(FIGURES)/lte-cell-selection-timeline.eps \
+	$(FIGURES)/lte-cell-selection-scenario.eps \
+	$(FIGURES)/lte-handover-target-scenario.eps \
 	$(FIGURES)/lena-dual-stripe.eps \
 	$(FIGURES)/lte-mcs-index.eps \
 	$(FIGURES)/lenaThrTestCase1.eps \
@@ -264,6 +281,7 @@ IMAGES_EPS = \
 	$(FIGURES)/lte-rlc-data-retx-ul.eps \
 	$(FIGURES)/lte-epc-x2-handover-seq-diagram.eps \
 	$(FIGURES)/lte-epc-x2-entity-saps.eps \
+	$(FIGURES)/lte-strongest-cell-handover-algorithm.eps \
 	$(FIGURES)/auvmobility-classes.eps \
 
 # rescale pdf figures as necessary
@@ -299,8 +317,6 @@ $(FIGURES)/lte-phy-interference.pdf_width = 12cm
 $(FIGURES)/lte-subframe-structure.pdf_width = 2in
 $(FIGURES)/mac-random-access-contention.pdf_width = 10cm
 $(FIGURES)/mac-random-access-noncontention.pdf_width = 15cm
-$(FIGURES)/lte-ue-rrc-states.pdf_width = 7cm
-$(FIGURES)/lte-handover-algorithm.pdf_width = 10cm
 $(FIGURES)/helpers.pdf_width = 8cm
 $(FIGURES)/auvmobility-classes.pdf_width = 10cm
 
@@ -309,7 +325,7 @@ IMAGES_PDF = ${IMAGES_EPS:.eps=.pdf}
 
 IMAGES = $(IMAGES_EPS) $(IMAGES_PNG) $(IMAGES_PDF)
 
-RESCALE = $(shell hg root)/utils/rescale-pdf.sh
+RESCALE = ../../utils/rescale-pdf.sh
 
 %.eps : %.dia; $(DIA) -t eps $< -e $@
 %.png : %.dia; $(DIA) -t png $< -e $@

@@ -55,43 +55,65 @@ public:
   static TypeId GetTypeId (void);
 
   LteUeNetDevice (void);
-  /**
-   * \brief Create an UE net device
-   * \param node the node to which the device belongs
-   * \param phy the PHY entity
-   * \param mac the MAC entity
-   * \param rrc the RRC entity
-   * \param nas the NAS entity
-   * \param imsi the unique UE identifier
-   * 
-   */
-  LteUeNetDevice (Ptr<Node> node, Ptr<LteUePhy> phy, Ptr<LteUeMac> mac, Ptr<LteUeRrc> rrc, Ptr<EpcUeNas> nas, uint64_t imsi);
-
   virtual ~LteUeNetDevice (void);
   virtual void DoDispose ();
 
 
   // inherited from NetDevice
   virtual bool Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber);
-  
+
 
   Ptr<LteUeMac> GetMac (void) const;
 
-  Ptr<LteUeRrc> GetRrc () const ;
+  Ptr<LteUeRrc> GetRrc () const;
 
   Ptr<LteUePhy> GetPhy (void) const;
-  
+
   Ptr<EpcUeNas> GetNas (void) const;
 
   uint64_t GetImsi () const;
 
- 
+  /**
+   * \return the downlink carrier frequency (EARFCN)
+   *
+   * Note that real-life handset typically supports more than one EARFCN, but
+   * the sake of simplicity we assume only one EARFCN is supported.
+   */
+  uint16_t GetDlEarfcn () const;
+
+  /**
+   * \param bw the downlink carrier frequency (EARFCN)
+   *
+   * Note that real-life handset typically supports more than one EARFCN, but
+   * the sake of simplicity we assume only one EARFCN is supported.
+   */
+  void SetDlEarfcn (uint16_t earfcn);
+
+  /**
+   * \brief Returns the CSG ID the UE is currently a member of.
+   * \return the Closed Subscriber Group identity
+   */
+  uint32_t GetCsgId () const;
+
+  /**
+   * \brief Enlist the UE device as a member of a particular CSG.
+   * \param csgId the intended Closed Subscriber Group identity
+   *
+   * UE is associated with a single CSG identity, and thus becoming a member of
+   * this particular CSG. As a result, the UE may gain access to cells which
+   * belong to this CSG. This does not revoke the UE's access to non-CSG cells.
+   *
+   * \note This restriction only applies to initial cell selection and
+   *       EPC-enabled simulation.
+   */
+  void SetCsgId (uint32_t csgId);
+
   /**
    * \brief Set the targer eNB where the UE is registered
    * \param enb
    */
   void SetTargetEnb (Ptr<LteEnbNetDevice> enb);
-  
+
   /**
    * \brief Get the targer eNB where the UE is registered
    * \return the pointer to the enb
@@ -105,16 +127,18 @@ protected:
 
 
 private:
+  bool m_isConstructed;
 
   /**
-   * Some attributes are exported as
-   * attributes of the LteUeNetDevice from a user perspective,  but
-   * are actually used also in other modules as well (the RRC, the
-   * PHY...). This methods takes care of updating the
-   * configuration of all modules so that their copy of the attribute
-   * values is in sync with the one in the LteUeNetDevice.
+   * \brief Propagate attributes and configuration to sub-modules.
+   *
+   * Several attributes (e.g., the IMSI) are exported as the attributes of the
+   * LteUeNetDevice from a user perspective, but are actually used also in other
+   * sub-modules (the RRC, the PHY, etc.). This method takes care of updating
+   * the configuration of all these sub-modules so that their copy of attribute
+   * values are in sync with the one in the LteUeNetDevice.
    */
-  void UpdateConfig (void);
+  void UpdateConfig ();
 
   Ptr<LteEnbNetDevice> m_targetEnb;
 
@@ -124,8 +148,12 @@ private:
   Ptr<EpcUeNas> m_nas;
 
   uint64_t m_imsi;
-  
-};
+
+  uint16_t m_dlEarfcn; /**< downlink carrier frequency */
+
+  uint32_t m_csgId;
+
+}; // end of class LteUeNetDevice
 
 } // namespace ns3
 

@@ -287,6 +287,10 @@ void
 DcfManager::SetupPhyListener (Ptr<WifiPhy> phy)
 {
   NS_LOG_FUNCTION (this << phy);
+  if (m_phyListener != 0)
+    {
+      delete m_phyListener;
+    }
   m_phyListener = new PhyListener (this);
   phy->RegisterListener (m_phyListener);
 }
@@ -294,6 +298,10 @@ void
 DcfManager::SetupLowListener (Ptr<MacLow> low)
 {
   NS_LOG_FUNCTION (this << low);
+  if (m_lowListener != 0)
+    {
+      delete m_lowListener;
+    }
   m_lowListener = new LowDcfListener (this);
   low->RegisterDcfListener (m_lowListener);
 }
@@ -748,7 +756,7 @@ void
 DcfManager::NotifyNavStartNow (Time duration)
 {
   NS_LOG_FUNCTION (this << duration);
-  NS_ASSERT (m_lastNavStart < Simulator::Now ());
+  NS_ASSERT (m_lastNavStart <= Simulator::Now ());
   MY_DEBUG ("nav start for=" << duration);
   UpdateBackoff ();
   Time newNavEnd = Simulator::Now () + duration;

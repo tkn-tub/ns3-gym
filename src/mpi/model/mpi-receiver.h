@@ -56,6 +56,8 @@ public:
    */
   void SetReceiveCallback (Callback<void, Ptr<Packet> > callback);
 private:
+  virtual void DoDispose (void);
+
   Callback<void, Ptr<Packet> > m_rxCallback;
 };
 

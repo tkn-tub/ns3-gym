@@ -20,7 +20,7 @@ IMAGES_PDF = ${IMAGES_EPS:.eps=.pdf}
 
 IMAGES = $(IMAGES_EPS) $(IMAGES_PNG) $(IMAGES_PDF)
 
-RESCALE = $(shell hg root)/utils/rescale-pdf.sh
+RESCALE = ../../../utils/rescale-pdf.sh
 
 %.eps : %.dia; $(DIA) -t eps $< -e $@
 %.png : %.dia; $(DIA) -t png $< -e $@

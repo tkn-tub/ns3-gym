@@ -208,7 +208,6 @@ private:
   uint8_t m_ctrlFromDs;
   uint8_t m_ctrlMoreFrag;
   uint8_t m_ctrlRetry;
-  uint8_t m_ctrlPwrMgt;
   uint8_t m_ctrlMoreData;
   uint8_t m_ctrlWep;
   uint8_t m_ctrlOrder;
