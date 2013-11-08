@@ -25,17 +25,20 @@
 
 #include <ns3/nstime.h>
 #include <ns3/object.h>
-#include <ns3/packet.h>
+#include <ns3/traced-callback.h>
+#include <ns3/event-id.h>
+
 #include <ns3/lte-enb-cmac-sap.h>
 #include <ns3/lte-mac-sap.h>
 #include <ns3/ff-mac-sched-sap.h>
+#include <ns3/ff-mac-csched-sap.h>
 #include <ns3/lte-pdcp-sap.h>
 #include <ns3/epc-x2-sap.h>
 #include <ns3/epc-enb-s1-sap.h>
+#include <ns3/lte-handover-management-sap.h>
 #include <ns3/lte-enb-cphy-sap.h>
 #include <ns3/lte-rrc-sap.h>
-#include <ns3/traced-callback.h>
-#include <ns3/event-id.h>
+#include <ns3/lte-anr-sap.h>
 
 #include <map>
 #include <set>
@@ -45,37 +48,9 @@ namespace ns3 {
 class LteRadioBearerInfo;
 class LteSignalingRadioBearerInfo;
 class LteDataRadioBearerInfo;
-class EpcEnbS1SapUser;
-class EpcEnbS1SapProvider;
-class LteUeRrc;
 class LteEnbRrc;
+class Packet;
 
-
-/**
- * Neighbour Relation between two eNBs (serving eNB and neighbour eNB)
- * See XXXXX for more info
- */
-class NeighbourRelation : public Object
-{
-public:
-  uint16_t  m_physCellId;
-  bool      m_noRemove;
-  bool      m_noHo;
-  bool      m_noX2;
-  bool      m_detectedAsNeighbour;
-};
-
-/**
- * Measurements reported by a UE for a cellId
- * The values are quantized according 3GPP TS XXXXX
- */
-class UeMeasure : public Object
-{
-public:
-  uint16_t  m_cellId;
-  uint8_t   m_rsrp;
-  uint8_t   m_rsrq;
-};
 
 
 /**
@@ -94,19 +69,19 @@ public:
    * 
    */
   enum State
-    {
-      INITIAL_RANDOM_ACCESS = 0,
-      CONNECTION_SETUP,
-      CONNECTION_REJECTED,
-      CONNECTED_NORMALLY,
-      CONNECTION_RECONFIGURATION,
-      CONNECTION_REESTABLISHMENT,
-      HANDOVER_PREPARATION,
-      HANDOVER_JOINING,
-      HANDOVER_PATH_SWITCH,
-      HANDOVER_LEAVING,
-      NUM_STATES
-    };
+  {
+    INITIAL_RANDOM_ACCESS = 0,
+    CONNECTION_SETUP,
+    CONNECTION_REJECTED,
+    CONNECTED_NORMALLY,
+    CONNECTION_RECONFIGURATION,
+    CONNECTION_REESTABLISHMENT,
+    HANDOVER_PREPARATION,
+    HANDOVER_JOINING,
+    HANDOVER_PATH_SWITCH,
+    HANDOVER_LEAVING,
+    NUM_STATES
+  };
 
   UeManager ();
  
@@ -282,19 +257,19 @@ public:
    * \return the RNTI, i.e., an UE identifier that is unique within
    * the cell
    */
-  uint16_t GetRnti (void);
+  uint16_t GetRnti (void) const;
 
   /** 
    *
    * \return the IMSI, i.e., a globally unique UE identifier
    */
-  uint64_t GetImsi (void);
+  uint64_t GetImsi (void) const;
 
   /** 
    * 
    * \return the SRS Configuration Index
    */
-  uint16_t GetSrsConfigurationIndex (void);  
+  uint16_t GetSrsConfigurationIndex (void) const;
 
   /** 
    * Set the SRS configuration index and do the necessary reconfiguration
@@ -307,7 +282,7 @@ public:
    * 
    * \return the current state
    */
-  State GetState ();
+  State GetState () const;
 
 
 private:
@@ -341,21 +316,13 @@ private:
    * current configuration
    */
   LteRrcSap::RrcConnectionReconfiguration BuildRrcConnectionReconfiguration ();
-  
+
   /** 
    * 
    * \return a RadioResourceConfigDedicated struct built based on the
    * current configuration
    */
   LteRrcSap::RadioResourceConfigDedicated BuildRadioResourceConfigDedicated ();
-
-  /** 
-   * 
-   * \return a MeasConfig struct built based on the
-   * current configuration
-   */
-  LteRrcSap::MeasConfig BuildMeasConfig ();
-
 
   /** 
    * 
@@ -438,11 +405,8 @@ private:
   EventId m_handoverJoiningTimeout;
   EventId m_handoverLeavingTimeout;
 
-  Ptr<UeMeasure> m_servingCellMeasures;
-  //       cellid
-  std::map<uint16_t, Ptr<UeMeasure> > m_neighbourCellMeasures;
-
 };
+
 
 
 /**
@@ -454,6 +418,8 @@ class LteEnbRrc : public Object
 {
 
   friend class EnbRrcMemberLteEnbCmacSapUser;
+  friend class MemberLteHandoverManagementSapUser<LteEnbRrc>;
+  friend class MemberLteAnrSapUser<LteEnbRrc>;
   friend class MemberLteEnbRrcSapProvider<LteEnbRrc>;
   friend class MemberEpcEnbS1SapUser<LteEnbRrc>;
   friend class EpcX2SpecificEpcX2SapUser<LteEnbRrc>;
@@ -504,6 +470,36 @@ public:
    * \return s the CMAC SAP User interface offered to the MAC by this RRC
    */
   LteEnbCmacSapUser* GetLteEnbCmacSapUser ();
+
+
+  /**
+   * set the Handover Management SAP this RRC should interact with
+   *
+   * \param s the Handover Management SAP Provider to be used by this RRC
+   */
+  void SetLteHandoverManagementSapProvider (LteHandoverManagementSapProvider * s);
+
+  /**
+   * Get the Handover Management SAP offered by this RRC
+   * \return s the Handover Management SAP User interface offered to the
+   *           handover algorithm by this RRC
+   */
+  LteHandoverManagementSapUser* GetLteHandoverManagementSapUser ();
+
+
+  /**
+   * set the ANR SAP this RRC should interact with
+   *
+   * \param s the ANR SAP Provider to be used by this RRC
+   */
+  void SetLteAnrSapProvider (LteAnrSapProvider * s);
+
+  /**
+   * Get the ANR SAP offered by this RRC
+   * \return s the ANR SAP User interface offered to the ANR instance by this
+   *           RRC
+   */
+  LteAnrSapUser* GetLteAnrSapUser ();
 
 
   /**
@@ -568,20 +564,50 @@ public:
   Ptr<UeManager> GetUeManager (uint16_t rnti);
 
   /**
-   * configure cell-specific parameters
+   * \brief Add a new UE measurement reporting configuration
+   * \param config the new reporting configuration
+   * \return the measurement ID (measId) referring to the newly added
+   *         reporting configuration
    *
+   * Assuming intra-frequency environment, the new measurement reporting
+   * configuration will be automatically associated to the only measurement
+   * object (i.e., a new measurement identity will be automatically created).
+   *
+   * Can only be called before the start of simulation.
+   */
+  uint8_t AddUeMeasReportConfig (LteRrcSap::ReportConfigEutra config);
+
+  /**
+   * \brief Configure cell-specific parameters.
    * \param ulBandwidth the uplink bandwidth in number of RB
    * \param dlBandwidth the downlink bandwidth in number of RB
    * \param ulEarfcn the UL EARFCN
    * \param dlEarfcn the DL EARFCN
    * \param cellId the ID of the cell
+   *
+   * Configure cell-specific parameters and propagate them to lower layers.
+   * The parameters include bandwidth, EARFCN (E-UTRA Absolute Radio Frequency
+   * Channel Number), and cell ID.
+   *
+   * In addition to parameter configuration, this function also performs several
+   * other tasks:
+   *  - Initializing UE measurement (i.e. measurement object and quantity
+   *    configuration), which is expected to be further configured through
+   *    `LteEnbRrc::AddUeMeasReportConfig`;
+   *  - Enabling MIB (Master Information Block) broadcast transmission
+   *  - Enabling SIB (System Information Block) broadcast transmission
+   *
+   * Typically runs when the eNodeB NetDevice is installed, for instance by
+   * `LteHelper::InstallEnbDevice` (i.e. before the simulation starts).
+   *
+   * \warning Raises an error when executed more than once.
    */
   void ConfigureCell (uint8_t ulBandwidth,
                       uint8_t dlBandwidth,
                       uint16_t ulEarfcn, 
                       uint16_t dlEarfcn,
                       uint16_t cellId);
-  
+
   /** 
    * set the cell id of this eNB
    * 
@@ -663,8 +689,8 @@ public:
 private:
 
 
-  // methods forwarded from RRC SAP
-  
+  // RRC SAP methods
+
   void DoCompleteSetupUe (uint16_t rnti, LteEnbRrcSapProvider::CompleteSetupUeParameters params);
   void DoRecvRrcConnectionRequest (uint16_t rnti, LteRrcSap::RrcConnectionRequest msg);
   void DoRecvRrcConnectionSetupCompleted (uint16_t rnti, LteRrcSap::RrcConnectionSetupCompleted msg);
@@ -673,11 +699,13 @@ private:
   void DoRecvRrcConnectionReestablishmentComplete (uint16_t rnti, LteRrcSap::RrcConnectionReestablishmentComplete msg);
   void DoRecvMeasurementReport (uint16_t rnti, LteRrcSap::MeasurementReport msg);
 
-
   // S1 SAP methods
+
   void DoDataRadioBearerSetupRequest (EpcEnbS1SapUser::DataRadioBearerSetupRequestParameters params);
-  void DoPathSwitchRequestAcknowledge (EpcEnbS1SapUser::PathSwitchRequestAcknowledgeParameters params);       
+  void DoPathSwitchRequestAcknowledge (EpcEnbS1SapUser::PathSwitchRequestAcknowledgeParameters params);
+
   // X2 SAP methods
+
   void DoRecvHandoverRequest (EpcX2SapUser::HandoverRequestParams params);
   void DoRecvHandoverRequestAck (EpcX2SapUser::HandoverRequestAckParams params);
   void DoRecvHandoverPreparationFailure (EpcX2SapUser::HandoverPreparationFailureParams params);
@@ -687,12 +715,21 @@ private:
   void DoRecvResourceStatusUpdate (EpcX2SapUser::ResourceStatusUpdateParams params);
   void DoRecvUeData (EpcX2SapUser::UeDataParams params);
 
-
   // CMAC SAP methods
+
   uint16_t DoAllocateTemporaryCellRnti ();
   void DoNotifyLcConfigResult (uint16_t rnti, uint8_t lcid, bool success);
   void DoRrcConfigurationUpdateInd (LteEnbCmacSapUser::UeConfig params);
-  
+
+  // Handover Management SAP methods
+
+  uint8_t DoAddUeMeasReportConfigForHandover (LteRrcSap::ReportConfigEutra reportConfig);
+  void DoTriggerHandover (uint16_t rnti, uint16_t targetCellId);
+
+  // ANR SAP methods
+
+  uint8_t DoAddUeMeasReportConfigForAnr (LteRrcSap::ReportConfigEutra reportConfig);
+
 
   // Internal methods
 
@@ -745,6 +782,27 @@ public:
    * \return the current SRS periodicity
    */
   uint32_t GetSrsPeriodicity () const;
+
+  /**
+   * \brief Associate this RRC entity with a particular CSG information.
+   * \param csgId the intended Closed Subscriber Group identity
+   * \param csgIndication if TRUE, only CSG members are allowed to access the
+   *                      cell
+   *
+   * CSG identity is a number identifying a Closed Subscriber Group which the
+   * cell belongs to. eNodeB is associated with a single CSG identity.
+   *
+   * The same CSG identity can also be associated to several UEs, which is
+   * equivalent as enlisting these UEs as the members of this particular CSG.
+   * When the CSG indication field is set to TRUE, only UEs which are members of
+   * the CSG (i.e. same CSG ID) can gain access to the eNodeB, therefore
+   * enforcing closed access mode. Otherwise, the eNodeB operates as a non-CSG
+   * cell and implements open access mode.
+   *
+   * This restriction only applies to initial cell selection and EPC-enabled
+   * simulation.
+   */
+  void SetCsgId (uint32_t csgId, bool csgIndication);
 
 private:
 
@@ -804,6 +862,12 @@ private:
   LteEnbCmacSapUser* m_cmacSapUser;
   LteEnbCmacSapProvider* m_cmacSapProvider;
 
+  LteHandoverManagementSapUser* m_handoverManagementSapUser;
+  LteHandoverManagementSapProvider* m_handoverManagementSapProvider;
+
+  LteAnrSapUser* m_anrSapUser;
+  LteAnrSapProvider* m_anrSapProvider;
+
   LteEnbRrcSapUser* m_rrcSapUser;
   LteEnbRrcSapProvider* m_rrcSapProvider;
 
@@ -823,46 +887,57 @@ private:
   uint16_t m_ulBandwidth;
   uint16_t m_lastAllocatedRnti;
 
-  std::map<uint16_t, Ptr<UeManager> > m_ueMap;  
+  /// the System Information Block Type 1 that is currently broadcasted over BCH
+  LteRrcSap::SystemInformationBlockType1 m_sib1;
+
+  std::map<uint16_t, Ptr<UeManager> > m_ueMap;
+
+  /**
+   * \brief List of measurement configuration which are active in every UE
+   *        attached to this eNodeB instance.
+   */
+  LteRrcSap::MeasConfig m_ueMeasConfig;
+
+  std::set<uint8_t> m_handoverMeasIds;
+  std::set<uint8_t> m_anrMeasIds;
 
   struct X2uTeidInfo
   {
     uint16_t rnti;
     uint8_t drbid;
   };
-    
+
   //       TEID      RNTI, DRBID
-  std::map<uint32_t, X2uTeidInfo> m_x2uTeidInfoMap; 
-  
+  std::map<uint32_t, X2uTeidInfo> m_x2uTeidInfoMap;
+
   uint8_t m_defaultTransmissionMode;
 
   enum LteEpsBearerToRlcMapping_t m_epsBearerToRlcMapping;
 
   Time m_systemInformationPeriodicity;
-  
+
   // SRS related attributes
   uint16_t m_srsCurrentPeriodicityId;
   std::set<uint16_t> m_ueSrsConfigurationIndexSet;
   uint16_t m_lastAllocatedConfigurationIndex;
   bool m_reconfigureUes;
 
+  // Cell selection related attribute
+  int8_t m_qRxLevMin;
+
   // Handover related attributes
   bool m_admitHandoverRequest;
   bool m_admitRrcConnectionRequest;
-  uint8_t m_eventA2Threshold;
-  uint8_t m_eventA4Threshold;
-  uint8_t m_servingCellHandoverThreshold;
-  uint8_t m_neighbourCellHandoverOffset;
+
+  // UE measurements related attributes
+  uint8_t m_rsrpFilterCoefficient;
+  uint8_t m_rsrqFilterCoefficient;
 
   // timeouts
   Time m_connectionTimeoutDuration;
   Time m_connectionRejectedTimeoutDuration;
   Time m_handoverJoiningTimeoutDuration;
-  Time m_handoverLeavingTimeoutDuration;  
-
-  //       cellid
-  std::map<uint16_t, Ptr<NeighbourRelation> > m_neighbourRelationTable;
-
+  Time m_handoverLeavingTimeoutDuration;
 
   //             cellid    rnti   
   TracedCallback<uint16_t, uint16_t> m_newUeContextTrace;

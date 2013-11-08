@@ -116,8 +116,6 @@ private:
   // methods forwarded from LteEnbRrcSapUser
   void DoSetupUe (uint16_t rnti, LteEnbRrcSapUser::SetupUeParameters params);
   void DoRemoveUe (uint16_t rnti);
-  void DoSendMasterInformationBlock (LteRrcSap::MasterInformationBlock msg);
-  void DoSendSystemInformationBlockType1 (LteRrcSap::SystemInformationBlockType1 msg);
   void DoSendSystemInformation (LteRrcSap::SystemInformation msg);
   void SendSystemInformation (LteRrcSap::SystemInformation msg);
   void DoSendRrcConnectionSetup (uint16_t rnti, LteRrcSap::RrcConnectionSetup msg);

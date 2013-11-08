@@ -49,8 +49,8 @@ class PropagationLossModel;
 class SpectrumPropagationLossModel;
 
 /**
- * Creation and configuration of LTE entities
- *
+ * \ingroup lte
+ * \brief Creation and configuration of LTE entities
  */
 class LteHelper : public Object
 {
@@ -113,6 +113,26 @@ public:
   void SetSchedulerAttribute (std::string n, const AttributeValue &v);
 
   /**
+   *
+   * \param type the type of handover algorithm to be used for the eNBs
+   */
+  void SetHandoverAlgorithmType (std::string type);
+
+  /**
+   *
+   * \return the handover algorithm type
+   */
+  std::string GetHandoverAlgorithmType () const;
+
+  /**
+   * set an attribute for the handover algorithm to be created
+   *
+   * \param n the name of the attribute
+   * \param v the value of the attribute
+   */
+  void SetHandoverAlgorithmAttribute (std::string n, const AttributeValue &v);
+
+  /**
    * set an attribute for the LteEnbNetDevice to be created
    * 
    * \param n the name of the attribute
@@ -133,6 +153,14 @@ public:
    * \param v the value of the attribute
    */
   void SetEnbAntennaModelAttribute (std::string n, const AttributeValue &v);
+
+  /**
+   * set an attribute for the LteUeNetDevice to be created
+   *
+   * \param n the name of the attribute
+   * \param v the value of the attribute
+   */
+  void SetUeDeviceAttribute (std::string n, const AttributeValue &v);
 
   /** 
    * 
@@ -161,6 +189,7 @@ public:
    * \param v the value of the attribute
    */
   void SetSpectrumChannelAttribute (std::string n, const AttributeValue &v);
+
   /**
    * create a set of eNB devices
    *
@@ -180,40 +209,101 @@ public:
   NetDeviceContainer InstallUeDevice (NodeContainer c);
 
   /**
-   * Attach a set of UE devices to a single eNB device
+   * \brief Enables automatic attachment of a set of UE devices to a suitable
+   *        cell using Idle mode initial cell selection procedure.
+   * \param ueDevices the set of UE devices to be attached
    *
-   * \param ueDevices
-   * \param enbDevice
+   * By calling this, the UE will start the initial cell selection procedure at
+   * the beginning of simulation. In addition, the function also instructs each
+   * UE to immediately enter CONNECTED mode and activates the default EPS
+   * bearer.
+   *
+   * If this function is called when the UE is in a situation where entering
+   * CONNECTED mode is not possible (e.g. before the simulation begin), then the
+   * UE will attempt to connect at the earliest possible time (e.g. after it
+   * camps to a suitable cell).
+   *
+   * Note that this function can only be used in EPC-enabled simulation.
+   */
+  void Attach (NetDeviceContainer ueDevices);
+
+  /**
+   * \brief Enables automatic attachment of a UE device to a suitable cell
+   *        using Idle mode initial cell selection procedure.
+   * \param ueDevice the UE device to be attached
+   *
+   * By calling this, the UE will start the initial cell selection procedure at
+   * the beginning of simulation. In addition, the function also instructs the
+   * UE to immediately enter CONNECTED mode and activates the default EPS
+   * bearer.
+   *
+   * If this function is called when the UE is in a situation where entering
+   * CONNECTED mode is not possible (e.g. before the simulation begin), then the
+   * UE will attempt to connect at the earliest possible time (e.g. after it
+   * camps to a suitable cell).
+   *
+   * Note that this function can only be used in EPC-enabled simulation.
+   */
+  void Attach (Ptr<NetDevice> ueDevice);
+
+  /**
+   * \brief Manual attachment of a set of UE devices to the network via a given
+   *        eNodeB.
+   * \param ueDevices the set of UE devices to be attached
+   * \param enbDevice the destination eNodeB device
+   *
+   * In addition, the function also instructs each UE to immediately enter
+   * CONNECTED mode and activates the default EPS bearer.
+   *
+   * The function can be used in both LTE-only and EPC-enabled simulations.
+   * Note that this function will disable Idle mode initial cell selection
+   * procedure.
    */
   void Attach (NetDeviceContainer ueDevices, Ptr<NetDevice> enbDevice);
 
   /**
-   * Attach a UE to the network
+   * \brief Manual attachment of a UE device to the network via a given eNodeB.
+   * \param ueDevice the UE device to be attached
+   * \param enbDevice the destination eNodeB device
    *
-   * Attach a UE device to the network via a given eNB, and activate the default EPS bearer.
+   * In addition, the function also instructs the UE to immediately enter
+   * CONNECTED mode and activates the default EPS bearer.
    *
-   * \param ueDevice
-   * \param enbDevice
+   * The function can be used in both LTE-only and EPC-enabled simulations.
+   * Note that this function will disable Idle mode initial cell selection
+   * procedure.
    */
   void Attach (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice);
 
   /** 
-   * Attach each UE in a set to the closest (w.r.t. distance) eNB among those in a set.
+   * \brief Manual attachment of a set of UE devices to the network via the
+   *        closest eNodeB (with respect to distance) among those in the set.
+   * \param ueDevices the set of UE devices to be attached
+   * \param enbDevices the set of eNodeB devices to be considered
    * 
+   * This function finds among the eNodeB set the closest eNodeB for each UE,
+   * and then invokes manual attachment between the pair.
    * 
+   * Users are encouraged to use automatic attachment (Idle mode cell selection)
+   * instead of this function.
    * 
-   * \param ueDevices the set of UEs
-   * \param enbDevices the set of eNBs
+   * \sa LteHelper::Attach(NetDeviceContainer ueDevices);
    */
   void AttachToClosestEnb (NetDeviceContainer ueDevices, NetDeviceContainer enbDevices);
 
   /** 
-   * Attach an UE ito the closest (w.r.t. distance) eNB among those in a set
-   * Will call LteHelper::Attach () passing to it the single eNB
-   * instance which resulted to be the closest to the UE 
+   * \brief Manual attachment of a UE device to the network via the closest
+   *        eNodeB (with respect to distance) among those in the set.
+   * \param ueDevices the set UE device to be attached
+   * \param enbDevices the set of eNodeB devices to be considered
+   *
+   * This function finds among the eNodeB set the closest eNodeB for the UE,
+   * and then invokes manual attachment between the pair.
    * 
-   * \param ueDevice the UE
-   * \param enbDevices the set of eNBs
+   * Users are encouraged to use automatic attachment (Idle mode cell selection)
+   * instead of this function.
+   *
+   * \sa LteHelper::Attach(Ptr<NetDevice> ueDevice);
    */
   void AttachToClosestEnb (Ptr<NetDevice> ueDevice, NetDeviceContainer enbDevices);
 
@@ -323,7 +413,7 @@ public:
    * Enable trace sinks for UL PHY layer
    */
   void EnableUlPhyTraces (void);
-  
+
   /**
    * Enable trace sinks for DL transmission PHY layer
    */
@@ -416,9 +506,11 @@ private:
   Ptr<Object> m_uplinkPathlossModel;
 
   ObjectFactory m_schedulerFactory;
+  ObjectFactory m_handoverAlgorithmFactory;
   ObjectFactory m_propagationModelFactory;
   ObjectFactory m_enbNetDeviceFactory;
   ObjectFactory m_enbAntennaModelFactory;
+  ObjectFactory m_ueNetDeviceFactory;
   ObjectFactory m_ueAntennaModelFactory;
 
   ObjectFactory m_dlPathlossModelFactory;
@@ -445,6 +537,7 @@ private:
   uint16_t m_cellIdCounter;
 
   bool m_useIdealRrc;
+  bool m_isAnrEnabled;
 };
 
 

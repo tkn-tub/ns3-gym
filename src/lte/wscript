@@ -98,6 +98,13 @@ def build(bld):
         'model/epc-mme.cc',
         'model/lte-asn1-header.cc',
         'model/lte-rrc-header.cc',
+        'model/lte-handover-management-sap.cc',
+        'model/lte-handover-algorithm.cc',
+        'model/a2-a4-rsrq-handover-algorithm.cc',
+        'model/a3-rsrp-handover-algorithm.cc',
+        'model/no-op-handover-algorithm.cc',
+        'model/lte-anr-sap.cc',
+        'model/lte-anr.cc',
         ]
 
     module_test = bld.create_ns3_module_test_library('lte')
@@ -142,7 +149,9 @@ def build(bld):
         'test/test-lte-x2-handover-measures.cc',
         'test/test-asn1-encoding.cc',
         'test/lte-test-ue-measurements.cc',
+        'test/lte-test-cell-selection.cc',
         'test/test-lte-handover-delay.cc',
+        'test/test-lte-handover-target.cc',
         ]
 
     headers = bld(features='ns3header')
@@ -242,6 +251,13 @@ def build(bld):
         'model/epc-mme.h',
         'model/lte-asn1-header.h',
         'model/lte-rrc-header.h',
+        'model/lte-handover-management-sap.h',
+        'model/lte-handover-algorithm.h',
+        'model/a2-a4-rsrq-handover-algorithm.h',
+        'model/a3-rsrp-handover-algorithm.h',
+        'model/no-op-handover-algorithm.h',
+        'model/lte-anr-sap.h',
+        'model/lte-anr.h',
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):

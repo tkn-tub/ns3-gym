@@ -11,7 +11,7 @@ FIGURES = $(SOURCE)/figures
 # specify dia figures from which .png and .pdf figures need to be built
 
 IMAGES_DIA = \
-        $(FIGURES)/epc-ctrl-arch.dia \
+	$(FIGURES)/epc-ctrl-arch.dia \
 	$(FIGURES)/epc-data-flow-dl.dia \
 	$(FIGURES)/epc-data-flow-ul.dia \
 	$(FIGURES)/epc-profiling-scenario.dia \
@@ -26,12 +26,20 @@ IMAGES_DIA = \
 	$(FIGURES)/lte-arch-ue-ctrl.dia \
 	$(FIGURES)/lte-enb-phy.dia \
 	$(FIGURES)/lte-ue-phy.dia \
+	$(FIGURES)/lte-epc-x2-handover-seq-diagram.dia \
 	$(FIGURES)/lte-epc-e2e-data-protocol-stack.dia \
 	$(FIGURES)/lte-interference-test-scenario.dia \
 	$(FIGURES)/lte-subframe-structure.dia \
 	$(FIGURES)/lte-epc-x2-interface.dia \
 	$(FIGURES)/lte-harq-architecture.dia \
-	$(FIGURES)/lte-harq-processes-scheme.dia
+	$(FIGURES)/lte-harq-processes-scheme.dia \
+	$(FIGURES)/ue-meas-consumer.dia \
+	$(FIGURES)/ue-meas-piecewise-motion.dia \
+	$(FIGURES)/ue-meas-piecewise-a1.dia \
+	$(FIGURES)/ue-meas-piecewise-a1-hys.dia \
+	$(FIGURES)/lte-cell-selection-timeline.dia \
+	$(FIGURES)/lte-cell-selection-scenario.dia \
+	$(FIGURES)/lte-handover-target-scenario.dia
 
 
 # specify eps figures from which .png and .pdf figures need to be built
@@ -53,9 +61,8 @@ IMAGES_EPS = \
 	$(FIGURES)/lte-rlc-data-retx-dl.eps \
 	$(FIGURES)/lte-rlc-data-txon-ul.eps \
 	$(FIGURES)/lte-rlc-data-retx-ul.eps \
-	$(FIGURES)/lte-epc-x2-handover-seq-diagram.eps \
-	$(FIGURES)/lte-epc-x2-entity-saps.eps
-
+	$(FIGURES)/lte-epc-x2-entity-saps.eps \
+	$(FIGURES)/lte-strongest-cell-handover-algorithm.eps
 
 # rescale pdf figures as necessary
 $(FIGURES)/lte-interference-test-scenario.pdf_width = 3in
@@ -78,8 +85,6 @@ $(FIGURES)/lte-phy-interference.pdf_width = 12cm
 $(FIGURES)/lte-subframe-structure.pdf_width = 2in
 $(FIGURES)/mac-random-access-contention.pdf_width = 10cm
 $(FIGURES)/mac-random-access-noncontention.pdf_width = 15cm
-$(FIGURES)/lte-ue-rrc-states.pdf_width = 7cm
-$(FIGURES)/lte-handover-algorithm.pdf_width = 10cm
 $(FIGURES)/helpers.pdf_width = 8cm
 
 IMAGES_SEQDIAG = \
@@ -95,7 +100,7 @@ IMAGES_SEQDIAG = \
 IMAGES_DOT = \
 	$(FIGURES)/lte-enb-rrc-states.dot \
 	$(FIGURES)/lte-ue-rrc-states.dot \
-	$(FIGURES)/lte-handover-algorithm.dot
+	$(FIGURES)/lte-legacy-handover-algorithm.dot
 
 IMAGES_NOBUILD = $(FIGURES)/fading_pedestrian.png \
 	$(FIGURES)/fading_vehicular.png \
@@ -131,6 +136,8 @@ IMAGES_NOBUILD = $(FIGURES)/fading_pedestrian.png \
 	$(FIGURES)/helpers.pdf \
 	$(FIGURES)/miesm_scheme.pdf \
 	$(FIGURES)/miesm_scheme.png \
+	$(FIGURES)/lte-handover-campaign-rem.pdf \
+	$(FIGURES)/lte-handover-campaign-rem.png \
 	${IMAGES_SEQDIAG:.seqdiag=.png} \
 	${IMAGES_SEQDIAG:.seqdiag=.pdf} \
 	${IMAGES_DOT:.dot=.png} \

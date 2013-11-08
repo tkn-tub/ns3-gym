@@ -1,14 +1,14 @@
 .. include:: replace.txt
 
 
-++++++++++++++++++++++++++
- Design Documentation
-++++++++++++++++++++++++++
+++++++++++++++++++++
+Design Documentation
+++++++++++++++++++++
 
 
----------
+--------
 Overview
----------
+--------
 
 
 An overview of the  LTE-EPC simulation model is depicted in
@@ -34,9 +34,9 @@ the figure :ref:`fig-epc-topology`. There are two main components:
 
 .. _sec-design-criteria:
 
------------------------
+---------------
 Design Criteria
------------------------
+---------------
 
 
 LTE Model
@@ -61,7 +61,7 @@ have been considered:
     The reason is that, since packet scheduling is done on
     a per-RB basis, an eNB might transmit on a subset only of all the available
     RBs, hence interfering with other eNBs only on those RBs where it is
-    trasmitting.
+    transmitting.
     Note that this requirement rules out the adoption of a system level simulation
     approach, which evaluates resource allocation only at the granularity of
     call/bearer establishment.
@@ -114,10 +114,9 @@ EPC Model
 The main objective of the EPC model is to provides means for the
 simulation of end-to-end IP connectivity over the LTE model. 
 To this aim, it supports for the
-interconnection of multiple UEs to the internet, via a radio access
+interconnection of multiple UEs to the Internet, via a radio access
 network of multiple eNBs connected to a single SGW/PGW node, as shown
 in Figure :ref:`fig-epc-topology`.
-
 
 The following design choices have been made for the EPC model:
 
@@ -157,18 +156,18 @@ The following design choices have been made for the EPC model:
 
 
 
-.. _overall-architecture:
+.. _sec-overall-architecture:
 
------------------------
+------------
 Architecture
------------------------
+------------
 
 
 
 
 
-LTE Model 
-++++++++++
+LTE Model
++++++++++
 
 
 
@@ -391,6 +390,8 @@ Please refer to the documentation of the Buildings module for details
 on the actual models used in each case. 
 
 
+.. _sec-fading-model:
+
 Fading Model
 ++++++++++++
 
@@ -439,12 +440,12 @@ hence :math:`N_{scenarios} = 3`. All traces have :math:`T_{trace} = 10` s and :m
 Antennas
 ++++++++
 
-Being based on the SpectrumPhy, the LTE PHY model supports antenna
-modeling via the ns-3 AntennaModel class. Hence, any model based on
+Being based on the ``SpectrumPhy``, the LTE PHY model supports antenna
+modeling via the ns-3 ``AntennaModel`` class. Hence, any model based on
 this class can be associated with any eNB or UE instance. For
-instance, the use of the CosineAntennaModel associated with an eNB
+instance, the use of the ``CosineAntennaModel`` associated with an eNB
 device allows to model one sector of a macro base station. By default,
-the IsotropicAntennaModel is used for both eNBs and UEs. 
+the ``IsotropicAntennaModel`` is used for both eNBs and UEs. 
 
 
 
@@ -455,9 +456,9 @@ the IsotropicAntennaModel is used for both eNBs and UEs.
         \clearpage
 
 
-----
+---
 PHY
-----
+---
 
 
 Overview
@@ -478,7 +479,7 @@ The subframe is divided into control and data part as described in Figure :ref:`
 .. figure:: figures/lte-subframe-structure.*
    :width: 50px
 
-   Lte subframe division.
+   LTE subframe division.
 
 
 Considering the granularity of the simulator based on RB, the control and the reference signaling have to be consequently modeled considering this constraint.  According to the standard [TS36211]_, the downlink control frame starts at the beginning of each subframe and lasts up to three symbols across the whole system bandwidth, where the actual duration is provided by the Physical Control Format Indicator Channel (PCFICH). The information on the allocation are then mapped in the remaining resource up to the duration defined by the PCFICH, in the so called Physical Downlink Control Channel (PDCCH). A PDCCH transports a single message called Downlink Control Information (DCI) coming from the MAC layer, where the scheduler indicates the resource allocation for a specific user.
@@ -725,7 +726,7 @@ According to the considerations above, a model more flexible can be obtained con
 Therefore the PHY layer implements the MIMO model as the gain perceived by the receiver when using a MIMO scheme respect to the one obtained using SISO one. We note that, these gains referred to a case where there is no correlation between the antennas in MIMO scheme; therefore do not model degradation due to paths correlation.
 
 
-.. _phy-ue-measurements:
+.. _sec-phy-ue-measurements:
 
 UE PHY Measurements Model
 +++++++++++++++++++++++++
@@ -776,9 +777,9 @@ where :math:`RSRP_i` is the RSRP of the neighbor cell :math:`i`, :math:`P_i(k)` 
 
 
 
-----------
-HARQ 
-----------
+----
+HARQ
+----
 
 The HARQ scheme implemented is based on a incremental redundancy (IR) solutions combined with multiple stop-and-wait processes for enabling a continuous data flow. In detail, the solution adopted is the *soft combining hybrid IR Full incremental redundancy* (also called IR Type II), which implies that the retransmissions contain only new information respect to the previous ones. The resource allocation algorithm of the HARQ has been implemented within the respective scheduler classes (i.e., ``RrFfMacScheduler`` and ``PfFfMacScheduler``, refer to their correspondent sections for more info), while the decodification part of the HARQ has been implemented in the ``LteSpectrumPhy`` and ``LteHarqPhy`` classes which will be detailed in this section.
 
@@ -821,9 +822,9 @@ Finally, the HARQ engine is always active both at MAC and PHY layer; however, in
    Interaction between HARQ and LTE protocol stack
 
 
-------
-MAC 
-------
+---
+MAC
+---
   
 
 Resource Allocation Model
@@ -832,7 +833,7 @@ Resource Allocation Model
 
 We now briefly describe how resource allocation is handled in LTE,
 clarifying how it is modeled in the simulator. The scheduler is in
-charge of generating specific structures calles Data Control Indication (DCI)
+charge of generating specific structures called *Data Control Indication* (DCI)
 which are then transmitted by the PHY of the eNB to the connected UEs, in order
 to inform them of the resource allocation on a per subframe basis. In doing this
 in the downlink direction, the scheduler has to fill some specific fields of the
@@ -914,6 +915,7 @@ performs a functionality which is partially equivalent to that of the
 MAC headers specified by 3GPP. 
 
 
+.. _sec-ff-mac-scheduler:
 
 The FemtoForum MAC Scheduler Interface
 ++++++++++++++++++++++++++++++++++++++
@@ -1003,7 +1005,7 @@ available resources among the active flows, i.e., those logical channels which h
 
 For what concern the HARQ, RR implements the non adaptive version, which implies that in allocating the retransmission attempts RR uses the same allocation configuration of the original block, which means maintaining the same RBGs and MCS. UEs that are allocated for HARQ retransmissions are not considered for the transmission of new data in case they have a transmission opportunity available in the same TTI. Finally, HARQ can be disabled with ns3 attribute system for maintaining backward compatibility with old test cases and code, in detail::
 
-  Config::SetDefault ("ns3::RrFfMacScheduler::HarqEnabled", BooleanValue (false));
+   Config::SetDefault ("ns3::RrFfMacScheduler::HarqEnabled", BooleanValue (false));
 
 The scheduler implements the filtering of the uplink CQIs according to their nature with ``UlCqiFilter`` attibute, in detail:
 
@@ -1081,11 +1083,14 @@ where :math:`|\cdot|` indicates the cardinality of the set; finally,
    \right)}{\tau}
    
 
-For what concern the HARQ, PF implements the non adaptive version, which implies that in allocating the retransmission attempts the scheduler uses the same allocation configuration of the original block, which means maintaining the same RBGs and MCS. UEs that are allocated for HARQ retransmissions are not considered for the transmission of new data in case they have a transmission opportunity available in the same TTI. Finally, HARQ can be disabled with ns3 attribute system for maintaining backward compatibility with old test cases and code, in detail.
+For what concern the HARQ, PF implements the non adaptive version, which implies that in allocating the retransmission attempts the scheduler uses the same allocation configuration of the original block, which means maintaining the same RBGs and MCS. UEs that are allocated for HARQ retransmissions are not considered for the transmission of new data in case they have a transmission opportunity available in the same TTI. Finally, HARQ can be disabled with ns3 attribute system for maintaining backward compatibility with old test cases and code, in detail::
+
+   Config::SetDefault ("ns3::PfFfMacScheduler::HarqEnabled", BooleanValue (false));
+
 
 
 Maximum Throughput (MT) Scheduler
-----------------------------------
+---------------------------------
 
 The Maximum Throughput (MT) scheduler [FCapo2012]_ aims to maximize the overall throughput of eNB.
 It allocates each RB to the user that can achieve the maximum achievable rate in the current TTI.
@@ -1122,7 +1127,7 @@ fairness to UEs in poor channel condition.
 
 
 Throughput to Average (TTA) Scheduler
---------------------------------------
+-------------------------------------
 
 The Throughput to Average (TTA) scheduler [FCapo2012]_ can be considered as an intermediate between MT and PF. 
 The metric used in TTA is calculated as follows:
@@ -1264,6 +1269,8 @@ The scheduler implements the filtering of the uplink CQIs according to their nat
   - ``ALL_UL_CQI``: all CQIs are stored in the same internal attibute (i.e., the last CQI received is stored independently from its nature).
 
 
+.. _sec-random-access:
+
 Random Access
 +++++++++++++
 
@@ -1347,9 +1354,9 @@ and the other entities.
         \clearpage
 
 
-----
-RLC 
-----
+---
+RLC
+---
 
 
 
@@ -1441,7 +1448,7 @@ The following list specifies which service primitives are provided by the MAC se
           in the receiver peer
 
 
-.. _am_data_transfer:
+.. _sec-am_data_transfer:
 
 AM RLC
 ++++++
@@ -1667,7 +1674,7 @@ with the difference that, following the specifications of [TS36322]_,
 retransmission are not performed, and there are no STATUS PDUs.
 
 Transmit operations in uplink
-------------------------------
+-----------------------------
 
 The transmit operations in the uplink are similar to those of the
 downlink, with the main difference that the Report_Buffer_Status is
@@ -1857,11 +1864,13 @@ The RRC model implemented in the simulator provides the following functionality:
 
  - generation (at the eNB) and interpretation (at the UE) of System
    Information (in particular the Master Information Block and, at the
-   time of this writing, only System Information Block Type 2)
+   time of this writing, only System Information Block Type 1 and 2)
+ - initial cell selection
  - RRC connection establishment procedure
  - RRC reconfiguration procedure, supporting the following use cases:
    + reconfiguration of the SRS configuration index
    + reconfiguration of the PHY TX mode (MIMO)
+   + reconfiguration of UE measurements
    + data radio bearer setup
    + handover
  - RRC connection re-establishment, supporting the following use
@@ -1901,6 +1910,7 @@ as implemented in the RRC UE entity.
 .. _fig-lte-ue-rrc-states:
 
 .. figure:: figures/lte-ue-rrc-states.*
+   :scale: 70 %
    :align: center
 
    UE RRC State Machine
@@ -1938,11 +1948,173 @@ represented in Figure :ref:`fig-lte-enb-rrc-states`.
 .. _fig-lte-enb-rrc-states:
 
 .. figure:: figures/lte-enb-rrc-states.*
+   :scale: 70 %
    :align: center
 
    ENB RRC State Machine for each UE
 
 
+.. _sec-initial-cell-selection:
+
+Initial Cell Selection
+++++++++++++++++++++++
+
+Initial cell selection is an IDLE mode procedure, performed by UE when it has
+not yet camped or attached to an eNodeB. The objective of the procedure is to
+find a suitable cell and attach to it to gain access to the cellular network.
+
+It is typically done at the beginning of simulation, as depicted in Figure
+:ref:`fig-lte-cell-selection-timeline` below. The time diagram on the left side
+is illustrating the case where initial cell selection succeed on first try,
+while the diagram on the right side is for the case where it fails on the first
+try and succeed on the second try. The timing assumes the use of real RRC
+protocol model (see :ref:`sec-rrc-protocol-models`) and no transmission error.
+
+.. _fig-lte-cell-selection-timeline:
+
+.. figure:: figures/lte-cell-selection-timeline.*
+   :scale: 80 %
+   :align: center
+
+   Sample runs of initial cell selection in UE and timing of related events
+
+The functionality is based on 3GPP IDLE mode specifications, such as in
+[TS36300]_, [TS36304]_, and [TS36331]_. However, a proper implementation of IDLE
+mode is still missing in the simulator, so we reserve several simplifying
+assumptions:
+
+ - multiple carrier frequency is not supported;
+ 
+ - multiple Public Land Mobile Network (PLMN) identities (i.e. multiple network
+   operators) is not supported;
+ 
+ - RSRQ measurements are not utilized;
+ 
+ - stored information cell selection is not supported;
+
+ - "Any Cell Selection" state and camping to an acceptable cell is not
+   supported;
+ 
+ - marking a cell as barred or reserved is not supported;
+
+ - cell reselection is not supported, hence it is not possible for UE to camp to
+   a different cell after the initial camp has been placed; and
+ 
+ - UE's Closed Subscriber Group (CSG) white list contains only one CSG identity.
+   
+Also note that initial cell selection is only available for EPC-enabled
+simulations. LTE-only simulations must use the manual attachment method. See
+section :ref:`sec-network-attachment` of the User Documentation for more
+information on their differences in usage.
+
+The next subsections cover different parts of initial cell selection, namely
+*cell search*, *broadcast of system information*, and *cell selection evaluation*.
+
+.. _sec-cell-search:
+
+Cell Search
+-----------
+
+Cell search aims to detect surrounding cells and measure the strength of
+received signal from each of these cells. One of these cells will become the
+UE's entry point to join the cellular network.
+
+The measurements are based on the RSRP of the received PSS, averaged by Layer 1
+filtering, and performed by the PHY layer, as previously described in more
+detail in section :ref:`sec-phy-ue-measurements`. PSS is transmitted by eNodeB
+over the central 72 sub-carriers of the DL channel (Section 5.1.7.3 [TS36300]_),
+hence we model cell search to operate using a DL bandwidth of 6 RBs. Note that
+measurements of RSRQ are not available at this point of time in simulation. As
+a consequence, the ``LteUePhy::RsrqUeMeasThreshold`` attribute does not apply
+during cell search.
+
+By using the measured RSRP, the PHY entity is able to generate a list of
+detected cells, each with its corresponding cell ID and averaged RSRP. This list
+is periodically pushed via CPHY SAP to the RRC entity as a measurement report.
+
+The RRC entity inspects the report and simply choose the cell with the strongest
+RSRP, as also indicated in Section 5.2.3.1 of [TS36304]_. Then it instructs back
+the PHY entity to synchronize to this particular cell. The actual operating
+bandwidth of the cell is still unknown at this time, so the PHY entity listens
+only to the minimum bandwidth of 6 RBs. Nevertheless, the PHY entity will be
+able to receive system broadcast message from this particular eNodeB, which is
+the topic of the next subsection.
+
+Broadcast of System Information
+-------------------------------
+
+System information blocks are broadcasted by eNodeB to UEs at predefined time
+intervals, adapted from Section 5.2.1.2 of [TS36331]_. The supported system
+information blocks are:
+
+ - Master Information Block (MIB)
+      Contains parameters related to the PHY layer, generated during cell
+      configuration and broadcasted every 10 ms at the beginning of radio frame
+      as a control message.
+
+ - System Information Block Type 1 (SIB1)
+      Contains information regarding network access, broadcasted every 20 ms at
+      the middle of radio frame as a control message. Not used in manual
+      attachment method. UE must have decoded MIB before it can receive SIB1.
+      
+ - System Information Block Type 2 (SIB2)
+      Contains UL- and RACH-related settings, scheduled to transmit via RRC
+      protocol at 16 ms after cell configuration, and then repeats every 80 ms
+      (configurable through `LteEnbRrc::SystemInformationPeriodicity` attribute.
+      UE must be camped to a cell in order to be able to receive its SIB2.
+
+Reception of system information is fundamental for UE to advance in its
+lifecycle. MIB enables the UE to increase the initial DL bandwidth of 6 RBs to
+the actual operating bandwidth of the network. SIB1 provides information
+necessary for cell selection evaluation (explained in the next section). And
+finally SIB2 is required before the UE is allowed to switch to CONNECTED state.
+
+Cell Selection Evaluation
+-------------------------
+
+UE RRC reviews the measurement report produced in :ref:`sec-cell-search` and the
+cell access information provided by SIB1. Once both information is available for
+a specific cell, the UE triggers the evaluation process. The purpose of this
+process is to determine whether the cell is a suitable cell to camp to.
+
+The evaluation process is a slightly simplified version of Section 5.2.3.2 of
+[TS36304]_. It consists of the following criteria:
+
+ - Rx level criterion; and
+ 
+ - closed subscriber group (CSG) criterion.
+ 
+The first criterion, Rx level, is based on the cell's measured RSRP
+:math:`Q_{rxlevmeas}`, which has to be higher than a required minimum
+:math:`Q_{rxlevmin}` in order to pass the criterion:
+
+.. math::
+
+   Q_{rxlevmeas} - Q_{rxlevmin} > 0 
+
+where :math:`Q_{rxlevmin}` is determined by each eNodeB and is obtainable by UE
+from SIB1.
+
+The last criterion, CSG, is a combination of a true-or-false parameter called
+*CSG indication* and a simple number *CSG identity*. The basic rule is that UE
+shall not camp to eNodeB with a different CSG identity. But this rule is only
+enforced when CSG indication is valued as true. More details are provided in
+Section :ref:`sec-network-attachment` of the User Documentation.
+
+When the cell passes all the above criteria, the cell is deemed as *suitable*.
+Then UE camps to it (`IDLE_CAMPED_NORMALLY` state).
+
+After this, upper layer may request UE to enter CONNECTED mode. Please refer to
+section :ref:`sec-rrc-connection-establishment` for details on this.
+
+On the other hand, when the cell does not pass the CSG criterion, then the cell
+is labeled as *acceptable* (Section 10.1.1.1 [TS36300]_). In this case, the RRC
+entity will tell the PHY entity to synchronize to the second strongest cell and
+repeat the initial cell selection procedure using that cell. As long as no
+suitable cell is found, the UE will repeat these steps while avoiding cells that
+have been identified as acceptable.
+
+   
 
 Radio Admission Control
 +++++++++++++++++++++++
@@ -1990,109 +2162,493 @@ within the simulation program are supported (network-driven handovers
 based on UE measurements are planned only at a later stage).
 
 
-UE Measurements
-+++++++++++++++
+.. _sec-ue-measurements:
 
+UE RRC Measurements Model
++++++++++++++++++++++++++
 
 UE RRC measurements support
 ---------------------------
 
-The UE RRC entity provides support for UE measurements; in
-particular, it implements the procedures described in Section 5.5 of
-[TS36331]_, with the following simplifying assumptions:
+The UE RRC entity provides support for UE measurements; in particular, it
+implements the procedures described in Section 5.5 of [TS36331]_, with the
+following simplifying assumptions:
 
- - only E-UTRA intra-frequency measurements are supported;
+ - only E-UTRA intra-frequency measurements are supported, which implies:
+   
+   - only one measurement object is used during the simulation;
+   - measurement gaps are not needed to perform the measurements;
+   - Event B1 and B2 are not implemented;
+   
+ - only `reportStrongestCells` purpose is supported, while `reportCGI` and
+   `reportStrongestCellsForSON` purposes are not supported;
 
- - measurement gaps are not needed to perform the measurements;
+ - `s-Measure` is not supported;
+ 
+ - since carrier aggregation is not supported in by the LTE module, the
+   following assumptions in UE measurements hold true:
+   
+   - no notion of secondary cell (`SCell`);
+   - primary cell (`PCell`) simply means serving cell;
+   - Event A6 is not implemented;
+   
+ - speed dependant scaling of time-to-trigger (Section 5.5.6.2 of [TS36331]_) is
+   not supported.
 
- - only event-driven measurements are supported; the other type of
-   measurements are not supported;
+Overall design
+--------------
 
- - only the events A2 and A4 are to be supported; 
+The model is based on the concept of *UE measurements consumer*, which is an
+entity that may request an eNodeB RRC entity to provide UE measurement reports.
+Consumers are, for example, :ref:`sec-handover-algorithm`, which compute
+handover decision based on UE measurement reports. Test cases and user's
+programs may also become consumers. Figure :ref:`fig-ue-meas-consumer` depicts
+the relationship between these entities.
 
- - time-to-trigger is not supported, i.e., a time-to-trigger value
-   equal to zero is always assumed;
+.. _fig-ue-meas-consumer:
+   
+.. figure:: figures/ue-meas-consumer.*
+   :scale: 80 %
+   :align: center
 
- - layer 3 filtering assumes that the periodicity of the measurements
-   reported by the PHY is equal to 200ms;
+   Relationship between UE measurements and its consumers
 
- - in measurement reports, the reportQuantity is always assumed to be
-   "both", i.e., both RSRP and RSRQ are always reported, regardless of
-   the trigger quantity.
+The whole UE measurements function at the RRC level is divided into 4 major
+parts:
+
+ #. Measurement configuration (handled by ``LteUeRrc::ApplyMeasConfig``)
+ 
+ #. Performing measurements (handled by ``LteUeRrc::DoReportUeMeasurements``)
+ 
+ #. Measurement report triggering (handled by
+    ``LteUeRrc::MeasurementReportTriggering``)
+   
+ #. Measurement reporting (handled by ``LteUeRrc::SendMeasurementReport``)
+
+The following sections will describe each of the parts above.
+
+Measurement configuration
+-------------------------
+
+An eNodeB RRC entity configures UE measurements by sending the configuration
+parameters to the UE RRC entity. This set of parameters are defined within the
+``MeasConfig`` Information Element (IE) of the RRC Connection Reconfiguration
+message (:ref:`sec-rrc-connection-reconfiguration`).
+
+The eNodeB RRC entity implements the configuration parameters and procedures
+described in Section 5.5.2 of [TS36331]_, with the following simplifying
+assumption:
+
+ - configuration (i.e. addition, modification, and removal) can only be done
+   before the simulation begins;
+   
+ - all UEs attached to the eNodeB will be configured the same way, i.e. there is
+   no support for configuring specific measurement for specific UE; and
+   
+ - it is assumed that there is a one-to-one mapping between the PCI and the
+   E-UTRAN Global Cell Identifier (EGCI). This is consistent with the PCI
+   modeling assumptions described in :ref:`sec-phy-ue-measurements`.
+
+The eNodeB RRC instance here acts as an intermediary between the consumers and
+the attached UEs. At the beginning of simulation, each consumer provides the
+eNodeB RRC instance with the UE measurements configuration that it requires.
+After that, the eNodeB RRC distributes the configuration to attached UEs.
+
+Users may customize the measurement configuration using several methods. Please
+refer to Section :ref:`sec-configure-ue-measurements` of the User Documentation
+for the description of these methods.
+
+.. _sec-performing-measurements:
+
+Performing measurements
+-----------------------
+
+UE RRC receives both RSRP and RSRQ measurements on periodical basis from UE PHY,
+as described in :ref:`sec-phy-ue-measurements`. *Layer 3 filtering* will be
+applied to these received measurements. The implementation of the filtering
+follows Section 5.5.3.2 of [TS36331]_:
+
+.. math::
+
+   F_n = (1 - a) \times F_{n-1} + a \times M_n
+
+where:
+
+ - :math:`M_n` is the latest received measurement result from the physical
+   layer;
+ - :math:`F_n` is the updated filtered measurement result;
+ - :math:`F_{n-1}` is the old filtered measurement result, where
+   :math:`F_0 = M_1` (i.e. the first measurement is not filtered); and
+ - :math:`a = (\frac{1}{2})^{\frac{k}{4}}`, where :math:`k` is the configurable
+   `filterCoefficent` provided by the ``QuantityConfig``;
+   
+:math:`k = 4` is the default value, but can be configured by setting the
+`RsrpFilterCoefficient` and `RsrqFilterCoefficient` attributes in
+``LteEnbRrc``.
+
+Therefore :math:`k = 0` will disable Layer 3 filtering. On the other hand, past
+measurements can be granted more influence on the filtering results by using
+larger value of :math:`k`.
+
+Measurement reporting triggering
+--------------------------------
+
+In this part, UE RRC will go through the list of active measurement
+configuration and check whether the triggering condition is fulfilled in
+accordance with Section 5.5.4 of [TS36331]_. When at least one triggering
+condition from all the active measurement configuration is fulfilled, the
+measurement reporting procedure (described in the next subsection) will be
+initiated.
+
+3GPP defines two kinds of `triggerType`: *periodical* and *event-based*. At the
+moment, only event-based criterion is supported. There are various events that
+can be selected, which are briefly described in the table below: 
+
+.. table:: List of supported event-based triggering criteria
+
+   ======== ======================================================
+   Name     Description
+   ======== ======================================================
+   Event A1 Serving cell becomes better than `threshold`
+   Event A2 Serving cell becomes worse than `threshold`
+   Event A3 Neighbour becomes `offset` dB better than serving cell
+   Event A4 Neighbour becomes better than `threshold`
+   Event A5 Serving becomes worse than `threshold1`
+            *AND* neighbour becomes better than `threshold2`
+   ======== ======================================================
+
+Two main conditions to be checked in an event-based trigger are the *entering
+condition* and the *leaving condition*. More details on these two can be found
+in Section 5.5.4 of [TS36331]_.
+
+An event-based trigger can be further configured by introducing hysteresis and
+time-to-trigger. *Hysteresis* (:math:`Hys`) defines the distance between the
+entering and leaving conditions in dB. Similarly, *time-to-trigger* introduces
+delay to both entering and leaving conditions, but as a unit of time.
+
+The *periodical* type of reporting trigger is not supported, but its behaviour
+can be easily obtained by using an event-based trigger. This can be done by
+configuring the measurement in such a way that the entering condition is always
+fulfilled, for example, by setting the threshold of Event A1 to zero (the
+minimum level). As a result, the measurement reports will always be triggered
+at every certain interval, as determined by the `reportInterval` field within
+``LteRrcSap::ReportConfigEutra``, therefore producing the same behaviour as
+periodical reporting.
+
+As a limitation with respect to 3GPP specifications, the current model does not
+support any cell-specific configuration. These configuration parameters are
+defined in measurement object. As a consequence, incorporating a list of black
+cells into the triggering process is not supported. Moreover, cell-specific
+offset (i.e., :math:`O_{cn}` and :math:`O_{cp}` in Event A3, A4, and A5) are not
+supported as well. The value equal to zero is always assumed in place of them.
+
+Measurement reporting
+---------------------
+
+This part handles the submission of measurement report from the UE RRC entity
+to the serving eNodeB entity via RRC protocol. Several simplifying assumptions
+have been adopted:
+
+ - `reportAmount` is *not* applicable (i.e. always assumed to be infinite);
+   
+ - in measurement reports, the `reportQuantity` is always assumed to be `BOTH`,
+   i.e., both RSRP and RSRQ are always reported, regardless of the
+   `triggerQuantity`.
 
 
-eNB RRC measurement configuration
----------------------------------
-
-The eNB RRC entity configures the UE measurements. The eNB RRC entity
-sends the configuration parameters to the UE RRC entity in the
-MeasConfig IE of the RRC Connection Reconfiguration message when the UE
-attaches to the eNB or the RRC Handover Request message when the target
-eNB initiates the handover procedure.
-
-The eNB RRC entity implements the configuration parameters and procedures
-described in Section 5.5 of [TS36331]_, with the following simplifying
-assumptions:
-
- - only E-UTRA intra-frequency measurements are configured, so only the
-   downlink carrier frequency of the serving cell is configured as
-   measurement object;
-
- - only the events A2 and A4 are configured;
-
- - only the RSRQ threshold is configured for both events;
-
- - the reportInterval parameter is configured to 480 ms, so once the
-   events are triggered, the UE will send the measurement reports with
-   this periodicity;
-
- - the filterCoefficientRSRQ parameter is configured to fc4, it is the
-   default value specified in the protocol specification [TS36331]_;
-
- - the hysteresis and timeToTrigger parameters are configured with
-   values equal to zero;
-
- - it is assumed that there is a one-to-one mapping between the PCI
-   and the E-UTRAN Global Cell Identifier (EGCI). This is consistent
-   with the PCI modeling assumptions described in :ref:`phy-ue-measurements`.
-
-
+.. _sec-handover:
 
 Handover
 ++++++++
 
-The RRC model support the execution of an X2-based handover procedure.
-There are 2 ways to trigger the handover procedure:
+The RRC model supports UE mobility in CONNECTED mode by invoking the X2-based
+handover procedure. The model is intra-EUTRAN and intra-frequency, as based on
+Section 10.1.2.1 of [TS36300]_.
 
- - the handover could be triggered explicitly by the simulation program
-   by scheduling an execution of the method ``LteEnbRrc::SendHandoverRequest ()``
+This section focuses on the process of triggering a handover. The handover
+execution procedure itself is covered in Section :ref:`sec-x2`.
 
- - the handover could be triggered automatically by the eNB RRC entity.
-   The eNB executes the following algorithm :ref:`fig-lte-handover-algorithm` 
-   to trigger the handover procedure for a UE providing measurements in its
-   serving cell and the neighbour cells the UE measures:
+There are two ways to trigger the handover procedure:
 
-.. _fig-lte-handover-algorithm:
+ - *explicitly* (or manually) triggered by the simulation program by scheduling
+   an execution of the method ``LteEnbRrc::SendHandoverRequest``; or
 
-.. figure:: figures/lte-handover-algorithm.*
+ - *automatically* triggered by the eNodeB RRC entity based on UE measurements
+   and according to the selected handover algorithm.
+
+Section :ref:`sec-x2-based-handover` of the User Documentation provides some
+examples on using both explicit and automatic handover triggers in simulation.
+The next subsection will take a closer look on the automatic method, by
+describing the design aspects of the handover algorithm interface and the
+available handover algorithms.
+
+.. _sec-handover-algorithm:
+
+Handover algorithm
+------------------
+
+Handover in 3GPP LTE has the following properties:
+
+ - UE-assisted
+     The UE provides input to the network in the form of measurement reports.
+     This is handled by the :ref:`sec-ue-measurements`.
+   
+ - Network-controlled
+     The network (i.e. the source eNodeB and the target eNodeB) decides when to
+     trigger the handover and oversees its execution.
+
+The *handover algorithm* operates at the source eNodeB and is responsible in
+making handover decisions in an "automatic" manner. It interacts with an eNodeB
+RRC instance via the *Handover Management SAP* interface. These relationships
+are illustrated in Figure :ref:`fig-ue-meas-consumer` from the previous section.
+
+The handover algorithm interface consists of the following methods:
+
+ - ``AddUeMeasReportConfigForHandover``
+     (Handover Algorithm -> eNodeB RRC) Used by the handover algorithm to
+     request measurement reports from the eNodeB RRC entity, by passing the
+     desired reporting configuration. The configuration will be applied to
+     all future attached UEs.
+
+ - ``ReportUeMeas``
+     (eNodeB RRC -> Handover Algorithm) Based on the UE measurements configured
+     earlier in ``AddUeMeasReportConfigForHandover``, UE may submit measurement
+     reports to the eNodeB. The eNodeB RRC entity uses the ``ReportUeMeas``
+     interface to forward these measurement reports to the handover algorithm.
+     
+ - ``TriggerHandover``
+     (Handover Algorithm -> eNodeB RRC) After examining the measurement reports
+     (but not necessarily), the handover algorithm may declare a handover. This
+     method is used to notify the eNodeB RRC entity about this decision, which
+     will then proceed to commence the handover procedure. 
+
+One note for the ``AddUeMeasReportConfigForHandover``. The method will return
+the ``measId`` (measurement identity) of the newly created measurement
+configuration. Typically a handover algorithm would store this unique number. It
+may be useful in the ``ReportUeMeas`` method, for example when more than one
+configuration has been requested and the handover algorithm needs to
+differentiate incoming reports based on the configuration that triggered them.
+
+A handover algorithm is implemented by writing a subclass of the
+``LteHandoverAlgorithm`` abstract superclass and implementing each of the above
+mentioned SAP interface methods. Users may develop their own handover algorithm
+this way, and then use it in any simulation by following the steps outlined in
+Section :ref:`sec-x2-based-handover` of the User Documentation.
+
+Alternatively, users may choose to use one of the 3 built-in handover algorithms
+provided by the LTE module: no-op, A2-A4-RSRQ, and strongest cell handover
+algorithm. They are ready to be used in simulations or can be taken as an
+example of implementing a handover algorithm. Each of these built-in algorithms
+is covered in each of the following subsections.
+
+No-op handover algorithm
+------------------------
+
+The *no-op handover algorithm* (``NoOpHandoverAlgorithm`` class) is the simplest
+possible implementation of handover algorithm. It basically does nothing, i.e.,
+does not call any of the Handover Management SAP interface methods. Users may
+choose this handover algorithm if they wish to disable automatic handover
+trigger in their simulation.
+
+A2-A4-RSRQ handover algorithm
+-----------------------------
+
+The *A2-A4-RSRQ handover algorithm* provides the functionality of the default
+handover algorithm originally included in LENA M6 (ns-3.18), ported to the
+Handover Management SAP interface as the ``A2A4RsrqHandoverAlgorithm`` class.
+
+As the name implies, the algorithm utilizes the Reference Signal Received
+Quality (RSRQ) measurements acquired from Event A2 and Event A4. Thus, the
+algorithm will add 2 measurement configuration to the corresponding eNodeB RRC
+instance. Their intended use are described as follows:
+
+ - *Event A2* (serving cell's RSRQ becomes worse than `threshold`) is leveraged
+   to indicate that the UE is experiencing poor signal quality and may benefit
+   from a handover.
+ 
+ - *Event A4* (neighbour cell's RSRQ becomes better than `threshold`) is used
+   to detect neighbouring cells and acquire their corresponding RSRQ from every
+   attached UE, which are then stored internally by the algorithm. By default,
+   the algorithm configures Event A4 with a very low threshold, so that the
+   trigger criteria are always true.
+   
+Figure :ref:`fig-lte-legacy-handover-algorithm` below summarizes this procedure.
+
+.. _fig-lte-legacy-handover-algorithm:
+
+.. figure:: figures/lte-legacy-handover-algorithm.*
+   :scale: 70 %
    :align: center
 
-   Algorithm to automatically trigger the Handover procedure
+   A2-A4-RSRQ handover algorithm
+ 
+Two attributes can be set to tune the algorithm behaviour:
 
-The simulation user can set two parameters to control the handover decision:
+ - ``ServingCellThreshold``
+     The `threshold` for Event A2, i.e. a UE must have an RSRQ lower than this
+     threshold to be considered for a handover.
 
- - servingHandoverThreshold, if the RSRQ value measured by the UE in its
-   serving cell is less or equal to the servingHandoverThreshold parameter
-   (i.e. the conditions of the UE in the serving cell are getting bad or
-   not good enough), then the eNB considers this UE to hand it over to a new
-   neighbour eNB. The handover will eventually be triggered depending on the 
-   measurements of the neighbour cells.
+ - ``NeighbourCellOffset``
+     The `offset` that aims to ensure that the UE would receive better signal
+     quality after the handover. A neighbouring cell is considered as a target
+     cell for the handover only if its RSRQ is higher than the serving cell's
+     RSRQ by the amount of this `offset`.
 
- - neighbourHandoverOffset, if the UE is considered for handover, and
-   the difference between the best neighbour RSRQ 
-   and the RSRQ difference between the neighbor and the serving cell
-   is greater or equal to the neighbourHandoverOffset 
-   parameter, then the handover procedure is triggered for this UE.
+The value of both attributes are expressed as RSRQ range (Section 9.1.7 of
+[TS36133]_), which is an integer between 0 and 34, with 0 as the lowest RSRQ.
+
+Strongest cell handover algorithm
+---------------------------------
+
+The *strongest cell handover algorithm*, or also sometimes known as the
+*traditional power budget (PBGT) algorithm*, is developed using [Dimou2009]_ as
+reference. The idea is to provide each UE with the best possible Reference
+Signal Received Power (RSRP). This is done by performing a handover as soon as
+a better cell (i.e. with stronger RSRP) is detected.
+
+*Event A3* (neighbour cell's RSRP becomes better than serving cell's RSRP) is
+chosen to realize this concept. The ``A3RsrpHandoverAlgorithm`` class is the
+result of the implementation. Handover is triggered for the UE to the best cell
+in the measurement report.
+
+A simulation which uses this algorithm is usually more vulnerable to ping-pong
+handover (consecutive handover to the previous source eNodeB within short period
+of time), especially when the :ref:`sec-fading-model` is enabled. This problem
+is typically tackled by introducing a certain delay to the handover. The
+algorithm does this by including hysteresis and time-to-trigger parameters
+(Section 6.3.5 of [TS36331]_) to the UE measurements configuration.
+
+*Hysteresis* (a.k.a. handover margin) delays the handover in regard of RSRP. The
+value is expressed in dB, ranges between 0 to 15 dB, and have a 0.5 dB accuracy,
+e.g., an input value of 2.7 dB is rounded to 2.5 dB.
+
+On the other hand, *time-to-trigger* delays the handover in regard of time. 3GPP
+defines 16 valid values for time-to-trigger (all in milliseconds): 0, 40, 64,    
+80, 100, 128, 160, 256, 320, 480, 512, 640, 1024, 1280, 2560, and 5120.
+
+The difference between hysteresis and time-to-trigger is illustrated in Figure
+:ref:`fig-lte-strongest-cell-handover-algorithm` below, which is taken from the
+`lena-x2-handover-measures` example. It depicts the perceived RSRP of serving
+cell and a neighbouring cell by a UE which moves pass the border of the cells.
+
+.. _fig-lte-strongest-cell-handover-algorithm:
+
+.. figure:: figures/lte-strongest-cell-handover-algorithm.*
+   :align: center
+
+   Effect of hysteresis and time-to-trigger in strongest cell handover algorithm
+
+By default, the algorithm uses a hysteresis of 3.0 dB and time-to-trigger of
+256 ms. These values can be tuned through the ``Hysteresis`` and
+``TimeToTrigger`` attributes of the ``A3RsrpHandoverAlgorithm`` class.
+
+
+Neighbour Relation
+++++++++++++++++++
+
+LTE module supports a simplified *Automatic Neighbour Relation* (ANR) function.
+This is handled by the ``LteAnr`` class, which interacts with an eNodeB RRC
+instance through the ANR SAP interface.
+
+Neighbour Relation Table
+------------------------
+
+The ANR holds a *Neighbour Relation Table* (NRT), similar to the description in
+Section 22.3.2a of [TS36300]_. Each entry in the table is called a *Neighbour
+Relation* (NR) and represents a detected neighbouring cell, which contains the
+following boolean fields:
+
+ - `No Remove`
+     Indicates that the NR shall *not* be removed from the NRT. This is `true`
+     by default for user-provided NR and `false` otherwise.
+     
+ - `No X2`
+     Indicates that the NR shall *not* use an X2 interface in order to initiate
+     procedures towards the eNodeB parenting the target cell. This is `false` by
+     default for user-provided NR, and `true` otherwise.
+
+ - `No HO`
+     Indicates that the NR shall *not* be used by the eNodeB for handover
+     reasons. This is `true` in most cases, except when the NR is both
+     user-provided and network-detected.
+
+Each NR entry may have at least one of the following properties:
+
+ - User-provided
+     This type of NR is created as instructed by the simulation user. For
+     example, a NR is created automatically upon a user-initiated establishment
+     of X2 connection between 2 eNodeBs, e.g. as described in Section
+     :ref:`sec-x2-based-handover`. Another way to create a user-provided NR is
+     to call the ``AddNeighbourRelation`` function explicitly.
+
+ - Network-detected
+     This type of NR is automatically created during the simulation as a result
+     of the discovery of a nearby cell.
+
+In order to automatically create network-detected NR, ANR utilizes UE
+measurements. In other words, ANR is a consumer of UE measurements, as depicted
+in Figure :ref:`fig-ue-meas-consumer`. RSRQ and Event A4 (neighbour becomes
+better than `threshold`) are used for the reporting configuration. The default
+Event A4 `threshold` is set to the lowest possible, i.e., maximum detection
+capability, but can be changed by setting the ``Threshold`` attribute of
+``LteAnr`` class. Note that the A2-A4-RSRQ handover algorithm also utilizes a
+similar reporting configuration. Despite the similarity, when both ANR and this
+handover algorithm are active in the eNodeB, they use separate reporting
+configuration.
+
+Also note that automatic setup of X2 interface is not supported. This is the
+reason why the `No X2` and `No HO` fields are true in a network-detected but not
+user-detected NR.
+
+Role of ANR in Simulation
+-------------------------
+
+The ANR SAP interface provides the means of communication between ANR and eNodeB
+RRC. Some interface functions are used by eNodeB RRC to interact with the NRT,
+as shown below:
+
+ - ``AddNeighbourRelation``
+     (eNodeB RRC -> ANR) Add a new user-provided NR entry into the NRT.
+
+ - ``GetNoRemove``
+     (eNodeB RRC -> ANR) Get the value of `No Remove` field of an NR entry of
+     the given cell ID.
+     
+ - ``GetNoHo``
+     (eNodeB RRC -> ANR) Get the value of `No HO` field of an NR entry of
+     the given cell ID.
+
+ - ``GetNoX2``
+     (eNodeB RRC -> ANR) Get the value of `No X2` field of an NR entry of
+     the given cell ID.
+
+Other interface functions exist to support the role of ANR as a UE measurements
+consumer, as listed below:
+
+ - ``AddUeMeasReportConfigForAnr``
+     (ANR -> eNodeB RRC) Used by the ANR to request measurement reports from the
+     eNodeB RRC entity, by passing the desired reporting configuration. The
+     configuration will be applied to all future attached UEs.
+     
+ - ``ReportUeMeas``
+     (eNodeB RRC -> ANR) Based on the UE measurements configured earlier in
+     ``AddUeMeasReportConfigForAnr``, UE may submit measurement reports to the
+     eNodeB. The eNodeB RRC entity uses the ``ReportUeMeas`` interface to
+     forward these measurement reports to the ANR.
+
+Please refer to the corresponding API documentation for ``LteAnrSap`` class for
+more details on the usage and the required parameters.
+
+The ANR is utilized by the eNodeB RRC instance as a data structure to keep track
+of the situation of nearby neighbouring cells. The ANR also helps the eNodeB RRC
+instance to determine whether it is possible to execute a handover procedure to
+a neighbouring cell. This is realized by the fact that eNodeB RRC will only
+allow a handover procedure to happen if the NR entry of the target cell has both
+`No HO` and `No X2` fields set to `false`. 
+
+ANR is enabled by default in every eNodeB instance in the simulation. It can be
+disabled by setting the ``AnrEnabled`` attribute in ``LteHelper`` class to
+`false`.
 
 
 RRC sequence diagrams
@@ -2100,6 +2656,8 @@ RRC sequence diagrams
 
 In this section we provide some sequence diagrams that explain the
 most important RRC procedures being modeled.
+
+.. _sec-rrc-connection-establishment:
 
 RRC connection establishment
 ----------------------------
@@ -2117,6 +2675,8 @@ interaction with the other layers.
    Sequence diagram of the RRC Connection Establishment procedure
 
 
+
+.. _sec-rrc-connection-reconfiguration:
 
 RRC connection reconfiguration
 ------------------------------
@@ -2351,9 +2911,9 @@ The following RRC SAP have been implemented:
 
 
 
---------
+---
 NAS
---------
+---
 
 
 The focus of the LTE-EPC model is on the NAS Active state, which corresponds to EMM Registered, ECM connected, and RRC connected. Because of this, the following simplifications are made:
@@ -2580,7 +3140,7 @@ The S1-AP primitives that are modeled are:
 
 
 
-
+.. _sec-x2:
 
 ---
 X2 
@@ -2597,8 +3157,7 @@ point-to-point devices are attached to the point-to-point link.
 
 For a representation of how the X2 interface fits in the overall
 architecture of the LENA simulation model, the reader is referred to
-the figure :ref:`overall-architecture`.
-
+the figure :ref:`fig-epc-topology`.
 
 The X2 interface implemented in the simulator provides detailed implementation of the following elementary procedures of the Mobility Management functionality [TS36423]_:
 
@@ -2617,16 +3176,30 @@ the *seamless handover* as defined in Section 2.6.3.1 of [Sesia2009]_;
 in particular, *lossless handover* as described in Section 2.6.3.2 of
 [Sesia2009]_ is not supported at the time of this writing.
 
-Figure :ref:`fig-x2-based-handover-seq-diagram` shows the interaction of the entities of the X2 model in the simulator.
+Figure :ref:`fig-x2-based-handover-seq-diagram` below shows the interaction of
+the entities of the X2 model in the simulator. The shaded labels indicate the
+moments when the UE or eNodeB transition to another RRC state.
 
 .. _fig-x2-based-handover-seq-diagram:
 
 .. figure:: figures/lte-epc-x2-handover-seq-diagram.*
-    :width: 700px
-    :align: center
+   :scale: 80 %
+   :align: center
 
-    Sequence diagram of the X2-based handover
+   Sequence diagram of the X2-based handover
 
+The figure also shows two timers within the handover procedure: the *handover
+leaving timer* is maintained by the source eNodeB, while the *handover joining
+timer* by the target eNodeB. The duration of the timers can be configured in
+the ``HandoverLeavingTimeoutDuration`` and ``HandoverJoiningTimeoutDuration``
+attributes of the respective ``LteEnbRrc`` instances. When one of these timers
+expire, the handover procedure is considered as failed.
+
+However, there is no proper handling of handover failure in the current version
+of LTE module. Users should tune the simulation properly in order to avoid
+handover failure, otherwise unexpected behaviour may occur. Please refer to
+Section :ref:`sec-tuning-handover-simulation` of the User Documentation for some
+tips regarding this matter.
 
 The X2 model is an entity that uses services from:
 
@@ -2833,9 +3406,9 @@ indication and Handover Report are not supported at this stage.
 
 
 
------------------
+---
 S11
------------------
+---
 
 The S11 interface provides control plane interaction between the SGW
 and the MME using the GTPv2-C protocol specified in [TS29274]_. In the
@@ -2875,19 +3448,19 @@ Two helper objects are use to setup simulations and configure the
 various components. These objects are:
 
 
- * LteHelper, which takes care of the configuration of the LTE radio
+ * ``LteHelper``, which takes care of the configuration of the LTE radio
    access network, as well as of coordinating the setup and release of
    EPS bearers 
- * EpcHelper, which takes care of the configuratio of the Evolved
+ * ``EpcHelper``, which takes care of the configuration of the Evolved
    Packet Core
 
 It is possible to create a simple LTE-only simulations by
-using LteHelper alone, or to create complete LTE-EPC simulations by
-using both LteHelper and EpcHelper. When both helpers are used, they
-interact in a master-slave fashion, with LteHelper being the Master
-that interacts directly with the user program, and EpcHelper working
+using ``LteHelper`` alone, or to create complete LTE-EPC simulations by
+using both ``LteHelper`` and ``EpcHelper``. When both helpers are used, they
+interact in a master-slave fashion, with ``LteHelper`` being the Master
+that interacts directly with the user program, and ``EpcHelper`` working
 "under the hood" to configure the EPC upon explicit methods called by
-LteHelper. The exact interactions are displayed in the Figure :ref:`fig-helpers`.
+``LteHelper``. The exact interactions are displayed in the Figure :ref:`fig-helpers`.
 
 .. _fig-helpers:
    

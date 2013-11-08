@@ -337,7 +337,7 @@ LteUplinkSrsSinrTestCase::DoRun (void)
   */
   
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
-  lteHelper->EnableLogComponents ();
+  // lteHelper->EnableLogComponents ();
   Ptr<LteSpectrumPhy> dlPhy = CreateObject<LteSpectrumPhy> ();
   Ptr<LteSpectrumPhy> ulPhy = CreateObject<LteSpectrumPhy> ();
   Ptr<LteTestUePhy> uePhy = CreateObject<LteTestUePhy> (dlPhy, ulPhy);

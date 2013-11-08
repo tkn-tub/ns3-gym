@@ -264,6 +264,7 @@ private:
   void DoSetTransmissionMode (uint16_t  rnti, uint8_t txMode);
   void DoSetSrsConfigurationIndex (uint16_t  rnti, uint16_t srcCi);  
   void DoSetMasterInformationBlock (LteRrcSap::MasterInformationBlock mib);
+  void DoSetSystemInformationBlockType1 (LteRrcSap::SystemInformationBlockType1 sib1);
 
   // LteEnbPhySapProvider forwarded methods
   void DoSendMacPdu (Ptr<Packet> p);  
@@ -301,6 +302,7 @@ private:
   uint16_t m_currentSrsOffset;
 
   LteRrcSap::MasterInformationBlock m_mib;
+  LteRrcSap::SystemInformationBlockType1 m_sib1;
 
   Ptr<LteHarqPhy> m_harqPhyModule;
 

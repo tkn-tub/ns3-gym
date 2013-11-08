@@ -1,9 +1,9 @@
 .. include:: replace.txt
 
 
-+++++++++++++++++++++++++++++++++
- User Documentation
-+++++++++++++++++++++++++++++++++
+++++++++++++++++++
+User Documentation
+++++++++++++++++++
 
 
 Background
@@ -39,6 +39,8 @@ of practical examples.
 
 
 
+.. _sec-basic-simulation-program:
+
 Basic simulation program
 ------------------------
 
@@ -60,7 +62,7 @@ Here is the minimal simulation program that is needed to do an LTE-only simulati
       // the rest of the simulation program follows
 
 
-#. Create a LteHelper object::
+#. Create an ``LteHelper`` object::
 
       Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
 
@@ -68,7 +70,7 @@ Here is the minimal simulation program that is needed to do an LTE-only simulati
    objects (e.g., the Channel object) and provide the methods to add
    eNBs and UEs and configure them.
 
-#. Create Node objects for the eNB(s) and the UEs::
+#. Create ``Node`` objects for the eNB(s) and the UEs::
 
       NodeContainer enbNodes;
       enbNodes.Create (1);
@@ -137,8 +139,8 @@ Here is the minimal simulation program that is needed to do an LTE-only simulati
 For how to compile and run simulation programs, please refer to [ns3tutorial]_.
 
 
-Configuration of LTE model parameters 
---------------------------------------
+Configuration of LTE model parameters
+-------------------------------------
 
 All the relevant LTE model parameters are managed through the ns-3
 attribute system. Please refer to the [ns3tutorial]_ and [ns3manual]_
@@ -264,6 +266,8 @@ You can try also with other LTE and EPC objects, like this::
      ./waf --run lena-simple --command-template="%s --PrintAttributes=ns3::EpcHelper"
  
 
+
+.. _sec-simulation-output:
 
 Simulation Output
 -----------------
@@ -503,7 +507,7 @@ The simulator provide natively three fading traces generated according to the co
    Excerpt of the fading trace included in the simulator for an urban  scenario (speed of 3 kmph).
 
 
-Mobility Model with Buildings 
+Mobility Model with Buildings
 -----------------------------
 
 We now explain by examples how to use the buildings model (in particular, the ``MobilityBuildingInfo`` and the ``BuildingPropagationModel`` classes) in an ns-3 simulation program to setup an LTE simulation scenario that includes buildings and indoor nodes.
@@ -653,10 +657,12 @@ placed at the same position, and to configure separate ``EnbNetDevice``
 with different antenna orientations to be installed on each node.
 
 
+.. _sec-radio-environment-maps:
+
 Radio Environment Maps
 ----------------------
 
-By using the class RadioEnvironmentMapHelper it is possible to output
+By using the class ``RadioEnvironmentMapHelper`` it is possible to output
 to a file a Radio Environment Map (REM), i.e., a uniform 2D grid of values
 that represent the Signal-to-noise ratio in the downlink with respect
 to the eNB that has the strongest signal at each point. 
@@ -676,9 +682,9 @@ program towards the end, right before the call to Simulator::Run ()::
   remHelper->SetAttribute ("Z", DoubleValue (0.0));
   remHelper->Install ();
 
-By configuring the attributes of the RadioEnvironmentMapHelper object
+By configuring the attributes of the ``RadioEnvironmentMapHelper`` object
 as shown above, you can tune the parameters of the REM to be
-generated. Note that each RadioEnvironmentMapHelper instance can
+generated. Note that each ``RadioEnvironmentMapHelper`` instance can
 generate only one REM; if you want to generate more REMs, you need to
 create one separate instance for each REM. 
 
@@ -758,6 +764,7 @@ Finally, the required efficiency of the ``PiroEW2010`` AMC module can be tuned t
 
 
 
+.. _sec-evolved-packet-core:
 
 Evolved Packet Core (EPC)
 -------------------------
@@ -794,7 +801,7 @@ created will have the ``EpsBearerToRlcMapping`` attribute set to
 the default; otherwise, the attribute won't be changed (e.g., if
 you changed the default to ``RLC_AM_ALWAYS``, it won't be touched).
 
-It is to be noted that, upon construction, the EpcHelper will also
+It is to be noted that, upon construction, the ``EpcHelper`` will also
 create and configure the PGW node. Its configuration in particular
 is very complex, and hence is done automatically by the Helper. Still,
 it is allowed to access the PGW node in order to connect it to other
@@ -913,74 +920,401 @@ That's all! You can now start your simulation as usual::
 
 
 
+.. _sec-network-attachment:
+
+Network Attachment
+------------------
+
+As shown in the basic example in section :ref:`sec-basic-simulation-program`,
+attaching a UE to an eNodeB is done by calling ``LteHelper::Attach`` function.
+
+There are 2 possible ways of network attachment. The first method is the
+*"manual"* one, while the second one has a more *"automatic"* sense on it. Each
+of them will be covered in this section.
+
+Manual attachment
+*****************
+
+This method uses the ``LteHelper::Attach`` function mentioned above. It has been
+the only available network attachment method in earlier versions of LTE module.
+It is typically invoked before the simulation begins::
+
+   lteHelper->Attach (ueDevs, enbDev); // attach one or more UEs to a single eNodeB
+
+``LteHelper::InstallEnbDevice`` and ``LteHelper::InstallUeDevice`` functions
+must have been called before attaching. In an EPC-enabled simulation, it is also
+required to have IPv4 properly pre-installed in the UE.
+
+This method is very simple, but requires you to know exactly which UE belongs to
+to which eNodeB before the simulation begins. This can be difficult when the UE
+initial position is randomly determined by the simulation script.
+
+One may choose the distance between the UE and the eNodeB as a criterion for
+selecting the appropriate cell. It is quite simple (at least from the
+simulator's point of view) and sometimes practical. But it is important to note
+that sometimes distance does not make a single correct criterion. For instance,
+the eNodeB antenna directivity should be considered as well. Besides that, one
+should also take into account the channel condition, which might be fluctuating
+if there is fading or shadowing in effect. In these kind of cases, network
+attachment should not be based on distance alone.
+
+In real life, UE will automatically evaluate certain criteria and select the
+best cell to attach to, without manual intervention from the user. Obviously
+this is not the case in this ``LteHelper::Attach`` function. The other network
+attachment method uses more *"automatic"* approach to network attachment, as
+will be described next.
+
+Automatic attachment using Idle mode cell selection procedure
+*************************************************************
+
+The strength of the received signal is the standard criterion used for selecting
+the best cell to attach to. The use of this criterion is implemented in the
+`initial cell selection` process, which can be invoked by calling another
+version of the ``LteHelper::Attach`` function, as shown below::
+
+   lteHelper->Attach (ueDevs); // attach one or more UEs to a strongest cell
+
+The difference with the manual method is that the destination eNodeB is not
+specified. The procedure will find the best cell for the UEs, based on several
+criteria, including the strength of the received signal (RSRP).
+
+After the method is called, the UE will spend some time to measure the
+neighbouring cells, and then attempt to attach to the best one. More details can
+be found in section :ref:`sec-initial-cell-selection` of the Design
+Documentation.
+
+It is important to note that this method only works in EPC-enabled simulations.
+LTE-only simulations must resort to manual attachment method.
+
+Closed Subscriber Group
+***********************
+
+An interesting use case of the initial cell selection process is to setup a
+simulation environment with Closed Subscriber Group (CSG).
+
+For example, a certain eNodeB, typically a smaller version such as femtocell,
+might belong to a private owner (e.g. a household or business), allowing access
+only to some UEs which have been previously registered by the owner. The eNodeB
+and the registered UEs altogether form a CSG.
+
+The access restriction can be simulated by "labeling" the CSG members with the
+same CSG ID. This is done through the attributes in both eNodeB and UE, for
+example using the following ``LteHelper`` functions::
+
+   // label the following eNodeBs with CSG identity of 1 and CSG indication enabled
+   lteHelper->SetEnbDeviceAttribute ("CsgId", UintegerValue (1));
+   lteHelper->SetEnbDeviceAttribute ("CsgIndication", BooleanValue (true));
+
+   // label one or more UEs with CSG identity of 1
+   lteHelper->SetUeDeviceAttribute ("CsgId", UintegerValue (1));
+   
+   // install the eNodeBs and UEs
+   NetDeviceContainer csgEnbDevs = lteHelper->InstallEnbDevice (csgEnbNodes);
+   NetDeviceContainer csgUeDevs = lteHelper->InstallUeDevice (csgUeNodes);
+
+Then enable the initial cell selection procedure on the UEs:: 
+
+   lteHelper->Attach (csgUeDevs);
+
+This is necessary because the CSG restriction only works with automatic method
+of network attachment, but not in the manual method.
+
+Note that setting the CSG indication of an eNodeB as false (the default value)
+will disable the restriction, i.e., any UEs can connect to this eNodeB.
+
+
+
+.. _sec-configure-ue-measurements:
+
+Configure UE measurements
+-------------------------
+
+The active UE measurement configuration in a simulation is dictated by the
+selected so called "consumers", such as handover algorithm. Users may add their
+own configuration into action, and there are several ways to do so:
+
+ #. direct configuration in eNodeB RRC entity;
+ 
+ #. configuring existing handover algorithm; and
+ 
+ #. developing a new handover algorithm.
+ 
+This section will cover the first method only. The second method is covered in
+:ref:`sec-automatic-handover`, while the third method is explained in length in
+Section :ref:`sec-handover-algorithm` of the Design Documentation.
+
+Direct configuration in eNodeB RRC works as follows. User begins by creating a
+new ``LteRrcSap::ReportConfigEutra`` instance and pass it to the
+``LteEnbRrc::AddUeMeasReportConfig`` function. The function will return the
+``measId`` (measurement identity) which is a unique reference of the
+configuration in the eNodeB instance. This function must be called before the
+simulation begins. The measurement configuration will be active in all UEs
+attached to the eNodeB throughout the duration of the simulation. During the
+simulation, user can capture the measurement reports produced by the UEs by
+listening to the existing ``LteEnbRrc::RecvMeasurementReport`` trace source.
+
+The structure `ReportConfigEutra` is in accord with 3GPP specification.
+Definition of the structure and each member field can be found in Section 6.3.5
+of [TS36331]_.
+
+The code sample below configures Event A1 RSRP measurement to every eNodeB
+within the container ``devs``::
+
+   LteRrcSap::ReportConfigEutra config;        
+   config.eventId = LteRrcSap::ReportConfigEutra::EVENT_A1;
+   config.threshold1.choice = LteRrcSap::ThresholdEutra::THRESHOLD_RSRP;
+   config.threshold1.range = 41;
+   config.triggerQuantity = LteRrcSap::ReportConfigEutra::RSRP;
+   config.reportInterval = LteRrcSap::ReportConfigEutra::MS480;
+   
+   std::vector<uint8_t> measIdList;
+
+   NetDeviceContainer::Iterator it;
+   for (it = devs.Begin (); it != devs.End (); it++)
+   {
+     Ptr<NetDevice> dev = *it;
+     Ptr<LteEnbNetDevice> enbDev = dev->GetObject<LteEnbNetDevice> ();
+     Ptr<LteEnbRrc> enbRrc = enbDev->GetRrc ();
+    
+     uint8_t measId = enbRrc->AddUeMeasReportConfig (config);
+     measIdList.push_back (measId); // remember the measId created
+    
+     enbRrc->TraceConnect ("RecvMeasurementReport",
+                           "context",
+                           MakeCallback (&RecvMeasurementReportCallback));
+   }
+
+Note that thresholds are expressed as range. In the example above, the range 41
+for RSRP corresponds to -100 dBm. The conversion from and to the range format is
+due to Section 9.1.4 and 9.1.7 of [TS36133]_. The ``EutranMeasurementMapping``
+class has several static functions that can be used for this purpose.
+
+The corresponding callback function would have a definition similar as below::
+
+   void
+   RecvMeasurementReportCallback (std::string context,
+                                  uint64_t imsi,
+                                  uint16_t cellId,
+                                  uint16_t rnti,
+                                  LteRrcSap::MeasurementReport measReport);
+
+This method will register the callback function as a consumer of UE
+measurements. In the case where there are more than one consumers in the
+simulation (e.g. handover algorithm), the measurements intended for other
+consumers will also be captured by this callback function. Users may utilize the
+the ``measId`` field, contained within the ``LteRrcSap::MeasurementReport``
+argument of the callback function, to tell which measurement configuration has
+triggered the report.
+
+In general, this mechanism prevents one consumer to unknowingly intervene with
+another consumer's reporting configuration.
+
+Note that only the reporting configuration part (i.e.
+``LteRrcSap::ReportConfigEutra``) of the UE measurements parameter is open for
+consumers to configure, while the other parts are kept hidden. The
+intra-frequency limitation is the main motivation behind this API implementation
+decision:
+
+ - there is only one, unambiguous and definitive *measurement object*, thus
+   there is no need to configure it;
+   
+ - *measurement identities* are kept hidden because of the fact that there is
+   one-to-one mapping between reporting configuration and measurement identity,
+   thus a new measurement identity is set up automatically when a new reporting
+   configuration is created;
+
+ - *quantity configuration* is configured elsewhere, see
+   :ref:`sec-performing-measurements`; and
+   
+ - *measurement gaps* are not supported, because it is only applicable for
+   inter-frequency settings;
+
+
+
+.. _sec-x2-based-handover:
+
 X2-based handover
 -----------------
 
-The execution of an X2-based handover between two eNBs requires the
-configuration of an X2 interface between the two eNBs. This needs to
-be done explicitly within the simulation program like this::
+As defined by 3GPP, handover is a procedure for changing the serving cell of a
+UE in CONNECTED mode. The two eNodeBs involved in the process are typically
+called the *source eNodeB* and the *target eNodeB*.
 
-     lteHelper->AddX2Interface (enbNodes);
+In order to enable the execution of X2-based handover in simulation, there are
+two requirements that must be met. Firstly, EPC must be enabled in the
+simulation (see :ref:`sec-evolved-packet-core`).
 
-where ``enbNodes`` is a ``NodeContainer`` that contains the two eNBs
-between which the X2 interface is to be configured.
+Secondly, an X2 interface must be configured between the two eNodeBs, which
+needs to be done explicitly within the simulation program::
+
+   lteHelper->AddX2Interface (enbNodes);
+
+where ``enbNodes`` is a ``NodeContainer`` that contains the two eNodeBs between
+which the X2 interface is to be configured. If the container has more than two
+eNodeBs, the function will create an X2 interface between every pair of eNodeBs
+in the container.
+
+Lastly, the target eNodeB must be configured as "open" to X2 HANDOVER REQUEST.
+Every eNodeB is open by default, so no extra instruction is needed in most
+cases. However, users may set the eNodeB to "closed" by setting the boolean
+attribute ``LteEnbRrc::AdmitHandoverRequest`` to `false`. As an example, you can
+run the ``lena-x2-handover`` program and setting the attribute in this way::
+
+   NS_LOG=EpcX2:LteEnbRrc ./waf --run lena-x2-handover --command="%s --ns3::LteEnbRrc::AdmitHandoverRequest=false"
+
+After the above three requirements are fulfilled, the handover procedure can be
+triggered manually or automatically. Each will be presented in the following
+subsections.
 
 
 Manual handover trigger
 ***********************
 
-Handover event can be triggered "manually" within the simulation
-program by scheduling an  explicit handover event. The ``LteHelper``
-provides a convenient method for the scheduling of a handover
-event. As an example, let us assume that ``ueLteDevs``` is a
-``NetDeviceContainer`` that contains the UE that is to be handed over,
-and that ``enbLteDevs`` is another ``NetDeviceContainer`` that
-contains the source and the target eNB. Then, an handover at 0.1s can be
+Handover event can be triggered "manually" within the simulation program by
+scheduling an explicit handover event. The ``LteHelper`` object provides a
+convenient method for the scheduling of a handover event. As an example, let us
+assume that ``ueLteDevs`` is a ``NetDeviceContainer`` that contains the UE that
+is to be handed over, and that ``enbLteDevs`` is another ``NetDeviceContainer``
+that contains the source and the target eNB. Then, a handover at 0.1s can be
 scheduled like this::
 
-     lteHelper->HandoverRequest (Seconds (0.100), 
-                                 ueLteDevs.Get (0), 
-                                 enbLteDevs.Get (0), 
-                                 enbLteDevs.Get (1));
+   lteHelper->HandoverRequest (Seconds (0.100), 
+                               ueLteDevs.Get (0), 
+                               enbLteDevs.Get (0), 
+                               enbLteDevs.Get (1));
+
+Note that the UE needs to be already connected to the source eNB, otherwise the
+simulation will terminate with an error message. 
+
+For an example with full source code, please refer to the ``lena-x2-handover``
+example program.
 
 
-Note that the UE needs to be already connected to the source eNB,
-otherwise the simulation will terminate with an error message.
-
+.. _sec-automatic-handover:
 
 Automatic handover trigger
 **************************
 
-Handover procedure can be triggered "automatically" by the serving eNB of 
-the UE. It is also known as the source eNB in the handover procedure. In
-order to control when the handover procedure is initiated, you can configure
-the parameters of the handover algorithm in your simulation program 
-through the ns-3 attributes of the eNB RRC entity::
+Handover procedure can also be triggered "automatically" by the serving eNodeB 
+of the UE. The logic behind the trigger depends on the handover algorithm
+currently active in the eNodeB RRC entity. Users may select and configure the
+handover algorithm that will be used in the simulation, which will be explained
+shortly in this section. Users may also opt to write their own implementation of
+handover algorithm, as described in Section :ref:`sec-handover-algorithm` of the
+Design Documentation.
+
+Selecting a handover algorithm is done via the ``LteHelper`` object and its
+``SetHandoverAlgorithmType`` method as shown below::
+
+   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
+   lteHelper->SetHandoverAlgorithmType ("ns3::A2A4RsrqHandoverAlgorithm");
+ 
+The selected handover algorithm may also provide several configurable
+attributes, which can be set as follows::
+
+   lteHelper->SetHandoverAlgorithmAttribute ("ServingCellThreshold",
+                                             UintegerValue (30));
+   lteHelper->SetHandoverAlgorithmAttribute ("NeighbourCellOffset",
+                                             UintegerValue (1));
+
+Three options of handover algorithm are included in the LTE module. The
+*A2-A4-RSRQ* handover algorithm (named as ``ns3::A2A4RsrqHandoverAlgorithm``) is
+the default option, and the usage has already been shown above.
+
+Another option is the *strongest cell* handover algorithm (named as
+``ns3::A3RsrpHandoverAlgorithm``), which can be selected and configured by the
+following code::
+
+   lteHelper->SetHandoverAlgorithmType ("ns3::A3RsrpHandoverAlgorithm");
+   lteHelper->SetHandoverAlgorithmAttribute ("Hysteresis",
+                                             DoubleValue (3.0));
+   lteHelper->SetHandoverAlgorithmAttribute ("TimeToTrigger",
+                                             TimeValue (MilliSeconds (256)));
+
+The last option is a special one, called the *no-op* handover algorithm, which
+basically disables automatic handover trigger. This is useful for example in
+cases where manual handover trigger need an exclusive control of all handover
+decision. It does not have any configurable attributes. The usage is as
+follows::
+
+   lteHelper->SetHandoverAlgorithmType ("ns3::NoOpHandoverAlgorithm");
+
+For more information on each handover algorithm's decision policy and their
+attributes, please refer to their respective subsections in Section
+:ref:`sec-handover-algorithm` of the Design Documentation.
+
+Finally, the ``InstallEnbDevice`` function of ``LteHelper`` will instantiate one
+instance of the selected handover algorithm for each eNodeB device. In other
+words, make sure to select the right handover algorithm before finalizing it in
+the following line of code::
+
+   NetDeviceContainer enbLteDevs = lteHelper->InstallEnbDevice (enbNodes); 
+
+Example with full source code of using automatic handover trigger can be found
+in the ``lena-x2-handover-measures`` example program.
 
 
-  Config::SetDefault ("ns3::LteEnbRrc::ServingCellHandoverThreshold",
-                      UintegerValue (30));
+.. _sec-tuning-handover-simulation:
 
-  Config::SetDefault ("ns3::LteEnbRrc::NeighbourCellHandoverOffset",
-                      UintegerValue (1));
+Tuning simulation with handover
+*******************************
 
+As mentioned in the Design Documentation, the current implementation of handover
+model may produce unpredicted behaviour when handover failure occurs. This
+subsection will focus on the steps that should be taken into account by users
+if they plan to use handover in their simulations.
 
-The UE measurements are used in the automatic handover algorithm. You can
-configure the parameters of the UE measurements in your simulation program
-through the ns-3 attributes of the eNB RRC entity. You can set the thresholds
-of events A2 and A4::
+The major cause of handover failure that we will tackle is the error in
+transmitting handover-related signaling messages during the execution of a
+handover procedure. As apparent from the Figure
+:ref:`fig-x2-based-handover-seq-diagram` from the Design Documentation, there
+are many of them and they use different interfaces and protocols. For the sake
+of simplicity, we can safely assume that the X2 interface (between the source
+eNodeB and the target eNodeB) and the S1 interface (between the target eNodeB
+and the SGW/PGW) are quite stable. Therefore we will focus our attention to the
+RRC protocol (between the UE and the eNodeBs) and the Random Access procedure,
+which are normally transmitted through the air and susceptible to degradation of
+channel condition. 
 
+A general tips to reduce transmission error is to *ensure high enough SINR*
+level in every UE. This can be done by a proper planning of the network topology
+that *minimizes network coverage hole*. If the topology has a known coverage
+hole, then the UE should be configured not to venture to that area.
 
-  Config::SetDefault ("ns3::LteEnbRrc::EventA2Threshold",
-                      UintegerValue (32));
+Another approach to keep in mind is to *avoid too-late handovers*. In other
+words, handover should happen before the UE's SINR becomes too low, otherwise
+the UE may fail to receive the handover command from the source eNodeB. Handover
+algorithms have the means to control how early or late a handover decision is
+made. For example, A2-A4-RSRQ handover algorithm can be configured with a higher
+threshold to make it decide a handover earlier. Similarly, smaller hysteresis
+and/or shorter time-to-trigger in the strongest cell handover algorithm
+typically results in earlier handovers. In order to find the right values for
+these parameters, one of the factors that should be considered is the UE
+movement speed. Generally, a faster moving UE requires the handover to be
+executed earlier. Some research work have suggested recommended values, such as
+in [Lee2010]_.
 
-  Config::SetDefault ("ns3::LteEnbRrc::EventA4Threshold",
-                      UintegerValue (2));
+The above tips should be enough in normal simulation uses, but in the case some
+special needs arise then an extreme measure can be taken into consideration.
+For instance, users may consider *disabling the channel error models*. This will
+ensure that all handover-related signaling messages will be transmitted
+successfully, regardless of distance and channel condition. However, it will
+also affect all other data or control packets not related to handover, which may
+be an unwanted side effect. Otherwise, it can be done as follows::
 
+   Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled");
+   Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled");
+   
+By using the above code, we disable the error model in both control and data
+channels and in both directions (downlink and uplink). This is necessary because
+handover-related signaling messages are transmitted using these channels. An
+exception is when the simulation uses the ideal RRC protocol. In this case, only
+the Random Access procedure is left to be considered. The procedure consists of
+control messages, therefore we only need to disable the control channel's error
+model.
+      
 
-You can find more info about events A2 and A4 in Subsections 5.5.4.3 and 5.5.4.5
-of [TS36331]_.
-
+.. _sec-handover-traces:
 
 Handover traces
 ***************
@@ -991,76 +1325,73 @@ custom functions so that they are called upon start and end of the
 handover execution phase at both the UE and eNB side. As an example,
 in your simulation program you can declare the following methods::
 
-
-  void 
-  NotifyHandoverStartUe (std::string context, 
-                         uint64_t imsi, 
-                         uint16_t cellid, 
-                         uint16_t rnti, 
-                         uint16_t targetCellId)
-  {
-    std::cout << context 
-              << " UE IMSI " << imsi 
-              << ": previously connected to CellId " << cellid 
-              << " with RNTI " << rnti 
-              << ", doing handover to CellId " << targetCellId 
-              << std::endl;
-  }
-
-  void 
-  NotifyHandoverEndOkUe (std::string context, 
-                         uint64_t imsi, 
-                         uint16_t cellid, 
-                         uint16_t rnti)
-  {
-    std::cout << context 
-              << " UE IMSI " << imsi 
-              << ": successful handover to CellId " << cellid 
-              << " with RNTI " << rnti 
-              << std::endl;
-  }
-
-  void 
-  NotifyHandoverStartEnb (std::string context, 
+   void 
+   NotifyHandoverStartUe (std::string context, 
                           uint64_t imsi, 
-                          uint16_t cellid, 
+                          uint16_t cellId, 
                           uint16_t rnti, 
                           uint16_t targetCellId)
-  {
-    std::cout << context 
-              << " eNB CellId " << cellid 
-              << ": start handover of UE with IMSI " << imsi 
-              << " RNTI " << rnti 
-              << " to CellId " << targetCellId 
-              << std::endl;
-  }
+   {
+     std::cout << Simulator::Now ().GetSeconds () << " " << context 
+               << " UE IMSI " << imsi 
+               << ": previously connected to CellId " << cellId 
+               << " with RNTI " << rnti 
+               << ", doing handover to CellId " << targetCellId 
+               << std::endl;
+   }
 
-  void 
-  NotifyHandoverEndOkEnb (std::string context, 
+   void 
+   NotifyHandoverEndOkUe (std::string context, 
                           uint64_t imsi, 
-                          uint16_t cellid, 
+                          uint16_t cellId, 
                           uint16_t rnti)
-  {
-    std::cout << context 
-              << " eNB CellId " << cellid 
-              << ": completed handover of UE with IMSI " << imsi 
-              << " RNTI " << rnti 
-              << std::endl;
-  }
+   {
+     std::cout << Simulator::Now ().GetSeconds () << " " << context 
+               << " UE IMSI " << imsi 
+               << ": successful handover to CellId " << cellId 
+               << " with RNTI " << rnti 
+               << std::endl;
+   }
 
+   void 
+   NotifyHandoverStartEnb (std::string context, 
+                           uint64_t imsi, 
+                           uint16_t cellId, 
+                           uint16_t rnti, 
+                           uint16_t targetCellId)
+   {
+     std::cout << Simulator::Now ().GetSeconds () << " " << context 
+               << " eNB CellId " << cellId 
+               << ": start handover of UE with IMSI " << imsi 
+               << " RNTI " << rnti 
+               << " to CellId " << targetCellId 
+               << std::endl;
+   }
+
+   void 
+   NotifyHandoverEndOkEnb (std::string context, 
+                           uint64_t imsi, 
+                           uint16_t cellId, 
+                           uint16_t rnti)
+   {
+     std::cout << Simulator::Now ().GetSeconds () << " " << context 
+               << " eNB CellId " << cellId 
+               << ": completed handover of UE with IMSI " << imsi 
+               << " RNTI " << rnti 
+               << std::endl;
+   }
 
 Then, you can hook up these methods to the corresponding trace sources
 like this::
 
-  Config::Connect ("/NodeList/*/DeviceList/*/LteEnbRrc/HandoverStart",
-                   MakeCallback (&NotifyHandoverStartEnb));
-  Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/HandoverStart",
-                   MakeCallback (&NotifyHandoverStartUe));
-  Config::Connect ("/NodeList/*/DeviceList/*/LteEnbRrc/HandoverEndOk",
-                   MakeCallback (&NotifyHandoverEndOkEnb));
-  Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/HandoverEndOk",
-                   MakeCallback (&NotifyHandoverEndOkUe));
-
+   Config::Connect ("/NodeList/*/DeviceList/*/LteEnbRrc/HandoverStart",
+                    MakeCallback (&NotifyHandoverStartEnb));
+   Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/HandoverStart",
+                    MakeCallback (&NotifyHandoverStartUe));
+   Config::Connect ("/NodeList/*/DeviceList/*/LteEnbRrc/HandoverEndOk",
+                    MakeCallback (&NotifyHandoverEndOkEnb));
+   Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/HandoverEndOk",
+                    MakeCallback (&NotifyHandoverEndOkUe));
 
 The example program ``src/lte/examples/lena-x2-handover.cc``
 illustrates how the all above instructions can be integrated in a
@@ -1075,14 +1406,6 @@ information, you can run the program like this::
     NS_LOG=LteEnbRrc:LteUeRrc:EpcX2 ./waf --run lena-x2-handover
 
 
-Whether a target eNB will accept or not an incoming X2 HANDOVER
-REQUEST is controlled by the boolean attribute
-``LteEnbRrc::AdmitHandoverRequest`` (default: true). As an example,
-you can run the ``lena-x2-handover`` program setting the attribute to
-false in this way::
-
-   NS_LOG=EpcX2:LteEnbRrc ./waf --run lena-x2-handover 
-     --command="%s --ns3::LteEnbRrc::AdmitHandoverRequest=false"
 
 
 
@@ -1093,28 +1416,311 @@ The directory ``src/lte/examples/`` contains some example simulation programs th
 show how to simulate different LTE scenarios. 
 
 
+
 Reference scenarios
 -------------------
 
 There is a vast amount of reference LTE simulation scenarios which can
 be found in the literature. Here we list some of them: 
 
- * The dual stripe model [R4-092042]_, which is partially implemented
-   in the example program
-   ``src/lte/examples/lena-dual-stripe.cc``. This example program
-   features a lot of configurable parameters which can be customize by
-   changing the corresponding global variable. To get a list of all these
-   parameters, you can run this command::
+ * The system simulation scenarios mentioned in section A.2 of [TR36814]_.
+
+ * The dual stripe model [R4-092042]_, which is partially implemented in the
+   example program ``src/lte/examples/lena-dual-stripe.cc``. This example
+   program features a lot of configurable parameters which can be customized by
+   changing the corresponding global variables. To get a list of all these
+   global variables, you can run this command::
 
      ./waf --run lena-dual-stripe --command-template="%s --PrintGlobals"
+     
+   The following subsection presents an example of running a simulation
+   campaign using this example program.
 
 
+Handover simulation campaign
+****************************
 
- * The system simulation scenarios mentioned in section A.2 of [TR36814]_
+In this subsection, we will demonstrate an example of running a simulation
+campaign using the LTE module of |ns3|. The objective of the campaign is to
+compare the effect of each built-in handover algorithm of the LTE module.
 
+The campaign will use the ``lena-dual-stripe`` example program. First, we have
+to modify the example program to produce the output that we need. In this
+occassion, we want to produce the number of handovers, user average throughput,
+and average SINR.
 
+The number of handovers can be obtained by counting the number of times the
+`HandoverEndOk` :ref:`sec-handover-traces` is fired. Then the user average
+throughput can be obtained by enabling the RLC :ref:`sec-simulation-output`.
+Finally, SINR can be obtained by enabling the PHY simulation output. The
+following sample code snippet shows one possible way to obtain the above::
 
+   void
+   NotifyHandoverEndOkUe (std::string context, uint64_t imsi,
+                          uint16_t cellId, uint16_t rnti)
+   {
+     std::cout << "Handover IMSI " << imsi << std::endl;
+   }
 
+   int
+   main (int argc, char *argv[])
+   {
+     /*** SNIP ***/
 
+     Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/HandoverEndOk",
+                      MakeCallback (&NotifyHandoverEndOkUe));
 
+     lteHelper->EnablePhyTraces ();
+     lteHelper->EnableRlcTraces ();
+     Ptr<RadioBearerStatsCalculator> rlcStats = lteHelper->GetRlcStats ();
+     rlcStats->SetAttribute ("StartTime", TimeValue (Seconds (0)));
+     rlcStats->SetAttribute ("EpochDuration", TimeValue (Seconds (simTime)));
 
+     Simulator::Run ();
+     Simulator::Destroy ();
+     return 0;
+   }
+
+Then we have to configure the parameters of the program to suit our simulation
+needs. We are looking for the following assumptions in our simulation:
+
+ * 7 sites of tri-sectored macro eNodeBs (i.e. 21 macrocells) deployed in
+   hexagonal layout with 500 m inter-site distance.
+
+ * Although ``lena-dual-stripe`` is originally intended for a two-tier
+   (macrocell and femtocell) simulation, we will simplify our simulation to
+   one-tier (macrocell) simulation only.
+
+ * UEs are randomly distributed around the sites and attach to the network
+   automatically using Idle mode cell selection. After that, UE will roam the
+   simulation environment with 60 kmph movement speed.
+
+ * 50 seconds simulation duration, so UEs would have traveled far enough to
+   trigger some handovers.
+
+ * 46 dBm macrocell Tx power and 10 dBm UE Tx power.
+
+ * EPC mode will be used because the X2 handover procedure requires it to be
+   enabled.
+
+ * Full-buffer downlink and uplink traffic, both in 5 MHz bandwidth, using TCP
+   protocol and Proportional Fair scheduler.
+
+ * Ideal RRC protocol.
+
+Table :ref:`tab-handover-campaign-program-parameter` below shows how we
+configure the parameters of ``lena-dual-stripe`` to achieve the above
+assumptions.
+
+.. _tab-handover-campaign-program-parameter:
+
+.. table:: ``lena-dual-stripe`` parameter configuration for handover campaign
+
+   ================== ========== ===============================================
+   Parameter name     Value      Description
+   ================== ========== ===============================================
+   simTime            50         50 seconds simulation duration
+   nBlocks            0          Disabling apartment buildings and femtocells
+   nMacroEnbSites     7          Number of macrocell sites (each site has 3
+                                 cells)
+   nMacroEnbSitesX    2          The macrocell sites will be positioned in a
+                                 2-3-2 formation
+   interSiteDistance  500        500 m distance between adjacent macrocell sites
+   macroEnbTxPowerDbm 46         46 dBm Tx power for each macrocell
+   epc                1          Enable EPC mode
+   epcDl              1          Enable full-buffer DL traffic
+   epcUl              1          Enable full-buffer UL traffic
+   useUdp             0          Disable UDP traffic and enable TCP instead
+   macroUeDensity     0.00002    Determines number of UEs (translates to 48 UEs
+                                 in our simulation)
+   outdoorUeMinSpeed  16.6667    Minimum UE movement speed in m/s (60 kmph)
+   outdoorUeMaxSpeed  16.6667    Maximum UE movement speed in m/s (60 kmph)
+   macroEnbBandwidth  25         5 MHz DL and UL bandwidth
+   generateRem        1          (Optional) For plotting the Radio Environment
+                                 Map
+   ================== ========== ===============================================
+
+Some of the required assumptions are not available as parameters of
+``lena-dual-stripe``. In this case, we override the default attributes, as
+shown in Table :ref:`tab-handover-campaign-default-values` below.
+
+.. _tab-handover-campaign-default-values:
+
+.. table:: Overriding default attributes for handover campaign
+
+   ==================================================== ================================== ==============================================
+   Default value name                                   Value                              Description
+   ==================================================== ================================== ==============================================
+   ns3::LteHelper::HandoverAlgorithm                    `ns3::NoOpHandoverAlgorithm`,      Choice of handover algorithm
+                                                        `ns3::A3RsrpHandoverAlgorithm`, or
+                                                        `ns3::A2A4RsrqHandoverAlgorithm`
+   ns3::LteHelper::Scheduler                            `ns3::PfFfMacScheduler`            Proportional Fair scheduler
+   ns3::LteHelper::UseIdealRrc                           1                                 Ideal RRC protocol
+   ns3::RadioBearerStatsCalculator::DlRlcOutputFilename `<run>`-DlRlcStats.txt             File name for DL RLC trace output
+   ns3::RadioBearerStatsCalculator::UlRlcOutputFilename `<run>`-UlRlcStats.txt             File name for UL RLC trace output
+   ns3::PhyStatsCalculator::DlRsrpSinrFilename          `<run>`-DlRsrpSinrStats.txt        File name for DL PHY RSRP/SINR trace output
+   ns3::PhyStatsCalculator::UlSinrFilename              `<run>`-UlSinrStats.txt            File name for UL PHY SINR trace output
+   ==================================================== ================================== ==============================================
+
+|ns3| provides many ways for passing configuration values into a simulation. In
+this example, we will use the command line arguments. It is basically done by
+appending the parameters and their values to the ``waf`` call when starting each
+individual simulation. So the ``waf`` calls for invoking our 3 simulations would
+look as below::
+
+   $ ./waf --run="lena-dual-stripe
+     --simTime=50 --nBlocks=0 --nMacroEnbSites=7 --nMacroEnbSitesX=2
+     --epc=1 --useUdp=0 --outdoorUeMinSpeed=16.6667 --outdoorUeMaxSpeed=16.6667
+     --ns3::LteHelper::HandoverAlgorithm=ns3::NoOpHandoverAlgorithm
+     --ns3::RadioBearerStatsCalculator::DlRlcOutputFilename=no-op-DlRlcStats.txt
+     --ns3::RadioBearerStatsCalculator::UlRlcOutputFilename=no-op-UlRlcStats.txt
+     --ns3::PhyStatsCalculator::DlRsrpSinrFilename=no-op-DlRsrpSinrStats.txt
+     --ns3::PhyStatsCalculator::UlSinrFilename=no-op-UlSinrStats.txt
+     --RngRun=1" > no-op.txt
+
+   $ ./waf --run="lena-dual-stripe
+     --simTime=50 --nBlocks=0 --nMacroEnbSites=7 --nMacroEnbSitesX=2
+     --epc=1 --useUdp=0 --outdoorUeMinSpeed=16.6667 --outdoorUeMaxSpeed=16.6667
+     --ns3::LteHelper::HandoverAlgorithm=ns3::A3RsrpHandoverAlgorithm
+     --ns3::RadioBearerStatsCalculator::DlRlcOutputFilename=a3-rsrp-DlRlcStats.txt
+     --ns3::RadioBearerStatsCalculator::UlRlcOutputFilename=a3-rsrp-UlRlcStats.txt
+     --ns3::PhyStatsCalculator::DlRsrpSinrFilename=a3-rsrp-DlRsrpSinrStats.txt
+     --ns3::PhyStatsCalculator::UlSinrFilename=a3-rsrp-UlSinrStats.txt
+     --RngRun=1" > a3-rsrp.txt
+
+   $ ./waf --run="lena-dual-stripe
+     --simTime=50 --nBlocks=0 --nMacroEnbSites=7 --nMacroEnbSitesX=2
+     --epc=1 --useUdp=0 --outdoorUeMinSpeed=16.6667 --outdoorUeMaxSpeed=16.6667
+     --ns3::LteHelper::HandoverAlgorithm=ns3::A2A4RsrqHandoverAlgorithm
+     --ns3::RadioBearerStatsCalculator::DlRlcOutputFilename=a2-a4-rsrq-DlRlcStats.txt
+     --ns3::RadioBearerStatsCalculator::UlRlcOutputFilename=a2-a4-rsrq-UlRlcStats.txt
+     --ns3::PhyStatsCalculator::DlRsrpSinrFilename=a2-a4-rsrq-DlRsrpSinrStats.txt
+     --ns3::PhyStatsCalculator::UlSinrFilename=a2-a4-rsrq-UlSinrStats.txt
+     --RngRun=1" > a2-a4-rsrq.txt
+
+Some notes on the execution:
+
+ * Notice that some arguments are not specified because they are already the
+   same as the default values. We also keep the handover algorithms on each own
+   default settings.
+
+ * Note the file names of simulation output, e.g. RLC traces and PHY traces,
+   because we have to make sure that they are not overwritten by the next
+   simulation run. In this example, we specify the names one by one using the
+   command line arguments.
+
+ * The ``--RngRun=1`` argument at the end is used for setting the run number
+   used by the random number generator used in the simulation. We re-run the
+   same simulations with different `RngRun` values, hence creating several
+   independent replications of the same simulations. Then we average the
+   results obtained from these replications to achieve some statistical
+   confidence.
+
+ * We can add a ``--generateRem=1`` argument to generate the files necessary for
+   generating the Radio Environment Map (REM) of the simulation. The result is
+   Figure :ref:`fig-lte-handover-campaign-rem` below, which can be produced by
+   following the steps described in Section :ref:`sec-radio-environment-maps`.
+   This figure also shows the position of eNodeBs and UEs at the beginning of a
+   simulation using ``RngRun = 1``. Other values of `RngRun` may produce
+   different UE position.
+   
+.. _fig-lte-handover-campaign-rem:
+
+.. figure:: figures/lte-handover-campaign-rem.*
+   :align: center
+
+   REM obtained from a simulation in handover campaign
+
+After hours of running, the simulation campaign will eventually end. Next we
+will perform some post-processing on the produced simulation output to obtain
+meaningful information out of it.
+
+In this example, we use GNU Octave to assist the processing of throughput and
+SINR data, as demonstrated in a sample GNU Octave script below::
+
+   % RxBytes is the 10th column
+   DlRxBytes = load ("no-op-DlRlcStats.txt") (:,10);
+   DlAverageThroughputKbps = sum (DlRxBytes) * 8 / 1000 / 50
+
+   % RxBytes is the 10th column
+   UlRxBytes = load ("no-op-UlRlcStats.txt") (:,10);
+   UlAverageThroughputKbps = sum (UlRxBytes) * 8 / 1000 / 50
+
+   % Sinr is the 6th column
+   DlSinr = load ("no-op-DlRsrpSinrStats.txt") (:,6);
+   % eliminate NaN values
+   idx = isnan (DlSinr);
+   DlSinr (idx) = 0;
+   DlAverageSinrDb = 10 * log10 (mean (DlSinr)) % convert to dB
+
+   % Sinr is the 5th column
+   UlSinr = load ("no-op-UlSinrStats.txt") (:,5);
+   % eliminate NaN values
+   idx = isnan (UlSinr);
+   UlSinr (idx) = 0;
+   UlAverageSinrDb = 10 * log10 (mean (UlSinr)) % convert to dB
+
+As for the number of handovers, we can use simple shell scripting to count the
+number of occurrences of string "Handover" in the log file::
+
+   $ grep "Handover" no-op.txt | wc -l
+
+Table :ref:`tab-handover-campaign-results` below shows the complete statistics
+after we are done with post-processing on every individual simulation run. The
+values shown are the average of the results obtained from ``RngRun`` of 1, 2, 3,
+and 4.
+
+.. _tab-handover-campaign-results:
+
+.. table:: Results of handover campaign
+
+   ===================================== ========== =========== ==============
+   Statistics                            No-op      A2-A4-RSRQ  Strongest cell
+   ===================================== ========== =========== ==============
+   Average DL system throughput          6 615 kbps 20 509 kbps 19 709 kbps
+   Average UL system throughput          4 095 kbps 5 705 kbps  6 627 kbps
+   Average DL SINR                       -0.10 dB   5.19 dB     5.24 dB
+   Average UL SINR                       9.54 dB    81.57 dB    79.65 dB
+   Number of handovers per UE per second 0          0.05694     0.04771
+   ===================================== ========== =========== ==============
+
+.. Below are the detailed datasheets from the campaign, for informational
+   purpose, but hidden from the published document.
+
+.. ======================= ========== ========== ========== ========== =======
+   NoOp                    RngRun = 1 RngRun = 2 RngRun = 3 RngRun = 4 Average
+   ======================= ========== ========== ========== ========== =======
+   DlAverageThroughputKbps 8 476      4 478      6 913      6 593      6 615
+   UlAverageThroughputKbps 4 923      2 962      4 715      3 779      4 095
+   DlAverageSinrDb         0.40       -0.99      0.84       -0.64      -0.10
+   UlAverageSinrDb         7.93       8.06       12.52      9.65       9.54
+   NumHandoverPerUePerSec  0          0          0          0          0
+   ======================= ========== ========== ========== ========== =======
+
+.. ======================= ========== ========== ========== ========== =======
+   A2A4Rsrq                RngRun = 1 RngRun = 2 RngRun = 3 RngRun = 4 Average
+   ======================= ========== ========== ========== ========== =======
+   DlAverageThroughputKbps 21 575     18 500     n/a        21 451     20 509
+   UlAverageThroughputKbps 6 039      5 320      n/a        5 757      5 705
+   DlAverageSinrDb         5.31       5.16       n/a        5.09       5.19
+   UlAverageSinrDb         84.17      79.18      n/a        81.37      81.57
+   NumHandoverPerUePerSec  0.05458    0.06000    n/a        0.05625    0.05694
+   ======================= ========== ========== ========== ========== =======
+   RngRun = 3 simulation got a segmentation fault as around +15.2s. The cause is
+   unknown at the moment.
+
+.. ======================= ========== ========== ========== ========== =======
+   A3Rsrp                  RngRun = 1 RngRun = 2 RngRun = 3 RngRun = 4 Average
+   ======================= ========== ========== ========== ========== =======
+   DlAverageThroughputKbps 20 349     17 781     20 229     20 478     19 709
+   UlAverageThroughputKbps 6 491      6 397      7 555      6 064      6 627
+   DlAverageSinrDb         5.24       5.08       5.63       5.01       5.24
+   UlAverageSinrDb         83.62      81.94      78.84      74.19      79.65
+   NumHandoverPerUePerSec  0.04625    0.04917    0.04958    0.04583    0.04771
+   ======================= ========== ========== ========== ========== =======
+
+The results show that having a handover algorithm in a mobility simulation
+improves both user throughput and SINR significantly. There is little difference
+between the two handover algorithms in this campaign scenario. It would be
+interesting to see their performance in different scenarios, such as scenarios
+with home eNodeBs deployment.

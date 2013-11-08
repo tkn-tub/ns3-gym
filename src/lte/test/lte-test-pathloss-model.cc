@@ -78,8 +78,6 @@ LteTestPathlossDlSchedCallback (LtePathlossModelSystemTestCase *testcase, std::s
 LtePathlossModelTestSuite::LtePathlossModelTestSuite ()
   : TestSuite ("lte-pathloss-model", SYSTEM)
 {
- 
-  
   // LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
   // LogComponentEnable ("LteHelper", logLevel);
   // LogComponentEnable ("LtePathlossModelTest", logLevel);
@@ -214,10 +212,10 @@ LtePathlossModelSystemTestCase::DoRun (void)
   lteHelper->EnableRlcTraces ();
   lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::HybridBuildingsPropagationLossModel"));
 
-  // set frequency. This is important because it changes the behavior of the pathloss model
+  // set frequency. This is important because it changes the behavior of the path loss model
   lteHelper->SetEnbDeviceAttribute ("DlEarfcn", UintegerValue (200));
+  lteHelper->SetUeDeviceAttribute ("DlEarfcn", UintegerValue (200));
 
-  
   // remove shadowing component
   lteHelper->SetPathlossModelAttribute ("ShadowSigmaOutdoor", DoubleValue (0.0));
   lteHelper->SetPathlossModelAttribute ("ShadowSigmaIndoor", DoubleValue (0.0));
@@ -263,7 +261,6 @@ LtePathlossModelSystemTestCase::DoRun (void)
   // Attach a UE to a eNB
   lteHelper->Attach (ueDevs, enbDevs.Get (0));
 
-  
   // Activate an EPS bearer
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);

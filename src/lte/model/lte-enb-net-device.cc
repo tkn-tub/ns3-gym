@@ -38,6 +38,8 @@
 #include <ns3/lte-ue-net-device.h>
 #include <ns3/lte-enb-phy.h>
 #include <ns3/ff-mac-scheduler.h>
+#include <ns3/lte-handover-algorithm.h>
+#include <ns3/lte-anr.h>
 #include <ns3/ipv4-l3-protocol.h>
 #include <ns3/abort.h>
 #include <ns3/log.h>
@@ -60,6 +62,16 @@ TypeId LteEnbNetDevice::GetTypeId (void)
                    PointerValue (),
                    MakePointerAccessor (&LteEnbNetDevice::m_rrc),
                    MakePointerChecker <LteEnbRrc> ())
+    .AddAttribute ("LteHandoverAlgorithm",
+                   "The handover algorithm associated to this EnbNetDevice",
+                   PointerValue (),
+                   MakePointerAccessor (&LteEnbNetDevice::m_handoverAlgorithm),
+                   MakePointerChecker <LteHandoverAlgorithm> ())
+    .AddAttribute ("LteAnr",
+                   "The automatic neighbour relation function associated to this EnbNetDevice",
+                   PointerValue (),
+                   MakePointerAccessor (&LteEnbNetDevice::m_anr),
+                   MakePointerChecker <LteAnr> ())
     .AddAttribute ("LteEnbMac",
                    "The MAC associated to this EnbNetDevice",
                    PointerValue (),
@@ -104,11 +116,28 @@ TypeId LteEnbNetDevice::GetTypeId (void)
                    UintegerValue (18100),
                    MakeUintegerAccessor (&LteEnbNetDevice::m_ulEarfcn),
                    MakeUintegerChecker<uint16_t> (18000, 24599))
+    .AddAttribute ("CsgId",
+                   "The Closed Subscriber Group (CSG) identity that this eNodeB belongs to",
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&LteEnbNetDevice::SetCsgId,
+                                         &LteEnbNetDevice::GetCsgId),
+                   MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("CsgIndication",
+                   "If true, only UEs which are members of the CSG (i.e. same CSG ID) "
+                   "can gain access to the eNodeB, therefore enforcing closed access mode. "
+                   "Otherwise, the eNodeB operates as a non-CSG cell and implements open access mode.",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&LteEnbNetDevice::SetCsgIndication,
+                                        &LteEnbNetDevice::GetCsgIndication),
+                   MakeBooleanChecker ())
   ;
   return tid;
 }
 
 LteEnbNetDevice::LteEnbNetDevice ()
+  : m_isConstructed (false),
+    m_isConfigured (false),
+    m_anr (0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -132,6 +161,15 @@ LteEnbNetDevice::DoDispose ()
   m_rrc->Dispose ();
   m_rrc = 0;
 
+  m_handoverAlgorithm->Dispose ();
+  m_handoverAlgorithm = 0;
+
+  if (m_anr != 0)
+    {
+      m_anr->Dispose ();
+      m_anr = 0;
+    }
+
   m_phy->Dispose ();
   m_phy = 0;
 
@@ -141,20 +179,16 @@ LteEnbNetDevice::DoDispose ()
 
 
 Ptr<LteEnbMac>
-LteEnbNetDevice::GetMac (void) const
+LteEnbNetDevice::GetMac () const
 {
-  NS_LOG_FUNCTION (this);
   return m_mac;
 }
 
-
 Ptr<LteEnbPhy>
-LteEnbNetDevice::GetPhy (void) const
+LteEnbNetDevice::GetPhy () const
 {
-  NS_LOG_FUNCTION (this);
   return m_phy;
 }
-
 
 Ptr<LteEnbRrc>
 LteEnbNetDevice::GetRrc () const
@@ -177,6 +211,7 @@ LteEnbNetDevice::GetUlBandwidth () const
 void 
 LteEnbNetDevice::SetUlBandwidth (uint8_t bw)
 { 
+  NS_LOG_FUNCTION (this << uint16_t (bw));
   switch (bw)
     { 
     case 6:
@@ -203,6 +238,7 @@ LteEnbNetDevice::GetDlBandwidth () const
 void 
 LteEnbNetDevice::SetDlBandwidth (uint8_t bw)
 {
+  NS_LOG_FUNCTION (this << uint16_t (bw));
   switch (bw)
     { 
     case 6:
@@ -229,6 +265,7 @@ LteEnbNetDevice::GetDlEarfcn () const
 void 
 LteEnbNetDevice::SetDlEarfcn (uint16_t earfcn)
 { 
+  NS_LOG_FUNCTION (this << earfcn);
   m_dlEarfcn = earfcn;
 }
 
@@ -241,20 +278,55 @@ LteEnbNetDevice::GetUlEarfcn () const
 void 
 LteEnbNetDevice::SetUlEarfcn (uint16_t earfcn)
 { 
+  NS_LOG_FUNCTION (this << earfcn);
   m_ulEarfcn = earfcn;
+}
+
+uint32_t
+LteEnbNetDevice::GetCsgId () const
+{
+  return m_csgId;
+}
+
+void
+LteEnbNetDevice::SetCsgId (uint32_t csgId)
+{
+  NS_LOG_FUNCTION (this << csgId);
+  m_csgId = csgId;
+  UpdateConfig (); // propagate the change to RRC level
+}
+
+bool
+LteEnbNetDevice::GetCsgIndication () const
+{
+  return m_csgIndication;
+}
+
+void
+LteEnbNetDevice::SetCsgIndication (bool csgIndication)
+{
+  NS_LOG_FUNCTION (this << csgIndication);
+  m_csgIndication = csgIndication;
+  UpdateConfig (); // propagate the change to RRC level
 }
 
 
 void 
 LteEnbNetDevice::DoInitialize (void)
 {
-
+  NS_LOG_FUNCTION (this);
+  m_isConstructed = true;
   UpdateConfig ();
   m_phy->Initialize ();
   m_mac->Initialize ();
   m_rrc->Initialize ();
-}
+  m_handoverAlgorithm->Initialize ();
 
+  if (m_anr != 0)
+    {
+      m_anr->Initialize ();
+    }
+}
 
 
 bool
@@ -266,16 +338,33 @@ LteEnbNetDevice::Send (Ptr<Packet> packet, const Address& dest, uint16_t protoco
 }
 
 
-
-
 void
 LteEnbNetDevice::UpdateConfig (void)
 {
   NS_LOG_FUNCTION (this);
 
-  m_rrc->ConfigureCell (m_ulBandwidth, m_dlBandwidth, m_ulEarfcn, m_dlEarfcn, m_cellId);
-  m_rrc->SetCellId (m_cellId);
+  if (m_isConstructed)
+    {
+      if (!m_isConfigured)
+        {
+          NS_LOG_LOGIC (this << " Configure cell " << m_cellId);
+          // we have to make sure that this function is called only once
+          m_rrc->ConfigureCell (m_ulBandwidth, m_dlBandwidth, m_ulEarfcn, m_dlEarfcn, m_cellId);
+          m_isConfigured = true;
+        }
 
+      NS_LOG_LOGIC (this << " Updating SIB1 of cell " << m_cellId
+                         << " with CSG ID " << m_csgId
+                         << " and CSG indication " << m_csgIndication);
+      m_rrc->SetCsgId (m_csgId, m_csgIndication);
+    }
+  else
+    {
+      /*
+       * Lower layers are not ready yet, so do nothing now and expect
+       * ``DoInitialize`` to re-invoke this function.
+       */
+    }
 }
 
 

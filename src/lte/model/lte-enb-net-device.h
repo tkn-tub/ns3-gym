@@ -40,6 +40,8 @@ class LteEnbPhy;
 class LteEnbMac;
 class LteEnbRrc;
 class FfMacScheduler;
+class LteHandoverAlgorithm;
+class LteAnr;
 
 
 /**
@@ -120,6 +122,50 @@ public:
    */
   void SetUlEarfcn (uint16_t earfcn);
 
+  /**
+   * \brief Returns the CSG ID of the eNodeB.
+   * \return the Closed Subscriber Group identity
+   * \sa LteEnbNetDevice::SetCsgId
+   */
+  uint32_t GetCsgId () const;
+
+  /**
+   * \brief Associate the eNodeB device with a particular CSG.
+   * \param csgId the intended Closed Subscriber Group identity
+   *
+   * CSG identity is a number identifying a Closed Subscriber Group which the
+   * cell belongs to. eNodeB is associated with a single CSG identity.
+   *
+   * The same CSG identity can also be associated to several UEs, which is
+   * equivalent as enlisting these UEs as the members of this particular CSG.
+   *
+   * \sa LteEnbNetDevice::SetCsgIndication
+   */
+  void SetCsgId (uint32_t csgId);
+
+  /**
+   * \brief Returns the CSG indication flag of the eNodeB.
+   * \return the CSG indication flag
+   * \sa LteEnbNetDevice::SetCsgIndication
+   */
+  bool GetCsgIndication () const;
+
+  /**
+   * \brief Enable or disable the CSG indication flag.
+   * \param csgIndication if TRUE, only CSG members are allowed to access this
+   *                      cell
+   *
+   * When the CSG indication field is set to TRUE, only UEs which are members of
+   * the CSG (i.e. same CSG ID) can gain access to the eNodeB, therefore
+   * enforcing closed access mode. Otherwise, the eNodeB operates as a non-CSG
+   * cell and implements open access mode.
+   *
+   * \note This restriction only applies to initial cell selection and
+   *       EPC-enabled simulation.
+   *
+   * \sa LteEnbNetDevice::SetCsgIndication
+   */
+  void SetCsgIndication (bool csgIndication);
 
 protected:
   // inherited from Object
@@ -127,16 +173,20 @@ protected:
 
 
 private:
+  bool m_isConstructed;
+  bool m_isConfigured;
 
   /**
-   * Several attributes (e.g., the bandwidth) are exported as
-   * attributes of the LteEnbNetDevice from a user perspective,  but
-   * are actually used also in other modules as well (the RRC, the
-   * PHY, the scheduler...). This methods takes care of updating the
-   * configuration of all modules so that their copy of the attribute
-   * values is in sync with the one in the LteEnbNetDevice.
+   * \brief Propagate attributes and configuration to sub-modules.
+   *
+   * Several attributes (e.g., the bandwidth) are exported as the attributes of
+   * the LteEnbNetDevice from a user perspective, but are actually used also in
+   * other sub-modules (the RRC, the PHY, the scheduler, etc.). This method
+   * takes care of updating the configuration of all these sub-modules so that
+   * their copy of attribute values are in sync with the one in
+   * the LteEnbNetDevice.
    */
-  void UpdateConfig (void);
+  void UpdateConfig ();
 
   Ptr<LteEnbMac> m_mac;
 
@@ -146,6 +196,10 @@ private:
 
   Ptr<FfMacScheduler> m_scheduler;
 
+  Ptr<LteHandoverAlgorithm> m_handoverAlgorithm;
+
+  Ptr<LteAnr> m_anr;
+
   uint16_t m_cellId; /**< Cell Identifer. Part of the CGI, see TS 29.274, section 8.21.1  */
 
   uint8_t m_dlBandwidth; /**< downlink bandwidth in RBs */
@@ -154,7 +208,10 @@ private:
   uint16_t m_dlEarfcn;  /**< downlink carrier frequency */
   uint16_t m_ulEarfcn;  /**< uplink carrier frequency */
 
-};
+  uint16_t m_csgId;
+  bool m_csgIndication;
+
+}; // end of class LteEnbNetDevice
 
 } // namespace ns3
 
