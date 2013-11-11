@@ -233,7 +233,7 @@ public:
    * \param minX X value of the lower left corner
    * \param minY Y value of the lower left corner
    * \param maxX X value of the upper right corner
-   * \param maxX Y value of the upper right corner
+   * \param maxY Y value of the upper right corner
    *
    */
   static void SetBoundary (double minX, double minY, double maxX, double maxY);
@@ -320,7 +320,7 @@ public:
 
   /**
    * \brief Helper function to set the color of nodes in a container
-   * \param n Ptr to the node
+   * \param nc A Node Container of Nodes 
    * \param r Red component value (0-255)
    * \param g Green component value (0-255)
    * \param b Blue component value (0-255)
