@@ -58,6 +58,17 @@ us a note on ns-developers mailing list.</p>
 </ul>
 <h2>Changes to existing API:</h2>
 <ul>
+  <li>A change is introduced for the usage of the EpcHelper
+      class. Previously, the EpcHelper class included both the API
+      definition and its (only) implementation; as such, users would
+      instantiate and use the EpcHelper class directly in their
+      simulation programs. From now on,
+      EpcHelper is just the base class defining the API, and the
+      implementation has been moved to derived classes; as such,
+      users are now expected to use one of the derived classes in
+      their simulation program. The imlpementation previously
+      provided by the EpcHelper class has been moved to the new
+      derived class PointToPointEpcHelper.</li>
   <li></li>
 </ul>
 <h2>Changes to build system:</h2>

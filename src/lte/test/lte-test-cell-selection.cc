@@ -29,7 +29,7 @@
 
 #include <ns3/mobility-helper.h>
 #include <ns3/lte-helper.h>
-#include <ns3/epc-helper.h>
+#include <ns3/point-to-point-epc-helper.h>
 #include <ns3/internet-stack-helper.h>
 #include <ns3/point-to-point-helper.h>
 #include <ns3/ipv4-address-helper.h>
@@ -163,11 +163,11 @@ LteCellSelectionTestCase::DoRun ()
                            StringValue ("ns3::FriisSpectrumPropagationLossModel"));
   lteHelper->SetAttribute ("UseIdealRrc", BooleanValue (m_isIdealRrc));
 
-  Ptr<EpcHelper> epcHelper;
+  Ptr<PointToPointEpcHelper> epcHelper;
 
   if (m_isEpcMode)
     {
-      epcHelper = CreateObject<EpcHelper> ();
+      epcHelper = CreateObject<PointToPointEpcHelper> ();
       lteHelper->SetEpcHelper (epcHelper);
     }
 

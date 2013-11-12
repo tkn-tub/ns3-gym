@@ -24,7 +24,7 @@
 #include "ns3/log.h"
 #include "ns3/test.h"
 #include "ns3/lte-helper.h"
-#include "ns3/epc-helper.h"
+#include "ns3/point-to-point-epc-helper.h"
 #include "ns3/packet-sink-helper.h"
 #include "ns3/udp-client-server-helper.h"
 #include "ns3/udp-echo-helper.h"
@@ -116,7 +116,7 @@ LteEpcE2eDataTestCase::DoRun ()
   Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));  
   Config::SetDefault ("ns3::LteHelper::UseIdealRrc", BooleanValue (true));
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
-  Ptr<EpcHelper> epcHelper = CreateObject<EpcHelper> ();
+  Ptr<PointToPointEpcHelper> epcHelper = CreateObject<PointToPointEpcHelper> ();
   lteHelper->SetEpcHelper (epcHelper);
 
   lteHelper->SetAttribute("PathlossModel",
