@@ -8,7 +8,7 @@ This chapter posts some information about possibly common errors in building
 or running |ns3| programs.
 
 Please note that the wiki
-(`<http://www.nsnam.org/wiki/index.php/Troubleshooting>`_) may have contributed
+(`<http://www.nsnam.org/wiki/Troubleshooting>`_) may have contributed
 items.
 
 Build errors

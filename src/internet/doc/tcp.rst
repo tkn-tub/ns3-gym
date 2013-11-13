@@ -147,7 +147,7 @@ Validation
 ++++++++++
 
 Several TCP validation test results can be found in the
-`wiki page <http://www.nsnam.org/wiki/index.php/New_TCP_Socket_Architecture>`_ 
+`wiki page <http://www.nsnam.org/wiki/New_TCP_Socket_Architecture>`_ 
 describing this implementation.
 
 Current limitations
@@ -365,4 +365,4 @@ Limitations
 * The non-Linux stacks of NSC are not supported in |ns3|
 * Not all socket API callbacks are supported
 
-For more information, see `this wiki page <http://www.nsnam.org/wiki/index.php/Network_Simulation_Cradle_Integration>`_.
+For more information, see `this wiki page <http://www.nsnam.org/wiki/Network_Simulation_Cradle_Integration>`_.

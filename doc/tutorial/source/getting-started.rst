@@ -43,7 +43,7 @@ editor) you will need to ensure that a number of additional libraries are
 present on your system before proceeding.  |ns3| provides a wiki
 page that includes pages with many useful hints and tips.
 One such page is the "Installation" page,
-http://www.nsnam.org/wiki/index.php/Installation.
+http://www.nsnam.org/wiki/Installation.
 
 The "Prerequisites" section of this wiki page explains which packages are 
 required to support common |ns3| options, and also provides the 
@@ -661,5 +661,5 @@ expected output.
 
 If you want to run programs under another tool such as gdb or valgrind,
 see this `wiki entry
-<http://www.nsnam.org/wiki/index.php/User_FAQ#How_to_run_NS-3_programs_under_another_tool>`_.
+<http://www.nsnam.org/wiki/User_FAQ#How_to_run_NS-3_programs_under_another_tool>`_.
 

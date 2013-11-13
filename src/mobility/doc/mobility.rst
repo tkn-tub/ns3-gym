@@ -168,7 +168,7 @@ Some examples of external tools that can export in this format include:
 
 - BonnMotion http://net.cs.uni-bonn.de/wg/cs/applications/bonnmotion/
 
-  - Some installation instructions for BonnMotion can be found here:  http://www.nsnam.org/wiki/index.php/HOWTO_use_ns-3_with_BonnMotion_mobility_generator_and_analysis_tool
+  - Some installation instructions for BonnMotion can be found here:  http://www.nsnam.org/wiki/HOWTO_use_ns-3_with_BonnMotion_mobility_generator_and_analysis_tool
   - Documentation on using BonnMotion with |ns3| is posted here: http://www.ida.liu.se/~rikno/files/mobility_generation.pdf  
 
 - SUMO http://sourceforge.net/apps/mediawiki/sumo/index.php?title=Main_Page

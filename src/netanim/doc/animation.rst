@@ -6,7 +6,7 @@ Animation
 Animation is an important tool for network simulation. While |ns3| does not
 contain a default graphical animation tool, we currently have two ways to provide
 animation, namely using the PyViz method or the NetAnim method.
-The PyViz method is described in http://www.nsnam.org/wiki/index.php/PyViz.
+The PyViz method is described in http://www.nsnam.org/wiki/PyViz.
 
 We will describe the NetAnim method briefly here.
 
@@ -320,4 +320,4 @@ Wiki
 ====
 For detailed instructions on installing "NetAnim", F.A.Qs and loading the XML trace file 
 (mentioned earlier) using NetAnim please refer:
-http://www.nsnam.org/wiki/index.php/NetAnim
+http://www.nsnam.org/wiki/NetAnim

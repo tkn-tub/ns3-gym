@@ -178,7 +178,7 @@ protected:
 
 private:
   // private copy constructor as sugested in:
-  // http://www.nsnam.org/wiki/index.php/NS-3_Python_Bindings#.22invalid_use_of_incomplete_type.22
+  // http://www.nsnam.org/wiki/NS-3_Python_Bindings#.22invalid_use_of_incomplete_type.22
   FdNetDevice (FdNetDevice const &);
 
   /**
