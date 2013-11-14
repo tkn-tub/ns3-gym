@@ -50,11 +50,22 @@ class NetDevice;
 class Ipv4RoutingProtocol : public Object
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
+  /// Callback for unicast packets to be forwarded
   typedef Callback<void, Ptr<Ipv4Route>, Ptr<const Packet>, const Ipv4Header &> UnicastForwardCallback;
+
+  /// Callback for multicast packets to be forwarded
   typedef Callback<void, Ptr<Ipv4MulticastRoute>, Ptr<const Packet>, const Ipv4Header &> MulticastForwardCallback;
+
+  /// Callback for packets to be locally delivered
   typedef Callback<void, Ptr<const Packet>, const Ipv4Header &, uint32_t > LocalDeliverCallback;
+
+  /// Callback for routing errors (e.g., no route found)
   typedef Callback<void, Ptr<const Packet>, const Ipv4Header &, Socket::SocketErrno > ErrorCallback;
 
   /**

@@ -115,7 +115,12 @@ static uint32_t lookuphash (unsigned char* k, uint32_t length, uint32_t level)
 
 /**
  * \brief Convert an IPv6 C-string into a 128-bit representation.
+ *
+ * \param address pointer to the char buffer with the address ascii representation
+ * \param addr the buffer to store the IPv6 address
+ *
  * \return true if success, false otherwise (bad format, ...)
+ *
  * \note This function is strongly inspired by inet_pton6() from Paul Vixie.
  * \todo Handle IPv6 address with decimal value for last four bytes.
  */
@@ -913,16 +918,6 @@ std::istream& operator >> (std::istream& is, Ipv6Prefix& prefix)
   is >> str;
   prefix = Ipv6Prefix (str.c_str ());
   return is;
-}
-
-bool operator == (Ipv6Prefix const &a, Ipv6Prefix const &b)
-{
-  return a.IsEqual (b);
-}
-
-bool operator != (Ipv6Prefix const &a, Ipv6Prefix const &b)
-{
-  return !a.IsEqual (b);
 }
 
 size_t Ipv6AddressHash::operator () (Ipv6Address const &x) const

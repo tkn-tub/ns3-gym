@@ -26,6 +26,8 @@
 #include <list>
 
 /**
+ * \brief Register the class in the ns-3 factory.
+ *
  * This macro should be invoked once for every class which
  * defines a new GetTypeId method.
  */

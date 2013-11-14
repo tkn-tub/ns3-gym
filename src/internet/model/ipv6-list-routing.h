@@ -118,7 +118,14 @@ protected:
   virtual void DoDispose (void);
 
 private:
+  /**
+   * \brief Container identifying an IPv6 Routing Protocol entry in the list.
+   */
   typedef std::pair<int16_t, Ptr<Ipv6RoutingProtocol> > Ipv6RoutingProtocolEntry;
+
+  /**
+   * \brief Container of the IPv6 Routing Protocols.
+   */
   typedef std::list<Ipv6RoutingProtocolEntry> Ipv6RoutingProtocolList;
 
   /**

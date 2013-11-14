@@ -268,7 +268,7 @@ public:
   void EnableAsciiIpv4All (Ptr<OutputStreamWrapper> stream);
 
   /**
-   * @brief Enable pcap output on the Ipv4 and interface pair specified by a 
+   * @brief Enable ascii trace output on the Ipv4 and interface pair specified by a
    * global node-id (of a previously created node) and interface.  Since there
    * can be only one Ipv4 aggregated to a node, the node-id unambiguously 
    * determines the Ipv4.
@@ -283,7 +283,7 @@ public:
   void EnableAsciiIpv4 (std::string prefix, uint32_t nodeid, uint32_t deviceid, bool explicitFilename);
 
   /**
-   * @brief Enable pcap output on the Ipv4 and interface pair specified by a 
+   * @brief Enable ascii trace output on the Ipv4 and interface pair specified by a
    * global node-id (of a previously created node) and interface.  Since there
    * can be only one Ipv4 aggregated to a node, the node-id unambiguously 
    * determines the Ipv4.
@@ -299,7 +299,21 @@ public:
 
 private:
   /**
-   * @internal Avoid code duplication.
+   * @internal
+   *
+   * @brief Enable ascii trace output on the Ipv4 and interface pair specified by a
+   * global node-id (of a previously created node) and interface.  Since there
+   * can be only one Ipv4 aggregated to a node, the node-id unambiguously
+   * determines the Ipv4.
+   *
+   * @param stream An OutputStreamWrapper representing an existing file to use
+   *               when writing trace data.
+   * @param prefix Filename prefix to use when creating ascii trace files
+   * @param nodeid The node identifier/number of the node on which to enable
+   *               ascii tracing
+   * @param interface The device identifier/index of the device on which to enable
+   *               ascii tracing
+   * @param explicitFilename Treat the prefix as an explicit filename if true.
    */
   void EnableAsciiIpv4Impl (Ptr<OutputStreamWrapper> stream, 
                             std::string prefix, 
@@ -308,17 +322,50 @@ private:
                             bool explicitFilename);
 
   /**
-   * @internal Avoid code duplication.
+   * @internal
+   *
+   * @brief Enable ascii trace output on the Ipv4 and interface pair specified by a
+   * global node-id (of a previously created node) and interface.  Since there
+   * can be only one Ipv4 aggregated to a node, the node-id unambiguously
+   * determines the Ipv4.
+   *
+   * @param stream An OutputStreamWrapper representing an existing file to use
+   *               when writing trace data.
+   * @param prefix Filename prefix to use when creating ascii trace files
+   * @param n container of nodes.
    */
   void EnableAsciiIpv4Impl (Ptr<OutputStreamWrapper> stream, std::string prefix, NodeContainer n);
 
   /**
-   * @internal Avoid code duplication.
+   * @internal
+   *
+   * @brief Enable ascii trace output on the Ipv4 and interface pair specified by a
+   * global node-id (of a previously created node) and interface.  Since there
+   * can be only one Ipv4 aggregated to a node, the node-id unambiguously
+   * determines the Ipv4.
+   *
+   * @param stream An OutputStreamWrapper representing an existing file to use
+   *               when writing trace data.
+   * @param prefix Filename prefix to use when creating ascii trace files
+   * @param c Ipv4InterfaceContainer of Ipv4 and interface pairs
    */
   void EnableAsciiIpv4Impl (Ptr<OutputStreamWrapper> stream, std::string prefix, Ipv4InterfaceContainer c);
 
   /**
-   * @internal Avoid code duplication.
+   * @internal
+   *
+   * @brief Enable ascii trace output on the Ipv4 and interface pair specified by a
+   * global node-id (of a previously created node) and interface.  Since there
+   * can be only one Ipv4 aggregated to a node, the node-id unambiguously
+   * determines the Ipv4.
+   *
+   * @param stream An OutputStreamWrapper representing an existing file to use
+   *               when writing trace data.
+   * @param prefix Filename prefix to use when creating ascii trace files
+   * @param ipv4Name Name of the Ptr<Ipv4> on which you want to enable tracing.
+   * @param interface The device identifier/index of the device on which to enable
+   *               ascii tracing
+   * @param explicitFilename Treat the prefix as an explicit filename if true.
    */
   void EnableAsciiIpv4Impl (Ptr<OutputStreamWrapper> stream, 
                             std::string prefix, 
@@ -327,7 +374,20 @@ private:
                             bool explicitFilename);
 
   /**
-   * @internal Avoid code duplication.
+   * @internal
+   *
+   * @brief Enable ascii trace output on the Ipv4 and interface pair specified by a
+   * global node-id (of a previously created node) and interface.  Since there
+   * can be only one Ipv4 aggregated to a node, the node-id unambiguously
+   * determines the Ipv4.
+   *
+   * @param stream An OutputStreamWrapper representing an existing file to use
+   *               when writing trace data.
+   * @param prefix Filename prefix to use when creating ascii trace files
+   * @param ipv4 Ptr<Ipv4> on which you want to enable tracing.
+   * @param interface The device identifier/index of the device on which to enable
+   *               ascii tracing
+   * @param explicitFilename Treat the prefix as an explicit filename if true.
    */
   void EnableAsciiIpv4Impl (Ptr<OutputStreamWrapper> stream, 
                             std::string prefix, 
@@ -558,7 +618,7 @@ public:
   void EnableAsciiIpv6 (Ptr<OutputStreamWrapper> stream, NodeContainer n);
 
   /**
-   * @brief Enable pcap output on the Ipv6 and interface pair specified by a 
+   * @brief Enable ascii trace output on the Ipv6 and interface pair specified by a
    * global node-id (of a previously created node) and interface.  Since there
    * can be only one Ipv6 aggregated to a node, the node-id unambiguously 
    * determines the Ipv6.
@@ -573,7 +633,7 @@ public:
   void EnableAsciiIpv6 (std::string prefix, uint32_t nodeid, uint32_t interface, bool explicitFilename);
 
   /**
-   * @brief Enable pcap output on the Ipv6 and interface pair specified by a 
+   * @brief Enable ascii trace output on the Ipv6 and interface pair specified by a
    * global node-id (of a previously created node) and interface.  Since there
    * can be only one Ipv6 aggregated to a node, the node-id unambiguously 
    * determines the Ipv6.
@@ -605,7 +665,21 @@ public:
 
 private:
   /**
-   * @internal Avoid code duplication.
+   * @internal
+   *
+   * @brief Enable ascii trace output on the Ipv6 and interface pair specified by a
+   * global node-id (of a previously created node) and interface.  Since there
+   * can be only one Ipv6 aggregated to a node, the node-id unambiguously
+   * determines the Ipv6.
+   *
+   * @param stream An OutputStreamWrapper representing an existing file to use
+   *               when writing trace data.
+   * @param prefix Filename prefix to use when creating ascii trace files
+   * @param nodeid The node identifier/number of the node on which to enable
+   *               ascii tracing
+   * @param interface The device identifier/index of the device on which to enable
+   *               ascii tracing
+   * @param explicitFilename Treat the prefix as an explicit filename if true.
    */
   void EnableAsciiIpv6Impl (Ptr<OutputStreamWrapper> stream, 
                             std::string prefix, 
@@ -614,17 +688,50 @@ private:
                             bool explicitFilename);
 
   /**
-   * @internal Avoid code duplication.
+   * @internal
+   *
+   * @brief Enable ascii trace output on the Ipv6 and interface pair specified by a
+   * global node-id (of a previously created node) and interface.  Since there
+   * can be only one Ipv6 aggregated to a node, the node-id unambiguously
+   * determines the Ipv6.
+   *
+   * @param stream An OutputStreamWrapper representing an existing file to use
+   *               when writing trace data.
+   * @param prefix Filename prefix to use when creating ascii trace files
+   * @param n container of nodes.
    */
   void EnableAsciiIpv6Impl (Ptr<OutputStreamWrapper> stream, std::string prefix, NodeContainer n);
 
   /**
-   * @internal Avoid code duplication.
+   * @internal
+   *
+   * @brief Enable ascii trace output on the Ipv6 and interface pair specified by a
+   * global node-id (of a previously created node) and interface.  Since there
+   * can be only one Ipv6 aggregated to a node, the node-id unambiguously
+   * determines the Ipv6.
+   *
+   * @param stream An OutputStreamWrapper representing an existing file to use
+   *               when writing trace data.
+   * @param prefix Filename prefix to use when creating ascii trace files
+   * @param c Ipv6InterfaceContainer of Ipv6 and interface pairs
    */
   void EnableAsciiIpv6Impl (Ptr<OutputStreamWrapper> stream, std::string prefix, Ipv6InterfaceContainer c);
 
   /**
-   * @internal Avoid code duplication.
+   * @internal
+   *
+   * @brief Enable ascii trace output on the Ipv6 and interface pair specified by a
+   * global node-id (of a previously created node) and interface.  Since there
+   * can be only one Ipv6 aggregated to a node, the node-id unambiguously
+   * determines the Ipv6.
+   *
+   * @param stream An OutputStreamWrapper representing an existing file to use
+   *               when writing trace data.
+   * @param prefix Filename prefix to use when creating ascii trace files
+   * @param ipv6Name Name of the Ptr<Ipv6> on which you want to enable tracing.
+   * @param interface The device identifier/index of the device on which to enable
+   *               ascii tracing
+   * @param explicitFilename Treat the prefix as an explicit filename if true.
    */
   void EnableAsciiIpv6Impl (Ptr<OutputStreamWrapper> stream, 
                             std::string prefix, 
@@ -633,7 +740,20 @@ private:
                             bool explicitFilename);
 
   /**
-   * @internal Avoid code duplication.
+   * @internal
+   *
+   * @brief Enable ascii trace output on the Ipv6 and interface pair specified by a
+   * global node-id (of a previously created node) and interface.  Since there
+   * can be only one Ipv6 aggregated to a node, the node-id unambiguously
+   * determines the Ipv6.
+   *
+   * @param stream An OutputStreamWrapper representing an existing file to use
+   *               when writing trace data.
+   * @param prefix Filename prefix to use when creating ascii trace files
+   * @param ipv6 Ptr<Ipv6> on which you want to enable tracing.
+   * @param interface The device identifier/index of the device on which to enable
+   *               ascii tracing
+   * @param explicitFilename Treat the prefix as an explicit filename if true.
    */
   void EnableAsciiIpv6Impl (Ptr<OutputStreamWrapper> stream, 
                             std::string prefix, 

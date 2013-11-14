@@ -210,42 +210,42 @@ TcpSocketBase::~TcpSocketBase (void)
   CancelAllTimers ();
 }
 
-/** Associate a node with this TCP socket */
+/* Associate a node with this TCP socket */
 void
 TcpSocketBase::SetNode (Ptr<Node> node)
 {
   m_node = node;
 }
 
-/** Associate the L4 protocol (e.g. mux/demux) with this socket */
+/* Associate the L4 protocol (e.g. mux/demux) with this socket */
 void
 TcpSocketBase::SetTcp (Ptr<TcpL4Protocol> tcp)
 {
   m_tcp = tcp;
 }
 
-/** Set an RTT estimator with this socket */
+/* Set an RTT estimator with this socket */
 void
 TcpSocketBase::SetRtt (Ptr<RttEstimator> rtt)
 {
   m_rtt = rtt;
 }
 
-/** Inherit from Socket class: Returns error code */
+/* Inherit from Socket class: Returns error code */
 enum Socket::SocketErrno
 TcpSocketBase::GetErrno (void) const
 {
   return m_errno;
 }
 
-/** Inherit from Socket class: Returns socket type, NS3_SOCK_STREAM */
+/* Inherit from Socket class: Returns socket type, NS3_SOCK_STREAM */
 enum Socket::SocketType
 TcpSocketBase::GetSocketType (void) const
 {
   return NS3_SOCK_STREAM;
 }
 
-/** Inherit from Socket class: Returns associated node */
+/* Inherit from Socket class: Returns associated node */
 Ptr<Node>
 TcpSocketBase::GetNode (void) const
 {
@@ -253,7 +253,7 @@ TcpSocketBase::GetNode (void) const
   return m_node;
 }
 
-/** Inherit from Socket class: Bind socket to an end-point in TcpL4Protocol */
+/* Inherit from Socket class: Bind socket to an end-point in TcpL4Protocol */
 int
 TcpSocketBase::Bind (void)
 {
@@ -282,7 +282,7 @@ TcpSocketBase::Bind6 (void)
   return SetupCallback ();
 }
 
-/** Inherit from Socket class: Bind socket (with specific address) to an end-point in TcpL4Protocol */
+/* Inherit from Socket class: Bind socket (with specific address) to an end-point in TcpL4Protocol */
 int
 TcpSocketBase::Bind (const Address &address)
 {
@@ -352,7 +352,7 @@ TcpSocketBase::Bind (const Address &address)
   return SetupCallback ();
 }
 
-/** Inherit from Socket class: Initiate connection to a remote address:port */
+/* Inherit from Socket class: Initiate connection to a remote address:port */
 int
 TcpSocketBase::Connect (const Address & address)
 {
@@ -424,7 +424,7 @@ TcpSocketBase::Connect (const Address & address)
   return DoConnect ();
 }
 
-/** Inherit from Socket class: Listen on the endpoint for an incoming connection */
+/* Inherit from Socket class: Listen on the endpoint for an incoming connection */
 int
 TcpSocketBase::Listen (void)
 {
@@ -441,7 +441,7 @@ TcpSocketBase::Listen (void)
   return 0;
 }
 
-/** Inherit from Socket class: Kill this socket and signal the peer (if any) */
+/* Inherit from Socket class: Kill this socket and signal the peer (if any) */
 int
 TcpSocketBase::Close (void)
 {
@@ -468,7 +468,7 @@ TcpSocketBase::Close (void)
   return DoClose ();
 }
 
-/** Inherit from Socket class: Signal a termination of send */
+/* Inherit from Socket class: Signal a termination of send */
 int
 TcpSocketBase::ShutdownSend (void)
 {
@@ -502,7 +502,7 @@ TcpSocketBase::ShutdownSend (void)
   return 0;
 }
 
-/** Inherit from Socket class: Signal a termination of receive */
+/* Inherit from Socket class: Signal a termination of receive */
 int
 TcpSocketBase::ShutdownRecv (void)
 {
@@ -511,7 +511,7 @@ TcpSocketBase::ShutdownRecv (void)
   return 0;
 }
 
-/** Inherit from Socket class: Send a packet. Parameter flags is not used.
+/* Inherit from Socket class: Send a packet. Parameter flags is not used.
     Packet has no TCP header. Invoked by upper-layer application */
 int
 TcpSocketBase::Send (Ptr<Packet> p, uint32_t flags)
@@ -546,15 +546,15 @@ TcpSocketBase::Send (Ptr<Packet> p, uint32_t flags)
     }
 }
 
-/** Inherit from Socket class: In TcpSocketBase, it is same as Send() call */
+/* Inherit from Socket class: In TcpSocketBase, it is same as Send() call */
 int
 TcpSocketBase::SendTo (Ptr<Packet> p, uint32_t flags, const Address &address)
 {
   return Send (p, flags); // SendTo() and Send() are the same
 }
 
-/** Inherit from Socket class: Return data to upper-layer application. Parameter flags
-    is not used. Data is returned as a packet of size no larger than maxSize */
+/* Inherit from Socket class: Return data to upper-layer application. Parameter flags
+   is not used. Data is returned as a packet of size no larger than maxSize */
 Ptr<Packet>
 TcpSocketBase::Recv (uint32_t maxSize, uint32_t flags)
 {
@@ -581,7 +581,7 @@ TcpSocketBase::Recv (uint32_t maxSize, uint32_t flags)
   return outPacket;
 }
 
-/** Inherit from Socket class: Recv and return the remote's address */
+/* Inherit from Socket class: Recv and return the remote's address */
 Ptr<Packet>
 TcpSocketBase::RecvFrom (uint32_t maxSize, uint32_t flags, Address &fromAddress)
 {
@@ -606,7 +606,7 @@ TcpSocketBase::RecvFrom (uint32_t maxSize, uint32_t flags, Address &fromAddress)
   return packet;
 }
 
-/** Inherit from Socket class: Get the max number of bytes an app can send */
+/* Inherit from Socket class: Get the max number of bytes an app can send */
 uint32_t
 TcpSocketBase::GetTxAvailable (void) const
 {
@@ -614,7 +614,7 @@ TcpSocketBase::GetTxAvailable (void) const
   return m_txBuffer.Available ();
 }
 
-/** Inherit from Socket class: Get the max number of bytes an app can read */
+/* Inherit from Socket class: Get the max number of bytes an app can read */
 uint32_t
 TcpSocketBase::GetRxAvailable (void) const
 {
@@ -622,7 +622,7 @@ TcpSocketBase::GetRxAvailable (void) const
   return m_rxBuffer.Available ();
 }
 
-/** Inherit from Socket class: Return local address:port */
+/* Inherit from Socket class: Return local address:port */
 int
 TcpSocketBase::GetSockName (Address &address) const
 {
@@ -644,7 +644,7 @@ TcpSocketBase::GetSockName (Address &address) const
   return 0;
 }
 
-/** Inherit from Socket class: Bind this socket to the specified NetDevice */
+/* Inherit from Socket class: Bind this socket to the specified NetDevice */
 void
 TcpSocketBase::BindToNetDevice (Ptr<NetDevice> netdevice)
 {
@@ -668,7 +668,7 @@ TcpSocketBase::BindToNetDevice (Ptr<NetDevice> netdevice)
   return;
 }
 
-/** Clean up after Bind. Set up callback functions in the end-point. */
+/* Clean up after Bind. Set up callback functions in the end-point. */
 int
 TcpSocketBase::SetupCallback (void)
 {
@@ -694,7 +694,7 @@ TcpSocketBase::SetupCallback (void)
   return 0;
 }
 
-/** Perform the real connection tasks: Send SYN if allowed, RST if invalid */
+/* Perform the real connection tasks: Send SYN if allowed, RST if invalid */
 int
 TcpSocketBase::DoConnect (void)
 {
@@ -716,7 +716,7 @@ TcpSocketBase::DoConnect (void)
   return 0;
 }
 
-/** Do the action to close the socket. Usually send a packet with appropriate
+/* Do the action to close the socket. Usually send a packet with appropriate
     flags depended on the current m_state. */
 int
 TcpSocketBase::DoClose (void)
@@ -759,7 +759,7 @@ TcpSocketBase::DoClose (void)
   return 0;
 }
 
-/** Peacefully close the socket by notifying the upper layer and deallocate end point */
+/* Peacefully close the socket by notifying the upper layer and deallocate end point */
 void
 TcpSocketBase::CloseAndNotify (void)
 {
@@ -780,7 +780,7 @@ TcpSocketBase::CloseAndNotify (void)
 }
 
 
-/** Tell if a sequence number range is out side the range that my rx buffer can
+/* Tell if a sequence number range is out side the range that my rx buffer can
     accpet */
 bool
 TcpSocketBase::OutOfRange (SequenceNumber32 head, SequenceNumber32 tail) const
@@ -799,7 +799,7 @@ TcpSocketBase::OutOfRange (SequenceNumber32 head, SequenceNumber32 tail) const
   return (tail < m_rxBuffer.NextRxSequence () || m_rxBuffer.MaxRxSequence () <= head);
 }
 
-/** Function called by the L3 protocol when it received a packet to pass on to
+/* Function called by the L3 protocol when it received a packet to pass on to
     the TCP. This function is registered as the "RxCallback" function in
     SetupCallback(), which invoked by Bind(), and CompleteFork() */
 void
@@ -841,7 +841,7 @@ TcpSocketBase::ForwardIcmp6 (Ipv6Address icmpSource, uint8_t icmpTtl,
     }
 }
 
-/** The real function to handle the incoming packet from lower layers. This is
+/* The real function to handle the incoming packet from lower layers. This is
     wrapped by ForwardUp() so that this function can be overloaded by daughter
     classes. */
 void
@@ -1035,7 +1035,7 @@ TcpSocketBase::DoForwardUp (Ptr<Packet> packet, Ipv6Header header, uint16_t port
     }
 }
 
-/** Received a packet upon ESTABLISHED state. This function is mimicking the
+/* Received a packet upon ESTABLISHED state. This function is mimicking the
     role of tcp_rcv_established() in tcp_input.c in Linux kernel. */
 void
 TcpSocketBase::ProcessEstablished (Ptr<Packet> packet, const TcpHeader& tcpHeader)
@@ -1081,7 +1081,7 @@ TcpSocketBase::ProcessEstablished (Ptr<Packet> packet, const TcpHeader& tcpHeade
     }
 }
 
-/** Process the newly received ACK */
+/* Process the newly received ACK */
 void
 TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
 {
@@ -1118,7 +1118,7 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
     }
 }
 
-/** Received a packet upon LISTEN state. */
+/* Received a packet upon LISTEN state. */
 void
 TcpSocketBase::ProcessListen (Ptr<Packet> packet, const TcpHeader& tcpHeader,
                               const Address& fromAddress, const Address& toAddress)
@@ -1148,7 +1148,7 @@ TcpSocketBase::ProcessListen (Ptr<Packet> packet, const TcpHeader& tcpHeader,
                           packet, tcpHeader, fromAddress, toAddress);
 }
 
-/** Received a packet upon SYN_SENT */
+/* Received a packet upon SYN_SENT */
 void
 TcpSocketBase::ProcessSynSent (Ptr<Packet> packet, const TcpHeader& tcpHeader)
 {
@@ -1206,7 +1206,7 @@ TcpSocketBase::ProcessSynSent (Ptr<Packet> packet, const TcpHeader& tcpHeader)
     }
 }
 
-/** Received a packet upon SYN_RCVD */
+/* Received a packet upon SYN_RCVD */
 void
 TcpSocketBase::ProcessSynRcvd (Ptr<Packet> packet, const TcpHeader& tcpHeader,
                                const Address& fromAddress, const Address& toAddress)
@@ -1296,7 +1296,7 @@ TcpSocketBase::ProcessSynRcvd (Ptr<Packet> packet, const TcpHeader& tcpHeader,
     }
 }
 
-/** Received a packet upon CLOSE_WAIT, FIN_WAIT_1, or FIN_WAIT_2 states */
+/* Received a packet upon CLOSE_WAIT, FIN_WAIT_1, or FIN_WAIT_2 states */
 void
 TcpSocketBase::ProcessWait (Ptr<Packet> packet, const TcpHeader& tcpHeader)
 {
@@ -1367,7 +1367,7 @@ TcpSocketBase::ProcessWait (Ptr<Packet> packet, const TcpHeader& tcpHeader)
     }
 }
 
-/** Received a packet upon CLOSING */
+/* Received a packet upon CLOSING */
 void
 TcpSocketBase::ProcessClosing (Ptr<Packet> packet, const TcpHeader& tcpHeader)
 {
@@ -1399,7 +1399,7 @@ TcpSocketBase::ProcessClosing (Ptr<Packet> packet, const TcpHeader& tcpHeader)
     }
 }
 
-/** Received a packet upon LAST_ACK */
+/* Received a packet upon LAST_ACK */
 void
 TcpSocketBase::ProcessLastAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
 {
@@ -1435,7 +1435,7 @@ TcpSocketBase::ProcessLastAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
     }
 }
 
-/** Peer sent me a FIN. Remember its sequence in rx buffer. */
+/* Peer sent me a FIN. Remember its sequence in rx buffer. */
 void
 TcpSocketBase::PeerClose (Ptr<Packet> p, const TcpHeader& tcpHeader)
 {
@@ -1472,7 +1472,7 @@ TcpSocketBase::PeerClose (Ptr<Packet> p, const TcpHeader& tcpHeader)
   DoPeerClose (); // Change state, respond with ACK
 }
 
-/** Received a in-sequence FIN. Close down this socket. */
+/* Received a in-sequence FIN. Close down this socket. */
 void
 TcpSocketBase::DoPeerClose (void)
 {
@@ -1510,7 +1510,7 @@ TcpSocketBase::DoPeerClose (void)
     }
 }
 
-/** Kill this socket. This is a callback function configured to m_endpoint in
+/* Kill this socket. This is a callback function configured to m_endpoint in
    SetupCallback(), invoked when the endpoint is destroyed. */
 void
 TcpSocketBase::Destroy (void)
@@ -1531,7 +1531,7 @@ TcpSocketBase::Destroy (void)
   CancelAllTimers ();
 }
 
-/** Kill this socket. This is a callback function configured to m_endpoint in
+/* Kill this socket. This is a callback function configured to m_endpoint in
    SetupCallback(), invoked when the endpoint is destroyed. */
 void
 TcpSocketBase::Destroy6 (void)
@@ -1552,7 +1552,7 @@ TcpSocketBase::Destroy6 (void)
   CancelAllTimers ();
 }
 
-/** Send an empty packet with specified TCP flags */
+/* Send an empty packet with specified TCP flags */
 void
 TcpSocketBase::SendEmptyPacket (uint8_t flags)
 {
@@ -1667,7 +1667,7 @@ TcpSocketBase::SendEmptyPacket (uint8_t flags)
     }
 }
 
-/** This function closes the endpoint completely. Called upon RST_TX action. */
+/* This function closes the endpoint completely. Called upon RST_TX action. */
 void
 TcpSocketBase::SendRST (void)
 {
@@ -1677,7 +1677,7 @@ TcpSocketBase::SendRST (void)
   DeallocateEndPoint ();
 }
 
-/** Deallocate the end point and cancel all the timers */
+/* Deallocate the end point and cancel all the timers */
 void
 TcpSocketBase::DeallocateEndPoint (void)
 {
@@ -1709,7 +1709,7 @@ TcpSocketBase::DeallocateEndPoint (void)
     }
 }
 
-/** Configure the endpoint to a local address. Called by Connect() if Bind() didn't specify one. */
+/* Configure the endpoint to a local address. Called by Connect() if Bind() didn't specify one. */
 int
 TcpSocketBase::SetupEndpoint ()
 {
@@ -1770,7 +1770,7 @@ TcpSocketBase::SetupEndpoint6 ()
   return 0;
 }
 
-/** This function is called only if a SYN received in LISTEN state. After
+/* This function is called only if a SYN received in LISTEN state. After
    TcpSocketBase cloned, allocate a new end point to handle the incoming
    connection and send a SYN+ACK to complete the handshake. */
 void
@@ -1820,7 +1820,7 @@ TcpSocketBase::ConnectionSucceeded ()
     }
 }
 
-/** Extract at most maxSize bytes from the TxBuffer at sequence seq, add the
+/* Extract at most maxSize bytes from the TxBuffer at sequence seq, add the
     TCP header, and send to TcpL4Protocol */
 uint32_t
 TcpSocketBase::SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool withAck)
@@ -1926,7 +1926,7 @@ TcpSocketBase::SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool with
   return sz;
 }
 
-/** Send as much pending data as possible according to the Tx window. Note that
+/* Send as much pending data as possible according to the Tx window. Note that
  *  this function did not implement the PSH flag
  */
 bool
@@ -2071,7 +2071,7 @@ TcpSocketBase::ReceivedData (Ptr<Packet> p, const TcpHeader& tcpHeader)
     }
 }
 
-/** Called by ForwardUp() to estimate RTT */
+/* Called by ForwardUp() to estimate RTT */
 void
 TcpSocketBase::EstimateRtt (const TcpHeader& tcpHeader)
 {
@@ -2281,7 +2281,7 @@ TcpSocketBase::CancelAllTimers ()
   m_timewaitEvent.Cancel ();
 }
 
-/** Move TCP to Time_Wait state and schedule a transition to Closed state */
+/* Move TCP to Time_Wait state and schedule a transition to Closed state */
 void
 TcpSocketBase::TimeWait ()
 {
@@ -2294,7 +2294,7 @@ TcpSocketBase::TimeWait ()
                                          &TcpSocketBase::CloseAndNotify, this);
 }
 
-/** Below are the attribute get/set functions */
+/* Below are the attribute get/set functions */
 
 void
 TcpSocketBase::SetSndBufSize (uint32_t size)
@@ -2418,13 +2418,13 @@ TcpSocketBase::GetAllowBroadcast (void) const
   return false;
 }
 
-/** Placeholder function for future extension that reads more from the TCP header */
+/* Placeholder function for future extension that reads more from the TCP header */
 void
 TcpSocketBase::ReadOptions (const TcpHeader&)
 {
 }
 
-/** Placeholder function for future extension that changes the TCP header */
+/* Placeholder function for future extension that changes the TCP header */
 void
 TcpSocketBase::AddOptions (TcpHeader&)
 {

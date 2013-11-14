@@ -43,6 +43,10 @@ namespace ns3 {
 class RocketfuelTopologyReader : public TopologyReader
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   RocketfuelTopologyReader ();
@@ -61,22 +65,51 @@ public:
   virtual NodeContainer Read (void);
 
 private:
-  RocketfuelTopologyReader (const RocketfuelTopologyReader&);
-  RocketfuelTopologyReader& operator= (const RocketfuelTopologyReader&);
-  // Parser for the *.cch file available at:
-  // http://www.cs.washington.edu/research/networking/rocketfuel/maps/rocketfuel_maps_cch.tar.gz
+  /**
+   * \brief Topology read function from a file containing the nodes map.
+   *
+   * Parser for the *.cch file available at:
+   * http://www.cs.washington.edu/research/networking/rocketfuel/maps/rocketfuel_maps_cch.tar.gz
+   *
+   * \param argc argument counter
+   * \param argv argument vector
+   * \return the container of the nodes created (or empty container if there was an error)
+   */
   NodeContainer GenerateFromMapsFile (int argc, char *argv[]);
-  // Parser for the weights.* file available at:
-  // http://www.cs.washington.edu/research/networking/rocketfuel/maps/weights-dist.tar.gz
+
+  /**
+   * \brief Topology read function from a file containing the nodes weights.
+   *
+   * Parser for the weights.* file available at:
+   * http://www.cs.washington.edu/research/networking/rocketfuel/maps/weights-dist.tar.gz
+   *
+   * \param argc argument counter
+   * \param argv argument vector
+   * \return the container of the nodes created (or empty container if there was an error)
+   */
   NodeContainer GenerateFromWeightsFile (int argc, char *argv[]);
 
+  /**
+   * \brief Enum of the possible file types.
+   */
   enum RF_FileType
   {
     RF_MAPS,
     RF_WEIGHTS,
     RF_UNKNOWN
   };
+
+
+  /**
+   * \brief Classifies the file type according to its content.
+   *
+   * \return the file type (RF_MAPS, RF_WEIGHTS, or RF_UNKNOWN)
+   */
   enum RF_FileType GetFileType (const char *);
+
+  int m_linksNumber; //!< number of links
+  int m_nodesNumber; //!< number of nodes
+  std::map<std::string, Ptr<Node> > m_nodeMap; //!< map of the nodes (name, node)
 
   // end class RocketfuelTopologyReader
 };

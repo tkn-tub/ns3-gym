@@ -625,8 +625,8 @@ private:
 
 public:
   /**
-   * \brief dijsktra algorithm to get the best route from m_netGraph and update the m_bestRoutesTable_link
-   * \when current graph information has changed
+   * \brief Dijsktra algorithm to get the best route from m_netGraph and update the m_bestRoutesTable_link
+   * when current graph information has changed
    * \param The type of the cache
    */
   void SetCacheType (std::string type);

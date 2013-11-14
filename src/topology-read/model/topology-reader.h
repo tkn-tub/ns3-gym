@@ -54,9 +54,9 @@ public:
   class Link
   {
 public:
-  /**
-   * \brief Constant iterator to scan the map of link attributes.
-   */
+    /**
+     * \brief Constant iterator to scan the map of link attributes.
+     */
     typedef std::map<std::string, std::string>::const_iterator ConstAttributesIterator;
 
     /**
@@ -123,11 +123,11 @@ public:
 
 private:
     Link ();
-    std::string m_fromName;
-    Ptr< Node > m_fromPtr;
-    std::string m_toName;
-    Ptr< Node > m_toPtr;
-    std::map<std::string, std::string> m_linkAttr;
+    std::string m_fromName; //!< Name of the node the links originates from
+    Ptr< Node > m_fromPtr;  //!< The node the links originates from
+    std::string m_toName;   //!< Name of the node the links is directed to
+    Ptr< Node > m_toPtr;    //!< The node the links is directed to
+    std::map<std::string, std::string> m_linkAttr;  ///< Container of the link attributes (if any)
   };
 
   /**
@@ -135,6 +135,10 @@ private:
    */
   typedef std::list< Link >::const_iterator ConstLinksIterator;
 
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   TopologyReader ();
@@ -196,10 +200,15 @@ private:
   void AddLink (Link link);
 
 private:
-  TopologyReader (const TopologyReader&);
-  TopologyReader& operator= (const TopologyReader&);
 
+  /**
+   * the name of the input file
+   */
   std::string m_fileName;
+
+  /**
+   * the container of the links between the nodes
+   */
   std::list<Link> m_linksList;
 
   // end class TopologyReader
