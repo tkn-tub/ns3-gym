@@ -2,7 +2,7 @@
 
 def build(bld):
 
-    module = bld.create_ns3_module('lte', ['core', 'network', 'spectrum', 'stats', 'buildings', 'virtual-net-device','point-to-point','applications','internet','csma'])
+    module = bld.create_ns3_module('lte', ['core', 'network', 'spectrum', 'stats', 'buildings', 'virtual-net-device','point-to-point','applications','internet','csma','fd-net-device'])
     module.source = [
         'model/lte-common.cc',
         'model/lte-spectrum-phy.cc',
@@ -41,6 +41,7 @@ def build(bld):
         'helper/lte-stats-calculator.cc',
         'helper/epc-helper.cc',
         'helper/point-to-point-epc-helper.cc',
+        'helper/emu-epc-helper.cc',
         'helper/radio-bearer-stats-calculator.cc',
         'helper/radio-bearer-stats-connector.cc',
         'helper/phy-stats-calculator.cc',
@@ -195,6 +196,7 @@ def build(bld):
         'helper/lte-stats-calculator.h',
         'helper/epc-helper.h',
         'helper/point-to-point-epc-helper.h',
+        'helper/emu-epc-helper.h',
         'helper/phy-stats-calculator.h',
         'helper/mac-stats-calculator.h',
         'helper/phy-tx-stats-calculator.h',
