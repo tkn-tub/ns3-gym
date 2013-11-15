@@ -33,7 +33,8 @@ NS_LOG_COMPONENT_DEFINE ("LteAnr");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (LteAnr);
+NS_OBJECT_ENSURE_REGISTERED (LteAnr)
+  ;
 
 
 LteAnr::LteAnr (uint16_t servingCellId)

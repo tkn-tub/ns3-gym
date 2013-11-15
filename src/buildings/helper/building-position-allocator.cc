@@ -285,7 +285,8 @@ SameRoomPositionAllocator::AssignStreams (int64_t stream)
   return 1;
 }
 
-NS_OBJECT_ENSURE_REGISTERED (FixedRoomPositionAllocator);
+NS_OBJECT_ENSURE_REGISTERED (FixedRoomPositionAllocator)
+  ;
 
 
 FixedRoomPositionAllocator::FixedRoomPositionAllocator (

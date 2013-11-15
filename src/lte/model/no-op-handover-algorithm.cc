@@ -26,7 +26,8 @@ NS_LOG_COMPONENT_DEFINE ("NoOpHandoverAlgorithm");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (NoOpHandoverAlgorithm);
+NS_OBJECT_ENSURE_REGISTERED (NoOpHandoverAlgorithm)
+  ;
 
 
 NoOpHandoverAlgorithm::NoOpHandoverAlgorithm ()

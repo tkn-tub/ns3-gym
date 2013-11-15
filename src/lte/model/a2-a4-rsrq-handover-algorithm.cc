@@ -34,7 +34,8 @@ NS_LOG_COMPONENT_DEFINE ("A2A4RsrqHandoverAlgorithm");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (A2A4RsrqHandoverAlgorithm);
+NS_OBJECT_ENSURE_REGISTERED (A2A4RsrqHandoverAlgorithm)
+  ;
 
 
 ///////////////////////////////////////////
