@@ -30,7 +30,7 @@ Este é o *Tutorial do ns-3* baseado no *ns-3 Tutorial* (inglês), versão 3.14. A 
 
 * Tutorial *(este documento)*, manual, modelos de bibliotecas para a `última release <http://www.nsnam.org/documentation/latest/>`_ e `árvore de desenvolvimento <http://www.nsnam.org/ns-3-dev/documentation/>`_;
 
-* `ns-3 wiki <http://www.nsnam.org/wiki/index.php/Main_Page>`_.
+* `ns-3 wiki <http://www.nsnam.org/wiki/Main_Page>`_.
 
 ..
 	This document is written in `reStructuredText <http://docutils.sourceforge.net/rst.html>`_ for `Sphinx <http://sphinx.pocoo.org/>`_ and is maintained in the

@@ -28,7 +28,8 @@ NS_LOG_COMPONENT_DEFINE ("LoopbackNetDevice");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (LoopbackNetDevice);
+NS_OBJECT_ENSURE_REGISTERED (LoopbackNetDevice)
+  ;
 
 TypeId 
 LoopbackNetDevice::GetTypeId (void)

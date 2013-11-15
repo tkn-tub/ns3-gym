@@ -35,7 +35,8 @@ NS_LOG_COMPONENT_DEFINE ("RemSpectrumPhy");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (RemSpectrumPhy);
+NS_OBJECT_ENSURE_REGISTERED (RemSpectrumPhy)
+  ;
 
 RemSpectrumPhy::RemSpectrumPhy ()
   : m_mobility (0),    

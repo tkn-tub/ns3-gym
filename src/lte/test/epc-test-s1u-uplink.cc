@@ -52,7 +52,8 @@ namespace ns3 {
 
 
 
-NS_LOG_COMPONENT_DEFINE ("EpcTestS1uUplink");
+NS_LOG_COMPONENT_DEFINE ("EpcTestS1uUplink")
+  ;
 
 /*
  * A Udp client. Sends UDP packet carrying sequence number and time

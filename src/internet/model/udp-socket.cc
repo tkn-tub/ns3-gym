@@ -30,7 +30,8 @@ NS_LOG_COMPONENT_DEFINE ("UdpSocket");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (UdpSocket);
+NS_OBJECT_ENSURE_REGISTERED (UdpSocket)
+  ;
 
 TypeId
 UdpSocket::GetTypeId (void)

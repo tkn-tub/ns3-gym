@@ -30,7 +30,8 @@ NS_LOG_COMPONENT_DEFINE ("SimpleNetDevice");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (SimpleNetDevice);
+NS_OBJECT_ENSURE_REGISTERED (SimpleNetDevice)
+  ;
 
 TypeId 
 SimpleNetDevice::GetTypeId (void)

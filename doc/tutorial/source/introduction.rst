@@ -135,9 +135,9 @@ contribute to |ns3| like they have for |ns2|:
 
 * Open source licensing based on GNU GPLv2 compatibility
 * `wiki
-  <http://www.nsnam.org/wiki/index.php>`_
+  <http://www.nsnam.org/wiki>`_
 * `Contributed Code
-  <http://www.nsnam.org/wiki/index.php/Contributed_Code>`_ page, similar to |ns2|'s popular Contributed Code
+  <http://www.nsnam.org/wiki/Contributed_Code>`_ page, similar to |ns2|'s popular Contributed Code
   `page
   <http://nsnam.isi.edu/nsnam/index.php/Contributed_Code>`_ 
 * Open `bug tracker

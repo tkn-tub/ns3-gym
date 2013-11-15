@@ -32,7 +32,8 @@ NS_LOG_COMPONENT_DEFINE ("TcpReno");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (TcpReno);
+NS_OBJECT_ENSURE_REGISTERED (TcpReno)
+  ;
 
 TypeId
 TcpReno::GetTypeId (void)

@@ -34,7 +34,16 @@
 
 namespace ns3 {
 
+class PointToPointHelper;
+
 /**
+ * \defgroup brite BRITE Topology Generator
+ *
+ * Create topologies with BRITE.
+ */
+
+/**
+ * \ingroup brite
  * \brief Interface with BRITE, the Boston university Representative Internet
  *        Topology gEnerator
  *
@@ -47,12 +56,10 @@ namespace ns3 {
  *
  */
 
-class PointToPointHelper;
-
 class BriteTopologyHelper
 {
 public:
-  /*
+  /**
    * Construct a BriteTopologyHelper
    *
    * \param confFile a BRITE configuration file
@@ -63,7 +70,7 @@ public:
                        std::string seedFile,
                        std::string newseedFile);
 
-  /*
+  /**
    * Construct a BriteTopologyHelper using NS3 to generate seed values
    * need by BRITE
    *
@@ -72,7 +79,7 @@ public:
 
   ~BriteTopologyHelper ();
 
-  /*
+  /**
    * Assigns stream number to UniformRandomVariable used to
    * generate brite seed file
    *
@@ -81,14 +88,14 @@ public:
    */
   void AssignStreams (int64_t streamNumber);
 
-  /*
+  /**
    *  Create NS3 topology using information generated from BRITE.
    *
    *  \param stack Internet stack to assign to nodes in topology
    */
   void BuildBriteTopology (InternetStackHelper& stack);
 
-  /*
+  /**
    * Create NS3 topology using information generated from BRITE and configure topology for MPI use.
    *
    * \param stack Internet stack to assign to nodes in topology.
@@ -97,7 +104,7 @@ public:
    */
   void BuildBriteTopology (InternetStackHelper& stack, const uint32_t systemCount);
 
-  /*
+  /**
    * Returns the number of router leaf nodes for a given AS
    *
    * \param asNum the AS number
@@ -106,7 +113,7 @@ public:
    */
   uint32_t GetNLeafNodesForAs (uint32_t asNum);
 
-  /*
+  /**
    * Returns a given router leaf node from a given AS
    *
    * \param asNum the AS number
@@ -115,7 +122,7 @@ public:
    */
   Ptr<Node> GetLeafNodeForAs (uint32_t asNum, uint32_t leafNum);
 
-  /*
+  /**
    * Returns the total number of nodes for a given AS
    *
    * \param asNum the AS number
@@ -123,7 +130,7 @@ public:
    */
   uint32_t GetNNodesForAs (uint32_t asNum);
 
-  /*
+  /**
    * Returns a given router node for a given AS
    *
    * \param asNum the AS number
@@ -244,52 +251,56 @@ private:
     */
   void GenerateBriteTopology (void);
 
-  //brite configuration file to use
+  /// brite configuration file to use
   std::string m_confFile;
 
-  //brite seed file to use
+  /// brite seed file to use
   std::string m_seedFile;
 
-  //brite seed file to generate for next run
+  /// brite seed file to generate for next run
   std::string m_newSeedFile;
 
-  //stores the number of AS in the BRITE generated topology
+  /// stores the number of AS in the BRITE generated topology
   uint32_t m_numAs;
 
-  //stores the netdevices created for each AS
+  /// stores the netdevices created for each AS
   std::vector<NetDeviceContainer*> m_netDevices;
 
-  //stores the leaf router nodes for each AS
+  /// stores the leaf router nodes for each AS
   std::vector<NodeContainer*> m_asLeafNodes;
 
-  //stores all of the nodes in the brite topology by AS number
+  /// stores all of the nodes in the brite topology by AS number
   std::vector<NodeContainer*> m_nodesByAs;
 
-  //stores the MPI system number each AS assigned to.  All assigned to 0 if MPI not used.
+  /// stores the MPI system number each AS assigned to.  All assigned to 0 if MPI not used.
   std::vector<int> m_systemForAs;
 
+  /// the Brite topology
   brite::Topology* m_topology;
 
-  //stores the number of nodes created in the BRITE topology
+  /// stores the number of nodes created in the BRITE topology
   uint32_t m_numNodes;
 
-  //stores the number of edges created in the BRITE topology
+  /// stores the number of edges created in the BRITE topology
   uint32_t m_numEdges;
 
   /**
    * The BRITE code generates multiple nodes and edges. Each
    * node and edge is stored in a BriteNodeInfo or BriteEdgeInfo
    * struct, and each instance is stored in a vector.
+   * @{
    */
   typedef std::vector<BriteNodeInfo> BriteNodeInfoList;
   typedef std::vector<BriteEdgeInfo> BriteEdgeInfoList;
 
   BriteNodeInfoList m_briteNodeInfoList;
   BriteEdgeInfoList m_briteEdgeInfoList;
+  /**@}*/
 
-  //used to create the links within the topology
+  /// used to create the links within the topology
   PointToPointHelper m_britePointToPointHelper;
 
+  /// random variable stream for brite seed file
   Ptr<UniformRandomVariable> m_uv;
 };
 

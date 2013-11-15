@@ -30,7 +30,8 @@ NS_LOG_COMPONENT_DEFINE ("SpectrumPhy");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (SpectrumPhy);
+NS_OBJECT_ENSURE_REGISTERED (SpectrumPhy)
+  ;
 
 
 TypeId

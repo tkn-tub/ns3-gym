@@ -26,7 +26,8 @@ NS_LOG_COMPONENT_DEFINE ("LtePdcpHeader");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (LtePdcpHeader);
+NS_OBJECT_ENSURE_REGISTERED (LtePdcpHeader)
+  ;
 
 LtePdcpHeader::LtePdcpHeader ()
   : m_dcBit (0xff),

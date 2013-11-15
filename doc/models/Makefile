@@ -34,6 +34,7 @@ SOURCES = \
 	$(SRC)/csma/doc/csma.rst \
 	$(SRC)/dsdv/doc/dsdv.rst \
 	$(SRC)/dsr/doc/dsr.rst \
+	$(SRC)/emu/doc/emu.rst \
 	$(SRC)/mpi/doc/distributed.rst \
 	$(SRC)/energy/doc/energy.rst \
 	$(SRC)/fd-net-device/doc/fd-net-device.rst \
@@ -66,6 +67,14 @@ SOURCES = \
 	$(SRC)/uan/doc/uan.rst \
 	$(SRC)/topology-read/doc/topology.rst \
 	$(SRC)/spectrum/doc/spectrum.rst \
+	$(SRC)/stats/doc/adaptor.rst \
+	$(SRC)/stats/doc/aggregator.rst \
+	$(SRC)/stats/doc/collector.rst \
+	$(SRC)/stats/doc/data-collection-helpers.rst \
+	$(SRC)/stats/doc/data-collection-overview.rst \
+	$(SRC)/stats/doc/data-collection.rst \
+	$(SRC)/stats/doc/probe.rst \
+	$(SRC)/stats/doc/scope-and-limitations.rst \
 	$(SRC)/stats/doc/statistics.rst \
 	$(SRC)/netanim/doc/animation.rst \
 	$(SRC)/flow-monitor/doc/flow-monitor.rst \
@@ -195,6 +204,13 @@ SOURCEFIGS = \
 	$(SRC)/uan/doc/auvmobility-classes.dia \
 	$(SRC)/stats/doc/Stat-framework-arch.png \
 	$(SRC)/stats/doc/Wifi-default.png \
+	$(SRC)/stats/doc/dcf-overview.dia \
+	$(SRC)/stats/doc/dcf-overview-with-aggregation.dia \
+	$(SRC)/stats/doc/file-example.png \
+	$(SRC)/stats/doc/gnuplot-aggregator.png \
+	$(SRC)/stats/doc/gnuplot-example.png \
+	$(SRC)/stats/doc/gnuplot-helper-example.png \
+	$(SRC)/stats/doc/seventh-packet-byte-count.png \
 	$(SRC)/netanim/doc/figures/Dumbbell.png \
 	$(SRC)/netanim/doc/figures/Dumbbell.pdf \
 	$(SRC)/netanim/doc/figures/PacketStatistics.png \
@@ -235,6 +251,8 @@ IMAGES_EPS = \
 	$(FIGURES)/WifiArchitecture.eps \
 	$(FIGURES)/snir.eps \
 	$(FIGURES)/WimaxArchitecture.eps \
+	$(FIGURES)/dcf-overview.eps \
+	$(FIGURES)/dcf-overview-with-aggregation.eps \
 	$(FIGURES)/epc-ctrl-arch.eps \
 	$(FIGURES)/epc-data-flow-dl.eps \
 	$(FIGURES)/epc-data-flow-ul.eps \

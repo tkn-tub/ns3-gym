@@ -31,7 +31,8 @@ NS_LOG_COMPONENT_DEFINE ("WaypointMobilityModel");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (WaypointMobilityModel);
+NS_OBJECT_ENSURE_REGISTERED (WaypointMobilityModel)
+  ;
 
 
 TypeId

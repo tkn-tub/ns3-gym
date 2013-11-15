@@ -44,7 +44,7 @@ return value of this function is a boolean that tells the caller whether any
 corruption occurred.  Note that depending on the error model, the packet data
 buffer may or may not be corrupted.  Let's call this function "IsCorrupt()".
 
-So far, in our design, we have:::
+So far, in our design, we have::
 
     class ErrorModel
     {
@@ -95,7 +95,7 @@ a user to force errors on otherwise successful packet transmissions, at the
 NetDevice level.
 
 After some thinking and looking at existing |ns2| code, here is a sample API of
-a base class and first subclass that could be posted for initial review:::
+a base class and first subclass that could be posted for initial review::
 
     class ErrorModel 
     {
@@ -217,7 +217,7 @@ an |ns3| namespace block in both the cc and h file.::
     }
 
 At this point, we have some skeletal files in which we can start defining
-our new classes. The header file looks like this:::
+our new classes. The header file looks like this::
 
     #ifndef ERROR_MODEL_H
     #define ERROR_MODEL_H
@@ -227,7 +227,7 @@ our new classes. The header file looks like this:::
     } // namespace ns3
     #endif
 
-while the ``error-model.cc`` file simply looks like this:::
+while the ``error-model.cc`` file simply looks like this::
 
     #include "error-model.h"
 
@@ -541,7 +541,7 @@ We declare BasicErrorModel to be a subclass of ErrorModel as follows,::
     }
 
 and configure the subclass GetTypeId function by setting a unique TypeId string
-and setting the Parent to ErrorModel:::
+and setting the Parent to ErrorModel::
 
     TypeId RateErrorModel::GetTypeId (void)
     {

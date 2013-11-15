@@ -31,7 +31,8 @@ NS_LOG_COMPONENT_DEFINE ("ItuR1411LosPropagationLossModel");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (ItuR1411LosPropagationLossModel);
+NS_OBJECT_ENSURE_REGISTERED (ItuR1411LosPropagationLossModel)
+  ;
 
 TypeId
 ItuR1411LosPropagationLossModel::GetTypeId (void)

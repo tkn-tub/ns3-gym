@@ -24,7 +24,8 @@
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (WifiInformationElementVector);
+NS_OBJECT_ENSURE_REGISTERED (WifiInformationElementVector)
+  ;
 
 WifiInformationElementVector::WifiInformationElementVector ()
   : m_maxSize (1500)

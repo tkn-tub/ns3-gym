@@ -120,7 +120,8 @@ std::string ToString (UeManager::State s)
 }
 
 
-NS_OBJECT_ENSURE_REGISTERED (UeManager);
+NS_OBJECT_ENSURE_REGISTERED (UeManager)
+  ;
 
 
 UeManager::UeManager ()
@@ -1219,7 +1220,8 @@ UeManager::SwitchToState (State newState)
 // eNB RRC methods
 ///////////////////////////////////////////
 
-NS_OBJECT_ENSURE_REGISTERED (LteEnbRrc);
+NS_OBJECT_ENSURE_REGISTERED (LteEnbRrc)
+  ;
 
 LteEnbRrc::LteEnbRrc ()
   : m_x2SapProvider (0),

@@ -1,4 +1,5 @@
 .. include:: replace.txt
+.. highlight:: cpp
 
 .. heading hierarchy:
    ************* Section (#.#)
@@ -162,26 +163,26 @@ It has the following prototype:
 
 It has the following arguments:
 
-+--------------------------------+------------------------------+
-| Argument                       | Description                  |
-+================================+==============================+
-| outputFileNameWithoutExtension | Name of gnuplot related files|
-|                                | to write with no extension.  |
-+--------------------------------+------------------------------+
-| title                          | Plot title string to use for |
-|                                | this plot.                   |
-+--------------------------------+------------------------------+
-| xLegend                        | The legend for the x         |
-|                                | horizontal axis.             |
-+--------------------------------+------------------------------+
-| yLegend                        | The legend for the y         |
-|                                | vertical axis.               |
-+--------------------------------+------------------------------+
-| terminalType                   | Terminal type setting string |
-|                                | for output.  The default     |
-|                                | terminal type is "png".      |
-+--------------------------------+------------------------------+
-
+  +--------------------------------+------------------------------+
+  | Argument                       | Description                  |
+  +================================+==============================+
+  | outputFileNameWithoutExtension | Name of gnuplot related files|
+  |                                | to write with no extension.  |
+  +--------------------------------+------------------------------+
+  | title                          | Plot title string to use for |
+  |                                | this plot.                   |
+  +--------------------------------+------------------------------+
+  | xLegend                        | The legend for the x         |
+  |                                | horizontal axis.             |
+  +--------------------------------+------------------------------+
+  | yLegend                        | The legend for the y         |
+  |                                | vertical axis.               |
+  +--------------------------------+------------------------------+
+  | terminalType                   | Terminal type setting string |
+  |                                | for output.  The default     |
+  |                                | terminal type is "png".      |
+  +--------------------------------+------------------------------+
+  
 The GnuplotHelper's ``ConfigurePlot()`` function configures plot 
 related parameters for this gnuplot helper so
 that it will create a space separated gnuplot data file named
@@ -219,26 +220,26 @@ It has the following prototype:
 
 It has the following arguments:
 
-+------------------+------------------------------+
-| Argument         | Description                  |
-+==================+==============================+
-| typeId           | The type ID for the probe    |
-|                  | used when it is created.     |
-+------------------+------------------------------+
-| path             | Config path to access the    |
-|                  | probe.                       |
-+------------------+------------------------------+
-| probeTraceSource | The probe trace source to    |
-|                  | access.                      |
-+------------------+------------------------------+
-| title            | The title to be associated   |
-|                  | to this dataset              |
-+------------------+------------------------------+
-| keyLocation      | The location of the key in   |
-|                  | the plot.  The default       |
-|                  | location is inside.          |
-+------------------+------------------------------+
-
+  +------------------+------------------------------+
+  | Argument         | Description                  |
+  +==================+==============================+
+  | typeId           | The type ID for the probe    |
+  |                  | used when it is created.     |
+  +------------------+------------------------------+
+  | path             | Config path to access the    |
+  |                  | probe.                       |
+  +------------------+------------------------------+
+  | probeTraceSource | The probe trace source to    |
+  |                  | access.                      |
+  +------------------+------------------------------+
+  | title            | The title to be associated   |
+  |                  | to this dataset              |
+  +------------------+------------------------------+
+  | keyLocation      | The location of the key in   |
+  |                  | the plot.  The default       |
+  |                  | location is inside.          |
+  +------------------+------------------------------+
+  
 The GnuplotHelper's ``PlotProbe()`` function 
 plots a dataset generated by hooking the |ns3| trace source with a
 probe, and then plotting the values from the probeTraceSource. 
@@ -365,7 +366,7 @@ The following text file with 2 columns of formatted values named
 code that was added to the original |ns3| Tutorial example's code.  
 Only the first 10 lines of this file are shown here for brevity.
 
-::
+.. sourcecode:: text
 
   Time (Seconds) = 1.000e+00	Packet Byte Count = 40
   Time (Seconds) = 1.004e+00	Packet Byte Count = 40
@@ -386,7 +387,7 @@ created using the same new code that was added to the original
 |ns3| Tutorial example's code.  Only the first 10 lines of this 
 file are shown here for brevity.
 
-::
+.. sourcecode:: text
 
   Time (Seconds) = 1.002e+00	Packet Byte Count = 40
   Time (Seconds) = 1.007e+00	Packet Byte Count = 40
@@ -445,17 +446,17 @@ It has the following prototype:
 
 It has the following arguments:
 
-+--------------------------------+------------------------------+
-| Argument                       | Description                  |
-+================================+==============================+
-| outputFileNameWithoutExtension | Name of output file to write |
-|                                | with no extension.           |
-+--------------------------------+------------------------------+
-| fileType                       | Type of file to write.  The  | 
-|                                | default type of file is space| 
-|                                | separated.                   |
-+--------------------------------+------------------------------+
-
+  +--------------------------------+------------------------------+
+  | Argument                       | Description                  |
+  +================================+==============================+
+  | outputFileNameWithoutExtension | Name of output file to write |
+  |                                | with no extension.           |
+  +--------------------------------+------------------------------+
+  | fileType                       | Type of file to write.  The  | 
+  |                                | default type of file is space| 
+  |                                | separated.                   |
+  +--------------------------------+------------------------------+
+  
 The FileHelper's ``ConfigureFile()`` function configures text file 
 related parameters for the file helper so that
 it will create a file named outputFileNameWithoutExtension plus
@@ -487,19 +488,19 @@ It has the following prototype:
 
 It has the following arguments:
 
-+------------------+------------------------------+
-| Argument         | Description                  |
-+==================+==============================+
-| typeId           | The type ID for the probe    |
-|                  | used when it is created.     |
-+------------------+------------------------------+
-| path             | Config path to access the    |
-|                  | probe.                       |
-+------------------+------------------------------+
-| probeTraceSource | The probe trace source to    |
-|                  | access.                      |
-+------------------+------------------------------+
-
+  +------------------+------------------------------+
+  | Argument         | Description                  |
+  +==================+==============================+
+  | typeId           | The type ID for the probe    |
+  |                  | used when it is created.     |
+  +------------------+------------------------------+
+  | path             | Config path to access the    |
+  |                  | probe.                       |
+  +------------------+------------------------------+
+  | probeTraceSource | The probe trace source to    |
+  |                  | access.                      |
+  +------------------+------------------------------+
+  
 The FileHelper's ``WriteProbe()`` function
 creates output text files generated by hooking the ns-3 trace source
 with a probe, and then writing the values from the
@@ -544,7 +545,7 @@ The following text file with 2 columns of formatted values named
 ``file-helper-example.txt`` was created using the example.  
 Only the first 10 lines of this file are shown here for brevity.
 
-::
+.. sourcecode:: text
 
   Time (Seconds) = 4.995e-01	Count = 1
   Time (Seconds) = 1.463e+00	Count = 2

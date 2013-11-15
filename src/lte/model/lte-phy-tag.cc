@@ -26,7 +26,8 @@
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (LtePhyTag);
+NS_OBJECT_ENSURE_REGISTERED (LtePhyTag)
+  ;
 
 TypeId
 LtePhyTag::GetTypeId (void)

@@ -1,11 +1,11 @@
 .. include:: replace.txt
+.. highlight:: cpp
 
 Emu NetDevice
 -------------
 
 **Note:** The ``EmuNetDevice`` is being deprecated as of ns-3.17.  The
-``EmuFdNetDeviceHelper`` class replaces this functionality and API
-entirely.
+:doc:`fd-net-device` and ``EmuFdNetDeviceHelper`` class replaces this functionality and API entirely.
 
 Behavior
 ********
@@ -59,7 +59,7 @@ Usage
 Any mixing of |ns3| objects with real objects will typically require that
 |ns3| compute checksums in its protocols. By default, checksums are not
 computed by |ns3|. To enable checksums (e.g. UDP, TCP, IP), users must set
-the attribute ``ChecksumEnabled`` to true, such as follows:::
+the attribute ``ChecksumEnabled`` to true, such as follows::
 
     GlobalValue::Bind ("ChecksumEnabled", BooleanValue (true));
 
@@ -70,8 +70,8 @@ may want to take a moment to review a couple of HOWTO pages on the |ns3| wiki
 that describe how to set up a virtual test network using VMware and how to run a
 set of example (client server) simulations that use ``Emu`` net devices.
 
-* `<http://www.nsnam.org/wiki/index.php/HOWTO_use_VMware_to_set_up_virtual_networks_(Windows)>`_
-* `<http://www.nsnam.org/wiki/index.php/HOWTO_use_ns-3_scripts_to_drive_real_hardware_(experimental)>`_
+* `<http://www.nsnam.org/wiki/HOWTO_use_VMware_to_set_up_virtual_networks_(Windows)>`_
+* `<http://www.nsnam.org/wiki/HOWTO_use_ns-3_scripts_to_drive_real_hardware_(experimental)>`_
 
 Once you are over the configuration hurdle, the script changes required to use
 an ``Emu`` device are trivial. The main structural difference is that you will
@@ -141,7 +141,7 @@ similarly to the snippet above.::
 
 The ``Emu`` net device and helper provide access to ASCII and pcap tracing
 functionality just as other |ns3| net devices to. You enable tracing similarly
-to these other net devices:::
+to these other net devices::
 
   EmuHelper::EnablePcapAll ("emu-udp-echo-client");
 
@@ -176,7 +176,7 @@ the device using the "Stop" attribute.
 
 Once the (promiscuous mode) socket is created, we bind it to an interface name 
 also provided as an attribute ("DeviceName") that is stored internally as 
-``m_deviceName``:::
+``m_deviceName``::
 
   struct ifreq ifr;
   bzero (&ifr, sizeof(ifr));

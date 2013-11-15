@@ -33,7 +33,8 @@ NS_LOG_COMPONENT_DEFINE ("UplinkSchedulerMBQoS");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (UplinkSchedulerMBQoS);
+NS_OBJECT_ENSURE_REGISTERED (UplinkSchedulerMBQoS)
+  ;
 
 UplinkSchedulerMBQoS::UplinkSchedulerMBQoS ()
 {

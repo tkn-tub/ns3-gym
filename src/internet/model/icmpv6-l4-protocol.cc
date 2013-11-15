@@ -39,9 +39,11 @@
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (Icmpv6L4Protocol);
+NS_OBJECT_ENSURE_REGISTERED (Icmpv6L4Protocol)
+  ;
 
-NS_LOG_COMPONENT_DEFINE ("Icmpv6L4Protocol");
+NS_LOG_COMPONENT_DEFINE ("Icmpv6L4Protocol")
+  ;
 
 const uint8_t Icmpv6L4Protocol::PROT_NUMBER = 58;
 

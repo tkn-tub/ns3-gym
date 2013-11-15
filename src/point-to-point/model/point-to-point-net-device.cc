@@ -34,7 +34,8 @@ NS_LOG_COMPONENT_DEFINE ("PointToPointNetDevice");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (PointToPointNetDevice);
+NS_OBJECT_ENSURE_REGISTERED (PointToPointNetDevice)
+  ;
 
 TypeId 
 PointToPointNetDevice::GetTypeId (void)

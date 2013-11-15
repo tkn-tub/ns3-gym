@@ -30,7 +30,8 @@ NS_LOG_COMPONENT_DEFINE ("PositionAllocator");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (PositionAllocator);
+NS_OBJECT_ENSURE_REGISTERED (PositionAllocator)
+  ;
 
 TypeId 
 PositionAllocator::GetTypeId (void)
@@ -48,7 +49,8 @@ PositionAllocator::~PositionAllocator ()
 {
 }
 
-NS_OBJECT_ENSURE_REGISTERED (ListPositionAllocator);
+NS_OBJECT_ENSURE_REGISTERED (ListPositionAllocator)
+  ;
 
 TypeId
 ListPositionAllocator::GetTypeId (void)
@@ -85,7 +87,8 @@ ListPositionAllocator::AssignStreams (int64_t stream)
   return 0;
 }
 
-NS_OBJECT_ENSURE_REGISTERED (GridPositionAllocator);
+NS_OBJECT_ENSURE_REGISTERED (GridPositionAllocator)
+  ;
 
 TypeId 
 GridPositionAllocator::GetTypeId (void)
@@ -213,7 +216,8 @@ GridPositionAllocator::AssignStreams (int64_t stream)
   return 0;
 }
 
-NS_OBJECT_ENSURE_REGISTERED (RandomRectanglePositionAllocator);
+NS_OBJECT_ENSURE_REGISTERED (RandomRectanglePositionAllocator)
+  ;
 
 TypeId
 RandomRectanglePositionAllocator::GetTypeId (void)
@@ -269,7 +273,8 @@ RandomRectanglePositionAllocator::AssignStreams (int64_t stream)
   return 2;
 }
 
-NS_OBJECT_ENSURE_REGISTERED (RandomBoxPositionAllocator);
+NS_OBJECT_ENSURE_REGISTERED (RandomBoxPositionAllocator)
+  ;
 
 TypeId
 RandomBoxPositionAllocator::GetTypeId (void)
@@ -337,7 +342,8 @@ RandomBoxPositionAllocator::AssignStreams (int64_t stream)
   return 3;
 }
 
-NS_OBJECT_ENSURE_REGISTERED (RandomDiscPositionAllocator);
+NS_OBJECT_ENSURE_REGISTERED (RandomDiscPositionAllocator)
+  ;
 
 TypeId
 RandomDiscPositionAllocator::GetTypeId (void)
@@ -418,7 +424,8 @@ RandomDiscPositionAllocator::AssignStreams (int64_t stream)
 
 
 
-NS_OBJECT_ENSURE_REGISTERED (UniformDiscPositionAllocator);
+NS_OBJECT_ENSURE_REGISTERED (UniformDiscPositionAllocator)
+  ;
 
 TypeId
 UniformDiscPositionAllocator::GetTypeId (void)

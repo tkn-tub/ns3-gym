@@ -41,7 +41,8 @@ NS_LOG_COMPONENT_DEFINE ("PassiveBuffer");
 namespace ns3 {
 namespace dsr {
 
-NS_OBJECT_ENSURE_REGISTERED (PassiveBuffer);
+NS_OBJECT_ENSURE_REGISTERED (PassiveBuffer)
+  ;
 
 TypeId PassiveBuffer::GetTypeId ()
 {

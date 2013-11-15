@@ -30,7 +30,8 @@ NS_LOG_COMPONENT_DEFINE ("RandomWalk2d");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (RandomWalk2dMobilityModel);
+NS_OBJECT_ENSURE_REGISTERED (RandomWalk2dMobilityModel)
+  ;
 
 TypeId
 RandomWalk2dMobilityModel::GetTypeId (void)

@@ -44,7 +44,8 @@ NS_LOG_COMPONENT_DEFINE ("DsdvRoutingProtocol");
 
 namespace ns3 {
 namespace dsdv {
-NS_OBJECT_ENSURE_REGISTERED (RoutingProtocol);
+NS_OBJECT_ENSURE_REGISTERED (RoutingProtocol)
+  ;
 
 /// UDP Port for DSDV control traffic
 const uint32_t RoutingProtocol::DSDV_PORT = 269;

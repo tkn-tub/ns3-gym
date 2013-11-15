@@ -30,9 +30,9 @@ Baixando o ns-3
 	present on your system before proceeding.  |ns3| provides a wiki
 	for your reading pleasure that includes pages with many useful hints and tips.
 	One such page is the "Installation" page,
-	http://www.nsnam.org/wiki/index.php/Installation. 
+	http://www.nsnam.org/wiki/Installation. 
 
-O |ns3|, como um todo, é bastante complexo e possui várias dependências. Isto também é verdade para as ferramentas que fornecem suporte ao |ns3| (exemplos, `"GNU toolchain"`, Mercurial e um editor para a programação), desta forma é necessário assegurar que várias bibliotecas estejam presentes no sistema. O |ns3| fornece um Wiki com várias dicas sobre o sistema. Uma das páginas do Wiki é a página de instalação (`"Installation"`) que está disponível em: http://www.nsnam.org/wiki/index.php/Installation. 
+O |ns3|, como um todo, é bastante complexo e possui várias dependências. Isto também é verdade para as ferramentas que fornecem suporte ao |ns3| (exemplos, `"GNU toolchain"`, Mercurial e um editor para a programação), desta forma é necessário assegurar que várias bibliotecas estejam presentes no sistema. O |ns3| fornece um Wiki com várias dicas sobre o sistema. Uma das páginas do Wiki é a página de instalação (`"Installation"`) que está disponível em: http://www.nsnam.org/wiki/Installation. 
 
 ..
 	The "Prerequisites" section of this wiki page explains which packages are 
@@ -740,7 +740,7 @@ Agora, ao executar o programa ``hello-simulator`` devemos ter a seguinte a saída
 ..
 	If you want to run programs under another tool such as gdb or valgrind,
 	see this `wiki entry
-	<http://www.nsnam.org/wiki/index.php/User_FAQ#How_to_run_NS-3_programs_under_another_tool>`_.
+	<http://www.nsnam.org/wiki/User_FAQ#How_to_run_NS-3_programs_under_another_tool>`_.
 
-Se o leitor for executar seus programas sob outras ferramentas, tais como Gdb ou Valgrind, é recomendável que leia a seguinte `entrada no Wiki <http://www.nsnam.org/wiki/index.php/User_FAQ#How_to_run_NS-3_programs_under_another_tool>`_.
+Se o leitor for executar seus programas sob outras ferramentas, tais como Gdb ou Valgrind, é recomendável que leia a seguinte `entrada no Wiki <http://www.nsnam.org/wiki/User_FAQ#How_to_run_NS-3_programs_under_another_tool>`_.
 

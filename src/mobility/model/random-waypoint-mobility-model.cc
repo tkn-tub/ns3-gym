@@ -27,7 +27,8 @@
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (RandomWaypointMobilityModel);
+NS_OBJECT_ENSURE_REGISTERED (RandomWaypointMobilityModel)
+  ;
 
 TypeId
 RandomWaypointMobilityModel::GetTypeId (void)

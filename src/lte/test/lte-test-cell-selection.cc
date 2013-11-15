@@ -77,8 +77,8 @@ LteCellSelectionTestSuite::LteCellSelectionTestSuite ()
                                                     MilliSeconds (283), 4, 0));
 
   AddTestCase (new LteCellSelectionTestCase ("EPC, real RRC, RngNum=1",
-                                             true, false, 60.0, 20.0, w, 1),
-               //                                        isd   txpow    rngrun
+                                             true, false, 60.0, w, 1),
+               //                                        isd       rngrun
                TestCase::QUICK);
 
   // IDEAL RRC PROTOCOL
@@ -100,8 +100,8 @@ LteCellSelectionTestSuite::LteCellSelectionTestSuite ()
                                                     MilliSeconds (266), 4, 0));
 
   AddTestCase (new LteCellSelectionTestCase ("EPC, ideal RRC, RngNum=1",
-                                             true, true, 60.0, 20.0, w, 1),
-               //                                        isd   txpow    rngrun
+                                             true, true, 60.0, w, 1),
+               //                                        isd      rngrun
                TestCase::QUICK);
 
 } // end of LteCellSelectionTestSuite::LteCellSelectionTestSuite ()
@@ -130,13 +130,12 @@ LteCellSelectionTestCase::UeSetup_t::UeSetup_t (
 
 LteCellSelectionTestCase::LteCellSelectionTestCase (
   std::string name, bool isEpcMode, bool isIdealRrc,
-  double interSiteDistance, double enbTxPower,
+  double interSiteDistance,
   std::vector<UeSetup_t> ueSetupList, int64_t rngRun)
   : TestCase (name),
     m_isEpcMode (isEpcMode),
     m_isIdealRrc (isIdealRrc),
     m_interSiteDistance (interSiteDistance),
-    m_enbTxPower (enbTxPower),
     m_ueSetupList (ueSetupList),
     m_rngRun (rngRun)
 {

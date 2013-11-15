@@ -86,9 +86,15 @@ private:
    * \internal
    * \brief Assignment operator declared private and not implemented to disallow
    * assignment and prevent the compiler from happily inserting its own.
+   * \param o object to copy from
+   * \returns a reference to the new object
    */
   Ipv6ListRoutingHelper &operator = (const Ipv6ListRoutingHelper &o);
 
+  /**
+   * \internal
+   * \brief Container for pairs of Ipv6RoutingHelper pointer / priority.
+   */
   std::list<std::pair<const Ipv6RoutingHelper *,int16_t> > m_list;
 };
 

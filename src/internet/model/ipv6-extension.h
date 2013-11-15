@@ -381,7 +381,6 @@ private:
    * \brief Process the timeout for packet fragments
    * \param key representing the packet fragments
    * \param ipHeader the IP header of the original packet
-   * \param iif Input Interface
    */
   void HandleFragmentsTimeout (std::pair<Ipv6Address, uint32_t> key, Ipv6Header & ipHeader);
 
@@ -401,6 +400,9 @@ private:
    */
   void CancelTimeout ();
 
+  /**
+   * \brief Container for the packet fragments.
+   */
   typedef std::map<std::pair<Ipv6Address, uint32_t>, Ptr<Fragments> > MapFragments_t;
 
   /**
@@ -521,6 +523,9 @@ protected:
   virtual void DoDispose ();
 
 private:
+  /**
+   * \brief Container for the extension routing.
+   */
   typedef std::list<Ptr<Ipv6ExtensionRouting> > Ipv6ExtensionRoutingList_t;
 
   /**

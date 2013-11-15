@@ -31,7 +31,7 @@ namespace ns3 {
 class Node;
 
 /**
- * \defgroup bridge Bridge Device
+ * \defgroup bridge Bridge Network Device
  * 
  * \brief a virtual net device that bridges multiple LAN segments
  *

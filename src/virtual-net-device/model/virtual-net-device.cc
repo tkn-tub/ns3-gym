@@ -34,7 +34,8 @@ NS_LOG_COMPONENT_DEFINE ("VirtualNetDevice");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (VirtualNetDevice);
+NS_OBJECT_ENSURE_REGISTERED (VirtualNetDevice)
+  ;
 
 TypeId
 VirtualNetDevice::GetTypeId (void)

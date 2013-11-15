@@ -27,7 +27,8 @@ NS_LOG_COMPONENT_DEFINE ("LteHarqPhy");
 
 namespace ns3 {
 
-//NS_OBJECT_ENSURE_REGISTERED (LteHarqPhy);
+//NS_OBJECT_ENSURE_REGISTERED (LteHarqPhy)
+//  ;
 
 
 LteHarqPhy::LteHarqPhy ()

@@ -40,7 +40,8 @@ NS_LOG_COMPONENT_DEFINE ("MeshWifiInterfaceMac");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (MeshWifiInterfaceMac);
+NS_OBJECT_ENSURE_REGISTERED (MeshWifiInterfaceMac)
+  ;
 
 TypeId
 MeshWifiInterfaceMac::GetTypeId ()

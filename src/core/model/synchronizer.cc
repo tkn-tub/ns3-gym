@@ -23,7 +23,8 @@ NS_LOG_COMPONENT_DEFINE ("Synchronizer");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (Synchronizer);
+NS_OBJECT_ENSURE_REGISTERED (Synchronizer)
+  ;
 
 TypeId 
 Synchronizer::GetTypeId (void)

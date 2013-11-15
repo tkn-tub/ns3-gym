@@ -34,7 +34,8 @@ NS_LOG_COMPONENT_DEFINE ("Ipv4GlobalRouting");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv4GlobalRouting);
+NS_OBJECT_ENSURE_REGISTERED (Ipv4GlobalRouting)
+  ;
 
 TypeId 
 Ipv4GlobalRouting::GetTypeId (void)

@@ -59,8 +59,8 @@ namespace ns3 {
  *   depleted
  *
  * For a complete reference of the energy source model and model's fitting please refer
- * to <a href="http://www.nsnam.org/wiki/index.php/GSOC2010UANFramework">UAN Framework</a>
- * page and <a href="http://www.nsnam.org/wiki/index.php/Li-Ion_model_fitting">Li-Ion model
+ * to <a href="http://www.nsnam.org/wiki/GSOC2010UANFramework">UAN Framework</a>
+ * page and <a href="http://www.nsnam.org/wiki/Li-Ion_model_fitting">Li-Ion model
  * fitting</a> page.
  *
  * References:

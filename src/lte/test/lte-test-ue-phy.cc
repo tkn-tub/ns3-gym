@@ -26,7 +26,8 @@ NS_LOG_COMPONENT_DEFINE ("LteTestUePhy");
 namespace ns3 {
 
  
-NS_OBJECT_ENSURE_REGISTERED (LteTestUePhy);
+NS_OBJECT_ENSURE_REGISTERED (LteTestUePhy)
+  ;
 
 LteTestUePhy::LteTestUePhy ()
 {

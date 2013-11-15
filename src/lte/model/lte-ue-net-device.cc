@@ -48,7 +48,8 @@ NS_LOG_COMPONENT_DEFINE ("LteUeNetDevice");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED ( LteUeNetDevice);
+NS_OBJECT_ENSURE_REGISTERED ( LteUeNetDevice)
+  ;
 
 
 TypeId LteUeNetDevice::GetTypeId (void)

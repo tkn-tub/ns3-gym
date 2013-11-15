@@ -79,7 +79,8 @@ NS_LOG_COMPONENT_DEFINE ("DsrRouting");
 namespace ns3 {
 namespace dsr {
 
-NS_OBJECT_ENSURE_REGISTERED (DsrRouting);
+NS_OBJECT_ENSURE_REGISTERED (DsrRouting)
+  ;
 
 /* see http://www.iana.org/assignments/protocol-numbers */
 const uint8_t DsrRouting::PROT_NUMBER = 48;

@@ -5,7 +5,8 @@ NS_LOG_COMPONENT_DEFINE ("Header");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (Header);
+NS_OBJECT_ENSURE_REGISTERED (Header)
+  ;
 
 Header::~Header ()
 {

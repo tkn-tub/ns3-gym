@@ -31,7 +31,8 @@ namespace ns3 {
 
 const double RandomDirection2dMobilityModel::PI = 3.14159265358979323846;
 
-NS_OBJECT_ENSURE_REGISTERED (RandomDirection2dMobilityModel);
+NS_OBJECT_ENSURE_REGISTERED (RandomDirection2dMobilityModel)
+  ;
 
 
 TypeId

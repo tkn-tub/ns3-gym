@@ -44,6 +44,10 @@ namespace ns3 {
 class OrbisTopologyReader : public TopologyReader
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   OrbisTopologyReader ();
@@ -60,10 +64,6 @@ public:
    * \return the container of the nodes created (or empty container if there was an error)
    */
   virtual NodeContainer Read (void);
-
-private:
-  OrbisTopologyReader (const OrbisTopologyReader&);
-  OrbisTopologyReader& operator= (const OrbisTopologyReader&);
 
   // end class OrbisTopologyReader
 };

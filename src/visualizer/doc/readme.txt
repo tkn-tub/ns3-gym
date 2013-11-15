@@ -6,4 +6,4 @@ that can be used to debug the state of the running objects. Although
 it is mostly written in Python, it works both with Python and pure C++
 simulations.
 
-For more information, see http://www.nsnam.org/wiki/index.php/PyViz
+For more information, see http://www.nsnam.org/wiki/PyViz

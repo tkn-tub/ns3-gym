@@ -31,7 +31,8 @@ NS_LOG_COMPONENT_DEFINE ("ConstantSpectrumPropagationLossModel");
 namespace ns3 {
 
 
-NS_OBJECT_ENSURE_REGISTERED (ConstantSpectrumPropagationLossModel);
+NS_OBJECT_ENSURE_REGISTERED (ConstantSpectrumPropagationLossModel)
+  ;
 
 ConstantSpectrumPropagationLossModel::ConstantSpectrumPropagationLossModel ()
 {

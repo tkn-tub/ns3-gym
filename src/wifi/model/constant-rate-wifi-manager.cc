@@ -30,7 +30,8 @@ NS_LOG_COMPONENT_DEFINE ("ConstantRateWifiManager");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (ConstantRateWifiManager);
+NS_OBJECT_ENSURE_REGISTERED (ConstantRateWifiManager)
+  ;
 
 TypeId
 ConstantRateWifiManager::GetTypeId (void)

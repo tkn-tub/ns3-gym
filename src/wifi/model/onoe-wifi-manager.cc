@@ -42,7 +42,8 @@ struct OnoeWifiRemoteStation : public WifiRemoteStation
 };
 
 
-NS_OBJECT_ENSURE_REGISTERED (OnoeWifiManager);
+NS_OBJECT_ENSURE_REGISTERED (OnoeWifiManager)
+  ;
 
 TypeId
 OnoeWifiManager::GetTypeId (void)

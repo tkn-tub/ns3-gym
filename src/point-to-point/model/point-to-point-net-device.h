@@ -38,7 +38,7 @@ class PointToPointChannel;
 class ErrorModel;
 
 /**
- * \defgroup point-to-point PointToPointNetDevice
+ * \defgroup point-to-point Point-To-Point Network Device
  * This section documents the API of the ns-3 point-to-point module. For a generic functional description, please refer to the ns-3 manual.
  */
 

@@ -25,7 +25,8 @@
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (Ucd);
+NS_OBJECT_ENSURE_REGISTERED (Ucd)
+  ;
 
 UcdChannelEncodings::UcdChannelEncodings (void)
   : m_bwReqOppSize (0),
@@ -577,7 +578,8 @@ OfdmUlMapIe::Read (Buffer::Iterator start)
 
 // ----------------------------------------------------------------------------------------------------------
 
-NS_OBJECT_ENSURE_REGISTERED (UlMap);
+NS_OBJECT_ENSURE_REGISTERED (UlMap)
+  ;
 
 UlMap::UlMap (void)
   : m_reserved (0),

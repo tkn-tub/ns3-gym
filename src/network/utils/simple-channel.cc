@@ -28,7 +28,8 @@ NS_LOG_COMPONENT_DEFINE ("SimpleChannel");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (SimpleChannel);
+NS_OBJECT_ENSURE_REGISTERED (SimpleChannel)
+  ;
 
 TypeId 
 SimpleChannel::GetTypeId (void)

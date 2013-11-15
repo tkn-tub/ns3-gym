@@ -34,7 +34,8 @@ NS_LOG_COMPONENT_DEFINE ("UanNetDevice");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (UanNetDevice);
+NS_OBJECT_ENSURE_REGISTERED (UanNetDevice)
+  ;
 
 UanNetDevice::UanNetDevice ()
   : NetDevice (),

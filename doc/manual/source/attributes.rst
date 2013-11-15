@@ -53,7 +53,7 @@ As introduced in the |ns3| tutorial, |ns3| objects are memory managed by a
 
 Smart pointers are used extensively in the |ns3| APIs, to avoid passing
 references to heap-allocated objects that may cause memory leaks.  
-For most basic usage (syntax), treat a smart pointer like a regular pointer:::
+For most basic usage (syntax), treat a smart pointer like a regular pointer::
 
   Ptr<WifiNetDevice> nd = ...;
   nd->CallSomeFunction ();
@@ -67,11 +67,11 @@ lowest-level API, objects of type :cpp:class:`ns3::Object` are not instantiated
 using ``operator new`` as usual but instead by a templated function called
 :cpp:func:`CreateObject()`.
 
-A typical way to create such an object is as follows:::
+A typical way to create such an object is as follows::
 
   Ptr<WifiNetDevice> nd = CreateObject<WifiNetDevice> ();
 
-You can think of this as being functionally equivalent to:::
+You can think of this as being functionally equivalent to::
 
   WifiNetDevice* nd = new WifiNetDevice ();
 
@@ -102,7 +102,7 @@ Putting all of these concepts together, let's look at a specific
 example: class :cpp:class:`ns3::Node`.
 
 The public header file node.h has a declaration that includes a static GetTypeId
-function call:::
+function call::
 
     class Node : public Object
     {
@@ -110,7 +110,7 @@ function call:::
       static TypeId GetTypeId (void);
       ...
 
-This is defined in the ``node.cc`` file as follows:::
+This is defined in the ``node.cc`` file as follows::
 
     TypeId 
     Node::GetTypeId (void)
@@ -210,7 +210,7 @@ to them. Consider a class DropTailQueue that has a member variable that is an
 unsigned integer ``m_maxPackets``; this member variable controls the depth of
 the queue.  
 
-If we look at the declaration of DropTailQueue, we see the following:::
+If we look at the declaration of DropTailQueue, we see the following::
 
     class DropTailQueue : public Queue {
     public:
@@ -233,7 +233,7 @@ The above things typically require providing Set() and Get() functions, and some
 type of global default value.
 
 In the |ns3| attribute system, these value definitions and accessor functions
-are moved into the TypeId class; e.g.:::
+are moved into the TypeId class; e.g.::
 
     NS_OBJECT_ENSURE_REGISTERED (DropTailQueue);
 
@@ -424,11 +424,11 @@ Setting through constructors helper classes
 +++++++++++++++++++++++++++++++++++++++++++
 
 Arbitrary combinations of attributes can be set and fetched from
-the helper and low-level APIs; either from the constructors themselves:::
+the helper and low-level APIs; either from the constructors themselves::
 
     Ptr<Object> p = CreateObject<MyNewObject> ("n1", v1, "n2", v2, ...);
 
-or from the higher-level helper APIs, such as:::
+or from the higher-level helper APIs, such as::
 
     mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
                                    "MinX", DoubleValue (-100.0),
@@ -451,7 +451,7 @@ attribute system. Recall that this database is holding objects of many types
 with a single generic type. Conversions to this type can either be done using an
 intermediate class (IntegerValue, DoubleValue for "floating point") or via
 strings. Direct implicit conversion of types to Value is not really practical.
-So in the above, users have a choice of using strings or values:::
+So in the above, users have a choice of using strings or values::
 
     p->Set ("cwnd", StringValue ("100")); // string-based setter
     p->Set ("cwnd", IntegerValue (100)); // integer-based setter
@@ -488,7 +488,7 @@ variables is executed after an object is constructed. But what if you need the
 values assigned before the constructor body executes, because you need them in
 the logic of the constructor? There is a way to do this, used for example in the
 class :cpp:class:`ns3::ConfigStore`: call ``ObjectBase::ConstructSelf ()`` as
-follows:::
+follows::
 
     ConfigStore::ConfigStore ()
     {
@@ -510,14 +510,14 @@ missed, or to add their own classes to this.
 Adding an existing internal variable to the metadata system 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-Consider this variable in class TcpSocket:::
+Consider this variable in class TcpSocket::
 
     uint32_t m_cWnd;   // Congestion window
 
 Suppose that someone working with TCP wanted to get or set the value of that
 variable using the metadata system. If it were not already provided by |ns3|,
 the user could declare the following addition in the runtime metadata system (to
-the TypeId declaration for TcpSocket):::
+the TypeId declaration for TcpSocket)::
 
     .AddAttribute ("Congestion window", 
                    "Tcp congestion window (bytes)",
@@ -537,7 +537,7 @@ Adding a new TypeId
 Here, we discuss the impact on a user who wants to add a new class to |ns3|;
 what additional things must be done to hook it into this system.
 
-We've already introduced what a TypeId definition looks like:::
+We've already introduced what a TypeId definition looks like::
 
     TypeId
     RandomWalk2dMobilityModel::GetTypeId (void)
@@ -562,7 +562,7 @@ We've already introduced what a TypeId definition looks like:::
     }
 
 The declaration for this in the class declaration is one-line public member
-method:::
+method::
 
     public:
       static TypeId GetTypeId (void);
@@ -606,7 +606,7 @@ Header file
     };
  
 One macro call and two operators, must be added below the class declaration in
-order to turn a Rectangle into a value usable by the ``Attribute`` system:::
+order to turn a Rectangle into a value usable by the ``Attribute`` system::
 
     std::ostream &operator << (std::ostream &os, const Rectangle &rectangle);
     std::istream &operator >> (std::istream &is, Rectangle &rectangle);
@@ -616,7 +616,7 @@ order to turn a Rectangle into a value usable by the ``Attribute`` system:::
 Implementation file
 +++++++++++++++++++
 
-In the class definition (``.cc`` file), the code looks like this:::
+In the class definition (``.cc`` file), the code looks like this::
 
     ATTRIBUTE_HELPER_CPP (Rectangle);
 
@@ -660,12 +660,12 @@ and loaded into a future simulation.  This feature is known as the
 |ns3| ConfigStore.  We can explore this system by using an example from
 ``src/config-store/examples/config-store-save.cc``.
 
-First, all users must include the following statement:::
+First, all users must include the following statement::
 
     #include "ns3/config-store-module.h"
 
 Next, this program adds a sample object A to show how the system
-is extended:::
+is extended::
 
     class A : public Object
     {
@@ -686,7 +686,7 @@ is extended:::
     NS_OBJECT_ENSURE_REGISTERED (A);
 
 Next, we use the Config subsystem to override the defaults in a couple of
-ways:::
+ways::
      
       Config::SetDefault ("ns3::A::TestInt16", IntegerValue (-5));
     
@@ -703,7 +703,7 @@ The next statement is necessary to make sure that (one of) the objects
 created is rooted in the configuration namespace as an object instance.
 This normally happens when you aggregate objects to ns3::Node or ns3::Channel
 but here, since we are working at the core level, we need to create a
-new root namespace object:::
+new root namespace object::
 
       Config::RegisterRootNamespaceObject (a2_obj);
 
@@ -720,7 +720,7 @@ There are three attributes that govern the behavior of the ConfigStore: "Mode",
 (default "RawText") governs whether the ConfigStore format is Xml or RawText
 format.
 
-The example shows:::
+The example shows::
 
       Config::SetDefault ("ns3::ConfigStore::Filename", StringValue ("output-attributes.xml"));
       Config::SetDefault ("ns3::ConfigStore::FileFormat", StringValue ("Xml"));
@@ -895,7 +895,7 @@ version is installed and:
 is rerun.
 
 Usage is almost the same as the non-GTK-based version, but there
-are no ConfigStore attributes involved:::
+are no ConfigStore attributes involved::
 
   // Invoke just before entering Simulator::Run ()
   GtkConfigStore config;

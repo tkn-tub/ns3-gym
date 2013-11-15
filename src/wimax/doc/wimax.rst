@@ -1,4 +1,5 @@
 .. include:: replace.txt
+.. highlight:: cpp
 
 Wimax NetDevice
 ---------------
@@ -78,7 +79,7 @@ attributes of the model.
 The helper API is defined in ``src/wimax/helper/wimax-helper.{cc,h}``.
 
 The example ``src/wimax/examples/wimax-simple.cc`` contains some basic code that
-shows how to set up the model:::
+shows how to set up the model::
 
   switch (schedType)
     {
@@ -117,7 +118,7 @@ type, the physical layer type, and the device type.
 
 Different variants of ``Install`` are available; for instance, the example
 ``src/wimax/examples/wimax-multicast.cc`` shows how to specify a non-default channel
-or propagation model:::
+or propagation model::
 
   channel = CreateObject<SimpleOfdmWimaxChannel> ();
   channel->SetPropagationModel (SimpleOfdmWimaxChannel::COST231_PROPAGATION);
@@ -140,11 +141,11 @@ unidirectional flow of packets with a set of QoS parameters such as traffic
 priority, rate, scheduling type, etc. The base station is responsible for
 issuing service flow identifiers and mapping them to WiMAX connections. The
 following code from ``src/wimax/examples/wimax-multicast.cc`` shows how this is
-configured from a helper level:::
+configured from a helper level::
 
  ServiceFlow MulticastServiceFlow = wimax.CreateServiceFlow (ServiceFlow::SF_DIRECTION_DOWN,
-                                                              ServiceFlow::SF_TYPE_UGS,
-                                                              MulticastClassifier);
+                                                             ServiceFlow::SF_TYPE_UGS,
+                                                             MulticastClassifier);
 
   bs->GetServiceFlowManager ()->AddMulticastServiceFlow (MulticastServiceFlow, WimaxPhy::MODULATION_TYPE_QPSK_12);
 
@@ -178,7 +179,7 @@ Wimax Tracing
 existing trace sources, or to define and export new ones.  
 
 Many |ns3| users use the built-in Pcap or Ascii tracing, and the
-WimaxHelper has similar APIs:::
+WimaxHelper has similar APIs::
 
     AsciiTraceHelper ascii;
     WimaxHelper wimax;
@@ -505,7 +506,9 @@ scheme.
 
 The names of the files should respect the following format: modulation0.txt for
 modulation 0, modulation1.txt for modulation 1 and so on...  The file format
-should be as follows::
+should be as follows:
+
+.. sourcecode:: text
 
     SNR_value1   BER  Blc_ER  STANDARD_DEVIATION  CONFIDENCE_INTERVAL1  CONFIDENCE_INTERVAL2
     SNR_value2   BER  Blc_ER  STANDARD_DEVIATION  CONFIDENCE_INTERVAL1  CONFIDENCE_INTERVAL2

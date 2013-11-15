@@ -32,7 +32,8 @@ NS_LOG_COMPONENT_DEFINE ("Ipv4PacketProbe");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv4PacketProbe);
+NS_OBJECT_ENSURE_REGISTERED (Ipv4PacketProbe)
+  ;
 
 TypeId
 Ipv4PacketProbe::GetTypeId ()

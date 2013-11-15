@@ -31,7 +31,8 @@ NS_LOG_COMPONENT_DEFINE ("Dot11sPeerManagementProtocol");
 namespace ns3 {
 namespace dot11s {
 
-NS_OBJECT_ENSURE_REGISTERED ( PeerLink);
+NS_OBJECT_ENSURE_REGISTERED ( PeerLink)
+  ;
 
 TypeId
 PeerLink::GetTypeId ()

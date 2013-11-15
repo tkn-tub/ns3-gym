@@ -42,7 +42,8 @@ NS_LOG_COMPONENT_DEFINE ("UdpSocketImpl");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (UdpSocketImpl);
+NS_OBJECT_ENSURE_REGISTERED (UdpSocketImpl)
+  ;
 
 static const uint32_t MAX_IPV4_UDP_DATAGRAM_SIZE = 65507;
 

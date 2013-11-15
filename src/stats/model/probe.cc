@@ -28,7 +28,8 @@ NS_LOG_COMPONENT_DEFINE ("Probe");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (Probe);
+NS_OBJECT_ENSURE_REGISTERED (Probe)
+  ;
 
 TypeId
 Probe::GetTypeId ()
