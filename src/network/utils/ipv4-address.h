@@ -286,8 +286,8 @@ private:
  * \brief hold objects of type ns3::Ipv4Mask
  */
 
-ATTRIBUTE_HELPER_HEADER (Ipv4Address);
-ATTRIBUTE_HELPER_HEADER (Ipv4Mask);
+ATTRIBUTE_HELPER_HEADER (Ipv4Address);  /// Macro to make help make class an ns-3 attribute
+ATTRIBUTE_HELPER_HEADER (Ipv4Mask);     /// Macro to make help make class an ns-3 attribute
 
 std::ostream& operator<< (std::ostream& os, Ipv4Address const& address);
 std::ostream& operator<< (std::ostream& os, Ipv4Mask const& mask);

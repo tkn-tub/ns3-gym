@@ -156,7 +156,11 @@ private:
   virtual Ptr<const Packet> DoPeek (void) const = 0;
 
 protected:
-  // called by subclasses to notify parent of packet drops.
+  /**
+   *  \brief Drop a packet 
+   *  \param packet packet that was dropped
+   *  This method is called by subclasses to notify parent (this class) of packet drops.
+   */
   void Drop (Ptr<Packet> packet);
 
 private:

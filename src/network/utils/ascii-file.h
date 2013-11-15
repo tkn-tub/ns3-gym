@@ -30,10 +30,11 @@
 namespace ns3 {
 
 
-/*
- * A class representing an ascii file.
+/**
+ * \brief A class representing an ascii file.
+ *
+ * This class represents an ascii file
  */
-
 class AsciiFile
 {
 public:

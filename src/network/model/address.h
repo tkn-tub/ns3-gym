@@ -224,7 +224,7 @@ private:
  * \brief hold objects of type ns3::Address
  */
 
-ATTRIBUTE_HELPER_HEADER (Address);
+ATTRIBUTE_HELPER_HEADER (Address);  /// Macro to make help make class an ns-3 attribute
 
 bool operator == (const Address &a, const Address &b);
 bool operator != (const Address &a, const Address &b);

@@ -169,7 +169,7 @@ Address::Deserialize (TagBuffer buffer)
   buffer.Read (m_data, m_len);
 }
 
-ATTRIBUTE_HELPER_CPP (Address);
+ATTRIBUTE_HELPER_CPP (Address);   /// Macro to make help make class an ns-3 attribute
 
 
 bool operator == (const Address &a, const Address &b)

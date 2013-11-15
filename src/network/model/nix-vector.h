@@ -75,6 +75,8 @@ public:
    */
   NixVector (const NixVector &o);
   /**
+   * \return a reference to the assignee
+   *
    * \param o the NixVector to copy to a new NixVector using the
    *          equals operator
    */
