@@ -132,23 +132,23 @@ retype them when a new shell is opened.
 Building and Running Examples
 +++++++++++++++++++++++++++++
 
-If you already built |ns3| without MPI enabled, you must re-build:::
+If you already built |ns3| without MPI enabled, you must re-build::
 
     $ ./waf distclean
 
-Configure |ns3| with the --enable-mpi option:::
+Configure |ns3| with the --enable-mpi option::
 
     $ ./waf -d debug configure --enable-examples --enable-tests --enable-mpi
 
 Ensure that MPI is enabled by checking the optional features shown from the
 output of configure.
 
-Next, build |ns3|:::
+Next, build |ns3|::
 
     $ ./waf
 
 After building |ns3| with mpi enabled, the example programs are now ready to run
-with mpirun. Here are a few examples (from the root |ns3| directory):::
+with mpirun. Here are a few examples (from the root |ns3| directory)::
 
     $ mpirun -np 2 ./waf --run simple-distributed
     $ mpirun -np 4 -machinefile mpihosts ./waf --run 'nms-udp-nix --LAN=2 --CN=4 --nix=1'
@@ -167,7 +167,7 @@ exist (in this case mpihosts). This can simply contain something like:
 Or if you have a cluster of machines, you can name them.
 
 NOTE: Some users have experienced issues using mpirun and waf together. An
-alternative way to run distributed examples is shown below:::
+alternative way to run distributed examples is shown below::
 
     $ ./waf shell
     $ cd build/debug
@@ -184,14 +184,14 @@ be divided, and installing applications only on the LP associated with the
 target node.
 
 Assigning system ids to nodes is simple and can be handled two different ways.
-First, a NodeContainer can be used to create the nodes and assign system ids:::
+First, a NodeContainer can be used to create the nodes and assign system ids::
 
     NodeContainer nodes;
     nodes.Create (5, 1); // Creates 5 nodes with system id 1.
 
 Alternatively, nodes can be created individually, assigned system ids, and added
 to a NodeContainer. This is useful if a NodeContainer holds nodes with different
-system ids:::
+system ids::
 
     NodeContainer nodes;
     Ptr<Node> node1 = CreateObject<Node> (0); // Create node1 with system id 0
@@ -219,7 +219,7 @@ simulator until it reaches nodes specific to that simulator. The easiest way to
 keep track of different traces is to just name the trace files or pcaps
 differently, based on the system id of the simulator. For example, something
 like this should work well, assuming all of these local variables were
-previously defined:::
+previously defined::
 
     if (MpiInterface::GetSystemId () == 0)
       {

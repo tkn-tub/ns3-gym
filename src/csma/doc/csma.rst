@@ -109,7 +109,7 @@ the simulator is single threaded, access to the common channel will be
 serialized by the simulator. This provides a deterministic mechanism for
 contending for the channel. The channel is allocated (transitioned from state
 ``IDLE`` to state ``TRANSMITTING``) on a first-come first-served basis.
-The channel always goes through a three state process:::
+The channel always goes through a three state process::
 
   IDLE -> TRANSMITTING -> PROPAGATING -> IDLE
 
@@ -207,7 +207,7 @@ work in a similar way, and their use is seen in many of our example programs.
 The conceptual model of interest is that of a bare computer "husk" into which
 you plug net devices. The bare computers are created using a ``NodeContainer``
 helper. You just ask this helper to create as many computers (we call them
-``Nodes``) as you need on your network:::
+``Nodes``) as you need on your network::
 
   NodeContainer csmaNodes;
   csmaNodes.Create (nCsmaNodes);

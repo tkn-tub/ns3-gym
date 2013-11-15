@@ -73,7 +73,7 @@ In many cases, usage of TCP is set at the application layer by telling
 the |ns3| application which kind of socket factory to use.
 
 Using the helper functions defined in ``src/applications/helper`` and
-``src/network/helper``, here is how one would create a TCP receiver:::
+``src/network/helper``, here is how one would create a TCP receiver::
 
   // Create a packet sink on the star "hub" to receive these packets
   uint16_t port = 50000;
@@ -84,7 +84,7 @@ Using the helper functions defined in ``src/applications/helper`` and
   sinkApp.Stop (Seconds (10.0));
 
 Similarly, the below snippet configures OnOffApplication traffic source to use
-TCP:::
+TCP::
 
   // Create the OnOff applications to send TCP to the server
   OnOffHelper clientHelper ("ns3::TcpSocketFactory", Address ());
@@ -106,7 +106,7 @@ settable attribute.
 
 To set the default socket type before any internet stack-related objects are
 created, one may put the following statement at the top of the simulation
-program::: 
+program:: 
 
   Config::SetDefault ("ns3::TcpL4Protocol::SocketType", StringValue ("ns3::TcpTahoe")); 
 
@@ -119,7 +119,7 @@ socket type must be done by twiddling the attribute associated with the
 underlying TcpL4Protocol object.  The easiest way to get at this would be 
 through the attribute configuration system.  In the below example,
 the Node container "n0n1" is accessed
-to get the zeroth element, and a socket is created on this node:::
+to get the zeroth element, and a socket is created on this node::
 
   // Create and bind the socket...
   TypeId tid = TypeId::LookupByName ("ns3::TcpTahoe");
@@ -130,7 +130,7 @@ to get the zeroth element, and a socket is created on this node:::
 Above, the "*" wild card for node number is passed to the attribute
 configuration system, so that all future sockets on all nodes are set to 
 Tahoe, not just on node 'n0n1.Get (0)'.  If one wants to limit it to just 
-the specified node, one would have to do something like:::
+the specified node, one would have to do something like::
 
   // Create and bind the socket...
   TypeId tid = TypeId::LookupByName ("ns3::TcpTahoe");
@@ -233,7 +233,7 @@ which can be examined by tcpdump or wireshark.
 Let's look at the ``examples/tcp/tcp-nsc-zoo.cc`` file for some typical
 usage. How does it differ from using native |ns3| TCP? There is one main
 configuration line, when using NSC and the |ns3| helper API, that needs to be
-set:::
+set::
 
   InternetStackHelper internetStack;
 
@@ -271,7 +271,7 @@ sockets, as described above and documented in `Doxygen
 
 Additionally, NSC TCP exports a lot of configuration variables into the 
 |ns3| attributes system, via a `sysctl <http://en.wikipedia.org/wiki/Sysctl>`_-like interface. In the ``examples/tcp/tcp-nsc-zoo`` example, you
-can see the following configuration:::
+can see the following configuration::
 
 
   // this disables TCP SACK, wscale and timestamps on node 1 (the attributes 

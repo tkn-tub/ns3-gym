@@ -59,7 +59,7 @@ Usage
 Any mixing of |ns3| objects with real objects will typically require that
 |ns3| compute checksums in its protocols. By default, checksums are not
 computed by |ns3|. To enable checksums (e.g. UDP, TCP, IP), users must set
-the attribute ``ChecksumEnabled`` to true, such as follows:::
+the attribute ``ChecksumEnabled`` to true, such as follows::
 
     GlobalValue::Bind ("ChecksumEnabled", BooleanValue (true));
 
@@ -141,7 +141,7 @@ similarly to the snippet above.::
 
 The ``Emu`` net device and helper provide access to ASCII and pcap tracing
 functionality just as other |ns3| net devices to. You enable tracing similarly
-to these other net devices:::
+to these other net devices::
 
   EmuHelper::EnablePcapAll ("emu-udp-echo-client");
 
@@ -176,7 +176,7 @@ the device using the "Stop" attribute.
 
 Once the (promiscuous mode) socket is created, we bind it to an interface name 
 also provided as an attribute ("DeviceName") that is stored internally as 
-``m_deviceName``:::
+``m_deviceName``::
 
   struct ifreq ifr;
   bzero (&ifr, sizeof(ifr));

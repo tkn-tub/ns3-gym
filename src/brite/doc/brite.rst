@@ -85,7 +85,7 @@ can be found in the BRITE user manual.
 Building BRITE Integration
 ==========================
 
-The first step is to download and build the ns-3 specific BRITE repository:::
+The first step is to download and build the ns-3 specific BRITE repository::
 
   $ hg clone http://code.nsnam.org/BRITE
   $ cd BRITE
@@ -95,7 +95,7 @@ This will build BRITE and create a library, libbrite.so, within the BRITE
 directory.
 
 Once BRITE has been built successfully, we proceed to configure ns-3 with 
-BRITE support. Change to your ns-3 directory:::
+BRITE support. Change to your ns-3 directory::
 
   $ ./waf configure --with-brite=/your/path/to/brite/source --enable-examples
 
@@ -103,14 +103,14 @@ Make sure it says 'enabled' beside 'BRITE Integration'. If it does not, then
 something has gone wrong. Either you have forgotten to build BRITE first 
 following the steps above, or ns-3 could not find your BRITE directory.
 
-Next, build ns-3:::
+Next, build ns-3::
 
   $ ./waf
 
 Examples
 ========
 For an example demonstrating BRITE integration
-run:::
+run::
 
   $ ./waf --run 'brite-generic-example'
 
@@ -131,13 +131,13 @@ many other command-line parameters including confFile, tracing, and nix, describ
     Enables nix-vector routing. Global routing is used by default.
 
 The generic BRITE example also support visualization using pyviz, assuming
-python bindings in ns-3 are enabled:::
+python bindings in ns-3 are enabled::
 
   $ ./waf --run brite-generic-example --vis
   
 Simulations involving BRITE can also be used with MPI.  The total number of MPI instances is 
 passed to the BRITE topology helper where a modulo divide is used to assign the nodes for each 
-AS to a MPI instance.  An example can be found in src/brite/examples:::
+AS to a MPI instance.  An example can be found in src/brite/examples::
 
   $ mpirun -np 2 ./waf --run brite-MPI-example
 	

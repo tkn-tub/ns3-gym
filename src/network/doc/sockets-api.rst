@@ -128,7 +128,7 @@ sending of more data until a function registered at the
 :cpp:func:`ns3::Socket::SetSendCallback` callback is invoked.  
 An application can also ask the socket how much space is available 
 by calling :cpp:func:`ns3::Socket::GetTxAvailable`.  A typical sequence 
-of events for sending data (ignoring connection setup) might be:::
+of events for sending data (ignoring connection setup) might be::
 
     SetSendCallback (MakeCallback(&HandleSendCallback));
     Send ();

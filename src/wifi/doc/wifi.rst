@@ -150,7 +150,7 @@ propagation delay equal to a constant, the speed of light, and a propagation
 loss based on a log distance model with a reference loss of 46.6777 dB at
 reference distance of 1m.
 
-Users will typically type code such as:::
+Users will typically type code such as::
 
   YansWifiChannelHelper wifiChannelHelper = YansWifiChannelHelper::Default ();
   Ptr<WifiChannel> wifiChannel = wifiChannelHelper.Create ();
@@ -175,7 +175,7 @@ the ``YansWifiPhyHelper`` will do the work.
 The YansWifiPhyHelper class configures an object factory to create instances of
 a ``YansWifiPhy`` and adds some other objects to it, including possibly a
 supplemental ErrorRateModel and a pointer to a MobilityModel. The user code is
-typically:::
+typically::
 
   YansWifiPhyHelper wifiPhyHelper = YansWifiPhyHelper::Default ();
   wifiPhyHelper.SetChannel (wifiChannel);
@@ -200,7 +200,7 @@ instances that do not have 802.11e/WMM-style QoS support enabled.
 
 For example the following user code configures a non-QoS MAC that
 will be a non-AP STA in an infrastructure network where the AP has
-SSID ``ns-3-ssid``:::
+SSID ``ns-3-ssid``::
 
     NqosWifiMacHelper wifiMacHelper = NqosWifiMacHelper::Default ();
     Ssid ssid = Ssid ("ns-3-ssid");
@@ -218,7 +218,7 @@ To create MAC instances with QoS support enabled,
   mechanism should be used) and inactivity timeout.
 
 The following code shows an example use of ``ns3::QosWifiMacHelper`` to 
-create an AP with QoS enabled, aggregation on AC_VO, and Block Ack on AC_BE:::
+create an AP with QoS enabled, aggregation on AC_VO, and Block Ack on AC_BE::
 
   QosWifiMacHelper wifiMacHelper = QosWifiMacHelper::Default ();
   wifiMacHelper.SetType ("ns3::ApWifiMac",
@@ -239,7 +239,7 @@ supports creation of MAC instances that have 802.11n-style High throughput (Ht) 
 
 For example the following user code configures a HT MAC that
 will be a non-AP STA in an infrastructure network where the AP has
-SSID ``ns-3-ssid``:::
+SSID ``ns-3-ssid``::
 
     HtWifiMacHelper wifiMacHelper = HtWifiMacHelper::Default ();
     Ssid ssid = Ssid ("ns-3-ssid");
@@ -253,14 +253,14 @@ WifiHelper
 ++++++++++
 
 We're now ready to create WifiNetDevices. First, let's create
-a WifiHelper with default settings:::
+a WifiHelper with default settings::
 
   WifiHelper wifiHelper = WifiHelper::Default ();
 
 What does this do?  It sets the RemoteStationManager to
 ``ns3::ArfWifiManager``.
 Now, let's use the wifiPhyHelper and wifiMacHelper created above to install WifiNetDevices
-on a set of nodes in a NodeContainer "c":::
+on a set of nodes in a NodeContainer "c"::
 
   NetDeviceContainer wifiContainer = WifiHelper::Install (wifiPhyHelper, wifiMacHelper, c);
 

@@ -111,14 +111,14 @@ over routes found by global routing).
 Global Unicast Routing API
 ++++++++++++++++++++++++++
 
-The public API is very minimal. User scripts include the following:::
+The public API is very minimal. User scripts include the following::
 
     #include "ns3/internet-module.h"
 
 If the default InternetStackHelper is used, then an instance of global routing
 will be aggregated to each node.  After IP addresses are configured, the
 following function call will cause all of the nodes that have an Ipv4 interface
-to receive forwarding tables entered automatically by the GlobalRouteManager:::
+to receive forwarding tables entered automatically by the GlobalRouteManager::
 
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
@@ -127,7 +127,7 @@ wireless effects into account. For wireless, we recommend OLSR dynamic routing
 described below.
 
 It is possible to call this function again in the midst of a simulation using
-the following additional public function:::
+the following additional public function::
 
   Ipv4GlobalRoutingHelper::RecomputeRoutingTables ();
 
@@ -135,7 +135,7 @@ which flushes the old tables, queries the nodes for new interface information,
 and rebuilds the routes.
 
 For instance, this scheduling call will cause the tables to be rebuilt
-at time 5 seconds:::
+at time 5 seconds::
 
   Simulator::Schedule (Seconds (5),
                        &Ipv4GlobalRoutingHelper::RecomputeRoutingTables);
@@ -195,7 +195,7 @@ same shared channel is reachable from every other node (i.e. it will
 be treated like a broadcast CSMA link).
 
 The GlobalRouteManager first walks the list of nodes and aggregates
-a GlobalRouter interface to each one as follows:::
+a GlobalRouter interface to each one as follows::
 
   typedef std::vector < Ptr<Node> >::iterator Iterator;
   for (Iterator i = NodeList::Begin (); i != NodeList::End (); i++)
@@ -257,7 +257,7 @@ Ipv4ListRouting::AddRoutingProtocol
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Class Ipv4ListRouting provides a pure virtual function declaration for the
-method that allows one to add a routing protocol:::
+method that allows one to add a routing protocol::
 
   void AddRoutingProtocol (Ptr<Ipv4RoutingProtocol> routingProtocol,
                            int16_t priority);
@@ -272,7 +272,7 @@ Ipv4StaticRoutingImpl object at priority zero.  Internally, a list of
 Ipv4RoutingProtocols is stored, and and the routing protocols are each consulted
 in decreasing order of priority to see whether a match is found. Therefore, if
 you want your Ipv4RoutingProtocol to have priority lower than the static
-routing, insert it with priority less than 0; e.g.:::
+routing, insert it with priority less than 0; e.g.::
 
   Ptr<MyRoutingProtocol> myRoutingProto = CreateObject<MyRoutingProtocol> ();
   listRoutingPtr->AddRoutingProtocol (myRoutingProto, -10);
@@ -335,7 +335,7 @@ Multicast routing
 *****************
 
 The following function is used to add a static multicast route
-to a node:::
+to a node::
 
     void 
     Ipv4StaticRouting::AddMulticastRoute (Ipv4Address origin,
@@ -371,7 +371,7 @@ interfaces. Compare this to the actual default multicast address that is
 limited to specifying a single output interface for compatibility with
 existing functionality in other systems.
 
-Another command sets the default multicast route:::
+Another command sets the default multicast route::
 
     void 
     Ipv4StaticRouting::SetDefaultMulticastRoute (uint32_t outputInterface);
@@ -392,7 +392,7 @@ irrespective of origin or multicast group if another specific route is not
 found.
 
 Finally, a number of additional functions are provided to fetch and remove
-multicast routes:::
+multicast routes::
 
   uint32_t GetNMulticastRoutes (void) const;
 

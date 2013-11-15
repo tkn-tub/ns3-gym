@@ -77,7 +77,7 @@ example programs and is also covered in the |ns3| tutorial.
 The conceptual model of interest is that of a bare computer "husk" into which
 you plug net devices. The bare computers are created using a ``NodeContainer``
 helper. You just ask this helper to create as many computers (we call them
-``Nodes``) as you need on your network:::
+``Nodes``) as you need on your network::
 
   NodeContainer nodes;
   nodes.Create (2);

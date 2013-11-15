@@ -26,6 +26,7 @@ This document is written in `reStructuredText <http://docutils.sourceforge.net/r
    buildings
    click
    csma
+   data-collection
    dsdv
    dsr
    emulation-overview
@@ -41,7 +42,7 @@ This document is written in `reStructuredText <http://docutils.sourceforge.net/r
    openflow-switch
    point-to-point
    propagation
-   statistics
+   spectrum
    topology
    uan
    wifi

@@ -162,7 +162,7 @@ The following command will create a new packet with a new unique Id.::
   Ptr<Packet> pkt = Create<Packet> ();
 
 What is the Uid (unique Id)?  It is an internal id that the system uses to
-identify packets.  It can be fetched via the following method:::
+identify packets.  It can be fetched via the following method::
 
   uint32_t uid = pkt->GetUid ();
 
@@ -180,14 +180,14 @@ payloads that do not actually require a memory allocation (i.e., the packet may
 behave, when delays such as serialization or transmission delays are computed,
 to have a certain number of payload bytes, but the bytes will only be allocated
 on-demand when needed).  The command to do this is, when the packet is
-created:::
+created::
 
   Ptr<Packet> pkt = Create<Packet> (N);
 
 where N is a positive integer.  
 
 The packet now has a size of N bytes, which can be verified by the GetSize()
-method:::
+method::
 
   /**
    * \returns the size in bytes of the packet (including the zero-filled
@@ -197,11 +197,11 @@ method:::
 
 You can also initialize a packet with a character buffer. The input
 data is copied and the input buffer is untouched. The constructor
-applied is:::
+applied is::
 
   Packet (uint8_t const *buffer, uint32_t size);
 
-Here is an example:::
+Here is an example::
 
   Ptr<Packet> pkt1 = Create<Packet> (reinterpret_cast<const uint8_t*> ("hello"), 5);
 
@@ -422,14 +422,14 @@ The Packet API for packet tags is given below.::
   PacketTagIterator GetPacketTagIterator (void) const;
 
 Here is a simple example illustrating the use of tags from the
-code in ``src/internet/model/udp-socket-impl.cc``:::
+code in ``src/internet/model/udp-socket-impl.cc``::
 
   Ptr<Packet> p;  // pointer to a pre-existing packet
   SocketIpTtlTag tag
   tag.SetTtl (m_ipMulticastTtl); // Convey the TTL from UDP layer to IP layer
   p->AddPacketTag (tag);
 
-This tag is read at the IP layer, then stripped (``src/internet/model/ipv4-l3-protocol.cc``):::
+This tag is read at the IP layer, then stripped (``src/internet/model/ipv4-l3-protocol.cc``)::
 
   uint8_t ttl = m_defaultTtl;
   SocketIpTtlTag tag;
@@ -444,7 +444,7 @@ Fragmentation and concatenation
 
 Packets may be fragmented or merged together.  For example, to fragment a packet
 ``p`` of 90 bytes into two packets, one containing the first 10 bytes and the
-other containing the remaining 80, one may call the following code:::
+other containing the remaining 80, one may call the following code::
 
   Ptr<Packet> frag0 = p->CreateFragment (0, 10);
   Ptr<Packet> frag1 = p->CreateFragment (10, 90);
@@ -452,7 +452,7 @@ other containing the remaining 80, one may call the following code:::
 As discussed above, the packet tags from ``p`` will follow to both packet
 fragments, and the byte tags will follow the byte ranges as needed.
 
-Now, to put them back together:::
+Now, to put them back together::
 
   frag0->AddAtEnd (frag1);
 
@@ -481,7 +481,7 @@ present at the front of the packet. These errors will be detected and will abort
 the program.
 
 To enable this operation, users will typically insert one or both of these
-statements at the beginning of their programs:::
+statements at the beginning of their programs::
 
   Packet::EnablePrinting ();
   Packet::EnableChecking ();
@@ -497,7 +497,7 @@ Implementation details
 Private member variables
 ++++++++++++++++++++++++
 
-A Packet object's interface provides access to some private data:::
+A Packet object's interface provides access to some private data::
 
   Buffer m_buffer;
   ByteTagList m_byteTagList;
@@ -602,7 +602,7 @@ copying the TagData head pointer and incrementing its reference count.
 Tags are found by the unique mapping between the Tag type and
 its underlying id. This is why at most one instance of any Tag
 can be stored in a packet. The mapping between Tag type and 
-underlying id is performed by a registration as follows:::
+underlying id is performed by a registration as follows::
 
     /* A sample Tag implementation
      */

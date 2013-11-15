@@ -17,7 +17,7 @@ IPv6, Neighbor Discovery, and other related protocols.
 Internet Nodes are not subclasses of class Node; they are simply Nodes that have
 had a bunch of IP-related objects aggregated to them. They can be put together
 by hand, or via a helper function :cpp:func:`InternetStackHelper::Install ()`
-which does the following to all nodes passed in as arguments:::
+which does the following to all nodes passed in as arguments::
 
     void
     InternetStackHelper::Install (Ptr<Node> node) const
@@ -77,7 +77,7 @@ Where multiple implementations exist in |ns3| (TCP, IP routing), these objects
 are added by a factory object (TCP) or by a routing helper (m_routing).
 
 Note that the routing protocol is configured and set outside this
-function. By default, the following protocols are added:::
+function. By default, the following protocols are added::
 
     void InternetStackHelper::Initialize ()
     {
@@ -111,7 +111,7 @@ including IPv4, IPv6, ARP and so on. The class
 typically class :cpp:class:`Ipv4`, but the
 Ipv4L3Protocol public API is also used internally at present.
 
-In class Ipv4L3Protocol, one method described below is ``Receive ()``:::
+In class Ipv4L3Protocol, one method described below is ``Receive ()``::
 
      /**
        * Lower layer calls this method after calling L3Demux::Lookup
@@ -127,7 +127,7 @@ First, note that the ``Receive ()`` function has a matching signature to the
 ReceiveCallback in the class :cpp:class:`Node`. This function pointer is
 inserted into the Node's protocol handler when ``AddInterface ()`` is called.
 The actual registration is done
-with a statement such as follows:::
+with a statement such as follows::
 
      RegisterProtocolHandler ( MakeCallback (&Ipv4Protocol::Receive, ipv4),
                                Ipv4L3Protocol::PROT_NUMBER, 0);
@@ -135,7 +135,7 @@ with a statement such as follows:::
 The Ipv4L3Protocol object is aggregated to the Node; there is only one such
 Ipv4L3Protocol object. Higher-layer protocols that have a packet to send down to
 the Ipv4L3Protocol object can call ``GetObject<Ipv4L3Protocol> ()`` to obtain a
-pointer, as follows:::
+pointer, as follows::
 
   Ptr<Ipv4L3Protocol> ipv4 = m_node->GetObject<Ipv4L3Protocol> ();
   if (ipv4 != 0)
@@ -147,7 +147,7 @@ This class nicely demonstrates two techniques we exploit in |ns3| to bind
 objects together:  callbacks, and object aggregation.
 
 Once IPv4 routing has determined that a packet is for the local node, it
-forwards it up the stack.  This is done with the following function:::
+forwards it up the stack.  This is done with the following function::
 
     void
     Ipv4L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv4Header const&ip, uint32_t iif)
@@ -169,7 +169,7 @@ common mistake is to forget the effects of local queues when sending packets, e.
 queue. This can be particularly puzzling when sending jumbo packets or packet bursts using UDP.
 The ARP cache pending queue is limited (3 datagrams) and IP packets might be fragmented, easily
 overfilling the ARP cache queue size. In those cases it is useful to increase the ARP cache
-pending size to a proper value, e.g.:::
+pending size to a proper value, e.g.::
 
     Config::SetDefault ("ns3::ArpCache::PendingQueueSize", UintegerValue (MAX_BURST_SIZE/L2MTU*3));
 
@@ -188,7 +188,7 @@ together. In summary, each transport protocol implementation is a socket
 factory. An application that needs a new socket 
 
 For instance, to create a UDP socket, an application would use a code snippet
-such as the following:::
+such as the following::
 
       Ptr<Udp> udpSocketFactory = GetNode ()->GetObject<Udp> ();
       Ptr<Socket> m_socket = socketFactory->CreateSocket ();
@@ -226,14 +226,14 @@ some type of I/O (e.g., blocking, non-blocking, asynchronous, ...).
 |ns3| implements an asynchronous model for socket I/O; the application
 sets a callback to be notified of received data ready to be read, and the 
 callback is invoked by the transport protocol when data is available.
-This callback is specified as follows:::
+This callback is specified as follows::
 
   void Socket::SetRecvCallback (Callback<void, Ptr<Socket>, 
                                 Ptr<Packet>,
                                 const Address&> receivedData);
 
 The data being received is conveyed in the Packet data buffer.  An example
-usage is in class :cpp:class:`PacketSink`:::
+usage is in class :cpp:class:`PacketSink`::
 
   m_socket->SetRecvCallback (MakeCallback(&PacketSink::HandleRead, this));
 
