@@ -269,7 +269,6 @@ EutranMeasurementMapping::ActualHysteresis2IeValue (double hysteresisDb)
     }
 
   uint8_t ieValue = lround (hysteresisDb * 2.0);
-  //  NS_ASSERT (ieValue >= 0);  // always true due to limited range of data type
   NS_ASSERT (ieValue <= 30);
   return ieValue;
 }
@@ -300,8 +299,8 @@ EutranMeasurementMapping::ActualA3Offset2IeValue (double a3OffsetDb)
                                    << " for A3 Offset");
     }
 
-  uint8_t ieValue = lround (a3OffsetDb * 2.0);
-  // NS_ASSERT (ieValue >= -30);  // always true due to limited range of data type
+  int8_t ieValue = lround (a3OffsetDb * 2.0);
+  NS_ASSERT (ieValue >= -30);
   NS_ASSERT (ieValue <= 30);
   return ieValue;
 }
