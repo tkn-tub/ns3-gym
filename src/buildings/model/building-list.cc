@@ -57,7 +57,8 @@ private:
   std::vector<Ptr<Building> > m_buildings;
 };
 
-NS_OBJECT_ENSURE_REGISTERED (BuildingListPriv);
+NS_OBJECT_ENSURE_REGISTERED (BuildingListPriv)
+  ;
 
 TypeId
 BuildingListPriv::GetTypeId (void)

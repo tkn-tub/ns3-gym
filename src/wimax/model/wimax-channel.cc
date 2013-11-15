@@ -27,7 +27,8 @@ NS_LOG_COMPONENT_DEFINE ("WimaxChannel");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (WimaxChannel);
+NS_OBJECT_ENSURE_REGISTERED (WimaxChannel)
+  ;
 
 TypeId WimaxChannel::GetTypeId (void)
 {

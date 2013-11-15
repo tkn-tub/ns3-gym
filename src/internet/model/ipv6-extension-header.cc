@@ -28,7 +28,8 @@ namespace ns3
 
 NS_LOG_COMPONENT_DEFINE ("Ipv6ExtensionHeader");
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv6ExtensionHeader);
+NS_OBJECT_ENSURE_REGISTERED (Ipv6ExtensionHeader)
+  ;
 
 TypeId Ipv6ExtensionHeader::GetTypeId ()
 {
@@ -199,7 +200,8 @@ Buffer OptionField::GetOptionBuffer ()
 }
 
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv6ExtensionHopByHopHeader);
+NS_OBJECT_ENSURE_REGISTERED (Ipv6ExtensionHopByHopHeader)
+  ;
 
 TypeId Ipv6ExtensionHopByHopHeader::GetTypeId ()
 {
@@ -254,7 +256,8 @@ uint32_t Ipv6ExtensionHopByHopHeader::Deserialize (Buffer::Iterator start)
   return GetSerializedSize ();
 }
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv6ExtensionDestinationHeader);
+NS_OBJECT_ENSURE_REGISTERED (Ipv6ExtensionDestinationHeader)
+  ;
 
 TypeId Ipv6ExtensionDestinationHeader::GetTypeId ()
 {
@@ -309,7 +312,8 @@ uint32_t Ipv6ExtensionDestinationHeader::Deserialize (Buffer::Iterator start)
   return GetSerializedSize ();
 }
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv6ExtensionFragmentHeader);
+NS_OBJECT_ENSURE_REGISTERED (Ipv6ExtensionFragmentHeader)
+  ;
 
 TypeId Ipv6ExtensionFragmentHeader::GetTypeId ()
 {
@@ -400,7 +404,8 @@ uint32_t Ipv6ExtensionFragmentHeader::Deserialize (Buffer::Iterator start)
   return GetSerializedSize ();
 }
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv6ExtensionRoutingHeader);
+NS_OBJECT_ENSURE_REGISTERED (Ipv6ExtensionRoutingHeader)
+  ;
 
 TypeId Ipv6ExtensionRoutingHeader::GetTypeId ()
 {
@@ -479,7 +484,8 @@ uint32_t Ipv6ExtensionRoutingHeader::Deserialize (Buffer::Iterator start)
   return GetSerializedSize ();
 }
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv6ExtensionLooseRoutingHeader);
+NS_OBJECT_ENSURE_REGISTERED (Ipv6ExtensionLooseRoutingHeader)
+  ;
 
 TypeId Ipv6ExtensionLooseRoutingHeader::GetTypeId ()
 {
@@ -586,7 +592,8 @@ uint32_t Ipv6ExtensionLooseRoutingHeader::Deserialize (Buffer::Iterator start)
   return GetSerializedSize ();
 }
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv6ExtensionESPHeader);
+NS_OBJECT_ENSURE_REGISTERED (Ipv6ExtensionESPHeader)
+  ;
 
 TypeId Ipv6ExtensionESPHeader::GetTypeId ()
 {
@@ -632,7 +639,8 @@ uint32_t Ipv6ExtensionESPHeader::Deserialize (Buffer::Iterator start)
   return 0;
 }
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv6ExtensionAHHeader);
+NS_OBJECT_ENSURE_REGISTERED (Ipv6ExtensionAHHeader)
+  ;
 
 TypeId Ipv6ExtensionAHHeader::GetTypeId ()
 {

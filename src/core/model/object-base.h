@@ -30,6 +30,19 @@
  *
  * This macro should be invoked once for every class which
  * defines a new GetTypeId method.
+ *
+ * Given a class Foo, the .cc implementation should begin
+ *
+ * \code
+ *   NS_OBJECT_ENSURE_REGISTERED (Foo)
+ *     ;
+ * \endcode
+ *
+ * If the class is in a namespace, then the macro call should also be
+ * in the namespace.
+ *
+ * Note the closing ';' is not on the same line;  this prevents 
+ * Doxygen from spuriously warning that the macro invocation is undocumented.
  */
 #define NS_OBJECT_ENSURE_REGISTERED(type)       \
   static struct X ## type ## RegistrationClass      \

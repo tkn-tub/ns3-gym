@@ -24,7 +24,9 @@
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (WifiMac);
+NS_OBJECT_ENSURE_REGISTERED (WifiMac)
+  ;
+  
 
 Time
 WifiMac::GetDefaultMaxPropagationDelay (void)

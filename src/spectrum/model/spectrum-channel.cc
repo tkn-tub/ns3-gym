@@ -24,7 +24,8 @@
 namespace ns3 {
 
 
-NS_OBJECT_ENSURE_REGISTERED (SpectrumChannel);
+NS_OBJECT_ENSURE_REGISTERED (SpectrumChannel)
+  ;
 
 TypeId
 SpectrumChannel::GetTypeId (void)

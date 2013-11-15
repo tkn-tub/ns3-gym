@@ -27,7 +27,8 @@ NS_LOG_COMPONENT_DEFINE ("ArpHeader");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (ArpHeader);
+NS_OBJECT_ENSURE_REGISTERED (ArpHeader)
+  ;
 
 void 
 ArpHeader::SetRequest (Address sourceHardwareAddress,

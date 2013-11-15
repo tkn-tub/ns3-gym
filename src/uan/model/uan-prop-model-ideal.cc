@@ -24,7 +24,8 @@
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (UanPropModelIdeal);
+NS_OBJECT_ENSURE_REGISTERED (UanPropModelIdeal)
+  ;
 
 UanPropModelIdeal::UanPropModelIdeal ()
 {

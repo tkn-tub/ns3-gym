@@ -30,7 +30,8 @@ NS_LOG_COMPONENT_DEFINE ("EthernetHeader");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (EthernetHeader);
+NS_OBJECT_ENSURE_REGISTERED (EthernetHeader)
+  ;
 
 EthernetHeader::EthernetHeader (bool hasPreamble)
   : m_enPreambleSfd (hasPreamble),

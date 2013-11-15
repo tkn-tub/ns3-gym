@@ -58,7 +58,8 @@ static const uint8_t TIS_MULTIVALUE = 0x04;
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (PbbPacket);
+NS_OBJECT_ENSURE_REGISTERED (PbbPacket)
+  ;
 
 PbbTlvBlock::PbbTlvBlock (void)
 {

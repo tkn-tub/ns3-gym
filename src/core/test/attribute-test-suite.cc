@@ -72,7 +72,8 @@ public:
   Derived () {}
 };
 
-NS_OBJECT_ENSURE_REGISTERED (Derived);
+NS_OBJECT_ENSURE_REGISTERED (Derived)
+  ;
 
 class AttributeObjectTest : public Object
 {
@@ -263,7 +264,8 @@ private:
   Time m_timeWithBounds;
 };
 
-NS_OBJECT_ENSURE_REGISTERED (AttributeObjectTest);
+NS_OBJECT_ENSURE_REGISTERED (AttributeObjectTest)
+  ;
 
 // ===========================================================================
 // Test case template used for generic Attribute Value types -- used to make 

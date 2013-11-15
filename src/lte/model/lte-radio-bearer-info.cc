@@ -29,7 +29,8 @@
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (LteRadioBearerInfo);
+NS_OBJECT_ENSURE_REGISTERED (LteRadioBearerInfo)
+  ;
 
 LteRadioBearerInfo::LteRadioBearerInfo (void)
 {

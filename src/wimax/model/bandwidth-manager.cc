@@ -37,7 +37,8 @@ NS_LOG_COMPONENT_DEFINE ("BandwidthManager");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (BandwidthManager);
+NS_OBJECT_ENSURE_REGISTERED (BandwidthManager)
+  ;
 
 TypeId BandwidthManager::GetTypeId (void)
 {

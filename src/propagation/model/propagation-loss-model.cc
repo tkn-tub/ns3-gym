@@ -36,7 +36,8 @@ namespace ns3 {
 
 // ------------------------------------------------------------------------- //
 
-NS_OBJECT_ENSURE_REGISTERED (PropagationLossModel);
+NS_OBJECT_ENSURE_REGISTERED (PropagationLossModel)
+  ;
 
 TypeId 
 PropagationLossModel::GetTypeId (void)
@@ -95,7 +96,8 @@ PropagationLossModel::AssignStreams (int64_t stream)
 
 // ------------------------------------------------------------------------- //
 
-NS_OBJECT_ENSURE_REGISTERED (RandomPropagationLossModel);
+NS_OBJECT_ENSURE_REGISTERED (RandomPropagationLossModel)
+  ;
 
 TypeId 
 RandomPropagationLossModel::GetTypeId (void)
@@ -138,7 +140,8 @@ RandomPropagationLossModel::DoAssignStreams (int64_t stream)
 
 // ------------------------------------------------------------------------- //
 
-NS_OBJECT_ENSURE_REGISTERED (FriisPropagationLossModel);
+NS_OBJECT_ENSURE_REGISTERED (FriisPropagationLossModel)
+  ;
 
 const double FriisPropagationLossModel::PI = 3.14159265358979323846;
 
@@ -275,7 +278,8 @@ FriisPropagationLossModel::DoAssignStreams (int64_t stream)
 // ------------------------------------------------------------------------- //
 // -- Two-Ray Ground Model ported from NS-2 -- tomhewer@mac.com -- Nov09 //
 
-NS_OBJECT_ENSURE_REGISTERED (TwoRayGroundPropagationLossModel);
+NS_OBJECT_ENSURE_REGISTERED (TwoRayGroundPropagationLossModel)
+  ;
 
 const double TwoRayGroundPropagationLossModel::PI = 3.14159265358979323846;
 
@@ -449,7 +453,8 @@ TwoRayGroundPropagationLossModel::DoAssignStreams (int64_t stream)
 
 // ------------------------------------------------------------------------- //
 
-NS_OBJECT_ENSURE_REGISTERED (LogDistancePropagationLossModel);
+NS_OBJECT_ENSURE_REGISTERED (LogDistancePropagationLossModel)
+  ;
 
 TypeId
 LogDistancePropagationLossModel::GetTypeId (void)
@@ -537,7 +542,8 @@ LogDistancePropagationLossModel::DoAssignStreams (int64_t stream)
 
 // ------------------------------------------------------------------------- //
 
-NS_OBJECT_ENSURE_REGISTERED (ThreeLogDistancePropagationLossModel);
+NS_OBJECT_ENSURE_REGISTERED (ThreeLogDistancePropagationLossModel)
+  ;
 
 TypeId
 ThreeLogDistancePropagationLossModel::GetTypeId (void)
@@ -638,7 +644,8 @@ ThreeLogDistancePropagationLossModel::DoAssignStreams (int64_t stream)
 
 // ------------------------------------------------------------------------- //
 
-NS_OBJECT_ENSURE_REGISTERED (NakagamiPropagationLossModel);
+NS_OBJECT_ENSURE_REGISTERED (NakagamiPropagationLossModel)
+  ;
 
 TypeId
 NakagamiPropagationLossModel::GetTypeId (void)
@@ -752,7 +759,8 @@ NakagamiPropagationLossModel::DoAssignStreams (int64_t stream)
 
 // ------------------------------------------------------------------------- //
 
-NS_OBJECT_ENSURE_REGISTERED (FixedRssLossModel);
+NS_OBJECT_ENSURE_REGISTERED (FixedRssLossModel)
+  ;
 
 TypeId 
 FixedRssLossModel::GetTypeId (void)
@@ -798,7 +806,8 @@ FixedRssLossModel::DoAssignStreams (int64_t stream)
 
 // ------------------------------------------------------------------------- //
 
-NS_OBJECT_ENSURE_REGISTERED (MatrixPropagationLossModel);
+NS_OBJECT_ENSURE_REGISTERED (MatrixPropagationLossModel)
+  ;
 
 TypeId 
 MatrixPropagationLossModel::GetTypeId (void)
@@ -877,7 +886,8 @@ MatrixPropagationLossModel::DoAssignStreams (int64_t stream)
 
 // ------------------------------------------------------------------------- //
 
-NS_OBJECT_ENSURE_REGISTERED (RangePropagationLossModel);
+NS_OBJECT_ENSURE_REGISTERED (RangePropagationLossModel)
+  ;
 
 TypeId
 RangePropagationLossModel::GetTypeId (void)

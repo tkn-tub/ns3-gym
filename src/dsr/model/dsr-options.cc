@@ -65,7 +65,8 @@ NS_LOG_COMPONENT_DEFINE ("DsrOptions");
 namespace ns3 {
 namespace dsr {
 
-NS_OBJECT_ENSURE_REGISTERED (DsrOptions);
+NS_OBJECT_ENSURE_REGISTERED (DsrOptions)
+  ;
 
 TypeId DsrOptions::GetTypeId ()
 {
@@ -371,7 +372,8 @@ Ptr<Node> DsrOptions::GetNodeWithAddress (Ipv4Address ipv4Address)
   return 0;
 }
 
-NS_OBJECT_ENSURE_REGISTERED (DsrOptionPad1);
+NS_OBJECT_ENSURE_REGISTERED (DsrOptionPad1)
+  ;
 
 TypeId DsrOptionPad1::GetTypeId ()
 {
@@ -411,7 +413,8 @@ uint8_t DsrOptionPad1::Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Addres
   return pad1Header.GetSerializedSize ();
 }
 
-NS_OBJECT_ENSURE_REGISTERED (DsrOptionPadn);
+NS_OBJECT_ENSURE_REGISTERED (DsrOptionPadn)
+  ;
 
 TypeId DsrOptionPadn::GetTypeId ()
 {
@@ -451,7 +454,8 @@ uint8_t DsrOptionPadn::Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Addres
   return padnHeader.GetSerializedSize ();
 }
 
-NS_OBJECT_ENSURE_REGISTERED (DsrOptionRreq);
+NS_OBJECT_ENSURE_REGISTERED (DsrOptionRreq)
+  ;
 
 TypeId DsrOptionRreq::GetTypeId ()
 {
@@ -949,7 +953,8 @@ uint8_t DsrOptionRreq::Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Addres
   //unreachable:  return rreq.GetSerializedSize ();
 }
 
-NS_OBJECT_ENSURE_REGISTERED (DsrOptionRrep);
+NS_OBJECT_ENSURE_REGISTERED (DsrOptionRrep)
+  ;
 
 TypeId DsrOptionRrep::GetTypeId ()
 {
@@ -1149,7 +1154,8 @@ uint8_t DsrOptionRrep::Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Addres
   return rrep.GetSerializedSize ();
 }
 
-NS_OBJECT_ENSURE_REGISTERED (DsrOptionSR);
+NS_OBJECT_ENSURE_REGISTERED (DsrOptionSR)
+  ;
 
 TypeId DsrOptionSR::GetTypeId ()
 {
@@ -1389,7 +1395,8 @@ uint8_t DsrOptionSR::Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Address 
   return sourceRoute.GetSerializedSize ();
 }
 
-NS_OBJECT_ENSURE_REGISTERED (DsrOptionRerr);
+NS_OBJECT_ENSURE_REGISTERED (DsrOptionRerr)
+  ;
 
 TypeId DsrOptionRerr::GetTypeId ()
 {
@@ -1568,7 +1575,8 @@ uint8_t DsrOptionRerr::DoSendError (Ptr<Packet> p, DsrOptionRerrUnreachHeader &r
   return serializedSize;
 }
 
-NS_OBJECT_ENSURE_REGISTERED (DsrOptionAckReq);
+NS_OBJECT_ENSURE_REGISTERED (DsrOptionAckReq)
+  ;
 
 TypeId DsrOptionAckReq::GetTypeId ()
 {
@@ -1623,7 +1631,8 @@ uint8_t DsrOptionAckReq::Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Addr
   return ackReq.GetSerializedSize ();
 }
 
-NS_OBJECT_ENSURE_REGISTERED (DsrOptionAck);
+NS_OBJECT_ENSURE_REGISTERED (DsrOptionAck)
+  ;
 
 TypeId DsrOptionAck::GetTypeId ()
 {

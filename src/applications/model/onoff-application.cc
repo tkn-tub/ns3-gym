@@ -46,7 +46,8 @@ NS_LOG_COMPONENT_DEFINE ("OnOffApplication");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (OnOffApplication);
+NS_OBJECT_ENSURE_REGISTERED (OnOffApplication)
+  ;
 
 TypeId
 OnOffApplication::GetTypeId (void)

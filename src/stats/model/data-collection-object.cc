@@ -28,7 +28,8 @@ NS_LOG_COMPONENT_DEFINE ("DataCollectionObject");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (DataCollectionObject);
+NS_OBJECT_ENSURE_REGISTERED (DataCollectionObject)
+  ;
 
 TypeId
 DataCollectionObject::GetTypeId (void)

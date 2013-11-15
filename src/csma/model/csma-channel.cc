@@ -28,7 +28,8 @@ NS_LOG_COMPONENT_DEFINE ("CsmaChannel");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (CsmaChannel);
+NS_OBJECT_ENSURE_REGISTERED (CsmaChannel)
+  ;
 
 TypeId
 CsmaChannel::GetTypeId (void)

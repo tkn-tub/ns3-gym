@@ -23,7 +23,8 @@
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (UdpHeader);
+NS_OBJECT_ENSURE_REGISTERED (UdpHeader)
+  ;
 
 /* The magic values below are used only for debugging.
  * They can be used to easily detect memory corruption

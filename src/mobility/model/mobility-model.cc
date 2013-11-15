@@ -25,7 +25,8 @@
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (MobilityModel);
+NS_OBJECT_ENSURE_REGISTERED (MobilityModel)
+  ;
 
 TypeId 
 MobilityModel::GetTypeId (void)

@@ -29,7 +29,8 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("PhyRxStatsCalculator");
 
-NS_OBJECT_ENSURE_REGISTERED (PhyRxStatsCalculator);
+NS_OBJECT_ENSURE_REGISTERED (PhyRxStatsCalculator)
+  ;
 
 PhyRxStatsCalculator::PhyRxStatsCalculator ()
   : m_dlRxFirstWrite (true),

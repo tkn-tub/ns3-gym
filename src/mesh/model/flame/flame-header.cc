@@ -26,7 +26,8 @@
 namespace ns3 {
 namespace flame {
 
-NS_OBJECT_ENSURE_REGISTERED (FlameHeader);
+NS_OBJECT_ENSURE_REGISTERED (FlameHeader)
+  ;
 
 FlameHeader::FlameHeader () :
   m_cost (0), m_seqno (0), m_origDst (Mac48Address ()), m_origSrc (Mac48Address ())

@@ -25,7 +25,8 @@ NS_LOG_COMPONENT_DEFINE ("TcpRfc793");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (TcpRfc793);
+NS_OBJECT_ENSURE_REGISTERED (TcpRfc793)
+  ;
 
 TypeId
 TcpRfc793::GetTypeId (void)

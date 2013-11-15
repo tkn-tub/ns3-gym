@@ -28,7 +28,8 @@
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("V4Ping");
-NS_OBJECT_ENSURE_REGISTERED (V4Ping);
+NS_OBJECT_ENSURE_REGISTERED (V4Ping)
+  ;
 
 TypeId 
 V4Ping::GetTypeId (void)

@@ -30,7 +30,8 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("CalendarScheduler");
 
-NS_OBJECT_ENSURE_REGISTERED (CalendarScheduler);
+NS_OBJECT_ENSURE_REGISTERED (CalendarScheduler)
+  ;
 
 TypeId
 CalendarScheduler::GetTypeId (void)

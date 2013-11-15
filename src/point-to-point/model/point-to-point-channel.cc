@@ -27,7 +27,8 @@ NS_LOG_COMPONENT_DEFINE ("PointToPointChannel");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (PointToPointChannel);
+NS_OBJECT_ENSURE_REGISTERED (PointToPointChannel)
+  ;
 
 TypeId 
 PointToPointChannel::GetTypeId (void)

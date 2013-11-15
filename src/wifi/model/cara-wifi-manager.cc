@@ -40,7 +40,8 @@ struct CaraWifiRemoteStation : public WifiRemoteStation
   uint32_t m_rate;
 };
 
-NS_OBJECT_ENSURE_REGISTERED (CaraWifiManager);
+NS_OBJECT_ENSURE_REGISTERED (CaraWifiManager)
+  ;
 
 TypeId
 CaraWifiManager::GetTypeId (void)

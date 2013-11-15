@@ -25,7 +25,8 @@
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (UanNoiseModelDefault);
+NS_OBJECT_ENSURE_REGISTERED (UanNoiseModelDefault)
+  ;
 
 UanNoiseModelDefault::UanNoiseModelDefault ()
 {

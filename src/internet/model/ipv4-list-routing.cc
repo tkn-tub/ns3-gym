@@ -28,7 +28,8 @@ NS_LOG_COMPONENT_DEFINE ("Ipv4ListRouting");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv4ListRouting);
+NS_OBJECT_ENSURE_REGISTERED (Ipv4ListRouting)
+  ;
 
 TypeId
 Ipv4ListRouting::GetTypeId (void)

@@ -21,7 +21,8 @@
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (Tag);
+NS_OBJECT_ENSURE_REGISTERED (Tag)
+  ;
 
 TypeId 
 Tag::GetTypeId (void)

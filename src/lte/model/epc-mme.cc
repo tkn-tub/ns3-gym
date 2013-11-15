@@ -33,7 +33,8 @@ namespace ns3 {
 
 
 
-NS_OBJECT_ENSURE_REGISTERED (EpcMme);
+NS_OBJECT_ENSURE_REGISTERED (EpcMme)
+  ;
 
 EpcMme::EpcMme ()
   : m_s11SapSgw (0)

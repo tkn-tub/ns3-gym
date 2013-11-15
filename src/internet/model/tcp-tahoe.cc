@@ -32,7 +32,8 @@ NS_LOG_COMPONENT_DEFINE ("TcpTahoe");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (TcpTahoe);
+NS_OBJECT_ENSURE_REGISTERED (TcpTahoe)
+  ;
 
 TypeId
 TcpTahoe::GetTypeId (void)

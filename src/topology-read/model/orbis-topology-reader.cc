@@ -32,7 +32,8 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("OrbisTopologyReader");
 
-NS_OBJECT_ENSURE_REGISTERED (OrbisTopologyReader);
+NS_OBJECT_ENSURE_REGISTERED (OrbisTopologyReader)
+  ;
 
 TypeId OrbisTopologyReader::GetTypeId (void)
 {

@@ -28,7 +28,8 @@ NS_LOG_COMPONENT_DEFINE ("Ipv4Header");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv4Header);
+NS_OBJECT_ENSURE_REGISTERED (Ipv4Header)
+  ;
 
 Ipv4Header::Ipv4Header ()
   : m_calcChecksum (false),

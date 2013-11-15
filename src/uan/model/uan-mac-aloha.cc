@@ -32,7 +32,8 @@ NS_LOG_COMPONENT_DEFINE ("UanMacAloha");
 namespace ns3
 {
 
-NS_OBJECT_ENSURE_REGISTERED (UanMacAloha);
+NS_OBJECT_ENSURE_REGISTERED (UanMacAloha)
+  ;
 
 UanMacAloha::UanMacAloha ()
   : UanMac (),

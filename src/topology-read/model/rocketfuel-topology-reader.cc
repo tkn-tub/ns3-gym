@@ -32,7 +32,8 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("RocketfuelTopologyReader");
 
-NS_OBJECT_ENSURE_REGISTERED (RocketfuelTopologyReader);
+NS_OBJECT_ENSURE_REGISTERED (RocketfuelTopologyReader)
+  ;
 
 TypeId RocketfuelTopologyReader::GetTypeId (void)
 {

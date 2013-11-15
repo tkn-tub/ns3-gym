@@ -41,7 +41,8 @@ namespace ns3 {
  *         The Object implementation
  *********************************************************************/
 
-NS_OBJECT_ENSURE_REGISTERED (Object);
+NS_OBJECT_ENSURE_REGISTERED (Object)
+  ;
 
 Object::AggregateIterator::AggregateIterator ()
   : m_object (0),

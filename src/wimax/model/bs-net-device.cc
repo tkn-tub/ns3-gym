@@ -50,7 +50,8 @@ NS_LOG_COMPONENT_DEFINE ("BaseStationNetDevice");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (BaseStationNetDevice);
+NS_OBJECT_ENSURE_REGISTERED (BaseStationNetDevice)
+  ;
 
 TypeId BaseStationNetDevice::GetTypeId (void)
 {

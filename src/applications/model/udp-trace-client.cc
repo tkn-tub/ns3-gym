@@ -38,7 +38,8 @@
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("UdpTraceClient");
-NS_OBJECT_ENSURE_REGISTERED (UdpTraceClient);
+NS_OBJECT_ENSURE_REGISTERED (UdpTraceClient)
+  ;
 
 struct UdpTraceClient::TraceEntry UdpTraceClient::g_defaultEntries[] = {
   { 0, 534, 'I'},

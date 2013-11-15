@@ -27,7 +27,8 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("MacStatsCalculator");
 
-NS_OBJECT_ENSURE_REGISTERED (MacStatsCalculator);
+NS_OBJECT_ENSURE_REGISTERED (MacStatsCalculator)
+  ;
 
 MacStatsCalculator::MacStatsCalculator ()
   : m_dlFirstWrite (true),

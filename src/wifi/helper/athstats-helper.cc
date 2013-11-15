@@ -105,7 +105,8 @@ AthstatsHelper::EnableAthstats (std::string filename, NodeContainer n)
 
 
 
-NS_OBJECT_ENSURE_REGISTERED (AthstatsWifiTraceSink);
+NS_OBJECT_ENSURE_REGISTERED (AthstatsWifiTraceSink)
+  ;
 
 TypeId
 AthstatsWifiTraceSink::GetTypeId (void)

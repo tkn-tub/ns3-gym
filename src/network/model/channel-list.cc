@@ -55,7 +55,8 @@ private:
   std::vector<Ptr<Channel> > m_channels;
 };
 
-NS_OBJECT_ENSURE_REGISTERED (ChannelListPriv);
+NS_OBJECT_ENSURE_REGISTERED (ChannelListPriv)
+  ;
 
 TypeId 
 ChannelListPriv::GetTypeId (void)

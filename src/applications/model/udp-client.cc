@@ -36,7 +36,8 @@
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("UdpClient");
-NS_OBJECT_ENSURE_REGISTERED (UdpClient);
+NS_OBJECT_ENSURE_REGISTERED (UdpClient)
+  ;
 
 TypeId
 UdpClient::GetTypeId (void)

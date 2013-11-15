@@ -28,7 +28,8 @@ namespace ns3
 
 NS_LOG_COMPONENT_DEFINE ("Ipv6OptionHeader");
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv6OptionHeader);
+NS_OBJECT_ENSURE_REGISTERED (Ipv6OptionHeader)
+  ;
 
 TypeId Ipv6OptionHeader::GetTypeId ()
 {
@@ -116,7 +117,8 @@ Ipv6OptionHeader::Alignment Ipv6OptionHeader::GetAlignment () const
   return (Alignment){ 1,0};
 }
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv6OptionPad1Header);
+NS_OBJECT_ENSURE_REGISTERED (Ipv6OptionPad1Header)
+  ;
 
 TypeId Ipv6OptionPad1Header::GetTypeId ()
 {
@@ -167,7 +169,8 @@ uint32_t Ipv6OptionPad1Header::Deserialize (Buffer::Iterator start)
   return GetSerializedSize ();
 }
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv6OptionPadnHeader);
+NS_OBJECT_ENSURE_REGISTERED (Ipv6OptionPadnHeader)
+  ;
 
 TypeId Ipv6OptionPadnHeader::GetTypeId ()
 {
@@ -227,7 +230,8 @@ uint32_t Ipv6OptionPadnHeader::Deserialize (Buffer::Iterator start)
   return GetSerializedSize ();
 }
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv6OptionJumbogramHeader);
+NS_OBJECT_ENSURE_REGISTERED (Ipv6OptionJumbogramHeader)
+  ;
 
 TypeId Ipv6OptionJumbogramHeader::GetTypeId ()
 {
@@ -298,7 +302,8 @@ Ipv6OptionHeader::Alignment Ipv6OptionJumbogramHeader::GetAlignment () const
   return (Alignment){ 4,2}; //4n+2
 }
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv6OptionRouterAlertHeader);
+NS_OBJECT_ENSURE_REGISTERED (Ipv6OptionRouterAlertHeader)
+  ;
 
 TypeId Ipv6OptionRouterAlertHeader::GetTypeId ()
 {

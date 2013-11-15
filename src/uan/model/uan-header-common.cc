@@ -23,7 +23,8 @@
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (UanHeaderCommon);
+NS_OBJECT_ENSURE_REGISTERED (UanHeaderCommon)
+  ;
 
 UanHeaderCommon::UanHeaderCommon ()
 {

@@ -29,7 +29,8 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("PhyTxStatsCalculator");
 
-NS_OBJECT_ENSURE_REGISTERED (PhyTxStatsCalculator);
+NS_OBJECT_ENSURE_REGISTERED (PhyTxStatsCalculator)
+  ;
 
 PhyTxStatsCalculator::PhyTxStatsCalculator ()
   : m_dlTxFirstWrite (true),

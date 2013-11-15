@@ -28,7 +28,8 @@ NS_LOG_COMPONENT_DEFINE ("YansErrorRateModel");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (YansErrorRateModel);
+NS_OBJECT_ENSURE_REGISTERED (YansErrorRateModel)
+  ;
 
 TypeId
 YansErrorRateModel::GetTypeId (void)

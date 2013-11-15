@@ -46,7 +46,8 @@ int Type0AllocationRbg[4] = {
 
 
 
-NS_OBJECT_ENSURE_REGISTERED (RrFfMacScheduler);
+NS_OBJECT_ENSURE_REGISTERED (RrFfMacScheduler)
+  ;
 
 
 class RrSchedulerMemberCschedSapProvider : public FfMacCschedSapProvider

@@ -27,7 +27,8 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("PhyStatsCalculator");
 
-NS_OBJECT_ENSURE_REGISTERED (PhyStatsCalculator);
+NS_OBJECT_ENSURE_REGISTERED (PhyStatsCalculator)
+  ;
 
 PhyStatsCalculator::PhyStatsCalculator ()
   :  m_RsrpSinrFirstWrite (true),

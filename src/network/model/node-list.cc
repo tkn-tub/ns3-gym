@@ -56,7 +56,8 @@ private:
   std::vector<Ptr<Node> > m_nodes;
 };
 
-NS_OBJECT_ENSURE_REGISTERED (NodeListPriv);
+NS_OBJECT_ENSURE_REGISTERED (NodeListPriv)
+  ;
 
 TypeId 
 NodeListPriv::GetTypeId (void)

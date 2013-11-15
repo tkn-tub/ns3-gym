@@ -27,7 +27,8 @@ NS_LOG_COMPONENT_DEFINE ("LlcSnalHeader");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (LlcSnapHeader);
+NS_OBJECT_ENSURE_REGISTERED (LlcSnapHeader)
+  ;
 
 LlcSnapHeader::LlcSnapHeader ()
 {

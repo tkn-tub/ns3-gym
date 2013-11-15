@@ -38,7 +38,8 @@ NS_LOG_COMPONENT_DEFINE ("DefaultSimulatorImpl");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (DefaultSimulatorImpl);
+NS_OBJECT_ENSURE_REGISTERED (DefaultSimulatorImpl)
+  ;
 
 TypeId
 DefaultSimulatorImpl::GetTypeId (void)

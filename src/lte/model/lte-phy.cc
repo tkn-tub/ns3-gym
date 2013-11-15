@@ -33,7 +33,8 @@ NS_LOG_COMPONENT_DEFINE ("LtePhy");
 namespace ns3 {
 
 
-NS_OBJECT_ENSURE_REGISTERED (LtePhy);
+NS_OBJECT_ENSURE_REGISTERED (LtePhy)
+  ;
 
 
 LtePhy::LtePhy ()

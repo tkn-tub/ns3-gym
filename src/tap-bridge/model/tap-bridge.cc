@@ -89,7 +89,8 @@ FdReader::Data TapBridgeFdReader::DoRead (void)
 
 #define TAP_MAGIC 95549
 
-NS_OBJECT_ENSURE_REGISTERED (TapBridge);
+NS_OBJECT_ENSURE_REGISTERED (TapBridge)
+  ;
 
 TypeId
 TapBridge::GetTypeId (void)

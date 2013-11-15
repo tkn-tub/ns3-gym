@@ -28,7 +28,8 @@ NS_LOG_COMPONENT_DEFINE ("BridgeNetDevice");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (BridgeNetDevice);
+NS_OBJECT_ENSURE_REGISTERED (BridgeNetDevice)
+  ;
 
 
 TypeId

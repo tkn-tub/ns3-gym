@@ -25,7 +25,8 @@ NS_LOG_COMPONENT_DEFINE ("Ipv4RawSocketFactory");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv4RawSocketFactory);
+NS_OBJECT_ENSURE_REGISTERED (Ipv4RawSocketFactory)
+  ;
 
 TypeId Ipv4RawSocketFactory::GetTypeId (void)
 {

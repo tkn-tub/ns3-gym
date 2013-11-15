@@ -38,7 +38,8 @@ NS_LOG_COMPONENT_DEFINE ("RttEstimator");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (RttEstimator);
+NS_OBJECT_ENSURE_REGISTERED (RttEstimator)
+  ;
 
 TypeId 
 RttEstimator::GetTypeId (void)
@@ -231,7 +232,8 @@ void RttEstimator::Reset ()
 //-----------------------------------------------------------------------------
 // Mean-Deviation Estimator
 
-NS_OBJECT_ENSURE_REGISTERED (RttMeanDeviation);
+NS_OBJECT_ENSURE_REGISTERED (RttMeanDeviation)
+  ;
 
 TypeId 
 RttMeanDeviation::GetTypeId (void)

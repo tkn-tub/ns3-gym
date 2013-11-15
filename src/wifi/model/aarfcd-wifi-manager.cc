@@ -53,7 +53,8 @@ struct AarfcdWifiRemoteStation : public WifiRemoteStation
   bool m_haveASuccess;
 };
 
-NS_OBJECT_ENSURE_REGISTERED (AarfcdWifiManager);
+NS_OBJECT_ENSURE_REGISTERED (AarfcdWifiManager)
+  ;
 
 TypeId
 AarfcdWifiManager::GetTypeId (void)

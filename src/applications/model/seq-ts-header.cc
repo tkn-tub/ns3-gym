@@ -28,7 +28,8 @@ NS_LOG_COMPONENT_DEFINE ("SeqTsHeader");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (SeqTsHeader);
+NS_OBJECT_ENSURE_REGISTERED (SeqTsHeader)
+  ;
 
 SeqTsHeader::SeqTsHeader ()
   : m_seq (0),

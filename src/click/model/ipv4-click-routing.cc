@@ -45,7 +45,8 @@ namespace ns3 {
 #define INTERFACE_ID_FIRST 1
 #define INTERFACE_ID_FIRST_DROP 33
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv4ClickRouting);
+NS_OBJECT_ENSURE_REGISTERED (Ipv4ClickRouting)
+  ;
 
 std::map < simclick_node_t *, Ptr<Ipv4ClickRouting> > Ipv4ClickRouting::m_clickInstanceFromSimNode;
 

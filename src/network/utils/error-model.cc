@@ -77,7 +77,8 @@ NS_LOG_COMPONENT_DEFINE ("ErrorModel");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (ErrorModel);
+NS_OBJECT_ENSURE_REGISTERED (ErrorModel)
+  ;
 
 TypeId ErrorModel::GetTypeId (void)
 { 
@@ -145,7 +146,8 @@ ErrorModel::IsEnabled (void) const
 // RateErrorModel
 //
 
-NS_OBJECT_ENSURE_REGISTERED (RateErrorModel);
+NS_OBJECT_ENSURE_REGISTERED (RateErrorModel)
+  ;
 
 TypeId RateErrorModel::GetTypeId (void)
 { 
@@ -284,7 +286,8 @@ RateErrorModel::DoReset (void)
 // BurstErrorModel
 //
 
-NS_OBJECT_ENSURE_REGISTERED (BurstErrorModel);
+NS_OBJECT_ENSURE_REGISTERED (BurstErrorModel)
+  ;
 
 TypeId BurstErrorModel::GetTypeId (void)
 {
@@ -412,7 +415,8 @@ BurstErrorModel::DoReset (void)
 // ListErrorModel
 //
 
-NS_OBJECT_ENSURE_REGISTERED (ListErrorModel);
+NS_OBJECT_ENSURE_REGISTERED (ListErrorModel)
+  ;
 
 TypeId ListErrorModel::GetTypeId (void)
 { 
@@ -481,7 +485,8 @@ ListErrorModel::DoReset (void)
 // ReceiveListErrorModel
 //
 
-NS_OBJECT_ENSURE_REGISTERED (ReceiveListErrorModel);
+NS_OBJECT_ENSURE_REGISTERED (ReceiveListErrorModel)
+  ;
 
 TypeId ReceiveListErrorModel::GetTypeId (void)
 { 

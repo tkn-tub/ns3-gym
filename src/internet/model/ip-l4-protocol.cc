@@ -29,7 +29,8 @@ NS_LOG_COMPONENT_DEFINE ("IpL4Protocol");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (IpL4Protocol);
+NS_OBJECT_ENSURE_REGISTERED (IpL4Protocol)
+  ;
 
 TypeId 
 IpL4Protocol::GetTypeId (void)
