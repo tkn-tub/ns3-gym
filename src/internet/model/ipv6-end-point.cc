@@ -27,7 +27,8 @@
 namespace ns3
 {
 
-NS_LOG_COMPONENT_DEFINE ("Ipv6EndPoint");
+NS_LOG_COMPONENT_DEFINE ("Ipv6EndPoint")
+  ;
 
 Ipv6EndPoint::Ipv6EndPoint (Ipv6Address addr, uint16_t port)
   : m_localAddr (addr),

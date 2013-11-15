@@ -26,7 +26,8 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("ChannelList");
+NS_LOG_COMPONENT_DEFINE ("ChannelList")
+  ;
 
 /**
  * \brief private implementation detail of the ChannelList API.

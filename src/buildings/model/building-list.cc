@@ -30,7 +30,8 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("BuildingList");
+NS_LOG_COMPONENT_DEFINE ("BuildingList")
+  ;
 
 /**
  * \brief private implementation detail of the BuildingList API.

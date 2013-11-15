@@ -25,7 +25,8 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("MacStatsCalculator");
+NS_LOG_COMPONENT_DEFINE ("MacStatsCalculator")
+  ;
 
 NS_OBJECT_ENSURE_REGISTERED (MacStatsCalculator)
   ;

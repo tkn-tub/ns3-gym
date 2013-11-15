@@ -28,7 +28,8 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("FileAggregator");
+NS_LOG_COMPONENT_DEFINE ("FileAggregator")
+  ;
 
 NS_OBJECT_ENSURE_REGISTERED (FileAggregator)
   ;

@@ -34,7 +34,8 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("TypeId");
+NS_LOG_COMPONENT_DEFINE ("TypeId")
+  ;
 
 // IidManager needs to be in ns3 namespace for NS_ASSERT and NS_LOG
 // to find g_log

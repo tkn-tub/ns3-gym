@@ -28,7 +28,8 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("LteGlobalPathlossDatabase");
+NS_LOG_COMPONENT_DEFINE ("LteGlobalPathlossDatabase")
+  ;
 
 
 LteGlobalPathlossDatabase::~LteGlobalPathlossDatabase (void)

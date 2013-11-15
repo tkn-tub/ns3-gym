@@ -38,7 +38,8 @@
 namespace ns3 
 {
 
-NS_LOG_COMPONENT_DEFINE ("Ping6Application");
+NS_LOG_COMPONENT_DEFINE ("Ping6Application")
+  ;
 
 NS_OBJECT_ENSURE_REGISTERED (Ping6)
   ;

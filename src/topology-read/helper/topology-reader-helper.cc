@@ -28,7 +28,8 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("TopologyReaderHelper");
+NS_LOG_COMPONENT_DEFINE ("TopologyReaderHelper")
+  ;
 
 TopologyReaderHelper::TopologyReaderHelper ()
 {

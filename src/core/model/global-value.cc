@@ -31,7 +31,8 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("GlobalValue");
+NS_LOG_COMPONENT_DEFINE ("GlobalValue")
+  ;
 
 GlobalValue::GlobalValue (std::string name, std::string help,
                           const AttributeValue &initialValue,

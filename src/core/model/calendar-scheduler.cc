@@ -28,7 +28,8 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("CalendarScheduler");
+NS_LOG_COMPONENT_DEFINE ("CalendarScheduler")
+  ;
 
 NS_OBJECT_ENSURE_REGISTERED (CalendarScheduler)
   ;

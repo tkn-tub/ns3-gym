@@ -30,7 +30,8 @@
 namespace ns3
 {
 
-NS_LOG_COMPONENT_DEFINE ("NdiscCache");
+NS_LOG_COMPONENT_DEFINE ("NdiscCache")
+  ;
 
 NS_OBJECT_ENSURE_REGISTERED (NdiscCache)
   ;

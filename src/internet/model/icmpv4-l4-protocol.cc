@@ -11,7 +11,8 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("Icmpv4L4Protocol");
+NS_LOG_COMPONENT_DEFINE ("Icmpv4L4Protocol")
+  ;
 
 NS_OBJECT_ENSURE_REGISTERED (Icmpv4L4Protocol)
   ;

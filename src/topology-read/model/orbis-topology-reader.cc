@@ -30,7 +30,8 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("OrbisTopologyReader");
+NS_LOG_COMPONENT_DEFINE ("OrbisTopologyReader")
+  ;
 
 NS_OBJECT_ENSURE_REGISTERED (OrbisTopologyReader)
   ;

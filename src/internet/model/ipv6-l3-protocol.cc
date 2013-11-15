@@ -52,7 +52,8 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (Ipv6L3Protocol)
   ;
 
-NS_LOG_COMPONENT_DEFINE ("Ipv6L3Protocol");
+NS_LOG_COMPONENT_DEFINE ("Ipv6L3Protocol")
+  ;
 
 const uint16_t Ipv6L3Protocol::PROT_NUMBER = 0x86DD;
 

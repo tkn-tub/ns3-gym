@@ -24,7 +24,8 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("Ipv6EndPointDemux");
+NS_LOG_COMPONENT_DEFINE ("Ipv6EndPointDemux")
+  ;
 
 Ipv6EndPointDemux::Ipv6EndPointDemux ()
   : m_ephemeral (49152),
