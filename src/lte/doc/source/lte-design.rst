@@ -1,5 +1,5 @@
 .. include:: replace.txt
-
+.. highlight:: cpp
 
 ++++++++++++++++++++
 Design Documentation
@@ -477,7 +477,8 @@ The subframe is divided into control and data part as described in Figure :ref:`
 .. _fig-lte-subframe-structure:
 
 .. figure:: figures/lte-subframe-structure.*
-   :width: 50px
+   :align: center
+   :width: 300px
 
    LTE subframe division.
 
@@ -1259,6 +1260,8 @@ where :math:`T_{j}(t)` is the past throughput performance perceived by the user 
 RBG k, the FD scheduler selects the UE :math:`j` that maximizes the product of the frequency domain 
 metric (:math:`Msch`, :math:`MCoI`) by weight :math:`W[n]`. This strategy will guarantee the throughput of lower
 quality UE tend towards the TBR. 
+
+::
 
   Config::SetDefault ("ns3::PfFfMacScheduler::HarqEnabled", BooleanValue (false));
 

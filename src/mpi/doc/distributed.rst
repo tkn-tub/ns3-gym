@@ -68,6 +68,7 @@ Running Distributed Simulations
 
 Prerequisites
 +++++++++++++
+.. highlight:: bash
 
 Ensure that MPI is installed, as well as mpic++. In Ubuntu repositories, 
 these are openmpi-bin, openmpi-common, openmpi-doc, libopenmpi-dev. In 
@@ -78,31 +79,33 @@ Note:
 There is a conflict on some Fedora systems between libotf and openmpi. A 
 possible "quick-fix" is to yum remove libotf before installing openmpi. 
 This will remove conflict, but it will also remove emacs. Alternatively, 
-these steps could be followed to resolve the conflict:::
+these steps could be followed to resolve the conflict:
 
-    1) Rename the tiny otfdump which emacs says it needs:
+    1) Rename the tiny otfdump which emacs says it needs::
 
-         mv /usr/bin/otfdump /usr/bin/otfdump.emacs-version
+         $ mv /usr/bin/otfdump /usr/bin/otfdump.emacs-version
 
-    2) Manually resolve openmpi dependencies:
+    2) Manually resolve openmpi dependencies::
 
-         sudo yum install libgfortran libtorque numactl
+         $ sudo yum install libgfortran libtorque numactl
 
     3) Download rpm packages: 
+
+       .. sourcecode:: text
 
          openmpi-1.3.1-1.fc11.i586.rpm
          openmpi-devel-1.3.1-1.fc11.i586.rpm
          openmpi-libs-1.3.1-1.fc11.i586.rpm
          openmpi-vt-1.3.1-1.fc11.i586.rpm
 
-         from
+       from http://mirrors.kernel.org/fedora/releases/11/Everything/i386/os/Packages/
 
-         http://mirrors.kernel.org/fedora/releases/11/Everything/i386/os/Packages/
+    4) Force the packages in::
 
-    4) Force the packages in:
-
-         sudo rpm -ivh --force openmpi-1.3.1-1.fc11.i586.rpm
-         openmpi-libs-1.3.1-1.fc11.i586.rpm openmpi-devel-1.3.1-1.fc11.i586.rpm
+         $ sudo rpm -ivh --force \
+         openmpi-1.3.1-1.fc11.i586.rpm \
+         openmpi-libs-1.3.1-1.fc11.i586.rpm \
+         openmpi-devel-1.3.1-1.fc11.i586.rpm \
          openmpi-vt-1.3.1-1.fc11.i586.rpm
 
 Also, it may be necessary to add the openmpi bin directory to PATH in order to
@@ -111,17 +114,17 @@ these executables can be used. Finally, if openmpi complains about the inability
 to open shared libraries, such as libmpi_cxx.so.0, it may be necessary to add
 the openmpi lib directory to LD_LIBRARY_PATH.
 
-Here is an example of setting up PATH and LD_LIBRARY_PATH using a bash shell:::
+Here is an example of setting up PATH and LD_LIBRARY_PATH using a bash shell:
 
-     For a 32-bit Linux distribution:
+    * For a 32-bit Linux distribution::
          
-          export PATH=$PATH:/usr/lib/openmpi/bin
-          export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/openmpi/lib      
+         $ export PATH=$PATH:/usr/lib/openmpi/bin
+         $ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/openmpi/lib      
     
-     For a 64-bit Linux distribution:
+     For a 64-bit Linux distribution::
      
-          export PATH=$PATH:/usr/lib64/openmpi/bin
-          export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib64/openmpi/lib          
+         $ export PATH=$PATH:/usr/lib64/openmpi/bin
+         $ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib64/openmpi/lib          
 
 These lines can be added into ~/.bash_profile or ~/.bashrc to avoid having to
 retype them when a new shell is opened.
@@ -131,28 +134,30 @@ Building and Running Examples
 
 If you already built |ns3| without MPI enabled, you must re-build:::
 
-    ./waf distclean
+    $ ./waf distclean
 
 Configure |ns3| with the --enable-mpi option:::
 
-    ./waf -d debug configure --enable-examples --enable-tests --enable-mpi
+    $ ./waf -d debug configure --enable-examples --enable-tests --enable-mpi
 
 Ensure that MPI is enabled by checking the optional features shown from the
 output of configure.
 
 Next, build |ns3|:::
 
-    ./waf
+    $ ./waf
 
 After building |ns3| with mpi enabled, the example programs are now ready to run
 with mpirun. Here are a few examples (from the root |ns3| directory):::
 
-    mpirun -np 2 ./waf --run simple-distributed
-    mpirun -np 4 -machinefile mpihosts ./waf --run 'nms-udp-nix --LAN=2 --CN=4 --nix=1'
+    $ mpirun -np 2 ./waf --run simple-distributed
+    $ mpirun -np 4 -machinefile mpihosts ./waf --run 'nms-udp-nix --LAN=2 --CN=4 --nix=1'
             
 The np switch is the number of logical processors to use. The machinefile switch
 is which machines to use. In order to use machinefile, the target file must
-exist (in this case mpihosts). This can simply contain something like:::
+exist (in this case mpihosts). This can simply contain something like:
+
+.. sourcecode:: text
 
     localhost
     localhost
@@ -164,12 +169,13 @@ Or if you have a cluster of machines, you can name them.
 NOTE: Some users have experienced issues using mpirun and waf together. An
 alternative way to run distributed examples is shown below:::
 
-    ./waf shell
-    cd build/debug
-    mpirun -np 2 src/mpi/examples/simple-distributed
+    $ ./waf shell
+    $ cd build/debug
+    $ mpirun -np 2 src/mpi/examples/simple-distributed
 
 Creating custom topologies
 ++++++++++++++++++++++++++
+.. highlight:: cpp
 
 The example programs in src/mpi/examples give a good idea of how to create different
 topologies for distributed simulation. The main points are assigning system ids

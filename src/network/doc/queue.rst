@@ -85,7 +85,7 @@ A typical usage pattern is to create a device helper and to configure
 the queue type and attributes from the helper, such as this example
 from ``src/network/examples/red-tests.cc``:
 
-:: 
+.. sourcecode:: cpp
 
   PointToPointHelper p2p;
 
@@ -134,7 +134,7 @@ The ns-3 ascii trace helpers used by many of the NetDevices will hook
 the Enqueue, Dequeue, and Drop traces of these queues and print out 
 trace statements, such as the following from ``examples/udp/udp-echo.cc``:
 
-::
+.. sourcecode:: text
 
   + 2 /NodeList/0/DeviceList/1/$ns3::CsmaNetDevice/TxQueue/Enqueue ns3::EthernetHeader 
   ( length/type=0x806, source=00:00:00:00:00:01, destination=ff:ff:ff:ff:ff:ff) 

@@ -1,4 +1,5 @@
 .. include:: replace.txt
+.. highlight:: cpp
 
 Internet Stack
 --------------
@@ -119,8 +120,8 @@ In class Ipv4L3Protocol, one method described below is ``Receive ()``:::
        *    - implement a per-NetDevice ARP cache
        *    - send back arp replies on the right device
        */
-      void Receive( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t protocol, 
-    const Address &from, const Address &to, NetDevice::PacketType packetType);
+     void Receive( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t protocol, 
+     const Address &from, const Address &to, NetDevice::PacketType packetType);
 
 First, note that the ``Receive ()`` function has a matching signature to the
 ReceiveCallback in the class :cpp:class:`Node`. This function pointer is
@@ -129,7 +130,7 @@ The actual registration is done
 with a statement such as follows:::
 
      RegisterProtocolHandler ( MakeCallback (&Ipv4Protocol::Receive, ipv4),
-        Ipv4L3Protocol::PROT_NUMBER, 0);
+                               Ipv4L3Protocol::PROT_NUMBER, 0);
 
 The Ipv4L3Protocol object is aggregated to the Node; there is only one such
 Ipv4L3Protocol object. Higher-layer protocols that have a packet to send down to
@@ -228,7 +229,8 @@ callback is invoked by the transport protocol when data is available.
 This callback is specified as follows:::
 
   void Socket::SetRecvCallback (Callback<void, Ptr<Socket>, 
-    Ptr<Packet>, const Address&> receivedData);
+                                Ptr<Packet>,
+                                const Address&> receivedData);
 
 The data being received is conveyed in the Packet data buffer.  An example
 usage is in class :cpp:class:`PacketSink`:::

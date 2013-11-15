@@ -1,4 +1,5 @@
 .. include:: replace.txt
+.. highlight:: cpp
 
 Wimax NetDevice
 ---------------
@@ -143,8 +144,8 @@ following code from ``src/wimax/examples/wimax-multicast.cc`` shows how this is
 configured from a helper level:::
 
  ServiceFlow MulticastServiceFlow = wimax.CreateServiceFlow (ServiceFlow::SF_DIRECTION_DOWN,
-                                                              ServiceFlow::SF_TYPE_UGS,
-                                                              MulticastClassifier);
+                                                             ServiceFlow::SF_TYPE_UGS,
+                                                             MulticastClassifier);
 
   bs->GetServiceFlowManager ()->AddMulticastServiceFlow (MulticastServiceFlow, WimaxPhy::MODULATION_TYPE_QPSK_12);
 
@@ -505,7 +506,9 @@ scheme.
 
 The names of the files should respect the following format: modulation0.txt for
 modulation 0, modulation1.txt for modulation 1 and so on...  The file format
-should be as follows::
+should be as follows:
+
+.. sourcecode:: text
 
     SNR_value1   BER  Blc_ER  STANDARD_DEVIATION  CONFIDENCE_INTERVAL1  CONFIDENCE_INTERVAL2
     SNR_value2   BER  Blc_ER  STANDARD_DEVIATION  CONFIDENCE_INTERVAL1  CONFIDENCE_INTERVAL2

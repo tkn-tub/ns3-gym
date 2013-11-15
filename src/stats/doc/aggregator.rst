@@ -1,4 +1,5 @@
 .. include:: replace.txt
+.. highlight:: cpp
 
 .. heading hierarchy:
    ************* Section (#.#)

@@ -1,4 +1,5 @@
 .. include:: replace.txt
+.. highlight:: cpp
 
 .. heading hierarchy:
    ************* Section (#.#)
@@ -46,13 +47,17 @@ trace source are as follows:
 * Probes register a name in the ns3::Config namespace (using
   ``Names::Add ()``) so that other objects may refer to them.
 * Probes provide a static method that allows one to manipulate a Probe
-  by name, such as what is done in ns2measure [Cic06]_ ::
+  by name, such as what is done in ns2measure [Cic06]_
 
-   Stat::put ("my_metric", ID, sample);
+  ::
 
-  The ns-3 equivalent of the above ns2measure code is, e.g.::
+    Stat::put ("my_metric", ID, sample);
 
-  DoubleProbe::SetValueByPath ("/path/to/probe", sample);
+  The ns-3 equivalent of the above ns2measure code is, e.g.
+
+  ::
+
+    DoubleProbe::SetValueByPath ("/path/to/probe", sample);
 
 Creation
 ########
@@ -245,23 +250,23 @@ particular, two ways of emitting data are shown:
 
 1. through a traced variable hooked to one Probe: 
 
-::
+   ::
   
-    TracedValue<double> m_counter;  // normally this would be integer type
+     TracedValue<double> m_counter;  // normally this would be integer type
   
 2. through a counter whose value is posted to a second Probe, referenced by its name in the Config system:
 
-::
+  ::
 
-  void
-  Emitter::Count (void)
-  {
-    NS_LOG_FUNCTION (this);
-    NS_LOG_DEBUG ("Counting at " << Simulator::Now ().GetSeconds ());
-    m_counter += 1.0;
-    DoubleProbe::SetValueByPath ("/Names/StaticallyAccessedProbe", m_counter);
-    Simulator::Schedule (Seconds (m_var->GetValue ()), &Emitter::Count, this);
-  }
+    void
+    Emitter::Count (void)
+    {
+      NS_LOG_FUNCTION (this);
+      NS_LOG_DEBUG ("Counting at " << Simulator::Now ().GetSeconds ());
+      m_counter += 1.0;
+      DoubleProbe::SetValueByPath ("/Names/StaticallyAccessedProbe", m_counter);
+      Simulator::Schedule (Seconds (m_var->GetValue ()), &Emitter::Count, this);
+    }
 
 Let's look at the Probe more carefully.  Probes can receive their values
 in a multiple ways:
@@ -303,7 +308,7 @@ shown below.
 
 Case 0):
 
-::
+  ::
 
     // The below shows typical functionality without a probe
     // (connect a sink function to a trace source)
@@ -314,7 +319,7 @@ Case 0):
 
 case 1):
 
-::
+  ::
 
     // 
     // Probe1 will be hooked directly to the Emitter trace source object
@@ -331,7 +336,7 @@ case 1):
 
 case 2):
 
-::
+  ::
 
     // 
     // Probe2 will be hooked to the Emitter trace source object by 
@@ -347,7 +352,7 @@ case 2):
   
 case 4) (case 3 is not shown in this example):
 
-::
+  ::
 
     // 
     // Probe3 will be called by the emitter directly through the 
@@ -361,12 +366,14 @@ case 4) (case 3 is not shown in this example):
 And finally, the example shows how the probes can be hooked to
 generate output:
 
-::
+  ::
 
     // The probe itself should generate output.  The context that we provide
     // to this probe (in this case, the probe name) will help to disambiguate
     // the source of the trace
-    connected = probe3->TraceConnect ("Output", "/Names/Probes/StaticallyAccessedProbe/Output", MakeCallback (&NotifyViaProbe));
+    connected = probe3->TraceConnect ("Output",
+                                      "/Names/Probes/StaticallyAccessedProbe/Output",
+                                      MakeCallback (&NotifyViaProbe));
     NS_ASSERT_MSG (connected, "Trace source not .. connected to probe3 Output");
   
 The following callback is hooked to the Probe in this example for 
@@ -390,21 +397,18 @@ The IPv4 packet plot example is based on the fifth.cc example from the |ns3|
 Tutorial.  It can be found in 
 ``src/stats/examples/ipv4-packet-plot-example.cc``.
 
-::
+.. sourcecode:: text
 
-    // ===========================================================================
-    //
-    //         node 0                 node 1
-    //   +----------------+    +----------------+
-    //   |    ns-3 TCP    |    |    ns-3 TCP    |
-    //   +----------------+    +----------------+
-    //   |    10.1.1.1    |    |    10.1.1.2    |
-    //   +----------------+    +----------------+
-    //   | point-to-point |    | point-to-point |
-    //   +----------------+    +----------------+
-    //           |                     |
-    //           +---------------------+
-
+          node 0                 node 1
+    +----------------+    +----------------+
+    |    ns-3 TCP    |    |    ns-3 TCP    |
+    +----------------+    +----------------+
+    |    10.1.1.1    |    |    10.1.1.2    |
+    +----------------+    +----------------+
+    | point-to-point |    | point-to-point |
+    +----------------+    +----------------+
+            |                     |
+            +---------------------+
 
 
 We'll just look at the Probe, as it illustrates that Probes may also

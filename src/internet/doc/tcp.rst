@@ -1,4 +1,5 @@
 .. include:: replace.txt
+.. highlight:: cpp
 
 TCP models in ns-3
 ------------------
@@ -41,7 +42,9 @@ This implementation was substantially rewritten by Adriam Tam for ns-3.10.
 The model is a full TCP, in that it is bidirectional and attempts to model the
 connection setup and close logic. 
 
-The implementation of TCP is contained in the following files:::
+The implementation of TCP is contained in the following files:
+
+.. sourcecode:: text
 
     src/internet/model/tcp-header.{cc,h}
     src/internet/model/tcp-l4-protocol.{cc,h}
@@ -186,9 +189,11 @@ Configuring and Downloading
 
 Using the ``build.py`` script in ns-3-allinone directory, NSC will be enabled by
 default unless the platform does not support it. To disable it when building
-|ns3|, type:::
+|ns3|, type:
 
-./waf configure --enable-examples --enable-tests --disable-nsc
+.. sourcecode:: bash
+
+  $ ./waf configure --enable-examples --enable-tests --disable-nsc
 
 Building and validating
 +++++++++++++++++++++++
@@ -197,12 +202,16 @@ Building |ns3| with nsc support is the same as building it without; no
 additional arguments are needed for waf. Building nsc may take some time
 compared to |ns3|; it is interleaved in the |ns3| building process.
 
-Try running the following ns-3 test suite:::  
+Try running the following ns-3 test suite:
 
-    ./test.py -s ns3-tcp-interoperability
+.. sourcecode:: bash
+
+    $ ./test.py -s ns3-tcp-interoperability
 
 If NSC has been successfully built, the following test should show up 
-in the results:::
+in the results:
+
+.. sourcecode:: text
 
     PASS TestSuite ns3-tcp-interoperability
 
@@ -211,10 +220,12 @@ This confirms that NSC is ready to use.
 Usage
 +++++
 
-There are a few example files.  Try::
+There are a few example files.  Try:
 
-    ./waf --run tcp-nsc-zoo
-    ./waf --run tcp-nsc-lfn
+.. sourcecode:: bash
+
+    $ ./waf --run tcp-nsc-zoo
+    $ ./waf --run tcp-nsc-lfn
 
 These examples will deposit some ``.pcap`` files in your directory,
 which can be examined by tcpdump or wireshark.
@@ -240,9 +251,11 @@ to the remaining nodes.  It is important that this function be called
 Which stacks are available to use? Presently, the focus has been on
 Linux 2.6.18 and Linux 2.6.26 stacks for |ns3|. To see which stacks
 were built, one can execute the following find command at the |ns3| top level
-directory:::
+directory:
 
-    ~/ns-3.10> find nsc -name "*.so" -type f 
+.. sourcecode:: bash
+
+    $ find nsc -name "*.so" -type f 
     nsc/linux-2.6.18/liblinux2.6.18.so
     nsc/linux-2.6.26/liblinux2.6.26.so
 
@@ -272,10 +285,10 @@ can see the following configuration:::
 
 These additional configuration variables are not available to native |ns3| TCP.
 
-Also note that default values for TCP attributes in |ns3| TCP may differ from the nsc TCP implementation.  Specifically in |ns3|::: 
+Also note that default values for TCP attributes in |ns3| TCP may differ from the nsc TCP implementation.  Specifically in |ns3|:
 
-		1) TCP default MSS is 536
-		2) TCP Delayed Ack count is 2 
+  1) TCP default MSS is 536
+  2) TCP Delayed Ack count is 2 
 		
 Therefore when making comparisons between results obtained using nsc and |ns3| TCP, care must be taken to ensure these values are set appropriately.  See /examples/tcp/tcp-nsc-comparision.cc for an example.
 

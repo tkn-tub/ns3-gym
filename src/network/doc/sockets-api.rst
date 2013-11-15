@@ -1,4 +1,5 @@
 .. include:: replace.txt
+.. highlight:: cpp
 
 .. _Sockets-APIs:
 
@@ -104,14 +105,14 @@ Using sockets
 =============
 
 Below is a typical sequence of socket calls for a TCP client in a
-real implementation:
+real implementation::
 
-* ``sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);``
-* ``bind(sock, ...);``
-* ``connect(sock, ...);``
-* ``send(sock, ...);``
-* ``recv(sock, ...);``
-* ``close(sock);``
+    sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
+    bind(sock, ...);
+    connect(sock, ...);
+    send(sock, ...);
+    recv(sock, ...);
+    close(sock);
 
 There are analogs to all of these calls in ns-3, but we will focus on  
 two aspects here.  First, most usage of sockets in real systems 
@@ -129,14 +130,14 @@ An application can also ask the socket how much space is available
 by calling :cpp:func:`ns3::Socket::GetTxAvailable`.  A typical sequence 
 of events for sending data (ignoring connection setup) might be:::
 
-    * ``SetSendCallback (MakeCallback(&HandleSendCallback));``
-    * ``Send ();``
-    * ``Send ();``
-    * ...
-    * Send fails because buffer is full
-    * wait until :cpp:func:`HandleSendCallback` is called
-    * :cpp:func:`HandleSendCallback` is called by socket, since space now available
-    * ``Send (); // Start sending again``
+    SetSendCallback (MakeCallback(&HandleSendCallback));
+    Send ();
+    Send ();
+    ...
+    // Send fails because buffer is full
+    // Wait until HandleSendCallback is called
+    // HandleSendCallback is called by socket, since space now available
+    Send (); // Start sending again
 
 Similarly, on the receive side, the socket user does not block on
 a call to ``recv()``.  Instead, the application sets a callback

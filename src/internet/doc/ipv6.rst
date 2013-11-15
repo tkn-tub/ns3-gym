@@ -1,4 +1,5 @@
 .. include:: replace.txt
+.. highlight:: cpp
 
 IPv6
 ----
@@ -21,7 +22,7 @@ in the directory ``src/internet``.
 
 The implementation of IPv6 is contained in the following files:
 
-::
+.. sourcecode:: text
 
     src/internet/model/icmpv6-header.{cc,h}
     src/internet/model/icmpv6-l4-protocol.{cc,h}
@@ -56,7 +57,7 @@ The implementation of IPv6 is contained in the following files:
 
 Also some helpers are involved with IPv6:
 
-::
+.. sourcecode:: text
 
     src/internet/helper/internet-stack-helper.{cc,h}
     src/internet/helper/ipv6-address-helper.{cc,h}

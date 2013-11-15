@@ -1,4 +1,5 @@
 .. include:: replace.txt
+.. highlight:: bash
 
 BRITE Integration
 ------------------
@@ -30,9 +31,7 @@ the Waxman model or the Barbasi-Albert model.  BRITE interconnects these separat
 router topologies as specified by the AS level topology.  Once the hierarchical 
 topology is constructed, it is flattened into a large router level topology.
 
-Further information can be found in the BRITE user manual:::
-
-	http://www.cs.bu.edu/brite/publications/usermanual.pdf
+Further information can be found in the BRITE user manual: http://www.cs.bu.edu/brite/publications/usermanual.pdf
 
 Model Description
 *****************
@@ -119,14 +118,17 @@ By enabling the verbose parameter, the example will print out the node and
 edge information in a similar format to standard BRITE output. There are 
 many other command-line parameters including confFile, tracing, and nix, described below:
    
-   confFile:    A BRITE configuration file. Many different BRITE configuration 
-                file examples exist in the src/brite/examples/conf_files directory, for 
-                example, RTBarabasi20.conf and RTWaxman.conf. Please refer to 
-                the conf_files directory for more examples.
+  confFile
+    A BRITE configuration file. Many different BRITE configuration 
+    file examples exist in the src/brite/examples/conf_files directory, for 
+    example, RTBarabasi20.conf and RTWaxman.conf. Please refer to 
+    the conf_files directory for more examples.
 
-   tracing:     Enables ascii tracing.
+  tracing
+    Enables ascii tracing.
 
-   nix:         Enables nix-vector routing. Global routing is used by default.
+  nix
+    Enables nix-vector routing. Global routing is used by default.
 
 The generic BRITE example also support visualization using pyviz, assuming
 python bindings in ns-3 are enabled:::
@@ -137,7 +139,7 @@ Simulations involving BRITE can also be used with MPI.  The total number of MPI 
 passed to the BRITE topology helper where a modulo divide is used to assign the nodes for each 
 AS to a MPI instance.  An example can be found in src/brite/examples:::
 
-	$ mpirun -np 2 ./waf --run brite-MPI-example
+  $ mpirun -np 2 ./waf --run brite-MPI-example
 	
 Please see the ns-3 MPI documentation for information on setting up MPI with ns-3.
 

@@ -1,4 +1,5 @@
 .. include:: replace.txt
+.. highlight:: cpp
 
 Routing overview
 ----------------
@@ -137,7 +138,7 @@ For instance, this scheduling call will cause the tables to be rebuilt
 at time 5 seconds:::
 
   Simulator::Schedule (Seconds (5),
-    &Ipv4GlobalRoutingHelper::RecomputeRoutingTables);
+                       &Ipv4GlobalRoutingHelper::RecomputeRoutingTables);
 
 
 There are two attributes that govern the behavior. The first is
@@ -338,9 +339,9 @@ to a node:::
 
     void 
     Ipv4StaticRouting::AddMulticastRoute (Ipv4Address origin,
-                              Ipv4Address group,
-                              uint32_t inputInterface,
-                              std::vector<uint32_t> outputInterfaces);
+                                          Ipv4Address group,
+                                          uint32_t inputInterface,
+                                          std::vector<uint32_t> outputInterfaces);
 
 A multicast route must specify an origin IP address, a multicast group and an
 input network interface index as conditions and provide a vector of output

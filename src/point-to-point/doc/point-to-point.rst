@@ -1,4 +1,5 @@
 .. include:: replace.txt
+.. highlight:: cpp
 
 PointToPoint NetDevice
 ----------------------
@@ -119,7 +120,7 @@ the device MAC hooks.
 When a packet is sent to the Point-to-Point net device for transmission it
 always passes through the transmit queue. The transmit queue in the
 PointToPointNetDevice inherits from Queue, and therefore inherits three trace
-sources:::
+sources:
 
 * An Enqueue operation source (see ns3::Queue::m_traceEnqueue);
 * A Dequeue operation source (see ns3::Queue::m_traceDequeue);

@@ -1,4 +1,5 @@
 .. include:: replace.txt
+.. highlight:: bash
 
 
 +++++++++++++++++++++
@@ -12,20 +13,20 @@ Overview
 To test and validate the ns-3 LTE module, several test suites are provided which are integrated with the ns-3 test framework.
 To run them, you need to have configured the build of the simulator in this way::
 
-    ./waf configure --enable-tests --enable-modules=lte --enable-examples
-    ./test.py
+    $ ./waf configure --enable-tests --enable-modules=lte --enable-examples
+    $ ./test.py
 
 The above will run not only the test suites belonging to the LTE module, but also those belonging to all the other ns-3 modules on which the LTE module depends. See the ns-3 manual for generic information on the testing framework.
 
 You can get a more detailed report in HTML format in this way::
 
-    ./test.py -w results.html
+    $ ./test.py -w results.html
 
 After the above command has run, you can view the detailed result for each test by opening the file ``results.html`` with a web browser. 
 
 You can run each test suite separately using this command::
 
-    ./test.py -s test-suite-name
+    $ ./test.py -s test-suite-name
 
 For more details about ``test.py`` and the ns-3 testing framework, please refer to the ns-3 manual.
 

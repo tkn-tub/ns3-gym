@@ -1,11 +1,11 @@
 .. include:: replace.txt
+.. highlight:: cpp
 
 Emu NetDevice
 -------------
 
 **Note:** The ``EmuNetDevice`` is being deprecated as of ns-3.17.  The
-``EmuFdNetDeviceHelper`` class replaces this functionality and API
-entirely.
+:doc:`fd-net-device` and ``EmuFdNetDeviceHelper`` class replaces this functionality and API entirely.
 
 Behavior
 ********
