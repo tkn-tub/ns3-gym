@@ -32,24 +32,33 @@
 
 using namespace ns3;
 
-/**
- * Sample simulation script for LTE+EPC. It instantiates several eNodeB,
- * attaches one UE per eNodeB starts a flow for each UE to  and from a remote host.
- * It also  starts yet another flow between each UE pair.
+/*
+ * Simple simulation program using the emulated EPC.
+ * For the LTE radio part, it simulates a simple linear topology with
+ * a fixed number of eNBs spaced at equal distance, and a fixed number
+ * of UEs per each eNB, located at the same position of the eNB. 
+ * For the EPC, it uses EmuEpcHelper to realize the S1-U connection
+ * via a real link. 
  */
+
+
+
+
 NS_LOG_COMPONENT_DEFINE ("EpcFirstExample");
 int
 main (int argc, char *argv[])
 {
 
-  uint16_t numberOfNodes = 1;
+  uint16_t nEnbs = 1;
+  uint16_t nUesPerEnb = 1;
   double simTime = 10.1;
-  double distance = 60.0;
+  double distance = 1000.0;
   double interPacketInterval = 1000;
 
   // Command line arguments
   CommandLine cmd;
-  cmd.AddValue("numberOfNodes", "Number of eNodeBs + UE pairs", numberOfNodes);
+  cmd.AddValue("nEnbs", "Number of eNBs", nEnbs);
+  cmd.AddValue("nUesPerEnb", "Number of UEs per eNB", nUesPerEnb);
   cmd.AddValue("simTime", "Total duration of the simulation [s])", simTime);
   cmd.AddValue("distance", "Distance between eNBs [m]", distance);
   cmd.AddValue("interPacketInterval", "Inter packet interval [ms])", interPacketInterval);
@@ -63,7 +72,7 @@ main (int argc, char *argv[])
   //GlobalValue::Bind ("SimulatorImplementationType", 
   //                 StringValue ("ns3::RealtimeSimulatorImpl"));
 
- // and let's try to speed things up
+ // let's speed things up, we don't need these details for this scenario
   Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue (false));
   Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));  
 
@@ -109,12 +118,12 @@ main (int argc, char *argv[])
 
   NodeContainer ueNodes;
   NodeContainer enbNodes;
-  enbNodes.Create(numberOfNodes);
-  ueNodes.Create(numberOfNodes);
+  enbNodes.Create(nEnbs);
+  ueNodes.Create(nEnbs*nUesPerEnb);
 
   // Install Mobility Model
   Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
-  for (uint16_t i = 0; i < numberOfNodes; i++)
+  for (uint16_t i = 0; i < nEnbs; i++)
     {
       positionAlloc->Add (Vector(distance * i, 0, 0));
     }
@@ -141,22 +150,26 @@ main (int argc, char *argv[])
       ueStaticRouting->SetDefaultRoute (epcHelper->GetUeDefaultGatewayAddress (), 1);
     }
 
-  // Attach one UE per eNodeB
-  for (uint16_t i = 0; i < numberOfNodes; i++)
-      {
-        lteHelper->Attach (ueLteDevs.Get(i), enbLteDevs.Get(i));
-        // side effect: the default EPS bearer will be activated
-      }
+  lteHelper->Attach (ueLteDevs); 
+  // side effects: 1) use idle mode cell selection, 2) activate default EPS bearer
 
+  // randomize a bit start times to avoid simulation artifacts
+  // (e.g., buffer overflows due to packet transmissions happening
+  // exactly at the same time) 
+  Ptr<UniformRandomVariable> startTimeSeconds = CreateObject<UniformRandomVariable> ();
+  startTimeSeconds->SetAttribute ("Min", DoubleValue (0));
+  startTimeSeconds->SetAttribute ("Max", DoubleValue (interPacketInterval/1000.0));
 
   // Install and start applications on UEs and remote host
   uint16_t dlPort = 1234;
   uint16_t ulPort = 2000;
-  ApplicationContainer clientApps;
-  ApplicationContainer serverApps;
   for (uint32_t u = 0; u < ueNodes.GetN (); ++u)
     {
       ++ulPort;
+      ApplicationContainer clientApps;
+      ApplicationContainer serverApps;
+
+
       PacketSinkHelper dlPacketSinkHelper ("ns3::UdpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), dlPort));
       PacketSinkHelper ulPacketSinkHelper ("ns3::UdpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), ulPort));
       serverApps.Add (dlPacketSinkHelper.Install (ueNodes.Get(u)));
@@ -172,21 +185,15 @@ main (int argc, char *argv[])
 
       clientApps.Add (dlClient.Install (remoteHost));
       clientApps.Add (ulClient.Install (ueNodes.Get(u)));
+
+      serverApps.Start (Seconds (startTimeSeconds->GetValue ()));
+      clientApps.Start (Seconds (startTimeSeconds->GetValue ()));  
     }
-  serverApps.Start (Seconds (0.01));
-  clientApps.Start (Seconds (0.01));
-  lteHelper->EnableTraces ();
-  // Uncomment to enable PCAP tracing
-  //p2ph.EnablePcapAll("lena-epc-first");
 
   Simulator::Stop(Seconds(simTime));
   Simulator::Run();
 
-  /*GtkConfigStore config;
-  config.ConfigureAttributes();*/
-
   Simulator::Destroy();
   return 0;
-
 }
 
