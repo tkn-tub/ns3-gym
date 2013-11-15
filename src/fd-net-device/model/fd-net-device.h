@@ -63,7 +63,7 @@ private:
 class Node;
 
 /**
- * \defgroup fd-net-device FdNetDevice
+ * \defgroup fd-net-device File Descriptor Network Device
  * This section documents the API of the ns-3 fd-net-device module.
  * For a generic functional description, please refer to the ns-3 manual.
  */
