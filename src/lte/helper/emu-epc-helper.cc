@@ -157,7 +157,7 @@ EmuEpcHelper::DoInitialize ()
   // we use a /8 subnet so the SGW and the eNBs can talk directly to each other
   m_epcIpv4AddressHelper.SetBase ("10.0.0.0", "255.255.255.0", "0.0.0.1");  
   m_sgwIpIfaces = m_epcIpv4AddressHelper.Assign (sgwDevices);
-  m_epcIpv4AddressHelper.SetBase ("10.0.0.0", "255.0.0.0", "0.1.1.1");  
+  m_epcIpv4AddressHelper.SetBase ("10.0.0.0", "255.0.0.0", "0.0.0.101");  
   
   
   EpcHelper::DoInitialize ();
