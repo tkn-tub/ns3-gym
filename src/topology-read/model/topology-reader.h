@@ -202,6 +202,20 @@ private:
 private:
 
   /**
+   * \brief Copy constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   */
+  TopologyReader (const TopologyReader&);
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   * \returns
+   */
+  TopologyReader& operator= (const TopologyReader&);
+
+  /**
    * the name of the input file
    */
   std::string m_fileName;

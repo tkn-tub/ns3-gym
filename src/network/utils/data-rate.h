@@ -81,13 +81,66 @@ public:
    * \param bps bit/s value
    */
   DataRate (uint64_t bps);
+  /**
+   * \brief String constructor
+   *
+   * Construct a data rate from a string.  Many different unit strings are supported
+   * Supported unit strings:
+   * bps, b/s, Bps, B/s \n
+   * kbps, kb/s, Kbps, Kb/s, kBps, kB/s, KBps, KB/s, Kib/s, KiB/s \n
+   * Mbps, Mb/s, MBps, MB/s, Mib/s, MiB/s \n
+   * Gbps, Gb/s, GBps, GB/s, Gib/s, GiB/s \n
+   * 
+   * Examples:
+   * "56kbps" = 56,000 bits/s \n
+   * "128 kb/s" = 128,000 bits/s \n
+   * "8Kib/s" = 1 KiB/s = 8192 bits/s \n
+   * "1kB/s" = 8000 bits/s 
+   *
+   * \param rate string representing the desired rate
+   */
   DataRate (std::string rate);
 
+  /**
+   * \return true if this rate is less than rhs
+   *
+   * \param rhs the datarate to compare to this datarate
+   */  
   bool operator <  (const DataRate& rhs) const;
+
+  /**
+   * \return true if this rate is less than or equal to rhs
+   *
+   * \param rhs the datarate to compare to this datarate
+   */ 
   bool operator <= (const DataRate& rhs) const;
+  
+  /**
+   * \return true if this rate is greater than rhs
+   *
+   * \param rhs the datarate to compare to this datarate
+   */   
   bool operator >  (const DataRate& rhs) const;
+  
+  /**
+   * \return true if this rate is greather than or equal to rhs
+   *
+   * \param rhs the datarate to compare to this datarate
+   */   
   bool operator >= (const DataRate& rhs) const;
+  
+  /**
+   * \return true if this rate is equal to rhs
+   *
+   * \param rhs the datarate to compare to this datarate
+   */   
   bool operator == (const DataRate& rhs) const;
+  
+  /**
+   * \return true if this rate is not equal to rhs
+   *
+   * \param rhs the datarate to compare to this datarate
+   */   
   bool operator != (const DataRate& rhs) const;
 
   /**
@@ -118,7 +171,8 @@ std::istream &operator >> (std::istream &is, DataRate &rate);
  * \brief hold objects of type ns3::DataRate
  */
 
-ATTRIBUTE_HELPER_HEADER (DataRate);
+
+ATTRIBUTE_HELPER_HEADER (DataRate);   /// Macro to make help make data-rate an ns-3 attribute
 
 /**
  * \param lhs

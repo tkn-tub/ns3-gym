@@ -929,8 +929,8 @@ size_t Ipv6AddressHash::operator () (Ipv6Address const &x) const
   return lookuphash (buf, sizeof (buf), 0);
 }
 
-ATTRIBUTE_HELPER_CPP (Ipv6Address);
-ATTRIBUTE_HELPER_CPP (Ipv6Prefix);
+ATTRIBUTE_HELPER_CPP (Ipv6Address); /// Macro to make help make class an ns-3 attribute
+ATTRIBUTE_HELPER_CPP (Ipv6Prefix);  /// Macro to make help make class an ns-3 attribute
 
 } /* namespace ns3 */
 

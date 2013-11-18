@@ -65,6 +65,22 @@ public:
    */
   virtual NodeContainer Read (void);
 
+private:
+private:
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   */
+  OrbisTopologyReader (const OrbisTopologyReader&);
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   * \returns
+   */
+  OrbisTopologyReader& operator= (const OrbisTopologyReader&);
+
   // end class OrbisTopologyReader
 };
 

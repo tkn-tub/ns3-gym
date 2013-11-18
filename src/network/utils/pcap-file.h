@@ -31,12 +31,14 @@ namespace ns3 {
 class Packet;
 class Header;
 
-/*
+
+/**
+ * \brief A class representing a pcap file
+ * 
  * A class representing a pcap file.  This allows easy creation, writing and 
  * reading of files composed of stored packets; which may be viewed using
  * standard tools.
  */
-
 class PcapFile
 {
 public:

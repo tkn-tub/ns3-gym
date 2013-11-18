@@ -78,6 +78,18 @@ RocketfuelTopologyReader::~RocketfuelTopologyReader ()
 #define ROCKETFUEL_WEIGHTS_LINE \
   START "([^ \t]+)" SPACE "([^ \t]+)" SPACE "([0-9.]+)" MAYSPACE END
 
+static inline void
+PrintNodeInfo (std::string & uid, std::string & loc, bool dns, bool bb,
+               std::vector <std::string>::size_type neighListSize,
+               std::string & name, int radius)
+{
+  /* uid @loc [+] [bb] (num_neigh) [&ext] -> <nuid-1> <nuid-2> ... {-euid} ... =name[!] rn */
+  NS_LOG_INFO ("Load Node[" << uid << "]: location: " << loc << " dns: " << dns
+                            << " bb: " << bb << " neighbors: " << neighListSize
+                            << "(" << "%d" << ") externals: \"%s\"(%d) "
+                            << "name: " << name << " radius: " << radius);
+}
+
 NodeContainer
 RocketfuelTopologyReader::GenerateFromMapsFile (int argc, char *argv[])
 {
@@ -152,11 +164,7 @@ RocketfuelTopologyReader::GenerateFromMapsFile (int argc, char *argv[])
       return nodes;
     }
 
-  /* uid @loc [+] [bb] (num_neigh) [&ext] -> <nuid-1> <nuid-2> ... {-euid} ... =name[!] rn */
-  NS_LOG_INFO ("Load Node[" << uid << "]: location: " << loc << " dns: " << dns
-                            << " bb: " << bb << " neighbors: " << int(neigh_list.size ())
-                            << "(" << "%d" << ") externals: \"%s\"(%d) "
-                            << "name: " << name << " radius: " << radius);
+  PrintNodeInfo (uid, loc, dns, bb, neigh_list.size (), name, radius);
 
   // Create node and link
   if (!uid.empty ())
