@@ -227,7 +227,7 @@ public:
   * Start a transmission of control frame in DL
   *
   *
-  * @param ctrlMsgList the burst of contrl messages to be transmitted
+  * @param ctrlMsgList the burst of control messages to be transmitted
   * @param pss the flag for transmitting the primary synchronization signal
   *
   * @return true if an error occurred and the transmission was not
@@ -239,9 +239,6 @@ public:
   /**
   * Start a transmission of control frame in UL
   *
-  *
-  * @param pb the burst of control messages to be transmitted
-  *
   * @return true if an error occurred and the transmission was not
   * started, false otherwise.
   */
@@ -250,7 +247,7 @@ public:
 
   /**
    * set the callback for the end of a TX, as part of the
-   * interconnections betweenthe PHY and the MAC
+   * interconnections between the PHY and the MAC
    *
    * @param c the callback
    */
@@ -258,7 +255,7 @@ public:
 
   /**
    * set the callback for the end of a RX in error, as part of the
-   * interconnections betweenthe PHY and the MAC
+   * interconnections between the PHY and the MAC
    *
    * @param c the callback
    */
@@ -266,7 +263,7 @@ public:
 
   /**
    * set the callback for the successful end of a RX, as part of the
-   * interconnections betweenthe PHY and the MAC
+   * interconnections between the PHY and the MAC
    *
    * @param c the callback
    */
@@ -274,7 +271,7 @@ public:
   
   /**
   * set the callback for the successful end of a RX ctrl frame, as part 
-  * of the interconnections betweenthe LteSpectrumPhy and the PHY
+  * of the interconnections between the LteSpectrumPhy and the PHY
   *
   * @param c the callback
   */
@@ -282,7 +279,7 @@ public:
   
   /**
   * set the callback for the erroneous end of a RX ctrl frame, as part 
-  * of the interconnections betweenthe LteSpectrumPhy and the PHY
+  * of the interconnections between the LteSpectrumPhy and the PHY
   *
   * @param c the callback
   */
@@ -298,7 +295,7 @@ public:
 
   /**
   * set the callback for the DL HARQ feedback as part of the 
-  * interconnections betweenthe LteSpectrumPhy and the PHY
+  * interconnections between the LteSpectrumPhy and the PHY
   *
   * @param c the callback
   */
@@ -306,7 +303,7 @@ public:
 
   /**
   * set the callback for the UL HARQ feedback as part of the
-  * interconnections betweenthe LteSpectrumPhy and the PHY
+  * interconnections between the LteSpectrumPhy and the PHY
   *
   * @param c the callback
   */
@@ -330,7 +327,7 @@ public:
   *
   *
   * \param p the new LteSinrChunkProcessor to be added to the RS power 
-  * \processing chain
+  *          processing chain
   */
   void AddRsPowerChunkProcessor (Ptr<LteSinrChunkProcessor> p);
   
@@ -342,7 +339,7 @@ public:
   void AddDataSinrChunkProcessor (Ptr<LteSinrChunkProcessor> p);
 
   /**
-  *  LteSinrChunkProcessor devoted to evaluate intefrerence + noise power 
+  *  LteSinrChunkProcessor devoted to evaluate interference + noise power
   *  in control symbols of the subframe
   *
   * \param p the new LteSinrChunkProcessor to be added to the data processing chain
@@ -350,7 +347,7 @@ public:
   void AddInterferenceCtrlChunkProcessor (Ptr<LteSinrChunkProcessor> p);
 
   /**
-  *  LteSinrChunkProcessor devoted to evaluate intefrerence + noise power
+  *  LteSinrChunkProcessor devoted to evaluate interference + noise power
   *  in data symbols of the subframe
   *
   * \param p the new LteSinrChunkProcessor to be added to the data processing chain

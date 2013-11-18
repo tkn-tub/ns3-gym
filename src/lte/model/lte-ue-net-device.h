@@ -82,7 +82,7 @@ public:
   uint16_t GetDlEarfcn () const;
 
   /**
-   * \param bw the downlink carrier frequency (EARFCN)
+   * \param earfcn the downlink carrier frequency (EARFCN)
    *
    * Note that real-life handset typically supports more than one EARFCN, but
    * the sake of simplicity we assume only one EARFCN is supported.

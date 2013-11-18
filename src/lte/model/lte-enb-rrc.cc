@@ -1754,8 +1754,7 @@ void
 LteEnbRrc::DoRecvRrcConnectionRequest (uint16_t rnti, LteRrcSap::RrcConnectionRequest msg)
 {
   NS_LOG_FUNCTION (this << rnti);
-  
-    GetUeManager (rnti)->RecvRrcConnectionRequest (msg);
+  GetUeManager (rnti)->RecvRrcConnectionRequest (msg);
 }
 
 void

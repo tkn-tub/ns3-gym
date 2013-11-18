@@ -95,7 +95,7 @@ public:
   void SetLteEnbCphySapUser (LteEnbCphySapUser* s);
 
   /**
-   * \param pw the transmission power in dBm
+   * \param pow the transmission power in dBm
    */
   void SetTxPower (double pow);
 
@@ -106,7 +106,7 @@ public:
 
 
   /**
-   * \param pw the noise figure in dB
+   * \param pow the noise figure in dB
    */
   void SetNoiseFigure (double pow);
 
@@ -178,6 +178,7 @@ public:
   * \brief Create the UL CQI feedback from SINR values perceived at
   * the physical layer with the PUSCH signal received from eNB
   * \param sinr SINR values vector
+  * \return UL CQI feedback in the format usable by an FF MAC scheduler
   */
   FfMacSchedSapProvider::SchedUlCqiInfoReqParameters CreatePuschCqiReport (const SpectrumValue& sinr);
   
@@ -185,6 +186,7 @@ public:
   * \brief Create the UL CQI feedback from SINR values perceived at
   * the physical layer with the SRS signal received from eNB
   * \param sinr SINR values vector
+  * \return UL CQI feedback in the format usable by an FF MAC scheduler
   */
   FfMacSchedSapProvider::SchedUlCqiInfoReqParameters CreateSrsCqiReport (const SpectrumValue& sinr);
 
@@ -242,7 +244,7 @@ public:
   virtual void GenerateCtrlCqiReport (const SpectrumValue& sinr);
   virtual void GenerateDataCqiReport (const SpectrumValue& sinr);
   virtual void ReportInterference (const SpectrumValue& interf);
-  virtual void ReportRsReceivedPower (const SpectrumValue& interf);
+  virtual void ReportRsReceivedPower (const SpectrumValue& power);
 
 
 

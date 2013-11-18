@@ -86,9 +86,10 @@ public:
    * \brief Create a message with CQI feedback
    * \param sinr the SpectrumValue vector of SINR for evaluating the CQI
    * \param rbgSize size of RB group (in RBs) for evaluating subband/wideband CQI
-   *
+   * \return a vector of CQI feedbacks
    */
-  /*static*/ std::vector<int> CreateCqiFeedbacks (const SpectrumValue& sinr, uint8_t rbgSize = 0);
+  /*static*/ std::vector<int> CreateCqiFeedbacks (const SpectrumValue& sinr,
+                                                  uint8_t rbgSize = 0);
 
   /**
    * \brief Get a proper CQI for the spectrale efficiency value.

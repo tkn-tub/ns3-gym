@@ -53,9 +53,7 @@ public:
    */
   virtual ~MacStatsCalculator ();
 
-  /**
-   * Inherited from ns3::Object
-   */
+  // Inherited from ns3::Object
   static TypeId GetTypeId (void);
 
   /**
@@ -67,6 +65,7 @@ public:
 
   /**
    * Get the name of the file where the uplink statistics will be stored.
+   * @return the name of the file where the uplink statistics will be stored
    */
   std::string GetUlOutputFilename (void);
 
@@ -79,6 +78,7 @@ public:
 
   /**
    * Get the name of the file where the downlink statistics will be stored.
+   * @return the name of the file where the downlink statistics will be stored
    */
   std::string GetDlOutputFilename (void);
 
@@ -108,7 +108,7 @@ public:
    * @param sizeTb Size of transport block
    */
   void UlScheduling (uint16_t cellId, uint64_t imsi,uint32_t frameNo, uint32_t subframeNo,
-                     uint16_t rnti, uint8_t mcs, uint16_t sizeTb);
+                     uint16_t rnti, uint8_t mcsTb, uint16_t sizeTb);
 
   
   /** 

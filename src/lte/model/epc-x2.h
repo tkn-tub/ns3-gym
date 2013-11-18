@@ -92,15 +92,20 @@ public:
   void SetEpcX2SapUser (EpcX2SapUser * s);
 
   /**
-   * \param s the X2 SAP Provider interface offered by this EPC X2 entity
+   * \return the X2 SAP Provider interface offered by this EPC X2 entity
    */
   EpcX2SapProvider* GetEpcX2SapProvider ();
 
 
   /**
-   * \param s the X2 SAP Provider interface offered by this EPC X2 entity
+   * Add an X2 interface to this EPC X2 entity
+   * \param enb1CellId the cell ID of the current eNodeB
+   * \param enb1X2Address the address of the current eNodeB
+   * \param enb2CellId the cell ID of the neighbouring eNodeB
+   * \param enb2X2Address the address of the neighbouring eNodeB
    */
-  void AddX2Interface (uint16_t enb1CellId, Ipv4Address enb1X2Address, uint16_t enb2CellId, Ipv4Address enb2X2Address);
+  void AddX2Interface (uint16_t enb1CellId, Ipv4Address enb1X2Address,
+                       uint16_t enb2CellId, Ipv4Address enb2X2Address);
 
 
   /** 

@@ -102,12 +102,15 @@ public:
    * \param earfcn the carrier frequency (EARFCN) of the transmission
    * \param bandwidth the Transmission Bandwidth Configuration in
    * number of resource blocks
-   * \param txPower the total power in dBm over the whole bandwidth
-   * \param ActiveRbs the list of Active Resource Blocks (PRBs)
+   * \param powerTx the total power in dBm over the whole bandwidth
+   * \param activeRbs the list of Active Resource Blocks (PRBs)
    *
    * \return a pointer to a newly allocated SpectrumValue representing the TX Power Spectral Density in W/Hz for each Resource Block
    */
-  static Ptr<SpectrumValue> CreateTxPowerSpectralDensity (uint16_t earfcn, uint8_t bandwidth, double powerTx, std::vector <int> activeRbs);
+  static Ptr<SpectrumValue> CreateTxPowerSpectralDensity (uint16_t earfcn,
+                                                          uint8_t bandwidth,
+                                                          double powerTx,
+                                                          std::vector <int> activeRbs);
 
 
   /**

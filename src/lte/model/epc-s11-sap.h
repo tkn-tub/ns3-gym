@@ -99,7 +99,7 @@ public:
   /** 
    * send a Create Session Response message
    * 
-   * \params msg the message
+   * \param msg the message
    */
   virtual void CreateSessionResponse (CreateSessionResponseMessage msg) = 0;
 
@@ -120,7 +120,7 @@ public:
   /** 
    * send a Modify Bearer Response message
    * 
-   * \params msg the message
+   * \param msg the message
    */
   virtual void ModifyBearerResponse (ModifyBearerResponseMessage msg) = 0;
 
@@ -158,7 +158,7 @@ public:
   /** 
    * send a Create Session Request message
    * 
-   * \params msg the message
+   * \param msg the message
    */
   virtual void CreateSessionRequest (CreateSessionRequestMessage msg) = 0;
 
@@ -174,7 +174,7 @@ public:
   /** 
    * send a Modify Bearer Request message
    * 
-   * \params msg the message
+   * \param msg the message
    */
   virtual void ModifyBearerRequest (ModifyBearerRequestMessage msg) = 0;
 

@@ -235,21 +235,31 @@ public:
    */
   void RecvUeContextRelease (EpcX2SapUser::UeContextReleaseParams params); 
 
-  // methods forwarded from RRC SAP
+
+  // METHODS FORWARDED FROM ENB RRC SAP ///////////////////////////////////////
+
+  /// Part of the RRC protocol. Implement the LteEnbRrcSapProvider::CompleteSetupUe interface.
   void CompleteSetupUe (LteEnbRrcSapProvider::CompleteSetupUeParameters params);
+  /// Part of the RRC protocol. Implement the LteEnbRrcSapProvider::RecvRrcConnectionRequest interface.
   void RecvRrcConnectionRequest (LteRrcSap::RrcConnectionRequest msg);
+  /// Part of the RRC protocol. Implement the LteEnbRrcSapProvider::RecvRrcConnectionSetupCompleted interface.
   void RecvRrcConnectionSetupCompleted (LteRrcSap::RrcConnectionSetupCompleted msg);
+  /// Part of the RRC protocol. Implement the LteEnbRrcSapProvider::RecvRrcConnectionReconfigurationCompleted interface.
   void RecvRrcConnectionReconfigurationCompleted (LteRrcSap::RrcConnectionReconfigurationCompleted msg);
+  /// Part of the RRC protocol. Implement the LteEnbRrcSapProvider::RecvRrcConnectionReestablishmentRequest interface.
   void RecvRrcConnectionReestablishmentRequest (LteRrcSap::RrcConnectionReestablishmentRequest msg);
+  /// Part of the RRC protocol. Implement the LteEnbRrcSapProvider::RecvRrcConnectionReestablishmentComplete interface.
   void RecvRrcConnectionReestablishmentComplete (LteRrcSap::RrcConnectionReestablishmentComplete msg);
+  /// Part of the RRC protocol. Implement the LteEnbRrcSapProvider::RecvMeasurementReport interface.
   void RecvMeasurementReport (LteRrcSap::MeasurementReport msg);
 
 
-  // methods forwarded from CMAC SAP
+  // METHODS FORWARDED FROM ENB CMAC SAP //////////////////////////////////////
+
   void CmacUeConfigUpdateInd (LteEnbCmacSapUser::UeConfig cmacParams);
 
+  // METHODS FORWARDED FROM ENB PDCP SAP //////////////////////////////////////
 
-  // methods forwarded from PDCP SAP
   void DoReceivePdcpSdu (LtePdcpSapUser::ReceivePdcpSduParameters params);
   
   /** 
@@ -629,7 +639,6 @@ public:
   /** 
    * set the callback used to forward data packets up the stack
    * 
-   * \param void 
    * \param cb 
    */
   void SetForwardUpCallback (Callback <void, Ptr<Packet> > cb);
@@ -672,8 +681,8 @@ public:
    * by sending a handover request to the target eNB over the X2
    * interface 
    *
-   * \param imsi the id of the UE to be handed over 
-   * \param cellId the id of the target eNB
+   * \param rnti the ID of the UE to be handed over
+   * \param cellId the ID of the target eNB
    */
   void SendHandoverRequest (uint16_t rnti, uint16_t cellId);
 
@@ -691,12 +700,19 @@ private:
 
   // RRC SAP methods
 
+  /// Part of the RRC protocol. Forwarding LteEnbRrcSapProvider::CompleteSetupUe interface to UeManager::CompleteSetupUe
   void DoCompleteSetupUe (uint16_t rnti, LteEnbRrcSapProvider::CompleteSetupUeParameters params);
+  /// Part of the RRC protocol. Forwarding LteEnbRrcSapProvider::RecvRrcConnectionRequest interface to UeManager::RecvRrcConnectionRequest
   void DoRecvRrcConnectionRequest (uint16_t rnti, LteRrcSap::RrcConnectionRequest msg);
+  /// Part of the RRC protocol. Forwarding LteEnbRrcSapProvider::RecvRrcConnectionSetupCompleted interface to UeManager::RecvRrcConnectionSetupCompleted
   void DoRecvRrcConnectionSetupCompleted (uint16_t rnti, LteRrcSap::RrcConnectionSetupCompleted msg);
+  /// Part of the RRC protocol. Forwarding LteEnbRrcSapProvider::RecvRrcConnectionReconfigurationCompleted interface to UeManager::RecvRrcConnectionReconfigurationCompleted
   void DoRecvRrcConnectionReconfigurationCompleted (uint16_t rnti, LteRrcSap::RrcConnectionReconfigurationCompleted msg);
+  /// Part of the RRC protocol. Forwarding LteEnbRrcSapProvider::RecvRrcConnectionReestablishmentRequest interface to UeManager::RecvRrcConnectionReestablishmentRequest
   void DoRecvRrcConnectionReestablishmentRequest (uint16_t rnti, LteRrcSap::RrcConnectionReestablishmentRequest msg);
+  /// Part of the RRC protocol. Forwarding LteEnbRrcSapProvider::RecvRrcConnectionReestablishmentComplete interface to UeManager::RecvRrcConnectionReestablishmentComplete
   void DoRecvRrcConnectionReestablishmentComplete (uint16_t rnti, LteRrcSap::RrcConnectionReestablishmentComplete msg);
+  /// Part of the RRC protocol. Forwarding LteEnbRrcSapProvider::RecvMeasurementReport interface to UeManager::RecvMeasurementReport
   void DoRecvMeasurementReport (uint16_t rnti, LteRrcSap::MeasurementReport msg);
 
   // S1 SAP methods
@@ -767,7 +783,7 @@ public:
   /** 
    * Add a neighbour with an X2 interface
    *
-   * \param cellid neighbouring cell id
+   * \param cellId neighbouring cell id
    */
   void AddX2Neighbour (uint16_t cellId);
 
