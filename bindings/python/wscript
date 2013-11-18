@@ -366,9 +366,10 @@ class apiscan_task(Task.Task):
         return retval
 
     def runnable_status(self):
-        # Waf Task will usually run if the signature of the build changes
-        # but skip otherwise.  Here, we want to always run this task if
-        # user invoked --apiscan
+        # By default, Waf Task will skip running a task if the signature of
+        # the build has not changed.  We want this task to always run if
+        # invoked by the user, particularly since --apiscan=all will require
+        # invoking this task many times, once per module.
         return RUN_ME
 
 def get_modules_and_headers(bld):
