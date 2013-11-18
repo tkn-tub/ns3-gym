@@ -87,39 +87,51 @@ public:
 
   Time GetRifs (void) const;
   /**
-   * \returns the current PIFS duration.
+   * \return the current PIFS duration.
    */
   Time GetPifs (void) const;
   /**
-   * \returns the current SIFS duration.
+   * \return the current SIFS duration.
    */
   Time GetSifs (void) const;
   /**
-   * \returns the current slot duration.
+   * \return the current slot duration.
    */
   Time GetSlot (void) const;
   /**
-   * \returns the current EIFS minus DIFS duration
+   * \return the current EIFS minus DIFS duration
    */
   Time GetEifsNoDifs (void) const;
   /**
-   * \returns the current CTS timeout duration.
+   * \return the current CTS timeout duration.
    */
   Time GetCtsTimeout (void) const;
   /**
-   * \returns the current ACK timeout duration.
+   * \return the current ACK timeout duration.
    */
   Time GetAckTimeout (void) const;
 
+  /**
+   * Enable or disable CTS-to-self feature.
+   *
+   * \param enable true if CTS-to-self is to be supported,
+   *        false otherwise
+   */
   void SetCtsToSelfSupported (bool enable);
  
+  /**
+   * Return whether the device supports CTS-to-self
+   * capability.
+   *
+   * \return true if CTS-to-self is supported, false otherwise.
+   */
   bool GetCtsToSelfSupported () const;
   /**
-   * \returns the MAC address associated to this MAC layer.
+   * \return the MAC address associated to this MAC layer.
    */
   virtual Mac48Address GetAddress (void) const;
   /**
-   * \returns the ssid which this MAC layer is going to try to stay in.
+   * \return the ssid which this MAC layer is going to try to stay in.
    */
   virtual Ssid GetSsid (void) const;
   /**
@@ -135,7 +147,7 @@ public:
    */
   virtual void SetBssid (Mac48Address bssid);
   /**
-   * \returns the bssid of the network this device belongs to.
+   * \return the bssid of the network this device belongs to.
    */
   virtual Mac48Address GetBssid (void) const;
   /**
@@ -175,7 +187,7 @@ public:
    */
   virtual void SetWifiPhy (Ptr<WifiPhy> phy);
   /**
-   * \returns the physical layer attached to this MAC.
+   * \return the physical layer attached to this MAC.
    */
   virtual Ptr<WifiPhy> GetWifiPhy () const;
   /**
@@ -183,7 +195,7 @@ public:
    */
   virtual void SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> stationManager);
   /**
-   * \returns the station manager attached to this MAC.
+   * \return the station manager attached to this MAC.
    */
   virtual Ptr<WifiRemoteStationManager> GetWifiRemoteStationManager () const;
 
@@ -286,9 +298,28 @@ protected:
    * \param hdr a pointer to the MAC header of the received frame.
    */
   virtual void Receive (Ptr<Packet> packet, const WifiMacHeader *hdr);
+    /**
+   * The packet we sent was successfully received by the receiver
+   * (i.e. we received an ACK from the receiver).
+   * 
+   * \param hdr the header of the packet that we successfully sent
+   */
   virtual void TxOk (const WifiMacHeader &hdr);
+  /**
+   * The packet we sent was successfully received by the receiver
+   * (i.e. we did not receive an ACK from the receiver).
+   *
+   * \param hdr the header of the packet that we failed to sent
+   */
   virtual void TxFailed (const WifiMacHeader &hdr);
 
+  /**
+   * Forward the packet up to the device.
+   *
+   * \param packet the packet that we are forwarding up to the device
+   * \param from the address of the source
+   * \param to the address of the destination
+   */
   void ForwardUp (Ptr<Packet> packet, Mac48Address from, Mac48Address to);
 
   /**
@@ -325,9 +356,17 @@ protected:
    * however.
    */
   bool m_qosSupported;
-  /** Set accessor for the \c m_qosSupported member */
+  /**
+   * Enable or disable QoS support for the device.
+   *
+   * \param enable whether QoS is supported
+   */
   void SetQosSupported (bool enable);
-  /** Get accessor for the \c m_qosSupported member */
+  /** 
+   * Return whether the device supports QoS.
+   *
+   * \return true if QoS is supported, false otherwise
+   */
   bool GetQosSupported () const;
 
  /**
@@ -344,9 +383,17 @@ protected:
    * however.
    */
   bool m_htSupported;
-  /** Set accessor for the \c m_htSupported member */
+  /**
+   * Enable or disable HT support for the device.
+   *
+   * \param enable whether HT is supported
+   */
   void SetHtSupported (bool enable);
-  /** Get accessor for the \c m_htSupported member */
+  /**
+   * Return whether the device supports QoS.
+   *
+   * \return true if HT is supported, false otherwise
+   */
   bool GetHtSupported () const;
 
 private:
@@ -361,16 +408,36 @@ private:
    */
   void SetupEdcaQueue (enum AcIndex ac);
 
-  /** Accessor for the DCF object */
+  /**
+   * Return the DCF.
+   *
+   * \return a DCF instance
+   */
   Ptr<DcaTxop> GetDcaTxop (void) const;
 
-  /** Accessor for the AC_VO channel access function */
+  /**
+   * Return the EDCAF instance for the voice access class.
+   *
+   * \return a AC_VO EDCAF instance
+   */
   Ptr<EdcaTxopN> GetVOQueue (void) const;
-  /** Accessor for the AC_VI channel access function */
+  /**
+   * Return the EDCAF instance for the video access class.
+   *
+   * \return a AC_VI EDCAF instance
+   */
   Ptr<EdcaTxopN> GetVIQueue (void) const;
-  /** Accessor for the AC_BE channel access function */
+  /**
+   * Return the EDCAF instance for the best effort access class.
+   *
+   * \return a AC_BE EDCAF instance
+   */
   Ptr<EdcaTxopN> GetBEQueue (void) const;
-  /** Accessor for the AC_BK channel access function */
+  /**
+   * Return the EDCAF instance for the background access class.
+   *
+   * \return a AC_BK EDCAF instance
+   */
   Ptr<EdcaTxopN> GetBKQueue (void) const;
 
   TracedCallback<const WifiMacHeader &> m_txOkCallback;

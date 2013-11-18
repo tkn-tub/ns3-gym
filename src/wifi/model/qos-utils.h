@@ -52,6 +52,8 @@ enum AcIndex
  * \ingroup wifi
  * Maps TID (Traffic ID) to Access classes.
  * For more details see table 9-1 of IEEE802.11 standard.
+ *
+ * \param tid the Traffic ID to be mapped to Access class
  */
 AcIndex QosUtilsMapTidToAc (uint8_t tid);
 
@@ -59,6 +61,10 @@ AcIndex QosUtilsMapTidToAc (uint8_t tid);
  * \ingroup wifi
  * If a qos tag is attached to the packet, returns a value < 8.
  * A value >= 8 is returned otherwise.
+ *
+ * \param packet the packet to checked for a QoS tag
+ * \return a value less than 8 if QoS tag was present, a value >= 8
+ *         is returned if no QoS tag was present
  */
 uint8_t QosUtilsGetTidForPacket (Ptr<const Packet> packet);
 
@@ -67,6 +73,9 @@ uint8_t QosUtilsGetTidForPacket (Ptr<const Packet> packet);
  * Next function is useful to correctly sort buffered packets under block ack.
  * When an BAR is received from originator station, completed "old"
  * (see section 9.10.3 in IEEE802.11e) packets must be forwarded up before "new" packets.
+ *
+ * \param seqConrol the sequence control field
+ * \param endSequence
  */
 uint32_t QosUtilsMapSeqControlToUniqueInteger (uint16_t seqControl, uint16_t endSequence);
 
@@ -102,7 +111,8 @@ uint32_t QosUtilsMapSeqControlToUniqueInteger (uint16_t seqControl, uint16_t end
  * if that packet (with sequence number <i>numberSeq</i>)) belongs to the section of the
  * sequence number space marked with '-' characters. The function returns false otherwise.
  *
- *
+ * \param startingSeq the starting sequence number
+ * \param seqNumber the sequence number to be checked
  */
 bool QosUtilsIsOldPacket (uint16_t startingSeq, uint16_t seqNumber);
 

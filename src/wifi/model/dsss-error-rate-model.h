@@ -67,10 +67,46 @@ double IntegralFunction (double x, void *params);
 class DsssErrorRateModel
 {
 public:
+  /**
+   * A function DQPSK
+   *
+   * \param x x
+   * \return DQPSK(x)
+   */
   static double DqpskFunction (double x);
+  /**
+   * Return the chunk success rate of the differential BPSK.
+   *
+   * \param sinr the SINR of the chunk
+   * \param nbits the size of the chunk
+   * \return the chunk success rate of the differential BPSK
+   */
   static double GetDsssDbpskSuccessRate (double sinr, uint32_t nbits);
+  /**
+   * Return the chunk success rate of the differential encoded QPSK.
+   *
+   * \param sinr the SINR of the chunk
+   * \param nbits the size of the chunk
+   * \return the chunk success rate of the differential encoded QPSK.
+   */
   static double GetDsssDqpskSuccessRate (double sinr,uint32_t nbits);
+  /**
+   * Return the chunk success rate of the differential encoded QPSK for
+   * 5.5Mbps data rate.
+   *
+   * \param sinr the SINR of the chunk
+   * \param nbits the size of the chunk
+   * \return the chunk success rate of the differential encoded QPSK for
+   */
   static double GetDsssDqpskCck5_5SuccessRate (double sinr,uint32_t nbits);
+  /**
+   * Return the chunk success rate of the differential encoded QPSK for
+   * 11Mbps data rate.
+   *
+   * \param sinr the SINR of the chunk
+   * \param nbits the size of the chunk
+   * \return the chunk success rate of the differential encoded QPSK for
+   */
   static double GetDsssDqpskCck11SuccessRate (double sinr,uint32_t nbits);
 #ifdef ENABLE_GSL
   static double SymbolErrorProb16Cck (double e2);  /// equation (18) in Pursley's paper

@@ -162,10 +162,20 @@ public:
   WifiPhy ();
   virtual ~WifiPhy ();
 
+  /**
+   * Return the minimum available transmission power level (dBm).
+   *
+   * \return the minimum available transmission power level in dBm
+   */
   virtual double GetTxPowerStart (void) const = 0;
+  /**
+   * Return the maximum available transmission power level (dBm).
+   *
+   * \return the maximum available transmission power level in dBm
+   */
   virtual double GetTxPowerEnd (void) const = 0;
   /**
-   * \returns the number of tx power levels available for this PHY.
+   * \return the number of tx power levels available for this PHY.
    */
   virtual uint32_t GetNTxPower (void) const = 0;
 
@@ -198,41 +208,46 @@ public:
   virtual void RegisterListener (WifiPhyListener *listener) = 0;
 
   /**
-   * \returns true of the current state of the PHY layer is WifiPhy::IDLE, false otherwise.
+   * \return true of the current state of the PHY layer is WifiPhy::IDLE, false otherwise.
    */
   virtual bool IsStateIdle (void) = 0;
   /**
-   * \returns true of the current state of the PHY layer is WifiPhy::CCA_BUSY, false otherwise.
+   * \return true of the current state of the PHY layer is WifiPhy::CCA_BUSY, false otherwise.
    */
   virtual bool IsStateCcaBusy (void) = 0;
   /**
-   * \returns true of the current state of the PHY layer is not WifiPhy::IDLE, false otherwise.
+   * \return true of the current state of the PHY layer is not WifiPhy::IDLE, false otherwise.
    */
   virtual bool IsStateBusy (void) = 0;
   /**
-   * \returns true of the current state of the PHY layer is WifiPhy::RX, false otherwise.
+   * \return true of the current state of the PHY layer is WifiPhy::RX, false otherwise.
    */
   virtual bool IsStateRx (void) = 0;
   /**
-   * \returns true of the current state of the PHY layer is WifiPhy::TX, false otherwise.
+   * \return true of the current state of the PHY layer is WifiPhy::TX, false otherwise.
    */
   virtual bool IsStateTx (void) = 0;
   /**
-   * \returns true of the current state of the PHY layer is WifiPhy::SWITCHING, false otherwise.
+   * \return true of the current state of the PHY layer is WifiPhy::SWITCHING, false otherwise.
    */
   virtual bool IsStateSwitching (void) = 0;
   /**
-   * \returns the amount of time since the current state has started.
+   * \return the amount of time since the current state has started.
    */
   virtual Time GetStateDuration (void) = 0;
   /**
-   * \returns the predicted delay until this PHY can become WifiPhy::IDLE.
+   * \return the predicted delay until this PHY can become WifiPhy::IDLE.
    *
    * The PHY will never become WifiPhy::IDLE _before_ the delay returned by
    * this method but it could become really idle later.
    */
   virtual Time GetDelayUntilIdle (void) = 0;
 
+  /**
+   * Return the start time of the last received packet.
+   *
+   * \return the start time of the last received packet
+   */
   virtual Time GetLastRxStartTime (void) const = 0;
 
   /**
@@ -313,7 +328,7 @@ public:
    * WifiRemoteStationManager), which itself is a superset (again, not
    * necessarily proper) of the BSSBasicRateSet.
    *
-   * \returns the number of transmission modes supported by this PHY.
+   * \return the number of transmission modes supported by this PHY.
    *
    * \sa WifiPhy::GetMode()
    */
@@ -332,7 +347,7 @@ public:
    * necessarily proper) of the BSSBasicRateSet.
    *
    * \param mode index in array of supported modes
-   * \returns the mode whose index is specified.
+   * \return the mode whose index is specified.
    *
    * \sa WifiPhy::GetNModes()
    */
@@ -340,7 +355,7 @@ public:
   /**
    * \param txMode the transmission mode
    * \param ber the probability of bit error rate
-   * \returns the minimum snr which is required to achieve
+   * \return the minimum snr which is required to achieve
    *          the requested ber for the specified transmission mode. (W/W)
    */
   virtual double CalculateSnr (WifiMode txMode, double ber) const = 0;
@@ -354,7 +369,7 @@ public:
    * This was introduced with 11n
    *
    * \param selector index in array of supported memeberships
-   * \returns the memebership selector whose index is specified.
+   * \return the memebership selector whose index is specified.
    *
    * \sa WifiPhy::NBssMembershipSelectors()
    */
@@ -371,7 +386,7 @@ public:
    * This was introduced with 11n
    *
    * \param selector index in array of supported memeberships
-   * \returns a WifiModeList that contains the WifiModes associrated with the selected index.
+   * \return a WifiModeList that contains the WifiModes associrated with the selected index.
    *
    * \sa WifiPhy::GetMembershipSelectorModes()
    */
@@ -386,7 +401,7 @@ public:
    * This was introduced with 11n
    *
    * \param Mcs index in array of supported Mcs
-   * \returns the Mcs index whose index is specified.
+   * \return the Mcs index whose index is specified.
    *
    * \sa WifiPhy::GetNMcs()
    */
@@ -405,13 +420,29 @@ public:
    *
    * where Starting channel frequency is standard-dependent, see SetStandard()
    * as defined in IEEE 802.11-2007 17.3.8.3.2.
+   *
+   * \param id the channel number
    */
   virtual void SetChannelNumber (uint16_t id) = 0;
-  /// Return current channel number, see SetChannelNumber()
+  /**  
+   * Return current channel number.
+   *
+   * \return the current channel number
+   */
   virtual uint16_t GetChannelNumber () const = 0;
 
+  /**
+   * Configure the PHY-level parameters for different Wi-Fi standard.
+   *
+   * \param standard the Wi-Fi standard
+   */
   virtual void ConfigureStandard (enum WifiPhyStandard standard) = 0;
 
+  /**
+   * Return the WifiChannel this WifiPhy is connected to.
+   *
+   * \return the WifiChannel this WifiPhy is connected to
+   */
   virtual Ptr<WifiChannel> GetChannel (void) const = 0;
 
   static WifiMode GetDsssRate1Mbps ();
@@ -488,36 +519,48 @@ public:
   /**
    * Public method used to fire a PhyTxBegin trace.  Implemented for encapsulation
    * purposes.
+   *
+   * \param packet the packet being transmitted
    */
   void NotifyTxBegin (Ptr<const Packet> packet);
 
   /**
    * Public method used to fire a PhyTxEnd trace.  Implemented for encapsulation
    * purposes.
+   *
+   * \param packet the packet that was transmitted
    */
   void NotifyTxEnd (Ptr<const Packet> packet);
 
   /**
    * Public method used to fire a PhyTxDrop trace.  Implemented for encapsulation
    * purposes.
+   *
+   * \param packet the packet that was failed to transmitted
    */
   void NotifyTxDrop (Ptr<const Packet> packet);
 
   /**
    * Public method used to fire a PhyRxBegin trace.  Implemented for encapsulation
    * purposes.
+   *
+   * \param packet the packet being received
    */
   void NotifyRxBegin (Ptr<const Packet> packet);
 
   /**
    * Public method used to fire a PhyRxEnd trace.  Implemented for encapsulation
    * purposes.
+   *
+   * \param packet the packet received
    */
   void NotifyRxEnd (Ptr<const Packet> packet);
 
   /**
    * Public method used to fire a PhyRxDrop trace.  Implemented for encapsulation
    * purposes.
+   *
+   * \param packet the packet that was not successfully received
    */
   void NotifyRxDrop (Ptr<const Packet> packet);
 
@@ -526,20 +569,20 @@ public:
    * Public method used to fire a MonitorSniffer trace for a wifi packet being received.  Implemented for encapsulation
    * purposes.
    *
-   * @param packet the packet being received
-   * @param channelFreqMhz the frequency in MHz at which the packet is
-   * received. Note that in real devices this is normally the
-   * frequency to which  the receiver is tuned, and this can be
-   * different than the frequency at which the packet was originally
-   * transmitted. This is because it is possible to have the receiver
-   * tuned on a given channel and still to be able to receive packets
-   * on a nearby channel.
-   * @param channelNumber the channel on which the packet is received
-   * @param rate the PHY data rate in units of 500kbps (i.e., the same
-   * units used both for the radiotap and for the prism header)
-   * @param isShortPreamble true if short preamble is used, false otherwise
-   * @param signalDbm signal power in dBm
-   * @param noiseDbm  noise power in dBm
+   * \param packet the packet being received
+   * \param channelFreqMhz the frequency in MHz at which the packet is
+   *        received. Note that in real devices this is normally the
+   *        frequency to which  the receiver is tuned, and this can be
+   *        different than the frequency at which the packet was originally
+   *        transmitted. This is because it is possible to have the receiver
+   *        tuned on a given channel and still to be able to receive packets
+   *        on a nearby channel.
+   * \param channelNumber the channel on which the packet is received
+   * \param rate the PHY data rate in units of 500kbps (i.e., the same
+   *        units used both for the radiotap and for the prism header)
+   * \param isShortPreamble true if short preamble is used, false otherwise
+   * \param signalDbm signal power in dBm
+   * \param noiseDbm  noise power in dBm
    */
   void NotifyMonitorSniffRx (Ptr<const Packet> packet, uint16_t channelFreqMhz, uint16_t channelNumber, uint32_t rate, bool isShortPreamble,
                              double signalDbm, double noiseDbm);
@@ -549,13 +592,14 @@ public:
    * Public method used to fire a MonitorSniffer trace for a wifi packet being transmitted.  Implemented for encapsulation
    * purposes.
    *
-   * @param packet the packet being transmitted
-   * @param channelFreqMhz the frequency in MHz at which the packet is
-   * transmitted.
-   * @param channelNumber the channel on which the packet is transmitted
-   * @param rate the PHY data rate in units of 500kbps (i.e., the same
-   * units used both for the radiotap and for the prism header)
-   * @param isShortPreamble true if short preamble is used, false otherwise
+   * \param packet the packet being transmitted
+   * \param channelFreqMhz the frequency in MHz at which the packet is
+   *        transmitted.
+   * \param channelNumber the channel on which the packet is transmitted
+   * \param rate the PHY data rate in units of 500kbps (i.e., the same
+   *        units used both for the radiotap and for the prism header)
+   * \param isShortPreamble true if short preamble is used, false otherwise
+   * \param txPower the transmission power in dBm
    */
   void NotifyMonitorSniffTx (Ptr<const Packet> packet, uint16_t channelFreqMhz, uint16_t channelNumber, uint32_t rate, bool isShortPreamble, uint8_t txPower);
 
@@ -570,63 +614,69 @@ public:
   virtual int64_t AssignStreams (int64_t stream) = 0;
 
   /**
-   * \param the operating frequency on this node.
+   * \param freq the operating frequency on this node.
    */
   virtual void SetFrequency (uint32_t freq)=0;
+  /**
+   * \return the operating frequency on this node
+   */
   virtual uint32_t GetFrequency (void) const=0;
   /**
-   * \param the number of transmitters on this node.
+   * \param tx the number of transmitters on this node.
    */
   virtual void SetNumberOfTransmitAntennas (uint32_t tx)=0;
 
+  /**
+   * \return the number of transmit antenna on this device
+   */
   virtual uint32_t GetNumberOfTransmitAntennas (void) const=0;
    /**
-   * \param the number of recievers on this node.
+   * \param rx the number of recievers on this node.
    */
   virtual void SetNumberOfReceiveAntennas (uint32_t rx)=0 ;
   /**
-   * \returns the number of recievers on this node.
+   * \return the number of recievers on this node.
    */
   virtual uint32_t GetNumberOfReceiveAntennas (void) const=0;
   /**
-   * \paramif short guard interval is supported or not
+   * \param guardInterval Enable or disable short guard interval
    */
-   virtual void SetGuardInterval (bool GuardInterval)=0;
+   virtual void SetGuardInterval (bool guardInterval)=0;
    /**
-   *  \returns if short guard interval is supported or not
+   *  \return true if short guard interval is supported, false otherwise
    */
   virtual bool GetGuardInterval (void) const = 0;
   /**
-   * \paramif LDPC is supported or not
+   * \param ldpc Enable or disable LDPC
    */
-  virtual void SetLdpc (bool Ldpc)=0;
+  virtual void SetLdpc (bool ldpc)=0;
   /**
-   * \returns if LDPC is supported or not
+   * \return true if LDPC is supported, false otherwise
    */
   virtual bool GetLdpc (void) const=0;
   /**
-   * \paramif STBC is supported or not
+   * \param stbc Enable or disable STBC is supported
    */
   virtual void SetStbc (bool stbc)=0;
   /**
-   *  \returns if STBC is supported or not
+   *  \return true if STBC is supported, false otherwise
    */
   virtual bool GetStbc (void) const=0;
    
   /**
-   * \paramif GreenField is supported or not
+   * \param greenfield Enable or disable GreenField
    */
   virtual void SetGreenfield (bool greenfield)=0;
   /**
-   *  \returns if Green field is supported or not
+   * \return true if Greenfield is supported, false otherwise
    */
   virtual bool GetGreenfield (void) const=0;
   /**
-   * \paramif channel bonding 40 MHz is supported or not
+   * \return true if channel bonding 40 MHz is supported, false otherwise
    */
   virtual bool GetChannelBonding (void) const = 0;
   /**
-   *  \returns if channel bonding is supported or not
+   *  \param channelbonding Enable or disable channel bonding
    */
   virtual void SetChannelBonding (bool channelbonding) = 0 ;
 

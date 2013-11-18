@@ -103,41 +103,167 @@ public:
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
 
-
+  /**
+   * Set Type/Subtype values for an association request header.
+   */
   void SetAssocReq (void);
+  /**
+   * Set Type/Subtype values for an association response header.
+   */
   void SetAssocResp (void);
+  /**
+   * Set Type/Subtype values for a probe request header.
+   */
   void SetProbeReq (void);
+  /**
+   * Set Type/Subtype values for a probe response header.
+   */
   void SetProbeResp (void);
+  /**
+   * Set Type/Subtype values for a beacon header.
+   */
   void SetBeacon (void);
+  /**
+   * Set Type/Subtype values for a data packet with
+   * no subtype equal to 0.
+   */
   void SetTypeData (void);
+  /**
+   * Set Type/Subtype values for an action header.
+   */
   void SetAction ();
+  /**
+   * Set Type/Subtype values for a Block Ack Request header.
+   */
   void SetBlockAckReq (void);
+  /**
+   * Set Type/Subtype values for a Block Ack header.
+   */
   void SetBlockAck (void);
   void SetMultihopAction ();
+  /**
+   * Set the From DS bit in the Frame Control field.
+   */
   void SetDsFrom (void);
+  /**
+   * Un-set the From DS bit in the Frame Control field.
+   */
   void SetDsNotFrom (void);
+  /**
+   * Set the To DS bit in the Frame Control field.
+   */
   void SetDsTo (void);
+  /**
+   * Un-set the To DS bit in the Frame Control field.
+   */
   void SetDsNotTo (void);
+  /**
+   * Fill the Address 1 field with the given address.
+   *
+   * \param address the address to be used in the Address 1 field
+   */
   void SetAddr1 (Mac48Address address);
+  /**
+   * Fill the Address 2 field with the given address.
+   *
+   * \param address the address to be used in the Address 2 field
+   */
   void SetAddr2 (Mac48Address address);
+  /**
+   * Fill the Address 3 field with the given address.
+   *
+   * \param address the address to be used in the Address 3 field
+   */
   void SetAddr3 (Mac48Address address);
+  /**
+   * Fill the Address 4 field with the given address.
+   *
+   * \param address the address to be used in the Address 4 field
+   */
   void SetAddr4 (Mac48Address address);
+  /**
+   * Set Type/Subtype values with the correct values depending
+   * on the given type.
+   *
+   * \param type the WifiMacType for the header
+   */
   void SetType (enum WifiMacType type);
+  /**
+   * Set the Duration/ID field with the given raw uint16_t value.
+   *
+   * \param duration the raw duration in uint16_t
+   */
   void SetRawDuration (uint16_t duration);
+  /**
+   * Set the Duration/ID field with the given duration (Time object).
+   * The method converts the given time to microseconds.
+   *
+   * \param duration the duration (Time object)
+   */
   void SetDuration (Time duration);
+  /**
+   * Set the Duration/ID field with the given ID.
+   *
+   * \param id the ID
+   */
   void SetId (uint16_t id);
+  /**
+   * Set the sequence number of the header.
+   *
+   * \param seq the given sequence number
+   */
   void SetSequenceNumber (uint16_t seq);
+  /**
+   * Set the fragment number of the header.
+   *
+   * \param frag the given fragment number
+   */
   void SetFragmentNumber (uint8_t frag);
+  /**
+   * Un-set the More Fragment bit in the Frame Control Field
+   */
   void SetNoMoreFragments (void);
+  /**
+   * Set the More Fragment bit in the Frame Control field
+   */
   void SetMoreFragments (void);
+  /**
+   * Set the Retry bit in the Frame Control field.
+   */
   void SetRetry (void);
+  /**
+   * Un-set the Retry bit in the Frame Control field.
+   */
   void SetNoRetry (void);
+  /**
+   * Set the TID for the QoS header.
+   *
+   * \param tid the TID for the QoS header
+   */
   void SetQosTid (uint8_t tid);
+  /**
+   * Set the end of service period (EOSP) bit in the QoS control field.
+   */
   void SetQosEosp ();
+  /**
+   * Un-set the end of service period (EOSP) bit in the QoS control field.
+   */
   void SetQosNoEosp ();
+  /**
+   * Set the QoS ACK policy in the QoS control field.
+   */
   void SetQosAckPolicy (enum QosAckPolicy);
+  /**
+   * Set the QoS ACK policy in the QoS control field to normal ACK.
+   */
   void SetQosNormalAck (void);
+  /**
+   * Set the QoS ACK policy in the QoS control field to block ACK.
+   */
   void SetQosBlockAck (void);
+  /**
+   * Set the QoS ACK policy in the QoS control field to no ACK.
+   */
   void SetQosNoAck (void);
   void SetQosAmsdu (void);
   void SetQosNoAmsdu (void);
@@ -145,61 +271,300 @@ public:
   void SetOrder (void);
   void SetNoOrder (void);
 
+  /**
+   * Return the address in the Address 1 field.
+   *
+   * \return the address in the Address 1 field
+   */
   Mac48Address GetAddr1 (void) const;
+  /**
+   * Return the address in the Address 2 field.
+   *
+   * \return the address in the Address 2 field
+   */
   Mac48Address GetAddr2 (void) const;
+  /**
+   * Return the address in the Address 3 field.
+   *
+   * \return the address in the Address 3 field
+   */
   Mac48Address GetAddr3 (void) const;
+  /**
+   * Return the address in the Address 4 field.
+   *
+   * \return the address in the Address 4 field
+   */
   Mac48Address GetAddr4 (void) const;
+  /**
+   * Return the type (enum WifiMacType)
+   *
+   * \return the type (enum WifiMacType)
+   */
   enum WifiMacType GetType (void) const;
+  /**
+   * \return true if From DS bit is set, false otherwise
+   */
   bool IsFromDs (void) const;
+  /**
+   * \return true if To DS bit is set, false otherwise
+   */
   bool IsToDs (void) const;
+  /**
+   * Return true if the Type is DATA.  The method does
+   * not check the Subtype field. (e.g. the header may be
+   * DATA with QoS)
+   *
+   * \return true if Type is DATA, false otherwise
+   */
   bool IsData (void) const;
+  /**
+   * Return true if the Type is DATA and Subtype is one of the
+   * possible values for QoS DATA.
+   *
+   * \return true if Type is QoS DATA, false otherwise
+   */
   bool IsQosData (void) const;
+  /**
+   * Return true if the Type is Control.
+   *
+   * \return true if Type is Control, false otherwise
+   */
   bool IsCtl (void) const;
+  /**
+   * Return true if the Type is Management.
+   *
+   * \return true if Type is Management, false otherwise
+   */
   bool IsMgt (void) const;
+  /**
+   * Return true if the Type/Subtype is one of the possible CF-Poll headers.
+   *
+   * \return true if the Type/Subtype is one of the possible CF-Poll headers, false otherwise
+   */
   bool IsCfpoll (void) const;
+  /**
+   * Return true if the header is a RTS header.
+   *
+   * \return true if the header is a RTS header, false otherwise
+   */
   bool IsRts (void) const;
+  /**
+   * Return true if the header is a CTS header.
+   *
+   * \return true if the header is a CTS header, false otherwise
+   */
   bool IsCts (void) const;
+  /**
+   * Return true if the header is an ACK header.
+   *
+   * \return true if the header is an ACK header, false otherwise
+   */
   bool IsAck (void) const;
+  /**
+   * Return true if the header is a Block ACK Request header.
+   *
+   * \return true if the header is a Block ACK Request header, false otherwise
+   */
   bool IsBlockAckReq (void) const;
+  /**
+   * Return true if the header is a Block ACK header.
+   *
+   * \return true if the header is a Block ACK header, false otherwise
+   */
   bool IsBlockAck (void) const;
+  /**
+   * Return true if the header is an Association Request header.
+   *
+   * \return true if the header is an Association Request header, false otherwise
+   */
   bool IsAssocReq (void) const;
+  /**
+   * Return true if the header is an Association Response header.
+   *
+   * \return true if the header is an Association Response header, false otherwise
+   */
   bool IsAssocResp (void) const;
+  /**
+   * Return true if the header is a Reassociation Request header.
+   *
+   * \return true if the header is a Reassociation Request header, false otherwise
+   */
   bool IsReassocReq (void) const;
+  /**
+   * Return true if the header is a Reassociation Response header.
+   *
+   * \return true if the header is a Reassociation Response header, false otherwise
+   */
   bool IsReassocResp (void) const;
+  /**
+   * Return true if the header is a Probe Request header.
+   *
+   * \return true if the header is a Probe Request header, false otherwise
+   */
   bool IsProbeReq (void) const;
+  /**
+   * Return true if the header is a Probe Response header.
+   *
+   * \return true if the header is a Probe Response header, false otherwise
+   */
   bool IsProbeResp (void) const;
+  /**
+   * Return true if the header is a Beacon header.
+   *
+   * \return true if the header is a Beacon header, false otherwise
+   */
   bool IsBeacon (void) const;
+  /**
+   * Return true if the header is a Disassociation header.
+   *
+   * \return true if the header is a Disassociation header, false otherwise
+   */
   bool IsDisassociation (void) const;
+  /**
+   * Return true if the header is an Authentication header.
+   *
+   * \return true if the header is an Authentication header, false otherwise
+   */
   bool IsAuthentication (void) const;
+  /**
+   * Return true if the header is a Deauthentication header.
+   *
+   * \return true if the header is a Deauthentication header, false otherwise
+   */
   bool IsDeauthentication (void) const;
+  /**
+   * Return true if the header is an Action header.
+   *
+   * \return true if the header is an Action header, false otherwise
+   */
   bool IsAction () const;
   bool IsMultihopAction () const;
+  /**
+   * Return the raw duration from the Duration/ID field.
+   *
+   * \return the raw duration from the Duration/ID field
+   */
   uint16_t GetRawDuration (void) const;
+  /**
+   * Return the duration from the Duration/ID field (Time object).
+   *
+   * \return the duration from the Duration/ID field (Time object)
+   */
   Time GetDuration (void) const;
+  /**
+   * Return the raw Sequence Control field.
+   *
+   * \return the raw Sequence Control field
+   */
   uint16_t GetSequenceControl (void) const;
+  /**
+   * Return the sequence number of the header.
+   *
+   * \return the sequence number of the header
+   */
   uint16_t GetSequenceNumber (void) const;
+  /**
+   * Return the fragment number of the header.
+   *
+   * \return the fragment number of the header
+   */
   uint16_t GetFragmentNumber (void) const;
+  /**
+   * Return if the Retry bit is set.
+   *
+   * \return true if the Retry bit is set, false otherwise
+   */
   bool IsRetry (void) const;
+  /**
+   * Return if the More Fragment bit is set.
+   *
+   * \return true if the More Fragment bit is set, false otherwise
+   */
   bool IsMoreFragments (void) const;
+  /**
+   * Return if the QoS ACK policy is Block ACK.
+   *
+   * \return true if the QoS ACK policy is Block ACK, false otherwise
+   */
   bool IsQosBlockAck (void) const;
+  /**
+   * Return if the QoS ACK policy is No ACK.
+   *
+   * \return true if the QoS ACK policy is No ACK, false otherwise
+   */
   bool IsQosNoAck (void) const;
+  /**
+   * Return if the QoS ACK policy is Normal ACK.
+   *
+   * \return true if the QoS ACK policy is No ACK, false otherwise
+   */
   bool IsQosAck (void) const;
+  /**
+   * Return if the end of service period (EOSP) is set.
+   *
+   * \return true if the end of service period (EOSP) is set, false otherwise
+   */
   bool IsQosEosp (void) const;
   bool IsQosAmsdu (void) const;
+  /**
+   * Return the Traffic ID of a QoS header.
+   *
+   * \return the Traffic ID of a QoS header
+   */
   uint8_t GetQosTid (void) const;
+  /**
+   * Return the QoS ACK Policy of a QoS header.
+   *
+   * \return the QoS ACK Policy of a QoS header
+   */
   enum QosAckPolicy GetQosAckPolicy (void) const;
   uint8_t GetQosTxopLimit (void) const;
 
   uint32_t GetSize (void) const;
+  /**
+   * Return a string corresponds to the header type.
+   *
+   * \returns a string corresponds to the header type.
+   */
   const char * GetTypeString (void) const;
 
 
 private:
+  /**
+   * Return the raw Frame Control field.
+   *
+   * \return the raw Frame Control field
+   */
   uint16_t GetFrameControl (void) const;
+  /**
+   * Return the raw QoS Control field.
+   *
+   * \return the raw QoS Control field
+   */
   uint16_t GetQosControl (void) const;
+  /**
+   * Set the Frame Control field with the given raw value.
+   *
+   * \param control the raw Frame Control field value
+   */
   void SetFrameControl (uint16_t control);
+  /**
+   * Set the Sequence Control field with the given raw value.
+   *
+   * \param seq the raw Sequence Control field value
+   */
   void SetSequenceControl (uint16_t seq);
+  /**
+   * Set the QoS Control field with the given raw value.
+   *
+   * \param qos the raw QoS Control field value
+   */
   void SetQosControl (uint16_t qos);
+  /**
+   * Print the Frame Control field to the output stream.
+   *
+   * \param os the output stream to print to
+   */
   void PrintFrameControl (std::ostream &os) const;
 
   uint8_t m_ctrlType;
