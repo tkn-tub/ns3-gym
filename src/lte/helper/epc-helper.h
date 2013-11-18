@@ -72,7 +72,7 @@ public:
    * \param lteEnbNetDevice the LteEnbNetDevice of the eNB node
    * \param cellId ID of the eNB
    */
-  virtual void AddEnb (Ptr<Node> enbNode, Ptr<NetDevice> lteEnbNetDevice, uint16_t cellId);
+  virtual void AddEnb (Ptr<Node> enbNode, Ptr<NetDevice> lteEnbNetDevice, uint16_t cellId) = 0;
 
   /** 
    * Notify the EPC of the existance of a new UE which might attach at a later time
@@ -80,7 +80,7 @@ public:
    * \param ueLteDevice the UE device to be attached
    * \param imsi the unique identifier of the UE
    */
-  virtual void AddUe (Ptr<NetDevice> ueLteDevice, uint64_t imsi);
+  virtual void AddUe (Ptr<NetDevice> ueLteDevice, uint64_t imsi) = 0;
 
   /** 
    * Add an X2 interface between two eNB
@@ -88,7 +88,7 @@ public:
    * \param enbNode1 one eNB peer of the X2 interface
    * \param enbNode2 the other eNB peer of the X2 interface
    */
-  virtual void AddX2Interface (Ptr<Node> enbNode1, Ptr<Node> enbNode2);
+  virtual void AddX2Interface (Ptr<Node> enbNode1, Ptr<Node> enbNode2) = 0;
 
   /** 
    * Activate an EPS bearer, setting up the corresponding S1-U tunnel.
@@ -101,7 +101,7 @@ public:
    * \param tft the Traffic Flow Template of the new bearer
    * \param bearer struct describing the characteristics of the EPS bearer to be activated
    */
-  virtual void ActivateEpsBearer (Ptr<NetDevice> ueLteDevice, uint64_t imsi, Ptr<EpcTft> tft, EpsBearer bearer);
+  virtual void ActivateEpsBearer (Ptr<NetDevice> ueLteDevice, uint64_t imsi, Ptr<EpcTft> tft, EpsBearer bearer) = 0;
 
 
   /** 
@@ -112,7 +112,7 @@ public:
    * intended for this method is to allow the user to configure the Gi
    * interface of the PGW, i.e., to connect the PGW to the internet.
    */
-  virtual Ptr<Node> GetPgwNode ();
+  virtual Ptr<Node> GetPgwNode () = 0;
 
   /** 
    * Assign IPv4 addresses to UE devices
@@ -121,14 +121,14 @@ public:
    * 
    * \return the interface container, \see Ipv4AddressHelper::Assign() which has similar semantics
    */
-  virtual Ipv4InterfaceContainer AssignUeIpv4Address (NetDeviceContainer ueDevices);
+  virtual Ipv4InterfaceContainer AssignUeIpv4Address (NetDeviceContainer ueDevices) = 0;
 
 
   /** 
    * 
    * \return the address of the Default Gateway to be used by UEs to reach the internet
    */
-  virtual Ipv4Address GetUeDefaultGatewayAddress ();
+  virtual Ipv4Address GetUeDefaultGatewayAddress () = 0;
 
 
 };

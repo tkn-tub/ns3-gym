@@ -60,57 +60,6 @@ EpcHelper::DoDispose ()
   Object::DoDispose ();
 }
 
-#define EPC_HELPER_API_CHANGE_MSG "The EpcHelper class is now an abstract class, and should not be used directly any more. Please use one of its derived classes (e.g., PointToPointEpcHelper) instead. For the vast majority of cases, it should be sufficient to search & replace \"<EpcHelper>\" for \"<PointToPointEpcHelper>\" in your code. "
-
-
-void
-EpcHelper::AddEnb (Ptr<Node> enb, Ptr<NetDevice> lteEnbNetDevice, uint16_t cellId)
-{
-  NS_FATAL_ERROR (EPC_HELPER_API_CHANGE_MSG);
-}
-
-void
-EpcHelper::AddX2Interface (Ptr<Node> enb1, Ptr<Node> enb2)
-{
-  NS_FATAL_ERROR (EPC_HELPER_API_CHANGE_MSG);
-}
-
-void 
-EpcHelper::AddUe (Ptr<NetDevice> ueDevice, uint64_t imsi)
-{
-  NS_FATAL_ERROR (EPC_HELPER_API_CHANGE_MSG);
-}
-
-
-void
-EpcHelper::ActivateEpsBearer (Ptr<NetDevice> ueDevice, uint64_t imsi, Ptr<EpcTft> tft, EpsBearer bearer)
-{
-  NS_FATAL_ERROR (EPC_HELPER_API_CHANGE_MSG);
-}
-
-
-Ptr<Node>
-EpcHelper::GetPgwNode ()
-{
-  NS_FATAL_ERROR (EPC_HELPER_API_CHANGE_MSG);
-  return Ptr<Node> (0);
-}
-
-Ipv4InterfaceContainer 
-EpcHelper::AssignUeIpv4Address (NetDeviceContainer ueDevices)
-{
-  NS_FATAL_ERROR (EPC_HELPER_API_CHANGE_MSG);
-  return Ipv4InterfaceContainer ();
-}
-
-
-Ipv4Address
-EpcHelper::GetUeDefaultGatewayAddress ()
-{
-  NS_FATAL_ERROR (EPC_HELPER_API_CHANGE_MSG);
-  return Ipv4Address ();
-}
-
 
 
 } // namespace ns3
