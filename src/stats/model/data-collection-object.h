@@ -42,6 +42,7 @@ public:
 
   /// Set the status of an individual object.
   void Enable (void);
+  /// Unset the status of an individual object.
   void Disable (void);
 
   /// Check the status of an individual object.

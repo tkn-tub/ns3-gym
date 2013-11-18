@@ -35,7 +35,8 @@ namespace ns3 {
 //--------------------------------------------
 /**
  * \ingroup stats
- *
+ * \class SqliteDataOutput
+ * \brief Outputs data in a format compatible with SQLite
  */
 class SqliteDataOutput : public DataOutputInterface {
 public:

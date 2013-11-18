@@ -32,6 +32,8 @@ namespace ns3 {
 //--------------------------------------------
 /**
  * \ingroup stats
+ * \class OmnetDataOutput
+ * \brief Outputs data in a format compatible with OMNeT library and framework
  *
  */
 class OmnetDataOutput : public DataOutputInterface {
