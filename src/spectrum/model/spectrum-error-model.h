@@ -39,6 +39,8 @@ namespace ns3 {
 class SpectrumErrorModel :  public Object
 {
 public:
+
+  static TypeId GetTypeId ();
   virtual ~SpectrumErrorModel ();
   virtual void StartRx (Ptr<const Packet> p) = 0;
   virtual void EvaluateChunk (const SpectrumValue& sinr, Time duration) = 0;
