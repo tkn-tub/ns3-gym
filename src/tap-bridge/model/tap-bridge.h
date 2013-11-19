@@ -291,6 +291,8 @@ private:
    */
   Ptr<Packet> Filter (Ptr<Packet> packet, Address *src, Address *dst, uint16_t *type);
 
+  void NotifyLinkUp (void);
+
   /**
    * \internal
    *
@@ -463,6 +465,22 @@ private:
    * multithreaded apps is not a good thing.
    */
   uint32_t m_nodeId;
+
+  /**
+   * \internal
+   *
+   * Flag indicating whether or not the link is up.  In this case,
+   * whether or not ns-3 is connected to the underlying TAP device
+   * with a file descriptor.
+   */
+  bool m_linkUp;
+
+  /**
+   * \internal
+   *
+   * Callbacks to fire if the link changes state (up or down).
+   */
+  TracedCallback<> m_linkChangeCallbacks;
 };
 
 } // namespace ns3

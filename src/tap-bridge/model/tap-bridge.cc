@@ -221,6 +221,9 @@ TapBridge::StartTapDevice (void)
   //
   CreateTap ();
 
+  // Declare the link up
+  NotifyLinkUp ();
+
   //
   // Now spin up a read thread to read packets from the tap device.
   //
@@ -1056,18 +1059,29 @@ TapBridge::GetMtu (void) const
   return m_mtu;
 }
 
+void
+TapBridge::NotifyLinkUp (void)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  if (!m_linkUp)
+    {
+      m_linkUp = true;
+      m_linkChangeCallbacks ();
+    }
+}
 
 bool 
 TapBridge::IsLinkUp (void) const
 {
   NS_LOG_FUNCTION_NOARGS ();
-  return true;
+  return m_linkUp;
 }
 
 void 
 TapBridge::AddLinkChangeCallback (Callback<void> callback)
 {
   NS_LOG_FUNCTION_NOARGS ();
+  m_linkChangeCallbacks.ConnectWithoutContext (callback);
 }
 
 bool 
