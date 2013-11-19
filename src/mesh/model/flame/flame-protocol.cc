@@ -38,8 +38,10 @@ namespace flame {
 //-----------------------------------------------------------------------------
 // FlameTag
 //-----------------------------------------------------------------------------
-NS_OBJECT_ENSURE_REGISTERED (FlameTag);
-NS_OBJECT_ENSURE_REGISTERED (FlameProtocol);
+NS_OBJECT_ENSURE_REGISTERED (FlameTag)
+  ;
+NS_OBJECT_ENSURE_REGISTERED (FlameProtocol)
+  ;
 
 TypeId
 FlameTag::GetTypeId ()

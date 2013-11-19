@@ -26,7 +26,8 @@ NS_LOG_COMPONENT_DEFINE ("Jakes");
 
 namespace ns3
 {
-NS_OBJECT_ENSURE_REGISTERED (JakesPropagationLossModel);
+NS_OBJECT_ENSURE_REGISTERED (JakesPropagationLossModel)
+  ;
 
 
 const double JakesPropagationLossModel::PI = 3.14159265358979323846;

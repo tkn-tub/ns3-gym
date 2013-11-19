@@ -84,6 +84,9 @@ public:
   void StartActiveAssociation (void);
 
 private:
+  /**
+   * The current MAC state of the STA.
+   */
   enum MacState
   {
     ASSOCIATED,
@@ -93,21 +96,86 @@ private:
     REFUSED
   };
 
+  /**
+   * Enable or disable active probing.
+   *
+   * \param enable enable or disable active probing
+   */
   void SetActiveProbing (bool enable);
+  /**
+   * Return whether active probing is enabled.
+   *
+   * \return true if active probing is enabled, false otherwise
+   */
   bool GetActiveProbing (void) const;
   virtual void Receive (Ptr<Packet> packet, const WifiMacHeader *hdr);
+
+  /**
+   * Forward a probe request packet to the DCF. The standard is not clear on the correct
+   * queue for management frames if QoS is supported. We always use the DCF.
+   */
   void SendProbeRequest (void);
+  /**
+   * Forward an association request packet to the DCF. The standard is not clear on the correct
+   * queue for management frames if QoS is supported. We always use the DCF.
+   */
   void SendAssociationRequest (void);
+  /**
+   * Try to ensure that we are associated with an AP by taking an appropriate action
+   * depending on the current association status.
+   */
   void TryToEnsureAssociated (void);
+  /**
+   * This method is called after the association timeout occurred. We switch the state to 
+   * WAIT_ASSOC_RESP and re-send an association request.
+   */
   void AssocRequestTimeout (void);
+  /**
+   * This method is called after the probe request timeout occurred. We switch the state to 
+   * WAIT_PROBE_RESP and re-send a probe request.
+   */
   void ProbeRequestTimeout (void);
+  /**
+   * Return whether we are associated with an AP.
+   *
+   * \return true if we are associated with an AP, false otherwise
+   */
   bool IsAssociated (void) const;
+  /**
+   * Return whether we are waiting for an association response from an AP.
+   *
+   * \return true if we are waiting for an association response from an AP, false otherwise
+   */
   bool IsWaitAssocResp (void) const;
+  /**
+   * This method is called after we have not received a beacon from the AP 
+   */
   void MissedBeacons (void);
+  /**
+   * Restarts the beacon timer. 
+   *
+   * \param delay the delay before the watchdog fires
+   */
   void RestartBeaconWatchdog (Time delay);
+  /**
+   * Return an instance of SupportedRates that contains all rates that we support
+   * including HT rates.
+   *
+   * \return SupportedRates all rates that we support
+   */
   SupportedRates GetSupportedRates (void) const;
+  /**
+   * Set the current MAC state.
+   *
+   * \param value the new state
+   */
   void SetState (enum MacState value);
 
+  /**
+   * Return the HT capability of the current AP.
+   * 
+   * \return the HT capability that we support
+   */
   HtCapabilities GetHtCapabilities (void) const;
 
 

@@ -31,7 +31,8 @@ NS_LOG_COMPONENT_DEFINE ("Icmpv6Header");
 namespace ns3
 {
 
-NS_OBJECT_ENSURE_REGISTERED (Icmpv6Header);
+NS_OBJECT_ENSURE_REGISTERED (Icmpv6Header)
+  ;
 
 TypeId Icmpv6Header::GetTypeId ()
 {
@@ -172,7 +173,8 @@ void Icmpv6Header::CalculatePseudoHeaderChecksum (Ipv6Address src, Ipv6Address d
   m_checksum = ~(it.CalculateIpChecksum (40));
 }
 
-NS_OBJECT_ENSURE_REGISTERED (Icmpv6NS);
+NS_OBJECT_ENSURE_REGISTERED (Icmpv6NS)
+  ;
 
 Icmpv6NS::Icmpv6NS ()
 {
@@ -294,7 +296,8 @@ uint32_t Icmpv6NS::Deserialize (Buffer::Iterator start)
   return GetSerializedSize ();
 }
 
-NS_OBJECT_ENSURE_REGISTERED (Icmpv6NA);
+NS_OBJECT_ENSURE_REGISTERED (Icmpv6NA)
+  ;
 
 TypeId Icmpv6NA::GetTypeId ()
 {
@@ -477,7 +480,8 @@ uint32_t Icmpv6NA::Deserialize (Buffer::Iterator start)
   return GetSerializedSize ();
 }
 
-NS_OBJECT_ENSURE_REGISTERED (Icmpv6RA);
+NS_OBJECT_ENSURE_REGISTERED (Icmpv6RA)
+  ;
 
 TypeId Icmpv6RA::GetTypeId ()
 {
@@ -696,7 +700,8 @@ uint32_t Icmpv6RA::Deserialize (Buffer::Iterator start)
   return GetSerializedSize ();
 }
 
-NS_OBJECT_ENSURE_REGISTERED (Icmpv6RS);
+NS_OBJECT_ENSURE_REGISTERED (Icmpv6RS)
+  ;
 
 TypeId Icmpv6RS::GetTypeId ()
 {
@@ -786,7 +791,8 @@ uint32_t Icmpv6RS::Deserialize (Buffer::Iterator start)
   return GetSerializedSize ();
 }
 
-NS_OBJECT_ENSURE_REGISTERED (Icmpv6Redirection);
+NS_OBJECT_ENSURE_REGISTERED (Icmpv6Redirection)
+  ;
 
 TypeId Icmpv6Redirection::GetTypeId ()
 {
@@ -916,7 +922,8 @@ uint32_t Icmpv6Redirection::Deserialize (Buffer::Iterator start)
   return GetSerializedSize ();
 }
 
-NS_OBJECT_ENSURE_REGISTERED (Icmpv6Echo);
+NS_OBJECT_ENSURE_REGISTERED (Icmpv6Echo)
+  ;
 
 TypeId Icmpv6Echo::GetTypeId ()
 {
@@ -1033,7 +1040,8 @@ uint32_t Icmpv6Echo::Deserialize (Buffer::Iterator start)
   return GetSerializedSize ();
 }
 
-NS_OBJECT_ENSURE_REGISTERED (Icmpv6DestinationUnreachable);
+NS_OBJECT_ENSURE_REGISTERED (Icmpv6DestinationUnreachable)
+  ;
 
 TypeId Icmpv6DestinationUnreachable::GetTypeId ()
 {
@@ -1130,7 +1138,8 @@ uint32_t Icmpv6DestinationUnreachable::Deserialize (Buffer::Iterator start)
   return GetSerializedSize ();
 }
 
-NS_OBJECT_ENSURE_REGISTERED (Icmpv6TooBig);
+NS_OBJECT_ENSURE_REGISTERED (Icmpv6TooBig)
+  ;
 
 TypeId Icmpv6TooBig::GetTypeId ()
 {
@@ -1240,7 +1249,8 @@ uint32_t Icmpv6TooBig::Deserialize (Buffer::Iterator start)
   return GetSerializedSize ();
 }
 
-NS_OBJECT_ENSURE_REGISTERED (Icmpv6TimeExceeded);
+NS_OBJECT_ENSURE_REGISTERED (Icmpv6TimeExceeded)
+  ;
 
 TypeId Icmpv6TimeExceeded::GetTypeId ()
 {
@@ -1339,7 +1349,8 @@ uint32_t Icmpv6TimeExceeded::Deserialize (Buffer::Iterator start)
   return GetSerializedSize ();
 }
 
-NS_OBJECT_ENSURE_REGISTERED (Icmpv6ParameterError);
+NS_OBJECT_ENSURE_REGISTERED (Icmpv6ParameterError)
+  ;
 
 TypeId Icmpv6ParameterError::GetTypeId ()
 {
@@ -1449,7 +1460,8 @@ uint32_t Icmpv6ParameterError::Deserialize (Buffer::Iterator start)
   return GetSerializedSize ();
 }
 
-NS_OBJECT_ENSURE_REGISTERED (Icmpv6OptionHeader);
+NS_OBJECT_ENSURE_REGISTERED (Icmpv6OptionHeader)
+  ;
 
 TypeId Icmpv6OptionHeader::GetTypeId ()
 {
@@ -1527,7 +1539,8 @@ void Icmpv6OptionHeader::Serialize (Buffer::Iterator start) const
   NS_LOG_FUNCTION (this << &start);
 }
 
-NS_OBJECT_ENSURE_REGISTERED (Icmpv6OptionMtu);
+NS_OBJECT_ENSURE_REGISTERED (Icmpv6OptionMtu)
+  ;
 
 TypeId Icmpv6OptionMtu::GetTypeId ()
 {
@@ -1623,7 +1636,8 @@ uint32_t Icmpv6OptionMtu::Deserialize (Buffer::Iterator start)
   return GetSerializedSize ();
 }
 
-NS_OBJECT_ENSURE_REGISTERED (Icmpv6OptionPrefixInformation);
+NS_OBJECT_ENSURE_REGISTERED (Icmpv6OptionPrefixInformation)
+  ;
 
 TypeId Icmpv6OptionPrefixInformation::GetTypeId ()
 {
@@ -1796,7 +1810,8 @@ uint32_t Icmpv6OptionPrefixInformation::Deserialize (Buffer::Iterator start)
   return GetSerializedSize ();
 }
 
-NS_OBJECT_ENSURE_REGISTERED (Icmpv6OptionLinkLayerAddress);
+NS_OBJECT_ENSURE_REGISTERED (Icmpv6OptionLinkLayerAddress)
+  ;
 
 TypeId Icmpv6OptionLinkLayerAddress::GetTypeId ()
 {
@@ -1903,7 +1918,8 @@ uint32_t Icmpv6OptionLinkLayerAddress::Deserialize (Buffer::Iterator start)
   return GetSerializedSize ();
 }
 
-NS_OBJECT_ENSURE_REGISTERED (Icmpv6OptionRedirected);
+NS_OBJECT_ENSURE_REGISTERED (Icmpv6OptionRedirected)
+  ;
 
 TypeId Icmpv6OptionRedirected::GetTypeId ()
 {

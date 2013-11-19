@@ -67,7 +67,7 @@ struct CallbackTraits<T *>
 
 /**
  * \ingroup callback
- * \defgroup callbackimpl CallbackImpl
+ * \defgroup callbackimpl Callback Implementation
  * CallbackImpl classes
  */
 /**
@@ -1378,7 +1378,7 @@ Callback<R,T1,T2,T3,T4,T5,T6,T7,T8,T9> MakeCallback (R (*fnPtr)(T1,T2,T3,T4,T5,T
 
 /**
  * \ingroup callback
- * \defgroup makenullcallback MakeCallbacks with no arguments
+ * \defgroup makenullcallback MakeCallback with no arguments
  */
 /**
  * \ingroup makenullcallback

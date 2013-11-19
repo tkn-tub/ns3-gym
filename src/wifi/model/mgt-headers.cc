@@ -29,7 +29,8 @@ namespace ns3 {
  *          Probe Request
  ***********************************************************/
 
-NS_OBJECT_ENSURE_REGISTERED (MgtProbeRequestHeader);
+NS_OBJECT_ENSURE_REGISTERED (MgtProbeRequestHeader)
+  ;
 
 MgtProbeRequestHeader::~MgtProbeRequestHeader ()
 {
@@ -122,7 +123,8 @@ MgtProbeRequestHeader::Deserialize (Buffer::Iterator start)
  *          Probe Response
  ***********************************************************/
 
-NS_OBJECT_ENSURE_REGISTERED (MgtProbeResponseHeader);
+NS_OBJECT_ENSURE_REGISTERED (MgtProbeResponseHeader)
+  ;
 
 MgtProbeResponseHeader::MgtProbeResponseHeader ()
 {
@@ -255,7 +257,8 @@ MgtProbeResponseHeader::Deserialize (Buffer::Iterator start)
  *          Assoc Request
  ***********************************************************/
 
-NS_OBJECT_ENSURE_REGISTERED (MgtAssocRequestHeader);
+NS_OBJECT_ENSURE_REGISTERED (MgtAssocRequestHeader)
+  ;
 
 MgtAssocRequestHeader::MgtAssocRequestHeader ()
   : m_listenInterval (0)
@@ -367,7 +370,8 @@ MgtAssocRequestHeader::Deserialize (Buffer::Iterator start)
  *          Assoc Response
  ***********************************************************/
 
-NS_OBJECT_ENSURE_REGISTERED (MgtAssocResponseHeader);
+NS_OBJECT_ENSURE_REGISTERED (MgtAssocResponseHeader)
+  ;
 
 MgtAssocResponseHeader::MgtAssocResponseHeader ()
   : m_aid (0)
@@ -633,7 +637,8 @@ WifiActionHeader::Deserialize (Buffer::Iterator start)
 *                 ADDBARequest
 ****************************************************/
 
-NS_OBJECT_ENSURE_REGISTERED (MgtAddBaRequestHeader);
+NS_OBJECT_ENSURE_REGISTERED (MgtAddBaRequestHeader)
+  ;
 
 MgtAddBaRequestHeader::MgtAddBaRequestHeader ()
   : m_dialogToken (1),
@@ -809,7 +814,8 @@ MgtAddBaRequestHeader::SetParameterSet (uint16_t params)
 *                 ADDBAResponse
 ****************************************************/
 
-NS_OBJECT_ENSURE_REGISTERED (MgtAddBaResponseHeader);
+NS_OBJECT_ENSURE_REGISTERED (MgtAddBaResponseHeader)
+  ;
 
 MgtAddBaResponseHeader::MgtAddBaResponseHeader ()
   : m_dialogToken (1),
@@ -975,7 +981,8 @@ MgtAddBaResponseHeader::SetParameterSet (uint16_t params)
 *                     DelBa
 ****************************************************/
 
-NS_OBJECT_ENSURE_REGISTERED (MgtDelBaHeader);
+NS_OBJECT_ENSURE_REGISTERED (MgtDelBaHeader)
+  ;
 
 MgtDelBaHeader::MgtDelBaHeader ()
   : m_reasonCode (1)

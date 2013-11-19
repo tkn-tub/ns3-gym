@@ -34,7 +34,8 @@ NS_LOG_COMPONENT_DEFINE ("Building");
 namespace ns3 {
 
 
-NS_OBJECT_ENSURE_REGISTERED (Building);
+NS_OBJECT_ENSURE_REGISTERED (Building)
+  ;
 
 TypeId
 Building::GetTypeId (void)

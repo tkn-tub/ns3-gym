@@ -48,6 +48,7 @@ public:
    * \param rxc received count
    * \param txc transmitted count
    * \param id mpi rank
+   * \param isFinished whether message is finished
    * \param t smallest time
    */
   LbtsMessage (uint32_t rxc, uint32_t txc, uint32_t id, bool isFinished, const Time& t)
@@ -70,14 +71,16 @@ public:
    */
   uint32_t GetTxCount ();
   /**
-   * \return receieved count
+   * \return received count
    */
   uint32_t GetRxCount ();
   /**
    * \return id which corresponds to mpi rank
    */
   uint32_t GetMyId ();
-
+  /**
+   * \return true if LBTS message is finished
+   */
   bool IsFinished ();
 
 private:

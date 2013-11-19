@@ -33,7 +33,8 @@ NS_LOG_COMPONENT_DEFINE ("PacketSocket");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (PacketSocket);
+NS_OBJECT_ENSURE_REGISTERED (PacketSocket)
+  ;
 
 TypeId
 PacketSocket::GetTypeId (void)
@@ -536,7 +537,8 @@ PacketSocketTag::GetDestAddress (void) const
   return m_destAddr;
 }
 
-NS_OBJECT_ENSURE_REGISTERED (PacketSocketTag);
+NS_OBJECT_ENSURE_REGISTERED (PacketSocketTag)
+  ;
 
 TypeId
 PacketSocketTag::GetTypeId (void)
@@ -599,7 +601,8 @@ DeviceNameTag::GetDeviceName (void) const
   return m_deviceName;
 }
 
-NS_OBJECT_ENSURE_REGISTERED (DeviceNameTag);
+NS_OBJECT_ENSURE_REGISTERED (DeviceNameTag)
+  ;
 
 TypeId
 DeviceNameTag::GetTypeId (void)

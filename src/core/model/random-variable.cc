@@ -44,7 +44,8 @@ namespace ns3 {
 // -----------------------------------------------------------------------------
 // RandomVariableBase methods
 
-NS_LOG_COMPONENT_DEFINE ("RandomVariable");
+NS_LOG_COMPONENT_DEFINE ("RandomVariable")
+  ;
 
 /** \ingroup legacyrandom */
 class RandomVariableBase

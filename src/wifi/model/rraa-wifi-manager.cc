@@ -46,7 +46,8 @@ struct RraaWifiRemoteStation : public WifiRemoteStation
   uint32_t m_rate;
 };
 
-NS_OBJECT_ENSURE_REGISTERED (RraaWifiManager);
+NS_OBJECT_ENSURE_REGISTERED (RraaWifiManager)
+  ;
 
 TypeId
 RraaWifiManager::GetTypeId (void)

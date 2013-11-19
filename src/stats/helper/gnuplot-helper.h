@@ -139,12 +139,13 @@ public:
 
   /**
    * \param probeName the probe's name.
-   *
+   * \return Ptr to probe
    * \brief Gets the specified probe.
    */
   Ptr<Probe> GetProbe (std::string probeName) const;
 
   /**
+   * \return Ptr to GnuplotAggregator object
    * \brief Gets the aggregator.
    *
    * This function is non-const because an aggregator may be lazily

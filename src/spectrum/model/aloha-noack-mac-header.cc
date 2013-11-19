@@ -26,7 +26,8 @@ NS_LOG_COMPONENT_DEFINE ("AlohaNoackMacHeader");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (AlohaNoackMacHeader);
+NS_OBJECT_ENSURE_REGISTERED (AlohaNoackMacHeader)
+  ;
 
 TypeId
 AlohaNoackMacHeader::GetTypeId (void)

@@ -36,13 +36,14 @@ namespace ns3 {
 
 BriteTopologyHelper::BriteTopologyHelper (std::string confFile,
                                           std::string seedFile,
-                                          std::string newseedFile) : m_confFile (confFile),
-                                                                     m_seedFile (seedFile),
-                                                                     m_newSeedFile (newseedFile),
-                                                                     m_numAs (0),
-                                                                     m_topology (NULL),
-                                                                     m_numNodes (0),
-                                                                     m_numEdges (0)
+                                          std::string newseedFile)
+  : m_confFile (confFile),
+    m_seedFile (seedFile),
+    m_newSeedFile (newseedFile),
+    m_numAs (0),
+    m_topology (NULL),
+    m_numNodes (0),
+    m_numEdges (0)
 {
   NS_LOG_FUNCTION (this);
 
@@ -50,11 +51,12 @@ BriteTopologyHelper::BriteTopologyHelper (std::string confFile,
 
 }
 
-BriteTopologyHelper::BriteTopologyHelper (std::string confFile) : m_confFile (confFile),
-                                                                  m_numAs (0),
-                                                                  m_topology (NULL),
-                                                                  m_numNodes (0),
-                                                                  m_numEdges (0)
+BriteTopologyHelper::BriteTopologyHelper (std::string confFile)
+  : m_confFile (confFile),
+    m_numAs (0),
+    m_topology (NULL),
+    m_numNodes (0),
+    m_numEdges (0)
 {
   NS_LOG_FUNCTION (this);
 

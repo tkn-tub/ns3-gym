@@ -43,7 +43,8 @@ NS_LOG_COMPONENT_DEFINE ("ServiceFlowManager");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (ServiceFlowManager);
+NS_OBJECT_ENSURE_REGISTERED (ServiceFlowManager)
+  ;
 
 TypeId ServiceFlowManager::GetTypeId (void)
 {

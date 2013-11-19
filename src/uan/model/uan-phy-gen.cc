@@ -40,11 +40,16 @@ NS_LOG_COMPONENT_DEFINE ("UanPhyGen");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (UanPhyGen);
-NS_OBJECT_ENSURE_REGISTERED (UanPhyPerGenDefault);
-NS_OBJECT_ENSURE_REGISTERED (UanPhyCalcSinrDefault);
-NS_OBJECT_ENSURE_REGISTERED (UanPhyCalcSinrFhFsk);
-NS_OBJECT_ENSURE_REGISTERED (UanPhyPerUmodem);
+NS_OBJECT_ENSURE_REGISTERED (UanPhyGen)
+  ;
+NS_OBJECT_ENSURE_REGISTERED (UanPhyPerGenDefault)
+  ;
+NS_OBJECT_ENSURE_REGISTERED (UanPhyCalcSinrDefault)
+  ;
+NS_OBJECT_ENSURE_REGISTERED (UanPhyCalcSinrFhFsk)
+  ;
+NS_OBJECT_ENSURE_REGISTERED (UanPhyPerUmodem)
+  ;
 
 
 /*************** UanPhyCalcSinrDefault definition *****************/

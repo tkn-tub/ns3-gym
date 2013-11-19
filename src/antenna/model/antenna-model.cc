@@ -28,7 +28,8 @@ NS_LOG_COMPONENT_DEFINE ("AntennaModel");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (AntennaModel);
+NS_OBJECT_ENSURE_REGISTERED (AntennaModel)
+  ;
 
 
 AntennaModel::AntennaModel ()
@@ -39,7 +40,7 @@ AntennaModel::~AntennaModel ()
 {
 }
 
-TypeId 
+TypeId
 AntennaModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::AntennaModel")

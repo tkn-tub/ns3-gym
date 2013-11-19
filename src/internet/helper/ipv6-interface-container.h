@@ -41,7 +41,12 @@ namespace ns3
 class Ipv6InterfaceContainer
 {
 public:
+
+  /**
+   * \brief Container Const Iterator for pairs of Ipv6 smart pointer / Interface Index.
+   */
   typedef std::vector<std::pair<Ptr<Ipv6>, uint32_t> >::const_iterator Iterator;
+
   /**
    * \brief Constructor.
    */
@@ -205,6 +210,10 @@ public:
   void SetDefaultRoute (uint32_t i, Ipv6Address routerAddr);
 
 private:
+  /**
+   * \internal
+   * \brief Container for pairs of Ipv6 smart pointer / Interface Index.
+   */
   typedef std::vector<std::pair<Ptr<Ipv6>, uint32_t> > InterfaceVector;
 
   /**

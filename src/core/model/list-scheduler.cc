@@ -30,7 +30,8 @@ NS_LOG_COMPONENT_DEFINE ("ListScheduler");
 namespace ns3 {
 
 
-NS_OBJECT_ENSURE_REGISTERED (ListScheduler);
+NS_OBJECT_ENSURE_REGISTERED (ListScheduler)
+  ;
 
 TypeId
 ListScheduler::GetTypeId (void)

@@ -34,7 +34,8 @@ NS_LOG_COMPONENT_DEFINE ("YansWifiChannel");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (YansWifiChannel);
+NS_OBJECT_ENSURE_REGISTERED (YansWifiChannel)
+  ;
 
 TypeId
 YansWifiChannel::GetTypeId (void)

@@ -30,7 +30,8 @@ NS_LOG_COMPONENT_DEFINE ("ErrorNetDevice");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (ErrorNetDevice);
+NS_OBJECT_ENSURE_REGISTERED (ErrorNetDevice)
+  ;
 
 TypeId 
 ErrorNetDevice::GetTypeId (void)

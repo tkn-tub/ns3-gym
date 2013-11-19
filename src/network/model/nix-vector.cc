@@ -27,7 +27,7 @@ NS_LOG_COMPONENT_DEFINE ("NixVector");
 
 namespace ns3 {
 
-typedef std::vector<uint32_t> NixBits_t;
+typedef std::vector<uint32_t> NixBits_t;  ///typedef for the nixVector
 
 NixVector::NixVector ()
   : m_nixVector (0),
@@ -77,6 +77,7 @@ NixVector::Copy (void) const
   return Ptr<NixVector> (new NixVector (*this), false);
 }
 
+/* For printing the nix vector */
 std::ostream & operator << (std::ostream &os, const NixVector &nix)
 {
   nix.DumpNixVector (os); 

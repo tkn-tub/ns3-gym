@@ -34,8 +34,10 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("UdpEchoServerApplication");
-NS_OBJECT_ENSURE_REGISTERED (UdpEchoServer);
+NS_LOG_COMPONENT_DEFINE ("UdpEchoServerApplication")
+  ;
+NS_OBJECT_ENSURE_REGISTERED (UdpEchoServer)
+  ;
 
 TypeId
 UdpEchoServer::GetTypeId (void)

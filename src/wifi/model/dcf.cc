@@ -25,7 +25,8 @@ NS_LOG_COMPONENT_DEFINE ("Dcf");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (Dcf);
+NS_OBJECT_ENSURE_REGISTERED (Dcf)
+  ;
 
 TypeId
 Dcf::GetTypeId (void)

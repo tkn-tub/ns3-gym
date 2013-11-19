@@ -137,7 +137,7 @@ DefaultHashTestCase::DoRun (void)
   hash32Reference = 0x463d70e2;  // murmur3(key)
   Check ( "default", Hash32 (key));
 
-  hash64Reference = 0xa750412079d53e04;
+  hash64Reference = 0xa750412079d53e04ULL;
   Check ( "default", Hash64 (key));
 }
 
@@ -170,7 +170,7 @@ Fnv1aTestCase::DoRun (void)
   hash32Reference = 0xa3fc0d6d;  // Fnv1a(key)
   Check ("FNV1a", hasher.clear ().GetHash32 (key));
 
-  hash64Reference = 0x88f6cdbe0a31098d;
+  hash64Reference = 0x88f6cdbe0a31098dULL;
   Check ( "FNV1a", hasher.clear ().GetHash64 (key));
 }
 
@@ -204,7 +204,7 @@ Murmur3TestCase::DoRun (void)
   hash32Reference = 0x463d70e2;  // Murmur3(key)
   Check ( "murmur3", hasher.clear ().GetHash32 (key));
 
-  hash64Reference = 0xa750412079d53e04;
+  hash64Reference = 0xa750412079d53e04ULL;
   Check ( "murmur3", hasher.clear ().GetHash64 (key));
 }
 
@@ -303,7 +303,7 @@ void
 Hash64FunctionPtrTestCase::DoRun (void)
 {
   Hasher hasher = Hasher ( Create<Hash::Function::Hash64> (&gnu_sum64) );
-  hash64Reference = 0x4126412641264126;  // Hash64FunctionPtr(key)
+  hash64Reference = 0x4126412641264126ULL;  // Hash64FunctionPtr(key)
   Check ( "gnu_sum64", hasher.clear ().GetHash64 (key));
 }
 

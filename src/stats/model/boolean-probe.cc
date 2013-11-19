@@ -32,7 +32,8 @@ NS_LOG_COMPONENT_DEFINE ("BooleanProbe");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (BooleanProbe);
+NS_OBJECT_ENSURE_REGISTERED (BooleanProbe)
+  ;
 
 TypeId
 BooleanProbe::GetTypeId ()

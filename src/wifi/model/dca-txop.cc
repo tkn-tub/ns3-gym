@@ -112,7 +112,8 @@ private:
   DcaTxop *m_txop;
 };
 
-NS_OBJECT_ENSURE_REGISTERED (DcaTxop);
+NS_OBJECT_ENSURE_REGISTERED (DcaTxop)
+  ;
 
 TypeId
 DcaTxop::GetTypeId (void)

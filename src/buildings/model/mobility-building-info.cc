@@ -30,7 +30,8 @@ NS_LOG_COMPONENT_DEFINE ("MobilityBuildingInfo");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (MobilityBuildingInfo);
+NS_OBJECT_ENSURE_REGISTERED (MobilityBuildingInfo)
+  ;
 
 TypeId
 MobilityBuildingInfo::GetTypeId (void)

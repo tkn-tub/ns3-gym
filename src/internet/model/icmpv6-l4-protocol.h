@@ -346,8 +346,7 @@ public:
   /**
    * \brief Receive method.
    * \param p the packet
-   * \param src source address
-   * \param dst destination address
+   * \param header the IPv6 header
    * \param interface the interface from which the packet is coming
    */
   virtual enum IpL4Protocol::RxStatus Receive (Ptr<Packet> p,

@@ -82,8 +82,8 @@ class LteAnr : public Object
 public:
   /**
    * \brief Creates an ANR instance.
-   * \param the cell ID of the eNodeB instance whom this ANR instance is to be
-   *        associated with
+   * \param servingCellId the cell ID of the eNodeB instance whom this ANR
+   *                      instance is to be associated with
    */
   LteAnr (uint16_t servingCellId);
   virtual ~LteAnr ();
@@ -109,7 +109,7 @@ public:
 
   /**
    * \brief Remove an existing Neighbour Relation entry.
-   * \param the cell ID to be removed from the NRT
+   * \param cellId the cell ID to be removed from the NRT
    *
    * This function simulates the Neighbour Relation removal operation by
    * network operations and maintenance, as depicted in Section 22.3.2a of

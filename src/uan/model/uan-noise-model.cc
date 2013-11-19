@@ -22,7 +22,8 @@
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (UanNoiseModel);
+NS_OBJECT_ENSURE_REGISTERED (UanNoiseModel)
+  ;
 
 TypeId UanNoiseModel::GetTypeId (void)
 {

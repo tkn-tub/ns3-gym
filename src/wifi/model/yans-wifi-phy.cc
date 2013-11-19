@@ -42,7 +42,8 @@ NS_LOG_COMPONENT_DEFINE ("YansWifiPhy");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (YansWifiPhy);
+NS_OBJECT_ENSURE_REGISTERED (YansWifiPhy)
+  ;
 
 TypeId
 YansWifiPhy::GetTypeId (void)
@@ -862,9 +863,9 @@ YansWifiPhy::GetGuardInterval (void) const
   return m_guardInterval;
 }
 void
-YansWifiPhy::SetGuardInterval (bool GuardInterval)
+YansWifiPhy::SetGuardInterval (bool guardInterval)
 {
-  m_guardInterval = GuardInterval;
+  m_guardInterval = guardInterval;
 }
 
 uint32_t

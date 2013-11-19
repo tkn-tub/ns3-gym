@@ -21,7 +21,7 @@
 # to force us into the public case.)
 #
 # The approach to identify cases 1 & 2 is to test:
-# a.  We're on nsnam.org (actually, nsnam.ece.gatech.edu), and
+# a.  We're on nsnam.org (actually, nsnam-www.coe-hosted.gatech.edu), and
 # b.  We're in the tmp build directory, /tmp/daily-nsnam/
 #     (This is the directory used by the update-* scripts
 #     run by cron jobs.)
@@ -91,9 +91,9 @@ while getopts :pndth option ; do
     esac
 done
 
-# Hostname, fully qualified, e.g. nsnam.ece.gatech.edu
+# Hostname, fully qualified, e.g. nsnam-www.coe-hosted.gatech.edu
 HOST=`hostname`
-NSNAM="nsnam.ece.gatech.edu"
+NSNAM="nsnam-www.coe-hosted.gatech.edu"
 
 # Build directory
 DAILY="^/tmp/daily-nsnam/"

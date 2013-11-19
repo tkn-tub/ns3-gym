@@ -28,12 +28,25 @@ Bugs fixed
 Release 3.18.1
 ==============
 
+This release is mainly to provide updated compiler support (clang/LLVM)
+and fix the Python API scanning facility.  A few additional bug fixes
+and new features are described below.
+
 Availability
 ------------
-This release is not yet available.
+This release is available from:
+http://www.nsnam.org/release/ns-allinone-3.18.1.tar.bz2
 
 Supported platforms
 -------------------
+These platforms have been tested; others may work also:
+- Fedora Core 19 (32/64 bit) with g++-4.8.1
+- Ubuntu 13.10 (64 bit) with g++-4.8.1
+- Ubuntu 12.04.3 (32/64 bit) with g++-4.6.3
+- Ubuntu 10.04.4 LTS (64 bit) with g++-4.4.3
+- OS X Mavericks 10.9 with Xcode 5.0.1 and clang-500.2.79
+- OS X Mountain Lion 10.8.5 with Xcode 5 and g++-4.2.1
+- FreeBSD 9.2-RELEASE (64 bit) with clang-3.3
 
 New user-visible features
 -------------------------
@@ -1009,7 +1022,7 @@ ns-3.9 has been tested on the following platforms:
 
 Not all ns-3 options are available on all platforms; consult the
 wiki for more information:
-http://www.nsnam.org/wiki/index.php/Installation
+http://www.nsnam.org/wiki/Installation
 
 New user-visible features
 -------------------------
@@ -1166,7 +1179,7 @@ ns-3.8 has been tested on the following platforms:
 
 Not all ns-3 options are available on all platforms; consult the
 wiki for more information:
-http://www.nsnam.org/wiki/index.php/Installation
+http://www.nsnam.org/wiki/Installation
 
 New user-visible features
 -------------------------
@@ -1310,7 +1323,7 @@ Unofficially supported platform
 
 Not all ns-3 options are available on all platforms; consult the
 wiki for more information:
-http://www.nsnam.org/wiki/index.php/Installation
+http://www.nsnam.org/wiki/Installation
 
 New user-visible features
 -------------------------
@@ -1430,7 +1443,7 @@ ns-3.6 has been tested on the following platforms:
 
 Not all ns-3 options are available on all platforms; consult the
 wiki for more information:
-http://www.nsnam.org/wiki/index.php/Installation
+http://www.nsnam.org/wiki/Installation
 
 New user-visible features
 -------------------------
@@ -1507,7 +1520,7 @@ ns-3.5 has been tested on the following platforms:
 
 Not all ns-3 options are available on all platforms; consult the
 wiki for more information:
-http://www.nsnam.org/wiki/index.php/Installation
+http://www.nsnam.org/wiki/Installation
 
 New user-visible features
 -------------------------
@@ -1565,7 +1578,7 @@ ns-3.4 has been tested on the following platforms:
 
 Not all ns-3 options are available on all platforms; consult the
 wiki for more information:
-http://www.nsnam.org/wiki/index.php/Installation
+http://www.nsnam.org/wiki/Installation
 
 New user-visible features
 -------------------------
@@ -1629,7 +1642,7 @@ ns-3.3 has been tested on the following platforms:
 
 Not all ns-3 options are available on all platforms; consult the
 wiki for more information:
-http://www.nsnam.org/wiki/index.php/Installation
+http://www.nsnam.org/wiki/Installation
 
 New user-visible features
 -------------------------
@@ -1696,7 +1709,7 @@ ns-3.2 has been tested on the following platforms:
 
 Not all ns-3 options are available on all platforms; consult the
 wiki for more information:
-http://www.nsnam.org/wiki/index.php/Installation
+http://www.nsnam.org/wiki/Installation
 
 New user-visible features
 -------------------------
@@ -1724,7 +1737,7 @@ New user-visible features
     keep track of simulation data in persistent storage across multiple 
     runs (database and ascii file backends are available).
     More information on the wiki:
-    http://www.nsnam.org/wiki/index.php/Statistical_Framework_for_Network_Simulation
+    http://www.nsnam.org/wiki/Statistical_Framework_for_Network_Simulation
 
 API changes from ns-3.1
 -----------------------

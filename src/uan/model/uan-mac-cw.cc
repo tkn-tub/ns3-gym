@@ -31,7 +31,8 @@ NS_LOG_COMPONENT_DEFINE ("UanMacCw");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (UanMacCw);
+NS_OBJECT_ENSURE_REGISTERED (UanMacCw)
+  ;
 
 UanMacCw::UanMacCw ()
   : UanMac (),

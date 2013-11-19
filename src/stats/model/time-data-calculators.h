@@ -44,15 +44,25 @@ public:
   TimeMinMaxAvgTotalCalculator();
   virtual ~TimeMinMaxAvgTotalCalculator();
 
+  /**
+   * Updates all variables of TimeMinMaxAvgTotalCalculator
+   * \param i value of type Time to use for updating the calculator
+   */
   void Update (const Time i);
 
+  /**
+   * Outputs data based on the provided callback
+   * \param callback
+   */
   virtual void Output (DataOutputCallback &callback) const;
 
 protected:
   virtual void DoDispose (void);
 
-  uint32_t m_count;
-  Time m_total, m_min, m_max;
+  uint32_t m_count; /// Count value of TimeMinMaxAvgTotalCalculator
+  Time m_total;     /// Total value of TimeMinMaxAvgTotalCalculator
+  Time m_min;       /// Minimum value of TimeMinMaxAvgTotalCalculator
+  Time m_max;       /// Maximum value of TimeMinMaxAvgTotalCalculator
 
   // end class TimeMinMaxAvgTotalCalculator
 };

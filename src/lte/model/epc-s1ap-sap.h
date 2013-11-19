@@ -53,11 +53,11 @@ public:
    * 
    * \param mmeUeS1Id in practice, we use the IMSI
    * \param enbUeS1Id in practice, we use the RNTI
-   * \param s-tmsi in practice, the imsi
+   * \param stmsi in practice, the imsi
    * \param ecgi in practice, the cell Id
    * 
    */
-  virtual void InitialUeMessage (uint64_t mmeUeS1Id, uint16_t enbUeS1Id, uint64_t imsi, uint16_t ecgi) = 0;
+  virtual void InitialUeMessage (uint64_t mmeUeS1Id, uint16_t enbUeS1Id, uint64_t stmsi, uint16_t ecgi) = 0;
 
 
   /**
@@ -76,10 +76,12 @@ public:
    * 
    * \param mmeUeS1Id in practice, we use the IMSI
    * \param enbUeS1Id in practice, we use the RNTI
-   * \param ecgi in practice, the cell Id
+   * \param erabSetupList
    * 
    */
-  virtual void InitialContextSetupResponse (uint64_t mmeUeS1Id, uint16_t enbUeS1Id, std::list<ErabSetupItem> erabSetupList) = 0;
+  virtual void InitialContextSetupResponse (uint64_t mmeUeS1Id,
+                                            uint16_t enbUeS1Id,
+                                            std::list<ErabSetupItem> erabSetupList) = 0;
 
 
   /**
@@ -126,10 +128,12 @@ public:
    * 
    * \param mmeUeS1Id in practice, we use the IMSI
    * \param enbUeS1Id in practice, we use the RNTI
-   * \param ecgi in practice, the cell Id
+   * \param erabToBeSetupList
    * 
    */
-  virtual void InitialContextSetupRequest (uint64_t mmeUeS1Id, uint16_t enbUeS1Id, std::list<ErabToBeSetupItem> erabToBeSetupList) = 0;
+  virtual void InitialContextSetupRequest (uint64_t mmeUeS1Id,
+                                           uint16_t enbUeS1Id,
+                                           std::list<ErabToBeSetupItem> erabToBeSetupList) = 0;
 
 
   /**

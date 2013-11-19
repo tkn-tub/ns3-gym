@@ -45,7 +45,8 @@ NS_LOG_COMPONENT_DEFINE ("MultiModelSpectrumChannel");
 namespace ns3 {
 
 
-NS_OBJECT_ENSURE_REGISTERED (MultiModelSpectrumChannel);
+NS_OBJECT_ENSURE_REGISTERED (MultiModelSpectrumChannel)
+  ;
 
 
 std::ostream& operator<< (std::ostream& lhs, TxSpectrumModelInfoMap_t& rhs)

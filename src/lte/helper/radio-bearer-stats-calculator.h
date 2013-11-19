@@ -79,31 +79,32 @@ public:
   virtual
   ~RadioBearerStatsCalculator ();
 
-  /**
-   * Inherited from ns3::Object
-   */
+  // Inherited from ns3::Object
   static TypeId GetTypeId (void);
   void DoDispose ();
 
   /**
    * Get the name of the file where the uplink statistics will be stored.
+   * @return the name of the file where the uplink statistics will be stored
    */
   std::string GetUlOutputFilename (void);
 
   /**
    * Get the name of the file where the downlink statistics will be stored.
+   * @return the name of the file where the downlink statistics will be stored
    */
   std::string GetDlOutputFilename (void);
 
   /**
    * Set the name of the file where the uplink PDCP statistics will be stored.
    *
-   * \param outputFilename string with the name of the file
+   * @param outputFilename string with the name of the file
    */
   void SetUlPdcpOutputFilename (std::string outputFilename);
 
   /**
    * Get the name of the file where the uplink PDCP statistics will be stored.
+   * @return the name of the file where the uplink PDCP statistics will be stored
    */
   std::string GetUlPdcpOutputFilename (void);
 
@@ -116,6 +117,7 @@ public:
 
   /**
    * Get the name of the file where the downlink PDCP statistics will be stored.
+   * @return the name of the file where the downlink PDCP statistics will be stored
    */
   std::string GetDlPdcpOutputFilename (void);
 

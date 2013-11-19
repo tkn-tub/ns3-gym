@@ -25,7 +25,8 @@ NS_LOG_COMPONENT_DEFINE ("AmsduSubframeHeader");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (AmsduSubframeHeader);
+NS_OBJECT_ENSURE_REGISTERED (AmsduSubframeHeader)
+  ;
 
 TypeId
 AmsduSubframeHeader::GetTypeId ()

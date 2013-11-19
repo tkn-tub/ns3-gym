@@ -86,6 +86,10 @@ protected:
   virtual void DoDispose ();
 
 private:
+
+  /**
+   * \brief Container of the IPv6 Extensions.
+   */
   typedef std::list<Ptr<Ipv6Extension> > Ipv6ExtensionList_t;
 
   /**

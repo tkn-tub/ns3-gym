@@ -32,7 +32,8 @@ struct IdealWifiRemoteStation : public WifiRemoteStation
   double m_lastSnr;
 };
 
-NS_OBJECT_ENSURE_REGISTERED (IdealWifiManager);
+NS_OBJECT_ENSURE_REGISTERED (IdealWifiManager)
+  ;
 
 TypeId
 IdealWifiManager::GetTypeId (void)

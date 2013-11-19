@@ -28,7 +28,8 @@ NS_LOG_COMPONENT_DEFINE ("ErrorChannel");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (ErrorChannel);
+NS_OBJECT_ENSURE_REGISTERED (ErrorChannel)
+  ;
 
 TypeId 
 ErrorChannel::GetTypeId (void)
@@ -104,7 +105,8 @@ ErrorChannel::GetDevice (uint32_t i) const
   return m_devices[i];
 }
 
-NS_OBJECT_ENSURE_REGISTERED (ErrorModel);
+NS_OBJECT_ENSURE_REGISTERED (ErrorModel)
+  ;
 
 TypeId BinaryErrorModel::GetTypeId (void)
 {

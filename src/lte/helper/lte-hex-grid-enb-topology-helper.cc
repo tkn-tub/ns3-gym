@@ -32,7 +32,8 @@ NS_LOG_COMPONENT_DEFINE ("LteHexGridEnbTopologyHelper");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (LteHexGridEnbTopologyHelper);
+NS_OBJECT_ENSURE_REGISTERED (LteHexGridEnbTopologyHelper)
+  ;
 
 LteHexGridEnbTopologyHelper::LteHexGridEnbTopologyHelper ()
 {

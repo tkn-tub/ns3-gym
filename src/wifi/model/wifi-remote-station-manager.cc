@@ -45,6 +45,9 @@ class HighLatencyDataTxVectorTag : public Tag
 public:
   HighLatencyDataTxVectorTag ();
   HighLatencyDataTxVectorTag (WifiTxVector dataTxVector);
+  /**
+   * \returns the transmission mode to use to send this packet
+   */
   WifiTxVector GetDataTxVector (void) const;
 
   static TypeId GetTypeId (void);
@@ -110,6 +113,10 @@ class HighLatencyRtsTxVectorTag : public Tag
 public:
   HighLatencyRtsTxVectorTag ();
   HighLatencyRtsTxVectorTag (WifiTxVector rtsTxVector);
+  /**
+   * \returns the transmission mode to use to send the RTS prior to the
+   *          transmission of the data packet itself.
+   */
   WifiTxVector GetRtsTxVector (void) const;
 
   static TypeId GetTypeId (void);
@@ -175,6 +182,9 @@ class HighLatencyCtsToSelfTxVectorTag : public Tag
 public:
   HighLatencyCtsToSelfTxVectorTag ();
   HighLatencyCtsToSelfTxVectorTag (WifiTxVector ctsToSelfTxVector);
+  /**
+   * \returns the transmission mode to use for the CTS-to-self.
+   */
   WifiTxVector GetCtsToSelfTxVector (void) const;
 
   static TypeId GetTypeId (void);
@@ -239,7 +249,8 @@ HighLatencyCtsToSelfTxVectorTag::Print (std::ostream &os) const
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (WifiRemoteStationManager);
+NS_OBJECT_ENSURE_REGISTERED (WifiRemoteStationManager)
+  ;
 
 TypeId
 WifiRemoteStationManager::GetTypeId (void)

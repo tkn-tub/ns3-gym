@@ -31,7 +31,8 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("MobilityHelper");
+NS_LOG_COMPONENT_DEFINE ("MobilityHelper")
+  ;
 
 MobilityHelper::MobilityHelper ()
 {

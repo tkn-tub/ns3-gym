@@ -86,6 +86,9 @@ protected:
   virtual void DoDispose ();
 
 private:
+  /**
+   * \brief Container of the IPv6 Options types.
+   */
   typedef std::list<Ptr<Ipv6Option> > Ipv6OptionList_t;
 
   /**

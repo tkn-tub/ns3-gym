@@ -41,6 +41,7 @@ public:
 
   /**
    * Reference-counting copy constructor.
+   * \param original Original GnuPlotDataset
    */
   GnuplotDataset (const GnuplotDataset& original);
 
@@ -51,6 +52,8 @@ public:
 
   /**
    * Reference-counting assignment operator.
+   * \param original Right-hand side of assignment operator
+   * \return Copy of original GnuplotDataset
    */
   GnuplotDataset& operator= (const GnuplotDataset& original);
 
@@ -101,6 +104,7 @@ protected:
 };
 
 /**
+ * \class Gnuplot2dDataset
  * \brief Class to represent a 2D points plot. Set the line or points style
  * using SetStyle() and set points using Add().
  */
@@ -361,7 +365,8 @@ public:
   /**
    * Crude attempt to auto-detect the correct terminal setting by inspecting
    * the filename's extension.
-   * \param filename output file name
+   * \param filename output filename
+   * \return File extension of the provided filename
    */
   static std::string DetectTerminal (const std::string& filename);
 

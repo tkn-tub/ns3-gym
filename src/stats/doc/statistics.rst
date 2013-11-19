@@ -1,4 +1,5 @@
 .. include:: replace.txt
+.. highlight:: cpp
 
 Statistical Framework
 ---------------------
@@ -35,8 +36,8 @@ The statistics framework includes the following features:
 
 * The core framework and two basic data collectors: A counter, and a min/max/avg/total observer.
 * Extensions of those to easily work with times and packets.
-* Plaintext output formatted for omnetpp.
-* Database output using sqlite3, a standalone, lightweight, high performance SQL engine.
+* Plaintext output formatted for `OMNet++`_.
+* Database output using SQLite_, a standalone, lightweight, high performance SQL engine.
 * Mandatory and open ended metadata for describing and working with runs.
 * An example based on the notional experiment of examining the properties of NS-3's default ad hoc WiFi performance.  It incorporates the following:
 
@@ -46,6 +47,9 @@ The statistics framework includes the following features:
   * Instrumentation of custom applications by connecting new trace signals to the stat framework, as well as via direct updates.  Information is recorded about total packets sent and received, bytes transmitted, and end-to-end delay.
   * An example of using packet tags to track end-to-end delay.
   * A simple control script which runs a number of trials of the experiment at varying distances and queries the resulting database to produce a graph using GNUPlot.
+
+.. _OMNet++: http://www.omnetpp.org
+.. _SQLite:  http://www.sqlite.org
 
 To-Do
 *****
@@ -98,17 +102,18 @@ The first thing to do in implementing this experiment is developing the simulati
 
   ::
 
+    double distance = 50.0;
+    string format ("OMNet++");
+    string experiment ("wifi-distance-test");
+    string strategy ("wifi-default");
+    string runID;
+
     CommandLine cmd;
-    cmd.AddValue("distance", "Distance apart to place nodes (in meters).",
-                 distance);
-    cmd.AddValue("format", "Format to use for data output.",
-                 format);
-    cmd.AddValue("experiment", "Identifier for experiment.",
-                 experiment);
-    cmd.AddValue("strategy", "Identifier for strategy.",
-                 strategy);
-    cmd.AddValue("run", "Identifier for run.",
-                 runID);
+    cmd.AddValue("distance",   "Distance apart to place nodes (in meters).", distance);
+    cmd.AddValue("format",     "Format to use for data output.",             format);
+    cmd.AddValue("experiment", "Identifier for experiment.",                 experiment);
+    cmd.AddValue("strategy",   "Identifier for strategy.",                   strategy);
+    cmd.AddValue("run",        "Identifier for run.",                        runID);
     cmd.Parse (argc, argv);
 
 * Creating nodes and network stacks using ``ns3::NodeContainer``, ``ns3::WiFiHelper``, and ``ns3::InternetStackHelper``.
@@ -170,30 +175,24 @@ The first thing to do in implementing this experiment is developing the simulati
   ::
 
     DataCollector data;
-    data.DescribeRun(experiment,
-                     strategy,
-                     input,
-                     runID);
+    data.DescribeRun(experiment, strategy, input, runID);
     data.AddMetadata("author", "tjkopena");
 
   Actual observation and calculating is done by ``ns3::DataCalculator`` objects, of which several different types exist.  These are created by the simulation program, attached to reporting or sampling code, and then registered with the ``ns3::DataCollector`` so they will be queried later for their output.  One easy observation mechanism is to use existing trace sources, for example to instrument objects in the ns-3 core without changing their code.  Here a counter is attached directly to a trace signal in the WiFi MAC layer on the target node.
 
   ::
 
-    Ptr<PacketCounterCalculator> totalRx =
-      CreateObject<PacketCounterCalculator>();
+    Ptr<PacketCounterCalculator> totalRx = CreateObject<PacketCounterCalculator>();
     totalRx->SetKey("wifi-rx-frames");
     Config::Connect("/NodeList/1/DeviceList/*/$ns3::WifiNetDevice/Rx",
-                    MakeCallback(&PacketCounterCalculator::FrameUpdate,
-                                      totalRx));
+                    MakeCallback(&PacketCounterCalculator::FrameUpdate, totalRx));
     data.AddDataCalculator(totalRx);
 
   Calculators may also be manipulated directly.  In this example, a counter is created and passed to the traffic sink application to be updated when packets are received.
 
   ::
 
-    Ptr<CounterCalculator<> > appRx =
-      CreateObject<CounterCalculator<> >();
+    Ptr<CounterCalculator<> > appRx = CreateObject<CounterCalculator<> >();
     appRx->SetKey("receiver-rx-packets");
     receiver->SetCounter(appRx);
     data.AddDataCalculator(appRx);
@@ -212,22 +211,23 @@ The first thing to do in implementing this experiment is developing the simulati
 
     Simulator::Run();    
 
-* Generating either omnetpp or sqlite output, depending on the command line arguments.  To do this a ``ns3::DataOutputInterface`` object is created and configured.  The specific type of this will determine the output format.  This object is then given the ``ns3::DataCollector`` object which it interrogates to produce the output.
+* Generating either `OMNet++`_ or SQLite_ output, depending on the command line arguments.  To do this a ``ns3::DataOutputInterface`` object is created and configured.  The specific type of this will determine the output format.  This object is then given the ``ns3::DataCollector`` object which it interrogates to produce the output.
 
-  ::
+  .. sourcecode:: cpp
 
     Ptr<DataOutputInterface> output;
-    if (format == "omnet") {
-      NS_LOG_INFO("Creating omnet formatted data output.");
+    if (format == "OMNet++") {
+      NS_LOG_INFO("Creating OMNet++ formatted data output.");
       output = CreateObject<OmnetDataOutput>();
     } else {
-      #ifdef STAT_USE_DB
-        NS_LOG_INFO("Creating sqlite formatted data output.");
+    #   ifdef STAT_USE_DB
+        NS_LOG_INFO("Creating SQLite formatted data output.");
         output = CreateObject<SqliteDataOutput>();
-      #endif
+    #   endif
     }
 
     output->Output(data);
+
 
 * Freeing any memory used by the simulation.  This should come at the end of the main function for the example.
 
@@ -240,18 +240,18 @@ Logging
 
 To see what the example program, applications, and stat framework are doing in detail, set the ``NS_LOG`` variable appropriately.  The following will provide copious output from all three.
   
-::
+.. sourcecode:: bash
 
-  export NS_LOG=StatFramework:WiFiDistanceExperiment:WiFiDistanceApps
+  $ export NS_LOG=StatFramework:WiFiDistanceExperiment:WiFiDistanceApps
 
 Note that this slows down the simulation extraordinarily.
 
 Sample Output
 =============
 
-Compiling and simply running the test program will append omnet++ formatted output such as the following to ``data.sca``.
+Compiling and simply running the test program will append `OMNet++`_ formatted output such as the following to ``data.sca``.
 
-::
+.. sourcecode:: text
  
   run run-1212239121
   
@@ -280,9 +280,9 @@ Compiling and simply running the test program will append omnet++ formatted outp
 Control Script
 ++++++++++++++
 
-In order to automate data collection at a variety of inputs (distances), a simple Bash script is used to execute a series of simulations.  It can be found at ``examples/stats/wifi-example-db.sh``.  The script runs through a set of distances, collecting the results into an sqlite3 database.  At each distance five trials are conducted to give a better picture of expected performance.  The entire experiment takes only a few dozen seconds to run on a low end machine as there is no output during the simulation and little traffic is generated.
+In order to automate data collection at a variety of inputs (distances), a simple Bash script is used to execute a series of simulations.  It can be found at ``examples/stats/wifi-example-db.sh``.  The script runs through a set of distances, collecting the results into an SQLite_ database.  At each distance five trials are conducted to give a better picture of expected performance.  The entire experiment takes only a few dozen seconds to run on a low end machine as there is no output during the simulation and little traffic is generated.
   
-::
+.. sourcecode:: bash
 
   #!/bin/sh
   
@@ -314,9 +314,9 @@ In order to automate data collection at a variety of inputs (distances), a simpl
 Analysis and Conclusion
 +++++++++++++++++++++++
 
-Once all trials have been conducted, the script executes a simple SQL query over the database using the sqlite3 command line program.  The query computes average packet loss in each set of trials associated with each distance.  It does not take into account different strategies, but the information is present in the database to make some simple extensions and do so.  The collected data is then passed to GNUPlot for graphing.
+Once all trials have been conducted, the script executes a simple SQL query over the database using the SQLite_ command line program.  The query computes average packet loss in each set of trials associated with each distance.  It does not take into account different strategies, but the information is present in the database to make some simple extensions and do so.  The collected data is then passed to GNUPlot for graphing.
   
-::
+.. sourcecode:: sql
 
   CMD="select exp.input,avg(100-((rx.value*100)/tx.value)) \
       from Singletons rx, Singletons tx, Experiments exp \
@@ -333,7 +333,7 @@ Once all trials have been conducted, the script executes a simple SQL query over
 
 The GNUPlot script found at ``examples/stats/wifi-example.gnuplot`` simply defines the output format and some basic formatting for the graph.
   
-::
+.. sourcecode:: bash
 
   set terminal postscript portrait enhanced lw 2 "Helvetica" 14
   

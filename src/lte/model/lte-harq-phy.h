@@ -88,8 +88,8 @@ public:
   /**
   * \brief Return the info of the HARQ procId in case of retranmissions
   * for UL (asynchronous)
+  * \param rnti the RNTI of the transmitter
   * \param harqProcId the HARQ proc id
-  * \param layer layer no. (for MIMO spatail multiplexing)
   * \return the vector of the info related to HARQ proc Id
   */
   HarqProcessInfoList_t GetHarqProcessInfoUl (uint16_t rnti, uint8_t harqProcId);

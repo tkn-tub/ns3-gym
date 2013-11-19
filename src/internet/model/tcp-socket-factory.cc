@@ -23,7 +23,8 @@
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (TcpSocketFactory);
+NS_OBJECT_ENSURE_REGISTERED (TcpSocketFactory)
+  ;
 
 TypeId
 TcpSocketFactory::GetTypeId (void)

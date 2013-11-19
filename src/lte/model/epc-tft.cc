@@ -28,7 +28,8 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("EpcTft");
+NS_LOG_COMPONENT_DEFINE ("EpcTft")
+  ;
 
 std::ostream& operator<< (std::ostream& os, EpcTft::Direction& d)
 {

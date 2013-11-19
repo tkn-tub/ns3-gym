@@ -25,7 +25,9 @@
 
 namespace ns3 {
 namespace dot11s {
-NS_OBJECT_ENSURE_REGISTERED (AirtimeLinkMetricCalculator);
+NS_OBJECT_ENSURE_REGISTERED (AirtimeLinkMetricCalculator)
+  ;
+  
 TypeId
 AirtimeLinkMetricCalculator::GetTypeId ()
 {

@@ -312,4 +312,4 @@ The ``src/<module>/bindings`` directory may contain the following files, some of
 More Information for Developers
 *******************************
 
-If you are a developer and need more information on |ns3|'s Python bindings, please see the `Python Bindings wiki page <http://www.nsnam.org/wiki/index.php/NS-3_Python_Bindings>`_.
+If you are a developer and need more information on |ns3|'s Python bindings, please see the `Python Bindings wiki page <http://www.nsnam.org/wiki/NS-3_Python_Bindings>`_.

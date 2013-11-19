@@ -122,22 +122,55 @@ public:
   uint16_t GetUrgentPointer () const;
 
   /**
-   * \param source the ip source to use in the underlying
-   *        ip packet.
-   * \param destination the ip destination to use in the
-   *        underlying ip packet.
-   * \param protocol the protocol number to use in the underlying
-   *        ip packet.
+   * \brief Initialize the TCP checksum.
    *
    * If you want to use tcp checksums, you should call this
    * method prior to adding the header to a packet.
+   *
+   * \param source the IP source to use in the underlying
+   *        IP packet.
+   * \param destination the IP destination to use in the
+   *        underlying IP packet.
+   * \param protocol the protocol number to use in the underlying
+   *        IP packet.
+   *
    */
   void InitializeChecksum (Ipv4Address source, 
                            Ipv4Address destination,
                            uint8_t protocol);
+
+  /**
+   * \brief Initialize the TCP checksum.
+   *
+   * If you want to use tcp checksums, you should call this
+   * method prior to adding the header to a packet.
+   *
+   * \param source the IP source to use in the underlying
+   *        IP packet.
+   * \param destination the IP destination to use in the
+   *        underlying IP packet.
+   * \param protocol the protocol number to use in the underlying
+   *        IP packet.
+   *
+   */
   void InitializeChecksum (Ipv6Address source, 
                            Ipv6Address destination,
                            uint8_t protocol);
+
+  /**
+   * \brief Initialize the TCP checksum.
+   *
+   * If you want to use tcp checksums, you should call this
+   * method prior to adding the header to a packet.
+   *
+   * \param source the IP source to use in the underlying
+   *        IP packet.
+   * \param destination the IP destination to use in the
+   *        underlying IP packet.
+   * \param protocol the protocol number to use in the underlying
+   *        IP packet.
+   *
+   */
   void InitializeChecksum (Address source, 
                            Address destination,
                            uint8_t protocol);

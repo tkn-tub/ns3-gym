@@ -115,7 +115,8 @@ std::string ToString (LteUeRrc::State s)
 // ue RRC methods
 /////////////////////////////
 
-NS_OBJECT_ENSURE_REGISTERED (LteUeRrc);
+NS_OBJECT_ENSURE_REGISTERED (LteUeRrc)
+  ;
 
 
 LteUeRrc::LteUeRrc ()
@@ -1487,7 +1488,7 @@ LteUeRrc::SaveUeMeasurements (uint16_t cellId, double rsrp, double rsrq,
           storedMeasIt->second.rsrp = (1 - m_varMeasConfig.aRsrp) * storedMeasIt->second.rsrp
             + m_varMeasConfig.aRsrp * rsrp;
 
-          if (isnan (storedMeasIt->second.rsrq))
+          if (std::isnan (storedMeasIt->second.rsrq))
             {
               // the previous RSRQ measurements provided UE PHY are invalid
               storedMeasIt->second.rsrq = rsrq; // replace it with unfiltered value

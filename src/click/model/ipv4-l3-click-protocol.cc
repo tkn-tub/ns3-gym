@@ -44,7 +44,8 @@ namespace ns3 {
 const uint16_t Ipv4L3ClickProtocol::PROT_NUMBER = 0x0800;
 
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv4L3ClickProtocol);
+NS_OBJECT_ENSURE_REGISTERED (Ipv4L3ClickProtocol)
+  ;
 
 TypeId
 Ipv4L3ClickProtocol::GetTypeId (void)

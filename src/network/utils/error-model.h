@@ -277,19 +277,19 @@ public:
    */
   double GetBurstRate (void) const;
   /**
-   * \param burstRate the error rate to be used by the model
+   * \param rate the error rate to be used by the model
    */
   void SetBurstRate (double rate);
 
   /**
-   * \param ranVariable A random variable distribution to generate random variates
+   * \param ranVar A random variable distribution to generate random variates
    */
-  void SetRandomVariable (Ptr<RandomVariableStream>);
+  void SetRandomVariable (Ptr<RandomVariableStream> ranvar);
 
   /**
-   * \param burstSize A random variable distribution to generate random burst size
+   * \param burstSz A random variable distribution to generate random burst size
    */
-  void SetRandomBurstSize (Ptr<RandomVariableStream>);
+  void SetRandomBurstSize (Ptr<RandomVariableStream> burstSz);
 
   /**
     * Assign a fixed random variable stream number to the random variables

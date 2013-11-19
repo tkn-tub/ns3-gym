@@ -35,7 +35,8 @@ NS_LOG_COMPONENT_DEFINE ("OhBuildingsPropagationLossModel");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (OhBuildingsPropagationLossModel);
+NS_OBJECT_ENSURE_REGISTERED (OhBuildingsPropagationLossModel)
+  ;
 
 
 

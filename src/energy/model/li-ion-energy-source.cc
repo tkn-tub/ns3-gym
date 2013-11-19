@@ -31,7 +31,8 @@ NS_LOG_COMPONENT_DEFINE ("LiIonEnergySource");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (LiIonEnergySource);
+NS_OBJECT_ENSURE_REGISTERED (LiIonEnergySource)
+  ;
 
 TypeId
 LiIonEnergySource::GetTypeId (void)

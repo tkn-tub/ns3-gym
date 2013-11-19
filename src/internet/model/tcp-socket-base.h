@@ -61,6 +61,11 @@ class TcpHeader;
 class TcpSocketBase : public TcpSocket
 {
 public:
+  /**
+   * Get the type ID.
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   /**
    * Create an unbound TCP socket
@@ -69,13 +74,30 @@ public:
 
   /**
    * Clone a TCP socket, for use upon receiving a connection request in LISTEN state
+   *
+   * \param sock the original Tcp Socket
    */
   TcpSocketBase (const TcpSocketBase& sock);
   virtual ~TcpSocketBase (void);
 
   // Set associated Node, TcpL4Protocol, RttEstimator to this socket
+
+  /**
+   * \brief Set the associated node.
+   * \param node the node
+   */
   virtual void SetNode (Ptr<Node> node);
+
+  /**
+   * \brief Set the associated TCP L4 protocol.
+   * \param tcp the TCP L4 protocol
+   */
   virtual void SetTcp (Ptr<TcpL4Protocol> tcp);
+
+  /**
+   * \brief Set the associated RTT estimator.
+   * \param rtt the RTT estimator
+   */
   virtual void SetRtt (Ptr<RttEstimator> rtt);
 
   // Necessary implementations of null functions from ns3::Socket
@@ -101,6 +123,8 @@ public:
 
 protected:
   // Implementing ns3::TcpSocket -- Attribute get/set
+  // inherited, no need to doc
+
   virtual void     SetSndBufSize (uint32_t size);
   virtual uint32_t GetSndBufSize (void) const;
   virtual void     SetRcvBufSize (uint32_t size);
@@ -126,120 +150,454 @@ protected:
   virtual bool     SetAllowBroadcast (bool allowBroadcast);
   virtual bool     GetAllowBroadcast (void) const;
 
+
+
   // Helper functions: Connection set up
-  int SetupCallback (void);        // Common part of the two Bind(), i.e. set callback and remembering local addr:port
-  int DoConnect (void);            // Sending a SYN packet to make a connection if the state allows
-  void ConnectionSucceeded (void); // Schedule-friendly wrapper for Socket::NotifyConnectionSucceeded()
-  int SetupEndpoint (void);        // Configure m_endpoint for local addr for given remote addr
-  int SetupEndpoint6 (void);       // Configure m_endpoint6 for local addr for given remote addr
-  void CompleteFork (Ptr<Packet>, const TcpHeader&, const Address& fromAddress, const Address& toAdress);
+
+  /**
+   * \brief Common part of the two Bind(), i.e. set callback and remembering local addr:port
+   *
+   * \returns 0 on success, -1 on failure
+   */
+  int SetupCallback (void);
+
+  /**
+   * \brief Perform the real connection tasks: Send SYN if allowed, RST if invalid
+   *
+   * \returns 0 on success
+   */
+  int DoConnect (void);
+
+  /**
+   * \brief Schedule-friendly wrapper for Socket::NotifyConnectionSucceeded()
+   */
+  void ConnectionSucceeded (void);
+
+  /**
+   * \brief Configure the endpoint to a local address. Called by Connect() if Bind() didn't specify one.
+   *
+   * \returns 0 on success
+   */
+  int SetupEndpoint (void);
+
+  /**
+   * \brief Configure the endpoint v6 to a local address. Called by Connect() if Bind() didn't specify one.
+   *
+   * \returns 0 on success
+   */
+  int SetupEndpoint6 (void);
+
+  /**
+   * \brief Complete a connection by forking the socket
+   *
+   * This function is called only if a SYN received in LISTEN state. After
+   * TcpSocketBase cloned, allocate a new end point to handle the incoming
+   * connection and send a SYN+ACK to complete the handshake.
+   *
+   * \param p the packet triggering the fork
+   * \param tcpHeader the TCP header of the triggering packet
+   * \param fromAddress the address of the remote host
+   * \param toAddress the address the connection is directed to
+   */
+  void CompleteFork (Ptr<Packet> p, const TcpHeader& tcpHeader, const Address& fromAddress, const Address& toAddress);
+
+
 
   // Helper functions: Transfer operation
+
+  /**
+   * \brief Called by the L3 protocol when it received a packet to pass on to TCP.
+   *
+   * \param packet the incoming packet
+   * \param header the apcket's IPv4 header
+   * \param port the incoming port
+   * \param incomingInterface the incoming interface
+   */
   void ForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port, Ptr<Ipv4Interface> incomingInterface);
+
+  /**
+   * \brief Called by the L3 protocol when it received a packet to pass on to TCP.
+   *
+   * \param packet the incoming packet
+   * \param header the apcket's IPv6 header
+   * \param port the incoming port
+   */
   void ForwardUp6 (Ptr<Packet> packet, Ipv6Header header, uint16_t port);
+
+  /**
+   * \brief Called by TcpSocketBase::ForwardUp().
+   *
+   * \param packet the incoming packet
+   * \param header the apcket's IPv4 header
+   * \param port the incoming port
+   * \param incomingInterface the incoming interface
+   */
   virtual void DoForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port, Ptr<Ipv4Interface> incomingInterface); //Get a pkt from L3
-  virtual void DoForwardUp (Ptr<Packet> packet, Ipv6Header header, uint16_t port); // Ipv6 version
+
+  /**
+   * \brief Called by TcpSocketBase::ForwardUp6().
+   *
+   * \param packet the incoming packet
+   * \param header the apcket's IPv6 header
+   * \param port the incoming port
+   */
+  virtual void DoForwardUp (Ptr<Packet> packet, Ipv6Header header, uint16_t port);
+
+  /**
+   * \brief Called by the L3 protocol when it received an ICMP packet to pass on to TCP.
+   *
+   * \param icmpSource the ICMP source address
+   * \param icmpTtl the ICMP Time to Live
+   * \param icmpType the ICMP Type
+   * \param icmpCode the ICMP Code
+   * \param icmpInfo the ICMP Info
+   */
   void ForwardIcmp (Ipv4Address icmpSource, uint8_t icmpTtl, uint8_t icmpType, uint8_t icmpCode, uint32_t icmpInfo);
-  void ForwardIcmp6 (Ipv6Address icmpSource, uint8_t icmpTtl, uint8_t icmpType, uint8_t icmpCode, uint32_t icmpInfo);  
-  bool SendPendingData (bool withAck = false); // Send as much as the window allows
-  uint32_t SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool withAck); // Send a data packet
-  void SendEmptyPacket (uint8_t flags); // Send a empty packet that carries a flag, e.g. ACK
-  void SendRST (void); // Send reset and tear down this socket
-  bool OutOfRange (SequenceNumber32 head, SequenceNumber32 tail) const; // Check if a sequence number range is within the rx window
+
+  /**
+   * \brief Called by the L3 protocol when it received an ICMPv6 packet to pass on to TCP.
+   *
+   * \param icmpSource the ICMP source address
+   * \param icmpTtl the ICMP Time to Live
+   * \param icmpType the ICMP Type
+   * \param icmpCode the ICMP Code
+   * \param icmpInfo the ICMP Info
+   */
+  void ForwardIcmp6 (Ipv6Address icmpSource, uint8_t icmpTtl, uint8_t icmpType, uint8_t icmpCode, uint32_t icmpInfo);
+
+  /**
+   * \brief Send as much pending data as possible according to the Tx window.
+   *
+   * Note that this function did not implement the PSH flag.
+   *
+   * \param withAck forces an ACK to be sent
+   * \returns true if some data have been sent
+   */
+  bool SendPendingData (bool withAck = false);
+
+  /**
+   * \brief Extract at most maxSize bytes from the TxBuffer at sequence seq, add the
+   *        TCP header, and send to TcpL4Protocol
+   *
+   * \param seq the sequence number
+   * \param maxSize the maximum data block to be transmitted (in bytes)
+   * \param withAck forces an ACK to be sent
+   * \returns the number of bytes sent
+   */
+  uint32_t SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool withAck);
+
+  /**
+   * \brief Send a empty packet that carries a flag, e.g. ACK
+   *
+   * \param flags the packet's flags
+   */
+  void SendEmptyPacket (uint8_t flags);
+
+  /**
+   * \brief Send reset and tear down this socket
+   */
+  void SendRST (void);
+
+  /**
+   * \brief Check if a sequence number range is within the rx window
+   *
+   * \param head start of the Sequence window
+   * \param tail end of the Sequence window
+   * \returns true if it is in range
+   */
+  bool OutOfRange (SequenceNumber32 head, SequenceNumber32 tail) const;
+
 
   // Helper functions: Connection close
-  int DoClose (void); // Close a socket by sending RST, FIN, or FIN+ACK, depend on the current state
-  void CloseAndNotify (void); // To CLOSED state, notify upper layer, and deallocate end point
-  void Destroy (void); // Kill this socket by zeroing its attributes
-  void Destroy6 (void); // Kill this socket by zeroing its attributes
-  void DeallocateEndPoint (void); // Deallocate m_endPoint
-  void PeerClose (Ptr<Packet>, const TcpHeader&); // Received a FIN from peer, notify rx buffer
-  void DoPeerClose (void); // FIN is in sequence, notify app and respond with a FIN
-  void CancelAllTimers (void); // Cancel all timer when endpoint is deleted
-  void TimeWait (void);  // Move from CLOSING or FIN_WAIT_2 to TIME_WAIT state
+
+  /**
+   * \brief Close a socket by sending RST, FIN, or FIN+ACK, depend on the current state
+   *
+   * \returns 0 on success
+   */
+  int DoClose (void);
+
+  /**
+   * \brief Peacefully close the socket by notifying the upper layer and deallocate end point
+   */
+  void CloseAndNotify (void);
+
+  /**
+   * \brief Kill this socket by zeroing its attributes (IPv4)
+   *
+   * This is a callback function configured to m_endpoint in
+   * SetupCallback(), invoked when the endpoint is destroyed.
+   */
+  void Destroy (void);
+
+  /**
+   * \brief Kill this socket by zeroing its attributes (IPv6)
+   *
+   * This is a callback function configured to m_endpoint in
+   * SetupCallback(), invoked when the endpoint is destroyed.
+   */
+  void Destroy6 (void);
+
+  /**
+   * \brief Deallocate m_endPoint
+   */
+  void DeallocateEndPoint (void);
+
+  /**
+   * \brief Received a FIN from peer, notify rx buffer
+   *
+   * \param p the packet
+   * \param tcpHeader the packet's TCP header
+   */
+  void PeerClose (Ptr<Packet> p, const TcpHeader& tcpHeader);
+
+  /**
+   * \brief FIN is in sequence, notify app and respond with a FIN
+   */
+  void DoPeerClose (void);
+
+  /**
+   * \brief Cancel all timer when endpoint is deleted
+   */
+  void CancelAllTimers (void);
+
+  /**
+   * \brief Move from CLOSING or FIN_WAIT_2 to TIME_WAIT state
+   */
+  void TimeWait (void);
 
   // State transition functions
-  void ProcessEstablished (Ptr<Packet>, const TcpHeader&); // Received a packet upon ESTABLISHED state
-  void ProcessListen (Ptr<Packet>, const TcpHeader&, const Address&, const Address&); // Process the newly received ACK
-  void ProcessSynSent (Ptr<Packet>, const TcpHeader&); // Received a packet upon SYN_SENT
-  void ProcessSynRcvd (Ptr<Packet>, const TcpHeader&, const Address&, const Address&); // Received a packet upon SYN_RCVD
-  void ProcessWait (Ptr<Packet>, const TcpHeader&); // Received a packet upon CLOSE_WAIT, FIN_WAIT_1, FIN_WAIT_2
-  void ProcessClosing (Ptr<Packet>, const TcpHeader&); // Received a packet upon CLOSING
-  void ProcessLastAck (Ptr<Packet>, const TcpHeader&); // Received a packet upon LAST_ACK
+
+  /**
+   * \brief Received a packet upon ESTABLISHED state.
+   *
+   * This function is mimicking the role of tcp_rcv_established() in tcp_input.c in Linux kernel.
+   *
+   * \param packet the packet
+   * \param tcpHeader the packet's TCP header
+   */
+  void ProcessEstablished (Ptr<Packet> packet, const TcpHeader& tcpHeader); // Received a packet upon ESTABLISHED state
+
+  /**
+   * \brief Received a packet upon LISTEN state.
+   *
+   * \param packet the packet
+   * \param tcpHeader the packet's TCP header
+   * \param fromAddress the source address
+   * \param toAddress the destination address
+   */
+  void ProcessListen (Ptr<Packet> packet, const TcpHeader& tcpHeader,
+                      const Address& fromAddress, const Address& toAddress);
+
+  /**
+   * \brief Received a packet upon SYN_SENT
+   *
+   * \param packet the packet
+   * \param tcpHeader the packet's TCP header
+   */
+  void ProcessSynSent (Ptr<Packet> packet, const TcpHeader& tcpHeader);
+
+  /**
+   * \brief Received a packet upon SYN_RCVD.
+   *
+   * \param packet the packet
+   * \param tcpHeader the packet's TCP header
+   * \param fromAddress the source address
+   * \param toAddress the destination address
+   */
+  void ProcessSynRcvd (Ptr<Packet> packet, const TcpHeader& tcpHeader,
+                       const Address& fromAddress, const Address& toAddress);
+
+  /**
+   * \brief Received a packet upon CLOSE_WAIT, FIN_WAIT_1, FIN_WAIT_2
+   *
+   * \param packet the packet
+   * \param tcpHeader the packet's TCP header
+   */
+  void ProcessWait (Ptr<Packet> packet, const TcpHeader& tcpHeader);
+
+  /**
+   * \brief Received a packet upon CLOSING
+   *
+   * \param packet the packet
+   * \param tcpHeader the packet's TCP header
+   */
+  void ProcessClosing (Ptr<Packet> packet, const TcpHeader& tcpHeader);
+
+  /**
+   * \brief Received a packet upon LAST_ACK
+   *
+   * \param packet the packet
+   * \param tcpHeader the packet's TCP header
+   */
+  void ProcessLastAck (Ptr<Packet> packet, const TcpHeader& tcpHeader);
 
   // Window management
-  virtual uint32_t UnAckDataCount (void);       // Return count of number of unacked bytes
-  virtual uint32_t BytesInFlight (void);        // Return total bytes in flight
-  virtual uint32_t Window (void);               // Return the max possible number of unacked bytes
-  virtual uint32_t AvailableWindow (void);      // Return unfilled portion of window
-  virtual uint16_t AdvertisedWindowSize (void); // The amount of Rx window announced to the peer
+
+  /**
+   * \brief Return count of number of unacked bytes
+   * \returns count of number of unacked bytes
+   */
+  virtual uint32_t UnAckDataCount (void);
+
+  /**
+   * \brief Return total bytes in flight
+   * \returns total bytes in flight
+   */
+  virtual uint32_t BytesInFlight (void);
+
+  /**
+   * \brief Return the max possible number of unacked bytes
+   * \returns the max possible number of unacked bytes
+   */
+  virtual uint32_t Window (void);
+
+  /**
+   * \brief Return unfilled portion of window
+   * \return unfilled portion of window
+   */
+  virtual uint32_t AvailableWindow (void);
+
+  /**
+   * \brief The amount of Rx window announced to the peer
+   * \returns size of Rx window announced to the peer
+   */
+  virtual uint16_t AdvertisedWindowSize (void);
+
 
   // Manage data tx/rx
-  virtual Ptr<TcpSocketBase> Fork (void) = 0; // Call CopyObject<> to clone me
-  virtual void ReceivedAck (Ptr<Packet>, const TcpHeader&); // Received an ACK packet
-  virtual void ReceivedData (Ptr<Packet>, const TcpHeader&); // Recv of a data, put into buffer, call L7 to get it if necessary
-  virtual void EstimateRtt (const TcpHeader&); // RTT accounting
-  virtual void NewAck (SequenceNumber32 const& seq); // Update buffers w.r.t. ACK
-  virtual void DupAck (const TcpHeader& t, uint32_t count) = 0; // Received dupack
-  virtual void ReTxTimeout (void); // Call Retransmit() upon RTO event
-  virtual void Retransmit (void); // Halving cwnd and call DoRetransmit()
-  virtual void DelAckTimeout (void);  // Action upon delay ACK timeout, i.e. send an ACK
-  virtual void LastAckTimeout (void); // Timeout at LAST_ACK, close the connection
-  virtual void PersistTimeout (void); // Send 1 byte probe to get an updated window size
-  virtual void DoRetransmit (void); // Retransmit the oldest packet
-  virtual void ReadOptions (const TcpHeader&); // Read option from incoming packets
-  virtual void AddOptions (TcpHeader&); // Add option to outgoing packets
+
+  /**
+   * \brief Call CopyObject<> to clone me
+   * \returns a copy of the socket
+   */
+  virtual Ptr<TcpSocketBase> Fork (void) = 0;
+
+  /**
+   * \brief Received an ACK packet
+   * \param packet the packet
+   * \param tcpHeader the packet's TCP header
+   */
+  virtual void ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader);
+
+  /**
+   * \brief Recv of a data, put into buffer, call L7 to get it if necessary
+   * \param packet the packet
+   * \param tcpHeader the packet's TCP header
+   */
+  virtual void ReceivedData (Ptr<Packet> packet, const TcpHeader& tcpHeader);
+
+  /**
+   * \brief Take into account the packet for RTT estimation
+   * \param tcpHeader the packet's TCP header
+   */
+  virtual void EstimateRtt (const TcpHeader& tcpHeader);
+
+  /**
+   * \brief Update buffers w.r.t. ACK
+   * \param seq the sequence number
+   */
+  virtual void NewAck (SequenceNumber32 const& seq);
+
+  /**
+   * \brief Received dupack (duplicate ACK)
+   * \param tcpHeader the packet's TCP header
+   * \param count counter of duplicate ACKs
+   */
+  virtual void DupAck (const TcpHeader& tcpHeader, uint32_t count) = 0;
+
+  /**
+   * \brief Call Retransmit() upon RTO event
+   */
+  virtual void ReTxTimeout (void);
+
+  /**
+   * \brief Halving cwnd and call DoRetransmit()
+   */
+  virtual void Retransmit (void);
+
+  /**
+   * \brief Action upon delay ACK timeout, i.e. send an ACK
+   */
+  virtual void DelAckTimeout (void);
+
+  /**
+   * \brief Timeout at LAST_ACK, close the connection
+   */
+  virtual void LastAckTimeout (void);
+
+  /**
+   * \brief Send 1 byte probe to get an updated window size
+   */
+  virtual void PersistTimeout (void);
+
+  /**
+   * \brief Retransmit the oldest packet
+   */
+  virtual void DoRetransmit (void);
+
+  /**
+   * \brief Read option from incoming packets
+   * \param tcpHeader the packet's TCP header
+   */
+  virtual void ReadOptions (const TcpHeader& tcpHeader);
+
+  /**
+   * \brief Add option to outgoing packets
+   * \param tcpHeader the packet's TCP header
+   */
+  virtual void AddOptions (TcpHeader& tcpHeader);
+
 
 protected:
   // Counters and events
-  EventId           m_retxEvent;       //< Retransmission event
-  EventId           m_lastAckEvent;    //< Last ACK timeout event
-  EventId           m_delAckEvent;     //< Delayed ACK timeout event
-  EventId           m_persistEvent;    //< Persist event: Send 1 byte to probe for a non-zero Rx window
-  EventId           m_timewaitEvent;   //< TIME_WAIT expiration event: Move this socket to CLOSED state
-  uint32_t          m_dupAckCount;     //< Dupack counter
-  uint32_t          m_delAckCount;     //< Delayed ACK counter
-  uint32_t          m_delAckMaxCount;  //< Number of packet to fire an ACK before delay timeout
-  bool              m_noDelay;         //< Set to true to disable Nagle's algorithm
-  uint32_t          m_cnCount;         //< Count of remaining connection retries
-  uint32_t          m_cnRetries;       //< Number of connection retries before giving up
-  TracedValue<Time> m_rto;             //< Retransmit timeout
-  TracedValue<Time> m_lastRtt;         //< Last RTT sample collected
-  Time              m_delAckTimeout;   //< Time to delay an ACK
-  Time              m_persistTimeout;  //< Time between sending 1-byte probes
-  Time              m_cnTimeout;       //< Timeout for connection retry
+  EventId           m_retxEvent;       //!< Retransmission event
+  EventId           m_lastAckEvent;    //!< Last ACK timeout event
+  EventId           m_delAckEvent;     //!< Delayed ACK timeout event
+  EventId           m_persistEvent;    //!< Persist event: Send 1 byte to probe for a non-zero Rx window
+  EventId           m_timewaitEvent;   //!< TIME_WAIT expiration event: Move this socket to CLOSED state
+  uint32_t          m_dupAckCount;     //!< Dupack counter
+  uint32_t          m_delAckCount;     //!< Delayed ACK counter
+  uint32_t          m_delAckMaxCount;  //!< Number of packet to fire an ACK before delay timeout
+  bool              m_noDelay;         //!< Set to true to disable Nagle's algorithm
+  uint32_t          m_cnCount;         //!< Count of remaining connection retries
+  uint32_t          m_cnRetries;       //!< Number of connection retries before giving up
+  TracedValue<Time> m_rto;             //!< Retransmit timeout
+  TracedValue<Time> m_lastRtt;         //!< Last RTT sample collected
+  Time              m_delAckTimeout;   //!< Time to delay an ACK
+  Time              m_persistTimeout;  //!< Time between sending 1-byte probes
+  Time              m_cnTimeout;       //!< Timeout for connection retry
 
   // Connections to other layers of TCP/IP
-  Ipv4EndPoint*       m_endPoint;
-  Ipv6EndPoint*       m_endPoint6;
-  Ptr<Node>           m_node;
-  Ptr<TcpL4Protocol>  m_tcp;
-  Callback<void, Ipv4Address,uint8_t,uint8_t,uint8_t,uint32_t> m_icmpCallback;
-  Callback<void, Ipv6Address,uint8_t,uint8_t,uint8_t,uint32_t> m_icmpCallback6;
+  Ipv4EndPoint*       m_endPoint;   //!< the IPv4 endpoint
+  Ipv6EndPoint*       m_endPoint6;  //!< the IPv6 endpoint
+  Ptr<Node>           m_node;       //!< the associated node
+  Ptr<TcpL4Protocol>  m_tcp;        //!< the associated TCP L4 protocol
+  Callback<void, Ipv4Address,uint8_t,uint8_t,uint8_t,uint32_t> m_icmpCallback;  //!< ICMP callback
+  Callback<void, Ipv6Address,uint8_t,uint8_t,uint8_t,uint32_t> m_icmpCallback6; //!< ICMPv6 callback
 
-  // Round trip time estimation
-  Ptr<RttEstimator> m_rtt;
+  Ptr<RttEstimator> m_rtt; //!< Round trip time estimator
 
   // Rx and Tx buffer management
-  TracedValue<SequenceNumber32> m_nextTxSequence; //< Next seqnum to be sent (SND.NXT), ReTx pushes it back
-  TracedValue<SequenceNumber32> m_highTxMark;     //< Highest seqno ever sent, regardless of ReTx
-  TcpRxBuffer                   m_rxBuffer;       //< Rx buffer (reordering buffer)
-  TcpTxBuffer                   m_txBuffer;       //< Tx buffer
+  TracedValue<SequenceNumber32> m_nextTxSequence; //!< Next seqnum to be sent (SND.NXT), ReTx pushes it back
+  TracedValue<SequenceNumber32> m_highTxMark;     //!< Highest seqno ever sent, regardless of ReTx
+  TcpRxBuffer                   m_rxBuffer;       //!< Rx buffer (reordering buffer)
+  TcpTxBuffer                   m_txBuffer;       //!< Tx buffer
 
   // State-related attributes
-  TracedValue<TcpStates_t> m_state;         //< TCP state
-  enum SocketErrno         m_errno;         //< Socket error code
-  bool                     m_closeNotified; //< Told app to close socket
-  bool                     m_closeOnEmpty;  //< Close socket upon tx buffer emptied
-  bool                     m_shutdownSend;  //< Send no longer allowed
-  bool                     m_shutdownRecv;  //< Receive no longer allowed
-  bool                     m_connected;     //< Connection established
-  double                   m_msl;           //< Max segment lifetime
+  TracedValue<TcpStates_t> m_state;         //!< TCP state
+  enum SocketErrno         m_errno;         //!< Socket error code
+  bool                     m_closeNotified; //!< Told app to close socket
+  bool                     m_closeOnEmpty;  //!< Close socket upon tx buffer emptied
+  bool                     m_shutdownSend;  //!< Send no longer allowed
+  bool                     m_shutdownRecv;  //!< Receive no longer allowed
+  bool                     m_connected;     //!< Connection established
+  double                   m_msl;           //!< Max segment lifetime
 
   // Window management
-  uint32_t              m_segmentSize; //< Segment size
-  uint16_t              m_maxWinSize;  //< Maximum window size to advertise
-  TracedValue<uint32_t> m_rWnd;        //< Flow control window at remote side
+  uint32_t              m_segmentSize; //!< Segment size
+  uint16_t              m_maxWinSize;  //!< Maximum window size to advertise
+  TracedValue<uint32_t> m_rWnd;        //!< Flow control window at remote side
 };
 
 } // namespace ns3

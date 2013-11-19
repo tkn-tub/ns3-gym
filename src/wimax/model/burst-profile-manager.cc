@@ -31,7 +31,8 @@ NS_LOG_COMPONENT_DEFINE ("BurstProfileManager");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (BurstProfileManager);
+NS_OBJECT_ENSURE_REGISTERED (BurstProfileManager)
+  ;
 
 TypeId BurstProfileManager::GetTypeId (void)
 {

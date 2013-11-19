@@ -57,7 +57,7 @@ public:
    *
    * @param rnti the value of the RNTI to set
    */
-  void SetRnti (uint16_t tid);
+  void SetRnti (uint16_t rnti);
 
   /**
    * Set the LC id to the given value.
@@ -71,7 +71,7 @@ public:
   *
   * @param layer the value of the layer to set
   */
-  void SetLayer (uint8_t lcid);
+  void SetLayer (uint8_t layer);
 
 
   virtual void Serialize (TagBuffer i) const;

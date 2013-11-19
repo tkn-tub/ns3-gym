@@ -60,7 +60,8 @@ NS_LOG_COMPONENT_DEFINE ("StaWifiMac");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (StaWifiMac);
+NS_OBJECT_ENSURE_REGISTERED (StaWifiMac)
+  ;
 
 TypeId
 StaWifiMac::GetTypeId (void)

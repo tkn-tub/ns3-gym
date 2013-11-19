@@ -36,8 +36,10 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("UdpServer");
-NS_OBJECT_ENSURE_REGISTERED (UdpServer);
+NS_LOG_COMPONENT_DEFINE ("UdpServer")
+  ;
+NS_OBJECT_ENSURE_REGISTERED (UdpServer)
+  ;
 
 
 TypeId

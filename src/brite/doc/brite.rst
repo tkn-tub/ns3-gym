@@ -1,4 +1,5 @@
 .. include:: replace.txt
+.. highlight:: bash
 
 BRITE Integration
 ------------------
@@ -30,9 +31,7 @@ the Waxman model or the Barbasi-Albert model.  BRITE interconnects these separat
 router topologies as specified by the AS level topology.  Once the hierarchical 
 topology is constructed, it is flattened into a large router level topology.
 
-Further information can be found in the BRITE user manual:::
-
-	http://www.cs.bu.edu/brite/publications/usermanual.pdf
+Further information can be found in the BRITE user manual: http://www.cs.bu.edu/brite/publications/usermanual.pdf
 
 Model Description
 *****************
@@ -86,7 +85,7 @@ can be found in the BRITE user manual.
 Building BRITE Integration
 ==========================
 
-The first step is to download and build the ns-3 specific BRITE repository:::
+The first step is to download and build the ns-3 specific BRITE repository::
 
   $ hg clone http://code.nsnam.org/BRITE
   $ cd BRITE
@@ -96,7 +95,7 @@ This will build BRITE and create a library, libbrite.so, within the BRITE
 directory.
 
 Once BRITE has been built successfully, we proceed to configure ns-3 with 
-BRITE support. Change to your ns-3 directory:::
+BRITE support. Change to your ns-3 directory::
 
   $ ./waf configure --with-brite=/your/path/to/brite/source --enable-examples
 
@@ -104,14 +103,14 @@ Make sure it says 'enabled' beside 'BRITE Integration'. If it does not, then
 something has gone wrong. Either you have forgotten to build BRITE first 
 following the steps above, or ns-3 could not find your BRITE directory.
 
-Next, build ns-3:::
+Next, build ns-3::
 
   $ ./waf
 
 Examples
 ========
 For an example demonstrating BRITE integration
-run:::
+run::
 
   $ ./waf --run 'brite-generic-example'
 
@@ -119,25 +118,28 @@ By enabling the verbose parameter, the example will print out the node and
 edge information in a similar format to standard BRITE output. There are 
 many other command-line parameters including confFile, tracing, and nix, described below:
    
-   confFile:    A BRITE configuration file. Many different BRITE configuration 
-                file examples exist in the src/brite/examples/conf_files directory, for 
-                example, RTBarabasi20.conf and RTWaxman.conf. Please refer to 
-                the conf_files directory for more examples.
+  confFile
+    A BRITE configuration file. Many different BRITE configuration 
+    file examples exist in the src/brite/examples/conf_files directory, for 
+    example, RTBarabasi20.conf and RTWaxman.conf. Please refer to 
+    the conf_files directory for more examples.
 
-   tracing:     Enables ascii tracing.
+  tracing
+    Enables ascii tracing.
 
-   nix:         Enables nix-vector routing. Global routing is used by default.
+  nix
+    Enables nix-vector routing. Global routing is used by default.
 
 The generic BRITE example also support visualization using pyviz, assuming
-python bindings in ns-3 are enabled:::
+python bindings in ns-3 are enabled::
 
   $ ./waf --run brite-generic-example --vis
   
 Simulations involving BRITE can also be used with MPI.  The total number of MPI instances is 
 passed to the BRITE topology helper where a modulo divide is used to assign the nodes for each 
-AS to a MPI instance.  An example can be found in src/brite/examples:::
+AS to a MPI instance.  An example can be found in src/brite/examples::
 
-	$ mpirun -np 2 ./waf --run brite-MPI-example
+  $ mpirun -np 2 ./waf --run brite-MPI-example
 	
 Please see the ns-3 MPI documentation for information on setting up MPI with ns-3.
 

@@ -24,7 +24,8 @@
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (RlcTag);
+NS_OBJECT_ENSURE_REGISTERED (RlcTag)
+  ;
 
 RlcTag::RlcTag ()
   : m_senderTimestamp (Seconds (0))

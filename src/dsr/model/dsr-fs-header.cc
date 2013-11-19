@@ -39,7 +39,8 @@ namespace dsr {
 
 NS_LOG_COMPONENT_DEFINE ("DsrFsHeader");
 
-NS_OBJECT_ENSURE_REGISTERED (DsrFsHeader);
+NS_OBJECT_ENSURE_REGISTERED (DsrFsHeader)
+  ;
 
 TypeId DsrFsHeader::GetTypeId ()
 {
@@ -258,7 +259,8 @@ Buffer DsrOptionField::GetDsrOptionBuffer ()
   return m_optionData;
 }
 
-NS_OBJECT_ENSURE_REGISTERED (DsrRoutingHeader);
+NS_OBJECT_ENSURE_REGISTERED (DsrRoutingHeader)
+  ;
 
 TypeId DsrRoutingHeader::GetTypeId ()
 {

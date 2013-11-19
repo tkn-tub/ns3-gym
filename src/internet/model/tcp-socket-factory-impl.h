@@ -46,6 +46,10 @@ public:
   TcpSocketFactoryImpl ();
   virtual ~TcpSocketFactoryImpl ();
 
+  /**
+   * \brief Set the associated TCP L4 protocol.
+   * \param tcp the TCP L4 protocol
+   */
   void SetTcp (Ptr<TcpL4Protocol> tcp);
 
   virtual Ptr<Socket> CreateSocket (void);
@@ -53,7 +57,7 @@ public:
 protected:
   virtual void DoDispose (void);
 private:
-  Ptr<TcpL4Protocol> m_tcp;
+  Ptr<TcpL4Protocol> m_tcp; //!< the associated TCP L4 protocol
 };
 
 } // namespace ns3

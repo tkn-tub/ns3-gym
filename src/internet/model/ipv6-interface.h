@@ -257,8 +257,19 @@ protected:
   virtual void DoDispose ();
 
 private:
+  /**
+   * \brief Container for the Ipv6InterfaceAddresses.
+   */
   typedef std::list<Ipv6InterfaceAddress> Ipv6InterfaceAddressList;
+
+  /**
+   * \brief Container Iterator for the Ipv6InterfaceAddresses.
+   */
   typedef std::list<Ipv6InterfaceAddress>::iterator Ipv6InterfaceAddressListI;
+
+  /**
+   * \brief Const Container Itareator for the Ipv6InterfaceAddresses.
+   */
   typedef std::list<Ipv6InterfaceAddress>::const_iterator Ipv6InterfaceAddressListCI;
 
   /**

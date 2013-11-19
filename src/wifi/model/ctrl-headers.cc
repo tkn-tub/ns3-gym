@@ -30,7 +30,8 @@ namespace ns3 {
  *       Block ack request
  ***********************************/
 
-NS_OBJECT_ENSURE_REGISTERED (CtrlBAckRequestHeader);
+NS_OBJECT_ENSURE_REGISTERED (CtrlBAckRequestHeader)
+  ;
 
 CtrlBAckRequestHeader::CtrlBAckRequestHeader ()
   : m_barAckPolicy (false),
@@ -278,7 +279,8 @@ CtrlBAckRequestHeader::IsMultiTid (void) const
  *       Block ack response
  ***********************************/
 
-NS_OBJECT_ENSURE_REGISTERED (CtrlBAckResponseHeader);
+NS_OBJECT_ENSURE_REGISTERED (CtrlBAckResponseHeader)
+  ;
 
 CtrlBAckResponseHeader::CtrlBAckResponseHeader ()
   : m_baAckPolicy (false),

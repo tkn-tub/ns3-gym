@@ -51,7 +51,8 @@ NS_LOG_COMPONENT_DEFINE ("TcpL4Protocol");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (TcpL4Protocol);
+NS_OBJECT_ENSURE_REGISTERED (TcpL4Protocol)
+  ;
 
 //TcpL4Protocol stuff----------------------------------------------------------
 

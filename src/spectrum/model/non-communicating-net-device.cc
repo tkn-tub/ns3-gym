@@ -36,7 +36,8 @@ namespace ns3 {
 
 
 
-NS_OBJECT_ENSURE_REGISTERED (NonCommunicatingNetDevice);
+NS_OBJECT_ENSURE_REGISTERED (NonCommunicatingNetDevice)
+  ;
 
 TypeId
 NonCommunicatingNetDevice::GetTypeId (void)

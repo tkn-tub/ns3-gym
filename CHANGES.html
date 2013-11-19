@@ -51,22 +51,52 @@ to this file based on your experience, please contribute a patch or drop
 us a note on ns-developers mailing list.</p>
 
 <hr>
-<h1>Changes from ns-3.18 to ns-3.19</h1>
+<h1>Changes from ns-3.18.1 to ns-3.19</h1>
+
+<h2>New API:</h2>
+
+<h2>Changes to existing API:</h2>
+
+<h2>Changes to build system:</h2>
+
+<h2>Changed behavior:</h2>
+
+<hr>
+<h1>Changes from ns-3.18 to ns-3.18.1</h1>
 <h2>New API:</h2>
 <ul>
-  <li></li>
+  <li> It is now possible to randomize the time of the first beacon from an
+  access point.  Use an attribute "EnableBeaconJitter" to enable/disable
+  this feature.
+  </li>
+  <li> A new FixedRoomPositionAllocator helper class is available; it
+  allows one to generate a random position uniformly distributed in the
+  volume of a chosen room inside a chosen building.
+  </li>
 </ul>
+
 <h2>Changes to existing API:</h2>
 <ul>
-  <li></li>
+  <li> Logging wildcards:  allow "***" as synonym for "*=**" to turn on all logging.
+  </li>
+  <li> The log component list ("NS_LOG=print-list") is now printed alphabetically.
+  </li>
+  <li> Some deprecated IEEE 802.11p code has been removed from the wifi module
+  </li>
 </ul>
+
 <h2>Changes to build system:</h2>
 <ul>
-  <li></li>
+  <li> The Python API scanning system (./waf --apiscan) has been fixed (bug 1622)
+  </li> 
+  <li> Waf has been upgraded from 1.7.11 to 1.7.13
+  </li> 
 </ul>
+
 <h2>Changed behavior:</h2>
 <ul>
-  <li></li>
+  <li> Wifi simulations have additional jitter on AP beaconing (see above) and some bug fixes have been applied to wifi module (see RELEASE_NOTES)
+  </li> 
 </ul>
 
 <hr>

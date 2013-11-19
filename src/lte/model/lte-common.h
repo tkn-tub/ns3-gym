@@ -118,31 +118,31 @@ public:
 struct PhyTransmissionStatParameters
 {
   int64_t  m_timestamp; // in millisecond
-  uint16_t m_cellId;
-  uint64_t m_imsi;
-  uint16_t m_rnti;
-  uint8_t  m_txMode;
-  uint8_t  m_layer;
-  uint8_t  m_mcs;
-  uint16_t m_size;
-  uint8_t  m_rv;
-  uint8_t  m_ndi;
+  uint16_t m_cellId;  ///< Cell ID of the attached Enb
+  uint64_t m_imsi;    ///< IMSI of the scheduled UE
+  uint16_t m_rnti;    ///< C-RNTI scheduled
+  uint8_t  m_txMode;  ///< the transmission Mode
+  uint8_t  m_layer;   ///< the layer (cw) of the transmission
+  uint8_t  m_mcs;     ///< MCS for transport block
+  uint16_t m_size;    ///< Size of transport block
+  uint8_t  m_rv;      ///< the redundancy version (HARQ)
+  uint8_t  m_ndi;     ///< new data indicator flag
 };
 
 
 struct PhyReceptionStatParameters
 {
   int64_t  m_timestamp; // in millisecond
-  uint16_t m_cellId;
-  uint64_t m_imsi;
-  uint16_t m_rnti;
-  uint8_t  m_txMode;
-  uint8_t  m_layer;
-  uint8_t  m_mcs;
-  uint16_t m_size;
-  uint8_t  m_rv;
-  uint8_t  m_ndi;
-  uint8_t  m_correctness;
+  uint16_t m_cellId;       ///< Cell ID of the attached Enb
+  uint64_t m_imsi;         ///< IMSI of the scheduled UE
+  uint16_t m_rnti;         ///< C-RNTI scheduled
+  uint8_t  m_txMode;       ///< the transmission Mode
+  uint8_t  m_layer;        ///< the layer (cw) of the transmission
+  uint8_t  m_mcs;          ///< MCS for transport block
+  uint16_t m_size;         ///< Size of transport block
+  uint8_t  m_rv;           ///< the redundancy version (HARQ)
+  uint8_t  m_ndi;          ///< new data indicator flag
+  uint8_t  m_correctness;  ///< correctness of the TB received
 };
 
 

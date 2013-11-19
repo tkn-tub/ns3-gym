@@ -31,6 +31,12 @@ namespace ns3 {
  *
  */
 
+/**
+ * \ingroup stats
+ * \class MinMaxAvgTotalCalculator
+ * \brief Template class MinMaxAvgTotalCalculator
+ *
+ */
 //------------------------------------------------------------
 //--------------------------------------------
 template <typename T  = uint32_t>
@@ -40,36 +46,75 @@ public:
   MinMaxAvgTotalCalculator();
   virtual ~MinMaxAvgTotalCalculator();
 
+  /**
+   * Updates all variables of MinMaxAvgTotalCalculator
+   * \param i value of type T to use for updating the calculator
+   */
   void Update (const T i);
+  /**
+   * Reinitializes all variables of MinMaxAvgTotalCalculator
+   */
   void Reset ();
 
   virtual void Output (DataOutputCallback &callback) const;
 
+  /**
+   * Returns the count
+   * \return Count
+   */
   long getCount () const { return m_count; }
+  /**
+   * Returns the sum
+   * \return Total
+   */
   double getSum () const { return m_total; }
+  /**
+   * Returns the minimum value
+   * \return Min
+   */
   double getMin () const { return m_min; }
+  /**
+   * Returns the maximum value
+   * \return Max
+   */
   double getMax () const { return m_max; }
+  /**
+   * Returns the mean value
+   * \return Mean
+   */
   double getMean () const { return m_meanCurr; }
+  /**
+   * Returns the standard deviation
+   * \return Standard deviation
+   */
   double getStddev () const { return std::sqrt (m_varianceCurr); }
+  /**
+   * Returns the current variance
+   * \return Variance
+   */
   double getVariance () const { return m_varianceCurr; }
+  /**
+   * Returns the sum of squares
+   * \return Sum of squares
+   */
   double getSqrSum () const { return m_squareTotal; }
 
 protected:
   virtual void DoDispose (void);
 
-  uint32_t m_count;
+  uint32_t m_count;      /// Count value of MinMaxAvgTotalCalculator
 
-  T m_total;
-  T m_squareTotal;
-  T m_min;
-  T m_max;
+  T m_total;             /// Total value of MinMaxAvgTotalCalculator
+  T m_squareTotal;       /// Sum of squares value of MinMaxAvgTotalCalculator
+  T m_min;               /// Minimum value of MinMaxAvgTotalCalculator
+  T m_max;               /// Maximum value of MinMaxAvgTotalCalculator
 
-  double m_meanCurr;
-  double m_sCurr;
-  double m_varianceCurr;
+  double m_meanCurr;     /// Current mean of MinMaxAvgTotalCalculator
+  double m_sCurr;        /// Current s of MinMaxAvgTotalCalculator
+  double m_varianceCurr; /// Current variance of MinMaxAvgTotalCalculator
 
-  double m_meanPrev;
-  double m_sPrev;
+  double m_meanPrev;     /// Previous mean of MinMaxAvgTotalCalculator
+  double m_sPrev;        /// Previous s of MinMaxAvgTotalCalculator
 
   // end MinMaxAvgTotalCalculator
 };
@@ -197,6 +242,8 @@ MinMaxAvgTotalCalculator<T>::Output (DataOutputCallback &callback) const
 
 /**
  * \ingroup stats
+ * \class CounterCalculator
+ * \brief Template class CounterCalculator
  *
  */
 //------------------------------------------------------------
@@ -207,17 +254,32 @@ public:
   CounterCalculator();
   virtual ~CounterCalculator();
 
+  /**
+   * Increments count by 1
+   */
   void Update ();
+  /**
+   * Increments count by i
+   * \param i value of type T to increment count
+   */
   void Update (const T i);
 
+  /**
+   * Returns the count of the CounterCalculator
+   * \return Count as a value of type T
+   */
   T GetCount () const;
 
+  /**
+   * Outputs the data based on the provided callback
+   * \param callback
+   */
   virtual void Output (DataOutputCallback &callback) const;
 
 protected:
   virtual void DoDispose (void);
 
-  T m_count;
+  T m_count; /// Count value of CounterCalculator
 
   // end CounterCalculator
 };

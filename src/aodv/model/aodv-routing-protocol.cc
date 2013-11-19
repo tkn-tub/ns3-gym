@@ -48,7 +48,8 @@ namespace ns3
 {
 namespace aodv
 {
-NS_OBJECT_ENSURE_REGISTERED (RoutingProtocol);
+NS_OBJECT_ENSURE_REGISTERED (RoutingProtocol)
+  ;
 
 /// UDP Port for AODV control traffic
 const uint32_t RoutingProtocol::AODV_PORT = 654;
@@ -111,7 +112,8 @@ private:
   int32_t m_oif;
 };
 
-NS_OBJECT_ENSURE_REGISTERED (DeferredRouteOutputTag);
+NS_OBJECT_ENSURE_REGISTERED (DeferredRouteOutputTag)
+  ;
 
 
 //-----------------------------------------------------------------------------

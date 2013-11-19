@@ -35,7 +35,8 @@ NS_LOG_COMPONENT_DEFINE ("IpcsClassifier");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (IpcsClassifier);
+NS_OBJECT_ENSURE_REGISTERED (IpcsClassifier)
+  ;
 
 TypeId IpcsClassifier::GetTypeId (void)
 {

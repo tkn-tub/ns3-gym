@@ -24,12 +24,26 @@ public:
 
   static uint16_t GetStaticProtocolNumber (void);
   virtual int GetProtocolNumber (void) const;
+
+  /**
+   * \brief Receive method.
+   * \param p the packet
+   * \param header the IPv4 header
+   * \param interface the interface from which the packet is coming
+   */
   virtual enum IpL4Protocol::RxStatus Receive (Ptr<Packet> p,
-                                                 Ipv4Header const &header,
-                                                 Ptr<Ipv4Interface> incomingInterface);
+                                               Ipv4Header const &header,
+                                               Ptr<Ipv4Interface> incomingInterface);
+
+  /**
+   * \brief Receive method.
+   * \param p the packet
+   * \param header the IPv6 header
+   * \param interface the interface from which the packet is coming
+   */
   virtual enum IpL4Protocol::RxStatus Receive (Ptr<Packet> p,
-                                                 Ipv6Header const &header,
-                                                 Ptr<Ipv6Interface> incomingInterface);
+                                               Ipv6Header const &header,
+                                               Ptr<Ipv6Interface> incomingInterface);
 
   void SendDestUnreachFragNeeded (Ipv4Header header, Ptr<const Packet> orgData, uint16_t nextHopMtu);
   void SendTimeExceededTtl (Ipv4Header header, Ptr<const Packet> orgData);

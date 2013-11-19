@@ -24,7 +24,8 @@
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv6RawSocketFactory);
+NS_OBJECT_ENSURE_REGISTERED (Ipv6RawSocketFactory)
+  ;
 
 TypeId Ipv6RawSocketFactory::GetTypeId ()
 {

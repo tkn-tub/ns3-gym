@@ -48,7 +48,8 @@ WifiPhyListener::~WifiPhyListener ()
  *       The actual WifiPhy class
  ****************************************************************/
 
-NS_OBJECT_ENSURE_REGISTERED (WifiPhy);
+NS_OBJECT_ENSURE_REGISTERED (WifiPhy)
+  ;
 
 TypeId
 WifiPhy::GetTypeId (void)
@@ -260,7 +261,7 @@ WifiPhy::GetPlcpHeaderDurationMicroSeconds (WifiMode payloadMode, WifiPreamble p
             }
       }
     case WIFI_MOD_CLASS_ERP_OFDM:
-      return 16;
+      return 4;
 
     case WIFI_MOD_CLASS_DSSS:
       if (preamble == WIFI_PREAMBLE_SHORT)
@@ -309,7 +310,7 @@ WifiPhy::GetPlcpPreambleDurationMicroSeconds (WifiMode payloadMode, WifiPreamble
            return 16;
       }
     case WIFI_MOD_CLASS_ERP_OFDM:
-      return 4;
+      return 16;
 
     case WIFI_MOD_CLASS_DSSS:
       if (preamble == WIFI_PREAMBLE_SHORT)
@@ -498,9 +499,7 @@ WifiPhy::NotifyMonitorSniffTx (Ptr<const Packet> packet, uint16_t channelFreqMhz
 }
 
 
-/**
- * Clause 15 rates (DSSS)
- */
+// Clause 15 rates (DSSS)
 
 WifiMode
 WifiPhy::GetDsssRate1Mbps ()
@@ -529,9 +528,8 @@ WifiPhy::GetDsssRate2Mbps ()
 }
 
 
-/**
- * Clause 18 rates (HR/DSSS)
- */
+// Clause 18 rates (HR/DSSS)
+
 WifiMode
 WifiPhy::GetDsssRate5_5Mbps ()
 {
@@ -559,9 +557,8 @@ WifiPhy::GetDsssRate11Mbps ()
 }
 
 
-/**
- * Clause 19.5 rates (ERP-OFDM)
- */
+// Clause 19.5 rates (ERP-OFDM)
+
 WifiMode
 WifiPhy::GetErpOfdmRate6Mbps ()
 {
@@ -667,9 +664,8 @@ WifiPhy::GetErpOfdmRate54Mbps ()
 }
 
 
-/**
- * Clause 17 rates (OFDM)
- */
+// Clause 17 rates (OFDM)
+
 WifiMode
 WifiPhy::GetOfdmRate6Mbps ()
 {
@@ -774,7 +770,8 @@ WifiPhy::GetOfdmRate54Mbps ()
   return mode;
 }
 
-/* 10 MHz channel rates */
+// 10 MHz channel rates
+
 WifiMode
 WifiPhy::GetOfdmRate3MbpsBW10MHz ()
 {
@@ -879,7 +876,8 @@ WifiPhy::GetOfdmRate27MbpsBW10MHz ()
   return mode;
 }
 
-/* 5 MHz channel rates */
+// 5 MHz channel rates
+
 WifiMode
 WifiPhy::GetOfdmRate1_5MbpsBW5MHz ()
 {
@@ -984,7 +982,7 @@ WifiPhy::GetOfdmRate13_5MbpsBW5MHz ()
   return mode;
 }
 
-/*Clause 20*/
+// Clause 20
 
 WifiMode
 WifiPhy::GetOfdmRate6_5MbpsBW20MHz ()

@@ -80,7 +80,8 @@ X2CellInfo::operator= (const X2CellInfo& value)
 
 ///////////////////////////////////////////
 
-NS_OBJECT_ENSURE_REGISTERED (EpcX2);
+NS_OBJECT_ENSURE_REGISTERED (EpcX2)
+  ;
 
 EpcX2::EpcX2 ()
   : m_x2cUdpPort (4444),

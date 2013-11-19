@@ -26,7 +26,8 @@
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (TcpHeader);
+NS_OBJECT_ENSURE_REGISTERED (TcpHeader)
+  ;
 
 TcpHeader::TcpHeader ()
   : m_sourcePort (0),

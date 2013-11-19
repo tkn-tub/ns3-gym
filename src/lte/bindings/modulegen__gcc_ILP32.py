@@ -354,6 +354,10 @@ def register_types(module):
     module.add_enum('Direction_e', ['DIR_UL', 'DIR_DL', 'DIR_BOTH'], outer_class=root_module['ns3::LogicalChannelConfigListElement_s'])
     ## ff-mac-common.h (module 'lte'): ns3::LogicalChannelConfigListElement_s::QosBearerType_e [enumeration]
     module.add_enum('QosBearerType_e', ['QBT_NON_GBR', 'QBT_GBR'], outer_class=root_module['ns3::LogicalChannelConfigListElement_s'])
+    ## lte-anr-sap.h (module 'lte'): ns3::LteAnrSapProvider [class]
+    module.add_class('LteAnrSapProvider', allow_subclassing=True)
+    ## lte-anr-sap.h (module 'lte'): ns3::LteAnrSapUser [class]
+    module.add_class('LteAnrSapUser', allow_subclassing=True)
     ## lte-as-sap.h (module 'lte'): ns3::LteAsSapProvider [class]
     module.add_class('LteAsSapProvider', allow_subclassing=True)
     ## lte-as-sap.h (module 'lte'): ns3::LteAsSapUser [class]
@@ -386,6 +390,10 @@ def register_types(module):
     module.add_class('LteFlowId_t')
     ## lte-global-pathloss-database.h (module 'lte'): ns3::LteGlobalPathlossDatabase [class]
     module.add_class('LteGlobalPathlossDatabase', allow_subclassing=True)
+    ## lte-handover-management-sap.h (module 'lte'): ns3::LteHandoverManagementSapProvider [class]
+    module.add_class('LteHandoverManagementSapProvider', allow_subclassing=True)
+    ## lte-handover-management-sap.h (module 'lte'): ns3::LteHandoverManagementSapUser [class]
+    module.add_class('LteHandoverManagementSapUser', allow_subclassing=True)
     ## lte-mac-sap.h (module 'lte'): ns3::LteMacSapProvider [class]
     module.add_class('LteMacSapProvider', allow_subclassing=True)
     ## lte-mac-sap.h (module 'lte'): ns3::LteMacSapProvider::ReportBufferStatusParameters [struct]
@@ -426,6 +434,8 @@ def register_types(module):
     module.add_class('CarrierFreqEutra', outer_class=root_module['ns3::LteRrcSap'])
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::CellAccessRelatedInfo [struct]
     module.add_class('CellAccessRelatedInfo', outer_class=root_module['ns3::LteRrcSap'])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::CellSelectionInfo [struct]
+    module.add_class('CellSelectionInfo', outer_class=root_module['ns3::LteRrcSap'])
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::CellsToAddMod [struct]
     module.add_class('CellsToAddMod', outer_class=root_module['ns3::LteRrcSap'])
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::CgiInfo [struct]
@@ -906,8 +916,6 @@ def register_types(module):
     module.add_class('UeManager', parent=root_module['ns3::Object'])
     ## lte-enb-rrc.h (module 'lte'): ns3::UeManager::State [enumeration]
     module.add_enum('State', ['INITIAL_RANDOM_ACCESS', 'CONNECTION_SETUP', 'CONNECTION_REJECTED', 'CONNECTED_NORMALLY', 'CONNECTION_RECONFIGURATION', 'CONNECTION_REESTABLISHMENT', 'HANDOVER_PREPARATION', 'HANDOVER_JOINING', 'HANDOVER_PATH_SWITCH', 'HANDOVER_LEAVING', 'NUM_STATES'], outer_class=root_module['ns3::UeManager'])
-    ## lte-enb-rrc.h (module 'lte'): ns3::UeMeasure [class]
-    module.add_class('UeMeasure', parent=root_module['ns3::Object'])
     ## random-variable-stream.h (module 'core'): ns3::UniformRandomVariable [class]
     module.add_class('UniformRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
     ## ff-mac-common.h (module 'lte'): ns3::VendorSpecificValue [struct]
@@ -1060,10 +1068,12 @@ def register_types(module):
     module.add_class('LteAmc', parent=root_module['ns3::Object'])
     ## lte-amc.h (module 'lte'): ns3::LteAmc::AmcModel [enumeration]
     module.add_enum('AmcModel', ['PiroEW2010', 'MiErrorModel'], outer_class=root_module['ns3::LteAmc'])
+    ## lte-anr.h (module 'lte'): ns3::LteAnr [class]
+    module.add_class('LteAnr', parent=root_module['ns3::Object'])
     ## lte-control-messages.h (module 'lte'): ns3::LteControlMessage [class]
     module.add_class('LteControlMessage', parent=root_module['ns3::SimpleRefCount< ns3::LteControlMessage, ns3::empty, ns3::DefaultDeleter<ns3::LteControlMessage> >'])
     ## lte-control-messages.h (module 'lte'): ns3::LteControlMessage::MessageType [enumeration]
-    module.add_enum('MessageType', ['DL_DCI', 'UL_DCI', 'DL_CQI', 'UL_CQI', 'BSR', 'DL_HARQ', 'RACH_PREAMBLE', 'RAR', 'MIB'], outer_class=root_module['ns3::LteControlMessage'])
+    module.add_enum('MessageType', ['DL_DCI', 'UL_DCI', 'DL_CQI', 'UL_CQI', 'BSR', 'DL_HARQ', 'RACH_PREAMBLE', 'RAR', 'MIB', 'SIB1'], outer_class=root_module['ns3::LteControlMessage'])
     ## lte-enb-mac.h (module 'lte'): ns3::LteEnbMac [class]
     module.add_class('LteEnbMac', parent=root_module['ns3::Object'])
     ## lte-enb-rrc.h (module 'lte'): ns3::LteEnbRrc [class]
@@ -1074,6 +1084,8 @@ def register_types(module):
     module.add_class('LteEnbRrcProtocolIdeal', parent=root_module['ns3::Object'])
     ## lte-rrc-protocol-real.h (module 'lte'): ns3::LteEnbRrcProtocolReal [class]
     module.add_class('LteEnbRrcProtocolReal', parent=root_module['ns3::Object'])
+    ## lte-handover-algorithm.h (module 'lte'): ns3::LteHandoverAlgorithm [class]
+    module.add_class('LteHandoverAlgorithm', parent=root_module['ns3::Object'])
     ## lte-harq-phy.h (module 'lte'): ns3::LteHarqPhy [class]
     module.add_class('LteHarqPhy', parent=root_module['ns3::SimpleRefCount< ns3::LteHarqPhy, ns3::empty, ns3::DefaultDeleter<ns3::LteHarqPhy> >'])
     ## lte-helper.h (module 'lte'): ns3::LteHelper [class]
@@ -1124,10 +1136,12 @@ def register_types(module):
     module.add_class('LteUeMac', parent=root_module['ns3::Object'])
     ## lte-ue-phy.h (module 'lte'): ns3::LteUePhy [class]
     module.add_class('LteUePhy', parent=root_module['ns3::LtePhy'])
+    ## lte-ue-phy.h (module 'lte'): ns3::LteUePhy::State [enumeration]
+    module.add_enum('State', ['CELL_SEARCH', 'SYNCHRONIZED', 'NUM_STATES'], outer_class=root_module['ns3::LteUePhy'])
     ## lte-ue-rrc.h (module 'lte'): ns3::LteUeRrc [class]
     module.add_class('LteUeRrc', parent=root_module['ns3::Object'])
     ## lte-ue-rrc.h (module 'lte'): ns3::LteUeRrc::State [enumeration]
-    module.add_enum('State', ['IDLE_CELL_SELECTION', 'IDLE_WAIT_SYSTEM_INFO', 'IDLE_CAMPED_NORMALLY', 'IDLE_RANDOM_ACCESS', 'IDLE_CONNECTING', 'CONNECTED_NORMALLY', 'CONNECTED_REESTABLISHING', 'CONNECTED_HANDOVER', 'NUM_STATES'], outer_class=root_module['ns3::LteUeRrc'])
+    module.add_enum('State', ['IDLE_START', 'IDLE_CELL_SEARCH', 'IDLE_WAIT_MIB_SIB1', 'IDLE_WAIT_MIB', 'IDLE_WAIT_SIB1', 'IDLE_CAMPED_NORMALLY', 'IDLE_WAIT_SIB2', 'IDLE_RANDOM_ACCESS', 'IDLE_CONNECTING', 'CONNECTED_NORMALLY', 'CONNECTED_HANDOVER', 'CONNECTED_PHY_PROBLEM', 'CONNECTED_REESTABLISHING', 'NUM_STATES'], outer_class=root_module['ns3::LteUeRrc'])
     ## lte-rrc-protocol-ideal.h (module 'lte'): ns3::LteUeRrcProtocolIdeal [class]
     module.add_class('LteUeRrcProtocolIdeal', parent=root_module['ns3::Object'])
     ## lte-rrc-protocol-real.h (module 'lte'): ns3::LteUeRrcProtocolReal [class]
@@ -1142,14 +1156,14 @@ def register_types(module):
     module.add_class('MibLteControlMessage', parent=root_module['ns3::LteControlMessage'])
     ## mobility-model.h (module 'mobility'): ns3::MobilityModel [class]
     module.add_class('MobilityModel', import_from_module='ns.mobility', parent=root_module['ns3::Object'])
-    ## lte-enb-rrc.h (module 'lte'): ns3::NeighbourRelation [class]
-    module.add_class('NeighbourRelation', parent=root_module['ns3::Object'])
     ## net-device.h (module 'network'): ns3::NetDevice [class]
     module.add_class('NetDevice', import_from_module='ns.network', parent=root_module['ns3::Object'])
     ## net-device.h (module 'network'): ns3::NetDevice::PacketType [enumeration]
     module.add_enum('PacketType', ['PACKET_HOST', 'NS3_PACKET_HOST', 'PACKET_BROADCAST', 'NS3_PACKET_BROADCAST', 'PACKET_MULTICAST', 'NS3_PACKET_MULTICAST', 'PACKET_OTHERHOST', 'NS3_PACKET_OTHERHOST'], outer_class=root_module['ns3::NetDevice'], import_from_module='ns.network')
     ## nix-vector.h (module 'network'): ns3::NixVector [class]
     module.add_class('NixVector', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::NixVector, ns3::empty, ns3::DefaultDeleter<ns3::NixVector> >'])
+    ## no-op-handover-algorithm.h (module 'lte'): ns3::NoOpHandoverAlgorithm [class]
+    module.add_class('NoOpHandoverAlgorithm', parent=root_module['ns3::LteHandoverAlgorithm'])
     ## node.h (module 'network'): ns3::Node [class]
     module.add_class('Node', import_from_module='ns.network', parent=root_module['ns3::Object'])
     ## random-variable-stream.h (module 'core'): ns3::NormalRandomVariable [class]
@@ -1198,6 +1212,8 @@ def register_types(module):
     module.add_class('RrcUlCcchMessage', parent=root_module['ns3::RrcAsn1Header'])
     ## lte-rrc-header.h (module 'lte'): ns3::RrcUlDcchMessage [class]
     module.add_class('RrcUlDcchMessage', parent=root_module['ns3::RrcAsn1Header'])
+    ## lte-control-messages.h (module 'lte'): ns3::Sib1LteControlMessage [class]
+    module.add_class('Sib1LteControlMessage', parent=root_module['ns3::LteControlMessage'])
     ## spectrum-channel.h (module 'spectrum'): ns3::SpectrumChannel [class]
     module.add_class('SpectrumChannel', import_from_module='ns.spectrum', parent=root_module['ns3::Channel'])
     ## lte-vendor-specific-parameters.h (module 'lte'): ns3::SrsCqiRntiVsp [class]
@@ -1234,6 +1250,10 @@ def register_types(module):
     module.add_class('Vector3DValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
     ## virtual-net-device.h (module 'virtual-net-device'): ns3::VirtualNetDevice [class]
     module.add_class('VirtualNetDevice', import_from_module='ns.virtual_net_device', parent=root_module['ns3::NetDevice'])
+    ## a2-a4-rsrq-handover-algorithm.h (module 'lte'): ns3::A2A4RsrqHandoverAlgorithm [class]
+    module.add_class('A2A4RsrqHandoverAlgorithm', parent=root_module['ns3::LteHandoverAlgorithm'])
+    ## a3-rsrp-handover-algorithm.h (module 'lte'): ns3::A3RsrpHandoverAlgorithm [class]
+    module.add_class('A3RsrpHandoverAlgorithm', parent=root_module['ns3::LteHandoverAlgorithm'])
     ## address.h (module 'network'): ns3::AddressChecker [class]
     module.add_class('AddressChecker', import_from_module='ns.network', parent=root_module['ns3::AttributeChecker'])
     ## address.h (module 'network'): ns3::AddressValue [class]
@@ -1664,6 +1684,8 @@ def register_methods(root_module):
     register_Ns3Ipv6Prefix_methods(root_module, root_module['ns3::Ipv6Prefix'])
     register_Ns3LogComponent_methods(root_module, root_module['ns3::LogComponent'])
     register_Ns3LogicalChannelConfigListElement_s_methods(root_module, root_module['ns3::LogicalChannelConfigListElement_s'])
+    register_Ns3LteAnrSapProvider_methods(root_module, root_module['ns3::LteAnrSapProvider'])
+    register_Ns3LteAnrSapUser_methods(root_module, root_module['ns3::LteAnrSapUser'])
     register_Ns3LteAsSapProvider_methods(root_module, root_module['ns3::LteAsSapProvider'])
     register_Ns3LteAsSapUser_methods(root_module, root_module['ns3::LteAsSapUser'])
     register_Ns3LteEnbCmacSapProvider_methods(root_module, root_module['ns3::LteEnbCmacSapProvider'])
@@ -1680,6 +1702,8 @@ def register_methods(root_module):
     register_Ns3LteFfConverter_methods(root_module, root_module['ns3::LteFfConverter'])
     register_Ns3LteFlowId_t_methods(root_module, root_module['ns3::LteFlowId_t'])
     register_Ns3LteGlobalPathlossDatabase_methods(root_module, root_module['ns3::LteGlobalPathlossDatabase'])
+    register_Ns3LteHandoverManagementSapProvider_methods(root_module, root_module['ns3::LteHandoverManagementSapProvider'])
+    register_Ns3LteHandoverManagementSapUser_methods(root_module, root_module['ns3::LteHandoverManagementSapUser'])
     register_Ns3LteMacSapProvider_methods(root_module, root_module['ns3::LteMacSapProvider'])
     register_Ns3LteMacSapProviderReportBufferStatusParameters_methods(root_module, root_module['ns3::LteMacSapProvider::ReportBufferStatusParameters'])
     register_Ns3LteMacSapProviderTransmitPduParameters_methods(root_module, root_module['ns3::LteMacSapProvider::TransmitPduParameters'])
@@ -1699,6 +1723,7 @@ def register_methods(root_module):
     register_Ns3LteRrcSapCarrierBandwidthEutra_methods(root_module, root_module['ns3::LteRrcSap::CarrierBandwidthEutra'])
     register_Ns3LteRrcSapCarrierFreqEutra_methods(root_module, root_module['ns3::LteRrcSap::CarrierFreqEutra'])
     register_Ns3LteRrcSapCellAccessRelatedInfo_methods(root_module, root_module['ns3::LteRrcSap::CellAccessRelatedInfo'])
+    register_Ns3LteRrcSapCellSelectionInfo_methods(root_module, root_module['ns3::LteRrcSap::CellSelectionInfo'])
     register_Ns3LteRrcSapCellsToAddMod_methods(root_module, root_module['ns3::LteRrcSap::CellsToAddMod'])
     register_Ns3LteRrcSapCgiInfo_methods(root_module, root_module['ns3::LteRrcSap::CgiInfo'])
     register_Ns3LteRrcSapDrbToAddMod_methods(root_module, root_module['ns3::LteRrcSap::DrbToAddMod'])
@@ -1895,7 +1920,6 @@ def register_methods(root_module):
     register_Ns3Trailer_methods(root_module, root_module['ns3::Trailer'])
     register_Ns3TriangularRandomVariable_methods(root_module, root_module['ns3::TriangularRandomVariable'])
     register_Ns3UeManager_methods(root_module, root_module['ns3::UeManager'])
-    register_Ns3UeMeasure_methods(root_module, root_module['ns3::UeMeasure'])
     register_Ns3UniformRandomVariable_methods(root_module, root_module['ns3::UniformRandomVariable'])
     register_Ns3VendorSpecificValue_methods(root_module, root_module['ns3::VendorSpecificValue'])
     register_Ns3WeibullRandomVariable_methods(root_module, root_module['ns3::WeibullRandomVariable'])
@@ -1965,11 +1989,13 @@ def register_methods(root_module):
     register_Ns3Ipv6PrefixValue_methods(root_module, root_module['ns3::Ipv6PrefixValue'])
     register_Ns3LogNormalRandomVariable_methods(root_module, root_module['ns3::LogNormalRandomVariable'])
     register_Ns3LteAmc_methods(root_module, root_module['ns3::LteAmc'])
+    register_Ns3LteAnr_methods(root_module, root_module['ns3::LteAnr'])
     register_Ns3LteControlMessage_methods(root_module, root_module['ns3::LteControlMessage'])
     register_Ns3LteEnbMac_methods(root_module, root_module['ns3::LteEnbMac'])
     register_Ns3LteEnbRrc_methods(root_module, root_module['ns3::LteEnbRrc'])
     register_Ns3LteEnbRrcProtocolIdeal_methods(root_module, root_module['ns3::LteEnbRrcProtocolIdeal'])
     register_Ns3LteEnbRrcProtocolReal_methods(root_module, root_module['ns3::LteEnbRrcProtocolReal'])
+    register_Ns3LteHandoverAlgorithm_methods(root_module, root_module['ns3::LteHandoverAlgorithm'])
     register_Ns3LteHarqPhy_methods(root_module, root_module['ns3::LteHarqPhy'])
     register_Ns3LteHelper_methods(root_module, root_module['ns3::LteHelper'])
     register_Ns3LteHexGridEnbTopologyHelper_methods(root_module, root_module['ns3::LteHexGridEnbTopologyHelper'])
@@ -2001,9 +2027,9 @@ def register_methods(root_module):
     register_Ns3MacStatsCalculator_methods(root_module, root_module['ns3::MacStatsCalculator'])
     register_Ns3MibLteControlMessage_methods(root_module, root_module['ns3::MibLteControlMessage'])
     register_Ns3MobilityModel_methods(root_module, root_module['ns3::MobilityModel'])
-    register_Ns3NeighbourRelation_methods(root_module, root_module['ns3::NeighbourRelation'])
     register_Ns3NetDevice_methods(root_module, root_module['ns3::NetDevice'])
     register_Ns3NixVector_methods(root_module, root_module['ns3::NixVector'])
+    register_Ns3NoOpHandoverAlgorithm_methods(root_module, root_module['ns3::NoOpHandoverAlgorithm'])
     register_Ns3Node_methods(root_module, root_module['ns3::Node'])
     register_Ns3NormalRandomVariable_methods(root_module, root_module['ns3::NormalRandomVariable'])
     register_Ns3ObjectFactoryChecker_methods(root_module, root_module['ns3::ObjectFactoryChecker'])
@@ -2028,6 +2054,7 @@ def register_methods(root_module):
     register_Ns3RrcDlDcchMessage_methods(root_module, root_module['ns3::RrcDlDcchMessage'])
     register_Ns3RrcUlCcchMessage_methods(root_module, root_module['ns3::RrcUlCcchMessage'])
     register_Ns3RrcUlDcchMessage_methods(root_module, root_module['ns3::RrcUlDcchMessage'])
+    register_Ns3Sib1LteControlMessage_methods(root_module, root_module['ns3::Sib1LteControlMessage'])
     register_Ns3SpectrumChannel_methods(root_module, root_module['ns3::SpectrumChannel'])
     register_Ns3SrsCqiRntiVsp_methods(root_module, root_module['ns3::SrsCqiRntiVsp'])
     register_Ns3StringChecker_methods(root_module, root_module['ns3::StringChecker'])
@@ -2046,6 +2073,8 @@ def register_methods(root_module):
     register_Ns3Vector3DChecker_methods(root_module, root_module['ns3::Vector3DChecker'])
     register_Ns3Vector3DValue_methods(root_module, root_module['ns3::Vector3DValue'])
     register_Ns3VirtualNetDevice_methods(root_module, root_module['ns3::VirtualNetDevice'])
+    register_Ns3A2A4RsrqHandoverAlgorithm_methods(root_module, root_module['ns3::A2A4RsrqHandoverAlgorithm'])
+    register_Ns3A3RsrpHandoverAlgorithm_methods(root_module, root_module['ns3::A3RsrpHandoverAlgorithm'])
     register_Ns3AddressChecker_methods(root_module, root_module['ns3::AddressChecker'])
     register_Ns3AddressValue_methods(root_module, root_module['ns3::AddressValue'])
     register_Ns3BsrLteControlMessage_methods(root_module, root_module['ns3::BsrLteControlMessage'])
@@ -3609,6 +3638,16 @@ def register_Ns3EutranMeasurementMapping_methods(root_module, cls):
     cls.add_constructor([])
     ## lte-common.h (module 'lte'): ns3::EutranMeasurementMapping::EutranMeasurementMapping(ns3::EutranMeasurementMapping const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::EutranMeasurementMapping const &', 'arg0')])
+    ## lte-common.h (module 'lte'): static int8_t ns3::EutranMeasurementMapping::ActualA3Offset2IeValue(double a3OffsetDb) [member function]
+    cls.add_method('ActualA3Offset2IeValue', 
+                   'int8_t', 
+                   [param('double', 'a3OffsetDb')], 
+                   is_static=True)
+    ## lte-common.h (module 'lte'): static uint8_t ns3::EutranMeasurementMapping::ActualHysteresis2IeValue(double hysteresisDb) [member function]
+    cls.add_method('ActualHysteresis2IeValue', 
+                   'uint8_t', 
+                   [param('double', 'hysteresisDb')], 
+                   is_static=True)
     ## lte-common.h (module 'lte'): static uint8_t ns3::EutranMeasurementMapping::Db2RsrqRange(double db) [member function]
     cls.add_method('Db2RsrqRange', 
                    'uint8_t', 
@@ -3618,6 +3657,26 @@ def register_Ns3EutranMeasurementMapping_methods(root_module, cls):
     cls.add_method('Dbm2RsrpRange', 
                    'uint8_t', 
                    [param('double', 'dbm')], 
+                   is_static=True)
+    ## lte-common.h (module 'lte'): static double ns3::EutranMeasurementMapping::IeValue2ActualA3Offset(int8_t a3OffsetIeValue) [member function]
+    cls.add_method('IeValue2ActualA3Offset', 
+                   'double', 
+                   [param('int8_t', 'a3OffsetIeValue')], 
+                   is_static=True)
+    ## lte-common.h (module 'lte'): static double ns3::EutranMeasurementMapping::IeValue2ActualHysteresis(uint8_t hysteresisIeValue) [member function]
+    cls.add_method('IeValue2ActualHysteresis', 
+                   'double', 
+                   [param('uint8_t', 'hysteresisIeValue')], 
+                   is_static=True)
+    ## lte-common.h (module 'lte'): static double ns3::EutranMeasurementMapping::IeValue2ActualQQualMin(int8_t qQualMinIeValue) [member function]
+    cls.add_method('IeValue2ActualQQualMin', 
+                   'double', 
+                   [param('int8_t', 'qQualMinIeValue')], 
+                   is_static=True)
+    ## lte-common.h (module 'lte'): static double ns3::EutranMeasurementMapping::IeValue2ActualQRxLevMin(int8_t qRxLevMinIeValue) [member function]
+    cls.add_method('IeValue2ActualQRxLevMin', 
+                   'double', 
+                   [param('int8_t', 'qRxLevMinIeValue')], 
                    is_static=True)
     ## lte-common.h (module 'lte'): static double ns3::EutranMeasurementMapping::QuantizeRsrp(double v) [member function]
     cls.add_method('QuantizeRsrp', 
@@ -5210,6 +5269,50 @@ def register_Ns3LogicalChannelConfigListElement_s_methods(root_module, cls):
     cls.add_instance_attribute('m_qosBearerType', 'ns3::LogicalChannelConfigListElement_s::QosBearerType_e', is_const=False)
     return
 
+def register_Ns3LteAnrSapProvider_methods(root_module, cls):
+    ## lte-anr-sap.h (module 'lte'): ns3::LteAnrSapProvider::LteAnrSapProvider() [constructor]
+    cls.add_constructor([])
+    ## lte-anr-sap.h (module 'lte'): ns3::LteAnrSapProvider::LteAnrSapProvider(ns3::LteAnrSapProvider const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::LteAnrSapProvider const &', 'arg0')])
+    ## lte-anr-sap.h (module 'lte'): void ns3::LteAnrSapProvider::AddNeighbourRelation(uint16_t cellId) [member function]
+    cls.add_method('AddNeighbourRelation', 
+                   'void', 
+                   [param('uint16_t', 'cellId')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## lte-anr-sap.h (module 'lte'): bool ns3::LteAnrSapProvider::GetNoHo(uint16_t cellId) const [member function]
+    cls.add_method('GetNoHo', 
+                   'bool', 
+                   [param('uint16_t', 'cellId')], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## lte-anr-sap.h (module 'lte'): bool ns3::LteAnrSapProvider::GetNoRemove(uint16_t cellId) const [member function]
+    cls.add_method('GetNoRemove', 
+                   'bool', 
+                   [param('uint16_t', 'cellId')], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## lte-anr-sap.h (module 'lte'): bool ns3::LteAnrSapProvider::GetNoX2(uint16_t cellId) const [member function]
+    cls.add_method('GetNoX2', 
+                   'bool', 
+                   [param('uint16_t', 'cellId')], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## lte-anr-sap.h (module 'lte'): void ns3::LteAnrSapProvider::ReportUeMeas(ns3::LteRrcSap::MeasResults measResults) [member function]
+    cls.add_method('ReportUeMeas', 
+                   'void', 
+                   [param('ns3::LteRrcSap::MeasResults', 'measResults')], 
+                   is_pure_virtual=True, is_virtual=True)
+    return
+
+def register_Ns3LteAnrSapUser_methods(root_module, cls):
+    ## lte-anr-sap.h (module 'lte'): ns3::LteAnrSapUser::LteAnrSapUser() [constructor]
+    cls.add_constructor([])
+    ## lte-anr-sap.h (module 'lte'): ns3::LteAnrSapUser::LteAnrSapUser(ns3::LteAnrSapUser const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::LteAnrSapUser const &', 'arg0')])
+    ## lte-anr-sap.h (module 'lte'): uint8_t ns3::LteAnrSapUser::AddUeMeasReportConfigForAnr(ns3::LteRrcSap::ReportConfigEutra reportConfig) [member function]
+    cls.add_method('AddUeMeasReportConfigForAnr', 
+                   'uint8_t', 
+                   [param('ns3::LteRrcSap::ReportConfigEutra', 'reportConfig')], 
+                   is_pure_virtual=True, is_virtual=True)
+    return
+
 def register_Ns3LteAsSapProvider_methods(root_module, cls):
     ## lte-as-sap.h (module 'lte'): ns3::LteAsSapProvider::LteAsSapProvider() [constructor]
     cls.add_constructor([])
@@ -5225,15 +5328,25 @@ def register_Ns3LteAsSapProvider_methods(root_module, cls):
                    'void', 
                    [], 
                    is_pure_virtual=True, is_virtual=True)
-    ## lte-as-sap.h (module 'lte'): void ns3::LteAsSapProvider::ForceCampedOnEnb(uint16_t cellId, uint16_t earfcn) [member function]
+    ## lte-as-sap.h (module 'lte'): void ns3::LteAsSapProvider::ForceCampedOnEnb(uint16_t cellId, uint16_t dlEarfcn) [member function]
     cls.add_method('ForceCampedOnEnb', 
                    'void', 
-                   [param('uint16_t', 'cellId'), param('uint16_t', 'earfcn')], 
+                   [param('uint16_t', 'cellId'), param('uint16_t', 'dlEarfcn')], 
                    is_pure_virtual=True, is_virtual=True)
     ## lte-as-sap.h (module 'lte'): void ns3::LteAsSapProvider::SendData(ns3::Ptr<ns3::Packet> packet, uint8_t bid) [member function]
     cls.add_method('SendData', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet >', 'packet'), param('uint8_t', 'bid')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## lte-as-sap.h (module 'lte'): void ns3::LteAsSapProvider::SetCsgWhiteList(uint32_t csgId) [member function]
+    cls.add_method('SetCsgWhiteList', 
+                   'void', 
+                   [param('uint32_t', 'csgId')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## lte-as-sap.h (module 'lte'): void ns3::LteAsSapProvider::StartCellSelection(uint16_t dlEarfcn) [member function]
+    cls.add_method('StartCellSelection', 
+                   'void', 
+                   [param('uint16_t', 'dlEarfcn')], 
                    is_pure_virtual=True, is_virtual=True)
     return
 
@@ -5451,6 +5564,11 @@ def register_Ns3LteEnbCphySapProvider_methods(root_module, cls):
                    'void', 
                    [param('uint16_t', 'rnti'), param('uint16_t', 'srsCi')], 
                    is_pure_virtual=True, is_virtual=True)
+    ## lte-enb-cphy-sap.h (module 'lte'): void ns3::LteEnbCphySapProvider::SetSystemInformationBlockType1(ns3::LteRrcSap::SystemInformationBlockType1 sib1) [member function]
+    cls.add_method('SetSystemInformationBlockType1', 
+                   'void', 
+                   [param('ns3::LteRrcSap::SystemInformationBlockType1', 'sib1')], 
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-enb-cphy-sap.h (module 'lte'): void ns3::LteEnbCphySapProvider::SetTransmissionMode(uint16_t rnti, uint8_t txMode) [member function]
     cls.add_method('SetTransmissionMode', 
                    'void', 
@@ -5583,6 +5701,35 @@ def register_Ns3LteGlobalPathlossDatabase_methods(root_module, cls):
     cls.add_method('UpdatePathloss', 
                    'void', 
                    [param('std::string', 'context'), param('ns3::Ptr< ns3::SpectrumPhy >', 'txPhy'), param('ns3::Ptr< ns3::SpectrumPhy >', 'rxPhy'), param('double', 'lossDb')], 
+                   is_pure_virtual=True, is_virtual=True)
+    return
+
+def register_Ns3LteHandoverManagementSapProvider_methods(root_module, cls):
+    ## lte-handover-management-sap.h (module 'lte'): ns3::LteHandoverManagementSapProvider::LteHandoverManagementSapProvider() [constructor]
+    cls.add_constructor([])
+    ## lte-handover-management-sap.h (module 'lte'): ns3::LteHandoverManagementSapProvider::LteHandoverManagementSapProvider(ns3::LteHandoverManagementSapProvider const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::LteHandoverManagementSapProvider const &', 'arg0')])
+    ## lte-handover-management-sap.h (module 'lte'): void ns3::LteHandoverManagementSapProvider::ReportUeMeas(uint16_t rnti, ns3::LteRrcSap::MeasResults measResults) [member function]
+    cls.add_method('ReportUeMeas', 
+                   'void', 
+                   [param('uint16_t', 'rnti'), param('ns3::LteRrcSap::MeasResults', 'measResults')], 
+                   is_pure_virtual=True, is_virtual=True)
+    return
+
+def register_Ns3LteHandoverManagementSapUser_methods(root_module, cls):
+    ## lte-handover-management-sap.h (module 'lte'): ns3::LteHandoverManagementSapUser::LteHandoverManagementSapUser() [constructor]
+    cls.add_constructor([])
+    ## lte-handover-management-sap.h (module 'lte'): ns3::LteHandoverManagementSapUser::LteHandoverManagementSapUser(ns3::LteHandoverManagementSapUser const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::LteHandoverManagementSapUser const &', 'arg0')])
+    ## lte-handover-management-sap.h (module 'lte'): uint8_t ns3::LteHandoverManagementSapUser::AddUeMeasReportConfigForHandover(ns3::LteRrcSap::ReportConfigEutra reportConfig) [member function]
+    cls.add_method('AddUeMeasReportConfigForHandover', 
+                   'uint8_t', 
+                   [param('ns3::LteRrcSap::ReportConfigEutra', 'reportConfig')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## lte-handover-management-sap.h (module 'lte'): void ns3::LteHandoverManagementSapUser::TriggerHandover(uint16_t rnti, uint16_t targetCellId) [member function]
+    cls.add_method('TriggerHandover', 
+                   'void', 
+                   [param('uint16_t', 'rnti'), param('uint16_t', 'targetCellId')], 
                    is_pure_virtual=True, is_virtual=True)
     return
 
@@ -5862,6 +6009,17 @@ def register_Ns3LteRrcSapCellAccessRelatedInfo_methods(root_module, cls):
     cls.add_instance_attribute('csgIndication', 'bool', is_const=False)
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::CellAccessRelatedInfo::plmnIdentityInfo [variable]
     cls.add_instance_attribute('plmnIdentityInfo', 'ns3::LteRrcSap::PlmnIdentityInfo', is_const=False)
+    return
+
+def register_Ns3LteRrcSapCellSelectionInfo_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::CellSelectionInfo::CellSelectionInfo() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::CellSelectionInfo::CellSelectionInfo(ns3::LteRrcSap::CellSelectionInfo const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::CellSelectionInfo const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::CellSelectionInfo::qQualMin [variable]
+    cls.add_instance_attribute('qQualMin', 'int8_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::CellSelectionInfo::qRxLevMin [variable]
+    cls.add_instance_attribute('qRxLevMin', 'int8_t', is_const=False)
     return
 
 def register_Ns3LteRrcSapCellsToAddMod_methods(root_module, cls):
@@ -6276,10 +6434,10 @@ def register_Ns3LteRrcSapReestabUeIdentity_methods(root_module, cls):
     return
 
 def register_Ns3LteRrcSapReportConfigEutra_methods(root_module, cls):
-    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::ReportConfigEutra::ReportConfigEutra() [constructor]
-    cls.add_constructor([])
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::ReportConfigEutra::ReportConfigEutra(ns3::LteRrcSap::ReportConfigEutra const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::LteRrcSap::ReportConfigEutra const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::ReportConfigEutra::ReportConfigEutra() [constructor]
+    cls.add_constructor([])
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::ReportConfigEutra::a3Offset [variable]
     cls.add_instance_attribute('a3Offset', 'int8_t', is_const=False)
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::ReportConfigEutra::hysteresis [variable]
@@ -6504,6 +6662,8 @@ def register_Ns3LteRrcSapSystemInformationBlockType1_methods(root_module, cls):
     cls.add_constructor([param('ns3::LteRrcSap::SystemInformationBlockType1 const &', 'arg0')])
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SystemInformationBlockType1::cellAccessRelatedInfo [variable]
     cls.add_instance_attribute('cellAccessRelatedInfo', 'ns3::LteRrcSap::CellAccessRelatedInfo', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SystemInformationBlockType1::cellSelectionInfo [variable]
+    cls.add_instance_attribute('cellSelectionInfo', 'ns3::LteRrcSap::CellSelectionInfo', is_const=False)
     return
 
 def register_Ns3LteRrcSapSystemInformationBlockType2_methods(root_module, cls):
@@ -6712,8 +6872,18 @@ def register_Ns3LteUeCphySapProvider_methods(root_module, cls):
                    'void', 
                    [param('uint8_t', 'txMode')], 
                    is_pure_virtual=True, is_virtual=True)
-    ## lte-ue-cphy-sap.h (module 'lte'): void ns3::LteUeCphySapProvider::SyncronizeWithEnb(uint16_t cellId, uint16_t dlEarfcn) [member function]
-    cls.add_method('SyncronizeWithEnb', 
+    ## lte-ue-cphy-sap.h (module 'lte'): void ns3::LteUeCphySapProvider::StartCellSearch(uint16_t dlEarfcn) [member function]
+    cls.add_method('StartCellSearch', 
+                   'void', 
+                   [param('uint16_t', 'dlEarfcn')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## lte-ue-cphy-sap.h (module 'lte'): void ns3::LteUeCphySapProvider::SynchronizeWithEnb(uint16_t cellId) [member function]
+    cls.add_method('SynchronizeWithEnb', 
+                   'void', 
+                   [param('uint16_t', 'cellId')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## lte-ue-cphy-sap.h (module 'lte'): void ns3::LteUeCphySapProvider::SynchronizeWithEnb(uint16_t cellId, uint16_t dlEarfcn) [member function]
+    cls.add_method('SynchronizeWithEnb', 
                    'void', 
                    [param('uint16_t', 'cellId'), param('uint16_t', 'dlEarfcn')], 
                    is_pure_virtual=True, is_virtual=True)
@@ -6724,10 +6894,15 @@ def register_Ns3LteUeCphySapUser_methods(root_module, cls):
     cls.add_constructor([])
     ## lte-ue-cphy-sap.h (module 'lte'): ns3::LteUeCphySapUser::LteUeCphySapUser(ns3::LteUeCphySapUser const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::LteUeCphySapUser const &', 'arg0')])
-    ## lte-ue-cphy-sap.h (module 'lte'): void ns3::LteUeCphySapUser::RecvMasterInformationBlock(ns3::LteRrcSap::MasterInformationBlock mib) [member function]
+    ## lte-ue-cphy-sap.h (module 'lte'): void ns3::LteUeCphySapUser::RecvMasterInformationBlock(uint16_t cellId, ns3::LteRrcSap::MasterInformationBlock mib) [member function]
     cls.add_method('RecvMasterInformationBlock', 
                    'void', 
-                   [param('ns3::LteRrcSap::MasterInformationBlock', 'mib')], 
+                   [param('uint16_t', 'cellId'), param('ns3::LteRrcSap::MasterInformationBlock', 'mib')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## lte-ue-cphy-sap.h (module 'lte'): void ns3::LteUeCphySapUser::RecvSystemInformationBlockType1(uint16_t cellId, ns3::LteRrcSap::SystemInformationBlockType1 sib1) [member function]
+    cls.add_method('RecvSystemInformationBlockType1', 
+                   'void', 
+                   [param('uint16_t', 'cellId'), param('ns3::LteRrcSap::SystemInformationBlockType1', 'sib1')], 
                    is_pure_virtual=True, is_virtual=True)
     ## lte-ue-cphy-sap.h (module 'lte'): void ns3::LteUeCphySapUser::ReportUeMeasurements(ns3::LteUeCphySapUser::UeMeasurementsParameters params) [member function]
     cls.add_method('ReportUeMeasurements', 
@@ -6812,11 +6987,6 @@ def register_Ns3LteUeRrcSapProvider_methods(root_module, cls):
                    'void', 
                    [param('ns3::LteUeRrcSapProvider::CompleteSetupParameters', 'params')], 
                    is_pure_virtual=True, is_virtual=True)
-    ## lte-rrc-sap.h (module 'lte'): void ns3::LteUeRrcSapProvider::RecvMasterInformationBlock(ns3::LteRrcSap::MasterInformationBlock msg) [member function]
-    cls.add_method('RecvMasterInformationBlock', 
-                   'void', 
-                   [param('ns3::LteRrcSap::MasterInformationBlock', 'msg')], 
-                   is_pure_virtual=True, is_virtual=True)
     ## lte-rrc-sap.h (module 'lte'): void ns3::LteUeRrcSapProvider::RecvRrcConnectionReconfiguration(ns3::LteRrcSap::RrcConnectionReconfiguration msg) [member function]
     cls.add_method('RecvRrcConnectionReconfiguration', 
                    'void', 
@@ -6851,11 +7021,6 @@ def register_Ns3LteUeRrcSapProvider_methods(root_module, cls):
     cls.add_method('RecvSystemInformation', 
                    'void', 
                    [param('ns3::LteRrcSap::SystemInformation', 'msg')], 
-                   is_pure_virtual=True, is_virtual=True)
-    ## lte-rrc-sap.h (module 'lte'): void ns3::LteUeRrcSapProvider::RecvSystemInformationBlockType1(ns3::LteRrcSap::SystemInformationBlockType1 msg) [member function]
-    cls.add_method('RecvSystemInformationBlockType1', 
-                   'void', 
-                   [param('ns3::LteRrcSap::SystemInformationBlockType1', 'msg')], 
                    is_pure_virtual=True, is_virtual=True)
     return
 
@@ -9262,11 +9427,6 @@ def register_Ns3LteEnbRrcSapUser_methods(root_module, cls):
                    'void', 
                    [param('ns3::LteRrcSap::SystemInformation', 'msg')], 
                    is_pure_virtual=True, is_virtual=True)
-    ## lte-rrc-sap.h (module 'lte'): void ns3::LteEnbRrcSapUser::SendSystemInformationBlockType1(ns3::LteRrcSap::SystemInformationBlockType1 msg) [member function]
-    cls.add_method('SendSystemInformationBlockType1', 
-                   'void', 
-                   [param('ns3::LteRrcSap::SystemInformationBlockType1', 'msg')], 
-                   is_pure_virtual=True, is_virtual=True)
     ## lte-rrc-sap.h (module 'lte'): void ns3::LteEnbRrcSapUser::SetupUe(uint16_t rnti, ns3::LteEnbRrcSapUser::SetupUeParameters params) [member function]
     cls.add_method('SetupUe', 
                    'void', 
@@ -11467,30 +11627,34 @@ def register_Ns3UeManager_methods(root_module, cls):
     cls.add_method('GetErabList', 
                    'std::vector< ns3::EpcX2Sap::ErabToBeSetupItem >', 
                    [])
-    ## lte-enb-rrc.h (module 'lte'): uint64_t ns3::UeManager::GetImsi() [member function]
+    ## lte-enb-rrc.h (module 'lte'): uint64_t ns3::UeManager::GetImsi() const [member function]
     cls.add_method('GetImsi', 
                    'uint64_t', 
-                   [])
+                   [], 
+                   is_const=True)
     ## lte-enb-rrc.h (module 'lte'): ns3::LteRrcSap::RadioResourceConfigDedicated ns3::UeManager::GetRadioResourceConfigForHandoverPreparationInfo() [member function]
     cls.add_method('GetRadioResourceConfigForHandoverPreparationInfo', 
                    'ns3::LteRrcSap::RadioResourceConfigDedicated', 
                    [])
-    ## lte-enb-rrc.h (module 'lte'): uint16_t ns3::UeManager::GetRnti() [member function]
+    ## lte-enb-rrc.h (module 'lte'): uint16_t ns3::UeManager::GetRnti() const [member function]
     cls.add_method('GetRnti', 
                    'uint16_t', 
-                   [])
+                   [], 
+                   is_const=True)
     ## lte-enb-rrc.h (module 'lte'): ns3::LteRrcSap::RrcConnectionReconfiguration ns3::UeManager::GetRrcConnectionReconfigurationForHandover() [member function]
     cls.add_method('GetRrcConnectionReconfigurationForHandover', 
                    'ns3::LteRrcSap::RrcConnectionReconfiguration', 
                    [])
-    ## lte-enb-rrc.h (module 'lte'): uint16_t ns3::UeManager::GetSrsConfigurationIndex() [member function]
+    ## lte-enb-rrc.h (module 'lte'): uint16_t ns3::UeManager::GetSrsConfigurationIndex() const [member function]
     cls.add_method('GetSrsConfigurationIndex', 
                    'uint16_t', 
-                   [])
-    ## lte-enb-rrc.h (module 'lte'): ns3::UeManager::State ns3::UeManager::GetState() [member function]
+                   [], 
+                   is_const=True)
+    ## lte-enb-rrc.h (module 'lte'): ns3::UeManager::State ns3::UeManager::GetState() const [member function]
     cls.add_method('GetState', 
                    'ns3::UeManager::State', 
-                   [])
+                   [], 
+                   is_const=True)
     ## lte-enb-rrc.h (module 'lte'): static ns3::TypeId ns3::UeManager::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -11590,19 +11754,6 @@ def register_Ns3UeManager_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
-    return
-
-def register_Ns3UeMeasure_methods(root_module, cls):
-    ## lte-enb-rrc.h (module 'lte'): ns3::UeMeasure::UeMeasure() [constructor]
-    cls.add_constructor([])
-    ## lte-enb-rrc.h (module 'lte'): ns3::UeMeasure::UeMeasure(ns3::UeMeasure const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::UeMeasure const &', 'arg0')])
-    ## lte-enb-rrc.h (module 'lte'): ns3::UeMeasure::m_cellId [variable]
-    cls.add_instance_attribute('m_cellId', 'uint16_t', is_const=False)
-    ## lte-enb-rrc.h (module 'lte'): ns3::UeMeasure::m_rsrp [variable]
-    cls.add_instance_attribute('m_rsrp', 'uint8_t', is_const=False)
-    ## lte-enb-rrc.h (module 'lte'): ns3::UeMeasure::m_rsrq [variable]
-    cls.add_instance_attribute('m_rsrq', 'uint8_t', is_const=False)
     return
 
 def register_Ns3UniformRandomVariable_methods(root_module, cls):
@@ -12971,10 +13122,14 @@ def register_Ns3EpcUeNas_methods(root_module, cls):
     cls.add_method('ActivateEpsBearer', 
                    'void', 
                    [param('ns3::EpsBearer', 'bearer'), param('ns3::Ptr< ns3::EpcTft >', 'tft')])
-    ## epc-ue-nas.h (module 'lte'): void ns3::EpcUeNas::Connect(uint16_t cellId, uint16_t earfcn) [member function]
+    ## epc-ue-nas.h (module 'lte'): void ns3::EpcUeNas::Connect() [member function]
     cls.add_method('Connect', 
                    'void', 
-                   [param('uint16_t', 'cellId'), param('uint16_t', 'earfcn')])
+                   [])
+    ## epc-ue-nas.h (module 'lte'): void ns3::EpcUeNas::Connect(uint16_t cellId, uint16_t dlEarfcn) [member function]
+    cls.add_method('Connect', 
+                   'void', 
+                   [param('uint16_t', 'cellId'), param('uint16_t', 'dlEarfcn')])
     ## epc-ue-nas.h (module 'lte'): void ns3::EpcUeNas::Disconnect() [member function]
     cls.add_method('Disconnect', 
                    'void', 
@@ -12988,6 +13143,16 @@ def register_Ns3EpcUeNas_methods(root_module, cls):
     cls.add_method('GetAsSapUser', 
                    'ns3::LteAsSapUser *', 
                    [])
+    ## epc-ue-nas.h (module 'lte'): uint32_t ns3::EpcUeNas::GetCsgId() const [member function]
+    cls.add_method('GetCsgId', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## epc-ue-nas.h (module 'lte'): ns3::EpcUeNas::State ns3::EpcUeNas::GetState() const [member function]
+    cls.add_method('GetState', 
+                   'ns3::EpcUeNas::State', 
+                   [], 
+                   is_const=True)
     ## epc-ue-nas.h (module 'lte'): static ns3::TypeId ns3::EpcUeNas::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -13001,6 +13166,10 @@ def register_Ns3EpcUeNas_methods(root_module, cls):
     cls.add_method('SetAsSapProvider', 
                    'void', 
                    [param('ns3::LteAsSapProvider *', 's')])
+    ## epc-ue-nas.h (module 'lte'): void ns3::EpcUeNas::SetCsgId(uint32_t csgId) [member function]
+    cls.add_method('SetCsgId', 
+                   'void', 
+                   [param('uint32_t', 'csgId')])
     ## epc-ue-nas.h (module 'lte'): void ns3::EpcUeNas::SetDevice(ns3::Ptr<ns3::NetDevice> dev) [member function]
     cls.add_method('SetDevice', 
                    'void', 
@@ -13013,6 +13182,10 @@ def register_Ns3EpcUeNas_methods(root_module, cls):
     cls.add_method('SetImsi', 
                    'void', 
                    [param('uint64_t', 'imsi')])
+    ## epc-ue-nas.h (module 'lte'): void ns3::EpcUeNas::StartCellSelection(uint16_t dlEarfcn) [member function]
+    cls.add_method('StartCellSelection', 
+                   'void', 
+                   [param('uint16_t', 'dlEarfcn')])
     return
 
 def register_Ns3EpcX2_methods(root_module, cls):
@@ -14743,6 +14916,46 @@ def register_Ns3LteAmc_methods(root_module, cls):
                    is_static=True)
     return
 
+def register_Ns3LteAnr_methods(root_module, cls):
+    ## lte-anr.h (module 'lte'): ns3::LteAnr::LteAnr(ns3::LteAnr const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::LteAnr const &', 'arg0')])
+    ## lte-anr.h (module 'lte'): ns3::LteAnr::LteAnr(uint16_t servingCellId) [constructor]
+    cls.add_constructor([param('uint16_t', 'servingCellId')])
+    ## lte-anr.h (module 'lte'): void ns3::LteAnr::AddNeighbourRelation(uint16_t cellId) [member function]
+    cls.add_method('AddNeighbourRelation', 
+                   'void', 
+                   [param('uint16_t', 'cellId')])
+    ## lte-anr.h (module 'lte'): ns3::LteAnrSapProvider * ns3::LteAnr::GetLteAnrSapProvider() [member function]
+    cls.add_method('GetLteAnrSapProvider', 
+                   'ns3::LteAnrSapProvider *', 
+                   [], 
+                   is_virtual=True)
+    ## lte-anr.h (module 'lte'): static ns3::TypeId ns3::LteAnr::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## lte-anr.h (module 'lte'): void ns3::LteAnr::RemoveNeighbourRelation(uint16_t cellId) [member function]
+    cls.add_method('RemoveNeighbourRelation', 
+                   'void', 
+                   [param('uint16_t', 'cellId')])
+    ## lte-anr.h (module 'lte'): void ns3::LteAnr::SetLteAnrSapUser(ns3::LteAnrSapUser * s) [member function]
+    cls.add_method('SetLteAnrSapUser', 
+                   'void', 
+                   [param('ns3::LteAnrSapUser *', 's')], 
+                   is_virtual=True)
+    ## lte-anr.h (module 'lte'): void ns3::LteAnr::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    ## lte-anr.h (module 'lte'): void ns3::LteAnr::DoInitialize() [member function]
+    cls.add_method('DoInitialize', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    return
+
 def register_Ns3LteControlMessage_methods(root_module, cls):
     ## lte-control-messages.h (module 'lte'): ns3::LteControlMessage::LteControlMessage(ns3::LteControlMessage const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::LteControlMessage const &', 'arg0')])
@@ -14824,6 +15037,10 @@ def register_Ns3LteEnbRrc_methods(root_module, cls):
     cls.add_constructor([param('ns3::LteEnbRrc const &', 'arg0')])
     ## lte-enb-rrc.h (module 'lte'): ns3::LteEnbRrc::LteEnbRrc() [constructor]
     cls.add_constructor([])
+    ## lte-enb-rrc.h (module 'lte'): uint8_t ns3::LteEnbRrc::AddUeMeasReportConfig(ns3::LteRrcSap::ReportConfigEutra config) [member function]
+    cls.add_method('AddUeMeasReportConfig', 
+                   'uint8_t', 
+                   [param('ns3::LteRrcSap::ReportConfigEutra', 'config')])
     ## lte-enb-rrc.h (module 'lte'): void ns3::LteEnbRrc::AddX2Neighbour(uint16_t cellId) [member function]
     cls.add_method('AddX2Neighbour', 
                    'void', 
@@ -14844,6 +15061,10 @@ def register_Ns3LteEnbRrc_methods(root_module, cls):
     cls.add_method('GetEpcX2SapUser', 
                    'ns3::EpcX2SapUser *', 
                    [])
+    ## lte-enb-rrc.h (module 'lte'): ns3::LteAnrSapUser * ns3::LteEnbRrc::GetLteAnrSapUser() [member function]
+    cls.add_method('GetLteAnrSapUser', 
+                   'ns3::LteAnrSapUser *', 
+                   [])
     ## lte-enb-rrc.h (module 'lte'): ns3::LteEnbCmacSapUser * ns3::LteEnbRrc::GetLteEnbCmacSapUser() [member function]
     cls.add_method('GetLteEnbCmacSapUser', 
                    'ns3::LteEnbCmacSapUser *', 
@@ -14855,6 +15076,10 @@ def register_Ns3LteEnbRrc_methods(root_module, cls):
     ## lte-enb-rrc.h (module 'lte'): ns3::LteEnbRrcSapProvider * ns3::LteEnbRrc::GetLteEnbRrcSapProvider() [member function]
     cls.add_method('GetLteEnbRrcSapProvider', 
                    'ns3::LteEnbRrcSapProvider *', 
+                   [])
+    ## lte-enb-rrc.h (module 'lte'): ns3::LteHandoverManagementSapUser * ns3::LteEnbRrc::GetLteHandoverManagementSapUser() [member function]
+    cls.add_method('GetLteHandoverManagementSapUser', 
+                   'ns3::LteHandoverManagementSapUser *', 
                    [])
     ## lte-enb-rrc.h (module 'lte'): ns3::EpcEnbS1SapUser * ns3::LteEnbRrc::GetS1SapUser() [member function]
     cls.add_method('GetS1SapUser', 
@@ -14894,6 +15119,10 @@ def register_Ns3LteEnbRrc_methods(root_module, cls):
     cls.add_method('SetCellId', 
                    'void', 
                    [param('uint16_t', 'm_cellId')])
+    ## lte-enb-rrc.h (module 'lte'): void ns3::LteEnbRrc::SetCsgId(uint32_t csgId, bool csgIndication) [member function]
+    cls.add_method('SetCsgId', 
+                   'void', 
+                   [param('uint32_t', 'csgId'), param('bool', 'csgIndication')])
     ## lte-enb-rrc.h (module 'lte'): void ns3::LteEnbRrc::SetEpcX2SapProvider(ns3::EpcX2SapProvider * s) [member function]
     cls.add_method('SetEpcX2SapProvider', 
                    'void', 
@@ -14902,6 +15131,10 @@ def register_Ns3LteEnbRrc_methods(root_module, cls):
     cls.add_method('SetForwardUpCallback', 
                    'void', 
                    [param('ns3::Callback< void, ns3::Ptr< ns3::Packet >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'cb')])
+    ## lte-enb-rrc.h (module 'lte'): void ns3::LteEnbRrc::SetLteAnrSapProvider(ns3::LteAnrSapProvider * s) [member function]
+    cls.add_method('SetLteAnrSapProvider', 
+                   'void', 
+                   [param('ns3::LteAnrSapProvider *', 's')])
     ## lte-enb-rrc.h (module 'lte'): void ns3::LteEnbRrc::SetLteEnbCmacSapProvider(ns3::LteEnbCmacSapProvider * s) [member function]
     cls.add_method('SetLteEnbCmacSapProvider', 
                    'void', 
@@ -14914,6 +15147,10 @@ def register_Ns3LteEnbRrc_methods(root_module, cls):
     cls.add_method('SetLteEnbRrcSapUser', 
                    'void', 
                    [param('ns3::LteEnbRrcSapUser *', 's')])
+    ## lte-enb-rrc.h (module 'lte'): void ns3::LteEnbRrc::SetLteHandoverManagementSapProvider(ns3::LteHandoverManagementSapProvider * s) [member function]
+    cls.add_method('SetLteHandoverManagementSapProvider', 
+                   'void', 
+                   [param('ns3::LteHandoverManagementSapProvider *', 's')])
     ## lte-enb-rrc.h (module 'lte'): void ns3::LteEnbRrc::SetLteMacSapProvider(ns3::LteMacSapProvider * s) [member function]
     cls.add_method('SetLteMacSapProvider', 
                    'void', 
@@ -15007,6 +15244,38 @@ def register_Ns3LteEnbRrcProtocolReal_methods(root_module, cls):
                    [param('uint16_t', 'rnti'), param('ns3::LteUeRrcSapProvider *', 'p')])
     return
 
+def register_Ns3LteHandoverAlgorithm_methods(root_module, cls):
+    ## lte-handover-algorithm.h (module 'lte'): ns3::LteHandoverAlgorithm::LteHandoverAlgorithm(ns3::LteHandoverAlgorithm const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::LteHandoverAlgorithm const &', 'arg0')])
+    ## lte-handover-algorithm.h (module 'lte'): ns3::LteHandoverAlgorithm::LteHandoverAlgorithm() [constructor]
+    cls.add_constructor([])
+    ## lte-handover-algorithm.h (module 'lte'): ns3::LteHandoverManagementSapProvider * ns3::LteHandoverAlgorithm::GetLteHandoverManagementSapProvider() [member function]
+    cls.add_method('GetLteHandoverManagementSapProvider', 
+                   'ns3::LteHandoverManagementSapProvider *', 
+                   [], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## lte-handover-algorithm.h (module 'lte'): static ns3::TypeId ns3::LteHandoverAlgorithm::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## lte-handover-algorithm.h (module 'lte'): void ns3::LteHandoverAlgorithm::SetLteHandoverManagementSapUser(ns3::LteHandoverManagementSapUser * s) [member function]
+    cls.add_method('SetLteHandoverManagementSapUser', 
+                   'void', 
+                   [param('ns3::LteHandoverManagementSapUser *', 's')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## lte-handover-algorithm.h (module 'lte'): void ns3::LteHandoverAlgorithm::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    ## lte-handover-algorithm.h (module 'lte'): void ns3::LteHandoverAlgorithm::DoReportUeMeas(uint16_t rnti, ns3::LteRrcSap::MeasResults measResults) [member function]
+    cls.add_method('DoReportUeMeas', 
+                   'void', 
+                   [param('uint16_t', 'rnti'), param('ns3::LteRrcSap::MeasResults', 'measResults')], 
+                   is_pure_virtual=True, visibility='protected', is_virtual=True)
+    return
+
 def register_Ns3LteHarqPhy_methods(root_module, cls):
     ## lte-harq-phy.h (module 'lte'): ns3::LteHarqPhy::LteHarqPhy(ns3::LteHarqPhy const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::LteHarqPhy const &', 'arg0')])
@@ -15083,6 +15352,14 @@ def register_Ns3LteHelper_methods(root_module, cls):
     cls.add_method('AssignStreams', 
                    'int64_t', 
                    [param('ns3::NetDeviceContainer', 'c'), param('int64_t', 'stream')])
+    ## lte-helper.h (module 'lte'): void ns3::LteHelper::Attach(ns3::NetDeviceContainer ueDevices) [member function]
+    cls.add_method('Attach', 
+                   'void', 
+                   [param('ns3::NetDeviceContainer', 'ueDevices')])
+    ## lte-helper.h (module 'lte'): void ns3::LteHelper::Attach(ns3::Ptr<ns3::NetDevice> ueDevice) [member function]
+    cls.add_method('Attach', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::NetDevice >', 'ueDevice')])
     ## lte-helper.h (module 'lte'): void ns3::LteHelper::Attach(ns3::NetDeviceContainer ueDevices, ns3::Ptr<ns3::NetDevice> enbDevice) [member function]
     cls.add_method('Attach', 
                    'void', 
@@ -15160,6 +15437,11 @@ def register_Ns3LteHelper_methods(root_module, cls):
     cls.add_method('EnableUlTxPhyTraces', 
                    'void', 
                    [])
+    ## lte-helper.h (module 'lte'): std::string ns3::LteHelper::GetHandoverAlgorithmType() const [member function]
+    cls.add_method('GetHandoverAlgorithmType', 
+                   'std::string', 
+                   [], 
+                   is_const=True)
     ## lte-helper.h (module 'lte'): ns3::Ptr<ns3::RadioBearerStatsCalculator> ns3::LteHelper::GetPdcpStats() [member function]
     cls.add_method('GetPdcpStats', 
                    'ns3::Ptr< ns3::RadioBearerStatsCalculator >', 
@@ -15214,6 +15496,14 @@ def register_Ns3LteHelper_methods(root_module, cls):
     cls.add_method('SetFadingModelAttribute', 
                    'void', 
                    [param('std::string', 'n'), param('ns3::AttributeValue const &', 'v')])
+    ## lte-helper.h (module 'lte'): void ns3::LteHelper::SetHandoverAlgorithmAttribute(std::string n, ns3::AttributeValue const & v) [member function]
+    cls.add_method('SetHandoverAlgorithmAttribute', 
+                   'void', 
+                   [param('std::string', 'n'), param('ns3::AttributeValue const &', 'v')])
+    ## lte-helper.h (module 'lte'): void ns3::LteHelper::SetHandoverAlgorithmType(std::string type) [member function]
+    cls.add_method('SetHandoverAlgorithmType', 
+                   'void', 
+                   [param('std::string', 'type')])
     ## lte-helper.h (module 'lte'): void ns3::LteHelper::SetPathlossModelAttribute(std::string n, ns3::AttributeValue const & v) [member function]
     cls.add_method('SetPathlossModelAttribute', 
                    'void', 
@@ -15246,6 +15536,10 @@ def register_Ns3LteHelper_methods(root_module, cls):
     cls.add_method('SetUeAntennaModelType', 
                    'void', 
                    [param('std::string', 'type')])
+    ## lte-helper.h (module 'lte'): void ns3::LteHelper::SetUeDeviceAttribute(std::string n, ns3::AttributeValue const & v) [member function]
+    cls.add_method('SetUeDeviceAttribute', 
+                   'void', 
+                   [param('std::string', 'n'), param('ns3::AttributeValue const &', 'v')])
     ## lte-helper.h (module 'lte'): void ns3::LteHelper::DoInitialize() [member function]
     cls.add_method('DoInitialize', 
                    'void', 
@@ -16215,6 +16509,11 @@ def register_Ns3LteUePhy_methods(root_module, cls):
                    'double', 
                    [], 
                    is_const=True)
+    ## lte-ue-phy.h (module 'lte'): ns3::LteUePhy::State ns3::LteUePhy::GetState() const [member function]
+    cls.add_method('GetState', 
+                   'ns3::LteUePhy::State', 
+                   [], 
+                   is_const=True)
     ## lte-ue-phy.h (module 'lte'): std::vector<int, std::allocator<int> > ns3::LteUePhy::GetSubChannelsForReception() [member function]
     cls.add_method('GetSubChannelsForReception', 
                    'std::vector< int >', 
@@ -16344,10 +16643,11 @@ def register_Ns3LteUeRrc_methods(root_module, cls):
                    'uint16_t', 
                    [], 
                    is_const=True)
-    ## lte-ue-rrc.h (module 'lte'): uint64_t ns3::LteUeRrc::GetImsi() [member function]
+    ## lte-ue-rrc.h (module 'lte'): uint64_t ns3::LteUeRrc::GetImsi() const [member function]
     cls.add_method('GetImsi', 
                    'uint64_t', 
-                   [])
+                   [], 
+                   is_const=True)
     ## lte-ue-rrc.h (module 'lte'): ns3::LteUeCmacSapUser * ns3::LteUeRrc::GetLteUeCmacSapUser() [member function]
     cls.add_method('GetLteUeCmacSapUser', 
                    'ns3::LteUeCmacSapUser *', 
@@ -16365,10 +16665,11 @@ def register_Ns3LteUeRrc_methods(root_module, cls):
                    'uint16_t', 
                    [], 
                    is_const=True)
-    ## lte-ue-rrc.h (module 'lte'): ns3::LteUeRrc::State ns3::LteUeRrc::GetState() [member function]
+    ## lte-ue-rrc.h (module 'lte'): ns3::LteUeRrc::State ns3::LteUeRrc::GetState() const [member function]
     cls.add_method('GetState', 
                    'ns3::LteUeRrc::State', 
-                   [])
+                   [], 
+                   is_const=True)
     ## lte-ue-rrc.h (module 'lte'): static ns3::TypeId ns3::LteUeRrc::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -16649,23 +16950,6 @@ def register_Ns3MobilityModel_methods(root_module, cls):
                    is_pure_virtual=True, visibility='private', is_virtual=True)
     return
 
-def register_Ns3NeighbourRelation_methods(root_module, cls):
-    ## lte-enb-rrc.h (module 'lte'): ns3::NeighbourRelation::NeighbourRelation() [constructor]
-    cls.add_constructor([])
-    ## lte-enb-rrc.h (module 'lte'): ns3::NeighbourRelation::NeighbourRelation(ns3::NeighbourRelation const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::NeighbourRelation const &', 'arg0')])
-    ## lte-enb-rrc.h (module 'lte'): ns3::NeighbourRelation::m_detectedAsNeighbour [variable]
-    cls.add_instance_attribute('m_detectedAsNeighbour', 'bool', is_const=False)
-    ## lte-enb-rrc.h (module 'lte'): ns3::NeighbourRelation::m_noHo [variable]
-    cls.add_instance_attribute('m_noHo', 'bool', is_const=False)
-    ## lte-enb-rrc.h (module 'lte'): ns3::NeighbourRelation::m_noRemove [variable]
-    cls.add_instance_attribute('m_noRemove', 'bool', is_const=False)
-    ## lte-enb-rrc.h (module 'lte'): ns3::NeighbourRelation::m_noX2 [variable]
-    cls.add_instance_attribute('m_noX2', 'bool', is_const=False)
-    ## lte-enb-rrc.h (module 'lte'): ns3::NeighbourRelation::m_physCellId [variable]
-    cls.add_instance_attribute('m_physCellId', 'uint16_t', is_const=False)
-    return
-
 def register_Ns3NetDevice_methods(root_module, cls):
     ## net-device.h (module 'network'): ns3::NetDevice::NetDevice() [constructor]
     cls.add_constructor([])
@@ -16840,6 +17124,43 @@ def register_Ns3NixVector_methods(root_module, cls):
                    'uint32_t', 
                    [param('uint32_t *', 'buffer'), param('uint32_t', 'maxSize')], 
                    is_const=True)
+    return
+
+def register_Ns3NoOpHandoverAlgorithm_methods(root_module, cls):
+    ## no-op-handover-algorithm.h (module 'lte'): ns3::NoOpHandoverAlgorithm::NoOpHandoverAlgorithm(ns3::NoOpHandoverAlgorithm const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::NoOpHandoverAlgorithm const &', 'arg0')])
+    ## no-op-handover-algorithm.h (module 'lte'): ns3::NoOpHandoverAlgorithm::NoOpHandoverAlgorithm() [constructor]
+    cls.add_constructor([])
+    ## no-op-handover-algorithm.h (module 'lte'): ns3::LteHandoverManagementSapProvider * ns3::NoOpHandoverAlgorithm::GetLteHandoverManagementSapProvider() [member function]
+    cls.add_method('GetLteHandoverManagementSapProvider', 
+                   'ns3::LteHandoverManagementSapProvider *', 
+                   [], 
+                   is_virtual=True)
+    ## no-op-handover-algorithm.h (module 'lte'): static ns3::TypeId ns3::NoOpHandoverAlgorithm::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## no-op-handover-algorithm.h (module 'lte'): void ns3::NoOpHandoverAlgorithm::SetLteHandoverManagementSapUser(ns3::LteHandoverManagementSapUser * s) [member function]
+    cls.add_method('SetLteHandoverManagementSapUser', 
+                   'void', 
+                   [param('ns3::LteHandoverManagementSapUser *', 's')], 
+                   is_virtual=True)
+    ## no-op-handover-algorithm.h (module 'lte'): void ns3::NoOpHandoverAlgorithm::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    ## no-op-handover-algorithm.h (module 'lte'): void ns3::NoOpHandoverAlgorithm::DoInitialize() [member function]
+    cls.add_method('DoInitialize', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    ## no-op-handover-algorithm.h (module 'lte'): void ns3::NoOpHandoverAlgorithm::DoReportUeMeas(uint16_t rnti, ns3::LteRrcSap::MeasResults measResults) [member function]
+    cls.add_method('DoReportUeMeas', 
+                   'void', 
+                   [param('uint16_t', 'rnti'), param('ns3::LteRrcSap::MeasResults', 'measResults')], 
+                   visibility='protected', is_virtual=True)
     return
 
 def register_Ns3Node_methods(root_module, cls):
@@ -18153,6 +18474,22 @@ def register_Ns3RrcUlDcchMessage_methods(root_module, cls):
                    is_const=True, visibility='protected')
     return
 
+def register_Ns3Sib1LteControlMessage_methods(root_module, cls):
+    ## lte-control-messages.h (module 'lte'): ns3::Sib1LteControlMessage::Sib1LteControlMessage(ns3::Sib1LteControlMessage const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Sib1LteControlMessage const &', 'arg0')])
+    ## lte-control-messages.h (module 'lte'): ns3::Sib1LteControlMessage::Sib1LteControlMessage() [constructor]
+    cls.add_constructor([])
+    ## lte-control-messages.h (module 'lte'): ns3::LteRrcSap::SystemInformationBlockType1 ns3::Sib1LteControlMessage::GetSib1() const [member function]
+    cls.add_method('GetSib1', 
+                   'ns3::LteRrcSap::SystemInformationBlockType1', 
+                   [], 
+                   is_const=True)
+    ## lte-control-messages.h (module 'lte'): void ns3::Sib1LteControlMessage::SetSib1(ns3::LteRrcSap::SystemInformationBlockType1 sib1) [member function]
+    cls.add_method('SetSib1', 
+                   'void', 
+                   [param('ns3::LteRrcSap::SystemInformationBlockType1', 'sib1')])
+    return
+
 def register_Ns3SpectrumChannel_methods(root_module, cls):
     ## spectrum-channel.h (module 'spectrum'): ns3::SpectrumChannel::SpectrumChannel() [constructor]
     cls.add_constructor([])
@@ -18760,6 +19097,80 @@ def register_Ns3VirtualNetDevice_methods(root_module, cls):
     cls.add_method('DoDispose', 
                    'void', 
                    [], 
+                   visibility='protected', is_virtual=True)
+    return
+
+def register_Ns3A2A4RsrqHandoverAlgorithm_methods(root_module, cls):
+    ## a2-a4-rsrq-handover-algorithm.h (module 'lte'): ns3::A2A4RsrqHandoverAlgorithm::A2A4RsrqHandoverAlgorithm(ns3::A2A4RsrqHandoverAlgorithm const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::A2A4RsrqHandoverAlgorithm const &', 'arg0')])
+    ## a2-a4-rsrq-handover-algorithm.h (module 'lte'): ns3::A2A4RsrqHandoverAlgorithm::A2A4RsrqHandoverAlgorithm() [constructor]
+    cls.add_constructor([])
+    ## a2-a4-rsrq-handover-algorithm.h (module 'lte'): ns3::LteHandoverManagementSapProvider * ns3::A2A4RsrqHandoverAlgorithm::GetLteHandoverManagementSapProvider() [member function]
+    cls.add_method('GetLteHandoverManagementSapProvider', 
+                   'ns3::LteHandoverManagementSapProvider *', 
+                   [], 
+                   is_virtual=True)
+    ## a2-a4-rsrq-handover-algorithm.h (module 'lte'): static ns3::TypeId ns3::A2A4RsrqHandoverAlgorithm::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## a2-a4-rsrq-handover-algorithm.h (module 'lte'): void ns3::A2A4RsrqHandoverAlgorithm::SetLteHandoverManagementSapUser(ns3::LteHandoverManagementSapUser * s) [member function]
+    cls.add_method('SetLteHandoverManagementSapUser', 
+                   'void', 
+                   [param('ns3::LteHandoverManagementSapUser *', 's')], 
+                   is_virtual=True)
+    ## a2-a4-rsrq-handover-algorithm.h (module 'lte'): void ns3::A2A4RsrqHandoverAlgorithm::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    ## a2-a4-rsrq-handover-algorithm.h (module 'lte'): void ns3::A2A4RsrqHandoverAlgorithm::DoInitialize() [member function]
+    cls.add_method('DoInitialize', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    ## a2-a4-rsrq-handover-algorithm.h (module 'lte'): void ns3::A2A4RsrqHandoverAlgorithm::DoReportUeMeas(uint16_t rnti, ns3::LteRrcSap::MeasResults measResults) [member function]
+    cls.add_method('DoReportUeMeas', 
+                   'void', 
+                   [param('uint16_t', 'rnti'), param('ns3::LteRrcSap::MeasResults', 'measResults')], 
+                   visibility='protected', is_virtual=True)
+    return
+
+def register_Ns3A3RsrpHandoverAlgorithm_methods(root_module, cls):
+    ## a3-rsrp-handover-algorithm.h (module 'lte'): ns3::A3RsrpHandoverAlgorithm::A3RsrpHandoverAlgorithm(ns3::A3RsrpHandoverAlgorithm const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::A3RsrpHandoverAlgorithm const &', 'arg0')])
+    ## a3-rsrp-handover-algorithm.h (module 'lte'): ns3::A3RsrpHandoverAlgorithm::A3RsrpHandoverAlgorithm() [constructor]
+    cls.add_constructor([])
+    ## a3-rsrp-handover-algorithm.h (module 'lte'): ns3::LteHandoverManagementSapProvider * ns3::A3RsrpHandoverAlgorithm::GetLteHandoverManagementSapProvider() [member function]
+    cls.add_method('GetLteHandoverManagementSapProvider', 
+                   'ns3::LteHandoverManagementSapProvider *', 
+                   [], 
+                   is_virtual=True)
+    ## a3-rsrp-handover-algorithm.h (module 'lte'): static ns3::TypeId ns3::A3RsrpHandoverAlgorithm::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## a3-rsrp-handover-algorithm.h (module 'lte'): void ns3::A3RsrpHandoverAlgorithm::SetLteHandoverManagementSapUser(ns3::LteHandoverManagementSapUser * s) [member function]
+    cls.add_method('SetLteHandoverManagementSapUser', 
+                   'void', 
+                   [param('ns3::LteHandoverManagementSapUser *', 's')], 
+                   is_virtual=True)
+    ## a3-rsrp-handover-algorithm.h (module 'lte'): void ns3::A3RsrpHandoverAlgorithm::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    ## a3-rsrp-handover-algorithm.h (module 'lte'): void ns3::A3RsrpHandoverAlgorithm::DoInitialize() [member function]
+    cls.add_method('DoInitialize', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    ## a3-rsrp-handover-algorithm.h (module 'lte'): void ns3::A3RsrpHandoverAlgorithm::DoReportUeMeas(uint16_t rnti, ns3::LteRrcSap::MeasResults measResults) [member function]
+    cls.add_method('DoReportUeMeas', 
+                   'void', 
+                   [param('uint16_t', 'rnti'), param('ns3::LteRrcSap::MeasResults', 'measResults')], 
                    visibility='protected', is_virtual=True)
     return
 
@@ -19466,8 +19877,6 @@ def register_Ns3LteUeNetDevice_methods(root_module, cls):
                    is_static=True)
     ## lte-ue-net-device.h (module 'lte'): ns3::LteUeNetDevice::LteUeNetDevice() [constructor]
     cls.add_constructor([])
-    ## lte-ue-net-device.h (module 'lte'): ns3::LteUeNetDevice::LteUeNetDevice(ns3::Ptr<ns3::Node> node, ns3::Ptr<ns3::LteUePhy> phy, ns3::Ptr<ns3::LteUeMac> mac, ns3::Ptr<ns3::LteUeRrc> rrc, ns3::Ptr<ns3::EpcUeNas> nas, uint64_t imsi) [constructor]
-    cls.add_constructor([param('ns3::Ptr< ns3::Node >', 'node'), param('ns3::Ptr< ns3::LteUePhy >', 'phy'), param('ns3::Ptr< ns3::LteUeMac >', 'mac'), param('ns3::Ptr< ns3::LteUeRrc >', 'rrc'), param('ns3::Ptr< ns3::EpcUeNas >', 'nas'), param('uint64_t', 'imsi')])
     ## lte-ue-net-device.h (module 'lte'): void ns3::LteUeNetDevice::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
@@ -19503,6 +19912,24 @@ def register_Ns3LteUeNetDevice_methods(root_module, cls):
                    'uint64_t', 
                    [], 
                    is_const=True)
+    ## lte-ue-net-device.h (module 'lte'): uint16_t ns3::LteUeNetDevice::GetDlEarfcn() const [member function]
+    cls.add_method('GetDlEarfcn', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## lte-ue-net-device.h (module 'lte'): void ns3::LteUeNetDevice::SetDlEarfcn(uint16_t earfcn) [member function]
+    cls.add_method('SetDlEarfcn', 
+                   'void', 
+                   [param('uint16_t', 'earfcn')])
+    ## lte-ue-net-device.h (module 'lte'): uint32_t ns3::LteUeNetDevice::GetCsgId() const [member function]
+    cls.add_method('GetCsgId', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## lte-ue-net-device.h (module 'lte'): void ns3::LteUeNetDevice::SetCsgId(uint32_t csgId) [member function]
+    cls.add_method('SetCsgId', 
+                   'void', 
+                   [param('uint32_t', 'csgId')])
     ## lte-ue-net-device.h (module 'lte'): void ns3::LteUeNetDevice::SetTargetEnb(ns3::Ptr<ns3::LteEnbNetDevice> enb) [member function]
     cls.add_method('SetTargetEnb', 
                    'void', 
@@ -20108,6 +20535,24 @@ def register_Ns3LteEnbNetDevice_methods(root_module, cls):
     cls.add_method('SetUlEarfcn', 
                    'void', 
                    [param('uint16_t', 'earfcn')])
+    ## lte-enb-net-device.h (module 'lte'): uint32_t ns3::LteEnbNetDevice::GetCsgId() const [member function]
+    cls.add_method('GetCsgId', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## lte-enb-net-device.h (module 'lte'): void ns3::LteEnbNetDevice::SetCsgId(uint32_t csgId) [member function]
+    cls.add_method('SetCsgId', 
+                   'void', 
+                   [param('uint32_t', 'csgId')])
+    ## lte-enb-net-device.h (module 'lte'): bool ns3::LteEnbNetDevice::GetCsgIndication() const [member function]
+    cls.add_method('GetCsgIndication', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## lte-enb-net-device.h (module 'lte'): void ns3::LteEnbNetDevice::SetCsgIndication(bool csgIndication) [member function]
+    cls.add_method('SetCsgIndication', 
+                   'void', 
+                   [param('bool', 'csgIndication')])
     ## lte-enb-net-device.h (module 'lte'): void ns3::LteEnbNetDevice::DoInitialize() [member function]
     cls.add_method('DoInitialize', 
                    'void', 

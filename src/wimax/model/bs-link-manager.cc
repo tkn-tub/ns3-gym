@@ -36,7 +36,8 @@ NS_LOG_COMPONENT_DEFINE ("BSLinkManager");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (BSLinkManager);
+NS_OBJECT_ENSURE_REGISTERED (BSLinkManager)
+  ;
 
 TypeId BSLinkManager::GetTypeId (void)
 {

@@ -43,7 +43,8 @@ JakesProcess::Oscillator::GetValueAt (Time at) const
   return (m_amplitude * std::cos (at.GetSeconds () * m_omega + m_phase));
 }
 
-NS_OBJECT_ENSURE_REGISTERED (JakesProcess);
+NS_OBJECT_ENSURE_REGISTERED (JakesProcess)
+  ;
 
 TypeId
 JakesProcess::GetTypeId ()

@@ -48,7 +48,12 @@ namespace ns3 {
 class Ipv6PacketProbe : public Probe
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId ();
+
   Ipv6PacketProbe ();
   virtual ~Ipv6PacketProbe ();
 
@@ -103,7 +108,9 @@ private:
    */
   void TraceSink (Ptr<const Packet> packet, Ptr<Ipv6> ipv6, uint32_t interface);
 
+  /// Traced Callback: the packet, the Ipv6 object and the interface.
   TracedCallback<Ptr<const Packet>, Ptr<Ipv6>, uint32_t> m_output;
+  /// Traced Callback: the previous packet's size and the actual packet's size.
   TracedCallback<uint32_t, uint32_t> m_outputBytes;
 
   /// The traced packet.

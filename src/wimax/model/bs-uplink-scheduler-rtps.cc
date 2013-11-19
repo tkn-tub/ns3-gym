@@ -36,7 +36,9 @@
 NS_LOG_COMPONENT_DEFINE ("UplinkSchedulerRtps");
 
 namespace ns3 {
-NS_OBJECT_ENSURE_REGISTERED ( UplinkSchedulerRtps);
+NS_OBJECT_ENSURE_REGISTERED ( UplinkSchedulerRtps)
+  ;
+  
 
 UplinkSchedulerRtps::UplinkSchedulerRtps ()
 {

@@ -156,12 +156,12 @@ LteHandoverTargetTestCase::LteHandoverTargetTestCase (std::string name, Vector u
 
   uint16_t nEnb = gridSizeX * gridSizeY;
 
-  if ((sourceCellId < 0) && (sourceCellId > nEnb))
+  if (sourceCellId > nEnb)
     {
       NS_FATAL_ERROR ("Invalid source cell ID " << sourceCellId);
     }
 
-  if ((targetCellId < 0) && (targetCellId > nEnb))
+  if (targetCellId > nEnb)
     {
       NS_FATAL_ERROR ("Invalid target cell ID " << targetCellId);
     }

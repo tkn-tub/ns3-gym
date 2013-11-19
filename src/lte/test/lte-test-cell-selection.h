@@ -76,13 +76,12 @@ public:
    * \param isIdealRrc if true, simulation uses Ideal RRC protocol, otherwise
    *                   simulation uses Real RRC protocol
    * \param interSiteDistance the distance between eNodeB in meters
-   * \param enbTxPower the transmitting power of eNodeBs in dBm
    * \param ueSetupList a list of UE configuration to be installed in the
    *                    simulation
    * \param rngRun the number of run to be used by the random number generator
    */
   LteCellSelectionTestCase (std::string name, bool isEpcMode, bool isIdealRrc,
-                            double interSiteDistance, double enbTxPower,
+                            double interSiteDistance,
                             std::vector<UeSetup_t> ueSetupList,
                             int64_t rngRun);
 
@@ -115,7 +114,6 @@ private:
   bool m_isEpcMode;
   bool m_isIdealRrc;
   double m_interSiteDistance;
-  double m_enbTxPower;
   std::vector<UeSetup_t> m_ueSetupList;
   int64_t m_rngRun;
 

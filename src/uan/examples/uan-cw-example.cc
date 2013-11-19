@@ -47,7 +47,8 @@
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE ("UanCwExample");
+NS_LOG_COMPONENT_DEFINE ("UanCwExample")
+  ;
 
 Experiment::Experiment () 
   : m_numNodes (15),

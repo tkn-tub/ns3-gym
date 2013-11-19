@@ -40,7 +40,8 @@ NS_LOG_COMPONENT_DEFINE ("LteNetDevice");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED ( LteNetDevice);
+NS_OBJECT_ENSURE_REGISTERED ( LteNetDevice)
+  ;
 
 ////////////////////////////////
 // LteNetDevice
