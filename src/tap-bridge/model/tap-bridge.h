@@ -448,7 +448,7 @@ private:
    * \internal
    *
    * Whether the MAC address of the underlying ns-3 device has already been
-   * rewritten is stored in this variable (for UseLocal mode only).
+   * rewritten is stored in this variable (for UseLocal/UseBridge mode only).
    */
   bool m_ns3AddressRewritten;
 
