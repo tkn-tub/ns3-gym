@@ -74,31 +74,6 @@ private:
 };
 
 
-// class EffectiveSnrSpectrumErrorModel
-// {
-// public:
-
-//   enum ModulationAndCoding {
-//     BPSK_1_2,
-//     BPSK_1_3,
-//     QPSK_1_2,
-//     QPSK_1_3,
-//     QAM16_1_2,
-//     QAM64_1_2
-//   };
-
-//   void StartRx (uint32_t bytes);
-//   void EvaluateChunk (const SpectrumValue& sinr, Time duration);
-//   bool IsRxCorrect ();
-
-// protected:
-//   uint32_t m_bytes;
-//   uint32_t m_deliverableBytes;
-
-// };
-
-
-
 } // namespace ns3
 
 
