@@ -465,21 +465,23 @@ LteMiErrorModel::GetPcfichPdcchError (const SpectrumValue& sinr)
   while (sinrIt!=sinrCopy.ValuesEnd ())
     {
       double sinrLin = *sinrIt;
-      int tr = 0;
-      while ((tr<MI_MAP_QPSK_SIZE)&&(MI_map_qpsk_axis[tr] < sinrLin))
-        {
-          tr++;
-        }
       if (sinrLin > MI_map_qpsk_axis[MI_MAP_QPSK_SIZE-1])
         {
           MI = 1;
         }
       else 
-        {
-          NS_ASSERT_MSG (tr<MI_MAP_QPSK_SIZE, "MI map out of data");
-          MI = MI_map_qpsk[tr];
+        { 
+          // since the values in MI_map_qpsk_axis are uniformly spaced, we have
+          // index = ((sinrLin - value[0]) / (value[SIZE-1] - value[0])) * (SIZE-1)
+              // the scaling coefficient is always the same, so we use a static const
+              // to speed up the calculation
+          static const double scalingCoeffQpsk = 
+            (MI_MAP_QPSK_SIZE - 1) / (MI_map_qpsk_axis[MI_MAP_QPSK_SIZE-1] - MI_map_qpsk_axis[0]);
+          double sinrIndexDouble = (sinrLin -  MI_map_qpsk_axis[0]) * scalingCoeffQpsk + 1;
+          uint32_t sinrIndex = std::max(0.0, std::floor (sinrIndexDouble));
+          NS_ASSERT_MSG (sinrIndex < MI_MAP_QPSK_SIZE, "MI map out of data");
+          MI = MI_map_qpsk[sinrIndex];
         }
-//       NS_LOG_DEBUG (" RB " << rb << " SINR " << 10*log10 (sinrLin) << " MI " << MI);
       MIsum += MI;
       sinrIt++;
       rb++;
