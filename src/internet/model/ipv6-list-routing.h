@@ -136,15 +136,8 @@ private:
    */
   static bool Compare (const Ipv6RoutingProtocolEntry& a, const Ipv6RoutingProtocolEntry& b);
 
-  /**
-   * \brief List of routing protocols.
-   */
-  Ipv6RoutingProtocolList m_routingProtocols;
-
-  /**
-   * \brief Ipv6 reference.
-   */
-  Ptr<Ipv6> m_ipv6;
+  Ipv6RoutingProtocolList m_routingProtocols; //!<  List of routing protocols.
+  Ptr<Ipv6> m_ipv6;  //!< Ipv6 this protocol is associated with.
 };
 
 } // namespace ns3

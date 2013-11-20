@@ -42,7 +42,7 @@ class NdiscCache;
  * \brief The IPv6 representation of a network interface
  *
  * By default IPv6 interfaces are created in the "down" state
- * with IP "fe80::1" and a /64 prefix. Before becoming useable,
+ * with IP "fe80::1" and a /64 prefix. Before becoming usable,
  * the user must invoke SetUp on them once the final IPv6 address
  * and mask has been set.
  */
@@ -268,7 +268,7 @@ private:
   typedef std::list<Ipv6InterfaceAddress>::iterator Ipv6InterfaceAddressListI;
 
   /**
-   * \brief Const Container Itareator for the Ipv6InterfaceAddresses.
+   * \brief Const Container Iterator for the Ipv6InterfaceAddresses.
    */
   typedef std::list<Ipv6InterfaceAddress>::const_iterator Ipv6InterfaceAddressListCI;
 

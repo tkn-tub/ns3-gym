@@ -69,6 +69,10 @@ class Node;
 class Ipv4StaticRouting : public Ipv4RoutingProtocol
 {
 public:
+  /**
+   * \brief The interface Id associated with this class.
+   * \return type identifier
+   */
   static TypeId GetTypeId (void);
 
   Ipv4StaticRouting ();
@@ -177,6 +181,7 @@ public:
  * to the routing table.
  *
  * \warning The default route counts as one of the routes.
+ * \return number of entries
  */
   uint32_t GetNRoutes (void) const;
 
@@ -308,6 +313,7 @@ public:
  * to the routing table.
  *
  * \warning The default multicast route counts as one of the routes.
+ * \return number of entries
  */
   uint32_t GetNMulticastRoutes (void) const;
 
@@ -375,23 +381,63 @@ protected:
   virtual void DoDispose (void);
 
 private:
+  /// Container for the network routes
   typedef std::list<std::pair <Ipv4RoutingTableEntry *, uint32_t> > NetworkRoutes;
+
+  /// Const Iterator for container for the network routes
   typedef std::list<std::pair <Ipv4RoutingTableEntry *, uint32_t> >::const_iterator NetworkRoutesCI;
+
+  /// Iterator for container for the network routes
   typedef std::list<std::pair <Ipv4RoutingTableEntry *, uint32_t> >::iterator NetworkRoutesI;
 
+  /// Container for the multicast routes
   typedef std::list<Ipv4MulticastRoutingTableEntry *> MulticastRoutes;
+
+  /// Const Iterator for container for the multicast routes
   typedef std::list<Ipv4MulticastRoutingTableEntry *>::const_iterator MulticastRoutesCI;
+
+  /// Iterator for container for the multicast routes
   typedef std::list<Ipv4MulticastRoutingTableEntry *>::iterator MulticastRoutesI;
 
+  /**
+   * \brief Lookup in the forwarding table for destination.
+   * \param dest destination address
+   * \param oif output interface if any (put 0 otherwise)
+   * \return Ipv4Route to route the packet to reach dest address
+   */
   Ptr<Ipv4Route> LookupStatic (Ipv4Address dest, Ptr<NetDevice> oif = 0);
+
+  /**
+   * \brief Lookup in the multicast forwarding table for destination.
+   * \param origin source address
+   * \param group group multicast address
+   * \param interface interface index
+   * \return Ipv4MulticastRoute to route the packet to reach dest address
+   */
   Ptr<Ipv4MulticastRoute> LookupStatic (Ipv4Address origin, Ipv4Address group,
                                         uint32_t interface);
 
+  /**
+   * \brief Choose the source address to use with destination address.
+   * \param interface interface index
+   * \param dest IPv4 destination address
+   * \return IPv4 source address to use
+   */
   Ipv4Address SourceAddressSelection (uint32_t interface, Ipv4Address dest);
 
+  /**
+   * \brief the forwarding table for network.
+   */
   NetworkRoutes m_networkRoutes;
+
+  /**
+   * \brief the forwarding table for multicast.
+   */
   MulticastRoutes m_multicastRoutes;
 
+  /**
+   * \brief Ipv4 reference.
+   */
   Ptr<Ipv4> m_ipv4;
 };
 

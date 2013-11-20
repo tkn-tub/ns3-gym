@@ -94,7 +94,7 @@ public:
   virtual ~Ipv6L3Protocol ();
 
   /**
-   * \brief Set node for this stack.
+   * \brief Set node associated with this stack.
    * \param node node to set
    */
   void SetNode (Ptr<Node> node);
@@ -427,16 +427,18 @@ private:
 
   /**
    * \brief Copy constructor.
-   * \param o object to copy
+   *
+   * Defined but not implemented to avoid misuse
    */
-  Ipv6L3Protocol (const Ipv6L3Protocol& o);
+  Ipv6L3Protocol (const Ipv6L3Protocol&);
 
   /**
    * \brief Copy constructor.
-   * \param o object to copy
+   *
+   * Defined but not implemented to avoid misuse
    * \returns the copied object
    */
-  Ipv6L3Protocol &operator = (const Ipv6L3Protocol& o);
+  Ipv6L3Protocol &operator = (const Ipv6L3Protocol&);
 
   /**
    * \brief Construct an IPv6 header.
@@ -469,7 +471,7 @@ private:
   void IpForward (Ptr<const NetDevice> idev, Ptr<Ipv6Route> rtentry, Ptr<const Packet> p, const Ipv6Header& header);
 
   /**
-   * \brief Forward a packet in multicast.
+   * \brief Forward a multicast packet.
    * \param idev Pointer to ingress network device
    * \param mrtentry route 
    * \param p packet to forward

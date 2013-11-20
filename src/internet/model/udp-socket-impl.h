@@ -50,6 +50,10 @@ class UdpL4Protocol;
 class UdpSocketImpl : public UdpSocket
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   /**
    * Create an unbound udp socket.
@@ -57,7 +61,15 @@ public:
   UdpSocketImpl ();
   virtual ~UdpSocketImpl ();
 
+  /**
+   * \brief Set the associated node.
+   * \param node the node
+   */
   void SetNode (Ptr<Node> node);
+  /**
+   * \brief Set the associated UDP L4 protocol.
+   * \param udp the UDP L4 protocol
+   */
   void SetUdp (Ptr<UdpL4Protocol> udp);
 
   virtual enum SocketErrno GetErrno (void) const;
@@ -101,48 +113,127 @@ private:
 
   friend class UdpSocketFactory;
   // invoked by Udp class
+
+  /**
+   * Finish the binding process
+   * \returns 0 on success, -1 on failure
+   */
   int FinishBind (void);
-  void ForwardUp (Ptr<Packet> p, Ipv4Header header, uint16_t port, 
-                  Ptr<Ipv4Interface> incomingInterface);
-  void ForwardUp6 (Ptr<Packet> p, Ipv6Header header, uint16_t port);
+
+  /**
+   * \brief Called by the L3 protocol when it received a packet to pass on to TCP.
+   *
+   * \param packet the incoming packet
+   * \param header the packet's IPv4 header
+   * \param port the incoming port
+   * \param incomingInterface the incoming interface
+   */
+  void ForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port, Ptr<Ipv4Interface> incomingInterface);
+
+  /**
+   * \brief Called by the L3 protocol when it received a packet to pass on to TCP.
+   *
+   * \param packet the incoming packet
+   * \param header the packet's IPv6 header
+   * \param port the incoming port
+   */
+  void ForwardUp6 (Ptr<Packet> packet, Ipv6Header header, uint16_t port);
+
+  /**
+   * \brief Kill this socket by zeroing its attributes (IPv4)
+   *
+   * This is a callback function configured to m_endpoint in
+   * SetupCallback(), invoked when the endpoint is destroyed.
+   */
   void Destroy (void);
+
+  /**
+   * \brief Kill this socket by zeroing its attributes (IPv6)
+   *
+   * This is a callback function configured to m_endpoint in
+   * SetupCallback(), invoked when the endpoint is destroyed.
+   */
   void Destroy6 (void);
+
+  /**
+   * \brief Send a packet
+   * \param p packet
+   * \returns 0 on success, -1 on failure
+   */
   int DoSend (Ptr<Packet> p);
+  /**
+   * \brief Send a packet to a specific destination
+   * \param p packet
+   * \param daddr destination address
+   * \returns 0 on success, -1 on failure
+   */
   int DoSendTo (Ptr<Packet> p, const Address &daddr);
+  /**
+   * \brief Send a packet to a specific destination and port (IPv4)
+   * \param p packet
+   * \param daddr destination address
+   * \param dport destination port
+   * \returns 0 on success, -1 on failure
+   */
   int DoSendTo (Ptr<Packet> p, Ipv4Address daddr, uint16_t dport);
+  /**
+   * \brief Send a packet to a specific destination and port (IPv6)
+   * \param p packet
+   * \param daddr destination address
+   * \param dport destination port
+   * \returns 0 on success, -1 on failure
+   */
   int DoSendTo (Ptr<Packet> p, Ipv6Address daddr, uint16_t dport);
-  void ForwardIcmp (Ipv4Address icmpSource, uint8_t icmpTtl, 
-                    uint8_t icmpType, uint8_t icmpCode,
-                    uint32_t icmpInfo);
-  void ForwardIcmp6 (Ipv6Address icmpSource, uint8_t icmpTtl, 
-                     uint8_t icmpType, uint8_t icmpCode,
-                     uint32_t icmpInfo);
 
-  Ipv4EndPoint *m_endPoint;
-  Ipv6EndPoint *m_endPoint6;
-  Ptr<Node> m_node;
-  Ptr<UdpL4Protocol> m_udp;
-  Address m_defaultAddress;
-  uint16_t m_defaultPort;
-  TracedCallback<Ptr<const Packet> > m_dropTrace;
+  /**
+   * \brief Called by the L3 protocol when it received an ICMP packet to pass on to TCP.
+   *
+   * \param icmpSource the ICMP source address
+   * \param icmpTtl the ICMP Time to Live
+   * \param icmpType the ICMP Type
+   * \param icmpCode the ICMP Code
+   * \param icmpInfo the ICMP Info
+   */
+  void ForwardIcmp (Ipv4Address icmpSource, uint8_t icmpTtl, uint8_t icmpType, uint8_t icmpCode, uint32_t icmpInfo);
 
-  enum SocketErrno m_errno;
-  bool m_shutdownSend;
-  bool m_shutdownRecv;
-  bool m_connected;
-  bool m_allowBroadcast;
+  /**
+   * \brief Called by the L3 protocol when it received an ICMPv6 packet to pass on to TCP.
+   *
+   * \param icmpSource the ICMP source address
+   * \param icmpTtl the ICMP Time to Live
+   * \param icmpType the ICMP Type
+   * \param icmpCode the ICMP Code
+   * \param icmpInfo the ICMP Info
+   */
+  void ForwardIcmp6 (Ipv6Address icmpSource, uint8_t icmpTtl, uint8_t icmpType, uint8_t icmpCode, uint32_t icmpInfo);
 
-  std::queue<Ptr<Packet> > m_deliveryQueue;
-  uint32_t m_rxAvailable;
+  // Connections to other layers of TCP/IP
+  Ipv4EndPoint*       m_endPoint;   //!< the IPv4 endpoint
+  Ipv6EndPoint*       m_endPoint6;  //!< the IPv6 endpoint
+  Ptr<Node>           m_node;       //!< the associated node
+  Ptr<UdpL4Protocol> m_udp;         //!< the associated UDP L4 protocol
+  Callback<void, Ipv4Address,uint8_t,uint8_t,uint8_t,uint32_t> m_icmpCallback;  //!< ICMP callback
+  Callback<void, Ipv6Address,uint8_t,uint8_t,uint8_t,uint32_t> m_icmpCallback6; //!< ICMPv6 callback
+
+  Address m_defaultAddress; //!< Default address
+  uint16_t m_defaultPort;   //!< Default port
+  TracedCallback<Ptr<const Packet> > m_dropTrace; //!< Trace for dropped packets
+
+  enum SocketErrno         m_errno;           //!< Socket error code
+  bool                     m_shutdownSend;    //!< Send no longer allowed
+  bool                     m_shutdownRecv;    //!< Receive no longer allowed
+  bool                     m_connected;       //!< Connection established
+  bool                     m_allowBroadcast;  //!< Allow send broadcast packets
+
+  std::queue<Ptr<Packet> > m_deliveryQueue; //!< Queue for incoming packets
+  uint32_t m_rxAvailable;                   //!< Number of available bytes to be received
 
   // Socket attributes
-  uint32_t m_rcvBufSize;
-  uint8_t m_ipMulticastTtl;
-  int32_t m_ipMulticastIf;
-  bool m_ipMulticastLoop;
-  bool m_mtuDiscover;
-  Callback<void, Ipv4Address,uint8_t,uint8_t,uint8_t,uint32_t> m_icmpCallback;
-  Callback<void, Ipv6Address,uint8_t,uint8_t,uint8_t,uint32_t> m_icmpCallback6;
+  uint32_t m_rcvBufSize;    //!< Receive buffer size
+  uint8_t m_ipMulticastTtl; //!< Multicast TTL
+  int32_t m_ipMulticastIf;  //!< Multicast Interface
+  bool m_ipMulticastLoop;   //!< Allow multicast loop
+  bool m_mtuDiscover;       //!< Allow MTU discovery
 };
 
 } // namespace ns3

@@ -38,6 +38,10 @@ class Node;
 class LoopbackNetDevice : public NetDevice
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   LoopbackNetDevice ();
 
@@ -72,13 +76,30 @@ public:
 protected:
   virtual void DoDispose (void);
 private:
+  /**
+   * Receive a packet from tge Loopback NetDevice.
+   *
+   * \param packet a reference to the received packet
+   * \param protocol the protocol
+   * \param to destination address
+   * \param from source address
+   */
   void Receive (Ptr<Packet> packet, uint16_t protocol, Mac48Address to, Mac48Address from);
+
+  /**
+   * The callback used to notify higher layers that a packet has been received.
+   */
   NetDevice::ReceiveCallback m_rxCallback;
+
+  /**
+   * The callback used to notify higher layers that a packet has been received in promiscuous mode.
+   */
   NetDevice::PromiscReceiveCallback m_promiscCallback;
-  Ptr<Node> m_node;
-  uint16_t m_mtu;
-  uint32_t m_ifIndex;
-  Mac48Address m_address;
+
+  Ptr<Node> m_node; //!< the node this NetDevice is associated with
+  uint16_t m_mtu; //!< device MTU
+  uint32_t m_ifIndex; //!< interface index
+  Mac48Address m_address; //!< NetDevice MAC address
 };
 
 } // namespace ns3

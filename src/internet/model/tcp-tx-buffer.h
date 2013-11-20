@@ -40,7 +40,15 @@ class Packet;
 class TcpTxBuffer : public Object
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
+  /**
+   * \brief Constructor
+   * \param n initial Sequence number to be transmitted
+   */
   TcpTxBuffer (uint32_t n = 0);
   virtual ~TcpTxBuffer (void);
 
@@ -48,31 +56,37 @@ public:
 
   /**
    * Returns the first byte's sequence number
+   * \returns the first byte's sequence number
    */
   SequenceNumber32 HeadSequence (void) const;
 
   /**
    * Returns the last byte's sequence number + 1
+   * \returns the last byte's sequence number + 1
    */
   SequenceNumber32 TailSequence (void) const;
 
   /**
    * Returns total number of bytes in this Tx buffer
+   * \returns total number of bytes in this Tx buffer
    */
   uint32_t Size (void) const;
 
   /**
    * Returns the Tx window size
+   * \returns the Tx window size (in bytes)
    */
   uint32_t MaxBufferSize (void) const;
 
   /**
    * Set the Tx window size
+   * \param n Tx window size (in bytes)
    */
   void SetMaxBufferSize (uint32_t n);
 
   /**
    * Returns the available capacity in this Tx window
+   * \returns available capacity in this Tx window
    */
   uint32_t Available (void) const;
 
@@ -86,17 +100,23 @@ public:
 
   /**
    * Returns the number of bytes from the buffer in the range [seq, tailSequence)
+   * \param seq initial sequence number
+   * \returns the number of bytes from the buffer in the range
    */
   uint32_t SizeFromSequence (const SequenceNumber32& seq) const;
 
   /**
    * Copy data of size numBytes into a packet, data from the range [seq, seq+numBytes)
+   * \param numBytes number of bytes to copy
+   * \param seq start sequence number to extract
+   * \returns a packet
    */
   Ptr<Packet> CopyFromSequence (uint32_t numBytes, const SequenceNumber32& seq);
 
   /**
    * Set the m_firstByteSeq to seq. Supposed to be called only when the
    * connection is just set up and we did not send any data out yet.
+   * \param seq The sequence number of the head byte
    */
   void SetHeadSequence (const SequenceNumber32& seq);
 
@@ -108,12 +128,13 @@ public:
   void DiscardUpTo (const SequenceNumber32& seq);
 
 private:
+  /// container for data stored in the buffer
   typedef std::list<Ptr<Packet> >::iterator BufIterator;
 
-  TracedValue<SequenceNumber32> m_firstByteSeq; //< Sequence number of the first byte in data (SND.UNA)
-  uint32_t m_size;                              //< Number of data bytes
-  uint32_t m_maxBuffer;                         //< Max number of data bytes in buffer (SND.WND)
-  std::list<Ptr<Packet> > m_data;               //< Corresponding data (may be null)
+  TracedValue<SequenceNumber32> m_firstByteSeq; //!< Sequence number of the first byte in data (SND.UNA)
+  uint32_t m_size;                              //!< Number of data bytes
+  uint32_t m_maxBuffer;                         //!< Max number of data bytes in buffer (SND.WND)
+  std::list<Ptr<Packet> > m_data;               //!< Corresponding data (may be null)
 };
 
 } // namepsace ns3

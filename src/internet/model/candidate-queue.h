@@ -176,6 +176,7 @@ private:
  * prevent the compiler from slipping in incorrect versions that don't
  * properly deal with deep copies.
  * \param sr object to assign
+ * \return copied object
  */
   CandidateQueue& operator= (CandidateQueue& sr);
 /**
@@ -185,13 +186,22 @@ private:
  * defined by this method. If v1 should be popped before v2, this 
  * method return true; false otherwise
  *
+ * \param v1 first operand
+ * \param v2 second operand
  * \return True if v1 should be popped before v2; false otherwise
  */
   static bool CompareSPFVertex (const SPFVertex* v1, const SPFVertex* v2);
 
-  typedef std::list<SPFVertex*> CandidateList_t;
-  CandidateList_t m_candidates;
+  typedef std::list<SPFVertex*> CandidateList_t; //!< container of SPFVertex pointers
+  CandidateList_t m_candidates;  //!< SPFVertex candidates
 
+  /**
+   * \brief Stream insertion operator.
+   *
+   * \param os the reference to the output stream
+   * \param q the CandidateQueue
+   * \returns the reference to the output stream
+   */
   friend std::ostream& operator<< (std::ostream& os, const CandidateQueue& q);
 };
 

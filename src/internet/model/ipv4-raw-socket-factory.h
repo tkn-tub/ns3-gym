@@ -37,6 +37,10 @@ class Socket;
 class Ipv4RawSocketFactory : public SocketFactory
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
 };

@@ -51,7 +51,7 @@ namespace ns3 {
  * but can also be a pseudo-random value (\RFC{3041}).  This implementation
  * does not generate EUI-64-based interface IDs.
  *
- * BEWARE: this class acts as a Singleton.
+ * \note BEWARE: this class acts as a Singleton.
  * In other terms, two different instances of Ipv6AddressGenerator will
  * pick IPv6 numbers from the same pool. Changing the network in one of them
  * will also change the network in the other instances.

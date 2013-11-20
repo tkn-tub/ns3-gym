@@ -209,7 +209,7 @@ protected:
    * \brief Called by the L3 protocol when it received a packet to pass on to TCP.
    *
    * \param packet the incoming packet
-   * \param header the apcket's IPv4 header
+   * \param header the packet's IPv4 header
    * \param port the incoming port
    * \param incomingInterface the incoming interface
    */
@@ -219,7 +219,7 @@ protected:
    * \brief Called by the L3 protocol when it received a packet to pass on to TCP.
    *
    * \param packet the incoming packet
-   * \param header the apcket's IPv6 header
+   * \param header the packet's IPv6 header
    * \param port the incoming port
    */
   void ForwardUp6 (Ptr<Packet> packet, Ipv6Header header, uint16_t port);
@@ -228,7 +228,7 @@ protected:
    * \brief Called by TcpSocketBase::ForwardUp().
    *
    * \param packet the incoming packet
-   * \param header the apcket's IPv4 header
+   * \param header the packet's IPv4 header
    * \param port the incoming port
    * \param incomingInterface the incoming interface
    */
@@ -238,7 +238,7 @@ protected:
    * \brief Called by TcpSocketBase::ForwardUp6().
    *
    * \param packet the incoming packet
-   * \param header the apcket's IPv6 header
+   * \param header the packet's IPv6 header
    * \param port the incoming port
    */
   virtual void DoForwardUp (Ptr<Packet> packet, Ipv6Header header, uint16_t port);

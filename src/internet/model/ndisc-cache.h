@@ -412,20 +412,29 @@ private:
   };
 
 private:
+  /**
+   * \brief Neighbor Discovery Cache container
+   */
   typedef sgi::hash_map<Ipv6Address, NdiscCache::Entry *, Ipv6AddressHash> Cache;
+  /**
+   * \brief Neighbor Discovery Cache container iterator
+   */
   typedef sgi::hash_map<Ipv6Address, NdiscCache::Entry *, Ipv6AddressHash>::iterator CacheI;
 
   /**
    * \brief Copy constructor.
-   * \param a cache to copy
+   *
+   * Not implemented to avoid misuse
    */
-  NdiscCache (NdiscCache const &a);
+  NdiscCache (NdiscCache const &);
 
   /**
-   * \brief Equal operator.
-   * \param a cache to copy
+   * \brief Copy constructor.
+   *
+   * Not implemented to avoid misuse
+   * \returns
    */
-  NdiscCache& operator= (NdiscCache const &a);
+  NdiscCache& operator= (NdiscCache const &);
 
   /**
    * \brief Dispose this object.

@@ -88,8 +88,9 @@ private:
    * \internal
    * \brief Assignment operator declared private and not implemented to disallow
    * assignment and prevent the compiler from happily inserting its own.
+   * \return
    */
-  Ipv4GlobalRoutingHelper &operator = (const Ipv4GlobalRoutingHelper &o);
+  Ipv4GlobalRoutingHelper &operator = (const Ipv4GlobalRoutingHelper &);
 };
 
 } // namespace ns3

@@ -81,7 +81,7 @@ TcpNewReno::~TcpNewReno (void)
 {
 }
 
-/** We initialize m_cWnd from this function, after attributes initialized */
+/* We initialize m_cWnd from this function, after attributes initialized */
 int
 TcpNewReno::Listen (void)
 {
@@ -90,7 +90,7 @@ TcpNewReno::Listen (void)
   return TcpSocketBase::Listen ();
 }
 
-/** We initialize m_cWnd from this function, after attributes initialized */
+/* We initialize m_cWnd from this function, after attributes initialized */
 int
 TcpNewReno::Connect (const Address & address)
 {
@@ -99,7 +99,7 @@ TcpNewReno::Connect (const Address & address)
   return TcpSocketBase::Connect (address);
 }
 
-/** Limit the size of in-flight data by cwnd and receiver's rxwin */
+/* Limit the size of in-flight data by cwnd and receiver's rxwin */
 uint32_t
 TcpNewReno::Window (void)
 {
@@ -113,7 +113,7 @@ TcpNewReno::Fork (void)
   return CopyObject<TcpNewReno> (this);
 }
 
-/** New ACK (up to seqnum seq) received. Increase cwnd and call TcpSocketBase::NewAck() */
+/* New ACK (up to seqnum seq) received. Increase cwnd and call TcpSocketBase::NewAck() */
 void
 TcpNewReno::NewAck (const SequenceNumber32& seq)
 {
@@ -158,7 +158,7 @@ TcpNewReno::NewAck (const SequenceNumber32& seq)
   TcpSocketBase::NewAck (seq);
 }
 
-/** Cut cwnd and enter fast recovery mode upon triple dupack */
+/* Cut cwnd and enter fast recovery mode upon triple dupack */
 void
 TcpNewReno::DupAck (const TcpHeader& t, uint32_t count)
 {
@@ -187,7 +187,7 @@ TcpNewReno::DupAck (const TcpHeader& t, uint32_t count)
     };
 }
 
-/** Retransmit timeout */
+/* Retransmit timeout */
 void
 TcpNewReno::Retransmit (void)
 {

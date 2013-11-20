@@ -85,9 +85,14 @@ private:
    * \internal
    * \brief Assignment operator declared private and not implemented to disallow
    * assignment and prevent the compiler from happily inserting its own.
+   * \return
    */
-  Ipv4ListRoutingHelper &operator = (const Ipv4ListRoutingHelper &o);
+  Ipv4ListRoutingHelper &operator = (const Ipv4ListRoutingHelper &);
 
+  /**
+   * \internal
+   * \brief Container for pairs of Ipv4RoutingHelper pointer / priority.
+   */
   std::list<std::pair<const Ipv4RoutingHelper *,int16_t> > m_list;
 };
 

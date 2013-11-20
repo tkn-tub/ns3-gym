@@ -36,6 +36,7 @@ class Node;
 /**
  * \class Ipv6RawSocketImpl
  * \brief IPv6 raw socket.
+ * \ingroup socket
  *
  * A RAW Socket typically is used to access specific IP layers not usually
  * available through L4 sockets, e.g., ICMP. The implementer should take
@@ -70,26 +71,15 @@ public:
    */
   static TypeId GetTypeId ();
 
-  /**
-   * \brief Constructor.
-   */
   Ipv6RawSocketImpl ();
-
-  /**
-   * \brief Destructor.
-   */
   virtual ~Ipv6RawSocketImpl ();
 
   /**
-   * \brief Set the node.
+   * \brief Set the node associated with this socket.
    * \param node node to set
    */
   void SetNode (Ptr<Node> node);
 
-  /**
-   * \brief Get last error number.
-   * \return error number
-   */
   virtual enum Socket::SocketErrno GetErrno () const;
 
   /**
@@ -98,108 +88,24 @@ public:
    */
   virtual enum Socket::SocketType GetSocketType () const;
 
-  /**
-   * \brief Get node.
-   * \return node associated with this raw socket.
-   */
   virtual Ptr<Node> GetNode () const;
 
-  /**
-   * \brief Bind the socket to address.
-   * \param address bind to this address
-   * \return 0 if success, -1 otherwise
-   */
   virtual int Bind (const Address& address);
-
-  /**
-   * \brief Bind socket.
-   * \return 0 if success, -1 otherwise
-   */
   virtual int Bind ();
   virtual int Bind6 ();
 
-  /**
-   * \brief Get socket address.
-   * \param address socket address if method success
-   * \return 0 if success, -1 otherwise
-   */
   virtual int GetSockName (Address& address) const;
 
-  /**
-   * \brief Close the socket.
-   * \return 0 if success, -1 otherwise
-   */
   virtual int Close ();
-
-  /**
-   * \brief Shutdown send capability.
-   * \return 0 if success, -1 otherwise
-   */
   virtual int ShutdownSend ();
-
-  /**
-   * \brief Shutdown receive capability.
-   * \return 0 if success, -1 otherwise
-   */
   virtual int ShutdownRecv ();
-
-  /**
-   * \brief Connect to address.
-   * \param address address
-   * \return 0 if success, -1 otherwise
-   */
   virtual int Connect (const Address& address);
-
-  /**
-   * \brief Listen.
-   * \return 0 if success, -1 otherwise
-   */
   virtual int Listen ();
-
-  /**
-   * \brief Get TX size available.
-   * \return TX size
-   */
   virtual uint32_t GetTxAvailable () const;
-
-  /**
-   * \brief Get RX size available.
-   * \return RX size
-   */
   virtual uint32_t GetRxAvailable () const;
-
-  /**
-   * \brief Send a packet.
-   * \param p packet to send
-   * \param flags additionnal flags
-   * \return 0 if success, -1 otherwise
-   */
   virtual int Send (Ptr<Packet> p, uint32_t flags);
-
-  /**
-   * \brief Send a packet.
-   * \param p packet to send
-   * \param flags additionnal flags
-   * \param toAddress destination address
-   * \return 0 if success, -1 otherwise
-   */
   virtual int SendTo (Ptr<Packet> p, uint32_t flags, const Address& toAddress);
-
-  /**
-   * \brief Receive packet.
-   * \param maxSize maximum size
-   * \param flags additionnal flags
-   * \return packet received
-   */
   virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags);
-
-  /**
-   * \brief Receive packet.
-   * \param maxSize maximum size
-   * \param flags additionnal flags
-   * \param fromAddress source address
-   * \return packet received
-   */
   virtual Ptr<Packet> RecvFrom (uint32_t maxSize, uint32_t flags, Address& fromAddress);
 
   /**
