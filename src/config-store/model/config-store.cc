@@ -23,7 +23,8 @@ NS_LOG_COMPONENT_DEFINE ("ConfigStore");
 namespace ns3 {
 
 
-NS_OBJECT_ENSURE_REGISTERED (ConfigStore);
+NS_OBJECT_ENSURE_REGISTERED (ConfigStore)
+  ;
 
 TypeId 
 ConfigStore::GetTypeId (void)

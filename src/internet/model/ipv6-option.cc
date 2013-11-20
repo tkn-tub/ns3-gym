@@ -29,7 +29,8 @@ NS_LOG_COMPONENT_DEFINE ("Ipv6Option");
 namespace ns3
 {
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv6Option);
+NS_OBJECT_ENSURE_REGISTERED (Ipv6Option)
+  ;
 
 TypeId Ipv6Option::GetTypeId ()
 {
@@ -55,7 +56,8 @@ void Ipv6Option::SetNode (Ptr<Node> node)
 }
 
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv6OptionPad1);
+NS_OBJECT_ENSURE_REGISTERED (Ipv6OptionPad1)
+  ;
 
 TypeId Ipv6OptionPad1::GetTypeId ()
 {
@@ -99,7 +101,8 @@ uint8_t Ipv6OptionPad1::Process (Ptr<Packet> packet, uint8_t offset, Ipv6Header 
 }
 
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv6OptionPadn);
+NS_OBJECT_ENSURE_REGISTERED (Ipv6OptionPadn)
+  ;
 
 TypeId Ipv6OptionPadn::GetTypeId ()
 {
@@ -143,7 +146,8 @@ uint8_t Ipv6OptionPadn::Process (Ptr<Packet> packet, uint8_t offset, Ipv6Header 
 }
 
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv6OptionJumbogram);
+NS_OBJECT_ENSURE_REGISTERED (Ipv6OptionJumbogram)
+  ;
 
 TypeId Ipv6OptionJumbogram::GetTypeId ()
 {
@@ -187,7 +191,8 @@ uint8_t Ipv6OptionJumbogram::Process (Ptr<Packet> packet, uint8_t offset, Ipv6He
 }
 
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv6OptionRouterAlert);
+NS_OBJECT_ENSURE_REGISTERED (Ipv6OptionRouterAlert)
+  ;
 
 TypeId Ipv6OptionRouterAlert::GetTypeId ()
 {

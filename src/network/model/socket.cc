@@ -31,7 +31,8 @@ NS_LOG_COMPONENT_DEFINE ("Socket");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (Socket);
+NS_OBJECT_ENSURE_REGISTERED (Socket)
+  ;
 
 TypeId
 Socket::GetTypeId (void)
@@ -532,7 +533,8 @@ SocketAddressTag::GetAddress (void) const
   return m_address;
 }
 
-NS_OBJECT_ENSURE_REGISTERED (SocketAddressTag);
+NS_OBJECT_ENSURE_REGISTERED (SocketAddressTag)
+  ;
 
 TypeId
 SocketAddressTag::GetTypeId (void)
@@ -592,7 +594,8 @@ SocketIpTtlTag::GetTtl (void) const
   return m_ttl;
 }
 
-NS_OBJECT_ENSURE_REGISTERED (SocketIpTtlTag);
+NS_OBJECT_ENSURE_REGISTERED (SocketIpTtlTag)
+  ;
 
 TypeId
 SocketIpTtlTag::GetTypeId (void)
@@ -650,7 +653,8 @@ SocketIpv6HopLimitTag::GetHopLimit (void) const
   return m_hopLimit;
 }
 
-NS_OBJECT_ENSURE_REGISTERED (SocketIpv6HopLimitTag);
+NS_OBJECT_ENSURE_REGISTERED (SocketIpv6HopLimitTag)
+  ;
 
 TypeId
 SocketIpv6HopLimitTag::GetTypeId (void)
@@ -711,7 +715,8 @@ SocketSetDontFragmentTag::IsEnabled (void) const
   return m_dontFragment;
 }
 
-NS_OBJECT_ENSURE_REGISTERED (SocketSetDontFragmentTag);
+NS_OBJECT_ENSURE_REGISTERED (SocketSetDontFragmentTag)
+  ;
 
 TypeId 
 SocketSetDontFragmentTag::GetTypeId (void)

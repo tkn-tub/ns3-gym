@@ -39,7 +39,8 @@ NS_LOG_COMPONENT_DEFINE ("DistributedSimulatorImpl");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (DistributedSimulatorImpl);
+NS_OBJECT_ENSURE_REGISTERED (DistributedSimulatorImpl)
+  ;
 
 LbtsMessage::~LbtsMessage ()
 {

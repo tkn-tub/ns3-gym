@@ -29,7 +29,8 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("NodeList");
+NS_LOG_COMPONENT_DEFINE ("NodeList")
+  ;
 
 /**
  * \brief private implementation detail of the NodeList API.
@@ -56,7 +57,8 @@ private:
   std::vector<Ptr<Node> > m_nodes;
 };
 
-NS_OBJECT_ENSURE_REGISTERED (NodeListPriv);
+NS_OBJECT_ENSURE_REGISTERED (NodeListPriv)
+  ;
 
 TypeId 
 NodeListPriv::GetTypeId (void)

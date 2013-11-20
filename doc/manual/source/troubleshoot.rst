@@ -8,7 +8,7 @@ This chapter posts some information about possibly common errors in building
 or running |ns3| programs.
 
 Please note that the wiki
-(`<http://www.nsnam.org/wiki/index.php/Troubleshooting>`_) may have contributed
+(`<http://www.nsnam.org/wiki/Troubleshooting>`_) may have contributed
 items.
 
 Build errors
@@ -21,7 +21,7 @@ Sometimes, errors can occur with a program after a successful build. These are
 run-time errors, and can commonly occur when memory is corrupted or pointer
 values are unexpectedly null.
 
-Here is an example of what might occur:::
+Here is an example of what might occur::
 
     $ ./waf --run tcp-point-to-point
     Entering directory '/home/tomh/ns-3-nsc/build'

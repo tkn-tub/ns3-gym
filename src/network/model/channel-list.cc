@@ -26,7 +26,8 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("ChannelList");
+NS_LOG_COMPONENT_DEFINE ("ChannelList")
+  ;
 
 /**
  * \brief private implementation detail of the ChannelList API.
@@ -55,7 +56,8 @@ private:
   std::vector<Ptr<Channel> > m_channels;
 };
 
-NS_OBJECT_ENSURE_REGISTERED (ChannelListPriv);
+NS_OBJECT_ENSURE_REGISTERED (ChannelListPriv)
+  ;
 
 TypeId 
 ChannelListPriv::GetTypeId (void)

@@ -25,7 +25,8 @@ NS_LOG_COMPONENT_DEFINE ("Ipv4RoutingProtocol");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv4RoutingProtocol);
+NS_OBJECT_ENSURE_REGISTERED (Ipv4RoutingProtocol)
+  ;
 
 TypeId Ipv4RoutingProtocol::GetTypeId (void)
 {

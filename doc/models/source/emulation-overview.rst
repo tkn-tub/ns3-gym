@@ -83,5 +83,6 @@ simulated |ns3| networks.
 
 .. toctree::
 
+  emu
   fd-net-device
   tap

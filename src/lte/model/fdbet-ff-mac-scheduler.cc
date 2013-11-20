@@ -43,7 +43,8 @@ int FdBetType0AllocationRbg[4] = {
 };  // see table 7.1.6.1-1 of 36.213
 
 
-NS_OBJECT_ENSURE_REGISTERED (FdBetFfMacScheduler);
+NS_OBJECT_ENSURE_REGISTERED (FdBetFfMacScheduler)
+  ;
 
 
 

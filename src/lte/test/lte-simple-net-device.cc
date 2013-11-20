@@ -28,7 +28,8 @@ NS_LOG_COMPONENT_DEFINE ("LteSimpleNetDevice");
 namespace ns3 {
 
 
-NS_OBJECT_ENSURE_REGISTERED (LteSimpleNetDevice);
+NS_OBJECT_ENSURE_REGISTERED (LteSimpleNetDevice)
+  ;
 
 
 TypeId LteSimpleNetDevice::GetTypeId (void)

@@ -23,7 +23,8 @@ NS_LOG_COMPONENT_DEFINE ("BridgeChannel");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (BridgeChannel);
+NS_OBJECT_ENSURE_REGISTERED (BridgeChannel)
+  ;
 
 TypeId 
 BridgeChannel::GetTypeId (void)

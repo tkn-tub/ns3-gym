@@ -30,7 +30,8 @@ NS_LOG_COMPONENT_DEFINE ("LteRlcUm");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (LteRlcUm);
+NS_OBJECT_ENSURE_REGISTERED (LteRlcUm)
+  ;
 
 LteRlcUm::LteRlcUm ()
   : m_maxTxBufferSize (10 * 1024),

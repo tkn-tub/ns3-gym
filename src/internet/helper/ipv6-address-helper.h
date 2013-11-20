@@ -73,6 +73,11 @@ namespace ns3 {
  * If this method is called, the addressed returned will include a
  * modified EUI-64-format identifier created from the MAC address as 
  * specified in \RFC{4291}.
+ *
+ * BEWARE: the underlying implementation acts as a Singleton.
+ * In other terms, two different instances of Ipv6AddressHelper will
+ * pick IPv6 numbers from the same pool. Changing the network in one of them
+ * will also change the network in the other instances.
  */
 class Ipv6AddressHelper
 {

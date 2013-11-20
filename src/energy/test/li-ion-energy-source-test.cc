@@ -27,7 +27,8 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("LiIonEnergySourceTestSuite");
+NS_LOG_COMPONENT_DEFINE ("LiIonEnergySourceTestSuite")
+  ;
 
 class LiIonEnergyTestCase : public TestCase
 {

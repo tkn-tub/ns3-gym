@@ -47,6 +47,10 @@ namespace ns3 {
 class InetTopologyReader : public TopologyReader
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   InetTopologyReader ();
@@ -67,7 +71,18 @@ public:
   virtual NodeContainer Read (void);
 
 private:
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   */
   InetTopologyReader (const InetTopologyReader&);
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   * \returns
+   */
   InetTopologyReader& operator= (const InetTopologyReader&);
 
   // end class InetTopologyReader

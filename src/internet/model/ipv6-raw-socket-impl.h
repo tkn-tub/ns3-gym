@@ -232,26 +232,26 @@ public:
 
   /**
    * \brief Set the filter to pass one ICMPv6 type
-   * \param the ICMPv6 type to pass
+   * \param type the ICMPv6 type to pass
    */
   void Icmpv6FilterSetPass(uint8_t type);
 
   /**
    * \brief Set the filter to block one ICMPv6 type
-   * \param the ICMPv6 type to block
+   * \param type the ICMPv6 type to block
    */
   void Icmpv6FilterSetBlock(uint8_t type);
 
   /**
    * \brief Ask the filter about the status of one ICMPv6 type
-   * \param the ICMPv6 type
+   * \param type the ICMPv6 type
    * \return true if the ICMP type is passing through
    */
   bool Icmpv6FilterWillPass(uint8_t type);
 
   /**
    * \brief Ask the filter about the status of one ICMPv6 type
-   * \param the ICMPv6 type
+   * \param type the ICMPv6 type
    * \return true if the ICMP type is being blocked
    */
   bool Icmpv6FilterWillBlock(uint8_t type);
@@ -319,7 +319,7 @@ private:
    */
   typedef struct
   {
-    uint32_t icmpv6Filt[8];
+    uint32_t icmpv6Filt[8]; //!< ICMPv6 filter specification
   } icmpv6Filter;
 
   /**

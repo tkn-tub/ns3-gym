@@ -217,6 +217,7 @@ public:
   /**
    * \brief Get interface index which is on a specified net device.
    * \param device net device
+   * \returns the interface index
    */
   int32_t GetInterfaceForDevice (Ptr<const NetDevice> device) const;
 
@@ -224,6 +225,7 @@ public:
    * \brief Add an address on interface.
    * \param i interface index
    * \param address to add
+   * \returns true if the operation succeeded
    */
   bool AddAddress (uint32_t i, Ipv6InterfaceAddress address);
 
@@ -246,6 +248,7 @@ public:
    * \brief Remove an address from an interface.
    * \param interfaceIndex interface index
    * \param addressIndex address index on the interface
+   * \returns true if the operation succeeded
    */
   bool RemoveAddress (uint32_t interfaceIndex, uint32_t addressIndex);
 
@@ -255,7 +258,7 @@ public:
    * \param address Ipv6Address to be removed from the interface
    * \returns true if the operation succeeded
    */
-  bool RemoveAddress (uint32_t interface, Ipv6Address address);
+  bool RemoveAddress (uint32_t interfaceIndex, Ipv6Address address);
 
   /**
    * \brief Set metric for an interface.
@@ -288,6 +291,7 @@ public:
   /**
    * \brief Is specified interface up ?
    * \param i interface index
+   * \returns true if the interface is up
    */
   bool IsUp (uint32_t i) const;
 
@@ -306,6 +310,7 @@ public:
   /**
    * \brief Is interface allows forwarding ?
    * \param i interface index
+   * \returns true if the interface is forwarding
    */
   bool IsForwarding (uint32_t i) const;
 
@@ -380,11 +385,29 @@ private:
   friend class Ipv6L3ProtocolTestCase;
   friend class Ipv6ExtensionLooseRouting;
 
+  /**
+   * \brief Container of the IPv6 Interfaces.
+   */
   typedef std::list<Ptr<Ipv6Interface> > Ipv6InterfaceList;
+
+  /**
+   * \brief Container of the IPv6 Raw Sockets.
+   */
   typedef std::list<Ptr<Ipv6RawSocketImpl> > SocketList;
+
+  /**
+   * \brief Container of the IPv6 L4 instances.
+   */
   typedef std::list<Ptr<IpL4Protocol> > L4List_t;
 
+  /**
+   * \brief Container of the IPv6 Autoconfigured addresses.
+   */
   typedef std::list< Ptr<Ipv6AutoconfiguredPrefix> > Ipv6AutoconfiguredPrefixList;
+
+  /**
+   * \brief Iterator of the container of the IPv6 Autoconfigured addresses.
+   */
   typedef std::list< Ptr<Ipv6AutoconfiguredPrefix> >::iterator Ipv6AutoconfiguredPrefixListI;
 
   /**
@@ -411,6 +434,7 @@ private:
   /**
    * \brief Copy constructor.
    * \param o object to copy
+   * \returns the copied object
    */
   Ipv6L3Protocol &operator = (const Ipv6L3Protocol& o);
 
@@ -421,6 +445,7 @@ private:
    * \param protocol L4 protocol
    * \param payloadSize payload size
    * \param hopLimit Hop limit
+   * \param tclass Tclass
    * \return newly created IPv6 header
    */
   Ipv6Header BuildHeader (Ipv6Address src, Ipv6Address dst, uint8_t protocol,

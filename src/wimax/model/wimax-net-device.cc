@@ -43,7 +43,8 @@ NS_LOG_COMPONENT_DEFINE ("WimaxNetDevice");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (WimaxNetDevice);
+NS_OBJECT_ENSURE_REGISTERED (WimaxNetDevice)
+  ;
 
 uint32_t WimaxNetDevice::m_nrFrames = 0;
 uint8_t WimaxNetDevice::m_direction = ~0;

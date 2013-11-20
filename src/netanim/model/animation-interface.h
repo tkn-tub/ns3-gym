@@ -89,7 +89,7 @@ typedef struct {
 } Ipv4RoutePathElement;
 
 /**
- * \defgroup netanim Netanim
+ * \defgroup netanim Network Animation
  *
  * This section documents the API of the ns-3 netanim module. For a generic functional description, please refer to the ns-3 manual.
  */

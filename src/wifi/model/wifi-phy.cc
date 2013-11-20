@@ -48,7 +48,8 @@ WifiPhyListener::~WifiPhyListener ()
  *       The actual WifiPhy class
  ****************************************************************/
 
-NS_OBJECT_ENSURE_REGISTERED (WifiPhy);
+NS_OBJECT_ENSURE_REGISTERED (WifiPhy)
+  ;
 
 TypeId
 WifiPhy::GetTypeId (void)
@@ -260,7 +261,7 @@ WifiPhy::GetPlcpHeaderDurationMicroSeconds (WifiMode payloadMode, WifiPreamble p
             }
       }
     case WIFI_MOD_CLASS_ERP_OFDM:
-      return 16;
+      return 4;
 
     case WIFI_MOD_CLASS_DSSS:
       if (preamble == WIFI_PREAMBLE_SHORT)
@@ -309,7 +310,7 @@ WifiPhy::GetPlcpPreambleDurationMicroSeconds (WifiMode payloadMode, WifiPreamble
            return 16;
       }
     case WIFI_MOD_CLASS_ERP_OFDM:
-      return 4;
+      return 16;
 
     case WIFI_MOD_CLASS_DSSS:
       if (preamble == WIFI_PREAMBLE_SHORT)

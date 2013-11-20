@@ -38,7 +38,7 @@ class Packet;
 
 /**
  * \ingroup network
- * \defgroup netdevice NetDevice
+ * \defgroup netdevice Network Device
  */
 /**
  * \ingroup netdevice

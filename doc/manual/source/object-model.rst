@@ -27,7 +27,7 @@ Object-oriented behavior
 C++ objects, in general, provide common object-oriented capabilities 
 (abstraction, encapsulation, inheritance, and polymorphism) that are part 
 of classic object-oriented design. |ns3| objects make use of these 
-properties; for instance:::
+properties; for instance::
 
     class Address
     {
@@ -130,7 +130,7 @@ holds true for |ns3| also, but some objects in the system have some additional
 frameworks available. Specifically, reference counted objects are usually
 allocated using a templated Create or CreateObject method, as follows.
 
-For objects deriving from class :cpp:class:`Object`:::
+For objects deriving from class :cpp:class:`Object`::
 
     Ptr<WifiNetDevice> device = CreateObject<WifiNetDevice> ();
 
@@ -139,7 +139,7 @@ Please do not create such objects using ``operator new``; create them using
 
 For objects deriving from class :cpp:class:`SimpleRefCount`, or other objects
 that support usage of the smart pointer class, a templated helper function is
-available and recommended to be used:::
+available and recommended to be used::
 
     Ptr<B> b = Create<B> ();
 
@@ -218,7 +218,7 @@ Consider a node pointer ``m_node`` that points to a Node object that has an
 implementation of IPv4 previously aggregated to it. The client code wishes to
 configure a default route. To do so, it must access an object within the node
 that has an interface to the IP forwarding configuration. It performs the
-following:::
+following::
 
     Ptr<Ipv4> ipv4 = m_node->GetObject<Ipv4> ();
 
@@ -281,7 +281,7 @@ to the subclass API?"
 
 The answer to this is that in many situations, both techniques will work.
 |ns3| provides a templated function for making the syntax of Object
-dynamic casting much more user friendly:::
+dynamic casting much more user friendly::
 
     template <typename T1, typename T2>
     Ptr<T1>

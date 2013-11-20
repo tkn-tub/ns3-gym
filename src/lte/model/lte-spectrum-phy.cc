@@ -110,7 +110,8 @@ operator < (const TbId_t& a, const TbId_t& b)
   return ( (a.m_rnti < b.m_rnti) || ( (a.m_rnti == b.m_rnti) && (a.m_layer < b.m_layer) ) );
 }
 
-NS_OBJECT_ENSURE_REGISTERED (LteSpectrumPhy);
+NS_OBJECT_ENSURE_REGISTERED (LteSpectrumPhy)
+  ;
 
 LteSpectrumPhy::LteSpectrumPhy ()
   : m_state (IDLE),

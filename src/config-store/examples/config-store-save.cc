@@ -22,7 +22,8 @@ public:
   int16_t m_int16;
 };
 
-NS_OBJECT_ENSURE_REGISTERED (A);
+NS_OBJECT_ENSURE_REGISTERED (A)
+  ;
 
 // Assign a new default value to A::TestInt16 (-5)
 // Configure a TestInt16 value for a special instance of A (to -3)

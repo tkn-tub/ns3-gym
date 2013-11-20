@@ -23,7 +23,8 @@ NS_LOG_COMPONENT_DEFINE ("OpenFlowSwitchNetDevice");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (OpenFlowSwitchNetDevice);
+NS_OBJECT_ENSURE_REGISTERED (OpenFlowSwitchNetDevice)
+  ;
 
 const char *
 OpenFlowSwitchNetDevice::GetManufacturerDescription ()

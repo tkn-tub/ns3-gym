@@ -32,7 +32,8 @@ NS_LOG_COMPONENT_DEFINE ("DoubleProbe");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (DoubleProbe);
+NS_OBJECT_ENSURE_REGISTERED (DoubleProbe)
+  ;
 
 TypeId
 DoubleProbe::GetTypeId ()

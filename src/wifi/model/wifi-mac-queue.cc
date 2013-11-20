@@ -29,7 +29,8 @@
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (WifiMacQueue);
+NS_OBJECT_ENSURE_REGISTERED (WifiMacQueue)
+  ;
 
 WifiMacQueue::Item::Item (Ptr<const Packet> packet,
                           const WifiMacHeader &hdr,

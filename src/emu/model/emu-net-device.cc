@@ -55,7 +55,8 @@ NS_LOG_COMPONENT_DEFINE ("EmuNetDevice");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (EmuNetDevice);
+NS_OBJECT_ENSURE_REGISTERED (EmuNetDevice)
+  ;
 
 #define EMU_MAGIC 65867
 

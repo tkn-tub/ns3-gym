@@ -46,6 +46,11 @@ class Socket;
 class TcpSocketFactory : public SocketFactory
 {
 public:
+  /**
+   * Get the type ID.
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
 };

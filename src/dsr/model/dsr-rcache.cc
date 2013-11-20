@@ -131,7 +131,8 @@ RouteCacheEntry::Print (std::ostream & os) const
      << "\t";
 }
 
-NS_OBJECT_ENSURE_REGISTERED (RouteCache);
+NS_OBJECT_ENSURE_REGISTERED (RouteCache)
+  ;
 
 TypeId RouteCache::GetTypeId ()
 {

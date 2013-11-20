@@ -16,7 +16,7 @@ from waflib.Errors import WafError
 REQUIRED_PYBINDGEN_VERSION = (0, 16, 0, 834)
 REQUIRED_PYGCCXML_VERSION = (0, 9, 5)
 
-
+RUN_ME=-3
 
 def add_to_python_path(path):
     if os.environ.get('PYTHONPATH', ''):
@@ -365,6 +365,11 @@ class apiscan_task(Task.Task):
         retval = scan.wait()
         return retval
 
+    def runnable_status(self):
+        # Waf Task will usually run if the signature of the build changes
+        # but skip otherwise.  Here, we want to always run this task if
+        # user invoked --apiscan
+        return RUN_ME
 
 def get_modules_and_headers(bld):
     """

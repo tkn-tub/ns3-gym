@@ -28,7 +28,8 @@ namespace flame {
 
 NS_LOG_COMPONENT_DEFINE ("FlameRtable");
 
-NS_OBJECT_ENSURE_REGISTERED (FlameRtable);
+NS_OBJECT_ENSURE_REGISTERED (FlameRtable)
+  ;
 
 TypeId
 FlameRtable::GetTypeId ()

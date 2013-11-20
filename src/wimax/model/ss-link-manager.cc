@@ -35,7 +35,8 @@ NS_LOG_COMPONENT_DEFINE ("SSLinkManager");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (SSLinkManager);
+NS_OBJECT_ENSURE_REGISTERED (SSLinkManager)
+  ;
 
 TypeId SSLinkManager::GetTypeId (void)
 {

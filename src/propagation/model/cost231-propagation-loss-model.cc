@@ -29,8 +29,10 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("Cost231PropagationLossModel");
-NS_OBJECT_ENSURE_REGISTERED (Cost231PropagationLossModel);
+NS_LOG_COMPONENT_DEFINE ("Cost231PropagationLossModel")
+  ;
+NS_OBJECT_ENSURE_REGISTERED (Cost231PropagationLossModel)
+  ;
 
 TypeId
 Cost231PropagationLossModel::GetTypeId (void)

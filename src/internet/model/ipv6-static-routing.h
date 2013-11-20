@@ -205,6 +205,7 @@ public:
    * \param origin IPv6 address of the source
    * \param group the multicast group address.
    * \param inputInterface the input interface index
+   * \return true on success
    */
   bool RemoveMulticastRoute (Ipv6Address origin, Ipv6Address group, uint32_t inputInterface);
 
@@ -250,12 +251,22 @@ protected:
   virtual void DoDispose ();
 
 private:
+  /// Container for the network routes
   typedef std::list<std::pair <Ipv6RoutingTableEntry *, uint32_t> > NetworkRoutes;
+
+  /// Const Iterator for container for the network routes
   typedef std::list<std::pair <Ipv6RoutingTableEntry *, uint32_t> >::const_iterator NetworkRoutesCI;
+
+  /// Iterator for container for the network routes
   typedef std::list<std::pair <Ipv6RoutingTableEntry *, uint32_t> >::iterator NetworkRoutesI;
 
+  /// Container for the multicast routes
   typedef std::list<Ipv6MulticastRoutingTableEntry *> MulticastRoutes;
+
+  /// Const Iterator for container for the multicast routes
   typedef std::list<Ipv6MulticastRoutingTableEntry *>::const_iterator MulticastRoutesCI;
+
+  /// Iterator for container for the multicast routes
   typedef std::list<Ipv6MulticastRoutingTableEntry *>::iterator MulticastRoutesI;
 
   /**

@@ -26,7 +26,8 @@ NS_LOG_COMPONENT_DEFINE ("LteHandoverAlgorithm");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (LteHandoverAlgorithm);
+NS_OBJECT_ENSURE_REGISTERED (LteHandoverAlgorithm)
+  ;
 
 
 LteHandoverAlgorithm::LteHandoverAlgorithm ()

@@ -80,6 +80,7 @@ public:
   static bool IsMatchingType (const Address &address);
   /**
    * Allocate a new Mac16Address.
+   * \returns newly allocated mac16Address
    */
   static Mac16Address Allocate (void);
 
@@ -104,7 +105,7 @@ private:
  * \brief hold objects of type ns3::Mac16Address
  */
 
-ATTRIBUTE_HELPER_HEADER (Mac16Address);
+ATTRIBUTE_HELPER_HEADER (Mac16Address); /// Macro to make help make class an ns-3 attribute
 
 inline bool operator == (const Mac16Address &a, const Mac16Address &b)
 {

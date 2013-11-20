@@ -37,7 +37,14 @@ class Ipv6EndPoint;
 class Ipv6EndPointDemux
 {
 public:
+  /**
+   * \brief Container of the IPv6 endpoints.
+   */
   typedef std::list<Ipv6EndPoint *>EndPoints;
+
+  /**
+   * \brief Iterator to the container of the IPv6 endpoints.
+   */
   typedef std::list<Ipv6EndPoint *>::iterator EndPointsI;
 
   /**

@@ -55,8 +55,8 @@ enum PbbAddressLength {
 class PbbTlvBlock
 {
 public:
-  typedef std::list< Ptr<PbbTlv> >::iterator Iterator;
-  typedef std::list< Ptr<PbbTlv> >::const_iterator ConstIterator;
+  typedef std::list< Ptr<PbbTlv> >::iterator Iterator;              /// this is an iterator
+  typedef std::list< Ptr<PbbTlv> >::const_iterator ConstIterator;   /// this is a const iterator
 
   PbbTlvBlock (void);
   ~PbbTlvBlock (void);
@@ -192,7 +192,17 @@ public:
    */
   void Print (std::ostream &os, int level) const;
 
+  /**
+   * \brief Equality operator for PbbTlvBlock
+   * \param other PbbTlvBlock to compare this one to
+   * \returns true if the blocks are equal
+   */
   bool operator== (const PbbTlvBlock &other) const;
+  /**
+   * \brief Inequality operator for PbbTlvBlock
+   * \param other PbbTlvBlock to compare this one to
+   * \returns true if the blocks are not equal
+   */  
   bool operator!= (const PbbTlvBlock &other) const;
 
 private:
@@ -207,8 +217,8 @@ private:
 class PbbAddressTlvBlock
 {
 public:
-  typedef std::list< Ptr<PbbAddressTlv> >::iterator Iterator;
-  typedef std::list< Ptr<PbbAddressTlv> >::const_iterator ConstIterator;
+  typedef std::list< Ptr<PbbAddressTlv> >::iterator Iterator;               /// This is a PbbAddressTlv iterator for PbbAddressTlvBlock
+  typedef std::list< Ptr<PbbAddressTlv> >::const_iterator ConstIterator;    /// This is a const PbbAddressTlv iterator for PbbAddressTlvBlock
 
   PbbAddressTlvBlock (void);
   ~PbbAddressTlvBlock (void);
@@ -346,7 +356,18 @@ public:
    */
   void Print (std::ostream &os, int level) const;
 
+  /**
+   * \brief Equality operator for PbbAddressTlvBlock
+   * \param other PbbAddressTlvBlock to compare to this one
+   * \returns true if PbbAddressTlvBlock are equal
+   */
   bool operator== (const PbbAddressTlvBlock &other) const;
+
+  /**
+   * \brief Inequality operator for PbbAddressTlvBlock
+   * \param other PbbAddressTlvBlock to compare to this one
+   * \returns true if PbbAddressTlvBlock are not equal
+   */  
   bool operator!= (const PbbAddressTlvBlock &other) const;
 
 private:
@@ -364,10 +385,10 @@ private:
 class PbbPacket : public SimpleRefCount<PbbPacket,Header>
 {
 public:
-  typedef std::list< Ptr<PbbTlv> >::iterator TlvIterator;
-  typedef std::list< Ptr<PbbTlv> >::const_iterator ConstTlvIterator;
-  typedef std::list< Ptr<PbbMessage> >::iterator MessageIterator;
-  typedef std::list< Ptr<PbbMessage> >::const_iterator ConstMessageIterator;
+  typedef std::list< Ptr<PbbTlv> >::iterator TlvIterator;                       /// This is a PbbTlv iterator for PbbPacket
+  typedef std::list< Ptr<PbbTlv> >::const_iterator ConstTlvIterator;            /// This is a const PbbTlv iterator for PbbPacket
+  typedef std::list< Ptr<PbbMessage> >::iterator MessageIterator;               /// This is a PbbMessageIterator for PbbPacket
+  typedef std::list< Ptr<PbbMessage> >::const_iterator ConstMessageIterator;    /// This is a const PbbMessageIterator for PbbPacket
 
   PbbPacket (void);
   ~PbbPacket (void);
@@ -627,7 +648,18 @@ public:
    */
   virtual void Print (std::ostream &os) const;
 
+  /**
+   * \brief Equality operator for PbbPacket
+   * \param other PbbPacket to compare to this one
+   * \returns true if PbbPacket are equal
+   */
   bool operator== (const PbbPacket &other) const;
+  
+  /**
+   * \brief Inequality operator for PbbPacket
+   * \param other PbbPacket to compare to this one
+   * \returns true if PbbPacket are not equal
+   */
   bool operator!= (const PbbPacket &other) const;
 
 protected:
@@ -652,10 +684,10 @@ private:
 class PbbMessage : public SimpleRefCount<PbbMessage>
 {
 public:
-  typedef std::list< Ptr<PbbTlv> >::iterator TlvIterator;
-  typedef std::list< Ptr<PbbTlv> >::const_iterator ConstTlvIterator;
-  typedef std::list< Ptr<PbbAddressBlock> >::iterator AddressBlockIterator;
-  typedef std::list< Ptr<PbbAddressBlock> >::const_iterator ConstAddressBlockIterator;
+  typedef std::list< Ptr<PbbTlv> >::iterator TlvIterator;                                 /// This is a PbbTlv iterator for PbbMessage
+  typedef std::list< Ptr<PbbTlv> >::const_iterator ConstTlvIterator;                      /// This is a const PbbTlv iterator for PbbMessage
+  typedef std::list< Ptr<PbbAddressBlock> >::iterator AddressBlockIterator;               /// This is a PbbAddressBlock iterator for PbbMessage
+  typedef std::list< Ptr<PbbAddressBlock> >::const_iterator ConstAddressBlockIterator;    /// This is a const PbbAddressBlock iterator for PbbMessage
 
   PbbMessage ();
   virtual ~PbbMessage ();
@@ -1004,13 +1036,27 @@ public:
    */
   void Print (std::ostream &os, int level) const;
 
+  /**
+   * \brief Equality operator for PbbMessage
+   * \param other PbbMessage to compare to this one
+   * \returns true if PbbMessages are equal
+   */
   bool operator== (const PbbMessage &other) const;
+  /**
+   * \brief Inequality operator for PbbMessage
+   * \param other PbbMessage to compare to this one
+   * \returns true if PbbMessages are not equal
+   */
   bool operator!= (const PbbMessage &other) const;
 
-protected:
-  /* PbbMessage size in bytes - 1.
+protected:  
+  /**
+   * \brief Returns address length (IPV4 3 or IPV6 15)
    *
-   * IPv4 = 4 - 1 = 3, IPv6 = 16 - 1 = 15
+   *  Returns message size in bytes - 1
+   *  IPv4 = 4 - 1 = 3, IPv6 = 16 - 1 = 15
+   *
+   * \returns Address length (IPV4 3 or IPV6 15)
    */
   virtual PbbAddressLength GetAddressLength (void) const = 0;
 
@@ -1051,6 +1097,14 @@ public:
   virtual ~PbbMessageIpv4 ();
 
 protected:
+  /**
+   * \brief Returns address length (IPV4 3 or IPV6 15)
+   *
+   *  Returns message size in bytes - 1
+   *  IPv4 = 4 - 1 = 3, IPv6 = 16 - 1 = 15
+   *
+   * \returns Address length (IPV4 3 or IPV6 15)
+   */
   virtual PbbAddressLength GetAddressLength (void) const;
 
   virtual void SerializeOriginatorAddress (Buffer::Iterator &start) const;
@@ -1071,6 +1125,14 @@ public:
   virtual ~PbbMessageIpv6 ();
 
 protected:
+  /**
+   * \brief Returns address length (IPV4 3 or IPV6 15)
+   *
+   *  Returns message size in bytes - 1
+   *  IPv4 = 4 - 1 = 3, IPv6 = 16 - 1 = 15
+   *
+   * \returns Address length (IPV4 3 or IPV6 15)
+   */
   virtual PbbAddressLength GetAddressLength (void) const;
 
   virtual void SerializeOriginatorAddress (Buffer::Iterator &start) const;
@@ -1089,14 +1151,14 @@ protected:
 class PbbAddressBlock : public SimpleRefCount<PbbAddressBlock>
 {
 public:
-  typedef std::list< Address >::iterator AddressIterator;
-  typedef std::list< Address >::const_iterator ConstAddressIterator;
+  typedef std::list< Address >::iterator AddressIterator;             /// this is an address iterator for PbbAddressBlock
+  typedef std::list< Address >::const_iterator ConstAddressIterator;  /// this is an const address iterator for PbbAddressBlock
 
-  typedef std::list<uint8_t>::iterator PrefixIterator;
-  typedef std::list<uint8_t>::const_iterator ConstPrefixIterator;
+  typedef std::list<uint8_t>::iterator PrefixIterator;                /// this is a prefix iterator for PbbAddressBlock
+  typedef std::list<uint8_t>::const_iterator ConstPrefixIterator;     /// this is a const prefix iterator for PbbAddressBlock
 
-  typedef PbbAddressTlvBlock::Iterator TlvIterator;
-  typedef PbbAddressTlvBlock::ConstIterator ConstTlvIterator;
+  typedef PbbAddressTlvBlock::Iterator TlvIterator;                   /// this is a tlvblock iterator for PbbAddressBlock
+  typedef PbbAddressTlvBlock::ConstIterator ConstTlvIterator;         /// this is a const tlvblock iterator for PbbAddressBlock
 
   PbbAddressBlock ();
   virtual ~PbbAddressBlock ();
@@ -1440,12 +1502,26 @@ public:
    */
   void Print (std::ostream &os, int level) const;
 
+  /**
+   * \brief Equality operator for PbbAddressBlock
+   * \param other PbbAddressBlock to compare to this one
+   * \returns true if PbbMessages are equal
+   */
   bool operator== (const PbbAddressBlock &other) const;
+  
+  /**
+   * \brief Inequality operator for PbbAddressBlock
+   * \param other PbbAddressBlock to compare to this one
+   * \returns true if PbbAddressBlock are not equal
+   */  
   bool operator!= (const PbbAddressBlock &other) const;
 
 protected:
+  /**
+   * \brief Returns address length
+   * \returns Address length
+   */
   virtual uint8_t GetAddressLength (void) const = 0;
-
   virtual void SerializeAddress (uint8_t *buffer, ConstAddressIterator iter) const = 0;
   virtual Address DeserializeAddress (uint8_t *buffer) const = 0;
   virtual void PrintAddress (std::ostream &os, ConstAddressIterator iter) const = 0;
@@ -1473,8 +1549,11 @@ public:
   virtual ~PbbAddressBlockIpv4 ();
 
 protected:
+  /**
+   * \brief Returns address length
+   * \returns Address length
+   */
   virtual uint8_t GetAddressLength (void) const;
-
   virtual void SerializeAddress (uint8_t *buffer, ConstAddressIterator iter) const;
   virtual Address DeserializeAddress (uint8_t *buffer) const;
   virtual void PrintAddress (std::ostream &os, ConstAddressIterator iter) const;
@@ -1492,8 +1571,11 @@ public:
   virtual ~PbbAddressBlockIpv6 ();
 
 protected:
+  /**
+   * \brief Returns address length
+   * \returns Address length
+   */
   virtual uint8_t GetAddressLength (void) const;
-
   virtual void SerializeAddress (uint8_t *buffer, ConstAddressIterator iter) const;
   virtual Address DeserializeAddress (uint8_t *buffer) const;
   virtual void PrintAddress (std::ostream &os, ConstAddressIterator iter) const;
@@ -1620,7 +1702,18 @@ public:
    */
   void Print (std::ostream &os, int level) const;
 
+  /**
+   * \brief Equality operator for PbbTlv
+   * \param other PbbTlv to compare to this one
+   * \returns true if PbbTlv are equal
+   */
   bool operator== (const PbbTlv &other) const;
+
+  /**
+   * \brief Inequality operator for PbbTlv
+   * \param other PbbTlv to compare to this one
+   * \returns true if PbbTlv are not equal
+   */
   bool operator!= (const PbbTlv &other) const;
 
 protected:

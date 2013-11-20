@@ -40,7 +40,8 @@ NS_LOG_COMPONENT_DEFINE ("AdhocWifiMac");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (AdhocWifiMac);
+NS_OBJECT_ENSURE_REGISTERED (AdhocWifiMac)
+  ;
 
 TypeId
 AdhocWifiMac::GetTypeId (void)

@@ -48,7 +48,26 @@ public:
   static TypeId GetTypeId (void);
   SimpleNetDevice ();
 
+  /**
+   * Receive a packet from a connected SimpleChannel.  The 
+   * SimpleNetDevice receives packets from its connected channel
+   * and then forwards them by calling its rx callback method
+   *
+   * \param packet Packet received on the channel
+   * \param protocol protocol number
+   * \param to address packet should be sent to
+   * \param from address packet was sent from
+   */
   void Receive (Ptr<Packet> packet, uint16_t protocol, Mac48Address to, Mac48Address from);
+  
+  /**
+   *
+   * Attach a channel to this net device.  This will be the 
+   * channel the net device sends on
+   * 
+   * \param channel channel to assign to this net device
+   *
+   */
   void SetChannel (Ptr<SimpleChannel> channel);
 
   /**

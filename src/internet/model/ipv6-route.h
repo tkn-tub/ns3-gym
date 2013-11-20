@@ -123,6 +123,13 @@ private:
   Ptr<NetDevice> m_outputDevice;
 };
 
+/**
+ * \brief Stream insertion operator.
+ *
+ * \param os the reference to the output stream
+ * \param route the Ipv6 route
+ * \returns the reference to the output stream
+ */
 std::ostream& operator<< (std::ostream& os, Ipv6Route const& route);
 
 /**
@@ -231,6 +238,13 @@ private:
   std::map<uint32_t, uint32_t> m_ttls;
 };
 
+/**
+ * \brief Stream insertion operator.
+ *
+ * \param os the reference to the output stream
+ * \param route the Ipv6 multicast route
+ * \returns the reference to the output stream
+ */
 std::ostream& operator<< (std::ostream& os, Ipv6MulticastRoute const& route);
 
 } /* namespace ns3 */

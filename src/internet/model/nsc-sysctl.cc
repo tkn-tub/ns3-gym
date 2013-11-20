@@ -142,7 +142,8 @@ Ns3NscStack::Set (std::string name, std::string value)
     }
 }
 
-NS_OBJECT_ENSURE_REGISTERED (Ns3NscStack);
+NS_OBJECT_ENSURE_REGISTERED (Ns3NscStack)
+  ;
 
 TypeId
 Ns3NscStack::Ns3NscStack::GetTypeId (void)

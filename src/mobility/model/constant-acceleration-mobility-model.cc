@@ -20,7 +20,8 @@
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (ConstantAccelerationMobilityModel);
+NS_OBJECT_ENSURE_REGISTERED (ConstantAccelerationMobilityModel)
+  ;
 
 TypeId ConstantAccelerationMobilityModel::GetTypeId (void)
 {

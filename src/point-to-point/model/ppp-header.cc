@@ -27,7 +27,8 @@ NS_LOG_COMPONENT_DEFINE ("PppHeader");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (PppHeader);
+NS_OBJECT_ENSURE_REGISTERED (PppHeader)
+  ;
 
 PppHeader::PppHeader ()
 {

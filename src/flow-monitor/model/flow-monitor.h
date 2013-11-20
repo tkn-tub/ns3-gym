@@ -34,6 +34,10 @@
 
 namespace ns3 {
 
+/// \defgroup flow-monitor Flow Monitor  
+/// \brief  Collect and store performance data from a simulation
+
+/// \ingroup flow-monitor
 /// \brief An object that monitors and reports back packet flows observed during a simulation
 ///
 /// The FlowMonitor class is responsible forcoordinating efforts

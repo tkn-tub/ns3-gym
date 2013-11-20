@@ -47,9 +47,11 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("EmuEpcHelper");
+NS_LOG_COMPONENT_DEFINE ("EmuEpcHelper")
+  ;
 
-NS_OBJECT_ENSURE_REGISTERED (EmuEpcHelper);
+NS_OBJECT_ENSURE_REGISTERED (EmuEpcHelper)
+  ;
 
 
 EmuEpcHelper::EmuEpcHelper () 

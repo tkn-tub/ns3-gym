@@ -27,7 +27,8 @@ NS_LOG_COMPONENT_DEFINE ("EpcX2Header");
 namespace ns3 {
 
 
-NS_OBJECT_ENSURE_REGISTERED (EpcX2Header);
+NS_OBJECT_ENSURE_REGISTERED (EpcX2Header)
+  ;
 
 EpcX2Header::EpcX2Header ()
   : m_messageType (0xfa),
@@ -145,7 +146,8 @@ EpcX2Header::SetNumberOfIes (uint32_t numberOfIes)
 
 /////////////////////////////////////////////////////////////////////
 
-NS_OBJECT_ENSURE_REGISTERED (EpcX2HandoverRequestHeader);
+NS_OBJECT_ENSURE_REGISTERED (EpcX2HandoverRequestHeader)
+  ;
 
 EpcX2HandoverRequestHeader::EpcX2HandoverRequestHeader ()
   : m_numberOfIes (1 + 1 + 1 + 1),
@@ -433,7 +435,8 @@ EpcX2HandoverRequestHeader::GetNumberOfIes () const
 
 /////////////////////////////////////////////////////////////////////
 
-NS_OBJECT_ENSURE_REGISTERED (EpcX2HandoverRequestAckHeader);
+NS_OBJECT_ENSURE_REGISTERED (EpcX2HandoverRequestAckHeader)
+  ;
 
 EpcX2HandoverRequestAckHeader::EpcX2HandoverRequestAckHeader ()
   : m_numberOfIes (1 + 1 + 1 + 1),
@@ -658,7 +661,8 @@ EpcX2HandoverRequestAckHeader::GetNumberOfIes () const
 
 /////////////////////////////////////////////////////////////////////
 
-NS_OBJECT_ENSURE_REGISTERED (EpcX2HandoverPreparationFailureHeader);
+NS_OBJECT_ENSURE_REGISTERED (EpcX2HandoverPreparationFailureHeader)
+  ;
 
 EpcX2HandoverPreparationFailureHeader::EpcX2HandoverPreparationFailureHeader ()
   : m_numberOfIes (1 + 1 + 1),
@@ -783,7 +787,8 @@ EpcX2HandoverPreparationFailureHeader::GetNumberOfIes () const
 
 /////////////////////////////////////////////////////////////////////
 
-NS_OBJECT_ENSURE_REGISTERED (EpcX2SnStatusTransferHeader);
+NS_OBJECT_ENSURE_REGISTERED (EpcX2SnStatusTransferHeader)
+  ;
 
 EpcX2SnStatusTransferHeader::EpcX2SnStatusTransferHeader ()
   : m_numberOfIes (3),
@@ -975,7 +980,8 @@ EpcX2SnStatusTransferHeader::GetNumberOfIes () const
 
 /////////////////////////////////////////////////////////////////////
 
-NS_OBJECT_ENSURE_REGISTERED (EpcX2UeContextReleaseHeader);
+NS_OBJECT_ENSURE_REGISTERED (EpcX2UeContextReleaseHeader)
+  ;
 
 EpcX2UeContextReleaseHeader::EpcX2UeContextReleaseHeader ()
   : m_numberOfIes (1 + 1),
@@ -1082,7 +1088,8 @@ EpcX2UeContextReleaseHeader::GetNumberOfIes () const
 
 /////////////////////////////////
 
-NS_OBJECT_ENSURE_REGISTERED (EpcX2LoadInformationHeader);
+NS_OBJECT_ENSURE_REGISTERED (EpcX2LoadInformationHeader)
+  ;
 
 EpcX2LoadInformationHeader::EpcX2LoadInformationHeader ()
   : m_numberOfIes (1),
@@ -1306,7 +1313,8 @@ EpcX2LoadInformationHeader::GetNumberOfIes () const
 
 ////////////////
 
-NS_OBJECT_ENSURE_REGISTERED (EpcX2ResourceStatusUpdateHeader);
+NS_OBJECT_ENSURE_REGISTERED (EpcX2ResourceStatusUpdateHeader)
+  ;
 
 EpcX2ResourceStatusUpdateHeader::EpcX2ResourceStatusUpdateHeader ()
   : m_numberOfIes (3),

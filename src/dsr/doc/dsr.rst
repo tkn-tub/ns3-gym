@@ -155,7 +155,9 @@ Helper
 ******
 
 To have a node run DSR, the easiest way would be to use the DsrHelper
-and DsrMainHelpers in your simulation script. For instance::
+and DsrMainHelpers in your simulation script. For instance:
+
+.. sourcecode:: cpp
 
   DsrHelper dsr;
   DsrMainHelper dsrMain;

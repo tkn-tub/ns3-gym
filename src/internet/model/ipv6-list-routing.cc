@@ -29,7 +29,8 @@ NS_LOG_COMPONENT_DEFINE ("Ipv6ListRouting");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv6ListRouting);
+NS_OBJECT_ENSURE_REGISTERED (Ipv6ListRouting)
+  ;
 
 TypeId
 Ipv6ListRouting::GetTypeId (void)

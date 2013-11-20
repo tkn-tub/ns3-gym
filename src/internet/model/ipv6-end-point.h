@@ -149,8 +149,7 @@ public:
   /**
    * \brief Forward the packet to the upper level.
    * \param p the packet
-   * \param srcAddr source address
-   * \param dstAddr source address
+   * \param header the packet header
    * \param port source port
    */
   void ForwardUp (Ptr<Packet> p, Ipv6Header header, uint16_t port);
@@ -171,8 +170,7 @@ private:
   /**
    * \brief ForwardUp wrapper.
    * \param p packet
-   * \param saddr source IPv6 address
-   * \param daddr dest IPv6 address
+   * \param header the packet header
    * \param sport source port
    */
   void DoForwardUp (Ptr<Packet> p, Ipv6Header header, uint16_t sport);

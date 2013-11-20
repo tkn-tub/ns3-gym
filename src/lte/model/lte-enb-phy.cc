@@ -49,7 +49,8 @@ NS_LOG_COMPONENT_DEFINE ("LteEnbPhy");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (LteEnbPhy);
+NS_OBJECT_ENSURE_REGISTERED (LteEnbPhy)
+  ;
 
 // duration of the data part of a subframe in DL
 // = 0.001 / 14 * 11 (fixed to 11 symbols) -1ns as margin to avoid overlapping simulator events

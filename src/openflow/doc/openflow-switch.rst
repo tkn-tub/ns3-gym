@@ -1,4 +1,5 @@
 .. include:: replace.txt
+.. highlight:: bash
 
 OpenFlow switch support
 -----------------------
@@ -62,14 +63,18 @@ OpenFlow switch Model
 The OpenFlow switch device behaves somewhat according to the diagram setup as a classical OFSID
 switch, with a few modifications made for a proper simulation environment.
 
-Normal OF-enabled Switch:::
+Normal OF-enabled Switch:
+
+.. sourcecode:: text
   
   | Secure Channel                  | <--OF Protocol--> | Controller is external |
   | Hardware or Software Flow Table |
  
 
-ns-3 OF-enabled Switch (module):::
+ns-3 OF-enabled Switch (module):
 
+.. sourcecode:: text
+  
   | m_controller->ReceiveFromSwitch() | <--OF Protocol--> | Controller is internal |
   | Software Flow Table, virtual TCAM |
 
@@ -132,42 +137,45 @@ In order to use the OpenFlowSwitch module, you must create and link the
 OFSID (OpenFlow Software Implementation Distribution) to ns-3.
 To do this:
 
-#1 Obtain the OFSID code. An ns-3 specific OFSID branch is provided to ensure
-operation with ns-3. Use mercurial to download this branch and waf to build 
-the library::: 
+1. Obtain the OFSID code.
+   An ns-3 specific OFSID branch is provided to ensure
+   operation with ns-3. Use mercurial to download this branch and waf to build 
+   the library::
 
-  $ hg clone http://code.nsnam.org/openflow
-  $ cd openflow
+     $ hg clone http://code.nsnam.org/openflow
+     $ cd openflow
 
-From the "openflow" directory, run:::
+   From the "openflow" directory, run::
      
-  $ ./waf configure
-  $ ./waf build
+     $ ./waf configure
+     $ ./waf build
 
-#2 Your OFSID is now built into a libopenflow.a library!   To
-link to an ns-3 build with this OpenFlow switch module, run from the ns-3-dev
-(or whatever you have named your distribution):::
+2. Your OFSID is now built into a libopenflow.a library!
+   To link to an ns-3 build with this OpenFlow switch module, run from the ns-3-dev
+   (or whatever you have named your distribution)::
 
-  $ ./waf configure --enable-examples --enable-tests --with-openflow=path/to/openflow
+     $ ./waf configure --enable-examples --enable-tests --with-openflow=path/to/openflow
 
-#3 Under ``---- Summary of optional NS-3 features:`` you should see:::
+3. Under ``---- Summary of optional NS-3 features:`` you should see:
 
-   "NS-3 OpenFlow Integration     : enabled"
+   .. sourcecode:: text
+  
+     "NS-3 OpenFlow Integration     : enabled"
 
-indicating the library has been linked to ns-3. Run:::
+   indicating the library has been linked to ns-3. Run::
 
-   $ ./waf build
+     $ ./waf build
 
 to build ns-3 and activate the OpenFlowSwitch module in ns-3.
 
 Examples
 ========
 For an example demonstrating its use in a simple learning controller/switch, 
-run:::
+run::
 
   $ ./waf --run openflow-switch
 
-To see it in detailed logging, run:::
+To see it in detailed logging, run::
 
   $ ./waf --run "openflow-switch -v"
 
@@ -219,7 +227,7 @@ Caveats
 Validation
 **********
 
-This model has one test suite which can be run as follows:::
+This model has one test suite which can be run as follows::
 
   $ ./test.py --suite=openflow
 

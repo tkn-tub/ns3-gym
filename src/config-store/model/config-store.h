@@ -7,7 +7,7 @@
 namespace ns3 {
 
 /**
- * \defgroup configstore Config-Store
+ * \defgroup configstore Configuration Store/Load
  *
  * \brief Store and load simulation attribute configuration
  *

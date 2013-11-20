@@ -153,7 +153,7 @@ public:
     */
   Ptr<dsr::PassiveBuffer> GetPassiveBuffer () const;
 
-  ///\functions used to direct to route cache
+  /// functions used to direct to route cache
   //\{
   bool IsLinkCache ();
   void UseExtends (RouteCacheEntry::IP_VECTOR rt);

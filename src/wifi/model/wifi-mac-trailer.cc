@@ -22,7 +22,8 @@
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (WifiMacTrailer);
+NS_OBJECT_ENSURE_REGISTERED (WifiMacTrailer)
+  ;
 
 WifiMacTrailer::WifiMacTrailer ()
 {

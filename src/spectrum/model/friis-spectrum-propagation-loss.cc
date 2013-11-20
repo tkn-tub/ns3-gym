@@ -25,7 +25,8 @@
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (FriisSpectrumPropagationLossModel);
+NS_OBJECT_ENSURE_REGISTERED (FriisSpectrumPropagationLossModel)
+  ;
 
 
 FriisSpectrumPropagationLossModel::FriisSpectrumPropagationLossModel ()

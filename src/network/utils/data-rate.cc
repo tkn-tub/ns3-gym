@@ -182,7 +182,7 @@ DoParse (const std::string s, uint64_t *v)
 
 namespace ns3 {
 
-ATTRIBUTE_HELPER_CPP (DataRate);
+ATTRIBUTE_HELPER_CPP (DataRate);  /// Macro to make help make data-rate an ns-3 attribute
 
 DataRate::DataRate ()
   : m_bps (0)
@@ -248,11 +248,13 @@ DataRate::DataRate (std::string rate)
     }
 }
 
+/* For printing of data rate */
 std::ostream &operator << (std::ostream &os, const DataRate &rate)
 {
   os << rate.GetBitRate () << "bps";
   return os;
 }
+/* Initialize a data rate from an input stream */
 std::istream &operator >> (std::istream &is, DataRate &rate)
 {
   std::string value;
@@ -267,13 +269,26 @@ std::istream &operator >> (std::istream &is, DataRate &rate)
   return is;
 }
 
-
-
+/**
+  * \brief Multiply datarate by a time value
+  *
+  * Calculates the number of bits that have been transmitted over a period of time
+  * \param lhs rate
+  * \param rhs time
+  * \return the number of bits over the period of time
+  */
 double operator* (const DataRate& lhs, const Time& rhs)
 {
   return rhs.GetSeconds ()*lhs.GetBitRate ();
 }
-
+/**
+  * \brief Multiply time value by a data rate
+  *
+  * Calculates the number of bits that have been transmitted over a period of time
+  * \param lhs time
+  * \param rhs rate
+  * \return the number of bits over the period of time
+  */
 double operator* (const Time& lhs, const DataRate& rhs)
 {
   return lhs.GetSeconds ()*rhs.GetBitRate ();

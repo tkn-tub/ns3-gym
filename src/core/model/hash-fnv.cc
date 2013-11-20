@@ -38,7 +38,8 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("Hash-Fnv");
+NS_LOG_COMPONENT_DEFINE ("Hash-Fnv")
+  ;
 
 namespace Hash {
 

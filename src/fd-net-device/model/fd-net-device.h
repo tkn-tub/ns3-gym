@@ -63,7 +63,7 @@ private:
 class Node;
 
 /**
- * \defgroup fd-net-device FdNetDevice
+ * \defgroup fd-net-device File Descriptor Network Device
  * This section documents the API of the ns-3 fd-net-device module.
  * For a generic functional description, please refer to the ns-3 manual.
  */
@@ -178,7 +178,7 @@ protected:
 
 private:
   // private copy constructor as sugested in:
-  // http://www.nsnam.org/wiki/index.php/NS-3_Python_Bindings#.22invalid_use_of_incomplete_type.22
+  // http://www.nsnam.org/wiki/NS-3_Python_Bindings#.22invalid_use_of_incomplete_type.22
   FdNetDevice (FdNetDevice const &);
 
   /**

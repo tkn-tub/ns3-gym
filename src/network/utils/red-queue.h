@@ -83,46 +83,43 @@ class RedQueue : public Queue
 {
 public:
   static TypeId GetTypeId (void);
-  /*
+  /**
    * \brief RedQueue Constructor
    *
    * Create a RED queue
    */
   RedQueue ();
 
-  /*
+  /**
    * \brief Destructor
    *
    * Destructor
    */ 
   virtual ~RedQueue ();
 
-  /*
+  /**
    * \brief Stats
    *
    */
   typedef struct
-  {
-    // Early probability drops
-    uint32_t unforcedDrop;
-    // Forced drops, qavg > max threshold
-    uint32_t forcedDrop;
-    // Drops due to queue limits
-    uint32_t qLimDrop;
+  {   
+    uint32_t unforcedDrop;  /// Early probability drops 
+    uint32_t forcedDrop;    /// Forced drops, qavg > max threshold
+    uint32_t qLimDrop;      /// Drops due to queue limits
   } Stats;
 
-  /* 
+  /** 
    * \brief Drop types
    *
    */
   enum
   {
-    DTYPE_NONE,        // Ok, no drop
-    DTYPE_FORCED,      // A "forced" drop
-    DTYPE_UNFORCED,    // An "unforced" (random) drop
+    DTYPE_NONE,        /// Ok, no drop
+    DTYPE_FORCED,      /// A "forced" drop
+    DTYPE_UNFORCED,    /// An "unforced" (random) drop
   };
 
-  /*
+  /**
    * \brief Set the operating mode of this queue.
    *  Set operating mode
    *
@@ -130,7 +127,7 @@ public:
    */
   void SetMode (RedQueue::QueueMode mode);
 
-  /*
+  /**
    * \brief Get the encapsulation mode of this queue.
    * Get the encapsulation mode of this queue
    *
@@ -138,21 +135,21 @@ public:
    */
   RedQueue::QueueMode GetMode (void);
 
-  /*
+  /**
    * \brief Get the current value of the queue in bytes or packets.
    *
    * \returns The queue size in bytes or packets.
    */
   uint32_t GetQueueSize (void);
 
-  /*
+  /**
    * \brief Set the limit of the queue.
    *
    * \param lim The limit in bytes or packets.
    */
   void SetQueueLimit (uint32_t lim);
 
-  /*
+  /**
    * \brief Set the thresh limits of RED.
    *
    * \param min Minimum thresh in bytes or packets.
@@ -160,7 +157,7 @@ public:
    */
   void SetTh (double minTh, double maxTh);
 
-  /*
+  /**
    * \brief Get the RED statistics after running.
    *
    * \returns The drop statistics.

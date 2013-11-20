@@ -41,7 +41,8 @@ NS_LOG_COMPONENT_DEFINE ("BSSchedulerRtps");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (BSSchedulerRtps);
+NS_OBJECT_ENSURE_REGISTERED (BSSchedulerRtps)
+  ;
 
 TypeId
 BSSchedulerRtps::GetTypeId (void)

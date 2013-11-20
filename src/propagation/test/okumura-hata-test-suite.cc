@@ -31,7 +31,8 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("OkumuraHataPropagationLossModelTest");
+NS_LOG_COMPONENT_DEFINE ("OkumuraHataPropagationLossModelTest")
+  ;
 
 
 class OkumuraHataPropagationLossModelTestCase : public TestCase

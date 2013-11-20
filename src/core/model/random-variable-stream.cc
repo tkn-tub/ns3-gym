@@ -40,7 +40,8 @@ NS_LOG_COMPONENT_DEFINE ("RandomVariableStream");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (RandomVariableStream);
+NS_OBJECT_ENSURE_REGISTERED (RandomVariableStream)
+  ;
 
 TypeId 
 RandomVariableStream::GetTypeId (void)
@@ -130,7 +131,8 @@ RandomVariableStream::Peek(void) const
   return m_rng;
 }
 
-NS_OBJECT_ENSURE_REGISTERED(UniformRandomVariable);
+NS_OBJECT_ENSURE_REGISTERED(UniformRandomVariable)
+  ;
 
 TypeId 
 UniformRandomVariable::GetTypeId (void)
@@ -200,7 +202,8 @@ UniformRandomVariable::GetInteger (void)
   return (uint32_t)GetValue (m_min, m_max + 1);
 }
 
-NS_OBJECT_ENSURE_REGISTERED(ConstantRandomVariable);
+NS_OBJECT_ENSURE_REGISTERED(ConstantRandomVariable)
+  ;
 
 TypeId 
 ConstantRandomVariable::GetTypeId (void)
@@ -254,7 +257,8 @@ ConstantRandomVariable::GetInteger (void)
   return (uint32_t)GetValue (m_constant);
 }
 
-NS_OBJECT_ENSURE_REGISTERED(SequentialRandomVariable);
+NS_OBJECT_ENSURE_REGISTERED(SequentialRandomVariable)
+  ;
 
 TypeId 
 SequentialRandomVariable::GetTypeId (void)
@@ -353,7 +357,8 @@ SequentialRandomVariable::GetInteger (void)
   return (uint32_t)GetValue ();
 }
 
-NS_OBJECT_ENSURE_REGISTERED(ExponentialRandomVariable);
+NS_OBJECT_ENSURE_REGISTERED(ExponentialRandomVariable)
+  ;
 
 TypeId 
 ExponentialRandomVariable::GetTypeId (void)
@@ -434,7 +439,8 @@ ExponentialRandomVariable::GetInteger (void)
   return (uint32_t)GetValue (m_mean, m_bound);
 }
 
-NS_OBJECT_ENSURE_REGISTERED(ParetoRandomVariable);
+NS_OBJECT_ENSURE_REGISTERED(ParetoRandomVariable)
+  ;
 
 TypeId 
 ParetoRandomVariable::GetTypeId (void)
@@ -529,7 +535,8 @@ ParetoRandomVariable::GetInteger (void)
   return (uint32_t)GetValue (m_mean, m_shape, m_bound);
 }
 
-NS_OBJECT_ENSURE_REGISTERED(WeibullRandomVariable);
+NS_OBJECT_ENSURE_REGISTERED(WeibullRandomVariable)
+  ;
 
 TypeId 
 WeibullRandomVariable::GetTypeId (void)
@@ -622,7 +629,8 @@ WeibullRandomVariable::GetInteger (void)
   return (uint32_t)GetValue (m_scale, m_shape, m_bound);
 }
 
-NS_OBJECT_ENSURE_REGISTERED(NormalRandomVariable);
+NS_OBJECT_ENSURE_REGISTERED(NormalRandomVariable)
+  ;
 
 const double NormalRandomVariable::INFINITE_VALUE = 1e307;
 
@@ -741,7 +749,8 @@ NormalRandomVariable::GetInteger (void)
   return (uint32_t)GetValue (m_mean, m_variance, m_bound);
 }
 
-NS_OBJECT_ENSURE_REGISTERED(LogNormalRandomVariable);
+NS_OBJECT_ENSURE_REGISTERED(LogNormalRandomVariable)
+  ;
 
 TypeId 
 LogNormalRandomVariable::GetTypeId (void)
@@ -860,7 +869,8 @@ LogNormalRandomVariable::GetInteger (void)
   return (uint32_t)GetValue (m_mu, m_sigma);
 }
 
-NS_OBJECT_ENSURE_REGISTERED(GammaRandomVariable);
+NS_OBJECT_ENSURE_REGISTERED(GammaRandomVariable)
+  ;
 
 TypeId 
 GammaRandomVariable::GetTypeId (void)
@@ -1035,7 +1045,8 @@ GammaRandomVariable::GetNormalValue (double mean, double variance, double bound)
     }
 }
 
-NS_OBJECT_ENSURE_REGISTERED(ErlangRandomVariable);
+NS_OBJECT_ENSURE_REGISTERED(ErlangRandomVariable)
+  ;
 
 TypeId 
 ErlangRandomVariable::GetTypeId (void)
@@ -1146,7 +1157,8 @@ ErlangRandomVariable::GetExponentialValue (double mean, double bound)
     }
 }
 
-NS_OBJECT_ENSURE_REGISTERED(TriangularRandomVariable);
+NS_OBJECT_ENSURE_REGISTERED(TriangularRandomVariable)
+  ;
 
 TypeId 
 TriangularRandomVariable::GetTypeId (void)
@@ -1240,7 +1252,8 @@ TriangularRandomVariable::GetInteger (void)
   return (uint32_t)GetValue (m_mean, m_min, m_max);
 }
 
-NS_OBJECT_ENSURE_REGISTERED(ZipfRandomVariable);
+NS_OBJECT_ENSURE_REGISTERED(ZipfRandomVariable)
+  ;
 
 TypeId 
 ZipfRandomVariable::GetTypeId (void)
@@ -1330,7 +1343,8 @@ ZipfRandomVariable::GetInteger (void)
   return (uint32_t)GetValue (m_n, m_alpha);
 }
 
-NS_OBJECT_ENSURE_REGISTERED(ZetaRandomVariable);
+NS_OBJECT_ENSURE_REGISTERED(ZetaRandomVariable)
+  ;
 
 TypeId 
 ZetaRandomVariable::GetTypeId (void)
@@ -1413,7 +1427,8 @@ ZetaRandomVariable::GetInteger (void)
   return (uint32_t)GetValue (m_alpha);
 }
 
-NS_OBJECT_ENSURE_REGISTERED(DeterministicRandomVariable);
+NS_OBJECT_ENSURE_REGISTERED(DeterministicRandomVariable)
+  ;
 
 TypeId 
 DeterministicRandomVariable::GetTypeId (void)
@@ -1485,7 +1500,8 @@ DeterministicRandomVariable::GetInteger (void)
   return (uint32_t)GetValue ();
 }
 
-NS_OBJECT_ENSURE_REGISTERED(EmpiricalRandomVariable);
+NS_OBJECT_ENSURE_REGISTERED(EmpiricalRandomVariable)
+  ;
 
 // ValueCDF methods
 EmpiricalRandomVariable::ValueCDF::ValueCDF ()

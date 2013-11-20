@@ -42,9 +42,11 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("PointToPointEpcHelper");
+NS_LOG_COMPONENT_DEFINE ("PointToPointEpcHelper")
+  ;
 
-NS_OBJECT_ENSURE_REGISTERED (PointToPointEpcHelper);
+NS_OBJECT_ENSURE_REGISTERED (PointToPointEpcHelper)
+  ;
 
 
 PointToPointEpcHelper::PointToPointEpcHelper () 

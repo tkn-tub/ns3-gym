@@ -64,7 +64,8 @@ class Object : public SimpleRefCount<Object,ObjectBase,ObjectDeleter>
 {
 public:
   /**
-   * Get the type ID.
+   * \brief Get the type ID.
+   * \return the object TypeId
    */
   static TypeId GetTypeId (void);
 
