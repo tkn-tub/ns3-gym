@@ -76,6 +76,8 @@ LteRlcAm::LteRlcAm ()
 
   // Timers
   m_pollRetransmitTimerValue = MilliSeconds (100);
+  m_reorderingTimerValue = MilliSeconds (20);
+  m_statusProhibitTimerValue = MilliSeconds (20);
 }
 
 LteRlcAm::~LteRlcAm ()
@@ -247,6 +249,8 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId)
 
       m_statusPduRequested = false;
       m_statusPduBufferSize = 0;
+      m_statusProhibitTimer = Simulator::Schedule (m_statusProhibitTimerValue,
+                                                   &LteRlcAm::ExpireStatusProhibitTimer, this);
       return;
     }
   else if ( m_retxBufferSize > 0 )
@@ -293,7 +297,7 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId)
 
       NS_LOG_LOGIC ("Sending data from Transmission Buffer");
     }
-  else if ( m_txedBufferSize > 0 )
+  /* else if ( m_txedBufferSize > 0 )
     {
       NS_LOG_LOGIC ("Sending data from Transmitted Buffer");
 
@@ -335,7 +339,7 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId)
           NS_LOG_LOGIC ("Waiting for bigger TxOpportunity");
           return;
         }
-    } 
+        }*/ 
   else
     {
       NS_LOG_LOGIC ("No data pending");
@@ -905,7 +909,7 @@ LteRlcAm::DoReceivePdu (Ptr<Packet> p)
           if ( m_vrH > m_vrR )
             {
               NS_LOG_LOGIC ("Start reordering timer");
-              m_reorderingTimer = Simulator::Schedule (Time ("0.1s"),
+              m_reorderingTimer = Simulator::Schedule (m_reorderingTimerValue,
                                                        &LteRlcAm::ExpireReorderingTimer ,this);
               m_vrX = m_vrH;
               NS_LOG_LOGIC ("New VR(X) = " << m_vrX);
@@ -997,7 +1001,7 @@ LteRlcAm::DoReceivePdu (Ptr<Packet> p)
 //             {
 //               NS_LOG_LOGIC ("VR(UX) > VR(UR). " << m_vrUx << " > " << m_vrUr);
 //               NS_LOG_LOGIC ("Start reordering timer");
-//               m_reorderingTimer = Simulator::Schedule (Time ("1.0s"),
+//               m_reorderingTimer = Simulator::Schedule (m_reorderingTimerValue),
 //                                                       &LteRlcAm::ExpireReorderingTimer ,this);
 //               m_vrUx = m_vrUh;
 //               NS_LOG_LOGIC ("New VR(UX) = " << m_vrUx);
@@ -1699,11 +1703,16 @@ LteRlcAm::ExpireReorderingTimer (void)
   if ( m_vrH > m_vrMs )
     {
       NS_LOG_LOGIC ("Start reordering timer");
-      m_reorderingTimer = Simulator::Schedule (Time ("0.1s"),
+      m_reorderingTimer = Simulator::Schedule (m_reorderingTimerValue,
                                               &LteRlcAm::ExpireReorderingTimer ,this);
       m_vrX = m_vrH;
       NS_LOG_LOGIC ("New VR(MS) = " << m_vrMs);
     }
+
+    // Section 5.2.3 Status Reporting:
+    //   - The receiving side of an AM RLC entity shall trigger a
+    //     STATUS report when T_reordering expires. 
+  m_statusPduRequested = true;
 }
 
 void
@@ -1721,5 +1730,10 @@ LteRlcAm::ExpirePollRetransmitTimer (void)
 }
 
 
+void 
+LteRlcAm::ExpireStatusProhibitTimer (void)
+{
+  NS_LOG_FUNCTION (this);
+}
 
 } // namespace ns3

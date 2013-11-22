@@ -62,6 +62,12 @@ private:
   void ExpireReorderingTimer (void);
   void ExpirePollRetransmitTimer (void);
 
+  /** 
+   * method called when the T_status_prohibit timer expires
+   * 
+   */
+  void ExpireStatusProhibitTimer (void);
+
   bool IsInsideReceivingWindow (SequenceNumber10 seqNumber);
 // 
 //   void ReassembleOutsideWindow (void);
@@ -142,7 +148,9 @@ private:
   EventId m_pollRetransmitTimer;
   Time    m_pollRetransmitTimerValue;
   EventId m_reorderingTimer;
+  Time    m_reorderingTimerValue;
   EventId m_statusProhibitTimer;
+  Time    m_statusProhibitTimerValue;
 
   /**
    * Configurable parameters. See section 7.4 in TS 36.322
