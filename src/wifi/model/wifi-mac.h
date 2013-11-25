@@ -85,50 +85,54 @@ public:
    */
   void SetMaxPropagationDelay (Time delay);
 /**
-   * \returns the current RIFS duration.
+   * \return the current RIFS duration.
    */
 
   virtual Time GetRifs (void) const = 0;
 
   /**
-   * \returns the current PIFS duration.
+   * \return the current PIFS duration.
    */
   virtual Time GetPifs (void) const = 0;
   /**
-   * \returns the current SIFS duration.
+   * \return the current SIFS duration.
    */
   virtual Time GetSifs (void) const = 0;
   /**
-   * \returns the current slot duration.
+   * \return the current slot duration.
    */
   virtual Time GetSlot (void) const = 0;
   /**
-   * \returns the current EIFS minus DIFS duration
+   * \return the current EIFS minus DIFS duration
    */
   virtual Time GetEifsNoDifs (void) const = 0;
   /**
-   * \returns the current CTS timeout duration.
+   * \return the current CTS timeout duration.
    */
   virtual Time GetCtsTimeout (void) const = 0;
   /**
-   * \returns the current ACK timeout duration.
+   * \return the current ACK timeout duration.
    */
   virtual Time GetAckTimeout (void) const = 0;
   /**
+   * \return the maximum lifetime of an MSDU.
+   *
    * Unused for now.
    */
   Time GetMsduLifetime (void) const;
   /**
+   * \return the maximum propagation delay.
+   * 
    * Unused for now.
    */
   Time GetMaxPropagationDelay (void) const;
 
   /**
-   * \returns the MAC address associated to this MAC layer.
+   * \return the MAC address associated to this MAC layer.
    */
   virtual Mac48Address GetAddress (void) const = 0;
   /**
-   * \returns the ssid which this MAC layer is going to try to stay in.
+   * \return the ssid which this MAC layer is going to try to stay in.
    */
   virtual Ssid GetSsid (void) const = 0;
   /**
@@ -140,7 +144,7 @@ public:
    */
   virtual void SetSsid (Ssid ssid) = 0;
   /**
-   * \returns the bssid of the network this device belongs to.
+   * \return the bssid of the network this device belongs to.
    */
   virtual Mac48Address GetBssid (void) const = 0;
   /**
@@ -173,6 +177,13 @@ public:
    * access it granted to this MAC.
    */
   virtual void Enqueue (Ptr<const Packet> packet, Mac48Address to) = 0;
+  /**
+   * \return if this MAC supports sending from arbitrary address.
+   *
+   * The interface may or may not support sending from arbitrary address.
+   * This function returns true if sending from arbitrary address is supported,
+   * false otherwise.
+   */
   virtual bool SupportsSendFrom (void) const = 0;
   /**
    * \param phy the physical layer attached to this MAC.
@@ -197,36 +208,65 @@ public:
   /* Next functions are not pure virtual so non Qos WifiMacs are not
    * forced to implement them.
    */
+
+  /**
+   * \param blockAckTimeout the duration for basic block ACK timeout.
+   *
+   * Sets the timeout for basic block ACK.
+   */
   virtual void SetBasicBlockAckTimeout (Time blockAckTimeout);
+  /**
+   * \return the current basic block ACK timeout duration.
+   */
   virtual Time GetBasicBlockAckTimeout (void) const;
+  /**
+   * \param blockAckTimeout
+   *
+   * Sets the timeout for compressed block ACK.
+   */
   virtual void SetCompressedBlockAckTimeout (Time blockAckTimeout);
+  /**
+   * \return the current compressed block ACK timeout duration.
+   */
   virtual Time GetCompressedBlockAckTimeout (void) const;
 
   /**
+   * \param packet the packet being enqueued
+   *
    * Public method used to fire a MacTx trace.  Implemented for encapsulation
-   * purposes.
+   * purposes.  Note this trace indicates that the packet was accepted by the
+   * device only.  The packet may be dropped later (e.g. if the queue is full).
    */
   void NotifyTx (Ptr<const Packet> packet);
 
   /**
+   * \param packet the packet being dropped
+   * 
    * Public method used to fire a MacTxDrop trace.  Implemented for encapsulation
-   * purposes.
+   * purposes.  This trace indicates that the packet was dropped before it was
+   * transmitted (e.g. when a STA is not associated with an AP).
    */
   void NotifyTxDrop (Ptr<const Packet> packet);
 
   /**
+   * \param packet the packet we received
+   * 
    * Public method used to fire a MacRx trace.  Implemented for encapsulation
    * purposes.
    */
   void NotifyRx (Ptr<const Packet> packet);
 
   /**
+   * \param packet the packet we received promiscuously
+   *
    * Public method used to fire a MacPromiscRx trace.  Implemented for encapsulation
    * purposes.
    */
   void NotifyPromiscRx (Ptr<const Packet> packet);
 
   /**
+   * \param packet the packet we received but is not destined for us
+   * 
    * Public method used to fire a MacRxDrop trace.  Implemented for encapsulation
    * purposes.
    */
@@ -237,18 +277,72 @@ public:
   void ConfigureStandard (enum WifiPhyStandard standard);
 
 protected:
+  /**
+   * \param dcf the DCF to be configured
+   * \param cwmin the minimum congestion window for the DCF
+   * \param cwmax the maximum congestion window for the DCF
+   * \param ac the access category for the DCF
+   *
+   * Configure the DCF with appropriate values depending on the given access category.
+   */
   void ConfigureDcf (Ptr<Dcf> dcf, uint32_t cwmin, uint32_t cwmax, enum AcIndex ac);
 private:
+  /**
+   * \return the default maximum propagation delay
+   *
+   * By default, we get the maximum propagation delay from 1000 m and speed of light
+   * (3e8 m/s).
+   */
   static Time GetDefaultMaxPropagationDelay (void);
+  /**
+   * \return the default slot duration
+   * 
+   * Return a default slot value for 802.11a (9 microseconds).
+   */
   static Time GetDefaultSlot (void);
+  /**
+   * \return the default short interframe space (SIFS)
+   * 
+   * Return a default SIFS value for 802.11a (16 microseconds).
+   */
   static Time GetDefaultSifs (void);
+  /**
+   * \return the default reduced interframe space (RIFS)
+   * 
+   * Return a default RIFS value for 802.11n (2 microseconds).
+   */
   static Time GetDefaultRifs (void);
+  /**
+   * \return the default extended interframe space (EIFS) without
+   *          DCF interframe space (DIFS)
+   * 
+   * Return default SIFS + default CTS-ACK delay
+   */
   static Time GetDefaultEifsNoDifs (void);
+  /**
+   * \return the default CTS-ACK delay
+   * 
+   * Return a default value for 802.11a at 6Mbps (44 microseconds)
+   */
   static Time GetDefaultCtsAckDelay (void);
+  /**
+   * \return the default CTS and ACK timeout
+   * 
+   * Return the default CTS and ACK timeout.
+   * Cts_Timeout and Ack_Timeout are specified in the Annex C
+   * (Formal description of MAC operation, see details on the
+   * Trsp timer setting at page 346)
+   */
   static Time GetDefaultCtsAckTimeout (void);
   static Time GetDefaultBasicBlockAckDelay (void);
+  /**
+   * \return the default basic block ACK timeout
+   */
   static Time GetDefaultBasicBlockAckTimeout (void);
   static Time GetDefaultCompressedBlockAckDelay (void);
+  /**
+   * \return the default compressed block ACK timeout
+   */
   static Time GetDefaultCompressedBlockAckTimeout (void);
   /**
    * \param standard the phy standard to be used
@@ -262,12 +356,33 @@ private:
 
   Time m_maxPropagationDelay;
 
+  /**
+   * Configure appropriate timing parameters for 802.11a.
+   */
   void Configure80211a (void);
+  /**
+   * Configure appropriate timing parameters for 802.11b.
+   */
   void Configure80211b (void);
+  /**
+   * Configure appropriate timing parameters for 802.11g.
+   */
   void Configure80211g (void);
+  /**
+   * Configure appropriate timing parameters for 802.11 with 10Mhz channel spacing.
+   */
   void Configure80211_10Mhz (void);
+  /**
+   * Configure appropriate timing parameters for 802.11 with 5Mhz channel spacing.
+   */
   void Configure80211_5Mhz ();
+  /**
+   * Configure appropriate timing parameters for 802.11n operating at 2.4Ghz.
+   */
   void Configure80211n_2_4Ghz (void);
+  /**
+   * Configure appropriate timing parameters for 802.11n operating at 5Ghz.
+   */
   void Configure80211n_5Ghz (void);
 
   /**

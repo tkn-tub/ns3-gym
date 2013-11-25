@@ -68,7 +68,7 @@ public:
   /**
    *
    *
-   * \param s the PDCP SAP Provider interface offered to the RRC by this LTE_PDCP
+   * \return the PDCP SAP Provider interface offered to the RRC by this LTE_PDCP
    */
   LtePdcpSapProvider* GetLtePdcpSapProvider ();
 
@@ -82,7 +82,7 @@ public:
   /**
    *
    *
-   * \param s the RLC SAP User interface offered to the RLC by this LTE_PDCP
+   * \return the RLC SAP User interface offered to the RLC by this LTE_PDCP
    */
   LteRlcSapUser* GetLteRlcSapUser ();
 

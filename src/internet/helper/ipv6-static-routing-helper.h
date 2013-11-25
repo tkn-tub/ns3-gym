@@ -72,7 +72,7 @@ public:
   /**
    * \brief Get Ipv6StaticRouting pointer from IPv6 stack.
    * \param ipv6 Ipv6 pointer
-   * \return Ipv6StaticRouting pointer or 0 if not exist
+   * \return Ipv6StaticRouting pointer or 0 if not found
    */
   Ptr<Ipv6StaticRouting> GetStaticRouting (Ptr<Ipv6> ipv6) const;
 

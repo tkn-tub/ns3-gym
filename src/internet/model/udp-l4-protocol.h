@@ -47,12 +47,20 @@ class UdpSocketImpl;
  */
 class UdpL4Protocol : public IpL4Protocol {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
-  static const uint8_t PROT_NUMBER;
+  static const uint8_t PROT_NUMBER; //!< protocol number (0x11)
 
   UdpL4Protocol ();
   virtual ~UdpL4Protocol ();
 
+  /**
+   * Set node associated with this stack
+   * \param node the node
+   */
   void SetNode (Ptr<Node> node);
 
   virtual int GetProtocolNumber (void) const;
@@ -63,25 +71,90 @@ public:
    */
   Ptr<Socket> CreateSocket (void);
 
+  /**
+   * \brief Allocate an IPv4 Endpoint
+   * \return the Endpoint
+   */
   Ipv4EndPoint *Allocate (void);
+  /**
+   * \brief Allocate an IPv4 Endpoint
+   * \param address address to use
+   * \return the Endpoint
+   */
   Ipv4EndPoint *Allocate (Ipv4Address address);
+  /**
+   * \brief Allocate an IPv4 Endpoint
+   * \param port port to use
+   * \return the Endpoint
+   */
   Ipv4EndPoint *Allocate (uint16_t port);
+  /**
+   * \brief Allocate an IPv4 Endpoint
+   * \param address address to use
+   * \param port port to use
+   * \return the Endpoint
+   */
   Ipv4EndPoint *Allocate (Ipv4Address address, uint16_t port);
+  /**
+   * \brief Allocate an IPv4 Endpoint
+   * \param localAddress local address to use
+   * \param localPort local port to use
+   * \param peerAddress remote address to use
+   * \param peerPort remote port to use
+   * \return the Endpoint
+   */
   Ipv4EndPoint *Allocate (Ipv4Address localAddress, uint16_t localPort,
                           Ipv4Address peerAddress, uint16_t peerPort);
-  Ipv6EndPoint *Allocate6 (void);
-  Ipv6EndPoint *Allocate6 (Ipv6Address address);
-  Ipv6EndPoint *Allocate6 (uint16_t port);
-  Ipv6EndPoint *Allocate6 (Ipv6Address address, uint16_t port);
-  Ipv6EndPoint *Allocate6 (Ipv6Address localAddress, uint16_t localPort,
-                          Ipv6Address peerAddress, uint16_t peerPort);
 
+  /**
+   * \brief Allocate an IPv6 Endpoint
+   * \return the Endpoint
+   */
+  Ipv6EndPoint *Allocate6 (void);
+  /**
+   * \brief Allocate an IPv6 Endpoint
+   * \param address address to use
+   * \return the Endpoint
+   */
+  Ipv6EndPoint *Allocate6 (Ipv6Address address);
+  /**
+   * \brief Allocate an IPv6 Endpoint
+   * \param port port to use
+   * \return the Endpoint
+   */
+  Ipv6EndPoint *Allocate6 (uint16_t port);
+  /**
+   * \brief Allocate an IPv6 Endpoint
+   * \param address address to use
+   * \param port port to use
+   * \return the Endpoint
+   */
+  Ipv6EndPoint *Allocate6 (Ipv6Address address, uint16_t port);
+  /**
+   * \brief Allocate an IPv6 Endpoint
+   * \param localAddress local address to use
+   * \param localPort local port to use
+   * \param peerAddress remote address to use
+   * \param peerPort remote port to use
+   * \return the Endpoint
+   */
+  Ipv6EndPoint *Allocate6 (Ipv6Address localAddress, uint16_t localPort,
+                           Ipv6Address peerAddress, uint16_t peerPort);
+
+  /**
+   * \brief Remove an IPv4 Endpoint.
+   * \param endPoint the end point to remove
+   */
   void DeAllocate (Ipv4EndPoint *endPoint);
+  /**
+   * \brief Remove an IPv6 Endpoint.
+   * \param endPoint the end point to remove
+   */
   void DeAllocate (Ipv6EndPoint *endPoint);
 
   // called by UdpSocket.
   /**
-   * \brief Send a packet via UDP
+   * \brief Send a packet via UDP (IPv4)
    * \param packet The packet to send
    * \param saddr The source Ipv4Address
    * \param daddr The destination Ipv4Address
@@ -91,40 +164,50 @@ public:
   void Send (Ptr<Packet> packet,
              Ipv4Address saddr, Ipv4Address daddr, 
              uint16_t sport, uint16_t dport);
+  /**
+   * \brief Send a packet via UDP (IPv4)
+   * \param packet The packet to send
+   * \param saddr The source Ipv4Address
+   * \param daddr The destination Ipv4Address
+   * \param sport The source port number
+   * \param dport The destination port number
+   * \param route The route
+   */
   void Send (Ptr<Packet> packet,
              Ipv4Address saddr, Ipv4Address daddr, 
              uint16_t sport, uint16_t dport, Ptr<Ipv4Route> route);
+  /**
+   * \brief Send a packet via UDP (IPv6)
+   * \param packet The packet to send
+   * \param saddr The source Ipv4Address
+   * \param daddr The destination Ipv4Address
+   * \param sport The source port number
+   * \param dport The destination port number
+   */
   void Send (Ptr<Packet> packet,
              Ipv6Address saddr, Ipv6Address daddr, 
              uint16_t sport, uint16_t dport);
+  /**
+   * \brief Send a packet via UDP (IPv6)
+   * \param packet The packet to send
+   * \param saddr The source Ipv4Address
+   * \param daddr The destination Ipv4Address
+   * \param sport The source port number
+   * \param dport The destination port number
+   * \param route The route
+   */
   void Send (Ptr<Packet> packet,
              Ipv6Address saddr, Ipv6Address daddr, 
              uint16_t sport, uint16_t dport, Ptr<Ipv6Route> route);
-  /**
-   * \brief Receive a packet up the protocol stack
-   * \param p The Packet to dump the contents into
-   * \param header IPv4 Header information
-   * \param interface the interface from which the packet is coming.
-   */
+
   // inherited from Ipv4L4Protocol
   virtual enum IpL4Protocol::RxStatus Receive (Ptr<Packet> p,
-                                                 Ipv4Header const &header,
-                                                 Ptr<Ipv4Interface> interface);
+                                               Ipv4Header const &header,
+                                               Ptr<Ipv4Interface> interface);
   virtual enum IpL4Protocol::RxStatus Receive (Ptr<Packet> p,
-                                                 Ipv6Header const &header,
-                                                 Ptr<Ipv6Interface> interface);
+                                               Ipv6Header const &header,
+                                               Ptr<Ipv6Interface> interface);
 
-  /**
-   * \brief Receive an ICMP packet
-   * \param icmpSource The IP address of the source of the packet.
-   * \param icmpTtl The time to live from the IP header
-   * \param icmpType The type of the message from the ICMP header
-   * \param icmpCode The message code from the ICMP header
-   * \param icmpInfo 32-bit integer carrying informational value of varying semantics.
-   * \param payloadSource The IP source address from the IP header of the packet
-   * \param payloadDestination The IP destination address from the IP header of the packet
-   * \param payload Payload of the ICMP packet
-   */
   virtual void ReceiveIcmp (Ipv4Address icmpSource, uint8_t icmpTtl,
                             uint8_t icmpType, uint8_t icmpCode, uint32_t icmpInfo,
                             Ipv4Address payloadSource,Ipv4Address payloadDestination,
@@ -149,14 +232,28 @@ protected:
    */
   virtual void NotifyNewAggregate ();
 private:
-  Ptr<Node> m_node;
-  Ipv4EndPointDemux *m_endPoints;
-  Ipv6EndPointDemux *m_endPoints6;
-  UdpL4Protocol (const UdpL4Protocol &o);
-  UdpL4Protocol &operator = (const UdpL4Protocol &o);
-  std::vector<Ptr<UdpSocketImpl> > m_sockets;
-  IpL4Protocol::DownTargetCallback m_downTarget;
-  IpL4Protocol::DownTargetCallback6 m_downTarget6;
+  Ptr<Node> m_node; //!< the node this stack is associated with
+  Ipv4EndPointDemux *m_endPoints; //!< A list of IPv4 end points.
+  Ipv6EndPointDemux *m_endPoints6; //!< A list of IPv6 end points.
+
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and not implemented to avoid misuse
+   */
+  UdpL4Protocol (const UdpL4Protocol &);
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and not implemented to avoid misuse
+   * \returns
+   */
+  UdpL4Protocol &operator = (const UdpL4Protocol &);
+
+  std::vector<Ptr<UdpSocketImpl> > m_sockets;      //!< list of sockets
+  IpL4Protocol::DownTargetCallback m_downTarget;   //!< Callback to send packets over IPv4
+  IpL4Protocol::DownTargetCallback6 m_downTarget6; //!< Callback to send packets over IPv6
+
 };
 
 } // namespace ns3

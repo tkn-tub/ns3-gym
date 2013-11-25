@@ -83,13 +83,13 @@ public:
    * \param rnti the RNTI of the user
    * \param txMode the transmissionMode of the user
    */
-  virtual void SetTransmissionMode (uint16_t  rnti, uint8_t txMode) = 0;
+  virtual void SetTransmissionMode (uint16_t rnti, uint8_t txMode) = 0;
 
   /**
    * \param rnti the RNTI of the user
-   * \param txMode the SRS Configuration Index of the user
+   * \param srsCi the SRS Configuration Index of the user
    */
-  virtual void SetSrsConfigurationIndex (uint16_t  rnti, uint16_t srsCi) = 0;
+  virtual void SetSrsConfigurationIndex (uint16_t rnti, uint16_t srsCi) = 0;
 
   /** 
    * 

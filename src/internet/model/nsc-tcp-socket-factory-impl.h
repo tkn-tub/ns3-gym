@@ -47,6 +47,10 @@ public:
   NscTcpSocketFactoryImpl ();
   virtual ~NscTcpSocketFactoryImpl ();
 
+  /**
+   * \brief Set the associated TCP L4 protocol.
+   * \param tcp the TCP L4 protocol
+   */
   void SetTcp (Ptr<NscTcpL4Protocol> tcp);
 
   virtual Ptr<Socket> CreateSocket (void);
@@ -54,7 +58,7 @@ public:
 protected:
   virtual void DoDispose (void);
 private:
-  Ptr<NscTcpL4Protocol> m_tcp;
+  Ptr<NscTcpL4Protocol> m_tcp; //!< the associated TCP L4 protocol
 };
 
 } // namespace ns3

@@ -133,7 +133,7 @@ private:
 
   /**
   * \brief Receive a CE element containing the buffer status report
-  * \param msg the BSR message
+  * \param bsr the BSR message
   */
   void ReceiveBsrMessage  (MacCeListElement_s bsr);
 

@@ -70,7 +70,9 @@ public:
   QosTag ();
 
   /**
-   * Create a QosTag with the given TID
+   * Create a QosTag with the given Traffic ID
+   *
+   * \param tid the given Traffic ID
    */
   QosTag (uint8_t tid);
 
@@ -100,6 +102,11 @@ public:
   virtual uint32_t GetSerializedSize () const;
   virtual void Print (std::ostream &os) const;
 
+  /**
+   * Return the Type ID.
+   *
+   * \return type ID
+   */
   uint8_t GetTid (void) const;
 
 private:

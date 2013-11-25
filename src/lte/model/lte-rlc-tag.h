@@ -55,6 +55,7 @@ public:
 
   /**
    * Get the instant when the RLC delivers the PDU to the MAC SAP provider
+   * @return the sender timestamp
    */
   Time  GetSenderTimestamp (void) const
   {

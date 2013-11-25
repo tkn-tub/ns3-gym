@@ -261,12 +261,12 @@ private:
 };
 
 /**
-* \brief Stream insertion operator.
-*
-* \param os the reference to the output stream
-* \param route the Ipv6 routing table entry
-* \returns the reference to the output stream
-*/
+ * \brief Stream insertion operator.
+ *
+ * \param os the reference to the output stream
+ * \param route the Ipv6 routing table entry
+ * \returns the reference to the output stream
+ */
 std::ostream& operator<< (std::ostream& os, Ipv6RoutingTableEntry const& route);
 
 /**
@@ -372,12 +372,12 @@ private:
 };
 
 /**
-* \brief Stream insertion operator.
-*
-* \param os the reference to the output stream
-* \param route the Ipv6 multicast routing table entry
-* \returns the reference to the output stream
-*/
+ * \brief Stream insertion operator.
+ *
+ * \param os the reference to the output stream
+ * \param route the Ipv6 multicast routing table entry
+ * \returns the reference to the output stream
+ */
 std::ostream& operator<< (std::ostream& os, Ipv6MulticastRoutingTableEntry const& route);
 
 } /* namespace ns3 */

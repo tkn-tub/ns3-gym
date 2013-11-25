@@ -44,6 +44,7 @@ public:
 
   /**
    * Create a SnrTag with the given snr value
+   * \param snr the given SNR value
    */
   SnrTag(double snr);
 
@@ -55,9 +56,14 @@ public:
   /**
    * Set the SNR to the given value.
    *
-   * @param snr the value of the snr to set
+   * \param snr the value of the snr to set
    */
   void Set (double snr);
+  /**
+   * Return the SNR value.
+   *
+   * \return the SNR value
+   */
   double Get (void) const;
 private:
   double m_snr;

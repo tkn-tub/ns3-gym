@@ -24,16 +24,33 @@ New user-visible features
 
 Bugs fixed
 ----------
+- Bug 1778 - Implement TapBridge::IsLinkUp() function
+- Bug 1777 - Implement the more direct way of "using" configuration of existing tap interface
+- Bug 1776 - Improve CRC performance for CsmaNetDevice in emulation modes
+- Bug 1798 - Changing the rate of onOffApplication might stop transmission
 
 Release 3.18.1
 ==============
 
+This release is mainly to provide updated compiler support (clang/LLVM)
+and fix the Python API scanning facility.  A few additional bug fixes
+and new features are described below.
+
 Availability
 ------------
-This release is not yet available.
+This release is available from:
+http://www.nsnam.org/release/ns-allinone-3.18.1.tar.bz2
 
 Supported platforms
 -------------------
+These platforms have been tested; others may work also:
+- Fedora Core 19 (32/64 bit) with g++-4.8.1
+- Ubuntu 13.10 (64 bit) with g++-4.8.1
+- Ubuntu 12.04.3 (32/64 bit) with g++-4.6.3
+- Ubuntu 10.04.4 LTS (64 bit) with g++-4.4.3
+- OS X Mavericks 10.9 with Xcode 5.0.1 and clang-500.2.79
+- OS X Mountain Lion 10.8.5 with Xcode 5 and g++-4.2.1
+- FreeBSD 9.2-RELEASE (64 bit) with clang-3.3
 
 New user-visible features
 -------------------------

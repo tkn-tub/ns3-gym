@@ -133,12 +133,13 @@ public:
 
   /**
    * \param probeName the probe's name.
-   *
+   * \return Ptr to the probe
    * \brief Gets the specified probe.
    */
   Ptr<Probe> GetProbe (std::string probeName) const;
 
   /**
+   * \return Ptr to a FileAggregator object
    * \brief Gets the single aggregator that is always constructed.
    *
    * This function is non-const because an aggregator may be lazily
@@ -149,7 +150,7 @@ public:
   /**
    * \param aggregatorName name for aggregator.
    * \param outputFileName name of output file to write.
-   *
+   * \return Ptr to a FileAggregator object
    * \brief Gets one of the multiple aggregators from the map.
    *
    * This function is non-const because an aggregator may be lazily

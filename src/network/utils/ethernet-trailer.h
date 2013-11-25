@@ -104,8 +104,6 @@ private:
   bool m_calcFcs;
   uint32_t m_fcs; /// Value of the fcs contained in the trailer
 
-  uint32_t DoCalcFcs (uint8_t const *buffer, size_t len) const;
-
 };
 
 } // namespace ns3

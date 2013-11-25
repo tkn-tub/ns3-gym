@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2008 INRIA
+ * Copyright (c) 2013 PIOTR JURKIEWICZ
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -15,33 +15,22 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ * Author: Piotr Jurkiewicz <piotr.jerzy.jurkiewicz@gmail.com>
  */
+#ifndef CRC32_H
+#define CRC32_H
+#include <stdint.h>
 
-#ifndef IPV6_RAW_SOCKET_FACTORY_IMPL_H
-#define IPV6_RAW_SOCKET_FACTORY_IMPL_H
-
-#include "ns3/ipv6-raw-socket-factory.h"
-
-namespace ns3
-{
+namespace ns3 {
 
 /**
- * \ingroup socket
+ * \param data buffer to calculate the checksum for
+ * \param length the length of the buffer (bytes)
+ * \returns the computed crc.
  *
- * \class Ipv6RawSocketFactoryImpl
- * \brief Implementation of IPv6 raw socket factory.
  */
-class Ipv6RawSocketFactoryImpl : public Ipv6RawSocketFactory
-{
-public:
-  /**
-   * \brief Create a raw IPv6 socket.
-   */
-  virtual Ptr<Socket> CreateSocket ();
-};
+uint32_t CRC32Calculate (const uint8_t *data, int length);
 
-} /* namespace ns3 */
+} // namespace ns3
 
-#endif /* IPV6_RAW_SOCKET_FACTORY_IMPL_H */
-
+#endif

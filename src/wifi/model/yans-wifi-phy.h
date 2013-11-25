@@ -71,25 +71,13 @@ public:
 
   void SetChannel (Ptr<YansWifiChannel> channel);
 
-  /**
-   * \brief Set channel number.
-   *
-   * Channel center frequency = Channel starting frequency + 5 MHz * nch
-   *
-   * where Starting channel frequency is standard-dependent, see SetStandard()
-   * as defined in IEEE 802.11-2007 17.3.8.3.2.
-   *
-   * YansWifiPhy can switch among different channels. Basically, YansWifiPhy
-   * has a private attribute m_channelNumber that identifies the channel the
-   * PHY operates on. Channel switching cannot interrupt an ongoing transmission.
-   * When PHY is in TX state, the channel switching is postponed until the end
-   * of the current transmission. When the PHY is in RX state, the channel
-   * switching causes the drop of the synchronized packet.
-   */
   void SetChannelNumber (uint16_t id);
-  /// Return current channel number, see SetChannelNumber()
   uint16_t GetChannelNumber () const;
-  /// Return current center channel frequency in MHz, see SetChannelNumber()
+  /**
+   * Return current center channel frequency in MHz.
+   *
+   * \return the current center channel frequency in MHz
+   */  
   double GetChannelFrequencyMhz () const;
 
   void StartReceivePacket (Ptr<Packet> packet,
@@ -97,31 +85,134 @@ public:
                            WifiTxVector txVector,
                            WifiPreamble preamble);
 
+  /**
+   * Sets the RX loss (dB) in the Signal-to-Noise-Ratio due to non-idealities in the receiver.
+   *
+   * \param noiseFigureDb noise figure in dB
+   */
   void SetRxNoiseFigure (double noiseFigureDb);
+  /**
+   * Sets the minimum available transmission power level (dBm).
+   *
+   * \param start the minimum transmission power level (dBm)
+   */
   void SetTxPowerStart (double start);
+  /**
+   * Sets the maximum available transmission power level (dBm).
+   *
+   * \param end the maximum transmission power level (dBm)
+   */
   void SetTxPowerEnd (double end);
+  /**
+   * Sets the number of transmission power levels available between the
+   * minimum level and the maximum level.  Transmission power levels are
+   * equally separated (in dBm) with the minimum and the maximum included.
+   *
+   * \param n the number of available levels
+   */
   void SetNTxPower (uint32_t n);
+  /**
+   * Sets the transmission gain (dB).
+   *
+   * \param gain the transmission gain in dB
+   */
   void SetTxGain (double gain);
+  /**
+   * Sets the reception gain (dB).
+   *
+   * \param gain the reception gain in dB
+   */
   void SetRxGain (double gain);
+  /**
+   * Sets the energy detection threshold (dBm).
+   * The energy of a received signal should be higher than
+   * this threshold (dbm) to allow the PHY layer to detect the signal.
+   *
+   * \param threshold the energy detction threshold in dBm
+   */
   void SetEdThreshold (double threshold);
+  /**
+   * Sets the CCA threshold (dBm).  The energy of a received signal
+   * should be higher than this threshold to allow the PHY
+   * layer to declare CCA BUSY state.
+   *
+   * \param threshold the CCA threshold in dBm
+   */
   void SetCcaMode1Threshold (double threshold);
+  /**
+   * Sets the error rate model.
+   *
+   * \param rate the error rate model
+   */
   void SetErrorRateModel (Ptr<ErrorRateModel> rate);
+  /**
+   * Sets the device this PHY is associated with.
+   *
+   * \param device the device this PHY is associated with
+   */
   void SetDevice (Ptr<Object> device);
+  /**
+   * Sets the mobility model.
+   *
+   * \param mobility the mobility model this PHY is associated with
+   */
   void SetMobility (Ptr<Object> mobility);
+  /**
+   * Return the RX noise figure (dBm).
+   *
+   * \return the RX noise figure in dBm
+   */
   double GetRxNoiseFigure (void) const;
+  /**
+   * Return the transmission gain (dB).
+   *
+   * \return the transmission gain in dB
+   */
   double GetTxGain (void) const;
+  /**
+   * Return the reception gain (dB).
+   *
+   * \return the reception gain in dB
+   */
   double GetRxGain (void) const;
+  /**
+   * Return the energy detection threshold (dBm).
+   *
+   * \return the energy detection threshold in dBm
+   */
   double GetEdThreshold (void) const;
+  /**
+   * Return the CCA threshold (dBm).
+   *
+   * \return the CCA threshold in dBm
+   */
   double GetCcaMode1Threshold (void) const;
+  /**
+   * Return the error rate model this PHY is using.
+   *
+   * \return the error rate model this PHY is using
+   */
   Ptr<ErrorRateModel> GetErrorRateModel (void) const;
+  /**
+   * Return the device this PHY is associated with
+   *
+   * \return the device this PHY is associated with
+   */
   Ptr<Object> GetDevice (void) const;
+  /**
+   * Return the mobility model this PHY is associated with.
+   *
+   * \return the mobility model this PHY is associated with
+   */
   Ptr<Object> GetMobility (void);
-
-
-
 
   virtual double GetTxPowerStart (void) const;
   virtual double GetTxPowerEnd (void) const;
+  /**
+   * Return the number of available transmission power levels.
+   *
+   * \return the number of available transmission power levels
+   */
   virtual uint32_t GetNTxPower (void) const;
   virtual void SetReceiveOkCallback (WifiPhy::RxOkCallback callback);
   virtual void SetReceiveErrorCallback (WifiPhy::RxErrorCallback callback);
@@ -140,6 +231,7 @@ public:
   virtual WifiMode GetMode (uint32_t mode) const;
   virtual double CalculateSnr (WifiMode txMode, double ber) const;
   virtual Ptr<WifiChannel> GetChannel (void) const;
+  
   virtual void ConfigureStandard (enum WifiPhyStandard standard);
 
  /**
@@ -153,61 +245,83 @@ public:
   int64_t AssignStreams (int64_t stream);
 
   /**
-   * \param the operating frequency on this node (2.4 GHz or 5GHz).
+   * \param freq the operating frequency on this node (2.4 GHz or 5GHz).
    */
   virtual void SetFrequency (uint32_t freq);
   /**
-   * \returns the operating frequency on this node
+   * \return the operating frequency on this node
    */
   virtual uint32_t GetFrequency (void) const;
   /**
-   * \param the number of transmitters on this node.
+   * \param tx the number of transmitters on this node.
    */
   virtual void SetNumberOfTransmitAntennas (uint32_t tx);
   virtual uint32_t GetNumberOfTransmitAntennas (void) const;
   /**
-   * \param the number of receivers on this node.
+   * \param rx the number of receivers on this node.
    */
   virtual void SetNumberOfReceiveAntennas (uint32_t rx) ;
   /**
-   * \returns the number of receivers on this node.
+   * \return the number of receivers on this node.
    */
   virtual uint32_t GetNumberOfReceiveAntennas (void) const;
   /**
-   * \param set short/long guard interval.
+   * Enable or disable short/long guard interval.
+   *
+   * \param guardInterval Enable or disable guard interval
    */
-  virtual void SetGuardInterval (bool GuardInterval);
-   virtual bool GetGuardInterval (void) const;
+  virtual void SetGuardInterval (bool guardInterval);
   /**
-   * \param sets LDPC is supported or not
+   * Return whether guard interval is being used.
+   *
+   * \return true if guard interval is being used, false otherwise
    */
-  virtual void SetLdpc (bool Ldpc);
+  virtual bool GetGuardInterval (void) const;
   /**
-   * \returns if LDPC is supported or not
+   * Enable or disable LDPC.
+   * \param ldpc Enable or disable LDPC
+   */
+  virtual void SetLdpc (bool ldpc);
+  /**
+   * Return if LDPC is supported.
+   *
+   * \return true if LDPC is supported, false otherwise
    */
   virtual bool GetLdpc (void) const;
   /**
-   * \param sets STBC is supported or not
+   * Enable or disable STBC.
+   *
+   * \param stbc Enable or disable STBC
    */
   virtual void SetStbc (bool stbc);
- /**
-   * \returns if STBC is supported or not
+  /**
+   * Return whether STBC is supported. 
+   *
+   * \return true if STBC is supported, false otherwise
    */
   virtual bool GetStbc (void) const;
   /**
-   * \param sets Greenfield is supported or not
+   * Enable or disable Greenfield support.
+   *
+   * \param greenfield Enable or disable Greenfield
    */
   virtual void SetGreenfield (bool greenfield);
   /**
-   * \returns if Greenfield is supported or not
+   * Return whether Greenfield is supported.
+   *
+   * \return true if Greenfield is supported, false otherwise
    */
   virtual bool GetGreenfield (void) const;
   /**
-   * \param sets channel bonding is supported or not
+   * Return whether channel bonding is supported.
+   * 
+   * \return true if channel bonding is supported, false otherwise
    */
   virtual bool GetChannelBonding (void) const ;
   /**
-   * \returns if channel bonding is supported or not
+   * Enable or disable channel bonding support.
+   * 
+   * \param channelBonding Enable or disable channel bonding
    */
   virtual void SetChannelBonding (bool channelbonding) ;
 
@@ -215,7 +329,7 @@ public:
   virtual uint32_t GetBssMembershipSelector (uint32_t selector) const;
   virtual WifiModeList GetMembershipSelectorModes(uint32_t selector);
   /**
-   * \returns the number of MCS supported by this phy
+   * \return the number of MCS supported by this phy
    */
   virtual uint8_t GetNMcs (void) const;
   virtual uint8_t GetMcs (uint8_t mcs) const;
@@ -224,7 +338,7 @@ public:
   * as defined in the IEEE 802.11n standard 
   *
   * \param mode the WifiMode
-  * \returns the MCS number that corresponds to the given WifiMode
+  * \return the MCS number that corresponds to the given WifiMode
   */
   virtual uint32_t WifiModeToMcs (WifiMode mode);
  /**
@@ -232,7 +346,7 @@ public:
   * as defined in the IEEE 802.11n standard. 
   * 
   * \param mcs the MCS number 
-  * \returns the WifiMode that corresponds to the given mcs number
+  * \return the WifiMode that corresponds to the given mcs number
   */
   virtual WifiMode McsToWifiMode (uint8_t mcs);
 

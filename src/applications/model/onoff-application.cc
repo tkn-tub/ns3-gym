@@ -167,6 +167,8 @@ void OnOffApplication::StartApplication () // Called at time specified by Start
         MakeCallback (&OnOffApplication::ConnectionSucceeded, this),
         MakeCallback (&OnOffApplication::ConnectionFailed, this));
     }
+  m_cbrRateFailSafe = m_cbrRate;
+
   // Insure no pending event
   CancelEvents ();
   // If we are not yet connected, there is nothing to do here
@@ -194,13 +196,14 @@ void OnOffApplication::CancelEvents ()
 {
   NS_LOG_FUNCTION (this);
 
-  if (m_sendEvent.IsRunning ())
+  if (m_sendEvent.IsRunning () && m_cbrRateFailSafe == m_cbrRate )
     { // Cancel the pending send packet event
       // Calculate residual bits since last packet sent
       Time delta (Simulator::Now () - m_lastStartTime);
       int64x64_t bits = delta.To (Time::S) * m_cbrRate.GetBitRate ();
       m_residualBits += bits.GetHigh ();
     }
+  m_cbrRateFailSafe = m_cbrRate;
   Simulator::Cancel (m_sendEvent);
   Simulator::Cancel (m_startStopEvent);
 }

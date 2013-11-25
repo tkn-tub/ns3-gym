@@ -119,6 +119,8 @@ public:
    */
   static Ptr<Socket> CreateSocket (Ptr<Node> node, TypeId tid);
   /**
+   * \brief Get last error number.
+   *
    * \return the errno associated to the last call which failed in this
    *         socket. Each socket's errno is initialized to zero
    *         when the socket is created.
@@ -129,7 +131,8 @@ public:
     */
   virtual enum Socket::SocketType GetSocketType (void) const = 0;
   /**
-   * \returns the node this socket is associated with.
+   * \brief Return the node this socket is associated with.
+   * \returns the node
    */
   virtual Ptr<Node> GetNode (void) const = 0;
   /**
@@ -551,6 +554,7 @@ public:
   int RecvFrom (uint8_t* buf, uint32_t size, uint32_t flags,
                 Address &fromAddress);
   /**
+   * \brief Get socket address.
    * \param address the address name this socket is associated with.
    * \returns 0 if success, -1 otherwise
    */

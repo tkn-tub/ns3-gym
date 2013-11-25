@@ -62,10 +62,46 @@ public:
   virtual double GetChunkSuccessRate (WifiMode mode, double snr, uint32_t nbits) const;
 
 private:
+  /**
+   * Return the logarithm of the given value to base 2.
+   *
+   * \param val
+   * \return the logarithm of val to base 2.
+   */
   double Log2 (double val) const;
+  /**
+   * Return BER of BPSK with the given parameters.
+   *
+   * \param snr snr value
+   * \param signalSpread
+   * \param phyRate
+   * \return BER of BPSK at the given SNR
+   */
   double GetBpskBer (double snr, uint32_t signalSpread, uint32_t phyRate) const;
+  /**
+   * Return BER of QAM-m with the given parameters.
+   *
+   * \param snr snr value
+   * \param m
+   * \param signalSpread
+   * \param phyRate
+   * \return BER of BPSK at the given SNR
+   */
   double GetQamBer (double snr, unsigned int m, uint32_t signalSpread, uint32_t phyRate) const;
+  /**
+   * Return k!
+   *
+   * \return k!
+   */
   uint32_t Factorial (uint32_t k) const;
+  /**
+   * Return Binomial distribution for a given k, p, and n
+   * 
+   * \param k
+   * \param p
+   * \param n
+   * \return a Binomial distribution
+   */
   double Binomial (uint32_t k, double p, uint32_t n) const;
   double CalculatePdOdd (double ber, unsigned int d) const;
   double CalculatePdEven (double ber, unsigned int d) const;

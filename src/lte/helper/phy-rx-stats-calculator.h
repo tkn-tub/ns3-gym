@@ -58,9 +58,7 @@ public:
    */
   virtual ~PhyRxStatsCalculator ();
 
-  /**
-   * Inherited from ns3::Object
-   */
+  // Inherited from ns3::Object
   static TypeId GetTypeId (void);
 
   /**
@@ -72,6 +70,7 @@ public:
 
   /**
    * Get the name of the file where the UL RX PHY statistics will be stored.
+   * @return the name of the file where the UL RX PHY statistics will be stored
    */
   std::string GetUlRxOutputFilename (void);
 
@@ -84,40 +83,19 @@ public:
 
   /**
    * Get the name of the file where the DL RX PHY statistics will be stored.
+   * @return the name of the file where the DL RX PHY statistics will be stored
    */
   std::string GetDlRxOutputFilename (void);
 
   /**
    * Notifies the stats calculator that an downlink reception has occurred.
-   * @param cellId Cell ID of the attached Enb
-   * @param imsi IMSI of the scheduled UE
-   * @param frameNo Frame number
-   * @param subframeNo Subframe number
-   * @param rnti C-RNTI scheduled
-   * @param layer the layer (cw) of the transmission
-   * @param txMode the transmission Mode
-   * @param mcs MCS for transport block
-   * @param size Size of transport block
-   * @param rv the redundancy version (HARQ)
-   * @param ndi new data indicator flag
-   * @param correctness correctness of the TB received
+   * @param params Trace information regarding PHY reception stats
    */
   void DlPhyReception (PhyReceptionStatParameters params);
 
   /**
    * Notifies the stats calculator that an uplink reception has occurred.
-   * @param cellId Cell ID of the attached Enb
-   * @param imsi IMSI of the scheduled UE
-   * @param frameNo Frame number
-   * @param subframeNo Subframe number
-   * @param rnti C-RNTI scheduled
-   * @param layer the layer (cw) of the transmission
-   * @param txMode the transmission Mode
-   * @param mcs MCS for transport block
-   * @param size Size of transport block
-   * @param rv the redundancy version (HARQ)
-   * @param ndi new data indicator flag
-   * @param correctness correctness of the TB received
+   * @param params Trace information regarding PHY reception stats
    */
   void UlPhyReception (PhyReceptionStatParameters params);
 

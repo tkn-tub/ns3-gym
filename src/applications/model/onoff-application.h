@@ -145,6 +145,7 @@ private:
   Ptr<RandomVariableStream>  m_onTime;       // rng for On Time
   Ptr<RandomVariableStream>  m_offTime;      // rng for Off Time
   DataRate        m_cbrRate;      // Rate that data is generated
+  DataRate        m_cbrRateFailSafe;      // Rate that data is generated (check copy)
   uint32_t        m_pktSize;      // Size of packets
   uint32_t        m_residualBits; // Number of generated, but not sent, bits
   Time            m_lastStartTime; // Time last packet sent

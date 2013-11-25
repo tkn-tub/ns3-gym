@@ -274,13 +274,22 @@ private:
   void DoReportUeMeasurements (LteUeCphySapUser::UeMeasurementsParameters params);
 
   // RRC SAP methods
+
+  /// Part of the RRC protocol. Implement the LteUeRrcSapProvider::CompleteSetup interface.
   void DoCompleteSetup (LteUeRrcSapProvider::CompleteSetupParameters params);
+  /// Part of the RRC protocol. Implement the LteUeRrcSapProvider::RecvSystemInformation interface.
   void DoRecvSystemInformation (LteRrcSap::SystemInformation msg);
+  /// Part of the RRC protocol. Implement the LteUeRrcSapProvider::RecvRrcConnectionSetup interface.
   void DoRecvRrcConnectionSetup (LteRrcSap::RrcConnectionSetup msg);
+  /// Part of the RRC protocol. Implement the LteUeRrcSapProvider::RecvRrcConnectionReconfiguration interface.
   void DoRecvRrcConnectionReconfiguration (LteRrcSap::RrcConnectionReconfiguration msg);
+  /// Part of the RRC protocol. Implement the LteUeRrcSapProvider::RecvRrcConnectionReestablishment interface.
   void DoRecvRrcConnectionReestablishment (LteRrcSap::RrcConnectionReestablishment msg);
+  /// Part of the RRC protocol. Implement the LteUeRrcSapProvider::RecvRrcConnectionReestablishmentReject interface.
   void DoRecvRrcConnectionReestablishmentReject (LteRrcSap::RrcConnectionReestablishmentReject msg);
+  /// Part of the RRC protocol. Implement the LteUeRrcSapProvider::RecvRrcConnectionRelease interface.
   void DoRecvRrcConnectionRelease (LteRrcSap::RrcConnectionRelease msg);
+  /// Part of the RRC protocol. Implement the LteUeRrcSapProvider::RecvRrcConnectionReject interface.
   void DoRecvRrcConnectionReject (LteRrcSap::RrcConnectionReject msg);
 
  

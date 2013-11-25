@@ -121,13 +121,6 @@ public:
   void DoDispose ();
 
   /**
-   * \brief Receive SendLteControlMessage (PDCCH map, CQI feedbacks) using the ideal control channel
-   * \param msg the Ideal Control Message to receive
-   */
-//   virtual void ReceiveLteControlMessage (Ptr<LteControlMessage> msg) = 0;
-
-
-  /**
    * \param tti transmission time interval
    */
   void SetTti (double tti);
@@ -188,7 +181,7 @@ public:
    * 
    * \param sinr the SINR vs frequency measured by the device
    */
-  virtual void  GenerateCtrlCqiReport (const SpectrumValue& sinr) = 0;
+  virtual void GenerateCtrlCqiReport (const SpectrumValue& sinr) = 0;
   
   /** 
   * generate a CQI report based on the given SINR of Data frame
@@ -196,25 +189,25 @@ public:
   * 
   * \param sinr the SINR vs frequency measured by the device
   */
-  virtual void  GenerateDataCqiReport (const SpectrumValue& sinr) = 0;
+  virtual void GenerateDataCqiReport (const SpectrumValue& sinr) = 0;
 
   /**
   * generate a report based on the linear interference and noise power
   * perceived during DATA frame
   * NOTE: used only by eNB 
   *
-  * \param sinr the interference + noise power measured by the device
+  * \param interf the interference + noise power measured by the device
   */
-  virtual void ReportInterference (const SpectrumValue& power) = 0;
+  virtual void ReportInterference (const SpectrumValue& interf) = 0;
 
   /**
   * generate a report based on the linear RS power perceived during CTRL 
   * frame
   * NOTE: used only by UE for evaluating RSRP
   *
-  * \param sinr the RS power measured by the device
+  * \param power the RS power measured by the device
   */
-  virtual void ReportRsReceivedPower (const SpectrumValue& interf) = 0;
+  virtual void ReportRsReceivedPower (const SpectrumValue& power) = 0;
 
 
 

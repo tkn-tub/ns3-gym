@@ -84,10 +84,10 @@ public:
 
   /** 
    * Add a new ENB to the MME. 
-   * \param imsi the unique identifier of the UE
+   * \param ecgi E-UTRAN Cell Global ID, the unique identifier of the eNodeB
    * \param enbS1apSap the ENB side of the S1-AP SAP 
    */
-  void AddEnb (uint16_t egci, Ipv4Address enbS1UAddr, EpcS1apSapEnb* enbS1apSap); 
+  void AddEnb (uint16_t ecgi, Ipv4Address enbS1UAddr, EpcS1apSapEnb* enbS1apSap);
   
   /** 
    * Add a new UE to the MME. This is the equivalent of storing the UE

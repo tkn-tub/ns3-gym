@@ -6,15 +6,15 @@
 
 using namespace ns3;
 
-class A : public Object
+class ConfigExample : public Object
 {
 public:
   static TypeId GetTypeId (void) {
-    static TypeId tid = TypeId ("ns3::A")
+    static TypeId tid = TypeId ("ns3::ConfigExample")
       .SetParent<Object> ()
       .AddAttribute ("TestInt16", "help text",
                      IntegerValue (-2),
-                     MakeIntegerAccessor (&A::m_int16),
+                     MakeIntegerAccessor (&ConfigExample::m_int16),
                      MakeIntegerChecker<int16_t> ())
       ;
       return tid;
@@ -22,7 +22,7 @@ public:
   int16_t m_int16;
 };
 
-NS_OBJECT_ENSURE_REGISTERED (A)
+NS_OBJECT_ENSURE_REGISTERED (ConfigExample)
   ;
 
 // Assign a new default value to A::TestInt16 (-5)
@@ -31,16 +31,16 @@ NS_OBJECT_ENSURE_REGISTERED (A)
 // 
 int main (int argc, char *argv[])
 {
-  Config::SetDefault ("ns3::A::TestInt16", IntegerValue (-5));
+  Config::SetDefault ("ns3::ConfigExample::TestInt16", IntegerValue (-5));
 
-  Ptr<A> a_obj = CreateObject<A> ();
-  NS_ABORT_MSG_UNLESS (a_obj->m_int16 == -5, "Cannot set A's integer attribute via Config::SetDefault");
+  Ptr<ConfigExample> a_obj = CreateObject<ConfigExample> ();
+  NS_ABORT_MSG_UNLESS (a_obj->m_int16 == -5, "Cannot set ConfigExample's integer attribute via Config::SetDefault");
 
-  Ptr<A> a2_obj = CreateObject<A> ();
-  a2_obj->SetAttribute ("TestInt16", IntegerValue (-3));
+  Ptr<ConfigExample> b_obj = CreateObject<ConfigExample> ();
+  b_obj->SetAttribute ("TestInt16", IntegerValue (-3));
   IntegerValue iv;
-  a2_obj->GetAttribute ("TestInt16", iv);
-  NS_ABORT_MSG_UNLESS (iv.Get () == -3, "Cannot set A's integer attribute via SetAttribute");
+  b_obj->GetAttribute ("TestInt16", iv);
+  NS_ABORT_MSG_UNLESS (iv.Get () == -3, "Cannot set ConfigExample's integer attribute via SetAttribute");
 
   // These test objects are not rooted in any ns-3 configuration namespace.
   // This is usually done automatically for ns3 nodes and channels, but
@@ -48,7 +48,7 @@ int main (int argc, char *argv[])
   // can't use two objects of the same type as roots).  Rooting one of these
   // is necessary for it to show up in the config namespace so that
   // ConfigureAttributes() will work below.
-  Config::RegisterRootNamespaceObject (a2_obj);
+  Config::RegisterRootNamespaceObject (b_obj);
   
 #ifdef HAVE_LIBXML2
   // Output config store to XML format

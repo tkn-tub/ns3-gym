@@ -30,6 +30,7 @@ namespace ns3 {
  * \param matchedPath the path that matched the Config path.
  * \param wildcardSeparator the text to put betwen the wildcard
  * matches.  By default, a space is used.
+ * \return String value of text matches
  *
  * \brief Returns the text matches from the matched path for each of
  * the wildcards in the Config path, separated by the wild card

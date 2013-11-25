@@ -78,6 +78,16 @@ RocketfuelTopologyReader::~RocketfuelTopologyReader ()
 #define ROCKETFUEL_WEIGHTS_LINE \
   START "([^ \t]+)" SPACE "([^ \t]+)" SPACE "([0-9.]+)" MAYSPACE END
 
+/**
+ * \brief Print node info
+ * \param uid node ID
+ * \param loc node location
+ * \param dns is a DNS node ?
+ * \param bb is a BB node ?
+ * \param neighListSize size of neighbor list
+ * \param name node name
+ * \param radius node radius
+ */
 static inline void
 PrintNodeInfo (std::string & uid, std::string & loc, bool dns, bool bb,
                std::vector <std::string>::size_type neighListSize,

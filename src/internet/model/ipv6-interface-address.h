@@ -53,7 +53,7 @@ public:
 
   /**
    * \enum Scope_e
-   * \brief Scope of address.
+   * \brief Address scope.
    */
   enum Scope_e
   {

@@ -59,6 +59,11 @@ public:
   virtual uint32_t GetNDevices (void) const;
   virtual Ptr<NetDevice> GetDevice (uint32_t i) const;
 
+  /**
+   * Adds the given YansWifiPhy to the PHY list
+   *
+   * \param phy the YansWifiPhy to be added to the PHY list
+   */
   void Add (Ptr<YansWifiPhy> phy);
 
   /**
@@ -74,7 +79,7 @@ public:
    * \param sender the device from which the packet is originating.
    * \param packet the packet to send
    * \param txPowerDbm the tx power associated to the packet
-   * \param wifiMode the tx mode associated to the packet
+   * \param txVector the TXVECTOR associated to the packet
    * \param preamble the preamble associated to the packet
    *
    * This method should not be invoked by normal users. It is
@@ -99,7 +104,21 @@ private:
   YansWifiChannel& operator = (const YansWifiChannel &);
   YansWifiChannel (const YansWifiChannel &);
 
+  /**
+   * A vector of pointers to YansWifiPhy.
+   */
   typedef std::vector<Ptr<YansWifiPhy> > PhyList;
+  /**
+   * This method is scheduled by Send for each associated YansWifiPhy.
+   * The method then calls the corresponding YansWifiPhy that the first
+   * bit of the packet has arrived.
+   *
+   * \param i index of the corresponding YansWifiPhy in the PHY list
+   * \param packet the packet being sent
+   * \param rxPowerDbm the received power of the packet
+   * \param txVector the TXVECTOR of the packet
+   * \param preamble the type of preamble being used to send the packet
+   */
   void Receive (uint32_t i, Ptr<Packet> packet, double rxPowerDbm,
                 WifiTxVector txVector, WifiPreamble preamble) const;
 

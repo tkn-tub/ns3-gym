@@ -294,7 +294,7 @@ public:
   /** 
    * \brief Manual attachment of a UE device to the network via the closest
    *        eNodeB (with respect to distance) among those in the set.
-   * \param ueDevices the set UE device to be attached
+   * \param ueDevice the UE device to be attached
    * \param enbDevices the set of eNodeB devices to be considered
    *
    * This function finds among the eNodeB set the closest eNodeB for the UE,
@@ -319,7 +319,7 @@ public:
   /**
    * Activate a dedicated EPS bearer on a given UE device
    *
-   * \param ueDevices the set of UE devices
+   * \param ueDevice the UE device
    * \param bearer the characteristics of the bearer to be activated
    * \param tft the Traffic Flow Template that identifies the traffic to go on this bearer
    */
@@ -342,14 +342,19 @@ public:
   void AddX2Interface (Ptr<Node> enbNode1, Ptr<Node> enbNode2);
 
   /**
-   * Trigger an X2-based handover of a UE between two eNBs
-   *
+   * \brief Manually trigger an X2-based handover of a UE between two eNBs at a
+   *        specific simulation time.
    * \param hoTime when the Handover is initiated
-   * \param ueDev the UE that hands off
-   * \param enbDev1 source eNB, originally the UE is attached to this eNB
-   * \param enbDev2 target eNB, the UE is finally connected to this eNB
+   * \param ueDev the UE that hands off, must be of the type LteUeNetDevice
+   * \param sourceEnbDev source eNB, must be of the type LteEnbNetDevice
+   *                     (originally the UE is attached to this eNB)
+   * \param targetEnbDev target eNB, must be of the type LteEnbNetDevice
+   *                     (the UE is finally connected to this eNB)
+   *
+   * \warning Requires the use of EPC mode. See SetEpcHelper() method.
    */
-  void HandoverRequest (Time hoTime, Ptr<NetDevice> ueDev, Ptr<NetDevice> sourceEnbDev, Ptr<NetDevice> targetEnbDev);
+  void HandoverRequest (Time hoTime, Ptr<NetDevice> ueDev,
+                        Ptr<NetDevice> sourceEnbDev, Ptr<NetDevice> targetEnbDev);
 
 
   /** 
@@ -375,12 +380,15 @@ public:
   /** 
    * 
    * 
-   * \param type the fading model to be used
+   * \param model the fading model to be used
    */
   void SetFadingModel (std::string model);
 
   /**
    * set an attribute of the fading model
+   *
+   * \param n the name of the attribute
+   * \param v the value of the attribute
    */
   void SetFadingModelAttribute (std::string n, const AttributeValue &v);
 
@@ -494,10 +502,34 @@ protected:
   virtual void DoInitialize (void);
 
 private:
+  /**
+   * \brief Create an eNodeB device (LteEnbNetDevice) on the given node.
+   * \param n the node where the device is to be installed
+   * \return pointer to the created device
+   */
   Ptr<NetDevice> InstallSingleEnbDevice (Ptr<Node> n);
+
+  /**
+   * \brief Create a UE device (LteUeNetDevice) on the given node.
+   * \param n the node where the device is to be installed
+   * \return pointer to the created device
+   */
   Ptr<NetDevice> InstallSingleUeDevice (Ptr<Node> n);
 
-  void DoHandoverRequest (Ptr<NetDevice> ueDev, Ptr<NetDevice> sourceEnbDev, Ptr<NetDevice> targetEnbDev);
+  /**
+   * \brief The actual function to trigger a manual handover.
+   * \param ueDev the UE that hands off, must be of the type LteUeNetDevice
+   * \param sourceEnbDev source eNB, must be of the type LteEnbNetDevice
+   *                     (originally the UE is attached to this eNB)
+   * \param targetEnbDev target eNB, must be of the type LteEnbNetDevice
+   *                     (the UE is finally connected to this eNB)
+   *
+   * This method is normally scheduled by HandoverRequest() to run at a specific
+   * time where a manual handover is desired by the simulation user.
+   */
+  void DoHandoverRequest (Ptr<NetDevice> ueDev,
+                          Ptr<NetDevice> sourceEnbDev,
+                          Ptr<NetDevice> targetEnbDev);
 
   Ptr<SpectrumChannel> m_downlinkChannel;
   Ptr<SpectrumChannel> m_uplinkChannel;

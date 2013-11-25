@@ -328,62 +328,72 @@ LteMiErrorModel::Mib (const SpectrumValue& sinr, const std::vector<int>& map, ui
   
   double MI;
   double MIsum = 0.0;
+  SpectrumValue sinrCopy = sinr;
   
   for (uint32_t i = 0; i < map.size (); i++)
     {
-      SpectrumValue sinrCopy = sinr;
       double sinrLin = sinrCopy[map.at (i)];
       if (mcs <= MI_QPSK_MAX_ID) // QPSK
         {
-          int tr = 0;
-          while ((tr<MI_MAP_QPSK_SIZE)&&(MI_map_qpsk_axis[tr] < sinrLin))
-            {
-              tr++;
-            }
+
           if (sinrLin > MI_map_qpsk_axis[MI_MAP_QPSK_SIZE-1])
             {
               MI = 1;
             }
           else 
-            {
-              NS_ASSERT_MSG (tr<MI_MAP_QPSK_SIZE, "MI map out of data");
-              MI = MI_map_qpsk[tr];
+            { 
+              // since the values in MI_map_qpsk_axis are uniformly spaced, we have
+              // index = ((sinrLin - value[0]) / (value[SIZE-1] - value[0])) * (SIZE-1)
+              // the scaling coefficient is always the same, so we use a static const
+              // to speed up the calculation
+              static const double scalingCoeffQpsk = 
+                (MI_MAP_QPSK_SIZE - 1) / (MI_map_qpsk_axis[MI_MAP_QPSK_SIZE-1] - MI_map_qpsk_axis[0]);
+              double sinrIndexDouble = (sinrLin -  MI_map_qpsk_axis[0]) * scalingCoeffQpsk + 1;
+              uint32_t sinrIndex = std::max(0.0, std::floor (sinrIndexDouble));
+              NS_ASSERT_MSG (sinrIndex < MI_MAP_QPSK_SIZE, "MI map out of data");
+              MI = MI_map_qpsk[sinrIndex];
             }
         }
       else
         {
           if (mcs > MI_QPSK_MAX_ID && mcs <= MI_16QAM_MAX_ID )	// 16-QAM
             {
-              int tr = 0;
-              while ((tr<MI_MAP_16QAM_SIZE)&&(MI_map_16qam_axis[tr] < sinrLin))
-                {
-                  tr++;
-                }
               if (sinrLin > MI_map_16qam_axis[MI_MAP_16QAM_SIZE-1])
                 {
                   MI = 1;
                 }
               else 
                 {
-                  NS_ASSERT_MSG (tr<MI_MAP_16QAM_SIZE, "MI map out of data");
-                  MI = MI_map_16qam[tr];
+                  // since the values in MI_map_16QAM_axis are uniformly spaced, we have
+                  // index = ((sinrLin - value[0]) / (value[SIZE-1] - value[0])) * (SIZE-1)
+                  // the scaling coefficient is always the same, so we use a static const
+                  // to speed up the calculation
+                  static const double scalingCoeff16qam = 
+                    (MI_MAP_16QAM_SIZE - 1) / (MI_map_16qam_axis[MI_MAP_16QAM_SIZE-1] - MI_map_16qam_axis[0]);
+                  double sinrIndexDouble = (sinrLin -  MI_map_16qam_axis[0]) * scalingCoeff16qam + 1;
+                  uint32_t sinrIndex = std::max(0.0, std::floor (sinrIndexDouble));
+                  NS_ASSERT_MSG (sinrIndex < MI_MAP_16QAM_SIZE, "MI map out of data");
+                  MI = MI_map_16qam[sinrIndex];
                 }
             }
           else // 64-QAM
             {
-              int tr = 0;
-              while ((tr<MI_MAP_64QAM_SIZE)&&(MI_map_64qam_axis[tr] < sinrLin))
-                {
-                  tr++;
-                }
               if (sinrLin > MI_map_64qam_axis[MI_MAP_64QAM_SIZE-1])
                 {
                   MI = 1;
                 }
               else
                 {
-                  NS_ASSERT_MSG (tr<MI_MAP_64QAM_SIZE, "MI map out of data");
-                  MI = MI_map_64qam[tr];
+                  // since the values in MI_map_64QAM_axis are uniformly spaced, we have
+                  // index = ((sinrLin - value[0]) / (value[SIZE-1] - value[0])) * (SIZE-1)
+                  // the scaling coefficient is always the same, so we use a static const
+                  // to speed up the calculation
+                  static const double scalingCoeff64qam = 
+                    (MI_MAP_64QAM_SIZE - 1) / (MI_map_64qam_axis[MI_MAP_64QAM_SIZE-1] - MI_map_64qam_axis[0]);
+                  double sinrIndexDouble = (sinrLin -  MI_map_64qam_axis[0]) * scalingCoeff64qam + 1;
+                  uint32_t sinrIndex = std::max(0.0, std::floor (sinrIndexDouble));
+                  NS_ASSERT_MSG (sinrIndex < MI_MAP_64QAM_SIZE, "MI map out of data");
+                  MI = MI_map_64qam[sinrIndex];
                 }
             }
         }
