@@ -640,6 +640,13 @@ TtaFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
   rbgMap.resize (m_cschedCellConfig.m_dlBandwidth / rbgSize, false);
   FfMacSchedSapUser::SchedDlConfigIndParameters ret;
 
+  //   update UL HARQ proc id
+  std::map <uint16_t, uint8_t>::iterator itProcId;
+  for (itProcId = m_ulHarqCurrentProcessId.begin (); itProcId != m_ulHarqCurrentProcessId.end (); itProcId++)
+    {
+      (*itProcId).second = ((*itProcId).second + 1) % HARQ_PROC_NUM;
+    }
+
   // RACH Allocation
   m_rachAllocationMap.resize (m_cschedCellConfig.m_ulBandwidth, 0);
   uint16_t rbStart = 0;
@@ -680,6 +687,44 @@ TtaFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
           m_rachAllocationMap.at (i) = (*itRach).m_rnti;
         }
       rbStart = rbStart + rbLen;
+
+      if (m_harqOn == true)
+        {
+          // generate UL-DCI for HARQ retransmissions
+          UlDciListElement_s uldci;
+          uldci.m_rnti = newRar.m_rnti;
+          uldci.m_rbLen = rbLen;
+          uldci.m_rbStart = rbStart;
+          uldci.m_mcs = m_ulGrantMcs;
+          uldci.m_tbSize = tbSizeBits / 8;
+          uldci.m_ndi = 1;
+          uldci.m_cceIndex = 0;
+          uldci.m_aggrLevel = 1;
+          uldci.m_ueTxAntennaSelection = 3; // antenna selection OFF
+          uldci.m_hopping = false;
+          uldci.m_n2Dmrs = 0;
+          uldci.m_tpc = 0; // no power control
+          uldci.m_cqiRequest = false; // only period CQI at this stage
+          uldci.m_ulIndex = 0; // TDD parameter
+          uldci.m_dai = 1; // TDD parameter
+          uldci.m_freqHopping = 0;
+          uldci.m_pdcchPowerOffset = 0; // not used
+
+          uint8_t harqId = 0;
+          std::map <uint16_t, uint8_t>::iterator itProcId;
+          itProcId = m_ulHarqCurrentProcessId.find (uldci.m_rnti);
+          if (itProcId == m_ulHarqCurrentProcessId.end ())
+            {
+              NS_FATAL_ERROR ("No info find in HARQ buffer for UE " << uldci.m_rnti);
+            }
+          harqId = (*itProcId).second;
+          std::map <uint16_t, UlHarqProcessesDciBuffer_t>::iterator itDci = m_ulHarqProcessesDciBuffer.find (uldci.m_rnti);
+          if (itDci == m_ulHarqProcessesDciBuffer.end ())
+            {
+              NS_FATAL_ERROR ("Unable to find RNTI entry in UL DCI HARQ buffer for RNTI " << uldci.m_rnti);
+            }
+          (*itDci).second.at (harqId) = uldci;
+        }
 
       ret.m_buildRarList.push_back (newRar);
     }
@@ -1381,20 +1426,13 @@ TtaFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sche
   if (m_harqOn == true)
     {
       //   Process UL HARQ feedback
-      //   update UL HARQ proc id
-      std::map <uint16_t, uint8_t>::iterator itProcId;
-      for (itProcId = m_ulHarqCurrentProcessId.begin (); itProcId != m_ulHarqCurrentProcessId.end (); itProcId++)
-        {
-          (*itProcId).second = ((*itProcId).second + 1) % HARQ_PROC_NUM;
-        }
-
       for (uint16_t i = 0; i < params.m_ulInfoList.size (); i++)
         {        
           if (params.m_ulInfoList.at (i).m_receptionStatus == UlInfoListElement_s::NotOk)
             {
               // retx correspondent block: retrieve the UL-DCI
               uint16_t rnti = params.m_ulInfoList.at (i).m_rnti;
-              itProcId = m_ulHarqCurrentProcessId.find (rnti);
+              std::map <uint16_t, uint8_t>::iterator itProcId = m_ulHarqCurrentProcessId.find (rnti);
               if (itProcId == m_ulHarqCurrentProcessId.end ())
                 {
                   NS_LOG_ERROR ("No info find in HARQ buffer for UE (might change eNB) " << rnti);
