@@ -31,38 +31,58 @@ namespace ns3 {
 class AttributeValue;
 class Ipv4FlowClassifier;
 
-/// \brief Helper to enable IPv4 flow monitoring on a set of Nodes
+/**
+ * \ingroup flow-monitor
+ * \brief Helper to enable IPv4 flow monitoring on a set of Nodes
+ */
 class FlowMonitorHelper
 {
 public:
-  /// \brief Construct a FlowMonitorHelper class which makes it easier to 
-  /// configure and use the FlowMonitor
+
   FlowMonitorHelper ();
-  /// \brief Dispose of objects allocated by the helper
   ~FlowMonitorHelper ();
 
-  /// \brief Set an attribute for the to-be-created FlowMonitor object
+  /**
+   * \brief Set an attribute for the to-be-created FlowMonitor object
+   * \param n1 attribute name
+   * \param v1 attibute value
+   */
   void SetMonitorAttribute (std::string n1, const AttributeValue &v1);
 
-  /// \brief Enable flow monitoring on a set of nodes
-  /// \param nodes A NodeContainer holding the set of nodes to work with.
+  /**
+   * \brief Enable flow monitoring on a set of nodes
+   * \param nodes A NodeContainer holding the set of nodes to work with.
+   * \returns a pointer to the FlowMonitor object
+   */
   Ptr<FlowMonitor> Install (NodeContainer nodes);
-  /// \brief Enable flow monitoring on a single node
-  /// \param node A Ptr<Node> to the node on which to enable flow monitoring.
+  /**
+   * \brief Enable flow monitoring on a single node
+   * \param node A Ptr<Node> to the node on which to enable flow monitoring.
+   * \returns a pointer to the FlowMonitor object
+   */
   Ptr<FlowMonitor> Install (Ptr<Node> node);
-  /// \brief Enable flow monitoring on all nodes
+  /**
+   * \brief Enable flow monitoring on all nodes
+   * \returns a pointer to the FlowMonitor object
+   */
   Ptr<FlowMonitor> InstallAll ();
 
-  /// \brief Retrieve the FlowMonitor object created by the Install* methods
+  /**
+   * \brief Retrieve the FlowMonitor object created by the Install* methods
+   * \returns a pointer to the FlowMonitor object
+   */
   Ptr<FlowMonitor> GetMonitor ();
 
-  /// \brief Retrieve the FlowClassifier object created by the Install* methods
+  /**
+   * \brief Retrieve the FlowClassifier object created by the Install* methods
+   * \returns a pointer to the FlowClassifier object
+   */
   Ptr<FlowClassifier> GetClassifier ();
 
 private:
-  ObjectFactory m_monitorFactory;
-  Ptr<FlowMonitor> m_flowMonitor;
-  Ptr<FlowClassifier> m_flowClassifier;
+  ObjectFactory m_monitorFactory;       //!< Object factory
+  Ptr<FlowMonitor> m_flowMonitor;       //!< the FlowMonitor object
+  Ptr<FlowClassifier> m_flowClassifier; //!< the FlowClassifier object
 };
 
 } // namespace ns3

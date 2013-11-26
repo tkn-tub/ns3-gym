@@ -3453,9 +3453,13 @@ various components. These objects are:
 
  * ``LteHelper``, which takes care of the configuration of the LTE radio
    access network, as well as of coordinating the setup and release of
-   EPS bearers 
+   EPS bearers. The ``LteHelper`` class provides both the API
+   definition and its implementation.  
  * ``EpcHelper``, which takes care of the configuration of the Evolved
-   Packet Core
+   Packet Core. The ``EpcHelper`` class is an abstract base class
+   which only provides the API definition; the implementation is delegated
+   to child classes in order to allow for different EPC network
+   models.
 
 It is possible to create a simple LTE-only simulations by
 using ``LteHelper`` alone, or to create complete LTE-EPC simulations by

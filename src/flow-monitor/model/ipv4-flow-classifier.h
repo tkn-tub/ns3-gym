@@ -39,13 +39,14 @@ class Ipv4FlowClassifier : public FlowClassifier
 {
 public:
 
+  /// Structure to classify a packet
   struct FiveTuple
   {
-    Ipv4Address sourceAddress;
-    Ipv4Address destinationAddress;
-    uint8_t protocol;
-    uint16_t sourcePort;
-    uint16_t destinationPort;
+    Ipv4Address sourceAddress;      //!< Source address
+    Ipv4Address destinationAddress; //!< Destination address
+    uint8_t protocol;               //!< Protocol
+    uint16_t sourcePort;            //!< Source port
+    uint16_t destinationPort;       //!< Destination port
   };
 
   Ipv4FlowClassifier ();
@@ -53,22 +54,43 @@ public:
   /// \brief try to classify the packet into flow-id and packet-id
   /// \return true if the packet was classified, false if not (i.e. it
   /// does not appear to be part of a flow).
+  /// \param ipHeader packet's IP header
+  /// \param ipPayload packet's IP payload
+  /// \param out_flowId packet's FlowId
+  /// \param out_packetId packet's identifier
   bool Classify (const Ipv4Header &ipHeader, Ptr<const Packet> ipPayload,
                  uint32_t *out_flowId, uint32_t *out_packetId);
 
   /// Searches for the FiveTuple corresponding to the given flowId
+  /// \param flowId the FlowId to search for
+  /// \returns the FiveTuple corresponding to flowId
   FiveTuple FindFlow (FlowId flowId) const;
 
   virtual void SerializeToXmlStream (std::ostream &os, int indent) const;
 
 private:
 
+  /// Map to Flows Identifiers to FlowIds
   std::map<FiveTuple, FlowId> m_flowMap;
 
 };
 
-
+/**
+ * \brief Less than operator.
+ *
+ * \param t1 the first operand
+ * \param t2 the first operand
+ * \returns true if the operands are equal
+ */
 bool operator < (const Ipv4FlowClassifier::FiveTuple &t1, const Ipv4FlowClassifier::FiveTuple &t2);
+
+/**
+ * \brief Equal to operator.
+ *
+ * \param t1 the first operand
+ * \param t2 the first operand
+ * \returns true if the operands are equal
+ */
 bool operator == (const Ipv4FlowClassifier::FiveTuple &t1, const Ipv4FlowClassifier::FiveTuple &t2);
 
 

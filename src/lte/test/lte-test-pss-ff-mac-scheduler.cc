@@ -49,7 +49,7 @@
 #include <ns3/boolean.h>
 #include <ns3/enum.h>
 
-#include "ns3/epc-helper.h"
+#include "ns3/point-to-point-epc-helper.h"
 #include "ns3/network-module.h"
 #include "ns3/ipv4-global-routing-helper.h"
 #include "ns3/internet-module.h"
@@ -268,7 +268,7 @@ LenaPssFfMacSchedulerTestCase1::DoRun (void)
   Config::SetDefault ("ns3::LteHelper::UseIdealRrc", BooleanValue (true));
 
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
-  Ptr<EpcHelper>  epcHelper = CreateObject<EpcHelper> ();
+  Ptr<PointToPointEpcHelper>  epcHelper = CreateObject<PointToPointEpcHelper> ();
   lteHelper->SetEpcHelper (epcHelper);
 
   //LogComponentEnable ("PssFfMacScheduler", LOG_DEBUG);
@@ -516,7 +516,7 @@ LenaPssFfMacSchedulerTestCase2::DoRun (void)
 
 
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
-  Ptr<EpcHelper>  epcHelper = CreateObject<EpcHelper> ();
+  Ptr<PointToPointEpcHelper>  epcHelper = CreateObject<PointToPointEpcHelper> ();
   lteHelper->SetEpcHelper (epcHelper);
 
   Ptr<Node> pgw = epcHelper->GetPgwNode ();

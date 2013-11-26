@@ -48,9 +48,22 @@ class Ipv6MulticastRoutingTableEntry;
 /**
  * \ingroup ipv6StaticRouting
  * \class Ipv6StaticRouting
- * \brief Static routing protocol for IP version 6 stack.
+ *
+ * \brief Static routing protocol for IP version 6 stacks.
+ *
+ * This class provides a basic set of methods for inserting static
+ * unicast and multicast routes into the Ipv6 routing system.
+ * This particular protocol is designed to be inserted into an
+ * Ipv6ListRouting protocol but can be used also as a standalone
+ * protocol.
+ *
+ * The Ipv6StaticRouting class inherits from the abstract base class
+ * Ipv6RoutingProtocol that defines the interface methods that a routing
+ * protocol must support.
+ *
  * \see Ipv6RoutingProtocol
  * \see Ipv6ListRouting
+ * \see Ipv6ListRouting::AddRoutingProtocol
  */
 class Ipv6StaticRouting : public Ipv6RoutingProtocol
 {
@@ -61,14 +74,7 @@ public:
    */
   static TypeId GetTypeId ();
 
-  /**
-   * \brief Constructor.
-   */
   Ipv6StaticRouting ();
-
-  /**
-   * \brief Destructor.
-   */
   virtual ~Ipv6StaticRouting ();
 
   /**

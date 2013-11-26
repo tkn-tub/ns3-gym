@@ -114,6 +114,10 @@ public:
                            Ipv6Address destination,
                            uint8_t protocol);
 
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
   virtual void Print (std::ostream &os) const;
@@ -128,16 +132,21 @@ public:
   bool IsChecksumOk (void) const;
 
 private:
+  /**
+   * \brief Calculate the header checksum
+   * \param size packet size
+   * \returns the checksum
+   */
   uint16_t CalculateHeaderChecksum (uint16_t size) const;
-  uint16_t m_sourcePort;
-  uint16_t m_destinationPort;
-  uint16_t m_payloadSize;
+  uint16_t m_sourcePort;      //!< Source port
+  uint16_t m_destinationPort; //!< Destination port
+  uint16_t m_payloadSize;     //!< Payload size
 
-  Address m_source;
-  Address m_destination;
-  uint8_t m_protocol;
-  bool m_calcChecksum;
-  bool m_goodChecksum;
+  Address m_source;           //!< Source IP address
+  Address m_destination;      //!< Destination IP address
+  uint8_t m_protocol;         //!< Protocol number
+  bool m_calcChecksum;        //!< Flag to calculate checksum
+  bool m_goodChecksum;        //!< Flag to indicate that checksum is correct
 };
 
 } // namespace ns3

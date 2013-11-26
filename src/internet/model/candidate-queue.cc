@@ -27,6 +27,13 @@ NS_LOG_COMPONENT_DEFINE ("CandidateQueue");
 
 namespace ns3 {
 
+/**
+ * \brief Stream insertion operator.
+ *
+ * \param os the reference to the output stream
+ * \param t the SPFVertex type
+ * \returns the reference to the output stream
+ */
 std::ostream&
 operator<< (std::ostream& os, const SPFVertex::VertexType& t)
 {

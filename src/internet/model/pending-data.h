@@ -41,17 +41,48 @@ class Packet;
 class PendingData {
 public:
   PendingData ();
+  /**
+   * Constructor
+   * \param s size
+   * \param d data
+   * \param msg message size
+   * \param resp response size
+   */
   PendingData (uint32_t s, uint8_t* d = NULL, uint32_t msg = 0, uint32_t resp = 0);
-  PendingData (const std::string&); // Construct from string
-  PendingData (uint8_t*, uint32_t&, Packet*); // Construct from serialized buffer
-  PendingData (const PendingData&);   // Copy constructor
+  /**
+   * Constructor from string
+   * \param s string
+   */
+  PendingData (const std::string& s); // Construct from string
+
+  /**
+   * Copy constructor
+   * \param o object to copy
+   */
+  PendingData (const PendingData& o);   // Copy constructor
   virtual ~PendingData ();     // Destructor
+
+  /**
+   * Returns the size of the pending data
+   * \returns size of pending data
+   */
   uint32_t Size () const { return size; }
-  // Serialization
-  uint8_t*  Serialize (uint8_t*, uint32_t&); // Serialize to a buffer
-  uint8_t*  Construct (uint8_t*, uint32_t&); // Construct from buffer
-  virtual void Clear (); // Remove all associated data
-  virtual void Add (uint32_t s, const uint8_t* d = 0); // Add some data to end
+
+  /**
+   * \brief Remove all associated data
+   */
+  virtual void Clear ();
+
+  /**
+   * \brief Add some data to end
+   * \param s the data size.
+   * \param d the data to store.
+   */
+  virtual void Add (uint32_t s, const uint8_t* d = 0); //
+  /**
+   * \brief Add some data to end
+   * \param p packet containing the data.
+   */
   virtual void Add (Ptr<Packet> p);
   /**
    * This method returns the number of bytes in the PendingData buffer
@@ -89,9 +120,24 @@ public:
    * \return seqOffset-seqFront
    */
   virtual uint32_t OffsetFromSeq (const SequenceNumber32& seqFront, const SequenceNumber32& seqOffset);
-  virtual Ptr<Packet> CopyFromOffset (uint32_t, uint32_t);  // Size, offset, ret packet
-  // Copy data, size, offset specified by sequence difference
-  virtual Ptr<Packet> CopyFromSeq (uint32_t, const SequenceNumber32&, const SequenceNumber32&);
+
+  /**
+   * \brief Copy data starting from a give offset
+   * \param s size of data to copy
+   * \param o offset
+   * \returns a packet containing the requested data
+   */
+  virtual Ptr<Packet> CopyFromOffset  (uint32_t s, uint32_t o);  // Size, offset, ret packet
+  /**
+   * \brief Copy data starting from a give offset
+   * \param s size of data to copy
+   * \param f Front sequence
+   * \param o Offset sequence
+   *
+   * \see PendingData::OffsetFromSeq()
+   * \returns a packet containing the requested data
+   */
+  virtual Ptr<Packet> CopyFromSeq (uint32_t s, const SequenceNumber32& f, const SequenceNumber32& o);
   /**
    * Permits object to clear any pending data between seqFront and 
    * seqOffset - 1).  Callers should check the return value to determine
@@ -102,15 +148,35 @@ public:
    * \return number of bytes from the front that were removed from the buffer
    */
   virtual uint32_t RemoveToSeq (const SequenceNumber32& seqFront, const SequenceNumber32& seqOffset);
-  PendingData*   Copy () const;          // Create a copy of this header
-  PendingData*   CopyS (uint32_t);         // Copy with new size
-  PendingData*   CopySD (uint32_t, uint8_t*); // Copy with new size, new data
+
+  /**
+   * \brief Create a copy of self
+   * \returns copy of pending data
+   */
+  PendingData*   Copy () const;
+  /**
+   * \brief Create a copy of self with new size
+   *
+   * Assumes no associated data
+   * \param s new size
+   * \returns copy of pending data
+   */
+  PendingData*   CopyS (uint32_t s);         // Copy
+  /**
+   * \brief Create a copy of self with new size, new data
+   *
+   * Assumes no associated data
+   * \param s new size
+   * \param d new data
+   * \returns copy of pending data
+   */
+  PendingData*   CopySD (uint32_t s, uint8_t* d);
 public:
-  uint32_t size;        // Number of data bytes
-  std::vector<Ptr<Packet> > data;         // Corresponding data (may be null)
+  uint32_t size;        //!< Number of data bytes
+  std::vector<Ptr<Packet> > data;         //!< Corresponding data (may be null)
   // The next two fields allow simulated applications to exchange some info
-  uint32_t msgSize;     // Total size of message
-  uint32_t responseSize; // Size of response requested
+  uint32_t msgSize;     //!< Total size of message
+  uint32_t responseSize; //!< Size of response requested
 };
 
 } //namepsace ns3

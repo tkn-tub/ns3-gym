@@ -498,11 +498,11 @@ main (int argc, char *argv[])
       lteHelper->SetFadingModelAttribute ("TraceFilename", StringValue (fadingTrace));
     }
 
-  Ptr<EpcHelper> epcHelper;
+  Ptr<PointToPointEpcHelper> epcHelper;
   if (epc)
     {
       NS_LOG_LOGIC ("enabling EPC");
-      epcHelper = CreateObject<EpcHelper> ();
+      epcHelper = CreateObject<PointToPointEpcHelper> ();
       lteHelper->SetEpcHelper (epcHelper);
     }
 

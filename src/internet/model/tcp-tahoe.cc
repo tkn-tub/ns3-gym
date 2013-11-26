@@ -72,7 +72,7 @@ TcpTahoe::~TcpTahoe (void)
 {
 }
 
-/** We initialize m_cWnd from this function, after attributes initialized */
+/* We initialize m_cWnd from this function, after attributes initialized */
 int
 TcpTahoe::Listen (void)
 {
@@ -81,7 +81,7 @@ TcpTahoe::Listen (void)
   return TcpSocketBase::Listen ();
 }
 
-/** We initialize m_cWnd from this function, after attributes initialized */
+/* We initialize m_cWnd from this function, after attributes initialized */
 int
 TcpTahoe::Connect (const Address & address)
 {
@@ -90,7 +90,7 @@ TcpTahoe::Connect (const Address & address)
   return TcpSocketBase::Connect (address);
 }
 
-/** Limit the size of in-flight data by cwnd and receiver's rxwin */
+/* Limit the size of in-flight data by cwnd and receiver's rxwin */
 uint32_t
 TcpTahoe::Window (void)
 {
@@ -104,7 +104,7 @@ TcpTahoe::Fork (void)
   return CopyObject<TcpTahoe> (this);
 }
 
-/** New ACK (up to seqnum seq) received. Increase cwnd and call TcpSocketBase::NewAck() */
+/* New ACK (up to seqnum seq) received. Increase cwnd and call TcpSocketBase::NewAck() */
 void
 TcpTahoe::NewAck (SequenceNumber32 const& seq)
 {
@@ -128,7 +128,7 @@ TcpTahoe::NewAck (SequenceNumber32 const& seq)
   TcpSocketBase::NewAck (seq);           // Complete newAck processing
 }
 
-/** Cut down ssthresh upon triple dupack */
+/* Cut down ssthresh upon triple dupack */
 void
 TcpTahoe::DupAck (const TcpHeader& t, uint32_t count)
 {
@@ -148,7 +148,7 @@ TcpTahoe::DupAck (const TcpHeader& t, uint32_t count)
     }
 }
 
-/** Retransmit timeout */
+/* Retransmit timeout */
 void TcpTahoe::Retransmit (void)
 {
   NS_LOG_FUNCTION (this);

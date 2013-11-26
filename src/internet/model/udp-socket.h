@@ -46,6 +46,11 @@ class Packet;
 class UdpSocket : public Socket
 {
 public:
+  /**
+   * Get the type ID.
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
  
   UdpSocket (void);
@@ -99,15 +104,67 @@ public:
 
 private:
   // Indirect the attribute setting and getting through private virtual methods
+  /**
+   * \brief Set the receiving buffer size
+   * \param size the buffer size
+   */
   virtual void SetRcvBufSize (uint32_t size) = 0;
+  /**
+   * \brief Get the receiving buffer size
+   * \returns the buffer size
+   */
   virtual uint32_t GetRcvBufSize (void) const = 0;
+  /**
+   * \brief Set the IP multicast TTL
+   * \param ipTtl the IP multicast TTL
+   */
   virtual void SetIpMulticastTtl (uint8_t ipTtl) = 0;
+  /**
+   * \brief Get the IP multicast TTL
+   * \returns the IP multicast TTL
+   */
   virtual uint8_t GetIpMulticastTtl (void) const = 0;
+  /**
+   * \brief Set the IP multicast interface
+   * \param ipIf the IP multicast interface
+   */
   virtual void SetIpMulticastIf (int32_t ipIf) = 0;
+  /**
+   * \brief Get the IP multicast interface
+   * \returns the IP multicast interface
+   */
   virtual int32_t GetIpMulticastIf (void) const = 0;
+  /**
+   * \brief Set the IP multicast loop capability
+   *
+   * This means that the socket will receive the packets
+   * sent by itself on a multicast address.
+   * Equivalent to setsockopt  IP_MULTICAST_LOOP
+   *
+   * \param loop the IP multicast loop capability
+   */
   virtual void SetIpMulticastLoop (bool loop) = 0;
+  /**
+   * \brief Get the IP multicast loop capability
+   *
+   * This means that the socket will receive the packets
+   * sent by itself on a multicast address.
+   * Equivalent to setsockopt  IP_MULTICAST_LOOP
+   *
+   * \returns the IP multicast loop capability
+   */
   virtual bool GetIpMulticastLoop (void) const = 0;
+  /**
+   * \brief Set the MTU discover capability
+   *
+   * \param discover the MTU discover capability
+   */
   virtual void SetMtuDiscover (bool discover) = 0;
+  /**
+   * \brief Get the MTU discover capability
+   *
+   * \returns the MTU discover capability
+   */
   virtual bool GetMtuDiscover (void) const = 0;
 };
 

@@ -32,6 +32,9 @@ namespace ns3 {
 class Ipv4InterfaceContainer
 {
 public:
+  /**
+   * \brief Container Const Iterator for pairs of Ipv4 smart pointer / Interface Index.
+   */
   typedef std::vector<std::pair<Ptr<Ipv4>, uint32_t> >::const_iterator Iterator;
 
   /**
@@ -124,6 +127,11 @@ public:
    */
   Ipv4Address GetAddress (uint32_t i, uint32_t j = 0) const;
 
+  /**
+   * \brief Set a metric for the given interface
+   * \param i Interface index
+   * \param metric the interface metric
+   */
   void SetMetric (uint32_t i, uint16_t metric);
 
   /**
@@ -163,15 +171,24 @@ public:
    * Get the std::pair of an Ptr<Ipv4> and interface stored at the location 
    * specified by the index.
    *
-   * \param i the index of the entery to retrieve.
+   * \param i the index of the entry to retrieve.
+   * \return the Ipv4InterfaceContainer
    *
    * @see Ipv4InterfaceContainer
    */
   std::pair<Ptr<Ipv4>, uint32_t> Get (uint32_t i) const;
 
 private:
-
+  /**
+   * \internal
+   * \brief Container for pairs of Ipv4 smart pointer / Interface Index.
+   */
   typedef std::vector<std::pair<Ptr<Ipv4>,uint32_t> > InterfaceVector;
+
+  /**
+   * \internal
+   * \brief List of IPv4 stack and interfaces index.
+   */
   InterfaceVector m_interfaces;
 };
 

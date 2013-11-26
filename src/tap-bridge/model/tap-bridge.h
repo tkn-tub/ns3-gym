@@ -291,6 +291,8 @@ private:
    */
   Ptr<Packet> Filter (Ptr<Packet> packet, Address *src, Address *dst, uint16_t *type);
 
+  void NotifyLinkUp (void);
+
   /**
    * \internal
    *
@@ -448,7 +450,7 @@ private:
    * \internal
    *
    * Whether the MAC address of the underlying ns-3 device has already been
-   * rewritten is stored in this variable (for UseLocal mode only).
+   * rewritten is stored in this variable (for UseLocal/UseBridge mode only).
    */
   bool m_ns3AddressRewritten;
 
@@ -463,6 +465,22 @@ private:
    * multithreaded apps is not a good thing.
    */
   uint32_t m_nodeId;
+
+  /**
+   * \internal
+   *
+   * Flag indicating whether or not the link is up.  In this case,
+   * whether or not ns-3 is connected to the underlying TAP device
+   * with a file descriptor.
+   */
+  bool m_linkUp;
+
+  /**
+   * \internal
+   *
+   * Callbacks to fire if the link changes state (up or down).
+   */
+  TracedCallback<> m_linkChangeCallbacks;
 };
 
 } // namespace ns3

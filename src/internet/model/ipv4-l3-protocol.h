@@ -77,8 +77,12 @@ class Icmpv4L4Protocol;
 class Ipv4L3Protocol : public Ipv4
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
-  static const uint16_t PROT_NUMBER;
+  static const uint16_t PROT_NUMBER; //!< Protocol number (0x0800)
 
   Ipv4L3Protocol();
   virtual ~Ipv4L3Protocol ();
@@ -97,6 +101,10 @@ public:
     DROP_FRAGMENT_TIMEOUT /**< Fragment timeout exceeded */
   };
 
+  /**
+   * \brief Set node associated with this stack.
+   * \param node node to set
+   */
   void SetNode (Ptr<Node> node);
 
   // functions defined in base class Ipv4
@@ -182,6 +190,11 @@ public:
   void SendWithHeader (Ptr<Packet> packet, Ipv4Header ipHeader, Ptr<Ipv4Route> route);
 
   uint32_t AddInterface (Ptr<NetDevice> device);
+  /**
+   * \brief Get an interface.
+   * \param i interface index
+   * \return IPv4 interface pointer
+   */
   Ptr<Ipv4Interface> GetInterface (uint32_t i) const;
   uint32_t GetNInterfaces (void) const;
 
@@ -220,7 +233,20 @@ protected:
   virtual void NotifyNewAggregate ();
 private:
   friend class Ipv4L3ProtocolTestCase;
+
+  /**
+   * \brief Copy constructor.
+   *
+   * Defined but not implemented to avoid misuse
+   */
   Ipv4L3Protocol(const Ipv4L3Protocol &);
+
+  /**
+   * \brief Copy constructor.
+   *
+   * Defined but not implemented to avoid misuse
+   * \returns the copied object
+   */
   Ipv4L3Protocol &operator = (const Ipv4L3Protocol &);
 
   // class Ipv4 attributes
@@ -229,6 +255,17 @@ private:
   virtual void SetWeakEsModel (bool model);
   virtual bool GetWeakEsModel (void) const;
 
+  /**
+   * \brief Construct an IPv4 header.
+   * \param source source IPv4 address
+   * \param destination destination IPv4 address
+   * \param protocol L4 protocol
+   * \param payloadSize payload size
+   * \param ttl Time to Live
+   * \param tos Type of Service
+   * \param mayFragment true if the packet can be fragmented
+   * \return newly created IPv4 header
+   */
   Ipv4Header BuildHeader (
     Ipv4Address source,
     Ipv4Address destination,
@@ -238,25 +275,65 @@ private:
     uint8_t tos,
     bool mayFragment);
 
+  /**
+   * \brief Send packet with route.
+   * \param route route
+   * \param packet packet to send
+   * \param ipHeader IPv4 header to add to the packet
+   */
   void
   SendRealOut (Ptr<Ipv4Route> route,
                Ptr<Packet> packet,
                Ipv4Header const &ipHeader);
 
+  /**
+   * \brief Forward a packet.
+   * \param rtentry route
+   * \param p packet to forward
+   * \param header IPv4 header to add to the packet
+   */
   void 
   IpForward (Ptr<Ipv4Route> rtentry, 
              Ptr<const Packet> p, 
              const Ipv4Header &header);
 
+  /**
+   * \brief Forward a multicast packet.
+   * \param mrtentry route
+   * \param p packet to forward
+   * \param header IPv6 header to add to the packet
+   */
   void
   IpMulticastForward (Ptr<Ipv4MulticastRoute> mrtentry, 
                       Ptr<const Packet> p, 
                       const Ipv4Header &header);
 
+  /**
+   * \brief Deliver a packet.
+   * \param p packet delivered
+   * \param ip IPv4 header
+   * \param iif input interface packet was received
+   */
   void LocalDeliver (Ptr<const Packet> p, Ipv4Header const&ip, uint32_t iif);
+
+  /**
+   * \brief Fallback when no route is found.
+   * \param p packet
+   * \param ipHeader IPv4 header
+   * \param sockErrno error number
+   */
   void RouteInputError (Ptr<const Packet> p, const Ipv4Header & ipHeader, Socket::SocketErrno sockErrno);
 
+  /**
+   * \brief Add an IPv4 interface to the stack.
+   * \param interface interface to add
+   * \return index of newly added interface
+   */
   uint32_t AddIpv4Interface (Ptr<Ipv4Interface> interface);
+
+  /**
+   * \brief Setup loopback interface.
+   */
   void SetupLoopback (void);
 
   /**
@@ -264,6 +341,13 @@ private:
    * \return Icmpv4L4Protocol pointer
    */
   Ptr<Icmpv4L4Protocol> GetIcmp (void) const;
+
+  /**
+   * \brief Check if an IPv4 address is unicast.
+   * \param ad address
+   * \param interfaceMask the network mask
+   * \return true if the address is unicast
+   */
   bool IsUnicast (Ipv4Address ad, Ipv4Mask interfaceMask) const;
 
   /**
@@ -277,7 +361,7 @@ private:
   /**
    * \brief Process a packet fragment
    * \param packet the packet
-   * \param fragmentSize the size of the fragment
+   * \param ipHeader the IP header
    * \param iif Input Interface
    * \return true is the fragment completed the packet
    */
@@ -291,32 +375,47 @@ private:
    */
   void HandleFragmentsTimeout ( std::pair<uint64_t, uint32_t> key, Ipv4Header & ipHeader, uint32_t iif);
 
+  /**
+   * \brief Container of the IPv4 Interfaces.
+   */
   typedef std::vector<Ptr<Ipv4Interface> > Ipv4InterfaceList;
+  /**
+   * \brief Container of the IPv4 Raw Sockets.
+   */
   typedef std::list<Ptr<Ipv4RawSocketImpl> > SocketList;
-  typedef std::list<Ptr<IpL4Protocol> > L4List_t;
+  /**
+   * \brief Container of the IPv4 L4 instances.
+   */
+   typedef std::list<Ptr<IpL4Protocol> > L4List_t;
 
-  bool m_ipForward;
-  bool m_weakEsModel;
-  L4List_t m_protocols;
-  Ipv4InterfaceList m_interfaces;
-  uint8_t m_defaultTos;
-  uint8_t m_defaultTtl;
-  uint16_t m_identification;
-  Ptr<Node> m_node;
+  bool m_ipForward;      //!< Forwarding packets (i.e. router mode) state.
+  bool m_weakEsModel;    //!< Weak ES model state
+  L4List_t m_protocols;  //!< List of transport protocol.
+  Ipv4InterfaceList m_interfaces; //!< List of IPv4 interfaces.
+  uint8_t m_defaultTos;  //!< Default TOS
+  uint8_t m_defaultTtl;  //!< Default TTL
+  uint16_t m_identification; //!< Identification
+  Ptr<Node> m_node; //!< Node attached to stack.
 
+  /// Trace of sent packets
   TracedCallback<const Ipv4Header &, Ptr<const Packet>, uint32_t> m_sendOutgoingTrace;
+  /// Trace of unicast forwarded packets
   TracedCallback<const Ipv4Header &, Ptr<const Packet>, uint32_t> m_unicastForwardTrace;
+  /// Trace of locally delivered packets
   TracedCallback<const Ipv4Header &, Ptr<const Packet>, uint32_t> m_localDeliverTrace;
 
   // The following two traces pass a packet with an IP header
+  /// Trace of transmitted packets
   TracedCallback<Ptr<const Packet>, Ptr<Ipv4>,  uint32_t> m_txTrace;
+  /// Trace of received packets
   TracedCallback<Ptr<const Packet>, Ptr<Ipv4>, uint32_t> m_rxTrace;
   // <ip-header, payload, reason, ifindex> (ifindex not valid if reason is DROP_NO_ROUTE)
+  /// Trace of dropped packets
   TracedCallback<const Ipv4Header &, Ptr<const Packet>, DropReason, Ptr<Ipv4>, uint32_t> m_dropTrace;
 
-  Ptr<Ipv4RoutingProtocol> m_routingProtocol;
+  Ptr<Ipv4RoutingProtocol> m_routingProtocol; //!< Routing protocol associated with the stack
 
-  SocketList m_sockets;
+  SocketList m_sockets; //!< List of IPv4 raw sockets.
 
   /**
    * \class Fragments
@@ -374,15 +473,14 @@ private:
 
   };
 
+  /// Container of fragments, stored as pairs(src+dst addr, src+dst port) / fragment
   typedef std::map< std::pair<uint64_t, uint32_t>, Ptr<Fragments> > MapFragments_t;
+  /// Container of fragment timeout event, stored as pairs(src+dst addr, src+dst port) / EventId
   typedef std::map< std::pair<uint64_t, uint32_t>, EventId > MapFragmentsTimers_t;
 
-  /**
-   * \brief The hash of fragmented packets.
-   */
-  MapFragments_t       m_fragments;
-  Time                 m_fragmentExpirationTimeout;
-  MapFragmentsTimers_t m_fragmentsTimers;
+  MapFragments_t       m_fragments; //!< Fragmented packets.
+  Time                 m_fragmentExpirationTimeout; //!< Expiration timeout
+  MapFragmentsTimers_t m_fragmentsTimers; //!< Expiration events.
 
 };
 

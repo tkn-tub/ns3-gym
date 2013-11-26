@@ -72,7 +72,7 @@ private:
   bool m_admitHo;
   bool     m_useIdealRrc;
   Ptr<LteHelper> m_lteHelper;
-  Ptr<EpcHelper> m_epcHelper;
+  Ptr<PointToPointEpcHelper> m_epcHelper;
   
   struct BearerData
   {
@@ -167,7 +167,7 @@ LteX2HandoverTestCase::DoRun ()
 
   if (m_epc)
     {
-      m_epcHelper = CreateObject<EpcHelper> ();
+      m_epcHelper = CreateObject<PointToPointEpcHelper> ();
       m_lteHelper->SetEpcHelper (m_epcHelper);      
     }
 

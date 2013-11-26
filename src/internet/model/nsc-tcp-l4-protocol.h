@@ -45,18 +45,39 @@ class NscInterfaceImpl;
  */
 class NscTcpL4Protocol : public IpL4Protocol {
 public:
-  static const uint8_t PROT_NUMBER;
-  static TypeId GetTypeId (void);
+  static const uint8_t PROT_NUMBER; //!< protocol number (0x6)
   /**
-   * \brief Constructor
+   * \brief Get the type ID.
+   * \return the object TypeId
    */
+  static TypeId GetTypeId (void);
+
   NscTcpL4Protocol ();
   virtual ~NscTcpL4Protocol ();
 
+  /**
+   * Set node associated with this stack
+   * \param node the node
+   */
   void SetNode (Ptr<Node> node);
+
+  /**
+   * Set the NSC library to be used
+   * \param lib the library path
+   */
   void SetNscLibrary (const std::string &lib);
+
+  /**
+   * Get the NSC library being used
+   * \returns the library path
+   */
   std::string GetNscLibrary (void) const;
   virtual int GetProtocolNumber (void) const;
+
+  /**
+   * Get the NSC version
+   * \returns the NSC version
+   */
   virtual int GetVersion (void) const;
 
   /**
@@ -65,27 +86,54 @@ public:
    */
   Ptr<Socket> CreateSocket (void);
 
+  /**
+   * \brief Allocate an IPv4 Endpoint
+   * \return the Endpoint
+   */
   Ipv4EndPoint *Allocate (void);
+  /**
+   * \brief Allocate an IPv4 Endpoint
+   * \param address address to use
+   * \return the Endpoint
+   */
   Ipv4EndPoint *Allocate (Ipv4Address address);
+  /**
+   * \brief Allocate an IPv4 Endpoint
+   * \param port port to use
+   * \return the Endpoint
+   */
   Ipv4EndPoint *Allocate (uint16_t port);
+  /**
+   * \brief Allocate an IPv4 Endpoint
+   * \param address address to use
+   * \param port port to use
+   * \return the Endpoint
+   */
   Ipv4EndPoint *Allocate (Ipv4Address address, uint16_t port);
+  /**
+   * \brief Allocate an IPv4 Endpoint
+   * \param localAddress local address to use
+   * \param localPort local port to use
+   * \param peerAddress remote address to use
+   * \param peerPort remote port to use
+   * \return the Endpoint
+   */
   Ipv4EndPoint *Allocate (Ipv4Address localAddress, uint16_t localPort,
                           Ipv4Address peerAddress, uint16_t peerPort);
 
-  void DeAllocate (Ipv4EndPoint *endPoint);
 
   /**
-   * \brief Receive a packet up the protocol stack
-   * \param p The Packet to dump the contents into
-   * \param header IPv4 Header information
-   * \param incomingInterface The Ipv4Interface it was received on
+   * \brief Remove an IPv4 Endpoint.
+   * \param endPoint the end point to remove
    */
+  void DeAllocate (Ipv4EndPoint *endPoint);
+
   virtual IpL4Protocol::RxStatus Receive (Ptr<Packet> p,
-                                            Ipv4Header const &header,
-                                            Ptr<Ipv4Interface> incomingInterface);
+                                          Ipv4Header const &header,
+                                          Ptr<Ipv4Interface> incomingInterface);
   virtual IpL4Protocol::RxStatus Receive (Ptr<Packet> p,
-                                                 Ipv6Header const &header,
-                                                 Ptr<Ipv6Interface> interface);
+                                          Ipv6Header const &header,
+                                          Ptr<Ipv6Interface> interface);
 
   // From IpL4Protocol
   virtual void SetDownTarget (IpL4Protocol::DownTargetCallback cb);
@@ -97,38 +145,73 @@ protected:
   virtual void DoDispose (void);
   virtual void NotifyNewAggregate ();
 private:
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and not implemented to avoid misuse
+   */
   NscTcpL4Protocol (NscTcpL4Protocol const &);
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and not implemented to avoid misuse
+   * \returns
+   */
   NscTcpL4Protocol& operator= (NscTcpL4Protocol const &);
 
   // NSC callbacks.
   // NSC invokes these hooks to interact with the simulator.
   // In any case, these methods are only to be called by NSC.
-  //
-  // send_callback is invoked by NSCs 'ethernet driver' to re-inject
-  // a packet (i.e. an octet soup consisting of an IP Header, TCP Header
-  // and user payload, if any), into ns-3.
+
+  /**
+   * \brief Invoked by NSCs 'ethernet driver' to re-inject a packet into ns-3.
+   *
+   * A packet is an octet soup consisting of an IP Header, TCP Header
+   * and user payload, if any
+   *
+   * \param data the data
+   * \param datalen the data length
+   */
   void send_callback (const void *data, int datalen);
-  // This is called by the NSC stack whenever something of interest
-  // has happened, e.g. when data arrives on a socket, a listen socket
-  // has a new connection pending, etc.
+  /**
+   * \brief Called by the NSC stack whenever something of interest has happened
+   *
+   * Examples: when data arrives on a socket, a listen socket
+   * has a new connection pending, etc.
+   */
   void wakeup ();
-  // This is called by the Linux stack RNG initialization.
-  // Its also used by the cradle code to add a timestamp to
-  // printk/printf/debug output.
+  /**
+   * \brief Called by the Linux stack RNG initialization
+   *
+   * Its also used by the cradle code to add a timestamp to
+   * printk/printf/debug output.
+   * \param sec seconds
+   * \param usec microseconds
+   */
   void gettime (unsigned int *sec, unsigned int *usec);
+  /**
+   * \brief Add an interface
+   *
+   * Actually NSC only supports one interface per node (\bugid{1398})
+   */
   void AddInterface (void);
+
+  /**
+   * \brief Provide a "soft" interrupt to NSC
+   */
   void SoftInterrupt (void);
   friend class NscInterfaceImpl;
   friend class NscTcpSocketImpl;
-  Ptr<Node> m_node;
-  Ipv4EndPointDemux *m_endPoints;
-  INetStack* m_nscStack;
-  NscInterfaceImpl *m_nscInterface;
-  void *m_dlopenHandle;
-  std::string m_nscLibrary;
-  Timer m_softTimer;
-  std::vector<Ptr<NscTcpSocketImpl> > m_sockets;
-  IpL4Protocol::DownTargetCallback m_downTarget;
+
+  Ptr<Node> m_node; //!< the node this stack is associated with
+  Ipv4EndPointDemux *m_endPoints; //!< A list of IPv4 end points.
+  INetStack* m_nscStack; //!< the NSC stack.
+  NscInterfaceImpl *m_nscInterface; //!< the NSC Interface.
+  void *m_dlopenHandle; //!< dynamic library handle.
+  std::string m_nscLibrary; //!< path to the NSC library.
+  Timer m_softTimer; //!< Soft interrupt timer
+  std::vector<Ptr<NscTcpSocketImpl> > m_sockets; //!< list of sockets
+  IpL4Protocol::DownTargetCallback m_downTarget; //!< Callback to send packets over IPv4
 };
 
 } // namespace ns3

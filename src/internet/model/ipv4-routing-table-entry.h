@@ -135,25 +135,56 @@ public:
                                                    uint32_t interface);
 
 private:
+  /**
+   * \brief Constructor.
+   * \param network network address
+   * \param mask network mask
+   * \param gateway the gateway
+   * \param interface the interface index
+   */
   Ipv4RoutingTableEntry (Ipv4Address network,
                          Ipv4Mask mask,
                          Ipv4Address gateway,
                          uint32_t interface);
+  /**
+   * \brief Constructor.
+   * \param dest destination address
+   * \param mask network mask
+   * \param interface the interface index
+   */
   Ipv4RoutingTableEntry (Ipv4Address dest,
                          Ipv4Mask mask,
                          uint32_t interface);
+  /**
+   * \brief Constructor.
+   * \param dest destination address
+   * \param gateway the gateway
+   * \param interface the interface index
+   */
   Ipv4RoutingTableEntry (Ipv4Address dest,
                          Ipv4Address gateway,
                          uint32_t interface);
+  /**
+   * \brief Constructor.
+   * \param dest destination address
+   * \param interface the interface index
+   */
   Ipv4RoutingTableEntry (Ipv4Address dest,
                          uint32_t interface);
 
-  Ipv4Address m_dest;
-  Ipv4Mask m_destNetworkMask;
-  Ipv4Address m_gateway;
-  uint32_t m_interface;
+  Ipv4Address m_dest;         //!< destination address
+  Ipv4Mask m_destNetworkMask; //!< destination network mask
+  Ipv4Address m_gateway;      //!< gateway
+  uint32_t m_interface;       //!< output interface
 };
 
+/**
+ * \brief Stream insertion operator.
+ *
+ * \param os the reference to the output stream
+ * \param route the Ipv4 routing table entry
+ * \returns the reference to the output stream
+ */
 std::ostream& operator<< (std::ostream& os, Ipv4RoutingTableEntry const& route);
 
 /**
@@ -215,15 +246,29 @@ public:
                                                               std::vector<uint32_t> outputInterfaces);
 
 private:
+  /**
+   * \brief Constructor.
+   * \param origin source address
+   * \param group destination address
+   * \param inputInterface input interface
+   * \param outputInterfaces output interfaces
+   */
   Ipv4MulticastRoutingTableEntry (Ipv4Address origin, Ipv4Address group, 
                                   uint32_t inputInterface, std::vector<uint32_t> outputInterfaces);
 
-  Ipv4Address m_origin;
-  Ipv4Address m_group;
-  uint32_t m_inputInterface;
-  std::vector<uint32_t> m_outputInterfaces;
+  Ipv4Address m_origin;   //!< source address
+  Ipv4Address m_group;    //!< destination address
+  uint32_t m_inputInterface;    //!< input interface
+  std::vector<uint32_t> m_outputInterfaces;   //!< output interfaces
 };
 
+/**
+ * \brief Stream insertion operator.
+ *
+ * \param os the reference to the output stream
+ * \param route the Ipv4 multicast routing table entry
+ * \returns the reference to the output stream
+ */
 std::ostream& operator<< (std::ostream& os, Ipv4MulticastRoutingTableEntry const& route);
 
 } // namespace ns3

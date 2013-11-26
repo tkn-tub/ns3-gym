@@ -45,19 +45,6 @@ const double a21  =       527612.0;
 const double a23n =       1370589.0;
 const double two17 =      131072.0;
 const double two53 =      9007199254740992.0;
-const double fact =       5.9604644775390625e-8;     /* 1 / 2^24  */
-
-const Matrix InvA1 = {          // Inverse of A1p0
-  { 184888585.0,   0.0,  1945170933.0 },
-  {         1.0,   0.0,           0.0 },
-  {         0.0,   1.0,           0.0 }
-};
-
-const Matrix InvA2 = {          // Inverse of A2p0
-  {      0.0,  360363334.0,  4225571728.0 },
-  {      1.0,          0.0,           0.0 },
-  {      0.0,          1.0,           0.0 }
-};
 
 const Matrix A1p0 = {
   {       0.0,        1.0,       0.0 },

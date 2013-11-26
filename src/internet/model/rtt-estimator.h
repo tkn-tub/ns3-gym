@@ -39,15 +39,26 @@ namespace ns3 {
  */
 class RttHistory {
 public:
+  /**
+   * \brief Constructor - builds an RttHistory with the given parameters
+   * \param s First sequence number in packet sent
+   * \param c Number of bytes sent
+   * \param t Time this one was sent
+   */
   RttHistory (SequenceNumber32 s, uint32_t c, Time t);
+  /**
+   * \brief Copy constructor
+   * \param h the object to copy
+   */
   RttHistory (const RttHistory& h); // Copy constructor
 public:
-  SequenceNumber32  seq;  // First sequence number in packet sent
-  uint32_t        count;  // Number of bytes sent
-  Time            time;   // Time this one was sent
-  bool            retx;   // True if this has been retransmitted
+  SequenceNumber32  seq;  //!< First sequence number in packet sent
+  uint32_t        count;  //!< Number of bytes sent
+  Time            time;   //!< Time this one was sent
+  bool            retx;   //!< True if this has been retransmitted
 };
 
+/// Container for RttHistory objects
 typedef std::deque<RttHistory> RttHistory_t;
 
 /**
@@ -57,10 +68,18 @@ typedef std::deque<RttHistory> RttHistory_t;
  */
 class RttEstimator : public Object {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   RttEstimator();
-  RttEstimator (const RttEstimator&); 
+  /**
+   * \brief Copy constructor
+   * \param r the object to copy
+   */
+  RttEstimator (const RttEstimator& r);
 
   virtual ~RttEstimator();
 
@@ -97,6 +116,10 @@ public:
    */
   virtual Time RetransmitTimeout () = 0;
 
+  /**
+   * \brief Copy object
+   * \returns a copy of itself
+   */
   virtual Ptr<RttEstimator> Copy () const = 0;
 
   /**
@@ -139,16 +162,16 @@ public:
   Time GetCurrentEstimate (void) const;
 
 private:
-  SequenceNumber32 m_next;    // Next expected sequence to be sent
-  RttHistory_t m_history;     // List of sent packet
-  uint16_t m_maxMultiplier;
-  Time m_initialEstimatedRtt;
+  SequenceNumber32 m_next;    //!< Next expected sequence to be sent
+  RttHistory_t m_history;     //!< List of sent packet
+  uint16_t m_maxMultiplier;   //!< Maximum RTO Multiplier
+  Time m_initialEstimatedRtt; //!< Initial RTT estimation
 
 protected:
-  Time         m_currentEstimatedRtt;     // Current estimate
-  Time         m_minRto;                  // minimum value of the timeout
-  uint32_t     m_nSamples;                // Number of samples
-  uint16_t     m_multiplier;              // RTO Multiplier
+  Time         m_currentEstimatedRtt;     //!< Current estimate
+  Time         m_minRto;                  //!< minimum value of the timeout
+  uint32_t     m_nSamples;                //!< Number of samples
+  uint16_t     m_multiplier;              //!< RTO Multiplier
 };
 
 /**
@@ -163,11 +186,19 @@ protected:
  */
 class RttMeanDeviation : public RttEstimator {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   RttMeanDeviation ();
 
-  RttMeanDeviation (const RttMeanDeviation&);
+  /**
+   * \brief Copy constructor
+   * \param r the object to copy
+   */
+  RttMeanDeviation (const RttMeanDeviation& r);
 
   virtual TypeId GetInstanceTypeId (void) const;
 
@@ -186,7 +217,7 @@ public:
   Ptr<RttEstimator> Copy () const;
 
   /**
-   * \brief Resets sthe estimator.
+   * \brief Resets the estimator.
    */
   void Reset ();
 
@@ -197,8 +228,8 @@ public:
   void Gain (double g);
 
 private:
-  double       m_gain;       // Filter gain
-  Time         m_variance;   // Current variance
+  double       m_gain;       //!< Filter gain
+  Time         m_variance;   //!< Current variance
 };
 } // namespace ns3
 

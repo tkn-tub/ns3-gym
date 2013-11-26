@@ -37,9 +37,22 @@ NS_LOG_COMPONENT_DEFINE ("Ipv4FlowProbe")
 // Ipv4FlowProbeTag class implementation //
 //////////////////////////////////////
 
+/**
+ * \ingroup flow-monitor
+ *
+ * \brief Tag used to allow a fast identification of the packet
+ *
+ * This tag is added by FlowMonitor when a packet is seen for
+ * the first time, and it is then used to classify the packet in
+ * the following hops.
+ */
 class Ipv4FlowProbeTag : public Tag
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
   virtual uint32_t GetSerializedSize (void) const;
@@ -47,17 +60,47 @@ public:
   virtual void Deserialize (TagBuffer buf);
   virtual void Print (std::ostream &os) const;
   Ipv4FlowProbeTag ();
+  /**
+   * \brief Consructor
+   * \param flowId the flow identifier
+   * \param packetId the packet identifier
+   * \param packetSize the packet size
+   */
   Ipv4FlowProbeTag (uint32_t flowId, uint32_t packetId, uint32_t packetSize);
+  /**
+   * \brief Set the flow identifier
+   * \param flowId the flow identifier
+   */
   void SetFlowId (uint32_t flowId);
+  /**
+   * \brief Set the packet identifier
+   * \param packetId the packet identifier
+   */
   void SetPacketId (uint32_t packetId);
+  /**
+   * \brief Set the packet size
+   * \param packetSize the packet size
+   */
   void SetPacketSize (uint32_t packetSize);
+  /**
+   * \brief Set the flow identifier
+   * \returns the flow identifier
+   */
   uint32_t GetFlowId (void) const;
+  /**
+   * \brief Set the packet identifier
+   * \returns the packet identifier
+   */
   uint32_t GetPacketId (void) const;
+  /**
+   * \brief Get the packet size
+   * \returns the packet size
+   */
   uint32_t GetPacketSize (void) const;
 private:
-  uint32_t m_flowId;
-  uint32_t m_packetId;
-  uint32_t m_packetSize;
+  uint32_t m_flowId;      //!< flow identifier
+  uint32_t m_packetId;    //!< packet identifier
+  uint32_t m_packetSize;  //!< packet size
 
 };
 

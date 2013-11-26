@@ -47,6 +47,10 @@ namespace ns3 {
 class Ipv4PacketProbe : public Probe
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId ();
   Ipv4PacketProbe ();
   virtual ~Ipv4PacketProbe ();
@@ -102,7 +106,9 @@ private:
    */
   void TraceSink (Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface);
 
+  /// Traced Callback: the packet, the Ipv4 object and the interface.
   TracedCallback<Ptr<const Packet>, Ptr<Ipv4>, uint32_t> m_output;
+  /// Traced Callback: the previous packet's size and the actual packet's size.
   TracedCallback<uint32_t, uint32_t> m_outputBytes;
 
   /// The traced packet.
