@@ -172,6 +172,7 @@ public:
    */
   DscpType GetDscp (void) const;
   /**
+   * \param dscp the dscp
    * \returns std::string of DSCPType
    */
   std::string DscpTypeToString (DscpType dscp) const;
@@ -180,6 +181,7 @@ public:
    */
   EcnType GetEcn (void) const;
   /**
+   * \param ecn the ECNType
    * \returns std::string of ECNType
    */
   std::string EcnTypeToString (EcnType ecn) const;
@@ -220,6 +222,10 @@ public:
    */
   bool IsChecksumOk (void) const;
 
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
   virtual void Print (std::ostream &os) const;
@@ -228,25 +234,26 @@ public:
   virtual uint32_t Deserialize (Buffer::Iterator start);
 private:
 
+  /// flags related to IP fragmentation
   enum FlagsE {
     DONT_FRAGMENT = (1<<0),
     MORE_FRAGMENTS = (1<<1)
   };
 
-  bool m_calcChecksum;
+  bool m_calcChecksum; //!< true if the checksum must be calculated
 
-  uint16_t m_payloadSize;
-  uint16_t m_identification;
-  uint32_t m_tos : 8; //Also used as DSCP + ECN value
-  uint32_t m_ttl : 8;
-  uint32_t m_protocol : 8;
-  uint32_t m_flags : 3;
-  uint16_t m_fragmentOffset;
-  Ipv4Address m_source;
-  Ipv4Address m_destination;
-  uint16_t m_checksum;
-  bool m_goodChecksum;
-  uint16_t m_headerSize;
+  uint16_t m_payloadSize; //!< payload size
+  uint16_t m_identification; //!< identification
+  uint32_t m_tos : 8; //!< TOS, also used as DSCP + ECN value
+  uint32_t m_ttl : 8; //!< TTL
+  uint32_t m_protocol : 8;  //!< Protocol
+  uint32_t m_flags : 3; //!< flags
+  uint16_t m_fragmentOffset;  //!< Fragment offset
+  Ipv4Address m_source; //!< source address
+  Ipv4Address m_destination; //!< destination address
+  uint16_t m_checksum; //!< checksum
+  bool m_goodChecksum; //!< true if checksum is correct
+  uint16_t m_headerSize; //!< IP header size
 };
 
 } // namespace ns3

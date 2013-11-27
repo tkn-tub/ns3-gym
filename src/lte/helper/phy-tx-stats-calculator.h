@@ -60,20 +60,19 @@ public:
    */
   virtual ~PhyTxStatsCalculator ();
 
-  /**
-   * Inherited from ns3::Object
-   */
+  // Inherited from ns3::Object
   static TypeId GetTypeId (void);
 
   /**
    * Set the name of the file where the UL Tx PHY statistics will be stored.
    *
-   * \param outputFilename string with the name of the file
+   * @param outputFilename string with the name of the file
    */
   void SetUlTxOutputFilename (std::string outputFilename);
 
   /**
    * Get the name of the file where the UL RX PHY statistics will be stored.
+   * @return the name of the file where the UL RX PHY statistics will be stored
    */
   std::string GetUlTxOutputFilename (void);
 
@@ -86,38 +85,19 @@ public:
 
   /**
    * Get the name of the file where the DL TX PHY statistics will be stored.
+   * @return the name of the file where the DL TX PHY statistics will be stored
    */
   std::string GetDlTxOutputFilename (void);
 
   /**
    * Notifies the stats calculator that an downlink trasmission has occurred.
-   * @param cellId Cell ID of the attached Enb
-   * @param imsi IMSI of the scheduled UE
-   * @param frameNo Frame number
-   * @param subframeNo Subframe number
-   * @param rnti C-RNTI scheduled
-   * @param layer the layer (cw) of the transmission
-   * @param txMode the transmission Mode
-   * @param mcs MCS for transport block
-   * @param size Size of transport block
-   * @param rv the redundancy version (HARQ)
-   * @param ndi new data indicator flag
+   * @param params Trace information regarding PHY transmission stats
    */
   void DlPhyTransmission (PhyTransmissionStatParameters params);
 
   /**
    * Notifies the stats calculator that an uplink trasmission has occurred.
-   * @param cellId Cell ID of the attached Enb
-   * @param imsi IMSI of the scheduled UE
-   * @param frameNo Frame number
-   * @param subframeNo Subframe number
-   * @param rnti C-RNTI scheduled
-   * @param layer the layer (cw) of the transmission
-   * @param txMode the transmission Mode
-   * @param mcs MCS for transport block
-   * @param size Size of transport block
-   * @param rv the redundancy version (HARQ)
-   * @param ndi new data indicator flag
+   * @param params Trace information regarding PHY transmission stats
    */
   void UlPhyTransmission (PhyTransmissionStatParameters params);
 

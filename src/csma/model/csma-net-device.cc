@@ -700,7 +700,6 @@ CsmaNetDevice::Receive (Ptr<Packet> packet, Ptr<CsmaNetDevice> senderDevice)
       trailer.EnableFcs (true);
     }
 
-  trailer.CheckFcs (packet);
   bool crcGood = trailer.CheckFcs (packet);
   if (!crcGood)
     {

@@ -27,8 +27,8 @@
 namespace ns3 {
 
 /* see http://www.iana.org/assignments/protocol-numbers */
-const uint8_t TCP_PROT_NUMBER = 6;
-const uint8_t UDP_PROT_NUMBER = 17;
+const uint8_t TCP_PROT_NUMBER = 6;  //!< TCP Protocol number
+const uint8_t UDP_PROT_NUMBER = 17; //!< UDP Protocol number
 
 
 

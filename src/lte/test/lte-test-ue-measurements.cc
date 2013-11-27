@@ -32,7 +32,7 @@
 
 #include <ns3/mobility-helper.h>
 #include <ns3/lte-helper.h>
-#include <ns3/epc-helper.h>
+#include <ns3/point-to-point-epc-helper.h>
 #include <ns3/internet-stack-helper.h>
 #include <ns3/point-to-point-helper.h>
 #include <ns3/ipv4-address-helper.h>
@@ -1700,7 +1700,7 @@ LteUeMeasurementsHandoverTestCase::DoRun ()
   NS_LOG_INFO (this << " " << GetName ());
 
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
-  Ptr<EpcHelper> epcHelper = CreateObject<EpcHelper> ();
+  Ptr<PointToPointEpcHelper> epcHelper = CreateObject<PointToPointEpcHelper> ();
   lteHelper->SetEpcHelper (epcHelper);
   lteHelper->SetAttribute ("PathlossModel",
                            StringValue ("ns3::FriisSpectrumPropagationLossModel"));

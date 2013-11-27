@@ -43,20 +43,36 @@ class ArpCache;
  * specific information (addresses) about an interface.
  *
  * By default, Ipv4 interface are created in the "down" state
- * no IP addresses.  Before becoming useable, the user must 
+ * no IP addresses.  Before becoming usable, the user must
  * add an address of some type and invoke Setup on them.
  */
 class Ipv4Interface  : public Object
 {
 public:
+  /**
+   * \brief Get the type ID
+   * \return type ID
+   */
   static TypeId GetTypeId (void);
 
   Ipv4Interface ();
   virtual ~Ipv4Interface();
 
+  /**
+   * \brief Set node associated with interface.
+   * \param node node
+   */
   void SetNode (Ptr<Node> node); 
+  /**
+   * \brief Set the NetDevice.
+   * \param device NetDevice
+   */
   void SetDevice (Ptr<NetDevice> device);
-  void SetArpCache (Ptr<ArpCache>);
+  /**
+   * \brief Set ARP cache used by this interface
+   * \param arpCache the ARP cache
+   */
+  void SetArpCache (Ptr<ArpCache> arpCache);
 
   /**
    * \returns the underlying NetDevice. This method cannot return zero.
@@ -164,18 +180,36 @@ public:
 protected:
   virtual void DoDispose (void);
 private:
+  /**
+   * \brief Initialize interface.
+   */
   void DoSetup (void);
+
+
+  /**
+   * \brief Container for the Ipv4InterfaceAddresses.
+   */
   typedef std::list<Ipv4InterfaceAddress> Ipv4InterfaceAddressList;
+
+  /**
+   * \brief Container Iterator for the Ipv4InterfaceAddresses.
+   */
   typedef std::list<Ipv4InterfaceAddress>::const_iterator Ipv4InterfaceAddressListCI;
+
+  /**
+   * \brief Const Container Iterator for the Ipv4InterfaceAddresses.
+   */
   typedef std::list<Ipv4InterfaceAddress>::iterator Ipv4InterfaceAddressListI;
 
-  bool m_ifup;
-  bool m_forwarding;  // IN_DEV_FORWARD
-  uint16_t m_metric;
-  Ipv4InterfaceAddressList m_ifaddrs;
-  Ptr<Node> m_node;
-  Ptr<NetDevice> m_device;
-  Ptr<ArpCache> m_cache; 
+
+
+  bool m_ifup; //!< The state of this interface
+  bool m_forwarding;  //!< Forwarding state.
+  uint16_t m_metric;  //!< Interface metric
+  Ipv4InterfaceAddressList m_ifaddrs; //!< Address list
+  Ptr<Node> m_node; //!< The associated node
+  Ptr<NetDevice> m_device; //!< The associated NetDevice
+  Ptr<ArpCache> m_cache; //!< ARP cache
 };
 
 } // namespace ns3

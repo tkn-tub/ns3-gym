@@ -57,7 +57,7 @@ main (int argc, char *argv[])
   cmd.Parse(argc, argv);
 
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
-  Ptr<EpcHelper>  epcHelper = CreateObject<EpcHelper> ();
+  Ptr<PointToPointEpcHelper>  epcHelper = CreateObject<PointToPointEpcHelper> ();
   lteHelper->SetEpcHelper (epcHelper);
 
   ConfigStore inputConfig;

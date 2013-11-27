@@ -82,8 +82,8 @@ public:
   static double Mib (const SpectrumValue& sinr, const std::vector<int>& map, uint8_t mcs);
   /** 
    * \brief map the mmib (mean mutual information per bit) for different MCS
-   * \param mmib mean mutual information per bit of a code-block
-   * \param mcs the MCS
+   * \param mib mean mutual information per bit of a code-block
+   * \param ecrId Effective Code Rate ID
    * \param cbSize the size of the CB
    * \return the code block error rate
    */

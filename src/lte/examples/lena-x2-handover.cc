@@ -157,7 +157,7 @@ main (int argc, char *argv[])
 
 
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
-  Ptr<EpcHelper> epcHelper = CreateObject<EpcHelper> ();
+  Ptr<PointToPointEpcHelper> epcHelper = CreateObject<PointToPointEpcHelper> ();
   lteHelper->SetEpcHelper (epcHelper);
   lteHelper->SetSchedulerType ("ns3::RrFfMacScheduler");
   lteHelper->SetHandoverAlgorithmType ("ns3::NoOpHandoverAlgorithm"); // disable automatic handover

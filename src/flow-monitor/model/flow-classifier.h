@@ -26,11 +26,21 @@
 
 namespace ns3 {
 
-typedef uint32_t FlowId;          ///< \ingroup flow-monitor
-typedef uint32_t FlowPacketId;    ///< \ingroup flow-monitor
+/**
+ * \ingroup flow-monitor
+ * \brief Abstract identifier of a packet flow
+ */
+typedef uint32_t FlowId;
+
+/**
+ * \ingroup flow-monitor
+ * \brief Abstract identifier of a packet within a flow
+ */
+typedef uint32_t FlowPacketId;
+
 
 /// \ingroup flow-monitor
-/// provides a method to translate raw packet data into abstract
+/// Provides a method to translate raw packet data into abstract
 /// ``flow identifier'' and ``packet identifier'' parameters.  These
 /// identifiers are unsigned 32-bit integers that uniquely identify a
 /// flow and a packet within that flow, respectively, for the whole
@@ -43,9 +53,12 @@ typedef uint32_t FlowPacketId;    ///< \ingroup flow-monitor
 class FlowClassifier : public SimpleRefCount<FlowClassifier>
 {
 private:
-  FlowId m_lastNewFlowId;
+  FlowId m_lastNewFlowId; //!< Last known Flow ID
 
+  /// Defined and not implemented to avoid misuse
   FlowClassifier (FlowClassifier const &);
+  /// Defined and not implemented to avoid misuse
+  /// \returns
   FlowClassifier& operator= (FlowClassifier const &);
 
 public:
@@ -53,9 +66,14 @@ public:
   FlowClassifier ();
   virtual ~FlowClassifier ();
 
+  /// Serializes the results to an std::ostream in XML format
+  /// \param os the output stream
+  /// \param indent number of spaces to use as base indentation level
   virtual void SerializeToXmlStream (std::ostream &os, int indent) const = 0;
 
 protected:
+  /// Returns a new, unique Flow Identifier
+  /// \returns a new FlowId
   FlowId GetNewFlowId ();
 
 };

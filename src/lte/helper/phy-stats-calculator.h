@@ -63,20 +63,19 @@ public:
    */
   virtual ~PhyStatsCalculator ();
 
-  /**
-   * Inherited from ns3::Object
-   */
+  // Inherited from ns3::Object
   static TypeId GetTypeId (void);
 
   /**
    * Set the name of the file where the RSRP/SINR statistics will be stored.
    *
-   * \param filename string with the name of the file
+   * @param filename string with the name of the file
    */
   void SetCurrentCellRsrpSinrFilename (std::string filename);
 
   /**
    * Get the name of the file where the RSRP/SINR statistics will be stored.
+   * @return the name of the file where the RSRP/SINR statistics will be stored
    */
   std::string GetCurrentCellRsrpSinrFilename  (void);
 
@@ -89,6 +88,7 @@ public:
 
   /**
    * Get the name of the file where the UE SINR statistics will be stored.
+   * @return the name of the file where the UE SINR statistics will be stored
    */
   std::string GetUeSinrFilename (void);
 
@@ -101,6 +101,7 @@ public:
 
   /**
    * Get the name of the file where the interference statistics will be stored.
+   * @return the name of the file where the interference statistics will be stored
    */
   std::string GetInterferenceFilename (void);
 
@@ -123,8 +124,6 @@ public:
   void ReportUeSinr (uint16_t cellId, uint64_t imsi, uint16_t rnti, double sinrLinear);
   /**
    * Notifies the stats calculator that an interference report has occurred.
-   * @param imsi IMSI of the scheduled UE
-   * @param rnti C-RNTI scheduled
    * @param cellId Cell ID of the reported Enb
    * @param interference Measured interference for each RB
    */

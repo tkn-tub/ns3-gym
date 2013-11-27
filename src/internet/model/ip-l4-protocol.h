@@ -47,6 +47,9 @@ class Ipv6Route;
 class IpL4Protocol : public Object
 {
 public:
+  /**
+   * \brief Rx status codes
+   */
   enum RxStatus {
     RX_OK,
     RX_CSUM_FAILED,
@@ -54,6 +57,10 @@ public:
     RX_ENDPOINT_UNREACH
   };
 
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   virtual ~IpL4Protocol ();
@@ -64,30 +71,29 @@ public:
   virtual int GetProtocolNumber (void) const = 0;
 
   /**
+   * \brief Called from lower-level layers to send the packet up in the stack.
    * \param p packet to forward up
    * \param header IPv4 Header information
    * \param incomingInterface the Ipv4Interface on which the packet arrived
-   * 
-   * Called from lower-level layers to send the packet up
-   * in the stack. 
+   * \returns Rx status code
    */
   virtual enum RxStatus Receive (Ptr<Packet> p,
                                  Ipv4Header const &header,
                                  Ptr<Ipv4Interface> incomingInterface) = 0;
 
   /**
+   * \brief Called from lower-level layers to send the packet up in the stack.
    * \param p packet to forward up
    * \param header IPv6 Header information
    * \param incomingInterface the Ipv6Interface on which the packet arrived
-   *
-   * Called from lower-level layers to send the packet up
-   * in the stack.
+   * \returns Rx status code
    */
   virtual enum RxStatus Receive (Ptr<Packet> p,
                                  Ipv6Header const &header,
                                  Ptr<Ipv6Interface> incomingInterface) = 0;
 
   /**
+   * \brief Called from lower-level layers to send the ICMP packet up in the stack.
    * \param icmpSource the source address of the icmp message
    * \param icmpTtl the ttl of the icmp message
    * \param icmpType the 'type' field of the icmp message
@@ -98,7 +104,7 @@ public:
    *        the icmp message
    * \param payloadDestination the destination address of the packet which
    *        triggered the icmp message.
-   * \param payload the first 8 bytes of the udp header of the packet
+   * \param payload the first 8 bytes of the packet payload
    *        which triggered the icmp message.
    */
   virtual void ReceiveIcmp (Ipv4Address icmpSource, uint8_t icmpTtl,
@@ -108,6 +114,7 @@ public:
 
 
   /**
+   * \brief Called from lower-level layers to send the ICMPv6 packet up in the stack.
    * \param icmpSource the source address of the icmp message
    * \param icmpTtl the ttl of the icmp message
    * \param icmpType the 'type' field of the icmp message
@@ -118,7 +125,7 @@ public:
    *        the icmp message
    * \param payloadDestination the destination address of the packet which
    *        triggered the icmp message.
-   * \param payload the first 8 bytes of the udp header of the packet
+   * \param payload the first 8 bytes of the packet payload
    *        which triggered the icmp message.
    */
   virtual void ReceiveIcmp (Ipv6Address icmpSource, uint8_t icmpTtl,
@@ -126,12 +133,18 @@ public:
                             Ipv6Address payloadSource, Ipv6Address payloadDestination,
                             const uint8_t payload[8]);
 
+  /**
+   * \brief callback to send packets over IPv4
+   */
   typedef Callback<void,Ptr<Packet>, Ipv4Address, Ipv4Address, uint8_t, Ptr<Ipv4Route> > DownTargetCallback;
+  /**
+   * \brief callback to send packets over IPv6
+   */
   typedef Callback<void,Ptr<Packet>, Ipv6Address, Ipv6Address, uint8_t, Ptr<Ipv6Route> > DownTargetCallback6;
 
   /**
    * This method allows a caller to set the current down target callback
-   * set for this L4 protocol
+   * set for this L4 protocol (IPv4 case)
    *
    * \param cb current Callback for the L4 protocol
    */
@@ -139,7 +152,7 @@ public:
 
   /**
    * This method allows a caller to set the current down target callback
-   * set for this L4 protocol
+   * set for this L4 protocol (IPv6 case)
    *
    * \param cb current Callback for the L4 protocol
    */
@@ -147,7 +160,7 @@ public:
 
   /**
    * This method allows a caller to get the current down target callback
-   * set for this L4 protocol, for
+   * set for this L4 protocol (IPv4 case)
    *
    * \return current Callback for the L4 protocol
    */
@@ -155,7 +168,7 @@ public:
 
   /**
    * This method allows a caller to get the current down target callback
-   * set for this L4 protocol, for
+   * set for this L4 protocol (IPv6 case)
    *
    * \return current Callback for the L4 protocol
    */

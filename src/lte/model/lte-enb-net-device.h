@@ -108,7 +108,7 @@ public:
   uint16_t GetDlEarfcn () const;
 
   /** 
-   * \param bw the downlink carrier frequency (EARFCN)
+   * \param earfcn the downlink carrier frequency (EARFCN)
    */
   void SetDlEarfcn (uint16_t earfcn);
 
@@ -118,7 +118,7 @@ public:
   uint16_t GetUlEarfcn () const;
 
   /** 
-   * \param bw the uplink carrier frequency (EARFCN)
+   * \param earfcn the uplink carrier frequency (EARFCN)
    */
   void SetUlEarfcn (uint16_t earfcn);
 

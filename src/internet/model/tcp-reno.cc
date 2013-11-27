@@ -73,7 +73,7 @@ TcpReno::~TcpReno (void)
 {
 }
 
-/** We initialize m_cWnd from this function, after attributes initialized */
+/* We initialize m_cWnd from this function, after attributes initialized */
 int
 TcpReno::Listen (void)
 {
@@ -82,7 +82,7 @@ TcpReno::Listen (void)
   return TcpSocketBase::Listen ();
 }
 
-/** We initialize m_cWnd from this function, after attributes initialized */
+/* We initialize m_cWnd from this function, after attributes initialized */
 int
 TcpReno::Connect (const Address & address)
 {
@@ -91,7 +91,7 @@ TcpReno::Connect (const Address & address)
   return TcpSocketBase::Connect (address);
 }
 
-/** Limit the size of in-flight data by cwnd and receiver's rxwin */
+/* Limit the size of in-flight data by cwnd and receiver's rxwin */
 uint32_t
 TcpReno::Window (void)
 {
@@ -105,7 +105,7 @@ TcpReno::Fork (void)
   return CopyObject<TcpReno> (this);
 }
 
-/** New ACK (up to seqnum seq) received. Increase cwnd and call TcpSocketBase::NewAck() */
+/* New ACK (up to seqnum seq) received. Increase cwnd and call TcpSocketBase::NewAck() */
 void
 TcpReno::NewAck (const SequenceNumber32& seq)
 {

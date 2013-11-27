@@ -189,7 +189,7 @@ public:
   * \brief add a BSR feedback record into the message.
   * \param bsr the BSR feedback
   */
-  void SetBsr (MacCeListElement_s ulcqi);
+  void SetBsr (MacCeListElement_s bsr);
 
   /**
   * \brief Get BSR informations
@@ -218,7 +218,7 @@ public:
 
   /**
   * \brief add a DL HARQ feedback record into the message.
-  * \param DlInfoListElement_s the dl HARQ feedback
+  * \param m the DL HARQ feedback
   */
   void SetDlHarqFeedback (DlInfoListElement_s m);
 
@@ -249,7 +249,7 @@ public:
   /** 
    * Set the Random Access Preamble Identifier (RAPID), see 3GPP TS 36.321 6.2.2
    *
-   * \param rapid
+   * \param rapid the RAPID
    */
   void SetRapId (uint32_t rapid);
   
@@ -387,7 +387,7 @@ public:
 
   /**
    * \brief Replace the SIB1 content of this control message.
-   * \param sib the desired SIB1 content
+   * \param sib1 the desired SIB1 content
    */
   void SetSib1 (LteRrcSap::SystemInformationBlockType1 sib1);
 

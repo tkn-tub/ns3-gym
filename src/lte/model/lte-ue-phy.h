@@ -109,7 +109,7 @@ public:
 
 
   /**
-   * \param pw the transmission power in dBm
+   * \param pow the transmission power in dBm
    */
   void SetTxPower (double pow);
 
@@ -118,9 +118,9 @@ public:
    */
   double GetTxPower () const;
   /**
-   * \param pw the noise figure in dB
+   * \param nf the noise figure in dB
    */
-  void SetNoiseFigure (double pow);
+  void SetNoiseFigure (double nf);
 
   /**
    * \return the noise figure in dB
@@ -174,6 +174,7 @@ public:
   * \brief Create the DL CQI feedback from SINR values perceived at
   * the physical layer with the signal received from eNB
   * \param sinr SINR values vector
+  * \return a DL CQI control message containing the CQI feedback
   */
   Ptr<DlCqiLteControlMessage> CreateDlCqiFeedbackMessage (const SpectrumValue& sinr);
 

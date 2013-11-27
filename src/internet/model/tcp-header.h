@@ -175,9 +175,16 @@ public:
                            Address destination,
                            uint8_t protocol);
 
+  /**
+   * \brief TCP flag field values
+   */
   typedef enum { NONE = 0, FIN = 1, SYN = 2, RST = 4, PSH = 8, ACK = 16, 
                  URG = 32, ECE = 64, CWR = 128} Flags_t;
 
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
   virtual void Print (std::ostream &os) const;
@@ -192,22 +199,27 @@ public:
   bool IsChecksumOk (void) const;
 
 private:
+  /**
+   * \brief Calculate the header checksum
+   * \param size packet size
+   * \returns the checksum
+   */
   uint16_t CalculateHeaderChecksum (uint16_t size) const;
-  uint16_t m_sourcePort;
-  uint16_t m_destinationPort;
-  SequenceNumber32 m_sequenceNumber;
-  SequenceNumber32 m_ackNumber;
-  uint8_t m_length; // really a uint4_t
-  uint8_t m_flags;      // really a uint6_t
-  uint16_t m_windowSize;
-  uint16_t m_urgentPointer;
+  uint16_t m_sourcePort;        //!< Source port
+  uint16_t m_destinationPort;   //!< Destination port
+  SequenceNumber32 m_sequenceNumber;  //!< Sequence number
+  SequenceNumber32 m_ackNumber;       //!< ACK number
+  uint8_t m_length;             //!< Length (really a uint4_t)
+  uint8_t m_flags;              //!< Flags (really a uint6_t)
+  uint16_t m_windowSize;        //!< Window size
+  uint16_t m_urgentPointer;     //!< Urgent pointer
 
-  Address m_source;
-  Address m_destination;
-  uint8_t m_protocol;
+  Address m_source;       //!< Source IP address
+  Address m_destination;  //!< Destination IP address
+  uint8_t m_protocol;     //!< Protocol number
 
-  bool m_calcChecksum;
-  bool m_goodChecksum;
+  bool m_calcChecksum;    //!< Flag to calculate checksum
+  bool m_goodChecksum;    //!< Flag to indicate that checksum is correct
 };
 
 } // namespace ns3

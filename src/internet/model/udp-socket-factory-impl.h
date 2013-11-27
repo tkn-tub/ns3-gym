@@ -57,6 +57,10 @@ public:
   UdpSocketFactoryImpl ();
   virtual ~UdpSocketFactoryImpl ();
 
+  /**
+   * \brief Set the associated UDP L4 protocol.
+   * \param udp the UDP L4 protocol
+   */
   void SetUdp (Ptr<UdpL4Protocol> udp);
 
   /**
@@ -71,7 +75,7 @@ public:
 protected:
   virtual void DoDispose (void);
 private:
-  Ptr<UdpL4Protocol> m_udp;
+  Ptr<UdpL4Protocol> m_udp; //!< the associated UDP L4 protocol
 };
 
 } // namespace ns3

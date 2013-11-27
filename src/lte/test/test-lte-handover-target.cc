@@ -35,7 +35,7 @@
 #include <ns3/ipv4-interface-container.h>
 
 #include <ns3/lte-helper.h>
-#include <ns3/epc-helper.h>
+#include <ns3/point-to-point-epc-helper.h>
 #include <ns3/internet-stack-helper.h>
 #include <ns3/point-to-point-helper.h>
 #include <ns3/ipv4-address-helper.h>
@@ -218,7 +218,7 @@ LteHandoverTargetTestCase::DoRun ()
                       BooleanValue (false)); // disable control channel error model
 
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
-  Ptr<EpcHelper> epcHelper = CreateObject<EpcHelper> ();
+  Ptr<PointToPointEpcHelper> epcHelper = CreateObject<PointToPointEpcHelper> ();
   lteHelper->SetEpcHelper (epcHelper);
   lteHelper->SetAttribute ("PathlossModel",
                            StringValue ("ns3::FriisSpectrumPropagationLossModel"));

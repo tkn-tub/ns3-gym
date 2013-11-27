@@ -263,7 +263,7 @@ You can try also with other LTE and EPC objects, like this::
      ./waf --run lena-simple --command-template="%s --PrintAttributes=ns3::LteEnbMac"
      ./waf --run lena-simple --command-template="%s --PrintAttributes=ns3::LteEnbPhy"
      ./waf --run lena-simple --command-template="%s --PrintAttributes=ns3::LteUePhy"
-     ./waf --run lena-simple --command-template="%s --PrintAttributes=ns3::EpcHelper"
+     ./waf --run lena-simple --command-template="%s --PrintAttributes=ns3::PointToPointEpcHelper"
  
 
 
@@ -776,11 +776,18 @@ you will be able to use the regular ns-3 applications and sockets over
 IPv4 over LTE, and also to connect an LTE network to any other IPv4
 network you might have in your simulation.
 
-First of all, in your simulation program you need to create two
-helpers::
+First of all, in addition to ``LteHelper`` that we already introduced
+in :ref:`sec-basic-simulation-program`, you need to use an additional
+``EpcHelper`` class, which will take care of creating the EPC entities and
+network topology. Note that you can't use ``EpcHelper`` directly, as
+it is an abstract base class; instead, you need to use one of its
+child classes, which provide different EPC topology implementations. In
+this example we will consider ``PointToPointEpcHelper``, which
+implements an EPC based on point-to-point links. To use it, you need
+first to insert this code in your simulation program::
 
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
-  Ptr<EpcHelper> epcHelper = CreateObject<EpcHelper> ();
+  Ptr<PointToPointEpcHelper> epcHelper = CreateObject<PointToPointEpcHelper> ();
 
 Then, you need to tell the LTE helper that the EPC will be used::
 
@@ -801,11 +808,11 @@ created will have the ``EpsBearerToRlcMapping`` attribute set to
 the default; otherwise, the attribute won't be changed (e.g., if
 you changed the default to ``RLC_AM_ALWAYS``, it won't be touched).
 
-It is to be noted that, upon construction, the ``EpcHelper`` will also
-create and configure the PGW node. Its configuration in particular
-is very complex, and hence is done automatically by the Helper. Still,
-it is allowed to access the PGW node in order to connect it to other
-IPv4 network (e.g., the internet). Here is a very simple example about
+It is to be noted that the ``EpcHelper`` will also automatically
+create the PGW node and configure it so that it can properly handle
+traffic from/to the LTE radio access network.  Still,
+you need to add some explicit code to connect the PGW to other
+IPv4 networks (e.g., the internet). Here is a very simple example about
 how to connect a single remote host to the PGW via a point-to-point
 link::
 
@@ -833,7 +840,7 @@ link::
 
 It's important to specify routes so that the remote host can reach LTE
 UEs. One way of doing this is by exploiting the fact that the
-EpcHelper will by default assign to LTE UEs an IP address in the
+``PointToPointEpcHelper`` will by default assign to LTE UEs an IP address in the
 7.0.0.0 network. With this in mind, it suffices to do::
 
   Ipv4StaticRoutingHelper ipv4RoutingHelper;

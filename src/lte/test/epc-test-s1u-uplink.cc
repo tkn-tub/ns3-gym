@@ -27,7 +27,7 @@
 #include "ns3/simulator.h"
 #include "ns3/log.h"
 #include "ns3/test.h"
-#include "ns3/epc-helper.h"
+#include "ns3/point-to-point-epc-helper.h"
 #include "ns3/epc-enb-application.h"
 #include "ns3/packet-sink-helper.h"
 #include "ns3/point-to-point-helper.h"
@@ -294,7 +294,7 @@ EpcS1uUlTestCase::~EpcS1uUlTestCase ()
 void 
 EpcS1uUlTestCase::DoRun ()
 {
-  Ptr<EpcHelper> epcHelper = CreateObject<EpcHelper> ();
+  Ptr<PointToPointEpcHelper> epcHelper = CreateObject<PointToPointEpcHelper> ();
   Ptr<Node> pgw = epcHelper->GetPgwNode ();
 
   // allow jumbo packets

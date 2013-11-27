@@ -5,41 +5,41 @@
 
 using namespace ns3;
 
-class A : public Object
+class PtrExample : public Object
 {
 public:
-  A ();
-  ~A ();
+  PtrExample ();
+  ~PtrExample ();
   void Method (void);
 };
-A::A ()
+PtrExample::PtrExample ()
 {
-  std::cout << "A constructor" << std::endl;
+  std::cout << "PtrExample constructor" << std::endl;
 }
-A::~A()
+PtrExample::~PtrExample()
 {
-  std::cout << "A destructor" << std::endl;
+  std::cout << "PtrExample destructor" << std::endl;
 }
 void
-A::Method (void)
+PtrExample::Method (void)
 {
-  std::cout << "A method" << std::endl;
+  std::cout << "PtrExample method" << std::endl;
 }
 
-static Ptr<A> g_a = 0;
+static Ptr<PtrExample> g_ptr = 0;
 
-static Ptr<A>
-StoreA (Ptr<A> a)
+static Ptr<PtrExample>
+StorePtr (Ptr<PtrExample> p)
 {
-  Ptr<A> prev = g_a;
-  g_a = a;
+  Ptr<PtrExample> prev = g_ptr;
+  g_ptr = p;
   return prev;
 }
 
 static void
-ClearA (void)
+ClearPtr (void)
 {
-  g_a = 0;
+  g_ptr = 0;
 }
 
 
@@ -47,25 +47,25 @@ ClearA (void)
 int main (int argc, char *argv[])
 {
   {
-    // Create a new object of type A, store it in global 
-    // variable g_a
-    Ptr<A> a = CreateObject<A> ();
-    a->Method ();
-    Ptr<A> prev = StoreA (a);
+    // Create a new object of type PtrExample, store it in global 
+    // variable g_ptr
+    Ptr<PtrExample> p = CreateObject<PtrExample> ();
+    p->Method ();
+    Ptr<PtrExample> prev = StorePtr (p);
     NS_ASSERT (prev == 0);
   }
 
   {
-    // Create a new object of type A, store it in global 
-    // variable g_a, get a hold on the previous A object.
-    Ptr<A> a = CreateObject<A> ();
-    Ptr<A> prev = StoreA (a);
+    // Create a new object of type PtrExample, store it in global 
+    // variable g_ptr, get a hold on the previous PtrExample object.
+    Ptr<PtrExample> p = CreateObject<PtrExample> ();
+    Ptr<PtrExample> prev = StorePtr (p);
     // call method on object
     prev->Method ();
     // Clear the currently-stored object
-    ClearA ();
+    ClearPtr ();
     // get the raw pointer and release it.
-    A *raw = GetPointer (prev);
+    PtrExample *raw = GetPointer (prev);
     prev = 0;
     raw->Method ();
     raw->Unref ();

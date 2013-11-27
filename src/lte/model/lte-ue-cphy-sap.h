@@ -128,9 +128,9 @@ public:
   virtual void SetTransmissionMode (uint8_t txMode) = 0;
 
   /**
-   * \param txMode the transmissionMode of the user
+   * \param srcCi the SRS configuration index
    */
-  virtual void SetSrsConfigurationIndex (uint16_t   srcCi) = 0;
+  virtual void SetSrsConfigurationIndex (uint16_t srcCi) = 0;
 
 };
 
@@ -182,7 +182,7 @@ public:
   /**
    * \brief Relay an SIB1 message from the PHY entity to the RRC layer.
    * \param cellId the ID of the eNodeB where the message originates from
-   * \param mib the System Information Block Type 1 message
+   * \param sib1 the System Information Block Type 1 message
    *
    * This function is typically called after PHY receives an SIB1 message over
    * the BCH.

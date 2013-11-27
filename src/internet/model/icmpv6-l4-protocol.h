@@ -338,6 +338,7 @@ public:
    * \param p the packet
    * \param header the IPv4 header
    * \param interface the interface from which the packet is coming
+   * \returns the receive status
    */
   virtual enum IpL4Protocol::RxStatus Receive (Ptr<Packet> p,
                                                Ipv4Header const &header,
@@ -348,6 +349,7 @@ public:
    * \param p the packet
    * \param header the IPv6 header
    * \param interface the interface from which the packet is coming
+   * \returns the receive status
    */
   virtual enum IpL4Protocol::RxStatus Receive (Ptr<Packet> p,
                                                Ipv6Header const &header,
@@ -363,11 +365,14 @@ public:
 
   /**
    * \brief Lookup in the ND cache for the IPv6 address
+   *
+   * \note Unlike other Lookup method, it does not send NS request!
+   *
    * \param dst destination address
    * \param device device
    * \param cache the neighbor cache
    * \param hardwareDestination hardware address
-   * \note Unlike other Lookup method, it does not send NS request!
+   * \return true if the address is in the ND cache, the hardwareDestination is updated.
    */
   bool Lookup (Ipv6Address dst, Ptr<NetDevice> device, Ptr<NdiscCache> cache, Address* hardwareDestination);
 
@@ -423,7 +428,7 @@ protected:
   virtual void DoDispose ();
 
 private:
-  typedef std::list<Ptr<NdiscCache> > CacheList;
+  typedef std::list<Ptr<NdiscCache> > CacheList; //!< container of NdiscCaches
 
   /**
    * \brief The node.
@@ -559,6 +564,7 @@ private:
   /**
    * \brief Get the cache corresponding to the device.
    * \param device the device
+   * \returns the NdiscCache associated with the device
    */
   Ptr<NdiscCache> FindCache (Ptr<NetDevice> device);
 
@@ -569,7 +575,7 @@ private:
   virtual IpL4Protocol::DownTargetCallback GetDownTarget (void) const;
   virtual IpL4Protocol::DownTargetCallback6 GetDownTarget6 (void) const;
 
-  IpL4Protocol::DownTargetCallback6 m_downTarget;
+  IpL4Protocol::DownTargetCallback6 m_downTarget; //!< callback to Ipv6::Send
 
 };
 

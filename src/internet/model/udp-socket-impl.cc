@@ -45,7 +45,10 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (UdpSocketImpl)
   ;
 
-static const uint32_t MAX_IPV4_UDP_DATAGRAM_SIZE = 65507;
+// The correct maximum UDP message size is 65507, as determined by the following formula:
+// 0xffff - (sizeof(IP Header) + sizeof(UDP Header)) = 65535-(20+8) = 65507
+// \todo MAX_IPV4_UDP_DATAGRAM_SIZE is correct only for IPv4
+static const uint32_t MAX_IPV4_UDP_DATAGRAM_SIZE = 65507; //!< Maximum UDP datagram size
 
 // Add attributes generic to all UdpSockets to base class UdpSocket
 TypeId
@@ -736,9 +739,9 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv6Address dest, uint16_t port)
 }
 
 
-//  maximum message size for UDP broadcast is limited by MTU
+// maximum message size for UDP broadcast is limited by MTU
 // size of underlying link; we are not checking that now.
-/// \todo Check MTU size of underlying link
+// \todo Check MTU size of underlying link
 uint32_t
 UdpSocketImpl::GetTxAvailable (void) const
 {

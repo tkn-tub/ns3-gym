@@ -32,7 +32,7 @@
 #include <ns3/ipv4-interface-container.h>
 
 #include <ns3/lte-helper.h>
-#include <ns3/epc-helper.h>
+#include <ns3/point-to-point-epc-helper.h>
 #include <ns3/internet-stack-helper.h>
 #include <ns3/point-to-point-helper.h>
 #include <ns3/ipv4-address-helper.h>
@@ -96,7 +96,7 @@ LteHandoverDelayTestCase::DoRun ()
       << " handover time = " << m_handoverTime.GetSeconds () << "-----");
 
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
-  Ptr<EpcHelper> epcHelper = CreateObject<EpcHelper> ();
+  Ptr<PointToPointEpcHelper> epcHelper = CreateObject<PointToPointEpcHelper> ();
   lteHelper->SetEpcHelper (epcHelper);
   lteHelper->SetAttribute ("UseIdealRrc", BooleanValue(m_useIdealRrc));
 

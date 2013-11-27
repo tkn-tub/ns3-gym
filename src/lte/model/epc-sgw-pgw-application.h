@@ -130,7 +130,8 @@ public:
    * Let the SGW be aware of a new eNB 
    * 
    * \param cellId the cell identifier
-   * \param enbAdd the address of the eNB
+   * \param enbAddr the address of the eNB
+   * \param sgwAddr the address of the SGW
    */
   void AddEnb (uint16_t cellId, Ipv4Address enbAddr, Ipv4Address sgwAddr);
 
