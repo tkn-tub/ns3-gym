@@ -43,6 +43,10 @@ class Packet;
 class UdpEchoServer : public Application 
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   UdpEchoServer ();
   virtual ~UdpEchoServer ();
@@ -55,12 +59,19 @@ private:
   virtual void StartApplication (void);
   virtual void StopApplication (void);
 
+  /**
+   * \brief Handle a packet reception.
+   *
+   * This function is called by lower layers.
+   *
+   * \param socket the socket the packet was received to.
+   */
   void HandleRead (Ptr<Socket> socket);
 
-  uint16_t m_port;
-  Ptr<Socket> m_socket;
-  Ptr<Socket> m_socket6;
-  Address m_local;
+  uint16_t m_port; //!< Port on which we listen for incoming packets.
+  Ptr<Socket> m_socket; //!< IPv4 Socket
+  Ptr<Socket> m_socket6; //!< IPv6 Socket
+  Address m_local; //!< local multicast address
 };
 
 } // namespace ns3

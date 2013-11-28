@@ -30,7 +30,8 @@
 namespace ns3 {
 
 /**
- * \brief Create a server application which waits for input udp packets
+ * \ingroup udpecho
+ * \brief Create a server application which waits for input UDP packets
  *        and sends them back to the original sender.
  */
 class UdpEchoServerHelper
@@ -87,15 +88,20 @@ public:
 
 private:
   /**
-   * \internal
+   * Install an ns3::UdpEchoServer on the node configured with all the
+   * attributes set with SetAttribute.
+   *
+   * \param node The node on which an UdpEchoServer will be installed.
+   * \returns Ptr to the application installed.
    */
   Ptr<Application> InstallPriv (Ptr<Node> node) const;
 
-  ObjectFactory m_factory;
+  ObjectFactory m_factory; //!< Object factory.
 };
 
 /**
- * \brief create an application which sends a udp packet and waits for an echo of this packet
+ * \ingroup udpecho
+ * \brief Create an application which sends a UDP packet and waits for an echo of this packet
  */
 class UdpEchoClientHelper
 {
@@ -108,7 +114,21 @@ public:
    * \param port The port number of the remote udp echo server
    */
   UdpEchoClientHelper (Address ip, uint16_t port);
+  /**
+   * Create UdpEchoClientHelper which will make life easier for people trying
+   * to set up simulations with echos.
+   *
+   * \param ip The IPv4 address of the remote udp echo server
+   * \param port The port number of the remote udp echo server
+   */
   UdpEchoClientHelper (Ipv4Address ip, uint16_t port);
+  /**
+   * Create UdpEchoClientHelper which will make life easier for people trying
+   * to set up simulations with echos.
+   *
+   * \param ip The IPv6 address of the remote udp echo server
+   * \param port The port number of the remote udp echo server
+   */
   UdpEchoClientHelper (Ipv6Address ip, uint16_t port);
 
   /**
@@ -203,8 +223,15 @@ public:
   ApplicationContainer Install (NodeContainer c) const;
 
 private:
+  /**
+   * Install an ns3::UdpEchoClient on the node configured with all the
+   * attributes set with SetAttribute.
+   *
+   * \param node The node on which an UdpEchoClient will be installed.
+   * \returns Ptr to the application installed.
+   */
   Ptr<Application> InstallPriv (Ptr<Node> node) const;
-  ObjectFactory m_factory;
+  ObjectFactory m_factory; //!< Object factory.
 };
 
 } // namespace ns3

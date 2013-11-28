@@ -37,30 +37,36 @@ namespace ns3 {
 /**
  * \ingroup udpclientserver
  * \class UdpServer
- * \brief A Udp server. Receives UDP packets from a remote host. UDP packets
- * carry a 32bits sequence number followed by a 64bits time stamp in their
- * payloads. The application uses, the sequence number to determine if a packet
- * is lost, and the time stamp to compute the delay
+ * \brief A UDP server, receives UDP packets from a remote host.
+ *
+ * UDP packets carry a 32bits sequence number followed by a 64bits time
+ * stamp in their payloads. The application uses the sequence number
+ * to determine if a packet is lost, and the time stamp to compute the delay.
  */
 class UdpServer : public Application
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   UdpServer ();
   virtual ~UdpServer ();
   /**
-   * returns the number of lost packets
+   * \brief Returns the number of lost packets
    * \return the number of lost packets
    */
   uint32_t GetLost (void) const;
 
   /**
-   * \brief returns the number of received packets
+   * \brief Returns the number of received packets
    * \return the number of received packets
    */
   uint32_t GetReceived (void) const;
 
   /**
+   * \brief Returns the size of the window used for checking loss.
    * \return the size of the window used for checking loss.
    */
   uint16_t GetPacketWindowSize () const;
@@ -80,14 +86,20 @@ private:
   virtual void StartApplication (void);
   virtual void StopApplication (void);
 
+  /**
+   * \brief Handle a packet reception.
+   *
+   * This function is called by lower layers.
+   *
+   * \param socket the socket the packet was received to.
+   */
   void HandleRead (Ptr<Socket> socket);
 
-  uint16_t m_port;
-  Ptr<Socket> m_socket;
-  Ptr<Socket> m_socket6;
-  Address m_local;
-  uint32_t m_received;
-  PacketLossCounter m_lossCounter;
+  uint16_t m_port; //!< Port on which we listen for incoming packets.
+  Ptr<Socket> m_socket; //!< IPv4 Socket
+  Ptr<Socket> m_socket6; //!< IPv6 Socket
+  uint32_t m_received; //!< Number of received packets
+  PacketLossCounter m_lossCounter; //!< Lost packet counter
 };
 
 } // namespace ns3

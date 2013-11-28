@@ -35,6 +35,7 @@ namespace ns3 {
 class DataRate;
 
 /**
+ * \ingroup onoff
  * \brief A helper to make it easier to instantiate an ns3::OnOffApplication 
  * on a set of nodes.
  */
@@ -114,7 +115,6 @@ public:
 
 private:
   /**
-   * \internal
    * Install an ns3::OnOffApplication on the node configured with all the 
    * attributes set with SetAttribute.
    *
@@ -122,9 +122,8 @@ private:
    * \returns Ptr to the application installed.
    */
   Ptr<Application> InstallPriv (Ptr<Node> node) const;
-  std::string m_protocol;
-  Address m_remote;
-  ObjectFactory m_factory;
+
+  ObjectFactory m_factory; //!< Object factory.
 };
 
 } // namespace ns3

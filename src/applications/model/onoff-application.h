@@ -86,6 +86,10 @@ class Socket;
 class OnOffApplication : public Application 
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   OnOffApplication ();
@@ -93,23 +97,24 @@ public:
   virtual ~OnOffApplication();
 
   /**
-   * \param maxBytes the total number of bytes to send
+   * \brief Set the total number of bytes to send.
    *
-   * Set the total number of bytes to send. Once these bytes are sent, no packet 
-   * is sent again, even in on state. The value zero means that there is no 
-   * limit.
+   * Once these bytes are sent, no packet is sent again, even in on state.
+   * The value zero means that there is no limit.
+   *
+   * \param maxBytes the total number of bytes to send
    */
   void SetMaxBytes (uint32_t maxBytes);
 
   /**
+   * \brief Return a pointer to associated socket.
    * \return pointer to associated socket
    */
   Ptr<Socket> GetSocket (void) const;
 
  /**
-  * Assign a fixed random variable stream number to the random variables
-  * used by this model.  Return the number of streams (possibly zero) that
-  * have been assigned.
+  * \brief Assign a fixed random variable stream number to the random variables
+  * used by this model.
   *
   * \param stream first stream index to use
   * \return the number of stream indices assigned by this model
@@ -124,44 +129,67 @@ private:
   virtual void StopApplication (void);     // Called at time specified by Stop
 
   //helpers
+  /**
+   * \brief Cancel all pending events.
+   */
   void CancelEvents ();
 
-  void Construct (Ptr<Node> n,
-                  const Address &remote,
-                  std::string tid,
-                  const RandomVariable& ontime,
-                  const RandomVariable& offtime,
-                  uint32_t size);
-
-
   // Event handlers
+  /**
+   * \brief Start an On period
+   */
   void StartSending ();
+  /**
+   * \brief Start an Off period
+   */
   void StopSending ();
+  /**
+   * \brief Send a packet
+   */
   void SendPacket ();
 
-  Ptr<Socket>     m_socket;       // Associated socket
-  Address         m_peer;         // Peer address
-  bool            m_connected;    // True if connected
-  Ptr<RandomVariableStream>  m_onTime;       // rng for On Time
-  Ptr<RandomVariableStream>  m_offTime;      // rng for Off Time
-  DataRate        m_cbrRate;      // Rate that data is generated
-  DataRate        m_cbrRateFailSafe;      // Rate that data is generated (check copy)
-  uint32_t        m_pktSize;      // Size of packets
-  uint32_t        m_residualBits; // Number of generated, but not sent, bits
-  Time            m_lastStartTime; // Time last packet sent
-  uint32_t        m_maxBytes;     // Limit total number of bytes sent
-  uint32_t        m_totBytes;     // Total bytes sent so far
-  EventId         m_startStopEvent;     // Event id for next start or stop event
-  EventId         m_sendEvent;    // Eventid of pending "send packet" event
-  bool            m_sending;      // True if currently in sending state
-  TypeId          m_tid;
+  Ptr<Socket>     m_socket;       //!< Associated socket
+  Address         m_peer;         //!< Peer address
+  bool            m_connected;    //!< True if connected
+  Ptr<RandomVariableStream>  m_onTime;       //!< rng for On Time
+  Ptr<RandomVariableStream>  m_offTime;      //!< rng for Off Time
+  DataRate        m_cbrRate;      //!< Rate that data is generated
+  DataRate        m_cbrRateFailSafe;      //!< Rate that data is generated (check copy)
+  uint32_t        m_pktSize;      //!< Size of packets
+  uint32_t        m_residualBits; //!< Number of generated, but not sent, bits
+  Time            m_lastStartTime; //!< Time last packet sent
+  uint32_t        m_maxBytes;     //!< Limit total number of bytes sent
+  uint32_t        m_totBytes;     //!< Total bytes sent so far
+  EventId         m_startStopEvent;     //!< Event id for next start or stop event
+  EventId         m_sendEvent;    //!< Event id of pending "send packet" event
+  bool            m_sending;      //!< True if currently in sending (On) state
+  TypeId          m_tid;          //!< Type of the socket used
+
+  /// Traced Callback: transmitted packets.
   TracedCallback<Ptr<const Packet> > m_txTrace;
 
 private:
+  /**
+   * \brief Schedule the next packet transmission
+   */
   void ScheduleNextTx ();
+  /**
+   * \brief Schedule the next On period start
+   */
   void ScheduleStartEvent ();
+  /**
+   * \brief Schedule the next Off period start
+   */
   void ScheduleStopEvent ();
+  /**
+   * \brief Handle a Connection Succeed event
+   * \param socket the connected socket
+   */
   void ConnectionSucceeded (Ptr<Socket> socket);
+  /**
+   * \brief Handle a Connection Failed event
+   * \param socket the not connected socket
+   */
   void ConnectionFailed (Ptr<Socket> socket);
 };
 

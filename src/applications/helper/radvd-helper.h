@@ -35,6 +35,7 @@
 namespace ns3 {
 
 /**
+ * \ingroup radvd
  * \class RadvdHelper
  * \brief Radvd application helper.
  */
@@ -69,9 +70,10 @@ public:
   void DisableDefaultRouterForInterface (uint32_t interface);
 
   /**
-   * \brief Get the low-level radvdInterface specification for an interface.
+   * \brief Get the low-level RadvdInterface specification for an interface.
    * This method is provided to enable fine-grain parameter setup.
    * \param interface outgoing interface
+   * \returns the RadvdInterface
    */
   Ptr<RadvdInterface> GetRadvdInterface (uint32_t interface);
 
@@ -100,10 +102,12 @@ private:
    */
   ObjectFactory m_factory;
 
+  /// Container: interface index, RadvdInterface
   typedef std::map<uint32_t, Ptr<RadvdInterface> > RadvdInterfaceMap;
+  /// Container Iterator: interface index, RadvdInterface
   typedef std::map<uint32_t, Ptr<RadvdInterface> >::iterator RadvdInterfaceMapI;
 
-  RadvdInterfaceMap m_radvdInterfaces;
+  RadvdInterfaceMap m_radvdInterfaces; //!< RadvdInterface(s)
 };
 
 } /* namespace ns3 */

@@ -36,8 +36,11 @@ namespace ns3
 class RadvdInterface : public SimpleRefCount<RadvdInterface>
 {
 public:
+  /// Container: Ptr to RadvdPrefix
   typedef std::list<Ptr<RadvdPrefix> > RadvdPrefixList;
+  /// Container Iterator: Ptr to RadvdPrefix
   typedef std::list<Ptr<RadvdPrefix> >::iterator RadvdPrefixListI;
+  /// Container Const Iterator: Ptr to RadvdPrefix
   typedef std::list<Ptr<RadvdPrefix> >::const_iterator RadvdPrefixListCI;
 
   /**

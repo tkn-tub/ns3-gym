@@ -42,6 +42,9 @@ NS_LOG_COMPONENT_DEFINE ("UdpTraceClient")
 NS_OBJECT_ENSURE_REGISTERED (UdpTraceClient)
   ;
 
+/**
+ * \brief Default trace to send
+ */
 struct UdpTraceClient::TraceEntry UdpTraceClient::g_defaultEntries[] = {
   { 0, 534, 'I'},
   { 40, 1542, 'P'},
@@ -72,7 +75,7 @@ UdpTraceClient::GetTypeId (void)
                    MakeUintegerAccessor (&UdpTraceClient::m_peerPort),
                    MakeUintegerChecker<uint16_t> ())
     .AddAttribute ("MaxPacketSize",
-                   "The maximum size of a packet.",
+                   "The maximum size of a packet (including the SeqTsHeader, 12 bytes).",
                    UintegerValue (1024),
                    MakeUintegerAccessor (&UdpTraceClient::m_maxPacketSize),
                    MakeUintegerChecker<uint32_t> ())
