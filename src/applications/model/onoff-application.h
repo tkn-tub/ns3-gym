@@ -162,7 +162,6 @@ private:
   uint32_t        m_totBytes;     //!< Total bytes sent so far
   EventId         m_startStopEvent;     //!< Event id for next start or stop event
   EventId         m_sendEvent;    //!< Event id of pending "send packet" event
-  bool            m_sending;      //!< True if currently in sending (On) state
   TypeId          m_tid;          //!< Type of the socket used
 
   /// Traced Callback: transmitted packets.
