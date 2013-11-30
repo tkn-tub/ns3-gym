@@ -206,7 +206,6 @@ def build(bld):
         'test/ipv4-fragmentation-test.cc',
         'test/ipv4-forwarding-test.cc',
         'test/error-channel.cc',
-        'test/error-net-device.cc',
         'test/ipv4-test.cc',
         'test/ipv6-extension-header-test-suite.cc',
         'test/ipv6-list-routing-test-suite.cc',

@@ -20,7 +20,7 @@
 #ifndef ERROR_CHANNEL_H
 #define ERROR_CHANNEL_H
 
-#include "ns3/channel.h"
+#include "ns3/simple-channel.h"
 #include "ns3/error-model.h"
 #include "ns3/mac48-address.h"
 #include "ns3/nstime.h"
@@ -28,23 +28,23 @@
 
 namespace ns3 {
 
-class ErrorNetDevice;
+class SimpleNetDevice;
 class Packet;
 
 /**
  * \ingroup channel
  * \brief A Error channel, introducing deterministic delays on even/odd packets. Used for testing
  */
-class ErrorChannel : public Channel
+class ErrorChannel : public SimpleChannel
 {
 public:
   static TypeId GetTypeId (void);
   ErrorChannel ();
 
   void Send (Ptr<Packet> p, uint16_t protocol, Mac48Address to, Mac48Address from,
-	     Ptr<ErrorNetDevice> sender);
+	     Ptr<SimpleNetDevice> sender);
 
-  void Add (Ptr<ErrorNetDevice> device);
+  void Add (Ptr<SimpleNetDevice> device);
 
   // inherited from ns3::Channel
   virtual uint32_t GetNDevices (void) const;
@@ -63,7 +63,7 @@ public:
 void SetJumpingMode(bool mode);
 
 private:
-  std::vector<Ptr<ErrorNetDevice> > m_devices;
+  std::vector<Ptr<SimpleNetDevice> > m_devices;
   Time jumpingTime;
   uint8_t jumpingState;
   bool jumping;
