@@ -890,18 +890,19 @@ Ipv4L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv4Header const&ip, uin
           return;
         }
       NS_LOG_LOGIC ("Got last fragment, Packet is complete " << *p );
+      ipHeader.SetFragmentOffset (0);
     }
 
-  m_localDeliverTrace (ip, packet, iif);
+  m_localDeliverTrace (ipHeader, p, iif);
 
-  Ptr<IpL4Protocol> protocol = GetProtocol (ip.GetProtocol ());
+  Ptr<IpL4Protocol> protocol = GetProtocol (ipHeader.GetProtocol ());
   if (protocol != 0)
     {
       // we need to make a copy in the unlikely event we hit the
       // RX_ENDPOINT_UNREACH codepath
       Ptr<Packet> copy = p->Copy ();
       enum IpL4Protocol::RxStatus status = 
-        protocol->Receive (p, ip, GetInterface (iif));
+        protocol->Receive (p, ipHeader, GetInterface (iif));
       switch (status) {
         case IpL4Protocol::RX_OK:
         // fall through
@@ -910,8 +911,8 @@ Ipv4L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv4Header const&ip, uin
         case IpL4Protocol::RX_CSUM_FAILED:
           break;
         case IpL4Protocol::RX_ENDPOINT_UNREACH:
-          if (ip.GetDestination ().IsBroadcast () == true ||
-              ip.GetDestination ().IsMulticast () == true)
+          if (ipHeader.GetDestination ().IsBroadcast () == true ||
+              ipHeader.GetDestination ().IsMulticast () == true)
             {
               break; // Do not reply to broadcast or multicast
             }
@@ -920,15 +921,15 @@ Ipv4L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv4Header const&ip, uin
           for (uint32_t i = 0; i < GetNAddresses (iif); i++)
             {
               Ipv4InterfaceAddress addr = GetAddress (iif, i);
-              if (addr.GetLocal ().CombineMask (addr.GetMask ()) == ip.GetDestination ().CombineMask (addr.GetMask ()) &&
-                  ip.GetDestination ().IsSubnetDirectedBroadcast (addr.GetMask ()))
+              if (addr.GetLocal ().CombineMask (addr.GetMask ()) == ipHeader.GetDestination ().CombineMask (addr.GetMask ()) &&
+                  ipHeader.GetDestination ().IsSubnetDirectedBroadcast (addr.GetMask ()))
                 {
                   subnetDirected = true;
                 }
             }
           if (subnetDirected == false)
             {
-              GetIcmp ()->SendDestUnreachPort (ip, copy);
+              GetIcmp ()->SendDestUnreachPort (ipHeader, copy);
             }
         }
     }
