@@ -152,8 +152,8 @@ public:
   /**
    * \brief Set the thresh limits of RED.
    *
-   * \param min Minimum thresh in bytes or packets.
-   * \param max Maximum thresh in bytes or packets.
+   * \param minTh Minimum thresh in bytes or packets.
+   * \param maxTh Maximum thresh in bytes or packets.
    */
   void SetTh (double minTh, double maxTh);
 

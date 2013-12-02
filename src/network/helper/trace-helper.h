@@ -67,23 +67,42 @@ public:
   /**
    * @brief Let the pcap helper figure out a reasonable filename to use for a
    * pcap file associated with a device.
+   * 
+   * @param prefix prefix string
+   * @param device NetDevice
+   * @param useObjectNames use node and device names instead of indexes
    */
   std::string GetFilenameFromDevice (std::string prefix, Ptr<NetDevice> device, bool useObjectNames = true);
 
   /**
    * @brief Let the pcap helper figure out a reasonable filename to use for the
    * pcap file associated with a node.
+   * 
+   * @param prefix prefix string
+   * @param object interface (such as Ipv4Interface or Ipv6Interface)
+   * @param interface interface id
+   * @param useObjectNames use node and device names instead of indexes
    */
   std::string GetFilenameFromInterfacePair (std::string prefix, Ptr<Object> object, 
                                             uint32_t interface, bool useObjectNames = true);
 
   /**
    * @brief Create and initialize a pcap file.
+   * 
+   * @param filename file name
+   * @param filemode file mode
+   * @param dataLinkType data link type of packet data
+   * @param snapLen maximum length of packet data stored in records
+   * @param tzCorrection time zone correction to be applied to timestamps of packets
    */
   Ptr<PcapFileWrapper> CreateFile (std::string filename, std::ios::openmode filemode,
                                    uint32_t dataLinkType,  uint32_t snapLen = 65535, int32_t tzCorrection = 0);
   /**
    * @brief Hook a trace source to the default trace sink
+   * 
+   * @param object object
+   * @param traceName trace source name
+   * @param file file wrapper
    */
   template <typename T> void HookDefaultSink (Ptr<T> object, std::string traceName, Ptr<PcapFileWrapper> file);
 
@@ -122,12 +141,21 @@ public:
   /**
    * @brief Let the ascii trace helper figure out a reasonable filename to use
    * for an ascii trace file associated with a device.
+   * 
+   * @param prefix prefix string
+   * @param device NetDevice
+   * @param useObjectNames use node and device names instead of indexes
    */
   std::string GetFilenameFromDevice (std::string prefix, Ptr<NetDevice> device, bool useObjectNames = true);
 
   /**
    * @brief Let the ascii trace helper figure out a reasonable filename to use
    * for an ascii trace file associated with a node.
+   * 
+   * @param prefix prefix string
+   * @param object interface (such as Ipv4Interface or Ipv6Interface)
+   * @param interface interface id
+   * @param useObjectNames use node and device names instead of indexes
    */
   std::string GetFilenameFromInterfacePair (std::string prefix, Ptr<Object> object, 
                                             uint32_t interface, bool useObjectNames = true);
@@ -151,6 +179,9 @@ public:
    * run into object lifetime issues.  Ns-3 has a nice reference counted object
    * that can solve the problem so we use one of those to carry the stream
    * around and deal with the lifetime issues.
+   * 
+   * @param filename file name
+   * @param filemode file mode
    */
   Ptr<OutputStreamWrapper> CreateFileStream (std::string filename, 
                                              std::ios::openmode filemode = std::ios::out);
@@ -158,6 +189,10 @@ public:
   /**
    * @brief Hook a trace source to the default enqueue operation trace sink that
    * does not accept nor log a trace context.
+   * 
+   * @param object object
+   * @param traceName trace source name
+   * @param stream output stream wrapper
    */
   template <typename T> 
   void HookDefaultEnqueueSinkWithoutContext (Ptr<T> object, std::string traceName, Ptr<OutputStreamWrapper> stream);
@@ -165,6 +200,11 @@ public:
   /**
    * @brief Hook a trace source to the default enqueue operation trace sink that
    * does accept and log a trace context.
+   * 
+   * @param object object
+   * @param context context string
+   * @param traceName trace source name
+   * @param stream output stream wrapper
    */
   template <typename T> 
   void HookDefaultEnqueueSinkWithContext (Ptr<T> object, 
@@ -173,6 +213,10 @@ public:
   /**
    * @brief Hook a trace source to the default drop operation trace sink that 
    * does not accept nor log a trace context.
+   * 
+   * @param object object
+   * @param traceName trace source name
+   * @param stream output stream wrapper
    */
   template <typename T> 
   void HookDefaultDropSinkWithoutContext (Ptr<T> object, std::string traceName, Ptr<OutputStreamWrapper> stream);
@@ -180,6 +224,11 @@ public:
   /**
    * @brief Hook a trace source to the default drop operation trace sink that 
    * does accept and log a trace context.
+   * 
+   * @param object object
+   * @param context context string
+   * @param traceName trace source name
+   * @param stream output stream wrapper
    */
   template <typename T> 
   void HookDefaultDropSinkWithContext (Ptr<T> object, 
@@ -188,6 +237,10 @@ public:
   /**
    * @brief Hook a trace source to the default dequeue operation trace sink
    * that does not accept nor log a trace context.
+   * 
+   * @param object object
+   * @param traceName trace source name
+   * @param stream output stream wrapper
    */
   template <typename T> 
   void HookDefaultDequeueSinkWithoutContext (Ptr<T> object, std::string traceName, Ptr<OutputStreamWrapper> stream);
@@ -195,6 +248,11 @@ public:
   /**
    * @brief Hook a trace source to the default dequeue operation trace sink
    * that does accept and log a trace context.
+   * 
+   * @param object object
+   * @param context context string
+   * @param traceName trace source name
+   * @param stream output stream wrapper
    */
   template <typename T> 
   void HookDefaultDequeueSinkWithContext (Ptr<T> object, 
@@ -203,6 +261,10 @@ public:
   /**
    * @brief Hook a trace source to the default receive operation trace sink
    * that does not accept nor log a trace context.
+   * 
+   * @param object object
+   * @param traceName trace source name
+   * @param stream output stream wrapper
    */
   template <typename T> 
   void HookDefaultReceiveSinkWithoutContext (Ptr<T> object, std::string traceName, Ptr<OutputStreamWrapper> stream);
@@ -210,6 +272,11 @@ public:
   /**
    * @brief Hook a trace source to the default receive operation trace sink
    * that does accept and log a trace context.
+   * 
+   * @param object object
+   * @param context context string
+   * @param traceName trace source name
+   * @param stream output stream wrapper
    */
   template <typename T> 
   void HookDefaultReceiveSinkWithContext (Ptr<T> object, 

@@ -177,7 +177,7 @@ public:
    * \param [in] o The PacketTagList to copy.
    *
    * This makes a light-weight copy by #RemoveAll, then
-   * pointing to the same #struct TagData as \pname{o}.
+   * pointing to the same \ref TagData as \pname{o}.
    */
   inline PacketTagList (PacketTagList const &o);
   /**
@@ -186,7 +186,7 @@ public:
    * \param [in] o The PacketTagList to copy.
    *
    * This makes a light-weight copy by #RemoveAll, then
-   * pointing to the same #struct TagData as \pname{o}.
+   * pointing to the same \ref TagData as \pname{o}.
    */
   inline PacketTagList &operator = (PacketTagList const &o);
   /**
@@ -287,7 +287,7 @@ private:
   bool ReplaceWriter (Tag & tag, bool preMerge, struct TagData * cur, struct TagData ** prevNext);
 
   /**
-   * Pointer to first #struct TagData on the list
+   * Pointer to first \ref TagData on the list
    */
   struct TagData *m_next;
 };

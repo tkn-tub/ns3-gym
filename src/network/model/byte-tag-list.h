@@ -136,7 +136,7 @@ private:
    * 
    * Copy constructor, copies the data and increases reference count
    *
-   * \param The ByteTagList to copy
+   * \param o The ByteTagList to copy
    * \returns The newly created ByteTagList
    *
    */
