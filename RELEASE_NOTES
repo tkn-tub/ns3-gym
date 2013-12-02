@@ -38,6 +38,7 @@ Bugs fixed
 - Bug 1777 - Implement the more direct way of "using" configuration of existing tap interface
 - Bug 1776 - Improve CRC performance for CsmaNetDevice in emulation modes
 - Bug 1798 - Changing the rate of onOffApplication might stop transmission
+- Bug 1802 - FlowMon header deserialization problem with IPv4 fragments
 - Bug 1807 - Multiple bugs in Ipv4L3Protocol::LocalDeliver
 
 Release 3.18.1
