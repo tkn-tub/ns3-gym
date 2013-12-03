@@ -51,8 +51,8 @@ public:
    * \param sender netdevice who sent the packet
    *
    */
-  void Send (Ptr<Packet> p, uint16_t protocol, Mac48Address to, Mac48Address from,
-             Ptr<SimpleNetDevice> sender);
+  virtual void Send (Ptr<Packet> p, uint16_t protocol, Mac48Address to, Mac48Address from,
+                     Ptr<SimpleNetDevice> sender);
 
   /**
    * Attached a net device to the channel.

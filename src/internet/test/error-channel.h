@@ -41,8 +41,8 @@ public:
   static TypeId GetTypeId (void);
   ErrorChannel ();
 
-  void Send (Ptr<Packet> p, uint16_t protocol, Mac48Address to, Mac48Address from,
-	     Ptr<SimpleNetDevice> sender);
+  virtual void Send (Ptr<Packet> p, uint16_t protocol, Mac48Address to, Mac48Address from,
+                     Ptr<SimpleNetDevice> sender);
 
   void Add (Ptr<SimpleNetDevice> device);
 
