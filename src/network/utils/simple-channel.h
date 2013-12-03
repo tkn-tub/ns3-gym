@@ -59,7 +59,7 @@ public:
    *
    * \param device the device to attach to the channel
    */ 
-  void Add (Ptr<SimpleNetDevice> device);
+  virtual void Add (Ptr<SimpleNetDevice> device);
 
   // inherited from ns3::Channel
   virtual uint32_t GetNDevices (void) const;
