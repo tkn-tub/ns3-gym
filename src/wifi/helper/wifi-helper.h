@@ -140,7 +140,7 @@ public:
    * \param c the set of nodes on which a wifi device must be created
    * \returns a device container which contains all the devices created by this method.
    */
-  NetDeviceContainer Install (const WifiPhyHelper &phy,
+  virtual NetDeviceContainer Install (const WifiPhyHelper &phy,
                               const WifiMacHelper &mac, NodeContainer c) const;
   /**
    * \param phy the PHY helper to create PHY objects
@@ -148,7 +148,7 @@ public:
    * \param node the node on which a wifi device must be created
    * \returns a device container which contains all the devices created by this method.
    */
-  NetDeviceContainer Install (const WifiPhyHelper &phy,
+  virtual NetDeviceContainer Install (const WifiPhyHelper &phy,
                               const WifiMacHelper &mac, Ptr<Node> node) const;
   /**
    * \param phy the PHY helper to create PHY objects
@@ -156,7 +156,7 @@ public:
    * \param nodeName the name of node on which a wifi device must be created
    * \returns a device container which contains all the devices created by this method.
    */
-  NetDeviceContainer Install (const WifiPhyHelper &phy,
+  virtual NetDeviceContainer Install (const WifiPhyHelper &phy,
                               const WifiMacHelper &mac, std::string nodeName) const;
 
   /**
@@ -164,7 +164,7 @@ public:
    *
    * By default, all objects are configured for 802.11a
    */
-  void SetStandard (enum WifiPhyStandard standard);
+  virtual void SetStandard (enum WifiPhyStandard standard);
 
   /**
    * Helper to enable all WifiNetDevice log components with one statement
@@ -187,7 +187,7 @@ public:
   */
   int64_t AssignStreams (NetDeviceContainer c, int64_t stream);
 
-private:
+protected:
   ObjectFactory m_stationManager;
   enum WifiPhyStandard m_standard;
 };

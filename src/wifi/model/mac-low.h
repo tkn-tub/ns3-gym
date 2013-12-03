@@ -411,6 +411,7 @@ public:
   Time GetPifs (void) const;
   Time GetRifs (void) const;
   Mac48Address GetBssid (void) const;
+  bool IsPromisc (void) const;
 
   /**
    * \param callback the callback which receives every incoming packet.
@@ -512,6 +513,8 @@ public:
    * associated to this AC.
    */
   void RegisterBlockAckListenerForAc (enum AcIndex ac, MacLowBlockAckEventListener *listener);
+protected:
+  virtual WifiTxVector GetDataTxVector (Ptr<const Packet> packet, const WifiMacHeader *hdr) const;
 private:
   void CancelAllEvents (void);
   uint32_t GetAckSize (void) const;
@@ -522,7 +525,6 @@ private:
   void ForwardDown (Ptr<const Packet> packet, const WifiMacHeader *hdr,
                     WifiTxVector txVector, WifiPreamble preamble);
   WifiTxVector GetRtsTxVector (Ptr<const Packet> packet, const WifiMacHeader *hdr) const;
-  WifiTxVector GetDataTxVector (Ptr<const Packet> packet, const WifiMacHeader *hdr) const;
   WifiTxVector GetCtsTxVector (Mac48Address to, WifiMode rtsTxMode) const;
   WifiTxVector GetAckTxVector (Mac48Address to, WifiMode dataTxMode) const;
   WifiTxVector GetBlockAckTxVector (Mac48Address to, WifiMode dataTxMode) const;

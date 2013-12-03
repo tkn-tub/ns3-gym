@@ -1,0 +1,40 @@
+# -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+# def options(opt):
+#     pass
+
+# def configure(conf):
+#     conf.check_nonfatal(header_name='stdint.h', define_name='HAVE_STDINT_H')
+
+def build(bld):
+    module = bld.create_ns3_module('wave', ['core','wifi', 'propagation'])
+    module.source = [
+	'model/wave-mac-low.cc',
+        'model/ocb-wifi-mac.cc',
+        'model/vendor-specific-action.cc',
+        'model/higher-tx-tag.cc',
+        'helper/wave-mac-helper.cc',
+        'helper/wifi-80211p-helper.cc',
+        ]
+
+    module_test = bld.create_ns3_module_test_library('wave')
+    module_test.source = [
+        'test/ocb-test-suite.cc',
+        ]
+
+    headers = bld(features='ns3header')
+    headers.module = 'wave'
+    headers.source = [
+    	'model/wave-mac-low.h',
+        'model/ocb-wifi-mac.h',
+        'model/vendor-specific-action.h',
+        'model/higher-tx-tag.h',
+        'helper/wave-mac-helper.h',
+        'helper/wifi-80211p-helper.h',
+        ]
+
+    if bld.env.ENABLE_EXAMPLES:
+        bld.recurse('examples')
+
+    # bld.ns3_python_bindings()
+

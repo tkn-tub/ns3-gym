@@ -78,6 +78,7 @@ SOURCES = \
 	$(SRC)/stats/doc/statistics.rst \
 	$(SRC)/netanim/doc/animation.rst \
 	$(SRC)/flow-monitor/doc/flow-monitor.rst \
+	$(SRC)/wave/doc/wave.rst \
 
 # list all model library figure files that need to be copied to 
 # $SOURCETEMP/figures.  For each figure to be included in all

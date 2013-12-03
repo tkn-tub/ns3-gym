@@ -109,14 +109,14 @@ public:
   virtual bool SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber);
   virtual void SetPromiscReceiveCallback (PromiscReceiveCallback cb);
   virtual bool SupportsSendFrom (void) const;
-
+protected:
+   virtual void DoDispose (void);
+   virtual void DoInitialize (void);
+   void ForwardUp (Ptr<Packet> packet, Mac48Address from, Mac48Address to);
 private:
   // This value conforms to the 802.11 specification
   static const uint16_t MAX_MSDU_SIZE = 2304;
 
-  virtual void DoDispose (void);
-  virtual void DoInitialize (void);
-  void ForwardUp (Ptr<Packet> packet, Mac48Address from, Mac48Address to);
   void LinkUp (void);
   void LinkDown (void);
   Ptr<WifiChannel> DoGetChannel (void) const;

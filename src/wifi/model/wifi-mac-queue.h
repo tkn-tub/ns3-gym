@@ -30,8 +30,6 @@
 #include "wifi-mac-header.h"
 
 namespace ns3 {
-
-class WifiMacParameters;
 class QosBlockedDestinations;
 
 /**
@@ -120,14 +118,15 @@ public:
 
   bool IsEmpty (void);
   uint32_t GetSize (void);
-private:
+protected:
+  virtual void Cleanup (void);
+
   struct Item;
 
   typedef std::list<struct Item> PacketQueue;
   typedef std::list<struct Item>::reverse_iterator PacketQueueRI;
   typedef std::list<struct Item>::iterator PacketQueueI;
 
-  void Cleanup (void);
   Mac48Address GetAddressForPacket (enum WifiMacHeader::AddressType type, PacketQueueI);
 
   struct Item

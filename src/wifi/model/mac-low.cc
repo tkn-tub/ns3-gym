@@ -295,7 +295,9 @@ MacLow::MacLow ()
     m_waitSifsEvent (),
     m_endTxNoAckEvent (),
     m_currentPacket (0),
-    m_listener (0)
+    m_listener (0),
+    m_phyMacLowListener (0),
+    m_ctsToSelfSupported (false)
 {
   NS_LOG_FUNCTION (this);
   m_lastNavDuration = Seconds (0);
@@ -334,8 +336,11 @@ MacLow::DoDispose (void)
    m_waitRifsEvent.Cancel();
   m_phy = 0;
   m_stationManager = 0;
-  delete m_phyMacLowListener;
-  m_phyMacLowListener = 0;
+  if (m_phyMacLowListener != 0)
+    {
+	  delete m_phyMacLowListener;
+	  m_phyMacLowListener = 0;
+    }
 }
 
 void
@@ -538,6 +543,11 @@ Mac48Address
 MacLow::GetBssid (void) const
 {
   return m_bssid;
+}
+bool
+MacLow::IsPromisc (void) const
+{
+  return m_promisc;
 }
 
 void

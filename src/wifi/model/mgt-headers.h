@@ -204,6 +204,9 @@ public:
     MESH_INTERWORKING = 33,
     MESH_RESOURCE_COORDINATION = 34,
     MESH_PROXY_FORWARDING = 35,
+    // since vendor specific action has no stationary Action value,the parse process is not here.
+    // refer to vendor-specific-action in wave module.
+    VENDOR_SPECIFIC_ACTION = 127,
   };
   /* Compatible with open80211s implementation */
   enum PeerLinkMgtActionValue

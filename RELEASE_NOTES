@@ -22,6 +22,16 @@ Supported platforms
 New user-visible features
 -------------------------
 
+- A new wifi extension for vehicular simulation support is available in src/wave
+  directory.  The current code represents an interim capability to realize an
+  IEEE 802.11p-compliant device, but without the WAVE extensions (which
+  are planned for a later patch).  The WaveNetDevice modelled herein enforces that
+  a WAVE-compliant physical layer (at 5.9 GHz) is selected, and does not require 
+  any association between devices (similar to an adhoc WiFi MAC), but is 
+  otherwise similar (at this time) to a WifiNetDevice.  WAVE capabililties of 
+  switching between control and service channels, or using multiple radios, are
+  not yet modelled.
+
 Bugs fixed
 ----------
 - Bug 1778 - Implement TapBridge::IsLinkUp() function

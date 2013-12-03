@@ -259,6 +259,18 @@ protected:
   channel access function */
   EdcaQueues m_edca;
 
+  /** Accessor for the DCF object */
+  Ptr<DcaTxop> GetDcaTxop (void) const;
+
+  /** Accessor for the AC_VO channel access function */
+  Ptr<EdcaTxopN> GetVOQueue (void) const;
+  /** Accessor for the AC_VI channel access function */
+  Ptr<EdcaTxopN> GetVIQueue (void) const;
+  /** Accessor for the AC_BE channel access function */
+  Ptr<EdcaTxopN> GetBEQueue (void) const;
+  /** Accessor for the AC_BK channel access function */
+  Ptr<EdcaTxopN> GetBKQueue (void) const;
+
   /**
    * \param standard the phy standard to be used
    *
@@ -407,38 +419,6 @@ private:
    * \param ac the Access Category index of the queue to initialise.
    */
   void SetupEdcaQueue (enum AcIndex ac);
-
-  /**
-   * Return the DCF.
-   *
-   * \return a DCF instance
-   */
-  Ptr<DcaTxop> GetDcaTxop (void) const;
-
-  /**
-   * Return the EDCAF instance for the voice access class.
-   *
-   * \return a AC_VO EDCAF instance
-   */
-  Ptr<EdcaTxopN> GetVOQueue (void) const;
-  /**
-   * Return the EDCAF instance for the video access class.
-   *
-   * \return a AC_VI EDCAF instance
-   */
-  Ptr<EdcaTxopN> GetVIQueue (void) const;
-  /**
-   * Return the EDCAF instance for the best effort access class.
-   *
-   * \return a AC_BE EDCAF instance
-   */
-  Ptr<EdcaTxopN> GetBEQueue (void) const;
-  /**
-   * Return the EDCAF instance for the background access class.
-   *
-   * \return a AC_BK EDCAF instance
-   */
-  Ptr<EdcaTxopN> GetBKQueue (void) const;
 
   TracedCallback<const WifiMacHeader &> m_txOkCallback;
   TracedCallback<const WifiMacHeader &> m_txErrCallback;
