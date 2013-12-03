@@ -2,6 +2,18 @@
 
 # Process doxygen.warnings.log to generate sorted list of top offenders
 
+# This script is designed to be invoked from top level ns-3 directory as:
+#   $ bash doc/doxygen.warnings.report.sh
+
+# It will rebuild doxygen with a slightly modified doxygen.conf file and then
+# analyze the resulting log.  If a flag is passed such as:
+#   $ bash doc/doxygen.warnings.report.sh -
+# it will not rebuild doxygen but use either the existing doc/doxygen.log or 
+# doc/doxygen.warnings.log file
+
+# Output is sent to stdout, and can be redirected to a file using typical stdout
+# redirection
+
 # Flag to skip the build and running doxygen, and just analyze the log
 skipdoxy=${1:-""}
 
@@ -40,7 +52,17 @@ if [ "$skipdoxy" == "" ]; then
     mv $DIR/doxygen.log $log
 
 else
-    echo "Skipping doxygen run, using existing log file $log"
+    if [ -e $DIR/doxygen.log ]
+    then 
+        mv $DIR/doxygen.log $log
+    fi
+    if [ -e $log ]
+    then
+        echo "Skipping doxygen run, using existing log file $log"
+    else
+        echo "Asked to skip doxygen run, but log file $log not found; exiting"
+        exit 1
+    fi
 fi
 
 
@@ -95,7 +117,7 @@ undocfiles=$( \
     )
 
 # Sorted by number, decreasing
-undocsort=$(echo "$undocfiles" | sort -r )
+undocsort=$(echo "$undocfiles" | sort -k1,1 -n -r )
 
 # Total number of files
 filecount=$(                        \
