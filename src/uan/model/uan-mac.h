@@ -40,55 +40,69 @@ class UanAddress;
 
 
 /**
- * \class UanMac
+ * \ingroup uan
  *
- * \brief Virtual base class for all UAN MAC protocols
+ * Virtual base class for all UAN MAC protocols.
  */
 class UanMac : public Object
 {
 public:
-  static TypeId GetTypeId (void);
+  /**
+   * Register this type.
+   * \return The TypeId.
+   */
+   static TypeId GetTypeId (void);
 
   /**
-   * \returns MAC Address
+   * Get the MAC Address.
+   *
+   * \return MAC Address.
    */
   virtual Address GetAddress (void) = 0;
 
   /**
-   * \param addr UanAddress for this MAC
+   * Set the address.
+   *
+   * \param addr UanAddress for this MAC.
    */
   virtual void SetAddress (UanAddress addr) = 0;
 
   /**
-   * Enqueue packet to be transmitted
-   * \param pkt Packet to be transmitted
-   * \param dest Destination address
-   * \param protocolNumber Protocol #.  Usage varies by MAC
+   * Enqueue packet to be transmitted.
+   *
+   * \param pkt Packet to be transmitted.
+   * \param dest Destination address.
+   * \param protocolNumber Protocol number.  Usage varies by MAC.
+   * \return True if packet was successfully enqueued.
    */
   virtual bool Enqueue (Ptr<Packet> pkt, const Address &dest, uint16_t protocolNumber) = 0;
   /**
-   * \param cb  Callback to be called when a packet is forwarded up to higher layer
+   * Set the callback to forward packets up to higher layers.
+   * 
+   * \param cb The callback.
+   * \pname{packet} The packet.
+   * \pname{address} The source address.
    */
   virtual void SetForwardUpCb (Callback<void, Ptr<Packet>, const UanAddress&> cb) = 0;
 
   /**
    * Attach PHY layer to this MAC.
+   *
    * Some MACs may be designed to work with multiple PHY
    * layers.  Others may only work with one.
    *
-   * \param phy Phy layer to attach to this MAC
-   *
+   * \param phy Phy layer to attach to this MAC.
    */
   virtual void AttachPhy (Ptr<UanPhy> phy) = 0;
 
   /**
-   * \returns Broadcast address
+   * Get the broadcast address.
+   *
+   * \return The broadcast address.
    */
   virtual Address GetBroadcast (void) const = 0;
 
-  /**
-   * Clears all pointer references
-   */
+  /** Clears all pointer references. */
   virtual void Clear (void) = 0;
 
  /**
@@ -96,13 +110,13 @@ public:
   * used by this model.  Return the number of streams (possibly zero) that
   * have been assigned.
   *
-  * \param stream first stream index to use
-  * \return the number of stream indices assigned by this model
+  * \param stream First stream index to use.
+  * \return The number of stream indices assigned by this model.
   */
   virtual int64_t AssignStreams (int64_t stream) = 0;
 
-};
+};  // class UanMac
 
-}
+} // namespace ns3
 
 #endif /* UAN_MAC_H */

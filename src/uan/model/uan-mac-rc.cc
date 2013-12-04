@@ -211,53 +211,53 @@ UanMacRc::GetTypeId (void)
     .SetParent<UanMac> ()
     .AddConstructor<UanMacRc> ()
     .AddAttribute ("RetryRate",
-                   "Number of retry attempts per second (of RTS/GWPING)",
+                   "Number of retry attempts per second (of RTS/GWPING).",
                    DoubleValue (1 / 5.0),
                    MakeDoubleAccessor (&UanMacRc::m_retryRate),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("MaxFrames",
-                   "Maximum number of frames to include in a single RTS",
+                   "Maximum number of frames to include in a single RTS.",
                    UintegerValue (1),
                    MakeUintegerAccessor (&UanMacRc::m_maxFrames),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("QueueLimit",
-                   "Maximum packets to queue at MAC",
+                   "Maximum packets to queue at MAC.",
                    UintegerValue (10),
                    MakeUintegerAccessor (&UanMacRc::m_queueLimit),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("SIFS",
-                   "Spacing to give between frames (this should match gateway)",
+                   "Spacing to give between frames (this should match gateway).",
                    TimeValue (Seconds (0.2)),
                    MakeTimeAccessor (&UanMacRc::m_sifs),
                    MakeTimeChecker ())
     .AddAttribute ("NumberOfRates",
-                   "Number of rate divisions supported by each PHY",
+                   "Number of rate divisions supported by each PHY.",
                    UintegerValue (0),
                    MakeUintegerAccessor (&UanMacRc::m_numRates),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("MinRetryRate",
-                   "Smallest allowed RTS retry rate",
+                   "Smallest allowed RTS retry rate.",
                    DoubleValue (0.01),
                    MakeDoubleAccessor (&UanMacRc::m_minRetryRate),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("RetryStep",
-                   "Retry rate increment",
+                   "Retry rate increment.",
                    DoubleValue (0.01),
                    MakeDoubleAccessor (&UanMacRc::m_retryStep),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("MaxPropDelay",
-                   "Maximum possible propagation delay to gateway",
+                   "Maximum possible propagation delay to gateway.",
                    TimeValue (Seconds (2)),
                    MakeTimeAccessor (&UanMacRc::m_learnedProp),
                    MakeTimeChecker ())
     .AddTraceSource ("Enqueue",
-                     "A  (data) packet arrived at MAC for transmission",
+                     "A  (data) packet arrived at MAC for transmission.",
                      MakeTraceSourceAccessor (&UanMacRc::m_enqueueLogger))
     .AddTraceSource ("Dequeue",
-                     "A  (data) packet was passed down to PHY from MAC",
+                     "A  (data) packet was passed down to PHY from MAC.",
                      MakeTraceSourceAccessor (&UanMacRc::m_dequeueLogger))
     .AddTraceSource ("RX",
-                     "A packet was destined for and received at this MAC layer",
+                     "A packet was destined for and received at this MAC layer.",
                      MakeTraceSourceAccessor (&UanMacRc::m_rxLogger))
   ;
   return tid;

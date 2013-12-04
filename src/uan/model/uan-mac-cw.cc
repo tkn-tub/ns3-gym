@@ -81,23 +81,23 @@ UanMacCw::GetTypeId (void)
     .SetParent<Object> ()
     .AddConstructor<UanMacCw> ()
     .AddAttribute ("CW",
-                   "The MAC parameter CW",
+                   "The MAC parameter CW.",
                    UintegerValue (10),
                    MakeUintegerAccessor (&UanMacCw::m_cw),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("SlotTime",
-                   "Time slot duration for MAC backoff",
+                   "Time slot duration for MAC backoff.",
                    TimeValue (MilliSeconds (20)),
                    MakeTimeAccessor (&UanMacCw::m_slotTime),
                    MakeTimeChecker ())
     .AddTraceSource ("Enqueue",
-                     "A packet arrived at the MAC for transmission",
+                     "A packet arrived at the MAC for transmission.",
                      MakeTraceSourceAccessor (&UanMacCw::m_enqueueLogger))
     .AddTraceSource ("Dequeue",
-                     "A was passed down to the PHY from the MAC",
+                     "A was passed down to the PHY from the MAC.",
                      MakeTraceSourceAccessor (&UanMacCw::m_dequeueLogger))
     .AddTraceSource ("RX",
-                     "A packet was destined for this MAC and was received",
+                     "A packet was destined for this MAC and was received.",
                      MakeTraceSourceAccessor (&UanMacCw::m_rxLogger))
 
   ;

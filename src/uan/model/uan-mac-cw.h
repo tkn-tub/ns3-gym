@@ -32,40 +32,57 @@
 namespace ns3 {
 
 /**
- * \class UanMacCw
- * \brief CW-MAC A MAC protocol similar in idea to the 802.11 DCF with constant backoff window
+ * \ingroup uan
+ *
+ * CW-MAC protocol, similar in idea to the 802.11 DCF with
+ * constant backoff window
  *
  * For more information on this MAC protocol, see:
  * Parrish, N.; Tracy, L.; Roy, S.; Arabshahi, P.; Fox, W.,
- * "System Design Considerations for Undersea Networks: Link and Multiple Access Protocols,"
- * Selected Areas in Communications, IEEE Journal on , vol.26, no.9, pp.1720-1730, December 2008
+ * "System Design Considerations for Undersea Networks: Link and
+ * Multiple Access Protocols," Selected Areas in Communications,
+ * IEEE Journal on , vol.26, no.9, pp.1720-1730, December 2008
  */
 class UanMacCw : public UanMac,
                  public UanPhyListener
 {
 public:
+  /** Default constructor */
   UanMacCw ();
+  /** Dummy destructor, DoDispose. */
   virtual ~UanMacCw ();
+  /**
+   * Register this type.
+   * \return The TypeId.
+   */
   static TypeId GetTypeId (void);
 
   /**
-   * \param cw Contention window size
+   * Set the contention window size.
+   *   
+   * \param cw Contention window size.
    */
   virtual void SetCw (uint32_t cw);
   /**
-   * \param duration Slot time duration
+   * Set the slot time duration.
+   *
+   * \param duration Slot time duration.
    */
   virtual void SetSlotTime (Time duration);
   /**
-   * \returns Contention window size
+   * Get the contention window size.
+   *
+   * \return Contention window size.
    */
   virtual uint32_t GetCw (void);
   /**
-   * \returns slot time duration
+   * Get the slot time duration.
+   *
+   * \return Slot time duration.
    */
   virtual Time GetSlotTime (void);
 
-  // Inherited methods
+  // Inherited methods from UanMac
   virtual Address GetAddress ();
   virtual void SetAddress (UanAddress addr);
   virtual bool Enqueue (Ptr<Packet> pkt, const Address &dest, uint16_t protocolNumber);
@@ -73,71 +90,94 @@ public:
   virtual void AttachPhy (Ptr<UanPhy> phy);
   virtual Address GetBroadcast (void) const;
   virtual void Clear (void);
-
-  // PHY listeners
-  /// Function called by UanPhy object to notify of packet reception
-  virtual void NotifyRxStart (void);
-  /// Function called by UanPhy object to notify of packet received successfully
-  virtual void NotifyRxEndOk (void);
-  /// Function called by UanPhy object to notify of packet received in error
-  virtual void NotifyRxEndError (void);
-  /// Function called by UanPhy object to notify of channel sensed busy
-  virtual void NotifyCcaStart (void);
-  /// Function called by UanPhy object to notify of channel no longer sensed busy
-  virtual void NotifyCcaEnd (void);
-  /// Function called by UanPhy object to notify of outgoing transmission start
-  virtual void NotifyTxStart (Time duration);
-
- /**
-  * Assign a fixed random variable stream number to the random variables
-  * used by this model.  Return the number of streams (possibly zero) that
-  * have been assigned.
-  *
-  * \param stream first stream index to use
-  * \return the number of stream indices assigned by this model
-  */
   int64_t AssignStreams (int64_t stream);
 
+  // Inherited methods from UanPhyListener
+  virtual void NotifyRxStart (void);
+  virtual void NotifyRxEndOk (void);
+  virtual void NotifyRxEndError (void);
+  virtual void NotifyCcaStart (void);
+  virtual void NotifyCcaEnd (void);
+  virtual void NotifyTxStart (Time duration);
+
+
 private:
+  /** Enum defining possible Phy states. */
   typedef enum {
-    IDLE, CCABUSY, RUNNING, TX
+    IDLE,     //!< Idle state.
+    CCABUSY,  //!< Channel busy.
+    RUNNING,  //!< Delay timer running.
+    TX        //!< Transmitting.
   } State;
 
+  /** Forwarding up callback. */
   Callback <void, Ptr<Packet>, const UanAddress& > m_forwardUpCb;
+  /** The MAC address. */
   UanAddress m_address;
+  /** PHY layer attached to this MAC. */
   Ptr<UanPhy> m_phy;
+  /** A packet destined for this MAC was received. */
   TracedCallback<Ptr<const Packet>, UanTxMode > m_rxLogger;
+  /** A packet arrived at the MAC for transmission. */
   TracedCallback<Ptr<const Packet>, uint16_t  > m_enqueueLogger;
+  /** A packet was passed down to the PHY from the MAC. */
   TracedCallback<Ptr<const Packet>, uint16_t  > m_dequeueLogger;
 
   // Mac parameters
-  uint32_t m_cw;
-  Time m_slotTime;
+  uint32_t m_cw;        //!< Contention window size.
+  Time m_slotTime;      //!< Slot time duration.
 
   // State variables
+  /** Time to send next packet. */
   Time m_sendTime;
+  /** Remaining delay until next send. */
   Time m_savedDelayS;
+  /** Next packet to send. */
   Ptr<Packet> m_pktTx;
+  /** Next packet protocol number (usage varies by MAC). */
   uint16_t m_pktTxProt;
+  /** Scheduled SendPacket event. */
   EventId m_sendEvent;
+  /** Scheduled EndTx event. */
   EventId m_txEndEvent;
+  /** Current state. */
   State m_state;
 
+  /** Flag when we've been cleared */
   bool m_cleared;
 
-  /// Provides uniform random variables.
+  /** Provides uniform random variable for contention window. */
   Ptr<UniformRandomVariable> m_rv;
 
+  /**
+   * Receive packet from lower layer (passed to PHY as callback).
+   *
+   * \param packet Packet being received.
+   * \param sinr SINR of received packet.
+   * \param mode Mode of received packet.
+   */
   void PhyRxPacketGood (Ptr<Packet> packet, double sinr, UanTxMode mode);
+  /**
+   * Packet received at lower layer in error.
+   *
+   * \param packet Packet received in error.
+   * \param sinr SINR of received packet.
+   */
   void PhyRxPacketError (Ptr<Packet> packet, double sinr);
+  /** Cancel SendEvent and save remaining delay. */
   void SaveTimer (void);
+  /** Schedule SendPacket after delay. */
   void StartTimer (void);
+  /** Send packet on PHY. */
   void SendPacket (void);
+  /** End TX state. */
   void EndTx (void);
+
 protected:
   virtual void DoDispose ();
-};
 
-}
+};  // class UanMacCw
+
+} // namespace ns3
 
 #endif /* UAN_MAC_CW_H */

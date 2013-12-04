@@ -263,7 +263,7 @@ main (int argc, char *argv[])
   cmd.AddValue ("MaxRange", "Maximum range between gateway and acoustic node", exp.m_maxRange);
   cmd.AddValue ("SimMin", "Minimum parameter to test (nodes if DoNode=1, \"a\" param otherwise)", exp.m_simMin);
   cmd.AddValue ("SimMax", "Maximum parameter to test (nodes if DoNode=1, \"a\" param otherwise)", exp.m_simMax);
-  cmd.AddValue ("SimStep", "Ammount to increment param per trial", exp.m_simStep);
+  cmd.AddValue ("SimStep", "Amount to increment param per trial", exp.m_simStep);
   cmd.AddValue ("DataFile", "Filename for GnuPlot", exp.m_gnuplotfile);
   cmd.AddValue ("NumberNodes", "Number of nodes (invalid for doNode=1)", exp.m_numNodes);
   cmd.AddValue ("SIFS", "SIFS time duration", exp.m_sifs);

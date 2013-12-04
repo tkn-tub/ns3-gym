@@ -44,7 +44,7 @@ UanPropModelThorp::GetTypeId (void)
     .SetParent<Object> ()
     .AddConstructor<UanPropModelThorp> ()
     .AddAttribute ("SpreadCoef",
-                   "Spreading coefficient used in calculation of Thorp's approximation",
+                   "Spreading coefficient used in calculation of Thorp's approximation.",
                    DoubleValue (1.5),
                    MakeDoubleAccessor (&UanPropModelThorp::m_SpreadCoef),
                    MakeDoubleChecker<double> ())

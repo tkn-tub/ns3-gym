@@ -35,8 +35,9 @@ namespace ns3 {
 class UanTxMode;
 
 /**
- * \class Tap
- * \brief Holds PDP Tap information (amplitude and delay)
+ * \ingroup uan
+ *
+ * Holds PDP Tap information (amplitude and delay)
  */
 class Tap
 {
@@ -46,26 +47,35 @@ public:
    */
   Tap ();
   /**
+   * Constructor
+   *
    * \param delay Time delay (usually from first arrival) of signal
    * \param amp Complex amplitude of arrival
    */
   Tap (Time delay, std::complex<double> amp);
   /**
-   * \returns Complex amplitude of arrival
+   * Get the complex amplitude of arrival.
+   *
+   * \return The amplitude.
    */
   std::complex<double> GetAmp (void) const;
   /**
-   * \returns Time delay (usually from first arrival) of signal
+   * Get the delay time, usually from first arrival of signal.
+   * \return The time delay.
    */
   Time GetDelay (void) const;
 
 private:
-  std::complex<double> m_amplitude;
-  Time m_delay;
-};
+  std::complex<double> m_amplitude;  //!< The amplitude.
+  Time m_delay;                      //!< The time delay.
 
+};  // class Tap
+
+  
 /**
- * \class UanPdp
+ * \ingroup uan
+ *
+ * The power delay profile returned by propagation models.
  *
  * Container class to describe power delay profile returned
  * from UAN propagation models using tapped delay line model.
@@ -77,180 +87,242 @@ private:
  * power on any interval (t1, t2) can then be found from
  * summing the taps on the interval and multiplying by
  * the total received power at the receiver.
- *
- *
  */
 class UanPdp
 {
 public:
   /**
-   * \brief Iterator is a standard template library constant interator
+   * Convenience iterator typedef.
    */
   typedef std::vector<Tap>::const_iterator Iterator;
   /**
-   * \brief Create empty PDP object
+   * Create empty PDP object.
    */
   UanPdp ();
   /**
-   * \brief Create PDP object from a vector of Tap objects
-   * \param taps Taps to include in this PDP
-   * \param resolution Resolution of PDP object
+   * Create PDP object from a vector of Tap objects.
+   *
+   * \param taps Taps to include in this PDP.
+   * \param resolution Resolution of PDP object.
    */
   UanPdp (std::vector<Tap> taps, Time resolution);
   /**
-   * \brief Create PDP object from vector of arrival amplitudes
-   * \param arrivals  Vector of complex amplitude arrivals
-   * \param resolution Time duration between arrivals in vector
+   * Create PDP object from vector of arrival amplitudes.
+   *
+   * \param arrivals  Vector of complex amplitude arrivals.
+   * \param resolution Time duration between arrivals in vector.
    */
   UanPdp (std::vector<std::complex<double > > arrivals, Time resolution);
   /**
-   * \brief Create PDP object from real valued arrival amplitudes
-   * \param arrivals vector of real valued arrivals
-   * \param resolution Time duration between arrivals in vector
+   * Create PDP object from real valued arrival amplitudes.
+   *
+   * \param arrivals Vector of real valued arrivals.
+   * \param resolution Time duration between arrivals in vector.
    */
   UanPdp (std::vector<double> arrivals, Time resolution);
+  /** Dummy destructor, see DoDispose. */
   ~UanPdp ();
 
   /**
-   * \param arrival complex arrival value
-   * \param index index of arrival
+   * Set the arrival value for a tap.
+   *
+   * The delay time is the index multiplied by the resolution.
+   * The tap vector will be expanded to accomadate the requested
+   * index.
+   *
+   * \param arrival Complex arrival value.
+   * \param index Index of arrival.
    */
   void SetTap (std::complex<double> arrival, uint32_t index);
   /**
-   * \param nTaps number of taps in this PDP
+   * Resize the tap vector.
+   *
+   * \param nTaps Number of taps in this PDP
    */
   void SetNTaps (uint32_t nTaps);
   /**
-   * \param resolution Resolution of PDP (time between arrivals)
+   * Set the time duration (resolution) between arrivals.
+   *
+   * \param resolution The resolution.
    */
   void SetResolution (Time resolution);
   /**
-   * \returns Iterator positioned at first arrival
+   * Get the beginning of the tap vector.
+   *
+   * \return Iterator positioned at first arrival.
    */
   Iterator GetBegin (void) const;
   /**
-   * \returns Iterator positioned after last arrival
+   * Get the end of the tap list (one beyond the last entry).
+   *
+   * \return Iterator positioned after last arrival
    */
   Iterator GetEnd (void) const;
   /**
-   * \returns Number of taps in PDP
+   * Get the number of taps.
+   *
+   * \return Number of taps in PDP.
    */
   uint32_t GetNTaps (void) const;
   /**
-   * \returns Tap object at index i
-   * \param i Index number of tap to return (0 based)
+   * Get the Tap at the specified delay index.
+   *
+   * \param i Index number of tap to return (0 based).
+   * \return Tap object at index i.
    */
   const Tap &GetTap (uint32_t i) const;
   /**
-   * \returns Resolution of PDP (time duration between arrivals)
+   * Get the delay time resolution (time duration between arrivals).
+   * 
+   * \return Resolution of PDP.
    */
   Time GetResolution (void) const;
   /**
-   * \param begin Time value to begin summing arrivals
-   * \param end Time value to end summing arrivals
-   * \returns Returns Non-coherent sum of arrivals between two time values
+   * Compute the non-coherent sum of tap amplitudes
+   * between a start and end time.
    *
    * Assuming that Tap at index 0 arrives at time 0,
    * this function sums non-coherently (sums amplitude of arrivals
    * ignoring phase difference) all arrivals between a start
    * and end time.
+   *
+   * \param begin Time value to begin summing arrivals.
+   * \param end Time value to end summing arrivals.
+   * \return Non-coherent sum of arrivals between two time values.
    */
   double SumTapsNc (Time begin, Time end) const;
   /**
-   * \param begin Time value to begin summing arrivals
-   * \param end Time value to end summing arrivals
-   * \returns Returns coherent sum of arrivals between two time values
+   * Compute the coherent sum of tap amplitudes
+   * between a start and end time.
    *
    * Assuming that Tap at index 0 arrives at time 0,
    * this function sums coherently (sums amplitude of arrivals
    * considering phase difference) all arrivals between a start
    * and end time.
+   *
+   * \param begin Time value to begin summing arrivals.
+   * \param end Time value to end summing arrivals.
+   * \return Coherent sum of arrivals between two time values.
    */
   std::complex<double> SumTapsC (Time begin, Time end) const;
   /**
-   * \param delay Time duratation after max to begin summing arrivals
-   * \param duration Time duration to sum arrivals for
-   * \returns non-coherent sum of arrivals after max in given window
+   * Compute the non-coherent sum of tap amplitudes
+   * starting after a delay from the maximum amplitude
+   * for a total time duration.
    *
-   * this function sums non-coherently (sums amplitude of arrivals
+   * This function sums non-coherently (sums amplitude of arrivals
    * ignoring phase difference) all arrivals in a given duration
-   * starting the given time after the maximum amplitude arrival received
+   * starting the given time after the maximum amplitude arrival received.
+   *
+   * \param delay Time duratation after max to begin summing arrivals.
+   * \param duration Time duration to sum arrivals for.
+   * \return Non-coherent sum of arrivals after max in given window.
    */
   double SumTapsFromMaxNc (Time delay, Time duration) const;
   /**
-   * \param delay Time duratation after max to begin summing arrivals
-   * \param duration Time duration to sum arrivals for
-   * \returns coherent sum of arrivals after max in given window
+   * Compute the coherent sum of tap amplitudes
+   * starting after a delay from the maximum amplitude
+   * for a total duration.
    *
    * this function sums coherently (sums amplitude of arrivals
    * considering phase difference) all arrivals in a given duration
    * starting the given time after the maximum amplitude arrival received
+   *
+   * \param delay Time duratation after max to begin summing arrivals.
+   * \param duration Time duration to sum arrivals for.
+   * \return Coherent sum of arrivals after max in given window.
    */
   std::complex<double> SumTapsFromMaxC (Time delay, Time duration) const;
 
   /**
-   * \returns A PDP with a singlue unit impulse arrival at time 0
+   * Get a unit impulse PDP at time 0.
+   *
+   * \return The unit impulse.
    */ 
   static UanPdp CreateImpulsePdp (void);
+  
 private:
-  friend std::ostream &operator<< (std::ostream &os, UanPdp &pdp);
+  friend std::ostream &operator<< (std::ostream &os, const UanPdp &pdp);
   friend std::istream &operator>> (std::istream &is, UanPdp &pdp);
-  std::vector<Tap> m_taps;
-  Time m_resolution;
+  
+  std::vector<Tap> m_taps;  //!< The vector of Taps.
+  Time m_resolution;        //!< The time resolution.
 
-};
-/**
- * \brief Writes PDP to stream as list of arrivals
- */
-std::ostream &operator<< (std::ostream &os, UanPdp &pdp);
-/**
- * \brief Reads in list of arrivals from stream is
- */
-std::istream &operator>> (std::ostream &is, UanPdp &pdp);
+};  // class UanPdp
+
 
 /**
- * \class UanPropModel
+ * \ingroup uan
+ *
+ * Writes PDP to stream as list of arrivals
+ *
+ * \param os The output stream.
+ * \param pdp The PDP.
+ * \return The output stream.
+ */
+std::ostream &operator<< (std::ostream &os, const UanPdp &pdp);
+/**
+ * \ingroup uan
+ *
+ * Reads in list of arrivals from stream is
+ *
+ * \param is The input stream.
+ * \param pdp The PDP variable to set.
+ * \return The input stream.
+ */
+std::istream &operator>> (std::istream &is, UanPdp &pdp);  
+
+  
+/**
+ * \ingroup uan
  *
  * Base class for implemented underwater propagation models
  */
 class UanPropModel : public Object
 {
 public:
+  /**
+   * Register this type.
+   * \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
 
   /**
    * Computes pathloss between nodes a and b.
-   * \returns Pathloss in dB re 1 uPa
+   *
    * \param a Ptr to mobility model of node a
    * \param b Ptr to mobility model of node b
    * \param txMode TX mode of transmission between a and b
+   * \return Pathloss in dB re 1 uPa
    */
   virtual double GetPathLossDb (Ptr<MobilityModel> a, Ptr<MobilityModel> b, UanTxMode txMode) = 0;
 
   /**
-   * \returns PDP for link between nodes a and b
-   * \param a Ptr to mobility model of node a
-   * \param b Ptr to mobility model of node b
-   * \param mode TX mode of transmission from a to b
+   * Get the PDP for the path between two nodes.
+   *
+   * \param a Ptr to mobility model of node a.
+   * \param b Ptr to mobility model of node b.
+   * \param mode TX mode of transmission from a to b.
+   * \return PDP for link between nodes a and b.
    */
   virtual UanPdp GetPdp (Ptr<MobilityModel> a, Ptr<MobilityModel> b, UanTxMode mode) = 0;
   /**
-   * Finds propagation delay between nodes a and b
-   * \param a Ptr to mobility model of node a
-   * \param b Ptr to mobility model of node b
-   * \param mode TX mode of transmission
-   * \returns Propagation delay
+   * Finds propagation delay between nodes a and b.
+   *
+   * \param a Ptr to mobility model of node a.
+   * \param b Ptr to mobility model of node b.
+   * \param mode TX mode of transmission.
+   * \return Propagation delay.
    */
   virtual Time GetDelay (Ptr<MobilityModel> a, Ptr<MobilityModel> b, UanTxMode mode) = 0;
 
-  /**
-   * Clears all pointer references
-   */
+  /** Clear all pointer references. */
   virtual void Clear (void);
 
   virtual void DoDispose (void);
-};
 
-}
+};  // class UanPropModel
+
+} // namespace ns3
 
 #endif /* UAN_PROP_MODEL_H */

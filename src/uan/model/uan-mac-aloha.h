@@ -32,22 +32,29 @@ class UanPhy;
 class UanTxMode;
 
 /**
- * \class UanMacAloha
- * \brief ALOHA MAC Protocol
+ * \ingroup uan
  *
- * The simplest MAC protocol for wireless networks.  Packets enqueued
- * are immediately transmitted.  This MAC attaches a UanHeaderCommon
- * to outgoing packets for address information.  (The type field is not used)
+ * ALOHA MAC Protocol, the simplest MAC protocol for wireless networks.
+ *
+ * Packets enqueued are immediately transmitted.  This MAC attaches
+ * a UanHeaderCommon to outgoing packets for address information.
+ * (The type field is not used)
  */
 class UanMacAloha : public UanMac
 {
 public:
+  /** Default constructor */
   UanMacAloha ();
+  /** Dummy destructor, see DoDispose. */
   virtual ~UanMacAloha ();
+  /**
+   * Register this type.
+   * \return The TypeId.
+   */
   static TypeId GetTypeId (void);
 
 
-  //Inheritted functions
+  // Inherited methods
   Address GetAddress (void);
   virtual void SetAddress (UanAddress addr);
   virtual bool Enqueue (Ptr<Packet> pkt, const Address &dest, uint16_t protocolNumber);
@@ -55,41 +62,39 @@ public:
   virtual void AttachPhy (Ptr<UanPhy> phy);
   virtual Address GetBroadcast (void) const;
   virtual void Clear (void);
-
- /**
-  * Assign a fixed random variable stream number to the random variables
-  * used by this model.  Return the number of streams (possibly zero) that
-  * have been assigned.
-  *
-  * \param stream first stream index to use
-  * \return the number of stream indices assigned by this model
-  */
   int64_t AssignStreams (int64_t stream);
 
 private:
+  /** The MAC address. */
   UanAddress m_address;
+  /** PHY layer attached to this MAC. */
   Ptr<UanPhy> m_phy;
+  /** Forwarding up callback. */
   Callback<void, Ptr<Packet>, const UanAddress& > m_forUpCb;
+  /** Flag when we've been cleared. */
   bool m_cleared;
 
   /**
-   * \brief Receive packet from lower layer (passed to PHY as callback)
-   * \param pkt Packet being received
-   * \param sinr SINR of received packet
-   * \param txMode Mode of received packet
+   * Receive packet from lower layer (passed to PHY as callback).
+   *
+   * \param pkt Packet being received.
+   * \param sinr SINR of received packet.
+   * \param txMode Mode of received packet.
    */
   void RxPacketGood (Ptr<Packet> pkt, double sinr, UanTxMode txMode);
 
   /**
-   * \brief Packet received at lower layer in error
-   * \param pkt Packet received in error
-   * \param sinr SINR of received packet
+   * Packet received at lower layer in error.
+   *
+   * \param pkt Packet received in error.
+   * \param sinr SINR of received packet.
    */
   void RxPacketError (Ptr<Packet> pkt, double sinr);
 protected:
   virtual void DoDispose ();
-};
 
-}
+};  // class UanMacAloha
+
+} // namespace ns3
 
 #endif /* UAN_MAC_ALOHA_H */

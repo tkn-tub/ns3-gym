@@ -162,73 +162,73 @@ UanPhyDual::GetTypeId (void)
     .SetParent<UanPhy> ()
     .AddConstructor<UanPhyDual> ()
     .AddAttribute  ("CcaThresholdPhy1",
-                    "Aggregate energy of incoming signals to move to CCA Busy state dB of Phy1",
+                    "Aggregate energy of incoming signals to move to CCA Busy state dB of Phy1.",
                     DoubleValue (10),
                     MakeDoubleAccessor (&UanPhyDual::GetCcaThresholdPhy1, &UanPhyDual::SetCcaThresholdPhy1),
                     MakeDoubleChecker<double> ())
     .AddAttribute ("CcaThresholdPhy2",
-                   "Aggregate energy of incoming signals to move to CCA Busy state dB of Phy2",
+                   "Aggregate energy of incoming signals to move to CCA Busy state dB of Phy2.",
                    DoubleValue (10),
                    MakeDoubleAccessor (&UanPhyDual::GetCcaThresholdPhy2, &UanPhyDual::SetCcaThresholdPhy2),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("TxPowerPhy1",
-                   "Transmission output power in dB of Phy1",
+                   "Transmission output power in dB of Phy1.",
                    DoubleValue (190),
                    MakeDoubleAccessor (&UanPhyDual::GetTxPowerDbPhy1, &UanPhyDual::SetTxPowerDbPhy1),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("TxPowerPhy2",
-                   "Transmission output power in dB of Phy2",
+                   "Transmission output power in dB of Phy2.",
                    DoubleValue (190),
                    MakeDoubleAccessor (&UanPhyDual::GetTxPowerDbPhy2, &UanPhyDual::SetTxPowerDbPhy2),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("RxGainPhy1",
-                   "Gain added to incoming signal at receiver of Phy1",
+                   "Gain added to incoming signal at receiver of Phy1.",
                    DoubleValue (0),
                    MakeDoubleAccessor (&UanPhyDual::GetRxGainDbPhy1, &UanPhyDual::SetRxGainDbPhy1),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("RxGainPhy2",
-                   "Gain added to incoming signal at receiver of Phy2",
+                   "Gain added to incoming signal at receiver of Phy2.",
                    DoubleValue (0),
                    MakeDoubleAccessor (&UanPhyDual::GetRxGainDbPhy2, &UanPhyDual::SetRxGainDbPhy2),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("SupportedModesPhy1",
-                   "List of modes supported by Phy1",
+                   "List of modes supported by Phy1.",
                    UanModesListValue (UanPhyGen::GetDefaultModes ()),
                    MakeUanModesListAccessor (&UanPhyDual::GetModesPhy1, &UanPhyDual::SetModesPhy1),
                    MakeUanModesListChecker () )
     .AddAttribute ("SupportedModesPhy2",
-                   "List of modes supported by Phy2",
+                   "List of modes supported by Phy2.",
                    UanModesListValue (UanPhyGen::GetDefaultModes ()),
                    MakeUanModesListAccessor (&UanPhyDual::GetModesPhy2, &UanPhyDual::SetModesPhy2),
                    MakeUanModesListChecker () )
     .AddAttribute ("PerModelPhy1",
-                   "Functor to calculate PER based on SINR and TxMode for Phy1",
+                   "Functor to calculate PER based on SINR and TxMode for Phy1.",
                    PointerValue (CreateObject<UanPhyPerGenDefault> ()),
                    MakePointerAccessor (&UanPhyDual::GetPerModelPhy1, &UanPhyDual::SetPerModelPhy1),
                    MakePointerChecker<UanPhyPer> ())
     .AddAttribute ("PerModelPhy2",
-                   "Functor to calculate PER based on SINR and TxMode for Phy2",
+                   "Functor to calculate PER based on SINR and TxMode for Phy2.",
                    PointerValue (CreateObject<UanPhyPerGenDefault> ()),
                    MakePointerAccessor (&UanPhyDual::GetPerModelPhy2, &UanPhyDual::SetPerModelPhy2),
                    MakePointerChecker<UanPhyPer> ())
     .AddAttribute ("SinrModelPhy1",
-                   "Functor to calculate SINR based on pkt arrivals and modes for Phy1",
+                   "Functor to calculate SINR based on pkt arrivals and modes for Phy1.",
                    PointerValue (CreateObject<UanPhyCalcSinrDual> ()),
                    MakePointerAccessor (&UanPhyDual::GetSinrModelPhy1, &UanPhyDual::SetSinrModelPhy1),
                    MakePointerChecker<UanPhyCalcSinr> ())
     .AddAttribute ("SinrModelPhy2",
-                   "Functor to calculate SINR based on pkt arrivals and modes for Phy2",
+                   "Functor to calculate SINR based on pkt arrivals and modes for Phy2.",
                    PointerValue (CreateObject<UanPhyCalcSinrDual> ()),
                    MakePointerAccessor (&UanPhyDual::GetSinrModelPhy2, &UanPhyDual::SetSinrModelPhy2),
                    MakePointerChecker<UanPhyCalcSinr> ())
     .AddTraceSource ("RxOk",
-                     "A packet was received successfully",
+                     "A packet was received successfully.",
                      MakeTraceSourceAccessor (&UanPhyDual::m_rxOkLogger))
     .AddTraceSource ("RxError",
-                     "A packet was received unsuccessfully",
+                     "A packet was received unsuccessfully.",
                      MakeTraceSourceAccessor (&UanPhyDual::m_rxErrLogger))
     .AddTraceSource ("Tx",
-                     "Packet transmission beginning",
+                     "Packet transmission beginning.",
                      MakeTraceSourceAccessor (&UanPhyDual::m_txLogger))
 
   ;

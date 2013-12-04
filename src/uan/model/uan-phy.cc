@@ -74,22 +74,22 @@ TypeId UanPhy::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::UanPhy")
     .SetParent<Object> ()
     .AddTraceSource ("PhyTxBegin",
-                     "Trace source indicating a packet has begun transmitting over the channel medium",
+                     "Trace source indicating a packet has begun transmitting over the channel medium.",
                      MakeTraceSourceAccessor (&UanPhy::m_phyTxBeginTrace))
     .AddTraceSource ("PhyTxEnd",
                      "Trace source indicating a packet has been completely transmitted over the channel.",
                    MakeTraceSourceAccessor (&UanPhy::m_phyTxEndTrace))
     .AddTraceSource ("PhyTxDrop",
-                     "Trace source indicating a packet has been dropped by the device during transmission",
+                     "Trace source indicating a packet has been dropped by the device during transmission.",
                      MakeTraceSourceAccessor (&UanPhy::m_phyTxDropTrace))
     .AddTraceSource ("PhyRxBegin",
-                     "Trace source indicating a packet has begun being received from the channel medium by the device",
+                     "Trace source indicating a packet has begun being received from the channel medium by the device.",
                      MakeTraceSourceAccessor (&UanPhy::m_phyRxBeginTrace))
     .AddTraceSource ("PhyRxEnd",
-                     "Trace source indicating a packet has been completely received from the channel medium by the device",
+                     "Trace source indicating a packet has been completely received from the channel medium by the device.",
                      MakeTraceSourceAccessor (&UanPhy::m_phyRxEndTrace))
     .AddTraceSource ("PhyRxDrop",
-                     "Trace source indicating a packet has been dropped by the device during reception",
+                     "Trace source indicating a packet has been dropped by the device during reception.",
                      MakeTraceSourceAccessor (&UanPhy::m_phyRxDropTrace))
   ;
   return tid;
