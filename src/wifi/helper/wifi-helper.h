@@ -88,6 +88,8 @@ public:
 class WifiHelper
 {
 public:
+  virtual ~WifiHelper ();
+
   /**
    * Create a Wifi helper in an empty state: all its parameters
    * must be set before calling ns3::WifiHelper::Install
