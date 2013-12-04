@@ -202,9 +202,7 @@ modcount=$(                         \
 # Rather than work too hard to get the exact number for each file,
 # we just list the total here. 
 addlparam=$(                                  \
-    grep -v "^$ROOT" $LOG                   | \
-    grep -v "not generated, too many nodes" | \
-    grep "^  parameter '"                   | \
+    grep "^  parameter '" "$LOG"            | \
     wc -l                                   | \
     sed 's/^[ \t]*//;s/[ \t]*$//'             \
     )
@@ -228,7 +226,7 @@ undocfiles=$(               \
     )
 
 # Sorted by number, decreasing
-undocsort=$(echo "$undocfiles" | sort -r )
+undocsort=$(echo "$undocfiles" | sort -k1nr,2 )
 
 # Total number of files
 filecount=$(                        \
