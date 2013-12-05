@@ -4748,11 +4748,6 @@ def register_Ns3UanPhyCalcSinr_methods(root_module, cls):
                    'double', 
                    [param('double', 'db')], 
                    is_const=True)
-    ## uan-phy.h (module 'uan'): void ns3::UanPhyCalcSinr::DoDispose() [member function]
-    cls.add_method('DoDispose', 
-                   'void', 
-                   [], 
-                   is_virtual=True)
     ## uan-phy.h (module 'uan'): static ns3::TypeId ns3::UanPhyCalcSinr::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -4763,6 +4758,11 @@ def register_Ns3UanPhyCalcSinr_methods(root_module, cls):
                    'double', 
                    [param('double', 'kp')], 
                    is_const=True)
+    ## uan-phy.h (module 'uan'): void ns3::UanPhyCalcSinr::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
     return
 
 def register_Ns3UanPhyCalcSinrDefault_methods(root_module, cls):
@@ -5135,14 +5135,14 @@ def register_Ns3UanPhyDual_methods(root_module, cls):
                    'void', 
                    [param('double', 'txpwr')], 
                    is_virtual=True)
-    ## uan-phy-dual.h (module 'uan'): void ns3::UanPhyDual::SetTxPowerDbPhy1(double arg0) [member function]
+    ## uan-phy-dual.h (module 'uan'): void ns3::UanPhyDual::SetTxPowerDbPhy1(double txpwr) [member function]
     cls.add_method('SetTxPowerDbPhy1', 
                    'void', 
-                   [param('double', 'arg0')])
-    ## uan-phy-dual.h (module 'uan'): void ns3::UanPhyDual::SetTxPowerDbPhy2(double arg0) [member function]
+                   [param('double', 'txpwr')])
+    ## uan-phy-dual.h (module 'uan'): void ns3::UanPhyDual::SetTxPowerDbPhy2(double txpwr) [member function]
     cls.add_method('SetTxPowerDbPhy2', 
                    'void', 
-                   [param('double', 'arg0')])
+                   [param('double', 'txpwr')])
     ## uan-phy-dual.h (module 'uan'): void ns3::UanPhyDual::StartRxPacket(ns3::Ptr<ns3::Packet> pkt, double rxPowerDb, ns3::UanTxMode txMode, ns3::UanPdp pdp) [member function]
     cls.add_method('StartRxPacket', 
                    'void', 
@@ -5372,16 +5372,16 @@ def register_Ns3UanPhyPer_methods(root_module, cls):
                    'void', 
                    [], 
                    is_virtual=True)
-    ## uan-phy.h (module 'uan'): void ns3::UanPhyPer::DoDispose() [member function]
-    cls.add_method('DoDispose', 
-                   'void', 
-                   [], 
-                   is_virtual=True)
     ## uan-phy.h (module 'uan'): static ns3::TypeId ns3::UanPhyPer::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## uan-phy.h (module 'uan'): void ns3::UanPhyPer::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
     return
 
 def register_Ns3UanPhyPerGenDefault_methods(root_module, cls):
