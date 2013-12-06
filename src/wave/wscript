@@ -7,7 +7,7 @@
 #     conf.check_nonfatal(header_name='stdint.h', define_name='HAVE_STDINT_H')
 
 def build(bld):
-    module = bld.create_ns3_module('wave', ['core','wifi', 'propagation'])
+    module = bld.create_ns3_module('wave', ['core','wifi', 'propagation', 'applications'])
     module.source = [
 	'model/wave-mac-low.cc',
         'model/ocb-wifi-mac.cc',
