@@ -86,13 +86,17 @@ public:
    */
   enum Unit
   {
-    S  = 0,   //!< second
-    MS = 1,   //!< millisecond
-    US = 2,   //!< microsecond
-    NS = 3,   //!< nanosecond
-    PS = 4,   //!< picosecond
-    FS = 5,   //!< femtosecond
-    LAST = 6
+    Y   = 0,   //!< year, 365 days
+    D   = 1,   //!< day, 24 hours
+    H   = 2,   //!< hour, 60 minutes
+    MIN = 3,   //!< minute, 60 seconds
+    S   = 4,   //!< second
+    MS  = 5,   //!< millisecond
+    US  = 6,   //!< microsecond
+    NS  = 7,   //!< nanosecond
+    PS  = 8,   //!< picosecond
+    FS  = 9,   //!< femtosecond
+    LAST = 10
   };
 
   inline Time &operator = (const Time &o)
@@ -182,6 +186,10 @@ public:
    * - `ns` (nanoseconds)
    * - `ps` (picoseconds)
    * - `fs` (femtoseconds)
+   * - `min`  (minutes)
+   * - `h`  (hours)
+   * - `d`  (days)
+   * - `y`  (years)
    *
    * There can be no white space between the numerical portion
    * and the units.  Any otherwise malformed string causes a fatal error to
@@ -308,6 +316,40 @@ public:
   {
     return ToInteger (Time::FS);
   }
+
+  /**
+   * \returns an approximation in minutes of the time stored in this
+   *          instance.
+   */
+  inline double GetMinutes (void) const
+  {
+    return ToDouble (Time::MIN);
+  }
+  /**
+   * \returns an approximation in hours of the time stored in this
+   *          instance.
+   */
+  inline double GetHours (void) const
+  {
+    return ToDouble (Time::H);
+  }
+  /**
+   * \returns an approximation in days of the time stored in this
+   *          instance.
+   */
+  inline double GetDays (void) const
+  {
+    return ToDouble (Time::D);
+  }
+  /**
+   * \returns an approximation in years of the time stored in this
+   *          instance.
+   */
+  inline double GetYears (void) const
+  {
+    return ToDouble (Time::Y);
+  }
+
   /**
    * \returns the raw time value, in the current units
    */
@@ -762,7 +804,66 @@ inline Time FemtoSeconds (uint64_t fs)
 {
   return Time::FromInteger (fs, Time::FS);
 }
-
+/**
+ * \brief create ns3::Time instances in units of minutes (equal to 60 seconds).
+ *
+ * For example:
+ * \code
+ * Time t = Minutes (2.0);
+ * Simulator::Schedule (Minutes (5.0), ...);
+ * \endcode
+ * \param minutes mintues value
+ * \relates ns3::Time
+ */
+inline Time Minutes (double minutes)
+{
+  return Time::FromDouble (minutes, Time::MIN);
+}
+/**
+ * \brief create ns3::Time instances in units of hours (equal to 60 minutes).
+ *
+ * For example:
+ * \code
+ * Time t = Hours (2.0);
+ * Simulator::Schedule (Hours (5.0), ...);
+ * \endcode
+ * \param hours hours value
+ * \relates ns3::Time
+ */
+inline Time Hours (double hours)
+{
+  return Time::FromDouble (hours, Time::H);
+}
+/**
+ * \brief create ns3::Time instances in units of days (equal to 24 hours).
+ *
+ * For example:
+ * \code
+ * Time t = Days (2.0);
+ * Simulator::Schedule (Days (5.0), ...);
+ * \endcode
+ * \param days days value
+ * \relates ns3::Time
+ */
+inline Time Days (double days)
+{
+  return Time::FromDouble (days, Time::D);
+}
+/**
+ * \brief create ns3::Time instances in units of years (equal to 365 days).
+ *
+ * For example:
+ * \code
+ * Time t = Years (2.0);
+ * Simulator::Schedule (Years (5.0), ...);
+ * \endcode
+ * \param years years value
+ * \relates ns3::Time
+ */
+inline Time Years (double years)
+{
+  return Time::FromDouble (years, Time::Y);
+}
 
 /**
  * \see Seconds(double)
@@ -811,6 +912,38 @@ inline Time PicoSeconds (int64x64_t ps)
 inline Time FemtoSeconds (int64x64_t fs)
 {
   return Time::From (fs, Time::FS);
+}
+/**
+ * \see Minutes(uint64_t)
+ * \relates ns3::Time
+ */
+inline Time Minutes (int64x64_t minutes)
+{
+  return Time::From (minutes, Time::MIN);
+}
+/**
+ * \see Minutes(uint64_t)
+ * \relates ns3::Time
+ */
+inline Time Hours (int64x64_t hours)
+{
+  return Time::From (hours, Time::H);
+}
+/**
+ * \see Minutes(uint64_t)
+ * \relates ns3::Time
+ */
+inline Time Days (int64x64_t days)
+{
+  return Time::From (days, Time::D);
+}
+/**
+ * \see Minutes(uint64_t)
+ * \relates ns3::Time
+ */
+inline Time Years (int64x64_t years)
+{
+  return Time::From (years, Time::Y);
 }
 
 // internal function not publicly documented

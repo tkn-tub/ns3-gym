@@ -47,6 +47,22 @@ TimeSimpleTestCase::DoSetup (void)
 void
 TimeSimpleTestCase::DoRun (void)
 {
+  NS_TEST_ASSERT_MSG_EQ_TOL (Years (1.0).GetYears (), 1.0, Years (1).GetYears (),
+                             "is 1 really 1 ?");
+  NS_TEST_ASSERT_MSG_EQ_TOL (Years (10.0).GetYears (), 10.0, Years (1).GetYears (),
+                             "is 10 really 10 ?");
+  NS_TEST_ASSERT_MSG_EQ_TOL (Days (1.0).GetDays (), 1.0, Days (1).GetDays (),
+                             "is 1 really 1 ?");
+  NS_TEST_ASSERT_MSG_EQ_TOL (Days (10.0).GetDays (), 10.0, Days (1).GetDays (),
+                             "is 10 really 10 ?");
+  NS_TEST_ASSERT_MSG_EQ_TOL (Hours (1.0).GetHours (), 1.0, Hours (1).GetHours (),
+                             "is 1 really 1 ?");
+  NS_TEST_ASSERT_MSG_EQ_TOL (Hours (10.0).GetHours (), 10.0, Hours (1).GetHours (),
+                             "is 10 really 10 ?");
+  NS_TEST_ASSERT_MSG_EQ_TOL (Minutes (1.0).GetMinutes (), 1.0, Minutes (1).GetMinutes (),
+                             "is 1 really 1 ?");
+  NS_TEST_ASSERT_MSG_EQ_TOL (Minutes (10.0).GetMinutes (), 10.0, Minutes (1).GetMinutes (),
+                             "is 10 really 10 ?");
   NS_TEST_ASSERT_MSG_EQ_TOL (Seconds (1.0).GetSeconds (), 1.0, TimeStep (1).GetSeconds (), 
                              "is 1 really 1 ?");
   NS_TEST_ASSERT_MSG_EQ_TOL (Seconds (10.0).GetSeconds (), 10.0, TimeStep (1).GetSeconds (), 
