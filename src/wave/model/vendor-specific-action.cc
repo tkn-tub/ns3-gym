@@ -200,7 +200,7 @@ bool operator < (const OrganizationIdentifier& a, const OrganizationIdentifier& 
 
 std::ostream& operator << (std::ostream& os, const OrganizationIdentifier& oi)
 {
-  for (uint32_t i = 0; i < oi.m_type; i++)
+  for (int i = 0; i < oi.m_type; i++)
     {
       os << "0x" << std::hex << static_cast<int> (oi.m_oi[i]) << " ";
     }
