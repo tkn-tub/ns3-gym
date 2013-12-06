@@ -147,7 +147,7 @@ else
 	exit 1
     fi
 
-    mv $DIR/doxygen.log $log
+    mv $DIR/doxygen.log $LOG
 
 fi
 
