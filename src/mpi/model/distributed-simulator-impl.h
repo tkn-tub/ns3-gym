@@ -14,10 +14,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: George Riley <riley@ece.gatech.edu>
+ *
  */
 
-#ifndef DISTRIBUTED_SIMULATOR_IMPL_H
-#define DISTRIBUTED_SIMULATOR_IMPL_H
+#ifndef NS3_DISTRIBUTED_SIMULATOR_IMPL_H
+#define NS3_DISTRIBUTED_SIMULATOR_IMPL_H
 
 #include "ns3/simulator-impl.h"
 #include "ns3/scheduler.h"
@@ -79,7 +80,7 @@ public:
    */
   uint32_t GetMyId ();
   /**
-   * \return true if LBTS message is finished
+   * \return true if system is finished
    */
   bool IsFinished ();
 
@@ -95,7 +96,7 @@ private:
  * \ingroup simulator
  * \ingroup mpi
  *
- * \brief distributed simulator implementation using lookahead
+ * \brief Distributed simulator implementation using lookahead
  */
 class DistributedSimulatorImpl : public SimulatorImpl
 {
@@ -157,4 +158,4 @@ private:
 
 } // namespace ns3
 
-#endif /* DISTRIBUTED_SIMULATOR_IMPL_H */
+#endif /* NS3_DISTRIBUTED_SIMULATOR_IMPL_H */

@@ -32,10 +32,39 @@ on each LP to determine which events to process. It is important to process
 events in time-stamped order to ensure proper simulation execution. If a LP
 receives a message containing an event from the past, clearly this is an issue,
 since this event could change other events which have already been executed. To
-address this problem, a conservative synchronization algorithm with lookahead is
+address this problem, two conservative synchronization algorithm with lookahead are
 used in |ns3|. For more information on different synchronization approaches and
 parallel and distributed simulation in general, please refer to "Parallel and
-Distributed Simulation Systems" by Richard Fujimoto.
+Distributed Simulation Systems" by Richard Fujimoto.   
+
+The default parallel synchronization strategy implemented in the
+DistributedSimulatorImpl class is based on a globally synchronized
+algorithm using an MPI collective operation to synchronize simulation
+time across all LPs.  A second synchronization strategy based on local
+communication and null messages is implemented in the
+NullMessageSimulatorImpl class, For the null message strategy the
+global all to all gather is not required; LPs only need to
+communication with LPs that have shared point-to-point links.  The
+algorithm to use is controlled by which the |ns3| global value
+SimulatorImplementationType.
+
+The best algorithm to use is dependent on the communication and event
+scheduling pattern for the application.  In general, null message
+synchronization algorithms will scale better due to local
+communication scaling better than a global all-to-all gather that is
+required by DistributedSimulatorImpl.  There are two known cases where
+the global synchronization performs better.  The first is when most
+LPs have point-to-point link with most other LPs, in other words the
+LPs are nearly fully connected.  In this case the null message
+algorithm will generate more message passing traffic than the
+all-to-all gather.  A second case where the global all-to-all gather
+is more efficient is when there are long periods of simulation time
+when no events are occurring.  The all-to-all gather algorithm is able
+to quickly determine then next event time globally.  The nearest
+neighbor behavior of the null message algorithm will require more
+communications to propagate that knowledge; each LP is only aware of
+neighbor next event times.
+
 
 Remote point-to-point links
 +++++++++++++++++++++++++++
@@ -147,12 +176,17 @@ Next, build |ns3|::
 
     $ ./waf
 
-After building |ns3| with mpi enabled, the example programs are now ready to run
-with mpirun. Here are a few examples (from the root |ns3| directory)::
+After building |ns3| with mpi enabled, the example programs are now
+ready to run with mpirun. Here are a few examples (from the root |ns3|
+directory)::
 
     $ mpirun -np 2 ./waf --run simple-distributed
     $ mpirun -np 4 -machinefile mpihosts ./waf --run 'nms-udp-nix --LAN=2 --CN=4 --nix=1'
             
+An examle using the null message synchronization algorithm::
+
+    $ mpirun -np 2 ./waf --run simple-distributed --nullmsg
+
 The np switch is the number of logical processors to use. The machinefile switch
 is which machines to use. In order to use machinefile, the target file must
 exist (in this case mpihosts). This can simply contain something like:
@@ -172,6 +206,33 @@ alternative way to run distributed examples is shown below::
     $ ./waf shell
     $ cd build/debug
     $ mpirun -np 2 src/mpi/examples/simple-distributed
+
+Setting synchronization algorithm to use
+++++++++++++++++++++++++++++++++++++++++
+
+The global value SimulatorImplementationType is used to set the
+synchronization algorithm to use.  This value must be set before the
+MpiInterface::Enable method is invoked if the default
+DistributedSimulatorImpl is not used.  Here is an example code snippet
+showing how to add a command line argument to control the
+synchronization algorithm choice:::
+
+  cmd.AddValue ("nullmsg", "Enable the use of null-message synchronization", nullmsg);
+  if(nullmsg) 
+    {
+      GlobalValue::Bind ("SimulatorImplementationType",
+                         StringValue ("ns3::NullMessageSimulatorImpl"));
+    } 
+  else 
+    {
+      GlobalValue::Bind ("SimulatorImplementationType",
+                         StringValue ("ns3::DistributedSimulatorImpl"));
+    }
+
+  // Enable parallel simulator with the command line arguments
+  MpiInterface::Enable (&argc, &argv);
+
+
 
 Creating custom topologies
 ++++++++++++++++++++++++++

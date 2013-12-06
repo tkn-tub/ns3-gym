@@ -12,3 +12,7 @@ def build(bld):
     obj = bld.create_ns3_program('nms-p2p-nix-distributed',
                                  ['point-to-point', 'internet', 'nix-vector-routing', 'applications'])
     obj.source = 'nms-p2p-nix-distributed.cc'
+
+    obj = bld.create_ns3_program('simple-distributed-empty-node',
+                                 ['point-to-point', 'internet', 'nix-vector-routing', 'applications'])
+    obj.source = 'simple-distributed-empty-node.cc'

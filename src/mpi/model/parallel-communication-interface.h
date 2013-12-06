@@ -19,72 +19,68 @@
  *
  */
 
-#ifndef NS3_MPI_INTERFACE_H
-#define NS3_MPI_INTERFACE_H
+#ifndef NS3_PARALLEL_COMMUNICATION_INTERFACE_H
+#define NS3_PARALLEL_COMMUNICATION_INTERFACE_H
 
+#include <stdint.h>
+#include <list>
+
+#include <ns3/object.h>
 #include <ns3/nstime.h>
+#include <ns3/buffer.h>
 #include <ns3/packet.h>
 
-namespace ns3 {
-/**
- * \defgroup mpi MPI Distributed Simulation
- *
- */
+#if defined(NS3_MPI)
+#include "mpi.h"
+#endif
 
-class ParallelCommunicationInterface;
+namespace ns3 {
 
 /**
  * \ingroup mpi
  *
- * \brief Singleton used to interface to the communications infrastructure
- * when running NS3 in parallel.  
+ * \brief Pure virtual base class for the interface between ns-3 and
+ * the parallel communication layer being used.
  *
- * Delegates the implementation to the specific parallel
- * infrastructure being used.  Implementation is defined in the
- * ParallelCommunicationInterface virtual base class; this API mirrors
- * that interface.  This singleton is responsible for instantiating an
- * instance of the communication interface based on
- * SimulatorImplementationType attribute in ns3::GlobalValues.  The
- * attribute must be set before Enable is invoked.
+ * Each type of parallel communication layer is required to implement
+ * this interface.  This interface is called through the
+ * MpiInterface.
  */
-class MpiInterface
+  class ParallelCommunicationInterface
 {
 public:
   /**
+    * Destructor
+    */
+  virtual ~ParallelCommunicationInterface() {}
+  /**
    * Deletes storage used by the parallel environment.
    */
-  static void Destroy ();
+  virtual void Destroy () = 0;
   /**
    * \return system identification
-   *
-   * When running a sequential simulation this will return a systemID of 0.
    */
-  static uint32_t GetSystemId ();
+  virtual uint32_t GetSystemId () = 0;
   /**
    * \return number of parallel tasks
-   *
-   * When running a sequential simulation this will return a size of 1.
    */
-  static uint32_t GetSize ();
+  virtual uint32_t GetSize () = 0;
   /**
    * \return true if parallel communication is enabled
    */
-  static bool IsEnabled ();
+  virtual bool IsEnabled () = 0;
   /**
    * \param pargc number of command line arguments
    * \param pargv command line arguments
    *
-   * \brief Sets up parallel communication interface.
-   *
-   * SimulatorImplementationType attribute in ns3::GlobalValues must be set before
-   * Enable is invoked.
+   * Sets up parallel communication interface
    */
-  static void Enable (int* pargc, char*** pargv);
+  virtual void Enable (int* pargc, char*** pargv) = 0;
   /**
    * Terminates the parallel environment.
    * This function must be called after Destroy ()
    */
-  static void Disable ();
+  virtual void Disable () = 0;
   /**
    * \param p packet to send
    * \param rxTime received time at destination node
@@ -93,15 +89,11 @@ public:
    *
    * Serialize and send a packet to the specified node and net device
    */
-  static void SendPacket (Ptr<Packet> p, const Time &rxTime, uint32_t node, uint32_t dev);
-private:
+  virtual void SendPacket (Ptr<Packet> p, const Time &rxTime, uint32_t node, uint32_t dev) = 0;
 
-  /**
-   * Static instance of the instantiated parallel controller.
-   */
-  static ParallelCommunicationInterface* g_parallelCommunicationInterface;
+private:
 };
 
 } // namespace ns3
 
-#endif /* NS3_MPI_INTERFACE_H */
+#endif /* NS3_PARALLEL_COMMUNICATION_INTERFACE_H */

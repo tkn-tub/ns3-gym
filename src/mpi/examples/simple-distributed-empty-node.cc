@@ -14,9 +14,25 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *
- * TestDistributed creates a dumbbell topology and logically splits it in
- * half.  The left half is placed on logical processor 0 and the right half
- * is placed on logical processor 1.
+ * This test is equivalent to simple-distributed but tests boundary cases
+ * when one of the ranks has no Nodes on it.   When run on two tasks
+ * rank 0 will have all the Nodes and rank 1 will be empty:
+ * 
+ *                 -------   -------
+ *                  RANK 0    RANK 0
+ *                 ------- | -------
+ *                         |
+ * n0 ---------|           |           |---------- n6
+ *             |           |           |
+ * n1 -------\ |           |           | /------- n7
+ *            n4 ----------|---------- n5
+ * n2 -------/ |           |           | \------- n8
+ *             |           |           |
+ * n3 ---------|           |           |---------- n9
+ *
+ *
+ * When run on three tasks rank 1 has the left half of the Nodes and rank 2
+ * will be empty.
  *
  *                 -------   -------
  *                  RANK 0    RANK 1
@@ -29,7 +45,6 @@
  * n2 -------/ |           |           | \------- n8
  *             |           |           |
  * n3 ---------|           |           |---------- n9
- *
  *
  * OnOff clients are placed on each left leaf node. Each right leaf node
  * is a packet sink for a left leaf node.  As a packet travels from one
@@ -90,7 +105,6 @@ main (int argc, char *argv[])
                          StringValue ("ns3::DistributedSimulatorImpl"));
     }
 
-  // Enable parallel simulator with the command line arguments
   MpiInterface::Enable (&argc, &argv);
 
   LogComponentEnable ("PacketSink", LOG_LEVEL_INFO);
@@ -98,14 +112,24 @@ main (int argc, char *argv[])
   uint32_t systemId = MpiInterface::GetSystemId ();
   uint32_t systemCount = MpiInterface::GetSize ();
 
+  uint32_t rightHalfSystemId = 777;
+
   // Check for valid distributed parameters.
-  // Must have 2 and only 2 Logical Processors (LPs)
-  if (systemCount != 2)
+  // Must have 2 or 3 tasks.
+  if (systemCount == 2)
     {
-      std::cout << "This simulation requires 2 and only 2 logical processors." << std::endl;
+      rightHalfSystemId = 0;
+    }
+  else if (systemCount == 3)
+    {
+      rightHalfSystemId = 1;
+    }
+  else
+    {
+      std::cout << "This simulation requires 2 or 3 logical processors." << std::endl;
       return 1;
     }
-
+    
   // Some default values
   Config::SetDefault ("ns3::OnOffApplication::PacketSize", UintegerValue (512));
   Config::SetDefault ("ns3::OnOffApplication::DataRate", StringValue ("1Mbps"));
@@ -115,18 +139,18 @@ main (int argc, char *argv[])
   NodeContainer leftLeafNodes;
   leftLeafNodes.Create (4, 0);
 
-  // Create router nodes.  Left router
-  // with system id 0, right router with
-  // system id 1
+  // Create router nodes.  Left router with system id 0, right router
+  // with system id dependent on number of processors using
+  // rightHalfSystemId
   NodeContainer routerNodes;
   Ptr<Node> routerNode1 = CreateObject<Node> (0);
-  Ptr<Node> routerNode2 = CreateObject<Node> (1);
+  Ptr<Node> routerNode2 = CreateObject<Node> (rightHalfSystemId);
   routerNodes.Add (routerNode1);
   routerNodes.Add (routerNode2);
 
-  // Create leaf nodes on left with system id 1
+  // Create leaf nodes on left with system id rightHalfSystemId
   NodeContainer rightLeafNodes;
-  rightLeafNodes.Create (4, 1);
+  rightLeafNodes.Create (4, rightHalfSystemId);
 
   PointToPointHelper routerLink;
   routerLink.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
@@ -230,7 +254,7 @@ main (int argc, char *argv[])
           leafLink.EnablePcap("leaf-left", leftLeafDevices, true);
         }
       
-      if (systemId == 1)
+      if (systemId == rightHalfSystemId)
         {
           routerLink.EnablePcap("router-right", routerDevices, true);
           leafLink.EnablePcap("leaf-right", rightLeafDevices, true);
@@ -239,7 +263,7 @@ main (int argc, char *argv[])
 
   // Create a packet sink on the right leafs to receive packets from left leafs
   uint16_t port = 50000;
-  if (systemId == 1)
+  if (systemId == rightHalfSystemId)
     {
       Address sinkLocalAddress (InetSocketAddress (Ipv4Address::GetAny (), port));
       PacketSinkHelper sinkHelper ("ns3::UdpSocketFactory", sinkLocalAddress);

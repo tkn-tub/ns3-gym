@@ -49,10 +49,6 @@
 #include "ns3/ipv4-list-routing-helper.h"
 #include "ns3/ipv4-nix-vector-helper.h"
 
-#ifdef NS3_MPI
-#include <mpi.h>
-#endif
-
 using namespace ns3;
 
 typedef struct timeval TIMER_TYPE;
@@ -71,7 +67,8 @@ int
 main (int argc, char *argv[])
 {
 #ifdef NS3_MPI
-  // Enable MPI with the command line arguments
+
+  // Enable parallel simulator with the command line arguments
   MpiInterface::Enable (&argc, &argv);
 
   TIMER_TYPE t0, t1, t2;
@@ -608,7 +605,7 @@ main (int argc, char *argv[])
   TIMER_NOW (t2);
   std::cout << "Simulator finished." << std::endl;
   Simulator::Destroy ();
-  // Exit the MPI execution environment
+  // Exit the parallel execution environment
   MpiInterface::Disable ();
   double d1 = TIMER_DIFF (t1, t0), d2 = TIMER_DIFF (t2, t1);
   std::cout << "-----" << std::endl << "Runtime Stats:" << std::endl;

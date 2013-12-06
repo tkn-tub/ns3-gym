@@ -711,8 +711,9 @@ GlobalRouteManagerImpl::InitializeRoutes ()
       Ptr<GlobalRouter> rtr = 
         node->GetObject<GlobalRouter> ();
 
+      uint32_t systemId = MpiInterface::GetSystemId ();
       // Ignore nodes that are not assigned to our systemId (distributed sim)
-      if (node->GetSystemId () != MpiInterface::GetSystemId ()) 
+      if (node->GetSystemId () != systemId) 
         {
           continue;
         }
