@@ -1953,7 +1953,7 @@ void SixLowPanNetDevice::Fragments::AddFragment (Ptr<Packet> fragment, uint16_t 
     }
   if (!duplicate)
     {
-      m_fragments.insert (it, std::make_pair<Ptr<Packet>, uint16_t> (fragment, fragmentOffset));
+      m_fragments.insert (it, std::make_pair (fragment, fragmentOffset));
     }
 }
 
