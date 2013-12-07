@@ -1,0 +1,33 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    module = bld.create_ns3_module('sixlowpan', ['internet', 'network', 'core'])
+    module.includes = '.'
+    module.source = [
+        'model/sixlowpan-net-device.cc',
+        'model/sixlowpan-header.cc',
+        'helper/sixlowpan-helper.cc',
+        ]
+
+    module_test = bld.create_ns3_module_test_library('sixlowpan')
+    module_test.source = [
+        'test/sixlowpan-hc1-test.cc',
+        'test/sixlowpan-iphc-test.cc',
+        'test/error-channel-sixlow.cc',
+        'test/sixlowpan-fragmentation-test.cc',
+        
+        ]
+
+    headers = bld(features=['ns3header'])
+    headers.module = 'sixlowpan'
+    headers.source = [
+        'model/sixlowpan-net-device.h',
+        'model/sixlowpan-header.h',
+        'helper/sixlowpan-helper.h',
+        ]
+
+
+    if (bld.env['ENABLE_EXAMPLES']):
+        bld.recurse('examples')
+   
+    bld.ns3_python_bindings()

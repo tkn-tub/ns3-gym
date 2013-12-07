@@ -21,6 +21,12 @@ Supported platforms
 
 New user-visible features
 -------------------------
+- new SixLowPanNetDevice model, headers and associated helpers.  The 
+  SixLowPanNetDevice is able to act as a shim between IPv6 and a NetDevice, 
+  compressing IPv6 headers according to RFCs 4944 and 6262.
+  The SixLowPanNetDevice is meant to be used over 802.15.4 NetDevices, 
+  but it can be used on other NetDevices as well (see the manual for full 
+  details).
 
 - A new wifi extension for vehicular simulation support is available in src/wave
   directory.  The current code represents an interim capability to realize an
