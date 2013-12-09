@@ -1272,6 +1272,51 @@ The scheduler implements the filtering of the uplink CQIs according to their nat
   - ``ALL_UL_CQI``: all CQIs are stored in the same internal attibute (i.e., the last CQI received is stored independently from its nature).
 
 
+Channel QoS Aware Scheduler  
+---------------------------
+
+Channel QoS Aware (CQA) Scheduler [Bbojovic_sch]_ is LTE downlink scheduling mechanism that considers the head of line (HOL) delay, the GBR parameters and channel quality over 
+different subbands. The CQA scheduler is based on joint TD and FD scheduling. In the TD (at each TTI) the CQA scheduler groups users by priority. The purpose of 
+grouping is to enforce the FD scheduling to consider first the flows with highest HOL delay. The grouping metric :math:`m_{td}` for user :math:`j=1,...,N` is defined in the 
+following way:
+
+.. math::
+
+    m_{td}^{j}(t) = \lceil\frac{d_{hol}^{j}(t)}{g}\rceil \;,
+
+where :math:`d_{hol}^{j}(t)` is head of line delay of flow :math:`j,` while :math:`g` is a grouping parameter which should be choosen according the network characteristics. 
+Smaller value of :math:`g` may reduce CQA gains in the FD by reducing the users diversity. Contrawise, higher value of :math:`g` enables higher users diversity in FD domain 
+while :math:`d_{hol}` is taken into account through FD metric. In the FD, the CQA scheduler assigned each RBG :math:`k=1,...,K` to the user :math:`j` that has the maximum 
+value of the FD metric which we define in the following way:
+
+.. math::
+
+  m_{fd}^{(k,j)}(t) = m_{QoS}^j(t) * m_{ca}^{k,j}(t) \;,
+
+where :math:`m_{QoS}` is the QoS metric that is defined in the following way:
+
+.. math::
+
+	m_{QoS}^{j}(t) = d_{hol}*\max(1,GBR^j*m_{BET}^j(t)) \;.
+	
+The :math:`m_{QoS}` metric is introduced to provide to all flows the same level of QoS regarding HOL delay and GBR. The :math:`m_{BET}` is the Blind Equal Throughput metric 
+calculated as follows:
+
+.. math::
+	
+	m_{BET}^j(t)=\frac{1}{\overline{R^j}(t)}=\frac{1}{(1-\alpha)*\overline{R^j}(t-1)+\alpha*r^j(t)} \;,
+
+:math:`\overline{R^j}(t)` is the past averaged throughput that is calculated with a moving average and :math:`r^{j}` is the
+throughput achieved at time t, and :math:`\alpha` is a coefficient such that :math:`0 \le \alpha \le 1`.
+
+The :math:`m_{ca}^{(k,j)}(t)` metric is introduced to add channel awareness and to maximize the resource utilization by assigning resources to the flows that can use 
+them more efficiently. In order to use some of the channel aware metrics there are two metrics: to use metric based on Proportional Fair metric 
+(CqaMetric should be set to "CqaPf") or to use metric based on CoIta metric defined in [GMonghal2008]_ (CqaMetric should be set to "CqaFf"). The CqaMetric attribute 
+can be set in the following way:
+
+Config::SetDefault (“ns3::CqaFfMacScheduler::CqaMetric”, StringValue ("CqaFf"));
+
+
 .. _sec-random-access:
 
 Random Access
