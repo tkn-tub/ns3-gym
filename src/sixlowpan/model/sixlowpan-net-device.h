@@ -150,6 +150,18 @@ protected:
 
 private:
   /**
+   * \brief Copy constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   */
+  SixLowPanNetDevice (SixLowPanNetDevice const &);
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   */
+  SixLowPanNetDevice& operator= (SixLowPanNetDevice const &);
+  /**
    * \brief receives all the packets from a NetDevice for further processing.
    * \param device the NetDevice the packet ws received from
    * \param packet the received packet
