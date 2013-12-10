@@ -65,7 +65,7 @@ LteRlcAmE2eTestSuite::LteRlcAmE2eTestSuite ()
           std::ostringstream name;
           name << " Losses = " << losses[l] * 100 << "%. Run = " << runs[s];
           TestCase::TestDuration testDuration;
-          if (l == 1 && s == 0)
+          if (l == 3 && s == 4)
             {
               testDuration = TestCase::QUICK;
             }

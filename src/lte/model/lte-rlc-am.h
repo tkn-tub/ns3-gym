@@ -79,15 +79,17 @@ private:
 
 private:
     std::vector < Ptr<Packet> > m_txonBuffer;       // Transmission buffer
-    std::vector < Ptr<Packet> > m_txedBuffer;       // Transmitted packets buffer
 
-    struct RetxBuffer
+    struct RetxPdu
     {
       Ptr<Packet> m_pdu;
       uint16_t    m_retxCount;
     };
 
-    std::vector < RetxBuffer > m_retxBuffer;       // Retransmission buffer
+  std::vector <RetxPdu> m_txedBuffer;  ///< Buffer for transmitted and retransmitted PDUs 
+                                       ///< that have not been acked but are not considered 
+                                       ///< for retransmission 
+  std::vector <RetxPdu> m_retxBuffer;  ///< Buffer for PDUs considered for retransmission
 
     uint32_t m_txonBufferSize;
     uint32_t m_retxBufferSize;

@@ -33,6 +33,7 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (LteRlcAm);
 
+
 LteRlcAm::LteRlcAm ()
 {
   NS_LOG_FUNCTION (this);
@@ -255,34 +256,103 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId)
     }
   else if ( m_retxBufferSize > 0 )
     {
+      NS_LOG_LOGIC ("retxBufferSize = " << m_retxBufferSize);      
       NS_LOG_LOGIC ("Sending data from Retransmission Buffer");
-
-      Ptr<Packet> packet = m_retxBuffer.at (m_vtA.GetValue ()).m_pdu->Copy ();
-      
-      if (( packet->GetSize () <= bytes )
-          || m_txOpportunityForRetxAlwaysBigEnough)
+      NS_ASSERT (m_vtA < m_vtS);
+      SequenceNumber10 sn;
+      sn.SetModulusBase (m_vtA);
+      bool found = false;
+      for (sn = m_vtA; sn < m_vtS; sn++) 
         {
-          LteRlcAmHeader rlcAmHeader;
-          packet->PeekHeader (rlcAmHeader);
-          NS_LOG_LOGIC ("RLC header: " << rlcAmHeader);
+          uint16_t seqNumberValue = sn.GetValue ();
+          NS_LOG_LOGIC ("SN = " << seqNumberValue << " m_pdu " << m_retxBuffer.at (seqNumberValue).m_pdu);
 
-          // Send RLC PDU to MAC layer
-          LteMacSapProvider::TransmitPduParameters params;
-          params.pdu = packet;
-          params.rnti = m_rnti;
-          params.lcid = m_lcid;
-          params.layer = layer;
-          params.harqProcessId = harqId;
+          if (m_retxBuffer.at (seqNumberValue).m_pdu != 0)
+            {            
 
-          m_macSapProvider->TransmitPdu (params);
-          return;
+              Ptr<Packet> packet = m_retxBuffer.at (seqNumberValue).m_pdu->Copy ();
+              
+              if (( packet->GetSize () <= bytes )
+                  || m_txOpportunityForRetxAlwaysBigEnough)
+                {
+                  found = true;
+                  // According to 5.2.1, the data field is left as is, but we rebuild the header
+                  LteRlcAmHeader rlcAmHeader;
+                  packet->RemoveHeader (rlcAmHeader);
+                  NS_LOG_LOGIC ("old AM RLC header: " << rlcAmHeader);
+
+                  // Calculate the Polling Bit (5.2.2.1)
+                  rlcAmHeader.SetPollingBit (LteRlcAmHeader::STATUS_REPORT_NOT_REQUESTED);
+
+                  if (((m_txonBuffer.empty ()) && (m_retxBufferSize == packet->GetSize ())) ||
+                      (m_vtS >= m_vtMs))
+                    {
+                      rlcAmHeader.SetPollingBit (LteRlcAmHeader::STATUS_REPORT_IS_REQUESTED);
+                      m_pduWithoutPoll = 0;
+                      m_byteWithoutPoll = 0;
+
+                      m_pollSn = m_vtS - 1;
+                      NS_LOG_LOGIC ("New POLL_SN = " << m_pollSn);
+
+                      if (! m_pollRetransmitTimer.IsRunning () )
+                        {
+                          NS_LOG_LOGIC ("Start PollRetransmit timer");
+
+                          m_pollRetransmitTimer = Simulator::Schedule (m_pollRetransmitTimerValue,
+                                                                       &LteRlcAm::ExpirePollRetransmitTimer, this);
+                        }
+                      else
+                        {
+                          NS_LOG_LOGIC ("Restart PollRetransmit timer");
+
+                          m_pollRetransmitTimer.Cancel ();
+                          m_pollRetransmitTimer = Simulator::Schedule (m_pollRetransmitTimerValue,
+                                                                       &LteRlcAm::ExpirePollRetransmitTimer, this);
+                        }
+                    }
+
+                  packet->AddHeader (rlcAmHeader);
+                  NS_LOG_LOGIC ("new AM RLC header: " << rlcAmHeader);
+                  
+                  // Send RLC PDU to MAC layer
+                  LteMacSapProvider::TransmitPduParameters params;
+                  params.pdu = packet;
+                  params.rnti = m_rnti;
+                  params.lcid = m_lcid;
+                  params.layer = layer;
+                  params.harqProcessId = harqId;
+                  
+                  m_macSapProvider->TransmitPdu (params);
+
+                  m_retxBuffer.at (seqNumberValue).m_retxCount++;
+                  NS_LOG_INFO ("Incr RETX_COUNT for SN = " << seqNumberValue);
+                  if (m_retxBuffer.at (seqNumberValue).m_retxCount >= m_maxRetxThreshold)
+                    {
+                      NS_LOG_INFO ("Max RETX_COUNT for SN = " << seqNumberValue);
+                    }
+
+                  NS_LOG_INFO ("Move SN = " << seqNumberValue << " back to txedBuffer");
+                  m_txedBuffer.at (seqNumberValue).m_pdu = m_retxBuffer.at (seqNumberValue).m_pdu->Copy ();
+                  m_txedBuffer.at (seqNumberValue).m_retxCount = m_retxBuffer.at (seqNumberValue).m_retxCount;
+                  m_txedBufferSize += m_txedBuffer.at (seqNumberValue).m_pdu->GetSize ();
+
+                  m_retxBufferSize -= m_retxBuffer.at (seqNumberValue).m_pdu->GetSize ();
+                  m_retxBuffer.at (seqNumberValue).m_pdu = 0;
+                  m_retxBuffer.at (seqNumberValue).m_retxCount = 0;
+                  
+                  NS_LOG_LOGIC ("retxBufferSize = " << m_retxBufferSize);
+
+                  return;
+                }
+              else
+                {
+                  NS_LOG_LOGIC ("TxOpportunity (size = " << bytes << ") too small for retransmission of the packet (size = " << packet->GetSize () << ")");
+                  NS_LOG_LOGIC ("Waiting for bigger TxOpportunity");
+                  return;
+                }
+            }
         }
-      else
-        {
-          NS_LOG_LOGIC ("TxOpportunity (size = " << bytes << ") too small for retransmission of the packet (size = " << packet->GetSize () << ")");
-          NS_LOG_LOGIC ("Waiting for bigger TxOpportunity");
-          return;
-        }
+      NS_ASSERT_MSG (found, "m_retxBufferSize > 0, but no PDU considered for retx found");
     }
   else if ( m_txonBufferSize > 0 )
     {
@@ -604,7 +674,7 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId)
   NS_LOG_LOGIC ("BYTE_WITHOUT_POLL = " << m_byteWithoutPoll);
 
   if ( (m_pduWithoutPoll >= m_pollPdu) || (m_byteWithoutPoll >= m_pollByte) ||
-       ( (m_txonBuffer.empty ()) && (m_retxBuffer.empty ()) ) ||
+       ( (m_txonBuffer.empty ()) && (m_retxBufferSize == 0) ) ||
        (m_vtS >= m_vtMs)
      )
     {
@@ -640,7 +710,8 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId)
   // Store new PDU into the Transmitted PDU Buffer
   NS_LOG_LOGIC ("Put transmitted PDU in the txedBuffer");
   m_txedBufferSize += packet->GetSize ();
-  m_txedBuffer.at ( rlcAmHeader.GetSequenceNumber ().GetValue () ) = packet->Copy ();
+  m_txedBuffer.at ( rlcAmHeader.GetSequenceNumber ().GetValue () ).m_pdu = packet->Copy ();
+  m_txedBuffer.at ( rlcAmHeader.GetSequenceNumber ().GetValue () ).m_retxCount = 0;
 
   // Sender timestamp
   RlcTag rlcTag (Simulator::Now ());
@@ -1019,6 +1090,8 @@ LteRlcAm::DoReceivePdu (Ptr<Packet> p)
       NS_LOG_INFO ("ackSn     = " << ackSn);
       NS_LOG_INFO ("VT(A)     = " << m_vtA);
       NS_LOG_INFO ("VT(S)     = " << m_vtS);
+      NS_LOG_LOGIC ("retxBufferSize = " << m_retxBufferSize);
+      NS_LOG_LOGIC ("txedBufferSize = " << m_txedBufferSize);
 
       m_vtA.SetModulusBase (m_vtA);
       m_vtS.SetModulusBase (m_vtA);
@@ -1045,37 +1118,32 @@ LteRlcAm::DoReceivePdu (Ptr<Packet> p)
 
               incrementVtA = false;
 
-              if (m_txedBuffer.at (seqNumberValue))
+              if (m_txedBuffer.at (seqNumberValue).m_pdu != 0)
                 {
                   NS_LOG_INFO ("Move SN = " << seqNumberValue << " to retxBuffer");
-                  m_retxBuffer.at (seqNumberValue).m_pdu = m_txedBuffer.at (seqNumberValue)->Copy ();
-                  m_retxBuffer.at (seqNumberValue).m_retxCount = 0;
+                  m_retxBuffer.at (seqNumberValue).m_pdu = m_txedBuffer.at (seqNumberValue).m_pdu->Copy ();
+                  m_retxBuffer.at (seqNumberValue).m_retxCount = m_txedBuffer.at (seqNumberValue).m_retxCount;
                   m_retxBufferSize += m_retxBuffer.at (seqNumberValue).m_pdu->GetSize ();
 
-                  m_txedBufferSize -= m_txedBuffer.at (seqNumberValue)->GetSize ();
-                  m_txedBuffer.at (seqNumberValue) = 0;
+                  m_txedBufferSize -= m_txedBuffer.at (seqNumberValue).m_pdu->GetSize ();
+                  m_txedBuffer.at (seqNumberValue).m_pdu = 0;
+                  m_txedBuffer.at (seqNumberValue).m_retxCount = 0;
                 }
-              else if (m_retxBuffer.at (seqNumberValue).m_pdu)
-                {
-                  m_retxBuffer.at (seqNumberValue).m_retxCount++;
-                  NS_LOG_INFO ("Incr RETX_COUNT for SN = " << seqNumberValue);
-                  if (m_retxBuffer.at (seqNumberValue).m_retxCount >= m_maxRetxThreshold)
-                    {
-                      NS_LOG_INFO ("Max RETX_COUNT for SN = " << seqNumberValue);
-                    }
-                }
+
+              NS_ASSERT (m_retxBuffer.at (seqNumberValue).m_pdu != 0);
               
             }
           else
             {
               NS_LOG_LOGIC ("sn " << sn << " is ACKed");
 
-              if (m_txedBuffer.at (seqNumberValue))
+              if (m_txedBuffer.at (seqNumberValue).m_pdu)
                 {
                   NS_LOG_INFO ("ACKed SN = " << seqNumberValue << " from txedBuffer");
                   //               NS_LOG_INFO ("m_txedBuffer( " << m_vtA << " )->GetSize = " << m_txedBuffer.at (m_vtA.GetValue ())->GetSize ());
-                  m_txedBufferSize -= m_txedBuffer.at (seqNumberValue)->GetSize ();
-                  m_txedBuffer.at (seqNumberValue) = 0;
+                  m_txedBufferSize -= m_txedBuffer.at (seqNumberValue).m_pdu->GetSize ();
+                  m_txedBuffer.at (seqNumberValue).m_pdu = 0;
+                  NS_ASSERT (m_retxBuffer.at (seqNumberValue).m_pdu == 0);
                 }
 
               if (m_retxBuffer.at (seqNumberValue).m_pdu)
@@ -1087,6 +1155,9 @@ LteRlcAm::DoReceivePdu (Ptr<Packet> p)
                 }
 
             }
+
+          NS_LOG_LOGIC ("retxBufferSize = " << m_retxBufferSize);
+          NS_LOG_LOGIC ("txedBufferSize = " << m_txedBufferSize);      
 
           if (incrementVtA)
             {
@@ -1634,7 +1705,14 @@ LteRlcAm::DoReportBufferStatus (void)
   RlcTag retxQueueHolTimeTag;
   if ( m_retxBufferSize > 0 )
     {
-      m_retxBuffer.at (m_vtA.GetValue ()).m_pdu->PeekPacketTag (retxQueueHolTimeTag);
+      if (m_retxBuffer.at (m_vtA.GetValue ()).m_pdu != 0)
+        {
+          m_retxBuffer.at (m_vtA.GetValue ()).m_pdu->PeekPacketTag (retxQueueHolTimeTag);
+        }
+      else
+        {
+          m_txedBuffer.at (m_vtA.GetValue ()).m_pdu->PeekPacketTag (retxQueueHolTimeTag);
+        }      
       retxQueueHolDelay = now - retxQueueHolTimeTag.GetSenderTimestamp ();
     }
   else 
@@ -1726,28 +1804,29 @@ LteRlcAm::ExpirePollRetransmitTimer (void)
   NS_LOG_LOGIC ("txedBufferSize = " << m_txedBufferSize);
   NS_LOG_LOGIC ("statusPduRequested = " << m_statusPduRequested);
 
-  DoReportBufferStatus ();
-
-
   if ( m_txonBufferSize == 0 && m_retxBufferSize == 0 )
     {
       NS_LOG_INFO ("txonBuffer and retxBuffer empty. Move PDUs up to = " << m_vtS.GetValue () - 1 << " to retxBuffer");
       uint16_t sn = 0;
       for ( sn = m_vtA.GetValue(); sn < m_vtS.GetValue (); sn++ )
         {
-           bool pduAvailable = m_txedBuffer[ sn ]->GetSize () > 0;
+          bool pduAvailable = m_txedBuffer.at (sn).m_pdu != 0;
 
            if ( pduAvailable )
              {
-               m_retxBuffer.at (sn).m_pdu = m_txedBuffer.at (sn)->Copy ();
-               m_retxBuffer.at (sn).m_retxCount = 0;
+               NS_LOG_INFO ("Move PDU " << sn << " from txedBuffer to retxBuffer");
+               m_retxBuffer.at (sn).m_pdu = m_txedBuffer.at (sn).m_pdu->Copy ();
+               m_retxBuffer.at (sn).m_retxCount = m_txedBuffer.at (sn).m_retxCount;
                m_retxBufferSize += m_retxBuffer.at (sn).m_pdu->GetSize ();
 
-               m_txedBufferSize -= m_txedBuffer.at (sn)->GetSize ();
-               m_txedBuffer.at (sn) = 0;
+               m_txedBufferSize -= m_txedBuffer.at (sn).m_pdu->GetSize ();
+               m_txedBuffer.at (sn).m_pdu = 0;
+               m_txedBuffer.at (sn).m_retxCount = 0;
              }
         }
     }
+
+  DoReportBufferStatus ();  
 }
 
 
