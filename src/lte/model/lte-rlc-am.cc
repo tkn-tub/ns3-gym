@@ -1727,6 +1727,27 @@ LteRlcAm::ExpirePollRetransmitTimer (void)
   NS_LOG_LOGIC ("statusPduRequested = " << m_statusPduRequested);
 
   DoReportBufferStatus ();
+
+
+  if ( m_txonBufferSize == 0 && m_retxBufferSize == 0 )
+    {
+      NS_LOG_INFO ("txonBuffer and retxBuffer empty. Move PDUs up to = " << m_vtS.GetValue () - 1 << " to retxBuffer");
+      uint16_t sn = 0;
+      for ( sn = m_vtA.GetValue(); sn < m_vtS.GetValue (); sn++ )
+        {
+           bool pduAvailable = m_txedBuffer[ sn ]->GetSize () > 0;
+
+           if ( pduAvailable )
+             {
+               m_retxBuffer.at (sn).m_pdu = m_txedBuffer.at (sn)->Copy ();
+               m_retxBuffer.at (sn).m_retxCount = 0;
+               m_retxBufferSize += m_retxBuffer.at (sn).m_pdu->GetSize ();
+
+               m_txedBufferSize -= m_txedBuffer.at (sn)->GetSize ();
+               m_txedBuffer.at (sn) = 0;
+             }
+        }
+    }
 }
 
 
