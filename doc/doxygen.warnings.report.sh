@@ -4,14 +4,14 @@
 #
 
 me=$(basename $0)
-DIR=$(dirname $0)
-ROOT=$(hg root)
+DIR="$(dirname $0)"
+ROOT="$(hg root)"
 
 # Known log files
 STANDARDLOGFILE=doxygen.log
 WARNINGSLOGFILE=doxygen.warnings.log
 # Default choice:  generate it
-LOG=$DIR/$WARNINGSLOGFILE
+LOG="$DIR/$WARNINGSLOGFILE"
 
 
 # Options ------------------------------
@@ -21,7 +21,7 @@ function usage
 {
     cat <<-EOF
 	
-	Usage: $me [-eth] [-f <log-file> | -l | -s]
+	Usage: $me [-eth] [-f <log-file> | -l | -s] [-m <module> | -F <regex>]
 	
 	Run doxygen to generate all errors; report error counts
 	by module and file.
@@ -29,15 +29,26 @@ function usage
 	The default behavior is to modify doxygen.conf temporarily to
 	report all undocumented elements, and to reduce the run time.
 	The output of this special run is kept in doc/$WARNINGSLOGFILE.
-	The -f or -l options use alternate log files.
+
+	The -e and -t options exclude examples and test directories
+	from the counts.  The -m option only includes a specific module.
+	The -F option only includes files (or warnings) matching the <regex>.
+	The -m and -F options append the relevant warnings after the
+	numerical report.  These can be used in any combination.
 	
 	-e  Filter out warnings from */examples/*
 	-t  Filter out warnings from */test/*
-	
+	-m  Only include files matching src/<module>
+	-F  Only include files matching the <regex> 
+
+	The -f, -l, and -s options skip the doxygen run altogether.
+	The first two use a specified or the standard log file;
+	the -s option uses the warnings log from a prior run.
+	Only the first of -f <log-file>, -s, or -l will have effect.
+		
 	-f  Skip doxygen run; use existing <log-file>.
 	-s  Skip doxygen run; use existing warnings log doc/$WARNINGSLOGFILE
 	-l  Skip doxygen run; use the normal doxygen log doc/$STANDARDLOGFILE
-	Only the first of -f <log-file>, -s, or -l will have effect.
 		
 	-h  Print this usage message
 	    
@@ -59,22 +70,25 @@ SKIPDOXY=0
 # Filtering flags
 filter_examples=0
 filter_test=0
+filter_module=""
+filter_regex=""
 
-while getopts :etf:lsh option ; do
+while getopts :etm:F:lF:sh option ; do
 
     case $option in
 	
-	(e)  filter_examples=1
-	     ;;
+	(e)  filter_examples=1        ;;
 	
-	(t)  filter_test=1
-	     ;;
+	(t)  filter_test=1            ;;
+
+	(m)  filter_module="$OPTARG"  ;;
+
+	(F)  filter_regex="$OPTARG"   ;;
+
+	(l)  usestandard=1            ;;
 
 	(f)  usefilearg=1
 	     logfilearg="$OPTARG"
-	     ;;
-
-	(l)  usestandard=1
 	     ;;
 
 	(s)  usefilearg=1
@@ -105,15 +119,6 @@ elif [ $usestandard -eq 1 ]; then
     checklogfile "$DIR/$STANDARDLOGFILE"
 fi
 
-# Filter regular expression
-filterRE=""
-if [ $filter_examples -eq 1 ]; then
-    filterRE="${filterRE:-}${filterRE:+\\|}/examples/"
-fi
-if [ $filter_test -eq 1 ]; then
-    filterRE="${filterRE:-}${filterRE:+\\|}/test/"
-fi
-
 #  Run doxygen -------------------------
 #
 
@@ -123,7 +128,7 @@ if [ $SKIPDOXY -eq 1 ]; then
 else
 
     # Run introspection, which may require a build
-    (cd $(hg root) && ./waf --run print-introspected-doxygen >doc/introspected-doxygen.h)
+    (cd "$ROOT" && ./waf --run print-introspected-doxygen >doc/introspected-doxygen.h)
 
     # Modify doxygen.conf to generate all the warnings
     # (We also suppress dot graphs, so shorten the run time.)
@@ -135,7 +140,7 @@ else
 
     echo
     echo -n "Rebuilding doxygen docs with full errors..."
-    (cd $ROOT && ./waf --doxygen >/dev/null 2>&1)
+    (cd "$ROOT" && ./waf --doxygen >/dev/null 2>&1)
     status=$?
 
     hg revert $conf
@@ -147,16 +152,36 @@ else
 	exit 1
     fi
 
-    mv $DIR/doxygen.log $LOG
+    cp -f "$DIR/$STANDARDLOGFILE" "$DIR/$WARNINGSLOGFILE"
 
 fi
 
 # Log filters --------------------------
 #
-if [ "${filterRE:-}" != "" ] ; then
-    echo "Filtering out \"$filterRE\""
-else
-    echo "No filters."
+
+# Filter regular expression for -m and -F
+filter_inRE=""
+if [ "$filter_module" != "" ] ; then
+    filter_inRE="src/$filter_module"
+fi
+if [ "$filter_regex" != "" ] ; then
+    filter_inRE="${filter_inRE:-}${filter_inRE:+\\|}$filter_regex"
+fi
+
+# Filter regular expression for -e and -t
+filter_outRE=""
+if [ $filter_examples -eq 1 ]; then
+    filter_outRE="/examples/"
+fi
+if [ $filter_test -eq 1 ]; then
+    filter_outRE="${filter_outRE:-}${filter_outRE:+\\|}/test/"
+fi
+
+if [ "${filter_inRE:-}" != "" ] ; then
+    echo "Filtering in \"$filter_inRE\""
+fi
+if [ "${filter_outRE:-}" != "" ] ; then
+    echo "Filtering out \"$filter_outRE\""
 fi
 echo
 
@@ -166,8 +191,12 @@ function filter_log
     local flog;
     flog=$( cat "$LOG" | grep "^$ROOT" )
 
-    if [ "${filterRE:-}" != "" ] ; then
-	flog=$( echo "$flog" | grep -v "$filterRE" )
+    if [ "${filter_inRE:-}" != "" ] ; then
+	flog=$( echo "$flog" | grep "$filter_inRE" )
+    fi
+
+    if [ "${filter_outRE:-}" != "" ] ; then
+	flog=$( echo "$flog" | grep -v "$filter_outRE" )
     fi
 
     echo "$flog"
@@ -181,7 +210,7 @@ function filter_log
 undocmods=$(                \
     filter_log            | \
     cut -d ':' -f 1       | \
-    sed "s|$ROOT||g"      | \
+    sed "s|$ROOT/||g"     | \
     cut -d '/' -f 2-4     | \
     sort                  | \
     uniq -c               | \
@@ -235,6 +264,17 @@ filecount=$(                        \
     sed 's/^[ \t]*//;s/[ \t]*$//'   \
     )
 
+# Filtered in warnings
+filterin=
+if [ "${filter_inRE:-}" != "" ] ; then
+    filterin=$(                 \
+	filter_log            | \
+	sed "s|$ROOT/||g"       \
+	)
+fi
+
+
+
 # Summarize the log --------------------
 #
 
@@ -279,4 +319,10 @@ printf "%6d directories\n" $modcount
 printf "%6d files\n" $filecount
 printf "%6d warnings\n" $warncount
 
-
+if [ "$filterin" != "" ] ; then
+    echo
+    echo
+    echo "Filtered Warnings"
+    echo "========================================"
+    echo "$filterin"
+fi
