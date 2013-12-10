@@ -21,6 +21,9 @@ Supported platforms
 
 New user-visible features
 -------------------------
+- IPv6 addresses and routing tables are printed in a more conventional way,
+  closely matching the Linux "route -A inet6" command.
+  
 - new SixLowPanNetDevice model, headers and associated helpers.  The 
   SixLowPanNetDevice is able to act as a shim between IPv6 and a NetDevice, 
   compressing IPv6 headers according to RFCs 4944 and 6262.

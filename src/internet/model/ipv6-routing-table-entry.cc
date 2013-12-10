@@ -208,36 +208,36 @@ std::ostream& operator<< (std::ostream& os, Ipv6RoutingTableEntry const& route)
   if (route.IsDefault ())
     {
       NS_ASSERT (route.IsGateway ());
-      os << "default out =" << route.GetInterface () << ", next hop =" << route.GetGateway ();
+      os << "default out: " << route.GetInterface () << ", next hop: " << route.GetGateway ();
     }
   else if (route.IsHost ())
     {
       if (route.IsGateway ())
         {
-          os << "host ="<< route.GetDest () <<
-          ", out =" << route.GetInterface () <<
-          ", next hop =" << route.GetGateway ();
+          os << "host: "<< route.GetDest () <<
+          ", out: " << route.GetInterface () <<
+          ", next hop: " << route.GetGateway ();
         }
       else
         {
-          os << "host =" << route.GetDest () <<
-          ", out =" << route.GetInterface ();
+          os << "host: " << route.GetDest () <<
+          ", out: " << route.GetInterface ();
         }
     }
   else if (route.IsNetwork ())
     {
       if (route.IsGateway ())
         {
-          os << "network =" << route.GetDestNetwork () <<
-          ", mask =" << route.GetDestNetworkPrefix () <<
-          ",out =" << route.GetInterface () <<
-          ", next hop =" << route.GetGateway ();
+          os << "network: " << route.GetDestNetwork () <<
+          "/ " << int(route.GetDestNetworkPrefix ().GetPrefixLength ()) <<
+          ", out: " << route.GetInterface () <<
+          ", next hop: " << route.GetGateway ();
         }
       else
         {
-          os << "network =" << route.GetDestNetwork () <<
-          ", mask =" << route.GetDestNetworkPrefix () <<
-          ",out =" << route.GetInterface ();
+          os << "network: " << route.GetDestNetwork () <<
+          "/" << int(route.GetDestNetworkPrefix ().GetPrefixLength ()) <<
+          ", out: " << route.GetInterface ();
         }
     }
   else
@@ -314,10 +314,10 @@ Ipv6MulticastRoutingTableEntry Ipv6MulticastRoutingTableEntry::CreateMulticastRo
 
 std::ostream& operator<< (std::ostream& os, Ipv6MulticastRoutingTableEntry const& route)
 {
-  os << "origin =" << route.GetOrigin () <<
-  ", group =" << route.GetGroup () <<
-  ", input interface =" << route.GetInputInterface () <<
-  ", output interfaces =";
+  os << "origin: " << route.GetOrigin () <<
+  ", group: " << route.GetGroup () <<
+  ", input interface: " << route.GetInputInterface () <<
+  ", output interfaces: ";
 
   for (uint32_t i = 0; i < route.GetNOutputInterfaces (); ++i)
     {
