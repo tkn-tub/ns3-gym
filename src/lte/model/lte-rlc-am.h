@@ -61,6 +61,7 @@ private:
    */
   void ExpireReorderingTimer (void);
   void ExpirePollRetransmitTimer (void);
+  void ExpireRbsTimer (void);
 
   /** 
    * method called when the T_status_prohibit timer expires
@@ -153,6 +154,8 @@ private:
   Time    m_reorderingTimerValue;
   EventId m_statusProhibitTimer;
   Time    m_statusProhibitTimerValue;
+  EventId m_rbsTimer;
+  Time    m_rbsTimerValue;
 
   /**
    * Configurable parameters. See section 7.4 in TS 36.322
@@ -162,6 +165,7 @@ private:
   uint16_t m_pollByte;
   
   bool m_txOpportunityForRetxAlwaysBigEnough;
+  bool m_pollRetransmitTimerJustExpired;
 
   /**
    * SDU Reassembling state

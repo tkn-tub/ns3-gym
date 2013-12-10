@@ -79,6 +79,9 @@ LteRlcAm::LteRlcAm ()
   m_pollRetransmitTimerValue = MilliSeconds (100);
   m_reorderingTimerValue = MilliSeconds (20);
   m_statusProhibitTimerValue = MilliSeconds (20);
+  m_rbsTimerValue = MilliSeconds (10);
+
+  m_pollRetransmitTimerJustExpired = false;
 }
 
 LteRlcAm::~LteRlcAm ()
@@ -116,6 +119,7 @@ LteRlcAm::DoDispose ()
   m_pollRetransmitTimer.Cancel ();
   m_reorderingTimer.Cancel ();
   m_statusProhibitTimer.Cancel ();
+  m_rbsTimer.Cancel ();
 
   m_txonBuffer.clear ();
   m_txonBufferSize = 0;
@@ -160,6 +164,8 @@ LteRlcAm::DoTransmitPdcpPdu (Ptr<Packet> p)
 
   /** Report Buffer Status */
   DoReportBufferStatus ();
+  m_rbsTimer.Cancel ();
+  m_rbsTimer = Simulator::Schedule (m_rbsTimerValue, &LteRlcAm::ExpireRbsTimer, this);
 }
 
 
@@ -284,9 +290,14 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId)
                   // Calculate the Polling Bit (5.2.2.1)
                   rlcAmHeader.SetPollingBit (LteRlcAmHeader::STATUS_REPORT_NOT_REQUESTED);
 
-                  if (((m_txonBuffer.empty ()) && (m_retxBufferSize == packet->GetSize ())) ||
-                      (m_vtS >= m_vtMs))
+                  NS_LOG_LOGIC ("polling conditions: m_txonBuffer.empty=" << m_txonBuffer.empty () 
+                                << " retxBufferSize="  << m_retxBufferSize
+                                << " packet->GetSize ()=" << packet->GetSize ());
+                  if (((m_txonBuffer.empty ()) && (m_retxBufferSize == packet->GetSize () + rlcAmHeader.GetSerializedSize ())) 
+                      || (m_vtS >= m_vtMs)
+                      || m_pollRetransmitTimerJustExpired)
                     {
+                      m_pollRetransmitTimerJustExpired = false;
                       rlcAmHeader.SetPollingBit (LteRlcAmHeader::STATUS_REPORT_IS_REQUESTED);
                       m_pduWithoutPoll = 0;
                       m_byteWithoutPoll = 0;
@@ -676,8 +687,10 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId)
   if ( (m_pduWithoutPoll >= m_pollPdu) || (m_byteWithoutPoll >= m_pollByte) ||
        ( (m_txonBuffer.empty ()) && (m_retxBufferSize == 0) ) ||
        (m_vtS >= m_vtMs)
+       || m_pollRetransmitTimerJustExpired
      )
     {
+      m_pollRetransmitTimerJustExpired = false;
       rlcAmHeader.SetPollingBit (LteRlcAmHeader::STATUS_REPORT_IS_REQUESTED);
       m_pduWithoutPoll = 0;
       m_byteWithoutPoll = 0;
@@ -1804,6 +1817,8 @@ LteRlcAm::ExpirePollRetransmitTimer (void)
   NS_LOG_LOGIC ("txedBufferSize = " << m_txedBufferSize);
   NS_LOG_LOGIC ("statusPduRequested = " << m_statusPduRequested);
 
+  m_pollRetransmitTimerJustExpired = true;
+
   if ( m_txonBufferSize == 0 && m_retxBufferSize == 0 )
     {
       NS_LOG_INFO ("txonBuffer and retxBuffer empty. Move PDUs up to = " << m_vtS.GetValue () - 1 << " to retxBuffer");
@@ -1834,6 +1849,18 @@ void
 LteRlcAm::ExpireStatusProhibitTimer (void)
 {
   NS_LOG_FUNCTION (this);
+}
+
+void
+LteRlcAm::ExpireRbsTimer (void)
+{
+  NS_LOG_LOGIC ("RBS Timer expires");
+
+  if (m_txonBufferSize + m_txedBufferSize + m_retxBufferSize > 0)
+    {
+      DoReportBufferStatus ();
+      m_rbsTimer = Simulator::Schedule (m_rbsTimerValue, &LteRlcAm::ExpireRbsTimer, this);
+    }
 }
 
 } // namespace ns3
