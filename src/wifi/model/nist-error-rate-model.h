@@ -45,6 +45,13 @@ public:
   virtual double GetChunkSuccessRate (WifiMode mode, double snr, uint32_t nbits) const;
 
 private:
+  /**
+   * Return the coded BER for the given p and b.
+   *
+   * \param p
+   * \param bValue
+   * \return BER
+   */
   double CalculatePe (double p, uint32_t bValue) const;
   /**
    * Return BER of BPSK at the given SNR.

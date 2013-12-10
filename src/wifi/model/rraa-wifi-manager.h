@@ -71,13 +71,61 @@ private:
                           Ptr<const Packet> packet, bool normally);
   virtual bool IsLowLatency (void) const;
 
+  /**
+   * Return the index for the maximum transmission rate for
+   * the given station.
+   *
+   * \param station
+   * \return the index for the maximum transmission rate
+   */
   uint32_t GetMaxRate (RraaWifiRemoteStation *station);
+  /**
+   * Return the index for the minimum transmission rate for
+   * the given station.
+   *
+   * \param station
+   * \return the index for the minimum transmission rate
+   */
   uint32_t GetMinRate (RraaWifiRemoteStation *station);
+  /**
+   * Check if the counter should be resetted.
+   *
+   * \param station
+   */
   void CheckTimeout (RraaWifiRemoteStation *station);
+  /**
+   * Find an appropriate rate for the given station, using
+   * a basic algorithm.
+   *
+   * \param station
+   */
   void RunBasicAlgorithm (RraaWifiRemoteStation *station);
+  /**
+   * Activate the use of RTS for the given station if the conditions are met.
+   *
+   * \param station
+   */
   void ARts (RraaWifiRemoteStation *station);
+  /**
+   * Reset the counters of the given station.
+   *
+   * \param station
+   */
   void ResetCountersBasic (RraaWifiRemoteStation *station);
+  /**
+   * Get a threshold for the given mode.
+   *
+   * \param mode
+   * \return threshold
+   */
   struct ThresholdsItem GetThresholds (WifiMode mode) const;
+  /**
+   * Get a threshold for the given station and mode index.
+   *
+   * \param station
+   * \param rate
+   * \return threshold
+   */
   struct ThresholdsItem GetThresholds (RraaWifiRemoteStation *station, uint32_t rate) const;
 
   bool m_basic;

@@ -34,6 +34,12 @@ NS_LOG_COMPONENT_DEFINE ("Aarfcd");
 
 namespace ns3 {
 
+/**
+ * \brief hold per-remote-station state for AARF-CD Wifi manager.
+ *
+ * This struct extends from WifiRemoteStation struct to hold additional
+ * information required by the AARF-CD Wifi manager
+ */
 struct AarfcdWifiRemoteStation : public WifiRemoteStation
 {
   uint32_t m_timer;
@@ -149,15 +155,7 @@ AarfcdWifiManager::DoReportRtsFailed (WifiRemoteStation *station)
 {
   NS_LOG_FUNCTION (this << station);
 }
-/**
- * It is important to realize that "recovery" mode starts after failure of
- * the first transmission after a rate increase and ends at the first successful
- * transmission. Specifically, recovery mode transcends retransmissions boundaries.
- * Fundamentally, ARF handles each data transmission independently, whether it
- * is the initial transmission of a packet or the retransmission of a packet.
- * The fundamental reason for this is that there is a backoff between each data
- * transmission, be it an initial transmission or a retransmission.
- */
+
 void
 AarfcdWifiManager::DoReportDataFailed (WifiRemoteStation *st)
 {

@@ -163,13 +163,17 @@ DcfState::NotifyChannelSwitching (void)
 }
 
 
-/***************************************************************
- *         Listener for Nav events. Forwards to DcfManager
- ***************************************************************/
-
+/**
+ * Listener for NAV events. Forwards to DcfManager
+ */
 class LowDcfListener : public ns3::MacLowDcfListener
 {
 public:
+  /**
+   * Create a LowDcfListener for the given DcfManager.
+   *
+   * \param dcf
+   */
   LowDcfListener (ns3::DcfManager *dcf)
     : m_dcf (dcf)
   {
@@ -205,13 +209,17 @@ private:
   ns3::DcfManager *m_dcf;
 };
 
-/***************************************************************
- *         Listener for PHY events. Forwards to DcfManager
- ***************************************************************/
-
+/**
+ * Listener for PHY events. Forwards to DcfManager
+ */
 class PhyListener : public ns3::WifiPhyListener
 {
 public:
+  /**
+   * Create a PhyListener for the given DcfManager.
+   *
+   * \param dcf
+   */
   PhyListener (ns3::DcfManager *dcf)
     : m_dcf (dcf)
   {

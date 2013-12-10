@@ -150,16 +150,36 @@ public:
   MacLowDcfListener ();
   virtual ~MacLowDcfListener ();
   /**
+   * Norify that NAV has started for the given duration.
+   *
    * \param duration duration of NAV timer
    */
   virtual void NavStart (Time duration) = 0;
   /**
+   * Notify that NAV has resetted.
+   *
    * \param duration duration of NAV timer
    */
   virtual void NavReset (Time duration) = 0;
+  /**
+   * Notify that ACK timeout has started for a given duration.
+   *
+   * \param duration duration of ACK timeout
+   */
   virtual void AckTimeoutStart (Time duration) = 0;
+  /**
+   * Notify that ACK timeout has resetted.
+   */
   virtual void AckTimeoutReset () = 0;
+  /**
+   * Notify that CTS timeout has started for a given duration.
+   *
+   * \param duration duration of CTS timeout
+   */
   virtual void CtsTimeoutStart (Time duration) = 0;
+  /**
+   * Notify that CTS timeout has resetted.
+   */
   virtual void CtsTimeoutReset () = 0;
 };
 
@@ -180,6 +200,9 @@ public:
    * agreement. Timer is reset when a frame with ack policy block ack
    * or a block ack request are received. When this timer reaches zero
    * this method is called and a delba frame is scheduled for transmission.
+   *
+   * \param originator MAC address of the data originator
+   * \param tid
    */
   virtual void BlockAckInactivityTimeout (Mac48Address originator, uint8_t tid) = 0;
 };
@@ -354,6 +377,7 @@ public:
   uint32_t GetNextPacketSize (void) const;
 
 private:
+
   friend std::ostream &operator << (std::ostream &os, const MacLowTransmissionParameters &params);
   uint32_t m_nextSize;
   enum
@@ -370,6 +394,13 @@ private:
   Time m_overrideDurationId;
 };
 
+/**
+ * Serialize MacLowTransmissionParameters to ostream in a human-readable form.
+ *
+ * \param os std::ostream
+ * \param params MacLowTransmissionParameters
+ * \return std::ostream
+ */
 std::ostream &operator << (std::ostream &os, const MacLowTransmissionParameters &params);
 
 
@@ -380,37 +411,169 @@ std::ostream &operator << (std::ostream &os, const MacLowTransmissionParameters 
 class MacLow : public Object
 {
 public:
+  /**
+   * typedef for a callback for MacLowRx
+   */
   typedef Callback<void, Ptr<Packet>, const WifiMacHeader*> MacLowRxCallback;
 
   MacLow ();
   virtual ~MacLow ();
 
+  /**
+   * Set up WifiPhy associated with this MacLow.
+   *
+   * \param phy WifiPhy associated with this MacLow
+   */
   void SetPhy (Ptr<WifiPhy> phy);
+  /**
+   * Set up WifiRemoteStationManager associated with this MacLow.
+   *
+   * \param manager WifiRemoteStationManager associated with this MacLow
+   */
   void SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> manager);
 
+  /**
+   * Set MAC address of this MacLow.
+   *
+   * \param ad Mac48Address of this MacLow
+   */
   void SetAddress (Mac48Address ad);
+  /**
+   * Set ACK timeout of this MacLow.
+   *
+   * \param ackTimeout ACK timeout of this MacLow
+   */
   void SetAckTimeout (Time ackTimeout);
+  /**
+   * Set Basic Block ACK timeout of this MacLow.
+   *
+   * \param blockAckTimeout Basic Block ACK timeout of this MacLow
+   */
   void SetBasicBlockAckTimeout (Time blockAckTimeout);
+  /**
+   * Set Compressed Block ACK timeout of this MacLow.
+   *
+   * \param blockAckTimeout Compressed Block ACK timeout of this MacLow
+   */
   void SetCompressedBlockAckTimeout (Time blockAckTimeout);
+  /**
+   * Enable or disable CTS-to-self capability.
+   *
+   * \param enable Enable or disable CTS-to-self capability
+   */
   void SetCtsToSelfSupported (bool enable);
+  /**
+   * Set CTS timeout of this MacLow.
+   *
+   * \param ctsTimeout CTS timeout of this MacLow
+   */
   void SetCtsTimeout (Time ctsTimeout);
+  /**
+   * Set Short Interframe Space (SIFS) of this MacLow.
+   *
+   * \param sifs SIFS of this MacLow
+   */
   void SetSifs (Time sifs);
+  /**
+   * Set Reduced Interframe Space (RIFS) of this MacLow.
+   *
+   * \param rifs RIFS of this MacLow
+   */
   void SetRifs (Time rifs);
+  /**
+   * Set slot duration of this MacLow.
+   *
+   * \param slotTime slot duration of this MacLow
+   */
   void SetSlotTime (Time slotTime);
+  /**
+   * Set PCF Interframe Space (PIFS) of this MacLow.
+   *
+   * \param pifs PIFS of this MacLow
+   */
   void SetPifs (Time pifs);
+  /**
+   * Set the Basic Service Set Identification.
+   *
+   * \param ad the BSSID
+   */
   void SetBssid (Mac48Address ad);
+  /**
+   * Enable promiscuous mode.
+   */
   void SetPromisc (void);
+  /**
+   * Return whether CTS-to-self capability is supported.
+   *
+   * \return true if CTS-to-self is supported, false otherwise
+   */
   bool GetCtsToSelfSupported () const;
+  /**
+   * Return the MAC address of this MacLow.
+   *
+   * \return Mac48Address of this MacLow
+   */
   Mac48Address GetAddress (void) const;
+  /**
+   * Return ACK timeout of this MacLow.
+   *
+   * \return ACK timeout
+   */
   Time GetAckTimeout (void) const;
+  /**
+   * Return Basic Block ACK timeout of this MacLow.
+   *
+   * \return Basic Block ACK timeout
+   */
   Time GetBasicBlockAckTimeout () const;
+  /**
+   * Return Compressed Block ACK timeout of this MacLow.
+   *
+   * \return Compressed Block ACK timeout
+   */
   Time GetCompressedBlockAckTimeout () const;
+  /**
+   * Return CTS timeout of this MacLow.
+   *
+   * \return CTS timeout
+   */
   Time GetCtsTimeout (void) const;
+  /**
+   * Return Short Interframe Space (SIFS) of this MacLow.
+   *
+   * \return SIFS
+   */
   Time GetSifs (void) const;
+  /**
+   * Return slot duration of this MacLow.
+   *
+   * \return slot duration
+   */
   Time GetSlotTime (void) const;
+  /**
+   * Return PCF Interframe Space (PIFS) of this MacLow.
+   *
+   * \return PIFS
+   */
   Time GetPifs (void) const;
+  /**
+   * Return Reduced Interframe Space (RIFS) of this MacLow.
+   *
+   * \return RIFS
+   */
   Time GetRifs (void) const;
+  /**
+   * Return the Basic Service Set Identification.
+   *
+   * \return BSSID
+   */
   Mac48Address GetBssid (void) const;
+  /**
+   * Check if MacLow is operating in promiscuous mode.
+   *
+   * \return true if MacLow is operating in promiscuous mode,
+   *         false otherwise
+   */
   bool IsPromisc (void) const;
 
   /**
@@ -430,6 +593,7 @@ public:
    * \param packet to send (does not include the 802.11 MAC header and checksum)
    * \param hdr header associated to the packet to send.
    * \param parameters transmission parameters of packet.
+   * \return the transmission time that includes the time for the next packet transmission
    *
    * This transmission time includes the time required for
    * the next packet transmission if one was selected.
@@ -514,62 +678,325 @@ public:
    */
   void RegisterBlockAckListenerForAc (enum AcIndex ac, MacLowBlockAckEventListener *listener);
 protected:
+  /**
+   * Return a TXVECTOR for the DATA frame given the destination.
+   * The function consults WifiRemoteStationManager, which controls the rate
+   * to different destinations.
+   *
+   * \param packet the packet being asked for TXVECTOR
+   * \param hdr the WifiMacHeader
+   * \return TXVECTOR for the given packet
+   */
   virtual WifiTxVector GetDataTxVector (Ptr<const Packet> packet, const WifiMacHeader *hdr) const;
 private:
+  /**
+   * Cancel all scheduled events. Called before beginning a transmission
+   * or switching channel.
+   */
   void CancelAllEvents (void);
+  /**
+   * Return the total ACK size (including FCS trailer).
+   *
+   * \return the total ACK size
+   */
   uint32_t GetAckSize (void) const;
+  /**
+   * Return the total Block ACK size (including FCS trailer).
+   *
+   * \param type the Block ACK type
+   * \return the total Block ACK size
+   */
   uint32_t GetBlockAckSize (enum BlockAckType type) const;
+  /**
+   * Return the total RTS size (including FCS trailer).
+   *
+   * \return the total RTS size
+   */
   uint32_t GetRtsSize (void) const;
+  /**
+   * Return the total CTS size (including FCS trailer).
+   *
+   * \return the total CTS size
+   */
   uint32_t GetCtsSize (void) const;
+  /**
+   * Return the total size of the packet after WifiMacHeader and FCS trailer
+   * have been added.
+   *
+   * \param packet the packet to be encapsulated with WifiMacHeader and FCS trailer
+   * \param hdr the WifiMacHeader
+   * \return the total packet size
+   */
   uint32_t GetSize (Ptr<const Packet> packet, const WifiMacHeader *hdr) const;
+  /**
+   * Forward the packet down to WifiPhy for transmission.
+   *
+   * \param packet
+   * \param hdr
+   * \param txVector
+   * \param preamble
+   */
   void ForwardDown (Ptr<const Packet> packet, const WifiMacHeader *hdr,
                     WifiTxVector txVector, WifiPreamble preamble);
+  /**
+   * Return a TXVECTOR for the RTS frame given the destination.
+   * The function consults WifiRemoteStationManager, which controls the rate
+   * to different destinations.
+   *
+   * \param packet the packet being asked for RTS TXVECTOR
+   * \param hdr the WifiMacHeader
+   * \return TXVECTOR for the RTS of the given packet
+   */
   WifiTxVector GetRtsTxVector (Ptr<const Packet> packet, const WifiMacHeader *hdr) const;
+  /**
+   * Return a TXVECTOR for the CTS frame given the destination and the mode of the RTS
+   * used by the sender.
+   * The function consults WifiRemoteStationManager, which controls the rate
+   * to different destinations.
+   *
+   * \param to the MAC address of the CTS receiver
+   * \param rtsTxMode the mode of the RTS used by the sender
+   * \return TXVECTOR for the CTS
+   */
   WifiTxVector GetCtsTxVector (Mac48Address to, WifiMode rtsTxMode) const;
+  /**
+   * Return a TXVECTOR for the ACK frame given the destination and the mode of the DATA
+   * used by the sender.
+   * The function consults WifiRemoteStationManager, which controls the rate
+   * to different destinations.
+   *
+   * \param to the MAC address of the ACK receiver
+   * \param dataTxMode the mode of the DATA used by the sender
+   * \return TXVECTOR for the ACK
+   */
   WifiTxVector GetAckTxVector (Mac48Address to, WifiMode dataTxMode) const;
+  /**
+   * Return a TXVECTOR for the Block ACK frame given the destination and the mode of the DATA
+   * used by the sender.
+   * The function consults WifiRemoteStationManager, which controls the rate
+   * to different destinations.
+   *
+   * \param to the MAC address of the Block ACK receiver
+   * \param dataTxMode the mode of the DATA used by the sender
+   * \return TXVECTOR for the Block ACK
+   */
   WifiTxVector GetBlockAckTxVector (Mac48Address to, WifiMode dataTxMode) const;
 
+  /**
+   * Return a TXVECTOR for the CTS-to-self frame.
+   * The function consults WifiRemoteStationManager, which controls the rate
+   * to different destinations.
+   *
+   * \param packet the packet that requires CTS-to-self
+   * \param hdr the Wifi header of the packet
+   * \return TXVECTOR for the CTS-to-self operation
+   */
   WifiTxVector GetCtsToSelfTxVector (Ptr<const Packet> packet, const WifiMacHeader *hdr) const;
 
+  /**
+   * Return a TXVECTOR for the CTS frame given the destination and the mode of the RTS
+   * used by the sender.
+   * The function consults WifiRemoteStationManager, which controls the rate
+   * to different destinations.
+   *
+   * \param to the MAC address of the CTS receiver
+   * \param rtsTxMode the mode of the RTS used by the sender
+   * \return TXVECTOR for the CTS
+   */
   WifiTxVector GetCtsTxVectorForRts (Mac48Address to, WifiMode rtsTxMode) const;
+  /**
+   * Return a TXVECTOR for the Block ACK frame given the destination and the mode of the DATA
+   * used by the sender.
+   * The function consults WifiRemoteStationManager, which controls the rate
+   * to different destinations.
+   *
+   * \param to the MAC address of the Block ACK receiver
+   * \param dataTxMode the mode of the DATA used by the sender
+   * \return TXVECTOR for the Block ACK
+   */
   WifiTxVector GetAckTxVectorForData (Mac48Address to, WifiMode dataTxMode) const;
 
+  /**
+   * Return the time required to transmit the CTS (including preamble and FCS).
+   *
+   * \param ctsTxVector
+   * \return the time required to transmit the CTS (including preamble and FCS)
+   */
   Time GetCtsDuration (WifiTxVector ctsTxVector) const;
+  /**
+   * Return the time required to transmit the CTS to the specified address
+   * given the TXVECTOR of the RTS (including preamble and FCS).
+   *
+   * \param to
+   * \param rtsTxVector
+   * \return the time required to transmit the CTS (including preamble and FCS)
+   */
   Time GetCtsDuration (Mac48Address to, WifiTxVector rtsTxVector) const;
+  /**
+   * Return the time required to transmit the ACK (including preamble and FCS).
+   *
+   * \param ackTxVector
+   * \return the time required to transmit the ACK (including preamble and FCS)
+   */
   Time GetAckDuration (WifiTxVector ackTxVector) const;
+  /**
+   * Return the time required to transmit the ACK to the specified address
+   * given the TXVECTOR of the DATA (including preamble and FCS).
+   *
+   * \param to
+   * \param dataTxVector
+   * \return the time required to transmit the ACK (including preamble and FCS)
+   */
   Time GetAckDuration (Mac48Address to, WifiTxVector dataTxVector) const;
   Time GetBlockAckDuration (Mac48Address to, WifiTxVector blockAckReqTxVector, enum BlockAckType type) const;
 
+  /**
+   * Check if CTS-to-self mechanism should be used for the current packet.
+   *
+   * \return true if CTS-to-self mechanism should be used for the current packet,
+   *         false otherwise
+   */
   bool NeedCtsToSelf (void);
   
   Time CalculateOverallTxTime (Ptr<const Packet> packet,
                                const WifiMacHeader* hdr,
                                const MacLowTransmissionParameters &params) const;
   void NotifyNav (Ptr<const Packet> packet,const WifiMacHeader &hdr, WifiMode txMode, WifiPreamble preamble);
+  /**
+   * Reset NAV with the given duration.
+   *
+   * \param duration
+   */
   void DoNavResetNow (Time duration);
+  /**
+   * Start NAV with the given duration.
+   *
+   * \param duration
+   * \return true if NAV is resetted
+   */
   bool DoNavStartNow (Time duration);
+  /**
+   * Check if NAV is zero.
+   *
+   * \return true if NAV is zero,
+   *         false otherwise
+   */
   bool IsNavZero (void) const;
+  /**
+   * Notify DcfManager (via DcfListener) that
+   * ACK timer should be started for the given
+   * duration.
+   *
+   * \param duration
+   */
   void NotifyAckTimeoutStartNow (Time duration);
+  /**
+   * Notify DcfManager (via DcfListener) that
+   * ACK timer should be resetted.
+   */
   void NotifyAckTimeoutResetNow ();
+  /**
+   * Notify DcfManager (via DcfListener) that
+   * CTS timer should be started for the given
+   * duration.
+   *
+   * \param duration
+   */
   void NotifyCtsTimeoutStartNow (Time duration);
+  /**
+   * Notify DcfManager (via DcfListener) that
+   * CTS timer should be resetted.
+   */
   void NotifyCtsTimeoutResetNow ();
 
+  /**
+   * Reset NAV after CTS was missed when the NAV was
+   * setted with RTS.
+   *
+   * \param rtsEndRxTime
+   */
   void NavCounterResetCtsMissed (Time rtsEndRxTime);
+
+  /* Event handlers */
+  /**
+   * Event handler when normal ACK timeout occurs.
+   */
   void NormalAckTimeout (void);
+  /**
+   * Event handler when fast ACK timeout occurs (idle).
+   */
   void FastAckTimeout (void);
+  /**
+   * Event handler when super fast ACK timeout occurs.
+   */
   void SuperFastAckTimeout (void);
+  /**
+   * Event handler when fast ACK timeout occurs (busy).
+   */
   void FastAckFailedTimeout (void);
+  /**
+   * Event handler when block ACK timeout occurs.
+   */
   void BlockAckTimeout (void);
+  /**
+   * Event handler when CTS timeout occurs.
+   */
   void CtsTimeout (void);
+  /**
+   * Send CTS for a CTS-to-self mechanism.
+   */
   void SendCtsToSelf (void);
+  /**
+   * Send CTS after receiving RTS.
+   *
+   * \param source
+   * \param duration
+   * \param txMode
+   * \param rtsSnr
+   */
   void SendCtsAfterRts (Mac48Address source, Time duration, WifiMode txMode, double rtsSnr);
-  void SendAckAfterData (Mac48Address source, Time duration, WifiMode txMode, double rtsSnr);
+  /**
+   * Send ACK after receiving DATA.
+   *
+   * \param source
+   * \param duration
+   * \param dataTxMode
+   * \param dataSnr
+   */
+  void SendAckAfterData (Mac48Address source, Time duration, WifiMode dataTxMode, double dataSnr);
+  /**
+   * Send DATA after receiving CTS.
+   *
+   * \param source
+   * \param duration
+   * \param txMode
+   */
   void SendDataAfterCts (Mac48Address source, Time duration, WifiMode txMode);
+  /**
+   * Event handler that is usually scheduled to fired at the appropriate time
+   * after completing transmissions.
+   */
   void WaitSifsAfterEndTx (void);
+  /**
+   * A transmission that does not require an ACK has completed.
+   */
   void EndTxNoAck (void);
 
+  /**
+   * Send RTS to begin RTS-CTS-DATA-ACK transaction.
+   */
   void SendRtsForPacket (void);
+  /**
+   * Send DATA packet, which can be DATA-ACK or
+   * RTS-CTS-DATA-ACK transaction.
+   */
   void SendDataPacket (void);
+  /**
+   * Start a DATA timer by scheduling appropriate
+   * ACK timeout.
+   *
+   * \param dataTxVector
+   */
   void StartDataTxTimers (WifiTxVector dataTxVector);
   virtual void DoDispose (void);
   /**
@@ -601,31 +1028,55 @@ private:
    * circularly modulo 2^12.
    */
   bool StoreMpduIfNeeded (Ptr<Packet> packet, WifiMacHeader hdr);
-  /*
+  /**
    * Invoked after that a block ack request has been received. Looks for corresponding
    * block ack agreement and creates block ack bitmap on a received packets basis.
+   *
+   * \param reqHdr
+   * \param originator
+   * \param duration
+   * \param blockAckReqTxMode
    */
   void SendBlockAckAfterBlockAckRequest (const CtrlBAckRequestHeader reqHdr, Mac48Address originator,
                                          Time duration, WifiMode blockAckReqTxMode);
-  /*
+  /**
    * This method creates block ack frame with header equals to <i>blockAck</i> and start its transmission.
+   *
+   * \param blockAck
+   * \param originator
+   * \param immediate
+   * \param duration
+   * \param blockAckReqTxMode
    */
   void SendBlockAckResponse (const CtrlBAckResponseHeader* blockAck, Mac48Address originator, bool immediate,
                              Time duration, WifiMode blockAckReqTxMode);
-  /*
+  /**
    * Every time that a block ack request or a packet with ack policy equals to <i>block ack</i>
    * are received, if a relative block ack agreement exists and the value of inactivity timeout
    * is not 0, the timer is reset.
    * see section 11.5.3 in IEEE802.11e for more details.
+   *
+   * \param agreement
    */
   void ResetBlockAckInactivityTimerIfNeeded (BlockAckAgreement &agreement);
 
+  /**
+   * Set up WifiPhy listener for this MacLow.
+   *
+   * \param phy the WifiPhy this MacLow is connected to
+   */
   void SetupPhyMacLowListener (Ptr<WifiPhy> phy);
 
   Ptr<WifiPhy> m_phy;
   Ptr<WifiRemoteStationManager> m_stationManager;
   MacLowRxCallback m_rxCallback;
+  /**
+   * typedef for an iterator for a list of MacLowDcfListener.
+   */
   typedef std::vector<MacLowDcfListener *>::const_iterator DcfListenersCI;
+  /**
+   * typedef for a list of MacLowDcfListener.
+   */
   typedef std::vector<MacLowDcfListener *> DcfListeners;
   DcfListeners m_dcfListeners;
 

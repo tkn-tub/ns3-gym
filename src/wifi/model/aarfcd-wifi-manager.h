@@ -47,7 +47,19 @@ private:
   virtual WifiRemoteStation * DoCreateStation (void) const;
   virtual void DoReportRxOk (WifiRemoteStation *station,
                              double rxSnr, WifiMode txMode);
+
   virtual void DoReportRtsFailed (WifiRemoteStation *station);
+  /**
+   * It is important to realize that "recovery" mode starts after failure of
+   * the first transmission after a rate increase and ends at the first successful
+   * transmission. Specifically, recovery mode transcends retransmissions boundaries.
+   * Fundamentally, ARF handles each data transmission independently, whether it
+   * is the initial transmission of a packet or the retransmission of a packet.
+   * The fundamental reason for this is that there is a backoff between each data
+   * transmission, be it an initial transmission or a retransmission.
+   *
+   * \param station the station that we failed to send DATA
+   */
   virtual void DoReportDataFailed (WifiRemoteStation *station);
   virtual void DoReportRtsOk (WifiRemoteStation *station,
                               double ctsSnr, WifiMode ctsMode, double rtsSnr);
@@ -61,10 +73,35 @@ private:
                           Ptr<const Packet> packet, bool normally);
   virtual bool IsLowLatency (void) const;
 
+  /**
+   * Check if the use of RTS for the given station can be turned off.
+   *
+   * \param station the station that we are checking
+   */
   void CheckRts (AarfcdWifiRemoteStation *station);
+  /**
+   * Increase the RTS window size of the given station.
+   *
+   * \param station the station to increase RTS window
+   */
   void IncreaseRtsWnd (AarfcdWifiRemoteStation *station);
+  /**
+   * Reset the RTS window of the given station.
+   *
+   * \param station the station to reset RTS window
+   */
   void ResetRtsWnd (AarfcdWifiRemoteStation *station);
+  /**
+   * Turn off RTS for the given station.
+   *
+   * \param station the station to turn RTS off
+   */
   void TurnOffRts (AarfcdWifiRemoteStation *station);
+  /**
+   * Turn on RTS for the given station.
+   *
+   * \param station the station to turn RTS on
+   */
   void TurnOnRts (AarfcdWifiRemoteStation *station);
 
   // aarf fields below

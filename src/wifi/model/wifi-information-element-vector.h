@@ -45,8 +45,7 @@ class WifiInformationElementVector : public Header
 public:
   WifiInformationElementVector ();
   ~WifiInformationElementVector ();
-  ///\name Inherited from Header
-  // \{
+
   static TypeId GetTypeId ();
   TypeId GetInstanceTypeId () const;
   virtual uint32_t GetSerializedSize () const;
@@ -59,7 +58,7 @@ public:
    */
   virtual uint32_t Deserialize (Buffer::Iterator start);
   virtual void Print (std::ostream &os) const;
-  //\}
+
   /**
    * \brief Needed when you try to deserialize a lonely IE inside other header
    * \param start is the start of the buffer
@@ -79,8 +78,18 @@ public:
   /// vector of pointers to information elements is the body of IeVector
   Ptr<WifiInformationElement> FindFirst (WifiInformationElementId id) const;
 
+  /**
+   * Check if the given WifiInformationElementVectors are equivalent.
+   * 
+   * \param a another WifiInformationElementVector
+   * \return true if the given WifiInformationElementVectors are equivalent,
+   *         false otherwise
+   */
   virtual bool operator== (const WifiInformationElementVector & a) const;
 protected:
+  /**
+   * typedef for a vector of WifiInformationElements.
+   */
   typedef std::vector<Ptr<WifiInformationElement> > IE_VECTOR;
   /// Current number of bytes
   uint32_t GetSize () const;

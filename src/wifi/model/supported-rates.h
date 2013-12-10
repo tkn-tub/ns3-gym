@@ -53,6 +53,12 @@ class ExtendedSupportedRatesIE : public WifiInformationElement
 {
 public:
   ExtendedSupportedRatesIE ();
+  /**
+   * Create an extended supported rates information element
+   * from the given rates.
+   *
+   * \param rates
+   */
   ExtendedSupportedRatesIE (SupportedRates *rates);
 
   WifiInformationElementId ElementId () const;
@@ -61,13 +67,23 @@ public:
   uint8_t DeserializeInformationField (Buffer::Iterator start,
                                        uint8_t length);
 
-  /*
+  /**
    * This information element is a bit special in that it is only
    * included if there are more than 8 rates. To support this we
    * override the Serialize and GetSerializedSize methods of
    * WifiInformationElement.
+   *
+   * \param start
+   * \return an iterator
    */
   Buffer::Iterator Serialize (Buffer::Iterator start) const;
+  /**
+   * Return the serialized size of this supported rates 
+   * information element.
+   * 
+   * \return the serialized size of this supported rates 
+   * information element
+   */
   uint16_t GetSerializedSize () const;
 private:
   /**
@@ -94,13 +110,46 @@ class SupportedRates : public WifiInformationElement
 public:
   SupportedRates ();
 
+  /**
+   * Add the given rate to the supported rates.
+   *
+   * \param bs the rate to be added
+   */
   void AddSupportedRate (uint32_t bs);
+  /**
+   * Set the given rate to basic rates.
+   *
+   * \param bs the rate to be set
+   */
   void SetBasicRate (uint32_t bs);
 
+  /**
+   * Check if the given rate is supported.
+   *
+   * \param bs the rate to be checked
+   * \return true if the rate is supported, false otherwise
+   */
   bool IsSupportedRate (uint32_t bs) const;
+  /**
+   * Check if the given rate is a basic rate.
+   *
+   * \param bs the rate to be checked
+   * \return true if the rate is a basic rate, false otherwise
+   */
   bool IsBasicRate (uint32_t bs) const;
 
+  /**
+   * Return the number of supported rates.
+   *
+   * \return the number of supported rates
+   */
   uint8_t GetNRates (void) const;
+  /**
+   * Return the rate at the given index.
+   *
+   * \param i the given index
+   * \return the rate
+   */
   uint32_t GetRate (uint8_t i) const;
 
   WifiInformationElementId ElementId () const;

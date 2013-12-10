@@ -69,9 +69,24 @@ public:
   YansWifiPhy ();
   virtual ~YansWifiPhy ();
 
+  /**
+   * Set the YansWifiChannel this YansWifiPhy is to be connected to.
+   *
+   * \param channel the YansWifiChannel this YansWifiPhy is to be connected to
+   */
   void SetChannel (Ptr<YansWifiChannel> channel);
 
+  /**
+   * Set the current channel number.
+   *
+   * \param id the channel number
+   */
   void SetChannelNumber (uint16_t id);
+  /**
+   * Return the current channel number.
+   *
+   * \return the current channel number
+   */
   uint16_t GetChannelNumber () const;
   /**
    * Return current center channel frequency in MHz.
@@ -80,6 +95,14 @@ public:
    */  
   double GetChannelFrequencyMhz () const;
 
+  /**
+   * Starting receiving the packet (i.e. the first bit of the preamble has arrived).
+   *
+   * \param packet the arriving packet
+   * \param rxPowerDbm the receive power in dBm
+   * \param txVector the TXVECTOR of the arriving packet
+   * \param preamble the preamble of the arriving packet
+   */
   void StartReceivePacket (Ptr<Packet> packet,
                            double rxPowerDbm,
                            WifiTxVector txVector,
@@ -206,7 +229,15 @@ public:
    */
   Ptr<Object> GetMobility (void);
 
+  /**
+   * Return the minimum available transmission power level (dBm).
+   * \return the minimum available transmission power level (dBm)
+   */
   virtual double GetTxPowerStart (void) const;
+  /**
+   * Return the maximum available transmission power level (dBm).
+   * \return the maximum available transmission power level (dBm)
+   */
   virtual double GetTxPowerEnd (void) const;
   /**
    * Return the number of available transmission power levels.
@@ -321,7 +352,7 @@ public:
   /**
    * Enable or disable channel bonding support.
    * 
-   * \param channelBonding Enable or disable channel bonding
+   * \param channelbonding Enable or disable channel bonding
    */
   virtual void SetChannelBonding (bool channelbonding) ;
 
@@ -333,39 +364,92 @@ public:
    */
   virtual uint8_t GetNMcs (void) const;
   virtual uint8_t GetMcs (uint8_t mcs) const;
-  /**
-  * For a given WifiMode finds the corresponding MCS value and returns it 
-  * as defined in the IEEE 802.11n standard 
-  *
-  * \param mode the WifiMode
-  * \return the MCS number that corresponds to the given WifiMode
-  */
+
   virtual uint32_t WifiModeToMcs (WifiMode mode);
- /**
-  * For a given MCS finds the corresponding WifiMode and returns it 
-  * as defined in the IEEE 802.11n standard. 
-  * 
-  * \param mcs the MCS number 
-  * \return the WifiMode that corresponds to the given mcs number
-  */
   virtual WifiMode McsToWifiMode (uint8_t mcs);
 
 private:
-  YansWifiPhy (const YansWifiPhy &o);
+  //YansWifiPhy (const YansWifiPhy &o);
   virtual void DoDispose (void);
+  /**
+   * Configure YansWifiPhy with appropriate channel frequency and
+   * supported rates for 802.11a standard.
+   */
   void Configure80211a (void);
+  /**
+   * Configure YansWifiPhy with appropriate channel frequency and
+   * supported rates for 802.11b standard.
+   */
   void Configure80211b (void);
+  /**
+   * Configure YansWifiPhy with appropriate channel frequency and
+   * supported rates for 802.11g standard.
+   */
   void Configure80211g (void);
+  /**
+   * Configure YansWifiPhy with appropriate channel frequency and
+   * supported rates for 802.11a standard with 10MHz channel spacing.
+   */
   void Configure80211_10Mhz (void);
+  /**
+   * Configure YansWifiPhy with appropriate channel frequency and
+   * supported rates for 802.11a standard with 5MHz channel spacing.
+   */
   void Configure80211_5Mhz ();
   void ConfigureHolland (void);
+  /**
+   * Configure YansWifiPhy with appropriate channel frequency and
+   * supported rates for 802.11n standard.
+   */
   void Configure80211n (void);
+  /**
+   * Return the energy detection threshold.
+   *
+   * \return the energy detection threshold.
+   */
   double GetEdThresholdW (void) const;
+  /**
+   * Convert from dBm to Watts.
+   *
+   * \param dbm the power in dBm
+   * \return the equivalent Watts for the given dBm
+   */
   double DbmToW (double dbm) const;
+  /**
+   * Convert from dB to ratio.
+   *
+   * \param db
+   * \return ratio
+   */
   double DbToRatio (double db) const;
+  /**
+   * Convert from Watts to dBm.
+   *
+   * \param w the power in Watts
+   * \return the equivalent dBm for the given Watts
+   */
   double WToDbm (double w) const;
+  /**
+   * Convert from ratio to dB.
+   *
+   * \param ratio
+   * \return dB
+   */
   double RatioToDb (double ratio) const;
+  /**
+   * Get the power of the given power level in dBm.
+   * In YansWifiPhy implementation, the power levels are equally spaced (in dBm).
+   *
+   * \param power the power level
+   * \return the transmission power in dBm at the given power level
+   */
   double GetPowerDbm (uint8_t power) const;
+  /**
+   * The last bit of the packet has arrived.
+   *
+   * \param packet the packet that the last bit has arrived
+   * \param event the corresponding event of the first time the packet arrives
+   */
   void EndReceive (Ptr<Packet> packet, Ptr<InterferenceHelper::Event> event);
 
 private:
