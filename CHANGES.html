@@ -65,6 +65,16 @@ us a note on ns-developers mailing list.</p>
     capabililties of switching between control and service channels, or using 
     multiple radios, are not yet modelled.
   </li>
+  <li>New SixLowPanNetDevice class providing a shim between 
+    IPv6 and real NetDevices. The new module implements 6LoWPAN:
+    "Transmission of IPv6 Packets over IEEE 802.15.4 Networks" (see
+    <a href="http://www.ietf.org/rfc/rfc4944.txt">RFC 4944</a> and
+    <a href="http://www.ietf.org/rfc/rfc6262.txt">RFC 6262</a>), 
+    resulting in a heavy header compression for IPv6 packets.
+    The module is intended to be used on 802.15.4 NetDevices, but
+    it can be used over other NetDevices. See the manual for
+    further discussion.
+  </li>
 </ul>
 
 <h2>Changes to existing API:</h2>
@@ -80,16 +90,7 @@ us a note on ns-developers mailing list.</p>
       their simulation program. The imlpementation previously
       provided by the EpcHelper class has been moved to the new
       derived class PointToPointEpcHelper.</li>
-    <li>New SixLowPanNetDevice class providing a shim between 
-      IPv6 and real NetDevices. The new module implements 6LoWPAN:
-      "Transmission of IPv6 Packets over IEEE 802.15.4 Networks" (see
-      <a href="http://www.ietf.org/rfc/rfc4944.txt">RFC 4944</a> and
-      <a href="http://www.ietf.org/rfc/rfc6262.txt">RFC 6262</a>), 
-      resulting in a heavy header compression for IPv6 packets.
-      The module is intended to be used on 802.15.4 NetDevices, but
-      it can be used over other NetDevices. See the manual for
-      further discussion.</li>
-</ul>
+ </ul>
 <h2>Changes to build system:</h2>
 
 <h2>Changed behavior:</h2>
