@@ -317,7 +317,7 @@ void AnimationInterface::StartNewTraceFile ()
 
 std::string AnimationInterface::GetNetAnimVersion ()
 {
-  return "netanim-3.103";
+  return "netanim-3.104";
 }
 
 void AnimationInterface::SetStartTime (Time t)
