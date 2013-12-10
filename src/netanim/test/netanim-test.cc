@@ -186,8 +186,6 @@ private:
 
   Ptr<BasicEnergySource> m_energySource;
   Ptr<SimpleDeviceEnergyModel> m_energyModel;
-  ObjectFactory m_energySourceFactory;
-  ObjectFactory m_deviceEnergyModelFactory;
   const double m_initialEnergy;
 };
 
@@ -195,15 +193,13 @@ AnimationRemainingEnergyTestCase::AnimationRemainingEnergyTestCase () :
   AbstractAnimationInterfaceTestCase("Verify Remaining energy tracing"),
   m_initialEnergy(100)
 {
-  m_energySourceFactory.SetTypeId ("ns3::BasicEnergySource");
-  m_deviceEnergyModelFactory.SetTypeId ("ns3::SimpleDeviceEnergyModel");
 }
 
 void
 AnimationRemainingEnergyTestCase::PrepareNetwork (void)
 {
-  m_energySource = m_energySourceFactory.Create<BasicEnergySource>();
-  m_energyModel = m_deviceEnergyModelFactory.Create<SimpleDeviceEnergyModel>();
+  m_energySource = CreateObject<BasicEnergySource>();
+  m_energyModel = CreateObject<SimpleDeviceEnergyModel>();
 
   m_energySource->SetInitialEnergy(m_initialEnergy);
   m_energyModel->SetEnergySource (m_energySource);
