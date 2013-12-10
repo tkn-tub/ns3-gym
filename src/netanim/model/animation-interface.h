@@ -14,6 +14,7 @@
  *
  * Author: George F. Riley<riley@ece.gatech.edu>
  * Author: John Abraham <john.abraham@gatech.edu>
+ * Contributions: Eugene Kalishenko <ydginster@gmail.com> (Open Source and Linux Laboratory http://dev.osll.ru/)
  */
 
 // Interface between ns3 and the network animator
