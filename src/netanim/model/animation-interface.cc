@@ -1952,7 +1952,7 @@ std::string AnimationInterface::GetXMLOpenClose_nodeupdate (uint32_t id, bool vi
   AppendXMLNodeColor(oss, nodeColors[id]);
   AppendXMLRemainingEnergy(oss, id);
 
-  oss  <<"\"/>\n";
+  oss  <<"/>\n";
 
   return oss.str ();
 
@@ -1966,7 +1966,7 @@ std::string AnimationInterface::GetXMLOpenClose_node (uint32_t lp, uint32_t id, 
   oss << " locX = \"" << locX << "\" " << "locY = \"" << locY << "\"";
   AppendXMLRemainingEnergy(oss, id);
 
-  oss  <<"\"/>\n";
+  oss  <<"/>\n";
 
   return oss.str ();
 }
@@ -1980,7 +1980,7 @@ std::string AnimationInterface::GetXMLOpenClose_node (uint32_t lp, uint32_t id, 
   AppendXMLNodeColor(oss, rgb);
   AppendXMLRemainingEnergy(oss, id);
 
-  oss  <<"\"/>\n";
+  oss  <<"/>\n";
 
   return oss.str ();
 }
@@ -2171,7 +2171,7 @@ void AnimationInterface::AppendXMLNodeColor(std::ostream& ostream, const Rgb& co
 
   ostream << " r=\"" << (uint32_t)r << "\" "
           << " g=\"" << (uint32_t)g << "\" "
-          << " b=\"" << (uint32_t)b <<"\"/>\n";
+          << " b=\"" << (uint32_t)b <<"\" ";
 }
 
 void AnimationInterface::AppendXMLRemainingEnergy(std::ostream& ostream, uint32_t id) const
@@ -2179,7 +2179,9 @@ void AnimationInterface::AppendXMLRemainingEnergy(std::ostream& ostream, uint32_
   const EnergyFractionMap::const_iterator fractionIter = m_nodeEnergyFraction.find(id);
 
   if(fractionIter != m_nodeEnergyFraction.end())
-    ostream << "\" rc = \"" << fractionIter->second;
+    ostream << "rc = \"" << fractionIter->second <<"\" ";
+  else if(NodeList::GetNode (id)->GetObject<EnergySource>())
+    ostream << "rc = \"1\" ";
 }
 
 TypeId
