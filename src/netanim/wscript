@@ -7,7 +7,7 @@ NETANIM_RELEASE_NAME = "netanim-3.103"
 
 
 def build (bld) :
-	module = bld.create_ns3_module ('netanim', ['internet', 'mobility', 'wimax', 'wifi', 'csma', 'lte', 'uan'])
+	module = bld.create_ns3_module ('netanim', ['internet', 'mobility', 'wimax', 'wifi', 'csma', 'lte', 'uan', 'energy'])
 	module.includes = '.'
 	module.source = [
 			  'model/animation-interface.cc',
