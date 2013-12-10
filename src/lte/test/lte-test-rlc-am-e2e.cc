@@ -184,13 +184,13 @@ LteRlcAmE2eTestCase::DoRun (void)
 
   // MAC sends transmission opportunities (TxOpp)
   lteSimpleHelper->m_enbMac->SetTxOppSize (150);
-  lteSimpleHelper->m_enbMac->SetTxOppTime (Seconds (0.005));
-  lteSimpleHelper->m_enbMac->SetTxOpportunityMode (LteTestMac::RANDOM_MODE);
+  lteSimpleHelper->m_enbMac->SetTxOppTime (Seconds (0.003));
+  lteSimpleHelper->m_enbMac->SetTxOpportunityMode (LteTestMac::AUTOMATIC_MODE);
 
   // MAC sends transmission opportunities (TxOpp)
   lteSimpleHelper->m_ueMac->SetTxOppSize (140);
-  lteSimpleHelper->m_ueMac->SetTxOppTime (Seconds (0.015));
-  lteSimpleHelper->m_ueMac->SetTxOpportunityMode (LteTestMac::RANDOM_MODE);
+  lteSimpleHelper->m_ueMac->SetTxOppTime (Seconds (0.003));
+  lteSimpleHelper->m_ueMac->SetTxOpportunityMode (LteTestMac::AUTOMATIC_MODE);
 
   // Start/Stop pseudo-application at RRC layer
   Simulator::Schedule (Seconds (0.100), &LteTestRrc::Start, lteSimpleHelper->m_enbRrc);

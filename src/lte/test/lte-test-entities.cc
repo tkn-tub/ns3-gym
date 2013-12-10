@@ -569,20 +569,25 @@ LteTestMac::DoReportBufferStatus (LteMacSapProvider::ReportBufferStatusParameter
 
   if (m_txOpportunityMode == AUTOMATIC_MODE)
     {
-      if (params.statusPduSize)
-        {
-          Simulator::Schedule (Seconds (0.1), &LteMacSapUser::NotifyTxOpportunity,
-                               m_macSapUser, params.statusPduSize + 2, 0, 0);
+      // cancel all previously scheduled TxOpps
+      for (std::list<EventId>::iterator it = m_nextTxOppList.begin ();
+           it != m_nextTxOppList.end ();
+           ++it)
+        {          
+          it->Cancel ();
         }
-      else if (params.txQueueSize)
+      m_nextTxOppList.clear ();
+
+      int32_t size = params.statusPduSize + params.txQueueSize  + params.retxQueueSize;
+      Time time = m_txOppTime;
+      while (size > 0)
         {
-          Simulator::Schedule (Seconds (0.1), &LteMacSapUser::NotifyTxOpportunity,
-                               m_macSapUser, params.txQueueSize + 2, 0, 0);
-        }
-      else if (params.retxQueueSize)
-        {
-          Simulator::Schedule (Seconds (0.1), &LteMacSapUser::NotifyTxOpportunity,
-                               m_macSapUser, params.retxQueueSize + 2, 0, 0);
+          EventId e = Simulator::Schedule (time, 
+                                           &LteMacSapUser::NotifyTxOpportunity,
+                                           m_macSapUser, m_txOppSize, 0, 0);
+          m_nextTxOppList.push_back (e);
+          size -= m_txOppSize;
+          time += m_txOppTime;
         }
     }
 }

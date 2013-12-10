@@ -246,6 +246,7 @@ class LteTestMac : public Object
     EventId m_nextTxOpp;
     Time m_txOppTime;
     uint32_t m_txOppSize;
+    std::list<EventId> m_nextTxOppList;
 
     // Stats
     uint32_t m_txPdus;
