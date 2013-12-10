@@ -26,6 +26,8 @@
 #include "ns3/mobility-module.h"
 #include "ns3/internet-module.h"
 #include "ns3/netanim-module.h"
+#include "ns3/basic-energy-source.h"
+#include "ns3/simple-device-energy-model.h"
 
 
 
@@ -115,6 +117,17 @@ main (int argc, char *argv[])
   AnimationInterface::SetConstantPosition (p2pNodes.Get (1), 10, 30); 
   AnimationInterface::SetConstantPosition (csmaNodes.Get (1), 10, 33); 
 
+  Ptr<BasicEnergySource> energySource = CreateObject<BasicEnergySource>();
+  Ptr<SimpleDeviceEnergyModel> energyModel = CreateObject<SimpleDeviceEnergyModel>();
+
+  energySource->SetInitialEnergy(300);
+  energyModel->SetEnergySource (energySource);
+  energySource->AppendDeviceEnergyModel (energyModel);
+  energyModel->SetCurrentA(20);
+
+  // aggregate energy source to node
+  wifiApNode.Get (0)->AggregateObject (energySource);
+
   // Install internet stack
 
   InternetStackHelper stack;
@@ -152,7 +165,7 @@ main (int argc, char *argv[])
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
   Simulator::Stop (Seconds (15.0));
   AnimationInterface::SetNodeDescription (wifiApNode, "AP"); // Optional
-  AnimationInterface::SetNodeDescription (wifiStaNodes, "STA"); // Optional
+  AnimationInterface::SetNodeDescription (wifiStaNodes, "STA"); //b Optional
   AnimationInterface::SetNodeDescription (csmaNodes, "CSMA"); // Optional
   AnimationInterface::SetNodeColor (wifiApNode, 0, 255, 0); // Optional
   AnimationInterface::SetNodeColor (wifiStaNodes, 255, 0, 0); // Optional
