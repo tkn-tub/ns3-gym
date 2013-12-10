@@ -138,7 +138,7 @@ public:
    *
    * \returns reference to this AnimationInterface object
    */
-  AnimationInterface & EnableIpv4RouteTracking (std::string fileName, Time startTime, Time stopTime, Time pollInterval = Seconds(5));
+  AnimationInterface & EnableIpv4RouteTracking (std::string fileName, Time startTime, Time stopTime, Time pollInterval = Seconds (5));
 
   /**
    * \brief Enable tracking of the Ipv4 routing table for a set of Nodes
@@ -152,7 +152,7 @@ public:
    *
    * \returns reference to this AnimationInterface object
    */
-  AnimationInterface & EnableIpv4RouteTracking (std::string fileName, Time startTime, Time stopTime, NodeContainer nc, Time pollInterval = Seconds(5));
+  AnimationInterface & EnableIpv4RouteTracking (std::string fileName, Time startTime, Time stopTime, NodeContainer nc, Time pollInterval = Seconds (5));
 
   /**
    * \brief Check if AnimationInterface is initialized
@@ -630,7 +630,7 @@ private:
   EnergyFractionMap m_nodeEnergyFraction;
   uint64_t m_currentPktCount;
 
-  void StartNewTraceFile();
+  void StartNewTraceFile ();
 
   std::string GetMacAddress (Ptr <NetDevice> nd);
   std::string GetIpv4Address (Ptr <NetDevice> nd);
@@ -669,9 +669,9 @@ private:
   std::string GetXMLOpenClose_routing (uint32_t id, std::string routingInfo);
   std::string GetXMLOpenClose_rp (uint32_t nodeId, std::string destination, Ipv4RoutePathElements rpElements);
 
-  void AppendXMLNodeDescription(std::ostream& ostream, uint32_t id) const;
-  void AppendXMLNodeColor(std::ostream& ostream, const Rgb& color) const;
-  void AppendXMLRemainingEnergy(std::ostream& ostream, uint32_t id) const;
+  void AppendXMLNodeDescription (std::ostream& ostream, uint32_t id) const;
+  void AppendXMLNodeColor (std::ostream& ostream, const Rgb& color) const;
+  void AppendXMLRemainingEnergy (std::ostream& ostream, uint32_t id) const;
 
   /// Provides uniform random variables.
   Ptr<UniformRandomVariable> m_uniformRandomVariable;  

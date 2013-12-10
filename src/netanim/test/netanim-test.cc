@@ -38,18 +38,18 @@ public:
   /**
    * \brief Constructor.
    */
-  AbstractAnimationInterfaceTestCase(std::string name);
+  AbstractAnimationInterfaceTestCase (std::string name);
   /**
    * \brief Destructor.
    */
   virtual
-  ~AbstractAnimationInterfaceTestCase();
+  ~AbstractAnimationInterfaceTestCase ();
   /**
    * \brief Run unit tests for this class.
    * \return false if all tests have passed, false otherwise
    */
   virtual void
-  DoRun(void);
+  DoRun (void);
 
 protected:
 
@@ -59,19 +59,19 @@ protected:
 private:
 
   virtual void
-  PrepareNetwork() = 0;
+  PrepareNetwork () = 0;
 
   virtual void
-  CheckLogic() = 0;
+  CheckLogic () = 0;
 
   virtual void
-  CheckFileExistence();
+  CheckFileExistence ();
 
   const char* m_traceFileName;
 };
 
 AbstractAnimationInterfaceTestCase::AbstractAnimationInterfaceTestCase (std::string name) :
-  TestCase (name), m_anim(NULL), m_traceFileName("netanim-test.xml")
+  TestCase (name), m_anim (NULL), m_traceFileName ("netanim-test.xml")
 {
 }
 
@@ -83,18 +83,18 @@ AbstractAnimationInterfaceTestCase::~AbstractAnimationInterfaceTestCase ()
 void
 AbstractAnimationInterfaceTestCase::DoRun (void)
 {
-  PrepareNetwork();
+  PrepareNetwork ();
 
-  m_anim = new AnimationInterface(m_traceFileName);
+  m_anim = new AnimationInterface (m_traceFileName);
 
   Simulator::Run ();
-  CheckLogic();
-  CheckFileExistence();
+  CheckLogic ();
+  CheckFileExistence ();
   Simulator::Destroy ();
 }
 
 void
-AbstractAnimationInterfaceTestCase::CheckFileExistence()
+AbstractAnimationInterfaceTestCase::CheckFileExistence ()
 {
   FILE * fp = fopen (m_traceFileName, "r");
   NS_TEST_ASSERT_MSG_NE (fp, 0, "Trace file was not created");
@@ -113,10 +113,10 @@ public:
 private:
 
   virtual void
-  PrepareNetwork();
+  PrepareNetwork ();
 
   virtual void
-  CheckLogic();
+  CheckLogic ();
 
 };
 
@@ -180,10 +180,10 @@ public:
 private:
 
   virtual void
-  PrepareNetwork();
+  PrepareNetwork ();
 
   virtual void
-  CheckLogic();
+  CheckLogic ();
 
   Ptr<BasicEnergySource> m_energySource;
   Ptr<SimpleDeviceEnergyModel> m_energyModel;
@@ -191,8 +191,8 @@ private:
 };
 
 AnimationRemainingEnergyTestCase::AnimationRemainingEnergyTestCase () :
-  AbstractAnimationInterfaceTestCase("Verify Remaining energy tracing"),
-  m_initialEnergy(100)
+  AbstractAnimationInterfaceTestCase ("Verify Remaining energy tracing"),
+  m_initialEnergy (100)
 {
 }
 
@@ -202,10 +202,10 @@ AnimationRemainingEnergyTestCase::PrepareNetwork (void)
   m_energySource = CreateObject<BasicEnergySource>();
   m_energyModel = CreateObject<SimpleDeviceEnergyModel>();
 
-  m_energySource->SetInitialEnergy(m_initialEnergy);
+  m_energySource->SetInitialEnergy (m_initialEnergy);
   m_energyModel->SetEnergySource (m_energySource);
   m_energySource->AppendDeviceEnergyModel (m_energyModel);
-  m_energyModel->SetCurrentA(20);
+  m_energyModel->SetCurrentA (20);
 
   m_nodes.Create (1);
   AnimationInterface::SetConstantPosition (m_nodes.Get (0), 0 , 10);
@@ -219,10 +219,10 @@ AnimationRemainingEnergyTestCase::PrepareNetwork (void)
 void
 AnimationRemainingEnergyTestCase::CheckLogic (void)
 {
-  const double remainingEnergy = m_energySource->GetRemainingEnergy();
+  const double remainingEnergy = m_energySource->GetRemainingEnergy ();
 
-  NS_TEST_ASSERT_MSG_EQ((remainingEnergy < m_initialEnergy), true, "Energy hasn't depleted!");
-  NS_TEST_ASSERT_MSG_EQ_TOL(m_anim->GetNodeEnergyFraction(m_nodes.Get (0)),
+  NS_TEST_ASSERT_MSG_EQ ((remainingEnergy < m_initialEnergy), true, "Energy hasn't depleted!");
+  NS_TEST_ASSERT_MSG_EQ_TOL (m_anim->GetNodeEnergyFraction (m_nodes.Get (0)),
                             remainingEnergy / m_initialEnergy,
                             1.0e-13,
                             "Wrong remaining energy value was traced");

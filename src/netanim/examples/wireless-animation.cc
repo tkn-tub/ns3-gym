@@ -120,10 +120,10 @@ main (int argc, char *argv[])
   Ptr<BasicEnergySource> energySource = CreateObject<BasicEnergySource>();
   Ptr<SimpleDeviceEnergyModel> energyModel = CreateObject<SimpleDeviceEnergyModel>();
 
-  energySource->SetInitialEnergy(300);
+  energySource->SetInitialEnergy (300);
   energyModel->SetEnergySource (energySource);
   energySource->AppendDeviceEnergyModel (energyModel);
-  energyModel->SetCurrentA(20);
+  energyModel->SetCurrentA (20);
 
   // aggregate energy source to node
   wifiApNode.Get (0)->AggregateObject (energySource);
@@ -175,7 +175,7 @@ main (int argc, char *argv[])
   AnimationInterface anim ("wireless-animation.xml"); // Mandatory
 
   anim.EnablePacketMetadata (true); // Optional
-  anim.EnableIpv4RouteTracking ("routingtable-wireless.xml", Seconds(0), Seconds(5), Seconds(0.25)); //Optional
+  anim.EnableIpv4RouteTracking ("routingtable-wireless.xml", Seconds (0), Seconds (5), Seconds (0.25)); //Optional
   Simulator::Run ();
   Simulator::Destroy ();
   return 0;
