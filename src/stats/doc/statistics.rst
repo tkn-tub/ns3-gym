@@ -280,7 +280,9 @@ Compiling and simply running the test program will append `OMNet++`_ formatted o
 Control Script
 ++++++++++++++
 
-In order to automate data collection at a variety of inputs (distances), a simple Bash script is used to execute a series of simulations.  It can be found at ``examples/stats/wifi-example-db.sh``.  The script runs through a set of distances, collecting the results into an SQLite_ database.  At each distance five trials are conducted to give a better picture of expected performance.  The entire experiment takes only a few dozen seconds to run on a low end machine as there is no output during the simulation and little traffic is generated.
+In order to automate data collection at a variety of inputs (distances), a simple Bash script is used to execute a series of simulations.  It can be found at ``examples/stats/wifi-example-db.sh``.  The script is meant to be run from the ``examples/stats/`` directory.
+
+The script runs through a set of distances, collecting the results into an SQLite_ database.  At each distance five trials are conducted to give a better picture of expected performance.  The entire experiment takes only a few dozen seconds to run on a low end machine as there is no output during the simulation and little traffic is generated.
   
 .. sourcecode:: bash
 
