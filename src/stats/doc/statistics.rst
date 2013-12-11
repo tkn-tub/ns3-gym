@@ -242,7 +242,7 @@ To see what the example program, applications, and stat framework are doing in d
   
 .. sourcecode:: bash
 
-  $ export NS_LOG=StatFramework:WiFiDistanceExperiment:WiFiDistanceApps
+  $ export NS_LOG=WiFiDistanceExperiment:WiFiDistanceApps
 
 Note that this slows down the simulation extraordinarily.
 

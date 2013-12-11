@@ -69,6 +69,7 @@ public:
     DROP_INTERFACE_DOWN,   /**< Interface is down so can not send packet */
     DROP_ROUTE_ERROR,   /**< Route error */
     DROP_FRAGMENT_TIMEOUT, /**< Fragment timeout exceeded */
+    DROP_MTU_TOO_LITTLE, /**< MTU (or PMTU) lower than minimum */
 
     DROP_INVALID_REASON, /**< Fallback reason (no known reason) */
   };

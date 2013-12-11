@@ -888,6 +888,11 @@ void Ipv6L3Protocol::SendRealOut (Ptr<Ipv6Route> route, Ptr<Packet> packet, Ipv6
       targetMtu = dev->GetMtu ();
     }
 
+  if (targetMtu<1280)
+    {
+      m_dropTrace (ipHeader, packet, DROP_MTU_TOO_LITTLE, m_node->GetObject<Ipv6> (), interface);
+    }
+
   if (packet->GetSize () > targetMtu + 40) /* 40 => size of IPv6 header */
     {
       // Router => drop

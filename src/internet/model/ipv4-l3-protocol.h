@@ -98,8 +98,9 @@ public:
     DROP_BAD_CHECKSUM,   /**< Bad checksum */
     DROP_INTERFACE_DOWN,   /**< Interface is down so can not send packet */
     DROP_ROUTE_ERROR,   /**< Route error */
-    DROP_FRAGMENT_TIMEOUT /**< Fragment timeout exceeded */
-  };
+    DROP_FRAGMENT_TIMEOUT, /**< Fragment timeout exceeded */
+    DROP_MTU_TOO_LITTLE, /**< MTU (or PMTU) lower than minimum */
+ };
 
   /**
    * \brief Set node associated with this stack.
