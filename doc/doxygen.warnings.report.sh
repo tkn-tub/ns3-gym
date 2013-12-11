@@ -211,12 +211,11 @@ undocmods=$(                \
     filter_log            | \
     cut -d ':' -f 1       | \
     sed "s|$ROOT/||g"     | \
-    cut -d '/' -f 2-4     | \
+    cut -d '/' -f 1-3     | \
     sort                  | \
     uniq -c               | \
     sort -nr                \
     )
-    
 
 # Number of directories
 modcount=$(                         \
