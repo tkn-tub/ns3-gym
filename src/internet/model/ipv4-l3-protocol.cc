@@ -748,15 +748,6 @@ Ipv4L3Protocol::SendRealOut (Ptr<Ipv4Route> route,
   Ptr<Ipv4Interface> outInterface = GetInterface (interface);
   NS_LOG_LOGIC ("Send via NetDevice ifIndex " << outDev->GetIfIndex () << " ipv4InterfaceIndex " << interface);
 
-  // RFC 791, pg.25:
-  //  Every internet module must be able to forward a datagram of 68
-  //   octets without further fragmentation.  This is because an internet
-  //   header may be up to 60 octets, and the minimum fragment is 8 octets.
-  if (outInterface->GetDevice ()->GetMtu () < 68)
-    {
-      m_dropTrace (ipHeader, packet, DROP_MTU_TOO_LITTLE, m_node->GetObject<Ipv4> (), interface);
-    }
-
   if (!route->GetGateway ().IsEqual (Ipv4Address ("0.0.0.0")))
     {
       if (outInterface->IsUp ())

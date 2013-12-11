@@ -81,7 +81,6 @@ public:
     DROP_INTERFACE_DOWN, /**< Interface is down so can not send packet */
     DROP_ROUTE_ERROR, /**< Route error */
     DROP_UNKNOWN_PROTOCOL, /**< Unknown L4 protocol */
-    DROP_MTU_TOO_LITTLE, /**< MTU (or PMTU) lower than minimum */
   };
 
   /**

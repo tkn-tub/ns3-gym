@@ -359,10 +359,7 @@ Ipv4FlowProbe::DropLogger (const Ipv4Header &ipHeader, Ptr<const Packet> ipPaylo
           myReason = DROP_FRAGMENT_TIMEOUT;
           NS_LOG_DEBUG ("DROP_FRAGMENT_TIMEOUT");
           break;
-        case Ipv4L3Protocol::DROP_MTU_TOO_LITTLE:
-          myReason = DROP_MTU_TOO_LITTLE;
-          NS_LOG_DEBUG ("DROP_MTU_TOO_LITTLE");
-          break;
+
         default:
           myReason = DROP_INVALID_REASON;
           NS_FATAL_ERROR ("Unexpected drop reason code " << reason);
