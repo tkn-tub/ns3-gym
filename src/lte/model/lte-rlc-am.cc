@@ -877,12 +877,22 @@ LteRlcAm::DoReceivePdu (Ptr<Packet> p)
         }
       else
         {
-          NS_LOG_LOGIC ("Place PDU in the reception buffer ( SN = " << seqNumber << " )");
-          m_rxonBuffer[ seqNumber.GetValue () ].m_byteSegments.push_back (p);
-          m_rxonBuffer[ seqNumber.GetValue () ].m_pduComplete = true;
-
           // - if some byte segments of the AMD PDU contained in the RLC data PDU have been received before:
           //         - discard the duplicate byte segments.
+          // note: re-segmentation of AMD PDU is currently not supported, 
+          // so we just check that the segment was not received before
+          if (m_rxonBuffer[ seqNumber.GetValue () ].m_byteSegments.size () == 1)
+            {
+              NS_LOG_LOGIC ("PDU segment already received, discarded");
+            }
+          else
+            {
+              NS_LOG_LOGIC ("Place PDU in the reception buffer ( SN = " << seqNumber << " )");
+              m_rxonBuffer[ seqNumber.GetValue () ].m_byteSegments.push_back (p);
+              m_rxonBuffer[ seqNumber.GetValue () ].m_pduComplete = true;
+            }
+
+
         }
 
       // 5.1.3.2.3 Actions when a RLC data PDU is placed in the reception buffer
