@@ -215,6 +215,7 @@ DOC_RST_TEMPLATE = '''Example Module Documentation
 ----------------------------
 
 .. include:: replace.txt
+.. highlight:: cpp
 
 .. heading hierarchy:
    ------------- Chapter

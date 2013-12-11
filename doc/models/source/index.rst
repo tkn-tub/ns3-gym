@@ -14,7 +14,7 @@ This document is written in `reStructuredText <http://docutils.sourceforge.net/r
 ``doc/models`` directory of ns-3's source code.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    organization
    animation

@@ -1,8 +1,8 @@
 .. include:: replace.txt
 .. highlight:: cpp
 
-Creating a new ns-3 model
--------------------------
+Creating a new |ns3| model
+--------------------------
 
 This chapter walks through the design process of an |ns3| model.  In many
 research cases, users will not be satisfied to merely adapt existing models, but
@@ -11,7 +11,16 @@ example of adding an ErrorModel to a simple |ns3| link as a motivating example
 of how one might approach this problem and proceed through a design and
 implementation.
 
-Design-approach
+.. note:: Documentation
+
+   Here we focus on the process of creating new models
+   and new modules, and some of the design choices involved.
+   For the sake of clarity, we defer discussion of the
+   *mechanics* of documenting models and source code to the
+   :doc:`Documentation <documentation>` chapter.
+
+
+Design Approach
 ***************
 
 Consider how you want it to work; what should it do. Think about these things:
@@ -26,13 +35,13 @@ Consider how you want it to work; what should it do. Think about these things:
   should I avoid any dependence on IPv4 if I want it to also be used by IPv6?
   Should I avoid any dependency on IP at all?
 
-Do not be hesitant to contact the ns-3-users or ns-developers list if you have
+Do not be hesitant to contact the `ns-3-users` or `ns-developers` list if you have
 questions. In particular, it is important to think about the public API of your
 new model and ask for feedback. It also helps to let others know of your work in
 case you are interested in collaborators.
 
-Example: ErrorModel
-+++++++++++++++++++
+Example: `ErrorModel`
++++++++++++++++++++++
 
 An error model exists in |ns2|. It allows packets to be passed to a stateful
 object that determines, based on a random variable, whether the packet is
@@ -158,16 +167,16 @@ your model since if you follow the error model verbatim, the code you produce
 will collide with the existing error model. The below is just an outline of how
 ErrorModel was built that you can adapt to other models.
 
-Review the ns-3 coding style document
-+++++++++++++++++++++++++++++++++++++
+Review the |ns3| Coding Style Document
+++++++++++++++++++++++++++++++++++++++
 
 At this point, you may want to pause and read the |ns3| coding style document,
 especially if you are considering to contribute your code back to the project.
 The coding style document is linked off the main project page: `ns-3 coding
 style <http://www.nsnam.org/developers/contributing-code/coding-style/>`_.
 
-Decide where in the source tree the model will reside in
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Decide Where in the Source Tree the Model Should Reside
++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 All of the |ns3| model source code is in the directory ``src/``.  You will need
 to choose which subdirectory it resides in. If it is new model code of some
@@ -178,8 +187,8 @@ In the case of the error model, it is very related to the packet class, so it
 makes sense to implement this in the ``src/network/`` module where |ns3|
 packets are implemented.  
 
-waf and wscript
-+++++++++++++++
+`waf` and `wscript`
++++++++++++++++++++
 
 |ns3| uses the `Waf <http://www.freehackers.org/~tnagy/waf.html>`_ build system.
 You will want to integrate your new |ns3| uses the Waf build system. You will
@@ -193,7 +202,7 @@ rest of the source files, and the .h file to the list of the header files.
 Now, pop up to the top level directory and type "./test.py".  You
 shouldn't have broken anything by this operation.
 
-include guards
+Include Guards
 ++++++++++++++
 
 Next, let's add some `include guards
@@ -204,8 +213,8 @@ Next, let's add some `include guards
     ...
     #endif
 
-namespace ns3
-+++++++++++++
+`namespace ns3`
++++++++++++++++
 
 |ns3| uses the |ns3| `namespace
 <http://en.wikipedia.org/wiki/Namespace_(computer_science)#Use_in_common_languages>`_
@@ -244,8 +253,8 @@ Initial Implementation
 At this point, we're still working on some scaffolding, but we can begin to
 define our classes, with the functionality to be added later.
 
-use of class Object?
-++++++++++++++++++++
+Inherit from the `Object` Class?
+++++++++++++++++++++++++++++++++
 
 This is an important design step; whether to use class :cpp:class:`Object` as a
 base class for your new classes.
@@ -268,7 +277,7 @@ In our case, we want to make use of the attribute system, and we will be passing
 instances of this object across the |ns3| public API, so class
 :cpp:class:`Object` is appropriate for us.
 
-initial classes
+Initial Classes
 +++++++++++++++
 
 One way to proceed is to start by defining the bare minimum functions and see if
@@ -374,28 +383,28 @@ every class that defines a new GetTypeId method, and it does the actual
 registration of the class into the system.  The :ref:`Object-model` chapter
 discusses this in more detail.
 
-how to include files from elsewhere
-+++++++++++++++++++++++++++++++++++
+Including External Files
+++++++++++++++++++++++++
 
-log component 
-+++++++++++++
+Logging Support
++++++++++++++++
 
 *Here, write a bit about adding |ns3| logging macros. Note that
 LOG_COMPONENT_DEFINE is done outside the namespace ns3*
 
-constructor, empty function prototypes
+Constructor, Empty Function Prototypes
 ++++++++++++++++++++++++++++++++++++++
 
-key variables (default values, attributes)
+Key Variables (Default Values, Attributes)
 ++++++++++++++++++++++++++++++++++++++++++
 
-test program 1
+Test Program 1
 ++++++++++++++
 
 Object Framework
 ++++++++++++++++
 
-Adding-a-sample-script
+Adding a Sample Script
 **********************
 
 At this point, one may want to try to take the basic scaffolding defined above
@@ -404,7 +413,7 @@ model when plumbing into the system and may also reveal whether any design or
 API modifications need to be made. Once this is done, we will return to building
 out the functionality of the ErrorModels themselves.
 
-Add basic support in the class
+Add Basic Support in the Class
 ++++++++++++++++++++++++++++++
 
 ::
@@ -435,7 +444,7 @@ Add Accessor
                        MakePointerAccessor (&PointToPointNetDevice::m_receiveErrorModel),
                        MakePointerChecker<ErrorModel> ())
 
-Plumb into the system
+Plumb Into the System
 +++++++++++++++++++++
 
 ::
@@ -469,7 +478,7 @@ Plumb into the system
         }
     }
 
-Create null functional script
+Create Null Functional Script
 +++++++++++++++++++++++++++++
 
 ::
@@ -499,8 +508,8 @@ the receive path of the PointToPointNetDevice. It prints out the string
 "Corrupt!" for each packet received at node n3. Next, we return to the error
 model to add in a subclass that performs more interesting error modeling.
 
-Add subclass
-************
+Add a Subclass
+**************
 
 The trivial base class ErrorModel does not do anything interesting, but it
 provides a useful base class interface (Corrupt () and Reset ()), forwarded to
@@ -523,7 +532,7 @@ Here are a few simple requirements we will consider:
   of granularity.
 * Ability to enable/disable (default is enabled)
 
-How to subclass
+How to Subclass
 +++++++++++++++
 
 We declare BasicErrorModel to be a subclass of ErrorModel as follows,::
@@ -550,12 +559,12 @@ and setting the Parent to ErrorModel::
         .AddConstructor<RateErrorModel> ()
       ...
 
-Build-core-functions-and-unit-tests
+Build Core Functions and Unit Tests
 ***********************************
 
-assert macros
+Assert Macros
 +++++++++++++
 
-Writing unit tests
+Writing Unit Tests
 ++++++++++++++++++
 
