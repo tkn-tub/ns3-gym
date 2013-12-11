@@ -140,8 +140,22 @@ Ipv6InterfaceAddress::Scope_e Ipv6InterfaceAddress::GetScope () const
 
 std::ostream& operator<< (std::ostream& os, const Ipv6InterfaceAddress &addr)
 {
-  os << "address=" << addr.GetAddress () << "; prefix=" <<
-  addr.GetPrefix () << "; scope=" << addr.GetScope ();
+  os << "address: " << addr.GetAddress () << addr.GetPrefix () << "; scope: ";
+  switch (addr.GetScope ())
+  {
+    case Ipv6InterfaceAddress::HOST:
+      os << "HOST";
+      break;
+    case Ipv6InterfaceAddress::LINKLOCAL:
+      os << "LINK-LOCAL";
+      break;
+    case Ipv6InterfaceAddress::GLOBAL:
+      os << "GLOBAL";
+      break;
+    default:
+      os << "UNKNOWN";
+      break;
+  }
   return os;
 }
 

@@ -32,6 +32,12 @@ NS_LOG_COMPONENT_DEFINE ("Cara");
 
 namespace ns3 {
 
+/**
+ * \brief hold per-remote-station state for CARA Wifi manager.
+ *
+ * This struct extends from WifiRemoteStation struct to hold additional
+ * information required by the CARA Wifi manager
+ */
 struct CaraWifiRemoteStation : public WifiRemoteStation
 {
   uint32_t m_timer;

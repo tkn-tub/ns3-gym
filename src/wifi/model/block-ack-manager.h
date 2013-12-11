@@ -47,6 +47,15 @@ class WifiMacQueue;
 struct Bar
 {
   Bar ();
+  /**
+   * Construct Block ACK request for a given packet,
+   * receiver address, Traffic ID, and ACK policy.
+   *
+   * \param packet
+   * \param recipient
+   * \param tid
+   * \param immediate
+   */
   Bar (Ptr<const Packet> packet,
        Mac48Address recipient,
        uint8_t tid,
@@ -73,6 +82,7 @@ public:
   /**
    * \param recipient Address of peer station involved in block ack mechanism.
    * \param tid Traffic ID.
+   * \return true  if a block ack agreement exists, false otherwise
    *
    * Checks if a block ack agreement exists with station addressed by
    * <i>recipient</i> for tid <i>tid</i>.
@@ -82,7 +92,8 @@ public:
    * \param recipient Address of peer station involved in block ack mechanism.
    * \param tid Traffic ID.
    * \param state The state for block ack agreement
-
+   * \return true if a block ack agreement exists, false otherwise
+   *
    * Checks if a block ack agreement with a state equals to <i>state</i> exists with
    * station addressed by <i>recipient</i> for tid <i>tid</i>.
    */
@@ -122,6 +133,7 @@ public:
   void StorePacket (Ptr<const Packet> packet, const WifiMacHeader &hdr, Time tStamp);
   /**
    * \param hdr 802.11 header of returned packet (if exists).
+   * \return the packet
    *
    * This methods returns a packet (if exists) indicated as not received in
    * corresponding block ack bitmap.
@@ -131,6 +143,9 @@ public:
   /**
    * Returns true if there are packets that need of retransmission or at least a
    * BAR is scheduled. Returns false otherwise.
+   *
+   * \return true if there are packets that need of retransmission or at least a
+   *         BAR is scheduled, false otherwise
    */
   bool HasPackets (void) const;
   /**
@@ -146,6 +161,7 @@ public:
   /**
    * \param recipient Address of peer station involved in block ack mechanism.
    * \param tid Traffic ID.
+   * \return the number of packets buffered for a specified agreement
    *
    * Returns number of packets buffered for a specified agreement. This methods doesn't return
    * number of buffered MPDUs but number of buffered MSDUs.
@@ -154,6 +170,7 @@ public:
   /**
    * \param recipient Address of peer station involved in block ack mechanism.
    * \param tid Traffic ID.
+   * \return the number of packets for a specific agreement that need retransmission
    *
    * Returns number of packets for a specific agreement that need retransmission.
    * This method doesn't return number of MPDUs that need retransmission but number of MSDUs.
@@ -216,12 +233,16 @@ public:
   /**
    * \param sequenceNumber Sequence number of the packet which fragment is
    * part of.
+   * \return true if another fragment with the given sequence number is scheduled
+   * for retransmission.
    *
    * Returns true if another fragment with sequence number <i>sequenceNumber</i> is scheduled
    * for retransmission.
    */
   bool HasOtherFragments (uint16_t sequenceNumber) const;
   /**
+   * \return the size of the next packet that needs retransmission
+   *
    * Returns size of the next packet that needs retransmission.
    */
   uint32_t GetNextPacketSize (void) const;
@@ -238,6 +259,12 @@ public:
   void SetBlockDestinationCallback (Callback<void, Mac48Address, uint8_t> callback);
   void SetUnblockDestinationCallback (Callback<void, Mac48Address, uint8_t> callback);
   /**
+   * \param recipient
+   * \param tid
+   * \param startingSeq
+   * \return true if there are packets in the queue that could be sent under block ACK,
+   *         false otherwise
+   *
    * Checks if there are in the queue other packets that could be send under block ack.
    * If yes adds these packets in current block ack exchange.
    * However, number of packets exchanged in the current block ack, will not exceed
@@ -245,6 +272,10 @@ public:
    */
   bool SwitchToBlockAckIfNeeded (Mac48Address recipient, uint8_t tid, uint16_t startingSeq);
   /**
+   * \param recipient
+   * \param tid
+   * \return the sequence number of the next retry packet for a specific agreement
+   *
    * Returns the sequence number of the next retry packet for a specific agreement.
    * If there are no packets that need retransmission for the specified agreement or
    * the agreement doesn't exist the function returns 4096;
@@ -252,6 +283,10 @@ public:
   uint16_t GetSeqNumOfNextRetryPacket (Mac48Address recipient, uint8_t tid) const;
 private:
   /**
+   * \param recipient
+   * \param tid
+   * \return a packet
+   *
    * Checks if all packets, for which a block ack agreement was established or refreshed,
    * have been transmitted. If yes, adds a pair in m_bAckReqs to indicate that
    * at next channel access a block ack request (for established agreement
@@ -265,17 +300,39 @@ private:
   void InactivityTimeout (Mac48Address, uint8_t);
 
   struct Item;
+  /**
+   * typedef for a list of Item struct.
+   */
   typedef std::list<Item> PacketQueue;
+  /**
+   * typedef for an iterator for PacketQueue.
+   */
   typedef std::list<Item>::iterator PacketQueueI;
+  /**
+   * typedef for a const iterator for PacketQueue.
+   */
   typedef std::list<Item>::const_iterator PacketQueueCI;
 
+  /**
+   * typedef for a map between MAC address and block ACK agreement.
+   */
   typedef std::map<std::pair<Mac48Address, uint8_t>,
                    std::pair<OriginatorBlockAckAgreement, PacketQueue> > Agreements;
+  /**
+   * typedef for an iterator for Agreements.
+   */
   typedef std::map<std::pair<Mac48Address, uint8_t>,
                    std::pair<OriginatorBlockAckAgreement, PacketQueue> >::iterator AgreementsI;
+  /**
+   * typedef for a const iterator for Agreements.
+   */
   typedef std::map<std::pair<Mac48Address, uint8_t>,
                    std::pair<OriginatorBlockAckAgreement, PacketQueue> >::const_iterator AgreementsCI;
 
+  /**
+   * A struct for packet, Wifi header, and timestamp.
+   * Used in queue by block ACK manager.
+   */
   struct Item
   {
     Item ();

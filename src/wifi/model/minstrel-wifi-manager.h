@@ -123,6 +123,12 @@ private:
 
   /// for estimating the TxTime of a packet with a given mode
   Time GetCalcTxTime (WifiMode mode) const;
+  /**
+   * Add transmission time for the given mode to an internal list.
+   *
+   * \param mode Wi-Fi mode
+   * \param t transmission time
+   */
   void AddCalcTxTime (WifiMode mode, Time t);
 
   /// update the number of retries and reset accordingly
@@ -151,7 +157,11 @@ private:
 
   void CheckInit (MinstrelWifiRemoteStation *station);  ///< check for initializations
 
-
+  /**
+   * typedef for a vector of a pair of Time, WifiMode.
+   * (Essentially a list for WifiMode and its corresponding transmission time
+   * to transmit a reference packet.
+   */
   typedef std::vector<std::pair<Time,WifiMode> > TxTime;
   MinstrelRate m_minstrelTable;  ///< minstrel table
   SampleRate m_sampleTable;  ///< sample table

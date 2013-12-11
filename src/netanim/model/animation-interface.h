@@ -14,6 +14,7 @@
  *
  * Author: George F. Riley<riley@ece.gatech.edu>
  * Author: John Abraham <john.abraham@gatech.edu>
+ * Contributions: Eugene Kalishenko <ydginster@gmail.com> (Open Source and Linux Laboratory http://dev.osll.ru/)
  */
 
 // Interface between ns3 and the network animator
@@ -137,7 +138,7 @@ public:
    *
    * \returns reference to this AnimationInterface object
    */
-  AnimationInterface & EnableIpv4RouteTracking (std::string fileName, Time startTime, Time stopTime, Time pollInterval = Seconds(5));
+  AnimationInterface & EnableIpv4RouteTracking (std::string fileName, Time startTime, Time stopTime, Time pollInterval = Seconds (5));
 
   /**
    * \brief Enable tracking of the Ipv4 routing table for a set of Nodes
@@ -151,7 +152,7 @@ public:
    *
    * \returns reference to this AnimationInterface object
    */
-  AnimationInterface & EnableIpv4RouteTracking (std::string fileName, Time startTime, Time stopTime, NodeContainer nc, Time pollInterval = Seconds(5));
+  AnimationInterface & EnableIpv4RouteTracking (std::string fileName, Time startTime, Time stopTime, NodeContainer nc, Time pollInterval = Seconds (5));
 
   /**
    * \brief Check if AnimationInterface is initialized
@@ -410,6 +411,15 @@ public:
    */
   uint64_t GetTracePktCount ();
 
+  /**
+   *
+   * \brief Get node's energy fraction (This used only for testing)
+   *
+   * returns current node's remaining energy (between [0, 1])
+   *
+   */
+  double GetNodeEnergyFraction (Ptr <const Node> node) const;
+
  /**
   * Assign a fixed random variable stream number to the random variables
   * used by this model.  Return the number of streams (possibly zero) that
@@ -542,6 +552,8 @@ private:
   void UanPhyGenRxTrace (std::string context,
                          Ptr<const Packet>);
 
+  void RemainingEnergyTrace (std::string context, double previousEnergy, double currentEnergy);
+
   void MobilityCourseChangeTrace (Ptr <const MobilityModel> mob);
 
   // Write a string to the specified handle;
@@ -606,19 +618,25 @@ private:
   bool IsInTimeWindow ();
 
   // Path helper
-  std::vector<std::string> GetElementsFromContext (std::string context);
+  const std::vector<std::string> GetElementsFromContext (const std::string& context) const;
+  Ptr <Node> GetNodeFromContext (const std::string& context) const;
   Ptr <NetDevice> GetNetDeviceFromContext (std::string context);
+
+  typedef std::map <uint32_t, double> EnergyFractionMap;
 
   static std::map <uint32_t, Rgb> nodeColors;
   static std::map <uint32_t, std::string> nodeDescriptions;
   static std::map <P2pLinkNodeIdPair, LinkProperties, LinkPairCompare> linkProperties;
+  EnergyFractionMap m_nodeEnergyFraction;
   uint64_t m_currentPktCount;
 
-  void StartNewTraceFile();
+  void StartNewTraceFile ();
 
   std::string GetMacAddress (Ptr <NetDevice> nd);
   std::string GetIpv4Address (Ptr <NetDevice> nd);
   void WriteNonP2pLinkProperties (uint32_t id, std::string ipv4Address, std::string channelType);
+
+  void WriteNodeUpdate (uint32_t nodeId);
 
   std::string GetNetAnimVersion ();
 
@@ -651,7 +669,9 @@ private:
   std::string GetXMLOpenClose_routing (uint32_t id, std::string routingInfo);
   std::string GetXMLOpenClose_rp (uint32_t nodeId, std::string destination, Ipv4RoutePathElements rpElements);
 
-
+  void AppendXMLNodeDescription (std::ostream& ostream, uint32_t id) const;
+  void AppendXMLNodeColor (std::ostream& ostream, const Rgb& color) const;
+  void AppendXMLRemainingEnergy (std::ostream& ostream, uint32_t id) const;
 
   /// Provides uniform random variables.
   Ptr<UniformRandomVariable> m_uniformRandomVariable;  

@@ -43,14 +43,54 @@ public:
   MgtAssocRequestHeader ();
   ~MgtAssocRequestHeader ();
 
+  /**
+   * Set the Service Set Identifier (SSID).
+   *
+   * \param ssid SSID
+   */
   void SetSsid (Ssid ssid);
+  /**
+   * Set the supported rates.
+   *
+   * \param rates the supported rates
+   */
   void SetSupportedRates (SupportedRates rates);
+  /**
+   * Set the listen interval.
+   *
+   * \param interval the listen interval
+   */
   void SetListenInterval (uint16_t interval);
+  /**
+   * Set the HT capabilities.
+   *
+   * \param htcapabilities HT capabilities
+   */
   void SetHtCapabilities(HtCapabilities htcapabilities);
   
+  /**
+   * Return the HT capabilities.
+   *
+   * \return HT capabilities
+   */
   HtCapabilities GetHtCapabilities (void) const;
+  /**
+   * Return the Service Set Identifier (SSID).
+   *
+   * \return SSID
+   */
   Ssid GetSsid (void) const;
+  /**
+   * Return the supported rates.
+   *
+   * \return the supported rates
+   */
   SupportedRates GetSupportedRates (void) const;
+  /**
+   * Return the listen interval.
+   *
+   * \return the listen interval
+   */
   uint16_t GetListenInterval (void) const;
 
   static TypeId GetTypeId (void);
@@ -79,12 +119,42 @@ public:
   MgtAssocResponseHeader ();
   ~MgtAssocResponseHeader ();
 
+  /**
+   * Return the status code.
+   *
+   * \return the status code
+   */
   StatusCode GetStatusCode (void);
+  /**
+   * Return the supported rates.
+   *
+   * \return the supported rates
+   */
   SupportedRates GetSupportedRates (void);
+  /**
+   * Return the HT capabilities.
+   *
+   * \return HT capabilities
+   */
   HtCapabilities GetHtCapabilities (void) const;
 
+  /**
+   * Set the HT capabilities.
+   *
+   * \param htcapabilities HT capabilities
+   */
   void SetHtCapabilities(HtCapabilities htcapabilities);
+  /**
+   * Set the supported rates.
+   *
+   * \param rates the supported rates
+   */
   void SetSupportedRates (SupportedRates rates);
+  /**
+   * Set the status code.
+   *
+   * \param code the status code
+   */
   void SetStatusCode (StatusCode code);
 
   static TypeId GetTypeId (void);
@@ -112,12 +182,42 @@ class MgtProbeRequestHeader : public Header
 public:
   ~MgtProbeRequestHeader ();
 
+  /**
+   * Set the Service Set Identifier (SSID).
+   *
+   * \param ssid SSID
+   */
   void SetSsid (Ssid ssid);
+  /**
+   * Set the supported rates.
+   *
+   * \param rates the supported rates
+   */
   void SetSupportedRates (SupportedRates rates);
+  /**
+   * Return the Service Set Identifier (SSID).
+   *
+   * \return SSID
+   */
   Ssid GetSsid (void) const;
+  /**
+   * Return the supported rates.
+   *
+   * \return the supported rates
+   */
   SupportedRates GetSupportedRates (void) const;
- HtCapabilities GetHtCapabilities (void) const;
+  /**
+   * Return the HT capabilities.
+   *
+   * \return HT capabilities
+   */
+  HtCapabilities GetHtCapabilities (void) const;
 
+  /**
+   * Set the HT capabilities.
+   *
+   * \param htcapabilities HT capabilities
+   */
   void SetHtCapabilities(HtCapabilities htcapabilities);
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
@@ -142,15 +242,60 @@ public:
   MgtProbeResponseHeader ();
   ~MgtProbeResponseHeader ();
 
+  /**
+   * Return the Service Set Identifier (SSID).
+   *
+   * \return SSID
+   */
   Ssid GetSsid (void) const;
+  /**
+   * Return the beacon interval in microseconds unit.
+   *
+   * \return beacon interval in microseconds unit
+   */
   uint64_t GetBeaconIntervalUs (void) const;
+  /**
+   * Return the supported rates.
+   *
+   * \return the supported rates
+   */
   SupportedRates GetSupportedRates (void) const;
- HtCapabilities GetHtCapabilities (void) const;
+  /**
+   * Return the HT capabilities.
+   *
+   * \return HT capabilities
+   */
+  HtCapabilities GetHtCapabilities (void) const;
 
+  /**
+   * Set the HT capabilities.
+   *
+   * \param htcapabilities HT capabilities
+   */
   void SetHtCapabilities(HtCapabilities htcapabilities);
+  /**
+   * Set the Service Set Identifier (SSID).
+   *
+   * \param ssid SSID
+   */
   void SetSsid (Ssid ssid);
+  /**
+   * Set the beacon interval in microseconds unit.
+   *
+   * \param us beacon interval in microseconds unit
+   */
   void SetBeaconIntervalUs (uint64_t us);
+  /**
+   * Set the supported rates.
+   *
+   * \param rates the supported rates
+   */
   void SetSupportedRates (SupportedRates rates);
+  /**
+   * Return the time stamp.
+   *
+   * \return time stamp
+   */
   uint64_t GetTimestamp ();
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
@@ -194,8 +339,11 @@ public:
   WifiActionHeader ();
   ~WifiActionHeader ();
 
-  /* Compatible with open80211s implementation */
-  enum CategoryValue //table 7-24 staring from 4
+  /**
+   * Compatible with open80211s implementation
+   * Category values - see 802.11-2012 Table 8-38
+   */
+  enum CategoryValue
   {
     BLOCK_ACK = 3,
     MESH_PEERING_MGT = 30,
@@ -208,7 +356,9 @@ public:
     // refer to vendor-specific-action in wave module.
     VENDOR_SPECIFIC_ACTION = 127,
   };
-  /* Compatible with open80211s implementation */
+  /**
+   * Compatible with open80211s implementation
+   */
   enum PeerLinkMgtActionValue
   {
     PEER_LINK_OPEN = 0,
@@ -220,7 +370,9 @@ public:
     LINK_METRIC_REQUEST = 0,
     LINK_METRIC_REPORT,
   };
-  /* Compatible with open80211s implementation */
+  /**
+   * Compatible with open80211s implementation
+   */
   enum PathSelectionActionValue
   {
     PATH_SELECTION = 0,
@@ -242,12 +394,19 @@ public:
     TBTT_ADJUSTMENT_REQUEST,
     MESH_CHANNEL_SWITCH_ANNOUNCEMENT,
   };
+  /**
+   * Block ACK action field values
+   * See 802.11 Table 8-202
+   */
   enum BlockAckActionValue
   {
     BLOCK_ACK_ADDBA_REQUEST = 0,
     BLOCK_ACK_ADDBA_RESPONSE = 1,
     BLOCK_ACK_DELBA = 2
   };
+  /**
+   * typedef for union of different ActionValues
+   */
   typedef union
   {
     enum PeerLinkMgtActionValue peerLink;
@@ -257,9 +416,25 @@ public:
     enum ResourceCoordinationActionValue resourceCoordination;
     enum BlockAckActionValue blockAck;
   } ActionValue;
+  /**
+   * Set action for this Action header.
+   *
+   * \param type category
+   * \param action action
+   */
   void   SetAction (enum CategoryValue type,ActionValue action);
 
+  /**
+   * Return the category value.
+   *
+   * \return CategoryValue
+   */
   CategoryValue GetCategory ();
+  /**
+   * Return the action value.
+   *
+   * \return ActionValue
+   */
   ActionValue GetAction ();
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId () const;
@@ -288,25 +463,106 @@ public:
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
 
+  /**
+   * Enable delayed Block ACK.
+   */
   void SetDelayedBlockAck ();
+  /**
+   * Enable immediate Block ACK
+   */
   void SetImmediateBlockAck ();
+  /**
+   * Set Traffic ID (TID).
+   *
+   * \param tid traffic ID
+   */
   void SetTid (uint8_t tid);
+  /**
+   * Set timeout.
+   *
+   * \param timeout timeout
+   */
   void SetTimeout (uint16_t timeout);
+  /**
+   * Set buffer size.
+   *
+   * \param size buffer size
+   */
   void SetBufferSize (uint16_t size);
+  /**
+   * Set the starting sequence number.
+   *
+   * \param seq the starting sequence number
+   */
   void SetStartingSequence (uint16_t seq);
+  /**
+   * Enable or disable A-MSDU support.
+   *
+   * \param supported enable or disable A-MSDU support
+   */
   void SetAmsduSupport (bool supported);
 
+  /**
+   * Return the starting sequence number.
+   *
+   * \return the starting sequence number
+   */
   uint16_t GetStartingSequence (void) const;
+  /**
+   * Return the Traffic ID (TID).
+   *
+   * \return TID
+   */
   uint8_t GetTid (void) const;
+  /**
+   * Return whether the Block ACK policy is immediate Block ACK.
+   *
+   * \return true if immediate Block ACK is being used, false otherwise
+   */
   bool IsImmediateBlockAck (void) const;
+  /**
+   * Return the timeout.
+   *
+   * \return timeout
+   */
   uint16_t GetTimeout (void) const;
+  /**
+   * Return the buffer size.
+   *
+   * \return the buffer size.
+   */
   uint16_t GetBufferSize (void) const;
+  /**
+   * Return whether A-MSDU capability is supported.
+   *
+   * \return true is A-MSDU is supported, false otherwise
+   */
   bool IsAmsduSupported (void) const;
 
 private:
+  /**
+   * Return the raw parameter set.
+   *
+   * \return the raw parameter set
+   */
   uint16_t GetParameterSet (void) const;
+  /**
+   * Set the parameter set from the given raw value.
+   *
+   * \param params raw parameter set value
+   */
   void SetParameterSet (uint16_t params);
+  /**
+   * Return the raw sequence control.
+   *
+   * \return the raw sequence control
+   */
   uint16_t GetStartingSequenceControl (void) const;
+  /**
+   * Set sequence control with the given raw value.
+   *
+   * \param seqControl
+   */
   void SetStartingSequenceControl (uint16_t seqControl);
 
   uint8_t m_dialogToken; /* Not used for now */
@@ -335,23 +591,94 @@ public:
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
 
+  /**
+   * Enable delayed Block ACK.
+   */
   void SetDelayedBlockAck ();
+  /**
+   * Enable immediate Block ACK
+   */
   void SetImmediateBlockAck ();
+  /**
+   * Set Traffic ID (TID).
+   *
+   * \param tid traffic ID
+   */
   void SetTid (uint8_t tid);
+  /**
+   * Set timeout.
+   *
+   * \param timeout timeout
+   */
   void SetTimeout (uint16_t timeout);
+  /**
+   * Set buffer size.
+   *
+   * \param size buffer size
+   */
   void SetBufferSize (uint16_t size);
+  /**
+   * Set the status code.
+   *
+   * \param code the status code
+   */
   void SetStatusCode (StatusCode code);
+  /**
+   * Enable or disable A-MSDU support.
+   *
+   * \param supported enable or disable A-MSDU support
+   */
   void SetAmsduSupport (bool supported);
 
+  /**
+   * Return the status code.
+   *
+   * \return the status code
+   */
   StatusCode GetStatusCode (void) const;
+  /**
+   * Return the Traffic ID (TID).
+   *
+   * \return TID
+   */
   uint8_t GetTid (void) const;
+  /**
+   * Return whether the Block ACK policy is immediate Block ACK.
+   *
+   * \return true if immediate Block ACK is being used, false otherwise
+   */
   bool IsImmediateBlockAck (void) const;
+  /**
+   * Return the timeout.
+   *
+   * \return timeout
+   */
   uint16_t GetTimeout (void) const;
+  /**
+   * Return the buffer size.
+   *
+   * \return the buffer size.
+   */
   uint16_t GetBufferSize (void) const;
+  /**
+   * Return whether A-MSDU capability is supported.
+   *
+   * \return true is A-MSDU is supported, false otherwise
+   */
   bool IsAmsduSupported (void) const;
 
 private:
+  /**
+   * Return the raw parameter set.
+   *
+   * \return the raw parameter set
+   */
   uint16_t GetParameterSet (void) const;
+  /**
+   * Set the parameter set from the given raw value.
+   *
+   * \param params raw parameter set value
+   */
   void SetParameterSet (uint16_t params);
 
   uint8_t m_dialogToken; /* Not used for now */
@@ -380,14 +707,46 @@ public:
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
 
+  /**
+   * Check if the initiator bit in the DELBA is setted.
+   *
+   * \return true if the initiator bit in the DELBA is setted,
+   *         false otherwise
+   */
   bool IsByOriginator (void) const;
+  /**
+   * Return the Traffic ID (TID).
+   *
+   * \return TID
+   */
   uint8_t GetTid (void) const;
+  /**
+   * Set Traffic ID (TID).
+   *
+   * \param tid traffic ID
+   */
   void SetTid (uint8_t);
+  /**
+   * Set the initiator bit in the DELBA.
+   */
   void SetByOriginator (void);
+  /**
+   * Un-set the initiator bit in the DELBA.
+   */
   void SetByRecipient (void);
 
 private:
+  /**
+   * Return the raw parameter set.
+   *
+   * \return the raw parameter set
+   */
   uint16_t GetParameterSet (void) const;
+  /**
+   * Set the parameter set from the given raw value.
+   *
+   * \param params raw parameter set value
+   */
   void SetParameterSet (uint16_t params);
 
   uint16_t m_initiator;

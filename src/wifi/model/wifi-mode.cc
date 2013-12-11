@@ -24,15 +24,37 @@
 
 namespace ns3 {
 
+/**
+ * Check if the two WifiModes are identical.
+ *
+ * \param a WifiMode
+ * \param b WifiMode
+ * \return true if the two WifiModes are identical,
+ *         false otherwise
+ */
 bool operator == (const WifiMode &a, const WifiMode &b)
 {
   return a.GetUid () == b.GetUid ();
 }
+/**
+ * Serialize WifiMode to ostream (human-readable).
+ *
+ * \param os std::ostream
+ * \param mode
+ * \return std::ostream
+ */
 std::ostream & operator << (std::ostream & os, const WifiMode &mode)
 {
   os << mode.GetUniqueName ();
   return os;
 }
+/**
+ * Serialize WifiMode from istream (human-readable).
+ *
+ * \param is std::istream
+ * \param mode
+ * \return std::istream
+ */
 std::istream & operator >> (std::istream &is, WifiMode &mode)
 {
   std::string str;

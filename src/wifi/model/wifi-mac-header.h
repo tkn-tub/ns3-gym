@@ -29,6 +29,9 @@
 
 namespace ns3 {
 
+/**
+ * Combination of valid MAC header type/subtype.
+ */
 enum WifiMacType
 {
   WIFI_MAC_CTL_RTS = 0,
@@ -77,6 +80,9 @@ enum WifiMacType
 class WifiMacHeader : public Header
 {
 public:
+  /**
+   * ACK policy for QoS frames.
+   */
   enum QosAckPolicy
   {
     NORMAL_ACK = 0,
@@ -85,6 +91,9 @@ public:
     BLOCK_ACK = 3,
   };
 
+  /**
+   * Address types.
+   */
   enum AddressType
   {
     ADDR1,
@@ -140,6 +149,9 @@ public:
    * Set Type/Subtype values for a Block Ack header.
    */
   void SetBlockAck (void);
+  /**
+   * Set Type/Subtype values for a multihop action header.
+   */
   void SetMultihopAction ();
   /**
    * Set the From DS bit in the Frame Control field.
@@ -251,8 +263,10 @@ public:
   void SetQosNoEosp ();
   /**
    * Set the QoS ACK policy in the QoS control field.
+   *
+   * \param policy
    */
-  void SetQosAckPolicy (enum QosAckPolicy);
+  void SetQosAckPolicy (enum QosAckPolicy policy);
   /**
    * Set the QoS ACK policy in the QoS control field to normal ACK.
    */
@@ -265,10 +279,27 @@ public:
    * Set the QoS ACK policy in the QoS control field to no ACK.
    */
   void SetQosNoAck (void);
+  /**
+   * Set that A-MSDU is present.
+   */
   void SetQosAmsdu (void);
+  /**
+   * Set that A-MSDU is not present.
+   */
   void SetQosNoAmsdu (void);
+  /**
+   * Set TXOP limit in the QoS control field.
+   *
+   * \param txop
+   */
   void SetQosTxopLimit (uint8_t txop);
+  /**
+   * Set order bit in the frame control field.
+   */
   void SetOrder (void);
+  /**
+   * Unset order bit in the frame control field.
+   */
   void SetNoOrder (void);
 
   /**
@@ -438,6 +469,12 @@ public:
    * \return true if the header is an Action header, false otherwise
    */
   bool IsAction () const;
+  /**
+   * Check if the header is a Multihop action header.
+   *
+   * \return true if the header is a Multihop action header,
+   *         false otherwise
+   */
   bool IsMultihopAction () const;
   /**
    * Return the raw duration from the Duration/ID field.
@@ -505,6 +542,12 @@ public:
    * \return true if the end of service period (EOSP) is set, false otherwise
    */
   bool IsQosEosp (void) const;
+  /**
+   * Check if the A-MSDU present bit is set in the QoS control field.
+   *
+   * \return true if the A-MSDU present bit is set,
+   *        false otherwise
+   */
   bool IsQosAmsdu (void) const;
   /**
    * Return the Traffic ID of a QoS header.
@@ -518,8 +561,19 @@ public:
    * \return the QoS ACK Policy of a QoS header
    */
   enum QosAckPolicy GetQosAckPolicy (void) const;
+  /**
+   * Return the TXOP limit.
+   *
+   * \return the TXOP limit
+   */
   uint8_t GetQosTxopLimit (void) const;
 
+  /**
+   * Return the size of the WifiMacHeader in octets.
+   * GetSerializedSize calls this function.
+   *
+   * \return the size of the WifiMacHeader in octets
+   */
   uint32_t GetSize (void) const;
   /**
    * Return a string corresponds to the header type.

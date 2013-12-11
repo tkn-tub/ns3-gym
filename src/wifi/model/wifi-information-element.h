@@ -131,48 +131,99 @@ class WifiInformationElement : public SimpleRefCount<WifiInformationElement>
 {
 public:
   virtual ~WifiInformationElement ();
-  /// Serialize entire IE including Element ID and length fields
+  /**
+   * Serialize entire IE including Element ID and length fields
+   *
+   * \param i an iterator which points to where the IE should
+   *        be written.
+   * \return an iterator
+   */
   Buffer::Iterator Serialize (Buffer::Iterator i) const;
-  /// Deserialize entire IE, which must be present. The iterator
-  /// passed in must be pointing at the Element ID (i.e., the very
-  /// first octet) of the correct type of information element,
-  /// otherwise this method will generate a fatal error.
+  /**
+   * Deserialize entire IE, which must be present. The iterator
+   * passed in must be pointing at the Element ID (i.e., the very
+   * first octet) of the correct type of information element,
+   * otherwise this method will generate a fatal error.
+   *
+   * \param i an iterator which points to where the IE should be read.
+   * \return an iterator
+   */
   Buffer::Iterator Deserialize (Buffer::Iterator i);
-  /// Deserialize entire IE if it is present. The iterator passed in
-  /// must be pointing at the Element ID of an information element. If
-  /// the Element ID is not the one that the given class is interested
-  /// in then it will return the same iterator.
+  /**
+   * Deserialize entire IE if it is present. The iterator passed in
+   * must be pointing at the Element ID of an information element. If
+   * the Element ID is not the one that the given class is interested
+   * in then it will return the same iterator.
+   *
+   * \param i an iterator which points to where the IE should be read.
+   * \return an iterator
+   */
   Buffer::Iterator DeserializeIfPresent (Buffer::Iterator i);
-  /// Get the size of the serialized IE including Element ID and
-  /// length fields.
+  /**
+   * Get the size of the serialized IE including Element ID and
+   * length fields.
+   *
+   * \return the size of the serialized IE
+   */
   uint16_t GetSerializedSize () const;
 
   ///\name Each subclass must implement
   //\{
   /// Own unique Element ID
   virtual WifiInformationElementId ElementId () const = 0;
-  /// Length of serialized information (i.e., the length of the body
-  /// of the IE, not including the Element ID and length octets. This
-  /// is the value that will appear in the second octet of the entire
-  /// IE - the length field)
+  /**
+   * Length of serialized information (i.e., the length of the body
+   * of the IE, not including the Element ID and length octets. This
+   * is the value that will appear in the second octet of the entire
+   * IE - the length field)
+   *
+   * \return the length of serialized information
+   */
   virtual uint8_t GetInformationFieldSize () const = 0;
-  /// Serialize information (i.e., the body of the IE, not including
-  /// the Element ID and length octets)
+  /**
+   * Serialize information (i.e., the body of the IE, not including
+   * the Element ID and length octets)
+   *
+   * \param start an iterator which points to where the information should
+   *        be written.
+   */
   virtual void SerializeInformationField (Buffer::Iterator start) const = 0;
-  /// Deserialize information (i.e., the body of the IE, not including
-  /// the Element ID and length octets)
+  /**
+   * Deserialize information (i.e., the body of the IE, not including
+   * the Element ID and length octets)
+   *
+   * \param start an iterator which points to where the information should
+   *        be written.
+   * \param length
+   * \return the number of bytes read
+   */
   virtual uint8_t DeserializeInformationField (Buffer::Iterator start,
                                                uint8_t length) = 0;
   //\}
 
   /// In addition, a subclass may optionally override the following...
   //\{
-  /// Generate human-readable form of IE
+  /**
+   * Generate human-readable form of IE
+   *
+   * \param os output stream
+   */
   virtual void Print (std::ostream &os) const;
-  /// Compare information elements using Element ID
+  /**
+   * Compare information elements using Element ID
+   *
+   * \param a another information element to compare with
+   * \return true if the Element ID is less than the other IE Element ID,
+   *         false otherwise
+   */
   virtual bool operator< (WifiInformationElement const & a) const;
-  /// Compare two IEs for equality by ID & Length, and then through
-  /// memcmp of serialised version
+  /**
+   * Compare two IEs for equality by ID & Length, and then through
+   * memcmp of serialised version
+   *
+   * \param a another information element to compare with
+   * \return true if the two IEs are equal, false otherwise
+   */
   virtual bool operator== (WifiInformationElement const & a) const;
   //\}
 };
