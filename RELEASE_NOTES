@@ -47,6 +47,7 @@ New user-visible features
 
 Bugs fixed
 ----------
+- Bug 1496 - Option to print log level in NS_LOG messages, and documentation.
 - Bug 1778 - Implement TapBridge::IsLinkUp() function
 - Bug 1777 - Implement the more direct way of "using" configuration of existing tap interface
 - Bug 1776 - Improve CRC performance for CsmaNetDevice in emulation modes
