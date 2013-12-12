@@ -145,7 +145,9 @@ This component model the gain due to the fact that the transmitting device is on
 Shadowing Model
 ---------------
 
-The shadowing is modeled according to a log-normal distribution with variable standard deviation as function of the connection characteristics. In the implementation we considered three main possible scenarios which correspond to three standard deviations (i.e., the mean is always 0), in detail:
+The shadowing is modeled according to a log-normal distribution with variable standard deviation as function of the relative position (indoor or outdoor) of the MobilityModel instances involved. One random value is drawn for each pair of MobilityModels, and stays constant for that pair during the whole simulation. Thus, the model is appropriate for static nodes only. 
+
+The model considers that the mean of the shadowing loss in dB is always 0. For the variance, the model considers three possible values of standard deviation, in detail:
 
  * outdoor (``m_shadowingSigmaOutdoor``, defaul value of 7 dB) :math:`\rightarrow X_\mathrm{O} \sim N(\mu_\mathrm{O}, \sigma_\mathrm{O}^2)`.
  * indoor (``m_shadowingSigmaIndoor``, defaul value of 10 dB) :math:`\rightarrow X_\mathrm{I} \sim N(\mu_\mathrm{I}, \sigma_\mathrm{I}^2)`.
