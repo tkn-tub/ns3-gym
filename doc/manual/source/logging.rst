@@ -320,7 +320,7 @@ How to add logging to your code
 Adding logging to your code is very simple:
 
 1. Invoke the ``NS_LOG_COMPONENT_DEFINE (...);`` macro
-  outside of ``namespace ns3``.
+   outside of ``namespace ns3``.
 
   Create a unique string identifier (usually based on the name of the file
   and/or class defined within the file) and register it with a macro call
@@ -337,7 +337,8 @@ Adding logging to your code is very simple:
 
   (The macro was carefully written to permit inclusion either within or
   outside of namespace ``ns3``, and usage will vary across the codebase, but
-  the original intent was to register this *outside* of namespace ``ns3``.)
+  the original intent was to register this *outside* of namespace ``ns3``
+  at file global scope.)
 
 2. Add logging statements (macro calls) to your functions and function bodies.
 
