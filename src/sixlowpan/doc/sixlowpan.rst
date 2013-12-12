@@ -7,7 +7,7 @@
 
 This chapter describes the implementation of |ns3| model for the
 compression of IPv6 packets over IEEE 802.15.4-Based Networks 
-as specified by [RFC4944]_ and [RFC6282]_.
+as specified by :rfc:`4944` and :rfc:`6282`.
 
 Model Description
 *****************
@@ -21,7 +21,7 @@ The model design does not follow strictly the standard from an architectural
 standpoint, as it does extend it beyond the original scope by supporting also
 other kinds of networks.
 
-Other than that, the module strictly follows RFCs 4944 and 6282, with the 
+Other than that, the module strictly follows :rfc:`4944` and :rfc:`6282`, with the 
 following exceptions:
 
 * MESH and LOWPAN_BC0 dispatch types are not supported
@@ -32,9 +32,9 @@ The MESH and LOWPAN_BC0 are not supported as they do apply only to mesh-under
 architecture, which is not one of the goals of the module development.
 
 The HC2 encoding is not supported, as it has been superseded by IPHC and NHC
-compression type (RFC 6282).
+compression type (\ :rfc:`6282`).
 
-IPHC SAC and DAC are not yet supported, as they do require RFC 6775 for full 
+IPHC SAC and DAC are not yet supported, as they do require :rfc:`6775` for full 
 compliance. It is planned to support them in the future. 
 
 NetDevice
@@ -51,7 +51,7 @@ GetMtu behaviour. It will always return *at least* 1280 bytes, as is the minumum
 The module does provide some attributes and some tracesources.
 The attributes are:
 
-* Rfc6282 (boolean, default true), used to activate HC1 (RFC 4944) or IPHC (RFC 6282) compression.
+* :rfc:`6282` (boolean, default true), used to activate HC1 (:rfc:`4944`) or IPHC (:rfc:`6282`) compression.
 * OmitUdpChecksum (boolean, default true), used to activate UDP checksum compression in IPHC.
 * FragmentReassemblyListSize (integer, default 0), indicating the number of packets that can be reassembled at the same time. If the limit is reached, the oldest packet is discarded. Zero means infinite.
 * FragmentExpirationTimeout (Time, default 60 seconds), being the timeout to wait for further fragments before discarding a partial packet.
@@ -89,7 +89,7 @@ invoked when a packet (or a fragment) is discarded.
 Scope and Limitations
 =====================
 
-Future versions of this module will support [RFC6775]_, however no timeframe is guaranteed.
+Future versions of this module will support :rfc:`6775`, however no timeframe is guaranteed.
 
 Using 6LoWPAN with IPv4 (or other L3 protocols)
 ###############################################
@@ -109,9 +109,9 @@ not been tested.
 References
 ==========
 
-.. [RFC4944] RFC 4944, "Transmission of IPv6 Packets over IEEE 802.15.4 Networks": http://www.ietf.org/rfc/rfc4944.txt
-.. [RFC6282] RFC 6282, "Compression Format for IPv6 Datagrams over IEEE 802.15.4-Based Networks": http://www.ietf.org/rfc/rfc6282.txt
-.. [RFC6775] RFC 6775, "Neighbor Discovery Optimization for IPv6 over Low-Power Wireless Personal Area Networks (6LoWPANs)": http://www.ietf.org/rfc/rfc6775.txt
+.. [RFC4944] :rfc:`4944`, "Transmission of IPv6 Packets over IEEE 802.15.4 Networks"
+.. [RFC6282] :rfc:`6282`, "Compression Format for IPv6 Datagrams over IEEE 802.15.4-Based Networks"
+.. [RFC6775] :rfc:`6775`, "Neighbor Discovery Optimization for IPv6 over Low-Power Wireless Personal Area Networks (6LoWPANs)"
 .. [IANA802] IANA, assigned IEEE 802 numbers: http://www.iana.org/assignments/ieee-802-numbers/ieee-802-numbers.xml
 .. [Ethertype] IEEE Ethertype numbers: http://standards.ieee.org/develop/regauth/ethertype/eth.txt
 
