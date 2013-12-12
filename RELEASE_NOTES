@@ -50,6 +50,7 @@ Bugs fixed
 - Bug 1798 - Changing the rate of onOffApplication might stop transmission
 - Bug 1802 - FlowMon header deserialization problem with IPv4 fragments
 - Bug 1807 - Multiple bugs in Ipv4L3Protocol::LocalDeliver
+- Bug 1810 - IP packets can be sent on NetDevices not respecting the minimum MTU requirements
 
 Release 3.18.1
 ==============
