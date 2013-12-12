@@ -21,6 +21,10 @@ Supported platforms
 
 New user-visible features
 -------------------------
+- Ipv[4,6]Interfaces not respecting the minimum MTU requirements (68 octects
+  for IPv4 and 1280 octects for IPv6) will be automatically set as Down.
+  Warning: this might break some simulations (which hadn't to work anyway).
+  
 - IPv6 addresses and routing tables are printed in a more conventional way,
   closely matching the Linux "route -A inet6" command.
   
