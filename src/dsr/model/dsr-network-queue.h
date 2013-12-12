@@ -129,7 +129,7 @@ private:
 class DsrNetworkQueue : public Object
 {
 public:
-  static TypeId GetTypeID (void);
+  static TypeId GetTypeId (void);
   /// Default c-tor
   DsrNetworkQueue ();
   DsrNetworkQueue (uint32_t maxLen, Time maxDelay);
