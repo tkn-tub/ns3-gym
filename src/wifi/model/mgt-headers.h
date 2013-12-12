@@ -101,10 +101,10 @@ public:
   virtual uint32_t Deserialize (Buffer::Iterator start);
 
 private:
-  Ssid m_ssid;
-  SupportedRates m_rates;
-  CapabilityInformation m_capability;
-  HtCapabilities m_htCapability;
+  Ssid m_ssid; //!< Service Set ID (SSID)
+  SupportedRates m_rates; //!< List of supported rates
+  CapabilityInformation m_capability; //!< Capability information
+  HtCapabilities m_htCapability; //!< HT capabilities
   uint16_t m_listenInterval;
 };
 
@@ -165,11 +165,11 @@ public:
   virtual uint32_t Deserialize (Buffer::Iterator start);
 
 private:
-  SupportedRates m_rates;
-  CapabilityInformation m_capability;
-  StatusCode m_code;
+  SupportedRates m_rates; //!< List of supported rates
+  CapabilityInformation m_capability; //!< Capability information
+  StatusCode m_code; //!< Status code
   uint16_t m_aid;
-  HtCapabilities m_htCapability;
+  HtCapabilities m_htCapability; //!< HT capabilities
 };
 
 
@@ -226,9 +226,9 @@ public:
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
 private:
-  Ssid m_ssid;
-  SupportedRates m_rates;
-  HtCapabilities m_htCapability;
+  Ssid m_ssid; //!< Service Set ID (SSID)
+  SupportedRates m_rates; //!< List of supported rates
+  HtCapabilities m_htCapability; //!< HT capabilities
 };
 
 
@@ -305,12 +305,12 @@ public:
   virtual uint32_t Deserialize (Buffer::Iterator start);
 
 private:
-  uint64_t m_timestamp;
-  Ssid m_ssid;
-  uint64_t m_beaconInterval;
-  SupportedRates m_rates;
-  CapabilityInformation m_capability;
-  HtCapabilities m_htCapability;
+  uint64_t m_timestamp; //!< Timestamp
+  Ssid m_ssid; //!< Service set ID (SSID)
+  uint64_t m_beaconInterval; //!< Beacon interval
+  SupportedRates m_rates; //!< List of supported rates
+  CapabilityInformation m_capability; //!< Capability information
+  HtCapabilities m_htCapability; //!< HT capabilities
 };
 
 
@@ -443,8 +443,8 @@ public:
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
 private:
-  uint8_t m_category;
-  uint8_t m_actionValue;
+  uint8_t m_category; //!< Category of the action
+  uint8_t m_actionValue; //!< Action value
 };
 
 /**
@@ -566,12 +566,12 @@ private:
   void SetStartingSequenceControl (uint16_t seqControl);
 
   uint8_t m_dialogToken; /* Not used for now */
-  uint8_t m_amsduSupport;
-  uint8_t m_policy;
-  uint8_t m_tid;
-  uint16_t m_bufferSize;
-  uint16_t m_timeoutValue;
-  uint16_t m_startingSeq;
+  uint8_t m_amsduSupport; //!< Flag if A-MSDU is supported
+  uint8_t m_policy; //!< Block ACK policy
+  uint8_t m_tid; //!< Traffic ID
+  uint16_t m_bufferSize; //!< Buffer size
+  uint16_t m_timeoutValue; //!< Timeout
+  uint16_t m_startingSeq; //!< Starting sequence number
 };
 
 
@@ -682,12 +682,12 @@ private:
   void SetParameterSet (uint16_t params);
 
   uint8_t m_dialogToken; /* Not used for now */
-  StatusCode m_code;
-  uint8_t m_amsduSupport;
-  uint8_t m_policy;
-  uint8_t m_tid;
-  uint16_t m_bufferSize;
-  uint16_t m_timeoutValue;
+  StatusCode m_code; //!< Status code
+  uint8_t m_amsduSupport; //!< Flag if A-MSDU is supported
+  uint8_t m_policy; //!< Block ACK policy
+  uint8_t m_tid; //!< Traffic ID
+  uint16_t m_bufferSize; //!< Buffer size
+  uint16_t m_timeoutValue; //!< Timeout
 };
 
 
@@ -750,7 +750,7 @@ private:
   void SetParameterSet (uint16_t params);
 
   uint16_t m_initiator;
-  uint16_t m_tid;
+  uint16_t m_tid; //!< Traffic ID
   /* Not used for now.
      Always set to 1: "Unspecified reason" */
   uint16_t m_reasonCode;

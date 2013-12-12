@@ -1067,9 +1067,9 @@ private:
    */
   void SetupPhyMacLowListener (Ptr<WifiPhy> phy);
 
-  Ptr<WifiPhy> m_phy;
-  Ptr<WifiRemoteStationManager> m_stationManager;
-  MacLowRxCallback m_rxCallback;
+  Ptr<WifiPhy> m_phy; //!< Pointer to WifiPhy (actually send/receives frames)
+  Ptr<WifiRemoteStationManager> m_stationManager; //!< Pointer to WifiRemoteStationManager (rate control)
+  MacLowRxCallback m_rxCallback; //!< Callback to pass packet up
   /**
    * typedef for an iterator for a list of MacLowDcfListener.
    */
@@ -1078,44 +1078,43 @@ private:
    * typedef for a list of MacLowDcfListener.
    */
   typedef std::vector<MacLowDcfListener *> DcfListeners;
-  DcfListeners m_dcfListeners;
+  DcfListeners m_dcfListeners; //!< List of MacLowDcfListener (pass events to Dcf)
 
-  EventId m_normalAckTimeoutEvent;
-  EventId m_fastAckTimeoutEvent;
-  EventId m_superFastAckTimeoutEvent;
-  EventId m_fastAckFailedTimeoutEvent;
-  EventId m_blockAckTimeoutEvent;
-  EventId m_ctsTimeoutEvent;
-  EventId m_sendCtsEvent;
-  EventId m_sendAckEvent;
-  EventId m_sendDataEvent;
-  EventId m_waitSifsEvent;
-  EventId m_endTxNoAckEvent;
-  EventId m_navCounterResetCtsMissed;
-  EventId m_waitRifsEvent;
+  EventId m_normalAckTimeoutEvent;      //!< Normal ACK timeout event
+  EventId m_fastAckTimeoutEvent;        //!< Fast ACK timeout event
+  EventId m_superFastAckTimeoutEvent;   //!< Super fast ACK timeout event
+  EventId m_fastAckFailedTimeoutEvent;  //!< Fast ACK failed timeout event
+  EventId m_blockAckTimeoutEvent;       //!< Block ACK timeout event
+  EventId m_ctsTimeoutEvent;            //!< CTS timeout event
+  EventId m_sendCtsEvent;               //!< Event to send CTS
+  EventId m_sendAckEvent;               //!< Event to send ACK
+  EventId m_sendDataEvent;              //!< Event to send DATA
+  EventId m_waitSifsEvent;              //!< Wait for SIFS event
+  EventId m_endTxNoAckEvent;            //!< Event for finishing transmission that does not require ACK
+  EventId m_navCounterResetCtsMissed;   //!< Event to reset NAV when CTS is not received
+  EventId m_waitRifsEvent;              //!< Wait for RIFS event
 
-  Ptr<Packet> m_currentPacket;
-  WifiMacHeader m_currentHdr;
-  MacLowTransmissionParameters m_txParams;
-  MacLowTransmissionListener *m_listener;
-  Mac48Address m_self;
-  Mac48Address m_bssid;
-  Time m_ackTimeout;
-  Time m_basicBlockAckTimeout;
-  Time m_compressedBlockAckTimeout;
-  Time m_ctsTimeout;
-  Time m_sifs;
-  Time m_slotTime;
-  Time m_pifs;
-  Time m_rifs;
+  Ptr<Packet> m_currentPacket;              //!< Current packet transmitted/to be transmitted
+  WifiMacHeader m_currentHdr;               //!< Header of the current packet
+  MacLowTransmissionParameters m_txParams;  //!< Transmission parameters of the current packet
+  MacLowTransmissionListener *m_listener;   //!< Transmission listener for the current packet
+  Mac48Address m_self;                      //!< Address of this MacLow (Mac48Address)
+  Mac48Address m_bssid;                     //!< BSSID address (Mac48Address)
+  Time m_ackTimeout;                        //!< ACK timeout duration
+  Time m_basicBlockAckTimeout;              //!< Basic block ACK timeout duration
+  Time m_compressedBlockAckTimeout;         //!< Compressed block ACK timeout duration
+  Time m_ctsTimeout;                        //!< CTS timeout duration
+  Time m_sifs;                              //!< Short Interframe Space (SIFS) duration
+  Time m_slotTime;                          //!< Slot duration
+  Time m_pifs;                              //!< PCF Interframe Space (PIFS) duration
+  Time m_rifs;                              //!< Reduced Interframe Space (RIFS) duration
 
-  Time m_lastNavStart;
-  Time m_lastNavDuration;
+  Time m_lastNavStart;     //!< The time when the latest NAV started
+  Time m_lastNavDuration;  //!< The duration of the latest NAV
 
-  bool m_promisc;
+  bool m_promisc;  //!< Flag if the device is operating in promiscuous mode
 
-  // Listerner needed to monitor when a channel switching occurs.
-  class PhyMacLowListener * m_phyMacLowListener;
+  class PhyMacLowListener * m_phyMacLowListener; //!< Listerner needed to monitor when a channel switching occurs.
 
   /*
    * BlockAck data structures.

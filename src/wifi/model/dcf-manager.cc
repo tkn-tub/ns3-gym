@@ -206,7 +206,7 @@ public:
     m_dcf->NotifyCtsTimeoutResetNow ();
   }
 private:
-  ns3::DcfManager *m_dcf;
+  ns3::DcfManager *m_dcf;  //!< DcfManager to forward events to
 };
 
 /**
@@ -252,7 +252,7 @@ public:
     m_dcf->NotifySwitchingStartNow (duration);
   }
 private:
-  ns3::DcfManager *m_dcf;
+  ns3::DcfManager *m_dcf;  //!< DcfManager to forward events to
 };
 
 /****************************************************************

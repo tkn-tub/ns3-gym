@@ -883,8 +883,8 @@ private:
    */
   typedef std::vector <WifiRemoteStationState *> StationStates;
 
-  StationStates m_states;
-  Stations m_stations;
+  StationStates m_states;  //!< States of known stations
+  Stations m_stations;  //!< Information for each known stations
   /**
    * This is a pointer to the WifiPhy associated with this
    * WifiRemoteStationManager that is set on call to
@@ -894,8 +894,8 @@ private:
    * "DeviceRateSet").
    */
   Ptr<WifiPhy> m_wifiPhy;
-  WifiMode m_defaultTxMode;
-  uint8_t m_defaultTxMcs;
+  WifiMode m_defaultTxMode;  //!< The default transmission mode
+  uint8_t m_defaultTxMcs;  //!< The default transmission modulation-coding scheme (MCS)
 
   /**
    * This member is the list of WifiMode objects that comprise the
@@ -908,13 +908,13 @@ private:
   WifiModeList m_bssBasicRateSet;
   WifiMcsList m_bssBasicMcsSet;
 
-  bool m_htSupported;
-  uint32_t m_maxSsrc;
-  uint32_t m_maxSlrc;
-  uint32_t m_rtsCtsThreshold;
-  uint32_t m_fragmentationThreshold;
-  uint8_t m_defaultTxPowerLevel;
-  WifiMode m_nonUnicastMode;
+  bool m_htSupported;  //!< Flag if HT capability is supported
+  uint32_t m_maxSsrc;  //!< Maximum STA short retry count (SSRC)
+  uint32_t m_maxSlrc;  //!< Maximum STA long retry count (SLRC)
+  uint32_t m_rtsCtsThreshold;  //!< Threshold for RTS/CTS
+  uint32_t m_fragmentationThreshold;  //!< Threshold for fragmentation
+  uint8_t m_defaultTxPowerLevel;  //!< Default tranmission power level
+  WifiMode m_nonUnicastMode;  //!< Transmission mode for non-unicast DATA frames
 
   /**
    * The trace source fired when the transmission of a single RTS has failed
@@ -942,6 +942,9 @@ private:
  */
 struct WifiRemoteStationState
 {
+  /**
+   * State of the station
+   */
   enum
   {
     BRAND_NEW,
@@ -961,13 +964,13 @@ struct WifiRemoteStationState
    */
   WifiModeList m_operationalRateSet;
   WifiMcsList m_operationalMcsSet;
-  Mac48Address m_address; 
+  Mac48Address m_address;  //!< Mac48Address of the remote station
   WifiRemoteStationInfo m_info;
-  bool m_shortGuardInterval;
-  uint32_t m_rx;
-  uint32_t m_tx;
-  bool m_stbc;
-  bool m_greenfield;
+  bool m_shortGuardInterval;  //!< Flag if short guard interval is supported by the remote station
+  uint32_t m_rx;  //!< Number of RX antennae of the remote station
+  uint32_t m_tx;  //!< Number of TX antennae of the remote station
+  bool m_stbc;  //!< Flag if STBC is used by the remote station
+  bool m_greenfield;  //!< Flag if green field is used by the remote station
 
 };
 

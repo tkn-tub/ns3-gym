@@ -35,7 +35,7 @@ namespace ns3 {
  */
 struct IdealWifiRemoteStation : public WifiRemoteStation
 {
-  double m_lastSnr;
+  double m_lastSnr;  //!< SNR of last packet sent to the remote station
 };
 
 NS_OBJECT_ENSURE_REGISTERED (IdealWifiManager)

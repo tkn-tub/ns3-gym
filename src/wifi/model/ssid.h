@@ -81,8 +81,8 @@ public:
                                        uint8_t length);
 
 private:
-  uint8_t m_ssid[33];
-  uint8_t m_length;
+  uint8_t m_ssid[33]; //!< Raw SSID value
+  uint8_t m_length;   //!< Length of the SSID
 };
 
 std::ostream &operator << (std::ostream &os, const Ssid &ssid);

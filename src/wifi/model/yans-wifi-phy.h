@@ -453,33 +453,26 @@ private:
   void EndReceive (Ptr<Packet> packet, Ptr<InterferenceHelper::Event> event);
 
 private:
-  double   m_edThresholdW;
-  double   m_ccaMode1ThresholdW;
-  double   m_txGainDb;
-  double   m_rxGainDb;
-  double   m_txPowerBaseDbm;
-  double   m_txPowerEndDbm;
-  uint32_t m_nTxPower;
+  double   m_edThresholdW;        //!< Energy detection threshold in watts
+  double   m_ccaMode1ThresholdW;  //!< Clear channel assessment (CCA) threshold in watts
+  double   m_txGainDb;            //!< Transmission gain (dB)
+  double   m_rxGainDb;            //!< Reception gain (dB)
+  double   m_txPowerBaseDbm;      //!< Minimum transmission power (dBm)
+  double   m_txPowerEndDbm;       //!< Maximum transmission power (dBm)
+  uint32_t m_nTxPower;            //!< Number of available transmission power levels
 
-  Ptr<YansWifiChannel> m_channel;
-  uint16_t             m_channelNumber;
-  Ptr<Object>          m_device;
-  Ptr<Object>          m_mobility;
+  Ptr<YansWifiChannel> m_channel;        //!< YansWifiChannel that this YansWifiPhy is connected to
+  uint16_t             m_channelNumber;  //!< Operating channel number
+  Ptr<Object>          m_device;         //!< Pointer to the device
+  Ptr<Object>          m_mobility;       //!< Pointer to the mobility model
 
-  // number of transmitters
-  uint32_t m_numberOfTransmitters;
-  // number of receivers
-  uint32_t m_numberOfReceivers;
-  //if true use LDPC
-  bool     m_ldpc;
-  // True if STBC is used
-  bool     m_stbc;
-  //True if GreenField format is supported
-  bool     m_greenfield;
-  //True is short guard interval is used
-  bool     m_guardInterval;
-  //True if channel bonding is used
-  bool     m_channelBonding;
+  uint32_t m_numberOfTransmitters;  //!< Number of transmitters
+  uint32_t m_numberOfReceivers;     //!< Number of receivers
+  bool     m_ldpc;                  //!< Flag if LDPC is used
+  bool     m_stbc;                  //!< Flag if STBC is used      
+  bool     m_greenfield;            //!< Flag if GreenField format is supported
+  bool     m_guardInterval;         //!< Flag if short guard interval is used
+  bool     m_channelBonding;        //!< Flag if channel conding is used
 
 
   /**
@@ -523,13 +516,12 @@ private:
   std::vector<uint32_t> m_bssMembershipSelectorSet;
   std::vector<uint8_t> m_deviceMcsSet;
   EventId m_endRxEvent;
-  /// Provides uniform random variables.
-  Ptr<UniformRandomVariable> m_random;
-  /// Standard-dependent center frequency of 0-th channel, MHz
-  double m_channelStartingFrequency;
-  Ptr<WifiPhyStateHelper> m_state;
-  InterferenceHelper m_interference;
-  Time m_channelSwitchDelay;
+
+  Ptr<UniformRandomVariable> m_random;  //!< Provides uniform random variables.
+  double m_channelStartingFrequency;    //!< Standard-dependent center frequency of 0-th channel in MHz
+  Ptr<WifiPhyStateHelper> m_state;      //!< Pointer to WifiPhyStateHelper
+  InterferenceHelper m_interference;    //!< Pointer to InterferenceHelper
+  Time m_channelSwitchDelay;            //!< Time required to switch between channel
 
 };
 
