@@ -43,6 +43,7 @@ This document is written in `reStructuredText <http://docutils.sourceforge.net/r
    point-to-point
    propagation
    spectrum
+   sixlowpan
    topology
    uan
    wave

@@ -1,7 +1,9 @@
+.. include:: replace.txt
+
 PageBreak
 
-Transmission of IPv6 Packets over IEEE 802.15.4 Networks (6LoWPAN)
-------------------------------------------------------------------
+6LoWPAN: Transmission of IPv6 Packets over IEEE 802.15.4 Networks
+-----------------------------------------------------------------
 
 This chapter describes the implementation of |ns3| model for the
 compression of IPv6 packets over IEEE 802.15.4-Based Networks 

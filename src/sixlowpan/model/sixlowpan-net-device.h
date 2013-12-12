@@ -159,6 +159,7 @@ private:
    * \brief Copy constructor
    *
    * Defined and unimplemented to avoid misuse
+   * \returns
    */
   SixLowPanNetDevice& operator= (SixLowPanNetDevice const &);
   /**
