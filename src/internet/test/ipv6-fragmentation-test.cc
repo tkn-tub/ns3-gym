@@ -295,7 +295,7 @@ Ipv6FragmentationTest::DoRun (void)
   {
     clientDev = CreateObject<SimpleNetDevice> ();
     clientDev->SetAddress (Mac48Address::ConvertFrom (Mac48Address::Allocate ()));
-    clientDev->SetMtu (1000);
+    clientDev->SetMtu (1500);
     clientDev->SetReceiveErrorModel (clientDevErrorModel);
     clientDevErrorModel->Disable ();
     clientNode->AddDevice (clientDev);
@@ -315,7 +315,7 @@ Ipv6FragmentationTest::DoRun (void)
 
 
   // some small packets, some rather big ones
-  uint32_t packetSizes[5] = {1000, 2000, 5000, 10000, 65000};
+  uint32_t packetSizes[5] = {2000, 2500, 5000, 10000, 65000};
 
   // using the alphabet
   uint8_t fillData[78];
