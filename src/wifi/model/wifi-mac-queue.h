@@ -256,9 +256,9 @@ protected:
   };
 
   PacketQueue m_queue; //!< Packet (struct Item) queue
-  uint32_t m_size; //! Current queue size
+  uint32_t m_size; //!< Current queue size
   uint32_t m_maxSize; //!< Queue capacity
-  Time m_maxDelay; //! Time to live for packets in the queue
+  Time m_maxDelay; //!< Time to live for packets in the queue
 };
 
 } // namespace ns3

@@ -90,8 +90,8 @@ private:
    */
   typedef std::vector<std::pair<double,WifiMode> > Thresholds;
 
-  double m_ber;
-  Thresholds m_thresholds;
+  double m_ber;  //!< The maximum Bit Error Rate acceptable at any transmission mode
+  Thresholds m_thresholds;  //!< List of WifiMode and the minimum SNR pair
 };
 
 } // namespace ns3

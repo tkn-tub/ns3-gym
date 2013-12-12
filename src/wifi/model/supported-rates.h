@@ -168,8 +168,8 @@ public:
   friend class ExtendedSupportedRatesIE;
   ExtendedSupportedRatesIE extended;
 private:
-  uint8_t m_nRates;
-  uint8_t m_rates[MAX_SUPPORTED_RATES];
+  uint8_t m_nRates;  //!< Number of supported rates
+  uint8_t m_rates[MAX_SUPPORTED_RATES];  //!< List of supported bitrate (divided by 500000)
 };
 
 std::ostream &operator << (std::ostream &os, const SupportedRates &rates);
