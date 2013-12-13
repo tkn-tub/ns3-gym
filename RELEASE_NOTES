@@ -55,15 +55,32 @@ New user-visible features
    - two options of handover algorithms for enabling automatic handover trigger
      in LTE simulation: A2-A4-RSRQ and strongest cell (A3-RSRP).
 
+- A new FixedRoomPositionAllocator has been adeded to the buildings
+  module. It allows to generate a random position uniformly
+  distributed in the volume of a chosen room inside a chosen building.  
+
+- A new attribute ns3::LteRlcAm::TxOpportunityForRetxAlwaysBigEnough
+  allows to overcome the lack for re-segmentation in the RLC AM
+  implementation by assuming that the size of a TxOpportunity is
+  always big enough for the RLC AM PDU to be retransmitted.
+
+- After some profiling, the code of LteMiErrorModel has been optimized
+  for speed, resulting in a significantly lower execution time of the
+  LTE model when used with the error model enabled.
+
 Bugs fixed
 ----------
 - Bug 1496 - Option to print log level in NS_LOG messages, and documentation.
+- Bug 1756 - RLC AM Mode State Variable Bug
+- Bug 1763 - Message 3 should be sent using the UL GRANT in the RAR
 - Bug 1778 - Implement TapBridge::IsLinkUp() function
 - Bug 1777 - Implement the more direct way of "using" configuration of existing tap interface
 - Bug 1776 - Improve CRC performance for CsmaNetDevice in emulation modes
+- Bug 1788 - unused private field warning
 - Bug 1789 - missing test condition for sigma in buildings-shadowing-test
 - Bug 1798 - Changing the rate of onOffApplication might stop transmission
 - Bug 1802 - FlowMon header deserialization problem with IPv4 fragments
+- Bug 1803 - Lookup /NodeList/4/DeviceList/0/LteEnbRrc/UeMap/0 got no matches
 - Bug 1807 - Multiple bugs in Ipv4L3Protocol::LocalDeliver
 - Bug 1810 - IP packets can be sent on NetDevices not respecting the minimum MTU requirements
 - Bug 1814 - IPv6 Packet with length not multiple of 8 bytes are fragmented incorrectly.
