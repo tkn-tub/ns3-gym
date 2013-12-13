@@ -75,6 +75,38 @@ us a note on ns-developers mailing list.</p>
     it can be used over other NetDevices. See the manual for
     further discussion.
   </li>
+  <li> LteHelper has been updated with some new APIs:
+    <ul>
+      <li>new overloaded Attach methods to enable UE to automatically determine
+          the eNodeB to attach to (using initial cell selection);</li>
+      <li>new methods related to handover algorithm: SetHandoverAlgorithmType
+          and SetHandoverAlgorithmAttribute;</li>
+      <li>a new attribute AnrEnabled to activate/deactivate Automatic Neighbour
+          Relation (ANR) function; and</li>
+      <li>a new method SetUeDeviceAttribute for configuring LteUeNetDevice.</li>
+    </ul>
+  </li>
+  <li> The GSoC 2013 project in the LTE module has brought some additional APIs:
+    <ul>
+      <li>a new abstract class LteHandoverAlgorithm, which every future
+          implementation of automatic handover trigger should inherit from;</li>
+      <li>new classes LteHandoverAlgorithm and LteAnr as sub-modules of
+          LteEnbNetDevice class; both interfacing with the LteEnbRrc sub-module
+          through Handover Management SAP and ANR SAP;</li>
+      <li>new attributes in LteEnbNetDevice and LteUeNetDevice classes related
+          to Closed Subscriber Group (CSG) functionality in initial cell
+          selection;</li>
+      <li>new attributes in LteEnbRrc for configuring UE measurements' filtering
+          coefficient (i.e., quantity configuration);</li>
+      <li>a new public method AddUeMeasReportConfig in LteEnbRrc for setting up
+          custom UE measurements' reporting configuration; measurement reports
+          can then be captured from the RecvMeasurementReport trace source;
+          and</li>
+      <li>new trace sources in LteUeRrc to capture more events, such as System
+          Information messages (MIB, SIB1, SIB2), initial cell selection, random
+          access, and handover.</li>
+    </ul>
+  </li>
 </ul>
 
 <h2>Changes to existing API:</h2>
@@ -92,10 +124,22 @@ us a note on ns-developers mailing list.</p>
       EpcHelper is just the base class defining the API, and the
       implementation has been moved to derived classes; as such,
       users are now expected to use one of the derived classes in
-      their simulation program. The imlpementation previously
+      their simulation program. The implementation previously
       provided by the EpcHelper class has been moved to the new
       derived class PointToPointEpcHelper.</li>
- </ul>
+  <li> The automatic handover trigger and ANR functions in LTE module have been
+    moved from LteEnbRrc class to separate classes. As a result, the related
+    attributes, e.g., ServingCellHandoverThreshold, NeighbourCellHandoverOffset,
+    EventA2Threshold, and EventA4Threshold have been removed from LteEnbRrc
+    class. The equivalent attributes are now in A2A4RsrqHandoverAlgorithm and
+    LteAnr classes.</li>
+  <li> Master Information Block (MIB) and System Information Block Type 1 (SIB1)
+    are now transmitted as LTE control messages, so they are no longer part of
+    RRC protocol.</li>
+  <li> UE RRC state model in LTE module has been considerably modified and is
+    not backward compatible with the previous state model.</li>
+</ul>
+
 <h2>Changes to build system:</h2>
 
 <h2>Changed behavior:</h2>

@@ -45,6 +45,16 @@ New user-visible features
   switching between control and service channels, or using multiple radios, are
   not yet modelled.
 
+- Extension to UE measurements and improved handover algorithm models in LTE
+  module, as the outcome of GSoC 2013 project. The project also includes several
+  sub-features, such as:
+   - implementation of System Information Block Type 1 (SIB1);
+   - a new option for automatic UE attachment using Idle mode cell selection
+     procedure;
+   - improved configurability of UE measurements; and
+   - two options of handover algorithms for enabling automatic handover trigger
+     in LTE simulation: A2-A4-RSRQ and strongest cell (A3-RSRP).
+
 Bugs fixed
 ----------
 - Bug 1496 - Option to print log level in NS_LOG messages, and documentation.
