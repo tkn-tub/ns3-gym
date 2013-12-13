@@ -51,7 +51,7 @@ GetMtu behaviour. It will always return *at least* 1280 bytes, as is the minumum
 The module does provide some attributes and some tracesources.
 The attributes are:
 
-* :rfc:`6282` (boolean, default true), used to activate HC1 (:rfc:`4944`) or IPHC (:rfc:`6282`) compression.
+* Rfc6282 (boolean, default true), used to activate HC1 (:rfc:`4944`) or IPHC (:rfc:`6282`) compression.
 * OmitUdpChecksum (boolean, default true), used to activate UDP checksum compression in IPHC.
 * FragmentReassemblyListSize (integer, default 0), indicating the number of packets that can be reassembled at the same time. If the limit is reached, the oldest packet is discarded. Zero means infinite.
 * FragmentExpirationTimeout (Time, default 60 seconds), being the timeout to wait for further fragments before discarding a partial packet.
