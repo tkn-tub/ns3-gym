@@ -53,7 +53,15 @@ enum DsrMessageType
 class DsrNetworkQueueEntry
 {
 public:
-  /// c-tor
+  /**
+   * Construct a DsrNetworkQueueEntry with the given parameters
+   *
+   * \param pa packet
+   * \param s IPv4 address of the source
+   * \param n IPv4 address of the next hop node
+   * \param exp expiration time
+   * \param r Route
+   */
   DsrNetworkQueueEntry (Ptr<const Packet> pa = 0, Ipv4Address s = Ipv4Address (), Ipv4Address n = Ipv4Address (),
                         Time exp = Simulator::Now (), Ptr<Ipv4Route> r = 0)
     : m_packet (pa),
@@ -65,6 +73,7 @@ public:
   }
   /**
    * Compare send buffer entries
+   * \param o
    * \return true if equal
    */
   bool operator== (DsrNetworkQueueEntry const & o) const
@@ -130,21 +139,69 @@ class DsrNetworkQueue : public Object
 {
 public:
   static TypeId GetTypeId (void);
-  /// Default c-tor
+  
   DsrNetworkQueue ();
+  /**
+   * Construct a DsrNetworkQueue with the given
+   * maximum length and maximum delay.
+   *
+   * \param maxLen Maximum queue size
+   * \param maxDelay Maximum entry lifetime in the queue
+   */
   DsrNetworkQueue (uint32_t maxLen, Time maxDelay);
   ~DsrNetworkQueue ();
-  /// Push entry in queue, if there is no entry with the same packet and destination address in queue.
+
+  /**
+   * Push entry in queue, if there is no entry with the same
+   * packet and destination address in queue.
+   *
+   * \param entry packet entry
+   * \return true if the given entry was put in the queue,
+   *         false otherwise
+   */
   bool Enqueue (DsrNetworkQueueEntry & entry);
-  /// Return first found (the earliest) entry for given destination
+  /**
+   * Return first found (the earliest) entry for given destination
+   *
+   * \param entry pointer to the return entry
+   * \return true if an entry is returned,
+   *         false otherwise
+   */
   bool Dequeue (DsrNetworkQueueEntry & entry);
-  /// Number of entries
+  /**
+   * Number of entries
+   *
+   * \return the current queue size/length
+   */
   uint32_t GetSize ();
 
+  /**
+   * Set the maximum queue size
+   *
+   * \param maxSize the maximum queue size
+   */
   void SetMaxNetworkSize (uint32_t maxSize);
+  /**
+   * Set the maximum entry lifetime in the queue
+   *
+   * \param delay the maximum entry lifetime
+   */
   void SetMaxNetworkDelay (Time delay);
+  /**
+   * Return the maximum queue size
+   *
+   * \return the maximum queue size
+   */
   uint32_t GetMaxNetworkSize (void) const;
+  /**
+   * Return the maximum entry lifetime for this queue
+   *
+   * \return the maximum entry lifetime for this queue
+   */
   Time GetMaxNetworkDelay (void) const;
+  /**
+   * Clear the queue
+   */
   void Flush (void);
 
   std::vector<DsrNetworkQueueEntry> & GetQueue ()
@@ -153,11 +210,14 @@ public:
   }
 
 private:
+  /**
+   * Clean the queue by removing entries that exceeded lifetime.
+   */
   void Cleanup (void);
-  std::vector<DsrNetworkQueueEntry> m_dsrNetworkQueue;
-  uint32_t m_size;
-  uint32_t m_maxSize;
-  Time m_maxDelay;
+  std::vector<DsrNetworkQueueEntry> m_dsrNetworkQueue; //!< Queue (vector) of entries
+  uint32_t m_size; //!< Current queue size
+  uint32_t m_maxSize; //!< Maximum queue size
+  Time m_maxDelay; //!< Maximum entry lifetime
 };
 
 } // namespace dsr

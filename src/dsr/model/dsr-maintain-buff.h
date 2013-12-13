@@ -53,6 +53,7 @@ struct LinkKey
 
   /**
    * Compare maintain Buffer entries
+   * \param o
    * \return true if equal
    */
   bool operator < (LinkKey const & o) const
@@ -73,6 +74,7 @@ struct NetworkKey
 
   /**
    * Compare maintain Buffer entries
+   * \param o
    * \return true if equal
    */
   bool operator < (NetworkKey const & o) const
@@ -92,6 +94,7 @@ struct PassiveKey
 
   /**
    * Compare maintain Buffer entries
+   * \param o
    * \return true if equal
    */
   bool operator < (PassiveKey const & o) const
@@ -109,7 +112,18 @@ struct PassiveKey
 class MaintainBuffEntry
 {
 public:
-  // / c-tor
+  /**
+   * Construct a MaintainBuffEntry with the given parameters
+   *
+   * \param pa packet
+   * \param us our IPv4 address
+   * \param n next hop IPv4 address
+   * \param s IPv4 address of the source
+   * \param dst IPv4 address of the destination
+   * \param ackId ACK ID
+   * \param segs number of segments left
+   * \param exp expiration time
+   */
   MaintainBuffEntry (Ptr<const Packet> pa = 0, Ipv4Address us = Ipv4Address (),
                      Ipv4Address n = Ipv4Address (), Ipv4Address s = Ipv4Address (), Ipv4Address dst = Ipv4Address (),
                      uint16_t ackId = 0, uint8_t segs = 0, Time exp = Simulator::Now ())
@@ -124,7 +138,7 @@ public:
   {
   }
 
-  // /\name Fields
+  ///\name Fields
   // \{
   Ptr<const Packet> GetPacket () const
   {
@@ -192,21 +206,21 @@ public:
   }
   // \}
 private:
-  // / Data packet
+  /// Data packet
   Ptr<const Packet> m_packet;
-  // / Our own ip address
+  /// Our own ip address
   Ipv4Address m_ourAdd;
-  // / Next hop Ip address
+  /// Next hop Ip address
   Ipv4Address m_nextHop;
-  // / The source address
+  /// The source address
   Ipv4Address m_src;
-  // / The destination address
+  /// The destination address
   Ipv4Address m_dst;
-  // / The data ack id
+  /// The data ack id
   uint16_t m_ackId;
-  // / The segments left field
+  /// The segments left field
   uint8_t m_segsLeft;
-  // / Expire time for queue entry
+  /// Expire time for queue entry
   Time m_expire;
 };
 /**
@@ -217,21 +231,23 @@ private:
 class MaintainBuffer
 {
 public:
-  // / Default c-tor
+  /**
+   * Default constructor
+   */
   MaintainBuffer ()
   {
   }
-  // / Push entry in queue, if there is no entry with the same packet and destination address in queue.
+  /// Push entry in queue, if there is no entry with the same packet and destination address in queue.
   bool Enqueue (MaintainBuffEntry & entry);
-  // / Return first found (the earliest) entry for given destination
+  /// Return first found (the earliest) entry for given destination
   bool Dequeue (Ipv4Address dst, MaintainBuffEntry & entry);
-  // / Remove all packets with destination IP address dst
+  /// Remove all packets with destination IP address dst
   void DropPacketWithNextHop (Ipv4Address nextHop);
-  // / Finds whether a packet with destination dst exists in the queue
+  /// Finds whether a packet with destination dst exists in the queue
   bool Find (Ipv4Address nextHop);
-  // / Number of entries
+  /// Number of entries
   uint32_t GetSize ();
-  // /\name Fields
+  ///\name Fields
   // \{
   uint32_t GetMaxQueueLen () const
   {
@@ -249,27 +265,27 @@ public:
   {
     m_maintainBufferTimeout = t;
   }
-  // / Verify if all the elements in the maintainence buffer entry is the same
+  /// Verify if all the elements in the maintainence buffer entry is the same
   bool AllEqual (MaintainBuffEntry & entry);
-  // / Verify if the maintain buffer entry is the same in every field for link ack
+  /// Verify if the maintain buffer entry is the same in every field for link ack
   bool LinkEqual (MaintainBuffEntry & entry);
-  // / Verify if the maintain buffer entry is the same in every field for network ack
+  /// Verify if the maintain buffer entry is the same in every field for network ack
   bool NetworkEqual (MaintainBuffEntry & entry);
-  // / Verify if the maintain buffer entry is the same in every field for promiscuous ack
+  /// Verify if the maintain buffer entry is the same in every field for promiscuous ack
   bool PromiscEqual (MaintainBuffEntry & entry);
   // \}
 
 private:
-  // / The vector of maintain buffer entries
+  /// The vector of maintain buffer entries
   std::vector<MaintainBuffEntry> m_maintainBuffer;
   std::vector<NetworkKey> m_allNetworkKey;
-  // / Remove all expired entries
+  /// Remove all expired entries
   void Purge ();
-  // / The maximum number of packets that we allow a routing protocol to buffer.
+  /// The maximum number of packets that we allow a routing protocol to buffer.
   uint32_t m_maxLen;
-  // / The maximum period of time that a routing protocol is allowed to buffer a packet for, seconds.
+  /// The maximum period of time that a routing protocol is allowed to buffer a packet for, seconds.
   Time m_maintainBufferTimeout;
-  // / Verify if the maintain buffer is equal or not
+  /// Verify if the maintain buffer is equal or not
   static bool IsEqual (MaintainBuffEntry en, const Ipv4Address nextHop)
   {
     return (en.GetNextHop () == nextHop);
