@@ -247,6 +247,11 @@ UdpSocketImpl::Bind (const Address &address)
         {
           m_endPoint = m_udp->Allocate (ipv4, port);
         }
+      if (0 == m_endPoint)
+        {
+          m_errno = port ? ERROR_ADDRINUSE : ERROR_ADDRNOTAVAIL;
+          return -1;
+        }
     }
   else if (Inet6SocketAddress::IsMatchingType (address))
     {
@@ -268,6 +273,11 @@ UdpSocketImpl::Bind (const Address &address)
       else if (ipv6 != Ipv6Address::GetAny () && port != 0)
         {
           m_endPoint6 = m_udp->Allocate6 (ipv6, port);
+        }
+      if (0 == m_endPoint6)
+        {
+          m_errno = port ? ERROR_ADDRINUSE : ERROR_ADDRNOTAVAIL;
+          return -1;
         }
     }
   else
