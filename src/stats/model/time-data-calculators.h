@@ -59,10 +59,10 @@ public:
 protected:
   virtual void DoDispose (void);
 
-  uint32_t m_count; /// Count value of TimeMinMaxAvgTotalCalculator
-  Time m_total;     /// Total value of TimeMinMaxAvgTotalCalculator
-  Time m_min;       /// Minimum value of TimeMinMaxAvgTotalCalculator
-  Time m_max;       /// Maximum value of TimeMinMaxAvgTotalCalculator
+  uint32_t m_count; //!< Count value of TimeMinMaxAvgTotalCalculator
+  Time m_total;     //!< Total value of TimeMinMaxAvgTotalCalculator
+  Time m_min;       //!< Minimum value of TimeMinMaxAvgTotalCalculator
+  Time m_max;       //!< Maximum value of TimeMinMaxAvgTotalCalculator
 
   // end class TimeMinMaxAvgTotalCalculator
 };

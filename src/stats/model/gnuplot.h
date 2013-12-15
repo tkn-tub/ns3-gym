@@ -28,7 +28,7 @@
 namespace ns3 {
 
 /**
- * \ingroup tools
+ * \ingroup gnuplot
  *
  * \brief Abstract class to store a plot line to be used by ns3::Gnuplot.
  *
@@ -104,6 +104,8 @@ protected:
 };
 
 /**
+ * \ingroup gnuplot
+ *
  * \class Gnuplot2dDataset
  * \brief Class to represent a 2D points plot. Set the line or points style
  * using SetStyle() and set points using Add().
@@ -205,24 +207,30 @@ public:
 
 private:
 
+  /**
+   * A point in a 2D plot
+   */
   struct Point {
-    bool empty;
-    double x;
-    double y;
-    double dx;
-    double dy;
+    bool empty; //!< the point is empty
+    double x; //!< X coordinate
+    double y; //!< Y coordinate
+    double dx; //!< X error delta
+    double dy; //!< Y error delta
   };
 
+  /// The set of points in the dataset
   typedef std::vector<struct Point> PointSet;
 
-  static enum Style m_defaultStyle;
-  static enum ErrorBars m_defaultErrorBars;
+  static enum Style m_defaultStyle; //!< default plot style
+  static enum ErrorBars m_defaultErrorBars;  //!< default error bars type
 
   /// Forward declaration of the internal data class.
   struct Data2d;
 };
 
 /**
+ * \ingroup gnuplot
+ *
  * \brief Class to represent a 2D function expression plot.
  *
  * Since the function expression is not escaped, styles and extras could just
@@ -252,6 +260,8 @@ private:
 };
 
 /**
+ * \ingroup gnuplot
+ *
  * \brief Class to represent a 3D points plot. Set the line or points style
  * using SetStyle() and set points using Add().
  */
@@ -294,20 +304,28 @@ public:
 
 private:
 
+  /**
+   * A point in a 3D plot
+   */
   struct Point {
-    bool empty;
-    double x, y, z;
+    bool empty; //!< the point is empty
+    double x; //!< X coordinate
+    double y; //!< Y coordinate
+    double z; //!< Z coordinate
   };
 
+  /// The set of points in the dataset
   typedef std::vector<struct Point> PointSet;
 
-  static std::string m_defaultStyle;
+  static std::string m_defaultStyle; //!< default plot style
 
   /// Forward declaration of the internal data class.
   struct Data3d;
 };
 
 /**
+ * \ingroup gnuplot
+ *
  * \brief Class to represent a 3D function expression plot.
  *
  * Since the function expression is not escaped, styles and extras could just as
@@ -338,6 +356,8 @@ private:
 };
 
 /**
+ * \ingroup gnuplot
+ *
  * \brief a simple class to generate gnuplot-ready plotting commands
  *        from a set of datasets.
  *
@@ -436,24 +456,27 @@ public:
   void SetDataFileDatasetIndex (unsigned int index);
 
 private:
+  /// Type for Datasets to be used in plots
   typedef std::vector<GnuplotDataset> Datasets;
 
-  std::string m_outputFilename;
-  std::string m_terminal;
+  std::string m_outputFilename; //!< Output file name
+  std::string m_terminal; //!< Gnuplot "terminal" to use
 
-  Datasets m_datasets;
+  Datasets m_datasets; //!< Data sets
 
-  std::string m_title;
-  std::string m_xLegend;
-  std::string m_yLegend;
-  std::string m_extra;
+  std::string m_title; //!< Plot title
+  std::string m_xLegend; //!< X axis legend
+  std::string m_yLegend; //!< Y axis legend
+  std::string m_extra; //!< extra parameters for the plot
 
-  bool m_generateOneOutputFile;
+  bool m_generateOneOutputFile; //!< true if only one plot will be generated
 
-  unsigned int m_dataFileDatasetIndex;
+  unsigned int m_dataFileDatasetIndex; //!< Data set index to plot
 };
 
 /**
+ * \ingroup gnuplot
+ *
  * \brief a simple class to group together multiple gnuplots into one file,
  * e.g. for PDF multi-page output terminals.
  */
@@ -505,12 +528,13 @@ public:
                        std::string dataFileName);
 
 private:
+  /// Type of the Gnuplot collection
   typedef std::vector<Gnuplot> Plots;
 
-  std::string m_outputFilename;
-  std::string m_terminal;
+  std::string m_outputFilename; //!< Output file name
+  std::string m_terminal; //!< Gnuplot "terminal" to use
 
-  Plots       m_plots;
+  Plots       m_plots; //!< Plots in the collection
 };
 
 } // namespace ns3

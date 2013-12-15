@@ -26,7 +26,7 @@
 #include "ns3/simulator.h"
 
 namespace ns3 {
-extern const double NaN; /// Stored representation of NaN
+extern const double NaN; //!< Stored representation of NaN
 
 /**
  * \brief true if x is NaN
@@ -166,16 +166,16 @@ public:
   virtual void Output (DataOutputCallback &callback) const = 0;
 
 protected:
-  bool m_enabled;    /// Descendant classes *must* check & respect m_enabled!
+  bool m_enabled;    //!< Descendant classes *must* check & respect m_enabled!
 
-  std::string m_key;      /// Key value
-  std::string m_context;  /// Context value
+  std::string m_key;      //!< Key value
+  std::string m_context;  //!< Context value
 
   virtual void DoDispose (void);
 
 private:
-  EventId m_startEvent;
-  EventId m_stopEvent;
+  EventId m_startEvent; //!< Start event
+  EventId m_stopEvent;  //!< Stop event
 
   // end class DataCalculator
 };

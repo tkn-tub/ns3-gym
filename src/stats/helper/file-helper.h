@@ -32,6 +32,7 @@
 namespace ns3 {
 
 /**
+ * \ingroup stats
  * \brief Helper class used to put data values into a file.
  **/
 class FileHelper
@@ -304,17 +305,16 @@ private:
   /// Heading line for the outputfile.
   std::string m_heading;
 
-  /// Format strings for C-style sprintf() function.
-  std::string m_1dFormat;
-  std::string m_2dFormat;
-  std::string m_3dFormat;
-  std::string m_4dFormat;
-  std::string m_5dFormat;
-  std::string m_6dFormat;
-  std::string m_7dFormat;
-  std::string m_8dFormat;
-  std::string m_9dFormat;
-  std::string m_10dFormat;
+  std::string m_1dFormat;  //!< Format string for 1D format C-style sprintf() function.
+  std::string m_2dFormat;  //!< Format string for 2D format C-style sprintf() function.
+  std::string m_3dFormat;  //!< Format string for 3D format C-style sprintf() function.
+  std::string m_4dFormat;  //!< Format string for 4D format C-style sprintf() function.
+  std::string m_5dFormat;  //!< Format string for 5D format C-style sprintf() function.
+  std::string m_6dFormat;  //!< Format string for 6D format C-style sprintf() function.
+  std::string m_7dFormat;  //!< Format string for 7D format C-style sprintf() function.
+  std::string m_8dFormat;  //!< Format string for 8D format C-style sprintf() function.
+  std::string m_9dFormat;  //!< Format string for 9D format C-style sprintf() function.
+  std::string m_10dFormat; //!< Format string for 10D format C-style sprintf() function.
 
 }; // class FileHelper
 

@@ -32,6 +32,7 @@
 namespace ns3 {
 
 /**
+ * \ingroup aggregator
  * This aggregator produces output used to make gnuplot plots.
  **/
 class GnuplotAggregator : public DataCollectionObject
@@ -46,6 +47,10 @@ public:
     KEY_BELOW
   };
 
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId ();
 
   /**

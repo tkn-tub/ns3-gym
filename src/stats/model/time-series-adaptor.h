@@ -29,6 +29,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup aggregator
+ *
  * \brief Takes probed values of different types and outputs the
  * current time plus the value with both converted to doubles.
  *
@@ -46,6 +48,10 @@ namespace ns3 {
 class TimeSeriesAdaptor : public DataCollectionObject
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   TimeSeriesAdaptor ();
@@ -107,7 +113,7 @@ public:
   void TraceSinkUinteger32 (uint32_t oldData, uint32_t newData);
 
 private:
-  TracedCallback<double, double> m_output;
+  TracedCallback<double, double> m_output; //!< output trace
 };
 
 } // namespace ns3
