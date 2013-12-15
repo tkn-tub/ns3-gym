@@ -32,6 +32,7 @@
 #include "ns3/udp-socket-factory.h"
 #include "ns3/trace-source-accessor.h"
 #include "ns3/ipv4-packet-info-tag.h"
+#include "ns3/ipv6-packet-info-tag.h"
 #include "udp-socket-impl.h"
 #include "udp-l4-protocol.h"
 #include "ipv4-end-point.h"
@@ -965,7 +966,7 @@ UdpSocketImpl::ForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port,
 }
 
 void 
-UdpSocketImpl::ForwardUp6 (Ptr<Packet> packet, Ipv6Header header, uint16_t port)
+UdpSocketImpl::ForwardUp6 (Ptr<Packet> packet, Ipv6Header header, uint16_t port, Ptr<Ipv6Interface> incomingInterface)
 {
   NS_LOG_FUNCTION (this << packet << header.GetSourceAddress () << port);
 
@@ -974,6 +975,14 @@ UdpSocketImpl::ForwardUp6 (Ptr<Packet> packet, Ipv6Header header, uint16_t port)
       return;
     }
 
+  // Should check via getsockopt ()..
+  if (IsRecvPktInfo ())
+    {
+      Ipv6PacketInfoTag tag;
+      packet->RemovePacketTag (tag);
+      tag.SetRecvIf (incomingInterface->GetDevice ()->GetIfIndex ());
+      packet->AddPacketTag (tag);
+    }
 
   //Check only version 6 options
   if (IsIpv6RecvTclass ())

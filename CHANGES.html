@@ -111,6 +111,9 @@ us a note on ns-developers mailing list.</p>
 
 <h2>Changes to existing API:</h2>
 <ul>
+    <li> It is now possible to use Ipv6PacketInfoTag from UDP applications in the
+      very same way as Ipv4PacketInfoTag. See Doxygen fo current limitations in
+  	  using Ipv[4,6]PacketInfoTag to set IP properties.</li>
     <li> A change in Ipv[4,6]Interface enforces the correct behaviour of IP 
       when a device do not support the minimum MTU requirements.
       This is set to 68 and 1280 octects respectively.

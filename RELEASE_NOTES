@@ -21,6 +21,10 @@ Supported platforms
 
 New user-visible features
 -------------------------
+- It is now possible to use Ipv6PacketInfoTag from UDP applications in the
+  very same way as Ipv4PacketInfoTag. See Doxygen fo current limitations in
+  using Ipv[4,6]PacketInfoTag to set IP properties.
+  
 - Ipv[4,6]Interfaces not respecting the minimum MTU requirements (68 octects
   for IPv4 and 1280 octects for IPv6) will be automatically set as Down.
   Warning: this might break some simulations (which hadn't to work anyway).
@@ -79,6 +83,7 @@ Bugs fixed
 - Bug 1776 - Improve CRC performance for CsmaNetDevice in emulation modes
 - Bug 1788 - unused private field warning
 - Bug 1789 - missing test condition for sigma in buildings-shadowing-test
+- Bug 1796 - Ipv6PacketInfoTag is not filled by UdpSocketImpl::ForwardUp6
 - Bug 1798 - Changing the rate of onOffApplication might stop transmission
 - Bug 1802 - FlowMon header deserialization problem with IPv4 fragments
 - Bug 1803 - Lookup /NodeList/4/DeviceList/0/LteEnbRrc/UeMap/0 got no matches
