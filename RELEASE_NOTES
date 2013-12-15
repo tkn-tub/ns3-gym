@@ -71,6 +71,7 @@ New user-visible features
 Bugs fixed
 ----------
 - Bug 1496 - Option to print log level in NS_LOG messages, and documentation.
+- Bug 1592 - Parsing bug in FlowMonitor example script
 - Bug 1756 - RLC AM Mode State Variable Bug
 - Bug 1763 - Message 3 should be sent using the UL GRANT in the RAR
 - Bug 1778 - Implement TapBridge::IsLinkUp() function
