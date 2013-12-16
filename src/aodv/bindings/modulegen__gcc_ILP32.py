@@ -237,7 +237,7 @@ def register_types(module):
     ## nstime.h (module 'core'): ns3::Time [class]
     module.add_class('Time', import_from_module='ns.core')
     ## nstime.h (module 'core'): ns3::Time::Unit [enumeration]
-    module.add_enum('Unit', ['S', 'MS', 'US', 'NS', 'PS', 'FS', 'LAST'], outer_class=root_module['ns3::Time'], import_from_module='ns.core')
+    module.add_enum('Unit', ['Y', 'D', 'H', 'MIN', 'S', 'MS', 'US', 'NS', 'PS', 'FS', 'LAST'], outer_class=root_module['ns3::Time'], import_from_module='ns.core')
     ## nstime.h (module 'core'): ns3::Time [class]
     root_module['ns3::Time'].implicitly_converts_to(root_module['ns3::int64x64_t'])
     ## trace-source-accessor.h (module 'core'): ns3::TraceSourceAccessor [class]
@@ -1686,10 +1686,11 @@ def register_Ns3Ipv6Address_methods(root_module, cls):
                    'bool', 
                    [param('ns3::Ipv6Address const &', 'other')], 
                    is_const=True)
-    ## ipv6-address.h (module 'network'): bool ns3::Ipv6Address::IsIpv4MappedAddress() [member function]
+    ## ipv6-address.h (module 'network'): bool ns3::Ipv6Address::IsIpv4MappedAddress() const [member function]
     cls.add_method('IsIpv4MappedAddress', 
                    'bool', 
-                   [])
+                   [], 
+                   is_const=True)
     ## ipv6-address.h (module 'network'): bool ns3::Ipv6Address::IsLinkLocal() const [member function]
     cls.add_method('IsLinkLocal', 
                    'bool', 
@@ -4218,6 +4219,11 @@ def register_Ns3Time_methods(root_module, cls):
                    'ns3::Time', 
                    [param('uint64_t', 'value'), param('ns3::Time::Unit', 'timeUnit')], 
                    is_static=True)
+    ## nstime.h (module 'core'): double ns3::Time::GetDays() const [member function]
+    cls.add_method('GetDays', 
+                   'double', 
+                   [], 
+                   is_const=True)
     ## nstime.h (module 'core'): double ns3::Time::GetDouble() const [member function]
     cls.add_method('GetDouble', 
                    'double', 
@@ -4226,6 +4232,11 @@ def register_Ns3Time_methods(root_module, cls):
     ## nstime.h (module 'core'): int64_t ns3::Time::GetFemtoSeconds() const [member function]
     cls.add_method('GetFemtoSeconds', 
                    'int64_t', 
+                   [], 
+                   is_const=True)
+    ## nstime.h (module 'core'): double ns3::Time::GetHours() const [member function]
+    cls.add_method('GetHours', 
+                   'double', 
                    [], 
                    is_const=True)
     ## nstime.h (module 'core'): int64_t ns3::Time::GetInteger() const [member function]
@@ -4241,6 +4252,11 @@ def register_Ns3Time_methods(root_module, cls):
     ## nstime.h (module 'core'): int64_t ns3::Time::GetMilliSeconds() const [member function]
     cls.add_method('GetMilliSeconds', 
                    'int64_t', 
+                   [], 
+                   is_const=True)
+    ## nstime.h (module 'core'): double ns3::Time::GetMinutes() const [member function]
+    cls.add_method('GetMinutes', 
+                   'double', 
                    [], 
                    is_const=True)
     ## nstime.h (module 'core'): int64_t ns3::Time::GetNanoSeconds() const [member function]
@@ -4266,6 +4282,11 @@ def register_Ns3Time_methods(root_module, cls):
     ## nstime.h (module 'core'): int64_t ns3::Time::GetTimeStep() const [member function]
     cls.add_method('GetTimeStep', 
                    'int64_t', 
+                   [], 
+                   is_const=True)
+    ## nstime.h (module 'core'): double ns3::Time::GetYears() const [member function]
+    cls.add_method('GetYears', 
+                   'double', 
                    [], 
                    is_const=True)
     ## nstime.h (module 'core'): bool ns3::Time::IsNegative() const [member function]
@@ -4879,10 +4900,10 @@ def register_Ns3WifiMacHeader_methods(root_module, cls):
     cls.add_method('SetProbeResp', 
                    'void', 
                    [])
-    ## wifi-mac-header.h (module 'wifi'): void ns3::WifiMacHeader::SetQosAckPolicy(ns3::WifiMacHeader::QosAckPolicy arg0) [member function]
+    ## wifi-mac-header.h (module 'wifi'): void ns3::WifiMacHeader::SetQosAckPolicy(ns3::WifiMacHeader::QosAckPolicy policy) [member function]
     cls.add_method('SetQosAckPolicy', 
                    'void', 
-                   [param('ns3::WifiMacHeader::QosAckPolicy', 'arg0')])
+                   [param('ns3::WifiMacHeader::QosAckPolicy', 'policy')])
     ## wifi-mac-header.h (module 'wifi'): void ns3::WifiMacHeader::SetQosAmsdu() [member function]
     cls.add_method('SetQosAmsdu', 
                    'void', 
@@ -5968,10 +5989,10 @@ def register_Ns3Ipv4Interface_methods(root_module, cls):
     cls.add_method('Send', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::Ipv4Address', 'dest')])
-    ## ipv4-interface.h (module 'internet'): void ns3::Ipv4Interface::SetArpCache(ns3::Ptr<ns3::ArpCache> arg0) [member function]
+    ## ipv4-interface.h (module 'internet'): void ns3::Ipv4Interface::SetArpCache(ns3::Ptr<ns3::ArpCache> arpCache) [member function]
     cls.add_method('SetArpCache', 
                    'void', 
-                   [param('ns3::Ptr< ns3::ArpCache >', 'arg0')])
+                   [param('ns3::Ptr< ns3::ArpCache >', 'arpCache')])
     ## ipv4-interface.h (module 'internet'): void ns3::Ipv4Interface::SetDevice(ns3::Ptr<ns3::NetDevice> device) [member function]
     cls.add_method('SetDevice', 
                    'void', 
