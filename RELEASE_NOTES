@@ -75,6 +75,16 @@ New user-visible features
   
 - IPv6 addresses and routing tables are printed in a more conventional way,
   closely matching the Linux "route -A inet6" command.
+
+- Additional time units (Year, Day, Hour, Minute) were added to the time
+  value class that represents simulation time; the largest unit prior to 
+  this addition was Second.
+
+- A new parallel scheduling algorithm based on null messages, a common 
+  parallel DES scheduling algorithm, has been added.  The null message 
+  scheduler has better scaling properties when running on some scenarios
+  with large numbers of nodes since it does not require a global 
+  communication.
   
 Bugs fixed
 ----------
