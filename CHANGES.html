@@ -112,13 +112,8 @@ us a note on ns-developers mailing list.</p>
 <h2>Changes to existing API:</h2>
 <ul>
     <li> It is now possible to use Ipv6PacketInfoTag from UDP applications in the
-      very same way as Ipv4PacketInfoTag. See Doxygen fo current limitations in
+      same way as with Ipv4PacketInfoTag. See Doxygen for current limitations in
   	  using Ipv[4,6]PacketInfoTag to set IP properties.</li>
-    <li> A change in Ipv[4,6]Interface enforces the correct behaviour of IP 
-      when a device do not support the minimum MTU requirements.
-      This is set to 68 and 1280 octects respectively.
-      This might break some simulations. However, it's the correct 
-      behaviour.</li>
     <li>A change is introduced for the usage of the EpcHelper
       class. Previously, the EpcHelper class included both the API
       definition and its (only) implementation; as such, users would
@@ -150,6 +145,11 @@ us a note on ns-developers mailing list.</p>
   <li> For the TapBridge device, in UseLocal mode there is a MAC learning function. TapBridge has been waiting for the first packet received from tap interface to set the address of the bridged device to the source address of the first packet. This has caused problems with WiFi.  The new behavior is that after connection to the tap interface, ns-3 learns the MAC address of that interface with a system call and immediately sets the address of the bridged device to the learned one.  See <a href="https://www.nsnam.org/bugzilla/show_bug.cgi?id=1777">bug 1777</a> for more details.</li>
   <li> TapBridge device now correctly implements IsLinkUp() method.</li>
   <li> IPv6 addresses and routing tables are printed like in Linux "route -A inet6" command.</li>
+  <li> A change in Ipv[4,6]Interface enforces the correct behaviour of IP 
+    when a device do not support the minimum MTU requirements.
+    This is set to 68 and 1280 octects respectively.  IP simulations that
+    may have run over devices with smaller MTUs than 68 or 1280, respectively,
+    will no longer be able to use such devices.</li>
 </ul>
 
 <hr>
