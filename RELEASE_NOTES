@@ -21,34 +21,6 @@ Supported platforms
 
 New user-visible features
 -------------------------
-- It is now possible to use Ipv6PacketInfoTag from UDP applications in the
-  very same way as Ipv4PacketInfoTag. See Doxygen fo current limitations in
-  using Ipv[4,6]PacketInfoTag to set IP properties.
-  
-- Ipv[4,6]Interfaces not respecting the minimum MTU requirements (68 octects
-  for IPv4 and 1280 octects for IPv6) will be automatically set as Down.
-  Warning: this might break some simulations (which hadn't to work anyway).
-  
-- IPv6 addresses and routing tables are printed in a more conventional way,
-  closely matching the Linux "route -A inet6" command.
-  
-- new SixLowPanNetDevice model, headers and associated helpers.  The 
-  SixLowPanNetDevice is able to act as a shim between IPv6 and a NetDevice, 
-  compressing IPv6 headers according to RFCs 4944 and 6262.
-  The SixLowPanNetDevice is meant to be used over 802.15.4 NetDevices, 
-  but it can be used on other NetDevices as well (see the manual for full 
-  details).
-
-- A new wifi extension for vehicular simulation support is available in src/wave
-  directory.  The current code represents an interim capability to realize an
-  IEEE 802.11p-compliant device, but without the WAVE extensions (which
-  are planned for a later patch).  The WaveNetDevice modelled herein enforces that
-  a WAVE-compliant physical layer (at 5.9 GHz) is selected, and does not require 
-  any association between devices (similar to an adhoc WiFi MAC), but is 
-  otherwise similar (at this time) to a WifiNetDevice.  WAVE capabililties of 
-  switching between control and service channels, or using multiple radios, are
-  not yet modelled.
-
 - Extension to UE measurements and improved handover algorithm models in LTE
   module, as the outcome of GSoC 2013 project. The project also includes several
   sub-features, such as:
@@ -72,6 +44,38 @@ New user-visible features
   for speed, resulting in a significantly lower execution time of the
   LTE model when used with the error model enabled.
 
+- A new WiFi extension for vehicular simulation support is available in 
+  the src/wave directory.  The current code represents an interim capability 
+  to realize an IEEE 802.11p-compliant device, but without the WAVE 
+  extensions (which are planned for a later patch).  The WaveNetDevice 
+  modelled herein enforces that a WAVE-compliant physical layer (at 5.9 GHz)
+  is selected, and does not require any association between devices (similar 
+  to an adhoc WiFi MAC), but is otherwise similar (at this time) to a 
+  WifiNetDevice.  WAVE capabililties of switching between control and 
+  service channels, or using multiple radios, are not yet modelled.
+
+- A new IPv6 over Low power Wireless Personal Area Networks (6LoWPAN) model
+  is available.  Using ns-3's naming convention, the acronym is expanded
+  to SixLowPanNetDevice.   The SixLowPanNetDevice is able to act as a 
+  shim between IPv6 and a NetDevice, compressing IPv6 headers according 
+  to RFCs 4944 and 6262.  The SixLowPanNetDevice is meant to be used over 
+  IEEE 802.15.4 NetDevices, but it can be used on other NetDevices as 
+  well (see the manual for full details).  This model precedes the
+  general availability of an 802.15.4 model, so must be run in conjunction
+  with a wired NetDevice model for now, or with experimental versions of
+  802.15.4 models.
+
+- It is now possible to use Ipv6PacketInfoTag from UDP applications in the
+  same way as with Ipv4PacketInfoTag. See Doxygen for current limitations in
+  using Ipv[4,6]PacketInfoTag to set IP properties.
+  
+- Ipv[4,6]Interfaces not respecting the minimum MTU requirements (68 octects
+  for IPv4 and 1280 octects for IPv6) will be automatically set as Down.
+  Warning: this might break some simulations (which hadn't to work anyway).
+  
+- IPv6 addresses and routing tables are printed in a more conventional way,
+  closely matching the Linux "route -A inet6" command.
+  
 Bugs fixed
 ----------
 - Bug 1496 - Option to print log level in NS_LOG messages, and documentation.
