@@ -23,7 +23,7 @@ To build all the standard documentation:
 
 .. sourcecode:: bash
 
-   $ waf docs
+   $ ./waf docs
 
 For more specialized options, read on.
 
@@ -131,7 +131,7 @@ To build all the Sphinx documentation:
 
 .. sourcecode:: bash
 
-   $ waf sphinx
+   $ ./waf sphinx
 
 To build just the Models documentation:
 
@@ -330,7 +330,7 @@ Some items to note:
 
   * Use sentence case, including the initial capital.
   * Use punctuation, especially \`.'s at the end of sentences or phrases.
-  * The ``\brief`` tag is not needed; the first paragraph will be
+  * The ``\brief`` tag is not needed; the first sentence will be
     used as the brief description.
 
 Every class, method, typedef, member variable, function argument
@@ -366,7 +366,7 @@ Building the Doxygen documentation is pretty simple:
 
 .. sourcecode:: bash
 
-   $ waf doxygen
+   $ ./waf doxygen
 
 This builds using the default configuration, which generates documentation
 sections for *all* items, even if they do not have explicit comment
