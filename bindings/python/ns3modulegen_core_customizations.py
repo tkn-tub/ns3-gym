@@ -5,6 +5,7 @@ from pybindgen import ReturnValue, Parameter
 from pybindgen.cppmethod import CustomCppMethodWrapper, CustomCppConstructorWrapper
 from pybindgen.typehandlers.codesink import MemoryCodeSink
 from pybindgen.typehandlers import ctypeparser
+from pybindgen.typehandlers.base import ForwardWrapperBase
 from pybindgen import cppclass
 import warnings
 
@@ -425,11 +426,24 @@ def add_std_ofstream(module):
     add_std_ios_openmode(module)
 
 
-def add_std_ios_openmode(module):
-    import pybindgen.typehandlers.base
-    for alias in "std::_Ios_Openmode", "std::ios::openmode":
-        pybindgen.typehandlers.base.param_type_matcher.add_type_alias(alias, "int")
+class IosOpenmodeParam(Parameter):
 
+    DIRECTIONS = [Parameter.DIRECTION_IN]
+    CTYPES = ['std::ios::openmode', 'std::_Ios_Openmode']
+
+    def convert_c_to_python(self, wrapper):
+        assert isinstance(wrapper, ReverseWrapperBase)
+        wrapper.build_params.add_parameter('i', [self.value])
+
+    def convert_python_to_c(self, wrapper):
+        assert isinstance(wrapper, ForwardWrapperBase)
+        name = wrapper.declarations.declare_variable("std::ios::openmode", self.name, self.default_value)
+        wrapper.parse_params.add_parameter('i', ['&'+name], self.name, optional=bool(self.default_value))
+        wrapper.call_params.append(name)
+
+
+
+def add_std_ios_openmode(module):
     for flag in 'in', 'out', 'ate', 'app', 'trunc', 'binary':
         module.after_init.write_code('PyModule_AddIntConstant(m, (char *) "STD_IOS_%s", std::ios::%s);'
                                      % (flag.upper(), flag))
