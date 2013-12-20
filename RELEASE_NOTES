@@ -9,15 +9,25 @@ http://www.nsnam.org including tutorials: http://www.nsnam.org/tutorials.html
 Consult the file CHANGES.html for more detailed information about changed
 API and behavior across ns-3 releases.
 
-Release 3-dev
+Release 3.19
 =============
 
 Availability
 ------------
-This release is not yet available.
+This release is available from:
+http://www.nsnam.org/release/ns-allinone-3.19.tar.bz2
 
 Supported platforms
 -------------------
+These platforms have been tested; others may work also:
+- Fedora Core 20 (32 bit) with g++-4.8.2
+- Fedora Core 19 (32/64 bit) with g++-4.8.1
+- Ubuntu 13.10 (64 bit) with g++-4.8.1
+- Ubuntu 12.04.3 (32/64 bit) with g++-4.6.3
+- Ubuntu 10.04.4 LTS (64 bit) with g++-4.4.3
+- OS X Mavericks 10.9 with Xcode 5.0.1 and clang-500.2.79
+- OS X Mountain Lion 10.8.5 with Xcode 5 and g++-4.2.1
+- FreeBSD 9.2-RELEASE (64 bit) with clang-3.3
 
 New user-visible features
 -------------------------
@@ -31,8 +41,8 @@ New user-visible features
    - two options of handover algorithms for enabling automatic handover trigger
      in LTE simulation: A2-A4-RSRQ and strongest cell (A3-RSRP).
 
-- A new FixedRoomPositionAllocator has been adeded to the buildings
-  module. It allows to generate a random position uniformly
+- A new FixedRoomPositionAllocator has been added to the buildings
+  module. It allows one to generate a random position uniformly
   distributed in the volume of a chosen room inside a chosen building.  
 
 - A new attribute ns3::LteRlcAm::TxOpportunityForRetxAlwaysBigEnough
@@ -71,7 +81,6 @@ New user-visible features
   
 - Ipv[4,6]Interfaces not respecting the minimum MTU requirements (68 octects
   for IPv4 and 1280 octects for IPv6) will be automatically set as Down.
-  Warning: this might break some simulations (which hadn't to work anyway).
   
 - IPv6 addresses and routing tables are printed in a more conventional way,
   closely matching the Linux "route -A inet6" command.
@@ -104,6 +113,15 @@ Bugs fixed
 - Bug 1807 - Multiple bugs in Ipv4L3Protocol::LocalDeliver
 - Bug 1810 - IP packets can be sent on NetDevices not respecting the minimum MTU requirements
 - Bug 1814 - IPv6 Packet with length not multiple of 8 bytes are fragmented incorrectly.
+- Bug 1815 - Python bindings compilation with clang compiler toolchain
+- Bug 1816 - IPv4 fragmentation loses Packet tags
+
+Release 3.18.2
+==============
+
+ns-allinone-3.18.2 was released to include a bake configuration file update
+for Direct Code Execution.  The ns-3 code in this release was unchanged
+from that of ns-3.18.1.
 
 Release 3.18.1
 ==============
