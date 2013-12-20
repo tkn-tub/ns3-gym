@@ -1407,10 +1407,11 @@ Ipv4L3Protocol::Fragments::GetPacket () const
 
   std::list<std::pair<Ptr<Packet>, uint16_t> >::const_iterator it = m_fragments.begin ();
 
-  Ptr<Packet> p = Create<Packet> ();
-  uint16_t lastEndOffset = 0;
+  Ptr<Packet> p = it->first->Copy ();
+  uint16_t lastEndOffset = p->GetSize ();
+  it++;
 
-  for ( it = m_fragments.begin (); it != m_fragments.end (); it++)
+  for ( ; it != m_fragments.end (); it++)
     {
       if ( lastEndOffset > it->second )
         {
