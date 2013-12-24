@@ -22,6 +22,11 @@ Supported platforms
 New user-visible features
 -------------------------
 
+- a new LTE MAC downlink scheduling algorithm named Channel and QoS
+  Aware (CQA) Scheduler is provided by the new
+  ``ns3::CqaFfMacScheduler`` object.
+  
+
 Bugs fixed
 ----------
 
