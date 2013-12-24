@@ -389,11 +389,10 @@ help:
 	@echo "  doctest    to run all doctests embedded in the documentation (if enabled)"
 
 copy-sources:  $(SOURCES)
-	@rm -rf $(SOURCETEMP)
 	@mkdir -p $(SOURCETEMP) 
 	@mkdir -p $(FIGURES) 
-	@cp -r $(SOURCES) $(SOURCETEMP)
-	@cp -r $(SOURCEFIGS) $(FIGURES)
+	@cp -r -p $(SOURCES) $(SOURCETEMP)
+	@cp -r -p $(SOURCEFIGS) $(FIGURES)
 
 clean:
 	-rm -rf $(BUILDDIR)/*
