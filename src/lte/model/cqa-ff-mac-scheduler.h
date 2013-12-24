@@ -54,18 +54,18 @@ typedef std::vector < uint8_t > UlHarqProcessesStatus_t;
 struct CqasFlowPerf_t
 {
   Time flowStart;
-  unsigned long totalBytesTransmitted;
-  unsigned int lastTtiBytesTransmitted;
-  double lastAveragedThroughput;
+  unsigned long totalBytesTransmitted;     /// Total bytes send by eNb for this UE
+  unsigned int lastTtiBytesTransmitted;    /// Total bytes send by eNB in last tti for this UE
+  double lastAveragedThroughput;           /// Past average throughput
   double secondLastAveragedThroughput;
-  double targetThroughput;
+  double targetThroughput;                 /// Target throughput
 
 };
 
 /**
  * \ingroup ff-api
- * \defgroup CqaFfMacScheduler
- * \brief Implements the SCHED SAP and CSCHED SAP for a PRiority Based scheduler
+ * \brief Implements the SCHED SAP and CSCHED SAP for the Channel and QoS Aware Scheduler
+ *
  * This class implements the interface defined by the FfMacScheduler abstract class
  */
 
@@ -247,7 +247,6 @@ private:
 
 
   double m_timeWindow;
-  uint8_t m_schedTtiDelay; // delay between scheduling and reception (based on m_macChTtiDelay)
 
   uint16_t m_nextRntiUl; // RNTI of the next user to be served next scheduling in UL
 
