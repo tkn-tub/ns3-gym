@@ -791,7 +791,7 @@ Channel and QoS aware scheduler performance
 The performance of the Channel and QoS aware scheduler can be tested in the similar way to performance of 
 Priority Set scheduler when GBR flows are not delay sensitive by measuring if the achieved throughput at 
 RLC layer is close to the TBR. Having this in mind, the performance of the CQA scheduler is tested by using 
-the same test cases as the ``lte-pss-ff-mac-scheduler``. Additionally, in [Bbojovic_sch]_ can be found performance 
+the same test cases as the ``lte-pss-ff-mac-scheduler``. Additionally, in [Bbojovic2014]_ can be found performance 
 evaluation of CQA scheduler when the GBR flows are delay sensitive by considering different QoE metrics.
 
 Building Propagation Loss Model

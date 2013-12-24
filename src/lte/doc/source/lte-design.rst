@@ -1275,7 +1275,7 @@ The scheduler implements the filtering of the uplink CQIs according to their nat
 Channel and QoS Aware Scheduler
 -------------------------------
 
-The Channel and QoS Aware (CQA) Scheduler [Bbojovic_sch]_ is an LTE
+The Channel and QoS Aware (CQA) Scheduler [Bbojovic2014]_ is an LTE
 MAC downlink scheduling algorithm that considers the head of line
 (HOL) delay, the GBR parameters and channel quality over  
 different subbands. The CQA scheduler is based on joint TD and FD
