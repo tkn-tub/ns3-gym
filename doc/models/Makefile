@@ -235,6 +235,9 @@ SOURCEFIGS = \
 	$(SRC)/netanim/doc/figures/WithoutPrecision.pdf \
 	$(SRC)/netanim/doc/figures/WithPrecision.png \
 	$(SRC)/netanim/doc/figures/WithPrecision.pdf \
+	$(SRC)/spectrum/doc/spectrum-channel-phy-interface.png \
+	$(SRC)/spectrum/doc/spectrum-channel-phy-interface.pdf \
+	$(SRC)/spectrum/doc/spectrum-analyzer-example.eps 
 
 # specify figures from which .png and .pdf figures need to be
 # generated (all dia and eps figures)
@@ -303,6 +306,7 @@ IMAGES_EPS = \
 	$(FIGURES)/lte-epc-x2-entity-saps.eps \
 	$(FIGURES)/lte-strongest-cell-handover-algorithm.eps \
 	$(FIGURES)/auvmobility-classes.eps \
+	$(FIGURES)/spectrum-analyzer-example.eps 
 
 # rescale pdf figures as necessary
 $(FIGURES)/testbed.pdf_width = 5in
@@ -339,6 +343,7 @@ $(FIGURES)/mac-random-access-contention.pdf_width = 10cm
 $(FIGURES)/mac-random-access-noncontention.pdf_width = 15cm
 $(FIGURES)/helpers.pdf_width = 8cm
 $(FIGURES)/auvmobility-classes.pdf_width = 10cm
+$(FIGURES)/spectrum-analyzer-example.pdf_width = 15cm
 
 IMAGES_PNG = ${IMAGES_EPS:.eps=.png}
 IMAGES_PDF = ${IMAGES_EPS:.eps=.pdf}

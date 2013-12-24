@@ -542,7 +542,7 @@ The usage of the radio spectrum by eNBs and UEs in LTE is described in
 Let :math:`f_c` denote the  LTE Absolute Radio Frequency Channel Number, which
 identifies the carrier frequency on a 100 kHz raster; furthermore, let :math:`B` be
 the Transmission Bandwidth Configuration in number of Resource Blocks. For every
-pair :math:`(f_c,B)` used in the simulation we define a corresponding spectrum
+pair :math:`(f_c,B)` used in the simulation we define a corresponding SpectrumModel using the functionality provided by the :ref:`sec-spetrum-module` .
 model using the Spectrum framework described
 in [Baldo2009]_.  :math:`f_c` and :math:`B` can be configured for every eNB instantiated
 in the simulation; hence, each eNB can use a different spectrum model. Every UE
