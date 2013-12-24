@@ -33,22 +33,96 @@ class BlockAckAgreement
   friend class MacLow;
 public:
   BlockAckAgreement ();
+  /**
+   * Constructor for BlockAckAgreement with given peer and TID.
+   *
+   * \param peer
+   * \param tid
+   */
   BlockAckAgreement (Mac48Address peer, uint8_t tid);
   ~BlockAckAgreement ();
+  /**
+   * Set buffer size.
+   *
+   * \param bufferSize
+   */
   void SetBufferSize (uint16_t bufferSize);
+  /**
+   * Set timeout.
+   *
+   * \param timeout
+   */
   void SetTimeout (uint16_t timeout);
+  /**
+   * Set starting sequence number.
+   *
+   * \param seq the starting sequence number
+   */
   void SetStartingSequence (uint16_t seq);
+  /**
+   * Set Block ACK policy to immediate ACK.
+   */
   void SetImmediateBlockAck (void);
+  /**
+   * Set Block ACK policy to delayed ACK.
+   */
   void SetDelayedBlockAck (void);
+  /**
+   * Enable or disable A-MSDU support.
+   *
+   * \param supported enable or disable A-MSDU support
+   */
   void SetAmsduSupport (bool supported);
 
+  /**
+   * Return the Traffic ID (TID).
+   *
+   * \return TID
+   */
   uint8_t GetTid (void) const;
+  /**
+   * Return the peer address.
+   *
+   * \return Mac48Address
+   */
   Mac48Address GetPeer (void) const;
+  /**
+   * Return the buffer size.
+   *
+   * \return buffer size
+   */
   uint16_t GetBufferSize (void) const;
+  /**
+   * Return the timeout.
+   *
+   * \return timeout
+   */
   uint16_t GetTimeout (void) const;
+  /**
+   * Return the starting squence number.
+   *
+   * \return starting sequence number
+   */
   uint16_t GetStartingSequence (void) const;
+  /**
+   * Return the starting squence control
+   *
+   * \return starting sequence control
+   */
   uint16_t GetStartingSequenceControl (void) const;
+  /**
+   * Check whether the current ACK policy is immediate block ACK.
+   *
+   * \return true if the current ACK policy is immediate block ACK,
+   *         false otherwise
+   */
   bool IsImmediateBlockAck (void) const;
+  /**
+   * Check whether A-MSDU is supported
+   *
+   * \return true if A-MSDU is supported,
+   *         false otherwise
+   */
   bool IsAmsduSupported (void) const;
 
 protected:

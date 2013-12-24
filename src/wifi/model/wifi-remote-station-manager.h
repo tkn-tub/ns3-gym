@@ -125,19 +125,19 @@ public:
   /**
    * Sets the maximum STA short retry count (SSRC).
    *
-   * \param the maximum SSRC
+   * \param maxSsrc the maximum SSRC
    */
   void SetMaxSsrc (uint32_t maxSsrc);
   /**
    * Sets the maximum STA long retry count (SLRC).
    *
-   * \param the maximum SLRC
+   * \param maxSlrc the maximum SLRC
    */
   void SetMaxSlrc (uint32_t maxSlrc);
   /**
    * Sets the RTS threshold.
    *
-   * \param the RTS threshold
+   * \param threshold the RTS threshold
    */
   void SetRtsCtsThreshold (uint32_t threshold);
   /**
@@ -148,7 +148,7 @@ public:
    */
   void SetFragmentationThreshold (uint32_t threshold);
   /**
-   * Records HT capabilities of remote station.
+   * Records HT capabilities of the remote station.
    *
    * \param from the address of the station being recorded
    * \param htcapabilities the HT capabilities of the station
@@ -207,11 +207,39 @@ public:
    *          false otherwise
    */
   bool GetGreenfieldSupported (Mac48Address address) const;
+  /**
+   * Add a given Modulation and Coding Scheme (MCS) index to
+   * the set of basic MCS.
+   *
+   * \param mcs the MCS index
+   */
   void AddBasicMcs (uint8_t mcs);
 
+  /**
+   * Return the default Modulation and Coding Scheme (MCS) index.
+   *
+   * \return the default MCS index
+   */
   uint8_t GetDefaultMcs (void) const;
+  /**
+   * Return the number of basic MCS index.
+   *
+   * \return the number of basic MCS index
+   */
   uint32_t GetNBasicMcs (void) const;
+  /**
+   * Return the MCS at the given <i>list</i> index.
+   *
+   * \param i the position in the list
+   * \return the MCS at the given list index
+   */
   uint8_t GetBasicMcs (uint32_t i) const;
+  /**
+   * Record the MCS index supported by the station.
+   * 
+   * \param address the address of the station
+   * \param mcs the MCS index
+   */
   void AddSupportedMcs (Mac48Address address, uint8_t mcs);
 
   /**
@@ -342,6 +370,9 @@ public:
   /**
    * Since CTS-to-self parameters are not dependent on the station,
    * it is implemented in wifiremote station manager
+   *
+   * \return the transmission mode to use to send the CTS-to-self prior to the
+   *          transmission of the data packet itself.
    */
   WifiTxVector DoGetCtsToSelfTxVector (void);
 
@@ -427,6 +458,7 @@ public:
   /**
    * Return if we need to do Cts-to-self before sending a DATA.
    *
+   * \param txVector the TXVECTOR of the packet to be sent
    * \return true if Cts-to-self is needed, false otherwise
    */
   bool NeedCtsToSelf (WifiTxVector txVector);
@@ -519,7 +551,7 @@ public:
   /**
    * Set the default transmission power level
    *
-   * \param the default transmission power level
+   * \param txPower the default transmission power level
    */
   void SetDefaultTxPowerLevel (uint8_t txPower);
  /**
@@ -544,7 +576,20 @@ public:
    * \return the number of modes supported by the given station
    */
   uint32_t GetNSupported (const WifiRemoteStation *station) const;
+  /**
+   * Return the MCS index supported by the specified station at the specified index.
+   *
+   * \param station the station being queried
+   * \param i the index
+   * \return the MCS index at the given index of the specified station
+   */
   uint8_t GetMcsSupported (const WifiRemoteStation *station, uint32_t i) const;
+  /**
+   * Return the number of MCS supported by the given station.
+   *
+   * \param station the station being queried
+   * \return the number of MCS supported by the given station
+   */
   uint32_t GetNMcsSupported (const WifiRemoteStation *station) const;
 
   /**
@@ -555,6 +600,12 @@ public:
    *          false otherwise
    */
   bool GetShortGuardInterval (const WifiRemoteStation *station) const;
+  /**
+   * Return whether the given station supports space-time block coding (STBC).
+   *
+   * \param station the station being queried
+   * \return true if the station supports STBC, false otherwise
+   */
   bool GetStbc (const WifiRemoteStation *station) const;
   /**
    * Return whether the station supports Greenfield or not.
@@ -594,7 +645,7 @@ public:
   uint32_t GetShortRetryCount (const WifiRemoteStation *station) const;
 private:
   /**
-   * \param station the station with which we need to communicate
+   * \param station the station that we need to communicate
    * \param packet the packet to send
    * \param normally indicates whether the normal 802.11 rts enable mechanism would
    *        request that the rts is sent or not.
@@ -606,7 +657,7 @@ private:
   virtual bool DoNeedRts (WifiRemoteStation *station,
                           Ptr<const Packet> packet, bool normally);
   /**
-   * \param station the station with which we need to communicate
+   * \param station the station that we need to communicate
    * \param packet the packet to send
    * \param normally indicates whether the normal 802.11 rts enable mechanism would
    *        request that the rts is retransmitted or not.
@@ -619,7 +670,7 @@ private:
   virtual bool DoNeedRtsRetransmission (WifiRemoteStation *station,
                                         Ptr<const Packet> packet, bool normally);
   /**
-   * \param station the station with which we need to communicate
+   * \param station the station that we need to communicate
    * \param packet the packet to send
    * \param normally indicates whether the normal 802.11 data retransmission mechanism
    *        would request that the data is retransmitted or not.
@@ -633,7 +684,7 @@ private:
                                          Ptr<const Packet> packet, bool normally);
 
   /**
-   * \param station the station with which we need to communicate
+   * \param station the station that we need to communicate
    * \param packet the packet to send
    * \param normally indicates whether the normal 802.11 data fragmentation mechanism
    *        would request that the data packet is fragmented or not.
@@ -656,7 +707,7 @@ private:
    */
   virtual WifiRemoteStation* DoCreateStation (void) const = 0;
  /**
-   * \param station the station with which we need to communicate
+   * \param station the station that we need to communicate
    * \param size size of the packet or fragment we want to send
    * \return the transmission mode to use to send a packet to the station
    *
@@ -666,7 +717,7 @@ private:
   virtual WifiTxVector DoGetDataTxVector (WifiRemoteStation *station,
                                   uint32_t size) = 0;
   /**
-   * \param station the station with which we need to communicate
+   * \param station the station that we need to communicate
    * \return the transmission mode to use to send an rts to the station
    *
    * Note: This method is called before sending an rts to a station
@@ -717,21 +768,21 @@ private:
    * This method is a pure virtual method that must be implemented by the sub-class.
    * This allows different types of WifiRemoteStationManager to respond differently,
    *
-   * \param station the station with which we failed to send RTS
+   * \param station the station that we failed to send RTS
    */
   virtual void DoReportRtsFailed (WifiRemoteStation *station) = 0;
   /**
    * This method is a pure virtual method that must be implemented by the sub-class.
    * This allows different types of WifiRemoteStationManager to respond differently,
    *
-   * \param station the station with which we failed to send DATA
+   * \param station the station that we failed to send DATA
    */
   virtual void DoReportDataFailed (WifiRemoteStation *station) = 0;
   /**
    * This method is a pure virtual method that must be implemented by the sub-class.
    * This allows different types of WifiRemoteStationManager to respond differently,
    *
-   * \param station the station with which we successfully sent RTS
+   * \param station the station that we successfully sent RTS
    * \param ctsSnr the SNR of the CTS we received
    * \param ctsMode the WifiMode the receiver used to send the CTS
    * \param rtsSnr the SNR of the RTS we sent
@@ -742,7 +793,7 @@ private:
    * This method is a pure virtual method that must be implemented by the sub-class.
    * This allows different types of WifiRemoteStationManager to respond differently,
    *
-   * \param station the station with which we successfully sent RTS
+   * \param station the station that we successfully sent RTS
    * \param ackSnr the SNR of the ACK we received
    * \param ackMode the WifiMode the receiver used to send the ACK
    * \param dataSnr the SNR of the DATA we sent
@@ -753,14 +804,14 @@ private:
    * This method is a pure virtual method that must be implemented by the sub-class.
    * This allows different types of WifiRemoteStationManager to respond differently,
    *
-   * \param station the station with which we failed to send RTS
+   * \param station the station that we failed to send RTS
    */
   virtual void DoReportFinalRtsFailed (WifiRemoteStation *station) = 0;
   /**
    * This method is a pure virtual method that must be implemented by the sub-class.
    * This allows different types of WifiRemoteStationManager to respond differently,
    *
-   * \param station the station with which we failed to send DATA
+   * \param station the station that we failed to send DATA
    */
   virtual void DoReportFinalDataFailed (WifiRemoteStation *station) = 0;
   /**
@@ -832,8 +883,8 @@ private:
    */
   typedef std::vector <WifiRemoteStationState *> StationStates;
 
-  StationStates m_states;
-  Stations m_stations;
+  StationStates m_states;  //!< States of known stations
+  Stations m_stations;  //!< Information for each known stations
   /**
    * This is a pointer to the WifiPhy associated with this
    * WifiRemoteStationManager that is set on call to
@@ -843,8 +894,8 @@ private:
    * "DeviceRateSet").
    */
   Ptr<WifiPhy> m_wifiPhy;
-  WifiMode m_defaultTxMode;
-  uint8_t m_defaultTxMcs;
+  WifiMode m_defaultTxMode;  //!< The default transmission mode
+  uint8_t m_defaultTxMcs;  //!< The default transmission modulation-coding scheme (MCS)
 
   /**
    * This member is the list of WifiMode objects that comprise the
@@ -857,13 +908,13 @@ private:
   WifiModeList m_bssBasicRateSet;
   WifiMcsList m_bssBasicMcsSet;
 
-  bool m_htSupported;
-  uint32_t m_maxSsrc;
-  uint32_t m_maxSlrc;
-  uint32_t m_rtsCtsThreshold;
-  uint32_t m_fragmentationThreshold;
-  uint8_t m_defaultTxPowerLevel;
-  WifiMode m_nonUnicastMode;
+  bool m_htSupported;  //!< Flag if HT capability is supported
+  uint32_t m_maxSsrc;  //!< Maximum STA short retry count (SSRC)
+  uint32_t m_maxSlrc;  //!< Maximum STA long retry count (SLRC)
+  uint32_t m_rtsCtsThreshold;  //!< Threshold for RTS/CTS
+  uint32_t m_fragmentationThreshold;  //!< Threshold for fragmentation
+  uint8_t m_defaultTxPowerLevel;  //!< Default tranmission power level
+  WifiMode m_nonUnicastMode;  //!< Transmission mode for non-unicast DATA frames
 
   /**
    * The trace source fired when the transmission of a single RTS has failed
@@ -891,6 +942,9 @@ private:
  */
 struct WifiRemoteStationState
 {
+  /**
+   * State of the station
+   */
   enum
   {
     BRAND_NEW,
@@ -910,13 +964,13 @@ struct WifiRemoteStationState
    */
   WifiModeList m_operationalRateSet;
   WifiMcsList m_operationalMcsSet;
-  Mac48Address m_address;
+  Mac48Address m_address;  //!< Mac48Address of the remote station
   WifiRemoteStationInfo m_info;
-  bool m_shortGuardInterval;
-  uint32_t m_rx;
-  uint32_t m_tx;
-  bool m_stbc;
-  bool m_greenfield;
+  bool m_shortGuardInterval;  //!< Flag if short guard interval is supported by the remote station
+  uint32_t m_rx;  //!< Number of RX antennae of the remote station
+  uint32_t m_tx;  //!< Number of TX antennae of the remote station
+  bool m_stbc;  //!< Flag if STBC is used by the remote station
+  bool m_greenfield;  //!< Flag if green field is used by the remote station
 
 };
 
@@ -930,10 +984,10 @@ struct WifiRemoteStationState
  */
 struct WifiRemoteStation
 {
-  WifiRemoteStationState *m_state;
-  uint32_t m_ssrc;
-  uint32_t m_slrc;
-  uint8_t m_tid;
+  WifiRemoteStationState *m_state; //!< Remote station state
+  uint32_t m_ssrc; //!< STA short retry count
+  uint32_t m_slrc; //!< STA long retry count
+  uint8_t m_tid; //!< traffic ID
 };
 
 

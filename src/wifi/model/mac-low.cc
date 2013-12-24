@@ -243,14 +243,17 @@ std::ostream &operator << (std::ostream &os, const MacLowTransmissionParameters 
 }
 
 
-/***************************************************************
- *         Listener for PHY events. Forwards to MacLow
- ***************************************************************/
-
-
+/**
+ * Listener for PHY events. Forwards to MacLow
+ */
 class PhyMacLowListener : public ns3::WifiPhyListener
 {
 public:
+  /**
+   * Create a PhyMacLowListener for the given MacLow.
+   *
+   * \param macLow
+   */
   PhyMacLowListener (ns3::MacLow *macLow)
     : m_macLow (macLow)
   {

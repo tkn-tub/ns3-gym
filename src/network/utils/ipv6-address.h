@@ -269,7 +269,7 @@ public:
    * \brief If the address is an IPv4-mapped address
    * \return true if address is an IPv4-mapped address, otherwise false.
    */
-  bool IsIpv4MappedAddress();
+  bool IsIpv4MappedAddress() const;
 
   /**
    * \brief Convert to Address object

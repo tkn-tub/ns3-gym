@@ -966,6 +966,16 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
   m_dlInfoListBuffered.clear ();
   m_dlInfoListBuffered = dlInfoListUntxed;
 
+  if (rbgAllocatedNum == rbgNum)
+    {
+      // all the RBGs are already allocated -> exit
+      if ((ret.m_buildDataList.size () > 0) || (ret.m_buildRarList.size () > 0))
+        {
+          m_schedSapUser->SchedDlConfigInd (ret);
+        }
+      return;
+    }
+
   // Get the actual active flows (queue!=0)
   std::list<FfMacSchedSapProvider::SchedDlRlcBufferReqParameters>::iterator it;
   m_rlcBufferReq.sort (SortRlcBufferReq);

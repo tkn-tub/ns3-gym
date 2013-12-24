@@ -65,49 +65,41 @@ struct GraReplyEntry
 class GraReply  : public Object
 {
 public:
-  // / c-tor
-  /**
-   * \brief Get the type identificator.
-   * \return type identificator
-   */
+
   static TypeId GetTypeId ();
-  /**
-   * \brief Constructor.
-   */
+
   GraReply ();
-  /**
-   * \brief Destructor.
-   */
   virtual ~GraReply ();
-  // / Set the gratuitous reply table size
+
+  /// Set the gratuitous reply table size
   void SetGraTableSize (uint32_t g)
   {
     GraReplyTableSize = g;
   }
-  // / Get the gratuitous reply table size
+  /// Get the gratuitous reply table size
   uint32_t GetGraTableSize () const
   {
     return GraReplyTableSize;
   }
-  // / Add a new gratuitous reply entry
+  /// Add a new gratuitous reply entry
   bool AddEntry (GraReplyEntry & graTableEntry);
-  // / Update the route entry if found, create a new one if not
+  /// Update the route entry if found, create a new one if not
   bool FindAndUpdate (Ipv4Address replyTo, Ipv4Address replyFrom, Time gratReplyHoldoff);
-  // / Remove all expired entries
+  /// Remove all expired entries
   void Purge ();
-  // / Remove all entries
+  /// Remove all entries
   void Clear ()
   {
     m_graReply.clear ();
   }
 
 private:
-  // / Vector of entries
+  /// Vector of entries
   std::vector<GraReplyEntry> m_graReply;
-  // / The max # of gratuitous reply entries to hold
+  /// The max # of gratuitous reply entries to hold
   uint32_t GraReplyTableSize;
 
-  // / Check if the entry is expired or not
+  /// Check if the entry is expired or not
   struct IsExpired
   {
     bool operator() (const struct GraReplyEntry & b) const

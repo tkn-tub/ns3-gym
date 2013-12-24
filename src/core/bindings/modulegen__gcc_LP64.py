@@ -197,7 +197,7 @@ def register_types(module):
     ## nstime.h (module 'core'): ns3::Time [class]
     module.add_class('Time')
     ## nstime.h (module 'core'): ns3::Time::Unit [enumeration]
-    module.add_enum('Unit', ['S', 'MS', 'US', 'NS', 'PS', 'FS', 'LAST'], outer_class=root_module['ns3::Time'])
+    module.add_enum('Unit', ['Y', 'D', 'H', 'MIN', 'S', 'MS', 'US', 'NS', 'PS', 'FS', 'LAST'], outer_class=root_module['ns3::Time'])
     ## nstime.h (module 'core'): ns3::Time [class]
     root_module['ns3::Time'].implicitly_converts_to(root_module['ns3::int64x64_t'])
     ## trace-source-accessor.h (module 'core'): ns3::TraceSourceAccessor [class]
@@ -2559,6 +2559,11 @@ def register_Ns3Time_methods(root_module, cls):
                    'ns3::Time', 
                    [param('uint64_t', 'value'), param('ns3::Time::Unit', 'timeUnit')], 
                    is_static=True)
+    ## nstime.h (module 'core'): double ns3::Time::GetDays() const [member function]
+    cls.add_method('GetDays', 
+                   'double', 
+                   [], 
+                   is_const=True)
     ## nstime.h (module 'core'): double ns3::Time::GetDouble() const [member function]
     cls.add_method('GetDouble', 
                    'double', 
@@ -2567,6 +2572,11 @@ def register_Ns3Time_methods(root_module, cls):
     ## nstime.h (module 'core'): int64_t ns3::Time::GetFemtoSeconds() const [member function]
     cls.add_method('GetFemtoSeconds', 
                    'int64_t', 
+                   [], 
+                   is_const=True)
+    ## nstime.h (module 'core'): double ns3::Time::GetHours() const [member function]
+    cls.add_method('GetHours', 
+                   'double', 
                    [], 
                    is_const=True)
     ## nstime.h (module 'core'): int64_t ns3::Time::GetInteger() const [member function]
@@ -2582,6 +2592,11 @@ def register_Ns3Time_methods(root_module, cls):
     ## nstime.h (module 'core'): int64_t ns3::Time::GetMilliSeconds() const [member function]
     cls.add_method('GetMilliSeconds', 
                    'int64_t', 
+                   [], 
+                   is_const=True)
+    ## nstime.h (module 'core'): double ns3::Time::GetMinutes() const [member function]
+    cls.add_method('GetMinutes', 
+                   'double', 
                    [], 
                    is_const=True)
     ## nstime.h (module 'core'): int64_t ns3::Time::GetNanoSeconds() const [member function]
@@ -2607,6 +2622,11 @@ def register_Ns3Time_methods(root_module, cls):
     ## nstime.h (module 'core'): int64_t ns3::Time::GetTimeStep() const [member function]
     cls.add_method('GetTimeStep', 
                    'int64_t', 
+                   [], 
+                   is_const=True)
+    ## nstime.h (module 'core'): double ns3::Time::GetYears() const [member function]
+    cls.add_method('GetYears', 
+                   'double', 
                    [], 
                    is_const=True)
     ## nstime.h (module 'core'): bool ns3::Time::IsNegative() const [member function]
@@ -4757,6 +4777,14 @@ def register_functions(root_module):
                         'ns3::Ptr< ns3::PointerValue >', 
                         [], 
                         template_parameters=['ns3::PointerValue'])
+    ## nstime.h (module 'core'): ns3::Time ns3::Days(ns3::int64x64_t days) [free function]
+    module.add_function('Days', 
+                        'ns3::Time', 
+                        [param('ns3::int64x64_t', 'days')])
+    ## nstime.h (module 'core'): ns3::Time ns3::Days(double days) [free function]
+    module.add_function('Days', 
+                        'ns3::Time', 
+                        [param('double', 'days')])
     ## nstime.h (module 'core'): ns3::Time ns3::FemtoSeconds(ns3::int64x64_t fs) [free function]
     module.add_function('FemtoSeconds', 
                         'ns3::Time', 
@@ -4781,6 +4809,14 @@ def register_functions(root_module):
     module.add_function('Hash64', 
                         'uint64_t', 
                         [param('char const *', 'buffer'), param('size_t const', 'size')])
+    ## nstime.h (module 'core'): ns3::Time ns3::Hours(ns3::int64x64_t hours) [free function]
+    module.add_function('Hours', 
+                        'ns3::Time', 
+                        [param('ns3::int64x64_t', 'hours')])
+    ## nstime.h (module 'core'): ns3::Time ns3::Hours(double hours) [free function]
+    module.add_function('Hours', 
+                        'ns3::Time', 
+                        [param('double', 'hours')])
     ## log.h (module 'core'): extern void ns3::LogComponentDisable(char const * name, ns3::LogLevel level) [free function]
     module.add_function('LogComponentDisable', 
                         'void', 
@@ -4905,6 +4941,14 @@ def register_functions(root_module):
     module.add_function('Min', 
                         'ns3::int64x64_t', 
                         [param('ns3::int64x64_t const &', 'a'), param('ns3::int64x64_t const &', 'b')])
+    ## nstime.h (module 'core'): ns3::Time ns3::Minutes(ns3::int64x64_t minutes) [free function]
+    module.add_function('Minutes', 
+                        'ns3::Time', 
+                        [param('ns3::int64x64_t', 'minutes')])
+    ## nstime.h (module 'core'): ns3::Time ns3::Minutes(double minutes) [free function]
+    module.add_function('Minutes', 
+                        'ns3::Time', 
+                        [param('double', 'minutes')])
     ## nstime.h (module 'core'): ns3::Time ns3::NanoSeconds(ns3::int64x64_t ns) [free function]
     module.add_function('NanoSeconds', 
                         'ns3::Time', 
@@ -4991,6 +5035,14 @@ def register_functions(root_module):
                         'std::string', 
                         [], 
                         template_parameters=['unsigned char'])
+    ## nstime.h (module 'core'): ns3::Time ns3::Years(ns3::int64x64_t years) [free function]
+    module.add_function('Years', 
+                        'ns3::Time', 
+                        [param('ns3::int64x64_t', 'years')])
+    ## nstime.h (module 'core'): ns3::Time ns3::Years(double years) [free function]
+    module.add_function('Years', 
+                        'ns3::Time', 
+                        [param('double', 'years')])
     register_functions_ns3_CommandLineHelper(module.get_submodule('CommandLineHelper'), root_module)
     register_functions_ns3_Config(module.get_submodule('Config'), root_module)
     register_functions_ns3_FatalImpl(module.get_submodule('FatalImpl'), root_module)

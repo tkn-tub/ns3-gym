@@ -30,12 +30,7 @@
 namespace ns3 {
 
 /**
- * \defgroup tools Tools
- *
- */
-
-/**
- * \ingroup tools
+ * \ingroup stats
  *
  * Simple average, min, max and std. deviation calculator
  *
@@ -106,9 +101,10 @@ public:
   //\}
 
 private:
-  uint32_t m_size;
-  T      m_min, m_max;
-  MinMaxAvgTotalCalculator<double> m_varianceCalculator;
+  uint32_t m_size; //!< Number of sampled data.
+  T m_min; //!< Minimum value observed.
+  T m_max; //!< Maximum value observed.
+  MinMaxAvgTotalCalculator<double> m_varianceCalculator; //!< Variance calculator.
 };
 
 /// Print avg (err) [min, max]

@@ -66,7 +66,7 @@ public:
    */
   double Get (void) const;
 private:
-  double m_snr;
+  double m_snr;  //!< SNR value
 };
 
 

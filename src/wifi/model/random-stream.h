@@ -34,6 +34,13 @@ class RandomStream
 {
 public:
   virtual ~RandomStream ();
+  /**
+   * Get integer between min and max (including min and max).
+   *
+   * \param min lower bound (inclusive)
+   * \param max upper bound (inclusive)
+   * \return a random number between min and max (including min and max)
+   */
   virtual uint32_t GetNext (uint32_t min, uint32_t max) = 0;
 
  /**
@@ -71,6 +78,11 @@ private:
 class TestRandomStream : public RandomStream
 {
 public:
+  /**
+   * Add the given value to the list.
+   *
+   * \param v
+   */
   void AddNext (uint32_t v);
   virtual uint32_t GetNext (uint32_t min, uint32_t max);
 

@@ -45,7 +45,12 @@ NS_LOG_COMPONENT_DEFINE ("MinstrelWifiManager");
 
 namespace ns3 {
 
-
+/**
+ * \brief hold per-remote-station state for Minstrel Wifi manager.
+ *
+ * This struct extends from WifiRemoteStation struct to hold additional
+ * information required by the Minstrel Wifi manager
+ */
 struct MinstrelWifiRemoteStation : public WifiRemoteStation
 {
   Time m_nextStatsUpdate;  ///< 10 times every second

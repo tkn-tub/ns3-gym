@@ -57,8 +57,8 @@ private:
   virtual WifiTxVector DoGetRtsTxVector (WifiRemoteStation *station);
   virtual bool IsLowLatency (void) const;
 
-  WifiMode m_dataMode;
-  WifiMode m_ctlMode;
+  WifiMode m_dataMode; //!< Wifi mode for unicast DATA frames
+  WifiMode m_ctlMode; //!< Wifi mode for request control frames
 };
 
 } // namespace ns3

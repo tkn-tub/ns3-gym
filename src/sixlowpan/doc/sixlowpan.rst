@@ -1,11 +1,13 @@
-PageBreak
+.. include:: replace.txt
+.. highlight:: cpp
 
-Transmission of IPv6 Packets over IEEE 802.15.4 Networks (6LoWPAN)
-------------------------------------------------------------------
+
+6LoWPAN: Transmission of IPv6 Packets over IEEE 802.15.4 Networks
+-----------------------------------------------------------------
 
 This chapter describes the implementation of |ns3| model for the
 compression of IPv6 packets over IEEE 802.15.4-Based Networks 
-as specified by RFC 4944 and RFC 6262.
+as specified by :rfc:`4944` and :rfc:`6282`.
 
 Model Description
 *****************
@@ -19,8 +21,9 @@ The model design does not follow strictly the standard from an architectural
 standpoint, as it does extend it beyond the original scope by supporting also
 other kinds of networks.
 
-Other than that, the module strictly follows RFCs 4944 and 6262, with the 
+Other than that, the module strictly follows :rfc:`4944` and :rfc:`6282`, with the 
 following exceptions:
+
 * MESH and LOWPAN_BC0 dispatch types are not supported
 * HC2 encoding is not supported
 * IPHC's SAC and DAC are not supported
@@ -29,9 +32,9 @@ The MESH and LOWPAN_BC0 are not supported as they do apply only to mesh-under
 architecture, which is not one of the goals of the module development.
 
 The HC2 encoding is not supported, as it has been superseded by IPHC and NHC
-compression type (RFC 6262).
+compression type (\ :rfc:`6282`).
 
-IPHC SAC and DAC are not yet supported, as they do require RFC 6775 for full 
+IPHC SAC and DAC are not yet supported, as they do require :rfc:`6775` for full 
 compliance. It is planned to support them in the future. 
 
 NetDevice
@@ -47,7 +50,8 @@ GetMtu behaviour. It will always return *at least* 1280 bytes, as is the minumum
 
 The module does provide some attributes and some tracesources.
 The attributes are:
-* Rfc6282 (boolean, default true), used to activate HC1 (RFC 4944) or IPHC (RFC 6282) compression.
+
+* Rfc6282 (boolean, default true), used to activate HC1 (:rfc:`4944`) or IPHC (:rfc:`6282`) compression.
 * OmitUdpChecksum (boolean, default true), used to activate UDP checksum compression in IPHC.
 * FragmentReassemblyListSize (integer, default 0), indicating the number of packets that can be reassembled at the same time. If the limit is reached, the oldest packet is discarded. Zero means infinite.
 * FragmentExpirationTimeout (Time, default 60 seconds), being the timeout to wait for further fragments before discarding a partial packet.
@@ -57,7 +61,7 @@ The attributes are:
 The last two attributes are needed to use the module with a NetDevice other than 802.15.4, as
 neither IANA or IEEE did reserve an EtherType for 6LoWPAN. As a consequence there might be a
 conflict with the L2 multiplexer/demultiplexer which is based on EtherType. The default 
-value is 0xFFFF, which is reserved by IEEE.
+value is 0xFFFF, which is reserved by IEEE (see [IANA802]_ and [Ethertype]_).
 The default module behaviour is to not change the EtherType, however this would not work with
 any NetDevice actually understanding and using the EtherType.
 
@@ -73,6 +77,7 @@ Wireshark dissectors will not even try to decode 6LoWPAN headers on top of proto
 802.15.4.
 
 The Trace sources are:
+
 * Tx - exposing packet (including 6LoWPAN header), SixLoWPanNetDevice Ptr, interface index.
 * Rx - exposing packet (including 6LoWPAN header), SixLoWPanNetDevice Ptr, interface index.
 * Drop - exposing DropReason, packet (including 6LoWPAN header), SixLoWPanNetDevice Ptr, interface index.
@@ -84,7 +89,7 @@ invoked when a packet (or a fragment) is discarded.
 Scope and Limitations
 =====================
 
-Future versions of this module will support RFC 6775, however no timeframe is guaranteed.
+Future versions of this module will support :rfc:`6775`, however no timeframe is guaranteed.
 
 Using 6LoWPAN with IPv4 (or other L3 protocols)
 ###############################################
@@ -104,10 +109,11 @@ not been tested.
 References
 ==========
 
-* RFC 4944, "Transmission of IPv6 Packets over IEEE 802.15.4 Networks".
-* RFC 6282, "Compression Format for IPv6 Datagrams over IEEE 802.15.4-Based Networks".
-* http://www.iana.org/assignments/ieee-802-numbers/ieee-802-numbers.xml
-* http://standards.ieee.org/develop/regauth/ethertype/eth.txt
+.. [RFC4944] :rfc:`4944`, "Transmission of IPv6 Packets over IEEE 802.15.4 Networks"
+.. [RFC6282] :rfc:`6282`, "Compression Format for IPv6 Datagrams over IEEE 802.15.4-Based Networks"
+.. [RFC6775] :rfc:`6775`, "Neighbor Discovery Optimization for IPv6 over Low-Power Wireless Personal Area Networks (6LoWPANs)"
+.. [IANA802] IANA, assigned IEEE 802 numbers: http://www.iana.org/assignments/ieee-802-numbers/ieee-802-numbers.xml
+.. [Ethertype] IEEE Ethertype numbers: http://standards.ieee.org/develop/regauth/ethertype/eth.txt
 
 Usage
 *****

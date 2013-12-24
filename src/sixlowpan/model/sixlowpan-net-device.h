@@ -39,11 +39,11 @@ class Node;
 
 /**
  * \defgroup sixlowpan 6LoWPAN
- * \brief Performs 6LoWPAN compression of IPv6 packets as specified by RFC 4944 and RFC 6262
+ * \brief Performs 6LoWPAN compression of IPv6 packets as specified by RFC 4944 and RFC 6282
  *
  * This module acts as a shim between IPv6 and a generic NetDevice.
  *
- * The module implements RFCs 4944 and 6262, with the following exceptions:
+ * The module implements RFCs 4944 and 6282, with the following exceptions:
  * <ul>
  * <li> MESH and LOWPAN_BC0 dispatch types are not supported </li>
  * <li> HC2 encoding is not supported </li>
@@ -149,6 +149,19 @@ protected:
   virtual void DoDispose (void);
 
 private:
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   */
+  SixLowPanNetDevice (SixLowPanNetDevice const &);
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   * \returns
+   */
+  SixLowPanNetDevice& operator= (SixLowPanNetDevice const &);
   /**
    * \brief receives all the packets from a NetDevice for further processing.
    * \param device the NetDevice the packet ws received from

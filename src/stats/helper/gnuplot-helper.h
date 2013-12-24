@@ -33,6 +33,7 @@
 namespace ns3 {
 
 /**
+ * \ingroup gnuplot
  * \brief Helper class used to make gnuplot plots.
  **/
 class GnuplotHelper

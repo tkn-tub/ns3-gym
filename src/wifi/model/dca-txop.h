@@ -69,14 +69,37 @@ class DcaTxop : public Dcf
 public:
   static TypeId GetTypeId (void);
 
+  /**
+   * typedef for a callback to invoke when a
+   * packet transmission was completed successfully.
+   */
   typedef Callback <void, const WifiMacHeader&> TxOk;
+  /**
+   * typedef for a callback to invoke when a
+   * packet transmission was failed.
+   */
   typedef Callback <void, const WifiMacHeader&> TxFailed;
 
   DcaTxop ();
   ~DcaTxop ();
 
+  /**
+   * Set MacLow associated with this DcaTxop.
+   *
+   * \param low MacLow
+   */
   void SetLow (Ptr<MacLow> low);
+  /**
+   * Set DcfManager this DcaTxop is associated to.
+   *
+   * \param manager DcfManager
+   */
   void SetManager (DcfManager *manager);
+  /**
+   * Set WifiRemoteStationsManager this DcaTxop is associated to.
+   *
+   * \param remoteManager WifiRemoteStationManager
+   */
   void SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> remoteManager);
 
   /**
@@ -90,6 +113,11 @@ public:
    */
   void SetTxFailedCallback (TxFailed callback);
 
+  /**
+   * Return the packet queue associated with this DcaTxop.
+   *
+   * \return WifiMacQueue
+   */
   Ptr<WifiMacQueue > GetQueue () const;
   virtual void SetMinCw (uint32_t minCw);
   virtual void SetMaxCw (uint32_t maxCw);
@@ -129,37 +157,149 @@ private:
   DcaTxop (const DcaTxop &o);
 
   // Inherited from ns3::Object
+  /**
+   * Return the MacLow associated with this DcaTxop.
+   *
+   * \return MacLow
+   */
   Ptr<MacLow> Low (void);
   void DoInitialize ();
   /* dcf notifications forwarded here */
+  /**
+   * Check if the DCF requires access.
+   *
+   * \return true if the DCF requires access,
+   *         false otherwise
+   */
   bool NeedsAccess (void) const;
+  /**
+   * Notify the DCF that access has been granted.
+   */
   void NotifyAccessGranted (void);
+  /**
+   * Notify the DCF that internal collision has occurred.
+   */
   void NotifyInternalCollision (void);
+  /**
+   * Notify the DCF that collision has occurred.
+   */
   void NotifyCollision (void);
   /**
-  * When a channel switching occurs, enqueued packets are removed.
-  */
+   * When a channel switching occurs, enqueued packets are removed.
+   */
   void NotifyChannelSwitching (void);
-  /* event handlers */
+
+  /* Event handlers */
+  /**
+   * Event handler when a CTS is received.
+   *
+   * \param snr
+   * \param txMode
+   */
   void GotCts (double snr, WifiMode txMode);
+  /**
+   * Event handler when a CTS timeout has occurred.
+   */
   void MissedCts (void);
+  /**
+   * Event handler when an ACK is received.
+   *
+   * \param snr
+   * \param txMode
+   */
   void GotAck (double snr, WifiMode txMode);
+  /**
+   * Event handler when an ACK is received.
+   */
   void MissedAck (void);
+  /**
+   * Start transmission for the next fragment.
+   * This is called for fragment only.
+   */
   void StartNext (void);
+  /**
+   * Cancel the transmission.
+   */
   void Cancel (void);
+  /**
+   * Event handler when a transmission that
+   * does not require an ACK has completed.
+   */
   void EndTxNoAck (void);
 
+  /**
+   * Restart access request if needed.
+   */
   void RestartAccessIfNeeded (void);
+  /**
+   * Request access from DCF manager if needed.
+   */
   void StartAccessIfNeeded (void);
+  /**
+   * Check if the current packet should be sent with a RTS protection.
+   *
+   * \param packet
+   * \param header
+   * \return true if RTS protection should be used, false otherwise
+   */
   bool NeedRts (Ptr<const Packet> packet, const WifiMacHeader *header);
+  /**
+   * Check if RTS should be re-transmitted if CTS was missed.
+   *
+   * \return true if RTS should be re-transmitted, false otherwise
+   */
   bool NeedRtsRetransmission (void);
+  /**
+   * Check if DATA should be re-transmitted if ACK was missed.
+   *
+   * \return true if DATA should be re-transmitted, false otherwise
+   */
   bool NeedDataRetransmission (void);
+  /**
+   * Check if the current packet should be fragmented.
+   *
+   * \return true if the current packet should be fragmented,
+   *         false otherwise
+   */
   bool NeedFragmentation (void);
+  /**
+   * Calculate the size of the next fragment.
+   *
+   * \return the size of the next fragment
+   */
   uint32_t GetNextFragmentSize (void);
+  /**
+   * Calculate the size of the current fragment.
+   *
+   * \return the size of the current fragment
+   */
   uint32_t GetFragmentSize (void);
+  /**
+   * Calculate the offset for the current fragment.
+   *
+   * \return the offset for the current fragment
+   */
   uint32_t GetFragmentOffset (void);
+  /**
+   * Check if the curren fragment is the last fragment.
+   *
+   * \return true if the curren fragment is the last fragment,
+   *         false otherwise
+   */
   bool IsLastFragment (void);
+  /**
+   * Continue to the next fragment. This method simply
+   * increments the internal variable that keep track
+   * of the current fragment number.
+   */
   void NextFragment (void);
+  /**
+   * Get the next fragment from the packet with
+   * appropriate Wifi header for the fragment.
+   *
+   * \param hdr
+   * \return the fragment with the current fragment number
+   */
   Ptr<Packet> GetFragmentPacket (WifiMacHeader *hdr);
   virtual void DoDispose (void);
 

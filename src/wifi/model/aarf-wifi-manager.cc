@@ -31,6 +31,12 @@ NS_LOG_COMPONENT_DEFINE ("AarfWifiManager");
 
 namespace ns3 {
 
+/**
+ * \brief hold per-remote-station state for AARF Wifi manager.
+ *
+ * This struct extends from WifiRemoteStation struct to hold additional
+ * information required by the AARF Wifi manager
+ */
 struct AarfWifiRemoteStation : public WifiRemoteStation
 {
   uint32_t m_timer;
@@ -123,6 +129,8 @@ AarfWifiManager::DoReportRtsFailed (WifiRemoteStation *station)
  * is the initial transmission of a packet or the retransmission of a packet.
  * The fundamental reason for this is that there is a backoff between each data
  * transmission, be it an initial transmission or a retransmission.
+ *
+ * \param st the station that we failed to send DATA
  */
 void
 AarfWifiManager::DoReportDataFailed (WifiRemoteStation *st)

@@ -31,7 +31,7 @@ namespace ns3 {
 //------------------------------------------------------------
 //--------------------------------------------
 /**
- * \ingroup stats
+ * \ingroup dataoutput
  * \class OmnetDataOutput
  * \brief Outputs data in a format compatible with OMNeT library and framework
  *
@@ -47,36 +47,81 @@ protected:
   virtual void DoDispose ();
 
 private:
+  /**
+   * \ingroup dataoutput
+   *
+   * \brief Class to generate OMNeT output
+   */
   class OmnetOutputCallback : public DataOutputCallback {
 public:
+    /**
+     * Constructor
+     * \param scalar the output stream
+     */
     OmnetOutputCallback(std::ostream *scalar);
 
+    /**
+     * \brief Generates data statistics
+     * \param context the output context
+     * \param name the output name
+     * \param statSum the stats to print
+     */
     void OutputStatistic (std::string context,
                           std::string name,
                           const StatisticalSummary *statSum);
 
+    /**
+     * \brief Generates a single data output
+     * \param context the output context
+     * \param name the output name
+     * \param val the value
+     */
     void OutputSingleton (std::string context,
                           std::string name,
                           int val);
 
+    /**
+     * \brief Generates a single data output
+     * \param context the output context
+     * \param name the output name
+     * \param val the value
+     */
     void OutputSingleton (std::string context,
                           std::string name,
                           uint32_t val);
 
+    /**
+     * \brief Generates a single data output
+     * \param context the output context
+     * \param name the output name
+     * \param val the value
+     */
     void OutputSingleton (std::string context,
                           std::string name,
                           double val);
 
+    /**
+     * \brief Generates a single data output
+     * \param context the output context
+     * \param name the output name
+     * \param val the value
+     */
     void OutputSingleton (std::string context,
                           std::string name,
                           std::string val);
 
+    /**
+     * \brief Generates a single data output
+     * \param context the output context
+     * \param name the output name
+     * \param val the value
+     */
     void OutputSingleton (std::string context,
                           std::string name,
                           Time val);
 
 private:
-    std::ostream *m_scalar;
+    std::ostream *m_scalar; //!< output stream
     // end class OmnetOutputCallback
   };
 

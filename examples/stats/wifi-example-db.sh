@@ -70,7 +70,8 @@ CMD="select exp.input,avg(100-((rx.value*100)/tx.value)) \
     order by abs(exp.input) ASC;"
 
 sqlite3 -noheader data.db "$CMD" > wifi-default.data
-sed -i "s/|/   /" wifi-default.data
+sed -i.bak "s/|/   /" wifi-default.data
+rm wifi-default.data.bak
 gnuplot wifi-example.gnuplot
 
 echo "Done; data in wifi-default.data, plot in wifi-default.eps"

@@ -45,7 +45,14 @@ namespace dsr {
 class SendBuffEntry
 {
 public:
-  // / c-tor
+  /**
+   * Construct SendBuffEntry with the given parameters.
+   *
+   * \param pa packet
+   * \param d destination address
+   * \param exp expiration time
+   * \param p protocol number
+   */
   SendBuffEntry (Ptr<const Packet> pa = 0, Ipv4Address d = Ipv4Address (),
                  Time exp = Simulator::Now (), uint8_t p = 0)
     : m_packet (pa),
@@ -56,6 +63,7 @@ public:
   }
   /**
    * Compare send buffer entries
+   * \param o another SendBuffEntry
    * \return true if equal
    */
   bool operator== (SendBuffEntry const & o) const
@@ -98,13 +106,13 @@ public:
   }
   // \}
 private:
-  // / Data packet
+  /// Data packet
   Ptr<const Packet> m_packet;
-  // / Destination address
+  /// Destination address
   Ipv4Address m_dst;
-  // / Expire time for queue entry
+  /// Expire time for queue entry
   Time m_expire;
-  // / The protocol number
+  /// The protocol number
   uint8_t m_protocol;
 };
 
@@ -116,40 +124,93 @@ private:
 class SendBuffer
 {
 public:
-  // / Default c-tor
+  /**
+   * Default constructor
+   */
   SendBuffer ()
   {
   }
-  // / Push entry in queue, if there is no entry with the same packet and destination address in queue.
+  /**
+   * Push entry in queue, if there is no entry with
+   * the same packet and destination address in queue.
+   *
+   * \param entry SendBuffEntry to put in the queue
+   * \return true if successfully enqueued,
+   *         false otherwise
+   */
   bool Enqueue (SendBuffEntry & entry);
-  // / Return first found (the earliest) entry for given destination
+  /**
+   * Return first found (the earliest) entry for
+   * the given destination.
+   *
+   * \param dst IPv4 address of the destination
+   * \param entry pointer to entry to return
+   * \return true if successfully dequeued,
+   *         false otherwise
+   */
   bool Dequeue (Ipv4Address dst, SendBuffEntry & entry);
-  // / Remove all packets with destination IP address dst
+  /**
+   * Remove all packets with destination IP address dst
+   *
+   * \param dst IPv4 address of the destination
+   */
   void DropPacketWithDst (Ipv4Address dst);
-  // / Finds whether a packet with destination dst exists in the queue
+  /**
+   * Check if a packet with destination dst exists in the queue
+   *
+   * \param dst IPv4 address of the destination
+   * \return true if found, false otherwise
+   */
   bool Find (Ipv4Address dst);
-  // / Number of entries
+  /**
+   * Number of entries
+   *
+   * \return the number of entries in the queue
+   */
   uint32_t GetSize ();
-  // /\name Fields
-  // \{
+  /**
+   * Return the maximum queue length
+   *
+   * \return the maximum queue length
+   */
   uint32_t GetMaxQueueLen () const
   {
     return m_maxLen;
   }
+  /**
+   * Set the maximum queue length
+   *
+   * \param len the maximum queue length
+   */
   void SetMaxQueueLen (uint32_t len)
   {
     m_maxLen = len;
   }
+  /**
+   * Return the entry lifetime in the queue
+   *
+   * \return the entry lifetime in the queue
+   */
   Time GetSendBufferTimeout () const
   {
     return m_sendBufferTimeout;
   }
+  /**
+   * Set the entry lifetime in the queue
+   *
+   * \param t the entry lifetime in the queue
+   */
   void SetSendBufferTimeout (Time t)
   {
     m_sendBufferTimeout = t;
   }
   // \}
 
+  /**
+   * Return a pointer to the internal queue
+   *
+   * \return a pointer to the internal queue
+   */
   std::vector<SendBuffEntry> & GetBuffer ()
   {
     return m_sendBuffer;
@@ -162,7 +223,15 @@ private:
   void Drop (SendBuffEntry en, std::string reason);             ///< Notify that packet is dropped from queue by timeout
   uint32_t m_maxLen;                                            ///< The maximum number of packets that we allow a routing protocol to buffer.
   Time m_sendBufferTimeout;                                     ///< The maximum period of time that a routing protocol is allowed to buffer a packet for, seconds.
-  static bool IsEqual (SendBuffEntry en, const Ipv4Address dst) ///< Check if the send buffer entry is the same or not
+  /**
+   * Check if the send buffer entry is the same or not
+   *
+   * \param en SendBufferEntry
+   * \param dst IPv4 address to check
+   * \return true if the SendBufferEntry destination is the same,
+   *         false otherwise
+   */
+  static bool IsEqual (SendBuffEntry en, const Ipv4Address dst)
   {
     return (en.GetDestination () == dst);
   }

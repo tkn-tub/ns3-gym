@@ -510,6 +510,7 @@ void Ipv6ExtensionFragment::GetFragments (Ptr<Packet> packet, uint32_t maxFragme
         {
           moreFragment = true;
           currentFragmentablePartSize = maxFragmentablePartSize;
+          currentFragmentablePartSize -= currentFragmentablePartSize % 8;
         }
       else
         {
@@ -517,10 +518,8 @@ void Ipv6ExtensionFragment::GetFragments (Ptr<Packet> packet, uint32_t maxFragme
           currentFragmentablePartSize = p->GetSize () - offset;
         }
 
-      currentFragmentablePartSize -= currentFragmentablePartSize % 8;
 
       fragmentHeader.SetNextHeader (nextHeader);
-      fragmentHeader.SetLength (currentFragmentablePartSize);
       fragmentHeader.SetOffset (offset);
       fragmentHeader.SetMoreFragment (moreFragment);
       fragmentHeader.SetIdentification (identification);

@@ -34,11 +34,42 @@ class Dcf : public Object
 public:
   static TypeId GetTypeId (void);
 
+  /**
+   * Set the minimum congestion window size.
+   *
+   * \param minCw the minimum congestion window size
+   */
   virtual void SetMinCw (uint32_t minCw) = 0;
+  /**
+   * Set the maximum congestion window size.
+   *
+   * \param maxCw the maximum congestion window size
+   */
   virtual void SetMaxCw (uint32_t maxCw) = 0;
+  /**
+   * \param aifsn the number of slots which make up an AIFS for a specific DCF.
+   *        a DIFS corresponds to an AIFSN = 2.
+   *
+   * Calling this method after DcfManager::Add has been called is not recommended.
+   */
   virtual void SetAifsn (uint32_t aifsn) = 0;
+  /**
+   * Return the minimum congestion window size.
+   *
+   * \return the minimum congestion window size
+   */
   virtual uint32_t GetMinCw (void) const = 0;
+  /**
+   * Return the maximum congestion window size.
+   *
+   * \return the maximum congestion window size
+   */
   virtual uint32_t GetMaxCw (void) const = 0;
+  /**
+   * Return the number of slots that make up an AIFS.
+   *
+   * \return the number of slots that make up an AIFS
+   */
   virtual uint32_t GetAifsn (void) const = 0;
 };
 

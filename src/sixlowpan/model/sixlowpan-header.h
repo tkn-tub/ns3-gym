@@ -562,7 +562,7 @@ std::ostream & operator<< (std::ostream & os, SixLowPanFragN const &header);
 
 /**
 * \ingroup sixlowpan
-* \brief   LOWPAN_IPHC base Encoding - see RFC 6262
+* \brief   LOWPAN_IPHC base Encoding - see RFC 6282
   \verbatim
        0                                       1
        0   1   2   3   4   5   6   7   8   9   0   1   2   3   4   5
@@ -920,7 +920,7 @@ std::ostream & operator<< (std::ostream & os, SixLowPanIphc const &header);
 
 /**
 * \ingroup sixlowpan
-* \brief   LOWPAN_NHC Extension Header Encoding - see RFC 6262
+* \brief   LOWPAN_NHC Extension Header Encoding - see RFC 6282
   \verbatim
      0   1   2   3   4   5   6   7
    +---+---+---+---+---+---+---+---+
@@ -1065,7 +1065,7 @@ std::ostream & operator<< (std::ostream & os, SixLowPanNhcExtension const &heade
 
 /**
 * \ingroup sixlowpan
-* \brief   UDP LOWPAN_NHC Extension Header Encoding - see RFC 6262
+* \brief   UDP LOWPAN_NHC Extension Header Encoding - see RFC 6282
   \verbatim
      0   1   2   3   4   5   6   7
    +---+---+---+---+---+---+---+---+

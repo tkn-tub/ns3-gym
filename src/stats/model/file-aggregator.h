@@ -32,6 +32,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup aggregator
+ *
  * This aggregator sends values it receives to a file.
  **/
 class FileAggregator : public DataCollectionObject
@@ -46,6 +48,10 @@ public:
     TAB_SEPARATED
   };
 
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId ();
 
   /**
@@ -364,17 +370,16 @@ private:
   /// Heading line for the outputfile.
   std::string m_heading;
 
-  /// Format strings for C-style sprintf() function.
-  std::string m_1dFormat;
-  std::string m_2dFormat;
-  std::string m_3dFormat;
-  std::string m_4dFormat;
-  std::string m_5dFormat;
-  std::string m_6dFormat;
-  std::string m_7dFormat;
-  std::string m_8dFormat;
-  std::string m_9dFormat;
-  std::string m_10dFormat;
+  std::string m_1dFormat;  //!< Format string for 1D C-style sprintf() function.
+  std::string m_2dFormat;  //!< Format string for 2D C-style sprintf() function.
+  std::string m_3dFormat;  //!< Format string for 3D C-style sprintf() function.
+  std::string m_4dFormat;  //!< Format string for 4D C-style sprintf() function.
+  std::string m_5dFormat;  //!< Format string for 5D C-style sprintf() function.
+  std::string m_6dFormat;  //!< Format string for 6D C-style sprintf() function.
+  std::string m_7dFormat;  //!< Format string for 7D C-style sprintf() function.
+  std::string m_8dFormat;  //!< Format string for 8D C-style sprintf() function.
+  std::string m_9dFormat;  //!< Format string for 9D C-style sprintf() function.
+  std::string m_10dFormat; //!< Format string for 10D C-style sprintf() function.
 
 }; // class FileAggregator
 

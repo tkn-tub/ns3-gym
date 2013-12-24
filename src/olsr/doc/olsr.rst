@@ -22,10 +22,10 @@ Scope and Limitations
 
 The model is for IPv4 only.  
 
-* Mostly compliant with OLSR as documented in [rfc3626]_, 
+* Mostly compliant with OLSR as documented in :rfc:`3626`, 
 * The use of multiple interfaces was not supported by the NS-2 version, but is supported in NS-3;
 * OLSR does not respond to the routing event notifications corresponding to dynamic interface up and down (``ns3::RoutingProtocol::NotifyInterfaceUp`` and ``ns3::RoutingProtocol::NotifyInterfaceDown``) or address insertion/removal ``ns3::RoutingProtocol::NotifyAddAddress`` and ``ns3::RoutingProtocol::NotifyRemoveAddress``).
-* Unlike the NS-2 version, does not yet support MAC layer feedback as described in RFC 3626;
+* Unlike the NS-2 version, does not yet support MAC layer feedback as described in :rfc:`3626`;
 
 Host Network Association (HNA) is supported in this implementation
 of OLSR. Refer to ``examples/olsr-hna.cc`` to see how the API
@@ -34,7 +34,7 @@ is used.
 References
 ++++++++++
 
-.. [rfc3626] RFC 3626 *Optimized Link State Routing*
+.. [rfc3626] :rfc:`3626` *Optimized Link State Routing*
 
 Usage
 *****

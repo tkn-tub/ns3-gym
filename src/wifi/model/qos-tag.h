@@ -110,7 +110,7 @@ public:
   uint8_t GetTid (void) const;
 
 private:
-  uint8_t m_tid;
+  uint8_t m_tid;  //!< Traffic ID
 };
 
 } // namespace ns3

@@ -129,6 +129,13 @@ Ssid::DeserializeInformationField (Buffer::Iterator start,
 
 ATTRIBUTE_HELPER_CPP (Ssid);
 
+/**
+ * Serialize SSID to the given ostream
+ *
+ * \param os
+ * \param ssid
+ * \return std::ostream
+ */
 std::ostream &
 operator << (std::ostream &os, const Ssid &ssid)
 {
@@ -136,6 +143,13 @@ operator << (std::ostream &os, const Ssid &ssid)
   return os;
 }
 
+/**
+ * Serialize from the given istream to this SSID.
+ *
+ * \param is
+ * \param ssid
+ * \return std::istream
+ */
 std::istream &operator >> (std::istream &is, Ssid &ssid)
 {
   std::string str;

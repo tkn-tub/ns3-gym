@@ -204,12 +204,12 @@ private:
   virtual void DoDispose (void);
   virtual void DoInitialize (void);
 
-  Ptr<DcaTxop> m_beaconDca;
-  Time m_beaconInterval;
-  bool m_enableBeaconGeneration;
-  EventId m_beaconEvent;
-  Ptr<UniformRandomVariable> m_beaconJitter;
-  bool m_enableBeaconJitter;
+  Ptr<DcaTxop> m_beaconDca; //!< Dedicated DcaTxop for beacons
+  Time m_beaconInterval; //!< Interval between beacons
+  bool m_enableBeaconGeneration; //!< Flag if beacons are being generated
+  EventId m_beaconEvent; //!< Event to generate one beacon
+  Ptr<UniformRandomVariable> m_beaconJitter; //!< UniformRandomVariable used to randomize the time of the first beacon
+  bool m_enableBeaconJitter; //!< Flag if the first beacon should be generated at random time
 };
 
 } // namespace ns3

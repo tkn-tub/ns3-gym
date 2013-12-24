@@ -28,6 +28,43 @@
 
 namespace ns3 {
 
+/**
+ * \ingroup debugging
+ * \defgroup logging Logging
+ * \brief Logging functions and macros
+ *
+ * LOG functionality: macros which allow developers to
+ * send information to the std::clog output stream. All logging messages 
+ * are disabled by default. To enable selected logging 
+ * messages, use the ns3::LogComponentEnable
+ * function or use the NS_LOG environment variable 
+ *
+ * Use the environment variable NS_LOG to define a ':'-separated list of
+ * logging components to enable. For example (using bash syntax), 
+ * NS_LOG="OlsrAgent" would enable one component at all log levels. 
+ * NS_LOG="OlsrAgent:Ipv4L3Protocol" would enable two components, 
+ * at all log levels, etc.
+ * NS_LOG="*" will enable all available log components at all levels.
+ *
+ * To control more selectively the log levels for each component, use
+ * this syntax: NS_LOG='Component1=func|warn:Component2=error|debug'
+ * This example would enable the 'func', and 'warn' log
+ * levels for 'Component1' and the 'error' and 'debug' log levels
+ * for 'Component2'.  The wildcard can be used here as well.  For example
+ * NS_LOG='*=level_all|prefix' would enable all log levels and prefix all
+ * prints with the component and function names.
+ *
+ * A note on NS_LOG_FUNCTION() and NS_LOG_FUNCTION_NOARGS():
+ * generally, use of (at least) NS_LOG_FUNCTION(this) is preferred.
+ * Use NS_LOG_FUNCTION_NOARGS() only in static functions.
+ */
+
+
+/**
+ *  \ingroup logging
+ *
+ *  Logging severity classes and levels.
+ */
 enum LogLevel {
   LOG_NONE           = 0x00000000, // no logging
 
@@ -134,35 +171,51 @@ void LogComponentDisableAll (enum LogLevel level);
 #define NS_LOG_COMPONENT_DEFINE(name)                           \
   static ns3::LogComponent g_log = ns3::LogComponent (name)
 
+/**
+ * \ingroup logging
+ * Append the simulation time to a log message.
+ */
 #define NS_LOG_APPEND_TIME_PREFIX                               \
   if (g_log.IsEnabled (ns3::LOG_PREFIX_TIME))                   \
     {                                                           \
       ns3::LogTimePrinter printer = ns3::LogGetTimePrinter ();  \
       if (printer != 0)                                         \
         {                                                       \
-          (*printer)(std::clog);                               \
+          (*printer)(std::clog);                                \
           std::clog << " ";                                     \
         }                                                       \
     }
 
+/**
+ * \ingroup logging
+ * Append the simulation node id to a log message.
+ */
 #define NS_LOG_APPEND_NODE_PREFIX                               \
   if (g_log.IsEnabled (ns3::LOG_PREFIX_NODE))                   \
     {                                                           \
       ns3::LogNodePrinter printer = ns3::LogGetNodePrinter ();  \
       if (printer != 0)                                         \
         {                                                       \
-          (*printer)(std::clog);                               \
+          (*printer)(std::clog);                                \
           std::clog << " ";                                     \
         }                                                       \
     }
 
+/**
+ * \ingroup logging
+ * Append the function name to a log message.
+ */
 #define NS_LOG_APPEND_FUNC_PREFIX                               \
   if (g_log.IsEnabled (ns3::LOG_PREFIX_FUNC))                   \
     {                                                           \
       std::clog << g_log.Name () << ":" <<                      \
-      __FUNCTION__ << "(): ";                                 \
+      __FUNCTION__ << "(): ";                                   \
     }                                                           \
 
+/**
+ * \ingroup logging
+ * Append the log severity level to a log message.
+ */
 #define NS_LOG_APPEND_LEVEL_PREFIX(level)                       \
   if (g_log.IsEnabled (ns3::LOG_PREFIX_LEVEL))                  \
     {                                                           \
@@ -178,37 +231,6 @@ void LogComponentDisableAll (enum LogLevel level);
 
 #ifdef NS3_LOG_ENABLE
 
-
-/**
- * \ingroup debugging
- * \defgroup logging Logging
- * \brief Logging functions and macros
- *
- * LOG functionality: macros which allow developers to
- * send information out on screen. All logging messages 
- * are disabled by default. To enable selected logging 
- * messages, use the ns3::LogComponentEnable
- * function or use the NS_LOG environment variable 
- *
- * Use the environment variable NS_LOG to define a ':'-separated list of
- * logging components to enable. For example (using bash syntax), 
- * NS_LOG="OlsrAgent" would enable one component at all log levels. 
- * NS_LOG="OlsrAgent:Ipv4L3Protocol" would enable two components, 
- * at all log levels, etc.
- * NS_LOG="*" will enable all available log components at all levels.
- *
- * To control more selectively the log levels for each component, use
- * this syntax: NS_LOG='Component1=func|warn:Component2=error|debug'
- * This example would enable the 'func', and 'warn' log
- * levels for 'Component1' and the 'error' and 'debug' log levels
- * for 'Component2'.  The wildcard can be used here as well.  For example
- * NS_LOG='*=level_all|prefix' would enable all log levels and prefix all
- * prints with the component and function names.
- *
- * A note on NS_LOG_FUNCTION() and NS_LOG_FUNCTION_NOARGS():
- * generally, use of (at least) NS_LOG_FUNCTION(this) is preferred.
- * Use NS_LOG_FUNCTION_NOARGS() only in static functions.
- */
 
 
 /**
@@ -330,7 +352,7 @@ void LogComponentDisableAll (enum LogLevel level);
           NS_LOG_APPEND_CONTEXT;                                \
           std::clog << g_log.Name () << ":"                     \
                     << __FUNCTION__ << "(";                     \
-          ns3::ParameterLogger (std::clog) << parameters;      \
+          ns3::ParameterLogger (std::clog) << parameters;       \
           std::clog << ")" << std::endl;                        \
         }                                                       \
     }                                                           \

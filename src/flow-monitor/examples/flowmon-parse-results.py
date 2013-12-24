@@ -8,7 +8,7 @@ except ImportError:
 
 def parse_time_ns(tm):
     if tm.endswith('ns'):
-        return long(tm[:-2])
+        return long(tm[:-4])
     raise ValueError(tm)
 
 
@@ -39,8 +39,8 @@ class Flow(object):
         self.flowId = int(flow_el.get('flowId'))
         rxPackets = long(flow_el.get('rxPackets'))
         txPackets = long(flow_el.get('txPackets'))
-        tx_duration = float(long(flow_el.get('timeLastTxPacket')[:-2]) - long(flow_el.get('timeFirstTxPacket')[:-2]))*1e-9
-        rx_duration = float(long(flow_el.get('timeLastRxPacket')[:-2]) - long(flow_el.get('timeFirstRxPacket')[:-2]))*1e-9
+        tx_duration = float(long(flow_el.get('timeLastTxPacket')[:-4]) - long(flow_el.get('timeFirstTxPacket')[:-4]))*1e-9
+        rx_duration = float(long(flow_el.get('timeLastRxPacket')[:-4]) - long(flow_el.get('timeFirstRxPacket')[:-4]))*1e-9
         self.rx_duration = rx_duration
         self.probe_stats_unsorted = []
         if rxPackets:
@@ -48,7 +48,7 @@ class Flow(object):
         else:
             self.hopCount = -1000
         if rxPackets:
-            self.delayMean = float(flow_el.get('delaySum')[:-2]) / rxPackets * 1e-9
+            self.delayMean = float(flow_el.get('delaySum')[:-4]) / rxPackets * 1e-9
             self.packetSizeMean = float(flow_el.get('rxBytes')) / rxPackets
         else:
             self.delayMean = None

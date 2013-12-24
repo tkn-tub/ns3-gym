@@ -37,6 +37,7 @@
 #include <cstdlib>
 #include <sys/time.h>
 #include <fstream>
+#include <vector>
 
 #include "ns3/core-module.h"
 #include "ns3/internet-module.h"
@@ -58,15 +59,21 @@ typedef struct timeval TIMER_TYPE;
 
 NS_LOG_COMPONENT_DEFINE ("CampusNetworkModelDistributed");
 
-  /**
-   *  \internal
-   *  \c #defines for \c nCN and \c nLANClients are a temporary fix,
-   *  see \bugid{1560}
-   */
 int
 main (int argc, char *argv[])
 {
 #ifdef NS3_MPI
+
+  typedef std::vector<NodeContainer> vectorOfNodeContainer;
+  typedef std::vector<vectorOfNodeContainer> vectorOfVectorOfNodeContainer;
+  typedef std::vector<vectorOfVectorOfNodeContainer> vectorOfVectorOfVectorOfNodeContainer;  
+
+  typedef std::vector<Ipv4InterfaceContainer> vectorOfIpv4InterfaceContainer;
+  typedef std::vector<vectorOfIpv4InterfaceContainer> vectorOfVectorOfIpv4InterfaceContainer;
+  typedef std::vector<vectorOfVectorOfIpv4InterfaceContainer> vectorOfVectorOfVectorOfIpv4InterfaceContainer;
+ 
+  typedef std::vector<NetDeviceContainer> vectorOfNetDeviceContainer;
+  typedef std::vector<vectorOfNetDeviceContainer> vectorOfVectorOfNetDeviceContainer;
 
   // Enable parallel simulator with the command line arguments
   MpiInterface::Enable (&argc, &argv);
@@ -81,17 +88,14 @@ main (int argc, char *argv[])
   uint32_t systemId = MpiInterface::GetSystemId ();
   uint32_t systemCount = MpiInterface::GetSize ();
 
-  //temporary fix see bug 1560
-  #define nCN (2)
-  #define nLANClients (42)
-  //uint32_t nCN = 2, nLANClients = 42;
+  uint32_t nCN = 2, nLANClients = 42;
   int32_t single = 0;
   int nBytes = 500000; // Bytes for each on/off app
   bool nix = true;
 
   CommandLine cmd;
-  //cmd.AddValue ("CN", "Number of total CNs [2]", nCN);
-  //cmd.AddValue ("LAN", "Number of nodes per LAN [42]", nLANClients);
+  cmd.AddValue ("CN", "Number of total CNs [2]", nCN);
+  cmd.AddValue ("LAN", "Number of nodes per LAN [42]", nLANClients);
   cmd.AddValue ("single", "1 if use single flow", single);
   cmd.AddValue ("nBytes", "Number of bytes for each on/off app", nBytes);
   cmd.AddValue ("nix", "Toggle the use of nix-vector or global routing", nix);
@@ -111,15 +115,30 @@ main (int argc, char *argv[])
     }
 
   std::cout << "Number of CNs: " << nCN << ", LAN nodes: " << nLANClients << std::endl;
+  
 
-  NodeContainer nodes_net0[nCN][3], nodes_net1[nCN][6], nodes_netLR[nCN],
-                nodes_net2[nCN][14], nodes_net2LAN[nCN][7][nLANClients],
-                nodes_net3[nCN][9], nodes_net3LAN[nCN][5][nLANClients];
+
+  vectorOfNodeContainer nodes_netLR(nCN);
+  vectorOfVectorOfNodeContainer nodes_net0(nCN,vectorOfNodeContainer(3));
+  vectorOfVectorOfNodeContainer nodes_net1(nCN,vectorOfNodeContainer(6));
+  vectorOfVectorOfNodeContainer nodes_net2(nCN,vectorOfNodeContainer(14));
+  vectorOfVectorOfNodeContainer nodes_net3(nCN,vectorOfNodeContainer(9));
+     
+  vectorOfVectorOfVectorOfNodeContainer nodes_net2LAN(nCN,vectorOfVectorOfNodeContainer(7,vectorOfNodeContainer(nLANClients)));
+  vectorOfVectorOfVectorOfNodeContainer nodes_net3LAN(nCN,vectorOfVectorOfNodeContainer(5,vectorOfNodeContainer(nLANClients)));
+  
   PointToPointHelper p2p_2gb200ms, p2p_1gb5ms, p2p_100mb1ms;
   InternetStackHelper stack;
-  Ipv4InterfaceContainer ifs, ifs0[nCN][3], ifs1[nCN][6], ifs2[nCN][14],
-                         ifs3[nCN][9], ifs2LAN[nCN][7][nLANClients],
-                         ifs3LAN[nCN][5][nLANClients];
+  
+  Ipv4InterfaceContainer ifs;  
+
+  vectorOfVectorOfIpv4InterfaceContainer ifs0(nCN,vectorOfIpv4InterfaceContainer(3));
+  vectorOfVectorOfIpv4InterfaceContainer ifs1(nCN,vectorOfIpv4InterfaceContainer(6));
+  vectorOfVectorOfIpv4InterfaceContainer ifs2(nCN,vectorOfIpv4InterfaceContainer(14));
+  vectorOfVectorOfIpv4InterfaceContainer ifs3(nCN,vectorOfIpv4InterfaceContainer(9));
+  vectorOfVectorOfVectorOfIpv4InterfaceContainer ifs2LAN(nCN,vectorOfVectorOfIpv4InterfaceContainer(7,vectorOfIpv4InterfaceContainer(nLANClients)));
+  vectorOfVectorOfVectorOfIpv4InterfaceContainer ifs3LAN(nCN,vectorOfVectorOfIpv4InterfaceContainer(5,vectorOfIpv4InterfaceContainer(nLANClients)));
+  
   Ipv4AddressHelper address;
   std::ostringstream oss;
   p2p_1gb5ms.SetDeviceAttribute ("DataRate", StringValue ("1Gbps"));
@@ -220,7 +239,7 @@ main (int argc, char *argv[])
         {
           ndc2[i] = p2p_1gb5ms.Install (nodes_net2[z][i]);
         }
-      NetDeviceContainer ndc2LAN[7][nLANClients];
+      vectorOfVectorOfNetDeviceContainer ndc2LAN(7, vectorOfNetDeviceContainer(nLANClients));
       for (int i = 0; i < 7; ++i)
         {
           oss.str ("");
@@ -258,7 +277,7 @@ main (int argc, char *argv[])
         {
           ndc3[i] = p2p_1gb5ms.Install (nodes_net3[z][i]);
         }
-      NetDeviceContainer ndc3LAN[5][nLANClients];
+      vectorOfVectorOfNetDeviceContainer ndc3LAN(5, vectorOfNetDeviceContainer(nLANClients));
       for (int i = 0; i < 5; ++i)
         {
           oss.str ("");
@@ -371,7 +390,7 @@ main (int argc, char *argv[])
   if (nCN > 1)
     {
       std::cout << "Forming Ring Topology..." << std::endl;
-      NodeContainer nodes_ring[nCN];
+      vectorOfNodeContainer nodes_ring(nCN);
       for (uint32_t z = 0; z < nCN - 1; ++z)
         {
           nodes_ring[z].Add (nodes_net0[z][0].Get (0));
@@ -379,7 +398,7 @@ main (int argc, char *argv[])
         }
       nodes_ring[nCN - 1].Add (nodes_net0[nCN - 1][0].Get (0));
       nodes_ring[nCN - 1].Add (nodes_net0[0][0].Get (0));
-      NetDeviceContainer ndc_ring[nCN];
+      vectorOfNetDeviceContainer ndc_ring(nCN);
       for (uint32_t z = 0; z < nCN; ++z)
         {
           ndc_ring[z] = p2p_2gb200ms.Install (nodes_ring[z]);

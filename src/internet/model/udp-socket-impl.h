@@ -136,8 +136,9 @@ private:
    * \param packet the incoming packet
    * \param header the packet's IPv6 header
    * \param port the incoming port
+   * \param incomingInterface the incoming interface
    */
-  void ForwardUp6 (Ptr<Packet> packet, Ipv6Header header, uint16_t port);
+  void ForwardUp6 (Ptr<Packet> packet, Ipv6Header header, uint16_t port, Ptr<Ipv6Interface> incomingInterface);
 
   /**
    * \brief Kill this socket by zeroing its attributes (IPv4)

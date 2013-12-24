@@ -1095,11 +1095,23 @@ Ipv4L3Protocol::SetUp (uint32_t i)
 {
   NS_LOG_FUNCTION (this << i);
   Ptr<Ipv4Interface> interface = GetInterface (i);
-  interface->SetUp ();
 
-  if (m_routingProtocol != 0)
+  // RFC 791, pg.25:
+  //  Every internet module must be able to forward a datagram of 68
+  //  octets without further fragmentation.  This is because an internet
+  //  header may be up to 60 octets, and the minimum fragment is 8 octets.
+  if (interface->GetDevice ()->GetMtu () >= 68)
     {
-      m_routingProtocol->NotifyInterfaceUp (i);
+      interface->SetUp ();
+
+      if (m_routingProtocol != 0)
+        {
+          m_routingProtocol->NotifyInterfaceUp (i);
+        }
+    }
+  else
+    {
+      NS_LOG_LOGIC ("Interface " << int(i) << " is set to be down for IPv4. Reason: not respecting minimum IPv4 MTU (68 octects)");
     }
 }
 
@@ -1395,10 +1407,11 @@ Ipv4L3Protocol::Fragments::GetPacket () const
 
   std::list<std::pair<Ptr<Packet>, uint16_t> >::const_iterator it = m_fragments.begin ();
 
-  Ptr<Packet> p = Create<Packet> ();
-  uint16_t lastEndOffset = 0;
+  Ptr<Packet> p = it->first->Copy ();
+  uint16_t lastEndOffset = p->GetSize ();
+  it++;
 
-  for ( it = m_fragments.begin (); it != m_fragments.end (); it++)
+  for ( ; it != m_fragments.end (); it++)
     {
       if ( lastEndOffset > it->second )
         {

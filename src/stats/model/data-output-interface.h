@@ -32,11 +32,10 @@ class DataCollector;
 //------------------------------------------------------------
 //--------------------------------------------
 /**
- * \ingroup stats
- * \class DataCollector
- * \brief Abstract Data Output Interface class
+ * \ingroup dataoutput
  *
- */
+ * \brief Abstract Data Output Interface class
+s */
 class DataOutputInterface : public Object {
 public:
   DataOutputInterface();
@@ -50,7 +49,7 @@ public:
 
   /**
    * Sets the DataOutputInterface prefix to the provided prefix
-   * \param File prefix as a string
+   * \param prefix prefix as a string
    */
   void SetFilePrefix (const std::string prefix);
   /**
@@ -62,14 +61,14 @@ public:
 protected:
   virtual void DoDispose ();
 
-  std::string m_filePrefix; /// File prefix for the DataOutputInterface
+  std::string m_filePrefix; //!< File prefix for the DataOutputInterface
 
   // end class DataOutputInterface
 };
 
 /**
- * \ingroup stats
- * \class DataOutputCallback
+ * \ingroup dataoutput
+ *
  * \brief Callback class for the DataOutput classes
  *
  */

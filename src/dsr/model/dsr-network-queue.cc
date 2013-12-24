@@ -47,7 +47,7 @@ NS_OBJECT_ENSURE_REGISTERED (DsrNetworkQueue)
   ;
 
 TypeId
-DsrNetworkQueue::GetTypeID (void)
+DsrNetworkQueue::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::dsr::DsrNetworkQueue")
     .SetParent<Object> ()

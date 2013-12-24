@@ -14,7 +14,7 @@ DSR Routing Overview
 ********************
  
 This model implements the base specification of the Dynamic Source Routing 
-(DSR) protocol. Implementation is based on RFC4728.
+(DSR) protocol. Implementation is based on :rfc:`4728`.
 
 DSR operates on a on-demand behavior. Therefore, our DSR model buffers all 
 packets while a route request packet (RREQ) is disseminated. We implement 
@@ -127,7 +127,7 @@ Implementation modification
 	1. Message type is used to identify the data packet from control packet
 	2. source id is used to identify the real source of the data packet since we have to deliver the packet hop-by-hop and the ipv4header is not carrying the real source and destination ip address as needed
 	3. destination id is for same reason of above
-* Route Reply header is not word-aligned in DSR rfc, change it to word-aligned in implementation
+* Route Reply header is not word-aligned in DSR RFC, change it to word-aligned in implementation
 * DSR works as a shim header between transport and network protocol, it needs its own forwarding mechanism, we are changing the packet transmission to hop-by-hop delivery, so we added two fields in dsr fixed header to notify packet delivery
 
 
@@ -192,8 +192,8 @@ A paper was presented on these results at the Workshop on ns-3 in 2011.
 References
 **********
 
-[1] Link for the `original paper: <http://www.monarch.cs.rice.edu/monarch-papers/dsr-chapter00.pdf>`_
+[1] Original paper: http://www.monarch.cs.rice.edu/monarch-papers/dsr-chapter00.pdf
 
-[2] Link for `RFC 4728: <http://www6.ietf.org/rfc/rfc4728.txt>`_
+[2] RFC 4728 http://www6.ietf.org/rfc/rfc4728.txt
 
-[3] Link for the `Broch's comparison paper: <http://www.monarch.cs.rice.edu/monarch-papers/mobicom98.ps>`_
+[3] Broch's comparison paper: http://www.monarch.cs.rice.edu/monarch-papers/mobicom98.ps

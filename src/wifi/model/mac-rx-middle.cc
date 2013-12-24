@@ -33,10 +33,20 @@ NS_LOG_COMPONENT_DEFINE ("MacRxMiddle");
 namespace ns3 {
 
 
+/**
+ * A class to keep track of the packet originator status.
+ * It recomposes the packet from multiple fragments.
+ */
 class OriginatorRxStatus
 {
 private:
+  /**
+   * typedef for a list of fragments (i.e. incomplete Packet).
+   */
   typedef std::list<Ptr<const Packet> > Fragments;
+  /**
+   * typedef for a const iterator for Fragments
+   */
   typedef std::list<Ptr<const Packet> >::const_iterator FragmentsCI;
 
   bool m_defragmenting;
@@ -53,16 +63,37 @@ public:
   {
     m_fragments.clear ();
   }
+  /**
+   * Check if we are de-fragmenting packets.
+   *
+   * \return true if we are de-fragmenting packets,
+   *         false otherwise
+   */
   bool IsDeFragmenting (void)
   {
     return m_defragmenting;
   }
+  /**
+   * We have received a first fragmented packet.
+   * We start the deframentation by saving the first fragment.
+   *
+   * \param packet the first fragmented packet
+   */
   void AccumulateFirstFragment (Ptr<const Packet> packet)
   {
     NS_ASSERT (!m_defragmenting);
     m_defragmenting = true;
     m_fragments.push_back (packet);
   }
+  /**
+   * We have received a last fragment of the fragmented packets
+   * (indicated by the no more fragment field).
+   * We re-construct the packet from the fragments we saved
+   * and return the full packet.
+   *
+   * \param packet the last fragment
+   * \return the fully reconstructed packet
+   */
   Ptr<Packet> AccumulateLastFragment (Ptr<const Packet> packet)
   {
     NS_ASSERT (m_defragmenting);
@@ -76,11 +107,25 @@ public:
     m_fragments.erase (m_fragments.begin (), m_fragments.end ());
     return full;
   }
+  /**
+   * We received a fragmented packet (not first and not last).
+   * We simply save it into our internal list.
+   *
+   * \param packet the received fragment
+   */
   void AccumulateFragment (Ptr<const Packet> packet)
   {
     NS_ASSERT (m_defragmenting);
     m_fragments.push_back (packet);
   }
+  /**
+   * Check if the sequence control (i.e. fragment number) is
+   * in order.
+   *
+   * \param sequenceControl the raw sequence control
+   * \return true if the sequence control is in order,
+   *         false otherwise
+   */
   bool IsNextFragment (uint16_t sequenceControl)
   {
     if ((sequenceControl >> 4) == (m_lastSequenceControl >> 4)
@@ -93,10 +138,20 @@ public:
         return false;
       }
   }
+  /**
+   * Return the last sequence control we received.
+   *
+   * \return the last sequence control
+   */
   uint16_t GetLastSequenceControl (void)
   {
     return m_lastSequenceControl;
   }
+  /**
+   * Set the last sequence control we received.
+   *
+   * \param sequenceControl the last sequence control we received
+   */ 
   void SetSequenceControl (uint16_t sequenceControl)
   {
     m_lastSequenceControl = sequenceControl;

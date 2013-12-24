@@ -34,6 +34,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup probes
+ *
  * This class is designed to probe an underlying ns3 TraceSource exporting
  * a double.  This probe exports a trace source "Output" of type double.
  * The Output trace source emits a value when either the trace source
@@ -45,6 +47,10 @@ namespace ns3 {
 class DoubleProbe : public Probe
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId ();
   DoubleProbe ();
   virtual ~DoubleProbe ();
@@ -92,12 +98,10 @@ private:
    *
    * \param oldData previous value of the double
    * \param newData new value of the double
-   *
-   * \internal
    */
   void TraceSink (double oldData, double newData);
 
-  TracedValue<double> m_output;
+  TracedValue<double> m_output; //!< Output trace source.
 };
 
 } // namespace ns3

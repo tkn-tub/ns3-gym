@@ -987,6 +987,16 @@ TdMtFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sch
   m_dlInfoListBuffered.clear ();
   m_dlInfoListBuffered = dlInfoListUntxed;
 
+  if (rbgAllocatedNum == rbgNum)
+    {
+      // all the RBGs are already allocated -> exit
+      if ((ret.m_buildDataList.size () > 0) || (ret.m_buildRarList.size () > 0))
+        {
+          m_schedSapUser->SchedDlConfigInd (ret);
+        }
+      return;
+    }
+
 
   std::set <uint16_t>::iterator it;
   std::set <uint16_t>::iterator itMax = m_flowStatsDl.end ();

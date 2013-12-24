@@ -220,9 +220,9 @@ IPv6:
 
 * class Ipv4StaticRouting (covering both unicast and multicast)
 * IPv4 Optimized Link State Routing (OLSR) (a MANET protocol defined in 
-  `RFC 3626 <http://www.ietf.org/rfc/rfc3626.txt>`_)
+  :rfc:`3626`)
 * IPv4 Ad Hoc On Demand Distance Vector (AODV) (a MANET protocol defined in
-  `RFC 3561 <http://www.ietf.org/rfc/rfc3561.txt>`_)
+  :rfc:`3561`)
 * IPv4 Destination Sequenced Distance Vector (DSDV) (a MANET protocol)
 * class Ipv4ListRouting (used to store a prioritized list of routing protocols)
 * class Ipv4GlobalRouting (used to store routes computed by the global route

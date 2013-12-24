@@ -153,7 +153,7 @@ private:
  * \ingroup udpclientserver
  * Create UdpTraceClient application which sends UDP packets based on a trace
  * file of an MPEG4 stream. Trace files could be downloaded form :
- * http://www.tkn.tu-berlin.de/research/trace/ltvt.html (the 2 first lines of
+ * http://www2.tkn.tu-berlin.de/research/trace/ltvt.html (the 2 first lines of
  * the file should be removed)
  * A valid trace file is a file with 4 columns:
  * \li -1- the first one represents the frame index
