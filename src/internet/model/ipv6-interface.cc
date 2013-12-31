@@ -183,6 +183,7 @@ void Ipv6Interface::SetDown ()
   NS_LOG_FUNCTION_NOARGS ();
   m_ifup = false;
   m_addresses.clear ();
+  m_ndCache->Flush ();
 }
 
 bool Ipv6Interface::IsForwarding () const

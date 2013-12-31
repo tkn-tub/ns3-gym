@@ -684,21 +684,18 @@ void Ipv6StaticRouting::NotifyInterfaceUp (uint32_t i)
 void Ipv6StaticRouting::NotifyInterfaceDown (uint32_t i)
 {
   NS_LOG_FUNCTION (this << i);
-  uint32_t j = 0;
-  uint32_t max = GetNRoutes ();
 
   /* remove all static routes that are going through this interface */
-  while (j < max)
+  for (NetworkRoutesI it = m_networkRoutes.begin (); it != m_networkRoutes.end (); )
     {
-      Ipv6RoutingTableEntry route = GetRoute (j);
-
-      if (route.GetInterface () == i)
+      if (it->first->GetInterface () == i)
         {
-          RemoveRoute (j);
+          delete it->first;
+          it = m_networkRoutes.erase (it);
         }
       else
         {
-          j++;
+          it++;
         }
     }
 }
@@ -731,16 +728,19 @@ void Ipv6StaticRouting::NotifyRemoveAddress (uint32_t interface, Ipv6InterfaceAd
 
   // Remove all static routes that are going through this interface
   // which reference this network
-  for (uint32_t j = 0; j < GetNRoutes (); j++)
+  for (NetworkRoutesI it = m_networkRoutes.begin (); it != m_networkRoutes.end (); )
     {
-      Ipv6RoutingTableEntry route = GetRoute (j);
-
-      if (route.GetInterface () == interface
-          && route.IsNetwork ()
-          && route.GetDestNetwork () == networkAddress
-          && route.GetDestNetworkPrefix () == networkMask)
+      if (it->first->GetInterface () == interface
+          && it->first->IsNetwork ()
+          && it->first->GetDestNetwork () == networkAddress
+          && it->first->GetDestNetworkPrefix () == networkMask)
         {
-          RemoveRoute (j);
+          delete it->first;
+          it = m_networkRoutes.erase (it);
+        }
+      else
+        {
+          it++;
         }
     }
 }

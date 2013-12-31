@@ -29,6 +29,7 @@ New user-visible features
 
 Bugs fixed
 ----------
+- Bug 1821 - Setting an interface to Down state will cause various asserts in IPv6
 
 
 Release 3.19
