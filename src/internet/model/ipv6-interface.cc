@@ -117,10 +117,7 @@ void Ipv6Interface::DoSetup ()
     }
 
   Ptr<Icmpv6L4Protocol> icmpv6 = m_node->GetObject<Ipv6L3Protocol> ()->GetIcmpv6 ();
-  if (m_device->NeedsArp ())
-    {
-      m_ndCache = icmpv6->CreateCache (m_device, this);
-    }
+  m_ndCache = icmpv6->CreateCache (m_device, this);
 }
 
 void Ipv6Interface::SetNode (Ptr<Node> node)
