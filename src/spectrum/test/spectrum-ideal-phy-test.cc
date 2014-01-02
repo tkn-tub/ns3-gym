@@ -52,7 +52,7 @@
 
 NS_LOG_COMPONENT_DEFINE ("SpectrumIdealPhyTest");
 
-namespace ns3 {
+using namespace ns3;
 
 
 static uint64_t g_rxBytes;
@@ -246,5 +246,3 @@ SpectrumIdealPhyTestSuite::SpectrumIdealPhyTestSuite ()
 }
 
 static SpectrumIdealPhyTestSuite g_spectrumIdealPhyTestSuite;
-
-} // namespace ns3

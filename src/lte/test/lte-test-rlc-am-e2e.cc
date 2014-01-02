@@ -39,7 +39,7 @@
 
 NS_LOG_COMPONENT_DEFINE ("LteRlcAmE2eTest");
 
-namespace ns3 {
+using namespace ns3;
 
 
 /**
@@ -221,6 +221,3 @@ LteRlcAmE2eTestCase::DoRun (void)
 
   Simulator::Destroy ();
 }
-
-} // namespace ns3
-

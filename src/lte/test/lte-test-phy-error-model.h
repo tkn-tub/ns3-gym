@@ -26,7 +26,7 @@
 #include <ns3/nstime.h>
 
 
-namespace ns3 {
+using namespace ns3;
 
 
 /**
@@ -85,11 +85,5 @@ class LenaTestPhyErrorModelSuite : public TestSuite
 public:
   LenaTestPhyErrorModelSuite ();
 };
-
-
-
-
-} // namespace ns3
-
 
 #endif /* LENA_TEST_PHY_ERROR_MODEL_H */

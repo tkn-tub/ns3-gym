@@ -25,8 +25,7 @@
 #include "ns3/nstime.h"
 #include "ns3/node-container.h"
 
-namespace ns3 {
-namespace aodv {
+using namespace ns3;
 
 /**
  * \ingroup aodv
@@ -73,8 +72,5 @@ private:
   /// Go
   void DoRun ();
 };
-
-}
-}
 
 #endif /* BUG_772_H */

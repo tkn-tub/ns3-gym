@@ -27,7 +27,7 @@
 #include "ns3/test.h"
 
 
-namespace ns3 {
+using namespace ns3;
 
 
 /**
@@ -81,11 +81,5 @@ class LenaTestTdTbfqFfMacSchedulerSuite : public TestSuite
 public:
   LenaTestTdTbfqFfMacSchedulerSuite ();
 };
-
-
-
-
-} // namespace ns3
-
 
 #endif /* LENA_TEST_TDTBFQ_FF_MAC_SCHEDULER_H */

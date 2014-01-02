@@ -29,7 +29,7 @@
 
 NS_LOG_COMPONENT_DEFINE ("LteX2HandoverMeasuresTest");
 
-namespace ns3 {
+using namespace ns3;
 
 
 struct CheckPointEvent
@@ -709,8 +709,3 @@ LteX2HandoverMeasuresTestSuite::LteX2HandoverMeasuresTestSuite ()
 } // end of LteX2HandoverMeasuresTestSuite ()
 
 static LteX2HandoverMeasuresTestSuite g_lteX2HandoverMeasuresTestSuiteInstance;
-
-
-
-} // namespace ns3
-

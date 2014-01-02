@@ -30,6 +30,8 @@
 #include "ns3/ipv6-header.h"
 #include "ns3/ipv6-pmtu-cache.h"
 
+class Ipv6L3ProtocolTestCase;
+
 namespace ns3
 {
 
@@ -382,7 +384,7 @@ protected:
 
 private:
   /* for unit-tests */
-  friend class Ipv6L3ProtocolTestCase;
+  friend class ::Ipv6L3ProtocolTestCase;
   friend class Ipv6ExtensionLooseRouting;
 
   /**

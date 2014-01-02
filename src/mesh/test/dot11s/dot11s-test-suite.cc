@@ -26,8 +26,8 @@
 #include "ns3/peer-link-frame.h"
 #include "ns3/ie-dot11s-peer-management.h"
 
-namespace ns3 {
-namespace dot11s {
+using namespace ns3;
+using namespace dot11s;
 
 /// Built-in self test for FlameHeader
 struct MeshHeaderTest : public TestCase
@@ -285,5 +285,3 @@ Dot11sTestSuite::Dot11sTestSuite ()
 }
 
 static Dot11sTestSuite g_dot11sTestSuite;
-}
-}

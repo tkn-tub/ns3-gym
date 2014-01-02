@@ -36,7 +36,7 @@
 #include "ns3/uan-header-common.h"
 #include "ns3/uan-phy.h"
 
-namespace ns3 {
+using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("UanEnergyModelTestSuite")
   ;
@@ -310,5 +310,3 @@ UanEnergyModelTestSuite::UanEnergyModelTestSuite ()
 
 // create an instance of the test suite
 static UanEnergyModelTestSuite g_uanEnergyModelTestSuite;
-
-} // namespace ns3

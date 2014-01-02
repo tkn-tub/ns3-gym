@@ -48,7 +48,7 @@
 #include "ns3/config.h"
 #include "lte-test-entities.h"
 
-namespace ns3 {
+using namespace ns3;
 
 
 
@@ -538,8 +538,3 @@ EpcS1uUlTestSuite::EpcS1uUlTestSuite ()
   AddTestCase (new EpcS1uUlTestCase ("1 eNB, 100 pkts 15000 bytes each", v8), TestCase::QUICK);
   
 }
-
-
-
-}  // namespace ns3
-

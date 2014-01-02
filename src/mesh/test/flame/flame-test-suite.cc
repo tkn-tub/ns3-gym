@@ -24,8 +24,8 @@
 #include "ns3/flame-header.h"
 #include "ns3/flame-rtable.h"
 
-namespace ns3 {
-namespace flame {
+using namespace ns3;
+using namespace flame;
 
 /// Built-in self test for FlameHeader
 struct FlameHeaderTest : public TestCase
@@ -147,6 +147,3 @@ FlameTestSuite::FlameTestSuite ()
 }
 
 static FlameTestSuite g_flameTestSuite;
-
-}
-}

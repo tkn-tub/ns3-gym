@@ -43,6 +43,8 @@
 #include <vector>
 #include <map>
 
+/// Testcase for MPR computation mechanism
+class OlsrMprTestCase;
 
 namespace ns3 {
 namespace olsr {
@@ -67,9 +69,6 @@ struct RoutingTableEntry
 
 class RoutingProtocol;
 
-/// Testcase for MPR computation mechanism
-class OlsrMprTestCase;
-
 ///
 /// \ingroup olsr
 ///
@@ -78,7 +77,7 @@ class OlsrMprTestCase;
 class RoutingProtocol : public Ipv4RoutingProtocol
 {
 public:
-  friend class OlsrMprTestCase;
+  friend class ::OlsrMprTestCase;
   static TypeId GetTypeId (void);
 
   RoutingProtocol ();

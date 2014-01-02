@@ -34,8 +34,11 @@
 
 namespace ns3 {
 
-
 class MobilityModel;
+
+}
+
+using namespace ns3;
 
 
 // ===== LTE-UE-MEASUREMENTS TEST SUITE ==================================== //
@@ -402,10 +405,5 @@ private:
   std::set<uint8_t> m_expectedTargetCellMeasId;
 
 }; // end of class LteUeMeasurementsHandoverTestCase
-
-
-
-} // namespace ns3
-
 
 #endif /* LTE_TEST_UE_MEASUREMENTS_H */

@@ -32,7 +32,7 @@
 #include "ns3/ie-dot11s-preq.h"
 #include "ns3/ie-dot11s-rann.h"
 
-namespace ns3 {
+using namespace ns3;
 
 // Unit tests
 //-----------------------------------------------------------------------------
@@ -156,4 +156,3 @@ MeshTestSuite::MeshTestSuite ()
 
 static MeshTestSuite g_meshTestSuite;
 
-} // namespace ns3

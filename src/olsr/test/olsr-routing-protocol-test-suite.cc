@@ -37,8 +37,8 @@
 /// Willingness for forwarding packets from other nodes: always.
 #define OLSR_WILL_ALWAYS        7
 
-namespace ns3 {
-namespace olsr {
+using namespace ns3;
+using namespace olsr;
 
 /// Testcase for MPR computation mechanism
 class OlsrMprTestCase : public TestCase {
@@ -178,8 +178,3 @@ OlsrProtocolTestSuite::OlsrProtocolTestSuite()
 {
   AddTestCase (new OlsrMprTestCase (), TestCase::QUICK);
 }
-
-}
-}  // namespace olsr, ns3
-
-

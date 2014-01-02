@@ -46,7 +46,8 @@
 #include "ns3/dsdv-packet.h"
 #include "ns3/dsdv-rtable.h"
 
-namespace ns3 {
+using namespace ns3;
+
 class DsdvHeaderTestCase : public TestCase
 {
 public:
@@ -192,4 +193,3 @@ public:
     AddTestCase (new DsdvTableTestCase (), TestCase::QUICK);
   }
 } g_dsdvTestSuite;
-}

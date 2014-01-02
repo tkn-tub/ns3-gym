@@ -56,7 +56,7 @@
 
 NS_LOG_COMPONENT_DEFINE ("LteUeMeasurementsTest");
 
-namespace ns3 {
+using namespace ns3;
 
 
 // ===== LTE-UE-MEASUREMENTS TEST SUITE ==================================== //
@@ -1933,7 +1933,3 @@ LteUeMeasurementsHandoverTestCase::RecvMeasurementReportCallback (
     } // end of if (report.measResults.measId == correctMeasId)
 
 } // end of void LteUeMeasurementsHandoverTestCase::RecvMeasurementReportCallback
-
-
-} // namespace ns3
-

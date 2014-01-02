@@ -25,7 +25,7 @@
 
 
 
-namespace ns3 {
+using namespace ns3;
 
 /**
  * Test shadowing calculation
@@ -55,5 +55,3 @@ private:
 };
 
 #endif /*BUILDINGS_SHADOWING_TEST_H*/
-
-} // namespace ns3

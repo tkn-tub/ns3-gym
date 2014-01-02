@@ -34,8 +34,7 @@
 
 NS_LOG_COMPONENT_DEFINE ("BuildingPositionAllocatorTest");
 
-namespace ns3 {
-
+using namespace ns3;
 
 
 struct Room
@@ -242,6 +241,3 @@ BuildingPositionAllocatorTestSuite::BuildingPositionAllocatorTestSuite ()
 }
 
 static BuildingPositionAllocatorTestSuite buildingsPositionAllocatorTestSuiteInstance;
-
-} // namespace ns3
-

@@ -44,7 +44,7 @@
 
 
 
-namespace ns3 {
+using namespace ns3;
 
 
 NS_LOG_COMPONENT_DEFINE ("LteEpcE2eData")
@@ -452,8 +452,3 @@ LteEpcE2eDataTestSuite::LteEpcE2eDataTestSuite ()
 
 
 }
-
-
-
-}  // namespace ns3
-

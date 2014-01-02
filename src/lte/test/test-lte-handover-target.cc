@@ -50,7 +50,7 @@
 
 NS_LOG_COMPONENT_DEFINE ("LteHandoverTargetTest");
 
-namespace ns3 {
+using namespace ns3;
 
 
 /**
@@ -429,6 +429,3 @@ LteHandoverTargetTestSuite::LteHandoverTargetTestSuite ()
 
 
 static LteHandoverTargetTestSuite g_lteHandoverTargetTestSuiteInstance;
-
-
-} // end of namespace ns3

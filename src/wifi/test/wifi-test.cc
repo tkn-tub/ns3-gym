@@ -42,7 +42,7 @@
 #include "ns3/config.h"
 #include "ns3/boolean.h"
 
-namespace ns3 {
+using namespace ns3;
 
 // helper function to assign streams to random variables, to control 
 // randomness in the tests
@@ -495,5 +495,3 @@ WifiTestSuite::WifiTestSuite ()
 }
 
 static WifiTestSuite g_wifiTestSuite;
-
-} // namespace ns3

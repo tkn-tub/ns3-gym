@@ -29,7 +29,7 @@
 
 NS_LOG_COMPONENT_DEFINE ("LteX2HandoverTest");
 
-namespace ns3 {
+using namespace ns3;
 
 struct HandoverEvent
 {
@@ -668,7 +668,3 @@ LteX2HandoverTestSuite::LteX2HandoverTestSuite ()
 }
 
 static LteX2HandoverTestSuite g_lteX2HandoverTestSuiteInstance;
-
-
-
-} // namespace ns3

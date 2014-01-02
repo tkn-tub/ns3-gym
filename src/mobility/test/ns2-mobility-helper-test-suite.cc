@@ -51,7 +51,7 @@
 
 NS_LOG_COMPONENT_DEFINE ("ns2-mobility-helper-test-suite");
 
-namespace ns3 {
+using namespace ns3;
 
 // -----------------------------------------------------------------------------
 // Testing
@@ -522,6 +522,3 @@ public:
 
   }
 } g_ns2TransmobilityHelperTestSuite;
-
-
-} // namespace ns3

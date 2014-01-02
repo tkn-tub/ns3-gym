@@ -24,7 +24,7 @@
 #include "ns3/waypoint-mobility-model.h"
 #include "ns3/test.h"
 
-namespace ns3 {
+using namespace ns3;
 
 class WaypointMobilityModelNotifyTest : public TestCase
 {
@@ -155,6 +155,3 @@ static struct WaypointMobilityModelTestSuite : public TestSuite
     AddTestCase (new WaypointMobilityModelNotifyTest (false), TestCase::QUICK);
   }
 } g_waypointMobilityModelTestSuite;
-
-} // namespace ns3
-

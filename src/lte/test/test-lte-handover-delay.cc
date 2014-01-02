@@ -46,7 +46,7 @@
 
 NS_LOG_COMPONENT_DEFINE("LteHandoverDelayTest");
 
-namespace ns3 {
+using namespace ns3;
 
 
 /*
@@ -290,7 +290,3 @@ public:
       }
   }
 } g_lteHandoverDelayTestSuite;
-
-
-
-} // end of namespace ns3

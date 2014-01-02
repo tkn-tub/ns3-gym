@@ -53,7 +53,7 @@
 
 NS_LOG_COMPONENT_DEFINE ("LenaTestTdBetFfMacScheduler");
 
-namespace ns3 {
+using namespace ns3;
 
 LenaTestTdBetFfMacSchedulerSuite::LenaTestTdBetFfMacSchedulerSuite ()
   : TestSuite ("lte-tdbet-ff-mac-scheduler", SYSTEM)
@@ -491,10 +491,3 @@ LenaTdBetFfMacSchedulerTestCase2::DoRun (void)
   Simulator::Destroy ();
 
 }
-
-
-} // namespace ns3
-
-
-
-

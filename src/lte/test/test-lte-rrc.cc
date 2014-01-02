@@ -27,7 +27,7 @@
 
 NS_LOG_COMPONENT_DEFINE ("LteRrcTest");
 
-namespace ns3 {
+using namespace ns3;
 
 class LteRrcConnectionEstablishmentTestCase : public TestCase
 {
@@ -378,7 +378,3 @@ LteRrcTestSuite::LteRrcTestSuite ()
 }
 
 static LteRrcTestSuite g_lteRrcTestSuiteInstance;
-
-
-
-} // namespace ns3

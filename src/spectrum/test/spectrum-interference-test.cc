@@ -30,7 +30,7 @@
 
 NS_LOG_COMPONENT_DEFINE ("SpectrumInterferenceTest");
 
-namespace ns3 {
+using namespace ns3;
 
 
 
@@ -193,5 +193,3 @@ SpectrumInterferenceTestSuite::SpectrumInterferenceTestSuite ()
 }
 
 static SpectrumInterferenceTestSuite spectrumInterferenceTestSuite;
-
-} // namespace ns3

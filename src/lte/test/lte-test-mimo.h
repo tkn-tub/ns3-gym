@@ -25,7 +25,7 @@
 #include "ns3/test.h"
 
 
-namespace ns3 {
+using namespace ns3;
 
 
 /**
@@ -59,11 +59,5 @@ class LenaTestMimoSuite : public TestSuite
 public:
   LenaTestMimoSuite ();
 };
-
-
-
-
-} // namespace ns3
-
 
 #endif /* LENA_TEST_MIMO_H */

@@ -29,7 +29,7 @@
 #include "ns3/test.h"
 
 
-namespace ns3 {
+using namespace ns3;
 
 /**
 * This is a system test program. The test is based on a scenario with single eNB and several UEs.
@@ -79,11 +79,5 @@ class LenaTestCqaFfMacSchedulerSuite : public TestSuite
 public:
   LenaTestCqaFfMacSchedulerSuite ();
 };
-
-
-
-
-} // namespace ns3
-
 
 #endif /* LENA_TEST_CQA_FF_MAC_SCHEDULER_H */

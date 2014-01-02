@@ -35,6 +35,8 @@
 #include "ns3/nstime.h"
 #include "ns3/simulator.h"
 
+class Ipv4L3ProtocolTestCase;
+
 namespace ns3 {
 
 class Packet;
@@ -232,7 +234,7 @@ protected:
    */
   virtual void NotifyNewAggregate ();
 private:
-  friend class Ipv4L3ProtocolTestCase;
+  friend class ::Ipv4L3ProtocolTestCase;
 
   /**
    * \brief Copy constructor.

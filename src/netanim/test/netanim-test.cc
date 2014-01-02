@@ -30,7 +30,7 @@
 #include "ns3/basic-energy-source.h"
 #include "ns3/simple-device-energy-model.h"
 
-namespace ns3 {
+using namespace ns3;
 
 class AbstractAnimationInterfaceTestCase : public TestCase
 {
@@ -238,5 +238,3 @@ public:
     AddTestCase (new AnimationRemainingEnergyTestCase (), TestCase::QUICK);
   }
 } g_animationInterfaceTestSuite;
-
-} // namespace ns3

@@ -36,7 +36,7 @@
 NS_LOG_COMPONENT_DEFINE ("BuildingsShadowingTest");
 
 
-namespace ns3 {
+using namespace ns3;
 
 
 
@@ -228,8 +228,3 @@ BuildingsShadowingTestCase::CreateMobilityModel (uint16_t index)
   BuildingsHelper::MakeConsistent (mm); 
   return mm;
 }
-
-
-
-
-} // namespace ns3
