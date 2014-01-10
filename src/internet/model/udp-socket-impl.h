@@ -38,6 +38,8 @@ class Ipv6EndPoint;
 class Node;
 class Packet;
 class UdpL4Protocol;
+class Ipv6Header;
+class Ipv6Interface;
 
 /**
  * \ingroup udp
