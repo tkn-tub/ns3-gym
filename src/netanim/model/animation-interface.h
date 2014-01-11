@@ -114,12 +114,10 @@ public:
 	    AnimationInterface will create trace files with the following 
             filenames : filename, filename-1, filename-2..., filename-N
 	    where each file contains packet info for 'maxPktPerFile' number of packets
-   * \param usingXML Set to true if XML output traces are required
    *
    */
   AnimationInterface (const std::string filename, 
-	uint64_t maxPktsPerFile = MAX_PKTS_PER_TRACE_FILE, 
-	bool usingXML = true);
+	uint64_t maxPktsPerFile = MAX_PKTS_PER_TRACE_FILE);
 
   /**
    * \brief Destructor for the animator interface.
@@ -435,7 +433,6 @@ private:
   FILE * m_routingF; // File handle for routing table output (0 if None);
   // Write specified amount of data to the specified handle
   int WriteN (const char*, uint32_t, FILE * f);
-  bool m_xml;      // True if xml format desired
   Time m_mobilityPollInterval;
   std::string m_outputFileName;
   bool m_outputFileSet;
@@ -649,6 +646,7 @@ private:
   double m_topoMaxY;
   static Rectangle * userBoundary;
 
+  bool m_enable3105;
   std::string GetPacketMetadata (Ptr<const Packet> p);
 
   std::string GetXMLOpen_anim (uint32_t lp);

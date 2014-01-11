@@ -64,8 +64,8 @@ std::map <P2pLinkNodeIdPair, LinkProperties, LinkPairCompare> AnimationInterface
 Rectangle * AnimationInterface::userBoundary = 0;
 
 
-AnimationInterface::AnimationInterface (const std::string fn, uint64_t maxPktsPerFile, bool usingXML)
-  : m_routingF (0), m_xml (usingXML), m_mobilityPollInterval (Seconds (0.25)), 
+AnimationInterface::AnimationInterface (const std::string fn, uint64_t maxPktsPerFile)
+  : m_routingF (0), m_mobilityPollInterval (Seconds (0.25)), 
     m_outputFileName (fn),
     m_outputFileSet (false), gAnimUid (0), m_randomPosition (true),
     m_writeCallback (0), m_started (false), 
@@ -289,12 +289,6 @@ void AnimationInterface::TrackIpv4Route ()
     }
   TrackIpv4RoutePaths ();
   Simulator::Schedule (m_routingPollInterval, &AnimationInterface::TrackIpv4Route, this);
-}
-
-void AnimationInterface::SetXMLOutput ()
-{
-  NS_LOG_INFO ("XML output set");
-  m_xml = true;
 }
 
 
@@ -701,14 +695,7 @@ void AnimationInterface::StartAnimation (bool restart)
                       AddToIpv4AddressNodeIdTable (GetIpv4Address (dev), n1Id);
                       AddToIpv4AddressNodeIdTable (GetIpv4Address (chDev), n2Id);
                       std::ostringstream oss;
-                      if (m_xml)
-                        {
-                          oss << GetXMLOpenClose_link (0, n1Id, 0, n2Id);
-                        }
-                      else
-                        {
-                          oss << "0.0 L "  << n1Id << " " << n2Id << std::endl;
-                        }
+                      oss << GetXMLOpenClose_link (0, n1Id, 0, n2Id);
                       WriteN (oss.str (), m_f);
                     }
                 }
@@ -722,7 +709,7 @@ void AnimationInterface::StartAnimation (bool restart)
         }
     }
   linkProperties.clear ();
-  if (m_xml && !restart)
+  if (!restart)
     {
       WriteN (GetXMLClose ("topology"), m_f);
       Simulator::Schedule (m_mobilityPollInterval, &AnimationInterface::MobilityAutoCheck, this);
@@ -861,10 +848,8 @@ void AnimationInterface::StopAnimation (bool onlyAnimation)
   ResetAnimWriteCallback ();
   if (m_f) 
     {
-      if (m_xml)
-        { // Terminate the anim element
-          WriteN (GetXMLClose ("anim"), m_f);
-        }
+      // Terminate the anim element
+      WriteN (GetXMLClose ("anim"), m_f);
       std::fclose (m_f);
     }
     m_outputFileSet = false;
@@ -999,23 +984,10 @@ void AnimationInterface::DevTxTrace (std::string context, Ptr<const Packet> p,
   double lbTx = (now + txTime).GetSeconds ();
   double fbRx = (now + rxTime - txTime).GetSeconds ();
   double lbRx = (now + rxTime).GetSeconds ();
-  if (m_xml)
-    {
-      oss << GetXMLOpenClose_p ("p", tx->GetNode ()->GetId (), fbTx, lbTx, rx->GetNode ()->GetId (), 
-                                fbRx, lbRx, m_enablePacketMetadata? GetPacketMetadata (p):"");
-      StartNewTraceFile ();
-      ++m_currentPktCount;
-    }
-  else
-    {
-      oss << std::setprecision (10);
-      oss << now.GetSeconds () << " P "
-          << tx->GetNode ()->GetId () << " "
-          << rx->GetNode ()->GetId () << " "
-          << (now + txTime).GetSeconds () << " " // last bit tx time
-          << (now + rxTime - txTime).GetSeconds () << " " // first bit rx time
-          << (now + rxTime).GetSeconds () << std::endl;         // last bit rx time
-    }
+  oss << GetXMLOpenClose_p ("p", tx->GetNode ()->GetId (), fbTx, lbTx, rx->GetNode ()->GetId (), 
+         fbRx, lbRx, m_enablePacketMetadata? GetPacketMetadata (p):"");
+  StartNewTraceFile ();
+  ++m_currentPktCount;
   WriteN (oss.str (), m_f);
 }
 
@@ -1708,7 +1680,6 @@ return s;
 void AnimationInterface::OutputWirelessPacket (Ptr<const Packet> p, AnimPacketInfo &pktInfo, AnimRxInfo pktrxInfo)
 {
   StartNewTraceFile ();
-  NS_ASSERT (m_xml);
   std::ostringstream oss;
   uint32_t nodeId =  0;
   if (pktInfo.m_txnd)
@@ -1727,7 +1698,6 @@ void AnimationInterface::OutputWirelessPacket (Ptr<const Packet> p, AnimPacketIn
 void AnimationInterface::OutputCsmaPacket (Ptr<const Packet> p, AnimPacketInfo &pktInfo, AnimRxInfo pktrxInfo)
 {
   StartNewTraceFile ();
-  NS_ASSERT (m_xml);
   std::ostringstream oss;
   NS_ASSERT (pktInfo.m_txnd);
   uint32_t nodeId = pktInfo.m_txnd->GetNode ()->GetId ();
