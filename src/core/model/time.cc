@@ -424,6 +424,8 @@ operator<< (std::ostream& os, const Time & time)
   int64_t v = time.ToInteger (res);
 
   std::ios_base::fmtflags ff = os.flags ();
+
+  os << std::setw (0) << std::left;
   { // See bug 1737:  gcc libstc++ 4.2 bug
     if (v == 0)
       {

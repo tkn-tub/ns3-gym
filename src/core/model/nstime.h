@@ -701,7 +701,13 @@ inline Time Min (const Time &ta, const Time &tb)
 /**
  * \brief Time output streamer.
  * 
- * Generates output such as "3.96ns"
+ * Generates output such as "3.96ns".  Times are printed with the
+ * following format flags (independent of the stream flags):
+ *   - `showpos`
+ *   - `fixed`
+ *   - `left`
+ * The stream `width` and `precision` are ignored; Time output always
+ * includes ".0".
  * \relates ns3::Time
  */
 std::ostream& operator<< (std::ostream& os, const Time & time);
