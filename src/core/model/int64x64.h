@@ -79,6 +79,18 @@ INT64X64_OP_CMP (<=)
 INT64X64_OP_CMP (>)
 INT64X64_OP_CMP (>=)
 
+/**
+ * Output streamer for int64x64_t
+ *
+ * Values are printed with the following format flags
+ * independent of the the stream flags):
+ *   - `showpos`
+ *   - `left`
+ * The stream `width` is ignored.  If `floatfield` is set,
+ * `precision` decimal places are printed.  If `floatfield` is not set,
+ * all digits of the fractional part are printed, up to the
+ * representation limit of 20 digits; trailing zeros are omitted.
+ */
 std::ostream &operator << (std::ostream &os, const int64x64_t &val);
 std::istream &operator >> (std::istream &is, int64x64_t &val);
 
