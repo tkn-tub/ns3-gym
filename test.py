@@ -167,19 +167,23 @@ def parse_examples_to_run_file(
 
             # Add the proper prefix and suffix to the example name to
             # match what is done in the wscript file.
-            example_name = "%s%s-%s%s" % (APPNAME, VERSION, example_name, BUILD_PROFILE_SUFFIX)
+            example_path = "%s%s-%s%s" % (APPNAME, VERSION, example_name, BUILD_PROFILE_SUFFIX)
 
             # Set the full path for the example.
-            example_path = os.path.join(cpp_executable_dir, example_name)
+            example_path = os.path.join(cpp_executable_dir, example_path)
+            example_name = os.path.join(
+                os.path.relpath(cpp_executable_dir, NS3_BUILDDIR),
+                example_name)
             # Add all of the C++ examples that were built, i.e. found
             # in the directory, to the list of C++ examples to run.
             if os.path.exists(example_path):
                 # Add any arguments to the path.
                 if len(example_name_parts) != 1:
                     example_path = "%s %s" % (example_path, example_arguments)
+                    example_name = "%s %s" % (example_name, example_arguments)
 
                 # Add this example.
-                example_tests.append((example_path, do_run, do_valgrind_run))
+                example_tests.append((example_name, example_path, do_run, do_valgrind_run))
                 example_names_original.append(example_name_original)
     
         # Each tuple in the Python list of examples to run contains
@@ -1412,7 +1416,7 @@ def run_tests():
     if len(options.suite) == 0 and len(options.example) == 0 and len(options.pyexample) == 0:
         if len(options.constrain) == 0 or options.constrain == "example":
             if ENABLE_EXAMPLES:
-                for test, do_run, do_valgrind_run in example_tests:
+                for name, test, do_run, do_valgrind_run in example_tests:
                     # Remove any arguments and directory names from test.
                     test_name = test.split(' ', 1)[0] 
                     test_name = os.path.basename(test_name)
@@ -1423,7 +1427,7 @@ def run_tests():
                             job = Job()
                             job.set_is_example(True)
                             job.set_is_pyexample(False)
-                            job.set_display_name(test)
+                            job.set_display_name(name)
                             job.set_tmp_file_name("")
                             job.set_cwd(testpy_output_dir)
                             job.set_basedir(os.getcwd())
