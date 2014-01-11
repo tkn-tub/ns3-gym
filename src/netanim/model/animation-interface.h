@@ -45,6 +45,7 @@ namespace ns3 {
 
 #define MAX_PKTS_PER_TRACE_FILE 100000
 struct Rgb;
+struct NodeSize;
 typedef struct 
 {
   uint32_t fromNode;
@@ -110,13 +111,15 @@ public:
   /**
    * \brief Constructor
    * \param filename The Filename for the trace file used by the Animator
+   * \param enable3105 Enables 3.105 behavior. This flag will be made obsolete after
+   *        the transition period
    * \param maxPktsPerFile The maximum number of packets per trace file.
 	    AnimationInterface will create trace files with the following 
             filenames : filename, filename-1, filename-2..., filename-N
 	    where each file contains packet info for 'maxPktPerFile' number of packets
    *
    */
-  AnimationInterface (const std::string filename, 
+  AnimationInterface (const std::string filename, bool enable3105 = false, 
 	uint64_t maxPktsPerFile = MAX_PKTS_PER_TRACE_FILE);
 
   /**
@@ -295,6 +298,21 @@ public:
    */
   static void SetNodeColor (Ptr <Node> n, uint8_t r, uint8_t g, uint8_t b);
 
+  /**
+   * \brief Helper function to update the image of a node
+   * \param nodeId Id of the node
+   * \param resourceId Id of the image resource that was previously added
+   *
+   */
+  void UpdateNodeImage (uint32_t nodeId, uint32_t resourceId);
+  /**
+   * \brief Helper function to update the size of a node
+   * \param nodeId Id of the node
+   * \param width Width of the node
+   * \param height Height of the node
+   *
+   */
+  void UpdateNodeSize (uint32_t nodeId, double width, double height); 
 
   /**
    * \brief Helper function to update the node color
@@ -408,6 +426,15 @@ public:
    *
    */
   uint64_t GetTracePktCount ();
+
+  /**
+   *
+   * \brief Add a resource such as the path to an image file
+   *
+   * returns a number identifying the resource
+   *
+   */
+  uint32_t AddResource (std::string resourcePath);
 
   /**
    *
@@ -627,6 +654,8 @@ private:
   EnergyFractionMap m_nodeEnergyFraction;
   uint64_t m_currentPktCount;
 
+  std::map <uint32_t, NodeSize> m_nodeSizes;
+  std::vector <std::string> m_resources;
   void StartNewTraceFile ();
 
   std::string GetMacAddress (Ptr <NetDevice> nd);
@@ -650,6 +679,13 @@ private:
   std::string GetPacketMetadata (Ptr<const Packet> p);
 
   std::string GetXMLOpen_anim (uint32_t lp);
+  std::string GetXMLOpenCloseUpdateNodePosition (uint32_t nodeId, double x, double y);
+  std::string GetXMLOpenCloseUpdateNodeColor (uint32_t nodeId, uint8_t r, uint8_t g, uint8_t b);
+  std::string GetXMLOpenCloseUpdateNodeDescription (uint32_t nodeId);
+  std::string GetXMLOpenCloseUpdateNodeSize (uint32_t nodeId, double width, double height);
+  std::string GetXMLOpenCloseAddResource (uint32_t resourceId, std::string resourcePath);
+  std::string GetXMLOpenCloseUpdateNodeImage (uint32_t nodeId, uint32_t resourceId);
+
   std::string GetXMLOpen_topology (double minX, double minY, double maxX, double maxY);
   std::string GetXMLOpenClose_node (uint32_t lp, uint32_t id, double locX, double locY);
   std::string GetXMLOpenClose_node (uint32_t lp, uint32_t id, double locX, double locY, struct Rgb rgb);
@@ -686,6 +722,18 @@ struct Rgb
   uint8_t g;
   uint8_t b;
 };
+
+/**
+ * \ingroup netanim
+ * \brief A structure to store the width and height of a node` 
+ *
+ */
+struct NodeSize 
+{
+  double width;
+  double height;
+};
+
 
 /**
  * \ingroup netanim

@@ -64,7 +64,7 @@ std::map <P2pLinkNodeIdPair, LinkProperties, LinkPairCompare> AnimationInterface
 Rectangle * AnimationInterface::userBoundary = 0;
 
 
-AnimationInterface::AnimationInterface (const std::string fn, uint64_t maxPktsPerFile)
+AnimationInterface::AnimationInterface (const std::string fn, bool enable3105, uint64_t maxPktsPerFile)
   : m_routingF (0), m_mobilityPollInterval (Seconds (0.25)), 
     m_outputFileName (fn),
     m_outputFileSet (false), gAnimUid (0), m_randomPosition (true),
@@ -72,7 +72,7 @@ AnimationInterface::AnimationInterface (const std::string fn, uint64_t maxPktsPe
     m_enablePacketMetadata (false), m_startTime (Seconds (0)), m_stopTime (Seconds (3600 * 1000)),
     m_maxPktsPerFile (maxPktsPerFile), m_originalFileName (fn),
     m_routingStopTime (Seconds (0)), m_routingFileName (""),
-    m_routingPollInterval (Seconds (5))
+    m_routingPollInterval (Seconds (5)), m_enable3105 (enable3105)
 {
   m_uniformRandomVariable = CreateObject<UniformRandomVariable> ();
   initialized = true;
@@ -322,6 +322,17 @@ void AnimationInterface::SetStartTime (Time t)
 void AnimationInterface::SetStopTime (Time t)
 {
   m_stopTime = t;
+}
+
+
+uint32_t AnimationInterface::AddResource (std::string resourcePath)
+{
+  m_resources.push_back (resourcePath);
+  uint32_t resourceId = m_resources.size () -1;
+  std::ostringstream oss;
+  oss << GetXMLOpenCloseAddResource (resourceId, resourcePath);
+  WriteN (oss.str (), m_f);
+  return resourceId; 
 }
 
 bool AnimationInterface::SetOutputFile (const std::string& fn)
@@ -709,6 +720,17 @@ void AnimationInterface::StartAnimation (bool restart)
         }
     }
   linkProperties.clear ();
+  if (m_enable3105)
+    {
+      for (NodeList::Iterator i = NodeList::Begin (); i != NodeList::End (); ++i)
+        {
+          Ptr<Node> n = *i;
+          NS_LOG_INFO ("Update Size for Node: " << n->GetId ());
+          struct NodeSize s = { 1, 1 };
+          m_nodeSizes[n->GetId ()] = s;
+          UpdateNodeSize (n->GetId (), s.width, s.height);
+        }
+    }
   if (!restart)
     {
       WriteN (GetXMLClose ("topology"), m_f);
@@ -1538,9 +1560,16 @@ void AnimationInterface::MobilityCourseChangeTrace (Ptr <const MobilityModel> mo
   UpdatePosition (n,v);
   RecalcTopoBounds (v);
   std::ostringstream oss; 
-  oss << GetXMLOpen_topology (m_topoMinX, m_topoMinY, m_topoMaxX, m_topoMaxY);
-  oss << GetXMLOpenClose_node (0, n->GetId (), v.x, v.y, nodeColors[n->GetId ()]);
-  oss << GetXMLClose ("topology");
+  if (!m_enable3105)
+    {
+      oss << GetXMLOpen_topology (m_topoMinX, m_topoMinY, m_topoMaxX, m_topoMaxY);
+      oss << GetXMLOpenClose_node (0, n->GetId (), v.x, v.y, nodeColors[n->GetId ()]);
+      oss << GetXMLClose ("topology");
+    }
+  else
+    {
+      oss << GetXMLOpenCloseUpdateNodePosition (n->GetId (), v.x, v.y);
+    }
   WriteN (oss.str (), m_f);
   WriteDummyPacket ();
 }
@@ -1566,17 +1595,34 @@ void AnimationInterface::MobilityAutoCheck ()
     return;
   std::vector <Ptr <Node> > MovedNodes = RecalcTopoBounds ();
   std::ostringstream oss;
-  oss << GetXMLOpen_topology (m_topoMinX, m_topoMinY, m_topoMaxX, m_topoMaxY);
+  if (!m_enable3105)
+    {
+      oss << GetXMLOpen_topology (m_topoMinX, m_topoMinY, m_topoMaxX, m_topoMaxY);
+    }
   for (uint32_t i = 0; i < MovedNodes.size (); i++)
     {
       Ptr <Node> n = MovedNodes [i];
       NS_ASSERT (n);
       Vector v = GetPosition (n);
-      oss << GetXMLOpenClose_node (0, n->GetId (), v.x, v.y);
+      if (!m_enable3105)
+        {
+          oss << GetXMLOpenClose_node (0, n->GetId (), v.x, v.y);
+        }
+      else
+        {
+          oss << GetXMLOpenCloseUpdateNodePosition (n->GetId () , v.x, v.y);
+        }
     }
-  oss << GetXMLClose ("topology");
-  WriteN (oss.str (), m_f);
-  WriteDummyPacket ();
+  if (!m_enable3105)
+    {
+      oss << GetXMLClose ("topology");
+      WriteN (oss.str (), m_f);
+      WriteDummyPacket ();
+    }
+  else
+    {
+      WriteN (oss.str (), m_f);
+    }
   if (!Simulator::IsFinished ())
     {
       PurgePendingWifi ();
@@ -1586,6 +1632,19 @@ void AnimationInterface::MobilityAutoCheck ()
       Simulator::Schedule (m_mobilityPollInterval, &AnimationInterface::MobilityAutoCheck, this);
     }
 }
+
+void AnimationInterface::UpdateNodeImage (uint32_t nodeId, uint32_t resourceId)
+{
+  NS_LOG_INFO ("Setting node image for Node Id:" << nodeId);
+  if (resourceId > (m_resources.size ()-1))
+    {
+      NS_FATAL_ERROR ("Resource Id:" << resourceId << " not found. Did you use AddResource?");
+    } 
+  std::ostringstream oss;
+  oss << GetXMLOpenCloseUpdateNodeImage (nodeId, resourceId);
+  WriteN (oss.str (), m_f);
+}
+
 
 std::string AnimationInterface::GetPacketMetadata (Ptr<const Packet> p)
 {
@@ -1768,6 +1827,16 @@ void AnimationInterface::WriteNodeUpdate (uint32_t nodeId)
   WriteN (oss.str (), m_f);
 }
 
+void AnimationInterface::UpdateNodeSize (uint32_t nodeId, double width, double height)
+{
+  NodeSize s = { width, height };
+  m_nodeSizes[nodeId] = s;
+  std::ostringstream oss;
+  oss << GetXMLOpenCloseUpdateNodeSize (nodeId, s.width, s.height);
+  WriteN (oss.str (), m_f);
+}
+
+
 void AnimationInterface::UpdateNodeColor (Ptr <Node> n, uint8_t r, uint8_t g, uint8_t b)
 {
   UpdateNodeColor (n->GetId (), r, g, b);
@@ -1779,7 +1848,16 @@ void AnimationInterface::UpdateNodeColor (uint32_t nodeId, uint8_t r, uint8_t g,
   NS_LOG_INFO ("Setting node color for Node Id:" << nodeId); 
   struct Rgb rgb = {r, g, b};
   nodeColors[nodeId] = rgb;
-  WriteNodeUpdate (nodeId);
+  if (!m_enable3105)
+    {
+      WriteNodeUpdate (nodeId);
+    }
+  else
+    {
+      std::ostringstream oss;
+      oss << GetXMLOpenCloseUpdateNodeColor (nodeId, r, g, b);
+      WriteN (oss.str (), m_f);
+    }
 }
 
 
@@ -1866,7 +1944,14 @@ void AnimationInterface::UpdateNodeDescription (uint32_t nodeId, std::string des
   NS_ASSERT (NodeList::GetNode (nodeId));
   nodeDescriptions[nodeId] = descr;
   std::ostringstream oss;
-  oss << GetXMLOpenClose_nodeupdate (nodeId);
+  if (!m_enable3105)
+    {
+      oss << GetXMLOpenClose_nodeupdate (nodeId);
+    }
+  else
+    {
+      oss << GetXMLOpenCloseUpdateNodeDescription (nodeId);
+    }
   WriteN (oss.str (), m_f);
 }
 
@@ -2092,6 +2177,83 @@ std::string AnimationInterface::GetXMLOpenClose_meta (std::string metaInfo)
   oss << "<meta info=\""
       << metaInfo << "\" />" << std::endl;
   return oss.str ();      
+}
+
+std::string AnimationInterface::GetXMLOpenCloseAddResource (uint32_t resourceId, std::string resourcePath)
+{
+  std::ostringstream oss;
+  oss << "<res rid=\"" << resourceId << "\""
+      << " p=\"" << resourcePath << "\""
+      << "/>" << std::endl;
+  return oss.str ();
+}
+
+std::string AnimationInterface::GetXMLOpenCloseUpdateNodeImage (uint32_t nodeId, uint32_t resourceId)
+{
+  std::ostringstream oss;
+  oss << "<nu p=\"i\""
+      << " t=\"" << Simulator::Now ().GetSeconds () << "\""
+      << " id=\"" << nodeId << "\""
+      << " rid=\"" << resourceId << "\""
+      << "/>" << std::endl;
+  return oss.str ();
+}
+
+std::string AnimationInterface::GetXMLOpenCloseUpdateNodeSize (uint32_t nodeId, double width, double height)
+{
+  std::ostringstream oss;
+  oss << std::setprecision (10);
+  oss << "<nu p=\"s\""
+      << " t=\"" << Simulator::Now ().GetSeconds () << "\""
+      << " id=\"" << nodeId << "\""
+      << " w=\"" << width << "\""
+      << " h=\"" << height << "\""
+      << "/>" << std::endl;
+  return oss.str ();
+}
+
+std::string AnimationInterface::GetXMLOpenCloseUpdateNodePosition (uint32_t nodeId, double x, double y)
+{
+  std::ostringstream oss;
+  oss << "<nu p=\"p\""
+      << " t=\"" << Simulator::Now ().GetSeconds () << "\""
+      << " id=\"" << nodeId << "\""
+      << " x=\"" << x << "\""
+      << " y=\"" << y << "\""
+      << "/>" << std::endl;
+  return oss.str ();
+}
+
+std::string AnimationInterface::GetXMLOpenCloseUpdateNodeColor (uint32_t nodeId, uint8_t r, uint8_t g, uint8_t b)
+{
+  std::ostringstream oss;
+  oss << "<nu p=\"c\""
+      << " t=\"" << Simulator::Now ().GetSeconds () << "\""
+      << " id=\"" << nodeId << "\""
+      << " r=\"" << (uint32_t)r << "\""
+      << " g=\"" << (uint32_t)g << "\""
+      << " b=\"" << (uint32_t)b << "\""
+      << "/>" << std::endl;
+  return oss.str ();
+}
+
+std::string AnimationInterface::GetXMLOpenCloseUpdateNodeDescription (uint32_t nodeId)
+{
+  std::ostringstream oss;
+  oss << "<nu p=\"d\""
+      << " t=\"" << Simulator::Now ().GetSeconds () << "\""
+      << " id=\"" << nodeId << "\"";
+  if (nodeDescriptions.find (nodeId) != nodeDescriptions.end ())
+    {
+      oss << " descr=\""<< nodeDescriptions[nodeId] << "\"";
+    }
+  else
+    {
+      oss << " descr=\"\"";
+    }
+
+  oss << "/>" << std::endl;
+  return oss.str ();
 }
 
 
