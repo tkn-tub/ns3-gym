@@ -29,6 +29,7 @@ New user-visible features
 
 Bugs fixed
 ----------
+- Bug 1786 - os << int64x64_t prints un-normalized fractional values
 - Bug 1821 - Setting an interface to Down state will cause various asserts in IPv6
 
 
