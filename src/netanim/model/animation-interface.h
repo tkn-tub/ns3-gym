@@ -352,8 +352,10 @@ public:
    * \param y Y co-ordinate of the image
    * \param scaleX X scale of the image
    * \param scaleY Y scale of the image
+   * \param opacity Opacity of the background: A value between 0.0 and 1.0. 0.0 is transparent,
+   *        1.0 is opaque
    */
-  void SetBackgroundImage (std::string fileName, double x, double y, double scaleX=1, double scaleY=1); 
+  void SetBackgroundImage (std::string fileName, double x, double y, double scaleX, double scaleY, double opacity); 
 
   /**
    * \brief Helper function to set the description for a link
@@ -712,7 +714,7 @@ private:
   std::string GetXMLOpenClose_NonP2pLinkProperties (uint32_t id, std::string ipv4Address, std::string channelType);
   std::string GetXMLOpenClose_routing (uint32_t id, std::string routingInfo);
   std::string GetXMLOpenClose_rp (uint32_t nodeId, std::string destination, Ipv4RoutePathElements rpElements);
-  std::string GetXMLOpenCloseUpdateBackground (std::string fileName, double x, double y, double scaleX, double scaleY);
+  std::string GetXMLOpenCloseUpdateBackground (std::string fileName, double x, double y, double scaleX, double scaleY, double opacity);
 
   void AppendXMLNodeDescription (std::ostream& ostream, uint32_t id) const;
   void AppendXMLNodeColor (std::ostream& ostream, const Rgb& color) const;

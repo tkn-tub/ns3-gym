@@ -171,7 +171,7 @@ int main (int argc, char *argv[])
   // Provide the absolute path to the resource
   resourceId1 = pAnim->AddResource ("./ns-3-logo1.png");
   resourceId2 = pAnim->AddResource ("./ns-3-logo2.png");
-  pAnim->SetBackgroundImage ("./ns-3-background.png", 0, 0, 1, 1);
+  pAnim->SetBackgroundImage ("./ns-3-background.png", 0, 0, 0.2, 0.2, 0.1);
   Simulator::Schedule (Seconds (0.1), modify);
   
   // Set up the acutal simulation

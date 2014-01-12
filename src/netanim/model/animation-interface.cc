@@ -1798,10 +1798,14 @@ void AnimationInterface::SetBoundary (double minX, double minY, double maxX, dou
   userBoundary->yMin = minY;
 }
 
-void AnimationInterface::SetBackgroundImage (std::string fileName, double x, double y, double scaleX, double scaleY)
+void AnimationInterface::SetBackgroundImage (std::string fileName, double x, double y, double scaleX, double scaleY, double opacity)
 {
+  if ((opacity < 0) || (opacity > 1))
+    {
+      NS_FATAL_ERROR ("Opacity must be between 0.0 and 1.0");
+    }
   std::ostringstream oss;
-  oss << GetXMLOpenCloseUpdateBackground (fileName, x, y, scaleX, scaleY);
+  oss << GetXMLOpenCloseUpdateBackground (fileName, x, y, scaleX, scaleY, opacity);
   WriteN (oss.str (), m_f);
 }
 
@@ -2264,7 +2268,7 @@ std::string AnimationInterface::GetXMLOpenCloseUpdateNodeDescription (uint32_t n
   return oss.str ();
 }
 
-std::string AnimationInterface::GetXMLOpenCloseUpdateBackground (std::string fileName, double x, double y, double scaleX, double scaleY)
+std::string AnimationInterface::GetXMLOpenCloseUpdateBackground (std::string fileName, double x, double y, double scaleX, double scaleY, double opacity)
 {
   std::ostringstream oss;
   oss << "<bg f=\"" << fileName << "\""
@@ -2272,6 +2276,7 @@ std::string AnimationInterface::GetXMLOpenCloseUpdateBackground (std::string fil
       << " y=\"" << y << "\""
       << " sx=\"" << scaleX << "\""
       << " sy=\"" << scaleY << "\""
+      << " o=\"" << opacity << "\""
       << "/>" << std::endl;
   return oss.str ();
 }
