@@ -1798,6 +1798,14 @@ void AnimationInterface::SetBoundary (double minX, double minY, double maxX, dou
   userBoundary->yMin = minY;
 }
 
+void AnimationInterface::SetBackgroundImage (std::string fileName, double x, double y, double scaleX, double scaleY)
+{
+  std::ostringstream oss;
+  oss << GetXMLOpenCloseUpdateBackground (fileName, x, y, scaleX, scaleY);
+  WriteN (oss.str (), m_f);
+}
+
+
 void AnimationInterface::SetNodeColor (Ptr <Node> n, uint8_t r, uint8_t g, uint8_t b)
 {
   if (initialized)
@@ -2253,6 +2261,18 @@ std::string AnimationInterface::GetXMLOpenCloseUpdateNodeDescription (uint32_t n
     }
 
   oss << "/>" << std::endl;
+  return oss.str ();
+}
+
+std::string AnimationInterface::GetXMLOpenCloseUpdateBackground (std::string fileName, double x, double y, double scaleX, double scaleY)
+{
+  std::ostringstream oss;
+  oss << "<bg f=\"" << fileName << "\""
+      << " x=\"" << x << "\""
+      << " y=\"" << y << "\""
+      << " sx=\"" << scaleX << "\""
+      << " sy=\"" << scaleY << "\""
+      << "/>" << std::endl;
   return oss.str ();
 }
 

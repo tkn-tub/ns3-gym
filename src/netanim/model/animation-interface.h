@@ -346,6 +346,16 @@ public:
   static void SetNodeColor (NodeContainer nc, uint8_t r, uint8_t g, uint8_t b);
 
   /**
+   * \brief Helper function to set the background image
+   * \param fileName File name of the background image
+   * \param x X co-ordinate of the image
+   * \param y Y co-ordinate of the image
+   * \param scaleX X scale of the image
+   * \param scaleY Y scale of the image
+   */
+  void SetBackgroundImage (std::string fileName, double x, double y, double scaleX=1, double scaleY=1); 
+
+  /**
    * \brief Helper function to set the description for a link
    * \param fromNode Node Id of the "from Node" of the p2p link
    * \param toNode Node Id of the "to Node" of the p2p link
@@ -702,6 +712,7 @@ private:
   std::string GetXMLOpenClose_NonP2pLinkProperties (uint32_t id, std::string ipv4Address, std::string channelType);
   std::string GetXMLOpenClose_routing (uint32_t id, std::string routingInfo);
   std::string GetXMLOpenClose_rp (uint32_t nodeId, std::string destination, Ipv4RoutePathElements rpElements);
+  std::string GetXMLOpenCloseUpdateBackground (std::string fileName, double x, double y, double scaleX, double scaleY);
 
   void AppendXMLNodeDescription (std::ostream& ostream, uint32_t id) const;
   void AppendXMLNodeColor (std::ostream& ostream, const Rgb& color) const;
