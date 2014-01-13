@@ -72,8 +72,6 @@ information for a signal being transmitted/received by PHY devices:
 * its Power Spectral Density (PSD) of the signal, which is assumed to be constant for
   the duration of the signal. 
 
-The ``SpectrumSignalParameters``
-
 The PSD is represented as a set of discrete scalar values each
 corresponding to a certain subband in frequency. The set of frequency subbands
 to which the PSD refers to is defined by an instance of the
@@ -87,6 +85,17 @@ one ``SpectrumModel`` to another.
 
 For a more formal mathematical description of the signal model just
 described, the reader is referred to [Baldo2009]_.
+
+The ``SpectrumSignalParameters`` class is meant to include only
+information that is valid for all signals; as such, it is not meant to
+be modified to add technology-specific information (such as type of
+modulation and coding schemes used, info on preambles and reference
+signals, etc). Instead, such information shall be put in a new class
+that inherits from ``SpectrumSignalParameters`` and extends it with
+any technology-specific information that is needed. This design
+is intended to model the fact that in the real world we have signals
+of different technologies being simultaneously transmitted and
+received over the air.  
 
 
 
@@ -215,7 +224,14 @@ Here are some notes on how the spectrum module is expected to be used.
    
     - a child class of ``SpectrumPhy`` which will handle transmission and
       reception of signals (including, if appropriate, interference
-      and error modeling). 
+      and error modeling).
+
+    - a child class of ``SpectrumSignalParameters`` which will contain
+      all the information needed to model the signals for the wireless
+      technology being considered that is not already provided by the
+      base ``SpectrumSignalParameters`` class. Examples of such
+      information are the type of modulation and coding schemes used,
+      the PHY preamble format, info on the pilot/reference signals, etc.
 
  * The available ``SpectrumChannel`` implementations
    (``SingleModelSpectrumChannel`` and ``MultiModelSpectrumChannel``,
@@ -242,6 +258,14 @@ Here are some notes on how the spectrum module is expected to be used.
    BluetoohSpectrumPhy, and plug both on a SpectrumChannel, then you'll
    be able to simulate interference between wifi and bluetooth and
    vice versa.
+
+ * Different child classes of ``SpectrumSignalParameters`` can coexist
+   in the same simulation, and be transmitted over the same channel
+   object.  Again, this is part of the support for inter-technology
+   interference. A PHY device model is expected to use the
+   ``DynamicCast<>`` operator to determine if a signal is of a certain
+   type it can attempt to receive. If not, the signal is normally
+   expected to be considered as interference. 
 
 
 
@@ -295,7 +319,7 @@ Output
    example ``adhoc-aloha-ideal-phy-with-microwave-oven`` you will get
    an output file called ``spectrum-analyzer-output-3-0.tr``. From
    this output file, you can generate a figure similar to 
-   :ref:`fig-spectrum-channel-phy-interface` by executing the following
+   :ref:`fig-spectrum-analyzer-example` by executing the following
    gnuplot commands::
 
     unset surface
