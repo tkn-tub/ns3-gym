@@ -59,6 +59,7 @@ typedef struct
   std::string linkDescription;
 } LinkProperties;
 
+
 struct LinkPairCompare
 {
   bool operator () (P2pLinkNodeIdPair first, P2pLinkNodeIdPair second) const
@@ -121,6 +122,15 @@ public:
    */
   AnimationInterface (const std::string filename, bool enable3105 = false, 
 	uint64_t maxPktsPerFile = MAX_PKTS_PER_TRACE_FILE);
+
+  /**
+   * Counter Types 
+   */
+  typedef enum
+    {
+      UINT32_COUNTER,
+      DOUBLE_COUNTER
+    } CounterType;
 
   /**
    * \brief Destructor for the animator interface.
@@ -345,6 +355,16 @@ public:
    */
   static void SetNodeColor (NodeContainer nc, uint8_t r, uint8_t g, uint8_t b);
 
+
+  /**
+   * \brief Helper function to update a node's counter referenced by the nodeCounterId
+   * \param nodeCounterId The counter Id obtained from AddNodeCounter
+   * \param nodeId Node Id of the node
+   * \param counter Current value of the counter
+   *
+   */
+  void UpdateNodeCounter (uint32_t nodeCounterId, uint32_t nodeId, double counter);
+
   /**
    * \brief Helper function to set the background image
    * \param fileName File name of the background image
@@ -441,8 +461,19 @@ public:
 
   /**
    *
-   * \brief Add a resource such as the path to an image file
+   * \brief Setup a node counter
+   * \param counterName A string to identify the counter
+   * \param counterType The type of the counter, such as uint32, double etc
+   * 
+   * returns The id of the counter to be used as a reference for future
+   */
+  uint32_t AddNodeCounter (std::string counterName, CounterType counterType); 
+
+  /**
    *
+   * \brief Add a resource such as the path to an image file
+   * \param resourcePath Absolute Path to an image/resource
+   * 
    * returns a number identifying the resource
    *
    */
@@ -668,6 +699,7 @@ private:
 
   std::map <uint32_t, NodeSize> m_nodeSizes;
   std::vector <std::string> m_resources;
+  std::vector <std::string> m_nodeCounters;
   void StartNewTraceFile ();
 
   std::string GetMacAddress (Ptr <NetDevice> nd);
@@ -680,6 +712,7 @@ private:
 
   // XML helpers
   std::string GetPreamble (void);
+  std::string CounterTypeToString (CounterType counterType);
   // Topology element dimensions
   double m_topoMinX;
   double m_topoMinY;
@@ -696,8 +729,9 @@ private:
   std::string GetXMLOpenCloseUpdateNodeDescription (uint32_t nodeId);
   std::string GetXMLOpenCloseUpdateNodeSize (uint32_t nodeId, double width, double height);
   std::string GetXMLOpenCloseAddResource (uint32_t resourceId, std::string resourcePath);
+  std::string GetXMLOpenCloseAddNodeCounter (uint32_t counterId, std::string counterName, CounterType counterType);
   std::string GetXMLOpenCloseUpdateNodeImage (uint32_t nodeId, uint32_t resourceId);
-
+  std::string GetXMLOpenCloseUpdateNodeCounter (uint32_t counterId, uint32_t nodeId, double value);
   std::string GetXMLOpen_topology (double minX, double minY, double maxX, double maxY);
   std::string GetXMLOpenClose_node (uint32_t lp, uint32_t id, double locX, double locY);
   std::string GetXMLOpenClose_node (uint32_t lp, uint32_t id, double locX, double locY, struct Rgb rgb);

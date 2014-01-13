@@ -44,6 +44,8 @@ struct rgb colors [] = {
 
 uint32_t resourceId1;
 uint32_t resourceId2;
+uint32_t nodeCounterId;
+
 void modify ()
 {
   std::ostringstream oss;
@@ -92,6 +94,9 @@ void modify ()
   for (uint32_t nodeId = 4; nodeId < 12; ++nodeId)
     pAnim->UpdateNodeColor (nodeId, color.r, color.g, color.b); 
 
+  // Update Node Counter for node 0, use some random number between 0 to 1000 for value
+  Ptr <UniformRandomVariable> rv = CreateObject<UniformRandomVariable> ();
+  pAnim->UpdateNodeCounter (nodeCounterId, 0, rv->GetValue (0, 1000));
 
   if (Simulator::Now ().GetSeconds () < 10) // This is important or the simulation
     // will run endlessly
@@ -172,6 +177,11 @@ int main (int argc, char *argv[])
   resourceId1 = pAnim->AddResource ("/Users/john/ns3/netanim-3.105/ns-3-logo1.png");
   resourceId2 = pAnim->AddResource ("/Users/john/ns3/netanim-3.105/ns-3-logo2.png");
   pAnim->SetBackgroundImage ("/Users/john/ns3/netanim-3.105/ns-3-background.png", 0, 0, 0.2, 0.2, 0.1);
+
+
+  // Add a node counter
+  nodeCounterId = pAnim->AddNodeCounter ("Sample Counter", AnimationInterface::UINT32_COUNTER);
+
   Simulator::Schedule (Seconds (0.1), modify);
   
   // Set up the acutal simulation

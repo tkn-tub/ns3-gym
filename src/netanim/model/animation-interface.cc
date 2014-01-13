@@ -324,6 +324,15 @@ void AnimationInterface::SetStopTime (Time t)
   m_stopTime = t;
 }
 
+uint32_t AnimationInterface::AddNodeCounter (std::string counterName, CounterType counterType)
+{
+  m_nodeCounters.push_back (counterName);
+  uint32_t counterId = m_nodeCounters.size () -1;
+  std::ostringstream oss;
+  oss << GetXMLOpenCloseAddNodeCounter (counterId, counterName, counterType);
+  WriteN (oss.str (), m_f);
+  return counterId; 
+}
 
 uint32_t AnimationInterface::AddResource (std::string resourcePath)
 {
@@ -1676,6 +1685,24 @@ AnimationInterface::AssignStreams (int64_t stream)
 
 // Helper to output a wireless packet.
 // For now, only the XML interface is supported
+std::string AnimationInterface::CounterTypeToString (CounterType counterType)
+{
+  std::string typeString = "unknown";
+  switch (counterType)
+    {
+      case UINT32_COUNTER:
+        {
+          typeString = "UINT32";
+          break;
+        } 
+      case DOUBLE_COUNTER:
+        {
+          typeString = "DOUBLE";
+          break;
+        } 
+    }
+  return typeString;
+}
 
 
 std::string AnimationInterface::GetPreamble ()
@@ -1796,6 +1823,17 @@ void AnimationInterface::SetBoundary (double minX, double minY, double maxX, dou
   userBoundary->yMax = maxY;
   userBoundary->xMin = minX;
   userBoundary->yMin = minY;
+}
+
+void AnimationInterface::UpdateNodeCounter (uint32_t nodeCounterId, uint32_t nodeId, double counter)
+{
+  if (nodeCounterId > (m_nodeCounters.size ()-1))
+    {
+      NS_FATAL_ERROR ("NodeCounter Id:" << nodeCounterId << " not found. Did you use AddNodeCounter?");
+    }
+  std::ostringstream oss;
+  oss << GetXMLOpenCloseUpdateNodeCounter (nodeCounterId, nodeId, counter);
+  WriteN (oss.str (), m_f);
 }
 
 void AnimationInterface::SetBackgroundImage (std::string fileName, double x, double y, double scaleX, double scaleY, double opacity)
@@ -2191,6 +2229,16 @@ std::string AnimationInterface::GetXMLOpenClose_meta (std::string metaInfo)
   return oss.str ();      
 }
 
+std::string AnimationInterface::GetXMLOpenCloseAddNodeCounter (uint32_t nodeCounterId, std::string counterName, CounterType counterType)
+{
+  std::ostringstream oss;
+  oss << "<ncs ncId=\"" << nodeCounterId << "\""
+      << " n=\"" << counterName << "\""
+      << " t=\"" << CounterTypeToString (counterType) << "\""
+      << " />" << std::endl;
+  return oss.str ();
+}
+
 std::string AnimationInterface::GetXMLOpenCloseAddResource (uint32_t resourceId, std::string resourcePath)
 {
   std::ostringstream oss;
@@ -2265,6 +2313,18 @@ std::string AnimationInterface::GetXMLOpenCloseUpdateNodeDescription (uint32_t n
     }
 
   oss << "/>" << std::endl;
+  return oss.str ();
+}
+
+
+std::string AnimationInterface::GetXMLOpenCloseUpdateNodeCounter (uint32_t nodeCounterId, uint32_t nodeId, double counterValue)
+{
+  std::ostringstream oss;
+  oss << "<nc c=\"" << nodeCounterId << "\""
+      << " i=\"" << nodeId << "\""
+      << " t=\"" << Simulator::Now ().GetSeconds () << "\""
+      << " v=\"" << counterValue << "\""
+      << " />" << std::endl;
   return oss.str ();
 }
 
