@@ -136,7 +136,7 @@ public:
    * This method is typically called by lower layers
    * to forward packets up the stack to the right protocol.
    */
-  Ptr<IpL4Protocol> GetProtocol (int protocolNumber) const;
+  virtual Ptr<IpL4Protocol> GetProtocol (int protocolNumber) const;
   /**
    * \param protocol protocol to remove from this demux.
    *

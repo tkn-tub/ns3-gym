@@ -116,8 +116,16 @@ void Ipv6Interface::DoSetup ()
       return; /* no NDISC cache for ip6-localhost */
     }
 
-  Ptr<Icmpv6L4Protocol> icmpv6 = m_node->GetObject<Ipv6L3Protocol> ()->GetIcmpv6 ();
-  m_ndCache = icmpv6->CreateCache (m_device, this);
+  Ptr<IpL4Protocol> proto = m_node->GetObject<Ipv6> ()->GetProtocol (Icmpv6L4Protocol::GetStaticProtocolNumber ());
+  Ptr<Icmpv6L4Protocol> icmpv6;
+  if (proto)
+    {
+      icmpv6 = proto->GetObject <Icmpv6L4Protocol> ();
+    }
+  if (icmpv6)
+    {
+      m_ndCache = icmpv6->CreateCache (m_device, this);
+    }
 }
 
 void Ipv6Interface::SetNode (Ptr<Node> node)
@@ -216,7 +224,12 @@ bool Ipv6Interface::AddAddress (Ipv6InterfaceAddress iface)
       if (!addr.IsAny () || !addr.IsLocalhost ())
         {
           /* DAD handling */
-          Ptr<Icmpv6L4Protocol> icmpv6 = m_node->GetObject<Ipv6L3Protocol> ()->GetIcmpv6 ();
+          Ptr<IpL4Protocol> proto = m_node->GetObject<Ipv6> ()->GetProtocol (Icmpv6L4Protocol::GetStaticProtocolNumber ());
+          Ptr<Icmpv6L4Protocol> icmpv6;
+          if (proto)
+            {
+              icmpv6 = proto->GetObject <Icmpv6L4Protocol> ();
+            }
 
           if (icmpv6 && icmpv6->IsAlwaysDad ())
             {

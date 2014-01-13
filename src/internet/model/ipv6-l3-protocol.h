@@ -118,7 +118,7 @@ public:
    * \param protocolNumber protocol number
    * \return corresponding Ipv6L4Protocol or 0 if not found
    */
-  Ptr<IpL4Protocol> GetProtocol (int protocolNumber) const;
+  virtual Ptr<IpL4Protocol> GetProtocol (int protocolNumber) const;
 
   /**
    * \brief Create raw IPv6 socket.

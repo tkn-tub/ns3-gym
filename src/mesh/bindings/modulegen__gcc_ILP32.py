@@ -4377,6 +4377,16 @@ def register_Ns3PcapFileWrapper_methods(root_module, cls):
                    is_static=True)
     ## pcap-file-wrapper.h (module 'network'): ns3::PcapFileWrapper::PcapFileWrapper() [constructor]
     cls.add_constructor([])
+    ## pcap-file-wrapper.h (module 'network'): void ns3::PcapFileWrapper::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## pcap-file-wrapper.h (module 'network'): void ns3::PcapFileWrapper::NotifyNewAggregate() [member function]
+    cls.add_method('NotifyNewAggregate', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
     ## pcap-file-wrapper.h (module 'network'): bool ns3::PcapFileWrapper::Fail() const [member function]
     cls.add_method('Fail', 
                    'bool', 
