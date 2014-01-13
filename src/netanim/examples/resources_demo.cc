@@ -44,7 +44,9 @@ struct rgb colors [] = {
 
 uint32_t resourceId1;
 uint32_t resourceId2;
-uint32_t nodeCounterId;
+uint32_t nodeCounterIdUint32;
+uint32_t nodeCounterIdDouble1;
+uint32_t nodeCounterIdDouble2;
 
 void modify ()
 {
@@ -96,7 +98,9 @@ void modify ()
 
   // Update Node Counter for node 0, use some random number between 0 to 1000 for value
   Ptr <UniformRandomVariable> rv = CreateObject<UniformRandomVariable> ();
-  pAnim->UpdateNodeCounter (nodeCounterId, 0, rv->GetValue (0, 1000));
+  pAnim->UpdateNodeCounter (nodeCounterIdUint32, 0, rv->GetValue (0, 1000));
+  pAnim->UpdateNodeCounter (nodeCounterIdDouble1, 0, rv->GetValue (100.0, 200.0));
+  pAnim->UpdateNodeCounter (nodeCounterIdDouble2, 0, rv->GetValue (300.0, 400.0));
 
   if (Simulator::Now ().GetSeconds () < 10) // This is important or the simulation
     // will run endlessly
@@ -180,7 +184,9 @@ int main (int argc, char *argv[])
 
 
   // Add a node counter
-  nodeCounterId = pAnim->AddNodeCounter ("Sample Counter", AnimationInterface::UINT32_COUNTER);
+  nodeCounterIdUint32 = pAnim->AddNodeCounter ("Uint32 Counter", AnimationInterface::UINT32_COUNTER);
+  nodeCounterIdDouble1 = pAnim->AddNodeCounter ("Double Counter 1", AnimationInterface::DOUBLE_COUNTER);
+  nodeCounterIdDouble2 = pAnim->AddNodeCounter ("Double Counter 2", AnimationInterface::DOUBLE_COUNTER);
 
   Simulator::Schedule (Seconds (0.1), modify);
   
