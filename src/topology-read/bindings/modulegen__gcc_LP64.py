@@ -102,8 +102,6 @@ def register_types(module):
     module.add_class('AttributeChecker', allow_subclassing=False, automatic_type_narrowing=True, import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter<ns3::AttributeChecker> >'])
     ## attribute.h (module 'core'): ns3::AttributeValue [class]
     module.add_class('AttributeValue', allow_subclassing=False, automatic_type_narrowing=True, import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::AttributeValue, ns3::empty, ns3::DefaultDeleter<ns3::AttributeValue> >'])
-    ## caida-asrel-topology-reader.h (module 'topology-read'): ns3::CaidaAsrelTopologyReader [class]
-    module.add_class('CaidaAsrelTopologyReader', parent=root_module['ns3::TopologyReader'])
     ## callback.h (module 'core'): ns3::CallbackChecker [class]
     module.add_class('CallbackChecker', import_from_module='ns.core', parent=root_module['ns3::AttributeChecker'])
     ## callback.h (module 'core'): ns3::CallbackImplBase [class]
@@ -234,7 +232,6 @@ def register_methods(root_module):
     register_Ns3AttributeAccessor_methods(root_module, root_module['ns3::AttributeAccessor'])
     register_Ns3AttributeChecker_methods(root_module, root_module['ns3::AttributeChecker'])
     register_Ns3AttributeValue_methods(root_module, root_module['ns3::AttributeValue'])
-    register_Ns3CaidaAsrelTopologyReader_methods(root_module, root_module['ns3::CaidaAsrelTopologyReader'])
     register_Ns3CallbackChecker_methods(root_module, root_module['ns3::CallbackChecker'])
     register_Ns3CallbackImplBase_methods(root_module, root_module['ns3::CallbackImplBase'])
     register_Ns3CallbackValue_methods(root_module, root_module['ns3::CallbackValue'])
@@ -1926,29 +1923,6 @@ def register_Ns3AttributeValue_methods(root_module, cls):
                    'std::string', 
                    [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
-    return
-
-def register_Ns3CaidaAsrelTopologyReader_methods(root_module, cls):
-    ## caida-asrel-topology-reader.h (module 'topology-read'): static ns3::TypeId ns3::CaidaAsrelTopologyReader::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
-    ## caida-asrel-topology-reader.h (module 'topology-read'): ns3::CaidaAsrelTopologyReader::CaidaAsrelTopologyReader() [constructor]
-    cls.add_constructor([])
-    ## caida-asrel-topology-reader.h (module 'topology-read'): ns3::NodeContainer ns3::CaidaAsrelTopologyReader::Read() [member function]
-    cls.add_method('Read', 
-                   'ns3::NodeContainer', 
-                   [], 
-                   is_virtual=True)
-    ## caida-asrel-topology-reader.h (module 'topology-read'): bool ns3::CaidaAsrelTopologyReader::IsStub(ns3::Ptr<ns3::Node> node) [member function]
-    cls.add_method('IsStub', 
-                   'bool', 
-                   [param('ns3::Ptr< ns3::Node >', 'node')])
-    ## caida-asrel-topology-reader.h (module 'topology-read'): uint32_t ns3::CaidaAsrelTopologyReader::GetDepth(ns3::Ptr<ns3::Node> node) [member function]
-    cls.add_method('GetDepth', 
-                   'uint32_t', 
-                   [param('ns3::Ptr< ns3::Node >', 'node')])
     return
 
 def register_Ns3CallbackChecker_methods(root_module, cls):

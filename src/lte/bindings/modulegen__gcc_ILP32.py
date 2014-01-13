@@ -19308,8 +19308,6 @@ def register_Ns3LteInterferencePowerChunkProcessor_methods(root_module, cls):
     return
 
 def register_Ns3LteNetDevice_methods(root_module, cls):
-    ## lte-net-device.h (module 'lte'): ns3::LteNetDevice::m_traceRx [variable]
-    cls.add_instance_attribute('m_traceRx', 'ns3::TracedCallback< ns3::Ptr< ns3::Packet const >, ns3::Mac48Address const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', is_const=False)
     ## lte-net-device.h (module 'lte'): static ns3::TypeId ns3::LteNetDevice::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -19466,8 +19464,6 @@ def register_Ns3LteRsReceivedPowerChunkProcessor_methods(root_module, cls):
     return
 
 def register_Ns3LteUeNetDevice_methods(root_module, cls):
-    ## lte-ue-net-device.h (module 'lte'): ns3::LteUeNetDevice::m_traceTx [variable]
-    cls.add_instance_attribute('m_traceTx', 'ns3::TracedCallback< ns3::Ptr< ns3::Packet const >, ns3::Mac48Address const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', is_const=False)
     ## lte-ue-net-device.h (module 'lte'): static ns3::TypeId ns3::LteUeNetDevice::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
