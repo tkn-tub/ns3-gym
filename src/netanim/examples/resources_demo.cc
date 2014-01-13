@@ -169,9 +169,9 @@ int main (int argc, char *argv[])
   // Create the animation object and configure for specified output
   pAnim = new AnimationInterface (animFile, true); // true --> Enable 3.105 behavior
   // Provide the absolute path to the resource
-  resourceId1 = pAnim->AddResource ("./ns-3-logo1.png");
-  resourceId2 = pAnim->AddResource ("./ns-3-logo2.png");
-  pAnim->SetBackgroundImage ("./ns-3-background.png", 0, 0, 0.2, 0.2, 0.1);
+  resourceId1 = pAnim->AddResource ("/Users/john/ns3/netanim-3.105/ns-3-logo1.png");
+  resourceId2 = pAnim->AddResource ("/Users/john/ns3/netanim-3.105/ns-3-logo2.png");
+  pAnim->SetBackgroundImage ("/Users/john/ns3/netanim-3.105/ns-3-background.png", 0, 0, 0.2, 0.2, 0.1);
   Simulator::Schedule (Seconds (0.1), modify);
   
   // Set up the acutal simulation
