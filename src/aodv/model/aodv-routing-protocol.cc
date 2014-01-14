@@ -1746,7 +1746,7 @@ RoutingProtocol::SendRerrWhenNoRouteToForward (Ipv4Address dst,
             { 
               destination = iface.GetBroadcast ();
             }
-          socket->SendTo (packet, 0, InetSocketAddress (destination, AODV_PORT));
+          socket->SendTo (packet->Copy (), 0, InetSocketAddress (destination, AODV_PORT));
         }
     }
 }
