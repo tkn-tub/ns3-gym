@@ -721,6 +721,7 @@ private:
   static Rectangle * userBoundary;
 
   bool m_enable3105;
+  uint32_t m_remainingEnergyCounterId;
   std::string GetPacketMetadata (Ptr<const Packet> p);
 
   std::string GetXMLOpen_anim (uint32_t lp);

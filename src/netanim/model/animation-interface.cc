@@ -747,6 +747,7 @@ void AnimationInterface::StartAnimation (bool restart)
     }
   if (!restart)
     ConnectCallbacks ();
+  m_remainingEnergyCounterId = AddNodeCounter ("RemainingEnergy", AnimationInterface::DOUBLE_COUNTER);
 }
 
 void AnimationInterface::AddToIpv4AddressNodeIdTable (std::string ipv4Address, uint32_t nodeId)
@@ -1162,7 +1163,14 @@ void AnimationInterface::RemainingEnergyTrace (std::string context, double previ
   NS_LOG_INFO ("Total energy fraction on node " << nodeId << ": " << energyFraction);
 
   m_nodeEnergyFraction[nodeId] = energyFraction;
-  WriteNodeUpdate (nodeId);
+  if (!m_enable3105)
+    {
+      WriteNodeUpdate (nodeId);
+    }
+  else
+    {
+      UpdateNodeCounter (m_remainingEnergyCounterId, nodeId, energyFraction);
+    }
 }
 
 void AnimationInterface::WifiPhyTxBeginTrace (std::string context,
