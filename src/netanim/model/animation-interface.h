@@ -120,7 +120,7 @@ public:
 	    where each file contains packet info for 'maxPktPerFile' number of packets
    *
    */
-  AnimationInterface (const std::string filename, bool enable3105 = false, 
+  AnimationInterface (const std::string filename, bool enable3105 = true, 
 	uint64_t maxPktsPerFile = MAX_PKTS_PER_TRACE_FILE);
 
   /**

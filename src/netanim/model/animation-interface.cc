@@ -747,7 +747,18 @@ void AnimationInterface::StartAnimation (bool restart)
     }
   if (!restart)
     ConnectCallbacks ();
-  m_remainingEnergyCounterId = AddNodeCounter ("RemainingEnergy", AnimationInterface::DOUBLE_COUNTER);
+  if (m_enable3105)
+    {
+      m_remainingEnergyCounterId = AddNodeCounter ("RemainingEnergy", AnimationInterface::DOUBLE_COUNTER);
+      for (NodeList::Iterator i = NodeList::Begin (); i != NodeList::End (); ++i)
+        {
+          Ptr<Node> n = *i;
+          if (NodeList::GetNode (n->GetId ())->GetObject<EnergySource> ())
+            {
+              UpdateNodeCounter (m_remainingEnergyCounterId, n->GetId (), 1);
+            }
+        }
+    }
 }
 
 void AnimationInterface::AddToIpv4AddressNodeIdTable (std::string ipv4Address, uint32_t nodeId)
