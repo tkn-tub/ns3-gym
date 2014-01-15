@@ -159,6 +159,11 @@ private:
   void Destroy6 (void);
 
   /**
+   * \brief Deallocate m_endPoint and m_endPoint6
+   */
+  void DeallocateEndPoint (void);
+
+  /**
    * \brief Send a packet
    * \param p packet
    * \returns 0 on success, -1 on failure

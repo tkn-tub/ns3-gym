@@ -180,6 +180,25 @@ UdpSocketImpl::Destroy6 (void)
   m_endPoint6 = 0;
 }
 
+/* Deallocate the end point and cancel all the timers */
+void
+UdpSocketImpl::DeallocateEndPoint (void)
+{
+  if (m_endPoint != 0)
+    {
+      m_endPoint->SetDestroyCallback (MakeNullCallback<void> ());
+      m_udp->DeAllocate (m_endPoint);
+      m_endPoint = 0;
+    }
+  if (m_endPoint6 != 0)
+    {
+      m_endPoint6->SetDestroyCallback (MakeNullCallback<void> ());
+      m_udp->DeAllocate (m_endPoint6);
+      m_endPoint6 = 0;
+    }
+}
+
+
 int
 UdpSocketImpl::FinishBind (void)
 {
@@ -318,6 +337,7 @@ UdpSocketImpl::Close (void)
     }
   m_shutdownRecv = true;
   m_shutdownSend = true;
+  DeallocateEndPoint ();
   return 0;
 }
 

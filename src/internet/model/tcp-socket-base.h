@@ -341,7 +341,7 @@ protected:
   void Destroy6 (void);
 
   /**
-   * \brief Deallocate m_endPoint
+   * \brief Deallocate m_endPoint and m_endPoint6
    */
   void DeallocateEndPoint (void);
 
