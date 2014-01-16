@@ -980,18 +980,12 @@ def register_Ns3EventId_methods(root_module, cls):
     return
 
 def register_Ns3FlowMonitorHelper_methods(root_module, cls):
-    ## flow-monitor-helper.h (module 'flow-monitor'): ns3::FlowMonitorHelper::FlowMonitorHelper(ns3::FlowMonitorHelper const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::FlowMonitorHelper const &', 'arg0')])
     ## flow-monitor-helper.h (module 'flow-monitor'): ns3::FlowMonitorHelper::FlowMonitorHelper() [constructor]
     cls.add_constructor([])
-    ## flow-monitor-helper.h (module 'flow-monitor'): ns3::Ptr<ns3::FlowClassifier> ns3::FlowMonitorHelper::GetClassifier() [member function]
-    cls.add_method('GetClassifier', 
-                   'ns3::Ptr< ns3::FlowClassifier >', 
-                   [])
-    ## flow-monitor-helper.h (module 'flow-monitor'): ns3::Ptr<ns3::FlowMonitor> ns3::FlowMonitorHelper::GetMonitor() [member function]
-    cls.add_method('GetMonitor', 
-                   'ns3::Ptr< ns3::FlowMonitor >', 
-                   [])
+    ## flow-monitor-helper.h (module 'flow-monitor'): void ns3::FlowMonitorHelper::SetMonitorAttribute(std::string n1, ns3::AttributeValue const & v1) [member function]
+    cls.add_method('SetMonitorAttribute', 
+                   'void', 
+                   [param('std::string', 'n1'), param('ns3::AttributeValue const &', 'v1')])
     ## flow-monitor-helper.h (module 'flow-monitor'): ns3::Ptr<ns3::FlowMonitor> ns3::FlowMonitorHelper::Install(ns3::NodeContainer nodes) [member function]
     cls.add_method('Install', 
                    'ns3::Ptr< ns3::FlowMonitor >', 
@@ -1004,10 +998,14 @@ def register_Ns3FlowMonitorHelper_methods(root_module, cls):
     cls.add_method('InstallAll', 
                    'ns3::Ptr< ns3::FlowMonitor >', 
                    [])
-    ## flow-monitor-helper.h (module 'flow-monitor'): void ns3::FlowMonitorHelper::SetMonitorAttribute(std::string n1, ns3::AttributeValue const & v1) [member function]
-    cls.add_method('SetMonitorAttribute', 
-                   'void', 
-                   [param('std::string', 'n1'), param('ns3::AttributeValue const &', 'v1')])
+    ## flow-monitor-helper.h (module 'flow-monitor'): ns3::Ptr<ns3::FlowMonitor> ns3::FlowMonitorHelper::GetMonitor() [member function]
+    cls.add_method('GetMonitor', 
+                   'ns3::Ptr< ns3::FlowMonitor >', 
+                   [])
+    ## flow-monitor-helper.h (module 'flow-monitor'): ns3::Ptr<ns3::FlowClassifier> ns3::FlowMonitorHelper::GetClassifier() [member function]
+    cls.add_method('GetClassifier', 
+                   'ns3::Ptr< ns3::FlowClassifier >', 
+                   [])
     return
 
 def register_Ns3Hasher_methods(root_module, cls):
