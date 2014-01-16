@@ -33,6 +33,7 @@ Bugs fixed
 - Bug 1786 - os << int64x64_t prints un-normalized fractional values
 - Bug 1821 - Setting an interface to Down state will cause various asserts in IPv6
 - Bug 1837 - AODV crashes when using multiple interfaces
+- Bug 1838 - FlowMonitorHelper must not be copied.
 
 Release 3.19
 =============
