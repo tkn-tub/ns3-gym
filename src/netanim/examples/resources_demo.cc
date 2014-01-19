@@ -96,11 +96,14 @@ void modify ()
   for (uint32_t nodeId = 4; nodeId < 12; ++nodeId)
     pAnim->UpdateNodeColor (nodeId, color.r, color.g, color.b); 
 
-  // Update Node Counter for node 0, use some random number between 0 to 1000 for value
+  // Update Node Counter for node 0 and node 5, use some random number between 0 to 1000 for value
   Ptr <UniformRandomVariable> rv = CreateObject<UniformRandomVariable> ();
   pAnim->UpdateNodeCounter (nodeCounterIdUint32, 0, rv->GetValue (0, 1000));
   pAnim->UpdateNodeCounter (nodeCounterIdDouble1, 0, rv->GetValue (100.0, 200.0));
   pAnim->UpdateNodeCounter (nodeCounterIdDouble2, 0, rv->GetValue (300.0, 400.0));
+  pAnim->UpdateNodeCounter (nodeCounterIdUint32, 5, rv->GetValue (0, 1000));
+  pAnim->UpdateNodeCounter (nodeCounterIdDouble1, 5, rv->GetValue (100.0, 200.0));
+  pAnim->UpdateNodeCounter (nodeCounterIdDouble2, 5, rv->GetValue (300.0, 400.0));
 
   if (Simulator::Now ().GetSeconds () < 10) // This is important or the simulation
     // will run endlessly
