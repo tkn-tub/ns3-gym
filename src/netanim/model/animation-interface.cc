@@ -72,7 +72,8 @@ AnimationInterface::AnimationInterface (const std::string fn, bool enable3105, u
     m_enablePacketMetadata (false), m_startTime (Seconds (0)), m_stopTime (Seconds (3600 * 1000)),
     m_maxPktsPerFile (maxPktsPerFile), m_originalFileName (fn),
     m_routingStopTime (Seconds (0)), m_routingFileName (""),
-    m_routingPollInterval (Seconds (5)), m_enable3105 (enable3105)
+    m_routingPollInterval (Seconds (5)), m_enable3105 (enable3105),
+    m_trackPackets (true)
 {
   m_uniformRandomVariable = CreateObject<UniformRandomVariable> ();
   initialized = true;
@@ -86,6 +87,11 @@ AnimationInterface::~AnimationInterface ()
       delete userBoundary;
     }
   StopAnimation ();
+}
+
+void AnimationInterface::SkipPacketTracing ()
+{
+  m_trackPackets = false;
 }
 
 AnimationInterface & AnimationInterface::EnableIpv4RouteTracking (std::string fileName, Time startTime, Time stopTime, Time pollInterval)
@@ -1017,7 +1023,7 @@ void AnimationInterface::DevTxTrace (std::string context, Ptr<const Packet> p,
                                      Ptr<NetDevice> tx, Ptr<NetDevice> rx,
                                      Time txTime, Time rxTime)
 {
-  if (!m_started || !IsInTimeWindow ())
+  if (!m_started || !IsInTimeWindow () || !m_trackPackets)
     return;
   NS_ASSERT (tx);
   NS_ASSERT (rx);
@@ -1117,7 +1123,7 @@ uint64_t AnimationInterface::GetAnimUidFromPacket (Ptr <const Packet> p)
 
 void AnimationInterface::UanPhyGenTxTrace (std::string context, Ptr<const Packet> p)
 {
-  if (!m_started || !IsInTimeWindow ())
+  if (!m_started || !IsInTimeWindow () || !m_trackPackets)
     return;
   Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
   NS_ASSERT (ndev);
@@ -1136,7 +1142,7 @@ void AnimationInterface::UanPhyGenTxTrace (std::string context, Ptr<const Packet
 
 void AnimationInterface::UanPhyGenRxTrace (std::string context, Ptr<const Packet> p)
 {
-  if (!m_started || !IsInTimeWindow ())
+  if (!m_started || !IsInTimeWindow () || !m_trackPackets)
     return;
   Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
   NS_ASSERT (ndev);
@@ -1187,7 +1193,7 @@ void AnimationInterface::RemainingEnergyTrace (std::string context, double previ
 void AnimationInterface::WifiPhyTxBeginTrace (std::string context,
                                           Ptr<const Packet> p)
 {
-  if (!m_started || !IsInTimeWindow ())
+  if (!m_started || !IsInTimeWindow () || !m_trackPackets)
     return;
   Ptr <NetDevice> ndev = GetNetDeviceFromContext (context); 
   NS_ASSERT (ndev);
@@ -1217,7 +1223,7 @@ void AnimationInterface::WifiPhyTxEndTrace (std::string context,
 void AnimationInterface::WifiPhyTxDropTrace (std::string context,
                                              Ptr<const Packet> p)
 {
-  if (!m_started || !IsInTimeWindow ())
+  if (!m_started || !IsInTimeWindow () || !m_trackPackets)
     return;
   Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
   NS_ASSERT (ndev);
@@ -1232,7 +1238,7 @@ void AnimationInterface::WifiPhyTxDropTrace (std::string context,
 void AnimationInterface::WifiPhyRxBeginTrace (std::string context,
                                               Ptr<const Packet> p)
 {
-  if (!m_started || !IsInTimeWindow ())
+  if (!m_started || !IsInTimeWindow () || !m_trackPackets)
     return;
   Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
   NS_ASSERT (ndev);
@@ -1271,7 +1277,7 @@ void AnimationInterface::WifiPhyRxBeginTrace (std::string context,
 void AnimationInterface::WifiPhyRxEndTrace (std::string context,
                                             Ptr<const Packet> p)
 {
-  if (!m_started || !IsInTimeWindow ())
+  if (!m_started || !IsInTimeWindow () || !m_trackPackets)
     return;
   Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
   NS_ASSERT (ndev);
@@ -1298,7 +1304,7 @@ void AnimationInterface::WifiPhyRxEndTrace (std::string context,
 void AnimationInterface::WifiMacRxTrace (std::string context,
                                          Ptr<const Packet> p)
 {
-  if (!m_started || !IsInTimeWindow ())
+  if (!m_started || !IsInTimeWindow () || !m_trackPackets)
     return;
   Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
   NS_ASSERT (ndev);
@@ -1327,7 +1333,7 @@ void AnimationInterface::WifiPhyRxDropTrace (std::string context,
 
 void AnimationInterface::WimaxTxTrace (std::string context, Ptr<const Packet> p, const Mac48Address & m)
 {
-  if (!m_started || !IsInTimeWindow ())
+  if (!m_started || !IsInTimeWindow () || !m_trackPackets)
     return;
   Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
   NS_ASSERT (ndev);
@@ -1346,7 +1352,7 @@ void AnimationInterface::WimaxTxTrace (std::string context, Ptr<const Packet> p,
 
 void AnimationInterface::WimaxRxTrace (std::string context, Ptr<const Packet> p, const Mac48Address & m)
 {
-  if (!m_started || !IsInTimeWindow ())
+  if (!m_started || !IsInTimeWindow () || !m_trackPackets)
     return;
   Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
   NS_ASSERT (ndev);
@@ -1365,7 +1371,7 @@ void AnimationInterface::WimaxRxTrace (std::string context, Ptr<const Packet> p,
 
 void AnimationInterface::LteTxTrace (std::string context, Ptr<const Packet> p, const Mac48Address & m)
 {
-  if (!m_started || !IsInTimeWindow ())
+  if (!m_started || !IsInTimeWindow () || !m_trackPackets)
     return;
   Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
   NS_ASSERT (ndev);
@@ -1384,7 +1390,7 @@ void AnimationInterface::LteTxTrace (std::string context, Ptr<const Packet> p, c
 
 void AnimationInterface::LteRxTrace (std::string context, Ptr<const Packet> p, const Mac48Address & m)
 {
-  if (!m_started || !IsInTimeWindow ())
+  if (!m_started || !IsInTimeWindow () || !m_trackPackets)
     return;
   Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
   NS_ASSERT (ndev);
@@ -1407,7 +1413,7 @@ void AnimationInterface::LteRxTrace (std::string context, Ptr<const Packet> p, c
 
 void AnimationInterface::LteSpectrumPhyTxStart (std::string context, Ptr<const PacketBurst> pb)
 {
-  if (!m_started || !IsInTimeWindow ())
+  if (!m_started || !IsInTimeWindow () || !m_trackPackets)
     return;
   if (!pb) 
     {
@@ -1439,7 +1445,7 @@ void AnimationInterface::LteSpectrumPhyTxStart (std::string context, Ptr<const P
 
 void AnimationInterface::LteSpectrumPhyRxStart (std::string context, Ptr<const PacketBurst> pb)
 {
-  if (!m_started || !IsInTimeWindow ())
+  if (!m_started || !IsInTimeWindow () || !m_trackPackets)
     return;
   if (!pb) 
     {
@@ -1476,7 +1482,7 @@ void AnimationInterface::LteSpectrumPhyRxStart (std::string context, Ptr<const P
 
 void AnimationInterface::CsmaPhyTxBeginTrace (std::string context, Ptr<const Packet> p)
 {
-  if (!m_started || !IsInTimeWindow ())
+  if (!m_started || !IsInTimeWindow () || !m_trackPackets)
     return;
   Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
   NS_ASSERT (ndev);
@@ -1494,7 +1500,7 @@ void AnimationInterface::CsmaPhyTxBeginTrace (std::string context, Ptr<const Pac
 
 void AnimationInterface::CsmaPhyTxEndTrace (std::string context, Ptr<const Packet> p)
 {
-  if (!m_started || !IsInTimeWindow ())
+  if (!m_started || !IsInTimeWindow () || !m_trackPackets)
     return;
   Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
   NS_ASSERT (ndev);
@@ -1516,7 +1522,7 @@ void AnimationInterface::CsmaPhyTxEndTrace (std::string context, Ptr<const Packe
 
 void AnimationInterface::CsmaPhyRxEndTrace (std::string context, Ptr<const Packet> p)
 {
-  if (!m_started || !IsInTimeWindow ())
+  if (!m_started || !IsInTimeWindow () || !m_trackPackets)
     return;
   Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
   NS_ASSERT (ndev);
@@ -1545,7 +1551,7 @@ void AnimationInterface::CsmaPhyRxEndTrace (std::string context, Ptr<const Packe
 void AnimationInterface::CsmaMacRxTrace (std::string context,
                                          Ptr<const Packet> p)
 {
-  if (!m_started || !IsInTimeWindow ())
+  if (!m_started || !IsInTimeWindow () || !m_trackPackets)
     return;
   NS_LOG_FUNCTION (this);
   Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
@@ -1572,7 +1578,7 @@ void AnimationInterface::CsmaMacRxTrace (std::string context,
 void AnimationInterface::MobilityCourseChangeTrace (Ptr <const MobilityModel> mobility)
 
 {
-  if (!m_started || !IsInTimeWindow ())
+  if (!m_started || !IsInTimeWindow () || !m_trackPackets)
     return;
   Ptr <Node> n = mobility->GetObject <Node> ();
   NS_ASSERT (n);

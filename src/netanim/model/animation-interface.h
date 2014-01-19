@@ -443,6 +443,12 @@ public:
   bool IsStarted (void);
 
   /**
+   * \brief Do not trace packets. This helps reduce the trace file size if AnimationInterface is solely
+   *        used for tracking mobility, routing paths and counters
+   */
+  void SkipPacketTracing ();
+
+  /**
    *
    * \brief Enable Packet metadata
    * \param enable if true enables writing the packet metadata to the XML trace file
@@ -721,6 +727,7 @@ private:
   static Rectangle * userBoundary;
 
   bool m_enable3105;
+  bool m_trackPackets;
   uint32_t m_remainingEnergyCounterId;
   std::string GetPacketMetadata (Ptr<const Packet> p);
 
