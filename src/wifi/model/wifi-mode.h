@@ -30,8 +30,8 @@
 namespace ns3 {
 
 /**
- * This enumeration defines the modulation classes per IEEE
- * 802.11-2007, Section 9.6.1, Table 9-2.
+ * This enumeration defines the modulation classes per 
+ * (Table 9-4 "Modulation classes"; IEEE 802.11-2012).
  */
 enum WifiModulationClass
 {
@@ -138,8 +138,8 @@ public:
 
   /**
    *
-   * \returns the Modulation Class (see IEEE 802.11-2007 Section
-   * 9.6.1) to which this WifiMode belongs.
+   * \returns the Modulation Class (Section 9.7.8 "Modulation classes"; IEEE 802.11-2012)
+   * to which this WifiMode belongs.
    */
   enum WifiModulationClass GetModulationClass () const;
 

@@ -94,7 +94,7 @@ DcfState::ResetCw (void)
 void
 DcfState::UpdateFailedCw (void)
 {
-  // see 802.11-2007, section 9.9.1.5
+  // see 802.11-2012, section 9.19.2.5
   m_cw = std::min ( 2 * (m_cw + 1) - 1, m_cwMax);
 }
 void

@@ -159,7 +159,7 @@ WifiPhy::GetPlcpHeaderMode (WifiMode payloadMode, WifiPreamble preamble)
           case 10000000:
             return WifiPhy::GetOfdmRate3MbpsBW10MHz ();
           default:
-            // IEEE Std 802.11-2007, 17.3.2
+            // (Section 18.3.2 "PLCP frame format"; IEEE Std 802.11-2012)
             // actually this is only the first part of the PlcpHeader,
             // because the last 16 bits of the PlcpHeader are using the
             // same mode of the payload
@@ -202,12 +202,12 @@ WifiPhy::GetPlcpHeaderMode (WifiMode payloadMode, WifiPreamble preamble)
     case WIFI_MOD_CLASS_DSSS:
       if (preamble == WIFI_PREAMBLE_LONG)
         {
-          // IEEE Std 802.11-2007, sections 15.2.3 and 18.2.2.1
+          // (Section 16.2.3 "PLCP field definitions" and Section 17.2.2.2 "Long PPDU format"; IEEE Std 802.11-2012)
           return WifiPhy::GetDsssRate1Mbps ();
         }
       else  //  WIFI_PREAMBLE_SHORT
         {
-          // IEEE Std 802.11-2007, section 18.2.2.2
+          // (Section 17.2.2.3 "Short PPDU format"; IEEE Std 802.11-2012)
           return WifiPhy::GetDsssRate2Mbps ();
         }
 
@@ -229,18 +229,18 @@ WifiPhy::GetPlcpHeaderDurationMicroSeconds (WifiMode payloadMode, WifiPreamble p
           {
           case 20000000:
           default:
-            // IEEE Std 802.11-2007, section 17.3.3 and figure 17-4
-            // also section 17.3.2.3, table 17-4
+            // (Section 18.3.3 "PLCP preamble (SYNC))" and Figure 18-4 "OFDM training structure"; IEEE Std 802.11-2012)
+            // also (Section 18.3.2.4 "Timing related parameters" Table 18-5 "Timing-related parameters"; IEEE Std 802.11-2012)
             // We return the duration of the SIGNAL field only, since the
             // SERVICE field (which strictly speaking belongs to the PLCP
-            // header, see section 17.3.2 and figure 17-1) is sent using the
+            // header, see Section 18.3.2 and Figure 18-1) is sent using the
             // payload mode.
             return 4;
           case 10000000:
-            // IEEE Std 802.11-2007, section 17.3.2.3, table 17-4
+            // (Section 18.3.2.4 "Timing related parameters" Table 18-5 "Timing-related parameters"; IEEE Std 802.11-2012)
             return 8;
           case 5000000:
-            // IEEE Std 802.11-2007, section 17.3.2.3, table 17-4
+            // (Section 18.3.2.4 "Timing related parameters" Table 18-5 "Timing-related parameters"; IEEE Std 802.11-2012)
             return 16;
           }
       }
@@ -266,12 +266,12 @@ WifiPhy::GetPlcpHeaderDurationMicroSeconds (WifiMode payloadMode, WifiPreamble p
     case WIFI_MOD_CLASS_DSSS:
       if (preamble == WIFI_PREAMBLE_SHORT)
         {
-          // IEEE Std 802.11-2007, section 18.2.2.2 and figure 18-2
+          // (Section 17.2.2.3 "Short PPDU format" and Figure 17-2 "Short PPDU format"; IEEE Std 802.11-2012)
           return 24;
         }
       else // WIFI_PREAMBLE_LONG
         {
-          // IEEE Std 802.11-2007, sections 18.2.2.1 and figure 18-1
+          // (Section 17.2.2.2 "Long PPDU format" and Figure 17-1 "Short PPDU format"; IEEE Std 802.11-2012)
           return 48;
         }
 
@@ -292,16 +292,16 @@ WifiPhy::GetPlcpPreambleDurationMicroSeconds (WifiMode payloadMode, WifiPreamble
           {
           case 20000000:
           default:
-            // IEEE Std 802.11-2007, section 17.3.3,  figure 17-4
-            // also section 17.3.2.3, table 17-4
+            // (Section 18.3.3 "PLCP preamble (SYNC))" Figure 18-4 "OFDM training structure"
+            // also Section 18.3.2.3 "Modulation-dependent parameters" Table 18-4 "Modulation-dependent parameters"; IEEE Std 802.11-2012)
             return 16;
           case 10000000:
-            // IEEE Std 802.11-2007, section 17.3.3, table 17-4
-            // also section 17.3.2.3, table 17-4
+            // (Section 18.3.3 "PLCP preamble (SYNC))" Figure 18-4 "OFDM training structure"
+            // also Section 18.3.2.3 "Modulation-dependent parameters" Table 18-4 "Modulation-dependent parameters"; IEEE Std 802.11-2012)
             return 32;
           case 5000000:
-            // IEEE Std 802.11-2007, section 17.3.3
-            // also section 17.3.2.3, table 17-4
+            // (Section 18.3.3 "PLCP preamble (SYNC))" Figure 18-4 "OFDM training structure"
+            // also Section 18.3.2.3 "Modulation-dependent parameters" Table 18-4 "Modulation-dependent parameters"; IEEE Std 802.11-2012)
             return 64;
           }
       }
@@ -315,12 +315,12 @@ WifiPhy::GetPlcpPreambleDurationMicroSeconds (WifiMode payloadMode, WifiPreamble
     case WIFI_MOD_CLASS_DSSS:
       if (preamble == WIFI_PREAMBLE_SHORT)
         {
-          // IEEE Std 802.11-2007, section 18.2.2.2 and figure 18-2
+          // (Section 17.2.2.3 "Short PPDU format)" Figure 17-2 "Short PPDU format"; IEEE Std 802.11-2012)
           return 72;
         }
       else // WIFI_PREAMBLE_LONG
         {
-          // IEEE Std 802.11-2007, sections 18.2.2.1 and figure 18-1
+          // (Section 17.2.2.2 "Long PPDU format)" Figure 17-1 "Long PPDU format"; IEEE Std 802.11-2012)
           return 144;
         }
     default:
@@ -341,8 +341,8 @@ WifiPhy::GetPayloadDurationMicroSeconds (uint32_t size, WifiTxVector txvector)
     case WIFI_MOD_CLASS_OFDM:
     case WIFI_MOD_CLASS_ERP_OFDM:
       {
-        // IEEE Std 802.11-2007, section 17.3.2.3, table 17-4
-        // corresponds to T_{SYM} in the table
+        // (Section 18.3.2.4 "Timing related parameters" Table 18-5 "Timing-related parameters"; IEEE Std 802.11-2012
+        // corresponds to T_{SYM} in the table)
         uint32_t symbolDurationUs;
 
         switch (payloadMode.GetBandwidth ())
@@ -359,11 +359,11 @@ WifiPhy::GetPayloadDurationMicroSeconds (uint32_t size, WifiTxVector txvector)
             break;
           }
 
-        // IEEE Std 802.11-2007, section 17.3.2.2, table 17-3
+        // (Section 18.3.2.3 "Modulation-dependent parameters" Table 18-4 "Modulation-dependent parameters"; IEEE Std 802.11-2012)
         // corresponds to N_{DBPS} in the table
         double numDataBitsPerSymbol = payloadMode.GetDataRate () * symbolDurationUs / 1e6;
 
-        // IEEE Std 802.11-2007, section 17.3.5.3, equation (17-11)
+        // (Section 18.3.5.4 "Pad bits (PAD)" Equation 18-11; IEEE Std 802.11-2012)
         uint32_t numSymbols = lrint (ceil ((16 + size * 8.0 + 6.0) / numDataBitsPerSymbol));
 
         // Add signal extension for ERP PHY
@@ -424,7 +424,7 @@ WifiPhy::GetPayloadDurationMicroSeconds (uint32_t size, WifiTxVector txvector)
          
       }
     case WIFI_MOD_CLASS_DSSS:
-      // IEEE Std 802.11-2007, section 18.2.3.5
+      // (Section 17.2.3.6 "Long PLCP LENGTH field"; IEEE Std 802.11-2012)
       NS_LOG_LOGIC (" size=" << size
                              << " mode=" << payloadMode
                              << " rate=" << payloadMode.GetDataRate () );

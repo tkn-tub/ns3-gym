@@ -450,7 +450,7 @@ public:
    * Channel center frequency = Channel starting frequency + 5 MHz * (nch - 1)
    *
    * where Starting channel frequency is standard-dependent, see SetStandard()
-   * as defined in IEEE 802.11-2007 17.3.8.3.2.
+   * as defined in (Section 18.3.8.4.2 "Channel numbering"; IEEE Std 802.11-2012).
    *
    * \param id the channel number
    */

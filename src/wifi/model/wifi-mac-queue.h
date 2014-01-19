@@ -35,8 +35,8 @@ class QosBlockedDestinations;
 /**
  * \ingroup wifi
  *
- * This queue implements the timeout procedure described in IEEE
- * Std. 802.11-2007, section 9.9.1.6, paragraph 6.
+ * This queue implements the timeout procedure described in
+ * (Section 9.19.2.6 "Retransmit procedures" paragraph 6; IEEE 802.11-2012).
  *
  * When a packet is received by the MAC, to be sent to the PHY,
  * it is queued in the internal queue after being tagged by the

@@ -29,8 +29,8 @@ namespace ns3 {
 /**
  * \ingroup wifi
  * This enumeration defines the Access Categories as an enumeration
- * with values corresponding to the AC index (ACI) values specified in
- * Table 7-36 of IEEE 802.11-2007.
+ * with values corresponding to the AC index (ACI) values specified
+ * (Table 8-104 "ACI-to-AC coding"; IEEE 802.11-2012).
  */
 enum AcIndex
 {
@@ -51,7 +51,7 @@ enum AcIndex
 /**
  * \ingroup wifi
  * Maps TID (Traffic ID) to Access classes.
- * For more details see table 9-1 of IEEE802.11 standard.
+ * For more details see (Table 9-1 "UP-to-AC mapping"; IEEE802.11-2012).
  *
  * \param tid the Traffic ID to be mapped to Access class
  * \return the access class for the given TID
