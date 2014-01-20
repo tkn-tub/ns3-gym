@@ -48,8 +48,7 @@
 #include "ns3/pcap-test.h"
 #include <sstream>
 
-namespace ns3 {
-namespace aodv {
+using namespace ns3;
 
 //-----------------------------------------------------------------------------
 // UdpChainTest
@@ -166,7 +165,4 @@ Bug772ChainTest::CheckResults ()
     {
       NS_PCAP_TEST_EXPECT_EQ(m_prefix << "-" << i << "-0.pcap");
     }
-}
-
-}
 }

@@ -124,7 +124,7 @@ public:
   void SetNode (Ptr<Node> node);
   /**
    * \brief Set the route cache.
-   * \param the route cache to set
+   * \param r the route cache to set
    */
   void SetRouteCache (Ptr<dsr::RouteCache> r);
   /**
@@ -134,7 +134,7 @@ public:
   Ptr<dsr::RouteCache> GetRouteCache () const;
   /**
    * \brief Set the node.
-   * \param the request table to set
+   * \param r the request table to set
    */
   void SetRequestTable (Ptr<dsr::RreqTable> r);
   /**
@@ -144,7 +144,7 @@ public:
   Ptr<dsr::RreqTable> GetRequestTable () const;
   /**
    * \brief Set the node.
-   * \param the passive buffer to set
+   * \param r the passive buffer to set
    */
   void SetPassiveBuffer (Ptr<dsr::PassiveBuffer> r);
   /**
@@ -172,31 +172,37 @@ public:
   void ConnectCallbacks ();
   /**
     * \brief Get the netdevice from the context.
+    * \param context context
     * \return the netdevice we are looking for
     */
   Ptr<NetDevice> GetNetDeviceFromContext (std::string context);
   /**
     * \brief Get the elements from the tracing context.
+    * \param context context
     * \return the elements we are looking for
     */
   std::vector<std::string> GetElementsFromContext (std::string context);
   /**
     * \brief Get the node id from ip address.
+    * \param address IPv4 address
     * \return the node id
     */
   uint16_t GetIDfromIP (Ipv4Address address);
   /**
     * \brief Get the ip address from id.
+    * \param id unique ID
     * \return the ip address for the id
     */
   Ipv4Address GetIPfromID (uint16_t id);
   /**
     * \brief Get the Ip address from mac address.
+    * \param address Mac48Address
     * \return the ip address
     */
   Ipv4Address GetIPfromMAC (Mac48Address address);
   /**
     * \brief Get the node with give ip address.
+    * \param ipv4Address IPv4 address
     * \return the node associated with the ip address
     */
   Ptr<Node> GetNodeWithAddress (Ipv4Address ipv4Address);
@@ -206,6 +212,8 @@ public:
   void PrintVector (std::vector<Ipv4Address>& vec);
   /**
     * \brief Get the next hop of the route.
+    * \param ipv4Address
+    * \param vec Route
     * \return the next hop address of the route
     */
   Ipv4Address SearchNextHop (Ipv4Address ipv4Address, std::vector<Ipv4Address>& vec);
@@ -230,13 +238,16 @@ public:
                        Ipv4Address destination,
                        uint8_t protocol);
   /**
-   * \brief Set the route to use for data packets
+   * \brief Set the route to use for data packets,
+   *        used by the option headers when sending data/control packets
+   * \param nextHop next hop IPv4 address
+   * \param srcAddress IPv4 address of the source
    * \return the route
-   * \used by the option headers when sending data/control packets
    */
   Ptr<Ipv4Route> SetRoute (Ipv4Address nextHop, Ipv4Address srcAddress);
   /**
    * \brief Set the priority of the packet in network queue
+   * \param messageType Message type
    * \return the priority value
    */
   uint32_t GetPriority (DsrMessageType messageType);
@@ -378,28 +389,28 @@ public:
                            uint8_t protocol);
   /**
    * \brief Send the error request packet
-   * \param the route error header
-   * \param the protocol number
+   * \param rerr the route error header
+   * \param protocol the protocol number
    */
   void SendErrorRequest (DsrOptionRerrUnreachHeader &rerr, uint8_t protocol);
   /**
    * \brief Forward the route request if the node is not the destination
-   * \param the original packet
+   * \param packet the original packet
    * \param source address
    */
   void SendRequest (Ptr<Packet> packet,
                     Ipv4Address source);
   /**
    * \brief Schedule the intermediate route request
-   * \param the original packet
-   * \param source The source address
-   * \param destination The destination address
+   * \param packet the original packet
    */
   void ScheduleInterRequest (Ptr<Packet> packet);
   /**
    * \brief Send the gratuitous reply
    * \param replyTo The destination address to send the reply to
    * \param replyFrom The source address sending the reply
+   * \param nodeList Route
+   * \param protocol the protocol number
    */
   void SendGratuitousReply (Ipv4Address replyTo,
                             Ipv4Address replyFrom,
@@ -407,6 +418,11 @@ public:
                             uint8_t protocol);
   /**
    * Send the route reply back to the request originator with the cumulated route
+   *
+   * \param packet the original packet
+   * \param source IPv4 address of the source (i.e. request originator)
+   * \param nextHop IPv4 address of the next hop
+   * \param route Route
    */
   void SendReply (Ptr<Packet> packet,
                   Ipv4Address source,
@@ -415,6 +431,11 @@ public:
   /**
    * this is a generating the initial route reply from the destination address, a random delay time
    * [0, m_broadcastJitter] is used before unicasting back the route reply packet
+   *
+   * \param packet the original packet
+   * \param source IPv4 address of the source (i.e. request originator)
+   * \param nextHop IPv4 address of the next hop
+   * \param route Route
    */
   void ScheduleInitialReply (Ptr<Packet> packet,
                              Ipv4Address source,
@@ -422,6 +443,11 @@ public:
                              Ptr<Ipv4Route> route);
   /**
    * Schedule the cached reply to a random start time to avoid possible route reply storm
+   *
+   * \param packet the original packet
+   * \param source IPv4 address of the source (i.e. request originator)
+   * \param destination IPv4 address of the destination
+   * \param route Route
    */
   void ScheduleCachedReply (Ptr<Packet> packet,
                             Ipv4Address source,
@@ -430,6 +456,13 @@ public:
                             double hops);
   /**
    * Send network layer acknowledgment back to the earlier hop to notify the receipt of data packet
+   *
+   * \param ackId ACK ID
+   * \param destination IPv4 address of the immediate ACK receiver
+   * \param realSrc IPv4 address of the real source
+   * \param realDst IPv4 address of the real destination
+   * \param protocol the protocol number
+   * \param route Route
    */
   void SendAck   (uint16_t ackId,
                   Ipv4Address destination,
@@ -441,6 +474,7 @@ public:
    * \param p packet to forward up
    * \param header IPv4 Header information
    * \param incomingInterface the Ipv4Interface on which the packet arrived
+   * \return receive status
    *
    * Called from lower-level layers to send the packet up
    * in the stack.
@@ -453,6 +487,7 @@ public:
    * \param p packet to forward up
    * \param header IPv6 Header information
    * \param incomingInterface the Ipv6Interface on which the packet arrived
+   * \return receive status
    *
    * Called from lower-level layers to send the packet up
    * in the stack.  Not implemented (IPv6).
@@ -470,9 +505,10 @@ public:
    * Called from Ipv4L3Protocol::Receive.
    *
    * \param packet the packet
-   * \param offset the offset of the extension to process
+   * \param ipv4Header IPv4 header of the packet
    * \param dst destination address of the packet received (i.e. us)
    * \param nextHeader the next header
+   * \param protocol the protocol number
    * \param isDropped if the packet must be dropped
    * \return the size processed
    */
@@ -496,10 +532,21 @@ public:
   void CancelRreqTimer (Ipv4Address dst, bool isRemove);
   /**
    * \brief Schedule the route request retry.
-   * \param dst The dst address of the route request
+   * \param packet the original packet
+   * \param address List of IPv4 addresses
+   * \param nonProp flag if RREQ is non-propagating
+   * \param requestId Unique request ID
+   * \param protocol the protocol number
    */
   void ScheduleRreqRetry (Ptr<Packet> packet, std::vector<Ipv4Address> address, bool nonProp, uint32_t requestId, uint8_t protocol);
-  // / Handle route discovery timer
+  /**
+   * Handle route discovery timer
+   *
+   * \param packet the original packet
+   * \param address List of IPv4 addresses
+   * \param requestId Unique request ID
+   * \param protocol the protocol number
+   */
   void RouteRequestTimerExpire (Ptr<Packet> packet, std::vector<Ipv4Address> address, uint32_t requestId, uint8_t protocol);
 
  /**
@@ -548,6 +595,7 @@ private:
    * \param from The from address we received the packet
    * \param to The address this packet is destined for
    * \param packetType The dsr packet type, 0 is for control packet, 1 for data packet
+   * \return true if the packet was processed, false otherwise
    */
   bool PromiscReceive (Ptr<NetDevice> device, Ptr<const Packet> packet, uint16_t protocol, const Address &from,
                        const Address &to, NetDevice::PacketType packetType);

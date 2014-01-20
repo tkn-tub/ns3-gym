@@ -37,6 +37,8 @@
 namespace ns3 {
 
 /**
+ * \brief Probe to translate from a TraceSource to two more easily parsed TraceSources.
+ *
  * This class is designed to probe an underlying ns3 TraceSource
  * exporting a packet and a socket address.  This probe exports a
  * trace source "Output" with arguments of type Ptr<const Packet> and
@@ -49,6 +51,10 @@ namespace ns3 {
 class ApplicationPacketProbe : public Probe
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId ();
   ApplicationPacketProbe ();
   virtual ~ApplicationPacketProbe ();
@@ -97,11 +103,12 @@ private:
    * \param packet the traced packet
    * \param address the socket address for the traced packet
    *
-   * \internal
    */
   void TraceSink (Ptr<const Packet> packet, const Address& address);
 
+  /// Output trace, packet and source address
   TracedCallback<Ptr<const Packet>, const Address&> m_output;
+  /// Output trace, previous packet size and current packet size
   TracedCallback<uint32_t, uint32_t> m_outputBytes;
 
   /// The traced packet.

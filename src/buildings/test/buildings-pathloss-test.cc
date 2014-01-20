@@ -36,7 +36,7 @@
 
 NS_LOG_COMPONENT_DEFINE ("BuildingsPathlossTest");
 
-namespace ns3 {
+using namespace ns3;
 
 
 /**
@@ -271,7 +271,3 @@ BuildingsPathlossTestCase::CreateMobilityModel (uint16_t index)
   BuildingsHelper::MakeConsistent (mm); 
   return mm;
 }
-
-
-
-} // namespace ns3

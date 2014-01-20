@@ -16,7 +16,7 @@
  * Author: George Riley <riley@ece.gatech.edu>
  */
 
-// Provides an interface to aggregate to MPI-compatible NetDevices 
+// Provides an interface to aggregate to MPI-compatible NetDevices
 
 #ifndef NS3_MPI_RECEIVER_H
 #define NS3_MPI_RECEIVER_H
@@ -29,8 +29,8 @@ namespace ns3 {
 /**
  * \ingroup mpi
  *
- * Class to aggregate to a NetDevice if it supports MPI capability
- * 
+ * \brief Class to aggregate to a NetDevice if it supports MPI capability
+ *
  * MpiInterface::ReceiveMessages () needs to send packets to a NetDevice
  * Receive() method.  Since each NetDevice's Receive() method is specific
  * to the derived class, and since we do not know whether such a NetDevice

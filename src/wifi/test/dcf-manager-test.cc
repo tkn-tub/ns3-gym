@@ -22,7 +22,7 @@
 #include "ns3/simulator.h"
 #include "ns3/dcf-manager.h"
 
-namespace ns3 {
+using namespace ns3;
 
 class DcfManagerTest;
 
@@ -686,5 +686,3 @@ DcfTestSuite::DcfTestSuite ()
 }
 
 static DcfTestSuite g_dcfTestSuite;
-
-} // namespace ns3

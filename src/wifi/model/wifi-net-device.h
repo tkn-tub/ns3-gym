@@ -109,17 +109,41 @@ public:
   virtual bool SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber);
   virtual void SetPromiscReceiveCallback (PromiscReceiveCallback cb);
   virtual bool SupportsSendFrom (void) const;
-
+protected:
+   virtual void DoDispose (void);
+   virtual void DoInitialize (void);
+  /**
+   * Receive a packet from the lower layer and pass the
+   * packet up the stack.
+   *
+   * \param packet
+   * \param from
+   * \param to
+   */
+   void ForwardUp (Ptr<Packet> packet, Mac48Address from, Mac48Address to);
 private:
   // This value conforms to the 802.11 specification
   static const uint16_t MAX_MSDU_SIZE = 2304;
 
-  virtual void DoDispose (void);
-  virtual void DoInitialize (void);
-  void ForwardUp (Ptr<Packet> packet, Mac48Address from, Mac48Address to);
+  /**
+   * Set that the link is up. A link is always up in ad-hoc mode.
+   * For a STA, a link is up when the STA is associated with an AP.
+   */
   void LinkUp (void);
+  /**
+   * Set that the link is down (i.e. STA is not associated).
+   */
   void LinkDown (void);
+  /**
+   * Return the WifiChannel this device is connected to.
+   *
+   * \return WifiChannel
+   */
   Ptr<WifiChannel> DoGetChannel (void) const;
+  /**
+   * Complete the configuration of this Wi-Fi device by
+   * connecting all lower components (e.g. MAC, WifiRemoteStation) together.
+   */
   void CompleteConfig (void);
 
   Ptr<Node> m_node;

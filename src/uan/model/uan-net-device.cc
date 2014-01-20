@@ -93,7 +93,7 @@ UanNetDevice::GetTypeId ()
 
   static TypeId tid = TypeId ("ns3::UanNetDevice")
     .SetParent<NetDevice> ()
-    .AddAttribute ("Channel", "The channel attached to this device",
+    .AddAttribute ("Channel", "The channel attached to this device.",
                    PointerValue (),
                    MakePointerAccessor (&UanNetDevice::DoGetChannel, &UanNetDevice::SetChannel),
                    MakePointerChecker<UanChannel> ())

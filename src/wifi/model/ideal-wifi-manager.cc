@@ -27,9 +27,15 @@
 
 namespace ns3 {
 
+/**
+ * \brief hold per-remote-station state for Ideal Wifi manager.
+ *
+ * This struct extends from WifiRemoteStation struct to hold additional
+ * information required by the Ideal Wifi manager
+ */
 struct IdealWifiRemoteStation : public WifiRemoteStation
 {
-  double m_lastSnr;
+  double m_lastSnr;  //!< SNR of last packet sent to the remote station
 };
 
 NS_OBJECT_ENSURE_REGISTERED (IdealWifiManager)

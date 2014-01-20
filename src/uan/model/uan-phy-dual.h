@@ -33,8 +33,7 @@ class UanModesList;
 
 
 /**
- * \class UanPhyCalcSinrDual
- * \brief Default SINR model for UanPhyDual
+ * Default SINR model for UanPhyDual
  *
  * Considers interfering packet power as additional ambient noise only
  * if there is overlap in frequency band as found from supplied UanTxMode.
@@ -43,9 +42,17 @@ class UanModesList;
 class UanPhyCalcSinrDual : public UanPhyCalcSinr
 {
 public:
+  /** Constructor */
   UanPhyCalcSinrDual ();
+  /** Destructor */
   virtual ~UanPhyCalcSinrDual ();
+  
+  /**
+   * Register this type.
+   * \return The TypeId.
+   */
   static TypeId GetTypeId (void);
+
   virtual double CalcSinrDb (Ptr<Packet> pkt,
                              Time arrTime,
                              double rxPowerDb,
@@ -54,10 +61,13 @@ public:
                              UanPdp pdp,
                              const UanTransducer::ArrivalList &arrivalList
                              ) const;
-};
+
+};  // class UanPhyCalcSinrDual
 
 /**
- * \class UanPhyDual
+ * \ingroup uan
+ *
+ * Two channel Phy.
  *
  * A class that wraps two generic UAN Phy layers (UanPhyGen) into a single PHY.
  * This is used to simulate two receivers (and transmitters) that use
@@ -72,20 +82,28 @@ public:
 class UanPhyDual : public UanPhy
 {
 public:
+  /** Constructor */
   UanPhyDual ();
+  /** Dummy destructor \see DoDispose */
   virtual ~UanPhyDual ();
 
+  /**
+   * Register this type.
+   * \return The TypeId.
+   */
   static TypeId GetTypeId ();
 
+  // Inherited methods:
   virtual void SetEnergyModelCallback (DeviceEnergyModel::ChangeStateCallback callback);
   virtual void EnergyDepletionHandler (void);
   virtual void SendPacket (Ptr<Packet> pkt, uint32_t modeNum);
 
   /**
-   * \brief Register a class to receive phy state change notifications
-   * \param listener Class derived from UanPhyListener to receive notifications
+   * Register a UanPhyListener to be notified of common UanPhy events.
    *
-   * Note that, from UanPhyDual, you may receive duplicate
+   * \param listener New listener to register.
+   *
+   * \note You may receive duplicate
    * messages as underneath there are two generic phys here.
    * Each will notify of state changes independently.
    */
@@ -95,7 +113,6 @@ public:
   virtual void SetReceiveErrorCallback (RxErrCallback cb);
   virtual void SetRxGainDb (double gain);
   virtual void SetTxPowerDb (double txpwr);
-  /** \deprecated Look at PER Functor attribute */
   virtual void SetRxThresholdDb (double thresh) NS_DEPRECATED;
   virtual void SetCcaThresholdDb (double thresh);
   virtual double GetRxGainDb (void);
@@ -120,179 +137,155 @@ public:
   virtual uint32_t GetNModes (void);
   virtual UanTxMode GetMode (uint32_t n);
   virtual void Clear (void);
-
-  /**
-   * /returns True if Phy1 is Idle
-   */
-  bool IsPhy1Idle (void);
-  /**
-   * /returns True if Phy2 is Idle
-   */
-  bool IsPhy2Idle (void);
-  /**
-   * /returns True if Phy1 is currently in RX mode
-   */
-  bool IsPhy1Rx (void);
-  /**
-   * /returns True if Phy2 is currently in RX mode
-   */
-  bool IsPhy2Rx (void);
-  /**
-   * /returns True if Phy1 is in TX mode
-   */
-  bool IsPhy1Tx (void);
-  /**
-   * /returns True if Phy2 is in TX mode
-   */
-  bool IsPhy2Tx (void);
-
-  // Attribute getters and setters
-  /**
-   * \returns Clear channel assessment threshold of Phy1
-   */
-  double GetCcaThresholdPhy1 (void) const;
-  /**
-   * \returns Clear channel assessment threshold of Phy2
-   */
-  double GetCcaThresholdPhy2 (void) const;
-  /**
-   * \param thresh Signal power threshold in dB to set Phy1 to
-   */
-  void SetCcaThresholdPhy1 (double thresh);
-  /**
-   * \param thresh Signal power threshold in dB to set Phy2 to
-   */
-  void SetCcaThresholdPhy2 (double thresh);
-
-  /**
-   * \returns Current TX power setting of Phy 1 in dB
-   */
-  double GetTxPowerDbPhy1 (void) const;
-  /**
-   * \returns Current TX power setting of Phy 2 in dB
-   */
-  double GetTxPowerDbPhy2 (void) const;
-  /**
-   * \returns TX power setting of Phy1 in dB
-   */
-  void SetTxPowerDbPhy1 (double);
-  /**
-   * \returns TX power setting of Phy2 in dB
-   */
-  void SetTxPowerDbPhy2 (double);
-
-  /**
-   * \returns RX gain of Phy1 in dB
-   */
-  double GetRxGainDbPhy1 (void) const;
-  /**
-   * \returns RX gain of Phy2 in dB
-   */
-  double GetRxGainDbPhy2 (void) const;
-  /**
-   * \param gain value in dB to apply to RX gain of Phy1
-   */
-  void SetRxGainDbPhy1 (double gain);
-  /**
-   * \param gain value in dB to apply to RX gain of Phy2
-   */
-  void SetRxGainDbPhy2 (double gain);
-
-  /**
-   * \returns List of available modes on Phy1
-   */
-  UanModesList GetModesPhy1 (void) const;
-  /**
-   * \returns List of available modes on Phy2
-   */
-  UanModesList GetModesPhy2 (void) const;
-  /**
-   * \param modes List of modes to use on Phy1 (index corresponds to mode #)
-   */
-  void SetModesPhy1 (UanModesList modes);
-  /**
-   * \param modes List of modes to use on Phy2 (index corresponds to mode #)
-   */
-  void SetModesPhy2 (UanModesList modes);
-
-  /**
-   * \returns Ptr to PER model for Phy1
-   */
-  Ptr<UanPhyPer> GetPerModelPhy1 (void) const;
-  /**
-   * \returns Ptr to PER model for Phy2
-   */
-  Ptr<UanPhyPer> GetPerModelPhy2 (void) const;
-  /**
-   * \param per Ptr to PER model to use on Phy1
-   */
-  void SetPerModelPhy1 (Ptr<UanPhyPer> per);
-  /**
-   * \param per Ptr to PER model to use on Phy2
-   */
-  void SetPerModelPhy2 (Ptr<UanPhyPer> per);
-
-  /**
-   * \returns Ptr to SINR model for Phy1
-   */
-  Ptr<UanPhyCalcSinr> GetSinrModelPhy1 (void) const;
-  /**
-   * \returns Ptr to SINR model for Phy2
-   */
-  Ptr<UanPhyCalcSinr> GetSinrModelPhy2 (void) const;
-  /**
-   * \param calcSinr Ptr to SINR model to use on Phy1
-   */
-  void SetSinrModelPhy1 (Ptr<UanPhyCalcSinr> calcSinr);
-  /**
-   * \param calcSinr Ptr to SINR model to use on Phy2
-   */
-  void SetSinrModelPhy2 (Ptr<UanPhyCalcSinr> calcSinr);
-
   virtual void SetSleepMode (bool sleep)
   {
     /// \todo This method has to be implemented
   }
-
-  /**
-   * \returns Packet currently being received on Phy1 (Null Ptr if none)
-   */
-  Ptr<Packet> GetPhy1PacketRx (void) const;
-  /**
-   * \returns Packet currently being received on Phy2 (Null Ptr if none)
-   */
-  Ptr<Packet> GetPhy2PacketRx (void) const;
-  /**
-   * \returns Packet currenty being received on Phy1 (Null Ptr if none)
-   */
-  Ptr<Packet> GetPacketRx (void) const;
-
- /**
-  * Assign a fixed random variable stream number to the random variables
-  * used by this model.  Return the number of streams (possibly zero) that
-  * have been assigned.
-  *
-  * \param stream first stream index to use
-  * \return the number of stream indices assigned by this model
-  */
   int64_t AssignStreams (int64_t stream);
+  Ptr<Packet> GetPacketRx (void) const;
+  
+
+  /** \copydoc UanPhy::IsStateIdle */
+  bool IsPhy1Idle (void);
+  /** \copydoc UanPhy::IsStateIdle */
+  bool IsPhy2Idle (void);
+  /** \copydoc UanPhy::IsStateRx */
+  bool IsPhy1Rx (void);
+  /** \copydoc UanPhy::IsStateRx */
+  bool IsPhy2Rx (void);
+  /** \copydoc UanPhy::IsStateTx */
+  bool IsPhy1Tx (void);
+  /** \copydoc UanPhy::IsStateTx */
+  bool IsPhy2Tx (void);
+
+  // Attribute getters and setters
+  /** \copydoc ns3::UanPhy::GetCcaThresholdDb() */
+  double GetCcaThresholdPhy1 (void) const;
+  /** \copydoc UanPhy::GetCcaThresholdDb() */
+  double GetCcaThresholdPhy2 (void) const;
+  /** \copydoc UanPhy::SetCcaThresholdDb */
+  void SetCcaThresholdPhy1 (double thresh);
+  /** \copydoc UanPhy::SetCcaThresholdDb */
+  void SetCcaThresholdPhy2 (double thresh);
+
+  /** \copydoc UanPhy::GetTxPowerDb */
+  double GetTxPowerDbPhy1 (void) const;
+  /** \copydoc UanPhy::GetTxPowerDb */
+  double GetTxPowerDbPhy2 (void) const;
+  /** \copydoc UanPhy::SetTxPowerDb */
+  void SetTxPowerDbPhy1 (double txpwr);
+  /** \copydoc UanPhy::SetTxPowerDb */
+  void SetTxPowerDbPhy2 (double txpwr);
+
+  /** \copydoc UanPhy::GetRxGainDb */
+  double GetRxGainDbPhy1 (void) const;
+  /** \copydoc UanPhy::GetRxGainDb */
+  double GetRxGainDbPhy2 (void) const;
+  /** \copydoc UanPhy::SetRxGainDb */
+  void SetRxGainDbPhy1 (double gain);
+  /** \copydoc UanPhy::SetRxGainDb */
+  void SetRxGainDbPhy2 (double gain);
+
+  /**
+   * Get the list of available modes.
+   *
+   * \return The mode list.
+   */
+  UanModesList GetModesPhy1 (void) const;
+  /** \copydoc GetModesPhy1 */
+  UanModesList GetModesPhy2 (void) const;
+
+  /**
+   * Set the available modes.
+   * 
+   * \param modes List of modes.
+   */
+  void SetModesPhy1 (UanModesList modes);
+  /** \copydoc SetModesPhy1 */
+  void SetModesPhy2 (UanModesList modes);
+
+  /**
+   * Get the error probability model.
+   *
+   * \return The error model.
+   */
+  Ptr<UanPhyPer> GetPerModelPhy1 (void) const;
+  /** \copydoc GetPerModelPhy1() */
+  Ptr<UanPhyPer> GetPerModelPhy2 (void) const;
+
+  /**
+   * Set the error probability model.
+   *
+   * \param per The error model.
+   */
+  void SetPerModelPhy1 (Ptr<UanPhyPer> per);
+  /** \copydoc SetPerModelPhy1 */
+  void SetPerModelPhy2 (Ptr<UanPhyPer> per);
+
+  /**
+   * Get the SINR calculator.
+   *
+   * \return The SINR calculator.
+   */
+  Ptr<UanPhyCalcSinr> GetSinrModelPhy1 (void) const;
+  /** \copydoc GetSinrModelPhy1 */
+  Ptr<UanPhyCalcSinr> GetSinrModelPhy2 (void) const;
+  
+  /**
+   * Set the SINR calculator.
+   *
+   * \param calcSinr The SINR calculator.
+   */
+  void SetSinrModelPhy1 (Ptr<UanPhyCalcSinr> calcSinr);
+  /** \copydoc SetSinrModelPhy1 */
+  void SetSinrModelPhy2 (Ptr<UanPhyCalcSinr> calcSinr);
+
+  
+  /** \copydoc UanPhy::GetPacketRx */
+  Ptr<Packet> GetPhy1PacketRx (void) const;
+  /** \copydoc UanPhy::GetPacketRx */
+  Ptr<Packet> GetPhy2PacketRx (void) const;
+
 
 private:
+  /** First Phy layer. */
   Ptr<UanPhy> m_phy1;
+  /** Second Phy layer. */
   Ptr<UanPhy> m_phy2;
+
+  /** A packet was received successfully. */
   TracedCallback<Ptr<const Packet>, double, UanTxMode > m_rxOkLogger;
+  /** A packet was received unsuccessfully. */
   TracedCallback<Ptr<const Packet>, double, UanTxMode > m_rxErrLogger;
+  /** A packet was sent from this Phy. */
   TracedCallback<Ptr<const Packet>, double, UanTxMode > m_txLogger;
+  /** Callback when packet received without errors. */
   RxOkCallback m_recOkCb;
+  /** Callback when packet received with errors. */
   RxErrCallback m_recErrCb;
 
 
+  /**
+   * Handle callback and logger for packets received without error.
+   *
+   * \param pkt The packet.
+   * \param sinr The SINR.
+   * \param mode The channel mode.
+   */
   void RxOkFromSubPhy (Ptr<Packet> pkt, double sinr, UanTxMode mode);
+  /**
+   * Handle callback and logger for packets received with error.
+   *
+   * \param pkt The packet.
+   * \param sinr The SINR.
+   */
   void RxErrFromSubPhy (Ptr<Packet> pkt, double sinr);
+  
 protected:
   virtual void DoDispose ();
-};
 
-}
+};  // class UanPhyDual
+
+} // namespace ns3
 
 #endif /* UAN_PHY_DUAL_H */

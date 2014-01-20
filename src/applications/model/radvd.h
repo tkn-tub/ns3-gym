@@ -91,12 +91,18 @@ protected:
   virtual void DoDispose ();
 
 private:
+  /// Container: Ptr to RadvdInterface
   typedef std::list<Ptr<RadvdInterface> > RadvdInterfaceList;
+  /// Container Iterator: Ptr to RadvdInterface
   typedef std::list<Ptr<RadvdInterface> >::iterator RadvdInterfaceListI;
+  /// Container Const Iterator: Ptr to RadvdInterface
   typedef std::list<Ptr<RadvdInterface> >::const_iterator RadvdInterfaceListCI;
 
+  /// Container: interface number, EventId
   typedef std::map<uint32_t, EventId> EventIdMap;
+  /// Container Iterator: interface number, EventId
   typedef std::map<uint32_t, EventId>::iterator EventIdMapI;
+  /// Container Const Iterator: interface number, EventId
   typedef std::map<uint32_t, EventId>::const_iterator EventIdMapCI;
 
   /**

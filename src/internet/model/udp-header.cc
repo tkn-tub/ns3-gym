@@ -33,7 +33,8 @@ NS_OBJECT_ENSURE_REGISTERED (UdpHeader)
 UdpHeader::UdpHeader ()
   : m_sourcePort (0xfffd),
     m_destinationPort (0xfffd),
-    m_payloadSize (0xfffd),
+    m_payloadSize (0),
+    m_checksum (0),
     m_calcChecksum (false),
     m_goodChecksum (true)
 {
@@ -108,7 +109,7 @@ UdpHeader::CalculateHeaderChecksum (uint16_t size) const
 
   WriteTo (it, m_source);
   WriteTo (it, m_destination);
-  if (Ipv4Address::IsMatchingType(m_source))
+  if (Ipv4Address::IsMatchingType (m_source))
     {
       it.WriteU8 (0); /* protocol */
       it.WriteU8 (m_protocol); /* protocol */
@@ -116,7 +117,7 @@ UdpHeader::CalculateHeaderChecksum (uint16_t size) const
       it.WriteU8 (size & 0xff); /* length */
       hdrSize = 12;
     }
-  else if (Ipv6Address::IsMatchingType(m_source))
+  else if (Ipv6Address::IsMatchingType (m_source))
     {
       it.WriteU16 (0);
       it.WriteU8 (size >> 8); /* length */
@@ -138,6 +139,17 @@ UdpHeader::IsChecksumOk (void) const
   return m_goodChecksum; 
 }
 
+void
+UdpHeader::ForceChecksum (uint16_t checksum)
+{
+  m_checksum = checksum;
+}
+
+void
+UdpHeader::ForcePayloadSize (uint16_t payloadSize)
+{
+  m_payloadSize = payloadSize;
+}
 
 TypeId 
 UdpHeader::GetTypeId (void)
@@ -175,18 +187,33 @@ UdpHeader::Serialize (Buffer::Iterator start) const
 
   i.WriteHtonU16 (m_sourcePort);
   i.WriteHtonU16 (m_destinationPort);
-  i.WriteHtonU16 (start.GetSize ());
-  i.WriteU16 (0);
-
-  if (m_calcChecksum)
+  if (m_payloadSize == 0)
     {
-      uint16_t headerChecksum = CalculateHeaderChecksum (start.GetSize ());
-      i = start;
-      uint16_t checksum = i.CalculateIpChecksum (start.GetSize (), headerChecksum);
+      i.WriteHtonU16 (start.GetSize ());
+    }
+  else
+    {
+      i.WriteHtonU16 (m_payloadSize);
+    }
 
-      i = start;
-      i.Next (6);
-      i.WriteU16 (checksum);
+  if ( m_checksum == 0)
+    {
+      i.WriteU16 (0);
+
+      if (m_calcChecksum)
+        {
+          uint16_t headerChecksum = CalculateHeaderChecksum (start.GetSize ());
+          i = start;
+          uint16_t checksum = i.CalculateIpChecksum (start.GetSize (), headerChecksum);
+
+          i = start;
+          i.Next (6);
+          i.WriteU16 (checksum);
+        }
+    }
+  else
+    {
+      i.WriteU16 (m_checksum);
     }
 }
 uint32_t
@@ -196,9 +223,9 @@ UdpHeader::Deserialize (Buffer::Iterator start)
   m_sourcePort = i.ReadNtohU16 ();
   m_destinationPort = i.ReadNtohU16 ();
   m_payloadSize = i.ReadNtohU16 () - GetSerializedSize ();
-  i.Next (2);
+  m_checksum = i.ReadU16 ();
 
-  if(m_calcChecksum)
+  if (m_calcChecksum)
     {
       uint16_t headerChecksum = CalculateHeaderChecksum (start.GetSize ());
       i = start;
@@ -210,5 +237,10 @@ UdpHeader::Deserialize (Buffer::Iterator start)
   return GetSerializedSize ();
 }
 
+uint16_t
+UdpHeader::GetChecksum ()
+{
+  return m_checksum;
+}
 
 } // namespace ns3

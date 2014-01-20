@@ -29,6 +29,12 @@ NS_LOG_COMPONENT_DEFINE ("OnoeWifiRemoteStation");
 
 namespace ns3 {
 
+/**
+ * \brief hold per-remote-station state for ONOE Wifi manager.
+ *
+ * This struct extends from WifiRemoteStation struct to hold additional
+ * information required by the ONOE Wifi manager
+ */
 struct OnoeWifiRemoteStation : public WifiRemoteStation
 {
   Time m_nextModeUpdate;

@@ -241,6 +241,7 @@ PointToPointHelper::Install (Ptr<Node> a, Ptr<Node> b)
   //use a normal p2p channel, otherwise use a remote channel
   bool useNormalChannel = true;
   Ptr<PointToPointChannel> channel = 0;
+
   if (MpiInterface::IsEnabled ())
     {
       uint32_t n1SystemId = a->GetSystemId ();

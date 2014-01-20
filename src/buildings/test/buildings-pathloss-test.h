@@ -25,7 +25,7 @@
 #include <ns3/hybrid-buildings-propagation-loss-model.h>
 
 
-namespace ns3 {
+using namespace ns3;
 
 /**
 * Test 1.1 pathloss calculation
@@ -58,6 +58,3 @@ private:
 
 
 #endif /* BUILDING_PATHLOSS_TEST_H */
-
-
-} // namespace ns3

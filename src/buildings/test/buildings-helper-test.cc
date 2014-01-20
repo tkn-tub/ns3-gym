@@ -31,7 +31,7 @@
 
 NS_LOG_COMPONENT_DEFINE ("BuildingsHelperTest");
 
-namespace ns3 {
+using namespace ns3;
 
 
 struct PositionInBuilding
@@ -325,6 +325,3 @@ BuildingsHelperTestSuite::BuildingsHelperTestSuite ()
 }
 
 static BuildingsHelperTestSuite buildingsHelperAntennaTestSuiteInstance;
-
-} // namespace ns3
-

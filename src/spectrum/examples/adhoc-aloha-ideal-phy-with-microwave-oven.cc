@@ -144,7 +144,7 @@ int main (int argc, char** argv)
   Ptr<ListPositionAllocator> nodePositionList = CreateObject<ListPositionAllocator> ();
   nodePositionList->Add (Vector (5.0, 0.0, 0.0));  // TX node
   nodePositionList->Add (Vector (0.0, 0.0, 0.0));  // RX node
-  nodePositionList->Add (Vector (10.0, 0.0, 0.0)); // Microwave Oven
+  nodePositionList->Add (Vector (30.0, 0.0, 0.0)); // Microwave Oven
   nodePositionList->Add (Vector (0.0, 0.0, 0.0));  // Spectrum Analyzer
   mobility.SetPositionAllocator (nodePositionList);
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
@@ -164,7 +164,7 @@ int main (int argc, char** argv)
   WifiSpectrumValue5MhzFactory sf;
 
   double txPower = 0.1; // Watts
-  uint32_t channelNumber = 2;
+  uint32_t channelNumber = 4;
   Ptr<SpectrumValue> txPsd =  sf.CreateTxPowerSpectralDensity (txPower, channelNumber);
 
   // for the noise, we use the Power Spectral Density of thermal noise
@@ -191,14 +191,14 @@ int main (int argc, char** argv)
   socket.SetProtocol (1);
 
   OnOffHelper onoff ("ns3::PacketSocketFactory", Address (socket));
-  onoff.SetAttribute ("OnTime", StringValue ("ns3::ExponentialRandomVariable[Mean=0.4]"));
-  onoff.SetAttribute ("OffTime", StringValue ("ns3::ExponentialRandomVariable[Mean=0.1]"));
+  onoff.SetAttribute ("OnTime", StringValue ("ns3::ExponentialRandomVariable[Mean=0.04]"));
+  onoff.SetAttribute ("OffTime", StringValue ("ns3::ExponentialRandomVariable[Mean=0.01]"));
   onoff.SetAttribute ("DataRate", DataRateValue (DataRate ("0.4Mbps")));
   onoff.SetAttribute ("PacketSize", UintegerValue (1500));
 
   ApplicationContainer apps = onoff.Install (ofdmNodes.Get (0));
   apps.Start (Seconds (0.0));
-  apps.Stop (Seconds (2));
+  apps.Stop (Seconds (1));
 
   Ptr<Socket> recvSink = SetupPacketReceive (ofdmNodes.Get (1));
 
@@ -223,7 +223,7 @@ int main (int argc, char** argv)
 
   Simulator::Schedule (Seconds (0.1), &WaveformGenerator::Start,
                        waveformGeneratorDevices.Get (0)->GetObject<NonCommunicatingNetDevice> ()->GetPhy ()->GetObject<WaveformGenerator> ());
-
+  
 
 
   /////////////////////////////////
@@ -239,6 +239,19 @@ int main (int argc, char** argv)
   spectrumAnalyzerHelper.EnableAsciiAll ("spectrum-analyzer-output");
   NetDeviceContainer spectrumAnalyzerDevices = spectrumAnalyzerHelper.Install (spectrumAnalyzerNodes);
 
+  /*
+    you can get a nice plot of the output of SpectrumAnalyzer with this gnuplot script:
+
+    unset surface
+    set pm3d at s 
+    set palette
+    set key off
+    set view 50,50
+    set xlabel "time (ms)"
+    set ylabel "freq (MHz)"
+    set zlabel "PSD (dBW/Hz)" offset 15,0,0
+    splot "./spectrum-analyzer-output-3-0.tr" using ($1*1000.0):($2/1e6):(10*log10($3))
+  */
 
 
 

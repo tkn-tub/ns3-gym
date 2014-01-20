@@ -890,18 +890,20 @@ Ipv4L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv4Header const&ip, uin
           return;
         }
       NS_LOG_LOGIC ("Got last fragment, Packet is complete " << *p );
+      ipHeader.SetFragmentOffset (0);
+      ipHeader.SetPayloadSize (p->GetSize () + ipHeader.GetSerializedSize ());
     }
 
-  m_localDeliverTrace (ip, packet, iif);
+  m_localDeliverTrace (ipHeader, p, iif);
 
-  Ptr<IpL4Protocol> protocol = GetProtocol (ip.GetProtocol ());
+  Ptr<IpL4Protocol> protocol = GetProtocol (ipHeader.GetProtocol ());
   if (protocol != 0)
     {
       // we need to make a copy in the unlikely event we hit the
       // RX_ENDPOINT_UNREACH codepath
       Ptr<Packet> copy = p->Copy ();
       enum IpL4Protocol::RxStatus status = 
-        protocol->Receive (p, ip, GetInterface (iif));
+        protocol->Receive (p, ipHeader, GetInterface (iif));
       switch (status) {
         case IpL4Protocol::RX_OK:
         // fall through
@@ -910,8 +912,8 @@ Ipv4L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv4Header const&ip, uin
         case IpL4Protocol::RX_CSUM_FAILED:
           break;
         case IpL4Protocol::RX_ENDPOINT_UNREACH:
-          if (ip.GetDestination ().IsBroadcast () == true ||
-              ip.GetDestination ().IsMulticast () == true)
+          if (ipHeader.GetDestination ().IsBroadcast () == true ||
+              ipHeader.GetDestination ().IsMulticast () == true)
             {
               break; // Do not reply to broadcast or multicast
             }
@@ -920,15 +922,15 @@ Ipv4L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv4Header const&ip, uin
           for (uint32_t i = 0; i < GetNAddresses (iif); i++)
             {
               Ipv4InterfaceAddress addr = GetAddress (iif, i);
-              if (addr.GetLocal ().CombineMask (addr.GetMask ()) == ip.GetDestination ().CombineMask (addr.GetMask ()) &&
-                  ip.GetDestination ().IsSubnetDirectedBroadcast (addr.GetMask ()))
+              if (addr.GetLocal ().CombineMask (addr.GetMask ()) == ipHeader.GetDestination ().CombineMask (addr.GetMask ()) &&
+                  ipHeader.GetDestination ().IsSubnetDirectedBroadcast (addr.GetMask ()))
                 {
                   subnetDirected = true;
                 }
             }
           if (subnetDirected == false)
             {
-              GetIcmp ()->SendDestUnreachPort (ip, copy);
+              GetIcmp ()->SendDestUnreachPort (ipHeader, copy);
             }
         }
     }
@@ -1093,11 +1095,23 @@ Ipv4L3Protocol::SetUp (uint32_t i)
 {
   NS_LOG_FUNCTION (this << i);
   Ptr<Ipv4Interface> interface = GetInterface (i);
-  interface->SetUp ();
 
-  if (m_routingProtocol != 0)
+  // RFC 791, pg.25:
+  //  Every internet module must be able to forward a datagram of 68
+  //  octets without further fragmentation.  This is because an internet
+  //  header may be up to 60 octets, and the minimum fragment is 8 octets.
+  if (interface->GetDevice ()->GetMtu () >= 68)
     {
-      m_routingProtocol->NotifyInterfaceUp (i);
+      interface->SetUp ();
+
+      if (m_routingProtocol != 0)
+        {
+          m_routingProtocol->NotifyInterfaceUp (i);
+        }
+    }
+  else
+    {
+      NS_LOG_LOGIC ("Interface " << int(i) << " is set to be down for IPv4. Reason: not respecting minimum IPv4 MTU (68 octects)");
     }
 }
 
@@ -1393,10 +1407,11 @@ Ipv4L3Protocol::Fragments::GetPacket () const
 
   std::list<std::pair<Ptr<Packet>, uint16_t> >::const_iterator it = m_fragments.begin ();
 
-  Ptr<Packet> p = Create<Packet> ();
-  uint16_t lastEndOffset = 0;
+  Ptr<Packet> p = it->first->Copy ();
+  uint16_t lastEndOffset = p->GetSize ();
+  it++;
 
-  for ( it = m_fragments.begin (); it != m_fragments.end (); it++)
+  for ( ; it != m_fragments.end (); it++)
     {
       if ( lastEndOffset > it->second )
         {

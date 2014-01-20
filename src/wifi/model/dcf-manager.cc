@@ -94,7 +94,7 @@ DcfState::ResetCw (void)
 void
 DcfState::UpdateFailedCw (void)
 {
-  // see 802.11-2007, section 9.9.1.5
+  // see 802.11-2012, section 9.19.2.5
   m_cw = std::min ( 2 * (m_cw + 1) - 1, m_cwMax);
 }
 void
@@ -163,13 +163,17 @@ DcfState::NotifyChannelSwitching (void)
 }
 
 
-/***************************************************************
- *         Listener for Nav events. Forwards to DcfManager
- ***************************************************************/
-
+/**
+ * Listener for NAV events. Forwards to DcfManager
+ */
 class LowDcfListener : public ns3::MacLowDcfListener
 {
 public:
+  /**
+   * Create a LowDcfListener for the given DcfManager.
+   *
+   * \param dcf
+   */
   LowDcfListener (ns3::DcfManager *dcf)
     : m_dcf (dcf)
   {
@@ -202,16 +206,20 @@ public:
     m_dcf->NotifyCtsTimeoutResetNow ();
   }
 private:
-  ns3::DcfManager *m_dcf;
+  ns3::DcfManager *m_dcf;  //!< DcfManager to forward events to
 };
 
-/***************************************************************
- *         Listener for PHY events. Forwards to DcfManager
- ***************************************************************/
-
+/**
+ * Listener for PHY events. Forwards to DcfManager
+ */
 class PhyListener : public ns3::WifiPhyListener
 {
 public:
+  /**
+   * Create a PhyListener for the given DcfManager.
+   *
+   * \param dcf
+   */
   PhyListener (ns3::DcfManager *dcf)
     : m_dcf (dcf)
   {
@@ -244,7 +252,7 @@ public:
     m_dcf->NotifySwitchingStartNow (duration);
   }
 private:
-  ns3::DcfManager *m_dcf;
+  ns3::DcfManager *m_dcf;  //!< DcfManager to forward events to
 };
 
 /****************************************************************

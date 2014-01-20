@@ -37,7 +37,7 @@
 
 NS_LOG_COMPONENT_DEFINE ("LteLinkAdaptationTest");
 
-namespace ns3 {
+using namespace ns3;
 
 
 /**
@@ -244,6 +244,3 @@ LteLinkAdaptationTestCase::DlScheduling (uint32_t frameNo, uint32_t subframeNo, 
       NS_TEST_ASSERT_MSG_EQ ((uint16_t)mcsTb1, m_mcsIndex, "Wrong MCS index");
     }
 }
-
-} // namespace ns3
-

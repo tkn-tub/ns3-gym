@@ -28,24 +28,31 @@
 namespace ns3 {
 
 /**
- * \class UanPropModelIdeal
+ * \ingroup uan
  *
- * \brief Ideal propagation model (no pathloss, impulse PDP)
+ * Ideal propagation model (no pathloss, impulse PDP).
  */
 class UanPropModelIdeal : public UanPropModel
 {
 public:
+  /** Default constructor. */
   UanPropModelIdeal ();
+  /** Destructor */
   virtual ~UanPropModelIdeal ();
 
+  /**
+   * Register this type.
+   * \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
 
   // Inherited methods
   virtual double GetPathLossDb (Ptr<MobilityModel> a, Ptr<MobilityModel> b, UanTxMode mode);
   virtual UanPdp GetPdp (Ptr<MobilityModel> a, Ptr<MobilityModel> b, UanTxMode mode);
   virtual Time GetDelay (Ptr<MobilityModel> a, Ptr<MobilityModel> b, UanTxMode mode);
-};
 
-}
+};  // class UanPropModelIdeal
+
+} // namespace ns3
 
 #endif /* UAN_PROP_MODEL_IDEAL_H */

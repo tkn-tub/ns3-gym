@@ -26,7 +26,7 @@
 #include "ns3/steady-state-random-waypoint-mobility-model.h"
 #include "ns3/rng-seed-manager.h"
 
-namespace ns3 {
+using namespace ns3;
 
 class SteadyStateRandomWaypointTest : public TestCase
 {
@@ -144,5 +144,3 @@ struct SteadyStateRandomWaypointTestSuite : public TestSuite
     AddTestCase (new SteadyStateRandomWaypointTest, TestCase::QUICK);
   }
 } g_steadyStateRandomWaypointTestSuite;
-
-} // namespace ns3

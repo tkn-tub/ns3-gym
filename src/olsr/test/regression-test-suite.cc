@@ -22,8 +22,8 @@
 #include "tc-regression-test.h"
 #include "bug780-test.h"
 
-namespace ns3 {
-namespace olsr {
+using namespace ns3;
+using namespace olsr;
 
 class RegressionTestSuite : public TestSuite
 {
@@ -36,6 +36,3 @@ public:
     AddTestCase (new Bug780Test, TestCase::QUICK);
   }
 } g_olsrRegressionTestSuite;
-
-}
-}

@@ -24,7 +24,7 @@
 #include "ns3/test.h"
 
 
-namespace ns3 {
+using namespace ns3;
 
 
 /**
@@ -54,9 +54,5 @@ private:
   double m_loss;
   uint16_t m_mcsIndex;
 };
-
-
-} // namespace ns3
-
 
 #endif /* LTE_TEST_LINK_ADAPTATION_H */

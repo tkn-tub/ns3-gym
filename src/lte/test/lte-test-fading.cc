@@ -52,7 +52,7 @@
 
 NS_LOG_COMPONENT_DEFINE ("LteFadingTest");
 
-namespace ns3 {
+using namespace ns3;
 
 
 /**
@@ -295,6 +295,3 @@ LteFadingTestCase::GetFadingSample ()
   (*outPsd1)[1] = (10 * std::log10 (180000*(*outPsd1)[1])) - (10 * std::log10 (180000*(*inPsd1)[1]));
   m_fadingSamples.push_back ((*outPsd1));
 }
-
-} // namespace ns3
-

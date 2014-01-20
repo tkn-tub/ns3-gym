@@ -28,7 +28,7 @@
 
 NS_LOG_COMPONENT_DEFINE ("LteTestSpectrumValueHelper");
 
-namespace ns3 {
+using namespace ns3;
 
 class LteSpectrumModelTestCase : public TestCase
 {
@@ -1652,6 +1652,3 @@ LteSpectrumValueHelperTestSuite::LteSpectrumValueHelperTestSuite ()
 
 
 }
-
-
-} // namespace ns3

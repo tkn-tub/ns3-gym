@@ -46,13 +46,6 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (UanMacRcGw)
   ;
 
-bool
-operator < (UanAddress &a, UanAddress &b)
-{
-  return a.GetAsInt () < b.GetAsInt ();
-}
-
-
 UanMacRcGw::UanMacRcGw ()
   : UanMac (),
     m_state (IDLE),
@@ -114,60 +107,60 @@ UanMacRcGw::GetTypeId (void)
     .SetParent<UanMac> ()
     .AddConstructor<UanMacRcGw> ()
     .AddAttribute ("MaxReservations",
-                   "Maximum number of reservations to accept per cycle",
+                   "Maximum number of reservations to accept per cycle.",
                    UintegerValue (10),
                    MakeUintegerAccessor (&UanMacRcGw::m_maxRes),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("NumberOfRates",
-                   "Number of rates per Phy layer",
+                   "Number of rates per Phy layer.",
                    UintegerValue (1023),
                    MakeUintegerAccessor (&UanMacRcGw::m_numRates),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("MaxPropDelay",
-                   "Maximum propagation delay between gateway and non-gateway nodes",
+                   "Maximum propagation delay between gateway and non-gateway nodes.",
                    TimeValue (Seconds (2)),
                    MakeTimeAccessor (&UanMacRcGw::m_maxDelta),
                    MakeTimeChecker ())
     .AddAttribute ("SIFS",
-                   "Spacing between frames to account for timing error and processing delay",
+                   "Spacing between frames to account for timing error and processing delay.",
                    TimeValue (Seconds (0.2)),
                    MakeTimeAccessor (&UanMacRcGw::m_sifs),
                    MakeTimeChecker ())
     .AddAttribute ("NumberOfNodes",
-                   "Number of non-gateway nodes in this gateway's neighborhood",
+                   "Number of non-gateway nodes in this gateway's neighborhood.",
                    UintegerValue (10),
                    MakeUintegerAccessor (&UanMacRcGw::m_numNodes),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("MinRetryRate",
-                   "Smallest allowed RTS retry rate",
+                   "Smallest allowed RTS retry rate.",
                    DoubleValue (0.01),
                    MakeDoubleAccessor (&UanMacRcGw::m_minRetryRate),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("RetryStep",
-                   "Retry rate increment",
+                   "Retry rate increment.",
                    DoubleValue (0.01),
                    MakeDoubleAccessor (&UanMacRcGw::m_retryStep),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("TotalRate",
-                   "Total available channel rate in bps (for a single channel, without splitting reservation channel)",
+                   "Total available channel rate in bps (for a single channel, without splitting reservation channel).",
                    UintegerValue (4096),
                    MakeUintegerAccessor (&UanMacRcGw::m_totalRate),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("RateStep",
-                   "Increments available for rate assignment in bps",
+                   "Increments available for rate assignment in bps.",
                    UintegerValue (4),
                    MakeUintegerAccessor (&UanMacRcGw::m_rateStep),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("FrameSize",
-                   "Size of data frames in bytes",
+                   "Size of data frames in bytes.",
                    UintegerValue (1000),
                    MakeUintegerAccessor (&UanMacRcGw::m_frameSize),
                    MakeUintegerChecker<uint32_t> ())
     .AddTraceSource ("RX",
-                     "A packet was destined for and received at this MAC layer",
+                     "A packet was destined for and received at this MAC layer.",
                      MakeTraceSourceAccessor (&UanMacRcGw::m_rxLogger))
     .AddTraceSource ("Cycle",
-                     "Trace cycle statistics",
+                     "Trace cycle statistics.",
                      MakeTraceSourceAccessor (&UanMacRcGw::m_cycleLogger))
 
   ;

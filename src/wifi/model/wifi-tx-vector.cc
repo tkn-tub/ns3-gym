@@ -27,14 +27,14 @@ WifiTxVector::WifiTxVector ()
 {
 }
 
-WifiTxVector::WifiTxVector (WifiMode m, uint8_t l, uint8_t r, bool sg, uint8_t ns, uint8_t ne, bool Stbc)
-  : m_mode (m),
-    m_txPowerLevel (l),
-    m_retries (r),
-    m_shortGuardInterval(sg),
-    m_nss(ns),
-    m_ness(ne),
-    m_stbc(Stbc)
+WifiTxVector::WifiTxVector (WifiMode mode, uint8_t powerLevel, uint8_t retries, bool shortGuardInterval, uint8_t nss, uint8_t ness, bool stbc)
+  : m_mode (mode),
+    m_txPowerLevel (powerLevel),
+    m_retries (retries),
+    m_shortGuardInterval(shortGuardInterval),
+    m_nss(nss),
+    m_ness(ness),
+    m_stbc(stbc)
 {
 }
 

@@ -37,8 +37,7 @@
 
 NS_LOG_COMPONENT_DEFINE ("LteDownlinkSinrTest");
 
-namespace ns3 {
-
+using namespace ns3;
 
 /**
  * Test 1.1 SINR calculation in downlink
@@ -446,6 +445,3 @@ LteDownlinkCtrlSinrTestCase::DoRun (void)
   dlPhy->Dispose ();
   Simulator::Destroy ();
 }
-
-
-} // namespace

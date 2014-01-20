@@ -33,59 +33,93 @@
 namespace ns3 {
 
 /**
- * \class UanPhyPerGenDefault
- * \brief Default Packet Error Rate calculator for UanPhyGen
+ * \ingroup uan
+ *
+ * Default Packet Error Rate calculator for UanPhyGen
+ *
  * Considers no error if SINR is > user defined threshold
  * (configured by an attribute).
  */
 class UanPhyPerGenDefault : public UanPhyPer
 {
 public:
+  /** Constructor */
   UanPhyPerGenDefault ();
+  /** Destructor */
   virtual ~UanPhyPerGenDefault ();
 
+  /**
+   * Register this type.
+   * \return The TypeId.
+   */
   static TypeId GetTypeId (void);
+  
   virtual double CalcPer (Ptr<Packet> pkt, double sinrDb, UanTxMode mode);
 private:
-  double m_thresh;
+  
+  double m_thresh;  //!< SINR threshold.
 
-};
+};  // class UanPhyPerGenDefault
 
+  
 /**
- * \class UanPhyPerUmodem
- * \brief Packet error rate calculation assuming WHOI Micromodem like PHY
- * Calculates PER assuming rate 1/2 convolutional code with constraint length 9
- * with soft decision viterbi decoding and a CRC capable of correcting 1 bit error
+ * \ingroup uan
+ *
+ * Packet error rate calculation assuming WHOI Micromodem-like PHY.
+ *
+ * Calculates PER assuming rate 1/2 convolutional code with
+ * constraint length 9 with soft decision viterbi decoding and
+ * a CRC capable of correcting 1 bit error.
  */
 class UanPhyPerUmodem : public UanPhyPer
 {
 public:
+  /** Constructor */
   UanPhyPerUmodem ();
+  /** Destructor */
   virtual ~UanPhyPerUmodem ();
 
+  /**
+   * Register this type.
+   * \return The TypeId.
+   */
   static TypeId GetTypeId (void);
 
   /**
+   * Calculate the packet error probability based on
+   * SINR at the receiver and a tx mode.
    *
    * This implementation uses calculations
    * for binary FSK modulation coded by a rate 1/2 convolutional code
    * with constraint length = 9 and a viterbi decoder and finally a CRC capable
    * of correcting one bit error.  These equations can be found in
-   * the book, Digital Communications, by Proakis (Any version I think)
+   * the book, Digital Communications, by Proakis (any version I think).
    *
-   * \param pkt Packet which is under consideration
-   * \param sinrDb SINR at receiver
-   * \param mode TX mode used to transmit packet
-   * \returns Probability of packet error
+   * \param pkt Packet which is under consideration.
+   * \param sinrDb SINR at receiver.
+   * \param mode TX mode used to transmit packet.
+   * \return Probability of packet error.
    */
   virtual double CalcPer (Ptr<Packet> pkt, double sinrDb, UanTxMode mode);
+
 private:
+  /**
+   * Binomial coefficient
+   *
+   * \param n Pool size.
+   * \param k Number of draws.
+   * \return Binomial coefficient n choose k.
+   */
   double NChooseK (uint32_t n, uint32_t k);
 
-};
+};  // class UanPhyPerUmodem
+
+
 /**
- * \class UanPhyCalcSinrDefault
- * \brief Default SINR calculator for UanPhyGen
+ * \ingroup uan
+ *
+ * Default SINR calculator for UanPhyGen.
+ *
  * The default ignores mode data and assumes that all rxpower transmitted is
  * captured by the receiver, and that all signal power associated with
  * interfering packets affects SINR identically to additional ambient noise.
@@ -94,21 +128,31 @@ class UanPhyCalcSinrDefault : public UanPhyCalcSinr
 {
 
 public:
+  /** Constructor */
   UanPhyCalcSinrDefault ();
+  /** Destructor */
   virtual ~UanPhyCalcSinrDefault ();
-  static TypeId GetTypeId (void);
+  
   /**
+   * Register this type.
+   * \return The TypeId.
+   */
+  static TypeId GetTypeId (void);
+  
+  /**
+   * Calculate the SINR value for a packet.
+   *
    * This implementation simply adds all arriving signal power
    * and assumes it acts identically to additional noise.
    *
-   * \param pkt Packet which is under consideration
-   * \param arrTime Arrival time of packet pkt
-   * \param rxPowerDb Received signal power at receiver
-   * \param ambNoiseDb Ambient channel noise in dB re 1 uPa
-   * \param mode TX mode used to transmit packet
-   * \param pdp Power delay profile of arriving packet pkt
-   * \param arrivalList List of other, simultaneously arriving packets
-   * \returns Probability of packet error
+   * \param pkt Packet to calculate SINR for.
+   * \param arrTime Arrival time of pkt.
+   * \param rxPowerDb The received signal strength of the packet in dB re 1 uPa.
+   * \param ambNoiseDb Ambient channel noise in dB re 1 uPa.
+   * \param mode TX Mode of pkt.
+   * \param pdp  Power delay profile of pkt.
+   * \param arrivalList  List of interfering arrivals given from Transducer.
+   * \return The SINR in dB re 1 uPa.
    */
   virtual double CalcSinrDb (Ptr<Packet> pkt,
                              Time arrTime,
@@ -118,11 +162,14 @@ public:
                              UanPdp pdp,
                              const UanTransducer::ArrivalList &arrivalList
                              ) const;
-};
+
+};  // class UanPhyCalcSinrDefault
+
 
 /**
- * \class UanPhyCalcSinrFhFsk
- * \brief WHOI Micromodem like FH-FSK model
+ * \ingroup uan
+ *
+ * WHOI Micromodem like FH-FSK model.
  *
  * Model of interference calculation for FH-FSK wherein all nodes
  * use an identical hopping pattern.  In this case, there is an (M-1)*SymbolTime
@@ -134,9 +181,17 @@ class UanPhyCalcSinrFhFsk : public UanPhyCalcSinr
 {
 
 public:
+  /** Constructor */
   UanPhyCalcSinrFhFsk ();
+  /** Destructor */
   virtual ~UanPhyCalcSinrFhFsk ();
+  
+  /**
+   * Register this type.
+   * \return The TypeId.
+   */
   static TypeId GetTypeId (void);
+
   virtual double CalcSinrDb (Ptr<Packet> pkt,
                              Time arrTime,
                              double rxPowerDb,
@@ -146,12 +201,15 @@ public:
                              const UanTransducer::ArrivalList &arrivalList
                              ) const;
 private:
-  uint32_t m_hops;
-};
+  uint32_t m_hops;  //!< Number of hops.
+
+};  // class UanPhyCalcSinrFhFsk
+
 
 /**
- * \class UanPhyGen
- * \brief Generic PHY model
+ * \ingroup uan
+ *
+ * Generic PHY model.
  *
  * This is a generic PHY class.  SINR and PER information
  * are controlled via attributes.  By adapting the SINR
@@ -161,14 +219,25 @@ private:
 class UanPhyGen : public UanPhy
 {
 public:
+  /** Constructor */
   UanPhyGen ();
+  /** Dummy destructor, see DoDispose */
   virtual ~UanPhyGen ();
   /**
-   * \returns Default TX modes of UanPhyGen
+   * Get the default transmission modes.
+   *
+   * \return The default mode list.
    */
   static UanModesList GetDefaultModes (void);
 
+  
+  /**
+   * Register this type.
+   * \return The TypeId.
+   */
   static TypeId GetTypeId (void);
+
+  // Inherited methods
   virtual void SetEnergyModelCallback (DeviceEnergyModel::ChangeStateCallback cb);
   virtual void EnergyDepletionHandler (void);
   virtual void SendPacket (Ptr<Packet> pkt, uint32_t modeNum);
@@ -203,76 +272,134 @@ public:
   virtual UanTxMode GetMode (uint32_t n);
   virtual Ptr<Packet> GetPacketRx (void) const;
   virtual void Clear (void);
-
   virtual void SetSleepMode (bool sleep);
-
- /**
-  * Assign a fixed random variable stream number to the random variables
-  * used by this model.  Return the number of streams (possibly zero) that
-  * have been assigned.
-  *
-  * \param stream first stream index to use
-  * \return the number of stream indices assigned by this model
-  */
   int64_t AssignStreams (int64_t stream);
 
 private:
+  /** List of Phy Listeners. */
   typedef std::list<UanPhyListener *> ListenerList;
 
-  UanModesList m_modes;
+  UanModesList m_modes;             //!< List of modes supported by this PHY.
 
-  State m_state;
-  ListenerList m_listeners;
-  RxOkCallback m_recOkCb;
-  RxErrCallback m_recErrCb;
-  Ptr<UanChannel> m_channel;
-  Ptr<UanTransducer> m_transducer;
-  Ptr<UanNetDevice> m_device;
-  Ptr<UanMac> m_mac;
-  Ptr<UanPhyPer> m_per;
-  Ptr<UanPhyCalcSinr> m_sinr;
+  State m_state;                    //!< Phy state.
+  ListenerList m_listeners;         //!< List of listeners.
+  RxOkCallback m_recOkCb;           //!< Callback for packets received without error.
+  RxErrCallback m_recErrCb;         //!< Callback for packets received with errors.
+  Ptr<UanChannel> m_channel;        //!< Attached channel.
+  Ptr<UanTransducer> m_transducer;  //!< Associated transducer.
+  Ptr<UanNetDevice> m_device;       //!< Device hosting this Phy.
+  Ptr<UanMac> m_mac;                //!< MAC layer.
+  Ptr<UanPhyPer> m_per;             //!< Error model.
+  Ptr<UanPhyCalcSinr> m_sinr;       //!< SINR calculator.
 
-  double m_rxGainDb;
-  double m_txPwrDb;
-  double m_rxThreshDb;
-  double m_ccaThreshDb;
+  double m_rxGainDb;                //!< Receive gain.
+  double m_txPwrDb;                 //!< Transmit power.
+  double m_rxThreshDb;              //!< Receive SINR threshold.
+  double m_ccaThreshDb;             //!< CCA busy threshold.
 
-  Ptr<Packet> m_pktRx;
-  double m_minRxSinrDb;
-  double m_rxRecvPwrDb;
-  Time m_pktRxArrTime;
-  UanPdp m_pktRxPdp;
-  UanTxMode m_pktRxMode;
+  Ptr<Packet> m_pktRx;              //!< Received packet.
+  double m_minRxSinrDb;             //!< Minimum receive SINR during packet reception.
+  double m_rxRecvPwrDb;             //!< Receiver power.
+  Time m_pktRxArrTime;              //!< Packet arrival time.
+  UanPdp m_pktRxPdp;                //!< Power delay profile of pakket.
+  UanTxMode m_pktRxMode;            //!< Packet transmission mode at receiver.
 
-  bool m_cleared;
-  bool m_disabled;
+  bool m_cleared;                   //!< Flag when we've been cleared.
+  bool m_disabled;                  //!< Energy depleted. 
 
-  /// Provides uniform random variables.
+  /** Provides uniform random variables. */
   Ptr<UniformRandomVariable> m_pg;
 
+  /** Energy model callback. */
   DeviceEnergyModel::ChangeStateCallback m_energyCallback;
+  /** A packet destined for this Phy was received without error. */
   TracedCallback<Ptr<const Packet>, double, UanTxMode > m_rxOkLogger;
+  /** A packet destined for this Phy was received with error. */
   TracedCallback<Ptr<const Packet>, double, UanTxMode > m_rxErrLogger;
+  /** A packet was sent from this Phy. */
   TracedCallback<Ptr<const Packet>, double, UanTxMode > m_txLogger;
 
-  double CalculateSinrDb (Ptr<Packet> pkt, Time arrTime, double rxPowerDb, UanTxMode mode, UanPdp pdp);
+  /**
+   * Calculate the SINR value for a packet.
+   *
+   * \param pkt Packet to calculate SINR for.
+   * \param arrTime Arrival time of pkt.
+   * \param rxPowerDb The received signal strength of the packet in dB re 1 uPa.
+   * \param mode TX Mode of pkt.
+   * \param pdp  Power delay profile of pkt.
+   * \return The SINR in dB re 1 uPa.
+   */
+  double CalculateSinrDb (Ptr<Packet> pkt, Time arrTime, double rxPowerDb,
+                          UanTxMode mode, UanPdp pdp);
+
+  /**
+   * Calculate interference power from overlapping packet arrivals, in dB.
+   *
+   * The "signal" packet power is excluded.  Use
+   * GetInterferenceDb ( (Ptr<Packet>) 0) to treat all signals as
+   * interference, for instance in calculating the CCA busy.
+   *
+   * \param pkt The arriving (signal) packet.
+   * \return The total interference power, in dB.
+   */
   double GetInterferenceDb (Ptr<Packet> pkt);
+  /**
+   * Convert dB to kilopascals.
+   *
+   *   \f[{\rm{kPa}} = {10^{\frac{{{\rm{dB}}}}{{10}}}}\f]
+   *
+   * \param db Signal level in dB.
+   * \return Sound pressure in kPa.
+   */
   double DbToKp (double db);
+  /**
+   * Convert kilopascals to dB.
+   *
+   *   \f[{\rm{dB}} = 10{\log _{10}}{\rm{kPa}}\f]
+   *
+   * \param kp Sound pressure in kPa.
+   * \return Signal level in dB.
+   */
   double KpToDb (double kp);
+  /**
+   * Event to process end of packet reception.
+   *
+   * \param pkt The packet.
+   * \param rxPowerDb Received signal power.
+   * \param txMode Transmission mode.
+   */
   void RxEndEvent (Ptr<Packet> pkt, double rxPowerDb, UanTxMode txMode);
+  /** Event to process end of packet transmission. */
   void TxEndEvent ();
+  /**
+   * Update energy source with new state.
+   *
+   * \param state The new Phy state.
+   */
   void UpdatePowerConsumption (const State state);
 
-  void NotifyListenersRxStart (void);
+
+  /** Call UanListener::NotifyRxStart on all listeners. */
+  void NotifyListenersRxStart (void);  
+  /** Call UanListener::NotifyRxEndOk on all listeners. */
   void NotifyListenersRxGood (void);
+  /** Call UanListener::NotifyRxEndError on all listeners. */
   void NotifyListenersRxBad (void);
+  /** Call UanListener::NotifyCcaStart on all listeners. */
   void NotifyListenersCcaStart (void);
+  /** Call UanListener::NotifyCcaEnd on all listeners. */
   void NotifyListenersCcaEnd (void);
+  /**
+   * Call UanListener::NotifyTxStart on all listeners.
+   *
+   * \param duration Duration of transmission.
+   */
   void NotifyListenersTxStart (Time duration);
+
 protected:
   virtual void DoDispose ();
 
-};
+};  // class UanPhyGen
 
 } // namespace ns3
 

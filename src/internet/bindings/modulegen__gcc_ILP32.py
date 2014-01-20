@@ -439,7 +439,7 @@ def register_types(module):
     ## nstime.h (module 'core'): ns3::Time [class]
     module.add_class('Time', import_from_module='ns.core')
     ## nstime.h (module 'core'): ns3::Time::Unit [enumeration]
-    module.add_enum('Unit', ['S', 'MS', 'US', 'NS', 'PS', 'FS', 'LAST'], outer_class=root_module['ns3::Time'], import_from_module='ns.core')
+    module.add_enum('Unit', ['Y', 'D', 'H', 'MIN', 'S', 'MS', 'US', 'NS', 'PS', 'FS', 'LAST'], outer_class=root_module['ns3::Time'], import_from_module='ns.core')
     ## nstime.h (module 'core'): ns3::Time [class]
     root_module['ns3::Time'].implicitly_converts_to(root_module['ns3::int64x64_t'])
     ## trace-source-accessor.h (module 'core'): ns3::TraceSourceAccessor [class]
@@ -3000,10 +3000,11 @@ def register_Ns3Ipv6Address_methods(root_module, cls):
                    'bool', 
                    [param('ns3::Ipv6Address const &', 'other')], 
                    is_const=True)
-    ## ipv6-address.h (module 'network'): bool ns3::Ipv6Address::IsIpv4MappedAddress() [member function]
+    ## ipv6-address.h (module 'network'): bool ns3::Ipv6Address::IsIpv4MappedAddress() const [member function]
     cls.add_method('IsIpv4MappedAddress', 
                    'bool', 
-                   [])
+                   [], 
+                   is_const=True)
     ## ipv6-address.h (module 'network'): bool ns3::Ipv6Address::IsLinkLocal() const [member function]
     cls.add_method('IsLinkLocal', 
                    'bool', 
@@ -7526,8 +7527,8 @@ def register_Ns3RandomVariableStream_methods(root_module, cls):
 def register_Ns3RttEstimator_methods(root_module, cls):
     ## rtt-estimator.h (module 'internet'): ns3::RttEstimator::RttEstimator() [constructor]
     cls.add_constructor([])
-    ## rtt-estimator.h (module 'internet'): ns3::RttEstimator::RttEstimator(ns3::RttEstimator const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::RttEstimator const &', 'arg0')])
+    ## rtt-estimator.h (module 'internet'): ns3::RttEstimator::RttEstimator(ns3::RttEstimator const & r) [copy constructor]
+    cls.add_constructor([param('ns3::RttEstimator const &', 'r')])
     ## rtt-estimator.h (module 'internet'): ns3::Time ns3::RttEstimator::AckSeq(ns3::SequenceNumber32 ackSeq) [member function]
     cls.add_method('AckSeq', 
                    'ns3::Time', 
@@ -7606,8 +7607,8 @@ def register_Ns3RttEstimator_methods(root_module, cls):
 def register_Ns3RttMeanDeviation_methods(root_module, cls):
     ## rtt-estimator.h (module 'internet'): ns3::RttMeanDeviation::RttMeanDeviation() [constructor]
     cls.add_constructor([])
-    ## rtt-estimator.h (module 'internet'): ns3::RttMeanDeviation::RttMeanDeviation(ns3::RttMeanDeviation const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::RttMeanDeviation const &', 'arg0')])
+    ## rtt-estimator.h (module 'internet'): ns3::RttMeanDeviation::RttMeanDeviation(ns3::RttMeanDeviation const & r) [copy constructor]
+    cls.add_constructor([param('ns3::RttMeanDeviation const &', 'r')])
     ## rtt-estimator.h (module 'internet'): ns3::Ptr<ns3::RttEstimator> ns3::RttMeanDeviation::Copy() const [member function]
     cls.add_method('Copy', 
                    'ns3::Ptr< ns3::RttEstimator >', 
@@ -8776,10 +8777,10 @@ def register_Ns3TcpSocket_methods(root_module, cls):
                    'void', 
                    [param('ns3::Time', 'timeout')], 
                    is_pure_virtual=True, visibility='private', is_virtual=True)
-    ## tcp-socket.h (module 'internet'): void ns3::TcpSocket::SetInitialCwnd(uint32_t count) [member function]
+    ## tcp-socket.h (module 'internet'): void ns3::TcpSocket::SetInitialCwnd(uint32_t cwnd) [member function]
     cls.add_method('SetInitialCwnd', 
                    'void', 
-                   [param('uint32_t', 'count')], 
+                   [param('uint32_t', 'cwnd')], 
                    is_pure_virtual=True, visibility='private', is_virtual=True)
     ## tcp-socket.h (module 'internet'): void ns3::TcpSocket::SetPersistTimeout(ns3::Time timeout) [member function]
     cls.add_method('SetPersistTimeout', 
@@ -8933,10 +8934,10 @@ def register_Ns3TcpSocketBase_methods(root_module, cls):
                    'int', 
                    [], 
                    is_virtual=True)
-    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::AddOptions(ns3::TcpHeader & arg0) [member function]
+    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::AddOptions(ns3::TcpHeader & tcpHeader) [member function]
     cls.add_method('AddOptions', 
                    'void', 
-                   [param('ns3::TcpHeader &', 'arg0')], 
+                   [param('ns3::TcpHeader &', 'tcpHeader')], 
                    visibility='protected', is_virtual=True)
     ## tcp-socket-base.h (module 'internet'): uint16_t ns3::TcpSocketBase::AdvertisedWindowSize() [member function]
     cls.add_method('AdvertisedWindowSize', 
@@ -8963,10 +8964,10 @@ def register_Ns3TcpSocketBase_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected')
-    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::CompleteFork(ns3::Ptr<ns3::Packet> arg0, ns3::TcpHeader const & arg1, ns3::Address const & fromAddress, ns3::Address const & toAdress) [member function]
+    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::CompleteFork(ns3::Ptr<ns3::Packet> p, ns3::TcpHeader const & tcpHeader, ns3::Address const & fromAddress, ns3::Address const & toAddress) [member function]
     cls.add_method('CompleteFork', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'arg0'), param('ns3::TcpHeader const &', 'arg1'), param('ns3::Address const &', 'fromAddress'), param('ns3::Address const &', 'toAdress')], 
+                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::TcpHeader const &', 'tcpHeader'), param('ns3::Address const &', 'fromAddress'), param('ns3::Address const &', 'toAddress')], 
                    visibility='protected')
     ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::ConnectionSucceeded() [member function]
     cls.add_method('ConnectionSucceeded', 
@@ -9023,15 +9024,15 @@ def register_Ns3TcpSocketBase_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
-    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::DupAck(ns3::TcpHeader const & t, uint32_t count) [member function]
+    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::DupAck(ns3::TcpHeader const & tcpHeader, uint32_t count) [member function]
     cls.add_method('DupAck', 
                    'void', 
-                   [param('ns3::TcpHeader const &', 't'), param('uint32_t', 'count')], 
+                   [param('ns3::TcpHeader const &', 'tcpHeader'), param('uint32_t', 'count')], 
                    is_pure_virtual=True, visibility='protected', is_virtual=True)
-    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::EstimateRtt(ns3::TcpHeader const & arg0) [member function]
+    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::EstimateRtt(ns3::TcpHeader const & tcpHeader) [member function]
     cls.add_method('EstimateRtt', 
                    'void', 
-                   [param('ns3::TcpHeader const &', 'arg0')], 
+                   [param('ns3::TcpHeader const &', 'tcpHeader')], 
                    visibility='protected', is_virtual=True)
     ## tcp-socket-base.h (module 'internet'): ns3::Ptr<ns3::TcpSocketBase> ns3::TcpSocketBase::Fork() [member function]
     cls.add_method('Fork', 
@@ -9053,10 +9054,10 @@ def register_Ns3TcpSocketBase_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Ipv4Header', 'header'), param('uint16_t', 'port'), param('ns3::Ptr< ns3::Ipv4Interface >', 'incomingInterface')], 
                    visibility='protected')
-    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::ForwardUp6(ns3::Ptr<ns3::Packet> packet, ns3::Ipv6Header header, uint16_t port) [member function]
+    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::ForwardUp6(ns3::Ptr<ns3::Packet> packet, ns3::Ipv6Header header, uint16_t port, ns3::Ptr<ns3::Ipv6Interface> incomingInterface) [member function]
     cls.add_method('ForwardUp6', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Ipv6Header', 'header'), param('uint16_t', 'port')], 
+                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Ipv6Header', 'header'), param('uint16_t', 'port'), param('ns3::Ptr< ns3::Ipv6Interface >', 'incomingInterface')], 
                    visibility='protected')
     ## tcp-socket-base.h (module 'internet'): bool ns3::TcpSocketBase::GetAllowBroadcast() const [member function]
     cls.add_method('GetAllowBroadcast', 
@@ -9133,70 +9134,70 @@ def register_Ns3TcpSocketBase_methods(root_module, cls):
                    'bool', 
                    [param('ns3::SequenceNumber32', 'head'), param('ns3::SequenceNumber32', 'tail')], 
                    is_const=True, visibility='protected')
-    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::PeerClose(ns3::Ptr<ns3::Packet> arg0, ns3::TcpHeader const & arg1) [member function]
+    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::PeerClose(ns3::Ptr<ns3::Packet> p, ns3::TcpHeader const & tcpHeader) [member function]
     cls.add_method('PeerClose', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'arg0'), param('ns3::TcpHeader const &', 'arg1')], 
+                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::TcpHeader const &', 'tcpHeader')], 
                    visibility='protected')
     ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::PersistTimeout() [member function]
     cls.add_method('PersistTimeout', 
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
-    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::ProcessClosing(ns3::Ptr<ns3::Packet> arg0, ns3::TcpHeader const & arg1) [member function]
+    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::ProcessClosing(ns3::Ptr<ns3::Packet> packet, ns3::TcpHeader const & tcpHeader) [member function]
     cls.add_method('ProcessClosing', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'arg0'), param('ns3::TcpHeader const &', 'arg1')], 
+                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::TcpHeader const &', 'tcpHeader')], 
                    visibility='protected')
-    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::ProcessEstablished(ns3::Ptr<ns3::Packet> arg0, ns3::TcpHeader const & arg1) [member function]
+    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::ProcessEstablished(ns3::Ptr<ns3::Packet> packet, ns3::TcpHeader const & tcpHeader) [member function]
     cls.add_method('ProcessEstablished', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'arg0'), param('ns3::TcpHeader const &', 'arg1')], 
+                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::TcpHeader const &', 'tcpHeader')], 
                    visibility='protected')
-    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::ProcessLastAck(ns3::Ptr<ns3::Packet> arg0, ns3::TcpHeader const & arg1) [member function]
+    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::ProcessLastAck(ns3::Ptr<ns3::Packet> packet, ns3::TcpHeader const & tcpHeader) [member function]
     cls.add_method('ProcessLastAck', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'arg0'), param('ns3::TcpHeader const &', 'arg1')], 
+                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::TcpHeader const &', 'tcpHeader')], 
                    visibility='protected')
-    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::ProcessListen(ns3::Ptr<ns3::Packet> arg0, ns3::TcpHeader const & arg1, ns3::Address const & arg2, ns3::Address const & arg3) [member function]
+    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::ProcessListen(ns3::Ptr<ns3::Packet> packet, ns3::TcpHeader const & tcpHeader, ns3::Address const & fromAddress, ns3::Address const & toAddress) [member function]
     cls.add_method('ProcessListen', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'arg0'), param('ns3::TcpHeader const &', 'arg1'), param('ns3::Address const &', 'arg2'), param('ns3::Address const &', 'arg3')], 
+                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::TcpHeader const &', 'tcpHeader'), param('ns3::Address const &', 'fromAddress'), param('ns3::Address const &', 'toAddress')], 
                    visibility='protected')
-    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::ProcessSynRcvd(ns3::Ptr<ns3::Packet> arg0, ns3::TcpHeader const & arg1, ns3::Address const & arg2, ns3::Address const & arg3) [member function]
+    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::ProcessSynRcvd(ns3::Ptr<ns3::Packet> packet, ns3::TcpHeader const & tcpHeader, ns3::Address const & fromAddress, ns3::Address const & toAddress) [member function]
     cls.add_method('ProcessSynRcvd', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'arg0'), param('ns3::TcpHeader const &', 'arg1'), param('ns3::Address const &', 'arg2'), param('ns3::Address const &', 'arg3')], 
+                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::TcpHeader const &', 'tcpHeader'), param('ns3::Address const &', 'fromAddress'), param('ns3::Address const &', 'toAddress')], 
                    visibility='protected')
-    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::ProcessSynSent(ns3::Ptr<ns3::Packet> arg0, ns3::TcpHeader const & arg1) [member function]
+    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::ProcessSynSent(ns3::Ptr<ns3::Packet> packet, ns3::TcpHeader const & tcpHeader) [member function]
     cls.add_method('ProcessSynSent', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'arg0'), param('ns3::TcpHeader const &', 'arg1')], 
+                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::TcpHeader const &', 'tcpHeader')], 
                    visibility='protected')
-    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::ProcessWait(ns3::Ptr<ns3::Packet> arg0, ns3::TcpHeader const & arg1) [member function]
+    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::ProcessWait(ns3::Ptr<ns3::Packet> packet, ns3::TcpHeader const & tcpHeader) [member function]
     cls.add_method('ProcessWait', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'arg0'), param('ns3::TcpHeader const &', 'arg1')], 
+                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::TcpHeader const &', 'tcpHeader')], 
                    visibility='protected')
     ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::ReTxTimeout() [member function]
     cls.add_method('ReTxTimeout', 
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
-    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::ReadOptions(ns3::TcpHeader const & arg0) [member function]
+    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::ReadOptions(ns3::TcpHeader const & tcpHeader) [member function]
     cls.add_method('ReadOptions', 
                    'void', 
-                   [param('ns3::TcpHeader const &', 'arg0')], 
+                   [param('ns3::TcpHeader const &', 'tcpHeader')], 
                    visibility='protected', is_virtual=True)
-    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::ReceivedAck(ns3::Ptr<ns3::Packet> arg0, ns3::TcpHeader const & arg1) [member function]
+    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::ReceivedAck(ns3::Ptr<ns3::Packet> packet, ns3::TcpHeader const & tcpHeader) [member function]
     cls.add_method('ReceivedAck', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'arg0'), param('ns3::TcpHeader const &', 'arg1')], 
+                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::TcpHeader const &', 'tcpHeader')], 
                    visibility='protected', is_virtual=True)
-    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::ReceivedData(ns3::Ptr<ns3::Packet> arg0, ns3::TcpHeader const & arg1) [member function]
+    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::ReceivedData(ns3::Ptr<ns3::Packet> packet, ns3::TcpHeader const & tcpHeader) [member function]
     cls.add_method('ReceivedData', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'arg0'), param('ns3::TcpHeader const &', 'arg1')], 
+                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::TcpHeader const &', 'tcpHeader')], 
                    visibility='protected', is_virtual=True)
     ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::Retransmit() [member function]
     cls.add_method('Retransmit', 
@@ -9481,10 +9482,10 @@ def register_Ns3TcpWestwood_methods(root_module, cls):
                    'int', 
                    [], 
                    is_virtual=True)
-    ## tcp-westwood.h (module 'internet'): void ns3::TcpWestwood::DupAck(ns3::TcpHeader const & header, uint32_t count) [member function]
+    ## tcp-westwood.h (module 'internet'): void ns3::TcpWestwood::DupAck(ns3::TcpHeader const & t, uint32_t count) [member function]
     cls.add_method('DupAck', 
                    'void', 
-                   [param('ns3::TcpHeader const &', 'header'), param('uint32_t', 'count')], 
+                   [param('ns3::TcpHeader const &', 't'), param('uint32_t', 'count')], 
                    visibility='protected', is_virtual=True)
     ## tcp-westwood.h (module 'internet'): void ns3::TcpWestwood::EstimateRtt(ns3::TcpHeader const & header) [member function]
     cls.add_method('EstimateRtt', 
@@ -9602,6 +9603,11 @@ def register_Ns3Time_methods(root_module, cls):
                    'ns3::Time', 
                    [param('uint64_t', 'value'), param('ns3::Time::Unit', 'timeUnit')], 
                    is_static=True)
+    ## nstime.h (module 'core'): double ns3::Time::GetDays() const [member function]
+    cls.add_method('GetDays', 
+                   'double', 
+                   [], 
+                   is_const=True)
     ## nstime.h (module 'core'): double ns3::Time::GetDouble() const [member function]
     cls.add_method('GetDouble', 
                    'double', 
@@ -9610,6 +9616,11 @@ def register_Ns3Time_methods(root_module, cls):
     ## nstime.h (module 'core'): int64_t ns3::Time::GetFemtoSeconds() const [member function]
     cls.add_method('GetFemtoSeconds', 
                    'int64_t', 
+                   [], 
+                   is_const=True)
+    ## nstime.h (module 'core'): double ns3::Time::GetHours() const [member function]
+    cls.add_method('GetHours', 
+                   'double', 
                    [], 
                    is_const=True)
     ## nstime.h (module 'core'): int64_t ns3::Time::GetInteger() const [member function]
@@ -9625,6 +9636,11 @@ def register_Ns3Time_methods(root_module, cls):
     ## nstime.h (module 'core'): int64_t ns3::Time::GetMilliSeconds() const [member function]
     cls.add_method('GetMilliSeconds', 
                    'int64_t', 
+                   [], 
+                   is_const=True)
+    ## nstime.h (module 'core'): double ns3::Time::GetMinutes() const [member function]
+    cls.add_method('GetMinutes', 
+                   'double', 
                    [], 
                    is_const=True)
     ## nstime.h (module 'core'): int64_t ns3::Time::GetNanoSeconds() const [member function]
@@ -9650,6 +9666,11 @@ def register_Ns3Time_methods(root_module, cls):
     ## nstime.h (module 'core'): int64_t ns3::Time::GetTimeStep() const [member function]
     cls.add_method('GetTimeStep', 
                    'int64_t', 
+                   [], 
+                   is_const=True)
+    ## nstime.h (module 'core'): double ns3::Time::GetYears() const [member function]
+    cls.add_method('GetYears', 
+                   'double', 
                    [], 
                    is_const=True)
     ## nstime.h (module 'core'): bool ns3::Time::IsNegative() const [member function]
@@ -9864,6 +9885,18 @@ def register_Ns3UdpHeader_methods(root_module, cls):
     ## udp-header.h (module 'internet'): void ns3::UdpHeader::EnableChecksums() [member function]
     cls.add_method('EnableChecksums', 
                    'void', 
+                   [])
+    ## udp-header.h (module 'internet'): void ns3::UdpHeader::ForceChecksum(uint16_t checksum) [member function]
+    cls.add_method('ForceChecksum', 
+                   'void', 
+                   [param('uint16_t', 'checksum')])
+    ## udp-header.h (module 'internet'): void ns3::UdpHeader::ForcePayloadSize(uint16_t payloadSize) [member function]
+    cls.add_method('ForcePayloadSize', 
+                   'void', 
+                   [param('uint16_t', 'payloadSize')])
+    ## udp-header.h (module 'internet'): uint16_t ns3::UdpHeader::GetChecksum() [member function]
+    cls.add_method('GetChecksum', 
+                   'uint16_t', 
                    [])
     ## udp-header.h (module 'internet'): uint16_t ns3::UdpHeader::GetDestinationPort() const [member function]
     cls.add_method('GetDestinationPort', 
@@ -11575,10 +11608,10 @@ def register_Ns3Ipv4Interface_methods(root_module, cls):
     cls.add_method('Send', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::Ipv4Address', 'dest')])
-    ## ipv4-interface.h (module 'internet'): void ns3::Ipv4Interface::SetArpCache(ns3::Ptr<ns3::ArpCache> arg0) [member function]
+    ## ipv4-interface.h (module 'internet'): void ns3::Ipv4Interface::SetArpCache(ns3::Ptr<ns3::ArpCache> arpCache) [member function]
     cls.add_method('SetArpCache', 
                    'void', 
-                   [param('ns3::Ptr< ns3::ArpCache >', 'arg0')])
+                   [param('ns3::Ptr< ns3::ArpCache >', 'arpCache')])
     ## ipv4-interface.h (module 'internet'): void ns3::Ipv4Interface::SetDevice(ns3::Ptr<ns3::NetDevice> device) [member function]
     cls.add_method('SetDevice', 
                    'void', 
@@ -12333,6 +12366,11 @@ def register_Ns3Ipv6_methods(root_module, cls):
                    'ns3::Ptr< ns3::NetDevice >', 
                    [param('uint32_t', 'interface')], 
                    is_pure_virtual=True, is_virtual=True)
+    ## ipv6.h (module 'internet'): ns3::Ptr<ns3::IpL4Protocol> ns3::Ipv6::GetProtocol(int protocolNumber) const [member function]
+    cls.add_method('GetProtocol', 
+                   'ns3::Ptr< ns3::IpL4Protocol >', 
+                   [param('int', 'protocolNumber')], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
     ## ipv6.h (module 'internet'): ns3::Ptr<ns3::Ipv6RoutingProtocol> ns3::Ipv6::GetRoutingProtocol() const [member function]
     cls.add_method('GetRoutingProtocol', 
                    'ns3::Ptr< ns3::Ipv6RoutingProtocol >', 
@@ -13136,7 +13174,7 @@ def register_Ns3Ipv6L3Protocol_methods(root_module, cls):
     cls.add_method('GetProtocol', 
                    'ns3::Ptr< ns3::IpL4Protocol >', 
                    [param('int', 'protocolNumber')], 
-                   is_const=True)
+                   is_const=True, is_virtual=True)
     ## ipv6-l3-protocol.h (module 'internet'): ns3::Ptr<ns3::Socket> ns3::Ipv6L3Protocol::CreateRawSocket() [member function]
     cls.add_method('CreateRawSocket', 
                    'ns3::Ptr< ns3::Socket >', 
@@ -13221,10 +13259,10 @@ def register_Ns3Ipv6L3Protocol_methods(root_module, cls):
                    'bool', 
                    [param('uint32_t', 'interfaceIndex'), param('uint32_t', 'addressIndex')], 
                    is_virtual=True)
-    ## ipv6-l3-protocol.h (module 'internet'): bool ns3::Ipv6L3Protocol::RemoveAddress(uint32_t interface, ns3::Ipv6Address address) [member function]
+    ## ipv6-l3-protocol.h (module 'internet'): bool ns3::Ipv6L3Protocol::RemoveAddress(uint32_t interfaceIndex, ns3::Ipv6Address address) [member function]
     cls.add_method('RemoveAddress', 
                    'bool', 
-                   [param('uint32_t', 'interface'), param('ns3::Ipv6Address', 'address')], 
+                   [param('uint32_t', 'interfaceIndex'), param('ns3::Ipv6Address', 'address')], 
                    is_virtual=True)
     ## ipv6-l3-protocol.h (module 'internet'): void ns3::Ipv6L3Protocol::SetMetric(uint32_t i, uint16_t metric) [member function]
     cls.add_method('SetMetric', 
@@ -14727,10 +14765,10 @@ def register_Ns3TcpL4Protocol_methods(root_module, cls):
                    'ns3::IpL4Protocol::RxStatus', 
                    [param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::Ipv4Header const &', 'header'), param('ns3::Ptr< ns3::Ipv4Interface >', 'incomingInterface')], 
                    is_virtual=True)
-    ## tcp-l4-protocol.h (module 'internet'): ns3::IpL4Protocol::RxStatus ns3::TcpL4Protocol::Receive(ns3::Ptr<ns3::Packet> p, ns3::Ipv6Header const & header, ns3::Ptr<ns3::Ipv6Interface> interface) [member function]
+    ## tcp-l4-protocol.h (module 'internet'): ns3::IpL4Protocol::RxStatus ns3::TcpL4Protocol::Receive(ns3::Ptr<ns3::Packet> p, ns3::Ipv6Header const & header, ns3::Ptr<ns3::Ipv6Interface> incomingInterface) [member function]
     cls.add_method('Receive', 
                    'ns3::IpL4Protocol::RxStatus', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::Ipv6Header const &', 'header'), param('ns3::Ptr< ns3::Ipv6Interface >', 'interface')], 
+                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::Ipv6Header const &', 'header'), param('ns3::Ptr< ns3::Ipv6Interface >', 'incomingInterface')], 
                    is_virtual=True)
     ## tcp-l4-protocol.h (module 'internet'): void ns3::TcpL4Protocol::ReceiveIcmp(ns3::Ipv4Address icmpSource, uint8_t icmpTtl, uint8_t icmpType, uint8_t icmpCode, uint32_t icmpInfo, ns3::Ipv4Address payloadSource, ns3::Ipv4Address payloadDestination, uint8_t const * payload) [member function]
     cls.add_method('ReceiveIcmp', 

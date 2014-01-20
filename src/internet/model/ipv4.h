@@ -24,7 +24,6 @@
 #include "ns3/object.h"
 #include "ns3/socket.h"
 #include "ns3/callback.h"
-#include "ns3/ip-l4-protocol.h"
 #include "ns3/ipv4-address.h"
 #include "ipv4-route.h"
 #include "ipv4-interface-address.h"
@@ -35,6 +34,8 @@ class Node;
 class NetDevice;
 class Packet;
 class Ipv4RoutingProtocol;
+class IpL4Protocol;
+class Ipv4Header;
 
 /**
  * \ingroup internet

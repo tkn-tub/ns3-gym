@@ -54,9 +54,72 @@ us a note on ns-developers mailing list.</p>
 <h1>Changes from ns-3.18.1 to ns-3.19</h1>
 
 <h2>New API:</h2>
+<ul>
+  <li> A new wifi extension for vehicular simulation support is available in the
+    src/wave directory.  The current code represents an interim capability to 
+    realize an IEEE 802.11p-compliant device, but without the WAVE extensions 
+    (which are planned for a later patch).  The WaveNetDevice modelled herein 
+    enforces that a WAVE-compliant physical layer (at 5.9 GHz) is selected, and 
+    does not require any association between devices (similar to an adhoc WiFi 
+    MAC), but is otherwise similar (at this time) to a WifiNetDevice.  WAVE 
+    capabililties of switching between control and service channels, or using 
+    multiple radios, are not yet modelled.
+  </li>
+  <li>New SixLowPanNetDevice class providing a shim between 
+    IPv6 and real NetDevices. The new module implements 6LoWPAN:
+    "Transmission of IPv6 Packets over IEEE 802.15.4 Networks" (see
+    <a href="http://www.ietf.org/rfc/rfc4944.txt">RFC 4944</a> and
+    <a href="http://www.ietf.org/rfc/rfc6262.txt">RFC 6262</a>), 
+    resulting in a heavy header compression for IPv6 packets.
+    The module is intended to be used on 802.15.4 NetDevices, but
+    it can be used over other NetDevices. See the manual for
+    further discussion.
+  </li>
+  <li> LteHelper has been updated with some new APIs:
+    <ul>
+      <li>new overloaded Attach methods to enable UE to automatically determine
+          the eNodeB to attach to (using initial cell selection);</li>
+      <li>new methods related to handover algorithm: SetHandoverAlgorithmType
+          and SetHandoverAlgorithmAttribute;</li>
+      <li>a new attribute AnrEnabled to activate/deactivate Automatic Neighbour
+          Relation (ANR) function; and</li>
+      <li>a new method SetUeDeviceAttribute for configuring LteUeNetDevice.</li>
+    </ul>
+  </li>
+  <li> The GSoC 2013 project in the LTE module has brought some additional APIs:
+    <ul>
+      <li>a new abstract class LteHandoverAlgorithm, which every future
+          implementation of automatic handover trigger should inherit from;</li>
+      <li>new classes LteHandoverAlgorithm and LteAnr as sub-modules of
+          LteEnbNetDevice class; both interfacing with the LteEnbRrc sub-module
+          through Handover Management SAP and ANR SAP;</li>
+      <li>new attributes in LteEnbNetDevice and LteUeNetDevice classes related
+          to Closed Subscriber Group (CSG) functionality in initial cell
+          selection;</li>
+      <li>new attributes in LteEnbRrc for configuring UE measurements' filtering
+          coefficient (i.e., quantity configuration);</li>
+      <li>a new public method AddUeMeasReportConfig in LteEnbRrc for setting up
+          custom UE measurements' reporting configuration; measurement reports
+          can then be captured from the RecvMeasurementReport trace source;
+          and</li>
+      <li>new trace sources in LteUeRrc to capture more events, such as System
+          Information messages (MIB, SIB1, SIB2), initial cell selection, random
+          access, and handover.</li>
+    </ul>
+  </li>
+  <li>A new parallel scheduling algorithm based on null messages, a common 
+  parallel DES scheduling algorithm, has been added.  The null message 
+  scheduler has better scaling properties when running on some scenarios
+  with large numbers of nodes since it does not require a global 
+  communication.
+  </li>
+</ul>
 
 <h2>Changes to existing API:</h2>
 <ul>
+    <li> It is now possible to use Ipv6PacketInfoTag from UDP applications in the
+      same way as with Ipv4PacketInfoTag. See Doxygen for current limitations in
+  	  using Ipv[4,6]PacketInfoTag to set IP properties.</li>
     <li>A change is introduced for the usage of the EpcHelper
       class. Previously, the EpcHelper class included both the API
       definition and its (only) implementation; as such, users would
@@ -65,16 +128,38 @@ us a note on ns-developers mailing list.</p>
       EpcHelper is just the base class defining the API, and the
       implementation has been moved to derived classes; as such,
       users are now expected to use one of the derived classes in
-      their simulation program. The imlpementation previously
+      their simulation program. The implementation previously
       provided by the EpcHelper class has been moved to the new
       derived class PointToPointEpcHelper.</li>
+  <li> The automatic handover trigger and ANR functions in LTE module have been
+    moved from LteEnbRrc class to separate classes. As a result, the related
+    attributes, e.g., ServingCellHandoverThreshold, NeighbourCellHandoverOffset,
+    EventA2Threshold, and EventA4Threshold have been removed from LteEnbRrc
+    class. The equivalent attributes are now in A2A4RsrqHandoverAlgorithm and
+    LteAnr classes.</li>
+  <li> Master Information Block (MIB) and System Information Block Type 1 (SIB1)
+    are now transmitted as LTE control messages, so they are no longer part of
+    RRC protocol.</li>
+  <li> UE RRC state model in LTE module has been considerably modified and is
+    not backward compatible with the previous state model.</li>
+  <li> Additional time units (Year, Day, Hour, Minute) were added to the time
+  value class that represents simulation time; the largest unit prior to 
+  this addition was Second.
+  </li>
 </ul>
+
 <h2>Changes to build system:</h2>
 
 <h2>Changed behavior:</h2>
 <ul>
   <li> For the TapBridge device, in UseLocal mode there is a MAC learning function. TapBridge has been waiting for the first packet received from tap interface to set the address of the bridged device to the source address of the first packet. This has caused problems with WiFi.  The new behavior is that after connection to the tap interface, ns-3 learns the MAC address of that interface with a system call and immediately sets the address of the bridged device to the learned one.  See <a href="https://www.nsnam.org/bugzilla/show_bug.cgi?id=1777">bug 1777</a> for more details.</li>
   <li> TapBridge device now correctly implements IsLinkUp() method.</li>
+  <li> IPv6 addresses and routing tables are printed like in Linux "route -A inet6" command.</li>
+  <li> A change in Ipv[4,6]Interface enforces the correct behaviour of IP 
+    when a device do not support the minimum MTU requirements.
+    This is set to 68 and 1280 octects respectively.  IP simulations that
+    may have run over devices with smaller MTUs than 68 or 1280, respectively,
+    will no longer be able to use such devices.</li>
 </ul>
 
 <hr>

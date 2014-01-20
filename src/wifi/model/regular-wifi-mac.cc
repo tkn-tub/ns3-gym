@@ -62,7 +62,7 @@ RegularWifiMac::RegularWifiMac ()
   m_dca->SetTxFailedCallback (MakeCallback (&RegularWifiMac::TxFailed, this));
 
   // Construct the EDCAFs. The ordering is important - highest
-  // priority (see Table 9-1 in IEEE 802.11-2007) must be created
+  // priority (Table 9-1 UP-to-AC mapping; IEEE 802.11-2012) must be created
   // first.
   SetupEdcaQueue (AC_VO);
   SetupEdcaQueue (AC_VI);

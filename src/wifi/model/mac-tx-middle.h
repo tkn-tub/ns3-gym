@@ -42,7 +42,20 @@ public:
   MacTxMiddle ();
   ~MacTxMiddle ();
 
+  /**
+   * Return the next sequence number for the given header.
+   *
+   * \param hdr Wi-Fi header
+   * \return the next sequence number
+   */
   uint16_t GetNextSequenceNumberfor (const WifiMacHeader *hdr);
+  /**
+   * Return the next sequence number for the Traffic ID and destination.
+   *
+   * \param tid Traffic ID
+   * \param addr destination address
+   * \return the next sequence number
+   */
   uint16_t GetNextSeqNumberByTidAndAddress (uint8_t tid, Mac48Address addr) const;
 
 private:

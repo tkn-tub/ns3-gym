@@ -14,6 +14,7 @@
  *
  * Author: George F. Riley<riley@ece.gatech.edu>
  * Author: John Abraham <john.abraham@gatech.edu>
+ * Contributions: Eugene Kalishenko <ydginster@gmail.com> (Open Source and Linux Laboratory http://dev.osll.ru/)
  */
 
 // Interface between ns3 and the network animator
@@ -44,6 +45,7 @@ namespace ns3 {
 
 #define MAX_PKTS_PER_TRACE_FILE 100000
 struct Rgb;
+struct NodeSize;
 typedef struct 
 {
   uint32_t fromNode;
@@ -56,6 +58,7 @@ typedef struct
   std::string toNodeDescription;
   std::string linkDescription;
 } LinkProperties;
+
 
 struct LinkPairCompare
 {
@@ -109,16 +112,25 @@ public:
   /**
    * \brief Constructor
    * \param filename The Filename for the trace file used by the Animator
+   * \param enable3105 Enables 3.105 behavior. This flag will be made obsolete after
+   *        the transition period
    * \param maxPktsPerFile The maximum number of packets per trace file.
 	    AnimationInterface will create trace files with the following 
             filenames : filename, filename-1, filename-2..., filename-N
 	    where each file contains packet info for 'maxPktPerFile' number of packets
-   * \param usingXML Set to true if XML output traces are required
    *
    */
-  AnimationInterface (const std::string filename, 
-	uint64_t maxPktsPerFile = MAX_PKTS_PER_TRACE_FILE, 
-	bool usingXML = true);
+  AnimationInterface (const std::string filename, bool enable3105 = true, 
+	uint64_t maxPktsPerFile = MAX_PKTS_PER_TRACE_FILE);
+
+  /**
+   * Counter Types 
+   */
+  typedef enum
+    {
+      UINT32_COUNTER,
+      DOUBLE_COUNTER
+    } CounterType;
 
   /**
    * \brief Destructor for the animator interface.
@@ -137,7 +149,7 @@ public:
    *
    * \returns reference to this AnimationInterface object
    */
-  AnimationInterface & EnableIpv4RouteTracking (std::string fileName, Time startTime, Time stopTime, Time pollInterval = Seconds(5));
+  AnimationInterface & EnableIpv4RouteTracking (std::string fileName, Time startTime, Time stopTime, Time pollInterval = Seconds (5));
 
   /**
    * \brief Enable tracking of the Ipv4 routing table for a set of Nodes
@@ -151,7 +163,7 @@ public:
    *
    * \returns reference to this AnimationInterface object
    */
-  AnimationInterface & EnableIpv4RouteTracking (std::string fileName, Time startTime, Time stopTime, NodeContainer nc, Time pollInterval = Seconds(5));
+  AnimationInterface & EnableIpv4RouteTracking (std::string fileName, Time startTime, Time stopTime, NodeContainer nc, Time pollInterval = Seconds (5));
 
   /**
    * \brief Check if AnimationInterface is initialized
@@ -296,6 +308,21 @@ public:
    */
   static void SetNodeColor (Ptr <Node> n, uint8_t r, uint8_t g, uint8_t b);
 
+  /**
+   * \brief Helper function to update the image of a node
+   * \param nodeId Id of the node
+   * \param resourceId Id of the image resource that was previously added
+   *
+   */
+  void UpdateNodeImage (uint32_t nodeId, uint32_t resourceId);
+  /**
+   * \brief Helper function to update the size of a node
+   * \param nodeId Id of the node
+   * \param width Width of the node
+   * \param height Height of the node
+   *
+   */
+  void UpdateNodeSize (uint32_t nodeId, double width, double height); 
 
   /**
    * \brief Helper function to update the node color
@@ -327,6 +354,28 @@ public:
    *
    */
   static void SetNodeColor (NodeContainer nc, uint8_t r, uint8_t g, uint8_t b);
+
+
+  /**
+   * \brief Helper function to update a node's counter referenced by the nodeCounterId
+   * \param nodeCounterId The counter Id obtained from AddNodeCounter
+   * \param nodeId Node Id of the node
+   * \param counter Current value of the counter
+   *
+   */
+  void UpdateNodeCounter (uint32_t nodeCounterId, uint32_t nodeId, double counter);
+
+  /**
+   * \brief Helper function to set the background image
+   * \param fileName File name of the background image
+   * \param x X co-ordinate of the image
+   * \param y Y co-ordinate of the image
+   * \param scaleX X scale of the image
+   * \param scaleY Y scale of the image
+   * \param opacity Opacity of the background: A value between 0.0 and 1.0. 0.0 is transparent,
+   *        1.0 is opaque
+   */
+  void SetBackgroundImage (std::string fileName, double x, double y, double scaleX, double scaleY, double opacity); 
 
   /**
    * \brief Helper function to set the description for a link
@@ -394,6 +443,12 @@ public:
   bool IsStarted (void);
 
   /**
+   * \brief Do not trace packets. This helps reduce the trace file size if AnimationInterface is solely
+   *        used for tracking mobility, routing paths and counters
+   */
+  void SkipPacketTracing ();
+
+  /**
    *
    * \brief Enable Packet metadata
    * \param enable if true enables writing the packet metadata to the XML trace file
@@ -410,6 +465,35 @@ public:
    */
   uint64_t GetTracePktCount ();
 
+  /**
+   *
+   * \brief Setup a node counter
+   * \param counterName A string to identify the counter
+   * \param counterType The type of the counter, such as uint32, double etc
+   * 
+   * returns The id of the counter to be used as a reference for future
+   */
+  uint32_t AddNodeCounter (std::string counterName, CounterType counterType); 
+
+  /**
+   *
+   * \brief Add a resource such as the path to an image file
+   * \param resourcePath Absolute Path to an image/resource
+   * 
+   * returns a number identifying the resource
+   *
+   */
+  uint32_t AddResource (std::string resourcePath);
+
+  /**
+   *
+   * \brief Get node's energy fraction (This used only for testing)
+   *
+   * returns current node's remaining energy (between [0, 1])
+   *
+   */
+  double GetNodeEnergyFraction (Ptr <const Node> node) const;
+
  /**
   * Assign a fixed random variable stream number to the random variables
   * used by this model.  Return the number of streams (possibly zero) that
@@ -425,7 +509,6 @@ private:
   FILE * m_routingF; // File handle for routing table output (0 if None);
   // Write specified amount of data to the specified handle
   int WriteN (const char*, uint32_t, FILE * f);
-  bool m_xml;      // True if xml format desired
   Time m_mobilityPollInterval;
   std::string m_outputFileName;
   bool m_outputFileSet;
@@ -542,6 +625,8 @@ private:
   void UanPhyGenRxTrace (std::string context,
                          Ptr<const Packet>);
 
+  void RemainingEnergyTrace (std::string context, double previousEnergy, double currentEnergy);
+
   void MobilityCourseChangeTrace (Ptr <const MobilityModel> mob);
 
   // Write a string to the specified handle;
@@ -606,24 +691,34 @@ private:
   bool IsInTimeWindow ();
 
   // Path helper
-  std::vector<std::string> GetElementsFromContext (std::string context);
+  const std::vector<std::string> GetElementsFromContext (const std::string& context) const;
+  Ptr <Node> GetNodeFromContext (const std::string& context) const;
   Ptr <NetDevice> GetNetDeviceFromContext (std::string context);
+
+  typedef std::map <uint32_t, double> EnergyFractionMap;
 
   static std::map <uint32_t, Rgb> nodeColors;
   static std::map <uint32_t, std::string> nodeDescriptions;
   static std::map <P2pLinkNodeIdPair, LinkProperties, LinkPairCompare> linkProperties;
+  EnergyFractionMap m_nodeEnergyFraction;
   uint64_t m_currentPktCount;
 
-  void StartNewTraceFile();
+  std::map <uint32_t, NodeSize> m_nodeSizes;
+  std::vector <std::string> m_resources;
+  std::vector <std::string> m_nodeCounters;
+  void StartNewTraceFile ();
 
   std::string GetMacAddress (Ptr <NetDevice> nd);
   std::string GetIpv4Address (Ptr <NetDevice> nd);
   void WriteNonP2pLinkProperties (uint32_t id, std::string ipv4Address, std::string channelType);
 
+  void WriteNodeUpdate (uint32_t nodeId);
+
   std::string GetNetAnimVersion ();
 
   // XML helpers
   std::string GetPreamble (void);
+  std::string CounterTypeToString (CounterType counterType);
   // Topology element dimensions
   double m_topoMinX;
   double m_topoMinY;
@@ -631,9 +726,20 @@ private:
   double m_topoMaxY;
   static Rectangle * userBoundary;
 
+  bool m_enable3105;
+  bool m_trackPackets;
+  uint32_t m_remainingEnergyCounterId;
   std::string GetPacketMetadata (Ptr<const Packet> p);
 
   std::string GetXMLOpen_anim (uint32_t lp);
+  std::string GetXMLOpenCloseUpdateNodePosition (uint32_t nodeId, double x, double y);
+  std::string GetXMLOpenCloseUpdateNodeColor (uint32_t nodeId, uint8_t r, uint8_t g, uint8_t b);
+  std::string GetXMLOpenCloseUpdateNodeDescription (uint32_t nodeId);
+  std::string GetXMLOpenCloseUpdateNodeSize (uint32_t nodeId, double width, double height);
+  std::string GetXMLOpenCloseAddResource (uint32_t resourceId, std::string resourcePath);
+  std::string GetXMLOpenCloseAddNodeCounter (uint32_t counterId, std::string counterName, CounterType counterType);
+  std::string GetXMLOpenCloseUpdateNodeImage (uint32_t nodeId, uint32_t resourceId);
+  std::string GetXMLOpenCloseUpdateNodeCounter (uint32_t counterId, uint32_t nodeId, double value);
   std::string GetXMLOpen_topology (double minX, double minY, double maxX, double maxY);
   std::string GetXMLOpenClose_node (uint32_t lp, uint32_t id, double locX, double locY);
   std::string GetXMLOpenClose_node (uint32_t lp, uint32_t id, double locX, double locY, struct Rgb rgb);
@@ -650,8 +756,11 @@ private:
   std::string GetXMLOpenClose_NonP2pLinkProperties (uint32_t id, std::string ipv4Address, std::string channelType);
   std::string GetXMLOpenClose_routing (uint32_t id, std::string routingInfo);
   std::string GetXMLOpenClose_rp (uint32_t nodeId, std::string destination, Ipv4RoutePathElements rpElements);
+  std::string GetXMLOpenCloseUpdateBackground (std::string fileName, double x, double y, double scaleX, double scaleY, double opacity);
 
-
+  void AppendXMLNodeDescription (std::ostream& ostream, uint32_t id) const;
+  void AppendXMLNodeColor (std::ostream& ostream, const Rgb& color) const;
+  void AppendXMLRemainingEnergy (std::ostream& ostream, uint32_t id) const;
 
   /// Provides uniform random variables.
   Ptr<UniformRandomVariable> m_uniformRandomVariable;  
@@ -668,6 +777,18 @@ struct Rgb
   uint8_t g;
   uint8_t b;
 };
+
+/**
+ * \ingroup netanim
+ * \brief A structure to store the width and height of a node` 
+ *
+ */
+struct NodeSize 
+{
+  double width;
+  double height;
+};
+
 
 /**
  * \ingroup netanim

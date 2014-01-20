@@ -55,12 +55,11 @@ UdpClient::GetTypeId (void)
                    "The time to wait between packets", TimeValue (Seconds (1.0)),
                    MakeTimeAccessor (&UdpClient::m_interval),
                    MakeTimeChecker ())
-    .AddAttribute (
-      "RemoteAddress",
-      "The destination Address of the outbound packets",
-      AddressValue (),
-      MakeAddressAccessor (&UdpClient::m_peerAddress),
-      MakeAddressChecker ())
+    .AddAttribute ("RemoteAddress",
+                   "The destination Address of the outbound packets",
+                   AddressValue (),
+                   MakeAddressAccessor (&UdpClient::m_peerAddress),
+                   MakeAddressChecker ())
     .AddAttribute ("RemotePort", "The destination port of the outbound packets",
                    UintegerValue (100),
                    MakeUintegerAccessor (&UdpClient::m_peerPort),

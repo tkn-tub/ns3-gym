@@ -26,17 +26,25 @@
 namespace ns3 {
 
 /**
- * \class UanTransducerHd
- * \brief Half duplex implementation of transducer object
+ * \ingroup uan
  *
- * This class will only allow attached Phy's to receive packets if not in TX mode
+ * Half duplex implementation of transducer object
+ *
+ * This class will only allow attached Phy's to receive packets
+ * if not in TX mode.
  */
 class UanTransducerHd : public UanTransducer
 {
 public:
+  /** Constructor */
   UanTransducerHd ();
+  /** Dummy destructor, see DoDispose */
   virtual ~UanTransducerHd ();
 
+  /**
+   * Register this type.
+   * \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
 
   // inherited methods
@@ -53,20 +61,27 @@ public:
   virtual void Clear (void);
 
 private:
-  State m_state;
-  ArrivalList m_arrivalList;
-  UanPhyList m_phyList;
-  Ptr<UanChannel> m_channel;
-  EventId m_endTxEvent;
-  Time m_endTxTime;
-  bool m_cleared;
+  State m_state;              //!< Transducer state.
+  ArrivalList m_arrivalList;  //!< List of arriving packets which overlap in time.
+  UanPhyList m_phyList;       //!< List of physical layers attached above this tranducer.
+  Ptr<UanChannel> m_channel;  //!< The attached channel.
+  EventId m_endTxEvent;       //!< Event scheduled for end of transmission.
+  Time m_endTxTime;           //!< Time at which transmission will be completed.
+  bool m_cleared;             //!< Flab when we've been cleared.
 
+  /**
+   * Remove an entry from the arrival list.
+   *
+   * \param arrival The packet arrival to remove.
+   */
   void RemoveArrival (UanPacketArrival arrival);
+  /** Handle end of transmission event. */
   void EndTx (void);
 protected:
   virtual void DoDispose ();
-};
 
-}
+};  // class UanTransducerHd
+
+} // namespace ns3
 
 #endif /* UAN_TRANSDUCER_HD_H */

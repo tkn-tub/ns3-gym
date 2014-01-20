@@ -25,7 +25,7 @@
 #include "ns3/test.h"
 
 
-namespace ns3 {
+using namespace ns3;
 
 
 /**
@@ -60,11 +60,5 @@ class LenaTestHarqSuite : public TestSuite
 public:
   LenaTestHarqSuite ();
 };
-
-
-
-
-} // namespace ns3
-
 
 #endif /* LENA_TEST_HARQ_H */

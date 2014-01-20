@@ -29,7 +29,7 @@
 
 NS_LOG_COMPONENT_DEFINE ("LteRlcUmTransmitterTest");
 
-namespace ns3 {
+using namespace ns3;
 
 
 /**
@@ -298,7 +298,3 @@ LteRlcUmTransmitterReportBufferStatusTestCase::DoRun (void)
   Simulator::Run ();
   Simulator::Destroy ();
 }
-
-} // namespace ns3
-
-

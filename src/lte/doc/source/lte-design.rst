@@ -542,7 +542,7 @@ The usage of the radio spectrum by eNBs and UEs in LTE is described in
 Let :math:`f_c` denote the  LTE Absolute Radio Frequency Channel Number, which
 identifies the carrier frequency on a 100 kHz raster; furthermore, let :math:`B` be
 the Transmission Bandwidth Configuration in number of Resource Blocks. For every
-pair :math:`(f_c,B)` used in the simulation we define a corresponding spectrum
+pair :math:`(f_c,B)` used in the simulation we define a corresponding SpectrumModel using the functionality provided by the :ref:`sec-spetrum-module` .
 model using the Spectrum framework described
 in [Baldo2009]_.  :math:`f_c` and :math:`B` can be configured for every eNB instantiated
 in the simulation; hence, each eNB can use a different spectrum model. Every UE
@@ -1270,6 +1270,84 @@ The scheduler implements the filtering of the uplink CQIs according to their nat
   - ``SRS_UL_CQI``: only SRS based CQI are stored in the internal attributes.
   - ``PUSCH_UL_CQI``: only PUSCH based CQI are stored in the internal attributes.
   - ``ALL_UL_CQI``: all CQIs are stored in the same internal attibute (i.e., the last CQI received is stored independently from its nature).
+
+
+Channel and QoS Aware Scheduler
+-------------------------------
+
+The Channel and QoS Aware (CQA) Scheduler [Bbojovic2014]_ is an LTE
+MAC downlink scheduling algorithm that considers the head of line
+(HOL) delay, the GBR parameters and channel quality over  
+different subbands. The CQA scheduler is based on joint TD and FD
+scheduling. 
+
+In the TD (at each TTI) the CQA scheduler groups users by
+priority. The purpose of grouping is to enforce the FD scheduling to
+consider first the flows with highest HOL delay. The grouping metric
+:math:`m_{td}` for user :math:`j=1,...,N` is defined in the  
+following way:
+
+.. math::
+
+    m_{td}^{j}(t) = \lceil\frac{d_{hol}^{j}(t)}{g}\rceil \;,
+
+where :math:`d_{hol}^{j}(t)` is the current value of HOL delay of flow
+:math:`j`, and :math:`g` is a grouping parameter that determines
+granularity of the groups, i.e. the number of the flows that will be
+considered in the FD scheduling iteration. 
+
+The groups of flows selected in the TD iteration are forwarded to the FD
+scheduling starting from the flows with the highest value of the
+:math:`m_{td}` metric until all RBGs are assigned in the corresponding
+TTI.  In the FD, for each RBG :math:`k=1,...,K`, the CQA scheduler
+assigns the current RBG to the user :math:`j` that has the maximum value of
+the FD metric which we define in the following way:
+
+.. math::
+
+  m_{fd}^{(k,j)}(t) = d_{HOL}^{j}(t) \cdot m_{GBR}^j(t) \cdot m_{ca}^{k,j}(t) \;,
+
+where :math:`m_{GBR}^j(t)` is calculated as follows:
+
+.. math::
+
+	m_{GBR}^j(t)=\frac{GBR^j}{\overline{R^j}(t)}=\frac{GBR^j}{(1-\alpha)\cdot\overline{R^j}(t-1)+\alpha \cdot r^j(t)} \;,
+	
+where :math:`GBR^j` is the bit rate specified in EPS bearer of the
+flow :math:`j`, :math:`\overline{R^j}(t)` is the past averaged throughput that is calculated with a 
+moving average, :math:`r^{j}(t)` is the throughput achieved at the
+time t, and :math:`\alpha` is a coefficient such that :math:`0 \le \alpha 
+\le1`.
+
+For :math:`m_{ca}^{(k,j)}(t)` we consider two different
+metrics: :math:`m_{pf}^{(k,j)}(t)` and :math:`m_{ff}^{(k,j)}(t)`. 
+:math:`m_{pf}` is the Proportional Fair metric which is defined as follows:
+
+.. math::
+
+   m_{pf}^{(k,j)}(t) = \frac{R_e^{(k,j)}}{\overline{R^j}(t)} \;,
+
+where :math:`R_e^{(k,j)}(t)` is the estimated achievable throughput of user
+:math:`j` over RBG :math:`k` calculated by the Adaptive Modulation and Coding
+(AMC) scheme that maps the channel quality indicator (CQI) value to
+the transport block size in bits. 
+
+The other channel awareness metric that we consider is :math:`m_{ff}` which
+is proposed in [GMonghal2008]_ and it represents the frequency
+selective fading gains over RBG :math:`k` for user :math:`j` and is calculated in
+the following way:
+
+.. math::
+
+  m_{ff}^{(k,j)}(t) = \frac{CQI^{(k,j)}(t)}{\sum_{k=1}^{K}CQI(t)^{(k,j)}} \;,
+
+where :math:`CQI^{(k,j)}(t)` is the last reported CQI value from user
+:math:`j` for the :math:`k`-th RBG.
+
+The user can select whether :math:`m_{pf}` or :math:`m_{ff}` is used
+by setting the attribute ``ns3::CqaFfMacScheduler::CqaMetric``
+respectively to ``"CqaPf"`` or ``"CqaFf"``.
+
 
 
 .. _sec-random-access:

@@ -32,7 +32,7 @@
 
 NS_LOG_COMPONENT_DEFINE ("Asn1EncodingTest");
 
-namespace ns3 {
+using namespace ns3;
 
 class TestUtils
 {
@@ -1031,6 +1031,4 @@ Asn1EncodingSuite::Asn1EncodingSuite ()
 }
 
 Asn1EncodingSuite asn1EncodingSuite;
-
-} // namespace ns3
 

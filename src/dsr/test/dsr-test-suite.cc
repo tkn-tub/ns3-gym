@@ -49,8 +49,8 @@
 #include "ns3/dsr-main-helper.h"
 #include "ns3/dsr-helper.h"
 
-namespace ns3 {
-namespace dsr {
+using namespace ns3;
+using namespace dsr;
 
 // -----------------------------------------------------------------------------
 // / Unit test for DSR Fixed Size Header
@@ -519,5 +519,3 @@ public:
     AddTestCase (new DsrSendBuffTest, TestCase::QUICK);
   }
 } g_dsrTestSuite;
-} // namespace dsr
-} // namespace ns3

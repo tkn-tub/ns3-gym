@@ -45,7 +45,7 @@
 
 NS_LOG_COMPONENT_DEFINE ("LteCellSelectionTest");
 
-namespace ns3 {
+using namespace ns3;
 
 
 /*
@@ -425,7 +425,3 @@ LteCellSelectionTestCase::ConnectionEstablishedCallback (
 {
   NS_LOG_FUNCTION (this << imsi << cellId << rnti);
 }
-
-
-
-} // end of namespace ns3

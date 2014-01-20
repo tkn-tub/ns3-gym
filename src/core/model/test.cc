@@ -73,6 +73,18 @@ struct TestCaseFailure
   std::string file;
   int32_t line;
 };
+std::ostream & operator << (std::ostream & os, const TestCaseFailure & failure)
+{
+  os << "    test=\""  << failure.cond
+     << "\" actual=\"" << failure.actual
+     << "\" limit=\""  << failure.limit
+     << "\" in=\""     << failure.file
+     << ":"            << failure.line 
+     << "\" "          << failure.message;
+
+  return os;
+}
+
 struct TestCase::Result
 {
   Result ();
@@ -592,10 +604,7 @@ TestRunnerImpl::PrintReport (TestCase *test, std::ostream *os, bool xml, int lev
         {
           for (uint32_t i = 0; i < test->m_result->failure.size (); i++)
             {
-              TestCaseFailure failure = test->m_result->failure[i];
-              *os << Indent (level) << "    got=\"" << failure.cond << "\" expected=\"" 
-                  << failure.actual << "\" in=\"" << failure.file << ":" << failure.line 
-                  << "\" " << failure.message << std::endl;
+              *os << Indent (level) << test->m_result->failure[i] << std::endl;
             }
           for (uint32_t i = 0; i < test->m_children.size (); i++)
             {

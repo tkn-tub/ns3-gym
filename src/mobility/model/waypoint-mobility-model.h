@@ -26,6 +26,8 @@
 #include "ns3/vector.h"
 #include "waypoint.h"
 
+class WaypointMobilityModelNotifyTest;
+
 namespace ns3 {
 
 /**
@@ -123,7 +125,7 @@ public:
   void EndMobility (void);
 
 private:
-  friend class WaypointMobilityModelNotifyTest; // To allow Update() calls and access to m_current
+  friend class ::WaypointMobilityModelNotifyTest; // To allow Update() calls and access to m_current
 
   void Update (void) const;
   virtual void DoDispose (void);

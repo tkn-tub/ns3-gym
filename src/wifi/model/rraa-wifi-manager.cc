@@ -32,6 +32,12 @@ NS_LOG_COMPONENT_DEFINE ("RraaWifiManager");
 
 namespace ns3 {
 
+/**
+ * \brief hold per-remote-station state for RRAA Wifi manager.
+ *
+ * This struct extends from WifiRemoteStation struct to hold additional
+ * information required by the RRAA Wifi manager
+ */
 struct RraaWifiRemoteStation : public WifiRemoteStation
 {
   uint32_t m_counter;

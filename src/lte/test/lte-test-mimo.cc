@@ -58,7 +58,7 @@
 
 NS_LOG_COMPONENT_DEFINE ("LteTestMimo");
 
-namespace ns3 {
+using namespace ns3;
 
 
 LenaTestMimoSuite::LenaTestMimoSuite ()
@@ -261,8 +261,3 @@ LenaMimoTestCase::GetRlcBufferSample (Ptr<RadioBearerStatsCalculator> rlcStats, 
   m_dlDataRxed.push_back (rlcStats->GetDlRxData (imsi, lcId));
   NS_LOG_INFO (Simulator::Now () << "\t get bytes " << m_dlDataRxed.at (m_dlDataRxed.size () - 1));
 }
-
-
-
-} // namespace ns3
-

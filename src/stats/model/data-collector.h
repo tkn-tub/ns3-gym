@@ -28,10 +28,6 @@
 
 namespace ns3 {
 
-/**
- * \ingroup stats
- *
- */
 class DataCalculator;
 
 //------------------------------------------------------------
@@ -46,7 +42,7 @@ typedef std::list<Ptr<DataCalculator> > DataCalculatorList;
 typedef std::list<std::pair<std::string, std::string> > MetadataList;
 
 /**
- * \ingroup stats
+ * \ingroup dataoutput
  * \class DataCollector
  * \brief Collects data 
  */
@@ -144,14 +140,14 @@ protected:
   virtual void DoDispose ();
 
 private:
-  std::string m_experimentLabel;
-  std::string m_strategyLabel;
-  std::string m_inputLabel;
-  std::string m_runLabel;
-  std::string m_description;
+  std::string m_experimentLabel; //!< Experiment label
+  std::string m_strategyLabel;   //!< Strategy label
+  std::string m_inputLabel;      //!< Input label
+  std::string m_runLabel;        //!< Run label
+  std::string m_description;     //!< Description label
 
-  MetadataList m_metadata;
-  DataCalculatorList m_calcList;
+  MetadataList m_metadata;       //!< List of experiment metadata
+  DataCalculatorList m_calcList; //!< List of data calculators
 
   // end class DataCollector
 };

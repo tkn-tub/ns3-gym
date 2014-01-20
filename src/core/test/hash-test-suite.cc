@@ -24,7 +24,7 @@
 #include "ns3/test.h"
 #include "ns3/hash.h"
 
-namespace ns3 {
+using namespace ns3;
 
 /**
  * Base class for hash tests
@@ -385,5 +385,3 @@ HashTestSuite::HashTestSuite ()
 }
 
 static HashTestSuite g_hashTestSuite;
-
-}  // namespace ns3

@@ -25,24 +25,34 @@
 
 namespace ns3 {
 
+/**
+ * \ingroup uan
+ *
+ * UAN Noise Model base class.
+ */
 class UanNoiseModel : public Object
 {
 public:
+  /**
+   * Register this type.
+   * \return The TypeId.
+   */
   static TypeId GetTypeId (void);
 
   /**
-   * \param fKhz Frequency in kHz
-   * \returns Noise power in dB re 1uPa/Hz
+   * Compute the noise power at a given frequency.
+   *
+   * \param fKhz Frequency in kHz.
+   * \return Noise power in dB re 1uPa/Hz.
    */
   virtual double GetNoiseDbHz (double fKhz) const = 0;
 
-  /**
-   * Clears all pointer references
-   */
+  /** Clear all pointer references. */
   virtual void Clear (void);
 
   virtual void DoDispose (void);
-};
+
+};  // class UanNoiseModel
 
 } // namespace ns3
 

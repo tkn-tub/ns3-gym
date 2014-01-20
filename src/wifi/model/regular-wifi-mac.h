@@ -234,19 +234,19 @@ protected:
   virtual void DoInitialize ();
   virtual void DoDispose ();
 
-  MacRxMiddle *m_rxMiddle;
-  MacTxMiddle *m_txMiddle;
-  Ptr<MacLow> m_low;
-  DcfManager *m_dcfManager;
-  Ptr<WifiPhy> m_phy;
+  MacRxMiddle *m_rxMiddle; //!< RX middle (de-fragmentation etc.)
+  MacTxMiddle *m_txMiddle; //!< TX middle (aggregation etc.)
+  Ptr<MacLow> m_low; //!< MacLow (RTS, CTS, DATA, ACK etc.)
+  DcfManager *m_dcfManager; //!< DCF manager (access to channel)
+  Ptr<WifiPhy> m_phy; //!< Wifi PHY
 
-  Ptr<WifiRemoteStationManager> m_stationManager;
+  Ptr<WifiRemoteStationManager> m_stationManager; //!< Remote station manager (rate control, RTS/CTS/fragmentation thresholds etc.)
 
-  ForwardUpCallback m_forwardUp;
-  Callback<void> m_linkUp;
-  Callback<void> m_linkDown;
+  ForwardUpCallback m_forwardUp; //!< Callback to forward packet up the stack
+  Callback<void> m_linkUp; //!< Callback when a link is up
+  Callback<void> m_linkDown; //!< Callback when a link is down
 
-  Ssid m_ssid;
+  Ssid m_ssid; //!< Service Set ID (SSID)
 
   /** This holds a pointer to the DCF instance for this WifiMac - used
   for transmission of frames to non-QoS peers. */
@@ -258,6 +258,38 @@ protected:
   /** This is a map from Access Category index to the corresponding
   channel access function */
   EdcaQueues m_edca;
+
+  /**
+   * Accessor for the DCF object
+   * 
+   * \return a smart pointer to DcaTxop
+   */
+  Ptr<DcaTxop> GetDcaTxop (void) const;
+
+  /**
+   * Accessor for the AC_VO channel access function
+   * 
+   * \return a smart pointer to EdcaTxopN
+   */
+  Ptr<EdcaTxopN> GetVOQueue (void) const;
+  /**
+   * Accessor for the AC_VI channel access function
+   * 
+   * \return a smart pointer to EdcaTxopN
+   */
+  Ptr<EdcaTxopN> GetVIQueue (void) const;
+  /**
+   * Accessor for the AC_BE channel access function
+   * 
+   * \return a smart pointer to EdcaTxopN
+   */
+  Ptr<EdcaTxopN> GetBEQueue (void) const;
+  /**
+   * Accessor for the AC_BK channel access function
+   * 
+   * \return a smart pointer to EdcaTxopN
+   */
+  Ptr<EdcaTxopN> GetBKQueue (void) const;
 
   /**
    * \param standard the phy standard to be used
@@ -407,38 +439,6 @@ private:
    * \param ac the Access Category index of the queue to initialise.
    */
   void SetupEdcaQueue (enum AcIndex ac);
-
-  /**
-   * Return the DCF.
-   *
-   * \return a DCF instance
-   */
-  Ptr<DcaTxop> GetDcaTxop (void) const;
-
-  /**
-   * Return the EDCAF instance for the voice access class.
-   *
-   * \return a AC_VO EDCAF instance
-   */
-  Ptr<EdcaTxopN> GetVOQueue (void) const;
-  /**
-   * Return the EDCAF instance for the video access class.
-   *
-   * \return a AC_VI EDCAF instance
-   */
-  Ptr<EdcaTxopN> GetVIQueue (void) const;
-  /**
-   * Return the EDCAF instance for the best effort access class.
-   *
-   * \return a AC_BE EDCAF instance
-   */
-  Ptr<EdcaTxopN> GetBEQueue (void) const;
-  /**
-   * Return the EDCAF instance for the background access class.
-   *
-   * \return a AC_BK EDCAF instance
-   */
-  Ptr<EdcaTxopN> GetBKQueue (void) const;
 
   TracedCallback<const WifiMacHeader &> m_txOkCallback;
   TracedCallback<const WifiMacHeader &> m_txErrCallback;

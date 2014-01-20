@@ -109,34 +109,48 @@ Ipv4FlowClassifier::Classify (const Ipv4Header &ipHeader, Ptr<const Packet> ipPa
       return false;
     }
 
+  if (ipHeader.GetFragmentOffset () > 0 )
+    {
+      // Ignore fragments: they don't carry a valid L4 header
+      return false;
+    }
+
   FiveTuple tuple;
   tuple.sourceAddress = ipHeader.GetSource ();
   tuple.destinationAddress = ipHeader.GetDestination ();
   tuple.protocol = ipHeader.GetProtocol ();
 
-  switch (tuple.protocol)
+  if ((tuple.protocol != UDP_PROT_NUMBER) && (tuple.protocol != TCP_PROT_NUMBER))
     {
-    case UDP_PROT_NUMBER:
-      {
-        UdpHeader udpHeader;
-        ipPayload->PeekHeader (udpHeader);
-        tuple.sourcePort = udpHeader.GetSourcePort ();
-        tuple.destinationPort = udpHeader.GetDestinationPort ();
-      }
-      break;
-
-    case TCP_PROT_NUMBER:
-      {
-        TcpHeader tcpHeader;
-        ipPayload->PeekHeader (tcpHeader);
-        tuple.sourcePort = tcpHeader.GetSourcePort ();
-        tuple.destinationPort = tcpHeader.GetDestinationPort ();
-      }
-      break;
-
-    default:
       return false;
     }
+
+  if (ipPayload->GetSize () < 4)
+    {
+      // the packet doesn't carry enough bytes
+      return false;
+    }
+
+  // we rely on the fact that for both TCP and UDP the ports are
+  // carried in the first 4 octects.
+  // This allows to read the ports even on fragmented packets
+  // not carrying a full TCP or UDP header.
+
+  uint8_t data[4];
+  ipPayload->CopyData (data, 4);
+
+  uint16_t srcPort = 0;
+  srcPort |= data[0];
+  srcPort <<= 8;
+  srcPort |= data[1];
+
+  uint16_t dstPort = 0;
+  dstPort |= data[2];
+  dstPort <<= 8;
+  dstPort |= data[3];
+
+  tuple.sourcePort = srcPort;
+  tuple.destinationPort = dstPort;
 
   // try to insert the tuple, but check if it already exists
   std::pair<std::map<FiveTuple, FlowId>::iterator, bool> insert

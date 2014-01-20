@@ -14,34 +14,13 @@ NS_LOG_COMPONENT_DEFINE ("int64x64");
 
 namespace ns3 {
 
-static uint8_t MostSignificantDigit (uint64_t value)
-{
-  uint8_t n = 0;
-  do
-    {
-      n++;
-      value /= 10;
-    } while (value != 0);
-  return n;
-}
-
-static uint64_t PowerOfTen (uint8_t n)
-{
-  uint64_t retval = 1;
-  while (n > 0)
-    {
-      retval *= 10;
-      n--;
-    }
-  return retval;
-}
-
 std::ostream &operator << (std::ostream &os, const int64x64_t &value)
 {
   int64_t hi = value.GetHigh ();
 
   // Save stream format flags
   std::ios_base::fmtflags ff = os.flags ();
+  os << std::setw (1);
 
   { /// \internal
     /// See \bugid{1737}:  gcc libstc++ 4.2 bug
@@ -55,24 +34,41 @@ std::ostream &operator << (std::ostream &os, const int64x64_t &value)
       }
   }
   
-  os << hi << ".";
-  os.flags (ff);  // Restore stream flags
+  os << std::right << hi << ".";
 
-  uint64_t low = value.GetLow ();
-  uint8_t msd = MostSignificantDigit (~((uint64_t)0));
-  do
+  os << std::noshowpos;
+
+  int64x64_t low(0, value.GetLow ());
+  int places = 0;    // Number of decimal places printed so far
+  const bool floatfield = os.flags () & std::ios_base::floatfield;
+  bool more = true;  // Should we print more digits?
+
+  do 
     {
-      msd--;
-      uint64_t pow = PowerOfTen (msd);
-      uint8_t digit = low / pow;
-      NS_ASSERT (digit < 10);
-      os << (uint16_t) digit;
-      low -= digit * pow;
-    } while (msd > 0 && low > 0);
+      low = 10 * low;
+      int64_t digit = low.GetHigh ();
+      low -= digit;
+
+      os << std::setw (1) << digit;
+
+      ++places;
+      if (floatfield)
+	{
+	  more = places < os.precision ();
+	}
+      else  // default
+	{
+	  // Full resolution is 20 decimal digits
+	  more = low.GetLow () && (places < 20);
+	}
+
+    } while (more);
+
+  os.flags (ff);  // Restore stream flags
   return os;
 }
 
-static uint64_t ReadDigits (std::string str)
+static uint64_t ReadHiDigits (std::string str)
 {
   const char *buf = str.c_str ();
   uint64_t retval = 0;
@@ -85,6 +81,22 @@ static uint64_t ReadDigits (std::string str)
   return retval;
 }
 
+static uint64_t ReadLoDigits (std::string str)
+{
+  int64x64_t low (0, 0);
+  const int64x64_t round (0, 5);
+
+  for (std::string::const_reverse_iterator rchar = str.rbegin ();
+       rchar != str.rend ();
+       ++rchar)
+    {
+      int digit = *rchar - '0';
+      low = (low + digit + round) / 10; 
+    }
+  
+  return low.GetLow ();
+}
+    
 std::istream &operator >> (std::istream &is, int64x64_t &value)
 {
   std::string str;
@@ -121,12 +133,12 @@ std::istream &operator >> (std::istream &is, int64x64_t &value)
   next = str.find (".", cur);
   if (next != std::string::npos)
     {
-      hi = ReadDigits (str.substr (cur, next-cur));
-      lo = ReadDigits (str.substr (next+1, str.size ()-(next+1)));
+      hi = ReadHiDigits (str.substr (cur, next-cur));
+      lo = ReadLoDigits (str.substr (next+1, str.size ()-(next+1)));
     }
   else
     {
-      hi = ReadDigits (str.substr (cur, str.size ()-cur));
+      hi = ReadHiDigits (str.substr (cur, str.size ()-cur));
       lo = 0;
     }
   hi = negative ? -hi : hi;

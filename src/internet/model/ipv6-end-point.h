@@ -27,6 +27,7 @@
 #include "ns3/callback.h"
 #include "ns3/ipv6-header.h"
 #include "ns3/net-device.h"
+#include "ns3/ipv6-interface.h"
 
 namespace ns3
 {
@@ -134,7 +135,7 @@ public:
    * \brief Set the reception callback.
    * \param callback callback function
    */
-  void SetRxCallback (Callback<void, Ptr<Packet>, Ipv6Header, uint16_t> callback);
+  void SetRxCallback (Callback<void, Ptr<Packet>, Ipv6Header, uint16_t, Ptr<Ipv6Interface> > callback);
 
   /**
    * \brief Set the ICMP callback.
@@ -157,8 +158,9 @@ public:
    * \param p the packet
    * \param header the packet header
    * \param port source port
+   * \param incomingInterface incoming interface
    */
-  void ForwardUp (Ptr<Packet> p, Ipv6Header header, uint16_t port);
+  void ForwardUp (Ptr<Packet> p, Ipv6Header header, uint16_t port, Ptr<Ipv6Interface> incomingInterface);
 
   /**
    * \brief Forward the ICMP packet to the upper level.
@@ -181,8 +183,9 @@ private:
    * \param p packet
    * \param header the packet header
    * \param sport source port
+   * \param incomingInterface incoming interface
    */
-  void DoForwardUp (Ptr<Packet> p, Ipv6Header header, uint16_t sport);
+  void DoForwardUp (Ptr<Packet> p, Ipv6Header header, uint16_t sport, Ptr<Ipv6Interface> incomingInterface);
 
   /**
    * \brief ForwardIcmp wrapper.
@@ -223,7 +226,7 @@ private:
   /**
    * \brief The RX callback.
    */
-  Callback<void, Ptr<Packet>, Ipv6Header, uint16_t> m_rxCallback;
+  Callback<void, Ptr<Packet>, Ipv6Header, uint16_t, Ptr<Ipv6Interface> > m_rxCallback;
 
   /**
    * \brief The ICMPv6 callback.

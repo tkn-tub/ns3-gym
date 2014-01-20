@@ -28,7 +28,8 @@ namespace ns3 {
 /**
  * \ingroup udpclientserver
  * \class SeqTsHeader
- * \brief Packet header for Udp client/server application
+ * \brief Packet header for UDP client/server application.
+ *
  * The header is made of a 32bits sequence number followed by
  * a 64bits time stamp.
  */
@@ -50,16 +51,21 @@ public:
    */
   Time GetTs (void) const;
 
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
-private:
+
   virtual TypeId GetInstanceTypeId (void) const;
   virtual void Print (std::ostream &os) const;
   virtual uint32_t GetSerializedSize (void) const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
 
-  uint32_t m_seq;
-  uint64_t m_ts;
+private:
+  uint32_t m_seq; //!< Sequence number
+  uint64_t m_ts; //!< Timestamp
 };
 
 } // namespace ns3

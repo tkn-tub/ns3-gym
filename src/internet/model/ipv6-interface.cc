@@ -116,8 +116,13 @@ void Ipv6Interface::DoSetup ()
       return; /* no NDISC cache for ip6-localhost */
     }
 
-  Ptr<Icmpv6L4Protocol> icmpv6 = m_node->GetObject<Ipv6L3Protocol> ()->GetIcmpv6 ();
-  if (m_device->NeedsArp ())
+  Ptr<IpL4Protocol> proto = m_node->GetObject<Ipv6> ()->GetProtocol (Icmpv6L4Protocol::GetStaticProtocolNumber ());
+  Ptr<Icmpv6L4Protocol> icmpv6;
+  if (proto)
+    {
+      icmpv6 = proto->GetObject <Icmpv6L4Protocol> ();
+    }
+  if (icmpv6)
     {
       m_ndCache = icmpv6->CreateCache (m_device, this);
     }
@@ -183,6 +188,7 @@ void Ipv6Interface::SetDown ()
   NS_LOG_FUNCTION_NOARGS ();
   m_ifup = false;
   m_addresses.clear ();
+  m_ndCache->Flush ();
 }
 
 bool Ipv6Interface::IsForwarding () const
@@ -218,7 +224,12 @@ bool Ipv6Interface::AddAddress (Ipv6InterfaceAddress iface)
       if (!addr.IsAny () || !addr.IsLocalhost ())
         {
           /* DAD handling */
-          Ptr<Icmpv6L4Protocol> icmpv6 = m_node->GetObject<Ipv6L3Protocol> ()->GetIcmpv6 ();
+          Ptr<IpL4Protocol> proto = m_node->GetObject<Ipv6> ()->GetProtocol (Icmpv6L4Protocol::GetStaticProtocolNumber ());
+          Ptr<Icmpv6L4Protocol> icmpv6;
+          if (proto)
+            {
+              icmpv6 = proto->GetObject <Icmpv6L4Protocol> ();
+            }
 
           if (icmpv6 && icmpv6->IsAlwaysDad ())
             {

@@ -24,6 +24,9 @@
 
 namespace ns3 {
 
+/**
+ * Enumeration for different block ACK policies.
+ */
 enum BlockAckType
 {
   BASIC_BLOCK_ACK,
@@ -55,23 +58,101 @@ public:
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
 
+  /**
+   * Enable or disable HT immediate ACK.
+   *
+   * \param immediateAck enable or disable HT immediate ACK
+   */
   void SetHtImmediateAck (bool immediateAck);
+  /**
+   * Set the block ACK type.
+   *
+   * \param type
+   */
   void SetType (enum BlockAckType type);
+  /**
+   * Set Traffic ID (TID).
+   *
+   * \param tid
+   */
   void SetTidInfo (uint8_t tid);
+  /**
+   * Set the starting sequence number from the given 
+   * raw sequence control field.
+   *
+   * \param seq the raw sequence control 
+   */
   void SetStartingSequence (uint16_t seq);
 
+  /**
+   * Check if the current ACK policy is immediate.
+   *
+   * \return true if the current ACK policy is immediate,
+   *         false otherwise
+   */
   bool MustSendHtImmediateAck (void) const;
+  /**
+   * Return the Traffic ID (TID).
+   *
+   * \return TID
+   */
   uint8_t GetTidInfo (void) const;
+  /**
+   * Return the starting sequence number.
+   *
+   * \return the starting sequence number
+   */
   uint16_t GetStartingSequence (void) const;
+  /**
+   * Check if the current ACK policy is basic
+   * (i.e. not multiple TID and not compressed ACK).
+   *
+   * \return true if the current ACK policy is basic,
+   *         false otherwise
+   */
   bool IsBasic (void) const;
+  /**
+   * Check if the current ACK policy is compressed ACK
+   * and not multiple TID.
+   *
+   * \return true if the current ACK policy is compressed ACK,
+   *         false otherwise
+   */
   bool IsCompressed (void) const;
+  /**
+   * Check if the current ACK policy has multiple TID.
+   *
+   * \return true if the current ACK policy has multiple TID,
+   *         false otherwise
+   */
   bool IsMultiTid (void) const;
 
+  /**
+   * Return the starting sequence control.
+   *
+   * \return the starting sequence control
+   */
   uint16_t GetStartingSequenceControl (void) const;
 
 private:
+  /**
+   * Set the starting sequence control with the given
+   * sequence control value
+   *
+   * \param seqControl
+   */
   void SetStartingSequenceControl (uint16_t seqControl);
+  /**
+   * Return the Block ACK control.
+   *
+   * \return the Block ACK control
+   */
   uint16_t GetBarControl (void) const;
+  /**
+   * Set the Block ACK control.
+   *
+   * \param bar
+   */
   void SetBarControl (uint16_t bar);
 
   /**
@@ -111,35 +192,169 @@ public:
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
 
-  void SetHtImmediateAck (bool immeadiateAck);
+  /**
+   * Enable or disable HT immediate ACK.
+   *
+   * \param immediateAck enable or disable HT immediate ACK
+   */
+  void SetHtImmediateAck (bool immediateAck);
+  /**
+   * Set the block ACK type.
+   *
+   * \param type
+   */
   void SetType (enum BlockAckType type);
+  /**
+   * Set Traffic ID (TID).
+   *
+   * \param tid
+   */
   void SetTidInfo (uint8_t tid);
+  /**
+   * Set the starting sequence number from the given 
+   * raw sequence control field.
+   *
+   * \param seq the raw sequence control 
+   */
   void SetStartingSequence (uint16_t seq);
 
+  /**
+   * Check if the current ACK policy is immediate.
+   *
+   * \return true if the current ACK policy is immediate,
+   *         false otherwise
+   */
   bool MustSendHtImmediateAck (void) const;
+  /**
+   * Return the Traffic ID (TID).
+   *
+   * \return TID
+   */
   uint8_t GetTidInfo (void) const;
+  /**
+   * Return the starting sequence number.
+   *
+   * \return the starting sequence number
+   */
   uint16_t GetStartingSequence (void) const;
+  /**
+   * Check if the current ACK policy is basic
+   * (i.e. not multiple TID and not compressed ACK).
+   *
+   * \return true if the current ACK policy is basic,
+   *         false otherwise
+   */
   bool IsBasic (void) const;
+  /**
+   * Check if the current ACK policy is compressed ACK
+   * and not multiple TID.
+   *
+   * \return true if the current ACK policy is compressed ACK,
+   *         false otherwise
+   */
   bool IsCompressed (void) const;
+  /**
+   * Check if the current ACK policy has multiple TID.
+   *
+   * \return true if the current ACK policy has multiple TID,
+   *         false otherwise
+   */
   bool IsMultiTid (void) const;
 
+  /**
+   * Set the bitmap that the packet with the given sequence
+   * number was received.
+   *
+   * \param seq
+   */
   void SetReceivedPacket (uint16_t seq);
+  /**
+   * Set the bitmap that the packet with the given sequence
+   * number and fragment number was received.
+   *
+   * \param seq
+   * \param frag
+   */
   void SetReceivedFragment (uint16_t seq, uint8_t frag);
+  /**
+   * Check if the packet with the given sequence number
+   * was ACKed in this Block ACK response.
+   *
+   * \param seq
+   * \return true if the packet with the given sequence number
+   *         was ACKed in this Block ACK response, false otherwise
+   */
   bool IsPacketReceived (uint16_t seq) const;
+  /**
+   * Check if the packet with the given sequence number
+   * and fragment number was ACKed in this Block ACK response.
+   *
+   * \param seq
+   * \param frag
+   * \return true if the packet with the given sequence number
+   *         and sequence number was ACKed in this Block ACK response,
+   *         false otherwise
+   */
   bool IsFragmentReceived (uint16_t seq, uint8_t frag) const;
 
+  /**
+   * Return the starting sequence control.
+   *
+   * \return the starting sequence control
+   */
   uint16_t GetStartingSequenceControl (void) const;
+  /**
+   * Set the starting sequence control with the given
+   * sequence control value
+   *
+   * \param seqControl
+   */
   void SetStartingSequenceControl (uint16_t seqControl);
+  /**
+   * Return the bitmap from the block ACK response header.
+   *
+   * \return the bitmap from the block ACK response header
+   */
   const uint16_t* GetBitmap (void) const;
+  /**
+   * Return the compressed bitmap from the block ACK response header.
+   *
+   * \return the compressed bitmap from the block ACK response header
+   */
   uint64_t GetCompressedBitmap (void) const;
 
+  /**
+   * Reset the bitmap to 0.
+   */
   void ResetBitmap (void);
 
 private:
+  /**
+   * Return the block ACK control.
+   *
+   * \return the block ACK control
+   */
   uint16_t GetBaControl (void) const;
+  /**
+   * Set the block ACK control.
+   *
+   * \param bar
+   */
   void SetBaControl (uint16_t bar);
 
+  /**
+   * Serialize bitmap to the given buffer.
+   *
+   * \param start
+   * \return Buffer::Iterator to the next available buffer
+   */
   Buffer::Iterator SerializeBitmap (Buffer::Iterator start) const;
+  /**
+   * Deserialize bitmap from the given buffer.
+   *
+   * \param start
+   * \return Buffer::Iterator to the next available buffer
+   */
   Buffer::Iterator DeserializeBitmap (Buffer::Iterator start);
 
   /**

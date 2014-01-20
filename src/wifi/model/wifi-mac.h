@@ -334,13 +334,29 @@ private:
    * Trsp timer setting at page 346)
    */
   static Time GetDefaultCtsAckTimeout (void);
+  /**
+   * Return the default basic block ACK delay.
+   * Currently it returns 250 microseconds.
+   *
+   * \return the default basic block ACK delay
+   */
   static Time GetDefaultBasicBlockAckDelay (void);
   /**
+   * Return the default basic block ACK timeout.
+   *
    * \return the default basic block ACK timeout
    */
   static Time GetDefaultBasicBlockAckTimeout (void);
+  /**
+   * Return the default compressed block ACK delay.
+   * Currently it returns 76 microseconds.
+   *
+   * \return the default compressed block ACK delay
+   */
   static Time GetDefaultCompressedBlockAckDelay (void);
   /**
+   * Return the default compressed block ACK timeout.
+   *
    * \return the default compressed block ACK timeout
    */
   static Time GetDefaultCompressedBlockAckTimeout (void);

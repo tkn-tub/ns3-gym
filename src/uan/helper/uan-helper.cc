@@ -43,12 +43,30 @@
 NS_LOG_COMPONENT_DEFINE ("UanHelper");
 namespace ns3 {
 
+/**
+ * Ascii trace callback on Phy transmit events.
+ *
+ * \param os The output stream.
+ * \param context The node and device ids.
+ * \param packet The transmitted packet.
+ * \param txPowerDb The transmission power.
+ * \param mode The transmission mode.
+ */
 static void AsciiPhyTxEvent (std::ostream *os, std::string context,
                              Ptr<const Packet> packet, double txPowerDb, UanTxMode mode)
 {
   *os << "+ " << Simulator::Now ().GetSeconds () << " " << context << " " << *packet << std::endl;
 }
 
+/**
+ * Ascii trace callback on successful packet reception.
+ *
+ * \param os The output stream.
+ * \param context The node and device ids.
+ * \param packet The received packet.
+ * \param snr The received signal to noise ratio.
+ * \param mode The channel transmission mode.
+ */
 static void AsciiPhyRxOkEvent (std::ostream *os, std::string context,
                                Ptr<const Packet> packet, double snr, UanTxMode mode)
 {

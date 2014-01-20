@@ -22,12 +22,132 @@ Supported platforms
 New user-visible features
 -------------------------
 
+- a new LTE MAC downlink scheduling algorithm named Channel and QoS
+  Aware (CQA) Scheduler is provided by the new
+  ``ns3::CqaFfMacScheduler`` object.
+  
+
 Bugs fixed
 ----------
+- Bug 1739 - The endpoint is not deallocated for UDP sockets
+- Bug 1786 - os << int64x64_t prints un-normalized fractional values
+- Bug 1821 - Setting an interface to Down state will cause various asserts in IPv6
+- Bug 1837 - AODV crashes when using multiple interfaces
+- Bug 1838 - FlowMonitorHelper must not be copied.
+
+Release 3.19
+=============
+
+Availability
+------------
+This release is available from:
+http://www.nsnam.org/release/ns-allinone-3.19.tar.bz2
+
+Supported platforms
+-------------------
+These platforms have been tested; others may work also:
+- Fedora Core 20 (32 bit) with g++-4.8.2
+- Fedora Core 19 (32/64 bit) with g++-4.8.1
+- Ubuntu 13.10 (64 bit) with g++-4.8.1
+- Ubuntu 12.04.3 (32/64 bit) with g++-4.6.3
+- Ubuntu 10.04.4 LTS (64 bit) with g++-4.4.3
+- OS X Mavericks 10.9 with Xcode 5.0.1 and clang-500.2.79
+- OS X Mountain Lion 10.8.5 with Xcode 5 and g++-4.2.1
+- FreeBSD 9.2-RELEASE (64 bit) with clang-3.3
+
+New user-visible features
+-------------------------
+- Extension to UE measurements and improved handover algorithm models in LTE
+  module, as the outcome of GSoC 2013 project. The project also includes several
+  sub-features, such as:
+   - implementation of System Information Block Type 1 (SIB1);
+   - a new option for automatic UE attachment using Idle mode cell selection
+     procedure;
+   - improved configurability of UE measurements; and
+   - two options of handover algorithms for enabling automatic handover trigger
+     in LTE simulation: A2-A4-RSRQ and strongest cell (A3-RSRP).
+
+- A new FixedRoomPositionAllocator has been added to the buildings
+  module. It allows one to generate a random position uniformly
+  distributed in the volume of a chosen room inside a chosen building.  
+
+- A new attribute ns3::LteRlcAm::TxOpportunityForRetxAlwaysBigEnough
+  allows to overcome the lack for re-segmentation in the RLC AM
+  implementation by assuming that the size of a TxOpportunity is
+  always big enough for the RLC AM PDU to be retransmitted.
+
+- After some profiling, the code of LteMiErrorModel has been optimized
+  for speed, resulting in a significantly lower execution time of the
+  LTE model when used with the error model enabled.
+
+- A new WiFi extension for vehicular simulation support is available in 
+  the src/wave directory.  The current code represents an interim capability 
+  to realize an IEEE 802.11p-compliant device, but without the WAVE 
+  extensions (which are planned for a later patch).  The WaveNetDevice 
+  modelled herein enforces that a WAVE-compliant physical layer (at 5.9 GHz)
+  is selected, and does not require any association between devices (similar 
+  to an adhoc WiFi MAC), but is otherwise similar (at this time) to a 
+  WifiNetDevice.  WAVE capabililties of switching between control and 
+  service channels, or using multiple radios, are not yet modelled.
+
+- A new IPv6 over Low power Wireless Personal Area Networks (6LoWPAN) model
+  is available.  Using ns-3's naming convention, the acronym is expanded
+  to SixLowPanNetDevice.   The SixLowPanNetDevice is able to act as a 
+  shim between IPv6 and a NetDevice, compressing IPv6 headers according 
+  to RFCs 4944 and 6262.  The SixLowPanNetDevice is meant to be used over 
+  IEEE 802.15.4 NetDevices, but it can be used on other NetDevices as 
+  well (see the manual for full details).  This model precedes the
+  general availability of an 802.15.4 model, so must be run in conjunction
+  with a wired NetDevice model for now, or with experimental versions of
+  802.15.4 models.
+
+- It is now possible to use Ipv6PacketInfoTag from UDP applications in the
+  same way as with Ipv4PacketInfoTag. See Doxygen for current limitations in
+  using Ipv[4,6]PacketInfoTag to set IP properties.
+  
+- Ipv[4,6]Interfaces not respecting the minimum MTU requirements (68 octects
+  for IPv4 and 1280 octects for IPv6) will be automatically set as Down.
+  
+- IPv6 addresses and routing tables are printed in a more conventional way,
+  closely matching the Linux "route -A inet6" command.
+
+- Additional time units (Year, Day, Hour, Minute) were added to the time
+  value class that represents simulation time; the largest unit prior to 
+  this addition was Second.
+
+- A new parallel scheduling algorithm based on null messages, a common 
+  parallel DES scheduling algorithm, has been added.  The null message 
+  scheduler has better scaling properties when running on some scenarios
+  with large numbers of nodes since it does not require a global 
+  communication.
+  
+Bugs fixed
+----------
+- Bug 1496 - Option to print log level in NS_LOG messages, and documentation.
+- Bug 1592 - Parsing bug in FlowMonitor example script
+- Bug 1756 - RLC AM Mode State Variable Bug
+- Bug 1763 - Message 3 should be sent using the UL GRANT in the RAR
 - Bug 1778 - Implement TapBridge::IsLinkUp() function
 - Bug 1777 - Implement the more direct way of "using" configuration of existing tap interface
 - Bug 1776 - Improve CRC performance for CsmaNetDevice in emulation modes
+- Bug 1788 - unused private field warning
+- Bug 1789 - missing test condition for sigma in buildings-shadowing-test
+- Bug 1796 - Ipv6PacketInfoTag is not filled by UdpSocketImpl::ForwardUp6
 - Bug 1798 - Changing the rate of onOffApplication might stop transmission
+- Bug 1802 - FlowMon header deserialization problem with IPv4 fragments
+- Bug 1803 - Lookup /NodeList/4/DeviceList/0/LteEnbRrc/UeMap/0 got no matches
+- Bug 1807 - Multiple bugs in Ipv4L3Protocol::LocalDeliver
+- Bug 1810 - IP packets can be sent on NetDevices not respecting the minimum MTU requirements
+- Bug 1814 - IPv6 Packet with length not multiple of 8 bytes are fragmented incorrectly.
+- Bug 1815 - Python bindings compilation with clang compiler toolchain
+- Bug 1816 - IPv4 fragmentation loses Packet tags
+
+Release 3.18.2
+==============
+
+ns-allinone-3.18.2 was released to include a bake configuration file update
+for Direct Code Execution.  The ns-3 code in this release was unchanged
+from that of ns-3.18.1.
 
 Release 3.18.1
 ==============

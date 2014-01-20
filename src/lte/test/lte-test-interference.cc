@@ -41,7 +41,7 @@
 
 NS_LOG_COMPONENT_DEFINE ("LteInterferenceTest");
 
-namespace ns3 {
+using namespace ns3;
 
 
 void
@@ -248,6 +248,3 @@ LteInterferenceTestCase::UlScheduling (uint32_t frameNo, uint32_t subframeNo, ui
       NS_TEST_ASSERT_MSG_EQ ((uint32_t)mcs, (uint32_t)m_ulMcs, "Wrong UL MCS");
     }
 }
-
-} // namespace ns3
-

@@ -101,8 +101,8 @@ public:
   int64_t AssignStreams (int64_t stream);
 
 private:
-  YansWifiChannel& operator = (const YansWifiChannel &);
-  YansWifiChannel (const YansWifiChannel &);
+  //YansWifiChannel& operator = (const YansWifiChannel &);
+  //YansWifiChannel (const YansWifiChannel &);
 
   /**
    * A vector of pointers to YansWifiPhy.
@@ -123,9 +123,9 @@ private:
                 WifiTxVector txVector, WifiPreamble preamble) const;
 
 
-  PhyList m_phyList;
-  Ptr<PropagationLossModel> m_loss;
-  Ptr<PropagationDelayModel> m_delay;
+  PhyList m_phyList; //!< List of YansWifiPhys connected to this YansWifiChannel
+  Ptr<PropagationLossModel> m_loss; //!< Propagation loss model
+  Ptr<PropagationDelayModel> m_delay; //!< Propagation delay model
 };
 
 } // namespace ns3

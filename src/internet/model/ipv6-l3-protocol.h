@@ -30,6 +30,8 @@
 #include "ns3/ipv6-header.h"
 #include "ns3/ipv6-pmtu-cache.h"
 
+class Ipv6L3ProtocolTestCase;
+
 namespace ns3
 {
 
@@ -116,7 +118,7 @@ public:
    * \param protocolNumber protocol number
    * \return corresponding Ipv6L4Protocol or 0 if not found
    */
-  Ptr<IpL4Protocol> GetProtocol (int protocolNumber) const;
+  virtual Ptr<IpL4Protocol> GetProtocol (int protocolNumber) const;
 
   /**
    * \brief Create raw IPv6 socket.
@@ -382,7 +384,7 @@ protected:
 
 private:
   /* for unit-tests */
-  friend class Ipv6L3ProtocolTestCase;
+  friend class ::Ipv6L3ProtocolTestCase;
   friend class Ipv6ExtensionLooseRouting;
 
   /**

@@ -44,8 +44,8 @@
 #include "ns3/rng-seed-manager.h"
 #include <sstream>
 
-namespace ns3 {
-namespace aodv {
+using namespace ns3;
+using namespace aodv;
 //-----------------------------------------------------------------------------
 // Test suite
 //-----------------------------------------------------------------------------
@@ -191,7 +191,4 @@ ChainRegressionTest::CheckResults ()
     {
       NS_PCAP_TEST_EXPECT_EQ (m_prefix << "-" << i << "-0.pcap");
     }
-}
-
-}
 }

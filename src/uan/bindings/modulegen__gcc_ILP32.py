@@ -179,7 +179,7 @@ def register_types(module):
     ## nstime.h (module 'core'): ns3::Time [class]
     module.add_class('Time', import_from_module='ns.core')
     ## nstime.h (module 'core'): ns3::Time::Unit [enumeration]
-    module.add_enum('Unit', ['S', 'MS', 'US', 'NS', 'PS', 'FS', 'LAST'], outer_class=root_module['ns3::Time'], import_from_module='ns.core')
+    module.add_enum('Unit', ['Y', 'D', 'H', 'MIN', 'S', 'MS', 'US', 'NS', 'PS', 'FS', 'LAST'], outer_class=root_module['ns3::Time'], import_from_module='ns.core')
     ## nstime.h (module 'core'): ns3::Time [class]
     root_module['ns3::Time'].implicitly_converts_to(root_module['ns3::int64x64_t'])
     ## trace-source-accessor.h (module 'core'): ns3::TraceSourceAccessor [class]
@@ -1569,10 +1569,11 @@ def register_Ns3Ipv6Address_methods(root_module, cls):
                    'bool', 
                    [param('ns3::Ipv6Address const &', 'other')], 
                    is_const=True)
-    ## ipv6-address.h (module 'network'): bool ns3::Ipv6Address::IsIpv4MappedAddress() [member function]
+    ## ipv6-address.h (module 'network'): bool ns3::Ipv6Address::IsIpv4MappedAddress() const [member function]
     cls.add_method('IsIpv4MappedAddress', 
                    'bool', 
-                   [])
+                   [], 
+                   is_const=True)
     ## ipv6-address.h (module 'network'): bool ns3::Ipv6Address::IsLinkLocal() const [member function]
     cls.add_method('IsLinkLocal', 
                    'bool', 
@@ -3497,6 +3498,11 @@ def register_Ns3Time_methods(root_module, cls):
                    'ns3::Time', 
                    [param('uint64_t', 'value'), param('ns3::Time::Unit', 'timeUnit')], 
                    is_static=True)
+    ## nstime.h (module 'core'): double ns3::Time::GetDays() const [member function]
+    cls.add_method('GetDays', 
+                   'double', 
+                   [], 
+                   is_const=True)
     ## nstime.h (module 'core'): double ns3::Time::GetDouble() const [member function]
     cls.add_method('GetDouble', 
                    'double', 
@@ -3505,6 +3511,11 @@ def register_Ns3Time_methods(root_module, cls):
     ## nstime.h (module 'core'): int64_t ns3::Time::GetFemtoSeconds() const [member function]
     cls.add_method('GetFemtoSeconds', 
                    'int64_t', 
+                   [], 
+                   is_const=True)
+    ## nstime.h (module 'core'): double ns3::Time::GetHours() const [member function]
+    cls.add_method('GetHours', 
+                   'double', 
                    [], 
                    is_const=True)
     ## nstime.h (module 'core'): int64_t ns3::Time::GetInteger() const [member function]
@@ -3520,6 +3531,11 @@ def register_Ns3Time_methods(root_module, cls):
     ## nstime.h (module 'core'): int64_t ns3::Time::GetMilliSeconds() const [member function]
     cls.add_method('GetMilliSeconds', 
                    'int64_t', 
+                   [], 
+                   is_const=True)
+    ## nstime.h (module 'core'): double ns3::Time::GetMinutes() const [member function]
+    cls.add_method('GetMinutes', 
+                   'double', 
                    [], 
                    is_const=True)
     ## nstime.h (module 'core'): int64_t ns3::Time::GetNanoSeconds() const [member function]
@@ -3545,6 +3561,11 @@ def register_Ns3Time_methods(root_module, cls):
     ## nstime.h (module 'core'): int64_t ns3::Time::GetTimeStep() const [member function]
     cls.add_method('GetTimeStep', 
                    'int64_t', 
+                   [], 
+                   is_const=True)
+    ## nstime.h (module 'core'): double ns3::Time::GetYears() const [member function]
+    cls.add_method('GetYears', 
+                   'double', 
                    [], 
                    is_const=True)
     ## nstime.h (module 'core'): bool ns3::Time::IsNegative() const [member function]
@@ -4748,11 +4769,6 @@ def register_Ns3UanPhyCalcSinr_methods(root_module, cls):
                    'double', 
                    [param('double', 'db')], 
                    is_const=True)
-    ## uan-phy.h (module 'uan'): void ns3::UanPhyCalcSinr::DoDispose() [member function]
-    cls.add_method('DoDispose', 
-                   'void', 
-                   [], 
-                   is_virtual=True)
     ## uan-phy.h (module 'uan'): static ns3::TypeId ns3::UanPhyCalcSinr::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -4763,6 +4779,11 @@ def register_Ns3UanPhyCalcSinr_methods(root_module, cls):
                    'double', 
                    [param('double', 'kp')], 
                    is_const=True)
+    ## uan-phy.h (module 'uan'): void ns3::UanPhyCalcSinr::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
     return
 
 def register_Ns3UanPhyCalcSinrDefault_methods(root_module, cls):
@@ -5135,14 +5156,14 @@ def register_Ns3UanPhyDual_methods(root_module, cls):
                    'void', 
                    [param('double', 'txpwr')], 
                    is_virtual=True)
-    ## uan-phy-dual.h (module 'uan'): void ns3::UanPhyDual::SetTxPowerDbPhy1(double arg0) [member function]
+    ## uan-phy-dual.h (module 'uan'): void ns3::UanPhyDual::SetTxPowerDbPhy1(double txpwr) [member function]
     cls.add_method('SetTxPowerDbPhy1', 
                    'void', 
-                   [param('double', 'arg0')])
-    ## uan-phy-dual.h (module 'uan'): void ns3::UanPhyDual::SetTxPowerDbPhy2(double arg0) [member function]
+                   [param('double', 'txpwr')])
+    ## uan-phy-dual.h (module 'uan'): void ns3::UanPhyDual::SetTxPowerDbPhy2(double txpwr) [member function]
     cls.add_method('SetTxPowerDbPhy2', 
                    'void', 
-                   [param('double', 'arg0')])
+                   [param('double', 'txpwr')])
     ## uan-phy-dual.h (module 'uan'): void ns3::UanPhyDual::StartRxPacket(ns3::Ptr<ns3::Packet> pkt, double rxPowerDb, ns3::UanTxMode txMode, ns3::UanPdp pdp) [member function]
     cls.add_method('StartRxPacket', 
                    'void', 
@@ -5372,16 +5393,16 @@ def register_Ns3UanPhyPer_methods(root_module, cls):
                    'void', 
                    [], 
                    is_virtual=True)
-    ## uan-phy.h (module 'uan'): void ns3::UanPhyPer::DoDispose() [member function]
-    cls.add_method('DoDispose', 
-                   'void', 
-                   [], 
-                   is_virtual=True)
     ## uan-phy.h (module 'uan'): static ns3::TypeId ns3::UanPhyPer::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## uan-phy.h (module 'uan'): void ns3::UanPhyPer::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
     return
 
 def register_Ns3UanPhyPerGenDefault_methods(root_module, cls):

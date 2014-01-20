@@ -28,13 +28,13 @@ class Tag;
 
 
 /**
- * As per IEEE Std. 802.11-2007, Section 6.1.1.1.1, when EDCA is used the
+ * As per IEEE Std. 802.11-2012, Section 5.1.1.3, when EDCA is used the
  * the Traffic ID (TID) value corresponds to one of the User Priority (UP)
  * values defined by the IEEE Std. 802.1D-2004, Annex G, table G-2.
  *
  * Note that this correspondence does not hold for HCCA, since in that
  * case the mapping between UPs and TIDs should be determined by a
- * TSPEC element as per IEEE Std. 802.11-2007, Section 7.3.2.30
+ * TSPEC element as per IEEE Std. 802.11-2012, Section 8.4.2.32
  */
 enum UserPriority
 {
@@ -110,7 +110,7 @@ public:
   uint8_t GetTid (void) const;
 
 private:
-  uint8_t m_tid;
+  uint8_t m_tid;  //!< Traffic ID
 };
 
 } // namespace ns3

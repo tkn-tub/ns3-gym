@@ -78,7 +78,7 @@ public:
    * 
    * \param  f1         First ASCII file name
    * \param  f2         Second ASCII file name
-   * \param  lineNumbe   [out] Line number of first different line.
+   * \param  lineNumber   [out] Line number of first different line.
    */
   static bool Diff (std::string const & f1,
 		    std::string const & f2, 

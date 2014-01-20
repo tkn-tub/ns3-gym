@@ -27,7 +27,7 @@
 
 NS_LOG_COMPONENT_DEFINE ("InterferenceHelperTxDurationTest");
 
-namespace ns3 {
+using namespace ns3;
 
 class TxDurationTest : public TestCase
 {
@@ -210,5 +210,3 @@ TxDurationTestSuite::TxDurationTestSuite ()
 }
 
 static TxDurationTestSuite g_txDurationTestSuite;
-} // namespace ns3
-

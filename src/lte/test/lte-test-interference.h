@@ -25,7 +25,7 @@
 #include "ns3/test.h"
 
 
-namespace ns3 {
+using namespace ns3;
 
 
 /**
@@ -61,9 +61,5 @@ private:
   uint16_t m_dlMcs;
   uint16_t m_ulMcs;
 };
-
-
-} // namespace ns3
-
 
 #endif /* LTE_TEST_INTERFERENCE_H */

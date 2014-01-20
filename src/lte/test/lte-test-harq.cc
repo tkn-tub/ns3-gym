@@ -54,7 +54,7 @@
 
 NS_LOG_COMPONENT_DEFINE ("LenaTestHarq");
 
-namespace ns3 {
+using namespace ns3;
 
 
 LenaTestHarqSuite::LenaTestHarqSuite ()
@@ -260,6 +260,3 @@ LenaHarqTestCase::DoRun (void)
 
   Simulator::Destroy ();
 }
-
-
-} // namespace

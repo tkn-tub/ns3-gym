@@ -52,6 +52,10 @@ WifiMacHelper::~WifiMacHelper ()
 {
 }
 
+WifiHelper::~WifiHelper ()
+{
+}
+
 WifiHelper::WifiHelper ()
   : m_standard (WIFI_PHY_STANDARD_80211a)
 {

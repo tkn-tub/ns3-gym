@@ -16,6 +16,7 @@ SOURCES = \
 	source/replace.txt \
 	source/attributes.rst \
 	source/callbacks.rst \
+	source/documentation.rst \
 	source/enable-modules.rst \
 	source/enable-tests.rst \
 	source/events.rst \

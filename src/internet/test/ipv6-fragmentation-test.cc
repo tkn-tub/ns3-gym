@@ -31,7 +31,7 @@
 #include "ns3/udp-socket-factory.h"
 #include "ns3/simulator.h"
 #include "error-channel.h"
-#include "error-net-device.h"
+#include "ns3/simple-net-device.h"
 #include "ns3/drop-tail-queue.h"
 #include "ns3/socket.h"
 #include "ns3/udp-socket.h"
@@ -270,10 +270,10 @@ Ipv6FragmentationTest::DoRun (void)
   // Receiver Node
   Ptr<Node> serverNode = CreateObject<Node> ();
   AddInternetStack (serverNode);
-  Ptr<ErrorNetDevice> serverDev;
+  Ptr<SimpleNetDevice> serverDev;
   Ptr<BinaryErrorModel> serverDevErrorModel = CreateObject<BinaryErrorModel> ();
   {
-    serverDev = CreateObject<ErrorNetDevice> ();
+    serverDev = CreateObject<SimpleNetDevice> ();
     serverDev->SetAddress (Mac48Address::ConvertFrom (Mac48Address::Allocate ()));
     serverDev->SetMtu (1500);
     serverDev->SetReceiveErrorModel (serverDevErrorModel);
@@ -290,12 +290,12 @@ Ipv6FragmentationTest::DoRun (void)
   // Sender Node
   Ptr<Node> clientNode = CreateObject<Node> ();
   AddInternetStack (clientNode);
-  Ptr<ErrorNetDevice> clientDev;
+  Ptr<SimpleNetDevice> clientDev;
   Ptr<BinaryErrorModel> clientDevErrorModel = CreateObject<BinaryErrorModel> ();
   {
-    clientDev = CreateObject<ErrorNetDevice> ();
+    clientDev = CreateObject<SimpleNetDevice> ();
     clientDev->SetAddress (Mac48Address::ConvertFrom (Mac48Address::Allocate ()));
-    clientDev->SetMtu (1000);
+    clientDev->SetMtu (1500);
     clientDev->SetReceiveErrorModel (clientDevErrorModel);
     clientDevErrorModel->Disable ();
     clientNode->AddDevice (clientDev);
@@ -315,7 +315,7 @@ Ipv6FragmentationTest::DoRun (void)
 
 
   // some small packets, some rather big ones
-  uint32_t packetSizes[5] = {1000, 2000, 5000, 10000, 65000};
+  uint32_t packetSizes[5] = {2000, 2500, 5000, 10000, 65000};
 
   // using the alphabet
   uint8_t fillData[78];

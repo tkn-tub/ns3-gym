@@ -29,7 +29,14 @@
 #include <ns3/lte-ue-rrc.h>
 #include <vector>
 
+
 namespace ns3 {
+
+class LteUeNetDevice;
+
+}
+
+using namespace ns3;
 
 
 /**
@@ -46,7 +53,6 @@ public:
 
 
 
-class LteUeNetDevice;
 
 /**
  * \brief Testing the initial cell selection procedure by UE at IDLE state in
@@ -121,10 +127,5 @@ private:
   std::vector<LteUeRrc::State> m_lastState;
 
 }; // end of class LteCellSelectionTestCase
-
-
-
-} // end of namespace ns3
-
 
 #endif /* LTE_TEST_CELL_SELECTION_H */

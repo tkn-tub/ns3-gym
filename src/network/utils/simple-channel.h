@@ -51,15 +51,15 @@ public:
    * \param sender netdevice who sent the packet
    *
    */
-  void Send (Ptr<Packet> p, uint16_t protocol, Mac48Address to, Mac48Address from,
-             Ptr<SimpleNetDevice> sender);
+  virtual void Send (Ptr<Packet> p, uint16_t protocol, Mac48Address to, Mac48Address from,
+                     Ptr<SimpleNetDevice> sender);
 
   /**
    * Attached a net device to the channel.
    *
    * \param device the device to attach to the channel
    */ 
-  void Add (Ptr<SimpleNetDevice> device);
+  virtual void Add (Ptr<SimpleNetDevice> device);
 
   // inherited from ns3::Channel
   virtual uint32_t GetNDevices (void) const;

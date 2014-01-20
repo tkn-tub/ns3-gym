@@ -43,11 +43,11 @@ UanNoiseModelDefault::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::UanNoiseModelDefault")
     .SetParent<Object> ()
     .AddConstructor<UanNoiseModelDefault> ()
-    .AddAttribute ("Wind", "Wind speed in m/s",
+    .AddAttribute ("Wind", "Wind speed in m/s.",
                    DoubleValue (1),
                    MakeDoubleAccessor (&UanNoiseModelDefault::m_wind),
                    MakeDoubleChecker<double> (0))
-    .AddAttribute ("Shipping", "Shipping contribution to noise between 0 and 1",
+    .AddAttribute ("Shipping", "Shipping contribution to noise between 0 and 1.",
                    DoubleValue (0),
                    MakeDoubleAccessor (&UanNoiseModelDefault::m_shipping),
                    MakeDoubleChecker<double> (0,1))

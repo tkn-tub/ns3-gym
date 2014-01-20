@@ -25,6 +25,7 @@
 #include "ns3/simulator.h"
 #include "ns3/ipv6-route.h"
 #include "ns3/net-device.h"
+#include "ns3/names.h"
 
 #include "ipv6-static-routing.h"
 #include "ipv6-routing-table-entry.h"
@@ -80,18 +81,48 @@ void Ipv6StaticRouting::SetIpv6 (Ptr<Ipv6> ipv6)
 void
 Ipv6StaticRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << stream);
   std::ostream* os = stream->GetStream ();
+
+  *os << "Node: " << m_ipv6->GetObject<Node> ()->GetId ()
+      << " Time: " << Simulator::Now ().GetSeconds () << "s "
+      << "Ipv6StaticRouting table" << std::endl;
+
   if (GetNRoutes () > 0)
     {
-      *os << "Node: " << m_ipv6->GetObject<Node> ()->GetId ()
-          << " Time: " << Simulator::Now ().GetSeconds () << "s "
-          << "Ipv6StaticRouting table" << std::endl;
-
+      *os << "Destination                    Next Hop                   Flag Met Ref Use If" << std::endl;
       for (uint32_t j = 0; j < GetNRoutes (); j++)
         {
+          std::ostringstream dest, gw, mask, flags;
           Ipv6RoutingTableEntry route = GetRoute (j);
-          *os << route << std::endl;
+          dest << route.GetDest () << "/" << int(route.GetDestNetworkPrefix ().GetPrefixLength ());
+          *os << std::setiosflags (std::ios::left) << std::setw (31) << dest.str ();
+          gw << route.GetGateway ();
+          *os << std::setiosflags (std::ios::left) << std::setw (27) << gw.str ();
+          flags << "U";
+          if (route.IsHost ())
+            {
+              flags << "H";
+            }
+          else if (route.IsGateway ())
+            {
+              flags << "G";
+            }
+          *os << std::setiosflags (std::ios::left) << std::setw (5) << flags.str ();
+          *os << std::setiosflags (std::ios::left) << std::setw (4) << GetMetric (j);
+          // Ref ct not implemented
+          *os << "-" << "   ";
+          // Use not implemented
+          *os << "-" << "   ";
+          if (Names::FindName (m_ipv6->GetNetDevice (route.GetInterface ())) != "")
+            {
+              *os << Names::FindName (m_ipv6->GetNetDevice (route.GetInterface ()));
+            }
+          else
+            {
+              *os << route.GetInterface ();
+            }
+          *os << std::endl;
         }
     }
 }
@@ -653,21 +684,18 @@ void Ipv6StaticRouting::NotifyInterfaceUp (uint32_t i)
 void Ipv6StaticRouting::NotifyInterfaceDown (uint32_t i)
 {
   NS_LOG_FUNCTION (this << i);
-  uint32_t j = 0;
-  uint32_t max = GetNRoutes ();
 
   /* remove all static routes that are going through this interface */
-  while (j < max)
+  for (NetworkRoutesI it = m_networkRoutes.begin (); it != m_networkRoutes.end (); )
     {
-      Ipv6RoutingTableEntry route = GetRoute (j);
-
-      if (route.GetInterface () == i)
+      if (it->first->GetInterface () == i)
         {
-          RemoveRoute (j);
+          delete it->first;
+          it = m_networkRoutes.erase (it);
         }
       else
         {
-          j++;
+          it++;
         }
     }
 }
@@ -700,16 +728,19 @@ void Ipv6StaticRouting::NotifyRemoveAddress (uint32_t interface, Ipv6InterfaceAd
 
   // Remove all static routes that are going through this interface
   // which reference this network
-  for (uint32_t j = 0; j < GetNRoutes (); j++)
+  for (NetworkRoutesI it = m_networkRoutes.begin (); it != m_networkRoutes.end (); )
     {
-      Ipv6RoutingTableEntry route = GetRoute (j);
-
-      if (route.GetInterface () == interface
-          && route.IsNetwork ()
-          && route.GetDestNetwork () == networkAddress
-          && route.GetDestNetworkPrefix () == networkMask)
+      if (it->first->GetInterface () == interface
+          && it->first->IsNetwork ()
+          && it->first->GetDestNetwork () == networkAddress
+          && it->first->GetDestNetworkPrefix () == networkMask)
         {
-          RemoveRoute (j);
+          delete it->first;
+          it = m_networkRoutes.erase (it);
+        }
+      else
+        {
+          it++;
         }
     }
 }
@@ -724,12 +755,12 @@ void Ipv6StaticRouting::NotifyAddRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv6Ad
   else /* default route */
     {
       /* this case is mainly used by configuring default route following RA processing,
-       * in case of multipe prefix in RA, the first will configured default route
+       * in case of multiple prefix in RA, the first will configured default route
        */
 
       /* for the moment, all default route has the same metric
        * so according to the longest prefix algorithm,
-       * the default route choosen will be the last added
+       * the default route chosen will be the last added
        */
       SetDefaultRoute (nextHop, interface, prefixToUse);
     }

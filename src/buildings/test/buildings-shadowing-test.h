@@ -25,7 +25,7 @@
 
 
 
-namespace ns3 {
+using namespace ns3;
 
 /**
  * Test shadowing calculation
@@ -40,7 +40,7 @@ public:
 class BuildingsShadowingTestCase : public TestCase
 {
 public:
-  BuildingsShadowingTestCase (uint16_t m1, uint16_t m2, double refValue, std::string name);
+  BuildingsShadowingTestCase (uint16_t m1, uint16_t m2, double refValue, double sigmaRef, std::string name);
   virtual ~BuildingsShadowingTestCase ();
 
 private:
@@ -50,8 +50,8 @@ private:
   uint16_t m_mobilityModelIndex1;
   uint16_t m_mobilityModelIndex2;
   double m_lossRef;     // pathloss value (without shadowing)
+  double m_sigmaRef;
+
 };
 
 #endif /*BUILDINGS_SHADOWING_TEST_H*/
-
-} // namespace ns3

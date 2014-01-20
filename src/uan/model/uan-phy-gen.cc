@@ -116,7 +116,7 @@ UanPhyCalcSinrFhFsk::GetTypeId (void)
     .SetParent<Object> ()
     .AddConstructor<UanPhyCalcSinrFhFsk> ()
     .AddAttribute ("NumberOfHops",
-                   "Number of frequencies in hopping pattern",
+                   "Number of frequencies in hopping pattern.",
                    UintegerValue (13),
                    MakeUintegerAccessor (&UanPhyCalcSinrFhFsk::m_hops),
                    MakeUintegerChecker<uint32_t> ())
@@ -221,7 +221,7 @@ UanPhyPerGenDefault::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::UanPhyPerGenDefault")
     .SetParent<Object> ()
     .AddConstructor<UanPhyPerGenDefault> ()
-    .AddAttribute ("Threshold", "SINR cutoff for good packet reception",
+    .AddAttribute ("Threshold", "SINR cutoff for good packet reception.",
                    DoubleValue (8),
                    MakeDoubleAccessor (&UanPhyPerGenDefault::m_thresh),
                    MakeDoubleChecker<double> ());
@@ -437,48 +437,48 @@ UanPhyGen::GetTypeId (void)
     .SetParent<UanPhy> ()
     .AddConstructor<UanPhyGen> ()
     .AddAttribute ("CcaThreshold",
-                   "Aggregate energy of incoming signals to move to CCA Busy state dB",
+                   "Aggregate energy of incoming signals to move to CCA Busy state dB.",
                    DoubleValue (10),
                    MakeDoubleAccessor (&UanPhyGen::m_ccaThreshDb),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("RxThreshold",
-                   "Required SNR for signal acquisition in dB",
+                   "Required SNR for signal acquisition in dB.",
                    DoubleValue (10),
                    MakeDoubleAccessor (&UanPhyGen::m_rxThreshDb),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("TxPower",
-                   "Transmission output power in dB",
+                   "Transmission output power in dB.",
                    DoubleValue (190),
                    MakeDoubleAccessor (&UanPhyGen::m_txPwrDb),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("RxGain",
-                   "Gain added to incoming signal at receiver",
+                   "Gain added to incoming signal at receiver.",
                    DoubleValue (0),
                    MakeDoubleAccessor (&UanPhyGen::m_rxGainDb),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("SupportedModes",
-                   "List of modes supported by this PHY",
+                   "List of modes supported by this PHY.",
                    UanModesListValue (UanPhyGen::GetDefaultModes ()),
                    MakeUanModesListAccessor (&UanPhyGen::m_modes),
                    MakeUanModesListChecker () )
     .AddAttribute ("PerModel",
-                   "Functor to calculate PER based on SINR and TxMode",
+                   "Functor to calculate PER based on SINR and TxMode.",
                    PointerValue (CreateObject<UanPhyPerGenDefault> ()),
                    MakePointerAccessor (&UanPhyGen::m_per),
                    MakePointerChecker<UanPhyPer> ())
     .AddAttribute ("SinrModel",
-                   "Functor to calculate SINR based on pkt arrivals and modes",
+                   "Functor to calculate SINR based on pkt arrivals and modes.",
                    PointerValue (CreateObject<UanPhyCalcSinrDefault> ()),
                    MakePointerAccessor (&UanPhyGen::m_sinr),
                    MakePointerChecker<UanPhyCalcSinr> ())
     .AddTraceSource ("RxOk",
-                     "A packet was received successfully",
+                     "A packet was received successfully.",
                      MakeTraceSourceAccessor (&UanPhyGen::m_rxOkLogger))
     .AddTraceSource ("RxError",
-                     "A packet was received unsuccessfully",
+                     "A packet was received unsuccessfully.",
                      MakeTraceSourceAccessor (&UanPhyGen::m_rxErrLogger))
     .AddTraceSource ("Tx",
-                     "Packet transmission beginning",
+                     "Packet transmission beginning.",
                      MakeTraceSourceAccessor (&UanPhyGen::m_txLogger))
   ;
   return tid;

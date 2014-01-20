@@ -35,6 +35,8 @@
 #include "ns3/nstime.h"
 #include "ns3/simulator.h"
 
+class Ipv4L3ProtocolTestCase;
+
 namespace ns3 {
 
 class Packet;
@@ -134,7 +136,7 @@ public:
    * This method is typically called by lower layers
    * to forward packets up the stack to the right protocol.
    */
-  Ptr<IpL4Protocol> GetProtocol (int protocolNumber) const;
+  virtual Ptr<IpL4Protocol> GetProtocol (int protocolNumber) const;
   /**
    * \param protocol protocol to remove from this demux.
    *
@@ -232,7 +234,7 @@ protected:
    */
   virtual void NotifyNewAggregate ();
 private:
-  friend class Ipv4L3ProtocolTestCase;
+  friend class ::Ipv4L3ProtocolTestCase;
 
   /**
    * \brief Copy constructor.

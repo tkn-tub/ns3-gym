@@ -91,6 +91,7 @@ private:
   /**
    * Return k!
    *
+   * \param k
    * \return k!
    */
   uint32_t Factorial (uint32_t k) const;
@@ -103,12 +104,47 @@ private:
    * \return a Binomial distribution
    */
   double Binomial (uint32_t k, double p, uint32_t n) const;
+  /**
+   * \param ber
+   * \param d
+   * \return double
+   */
   double CalculatePdOdd (double ber, unsigned int d) const;
+  /**
+   * \param ber
+   * \param d
+   * \return double
+   */
   double CalculatePdEven (double ber, unsigned int d) const;
+  /**
+   * \param ber
+   * \param d
+   * \return double
+   */
   double CalculatePd (double ber, unsigned int d) const;
+  /**
+   * \param snr
+   * \param nbits
+   * \param signalSpread
+   * \param phyRate
+   * \param dFree
+   * \param adFree
+   * \return double
+   */
   double GetFecBpskBer (double snr, double nbits,
                         uint32_t signalSpread, uint32_t phyRate,
                         uint32_t dFree, uint32_t adFree) const;
+  /**
+   * \param snr
+   * \param nbits
+   * \param signalSpread
+   * \param phyRate
+   * \param m
+   * \param dfree
+   * \param adFree
+   * \param adFreePlusOne
+   * \return double
+   */
   double GetFecQamBer (double snr, uint32_t nbits,
                        uint32_t signalSpread,
                        uint32_t phyRate,

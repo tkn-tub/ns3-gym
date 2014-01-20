@@ -94,17 +94,46 @@ public:
     UNSUCCESSFUL
   };
   void SetState (enum State state);
+  /**
+   * Check if the current state of this agreement is PENDING.
+   *
+   * \return true if the current state of this agreement is PENDING,
+   *         false otherwise
+   */
   bool IsPending (void) const;
+  /**
+   * Check if the current state of this agreement is ESTABLISHED.
+   *
+   * \return true if the current state of this agreement is ESTABLISHED,
+   *         false otherwise
+   */
   bool IsEstablished (void) const;
+  /**
+   * Check if the current state of this agreement is INACTIVE.
+   *
+   * \return true if the current state of this agreement is INACTIVE,
+   *         false otherwise
+   */
   bool IsInactive (void) const;
+  /**
+   * Check if the current state of this agreement is UNSUCCESSFUL.
+   *
+   * \return true if the current state of this agreement is UNSUCCESSFUL,
+   *         false otherwise
+   */
   bool IsUnsuccessful (void) const;
   /**
    * Notifies a packet's transmission with ack policy Block Ack.
+   *
+   * \param nextSeqNumber
    */
   void NotifyMpduTransmission (uint16_t nextSeqNumber);
   /**
    * Returns true if all packets for which a block ack was negotiated have been transmitted so
    * a block ack request is needed in order to acknowledge them.
+   *
+   * \return  true if all packets for which a block ack was negotiated have been transmitted,
+   * false otherwise
    */
   bool IsBlockAckRequestNeeded (void) const;
   void CompleteExchange (void);

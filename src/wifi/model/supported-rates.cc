@@ -217,6 +217,13 @@ ExtendedSupportedRatesIE::DeserializeInformationField (Buffer::Iterator start,
   return length;
 }
 
+/**
+ * Serialize SupportedRates to the given ostream.
+ *
+ * \param os
+ * \param rates
+ * \return std::ostream
+ */
 std::ostream &operator << (std::ostream &os, const SupportedRates &rates)
 {
   os << "[";

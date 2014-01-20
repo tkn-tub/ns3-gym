@@ -72,7 +72,7 @@ public:
    * All the attributes specified in this method should exist
    * in the requested mac.
    */
-  void SetType (std::string type,
+  virtual void SetType (std::string type,
                 std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
                 std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
                 std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
@@ -81,6 +81,8 @@ public:
                 std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
                 std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
                 std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
+protected:
+  ObjectFactory m_mac;
 private:
   /**
    * \internal
@@ -89,8 +91,6 @@ private:
    * This method implements the pure virtual method defined in \ref ns3::WifiMacHelper.
    */
   virtual Ptr<WifiMac> Create (void) const;
-
-  ObjectFactory m_mac;
 };
 
 } // namespace ns3

@@ -77,7 +77,7 @@ public:
    * All the attributes specified in this method should exist
    * in the requested mac.
    */
-  void SetType (std::string type,
+  virtual void SetType (std::string type,
                 std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
                 std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
                 std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
@@ -131,6 +131,8 @@ public:
    * \param timeout number of block of 1024 microseconds.
    */
   void SetBlockAckInactivityTimeoutForAc (enum AcIndex ac, uint16_t timeout);
+protected:
+  ObjectFactory m_mac;
 private:
   /**
    * \internal
@@ -141,8 +143,6 @@ private:
   virtual Ptr<WifiMac> Create (void) const;
   void Setup (Ptr<WifiMac> mac, enum AcIndex ac, std::string dcaAttrName) const;
 
-
-  ObjectFactory m_mac;
   std::map<AcIndex, ObjectFactory> m_aggregators;
   /*
    * Next maps contain, for every access category, the values for

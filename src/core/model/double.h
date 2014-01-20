@@ -31,7 +31,7 @@ namespace ns3 {
  * \ingroup attribute 
  *
  * \class ns3::DoubleValue
- * \brief Hold an floating point type
+ * \brief Hold a floating point type
  *
  * \anchor double
  * This class can be used to hold variables of floating point type

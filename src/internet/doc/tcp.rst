@@ -62,7 +62,7 @@ The implementation of TCP is contained in the following files:
 
 Different variants of TCP congestion control are supported by subclassing
 the common base class :cpp:class:`TcpSocketBase`.  Several variants
-are supported, including RFC 793 (no congestion control), Tahoe, Reno, Westwood,
+are supported, including :rfc:`793` (no congestion control), Tahoe, Reno, Westwood,
 Westwood+, and NewReno.  NewReno is used by default.  See the Usage section of this
 document for on how to change the default TCP variant used in simulation.
 

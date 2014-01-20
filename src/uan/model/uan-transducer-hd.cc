@@ -155,8 +155,6 @@ UanTransducerHd::Transmit (Ptr<UanPhy> src,
                            double txPowerDb,
                            UanTxMode txMode)
 {
-
-  Time endTxTime;
   if (m_state == TX)
     {
       Simulator::Remove (m_endTxEvent);

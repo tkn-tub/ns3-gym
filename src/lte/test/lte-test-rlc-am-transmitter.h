@@ -30,6 +30,10 @@ class LteTestRrc;
 class LteTestMac;
 class LteTestPdcp;
 
+}
+
+using namespace ns3;
+
 /**
  * TestSuite 4.1.1 RLC AM: Only transmitter
  */
@@ -119,7 +123,5 @@ class LteRlcAmTransmitterReportBufferStatusTestCase : public LteRlcAmTransmitter
     virtual void DoRun (void);
 
 };
-
-} // namespace ns3
 
 #endif // LTE_TEST_RLC_AM_TRANSMITTER_H

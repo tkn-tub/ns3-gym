@@ -28,6 +28,7 @@
 namespace ns3 {
 
 /**
+ * \ingroup packetsink
  * \brief A helper to make it easier to instantiate an ns3::PacketSinkApplication
  * on a set of nodes.
  */
@@ -60,6 +61,7 @@ public:
    *
    * \param c NodeContainer of the set of nodes on which a PacketSinkApplication 
    * will be installed.
+   * \returns Container of Ptr to the applications installed.
    */
   ApplicationContainer Install (NodeContainer c) const;
 
@@ -68,6 +70,7 @@ public:
    * configured with all the attributes set with SetAttribute.
    *
    * \param node The node on which a PacketSinkApplication will be installed.
+   * \returns Container of Ptr to the applications installed.
    */
   ApplicationContainer Install (Ptr<Node> node) const;
 
@@ -76,15 +79,20 @@ public:
    * configured with all the attributes set with SetAttribute.
    *
    * \param nodeName The name of the node on which a PacketSinkApplication will be installed.
+   * \returns Container of Ptr to the applications installed.
    */
   ApplicationContainer Install (std::string nodeName) const;
 
 private:
   /**
-   * \internal
+   * Install an ns3::PacketSink on the node configured with all the
+   * attributes set with SetAttribute.
+   *
+   * \param node The node on which an PacketSink will be installed.
+   * \returns Ptr to the application installed.
    */
   Ptr<Application> InstallPriv (Ptr<Node> node) const;
-  ObjectFactory m_factory;
+  ObjectFactory m_factory; //!< Object factory.
 };
 
 } // namespace ns3

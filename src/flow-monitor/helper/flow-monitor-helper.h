@@ -80,6 +80,20 @@ public:
   Ptr<FlowClassifier> GetClassifier ();
 
 private:
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   */
+  FlowMonitorHelper (const FlowMonitorHelper&);
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   * \returns
+   */
+  FlowMonitorHelper& operator= (const FlowMonitorHelper&);
+
   ObjectFactory m_monitorFactory;       //!< Object factory
   Ptr<FlowMonitor> m_flowMonitor;       //!< the FlowMonitor object
   Ptr<FlowClassifier> m_flowClassifier; //!< the FlowClassifier object

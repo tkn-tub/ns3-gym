@@ -27,7 +27,7 @@
 
 NS_LOG_COMPONENT_DEFINE ("LteTestEarfcn");
 
-namespace ns3 {
+using namespace ns3;
 
 class LteEarfcnTestCase : public TestCase
 {
@@ -150,6 +150,3 @@ LteEarfcnTestSuite::LteEarfcnTestSuite ()
   AddTestCase (new LteEarfcnTestCase ("EARFCN=19400", 19400, 1730e6), TestCase::QUICK);
   AddTestCase (new LteEarfcnTestCase ("EARFCN=50000", 50000, 0.0), TestCase::QUICK);
 }
-
-
-} // namespace ns3

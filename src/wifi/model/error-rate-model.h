@@ -55,6 +55,7 @@ public:
    * \param mode the Wi-Fi mode the chunk is sent
    * \param snr the SNR of the chunk
    * \param nbits the number of bits in this chunk
+   * \return probability of successfully receiving the chunk
    */
   virtual double GetChunkSuccessRate (WifiMode mode, double snr, uint32_t nbits) const = 0;
 };

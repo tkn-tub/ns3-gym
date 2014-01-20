@@ -276,14 +276,14 @@ WifiRemoteStationManager::GetTypeId (void)
                    MakeUintegerAccessor (&WifiRemoteStationManager::m_maxSlrc),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("RtsCtsThreshold", "If  the size of the data packet + LLC header + MAC header + FCS trailer is bigger than "
-                   "this value, we use an RTS/CTS handshake before sending the data, as per IEEE Std. 802.11-2007, Section 9.2.6. "
+                   "this value, we use an RTS/CTS handshake before sending the data, as per IEEE Std. 802.11-2012, Section 9.3.5. "
                    "This value will not have any effect on some rate control algorithms.",
                    UintegerValue (2346),
                    MakeUintegerAccessor (&WifiRemoteStationManager::m_rtsCtsThreshold),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("FragmentationThreshold", "If the size of the data packet + LLC header + MAC header + FCS trailer is bigger"
                    "than this value, we fragment it such that the size of the fragments are equal or smaller "
-                   "than this value, as per IEEE Std. 802.11-2007, Section 9.4. "
+                   "than this value, as per IEEE Std. 802.11-2012, Section 9.5. "
                    "This value will not have any effect on some rate control algorithms.",
                    UintegerValue (2346),
                    MakeUintegerAccessor (&WifiRemoteStationManager::DoSetFragmentationThreshold,
@@ -850,8 +850,8 @@ WifiRemoteStationManager::GetControlAnswerMode (Mac48Address address, WifiMode r
 {
   /**
    * The standard has relatively unambiguous rules for selecting a
-   * control response rate (the below is quoted from IEEE 802.11-2007,
-   * Section 9.6):
+   * control response rate (the below is quoted from IEEE 802.11-2012,
+   * Section 9.7):
    *
    *   To allow the transmitting STA to calculate the contents of the
    *   Duration/ID field, a STA responding to a received frame shall
@@ -859,8 +859,8 @@ WifiRemoteStationManager::GetControlAnswerMode (Mac48Address address, WifiMode r
    *   than the BlockAck control frame, at the highest rate in the
    *   BSSBasicRateSet parameter that is less than or equal to the
    *   rate of the immediately previous frame in the frame exchange
-   *   sequence (as defined in 9.12) and that is of the same
-   *   modulation class (see 9.6.1) as the received frame...
+   *   sequence (as defined in Annex G) and that is of the same
+   *   modulation class (see Section 9.7.8) as the received frame...
    */
   WifiMode mode = GetDefaultMode ();
   bool found = false;

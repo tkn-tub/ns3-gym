@@ -123,6 +123,22 @@ Time::Time (const std::string& s)
         {
           *this = Time::FromDouble (r, Time::FS);
         }
+      else if (trailer == std::string ("min"))
+        {
+          *this = Time::FromDouble (r, Time::MIN);
+        }
+      else if (trailer == std::string ("h"))
+        {
+          *this = Time::FromDouble (r, Time::H);
+        }
+      else if (trailer == std::string ("d"))
+        {
+          *this = Time::FromDouble (r, Time::D);
+        }
+      else if (trailer == std::string ("y"))
+        {
+          *this = Time::FromDouble (r, Time::Y);
+        }
       else
         {
           NS_ABORT_MSG ("Can't Parse Time " << s);
@@ -176,21 +192,41 @@ Time::SetResolution (enum Unit unit, struct Resolution *resolution,
       ConvertTimes (unit);
     }
 
-  int8_t power [LAST] = { 15, 12, 9, 6, 3, 0};
+  // Y, D, H, MIN, S, MS, US, NS, PS, FS
+  const int8_t power [LAST] = { 17, 17, 17, 16, 15, 12, 9, 6, 3, 0 };
+  const int32_t coefficient [LAST] = { 315360, 864, 36, 6, 1, 1, 1, 1, 1, 1 };
   for (int i = 0; i < Time::LAST; i++)
     {
       int shift = power[i] - power[(int)unit];
-      int64_t factor = (int64_t) std::pow (10, std::fabs (shift));
+      int quotient = 1;
+      if (coefficient[i] > coefficient[(int) unit])
+        {
+          quotient = coefficient[i] / coefficient[(int) unit];
+          NS_ASSERT (quotient * coefficient[(int) unit] == coefficient[i]);
+        }
+      else if (coefficient[i] < coefficient[(int) unit])
+        {
+          quotient = coefficient[(int) unit] / coefficient[i];
+          NS_ASSERT (quotient * coefficient[i] == coefficient[(int) unit]);
+        }
+      NS_LOG_DEBUG ("SetResolution for unit " << (int) unit << " loop iteration " << i
+    		    << " has shift " << shift << " has quotient " << quotient);
+      int64_t factor = static_cast<int64_t> (std::pow (10, std::fabs (shift)) * quotient);
+      double realFactor = std::pow (10, (double) shift)
+                        * static_cast<double> (coefficient[i]) / coefficient[(int) unit];
+      NS_LOG_DEBUG ("SetResolution factor " << factor << " real factor " << realFactor);
       struct Information *info = &resolution->info[i];
       info->factor = factor;
-      if (shift == 0)
+      // here we could equivalently check for realFactor == 1.0 but it's better
+      // to avoid checking equality of doubles
+      if (shift == 0 && quotient == 1)
         {
           info->timeFrom = int64x64_t (1);
           info->timeTo = int64x64_t (1);
           info->toMul = true;
           info->fromMul = true;
         }
-      else if (shift > 0)
+      else if (realFactor > 1)
         {
           info->timeFrom = int64x64_t (factor);
           info->timeTo = int64x64_t::Invert (factor);
@@ -199,7 +235,7 @@ Time::SetResolution (enum Unit unit, struct Resolution *resolution,
         }
       else
         {
-          NS_ASSERT (shift < 0);
+          NS_ASSERT (realFactor < 1);
           info->timeFrom = int64x64_t::Invert (factor);
           info->timeTo = int64x64_t (factor);
           info->toMul = true;
@@ -368,6 +404,18 @@ operator<< (std::ostream& os, const Time & time)
     case Time::FS:
       unit = "fs";
       break;
+    case Time::MIN:
+      unit = "min";
+      break;
+    case Time::H:
+      unit = "h";
+      break;
+    case Time::D:
+      unit = "d";
+      break;
+    case Time::Y:
+      unit = "y";
+      break;
     case Time::LAST:
       NS_ABORT_MSG ("can't be reached");
       unit = "unreachable";
@@ -376,6 +424,8 @@ operator<< (std::ostream& os, const Time & time)
   int64_t v = time.ToInteger (res);
 
   std::ios_base::fmtflags ff = os.flags ();
+
+  os << std::setw (0) << std::left;
   { // See bug 1737:  gcc libstc++ 4.2 bug
     if (v == 0)
       {

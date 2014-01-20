@@ -486,11 +486,23 @@ void Ipv6L3Protocol::SetUp (uint32_t i)
   NS_LOG_FUNCTION (this << i);
   Ptr<Ipv6Interface> interface = GetInterface (i);
 
-  interface->SetUp ();
-
-  if (m_routingProtocol != 0)
+  // RFC 2460, Section 5, pg. 24:
+  //  IPv6 requires that every link in the internet have an MTU of 1280
+  //  octets or greater.  On any link that cannot convey a 1280-octet
+  //  packet in one piece, link-specific fragmentation and reassembly must
+  //  be provided at a layer below IPv6.
+  if (interface->GetDevice ()->GetMtu () >= 1280)
     {
-      m_routingProtocol->NotifyInterfaceUp (i);
+      interface->SetUp ();
+
+      if (m_routingProtocol != 0)
+        {
+          m_routingProtocol->NotifyInterfaceUp (i);
+        }
+    }
+  else
+    {
+      NS_LOG_LOGIC ("Interface " << int(i) << " is set to be down for IPv6. Reason: not respecting minimum IPv6 MTU (1280 octects)");
     }
 }
 

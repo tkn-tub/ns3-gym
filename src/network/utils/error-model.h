@@ -284,7 +284,7 @@ public:
   /**
    * \param ranVar A random variable distribution to generate random variates
    */
-  void SetRandomVariable (Ptr<RandomVariableStream> ranvar);
+  void SetRandomVariable (Ptr<RandomVariableStream> ranVar);
 
   /**
    * \param burstSz A random variable distribution to generate random burst size

@@ -131,6 +131,41 @@ public:
    */
   bool IsChecksumOk (void) const;
 
+  /**
+   * \brief Force the UDP checksum to a given value.
+   *
+   * This might be useful for test purposes or to
+   * restore the UDP checksum when the UDP header
+   * has been compressed (e.g., in 6LoWPAN).
+   * Note that, normally, the header checksum is
+   * calculated on the fly when the packet is
+   * serialized.
+   *
+   * When this option is used, the UDP checksum is written in
+   * the header, regardless of the global ChecksumEnabled option.
+   *
+   * \note The checksum value must be a big endian number.
+   *
+   * \param checksum the checksum to use (big endian).
+   */
+  void ForceChecksum (uint16_t checksum);
+
+  /**
+   * \brief Force the UDP payload length to a given value.
+   *
+   * This might be useful when forging a packet for test
+   * purposes.
+   *
+   * \param payloadSize the payload length to use.
+   */
+  void ForcePayloadSize (uint16_t payloadSize);
+
+  /**
+   * \brief Return the checksum (only known after a Deserialize)
+   * \return The checksum for this UdpHeader
+   */
+  uint16_t GetChecksum ();
+
 private:
   /**
    * \brief Calculate the header checksum
@@ -145,6 +180,7 @@ private:
   Address m_source;           //!< Source IP address
   Address m_destination;      //!< Destination IP address
   uint8_t m_protocol;         //!< Protocol number
+  uint16_t m_checksum;        //!< Forced Checksum value
   bool m_calcChecksum;        //!< Flag to calculate checksum
   bool m_goodChecksum;        //!< Flag to indicate that checksum is correct
 };

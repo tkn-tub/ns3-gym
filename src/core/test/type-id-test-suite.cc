@@ -28,7 +28,7 @@
 
 using namespace std;
 
-namespace ns3 {
+using namespace ns3;
 
 
 const std::string suite("type-id: ");
@@ -315,7 +315,4 @@ TypeIdPerformanceSuite::TypeIdPerformanceSuite ()
   AddTestCase (new LookupTimeTestCase, QUICK);
 }
 
-static TypeIdPerformanceSuite g_TypeIdPerformanceSuite;  
-  
-
-}  // namespace ns3
+static TypeIdPerformanceSuite g_TypeIdPerformanceSuite;

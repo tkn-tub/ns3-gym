@@ -34,7 +34,13 @@ Finally, additional documentation about various aspects of |ns3| may
 exist on the `project wiki <http://www.nsnam.org/wiki>`_.
 
 A sample outline of how to write model library documentation can be
-found in :mod:`src/template/doc`.
+found by executing the ``create-module.py`` program and looking at the
+template created in the file ``new-module/doc/new-module.rst``. 
+
+.. sourcecode:: bash
+
+  $ cd src
+  $ ./create-module.py new-module
 
 The remainder of this document is organized alphabetically by module name.
 

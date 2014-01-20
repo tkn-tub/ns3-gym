@@ -38,6 +38,7 @@ class Node;
 class NetDevice;
 class Packet;
 class Ipv6RoutingProtocol;
+class IpL4Protocol;
 
 /**
  * \ingroup internet
@@ -302,6 +303,13 @@ public:
    * If set to true, IPv6 forwarding is enabled for input datagrams on this device
    */
   virtual void SetForwarding (uint32_t interface, bool val) = 0;
+
+  /**
+   * \brief Get L4 protocol by protocol number.
+   * \param protocolNumber protocol number
+   * \return corresponding Ipv6L4Protocol or 0 if not found
+   */
+  virtual Ptr<IpL4Protocol> GetProtocol (int protocolNumber) const = 0;
 
   /**
    * \brief Register the IPv6 Extensions.

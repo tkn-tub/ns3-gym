@@ -27,11 +27,6 @@
 namespace ns3 {
 
 /**
- * \defgroup stats Statistics
- *
- */
-
-/**
  * \ingroup stats
  * \class MinMaxAvgTotalCalculator
  * \brief Template class MinMaxAvgTotalCalculator
@@ -102,19 +97,19 @@ public:
 protected:
   virtual void DoDispose (void);
 
-  uint32_t m_count;      /// Count value of MinMaxAvgTotalCalculator
+  uint32_t m_count;      //!< Count value of MinMaxAvgTotalCalculator
 
-  T m_total;             /// Total value of MinMaxAvgTotalCalculator
-  T m_squareTotal;       /// Sum of squares value of MinMaxAvgTotalCalculator
-  T m_min;               /// Minimum value of MinMaxAvgTotalCalculator
-  T m_max;               /// Maximum value of MinMaxAvgTotalCalculator
+  T m_total;             //!< Total value of MinMaxAvgTotalCalculator
+  T m_squareTotal;       //!< Sum of squares value of MinMaxAvgTotalCalculator
+  T m_min;               //!< Minimum value of MinMaxAvgTotalCalculator
+  T m_max;               //!< Maximum value of MinMaxAvgTotalCalculator
 
-  double m_meanCurr;     /// Current mean of MinMaxAvgTotalCalculator
-  double m_sCurr;        /// Current s of MinMaxAvgTotalCalculator
-  double m_varianceCurr; /// Current variance of MinMaxAvgTotalCalculator
+  double m_meanCurr;     //!< Current mean of MinMaxAvgTotalCalculator
+  double m_sCurr;        //!< Current s of MinMaxAvgTotalCalculator
+  double m_varianceCurr; //!< Current variance of MinMaxAvgTotalCalculator
 
-  double m_meanPrev;     /// Previous mean of MinMaxAvgTotalCalculator
-  double m_sPrev;        /// Previous s of MinMaxAvgTotalCalculator
+  double m_meanPrev;     //!< Previous mean of MinMaxAvgTotalCalculator
+  double m_sPrev;        //!< Previous s of MinMaxAvgTotalCalculator
 
   // end MinMaxAvgTotalCalculator
 };
@@ -279,7 +274,7 @@ public:
 protected:
   virtual void DoDispose (void);
 
-  T m_count; /// Count value of CounterCalculator
+  T m_count; //!< Count value of CounterCalculator
 
   // end CounterCalculator
 };

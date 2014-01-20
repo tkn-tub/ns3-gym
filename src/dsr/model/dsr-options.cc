@@ -1562,7 +1562,7 @@ uint8_t DsrOptionRerr::DoSendError (Ptr<Packet> p, DsrOptionRerrUnreachHeader &r
   newSourceRoute.SetNodesAddress (nodeList);
   nextAddress = newSourceRoute.GetNodeAddress (nextAddressIndex);
 
-  // / to test if the next address is multicast or not
+  /// to test if the next address is multicast or not
   if (nextAddress.IsMulticast () || targetAddress.IsMulticast ())
     {
       m_dropTrace (p);

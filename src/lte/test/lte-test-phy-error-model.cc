@@ -55,7 +55,7 @@
 
 NS_LOG_COMPONENT_DEFINE ("LteTestPhyErrorModel");
 
-namespace ns3 {
+using namespace ns3;
 
 
 LenaTestPhyErrorModelSuite::LenaTestPhyErrorModelSuite ()
@@ -433,6 +433,3 @@ LenaDlCtrlPhyErrorModelTestCase::DoRun (void)
   
   Simulator::Destroy ();
 }
-
-
-} // namespace

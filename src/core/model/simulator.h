@@ -109,8 +109,8 @@ public:
   /**
    * Run the simulation until one of:
    *   - no events are present anymore
-   *   - the user called Simulator::stop
-   *   - the user called Simulator::stopAtUs and the
+   *   - the user called Simulator::Stop()
+   *   - the user called Simulator::Stop(Time const &time) and the
    *     expiration time of the next event to be processed
    *     is greater than or equal to the stop time.
    */

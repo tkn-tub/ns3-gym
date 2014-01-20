@@ -69,9 +69,17 @@ private:
   DcaTxop *m_txop;
 };
 
+/**
+ * Listener for MacLow events. Forwards to DcaTxop.
+ */
 class DcaTxop::TransmissionListener : public MacLowTransmissionListener
 {
 public:
+  /**
+   * Create a TransmissionListener for the given DcaTxop.
+   *
+   * \param txop
+   */
   TransmissionListener (DcaTxop * txop)
     : MacLowTransmissionListener (),
       m_txop (txop) {

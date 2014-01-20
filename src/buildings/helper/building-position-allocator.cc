@@ -35,7 +35,7 @@
 
 NS_LOG_COMPONENT_DEFINE ("BuildingPositionAllocator");
 
-namespace ns3 {
+using namespace ns3;
 
 NS_OBJECT_ENSURE_REGISTERED (RandomBuildingPositionAllocator)
   ;
@@ -348,6 +348,3 @@ FixedRoomPositionAllocator::AssignStreams (int64_t stream)
   m_rand->SetStream (stream);
   return 1;
 }
-
-
-} // namespace ns3
