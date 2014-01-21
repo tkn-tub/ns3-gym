@@ -898,7 +898,7 @@ for an application at the UE communicating on port 1234::
       pf.localPortStart = 1234;
       pf.localPortEnd = 1234;
       tft->Add (pf);  
-      lteHelper->ActivateDedicatedEpsBearer (ueLteDevs, EpsBearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT), pf);
+      lteHelper->ActivateDedicatedEpsBearer (ueLteDevs, EpsBearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT), tft);
 
 you can of course use custom EpsBearer and EpcTft configurations,
 please refer to the doxygen documentation for how to do it.
