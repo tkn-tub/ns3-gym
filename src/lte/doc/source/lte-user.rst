@@ -236,7 +236,7 @@ Maximum Bit Rate (MBR) in epc bearer QoS parameters. Users can use following cod
   qos.mbrDl = yourvalue; // Downlink MBR
   qos.mbrUl = yourvalue; // Uplink MBR
   EpsBearer bearer (q, qos);
-  lteHelper->ActivateEpsBearer (ueDevs, bearer, EpcTft::Default ());
+  lteHelper->ActivateDedicatedEpsBearer (ueDevs, bearer, EpcTft::Default ());
 
 In PSS, TBR is obtained from GBR in bearer level QoS parameters. In TBFQ, token generation rate is obtained from the MBR
 setting in bearer level QoS parameters, which therefore needs to be configured consistently.
@@ -898,7 +898,7 @@ for an application at the UE communicating on port 1234::
       pf.localPortStart = 1234;
       pf.localPortEnd = 1234;
       tft->Add (pf);  
-      lteHelper->ActivateEpsBearer (ueLteDevs, EpsBearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT), pf);
+      lteHelper->ActivateDedicatedEpsBearer (ueLteDevs, EpsBearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT), pf);
 
 you can of course use custom EpsBearer and EpcTft configurations,
 please refer to the doxygen documentation for how to do it.
