@@ -81,9 +81,13 @@ FlowMonitorHelper::Install (Ptr<Node> node)
 {
   Ptr<FlowMonitor> monitor = GetMonitor ();
   Ptr<FlowClassifier> classifier = GetClassifier ();
-  Ptr<Ipv4FlowProbe> probe = Create<Ipv4FlowProbe> (monitor,
-                                                    DynamicCast<Ipv4FlowClassifier> (classifier),
-                                                    node);
+  Ptr<Ipv4L3Protocol> ipv4 = node->GetObject<Ipv4L3Protocol> ();
+  if (ipv4)
+    {
+      Ptr<Ipv4FlowProbe> probe = Create<Ipv4FlowProbe> (monitor,
+                                                        DynamicCast<Ipv4FlowClassifier> (classifier),
+                                                        node);
+    }
   return m_flowMonitor;
 }
 
