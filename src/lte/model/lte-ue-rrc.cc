@@ -2750,7 +2750,7 @@ LteUeRrc::SwitchToState (State newState)
   NS_LOG_FUNCTION (this << ToString (newState));
   State oldState = m_state;
   m_state = newState;
-  NS_LOG_INFO (this << "IMSI " << m_imsi << " RNTI " << m_rnti << " UeRrc "
+  NS_LOG_INFO (this << " IMSI " << m_imsi << " RNTI " << m_rnti << " UeRrc "
                     << ToString (oldState) << " --> " << ToString (newState));
   m_stateTransitionTrace (m_imsi, m_cellId, m_rnti, oldState, newState);
 

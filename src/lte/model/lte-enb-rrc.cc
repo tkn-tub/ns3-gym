@@ -1177,7 +1177,7 @@ UeManager::SwitchToState (State newState)
   NS_LOG_FUNCTION (this << ToString (newState));
   State oldState = m_state;
   m_state = newState;
-  NS_LOG_INFO (this << "IMSI " << m_imsi << " RNTI " << m_rnti << " UeManager "
+  NS_LOG_INFO (this << " IMSI " << m_imsi << " RNTI " << m_rnti << " UeManager "
                     << ToString (oldState) << " --> " << ToString (newState));
   m_stateTransitionTrace (m_imsi, m_rrc->m_cellId, m_rnti, oldState, newState);
   
@@ -1837,7 +1837,7 @@ LteEnbRrc::DoRecvHandoverRequest (EpcX2SapUser::HandoverRequestParams req)
   LteEnbCmacSapProvider::AllocateNcRaPreambleReturnValue anrcrv = m_cmacSapProvider->AllocateNcRaPreamble (rnti);
   if (anrcrv.valid == false)
     {
-      NS_LOG_INFO (this << "failed to allocate a preamble for non-contention based RA => cannot accept HO");
+      NS_LOG_INFO (this << " failed to allocate a preamble for non-contention based RA => cannot accept HO");
       RemoveUe (rnti);
       NS_FATAL_ERROR ("should trigger HO Preparation Failure, but it is not implemented");
       return;
