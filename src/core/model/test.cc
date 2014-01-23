@@ -256,6 +256,12 @@ TestCase::GetName (void) const
   NS_LOG_FUNCTION (this);
   return m_name;
 }
+TestCase *
+TestCase::GetParent () const
+{
+  return m_parent;
+}
+
 void
 TestCase::ReportTestFailure (std::string cond, std::string actual, 
                              std::string limit, std::string message, 

@@ -864,6 +864,11 @@ public:
    */
   virtual ~TestCase ();
 
+  /**
+   * \return name of this test
+   */
+  std::string GetName (void) const;  
+
 protected:
   /**
    * \param name the name of the new TestCase created
@@ -917,9 +922,9 @@ protected:
   bool IsStatusSuccess (void) const;
 
   /**
-   * \return name of this test
+   * \return a pointer to the parent of this test
    */
-  std::string GetName (void) const;
+  TestCase * GetParent () const;
   
   // The methods below are used only by test macros and should not
   // be used by normal users.
