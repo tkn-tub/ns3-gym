@@ -159,11 +159,17 @@ Ipv4FlowClassifier::Classify (const Ipv4Header &ipHeader, Ptr<const Packet> ipPa
   // if the insertion succeeded, we need to assign this tuple a new flow identifier
   if (insert.second)
     {
-      insert.first->second = GetNewFlowId ();
+      FlowId newFlowId = GetNewFlowId ();
+      insert.first->second = newFlowId;
+      m_flowPktIdMap[newFlowId] = 0;
+    }
+  else
+    {
+      m_flowPktIdMap[insert.first->second] ++;
     }
 
   *out_flowId = insert.first->second;
-  *out_packetId = ipHeader.GetIdentification ();
+  *out_packetId = m_flowPktIdMap[*out_flowId];
 
   return true;
 }

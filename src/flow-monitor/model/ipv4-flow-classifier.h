@@ -52,6 +52,9 @@ public:
   Ipv4FlowClassifier ();
 
   /// \brief try to classify the packet into flow-id and packet-id
+  ///
+  /// \warning: it must be called only once per packet, from SendOutgoingLogger.
+  ///
   /// \return true if the packet was classified, false if not (i.e. it
   /// does not appear to be part of a flow).
   /// \param ipHeader packet's IP header
@@ -72,6 +75,7 @@ private:
 
   /// Map to Flows Identifiers to FlowIds
   std::map<FiveTuple, FlowId> m_flowMap;
+  std::map<FlowId, FlowPacketId> m_flowPktIdMap;
 
 };
 
