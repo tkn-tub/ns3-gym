@@ -272,11 +272,14 @@ void Icmpv6L4Protocol::Forward (Ipv6Address source, Icmpv6Header icmp,
 
   uint8_t nextHeader = ipHeader.GetNextHeader ();
 
-  Ptr<IpL4Protocol> l4 = ipv6->GetProtocol (nextHeader);
-  if (l4 != 0)
+  if (nextHeader != Icmpv6L4Protocol::PROT_NUMBER)
     {
-      l4->ReceiveIcmp (source, ipHeader.GetHopLimit (), icmp.GetType (), icmp.GetCode (),
-                       info, ipHeader.GetSourceAddress (), ipHeader.GetDestinationAddress (), payload);
+      Ptr<IpL4Protocol> l4 = ipv6->GetProtocol (nextHeader);
+      if (l4 != 0)
+        {
+          l4->ReceiveIcmp (source, ipHeader.GetHopLimit (), icmp.GetType (), icmp.GetCode (),
+                           info, ipHeader.GetSourceAddress (), ipHeader.GetDestinationAddress (), payload);
+        }
     }
 }
 

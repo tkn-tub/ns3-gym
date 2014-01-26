@@ -869,6 +869,7 @@ void Ipv6L3Protocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16
                                       MakeCallback (&Ipv6L3Protocol::RouteInputError, this)))
     {
       NS_LOG_WARN ("No route found for forwarding packet.  Drop.");
+      GetIcmpv6 ()->SendErrorDestinationUnreachable (p->Copy (), hdr.GetSourceAddress (), Icmpv6Header::ICMPV6_NO_ROUTE);
       m_dropTrace (hdr, packet, DROP_NO_ROUTE, m_node->GetObject<Ipv6> (), interface);
     }
 }
@@ -1027,9 +1028,8 @@ void Ipv6L3Protocol::IpForward (Ptr<const NetDevice> idev, Ptr<Ipv6Route> rtentr
     {
       NS_LOG_WARN ("TTL exceeded.  Drop.");
       m_dropTrace (ipHeader, packet, DROP_TTL_EXPIRED, m_node->GetObject<Ipv6> (), 0);
-      // Do not reply to ICMPv6 or to multicast IPv6 address
-      if (ipHeader.GetNextHeader () != Icmpv6L4Protocol::PROT_NUMBER
-          && ipHeader.GetDestinationAddress ().IsMulticast () == false)
+      // Do not reply to multicast IPv6 address
+      if (ipHeader.GetDestinationAddress ().IsMulticast () == false)
         {
           packet->AddHeader (ipHeader);
           GetIcmpv6 ()->SendErrorTimeExceeded (packet, ipHeader.GetSourceAddress (), Icmpv6Header::ICMPV6_HOPLIMIT);
