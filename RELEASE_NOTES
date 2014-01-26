@@ -36,6 +36,7 @@ Bugs fixed
 - Bug 1837 - AODV crashes when using multiple interfaces
 - Bug 1838 - FlowMonitorHelper must not be copied.
 - Bug 1841 - FlowMonitor fails to install if IPv4 is not installed in the node
+- Bug 1846 - IPv6 should send Destination Unreachable if no route is available
 
 Release 3.19
 =============
