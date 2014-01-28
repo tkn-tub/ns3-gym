@@ -310,6 +310,8 @@
  * equality down to the numeric_limits<double>::epsilon () range, consider using 
  * ns3::TestDoubleIsEqual().
  *
+ * \note Mixing signed and unsigned types can lead to misleading results.
+ *
  * The message is interpreted as a stream, for example:
  *
  * \code
@@ -386,6 +388,8 @@
  * floating point rounding errors.    If you really want to check floating point
  * equality down to the numeric_limits<double>::epsilon () range, consider using 
  * ns3::TestDoubleIsEqual().
+ *
+ * \note Mixing signed and unsigned types can lead to misleading results.
  *
  * The message is interpreted as a stream, for example:
  *
@@ -468,6 +472,8 @@
  * floating point rounding errors.    If you really want to check floating point
  * equality down to the numeric_limits<double>::epsilon () range, consider using 
  * ns3::TestDoubleIsEqual().
+ *
+ * \note Mixing signed and unsigned types can lead to misleading results.
  *
  * The message is interpreted as a stream, for example:
  *
