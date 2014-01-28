@@ -22,7 +22,9 @@ Supported platforms
 New user-visible features
 -------------------------
 
-- a new LTE MAC downlink scheduling algorithm named Channel and QoS
+- Enable selection of high precision int64x64_t implementation
+  at configure time, for debugging purposes.
+- A new LTE MAC downlink scheduling algorithm named Channel and QoS
   Aware (CQA) Scheduler is provided by the new
   ``ns3::CqaFfMacScheduler`` object.
   
