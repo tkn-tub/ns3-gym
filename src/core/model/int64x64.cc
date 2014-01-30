@@ -43,10 +43,25 @@ std::ostream &operator << (std::ostream &os, const int64x64_t &value)
   const bool floatfield = os.flags () & std::ios_base::floatfield;
   bool more = true;  // Should we print more digits?
 
+#define HEXHILOW(hi, lo) \
+  std::hex << std::setfill ('0') << std::right << " (0x"		\
+	   << std::setw (16) << hi << " "				\
+	   << std::setw (16) << lo					\
+	   << std::dec << std::setfill (' ') << std::left << ")"
+
+  
+  NS_LOG_LOGIC (std::endl
+		<< "  [.] " << " " << HEXHILOW (hi, low.GetLow ()) 
+		<< ": " << hi << ".");
+
   do 
     {
-      low = 10 * low;
+      low *= 10;
       int64_t digit = low.GetHigh ();
+      NS_ASSERT_MSG ( (0 <= digit) && (digit <= 9),
+		      "digit " << digit << " out of range [0,9] "
+		      << " streaming out "
+		      << HEXHILOW (value.GetHigh (), value.GetLow ()) );
       low -= digit;
 
       os << std::setw (1) << digit;
@@ -61,6 +76,12 @@ std::ostream &operator << (std::ostream &os, const int64x64_t &value)
 	  // Full resolution is 20 decimal digits
 	  more = low.GetLow () && (places < 20);
 	}
+
+      NS_LOG_LOGIC ((more ? "+" : " ")
+		    << (floatfield ? "f" : " ")
+		    << "[" << places << "] " << digit
+		    << HEXHILOW (low.GetHigh (), low.GetLow ())
+		    << std::dec << std::setfill (' ' ) << std::left << ")" );
 
     } while (more);
 
@@ -91,6 +112,9 @@ static uint64_t ReadLoDigits (std::string str)
        ++rchar)
     {
       int digit = *rchar - '0';
+      NS_ASSERT_MSG ( (0 <= digit) && (digit <= 9),
+		      "digit " << digit << " out of range [0,9]"
+		      << " streaming in low digits \"" << str << "\"");
       low = (low + digit + round) / 10; 
     }
   
