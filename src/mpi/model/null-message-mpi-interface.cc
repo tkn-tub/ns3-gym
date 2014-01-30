@@ -338,7 +338,7 @@ NullMessageMpiInterface::ReceiveMessages (bool blocking)
           Time rxTime (time);
 
           // rxtime == 0 means this is a Null Message
-          if (rxTime > 0)
+          if (rxTime > Time (0))
             {
               count -= sizeof (time) + sizeof (guaranteeUpdate) + sizeof (node) + sizeof (dev);
 

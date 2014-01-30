@@ -2083,7 +2083,7 @@ TcpSocketBase::EstimateRtt (const TcpHeader& tcpHeader)
 
   //nextRtt will be zero for dup acks.  Don't want to update lastRtt in that case
   //but still needed to do list clearing that is done in AckSeq. 
-  if(nextRtt != 0)
+  if(nextRtt != Time (0))
   {
     m_lastRtt = nextRtt;
     NS_LOG_FUNCTION(this << m_lastRtt);
