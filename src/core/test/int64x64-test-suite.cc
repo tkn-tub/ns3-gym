@@ -577,6 +577,14 @@ class Int64x64CompareTestCase : public TestCase
 public:
   Int64x64CompareTestCase ();
   virtual void DoRun (void);
+
+#if defined (__GNUC__)
+#if (__GNUC__ == 4 && __GNUC_MINOR__ == 4)
+  // gcc-4.4 is overeager to optimize away signed comparisons
+  // which makes it hard to test comparison operators
+  __attribute__ ((optimize ("no-strict-overflow")))
+#endif
+#endif
   void Check (const bool result, const bool expected,
 	      const std::string & msg);
 };
