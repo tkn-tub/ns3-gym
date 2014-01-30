@@ -601,6 +601,10 @@ private:
   friend bool operator > (const Time &lhs, const Time &rhs);
   friend Time operator + (const Time &lhs, const Time &rhs);
   friend Time operator - (const Time &lhs, const Time &rhs);
+  friend Time operator * (const Time &lhs, const int64_t &rhs);
+  friend Time operator * (const int64_t &lhs, const Time &rhs);
+  friend int64_t operator / (const Time &lhs, const Time &rhs);
+  friend Time operator / (const Time &lhs, const int64_t &rhs);
   friend Time &operator += (Time &lhs, const Time &rhs);
   friend Time &operator -= (Time &lhs, const Time &rhs);
   friend Time Abs (const Time &time);
@@ -653,6 +657,33 @@ inline Time operator + (const Time &lhs, const Time &rhs)
 inline Time operator - (const Time &lhs, const Time &rhs)
 {
   return Time (lhs.m_data - rhs.m_data);
+}
+inline Time
+operator * (const Time &lhs, const int64_t &rhs)
+{
+  Time res = lhs;
+  res.m_data *= rhs;
+  return res;
+}
+inline Time
+operator * (const int64_t &lhs, const Time &rhs)
+{
+  Time res = rhs;
+  res.m_data *= lhs;
+  return res;
+}
+inline int64_t
+operator / (const Time &lhs, const Time &rhs)
+{
+  int64_t res = lhs.m_data / rhs.m_data;
+  return res;
+}
+inline Time
+operator / (const Time &lhs, const int64_t &rhs)
+{
+  Time res = lhs;
+  res.m_data /= rhs;
+  return res;
 }
 inline Time &operator += (Time &lhs, const Time &rhs)
 {
