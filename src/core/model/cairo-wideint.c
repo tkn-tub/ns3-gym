@@ -610,16 +610,16 @@ _cairo_uint128_divrem (cairo_uint128_t num, cairo_uint128_t den)
     return qr;
 }
 
-cairo_int128_t
-_cairo_int128_negate (cairo_int128_t a)
+cairo_uint128_t
+_cairo_uint128_negate (cairo_uint128_t a)
 {
     a.lo = _cairo_uint64_not (a.lo);
     a.hi = _cairo_uint64_not (a.hi);
     return _cairo_uint128_add (a, _cairo_uint32_to_uint128 (1));
 }
 
-cairo_int128_t
-_cairo_int128_not (cairo_int128_t a)
+cairo_uint128_t
+_cairo_uint128_not (cairo_uint128_t a)
 {
     a.lo = _cairo_uint64_not (a.lo);
     a.hi = _cairo_uint64_not (a.hi);
