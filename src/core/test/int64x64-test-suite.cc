@@ -110,7 +110,7 @@ Int64x64InputTestCase::Check (const std::string & str,
 	    << " hi: 0x" << std::setw (16) << hp.GetHigh ()
 	    << " lo: 0x" << std::setw (16) << hp.GetLow ()
 	    << std::dec  << std::setfill (' ')
-	    << " expected: " << hi << " " << lo << " ± " << loTolerance
+	    << " expected: " << hi << " " << lo << " +/- " << loTolerance
 	    << std::endl;
 
   NS_TEST_EXPECT_MSG_EQ (hp.GetHigh (), hi,
@@ -322,8 +322,6 @@ Int64x64ArithmeticTestCase::DoRun (void)
   Check (35,   zerof *   zerof,   frac  * frac  );
   Check (36,   zero  *   onef,    zero  );
   Check (37,   zerof *   one,     frac  );
-  
-  int64x64_t foo = zerof * onef;
   
   Check (38,   zerof *   onef,    fplf2 );
   Check (39,   zerof * (-onef),  -fplf2 );
@@ -612,7 +610,6 @@ Int64x64CompareTestCase::DoRun (void)
   const int64x64_t frac  = int64x64_t (0, 0xc000000000000000ULL);  // 0.75
   const int64x64_t zerof = zero + frac;
   const int64x64_t onef  = one  + frac;
-  const int64x64_t twof  = two  + frac;
   const int64x64_t monef = mone - frac;
   const int64x64_t mtwof = mtwo - frac;
   
