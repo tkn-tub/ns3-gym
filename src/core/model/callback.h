@@ -68,7 +68,7 @@ struct CallbackTraits<T *>
 /**
  * \ingroup callback
  * \defgroup callbackimpl Callback Implementation
- * CallbackImpl classes
+ * Callback implementation classes
  */
 /**
  * \ingroup callbackimpl
@@ -1695,10 +1695,8 @@ private:
   CallbackBase m_value;                 //!< the CallbackBase
 };
 
-/** Attribute helpers @{ */
 ATTRIBUTE_ACCESSOR_DEFINE (Callback);
 ATTRIBUTE_CHECKER_DEFINE (Callback);
-/**@}*/
 
 } // namespace ns3
 

@@ -531,7 +531,7 @@ private:
    *  Record all instances of Time, so we can rescale them when
    *  the resolution changes.
    *
-   *  \intern
+   *  \internal
    *
    *  We use a std::set so we can remove the record easily when
    *  ~Time() is called.
@@ -551,7 +551,7 @@ private:
    *  Record of outstanding Time objects which will need conversion
    *  when the resolution is set.
    *
-   *  \intern
+   *  \internal
    *
    *  Use a classic static variable so we can check in Time ctors
    *  without a function call.
@@ -576,7 +576,7 @@ private:
   /**
    *  Remove all MarkedTimes.
    *
-   *  \intern
+   *  \internal
    *  Has to be visible to the Simulator class, hence the friending.
    */
   static void ClearMarkedTimes ();
@@ -617,7 +617,7 @@ private:
 };  // class Time
 
 
-// Force static initialization of Time
+/// Force static initialization of Time
 static bool NS_UNUSED_GLOBAL (g_TimeStaticInit) = Time::StaticInit ();
 
 inline bool
@@ -697,7 +697,6 @@ inline Time &operator -= (Time &lhs, const Time &rhs)
 }
 
 /**
- * \anchor ns3-Time-Abs
  * \relates ns3::TimeUnit
  * Absolute value function for Time
  * \param time the input value
@@ -708,7 +707,6 @@ inline Time Abs (const Time &time)
   return Time ((time.m_data < 0) ? -time.m_data : time.m_data);
 }
 /**
- * \anchor ns3-Time-Max
  * \relates ns3::TimeUnit
  * \param ta the first value
  * \param tb the seconds value

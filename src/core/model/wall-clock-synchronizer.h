@@ -67,6 +67,7 @@ public:
 
   static const uint64_t US_PER_NS = (uint64_t)1000;
   static const uint64_t US_PER_SEC = (uint64_t)1000000;
+  /// Conversion from ns to s.
   static const uint64_t NS_PER_SEC = (uint64_t)1000000000;
 
 protected:
