@@ -524,6 +524,13 @@ def configure(conf):
 
     # Write a summary of optional features status
     print "---- Summary of optional NS-3 features:"
+    print "%-30s: %s%s%s" % ("Build profile", Logs.colors('GREEN'),
+                             Options.options.build_profile, Logs.colors('NORMAL'))
+    bld = wutils.bld
+    print "%-30s: %s%s%s" % ("Build directory", Logs.colors('GREEN'),
+                             Context.out_dir, Logs.colors('NORMAL'))
+    
+    
     for (name, caption, was_enabled, reason_not_enabled) in conf.env['NS3_OPTIONAL_FEATURES']:
         if was_enabled:
             status = 'enabled'
