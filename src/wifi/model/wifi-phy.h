@@ -353,6 +353,14 @@ public:
    */
   virtual WifiMode GetMode (uint32_t mode) const = 0;
   /**
+   * Check if the given WifiMode is supported by the PHY.
+   *
+   * \param mode the wifi mode to check
+   * \return true if the given mode is supported,
+   *         false otherwise
+   */
+  virtual bool IsModeSupported (WifiMode mode) const = 0;
+  /**
    * \param txMode the transmission mode
    * \param ber the probability of bit error rate
    * \return the minimum snr which is required to achieve
