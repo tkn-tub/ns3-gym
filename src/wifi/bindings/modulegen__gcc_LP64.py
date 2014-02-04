@@ -7569,6 +7569,11 @@ def register_Ns3WifiPhy_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## wifi-phy.h (module 'wifi'): bool ns3::WifiPhy::IsModeSupported(ns3::WifiMode mode) const [member function]
+    cls.add_method('IsModeSupported', 
+                   'bool', 
+                   [param('ns3::WifiMode', 'mode')], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
     ## wifi-phy.h (module 'wifi'): bool ns3::WifiPhy::IsStateBusy() [member function]
     cls.add_method('IsStateBusy', 
                    'bool', 
