@@ -579,7 +579,7 @@ public:
   virtual void DoRun (void);
 
 #if defined (__GNUC__)
-#if (__GNUC__ == 4 && __GNUC_MINOR__ == 4)
+#if (__GNUC__ == 4 && (4 <= __GNUC_MINOR__ && __GNUC_MINOR__ <= 6))
   // gcc-4.4 is overeager to optimize away signed comparisons
   // which makes it hard to test comparison operators
   __attribute__ ((optimize ("no-strict-overflow")))
