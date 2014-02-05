@@ -784,6 +784,44 @@ Int64x64InvertTestCase::DoRun (void)
 }
 
 
+class Int64x64ImplTestCase : public TestCase
+{
+public:
+  Int64x64ImplTestCase ();
+  virtual void DoRun (void);
+};
+
+Int64x64ImplTestCase::Int64x64ImplTestCase ()
+  : TestCase ("Print the implementation")
+{
+}
+
+void
+Int64x64ImplTestCase::DoRun (void)
+{
+  std::cout << std::endl;
+  std::cout << GetParent ()->GetName () << ": " << GetName () << ":"
+	    << std::endl;
+
+  
+  std::cout << "int64x64_t::implementation: ";
+  switch (int64x64_t::implementation)
+    {
+    case (int64x64_t::int128_impl) : std::cout << "int128_impl"; break;
+    case (int64x64_t::cairo_impl)  : std::cout << "cairo_impl";  break;
+    case (int64x64_t::ld_impl)     : std::cout << "ld_impl";     break;
+    default :                        std::cout << "unknown!";    
+    }
+  std::cout << std::endl;
+  
+  if (int64x64_t::implementation == int64x64_t::cairo_impl)
+    {
+      std::cout << "cairo_impl64:  " << cairo_impl64 << std::endl;
+      std::cout << "cairo_impl128: " << cairo_impl128 << std::endl;
+    }
+
+  std::cout << std::endl;
+}
 
 static class Int64x64128TestSuite : public TestSuite
 {
@@ -800,5 +838,6 @@ public:
     AddTestCase (new Int64x64Bug863TestCase (), TestCase::QUICK);
     AddTestCase (new Int64x64Bug1786TestCase (), TestCase::QUICK);
     AddTestCase (new Int64x64InvertTestCase (), TestCase::QUICK);
+    AddTestCase (new Int64x64ImplTestCase (), TestCase::QUICK);
   }
 } g_int64x64TestSuite;

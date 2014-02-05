@@ -2,7 +2,6 @@
 #if !defined(INT64X64_CAIRO_H) && defined (INT64X64_USE_CAIRO) && !defined(PYTHON_SCAN)
 #define INT64X64_CAIRO_H
 
-#include <stdint.h>
 #include <cmath>  // pow
 
 #include "cairo-wideint-private.h"
@@ -62,7 +61,7 @@ public:
   /**
    * Type tag for the underlying implementation.
    *
-   * A few testcases are are sensitive to implementation,
+   * A few testcases are sensitive to implementation,
    * specifically the double implementation.  To handle this,
    * we expose the underlying implementation type here.
    */

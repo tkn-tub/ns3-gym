@@ -32,6 +32,8 @@
 
 #if HAVE_UINT64_T
 
+const char * cairo_impl64 = "uint64_t";
+
 #define _cairo_uint32s_to_uint64(h,l) ((uint64_t) (h) << 32 | (l))
 
 cairo_uquorem64_t
@@ -45,6 +47,8 @@ _cairo_uint64_divrem (cairo_uint64_t num, cairo_uint64_t den)
 }
 
 #else
+
+const char * cairo_impl64 = "uint32_t";
 
 cairo_uint64_t
 _cairo_uint32_to_uint64 (uint32_t i)
@@ -312,6 +316,8 @@ _cairo_int64_divrem (cairo_int64_t num, cairo_int64_t den)
 
 #if HAVE_UINT128_T
 
+const char * cairo_impl128 = "uint128_t";
+
 cairo_uquorem128_t
 _cairo_uint128_divrem (cairo_uint128_t num, cairo_uint128_t den)
 {
@@ -323,6 +329,8 @@ _cairo_uint128_divrem (cairo_uint128_t num, cairo_uint128_t den)
 }
 
 #else
+
+const char * cairo_impl128 = "cairo_uint64_t";
 
 cairo_uint128_t
 _cairo_uint32_to_uint128 (uint32_t i)

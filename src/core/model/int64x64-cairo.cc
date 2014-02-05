@@ -17,13 +17,13 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "int64x64-cairo.h"
 #include "test.h"
 #include "abort.h"
 #include "assert.h"
 #include "log.h"
 #include <cmath>
 #include <iostream>
+#include "int64x64-cairo.h"
 
 // Note:  Logging in this file is largely avoided due to the
 // number of calls that are made to these functions and the possibility
