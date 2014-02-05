@@ -813,12 +813,11 @@ Int64x64ImplTestCase::DoRun (void)
     default :                        std::cout << "unknown!";    
     }
   std::cout << std::endl;
-  
-  if (int64x64_t::implementation == int64x64_t::cairo_impl)
-    {
-      std::cout << "cairo_impl64:  " << cairo_impl64 << std::endl;
-      std::cout << "cairo_impl128: " << cairo_impl128 << std::endl;
-    }
+
+#if defined (INT64X64_USE_CAIRO) && !defined (PYTHON_SCAN)
+  std::cout << "cairo_impl64:  " << cairo_impl64 << std::endl;
+  std::cout << "cairo_impl128: " << cairo_impl128 << std::endl;
+#endif
 
   std::cout << std::endl;
 }
