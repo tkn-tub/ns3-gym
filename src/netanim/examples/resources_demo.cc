@@ -179,7 +179,7 @@ int main (int argc, char *argv[])
 
 
   // Create the animation object and configure for specified output
-  pAnim = new AnimationInterface (animFile, true); // true --> Enable 3.105 behavior
+  pAnim = new AnimationInterface (animFile); 
   // Provide the absolute path to the resource
   resourceId1 = pAnim->AddResource ("/Users/john/ns3/netanim-3.105/ns-3-logo1.png");
   resourceId2 = pAnim->AddResource ("/Users/john/ns3/netanim-3.105/ns-3-logo2.png");

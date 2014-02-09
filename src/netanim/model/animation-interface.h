@@ -454,7 +454,7 @@ public:
    * \param enable if true enables writing the packet metadata to the XML trace file
    *        if false disables writing the packet metadata
    */
-  void EnablePacketMetadata (bool enable);
+  void EnablePacketMetadata (bool enable = true);
 
   /**
    *

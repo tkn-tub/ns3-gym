@@ -174,7 +174,7 @@ main (int argc, char *argv[])
 
   AnimationInterface anim ("wireless-animation.xml"); // Mandatory
 
-  anim.EnablePacketMetadata (true); // Optional
+  anim.EnablePacketMetadata (); // Optional
   anim.EnableIpv4RouteTracking ("routingtable-wireless.xml", Seconds (0), Seconds (5), Seconds (0.25)); //Optional
   Simulator::Run ();
   Simulator::Destroy ();

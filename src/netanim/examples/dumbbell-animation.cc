@@ -94,6 +94,7 @@ int main (int argc, char *argv[])
 
   // Create the animation object and configure for specified output
   AnimationInterface anim (animFile);
+  anim.EnablePacketMetadata (); // Optional
   
   // Set up the acutal simulation
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
