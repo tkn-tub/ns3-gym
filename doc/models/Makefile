@@ -213,28 +213,20 @@ SOURCEFIGS = \
 	$(SRC)/stats/doc/gnuplot-example.png \
 	$(SRC)/stats/doc/gnuplot-helper-example.png \
 	$(SRC)/stats/doc/seventh-packet-byte-count.png \
-	$(SRC)/netanim/doc/figures/Dumbbell.png \
-	$(SRC)/netanim/doc/figures/Dumbbell.pdf \
 	$(SRC)/netanim/doc/figures/PacketStatistics.png \
 	$(SRC)/netanim/doc/figures/PacketStatistics.pdf \
-	$(SRC)/netanim/doc/figures/FastForward.png \
-	$(SRC)/netanim/doc/figures/FastForward.pdf \
-	$(SRC)/netanim/doc/figures/Wireless.png \
-	$(SRC)/netanim/doc/figures/Wireless.pdf \
-	$(SRC)/netanim/doc/figures/Precision.png \
-	$(SRC)/netanim/doc/figures/Precision.pdf \
-	$(SRC)/netanim/doc/figures/Persist.png \
-	$(SRC)/netanim/doc/figures/Persist.pdf \
-	$(SRC)/netanim/doc/figures/SimTime.png \
-	$(SRC)/netanim/doc/figures/SimTime.pdf \
+	$(SRC)/netanim/doc/figures/NetAnim_3_105.png \
+	$(SRC)/netanim/doc/figures/NetAnim_3_105.pdf \
 	$(SRC)/netanim/doc/figures/Trajectory.png \
 	$(SRC)/netanim/doc/figures/Trajectory.pdf \
-	$(SRC)/netanim/doc/figures/UpdateRateInterval.png \
-	$(SRC)/netanim/doc/figures/UpdateRateInterval.pdf \
-	$(SRC)/netanim/doc/figures/WithoutPrecision.png \
-	$(SRC)/netanim/doc/figures/WithoutPrecision.pdf \
-	$(SRC)/netanim/doc/figures/WithPrecision.png \
-	$(SRC)/netanim/doc/figures/WithPrecision.pdf \
+	$(SRC)/netanim/doc/figures/NodeCountersChart.png \
+	$(SRC)/netanim/doc/figures/NodeCountersChart.pdf \
+	$(SRC)/netanim/doc/figures/NodeCountersTable.png \
+	$(SRC)/netanim/doc/figures/NodeCountersTable.pdf \
+	$(SRC)/netanim/doc/figures/RoutingTables.png \
+	$(SRC)/netanim/doc/figures/RoutingTables.pdf \
+	$(SRC)/netanim/doc/figures/PacketTimeline.png \
+	$(SRC)/netanim/doc/figures/PacketTimeline.pdf \
 	$(SRC)/spectrum/doc/spectrum-channel-phy-interface.png \
 	$(SRC)/spectrum/doc/spectrum-channel-phy-interface.pdf \
 	$(SRC)/spectrum/doc/spectrum-analyzer-example.eps 
