@@ -33,6 +33,7 @@
 #define CAIRO_WIDEINT_H
 
 // Adapt to ns-3 environment
+#include "ns3/core-config.h"
 #define cairo_private 
 #define HAVE_UINT64_T 1
 // Implementation tags added below and in cairo-wideint.c:
