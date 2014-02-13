@@ -252,15 +252,13 @@ void SixLowPanNetDevice::ReceiveFromDevice (Ptr<NetDevice> incomingPort,
 void SixLowPanNetDevice::SetIfIndex (const uint32_t index)
 {
   NS_LOG_FUNCTION (this << index);
-  // NS_ASSERT_MSG ( m_port != 0, "Sixlowpan: can't find any lower-layer protocol " << m_port );
   m_ifIndex = index;
 }
 
 uint32_t SixLowPanNetDevice::GetIfIndex (void) const
 {
   NS_LOG_FUNCTION (this);
-  // NS_ASSERT_MSG ( m_port != 0, "Sixlowpan: can't find any lower-layer protocol " << m_port );
-  return m_netDevice->GetIfIndex ();
+  return m_ifIndex;
 }
 
 Ptr<Channel> SixLowPanNetDevice::GetChannel (void) const
