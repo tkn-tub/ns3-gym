@@ -27,7 +27,8 @@ WifiTxVector::WifiTxVector ()
 {
 }
 
-WifiTxVector::WifiTxVector (WifiMode mode, uint8_t powerLevel, uint8_t retries, bool shortGuardInterval, uint8_t nss, uint8_t ness, bool stbc)
+WifiTxVector::WifiTxVector (WifiMode mode, uint8_t powerLevel, uint8_t retries,
+                            bool shortGuardInterval, uint8_t nss, uint8_t ness, bool stbc)
   : m_mode (mode),
     m_txPowerLevel (powerLevel),
     m_retries (retries),
@@ -112,7 +113,13 @@ WifiTxVector::SetStbc (bool stbc)
 
 std::ostream & operator << ( std::ostream &os, const WifiTxVector &v)
 { 
-  os << "mode:" << v.GetMode() << " txpwrlvl:" << v.GetTxPowerLevel() << " retries:" << v.GetRetries() << " Short GI: " << v.IsShortGuardInterval() << " Nss: " << v.GetNss() << " Ness: " << v.GetNess() << " STBC: " << v.IsStbc();
+  os << "mode:" << v.GetMode() <<
+    " txpwrlvl:" << (uint32_t)v.GetTxPowerLevel() <<
+    " retries:" << (uint32_t)v.GetRetries() <<
+    " Short GI: " << v.IsShortGuardInterval() <<
+    " Nss: " << (uint32_t)v.GetNss() <<
+    " Ness: " << (uint32_t)v.GetNess() <<
+    " STBC: " << v.IsStbc();
   return os;
 }
 
