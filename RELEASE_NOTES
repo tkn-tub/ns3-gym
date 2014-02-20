@@ -33,6 +33,7 @@ Bugs fixed
 ----------
 - Bug 1739 - The endpoint is not deallocated for UDP sockets
 - Bug 1786 - os << int64x64_t prints un-normalized fractional values
+- Bug 1787 - Runtime error when using AnimationInterface::EnablePacketMetadata() to fetch metadata of CSMA packet
 - Bug 1808 - FlowMon relies on IPv4's Identification field to trace packets
 - Bug 1821 - Setting an interface to Down state will cause various asserts in IPv6
 - Bug 1837 - AODV crashes when using multiple interfaces
