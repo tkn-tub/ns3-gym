@@ -457,4 +457,11 @@ CommandLineHelper::UserItemParse<bool> (const std::string value, bool & val)
     }
 }
 
+std::ostream &
+operator << (std::ostream & os, const CommandLine & cmd)
+{
+  cmd.PrintHelp (os);
+  return os;
+}
+
 } // namespace ns3
