@@ -166,16 +166,53 @@ private:
  *  - \f$ \lambda \f$ : wavelength (m)
  *  - \f$ d \f$ : distance (m)
  *  - \f$ L \f$ : system loss (unit-less)
- *
- *
- * This model is invalid for small distance values.
- * The current implementation returns the txpower as the rxpower
- * for any distance smaller than MinDistance.
  * 
  * In the implementation,  \f$ \lambda \f$ is calculated as 
  * \f$ \frac{C}{f} \f$, where  \f$ C = 299792458\f$ m/s is the speed of light in
  * vacuum, and \f$ f \f$ is the frequency in Hz which can be configured by
  * the user via the Frequency attribute.
+ *
+ * The Friis model is valid only for propagation in free space within
+ * the so-called far field region, which can be considered
+ * approximately as the region for \f$ d > 3 \lambda \f$.
+ * The model will still return a value for \f$ d < 3 \lambda \f$, as
+ * doing so (rather than triggering a fatal error) is practical for
+ * many simulation scenarios. However, we stress that the values
+ * obtained in such conditions shall not be considered realistic. 
+ * 
+ * Related with this issue, we note that the Friis formula is
+ * undefined for \f$ d = 0 \f$, and results in 
+ * \f$ P_r > P_t \f$ for \f$ d < \lambda / 2 \sqrt{\pi} \f$.
+ * Both these conditions occur outside of the far field region, so in
+ * principle the Friis model shall not be used in these conditions. 
+ * In practice, however, Friis is often used in scenarios where accurate
+ * propagation modeling is not deemed important, and values of \f$ d =
+ * 0 \f$ can occur. To allow practical use of the model in such
+ * scenarios, we have to 1) return some value for \f$ d = 0 \f$, and
+ * 2) avoid large discontinuities in propagation loss values (which
+ * could lead to artifacts such as bogus capture effects which are
+ * much worse than inaccurate propagation loss values). The two issues
+ * are conflicting, as, according to the Friis formula, 
+ * \f$\lim_{d \to 0 }  P_r = +\infty \f$;
+ * so if, for \f$ d = 0 \f$, we use a fixed loss value, we end up with an infinitely large
+ * discontinuity, which as we discussed can cause undesireable
+ * simulation artifacts.
+ *
+ * To avoid these artifact, this implmentation of the Friis model
+ * provides an attribute called MinLoss which allows to specify the
+ * minimum total loss (in dB) returned by the model. This is used in
+ * such a way that 
+ * \f$ P_r \f$ continuously increases for \f$ d \to 0 \f$, until
+ * MinLoss is reached, and then stay constant; this allow to
+ * return a value for \f$ d  = 0 \f$ and at the same time avoid
+ * discontinuities. The model won't be much realistic, but at least
+ * the simulation artifacts discussed before are avoided. The default value of
+ * MinLoss is 0 dB, which means that by default the model will return 
+ * \f$ P_r = P_t \f$ for \f$ d <= \lambda / 2 \sqrt{\pi} \f$. We note
+ * that this value of \f$ d \f$ is outside of the far field
+ * region, hence the validity of the model in the far field region is
+ * not affected.
+ * 
  */
 class FriisPropagationLossModel : public PropagationLossModel
 {
@@ -197,17 +234,17 @@ public:
   void SetSystemLoss (double systemLoss);
 
   /**
-   * \param minDistance the minimum distance
+   * \param minLoss the minimum loss (dB)
    *
-   * Below this distance, the txpower is returned
-   * unmodified as the rxpower.
+   * no matter how short the distance, the total propagation loss (in
+   * dB) will always be greater or equal than this value 
    */
-  void SetMinDistance (double minDistance);
+  void SetMinLoss (double minLoss);
 
   /**
-   * \returns the minimum distance.
+   * \return the minimum loss.
    */
-  double GetMinDistance (void) const;
+  double GetMinLoss (void) const;
 
   /**
    * \returns the current frequency (Hz)
@@ -232,7 +269,7 @@ private:
   double m_lambda;
   double m_frequency;
   double m_systemLoss;
-  double m_minDistance;
+  double m_minLoss;
 };
 
 /**

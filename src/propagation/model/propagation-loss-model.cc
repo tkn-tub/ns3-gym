@@ -161,11 +161,11 @@ FriisPropagationLossModel::GetTypeId (void)
                    DoubleValue (1.0),
                    MakeDoubleAccessor (&FriisPropagationLossModel::m_systemLoss),
                    MakeDoubleChecker<double> ())
-    .AddAttribute ("MinDistance", 
-                   "The distance under which the propagation model refuses to give results (m)",
-                   DoubleValue (0.5),
-                   MakeDoubleAccessor (&FriisPropagationLossModel::SetMinDistance,
-                                       &FriisPropagationLossModel::GetMinDistance),
+    .AddAttribute ("MinLoss", 
+                   "The minimum value (dB) of the total loss, used at short ranges. Note: ",
+                   DoubleValue (0.0),
+                   MakeDoubleAccessor (&FriisPropagationLossModel::SetMinLoss,
+                                       &FriisPropagationLossModel::GetMinLoss),
                    MakeDoubleChecker<double> ())
   ;
   return tid;
@@ -185,14 +185,14 @@ FriisPropagationLossModel::GetSystemLoss (void) const
   return m_systemLoss;
 }
 void
-FriisPropagationLossModel::SetMinDistance (double minDistance)
+FriisPropagationLossModel::SetMinLoss (double minLoss)
 {
-  m_minDistance = minDistance;
+  m_minLoss = minLoss;
 }
 double
-FriisPropagationLossModel::GetMinDistance (void) const
+FriisPropagationLossModel::GetMinLoss (void) const
 {
-  return m_minDistance;
+  return m_minLoss;
 }
 
 void
@@ -258,15 +258,19 @@ FriisPropagationLossModel::DoCalcRxPower (double txPowerDbm,
    * lambda: wavelength (m)
    */
   double distance = a->GetDistanceFrom (b);
-  if (distance <= m_minDistance)
+  if (distance < 3*m_lambda)
     {
-      return txPowerDbm;
+      NS_LOG_WARN ("distance not within the far field region => inaccurate propagation loss value");
+    }
+  if (distance <= 0)
+    {
+      return txPowerDbm - m_minLoss;
     }
   double numerator = m_lambda * m_lambda;
   double denominator = 16 * PI * PI * distance * distance * m_systemLoss;
-  double pr = 10 * std::log10 (numerator / denominator);
-  NS_LOG_DEBUG ("distance="<<distance<<"m, attenuation coefficient="<<pr<<"dB");
-  return txPowerDbm + pr;
+  double lossDb = -10 * log10 (numerator / denominator);
+  NS_LOG_DEBUG ("distance=" << distance<< "m, loss=" << lossDb <<"dB");
+  return txPowerDbm - std::max (lossDb, m_minLoss);
 }
 
 int64_t
