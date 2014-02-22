@@ -254,7 +254,7 @@ LogComponent::IsNoneEnabled (void) const
   return m_levels == 0;
 }
 
-void 
+void
 LogComponent::Enable (enum LogLevel level)
 {
   m_levels |= level;
@@ -580,8 +580,7 @@ LogNodePrinter LogGetNodePrinter (void)
 
 
 ParameterLogger::ParameterLogger (std::ostream &os)
-  : std::basic_ostream<char> (os.rdbuf ()),  //!< \bugid{1792}
-    m_itemNumber (0),
+  : m_first (true),
     m_os (os)
 {
 }

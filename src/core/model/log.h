@@ -430,27 +430,44 @@ private:
   int32_t     m_levels;
   std::string m_name;
 };
-
+  
 class ParameterLogger : public std::ostream
+
+/**
+ * \ingroup logging
+ *
+ * Insert `, ' when streaming function arguments.
+ */
+class ParameterLogger
 {
-  int m_itemNumber;
-  std::ostream &m_os;
+  bool m_first;        //!< First argument flag, doesn't get `, '.
+  std::ostream &m_os;  //!< Underlying output stream.
 public:
+  /**
+   * Constructor.
+   *
+   * \param [in] os Underlying output stream.
+   */
   ParameterLogger (std::ostream &os);
 
+  /**
+   * Write a function parameter on the output stream,
+   * separating paramters after the first by `, ' strings.
+   *
+   * \param [in] param the function parameter
+   */
   template<typename T>
   ParameterLogger& operator<< (T param)
   {
-    switch (m_itemNumber)
+    if (m_first)
       {
-      case 0: // first parameter
         m_os << param;
-        break;
-      default: // parameter following a previous parameter
-        m_os << ", " << param;
-        break;
+        m_first = false;
       }
-    m_itemNumber++;
+    else
+      {
+        m_os << ", " << param;
+      }
     return *this;
   }
 };
