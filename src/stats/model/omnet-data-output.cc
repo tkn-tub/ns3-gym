@@ -37,18 +37,18 @@ NS_LOG_COMPONENT_DEFINE ("OmnetDataOutput");
 //----------------------------------------------
 OmnetDataOutput::OmnetDataOutput()
 {
-  m_filePrefix = "data";
+  NS_LOG_FUNCTION (this);
 
-  NS_LOG_FUNCTION_NOARGS ();
+  m_filePrefix = "data";
 }
 OmnetDataOutput::~OmnetDataOutput()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 void
 OmnetDataOutput::DoDispose ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 
   DataOutputInterface::DoDispose ();
   // end OmnetDataOutput::DoDispose
@@ -85,6 +85,7 @@ inline bool isNumeric (const std::string& s) {
 void
 OmnetDataOutput::Output (DataCollector &dc)
 {
+  NS_LOG_FUNCTION (this << &dc);
 
   std::ofstream scalarFile;
   std::string fn = m_filePrefix +"-"+dc.GetRunLabel ()+ ".sca";
@@ -139,6 +140,7 @@ OmnetDataOutput::OmnetOutputCallback::OmnetOutputCallback
   (std::ostream *scalar) :
   m_scalar (scalar)
 {
+  NS_LOG_FUNCTION (this << scalar);
 }
 
 void
@@ -146,6 +148,8 @@ OmnetDataOutput::OmnetOutputCallback::OutputStatistic (std::string context,
                                                        std::string name,
                                                        const StatisticalSummary *statSum)
 {
+  NS_LOG_FUNCTION (this << context << name << statSum);
+
   if (context == "")
     context = ".";
   if (name == "")
@@ -172,6 +176,8 @@ OmnetDataOutput::OmnetOutputCallback::OutputSingleton (std::string context,
                                                        std::string name,
                                                        int val)
 {
+  NS_LOG_FUNCTION (this << context << name << val);
+
   if (context == "")
     context = ".";
   if (name == "")
@@ -185,6 +191,8 @@ OmnetDataOutput::OmnetOutputCallback::OutputSingleton (std::string context,
                                                        std::string name,
                                                        uint32_t val)
 {
+  NS_LOG_FUNCTION (this << context << name << val);
+
   if (context == "")
     context = ".";
   if (name == "")
@@ -198,6 +206,8 @@ OmnetDataOutput::OmnetOutputCallback::OutputSingleton (std::string context,
                                                        std::string name,
                                                        double val)
 {
+  NS_LOG_FUNCTION (this << context << name << val);
+
   if (context == "")
     context = ".";
   if (name == "")
@@ -211,6 +221,8 @@ OmnetDataOutput::OmnetOutputCallback::OutputSingleton (std::string context,
                                                        std::string name,
                                                        std::string val)
 {
+  NS_LOG_FUNCTION (this << context << name << val);
+
   if (context == "")
     context = ".";
   if (name == "")
@@ -224,6 +236,8 @@ OmnetDataOutput::OmnetOutputCallback::OutputSingleton (std::string context,
                                                        std::string name,
                                                        Time val)
 {
+  NS_LOG_FUNCTION (this << context << name << val);
+
   if (context == "")
     context = ".";
   if (name == "")
