@@ -46,6 +46,7 @@ Bugs fixed
 - Bug 1852 - cairo-wideint-private.h error cannot find definitions for fixed-width integral types
 - Bug 1853 - NS_LOG_FUNCTION broken on OSX 10.9
 - Bug 1855 - SixLowPanNetDevice is not correctly indexed
+- Bug 1862 - NS_LOG="Time=*|prefix_time" causes stack overflow
 
 Release 3.19
 =============

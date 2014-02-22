@@ -66,34 +66,34 @@ namespace ns3 {
  *  Logging severity classes and levels.
  */
 enum LogLevel {
-  LOG_NONE           = 0x00000000, // no logging
+  LOG_NONE           = 0x00000000, //!< no logging
 
-  LOG_ERROR          = 0x00000001, // serious error messages only
+  LOG_ERROR          = 0x00000001, //!< serious error messages only
   LOG_LEVEL_ERROR    = 0x00000001,
 
-  LOG_WARN           = 0x00000002, // warning messages
+  LOG_WARN           = 0x00000002, //!< warning messages
   LOG_LEVEL_WARN     = 0x00000003,
 
-  LOG_DEBUG          = 0x00000004, // rare ad-hoc debug messages
+  LOG_DEBUG          = 0x00000004, //!< rare ad-hoc debug messages
   LOG_LEVEL_DEBUG    = 0x00000007,
 
-  LOG_INFO           = 0x00000008, // informational messages (e.g., banners)
+  LOG_INFO           = 0x00000008, //!< informational messages (e.g., banners)
   LOG_LEVEL_INFO     = 0x0000000f,
 
-  LOG_FUNCTION       = 0x00000010, // function tracing
+  LOG_FUNCTION       = 0x00000010, //!< function tracing
   LOG_LEVEL_FUNCTION = 0x0000001f, 
 
-  LOG_LOGIC          = 0x00000020, // control flow tracing within functions
+  LOG_LOGIC          = 0x00000020, //!< control flow tracing within functions
   LOG_LEVEL_LOGIC    = 0x0000003f,
 
-  LOG_ALL            = 0x0fffffff, // print everything
+  LOG_ALL            = 0x0fffffff, //!< print everything
   LOG_LEVEL_ALL      = LOG_ALL,
 
-  LOG_PREFIX_FUNC    = 0x80000000, // prefix all trace prints with function
-  LOG_PREFIX_TIME    = 0x40000000, // prefix all trace prints with simulation time
-  LOG_PREFIX_NODE    = 0x20000000, // prefix all trace prints with simulation node
-  LOG_PREFIX_LEVEL   = 0x10000000, // prefix all trace prints with log level (severity)
-  LOG_PREFIX_ALL     = 0xf0000000  // all prefixes
+  LOG_PREFIX_FUNC    = 0x80000000, //!< prefix all trace prints with function
+  LOG_PREFIX_TIME    = 0x40000000, //!< prefix all trace prints with simulation time
+  LOG_PREFIX_NODE    = 0x20000000, //!< prefix all trace prints with simulation node
+  LOG_PREFIX_LEVEL   = 0x10000000, //!< prefix all trace prints with log level (severity)
+  LOG_PREFIX_ALL     = 0xf0000000  //!< all prefixes
 };
 
 /**
@@ -146,7 +146,6 @@ void LogComponentDisableAll (enum LogLevel level);
 
 /**
  * \ingroup logging
- * \param name a string
  *
  * Define a Log component with a specific name.
  *
@@ -166,10 +165,22 @@ void LogComponentDisableAll (enum LogLevel level);
  *
  * Note the closing ';' is not on the same line;  this prevents 
  * Doxygen from spuriously warning that the macro invocation is undocumented.
- 
+ *
+ * \param name a string
  */
 #define NS_LOG_COMPONENT_DEFINE(name)                           \
   static ns3::LogComponent g_log = ns3::LogComponent (name)
+
+/**
+ * \ingroup logging
+ *
+ * Define a logging component with a default mask.
+ *
+ * \param name a string
+ * \param mask the default mask
+ */
+#define NS_LOG_COMPONENT_DEFINE_MASK(name, mask)                \
+  static ns3::LogComponent g_log = ns3::LogComponent (name, mask)
 
 /**
  * \ingroup logging
@@ -416,22 +427,76 @@ void LogSetNodePrinter (LogNodePrinter);
 LogNodePrinter LogGetNodePrinter (void);
 
 
-class LogComponent {
+/**
+ * \ingroup logging
+ *
+ * A single log component configuration.
+ */
+class LogComponent
+{
 public:
-  LogComponent (const std::string & name);
-  void EnvVarCheck (const std::string & name);
-  bool IsEnabled (enum LogLevel level) const;
+  /**
+   * Constructor
+   *
+   * \param [in] name the user-visible name for this component.
+   */
+  LogComponent (const std::string & name, const enum LogLevel mask = LOG_NONE);
+  /**
+   * Check if this LogComponent is enabled for \pname{level}
+   *
+   * \param [in] level the level to check for.
+   * \return true if \pname{level} is enabled.
+   */
+  bool IsEnabled (const enum LogLevel level) const;
+  /**
+   * Check if all levels are disabled.
+   *
+   * \return true if all levels are disabled.
+   */
   bool IsNoneEnabled (void) const;
-  void Enable (enum LogLevel level);
-  void Disable (enum LogLevel level);
+  /**
+   * Enable this LogComponent at \pname{level}
+   *
+   * \param [in] level the LogLevel to enable.
+   */
+  void Enable (const enum LogLevel level);
+  /**
+   * Disable logging at \pname{level} for this LogComponent.
+   *
+   * \param [in] level the LogLevel to disable.
+   */
+  void Disable (const enum LogLevel level);
+  /**
+   * Get the name of this LogComponent.
+   *
+   * \return the name of this LogComponent.
+   */
   char const *Name (void) const;
-  std::string GetLevelLabel(const enum LogLevel level) const;
+  /**
+   * Get the string label for the given LogLevel.
+   *
+   * \param [in] level the LogLevel to get the label for.
+   * \return the string label for \pname{level}
+   */
+  static std::string GetLevelLabel(const enum LogLevel level);
+  /**
+   * Prevent the enabling of a specific LogLevel.
+   *
+   * \param level the LogLevel to block
+   */
+  void SetMask (const enum LogLevel level);
 private:
-  int32_t     m_levels;
-  std::string m_name;
-};
+  /**
+   * Parse the `NS_LOG` environment variable for options relating to this
+   * LogComponent.
+   */
+  void EnvVarCheck (void);
   
-class ParameterLogger : public std::ostream
+  int32_t     m_levels;  //!< Enabled LogLevels
+  int32_t     m_mask;    //!< Blocked LogLevels
+  std::string m_name;    //!< LogComponent name
+
+};  // class LogComponent
 
 /**
  * \ingroup logging

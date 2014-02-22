@@ -32,7 +32,7 @@
 #include <iomanip>  // showpos
 #include <sstream>
 
-NS_LOG_COMPONENT_DEFINE ("Time");
+NS_LOG_COMPONENT_DEFINE_MASK ("Time", ns3::LOG_PREFIX_TIME);
 
 namespace ns3 {
 
