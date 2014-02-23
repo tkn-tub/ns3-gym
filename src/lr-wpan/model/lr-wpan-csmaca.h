@@ -15,24 +15,23 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: kwong yin <kwong-sang.yin@boeing.com>
+ * Author:
+ *  kwong yin <kwong-sang.yin@boeing.com>
+ *  Sascha Alexander Jopen <jopen@cs.uni-bonn.de>
  */
 
-#ifndef LRWPANCSMACA_H
-#define LRWPANCSMACA_H
+#ifndef LR_WPAN_CSMACA_H
+#define LR_WPAN_CSMACA_H
 
-#include <stdint.h>
-#include "ns3/object.h"
-#include "ns3/nstime.h"
-#include "ns3/random-variable.h"
-#include "ns3/packet.h"
-#include "ns3/lr-wpan-phy.h"
-#include "ns3/lr-wpan-mac.h"
+#include <ns3/object.h>
+#include <ns3/random-variable.h>
+#include <ns3/event-id.h>
+#include <ns3/lr-wpan-mac.h>
 
 namespace ns3 {
 
 /* This method informs MAC that channel is idle or busy */
-typedef Callback< void, LrWpanMacState> LrWpanMacStateCallback;
+typedef Callback<void, LrWpanMacState> LrWpanMacStateCallback;
 
 /**
  * \ingroup lr-wpan
@@ -44,10 +43,10 @@ class LrWpanCsmaCa : public Object
 {
 
 public:
-  static TypeId GetTypeId ();
+  static TypeId GetTypeId (void);
 
-  LrWpanCsmaCa ();
-  ~LrWpanCsmaCa ();
+  LrWpanCsmaCa (void);
+  virtual ~LrWpanCsmaCa (void);
 
   void SetMac (Ptr<LrWpanMac> mac);
   Ptr<LrWpanMac> GetMac (void) const;
@@ -80,12 +79,12 @@ public:
   /*
    * cancel CSMA-CA algorithm
    */
-  void Cancel ();
+  void Cancel (void);
 
   /*
    * In step 2 of the CSMA-CA, perform a random backoff in the range of 0 to 2^BE -1
    */
-  void RandomBackoffDelay ();
+  void RandomBackoffDelay (void);
 
   /*
    * In the slotted CSMA-CA, after random backoff, Determine if the remaining
@@ -94,13 +93,13 @@ public:
    * This step is NOT performed for the unslotted CSMA-CA. If it can proceed
    * function CCAconfirmed() is called.
    */
-  void CanProceed ();
+  void CanProceed (void);
 
   /*
    * Request the Phy to perform CCA (Step 3)
    *
    */
-  void RequestCCA ();
+  void RequestCCA (void);
 
   /**
    *  IEEE 802.15.4-2006 section 6.2.2.2
@@ -123,7 +122,7 @@ public:
   void SetLrWpanMacStateCallback (LrWpanMacStateCallback macState);
 
 private:
-  virtual void DoDispose ();
+  virtual void DoDispose (void);
   LrWpanMacStateCallback m_lrWpanMacStateCallback;
   bool m_isSlotted;                     // beacon-enabled slotted or nonbeacon-enabled unslotted CSMA-CA
                                         // beacon order == 15 means nonbeacon-enabled
@@ -138,11 +137,16 @@ private:
   uint8_t m_macMaxBE;                   //3-8 default 5
   uint8_t m_macMaxCSMABackoffs;         //0-5 default 4
   uint64_t m_aUnitBackoffPeriod;        // 20 symbols in each backoff periods
+  UniformVariable m_random;
 
+  EventId m_randomBackoffEvent;
+  EventId m_requestCcaEvent;
+  EventId m_canProceedEvent;
+  bool m_ccaRequestRunning;
 };
 
 }
 
 // namespace ns-3
 
-#endif /* LRWPANCSMACA_H */
+#endif /* LR_WPAN_CSMACA_H */

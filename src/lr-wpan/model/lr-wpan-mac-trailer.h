@@ -15,16 +15,20 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *  Author: kwong yin <kwong-sang.yin@boeing.com>
+ * Author:
+ *  kwong yin <kwong-sang.yin@boeing.com>
+ *  Sascha Alexander Jopen <jopen@cs.uni-bonn.de>
+ *  Erwan Livolant <erwan.livolant@inria.fr>
  */
 
-#ifndef LRWPANMACTRAILER_H_
-#define LRWPANMACTRAILER_H_
+#ifndef LR_WPAN_MAC_TRAILER_H
+#define LR_WPAN_MAC_TRAILER_H
 
-#include "ns3/trailer.h"
-#include <stdint.h>
+#include <ns3/trailer.h>
 
 namespace ns3 {
+
+class Packet;
 
 /**
  * The length in octets of the IEEE 802.15.4 MAC FCS field
@@ -36,7 +40,6 @@ class LrWpanMacTrailer : public Trailer
 {
 public:
   LrWpanMacTrailer ();
-  ~LrWpanMacTrailer ();
 
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
@@ -44,6 +47,16 @@ public:
   virtual uint32_t GetSerializedSize (void) const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
+
+  uint16_t GetFcs (void) const;
+  void SetFcs (Ptr<const Packet> p);
+  bool CheckFcs (Ptr<const Packet> p);
+  void EnableFcs (bool enable);
+
+private:
+  uint16_t m_fcs;
+  bool m_calcFcs;
+  uint16_t GenerateCrc16 (uint8_t *data, int length);
 };
 } // namespace ns3
-#endif /* LRWPANMACTRAILER_H_ */
+#endif /* LR_WPAN_MAC_TRAILER_H */

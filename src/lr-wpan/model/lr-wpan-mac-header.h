@@ -35,14 +35,12 @@
  *    ++ - These fields are optional and of variable size
  */
 
-#ifndef LRWPAN_MAC_HEADER_H
-#define LRWPAN_MAC_HEADER_H
+#ifndef LR_WPAN_MAC_HEADER_H
+#define LR_WPAN_MAC_HEADER_H
 
-#include <stdint.h>
-#include "ns3/header.h"
-#include "ns3/nstime.h"
-#include "ns3/mac16-address.h"
-#include "ns3/mac64-address.h"
+#include <ns3/header.h>
+#include <ns3/mac16-address.h>
+#include <ns3/mac64-address.h>
 
 
 namespace ns3 {
@@ -211,7 +209,7 @@ private:
   Mac64Address m_addrExtSrcAddr;        // 0 or 8 Octet
 
   /* Auxiliary Security Header          // 0, 5, 6, 10 or 14 Octets */
-  uint8_t m_auxSecCtrl;                 // 1 Octet see below
+  // uint8_t m_auxSecCtrl;                 // 1 Octet see below
   uint32_t m_auxFrmCntr;                // 4 Octet
 
   /* Security Control fields */
@@ -235,7 +233,7 @@ private:
 
 }; //LrWpanMacHeader
 }; // namespace ns-3
-#endif /* LRWPAN_MAC_HEADER_H */
+#endif /* LR_WPAN_MAC_HEADER_H */
 
 // ----------------------------------------------------------------------------------------------------------
 

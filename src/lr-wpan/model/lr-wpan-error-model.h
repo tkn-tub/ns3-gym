@@ -20,9 +20,7 @@
 #ifndef LR_WPAN_ERROR_MODEL_H
 #define LR_WPAN_ERROR_MODEL_H
 
-#include <stdint.h>
-#include <math.h>
-#include "ns3/object.h"
+#include <ns3/object.h>
 
 namespace ns3 {
 
@@ -38,7 +36,7 @@ class LrWpanErrorModel : public Object
 public:
   static TypeId GetTypeId (void);
 
-  LrWpanErrorModel ();
+  LrWpanErrorModel (void);
 
   /**
    * return chunk success rate for given SNR
@@ -49,8 +47,8 @@ public:
   double GetChunkSuccessRate (double snr, uint32_t nbits) const;
 
 private:
-  uint64_t Factorial (uint32_t k) const;
-  uint32_t BinomialCoefficient (uint32_t k, uint32_t n) const;
+  double m_binomialCoefficients[17];
+
 };
 
 

@@ -19,13 +19,14 @@
  *  Gary Pei <guangyu.pei@boeing.com>
  *  Tom Henderson <thomas.r.henderson@boeing.com>
  */
-
 #include "lr-wpan-helper.h"
-#include "ns3/lr-wpan-phy.h"
-#include "ns3/lr-wpan-net-device.h"
-#include "ns3/propagation-loss-model.h"
-#include "ns3/log.h"
-#include "ns3/config.h"
+#include <ns3/lr-wpan-csmaca.h>
+#include <ns3/lr-wpan-error-model.h>
+#include <ns3/lr-wpan-net-device.h>
+#include <ns3/mobility-model.h>
+#include <ns3/single-model-spectrum-channel.h>
+#include <ns3/propagation-loss-model.h>
+#include <ns3/log.h>
 
 NS_LOG_COMPONENT_DEFINE ("LrWpanHelper");
 

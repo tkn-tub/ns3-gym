@@ -17,9 +17,8 @@
  *
  * Author:  Tom Henderson <thomas.r.henderson@boeing.com>
  */
-
-#include "ns3/core-module.h"
-#include "ns3/lr-wpan-module.h"
+#include <ns3/core-module.h>
+#include <ns3/lr-wpan-module.h>
 
 #include <iostream>
 

@@ -17,8 +17,10 @@
  *
  * Author: Gary Pei <guangyu.pei@boeing.com>
  */
-#include "ns3/lr-wpan-error-model.h"
-#include "ns3/log.h"
+#include "lr-wpan-error-model.h"
+#include <ns3/log.h>
+
+#include <cmath>
 
 NS_LOG_COMPONENT_DEFINE ("LrWpanErrorModel");
 
@@ -36,8 +38,25 @@ LrWpanErrorModel::GetTypeId (void)
   return tid;
 }
 
-LrWpanErrorModel::LrWpanErrorModel ()
+LrWpanErrorModel::LrWpanErrorModel (void)
 {
+  m_binomialCoefficients[0]  = 1;
+  m_binomialCoefficients[1]  = -16;
+  m_binomialCoefficients[2]  = 120;
+  m_binomialCoefficients[3]  = -560;
+  m_binomialCoefficients[4]  = 1820;
+  m_binomialCoefficients[5]  = -4368;
+  m_binomialCoefficients[6]  = 8008;
+  m_binomialCoefficients[7]  = -11440;
+  m_binomialCoefficients[8]  = 12870;
+  m_binomialCoefficients[9]  = -11440;
+  m_binomialCoefficients[10] = 8008;
+  m_binomialCoefficients[11] = -4368;
+  m_binomialCoefficients[12] = 1820;
+  m_binomialCoefficients[13] = -560;
+  m_binomialCoefficients[14] = 120;
+  m_binomialCoefficients[15] = -16;
+  m_binomialCoefficients[16] = 1;
 }
 
 double
@@ -47,7 +66,7 @@ LrWpanErrorModel::GetChunkSuccessRate (double snr, uint32_t nbits) const
 
   for (uint32_t k = 2; k <= 16; k++)
     {
-      ber += pow (-1.0, (double) k) * BinomialCoefficient (k,16) * exp (20.0 * snr * (1.0 / k - 1.0));
+      ber += m_binomialCoefficients[k] * exp (20.0 * snr * (1.0 / k - 1.0));
     }
 
   ber = ber * 8.0 / 15.0 / 16.0;
@@ -56,24 +75,5 @@ LrWpanErrorModel::GetChunkSuccessRate (double snr, uint32_t nbits) const
   double retval = pow (1.0 - ber, nbits);
   return retval;
 }
-
-uint64_t
-LrWpanErrorModel::Factorial (uint32_t k) const
-{
-  uint64_t fact = 1;
-  while (k > 0)
-    {
-      fact *= k;
-      k--;
-    }
-  return fact;
-}
-
-uint32_t LrWpanErrorModel::BinomialCoefficient (uint32_t k, uint32_t n) const
-{
-  uint32_t retval = Factorial (n) / Factorial (k) / Factorial (n - k);
-  return retval;
-}
-
 
 } // namespace ns3

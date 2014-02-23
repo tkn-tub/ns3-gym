@@ -20,10 +20,11 @@
 #ifndef LR_WPAN_SPECTRUM_VALUE_HELPER_H
 #define LR_WPAN_SPECTRUM_VALUE_HELPER_H
 
-#include <ns3/spectrum-value.h>
-#include <cmath>
+#include <ns3/ptr.h>
 
 namespace ns3 {
+
+class SpectrumValue;
 
 /**
  * \ingroup lr-wpan
@@ -33,8 +34,8 @@ namespace ns3 {
 class LrWpanSpectrumValueHelper
 {
 public:
-  LrWpanSpectrumValueHelper ();
-  virtual ~LrWpanSpectrumValueHelper ();
+  LrWpanSpectrumValueHelper (void);
+  virtual ~LrWpanSpectrumValueHelper (void);
 
   /**
    * \brief create spectrum value
@@ -56,7 +57,7 @@ public:
    * \param power spectral density
    * \return total power (using composite trap. rule to numerally integrate
    */
-  double TotalAvgPower (const SpectrumValue &psd);
+  double TotalAvgPower (Ptr<const SpectrumValue> psd);
 
 private:
   double m_noiseFactor;

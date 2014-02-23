@@ -15,13 +15,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: kwong yin <kwong-sang.yin@boeing.com>
+ * Author:
+ *  kwong yin <kwong-sang.yin@boeing.com>
+ *  Sascha Alexander Jopen <jopen@cs.uni-bonn.de>
  */
 
-#include "ns3/simulator.h"
-#include "ns3/lr-wpan-csmaca.h"
-#include "ns3/lr-wpan-mac.h"
-#include "ns3/log.h"
+#include "lr-wpan-csmaca.h"
+#include <ns3/simulator.h>
+#include <ns3/log.h>
 
 NS_LOG_COMPONENT_DEFINE ("LrWpanCsmaCa");
 
@@ -52,10 +53,16 @@ LrWpanCsmaCa::LrWpanCsmaCa ()
   // TODO-- make these into ns-3 attributes
 
   m_isSlotted = false;
+  m_NB = 0;
+  m_CW = 2;
+  m_BLE = false;
   m_macMinBE = 3;
   m_macMaxBE = 5;
   m_macMaxCSMABackoffs = 4;
   m_aUnitBackoffPeriod = 20; //20 symbols
+  m_random = UniformVariable ();
+  m_BE = m_macMinBE;
+  m_ccaRequestRunning = false;
 }
 
 LrWpanCsmaCa::~LrWpanCsmaCa ()
@@ -67,6 +74,7 @@ void
 LrWpanCsmaCa::DoDispose ()
 {
   m_lrWpanMacStateCallback = MakeNullCallback< void, LrWpanMacState> ();
+  Cancel ();
   m_mac = 0;
 }
 
@@ -197,12 +205,12 @@ LrWpanCsmaCa::Start ()
         }
       //TODO: for slotted, locate backoff period boundary. i.e. delay to the next slot boundary
       backoffBoundary = getTimeToNextSlot ();
-      Simulator::Schedule (Seconds (backoffBoundary),&LrWpanCsmaCa::RandomBackoffDelay,this);
+      m_randomBackoffEvent = Simulator::Schedule (Seconds (backoffBoundary), &LrWpanCsmaCa::RandomBackoffDelay, this);
     }
   else
     {
       m_BE = m_macMinBE;
-      Simulator::ScheduleNow (&LrWpanCsmaCa::RandomBackoffDelay,this);
+      m_randomBackoffEvent = Simulator::ScheduleNow (&LrWpanCsmaCa::RandomBackoffDelay, this);
     }
   /*
   *  TODO: If using Backoff.cc (will need to modify Backoff::GetBackoffTime)
@@ -217,8 +225,10 @@ LrWpanCsmaCa::Start ()
 void
 LrWpanCsmaCa::Cancel ()
 {
+  m_randomBackoffEvent.Cancel ();
+  m_requestCcaEvent.Cancel ();
+  m_canProceedEvent.Cancel ();
 }
-
 
 /*
  * Delay for backoff period in the range 0 to 2^BE -1 units
@@ -229,8 +239,6 @@ LrWpanCsmaCa::RandomBackoffDelay ()
 {
   NS_LOG_FUNCTION (this);
 
-  SeedManager::SetSeed (100);
-  UniformVariable uniformVar;
   uint64_t upperBound = (uint64_t) pow (2, m_BE) - 1;
   uint64_t backoffPeriod;
   Time randomBackoff;
@@ -239,19 +247,18 @@ LrWpanCsmaCa::RandomBackoffDelay ()
 
 
   symbolRate = (uint64_t) m_mac->GetPhy ()->GetDataOrSymbolRate (isData); //symbols per second
-  uniformVar = UniformVariable (0, upperBound);
-  backoffPeriod = (uint64_t)uniformVar.GetValue (); //num backoff periods
+  backoffPeriod = (uint64_t)m_random.GetValue (0, upperBound); //num backoff periods
   randomBackoff = MicroSeconds (backoffPeriod * getUnitBackoffPeriod () * 1000 * 1000 / symbolRate);
 
   if (isUnSlottedCsmaCa ())
     {
       NS_LOG_LOGIC ("Unslotted:  requesting CCA after backoff of " << randomBackoff.GetMicroSeconds () << " us");
-      Simulator::Schedule (randomBackoff,&LrWpanCsmaCa::RequestCCA,this);
+      m_requestCcaEvent = Simulator::Schedule (randomBackoff, &LrWpanCsmaCa::RequestCCA, this);
     }
   else
     {
       NS_LOG_LOGIC ("Slotted:  proceeding after backoff of " << randomBackoff.GetMicroSeconds () << " us");
-      Simulator::Schedule (randomBackoff,&LrWpanCsmaCa::CanProceed,this);
+      m_canProceedEvent = Simulator::Schedule (randomBackoff, &LrWpanCsmaCa::CanProceed, this);
     }
 }
 
@@ -276,11 +283,11 @@ LrWpanCsmaCa::CanProceed ()
     {
       // TODO: For slotted, Perform CCA on backoff period boundary i.e. delay to next slot boundary
       backoffBoundary = getTimeToNextSlot ();
-      Simulator::Schedule (Seconds (backoffBoundary),&LrWpanCsmaCa::RequestCCA,this);
+      m_requestCcaEvent = Simulator::Schedule (Seconds (backoffBoundary), &LrWpanCsmaCa::RequestCCA, this);
     }
   else
     {
-      Simulator::Schedule (Seconds (nextCap),&LrWpanCsmaCa::RandomBackoffDelay,this);
+      m_randomBackoffEvent = Simulator::Schedule (Seconds (nextCap), &LrWpanCsmaCa::RandomBackoffDelay, this);
     }
 }
 
@@ -288,6 +295,7 @@ void
 LrWpanCsmaCa::RequestCCA ()
 {
   NS_LOG_FUNCTION (this);
+  m_ccaRequestRunning = true;
   m_mac->GetPhy ()->PlmeCcaRequest ();
 }
 
@@ -299,59 +307,66 @@ LrWpanCsmaCa::PlmeCcaConfirm (LrWpanPhyEnumeration status)
 {
   NS_LOG_FUNCTION (this << status);
 
-  if (status == IEEE_802_15_4_PHY_IDLE)
+  // Only react on this event, if we are actually waiting for a CCA.
+  // If the CSMA algorithm was canceled, we could still receive this event from
+  // the PHY. In this case we ignore the event.
+  if (m_ccaRequestRunning)
     {
-      if (isSlottedCsmaCa ())
+      m_ccaRequestRunning = false;
+      if (status == IEEE_802_15_4_PHY_IDLE)
         {
-          m_CW--;
-          if (m_CW == 0)
+          if (isSlottedCsmaCa ())
             {
-              // inform MAC channel is idle
+              m_CW--;
+              if (m_CW == 0)
+                {
+                  // inform MAC channel is idle
+                  if (!m_lrWpanMacStateCallback.IsNull ())
+                    {
+                      NS_LOG_LOGIC ("Notifying MAC of idle channel");
+                      m_lrWpanMacStateCallback (CHANNEL_IDLE);
+                    }
+                }
+              else
+                {
+                  NS_LOG_LOGIC ("Perform CCA again, m_CW = " << m_CW);
+                  m_requestCcaEvent = Simulator::ScheduleNow (&LrWpanCsmaCa::RequestCCA, this); // Perform CCA again
+                }
+            }
+          else
+            {
+              // inform MAC, channel is idle
               if (!m_lrWpanMacStateCallback.IsNull ())
                 {
                   NS_LOG_LOGIC ("Notifying MAC of idle channel");
                   m_lrWpanMacStateCallback (CHANNEL_IDLE);
                 }
             }
+        }
+      else
+        {
+          if (isSlottedCsmaCa ())
+            {
+              m_CW = 2;
+            }
+          m_BE = MIN (m_BE + 1, m_macMaxBE);
+          m_NB++;
+          if (m_NB > m_macMaxCSMABackoffs)
+            {
+              // no channel found so cannot send pkt
+              NS_LOG_DEBUG ("Channel access failure");
+              if (!m_lrWpanMacStateCallback.IsNull ())
+                {
+                  NS_LOG_LOGIC ("Notifying MAC of Channel access failure");
+                  m_lrWpanMacStateCallback (CHANNEL_ACCESS_FAILURE);
+                }
+              return;
+            }
           else
             {
-              NS_LOG_LOGIC ("Perform CCA again, m_CW = " << m_CW);
-              Simulator::ScheduleNow (&LrWpanCsmaCa::RequestCCA,this); // Perform CCA again
+              NS_LOG_DEBUG ("Perform another backoff; m_NB = " << static_cast<uint16_t> (m_NB));
+              m_randomBackoffEvent = Simulator::ScheduleNow (&LrWpanCsmaCa::RandomBackoffDelay, this); //Perform another backoff (step 2)
             }
-        }
-      else
-        {
-          // inform MAC, channel is idle
-          if (!m_lrWpanMacStateCallback.IsNull ())
-            {
-              NS_LOG_LOGIC ("Notifying MAC of idle channel");
-              m_lrWpanMacStateCallback (CHANNEL_IDLE);
-            }
-        }
-    }
-  else
-    {
-      if (isSlottedCsmaCa ())
-        {
-          m_CW = 2;
-        }
-      m_BE = MIN (m_BE + 1, m_macMaxBE);
-      m_NB++;
-      if (m_NB > m_macMaxCSMABackoffs)
-        {
-          // no channel found so cannot send pkt
-          NS_LOG_DEBUG ("Channel access failure");
-          if (!m_lrWpanMacStateCallback.IsNull ())
-            {
-              NS_LOG_LOGIC ("Notifying MAC of Channel access failure");
-              m_lrWpanMacStateCallback (CHANNEL_ACCESS_FAILURE);
-            }
-          return;
-        }
-      else
-        {
-          NS_LOG_DEBUG ("Perform another backoff; m_NB = " << static_cast<uint16_t> (m_NB));
-          Simulator::ScheduleNow (&LrWpanCsmaCa::RandomBackoffDelay,this); //Perform another backoff (step 2)
         }
     }
 }

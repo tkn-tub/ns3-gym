@@ -25,13 +25,15 @@
  * Trace Phy state changes, and Mac DataIndication and DataConfirm events
  * to stdout
  */
-#include "ns3/log.h"
-#include "ns3/core-module.h"
-#include "ns3/lr-wpan-module.h"
-#include "ns3/propagation-loss-model.h"
-#include "ns3/simulator.h"
+#include <ns3/log.h>
+#include <ns3/core-module.h>
+#include <ns3/lr-wpan-module.h>
+#include <ns3/propagation-loss-model.h>
+#include <ns3/propagation-delay-model.h>
+#include <ns3/simulator.h>
 #include <ns3/single-model-spectrum-channel.h>
 #include <ns3/constant-position-mobility-model.h>
+#include <ns3/packet.h>
 
 #include <iostream>
 
@@ -83,7 +85,9 @@ int main (int argc, char *argv[])
   // Each device must be attached to the same channel
   Ptr<SingleModelSpectrumChannel> channel = CreateObject<SingleModelSpectrumChannel> ();
   Ptr<LogDistancePropagationLossModel> propModel = CreateObject<LogDistancePropagationLossModel> ();
+  Ptr<ConstantSpeedPropagationDelayModel> delayModel = CreateObject<ConstantSpeedPropagationDelayModel> ();
   channel->AddPropagationLossModel (propModel);
+  channel->SetPropagationDelayModel (delayModel);
 
   dev0->SetChannel (channel);
   dev1->SetChannel (channel);
@@ -128,21 +132,24 @@ int main (int argc, char *argv[])
 
   // The below should trigger two callbacks when end-to-end data is working
   // 1) DataConfirm callback is called
-  // 2) DataIndication callback is called with value of 20
-  Ptr<Packet> p0 = Create<Packet> (50);  // 20 bytes of dummy data
+  // 2) DataIndication callback is called with value of 50
+  Ptr<Packet> p0 = Create<Packet> (50);  // 50 bytes of dummy data
   McpsDataRequestParams params;
-  params.m_srcAddrMode = 2;
-  params.m_dstAddrMode = 2;
+  params.m_srcAddrMode = SHORT_ADDR;
+  params.m_dstAddrMode = SHORT_ADDR;
   params.m_dstPanId = 0;
   params.m_dstAddr = Mac16Address ("00:02");
   params.m_msduHandle = 0;
-  params.m_txOptions = 0;
-  dev0->GetMac ()->McpsDataRequest (params, p0);
+  params.m_txOptions = TX_OPTION_ACK;
+//  dev0->GetMac ()->McpsDataRequest (params, p0);
+  Simulator::ScheduleWithContext (1, Seconds (0.0),
+                       &LrWpanMac::McpsDataRequest,
+                       dev0->GetMac (), params, p0);
 
   // Send a packet back at time 2 seconds
-  Ptr<Packet> p2 = Create<Packet> (60);  // 20 bytes of dummy data
+  Ptr<Packet> p2 = Create<Packet> (60);  // 60 bytes of dummy data
   params.m_dstAddr = Mac16Address ("00:01");
-  Simulator::Schedule (MilliSeconds (2.0),
+  Simulator::ScheduleWithContext (2, Seconds (2.0),
                        &LrWpanMac::McpsDataRequest,
                        dev1->GetMac (), params, p2);
 

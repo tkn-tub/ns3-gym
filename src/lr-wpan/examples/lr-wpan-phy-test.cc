@@ -17,9 +17,9 @@
  *
  * Author: Gary Pei <guangyu.pei@boeing.com>
  */
-
 #include <ns3/log.h>
 #include <ns3/test.h>
+#include <ns3/packet.h>
 #include <ns3/lr-wpan-phy.h>
 #include <ns3/lr-wpan-mac.h>
 #include <ns3/simulator.h>
@@ -37,7 +37,7 @@ void GetSetTRXStateConfirm (LrWpanPhyEnumeration status)
 void
 ReceivePdDataIndication (uint32_t psduLength,
                          Ptr<Packet> p,
-                         uint32_t lqi)
+                         uint8_t lqi)
 {
   NS_LOG_UNCOND ("At: " << Simulator::Now ()
                         << " Received frame size: " << psduLength << " LQI: " <<

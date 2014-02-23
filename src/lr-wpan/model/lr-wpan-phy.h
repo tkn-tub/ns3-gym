@@ -15,33 +15,29 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Gary Pei <guangyu.pei@boeing.com>
+ * Author:
+ *  Gary Pei <guangyu.pei@boeing.com>
+ *  Sascha Alexander Jopen <jopen@cs.uni-bonn.de>
  */
 #ifndef LR_WPAN_PHY_H
 #define LR_WPAN_PHY_H
 
-#include <stdint.h>
-#include <math.h>
-#include <ns3/callback.h>
-#include <ns3/traced-callback.h>
-#include "ns3/object.h"
-#include <ns3/packet-burst.h>
 #include <ns3/spectrum-phy.h>
-#include <ns3/spectrum-channel.h>
-#include <ns3/spectrum-interference.h>
-#include <ns3/spectrum-value.h>
-#include <ns3/antenna-model.h>
-#include <ns3/mobility-model.h>
-#include <ns3/packet.h>
-#include <ns3/nstime.h>
-#include <ns3/net-device.h>
+#include <ns3/traced-callback.h>
 #include <ns3/event-id.h>
 #include <ns3/random-variable.h>
-#include "lr-wpan-spectrum-value-helper.h"
-#include "lr-wpan-error-model.h"
-#include "lr-wpan-spectrum-signal-parameters.h"
 
 namespace ns3 {
+
+class Packet;
+class SpectrumValue;
+class LrWpanErrorModel;
+struct LrWpanSpectrumSignalParameters;
+class MobilityModel;
+class SpectrumChannel;
+class SpectrumModel;
+class AntennaModel;
+class NetDevice;
 
 /**
  * IEEE802.15.4-2006 Table 1 and 2 in section 6.1.1 and 6.1.2
@@ -124,7 +120,7 @@ typedef struct
   uint32_t phyMaxFrameDuration;
   uint32_t phySHRDuration;
   double phySymbolsPerOctet;
-} LrWpanPhyPIBAttributes;
+} LrWpanPhyPibAttributes;
 
 /**
  * This method implements the PD SAP: PdDataIndication
@@ -133,7 +129,7 @@ typedef struct
  *  @param p the packet to be transmitted
  *  @param lqi Link quality (LQI) value measured during reception of the PPDU
  */
-typedef Callback< void, uint32_t, Ptr<Packet>, uint32_t > PdDataIndicationCallback;
+typedef Callback< void, uint32_t, Ptr<Packet>, uint8_t > PdDataIndicationCallback;
 
 /**
  * This method implements the PD SAP: PdDataConfirm
@@ -166,7 +162,7 @@ typedef Callback< void, LrWpanPhyEnumeration,uint8_t > PlmeEdConfirmCallback;
  */
 typedef Callback< void, LrWpanPhyEnumeration,
                   LrWpanPibAttributeIdentifier,
-                  LrWpanPhyPIBAttributes* > PlmeGetAttributeConfirmCallback;
+                  LrWpanPhyPibAttributes* > PlmeGetAttributeConfirmCallback;
 
 /**
  * This method implements the PD SAP: PlmeSetTRXStateConfirm
@@ -289,7 +285,7 @@ public:
    *  @param id the attributed identifier
    *  @param * attribute the attribute value
    */
-  void PlmeSetAttributeRequest (LrWpanPibAttributeIdentifier id, LrWpanPhyPIBAttributes* attribute);
+  void PlmeSetAttributeRequest (LrWpanPibAttributeIdentifier id, LrWpanPhyPibAttributes* attribute);
 
   /**
    * set the callback for the end of a RX, as part of the
@@ -367,7 +363,10 @@ public:
    * @return pointer to LrWpanErrorModel in use
    */
   Ptr<LrWpanErrorModel> GetErrorModel (void) const;
-
+  
+  uint64_t GetPhySHRDuration (void) const;
+  double GetPhySymbolsPerOctet (void) const;
+  
 protected:
   static const LrWpanPhyDataAndSymbolRates dataSymbolRates[7];
   static const LrWpanPhyPpduHeaderSymbolNumber ppduHeaderSymbolNumbers[7];
@@ -394,7 +393,7 @@ private:
   Ptr<const SpectrumValue> m_rxPsd;
   Ptr<const SpectrumValue> m_noise;
   Ptr<LrWpanErrorModel> m_errorModel;
-  LrWpanPhyPIBAttributes m_phyPIBAttributes;
+  LrWpanPhyPibAttributes m_phyPIBAttributes;
 
   // State variables
   LrWpanPhyEnumeration m_trxState;  /// transceiver state
@@ -465,6 +464,7 @@ private:
   PacketAndStatus m_currentRxPacket;
   PacketAndStatus m_currentTxPacket;
 
+  EventId m_ccaRequest;
   EventId m_edRequest;
   EventId m_setTRXState;
   EventId m_pdDataRequest;

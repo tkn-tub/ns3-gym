@@ -17,10 +17,12 @@
  *
  * Author:  Tom Henderson <thomas.r.henderson@boeing.com>
  */
-
 #include <ns3/log.h>
 #include <ns3/test.h>
 #include <ns3/lr-wpan-spectrum-value-helper.h>
+#include <ns3/spectrum-value.h>
+
+#include <cmath>
 
 using namespace ns3;
 
@@ -57,7 +59,7 @@ LrWpanSpectrumValueHelperTestCase::DoRun (void)
           value = helper.CreateTxPowerSpectralDensity (pwrdBm, chan);
           pwrWatts = pow (10.0, pwrdBm / 10.0) / 1000;
           // Test that average power calculation is within +/- 25% of expected
-          NS_TEST_ASSERT_MSG_EQ_TOL (helper.TotalAvgPower (*value), pwrWatts, pwrWatts / 4.0, "Not equal for channel " << chan << " pwrdBm " << pwrdBm);
+          NS_TEST_ASSERT_MSG_EQ_TOL (helper.TotalAvgPower (value), pwrWatts, pwrWatts / 4.0, "Not equal for channel " << chan << " pwrdBm " << pwrdBm);
         }
     }
 }

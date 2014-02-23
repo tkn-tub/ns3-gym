@@ -17,17 +17,16 @@
  *
  * Author: Gary Pei <guangyu.pei@boeing.com>
  */
-
+#include "lr-wpan-spectrum-signal-parameters.h"
 #include <ns3/log.h>
 #include <ns3/packet-burst.h>
-#include "lr-wpan-spectrum-signal-parameters.h"
 
 
 NS_LOG_COMPONENT_DEFINE ("LrWpanSpectrumSignalParameters");
 
 namespace ns3 {
 
-LrWpanSpectrumSignalParameters::LrWpanSpectrumSignalParameters ()
+LrWpanSpectrumSignalParameters::LrWpanSpectrumSignalParameters (void)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -40,7 +39,7 @@ LrWpanSpectrumSignalParameters::LrWpanSpectrumSignalParameters (const LrWpanSpec
 }
 
 Ptr<SpectrumSignalParameters>
-LrWpanSpectrumSignalParameters::Copy ()
+LrWpanSpectrumSignalParameters::Copy (void)
 {
   NS_LOG_FUNCTION (this);
   return Create<LrWpanSpectrumSignalParameters> (*this);

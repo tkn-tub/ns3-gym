@@ -12,6 +12,7 @@ def build(bld):
         'model/lr-wpan-net-device.cc',
         'model/lr-wpan-spectrum-value-helper.cc',
         'model/lr-wpan-spectrum-signal-parameters.cc',
+        'model/lr-wpan-lqi-tag.cc',
         'helper/lr-wpan-helper.cc',
         ]
 
@@ -35,6 +36,7 @@ def build(bld):
         'model/lr-wpan-net-device.h',
         'model/lr-wpan-spectrum-value-helper.h',
         'model/lr-wpan-spectrum-signal-parameters.h',
+        'model/lr-wpan-lqi-tag.h',
         'helper/lr-wpan-helper.h',
         ]
 

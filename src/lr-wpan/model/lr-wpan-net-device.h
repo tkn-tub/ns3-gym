@@ -15,20 +15,20 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author:  Tom Henderson <thomas.r.henderson@boeing.com>
+ * Author:
+ *  Tom Henderson <thomas.r.henderson@boeing.com>
+ *  Tommaso Pecorella <tommaso.pecorella@unifi.it>
+ *  Margherita Filippetti <morag87@gmail.com>
  */
 #ifndef LR_WPAN_NET_DEVICE_H
 #define LR_WPAN_NET_DEVICE_H
 
-#include <string>
-#include <stdint.h>
-#include "ns3/net-device.h"
-#include "ns3/traced-callback.h"
-
+#include <ns3/net-device.h>
+#include <ns3/traced-callback.h>
+#include <ns3/lr-wpan-mac.h>
 
 namespace ns3 {
 
-class LrWpanMac;
 class LrWpanPhy;
 class LrWpanCsmaCa;
 class SingleModelSpectrumChannel;
@@ -52,8 +52,8 @@ class LrWpanNetDevice : public NetDevice
 public:
   static TypeId GetTypeId (void);
 
-  LrWpanNetDevice ();
-  virtual ~LrWpanNetDevice ();
+  LrWpanNetDevice (void);
+  virtual ~LrWpanNetDevice (void);
 
   void SetMac (Ptr<LrWpanMac> mac);
   void SetPhy (Ptr<LrWpanPhy> phy);
@@ -103,6 +103,8 @@ public:
   virtual void SetPromiscReceiveCallback (PromiscReceiveCallback cb);
   virtual bool SupportsSendFrom (void) const;
 
+  void McpsDataIndication (McpsDataIndicationParams params, Ptr<Packet> pkt);
+
 private:
   virtual void DoDispose (void);
   virtual void DoStart (void);
@@ -116,13 +118,15 @@ private:
   Ptr<LrWpanCsmaCa> m_csmaca;
   Ptr<Node> m_node;
   bool m_configComplete;
+  bool m_useAcks;
 
   bool m_linkUp;
   uint32_t m_ifIndex;
 
   TracedCallback<> m_linkChanges;
+  ReceiveCallback m_receiveCallback;
 };
 
 } // namespace ns3
 
-#endif /* NET_DEVICE_H */
+#endif /* LR_WPAN_NET_DEVICE_H */

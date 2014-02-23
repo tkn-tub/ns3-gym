@@ -19,35 +19,44 @@
  *  Gary Pei <guangyu.pei@boeing.com>
  *  kwong yin <kwong-sang.yin@boeing.com>
  *  Tom Henderson <thomas.r.henderson@boeing.com>
+ *  Sascha Alexander Jopen <jopen@cs.uni-bonn.de>
  */
 #ifndef LR_WPAN_MAC_H
 #define LR_WPAN_MAC_H
 
-#include <stdint.h>
-#include <math.h>
-#include "ns3/object.h"
-#include "ns3/callback.h"
-#include "ns3/mac16-address.h"
-#include "lr-wpan-phy.h"
-#include "lr-wpan-mac-header.h"
-#include "lr-wpan-mac-trailer.h"
-#include "ns3/mac16-address.h"
-#include "ns3/mac64-address.h"
+#include <ns3/object.h>
+#include <ns3/traced-callback.h>
+#include <ns3/mac16-address.h>
+#include <ns3/mac64-address.h>
+#include <ns3/sequence-number.h>
+#include <ns3/lr-wpan-phy.h>
+#include <ns3/event-id.h>
 #include <deque>
-#include "ns3/sequence-number.h"
 
 
 namespace ns3 {
+
+class Packet;
+class LrWpanCsmaCa;
 
 /**
  * \defgroup lr-wpan LR-WPAN models
  *
  * This section documents the API of the IEEE 802.15.4-related models.  For a generic functional description, please refer to the ns-3 manual.
  */
+typedef enum
+{
+  TX_OPTION_ACK = 1,
+  TX_OPTION_GTS = 2,
+  TX_OPTION_INDIRECT = 4
+} LrWpanTxOption;
 
 typedef enum
 {
   MAC_IDLE,
+  MAC_CSMA,
+  MAC_SENDING,
+  MAC_ACK_PENDING,
   CHANNEL_ACCESS_FAILURE,
   CHANNEL_IDLE,
   SET_PHY_TX_ON
@@ -97,8 +106,12 @@ typedef enum
 
 struct McpsDataRequestParams
 {
-  uint8_t m_srcAddrMode;
-  uint8_t m_dstAddrMode;
+  McpsDataRequestParams () :
+    m_srcAddrMode (SHORT_ADDR), m_dstAddrMode (SHORT_ADDR), m_dstPanId (0),
+    m_dstAddr (), m_msduHandle (0), m_txOptions (0)
+  { };
+  LrWpanAddressMode m_srcAddrMode;
+  LrWpanAddressMode m_dstAddrMode;
   uint16_t m_dstPanId;
   Mac16Address m_dstAddr;
   uint8_t m_msduHandle;
@@ -126,16 +139,15 @@ struct McpsDataIndicationParams
 // This callback is called after a McpsDataRequest has been called from
 // the higher layer.  It returns a status of the outcome of the
 // transmission request
-typedef Callback< void, McpsDataConfirmParams > McpsDataConfirmCallback;
+typedef Callback<void, McpsDataConfirmParams> McpsDataConfirmCallback;
 
 // This callback is called after a Mcps has successfully received a
 // frame and wants to deliver it to the higher layer.
 //
 // XXX for now, we do not deliver all of the parameters in section
 // 7.1.1.3.1 but just send up the packet.
-typedef Callback< void, McpsDataIndicationParams, Ptr<Packet> > McpsDataIndicationCallback;
+typedef Callback<void, McpsDataIndicationParams, Ptr<Packet> > McpsDataIndicationCallback;
 
-class LrWpanCsmaCa;
 
 /**
  * \ingroup lr-wpan
@@ -152,6 +164,9 @@ public:
 
   LrWpanMac ();
   virtual ~LrWpanMac ();
+
+  bool GetRxOnWhenIdle ();
+  void SetRxOnWhenIdle (bool rxOnWhenIdle);
 
   // XXX these setters will become obsolete if we use the attribute system
   void SetShortAddress (Mac16Address address);
@@ -188,7 +203,7 @@ public:
    *  @param p the packet to be transmitted
    *  @param lqi Link quality (LQI) value measured during reception of the PPDU
    */
-  void PdDataIndication (uint32_t psduLength, Ptr<Packet> p, uint32_t lqi);
+  void PdDataIndication (uint32_t psduLength, Ptr<Packet> p, uint8_t lqi);
 
   /**
    *  IEEE 802.15.4-2006 section 6.2.1.2
@@ -223,7 +238,7 @@ public:
    */
   void PlmeGetAttributeConfirm (LrWpanPhyEnumeration status,
                                 LrWpanPibAttributeIdentifier id,
-                                LrWpanPhyPIBAttributes* attribute);
+                                LrWpanPhyPibAttributes* attribute);
 
   /**
    *  IEEE 802.15.4-2006 section 6.2.2.8
@@ -263,7 +278,7 @@ public:
   uint64_t m_aBaseSlotDuration;         // 60 symbols in each superframe slot
   uint64_t m_aNumSuperframeSlots;       // 16 slots in each superframe
   uint64_t m_aBaseSuperframeDuration;   // aBaseSlotDuration * aNumSuperframeSlots in symbols
-
+  
   //MAC PIB attributes
   uint64_t m_macBeaconTxTime;           // time the device tx last beacon frame in symbols, only 24 bits used
   uint64_t m_macSyncSymbolOffset;       // symbol boundary is same as m_macBeaconTxTime
@@ -271,11 +286,33 @@ public:
   uint64_t m_macSuperframeOrder;        // 0..14 and 15 means superframe shall not remain active after beacon
   bool m_macPromiscuousMode;            // Indicates if MAC sublayer is in receive all mode. True mean accept all frames from PHY.
   uint16_t m_macPanId;                  // 16bits id of PAN on which this device is operating. 0xffff means not asscoiated
-  SequenceNumber16 m_macDsn;            //Seq num added to transmitted data or MAC command frame 00-ff
+  SequenceNumber16 m_macDsn;            // Seq num added to transmitted data or MAC command frame 00-ff
+  uint8_t m_macMaxFrameRetries;         // The maximum number of retries allowed after a transmission failure
+  
+  uint64_t GetMacAckWaitDuration (void) const;
+  uint8_t GetMacMaxFrameRetries (void) const;
+  void SetMacMaxFrameRetries (uint8_t retries);
+
+protected:
+  virtual void DoInitialize (void);
+  virtual void DoDispose (void);
 
 private:
-  virtual void DoDispose (void);
+  struct TxQueueElement
+  {
+    uint8_t txQMsduHandle;
+    Ptr<Packet> txQPkt;
+  };
+
+  void SendAck (uint8_t seqno);
+  void RemoveFirstTxQElement (void);
   void ChangeMacState (LrWpanMacState newState);
+  void AckWaitTimeout (void);
+  bool PrepareRetransmission (void);
+  void CheckQueue (void);
+
+
+  TracedCallback<Ptr<const Packet>, bool> m_macTxQueueTrace;
   /**
    * The trace source fired when packets come into the "top" of the device
    * at the L3/L2 transition, before being queued for transmission.
@@ -373,13 +410,10 @@ private:
   Ptr<Packet> m_txPkt;  // XXX need packet buffer instead of single packet
   Mac16Address m_shortAddress;
   Mac64Address m_selfExt;
-
-  struct TxQueueElement
-  {
-    uint8_t txQMsduHandle;
-    Ptr<Packet> txQPkt;
-  };
   std::deque<TxQueueElement*> m_txQueue;
+  uint8_t m_retransmission;
+  EventId m_ackWaitTimeout;
+  bool m_macRxOnWhenIdle;
 };
 
 
