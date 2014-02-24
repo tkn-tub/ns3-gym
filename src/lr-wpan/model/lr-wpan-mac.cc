@@ -207,6 +207,7 @@ void
 LrWpanMac::McpsDataRequest (McpsDataRequestParams params, Ptr<Packet> p)
 {
   NS_LOG_FUNCTION (this << p);
+
   McpsDataConfirmParams confirmParams;
   confirmParams.m_msduHandle = params.m_msduHandle;
 
@@ -383,12 +384,14 @@ LrWpanMac::McpsDataRequest (McpsDataRequestParams params, Ptr<Packet> p)
 void
 LrWpanMac::CheckQueue ()
 {
+  NS_LOG_FUNCTION (this);
+
   // Pull a packet from the queue and start sending, if we are not already sending.
-  if (m_lrWpanMacState == MAC_IDLE && !m_txQueue.empty () && m_txPkt == 0)
+  if (m_lrWpanMacState == MAC_IDLE && !m_txQueue.empty () && m_txPkt == 0 && !m_setMacState.IsRunning ())
     {
       TxQueueElement *txQElement = m_txQueue.front ();
       m_txPkt = txQElement->txQPkt;
-      Simulator::ScheduleNow (&LrWpanMac::SetLrWpanMacState, this, MAC_CSMA);
+      m_setMacState = Simulator::ScheduleNow (&LrWpanMac::SetLrWpanMacState, this, MAC_CSMA);
     }
 }
 
@@ -578,8 +581,10 @@ LrWpanMac::PdDataIndication (uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
                       // Currently we simply restart CSMA/CA after sending the ACK.
                       m_csmaCa->Cancel ();
                     }
+                  // Cancel any pending MAC state change, ACKs have higher priority.
+                  m_setMacState.Cancel ();
                   ChangeMacState (MAC_IDLE);
-                  Simulator::ScheduleNow (&LrWpanMac::SendAck, this, receivedMacHdr.GetSeqNum ());
+                  m_setMacState = Simulator::ScheduleNow (&LrWpanMac::SendAck, this, receivedMacHdr.GetSeqNum ());
                 }
 
               if (receivedMacHdr.IsData () && !m_mcpsDataIndicationCallback.IsNull ())
@@ -606,7 +611,8 @@ LrWpanMac::PdDataIndication (uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
                           m_mcpsDataConfirmCallback (confirmParams);
                         }
                       RemoveFirstTxQElement ();
-                      Simulator::ScheduleNow (&LrWpanMac::SetLrWpanMacState, this, MAC_IDLE);
+                      m_setMacState.Cancel ();
+                      m_setMacState = Simulator::ScheduleNow (&LrWpanMac::SetLrWpanMacState, this, MAC_IDLE);
                     }
                   else
                     {
@@ -614,11 +620,13 @@ LrWpanMac::PdDataIndication (uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
                       m_ackWaitTimeout.Cancel ();
                       if (!PrepareRetransmission ())
                         {
-                          Simulator::ScheduleNow (&LrWpanMac::SetLrWpanMacState, this, MAC_IDLE);
+                          m_setMacState.Cancel ();
+                          m_setMacState = Simulator::ScheduleNow (&LrWpanMac::SetLrWpanMacState, this, MAC_IDLE);
                         }
                       else
                         {
-                          Simulator::ScheduleNow (&LrWpanMac::SetLrWpanMacState, this, MAC_CSMA);
+                          m_setMacState.Cancel ();
+                          m_setMacState = Simulator::ScheduleNow (&LrWpanMac::SetLrWpanMacState, this, MAC_CSMA);
                         }
                     }
                 }
@@ -634,6 +642,8 @@ LrWpanMac::PdDataIndication (uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
 void
 LrWpanMac::SendAck (uint8_t seqno)
 {
+  NS_LOG_FUNCTION (this << static_cast<uint32_t> (seqno));
+
   NS_ASSERT (m_lrWpanMacState == MAC_IDLE);
 
   // Generate a corresponding ACK Frame.
@@ -668,6 +678,8 @@ LrWpanMac::RemoveFirstTxQElement (void)
 void
 LrWpanMac::AckWaitTimeout (void)
 {
+  NS_LOG_FUNCTION (this);
+
   // TODO: If we are a PAN coordinator and this was an indirect transmission,
   //       we will not initiate a retransmission. Instead we wait for the data
   //       being extracted after a new data request command.
@@ -684,6 +696,8 @@ LrWpanMac::AckWaitTimeout (void)
 bool
 LrWpanMac::PrepareRetransmission (void)
 {
+  NS_LOG_FUNCTION (this);
+
   if (m_retransmission >= m_macMaxFrameRetries)
     {
       // Maximum number of retransmissions has been reached.
@@ -732,7 +746,8 @@ LrWpanMac::PdDataConfirm (LrWpanPhyEnumeration status)
               Time waitTime = MicroSeconds (GetMacAckWaitDuration () * 1000 * 1000 / m_phy->GetDataOrSymbolRate (false));
               NS_ASSERT (m_ackWaitTimeout.IsExpired());
               m_ackWaitTimeout = Simulator::Schedule (waitTime, &LrWpanMac::AckWaitTimeout, this);
-              Simulator::ScheduleNow (&LrWpanMac::SetLrWpanMacState, this, MAC_ACK_PENDING);
+              m_setMacState.Cancel ();
+              m_setMacState = Simulator::ScheduleNow (&LrWpanMac::SetLrWpanMacState, this, MAC_ACK_PENDING);
               return;
             }
           else
@@ -781,7 +796,8 @@ LrWpanMac::PdDataConfirm (LrWpanPhyEnumeration status)
       NS_FATAL_ERROR ("Transmission attempt failed with PHY status " << status);
     }
 
-  Simulator::ScheduleNow (&LrWpanMac::SetLrWpanMacState, this, MAC_IDLE);
+  m_setMacState.Cancel ();
+  m_setMacState = Simulator::ScheduleNow (&LrWpanMac::SetLrWpanMacState, this, MAC_IDLE);
 }
 
 void
@@ -880,7 +896,7 @@ LrWpanMac::SetLrWpanMacState (LrWpanMacState macState)
     }
   else if (macState == MAC_CSMA)
     {
-      NS_ASSERT (m_lrWpanMacState == MAC_IDLE);
+      NS_ASSERT (m_lrWpanMacState == MAC_IDLE || m_lrWpanMacState == MAC_ACK_PENDING);
 
       ChangeMacState (MAC_CSMA);
       m_phy->PlmeSetTRXStateRequest (IEEE_802_15_4_PHY_RX_ON);
@@ -907,7 +923,7 @@ LrWpanMac::SetLrWpanMacState (LrWpanMacState macState)
       // remove the copy of the packet that was just sent
       RemoveFirstTxQElement ();
 
-      Simulator::ScheduleNow (&LrWpanMac::SetLrWpanMacState, this, MAC_IDLE);
+      ChangeMacState (MAC_IDLE);
     }
 }
 

@@ -413,6 +413,7 @@ private:
   std::deque<TxQueueElement*> m_txQueue;
   uint8_t m_retransmission;
   EventId m_ackWaitTimeout;
+  EventId m_setMacState;
   bool m_macRxOnWhenIdle;
 };
 

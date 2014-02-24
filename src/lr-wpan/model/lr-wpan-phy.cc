@@ -254,7 +254,8 @@ LrWpanPhy::StartRx (Ptr<SpectrumSignalParameters> spectrumRxParams)
 
   Ptr<LrWpanSpectrumSignalParameters> lrWpanRxParams = DynamicCast<LrWpanSpectrumSignalParameters> (spectrumRxParams);
 
-  if (m_trxState == IEEE_802_15_4_PHY_RX_ON)
+  // Prevent PHY from receiving another packet while switching the transceiver state.
+  if (m_trxState == IEEE_802_15_4_PHY_RX_ON && !m_setTRXState.IsRunning ())
     {
       if (lrWpanRxParams != 0)
         {
@@ -407,46 +408,62 @@ LrWpanPhy::PdDataRequest (const uint32_t psduLength, Ptr<Packet> p)
       return;
     }
 
-  if (m_trxState == IEEE_802_15_4_PHY_TX_ON)
+  // Prevent PHY from sending a packet while switching the transceiver state.
+  if (!m_setTRXState.IsRunning())
     {
-      //send down
-      NS_ASSERT (m_channel);
+      if (m_trxState == IEEE_802_15_4_PHY_TX_ON)
+        {
+          //send down
+          NS_ASSERT (m_channel);
 
-      // Remove a possible LQI tag from a previous transmission of the packet.
-      LrWpanLqiTag lqiTag;
-      p->RemovePacketTag (lqiTag);
+          // Remove a possible LQI tag from a previous transmission of the packet.
+          LrWpanLqiTag lqiTag;
+          p->RemovePacketTag (lqiTag);
 
-      Ptr<LrWpanSpectrumSignalParameters> txParams = Create<LrWpanSpectrumSignalParameters> ();
-      txParams->duration = CalculateTxTime (p);
-      txParams->txPhy = GetObject<SpectrumPhy> ();
-      txParams->psd = m_txPsd;
-      txParams->txAntenna = m_antenna;
-      Ptr<PacketBurst> pb = CreateObject<PacketBurst> ();
-      pb->AddPacket (p);
-      txParams->packetBurst = pb;
-      m_channel->StartTx (txParams);
-      m_pdDataRequest = Simulator::Schedule (txParams->duration, &LrWpanPhy::EndTx, this);
-      ChangeTrxState (IEEE_802_15_4_PHY_BUSY_TX);
-      m_phyTxBeginTrace (p);
-      m_currentTxPacket.first = p;
-      m_currentTxPacket.second = false;
-      return;
+          Ptr<LrWpanSpectrumSignalParameters> txParams = Create<LrWpanSpectrumSignalParameters> ();
+          txParams->duration = CalculateTxTime (p);
+          txParams->txPhy = GetObject<SpectrumPhy> ();
+          txParams->psd = m_txPsd;
+          txParams->txAntenna = m_antenna;
+          Ptr<PacketBurst> pb = CreateObject<PacketBurst> ();
+          pb->AddPacket (p);
+          txParams->packetBurst = pb;
+          m_channel->StartTx (txParams);
+          m_pdDataRequest = Simulator::Schedule (txParams->duration, &LrWpanPhy::EndTx, this);
+          ChangeTrxState (IEEE_802_15_4_PHY_BUSY_TX);
+          m_phyTxBeginTrace (p);
+          m_currentTxPacket.first = p;
+          m_currentTxPacket.second = false;
+          return;
+        }
+      else if ((m_trxState == IEEE_802_15_4_PHY_RX_ON)
+               || (m_trxState == IEEE_802_15_4_PHY_TRX_OFF)
+               || (m_trxState == IEEE_802_15_4_PHY_BUSY_TX) )
+        {
+          if (!m_pdDataConfirmCallback.IsNull ())
+            {
+              m_pdDataConfirmCallback (m_trxState);
+            }
+          // Drop packet, hit PhyTxDrop trace
+          m_phyTxDropTrace (p);
+          return;
+        }
+      else
+        {
+          NS_FATAL_ERROR ("This should be unreachable, or else state " << m_trxState << " should be added as a case");
+        }
     }
-  else if ((m_trxState == IEEE_802_15_4_PHY_RX_ON)
-           || (m_trxState == IEEE_802_15_4_PHY_TRX_OFF)
-           || (m_trxState == IEEE_802_15_4_PHY_BUSY_TX) )
+  else
     {
+      // TODO: This error code is not covered by the standard.
+      // What is the correct behavior in this case?
       if (!m_pdDataConfirmCallback.IsNull ())
         {
-          m_pdDataConfirmCallback (m_trxState);
+          m_pdDataConfirmCallback (IEEE_802_15_4_PHY_UNSPECIFIED);
         }
       // Drop packet, hit PhyTxDrop trace
       m_phyTxDropTrace (p);
       return;
-    }
-  else
-    {
-      NS_FATAL_ERROR ("This should be unreachable, or else state " << m_trxState << " should be added as a case");
     }
 }
 
@@ -553,6 +570,7 @@ LrWpanPhy::PlmeSetTRXStateRequest (LrWpanPhyEnumeration state)
       else
         {
           NS_LOG_DEBUG ("Cancel m_setTRXState");
+          // Keep the transceiver state as the old state before the switching attempt.
           m_setTRXState.Cancel();
         }
     }
@@ -627,8 +645,6 @@ LrWpanPhy::PlmeSetTRXStateRequest (LrWpanPhyEnumeration state)
             }
 
           m_trxStatePending = IEEE_802_15_4_PHY_TX_ON;
-          // Prevent PHY from receiving another packet while switching.
-          ChangeTrxState (IEEE_802_15_4_PHY_IDLE);
 
           // Delay for turnaround time
           // TODO: Does it also take aTurnaroundTime to switch the transceiver state,
@@ -697,9 +713,6 @@ LrWpanPhy::PlmeSetTRXStateRequest (LrWpanPhyEnumeration state)
           // TODO: Does it really take aTurnaroundTime to switch the transceiver state,
           //       even when the transmitter is not busy? (6.9.1)
           m_trxStatePending = IEEE_802_15_4_PHY_RX_ON;
-
-          // Prevent PHY from sending another packet while switching.
-          ChangeTrxState (IEEE_802_15_4_PHY_IDLE);
 
           Time setTime = Seconds ( (double) aTurnaroundTime / GetDataOrSymbolRate (false));
           m_setTRXState = Simulator::Schedule (setTime, &LrWpanPhy::EndSetTRXState, this);
