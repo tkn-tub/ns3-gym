@@ -49,8 +49,9 @@ namespace ns3 {
  * maximum MPI message size for easy
  * buffer creation
  */
+#ifdef NS3_MPI
 const uint32_t NULL_MESSAGE_MAX_MPI_MSG_SIZE = 2000;
-
+#endif
 
 NullMessageSentBuffer::NullMessageSentBuffer ()
 {
