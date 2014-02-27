@@ -224,6 +224,7 @@ IPv6:
 * IPv4 Ad Hoc On Demand Distance Vector (AODV) (a MANET protocol defined in
   :rfc:`3561`)
 * IPv4 Destination Sequenced Distance Vector (DSDV) (a MANET protocol)
+* IPv4 Dynamic Source Routing (DSR) (a MANET protocol)
 * class Ipv4ListRouting (used to store a prioritized list of routing protocols)
 * class Ipv4GlobalRouting (used to store routes computed by the global route
   manager, if that is used)
