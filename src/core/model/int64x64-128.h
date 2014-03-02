@@ -14,32 +14,8 @@ typedef __int128_t int128_t;
 namespace ns3 {
 
 /**
- * \ingroup core
- * \defgroup highprec High Precision Q64.64
- *
- * Functions and class for high precision Q64.64 fixed point arithmetic.
- */
-  
-/**
- * \ingroup highprec
- * High precision numerical type, implementing Q64.64 fixed precision.
- *
- * A Q64.64 fixed precision number consists of:
- *
- *   Bits | Function
- *   ---- | --------
- *     1  | Sign bit
- *    63  | Integer portion
- *    64  | Fractional portion
- *
- * All standard arithemetic operations are supported:
- *
- *   Category    | Operators
- *   ----------- | ---------
- *   Computation | `+`, `+=`, `-`, `-=`, `*`, `*=`, `/`, `/=`
- *   Comparison  | `==`, `!=`, `<`, `<=`, `>`, `>=`
- *   Unary       | `+`, `-`, `!`
- *
+ * \internal
+ * The implementation documented here is based on native 128-bit integers.
  */
 class int64x64_t
 {
@@ -72,9 +48,9 @@ public:
    * we expose the underlying implementation type here.
    */
   enum impl_type {
-    int128_impl = 0,  //!< Native int128_t implementation.
-    cairo_impl  = 1,  //!< cairo wideint implementation
-    ld_impl     = 2   //!< long double implementation
+    int128_impl,  //!< Native int128_t implementation.
+    cairo_impl,   //!< cairo wideint implementation
+    ld_impl,      //!< long double implementation
   };
 
   /// Type tag for this implementation.
@@ -89,27 +65,38 @@ public:
    *
    * \param [in] value floating value to represent
    */
-  inline int64x64_t (double value)
+  inline int64x64_t (const double value)
   {
-    bool sign = value < 0;
-    value = sign ? -value : value;
-    long double hi = std::floor ((long double)value);
-    long double fr = value - hi;
-    long double lo = fr * HP_MAX_64;
-    _v = (uint128_t)hi << 64;
-    _v += (uint128_t)lo;
-    _v = sign ? -_v : _v;
+    const int64x64_t tmp ((long double)value);
+    _v = tmp._v;
   }
-  inline int64x64_t (long double value)
+  inline int64x64_t (const long double value)
   {
-    bool sign = value < 0;
-    value = sign ? -value : value;
-    long double hi = std::floor (value);
-    long double fr = value - hi;
-    long double lo = fr * HP_MAX_64;
-    _v = (uint128_t)hi << 64;
-    _v += (uint128_t)lo;
-    _v = sign ? -_v : _v;
+    const bool negative = value < 0;
+    const long double v = negative ? -value : value;
+
+    long double fhi;
+    long double flo = std::modf (v, &fhi);
+    // Add 0.5 to round, which improves the last count
+    // This breaks these tests:
+    //   TestSuite devices-mesh-dot11s-regression
+    //   TestSuite devices-mesh-flame-regression
+    //   TestSuite routing-aodv-regression
+    //   TestSuite routing-olsr-regression
+    // Setting round = 0; breaks:
+    //   TestSuite int64x64
+    const long double round = 0.5;
+    flo = flo * HP_MAX_64 + round;
+    int128_t hi = fhi;
+    const uint64_t lo = flo;
+    if (flo >= HP_MAX_64)
+      {
+	// conversion to uint64 rolled over
+	++hi;
+      }
+    _v = hi << 64;
+    _v |= lo;
+    _v = negative ? -_v : _v;
   }
   /**@}*/
 
@@ -119,32 +106,32 @@ public:
    *
    * \param [in] v integer value to represent
    */
-  inline int64x64_t (int v)
+  inline int64x64_t (const int v)
     : _v (v)
   {
     _v <<= 64;
   }
-  inline int64x64_t (long int v)
+  inline int64x64_t (const long int v)
     : _v (v) 
   {
     _v <<= 64;
   }
-  inline int64x64_t (long long int v)
+  inline int64x64_t (const long long int v)
     : _v (v) 
   {
     _v <<= 64;
   }
-  inline int64x64_t (unsigned int v)
+  inline int64x64_t (const unsigned int v)
     : _v (v)
   {
     _v <<= 64;
   }
-  inline int64x64_t (unsigned long int v)
+  inline int64x64_t (const unsigned long int v)
     : _v (v) 
   {
     _v <<= 64;
   }
-  inline int64x64_t (unsigned long long int v)
+  inline int64x64_t (const unsigned long long int v)
     : _v (v) 
   {
     _v <<= 64;
@@ -156,13 +143,10 @@ public:
    * \param [in] hi Integer portion.
    * \param [in] lo Fractional portion, already scaled to HP_MAX_64.
    */
-  explicit inline int64x64_t (int64_t hi, uint64_t lo)
+  explicit inline int64x64_t (const int64_t hi, const uint64_t lo)
   {
-    bool sign = hi<0;
-    _v = sign ? -hi : hi;
-    _v <<= 64;
-    _v += lo;
-    _v = sign ? -_v : _v;
+    _v = (int128_t)hi << 64;
+    _v |= lo;
   }
 
   /**
@@ -190,12 +174,13 @@ public:
    */
   inline double GetDouble (void) const
   {
-    bool sign = _v < 0;
-    uint128_t value = sign ? -_v : _v;
-    long double flo = (value & HP_MASK_LO) / HP_MAX_64;
-    long double retval = value >> 64;
+    const bool negative = _v < 0;
+    const uint128_t value = negative ? -_v : _v;
+    const long double fhi = value >> 64;
+    const long double flo = (value & HP_MASK_LO) / HP_MAX_64;
+    long double retval = fhi;
     retval += flo;
-    retval = sign ? -retval : retval;
+    retval = negative ? -retval : retval;
     return retval;
   }
   /**
@@ -205,11 +190,8 @@ public:
    */
   inline int64_t GetHigh (void) const
   {
-    bool sign = _v < 0;
-    int128_t value = sign ? -_v : _v;
-    value >>= 64;
-    int64_t retval = value;
-    return sign ? -retval : retval;
+    const int128_t retval = _v >> 64;
+    return retval;
   }
   /**
    * Get the fractional portion of this value, unscaled.
@@ -218,9 +200,7 @@ public:
    */
   inline uint64_t GetLow (void) const
   {
-    bool sign = _v < 0;
-    int128_t value = sign ? -_v : _v;
-    uint128_t retval = value & HP_MASK_LO;
+    const uint128_t retval = _v & HP_MASK_LO;
     return retval;
   }
 
@@ -247,15 +227,13 @@ public:
    * \param [in] v The value to compute the inverse of.
    * \return A Q0.128 representation of the inverse.
    */
-  static int64x64_t Invert (uint64_t v);
+  static int64x64_t Invert (const uint64_t v);
 
 private:
   friend bool         operator == (const int64x64_t & lhs, const int64x64_t & rhs);
 
   friend bool         operator <  (const int64x64_t & lhs, const int64x64_t & rhs);
-  friend bool         operator <= (const int64x64_t & lhs, const int64x64_t & rhs);
   friend bool         operator >  (const int64x64_t & lhs, const int64x64_t & rhs);
-  friend bool         operator >= (const int64x64_t & lhs, const int64x64_t & rhs);
   
   friend int64x64_t & operator += (      int64x64_t & lhs, const int64x64_t & rhs);
   friend int64x64_t & operator -= (      int64x64_t & lhs, const int64x64_t & rhs);
@@ -301,7 +279,7 @@ private:
    * high and low 64 bits.  To achieve this, we carry out the multiplication
    * explicitly with 64-bit operands and 128-bit intermediate results.
    */
-  static uint128_t Umul         (uint128_t a, uint128_t b);
+  static uint128_t Umul         (const uint128_t a, const uint128_t b);
   /**
    * Unsigned division of Q64.64 values.
    *
@@ -309,7 +287,7 @@ private:
    * \param [in] b Denominator.
    * \return The Q64.64 representation of `a / b`
    */
-  static uint128_t Udiv         (uint128_t a, uint128_t b);
+  static uint128_t Udiv         (const uint128_t a, const uint128_t b);
   /**
    * Unsigned multiplication of Q64.64 and Q0.128 values.
    *
@@ -319,14 +297,14 @@ private:
    *
    * \see Invert
    */
-  static uint128_t UmulByInvert (uint128_t a, uint128_t b);
+  static uint128_t UmulByInvert (const uint128_t a, const uint128_t b);
 
   /**
    * Construct from an integral type.
    *
    * \param [in] v integer value to represent
    */
-  inline int64x64_t (int128_t v)
+  inline int64x64_t (const int128_t v)
     : _v (v) {}
 
   int128_t _v;  //!< The Q64.64 value.
@@ -344,14 +322,6 @@ inline bool operator == (const int64x64_t & lhs, const int64x64_t & rhs)
 }
 /**
  * \ingroup highprec
- * Inequality operator
- */
-inline bool operator != (const int64x64_t & lhs, const int64x64_t & rhs)
-{
-  return !(lhs == rhs);
-}
-/**
- * \ingroup highprec
  * Less than operator
  */
 inline bool operator < (const int64x64_t & lhs, const int64x64_t & rhs)
@@ -360,27 +330,11 @@ inline bool operator < (const int64x64_t & lhs, const int64x64_t & rhs)
 }
 /**
  * \ingroup highprec
- * Less or equal operator
- */
-inline bool operator <= (const int64x64_t & lhs, const int64x64_t & rhs)
-{
-  return lhs._v <= rhs._v;
-}
-/**
- * \ingroup highprec
  * Greater operator
  */
 inline bool operator > (const int64x64_t & lhs, const int64x64_t & rhs)
 {
   return lhs._v > rhs._v;
-}
-/**
- * \ingroup highprec
- * Greater or equal operator
- */
-inline bool operator >= (const int64x64_t & lhs, const int64x64_t & rhs)
-{
-  return lhs._v >= rhs._v;
 }
 
 /**

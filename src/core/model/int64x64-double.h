@@ -9,32 +9,8 @@
 namespace ns3 {
 
 /**
- * \ingroup core
- * \defgroup highprec High Precision Q64.64
- *
- * Functions and class for high precision Q64.64 fixed point arithmetic.
- */
-  
-/**
- * \ingroup highprec
- * High precision numerical type, implementing Q64.64 fixed precision.
- *
- * A Q64.64 fixed precision number consists of:
- *
- *   Bits | Function
- *   ---- | --------
- *     1  | Sign bit
- *    63  | Integer portion
- *    64  | Fractional portion
- *
- * All standard arithemetic operations are supported:
- *
- *   Category    | Operators
- *   ----------- | ---------
- *   Computation | `+`, `+=`, `-`, `-=`, `*`, `*=`, `/`, `/=`
- *   Comparison  | `==`, `!=`, `<`, `<=`, `>`, `>=`
- *   Unary       | `+`, `-`, `!`
- *
+ * \internal
+ * The implementation documented here uses native long double.
  */
 class int64x64_t
 {
@@ -63,9 +39,9 @@ public:
    * we expose the underlying implementation type here.
    */
   enum impl_type {
-    int128_impl = 0,  //!< Native int128_t implementation.
-    cairo_impl  = 1,  //!< cairo wideint implementation
-    ld_impl     = 2   //!< long double implementation
+    int128_impl,  //!< Native int128_t implementation.
+    cairo_impl,   //!< cairo wideint implementation
+    ld_impl,      //!< long double implementation
   };
 
   /// Type tag for this implementation.
@@ -113,7 +89,12 @@ public:
    */
   explicit inline int64x64_t (int64_t hi, uint64_t lo)
   {
-    _v = (long double)hi + (long double)lo / HP_MAX_64;
+    const bool negative = hi < 0;
+    const long double fhi = negative ? -hi : hi;
+    const long double flo = lo / HP_MAX_64;
+    _v = negative ? - fhi : fhi;
+    _v += flo;
+    // _v = negative ? -_v : _v;
   }
 
   /**
@@ -143,6 +124,48 @@ public:
   {
     return (double)_v;
   }
+private:
+  /**
+   * Get the high and low portions of this value.
+   *
+   * \return a pair of the high and low words
+   */
+  std::pair<int64_t, uint64_t> GetHighLow (void) const
+    {
+    const bool negative = _v < 0;
+    const long double v = negative ? -_v : _v;
+
+    long double fhi;
+    long double flo = std::modf (v, &fhi);
+    // Add 0.5 to round, which improves the last count
+    // This breaks these tests:
+    //   TestSuite devices-mesh-dot11s-regression
+    //   TestSuite devices-mesh-flame-regression
+    //   TestSuite routing-aodv-regression
+    //   TestSuite routing-olsr-regression
+    // Setting round = 0; breaks:
+    //   TestSuite int64x64
+    const long double round = 0.5;
+    flo = flo * HP_MAX_64 + round;
+    int64_t  hi = fhi;
+    uint64_t lo = flo;
+    if (flo >= HP_MAX_64)
+      {
+	// conversion to uint64 rolled over
+	++hi;
+      }
+    if (negative)
+      {
+	lo = ~lo;
+	hi = ~hi;
+	if (++lo == 0)
+	  {
+	    ++hi;
+	  }
+      }
+    return std::make_pair (hi, lo);
+    }
+public:
   /**
    * Get the integer portion.
    *
@@ -150,8 +173,50 @@ public:
    */
   inline int64_t GetHigh (void) const
   {
-    return (int64_t)std::floor (_v);
+    return GetHighLow ().first;
   }
+private:
+  /**
+   * Get the high and low portions of this value.
+   *
+   * \return a pair of the high and low words
+   */
+  std::pair<int64_t, uint64_t> GetHighLow (void) const
+    {
+    const bool negative = _v < 0;
+    const long double v = negative ? -_v : _v;
+
+    long double fhi;
+    long double flo = std::modf (v, &fhi);
+    // Add 0.5 to round, which improves the last count
+    // This breaks these tests:
+    //   TestSuite devices-mesh-dot11s-regression
+    //   TestSuite devices-mesh-flame-regression
+    //   TestSuite routing-aodv-regression
+    //   TestSuite routing-olsr-regression
+    // Setting round = 0; breaks:
+    //   TestSuite int64x64
+    const long double round = 0.5;
+    flo = flo * HP_MAX_64 + round;
+    int64_t  hi = fhi;
+    uint64_t lo = flo;
+    if (flo >= HP_MAX_64)
+      {
+	// conversion to uint64 rolled over
+	++hi;
+      }
+    if (negative)
+      {
+	lo = ~lo;
+	hi = ~hi;
+	if (++lo == 0)
+	  {
+	    ++hi;
+	  }
+      }
+    return std::make_pair (hi, lo);
+    }
+public:
   /**
    * Get the fractional portion of this value, unscaled.
    *
@@ -159,10 +224,7 @@ public:
    */
   inline uint64_t GetLow (void) const
   {
-    long double frac = _v - std::floor (_v);
-    frac = frac * HP_MASK_LO + 0.5L;
-    uint64_t low = (uint64_t)frac;
-    return low;
+    return GetHighLow ().second;
   }
 
   /**
@@ -195,9 +257,7 @@ private:
   friend bool         operator == (const int64x64_t & lhs, const int64x64_t & rhs);
 
   friend bool         operator <  (const int64x64_t & lhs, const int64x64_t & rhs);
-  friend bool         operator <= (const int64x64_t & lhs, const int64x64_t & rhs);
   friend bool         operator >  (const int64x64_t & lhs, const int64x64_t & rhs);
-  friend bool         operator >= (const int64x64_t & lhs, const int64x64_t & rhs);
   
   friend int64x64_t & operator += (      int64x64_t & lhs, const int64x64_t & rhs);
   friend int64x64_t & operator -= (      int64x64_t & lhs, const int64x64_t & rhs);
@@ -222,14 +282,6 @@ inline bool operator == (const int64x64_t & lhs, const int64x64_t & rhs)
 }
 /**
  * \ingroup highprec
- * Inequality operator
- */
-inline bool operator != (const int64x64_t & lhs, const int64x64_t & rhs)
-{
-  return !(lhs == rhs);
-}
-/**
- * \ingroup highprec
  * Less than operator
  */
 inline bool operator < (const int64x64_t & lhs, const int64x64_t & rhs)
@@ -238,27 +290,11 @@ inline bool operator < (const int64x64_t & lhs, const int64x64_t & rhs)
 }
 /**
  * \ingroup highprec
- * Less or equal operator
- */
-inline bool operator <= (const int64x64_t & lhs, const int64x64_t & rhs)
-{
-  return lhs._v <= rhs._v;
-}
-/**
- * \ingroup highprec
  * Greater operator
  */
 inline bool operator > (const int64x64_t & lhs, const int64x64_t & rhs)
 {
   return lhs._v > rhs._v;
-}
-/**
- * \ingroup highprec
- * Greater or equal operator
- */
-inline bool operator >= (const int64x64_t & lhs, const int64x64_t & rhs)
-{
-  return lhs._v >= rhs._v;
 }
 
 /**

@@ -26,16 +26,16 @@ output_sign (const int128_t sa,
 }
 
 void
-int64x64_t::Mul (int64x64_t const &o)
+int64x64_t::Mul (const int64x64_t & o)
 {
   uint128_t a, b;
-  bool sign = output_sign (_v, o._v, a, b);
+  bool negative = output_sign (_v, o._v, a, b);
   uint128_t result = Umul (a, b);
-  _v = sign ? -result : result;
+  _v = negative ? -result : result;
 }
 
 uint128_t
-int64x64_t::Umul (uint128_t a, uint128_t b)
+int64x64_t::Umul (const uint128_t a, const uint128_t b)
 {
   uint128_t aL = a & HP_MASK_LO;
   uint128_t bL = b & HP_MASK_LO;
@@ -75,16 +75,16 @@ int64x64_t::Umul (uint128_t a, uint128_t b)
 }
 
 void
-int64x64_t::Div (int64x64_t const &o)
+int64x64_t::Div (const int64x64_t & o)
 {
   uint128_t a, b;
-  bool sign = output_sign (_v, o._v, a, b);
+  bool negative = output_sign (_v, o._v, a, b);
   int128_t result = Udiv (a, b);
-  _v = sign ? -result : result;
+  _v = negative ? -result : result;
 }
 
 uint128_t
-int64x64_t::Udiv (uint128_t a, uint128_t b)
+int64x64_t::Udiv (const uint128_t a, const uint128_t b)
 {
   
   uint128_t rem = a;
@@ -153,7 +153,7 @@ int64x64_t::Udiv (uint128_t a, uint128_t b)
 }
 
 void 
-int64x64_t::MulByInvert (const int64x64_t &o)
+int64x64_t::MulByInvert (const int64x64_t & o)
 {
   bool negResult = _v < 0;
   uint128_t a = negResult ? -_v : _v;
@@ -161,8 +161,9 @@ int64x64_t::MulByInvert (const int64x64_t &o)
 
   _v = negResult ? -result : result;
 }
+
 uint128_t
-int64x64_t::UmulByInvert (uint128_t a, uint128_t b)
+int64x64_t::UmulByInvert (const uint128_t a, const uint128_t b)
 {
   uint128_t result, ah, bh, al, bl;
   uint128_t hi, mid;
@@ -176,8 +177,9 @@ int64x64_t::UmulByInvert (uint128_t a, uint128_t b)
   result = hi + mid;
   return result;
 }
+
 int64x64_t 
-int64x64_t::Invert (uint64_t v)
+int64x64_t::Invert (const uint64_t v)
 {
   NS_ASSERT (v > 1);
   uint128_t a;

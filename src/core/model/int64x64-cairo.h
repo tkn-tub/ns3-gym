@@ -10,32 +10,8 @@
 namespace ns3 {
 
 /**
- * \ingroup core
- * \defgroup highprec High Precision Q64.64
- *
- * Functions and class for high precision Q64.64 fixed point arithmetic.
- */
-  
-/**
- * \ingroup highprec
- * High precision numerical type, implementing Q64.64 fixed precision.
- *
- * A Q64.64 fixed precision number consists of:
- *
- *   Bits | Function
- *   ---- | --------
- *     1  | Sign bit
- *    63  | Integer portion
- *    64  | Fractional portion
- *
- * All standard arithemetic operations are supported:
- *
- *   Category    | Operators
- *   ----------- | ---------
- *   Computation | `+`, `+=`, `-`, `-=`, `*`, `*=`, `/`, `/=`
- *   Comparison  | `==`, `!=`, `<`, `<=`, `>`, `>=`
- *   Unary       | `+`, `-`, `!`
- *
+ * \internal
+ * The implementation documented here uses cairo 128-bit integers.
  */
 class int64x64_t
 {
@@ -66,9 +42,9 @@ public:
    * we expose the underlying implementation type here.
    */
   enum impl_type {
-    int128_impl = 0,  //!< Native int128_t implementation.
-    cairo_impl  = 1,  //!< cairo wideint implementation
-    ld_impl     = 2   //!< long double implementation
+    int128_impl,  //!< Native int128_t implementation.
+    cairo_impl,   //!< cairo wideint implementation
+    ld_impl,      //!< long double implementation
   };
 
   /// Type tag for this implementation.
@@ -86,33 +62,38 @@ public:
    *
    * \param [in] value floating value to represent
    */
-  inline int64x64_t (double value)
+  inline int64x64_t (const double value)
   {
-    bool sign = value < 0;
-    value = sign ? -value : value;
-    long double hi = std::floor ((long double)value);
-    long double fr = value - hi;
-    long double lo = fr * HP_MAX_64;
-    _v.hi = hi;
-    _v.lo = lo;
-    if (sign)
-      {
-	Negate ();
-      }
+    const int64x64_t tmp ((long double)value);
+    _v = tmp._v;
   }
-  inline int64x64_t (long double value)
+  inline int64x64_t (const long double value)
   {
-    bool sign = value < 0;
-    value = sign ? -value : value;
-    long double hi = std::floor (value);
-    long double fr = value - hi;
-    long double lo = fr * HP_MAX_64;
+    const bool negative = value < 0;
+    const long double v = negative ? -value : value;
+
+    long double fhi;
+    long double flo = std::modf (v, &fhi);
+    // Add 0.5 to round, which improves the last count
+    // This breaks these tests:
+    //   TestSuite devices-mesh-dot11s-regression
+    //   TestSuite devices-mesh-flame-regression
+    //   TestSuite routing-aodv-regression
+    //   TestSuite routing-olsr-regression
+    // Setting round = 0; breaks:
+    //   TestSuite int64x64
+    const long double round = 0.5;
+    flo = flo * HP_MAX_64 + round;
+    cairo_int64_t  hi = fhi;
+    const cairo_uint64_t lo = flo;
+    if (flo >= HP_MAX_64)
+      {
+	// conversion to uint64 rolled over
+	++hi;
+      }
     _v.hi = hi;
     _v.lo = lo;
-    if (sign)
-      {
-	Negate ();
-      }
+    _v = negative ? _cairo_int128_negate (_v) : _v;
   }
   /**@}*/
 
@@ -122,32 +103,32 @@ public:
    *
    * \param [in] v integer value to represent
    */
-  inline int64x64_t (int v)
+  inline int64x64_t (const int v)
   {
     _v.hi = v;
     _v.lo = 0;
   }
-  inline int64x64_t (long int v)
+  inline int64x64_t (const long int v)
   {
     _v.hi = v;
     _v.lo = 0;
   }
-  inline int64x64_t (long long int v)
+  inline int64x64_t (const long long int v)
   {
     _v.hi = v;
     _v.lo = 0;
   }
-  inline int64x64_t (unsigned int v)
+  inline int64x64_t (const unsigned int v)
   {
     _v.hi = v;
     _v.lo = 0;
   }
-  inline int64x64_t (unsigned long int v)
+  inline int64x64_t (const unsigned long int v)
   {
     _v.hi = v;
     _v.lo = 0;
   }
-  inline int64x64_t (unsigned long long int v)
+  inline int64x64_t (const unsigned long long int v)
   {
     _v.hi = v;
     _v.lo = 0;
@@ -159,7 +140,7 @@ public:
    * \param [in] hi Integer portion.
    * \param [in] lo Fractional portion, already scaled to HP_MAX_64.
    */
-  explicit inline int64x64_t (int64_t hi, uint64_t lo)
+  explicit inline int64x64_t (const int64_t hi, const uint64_t lo)
   {
     _v.hi = hi;
     _v.lo = lo;
@@ -190,12 +171,13 @@ public:
    */
   inline double GetDouble (void) const
   {
-    bool sign = IsNegative ();
-    cairo_int128_t tmp = sign ? _cairo_int128_negate (_v) : _v;
-    long double flo = tmp.lo / HP_MAX_64;
-    long double retval = tmp.hi;
+    const bool negative = _cairo_int128_negative (_v);
+    const cairo_int128_t value = negative ? _cairo_int128_negate (_v) : _v;
+    const long double fhi = value.hi;
+    const long double flo = value.lo / HP_MAX_64;
+    long double retval = fhi;
     retval += flo;
-    retval = sign ? -retval : retval;
+    retval = negative ? -retval : retval;
     return retval;
   }
   /**
@@ -240,15 +222,13 @@ public:
    * \param [in] v The value to compute the inverse of.
    * \return A Q0.128 representation of the inverse.
    */
-  static int64x64_t Invert (uint64_t v);
+  static int64x64_t Invert (const uint64_t v);
 
 private:
   friend bool         operator == (const int64x64_t & lhs, const int64x64_t & rhs);
 
   friend bool         operator <  (const int64x64_t & lhs, const int64x64_t & rhs);
-  friend bool         operator <= (const int64x64_t & lhs, const int64x64_t & rhs);
   friend bool         operator >  (const int64x64_t & lhs, const int64x64_t & rhs);
-  friend bool         operator >= (const int64x64_t & lhs, const int64x64_t & rhs);
   
   friend int64x64_t & operator += (      int64x64_t & lhs, const int64x64_t & rhs);
   friend int64x64_t & operator -= (      int64x64_t & lhs, const int64x64_t & rhs);
@@ -294,7 +274,7 @@ private:
    * high and low 64 bits.  To achieve this, we carry out the multiplication
    * explicitly with 64-bit operands and 128-bit intermediate results.
    */
-  static cairo_uint128_t Umul         (cairo_uint128_t a, cairo_uint128_t b);
+  static cairo_uint128_t Umul (const cairo_uint128_t a, const cairo_uint128_t b);
   /**
    * Unsigned division of Q64.64 values.
    *
@@ -302,7 +282,7 @@ private:
    * \param [in] b Denominator.
    * \return The Q64.64 representation of `a / b`
    */
-  static cairo_uint128_t Udiv         (cairo_uint128_t a, cairo_uint128_t b);
+  static cairo_uint128_t Udiv (const cairo_uint128_t a, const cairo_uint128_t b);
   /**
    * Unsigned multiplication of Q64.64 and Q0.128 values.
    *
@@ -312,38 +292,7 @@ private:
    *
    * \see Invert
    */
-  static cairo_uint128_t UmulByInvert (cairo_uint128_t a, cairo_uint128_t b);
-  /** Negative predicate. */
-  inline bool IsNegative (void) const
-  {
-    bool sign = _cairo_int128_negative (_v);;
-    return sign;
-  }
-  /** Logical negation */
-  inline void Negate (void)
-  {
-    _v.lo = ~_v.lo;
-    _v.hi = ~_v.hi;
-    if (++_v.lo == 0)
-      {
-        ++_v.hi;
-      }
-  }
-  /**
-   * Return tri-valued comparision to another value.
-   *
-   * \param [in] o The value to compare to.
-   * \return -1 if `this < o`, 0 if they are equal, and +1 if `this > o`.
-   */
-  inline int Compare (const int64x64_t & o) const
-  {
-    int status;
-    int64x64_t tmp = *this;
-    tmp -= o;
-    status = (((int64_t)(tmp)._v.hi) < 0) ? -1 :
-      (((tmp)._v.hi == 0 && (tmp)._v.lo == 0)) ? 0 : 1;
-    return status;
-  }
+  static cairo_uint128_t UmulByInvert (const cairo_uint128_t a, const cairo_uint128_t b);
 
   cairo_int128_t _v;  //!< The Q64.64 value.
 
@@ -356,15 +305,7 @@ private:
  */
 inline bool operator == (const int64x64_t & lhs, const int64x64_t & rhs)
 {
-  return lhs._v.hi == rhs._v.hi && lhs._v.lo == rhs._v.lo;
-}
-/**
- * \ingroup highprec
- * Inequality operator
- */
-inline bool operator != (const int64x64_t & lhs, const int64x64_t & rhs)
-{
-  return !(lhs == rhs);
+  return _cairo_int128_eq (lhs._v, rhs._v);
 }
 /**
  * \ingroup highprec
@@ -372,15 +313,7 @@ inline bool operator != (const int64x64_t & lhs, const int64x64_t & rhs)
  */
 inline bool operator < (const int64x64_t & lhs, const int64x64_t & rhs)
 {
-  return lhs.Compare (rhs) < 0;
-}
-/**
- * \ingroup highprec
- * Less or equal operator
- */
-inline bool operator <= (const int64x64_t & lhs, const int64x64_t & rhs)
-{
-  return lhs.Compare (rhs) <= 0;
+  return _cairo_int128_lt (lhs._v, rhs._v);
 }
 /**
  * \ingroup highprec
@@ -388,15 +321,7 @@ inline bool operator <= (const int64x64_t & lhs, const int64x64_t & rhs)
  */
 inline bool operator > (const int64x64_t & lhs, const int64x64_t & rhs)
 {
-  return lhs.Compare (rhs) > 0;
-}
-/**
- * \ingroup highprec
- * Greater or equal operator
- */
-inline bool operator >= (const int64x64_t & lhs, const int64x64_t & rhs)
-{
-  return lhs.Compare (rhs) >= 0;
+  return _cairo_int128_gt (lhs._v, rhs._v);
 }
 
 /**
@@ -451,7 +376,7 @@ inline int64x64_t operator + (const int64x64_t & lhs)
 inline int64x64_t operator - (const int64x64_t & lhs)
 {
   int64x64_t tmp = lhs;
-  tmp.Negate ();
+  tmp._v = _cairo_int128_negate (tmp._v);
   return tmp;
 }
 /**
@@ -460,7 +385,7 @@ inline int64x64_t operator - (const int64x64_t & lhs)
  */
 inline int64x64_t operator ! (const int64x64_t & lhs)
 {
-  return (lhs._v.hi == 0 && lhs._v.lo == 0) ? int64x64_t (1, 0) : int64x64_t ();
+  return (lhs == int64x64_t ()) ? int64x64_t (1, 0) : int64x64_t ();
 }
 
 

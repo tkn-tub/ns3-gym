@@ -20,6 +20,74 @@
 namespace ns3 {
 
 /**
+ * \ingroup core
+ * \defgroup highprec High Precision Q64.64
+ *
+ * Functions and class for high precision Q64.64 fixed point arithmetic.
+ */
+  
+/**
+ * \ingroup highprec
+ * \class int64x64_t
+ * 
+ * High precision numerical type, implementing Q64.64 fixed precision.
+ *
+ * A Q64.64 fixed precision number consists of:
+ *
+ *   Bits | Function
+ *   ---- | --------
+ *     1  | Sign bit
+ *    63  | Integer portion
+ *    64  | Fractional portion
+ *
+ * The `high` word consists of the sign bit and integer value;
+ * the `low` word is the fractional part, unscaled.
+ *
+ * All standard arithmetic operations are supported:
+ *
+ *   Category    | Operators
+ *   ----------- | ---------
+ *   Computation | `+`, `+=`, `-`, `-=`, `*`, `*=`, `/`, `/=`
+ *   Comparison  | `==`, `!=`, `<`, `<=`, `>`, `>=`
+ *   Unary       | `+`, `-`, `!`
+ */
+
+
+/**
+ * \ingroup core
+ * \defgroup highprec High Precision Q64.64
+ *
+ * Functions and class for high precision Q64.64 fixed point arithmetic.
+ */
+  
+/**
+ * \ingroup highprec
+ * \class int64x64_t
+ * 
+ * High precision numerical type, implementing Q64.64 fixed precision.
+ *
+ * A Q64.64 fixed precision number consists of:
+ *
+ *   Bits | Function
+ *   ---- | --------
+ *     1  | Sign bit
+ *    63  | Integer portion
+ *    64  | Fractional portion
+ *
+ * The `high` word consists of the sign bit and integer value;
+ * the `low` word is the fractional part, unscaled.
+ *
+ * All standard arithmetic operations are supported:
+ *
+ *   Category    | Operators
+ *   ----------- | ---------
+ *   Computation | `+`, `+=`, `-`, `-=`, `*`, `*=`, `/`, `/=`
+ *   Comparison  | `==`, `!=`, `<`, `<=`, `>`, `>=`
+ *   Unary       | `+`, `-`, `!`
+ */
+
+
+/**
  * \ingroup highprec
  * Addition operator.
  */
@@ -63,7 +131,30 @@ int64x64_t operator / (const int64x64_t & lhs, const int64x64_t & rhs)
   tmp /= rhs;
   return tmp;
 }
-
+/**
+ * \ingroup highprec
+ * Inequality operator
+ */
+inline bool operator != (const int64x64_t & lhs, const int64x64_t & rhs)
+{
+  return !(lhs == rhs);
+}
+/**
+ * \ingroup highprec
+ * Less or equal operator
+ */
+inline bool operator <= (const int64x64_t & lhs, const int64x64_t & rhs)
+{
+  return !(lhs > rhs);
+}
+/**
+ * \ingroup highprec
+ * Greater or equal operator
+ */
+inline bool operator >= (const int64x64_t & lhs, const int64x64_t & rhs)
+{
+  return !(lhs < rhs);
+}
 /**
  * \ingroup highprec
  * Output streamer for int64x64_t

@@ -56,7 +56,7 @@ output_sign (const cairo_int128_t sa,
 }
 
 void
-int64x64_t::Mul (int64x64_t const &o)
+int64x64_t::Mul (const int64x64_t & o)
 {
   cairo_uint128_t a, b;
   bool sign = output_sign (_v, o._v, a, b);
@@ -65,7 +65,7 @@ int64x64_t::Mul (int64x64_t const &o)
 }
 
 cairo_uint128_t
-int64x64_t::Umul (cairo_uint128_t a, cairo_uint128_t b)
+int64x64_t::Umul (const cairo_uint128_t a, const cairo_uint128_t b)
 {
   cairo_uint128_t result;
   cairo_uint128_t hiPart, loPart, midPart;
@@ -101,7 +101,7 @@ int64x64_t::Umul (cairo_uint128_t a, cairo_uint128_t b)
 }
 
 void
-int64x64_t::Div (int64x64_t const &o)
+int64x64_t::Div (const int64x64_t & o)
 {
   cairo_uint128_t a, b;
   bool sign = output_sign (_v, o._v, a, b);
@@ -110,7 +110,7 @@ int64x64_t::Div (int64x64_t const &o)
 }
 
 cairo_uint128_t
-int64x64_t::Udiv (cairo_uint128_t a, cairo_uint128_t b)
+int64x64_t::Udiv (const cairo_uint128_t a, const cairo_uint128_t b)
 {
   cairo_uint128_t den = b;
   cairo_uquorem128_t qr = _cairo_uint128_divrem (a, b);
@@ -176,7 +176,7 @@ int64x64_t::Udiv (cairo_uint128_t a, cairo_uint128_t b)
 }
 
 void 
-int64x64_t::MulByInvert (const int64x64_t &o)
+int64x64_t::MulByInvert (const int64x64_t & o)
 {
   bool sign = _cairo_int128_negative (_v);
   cairo_uint128_t a = sign ? _cairo_int128_negate (_v) : _v;
@@ -184,8 +184,9 @@ int64x64_t::MulByInvert (const int64x64_t &o)
 
   _v = sign ? _cairo_int128_negate (result) : result;
 }
+  
 cairo_uint128_t
-int64x64_t::UmulByInvert (cairo_uint128_t a, cairo_uint128_t b)
+int64x64_t::UmulByInvert (const cairo_uint128_t a, const cairo_uint128_t b)
 {
   cairo_uint128_t result;
   cairo_uint128_t hi, mid;
@@ -197,8 +198,9 @@ int64x64_t::UmulByInvert (cairo_uint128_t a, cairo_uint128_t b)
   result = _cairo_uint128_add (hi,mid);
   return result;
 }
+
 int64x64_t 
-int64x64_t::Invert (uint64_t v)
+int64x64_t::Invert (const uint64_t v)
 {
   NS_ASSERT (v > 1);
   cairo_uint128_t a, factor;
