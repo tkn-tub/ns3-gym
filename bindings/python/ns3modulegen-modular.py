@@ -1,3 +1,4 @@
+from __future__ import print_function
 import warnings
 import sys
 import os
@@ -76,11 +77,11 @@ def main(argv):
 
         try:
             from callbacks_list import callback_classes
-        except ImportError, ex:
-            print >> sys.stderr, "***************", repr(ex)
+        except ImportError as ex:
+            print("***************", repr(ex), file=sys.stderr)
             callback_classes = []
         else:
-            print >> sys.stderr, ">>>>>>>>>>>>>>>>", repr(callback_classes)
+            print(">>>>>>>>>>>>>>>>", repr(callback_classes), file=sys.stderr)
 
     finally:
         sys.path.pop(0)

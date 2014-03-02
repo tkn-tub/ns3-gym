@@ -5,7 +5,7 @@ def post_register_types(root_module):
 
     if 'EmuFdNetDevice' not in enabled_features:
         if 'ns3::EmuFdNetDeviceHelper'in root_module:
-	    root_module.classes.remove(root_module['ns3::EmuFdNetDeviceHelper'])
+            root_module.classes.remove(root_module['ns3::EmuFdNetDeviceHelper'])
 
     if 'TapFdNetDevice' not in enabled_features:
         if 'ns3::TapFdNetDeviceHelper'in root_module:

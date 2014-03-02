@@ -13,7 +13,7 @@ from waflib.Errors import WafError
 # after = TaskGen.after
 
 ## https://launchpad.net/pybindgen/
-REQUIRED_PYBINDGEN_VERSION = (0, 17, 0, 866)
+REQUIRED_PYBINDGEN_VERSION = (0, 17, 0, 868)
 REQUIRED_PYGCCXML_VERSION = (0, 9, 5)
 
 RUN_ME=-3
@@ -165,7 +165,7 @@ def configure(conf):
     else:
         out = subprocess.Popen([conf.env['PYTHON'][0], "-c",
                                 "import pybindgen.version; "
-                                "print '.'.join([str(x) for x in pybindgen.version.__version__])"],
+                                "print('.'.join([str(x) for x in pybindgen.version.__version__]))"],
                                 stdout=subprocess.PIPE).communicate()[0]
         pybindgen_version_str = out.strip()
         pybindgen_version = tuple([int(x) for x in pybindgen_version_str.split('.')])
