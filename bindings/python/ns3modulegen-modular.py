@@ -6,6 +6,8 @@ from pybindgen import Module, FileCodeSink, param, retval, cppclass, typehandler
 from pybindgen.module import MultiSectionFactory
 import ns3modulegen_core_customizations
 
+import logging
+
 pybindgen.settings.wrapper_registry = pybindgen.settings.StdMapWrapperRegistry
 
 import traceback
@@ -55,6 +57,9 @@ class MyMultiSectionFactory(MultiSectionFactory):
 
 
 def main(argv):
+    logging.basicConfig()
+    logging.getLogger("pybindgen.typehandlers").setLevel(logging.DEBUG)
+
     module_abs_src_path, target, extension_name, output_cc_file_name = argv[1:]
     module_name = os.path.basename(module_abs_src_path)
     out = MyMultiSectionFactory(output_cc_file_name)
