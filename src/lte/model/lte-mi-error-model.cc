@@ -657,7 +657,8 @@ LteMiErrorModel::GetTbDecodificationStats (const SpectrumValue& sinr, const std:
   else
     {
       // second segmentation size: K- = maximum K in table such that K < K+
-      Kminus = cbSizeTable[KplusId-1 > 0 ? KplusId-1 : 0];
+      // -fstrict-overflow sensitive, see bug 1868
+      Kminus = cbSizeTable[ KplusId > 1 ? KplusId - 1 : 0];
       deltaK = Kplus - Kminus;
       Cminus = floor ((((double) C * Kplus) - (double)B1) / (double)deltaK);
       Cplus = C - Cminus;

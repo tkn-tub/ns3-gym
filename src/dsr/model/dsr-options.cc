@@ -1313,7 +1313,8 @@ uint8_t DsrOptionSR::Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Address 
                     m_dropTrace (packet);
                     return 0;
                   }
-                if (numberAddress - segsLeft - 2 < 0) // The index is invalid
+                // -fstrict-overflow sensitive, see bug 1868
+                if (numberAddress - segsLeft < 2) // The index is invalid
                    {
                       NS_LOG_LOGIC ("Malformed header. Drop!");
                       m_dropTrace (packet);
