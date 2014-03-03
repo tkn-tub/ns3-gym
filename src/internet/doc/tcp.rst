@@ -194,11 +194,12 @@ Configuring and Downloading
 +++++++++++++++++++++++++++
 
 As of ns-3.17 or later, NSC must either be downloaded separately from
-its own repository, or downloading when using the bake build system of 
+its own repository, or downloading when using the 
+`bake build system <http://www.nsnam.org/docs/tutorial/html/getting-started.html#downloading-ns3-using-bake>`_ of 
 |ns3|.  
 
-For ns-3.17 or later, when using bake, one must configure NSC as part of
-an "allinone" configuration, such as:
+For ns-3.17 or later releases, when using bake, one must configure NSC as 
+part of an "allinone" configuration, such as:
 
 .. sourcecode:: bash
 
@@ -210,15 +211,16 @@ an "allinone" configuration, such as:
 Instead of a released version, one may use the ns-3 development version
 by specifying "ns-3-allinone" to the configure step above.
 
-NSC may also be downloaded and built using 
-
-Prior to ns-3.17 release, using the ``build.py`` script in ns-3-allinone 
-directory, NSC will be enabled by default unless the platform does not 
-support it. To disable it when building |ns3|, type:
+NSC may also be downloaded from 
+`its download site <http://research.wand.net.nz/software/nsc.php>`_ 
+using Mercurial:
 
 .. sourcecode:: bash
 
-  $ ./waf configure --enable-examples --enable-tests --disable-nsc
+  $ hg clone https://secure.wand.net.nz/mercurial/nsc
+
+Prior to the ns-3.17 release, NSC was included in the allinone tarball and
+the released version did not need to be separately downloaded.
 
 Building and validating
 +++++++++++++++++++++++
@@ -257,8 +259,18 @@ with the "--with-nsc" configure option; e.g.
 
   $ ./waf configure --with-nsc=/path/to/my/nsc/directory
 
-If waf detects NSC, then building |ns3| with NSC is the same as building it
-without.  Once |ns3| is built, try running the following test suite:
+For |ns3| releases prior to the ns-3.17 release, using the ``build.py`` 
+script in ns-3-allinone directory, NSC will be built by default unless the 
+platform does not support it. To explicitly disable it when building |ns3|, 
+type:
+
+.. sourcecode:: bash
+
+  $ ./waf configure --enable-examples --enable-tests --disable-nsc
+
+If waf detects NSC, then building |ns3| with NSC is performed the same way
+with waf as without it.  Once |ns3| is built, try running the following 
+test suite:
 
 .. sourcecode:: bash
 
