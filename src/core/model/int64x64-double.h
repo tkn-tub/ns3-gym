@@ -175,48 +175,6 @@ public:
   {
     return GetHighLow ().first;
   }
-private:
-  /**
-   * Get the high and low portions of this value.
-   *
-   * \return a pair of the high and low words
-   */
-  std::pair<int64_t, uint64_t> GetHighLow (void) const
-    {
-    const bool negative = _v < 0;
-    const long double v = negative ? -_v : _v;
-
-    long double fhi;
-    long double flo = std::modf (v, &fhi);
-    // Add 0.5 to round, which improves the last count
-    // This breaks these tests:
-    //   TestSuite devices-mesh-dot11s-regression
-    //   TestSuite devices-mesh-flame-regression
-    //   TestSuite routing-aodv-regression
-    //   TestSuite routing-olsr-regression
-    // Setting round = 0; breaks:
-    //   TestSuite int64x64
-    const long double round = 0.5;
-    flo = flo * HP_MAX_64 + round;
-    int64_t  hi = fhi;
-    uint64_t lo = flo;
-    if (flo >= HP_MAX_64)
-      {
-	// conversion to uint64 rolled over
-	++hi;
-      }
-    if (negative)
-      {
-	lo = ~lo;
-	hi = ~hi;
-	if (++lo == 0)
-	  {
-	    ++hi;
-	  }
-      }
-    return std::make_pair (hi, lo);
-    }
-public:
   /**
    * Get the fractional portion of this value, unscaled.
    *
