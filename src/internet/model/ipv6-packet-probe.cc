@@ -33,8 +33,7 @@ NS_LOG_COMPONENT_DEFINE ("Ipv6PacketProbe");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv6PacketProbe)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (Ipv6PacketProbe);
 
 TypeId
 Ipv6PacketProbe::GetTypeId ()

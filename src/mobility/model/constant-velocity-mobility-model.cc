@@ -22,8 +22,7 @@
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (ConstantVelocityMobilityModel)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (ConstantVelocityMobilityModel);
 
 TypeId ConstantVelocityMobilityModel::GetTypeId (void)
 {

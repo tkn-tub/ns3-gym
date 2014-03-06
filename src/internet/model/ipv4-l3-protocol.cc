@@ -46,8 +46,7 @@ namespace ns3 {
 
 const uint16_t Ipv4L3Protocol::PROT_NUMBER = 0x0800;
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv4L3Protocol)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (Ipv4L3Protocol);
 
 TypeId 
 Ipv4L3Protocol::GetTypeId (void)
@@ -1290,8 +1289,8 @@ Ipv4L3Protocol::ProcessFragment (Ptr<Packet>& packet, Ipv4Header& ipHeader, uint
 {
   NS_LOG_FUNCTION (this << packet << ipHeader << iif);
 
-  uint64_t addressCombination = uint64_t (ipHeader.GetSource ().Get ()) << 32 | uint64_t (ipHeader.GetDestination ().Get ());
-  uint32_t idProto = uint32_t (ipHeader.GetIdentification ()) << 16 | uint32_t (ipHeader.GetProtocol ());
+  uint64_t addressCombination = uint64_t (ipHeader.GetSource ().Get ()) << 32 & uint64_t (ipHeader.GetDestination ().Get ());
+  uint32_t idProto = uint32_t (ipHeader.GetIdentification ()) << 16 & uint32_t (ipHeader.GetProtocol ());
   std::pair<uint64_t, uint32_t> key;
   bool ret = false;
   Ptr<Packet> p = packet->Copy ();

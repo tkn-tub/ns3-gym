@@ -26,8 +26,7 @@ NS_LOG_COMPONENT_DEFINE ("PcapFileWrapper");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (PcapFileWrapper)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (PcapFileWrapper);
 
 TypeId 
 PcapFileWrapper::GetTypeId (void)

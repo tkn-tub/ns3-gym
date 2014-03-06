@@ -24,8 +24,7 @@ NS_LOG_COMPONENT_DEFINE ("SocketFactory");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (SocketFactory)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (SocketFactory);
 
 TypeId SocketFactory::GetTypeId (void)
 {

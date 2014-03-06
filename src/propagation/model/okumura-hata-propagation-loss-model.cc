@@ -31,8 +31,7 @@ NS_LOG_COMPONENT_DEFINE ("OkumuraHataPropagationLossModel");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (OkumuraHataPropagationLossModel)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (OkumuraHataPropagationLossModel);
 
 
 TypeId

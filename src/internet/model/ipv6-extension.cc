@@ -44,8 +44,7 @@ NS_LOG_COMPONENT_DEFINE ("Ipv6Extension");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv6Extension)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (Ipv6Extension);
 
 TypeId Ipv6Extension::GetTypeId ()
 {
@@ -183,8 +182,7 @@ Ipv6Extension::AssignStreams (int64_t stream)
   return 1;
 }
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv6ExtensionHopByHop)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (Ipv6ExtensionHopByHop);
 
 TypeId Ipv6ExtensionHopByHop::GetTypeId ()
 {
@@ -236,8 +234,7 @@ uint8_t Ipv6ExtensionHopByHop::Process (Ptr<Packet>& packet, uint8_t offset, Ipv
 }
 
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv6ExtensionDestination)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (Ipv6ExtensionDestination);
 
 TypeId Ipv6ExtensionDestination::GetTypeId ()
 {
@@ -289,8 +286,7 @@ uint8_t Ipv6ExtensionDestination::Process (Ptr<Packet>& packet, uint8_t offset, 
 }
 
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv6ExtensionFragment)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (Ipv6ExtensionFragment);
 
 TypeId Ipv6ExtensionFragment::GetTypeId ()
 {
@@ -707,8 +703,7 @@ void Ipv6ExtensionFragment::Fragments::CancelTimeout ()
 }
 
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv6ExtensionRouting)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (Ipv6ExtensionRouting);
 
 TypeId Ipv6ExtensionRouting::GetTypeId ()
 {
@@ -793,8 +788,7 @@ uint8_t Ipv6ExtensionRouting::Process (Ptr<Packet>& packet, uint8_t offset, Ipv6
 }
 
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv6ExtensionRoutingDemux)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (Ipv6ExtensionRoutingDemux);
 
 TypeId Ipv6ExtensionRoutingDemux::GetTypeId ()
 {
@@ -856,8 +850,7 @@ void Ipv6ExtensionRoutingDemux::Remove (Ptr<Ipv6ExtensionRouting> extensionRouti
 }
 
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv6ExtensionLooseRouting)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (Ipv6ExtensionLooseRouting);
 
 TypeId Ipv6ExtensionLooseRouting::GetTypeId ()
 {
@@ -1010,8 +1003,7 @@ uint8_t Ipv6ExtensionLooseRouting::Process (Ptr<Packet>& packet, uint8_t offset,
 }
 
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv6ExtensionESP)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (Ipv6ExtensionESP);
 
 TypeId Ipv6ExtensionESP::GetTypeId ()
 {
@@ -1049,8 +1041,7 @@ uint8_t Ipv6ExtensionESP::Process (Ptr<Packet>& packet, uint8_t offset, Ipv6Head
 }
 
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv6ExtensionAH)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (Ipv6ExtensionAH);
 
 TypeId Ipv6ExtensionAH::GetTypeId ()
 {

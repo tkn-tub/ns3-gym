@@ -29,8 +29,7 @@ NS_LOG_COMPONENT_DEFINE ("LteRlcTm");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (LteRlcTm)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (LteRlcTm);
 
 LteRlcTm::LteRlcTm ()
   : m_maxTxBufferSize (0),

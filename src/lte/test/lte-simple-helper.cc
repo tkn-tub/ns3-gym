@@ -35,8 +35,7 @@ NS_LOG_COMPONENT_DEFINE ("LteSimpleHelper");
 namespace ns3 {
 
 
-NS_OBJECT_ENSURE_REGISTERED (LteSimpleHelper)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (LteSimpleHelper);
 
 LteSimpleHelper::LteSimpleHelper (void)
 {

@@ -26,8 +26,7 @@ NS_LOG_COMPONENT_DEFINE ("Scheduler");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (Scheduler)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (Scheduler);
 
 Scheduler::~Scheduler ()
 {

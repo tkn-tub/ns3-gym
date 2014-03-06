@@ -31,8 +31,7 @@ NS_LOG_COMPONENT_DEFINE ("WimaxMacQueue");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (WimaxMacQueue)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (WimaxMacQueue);
 
 WimaxMacQueue::QueueElement::QueueElement (void)
   : m_packet (Create<Packet> ()),

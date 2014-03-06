@@ -34,8 +34,7 @@
 namespace ns3 
 {
 
-NS_LOG_COMPONENT_DEFINE ("Ipv6AddressHelper")
-  ;
+NS_LOG_COMPONENT_DEFINE ("Ipv6AddressHelper");
 
 Ipv6AddressHelper::Ipv6AddressHelper ()
 {

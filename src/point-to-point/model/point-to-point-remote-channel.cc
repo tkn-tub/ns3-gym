@@ -31,8 +31,7 @@ NS_LOG_COMPONENT_DEFINE ("PointToPointRemoteChannel");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (PointToPointRemoteChannel)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (PointToPointRemoteChannel);
 
 TypeId
 PointToPointRemoteChannel::GetTypeId (void)

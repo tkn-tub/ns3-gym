@@ -28,8 +28,7 @@ NS_LOG_COMPONENT_DEFINE ("EthernetTrailer");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (EthernetTrailer)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (EthernetTrailer);
 
 EthernetTrailer::EthernetTrailer ()
   : m_calcFcs (false),

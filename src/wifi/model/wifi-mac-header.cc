@@ -25,8 +25,7 @@
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (WifiMacHeader)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (WifiMacHeader);
 
 enum
 {

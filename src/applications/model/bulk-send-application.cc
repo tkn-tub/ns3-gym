@@ -35,8 +35,7 @@ NS_LOG_COMPONENT_DEFINE ("BulkSendApplication");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (BulkSendApplication)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (BulkSendApplication);
 
 TypeId
 BulkSendApplication::GetTypeId (void)

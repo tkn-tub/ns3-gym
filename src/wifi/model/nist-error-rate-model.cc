@@ -27,8 +27,7 @@ NS_LOG_COMPONENT_DEFINE ("NistErrorRateModel");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (NistErrorRateModel)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (NistErrorRateModel);
 
 TypeId
 NistErrorRateModel::GetTypeId (void)

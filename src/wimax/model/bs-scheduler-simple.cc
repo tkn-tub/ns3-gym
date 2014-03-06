@@ -39,8 +39,7 @@ NS_LOG_COMPONENT_DEFINE ("BSSchedulerSimple");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (BSSchedulerSimple)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (BSSchedulerSimple);
 
 TypeId BSSchedulerSimple::GetTypeId (void)
 {

@@ -22,8 +22,7 @@
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (UanTransducer)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (UanTransducer);
 
 TypeId UanTransducer::GetTypeId (void)
 {

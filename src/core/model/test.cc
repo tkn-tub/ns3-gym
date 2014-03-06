@@ -30,8 +30,7 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("Test")
-  ;
+NS_LOG_COMPONENT_DEFINE ("Test");
 
 bool
 TestDoubleIsEqual (const double x1, const double x2, const double epsilon)

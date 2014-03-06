@@ -27,10 +27,10 @@
 #include "wimax-tlv.h"
 
 NS_LOG_COMPONENT_DEFINE ("MACMESSAGES");
+
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (ManagementMessageType)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (ManagementMessageType);
 
 ManagementMessageType::ManagementMessageType (void)
   : m_type (~0)
@@ -105,10 +105,9 @@ ManagementMessageType::Deserialize (Buffer::Iterator start)
   return i.GetDistanceFrom (start);
 }
 
-// ----------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------
 
-NS_OBJECT_ENSURE_REGISTERED (RngReq)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (RngReq);
 
 RngReq::RngReq (void)
   : m_reserved (0),
@@ -220,10 +219,9 @@ RngReq::Deserialize (Buffer::Iterator start)
   return i.GetDistanceFrom (start);
 }
 
-// ----------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------
 
-NS_OBJECT_ENSURE_REGISTERED (RngRsp)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (RngRsp);
 
 RngRsp::RngRsp (void)
   : m_reserved (0),
@@ -498,10 +496,9 @@ RngRsp::Deserialize (Buffer::Iterator start)
   return i.GetDistanceFrom (start);
 }
 
-// ----------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------
 
-NS_OBJECT_ENSURE_REGISTERED (DsaReq)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (DsaReq);
 
 DsaReq::DsaReq (void)
   : m_transactionId (0),
@@ -633,10 +630,9 @@ DsaReq::SetServiceFlow (ServiceFlow sf)
   m_serviceFlow = sf;
 }
 
-// ----------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------
 
-NS_OBJECT_ENSURE_REGISTERED (DsaRsp)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (DsaRsp);
 
 DsaRsp::DsaRsp (void)
   : m_transactionId (0),
@@ -774,10 +770,9 @@ DsaRsp::Deserialize (Buffer::Iterator start)
   return size + 3;
 }
 
-// ----------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------
 
-NS_OBJECT_ENSURE_REGISTERED (DsaAck)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (DsaAck);
 
 DsaAck::DsaAck (void)
   : m_transactionId (0),

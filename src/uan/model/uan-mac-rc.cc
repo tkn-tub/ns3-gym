@@ -40,8 +40,7 @@
 NS_LOG_COMPONENT_DEFINE ("UanMacRc");
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (UanMacRc)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (UanMacRc);
 
 Reservation::Reservation ()
   : m_length (0),

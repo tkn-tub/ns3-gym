@@ -28,8 +28,7 @@
 namespace ns3
 {
 
-NS_LOG_COMPONENT_DEFINE ("Ipv6InterfaceAddress")
-  ;
+NS_LOG_COMPONENT_DEFINE ("Ipv6InterfaceAddress");
 
 Ipv6InterfaceAddress::Ipv6InterfaceAddress () 
   : m_address (Ipv6Address ()),

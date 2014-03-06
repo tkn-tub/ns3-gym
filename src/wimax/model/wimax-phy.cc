@@ -34,8 +34,7 @@ NS_LOG_COMPONENT_DEFINE ("WimaxPhy");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (WimaxPhy)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (WimaxPhy);
 
 TypeId WimaxPhy::GetTypeId (void)
 {

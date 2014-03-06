@@ -42,8 +42,7 @@ NS_LOG_COMPONENT_DEFINE ("ApWifiMac");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (ApWifiMac)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (ApWifiMac);
 
 TypeId
 ApWifiMac::GetTypeId (void)

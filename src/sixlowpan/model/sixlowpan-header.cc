@@ -94,8 +94,7 @@ SixLowPanDispatch::GetNhcDispatchType (uint8_t dispatch)
 /*
  * SixLowPanHc1
  */
-NS_OBJECT_ENSURE_REGISTERED (SixLowPanHc1)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (SixLowPanHc1);
 
 SixLowPanHc1::SixLowPanHc1 ()
   : m_hopLimit (0)
@@ -539,8 +538,7 @@ std::ostream & operator << (std::ostream & os, const SixLowPanHc1 & h)
 /*
  * SixLowPanFrag1
  */
-NS_OBJECT_ENSURE_REGISTERED (SixLowPanFrag1)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (SixLowPanFrag1);
 
 SixLowPanFrag1::SixLowPanFrag1 ()
   : m_datagramSize (0),
@@ -624,8 +622,7 @@ std::ostream & operator << (std::ostream & os, const SixLowPanFrag1 & h)
  * SixLowPanFragN
  */
 
-NS_OBJECT_ENSURE_REGISTERED (SixLowPanFragN)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (SixLowPanFragN);
 
 SixLowPanFragN::SixLowPanFragN ()
   : m_datagramSize (0),
@@ -723,8 +720,7 @@ std::ostream & operator << (std::ostream & os, const SixLowPanFragN & h)
 /*
  * SixLowPanIphcHeader
  */
-NS_OBJECT_ENSURE_REGISTERED (SixLowPanIphc)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (SixLowPanIphc);
 
 SixLowPanIphc::SixLowPanIphc ()
 {
@@ -1419,8 +1415,7 @@ std::ostream & operator << (std::ostream & os, const SixLowPanIphc & h)
 /*
  * SixLowPanNhcExtensionHeader
  */
-NS_OBJECT_ENSURE_REGISTERED (SixLowPanNhcExtension)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (SixLowPanNhcExtension);
 
 SixLowPanNhcExtension::SixLowPanNhcExtension ()
 {
@@ -1547,8 +1542,7 @@ std::ostream & operator << (std::ostream & os, const SixLowPanNhcExtension & h)
 /*
  * SixLowPanUdpNhcExtension
  */
-NS_OBJECT_ENSURE_REGISTERED (SixLowPanUdpNhcExtension)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (SixLowPanUdpNhcExtension);
 
 SixLowPanUdpNhcExtension::SixLowPanUdpNhcExtension ()
 {

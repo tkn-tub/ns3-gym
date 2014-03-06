@@ -38,8 +38,7 @@ NS_LOG_COMPONENT_DEFINE ("DsrGraReplyTable");
 namespace ns3 {
 namespace dsr {
 
-NS_OBJECT_ENSURE_REGISTERED (GraReply)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (GraReply);
 
 TypeId GraReply::GetTypeId ()
 {

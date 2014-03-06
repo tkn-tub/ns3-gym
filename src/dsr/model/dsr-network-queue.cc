@@ -43,8 +43,7 @@ NS_LOG_COMPONENT_DEFINE ("DsrNetworkQueue");
 namespace ns3 {
 namespace dsr {
 
-NS_OBJECT_ENSURE_REGISTERED (DsrNetworkQueue)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (DsrNetworkQueue);
 
 TypeId
 DsrNetworkQueue::GetTypeId (void)

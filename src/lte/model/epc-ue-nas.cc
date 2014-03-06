@@ -52,8 +52,7 @@ std::string ToString (EpcUeNas::State s)
 
 
 
-NS_OBJECT_ENSURE_REGISTERED (EpcUeNas)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (EpcUeNas);
 
 EpcUeNas::EpcUeNas ()
   : m_state (OFF),

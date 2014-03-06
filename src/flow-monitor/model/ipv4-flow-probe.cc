@@ -30,8 +30,7 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("Ipv4FlowProbe")
-  ;
+NS_LOG_COMPONENT_DEFINE ("Ipv4FlowProbe");
 
 //////////////////////////////////////
 // Ipv4FlowProbeTag class implementation //

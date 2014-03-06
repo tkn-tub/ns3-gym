@@ -34,8 +34,9 @@
 
 namespace ns3 {
 namespace dsdv {
-NS_OBJECT_ENSURE_REGISTERED (DsdvHeader)
-  ;
+
+NS_OBJECT_ENSURE_REGISTERED (DsdvHeader);
+    
 DsdvHeader::DsdvHeader (Ipv4Address dst, uint32_t hopCount, uint32_t dstSeqNo)
   : m_dst (dst),
     m_hopCount (hopCount),

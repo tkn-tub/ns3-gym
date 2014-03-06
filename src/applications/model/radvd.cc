@@ -40,11 +40,9 @@
 namespace ns3
 {
 
-NS_LOG_COMPONENT_DEFINE ("RadvdApplication")
-  ;
+NS_LOG_COMPONENT_DEFINE ("RadvdApplication");
 
-NS_OBJECT_ENSURE_REGISTERED (Radvd)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (Radvd);
 
 TypeId Radvd::GetTypeId ()
 {

@@ -69,8 +69,7 @@ NS_LOG_COMPONENT_DEFINE ("RedQueue");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (RedQueue)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (RedQueue);
 
 TypeId RedQueue::GetTypeId (void)
 {

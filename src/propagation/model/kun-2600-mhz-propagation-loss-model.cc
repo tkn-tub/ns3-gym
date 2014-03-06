@@ -31,8 +31,7 @@ NS_LOG_COMPONENT_DEFINE ("Kun2600MhzPropagationLossModel");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (Kun2600MhzPropagationLossModel)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (Kun2600MhzPropagationLossModel);
 
 
 TypeId

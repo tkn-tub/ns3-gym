@@ -41,13 +41,11 @@
 #include "sixlowpan-net-device.h"
 #include "sixlowpan-header.h"
 
-NS_LOG_COMPONENT_DEFINE ("SixLowPanNetDevice")
-  ;
+NS_LOG_COMPONENT_DEFINE ("SixLowPanNetDevice");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (SixLowPanNetDevice)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (SixLowPanNetDevice);
 
 TypeId SixLowPanNetDevice::GetTypeId (void)
 {

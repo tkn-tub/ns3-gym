@@ -29,8 +29,7 @@ NS_LOG_COMPONENT_DEFINE ("WifiRadioEnergyModel");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (WifiRadioEnergyModel)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (WifiRadioEnergyModel);
 
 TypeId
 WifiRadioEnergyModel::GetTypeId (void)

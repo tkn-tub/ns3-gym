@@ -27,8 +27,7 @@
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (WimaxConnection)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (WimaxConnection);
 
 TypeId WimaxConnection::GetTypeId (void)
 {

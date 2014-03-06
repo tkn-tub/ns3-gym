@@ -31,8 +31,7 @@
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE ("ItuR1411NlosOverRooftopPropagationLossModelTest")
-  ;
+NS_LOG_COMPONENT_DEFINE ("ItuR1411NlosOverRooftopPropagationLossModelTest");
 
 
 class ItuR1411NlosOverRooftopPropagationLossModelTestCase : public TestCase

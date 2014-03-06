@@ -31,11 +31,9 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("FlowMonitor")
-  ;
+NS_LOG_COMPONENT_DEFINE ("FlowMonitor");
 
-NS_OBJECT_ENSURE_REGISTERED (FlowMonitor)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (FlowMonitor);
 
 
 TypeId 

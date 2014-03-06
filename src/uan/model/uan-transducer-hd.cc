@@ -31,8 +31,7 @@ NS_LOG_COMPONENT_DEFINE ("UanTransducerHd");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (UanTransducerHd)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (UanTransducerHd);
   
 UanTransducerHd::UanTransducerHd ()
   : UanTransducer (),

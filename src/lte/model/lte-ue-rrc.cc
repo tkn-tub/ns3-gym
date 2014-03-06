@@ -115,8 +115,7 @@ std::string ToString (LteUeRrc::State s)
 // ue RRC methods
 /////////////////////////////
 
-NS_OBJECT_ENSURE_REGISTERED (LteUeRrc)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (LteUeRrc);
 
 
 LteUeRrc::LteUeRrc ()

@@ -24,8 +24,7 @@
 namespace ns3 
 {
 
-NS_LOG_COMPONENT_DEFINE ("RadvdInterface")
-  ;
+NS_LOG_COMPONENT_DEFINE ("RadvdInterface");
 
 RadvdInterface::RadvdInterface (uint32_t interface)
   : m_interface (interface)
