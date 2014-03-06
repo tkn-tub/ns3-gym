@@ -81,7 +81,7 @@ private:
 #endif /* MANAGEMENT_MESSAGE_TYPE_H */
 
 
-// ----------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------
 
 #ifndef RNG_RSP_H
 #define RNG_RSP_H
@@ -246,7 +246,7 @@ private:
 
 #endif /* RNG_RSP_H */
 
-// ----------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------
 
 #ifndef DSA_REQ_H
 #define DSA_REQ_H
@@ -265,6 +265,15 @@ class DsaReq : public Header
    * \brief This class implements the ranging request message described by "IEEE Standard for
    * Local and metropolitan area networks Part 16: Air Interface for Fixed Broadband Wireless Access Systems"
    * 6.3.2.3.7 Registration request (REG-REQ) message, page 51
+   *
+   * \verbatim
+   *  0             7             15            23
+   * +-------------+-------------+-------------+
+   * |Mngt msg type|       Transaction ID      |
+   * +-------------+-------------+-------------+
+   * |            Service Flow TLV             |
+   * +~~~~~~~~~~~~~+~~~~~~~~~~~~~+~~~~~~~~~~~~~+
+   * \endverbatim
    *
    */
 public:
@@ -320,7 +329,7 @@ private:
 
 #endif /* DSA_REQ_H */
 
-// ----------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------
 
 #ifndef DSA_RSP_H
 #define DSA_RSP_H
@@ -338,6 +347,15 @@ class DsaRsp : public Header
    * \brief This class implements the DSA-RSP message described by "IEEE Standard for
    * Local and metropolitan area networks Part 16: Air Interface for Fixed Broadband Wireless Access Systems"
    * 6.3.2.3.11 DSA-RSP message, page 63
+   *
+   * \verbatim
+   *   0             7             15            23
+   *  +-------------+-------------+-------------+
+   *  |Mngt msg type|       Transaction ID      |
+   *  +-------------+-------------+-------------+
+   *  | Conf Code   | Service Flow TLV          |
+   *  +~~~~~~~~~~~~~+~~~~~~~~~~~~~+~~~~~~~~~~~~~+
+   * \endverbatim
    */
 
 public:
@@ -398,7 +416,7 @@ private:
 
 #endif /* DSA_RSP_H */
 
-// ----------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------
 
 #ifndef DSA_ACK_H
 #define DSA_ACK_H
@@ -443,7 +461,7 @@ private:
 
 #endif /* DSA_ACK_H */
 
-// ----------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------
 
 #ifndef RNG_REQ_H
 #define RNG_REQ_H

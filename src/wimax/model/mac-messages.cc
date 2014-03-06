@@ -580,16 +580,6 @@ DsaReq::Print (std::ostream &os) const
   os << " transaction id = " << (uint32_t) m_transactionId << ", m_sfid = " << m_sfid << ", cid = " << m_cid;
 }
 
-/*
- *  0             7             15            23
- * +-------------+-------------+-------------+
- * |Mngt msg type|       Transaction ID      |
- * +-------------+-------------+-------------+
- * |            Service Flow TLV             |
- * +~~~~~~~~~~~~~+~~~~~~~~~~~~~+~~~~~~~~~~~~~+
- *
- */
-
 uint32_t
 DsaReq::GetSerializedSize (void) const
 {
@@ -738,15 +728,7 @@ DsaRsp::GetSerializedSize (void) const
   return 2 + 1 + m_serviceFlow.ToTlv ().GetSerializedSize ();
 }
 
-/*
- *  0             7             15            23
- * +-------------+-------------+-------------+
- * |Mngt msg type|       Transaction ID      |
- * +-------------+-------------+-------------+
- * | Conf Code   | Service Flow TLV          |
- * +~~~~~~~~~~~~~+~~~~~~~~~~~~~+~~~~~~~~~~~~~+
- *
- */
+
 void
 DsaRsp::Serialize (Buffer::Iterator start) const
 {
