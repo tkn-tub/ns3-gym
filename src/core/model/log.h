@@ -156,16 +156,6 @@ void LogComponentDisableAll (enum LogLevel level);
  * ns3::LogComponentDisable functions or with the NS_LOG
  * environment variable.
  *
- * To create a log component Foo, at the top of foo.cc:
- *
- * \code
- *   NS_LOG_COMPONENT_DEFINE ("Foo")
- *     ;
- * \endcode
- *
- * Note the closing ';' is not on the same line;  this prevents 
- * Doxygen from spuriously warning that the macro invocation is undocumented.
- *
  * \param name a string
  */
 #define NS_LOG_COMPONENT_DEFINE(name)                           \
