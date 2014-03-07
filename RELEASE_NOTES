@@ -47,6 +47,7 @@ Bugs fixed
 - Bug 1853 - NS_LOG_FUNCTION broken on OSX 10.9
 - Bug 1855 - SixLowPanNetDevice is not correctly indexed
 - Bug 1862 - NS_LOG="Time=*|prefix_time" causes stack overflow
+- Bug 1874 - Ipv4L3Protocol::ProcessFragment: addressCombination and idProto identifiers not properly computed
 
 Release 3.19
 =============
