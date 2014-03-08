@@ -169,17 +169,6 @@ std::ostream & operator<< (std::ostream& os, const Mac16Address & address)
   return os;
 }
 
-static uint8_t
-AsInt (std::string v)
-{
-  NS_LOG_FUNCTION (v);
-  std::istringstream iss;
-  iss.str (v);
-  uint32_t retval;
-  iss >> std::hex >> retval >> std::dec;
-  return retval;
-}
-
 std::istream& operator>> (std::istream& is, Mac16Address & address)
 {
   std::string v;
@@ -194,13 +183,13 @@ std::istream& operator>> (std::istream& is, Mac16Address & address)
       if (next == std::string::npos)
         {
           tmp = v.substr (col, v.size ()-col);
-          address.m_address[i] = AsInt (tmp);
+          address.m_address[i] = strtoul (tmp.c_str(), 0, 16);
           break;
         }
       else
         {
           tmp = v.substr (col, next-col);
-          address.m_address[i] = AsInt (tmp);
+          address.m_address[i] = strtoul (tmp.c_str(), 0, 16);
           col = next + 1;
         }
     }
