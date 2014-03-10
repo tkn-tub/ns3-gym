@@ -31,6 +31,7 @@ namespace ns3 {
 /**
  * \ingroup debugging
  * \defgroup logging Logging
+ *
  * \brief Logging functions and macros
  *
  * LOG functionality: macros which allow developers to
@@ -58,7 +59,6 @@ namespace ns3 {
  * generally, use of (at least) NS_LOG_FUNCTION(this) is preferred.
  * Use NS_LOG_FUNCTION_NOARGS() only in static functions.
  */
-
 
 /**
  *  \ingroup logging
@@ -97,47 +97,53 @@ enum LogLevel {
 };
 
 /**
- * \param name a log component name
- * \param level a logging level
  * \ingroup logging
  *
  * Enable the logging output associated with that log component.
+ *
  * The logging output can be later disabled with a call
  * to ns3::LogComponentDisable.
  *
  * Same as running your program with the NS_LOG environment
  * variable set as NS_LOG='name=level'
+ *
+ * \param name a log component name
+ * \param level a logging level
  */
 void LogComponentEnable (char const *name, enum LogLevel level);
 
 /**
- * \param level a logging level
  * \ingroup logging
  *
  * Enable the logging output for all registered log components.
  *
  * Same as running your program with the NS_LOG environment
  * variable set as NS_LOG='*=level'
+ *
+ * \param level a logging level
  */
 void LogComponentEnableAll (enum LogLevel level);
 
 
 /**
- * \param name a log component name
- * \param level a logging level
  * \ingroup logging
  *
  * Disable the logging output associated with that log component.
+ *
  * The logging output can be later re-enabled with a call
  * to ns3::LogComponentEnable.
+ *
+ * \param name a log component name
+ * \param level a logging level
  */
 void LogComponentDisable (char const *name, enum LogLevel level);
 
 /**
- * \param level a logging level
  * \ingroup logging
  *
  * Disable all logging for all components.
+ *
+ * \param level a logging level
  */
 void LogComponentDisableAll (enum LogLevel level);
 
@@ -164,7 +170,9 @@ void LogComponentDisableAll (enum LogLevel level);
 /**
  * \ingroup logging
  *
- * Define a logging component with a default mask.
+ * Define a logging component with a mask.
+ *
+ * See LogComponent().
  *
  * \param name a string
  * \param mask the default mask
@@ -175,6 +183,8 @@ void LogComponentDisableAll (enum LogLevel level);
 /**
  * \ingroup logging
  * Append the simulation time to a log message.
+ * \internal
+ * Logging implementation macro; should not be called directly.
  */
 #define NS_LOG_APPEND_TIME_PREFIX                               \
   if (g_log.IsEnabled (ns3::LOG_PREFIX_TIME))                   \
@@ -190,6 +200,8 @@ void LogComponentDisableAll (enum LogLevel level);
 /**
  * \ingroup logging
  * Append the simulation node id to a log message.
+ * \internal
+ * Logging implementation macro; should not be called directly.
  */
 #define NS_LOG_APPEND_NODE_PREFIX                               \
   if (g_log.IsEnabled (ns3::LOG_PREFIX_NODE))                   \
@@ -205,6 +217,8 @@ void LogComponentDisableAll (enum LogLevel level);
 /**
  * \ingroup logging
  * Append the function name to a log message.
+ * \internal
+ * Logging implementation macro; should not be called directly.
  */
 #define NS_LOG_APPEND_FUNC_PREFIX                               \
   if (g_log.IsEnabled (ns3::LOG_PREFIX_FUNC))                   \
@@ -216,6 +230,8 @@ void LogComponentDisableAll (enum LogLevel level);
 /**
  * \ingroup logging
  * Append the log severity level to a log message.
+ * \internal
+ * Logging implementation macro; should not be called directly.
  */
 #define NS_LOG_APPEND_LEVEL_PREFIX(level)                       \
   if (g_log.IsEnabled (ns3::LOG_PREFIX_LEVEL))                  \
@@ -225,28 +241,50 @@ void LogComponentDisableAll (enum LogLevel level);
   
 
 #ifndef NS_LOG_APPEND_CONTEXT
+/**
+ * \ingroup logging
+ * Append the node id to a log message.
+ *
+ * This is implemented locally in `.cc` files because
+ * the the relevant variable is only known there.
+ *
+ * Preferred format is something like (assuming the node id is
+ * accessible from `var`:
+ * \code
+ *   if (var)
+ *     {
+ *       std::clog << "[node " << var->GetObject<Node> ()->GetId () << "] ";
+ *     }
+ * \endcode
+ *
+ * \internal
+ * Logging implementation macro; should not be called directly.
+ *
+ */
 #define NS_LOG_APPEND_CONTEXT
 #endif /* NS_LOG_APPEND_CONTEXT */
 
 
-
 #ifdef NS3_LOG_ENABLE
-
-
 
 /**
  * \ingroup logging
- * \param level the log level
- * \param msg the message to log
  *
  * This macro allows you to log an arbitrary message at a specific
- * log level. The log message is expected to be a C++ ostream
+ * log level.
+ *
+ * The log message is expected to be a C++ ostream
  * message such as "my string" << aNumber << "my oth stream".
  *
  * Typical usage looks like:
  * \code
  * NS_LOG (LOG_DEBUG, "a number="<<aNumber<<", anotherNumber="<<anotherNumber);
  * \endcode
+ *
+ * \param level the log level
+ * \param msg the message to log
+ * \internal
+ * Logging implementation macro; should not be called directly.
  */
 #define NS_LOG(level, msg)                                      \
   do                                                            \
@@ -265,36 +303,40 @@ void LogComponentDisableAll (enum LogLevel level);
 
 /**
  * \ingroup logging
- * \param msg the message to log
  *
  * Use \ref NS_LOG to output a message of level LOG_ERROR.
+ *
+ * \param msg the message to log
  */
 #define NS_LOG_ERROR(msg) \
   NS_LOG (ns3::LOG_ERROR, msg)
 
 /**
  * \ingroup logging
- * \param msg the message to log
  *
  * Use \ref NS_LOG to output a message of level LOG_WARN.
+ *
+ * \param msg the message to log
  */
 #define NS_LOG_WARN(msg) \
   NS_LOG (ns3::LOG_WARN, msg)
 
 /**
  * \ingroup logging
- * \param msg the message to log
  *
  * Use \ref NS_LOG to output a message of level LOG_DEBUG.
+ *
+ * \param msg the message to log
  */
 #define NS_LOG_DEBUG(msg) \
   NS_LOG (ns3::LOG_DEBUG, msg)
 
 /**
  * \ingroup logging
- * \param msg the message to log
  *
  * Use \ref NS_LOG to output a message of level LOG_INFO.
+ *
+ * \param msg the message to log
  */
 #define NS_LOG_INFO(msg) \
   NS_LOG (ns3::LOG_INFO, msg)
@@ -324,7 +366,6 @@ void LogComponentDisableAll (enum LogLevel level);
 
 /**
  * \ingroup logging
- * \param parameters the parameters to output.
  *
  * If log level LOG_FUNCTION is enabled, this macro will output
  * all input parameters separated by ", ".
@@ -342,6 +383,7 @@ void LogComponentDisableAll (enum LogLevel level);
  * (at least) NS_LOG_FUNCTION(this).  Static functions should use
  * NS_LOG_FUNCTION_NOARGS() instead.
  *
+ * \param parameters the parameters to output.
  */
 #define NS_LOG_FUNCTION(parameters)                             \
   do                                                            \
@@ -362,18 +404,20 @@ void LogComponentDisableAll (enum LogLevel level);
 
 /**
  * \ingroup logging
- * \param msg the message to log
  *
  * Use \ref NS_LOG to output a message of level LOG_LOGIC
+ *
+ * \param msg the message to log
  */
 #define NS_LOG_LOGIC(msg) \
   NS_LOG (ns3::LOG_LOGIC, msg)
 
 /**
  * \ingroup logging
- * \param msg the message to log
  *
  * Output the requested message unconditionaly.
+ *
+ * \param msg the message to log
  */
 #define NS_LOG_UNCOND(msg)              \
   do                                    \
@@ -429,6 +473,9 @@ public:
    * Constructor
    *
    * \param [in] name the user-visible name for this component.
+   * \param [in] mask LogLevels blocked for this LogComponent.  Blocking
+   *                  a log level helps prevent recursion by logging in
+   *                  functions which help implement the logging facility.
    */
   LogComponent (const std::string & name, const enum LogLevel mask = LOG_NONE);
   /**
@@ -491,11 +538,11 @@ private:
 /**
  * \ingroup logging
  *
- * Insert `, ' when streaming function arguments.
+ * Insert `, ` when streaming function arguments.
  */
 class ParameterLogger
 {
-  bool m_first;        //!< First argument flag, doesn't get `, '.
+  bool m_first;        //!< First argument flag, doesn't get `, `.
   std::ostream &m_os;  //!< Underlying output stream.
 public:
   /**
@@ -507,7 +554,7 @@ public:
 
   /**
    * Write a function parameter on the output stream,
-   * separating paramters after the first by `, ' strings.
+   * separating paramters after the first by `,` strings.
    *
    * \param [in] param the function parameter
    */

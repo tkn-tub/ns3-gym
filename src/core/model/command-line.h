@@ -353,12 +353,14 @@ private:
   /**
    * Handler for \c \-\-PrintAttributes:  print the attributes for a given type.
    *
+   * \param os the output stream.
    * \param type the TypeId whose Attributes should be displayed
    */
   void PrintAttributes (std::ostream &os, const std::string &type) const;
   /**
    * Handler for \c \-\-PrintGroup:  print all types belonging to a given group.
    *
+   * \param os the output stream.
    * \param group the name of the TypeId group to display
    */
   void PrintGroup (std::ostream &os, const std::string &group) const;

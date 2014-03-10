@@ -40,6 +40,7 @@ class Scheduler;
 /**
  * \ingroup core
  * \defgroup simulator Simulator
+ * \brief Control the virtual time and the execution of simulation events. 
  */
 /**
  * \ingroup simulator

@@ -31,11 +31,11 @@ class SimulatorEventsTestCase : public TestCase
 public:
   SimulatorEventsTestCase (ObjectFactory schedulerFactory);
   virtual void DoRun (void);
-  void A (int a);
-  void B (int b);
-  void C (int c);
-  void D (int d);
-  void foo0 (void);
+  void EventA (int a);
+  void EventB (int b);
+  void EventC (int c);
+  void EventD (int d);
+  void Eventfoo0 (void);
   uint64_t NowUs (void);
   void destroy (void);
   bool m_b;
@@ -62,13 +62,13 @@ SimulatorEventsTestCase::NowUs (void)
 }
 
 void
-SimulatorEventsTestCase::A (int a)
+SimulatorEventsTestCase::EventA (int a)
 {
   m_a = false;
 }
 
 void
-SimulatorEventsTestCase::B (int b)
+SimulatorEventsTestCase::EventB (int b)
 {
   if (b != 2 || NowUs () != 11) 
     {
@@ -79,17 +79,17 @@ SimulatorEventsTestCase::B (int b)
       m_b = true;
     }
   Simulator::Remove (m_idC);
-  Simulator::Schedule (MicroSeconds (10), &SimulatorEventsTestCase::D, this, 4);
+  Simulator::Schedule (MicroSeconds (10), &SimulatorEventsTestCase::EventD, this, 4);
 }
 
 void
-SimulatorEventsTestCase::C (int c)
+SimulatorEventsTestCase::EventC (int c)
 {
   m_c = false;
 }
 
 void
-SimulatorEventsTestCase::D (int d)
+SimulatorEventsTestCase::EventD (int d)
 {
   if (d != 4 || NowUs () != (11+10)) 
     {
@@ -102,7 +102,7 @@ SimulatorEventsTestCase::D (int d)
 }
 
 void
-SimulatorEventsTestCase::foo0 (void)
+SimulatorEventsTestCase::Eventfoo0 (void)
 {}
 
 void
@@ -123,9 +123,9 @@ SimulatorEventsTestCase::DoRun (void)
 
   Simulator::SetScheduler (m_schedulerFactory);
 
-  EventId a = Simulator::Schedule (MicroSeconds (10), &SimulatorEventsTestCase::A, this, 1);
-  Simulator::Schedule (MicroSeconds (11), &SimulatorEventsTestCase::B, this, 2);
-  m_idC = Simulator::Schedule (MicroSeconds (12), &SimulatorEventsTestCase::C, this, 3);
+  EventId a = Simulator::Schedule (MicroSeconds (10), &SimulatorEventsTestCase::EventA, this, 1);
+  Simulator::Schedule (MicroSeconds (11), &SimulatorEventsTestCase::EventB, this, 2);
+  m_idC = Simulator::Schedule (MicroSeconds (12), &SimulatorEventsTestCase::EventC, this, 3);
 
   NS_TEST_EXPECT_MSG_EQ (!m_idC.IsExpired (), true, "");
   NS_TEST_EXPECT_MSG_EQ (!a.IsExpired (), true, "");
@@ -137,7 +137,7 @@ SimulatorEventsTestCase::DoRun (void)
   NS_TEST_EXPECT_MSG_EQ (m_c, true, "Event C did not run ?");
   NS_TEST_EXPECT_MSG_EQ (m_d, true, "Event D did not run ?");
 
-  EventId anId = Simulator::ScheduleNow (&SimulatorEventsTestCase::foo0, this);
+  EventId anId = Simulator::ScheduleNow (&SimulatorEventsTestCase::Eventfoo0, this);
   EventId anotherId = anId;
   NS_TEST_EXPECT_MSG_EQ (!(anId.IsExpired () || anotherId.IsExpired ()), true, "Event should not have expired yet.");
 

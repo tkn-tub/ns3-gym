@@ -24,7 +24,8 @@
 #include "fatal-error.h"
 
 /**
- * \ingroup debugging
+ * \ingroup fatal
+ *
  * \brief Abnormal program termination
  *
  * \param msg message to output when this macro is hit.
@@ -48,7 +49,8 @@
 
 
 /**
- * \ingroup debugging
+ * \ingroup fatal
+ *
  * \brief Abnormal program termination if cond is true.
  *
  * \param cond condition to be evaluated.
@@ -76,7 +78,8 @@
     } while (false)
 
 /**
- * \ingroup debugging
+ * \ingroup fatal
+ *
  * \brief Abnormal program termination if cond is true.
  *
  * \param cond condition to be evaluated.
@@ -105,7 +108,8 @@
     } while (false)
 
 /**
- * \ingroup debugging
+ * \ingroup fatal
+ *
  * \brief Abnormal program termination if cond is false.
  *
  * \param cond condition to be evaluated.
@@ -118,7 +122,8 @@
   NS_ABORT_IF (!(cond))
 
 /**
- * \ingroup debugging
+ * \ingroup fatal
+ *
  * \brief Abnormal program termination if cond is false.
  *
  * \param cond condition to be evaluated.
