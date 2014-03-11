@@ -479,6 +479,7 @@ Ipv6FragmentationTest::DoRun (void)
           NS_TEST_EXPECT_MSG_NE (byteTag, 0, "ByteTag not found");
           item.GetTag (*byteTag);
           NS_TEST_EXPECT_MSG_EQ (byteTag->getToken (), 42, "ByteTag value not correct");
+          delete byteTag;
         }
       NS_TEST_EXPECT_MSG_EQ (end, m_receivedPacketServer->GetSize (), "trivial");
     }
