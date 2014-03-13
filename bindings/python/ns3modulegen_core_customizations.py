@@ -28,13 +28,13 @@ class SmartPointerTransformation(typehandlers.TypeTransformation):
     def __init__(self):
         super(SmartPointerTransformation, self).__init__()
         self.rx = re.compile(r'(ns3::|::ns3::|)Ptr<([^>]+)>\s*$')
-        print("{!r}".format(self), file=sys.stderr)
+        print("{0!r}".format(self), file=sys.stderr)
 
     def _get_untransformed_type_traits(self, name):
         m = self.rx.match(name)
         is_const = False
         if m is None:
-            print("{!r} did not match".format(name), file=sys.stderr)
+            print("{0!r} did not match".format(name), file=sys.stderr)
             return None, False
         else:
             name1 = m.group(2).strip()
@@ -65,9 +65,9 @@ class SmartPointerTransformation(typehandlers.TypeTransformation):
         ## fix the ctype, add ns3:: namespace
         orig_ctype, is_const = self._get_untransformed_type_traits(args[0])
         if is_const:
-            correct_ctype = 'ns3::Ptr< {} const >'.format(orig_ctype[:-2])
+            correct_ctype = 'ns3::Ptr< {0} const >'.format(orig_ctype[:-2])
         else:
-            correct_ctype = 'ns3::Ptr< {} >'.format(orig_ctype[:-2])
+            correct_ctype = 'ns3::Ptr< {0} >'.format(orig_ctype[:-2])
         args = tuple([correct_ctype] + list(args[1:]))
 
         handler = type_handler(*args, **kwargs)
