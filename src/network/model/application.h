@@ -30,7 +30,6 @@
 namespace ns3 {
 
 class Node;
-class RandomVariable;
 
 /**
  * \addtogroup applications Applications
