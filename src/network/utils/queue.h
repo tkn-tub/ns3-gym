@@ -45,6 +45,10 @@ namespace ns3 {
 class Queue : public Object
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   Queue ();
@@ -151,8 +155,21 @@ public:
 
 private:
 
+  /**
+   * Push a packet in the queue
+   * \param p the packet to enqueue
+   * \return true if success, false if the packet has been dropped.
+   */
   virtual bool DoEnqueue (Ptr<Packet> p) = 0;
+  /**
+   * Pull a packet from the queue
+   * \return the packet.
+   */
   virtual Ptr<Packet> DoDequeue (void) = 0;
+  /**
+   * Peek the front packet in the queue
+   * \return the packet.
+   */
   virtual Ptr<const Packet> DoPeek (void) const = 0;
 
 protected:
@@ -164,16 +181,19 @@ protected:
   void Drop (Ptr<Packet> packet);
 
 private:
+  /// Traced callback: fired when a packet is enqueued
   TracedCallback<Ptr<const Packet> > m_traceEnqueue;
+  /// Traced callback: fired when a packet is dequeued
   TracedCallback<Ptr<const Packet> > m_traceDequeue;
+  /// Traced callback: fired when a packet is dropped
   TracedCallback<Ptr<const Packet> > m_traceDrop;
 
-  uint32_t m_nBytes;
-  uint32_t m_nTotalReceivedBytes;
-  uint32_t m_nPackets;
-  uint32_t m_nTotalReceivedPackets;
-  uint32_t m_nTotalDroppedBytes;
-  uint32_t m_nTotalDroppedPackets;
+  uint32_t m_nBytes;                //!< Number of bytes in the queue
+  uint32_t m_nTotalReceivedBytes;   //!< Total received bytes
+  uint32_t m_nPackets;              //!< Number of packets in the queue
+  uint32_t m_nTotalReceivedPackets; //!< Total received packets
+  uint32_t m_nTotalDroppedBytes;    //!< Total dropped bytes
+  uint32_t m_nTotalDroppedPackets;  //!< Total dropped packets
 };
 
 } // namespace ns3

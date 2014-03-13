@@ -30,7 +30,7 @@
 
 namespace ns3 {
 
-/*
+/**
  * A class that wraps a PcapFile as an ns3::Object and provides a higher-layer
  * ns-3 interface to the low-level public methods of PcapFile.  Users are
  * encouraged to use this object instead of class ns3::PcapFile in ns-3
@@ -39,6 +39,10 @@ namespace ns3 {
 class PcapFileWrapper : public Object
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   PcapFileWrapper ();
@@ -138,65 +142,79 @@ public:
    */
   void Write (Time t, uint8_t const *buffer, uint32_t length);
 
-  /*
+  /**
    * \brief Returns the magic number of the pcap file as defined by the magic_number
    * field in the pcap global header.
    *
    * See http://wiki.wireshark.org/Development/LibpcapFileFormat
+   *
+   * \returns magic number
    */ 
   uint32_t GetMagic (void);
 
-  /*
+  /**
    * \brief Returns the major version of the pcap file as defined by the version_major
    * field in the pcap global header.
    *
    * See http://wiki.wireshark.org/Development/LibpcapFileFormat
+   *
+   * \returns major version
    */ 
   uint16_t GetVersionMajor (void);
 
-  /*
+  /**
    * \brief Returns the minor version of the pcap file as defined by the version_minor
    * field in the pcap global header.
    *
    * See http://wiki.wireshark.org/Development/LibpcapFileFormat
+   *
+   * \returns minor version
    */ 
   uint16_t GetVersionMinor (void);
 
-  /*
+  /**
    * \brief Returns the time zone offset of the pcap file as defined by the thiszone
    * field in the pcap global header.
    *
    * See http://wiki.wireshark.org/Development/LibpcapFileFormat
+   *
+   * \returns time zone offset
    */ 
   int32_t GetTimeZoneOffset (void);
 
-  /*
+  /**
    * \brief Returns the accuracy of timestamps field of the pcap file as defined
    * by the sigfigs field in the pcap global header.
    *
    * See http://wiki.wireshark.org/Development/LibpcapFileFormat
+   *
+   * \returns accuracy of timestamps
    */ 
   uint32_t GetSigFigs (void);
 
-  /*
+  /**
    * \brief Returns the max length of saved packets field of the pcap file as 
    * defined by the snaplen field in the pcap global header.
    *
    * See http://wiki.wireshark.org/Development/LibpcapFileFormat
+   *
+   * \returns max length of saved packets field
    */ 
   uint32_t GetSnapLen (void);
 
-  /*
+  /**
    * \brief Returns the data link type field of the pcap file as defined by the 
    * network field in the pcap global header.
    *
    * See http://wiki.wireshark.org/Development/LibpcapFileFormat
+   *
+   * \returns data link type field
    */ 
   uint32_t GetDataLinkType (void);
 
 private:
-  PcapFile m_file;
-  uint32_t m_snapLen;
+  PcapFile m_file; //!< Pcap file
+  uint32_t m_snapLen; //!< max length of saved packets
 };
 
 } // namespace ns3

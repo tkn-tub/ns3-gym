@@ -36,15 +36,29 @@ static const uint16_t LLC_SNAP_HEADER_LENGTH = 8;
  * \ingroup network
  *
  * \brief Header for the LLC/SNAP encapsulation
+ *
+ * For a list of EtherTypes, see http://www.iana.org/assignments/ieee-802-numbers/ieee-802-numbers.xhtml
  */
 class LlcSnapHeader : public Header 
 {
 public:
   LlcSnapHeader ();
 
+  /**
+   * \brief Set the Ethertype.
+   * \param type the Ethertype
+   */
   void SetType (uint16_t type);
+  /**
+   * \brief Return the Ethertype.
+   * \return Ethertype
+   */
   uint16_t GetType (void);
 
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
   virtual void Print (std::ostream &os) const;
@@ -52,7 +66,7 @@ public:
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
 private:
-  uint16_t m_etherType;
+  uint16_t m_etherType; //!< the Ethertype
 };
 
 } // namespace ns3

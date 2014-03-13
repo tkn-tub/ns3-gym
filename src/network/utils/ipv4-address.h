@@ -123,6 +123,7 @@ public:
    * address.
    *
    * \param mask a network mask 
+   * \returns the address combined with the mask
    */
   Ipv4Address CombineMask (Ipv4Mask const &mask) const;
   /**
@@ -134,6 +135,7 @@ public:
    * there is no subnet associated with a /32 address.
    *
    * \param mask a network mask 
+   * \returns a broadcast address for the subnet.
    */
   Ipv4Address GetSubnetDirectedBroadcast (Ipv4Mask const &mask) const;
   /**
@@ -189,13 +191,23 @@ public:
   static Ipv4Address GetLoopback (void);
 
 private:
+
+  /**
+   * \brief Convert to an Address type
+   */
   Address ConvertTo (void) const;
+
+  /**
+   * \brief Get the underlying address type (automatically assigned).
+   *
+   * \returns the address type
+   */
   static uint8_t GetType (void);
-  uint32_t m_address;
+  uint32_t m_address; //!< IPv4 address
 
   friend bool operator == (Ipv4Address const &a, Ipv4Address const &b);
   friend bool operator != (Ipv4Address const &a, Ipv4Address const &b);
-  friend bool operator < (Ipv4Address const &addrA, Ipv4Address const &addrB);
+  friend bool operator < (Ipv4Address const &a, Ipv4Address const &b);
 };
 
 /**
@@ -274,7 +286,7 @@ public:
   static Ipv4Mask GetOnes (void);
 
 private:
-  uint32_t m_mask;
+  uint32_t m_mask; //!< IP mask
 };
 
 /**
@@ -286,34 +298,106 @@ private:
  * \brief hold objects of type ns3::Ipv4Mask
  */
 
-ATTRIBUTE_HELPER_HEADER (Ipv4Address);  /// Macro to make help make class an ns-3 attribute
-ATTRIBUTE_HELPER_HEADER (Ipv4Mask);     /// Macro to make help make class an ns-3 attribute
+ATTRIBUTE_HELPER_HEADER (Ipv4Address);  //!< Macro to make help make class an ns-3 attribute
+ATTRIBUTE_HELPER_HEADER (Ipv4Mask);     //!< Macro to make help make class an ns-3 attribute
 
+/**
+ * \brief Stream insertion operator.
+ *
+ * \param os the stream
+ * \param address the address
+ * \returns a reference to the stream
+ */
 std::ostream& operator<< (std::ostream& os, Ipv4Address const& address);
+/**
+ * \brief Stream insertion operator.
+ *
+ * \param os the stream
+ * \param mask the mask
+ * \returns a reference to the stream
+ */
 std::ostream& operator<< (std::ostream& os, Ipv4Mask const& mask);
+/**
+ * \brief Stream extraction operator.
+ *
+ * \param is the stream
+ * \param address the address
+ * \returns a reference to the stream
+ */
 std::istream & operator >> (std::istream &is, Ipv4Address &address);
+/**
+ * \brief Stream extraction operator.
+ *
+ * \param is the stream
+ * \param mask the mask
+ * \returns a reference to the stream
+ */
 std::istream & operator >> (std::istream &is, Ipv4Mask &mask);
 
+/**
+ * \brief Equal to operator.
+ *
+ * \param a the first operand
+ * \param b the first operand
+ * \returns true if the operands are equal
+ */
 inline bool operator == (const Ipv4Address &a, const Ipv4Address &b)
 {
   return (a.m_address == b.m_address);
 }
+/**
+ * \brief Not equal to operator.
+ *
+ * \param a the first operand
+ * \param b the first operand
+ * \returns true if the operands are not equal
+ */
 inline bool operator != (const Ipv4Address &a, const Ipv4Address &b)
 {
   return (a.m_address != b.m_address);
 }
+/**
+ * \brief Less than operator.
+ *
+ * \param a the first operand
+ * \param b the first operand
+ * \returns true if the operand a is less than operand b
+ */
 inline bool operator < (const Ipv4Address &a, const Ipv4Address &b)
 {
   return (a.m_address < b.m_address);
 }
 
-
+/**
+ * \ingroup address
+ *
+ * \brief Class providing an hash for IPv4 addresses
+ */
 class Ipv4AddressHash : public std::unary_function<Ipv4Address, size_t> {
 public:
+  /**
+   * Returns the hash of the address
+   * \param x the address
+   * \return the hash
+   */
   size_t operator() (Ipv4Address const &x) const;
 };
 
+/**
+ * \brief Equal to operator.
+ *
+ * \param a the first operand
+ * \param b the first operand
+ * \returns true if the operands are equal
+ */
 bool operator == (Ipv4Mask const &a, Ipv4Mask const &b);
+/**
+ * \brief Not equal to operator.
+ *
+ * \param a the first operand
+ * \param b the first operand
+ * \returns true if the operands are not equal
+ */
 bool operator != (Ipv4Mask const &a, Ipv4Mask const &b);
 
 } // namespace ns3

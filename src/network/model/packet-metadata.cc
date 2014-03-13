@@ -447,12 +447,6 @@ PacketMetadata::AddBig (uint32_t next, uint32_t prev,
   return n;
 }
 
-/**
- * \param item the item data to write
- * \param extraItem the extra item data to write
- * \param available the number of bytes which can 
- *        be written without having to rewrite the buffer entirely.
- */
 void
 PacketMetadata::ReplaceTail (PacketMetadata::SmallItem *item, 
                              PacketMetadata::ExtraItem *extraItem,
@@ -530,12 +524,7 @@ PacketMetadata::ReplaceTail (PacketMetadata::SmallItem *item,
   *this = h;
 }
 
-/**
- * \param current the offset we should start reading the data from
- * \param item pointer to where we should store the data to return to the caller
- * \param extraItem pointer to where we should store the data to return to the caller
- * \returns the number of bytes read.
- */
+
 uint32_t
 PacketMetadata::ReadItems (uint16_t current, 
                            struct PacketMetadata::SmallItem *item,

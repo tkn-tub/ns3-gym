@@ -27,6 +27,10 @@ namespace ns3 {
 class FlowIdTag : public Tag
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
   virtual uint32_t GetSerializedSize (void) const;
@@ -57,7 +61,7 @@ public:
    */
   static uint32_t AllocateFlowId (void);
 private:
-  uint32_t m_flowId;
+  uint32_t m_flowId; //!< Flow ID
 };
 
 } // namespace ns3
