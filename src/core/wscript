@@ -296,6 +296,7 @@ def build(bld):
         'model/hash-murmur3.h',
         'model/hash-fnv.h',
         'model/hash.h',
+        'model/valgrind.h',
         ]
 
     if sys.platform == 'win32':
