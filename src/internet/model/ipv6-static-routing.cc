@@ -290,7 +290,7 @@ Ptr<Ipv6Route> Ipv6StaticRouting::LookupStatic (Ipv6Address dst, Ptr<NetDevice> 
     {
       NS_ASSERT_MSG (interface, "Try to send on link-local multicast address, and no interface index is given!");
       rtentry = Create<Ipv6Route> ();
-      rtentry->SetSource (SourceAddressSelection (m_ipv6->GetInterfaceForDevice (interface), dst));
+      rtentry->SetSource (m_ipv6->SourceAddressSelection (m_ipv6->GetInterfaceForDevice (interface), dst));
       rtentry->SetDestination (dst);
       rtentry->SetGateway (Ipv6Address::GetZero ());
       rtentry->SetOutputDevice (interface);
@@ -339,15 +339,15 @@ Ptr<Ipv6Route> Ipv6StaticRouting::LookupStatic (Ipv6Address dst, Ptr<NetDevice> 
 
               if (route->GetGateway ().IsAny ())
                 {
-                  rtentry->SetSource (SourceAddressSelection (interfaceIdx, route->GetDest ()));
+                  rtentry->SetSource (m_ipv6->SourceAddressSelection (interfaceIdx, route->GetDest ()));
                 }
               else if (route->GetDest ().IsAny ()) /* default route */
                 {
-                  rtentry->SetSource (SourceAddressSelection (interfaceIdx, route->GetPrefixToUse ().IsAny () ? dst : route->GetPrefixToUse ()));
+                  rtentry->SetSource (m_ipv6->SourceAddressSelection (interfaceIdx, route->GetPrefixToUse ().IsAny () ? dst : route->GetPrefixToUse ()));
                 }
               else
                 {
-                  rtentry->SetSource (SourceAddressSelection (interfaceIdx, route->GetGateway ()));
+                  rtentry->SetSource (m_ipv6->SourceAddressSelection (interfaceIdx, route->GetGateway ()));
                 }
 
               rtentry->SetDestination (route->GetDest ());
@@ -359,7 +359,7 @@ Ptr<Ipv6Route> Ipv6StaticRouting::LookupStatic (Ipv6Address dst, Ptr<NetDevice> 
 
   if (rtentry)
     {
-      NS_LOG_LOGIC ("Matching route via " << rtentry->GetDestination () << " (throught " << rtentry->GetGateway () << ") at the end");
+      NS_LOG_LOGIC ("Matching route via " << rtentry->GetDestination () << " (Through " << rtentry->GetGateway () << ") at the end");
     }
   return rtentry;
 }
@@ -791,45 +791,6 @@ void Ipv6StaticRouting::NotifyRemoveRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv
       /* default route case */
       RemoveRoute (dst, mask, interface, prefixToUse);
     }
-}
-
-Ipv6Address Ipv6StaticRouting::SourceAddressSelection (uint32_t interface, Ipv6Address dest)
-{
-  NS_LOG_FUNCTION (this << interface << dest);
-  Ipv6Address ret;
-
-  if (dest.IsLinkLocal () || dest.IsLinkLocalMulticast ())
-    {
-      for (uint32_t i = 0; i < m_ipv6->GetNAddresses (interface); i++)
-        {
-          Ipv6InterfaceAddress test = m_ipv6->GetAddress (interface, i);
-          if (test.GetScope () == Ipv6InterfaceAddress::LINKLOCAL)
-            {
-              return test.GetAddress ();
-            }
-        }
-      NS_ASSERT_MSG (false, "No link-local address found on interface " << interface);
-    }
-
-  for (uint32_t i = 0; i < m_ipv6->GetNAddresses (interface); i++)
-    {
-      Ipv6InterfaceAddress test = m_ipv6->GetAddress (interface, i);
-
-      if (test.GetScope () == Ipv6InterfaceAddress::GLOBAL)
-        {
-          if (test.IsInSameSubnet (dest))
-            {
-              return test.GetAddress ();
-            }
-          else
-            {
-              ret = test.GetAddress ();
-            }
-        }
-    }
-
-  // no specific match found. Use a global address (any useful is fine).
-  return ret;
 }
 
 } /* namespace ns3 */

@@ -323,6 +323,8 @@ public:
    */
   void SetForwarding (uint32_t i, bool val);
 
+  Ipv6Address SourceAddressSelection (uint32_t interface, Ipv6Address dest);
+
   /**
    * \brief Get device by index.
    * \param i device index on this stack
