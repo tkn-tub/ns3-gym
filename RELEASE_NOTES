@@ -50,6 +50,7 @@ Bugs fixed
 - Bug 1870 - Remove unnecessary AsInt functions
 - Bug 1874 - Ipv4L3Protocol::ProcessFragment: addressCombination and idProto identifiers not properly computed
 - Bug 1882 - int64x64 tests trigger valgrind bug
+- Bug 1883 - IPv6 don't consider the prefix and network when choosing output address
 
 Release 3.19
 =============

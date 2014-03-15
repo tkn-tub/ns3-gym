@@ -137,6 +137,29 @@ Ipv6InterfaceAddress::Scope_e Ipv6InterfaceAddress::GetScope () const
   return m_scope;
 }
 
+bool Ipv6InterfaceAddress::IsInSameSubnet (Ipv6Address b) const
+{
+  NS_LOG_FUNCTION_NOARGS ();
+
+  Ipv6Address aAddr = m_address;
+  aAddr = aAddr.CombinePrefix (m_prefix);
+  Ipv6Address bAddr = b;
+  bAddr = bAddr.CombinePrefix (m_prefix);
+
+  if (aAddr == bAddr)
+    {
+      return true;
+    }
+
+  if ((bAddr.IsLinkLocalMulticast () && aAddr.IsLinkLocal ()) ||
+      (aAddr.IsLinkLocalMulticast () && bAddr.IsLinkLocal ()))
+    {
+      return true;
+    }
+
+  return false;
+}
+
 std::ostream& operator<< (std::ostream& os, const Ipv6InterfaceAddress &addr)
 {
   os << "address: " << addr.GetAddress () << addr.GetPrefix () << "; scope: ";

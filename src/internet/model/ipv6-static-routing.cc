@@ -309,7 +309,7 @@ Ptr<Ipv6Route> Ipv6StaticRouting::LookupStatic (Ipv6Address dst, Ptr<NetDevice> 
 
       if (mask.IsMatch (dst, entry))
         {
-          NS_LOG_LOGIC ("Found global network route " << j << ", mask length " << maskLen << ", metric " << metric);
+          NS_LOG_LOGIC ("Found global network route " << *j << ", mask length " << maskLen << ", metric " << metric);
 
           /* if interface is given, check the route will output on this interface */
           if (!interface || interface == m_ipv6->GetNetDevice (j->GetInterface ()))
@@ -798,27 +798,37 @@ Ipv6Address Ipv6StaticRouting::SourceAddressSelection (uint32_t interface, Ipv6A
   NS_LOG_FUNCTION (this << interface << dest);
   Ipv6Address ret;
 
-  /* first address of an IPv6 interface is link-local ones */
-  ret = m_ipv6->GetAddress (interface, 0).GetAddress ();
-
-  if (dest == Ipv6Address::GetAllNodesMulticast () || dest == Ipv6Address::GetAllRoutersMulticast () || dest == Ipv6Address::GetAllHostsMulticast ())
+  if (dest.IsLinkLocal () || dest.IsLinkLocalMulticast ())
     {
-      return ret;
+      for (uint32_t i = 0; i < m_ipv6->GetNAddresses (interface); i++)
+        {
+          Ipv6InterfaceAddress test = m_ipv6->GetAddress (interface, i);
+          if (test.GetScope () == Ipv6InterfaceAddress::LINKLOCAL)
+            {
+              return test.GetAddress ();
+            }
+        }
+      NS_ASSERT_MSG (false, "No link-local address found on interface " << interface);
     }
 
-  /* usually IPv6 interfaces have one link-local address and one global address */
-
-  for (uint32_t i = 1; i < m_ipv6->GetNAddresses (interface); i++)
+  for (uint32_t i = 0; i < m_ipv6->GetNAddresses (interface); i++)
     {
       Ipv6InterfaceAddress test = m_ipv6->GetAddress (interface, i);
-      Ipv6InterfaceAddress dst(dest);
 
-      if (test.GetScope() == dst.GetScope())
+      if (test.GetScope () == Ipv6InterfaceAddress::GLOBAL)
         {
-          return test.GetAddress ();
+          if (test.IsInSameSubnet (dest))
+            {
+              return test.GetAddress ();
+            }
+          else
+            {
+              ret = test.GetAddress ();
+            }
         }
     }
 
+  // no specific match found. Use a global address (any useful is fine).
   return ret;
 }
 
