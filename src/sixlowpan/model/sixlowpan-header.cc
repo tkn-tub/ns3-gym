@@ -45,9 +45,9 @@ SixLowPanDispatch::GetDispatchType (uint8_t dispatch)
     {
       return LOWPAN_NALP;
     }
-  else if (dispatch == LOWPAN_NOTCOMPRESSED)
+  else if (dispatch == LOWPAN_IPv6)
     {
-      return LOWPAN_NOTCOMPRESSED;
+      return LOWPAN_IPv6;
     }
   else if (dispatch == LOWPAN_HC1)
     {
@@ -712,6 +712,58 @@ uint8_t SixLowPanFragN::GetDatagramOffset () const
 }
 
 std::ostream & operator << (std::ostream & os, const SixLowPanFragN & h)
+{
+  h.Print (os);
+  return os;
+}
+
+/*
+ * SixLowPanIpv6
+ */
+
+NS_OBJECT_ENSURE_REGISTERED (SixLowPanIpv6);
+
+SixLowPanIpv6::SixLowPanIpv6 ()
+{
+}
+
+TypeId SixLowPanIpv6::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::SixLowPanIpv6").SetParent<Header> ().AddConstructor<SixLowPanIpv6> ();
+  return tid;
+}
+
+TypeId SixLowPanIpv6::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
+}
+
+void SixLowPanIpv6::Print (std::ostream & os) const
+{
+  os << "Uncompressed IPv6";
+}
+
+uint32_t SixLowPanIpv6::GetSerializedSize () const
+{
+  return 1;
+}
+
+void SixLowPanIpv6::Serialize (Buffer::Iterator start) const
+{
+  Buffer::Iterator i = start;
+
+  i.WriteU8 (uint8_t (SixLowPanDispatch::LOWPAN_IPv6));
+}
+
+uint32_t SixLowPanIpv6::Deserialize (Buffer::Iterator start)
+{
+  Buffer::Iterator i = start;
+  i.ReadU8 ();
+
+  return GetSerializedSize ();
+}
+
+std::ostream & operator << (std::ostream & os, const SixLowPanIpv6 & h)
 {
   h.Print (os);
   return os;

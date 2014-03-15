@@ -27,7 +27,8 @@ New user-visible features
 - A new LTE MAC downlink scheduling algorithm named Channel and QoS
   Aware (CQA) Scheduler is provided by the new
   ``ns3::CqaFfMacScheduler`` object.
-  
+- SixLowPan model can now use uncompressed IPv6 headers. An option to
+  define the minimum compressed packet size has been added. 
 
 Bugs fixed
 ----------
