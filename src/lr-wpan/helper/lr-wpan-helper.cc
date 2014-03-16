@@ -160,28 +160,13 @@ LrWpanHelper::Install (NodeContainer c)
     {
       Ptr<Node> node = *i;
 
-      Ptr<LrWpanMac> mac = CreateObject<LrWpanMac> ();
-      Ptr<LrWpanPhy> phy = CreateObject<LrWpanPhy> ();
-      Ptr<LrWpanCsmaCa> csmaca = CreateObject<LrWpanCsmaCa> ();
-      // Set MAC-PHY SAPs
-      phy->SetPdDataIndicationCallback (MakeCallback (&LrWpanMac::PdDataIndication, mac));
-      phy->SetPdDataConfirmCallback (MakeCallback (&LrWpanMac::PdDataConfirm, mac));
-      phy->SetPlmeEdConfirmCallback (MakeCallback (&LrWpanMac::PlmeEdConfirm, mac));
-      phy->SetPlmeGetAttributeConfirmCallback (MakeCallback (&LrWpanMac::PlmeGetAttributeConfirm, mac));
-      phy->SetPlmeSetTRXStateConfirmCallback (MakeCallback (&LrWpanMac::PlmeSetTRXStateConfirm, mac));
-      phy->SetPlmeSetAttributeConfirmCallback (MakeCallback (&LrWpanMac::PlmeSetAttributeConfirm, mac));
-
-      Ptr<LrWpanErrorModel> errorModel = CreateObject <LrWpanErrorModel> ();
-      phy->SetErrorModel (errorModel);
-
-      mac->SetCsmaCa (csmaca);
-      csmaca->SetMac (mac);
-      csmaca->SetLrWpanMacStateCallback (MakeCallback (&LrWpanMac::SetLrWpanMacState, mac));
-      phy->SetPlmeCcaConfirmCallback (MakeCallback (&LrWpanCsmaCa::PlmeCcaConfirm, csmaca));
-
-      // Set Channel
-      phy->SetChannel (m_channel);
-      m_channel->AddRx (phy);
+      Ptr<LrWpanNetDevice> netDevice = CreateObject<LrWpanNetDevice> ();
+      netDevice->SetChannel (m_channel);
+      node->AddDevice (netDevice);
+      netDevice->SetNode (node);
+      // \todo add the capability to change short address, extended
+      // address and panId. Right now they are hardcoded in LrWpanMac::LrWpanMac ()
+      devices.Add (netDevice);
     }
   return devices;
 }

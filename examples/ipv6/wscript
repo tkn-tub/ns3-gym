@@ -25,3 +25,6 @@ def build(bld):
     obj = bld.create_ns3_program('loose-routing-ipv6', ['csma', 'internet'])
     obj.source = 'loose-routing-ipv6.cc'
 
+    obj = bld.create_ns3_program('wsn-ping6', ['lr-wpan', 'internet', 'sixlowpan', 'mobility'])
+    obj.source = 'wsn-ping6.cc'
+
