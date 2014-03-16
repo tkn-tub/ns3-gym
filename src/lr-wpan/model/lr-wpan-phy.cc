@@ -121,7 +121,7 @@ LrWpanPhy::LrWpanPhy ()
   m_rxTotalPower = 0.0;
   m_rxTotalNum = 0;
   // default -85 dBm in W for 2.4 GHz
-  m_rxSensitivity = pow (10.0, -85.0 / 10.0) / 1000.0;
+  m_rxSensitivity = pow (10.0, -110.0 / 10.0) / 1000.0;
   LrWpanSpectrumValueHelper psdHelper;
   m_txPsd = psdHelper.CreateTxPowerSpectralDensity (m_phyPIBAttributes.phyTransmitPower,
                                                     m_phyPIBAttributes.phyCurrentChannel);
