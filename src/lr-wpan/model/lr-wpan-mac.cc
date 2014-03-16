@@ -106,7 +106,7 @@ LrWpanMac::LrWpanMac ()
   UniformVariable uniformVar;
   uniformVar = UniformVariable (0, 255);
   m_macDsn = SequenceNumber16 (uniformVar.GetValue ());
-  m_shortAddress = Mac16Address::Allocate ();
+  m_shortAddress = Mac16Address ("00:00");
 }
 
 LrWpanMac::~LrWpanMac ()

@@ -87,6 +87,7 @@ int main (int argc, char **argv)
   // Add and install the LrWpanNetDevice for each node
   // lrWpanHelper.EnableLogComponents();
   NetDeviceContainer devContainer = lrWpanHelper.Install(nodes);
+  lrWpanHelper.AssociateToPan (devContainer, 10);
 
   std::cout << "Created " << devContainer.GetN() << " devices" << std::endl;
   std::cout << "There are " << nodes.GetN() << " nodes" << std::endl;

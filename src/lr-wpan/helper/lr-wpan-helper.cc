@@ -171,6 +171,31 @@ LrWpanHelper::Install (NodeContainer c)
   return devices;
 }
 
+void
+LrWpanHelper::AssociateToPan (NetDeviceContainer c, uint16_t panId)
+{
+  NetDeviceContainer devices;
+  uint16_t id = 1;
+  uint8_t idBuf[2];
+
+  for (NetDeviceContainer::Iterator i = c.Begin (); i != c.End (); i++)
+    {
+      Ptr<LrWpanNetDevice> device = DynamicCast<LrWpanNetDevice> (*i);
+      if (device)
+        {
+          idBuf[0] = (id >> 8) & 0xff;
+          idBuf[1] = (id >> 0) & 0xff;
+          Mac16Address address;
+          address.CopyFrom (idBuf);
+
+          device->GetMac ()->SetPanId (panId);
+          device->GetMac ()->SetShortAddress (address);
+          id++;
+        }
+    }
+  return;
+}
+
 static void
 PcapSniffLrWpan (Ptr<PcapFileWrapper> file, Ptr<const Packet> packet)
 {

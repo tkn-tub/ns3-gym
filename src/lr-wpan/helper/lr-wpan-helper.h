@@ -65,6 +65,14 @@ public:
   NetDeviceContainer Install (NodeContainer c);
 
   /**
+   * \brief Associate the nodes to the same PAN
+   *
+   * \param c a set of nodes
+   * \param panId the PAN Id
+   */
+  void AssociateToPan (NetDeviceContainer c, uint16_t panId);
+
+  /**
    * Helper to enable all LrWpan log components with one statement
    */
   void EnableLogComponents (void);
