@@ -36,6 +36,8 @@ New user-visible features
   is now fired when appropriate.
 - FlowMonitor does not track anymore multicast/broadcast packets, reflecting
   its original design.
+- A new IPv6 routing protocol has been added: RIPng. This protocol is
+  an Interior Gateway Protocol and it is available in the Internet module.
 
 Bugs fixed
 ----------
