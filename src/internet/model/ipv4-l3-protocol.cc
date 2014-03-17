@@ -540,6 +540,35 @@ Ipv4L3Protocol::GetIcmp (void) const
 }
 
 bool
+Ipv4L3Protocol::IsUnicast (Ipv4Address ad) const
+{
+  NS_LOG_FUNCTION (this << ad);
+
+  if (ad.IsBroadcast () || ad.IsMulticast ())
+    {
+      return false;
+    }
+  else
+    {
+      // check for subnet-broadcast
+      for (uint32_t ifaceIndex = 0; ifaceIndex < GetNInterfaces (); ifaceIndex++)
+        {
+          for (uint32_t j = 0; j < GetNAddresses (ifaceIndex); j++)
+            {
+              Ipv4InterfaceAddress ifAddr = GetAddress (ifaceIndex, j);
+              NS_LOG_LOGIC ("Testing address " << ad << " with subnet-directed broadcast " << ifAddr.GetBroadcast () );
+              if (ad == ifAddr.GetBroadcast () )
+                {
+                  return false;
+                }
+            }
+        }
+    }
+
+  return true;
+}
+
+bool
 Ipv4L3Protocol::IsUnicast (Ipv4Address ad, Ipv4Mask interfaceMask) const
 {
   NS_LOG_FUNCTION (this << ad << interfaceMask);

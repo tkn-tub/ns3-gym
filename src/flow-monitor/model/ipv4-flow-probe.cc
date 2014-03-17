@@ -196,26 +196,26 @@ Ipv4FlowProbe::Ipv4FlowProbe (Ptr<FlowMonitor> monitor,
 {
   NS_LOG_FUNCTION (this << node->GetId ());
 
-  Ptr<Ipv4L3Protocol> ipv4 = node->GetObject<Ipv4L3Protocol> ();
+  m_ipv4 = node->GetObject<Ipv4L3Protocol> ();
 
-  if (!ipv4->TraceConnectWithoutContext ("SendOutgoing",
-                                         MakeCallback (&Ipv4FlowProbe::SendOutgoingLogger, Ptr<Ipv4FlowProbe> (this))))
+  if (!m_ipv4->TraceConnectWithoutContext ("SendOutgoing",
+                                           MakeCallback (&Ipv4FlowProbe::SendOutgoingLogger, Ptr<Ipv4FlowProbe> (this))))
     {
       NS_FATAL_ERROR ("trace fail");
     }
-  if (!ipv4->TraceConnectWithoutContext ("UnicastForward",
-                                         MakeCallback (&Ipv4FlowProbe::ForwardLogger, Ptr<Ipv4FlowProbe> (this))))
+  if (!m_ipv4->TraceConnectWithoutContext ("UnicastForward",
+                                           MakeCallback (&Ipv4FlowProbe::ForwardLogger, Ptr<Ipv4FlowProbe> (this))))
     {
       NS_FATAL_ERROR ("trace fail");
     }
-  if (!ipv4->TraceConnectWithoutContext ("LocalDeliver",
-                                         MakeCallback (&Ipv4FlowProbe::ForwardUpLogger, Ptr<Ipv4FlowProbe> (this))))
+  if (!m_ipv4->TraceConnectWithoutContext ("LocalDeliver",
+                                           MakeCallback (&Ipv4FlowProbe::ForwardUpLogger, Ptr<Ipv4FlowProbe> (this))))
     {
       NS_FATAL_ERROR ("trace fail");
     }
 
-  if (!ipv4->TraceConnectWithoutContext ("Drop",
-                                         MakeCallback (&Ipv4FlowProbe::DropLogger, Ptr<Ipv4FlowProbe> (this))))
+  if (!m_ipv4->TraceConnectWithoutContext ("Drop",
+                                           MakeCallback (&Ipv4FlowProbe::DropLogger, Ptr<Ipv4FlowProbe> (this))))
     {
       NS_FATAL_ERROR ("trace fail");
     }
@@ -233,6 +233,8 @@ Ipv4FlowProbe::~Ipv4FlowProbe ()
 void
 Ipv4FlowProbe::DoDispose ()
 {
+  m_ipv4 = 0;
+  m_classifier = 0;
   FlowProbe::DoDispose ();
 }
 
@@ -241,6 +243,12 @@ Ipv4FlowProbe::SendOutgoingLogger (const Ipv4Header &ipHeader, Ptr<const Packet>
 {
   FlowId flowId;
   FlowPacketId packetId;
+
+  if (!m_ipv4->IsUnicast(ipHeader.GetDestination ()))
+    {
+      // we are not prepared to handle broadcast yet
+      return;
+    }
 
   if (m_classifier->Classify (ipHeader, ipPayload, &flowId, &packetId))
     {
