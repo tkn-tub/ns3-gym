@@ -83,6 +83,9 @@ public:
     DROP_INTERFACE_DOWN, /**< Interface is down so can not send packet */
     DROP_ROUTE_ERROR, /**< Route error */
     DROP_UNKNOWN_PROTOCOL, /**< Unknown L4 protocol */
+    DROP_UNKNOWN_OPTION, /**< Unknown option */
+    DROP_MALFORMED_HEADER, /**< Malformed header */
+    DROP_FRAGMENT_TIMEOUT, /**< Fragment timeout */
   };
 
   /**
@@ -370,6 +373,18 @@ public:
    * \brief Register the IPv6 Options.
    */
   virtual void RegisterOptions ();
+
+  /**
+   * \brief Report a packet drop
+   *
+   * This function is used by Fragment Timeout handling to signal a fragment drop.
+   *
+   * \param ipv6Header the IPv6 header of dropped packet
+   * \param p the packet (if available)
+   * \param dropReason the drop reason
+   *
+   */
+  virtual void ReportDrop (Ipv6Header ipHeader, Ptr<Packet> p, DropReason dropReason);
 
 protected:
   /**

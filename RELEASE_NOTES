@@ -31,6 +31,8 @@ New user-visible features
   define the minimum compressed packet size has been added. 
 - FlowMonitor "SerializeToXml" functions are now directly available 
   from the Helper.
+- Ipv6Extension::m_dropTrace has been removed. Ipv6L3Protocol::m_dropTrace 
+  is now fired when appropriate.
 
 Bugs fixed
 ----------
@@ -46,6 +48,7 @@ Bugs fixed
 - Bug 1838 - FlowMonitorHelper must not be copied.
 - Bug 1841 - FlowMonitor fails to install if IPv4 is not installed in the node
 - Bug 1842 - FlowMonitor SerializeToXml<Something> should be called by the helper
+- Bug 1843 - IPv6 extensions dropped packets do not fire L3 drop trace
 - Bug 1846 - IPv6 should send Destination Unreachable if no route is available
 - Bug 1852 - cairo-wideint-private.h error cannot find definitions for fixed-width integral types
 - Bug 1853 - NS_LOG_FUNCTION broken on OSX 10.9

@@ -33,6 +33,7 @@
 #include "ns3/packet.h"
 #include "ns3/random-variable-stream.h"
 #include "ns3/ipv6-address.h"
+#include "ns3/ipv6-l3-protocol.h"
 #include "ns3/traced-callback.h"
 
 
@@ -90,10 +91,19 @@ public:
    * \param ipv6Header the IPv6 header of packet received
    * \param dst destination address of the packet received (i.e. us)
    * \param nextHeader the next header
-   * \param isDropped if the packet must be dropped
+   * \param stopProcessing true if the packet must not be further processed
+   * \param isDropped true if the packet must be dropped
+   * \param dropReason dropping reason
    * \return the size processed
    */
-  virtual uint8_t Process (Ptr<Packet>& packet, uint8_t offset, Ipv6Header const& ipv6Header, Ipv6Address dst, uint8_t *nextHeader, bool& isDropped) = 0;
+  virtual uint8_t Process (Ptr<Packet>& packet,
+                           uint8_t offset,
+                           Ipv6Header const& ipv6Header,
+                           Ipv6Address dst,
+                           uint8_t *nextHeader,
+                           bool& stopProcessing,
+                           bool& isDropped,
+                           Ipv6L3Protocol::DropReason& dropReason) = 0;
 
   /**
    * \brief Process options
@@ -105,10 +115,21 @@ public:
    * \param ipv6Header the IPv6 header of packet received
    * \param dst destination address of the packet received (i.e. us)
    * \param nextHeader the next header
-   * \param isDropped if the packet must be dropped
+   * \param stopProcessing true if the packet must not be further processed
+   * \param isDropped true if the packet must be dropped
+   * \param dropReason dropping reason
    * \return the size processed
    */
-  virtual uint8_t ProcessOptions (Ptr<Packet>& packet, uint8_t offset, uint8_t length, Ipv6Header const& ipv6Header, Ipv6Address dst, uint8_t *nextHeader, bool& isDropped);
+  virtual uint8_t ProcessOptions (Ptr<Packet>& packet,
+                                  uint8_t offset,
+                                  uint8_t length,
+                                  Ipv6Header const& ipv6Header,
+                                  Ipv6Address dst,
+                                  uint8_t *nextHeader,
+                                  bool& stopProcessing,
+                                  bool& isDropped,
+                                  Ipv6L3Protocol::DropReason& dropReason
+                                  );
 
  /**
   * Assign a fixed random variable stream number to the random variables
@@ -121,11 +142,6 @@ public:
   int64_t AssignStreams (int64_t stream);
 
 protected:
-  /**
-   * \brief Drop trace callback.
-   */
-  TracedCallback<Ptr<const Packet> > m_dropTrace;
-
   /**
    * \brief Provides uniform random variables.
    */
@@ -172,18 +188,14 @@ public:
    */
   virtual uint8_t GetExtensionNumber () const;
 
-  /**
-   * \brief Process method
-   * Called from Ipv6L3Protocol::Receive.
-   * \param packet the packet
-   * \param offset the offset of the extension to process
-   * \param ipv6Header the IPv6 header of packet received
-   * \param dst destination address of the packet received (i.e. us)
-   * \param nextHeader the next header
-   * \param isDropped if the packet must be dropped
-   * \return the size processed
-   */
-  virtual uint8_t Process (Ptr<Packet>& packet, uint8_t offset, Ipv6Header const& ipv6Header, Ipv6Address dst, uint8_t *nextHeader, bool& isDropped);
+  virtual uint8_t Process (Ptr<Packet>& packet,
+                           uint8_t offset,
+                           Ipv6Header const& ipv6Header,
+                           Ipv6Address dst,
+                           uint8_t *nextHeader,
+                           bool& stopProcessing,
+                           bool& isDropped,
+                           Ipv6L3Protocol::DropReason& dropReason);
 };
 
 /**
@@ -220,18 +232,14 @@ public:
    */
   virtual uint8_t GetExtensionNumber () const;
 
-  /**
-   * \brief Process method
-   * Called from Ipv6L3Protocol::Receive.
-   * \param packet the packet
-   * \param offset the offset of the extension to process
-   * \param ipv6Header the IPv6 header of packet received
-   * \param dst destination address of the packet received (i.e. us)
-   * \param nextHeader the next header
-   * \param isDropped if the packet must be dropped
-   * \return the size processed
-   */
-  virtual uint8_t Process (Ptr<Packet>& packet, uint8_t offset, Ipv6Header const& ipv6Header, Ipv6Address dst, uint8_t *nextHeader, bool& isDropped);
+  virtual uint8_t Process (Ptr<Packet>& packet,
+                           uint8_t offset,
+                           Ipv6Header const& ipv6Header,
+                           Ipv6Address dst,
+                           uint8_t *nextHeader,
+                           bool& stopProcessing,
+                           bool& isDropped,
+                           Ipv6L3Protocol::DropReason& dropReason);
 };
 
 /**
@@ -268,18 +276,14 @@ public:
    */
   virtual uint8_t GetExtensionNumber () const;
 
-  /**
-   * \brief Process method
-   * Called from Ipv6L3Protocol::Receive.
-   * \param packet the packet
-   * \param offset the offset of the extension to process
-   * \param ipv6Header the IPv6 header of packet received
-   * \param dst destination address of the packet received (i.e. us)
-   * \param nextHeader the next header
-   * \param isDropped if the packet must be dropped
-   * \return the size processed
-   */
-  virtual uint8_t Process (Ptr<Packet>& packet, uint8_t offset, Ipv6Header const& ipv6Header, Ipv6Address dst, uint8_t *nextHeader, bool& isDropped);
+  virtual uint8_t Process (Ptr<Packet>& packet,
+                           uint8_t offset,
+                           Ipv6Header const& ipv6Header,
+                           Ipv6Address dst,
+                           uint8_t *nextHeader,
+                           bool& stopProcessing,
+                           bool& isDropped,
+                           Ipv6L3Protocol::DropReason& dropReason);
 
   /**
    * \brief Fragment a packet
@@ -382,7 +386,7 @@ private:
    * \param key representing the packet fragments
    * \param ipHeader the IP header of the original packet
    */
-  void HandleFragmentsTimeout (std::pair<Ipv6Address, uint32_t> key, Ipv6Header & ipHeader);
+  void HandleFragmentsTimeout (std::pair<Ipv6Address, uint32_t> key, Ipv6Header ipHeader);
 
   /**
    * \brief Get the packet parts so far received.
@@ -453,19 +457,14 @@ public:
    */
   virtual uint8_t GetTypeRouting () const;
 
-  /**
-   * \brief Process method
-   *
-   * Called from Ipv6L3Protocol::Receive.
-   * \param packet the packet
-   * \param offset the offset of the extension to process
-   * \param ipv6Header the IPv6 header of packet received
-   * \param dst destination address of the packet received (i.e. us)
-   * \param nextHeader the next header
-   * \param isDropped if the packet must be dropped
-   * \return the size processed
-   */
-  virtual uint8_t Process (Ptr<Packet>& packet, uint8_t offset, Ipv6Header const& ipv6Header, Ipv6Address dst, uint8_t *nextHeader, bool& isDropped);
+  virtual uint8_t Process (Ptr<Packet>& packet,
+                           uint8_t offset,
+                           Ipv6Header const& ipv6Header,
+                           Ipv6Address dst,
+                           uint8_t *nextHeader,
+                           bool& stopProcessing,
+                           bool& isDropped,
+                           Ipv6L3Protocol::DropReason& dropReason);
 };
 
 /**
@@ -573,20 +572,14 @@ public:
    */
   virtual uint8_t GetTypeRouting () const;
 
-  /**
-   * \brief Process method
-   *
-   * Called from Ipv6L3Protocol::Receive.
-   *
-   * \param packet the packet
-   * \param offset the offset of the extension to process
-   * \param ipv6Header the IPv6 header of packet received
-   * \param dst destination address of the packet received (i.e. us)
-   * \param nextHeader the next header
-   * \param isDropped if the packet must be dropped
-   * \return the size processed
-   */
-  virtual uint8_t Process (Ptr<Packet>& packet, uint8_t offset, Ipv6Header const& ipv6Header, Ipv6Address dst, uint8_t *nextHeader, bool& isDropped);
+  virtual uint8_t Process (Ptr<Packet>& packet,
+                           uint8_t offset,
+                           Ipv6Header const& ipv6Header,
+                           Ipv6Address dst,
+                           uint8_t *nextHeader,
+                           bool& stopProcessing,
+                           bool& isDropped,
+                           Ipv6L3Protocol::DropReason& dropReason);
 };
 
 /**
@@ -623,19 +616,14 @@ public:
    */
   virtual uint8_t GetExtensionNumber () const;
 
-  /**
-   * \brief Process method
-   * Called from Ipv6L3Protocol::Receive.
-   *
-   * \param packet the packet
-   * \param offset the offset of the extension to process
-   * \param ipv6Header the IPv6 header of packet received
-   * \param dst destination address of the packet received (i.e. us)
-   * \param nextHeader the next header
-   * \param isDropped if the packet must be dropped
-   * \return the size processed
-   */
-  virtual uint8_t Process (Ptr<Packet>& packet, uint8_t offset, Ipv6Header const& ipv6Header, Ipv6Address dst, uint8_t *nextHeader, bool& isDropped);
+  virtual uint8_t Process (Ptr<Packet>& packet,
+                           uint8_t offset,
+                           Ipv6Header const& ipv6Header,
+                           Ipv6Address dst,
+                           uint8_t *nextHeader,
+                           bool& stopProcessing,
+                           bool& isDropped,
+                           Ipv6L3Protocol::DropReason& dropReason);
 };
 
 /**
@@ -672,19 +660,14 @@ public:
    */
   virtual uint8_t GetExtensionNumber () const;
 
-  /**
-   * \brief Process method
-   * Called from Ipv6L3Protocol::Receive.
-   *
-   * \param packet the packet
-   * \param offset the offset of the extension to process
-   * \param ipv6Header the IPv6 header of packet received
-   * \param dst destination address of the packet received (i.e. us)
-   * \param nextHeader the next header
-   * \param isDropped if the packet must be dropped
-   * \return the size processed
-   */
-  virtual uint8_t Process (Ptr<Packet>& packet, uint8_t offset, Ipv6Header const& ipv6Header, Ipv6Address dst, uint8_t *nextHeader, bool& isDropped);
+  virtual uint8_t Process (Ptr<Packet>& packet,
+                           uint8_t offset,
+                           Ipv6Header const& ipv6Header,
+                           Ipv6Address dst,
+                           uint8_t *nextHeader,
+                           bool& stopProcessing,
+                           bool& isDropped,
+                           Ipv6L3Protocol::DropReason& dropReason);
 };
 
 } /* namespace ns3 */

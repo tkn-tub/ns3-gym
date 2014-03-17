@@ -882,7 +882,9 @@ void Ipv6L3Protocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16
   Ptr<Ipv6ExtensionDemux> ipv6ExtensionDemux = m_node->GetObject<Ipv6ExtensionDemux> ();
   Ptr<Ipv6Extension> ipv6Extension = 0;
   uint8_t nextHeader = hdr.GetNextHeader ();
+  bool stopProcessing = false;
   bool isDropped = false;
+  DropReason dropReason;
 
   if (nextHeader == Ipv6Header::IPV6_EXT_HOP_BY_HOP)
     {
@@ -890,10 +892,15 @@ void Ipv6L3Protocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16
 
       if (ipv6Extension)
         {
-          ipv6Extension->Process (packet, 0, hdr, hdr.GetDestinationAddress (), (uint8_t *)0, isDropped);
+          ipv6Extension->Process (packet, 0, hdr, hdr.GetDestinationAddress (), (uint8_t *)0, stopProcessing, isDropped, dropReason);
         }
 
       if (isDropped)
+        {
+          m_dropTrace (hdr, packet, dropReason, m_node->GetObject<Ipv6> (), interface);
+        }
+
+      if (stopProcessing)
         {
           return;
         }
@@ -1161,6 +1168,8 @@ void Ipv6L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv6Header const& i
   uint8_t nextHeader = ip.GetNextHeader ();
   uint8_t nextHeaderPosition = 0;
   bool isDropped = false;
+  bool stopProcessing = false;
+  DropReason dropReason;
 
   // check for a malformed hop-by-hop extension
   // this is a common case when forging IPv6 raw packets
@@ -1185,10 +1194,15 @@ void Ipv6L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv6Header const& i
         {
           uint8_t nextHeaderStep = 0;
           uint8_t curHeader = nextHeader;
-          nextHeaderStep = ipv6Extension->Process (p, nextHeaderPosition, ip, dst, &nextHeader, isDropped);
+          nextHeaderStep = ipv6Extension->Process (p, nextHeaderPosition, ip, dst, &nextHeader, stopProcessing, isDropped, dropReason);
           nextHeaderPosition += nextHeaderStep;
 
           if (isDropped)
+            {
+              m_dropTrace (ip, packet, dropReason, m_node->GetObject<Ipv6> (), iif);
+            }
+
+          if (stopProcessing)
             {
               return;
             }
@@ -1324,6 +1338,11 @@ void Ipv6L3Protocol::RegisterOptions ()
   ipv6OptionDemux->Insert (routerAlertOption);
 
   m_node->AggregateObject (ipv6OptionDemux);
+}
+
+void Ipv6L3Protocol::ReportDrop (Ipv6Header ipHeader, Ptr<Packet> p, DropReason dropReason)
+{
+  m_dropTrace (ipHeader, p, dropReason, m_node->GetObject<Ipv6> (), 0);
 }
 
 } /* namespace ns3 */
