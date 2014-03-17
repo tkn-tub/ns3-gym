@@ -105,10 +105,10 @@ WifiSpectrumValue5MhzFactory::CreateRfFilter (uint32_t channel)
   NS_ASSERT (channel >= 1);
   NS_ASSERT (channel <= 13);
 
-  (*rf)[channel - 1] = 1;
-  (*rf)[channel    ] = 1;
-  (*rf)[channel + 1] = 1;
-  (*rf)[channel + 2] = 1;
+  (*rf)[channel + 3] = 1;
+  (*rf)[channel + 4] = 1;
+  (*rf)[channel + 5] = 1;
+  (*rf)[channel + 6] = 1;
 
   return rf;
 }
