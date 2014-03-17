@@ -29,6 +29,8 @@ New user-visible features
   ``ns3::CqaFfMacScheduler`` object.
 - SixLowPan model can now use uncompressed IPv6 headers. An option to
   define the minimum compressed packet size has been added. 
+- FlowMonitor "SerializeToXml" functions are now directly available 
+  from the Helper.
 
 Bugs fixed
 ----------
@@ -43,6 +45,7 @@ Bugs fixed
 - Bug 1837 - AODV crashes when using multiple interfaces
 - Bug 1838 - FlowMonitorHelper must not be copied.
 - Bug 1841 - FlowMonitor fails to install if IPv4 is not installed in the node
+- Bug 1842 - FlowMonitor SerializeToXml<Something> should be called by the helper
 - Bug 1846 - IPv6 should send Destination Unreachable if no route is available
 - Bug 1852 - cairo-wideint-private.h error cannot find definitions for fixed-width integral types
 - Bug 1853 - NS_LOG_FUNCTION broken on OSX 10.9

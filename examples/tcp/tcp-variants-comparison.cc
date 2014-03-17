@@ -339,11 +339,10 @@ int main (int argc, char *argv[])
   LocalLink.EnablePcapAll("TcpVariantsComparison", true);
 
   // Flow monitor
-  Ptr<FlowMonitor> flowMonitor;
   FlowMonitorHelper flowHelper;
   if (flow_monitor)
     {
-      flowMonitor = flowHelper.InstallAll();
+      flowHelper.InstallAll();
     }
 
   Simulator::Stop (Seconds(stop_time));
@@ -351,7 +350,7 @@ int main (int argc, char *argv[])
 
   if (flow_monitor)
     {
-      flowMonitor->SerializeToXmlFile("TcpVariantsComparison.flowmonitor", true, true);
+      flowHelper.SerializeToXmlFile("TcpVariantsComparison.flowmonitor", true, true);
     }
 
   Simulator::Destroy ();

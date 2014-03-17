@@ -120,5 +120,34 @@ FlowMonitorHelper::InstallAll ()
   return m_flowMonitor;
 }
 
+void
+FlowMonitorHelper::SerializeToXmlStream (std::ostream &os, int indent, bool enableHistograms, bool enableProbes)
+{
+  if (m_flowMonitor)
+    {
+      m_flowMonitor->SerializeToXmlStream (os, indent, enableHistograms, enableProbes);
+    }
+}
+
+std::string
+FlowMonitorHelper::SerializeToXmlString (int indent, bool enableHistograms, bool enableProbes)
+{
+  std::ostringstream os;
+  if (m_flowMonitor)
+    {
+      m_flowMonitor->SerializeToXmlStream (os, indent, enableHistograms, enableProbes);
+    }
+  return os.str ();
+}
+
+void
+FlowMonitorHelper::SerializeToXmlFile (std::string fileName, bool enableHistograms, bool enableProbes)
+{
+  if (m_flowMonitor)
+    {
+      m_flowMonitor->SerializeToXmlFile (fileName, enableHistograms, enableProbes);
+    }
+}
+
 
 } // namespace ns3
