@@ -651,6 +651,12 @@ LrWpanMac::SendAck (uint8_t seqno)
   LrWpanMacTrailer macTrailer;
   Ptr<Packet> ackPacket = Create<Packet> (0);
   ackPacket->AddHeader (macHdr);
+  // Calculate FCS if the global attribute ChecksumEnable is set.
+  if (Node::ChecksumEnabled ())
+    {
+      macTrailer.EnableFcs (true);
+      macTrailer.SetFcs (ackPacket);
+    }
   ackPacket->AddTrailer (macTrailer);
 
   // Enqueue the ACK packet for further processing

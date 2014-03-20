@@ -72,6 +72,9 @@ int main (int argc, char *argv[])
       lrWpanHelper.EnableLogComponents ();
     }
 
+  // Enable calculation of FCS in the trailers. Only necessary when interacting with real devices or wireshark.
+  // GlobalValue::Bind ("ChecksumEnabled", BooleanValue (true));
+  
   // Create 2 nodes, and a NetDevice for each one
   Ptr<Node> n0 = CreateObject <Node> ();
   Ptr<Node> n1 = CreateObject <Node> ();
