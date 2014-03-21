@@ -25,8 +25,7 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("Names")
-  ;
+NS_LOG_COMPONENT_DEFINE ("Names");
 
 class NameNode
 {

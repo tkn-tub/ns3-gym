@@ -39,8 +39,7 @@ NS_LOG_COMPONENT_DEFINE ("RreqTable");
 namespace ns3 {
 namespace dsr {
 
-NS_OBJECT_ENSURE_REGISTERED (RreqTable)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (RreqTable);
 
 TypeId RreqTable::GetTypeId ()
 {

@@ -136,14 +136,14 @@ else
     conf=$DIR/doxygen.conf
 
     sed -i.bak -E '/^EXTRACT_ALL |^HAVE_DOT |^WARNINGS /s/YES/no/' $conf
-    rm -f $conf.bak
 
     echo
     echo -n "Rebuilding doxygen docs with full errors..."
     (cd "$ROOT" && ./waf --doxygen >/dev/null 2>&1)
     status=$?
 
-    hg revert $conf
+    rm -f $conf
+    mv -f $conf.bak $conf
 
     if [ $status -eq 0 ]; then
 	echo "Done."

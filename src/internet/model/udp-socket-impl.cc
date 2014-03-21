@@ -43,8 +43,7 @@ NS_LOG_COMPONENT_DEFINE ("UdpSocketImpl");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (UdpSocketImpl)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (UdpSocketImpl);
 
 // The correct maximum UDP message size is 65507, as determined by the following formula:
 // 0xffff - (sizeof(IP Header) + sizeof(UDP Header)) = 65535-(20+8) = 65507

@@ -24,8 +24,7 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("Hash")
-  ;
+NS_LOG_COMPONENT_DEFINE ("Hash");
 
 Hasher::Hasher ()
 {

@@ -26,8 +26,7 @@ NS_LOG_COMPONENT_DEFINE ("LteRlcHeader");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (LteRlcHeader)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (LteRlcHeader);
 
 LteRlcHeader::LteRlcHeader ()
   : m_headerLength (0),

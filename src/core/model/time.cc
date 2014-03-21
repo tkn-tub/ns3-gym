@@ -41,6 +41,7 @@ namespace ns3 {
 Time::MarkedTimes * Time::g_markingTimes = 0;
 
 /**
+ * \internal
  * Get mutex for critical sections around modification of Time::g_markingTimes
  *
  * \relates Time

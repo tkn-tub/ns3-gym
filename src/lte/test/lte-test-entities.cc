@@ -608,8 +608,7 @@ LteTestMac::Receive (Ptr<NetDevice> nd, Ptr<const Packet> p, uint16_t protocol, 
 
 
 
-NS_OBJECT_ENSURE_REGISTERED (EpcTestRrc)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (EpcTestRrc);
 
 EpcTestRrc::EpcTestRrc ()
   : m_s1SapProvider (0)

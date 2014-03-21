@@ -44,3 +44,4 @@ massif.*
 ^coverity
 syntax: glob
 TAGS
+waf

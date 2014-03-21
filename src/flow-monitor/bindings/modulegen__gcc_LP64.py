@@ -1016,6 +1016,18 @@ def register_Ns3FlowMonitorHelper_methods(root_module, cls):
     cls.add_method('GetClassifier', 
                    'ns3::Ptr< ns3::FlowClassifier >', 
                    [])
+    ## flow-monitor-helper.h (module 'flow-monitor'): void ns3::FlowMonitorHelper::SerializeToXmlStream(std::ostream & os, int indent, bool enableHistograms, bool enableProbes) [member function]
+    cls.add_method('SerializeToXmlStream', 
+                   'void', 
+                   [param('std::ostream &', 'os'), param('int', 'indent'), param('bool', 'enableHistograms'), param('bool', 'enableProbes')])
+    ## flow-monitor-helper.h (module 'flow-monitor'): std::string ns3::FlowMonitorHelper::SerializeToXmlString(int indent, bool enableHistograms, bool enableProbes) [member function]
+    cls.add_method('SerializeToXmlString', 
+                   'std::string', 
+                   [param('int', 'indent'), param('bool', 'enableHistograms'), param('bool', 'enableProbes')])
+    ## flow-monitor-helper.h (module 'flow-monitor'): void ns3::FlowMonitorHelper::SerializeToXmlFile(std::string fileName, bool enableHistograms, bool enableProbes) [member function]
+    cls.add_method('SerializeToXmlFile', 
+                   'void', 
+                   [param('std::string', 'fileName'), param('bool', 'enableHistograms'), param('bool', 'enableProbes')])
     return
 
 def register_Ns3Hasher_methods(root_module, cls):
@@ -4550,6 +4562,11 @@ def register_Ns3Ipv4L3Protocol_methods(root_module, cls):
                    'bool', 
                    [param('uint32_t', 'i')], 
                    is_const=True, is_virtual=True)
+    ## ipv4-l3-protocol.h (module 'internet'): bool ns3::Ipv4L3Protocol::IsUnicast(ns3::Ipv4Address ad) const [member function]
+    cls.add_method('IsUnicast', 
+                   'bool', 
+                   [param('ns3::Ipv4Address', 'ad')], 
+                   is_const=True)
     ## ipv4-l3-protocol.h (module 'internet'): bool ns3::Ipv4L3Protocol::IsUp(uint32_t i) const [member function]
     cls.add_method('IsUp', 
                    'bool', 
@@ -5414,10 +5431,10 @@ def register_Ns3Packet_methods(root_module, cls):
                    'uint32_t', 
                    [param('uint8_t *', 'buffer'), param('uint32_t', 'maxSize')], 
                    is_const=True)
-    ## packet.h (module 'network'): void ns3::Packet::SetNixVector(ns3::Ptr<ns3::NixVector> arg0) [member function]
+    ## packet.h (module 'network'): void ns3::Packet::SetNixVector(ns3::Ptr<ns3::NixVector> nixVector) [member function]
     cls.add_method('SetNixVector', 
                    'void', 
-                   [param('ns3::Ptr< ns3::NixVector >', 'arg0')])
+                   [param('ns3::Ptr< ns3::NixVector >', 'nixVector')])
     return
 
 def register_Ns3TimeValue_methods(root_module, cls):

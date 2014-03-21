@@ -91,7 +91,7 @@ def register_types(module):
     ## sixlowpan-header.h (module 'sixlowpan'): ns3::SixLowPanDispatch [class]
     module.add_class('SixLowPanDispatch')
     ## sixlowpan-header.h (module 'sixlowpan'): ns3::SixLowPanDispatch::Dispatch_e [enumeration]
-    module.add_enum('Dispatch_e', ['LOWPAN_NALP', 'LOWPAN_NALP_N', 'LOWPAN_NOTCOMPRESSED', 'LOWPAN_HC1', 'LOWPAN_BC0', 'LOWPAN_IPHC', 'LOWPAN_IPHC_N', 'LOWPAN_MESH', 'LOWPAN_MESH_N', 'LOWPAN_FRAG1', 'LOWPAN_FRAG1_N', 'LOWPAN_FRAGN', 'LOWPAN_FRAGN_N', 'LOWPAN_UNSUPPORTED'], outer_class=root_module['ns3::SixLowPanDispatch'])
+    module.add_enum('Dispatch_e', ['LOWPAN_NALP', 'LOWPAN_NALP_N', 'LOWPAN_IPv6', 'LOWPAN_HC1', 'LOWPAN_BC0', 'LOWPAN_IPHC', 'LOWPAN_IPHC_N', 'LOWPAN_MESH', 'LOWPAN_MESH_N', 'LOWPAN_FRAG1', 'LOWPAN_FRAG1_N', 'LOWPAN_FRAGN', 'LOWPAN_FRAGN_N', 'LOWPAN_UNSUPPORTED'], outer_class=root_module['ns3::SixLowPanDispatch'])
     ## sixlowpan-header.h (module 'sixlowpan'): ns3::SixLowPanDispatch::NhcDispatch_e [enumeration]
     module.add_enum('NhcDispatch_e', ['LOWPAN_NHC', 'LOWPAN_NHC_N', 'LOWPAN_UDPNHC', 'LOWPAN_UDPNHC_N', 'LOWPAN_NHCUNSUPPORTED'], outer_class=root_module['ns3::SixLowPanDispatch'])
     ## sixlowpan-helper.h (module 'sixlowpan'): ns3::SixLowPanHelper [class]
@@ -166,6 +166,8 @@ def register_types(module):
     module.add_enum('Hlim_e', ['HLIM_INLINE', 'HLIM_COMPR_1', 'HLIM_COMPR_64', 'HLIM_COMPR_255'], outer_class=root_module['ns3::SixLowPanIphc'])
     ## sixlowpan-header.h (module 'sixlowpan'): ns3::SixLowPanIphc::HeaderCompression_e [enumeration]
     module.add_enum('HeaderCompression_e', ['HC_INLINE', 'HC_COMPR_64', 'HC_COMPR_16', 'HC_COMPR_0'], outer_class=root_module['ns3::SixLowPanIphc'])
+    ## sixlowpan-header.h (module 'sixlowpan'): ns3::SixLowPanIpv6 [class]
+    module.add_class('SixLowPanIpv6', parent=root_module['ns3::Header'])
     ## sixlowpan-header.h (module 'sixlowpan'): ns3::SixLowPanNhcExtension [class]
     module.add_class('SixLowPanNhcExtension', parent=root_module['ns3::Header'])
     ## sixlowpan-header.h (module 'sixlowpan'): ns3::SixLowPanNhcExtension::Eid_e [enumeration]
@@ -376,6 +378,7 @@ def register_methods(root_module):
     register_Ns3SixLowPanFragN_methods(root_module, root_module['ns3::SixLowPanFragN'])
     register_Ns3SixLowPanHc1_methods(root_module, root_module['ns3::SixLowPanHc1'])
     register_Ns3SixLowPanIphc_methods(root_module, root_module['ns3::SixLowPanIphc'])
+    register_Ns3SixLowPanIpv6_methods(root_module, root_module['ns3::SixLowPanIpv6'])
     register_Ns3SixLowPanNhcExtension_methods(root_module, root_module['ns3::SixLowPanNhcExtension'])
     register_Ns3SixLowPanUdpNhcExtension_methods(root_module, root_module['ns3::SixLowPanUdpNhcExtension'])
     register_Ns3Time_methods(root_module, root_module['ns3::Time'])
@@ -3049,6 +3052,44 @@ def register_Ns3SixLowPanIphc_methods(root_module, cls):
                    [param('ns3::SixLowPanIphc::TrafficClassFlowLabel_e', 'tfField')])
     return
 
+def register_Ns3SixLowPanIpv6_methods(root_module, cls):
+    cls.add_output_stream_operator()
+    ## sixlowpan-header.h (module 'sixlowpan'): ns3::SixLowPanIpv6::SixLowPanIpv6(ns3::SixLowPanIpv6 const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::SixLowPanIpv6 const &', 'arg0')])
+    ## sixlowpan-header.h (module 'sixlowpan'): ns3::SixLowPanIpv6::SixLowPanIpv6() [constructor]
+    cls.add_constructor([])
+    ## sixlowpan-header.h (module 'sixlowpan'): uint32_t ns3::SixLowPanIpv6::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## sixlowpan-header.h (module 'sixlowpan'): ns3::TypeId ns3::SixLowPanIpv6::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## sixlowpan-header.h (module 'sixlowpan'): uint32_t ns3::SixLowPanIpv6::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## sixlowpan-header.h (module 'sixlowpan'): static ns3::TypeId ns3::SixLowPanIpv6::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## sixlowpan-header.h (module 'sixlowpan'): void ns3::SixLowPanIpv6::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## sixlowpan-header.h (module 'sixlowpan'): void ns3::SixLowPanIpv6::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    return
+
 def register_Ns3SixLowPanNhcExtension_methods(root_module, cls):
     cls.add_output_stream_operator()
     ## sixlowpan-header.h (module 'sixlowpan'): ns3::SixLowPanNhcExtension::SixLowPanNhcExtension(ns3::SixLowPanNhcExtension const & arg0) [copy constructor]
@@ -4691,10 +4732,10 @@ def register_Ns3Packet_methods(root_module, cls):
                    'uint32_t', 
                    [param('uint8_t *', 'buffer'), param('uint32_t', 'maxSize')], 
                    is_const=True)
-    ## packet.h (module 'network'): void ns3::Packet::SetNixVector(ns3::Ptr<ns3::NixVector> arg0) [member function]
+    ## packet.h (module 'network'): void ns3::Packet::SetNixVector(ns3::Ptr<ns3::NixVector> nixVector) [member function]
     cls.add_method('SetNixVector', 
                    'void', 
-                   [param('ns3::Ptr< ns3::NixVector >', 'arg0')])
+                   [param('ns3::Ptr< ns3::NixVector >', 'nixVector')])
     return
 
 def register_Ns3ParetoRandomVariable_methods(root_module, cls):

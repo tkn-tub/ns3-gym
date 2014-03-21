@@ -27,12 +27,6 @@ namespace
   std::string brief;                         ///< brief tag
   std::string commentStart;                  ///< start of code comment
   std::string commentStop;                   ///< end of code comment
-  std::string defgroupAttributeListStart;    ///< start of AttributeList group
-  std::string defgroupAttributeListStop;     ///< end of AttributeList group
-  std::string defgroupGlobalValueListStart;  ///< start of GlobalValueList group
-  std::string defgroupGlobalValueListStop;   ///< end of GlobalValueList group
-  std::string defgroupTraceSourceListStart;  ///< start of TraceSourceList group
-  std::string defgroupTraceSourceListStop;   ///< end of TraceSourceList group
   std::string flagSpanStart;                 ///< start of Attribute flag value
   std::string flagSpanStop;                  ///< end of Attribute flag value
   std::string functionStart;                 ///< start of a class/function
@@ -40,7 +34,9 @@ namespace
   std::string headingStart;                  ///< start of section heading (h3)
   std::string headingStop;                   ///< end of section heading (h3)
   std::string indentHtmlOnly;                ///< small indent
-  std::string ingroupConstructs;             ///< add to constructs group
+  std::string pageAttributeList;             ///< start Attributes list
+  std::string pageGlobalValueList;           ///< start GlobalValue page
+  std::string pageTraceSourceList;           ///< start Trace sources page
   std::string listStart;                     ///< start unordered list
   std::string listStop;                      ///< end unordered list
   std::string listLineStart;                 ///< start unordered list item
@@ -68,9 +64,37 @@ PrintAttributes (TypeId tid, std::ostream &os)
 	       && (info.checker->GetUnderlyingTypeInformation () != "std::string")
 	      )
 	    {
-	      os << reference;
+	      // Two indirect cases to handle
+	      bool handled = false;
+
+	      if (info.checker->GetValueTypeName () == "ns3::PointerValue")
+		{
+		  const PointerChecker *ptrChecker = dynamic_cast<const PointerChecker *> (PeekPointer (info.checker));
+		  if (ptrChecker != 0)
+		    {
+		      os << reference << "ns3::Ptr" << "< "
+			 << reference << ptrChecker->GetPointeeTypeId ().GetName ()
+			 << ">";
+		      handled = true;
+		    }
+		}
+	      else if (info.checker->GetValueTypeName () == "ns3::ObjectPtrContainerValue")
+		{
+		  const ObjectPtrContainerChecker * ptrChecker = dynamic_cast<const ObjectPtrContainerChecker *> (PeekPointer (info.checker));
+		  if (ptrChecker != 0)
+		    {
+		      os << reference << "ns3::Ptr" << "< "
+			 << reference << ptrChecker->GetItemTypeId ().GetName ()
+			 << ">";
+		      handled = true;
+		    }
+		}
+	      if (! handled)
+		{
+		  os << reference << info.checker->GetUnderlyingTypeInformation ();
+		}
 	    }
-	  os << info.checker->GetUnderlyingTypeInformation () << listLineStop << std::endl;
+	  os << listLineStop << std::endl;
 	}
       if (info.flags & TypeId::ATTR_CONSTRUCT && info.accessor->HasSetter ())
 	{
@@ -428,12 +452,6 @@ int main (int argc, char *argv[])
       brief                        = "";
       commentStart                 = "===============================================================\n";
       commentStop                  = "";
-      defgroupAttributeListStart   = "";
-      defgroupAttributeListStop    = "\n";
-      defgroupGlobalValueListStart = "";
-      defgroupGlobalValueListStop  = "";
-      defgroupTraceSourceListStart = "";
-      defgroupTraceSourceListStop  = "\n";
       flagSpanStart                = "";
       flagSpanStop                 = "";
       functionStart                = "";
@@ -441,7 +459,9 @@ int main (int argc, char *argv[])
       headingStart                 = "";
       headingStop                  = "";
       indentHtmlOnly               = "";
-      ingroupConstructs            = "";
+      pageAttributeList            = "";
+      pageGlobalValueList          = "";
+      pageTraceSourceList          = "";
       listStart                    = "";
       listStop                     = "";
       listLineStart                = "    * ";
@@ -458,14 +478,8 @@ int main (int argc, char *argv[])
       breakHtmlOnly                = "<br>";
       breakTextOnly                = "";
       brief                        = "\\brief ";
-      commentStart                 = "/*!";
-      commentStop                  = "*/";
-      defgroupAttributeListStart   = "\\defgroup AttributeList ";
-      defgroupAttributeListStop    = "";
-      defgroupGlobalValueListStart = "\\defgroup GlobalValueList ";
-      defgroupGlobalValueListStop  = "";
-      defgroupTraceSourceListStart = "\\defgroup TraceSourceList ";
-      defgroupTraceSourceListStop  = "";
+      commentStart                 = "/*!\n";
+      commentStop                  = "*/\n";
       flagSpanStart                = "<span class=\"mlabel\">";
       flagSpanStop                 = "</span>";
       functionStart                = "\\class ";
@@ -473,7 +487,9 @@ int main (int argc, char *argv[])
       headingStart                 = "<h3>";
       headingStop                  = "</h3>";
       indentHtmlOnly               = "  ";
-      ingroupConstructs            = "\\ingroup constructs\n";
+      pageAttributeList            = "\\page AttributesList ";
+      pageGlobalValueList          = "\\page GlobalValueList ";
+      pageTraceSourceList          = "\\page TraceSourceList ";
       listStart                    = "<ul>";
       listStop                     = "</ul>";
       listLineStart                = "<li>";
@@ -643,10 +659,10 @@ int main (int argc, char *argv[])
     }  // class documentation
 
 
-  std::cout << commentStart << std::endl
-            << ingroupConstructs
-            << defgroupTraceSourceListStart << "The list of all trace sources."
-	    << defgroupTraceSourceListStop << std::endl;
+  std::cout << commentStart
+            << pageTraceSourceList << "All TraceSources\n"
+	    << std::endl;
+
   for (uint32_t i = 0; i < TypeId::GetRegisteredN (); ++i)
     {
       TypeId tid = TypeId::GetRegistered (i);
@@ -661,17 +677,19 @@ int main (int argc, char *argv[])
       for (uint32_t j = 0; j < tid.GetTraceSourceN (); ++j)
 	{
 	  struct TypeId::TraceSourceInformation info = tid.GetTraceSource(j);
-	  std::cout << listLineStart << info.name << ": " << info.help
+	  std::cout << listLineStart
+		    << boldStart << info.name << boldStop
+		    << ": " << info.help
 		    << listLineStop  << std::endl;
 	}
       std::cout << listStop << std::endl;
     }
   std::cout << commentStop << std::endl;
 
-  std::cout << commentStart << std::endl
-            << ingroupConstructs
-            << defgroupAttributeListStart << "The list of all attributes."
-	    << defgroupAttributeListStop  << std::endl;
+  std::cout << commentStart
+            << pageAttributeList << "All Attributes\n"
+	    << std::endl;
+
   for (uint32_t i = 0; i < TypeId::GetRegisteredN (); ++i)
     {
       TypeId tid = TypeId::GetRegistered (i);
@@ -686,7 +704,9 @@ int main (int argc, char *argv[])
       for (uint32_t j = 0; j < tid.GetAttributeN (); ++j)
 	{
 	  struct TypeId::AttributeInformation info = tid.GetAttribute(j);
-	  std::cout << listLineStart << info.name << ": " << info.help
+	  std::cout << listLineStart
+		    << boldStart << info.name << boldStop
+		    << ": " << info.help
 		    << listLineStop  << std::endl;
 	}
       std::cout << listStop << std::endl;
@@ -695,11 +715,11 @@ int main (int argc, char *argv[])
 
 
 
-  std::cout << commentStart << std::endl
-            << ingroupConstructs
-            << defgroupGlobalValueListStart << "The list of all global values."
-	    << defgroupGlobalValueListStop  << std::endl
-            << listStart << std::endl;
+  std::cout << commentStart
+            << pageGlobalValueList << "All GlobalValues\n"
+	    << std::endl
+	    << listStart << std::endl;
+  
   for (GlobalValue::Iterator i = GlobalValue::Begin ();
        i != GlobalValue::End ();
        ++i)

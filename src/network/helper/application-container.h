@@ -64,6 +64,7 @@ public:
    */
   ApplicationContainer (std::string name);
 
+  /// Application container iterator
   typedef std::vector<Ptr<Application> >::const_iterator Iterator;
 
   /**
@@ -209,7 +210,7 @@ public:
   void Stop (Time stop);
 
 private:
-  std::vector<Ptr<Application> > m_applications;
+  std::vector<Ptr<Application> > m_applications; //!< Applications smart pointers
 };
 
 } // namespace ns3

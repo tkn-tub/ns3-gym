@@ -29,8 +29,7 @@ NS_LOG_COMPONENT_DEFINE ("A3RsrpHandoverAlgorithm");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (A3RsrpHandoverAlgorithm)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (A3RsrpHandoverAlgorithm);
 
 
 A3RsrpHandoverAlgorithm::A3RsrpHandoverAlgorithm ()

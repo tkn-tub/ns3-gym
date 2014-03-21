@@ -21,8 +21,7 @@
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (ConstantPositionMobilityModel)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (ConstantPositionMobilityModel);
 
 TypeId
 ConstantPositionMobilityModel::GetTypeId (void)

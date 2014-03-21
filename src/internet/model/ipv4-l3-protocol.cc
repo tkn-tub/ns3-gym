@@ -46,8 +46,7 @@ namespace ns3 {
 
 const uint16_t Ipv4L3Protocol::PROT_NUMBER = 0x0800;
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv4L3Protocol)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (Ipv4L3Protocol);
 
 TypeId 
 Ipv4L3Protocol::GetTypeId (void)
@@ -538,6 +537,35 @@ Ipv4L3Protocol::GetIcmp (void) const
     {
       return 0;
     }
+}
+
+bool
+Ipv4L3Protocol::IsUnicast (Ipv4Address ad) const
+{
+  NS_LOG_FUNCTION (this << ad);
+
+  if (ad.IsBroadcast () || ad.IsMulticast ())
+    {
+      return false;
+    }
+  else
+    {
+      // check for subnet-broadcast
+      for (uint32_t ifaceIndex = 0; ifaceIndex < GetNInterfaces (); ifaceIndex++)
+        {
+          for (uint32_t j = 0; j < GetNAddresses (ifaceIndex); j++)
+            {
+              Ipv4InterfaceAddress ifAddr = GetAddress (ifaceIndex, j);
+              NS_LOG_LOGIC ("Testing address " << ad << " with subnet-directed broadcast " << ifAddr.GetBroadcast () );
+              if (ad == ifAddr.GetBroadcast () )
+                {
+                  return false;
+                }
+            }
+        }
+    }
+
+  return true;
 }
 
 bool

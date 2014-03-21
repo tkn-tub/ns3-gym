@@ -26,8 +26,7 @@ NS_LOG_COMPONENT_DEFINE ("MsduAggregator");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (MsduAggregator)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (MsduAggregator);
 
 TypeId
 MsduAggregator::GetTypeId (void)

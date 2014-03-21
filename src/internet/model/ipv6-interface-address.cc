@@ -28,8 +28,7 @@
 namespace ns3
 {
 
-NS_LOG_COMPONENT_DEFINE ("Ipv6InterfaceAddress")
-  ;
+NS_LOG_COMPONENT_DEFINE ("Ipv6InterfaceAddress");
 
 Ipv6InterfaceAddress::Ipv6InterfaceAddress () 
   : m_address (Ipv6Address ()),
@@ -136,6 +135,29 @@ Ipv6InterfaceAddress::Scope_e Ipv6InterfaceAddress::GetScope () const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_scope;
+}
+
+bool Ipv6InterfaceAddress::IsInSameSubnet (Ipv6Address b) const
+{
+  NS_LOG_FUNCTION_NOARGS ();
+
+  Ipv6Address aAddr = m_address;
+  aAddr = aAddr.CombinePrefix (m_prefix);
+  Ipv6Address bAddr = b;
+  bAddr = bAddr.CombinePrefix (m_prefix);
+
+  if (aAddr == bAddr)
+    {
+      return true;
+    }
+
+  if ((bAddr.IsLinkLocalMulticast () && aAddr.IsLinkLocal ()) ||
+      (aAddr.IsLinkLocalMulticast () && bAddr.IsLinkLocal ()))
+    {
+      return true;
+    }
+
+  return false;
 }
 
 std::ostream& operator<< (std::ostream& os, const Ipv6InterfaceAddress &addr)

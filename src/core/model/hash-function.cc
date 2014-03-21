@@ -24,8 +24,7 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("HashFunction")
-  ;
+NS_LOG_COMPONENT_DEFINE ("HashFunction");
 
 namespace Hash {
 

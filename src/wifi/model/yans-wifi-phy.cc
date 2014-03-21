@@ -42,8 +42,7 @@ NS_LOG_COMPONENT_DEFINE ("YansWifiPhy");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (YansWifiPhy)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (YansWifiPhy);
 
 TypeId
 YansWifiPhy::GetTypeId (void)

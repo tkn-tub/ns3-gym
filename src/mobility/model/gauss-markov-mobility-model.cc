@@ -27,8 +27,7 @@
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (GaussMarkovMobilityModel)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (GaussMarkovMobilityModel);
 
 TypeId
 GaussMarkovMobilityModel::GetTypeId (void)

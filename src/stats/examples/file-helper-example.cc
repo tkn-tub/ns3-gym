@@ -53,8 +53,7 @@ private:
 
 };
 
-NS_OBJECT_ENSURE_REGISTERED (Emitter)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (Emitter);
 
 TypeId
 Emitter::GetTypeId (void)

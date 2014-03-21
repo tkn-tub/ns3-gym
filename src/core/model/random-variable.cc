@@ -44,8 +44,7 @@ namespace ns3 {
 // -----------------------------------------------------------------------------
 // RandomVariableBase methods
 
-NS_LOG_COMPONENT_DEFINE ("RandomVariable")
-  ;
+NS_LOG_COMPONENT_DEFINE ("RandomVariable");
 
 /** \ingroup legacyrandom */
 class RandomVariableBase
@@ -1362,7 +1361,7 @@ public:
    * \brief Constructor
    *
    * Creates a generator that returns successive elements of the d array
-   * on successive calls to ::Value().  Note that the d pointer is copied
+   * on successive calls to GetValue().  Note that the d pointer is copied
    * for use by the generator (shallow-copy), not its contents, so the
    * contents of the array d points to have to remain unchanged for the use
    * of DeterministicVariableImpl to be meaningful.
@@ -1861,7 +1860,7 @@ public:
   ZipfVariableImpl (long n, double alpha);
 
   /**
-   * \A zipf variable with N=1 and alpha=0
+   * A zipf variable with N=1 and alpha=0
    */
   ZipfVariableImpl ();
 
@@ -1953,7 +1952,7 @@ public:
   ZetaVariableImpl (double alpha);
 
   /**
-   * \A zipf variable with alpha=1.1
+   * A zipf variable with alpha=1.1
    */
   ZetaVariableImpl ();
 

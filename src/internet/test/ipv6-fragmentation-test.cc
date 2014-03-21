@@ -18,8 +18,11 @@
  * Author: Tommaso Pecorella <tommaso.pecorella@unifi.it>
  */
 /**
+ * \file
+ *
  * This is the test code for ipv6-l3protocol.cc (only the fragmentation and reassembly part).
  */
+
 #define NS3_LOG_ENABLE 1
 
 #include "ns3/test.h"
@@ -476,6 +479,7 @@ Ipv6FragmentationTest::DoRun (void)
           NS_TEST_EXPECT_MSG_NE (byteTag, 0, "ByteTag not found");
           item.GetTag (*byteTag);
           NS_TEST_EXPECT_MSG_EQ (byteTag->getToken (), 42, "ByteTag value not correct");
+          delete byteTag;
         }
       NS_TEST_EXPECT_MSG_EQ (end, m_receivedPacketServer->GetSize (), "trivial");
     }

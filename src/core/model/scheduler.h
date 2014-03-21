@@ -31,6 +31,7 @@ class EventImpl;
 /**
  * \ingroup core
  * \defgroup scheduler Scheduler and Events
+ * \brief Manage the event list by creating and scheduling events.
  */
 /**
  * \ingroup scheduler

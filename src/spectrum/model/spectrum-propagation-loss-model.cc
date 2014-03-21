@@ -26,8 +26,7 @@ NS_LOG_COMPONENT_DEFINE ("SpectrumPropagationLossModel");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (SpectrumPropagationLossModel)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (SpectrumPropagationLossModel);
 
 SpectrumPropagationLossModel::SpectrumPropagationLossModel ()
   : m_next (0)

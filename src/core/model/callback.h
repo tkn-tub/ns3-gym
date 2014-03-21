@@ -35,6 +35,10 @@ namespace ns3 {
 /**
  * \ingroup core
  * \defgroup callback Callbacks
+ * \brief Wrap functions, objects, and arguments into self contained callbacks.
+ *
+ * Wrapped callbacks are at the heart of scheduling events in the
+ * simulator.
  */
 /**
  * \ingroup callback
@@ -1658,12 +1662,14 @@ namespace ns3 {
 class CallbackValue : public AttributeValue
 {
 public:
+  /** Constructor */
   CallbackValue ();
   /**
    * Copy constructor
    * \param base Callback to copy
    */
-  CallbackValue (const CallbackBase &base);  
+  CallbackValue (const CallbackBase &base);
+  /** Destructor */
   virtual ~CallbackValue ();
   /** \param base the Callbackbase to use */
   void Set (CallbackBase base);

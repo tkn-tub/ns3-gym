@@ -54,8 +54,7 @@ NS_LOG_COMPONENT_DEFINE ("TcpSocketBase");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (TcpSocketBase)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (TcpSocketBase);
 
 TypeId
 TcpSocketBase::GetTypeId (void)

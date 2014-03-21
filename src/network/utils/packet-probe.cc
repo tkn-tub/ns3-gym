@@ -32,8 +32,7 @@ NS_LOG_COMPONENT_DEFINE ("PacketProbe");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (PacketProbe)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (PacketProbe);
 
 TypeId
 PacketProbe::GetTypeId ()

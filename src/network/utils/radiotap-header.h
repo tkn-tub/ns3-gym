@@ -35,7 +35,7 @@ namespace ns3 {
  * from a userspace application to the driver for transmission. 
  *
  * @warning the radiotap header specification says that the fields included in
- * the header should be aligned to their natural ize (e.g., 16-bit fields 
+ * the header should be aligned to their natural size (e.g., 16-bit fields
  * aligned to 16-bit boundaries, 32-bit fields aligned to 32-bit boundaries, 
  * and so on.  This implementation does not enforce this.  However, the radiotap
  * specification enforces an order in which fields have to appear (if they 
@@ -49,6 +49,10 @@ class RadiotapHeader : public Header
 {
 public:
   RadiotapHeader();
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
 
@@ -242,18 +246,16 @@ private:
     RADIOTAP_EXT               = 0x10000000
   };
  
-  void CheckAddChannelField ();
+  uint16_t m_length;        //!< entire length of radiotap data + header
+  uint32_t m_present;       //!< bits describing which fields follow header
 
-  uint16_t m_length;
-  uint32_t m_present;
-
-  uint64_t m_tsft;
-  uint8_t m_flags;
-  uint8_t m_rate;
-  uint16_t m_channelFreq;
-  uint16_t m_channelFlags;
-  int8_t m_antennaSignal;
-  int8_t m_antennaNoise;
+  uint64_t m_tsft;          //!< Time Synchronization Function Timer (when the first bit of the MPDU arrived at the MAC)
+  uint8_t m_flags;          //!< Properties of transmitted and received frames.
+  uint8_t m_rate;           //!< TX/RX data rate in units of 500 kbps
+  uint16_t m_channelFreq;   //!< Tx/Rx frequency in MHz.
+  uint16_t m_channelFlags;  //!< Tx/Rx channel flags.
+  int8_t m_antennaSignal;   //!< RF signal power at the antenna, dB difference from an arbitrary, fixed reference.
+  int8_t m_antennaNoise;    //!< RF noise power at the antenna, dB difference from an arbitrary, fixed reference.
 };
 
 } // namespace ns3

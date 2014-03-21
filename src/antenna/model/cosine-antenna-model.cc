@@ -31,8 +31,7 @@ NS_LOG_COMPONENT_DEFINE ("CosineAntennaModel");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (CosineAntennaModel)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (CosineAntennaModel);
 
 
 TypeId 

@@ -228,3 +228,10 @@ def run_python_program(program_string, env, visualize=False):
     return run_argv([env['PYTHON'][0]] + execvec, env, cwd=cwd)
 
 
+def uniquify_list(seq):
+    """Remove duplicates while preserving order
+       From Dave Kirby http://www.peterbe.com/plog/uniqifiers-benchmark
+    """
+    seen = set()
+    return [ x for x in seq if x not in seen and not seen.add(x)]
+

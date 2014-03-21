@@ -46,8 +46,7 @@ namespace ns3 {
 
 
 
-NS_OBJECT_ENSURE_REGISTERED (RadioEnvironmentMapHelper)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (RadioEnvironmentMapHelper);
 
 RadioEnvironmentMapHelper::RadioEnvironmentMapHelper ()
 {

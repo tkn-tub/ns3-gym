@@ -34,6 +34,10 @@ class TraceContainer;
  */
 class DropTailQueue : public Queue {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   /**
    * \brief DropTailQueue Constructor
@@ -64,11 +68,11 @@ private:
   virtual Ptr<Packet> DoDequeue (void);
   virtual Ptr<const Packet> DoPeek (void) const;
 
-  std::queue<Ptr<Packet> > m_packets;
-  uint32_t m_maxPackets;
-  uint32_t m_maxBytes;
-  uint32_t m_bytesInQueue;
-  QueueMode m_mode;
+  std::queue<Ptr<Packet> > m_packets; //!< the packets in the queue
+  uint32_t m_maxPackets;              //!< max packets in the queue
+  uint32_t m_maxBytes;                //!< max bytes in the queue
+  uint32_t m_bytesInQueue;            //!< actual bytes in the queue
+  QueueMode m_mode;                   //!< queue mode (packets or bytes limited)
 };
 
 } // namespace ns3

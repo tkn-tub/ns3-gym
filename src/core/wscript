@@ -296,6 +296,7 @@ def build(bld):
         'model/hash-murmur3.h',
         'model/hash-fnv.h',
         'model/hash.h',
+        'model/valgrind.h',
         ]
 
     if sys.platform == 'win32':
@@ -355,7 +356,10 @@ def build(bld):
     if env['ENABLE_GSL']:
         core.use.extend(['GSL', 'GSLCBLAS', 'M'])
         core_test.use.extend(['GSL', 'GSLCBLAS', 'M'])
-        core_test.source.extend(['test/rng-test-suite.cc'])
+        core_test.source.extend([
+                'test/rng-test-suite.cc',
+                'test/random-variable-stream-test-suite.cc'
+                ])
 
     if (bld.env['ENABLE_EXAMPLES']):
         bld.recurse('examples')

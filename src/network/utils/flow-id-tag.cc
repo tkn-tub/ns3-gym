@@ -24,8 +24,7 @@ NS_LOG_COMPONENT_DEFINE ("FlowIdTag");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (FlowIdTag)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (FlowIdTag);
 
 TypeId 
 FlowIdTag::GetTypeId (void)

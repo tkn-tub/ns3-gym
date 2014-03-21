@@ -28,8 +28,7 @@ NS_LOG_COMPONENT_DEFINE ("SimpleDeviceEnergyModel");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (SimpleDeviceEnergyModel)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (SimpleDeviceEnergyModel);
 
 TypeId
 SimpleDeviceEnergyModel::GetTypeId (void)

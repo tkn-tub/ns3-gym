@@ -32,8 +32,7 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("GnuplotHelper")
-  ;
+NS_LOG_COMPONENT_DEFINE ("GnuplotHelper");
 
 GnuplotHelper::GnuplotHelper ()
   : m_aggregator                     (0),

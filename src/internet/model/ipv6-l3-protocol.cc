@@ -49,11 +49,9 @@
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv6L3Protocol)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (Ipv6L3Protocol);
 
-NS_LOG_COMPONENT_DEFINE ("Ipv6L3Protocol")
-  ;
+NS_LOG_COMPONENT_DEFINE ("Ipv6L3Protocol");
 
 const uint16_t Ipv6L3Protocol::PROT_NUMBER = 0x86DD;
 
@@ -572,6 +570,45 @@ void Ipv6L3Protocol::SetForwarding (uint32_t i, bool val)
   interface->SetForwarding (val);
 }
 
+Ipv6Address Ipv6L3Protocol::SourceAddressSelection (uint32_t interface, Ipv6Address dest)
+{
+  NS_LOG_FUNCTION (this << interface << dest);
+  Ipv6Address ret;
+
+  if (dest.IsLinkLocal () || dest.IsLinkLocalMulticast ())
+    {
+      for (uint32_t i = 0; i < GetNAddresses (interface); i++)
+        {
+          Ipv6InterfaceAddress test = GetAddress (interface, i);
+          if (test.GetScope () == Ipv6InterfaceAddress::LINKLOCAL)
+            {
+              return test.GetAddress ();
+            }
+        }
+      NS_ASSERT_MSG (false, "No link-local address found on interface " << interface);
+    }
+
+  for (uint32_t i = 0; i < GetNAddresses (interface); i++)
+    {
+      Ipv6InterfaceAddress test = GetAddress (interface, i);
+
+      if (test.GetScope () == Ipv6InterfaceAddress::GLOBAL)
+        {
+          if (test.IsInSameSubnet (dest))
+            {
+              return test.GetAddress ();
+            }
+          else
+            {
+              ret = test.GetAddress ();
+            }
+        }
+    }
+
+  // no specific match found. Use a global address (any useful is fine).
+  return ret;
+}
+
 void Ipv6L3Protocol::SetIpForward (bool forward)
 {
   NS_LOG_FUNCTION (this << forward);
@@ -845,7 +882,9 @@ void Ipv6L3Protocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16
   Ptr<Ipv6ExtensionDemux> ipv6ExtensionDemux = m_node->GetObject<Ipv6ExtensionDemux> ();
   Ptr<Ipv6Extension> ipv6Extension = 0;
   uint8_t nextHeader = hdr.GetNextHeader ();
+  bool stopProcessing = false;
   bool isDropped = false;
+  DropReason dropReason;
 
   if (nextHeader == Ipv6Header::IPV6_EXT_HOP_BY_HOP)
     {
@@ -853,10 +892,15 @@ void Ipv6L3Protocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16
 
       if (ipv6Extension)
         {
-          ipv6Extension->Process (packet, 0, hdr, hdr.GetDestinationAddress (), (uint8_t *)0, isDropped);
+          ipv6Extension->Process (packet, 0, hdr, hdr.GetDestinationAddress (), (uint8_t *)0, stopProcessing, isDropped, dropReason);
         }
 
       if (isDropped)
+        {
+          m_dropTrace (hdr, packet, dropReason, m_node->GetObject<Ipv6> (), interface);
+        }
+
+      if (stopProcessing)
         {
           return;
         }
@@ -1124,6 +1168,8 @@ void Ipv6L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv6Header const& i
   uint8_t nextHeader = ip.GetNextHeader ();
   uint8_t nextHeaderPosition = 0;
   bool isDropped = false;
+  bool stopProcessing = false;
+  DropReason dropReason;
 
   // check for a malformed hop-by-hop extension
   // this is a common case when forging IPv6 raw packets
@@ -1148,10 +1194,15 @@ void Ipv6L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv6Header const& i
         {
           uint8_t nextHeaderStep = 0;
           uint8_t curHeader = nextHeader;
-          nextHeaderStep = ipv6Extension->Process (p, nextHeaderPosition, ip, dst, &nextHeader, isDropped);
+          nextHeaderStep = ipv6Extension->Process (p, nextHeaderPosition, ip, dst, &nextHeader, stopProcessing, isDropped, dropReason);
           nextHeaderPosition += nextHeaderStep;
 
           if (isDropped)
+            {
+              m_dropTrace (ip, packet, dropReason, m_node->GetObject<Ipv6> (), iif);
+            }
+
+          if (stopProcessing)
             {
               return;
             }
@@ -1287,6 +1338,11 @@ void Ipv6L3Protocol::RegisterOptions ()
   ipv6OptionDemux->Insert (routerAlertOption);
 
   m_node->AggregateObject (ipv6OptionDemux);
+}
+
+void Ipv6L3Protocol::ReportDrop (Ipv6Header ipHeader, Ptr<Packet> p, DropReason dropReason)
+{
+  m_dropTrace (ipHeader, p, dropReason, m_node->GetObject<Ipv6> (), 0);
 }
 
 } /* namespace ns3 */

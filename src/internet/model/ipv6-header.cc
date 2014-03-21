@@ -29,8 +29,7 @@ NS_LOG_COMPONENT_DEFINE ("Ipv6Header");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv6Header)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (Ipv6Header);
 
 Ipv6Header::Ipv6Header ()
   : m_version (6),

@@ -26,8 +26,7 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("PacketLossCounter")
-  ;
+NS_LOG_COMPONENT_DEFINE ("PacketLossCounter");
 
 
 PacketLossCounter::PacketLossCounter (uint8_t bitmapSize)

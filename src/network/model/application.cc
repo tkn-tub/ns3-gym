@@ -31,8 +31,7 @@ NS_LOG_COMPONENT_DEFINE ("Application");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (Application)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (Application);
 
 // Application Methods
 

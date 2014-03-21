@@ -35,8 +35,7 @@ NS_LOG_COMPONENT_DEFINE ("ConnectionManager");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (ConnectionManager)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (ConnectionManager);
 
 TypeId ConnectionManager::GetTypeId (void)
 {

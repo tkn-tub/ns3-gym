@@ -22,8 +22,7 @@
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (UanMac)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (UanMac);
 
 TypeId UanMac::GetTypeId (void)
 {

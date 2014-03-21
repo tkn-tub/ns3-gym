@@ -28,8 +28,7 @@ NS_LOG_COMPONENT_DEFINE ("Ipv4Header");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv4Header)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (Ipv4Header);
 
 Ipv4Header::Ipv4Header ()
   : m_calcChecksum (false),
@@ -247,8 +246,7 @@ uint16_t
 Ipv4Header::GetFragmentOffset (void) const
 {
   NS_LOG_FUNCTION (this);
-  // -fstrict-overflow sensitive, see bug 1868
-  if ( m_fragmentOffset + m_payloadSize > 65535 - 5*4 )
+  if ((m_fragmentOffset+m_payloadSize+5*4) > 65535)
     {
       NS_LOG_WARN("Fragment will exceed the maximum packet size once reassembled");
     }

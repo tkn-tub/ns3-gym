@@ -30,7 +30,7 @@ NS_LOG_COMPONENT_DEFINE ("Mac16Address");
 
 namespace ns3 {
 
-ATTRIBUTE_HELPER_CPP (Mac16Address);  /// Macro to make help make class an ns-3 attribute
+ATTRIBUTE_HELPER_CPP (Mac16Address);  //!< Macro to make help make class an ns-3 attribute
 
 #define ASCII_a (0x41)
 #define ASCII_z (0x5a)
@@ -39,6 +39,11 @@ ATTRIBUTE_HELPER_CPP (Mac16Address);  /// Macro to make help make class an ns-3 
 #define ASCII_COLON (0x3a)
 #define ASCII_ZERO (0x30)
 
+/**
+ * Converts a char to lower case.
+ * \param c the char
+ * \returns the lower case
+ */
 static char
 AsciiToLowCase (char c)
 {
@@ -169,17 +174,6 @@ std::ostream & operator<< (std::ostream& os, const Mac16Address & address)
   return os;
 }
 
-static uint8_t
-AsInt (std::string v)
-{
-  NS_LOG_FUNCTION (v);
-  std::istringstream iss;
-  iss.str (v);
-  uint32_t retval;
-  iss >> std::hex >> retval >> std::dec;
-  return retval;
-}
-
 std::istream& operator>> (std::istream& is, Mac16Address & address)
 {
   std::string v;
@@ -194,13 +188,13 @@ std::istream& operator>> (std::istream& is, Mac16Address & address)
       if (next == std::string::npos)
         {
           tmp = v.substr (col, v.size ()-col);
-          address.m_address[i] = AsInt (tmp);
+          address.m_address[i] = strtoul (tmp.c_str(), 0, 16);
           break;
         }
       else
         {
           tmp = v.substr (col, next-col);
-          address.m_address[i] = AsInt (tmp);
+          address.m_address[i] = strtoul (tmp.c_str(), 0, 16);
           col = next + 1;
         }
     }

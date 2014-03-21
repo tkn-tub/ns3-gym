@@ -39,8 +39,7 @@ namespace dot11s {
 /***************************************************
  * PeerManager
  ***************************************************/
-NS_OBJECT_ENSURE_REGISTERED (PeerManagementProtocol)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (PeerManagementProtocol);
 
 TypeId
 PeerManagementProtocol::GetTypeId (void)

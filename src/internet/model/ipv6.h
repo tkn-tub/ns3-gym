@@ -305,6 +305,14 @@ public:
   virtual void SetForwarding (uint32_t interface, bool val) = 0;
 
   /**
+   * \brief Choose the source address to use with destination address.
+   * \param interface interface index
+   * \param dest IPv6 destination address
+   * \return IPv6 source address to use
+   */
+  virtual Ipv6Address SourceAddressSelection (uint32_t interface, Ipv6Address dest) = 0;
+
+  /**
    * \brief Get L4 protocol by protocol number.
    * \param protocolNumber protocol number
    * \return corresponding Ipv6L4Protocol or 0 if not found

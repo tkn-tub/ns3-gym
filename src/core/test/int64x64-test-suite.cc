@@ -1,5 +1,6 @@
 #include "ns3/int64x64.h"
 #include "ns3/test.h"
+#include "ns3/valgrind.h"  // Bug 1882
 
 #include <cmath>    // fabs
 #include <iomanip>
@@ -130,7 +131,7 @@ Int64x64HiLoTestCase::DoRun (void)
   if (int64x64_t::implementation == int64x64_t::ld_impl)
     {
       // Darwin 12.5.0 (Mac 10.8.5) g++ 4.2.1
-      low = 2 * HP_MAX_64 * std::numeric_limits<long double>::epsilon ();
+      low = HP_MAX_64 * std::numeric_limits<long double>::epsilon ();
     }
 
   Check ( 0, 0);
@@ -956,15 +957,23 @@ Int64x64DoubleTestCase::Check (const long double value,
   const int64x64_t result = int64x64_t (value);
 
   // Make tolerance depend on magnitude of value
+  long double epsilon = std::numeric_limits<long double>::epsilon ();
   long double margin = 0;
   if (int64x64_t::implementation == int64x64_t::ld_impl)
     {
       // Darwin 12.5.0 (Mac 10.8.5) g++ 4.2.1
       margin = 1.0;
     }
-  
-  const int64x64_t tolerance = (margin + std::fabs (value))
-    * std::numeric_limits<long double>::epsilon ();
+  if (RUNNING_ON_VALGRIND)
+    {
+      // Valgrind uses 64-bit doubles for long doubles
+      // See ns-3 bug 1882
+      // Need non-zero margin to ensure final tolerance is non-zero
+      margin = 1.0;
+      epsilon = std::numeric_limits<double>::epsilon ();
+    }
+
+  const int64x64_t tolerance = (margin + std::fabs (value)) * epsilon;
   
   const int64x64_t delta = Abs (result - expect);
   const bool skip = value == m_last;
@@ -1167,8 +1176,13 @@ Int64x64ImplTestCase::DoRun (void)
   std::cout << "cairo_impl64:  " << cairo_impl64 << std::endl;
   std::cout << "cairo_impl128: " << cairo_impl128 << std::endl;
 #endif
-}
 
+  if (RUNNING_ON_VALGRIND != 0)
+    {
+      std::cout << "Running with valgrind" << std::endl;
+    }
+
+}
 
 static class Int64x64TestSuite : public TestSuite
 {

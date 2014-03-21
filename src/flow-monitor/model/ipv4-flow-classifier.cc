@@ -103,12 +103,6 @@ bool
 Ipv4FlowClassifier::Classify (const Ipv4Header &ipHeader, Ptr<const Packet> ipPayload,
                               uint32_t *out_flowId, uint32_t *out_packetId)
 {
-  if (ipHeader.GetDestination () == Ipv4Address::GetBroadcast ())
-    {
-      // we are not prepared to handle broadcast yet
-      return false;
-    }
-
   if (ipHeader.GetFragmentOffset () > 0 )
     {
       // Ignore fragments: they don't carry a valid L4 header

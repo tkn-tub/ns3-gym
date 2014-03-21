@@ -38,6 +38,7 @@ namespace ns3 {
 class NodeContainer
 {
 public:
+  /// Node container iterator
   typedef std::vector<Ptr<Node> >::const_iterator Iterator;
 
   /**
@@ -288,7 +289,7 @@ public:
   static NodeContainer GetGlobal (void);
 
 private:
-  std::vector<Ptr<Node> > m_nodes;
+  std::vector<Ptr<Node> > m_nodes; //!< Nodes smart pointers
 };
 
 } // namespace ns3

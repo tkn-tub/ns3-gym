@@ -46,8 +46,7 @@ int Type0AllocationRbg[4] = {
 
 
 
-NS_OBJECT_ENSURE_REGISTERED (RrFfMacScheduler)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (RrFfMacScheduler);
 
 
 class RrSchedulerMemberCschedSapProvider : public FfMacCschedSapProvider
@@ -1389,6 +1388,7 @@ RrFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
     {
       if (ret.m_dciList.size () > 0)
         {
+          m_allocationMaps.insert (std::pair <uint16_t, std::vector <uint16_t> > (params.m_sfnSf, rbgAllocationMap));
           m_schedSapUser->SchedUlConfigInd (ret);
         }
       return;  // no flows to be scheduled

@@ -31,8 +31,7 @@ NS_LOG_COMPONENT_DEFINE ("ParabolicAntennaModel");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (ParabolicAntennaModel)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (ParabolicAntennaModel);
 
 
 TypeId 

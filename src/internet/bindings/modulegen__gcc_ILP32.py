@@ -599,7 +599,7 @@ def register_types(module):
     ## ipv6-l3-protocol.h (module 'internet'): ns3::Ipv6L3Protocol [class]
     module.add_class('Ipv6L3Protocol', parent=root_module['ns3::Ipv6'])
     ## ipv6-l3-protocol.h (module 'internet'): ns3::Ipv6L3Protocol::DropReason [enumeration]
-    module.add_enum('DropReason', ['DROP_TTL_EXPIRED', 'DROP_NO_ROUTE', 'DROP_INTERFACE_DOWN', 'DROP_ROUTE_ERROR', 'DROP_UNKNOWN_PROTOCOL'], outer_class=root_module['ns3::Ipv6L3Protocol'])
+    module.add_enum('DropReason', ['DROP_TTL_EXPIRED', 'DROP_NO_ROUTE', 'DROP_INTERFACE_DOWN', 'DROP_ROUTE_ERROR', 'DROP_UNKNOWN_PROTOCOL', 'DROP_UNKNOWN_OPTION', 'DROP_MALFORMED_HEADER', 'DROP_FRAGMENT_TIMEOUT'], outer_class=root_module['ns3::Ipv6L3Protocol'])
     ## ipv6-route.h (module 'internet'): ns3::Ipv6MulticastRoute [class]
     module.add_class('Ipv6MulticastRoute', parent=root_module['ns3::SimpleRefCount< ns3::Ipv6MulticastRoute, ns3::empty, ns3::DefaultDeleter<ns3::Ipv6MulticastRoute> >'])
     ## ipv6-pmtu-cache.h (module 'internet'): ns3::Ipv6PmtuCache [class]
@@ -3236,6 +3236,11 @@ def register_Ns3Ipv6InterfaceAddress_methods(root_module, cls):
                    'ns3::Ipv6InterfaceAddress::State_e', 
                    [], 
                    is_const=True)
+    ## ipv6-interface-address.h (module 'internet'): bool ns3::Ipv6InterfaceAddress::IsInSameSubnet(ns3::Ipv6Address b) const [member function]
+    cls.add_method('IsInSameSubnet', 
+                   'bool', 
+                   [param('ns3::Ipv6Address', 'b')], 
+                   is_const=True)
     ## ipv6-interface-address.h (module 'internet'): void ns3::Ipv6InterfaceAddress::SetAddress(ns3::Ipv6Address address) [member function]
     cls.add_method('SetAddress', 
                    'void', 
@@ -5090,7 +5095,6 @@ def register_Ns3Empty_methods(root_module, cls):
     return
 
 def register_Ns3Int64x64_t_methods(root_module, cls):
-    cls.add_binary_comparison_operator('<=')
     cls.add_binary_comparison_operator('!=')
     cls.add_inplace_numeric_operator('+=', param('ns3::int64x64_t const &', u'right'))
     cls.add_binary_numeric_operator('*', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('ns3::int64x64_t const &', u'right'))
@@ -5104,6 +5108,7 @@ def register_Ns3Int64x64_t_methods(root_module, cls):
     cls.add_inplace_numeric_operator('-=', param('ns3::int64x64_t const &', u'right'))
     cls.add_inplace_numeric_operator('/=', param('ns3::int64x64_t const &', u'right'))
     cls.add_output_stream_operator()
+    cls.add_binary_comparison_operator('<=')
     cls.add_binary_comparison_operator('==')
     cls.add_binary_comparison_operator('>=')
     ## int64x64-double.h (module 'core'): ns3::int64x64_t::int64x64_t() [constructor]
@@ -9515,7 +9520,6 @@ def register_Ns3TcpWestwood_methods(root_module, cls):
     return
 
 def register_Ns3Time_methods(root_module, cls):
-    cls.add_binary_comparison_operator('<=')
     cls.add_binary_comparison_operator('!=')
     cls.add_inplace_numeric_operator('+=', param('ns3::Time const &', u'right'))
     cls.add_binary_numeric_operator('*', root_module['ns3::Time'], root_module['ns3::Time'], param('int64_t const &', u'right'))
@@ -9526,6 +9530,7 @@ def register_Ns3Time_methods(root_module, cls):
     cls.add_binary_comparison_operator('>')
     cls.add_inplace_numeric_operator('-=', param('ns3::Time const &', u'right'))
     cls.add_output_stream_operator()
+    cls.add_binary_comparison_operator('<=')
     cls.add_binary_comparison_operator('==')
     cls.add_binary_comparison_operator('>=')
     ## nstime.h (module 'core'): ns3::Time::Time() [constructor]
@@ -11718,6 +11723,11 @@ def register_Ns3Ipv4L3Protocol_methods(root_module, cls):
                    'bool', 
                    [param('uint32_t', 'i')], 
                    is_const=True, is_virtual=True)
+    ## ipv4-l3-protocol.h (module 'internet'): bool ns3::Ipv4L3Protocol::IsUnicast(ns3::Ipv4Address ad) const [member function]
+    cls.add_method('IsUnicast', 
+                   'bool', 
+                   [param('ns3::Ipv4Address', 'ad')], 
+                   is_const=True)
     ## ipv4-l3-protocol.h (module 'internet'): bool ns3::Ipv4L3Protocol::IsUp(uint32_t i) const [member function]
     cls.add_method('IsUp', 
                    'bool', 
@@ -12413,6 +12423,11 @@ def register_Ns3Ipv6_methods(root_module, cls):
                    'void', 
                    [param('uint32_t', 'interface')], 
                    is_pure_virtual=True, is_virtual=True)
+    ## ipv6.h (module 'internet'): ns3::Ipv6Address ns3::Ipv6::SourceAddressSelection(uint32_t interface, ns3::Ipv6Address dest) [member function]
+    cls.add_method('SourceAddressSelection', 
+                   'ns3::Ipv6Address', 
+                   [param('uint32_t', 'interface'), param('ns3::Ipv6Address', 'dest')], 
+                   is_pure_virtual=True, is_virtual=True)
     ## ipv6.h (module 'internet'): ns3::Ipv6::IF_ANY [variable]
     cls.add_static_attribute('IF_ANY', 'uint32_t const', is_const=True)
     ## ipv6.h (module 'internet'): bool ns3::Ipv6::GetIpForward() const [member function]
@@ -12501,15 +12516,15 @@ def register_Ns3Ipv6Extension_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## ipv6-extension.h (module 'internet'): uint8_t ns3::Ipv6Extension::Process(ns3::Ptr<ns3::Packet> & packet, uint8_t offset, ns3::Ipv6Header const & ipv6Header, ns3::Ipv6Address dst, uint8_t * nextHeader, bool & isDropped) [member function]
+    ## ipv6-extension.h (module 'internet'): uint8_t ns3::Ipv6Extension::Process(ns3::Ptr<ns3::Packet> & packet, uint8_t offset, ns3::Ipv6Header const & ipv6Header, ns3::Ipv6Address dst, uint8_t * nextHeader, bool & stopProcessing, bool & isDropped, ns3::Ipv6L3Protocol::DropReason & dropReason) [member function]
     cls.add_method('Process', 
                    'uint8_t', 
-                   [param('ns3::Ptr< ns3::Packet > &', 'packet'), param('uint8_t', 'offset'), param('ns3::Ipv6Header const &', 'ipv6Header'), param('ns3::Ipv6Address', 'dst'), param('uint8_t *', 'nextHeader'), param('bool &', 'isDropped')], 
+                   [param('ns3::Ptr< ns3::Packet > &', 'packet'), param('uint8_t', 'offset'), param('ns3::Ipv6Header const &', 'ipv6Header'), param('ns3::Ipv6Address', 'dst'), param('uint8_t *', 'nextHeader'), param('bool &', 'stopProcessing'), param('bool &', 'isDropped'), param('ns3::Ipv6L3Protocol::DropReason &', 'dropReason')], 
                    is_pure_virtual=True, is_virtual=True)
-    ## ipv6-extension.h (module 'internet'): uint8_t ns3::Ipv6Extension::ProcessOptions(ns3::Ptr<ns3::Packet> & packet, uint8_t offset, uint8_t length, ns3::Ipv6Header const & ipv6Header, ns3::Ipv6Address dst, uint8_t * nextHeader, bool & isDropped) [member function]
+    ## ipv6-extension.h (module 'internet'): uint8_t ns3::Ipv6Extension::ProcessOptions(ns3::Ptr<ns3::Packet> & packet, uint8_t offset, uint8_t length, ns3::Ipv6Header const & ipv6Header, ns3::Ipv6Address dst, uint8_t * nextHeader, bool & stopProcessing, bool & isDropped, ns3::Ipv6L3Protocol::DropReason & dropReason) [member function]
     cls.add_method('ProcessOptions', 
                    'uint8_t', 
-                   [param('ns3::Ptr< ns3::Packet > &', 'packet'), param('uint8_t', 'offset'), param('uint8_t', 'length'), param('ns3::Ipv6Header const &', 'ipv6Header'), param('ns3::Ipv6Address', 'dst'), param('uint8_t *', 'nextHeader'), param('bool &', 'isDropped')], 
+                   [param('ns3::Ptr< ns3::Packet > &', 'packet'), param('uint8_t', 'offset'), param('uint8_t', 'length'), param('ns3::Ipv6Header const &', 'ipv6Header'), param('ns3::Ipv6Address', 'dst'), param('uint8_t *', 'nextHeader'), param('bool &', 'stopProcessing'), param('bool &', 'isDropped'), param('ns3::Ipv6L3Protocol::DropReason &', 'dropReason')], 
                    is_virtual=True)
     ## ipv6-extension.h (module 'internet'): void ns3::Ipv6Extension::SetNode(ns3::Ptr<ns3::Node> node) [member function]
     cls.add_method('SetNode', 
@@ -12532,10 +12547,10 @@ def register_Ns3Ipv6ExtensionAH_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## ipv6-extension.h (module 'internet'): uint8_t ns3::Ipv6ExtensionAH::Process(ns3::Ptr<ns3::Packet> & packet, uint8_t offset, ns3::Ipv6Header const & ipv6Header, ns3::Ipv6Address dst, uint8_t * nextHeader, bool & isDropped) [member function]
+    ## ipv6-extension.h (module 'internet'): uint8_t ns3::Ipv6ExtensionAH::Process(ns3::Ptr<ns3::Packet> & packet, uint8_t offset, ns3::Ipv6Header const & ipv6Header, ns3::Ipv6Address dst, uint8_t * nextHeader, bool & stopProcessing, bool & isDropped, ns3::Ipv6L3Protocol::DropReason & dropReason) [member function]
     cls.add_method('Process', 
                    'uint8_t', 
-                   [param('ns3::Ptr< ns3::Packet > &', 'packet'), param('uint8_t', 'offset'), param('ns3::Ipv6Header const &', 'ipv6Header'), param('ns3::Ipv6Address', 'dst'), param('uint8_t *', 'nextHeader'), param('bool &', 'isDropped')], 
+                   [param('ns3::Ptr< ns3::Packet > &', 'packet'), param('uint8_t', 'offset'), param('ns3::Ipv6Header const &', 'ipv6Header'), param('ns3::Ipv6Address', 'dst'), param('uint8_t *', 'nextHeader'), param('bool &', 'stopProcessing'), param('bool &', 'isDropped'), param('ns3::Ipv6L3Protocol::DropReason &', 'dropReason')], 
                    is_virtual=True)
     ## ipv6-extension.h (module 'internet'): ns3::Ipv6ExtensionAH::EXT_NUMBER [variable]
     cls.add_static_attribute('EXT_NUMBER', 'uint8_t const', is_const=True)
@@ -12626,10 +12641,10 @@ def register_Ns3Ipv6ExtensionDestination_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## ipv6-extension.h (module 'internet'): uint8_t ns3::Ipv6ExtensionDestination::Process(ns3::Ptr<ns3::Packet> & packet, uint8_t offset, ns3::Ipv6Header const & ipv6Header, ns3::Ipv6Address dst, uint8_t * nextHeader, bool & isDropped) [member function]
+    ## ipv6-extension.h (module 'internet'): uint8_t ns3::Ipv6ExtensionDestination::Process(ns3::Ptr<ns3::Packet> & packet, uint8_t offset, ns3::Ipv6Header const & ipv6Header, ns3::Ipv6Address dst, uint8_t * nextHeader, bool & stopProcessing, bool & isDropped, ns3::Ipv6L3Protocol::DropReason & dropReason) [member function]
     cls.add_method('Process', 
                    'uint8_t', 
-                   [param('ns3::Ptr< ns3::Packet > &', 'packet'), param('uint8_t', 'offset'), param('ns3::Ipv6Header const &', 'ipv6Header'), param('ns3::Ipv6Address', 'dst'), param('uint8_t *', 'nextHeader'), param('bool &', 'isDropped')], 
+                   [param('ns3::Ptr< ns3::Packet > &', 'packet'), param('uint8_t', 'offset'), param('ns3::Ipv6Header const &', 'ipv6Header'), param('ns3::Ipv6Address', 'dst'), param('uint8_t *', 'nextHeader'), param('bool &', 'stopProcessing'), param('bool &', 'isDropped'), param('ns3::Ipv6L3Protocol::DropReason &', 'dropReason')], 
                    is_virtual=True)
     ## ipv6-extension.h (module 'internet'): ns3::Ipv6ExtensionDestination::EXT_NUMBER [variable]
     cls.add_static_attribute('EXT_NUMBER', 'uint8_t const', is_const=True)
@@ -12687,10 +12702,10 @@ def register_Ns3Ipv6ExtensionESP_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## ipv6-extension.h (module 'internet'): uint8_t ns3::Ipv6ExtensionESP::Process(ns3::Ptr<ns3::Packet> & packet, uint8_t offset, ns3::Ipv6Header const & ipv6Header, ns3::Ipv6Address dst, uint8_t * nextHeader, bool & isDropped) [member function]
+    ## ipv6-extension.h (module 'internet'): uint8_t ns3::Ipv6ExtensionESP::Process(ns3::Ptr<ns3::Packet> & packet, uint8_t offset, ns3::Ipv6Header const & ipv6Header, ns3::Ipv6Address dst, uint8_t * nextHeader, bool & stopProcessing, bool & isDropped, ns3::Ipv6L3Protocol::DropReason & dropReason) [member function]
     cls.add_method('Process', 
                    'uint8_t', 
-                   [param('ns3::Ptr< ns3::Packet > &', 'packet'), param('uint8_t', 'offset'), param('ns3::Ipv6Header const &', 'ipv6Header'), param('ns3::Ipv6Address', 'dst'), param('uint8_t *', 'nextHeader'), param('bool &', 'isDropped')], 
+                   [param('ns3::Ptr< ns3::Packet > &', 'packet'), param('uint8_t', 'offset'), param('ns3::Ipv6Header const &', 'ipv6Header'), param('ns3::Ipv6Address', 'dst'), param('uint8_t *', 'nextHeader'), param('bool &', 'stopProcessing'), param('bool &', 'isDropped'), param('ns3::Ipv6L3Protocol::DropReason &', 'dropReason')], 
                    is_virtual=True)
     ## ipv6-extension.h (module 'internet'): ns3::Ipv6ExtensionESP::EXT_NUMBER [variable]
     cls.add_static_attribute('EXT_NUMBER', 'uint8_t const', is_const=True)
@@ -12752,10 +12767,10 @@ def register_Ns3Ipv6ExtensionFragment_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## ipv6-extension.h (module 'internet'): uint8_t ns3::Ipv6ExtensionFragment::Process(ns3::Ptr<ns3::Packet> & packet, uint8_t offset, ns3::Ipv6Header const & ipv6Header, ns3::Ipv6Address dst, uint8_t * nextHeader, bool & isDropped) [member function]
+    ## ipv6-extension.h (module 'internet'): uint8_t ns3::Ipv6ExtensionFragment::Process(ns3::Ptr<ns3::Packet> & packet, uint8_t offset, ns3::Ipv6Header const & ipv6Header, ns3::Ipv6Address dst, uint8_t * nextHeader, bool & stopProcessing, bool & isDropped, ns3::Ipv6L3Protocol::DropReason & dropReason) [member function]
     cls.add_method('Process', 
                    'uint8_t', 
-                   [param('ns3::Ptr< ns3::Packet > &', 'packet'), param('uint8_t', 'offset'), param('ns3::Ipv6Header const &', 'ipv6Header'), param('ns3::Ipv6Address', 'dst'), param('uint8_t *', 'nextHeader'), param('bool &', 'isDropped')], 
+                   [param('ns3::Ptr< ns3::Packet > &', 'packet'), param('uint8_t', 'offset'), param('ns3::Ipv6Header const &', 'ipv6Header'), param('ns3::Ipv6Address', 'dst'), param('uint8_t *', 'nextHeader'), param('bool &', 'stopProcessing'), param('bool &', 'isDropped'), param('ns3::Ipv6L3Protocol::DropReason &', 'dropReason')], 
                    is_virtual=True)
     ## ipv6-extension.h (module 'internet'): ns3::Ipv6ExtensionFragment::EXT_NUMBER [variable]
     cls.add_static_attribute('EXT_NUMBER', 'uint8_t const', is_const=True)
@@ -12845,10 +12860,10 @@ def register_Ns3Ipv6ExtensionHopByHop_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## ipv6-extension.h (module 'internet'): uint8_t ns3::Ipv6ExtensionHopByHop::Process(ns3::Ptr<ns3::Packet> & packet, uint8_t offset, ns3::Ipv6Header const & ipv6Header, ns3::Ipv6Address dst, uint8_t * nextHeader, bool & isDropped) [member function]
+    ## ipv6-extension.h (module 'internet'): uint8_t ns3::Ipv6ExtensionHopByHop::Process(ns3::Ptr<ns3::Packet> & packet, uint8_t offset, ns3::Ipv6Header const & ipv6Header, ns3::Ipv6Address dst, uint8_t * nextHeader, bool & stopProcessing, bool & isDropped, ns3::Ipv6L3Protocol::DropReason & dropReason) [member function]
     cls.add_method('Process', 
                    'uint8_t', 
-                   [param('ns3::Ptr< ns3::Packet > &', 'packet'), param('uint8_t', 'offset'), param('ns3::Ipv6Header const &', 'ipv6Header'), param('ns3::Ipv6Address', 'dst'), param('uint8_t *', 'nextHeader'), param('bool &', 'isDropped')], 
+                   [param('ns3::Ptr< ns3::Packet > &', 'packet'), param('uint8_t', 'offset'), param('ns3::Ipv6Header const &', 'ipv6Header'), param('ns3::Ipv6Address', 'dst'), param('uint8_t *', 'nextHeader'), param('bool &', 'stopProcessing'), param('bool &', 'isDropped'), param('ns3::Ipv6L3Protocol::DropReason &', 'dropReason')], 
                    is_virtual=True)
     ## ipv6-extension.h (module 'internet'): ns3::Ipv6ExtensionHopByHop::EXT_NUMBER [variable]
     cls.add_static_attribute('EXT_NUMBER', 'uint8_t const', is_const=True)
@@ -12933,10 +12948,10 @@ def register_Ns3Ipv6ExtensionRouting_methods(root_module, cls):
                    'uint8_t', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## ipv6-extension.h (module 'internet'): uint8_t ns3::Ipv6ExtensionRouting::Process(ns3::Ptr<ns3::Packet> & packet, uint8_t offset, ns3::Ipv6Header const & ipv6Header, ns3::Ipv6Address dst, uint8_t * nextHeader, bool & isDropped) [member function]
+    ## ipv6-extension.h (module 'internet'): uint8_t ns3::Ipv6ExtensionRouting::Process(ns3::Ptr<ns3::Packet> & packet, uint8_t offset, ns3::Ipv6Header const & ipv6Header, ns3::Ipv6Address dst, uint8_t * nextHeader, bool & stopProcessing, bool & isDropped, ns3::Ipv6L3Protocol::DropReason & dropReason) [member function]
     cls.add_method('Process', 
                    'uint8_t', 
-                   [param('ns3::Ptr< ns3::Packet > &', 'packet'), param('uint8_t', 'offset'), param('ns3::Ipv6Header const &', 'ipv6Header'), param('ns3::Ipv6Address', 'dst'), param('uint8_t *', 'nextHeader'), param('bool &', 'isDropped')], 
+                   [param('ns3::Ptr< ns3::Packet > &', 'packet'), param('uint8_t', 'offset'), param('ns3::Ipv6Header const &', 'ipv6Header'), param('ns3::Ipv6Address', 'dst'), param('uint8_t *', 'nextHeader'), param('bool &', 'stopProcessing'), param('bool &', 'isDropped'), param('ns3::Ipv6L3Protocol::DropReason &', 'dropReason')], 
                    is_virtual=True)
     ## ipv6-extension.h (module 'internet'): ns3::Ipv6ExtensionRouting::EXT_NUMBER [variable]
     cls.add_static_attribute('EXT_NUMBER', 'uint8_t const', is_const=True)
@@ -13281,6 +13296,11 @@ def register_Ns3Ipv6L3Protocol_methods(root_module, cls):
                    'void', 
                    [param('uint32_t', 'i'), param('bool', 'val')], 
                    is_virtual=True)
+    ## ipv6-l3-protocol.h (module 'internet'): ns3::Ipv6Address ns3::Ipv6L3Protocol::SourceAddressSelection(uint32_t interface, ns3::Ipv6Address dest) [member function]
+    cls.add_method('SourceAddressSelection', 
+                   'ns3::Ipv6Address', 
+                   [param('uint32_t', 'interface'), param('ns3::Ipv6Address', 'dest')], 
+                   is_virtual=True)
     ## ipv6-l3-protocol.h (module 'internet'): ns3::Ptr<ns3::NetDevice> ns3::Ipv6L3Protocol::GetNetDevice(uint32_t i) [member function]
     cls.add_method('GetNetDevice', 
                    'ns3::Ptr< ns3::NetDevice >', 
@@ -13308,6 +13328,11 @@ def register_Ns3Ipv6L3Protocol_methods(root_module, cls):
     cls.add_method('RegisterOptions', 
                    'void', 
                    [], 
+                   is_virtual=True)
+    ## ipv6-l3-protocol.h (module 'internet'): void ns3::Ipv6L3Protocol::ReportDrop(ns3::Ipv6Header ipHeader, ns3::Ptr<ns3::Packet> p, ns3::Ipv6L3Protocol::DropReason dropReason) [member function]
+    cls.add_method('ReportDrop', 
+                   'void', 
+                   [param('ns3::Ipv6Header', 'ipHeader'), param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::Ipv6L3Protocol::DropReason', 'dropReason')], 
                    is_virtual=True)
     ## ipv6-l3-protocol.h (module 'internet'): void ns3::Ipv6L3Protocol::DoDispose() [member function]
     cls.add_method('DoDispose', 
@@ -14573,10 +14598,10 @@ def register_Ns3Packet_methods(root_module, cls):
                    'uint32_t', 
                    [param('uint8_t *', 'buffer'), param('uint32_t', 'maxSize')], 
                    is_const=True)
-    ## packet.h (module 'network'): void ns3::Packet::SetNixVector(ns3::Ptr<ns3::NixVector> arg0) [member function]
+    ## packet.h (module 'network'): void ns3::Packet::SetNixVector(ns3::Ptr<ns3::NixVector> nixVector) [member function]
     cls.add_method('SetNixVector', 
                    'void', 
-                   [param('ns3::Ptr< ns3::NixVector >', 'arg0')])
+                   [param('ns3::Ptr< ns3::NixVector >', 'nixVector')])
     return
 
 def register_Ns3ParetoRandomVariable_methods(root_module, cls):
@@ -15952,10 +15977,10 @@ def register_Ns3Ipv6ExtensionLooseRouting_methods(root_module, cls):
                    'uint8_t', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## ipv6-extension.h (module 'internet'): uint8_t ns3::Ipv6ExtensionLooseRouting::Process(ns3::Ptr<ns3::Packet> & packet, uint8_t offset, ns3::Ipv6Header const & ipv6Header, ns3::Ipv6Address dst, uint8_t * nextHeader, bool & isDropped) [member function]
+    ## ipv6-extension.h (module 'internet'): uint8_t ns3::Ipv6ExtensionLooseRouting::Process(ns3::Ptr<ns3::Packet> & packet, uint8_t offset, ns3::Ipv6Header const & ipv6Header, ns3::Ipv6Address dst, uint8_t * nextHeader, bool & stopProcessing, bool & isDropped, ns3::Ipv6L3Protocol::DropReason & dropReason) [member function]
     cls.add_method('Process', 
                    'uint8_t', 
-                   [param('ns3::Ptr< ns3::Packet > &', 'packet'), param('uint8_t', 'offset'), param('ns3::Ipv6Header const &', 'ipv6Header'), param('ns3::Ipv6Address', 'dst'), param('uint8_t *', 'nextHeader'), param('bool &', 'isDropped')], 
+                   [param('ns3::Ptr< ns3::Packet > &', 'packet'), param('uint8_t', 'offset'), param('ns3::Ipv6Header const &', 'ipv6Header'), param('ns3::Ipv6Address', 'dst'), param('uint8_t *', 'nextHeader'), param('bool &', 'stopProcessing'), param('bool &', 'isDropped'), param('ns3::Ipv6L3Protocol::DropReason &', 'dropReason')], 
                    is_virtual=True)
     ## ipv6-extension.h (module 'internet'): ns3::Ipv6ExtensionLooseRouting::TYPE_ROUTING [variable]
     cls.add_static_attribute('TYPE_ROUTING', 'uint8_t const', is_const=True)

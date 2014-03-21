@@ -36,10 +36,17 @@ namespace ns3 {
 
 /**
  * \ingroup debugging
+ * \defgroup breakpoint Breakpoints
+ *
+ * \brief Trigger a debugger breakpoint.
+ */
+
+/**
+ * \ingroup breakpoint
  *
  * Inserts a breakpoint instruction (or equivalent system call) into
- * the code for selected machines.  When an NS_ASSERT cannot verify its condition, 
- * this macro is used. Falls back to calling
+ * the code for selected machines.  When an NS_ASSERT cannot verify
+ * its condition, this macro is used. Falls back to calling
  * AssertBreakpoint() for architectures where breakpoint assembly
  * instructions are not supported.
  */
@@ -57,7 +64,7 @@ namespace ns3 {
 #endif
 
 /**
- * \ingroup debugging
+ * \ingroup breakpoint
  *
  * \brief fallback breakpoint function
  *

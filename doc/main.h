@@ -71,3 +71,28 @@
  * ns3 namespace.
  */
 
+// Macros defined by the build system.
+//
+// These have to be visible for doxygen to document them,
+// so we put them here in a file only seen by doxygen, not the compiler.
+/**
+ * \ingroup assert
+ *
+ * \def NS3_ASSERT_ENABLE
+ *
+ * Enable asserts at compile time.
+ *
+ * This is normally set by `./waf configure --build-profile=debug`.
+ */
+#define NS3_ASSERT_ENABLE
+
+/**
+ * \ingroup logging
+ *
+ * \def NS3_LOG_ENABLE
+ *
+ * Enable logging at compile time.
+ *
+ * This is normally set by `./waf configure --build-profile=debug`.
+ */
+#define NS3_LOG_ENABLE

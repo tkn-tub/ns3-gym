@@ -32,8 +32,7 @@ NS_LOG_COMPONENT_DEFINE ("ItuR1238PropagationLossModel");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (ItuR1238PropagationLossModel)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (ItuR1238PropagationLossModel);
 
 
 TypeId

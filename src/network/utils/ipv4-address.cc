@@ -31,6 +31,11 @@ namespace ns3 {
 #define ASCII_ZERO (0x30)
 #define ASCII_SLASH (0x2f)
 
+/**
+ * \brief Converts a string representing an IP address into the address
+ * \param address the address string
+ * \returns the address
+ */
 static uint32_t 
 AsciiToIpv4Host (char const *address)
 {
@@ -417,7 +422,7 @@ bool operator != (Ipv4Mask const &a, Ipv4Mask const &b)
   return !a.IsEqual (b);
 }
 
-ATTRIBUTE_HELPER_CPP (Ipv4Address); /// Macro to make help make class an ns-3 attribute
-ATTRIBUTE_HELPER_CPP (Ipv4Mask);    /// Macro to make help make class an ns-3 attribute
+ATTRIBUTE_HELPER_CPP (Ipv4Address); //!< Macro to make help make class an ns-3 attribute
+ATTRIBUTE_HELPER_CPP (Ipv4Mask);    //!< Macro to make help make class an ns-3 attribute
 
 } // namespace ns3

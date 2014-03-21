@@ -146,8 +146,7 @@ NS_LOG_COMPONENT_DEFINE ("OlsrRoutingProtocol");
 
 /********** OLSR class **********/
 
-NS_OBJECT_ENSURE_REGISTERED (RoutingProtocol)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (RoutingProtocol);
 
 TypeId 
 RoutingProtocol::GetTypeId (void)

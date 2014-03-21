@@ -118,8 +118,7 @@ std::string ToString (LteUePhy::State s)
 }
 
 
-NS_OBJECT_ENSURE_REGISTERED (LteUePhy)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (LteUePhy);
 
 
 LteUePhy::LteUePhy ()

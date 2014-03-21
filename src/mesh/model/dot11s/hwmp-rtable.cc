@@ -31,8 +31,7 @@ namespace dot11s {
 
 NS_LOG_COMPONENT_DEFINE ("HwmpRtable");
 
-NS_OBJECT_ENSURE_REGISTERED (HwmpRtable)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (HwmpRtable);
 
 TypeId
 HwmpRtable::GetTypeId ()

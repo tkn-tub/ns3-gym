@@ -39,8 +39,7 @@ namespace ns3 {
 
 const Time RRC_IDEAL_MSG_DELAY = MilliSeconds (0); 
 
-NS_OBJECT_ENSURE_REGISTERED (LteUeRrcProtocolIdeal)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (LteUeRrcProtocolIdeal);
 
 LteUeRrcProtocolIdeal::LteUeRrcProtocolIdeal ()
   :  m_ueRrcSapProvider (0),
@@ -207,8 +206,7 @@ LteUeRrcProtocolIdeal::SetEnbRrcSapProvider ()
 }
 
 
-NS_OBJECT_ENSURE_REGISTERED (LteEnbRrcProtocolIdeal)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (LteEnbRrcProtocolIdeal);
 
 LteEnbRrcProtocolIdeal::LteEnbRrcProtocolIdeal ()
   :  m_enbRrcSapProvider (0)

@@ -14,9 +14,23 @@ namespace ns3 {
 class Chunk : public ObjectBase
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void); 
 
+  /**
+   * \brief Deserialize the object from a buffer iterator
+   * \param start the buffer iterator
+   * \returns the number of deserialized bytes
+   */
   virtual uint32_t Deserialize (Buffer::Iterator start) = 0;
+
+  /**
+   * \brief Print the object contents
+   * \param os the output stream
+   */
   virtual void Print (std::ostream &os) const = 0;
 };
 

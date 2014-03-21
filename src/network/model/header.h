@@ -42,6 +42,10 @@ namespace ns3 {
 class Header : public Chunk
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   virtual ~Header ();
   /**
@@ -91,6 +95,14 @@ public:
   virtual void Print (std::ostream &os) const = 0;
 };
 
+
+/**
+ * \brief Stream insertion operator.
+ *
+ * \param os the stream
+ * \param header the header
+ * \returns a reference to the stream
+ */
 std::ostream & operator << (std::ostream &os, const Header &header);
 
 } // namespace ns3

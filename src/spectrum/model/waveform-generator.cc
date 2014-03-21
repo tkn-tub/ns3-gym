@@ -32,8 +32,7 @@ NS_LOG_COMPONENT_DEFINE ("WaveformGenerator");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (WaveformGenerator)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (WaveformGenerator);
 
 WaveformGenerator::WaveformGenerator ()
   : m_mobility (0),
