@@ -108,14 +108,12 @@ static std::string Name (std::string str, uint32_t totalStreamSize,
   return oss.str ();
 }
 
-#ifdef NS3_LOG_ENABLE
-static std::string GetString (Ptr<Packet> p)
+static inline std::string GetString (Ptr<Packet> p)
 {
   std::ostringstream oss;
   p->CopyData (&oss, p->GetSize ());
   return oss.str ();
 }
-#endif /* NS3_LOG_ENABLE */
 
 TcpTestCase::TcpTestCase (uint32_t totalStreamSize,
                           uint32_t sourceWriteSize,

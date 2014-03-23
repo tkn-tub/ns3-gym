@@ -2456,9 +2456,7 @@ RoutingProtocol::LinkTupleUpdated (const LinkTuple &tuple, uint8_t willingness)
 
   if (nb_tuple != NULL)
     {
-#ifdef NS3_LOG_ENABLE
       int statusBefore = nb_tuple->status;
-#endif // NS3_LOG_ENABLE
 
       bool hasSymmetricLink = false;
 
