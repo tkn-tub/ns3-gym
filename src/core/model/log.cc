@@ -36,8 +36,8 @@
 
 namespace ns3 {
 
-LogTimePrinter g_logTimePrinter = 0;
-LogNodePrinter g_logNodePrinter = 0;
+static LogTimePrinter g_logTimePrinter = 0;
+static LogNodePrinter g_logNodePrinter = 0;
 
 typedef std::map<std::string, LogComponent *> ComponentList;
 typedef std::map<std::string, LogComponent *>::iterator ComponentListI;
