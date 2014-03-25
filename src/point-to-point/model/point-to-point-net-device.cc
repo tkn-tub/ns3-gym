@@ -318,12 +318,18 @@ PointToPointNetDevice::Receive (Ptr<Packet> packet)
     {
       // 
       // Hit the trace hooks.  All of these hooks are in the same place in this 
-      // device becuase it is so simple, but this is not usually the case in 
+      // device because it is so simple, but this is not usually the case in
       // more complicated devices.
       //
       m_snifferTrace (packet);
       m_promiscSnifferTrace (packet);
       m_phyRxEndTrace (packet);
+
+      //
+      // Trace sinks will expect complete packets, not packets without some of the
+      // headers.
+      //
+      Ptr<Packet> originalPacket = packet->Copy ();
 
       //
       // Strip off the point-to-point protocol header and forward this packet
@@ -335,11 +341,11 @@ PointToPointNetDevice::Receive (Ptr<Packet> packet)
 
       if (!m_promiscCallback.IsNull ())
         {
-          m_macPromiscRxTrace (packet);
+          m_macPromiscRxTrace (originalPacket);
           m_promiscCallback (this, packet, protocol, GetRemote (), GetAddress (), NetDevice::PACKET_HOST);
         }
 
-      m_macRxTrace (packet);
+      m_macRxTrace (originalPacket);
       m_rxCallback (this, packet, protocol, GetRemote ());
     }
 }
