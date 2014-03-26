@@ -872,10 +872,14 @@ UdpSocketImpl::GetSockName (Address &address) const
     {
       address = InetSocketAddress (m_endPoint->GetLocalAddress (), m_endPoint->GetLocalPort ());
     }
-  else
+  else if (m_endPoint6 != 0)
     {
-      // It is possible to call this method on a socket without a name
+      address = Inet6SocketAddress (m_endPoint6->GetLocalAddress (), m_endPoint6->GetLocalPort ());
+    }
+  else
+    { // It is possible to call this method on a socket without a name
       // in which case, behavior is unspecified
+      // Should this return an InetSocketAddress or an Inet6SocketAddress?
       address = InetSocketAddress (Ipv4Address::GetZero (), 0);
     }
   return 0;
