@@ -493,33 +493,26 @@ PointToPointNetDevice::Send (
   m_macTxTrace (packet);
 
   //
-  // If there's a transmission in progress, we enque the packet for later
-  // transmission; otherwise we send it now.
+  // We should enqueue and dequeue the packet to hit the tracing hooks.
   //
-  if (m_txMachineState == READY) 
+  if (m_queue->Enqueue (packet))
     {
-      // 
-      // Even if the transmitter is immediately available, we still enqueue and
-      // dequeue the packet to hit the tracing hooks.
       //
-      if (m_queue->Enqueue (packet) == true)
+      // If the channel is ready for transition we send the packet right now
+      // 
+      if (m_txMachineState == READY)
         {
           packet = m_queue->Dequeue ();
           m_snifferTrace (packet);
           m_promiscSnifferTrace (packet);
           return TransmitStart (packet);
         }
-      else
-        {
-          // Enqueue may fail (overflow)
-          m_macTxDropTrace (packet);
-          return false;
-        }
+      return true;
     }
-  else
-    {
-      return m_queue->Enqueue (packet);
-    }
+
+  // Enqueue may fail (overflow)
+  m_macTxDropTrace (packet);
+  return false;
 }
 
 bool

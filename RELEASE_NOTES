@@ -62,6 +62,7 @@ Bugs fixed
 - Bug 1882 - int64x64 tests trigger valgrind bug
 - Bug 1883 - IPv6 don't consider the prefix and network when choosing output address
 - Bug 1887 - Point-to-point traces should contain PPP headers
+- Bug 1889 - PointToPointNetDevive: In some cases MacTxDrop trace is not called
 - Bug 1890 - UdpClientTrace: MPEG frame size is squeezed into (insufficient) 16 bit integer
 - Bug 1891 - UdpSocketImpl::GetSockName doesn't return the IPv6 address
 
