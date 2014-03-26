@@ -45,15 +45,15 @@ NS_LOG_COMPONENT_DEFINE ("Simulator");
 
 namespace ns3 {
 
-GlobalValue g_simTypeImpl = GlobalValue ("SimulatorImplementationType", 
-                                         "The object class to use as the simulator implementation",
-                                         StringValue ("ns3::DefaultSimulatorImpl"),
-                                         MakeStringChecker ());
+static GlobalValue g_simTypeImpl = GlobalValue ("SimulatorImplementationType",
+                                                "The object class to use as the simulator implementation",
+                                                StringValue ("ns3::DefaultSimulatorImpl"),
+                                                MakeStringChecker ());
 
-GlobalValue g_schedTypeImpl = GlobalValue ("SchedulerType", 
-                                           "The object class to use as the scheduler implementation",
-                                           TypeIdValue (MapScheduler::GetTypeId ()),
-                                           MakeTypeIdChecker ());
+static GlobalValue g_schedTypeImpl = GlobalValue ("SchedulerType",
+                                                  "The object class to use as the scheduler implementation",
+                                                  TypeIdValue (MapScheduler::GetTypeId ()),
+                                                  MakeTypeIdChecker ());
 
 static void
 TimePrinter (std::ostream &os)

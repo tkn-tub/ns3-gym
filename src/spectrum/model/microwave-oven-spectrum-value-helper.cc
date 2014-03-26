@@ -26,11 +26,11 @@ NS_LOG_COMPONENT_DEFINE ("MicrowaveOvenSpectrumValue");
 namespace ns3 {
 
 
-Ptr<SpectrumModel> g_MicrowaveOvenSpectrumModel5Mhz;
-Ptr<SpectrumModel> g_MicrowaveOvenSpectrumModel6Mhz;
+static Ptr<SpectrumModel> g_MicrowaveOvenSpectrumModel5Mhz;
+static Ptr<SpectrumModel> g_MicrowaveOvenSpectrumModel6Mhz;
 
 
-class MicrowaveOvenSpectrumModel5MhzInitializer
+static class MicrowaveOvenSpectrumModel5MhzInitializer
 {
 public:
   MicrowaveOvenSpectrumModel5MhzInitializer ()
@@ -52,7 +52,7 @@ public:
 
 
 
-class MicrowaveOvenSpectrumModel6MhzInitializer
+static class MicrowaveOvenSpectrumModel6MhzInitializer
 {
 public:
   MicrowaveOvenSpectrumModel6MhzInitializer ()

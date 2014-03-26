@@ -24,7 +24,7 @@
 namespace ns3 {
 
 
-Ptr<SpectrumModel> g_WifiSpectrumModel5Mhz;
+static Ptr<SpectrumModel> g_WifiSpectrumModel5Mhz;
 
 WifiSpectrumValueHelper::~WifiSpectrumValueHelper ()
 {
@@ -34,7 +34,7 @@ WifiSpectrumValue5MhzFactory::~WifiSpectrumValue5MhzFactory ()
 {
 }
 
-class WifiSpectrumModel5MhzInitializer
+static class WifiSpectrumModel5MhzInitializer
 {
 public:
   WifiSpectrumModel5MhzInitializer ()

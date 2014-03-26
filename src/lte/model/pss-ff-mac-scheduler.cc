@@ -38,7 +38,7 @@ NS_LOG_COMPONENT_DEFINE ("PssFfMacScheduler");
 
 namespace ns3 {
 
-int PssType0AllocationRbg[4] = {
+static const int PssType0AllocationRbg[4] = {
   10,       // RGB size 1
   26,       // RGB size 2
   63,       // RGB size 3

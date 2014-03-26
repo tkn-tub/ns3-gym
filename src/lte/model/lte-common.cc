@@ -127,7 +127,7 @@ LteFfConverter::getMinFpS11dot3Value ()
 //static double g_lowestFpS11dot3Value = -4096; // 0x8001 (1000 0000 0000 0000)
 
 
-uint32_t BufferSizeLevelBsrTable[64] = {
+static const uint32_t BufferSizeLevelBsrTable[64] = {
 
   0, 10, 12, 14, 17, 19, 22, 26, 31, 36, 42, 49, 57, 67, 78, 91, 
   107, 125, 146, 171, 200, 234, 274, 321, 376, 440, 515, 603, 

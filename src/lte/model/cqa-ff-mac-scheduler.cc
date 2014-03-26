@@ -43,7 +43,7 @@ NS_LOG_COMPONENT_DEFINE ("CqaFfMacScheduler");
 
 namespace ns3 {
 
-int CqaType0AllocationRbg[4] = {
+static const int CqaType0AllocationRbg[4] = {
   10,       // RGB size 1
   26,       // RGB size 2
   63,       // RGB size 3
