@@ -273,7 +273,7 @@ LrWpanPhy::StartRx (Ptr<SpectrumSignalParameters> spectrumRxParams)
       // as opposed to real receivers, which should go to this state only after
       // successfully receiving the SHR.
 
-      // TODO: Check that the SINR is high enough for synchronizing to the packet.
+      // \todo Check that the SINR is high enough for synchronizing to the packet.
       // If synchronizing to the packet is possible, change to BUSY_RX state,
       // otherwise drop the packet and stay in RX state. The actual synchronization
       // is not modeled.
@@ -281,7 +281,13 @@ LrWpanPhy::StartRx (Ptr<SpectrumSignalParameters> spectrumRxParams)
       *interferenceAndNoise -= *lrWpanRxParams->psd;
       *interferenceAndNoise += *m_noise;
       double sinr = LrWpanSpectrumValueHelper::TotalAvgPower (lrWpanRxParams->psd) / LrWpanSpectrumValueHelper::TotalAvgPower (interferenceAndNoise);
-      if (sinr > 1)
+
+      // Std. 802.15.4-2006, appendix E, Figure E.2
+      // At SNR < -5 the BER is less than 10e-1.
+      // It's useless to even *try* to decode the packet.
+      // \todo: change the value to something more meaningful.
+      //        i.e., the minimum SINR for decoding the preamble.
+      if (sinr > -5)
         {
           ChangeTrxState (IEEE_802_15_4_PHY_BUSY_RX);
           m_currentRxPacket = std::make_pair (lrWpanRxParams, false);
@@ -308,7 +314,7 @@ LrWpanPhy::StartRx (Ptr<SpectrumSignalParameters> spectrumRxParams)
     }
 
   // Always call EndRx to update the interference.
-  // TODO: Do we need to keep track of these events to unschedule them when disposing off the PHY?
+  // \todo: Do we need to keep track of these events to unschedule them when disposing off the PHY?
   Simulator::Schedule (lrWpanRxParams->duration, &LrWpanPhy::EndRx, this, lrWpanRxParams);
   ++m_rxTotalNum;
 }
@@ -1103,7 +1109,7 @@ LrWpanPhy::CalculateTxTime (Ptr<const Packet> packet)
   bool isData = true;
   Time txTime = GetPpduHeaderTxTime ();
 
-  txTime += Time::FromDouble (packet->GetSize () * 8.0 / GetDataOrSymbolRate (isData) * 1000, Time::MS);
+  txTime += Seconds (packet->GetSize () * 8.0 / GetDataOrSymbolRate (isData));
 
   return txTime;
 }
@@ -1143,7 +1149,7 @@ LrWpanPhy::GetPpduHeaderTxTime (void)
     + ppduHeaderSymbolNumbers[m_phyOption].shrSfd
     + ppduHeaderSymbolNumbers[m_phyOption].phr;
 
-  return Time::FromDouble (totalPpduHdrSymbols / GetDataOrSymbolRate (isData) * 1000, Time::MS);
+  return Seconds (totalPpduHdrSymbols / GetDataOrSymbolRate (isData));
 }
 
 // IEEE802.15.4-2006 Table 2 in section 6.1.2
