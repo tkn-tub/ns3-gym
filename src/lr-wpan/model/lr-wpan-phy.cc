@@ -335,17 +335,11 @@ LrWpanPhy::EndRx (Ptr<LrWpanSpectrumSignalParameters> params)
           // How many bits did we receive since the last calculation?
           double t = (Simulator::Now () - m_rxLastUpdate).ToDouble (Time::MS);
           uint32_t chunkSize = ceil (t * (GetDataOrSymbolRate (true) / 1000));
-          std::cout << "current signal : " << 10 * log10 (LrWpanSpectrumValueHelper::TotalAvgPower (currentRxParams->psd)) << std::endl;
-          std::cout << "all signals : " << 10 * log10 (LrWpanSpectrumValueHelper::TotalAvgPower (m_signal->GetSignalPsd ())) << std::endl;
-          std::cout << "noise : " << 10 * log10 (LrWpanSpectrumValueHelper::TotalAvgPower (m_noise)) << std::endl;
           Ptr<SpectrumValue> interferenceAndNoise = m_signal->GetSignalPsd ();
           *interferenceAndNoise -= *currentRxParams->psd;
           *interferenceAndNoise += *m_noise;
-          std::cout << "interference and noise : " << 10 * log10 (LrWpanSpectrumValueHelper::TotalAvgPower (interferenceAndNoise)) << std::endl;
           double sinr = LrWpanSpectrumValueHelper::TotalAvgPower (currentRxParams->psd) / LrWpanSpectrumValueHelper::TotalAvgPower (interferenceAndNoise);
-          std::cout << "sinr : " << sinr << std::endl;
           double per = 1.0 - m_errorModel->GetChunkSuccessRate (sinr, chunkSize);
-          std::cout << "per : " << per << std::endl;
 
           // TODO: What is the LQI for our model. The SINR is wrong in any case!
           LrWpanLqiTag tag(sinr);
