@@ -121,7 +121,7 @@ LrWpanSpectrumValueHelper::CreateNoisePowerSpectralDensity (uint32_t channel)
 double
 LrWpanSpectrumValueHelper::TotalAvgPower (Ptr<const SpectrumValue> psd)
 {
-  NS_LOG_FUNCTION (this << psd);
+  NS_LOG_FUNCTION (psd);
   double totalAvgPower = 0.0;
 
   // numerically integrate to get area under psd using

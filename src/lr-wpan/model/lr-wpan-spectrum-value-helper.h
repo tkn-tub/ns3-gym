@@ -57,7 +57,7 @@ public:
    * \param power spectral density
    * \return total power (using composite trap. rule to numerally integrate
    */
-  double TotalAvgPower (Ptr<const SpectrumValue> psd);
+  static double TotalAvgPower (Ptr<const SpectrumValue> psd);
 
 private:
   double m_noiseFactor;

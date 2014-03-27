@@ -126,10 +126,12 @@ LrWpanPhy::LrWpanPhy ()
   m_txPsd = psdHelper.CreateTxPowerSpectralDensity (m_phyPIBAttributes.phyTransmitPower,
                                                     m_phyPIBAttributes.phyCurrentChannel);
   m_noise = psdHelper.CreateNoisePowerSpectralDensity (m_phyPIBAttributes.phyCurrentChannel);
-  m_rxPsd = 0;
-  Ptr <Packet> none = 0;
-  m_currentRxPacket = std::make_pair (none, true);
-  m_currentTxPacket = std::make_pair (none, true);
+  m_signal = Create<LrWpanInterferenceHelper> (m_noise->GetSpectrumModel ());
+  m_rxLastUpdate = Seconds (0);
+  Ptr<Packet> none_packet = 0;
+  Ptr<LrWpanSpectrumSignalParameters> none_params = 0;
+  m_currentRxPacket = std::make_pair (none_params, true);
+  m_currentTxPacket = std::make_pair (none_packet, true);
   m_errorModel = 0;
 
   ChangeTrxState (IEEE_802_15_4_PHY_TRX_OFF);
@@ -153,8 +155,8 @@ LrWpanPhy::DoDispose ()
   m_device = 0;
   m_channel = 0;
   m_txPsd = 0;
-  m_rxPsd = 0;
   m_noise = 0;
+  m_signal = 0;
   m_errorModel = 0;
   m_pdDataIndicationCallback = MakeNullCallback< void, uint32_t, Ptr<Packet>, uint8_t > ();
   m_pdDataConfirmCallback = MakeNullCallback< void, LrWpanPhyEnumeration > ();
@@ -243,8 +245,6 @@ LrWpanPhy::SetAntenna (Ptr<AntennaModel> a)
   m_antenna = a;
 }
 
-
-
 void
 LrWpanPhy::StartRx (Ptr<SpectrumSignalParameters> spectrumRxParams)
 {
@@ -253,118 +253,147 @@ LrWpanPhy::StartRx (Ptr<SpectrumSignalParameters> spectrumRxParams)
 
 
   Ptr<LrWpanSpectrumSignalParameters> lrWpanRxParams = DynamicCast<LrWpanSpectrumSignalParameters> (spectrumRxParams);
+  NS_ASSERT (lrWpanRxParams != 0);
+  Ptr<Packet> p = (lrWpanRxParams->packetBurst->GetPackets ()).front ();
+  NS_ASSERT (p != 0);
+
+  // Add any incoming packet to the current interference.
+  m_signal->AddSignal (lrWpanRxParams->psd);
 
   // Prevent PHY from receiving another packet while switching the transceiver state.
   if (m_trxState == IEEE_802_15_4_PHY_RX_ON && !m_setTRXState.IsRunning ())
     {
-      if (lrWpanRxParams != 0)
+      // The specification doesn't seem to refer to BUSY_RX, but vendor
+      // data sheets suggest that this is a substate of the RX_ON state
+      // that is entered after preamble detection when the digital receiver
+      // is enabled.  Here, for now, we use BUSY_RX to mark the period between
+      // StartRx() and EndRx() states.
+
+      // We are going to BUSY_RX state when receiving the first bit of an SHR,
+      // as opposed to real receivers, which should go to this state only after
+      // successfully receiving the SHR.
+
+      // TODO: Check that the SINR is high enough for synchronizing to the packet.
+      // If synchronizing to the packet is possible, change to BUSY_RX state,
+      // otherwise drop the packet and stay in RX state. The actual synchronization
+      // is not modeled.
+      Ptr<SpectrumValue> interferenceAndNoise = m_signal->GetSignalPsd ();
+      *interferenceAndNoise -= *lrWpanRxParams->psd;
+      *interferenceAndNoise += *m_noise;
+      double sinr = LrWpanSpectrumValueHelper::TotalAvgPower (lrWpanRxParams->psd) / LrWpanSpectrumValueHelper::TotalAvgPower (interferenceAndNoise);
+      if (sinr > 1)
         {
-          // The specification doesn't seem to refer to BUSY_RX, but vendor
-          // data sheets suggest that this is a substate of the RX_ON state
-          // that is entered after preamble detection when the digital receiver
-          // is enabled.  Here, for now, we use BUSY_RX to mark the period between
-          // StartRx() and EndRx() states.
-          Ptr<Packet> p = (lrWpanRxParams->packetBurst->GetPackets ()).front ();
-          NS_ASSERT(p != 0);
-          m_rxPsd = lrWpanRxParams->psd;
-          m_rxTotalPower = psdHelper.TotalAvgPower (m_rxPsd);
+          ChangeTrxState (IEEE_802_15_4_PHY_BUSY_RX);
+          m_currentRxPacket = std::make_pair (lrWpanRxParams, false);
+          m_phyRxBeginTrace (p);
 
-          if (m_rxTotalPower >= m_rxSensitivity)
-            {
-              ChangeTrxState (IEEE_802_15_4_PHY_BUSY_RX);
-              Time duration = lrWpanRxParams->duration;
-              m_currentRxPacket = std::make_pair (p, false);
-
-              Simulator::Schedule (duration, &LrWpanPhy::EndRx, this);
-              m_phyRxBeginTrace (p);
-            }
-          else
-            {
-              // We are below our receiver sensitivity, the packet cannot be received.
-              // TODO: Add the power somehow to the interference.
-              m_phyRxDropTrace (p);
-            }
+          m_rxLastUpdate = Simulator::Now ();
         }
-      NS_LOG_LOGIC (this << " state: " << m_trxState << " m_rxTotalPower: " << m_rxTotalPower);
+      else
+        {
+          m_phyRxDropTrace (p);
+        }
     }
   else if (m_trxState == IEEE_802_15_4_PHY_BUSY_RX)
     {
-      // TODO: Drop the second packet and add the signal power to the interference of
-      //       the currently received packet. Consider the received signal power
-      //       during CCA/ED, too.
+      // Drop the new packet.
       NS_LOG_DEBUG (this << " packet collision");
-      Ptr<Packet> p = (lrWpanRxParams->packetBurst->GetPackets ()).front ();
       m_phyRxDropTrace (p);
     }
   else
     {
+      // Simply drop the packet.
       NS_LOG_DEBUG (this << " transceiver not in RX state");
-      Ptr<Packet> p = (lrWpanRxParams->packetBurst->GetPackets ()).front ();
       m_phyRxDropTrace (p);
     }
+
+  // Always call EndRx to update the interference.
+  // TODO: Do we need to keep track of these events to unschedule them when disposing off the PHY?
+  Simulator::Schedule (lrWpanRxParams->duration, &LrWpanPhy::EndRx, this, lrWpanRxParams);
+  ++m_rxTotalNum;
 }
 
-void LrWpanPhy::EndRx ()
+void
+LrWpanPhy::EndRx (Ptr<LrWpanSpectrumSignalParameters> params)
 {
   NS_LOG_FUNCTION (this);
+  NS_ASSERT (params != 0);
+
+  // Calculate whether packet was lost.
   LrWpanSpectrumValueHelper psdHelper;
-  // Calculate whether packet was lost
-  if (m_currentRxPacket.second == true)
+  Ptr<LrWpanSpectrumSignalParameters> currentRxParams = m_currentRxPacket.first;
+  Ptr<const Packet> packet = params->packetBurst->GetPackets ().front ();
+
+  // We are currently receiving a packet.
+  if (m_trxState == IEEE_802_15_4_PHY_BUSY_RX)
     {
-      if (m_currentRxPacket.first != 0)
-        {
-          NS_LOG_DEBUG ("Reception was previously terminated; dropping packet");
-          m_phyRxDropTrace (m_currentRxPacket.first);
-          m_currentRxPacket.first = 0;
-        }
-      else
-        {
-          // TODO: This should never happen, but it does!
-          NS_LOG_UNCOND (this << " Finishing receive of NULL packet!");
-        }
-    }
-  else
-    {
+      NS_ASSERT (currentRxParams && !m_currentRxPacket.second);
+
+      Ptr<Packet> currentPacket = currentRxParams->packetBurst->GetPackets ().front ();
       if (m_errorModel != 0)
         {
-          double sinr = psdHelper.TotalAvgPower (m_rxPsd) / psdHelper.TotalAvgPower (m_noise);
-          Ptr<Packet> p = m_currentRxPacket.first;
-          NS_ASSERT (p != 0);
-          p->AddPacketTag (LrWpanLqiTag (sinr));
+          // How many bits did we receive since the last calculation?
+          double t = (Simulator::Now () - m_rxLastUpdate).ToDouble (Time::MS);
+          uint32_t chunkSize = ceil (t * (GetDataOrSymbolRate (true) / 1000));
+          std::cout << "current signal : " << 10 * log10 (LrWpanSpectrumValueHelper::TotalAvgPower (currentRxParams->psd)) << std::endl;
+          std::cout << "all signals : " << 10 * log10 (LrWpanSpectrumValueHelper::TotalAvgPower (m_signal->GetSignalPsd ())) << std::endl;
+          std::cout << "noise : " << 10 * log10 (LrWpanSpectrumValueHelper::TotalAvgPower (m_noise)) << std::endl;
+          Ptr<SpectrumValue> interferenceAndNoise = m_signal->GetSignalPsd ();
+          *interferenceAndNoise -= *currentRxParams->psd;
+          *interferenceAndNoise += *m_noise;
+          std::cout << "interference and noise : " << 10 * log10 (LrWpanSpectrumValueHelper::TotalAvgPower (interferenceAndNoise)) << std::endl;
+          double sinr = LrWpanSpectrumValueHelper::TotalAvgPower (currentRxParams->psd) / LrWpanSpectrumValueHelper::TotalAvgPower (interferenceAndNoise);
+          std::cout << "sinr : " << sinr << std::endl;
+          double per = 1.0 - m_errorModel->GetChunkSuccessRate (sinr, chunkSize);
+          std::cout << "per : " << per << std::endl;
 
-          // Simplified calculation; the chunk is the whole packet
-          double per = 1.0 - m_errorModel->GetChunkSuccessRate (sinr, p->GetSize () * 8);
-          if (m_random.GetValue () > per)
+          // TODO: What is the LQI for our model. The SINR is wrong in any case!
+          LrWpanLqiTag tag(sinr);
+          currentPacket->ReplacePacketTag (tag);
+
+          if (m_random.GetValue () < per)
             {
-              NS_LOG_DEBUG ("Reception success for packet: per " << per << " sinr " << sinr);
-              m_phyRxEndTrace (p, sinr);
-              if (!m_pdDataIndicationCallback.IsNull ())
-                {
-                  m_pdDataIndicationCallback (p->GetSize (), p, (uint8_t)sinr);
-                }
-            }
-          else
-            {
-              /* Failure */
-              NS_LOG_DEBUG ("Reception failure for packet per" << per << " sinr " << sinr);
-              m_phyRxEndTrace (p, sinr);
-              m_phyRxDropTrace (p);
+              // The packet was destroyed, drop the packet after reception.
+              m_currentRxPacket.second = true;
             }
         }
       else
         {
+          LrWpanLqiTag tag;
+          currentPacket->ReplacePacketTag (tag);
           NS_LOG_WARN ("Missing ErrorModel");
-          Ptr<Packet> p = m_currentRxPacket.first;
-          p->AddPacketTag (LrWpanLqiTag ());
-          m_phyRxEndTrace (p, 0);
+        }
+    }
+
+  // Update the interference.
+  m_signal->RemoveSignal (params->psd);
+  m_rxLastUpdate = Simulator::Now ();
+  --m_rxTotalNum;
+
+  // If this is the end of the currently received packet, check if reception was successfull.
+  if (currentRxParams == params)
+    {
+      Ptr<Packet> currentPacket = currentRxParams->packetBurst->GetPackets ().front ();
+      NS_ASSERT (currentPacket != 0);
+
+      LrWpanLqiTag tag;
+      currentPacket->PeekPacketTag (tag);
+      m_phyRxEndTrace (currentPacket, tag.Get ());
+
+      if (!m_currentRxPacket.second)
+        {
+          // The packet was successfully received, push it up the stack.
           if (!m_pdDataIndicationCallback.IsNull ())
             {
-              m_pdDataIndicationCallback (p->GetSize (), p, 0);
+              m_pdDataIndicationCallback (currentPacket->GetSize (), currentPacket, tag.Get ());
             }
         }
-
-      m_rxTotalPower = 0;
-      Ptr<Packet> none = 0;
+      else
+        {
+          // The packet was destroyed, drop it.
+          m_phyRxDropTrace (currentPacket);
+        }
+      Ptr<LrWpanSpectrumSignalParameters> none = 0;
       m_currentRxPacket = std::make_pair (none, true);
 
       // We may be waiting to apply a pending state change.
@@ -385,10 +414,7 @@ void LrWpanPhy::EndRx ()
         }
       else
         {
-          if (m_trxState != IEEE_802_15_4_PHY_TRX_OFF)
-            {
-              ChangeTrxState (IEEE_802_15_4_PHY_RX_ON);
-            }
+          ChangeTrxState (IEEE_802_15_4_PHY_RX_ON);
         }
     }
 }
@@ -499,7 +525,7 @@ LrWpanPhy::PlmeEdRequest (void)
   NS_LOG_FUNCTION (this);
   if (m_trxState == IEEE_802_15_4_PHY_RX_ON)
     {
-      m_rxEdPeakPower = m_rxTotalPower;
+      m_rxEdPeakPower = LrWpanSpectrumValueHelper::TotalAvgPower (m_signal->GetSignalPsd());
       Time edTime = Seconds (8.0 / GetDataOrSymbolRate (false));
       m_edRequest = Simulator::Schedule (edTime, &LrWpanPhy::EndEd, this);
     }
@@ -1080,11 +1106,10 @@ LrWpanPhy::CalculateTxTime (Ptr<const Packet> packet)
 {
   NS_LOG_FUNCTION (this << packet);
 
-  Time txTime = Seconds (0);
   bool isData = true;
+  Time txTime = GetPpduHeaderTxTime ();
 
-  txTime = Seconds (GetPpduHeaderTxTime ()
-                    + packet->GetSize () * 8.0 / GetDataOrSymbolRate (isData));
+  txTime += Time::FromDouble (packet->GetSize () * 8.0 / GetDataOrSymbolRate (isData) * 1000, Time::MS);
 
   return txTime;
 }
@@ -1110,7 +1135,7 @@ LrWpanPhy::GetDataOrSymbolRate (bool isData)
   return (rate * 1000.0);
 }
 
-double
+Time
 LrWpanPhy::GetPpduHeaderTxTime (void)
 {
   NS_LOG_FUNCTION (this);
@@ -1124,7 +1149,7 @@ LrWpanPhy::GetPpduHeaderTxTime (void)
     + ppduHeaderSymbolNumbers[m_phyOption].shrSfd
     + ppduHeaderSymbolNumbers[m_phyOption].phr;
 
-  return totalPpduHdrSymbols / GetDataOrSymbolRate (isData);
+  return Time::FromDouble (totalPpduHdrSymbols / GetDataOrSymbolRate (isData) * 1000, Time::MS);
 }
 
 // IEEE802.15.4-2006 Table 2 in section 6.1.2

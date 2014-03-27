@@ -22,6 +22,8 @@
 #ifndef LR_WPAN_PHY_H
 #define LR_WPAN_PHY_H
 
+#include "lr-wpan-interference-helper.h"
+
 #include <ns3/spectrum-phy.h>
 #include <ns3/traced-callback.h>
 #include <ns3/event-id.h>
@@ -378,19 +380,18 @@ private:
   void SetMyPhyOption (void);
   LrWpanPhyOption GetMyPhyOption (void);
   void EndTx ();
-  void EndRx ();
+  void EndRx (Ptr<LrWpanSpectrumSignalParameters> params);
   void EndEd ();
   void EndCca ();
   void EndSetTRXState ();
   Time CalculateTxTime (Ptr<const Packet> packet);
-  double GetPpduHeaderTxTime (void);
+  Time GetPpduHeaderTxTime (void);
   bool ChannelSupported (uint8_t);
   Ptr<MobilityModel> m_mobility;
   Ptr<NetDevice> m_device;
   Ptr<SpectrumChannel> m_channel;
   Ptr<AntennaModel> m_antenna;
   Ptr<SpectrumValue> m_txPsd;
-  Ptr<const SpectrumValue> m_rxPsd;
   Ptr<const SpectrumValue> m_noise;
   Ptr<LrWpanErrorModel> m_errorModel;
   LrWpanPhyPibAttributes m_phyPIBAttributes;
@@ -461,7 +462,9 @@ private:
   double m_rxTotalPower;
   uint32_t m_rxTotalNum;
   double m_rxSensitivity;
-  PacketAndStatus m_currentRxPacket;
+  Ptr<LrWpanInterferenceHelper> m_signal;
+  Time m_rxLastUpdate;
+  std::pair<Ptr<LrWpanSpectrumSignalParameters>, bool>  m_currentRxPacket;
   PacketAndStatus m_currentTxPacket;
 
   EventId m_ccaRequest;

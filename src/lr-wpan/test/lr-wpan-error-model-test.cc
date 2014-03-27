@@ -125,9 +125,9 @@ LrWpanErrorDistanceTestCase::DoRun (void)
 
   Simulator::Run ();
 
-  // Test that we received 978 packets out of 1000, at distance of 100 m
+  // Test that we received 173 packets out of 1000, at distance of 100 m
   // with default power of 0
-  NS_TEST_ASSERT_MSG_EQ (GetReceived (), 978, "Model fails");
+  NS_TEST_ASSERT_MSG_EQ (GetReceived (), 173, "Model fails");
 
   Simulator::Destroy ();
 }

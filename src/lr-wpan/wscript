@@ -4,6 +4,7 @@ def build(bld):
     obj = bld.create_ns3_module('lr-wpan', ['core', 'network', 'mobility', 'spectrum', 'propagation'])
     obj.source = [
         'model/lr-wpan-error-model.cc',
+        'model/lr-wpan-interference-helper.cc',
         'model/lr-wpan-phy.cc',
         'model/lr-wpan-mac.cc',
         'model/lr-wpan-mac-header.cc',
@@ -28,6 +29,7 @@ def build(bld):
     headers.module = 'lr-wpan'
     headers.source = [
         'model/lr-wpan-error-model.h',
+        'model/lr-wpan-interference-helper.h',
         'model/lr-wpan-phy.h',
         'model/lr-wpan-mac.h',
         'model/lr-wpan-mac-header.h',
