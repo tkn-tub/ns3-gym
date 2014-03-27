@@ -186,7 +186,7 @@ void
 UdpTraceClient::LoadTrace (std::string filename)
 {
   NS_LOG_FUNCTION (this << filename);
-	uint32_t time, index, size, prevTime = 0;
+  uint32_t time, index, size, prevTime = 0;
   char frameType;
   TraceEntry entry;
   std::ifstream ifTraceFile;
@@ -326,7 +326,7 @@ UdpTraceClient::Send (void)
   struct TraceEntry *entry = &m_entries[m_currentEntry];
   do
     {
-			for (uint32_t i = 0; i < entry->packetSize / m_maxPacketSize; i++)
+      for (uint32_t i = 0; i < entry->packetSize / m_maxPacketSize; i++)
         {
           SendPacket (m_maxPacketSize);
         }
