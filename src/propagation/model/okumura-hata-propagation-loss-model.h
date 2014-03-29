@@ -48,6 +48,9 @@ public:
   // inherited from Object
   static TypeId GetTypeId (void);
 
+  OkumuraHataPropagationLossModel ();
+  virtual ~OkumuraHataPropagationLossModel ();
+
   /** 
    * \param a the first mobility model
    * \param b the second mobility model

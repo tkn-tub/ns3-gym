@@ -39,6 +39,7 @@ ItuR1411LosPropagationLossModel::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::ItuR1411LosPropagationLossModel")
 
     .SetParent<PropagationLossModel> ()
+    .AddConstructor<ItuR1411LosPropagationLossModel> ()
 
     .AddAttribute ("Frequency",
                    "The propagation frequency in Hz",
@@ -47,6 +48,15 @@ ItuR1411LosPropagationLossModel::GetTypeId (void)
                    MakeDoubleChecker<double> ());
 
   return tid;
+}
+
+ItuR1411LosPropagationLossModel::ItuR1411LosPropagationLossModel ()
+  : PropagationLossModel ()
+{
+}
+
+ItuR1411LosPropagationLossModel::~ItuR1411LosPropagationLossModel ()
+{
 }
 
 double

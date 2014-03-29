@@ -173,6 +173,7 @@ Bugs fixed
 - Bug 1814 - IPv6 Packet with length not multiple of 8 bytes are fragmented incorrectly.
 - Bug 1815 - Python bindings compilation with clang compiler toolchain
 - Bug 1816 - IPv4 fragmentation loses Packet tags
+- Bug 1877 - constructor missing for <something>PropagationLossModels
 
 Release 3.18.2
 ==============

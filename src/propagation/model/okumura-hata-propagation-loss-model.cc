@@ -40,6 +40,7 @@ OkumuraHataPropagationLossModel::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::OkumuraHataPropagationLossModel")
 
     .SetParent<PropagationLossModel> ()
+    .AddConstructor<OkumuraHataPropagationLossModel> ()
 
     .AddAttribute ("Frequency",
                    "The propagation frequency in Hz",
@@ -64,6 +65,15 @@ OkumuraHataPropagationLossModel::GetTypeId (void)
                                     LargeCity, "Large"));
 
   return tid;
+}
+
+OkumuraHataPropagationLossModel::OkumuraHataPropagationLossModel ()
+  : PropagationLossModel ()
+{
+}
+
+OkumuraHataPropagationLossModel::~OkumuraHataPropagationLossModel ()
+{
 }
 
 double
