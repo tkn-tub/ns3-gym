@@ -33,6 +33,8 @@
 
 namespace ns3 {
 
+class TimeWithUnit;
+  
 /**
  * \ingroup core
  * \brief Simulation virtual time values and global simulation resolution.
@@ -487,6 +489,20 @@ public:
   {
     return Time (value);
   }
+
+  /**
+   * Attach a unit to a Time, to facilitate output in a specific unit.
+   *
+   * For example,
+   * \code
+   *   Time t (3.14e9);  // Pi seconds
+   *   std::cout << t.As (Time::MS) << std::endl;
+   * \code
+   * will print ``+3140.0ms``
+   *
+   * \param unit [in] The unit to use.
+   */
+  TimeWithUnit As (const enum Unit unit) const;
 
 private:
   /**
@@ -1022,6 +1038,32 @@ Ptr<const AttributeChecker> MakeTimeChecker (const Time min)
   return MakeTimeChecker (min, Time::Max ());
 }
 
+/**
+ * \ingroup time
+ * \brief A Time with attached unit, to facilitate output in that unit.
+ */
+class TimeWithUnit
+{
+public:
+  /**
+   * Attach a unit to a Time
+   *
+   * \param [in] time The time.
+   * \param [in] unit The unit to use for output
+   */
+  TimeWithUnit (const Time time, const Time::Unit unit)
+    : m_time (time),
+      m_unit (unit)
+  { };
+
+private:
+  Time m_time;        //!< The time
+  Time::Unit m_unit;  //!< The unit to use in output
+
+  /// Output streamer
+  friend std::ostream & operator << (std::ostream & os, const TimeWithUnit & time);
+
+};  // class TimeWithUnit
 
 } // namespace ns3
 
