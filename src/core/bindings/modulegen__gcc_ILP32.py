@@ -100,6 +100,8 @@ def register_types(module):
     module.add_class('SystemMutex')
     ## system-wall-clock-ms.h (module 'core'): ns3::SystemWallClockMs [class]
     module.add_class('SystemWallClockMs')
+    ## nstime.h (module 'core'): ns3::TimeWithUnit [class]
+    module.add_class('TimeWithUnit')
     ## timer.h (module 'core'): ns3::Timer [class]
     module.add_class('Timer')
     ## timer.h (module 'core'): ns3::Timer::DestroyPolicy [enumeration]
@@ -320,10 +322,10 @@ def register_types(module):
     module.add_class('Vector3DChecker', parent=root_module['ns3::AttributeChecker'])
     ## vector.h (module 'core'): ns3::Vector3DValue [class]
     module.add_class('Vector3DValue', parent=root_module['ns3::AttributeValue'])
-    typehandlers.add_type_alias(u'ns3::RngSeedManager', u'ns3::SeedManager')
-    typehandlers.add_type_alias(u'ns3::RngSeedManager*', u'ns3::SeedManager*')
-    typehandlers.add_type_alias(u'ns3::RngSeedManager&', u'ns3::SeedManager&')
-    module.add_typedef(root_module['ns3::RngSeedManager'], 'SeedManager')
+    typehandlers.add_type_alias(u'ns3::Vector3D', u'ns3::Vector')
+    typehandlers.add_type_alias(u'ns3::Vector3D*', u'ns3::Vector*')
+    typehandlers.add_type_alias(u'ns3::Vector3D&', u'ns3::Vector&')
+    module.add_typedef(root_module['ns3::Vector3D'], 'Vector')
     typehandlers.add_type_alias(u'ns3::ObjectPtrContainerValue', u'ns3::ObjectVectorValue')
     typehandlers.add_type_alias(u'ns3::ObjectPtrContainerValue*', u'ns3::ObjectVectorValue*')
     typehandlers.add_type_alias(u'ns3::ObjectPtrContainerValue&', u'ns3::ObjectVectorValue&')
@@ -331,13 +333,13 @@ def register_types(module):
     typehandlers.add_type_alias(u'void ( * ) ( std::ostream & ) *', u'ns3::LogTimePrinter')
     typehandlers.add_type_alias(u'void ( * ) ( std::ostream & ) **', u'ns3::LogTimePrinter*')
     typehandlers.add_type_alias(u'void ( * ) ( std::ostream & ) *&', u'ns3::LogTimePrinter&')
+    typehandlers.add_type_alias(u'ns3::RngSeedManager', u'ns3::SeedManager')
+    typehandlers.add_type_alias(u'ns3::RngSeedManager*', u'ns3::SeedManager*')
+    typehandlers.add_type_alias(u'ns3::RngSeedManager&', u'ns3::SeedManager&')
+    module.add_typedef(root_module['ns3::RngSeedManager'], 'SeedManager')
     typehandlers.add_type_alias(u'void ( * ) ( std::ostream & ) *', u'ns3::LogNodePrinter')
     typehandlers.add_type_alias(u'void ( * ) ( std::ostream & ) **', u'ns3::LogNodePrinter*')
     typehandlers.add_type_alias(u'void ( * ) ( std::ostream & ) *&', u'ns3::LogNodePrinter&')
-    typehandlers.add_type_alias(u'ns3::Vector3D', u'ns3::Vector')
-    typehandlers.add_type_alias(u'ns3::Vector3D*', u'ns3::Vector*')
-    typehandlers.add_type_alias(u'ns3::Vector3D&', u'ns3::Vector&')
-    module.add_typedef(root_module['ns3::Vector3D'], 'Vector')
     typehandlers.add_type_alias(u'ns3::Vector3DValue', u'ns3::VectorValue')
     typehandlers.add_type_alias(u'ns3::Vector3DValue*', u'ns3::VectorValue*')
     typehandlers.add_type_alias(u'ns3::Vector3DValue&', u'ns3::VectorValue&')
@@ -475,6 +477,7 @@ def register_methods(root_module):
     register_Ns3SystemCondition_methods(root_module, root_module['ns3::SystemCondition'])
     register_Ns3SystemMutex_methods(root_module, root_module['ns3::SystemMutex'])
     register_Ns3SystemWallClockMs_methods(root_module, root_module['ns3::SystemWallClockMs'])
+    register_Ns3TimeWithUnit_methods(root_module, root_module['ns3::TimeWithUnit'])
     register_Ns3Timer_methods(root_module, root_module['ns3::Timer'])
     register_Ns3TimerImpl_methods(root_module, root_module['ns3::TimerImpl'])
     register_Ns3TriangularVariable_methods(root_module, root_module['ns3::TriangularVariable'])
@@ -1336,6 +1339,14 @@ def register_Ns3SystemWallClockMs_methods(root_module, cls):
     cls.add_method('Start', 
                    'void', 
                    [])
+    return
+
+def register_Ns3TimeWithUnit_methods(root_module, cls):
+    cls.add_output_stream_operator()
+    ## nstime.h (module 'core'): ns3::TimeWithUnit::TimeWithUnit(ns3::TimeWithUnit const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::TimeWithUnit const &', 'arg0')])
+    ## nstime.h (module 'core'): ns3::TimeWithUnit::TimeWithUnit(ns3::Time const time, ns3::Time::Unit const unit) [constructor]
+    cls.add_constructor([param('ns3::Time const', 'time'), param('ns3::Time::Unit const', 'unit')])
     return
 
 def register_Ns3Timer_methods(root_module, cls):
@@ -2474,10 +2485,10 @@ def register_Ns3SystemThread_methods(root_module, cls):
     return
 
 def register_Ns3Time_methods(root_module, cls):
-    #cls.add_binary_numeric_operator('*', root_module['ns3::Time'], root_module['ns3::Time'], param('int64_t const &', u'right'))
+    cls.add_binary_numeric_operator('*', root_module['ns3::Time'], root_module['ns3::Time'], param('int64_t const &', u'right'))
     cls.add_binary_numeric_operator('+', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::Time const &', u'right'))
     cls.add_binary_numeric_operator('-', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::Time const &', u'right'))
-    #cls.add_binary_numeric_operator('/', root_module['ns3::Time'], root_module['ns3::Time'], param('int64_t const &', u'right'))
+    cls.add_binary_numeric_operator('/', root_module['ns3::Time'], root_module['ns3::Time'], param('int64_t const &', u'right'))
     cls.add_binary_comparison_operator('<')
     cls.add_binary_comparison_operator('>')
     cls.add_binary_comparison_operator('!=')
@@ -2509,6 +2520,11 @@ def register_Ns3Time_methods(root_module, cls):
     cls.add_constructor([param('std::string const &', 's')])
     ## nstime.h (module 'core'): ns3::Time::Time(ns3::int64x64_t const & value) [constructor]
     cls.add_constructor([param('ns3::int64x64_t const &', 'value')])
+    ## nstime.h (module 'core'): ns3::TimeWithUnit ns3::Time::As(ns3::Time::Unit const unit) const [member function]
+    cls.add_method('As', 
+                   'ns3::TimeWithUnit', 
+                   [param('ns3::Time::Unit const', 'unit')], 
+                   is_const=True)
     ## nstime.h (module 'core'): int ns3::Time::Compare(ns3::Time const & o) const [member function]
     cls.add_method('Compare', 
                    'int', 
