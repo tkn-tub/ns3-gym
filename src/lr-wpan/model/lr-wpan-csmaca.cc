@@ -91,84 +91,84 @@ LrWpanCsmaCa::GetMac (void) const
 }
 
 void
-LrWpanCsmaCa::setSlottedCsmaCa (void)
+LrWpanCsmaCa::SetSlottedCsmaCa (void)
 {
   NS_LOG_FUNCTION (this);
   m_isSlotted = true;
 }
 
 void
-LrWpanCsmaCa::setUnSlottedCsmaCa (void)
+LrWpanCsmaCa::SetUnSlottedCsmaCa (void)
 {
   NS_LOG_FUNCTION (this);
   m_isSlotted = false;
 }
 
 bool
-LrWpanCsmaCa::isSlottedCsmaCa (void) const
+LrWpanCsmaCa::IsSlottedCsmaCa (void) const
 {
   NS_LOG_FUNCTION (this);
   return (m_isSlotted);
 }
 
 bool
-LrWpanCsmaCa::isUnSlottedCsmaCa (void) const
+LrWpanCsmaCa::IsUnSlottedCsmaCa (void) const
 {
   NS_LOG_FUNCTION (this);
   return (!m_isSlotted);
 }
 
 void
-LrWpanCsmaCa::setMacMinBE (uint8_t macMinBE)
+LrWpanCsmaCa::SetMacMinBE (uint8_t macMinBE)
 {
   NS_LOG_FUNCTION (this << macMinBE);
   m_macMinBE = macMinBE;
 }
 
 uint8_t
-LrWpanCsmaCa::getMacMinBE (void) const
+LrWpanCsmaCa::GetMacMinBE (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_macMinBE;
 }
 
 void
-LrWpanCsmaCa::setMacMaxBE (uint8_t macMaxBE)
+LrWpanCsmaCa::SetMacMaxBE (uint8_t macMaxBE)
 {
   NS_LOG_FUNCTION (this << macMaxBE);
   m_macMinBE = macMaxBE;
 }
 
 uint8_t
-LrWpanCsmaCa::getMacMaxBE (void) const
+LrWpanCsmaCa::GetMacMaxBE (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_macMaxBE;
 }
 
 void
-LrWpanCsmaCa::setmacMaxCSMABackoffs (uint8_t macMaxCSMABackoffs)
+LrWpanCsmaCa::SetMacMaxCSMABackoffs (uint8_t macMaxCSMABackoffs)
 {
   NS_LOG_FUNCTION (this << macMaxCSMABackoffs);
   m_macMaxCSMABackoffs = macMaxCSMABackoffs;
 }
 
 uint8_t
-LrWpanCsmaCa::getmacMaxCSMABackoffs (void) const
+LrWpanCsmaCa::GetMacMaxCSMABackoffs (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_macMaxCSMABackoffs;
 }
 
 void
-LrWpanCsmaCa::setUnitBackoffPeriod (uint64_t unitBackoffPeriod)
+LrWpanCsmaCa::SetUnitBackoffPeriod (uint64_t unitBackoffPeriod)
 {
   NS_LOG_FUNCTION (this << unitBackoffPeriod);
   m_aUnitBackoffPeriod = unitBackoffPeriod;
 }
 
 uint64_t
-LrWpanCsmaCa::getUnitBackoffPeriod (void) const
+LrWpanCsmaCa::GetUnitBackoffPeriod (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_aUnitBackoffPeriod;
@@ -176,7 +176,7 @@ LrWpanCsmaCa::getUnitBackoffPeriod (void) const
 
 //TODO:
 uint64_t
-LrWpanCsmaCa::getTimeToNextSlot (void) const
+LrWpanCsmaCa::GetTimeToNextSlot (void) const
 {
   NS_LOG_FUNCTION (this);
   uint64_t diffT = 0;
@@ -192,7 +192,7 @@ LrWpanCsmaCa::Start ()
   NS_LOG_FUNCTION (this);
   uint64_t backoffBoundary = 0;
   m_NB = 0;
-  if (isSlottedCsmaCa ())
+  if (IsSlottedCsmaCa ())
     {
       m_CW = 2;
       if (m_BLE)
@@ -204,7 +204,7 @@ LrWpanCsmaCa::Start ()
           m_BE = m_macMinBE;
         }
       //TODO: for slotted, locate backoff period boundary. i.e. delay to the next slot boundary
-      backoffBoundary = getTimeToNextSlot ();
+      backoffBoundary = GetTimeToNextSlot ();
       m_randomBackoffEvent = Simulator::Schedule (Seconds (backoffBoundary), &LrWpanCsmaCa::RandomBackoffDelay, this);
     }
   else
@@ -248,9 +248,9 @@ LrWpanCsmaCa::RandomBackoffDelay ()
 
   symbolRate = (uint64_t) m_mac->GetPhy ()->GetDataOrSymbolRate (isData); //symbols per second
   backoffPeriod = (uint64_t)m_random.GetValue (0, upperBound); //num backoff periods
-  randomBackoff = MicroSeconds (backoffPeriod * getUnitBackoffPeriod () * 1000 * 1000 / symbolRate);
+  randomBackoff = MicroSeconds (backoffPeriod * GetUnitBackoffPeriod () * 1000 * 1000 / symbolRate);
 
-  if (isUnSlottedCsmaCa ())
+  if (IsUnSlottedCsmaCa ())
     {
       NS_LOG_LOGIC ("Unslotted:  requesting CCA after backoff of " << randomBackoff.GetMicroSeconds () << " us");
       m_requestCcaEvent = Simulator::Schedule (randomBackoff, &LrWpanCsmaCa::RequestCCA, this);
@@ -282,7 +282,7 @@ LrWpanCsmaCa::CanProceed ()
   if (canProceed)
     {
       // TODO: For slotted, Perform CCA on backoff period boundary i.e. delay to next slot boundary
-      backoffBoundary = getTimeToNextSlot ();
+      backoffBoundary = GetTimeToNextSlot ();
       m_requestCcaEvent = Simulator::Schedule (Seconds (backoffBoundary), &LrWpanCsmaCa::RequestCCA, this);
     }
   else
@@ -315,7 +315,7 @@ LrWpanCsmaCa::PlmeCcaConfirm (LrWpanPhyEnumeration status)
       m_ccaRequestRunning = false;
       if (status == IEEE_802_15_4_PHY_IDLE)
         {
-          if (isSlottedCsmaCa ())
+          if (IsSlottedCsmaCa ())
             {
               m_CW--;
               if (m_CW == 0)
@@ -345,7 +345,7 @@ LrWpanCsmaCa::PlmeCcaConfirm (LrWpanPhyEnumeration status)
         }
       else
         {
-          if (isSlottedCsmaCa ())
+          if (IsSlottedCsmaCa ())
             {
               m_CW = 2;
             }

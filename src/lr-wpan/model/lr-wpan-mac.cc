@@ -302,7 +302,7 @@ LrWpanMac::McpsDataRequest (McpsDataRequestParams params, Ptr<Packet> p)
     }
 
   //if is Slotted CSMA means its beacon enabled
-  if (m_csmaCa->isSlottedCsmaCa ())
+  if (m_csmaCa->IsSlottedCsmaCa ())
     {
       if (b1 == TX_OPTION_GTS)
         {
@@ -546,14 +546,14 @@ LrWpanMac::PdDataIndication (uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
                   || (receivedMacHdr.GetType () == LrWpanMacHeader::LRWPAN_MAC_COMMAND))
               && (receivedMacHdr.GetSrcAddrMode () > 1))
             {
-              acceptFrame = receivedMacHdr.GetSrcPanId () == m_macPanId; //TODO need to check if PAN coord
+              acceptFrame = receivedMacHdr.GetSrcPanId () == m_macPanId; // \todo need to check if PAN coord
             }
 
           if (acceptFrame)
             {
               m_macRxTrace (originalPkt);
-              // TODO: What should we do if we receive a frame while waiting for an ACK?
-              //       Especially if this frame has the ACK request bit set, should we reply with an ACK, possibly missing the pending ACK?
+              // \todo: What should we do if we receive a frame while waiting for an ACK?
+              //        Especially if this frame has the ACK request bit set, should we reply with an ACK, possibly missing the pending ACK?
 
               // If the received frame is a frame with the ACK request bit set, we immediately send back an ACK.
               // If we are currently waiting for a pending ACK, we assume the ACK was lost and trigger a retransmission after sending the ACK.
@@ -572,8 +572,8 @@ LrWpanMac::PdDataIndication (uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
                     }
                   else if (m_lrWpanMacState == MAC_CSMA)
                     {
-                      // TODO: If we receive a packet while doing CSMA/CA, should  we drop the packet because of channel busy,
-                      //       or should we restart CSMA/CA for the packet after sending the ACK?
+                      // \todo: If we receive a packet while doing CSMA/CA, should  we drop the packet because of channel busy,
+                      //        or should we restart CSMA/CA for the packet after sending the ACK?
                       // Currently we simply restart CSMA/CA after sending the ACK.
                       m_csmaCa->Cancel ();
                     }
@@ -968,7 +968,7 @@ LrWpanMac::ChangeMacState (LrWpanMacState newState)
 uint64_t
 LrWpanMac::GetMacAckWaitDuration (void) const
 {
-  return m_csmaCa->getUnitBackoffPeriod () + m_phy->aTurnaroundTime + m_phy->GetPhySHRDuration ()
+  return m_csmaCa->GetUnitBackoffPeriod () + m_phy->aTurnaroundTime + m_phy->GetPhySHRDuration ()
       + ceil (6 * m_phy->GetPhySymbolsPerOctet ());
 }
 

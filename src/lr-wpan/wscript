@@ -23,6 +23,7 @@ def build(bld):
         'test/lr-wpan-packet-test.cc',
         'test/lr-wpan-error-model-test.cc',
         'test/lr-wpan-spectrum-value-helper-test.cc',
+        'test/lr-wpan-collision-test.cc',
         ]
      
     headers = bld(features='ns3header')

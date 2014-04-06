@@ -50,25 +50,25 @@ public:
 
   void SetMac (Ptr<LrWpanMac> mac);
   Ptr<LrWpanMac> GetMac (void) const;
-  void setSlottedCsmaCa (void);
-  void setUnSlottedCsmaCa (void);
-  bool isSlottedCsmaCa (void) const;
-  bool isUnSlottedCsmaCa (void) const;
+  void SetSlottedCsmaCa (void);
+  void SetUnSlottedCsmaCa (void);
+  bool IsSlottedCsmaCa (void) const;
+  bool IsUnSlottedCsmaCa (void) const;
 
-  void setMacMinBE (uint8_t macMinBE);
-  uint8_t getMacMinBE (void) const;
-  void setMacMaxBE (uint8_t macMaxBE);
-  uint8_t getMacMaxBE (void) const;
-  void setmacMaxCSMABackoffs (uint8_t macMaxCSMABackoffs);
-  uint8_t getmacMaxCSMABackoffs (void) const;
+  void SetMacMinBE (uint8_t macMinBE);
+  uint8_t GetMacMinBE (void) const;
+  void SetMacMaxBE (uint8_t macMaxBE);
+  uint8_t GetMacMaxBE (void) const;
+  void SetMacMaxCSMABackoffs (uint8_t macMaxCSMABackoffs);
+  uint8_t GetMacMaxCSMABackoffs (void) const;
 
-  void setUnitBackoffPeriod (uint64_t unitBackoffPeriod);
-  uint64_t getUnitBackoffPeriod (void) const;
+  void SetUnitBackoffPeriod (uint64_t unitBackoffPeriod);
+  uint64_t GetUnitBackoffPeriod (void) const;
 
   /*
    *  Amount of time from now to the beginning of the next slot
    */
-  uint64_t getTimeToNextSlot (void) const;
+  uint64_t GetTimeToNextSlot (void) const;
 
   /*
    * Start CSMA-CA algorithm (step 1), initialize NB, BE for both slotted and unslotted
