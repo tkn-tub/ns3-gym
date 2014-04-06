@@ -105,7 +105,7 @@ LrWpanMac::LrWpanMac ()
 
   UniformVariable uniformVar;
   uniformVar = UniformVariable (0, 255);
-  m_macDsn = SequenceNumber16 (uniformVar.GetValue ());
+  m_macDsn = SequenceNumber8 (uniformVar.GetValue ());
   m_shortAddress = Mac16Address ("00:00");
 }
 
@@ -215,12 +215,8 @@ LrWpanMac::McpsDataRequest (McpsDataRequestParams params, Ptr<Packet> p)
   //       The current tx drop trace is not suitable, because packets dropped using this trace carry the mac header
   //       and footer, while packets being dropped here do not have them.
 
-  LrWpanMacHeader macHdr (LrWpanMacHeader::LRWPAN_MAC_DATA, (uint8_t)m_macDsn.GetValue ());
+  LrWpanMacHeader macHdr (LrWpanMacHeader::LRWPAN_MAC_DATA, m_macDsn.GetValue ());
   m_macDsn++;
-  if (m_macDsn > SequenceNumber16 (255))
-    {
-      m_macDsn = m_macDsn - SequenceNumber16 (255);
-    }
 
   if (p->GetSize () > LrWpanPhy::aMaxPhyPacketSize - aMinMPDUOverhead)
     {
@@ -735,10 +731,6 @@ LrWpanMac::PdDataConfirm (LrWpanPhyEnumeration status)
 
   NS_LOG_FUNCTION (this << status << m_txQueue.size ());
 
-  // \todo: Temporary assert. This is a bug.
-  NS_ASSERT_MSG (m_txQueue.size () > 0, "TxQsize = 0");
-  TxQueueElement *txQElement = m_txQueue.front ();
-
   LrWpanMacHeader macHdr;
   m_txPkt->PeekHeader (macHdr);
   if (status == IEEE_802_15_4_PHY_SUCCESS)
@@ -764,6 +756,8 @@ LrWpanMac::PdDataConfirm (LrWpanPhyEnumeration status)
               if (!m_mcpsDataConfirmCallback.IsNull ())
                 {
                   McpsDataConfirmParams confirmParams;
+                  NS_ASSERT_MSG (m_txQueue.size () > 0, "TxQsize = 0");
+                  TxQueueElement *txQElement = m_txQueue.front ();
                   confirmParams.m_msduHandle = txQElement->txQMsduHandle;
                   confirmParams.m_status = IEEE_802_15_4_SUCCESS;
                   m_mcpsDataConfirmCallback (confirmParams);
@@ -782,6 +776,8 @@ LrWpanMac::PdDataConfirm (LrWpanPhyEnumeration status)
 
       if (!macHdr.IsAcknowledgment ())
         {
+          NS_ASSERT_MSG (m_txQueue.size () > 0, "TxQsize = 0");
+          TxQueueElement *txQElement = m_txQueue.front ();
           m_macTxDropTrace (txQElement->txQPkt);
           if (!m_mcpsDataConfirmCallback.IsNull ())
             {

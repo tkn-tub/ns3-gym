@@ -286,7 +286,7 @@ public:
   uint64_t m_macSuperframeOrder;        // 0..14 and 15 means superframe shall not remain active after beacon
   bool m_macPromiscuousMode;            // Indicates if MAC sublayer is in receive all mode. True mean accept all frames from PHY.
   uint16_t m_macPanId;                  // 16bits id of PAN on which this device is operating. 0xffff means not asscoiated
-  SequenceNumber16 m_macDsn;            // Seq num added to transmitted data or MAC command frame 00-ff
+  SequenceNumber8 m_macDsn;             // Seq num added to transmitted data or MAC command frame 00-ff
   uint8_t m_macMaxFrameRetries;         // The maximum number of retries allowed after a transmission failure
   
   uint64_t GetMacAckWaitDuration (void) const;
