@@ -733,8 +733,10 @@ LrWpanMac::PdDataConfirm (LrWpanPhyEnumeration status)
 {
   NS_ASSERT (m_lrWpanMacState == MAC_SENDING);
 
-  NS_LOG_FUNCTION (this << status << (m_txQueue.empty () ? 0 : m_txQueue.size ()));
+  NS_LOG_FUNCTION (this << status << m_txQueue.size ());
 
+  // \todo: Temporary assert. This is a bug.
+  NS_ASSERT_MSG (m_txQueue.size () > 0, "TxQsize = 0");
   TxQueueElement *txQElement = m_txQueue.front ();
 
   LrWpanMacHeader macHdr;
