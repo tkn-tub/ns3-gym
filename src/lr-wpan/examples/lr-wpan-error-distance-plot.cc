@@ -31,6 +31,7 @@
 #include <ns3/lr-wpan-error-model.h>
 #include <ns3/propagation-loss-model.h>
 #include <ns3/lr-wpan-net-device.h>
+#include <ns3/spectrum-value.h>
 #include <ns3/lr-wpan-spectrum-value-helper.h>
 #include <ns3/lr-wpan-mac.h>
 #include <ns3/node.h>
@@ -115,8 +116,8 @@ int main (int argc, char *argv[])
   dev1->GetMac ()->SetMcpsDataIndicationCallback (cb0);
 
   McpsDataRequestParams params;
-  params.m_srcAddrMode = 2;
-  params.m_dstAddrMode = 2;
+  params.m_srcAddrMode = SHORT_ADDR;
+  params.m_dstAddrMode = SHORT_ADDR;
   params.m_dstPanId = 0;
   params.m_dstAddr = Mac16Address ("00:02");
   params.m_msduHandle = 0;
