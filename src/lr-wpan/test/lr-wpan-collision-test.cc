@@ -103,7 +103,7 @@ LrWpanCollisionTestCase::DoRun (void)
 
   Ptr<ConstantPositionMobilityModel> sender1Mobility = CreateObject<ConstantPositionMobilityModel> ();
   // Configure position 10 m distance
-  sender1Mobility->SetPosition (Vector (0,10,0));
+  sender1Mobility->SetPosition (Vector (0,1,0));
   dev1->GetPhy ()->SetMobility (sender1Mobility);
   n1->AggregateObject (sender1Mobility);
 

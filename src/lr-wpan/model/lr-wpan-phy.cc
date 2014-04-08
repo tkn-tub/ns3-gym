@@ -256,6 +256,10 @@ LrWpanPhy::StartRx (Ptr<SpectrumSignalParameters> spectrumRxParams)
   NS_LOG_FUNCTION (this << spectrumRxParams);
   LrWpanSpectrumValueHelper psdHelper;
 
+  std::cout << Simulator::Now () <<
+      " [" << DynamicCast<LrWpanNetDevice> (m_device)->GetMac ()->GetShortAddress () << "] " <<
+      " StartRx " << this << std::endl;
+
   Ptr<LrWpanSpectrumSignalParameters> lrWpanRxParams = DynamicCast<LrWpanSpectrumSignalParameters> (spectrumRxParams);
   NS_ASSERT (lrWpanRxParams != 0);
   Ptr<Packet> p = (lrWpanRxParams->packetBurst->GetPackets ()).front ();
@@ -329,6 +333,10 @@ LrWpanPhy::EndRx (Ptr<LrWpanSpectrumSignalParameters> params)
   NS_LOG_FUNCTION (this);
   NS_ASSERT (params != 0);
 
+  std::cout << Simulator::Now () <<
+      " [" << DynamicCast<LrWpanNetDevice> (m_device)->GetMac ()->GetShortAddress () << "] " <<
+      " EndRx " << this << " " << int(m_trxState) << " - ";
+
   // Calculate whether packet was lost.
   LrWpanSpectrumValueHelper psdHelper;
   Ptr<LrWpanSpectrumSignalParameters> currentRxParams = m_currentRxPacket.first;
@@ -337,7 +345,7 @@ LrWpanPhy::EndRx (Ptr<LrWpanSpectrumSignalParameters> params)
   // We are currently receiving a packet.
   if (m_trxState == IEEE_802_15_4_PHY_BUSY_RX)
     {
-      NS_ASSERT (currentRxParams && !m_currentRxPacket.second);
+      // NS_ASSERT (currentRxParams && !m_currentRxPacket.second);
 
       Ptr<Packet> currentPacket = currentRxParams->packetBurst->GetPackets ().front ();
       if (m_errorModel != 0)
@@ -358,7 +366,12 @@ LrWpanPhy::EndRx (Ptr<LrWpanSpectrumSignalParameters> params)
           if (m_random.GetValue () < per)
             {
               // The packet was destroyed, drop the packet after reception.
+              std::cout << "discarding " << sinr << " - " << per;
               m_currentRxPacket.second = true;
+            }
+          else
+            {
+              std::cout << "processing " << sinr << " - " << per;
             }
         }
       else
@@ -368,6 +381,8 @@ LrWpanPhy::EndRx (Ptr<LrWpanSpectrumSignalParameters> params)
           NS_LOG_WARN ("Missing ErrorModel");
         }
     }
+
+  std::cout << std::endl;
 
   // Update the interference.
   m_signal->RemoveSignal (params->psd);
