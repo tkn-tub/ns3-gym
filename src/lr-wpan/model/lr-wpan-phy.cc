@@ -24,6 +24,7 @@
 #include "lr-wpan-spectrum-signal-parameters.h"
 #include "lr-wpan-spectrum-value-helper.h"
 #include "lr-wpan-error-model.h"
+#include "lr-wpan-net-device.h"
 #include <ns3/log.h>
 #include <ns3/abort.h>
 #include <ns3/simulator.h>
@@ -36,6 +37,10 @@
 #include <ns3/net-device.h>
 
 NS_LOG_COMPONENT_DEFINE ("LrWpanPhy");
+
+#undef NS_LOG_APPEND_CONTEXT
+#define NS_LOG_APPEND_CONTEXT                                   \
+  std::clog << "[address " << DynamicCast<LrWpanNetDevice> (m_device)->GetMac ()->GetShortAddress () << "] ";
 
 namespace ns3 {
 
@@ -251,6 +256,7 @@ LrWpanPhy::StartRx (Ptr<SpectrumSignalParameters> spectrumRxParams)
   NS_LOG_FUNCTION (this << spectrumRxParams);
   LrWpanSpectrumValueHelper psdHelper;
 
+  std::cout << Simulator::Now () << " StartRx " << this << std::endl;
 
   Ptr<LrWpanSpectrumSignalParameters> lrWpanRxParams = DynamicCast<LrWpanSpectrumSignalParameters> (spectrumRxParams);
   NS_ASSERT (lrWpanRxParams != 0);
@@ -325,6 +331,8 @@ LrWpanPhy::EndRx (Ptr<LrWpanSpectrumSignalParameters> params)
   NS_LOG_FUNCTION (this);
   NS_ASSERT (params != 0);
 
+  std::cout << Simulator::Now () << " EndRx " << this << " " << int(m_trxState) << " - ";
+
   // Calculate whether packet was lost.
   LrWpanSpectrumValueHelper psdHelper;
   Ptr<LrWpanSpectrumSignalParameters> currentRxParams = m_currentRxPacket.first;
@@ -354,7 +362,12 @@ LrWpanPhy::EndRx (Ptr<LrWpanSpectrumSignalParameters> params)
           if (m_random.GetValue () < per)
             {
               // The packet was destroyed, drop the packet after reception.
+              std::cout << "discarding " << sinr << " - " << per;
               m_currentRxPacket.second = true;
+            }
+          else
+            {
+              std::cout << "processing " << sinr << " - " << per;
             }
         }
       else
@@ -364,6 +377,8 @@ LrWpanPhy::EndRx (Ptr<LrWpanSpectrumSignalParameters> params)
           NS_LOG_WARN ("Missing ErrorModel");
         }
     }
+
+  std::cout << std::endl;
 
   // Update the interference.
   m_signal->RemoveSignal (params->psd);
@@ -454,6 +469,7 @@ LrWpanPhy::PdDataRequest (const uint32_t psduLength, Ptr<Packet> p)
           Ptr<PacketBurst> pb = CreateObject<PacketBurst> ();
           pb->AddPacket (p);
           txParams->packetBurst = pb;
+          std::cout << "** " << Simulator::Now () << " - StartTx " << this << std::endl;
           m_channel->StartTx (txParams);
           m_pdDataRequest = Simulator::Schedule (txParams->duration, &LrWpanPhy::EndTx, this);
           ChangeTrxState (IEEE_802_15_4_PHY_BUSY_TX);
@@ -497,6 +513,7 @@ void
 LrWpanPhy::PlmeCcaRequest (void)
 {
   NS_LOG_FUNCTION (this);
+
   if (m_trxState == IEEE_802_15_4_PHY_RX_ON || m_trxState == IEEE_802_15_4_PHY_BUSY_RX)
     {
       //call StartRx or ED and then get updated m_rxTotalPower in EndCCA?
@@ -577,6 +594,8 @@ void
 LrWpanPhy::PlmeSetTRXStateRequest (LrWpanPhyEnumeration state)
 {
   NS_LOG_FUNCTION (this << state);
+
+  // std::cout << Simulator::Now () << " PlmeSetTRXStateRequest " << int (state) << std::endl;
 
   // Check valid states (Table 14)
   NS_ABORT_IF ( (state != IEEE_802_15_4_PHY_RX_ON)

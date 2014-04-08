@@ -120,9 +120,9 @@ LrWpanCollisionTestCase::DoRun (void)
   dev1->GetCsmaCa ()->SetMacMinBE (0);
   dev2->GetCsmaCa ()->SetMacMinBE (0);
 
-  Ptr<Packet> p0 = Create<Packet> (50);
+  Ptr<Packet> p0 = Create<Packet> (20);
   Ptr<Packet> p1 = Create<Packet> (60);
-  Ptr<Packet> p2 = Create<Packet> (120);
+  Ptr<Packet> p2 = Create<Packet> (100);
 
   McpsDataRequestParams params;
   params.m_srcAddrMode = SHORT_ADDR;
@@ -131,77 +131,85 @@ LrWpanCollisionTestCase::DoRun (void)
   params.m_msduHandle = 0;
   // params.m_txOptions = TX_OPTION_ACK;
 
-  // First case: concurrent tx and no ACKs
-  m_rxPackets = 0;
-  params.m_dstAddr = Mac16Address ("00:02");
-  Simulator::Schedule (Seconds (0.0),
-                       &LrWpanMac::McpsDataRequest,
-                       dev0->GetMac (), params, p0);
-
-  params.m_dstAddr = Mac16Address ("00:01");
-  Simulator::Schedule (Seconds (0.0),
-                       &LrWpanMac::McpsDataRequest,
-                       dev1->GetMac (), params, p1);
-
-  Simulator::Run ();
-
-  NS_TEST_EXPECT_MSG_EQ (m_rxPackets, 0, "Not received a packet (as expected)");
-
-  // Second case: concurrent tx and ACKs
-  m_rxPackets = 0;
-  params.m_txOptions = TX_OPTION_ACK;
-
-  params.m_dstAddr = Mac16Address ("00:02");
-  Simulator::Schedule (Seconds (0.0),
-                       &LrWpanMac::McpsDataRequest,
-                       dev0->GetMac (), params, p0);
-
-  params.m_dstAddr = Mac16Address ("00:01");
-  Simulator::Schedule (Seconds (0.0),
-                       &LrWpanMac::McpsDataRequest,
-                       dev1->GetMac (), params, p1);
-
-  Simulator::Run ();
-
-  NS_TEST_EXPECT_MSG_EQ (m_rxPackets, 1, "Received a packet (as expected)");
+//  // First case: concurrent tx and no ACKs
+//  std::cout << "*** First test " << std::endl;
+//  m_rxPackets = 0;
+//  params.m_dstAddr = Mac16Address ("00:02");
+//  Simulator::Schedule (Seconds (0.0),
+//                       &LrWpanMac::McpsDataRequest,
+//                       dev0->GetMac (), params, p0);
+//
+//  params.m_dstAddr = Mac16Address ("00:01");
+//  Simulator::Schedule (Seconds (0.0),
+//                       &LrWpanMac::McpsDataRequest,
+//                       dev1->GetMac (), params, p1);
+//
+//  Simulator::Run ();
+//
+//  NS_TEST_EXPECT_MSG_EQ (m_rxPackets, 0, "Not received a packet (as expected)");
+//
+//  // Second case: concurrent tx and ACKs
+//  std::cout << "*** Second test " << std::endl;
+//  m_rxPackets = 0;
+//  params.m_txOptions = TX_OPTION_ACK;
+//
+//  params.m_dstAddr = Mac16Address ("00:02");
+//  Simulator::Schedule (Seconds (0.0),
+//                       &LrWpanMac::McpsDataRequest,
+//                       dev0->GetMac (), params, p0);
+//
+//  params.m_dstAddr = Mac16Address ("00:01");
+//  Simulator::Schedule (Seconds (0.0),
+//                       &LrWpanMac::McpsDataRequest,
+//                       dev1->GetMac (), params, p1);
+//
+//  Simulator::Run ();
+//
+//  NS_TEST_EXPECT_MSG_EQ (m_rxPackets, 1, "Received a packet (as expected)");
 
   // Third case: two concurrent tx and no ACKs
+  std::cout << "*** Third test " << Seconds (0.0) << " " << Seconds (0.0001) << std::endl;
   m_rxPackets = 0;
   params.m_txOptions = 0;
 
-  params.m_dstAddr = Mac16Address ("00:01");
-  Simulator::Schedule (Seconds (0.0),
-                       &LrWpanMac::McpsDataRequest,
-                       dev1->GetMac (), params, p2);
+//  LogComponentEnable("LrWpanMac",LOG_LEVEL_ALL);
+//  LogComponentEnable("LrWpanPhy",LOG_LEVEL_ALL);
+//  LogComponentEnableAll (LOG_PREFIX_TIME);
 
   params.m_dstAddr = Mac16Address ("00:01");
-  Simulator::Schedule (Seconds (0.0),
+  Simulator::Schedule (Seconds (0.0001),
                        &LrWpanMac::McpsDataRequest,
                        dev2->GetMac (), params, p2);
+
+  params.m_dstAddr = Mac16Address ("00:01");
+  Simulator::Schedule (Seconds (0.0002),
+                       &LrWpanMac::McpsDataRequest,
+                       dev1->GetMac (), params, p0);
 
   Simulator::Run ();
 
   std::cout << "m_rxPackets = " << int(m_rxPackets) << std::endl;
   NS_TEST_EXPECT_MSG_EQ (m_rxPackets, 0, "Received a packet (as expected)");
 
-  // Fourth case: two concurrent tx and ACKs
-  m_rxPackets = 0;
-  params.m_txOptions = TX_OPTION_ACK;
-
-  params.m_dstAddr = Mac16Address ("00:01");
-  Simulator::Schedule (Seconds (0.0),
-                       &LrWpanMac::McpsDataRequest,
-                       dev1->GetMac (), params, p0);
-
-  params.m_dstAddr = Mac16Address ("00:01");
-  Simulator::Schedule (Seconds (0.0),
-                       &LrWpanMac::McpsDataRequest,
-                       dev2->GetMac (), params, p1);
-
-  Simulator::Run ();
-
-  std::cout << "m_rxPackets = " << int(m_rxPackets) << std::endl;
-  NS_TEST_EXPECT_MSG_EQ (m_rxPackets, 2, "Received two packets (as expected)");
+//  // Fourth case: two concurrent tx and ACKs
+//  std::cout << "*** Fourth test " << std::endl;
+//  m_rxPackets = 0;
+//  params.m_txOptions = TX_OPTION_ACK;
+//
+//  params.m_dstAddr = Mac16Address ("00:01");
+//  Simulator::Schedule (Seconds (0.0),
+//                       &LrWpanMac::McpsDataRequest,
+//                       dev1->GetMac (), params, p0);
+//
+//  params.m_dstAddr = Mac16Address ("00:01");
+//  Simulator::Schedule (Seconds (0.0),
+//                       &LrWpanMac::McpsDataRequest,
+//                       dev2->GetMac (), params, p1);
+//
+//  Simulator::Run ();
+//
+//  std::cout << "m_rxPackets = " << int(m_rxPackets) << std::endl;
+//  NS_TEST_EXPECT_MSG_EQ (m_rxPackets, 2, "Received two packets (as expected)");
 
   Simulator::Destroy ();
 }

@@ -180,7 +180,7 @@ LrWpanNetDevice::SetChannel (Ptr<SpectrumChannel> channel)
 Ptr<LrWpanMac>
 LrWpanNetDevice::GetMac (void) const
 {
-  NS_LOG_FUNCTION (this);
+  // NS_LOG_FUNCTION (this);
   return m_mac;
 }
 

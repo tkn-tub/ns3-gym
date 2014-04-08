@@ -90,6 +90,11 @@ MAC
 ###
 
 The MAC at present implements the unslotted CSMA/CA variant, without beaconing.
+
+The implemented MAC is similar to Contiki's NullMAC, i.e., a MAC without sleep
+features. The radio is assiumed to be always active (receiving or transmitting).
+Moreover, frame reception is disabled while performing the CCA.
+
 The main API supported is the data transfer API 
 (McpsDataRequest/Indication/Confirm).  CSMA/CA according to Stc 802.15.4-2006,
 section 7.5.1.4 is supported.  Frame reception and rejection
