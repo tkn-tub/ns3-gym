@@ -1831,6 +1831,8 @@ LteRlcAm::ExpirePollRetransmitTimer (void)
 
   if ( m_txonBufferSize == 0 && m_retxBufferSize == 0 )
     {
+      // see section 5.2.2.3
+      // note the difference between Rel 8 and Rel 11 specs; we follow Rel 11 here
       NS_LOG_INFO ("txonBuffer and retxBuffer empty. Move PDUs up to = " << m_vtS.GetValue () - 1 << " to retxBuffer");
       uint16_t sn = 0;
       for ( sn = m_vtA.GetValue(); sn < m_vtS.GetValue (); sn++ )
