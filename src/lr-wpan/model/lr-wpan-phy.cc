@@ -38,10 +38,6 @@
 
 NS_LOG_COMPONENT_DEFINE ("LrWpanPhy");
 
-#undef NS_LOG_APPEND_CONTEXT
-#define NS_LOG_APPEND_CONTEXT                                   \
-  std::clog << "[address " << DynamicCast<LrWpanNetDevice> (m_device)->GetMac ()->GetShortAddress () << "] ";
-
 namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (LrWpanPhy);
@@ -256,9 +252,6 @@ LrWpanPhy::StartRx (Ptr<SpectrumSignalParameters> spectrumRxParams)
   NS_LOG_FUNCTION (this << spectrumRxParams);
   LrWpanSpectrumValueHelper psdHelper;
 
-  std::cout << Simulator::Now () <<
-      " [" << DynamicCast<LrWpanNetDevice> (m_device)->GetMac ()->GetShortAddress () << "] " <<
-      " StartRx " << this << std::endl;
 
   Ptr<LrWpanSpectrumSignalParameters> lrWpanRxParams = DynamicCast<LrWpanSpectrumSignalParameters> (spectrumRxParams);
   NS_ASSERT (lrWpanRxParams != 0);
@@ -281,7 +274,6 @@ LrWpanPhy::StartRx (Ptr<SpectrumSignalParameters> spectrumRxParams)
       // as opposed to real receivers, which should go to this state only after
       // successfully receiving the SHR.
 
-      // \todo Check that the SINR is high enough for synchronizing to the packet.
       // If synchronizing to the packet is possible, change to BUSY_RX state,
       // otherwise drop the packet and stay in RX state. The actual synchronization
       // is not modeled.
@@ -293,9 +285,7 @@ LrWpanPhy::StartRx (Ptr<SpectrumSignalParameters> spectrumRxParams)
       // Std. 802.15.4-2006, appendix E, Figure E.2
       // At SNR < -5 the BER is less than 10e-1.
       // It's useless to even *try* to decode the packet.
-      // \todo: change the value to something more meaningful.
-      //        i.e., the minimum SINR for decoding the preamble.
-      if (sinr > -5)
+      if (10 * log(sinr) > -5)
         {
           ChangeTrxState (IEEE_802_15_4_PHY_BUSY_RX);
           m_currentRxPacket = std::make_pair (lrWpanRxParams, false);
@@ -333,10 +323,6 @@ LrWpanPhy::EndRx (Ptr<LrWpanSpectrumSignalParameters> params)
   NS_LOG_FUNCTION (this);
   NS_ASSERT (params != 0);
 
-  std::cout << Simulator::Now () <<
-      " [" << DynamicCast<LrWpanNetDevice> (m_device)->GetMac ()->GetShortAddress () << "] " <<
-      " EndRx " << this << " " << int(m_trxState) << " - ";
-
   // Calculate whether packet was lost.
   LrWpanSpectrumValueHelper psdHelper;
   Ptr<LrWpanSpectrumSignalParameters> currentRxParams = m_currentRxPacket.first;
@@ -359,30 +345,25 @@ LrWpanPhy::EndRx (Ptr<LrWpanSpectrumSignalParameters> params)
           double sinr = LrWpanSpectrumValueHelper::TotalAvgPower (currentRxParams->psd) / LrWpanSpectrumValueHelper::TotalAvgPower (interferenceAndNoise);
           double per = 1.0 - m_errorModel->GetChunkSuccessRate (sinr, chunkSize);
 
-          // TODO: What is the LQI for our model. The SINR is wrong in any case!
-          LrWpanLqiTag tag(sinr);
+          // The LQI is the total packet success rate scaled to 0-255.
+          // If not already set, initialize to 255.
+          LrWpanLqiTag tag (std::numeric_limits<uint8_t>::max ());
+          currentPacket->PeekPacketTag (tag);
+          uint8_t lqi = tag.Get ();
+          tag.Set (lqi - (per * lqi));
           currentPacket->ReplacePacketTag (tag);
 
           if (m_random.GetValue () < per)
             {
               // The packet was destroyed, drop the packet after reception.
-              std::cout << "discarding " << sinr << " - " << per;
               m_currentRxPacket.second = true;
-            }
-          else
-            {
-              std::cout << "processing " << sinr << " - " << per;
             }
         }
       else
         {
-          LrWpanLqiTag tag;
-          currentPacket->ReplacePacketTag (tag);
           NS_LOG_WARN ("Missing ErrorModel");
         }
     }
-
-  std::cout << std::endl;
 
   // Update the interference.
   m_signal->RemoveSignal (params->psd);
@@ -395,7 +376,8 @@ LrWpanPhy::EndRx (Ptr<LrWpanSpectrumSignalParameters> params)
       Ptr<Packet> currentPacket = currentRxParams->packetBurst->GetPackets ().front ();
       NS_ASSERT (currentPacket != 0);
 
-      LrWpanLqiTag tag;
+      // If there is no error model attached to the PHY, we always report the maximum LQI value.
+      LrWpanLqiTag tag (std::numeric_limits<uint8_t>::max ());
       currentPacket->PeekPacketTag (tag);
       m_phyRxEndTrace (currentPacket, tag.Get ());
 
