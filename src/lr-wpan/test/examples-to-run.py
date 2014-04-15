@@ -8,10 +8,11 @@
 #
 # See test.py for more information.
 cpp_examples = [
-    ("lr-wpan-packet-print", "True", "True"),
-    ("lr-wpan-phy-test", "True", "True"),
     ("lr-wpan-data", "True", "True"),
+	("lr-wpan-error-distance-plot", "True", "True"),
     ("lr-wpan-error-model-plot", "True", "True"),
+	("lr-wpan-packet-print", "True", "True"),
+	("lr-wpan-phy-test", "True", "True"),
 ]
 
 # A list of Python examples to run in order to ensure that they remain

@@ -46,6 +46,7 @@ class LrWpanCsmaCa;
  */
 typedef enum
 {
+  TX_OPTION_NONE = 0,
   TX_OPTION_ACK = 1,
   TX_OPTION_GTS = 2,
   TX_OPTION_INDIRECT = 4
