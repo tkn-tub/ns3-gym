@@ -41,6 +41,13 @@ class SpectrumModel;
 class AntennaModel;
 class NetDevice;
 
+typedef struct
+{
+  double averagePower;
+  Time lastUpdate;
+  Time measurementLength;
+} LrWpanEdPower;
+
 /**
  * IEEE802.15.4-2006 Table 1 and 2 in section 6.1.1 and 6.1.2
  */
@@ -380,6 +387,8 @@ private:
   void SetMyPhyOption (void);
   LrWpanPhyOption GetMyPhyOption (void);
   void EndTx ();
+  void CheckInterference ();
+
   void EndRx (Ptr<LrWpanSpectrumSignalParameters> params);
   void EndEd ();
   void EndCca ();
@@ -458,9 +467,8 @@ private:
   PlmeSetTRXStateConfirmCallback m_plmeSetTRXStateConfirmCallback;
   PlmeSetAttributeConfirmCallback m_plmeSetAttributeConfirmCallback;
   LrWpanPhyOption m_phyOption;
-  double m_rxEdPeakPower;
-  double m_rxTotalPower;
-  uint32_t m_rxTotalNum;
+  LrWpanEdPower m_edPower;
+  double m_ccaPeakPower;
   double m_rxSensitivity;
   Ptr<LrWpanInterferenceHelper> m_signal;
   Time m_rxLastUpdate;

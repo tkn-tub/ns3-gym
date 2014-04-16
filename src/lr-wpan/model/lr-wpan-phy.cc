@@ -118,10 +118,11 @@ LrWpanPhy::LrWpanPhy ()
 
   SetMyPhyOption ();
 
-  m_rxEdPeakPower = 0.0;
-  m_rxTotalPower = 0.0;
-  m_rxTotalNum = 0;
-  // default -85 dBm in W for 2.4 GHz
+  m_edPower.averagePower = 0.0;
+  m_edPower.lastUpdate = Seconds (0.0);
+  m_edPower.measurementLength = Seconds (0.0);
+
+  // default -110 dBm in W for 2.4 GHz
   m_rxSensitivity = pow (10.0, -110.0 / 10.0) / 1000.0;
   LrWpanSpectrumValueHelper psdHelper;
   m_txPsd = psdHelper.CreateTxPowerSpectralDensity (m_phyPIBAttributes.phyTransmitPower,
@@ -258,8 +259,11 @@ LrWpanPhy::StartRx (Ptr<SpectrumSignalParameters> spectrumRxParams)
   Ptr<Packet> p = (lrWpanRxParams->packetBurst->GetPackets ()).front ();
   NS_ASSERT (p != 0);
 
-  // Add any incoming packet to the current interference.
-  m_signal->AddSignal (lrWpanRxParams->psd);
+  if (!m_edRequest.IsExpired ())
+    {
+      // Update the average receive power during ED.
+      m_edPower.averagePower += LrWpanSpectrumValueHelper::TotalAvgPower (m_signal->GetSignalPsd ()) * (Simulator::Now () - m_edPower.lastUpdate).GetTimeStep () / m_edPower.measurementLength.GetTimeStep ();
+    }
 
   // Prevent PHY from receiving another packet while switching the transceiver state.
   if (m_trxState == IEEE_802_15_4_PHY_RX_ON && !m_setTRXState.IsRunning ())
@@ -277,6 +281,10 @@ LrWpanPhy::StartRx (Ptr<SpectrumSignalParameters> spectrumRxParams)
       // If synchronizing to the packet is possible, change to BUSY_RX state,
       // otherwise drop the packet and stay in RX state. The actual synchronization
       // is not modeled.
+
+      // Add any incoming packet to the current interference before checking the
+      // SINR.
+      m_signal->AddSignal (lrWpanRxParams->psd);
       Ptr<SpectrumValue> interferenceAndNoise = m_signal->GetSignalPsd ();
       *interferenceAndNoise -= *lrWpanRxParams->psd;
       *interferenceAndNoise += *m_noise;
@@ -285,7 +293,7 @@ LrWpanPhy::StartRx (Ptr<SpectrumSignalParameters> spectrumRxParams)
       // Std. 802.15.4-2006, appendix E, Figure E.2
       // At SNR < -5 the BER is less than 10e-1.
       // It's useless to even *try* to decode the packet.
-      if (10 * log(sinr) > -5)
+      if (10 * log10 (sinr) > -5)
         {
           ChangeTrxState (IEEE_802_15_4_PHY_BUSY_RX);
           m_currentRxPacket = std::make_pair (lrWpanRxParams, false);
@@ -303,30 +311,46 @@ LrWpanPhy::StartRx (Ptr<SpectrumSignalParameters> spectrumRxParams)
       // Drop the new packet.
       NS_LOG_DEBUG (this << " packet collision");
       m_phyRxDropTrace (p);
+
+      // Check if we correctly received the old packet up to now.
+      CheckInterference ();
+
+      // Add the incoming packet to the current interference after we have
+      // checked for successfull reception of the current packet for the time
+      // before the additional interference.
+      m_signal->AddSignal (lrWpanRxParams->psd);
     }
   else
     {
       // Simply drop the packet.
       NS_LOG_DEBUG (this << " transceiver not in RX state");
       m_phyRxDropTrace (p);
+
+      // Add the signal power to the interference, anyway.
+      m_signal->AddSignal (lrWpanRxParams->psd);
+    }
+
+  // Update peak power if CCA is in progress.
+  if (!m_ccaRequest.IsExpired ())
+    {
+      double power = LrWpanSpectrumValueHelper::TotalAvgPower (m_signal->GetSignalPsd ());
+      if (m_ccaPeakPower < power)
+        {
+          m_ccaPeakPower = power;
+        }
     }
 
   // Always call EndRx to update the interference.
   // \todo: Do we need to keep track of these events to unschedule them when disposing off the PHY?
   Simulator::Schedule (lrWpanRxParams->duration, &LrWpanPhy::EndRx, this, lrWpanRxParams);
-  ++m_rxTotalNum;
 }
 
 void
-LrWpanPhy::EndRx (Ptr<LrWpanSpectrumSignalParameters> params)
+LrWpanPhy::CheckInterference ()
 {
-  NS_LOG_FUNCTION (this);
-  NS_ASSERT (params != 0);
-
   // Calculate whether packet was lost.
   LrWpanSpectrumValueHelper psdHelper;
   Ptr<LrWpanSpectrumSignalParameters> currentRxParams = m_currentRxPacket.first;
-  Ptr<const Packet> packet = params->packetBurst->GetPackets ().front ();
 
   // We are currently receiving a packet.
   if (m_trxState == IEEE_802_15_4_PHY_BUSY_RX)
@@ -364,13 +388,28 @@ LrWpanPhy::EndRx (Ptr<LrWpanSpectrumSignalParameters> params)
           NS_LOG_WARN ("Missing ErrorModel");
         }
     }
+  m_rxLastUpdate = Simulator::Now ();
+}
+
+void
+LrWpanPhy::EndRx (Ptr<LrWpanSpectrumSignalParameters> params)
+{
+  NS_LOG_FUNCTION (this);
+  NS_ASSERT (params != 0);
+
+  if (!m_edRequest.IsExpired ())
+    {
+      // Update the average receive power during ED.
+      m_edPower.averagePower += LrWpanSpectrumValueHelper::TotalAvgPower (m_signal->GetSignalPsd ()) * (Simulator::Now () - m_edPower.lastUpdate).GetTimeStep () / m_edPower.measurementLength.GetTimeStep ();
+    }
+
+  CheckInterference ();
 
   // Update the interference.
   m_signal->RemoveSignal (params->psd);
-  m_rxLastUpdate = Simulator::Now ();
-  --m_rxTotalNum;
 
   // If this is the end of the currently received packet, check if reception was successfull.
+  Ptr<LrWpanSpectrumSignalParameters> currentRxParams = m_currentRxPacket.first;
   if (currentRxParams == params)
     {
       Ptr<Packet> currentPacket = currentRxParams->packetBurst->GetPackets ().front ();
@@ -501,7 +540,7 @@ LrWpanPhy::PlmeCcaRequest (void)
 
   if (m_trxState == IEEE_802_15_4_PHY_RX_ON || m_trxState == IEEE_802_15_4_PHY_BUSY_RX)
     {
-      //call StartRx or ED and then get updated m_rxTotalPower in EndCCA?
+      m_ccaPeakPower = 0.0;
       Time ccaTime = Seconds (8.0 / GetDataOrSymbolRate (false));
       m_ccaRequest = Simulator::Schedule (ccaTime, &LrWpanPhy::EndCca, this);
     }
@@ -527,15 +566,17 @@ LrWpanPhy::PlmeEdRequest (void)
   NS_LOG_FUNCTION (this);
   if (m_trxState == IEEE_802_15_4_PHY_RX_ON)
     {
-      m_rxEdPeakPower = LrWpanSpectrumValueHelper::TotalAvgPower (m_signal->GetSignalPsd());
-      Time edTime = Seconds (8.0 / GetDataOrSymbolRate (false));
-      m_edRequest = Simulator::Schedule (edTime, &LrWpanPhy::EndEd, this);
+      // Average over the powers of all signals received until EndEd()
+      m_edPower.averagePower = 0;
+      m_edPower.lastUpdate = Simulator::Now ();
+      m_edPower.measurementLength = Seconds (8.0 / GetDataOrSymbolRate (false));
+      m_edRequest = Simulator::Schedule (m_edPower.measurementLength, &LrWpanPhy::EndEd, this);
     }
   else
     {
       if (!m_plmeEdConfirmCallback.IsNull ())
         {
-          m_plmeEdConfirmCallback (m_trxState,0);
+          m_plmeEdConfirmCallback (m_trxState, 0);
         }
     }
 }
@@ -949,10 +990,13 @@ void
 LrWpanPhy::EndEd ()
 {
   NS_LOG_FUNCTION (this);
+
+  m_edPower.averagePower += LrWpanSpectrumValueHelper::TotalAvgPower (m_signal->GetSignalPsd ()) * (Simulator::Now () - m_edPower.lastUpdate).GetTimeStep () / m_edPower.measurementLength.GetTimeStep ();
+
   uint8_t energyLevel;
 
   // Per IEEE802.15.4-2006 sec 6.9.7
-  double ratio = m_rxEdPeakPower / m_rxSensitivity;
+  double ratio = m_edPower.averagePower / m_rxSensitivity;
   ratio = 10.0 * log10 (ratio);
   if (ratio <= 10.0)
     {  // less than 10 dB
@@ -980,14 +1024,21 @@ LrWpanPhy::EndCca ()
   NS_LOG_FUNCTION (this);
   LrWpanPhyEnumeration sensedChannelState = IEEE_802_15_4_PHY_UNSPECIFIED;
 
-  if ((PhyIsBusy ()) || (m_rxTotalNum > 0))
+  // Update peak power.
+  double power = LrWpanSpectrumValueHelper::TotalAvgPower (m_signal->GetSignalPsd ());
+  if (m_ccaPeakPower < power)
+    {
+      m_ccaPeakPower = power;
+    }
+
+  if (PhyIsBusy ())
     {
       sensedChannelState = IEEE_802_15_4_PHY_BUSY;
     }
   else if (m_phyPIBAttributes.phyCCAMode == 1)
     { //sec 6.9.9 ED detection
       // -- ED threshold at most 10 dB above receiver sensitivity.
-      if (m_rxTotalPower / m_rxSensitivity >= 10.0)
+      if (m_ccaPeakPower / m_rxSensitivity >= 10.0)
         {
           sensedChannelState = IEEE_802_15_4_PHY_BUSY;
         }
@@ -997,9 +1048,15 @@ LrWpanPhy::EndCca ()
         }
     }
   else if (m_phyPIBAttributes.phyCCAMode == 2)
-    { //sec 6.9.9 carrier sense only
-      if (m_rxTotalNum > 0)
+    {
+      //sec 6.9.9 carrier sense only
+      if (m_trxState == IEEE_802_15_4_PHY_BUSY_RX)
         {
+          // We currently do not model PPDU reception in detail. Instead we model
+          // packet reception starting with the first bit of the preamble.
+          // Therefore, this code will never be reached, as PhyIsBusy() would
+          // already lead to a channel busy condition.
+          // TODO: Change this, if we also model preamble and SFD detection.
           sensedChannelState = IEEE_802_15_4_PHY_BUSY;
         }
       else
@@ -1009,9 +1066,12 @@ LrWpanPhy::EndCca ()
     }
   else if (m_phyPIBAttributes.phyCCAMode == 3)
     { //sect 6.9.9 both
-      if ((m_rxTotalPower / m_rxSensitivity >= 10.0)
-          && (m_rxTotalNum > 0))
+      if ((m_ccaPeakPower / m_rxSensitivity >= 10.0)
+          && m_trxState == IEEE_802_15_4_PHY_BUSY_RX)
         {
+          // Again, this code will never be reached, if we are already receiving
+          // a packet, as PhyIsBusy() would already lead to a channel busy condition.
+          // TODO: Change this, if we also model preamble and SFD detection.
           sensedChannelState = IEEE_802_15_4_PHY_BUSY;
         }
       else
