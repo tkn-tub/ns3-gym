@@ -312,6 +312,17 @@ private:
   bool PrepareRetransmission (void);
   void CheckQueue (void);
 
+  /**
+   * The trace source fired when packets are considered as successfully sent
+   * or the transmission has been given up.
+   * Only non-broadcast packets are traced.
+   *
+   * The data should represent:
+   * packet, number of retries, total number of csma backoffs (not currently implemented)
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Ptr<const Packet>, uint8_t, uint8_t > m_sentPktTrace;
 
   TracedCallback<Ptr<const Packet>, bool> m_macTxQueueTrace;
   /**

@@ -83,6 +83,9 @@ LrWpanMac::GetTypeId (void)
     .AddTraceSource ("MacState",
                      "The state of LrWpan Mac",
                      MakeTraceSourceAccessor (&LrWpanMac::m_macStateLogger))
+    .AddTraceSource ("MacSentPkt",
+                     "Trace source reporting some information about the sent packet",
+                     MakeTraceSourceAccessor (&LrWpanMac::m_sentPktTrace))
   ;
   return tid;
 }
@@ -669,6 +672,15 @@ LrWpanMac::RemoveFirstTxQElement (void)
 {
   TxQueueElement *txQElement = m_txQueue.front ();
   Ptr<const Packet> p = txQElement->txQPkt;
+
+  Ptr<Packet> pkt = p->Copy ();
+  LrWpanMacHeader hdr;
+  pkt->RemoveHeader (hdr);
+  if (hdr.GetShortDstAddr () != Mac16Address ("ff:ff"))
+    {
+      m_sentPktTrace (p, m_retransmission+1, 0);
+    }
+
   txQElement->txQPkt = 0;
   delete txQElement;
   m_txQueue.pop_front ();
