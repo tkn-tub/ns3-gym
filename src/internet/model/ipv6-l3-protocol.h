@@ -444,6 +444,13 @@ private:
    */ 
   TracedCallback<const Ipv6Header &, Ptr<const Packet>, DropReason, Ptr<Ipv6>, uint32_t> m_dropTrace;
 
+  /// Trace of sent packets
+  TracedCallback<const Ipv6Header &, Ptr<const Packet>, uint32_t> m_sendOutgoingTrace;
+  /// Trace of unicast forwarded packets
+  TracedCallback<const Ipv6Header &, Ptr<const Packet>, uint32_t> m_unicastForwardTrace;
+  /// Trace of locally delivered packets
+  TracedCallback<const Ipv6Header &, Ptr<const Packet>, uint32_t> m_localDeliverTrace;
+
   /**
    * \brief Copy constructor.
    *

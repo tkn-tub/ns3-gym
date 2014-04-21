@@ -38,6 +38,8 @@ New user-visible features
   its original design.
 - A new IPv6 routing protocol has been added: RIPng. This protocol is
   an Interior Gateway Protocol and it is available in the Internet module.
+- FlowMonitor can now track IPv6 packets.
+  
 
 Bugs fixed
 ----------
@@ -48,6 +50,7 @@ Bugs fixed
 - Bug 1787 - Runtime error when using AnimationInterface::EnablePacketMetadata() to fetch metadata of CSMA packet
 - Bug 1792 - Parameter logger constructor
 - Bug 1808 - FlowMon relies on IPv4's Identification field to trace packets
+- Bug 1818 - FlowMonitor needs IPv6 support
 - Bug 1821 - Setting an interface to Down state will cause various asserts in IPv6
 - Bug 1837 - AODV crashes when using multiple interfaces
 - Bug 1838 - FlowMonitorHelper must not be copied.

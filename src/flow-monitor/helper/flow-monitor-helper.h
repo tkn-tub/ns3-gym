@@ -30,10 +30,11 @@ namespace ns3 {
 
 class AttributeValue;
 class Ipv4FlowClassifier;
+class Ipv6FlowClassifier;
 
 /**
  * \ingroup flow-monitor
- * \brief Helper to enable IPv4 flow monitoring on a set of Nodes
+ * \brief Helper to enable IP flow monitoring on a set of Nodes
  */
 class FlowMonitorHelper
 {
@@ -74,10 +75,16 @@ public:
   Ptr<FlowMonitor> GetMonitor ();
 
   /**
-   * \brief Retrieve the FlowClassifier object created by the Install* methods
+   * \brief Retrieve the FlowClassifier object for IPv4 created by the Install* methods
    * \returns a pointer to the FlowClassifier object
    */
   Ptr<FlowClassifier> GetClassifier ();
+
+  /**
+   * \brief Retrieve the FlowClassifier object for IPv6 created by the Install* methods
+   * \returns a pointer to the FlowClassifier object
+   */
+  Ptr<FlowClassifier> GetClassifier6 ();
 
   /**
    * Serializes the results to an std::ostream in XML format
@@ -120,9 +127,10 @@ private:
    */
   FlowMonitorHelper& operator= (const FlowMonitorHelper&);
 
-  ObjectFactory m_monitorFactory;       //!< Object factory
-  Ptr<FlowMonitor> m_flowMonitor;       //!< the FlowMonitor object
-  Ptr<FlowClassifier> m_flowClassifier; //!< the FlowClassifier object
+  ObjectFactory m_monitorFactory;        //!< Object factory
+  Ptr<FlowMonitor> m_flowMonitor;        //!< the FlowMonitor object
+  Ptr<FlowClassifier> m_flowClassifier4; //!< the FlowClassifier object for IPv4
+  Ptr<FlowClassifier> m_flowClassifier6; //!< the FlowClassifier object for IPv6
 };
 
 } // namespace ns3

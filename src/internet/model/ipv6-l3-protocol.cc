@@ -83,6 +83,13 @@ TypeId Ipv6L3Protocol::GetTypeId ()
                      MakeTraceSourceAccessor (&Ipv6L3Protocol::m_rxTrace))
     .AddTraceSource ("Drop", "Drop IPv6 packet",
                      MakeTraceSourceAccessor (&Ipv6L3Protocol::m_dropTrace))
+
+    .AddTraceSource ("SendOutgoing", "A newly-generated packet by this node is about to be queued for transmission",
+                     MakeTraceSourceAccessor (&Ipv6L3Protocol::m_sendOutgoingTrace))
+    .AddTraceSource ("UnicastForward", "A unicast IPv6 packet was received by this node and is being forwarded to another node",
+                     MakeTraceSourceAccessor (&Ipv6L3Protocol::m_unicastForwardTrace))
+    .AddTraceSource ("LocalDeliver", "An IPv6 packet was received by/for this node, and it is being forward up the stack",
+                     MakeTraceSourceAccessor (&Ipv6L3Protocol::m_localDeliverTrace))
   ;
   return tid;
 }
@@ -784,6 +791,8 @@ void Ipv6L3Protocol::Send (Ptr<Packet> packet, Ipv6Address source, Ipv6Address d
     {
       NS_LOG_LOGIC ("Ipv6L3Protocol::Send case 1: passed in with a route");
       hdr = BuildHeader (source, destination, protocol, packet->GetSize (), ttl, tclass);
+      int32_t interface = GetInterfaceForDevice (route->GetOutputDevice ());
+      m_sendOutgoingTrace (hdr, packet, interface);
       SendRealOut (route, packet, hdr);
       return;
     }
@@ -794,6 +803,8 @@ void Ipv6L3Protocol::Send (Ptr<Packet> packet, Ipv6Address source, Ipv6Address d
       NS_LOG_LOGIC ("Ipv6L3Protocol::Send case 1: probably sent to machine on same IPv6 network");
       /* NS_FATAL_ERROR ("This case is not yet implemented"); */
       hdr = BuildHeader (source, destination, protocol, packet->GetSize (), ttl, tclass);
+      int32_t interface = GetInterfaceForDevice (route->GetOutputDevice ());
+      m_sendOutgoingTrace (hdr, packet, interface);
       SendRealOut (route, packet, hdr);
       return;
     }
@@ -823,6 +834,8 @@ void Ipv6L3Protocol::Send (Ptr<Packet> packet, Ipv6Address source, Ipv6Address d
 
   if (newRoute)
     {
+      int32_t interface = GetInterfaceForDevice (newRoute->GetOutputDevice ());
+      m_sendOutgoingTrace (hdr, packet, interface);
       SendRealOut (newRoute, packet, hdr);
     }
   else
@@ -1120,7 +1133,8 @@ void Ipv6L3Protocol::IpForward (Ptr<const NetDevice> idev, Ptr<Ipv6Route> rtentr
           icmpv6->SendRedirection (copy, linkLocal, src, target, dst, Address ());
         }
     }
-
+  int32_t interface = GetInterfaceForDevice (rtentry->GetOutputDevice ());
+  m_unicastForwardTrace (ipHeader, packet, interface);
   SendRealOut (rtentry, packet, ipHeader);
 }
 
@@ -1238,6 +1252,9 @@ void Ipv6L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv6Header const& i
 
               /* L4 protocol */
               Ptr<Packet> copy = p->Copy ();
+
+              m_localDeliverTrace (ip, p, iif);
+
               enum IpL4Protocol::RxStatus status = protocol->Receive (p, ip, GetInterface (iif));
 
               switch (status)
