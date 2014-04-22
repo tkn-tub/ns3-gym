@@ -264,7 +264,11 @@ TcpSocketBase::Bind (void)
       m_errno = ERROR_ADDRNOTAVAIL;
       return -1;
     }
-  m_tcp->m_sockets.push_back (this);
+
+  if (std::find(m_tcp->m_sockets.begin(), m_tcp->m_sockets.end(), this) == m_tcp->m_sockets.end())
+    {
+      m_tcp->m_sockets.push_back (this);
+    }
   return SetupCallback ();
 }
 
@@ -278,7 +282,11 @@ TcpSocketBase::Bind6 (void)
       m_errno = ERROR_ADDRNOTAVAIL;
       return -1;
     }
-  m_tcp->m_sockets.push_back (this);
+
+  if (std::find(m_tcp->m_sockets.begin(), m_tcp->m_sockets.end(), this) == m_tcp->m_sockets.end())
+    {
+      m_tcp->m_sockets.push_back (this);
+    }
   return SetupCallback ();
 }
 
@@ -346,7 +354,11 @@ TcpSocketBase::Bind (const Address &address)
       m_errno = ERROR_INVAL;
       return -1;
     }
-  m_tcp->m_sockets.push_back (this);
+
+  if (std::find(m_tcp->m_sockets.begin(), m_tcp->m_sockets.end(), this) == m_tcp->m_sockets.end())
+    {
+      m_tcp->m_sockets.push_back (this);
+    }
   NS_LOG_LOGIC ("TcpSocketBase " << this << " got an endpoint: " << m_endPoint);
 
   return SetupCallback ();
