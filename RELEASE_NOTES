@@ -48,10 +48,12 @@ Bugs fixed
 - Bug 1739 - The endpoint is not deallocated for UDP sockets
 - Bug 1786 - os << int64x64_t prints un-normalized fractional values
 - Bug 1787 - Runtime error when using AnimationInterface::EnablePacketMetadata() to fetch metadata of CSMA packet
+- Bug 1791 - TCP Endpoint never deallocates when closing
 - Bug 1792 - Parameter logger constructor
 - Bug 1808 - FlowMon relies on IPv4's Identification field to trace packets
 - Bug 1818 - FlowMonitor needs IPv6 support
 - Bug 1821 - Setting an interface to Down state will cause various asserts in IPv6
+- Bug 1829 - Multiple TCP socket entries
 - Bug 1837 - AODV crashes when using multiple interfaces
 - Bug 1838 - FlowMonitorHelper must not be copied.
 - Bug 1841 - FlowMonitor fails to install if IPv4 is not installed in the node
@@ -59,6 +61,7 @@ Bugs fixed
 - Bug 1843 - IPv6 extensions dropped packets do not fire L3 drop trace
 - Bug 1845 - FlowMonitor should discard any broadcast/multicast packet
 - Bug 1846 - IPv6 should send Destination Unreachable if no route is available
+- Bug 1850 - TCP NewReno loss behavior
 - Bug 1852 - cairo-wideint-private.h error cannot find definitions for fixed-width integral types
 - Bug 1853 - NS_LOG_FUNCTION broken on OSX 10.9
 - Bug 1855 - SixLowPanNetDevice is not correctly indexed
