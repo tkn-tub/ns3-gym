@@ -241,16 +241,6 @@ public:
   static void SetConstantPosition (Ptr <Node> n, double x, double y, double z=0);
 
   /**
-   * \brief Helper function to set the topology boundary rectangle
-   * \param minX X value of the lower left corner
-   * \param minY Y value of the lower left corner
-   * \param maxX X value of the upper right corner
-   * \param maxY Y value of the upper right corner
-   *
-   */
-  static void SetBoundary (double minX, double minY, double maxX, double maxY);
-
-  /**
    * \brief Helper function to set a brief description for a given node
    * \param n Ptr to the node
    * \param descr A string to briefly describe the node
@@ -724,7 +714,6 @@ private:
   double m_topoMinY;
   double m_topoMaxX;
   double m_topoMaxY;
-  static Rectangle * userBoundary;
 
   bool m_enable3105;
   bool m_trackPackets;

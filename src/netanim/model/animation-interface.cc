@@ -61,7 +61,6 @@ static bool initialized = false;
 std::map <uint32_t, std::string> AnimationInterface::nodeDescriptions;
 std::map <uint32_t, Rgb> AnimationInterface::nodeColors;
 std::map <P2pLinkNodeIdPair, LinkProperties, LinkPairCompare> AnimationInterface::linkProperties;
-Rectangle * AnimationInterface::userBoundary = 0;
 
 
 AnimationInterface::AnimationInterface (const std::string fn, bool enable3105, uint64_t maxPktsPerFile)
@@ -82,10 +81,6 @@ AnimationInterface::AnimationInterface (const std::string fn, bool enable3105, u
 
 AnimationInterface::~AnimationInterface ()
 {
-  if (userBoundary)
-    {
-      delete userBoundary;
-    }
   StopAnimation ();
 }
 
@@ -664,8 +659,6 @@ void AnimationInterface::StartAnimation (bool restart)
   
   std::ostringstream oss;
   oss << GetXMLOpen_anim (0);
-  oss << GetPreamble ();
-  oss << GetXMLOpen_topology (m_topoMinX, m_topoMinY, m_topoMaxX, m_topoMaxY);
   WriteN (oss.str (), m_f);
   NS_LOG_INFO ("Setting topology for "<<NodeList::GetNNodes ()<<" Nodes");
   // Dump the topology
@@ -748,7 +741,6 @@ void AnimationInterface::StartAnimation (bool restart)
     }
   if (!restart)
     {
-      WriteN (GetXMLClose ("topology"), m_f);
       Simulator::Schedule (m_mobilityPollInterval, &AnimationInterface::MobilityAutoCheck, this);
     }
   if (!restart)
@@ -1596,9 +1588,7 @@ void AnimationInterface::MobilityCourseChangeTrace (Ptr <const MobilityModel> mo
   std::ostringstream oss; 
   if (!m_enable3105)
     {
-      oss << GetXMLOpen_topology (m_topoMinX, m_topoMinY, m_topoMaxX, m_topoMaxY);
       oss << GetXMLOpenClose_node (0, n->GetId (), v.x, v.y, nodeColors[n->GetId ()]);
-      oss << GetXMLClose ("topology");
     }
   else
     {
@@ -1629,10 +1619,6 @@ void AnimationInterface::MobilityAutoCheck ()
     return;
   std::vector <Ptr <Node> > MovedNodes = RecalcTopoBounds ();
   std::ostringstream oss;
-  if (!m_enable3105)
-    {
-      oss << GetXMLOpen_topology (m_topoMinX, m_topoMinY, m_topoMaxX, m_topoMaxY);
-    }
   for (uint32_t i = 0; i < MovedNodes.size (); i++)
     {
       Ptr <Node> n = MovedNodes [i];
@@ -1649,8 +1635,6 @@ void AnimationInterface::MobilityAutoCheck ()
     }
   if (!m_enable3105)
     {
-      oss << GetXMLClose ("topology");
-      WriteN (oss.str (), m_f);
       WriteDummyPacket ();
     }
   else
@@ -1832,22 +1816,6 @@ void AnimationInterface::SetConstantPosition (Ptr <Node> n, double x, double y, 
   hubLoc->SetPosition (hubVec);
   NS_LOG_INFO ("Node:" << n->GetId () << " Position set to:(" << x << "," << y << "," << z << ")");
 
-}
-
-void AnimationInterface::SetBoundary (double minX, double minY, double maxX, double maxY)
-{
-  if (initialized)
-    NS_FATAL_ERROR ("SetBoundary must be used prior to creating the AnimationInterface object");
-  NS_ASSERT (minX < maxX);
-  NS_ASSERT (minY < maxY);
-  if (!userBoundary)
-    {
-      userBoundary = new Rectangle;
-    }
-  userBoundary->xMax = maxX;
-  userBoundary->yMax = maxY;
-  userBoundary->xMin = minX;
-  userBoundary->yMin = minY;
 }
 
 void AnimationInterface::UpdateNodeCounter (uint32_t nodeCounterId, uint32_t nodeId, double counter)
@@ -2052,22 +2020,6 @@ std::string AnimationInterface::GetXMLOpen_anim (uint32_t lp)
   std::ostringstream oss;
   oss <<"<anim ver=\"" << GetNetAnimVersion () << "\">\n";
   return oss.str ();
-}
-std::string AnimationInterface::GetXMLOpen_topology (double minX, double minY, double maxX, double maxY)
-{
-  if (userBoundary)
-    {
-      minX = userBoundary->xMin;
-      minY = userBoundary->yMin;
-      maxX = userBoundary->xMax;
-      maxY = userBoundary->yMax;
-    }
-  std::ostringstream oss;
-  oss << "<topology minX = \"" << minX << "\" minY = \"" << minY
-      << "\" maxX = \"" << maxX << "\" maxY = \"" << maxY
-      << "\">" << std::endl;
-  return oss.str ();
-
 }
 
 std::string AnimationInterface::GetXMLOpenClose_nodeupdate (uint32_t id, bool visible)
