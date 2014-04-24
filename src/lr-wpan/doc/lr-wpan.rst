@@ -90,16 +90,19 @@ MAC
 ###
 
 The MAC at present implements the unslotted CSMA/CA variant, without beaconing.
+Currently there is no support for coordinators and the relavant APIs.
 
 The implemented MAC is similar to Contiki's NullMAC, i.e., a MAC without sleep
-features. The radio is assiumed to be always active (receiving or transmitting).
-Moreover, frame reception is disabled while performing the CCA.
+features. The radio is assumed to be always active (receiving or transmitting),
+of completely shut down. Frame reception is not disabled while performing the
+CCA.
 
-The main API supported is the data transfer API 
+The main API supported is the data transfer API
 (McpsDataRequest/Indication/Confirm).  CSMA/CA according to Stc 802.15.4-2006,
-section 7.5.1.4 is supported.  Frame reception and rejection
-according to Std 802.15.4-2006, section 7.5.6.2 is supported.  Various
-trace sources are supported, and trace sources can be hooked to sinks.
+section 7.5.1.4 is supported. Frame reception and rejection according to
+Std 802.15.4-2006, section 7.5.6.2 is supported, including acknowledgements.
+Only short addressing completely implemented. Various trace sources are
+supported, and trace sources can be hooked to sinks.
 
 PHY
 ###
@@ -116,6 +119,24 @@ the transmit power spectral density mask specified in 2.4 GHz per section
 noise across the frequency bands. The loss model can fully utilize all 
 existing simple (non-spectrum phy) loss models. The Phy model uses 
 the existing single spectrum channel model.
+The physical layer is modeled on packet level, that is, no preamble/SFD
+detection is done. Packet reception will be started with the first bit of the
+preamble (which is not modeled), if the SNR is more than -5 dB, see IEEE
+Std 802.15.4-2006, appendix E, Figure E.2. Reception of the packet will finish
+after the packet was completely transmitted. Other packets arriving during
+reception will add up to the interference/noise.
+
+Currently the receiver sensitivity is set to a fixed value of -106.58 dBm. This
+corresponds to a packet error rate of 1% for 20 byte reference packets for this
+signal power, according to IEEE Std 802.15.4-2006, section 6.1.7. In the future
+we will provide support for changing the sensitivity to different values. 
+
+.. _fig-802-15-4-per-sens:
+
+.. figure:: figures/802-15-4-per-sens.*
+
+    Packet error rate vs. signal power
+
 
 NetDevice
 #########
@@ -132,7 +153,9 @@ Future versions of this document will contain a PICS proforma similar to
 Appendix D of IEEE 802.15.4-2006.  The current emphasis is on the 
 unslotted mode of 802.15.4 operation for use in Zigbee, and the scope
 is limited to enabling a single mode (CSMA/CA) with basic data transfer
-capabilities.
+capabilities. Association with PAN coordinators is not yet supported, nor the
+use of extended addressing. Interference is modeled as AWGN but this is
+currently not thoroughly tested.
 
 References
 ==========
@@ -158,7 +181,7 @@ is exemplified in ``examples/lr-wpan-data.cc``.  For ascii tracing,
 the transmit and receive traces are hooked at the Mac layer.
 
 The default propagation loss model added to the channel, when this helper
-is used, is the LogDistancePropagationLossModel.
+is used, is the LogDistancePropagationLossModel with default parameters.
 
 Examples
 ========
@@ -166,8 +189,8 @@ Examples
 The following examples have been written, which can be found in ``src/lr-wpan/examples/``:
 
 * ``lr-wpan-data.cc``:  A simple example showing end-to-end data transfer.
-* ``lr-wpan-error-model-plot.cc``:  An example to test the phy.
 * ``lr-wpan-error-distance-plot.cc``:  An example to plot variations of the packet success ratio as a function of distance.
+* ``lr-wpan-error-model-plot.cc``:  An example to test the phy.
 * ``lr-wpan-packet-print.cc``:  An example to print out the MAC header fields.
 * ``lr-wpan-phy-test.cc``:  An example to test the phy.
 
@@ -205,6 +228,8 @@ Tests
 
 The following tests have been written, which can be found in ``src/lr-wpan/tests/``:
 
+* ``lr-wpan-ack-test.cc``:  Check that acknowledgments are being used and issued in the correct order.
+* ``lr-wpan-collision-test.cc``:  Test correct reception of packets with interference and collisions.
 * ``lr-wpan-error-model-test.cc``:  Check that the error model gives predictable values.
 * ``lr-wpan-packet-test.cc``:  Test the 802.15.4 MAC header/trailer classes
 * ``lr-wpan-pd-plme-sap-test.cc``:  Test the PLME and PD SAP per IEEE 802.15.4
@@ -215,7 +240,7 @@ Validation
 
 The model has not been validated against real hardware.  The error model
 has been validated against the data in IEEE Std 802.15.4-2006, 
-section E.4.1.7 (Figure E.2).   The MAC behavior (CSMA backoff) has been 
+section E.4.1.7 (Figure E.2). The MAC behavior (CSMA backoff) has been 
 validated by hand against expected behavior.  The below plot is an example 
 of the error model validation and can be reproduced by running
 ``lr-wpan-error-model-plot.cc``:

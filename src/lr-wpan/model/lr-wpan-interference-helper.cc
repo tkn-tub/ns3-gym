@@ -21,6 +21,9 @@
 #include "lr-wpan-interference-helper.h"
 #include <ns3/spectrum-value.h>
 #include <ns3/spectrum-model.h>
+#include <ns3/log.h>
+
+NS_LOG_COMPONENT_DEFINE ("LrWpanInterferenceHelper");
 
 namespace ns3 {
 
@@ -39,6 +42,8 @@ LrWpanInterferenceHelper::~LrWpanInterferenceHelper ()
 bool
 LrWpanInterferenceHelper::AddSignal (Ptr<const SpectrumValue> signal)
 {
+  NS_LOG_FUNCTION (this << signal);
+
   bool result = false;
 
   if (signal->GetSpectrumModel () == m_spectrumModel)
@@ -55,6 +60,8 @@ LrWpanInterferenceHelper::AddSignal (Ptr<const SpectrumValue> signal)
 bool
 LrWpanInterferenceHelper::RemoveSignal (Ptr<const SpectrumValue> signal)
 {
+  NS_LOG_FUNCTION (this << signal);
+
   bool result = false;
 
   if (signal->GetSpectrumModel () == m_spectrumModel)
@@ -71,6 +78,8 @@ LrWpanInterferenceHelper::RemoveSignal (Ptr<const SpectrumValue> signal)
 void
 LrWpanInterferenceHelper::ClearSignals ()
 {
+  NS_LOG_FUNCTION (this);
+
   m_signals.clear ();
   m_dirty = true;
 }
@@ -78,6 +87,8 @@ LrWpanInterferenceHelper::ClearSignals ()
 Ptr<SpectrumValue>
 LrWpanInterferenceHelper::GetSignalPsd () const
 {
+  NS_LOG_FUNCTION (this);
+
   if (m_dirty)
     {
       // Sum up the current interference PSD.

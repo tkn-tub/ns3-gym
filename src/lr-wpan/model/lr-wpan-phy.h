@@ -41,6 +41,9 @@ class SpectrumModel;
 class AntennaModel;
 class NetDevice;
 
+/**
+ * Helper structure to manage the power measurement during ED.
+ */
 typedef struct
 {
   double averagePower;
@@ -104,8 +107,8 @@ typedef enum
   IEEE_802_15_4_PHY_UNSPECIFIED = 0xc // all cases not covered by ieee802.15.4
 } LrWpanPhyEnumeration;
 
-/** IEEE802.15.4-2006 PHY PIB Attributes Table 23
- * in section 6.4.2
+/**
+ * IEEE802.15.4-2006 PHY PIB Attribute Identifiers Table 23 in section 6.4.2
  */
 typedef enum
 {
@@ -119,6 +122,9 @@ typedef enum
   phySymbolsPerOctet = 0x07
 } LrWpanPibAttributeIdentifier;
 
+/**
+ * IEEE802.15.4-2006 PHY PIB Attributes Table 23 in section 6.4.2
+ */
 typedef struct
 {
   uint8_t phyCurrentChannel;
