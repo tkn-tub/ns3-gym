@@ -262,7 +262,9 @@ LrWpanPhy::StartRx (Ptr<SpectrumSignalParameters> spectrumRxParams)
   if (!m_edRequest.IsExpired ())
     {
       // Update the average receive power during ED.
-      m_edPower.averagePower += LrWpanSpectrumValueHelper::TotalAvgPower (m_signal->GetSignalPsd ()) * (Simulator::Now () - m_edPower.lastUpdate).GetTimeStep () / m_edPower.measurementLength.GetTimeStep ();
+      Time now = Simulator::Now ();
+      m_edPower.averagePower += LrWpanSpectrumValueHelper::TotalAvgPower (m_signal->GetSignalPsd ()) * (now - m_edPower.lastUpdate).GetTimeStep () / m_edPower.measurementLength.GetTimeStep ();
+      m_edPower.lastUpdate = now;
     }
 
   // Prevent PHY from receiving another packet while switching the transceiver state.
@@ -400,7 +402,9 @@ LrWpanPhy::EndRx (Ptr<LrWpanSpectrumSignalParameters> params)
   if (!m_edRequest.IsExpired ())
     {
       // Update the average receive power during ED.
-      m_edPower.averagePower += LrWpanSpectrumValueHelper::TotalAvgPower (m_signal->GetSignalPsd ()) * (Simulator::Now () - m_edPower.lastUpdate).GetTimeStep () / m_edPower.measurementLength.GetTimeStep ();
+      Time now = Simulator::Now ();
+      m_edPower.averagePower += LrWpanSpectrumValueHelper::TotalAvgPower (m_signal->GetSignalPsd ()) * (now - m_edPower.lastUpdate).GetTimeStep () / m_edPower.measurementLength.GetTimeStep ();
+      m_edPower.lastUpdate = now;
     }
 
   CheckInterference ();
@@ -564,7 +568,7 @@ void
 LrWpanPhy::PlmeEdRequest (void)
 {
   NS_LOG_FUNCTION (this);
-  if (m_trxState == IEEE_802_15_4_PHY_RX_ON)
+  if (m_trxState == IEEE_802_15_4_PHY_RX_ON || m_trxState == IEEE_802_15_4_PHY_BUSY_RX)
     {
       // Average over the powers of all signals received until EndEd()
       m_edPower.averagePower = 0;
@@ -574,9 +578,15 @@ LrWpanPhy::PlmeEdRequest (void)
     }
   else
     {
+      LrWpanPhyEnumeration result = m_trxState;
+      if (m_trxState == IEEE_802_15_4_PHY_BUSY_TX)
+        {
+          result = IEEE_802_15_4_PHY_TX_ON;
+        }
+
       if (!m_plmeEdConfirmCallback.IsNull ())
         {
-          m_plmeEdConfirmCallback (m_trxState, 0);
+          m_plmeEdConfirmCallback (result, 0);
         }
     }
 }
@@ -672,6 +682,8 @@ LrWpanPhy::PlmeSetTRXStateRequest (LrWpanPhyEnumeration state)
   // a packet being actively received)
   if (state == IEEE_802_15_4_PHY_TRX_OFF)
     {
+      CancelEd (state);
+
       if ((m_trxState == IEEE_802_15_4_PHY_BUSY_RX)
           && (m_currentRxPacket.first) && (!m_currentRxPacket.second))
         {
@@ -692,6 +704,8 @@ LrWpanPhy::PlmeSetTRXStateRequest (LrWpanPhyEnumeration state)
 
   if (state == IEEE_802_15_4_PHY_TX_ON)
     {
+      CancelEd (state);
+
       NS_LOG_DEBUG ("turn on PHY_TX_ON");
       if ((m_trxState == IEEE_802_15_4_PHY_BUSY_RX) || (m_trxState == IEEE_802_15_4_PHY_RX_ON))
         {
@@ -987,6 +1001,22 @@ LrWpanPhy::PhyIsBusy (void) const
 }
 
 void
+LrWpanPhy::CancelEd (LrWpanPhyEnumeration state)
+{
+  NS_LOG_FUNCTION (this);
+  NS_ASSERT (state == IEEE_802_15_4_PHY_TRX_OFF || state == IEEE_802_15_4_PHY_TX_ON);
+
+  if (!m_edRequest.IsExpired ())
+    {
+      m_edRequest.Cancel ();
+      if (!m_plmeEdConfirmCallback.IsNull ())
+        {
+          m_plmeEdConfirmCallback (state, 0);
+        }
+    }
+}
+
+void
 LrWpanPhy::EndEd ()
 {
   NS_LOG_FUNCTION (this);
@@ -1009,7 +1039,7 @@ LrWpanPhy::EndEd ()
   else
     {
       // in-between with linear increase per sec 6.9.7
-      energyLevel = (uint8_t)((ratio / 10.0 - 1.0) * (255.0 / 3.0));
+      energyLevel = static_cast<uint8_t> (((ratio - 10.0) / 30.0) * 255.0);
     }
 
   if (!m_plmeEdConfirmCallback.IsNull ())

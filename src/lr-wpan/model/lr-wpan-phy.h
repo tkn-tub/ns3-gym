@@ -396,6 +396,8 @@ private:
   void CheckInterference ();
 
   void EndRx (Ptr<LrWpanSpectrumSignalParameters> params);
+  void CancelEd (LrWpanPhyEnumeration state);
+
   void EndEd ();
   void EndCca ();
   void EndSetTRXState ();
