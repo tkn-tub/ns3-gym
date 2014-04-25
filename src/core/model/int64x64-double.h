@@ -4,6 +4,7 @@
 
 #include <stdint.h>
 #include <cmath>  // pow
+#include <utility>  // pair
 
 
 namespace ns3 {
