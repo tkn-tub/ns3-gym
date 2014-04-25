@@ -80,6 +80,7 @@ SOURCES = \
 	$(SRC)/flow-monitor/doc/flow-monitor.rst \
 	$(SRC)/wave/doc/wave.rst \
 	$(SRC)/sixlowpan/doc/sixlowpan.rst \
+	$(SRC)/lr-wpan/doc/lr-wpan.rst \
 
 # list all model library figure files that need to be copied to 
 # $SOURCETEMP/figures.  For each figure to be included in all
@@ -229,7 +230,13 @@ SOURCEFIGS = \
 	$(SRC)/netanim/doc/figures/PacketTimeline.pdf \
 	$(SRC)/spectrum/doc/spectrum-channel-phy-interface.png \
 	$(SRC)/spectrum/doc/spectrum-channel-phy-interface.pdf \
-	$(SRC)/spectrum/doc/spectrum-analyzer-example.eps 
+	$(SRC)/spectrum/doc/spectrum-analyzer-example.eps \
+	$(SRC)/lr-wpan/doc/lr-wpan-arch.dia \
+	$(SRC)/lr-wpan/doc/lr-wpan-data-example.dia \
+	$(SRC)/lr-wpan/doc/lr-wpan-primitives.dia \
+	$(SRC)/lr-wpan/doc/802-15-4-ber.eps \
+	$(SRC)/lr-wpan/doc/802-15-4-per-sens.eps \
+	$(SRC)/lr-wpan/doc/802-15-4-psr-distance.eps
 
 # specify figures from which .png and .pdf figures need to be
 # generated (all dia and eps figures)
@@ -298,7 +305,13 @@ IMAGES_EPS = \
 	$(FIGURES)/lte-epc-x2-entity-saps.eps \
 	$(FIGURES)/lte-strongest-cell-handover-algorithm.eps \
 	$(FIGURES)/auvmobility-classes.eps \
-	$(FIGURES)/spectrum-analyzer-example.eps 
+	$(FIGURES)/spectrum-analyzer-example.eps \ 
+	$(FIGURES)/lr-wpan-primitives.eps \
+	$(FIGURES)/lr-wpan-data-example.eps \
+	$(FIGURES)/lr-wpan-arch.eps \
+	$(FIGURES)/802-15-4-ber.eps \
+	$(FIGURES)/802-15-4-per-sens.eps \
+	$(FIGURES)/802-15-4-psr-distance.eps 
 
 # rescale pdf figures as necessary
 $(FIGURES)/testbed.pdf_width = 5in
@@ -336,6 +349,8 @@ $(FIGURES)/mac-random-access-noncontention.pdf_width = 15cm
 $(FIGURES)/helpers.pdf_width = 8cm
 $(FIGURES)/auvmobility-classes.pdf_width = 10cm
 $(FIGURES)/spectrum-analyzer-example.pdf_width = 15cm
+$(FIGURES)/lr-wpan-primitives.pdf_width = 3in
+$(FIGURES)/lr-wpan-arch.pdf_width = 2in
 
 IMAGES_PNG = ${IMAGES_EPS:.eps=.png}
 IMAGES_PDF = ${IMAGES_EPS:.eps=.pdf}
