@@ -318,7 +318,7 @@ private:
    * Only non-broadcast packets are traced.
    *
    * The data should represent:
-   * packet, number of retries, total number of csma backoffs (not currently implemented)
+   * packet, number of retries, total number of csma backoffs
    *
    * \see class CallBackTraceSource
    */
@@ -424,6 +424,7 @@ private:
   Mac64Address m_selfExt;
   std::deque<TxQueueElement*> m_txQueue;
   uint8_t m_retransmission;
+  uint8_t m_numCsmacaRetry;
   EventId m_ackWaitTimeout;
   EventId m_setMacState;
   bool m_macRxOnWhenIdle;

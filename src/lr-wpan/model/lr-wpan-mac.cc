@@ -106,6 +106,7 @@ LrWpanMac::LrWpanMac ()
   m_macPromiscuousMode = false;
   m_macMaxFrameRetries = 3;
   m_retransmission = 0;
+  m_numCsmacaRetry = 0;
   m_txPkt = 0;
 
   Ptr<UniformRandomVariable> uniformVar = CreateObject<UniformRandomVariable> ();
@@ -675,13 +676,14 @@ LrWpanMac::RemoveFirstTxQElement (void)
 {
   TxQueueElement *txQElement = m_txQueue.front ();
   Ptr<const Packet> p = txQElement->txQPkt;
+  m_numCsmacaRetry += m_csmaCa->GetNB () + 1;
 
   Ptr<Packet> pkt = p->Copy ();
   LrWpanMacHeader hdr;
   pkt->RemoveHeader (hdr);
   if (hdr.GetShortDstAddr () != Mac16Address ("ff:ff"))
     {
-      m_sentPktTrace (p, m_retransmission+1, 0);
+      m_sentPktTrace (p, m_retransmission+1, m_numCsmacaRetry);
     }
 
   txQElement->txQPkt = 0;
@@ -689,6 +691,7 @@ LrWpanMac::RemoveFirstTxQElement (void)
   m_txQueue.pop_front ();
   m_txPkt = 0;
   m_retransmission = 0;
+  m_numCsmacaRetry = 0;
   m_macTxQueueTrace (p, false);
 }
 
@@ -734,6 +737,7 @@ LrWpanMac::PrepareRetransmission (void)
   else
     {
       m_retransmission++;
+      m_numCsmacaRetry += m_csmaCa->GetNB () +1;
       // Start next CCA process for this packet.
       return true;
     }

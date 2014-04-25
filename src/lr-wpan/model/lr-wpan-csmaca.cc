@@ -378,4 +378,10 @@ LrWpanCsmaCa::AssignStreams (int64_t stream)
   return 1;
 }
 
+uint8_t
+LrWpanCsmaCa::GetNB (void)
+{
+  return m_NB;
+}
+
 } //namespace ns3

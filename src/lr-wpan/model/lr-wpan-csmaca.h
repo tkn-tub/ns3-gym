@@ -231,6 +231,13 @@ public:
    */
   int64_t AssignStreams (int64_t stream);
 
+  /**
+   * Get the number of CSMA retries
+   *
+   * \returns the number of CSMA retries
+   */
+  uint8_t GetNB (void);
+
 private:
   virtual void DoDispose (void);
 
