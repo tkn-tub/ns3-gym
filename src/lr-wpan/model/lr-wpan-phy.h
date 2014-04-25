@@ -27,7 +27,6 @@
 #include <ns3/spectrum-phy.h>
 #include <ns3/traced-callback.h>
 #include <ns3/event-id.h>
-#include <ns3/random-variable.h>
 
 namespace ns3 {
 
@@ -40,6 +39,7 @@ class SpectrumChannel;
 class SpectrumModel;
 class AntennaModel;
 class NetDevice;
+class UniformRandomVariable;
 
 /**
  * Helper structure to manage the power measurement during ED.
@@ -205,50 +205,79 @@ class LrWpanPhy : public SpectrumPhy
 {
 
 public:
-  // The second is true if the first is flagged as error
-  typedef std::pair<Ptr<Packet>, bool>  PacketAndStatus;
-
+  /**
+   * Get the type ID.
+   *
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
-  static const uint32_t aMaxPhyPacketSize; // Table 22 in section 6.4.1 of ieee802.15.4
-  static const uint32_t aTurnaroundTime;   // Table 22 in section 6.4.1 of ieee802.15.4
+  /**
+   * The maximum packet size accepted by the PHY.
+   * See Table 22 in section 6.4.1 of IEEE 802.15.4-2006
+   */
+  static const uint32_t aMaxPhyPacketSize;
 
-  LrWpanPhy ();
-  virtual ~LrWpanPhy ();
+  /**
+   * The turnaround time for switching the transceiver from RX to TX or vice
+   * versa.
+   * See Table 22 in section 6.4.1 of IEEE 802.15.4-2006
+   */
+  static const uint32_t aTurnaroundTime;
+
+  /**
+   * Default constructor.
+   */
+  LrWpanPhy (void);
+  virtual ~LrWpanPhy (void);
 
   // inherited from SpectrumPhy
   void SetMobility (Ptr<MobilityModel> m);
-  Ptr<MobilityModel> GetMobility ();
+  Ptr<MobilityModel> GetMobility (void);
   void SetChannel (Ptr<SpectrumChannel> c);
-  Ptr<SpectrumChannel> GetChannel (void);
-  void SetDevice (Ptr<NetDevice> d);
-  Ptr<NetDevice> GetDevice ();
-  void SetAntenna (Ptr<AntennaModel> a);
-  Ptr<AntennaModel> GetRxAntenna ();
-  virtual Ptr<const SpectrumModel> GetRxSpectrumModel () const;
 
   /**
-   * set the Power Spectral Density of outgoing signals in W/Hz.
+   * Get the currently attached channel.
    *
-   * @param txPsd
+   * \return the channel
+   */
+  Ptr<SpectrumChannel> GetChannel (void);
+  void SetDevice (Ptr<NetDevice> d);
+  Ptr<NetDevice> GetDevice (void);
+
+  /**
+   * Set the attached antenna.
+   *
+   * \param a the antenna
+   */
+  void SetAntenna (Ptr<AntennaModel> a);
+  Ptr<AntennaModel> GetRxAntenna (void);
+  virtual Ptr<const SpectrumModel> GetRxSpectrumModel (void) const;
+
+  /**
+   * Set the Power Spectral Density of outgoing signals in W/Hz.
+   *
+   * @param txPsd the Power Spectral Density value
    */
   void SetTxPowerSpectralDensity (Ptr<SpectrumValue> txPsd);
 
   /**
-   * \brief set the noise power spectral density
+   * Set the noise power spectral density.
+   *
    * @param noisePsd the Noise Power Spectral Density in power units
    * (Watt, Pascal...) per Hz.
    */
   void SetNoisePowerSpectralDensity (Ptr<const SpectrumValue> noisePsd);
 
   /**
-   * \brief get the noise power spectral density
+   * Get the noise power spectral density.
+   *
    * @return the Noise Power Spectral Density
    */
   Ptr<const SpectrumValue> GetNoisePowerSpectralDensity (void);
 
   /**
-    * Notify the SpectrumPhy instance of an incoming waveform
+    * Notify the SpectrumPhy instance of an incoming waveform.
     *
     * @param params the SpectrumSignalParameters associated with the incoming waveform
     */
@@ -379,45 +408,145 @@ public:
    */
   Ptr<LrWpanErrorModel> GetErrorModel (void) const;
   
+  /**
+   * Get the duration of the SHR (preamble and SFD) in symbols, depending on
+   * the currently selected channel.
+   *
+   * \return the SHR duration in symbols
+   */
   uint64_t GetPhySHRDuration (void) const;
+
+  /**
+   * Get the number of symbols per octet, depending on the currently selected
+   * channel.
+   *
+   * \return the number of symbols per octet
+   */
   double GetPhySymbolsPerOctet (void) const;
   
 protected:
+  /**
+   * The data and symbol rates for the different PHY options.
+   * See Table 2 in section 6.1.2 IEEE 802.15.4-2006
+   */
   static const LrWpanPhyDataAndSymbolRates dataSymbolRates[7];
+  /**
+   * The preamble, SFD, and PHR lengths in symbols for the different PHY options.
+   * See Table 19 and Table 20 in section 6.3 IEEE 802.15.4-2006
+   */
   static const LrWpanPhyPpduHeaderSymbolNumber ppduHeaderSymbolNumbers[7];
 
 private:
-  virtual void DoDispose (void);
-  void ChangeState (LrWpanPhyEnumeration newState);
-  void ChangeTrxState (LrWpanPhyEnumeration newState);
-  void SetMyPhyOption (void);
-  LrWpanPhyOption GetMyPhyOption (void);
-  void EndTx ();
-  void CheckInterference ();
+  /**
+   * The second is true if the first is flagged as error/invalid.
+   */
+  typedef std::pair<Ptr<Packet>, bool>  PacketAndStatus;
 
+  // Inherited from Object.
+  virtual void DoDispose (void);
+
+  /**
+   * Change the PHY state to the given new state, firing the state change trace.
+   *
+   * \param newState the new state
+   */
+  void ChangeTrxState (LrWpanPhyEnumeration newState);
+
+  /**
+   * Configure the PHY option according to the current channel and channel page.
+   * See IEEE 802.15.4-2006, section 6.1.2, Table 2.
+   */
+  void SetMyPhyOption (void);
+
+  /**
+   * Get the currently configured PHY option.
+   * See IEEE 802.15.4-2006, section 6.1.2, Table 2.
+   *
+   * \return the PHY option
+   */
+  LrWpanPhyOption GetMyPhyOption (void);
+
+  /**
+   * Finish the transmission of a frame. This is called at the end of a frame
+   * transmission, applying possibly pending PHY state changes and fireing the
+   * appropriate trace sources and confirm callbacks to the MAC.
+   */
+  void EndTx (void);
+
+  /**
+   * Check if the interference destroys a frame currently received. Called
+   * whenever a change in interference is detected.
+   */
+  void CheckInterference (void);
+
+  /**
+   * Finish the reception of a frame. This is called at the end of a frame
+   * reception, applying possibly pending PHY state changes and fireing the
+   * appropriate trace sources and indication callbacks to the MAC. A frame
+   * destroyed by noise/interference is dropped here, but not during reception.
+   * This method is also called for every packet which only contributes to
+   * interference.
+   *
+   * \param params signal parameters of the packet
+   */
   void EndRx (Ptr<LrWpanSpectrumSignalParameters> params);
+
+  /**
+   * Cancel an ongoing ED procedure. This is called when the transceiver is
+   * switched off or set to TX mode. This calls the appropiate confirm callback
+   * of the MAC.
+   *
+   * \param state the new state which is the cause for canceling ED
+   */
   void CancelEd (LrWpanPhyEnumeration state);
 
-  void EndEd ();
-  void EndCca ();
-  void EndSetTRXState ();
-  Time CalculateTxTime (Ptr<const Packet> packet);
-  Time GetPpduHeaderTxTime (void);
-  bool ChannelSupported (uint8_t);
-  Ptr<MobilityModel> m_mobility;
-  Ptr<NetDevice> m_device;
-  Ptr<SpectrumChannel> m_channel;
-  Ptr<AntennaModel> m_antenna;
-  Ptr<SpectrumValue> m_txPsd;
-  Ptr<const SpectrumValue> m_noise;
-  Ptr<LrWpanErrorModel> m_errorModel;
-  LrWpanPhyPibAttributes m_phyPIBAttributes;
+  /**
+   * Called at the end of the ED procedure. The average energy detected is
+   * reported to the MAC.
+   */
+  void EndEd (void);
 
-  // State variables
-  LrWpanPhyEnumeration m_trxState;  /// transceiver state
-  TracedCallback<Time, LrWpanPhyEnumeration, LrWpanPhyEnumeration> m_trxStateLogger;
-  LrWpanPhyEnumeration m_trxStatePending;  /// pending state change
-  bool PhyIsBusy (void) const;  /// helper function
+  /**
+   * Called at the end of the CCA. The channel condition (busy or idle) is
+   * reported to the MAC or CSMA/CA.
+   */
+  void EndCca (void);
+
+  /**
+   * Called after applying a deferred transceiver state switch. The result of
+   * the state switch is reported to the MAC.
+   */
+  void EndSetTRXState (void);
+
+  /**
+   * Calculate the time required for sending the given packet, including
+   * preamble, SFD and PHR.
+   *
+   * \param packet the packet for which the transmission time should be calculated
+   */
+  Time CalculateTxTime (Ptr<const Packet> packet);
+
+  /**
+   * Calculate the time required for sending the PPDU header, that is the
+   * preamble, SFD and PHR.
+   */
+  Time GetPpduHeaderTxTime (void);
+
+  /**
+   * Check if the given channel is supported by the PHY.
+   *
+   * \param channel the channel to check
+   * \return true, if the channel is supported, false otherwise
+   */
+  bool ChannelSupported (uint8_t channel);
+
+  /**
+   * Check if the PHY is busy, which is the case if the PHY is currently sending
+   * or receiving a frame.
+   *
+   * \return true, if the PHY is busy, false otherwise
+   */
+  bool PhyIsBusy (void) const;
 
   // Trace sources
   /**
@@ -467,6 +596,20 @@ private:
    */
   TracedCallback<Ptr<const Packet> > m_phyRxDropTrace;
 
+  Ptr<MobilityModel> m_mobility;
+  Ptr<NetDevice> m_device;
+  Ptr<SpectrumChannel> m_channel;
+  Ptr<AntennaModel> m_antenna;
+  Ptr<SpectrumValue> m_txPsd;
+  Ptr<const SpectrumValue> m_noise;
+  Ptr<LrWpanErrorModel> m_errorModel;
+  LrWpanPhyPibAttributes m_phyPIBAttributes;
+
+  // State variables
+  LrWpanPhyEnumeration m_trxState;  /// transceiver state
+  TracedCallback<Time, LrWpanPhyEnumeration, LrWpanPhyEnumeration> m_trxStateLogger;
+  LrWpanPhyEnumeration m_trxStatePending;  /// pending state change
+
   PdDataIndicationCallback m_pdDataIndicationCallback;
   PdDataConfirmCallback m_pdDataConfirmCallback;
   PlmeCcaConfirmCallback m_plmeCcaConfirmCallback;
@@ -487,7 +630,11 @@ private:
   EventId m_edRequest;
   EventId m_setTRXState;
   EventId m_pdDataRequest;
-  UniformVariable m_random;
+
+  /**
+   * Uniform random variable stream.
+   */
+  Ptr<UniformRandomVariable> m_random;
 };
 
 

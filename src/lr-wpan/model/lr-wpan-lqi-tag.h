@@ -25,16 +25,20 @@
 
 namespace ns3 {
 
-class Tag;
-
 class LrWpanLqiTag : public Tag
 {
 public:
+  /**
+   * Get the type ID.
+   *
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
+
   virtual TypeId GetInstanceTypeId (void) const;
 
   /**
-   * Create a LrWpanLqiTag with the default LQI 0 .
+   * Create a LrWpanLqiTag with the default LQI 0.
    */
   LrWpanLqiTag (void);
 
@@ -51,16 +55,21 @@ public:
   /**
    * Set the LQI to the given value.
    *
-   * @param lqi the value of the LQI to set
+   * \param lqi the value of the LQI to set
    */
   void Set (uint8_t lqi);
+
   /**
    * Get the LQI value.
    *
-   * @return the LQI value
+   * \return the LQI value
    */
   uint8_t Get (void) const;
 private:
+
+  /**
+   * The current LQI value of the tag.
+   */
   uint8_t m_lqi;
 };
 

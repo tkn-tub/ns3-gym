@@ -27,8 +27,10 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (LrWpanMacTrailer);
 
-LrWpanMacTrailer::LrWpanMacTrailer () :
-    m_fcs (0), m_calcFcs (false)
+const uint16_t LrWpanMacTrailer::LR_WPAN_MAC_FCS_LENGTH = 2;
+
+LrWpanMacTrailer::LrWpanMacTrailer (void)
+  : m_fcs (0), m_calcFcs (false)
 {
 }
 
@@ -57,23 +59,23 @@ LrWpanMacTrailer::Print (std::ostream &os) const
 uint32_t
 LrWpanMacTrailer::GetSerializedSize (void) const
 {
-  return LRWPAN_MAC_FCS_LENGTH;
+  return LR_WPAN_MAC_FCS_LENGTH;
 }
 
 void
 LrWpanMacTrailer::Serialize (Buffer::Iterator start) const
 {
-  start.Prev (LRWPAN_MAC_FCS_LENGTH);
+  start.Prev (LR_WPAN_MAC_FCS_LENGTH);
   start.WriteU16 (m_fcs);
 }
 
 uint32_t
 LrWpanMacTrailer::Deserialize (Buffer::Iterator start)
 {
-  start.Prev (LRWPAN_MAC_FCS_LENGTH);
+  start.Prev (LR_WPAN_MAC_FCS_LENGTH);
   m_fcs = start.ReadU16 ();
 
-  return LRWPAN_MAC_FCS_LENGTH;
+  return LR_WPAN_MAC_FCS_LENGTH;
 }
 
 uint16_t
@@ -124,10 +126,18 @@ void
 LrWpanMacTrailer::EnableFcs (bool enable)
 {
   m_calcFcs = enable;
+  if (!enable)
+    {
+      m_fcs = 0;
+    }
 }
 
-/* CRC16-CCITT with a generator polynomial = ^16 + ^12 + ^5 + 1,
- * LSB first and initial value = 0x0000  */
+bool
+LrWpanMacTrailer::IsFcsEnabled (void)
+{
+  return m_calcFcs;
+}
+
 uint16_t
 LrWpanMacTrailer::GenerateCrc16 (uint8_t *data, int length)
 {

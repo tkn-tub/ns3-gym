@@ -38,11 +38,11 @@ class Node;
 /**
  * \ingroup lr-wpan
  *
- * \brief Network layer to device interface
+ * \brief Network layer to device interface.
  *
- * The ns3::NetDevice includes IP-specific API such as GetMulticast(), and
- * the Send() and SendTo() methods do not map well the the 802.15.4 MAC
- * MCPS DataRequest primitive.  So, the basic design is to provide, as
+ * The ns3::NetDevice includes IP-specific API such as GetMulticast(), Send()
+ * and SendTo() methods, which do not map well the the 802.15.4 MAC MCPS
+ * DataRequest primitive.  So, the basic design is to provide, as
  * much as makes sense, the class ns3::NetDevice API, but rely on the user
  * accessing the LrWpanMac pointer to make 802.15.4-specific API calls.
  * As such, this is really just an encapsulating class.
@@ -50,24 +50,64 @@ class Node;
 class LrWpanNetDevice : public NetDevice
 {
 public:
+  /**
+   * Get the type ID.
+   *
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   LrWpanNetDevice (void);
   virtual ~LrWpanNetDevice (void);
 
-  void SetMac (Ptr<LrWpanMac> mac);
-  void SetPhy (Ptr<LrWpanPhy> phy);
-  void SetCsmaCa (Ptr<LrWpanCsmaCa> csmaca);
-  void SetChannel (Ptr<SpectrumChannel> channel);
   /**
-   * We disallow the conventional Send/SendFrom methods in this NetDevice,
-   * preferring instead that the higher layer access the LrWpanMac object
-   * directly (with its specific API).
+   * Set the MAC to be used by this NetDevice.
    *
-   * \return pointer to the LrWpanMac/Phy/Csmaca object
+   * \param mac the MAC to be used
+   */
+  void SetMac (Ptr<LrWpanMac> mac);
+
+  /**
+   * Set the PHY to be used by the MAC and this NetDevice.
+   *
+   * \param phy the PHY to be used
+   */
+  void SetPhy (Ptr<LrWpanPhy> phy);
+
+  /**
+   * Set the CSMA/CA implementation to be used by the MAC and this NetDevice.
+   *
+   * \param csmaca the CSMA/CA implementation to be used
+   */
+  void SetCsmaCa (Ptr<LrWpanCsmaCa> csmaca);
+
+  /**
+   * Set the channel to which the NetDevice, and therefore the PHY, should be
+   * attached to.
+   *
+   * \param channel the channel to be used
+   */
+  void SetChannel (Ptr<SpectrumChannel> channel);
+
+  /**
+   * Get the MAC used by this NetDevice.
+   *
+   * \return the MAC object
    */
   Ptr<LrWpanMac> GetMac (void) const;
+
+  /**
+   * Get the PHY used by this NetDevice.
+   *
+   * \return the PHY object
+   */
   Ptr<LrWpanPhy> GetPhy (void) const;
+
+  /**
+   * Get the CSMA/CA implementation used by this NetDevice.
+   *
+   * \return the CSMA/CA implementation object
+   */
   Ptr<LrWpanCsmaCa> GetCsmaCa (void) const;
 
   // From class NetDevice
@@ -103,27 +143,93 @@ public:
   virtual void SetPromiscReceiveCallback (PromiscReceiveCallback cb);
   virtual bool SupportsSendFrom (void) const;
 
+  /**
+   * The callback used by the MAC to hand over incoming packets to the
+   * NetDevice. This callback will in turn use the ReceiveCallback set by
+   * SetReceiveCallback() to notify upper layers.
+   *
+   * \param params 802.15.4 specific parameters, including source and destination addresses
+   * \param pkt the packet do be delivered
+   */
   void McpsDataIndication (McpsDataIndicationParams params, Ptr<Packet> pkt);
 
 private:
+  // Inherited from NetDevice/Object
   virtual void DoDispose (void);
   virtual void DoStart (void);
+
+  /**
+   * Mark NetDevice link as up.
+   */
   void LinkUp (void);
+
+  /**
+   * Mark NetDevice link as down.
+   */
   void LinkDown (void);
+
+  /**
+   * Attribute accessor method for the "Channel" attribute.
+   *
+   * \return the channel to which this NetDevice is attached
+   */
   Ptr<SpectrumChannel> DoGetChannel (void) const;
+
+  /**
+   * Configure PHY, MAC and CSMA/CA.
+   */
   void CompleteConfig (void);
 
+  /**
+   * The MAC for this NetDevice.
+   */
   Ptr<LrWpanMac> m_mac;
+
+  /**
+   * The PHY for this NetDevice.
+   */
   Ptr<LrWpanPhy> m_phy;
+
+  /**
+   * The CSMA/CA implementation for this NetDevice.
+   */
   Ptr<LrWpanCsmaCa> m_csmaca;
+
+  /**
+   * The node associated with this NetDevice.
+   */
   Ptr<Node> m_node;
+
+  /**
+   * True if MAC, PHY and CSMA/CA where successfully configured and the
+   * NetDevice is ready for being used.
+   */
   bool m_configComplete;
+
+  /**
+   * Configure the NetDevice to request MAC layer acknowledgements when sending
+   * packets using the Send() API.
+   */
   bool m_useAcks;
 
+  /**
+   * Is the link/device currently up and running?
+   */
   bool m_linkUp;
+
+  /**
+   * The interface index of this NetDevice.
+   */
   uint32_t m_ifIndex;
 
+  /**
+   * Trace source for link up/down changes.
+   */
   TracedCallback<> m_linkChanges;
+
+  /**
+   * Upper layer callback used for notification of new data packet arrivals.
+   */
   ReceiveCallback m_receiveCallback;
 };
 

@@ -232,8 +232,7 @@ private:
   uint8_t m_auxKeyIdKeyIndex;           // 1 octet
 
 }; //LrWpanMacHeader
+
 }; // namespace ns-3
+
 #endif /* LR_WPAN_MAC_HEADER_H */
-
-// ----------------------------------------------------------------------------------------------------------
-

@@ -31,6 +31,8 @@
 #include <ns3/uinteger.h>
 #include <ns3/node.h>
 #include <ns3/packet.h>
+#include <ns3/random-variable-stream.h>
+#include <ns3/double.h>
 
 NS_LOG_COMPONENT_DEFINE ("LrWpanMac");
 
@@ -106,9 +108,10 @@ LrWpanMac::LrWpanMac ()
   m_retransmission = 0;
   m_txPkt = 0;
 
-  UniformVariable uniformVar;
-  uniformVar = UniformVariable (0, 255);
-  m_macDsn = SequenceNumber8 (uniformVar.GetValue ());
+  Ptr<UniformRandomVariable> uniformVar = CreateObject<UniformRandomVariable> ();
+  uniformVar->SetAttribute ("Min", DoubleValue (0.0));
+  uniformVar->SetAttribute ("Max", DoubleValue (255.0));
+  m_macDsn = SequenceNumber8 (uniformVar->GetValue ());
   m_shortAddress = Mac16Address ("00:00");
 }
 

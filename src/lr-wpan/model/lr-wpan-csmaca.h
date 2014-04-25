@@ -24,80 +24,179 @@
 #define LR_WPAN_CSMACA_H
 
 #include <ns3/object.h>
-#include <ns3/random-variable.h>
 #include <ns3/event-id.h>
 #include <ns3/lr-wpan-mac.h>
 
 namespace ns3 {
 
-/* This method informs MAC that channel is idle or busy */
+class UniformRandomVariable;
+
+/**
+ * This method informs the MAC  whether the channel is idle or busy.
+ */
 typedef Callback<void, LrWpanMacState> LrWpanMacStateCallback;
 
 /**
  * \ingroup lr-wpan
  *
  * This class is a helper for the LrWpanMac to manage the Csma/CA
- * state machine.
+ * state machine according to IEEE 802.15.4-2006, section 7.5.1.4.
  */
 class LrWpanCsmaCa : public Object
 {
 
 public:
+  /**
+   * Get the type ID.
+   *
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
+  /**
+   * Default constructor.
+   */
   LrWpanCsmaCa (void);
   virtual ~LrWpanCsmaCa (void);
 
+  /**
+   * Set the MAC to which this CSMA/CA implementation is attached to.
+   *
+   * \param mac the used MAC
+   */
   void SetMac (Ptr<LrWpanMac> mac);
+
+  /**
+   * Get the MAC to which this CSMA/CA implementation is attached to.
+   *
+   * \return the used MAC
+   */
   Ptr<LrWpanMac> GetMac (void) const;
+
+  /**
+   * Configure for the use of the slotted CSMA/CA version.
+   */
   void SetSlottedCsmaCa (void);
+
+  /**
+   * Configure for the use of the unslotted CSMA/CA version.
+   */
   void SetUnSlottedCsmaCa (void);
+
+  /**
+   * Check if the slotted CSMA/CA version is being used.
+   *
+   * \return true, if slotted CSMA/CA is used, false otherwise.
+   */
   bool IsSlottedCsmaCa (void) const;
+
+  /**
+   * Check if the unslotted CSMA/CA version is being used.
+   *
+   * \return true, if unslotted CSMA/CA is used, false otherwise.
+   */
   bool IsUnSlottedCsmaCa (void) const;
 
+  /**
+   * Set the minimum backoff exponent value.
+   * See IEEE 802.15.4-2006, section 7.4.2, Table 86.
+   *
+   * \param macMinBE the minimum backoff exponent value
+   */
   void SetMacMinBE (uint8_t macMinBE);
+
+  /**
+   * Get the minimum backoff exponent value.
+   * See IEEE 802.15.4-2006, section 7.4.2, Table 86.
+   *
+   * \return the minimum backoff exponent value
+   */
   uint8_t GetMacMinBE (void) const;
+
+  /**
+   * Set the maximum backoff exponent value.
+   * See IEEE 802.15.4-2006, section 7.4.2, Table 86.
+   *
+   * \param macMaxBE the maximum backoff exponent value
+   */
   void SetMacMaxBE (uint8_t macMaxBE);
+
+  /**
+   * Get the maximum backoff exponent value.
+   * See IEEE 802.15.4-2006, section 7.4.2, Table 86.
+   *
+   * \return the maximum backoff exponent value
+   */
   uint8_t GetMacMaxBE (void) const;
+
+  /**
+   * Set the maximum number of backoffs.
+   * See IEEE 802.15.4-2006, section 7.4.2, Table 86.
+   *
+   * \param macMaxCSMABackoffs the maximum number of backoffs
+   */
   void SetMacMaxCSMABackoffs (uint8_t macMaxCSMABackoffs);
+
+  /**
+   * Get the maximum number of backoffs.
+   * See IEEE 802.15.4-2006, section 7.4.2, Table 86.
+   *
+   * \return the maximum number of backoffs
+   */
   uint8_t GetMacMaxCSMABackoffs (void) const;
 
+  /**
+   * Set the number of symbols forming the basic time period used by the
+   * CSMA-CA algorithm.
+   * See IEEE 802.15.4-2006, section 7.4.1, Table 85.
+   *
+   * \param unitBackoffPeriod the period length in symbols
+   */
   void SetUnitBackoffPeriod (uint64_t unitBackoffPeriod);
+
+  /**
+   * Get the number of symbols forming the basic time period used by the
+   * CSMA-CA algorithm.
+   * See IEEE 802.15.4-2006, section 7.4.1, Table 85.
+   *
+   * \return the period length in symbols
+   */
   uint64_t GetUnitBackoffPeriod (void) const;
 
-  /*
-   *  Amount of time from now to the beginning of the next slot
+  /**
+   * Get the amount of time from now to the beginning of the next slot.
+   *
+   * \return time offset to the next slot
    */
-  uint64_t GetTimeToNextSlot (void) const;
+  Time GetTimeToNextSlot (void) const;
 
-  /*
+  /**
    * Start CSMA-CA algorithm (step 1), initialize NB, BE for both slotted and unslotted
    * CSMA-CA. For the slotted intialize CW plus also start on the backoff boundary
    */
   void Start (void);
 
-  /*
-   * cancel CSMA-CA algorithm
+  /**
+   * Cancel CSMA-CA algorithm.
    */
   void Cancel (void);
 
-  /*
+  /**
    * In step 2 of the CSMA-CA, perform a random backoff in the range of 0 to 2^BE -1
    */
   void RandomBackoffDelay (void);
 
-  /*
-   * In the slotted CSMA-CA, after random backoff, Determine if the remaining
-   * CSMA-CA operation can proceed ie. Can the entire transactions can be transmitted
-   * before the end of the CAP. This step is performed between step 2 and 3.
-   * This step is NOT performed for the unslotted CSMA-CA. If it can proceed
-   * function CCAconfirmed() is called.
+  /**
+   * In the slotted CSMA-CA, after random backoff, determine if the remaining
+   * CSMA-CA operation can proceed, i.e. can the entire transactions can be
+   * transmitted before the end of the CAP. This step is performed between step
+   * 2 and 3. This step is NOT performed for the unslotted CSMA-CA. If it can
+   * proceed function RequestCCA() is called.
    */
   void CanProceed (void);
 
-  /*
+  /**
    * Request the Phy to perform CCA (Step 3)
-   *
    */
   void RequestCCA (void);
 
@@ -115,33 +214,97 @@ public:
   void PlmeCcaConfirm (LrWpanPhyEnumeration status);
 
   /**
-    * set the callback function. Used at the end of a Channel Assessment, as part of the
-    * interconnections between the CSMA-CA and the MAC. The callback
-    * lets MAc know a channel is either idle or busy
-    */
+   * Set the callback function to the MAC. Used at the end of a Channel Assessment, as part of the
+   * interconnections between the CSMA-CA and the MAC. The callback
+   * lets MAC know a channel is either idle or busy.
+   *
+   * \param macState the mac state callback
+   */
   void SetLrWpanMacStateCallback (LrWpanMacStateCallback macState);
 
 private:
   virtual void DoDispose (void);
+
+  /**
+   * The callback to inform the configured MAC of the CSMA/CA result.
+   */
   LrWpanMacStateCallback m_lrWpanMacStateCallback;
-  bool m_isSlotted;                     // beacon-enabled slotted or nonbeacon-enabled unslotted CSMA-CA
-                                        // beacon order == 15 means nonbeacon-enabled
 
+  /**
+   * Beacon-enabled slotted or nonbeacon-enabled unslotted CSMA-CA.
+   */
+  bool m_isSlotted;
+
+  /**
+   * The MAC instance for which this CSMAÄ/CA implemenation is configured.
+   */
   Ptr<LrWpanMac> m_mac;
-  uint8_t m_NB;                         // number of backoffs for the current transmission
-  uint8_t m_CW;                         // contention window length (used in slotted ver only)
-  uint8_t m_BE;                         // backoff exponent
-  bool m_BLE;                           // Battery Life Extension
 
-  uint8_t m_macMinBE;                   //0-macMaxBE default 3
-  uint8_t m_macMaxBE;                   //3-8 default 5
-  uint8_t m_macMaxCSMABackoffs;         //0-5 default 4
-  uint64_t m_aUnitBackoffPeriod;        // 20 symbols in each backoff periods
-  UniformVariable m_random;
+  /**
+   * Number of backoffs for the current transmission.
+   */
+  uint8_t m_NB;
 
+  /**
+   * Contention window length (used in slotted ver only).
+   */
+  uint8_t m_CW;
+
+  /**
+   * Backoff exponent.
+   */
+  uint8_t m_BE;
+
+  /**
+   * Battery Life Extension.
+   */
+  bool m_BLE;
+
+  /**
+   * Minimum backoff exponent. 0 - macMaxBE, default 3
+   */
+  uint8_t m_macMinBE;                   //
+
+  /**
+   * Maximum backoff exponent. 3 - 8, default 5
+   */
+  uint8_t m_macMaxBE;
+
+  /**
+   * Maximum number of backoffs. 0 - 5, default 4
+   */
+  uint8_t m_macMaxCSMABackoffs;
+
+  /**
+   * Number of symbols per CSMA/CA time unit, default 20 symbols.
+   */
+  uint64_t m_aUnitBackoffPeriod;
+
+  /**
+   * Uniform random variable stream.
+   */
+  Ptr<UniformRandomVariable> m_random;
+
+  /**
+   * Scheduler event for the start of the next random backoff/slot.
+   */
   EventId m_randomBackoffEvent;
+
+  /**
+   * Scheduler event when to start the CCA after a random backoff.
+   */
   EventId m_requestCcaEvent;
+
+  /**
+   * Scheduler event for checking if we can complete the transmission before the
+   * end of the CAP.
+   */
   EventId m_canProceedEvent;
+
+  /**
+   * Flag indicating that the PHY is currently running a CCA. Used to prevent
+   * reporting the channel status to the MAC while canceling the CSMA algorithm.
+   */
   bool m_ccaRequestRunning;
 };
 

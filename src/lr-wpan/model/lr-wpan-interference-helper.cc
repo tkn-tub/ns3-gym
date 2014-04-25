@@ -28,11 +28,12 @@ NS_LOG_COMPONENT_DEFINE ("LrWpanInterferenceHelper");
 namespace ns3 {
 
 LrWpanInterferenceHelper::LrWpanInterferenceHelper (Ptr<const SpectrumModel> spectrumModel) :
-    m_spectrumModel (spectrumModel), m_dirty(true)
+    m_spectrumModel (spectrumModel), m_dirty (false)
 {
+  m_signal = Create<SpectrumValue> (m_spectrumModel);
 }
 
-LrWpanInterferenceHelper::~LrWpanInterferenceHelper ()
+LrWpanInterferenceHelper::~LrWpanInterferenceHelper (void)
 {
   m_spectrumModel = 0;
   m_signal = 0;
@@ -76,7 +77,7 @@ LrWpanInterferenceHelper::RemoveSignal (Ptr<const SpectrumValue> signal)
 }
 
 void
-LrWpanInterferenceHelper::ClearSignals ()
+LrWpanInterferenceHelper::ClearSignals (void)
 {
   NS_LOG_FUNCTION (this);
 
@@ -85,7 +86,7 @@ LrWpanInterferenceHelper::ClearSignals ()
 }
 
 Ptr<SpectrumValue>
-LrWpanInterferenceHelper::GetSignalPsd () const
+LrWpanInterferenceHelper::GetSignalPsd (void) const
 {
   NS_LOG_FUNCTION (this);
 

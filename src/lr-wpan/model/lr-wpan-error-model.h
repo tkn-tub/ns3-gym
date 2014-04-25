@@ -34,12 +34,18 @@ namespace ns3 {
 class LrWpanErrorModel : public Object
 {
 public:
+  /**
+   * Get the type ID.
+   *
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   LrWpanErrorModel (void);
 
   /**
-   * return chunk success rate for given SNR
+   * Return chunk success rate for given SNR.
+   *
    * \return success rate (i.e. 1 - chunk error rate)
    * \param snr SNR expressed as a power ratio (i.e. not in dB)
    * \param nbits number of bits in the chunk
@@ -47,6 +53,9 @@ public:
   double GetChunkSuccessRate (double snr, uint32_t nbits) const;
 
 private:
+  /**
+   * Array of precalculated binomial coefficients.
+   */
   double m_binomialCoefficients[17];
 
 };

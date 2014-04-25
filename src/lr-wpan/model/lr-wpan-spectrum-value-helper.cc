@@ -60,6 +60,7 @@ LrWpanSpectrumValueHelper::LrWpanSpectrumValueHelper (void)
 
 LrWpanSpectrumValueHelper::~LrWpanSpectrumValueHelper (void)
 {
+  NS_LOG_FUNCTION (this);
 }
 
 Ptr<SpectrumValue>

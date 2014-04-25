@@ -29,9 +29,9 @@ namespace ns3 {
 class PacketBurst;
 
 /**
- * \ingroup lte
+ * \ingroup lr-wpan
  *
- * Signal parameters for LrWpan
+ * Signal parameters for LrWpan.
  */
 struct LrWpanSpectrumSignalParameters : public SpectrumSignalParameters
 {

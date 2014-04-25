@@ -225,6 +225,7 @@ LrWpanNetDevice::LinkUp (void)
   m_linkUp = true;
   m_linkChanges ();
 }
+
 void
 LrWpanNetDevice::LinkDown (void)
 {
@@ -233,13 +234,13 @@ LrWpanNetDevice::LinkDown (void)
   m_linkChanges ();
 }
 
-
 Ptr<SpectrumChannel>
 LrWpanNetDevice::DoGetChannel (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_phy->GetChannel ();
 }
+
 void
 LrWpanNetDevice::SetAddress (Address address)
 {

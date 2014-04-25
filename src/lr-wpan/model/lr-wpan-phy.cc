@@ -35,6 +35,8 @@
 #include <ns3/packet.h>
 #include <ns3/packet-burst.h>
 #include <ns3/net-device.h>
+#include <ns3/random-variable-stream.h>
+#include <ns3/double.h>
 
 NS_LOG_COMPONENT_DEFINE ("LrWpanPhy");
 
@@ -135,6 +137,11 @@ LrWpanPhy::LrWpanPhy ()
   m_currentRxPacket = std::make_pair (none_params, true);
   m_currentTxPacket = std::make_pair (none_packet, true);
   m_errorModel = 0;
+
+  m_random = CreateObject<UniformRandomVariable> ();
+  m_random->SetAttribute ("Min", DoubleValue (0.0));
+  m_random->SetAttribute ("Max", DoubleValue (1.0));
+
 
   ChangeTrxState (IEEE_802_15_4_PHY_TRX_OFF);
 }
@@ -379,7 +386,7 @@ LrWpanPhy::CheckInterference ()
           tag.Set (lqi - (per * lqi));
           currentPacket->ReplacePacketTag (tag);
 
-          if (m_random.GetValue () < per)
+          if (m_random->GetValue () < per)
             {
               // The packet was destroyed, drop the packet after reception.
               m_currentRxPacket.second = true;

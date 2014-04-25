@@ -21,22 +21,16 @@
  */
 
 #include "lr-wpan-csmaca.h"
+#include <ns3/random-variable-stream.h>
 #include <ns3/simulator.h>
 #include <ns3/log.h>
+#include <algorithm>
 
 NS_LOG_COMPONENT_DEFINE ("LrWpanCsmaCa");
 
 namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (LrWpanCsmaCa);
-
-#ifndef MAX
-#define MAX(x,y)        (((x) > (y)) ? (x) : (y))
-#endif
-
-#ifndef MIN
-#define MIN(x,y)        (((x) < (y)) ? (x) : (y))
-#endif
 
 TypeId
 LrWpanCsmaCa::GetTypeId (void)
@@ -60,7 +54,7 @@ LrWpanCsmaCa::LrWpanCsmaCa ()
   m_macMaxBE = 5;
   m_macMaxCSMABackoffs = 4;
   m_aUnitBackoffPeriod = 20; //20 symbols
-  m_random = UniformVariable ();
+  m_random = CreateObject<UniformRandomVariable> ();
   m_BE = m_macMinBE;
   m_ccaRequestRunning = false;
 }
@@ -174,15 +168,14 @@ LrWpanCsmaCa::GetUnitBackoffPeriod (void) const
   return m_aUnitBackoffPeriod;
 }
 
-//TODO:
-uint64_t
+Time
 LrWpanCsmaCa::GetTimeToNextSlot (void) const
 {
   NS_LOG_FUNCTION (this);
-  uint64_t diffT = 0;
 
+  // TODO: Calculate the offset to the next slot.
 
-  return(diffT);
+  return Seconds (0);
 
 }
 void
@@ -190,22 +183,21 @@ LrWpanCsmaCa::Start ()
 
 {
   NS_LOG_FUNCTION (this);
-  uint64_t backoffBoundary = 0;
   m_NB = 0;
   if (IsSlottedCsmaCa ())
     {
       m_CW = 2;
       if (m_BLE)
         {
-          m_BE = MIN (2, m_macMinBE);
+          m_BE = std::min (static_cast<uint8_t> (2), m_macMinBE);
         }
       else
         {
           m_BE = m_macMinBE;
         }
       //TODO: for slotted, locate backoff period boundary. i.e. delay to the next slot boundary
-      backoffBoundary = GetTimeToNextSlot ();
-      m_randomBackoffEvent = Simulator::Schedule (Seconds (backoffBoundary), &LrWpanCsmaCa::RandomBackoffDelay, this);
+      Time backoffBoundary = GetTimeToNextSlot ();
+      m_randomBackoffEvent = Simulator::Schedule (backoffBoundary, &LrWpanCsmaCa::RandomBackoffDelay, this);
     }
   else
     {
@@ -247,7 +239,7 @@ LrWpanCsmaCa::RandomBackoffDelay ()
 
 
   symbolRate = (uint64_t) m_mac->GetPhy ()->GetDataOrSymbolRate (isData); //symbols per second
-  backoffPeriod = (uint64_t)m_random.GetValue (0, upperBound); //num backoff periods
+  backoffPeriod = (uint64_t)m_random->GetValue (0, upperBound); //num backoff periods
   randomBackoff = MicroSeconds (backoffPeriod * GetUnitBackoffPeriod () * 1000 * 1000 / symbolRate);
 
   if (IsUnSlottedCsmaCa ())
@@ -268,8 +260,7 @@ void
 LrWpanCsmaCa::CanProceed ()
 {
   NS_LOG_FUNCTION (this);
-  uint64_t backoffBoundary = 0;
-  uint8_t nextCap = 0;
+
   bool canProceed = true;
 
   if (m_BLE)
@@ -282,12 +273,13 @@ LrWpanCsmaCa::CanProceed ()
   if (canProceed)
     {
       // TODO: For slotted, Perform CCA on backoff period boundary i.e. delay to next slot boundary
-      backoffBoundary = GetTimeToNextSlot ();
-      m_requestCcaEvent = Simulator::Schedule (Seconds (backoffBoundary), &LrWpanCsmaCa::RequestCCA, this);
+      Time backoffBoundary = GetTimeToNextSlot ();
+      m_requestCcaEvent = Simulator::Schedule (backoffBoundary, &LrWpanCsmaCa::RequestCCA, this);
     }
   else
     {
-      m_randomBackoffEvent = Simulator::Schedule (Seconds (nextCap), &LrWpanCsmaCa::RandomBackoffDelay, this);
+      Time nextCap = Seconds (0);
+      m_randomBackoffEvent = Simulator::Schedule (nextCap, &LrWpanCsmaCa::RandomBackoffDelay, this);
     }
 }
 
@@ -349,7 +341,7 @@ LrWpanCsmaCa::PlmeCcaConfirm (LrWpanPhyEnumeration status)
             {
               m_CW = 2;
             }
-          m_BE = MIN (m_BE + 1, m_macMaxBE);
+          m_BE = std::min (static_cast<uint16_t> (m_BE + 1), static_cast<uint16_t> (m_macMaxBE));
           m_NB++;
           if (m_NB > m_macMaxCSMABackoffs)
             {

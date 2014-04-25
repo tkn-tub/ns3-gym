@@ -54,12 +54,15 @@ public:
 
   /**
    * \brief total average power of the signal is the integral of the PSD
-   * \param power spectral density
+   * \param psd spectral density
    * \return total power (using composite trap. rule to numerally integrate
    */
   static double TotalAvgPower (Ptr<const SpectrumValue> psd);
 
 private:
+  /**
+   * A scaling factor for the noise power.
+   */
   double m_noiseFactor;
 
 };
