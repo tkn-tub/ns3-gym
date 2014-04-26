@@ -605,39 +605,170 @@ private:
    */
   TracedCallback<Ptr<const Packet> > m_phyRxDropTrace;
 
+  /**
+   * The trace source fired when the phy layer changes the transceiver state.
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Time, LrWpanPhyEnumeration, LrWpanPhyEnumeration> m_trxStateLogger;
+
+  /**
+   * The mobility model used by the PHY.
+   */
   Ptr<MobilityModel> m_mobility;
+
+  /**
+   * The configured net device.
+   */
   Ptr<NetDevice> m_device;
+
+  /**
+   * The channel attached to this transceiver.
+   */
   Ptr<SpectrumChannel> m_channel;
+
+  /**
+   * The antenna used by the transceiver.
+   */
   Ptr<AntennaModel> m_antenna;
+
+  /**
+   * The transmit power spectral density.
+   */
   Ptr<SpectrumValue> m_txPsd;
+
+  /**
+   * The spectral density for for the noise.
+   */
   Ptr<const SpectrumValue> m_noise;
+
+  /**
+   * The error model describing the bit and packet error rates.
+   */
   Ptr<LrWpanErrorModel> m_errorModel;
   LrWpanPhyPibAttributes m_phyPIBAttributes;
 
   // State variables
-  LrWpanPhyEnumeration m_trxState;  /// transceiver state
-  TracedCallback<Time, LrWpanPhyEnumeration, LrWpanPhyEnumeration> m_trxStateLogger;
-  LrWpanPhyEnumeration m_trxStatePending;  /// pending state change
+  /**
+   * The current transceiver state.
+   */
+  LrWpanPhyEnumeration m_trxState;
 
+  /**
+   * The next pending state to applied after the current action of the PHY is
+   * completed.
+   */
+  LrWpanPhyEnumeration m_trxStatePending;
+
+  // Callbacks
+  /**
+   * This callback is used to notify incoming packets to the MAC layer.
+   * See IEEE 802.15.4-2006, section 6.2.1.3.
+   */
   PdDataIndicationCallback m_pdDataIndicationCallback;
+
+  /**
+   * This callback is used to report packet transmission status to the MAC layer.
+   * See IEEE 802.15.4-2006, section 6.2.1.2.
+   */
   PdDataConfirmCallback m_pdDataConfirmCallback;
+
+  /**
+   * This callback is used to report CCA status to the MAC or CSMA/CA.
+   * See IEEE 802.15.4-2006, section 6.2.2.2.
+   */
   PlmeCcaConfirmCallback m_plmeCcaConfirmCallback;
+
+  /**
+   * This callback is used to report ED status to the MAC.
+   * See IEEE 802.15.4-2006, section 6.2.2.4.
+   */
   PlmeEdConfirmCallback m_plmeEdConfirmCallback;
+
+  /**
+   * This callback is used to report requested attribute values back to the MAC.
+   * See IEEE 802.15.4-2006, section 6.2.2.6.
+   */
   PlmeGetAttributeConfirmCallback m_plmeGetAttributeConfirmCallback;
+
+  /**
+   * This callback is used to report transceiver state change status to the MAC.
+   * See IEEE 802.15.4-2006, section 6.2.2.8.
+   */
   PlmeSetTRXStateConfirmCallback m_plmeSetTRXStateConfirmCallback;
+
+  /**
+   * This callback is used to report attribute set results back to the MAC.
+   * See IEEE 802.15.4-2006, section 6.2.2.10.
+   */
   PlmeSetAttributeConfirmCallback m_plmeSetAttributeConfirmCallback;
+
+  /**
+   * The currently configured PHY type.
+   */
   LrWpanPhyOption m_phyOption;
+
+  /**
+   * Helper value for tracking the average power during ED.
+   */
   LrWpanEdPower m_edPower;
+
+  /**
+   * Helper value for the peak power value during CCA.
+   */
   double m_ccaPeakPower;
+
+  /**
+   * The receiver sensitivity.
+   */
   double m_rxSensitivity;
+
+  /**
+   * The accumulated signals currently received by the transceiver, including
+   * the signal of a possibly received packet, as well as all signals
+   * considered noise.
+   */
   Ptr<LrWpanInterferenceHelper> m_signal;
+
+  /**
+   * Timestamp of the last calculation of the PER of a packet currently received.
+   */
   Time m_rxLastUpdate;
+
+  /**
+   * Statusinformation of the currently received packet. The first parameter
+   * contains the frame, as well the signal power of the frame. The second
+   * parameter is set to false, if the frame is either invalid or destroyed
+   * due to interference.
+   */
   std::pair<Ptr<LrWpanSpectrumSignalParameters>, bool>  m_currentRxPacket;
+
+  /**
+   * Statusinformation of the currently transmitted packet. The first parameter
+   * contains the frame. The second parameter is set to false, if the frame not
+   * completely transmitted, in the event of a force transceiver switch, for
+   * example.
+   */
   PacketAndStatus m_currentTxPacket;
 
+  /**
+   * Scheduler event of a currently running CCA request.
+   */
   EventId m_ccaRequest;
+
+  /**
+   * Scheduler event of a currently running ED request.
+   */
   EventId m_edRequest;
+
+  /**
+   * Scheduler event of a currently running deferred transceiver state switch.
+   */
   EventId m_setTRXState;
+
+  /**
+   * Scheduler event of a currently running data transmission request.
+   */
   EventId m_pdDataRequest;
 
   /**
