@@ -62,6 +62,9 @@ LrWpanMac::GetTypeId (void)
     .AddTraceSource ("MacTx",
                      "Trace source indicating a packet has arrived for transmission by this device",
                      MakeTraceSourceAccessor (&LrWpanMac::m_macTxTrace))
+    .AddTraceSource ("MacTxOk",
+                     "Trace source indicating a packet has been successfully sent",
+                     MakeTraceSourceAccessor (&LrWpanMac::m_macTxOkTrace))
     .AddTraceSource ("MacTxDrop",
                      "Trace source indicating a packet has been dropped during transmission",
                      MakeTraceSourceAccessor (&LrWpanMac::m_macTxDropTrace))
@@ -602,6 +605,7 @@ LrWpanMac::PdDataIndication (uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
                   m_txPkt->PeekHeader (macHdr);
                   if (receivedMacHdr.GetSeqNum () == macHdr.GetSeqNum ())
                     {
+                      m_macTxOkTrace (m_txPkt);
                       // If it is an ACK with the expected sequence number, finish the transmission
                       // and notify the upper layer.
                       m_ackWaitTimeout.Cancel ();
@@ -771,6 +775,7 @@ LrWpanMac::PdDataConfirm (LrWpanPhyEnumeration status)
             }
           else
             {
+              m_macTxOkTrace (m_txPkt);
               // remove the copy of the packet that was just sent
               if (!m_mcpsDataConfirmCallback.IsNull ())
                 {
@@ -858,6 +863,7 @@ LrWpanMac::PlmeSetTRXStateConfirm (LrWpanPhyEnumeration status)
       // Start sending if we are in state SENDING and the PHY transmitter was enabled.
       m_promiscSnifferTrace (m_txPkt);
       m_snifferTrace (m_txPkt);
+      m_macTxTrace (m_txPkt);
       m_phy->PdDataRequest (m_txPkt->GetSize (), m_txPkt);
     }
   else if (m_lrWpanMacState == MAC_CSMA && (status == IEEE_802_15_4_PHY_RX_ON || status == IEEE_802_15_4_PHY_SUCCESS))
@@ -980,7 +986,7 @@ LrWpanMac::ChangeMacState (LrWpanMacState newState)
   NS_LOG_LOGIC (this << " change lrwpan mac state from "
                      << m_lrWpanMacState << " to "
                      << newState);
-  m_macStateLogger (Simulator::Now (), m_lrWpanMacState, newState);
+  m_macStateLogger (m_lrWpanMacState, newState);
   m_lrWpanMacState = newState;
 }
 

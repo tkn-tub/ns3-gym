@@ -101,7 +101,7 @@ LrWpanPhy::GetTypeId (void)
   return tid;
 }
 
-LrWpanPhy::LrWpanPhy ()
+LrWpanPhy::LrWpanPhy (void)
   : m_edRequest (),
     m_setTRXState ()
 {
@@ -146,12 +146,12 @@ LrWpanPhy::LrWpanPhy ()
   ChangeTrxState (IEEE_802_15_4_PHY_TRX_OFF);
 }
 
-LrWpanPhy::~LrWpanPhy ()
+LrWpanPhy::~LrWpanPhy (void)
 {
 }
 
 void
-LrWpanPhy::DoDispose ()
+LrWpanPhy::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
 
@@ -179,7 +179,7 @@ LrWpanPhy::DoDispose ()
 }
 
 Ptr<NetDevice>
-LrWpanPhy::GetDevice ()
+LrWpanPhy::GetDevice (void)
 {
   NS_LOG_FUNCTION (this);
   return m_device;
@@ -187,7 +187,7 @@ LrWpanPhy::GetDevice ()
 
 
 Ptr<MobilityModel>
-LrWpanPhy::GetMobility ()
+LrWpanPhy::GetMobility (void)
 {
   NS_LOG_FUNCTION (this);
   return m_mobility;
@@ -227,7 +227,7 @@ LrWpanPhy::GetChannel (void)
 
 
 Ptr<const SpectrumModel>
-LrWpanPhy::GetRxSpectrumModel () const
+LrWpanPhy::GetRxSpectrumModel (void) const
 {
   NS_LOG_FUNCTION (this);
   if (m_txPsd)
@@ -241,7 +241,7 @@ LrWpanPhy::GetRxSpectrumModel () const
 }
 
 Ptr<AntennaModel>
-LrWpanPhy::GetRxAntenna ()
+LrWpanPhy::GetRxAntenna (void)
 {
   NS_LOG_FUNCTION (this);
   return m_antenna;
@@ -355,7 +355,7 @@ LrWpanPhy::StartRx (Ptr<SpectrumSignalParameters> spectrumRxParams)
 }
 
 void
-LrWpanPhy::CheckInterference ()
+LrWpanPhy::CheckInterference (void)
 {
   // Calculate whether packet was lost.
   LrWpanSpectrumValueHelper psdHelper;
@@ -1024,7 +1024,7 @@ LrWpanPhy::CancelEd (LrWpanPhyEnumeration state)
 }
 
 void
-LrWpanPhy::EndEd ()
+LrWpanPhy::EndEd (void)
 {
   NS_LOG_FUNCTION (this);
 
@@ -1056,7 +1056,7 @@ LrWpanPhy::EndEd ()
 }
 
 void
-LrWpanPhy::EndCca ()
+LrWpanPhy::EndCca (void)
 {
   NS_LOG_FUNCTION (this);
   LrWpanPhyEnumeration sensedChannelState = IEEE_802_15_4_PHY_UNSPECIFIED;
@@ -1130,7 +1130,7 @@ LrWpanPhy::EndCca ()
 }
 
 void
-LrWpanPhy::EndSetTRXState ()
+LrWpanPhy::EndSetTRXState (void)
 {
   NS_LOG_FUNCTION (this);
 
@@ -1145,7 +1145,7 @@ LrWpanPhy::EndSetTRXState ()
 }
 
 void
-LrWpanPhy::EndTx ()
+LrWpanPhy::EndTx (void)
 {
   NS_LOG_FUNCTION (this);
 

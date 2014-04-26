@@ -157,42 +157,130 @@ typedef Callback<void, McpsDataIndicationParams, Ptr<Packet> > McpsDataIndicatio
  */
 class LrWpanMac : public Object
 {
-  friend class LrWpanCsmaCa;
 public:
+  /**
+   * Get the type ID.
+   *
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
-  static const uint32_t aMinMPDUOverhead; // Table 85
+  /**
+   * The minimum number of octets added by the MAC sublayer to the PSDU.
+   * See IEEE 802.15.4-2006, section 7.4.1, Table 85
+   */
+  static const uint32_t aMinMPDUOverhead;
 
-  LrWpanMac ();
-  virtual ~LrWpanMac ();
+  /**
+   * Default constructor.
+   */
+  LrWpanMac (void);
+  virtual ~LrWpanMac (void);
 
-  bool GetRxOnWhenIdle ();
+  /**
+   * Check if the receiver will be enabled when the MAC is idle.
+   *
+   * \return true, if the receiver is enabled during idle periods, false otherwise
+   */
+  bool GetRxOnWhenIdle (void);
+
+  /**
+   * Set if the receiver should be enabled when the MAC is idle.
+   *
+   * \param rxOnWhenIdle set to true to enable the receiver during idle periods
+   */
   void SetRxOnWhenIdle (bool rxOnWhenIdle);
 
   // XXX these setters will become obsolete if we use the attribute system
+  /**
+   * Set the short address of this MAC.
+   *
+   * \param address the new address
+   */
   void SetShortAddress (Mac16Address address);
+
+  /**
+   * Get the short address of this MAC.
+   *
+   * \return the short address
+   */
   Mac16Address GetShortAddress (void) const;
+
+  /**
+   * Set the extended address of this MAC.
+   *
+   * \param address the new address
+   */
   void SetExtendedAddress (Mac64Address address);
+
+  /**
+   * Get the extended address of this MAC.
+   *
+   * \return the extended address
+   */
   Mac64Address GetExtendedAddress (void) const;
+
+  /**
+   * Set the PAN id used by this MAC.
+   *
+   * \param panId the new PAN id.
+   */
   void SetPanId (uint16_t panId);
+
+  /**
+   * Get the PAN id used by this MAC.
+   *
+   * \return the PAN id.
+   */
   uint16_t GetPanId (void) const;
 
-  // interface between SSCS and MAC
   /**
-   * specified in Section 7.1.1.1
+   *  IEEE 802.15.4-2006, section 7.1.1.1
+   *  MCPS-DATA.request
+   *  Request to transfer a MSDU.
    *
-   * XXX for now, we do not send down all of the parameters detailed in
-   * section 7.1.1.1.1 but just send down the packet.
-   * @param p the packet to send
+   *  \param params the request parameters
+   *  \param p the packet to be transmitted
    */
   void McpsDataRequest (McpsDataRequestParams params, Ptr<Packet> p);
-  /* for debug we send down with delay*/
 
+  /**
+   * Set the CSMA/CA implementation to be used by the MAC.
+   *
+   * \param csmaCa the CSMA/CA implementation
+   */
   void SetCsmaCa (Ptr<LrWpanCsmaCa> csmaCa);
+
+  /**
+   * Set the underlying PHY for the MAC.
+   *
+   * \param phy the PHY
+   */
   void SetPhy (Ptr<LrWpanPhy> phy);
+
+  /**
+   * Get the underlying PHY of the MAC.
+   *
+   * \return the PHY
+   */
   Ptr<LrWpanPhy> GetPhy (void);
 
+  /**
+   * Set the callback for the indication of an incoming data packet.
+   * The callback implements MCPS-DATA.indication SAP of IEEE 802.15.4-2006,
+   * section 7.1.1.3.
+   *
+   * \param c the callback
+   */
   void SetMcpsDataIndicationCallback (McpsDataIndicationCallback c);
+
+  /**
+   * Set the callback for the confirmation of a data transmission request.
+   * The callback implements MCPS-DATA.confirm SAP of IEEE 802.15.4-2006,
+   * section 7.1.1.2.
+   *
+   * \param c the callback
+   */
   void SetMcpsDataConfirmCallback (McpsDataConfirmCallback c);
 
   // interfaces between MAC and PHY
@@ -235,7 +323,7 @@ public:
    *  Get attributes per definition from Table 23 in section 6.4.2
    *  @param status SUCCESS or UNSUPPORTED_ATTRIBUTE
    *  @param id the attributed identifier
-   *  @param * attribute the attribute value
+   *  @param attribute the attribute value
    */
   void PlmeGetAttributeConfirm (LrWpanPhyEnumeration status,
                                 LrWpanPibAttributeIdentifier id,
@@ -245,7 +333,7 @@ public:
    *  IEEE 802.15.4-2006 section 6.2.2.8
    *  PLME-SET-TRX-STATE.confirm
    *  Set PHY state
-   *  @param state in RX_ON,TRX_OFF,FORCE_TRX_OFF,TX_ON
+   *  @param status in RX_ON,TRX_OFF,FORCE_TRX_OFF,TX_ON
    */
   void PlmeSetTRXStateConfirm (LrWpanPhyEnumeration status);
 
@@ -259,57 +347,185 @@ public:
   void PlmeSetAttributeConfirm (LrWpanPhyEnumeration status,
                                 LrWpanPibAttributeIdentifier id);
 
-
   /**
-   * CSMA-CA algorithm calls back the MAC after executing channel assessment
+   * CSMA-CA algorithm calls back the MAC after executing channel assessment.
+   *
+   * \param macState indicate BUSY oder IDLE channel condition
    */
   void SetLrWpanMacState (LrWpanMacState macState);
 
   /**
+   * Get the current association status.
+   *
    * \return current association status
    */
   LrWpanAssociationStatus GetAssociationStatus (void) const;
 
   /**
+   * Set the current association status.
+   *
    * \param status new association status
    */
   void SetAssociationStatus (LrWpanAssociationStatus status);
 
   //MAC sublayer constants
-  uint64_t m_aBaseSlotDuration;         // 60 symbols in each superframe slot
-  uint64_t m_aNumSuperframeSlots;       // 16 slots in each superframe
-  uint64_t m_aBaseSuperframeDuration;   // aBaseSlotDuration * aNumSuperframeSlots in symbols
+  /**
+   * Length of a superframe slot in symbols. Defaults to 60 symbols in each
+   * superframe slot.
+   * See IEEE 802.15.4-2006, section 7.4.1, Table 85.
+   */
+  uint64_t m_aBaseSlotDuration;
+
+  /**
+   * Number of a superframe slots per superframe. Defaults to 16.
+   * See IEEE 802.15.4-2006, section 7.4.1, Table 85.
+   */
+  uint64_t m_aNumSuperframeSlots;
+
+  /**
+   * Length of a superframe in symbols. Defaults to
+   * aBaseSlotDuration * aNumSuperframeSlots in symbols.
+   * See IEEE 802.15.4-2006, section 7.4.1, Table 85.
+   */
+  uint64_t m_aBaseSuperframeDuration;
   
   //MAC PIB attributes
-  uint64_t m_macBeaconTxTime;           // time the device tx last beacon frame in symbols, only 24 bits used
-  uint64_t m_macSyncSymbolOffset;       // symbol boundary is same as m_macBeaconTxTime
-  uint64_t m_macBeaconOrder;            // 0..14 and 15 mean no beacon frame sent
-  uint64_t m_macSuperframeOrder;        // 0..14 and 15 means superframe shall not remain active after beacon
-  bool m_macPromiscuousMode;            // Indicates if MAC sublayer is in receive all mode. True mean accept all frames from PHY.
-  uint16_t m_macPanId;                  // 16bits id of PAN on which this device is operating. 0xffff means not asscoiated
-  SequenceNumber8 m_macDsn;             // Seq num added to transmitted data or MAC command frame 00-ff
-  uint8_t m_macMaxFrameRetries;         // The maximum number of retries allowed after a transmission failure
+  /**
+   * The time that the device transmitted its last beacon frame, in symbol
+   * periods. Only 24 bits used.
+   * See IEEE 802.15.4-2006, section 7.4.2, Table 86.
+   */
+  uint64_t m_macBeaconTxTime;
+
+  /**
+   * Symbol boundary is same as m_macBeaconTxTime.
+   * See IEEE 802.15.4-2006, section 7.4.2, Table 86.
+   */
+  uint64_t m_macSyncSymbolOffset;
+
+  /**
+   * Specification of how often the coordinator transmits its beacon.
+   * 0 - 15 with 15 means no beacons are being sent.
+   * See IEEE 802.15.4-2006, section 7.4.2, Table 86.
+   */
+  uint64_t m_macBeaconOrder;
+
+  /**
+   * The length of the active portion of the outgoing superframe, including the
+   * beacon frame.
+   * 0 - 15 with 15 means the superframe will not be active after the beacon.
+   * See IEEE 802.15.4-2006, section 7.4.2, Table 86.
+   */
+  uint64_t m_macSuperframeOrder;
+
+  /**
+   * Indicates if MAC sublayer is in receive all mode. True mean accept all
+   * frames from PHY.
+   * See IEEE 802.15.4-2006, section 7.4.2, Table 86.
+   */
+  bool m_macPromiscuousMode;
+
+  /**
+   * 16 bits id of PAN on which this device is operating. 0xffff means not
+   * asscoiated.
+   * See IEEE 802.15.4-2006, section 7.4.2, Table 86.
+   */
+  uint16_t m_macPanId;
+
+  /**
+   * Sequence number added to transmitted data or MAC command frame, 00-ff.
+   * See IEEE 802.15.4-2006, section 7.4.2, Table 86.
+   */
+  SequenceNumber8 m_macDsn;
+
+  /**
+   * The maximum number of retries allowed after a transmission failure.
+   * See IEEE 802.15.4-2006, section 7.4.2, Table 86.
+   */
+  uint8_t m_macMaxFrameRetries;
   
+  /**
+   * Indication of whether the MAC sublayer is to enable its receiver during
+   * idle periods.
+   * See IEEE 802.15.4-2006, section 7.4.2, Table 86.
+   */
+  bool m_macRxOnWhenIdle;
+
+  /**
+   * Get the macAckWaitDuration attribute value.
+   *
+   * \return the maximum number symbols to wait for an acknowledgment frame
+   */
   uint64_t GetMacAckWaitDuration (void) const;
+
+  /**
+   * Get the macMaxFrameRetries attribute value.
+   *
+   * \return the maximum number of retries
+   */
   uint8_t GetMacMaxFrameRetries (void) const;
+
+  /**
+   * Set the macMaxFrameRetries attribute value.
+   *
+   * \param retries the maximum number of retries
+   */
   void SetMacMaxFrameRetries (uint8_t retries);
 
 protected:
+  // Inherited from Object.
   virtual void DoInitialize (void);
   virtual void DoDispose (void);
 
 private:
+  /**
+   * Helper structure for managing transmission queue elements.
+   */
   struct TxQueueElement
   {
     uint8_t txQMsduHandle;
     Ptr<Packet> txQPkt;
   };
 
+  /**
+   * Send an acknowledgment packet for the given sequence number.
+   *
+   * \param seqno the sequence number for the ACK
+   */
   void SendAck (uint8_t seqno);
+
+  /**
+   * Remove the tip of the transmission queue, including clean up related to the
+   * last packet transmission.
+   */
   void RemoveFirstTxQElement (void);
+
+  /**
+   * Change the current MAC state to the given new state.
+   *
+   * \param newState the new state
+   */
   void ChangeMacState (LrWpanMacState newState);
+
+  /**
+   * Handle an ACK timeout with a packet retransmission, if there are
+   * retransmission left, or a packet drop.
+   */
   void AckWaitTimeout (void);
+
+  /**
+   * Check for remaining retransmissions for the packet currently being sent.
+   * Drop the packet, if there are no retransmissions left.
+   *
+   * \return true, if the packet should be retransmitted, false otherwise.
+   */
   bool PrepareRetransmission (void);
+
+  /**
+   * Check the transmission queue. If there are packets in the transmission
+   * queue and the MAC is idle, pick the first one and initiate a packet
+   * transmission.
+   */
   void CheckQueue (void);
 
   /**
@@ -324,18 +540,33 @@ private:
    */
   TracedCallback<Ptr<const Packet>, uint8_t, uint8_t > m_sentPktTrace;
 
-  TracedCallback<Ptr<const Packet>, bool> m_macTxQueueTrace;
   /**
    * The trace source fired when packets come into the "top" of the device
-   * at the L3/L2 transition, before being queued for transmission.
+   * at the L3/L2 transition, when being queued for transmission.
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Ptr<const Packet>, bool> m_macTxQueueTrace;
+
+  /**
+   * The trace source fired when packets are being sent down to L1.
    *
    * \see class CallBackTraceSource
    */
   TracedCallback<Ptr<const Packet> > m_macTxTrace;
 
   /**
-   * The trace source fired when packets coming into the "top" of the device
-   * at the L3/L2 transition are dropped before being queued for transmission.
+   * The trace source fired when packets where successfully transmitted, that is
+   * an acknowledgment was received, if requested, or the packet was
+   * successfully sent by L1, if no ACK was requested.
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Ptr<const Packet> > m_macTxOkTrace;
+
+  /**
+   * The trace source fired when packets are dropped due to missing ACKs or
+   * because of transmission failures in L1.
    *
    * \see class CallBackTraceSource
    */
@@ -409,25 +640,88 @@ private:
   TracedCallback<Ptr<const Packet> > m_promiscSnifferTrace;
 
   /*
-   * A trace source that fires when the LrWpanMac changes states
+   * A trace source that fires when the LrWpanMac changes states.
+   * Parameters are the old mac state and the new mac state.
    */
-  TracedCallback<Time, LrWpanMacState, LrWpanMacState> m_macStateLogger;
+  TracedCallback<LrWpanMacState, LrWpanMacState> m_macStateLogger;
 
+  /**
+   * The PHY associated with this MAC.
+   */
   Ptr<LrWpanPhy> m_phy;
+
+  /**
+   * The CSMA/CA implementation used by this MAC.
+   */
   Ptr<LrWpanCsmaCa> m_csmaCa;
+
+  /**
+   * This callback is used to notify incoming packets to the upper layers.
+   * See IEEE 802.15.4-2006, section 7.1.1.3.
+   */
   McpsDataIndicationCallback m_mcpsDataIndicationCallback;
+
+  /**
+   * This callback is used to report data transmission request status to the
+   * upper layers.
+   * See IEEE 802.15.4-2006, section 7.1.1.2.
+   */
   McpsDataConfirmCallback m_mcpsDataConfirmCallback;
+
+  /**
+   * The current state of the MAC layer.
+   */
   LrWpanMacState m_lrWpanMacState;
+
+  /**
+   * The current association status of the MAC layer.
+   */
   LrWpanAssociationStatus m_associationStatus;
+
+  /**
+   * The packet which is currently being sent by the MAC layer.
+   */
   Ptr<Packet> m_txPkt;  // XXX need packet buffer instead of single packet
+
+  /**
+   * The short address used by this MAC. Currently we do not have complete
+   * extended address support in the MAC, nor do we have the association
+   * primitives, so this address has to be configured manually.
+   */
   Mac16Address m_shortAddress;
+
+  /**
+   * The extended address used by this MAC. Extended addresses are currently not
+   * really supported.
+   */
   Mac64Address m_selfExt;
+
+  /**
+   * The transmit queue used by the MAC.
+   */
   std::deque<TxQueueElement*> m_txQueue;
+
+  /**
+   * The number of already used retransmission for the currently transmitted
+   * packet.
+   */
   uint8_t m_retransmission;
+
+  /**
+   * The number of CSMA/CA retries used for sending the current packet.
+   */
   uint8_t m_numCsmacaRetry;
+
+  /**
+   * Scheduler event for the ACK timeout of the currently transmitted data
+   * packet.
+   */
   EventId m_ackWaitTimeout;
+
+  /**
+   * Scheduler event for a deferred MAC state change.
+   */
   EventId m_setMacState;
-  bool m_macRxOnWhenIdle;
 };
 
 

@@ -327,7 +327,7 @@ public:
    *  PLME-SET.request
    *  Set attributes per definition from Table 23 in section 6.4.2
    *  @param id the attributed identifier
-   *  @param * attribute the attribute value
+   *  @param attribute the attribute value
    */
   void PlmeSetAttributeRequest (LrWpanPibAttributeIdentifier id, LrWpanPhyPibAttributes* attribute);
 
@@ -532,6 +532,7 @@ private:
    * preamble, SFD and PHR.
    *
    * \param packet the packet for which the transmission time should be calculated
+   * \return the time required for transmitting the packet
    */
   Time CalculateTxTime (Ptr<const Packet> packet);
 
