@@ -156,7 +156,7 @@ public:
 private:
   // Inherited from NetDevice/Object
   virtual void DoDispose (void);
-  virtual void DoStart (void);
+  virtual void DoInitialize (void);
 
   /**
    * Mark NetDevice link as up.

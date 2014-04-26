@@ -101,12 +101,12 @@ LrWpanNetDevice::DoDispose (void)
 }
 
 void
-LrWpanNetDevice::DoStart (void)
+LrWpanNetDevice::DoInitialize (void)
 {
   NS_LOG_FUNCTION (this);
-  m_phy->Start ();
-  m_mac->Start ();
-  NetDevice::DoStart ();
+  m_phy->Initialize ();
+  m_mac->Initialize ();
+  NetDevice::DoInitialize ();
 }
 
 
