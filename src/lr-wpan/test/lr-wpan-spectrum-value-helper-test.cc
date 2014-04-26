@@ -74,7 +74,7 @@ public:
 LrWpanSpectrumValueHelperTestSuite::LrWpanSpectrumValueHelperTestSuite ()
   : TestSuite ("lr-wpan-spectrum-value-helper", UNIT)
 {
-  AddTestCase (new LrWpanSpectrumValueHelperTestCase);
+  AddTestCase (new LrWpanSpectrumValueHelperTestCase, TestCase::QUICK);
 }
 
 static LrWpanSpectrumValueHelperTestSuite lrWpanSpectrumValueHelperTestSuite;

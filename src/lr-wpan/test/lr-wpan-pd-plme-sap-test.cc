@@ -92,7 +92,7 @@ public:
 LrWpanPlmeAndPdInterfaceTestSuite::LrWpanPlmeAndPdInterfaceTestSuite ()
   : TestSuite ("lr-wpan-plme-pd-sap", UNIT)
 {
-  AddTestCase (new LrWpanPlmeAndPdInterfaceTestCase);
+  AddTestCase (new LrWpanPlmeAndPdInterfaceTestCase, TestCase::QUICK);
 }
 
 // Do not forget to allocate an instance of this TestSuite

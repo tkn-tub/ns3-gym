@@ -176,8 +176,8 @@ public:
 LrWpanErrorModelTestSuite::LrWpanErrorModelTestSuite ()
   : TestSuite ("lr-wpan-error-model", UNIT)
 {
-  AddTestCase (new LrWpanErrorModelTestCase);
-  AddTestCase (new LrWpanErrorDistanceTestCase);
+  AddTestCase (new LrWpanErrorModelTestCase, TestCase::QUICK);
+  AddTestCase (new LrWpanErrorDistanceTestCase, TestCase::QUICK);
 }
 
 static LrWpanErrorModelTestSuite lrWpanErrorModelTestSuite;

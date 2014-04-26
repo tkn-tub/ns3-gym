@@ -114,7 +114,7 @@ public:
 LrWpanPacketTestSuite::LrWpanPacketTestSuite ()
   : TestSuite ("lr-wpan-packet", UNIT)
 {
-  AddTestCase (new LrWpanPacketTestCase);
+  AddTestCase (new LrWpanPacketTestCase, TestCase::QUICK);
 }
 
 static LrWpanPacketTestSuite lrWpanPacketTestSuite;
