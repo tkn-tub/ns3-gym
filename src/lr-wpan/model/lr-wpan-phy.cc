@@ -1364,4 +1364,12 @@ LrWpanPhy::GetPhySymbolsPerOctet (void) const
   return dataSymbolRates [m_phyOption].symbolRate / (dataSymbolRates [m_phyOption].bitRate / 8);
 }
 
+int64_t
+LrWpanPhy::AssignStreams (int64_t stream)
+{
+  NS_LOG_FUNCTION (this);
+  m_random->SetStream (stream);
+  return 1;
+}
+
 } // namespace ns3

@@ -370,4 +370,12 @@ LrWpanCsmaCa::SetLrWpanMacStateCallback (LrWpanMacStateCallback c)
   m_lrWpanMacStateCallback = c;
 }
 
+int64_t
+LrWpanCsmaCa::AssignStreams (int64_t stream)
+{
+  NS_LOG_FUNCTION (this);
+  m_random->SetStream (stream);
+  return 1;
+}
+
 } //namespace ns3

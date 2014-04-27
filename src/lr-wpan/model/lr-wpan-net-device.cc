@@ -457,4 +457,15 @@ LrWpanNetDevice::SupportsSendFrom (void) const
   return false;
 }
 
+int64_t
+LrWpanNetDevice::AssignStreams (int64_t stream)
+{
+  NS_LOG_FUNCTION (stream);
+  int64_t streamIndex = stream;
+  streamIndex += m_csmaca->AssignStreams (stream);
+  streamIndex += m_phy->AssignStreams (stream);
+  NS_LOG_DEBUG ("Number of assigned RV streams:  " << (streamIndex - stream));
+  return (streamIndex - stream);
+}
+
 } // namespace ns3

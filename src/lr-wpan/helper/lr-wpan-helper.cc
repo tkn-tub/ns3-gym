@@ -173,6 +173,23 @@ LrWpanHelper::Install (NodeContainer c)
   return devices;
 }
 
+int64_t
+LrWpanHelper::AssignStreams (NetDeviceContainer c, int64_t stream)
+{
+  int64_t currentStream = stream;
+  Ptr<NetDevice> netDevice;
+  for (NetDeviceContainer::Iterator i = c.Begin (); i != c.End (); ++i)
+    {
+      netDevice = (*i);
+      Ptr<LrWpanNetDevice> lrwpan = DynamicCast<LrWpanNetDevice> (netDevice);
+      if (lrwpan)
+        {
+          currentStream += lrwpan->AssignStreams (currentStream);
+        }
+    }
+  return (currentStream - stream);
+}
+
 void
 LrWpanHelper::AssociateToPan (NetDeviceContainer c, uint16_t panId)
 {

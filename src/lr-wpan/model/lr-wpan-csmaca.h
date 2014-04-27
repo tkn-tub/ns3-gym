@@ -222,6 +222,15 @@ public:
    */
   void SetLrWpanMacStateCallback (LrWpanMacStateCallback macState);
 
+  /**
+   * Assign a fixed random variable stream number to the random variables
+   * used by this model.  Return the number of streams that have been assigned.
+   *
+   * \param stream first stream index to use
+   * \return the number of stream indices assigned by this model
+   */
+  int64_t AssignStreams (int64_t stream);
+
 private:
   virtual void DoDispose (void);
 
