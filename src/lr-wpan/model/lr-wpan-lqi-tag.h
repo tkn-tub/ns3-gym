@@ -66,7 +66,6 @@ public:
    */
   uint8_t Get (void) const;
 private:
-
   /**
    * The current LQI value of the tag.
    */

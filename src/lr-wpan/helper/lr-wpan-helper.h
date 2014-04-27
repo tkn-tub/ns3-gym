@@ -82,7 +82,7 @@ public:
 
   /**
    * Assign a fixed random variable stream number to the random variables
-   * used by this model. Return the number of streams that have been 
+   * used by this model. Return the number of streams that have been
    * assigned. The Install() method should have previously been
    * called by the user.
    *

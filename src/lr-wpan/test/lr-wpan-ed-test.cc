@@ -62,7 +62,7 @@ LrWpanEdTestCase::LrWpanEdTestCase ()
 void
 LrWpanEdTestCase::PlmeEdConfirm (LrWpanPhyEnumeration status, uint8_t level)
 {
-  NS_LOG_UNCOND ("Energy Detection completed with status " << LrWpanHelper::LrWpanPhyEnumerationPrinter(status) << " and energy level " << static_cast<uint32_t> (level));
+  NS_LOG_UNCOND ("Energy Detection completed with status " << LrWpanHelper::LrWpanPhyEnumerationPrinter (status) << " and energy level " << static_cast<uint32_t> (level));
   m_status = status;
   m_level = level;
 }
@@ -92,7 +92,7 @@ LrWpanEdTestCase::DoRun (void)
   // Set the random seed and run number for this test
   RngSeedManager::SetSeed (1);
   RngSeedManager::SetRun (6);
-  
+
   // Create 2 nodes, and a NetDevice for each one
   Ptr<Node> n0 = CreateObject <Node> ();
   Ptr<Node> n1 = CreateObject <Node> ();

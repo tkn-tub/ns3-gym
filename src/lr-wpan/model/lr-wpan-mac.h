@@ -107,10 +107,15 @@ typedef enum
 
 struct McpsDataRequestParams
 {
-  McpsDataRequestParams () :
-    m_srcAddrMode (SHORT_ADDR), m_dstAddrMode (SHORT_ADDR), m_dstPanId (0),
-    m_dstAddr (), m_msduHandle (0), m_txOptions (0)
-  { };
+  McpsDataRequestParams ()
+    : m_srcAddrMode (SHORT_ADDR),
+      m_dstAddrMode (SHORT_ADDR),
+      m_dstPanId (0),
+      m_dstAddr (),
+      m_msduHandle (0),
+      m_txOptions (0)
+  {
+  }
   LrWpanAddressMode m_srcAddrMode;
   LrWpanAddressMode m_dstAddrMode;
   uint16_t m_dstPanId;
@@ -388,7 +393,7 @@ public:
    * See IEEE 802.15.4-2006, section 7.4.1, Table 85.
    */
   uint64_t m_aBaseSuperframeDuration;
-  
+
   //MAC PIB attributes
   /**
    * The time that the device transmitted its last beacon frame, in symbol
@@ -443,7 +448,7 @@ public:
    * See IEEE 802.15.4-2006, section 7.4.2, Table 86.
    */
   uint8_t m_macMaxFrameRetries;
-  
+
   /**
    * Indication of whether the MAC sublayer is to enable its receiver during
    * idle periods.

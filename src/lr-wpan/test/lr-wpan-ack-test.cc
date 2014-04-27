@@ -114,7 +114,7 @@ LrWpanAckTestCase::DoRun (void)
 
   // Enable calculation of FCS in the trailers. Only necessary when interacting with real devices or wireshark.
   // GlobalValue::Bind ("ChecksumEnabled", BooleanValue (true));
-  
+
   // Set the random seed and run number for this test
   RngSeedManager::SetSeed (1);
   RngSeedManager::SetRun (6);

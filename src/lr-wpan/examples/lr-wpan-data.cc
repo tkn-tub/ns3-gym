@@ -74,7 +74,7 @@ int main (int argc, char *argv[])
 
   // Enable calculation of FCS in the trailers. Only necessary when interacting with real devices or wireshark.
   // GlobalValue::Bind ("ChecksumEnabled", BooleanValue (true));
-  
+
   // Create 2 nodes, and a NetDevice for each one
   Ptr<Node> n0 = CreateObject <Node> ();
   Ptr<Node> n1 = CreateObject <Node> ();
@@ -146,15 +146,15 @@ int main (int argc, char *argv[])
   params.m_txOptions = TX_OPTION_ACK;
 //  dev0->GetMac ()->McpsDataRequest (params, p0);
   Simulator::ScheduleWithContext (1, Seconds (0.0),
-                       &LrWpanMac::McpsDataRequest,
-                       dev0->GetMac (), params, p0);
+                                  &LrWpanMac::McpsDataRequest,
+                                  dev0->GetMac (), params, p0);
 
   // Send a packet back at time 2 seconds
   Ptr<Packet> p2 = Create<Packet> (60);  // 60 bytes of dummy data
   params.m_dstAddr = Mac16Address ("00:01");
   Simulator::ScheduleWithContext (2, Seconds (2.0),
-                       &LrWpanMac::McpsDataRequest,
-                       dev1->GetMac (), params, p2);
+                                  &LrWpanMac::McpsDataRequest,
+                                  dev1->GetMac (), params, p2);
 
   Simulator::Run ();
 

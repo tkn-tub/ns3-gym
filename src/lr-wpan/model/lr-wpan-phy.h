@@ -407,7 +407,7 @@ public:
    * @return pointer to LrWpanErrorModel in use
    */
   Ptr<LrWpanErrorModel> GetErrorModel (void) const;
-  
+
   /**
    * Get the duration of the SHR (preamble and SFD) in symbols, depending on
    * the currently selected channel.
@@ -423,7 +423,7 @@ public:
    * \return the number of symbols per octet
    */
   double GetPhySymbolsPerOctet (void) const;
-  
+
   /**
    * Assign a fixed random variable stream number to the random variables
    * used by this model.  Return the number of streams that have been assigned.

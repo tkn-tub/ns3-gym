@@ -61,9 +61,9 @@ LrWpanNetDevice::GetTypeId (void)
                                         &LrWpanNetDevice::SetMac),
                    MakePointerChecker<LrWpanMac> ())
     .AddAttribute ("UseAcks", "Request acknowledgments for data frames.",
-                  BooleanValue (true),
-                  MakeBooleanAccessor (&LrWpanNetDevice::m_useAcks),
-                  MakeBooleanChecker ())
+                   BooleanValue (true),
+                   MakeBooleanAccessor (&LrWpanNetDevice::m_useAcks),
+                   MakeBooleanChecker ())
   ;
   return tid;
 }

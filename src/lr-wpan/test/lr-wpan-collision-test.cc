@@ -59,7 +59,7 @@ LrWpanCollisionTestCase::~LrWpanCollisionTestCase ()
 
 void LrWpanCollisionTestCase::DataIndication (McpsDataIndicationParams params, Ptr<Packet> p)
 {
-  m_rxPackets ++;
+  m_rxPackets++;
 }
 
 

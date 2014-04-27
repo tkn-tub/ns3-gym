@@ -27,8 +27,9 @@ NS_LOG_COMPONENT_DEFINE ("LrWpanInterferenceHelper");
 
 namespace ns3 {
 
-LrWpanInterferenceHelper::LrWpanInterferenceHelper (Ptr<const SpectrumModel> spectrumModel) :
-    m_spectrumModel (spectrumModel), m_dirty (false)
+LrWpanInterferenceHelper::LrWpanInterferenceHelper (Ptr<const SpectrumModel> spectrumModel)
+  : m_spectrumModel (spectrumModel),
+    m_dirty (false)
 {
   m_signal = Create<SpectrumValue> (m_spectrumModel);
 }

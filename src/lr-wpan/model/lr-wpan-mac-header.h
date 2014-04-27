@@ -46,9 +46,9 @@
 namespace ns3 {
 
 
-/* 
+/*
  * \ingroup lr-wpan
- * Represent the Mac Header with the Frame Control and Sequence Number fields 
+ * Represent the Mac Header with the Frame Control and Sequence Number fields
  */
 class LrWpanMacHeader : public Header
 {

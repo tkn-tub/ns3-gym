@@ -291,7 +291,7 @@ LrWpanMac::McpsDataRequest (McpsDataRequestParams params, Ptr<Packet> p)
   if (b0 == TX_OPTION_ACK)
     {
       // Set AckReq bit only if the destination is not the broadcast address.
-      if (!(macHdr.GetDstAddrMode () == SHORT_ADDR && macHdr.GetShortDstAddr() == "ff:ff"))
+      if (!(macHdr.GetDstAddrMode () == SHORT_ADDR && macHdr.GetShortDstAddr () == "ff:ff"))
         {
           macHdr.SetAckReq ();
         }
@@ -465,7 +465,7 @@ LrWpanMac::PdDataIndication (uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
     }
 
   // level 1 filtering
-  if(!receivedMacTrailer.CheckFcs (p))
+  if (!receivedMacTrailer.CheckFcs (p))
     {
       m_macRxDropTrace (originalPkt);
     }
@@ -601,7 +601,7 @@ LrWpanMac::PdDataIndication (uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
                 }
               else if (receivedMacHdr.IsAcknowledgment () && m_txPkt && m_lrWpanMacState == MAC_ACK_PENDING)
                 {
-                  LrWpanMacHeader macHdr;;
+                  LrWpanMacHeader macHdr;
                   m_txPkt->PeekHeader (macHdr);
                   if (receivedMacHdr.GetSeqNum () == macHdr.GetSeqNum ())
                     {
@@ -687,7 +687,7 @@ LrWpanMac::RemoveFirstTxQElement (void)
   pkt->RemoveHeader (hdr);
   if (hdr.GetShortDstAddr () != Mac16Address ("ff:ff"))
     {
-      m_sentPktTrace (p, m_retransmission+1, m_numCsmacaRetry);
+      m_sentPktTrace (p, m_retransmission + 1, m_numCsmacaRetry);
     }
 
   txQElement->txQPkt = 0;
@@ -741,7 +741,7 @@ LrWpanMac::PrepareRetransmission (void)
   else
     {
       m_retransmission++;
-      m_numCsmacaRetry += m_csmaCa->GetNB () +1;
+      m_numCsmacaRetry += m_csmaCa->GetNB () + 1;
       // Start next CCA process for this packet.
       return true;
     }
@@ -767,7 +767,7 @@ LrWpanMac::PdDataConfirm (LrWpanPhyEnumeration status)
               // wait for the ack or the next retransmission timeout
               // start retransmission timer
               Time waitTime = MicroSeconds (GetMacAckWaitDuration () * 1000 * 1000 / m_phy->GetDataOrSymbolRate (false));
-              NS_ASSERT (m_ackWaitTimeout.IsExpired());
+              NS_ASSERT (m_ackWaitTimeout.IsExpired ());
               m_ackWaitTimeout = Simulator::Schedule (waitTime, &LrWpanMac::AckWaitTimeout, this);
               m_setMacState.Cancel ();
               m_setMacState = Simulator::ScheduleNow (&LrWpanMac::SetLrWpanMacState, this, MAC_ACK_PENDING);
@@ -994,7 +994,7 @@ uint64_t
 LrWpanMac::GetMacAckWaitDuration (void) const
 {
   return m_csmaCa->GetUnitBackoffPeriod () + m_phy->aTurnaroundTime + m_phy->GetPhySHRDuration ()
-      + ceil (6 * m_phy->GetPhySymbolsPerOctet ());
+         + ceil (6 * m_phy->GetPhySymbolsPerOctet ());
 }
 
 uint8_t

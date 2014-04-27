@@ -86,7 +86,6 @@ public:
    */
   Ptr<const SpectrumModel> GetSpectrumModel (void) const;
 private:
-
   /**
    * The helpers SpectrumModel.
    */

@@ -90,7 +90,7 @@ LrWpanSpectrumValueHelper::CreateTxPowerSpectralDensity (double txPower, uint32_
   (*txPsd)[2405 + 5 * (channel - 11) - 2400 + 2 ] = txPowerDensity * 0.005;
 
   // If more power is allocated to more subbands in future revisions of
-  // this model, make sure to renormalize so that the integral of the 
+  // this model, make sure to renormalize so that the integral of the
   // txPsd still equals txPower
 
   return txPsd;

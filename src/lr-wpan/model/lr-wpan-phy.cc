@@ -486,7 +486,7 @@ LrWpanPhy::PdDataRequest (const uint32_t psduLength, Ptr<Packet> p)
     }
 
   // Prevent PHY from sending a packet while switching the transceiver state.
-  if (!m_setTRXState.IsRunning())
+  if (!m_setTRXState.IsRunning ())
     {
       if (m_trxState == IEEE_802_15_4_PHY_TX_ON)
         {
@@ -657,7 +657,7 @@ LrWpanPhy::PlmeSetTRXStateRequest (LrWpanPhyEnumeration state)
         {
           NS_LOG_DEBUG ("Cancel m_setTRXState");
           // Keep the transceiver state as the old state before the switching attempt.
-          m_setTRXState.Cancel();
+          m_setTRXState.Cancel ();
         }
     }
   if (m_trxStatePending != IEEE_802_15_4_PHY_IDLE)
@@ -1352,7 +1352,7 @@ LrWpanPhy::GetPhySHRDuration (void) const
   NS_ASSERT (m_phyOption < IEEE_802_15_4_INVALID_PHY_OPTION);
 
   return ppduHeaderSymbolNumbers[m_phyOption].shrPreamble
-    + ppduHeaderSymbolNumbers[m_phyOption].shrSfd;
+         + ppduHeaderSymbolNumbers[m_phyOption].shrSfd;
 }
 
 double

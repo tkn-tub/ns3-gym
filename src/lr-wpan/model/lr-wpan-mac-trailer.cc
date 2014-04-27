@@ -30,7 +30,8 @@ NS_OBJECT_ENSURE_REGISTERED (LrWpanMacTrailer);
 const uint16_t LrWpanMacTrailer::LR_WPAN_MAC_FCS_LENGTH = 2;
 
 LrWpanMacTrailer::LrWpanMacTrailer (void)
-  : m_fcs (0), m_calcFcs (false)
+  : m_fcs (0),
+    m_calcFcs (false)
 {
 }
 
@@ -92,9 +93,9 @@ LrWpanMacTrailer::SetFcs (Ptr<const Packet> p)
       uint16_t size = p->GetSize ();
       uint8_t *serial_packet = new uint8_t[size];
 
-      p->CopyData(serial_packet, size);
+      p->CopyData (serial_packet, size);
 
-      m_fcs = GenerateCrc16(serial_packet, size);
+      m_fcs = GenerateCrc16 (serial_packet, size);
       delete[] serial_packet;
     }
 }
@@ -114,9 +115,9 @@ LrWpanMacTrailer::CheckFcs (Ptr<const Packet> p)
       uint16_t size = p->GetSize ();
       uint8_t *serial_packet = new uint8_t[size];
 
-      p->CopyData(serial_packet, size);
+      p->CopyData (serial_packet, size);
 
-      checkFcs = GenerateCrc16(serial_packet, size);
+      checkFcs = GenerateCrc16 (serial_packet, size);
       delete[] serial_packet;
       return (checkFcs == GetFcs ());
     }
@@ -144,7 +145,7 @@ LrWpanMacTrailer::GenerateCrc16 (uint8_t *data, int length)
   int i;
   uint16_t accumulator = 0;
 
-  for(i = 0; i < length; ++i)
+  for (i = 0; i < length; ++i)
     {
       accumulator ^= *data;
       accumulator  = (accumulator >> 8) | (accumulator << 8);
