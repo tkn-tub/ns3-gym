@@ -239,7 +239,7 @@ Address
 LrWpanNetDevice::GetAddress (void) const
 {
   NS_LOG_FUNCTION (this);
-  return m_mac->GetShortAddress ().ConvertTo ();
+  return m_mac->GetShortAddress ();
 }
 
 bool
