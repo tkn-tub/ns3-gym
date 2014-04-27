@@ -34,7 +34,7 @@
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE ("lr-wpan-ed-test");
+NS_LOG_COMPONENT_DEFINE ("lr-wpan-energy-detection-test");
 
 using namespace ns3;
 
@@ -62,7 +62,7 @@ LrWpanEdTestCase::LrWpanEdTestCase ()
 void
 LrWpanEdTestCase::PlmeEdConfirm (LrWpanPhyEnumeration status, uint8_t level)
 {
-  NS_LOG_UNCOND ("ED completed with status " << LrWpanHelper::LrWpanPhyEnumerationPrinter(status) << " and energy level " << static_cast<uint32_t> (level));
+  NS_LOG_UNCOND ("Energy Detection completed with status " << LrWpanHelper::LrWpanPhyEnumerationPrinter(status) << " and energy level " << static_cast<uint32_t> (level));
   m_status = status;
   m_level = level;
 }
@@ -250,7 +250,7 @@ public:
 };
 
 LrWpanEdTestSuite::LrWpanEdTestSuite ()
-  : TestSuite ("lr-wpan-ed", UNIT)
+  : TestSuite ("lr-wpan-energy-detection", UNIT)
 {
   AddTestCase (new LrWpanEdTestCase, TestCase::QUICK);
 }
