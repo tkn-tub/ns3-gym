@@ -23,7 +23,7 @@ def build(bld):
         'test/lr-wpan-spectrum-value-helper-test.cc',
         ]
      
-    headers = bld.new_task_gen(features=['ns3header'])
+    headers = bld(features='ns3header')
     headers.module = 'lr-wpan'
     headers.source = [
         'model/lr-wpan-error-model.h',
@@ -39,5 +39,6 @@ def build(bld):
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):
-        bld.add_subdirs('examples')
+        bld.recurse('examples')
 
+    bld.ns3_python_bindings()
