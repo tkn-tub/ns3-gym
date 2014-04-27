@@ -31,6 +31,7 @@
 #include <ns3/single-model-spectrum-channel.h>
 #include <ns3/mac16-address.h>
 #include <ns3/constant-position-mobility-model.h>
+#include "ns3/rng-seed-manager.h"
 
 NS_LOG_COMPONENT_DEFINE ("lr-wpan-error-model-test");
 
@@ -81,11 +82,19 @@ LrWpanErrorDistanceTestCase::Callback (McpsDataIndicationParams params, Ptr<Pack
 void
 LrWpanErrorDistanceTestCase::DoRun (void)
 {
+  // Set the random seed and run number for this test
+  RngSeedManager::SetSeed (1);
+  RngSeedManager::SetRun (6);
 
   Ptr<Node> n0 = CreateObject <Node> ();
   Ptr<Node> n1 = CreateObject <Node> ();
   Ptr<LrWpanNetDevice> dev0 = CreateObject<LrWpanNetDevice> ();
   Ptr<LrWpanNetDevice> dev1 = CreateObject<LrWpanNetDevice> ();
+
+  // Make random variable stream assignment deterministic
+  dev0->AssignStreams (0);
+  dev1->AssignStreams (10);
+
   dev0->SetAddress (Mac16Address ("00:01"));
   dev1->SetAddress (Mac16Address ("00:02"));
   Ptr<SingleModelSpectrumChannel> channel = CreateObject<SingleModelSpectrumChannel> ();
