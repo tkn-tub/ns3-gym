@@ -741,6 +741,11 @@ The example shows::
     
       Simulator::Destroy ();
     
+Note the placement of these statements just prior to the 
+:cpp:func:`Simulator::Run ()` statement.  This output logs all of the
+values in place just prior to starting the simulation (i.e. after
+all of the configuration has taken place).
+
 After running, you can open the output-attributes.txt file and see:
 
 .. sourcecode:: text
@@ -808,15 +813,34 @@ An XML version also exists in ``output-attributes.xml``:
     
 This file can be archived with your simulation script and output data.
 
-While it is possible to generate a sample config file and lightly edit it to
-change a couple of values, there are cases where this process will not work
-because the same value on the same object can appear multiple times in the same
-automatically-generated configuration file under different configuration paths.
+Next, we discuss using this to configure simulations via an input
+configuration file.  There are a couple of key differences when
+compared to use for logging the final simulation configuration.  First, we
+need to place statements such as these at the beginning of the program,
+before simulation configuration statements are written (so the values
+are registered before being used in object construction).
 
-As such, the best way to use this class is to use it to generate an initial
-configuration file, extract from that configuration file only the strictly
-necessary elements, and move these minimal elements to a new configuration file
-which can then safely be edited and loaded in a subsequent simulation run. 
+::
+
+      Config::SetDefault ("ns3::ConfigStore::Filename", StringValue ("input-defaults.xml"));
+      Config::SetDefault ("ns3::ConfigStore::Mode", StringValue ("Load"));
+      Config::SetDefault ("ns3::ConfigStore::FileFormat", StringValue ("Xml"));
+      ConfigStore inputConfig;
+      inputConfig.ConfigureDefaults ();
+
+Next, note that loading of input configuration data is limited to attribute
+default (i.e. not instance) values, and global values.  Attribute instance
+values are not supported because at this stage of the simulation, before
+any objects are constructed, there are no such object instances around.
+(Note, future enhancements to the config store may change this behavior).
+
+Second, while the output of config store state will list everything in
+the database, the input file need only contain the specific values to
+be overridden.  So, one way to use this class for input file configuration
+is to generate an initial configuration using the output (Save) method 
+described above, extract from that configuration file only the elements
+one wishes to change, and move these minimal elements to a new configuration 
+file which can then safely be edited and loaded in a subsequent simulation run. 
 
 When the ConfigStore object is instantiated, its attributes Filename, Mode, and
 FileFormat must be set, either via command-line or via program statements.  
@@ -824,9 +848,7 @@ FileFormat must be set, either via command-line or via program statements.
 As a more complicated example, let's assume that we want to read in a
 configuration of defaults from an input file named "input-defaults.xml", and
 write out the resulting attributes to a separate file called
-"output-attributes.xml".  (Note-- to get this input xml file to begin with, it
-is sometimes helpful to run the program to generate an output xml file first,
-then hand-edit that file and re-input it for the next simulation run).::
+"output-attributes.xml".::
 
     #include "ns3/config-store-module.h"
     ...
