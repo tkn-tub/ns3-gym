@@ -176,7 +176,7 @@ problems. This design is based on elements of the `Component Object Model
 binary-level compatibility of replaceable components is not supported and we
 have tried to simplify the syntax and impact on model developers.  
 
-Exmaples
+Examples
 ********
 
 Aggregation example
