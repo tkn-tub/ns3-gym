@@ -3356,6 +3356,12 @@ RoutingProtocol::Dump (void)
 #endif  //NS3_LOG_ENABLE
 }
 
+Ptr<const Ipv4StaticRouting>
+RoutingProtocol::GetRoutingTableAssociation () const
+{
+  return m_hnaRoutingTable;
+}
+
 } // namespace olsr
 } // namespace ns3
 

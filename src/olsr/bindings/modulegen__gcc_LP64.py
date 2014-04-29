@@ -7036,6 +7036,11 @@ def register_Ns3OlsrRoutingProtocol_methods(root_module, cls):
                    'std::set< unsigned int >', 
                    [], 
                    is_const=True)
+    ## olsr-routing-protocol.h (module 'olsr'): ns3::Ptr<const ns3::Ipv4StaticRouting> ns3::olsr::RoutingProtocol::GetRoutingTableAssociation() const [member function]
+    cls.add_method('GetRoutingTableAssociation', 
+                   'ns3::Ptr< ns3::Ipv4StaticRouting const >', 
+                   [], 
+                   is_const=True)
     ## olsr-routing-protocol.h (module 'olsr'): std::vector<ns3::olsr::RoutingTableEntry,std::allocator<ns3::olsr::RoutingTableEntry> > ns3::olsr::RoutingProtocol::GetRoutingTableEntries() const [member function]
     cls.add_method('GetRoutingTableEntries', 
                    'std::vector< ns3::olsr::RoutingTableEntry >', 
