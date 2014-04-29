@@ -43,6 +43,7 @@ New user-visible features
 
 Bugs fixed
 ----------
+- Bug 1276 - optimize NistErrorRateModel
 - Bug 1294 - New PeekU8 () and Read (Buffer::Iterator start, uint32_t size) methods in Buffer::Iterator
 - Bug 1653 - Extension of CommandLine interface: restored operator << (CommandLine)
 - Bug 1739 - The endpoint is not deallocated for UDP sockets
