@@ -39,7 +39,7 @@ New user-visible features
 - A new IPv6 routing protocol has been added: RIPng. This protocol is
   an Interior Gateway Protocol and it is available in the Internet module.
 - FlowMonitor can now track IPv6 packets.
-  
+- IPv4 identification field value is now dependent on the protocol field.
 
 Bugs fixed
 ----------
@@ -52,6 +52,7 @@ Bugs fixed
 - Bug 1791 - TCP Endpoint never deallocates when closing
 - Bug 1792 - Parameter logger constructor
 - Bug 1808 - FlowMon relies on IPv4's Identification field to trace packets
+- Bug 1817 - IPv4 Identification field should consider protocol as well.
 - Bug 1818 - FlowMonitor needs IPv6 support
 - Bug 1821 - Setting an interface to Down state will cause various asserts in IPv6
 - Bug 1829 - Multiple TCP socket entries

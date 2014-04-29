@@ -408,7 +408,7 @@ private:
   Ipv4InterfaceList m_interfaces; //!< List of IPv4 interfaces.
   uint8_t m_defaultTos;  //!< Default TOS
   uint8_t m_defaultTtl;  //!< Default TTL
-  uint16_t m_identification; //!< Identification
+  std::map<uint8_t, uint16_t> m_identification; //!< Identification (for each protocol)
   Ptr<Node> m_node; //!< Node attached to stack.
 
   /// Trace of sent packets

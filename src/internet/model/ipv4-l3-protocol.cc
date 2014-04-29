@@ -90,8 +90,6 @@ Ipv4L3Protocol::GetTypeId (void)
 }
 
 Ipv4L3Protocol::Ipv4L3Protocol()
-  : m_identification (0)
-
 {
   NS_LOG_FUNCTION (this);
 }
@@ -740,15 +738,18 @@ Ipv4L3Protocol::BuildHeader (
   if (mayFragment == true)
     {
       ipHeader.SetMayFragment ();
-      ipHeader.SetIdentification (m_identification);
-      m_identification++;
+      ipHeader.SetIdentification (m_identification[protocol]);
+      m_identification[protocol]++;
     }
   else
     {
       ipHeader.SetDontFragment ();
-      // TBD:  set to zero here; will cause traces to change
-      ipHeader.SetIdentification (m_identification);
-      m_identification++;
+      // RFC 6864 does not state anything about atomic datagrams
+      // identification requirement:
+      // >> Originating sources MAY set the IPv4 ID field of atomic datagrams
+      //    to any value.
+      ipHeader.SetIdentification (m_identification[protocol]);
+      m_identification[protocol]++;
     }
   if (Node::ChecksumEnabled ())
     {
