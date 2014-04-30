@@ -305,7 +305,7 @@ IMAGES_EPS = \
 	$(FIGURES)/lte-epc-x2-entity-saps.eps \
 	$(FIGURES)/lte-strongest-cell-handover-algorithm.eps \
 	$(FIGURES)/auvmobility-classes.eps \
-	$(FIGURES)/spectrum-analyzer-example.eps \ 
+	$(FIGURES)/spectrum-analyzer-example.eps \
 	$(FIGURES)/lr-wpan-primitives.eps \
 	$(FIGURES)/lr-wpan-data-example.eps \
 	$(FIGURES)/lr-wpan-arch.eps \
