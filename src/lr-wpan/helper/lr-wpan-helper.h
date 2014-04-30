@@ -94,6 +94,9 @@ public:
   int64_t AssignStreams (NetDeviceContainer c, int64_t stream);
 
 private:
+  // Disable implicit constructors
+  LrWpanHelper (LrWpanHelper const &);
+  LrWpanHelper& operator= (LrWpanHelper const &);
   /**
    * \internal
    *

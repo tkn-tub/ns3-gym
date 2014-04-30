@@ -31,7 +31,6 @@ namespace ns3 {
 
 class LrWpanPhy;
 class LrWpanCsmaCa;
-class SingleModelSpectrumChannel;
 class SpectrumChannel;
 class Node;
 
