@@ -239,6 +239,10 @@ public:
   uint8_t GetNB (void);
 
 private:
+  // Disable implicit copy constructors
+  LrWpanCsmaCa (LrWpanCsmaCa const &);
+  LrWpanCsmaCa& operator= (LrWpanCsmaCa const &);
+ 
   virtual void DoDispose (void);
 
   /**
