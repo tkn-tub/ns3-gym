@@ -154,7 +154,7 @@ static bool AsciiToIpv6Host (const char *address, uint8_t addr[16])
   static const char xdigits_u[] = "0123456789ABCDEF";
   unsigned char tmp[16];
   unsigned char* tp = tmp;
-  unsigned char* endp = 0;
+  unsigned char* const endp = tp + 16;
   unsigned char* colonp = 0;
   const char* xdigits = 0;
 #if 0
@@ -165,7 +165,6 @@ static bool AsciiToIpv6Host (const char *address, uint8_t addr[16])
   unsigned int val = 0;
 
   memset (tp, 0x00, 16);
-  endp = tp + 16;
 
   /* Leading :: requires some special handling. */
   if (*address == ':')
@@ -212,7 +211,7 @@ static bool AsciiToIpv6Host (const char *address, uint8_t addr[16])
               continue;
             }
 
-          if (tp + 2 > endp)
+          if (endp - tp < 2)
             {
               return (0);
             }
@@ -226,7 +225,7 @@ static bool AsciiToIpv6Host (const char *address, uint8_t addr[16])
 
       /* \todo Handle IPv4 mapped address (2001::192.168.0.1) */
 #if 0
-      if (ch == '.' && ((tp + 4 /*NS_INADDRSZ*/) <= endp) &&
+      if (ch == '.' && (endp - tp > 3 /* NS_INADDRSZ - 1 */)) &&
           inet_pton4 (curtok, tp) > 0)
         {
           tp += 4 /*NS_INADDRSZ*/;
@@ -239,7 +238,7 @@ static bool AsciiToIpv6Host (const char *address, uint8_t addr[16])
 
   if (seen_xdigits)
     {
-      if (tp + 2 > endp)
+      if ( endp - tp < 2)
         {
           return (0);
         }

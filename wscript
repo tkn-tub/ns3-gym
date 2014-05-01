@@ -325,6 +325,8 @@ def configure(conf):
         if Options.options.build_profile == 'optimized': 
             if conf.check_compilation_flag('-march=native'):
                 env.append_value('CXXFLAGS', '-march=native') 
+            env.append_value('CXXFLAGS', '-fstrict-overflow')
+            env.append_value('CXXFLAGS', '-Wstrict-overflow=5')
 
         if sys.platform == 'win32':
             env.append_value("LINKFLAGS", "-Wl,--enable-runtime-pseudo-reloc")

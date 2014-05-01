@@ -1041,7 +1041,7 @@ UeManager::AddDataRadioBearerInfo (Ptr<LteDataRadioBearerInfo> drbInfo)
 {
   NS_LOG_FUNCTION (this);
   const uint8_t MAX_DRB_ID = 32;  
-  for (uint8_t drbid = (m_lastAllocatedDrbid + 1) % MAX_DRB_ID; 
+  for (int drbid = (m_lastAllocatedDrbid + 1) % MAX_DRB_ID; 
        drbid != m_lastAllocatedDrbid; 
        drbid = (drbid + 1) % MAX_DRB_ID)
     {

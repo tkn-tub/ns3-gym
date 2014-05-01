@@ -2516,7 +2516,7 @@ PbbAddressBlock::GetHeadTail (uint8_t *head, uint8_t &headlen,
         }
 
       /* If headlen == fulllen - 1, then tail is 0 */
-      if (headlen <= GetAddressLength () - 1)
+      if (GetAddressLength () - headlen > 0)
         {
           for (i = GetAddressLength () - 1;
                GetAddressLength () - 1 - i <= taillen && i > headlen;

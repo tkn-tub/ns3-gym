@@ -90,7 +90,7 @@ uint32_t
 Address::CopyAllTo (uint8_t *buffer, uint8_t len) const
 {
   NS_LOG_FUNCTION (this << &buffer << static_cast<uint32_t> (len));
-  NS_ASSERT (len >= m_len + 2);
+  NS_ASSERT (len - m_len > 1);
   buffer[0] = m_type;
   buffer[1] = m_len;
   std::memcpy (buffer + 2, m_data, m_len);
@@ -114,7 +114,7 @@ Address::CopyAllFrom (const uint8_t *buffer, uint8_t len)
   m_type = buffer[0];
   m_len = buffer[1];
 
-  NS_ASSERT (len >= m_len + 2);
+  NS_ASSERT (len - m_len > 1);
   std::memcpy (m_data, buffer + 2, m_len);
   return m_len + 2;
 }
