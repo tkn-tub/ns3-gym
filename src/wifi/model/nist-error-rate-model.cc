@@ -86,7 +86,7 @@ NistErrorRateModel::GetFecBpskBer (double snr, uint32_t nbits,
     }
   double pe = CalculatePe (ber, bValue);
   pe = std::min (pe, 1.0);
-  double pms = std::pow (1 - pe, nbits);
+  double pms = std::pow (1 - pe, (double)nbits);
   return pms;
 }
 double
@@ -100,7 +100,7 @@ NistErrorRateModel::GetFecQpskBer (double snr, uint32_t nbits,
     }
   double pe = CalculatePe (ber, bValue);
   pe = std::min (pe, 1.0);
-  double pms = std::pow (1 - pe, nbits);
+  double pms = std::pow (1 - pe, (double)nbits);
   return pms;
 }
 double
