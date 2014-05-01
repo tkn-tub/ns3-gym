@@ -782,7 +782,11 @@ TcpSocketBase::CloseAndNotify (void)
       NotifyNormalClose ();
     }
 
-  DeallocateEndPoint ();
+  if (m_state != TIME_WAIT)
+    {
+      DeallocateEndPoint ();
+    }
+    
   m_closeNotified = true;
   NS_LOG_INFO (TcpStateName[m_state] << " -> CLOSED");
   CancelAllTimers ();
