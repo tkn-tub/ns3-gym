@@ -325,8 +325,10 @@ LrWpanHelper::EnableAsciiInternal (
 
       oss.str ("");
       oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/Mac/MacRx";
-      device->GetMac ()->TraceConnectWithoutContext ("MacRx", MakeBoundCallback (&AsciiLrWpanMacTransmitSinkWithoutContext, theStream));
       device->GetMac ()->TraceConnectWithoutContext ("MacRx", MakeBoundCallback (&AsciiLrWpanMacReceiveSinkWithoutContext, theStream));
+      oss.str ("");
+      oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/Mac/MacTx";
+      device->GetMac ()->TraceConnectWithoutContext ("MacTx", MakeBoundCallback (&AsciiLrWpanMacTransmitSinkWithoutContext, theStream));
 
       return;
     }
@@ -346,6 +348,8 @@ LrWpanHelper::EnableAsciiInternal (
   oss.str ("");
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/Mac/MacRx";
   device->GetMac ()->TraceConnect ("MacRx", oss.str (), MakeBoundCallback (&AsciiLrWpanMacReceiveSinkWithContext, stream));
+  oss.str ("");
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/Mac/MacTx";
   device->GetMac ()->TraceConnect ("MacTx", oss.str (), MakeBoundCallback (&AsciiLrWpanMacTransmitSinkWithContext, stream));
 
 }
