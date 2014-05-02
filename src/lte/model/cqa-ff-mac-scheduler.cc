@@ -1799,20 +1799,13 @@ CqaFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sche
   if (m_harqOn == true)
     {
       //   Process UL HARQ feedback
-      //   update UL HARQ proc id
-      std::map <uint16_t, uint8_t>::iterator itProcId;
-      for (itProcId = m_ulHarqCurrentProcessId.begin (); itProcId != m_ulHarqCurrentProcessId.end (); itProcId++)
-        {
-          (*itProcId).second = ((*itProcId).second + 1) % HARQ_PROC_NUM;
-        }
-
       for (uint16_t i = 0; i < params.m_ulInfoList.size (); i++)
         {
           if (params.m_ulInfoList.at (i).m_receptionStatus == UlInfoListElement_s::NotOk)
             {
               // retx correspondent block: retrieve the UL-DCI
               uint16_t rnti = params.m_ulInfoList.at (i).m_rnti;
-              itProcId = m_ulHarqCurrentProcessId.find (rnti);
+              std::map <uint16_t, uint8_t>::iterator itProcId = m_ulHarqCurrentProcessId.find (rnti);
               if (itProcId == m_ulHarqCurrentProcessId.end ())
                 {
                   NS_LOG_ERROR ("No info find in HARQ buffer for UE (might change eNB) " << rnti);

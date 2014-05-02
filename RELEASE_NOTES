@@ -84,6 +84,7 @@ Bugs fixed
 - Bug 1889 - PointToPointNetDevice: In some cases MacTxDrop trace is not called
 - Bug 1890 - UdpClientTrace: MPEG frame size is squeezed into (insufficient) 16 bit integer
 - Bug 1891 - UdpSocketImpl::GetSockName doesn't return the IPv6 address
+- Bug 1894 - CqaFfMacScheduler needs an update
 - Bug 1895 - IP header Source Address changed while forwarding RREQ
 - Bug 1903 - Namespace usage in olsr-state.cc/h
 
