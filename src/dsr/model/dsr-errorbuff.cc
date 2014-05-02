@@ -116,7 +116,7 @@ ErrorBuffer::Dequeue (Ipv4Address dst, ErrorBuffEntry & entry)
       if (i->GetDestination () == dst)
         {
           entry = *i;
-          m_errorBuffer.erase (i);
+          i = m_errorBuffer.erase (i);
           NS_LOG_DEBUG ("Packet size while dequeuing " << entry.GetPacket ()->GetSize ());
           return true;
         }

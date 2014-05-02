@@ -14,7 +14,8 @@ DSR Routing Overview
 ********************
  
 This model implements the base specification of the Dynamic Source Routing 
-(DSR) protocol. Implementation is based on :rfc:`4728`.
+(DSR) protocol. Implementation is based on :rfc:`4728`, with some extensions
+and modifications to the RFC specifications.
 
 DSR operates on a on-demand behavior. Therefore, our DSR model buffers all 
 packets while a route request packet (RREQ) is disseminated. We implement 
@@ -188,7 +189,16 @@ This model has been tested as follows:
 * manet-routing-compare.cc has been used to compare DSR with three of other routing protocols.
 
 A paper was presented on these results at the Workshop on ns-3 in 2011.
-  
+
+Limitations
+***********
+
+The model is not fully compliant with :rfc:`4728`. As an example, Dsr fixed size header
+has been extended and it is four octects longer then the RFC specification.
+As a consequence, the DSR headers can not be correctly decoded by Wireshark.
+
+The model full compliance with the RFC is planned for the future.
+
 References
 **********
 

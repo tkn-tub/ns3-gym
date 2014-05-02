@@ -254,8 +254,7 @@ public:
   /**
    * \brief This function is responsible for sending error packets in case of break link to next hop
    */
-  void SendUnreachError (Ipv4Address errorHop, Ipv4Address destination, Ipv4Address originalDst, uint8_t salvage, uint8_t protocol);
-  /**
+  void SendUnreachError (Ipv4Address unreachNode, Ipv4Address destination, Ipv4Address originalDst, uint8_t salvage, uint8_t protocol);  /**
    * \brief This function is responsible for forwarding error packets along the route
    */
   void ForwardErrPacket (DsrOptionRerrUnreachHeader &rerr,
@@ -304,6 +303,11 @@ public:
    */
   bool PassiveEntryCheck (Ptr<Packet> packet, Ipv4Address source, Ipv4Address destination, uint8_t segsLeft,
                           uint16_t fragmentOffset, uint16_t identification, bool saveEntry);
+
+  /**
+  * \brief Cancel all the packet timers
+  */
+  void CancelPacketAllTimer (MaintainBuffEntry & mb);
   /**
    * \brief Cancel the passive timer
    */
@@ -751,6 +755,8 @@ private:
   std::map<uint32_t, Ptr<dsr::DsrNetworkQueue> > m_priorityQueue;   ///< priority queues
 
   GraReply m_graReply;                                  ///< The gratuitous route reply.
+
+  DsrNetworkQueue m_networkQueue;                       ///< The network queue.
 
   std::vector<Ipv4Address> m_clearList;                 ///< The node that is clear to send packet to
 

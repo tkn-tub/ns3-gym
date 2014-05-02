@@ -99,6 +99,36 @@ DsrNetworkQueue::GetMaxNetworkDelay (void) const
 }
 
 bool
+DsrNetworkQueue::FindPacketWithNexthop (Ipv4Address nextHop, DsrNetworkQueueEntry & entry)
+{
+  Cleanup ();
+  for (std::vector<DsrNetworkQueueEntry>::iterator i = m_dsrNetworkQueue.begin (); i != m_dsrNetworkQueue.end (); ++i)
+    {
+      if (i->GetNextHopAddress () == nextHop)
+        {
+          entry = *i;
+          i = m_dsrNetworkQueue.erase (i);
+          return true;
+        }
+    }
+  return false;
+}
+
+bool
+DsrNetworkQueue::Find (Ipv4Address nextHop)
+{
+  Cleanup ();
+  for (std::vector<DsrNetworkQueueEntry>::iterator i = m_dsrNetworkQueue.begin (); i != m_dsrNetworkQueue.end (); ++i)
+    {
+      if (i->GetNextHopAddress () == nextHop)
+        {
+          return true;
+        }
+    }
+  return false;
+}
+
+bool
 DsrNetworkQueue::Enqueue (DsrNetworkQueueEntry & entry)
 {
   NS_LOG_FUNCTION (this << m_size << m_maxSize);

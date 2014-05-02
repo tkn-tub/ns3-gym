@@ -55,12 +55,18 @@ struct LinkKey
    * Compare maintain Buffer entries
    * \param o
    * \return true if equal
-   */
-  bool operator < (LinkKey const & o) const
+   */ 
+  bool operator < (const LinkKey & o) const
   {
-    return ((m_source < o.m_source) && (m_destination < o.m_destination)
-            && (m_ourAdd < o.m_nextHop) && (m_nextHop < o.m_nextHop)
-            );
+      if (m_source < o.m_source) return true;
+      if (o.m_source < m_source) return false;
+      if (m_destination < o.m_destination) return true;
+      if (o.m_destination < m_destination) return false;
+      if (m_ourAdd < o.m_ourAdd) return true;
+      if (o.m_ourAdd < m_ourAdd) return false;
+      if (m_nextHop < o.m_nextHop) return true;
+      if (o.m_nextHop < m_nextHop) return false;
+      return false;
   }
 };
 
@@ -77,11 +83,19 @@ struct NetworkKey
    * \param o
    * \return true if equal
    */
-  bool operator < (NetworkKey const & o) const
+  bool operator < (const NetworkKey & o) const
   {
-    return ((m_ackId < o.m_ackId) && (m_ourAdd < o.m_ourAdd) && (m_nextHop < o.m_nextHop) && (m_source < o.m_source)
-            && (m_destination < o.m_destination)
-            );
+      if (m_ackId < o.m_ackId) return true;
+      if (o.m_ackId < m_ackId) return false;
+      if (m_source < o.m_source) return true;
+      if (o.m_source < m_source) return false;
+      if (m_destination < o.m_destination) return true;
+      if (o.m_destination < m_destination) return false;
+      if (m_ourAdd < o.m_ourAdd) return true;
+      if (o.m_ourAdd < m_ourAdd) return false;
+      if (m_nextHop < o.m_nextHop) return true;
+      if (o.m_nextHop < m_nextHop) return false;
+      return false;
   }
 };
 
@@ -97,11 +111,17 @@ struct PassiveKey
    * \param o
    * \return true if equal
    */
-  bool operator < (PassiveKey const & o) const
+  bool operator < (const PassiveKey & o) const
   {
-    return ((m_ackId < o.m_ackId) && (m_source < o.m_source)
-            && (m_destination < o.m_destination) && (m_segsLeft < o.m_segsLeft)
-            );
+      if (m_ackId < o.m_ackId) return true;
+      if (o.m_ackId < m_ackId) return false;
+      if (m_source < o.m_source) return true;
+      if (o.m_source < m_source) return false;
+      if (m_destination < o.m_destination) return true;
+      if (o.m_destination < m_destination) return false;
+      if (m_segsLeft < o.m_segsLeft) return true;
+      if (o.m_segsLeft < m_segsLeft) return false;
+      return false;
   }
 };
 
