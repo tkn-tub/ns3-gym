@@ -50,7 +50,6 @@ Bugs fixed
 - Bug 1739 - The endpoint is not deallocated for UDP sockets
 - Bug 1786 - os << int64x64_t prints un-normalized fractional values
 - Bug 1787 - Runtime error when using AnimationInterface::EnablePacketMetadata() to fetch metadata of CSMA packet
-- Bug 1791 - TCP Endpoint never deallocates when closing
 - Bug 1792 - Parameter logger constructor
 - Bug 1808 - FlowMon relies on IPv4's Identification field to trace packets
 - Bug 1817 - IPv4 Identification field should consider protocol as well.
@@ -77,7 +76,7 @@ Bugs fixed
 - Bug 1883 - IPv6 don't consider the prefix and network when choosing output address
 - Bug 1887 - Point-to-point traces should contain PPP headers
 - Bug 1888 - COST231 propagation loss model: corrections
-- Bug 1889 - PointToPointNetDevive: In some cases MacTxDrop trace is not called
+- Bug 1889 - PointToPointNetDevice: In some cases MacTxDrop trace is not called
 - Bug 1890 - UdpClientTrace: MPEG frame size is squeezed into (insufficient) 16 bit integer
 - Bug 1891 - UdpSocketImpl::GetSockName doesn't return the IPv6 address
 - Bug 1903 - Namespace usage in olsr-state.cc/h
