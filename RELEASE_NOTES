@@ -45,8 +45,10 @@ Bugs fixed
 ----------
 - Bug 1276 - optimize NistErrorRateModel
 - Bug 1294 - New PeekU8 () and Read (Buffer::Iterator start, uint32_t size) methods in Buffer::Iterator
+- Bug 1443 - m_minDistance in FriisPropagationLossModel
 - Bug 1653 - Extension of CommandLine interface: restored operator << (CommandLine)
 - Bug 1717 - Detect unsettable attributes
+- Bug 1730 - no model library documentation for spectrum module
 - Bug 1739 - The endpoint is not deallocated for UDP sockets
 - Bug 1786 - os << int64x64_t prints un-normalized fractional values
 - Bug 1787 - Runtime error when using AnimationInterface::EnablePacketMetadata() to fetch metadata of CSMA packet
@@ -54,6 +56,7 @@ Bugs fixed
 - Bug 1808 - FlowMon relies on IPv4's Identification field to trace packets
 - Bug 1817 - IPv4 Identification field should consider protocol as well.
 - Bug 1818 - FlowMonitor needs IPv6 support
+- Bug 1820 - models library doc: make should not rm -rf figures
 - Bug 1821 - Setting an interface to Down state will cause various asserts in IPv6
 - Bug 1829 - Multiple TCP socket entries
 - Bug 1837 - AODV crashes when using multiple interfaces
@@ -75,6 +78,7 @@ Bugs fixed
 - Bug 1876 - enable OLSR HNA table access
 - Bug 1882 - int64x64 tests trigger valgrind bug
 - Bug 1883 - IPv6 don't consider the prefix and network when choosing output address
+- Bug 1885 - WifiSpectrumValue5MhzFactory::CreateRfFilter does not align with the used 5Mhz SpectrumModel
 - Bug 1887 - Point-to-point traces should contain PPP headers
 - Bug 1888 - COST231 propagation loss model: corrections
 - Bug 1889 - PointToPointNetDevice: In some cases MacTxDrop trace is not called
