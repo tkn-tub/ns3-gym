@@ -69,6 +69,7 @@
 #include "ns3/csma-module.h"
 #include "ns3/olsr-helper.h"
 #include "ns3/internet-module.h"
+#include "ns3/netanim-module.h"
 
 using namespace ns3;
 
@@ -407,6 +408,8 @@ main (int argc, char *argv[])
     {
       Config::Connect ("/NodeList/*/$ns3::MobilityModel/CourseChange", MakeCallback (&CourseChangeCallback));
     }
+
+  AnimationInterface anim ("mixed-wireless.xml");
 
   /////////////////////////////////////////////////////////////////////////// 
   //                                                                       //
