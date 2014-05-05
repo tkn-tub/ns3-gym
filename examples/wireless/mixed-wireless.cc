@@ -96,8 +96,8 @@ main (int argc, char *argv[])
   // simulation parameters.
   //
   uint32_t backboneNodes = 10;
-  uint32_t infraNodes = 5;
-  uint32_t lanNodes = 5;
+  uint32_t infraNodes = 2;
+  uint32_t lanNodes = 2;
   uint32_t stopTime = 20;
   bool useCourseChangeCallback = false;
 
@@ -181,17 +181,15 @@ main (int argc, char *argv[])
   // each of the nodes we just finished building.
   //
   MobilityHelper mobility;
-  Ptr<ListPositionAllocator> positionAlloc = 
-    CreateObject<ListPositionAllocator> ();
-  double x = 0.0;
-  for (uint32_t i = 0; i < backboneNodes; ++i)
-    {
-      positionAlloc->Add (Vector (x, 0.0, 0.0));
-      x += 5.0;
-    }
-  mobility.SetPositionAllocator (positionAlloc);
+  mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
+                                 "MinX", DoubleValue (20.0),
+                                 "MinY", DoubleValue (20.0),
+                                 "DeltaX", DoubleValue (20.0),
+                                 "DeltaY", DoubleValue (20.0),
+                                 "GridWidth", UintegerValue (5),
+                                 "LayoutType", StringValue ("RowFirst"));
   mobility.SetMobilityModel ("ns3::RandomDirection2dMobilityModel",
-                             "Bounds", RectangleValue (Rectangle (0, 20, 0, 20)),
+                             "Bounds", RectangleValue (Rectangle (-500, 500, -500, 500)),
                              "Speed", StringValue ("ns3::ConstantRandomVariable[Constant=2]"),
                              "Pause", StringValue ("ns3::ConstantRandomVariable[Constant=0.2]"));
   mobility.Install (backbone);
@@ -242,6 +240,21 @@ main (int argc, char *argv[])
       // network mask initialized above
       //
       ipAddrs.NewNetwork ();
+      //
+      // The new LAN nodes need a mobility model so we aggregate one
+      // to each of the nodes we just finished building.
+      //
+      MobilityHelper mobilityLan;
+      Ptr<ListPositionAllocator> subnetAlloc = 
+        CreateObject<ListPositionAllocator> ();
+      for (uint32_t j = 0; j < newLanNodes.GetN (); ++j)
+        {
+          subnetAlloc->Add (Vector (0.0, j*10 + 10, 0.0));
+        }
+      mobilityLan.PushReferenceMobilityModel (backbone.Get (i));
+      mobilityLan.SetPositionAllocator (subnetAlloc);
+      mobilityLan.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
+      mobilityLan.Install (newLanNodes);
     }
 
   /////////////////////////////////////////////////////////////////////////// 
@@ -322,7 +335,7 @@ main (int argc, char *argv[])
                                  "Bounds", RectangleValue (Rectangle (-10, 10, -10, 10)),
                                  "Speed", StringValue ("ns3::ConstantRandomVariable[Constant=3]"),
                                  "Pause", StringValue ("ns3::ConstantRandomVariable[Constant=0.4]"));
-      mobility.Install (infra);
+      mobility.Install (stas);
     }
 
   /////////////////////////////////////////////////////////////////////////// 

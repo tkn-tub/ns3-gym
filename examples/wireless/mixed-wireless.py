@@ -76,8 +76,8 @@ def main(argv):
     #  simulation parameters.
     # 
     backboneNodes = 10
-    infraNodes = 5
-    lanNodes = 5
+    infraNodes = 2 
+    lanNodes = 2
     stopTime = 20
 
     # 
@@ -155,14 +155,15 @@ def main(argv):
     #  each of the nodes we just finished building.  
     # 
     mobility = ns.mobility.MobilityHelper()
-    positionAlloc = ns.mobility.ListPositionAllocator()
-    x = 0.0
-    for i in range(backboneNodes):
-        positionAlloc.Add(ns.core.Vector(x, 0.0, 0.0))
-        x += 5.0
-    mobility.SetPositionAllocator(positionAlloc)
+    mobility.SetPositionAllocator("ns3::GridPositionAllocator",
+                                  "MinX", ns.core.DoubleValue(20.0),
+                                  "MinY", ns.core.DoubleValue(20.0),
+                                  "DeltaX", ns.core.DoubleValue(20.0),
+                                  "DeltaY", ns.core.DoubleValue(20.0),
+                                  "GridWidth", ns.core.UintegerValue(5),
+                                  "LayoutType", ns.core.StringValue("RowFirst"))
     mobility.SetMobilityModel("ns3::RandomDirection2dMobilityModel",
-                               "Bounds", ns.mobility.RectangleValue(ns.mobility.Rectangle(0, 20, 0, 20)),
+                               "Bounds", ns.mobility.RectangleValue(ns.mobility.Rectangle(-500, 500, -500, 500)),
                                "Speed", ns.core.StringValue ("ns3::ConstantRandomVariable[Constant=2]"),
                                "Pause", ns.core.StringValue ("ns3::ConstantRandomVariable[Constant=0.2]"))
     mobility.Install(backbone)
@@ -210,6 +211,19 @@ def main(argv):
         #  network mask initialized above
         # 
         ipAddrs.NewNetwork()
+        #
+        # The new LAN nodes need a mobility model so we aggregate one
+        # to each of the nodes we just finished building.
+        #
+        mobilityLan = ns.mobility.MobilityHelper() 
+        positionAlloc = ns.mobility.ListPositionAllocator()
+        for j in range(newLanNodes.GetN()):
+            positionAlloc.Add(ns.core.Vector(0.0, (j*10 + 10), 0.0))
+
+        mobilityLan.SetPositionAllocator(positionAlloc)
+        mobilityLan.PushReferenceMobilityModel(backbone.Get(i))
+        mobilityLan.SetMobilityModel("ns3::ConstantPositionMobilityModel")
+        mobilityLan.Install(newLanNodes);
 
     # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # / 
     #                                                                        # 
@@ -282,7 +296,7 @@ def main(argv):
                                   "Bounds", ns.mobility.RectangleValue(ns.mobility.Rectangle(-10, 10, -10, 10)),
                                   "Speed", ns.core.StringValue ("ns3::ConstantRandomVariable[Constant=3]"),
                                   "Pause", ns.core.StringValue ("ns3::ConstantRandomVariable[Constant=0.4]"))
-        mobility.Install(infra)
+        mobility.Install(stas)
 
     # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # / 
     #                                                                        # 
@@ -295,9 +309,6 @@ def main(argv):
     print "Create Applications."
     port = 9   #  Discard port(RFC 863)
 
-    #  Let's make sure that the user does not define too few LAN nodes
-    #  to make this example work.  We need lanNodes >= 5
-    assert(lanNodes >= 5)
     appSource = ns.network.NodeList.GetNode(backboneNodes)
     lastNodeIndex = backboneNodes + backboneNodes*(lanNodes - 1) + backboneNodes*(infraNodes - 1) - 1
     appSink = ns.network.NodeList.GetNode(lastNodeIndex)
