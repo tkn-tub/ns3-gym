@@ -33,23 +33,6 @@ NS_LOG_COMPONENT_DEFINE ("LrWpanHelper");
 namespace ns3 {
 
 static void
-AsciiLrWpanMacReceiveSinkWithContext (
-  Ptr<OutputStreamWrapper> stream,
-  std::string context,
-  Ptr<const Packet> p)
-{
-  *stream->GetStream () << "r " << Simulator::Now ().GetSeconds () << " " << context << " " << *p << std::endl;
-}
-
-static void
-AsciiLrWpanMacReceiveSinkWithoutContext (
-  Ptr<OutputStreamWrapper> stream,
-  Ptr<const Packet> p)
-{
-  *stream->GetStream () << "r " << Simulator::Now ().GetSeconds () << " " << *p << std::endl;
-}
-
-static void
 AsciiLrWpanMacTransmitSinkWithContext (
   Ptr<OutputStreamWrapper> stream,
   std::string context,
@@ -323,12 +306,13 @@ LrWpanHelper::EnableAsciiInternal (
       // The Mac and Phy objects have the trace sources for these
       //
 
-      oss.str ("");
-      oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/Mac/MacRx";
-      device->GetMac ()->TraceConnectWithoutContext ("MacRx", MakeBoundCallback (&AsciiLrWpanMacReceiveSinkWithoutContext, theStream));
-      oss.str ("");
-      oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/Mac/MacTx";
+      asciiTraceHelper.HookDefaultReceiveSinkWithoutContext<LrWpanNetDevice> (device, "MacRx", theStream);
+
       device->GetMac ()->TraceConnectWithoutContext ("MacTx", MakeBoundCallback (&AsciiLrWpanMacTransmitSinkWithoutContext, theStream));
+
+      asciiTraceHelper.HookDefaultEnqueueSinkWithoutContext<LrWpanNetDevice> (device, "MacTxEnqueue", theStream);
+      asciiTraceHelper.HookDefaultDequeueSinkWithoutContext<LrWpanNetDevice> (device, "MacTxDequeue", theStream);
+      asciiTraceHelper.HookDefaultDropSinkWithoutContext<LrWpanNetDevice> (device, "MacTxDrop", theStream);
 
       return;
     }
@@ -345,12 +329,27 @@ LrWpanHelper::EnableAsciiInternal (
   // but the default trace sinks are actually publicly available static
   // functions that are always there waiting for just such a case.
   //
+
+
   oss.str ("");
-  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/Mac/MacRx";
-  device->GetMac ()->TraceConnect ("MacRx", oss.str (), MakeBoundCallback (&AsciiLrWpanMacReceiveSinkWithContext, stream));
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::LrWpanNetDevice/Mac/MacRx";
+  device->GetMac ()->TraceConnect ("MacRx", oss.str (), MakeBoundCallback (&AsciiTraceHelper::DefaultReceiveSinkWithContext, stream));
+
   oss.str ("");
-  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/Mac/MacTx";
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::LrWpanNetDevice/Mac/MacTx";
   device->GetMac ()->TraceConnect ("MacTx", oss.str (), MakeBoundCallback (&AsciiLrWpanMacTransmitSinkWithContext, stream));
+
+  oss.str ("");
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::LrWpanNetDevice/Mac/MacTxEnqueue";
+  device->GetMac ()->TraceConnect ("MacTxEnqueue", oss.str (), MakeBoundCallback (&AsciiTraceHelper::DefaultEnqueueSinkWithContext, stream));
+
+  oss.str ("");
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::LrWpanNetDevice/Mac/MacTxDequeue";
+  device->GetMac ()->TraceConnect ("MacTxDequeue", oss.str (), MakeBoundCallback (&AsciiTraceHelper::DefaultDequeueSinkWithContext, stream));
+
+  oss.str ("");
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::LrWpanNetDevice/Mac/MacTxDrop";
+  device->GetMac ()->TraceConnect ("MacTxDrop", oss.str (), MakeBoundCallback (&AsciiTraceHelper::DefaultDropSinkWithContext, stream));
 
 }
 

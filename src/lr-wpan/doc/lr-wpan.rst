@@ -157,6 +157,10 @@ capabilities. Association with PAN coordinators is not yet supported, nor the
 use of extended addressing. Interference is modeled as AWGN but this is
 currently not thoroughly tested.
 
+The NetDevice Tx queue is not limited, i.e., packets are never dropped
+due to queue becoming full. They may be dropped due to excessive transmission 
+retries or channel access failure.
+
 References
 ==========
 

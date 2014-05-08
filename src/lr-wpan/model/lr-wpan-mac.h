@@ -503,7 +503,7 @@ private:
    * Remove the tip of the transmission queue, including clean up related to the
    * last packet transmission.
    */
-  void RemoveFirstTxQElement (void);
+  void RemoveFirstTxQElement ();
 
   /**
    * Change the current MAC state to the given new state.
@@ -551,7 +551,15 @@ private:
    *
    * \see class CallBackTraceSource
    */
-  TracedCallback<Ptr<const Packet>, bool> m_macTxQueueTrace;
+  TracedCallback<Ptr<const Packet> > m_macTxEnqueueTrace;
+
+  /**
+   * The trace source fired when packets are dequeued from the
+   * L3/l2 transmission queue.
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Ptr<const Packet> > m_macTxDequeueTrace;
 
   /**
    * The trace source fired when packets are being sent down to L1.

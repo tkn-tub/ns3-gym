@@ -56,9 +56,12 @@ LrWpanMac::GetTypeId (void)
                    UintegerValue (),
                    MakeUintegerAccessor (&LrWpanMac::m_macPanId),
                    MakeUintegerChecker<uint16_t> ())
-    .AddTraceSource ("MacTxQueue",
-                     "Trace source indicating a packet has was enqueued or dequeued to/from the transaction queue",
-                     MakeTraceSourceAccessor (&LrWpanMac::m_macTxQueueTrace))
+    .AddTraceSource ("MacTxEnqueue",
+                     "Trace source indicating a packet has was enqueued in the transaction queue",
+                     MakeTraceSourceAccessor (&LrWpanMac::m_macTxEnqueueTrace))
+    .AddTraceSource ("MacTxDequeue",
+                     "Trace source indicating a packet has was dequeued from the transaction queue",
+                     MakeTraceSourceAccessor (&LrWpanMac::m_macTxDequeueTrace))
     .AddTraceSource ("MacTx",
                      "Trace source indicating a packet has arrived for transmission by this device",
                      MakeTraceSourceAccessor (&LrWpanMac::m_macTxTrace))
@@ -377,7 +380,7 @@ LrWpanMac::McpsDataRequest (McpsDataRequestParams params, Ptr<Packet> p)
     }
   p->AddTrailer (macTrailer);
 
-  m_macTxQueueTrace (p, true);
+  m_macTxEnqueueTrace (p);
 
   TxQueueElement *txQElement = new TxQueueElement;
   txQElement->txQMsduHandle = params.m_msduHandle;
@@ -676,7 +679,7 @@ LrWpanMac::SendAck (uint8_t seqno)
 }
 
 void
-LrWpanMac::RemoveFirstTxQElement (void)
+LrWpanMac::RemoveFirstTxQElement ()
 {
   TxQueueElement *txQElement = m_txQueue.front ();
   Ptr<const Packet> p = txQElement->txQPkt;
@@ -696,7 +699,7 @@ LrWpanMac::RemoveFirstTxQElement (void)
   m_txPkt = 0;
   m_retransmission = 0;
   m_numCsmacaRetry = 0;
-  m_macTxQueueTrace (p, false);
+  m_macTxDequeueTrace (p);
 }
 
 void
