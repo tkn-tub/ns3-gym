@@ -497,7 +497,7 @@ public:
    * \code
    *   Time t (3.14e9);  // Pi seconds
    *   std::cout << t.As (Time::MS) << std::endl;
-   * \code
+   * \endcode
    * will print ``+3140.0ms``
    *
    * \param unit [in] The unit to use.
