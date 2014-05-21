@@ -41,7 +41,7 @@ RandomWalk2dMobilityModel::GetTypeId (void)
     .AddConstructor<RandomWalk2dMobilityModel> ()
     .AddAttribute ("Bounds",
                    "Bounds of the area to cruise.",
-                   RectangleValue (Rectangle (0.0, 0.0, 100.0, 100.0)),
+                   RectangleValue (Rectangle (0.0, 100.0, 0.0, 100.0)),
                    MakeRectangleAccessor (&RandomWalk2dMobilityModel::m_bounds),
                    MakeRectangleChecker ())
     .AddAttribute ("Time",
