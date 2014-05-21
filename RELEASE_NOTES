@@ -90,6 +90,7 @@ Bugs fixed
 - Bug 1903 - Namespace usage in olsr-state.cc/h
 - Bug 1903 - Namespace usage in olsr-state.cc/h
 - Bug 1915 - BRITE channel delay is rounded to an integer
+- Bug 1916 - RandomWalk2dMobilityMode default "Bounds" attribute is not a rectangle
 
 Release 3.19
 =============
