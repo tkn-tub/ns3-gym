@@ -29,6 +29,10 @@ modules_enabled  = ['all_modules']
 examples_enabled = False
 tests_enabled    = False
 
+# Bug 1868:  be conservative about -Wstrict-overflow for optimized builds
+# on older compilers; it can generate spurious warnings.  
+min_cc_version_warn_strict_overflow = ('4', '8', '2')
+
 # Get the information out of the NS-3 configuration file.
 config_file_exists = False
 (config_file_exists, modules_enabled, examples_enabled, tests_enabled) = read_config_file()
@@ -326,7 +330,8 @@ def configure(conf):
             if conf.check_compilation_flag('-march=native'):
                 env.append_value('CXXFLAGS', '-march=native') 
             env.append_value('CXXFLAGS', '-fstrict-overflow')
-            env.append_value('CXXFLAGS', '-Wstrict-overflow=5')
+            if conf.env['CC_VERSION'] >= min_cc_version_warn_strict_overflow:
+                env.append_value('CXXFLAGS', '-Wstrict-overflow=5')
 
         if sys.platform == 'win32':
             env.append_value("LINKFLAGS", "-Wl,--enable-runtime-pseudo-reloc")
