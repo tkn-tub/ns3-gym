@@ -127,7 +127,7 @@ private:
    *
    * \param packet the incoming packet
    * \param header the packet's IPv4 header
-   * \param port the incoming port
+   * \param port the remote port
    * \param incomingInterface the incoming interface
    */
   void ForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port, Ptr<Ipv4Interface> incomingInterface);
@@ -137,7 +137,7 @@ private:
    *
    * \param packet the incoming packet
    * \param header the packet's IPv6 header
-   * \param port the incoming port
+   * \param port the remote port
    * \param incomingInterface the incoming interface
    */
   void ForwardUp6 (Ptr<Packet> packet, Ipv6Header header, uint16_t port, Ptr<Ipv6Interface> incomingInterface);
