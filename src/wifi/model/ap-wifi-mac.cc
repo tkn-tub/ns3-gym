@@ -81,6 +81,7 @@ ApWifiMac::ApWifiMac ()
   m_beaconDca->SetMaxCw (0);
   m_beaconDca->SetLow (m_low);
   m_beaconDca->SetManager (m_dcfManager);
+  m_beaconDca->SetTxMiddle (m_txMiddle);
 
   // Let the lower layers know that we are acting as an AP.
   SetTypeOfStation (AP);

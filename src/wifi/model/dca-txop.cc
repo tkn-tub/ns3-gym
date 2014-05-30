@@ -145,7 +145,6 @@ DcaTxop::DcaTxop ()
   m_dcf = new DcaTxop::Dcf (this);
   m_queue = CreateObject<WifiMacQueue> ();
   m_rng = new RealRandomStream ();
-  m_txMiddle = new MacTxMiddle ();
 }
 
 DcaTxop::~DcaTxop ()
@@ -163,7 +162,6 @@ DcaTxop::DoDispose (void)
   delete m_transmissionListener;
   delete m_dcf;
   delete m_rng;
-  delete m_txMiddle;
   m_transmissionListener = 0;
   m_dcf = 0;
   m_rng = 0;
@@ -176,6 +174,11 @@ DcaTxop::SetManager (DcfManager *manager)
   NS_LOG_FUNCTION (this << manager);
   m_manager = manager;
   m_manager->Add (m_dcf);
+}
+
+void DcaTxop::SetTxMiddle (MacTxMiddle *txMiddle)
+{
+  m_txMiddle = txMiddle;
 }
 
 void
