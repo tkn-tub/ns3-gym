@@ -18,34 +18,43 @@ This release is not yet available.
 
 Supported platforms
 -------------------
+- Fedora Core 20 (32/64 bit) with g++-4.8.2
+- Ubuntu 14.04 (32/64 bit) with g++-4.8.2
+- Ubuntu 12.04.4 (64 bit) with g++-4.6.3
+- Ubuntu 10.04.4 LTS (64 bit) with g++-4.4.3
+- CentOS/RHEL 6.5 (64-bit) with g++-4.4.7
+- OS X Mavericks 10.9 with Xcode 5.1.1 and clang-503.0.40
+- FreeBSD 9.2-RELEASE (64 bit) with clang-3.3
 
 New user-visible features
 -------------------------
 
-- Simplify output of Times in a specific unit; see Time::As ()
-- Enable selection of high precision int64x64_t implementation
-  at configure time, for debugging purposes.
-- A new LTE MAC downlink scheduling algorithm named Channel and QoS
-  Aware (CQA) Scheduler is provided by the new
-  ``ns3::CqaFfMacScheduler`` object.
-- SixLowPan model can now use uncompressed IPv6 headers. An option to
-  define the minimum compressed packet size has been added. 
-- FlowMonitor "SerializeToXml" functions are now directly available 
-  from the Helper.
-- Ipv6Extension::m_dropTrace has been removed. Ipv6L3Protocol::m_dropTrace 
-  is now fired when appropriate.
-- FlowMonitor does not track anymore multicast/broadcast packets, reflecting
-  its original design.
+- A new LrWpan model, providing initial support for IEEE 802.15.4 networks
 - A new IPv6 routing protocol has been added: RIPng. This protocol is
   an Interior Gateway Protocol and it is available in the Internet module.
-- FlowMonitor can now track IPv6 packets.
+- A new LTE MAC downlink scheduling algorithm named Channel and QoS Aware (CQA) 
+  Scheduler is provided by the new ``ns3::CqaFfMacScheduler`` object.
+- The Internet FlowMonitor can now track IPv6 packets.
+- FlowMonitor no longer tracks multicast/broadcast packets, reflecting
+  its original design.
+- FlowMonitor "SerializeToXml" functions are now directly available 
+  from the helper.
+- The SixLowPan model can now use uncompressed IPv6 headers. An option to
+  define the minimum compressed packet size has been added. 
+- Simplify output of Times in a specific unit; see Time::As ()
+- Ipv6Extension::m_dropTrace has been removed. Ipv6L3Protocol::m_dropTrace 
+  is now fired when appropriate.
 - IPv4 identification field value is now dependent on the protocol field.
+- Fixes to support Python >= 3.3 in ns3 Python bindings
+- Enable selection of high precision int64x64_t implementation
+  at configure time, for debugging purposes.
 
 Bugs fixed
 ----------
 - Bug 1276 - optimize NistErrorRateModel
 - Bug 1294 - New PeekU8 () and Read (Buffer::Iterator start, uint32_t size) methods in Buffer::Iterator
-- Bug 1443 - m_minDistance in FriisPropagationLossModel
+- Bug 1443 - MinDistance replaced by MinLoss in FriisPropagationLossModel, to
+  better handle conditions outside of the assumed far field region.
 - Bug 1653 - Extension of CommandLine interface: restored operator << (CommandLine)
 - Bug 1717 - Detect unsettable attributes
 - Bug 1730 - no model library documentation for spectrum module
@@ -70,6 +79,7 @@ Bugs fixed
 - Bug 1852 - cairo-wideint-private.h error cannot find definitions for fixed-width integral types
 - Bug 1853 - NS_LOG_FUNCTION broken on OSX 10.9
 - Bug 1855 - SixLowPanNetDevice is not correctly indexed
+- Bug 1857 - Detect location of installed boost libraries
 - Bug 1862 - NS_LOG="Time=*|prefix_time" causes stack overflow
 - Bug 1868 - Optimized builds are sensitive to -fstrict-overflow
 - Bug 1870 - Remove unnecessary AsInt functions
@@ -77,6 +87,7 @@ Bugs fixed
 - Bug 1873 - Energy source checked to be aggregated to the node
 - Bug 1874 - Ipv4L3Protocol::ProcessFragment: addressCombination and idProto identifiers not properly computed
 - Bug 1876 - enable OLSR HNA table access
+- Bug 1877 - constructors missing for PropagationLossModels
 - Bug 1882 - int64x64 tests trigger valgrind bug
 - Bug 1883 - IPv6 don't consider the prefix and network when choosing output address
 - Bug 1885 - WifiSpectrumValue5MhzFactory::CreateRfFilter does not align with the used 5Mhz SpectrumModel
@@ -87,8 +98,10 @@ Bugs fixed
 - Bug 1891 - UdpSocketImpl::GetSockName doesn't return the IPv6 address
 - Bug 1894 - CqaFfMacScheduler needs an update
 - Bug 1895 - IP header Source Address changed while forwarding RREQ
+- Bug 1900 - Avoid floating point differences across platforms in test outputs
 - Bug 1903 - Namespace usage in olsr-state.cc/h
-- Bug 1903 - Namespace usage in olsr-state.cc/h
+- Bug 1912 - Avoid multiple Wifi MacTxMiddle instances
+- Bug 1913 - Avoid crash in Wifi BlockAckManager::GetNextPacket()
 - Bug 1915 - BRITE channel delay is rounded to an integer
 - Bug 1916 - RandomWalk2dMobilityMode default "Bounds" attribute is not a rectangle
 
