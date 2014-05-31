@@ -51,6 +51,62 @@ to this file based on your experience, please contribute a patch or drop
 us a note on ns-developers mailing list.</p>
 
 <hr>
+<h1>Changes from ns-3.19 to ns-3.20</h1>
+<h2>New API:</h2>
+<ul>
+  <li> Models have been added for low-rate, wireless personal area networks
+(LR-WPAN) as specified by IEEE standard 802.15.4 (2006).  The current 
+emphasis is on the unslotted mode of 802.15.4 operation for use in Zigbee, 
+and the scope is limited to enabling a single mode (CSMA/CA) with basic 
+data transfer capabilities. Association with PAN coordinators is not yet 
+supported, nor the use of extended addressing. Interference is modeled as 
+AWGN but this is currently not thoroughly tested.  The NetDevice Tx queue 
+is not limited, i.e., packets are never dropped due to queue becoming full. 
+They may be dropped due to excessive transmission retries or channel access 
+failure.  </li>
+  <li> A new IPv6 routing protocol has been added: RIPng. This protocol is
+  an Interior Gateway Protocol and it is available in the Internet module. </li>
+  <li> A new LTE MAC downlink scheduling algorithm named Channel and QoS 
+  Aware (CQA) Scheduler is provided by the new "ns3::CqaFfMacScheduler" object.
+  </li>
+  <li> Units may be attached to Time objects, to facilitate specific output
+  formats (see Time::As()) </li>
+  <li> FlowMonitor "SerializeToXml" functions are now directly available
+  from the helper.  </li>
+  <li> Access to OLSR's HNA table has been enabled </li>
+</ul>
+
+<h2>Changes to existing API:</h2>
+<ul>
+  <li> The SixLowPan model can now use uncompressed IPv6 headers. An option to
+  define the minimum compressed packet size has been added.  </li>
+  <li> MinDistance wsa replaced by MinLoss in FriisPropagationLossModel, to
+  better handle conditions outside of the assumed far field region. </li>
+</ul>
+
+<h2>Changes to build system:</h2>
+<ul>
+  <li> Python 3.3 is now supported for Python bindings for ns-3.  Python 3.3 
+  support for API scanning is not supported.  Python 3.2 is not supported.</li>
+  <li>  Enable selection of high precision int64x64_t implementation
+  at configure time, for debugging purposes.</li>
+  <li> Optimized builds are now enabling signed overflow optimization 
+  (-fstrict-overflow) and for gcc 4.8.2 and greater, also warning for cases 
+  where an optimizization may occur due to compiler assumption that 
+  overflow will not occur. </li>
+</ul>
+
+<h2>Changed behavior:</h2>
+<ul>
+  <li> The Internet FlowMonitor can now track IPv6 packets.  </li>
+  <li> Ipv6Extension::m_dropTrace has been removed. Ipv6L3Protocol::m_dropTrace
+  is now fired when appropriate.  </li>
+  <li> IPv4 identification field value is now dependent on the protocol 
+  field.  </li>
+  <li> Point-to-point trace sources now contain PPP headers </li>
+</ul>
+
+<hr>
 <h1>Changes from ns-3.18.1 to ns-3.19</h1>
 
 <h2>New API:</h2>
