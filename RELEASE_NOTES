@@ -100,10 +100,14 @@ Bugs fixed
 - Bug 1895 - IP header Source Address changed while forwarding RREQ
 - Bug 1900 - Avoid floating point differences across platforms in test outputs
 - Bug 1903 - Namespace usage in olsr-state.cc/h
+- Bug 1907 - Add IsSupportedMcs method in YansWifiPhy
 - Bug 1912 - Avoid multiple Wifi MacTxMiddle instances
 - Bug 1913 - Avoid crash in Wifi BlockAckManager::GetNextPacket()
 - Bug 1915 - BRITE channel delay is rounded to an integer
 - Bug 1916 - RandomWalk2dMobilityMode default "Bounds" attribute is not a rectangle
+- Bug 1919 - Strip trailing semi-colons from mobility trace files
+- Bug 1920 - Remove DSR attributes so file can be re-loaded by config-store
+- Bug 1922 - WAVE GetSsid should not be fatal
 
 Known issues
 ------------
