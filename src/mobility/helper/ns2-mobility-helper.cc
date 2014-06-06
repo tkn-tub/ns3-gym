@@ -507,7 +507,7 @@ TrimNs2Line (const std::string& s)
       ret.erase (0, 1);    // Removes blank spaces at the begining of the line
     }
 
-  while (ret.size () > 0 && isblank (ret[ret.size () - 1]))
+  while (ret.size () > 0 && (isblank (ret[ret.size () - 1]) || (ret[ret.size () - 1] == ';')))
     {
       ret.erase (ret.size () - 1, 1); // Removes blank spaces from at end of line
     }
