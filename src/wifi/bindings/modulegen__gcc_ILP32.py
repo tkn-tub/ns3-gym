@@ -8492,6 +8492,11 @@ def register_Ns3YansWifiPhy_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## yans-wifi-phy.h (module 'wifi'): bool ns3::YansWifiPhy::IsMcsSupported(ns3::WifiMode mode) [member function]
+    cls.add_method('IsMcsSupported', 
+                   'bool', 
+                   [param('ns3::WifiMode', 'mode')], 
+                   is_virtual=True)
     ## yans-wifi-phy.h (module 'wifi'): bool ns3::YansWifiPhy::IsModeSupported(ns3::WifiMode mode) const [member function]
     cls.add_method('IsModeSupported', 
                    'bool', 
