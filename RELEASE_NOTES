@@ -105,6 +105,12 @@ Bugs fixed
 - Bug 1915 - BRITE channel delay is rounded to an integer
 - Bug 1916 - RandomWalk2dMobilityMode default "Bounds" attribute is not a rectangle
 
+Known issues
+------------
+- Bug 1770 - The mesh module will crash if used for g++ version >= 4.8.1
+in optimized mode, on a 32-bit Linux machine.  Lowering the optimization
+level to -O1 in this case can be used as a workaround.
+
 Release 3.19
 =============
 
