@@ -658,12 +658,6 @@ TypeId DsrOptionRerrHeader::GetTypeId ()
   static TypeId tid = TypeId ("ns3::dsr::DsrOptionRerrHeader")
     .AddConstructor<DsrOptionRerrHeader> ()
     .SetParent<DsrOptionHeader> ()
-    .AddAttribute ("ErrorType","Type of route errors",
-                   EnumValue (NODE_UNREACHABLE),
-                   MakeEnumAccessor (&DsrOptionRerrHeader::m_errorType),
-                   MakeEnumChecker (NODE_UNREACHABLE, "Node unreachable",
-                                    FLOW_STATE_NOT_SUPPORTED, "Flow state not supported",
-                                    OPTION_NOT_SUPPORTED, "Option not supported"))
   ;
   return tid;
 }
