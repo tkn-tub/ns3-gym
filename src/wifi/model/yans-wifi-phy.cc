@@ -508,7 +508,7 @@ YansWifiPhy::StartReceivePacket (Ptr<Packet> packet,
     case YansWifiPhy::IDLE:
       if (rxPowerW > m_edThresholdW)
         {
-          if (IsModeSupported (txMode))
+          if (IsModeSupported (txMode) || IsMcsSupported(txMode))
             {
               NS_LOG_DEBUG ("sync to signal (power=" << rxPowerW << "W)");
               // sync to signal
@@ -594,6 +594,18 @@ YansWifiPhy::IsModeSupported (WifiMode mode) const
   for (uint32_t i = 0; i < GetNModes (); i++)
     {
       if (mode == GetMode (i))
+        {
+          return true;
+        }
+    }
+  return false;
+}
+bool
+YansWifiPhy::IsMcsSupported (WifiMode mode)
+{
+  for (uint32_t i = 0; i < GetNMcs (); i++)
+    {
+      if (mode == McsToWifiMode(GetMcs (i)))
         {
           return true;
         }
