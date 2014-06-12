@@ -108,6 +108,7 @@ Bugs fixed
 - Bug 1919 - Strip trailing semi-colons from mobility trace files
 - Bug 1920 - Remove DSR attributes so file can be re-loaded by config-store
 - Bug 1922 - WAVE GetSsid should not be fatal
+- Bug 1923 - Setting Active Probing to false in Wifi Sta has no effect
 
 Known issues
 ------------
