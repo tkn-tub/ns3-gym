@@ -20,6 +20,7 @@ def build(bld):
     module_test = bld.create_ns3_module_test_library('lr-wpan')
     module_test.source = [
         'test/lr-wpan-ack-test.cc',
+        'test/lr-wpan-cca-test.cc',
         'test/lr-wpan-collision-test.cc',
         'test/lr-wpan-ed-test.cc',
         'test/lr-wpan-error-model-test.cc',

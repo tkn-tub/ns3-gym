@@ -293,6 +293,7 @@ LrWpanPhy::StartRx (Ptr<SpectrumSignalParameters> spectrumRxParams)
 
       // Add any incoming packet to the current interference before checking the
       // SINR.
+      NS_LOG_DEBUG (this << " receiving packet with power: " << 10 * log10(LrWpanSpectrumValueHelper::TotalAvgPower (lrWpanRxParams->psd)) + 30 << "dBm");
       m_signal->AddSignal (lrWpanRxParams->psd);
       Ptr<SpectrumValue> interferenceAndNoise = m_signal->GetSignalPsd ();
       *interferenceAndNoise -= *lrWpanRxParams->psd;
@@ -1075,7 +1076,7 @@ LrWpanPhy::EndCca (void)
   else if (m_phyPIBAttributes.phyCCAMode == 1)
     { //sec 6.9.9 ED detection
       // -- ED threshold at most 10 dB above receiver sensitivity.
-      if (m_ccaPeakPower / m_rxSensitivity >= 10.0)
+      if (10 * log10 (m_ccaPeakPower / m_rxSensitivity) >= 10.0)
         {
           sensedChannelState = IEEE_802_15_4_PHY_BUSY;
         }
@@ -1103,7 +1104,7 @@ LrWpanPhy::EndCca (void)
     }
   else if (m_phyPIBAttributes.phyCCAMode == 3)
     { //sect 6.9.9 both
-      if ((m_ccaPeakPower / m_rxSensitivity >= 10.0)
+      if ((10 * log10 (m_ccaPeakPower / m_rxSensitivity) >= 10.0)
           && m_trxState == IEEE_802_15_4_PHY_BUSY_RX)
         {
           // Again, this code will never be reached, if we are already receiving

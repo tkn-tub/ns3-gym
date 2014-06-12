@@ -69,7 +69,7 @@ LrWpanSpectrumValueHelper::CreateTxPowerSpectralDensity (double txPower, uint32_
   NS_LOG_FUNCTION (this);
   Ptr<SpectrumValue> txPsd = Create <SpectrumValue> (g_LrWpanSpectrumModel);
 
-  // txPower is expressed in dBm. We must convert it into natural unit.
+  // txPower is expressed in dBm. We must convert it into natural unit (W).
   txPower = pow (10., (txPower - 30) / 10);
 
   // The effective occupied bandwidth of the signal is modelled to be 2 MHz.
