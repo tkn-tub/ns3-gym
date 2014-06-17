@@ -24,6 +24,7 @@ New user-visible features
 
 Bugs fixed
 ----------
+- Bug 1930 - Use of invalid reference in OLSR RemoveLinkTuple
 
 Known issues
 ------------

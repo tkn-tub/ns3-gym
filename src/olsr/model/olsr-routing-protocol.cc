@@ -2425,8 +2425,8 @@ RoutingProtocol::RemoveLinkTuple (const LinkTuple &tuple)
                 << "s: OLSR Node " << m_mainAddress
                 << " LinkTuple " << tuple << " REMOVED.");
 
-  m_state.EraseLinkTuple (tuple);
   m_state.EraseNeighborTuple (GetMainAddress (tuple.neighborIfaceAddr));
+  m_state.EraseLinkTuple (tuple);
 
 }
 
