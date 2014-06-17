@@ -1340,7 +1340,7 @@ bool Icmpv6L4Protocol::Lookup (Ptr<Packet> p, Ipv6Address dst, Ptr<NetDevice> de
           *hardwareDestination = entry->GetMacAddress ();
           return true;
         }
-      else /* PROBE */
+      else /* INCOMPLETE or PROBE */
         {
           /* queue packet */
           entry->AddWaitingPacket (p);

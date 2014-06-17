@@ -367,6 +367,10 @@ void NdiscCache::Entry::UpdateLastReachabilityconfirmation ()
 void NdiscCache::Entry::StartReachableTimer ()
 {
   NS_LOG_FUNCTION_NOARGS ();
+  if (m_reachableTimer.IsRunning ())
+    {
+      m_reachableTimer.Cancel ();
+    }
   m_reachableTimer.SetFunction (&NdiscCache::Entry::FunctionReachableTimeout, this);
   m_reachableTimer.SetDelay (MilliSeconds (Icmpv6L4Protocol::REACHABLE_TIME));
   m_reachableTimer.Schedule ();
@@ -381,6 +385,10 @@ void NdiscCache::Entry::StopReachableTimer ()
 void NdiscCache::Entry::StartProbeTimer ()
 {
   NS_LOG_FUNCTION_NOARGS ();
+  if (m_probeTimer.IsRunning ())
+    {
+      m_probeTimer.Cancel ();
+    }
   m_probeTimer.SetFunction (&NdiscCache::Entry::FunctionProbeTimeout, this);
   m_probeTimer.SetDelay (MilliSeconds (Icmpv6L4Protocol::RETRANS_TIMER));
   m_probeTimer.Schedule ();
@@ -397,6 +405,10 @@ void NdiscCache::Entry::StopProbeTimer ()
 void NdiscCache::Entry::StartDelayTimer ()
 {
   NS_LOG_FUNCTION_NOARGS ();
+  if (m_delayTimer.IsRunning ())
+    {
+      m_delayTimer.Cancel ();
+    }
   m_delayTimer.SetFunction (&NdiscCache::Entry::FunctionDelayTimeout, this);
   m_delayTimer.SetDelay (Seconds (Icmpv6L4Protocol::DELAY_FIRST_PROBE_TIME));
   m_delayTimer.Schedule ();
@@ -412,6 +424,10 @@ void NdiscCache::Entry::StopDelayTimer ()
 void NdiscCache::Entry::StartRetransmitTimer ()
 {
   NS_LOG_FUNCTION_NOARGS ();
+  if (m_retransTimer.IsRunning ())
+    {
+      m_retransTimer.Cancel ();
+    }
   m_retransTimer.SetFunction (&NdiscCache::Entry::FunctionRetransmitTimeout, this);
   m_retransTimer.SetDelay (MilliSeconds (Icmpv6L4Protocol::RETRANS_TIMER));
   m_retransTimer.Schedule ();

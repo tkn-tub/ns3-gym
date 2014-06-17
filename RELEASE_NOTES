@@ -25,6 +25,7 @@ New user-visible features
 Bugs fixed
 ----------
 - Bug 1930 - Use of invalid reference in OLSR RemoveLinkTuple
+- Bug 1932 - NdiscCache entry is not failsafe on double neighbor probing.
 
 Known issues
 ------------
