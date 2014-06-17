@@ -18,6 +18,26 @@ This release is not yet available.
 
 Supported platforms
 -------------------
+
+New user-visible features
+-------------------------
+
+Bugs fixed
+----------
+
+Known issues
+------------
+
+Release 3.20
+=============
+
+Availability
+------------
+This release is available from:
+http://www.nsnam.org/release/ns-allinone-3.20.tar.bz2
+
+Supported platforms
+-------------------
 - Fedora Core 20 (32/64 bit) with g++-4.8.2
 - Ubuntu 14.04 (32/64 bit) with g++-4.8.2
 - Ubuntu 12.04.4 (64 bit) with g++-4.6.3
