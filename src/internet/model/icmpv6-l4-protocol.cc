@@ -588,7 +588,16 @@ Ptr<Packet> Icmpv6L4Protocol::ForgeEchoRequest (Ipv6Address src, Ipv6Address dst
   req.SetId (id);
   req.SetSeq (seq);
 
+  req.CalculatePseudoHeaderChecksum (src, dst, p->GetSize () + req.GetSerializedSize (), PROT_NUMBER);
   p->AddHeader (req);
+
+  ipHeader.SetSourceAddress (src);
+  ipHeader.SetDestinationAddress (dst);
+  ipHeader.SetNextHeader (PROT_NUMBER);
+  ipHeader.SetPayloadLength (p->GetSize ());
+  ipHeader.SetHopLimit (255);
+
+  p->AddHeader (ipHeader);
 
   return p;
 }

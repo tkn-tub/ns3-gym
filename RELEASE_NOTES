@@ -24,6 +24,7 @@ New user-visible features
 
 Bugs fixed
 ----------
+- Bug 1921 - Icmpv6L4Protocol::ForgeEchoRequest returns a malformed packet
 - Bug 1930 - Use of invalid reference in OLSR RemoveLinkTuple
 - Bug 1932 - NdiscCache entry is not failsafe on double neighbor probing.
 
