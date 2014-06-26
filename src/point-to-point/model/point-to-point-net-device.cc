@@ -155,13 +155,13 @@ PointToPointNetDevice::PointToPointNetDevice ()
 
 PointToPointNetDevice::~PointToPointNetDevice ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 void
 PointToPointNetDevice::AddHeader (Ptr<Packet> p, uint16_t protocolNumber)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << p << protocolNumber);
   PppHeader ppp;
   ppp.SetProtocol (EtherToPpp (protocolNumber));
   p->AddHeader (ppp);
@@ -170,7 +170,7 @@ PointToPointNetDevice::AddHeader (Ptr<Packet> p, uint16_t protocolNumber)
 bool
 PointToPointNetDevice::ProcessHeader (Ptr<Packet> p, uint16_t& param)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << p << param);
   PppHeader ppp;
   p->RemoveHeader (ppp);
   param = PppToEther (ppp.GetProtocol ());
@@ -180,7 +180,7 @@ PointToPointNetDevice::ProcessHeader (Ptr<Packet> p, uint16_t& param)
 void
 PointToPointNetDevice::DoDispose ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   m_node = 0;
   m_channel = 0;
   m_receiveErrorModel = 0;
@@ -191,14 +191,14 @@ PointToPointNetDevice::DoDispose ()
 void
 PointToPointNetDevice::SetDataRate (DataRate bps)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   m_bps = bps;
 }
 
 void
 PointToPointNetDevice::SetInterframeGap (Time t)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << t.GetSeconds ());
   m_tInterframeGap = t;
 }
 
@@ -235,7 +235,7 @@ PointToPointNetDevice::TransmitStart (Ptr<Packet> p)
 void
 PointToPointNetDevice::TransmitComplete (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 
   //
   // This function is called to when we're all done transmitting a packet.
@@ -353,13 +353,14 @@ PointToPointNetDevice::Receive (Ptr<Packet> packet)
 Ptr<Queue>
 PointToPointNetDevice::GetQueue (void) const
 { 
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return m_queue;
 }
 
 void
 PointToPointNetDevice::NotifyLinkUp (void)
 {
+  NS_LOG_FUNCTION (this);
   m_linkUp = true;
   m_linkChangeCallbacks ();
 }
@@ -367,6 +368,7 @@ PointToPointNetDevice::NotifyLinkUp (void)
 void
 PointToPointNetDevice::SetIfIndex (const uint32_t index)
 {
+  NS_LOG_FUNCTION (this);
   m_ifIndex = index;
 }
 
@@ -391,6 +393,7 @@ PointToPointNetDevice::GetChannel (void) const
 void
 PointToPointNetDevice::SetAddress (Address address)
 {
+  NS_LOG_FUNCTION (this << address);
   m_address = Mac48Address::ConvertFrom (address);
 }
 
@@ -403,12 +406,14 @@ PointToPointNetDevice::GetAddress (void) const
 bool
 PointToPointNetDevice::IsLinkUp (void) const
 {
+  NS_LOG_FUNCTION (this);
   return m_linkUp;
 }
 
 void
 PointToPointNetDevice::AddLinkChangeCallback (Callback<void> callback)
 {
+  NS_LOG_FUNCTION (this);
   m_linkChangeCallbacks.ConnectWithoutContext (callback);
 }
 
@@ -419,6 +424,7 @@ PointToPointNetDevice::AddLinkChangeCallback (Callback<void> callback)
 bool
 PointToPointNetDevice::IsBroadcast (void) const
 {
+  NS_LOG_FUNCTION (this);
   return true;
 }
 
@@ -430,18 +436,21 @@ PointToPointNetDevice::IsBroadcast (void) const
 Address
 PointToPointNetDevice::GetBroadcast (void) const
 {
+  NS_LOG_FUNCTION (this);
   return Mac48Address ("ff:ff:ff:ff:ff:ff");
 }
 
 bool
 PointToPointNetDevice::IsMulticast (void) const
 {
+  NS_LOG_FUNCTION (this);
   return true;
 }
 
 Address
 PointToPointNetDevice::GetMulticast (Ipv4Address multicastGroup) const
 {
+  NS_LOG_FUNCTION (this);
   return Mac48Address ("01:00:5e:00:00:00");
 }
 
@@ -455,12 +464,14 @@ PointToPointNetDevice::GetMulticast (Ipv6Address addr) const
 bool
 PointToPointNetDevice::IsPointToPoint (void) const
 {
+  NS_LOG_FUNCTION (this);
   return true;
 }
 
 bool
 PointToPointNetDevice::IsBridge (void) const
 {
+  NS_LOG_FUNCTION (this);
   return false;
 }
 
@@ -470,7 +481,7 @@ PointToPointNetDevice::Send (
   const Address &dest, 
   uint16_t protocolNumber)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << packet << dest << protocolNumber);
   NS_LOG_LOGIC ("p=" << packet << ", dest=" << &dest);
   NS_LOG_LOGIC ("UID is " << packet->GetUid ());
 
@@ -521,6 +532,7 @@ PointToPointNetDevice::SendFrom (Ptr<Packet> packet,
                                  const Address &dest, 
                                  uint16_t protocolNumber)
 {
+  NS_LOG_FUNCTION (this << packet << source << dest << protocolNumber);
   return false;
 }
 
@@ -533,12 +545,14 @@ PointToPointNetDevice::GetNode (void) const
 void
 PointToPointNetDevice::SetNode (Ptr<Node> node)
 {
+  NS_LOG_FUNCTION (this);
   m_node = node;
 }
 
 bool
 PointToPointNetDevice::NeedsArp (void) const
 {
+  NS_LOG_FUNCTION (this);
   return false;
 }
 
@@ -557,18 +571,21 @@ PointToPointNetDevice::SetPromiscReceiveCallback (NetDevice::PromiscReceiveCallb
 bool
 PointToPointNetDevice::SupportsSendFrom (void) const
 {
+  NS_LOG_FUNCTION (this);
   return false;
 }
 
 void
 PointToPointNetDevice::DoMpiReceive (Ptr<Packet> p)
 {
+  NS_LOG_FUNCTION (this << p);
   Receive (p);
 }
 
 Address 
 PointToPointNetDevice::GetRemote (void) const
 {
+  NS_LOG_FUNCTION (this);
   NS_ASSERT (m_channel->GetNDevices () == 2);
   for (uint32_t i = 0; i < m_channel->GetNDevices (); ++i)
     {
@@ -594,13 +611,14 @@ PointToPointNetDevice::SetMtu (uint16_t mtu)
 uint16_t
 PointToPointNetDevice::GetMtu (void) const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return m_mtu;
 }
 
 uint16_t
 PointToPointNetDevice::PppToEther (uint16_t proto)
 {
+  NS_LOG_FUNCTION_NOARGS();
   switch(proto)
     {
     case 0x0021: return 0x0800;   //IPv4
@@ -613,6 +631,7 @@ PointToPointNetDevice::PppToEther (uint16_t proto)
 uint16_t
 PointToPointNetDevice::EtherToPpp (uint16_t proto)
 {
+  NS_LOG_FUNCTION_NOARGS();
   switch(proto)
     {
     case 0x0800: return 0x0021;   //IPv4
