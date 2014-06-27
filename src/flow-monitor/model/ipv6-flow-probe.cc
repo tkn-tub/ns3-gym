@@ -254,17 +254,15 @@ Ipv6FlowProbe::SendOutgoingLogger (const Ipv6Header &ipHeader, Ptr<const Packet>
       // tag the packet with the flow id and packet id, so that the packet can be identified even
       // when Ipv6Header is not accessible at some non-IPv6 protocol layer
       Ipv6FlowProbeTag fTag (flowId, packetId, size);
-      ipPayload->AddPacketTag (fTag);
+      ipPayload->AddByteTag (fTag);
     }
 }
 
 void
 Ipv6FlowProbe::ForwardLogger (const Ipv6Header &ipHeader, Ptr<const Packet> ipPayload, uint32_t interface)
 {
-  // peek the tags that are added by Ipv6FlowProbe::SendOutgoingLogger ()
   Ipv6FlowProbeTag fTag;
-
-  bool found = ipPayload->PeekPacketTag (fTag);
+  bool found = ipPayload->FindFirstMatchingByteTag (fTag);
 
   if (found)
     {
@@ -280,11 +278,8 @@ Ipv6FlowProbe::ForwardLogger (const Ipv6Header &ipHeader, Ptr<const Packet> ipPa
 void
 Ipv6FlowProbe::ForwardUpLogger (const Ipv6Header &ipHeader, Ptr<const Packet> ipPayload, uint32_t interface)
 {
-  // remove the tags that are added by Ipv6FlowProbe::SendOutgoingLogger ()
   Ipv6FlowProbeTag fTag;
-
-  // ConstCast: see http://www.nsnam.org/bugzilla/show_bug.cgi?id=904
-  bool found = ConstCast<Packet> (ipPayload)->RemovePacketTag (fTag);
+  bool found = ipPayload->FindFirstMatchingByteTag (fTag);
 
   if (found)
     {
@@ -319,11 +314,8 @@ Ipv6FlowProbe::DropLogger (const Ipv6Header &ipHeader, Ptr<const Packet> ipPaylo
     }
 #endif
 
-  // remove the tags that are added by Ipv6FlowProbe::SendOutgoingLogger ()
   Ipv6FlowProbeTag fTag;
-
-  // ConstCast: see http://www.nsnam.org/bugzilla/show_bug.cgi?id=904
-  bool found = ConstCast<Packet> (ipPayload)->RemovePacketTag (fTag);
+  bool found = ipPayload->FindFirstMatchingByteTag (fTag);
 
   if (found)
     {
@@ -384,11 +376,9 @@ Ipv6FlowProbe::DropLogger (const Ipv6Header &ipHeader, Ptr<const Packet> ipPaylo
 void 
 Ipv6FlowProbe::QueueDropLogger (Ptr<const Packet> ipPayload)
 {
-  // remove the tags that are added by Ipv6FlowProbe::SendOutgoingLogger ()
   Ipv6FlowProbeTag fTag;
+  bool tagFound = ipPayload->FindFirstMatchingByteTag (fTag);
 
-  // ConstCast: see http://www.nsnam.org/bugzilla/show_bug.cgi?id=904
-  bool tagFound = ConstCast<Packet> (ipPayload)->RemovePacketTag (fTag);
   if (!tagFound)
     {
       return;
