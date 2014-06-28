@@ -11,7 +11,6 @@ def build (bld) :
 	module.includes = '.'
 	module.source = [
 			  'model/animation-interface.cc',
-			  'helper/animation-interface-helper.cc',
 		        ]
     	netanim_test = bld.create_ns3_module_test_library('netanim')
     	netanim_test.source = [
@@ -22,7 +21,6 @@ def build (bld) :
 	headers.module = 'netanim'
 	headers.source = [
 			  'model/animation-interface.h',
-			  'helper/animation-interface-helper.h',
   			 ]
 
 	if (bld.env['ENABLE_EXAMPLES']) :

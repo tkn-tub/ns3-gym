@@ -64,12 +64,6 @@ void modify ()
   pAnim->UpdateLinkDescription (1, 10, oss.str ());
   pAnim->UpdateLinkDescription (1, 11, oss.str ());
   
-  // After 5 seconds mark node 3 as invisible 
-  if (Simulator::Now ().GetSeconds () > 5)
-  {
-    pAnim->ShowNode (3, false);
-  }
-
   // Every update change the node description for node 2
   std::ostringstream node0Oss;
   node0Oss << "-----Node:" << Simulator::Now ().GetSeconds ();

@@ -25,6 +25,7 @@
 #include <string>
 #include <cstdio>
 #include <map>
+
 #include "ns3/ptr.h"
 #include "ns3/net-device.h"
 #include "ns3/node-container.h"
@@ -34,62 +35,22 @@
 #include "ns3/random-variable-stream.h"
 #include "ns3/simulator.h"
 #include "ns3/config.h"
-#include "ns3/animation-interface-helper.h"
 #include "ns3/mac48-address.h"
 #include "ns3/lte-ue-net-device.h"
 #include "ns3/lte-enb-net-device.h"
 #include "ns3/uan-phy-gen.h"
 #include "ns3/rectangle.h"
+#include "ns3/ipv4.h"
+#include "ns3/ipv4-l3-protocol.h"
 
 namespace ns3 {
 
 #define MAX_PKTS_PER_TRACE_FILE 100000
-struct Rgb;
+#define PURGE_INTERVAL 5
+#define NETANIM_VERSION "netanim-3.105"
+
+
 struct NodeSize;
-typedef struct 
-{
-  uint32_t fromNode;
-  uint32_t toNode;
-} P2pLinkNodeIdPair;
-
-typedef struct
-{
-  std::string fromNodeDescription;
-  std::string toNodeDescription;
-  std::string linkDescription;
-} LinkProperties;
-
-
-struct LinkPairCompare
-{
-  bool operator () (P2pLinkNodeIdPair first, P2pLinkNodeIdPair second) const
-    {
-      //Check if they are the same node pairs but flipped
-      if (  ((first.fromNode == second.fromNode) && (first.toNode == second.toNode)) ||
-            ((first.fromNode == second.toNode) && (first.toNode == second.fromNode)) )
-        {
-          return false;
-        }
-      std::ostringstream oss1;
-      oss1 << first.fromNode << first.toNode;
-      std::ostringstream oss2;
-      oss2 << second.fromNode << second.toNode;
-      return oss1.str () < oss2.str ();
-    }
-   
-};
-
-struct Ipv4RouteTrackElement {
-  std::string destination;
-  uint32_t fromNodeId;
-};
-
-
-typedef struct {
-  uint32_t nodeId;
-  std::string nextHop;
-  
-} Ipv4RoutePathElement;
 
 /**
  * \defgroup netanim Network Animation
@@ -112,16 +73,9 @@ public:
   /**
    * \brief Constructor
    * \param filename The Filename for the trace file used by the Animator
-   * \param enable3105 Enables 3.105 behavior. This flag will be made obsolete after
-   *        the transition period
-   * \param maxPktsPerFile The maximum number of packets per trace file.
-	    AnimationInterface will create trace files with the following 
-            filenames : filename, filename-1, filename-2..., filename-N
-	    where each file contains packet info for 'maxPktPerFile' number of packets
    *
    */
-  AnimationInterface (const std::string filename, bool enable3105 = true, 
-	uint64_t maxPktsPerFile = MAX_PKTS_PER_TRACE_FILE);
+  AnimationInterface (const std::string filename);
 
   /**
    * Counter Types 
@@ -133,10 +87,61 @@ public:
     } CounterType;
 
   /**
+   * \brief typedef for WriteCallBack used for listening to AnimationInterface
+   * write messages
+   * 
+   */
+  typedef void (*AnimWriteCallback) (const char * str);
+
+  /**
    * \brief Destructor for the animator interface.
    *
    */
   ~AnimationInterface ();
+
+  /**
+   * \brief Enable tracking of Ipv4 L3 Protocol Counters such as Tx, Rx, Drop
+   *
+   * \param startTime Start Time for capturing values
+   * \param stopTime Stop Time for capturing values
+   * \param pollInterval The periodic interval at which the counters are written to the trace file
+   *        Default: 1s
+   * \returns none
+   */
+  void EnableIpv4L3ProtocolCounters (Time startTime, Time stopTime, Time pollInterval = Seconds (1));
+
+  /**
+   * \brief Enable tracking of Queue Counters such as Enqueue, Dequeue, Queue Drops
+   *
+   * \param startTime Start Time for capturing values
+   * \param stopTime Stop Time for capturing values
+   * \param pollInterval The periodic interval at which the counters are written to the trace file
+   *        Default: 1s
+   * \returns none
+   */
+  void EnableQueueCounters (Time startTime, Time stopTime, Time pollInterval = Seconds (1));
+
+  /**
+   * \brief Enable tracking of Wifi Mac Counters such as Tx, TxDrop, Rx, RxDrop
+   *
+   * \param startTime Start Time for capturing values
+   * \param stopTime Stop Time for capturing values
+   * \param pollInterval The periodic interval at which the counters are written to the trace file
+   *        Default: 1s
+   * \returns none
+   */
+  void EnableWifiMacCounters (Time startTime, Time stopTime, Time pollInterval = Seconds (1));
+
+  /**
+   * \brief Enable tracking of Wifi Phy Counters such as TxDrop, RxDrop
+   *
+   * \param startTime Start Time for capturing values
+   * \param stopTime Stop Time for capturing values
+   * \param pollInterval The periodic interval at which the counters are written to the trace file
+   *        Default: 1s
+   * \returns none
+   */
+  void EnableWifiPhyCounters (Time startTime, Time stopTime, Time pollInterval = Seconds (1));
 
   /**
    * \brief Enable tracking of the Ipv4 routing table for all Nodes
@@ -167,6 +172,7 @@ public:
 
   /**
    * \brief Check if AnimationInterface is initialized
+   *
    * \returns true if AnimationInterface was already initialized
    *
    */
@@ -191,42 +197,40 @@ public:
   void SetStopTime (Time t);
 
   /**
+   * \brief Set Max packets per trace file
+   * \param maxPktsPerFile The maximum number of packets per trace file.
+	    AnimationInterface will create trace files with the following 
+            filenames : filename, filename-1, filename-2..., filename-N
+	    where each file contains packet info for 'maxPktsPerFile' number of packets
+   *
+   * \returns none
+   */
+  void SetMaxPktsPerTraceFile (uint64_t maxPktsPerFile);
+
+  /**
    * \brief Set mobility poll interval:WARNING: setting a low interval can 
    * cause slowness
    *
    * \param t Time interval between fetching mobility/position information
    * Default: 0.25s
    *
+   * \returns none
    */
   void SetMobilityPollInterval (Time t);
-
-  /**
-   * \brief Set random position if a Mobility Model does not exists for the node
-   *
-   * \param setRandPos True if a random position can be set for a node without a
-   * Mobililty model
-   *
-   */
-  void SetRandomPosition (bool setRandPos);
-
-  /**
-   * \brief typedef for WriteCallBack used for listening to AnimationInterface
-   * write messages
-   * 
-   */
-  typedef void (*AnimWriteCallback) (const char * str);
 
   /**
    * \brief Set a callback function to listen to AnimationInterface write events
    *
    * \param cb Address of callback function
    *
+   * \returns none
    */
   void SetAnimWriteCallback (AnimWriteCallback cb);
 
   /**
    * \brief Reset the write callback function
    *
+   * \returns none
    */
   void ResetAnimWriteCallback ();
 
@@ -237,22 +241,16 @@ public:
    * \param y Y co-ordinate of the node
    * \param z Z co-ordinate of the node
    *
+   * \returns none
    */
   static void SetConstantPosition (Ptr <Node> n, double x, double y, double z=0);
-
-  /**
-   * \brief Helper function to set a brief description for a given node
-   * \param n Ptr to the node
-   * \param descr A string to briefly describe the node
-   *
-   */
-  static void SetNodeDescription (Ptr <Node> n, std::string descr);
 
   /**
    * \brief Helper function to update the description for a given node
    * \param n Ptr to the node
    * \param descr A string to briefly describe the node
    *
+   * \returns none
    */
   void UpdateNodeDescription (Ptr <Node> n, std::string descr);
 
@@ -261,56 +259,26 @@ public:
    * \param nodeId Id of the node
    * \param descr A string to briefly describe the node
    *
+   * \returns none
    */
   void UpdateNodeDescription (uint32_t nodeId, std::string descr);
-
- /**
-  * \brief Helper function to show/hide a node
-  * \param nodeId Id of the node
-  * \param show Set to true to show node, set to false to hide
-  *
-  */
-  void ShowNode (uint32_t nodeId, bool show = true);
-
- /**
-  * \brief Helper function to show/hide a node
-  * \param n Ptr to the node
-  * \param show Set to true to show node, set to false to hide
-  *
-  */
-  void ShowNode (Ptr <Node> n, bool show = true);
-
-  /**
-   * \brief Helper function to set a brief description for nodes in a Node Container
-   * \param nc NodeContainer containing the nodes
-   * \param descr A string to briefly describe the nodes
-   *
-   */
-  static void SetNodeDescription (NodeContainer nc, std::string descr);
-
-  /**
-   * \brief Helper function to set the node color
-   * \param n Ptr to the node
-   * \param r Red component value (0-255)
-   * \param g Green component value (0-255)
-   * \param b Blue component value (0-255)
-   *
-   */
-  static void SetNodeColor (Ptr <Node> n, uint8_t r, uint8_t g, uint8_t b);
 
   /**
    * \brief Helper function to update the image of a node
    * \param nodeId Id of the node
    * \param resourceId Id of the image resource that was previously added
    *
+   * \returns none
    */
   void UpdateNodeImage (uint32_t nodeId, uint32_t resourceId);
+
   /**
    * \brief Helper function to update the size of a node
    * \param nodeId Id of the node
    * \param width Width of the node
    * \param height Height of the node
    *
+   * \returns none
    */
   void UpdateNodeSize (uint32_t nodeId, double width, double height); 
 
@@ -321,6 +289,7 @@ public:
    * \param g Green component value (0-255)
    * \param b Blue component value (0-255)
    *
+   * \returns none
    */
   void UpdateNodeColor (Ptr <Node> n, uint8_t r, uint8_t g, uint8_t b);
 
@@ -331,20 +300,9 @@ public:
    * \param g Green component value (0-255)
    * \param b Blue component value (0-255)
    *
+   * \returns none
    */
   void UpdateNodeColor (uint32_t nodeId, uint8_t r, uint8_t g, uint8_t b);
-
-
-  /**
-   * \brief Helper function to set the color of nodes in a container
-   * \param nc A Node Container of Nodes 
-   * \param r Red component value (0-255)
-   * \param g Green component value (0-255)
-   * \param b Blue component value (0-255)
-   *
-   */
-  static void SetNodeColor (NodeContainer nc, uint8_t r, uint8_t g, uint8_t b);
-
 
   /**
    * \brief Helper function to update a node's counter referenced by the nodeCounterId
@@ -352,6 +310,7 @@ public:
    * \param nodeId Node Id of the node
    * \param counter Current value of the counter
    *
+   * \returns none
    */
   void UpdateNodeCounter (uint32_t nodeCounterId, uint32_t nodeId, double counter);
 
@@ -364,37 +323,10 @@ public:
    * \param scaleY Y scale of the image
    * \param opacity Opacity of the background: A value between 0.0 and 1.0. 0.0 is transparent,
    *        1.0 is opaque
+   *
+   * \returns none
    */
   void SetBackgroundImage (std::string fileName, double x, double y, double scaleX, double scaleY, double opacity); 
-
-  /**
-   * \brief Helper function to set the description for a link
-   * \param fromNode Node Id of the "from Node" of the p2p link
-   * \param toNode Node Id of the "to Node" of the p2p link
-   * \param linkDescription Description of the link such as link bandwidth
-   * \param fromNodeDescription Description at the "from Node" end such as IP address
-   * \param toNodeDescription Description at the "to Node" end such as Ip address
-   *
-   */
-  static void SetLinkDescription (uint32_t fromNode, uint32_t toNode, 
-                                  std::string linkDescription,
-                                  std::string fromNodeDescription = "",
-                                  std::string toNodeDescription = "");
-
-  /**
-   * \brief Helper function to set the description for a link
-   * \param fromNode Ptr to the "from Node" of the p2p link
-   * \param toNode Ptr the "to Node" of the p2p link
-   * \param linkDescription Description of the link such as link bandwidth
-   * \param fromNodeDescription Description at the "from Node" end such as IP address
-   * \param toNodeDescription Description at the "to Node" end such as Ip address
-   *
-   */
-  static void SetLinkDescription (Ptr <Node> fromNode, Ptr <Node> toNode,
-                                  std::string linkDescription,
-                                  std::string fromNodeDescription = "",
-                                  std::string toNodeDescription = "");
-
 
   /**
    * \brief Helper function to update the description for a link
@@ -402,6 +334,7 @@ public:
    * \param toNode Node Id of the "to Node" of the p2p link
    * \param linkDescription Description of the link such as link bandwidth
    *
+   * \returns none
    */
   void UpdateLinkDescription (uint32_t fromNode, uint32_t toNode,
                               std::string linkDescription);
@@ -412,6 +345,7 @@ public:
    * \param toNode Ptr to the "to Node" of the p2p link
    * \param linkDescription Description of the link such as link bandwidth
    *
+   * \returns none
    */
   void UpdateLinkDescription (Ptr <Node> fromNode, Ptr <Node> toNode,
                               std::string linkDescription);
@@ -427,14 +361,15 @@ public:
 
   /**
    * \brief Is AnimationInterface started
-   * \returns true if AnimationInterface was started
    *
+   * \returns true if AnimationInterface was started
    */
   bool IsStarted (void);
 
   /**
    * \brief Do not trace packets. This helps reduce the trace file size if AnimationInterface is solely
    *        used for tracking mobility, routing paths and counters
+   * \returns none
    */
   void SkipPacketTracing ();
 
@@ -443,6 +378,8 @@ public:
    * \brief Enable Packet metadata
    * \param enable if true enables writing the packet metadata to the XML trace file
    *        if false disables writing the packet metadata
+   *
+   * \returns none
    */
   void EnablePacketMetadata (bool enable = true);
 
@@ -451,7 +388,6 @@ public:
    * \brief Get trace file packet count (This used only for testing)
    *
    * returns Number of packets recorded in the current trace file
-   *
    */
   uint64_t GetTracePktCount ();
 
@@ -471,7 +407,6 @@ public:
    * \param resourcePath Absolute Path to an image/resource
    * 
    * returns a number identifying the resource
-   *
    */
   uint32_t AddResource (std::string resourcePath);
 
@@ -480,30 +415,153 @@ public:
    * \brief Get node's energy fraction (This used only for testing)
    *
    * returns current node's remaining energy (between [0, 1])
-   *
    */
   double GetNodeEnergyFraction (Ptr <const Node> node) const;
 
- /**
-  * Assign a fixed random variable stream number to the random variables
-  * used by this model.  Return the number of streams (possibly zero) that
-  * have been assigned.
-  *
-  * \param stream first stream index to use
-  * \return the number of stream indices assigned by this model
-  */
-  int64_t AssignStreams (int64_t stream);
-
 private:
+
+
+  // ##### typedef #####
+  class AnimRxInfo
+  {
+  public:
+    AnimRxInfo () {}
+    AnimRxInfo (const Time& fbRx, Ptr <const NetDevice> nd ,double rxRange)
+      : m_fbRx (fbRx.GetSeconds ()), m_lbRx (0), m_rxnd (nd), rxRange (rxRange), m_PhyRxComplete (false) {}
+    double m_fbRx;            
+    double m_lbRx;             
+    Ptr <const NetDevice> m_rxnd;
+    double rxRange;
+    bool IsPhyRxComplete ();
+    void SetPhyRxComplete ();
+  private:
+    bool m_PhyRxComplete;
+  };
+
+  class AnimPacketInfo
+  
+  {
+  public:
+    AnimPacketInfo ();
+    AnimPacketInfo (const AnimPacketInfo & pInfo);
+    AnimPacketInfo(Ptr <const NetDevice> tx_nd, const Time& fbTx, const Time& lbTx,Vector txLoc, uint32_t txNodeId = 0);
+    Ptr <const NetDevice> m_txnd;
+    uint32_t m_txNodeId;
+    double   m_fbTx;     
+    double   m_lbTx;     
+    Vector   m_txLoc;
+    std::map<uint32_t,AnimRxInfo> m_rx;
+    void ProcessRxBegin (Ptr <const NetDevice> nd, const Time& fbRx);
+    bool ProcessRxEnd (Ptr <const NetDevice> nd, const Time& fbRx, Vector rxLoc);
+    void ProcessRxDrop (Ptr <const NetDevice> nd);
+    AnimRxInfo GetRxInfo (Ptr <const NetDevice> nd);
+    void RemoveRxInfo (Ptr <const NetDevice> nd);
+    double firstlastbitDelta;
+  
+  };
+
+  typedef struct
+    {
+      uint8_t r;
+      uint8_t g;
+      uint8_t b;
+    } Rgb;
+
+  typedef struct
+  {
+    uint32_t fromNode;
+    uint32_t toNode;
+  } P2pLinkNodeIdPair;
+
+  typedef struct
+  {
+    std::string fromNodeDescription;
+    std::string toNodeDescription;
+    std::string linkDescription;
+  } LinkProperties;
+
+  struct LinkPairCompare
+  {
+    bool operator () (P2pLinkNodeIdPair first, P2pLinkNodeIdPair second) const
+      {
+        //Check if they are the same node pairs but flipped
+        if (  ((first.fromNode == second.fromNode) && (first.toNode == second.toNode)) ||
+              ((first.fromNode == second.toNode) && (first.toNode == second.fromNode)) )
+          {
+            return false;
+          }
+        std::ostringstream oss1;
+        oss1 << first.fromNode << first.toNode;
+        std::ostringstream oss2;
+        oss2 << second.fromNode << second.toNode;
+        return oss1.str () < oss2.str ();
+      }
+
+  };
+
+  typedef struct 
+    {
+      std::string destination;
+      uint32_t fromNodeId;
+    } Ipv4RouteTrackElement;
+
+  typedef struct 
+    {
+      uint32_t nodeId;
+      std::string nextHop;
+    } Ipv4RoutePathElement;
+
+  typedef enum
+    {
+      UAN,
+      LTE,
+      WIFI,
+      WIMAX,
+      CSMA
+    } ProtocolType;
+
+  typedef struct
+    {
+      double width;
+      double height;
+    } NodeSize;
+  typedef std::map <P2pLinkNodeIdPair, LinkProperties, LinkPairCompare> LinkPropertiesMap;
+  typedef std::map <uint32_t, std::string> NodeDescriptionsMap;
+  typedef std::map <uint32_t, Rgb> NodeColorsMap;
+  typedef std::map<uint64_t, AnimPacketInfo> AnimUidPacketInfoMap;
+  typedef std::map <uint32_t, double> EnergyFractionMap;
+  typedef std::vector <Ipv4RoutePathElement> Ipv4RoutePathElements;
+
+
+  // Node Counters
+  typedef std::map <uint32_t, uint64_t> NodeCounterMap64;
+
+
+  class AnimXmlElement
+  {
+    public:
+    AnimXmlElement (std::string tagName);
+    template <typename T>
+    void AddAttribute (std::string attribute, T value);
+    void Close ();
+    void CloseTag ();
+    void AddLineBreak ();
+    void Add (AnimXmlElement e);
+    std::string GetElementString ();
+  private:
+    std::string m_tagName;
+    std::string m_elementString;
+
+  };
+
+
+  // ##### State #####
+
   FILE * m_f; // File handle for output (0 if none)
   FILE * m_routingF; // File handle for routing table output (0 if None);
-  // Write specified amount of data to the specified handle
-  int WriteN (const char*, uint32_t, FILE * f);
   Time m_mobilityPollInterval;
   std::string m_outputFileName;
-  bool m_outputFileSet;
-  uint64_t gAnimUid ;    // Packet unique identifier used by Animtion
-  bool m_randomPosition;
+  uint64_t gAnimUid ;    // Packet unique identifier used by AnimationInterface
   AnimWriteCallback m_writeCallback;
   bool m_started;
   bool m_enablePacketMetadata; 
@@ -515,53 +573,136 @@ private:
   std::string m_routingFileName;
   Time m_routingPollInterval;
   NodeContainer m_routingNc;
+  Time m_ipv4L3ProtocolCountersStopTime;
+  Time m_ipv4L3ProtocolCountersPollInterval;
+  Time m_queueCountersStopTime;
+  Time m_queueCountersPollInterval;
+  Time m_wifiMacCountersStopTime;
+  Time m_wifiMacCountersPollInterval;
+  Time m_wifiPhyCountersStopTime;
+  Time m_wifiPhyCountersPollInterval;
+  static Rectangle * userBoundary;
+  bool m_trackPackets;
+
+  // Counter ID
+  uint32_t m_remainingEnergyCounterId;
   
+  uint32_t m_ipv4L3ProtocolTxCounterId;
+  uint32_t m_ipv4L3ProtocolRxCounterId;
+  uint32_t m_ipv4L3ProtocolDropCounterId;
+
+  uint32_t m_queueEnqueueCounterId;
+  uint32_t m_queueDequeueCounterId;
+  uint32_t m_queueDropCounterId;
+
+  uint32_t m_wifiMacTxCounterId;
+  uint32_t m_wifiMacTxDropCounterId;
+  uint32_t m_wifiMacRxCounterId;
+  uint32_t m_wifiMacRxDropCounterId;
+ 
+  uint32_t m_wifiPhyTxDropCounterId;
+  uint32_t m_wifiPhyRxDropCounterId;
+  
+  AnimUidPacketInfoMap m_pendingWifiPackets;
+  AnimUidPacketInfoMap m_pendingWimaxPackets;
+  AnimUidPacketInfoMap m_pendingLtePackets;
+  AnimUidPacketInfoMap m_pendingCsmaPackets;
+  AnimUidPacketInfoMap m_pendingUanPackets;
+  std::map<uint32_t, Vector> m_nodeLocation;
+  std::map <std::string, uint32_t> m_macToNodeIdMap;
+  std::map <std::string, uint32_t> m_ipv4ToNodeIdMap;
+  NodeColorsMap m_nodeColors;
+  NodeDescriptionsMap m_nodeDescriptions;
+  LinkPropertiesMap m_linkProperties;
+  EnergyFractionMap m_nodeEnergyFraction;
+  uint64_t m_currentPktCount;
+  std::vector <Ipv4RouteTrackElement> m_ipv4RouteTrackElements;
+  std::map <uint32_t, NodeSize> m_nodeSizes;
+  std::vector <std::string> m_resources;
+  std::vector <std::string> m_nodeCounters;
+
+  NodeCounterMap64 m_nodeIpv4Drop;
+  NodeCounterMap64 m_nodeIpv4Tx;
+  NodeCounterMap64 m_nodeIpv4Rx;
+  NodeCounterMap64 m_nodeQueueEnqueue;
+  NodeCounterMap64 m_nodeQueueDequeue;
+  NodeCounterMap64 m_nodeQueueDrop;
+  NodeCounterMap64 m_nodeWifiMacTx;
+  NodeCounterMap64 m_nodeWifiMacTxDrop;
+  NodeCounterMap64 m_nodeWifiMacRx;
+  NodeCounterMap64 m_nodeWifiMacRxDrop;
+  NodeCounterMap64 m_nodeWifiPhyTxDrop;
+  NodeCounterMap64 m_nodeWifiPhyRxDrop;
+
+  const std::vector<std::string> GetElementsFromContext (const std::string& context) const;
+  Ptr <Node> GetNodeFromContext (const std::string& context) const;
+  Ptr <NetDevice> GetNetDeviceFromContext (std::string context);
+  
+  // ##### General #####
+  void StartAnimation (bool restart = false);
+  void SetOutputFile (const std::string& fn, bool routing = false);
+  void StopAnimation (bool onlyAnimation = false);
+  std::string CounterTypeToString (CounterType counterType);
+  std::string GetPacketMetadata (Ptr<const Packet> p);
+  void AddByteTag (uint64_t animUid, Ptr<const Packet> p);
+  int WriteN (const char*, uint32_t, FILE * f);
+  int WriteN (const std::string&, FILE * f);
+  std::string GetMacAddress (Ptr <NetDevice> nd);
+  std::string GetIpv4Address (Ptr <NetDevice> nd);
+  std::string GetNetAnimVersion ();
+  void MobilityAutoCheck ();
+  bool IsPacketPending (uint64_t animUid, ProtocolType protocolType);
+  void PurgePendingPackets (ProtocolType protocolType);
+  AnimUidPacketInfoMap * ProtocolTypeToPendingPackets (ProtocolType protocolType);
+  void AddPendingPacket (ProtocolType protocolType, uint64_t animUid, AnimPacketInfo pktInfo);
+  uint64_t GetAnimUidFromPacket (Ptr <const Packet>);
+  void AddToIpv4AddressNodeIdTable (std::string, uint32_t);
+  bool IsInTimeWindow ();
+  void CheckMaxPktsPerTraceFile ();
+
+  void TrackWifiPhyCounters ();
+  void TrackWifiMacCounters ();
+  void TrackIpv4L3ProtocolCounters ();
+  void TrackQueueCounters ();
+  // ##### Routing #####
   void TrackIpv4Route ();
   void TrackIpv4RoutePaths ();
   std::string GetIpv4RoutingTable (Ptr <Node> n);
+  void RecursiveIpv4RoutePathSearch (std::string fromIpv4, std::string toIpv4, Ipv4RoutePathElements &);
+  void WriteRoutePath (uint32_t nodeId, std::string destination, Ipv4RoutePathElements rpElements);
 
-  /**
-   * \brief Specify that animation commands are to be written
-   * to the specified output file.
-   *
-   * This call is used to write the animation information to a text
-   * file that can later be used as input to the network animator tool.
-   *
-   * \param fn The name of the output file.
-   * \returns true if successful open.
-   *
-   */
-  bool SetOutputFile (const std::string& fn);
-  bool SetRoutingOutputFile (const std::string& fn);
 
-  /**
-   * \brief Specify that animation commands are to be written
-   * in XML format.
-   *
-   * \returns none
-   *
-   */
-  void SetXMLOutput ();
+  // ##### Trace #####
+  void EnqueueTrace (std::string context,
+                     Ptr<const Packet>);
+  void DequeueTrace (std::string context,
+                     Ptr<const Packet>);
+  void QueueDropTrace (std::string context,
+                     Ptr<const Packet>);
+  void Ipv4TxTrace (std::string context,
+                    Ptr<const Packet>, Ptr<Ipv4>,  
+                    uint32_t);
+  void Ipv4RxTrace (std::string context,
+                    Ptr<const Packet>, Ptr<Ipv4>,
+                    uint32_t);
+  void Ipv4DropTrace (std::string context,
+                      const Ipv4Header &, 
+                      Ptr<const Packet>, 
+                      Ipv4L3Protocol::DropReason, Ptr<Ipv4>, 
+                      uint32_t);
 
-  /**
-   * \brief Writes the topology information and sets up the appropriate
-   *  animation packet tx callback
-   *
-   * Writes the topology information to the appropriate output, depending
-   * on prior calls to SetOutputFile, SetServerPort, or SetInternalAnimation.
-   * Then creates the callbacks needed for the animator to start processing
-   * packets.
-   *
-   * \param restart True when restarting animation
-   */
-  void StartAnimation (bool restart = false);
-
-  /**
-   * \brief Closes the interface to the animator.
-   *
-   */
-  void StopAnimation (bool onlyAnimation = false);
-
+  void WifiMacTxTrace (std::string context,
+                       Ptr<const Packet>);
+  void WifiMacTxDropTrace (std::string context,
+                           Ptr<const Packet>);
+  void WifiMacRxTrace (std::string context,
+                       Ptr<const Packet>);
+  void WifiMacRxDropTrace (std::string context,
+                           Ptr<const Packet>);
+  void WifiPhyTxDropTrace (std::string context,
+                       Ptr<const Packet>);
+  void WifiPhyRxDropTrace (std::string context,
+                       Ptr<const Packet>);
   void DevTxTrace (std::string context,
                    Ptr<const Packet> p,
                    Ptr<NetDevice> tx,
@@ -570,18 +711,8 @@ private:
                    Time rxTime);
   void WifiPhyTxBeginTrace (std::string context,
                             Ptr<const Packet> p);
-  void WifiPhyTxEndTrace (std::string context,
-                          Ptr<const Packet> p);
-  void WifiPhyTxDropTrace (std::string context,
-                           Ptr<const Packet> p);
   void WifiPhyRxBeginTrace (std::string context,
                             Ptr<const Packet> p);
-  void WifiPhyRxEndTrace (std::string context,
-                          Ptr<const Packet> p);
-  void WifiMacRxTrace (std::string context,
-                       Ptr<const Packet> p);
-  void WifiPhyRxDropTrace (std::string context,
-                           Ptr<const Packet> p);
   void WimaxTxTrace (std::string context,
                      Ptr<const Packet> p,
 		     const Mac48Address &);
@@ -596,187 +727,81 @@ private:
                           Ptr<const Packet> p);
   void CsmaMacRxTrace (std::string context,
                        Ptr<const Packet> p);
-
   void LteTxTrace (std::string context,
                       Ptr<const Packet> p,
                       const Mac48Address &);
-
   void LteRxTrace (std::string context,
                       Ptr<const Packet> p,
                       const Mac48Address &);
-
   void LteSpectrumPhyTxStart (std::string context,
                       Ptr<const PacketBurst> pb);
   void LteSpectrumPhyRxStart (std::string context,
                       Ptr<const PacketBurst> pb);
-
   void UanPhyGenTxTrace (std::string context,
                          Ptr<const Packet>);
   void UanPhyGenRxTrace (std::string context,
                          Ptr<const Packet>);
-
   void RemainingEnergyTrace (std::string context, double previousEnergy, double currentEnergy);
 
-  void MobilityCourseChangeTrace (Ptr <const MobilityModel> mob);
-
-  // Write a string to the specified handle;
-  int  WriteN (const std::string&, FILE * f);
-
-  void OutputWirelessPacket (Ptr<const Packet> p, AnimPacketInfo& pktInfo, AnimRxInfo pktrxInfo);
-  void OutputCsmaPacket (Ptr<const Packet> p, AnimPacketInfo& pktInfo, AnimRxInfo pktrxInfo);
-  void MobilityAutoCheck ();
   
-
-  std::map<uint64_t, AnimPacketInfo> m_pendingWifiPackets;
-  void AddPendingWifiPacket (uint64_t AnimUid, AnimPacketInfo&);
-  bool WifiPacketIsPending (uint64_t AnimUid); 
-
-  std::map<uint64_t, AnimPacketInfo> m_pendingWimaxPackets;
-  void AddPendingWimaxPacket (uint64_t AnimUid, AnimPacketInfo&);
-  bool WimaxPacketIsPending (uint64_t AnimUid); 
-
-  std::map<uint64_t, AnimPacketInfo> m_pendingLtePackets;
-  void AddPendingLtePacket (uint64_t AnimUid, AnimPacketInfo&);
-  bool LtePacketIsPending (uint64_t AnimUid);
-
-  std::map<uint64_t, AnimPacketInfo> m_pendingCsmaPackets;
-  void AddPendingCsmaPacket (uint64_t AnimUid, AnimPacketInfo&);
-  bool CsmaPacketIsPending (uint64_t AnimUid);
-
-  std::map<uint64_t, AnimPacketInfo> m_pendingUanPackets;
-  void AddPendingUanPacket (uint64_t AnimUid, AnimPacketInfo&);
-  bool UanPacketIsPending (uint64_t AnimUid);
-
-  uint64_t GetAnimUidFromPacket (Ptr <const Packet>);
-
-  std::map<uint32_t, Vector> m_nodeLocation;
-  Vector GetPosition (Ptr <Node> n);
-  Vector UpdatePosition (Ptr <Node> n);
-  Vector UpdatePosition (Ptr <Node> n, Vector v);
-  void WriteDummyPacket ();
-  bool NodeHasMoved (Ptr <Node> n, Vector newLocation);
-
-  void PurgePendingWifi ();
-  void PurgePendingWimax ();
-  void PurgePendingLte ();
-  void PurgePendingCsma ();
-
-  // Recalculate topology bounds
-  void RecalcTopoBounds (Vector v);
-  std::vector < Ptr <Node> > RecalcTopoBounds ();
-
   void ConnectCallbacks ();
   void ConnectLte ();
   void ConnectLteUe (Ptr <Node> n, Ptr <LteUeNetDevice> nd, uint32_t devIndex);
   void ConnectLteEnb (Ptr <Node> n, Ptr <LteEnbNetDevice> nd, uint32_t devIndex);
 
-  
-  std::map <std::string, uint32_t> m_macToNodeIdMap;
-  std::map <std::string, uint32_t> m_ipv4ToNodeIdMap;
-  void AddToIpv4AddressNodeIdTable (std::string, uint32_t);
-  std::vector <Ipv4RouteTrackElement> m_ipv4RouteTrackElements;
-  typedef std::vector <Ipv4RoutePathElement> Ipv4RoutePathElements;
-  void RecursiveIpv4RoutePathSearch (std::string fromIpv4, std::string toIpv4, Ipv4RoutePathElements &);
-  void WriteRoutePath (uint32_t nodeId, std::string destination, Ipv4RoutePathElements rpElements);
-  bool IsInTimeWindow ();
 
-  // Path helper
-  const std::vector<std::string> GetElementsFromContext (const std::string& context) const;
-  Ptr <Node> GetNodeFromContext (const std::string& context) const;
-  Ptr <NetDevice> GetNetDeviceFromContext (std::string context);
+  // ##### Mobility #####
+  Vector GetPosition (Ptr <Node> n);
+  Vector UpdatePosition (Ptr <Node> n);
+  Vector UpdatePosition (Ptr <Node> n, Vector v);
+  bool NodeHasMoved (Ptr <Node> n, Vector newLocation);
+  std::vector < Ptr <Node> > GetMovedNodes ();
+  void MobilityCourseChangeTrace (Ptr <const MobilityModel> mob);
 
-  typedef std::map <uint32_t, double> EnergyFractionMap;
 
-  static std::map <uint32_t, Rgb> nodeColors;
-  static std::map <uint32_t, std::string> nodeDescriptions;
-  static std::map <P2pLinkNodeIdPair, LinkProperties, LinkPairCompare> linkProperties;
-  EnergyFractionMap m_nodeEnergyFraction;
-  uint64_t m_currentPktCount;
+  // ##### XML Helpers ##### 
 
-  std::map <uint32_t, NodeSize> m_nodeSizes;
-  std::vector <std::string> m_resources;
-  std::vector <std::string> m_nodeCounters;
-  void StartNewTraceFile ();
-
-  std::string GetMacAddress (Ptr <NetDevice> nd);
-  std::string GetIpv4Address (Ptr <NetDevice> nd);
   void WriteNonP2pLinkProperties (uint32_t id, std::string ipv4Address, std::string channelType);
-
   void WriteNodeUpdate (uint32_t nodeId);
+  void OutputWirelessPacketTxInfo (Ptr<const Packet> p, AnimPacketInfo& pktInfo, uint64_t animUid);
+  void OutputWirelessPacketRxInfo (Ptr<const Packet> p, AnimRxInfo pktrxInfo, uint64_t animUid);
+  void OutputCsmaPacket (Ptr<const Packet> p, AnimPacketInfo& pktInfo, AnimRxInfo pktrxInfo);
+  void WriteLinkProperties ();
+  void WriteNodes ();
+  void WriteNodeColors ();
+  void WriteNodeSizes ();
+  void WriteNodeEnergies ();
+  void WriteXmlAnim (bool routing = false);
+  void WriteXmlUpdateNodePosition (uint32_t nodeId, double x, double y);
+  void WriteXmlUpdateNodeColor (uint32_t nodeId, uint8_t r, uint8_t g, uint8_t b);
+  void WriteXmlUpdateNodeDescription (uint32_t nodeId);
+  void WriteXmlUpdateNodeSize (uint32_t nodeId, double width, double height);
+  void WriteXmlAddResource (uint32_t resourceId, std::string resourcePath);
+  void WriteXmlAddNodeCounter (uint32_t counterId, std::string counterName, CounterType counterType);
+  void WriteXmlUpdateNodeImage (uint32_t nodeId, uint32_t resourceId);
+  void WriteXmlUpdateNodeCounter (uint32_t counterId, uint32_t nodeId, double value);
+  void WriteXmlNode (uint32_t id, double locX, double locY);
+  void WriteXmlLink (uint32_t fromId, uint32_t toLp, uint32_t toId);
+  void WriteXmlUpdateLink (uint32_t fromId, uint32_t toId, std::string);
+  void WriteXmlP (std::string pktType, 
+                                 uint32_t fId, 
+                                 double fbTx, 
+                                 double lbTx, 
+                                 uint32_t tId, 
+                                 double fbRx, 
+                                 double lbRx,
+                                 std::string metaInfo = ""); 
+  void WriteXmlP (uint64_t animUid, std::string pktType, uint32_t fId, double fbTx, double lbTx);
+  void WriteXmlPRef (uint64_t animUid, uint32_t fId, double fbTx, double lbTx, std::string metaInfo = "");
+  void WriteXmlClose (std::string name, bool routing = false);
+  void WriteXmlNonP2pLinkProperties (uint32_t id, std::string ipv4Address, std::string channelType);
+  void WriteXmlRouting (uint32_t id, std::string routingInfo);
+  void WriteXmlRp (uint32_t nodeId, std::string destination, Ipv4RoutePathElements rpElements);
+  void WriteXmlUpdateBackground (std::string fileName, double x, double y, double scaleX, double scaleY, double opacity);
 
-  std::string GetNetAnimVersion ();
-
-  // XML helpers
-  std::string GetPreamble (void);
-  std::string CounterTypeToString (CounterType counterType);
-  // Topology element dimensions
-  double m_topoMinX;
-  double m_topoMinY;
-  double m_topoMaxX;
-  double m_topoMaxY;
-
-  bool m_enable3105;
-  bool m_trackPackets;
-  uint32_t m_remainingEnergyCounterId;
-  std::string GetPacketMetadata (Ptr<const Packet> p);
-
-  std::string GetXMLOpen_anim (uint32_t lp);
-  std::string GetXMLOpenCloseUpdateNodePosition (uint32_t nodeId, double x, double y);
-  std::string GetXMLOpenCloseUpdateNodeColor (uint32_t nodeId, uint8_t r, uint8_t g, uint8_t b);
-  std::string GetXMLOpenCloseUpdateNodeDescription (uint32_t nodeId);
-  std::string GetXMLOpenCloseUpdateNodeSize (uint32_t nodeId, double width, double height);
-  std::string GetXMLOpenCloseAddResource (uint32_t resourceId, std::string resourcePath);
-  std::string GetXMLOpenCloseAddNodeCounter (uint32_t counterId, std::string counterName, CounterType counterType);
-  std::string GetXMLOpenCloseUpdateNodeImage (uint32_t nodeId, uint32_t resourceId);
-  std::string GetXMLOpenCloseUpdateNodeCounter (uint32_t counterId, uint32_t nodeId, double value);
-  std::string GetXMLOpen_topology (double minX, double minY, double maxX, double maxY);
-  std::string GetXMLOpenClose_node (uint32_t lp, uint32_t id, double locX, double locY);
-  std::string GetXMLOpenClose_node (uint32_t lp, uint32_t id, double locX, double locY, struct Rgb rgb);
-  std::string GetXMLOpenClose_nodeupdate (uint32_t id, bool visible = true);
-  std::string GetXMLOpenClose_link (uint32_t fromLp, uint32_t fromId, uint32_t toLp, uint32_t toId);
-  std::string GetXMLOpenClose_linkupdate (uint32_t fromId, uint32_t toId, std::string);
-  std::string GetXMLOpen_packet (uint32_t fromLp, uint32_t fromId, double fbTx, double lbTx, std::string auxInfo = "");
-  std::string GetXMLOpenClose_p (std::string pktType, uint32_t fId, double fbTx, double lbTx, uint32_t tId, double fbRx, double lbRx,
-                                 std::string metaInfo = "", std::string auxInfo = "");
-  std::string GetXMLOpenClose_rx (uint32_t toLp, uint32_t toId, double fbRx, double lbRx);
-  std::string GetXMLOpen_wpacket (uint32_t fromLp, uint32_t fromId, double fbTx, double lbTx, double range);
-  std::string GetXMLClose (std::string name) {return "</" + name + ">\n"; }
-  std::string GetXMLOpenClose_meta (std::string metaInfo);
-  std::string GetXMLOpenClose_NonP2pLinkProperties (uint32_t id, std::string ipv4Address, std::string channelType);
-  std::string GetXMLOpenClose_routing (uint32_t id, std::string routingInfo);
-  std::string GetXMLOpenClose_rp (uint32_t nodeId, std::string destination, Ipv4RoutePathElements rpElements);
-  std::string GetXMLOpenCloseUpdateBackground (std::string fileName, double x, double y, double scaleX, double scaleY, double opacity);
-
-  void AppendXMLNodeDescription (std::ostream& ostream, uint32_t id) const;
-  void AppendXMLNodeColor (std::ostream& ostream, const Rgb& color) const;
-  void AppendXMLRemainingEnergy (std::ostream& ostream, uint32_t id) const;
-
-  /// Provides uniform random variables.
-  Ptr<UniformRandomVariable> m_uniformRandomVariable;  
 };
 
-/**
- * \ingroup netanim
- * \brief A structure to store red, blue and green components for entities such as nodes
- *
- */
-struct Rgb 
-{
-  uint8_t r;
-  uint8_t g;
-  uint8_t b;
-};
 
-/**
- * \ingroup netanim
- * \brief A structure to store the width and height of a node` 
- *
- */
-struct NodeSize 
-{
-  double width;
-  double height;
-};
 
 
 /**
@@ -853,6 +878,8 @@ public:
 private:
   uint64_t m_AnimUid;
 };
+
+
 
 }
 #endif
