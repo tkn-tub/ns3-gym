@@ -4,7 +4,7 @@ def build(bld):
     obj = bld.create_ns3_program('socket-bound-static-routing', ['network', 'csma', 'point-to-point', 'internet'])
     obj.source = 'socket-bound-static-routing.cc'
 
-    obj = bld.create_ns3_program('socket-bound-tcp-static-routing', ['network', 'csma', 'point-to-point', 'internet'])
+    obj = bld.create_ns3_program('socket-bound-tcp-static-routing', ['network', 'csma', 'point-to-point', 'internet', 'applications'])
     obj.source = 'socket-bound-tcp-static-routing.cc'
 
     obj = bld.create_ns3_program('socket-options-ipv4', ['network', 'csma', 'point-to-point', 'internet'])

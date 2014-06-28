@@ -11,5 +11,5 @@ def build(bld):
         obj = bld.create_ns3_program('tap-wifi-virtual-machine', ['csma', 'tap-bridge', 'internet', 'wifi', 'mobility'])
         obj.source = 'tap-wifi-virtual-machine.cc'
         bld.register_ns3_script('tap-wifi-virtual-machine.py', ['csma', 'tap-bridge', 'internet', 'wifi', 'mobility'])
-        obj = bld.create_ns3_program('tap-wifi-dumbbell', ['wifi', 'csma', 'point-to-point', 'tap-bridge', 'internet'])
+        obj = bld.create_ns3_program('tap-wifi-dumbbell', ['wifi', 'csma', 'point-to-point', 'tap-bridge', 'internet', 'applications'])
         obj.source = 'tap-wifi-dumbbell.cc'

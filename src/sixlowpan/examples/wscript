@@ -5,7 +5,7 @@ def build(bld):
         return;
 
     obj = bld.create_ns3_program('example-sixlowpan',
-                                 ['network', 'sixlowpan', 'internet', 'csma'])
+                                 ['network', 'sixlowpan', 'internet', 'csma', 'applications'])
     obj.source = 'example-sixlowpan.cc'
     
     obj = bld.create_ns3_program('example-ping-lr-wpan',
