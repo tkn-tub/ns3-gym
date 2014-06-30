@@ -1122,7 +1122,7 @@ AnimationInterface::OutputWirelessPacketTxInfo (Ptr<const Packet> p, AnimPacketI
     nodeId = pktInfo.m_txnd->GetNode ()->GetId ();
   else
     nodeId = pktInfo.m_txNodeId;
-  double lbTx = pktInfo.firstlastbitDelta + pktInfo.m_fbTx;
+  double lbTx = pktInfo.m_firstLastBitDelta + pktInfo.m_fbTx;
   WriteXmlPRef (animUid, nodeId, pktInfo.m_fbTx, lbTx, m_enablePacketMetadata? GetPacketMetadata (p):"");
 
 }
@@ -2006,7 +2006,8 @@ AnimationInterface::AnimXmlElement::AddAttribute (std::string attribute, T value
   std::ostringstream oss;
   oss << std::setprecision (10);
   oss << value;
-  m_elementString += attribute + "=\"" + oss.str () + "\" ";
+  m_elementString += attribute.c_str ();
+  m_elementString += "=\"" + oss.str () + "\" ";
 }
 
 void
@@ -2384,40 +2385,50 @@ AnimByteTag::Get (void) const
   return m_AnimUid;
 }
 
-AnimationInterface::AnimPacketInfo::AnimPacketInfo()
-  : m_txnd (0), m_fbTx (0), m_lbTx (0), 
-    m_txLoc (Vector (0,0,0))
+AnimationInterface::AnimPacketInfo::AnimPacketInfo ()
+  : m_txnd (0), 
+    m_txNodeId (0),
+    m_fbTx (0), 
+    m_lbTx (0), 
+    m_txLoc (Vector (0,0,0)), 
+    m_firstLastBitDelta (0)
 {
 }
 
 AnimationInterface::AnimPacketInfo::AnimPacketInfo (const AnimPacketInfo & pInfo)
 {
   m_txnd = pInfo.m_txnd;
+  m_txNodeId = pInfo.m_txNodeId;
   m_fbTx = pInfo.m_fbTx;
   m_lbTx = pInfo.m_lbTx;
   m_txLoc = pInfo.m_txLoc;
+  m_firstLastBitDelta = pInfo.m_firstLastBitDelta;
 }
 
 AnimationInterface::AnimPacketInfo::AnimPacketInfo (Ptr <const NetDevice> txnd, 
-                                const Time& fbTx, 
-                                const Time& lbTx, 
+                                const Time fbTx, 
+                                const Time lbTx, 
                                 Vector txLoc, 
                                 uint32_t txNodeId)
-  : m_txnd (txnd), m_fbTx (fbTx.GetSeconds ()), m_lbTx (lbTx.GetSeconds ()), 
-    m_txLoc (txLoc)
+  : m_txnd (txnd), 
+    m_txNodeId (0),
+    m_fbTx (fbTx.GetSeconds ()), 
+    m_lbTx (lbTx.GetSeconds ()), 
+    m_txLoc (txLoc),
+    m_firstLastBitDelta (0)
 {
   if (!m_txnd)
     m_txNodeId = txNodeId;
 }
 
 void 
-AnimationInterface::AnimPacketInfo::ProcessRxBegin (Ptr<const NetDevice> nd, const Time& fbRx)
+AnimationInterface::AnimPacketInfo::ProcessRxBegin (Ptr<const NetDevice> nd, const Time fbRx)
 {
   m_rx[nd->GetNode ()->GetId ()] = AnimRxInfo (fbRx, nd, 0);
 }
 
 bool 
-AnimationInterface::AnimPacketInfo::ProcessRxEnd (Ptr<const NetDevice> nd, const Time& lbRx, Vector rxLoc)
+AnimationInterface::AnimPacketInfo::ProcessRxEnd (Ptr<const NetDevice> nd, const Time lbRx, Vector rxLoc)
 {
   uint32_t NodeId = nd->GetNode ()->GetId (); 
   // Find the RxInfo
@@ -2434,7 +2445,7 @@ AnimationInterface::AnimPacketInfo::ProcessRxEnd (Ptr<const NetDevice> nd, const
   rxInfo.rxRange = CalculateDistance (m_txLoc, rxLoc);
   rxInfo.m_lbRx = lbRx.GetSeconds ();
   rxInfo.SetPhyRxComplete ();
-  firstlastbitDelta = rxInfo.m_lbRx - rxInfo.m_fbRx;
+  m_firstLastBitDelta = rxInfo.m_lbRx - rxInfo.m_fbRx;
   return true;
 }
 

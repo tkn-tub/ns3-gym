@@ -444,19 +444,19 @@ private:
   public:
     AnimPacketInfo ();
     AnimPacketInfo (const AnimPacketInfo & pInfo);
-    AnimPacketInfo(Ptr <const NetDevice> tx_nd, const Time& fbTx, const Time& lbTx,Vector txLoc, uint32_t txNodeId = 0);
+    AnimPacketInfo(Ptr <const NetDevice> tx_nd, const Time fbTx, const Time lbTx, Vector txLoc, uint32_t txNodeId = 0);
     Ptr <const NetDevice> m_txnd;
     uint32_t m_txNodeId;
-    double   m_fbTx;     
-    double   m_lbTx;     
-    Vector   m_txLoc;
+    double m_fbTx;     
+    double m_lbTx;     
+    Vector m_txLoc;
+    double m_firstLastBitDelta;
     std::map<uint32_t,AnimRxInfo> m_rx;
-    void ProcessRxBegin (Ptr <const NetDevice> nd, const Time& fbRx);
-    bool ProcessRxEnd (Ptr <const NetDevice> nd, const Time& fbRx, Vector rxLoc);
+    void ProcessRxBegin (Ptr <const NetDevice> nd, const Time fbRx);
+    bool ProcessRxEnd (Ptr <const NetDevice> nd, const Time fbRx, Vector rxLoc);
     void ProcessRxDrop (Ptr <const NetDevice> nd);
     AnimRxInfo GetRxInfo (Ptr <const NetDevice> nd);
     void RemoveRxInfo (Ptr <const NetDevice> nd);
-    double firstlastbitDelta;
   
   };
 
