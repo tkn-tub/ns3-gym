@@ -144,5 +144,18 @@ References
    "Effects of time-to-trigger parameter on handover performance in SON-based LTE systems",
    Communications (APCC), 2010 16th Asia-Pacific Conference on, pp.492-496, Oct. 31 2010--Nov. 3 2010
    
-.. [Bbojovic2014] B. Bojovic, N. Baldo, "A new Channel and QoS Aware Scheduler to enhance the capacity of Voice over LTE systems", SDD conference 2014, preprint version is available: <http://www.cttc.es/?post_type=publication&p=5226>
+.. [Bbojovic2014] B. Bojovic, N. Baldo, `"A new Channel and QoS Aware
+   Scheduler to enhance the capacity of Voice over LTE systems"
+   <http://www.cttc.es/publication/a-new-channel-and-qos-aware-scheduler-to-enhance-the-capacity-of-voice-over-lte-systems/>`_,
+   in Proceedings of 11th International Multi-Conference on Systems,
+   Signals & Devices (SSD’14), Castelldefels, 11-14 February 2014,
+   Castelldefels (Spain). 
+
+.. [Baldo2014] N. Baldo, R. Martínez, P. Dini, R. Vilalta, M. Miozzo,
+   R. Casellas, R. Muñoz, `"A Testbed for Fixed Mobile Convergence
+   Experimentation: ADRENALINE-LENA Integration"
+   <http://www.cttc.es/publication/a-testbed-for-fixed-mobile-convergence-experimentation-adrenaline-lena-integration/>`_, 
+   in Proceedings of European Wireless 2014, 14-16 May 2014, Barcelona
+   (Spain). 
+
 

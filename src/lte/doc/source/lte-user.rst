@@ -927,6 +927,94 @@ That's all! You can now start your simulation as usual::
 
 
 
+Using the EPC with emulation mode
+---------------------------------
+
+In the previous section we used PointToPoint links for the connection between the eNBs and the SGW (S1-U interface) and among eNBs (X2-U and X2-C interfaces). The LTE module supports using emulated links instead of PointToPoint links. This is achieved by just replacing the creation of ``LteHelper`` and ``EpcHelper`` with the following code::
+
+  Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
+  Ptr<EmuEpcHelper>  epcHelper = CreateObject<EmuEpcHelper> ();
+  lteHelper->SetEpcHelper (epcHelper);
+  epcHelper->Initialize ();
+
+
+The attributes ``ns3::EmuEpcHelper::sgwDeviceName`` and ``ns3::EmuEpcHelper::enbDeviceName`` are used to set the name of the devices used for transporting the S1-U, X2-U and X2-C interfaces at the SGW and eNB, respectively. We will now show how this is done in an example where we execute the example program ``lena-simple-epc-emu`` using two virtual ethernet interfaces. 
+
+First of all we build ns-3 appropriately::
+
+  # configure
+  ./waf configure --enable-sudo --enable-modules=lte,fd-net-device --enable-examples 
+  
+  # build 
+  ./waf
+
+
+Then we setup two virtual ethernet interfaces, and start wireshark to look at the traffic going through::
+
+
+  # note: you need to be root
+  
+  # create two paired veth devices
+  ip link add name veth0 type veth peer name veth1
+  ip link show
+  
+  # enable promiscuous mode
+  ip link set veth0 promisc on
+  ip link set veth1 promisc on
+  
+  # bring interfaces up
+  ip link set veth0 up
+  ip link set veth1 up
+  
+  # start wireshark and capture on veth0 
+  wireshark &
+  
+
+We can now run the example program with the simulated clock::
+
+  ./waf --run lena-simple-epc-emu --command="%s --ns3::EmuEpcHelper::sgwDeviceName=veth0 --ns3::EmuEpcHelper::enbDeviceName=veth1"
+
+
+Using wireshark, you should see ARP resolution first, then some GTP
+packets exchanged both in uplink and downlink. 
+
+The default setting of the example program is 1 eNB and 1UE. You can change this via command line parameters, e.g.::
+
+  ./waf --run lena-simple-epc-emu --command="%s --ns3::EmuEpcHelper::sgwDeviceName=veth0 --ns3::EmuEpcHelper::enbDeviceName=veth1 --nEnbs=2 --nUesPerEnb=2"
+
+
+To get a list of the available parameters::
+
+  ./waf --run lena-simple-epc-emu --command="%s --PrintHelp"
+
+
+
+To run with the realtime clock: it turns out that the default debug
+build is too slow for realtime. Softening the real time constraints
+with the BestEffort mode is not a good idea: something can go wrong
+(e.g., ARP can fail) and, if so, you won't get any data packets out. 
+So you need a decent hardware and the optimized build with statically  
+linked modules::
+
+  ./waf configure -d optimized --enable-static --enable-modules=lte --enable-examples --enable-sudo
+
+
+Then run the example program like this::
+
+  ./waf --run lena-simple-epc-emu --command="%s --ns3::EmuEpcHelper::sgwDeviceName=veth0 --ns3::EmuEpcHelper::enbDeviceName=veth1 --simulatorImplementationType=ns3::RealtimeSimulatorImpl --ns3::RealtimeSimulatorImpl::SynchronizationMode=HardLimit"
+
+
+note the HardLimit setting, which will cause the program to terminate
+if it cannot keep up with real time. 
+
+The approach described in this section can be used with any type of
+net device. For instance, [Baldo2014]_ describes how it was used to
+run an emulated LTE-EPC network over a real multi-layer packet-optical
+transport network.
+
+
+
+
 .. _sec-network-attachment:
 
 Network Attachment
