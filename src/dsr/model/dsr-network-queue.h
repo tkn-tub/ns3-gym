@@ -151,6 +151,8 @@ public:
   DsrNetworkQueue (uint32_t maxLen, Time maxDelay);
   ~DsrNetworkQueue ();
 
+  bool FindPacketWithNexthop (Ipv4Address nextHop, DsrNetworkQueueEntry & entry);
+  bool Find (Ipv4Address nextHop);
   /**
    * Push entry in queue, if there is no entry with the same
    * packet and destination address in queue.

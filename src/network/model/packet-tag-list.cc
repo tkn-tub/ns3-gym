@@ -30,8 +30,7 @@
 #include "ns3/log.h"
 #include <cstring>
 
-NS_LOG_COMPONENT_DEFINE ("PacketTagList")
-  ;
+NS_LOG_COMPONENT_DEFINE ("PacketTagList");
 
 namespace ns3 {
 

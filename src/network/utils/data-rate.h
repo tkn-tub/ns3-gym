@@ -159,11 +159,25 @@ public:
   uint64_t GetBitRate () const;
 
 private:
-  uint64_t m_bps;
-  static uint64_t Parse (const std::string);
+  uint64_t m_bps; //!< data rate [bps]
 };
 
+/**
+ * \brief Stream insertion operator.
+ *
+ * \param os the stream
+ * \param rate the data rate
+ * \returns a reference to the stream
+ */
 std::ostream &operator << (std::ostream &os, const DataRate &rate);
+
+/**
+ * \brief Stream extraction operator.
+ *
+ * \param is the stream
+ * \param rate the data rate
+ * \returns a reference to the stream
+ */
 std::istream &operator >> (std::istream &is, DataRate &rate);
 
 /**
@@ -172,15 +186,28 @@ std::istream &operator >> (std::istream &is, DataRate &rate);
  */
 
 
-ATTRIBUTE_HELPER_HEADER (DataRate);   /// Macro to make help make data-rate an ns-3 attribute
+ATTRIBUTE_HELPER_HEADER (DataRate);   //!< Macro to make help make data-rate an ns-3 attribute
+
 
 /**
- * \param lhs
- * \param rhs
- * \return Bits transmitted in rhs seconds at lhs b/s
+ * \brief Multiply datarate by a time value
+ *
+ * Calculates the number of bits that have been transmitted over a period of time
+ * \param lhs rate
+ * \param rhs time
+ * \return the number of bits over the period of time
  */
 double operator* (const DataRate& lhs, const Time& rhs);
+/**
+ * \brief Multiply time value by a data rate
+ *
+ * Calculates the number of bits that have been transmitted over a period of time
+ * \param lhs time
+ * \param rhs rate
+ * \return the number of bits over the period of time
+ */
 double operator* (const Time& lhs, const DataRate& rhs);
+
 
 } // namespace ns3
 

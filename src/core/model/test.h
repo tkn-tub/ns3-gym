@@ -31,6 +31,12 @@
 #include "system-wall-clock-ms.h"
 #include "deprecated.h"
 
+/**
+ * \ingroup core
+ * \defgroup testing Testing
+ * \brief Tools to define and execute unit tests.
+ */
+
 // 
 // Note on below macros:
 //
@@ -42,9 +48,9 @@
 //
 
 /**
+ * \ingroup testing
+ * \brief Check if we should assert on errors, and do so
  * \internal
- *
- * Check if we should assert on errors, and do so
  */
 #define ASSERT_ON_FAILURE                       \
   do {                                          \
@@ -55,9 +61,9 @@
   } while (false)
 
 /**
+ * \ingroup testing
+ * \brief If we shouldn't continue on errors, return
  * \internal
- *
- * If we shouldn't continue on errors, return
  */
 #define CONTINUE_ON_FAILURE                                             \
   do {                                                                  \
@@ -68,9 +74,9 @@
   } while (false)
 
 /**
+ * \ingroup testing
+ * \brief If we shouldn't continue on errors, return test status
  * \internal
- *
- * If we shouldn't continue on errors, return test status
  */
 #define CONTINUE_ON_FAILURE_RETURNS_BOOL                                \
   do {                                                                  \
@@ -87,6 +93,9 @@
 // ===========================================================================
 
 /**
+ * \ingroup testing
+ * \brief Test that an actual and expected (limit) value are equal and report
+ * and abort if not.
  * \internal
  */
 #define NS_TEST_ASSERT_MSG_EQ_INTERNAL(actual, limit, msg, file, line)  \
@@ -109,6 +118,8 @@
   } while (false)
 
 /**
+ * \ingroup testing
+ *
  * \brief Test that an actual and expected (limit) value are equal and report
  * and abort if not.
  *
@@ -138,6 +149,9 @@
   NS_TEST_ASSERT_MSG_EQ_INTERNAL (actual, limit, msg, __FILE__, __LINE__)
 
 /**
+ * \ingroup testing
+ * \brief Test that an actual and expected (limit) value are equal and report
+ * and abort if not.
  * \internal
  */
 #define NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL_INTERNAL(actual, limit, msg, file, line) \
@@ -160,6 +174,8 @@
   } while (false)
 
 /**
+ * \ingroup testing
+ *
  * \brief Test that an actual and expected (limit) value are equal and report
  * and abort if not.
  *
@@ -192,10 +208,13 @@
   NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL_INTERNAL (actual, limit, msg, __FILE__, __LINE__)
 
 /**
- * \internal
+ * \ingroup testing
+ * \brief Test that an actual and expected (limit) value are equal and report
+ * if not.
  * 
  * Required to avoid use of return statement which allows use in methods 
  * (esp. callbacks) returning void.
+ * \internal
  */
 #define NS_TEST_EXPECT_MSG_EQ_INTERNAL(actual, limit, msg, file, line)  \
   do {                                                                  \
@@ -216,6 +235,8 @@
   } while (false)
 
 /**
+ * \ingroup testing
+ *
  * \brief Test that an actual and expected (limit) value are equal and report
  * if not.
  *
@@ -250,6 +271,9 @@
 // ===========================================================================
 
 /**
+ * \ingroup testing
+ * \brief Test that actual and expected (limit) values are equal to plus
+ * or minus some tolerance and report and abort if not.
  * \internal
  */
 #define NS_TEST_ASSERT_MSG_EQ_TOL_INTERNAL(actual, limit, tol, msg, file, line) \
@@ -276,18 +300,21 @@
   } while (false)
 
 /**
- * \brief Test that actual and expected (limit) values are equal to plus or minus
- * some tolerance and report and abort if not.
+ * \ingroup testing
+ *
+ * \brief Test that actual and expected (limit) values are equal to plus
+ * or minus some tolerance and report and abort if not.
  *
  * Check to see if the expected (limit) value is equal to the actual value found
  * in a test case to some tolerance.  This is not the same thing as asking if
  * two floating point are equal to within some epsilon, but is useful for that
- * case.  This assertion is geared toward more of a measurement problem.  Consider
- * measuring a physical rod of some kind that you have ordered.  You need to 
- * determine if it is "good."  You won't measure the rod to an arbitrary precision
- * of sixteen significant figures, you will measure the rod to determine if its 
- * length is within the tolerances you provided.  For example, 12.00 inches plus
- * or minus .005 inch may be just fine.
+ * case.  This assertion is geared toward more of a measurement problem.
+ * Consider measuring a physical rod of some kind that you have ordered.
+ * You need to determine if it is "good."  You want to measure the rod
+ * to an arbitrary precision of sixteen significant figures, you will
+ * measure the rod to determine if its length is within the tolerances
+ * you provided.  For example, 12.00 inches plus or minus .005 inch
+ * may be just fine.
  * 
  * In ns-3, you might want to measure a signal to noise ratio and check to see
  * if the answer is what you expect.  If you naively measure (double)1128.93 and
@@ -297,18 +324,20 @@
  * probably quickly find that is not what you want either.  It may turn out to
  * be the case that when you measured an snr that printed as 1128.93, what was 
  * actually measured was something more like 1128.9287653857625442 for example.
- * Given that the double epsilon is on the order of 0.0000000000000009, you would
- * need to provide sixteen significant figures of expected value for this kind of
- * test to pass even with a typical test for floating point "approximate equality."
- * That is clearly not required or desired.  You really want to be able to provide 
- * 1128.93 along with a tolerance just like you provided 12 inches +- 0.005 inch 
- * above.
+ * Given that the double epsilon is on the order of 0.0000000000000009,
+ * you would need to provide sixteen significant figures of expected value
+ * for this kind of test to pass even with a typical test for floating point
+ * "approximate equality."  That is clearly not required or desired.
+ * You really want to be able to provide 1128.93 along with a tolerance
+ * just like you provided 12 inches +- 0.005 inch above.
  *
  * This assertion is designed for real measurements by taking into account
  * measurement tolerances.  By doing so it also automatically compensates for 
  * floating point rounding errors.    If you really want to check floating point
- * equality down to the numeric_limits<double>::epsilon () range, consider using 
- * ns3::TestDoubleIsEqual().
+ * equality down to the numeric_limits<double>::epsilon () range, consider
+ * using ns3::TestDoubleIsEqual().
+ *
+ * \note Mixing signed and unsigned types can lead to misleading results.
  *
  * The message is interpreted as a stream, for example:
  *
@@ -327,6 +356,9 @@
   NS_TEST_ASSERT_MSG_EQ_TOL_INTERNAL (actual, limit, tol, msg, __FILE__, __LINE__)
 
 /**
+ * \ingroup testing
+ * \brief Test that actual and expected (limit) values are equal to plus
+ * or minus some tolerance and report and abort if not.
  * \internal
  */
 #define NS_TEST_ASSERT_MSG_EQ_TOL_RETURNS_BOOL_INTERNAL(actual, limit, tol, msg, file, line) \
@@ -353,18 +385,21 @@
   } while (false)
 
 /**
- * \brief Test that actual and expected (limit) values are equal to plus or minus
- * some tolerance and report and abort if not.
+ * \ingroup testing
+ *
+ * \brief Test that actual and expected (limit) values are equal to plus
+ * or minus some tolerance and report and abort if not.
  *
  * Check to see if the expected (limit) value is equal to the actual value found
  * in a test case to some tolerance.  This is not the same thing as asking if
  * two floating point are equal to within some epsilon, but is useful for that
- * case.  This assertion is geared toward more of a measurement problem.  Consider
- * measuring a physical rod of some kind that you have ordered.  You need to 
- * determine if it is "good."  You won't measure the rod to an arbitrary precision
- * of sixteen significant figures, you will measure the rod to determine if its 
- * length is within the tolerances you provided.  For example, 12.00 inches plus
- * or minus .005 inch may be just fine.
+ * case.  This assertion is geared toward more of a measurement problem.
+ * Consider measuring a physical rod of some kind that you have ordered.
+ * You need to determine if it is "good."  You want to measure the rod
+ * to an arbitrary precision of sixteen significant figures, you will
+ * measure the rod to determine if its length is within the tolerances
+ * you provided.  For example, 12.00 inches plus or minus .005 inch
+ * may be just fine.
  * 
  * In ns-3, you might want to measure a signal to noise ratio and check to see
  * if the answer is what you expect.  If you naively measure (double)1128.93 and
@@ -374,18 +409,20 @@
  * probably quickly find that is not what you want either.  It may turn out to
  * be the case that when you measured an snr that printed as 1128.93, what was 
  * actually measured was something more like 1128.9287653857625442 for example.
- * Given that the double epsilon is on the order of 0.0000000000000009, you would
- * need to provide sixteen significant figures of expected value for this kind of
- * test to pass even with a typical test for floating point "approximate equality."
- * That is clearly not required or desired.  You really want to be able to provide 
- * 1128.93 along with a tolerance just like you provided 12 inches +- 0.005 inch 
- * above.
+ * Given that the double epsilon is on the order of 0.0000000000000009,
+ * you would need to provide sixteen significant figures of expected value
+ * for this kind of test to pass even with a typical test for floating point
+ * "approximate equality."  That is clearly not required or desired.
+ * You really want to be able to provide  1128.93 along with a tolerance
+ * just like you provided 12 inches +- 0.005 inch above.
  *
  * This assertion is designed for real measurements by taking into account
  * measurement tolerances.  By doing so it also automatically compensates for 
  * floating point rounding errors.    If you really want to check floating point
- * equality down to the numeric_limits<double>::epsilon () range, consider using 
- * ns3::TestDoubleIsEqual().
+ * equality down to the numeric_limits<double>::epsilon () range,
+ * consider using ns3::TestDoubleIsEqual().
+ *
+ * \note Mixing signed and unsigned types can lead to misleading results.
  *
  * The message is interpreted as a stream, for example:
  *
@@ -407,10 +444,13 @@
   NS_TEST_ASSERT_MSG_EQ_TOL_RETURNS_BOOL_INTERNAL (actual, limit, tol, msg, __FILE__, __LINE__)
 
 /**
- * \internal
+ * \ingroup testing
+ * \brief Test that actual and expected (limit) values are equal to plus or minus
+ * some tolerance and report if not.
  * 
  * Required to avoid use of return statement which allows use in methods 
  * (esp. callbacks) returning void.
+ * \internal
  */
 #define NS_TEST_EXPECT_MSG_EQ_TOL_INTERNAL(actual, limit, tol, msg, file, line) \
   do {                                                                  \
@@ -435,17 +475,20 @@
   } while (false)
 
 /**
- * \brief Test that actual and expected (limit) values are equal to plus or minus
- * some tolerance and report if not.
+ * \ingroup testing
+ *
+ * \brief Test that actual and expected (limit) values are equal to plus
+ * or minus some tolerance and report if not.
  *
  * Check to see if the expected (limit) value is equal to the actual value found
  * in a test case to some tolerance.  This is not the same thing as asking if
  * two floating point are equal to within some epsilon, but is useful for that
- * case.  This assertion is geared toward more of a measurement problem.  Consider
- * measuring a physical rod of some kind that you have ordered.  You need to 
- * determine if it is "good."  You won't measure the rod to an arbitrary precision
- * of sixteen significant figures, you will measure the rod to determine if its 
- * length is within the tolerances you provided.  For example, 12.00 inches plus
+ * case.  This assertion is geared toward more of a measurement problem.
+ * Consider measuring a physical rod of some kind that you have ordered.
+ * You need to  determine if it is "good."  You want to measure the rod
+ * to an arbitrary precision  of sixteen significant figures,
+ * you will measure the rod to determine if its length is within
+ * the tolerances you provided.  For example, 12.00 inches plus 
  * or minus .005 inch may be just fine.
  * 
  * In ns-3, you might want to measure a signal to noise ratio and check to see
@@ -456,18 +499,20 @@
  * probably quickly find that is not what you want either.  It may turn out to
  * be the case that when you measured an snr that printed as 1128.93, what was 
  * actually measured was something more like 1128.9287653857625442 for example.
- * Given that the double epsilon is on the order of 0.0000000000000009, you would
- * need to provide sixteen significant figures of expected value for this kind of
- * test to pass even with a typical test for floating point "approximate equality."
- * That is clearly not required or desired.  You really want to be able to provide 
- * 1128.93 along with a tolerance just like you provided 12 inches +- 0.005 inch 
- * above.
+ * Given that the double epsilon is on the order of 0.0000000000000009,
+ * you would  need to provide sixteen significant figures of expected value
+ * for this kind of test to pass even with a typical test for floating point
+ * "approximate equality."  That is clearly not required or desired.
+ * You really want to be able to provide 1128.93 along with a tolerance
+ * just like you provided 12 inches +- 0.005 inch above.
  *
  * This assertion is designed for real measurements by taking into account
  * measurement tolerances.  By doing so it also automatically compensates for 
  * floating point rounding errors.    If you really want to check floating point
- * equality down to the numeric_limits<double>::epsilon () range, consider using 
- * ns3::TestDoubleIsEqual().
+ * equality down to the numeric_limits<double>::epsilon () range,
+ * consider using ns3::TestDoubleIsEqual().
+ *
+ * \note Mixing signed and unsigned types can lead to misleading results.
  *
  * The message is interpreted as a stream, for example:
  *
@@ -490,6 +535,9 @@
 // ===========================================================================
 
 /**
+ * \ingroup testing
+ * \brief Test that an actual and expected (limit) value are not equal and 
+ * report and abort if not.
  * \internal
  */
 #define NS_TEST_ASSERT_MSG_NE_INTERNAL(actual, limit, msg, file, line)  \
@@ -512,6 +560,8 @@
   } while (false)
 
 /**
+ * \ingroup testing
+ *
  * \brief Test that an actual and expected (limit) value are not equal and 
  * report and abort if not.
  *
@@ -540,6 +590,9 @@
   NS_TEST_ASSERT_MSG_NE_INTERNAL (actual, limit, msg, __FILE__, __LINE__)
 
 /**
+ * \ingroup testing
+ * \brief Test that an actual and expected (limit) value are not equal and 
+ * report and abort if not.
  * \internal
  */
 #define NS_TEST_ASSERT_MSG_NE_RETURNS_BOOL_INTERNAL(actual, limit, msg, file, line) \
@@ -562,6 +615,8 @@
   } while (false)
 
 /**
+ * \ingroup testing
+ *
  * \brief Test that an actual and expected (limit) value are not equal and 
  * report and abort if not.
  *
@@ -593,10 +648,13 @@
   NS_TEST_ASSERT_MSG_NE_RETURNS_BOOL_INTERNAL (actual, limit, msg, __FILE__, __LINE__)
 
 /**
- * \internal
+ * \ingroup testing
+ * \brief Test that an actual and expected (limit) value are not equal and 
+ * report if not.
  * 
  * Required to avoid use of return statement which allows use in methods 
  * (callbacks) returning void.
+ * \internal
  */
 #define NS_TEST_EXPECT_MSG_NE_INTERNAL(actual, limit, msg, file, line)  \
   do {                                                                  \
@@ -617,6 +675,8 @@
   } while (false)
 
 /**
+ * \ingroup testing
+ *
  * \brief Test that an actual and expected (limit) value are not equal and 
  * report if not.
  *
@@ -649,6 +709,9 @@
 // ===========================================================================
 
 /**
+ * \ingroup testing
+ * \brief Test that an actual value is less than a limit and report and abort
+ * if not.
  * \internal
  */
 #define NS_TEST_ASSERT_MSG_LT_INTERNAL(actual, limit, msg, file, line)  \
@@ -671,6 +734,8 @@
   } while (false)
 
 /**
+ * \ingroup testing
+ *
  * \brief Test that an actual value is less than a limit and report and abort
  * if not.
  *
@@ -689,10 +754,12 @@
   NS_TEST_ASSERT_MSG_LT_INTERNAL (actual, limit, msg, __FILE__, __LINE__)
 
 /**
- * \internal
+ * \ingroup testing
+ * \brief Test that an actual value is less than a limit and report if not.
  * 
  * Required to avoid use of return statement which allows use in methods 
  * (callbacks) returning void.
+ * \internal
  */
 #define NS_TEST_EXPECT_MSG_LT_INTERNAL(actual, limit, msg, file, line)  \
   do {                                                                  \
@@ -713,6 +780,8 @@
   } while (false)
 
 /**
+ * \ingroup testing
+ *
  * \brief Test that an actual value is less than a limit and report if not.
  *
  * Check to see if the actual value found in a test case is less than the 
@@ -734,6 +803,9 @@
 // ===========================================================================
 
 /**
+ * \ingroup testing
+ * \brief Test that an actual value is greater than a limit and report and abort
+ * if not.
  * \internal
  */
 #define NS_TEST_ASSERT_MSG_GT_INTERNAL(actual, limit, msg, file, line)  \
@@ -756,6 +828,8 @@
   } while (false)
 
 /**
+ * \ingroup testing
+ *
  * \brief Test that an actual value is greater than a limit and report and abort
  * if not.
  *
@@ -774,10 +848,12 @@
   NS_TEST_ASSERT_MSG_GT_INTERNAL (actual, limit, msg, __FILE__, __LINE__)
 
 /**
- * \internal
+ * \ingroup testing
+ * \brief Test that an actual value is greater than a limit and report if not.
  * 
  * Required to avoid use of return statement which allows use in methods 
  * (callbacks) returning void.
+ * \internal
  */
 #define NS_TEST_EXPECT_MSG_GT_INTERNAL(actual, limit, msg, file, line)  \
   do {                                                                  \
@@ -798,6 +874,8 @@
   } while (false)
 
 /**
+ * \ingroup testing
+ *
  * \brief Test that an actual value is greater than a limit and report if not.
  *
  * Check to see if the actual value found in a test case is greater than the 
@@ -840,6 +918,8 @@ bool TestDoubleIsEqual (const double a, const double b,
 class TestRunnerImpl;
 
 /**
+ * \ingroup testing
+ *
  * \brief encapsulates test code
  *
  * To allow a new test to be run within the ns-3 test framework, users
@@ -863,6 +943,11 @@ public:
    *  Destructor
    */
   virtual ~TestCase ();
+
+  /**
+   * \return name of this test
+   */
+  std::string GetName (void) const;  
 
 protected:
   /**
@@ -917,47 +1002,43 @@ protected:
   bool IsStatusSuccess (void) const;
 
   /**
-   * \return name of this test
+   * \return a pointer to the parent of this test
    */
-  std::string GetName (void) const;
-  
-  // The methods below are used only by test macros and should not
-  // be used by normal users.
+  TestCase * GetParent () const;
 
   /**
+   * @{
    * \internal
-   *
+   * The methods below are used only by test macros and should not
+   * be used by normal users.
+   */
+  /**
    * Log the failure of this TestCase.
    */
   void ReportTestFailure (std::string cond, std::string actual, 
                       std::string limit, std::string message, 
                       std::string file, int32_t line);
   /**
-   * \internal
-   *
    * \return should we assert on failure, per the TestSuite configuration
    */
   bool MustAssertOnFailure (void) const;
   /**
-   * \internal
-   *
    * \return should we continue on failure, per the TestSuite configuration
    */
   bool MustContinueOnFailure (void) const;
   /**
-   * \internal
    * \param filename the bare (no path) file name
    * \return the full path to filename in the data directory
    */
   std::string CreateDataDirFilename (std::string filename);
   /**
-   * \internal
    * \param filename the bare (no path) file name
    * \return the full path to filename in the temporary directory.
    *  If the TestRunner is invoked with "--update-data", this will be
    *  the data directory instead.
    */
   std::string CreateTempDirFilename (std::string filename);
+  /**@}*/
 private:
   friend class TestRunnerImpl;
 
@@ -983,26 +1064,23 @@ private:
    */
   virtual void DoTeardown (void);
 
-  // forbid copying objects
   /**
-   * \internal
    * Private, to block copying
    */
   TestCase (TestCase& tc);
   /**
-   * \internal
    * Private, to block copying
    */
   TestCase& operator= (TestCase& tc);
 
   // methods called by TestRunnerImpl
   /**
-   * \internal
    * Actually run this TestCase
+   *
+   * \param runner The test runner implementation.
    */
   void Run (TestRunnerImpl *runner);
   /**
-   * \internal
    * \return the failure status of this TestCase and all it's children
    */
   bool IsFailed (void) const;
@@ -1020,6 +1098,8 @@ private:
 };
 
 /**
+ * \ingroup testing
+ *
  * \brief A suite of tests to run.
  */
 class TestSuite : public TestCase
@@ -1061,6 +1141,8 @@ private:
 };
 
 /**
+ * \ingroup testing
+ *
  * \brief A runner to execute tests.
  */
 class TestRunner
@@ -1069,14 +1151,16 @@ public:
   /**
    * Run the requested suite of tests.
    *
-   * \param list of command line arguments
-   * \param argc number of elements in argv
+   * \param argc number of elements in \pname{argv}
+   * \param argv vector of command line arguments
    * \returns success status
    */
   static int Run (int argc, char *argv[]);
 };
 
 /**
+ * \ingroup testing
+ *
  * \brief A simple way to store test vectors (for stimulus or from responses)
  */
 template <typename T>

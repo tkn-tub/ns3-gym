@@ -65,8 +65,7 @@ NS_LOG_COMPONENT_DEFINE ("LteHelper");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (LteHelper)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (LteHelper);
 
 LteHelper::LteHelper (void)
   : m_fadingStreamsAssigned (false),

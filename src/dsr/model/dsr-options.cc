@@ -65,8 +65,7 @@ NS_LOG_COMPONENT_DEFINE ("DsrOptions");
 namespace ns3 {
 namespace dsr {
 
-NS_OBJECT_ENSURE_REGISTERED (DsrOptions)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (DsrOptions);
 
 TypeId DsrOptions::GetTypeId ()
 {
@@ -372,8 +371,7 @@ Ptr<Node> DsrOptions::GetNodeWithAddress (Ipv4Address ipv4Address)
   return 0;
 }
 
-NS_OBJECT_ENSURE_REGISTERED (DsrOptionPad1)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (DsrOptionPad1);
 
 TypeId DsrOptionPad1::GetTypeId ()
 {
@@ -413,8 +411,7 @@ uint8_t DsrOptionPad1::Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Addres
   return pad1Header.GetSerializedSize ();
 }
 
-NS_OBJECT_ENSURE_REGISTERED (DsrOptionPadn)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (DsrOptionPadn);
 
 TypeId DsrOptionPadn::GetTypeId ()
 {
@@ -454,8 +451,7 @@ uint8_t DsrOptionPadn::Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Addres
   return padnHeader.GetSerializedSize ();
 }
 
-NS_OBJECT_ENSURE_REGISTERED (DsrOptionRreq)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (DsrOptionRreq);
 
 TypeId DsrOptionRreq::GetTypeId ()
 {
@@ -497,9 +493,9 @@ uint8_t DsrOptionRreq::Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Addres
    * \ when the ip source address is equal to the address of our own, this is request packet originated
    * \ by the node itself, discard it
    */
-  if (srcAddress == ipv4Address)
+  if (source == ipv4Address)
     {
-      NS_LOG_DEBUG ("Discard the packet");
+      NS_LOG_DEBUG ("Discard the packet since it was originated from same source address");
       m_dropTrace (packet); // call the drop trace to show in the tracing
       return 0;
     }
@@ -603,6 +599,14 @@ uint8_t DsrOptionRreq::Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Addres
     {
       // A node ignores all RREQs received from any node in its blacklist
       RouteCacheEntry toPrev;
+      bool isRouteInCache = dsr->LookupRoute (targetAddress,
+                                              toPrev);
+      RouteCacheEntry::IP_VECTOR ip = toPrev.GetVector (); // The route from our own route cache to dst
+      PrintVector (ip);
+      std::vector<Ipv4Address> saveRoute (nodeList);
+      PrintVector (saveRoute);
+      bool areThereDuplicates = IfDuplicates (ip,
+                                              saveRoute);
       /*
        *  When the reverse route is created or updated, the following actions on the route are also carried out:
        *  3. the next hop in the routing table becomes the node from which the  RREQ was received
@@ -622,7 +626,8 @@ uint8_t DsrOptionRreq::Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Addres
             {
               NS_LOG_DEBUG ("These two nodes are neighbors");
               m_finalRoute.clear ();
-              m_finalRoute.push_back (srcAddress);     // push back the request originator's address
+              /// TODO has changed the srcAddress to source, should not matter either way, check later
+              m_finalRoute.push_back (source);     // push back the request originator's address
               m_finalRoute.push_back (ipv4Address);    // push back our own address
               nextHop = srcAddress;
             }
@@ -696,10 +701,14 @@ uint8_t DsrOptionRreq::Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Addres
                   DsrOptionSRHeader sourceRoute;
                   NS_LOG_DEBUG ("The route length " << m_finalRoute.size ());
                   sourceRoute.SetNodesAddress (m_finalRoute);
-                  if (dsr->IsLinkCache ())
-                    {
-                      dsr->UseExtends (m_finalRoute);
-                    }
+
+                  /// TODO !!!!!!!!!!!!!!
+                  /// Think about this part, we just added the route,
+                  /// probability no need to increase stability now?????
+                  // if (dsr->IsLinkCache ())
+                  //   {
+                  //     dsr->UseExtends (m_finalRoute);
+                  //   }
                   sourceRoute.SetSegmentsLeft ((m_finalRoute.size () - 2));
                   // The salvage value here is 0
                   sourceRoute.SetSalvage (0);
@@ -737,18 +746,12 @@ uint8_t DsrOptionRreq::Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Addres
       /*
        * (ii) or it has an active route to the destination, send reply based on request header and route cache,
        *      need to delay based on a random value from d = H * (h - 1 + r), which can avoid possible route
-       *      reply storm.
+       *      reply storm. Also, verify if two vectors do not contain duplicates (part of the route to the
+       *      destination from route cache and route collected so far). If so, do not use the route found
+       *      and forward the route request.
        */
-      else if (dsr->LookupRoute (targetAddress, toPrev))
+      else if (isRouteInCache && !areThereDuplicates)
         {
-          RouteCacheEntry::IP_VECTOR ip = toPrev.GetVector (); // The route from our own route cache to dst
-          PrintVector (ip);
-          std::vector<Ipv4Address> saveRoute (nodeList);
-          PrintVector (saveRoute);
-          // Verify if the two vector contains duplicates, if so, do not use
-          // the route found and forward the route request
-          if (!(IfDuplicates (ip, saveRoute)))
-            {
               m_finalRoute.clear ();            // Clear the final route vector
               /**
                * push back the intermediate node address from the source to this node
@@ -800,10 +803,10 @@ uint8_t DsrOptionRreq::Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Addres
                       PrintVector (saveRoute);
 
                       sourceRoute.SetNodesAddress (saveRoute);
-                      if (dsr->IsLinkCache ())
-                        {
-                          dsr->UseExtends (saveRoute);
-                        }
+                      // if (dsr->IsLinkCache ())
+                      //   {
+                      //     dsr->UseExtends (saveRoute);
+                      //   }
                       sourceRoute.SetSegmentsLeft ((saveRoute.size () - 2));
                       uint8_t salvage = 0;
                       sourceRoute.SetSalvage (salvage);
@@ -839,7 +842,6 @@ uint8_t DsrOptionRreq::Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Addres
                * Need to first pin down the next hop address before removing duplicates
                */
               Ipv4Address nextHop = ReverseSearchNextHop (ipv4Address, m_finalRoute);
-              NS_LOG_DEBUG ("The nextHop address " << nextHop);
               /*
                * First remove the duplicate ip address to automatically shorten the route, and then reversely
                * search the next hop address
@@ -870,11 +872,6 @@ uint8_t DsrOptionRreq::Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Addres
               newPacket->AddHeader (dsrRoutingHeader);
               dsr->ScheduleCachedReply (newPacket, ipv4Address, nextHop, m_ipv4Route, hops);
               isPromisc = false;
-            }
-          else
-            {
-              NS_LOG_DEBUG ("There is duplicate ip addresses in the two route parts");
-            }
           return rreq.GetSerializedSize ();
         }
       /*
@@ -953,8 +950,7 @@ uint8_t DsrOptionRreq::Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Addres
   //unreachable:  return rreq.GetSerializedSize ();
 }
 
-NS_OBJECT_ENSURE_REGISTERED (DsrOptionRrep)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (DsrOptionRrep);
 
 TypeId DsrOptionRrep::GetTypeId ()
 {
@@ -1154,8 +1150,7 @@ uint8_t DsrOptionRrep::Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Addres
   return rrep.GetSerializedSize ();
 }
 
-NS_OBJECT_ENSURE_REGISTERED (DsrOptionSR)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (DsrOptionSR);
 
 TypeId DsrOptionSR::GetTypeId ()
 {
@@ -1313,7 +1308,8 @@ uint8_t DsrOptionSR::Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Address 
                     m_dropTrace (packet);
                     return 0;
                   }
-                if (numberAddress - segsLeft - 2 < 0) // The index is invalid
+                // -fstrict-overflow sensitive, see bug 1868
+                if (numberAddress - segsLeft < 2) // The index is invalid
                    {
                       NS_LOG_LOGIC ("Malformed header. Drop!");
                       m_dropTrace (packet);
@@ -1395,8 +1391,7 @@ uint8_t DsrOptionSR::Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Address 
   return sourceRoute.GetSerializedSize ();
 }
 
-NS_OBJECT_ENSURE_REGISTERED (DsrOptionRerr)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (DsrOptionRerr);
 
 TypeId DsrOptionRerr::GetTypeId ()
 {
@@ -1575,8 +1570,7 @@ uint8_t DsrOptionRerr::DoSendError (Ptr<Packet> p, DsrOptionRerrUnreachHeader &r
   return serializedSize;
 }
 
-NS_OBJECT_ENSURE_REGISTERED (DsrOptionAckReq)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (DsrOptionAckReq);
 
 TypeId DsrOptionAckReq::GetTypeId ()
 {
@@ -1631,8 +1625,7 @@ uint8_t DsrOptionAckReq::Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Addr
   return ackReq.GetSerializedSize ();
 }
 
-NS_OBJECT_ENSURE_REGISTERED (DsrOptionAck)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (DsrOptionAck);
 
 TypeId DsrOptionAck::GetTypeId ()
 {

@@ -30,7 +30,8 @@ NS_LOG_COMPONENT_DEFINE ("SystemCondition");
 namespace ns3 {
 
 class SystemConditionPrivate {
-public: 
+public:
+  /// Conversion from ns to s.
   static const uint64_t NS_PER_SEC = (uint64_t)1000000000;
 
   SystemConditionPrivate ();

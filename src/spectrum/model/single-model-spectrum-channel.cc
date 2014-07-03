@@ -44,8 +44,7 @@ NS_LOG_COMPONENT_DEFINE ("SingleModelSpectrumChannel");
 namespace ns3 {
 
 
-NS_OBJECT_ENSURE_REGISTERED (SingleModelSpectrumChannel)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (SingleModelSpectrumChannel);
 
 SingleModelSpectrumChannel::SingleModelSpectrumChannel ()
 {

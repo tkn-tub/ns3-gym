@@ -26,8 +26,7 @@
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (EpsBearerTag)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (EpsBearerTag);
 
 TypeId
 EpsBearerTag::GetTypeId (void)

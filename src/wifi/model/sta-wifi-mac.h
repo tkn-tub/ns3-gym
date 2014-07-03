@@ -187,6 +187,7 @@ private:
   EventId m_beaconWatchdog;
   Time m_beaconWatchdogEnd;
   uint32_t m_maxMissedBeacons;
+  bool m_activeProbing;
 
   TracedCallback<Mac48Address> m_assocLogger;
   TracedCallback<Mac48Address> m_deAssocLogger;

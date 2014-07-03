@@ -49,8 +49,9 @@ namespace ns3 {
  * maximum MPI message size for easy
  * buffer creation
  */
+#ifdef NS3_MPI
 const uint32_t NULL_MESSAGE_MAX_MPI_MSG_SIZE = 2000;
-
+#endif
 
 NullMessageSentBuffer::NullMessageSentBuffer ()
 {
@@ -338,7 +339,7 @@ NullMessageMpiInterface::ReceiveMessages (bool blocking)
           Time rxTime (time);
 
           // rxtime == 0 means this is a Null Message
-          if (rxTime > 0)
+          if (rxTime > Time (0))
             {
               count -= sizeof (time) + sizeof (guaranteeUpdate) + sizeof (node) + sizeof (dev);
 

@@ -28,8 +28,7 @@ NS_LOG_COMPONENT_DEFINE ("AntennaModel");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (AntennaModel)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (AntennaModel);
 
 
 AntennaModel::AntennaModel ()

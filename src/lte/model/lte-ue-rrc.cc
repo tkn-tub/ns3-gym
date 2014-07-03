@@ -88,7 +88,7 @@ UeMemberLteUeCmacSapUser::NotifyRandomAccessFailed ()
 
 
 
-const char* g_ueRrcStateName[LteUeRrc::NUM_STATES] = 
+static const std::string g_ueRrcStateName[LteUeRrc::NUM_STATES] =
 {
   "IDLE_START",
   "IDLE_CELL_SEARCH",
@@ -105,9 +105,9 @@ const char* g_ueRrcStateName[LteUeRrc::NUM_STATES] =
   "CONNECTED_REESTABLISHING"
 };
 
-std::string ToString (LteUeRrc::State s)
+static const std::string & ToString (LteUeRrc::State s)
 {
-  return std::string (g_ueRrcStateName[s]);
+  return g_ueRrcStateName[s];
 }
 
 
@@ -115,8 +115,7 @@ std::string ToString (LteUeRrc::State s)
 // ue RRC methods
 /////////////////////////////
 
-NS_OBJECT_ENSURE_REGISTERED (LteUeRrc)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (LteUeRrc);
 
 
 LteUeRrc::LteUeRrc ()

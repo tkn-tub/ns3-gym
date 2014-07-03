@@ -57,7 +57,7 @@ public:
   /**
    * \brief Destructor
    */
-  ~Ipv6RoutingTableEntry ();
+  virtual ~Ipv6RoutingTableEntry ();
 
   /**
    * \brief Is the route entry correspond to a host ?

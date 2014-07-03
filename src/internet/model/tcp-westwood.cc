@@ -46,8 +46,7 @@ NS_LOG_COMPONENT_DEFINE("TcpWestwood");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED(TcpWestwood)
-  ;
+NS_OBJECT_ENSURE_REGISTERED(TcpWestwood);
 
 TypeId
 TcpWestwood::GetTypeId (void)
@@ -329,7 +328,7 @@ TcpWestwood::EstimateRtt (const TcpHeader& tcpHeader)
   TcpSocketBase::EstimateRtt (tcpHeader);
 
   // Update minRtt
-  if (m_minRtt == 0)
+  if (m_minRtt == Time (0))
     {
       m_minRtt = m_lastRtt;
     }
@@ -345,7 +344,7 @@ TcpWestwood::EstimateRtt (const TcpHeader& tcpHeader)
   // to trigger a new BW sampling event
   if (m_pType == TcpWestwood::WESTWOODPLUS)
    {
-     if(m_lastRtt != 0 && m_state == ESTABLISHED && !m_IsCount)
+     if(m_lastRtt != Time (0) && m_state == ESTABLISHED && !m_IsCount)
        {
          m_IsCount = true;
          m_bwEstimateEvent.Cancel();

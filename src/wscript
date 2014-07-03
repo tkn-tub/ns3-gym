@@ -16,6 +16,7 @@ except NameError:
     from sets import Set as set # Python 2.3 fallback
 
 
+
 all_modules = []
 for dirname in os.listdir('src'):
     if dirname.startswith('.') or dirname == 'CVS':
@@ -59,11 +60,16 @@ def configure(conf):
             if not conf.env['LIB_BOOST']:
                 conf.env['LIB_BOOST'] = []
 
+    # Append blddir to the module path before recursing into modules
+    blddir = os.path.abspath(os.path.join(conf.bldnode.abspath(), conf.variant))
+    conf.env.append_value('NS3_MODULE_PATH', blddir)
+
     for module in all_modules:
         conf.recurse(module, mandatory=False)
 
-    blddir = os.path.abspath(os.path.join(conf.bldnode.abspath(), conf.variant))
-    conf.env.append_value('NS3_MODULE_PATH', blddir)
+    # Remove duplicate path items
+    conf.env['NS3_MODULE_PATH'] = wutils.uniquify_list(conf.env['NS3_MODULE_PATH'])
+
     if Options.options.enable_rpath:
         conf.env.append_value('RPATH', '-Wl,-rpath,%s' % (os.path.join(blddir),))
 

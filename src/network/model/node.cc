@@ -36,13 +36,15 @@ NS_LOG_COMPONENT_DEFINE ("Node");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (Node)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (Node);
 
-GlobalValue g_checksumEnabled  = GlobalValue ("ChecksumEnabled",
-                                              "A global switch to enable all checksums for all protocols",
-                                              BooleanValue (false),
-                                              MakeBooleanChecker ());
+/**
+ * \brief A global switch to enable all checksums for all protocols.
+ */
+static GlobalValue g_checksumEnabled  = GlobalValue ("ChecksumEnabled",
+                                                     "A global switch to enable all checksums for all protocols",
+                                                     BooleanValue (false),
+                                                     MakeBooleanChecker ());
 
 TypeId 
 Node::GetTypeId (void)

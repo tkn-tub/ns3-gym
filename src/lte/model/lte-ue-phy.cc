@@ -106,20 +106,19 @@ UeMemberLteUePhySapProvider::SendRachPreamble (uint32_t prachId, uint32_t raRnti
 // LteUePhy methods
 ////////////////////////////////////////
 
-const char* g_uePhyStateName[LteUePhy::NUM_STATES] =
+static const std::string g_uePhyStateName[LteUePhy::NUM_STATES] =
 {
   "CELL_SEARCH",
   "SYNCHRONIZED"
 };
 
-std::string ToString (LteUePhy::State s)
+static inline const std::string & ToString (LteUePhy::State s)
 {
-  return std::string (g_uePhyStateName[s]);
+  return g_uePhyStateName[s];
 }
 
 
-NS_OBJECT_ENSURE_REGISTERED (LteUePhy)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (LteUePhy);
 
 
 LteUePhy::LteUePhy ()
@@ -1110,7 +1109,7 @@ LteUePhy::DoSetDlBandwidth (uint8_t dlBandwidth)
     {
       m_dlBandwidth = dlBandwidth;
 
-      int Type0AllocationRbg[4] = {
+      static const int Type0AllocationRbg[4] = {
         10,     // RGB size 1
         26,     // RGB size 2
         63,     // RGB size 3

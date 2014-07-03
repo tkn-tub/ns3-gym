@@ -36,8 +36,8 @@
 
 namespace ns3 {
 
-LogTimePrinter g_logTimePrinter = 0;
-LogNodePrinter g_logNodePrinter = 0;
+static LogTimePrinter g_logTimePrinter = 0;
+static LogNodePrinter g_logNodePrinter = 0;
 
 typedef std::map<std::string, LogComponent *> ComponentList;
 typedef std::map<std::string, LogComponent *>::iterator ComponentListI;
@@ -84,10 +84,11 @@ PrintList::PrintList ()
 }
 
 
-LogComponent::LogComponent (const std::string & name)
-  : m_levels (0), m_name (name)
+LogComponent::LogComponent (const std::string & name,
+                            const enum LogLevel mask /* = 0 */)
+  : m_levels (0), m_mask (mask), m_name (name)
 {
-  EnvVarCheck (name);
+  EnvVarCheck ();
 
   ComponentList *components = GetComponentList ();
   for (ComponentListI i = components->begin ();
@@ -103,7 +104,7 @@ LogComponent::LogComponent (const std::string & name)
 }
 
 void
-LogComponent::EnvVarCheck (const std::string & name)
+LogComponent::EnvVarCheck (void)
 {
 #ifdef HAVE_GETENV
   char *envVar = getenv ("NS_LOG");
@@ -112,7 +113,6 @@ LogComponent::EnvVarCheck (const std::string & name)
       return;
     }
   std::string env = envVar;
-  std::string myName = name;
 
   std::string::size_type cur = 0;
   std::string::size_type next = 0;
@@ -125,7 +125,7 @@ LogComponent::EnvVarCheck (const std::string & name)
       if (equal == std::string::npos)
         {
           component = tmp;
-          if (component == myName || component == "*" || component == "***")
+          if (component == m_name || component == "*" || component == "***")
             {
               int level = LOG_LEVEL_ALL | LOG_PREFIX_ALL;
               Enable ((enum LogLevel)level);
@@ -135,7 +135,7 @@ LogComponent::EnvVarCheck (const std::string & name)
       else
         {
           component = tmp.substr (0, equal);
-          if (component == myName || component == "*")
+          if (component == m_name || component == "*")
             {
               int level = 0;
               std::string::size_type cur_lev;
@@ -242,7 +242,7 @@ LogComponent::EnvVarCheck (const std::string & name)
 
 
 bool 
-LogComponent::IsEnabled (enum LogLevel level) const
+LogComponent::IsEnabled (const enum LogLevel level) const
 {
   //  LogComponentEnableEnvVar ();
   return (level & m_levels) ? 1 : 0;
@@ -254,14 +254,20 @@ LogComponent::IsNoneEnabled (void) const
   return m_levels == 0;
 }
 
-void 
-LogComponent::Enable (enum LogLevel level)
+void
+LogComponent::SetMask (const enum LogLevel level)
 {
-  m_levels |= level;
+  m_mask |= level;
 }
 
 void 
-LogComponent::Disable (enum LogLevel level)
+LogComponent::Enable (const enum LogLevel level)
+{
+  m_levels |= (level & ~m_mask);
+}
+
+void 
+LogComponent::Disable (const enum LogLevel level)
 {
   m_levels &= ~level;
 }
@@ -272,8 +278,9 @@ LogComponent::Name (void) const
   return m_name.c_str ();
 }
 
+/* static */
 std::string
-LogComponent::GetLevelLabel(const enum LogLevel level) const
+LogComponent::GetLevelLabel(const enum LogLevel level)
 {
   if (level == LOG_ERROR)
     {
@@ -580,8 +587,7 @@ LogNodePrinter LogGetNodePrinter (void)
 
 
 ParameterLogger::ParameterLogger (std::ostream &os)
-  : std::basic_ostream<char> (os.rdbuf ()),  //!< \bugid{1792}
-    m_itemNumber (0),
+  : m_first (true),
     m_os (os)
 {
 }

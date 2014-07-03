@@ -504,8 +504,7 @@ std::ostream& operator<< (std::ostream& os, GlobalRoutingLSA& lsa)
 //
 // ---------------------------------------------------------------------------
 
-NS_OBJECT_ENSURE_REGISTERED (GlobalRouter)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (GlobalRouter);
 
 TypeId 
 GlobalRouter::GetTypeId (void)

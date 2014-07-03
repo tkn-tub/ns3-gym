@@ -157,6 +157,33 @@ This method will add two global IPv6 addresses to the nodes. Note that, as usual
 all the nodes will also have a link-local address. Typically the first address on an 
 interface will be the link-local one, with the global address(es) being the following ones.
 
+Note that the global addesses will be derived from the MAC address. As a consequence, expect
+to have addresses similar to ``2001:db8::200:ff:fe00:1``.
+
+It is possible to repeat the above to assign more than one global address to a node.
+However, due to the ``Ipv6AddressHelper`` singleton nature, one should first assign all the
+adddresses of a network, then change the network base (``SetBase``), then do a new assignment.
+
+Alternatively, it is possible to assign a specific address to a node:
+
+::
+
+    Ptr<Node> n0 = CreateObject<Node> ();
+    NodeContainer net (n0);
+    CsmaHelper csma;
+    NetDeviceContainer ndc = csma.Install (net); 
+
+    NS_LOG_INFO ("Specifically Assign an IPv6 Address.");
+    Ipv6AddressHelper ipv6;
+    Ptr<NetDevice> device = ndc.Get (0);
+    Ptr<Node> node = device->GetNode ();
+    Ptr<Ipv6> ipv6proto = node->GetObject<Ipv6> ();
+    int32_t ifIndex = 0;
+    ifIndex = ipv6proto->GetInterfaceForDevice (device);
+    Ipv6InterfaceAddress ipv6Addr = Ipv6InterfaceAddress (Ipv6Address ("2001:db8:f00d:cafe::42"), Ipv6Prefix (64));
+    ipv6proto->AddAddress (ifIndex, ipv6Addr);
+
+
 Auto-generated IPv6 adddresses
 ##############################
 

@@ -28,6 +28,7 @@ namespace ns3 {
  * \ingroup AttributeHelper
  */
 template <typename V, typename T1>
+inline
 Ptr<const AttributeAccessor>
 MakeAccessorHelper (T1 a1);
 
@@ -35,6 +36,7 @@ MakeAccessorHelper (T1 a1);
  * \ingroup AttributeHelper
  */
 template <typename V, typename T1, typename T2>
+inline
 Ptr<const AttributeAccessor>
 MakeAccessorHelper (T1 a1, T2 a2);
 
@@ -94,6 +96,7 @@ private:
 };
 
 template <typename V, typename T, typename U>
+inline
 Ptr<const AttributeAccessor>
 DoMakeAccessorHelperOne (U T::*memberVariable)
 {
@@ -132,6 +135,7 @@ private:
 }
 
 template <typename V, typename T, typename U>
+inline
 Ptr<const AttributeAccessor>
 DoMakeAccessorHelperOne (U (T::*getter)(void) const)
 {
@@ -163,6 +167,7 @@ private:
 
 
 template <typename V, typename T, typename U>
+inline
 Ptr<const AttributeAccessor>
 DoMakeAccessorHelperOne (void (T::*setter)(U))
 {
@@ -199,6 +204,7 @@ private:
 }
 
 template <typename W, typename T, typename U, typename V>
+inline
 Ptr<const AttributeAccessor>
 DoMakeAccessorHelperTwo (void (T::*setter)(U),
                          V (T::*getter)(void) const)
@@ -240,6 +246,7 @@ private:
 }
 
 template <typename W, typename T, typename U, typename V>
+inline
 Ptr<const AttributeAccessor>
 DoMakeAccessorHelperTwo (V (T::*getter)(void) const,
                          void (T::*setter)(U))
@@ -248,6 +255,7 @@ DoMakeAccessorHelperTwo (V (T::*getter)(void) const,
 }
 
 template <typename W, typename T, typename U, typename V>
+inline
 Ptr<const AttributeAccessor>
 DoMakeAccessorHelperTwo (bool (T::*setter)(U),
                          V (T::*getter)(void) const)
@@ -289,6 +297,7 @@ private:
 }
 
 template <typename W, typename T, typename U, typename V>
+inline
 Ptr<const AttributeAccessor>
 DoMakeAccessorHelperTwo (bool (T::*getter)(void) const,
                          void (T::*setter)(U))
@@ -297,6 +306,7 @@ DoMakeAccessorHelperTwo (bool (T::*getter)(void) const,
 }
 
 template <typename V, typename T1>
+inline
 Ptr<const AttributeAccessor>
 MakeAccessorHelper (T1 a1)
 {
@@ -304,6 +314,7 @@ MakeAccessorHelper (T1 a1)
 }
 
 template <typename V, typename T1, typename T2>
+inline
 Ptr<const AttributeAccessor>
 MakeAccessorHelper (T1 a1, T2 a2)
 {

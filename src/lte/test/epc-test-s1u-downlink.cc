@@ -44,8 +44,7 @@
 using namespace ns3;
 
 
-NS_LOG_COMPONENT_DEFINE ("EpcTestS1uDownlink")
-  ;
+NS_LOG_COMPONENT_DEFINE ("EpcTestS1uDownlink");
 
 
 

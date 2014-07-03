@@ -30,8 +30,7 @@ NS_LOG_COMPONENT_DEFINE ("LteRlcAm");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (LteRlcAm)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (LteRlcAm);
 
 LteRlcAm::LteRlcAm ()
 {

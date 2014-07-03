@@ -40,8 +40,7 @@ namespace ns3 {
 
 const Time RRC_REAL_MSG_DELAY = MilliSeconds (0); 
 
-NS_OBJECT_ENSURE_REGISTERED (LteUeRrcProtocolReal)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (LteUeRrcProtocolReal);
 
 LteUeRrcProtocolReal::LteUeRrcProtocolReal ()
   :  m_ueRrcSapProvider (0),
@@ -351,8 +350,7 @@ LteUeRrcProtocolReal::DoReceivePdcpSdu (LtePdcpSapUser::ReceivePdcpSduParameters
     }
 }
 
-NS_OBJECT_ENSURE_REGISTERED (LteEnbRrcProtocolReal)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (LteEnbRrcProtocolReal);
 
 LteEnbRrcProtocolReal::LteEnbRrcProtocolReal ()
   :  m_enbRrcSapProvider (0)

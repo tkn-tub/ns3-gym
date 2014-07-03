@@ -35,8 +35,7 @@ NS_LOG_COMPONENT_DEFINE ("WifiChannel");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (WifiChannel)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (WifiChannel);
 
 TypeId
 WifiChannel::GetTypeId (void)

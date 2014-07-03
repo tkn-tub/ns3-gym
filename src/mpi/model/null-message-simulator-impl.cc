@@ -355,7 +355,7 @@ NullMessageSimulatorImpl::CalculateSafeTime ()
   NS_LOG_FUNCTION (this);
 
   m_safeTime = RemoteChannelBundleManager::GetSafeTime ();
-  NS_ASSERT (m_safeTime >= m_currentTs);
+  NS_ASSERT (m_safeTime >= Time (m_currentTs));
 }
 
 Time

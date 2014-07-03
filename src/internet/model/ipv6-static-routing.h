@@ -293,14 +293,6 @@ private:
   Ptr<Ipv6MulticastRoute> LookupStatic (Ipv6Address origin, Ipv6Address group, uint32_t ifIndex);
 
   /**
-   * \brief Choose the source address to use with destination address.
-   * \param interface interface index
-   * \param dest IPv6 destination address
-   * \return IPv6 source address to use
-   */
-  Ipv6Address SourceAddressSelection (uint32_t interface, Ipv6Address dest);
-
-  /**
    * \brief the forwarding table for network.
    */
   NetworkRoutes m_networkRoutes;

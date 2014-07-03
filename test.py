@@ -1162,6 +1162,11 @@ def run_tests():
         else:
             path_cmd = os.path.join("utils", test_runner_name + " --print-test-name-list --print-test-types")
         (rc, standard_out, standard_err, et) = run_job_synchronously(path_cmd, os.getcwd(), False, False)
+        if rc != 0:
+            # This is usually a sign that ns-3 crashed or exited uncleanly
+            print('test.py error:  test-runner return code returned {}'.format(rc))
+            print('To debug, try running {}\n'.format('\'./waf --run \"test-runner --print-test-name-list\"\''))
+            return
         list_items = standard_out.split('\n')
         list_items.sort()
         print "Test Type    Test Name"
@@ -1324,6 +1329,7 @@ def run_tests():
     #
     total_tests = 0
     skipped_tests = 0
+    skipped_testnames = []
 
     #
     # We now have worker threads spun up, and a list of work to do.  So, run 
@@ -1593,8 +1599,11 @@ def run_tests():
     #
     passed_tests = 0
     failed_tests = 0
+    failed_testnames = []
     crashed_tests = 0
+    crashed_testnames = []
     valgrind_errors = 0
+    valgrind_testnames = []
     for i in range(jobs):
         job = output_queue.get()
         if job.is_break:
@@ -1608,18 +1617,22 @@ def run_tests():
         if job.is_skip:
             status = "SKIP"
             skipped_tests = skipped_tests + 1
+            skipped_testnames.append(job.display_name)
         else:
             if job.returncode == 0:
                 status = "PASS"
                 passed_tests = passed_tests + 1
             elif job.returncode == 1:
                 failed_tests = failed_tests + 1
+                failed_testnames.append(job.display_name)
                 status = "FAIL"
             elif job.returncode == 2:
                 valgrind_errors = valgrind_errors + 1
+                valgrind_testnames.append(job.display_name)
                 status = "VALGR"
             else:
                 crashed_tests = crashed_tests + 1
+                crashed_testnames.append(job.display_name)
                 status = "CRASH"
 
         if options.duration or options.constrain == "performance":
@@ -1755,6 +1768,17 @@ def run_tests():
     #
     print "%d of %d tests passed (%d passed, %d skipped, %d failed, %d crashed, %d valgrind errors)" % (passed_tests, 
         total_tests, passed_tests, skipped_tests, failed_tests, crashed_tests, valgrind_errors)
+    #
+    # Repeat summary of skipped, failed, crashed, valgrind events 
+    #
+    if skipped_testnames:
+        print 'List of SKIPped tests: %s' % ' '.join(map(str, skipped_testnames))
+    if failed_testnames:
+        print 'List of FAILed tests: %s' % ' '.join(map(str, failed_testnames))
+    if crashed_testnames:
+        print 'List of CRASHed tests: %s' % ' '.join(map(str, crashed_testnames))
+    if valgrind_testnames:
+        print 'List of VALGR failures: %s' % ' '.join(map(str, valgrind_testnames))
     #
     # The last things to do are to translate the XML results file to "human
     # readable form" if the user asked for it (or make an XML file somewhere)

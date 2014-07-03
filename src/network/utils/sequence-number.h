@@ -341,27 +341,107 @@ public:
   friend std::istream & operator >> (std::istream &is, const SequenceNumber<NUMERIC_TYPE2, SIGNED_TYPE2> &val);
 
 private: // unimplemented operators
+  /**
+   * \brief Plus equals operator - unimplemented
+   * \param value value
+   * \returns sequence number
+   */
   SequenceNumber<NUMERIC_TYPE, SIGNED_TYPE>& operator+= (SequenceNumber<NUMERIC_TYPE, SIGNED_TYPE> const &value);
+  /**
+   * \brief Minus equals operator - unimplemented
+   * \param value value
+   * \returns sequence number
+   */
   SequenceNumber<NUMERIC_TYPE, SIGNED_TYPE>& operator-= (SequenceNumber<NUMERIC_TYPE, SIGNED_TYPE> const &value);
+  /**
+   * \brief Multiplication operator - unimplemented
+   * \param b value
+   * \returns sequence number
+   */
   SequenceNumber<NUMERIC_TYPE, SIGNED_TYPE> operator* (const SequenceNumber<NUMERIC_TYPE, SIGNED_TYPE>& b) const;
+  /**
+   * \brief Division operator - unimplemented
+   * \param b value
+   * \returns sequence number
+   */
   SequenceNumber<NUMERIC_TYPE, SIGNED_TYPE> operator/ (const SequenceNumber<NUMERIC_TYPE, SIGNED_TYPE>& b) const;
+  /**
+   * \brief Modulo operator - unimplemented
+   * \param b value
+   * \returns sequence number
+   */
   SequenceNumber<NUMERIC_TYPE, SIGNED_TYPE> operator% (const SequenceNumber<NUMERIC_TYPE, SIGNED_TYPE>& b) const;
+  /**
+   * \brief Logical NOT operator - unimplemented
+   * \returns condition
+   */
   bool operator ! () const;
+  /**
+   * \brief Logical AND operator - unimplemented
+   * \param b value
+   * \returns condition
+   */
   bool operator && (const SequenceNumber<NUMERIC_TYPE, SIGNED_TYPE>& b) const;
+  /**
+   * \brief Logical OR operator - unimplemented
+   * \param b value
+   * \returns condition
+   */
   bool operator || (const SequenceNumber<NUMERIC_TYPE, SIGNED_TYPE>& b) const;
+  /**
+   * \brief Bitwise NOT operator - unimplemented
+   * \returns sequence number
+   */
   SequenceNumber<NUMERIC_TYPE, SIGNED_TYPE> operator~ () const;
+  /**
+   * \brief Bitwise AND operator - unimplemented
+   * \param b value
+   * \returns sequence number
+   */
   SequenceNumber<NUMERIC_TYPE, SIGNED_TYPE> operator& (const SequenceNumber<NUMERIC_TYPE, SIGNED_TYPE>& b) const;
+  /**
+   * \brief Bitwise OR operator - unimplemented
+   * \param b value
+   * \returns sequence number
+   */
   SequenceNumber<NUMERIC_TYPE, SIGNED_TYPE> operator| (const SequenceNumber<NUMERIC_TYPE, SIGNED_TYPE>& b) const;
+  /**
+   * \brief Bitwise XOR operator - unimplemented
+   * \param b value
+   * \returns sequence number
+   */
   SequenceNumber<NUMERIC_TYPE, SIGNED_TYPE> operator^ (const SequenceNumber<NUMERIC_TYPE, SIGNED_TYPE>& b) const;
+  /**
+   * \brief Bitwise left shift operator - unimplemented
+   * \param b value
+   * \returns sequence number
+   */
   SequenceNumber<NUMERIC_TYPE, SIGNED_TYPE> operator<< (const SequenceNumber<NUMERIC_TYPE, SIGNED_TYPE>& b) const;
+  /**
+   * \brief Bitwise right shift operator - unimplemented
+   * \param b value
+   * \returns sequence number
+   */
   SequenceNumber<NUMERIC_TYPE, SIGNED_TYPE> operator>> (const SequenceNumber<NUMERIC_TYPE, SIGNED_TYPE>& b) const;
+  /**
+   * \brief Indirection operator - unimplemented
+   * \returns integer
+   */
   int operator* ();
   //SequenceNumber<NUMERIC_TYPE, SIGNED_TYPE>* operator& ();
 
 private:
-  NUMERIC_TYPE m_value;
+  NUMERIC_TYPE m_value; //!< Sequence number value
 };
 
+
+/**
+ * \brief Stream insertion operator.
+ *
+ * \param os the stream
+ * \param val the value
+ * \returns a reference to the stream
+ */
 template<typename NUMERIC_TYPE, typename SIGNED_TYPE>
 std::ostream &
 operator<< (std::ostream& os, const SequenceNumber<NUMERIC_TYPE, SIGNED_TYPE> &val)
@@ -370,6 +450,14 @@ operator<< (std::ostream& os, const SequenceNumber<NUMERIC_TYPE, SIGNED_TYPE> &v
   return os;
 }
 
+
+/**
+ * \brief Stream extraction operator.
+ *
+ * \param is the stream
+ * \param val the value
+ * \returns a reference to the stream
+ */
 template<typename NUMERIC_TYPE, typename SIGNED_TYPE>
 std::istream & operator >> (std::istream &is, const SequenceNumber<NUMERIC_TYPE, SIGNED_TYPE> &val)
 {
@@ -377,9 +465,11 @@ std::istream & operator >> (std::istream &is, const SequenceNumber<NUMERIC_TYPE,
   return is;
 }
 
-
+/// 32 bit Sequence number
 typedef SequenceNumber<uint32_t, int32_t> SequenceNumber32;
+/// 16 bit Sequence number
 typedef SequenceNumber<uint16_t, int16_t> SequenceNumber16;
+typedef SequenceNumber<uint8_t, int8_t> SequenceNumber8;
 
 } // namespace ns3
 

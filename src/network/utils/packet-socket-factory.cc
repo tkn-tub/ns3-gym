@@ -26,8 +26,7 @@ NS_LOG_COMPONENT_DEFINE ("PacketSocketFactory");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (PacketSocketFactory)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (PacketSocketFactory);
 
 TypeId 
 PacketSocketFactory::GetTypeId (void)

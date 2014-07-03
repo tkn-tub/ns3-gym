@@ -47,6 +47,9 @@ public:
   // inherited from Object
   static TypeId GetTypeId (void);
 
+  ItuR1411LosPropagationLossModel ();
+  virtual ~ItuR1411LosPropagationLossModel ();
+
   /** 
    * Set the operating frequency
    * 

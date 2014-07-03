@@ -36,6 +36,10 @@ class Packet;
 class SimpleChannel : public Channel
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   SimpleChannel ();
 
@@ -66,7 +70,7 @@ public:
   virtual Ptr<NetDevice> GetDevice (uint32_t i) const;
 
 private:
-  std::vector<Ptr<SimpleNetDevice> > m_devices;
+  std::vector<Ptr<SimpleNetDevice> > m_devices; //!< devices connected by the channel
 };
 
 } // namespace ns3

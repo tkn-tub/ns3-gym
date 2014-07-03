@@ -14,47 +14,72 @@ NS_LOG_COMPONENT_DEFINE ("int64x64");
 
 namespace ns3 {
 
+/**
+ * \internal
+ * This algorithm is exact to the precision requested, up to the full
+ * 64 decimal digits required to exactly represent a 64-bit fraction.
+ *
+ * Proper rounding turns out to be surprisingly hard.
+ * In `y.xxxx5|6`, where the `|` marks follows the last output digit,
+ * rounding the `5|6` to `6|` is straightforward.  However,
+ * rounding `y.xxx99|6` should result in `y.xx100|`.  Notice the
+ * effect of rounding percolates to higher digits.
+ * We accumulate the output digits in a string, then carry out
+ * the rounding in the string directly.
+ */
 std::ostream &operator << (std::ostream &os, const int64x64_t &value)
 {
-  int64_t hi = value.GetHigh ();
+  const bool negative = (value < 0);
+  const int64x64_t absVal = (negative ? -value : value);
+  
+  int64_t hi = absVal.GetHigh ();
 
   // Save stream format flags
+  const std::streamsize precision = os.precision ();
   std::ios_base::fmtflags ff = os.flags ();
-  os << std::setw (1);
-
-  { /// \internal
-    /// See \bugid{1737}:  gcc libstc++ 4.2 bug
-    if (hi == 0)
-      { 
-	os << '+';
-      }
-    else
-      {
-	os << std::showpos;
-      }
-  }
-  
-  os << std::right << hi << ".";
-
-  os << std::noshowpos;
-
-  int64x64_t low(0, value.GetLow ());
-  int places = 0;    // Number of decimal places printed so far
   const bool floatfield = os.flags () & std::ios_base::floatfield;
+  os << std::setw (1) << std::noshowpos;
+  
+  os << std::right << (negative ? "-" : "+");
+
+  std::ostringstream oss;
+  oss << hi << ".";  // collect the digits here so we can round properly
+
+
+  int64x64_t low(0, absVal.GetLow ());
+  int places = 0;    // Number of decimal places printed so far
   bool more = true;  // Should we print more digits?
 
+#define HEXHILOW(hi, lo) \
+  std::hex << std::setfill ('0') << std::right << " (0x"		\
+	   << std::setw (16) << hi << " "				\
+	   << std::setw (16) << lo					\
+	   << std::dec << std::setfill (' ') << std::left << ")"
+
+  
+  NS_LOG_LOGIC (std::endl
+		<< (floatfield ? " f" : "  ")
+		<< "[" << precision << "] " << hi << ". "
+		<< HEXHILOW (hi, low.GetLow ())
+		);
+
+  int64_t digit;
   do 
     {
-      low = 10 * low;
-      int64_t digit = low.GetHigh ();
+      low *= 10;
+      digit = low.GetHigh ();
+      NS_ASSERT_MSG ( (0 <= digit) && (digit <= 9),
+		      "digit " << digit << " out of range [0,9] "
+		      << " streaming out "
+		      << HEXHILOW (value.GetHigh (), value.GetLow ()) );
       low -= digit;
 
-      os << std::setw (1) << digit;
+      oss << std::setw (1) << digit;
 
       ++places;
       if (floatfield)
 	{
-	  more = places < os.precision ();
+	  more = places < precision;
 	}
       else  // default
 	{
@@ -62,8 +87,50 @@ std::ostream &operator << (std::ostream &os, const int64x64_t &value)
 	  more = low.GetLow () && (places < 20);
 	}
 
+      NS_LOG_LOGIC ((more ? "+" : " ")
+		    << (floatfield ? "f" : " ")
+		    << "[" << places << "] " << digit
+		    << HEXHILOW (low.GetHigh (), low.GetLow ())
+		    << std::dec << std::setfill (' ' ) << std::left);
+
     } while (more);
 
+  // Check if we need to round the last printed digit,
+  // based on the first unprinted digit
+  std::string digits = oss.str ();
+  low *= 10;
+  int64_t nextDigit = low.GetHigh ();
+  if ( (nextDigit > 5) || ((nextDigit == 5) && (digit % 2 == 1)) )
+    {
+      // Walk backwards with the carry
+      bool carry = true;
+      for (std::string::reverse_iterator rit = digits.rbegin ();
+	   rit != digits.rend ();
+	   ++rit)
+	{
+	  if (*rit == '.')  // Skip over the decimal point
+	    {
+	      continue ;
+	    }
+	  
+	  ++(*rit);         // Add the carry
+	  if (*rit <= '9')  // Relies on character order...
+	    {
+	      carry = false;
+	      break ;       // Carry complete
+	    }
+	  else
+	    {
+	      *rit = '0';     // Continue carry to next higher digit
+	    }
+	}
+      if (carry)            // If we still have a carry...
+	{
+	  digits.insert (digits.begin (), '1');
+	}
+    }
+  os << digits;
+  
   os.flags (ff);  // Restore stream flags
   return os;
 }
@@ -75,7 +142,7 @@ static uint64_t ReadHiDigits (std::string str)
   while (*buf != 0)
     {
       retval *= 10;
-      retval += *buf - 0x30;
+      retval += *buf - '0';
       buf++;
     }
   return retval;
@@ -83,14 +150,17 @@ static uint64_t ReadHiDigits (std::string str)
 
 static uint64_t ReadLoDigits (std::string str)
 {
-  int64x64_t low (0, 0);
-  const int64x64_t round (0, 5);
+  int64x64_t low;
+  const int64x64_t round (0, 5);  // Round last place in division
 
-  for (std::string::const_reverse_iterator rchar = str.rbegin ();
-       rchar != str.rend ();
-       ++rchar)
+  for (std::string::const_reverse_iterator rit = str.rbegin ();
+       rit != str.rend ();
+       ++rit)
     {
-      int digit = *rchar - '0';
+      int digit = *rit - '0';
+      NS_ASSERT_MSG ( (0 <= digit) && (digit <= 9),
+		      "digit " << digit << " out of range [0,9]"
+		      << " streaming in low digits \"" << str << "\"");
       low = (low + digit + round) / 10; 
     }
   
@@ -136,13 +206,20 @@ std::istream &operator >> (std::istream &is, int64x64_t &value)
       hi = ReadHiDigits (str.substr (cur, next-cur));
       lo = ReadLoDigits (str.substr (next+1, str.size ()-(next+1)));
     }
-  else
+  else if (cur != std::string::npos)
     {
       hi = ReadHiDigits (str.substr (cur, str.size ()-cur));
       lo = 0;
     }
-  hi = negative ? -hi : hi;
+  else
+    {
+      hi = 0;
+      lo = 0;
+    }
+  
   value = int64x64_t (hi, lo);
+  value = negative ? -value : value;
+
   return is;
 }
 

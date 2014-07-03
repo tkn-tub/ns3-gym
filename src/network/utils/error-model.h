@@ -115,6 +115,10 @@ class Packet;
 class ErrorModel : public Object
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   ErrorModel ();
@@ -146,13 +150,18 @@ public:
   bool IsEnabled (void) const;
 
 private:
-  /*
-   * These methods must be implemented by subclasses
+  /**
+   * Corrupt a packet according to the specified model.
+   * \param p the packet to corrupt
+   * \returns true if the packet is corrupted
    */
-  virtual bool DoCorrupt (Ptr<Packet>) = 0;
+  virtual bool DoCorrupt (Ptr<Packet> p) = 0;
+  /**
+   * Re-initialize any state
+   */
   virtual void DoReset (void) = 0;
 
-  bool m_enable;
+  bool m_enable; //!< True if the error model is enabled
 };
 
 /**
@@ -173,11 +182,18 @@ private:
 class RateErrorModel : public ErrorModel
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   RateErrorModel ();
   virtual ~RateErrorModel ();
 
+  /**
+   * Error unit. The error model can be packet, Byte or bit based.
+   */
   enum ErrorUnit
   {
     ERROR_UNIT_BIT,
@@ -220,15 +236,30 @@ public:
 
 private:
   virtual bool DoCorrupt (Ptr<Packet> p);
+  /**
+   * Corrupt a packet (packet unit).
+   * \param p the packet to corrupt
+   * \returns true if the packet is corrupted
+   */
   virtual bool DoCorruptPkt (Ptr<Packet> p);
+  /**
+   * Corrupt a packet (Byte unit).
+   * \param p the packet to corrupt
+   * \returns true if the packet is corrupted
+   */
   virtual bool DoCorruptByte (Ptr<Packet> p);
+  /**
+   * Corrupt a packet (bit unit).
+   * \param p the packet to corrupt
+   * \returns true if the packet is corrupted
+   */
   virtual bool DoCorruptBit (Ptr<Packet> p);
   virtual void DoReset (void);
 
-  enum ErrorUnit m_unit;
-  double m_rate;
+  enum ErrorUnit m_unit; //!< Error rate unit
+  double m_rate; //!< Error rate
 
-  Ptr<RandomVariableStream> m_ranvar;
+  Ptr<RandomVariableStream> m_ranvar; //!< rng stream
 };
 
 
@@ -267,6 +298,10 @@ private:
 class BurstErrorModel : public ErrorModel
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   BurstErrorModel ();
@@ -305,16 +340,16 @@ private:
   virtual bool DoCorrupt (Ptr<Packet> p);
   virtual void DoReset (void);
 
-  double m_burstRate;                         //the burst error event
+  double m_burstRate;                         //!< the burst error event
+  Ptr<RandomVariableStream> m_burstStart;     //!< the error decision variable
+  Ptr<RandomVariableStream> m_burstSize;      //!< the number of packets being flagged as errored
 
-  Ptr<RandomVariableStream> m_burstStart;     //the error decision variable
-
-  Ptr<RandomVariableStream> m_burstSize;      //the number of packets being flagged as errored
-
-  uint32_t m_counter;                         //keep track of the number of packets being errored
-                                              //until it reaches m_burstSize
-
-  uint32_t m_currentBurstSz;                  //the current burst size
+  /**
+   * keep track of the number of packets being errored
+   * until it reaches m_burstSize
+   */
+  uint32_t m_counter;
+  uint32_t m_currentBurstSz;                  //!< the current burst size
 
 };
 
@@ -344,6 +379,10 @@ private:
 class ListErrorModel : public ErrorModel
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   ListErrorModel ();
   virtual ~ListErrorModel ();
@@ -363,10 +402,12 @@ private:
   virtual bool DoCorrupt (Ptr<Packet> p);
   virtual void DoReset (void);
 
+  /// Typedef: packet Uid list
   typedef std::list<uint32_t> PacketList;
+  /// Typedef: packet Uid list const iterator
   typedef std::list<uint32_t>::const_iterator PacketListCI;
 
-  PacketList m_packetList;
+  PacketList m_packetList; //!< container of Uid of packets to corrupt
 
 };
 
@@ -385,6 +426,10 @@ private:
 class ReceiveListErrorModel : public ErrorModel
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   ReceiveListErrorModel ();
   virtual ~ReceiveListErrorModel ();
@@ -404,11 +449,13 @@ private:
   virtual bool DoCorrupt (Ptr<Packet> p);
   virtual void DoReset (void);
 
+  /// Typedef: packet sequence number list
   typedef std::list<uint32_t> PacketList;
+  /// Typedef: packet sequence number list const iterator
   typedef std::list<uint32_t>::const_iterator PacketListCI;
 
-  PacketList m_packetList;
-  uint32_t m_timesInvoked;
+  PacketList m_packetList; //!< container of sequence number of packets to corrupt
+  uint32_t m_timesInvoked; //!< number of times the error model has been invoked
 
 };
 

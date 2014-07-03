@@ -35,8 +35,7 @@
 NS_LOG_COMPONENT_DEFINE ("UplinkSchedulerSimple");
 
 namespace ns3 {
-NS_OBJECT_ENSURE_REGISTERED (UplinkSchedulerSimple)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (UplinkSchedulerSimple);
 
 UplinkSchedulerSimple::UplinkSchedulerSimple (void)
 {

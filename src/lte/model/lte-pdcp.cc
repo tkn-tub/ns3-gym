@@ -61,8 +61,7 @@ LtePdcpSpecificLteRlcSapUser::ReceivePdcpPdu (Ptr<Packet> p)
 
 ///////////////////////////////////////
 
-NS_OBJECT_ENSURE_REGISTERED (LtePdcp)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (LtePdcp);
 
 LtePdcp::LtePdcp ()
   : m_pdcpSapUser (0),

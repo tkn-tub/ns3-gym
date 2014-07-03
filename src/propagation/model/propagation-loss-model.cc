@@ -36,8 +36,7 @@ namespace ns3 {
 
 // ------------------------------------------------------------------------- //
 
-NS_OBJECT_ENSURE_REGISTERED (PropagationLossModel)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (PropagationLossModel);
 
 TypeId 
 PropagationLossModel::GetTypeId (void)
@@ -96,8 +95,7 @@ PropagationLossModel::AssignStreams (int64_t stream)
 
 // ------------------------------------------------------------------------- //
 
-NS_OBJECT_ENSURE_REGISTERED (RandomPropagationLossModel)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (RandomPropagationLossModel);
 
 TypeId 
 RandomPropagationLossModel::GetTypeId (void)
@@ -140,8 +138,7 @@ RandomPropagationLossModel::DoAssignStreams (int64_t stream)
 
 // ------------------------------------------------------------------------- //
 
-NS_OBJECT_ENSURE_REGISTERED (FriisPropagationLossModel)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (FriisPropagationLossModel);
 
 const double FriisPropagationLossModel::PI = 3.14159265358979323846;
 
@@ -161,11 +158,11 @@ FriisPropagationLossModel::GetTypeId (void)
                    DoubleValue (1.0),
                    MakeDoubleAccessor (&FriisPropagationLossModel::m_systemLoss),
                    MakeDoubleChecker<double> ())
-    .AddAttribute ("MinDistance", 
-                   "The distance under which the propagation model refuses to give results (m)",
-                   DoubleValue (0.5),
-                   MakeDoubleAccessor (&FriisPropagationLossModel::SetMinDistance,
-                                       &FriisPropagationLossModel::GetMinDistance),
+    .AddAttribute ("MinLoss", 
+                   "The minimum value (dB) of the total loss, used at short ranges. Note: ",
+                   DoubleValue (0.0),
+                   MakeDoubleAccessor (&FriisPropagationLossModel::SetMinLoss,
+                                       &FriisPropagationLossModel::GetMinLoss),
                    MakeDoubleChecker<double> ())
   ;
   return tid;
@@ -185,14 +182,14 @@ FriisPropagationLossModel::GetSystemLoss (void) const
   return m_systemLoss;
 }
 void
-FriisPropagationLossModel::SetMinDistance (double minDistance)
+FriisPropagationLossModel::SetMinLoss (double minLoss)
 {
-  m_minDistance = minDistance;
+  m_minLoss = minLoss;
 }
 double
-FriisPropagationLossModel::GetMinDistance (void) const
+FriisPropagationLossModel::GetMinLoss (void) const
 {
-  return m_minDistance;
+  return m_minLoss;
 }
 
 void
@@ -258,15 +255,19 @@ FriisPropagationLossModel::DoCalcRxPower (double txPowerDbm,
    * lambda: wavelength (m)
    */
   double distance = a->GetDistanceFrom (b);
-  if (distance <= m_minDistance)
+  if (distance < 3*m_lambda)
     {
-      return txPowerDbm;
+      NS_LOG_WARN ("distance not within the far field region => inaccurate propagation loss value");
+    }
+  if (distance <= 0)
+    {
+      return txPowerDbm - m_minLoss;
     }
   double numerator = m_lambda * m_lambda;
   double denominator = 16 * PI * PI * distance * distance * m_systemLoss;
-  double pr = 10 * std::log10 (numerator / denominator);
-  NS_LOG_DEBUG ("distance="<<distance<<"m, attenuation coefficient="<<pr<<"dB");
-  return txPowerDbm + pr;
+  double lossDb = -10 * log10 (numerator / denominator);
+  NS_LOG_DEBUG ("distance=" << distance<< "m, loss=" << lossDb <<"dB");
+  return txPowerDbm - std::max (lossDb, m_minLoss);
 }
 
 int64_t
@@ -278,8 +279,7 @@ FriisPropagationLossModel::DoAssignStreams (int64_t stream)
 // ------------------------------------------------------------------------- //
 // -- Two-Ray Ground Model ported from NS-2 -- tomhewer@mac.com -- Nov09 //
 
-NS_OBJECT_ENSURE_REGISTERED (TwoRayGroundPropagationLossModel)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (TwoRayGroundPropagationLossModel);
 
 const double TwoRayGroundPropagationLossModel::PI = 3.14159265358979323846;
 
@@ -453,8 +453,7 @@ TwoRayGroundPropagationLossModel::DoAssignStreams (int64_t stream)
 
 // ------------------------------------------------------------------------- //
 
-NS_OBJECT_ENSURE_REGISTERED (LogDistancePropagationLossModel)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (LogDistancePropagationLossModel);
 
 TypeId
 LogDistancePropagationLossModel::GetTypeId (void)
@@ -542,8 +541,7 @@ LogDistancePropagationLossModel::DoAssignStreams (int64_t stream)
 
 // ------------------------------------------------------------------------- //
 
-NS_OBJECT_ENSURE_REGISTERED (ThreeLogDistancePropagationLossModel)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (ThreeLogDistancePropagationLossModel);
 
 TypeId
 ThreeLogDistancePropagationLossModel::GetTypeId (void)
@@ -644,8 +642,7 @@ ThreeLogDistancePropagationLossModel::DoAssignStreams (int64_t stream)
 
 // ------------------------------------------------------------------------- //
 
-NS_OBJECT_ENSURE_REGISTERED (NakagamiPropagationLossModel)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (NakagamiPropagationLossModel);
 
 TypeId
 NakagamiPropagationLossModel::GetTypeId (void)
@@ -759,8 +756,7 @@ NakagamiPropagationLossModel::DoAssignStreams (int64_t stream)
 
 // ------------------------------------------------------------------------- //
 
-NS_OBJECT_ENSURE_REGISTERED (FixedRssLossModel)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (FixedRssLossModel);
 
 TypeId 
 FixedRssLossModel::GetTypeId (void)
@@ -806,8 +802,7 @@ FixedRssLossModel::DoAssignStreams (int64_t stream)
 
 // ------------------------------------------------------------------------- //
 
-NS_OBJECT_ENSURE_REGISTERED (MatrixPropagationLossModel)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (MatrixPropagationLossModel);
 
 TypeId 
 MatrixPropagationLossModel::GetTypeId (void)
@@ -886,8 +881,7 @@ MatrixPropagationLossModel::DoAssignStreams (int64_t stream)
 
 // ------------------------------------------------------------------------- //
 
-NS_OBJECT_ENSURE_REGISTERED (RangePropagationLossModel)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (RangePropagationLossModel);
 
 TypeId
 RangePropagationLossModel::GetTypeId (void)

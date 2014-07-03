@@ -96,8 +96,7 @@ EmfToSeconds (uint8_t olsrFormat)
 
 // ---------------- OLSR Packet -------------------------------
 
-NS_OBJECT_ENSURE_REGISTERED (PacketHeader)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (PacketHeader);
 
 PacketHeader::PacketHeader ()
 {
@@ -154,8 +153,7 @@ PacketHeader::Deserialize (Buffer::Iterator start)
 
 // ---------------- OLSR Message -------------------------------
 
-NS_OBJECT_ENSURE_REGISTERED (MessageHeader)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (MessageHeader);
 
 MessageHeader::MessageHeader ()
   : m_messageType (MessageHeader::MessageType (0))

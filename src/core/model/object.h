@@ -46,6 +46,7 @@ struct ObjectDeleter
 /**
  * \ingroup core
  * \defgroup object Object
+ * \brief Base classes which provides memory management and object aggregation.
  */
 /**
  * \ingroup object

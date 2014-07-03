@@ -99,18 +99,27 @@ public:
   operator Address () const;
 
   /**
-   * \param address the Address instance to convert from.
+   * \brief Returns an InetSocketAddress which corresponds to the input
+   * Address.
    *
-   * Returns an InetSocketAddress which corresponds to the input
-   * Address
+   * \param address the Address instance to convert from.
+   * \returns an InetSocketAddress
    */
   static InetSocketAddress ConvertFrom (const Address &address);
 private:
+  /**
+   * \brief Convert to an Address type
+   */
   Address ConvertTo (void) const;
 
+  /**
+   * \brief Get the underlying address type (automatically assigned).
+   *
+   * \returns the address type
+   */
   static uint8_t GetType (void);
-  Ipv4Address m_ipv4;
-  uint16_t m_port;
+  Ipv4Address m_ipv4; //!< the IPv4 address
+  uint16_t m_port;    //!< the port
 };
 
 } // namespace ns3

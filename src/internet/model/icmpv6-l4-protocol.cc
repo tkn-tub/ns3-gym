@@ -39,11 +39,9 @@
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (Icmpv6L4Protocol)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (Icmpv6L4Protocol);
 
-NS_LOG_COMPONENT_DEFINE ("Icmpv6L4Protocol")
-  ;
+NS_LOG_COMPONENT_DEFINE ("Icmpv6L4Protocol");
 
 const uint8_t Icmpv6L4Protocol::PROT_NUMBER = 58;
 
@@ -272,11 +270,14 @@ void Icmpv6L4Protocol::Forward (Ipv6Address source, Icmpv6Header icmp,
 
   uint8_t nextHeader = ipHeader.GetNextHeader ();
 
-  Ptr<IpL4Protocol> l4 = ipv6->GetProtocol (nextHeader);
-  if (l4 != 0)
+  if (nextHeader != Icmpv6L4Protocol::PROT_NUMBER)
     {
-      l4->ReceiveIcmp (source, ipHeader.GetHopLimit (), icmp.GetType (), icmp.GetCode (),
-                       info, ipHeader.GetSourceAddress (), ipHeader.GetDestinationAddress (), payload);
+      Ptr<IpL4Protocol> l4 = ipv6->GetProtocol (nextHeader);
+      if (l4 != 0)
+        {
+          l4->ReceiveIcmp (source, ipHeader.GetHopLimit (), icmp.GetType (), icmp.GetCode (),
+                           info, ipHeader.GetSourceAddress (), ipHeader.GetDestinationAddress (), payload);
+        }
     }
 }
 
@@ -587,7 +588,16 @@ Ptr<Packet> Icmpv6L4Protocol::ForgeEchoRequest (Ipv6Address src, Ipv6Address dst
   req.SetId (id);
   req.SetSeq (seq);
 
+  req.CalculatePseudoHeaderChecksum (src, dst, p->GetSize () + req.GetSerializedSize (), PROT_NUMBER);
   p->AddHeader (req);
+
+  ipHeader.SetSourceAddress (src);
+  ipHeader.SetDestinationAddress (dst);
+  ipHeader.SetNextHeader (PROT_NUMBER);
+  ipHeader.SetPayloadLength (p->GetSize ());
+  ipHeader.SetHopLimit (255);
+
+  p->AddHeader (ipHeader);
 
   return p;
 }
@@ -1339,7 +1349,7 @@ bool Icmpv6L4Protocol::Lookup (Ptr<Packet> p, Ipv6Address dst, Ptr<NetDevice> de
           *hardwareDestination = entry->GetMacAddress ();
           return true;
         }
-      else /* PROBE */
+      else /* INCOMPLETE or PROBE */
         {
           /* queue packet */
           entry->AddWaitingPacket (p);

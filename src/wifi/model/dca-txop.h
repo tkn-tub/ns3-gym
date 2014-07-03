@@ -101,6 +101,12 @@ public:
    * \param remoteManager WifiRemoteStationManager
    */
   void SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> remoteManager);
+  /**
+   * Set MacTxMiddle this DcaTxop is associated to.
+   *
+   * \param txMiddle MacTxMiddle
+   */
+  void SetTxMiddle (MacTxMiddle *txMiddle);
 
   /**
    * \param callback the callback to invoke when a

@@ -36,8 +36,7 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("Hash-Murmur3")
-  ;
+NS_LOG_COMPONENT_DEFINE ("Hash-Murmur3");
 
 namespace Hash {
 

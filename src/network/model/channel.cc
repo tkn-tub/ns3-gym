@@ -27,8 +27,7 @@ NS_LOG_COMPONENT_DEFINE ("Channel");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (Channel)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (Channel);
 
 TypeId 
 Channel::GetTypeId (void)

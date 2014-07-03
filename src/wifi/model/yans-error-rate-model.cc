@@ -28,8 +28,7 @@ NS_LOG_COMPONENT_DEFINE ("YansErrorRateModel");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (YansErrorRateModel)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (YansErrorRateModel);
 
 TypeId
 YansErrorRateModel::GetTypeId (void)
@@ -65,7 +64,7 @@ YansErrorRateModel::GetQamBer (double snr, unsigned int m, uint32_t signalSpread
   double EbNo = snr * signalSpread / phyRate;
   double z = std::sqrt ((1.5 * Log2 (m) * EbNo) / (m - 1.0));
   double z1 = ((1.0 - 1.0 / std::sqrt (m)) * erfc (z));
-  double z2 = 1 - std::pow ((1 - z1), 2.0);
+  double z2 = 1 - std::pow ((1 - z1), 2);
   double ber = z2 / Log2 (m);
   NS_LOG_INFO ("Qam m=" << m << " rate=" << phyRate << " snr=" << snr << " ber=" << ber);
   return ber;

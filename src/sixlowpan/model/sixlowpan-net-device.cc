@@ -41,13 +41,11 @@
 #include "sixlowpan-net-device.h"
 #include "sixlowpan-header.h"
 
-NS_LOG_COMPONENT_DEFINE ("SixLowPanNetDevice")
-  ;
+NS_LOG_COMPONENT_DEFINE ("SixLowPanNetDevice");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (SixLowPanNetDevice)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (SixLowPanNetDevice);
 
 TypeId SixLowPanNetDevice::GetTypeId (void)
 {
@@ -72,6 +70,11 @@ TypeId SixLowPanNetDevice::GetTypeId (void)
                    TimeValue (Seconds (60)),
                    MakeTimeAccessor (&SixLowPanNetDevice::m_fragmentExpirationTimeout),
                    MakeTimeChecker ())
+    .AddAttribute ("CompressionThreshold",
+                   "The minimum MAC layer payload size.",
+                   UintegerValue (0x0),
+                   MakeUintegerAccessor (&SixLowPanNetDevice::m_compressionThreshold),
+                   MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("ForceEtherType",
                    "Force a specific EtherType in L2 frames.",
                    BooleanValue (false),
@@ -212,10 +215,13 @@ void SixLowPanNetDevice::ReceiveFromDevice (Ptr<NetDevice> incomingPort,
       NS_LOG_DEBUG ("Unsupported 6LoWPAN encoding: BC0, dropping.");
       m_dropTrace (DROP_UNKNOWN_EXTENSION, copyPkt, m_node->GetObject<SixLowPanNetDevice> (), GetIfIndex ());
       break;
-    case SixLowPanDispatch::LOWPAN_NOTCOMPRESSED:
-      NS_LOG_DEBUG ( "Packet without compression:" << *copyPkt );
-      NS_LOG_DEBUG ( "Packet length:" << copyPkt->GetSize () );
-      m_dropTrace (DROP_UNKNOWN_EXTENSION, copyPkt, m_node->GetObject<SixLowPanNetDevice> (), GetIfIndex ());
+    case SixLowPanDispatch::LOWPAN_IPv6:
+      NS_LOG_DEBUG ( "Packet without compression. Length: " << copyPkt->GetSize () );
+      {
+        SixLowPanIpv6 uncompressedHdr;
+        copyPkt->RemoveHeader(uncompressedHdr);
+        isPktDecompressed = true;
+      }
       break;
     case SixLowPanDispatch::LOWPAN_HC1:
       DecompressLowPanHc1 (copyPkt, src, dst);
@@ -252,15 +258,13 @@ void SixLowPanNetDevice::ReceiveFromDevice (Ptr<NetDevice> incomingPort,
 void SixLowPanNetDevice::SetIfIndex (const uint32_t index)
 {
   NS_LOG_FUNCTION (this << index);
-  // NS_ASSERT_MSG ( m_port != 0, "Sixlowpan: can't find any lower-layer protocol " << m_port );
   m_ifIndex = index;
 }
 
 uint32_t SixLowPanNetDevice::GetIfIndex (void) const
 {
   NS_LOG_FUNCTION (this);
-  // NS_ASSERT_MSG ( m_port != 0, "Sixlowpan: can't find any lower-layer protocol " << m_port );
-  return m_netDevice->GetIfIndex ();
+  return m_ifIndex;
 }
 
 Ptr<Channel> SixLowPanNetDevice::GetChannel (void) const
@@ -386,8 +390,35 @@ bool SixLowPanNetDevice::Send (Ptr<Packet> packet,
                                uint16_t protocolNumber)
 {
   NS_LOG_FUNCTION (this << *packet << dest << protocolNumber);
+  bool ret = false;
+  Address src;
+
+  ret = DoSend (packet, src, dest, protocolNumber, false);
+  return ret;
+}
+
+bool SixLowPanNetDevice::SendFrom (Ptr<Packet> packet,
+                                   const Address& src,
+                                   const Address& dest,
+                                   uint16_t protocolNumber)
+{
+  NS_LOG_FUNCTION (this << *packet << src << dest << protocolNumber);
+  bool ret = false;
+
+  ret = DoSend (packet, src, dest, protocolNumber, true);
+  return ret;
+}
+
+bool SixLowPanNetDevice::DoSend (Ptr<Packet> packet,
+                                 const Address& src,
+                                 const Address& dest,
+                                 uint16_t protocolNumber,
+                                 bool doSendFrom)
+{
+  NS_LOG_FUNCTION (this << *packet << src << dest << protocolNumber << doSendFrom);
   NS_ASSERT_MSG ( m_netDevice != 0, "Sixlowpan: can't find any lower-layer protocol " << m_netDevice );
 
+  Ptr<Packet> origPacket = packet->Copy ();
   uint32_t origHdrSize = 0;
   uint32_t origPacketSize = packet->GetSize ();
   bool ret = false;
@@ -418,66 +449,38 @@ bool SixLowPanNetDevice::Send (Ptr<Packet> packet,
         {
           NS_LOG_DEBUG ( "SixLowPanNetDevice::Send (Fragment) " << **it );
           m_txTrace (*it, m_node->GetObject<SixLowPanNetDevice> (), GetIfIndex ());
-          success &= m_netDevice->Send (*it, dest, protocolNumber);
+          if (doSendFrom)
+            {
+              success &= m_netDevice->SendFrom (*it, src, dest, protocolNumber);
+            }
+          else
+            {
+              success &= m_netDevice->Send (*it, dest, protocolNumber);
+            }
         }
       ret = success;
     }
   else
     {
-      NS_LOG_DEBUG ( "SixLowPanNetDevice::Send " << m_node->GetId () << " " << *packet );
-      m_txTrace (packet, m_node->GetObject<SixLowPanNetDevice> (), GetIfIndex ());
-      ret = m_netDevice->Send (packet, dest, protocolNumber);
-    }
-
-  return ret;
-}
-
-bool SixLowPanNetDevice::SendFrom (Ptr<Packet> packet,
-                                   const Address& src,
-                                   const Address& dest,
-                                   uint16_t protocolNumber)
-{
-  NS_LOG_FUNCTION (this << packet << src << dest << protocolNumber);
-  NS_ASSERT_MSG ( m_netDevice != 0, "Sixlowpan: can't find any lower-layer protocol " << m_netDevice );
-
-  uint32_t origHdrSize = 0;
-  uint32_t origPacketSize = packet->GetSize ();
-  bool ret = false;
-
-  if (m_forceEtherType)
-    {
-      protocolNumber = m_etherType;
-    }
-
-  if (m_useIphc)
-    {
-      origHdrSize += CompressLowPanIphc (packet, m_netDevice->GetAddress (), dest);
-    }
-  else
-    {
-      origHdrSize += CompressLowPanHc1 (packet, m_netDevice->GetAddress (), dest);
-    }
-
-  if ( packet->GetSize () > m_netDevice->GetMtu () )
-    {
-      // fragment
-      std::list<Ptr<Packet> > fragmentList;
-      DoFragmentation (packet, origPacketSize, origHdrSize, fragmentList);
-      std::list<Ptr<Packet> >::iterator it;
-      bool err = false;
-      for ( it = fragmentList.begin (); it != fragmentList.end (); it++ )
+      if (packet->GetSize () < m_compressionThreshold)
         {
-          NS_LOG_DEBUG ( "SixLowPanNetDevice::SendFrom (Fragment) " << **it );
-          m_txTrace (*it, m_node->GetObject<SixLowPanNetDevice> (), GetIfIndex ());
-          err |= !(m_netDevice->SendFrom (*it, src, dest, protocolNumber));
+          NS_LOG_LOGIC ("Compressed packet too short, using uncompressed one");
+          packet = origPacket;
+          SixLowPanIpv6 ipv6UncompressedHdr;
+          packet->AddHeader (ipv6UncompressedHdr);
         }
-      ret = !err;
-    }
-  else
-    {
-      NS_LOG_DEBUG ( "SixLowPanNetDevice::SendFrom " << *packet );
+
       m_txTrace (packet, m_node->GetObject<SixLowPanNetDevice> (), GetIfIndex ());
-      ret = m_netDevice->SendFrom (packet, src, dest, protocolNumber);
+      if (doSendFrom)
+        {
+          NS_LOG_DEBUG ( "SixLowPanNetDevice::SendFrom " << m_node->GetId () << " " << *packet );
+          ret = m_netDevice->SendFrom (packet, src, dest, protocolNumber);
+        }
+      else
+        {
+          NS_LOG_DEBUG ( "SixLowPanNetDevice::Send " << m_node->GetId () << " " << *packet );
+          ret = m_netDevice->Send (packet, dest, protocolNumber);
+        }
     }
 
   return ret;
@@ -1818,10 +1821,12 @@ bool SixLowPanNetDevice::ProcessFragment (Ptr<Packet>& packet, Address const &sr
 
       switch ( dispatchValFrag1 )
         {
-        case SixLowPanDispatch::LOWPAN_NOTCOMPRESSED:
-          NS_LOG_DEBUG ( "Packet without compression:" << *p );
-          NS_LOG_DEBUG ( "Packet length:" << p->GetSize () );
-          break;
+        case SixLowPanDispatch::LOWPAN_IPv6:
+          {
+            SixLowPanIpv6 uncompressedHdr;
+            p->RemoveHeader(uncompressedHdr);
+          }
+         break;
         case SixLowPanDispatch::LOWPAN_HC1:
           DecompressLowPanHc1 (p, src, dst);
           break;

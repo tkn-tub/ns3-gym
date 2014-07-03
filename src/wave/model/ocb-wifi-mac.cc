@@ -125,7 +125,7 @@ OcbWifiMac::SetSsid (Ssid ssid)
 Ssid
 OcbWifiMac::GetSsid (void) const
 {
-  NS_FATAL_ERROR ("in OCB mode we should not call GetSsid");
+  NS_LOG_WARN ("in OCB mode we should not call GetSsid");
   // we really do not want to return ssid, however we have to provide
   return RegularWifiMac::GetSsid ();
 }
@@ -134,13 +134,13 @@ OcbWifiMac::GetSsid (void) const
 void
 OcbWifiMac::SetBssid (Mac48Address bssid)
 {
-  NS_FATAL_ERROR ("in OCB mode we should not call SetBsid");
+  NS_LOG_WARN ("in OCB mode we should not call SetBsid");
 }
 
 Mac48Address
 OcbWifiMac::GetBssid (void) const
 {
-  NS_FATAL_ERROR ("in OCB mode we should not call GetBssid");
+  NS_LOG_WARN ("in OCB mode we should not call GetBssid");
   return WILDCARD_BSSID;
 }
 

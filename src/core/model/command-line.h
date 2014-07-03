@@ -91,7 +91,7 @@ namespace ns3 {
  *   --SchedulerType=HeapScheduler
  * \endcode
  *
- * A simple example is in \c src/core/example/command-line-example.cc
+ * A simple example is in `src/core/example/ command-line-example.cc`
  * The heart of that example is this code:
  *
  * \code
@@ -110,7 +110,7 @@ namespace ns3 {
  *  cmd.Parse (argc, argv);
  * \endcode
  * after which it prints the values of each variable.  (The \c SetCbArg function
- * is not shown.)
+ * is not shown here; see `src/core/example/ command-line-example.cc`)
  *
  * Here is the output from a few runs of that program:
  *
@@ -147,6 +147,31 @@ namespace ns3 {
  *       --PrintTypeIds:              Print all TypeIds.
  *       --PrintAttributes=[typeid]:  Print all attributes of typeid.
  *       --PrintHelp:                 Print this help message.
+ * \endcode
+ *
+ * Having parsed the arguments, some programs will need to perform
+ * some additional validation of the received values.  A common issue at this
+ * point is to discover that the supplied arguments are incomplete or
+ * incompatible.  Suggested best practice is to supply an error message
+ * and the complete usage message.  For example,
+ *
+ * \code
+ *   int value1;
+ *   int value2;
+ *   
+ *   CommandLine cmd;
+ *   cmd.Usage ("...");
+ *   cmd.AddValue ("value1", "first value", value1);
+ *   cmd.AddValue ("value2", "second value", value1);
+ *
+ *   cmd.Parse (argc, argv);
+ *
+ *   if (value1 * value2 < 0)
+ *     {
+ *       std::cerr << "value1 and value2 must have the same sign!" << std::endl;
+ *       std::cerr << cmd;
+ *       exit (-1);
+ *     }
  * \endcode
  */
 class CommandLine
@@ -328,12 +353,14 @@ private:
   /**
    * Handler for \c \-\-PrintAttributes:  print the attributes for a given type.
    *
+   * \param os the output stream.
    * \param type the TypeId whose Attributes should be displayed
    */
   void PrintAttributes (std::ostream &os, const std::string &type) const;
   /**
    * Handler for \c \-\-PrintGroup:  print all types belonging to a given group.
    *
+   * \param os the output stream.
    * \param group the name of the TypeId group to display
    */
   void PrintGroup (std::ostream &os, const std::string &group) const;
@@ -462,6 +489,23 @@ CommandLineHelper::UserItemParse (const std::string value, T & val)
   iss >> val;
   return !iss.bad () && !iss.fail ();
 }
+
+/**
+ * Overloaded operator << to print program usage
+ * (shortcut for CommandLine::PrintHelper)
+ *
+ * \see CommandLine::PrintHelper
+ *
+ * Example usage:
+ * \code
+ *    CommandLine cmd;
+ *    cmd.Parse (argc, argv);
+ *    ...
+ *    
+ *    std::cerr << cmd;
+ * \endcode
+ */
+std::ostream & operator << (std::ostream & os, const CommandLine & cmd);
 
 } // namespace ns3
 

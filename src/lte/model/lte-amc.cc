@@ -36,14 +36,13 @@ NS_LOG_COMPONENT_DEFINE ("LteAmc");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (LteAmc)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (LteAmc);
 
 // from 3GPP R1-081483 "Conveying MCS and TB size via PDCCH"
 // file TBS_support.xls
 // tab "MCS table" (rounded to 2 decimal digits)
 // the index in the vector (0-15) identifies the CQI value
-double SpectralEfficiencyForCqi[16] = {
+static const double SpectralEfficiencyForCqi[16] = {
   0.0, // out of range
   0.15, 0.23, 0.38, 0.6, 0.88, 1.18,
   1.48, 1.91, 2.41,
@@ -51,12 +50,13 @@ double SpectralEfficiencyForCqi[16] = {
 };
 
 
+#if 0 // currently unused
 // Table 7.1.7.1-1 of 3GPP TS 36.213 v8.8.0
 // the index in the vector (range 0-31; valid values 0-28) identifies the MCS index
 // note that this is similar to the one in R1-081483 but:
 //  1) a few values are different
 //  2) in R1-081483, a valid MCS index is in the range 1-30 (not 0-28)
-int ModulationSchemeForMcs[32] = {
+static const int ModulationSchemeForMcs[32] = {
   2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 
   4, 4, 4, 4, 4, 4, 4,
   6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
@@ -64,6 +64,7 @@ int ModulationSchemeForMcs[32] = {
   4,  // reserved
   6,  // reserved
 };
+#endif
 
 
 // from 3GPP R1-081483 "Conveying MCS and TB size via PDCCH"
@@ -71,7 +72,7 @@ int ModulationSchemeForMcs[32] = {
 // tab "MCS table" (rounded to 2 decimal digits)
 // the index in the table corresponds to the MCS index according to the convention in TS 36.213
 // (i.e., the MCS index reported in R1-081483 minus one)
-double SpectralEfficiencyForMcs[32] = {
+static const double SpectralEfficiencyForMcs[32] = {
   0.15, 0.19, 0.23, 0.31, 0.38, 0.49, 0.6, 0.74, 0.88, 1.03, 1.18,
   1.33, 1.48, 1.7, 1.91, 2.16, 2.41, 2.57,
   2.73, 3.03, 3.32, 3.61, 3.9, 4.21, 4.52, 4.82, 5.12, 5.33, 5.55,
@@ -79,7 +80,7 @@ double SpectralEfficiencyForMcs[32] = {
 };
 
 // Table 7.1.7.1-1 of 3GPP TS 36.213 v8.8.0
-int McsToItbs[29] = {
+static const int McsToItbs[29] = {
   0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 10, 11, 12, 13, 14, 15, 15, 16, 17, 18,
   19, 20, 21, 22, 23, 24, 25, 26
 };
@@ -88,7 +89,7 @@ int McsToItbs[29] = {
 // 3GPP TS 36.213 v8.8.0 Table 7.1.7.2.1-1: Transport block size table (dimension 27×110)
 // for NPRB = 1 and Itbs = 6 the stadard returns 328, but it not consisent with the
 // other values, therefore we used 88 obtained following the sequence of NPRB = 1 values
-int TransportBlockSizeTable [110][27] = {
+static const int TransportBlockSizeTable [110][27] = {
 
   /* NPRB 001*/
   { 16, 24, 32, 40, 56, 72, 88, 104, 120, 136, 144, 176, 208, 224, 256, 280, 328, 336, 376, 408, 440, 488, 520, 552, 584, 616, 712},

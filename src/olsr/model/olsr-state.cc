@@ -30,7 +30,7 @@
 
 
 namespace ns3 {
-
+namespace olsr {
 
 /********** MPR Selector Set Manipulation **********/
 
@@ -543,4 +543,4 @@ OlsrState::InsertAssociation (const Association &tuple)
   m_associations.push_back (tuple);
 }
 
-} // namespace ns3
+}} // namespace olsr, ns3

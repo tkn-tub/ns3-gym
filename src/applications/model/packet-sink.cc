@@ -34,10 +34,8 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("PacketSink")
-  ;
-NS_OBJECT_ENSURE_REGISTERED (PacketSink)
-  ;
+NS_LOG_COMPONENT_DEFINE ("PacketSink");
+NS_OBJECT_ENSURE_REGISTERED (PacketSink);
 
 TypeId 
 PacketSink::GetTypeId (void)

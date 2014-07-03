@@ -100,7 +100,7 @@ EnbRrcMemberLteEnbCmacSapUser::RrcConfigurationUpdateInd (UeConfig params)
 ///////////////////////////////////////////
 
 
-const char* g_ueManagerStateName[UeManager::NUM_STATES] = 
+static const std::string g_ueManagerStateName[UeManager::NUM_STATES] =
 {
   "INITIAL_RANDOM_ACCESS",
   "CONNECTION_SETUP",
@@ -114,14 +114,13 @@ const char* g_ueManagerStateName[UeManager::NUM_STATES] =
   "HANDOVER_LEAVING",
 };
 
-std::string ToString (UeManager::State s)
+static const std::string & ToString (UeManager::State s)
 {
-  return std::string (g_ueManagerStateName[s]);
+  return g_ueManagerStateName[s];
 }
 
 
-NS_OBJECT_ENSURE_REGISTERED (UeManager)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (UeManager);
 
 
 UeManager::UeManager ()
@@ -1042,7 +1041,7 @@ UeManager::AddDataRadioBearerInfo (Ptr<LteDataRadioBearerInfo> drbInfo)
 {
   NS_LOG_FUNCTION (this);
   const uint8_t MAX_DRB_ID = 32;  
-  for (uint8_t drbid = (m_lastAllocatedDrbid + 1) % MAX_DRB_ID; 
+  for (int drbid = (m_lastAllocatedDrbid + 1) % MAX_DRB_ID; 
        drbid != m_lastAllocatedDrbid; 
        drbid = (drbid + 1) % MAX_DRB_ID)
     {
@@ -1220,8 +1219,7 @@ UeManager::SwitchToState (State newState)
 // eNB RRC methods
 ///////////////////////////////////////////
 
-NS_OBJECT_ENSURE_REGISTERED (LteEnbRrc)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (LteEnbRrc);
 
 LteEnbRrc::LteEnbRrc ()
   : m_x2SapProvider (0),
@@ -2197,10 +2195,10 @@ LteEnbRrc::SetCsgId (uint32_t csgId, bool csgIndication)
 
 
 // from 3GPP TS 36.213 table 8.2-1 UE Specific SRS Periodicity
-const uint8_t SRS_ENTRIES = 9;
-uint16_t g_srsPeriodicity[SRS_ENTRIES] = {0, 2, 5, 10, 20, 40,  80, 160, 320};
-uint16_t g_srsCiLow[SRS_ENTRIES] =       {0, 0, 2,  7, 17, 37,  77, 157, 317};
-uint16_t g_srsCiHigh[SRS_ENTRIES] =      {0, 1, 6, 16, 36, 76, 156, 316, 636};
+static const uint8_t SRS_ENTRIES = 9;
+static const uint16_t g_srsPeriodicity[SRS_ENTRIES] = {0, 2, 5, 10, 20, 40,  80, 160, 320};
+static const uint16_t g_srsCiLow[SRS_ENTRIES] =       {0, 0, 2,  7, 17, 37,  77, 157, 317};
+static const uint16_t g_srsCiHigh[SRS_ENTRIES] =      {0, 1, 6, 16, 36, 76, 156, 316, 636};
 
 void 
 LteEnbRrc::SetSrsPeriodicity (uint32_t p)

@@ -30,8 +30,7 @@ NS_LOG_COMPONENT_DEFINE ("RvBatteryModel");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (RvBatteryModel)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (RvBatteryModel);
 
 TypeId
 RvBatteryModel::GetTypeId (void)

@@ -28,8 +28,7 @@
 namespace ns3
 {
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv6ExtensionDemux)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (Ipv6ExtensionDemux);
 
 TypeId Ipv6ExtensionDemux::GetTypeId ()
 {

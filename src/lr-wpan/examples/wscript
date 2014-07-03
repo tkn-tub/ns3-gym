@@ -1,0 +1,17 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    obj = bld.create_ns3_program('lr-wpan-packet-print', ['lr-wpan'])
+    obj.source = 'lr-wpan-packet-print.cc'
+
+    obj = bld.create_ns3_program('lr-wpan-phy-test', ['lr-wpan'])
+    obj.source = 'lr-wpan-phy-test.cc'
+
+    obj = bld.create_ns3_program('lr-wpan-data', ['lr-wpan'])
+    obj.source = 'lr-wpan-data.cc'
+
+    obj = bld.create_ns3_program('lr-wpan-error-model-plot', ['lr-wpan', 'stats'])
+    obj.source = 'lr-wpan-error-model-plot.cc'
+
+    obj = bld.create_ns3_program('lr-wpan-error-distance-plot', ['lr-wpan', 'stats'])
+    obj.source = 'lr-wpan-error-distance-plot.cc'

@@ -55,8 +55,7 @@ std::ostream& operator<< (std::ostream& os, AlohaNoackNetDevice::State state)
 }
 
 
-NS_OBJECT_ENSURE_REGISTERED (AlohaNoackNetDevice)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (AlohaNoackNetDevice);
 
 TypeId
 AlohaNoackNetDevice::GetTypeId (void)

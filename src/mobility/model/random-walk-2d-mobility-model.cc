@@ -30,8 +30,7 @@ NS_LOG_COMPONENT_DEFINE ("RandomWalk2d");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (RandomWalk2dMobilityModel)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (RandomWalk2dMobilityModel);
 
 TypeId
 RandomWalk2dMobilityModel::GetTypeId (void)
@@ -42,7 +41,7 @@ RandomWalk2dMobilityModel::GetTypeId (void)
     .AddConstructor<RandomWalk2dMobilityModel> ()
     .AddAttribute ("Bounds",
                    "Bounds of the area to cruise.",
-                   RectangleValue (Rectangle (0.0, 0.0, 100.0, 100.0)),
+                   RectangleValue (Rectangle (0.0, 100.0, 0.0, 100.0)),
                    MakeRectangleAccessor (&RandomWalk2dMobilityModel::m_bounds),
                    MakeRectangleChecker ())
     .AddAttribute ("Time",

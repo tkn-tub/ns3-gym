@@ -41,7 +41,7 @@ typedef uint32_t FlowPacketId;
 
 /// \ingroup flow-monitor
 /// Provides a method to translate raw packet data into abstract
-/// ``flow identifier'' and ``packet identifier'' parameters.  These
+/// `flow identifier` and `packet identifier` parameters.  These
 /// identifiers are unsigned 32-bit integers that uniquely identify a
 /// flow and a packet within that flow, respectively, for the whole
 /// simulation, regardless of the point in which the packet was

@@ -79,7 +79,7 @@ public:
   {
     LOWPAN_NALP = 0x0,
     LOWPAN_NALP_N = 0x3F,
-    LOWPAN_NOTCOMPRESSED = 0x41,
+    LOWPAN_IPv6 = 0x41,
     LOWPAN_HC1 = 0x42,
     LOWPAN_BC0 = 0x50,
     LOWPAN_IPHC = 0x60,
@@ -197,12 +197,6 @@ public:
    * \return size of the packet
    */
   virtual uint32_t Deserialize (Buffer::Iterator start);
-
-  /**
-   * \brief Get the Dispatch type.
-   * \return the Dispatch type
-   */
-  // virtual Dispatch_e GetDispatchType (void) const;
 
   /**
    * \brief Set the "Hop limit" field (TTL).
@@ -416,12 +410,6 @@ public:
   virtual uint32_t Deserialize (Buffer::Iterator start);
 
   /**
-   * \brief Get the Dispatch type.
-   * \return the Dispatch type
-   */
-  // virtual Dispatch_e GetDispatchType (void) const;
-
-  /**
    * \brief Set the datagram size
    * \param datagramSize the datagram size
    */
@@ -503,12 +491,6 @@ public:
   virtual uint32_t Deserialize (Buffer::Iterator start);
 
   /**
-   * \brief Get the Dispatch type.
-   * \return the Dispatch type
-   */
-  // virtual Dispatch_e GetDispatchType (void) const;
-
-  /**
    * \brief Set the datagram size
    * \param datagramSize the datagram size
    */
@@ -559,6 +541,59 @@ private:
  * \returns the reference to the output stream
  */
 std::ostream & operator<< (std::ostream & os, SixLowPanFragN const &header);
+
+/**
+ * \ingroup sixlowpan
+ * \brief 6LoWPAN IPv6 uncomprssed header - see RFC 4944
+ */
+class SixLowPanIpv6 : public Header
+{
+public:
+  SixLowPanIpv6 (void);
+
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
+  static TypeId GetTypeId (void);
+
+  /**
+   * \brief Return the instance type identifier.
+   * \return instance type ID
+   */
+  virtual TypeId GetInstanceTypeId (void) const;
+
+  virtual void Print (std::ostream& os) const;
+
+  /**
+   * \brief Get the serialized size of the packet.
+   * \return size
+   */
+  virtual uint32_t GetSerializedSize (void) const;
+
+  /**
+   * \brief Serialize the packet.
+   * \param start Buffer iterator
+   */
+  virtual void Serialize (Buffer::Iterator start) const;
+
+  /**
+   * \brief Deserialize the packet.
+   * \param start Buffer iterator
+   * \return size of the packet
+   */
+  virtual uint32_t Deserialize (Buffer::Iterator start);
+
+};
+
+/**
+ * \brief Stream insertion operator.
+ *
+ * \param os the reference to the output stream
+ * \param header the Frag1 Header
+ * \returns the reference to the output stream
+ */
+std::ostream & operator<< (std::ostream & os, SixLowPanIpv6 const & header);
 
 /**
 * \ingroup sixlowpan
@@ -662,12 +697,6 @@ public:
    * \return size of the packet
    */
   virtual uint32_t Deserialize (Buffer::Iterator start);
-
-  /**
-   * \brief Get the Dispatch type.
-   * \return the Dispatch type
-   */
-  // virtual Dispatch_e GetDispatchType (void) const;
 
   /**
    * \brief Set the TF (Traffic Class, Flow Label) compression.

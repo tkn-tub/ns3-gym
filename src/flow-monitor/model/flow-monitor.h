@@ -146,9 +146,9 @@ public:
   TypeId GetInstanceTypeId () const;
   FlowMonitor ();
 
-  /// Set the FlowClassifier to be used by the flow monitor.
+  /// Add a FlowClassifier to be used by the flow monitor.
   /// \param classifier the FlowClassifier
-  void SetFlowClassifier (Ptr<FlowClassifier> classifier);
+  void AddFlowClassifier (Ptr<FlowClassifier> classifier);
 
   /// Set the time, counting from the current time, from which to start monitoring flows.
   /// \param time delta time to start
@@ -266,7 +266,7 @@ private:
   std::vector< Ptr<FlowProbe> > m_flowProbes; //!< all the FlowProbes
 
   // note: this is needed only for serialization
-  Ptr<FlowClassifier> m_classifier; //!< the FlowClassifier
+  std::list<Ptr<FlowClassifier> > m_classifiers; //!< the FlowClassifiers
 
   EventId m_startEvent;     //!< Start event
   EventId m_stopEvent;      //!< Stop event

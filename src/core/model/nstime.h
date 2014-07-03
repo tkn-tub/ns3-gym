@@ -33,13 +33,11 @@
 
 namespace ns3 {
 
+class TimeWithUnit;
+  
 /**
  * \ingroup core
- * \defgroup time Time
- */
-/**
- * \ingroup time
- * \brief keep track of time values and allow control of global simulation resolution
+ * \brief Simulation virtual time values and global simulation resolution.
  *
  * This class defines all the classic C++ addition/subtraction
  * operators: +, -, +=, -=; and all the classic comparison operators:
@@ -99,7 +97,7 @@ public:
     LAST = 10
   };
 
-  inline Time &operator = (const Time &o)
+  inline Time & operator = (const Time & o)
   {
     m_data = o.m_data;
     return *this;
@@ -112,7 +110,7 @@ public:
 	Mark (this);
       }
   }
-  inline Time(const Time &o)
+  inline Time(const Time & o)
     : m_data (o.m_data)
   {
     if (g_markingTimes)
@@ -262,7 +260,7 @@ public:
   /**
    *  \return -1,0,+1 if `this < o`, `this == o`, or `this > o`
    */
-  inline int Compare (const Time &o) const
+  inline int Compare (const Time & o) const
   {
     return (m_data < o.m_data) ? -1 : (m_data == o.m_data) ? 0 : 1;
   }
@@ -445,7 +443,7 @@ public:
   {
     return To (timeUnit).GetDouble ();
   }
-  static inline Time From (const int64x64_t &from, enum Unit timeUnit)
+  static inline Time From (const int64x64_t & from, enum Unit timeUnit)
   {
     struct Information *info = PeekInformation (timeUnit);
     // DO NOT REMOVE this temporary variable. It's here
@@ -479,7 +477,7 @@ public:
   {
     return int64x64_t (m_data);
   }
-  explicit inline Time (const int64x64_t &value)
+  explicit inline Time (const int64x64_t & value)
     : m_data (value.GetHigh ())
   {
     if (g_markingTimes)
@@ -487,10 +485,24 @@ public:
 	Mark (this);
       }
   }
-  inline static Time From (const int64x64_t &value)
+  inline static Time From (const int64x64_t & value)
   {
     return Time (value);
   }
+
+  /**
+   * Attach a unit to a Time, to facilitate output in a specific unit.
+   *
+   * For example,
+   * \code
+   *   Time t (3.14e9);  // Pi seconds
+   *   std::cout << t.As (Time::MS) << std::endl;
+   * \endcode
+   * will print ``+3140.0ms``
+   *
+   * \param unit [in] The unit to use.
+   */
+  TimeWithUnit As (const enum Unit unit) const;
 
 private:
   /**
@@ -516,11 +528,11 @@ private:
   static inline struct Resolution *PeekResolution (void)
   {
     static struct Time::Resolution resolution = SetDefaultNsResolution ();
-    return &resolution;
+    return & resolution;
   }
   static inline struct Information *PeekInformation (enum Unit timeUnit)
   {
-    return &(PeekResolution ()->info[timeUnit]);
+    return & (PeekResolution ()->info[timeUnit]);
   }
 
   static struct Resolution SetDefaultNsResolution (void);
@@ -531,7 +543,7 @@ private:
    *  Record all instances of Time, so we can rescale them when
    *  the resolution changes.
    *
-   *  \intern
+   *  \internal
    *
    *  We use a std::set so we can remove the record easily when
    *  ~Time() is called.
@@ -543,7 +555,7 @@ private:
    *  [Stack Overflow](http://stackoverflow.com/questions/5526019/compile-errors-stdset-with-const-members)
    *  says otherwise, quoting the standard:
    *
-   *  > &sect;23.1/3 states that std::set key types must be assignable
+   *  > & sect;23.1/3 states that std::set key types must be assignable
    *  > and copy constructable; clearly a const type will not be assignable.
    */
   typedef std::set< Time * > MarkedTimes;
@@ -551,7 +563,7 @@ private:
    *  Record of outstanding Time objects which will need conversion
    *  when the resolution is set.
    *
-   *  \intern
+   *  \internal
    *
    *  Use a classic static variable so we can check in Time ctors
    *  without a function call.
@@ -576,7 +588,7 @@ private:
   /**
    *  Remove all MarkedTimes.
    *
-   *  \intern
+   *  \internal
    *  Has to be visible to the Simulator class, hence the friending.
    */
   static void ClearMarkedTimes ();
@@ -593,19 +605,23 @@ private:
    */
   static void ConvertTimes (const enum Unit unit);
 
-  friend bool operator == (const Time &lhs, const Time &rhs);
-  friend bool operator != (const Time &lhs, const Time &rhs);
-  friend bool operator <= (const Time &lhs, const Time &rhs);
-  friend bool operator >= (const Time &lhs, const Time &rhs);
-  friend bool operator < (const Time &lhs, const Time &rhs);
-  friend bool operator > (const Time &lhs, const Time &rhs);
-  friend Time operator + (const Time &lhs, const Time &rhs);
-  friend Time operator - (const Time &lhs, const Time &rhs);
-  friend Time &operator += (Time &lhs, const Time &rhs);
-  friend Time &operator -= (Time &lhs, const Time &rhs);
-  friend Time Abs (const Time &time);
-  friend Time Max (const Time &ta, const Time &tb);
-  friend Time Min (const Time &ta, const Time &tb);
+  friend bool operator == (const Time & lhs, const Time & rhs);
+  friend bool operator != (const Time & lhs, const Time & rhs);
+  friend bool operator <= (const Time & lhs, const Time & rhs);
+  friend bool operator >= (const Time & lhs, const Time & rhs);
+  friend bool operator < (const Time & lhs, const Time & rhs);
+  friend bool operator > (const Time & lhs, const Time & rhs);
+  friend Time operator + (const Time & lhs, const Time & rhs);
+  friend Time operator - (const Time & lhs, const Time & rhs);
+  friend Time operator * (const Time & lhs, const int64_t & rhs);
+  friend Time operator * (const int64_t & lhs, const Time & rhs);
+  friend int64_t operator / (const Time & lhs, const Time & rhs);
+  friend Time operator / (const Time & lhs, const int64_t & rhs);
+  friend Time & operator += (Time & lhs, const Time & rhs);
+  friend Time & operator -= (Time & lhs, const Time & rhs);
+  friend Time Abs (const Time & time);
+  friend Time Max (const Time & ta, const Time & tb);
+  friend Time Min (const Time & ta, const Time & tb);
 
 
   int64_t m_data;                   //!< Virtual time value, in the current unit.
@@ -613,90 +629,115 @@ private:
 };  // class Time
 
 
-// Force static initialization of Time
+/// Force static initialization of Time
 static bool NS_UNUSED_GLOBAL (g_TimeStaticInit) = Time::StaticInit ();
 
 inline bool
-operator == (const Time &lhs, const Time &rhs)
+operator == (const Time & lhs, const Time & rhs)
 {
   return lhs.m_data == rhs.m_data;
 }
 inline bool
-operator != (const Time &lhs, const Time &rhs)
+operator != (const Time & lhs, const Time & rhs)
 {
   return lhs.m_data != rhs.m_data;
 }
 inline bool
-operator <= (const Time &lhs, const Time &rhs)
+operator <= (const Time & lhs, const Time & rhs)
 {
   return lhs.m_data <= rhs.m_data;
 }
 inline bool
-operator >= (const Time &lhs, const Time &rhs)
+operator >= (const Time & lhs, const Time & rhs)
 {
   return lhs.m_data >= rhs.m_data;
 }
 inline bool
-operator < (const Time &lhs, const Time &rhs)
+operator < (const Time & lhs, const Time & rhs)
 {
   return lhs.m_data < rhs.m_data;
 }
 inline bool
-operator > (const Time &lhs, const Time &rhs)
+operator > (const Time & lhs, const Time & rhs)
 {
   return lhs.m_data > rhs.m_data;
 }
-inline Time operator + (const Time &lhs, const Time &rhs)
+inline Time operator + (const Time & lhs, const Time & rhs)
 {
   return Time (lhs.m_data + rhs.m_data);
 }
-inline Time operator - (const Time &lhs, const Time &rhs)
+inline Time operator - (const Time & lhs, const Time & rhs)
 {
   return Time (lhs.m_data - rhs.m_data);
 }
-inline Time &operator += (Time &lhs, const Time &rhs)
+inline Time
+operator * (const Time & lhs, const int64_t & rhs)
+{
+  Time res = lhs;
+  res.m_data *= rhs;
+  return res;
+}
+inline Time
+operator * (const int64_t & lhs, const Time & rhs)
+{
+  Time res = rhs;
+  res.m_data *= lhs;
+  return res;
+}
+inline int64_t
+operator / (const Time & lhs, const Time & rhs)
+{
+  int64_t res = lhs.m_data / rhs.m_data;
+  return res;
+}
+inline Time
+operator / (const Time & lhs, const int64_t & rhs)
+{
+  Time res = lhs;
+  res.m_data /= rhs;
+  return res;
+}
+inline Time & operator += (Time & lhs, const Time & rhs)
 {
   lhs.m_data += rhs.m_data;
   return lhs;
 }
-inline Time &operator -= (Time &lhs, const Time &rhs)
+inline Time & operator -= (Time & lhs, const Time & rhs)
 {
   lhs.m_data -= rhs.m_data;
   return lhs;
 }
 
 /**
- * \anchor ns3-Time-Abs
- * \relates ns3::TimeUnit
- * Absolute value function for Time
- * \param time the input value
- * \returns the absolute value of the input value.
- */
-inline Time Abs (const Time &time)
-{
-  return Time ((time.m_data < 0) ? -time.m_data : time.m_data);
-}
-/**
- * \anchor ns3-Time-Max
- * \relates ns3::TimeUnit
+ * Max function for Time.
  * \param ta the first value
  * \param tb the seconds value
  * \returns the max of the two input values.
  */
-inline Time Max (const Time &ta, const Time &tb)
+inline Time Max (const Time & ta, const Time & tb)
 {
   return Time ((ta.m_data < tb.m_data) ? tb : ta);
 }
 /**
+ * Min function for Time.
  * \param ta the first value
  * \param tb the seconds value
  * \returns the min of the two input values.
  */
-inline Time Min (const Time &ta, const Time &tb)
+inline Time Min (const Time & ta, const Time & tb)
 {
   return Time ((ta.m_data > tb.m_data) ? tb : ta);
 }
 
+/**
+ * Absolute value function for Time
+ * \param time the input value
+ * \returns the absolute value of the input value.
+ */
+inline Time Abs (const Time & time)
+{
+  return Time ((time.m_data < 0) ? -time.m_data : time.m_data);
+}
 
 /**
  * \brief Time output streamer.
@@ -708,16 +749,16 @@ inline Time Min (const Time &ta, const Time &tb)
  *   - `left`
  * The stream `width` and `precision` are ignored; Time output always
  * includes ".0".
- * \relates ns3::Time
+ * \relates Time
  */
-std::ostream& operator<< (std::ostream& os, const Time & time);
+std::ostream & operator<< (std::ostream & os, const Time & time);
 /**
  * \brief Time input streamer
  *
  * Uses the Time::Time (const std::string &) constructor
- * \relates ns3::Time
+ * \relates Time
  */
-std::istream& operator>> (std::istream& is, Time & time);
+std::istream & operator>> (std::istream & is, Time & time);
 
 /**
  * \brief create ns3::Time instances in units of seconds.
@@ -728,7 +769,7 @@ std::istream& operator>> (std::istream& is, Time & time);
  * Simulator::Schedule (Seconds (5.0), ...);
  * \endcode
  * \param seconds seconds value
- * \relates ns3::Time
+ * \relates Time
  */
 inline Time Seconds (double seconds)
 {
@@ -744,7 +785,7 @@ inline Time Seconds (double seconds)
  * Simulator::Schedule (MilliSeconds (5), ...);
  * \endcode
  * \param ms milliseconds value
- * \relates ns3::Time
+ * \relates Time
  */
 inline Time MilliSeconds (uint64_t ms)
 {
@@ -759,7 +800,7 @@ inline Time MilliSeconds (uint64_t ms)
  * Simulator::Schedule (MicroSeconds (5), ...);
  * \endcode
  * \param us microseconds value
- * \relates ns3::Time
+ * \relates Time
  */
 inline Time MicroSeconds (uint64_t us)
 {
@@ -774,7 +815,7 @@ inline Time MicroSeconds (uint64_t us)
  * Simulator::Schedule (NanoSeconds (5), ...);
  * \endcode
  * \param ns nanoseconds value
- * \relates ns3::Time
+ * \relates Time
  */
 inline Time NanoSeconds (uint64_t ns)
 {
@@ -789,7 +830,7 @@ inline Time NanoSeconds (uint64_t ns)
  * Simulator::Schedule (PicoSeconds (5), ...);
  * \endcode
  * \param ps picoseconds value
- * \relates ns3::Time
+ * \relates Time
  */
 inline Time PicoSeconds (uint64_t ps)
 {
@@ -804,7 +845,7 @@ inline Time PicoSeconds (uint64_t ps)
  * Simulator::Schedule (FemtoSeconds (5), ...);
  * \endcode
  * \param fs femtoseconds value
- * \relates ns3::Time
+ * \relates Time
  */
 inline Time FemtoSeconds (uint64_t fs)
 {
@@ -819,7 +860,7 @@ inline Time FemtoSeconds (uint64_t fs)
  * Simulator::Schedule (Minutes (5.0), ...);
  * \endcode
  * \param minutes mintues value
- * \relates ns3::Time
+ * \relates Time
  */
 inline Time Minutes (double minutes)
 {
@@ -834,7 +875,7 @@ inline Time Minutes (double minutes)
  * Simulator::Schedule (Hours (5.0), ...);
  * \endcode
  * \param hours hours value
- * \relates ns3::Time
+ * \relates Time
  */
 inline Time Hours (double hours)
 {
@@ -849,7 +890,7 @@ inline Time Hours (double hours)
  * Simulator::Schedule (Days (5.0), ...);
  * \endcode
  * \param days days value
- * \relates ns3::Time
+ * \relates Time
  */
 inline Time Days (double days)
 {
@@ -864,7 +905,7 @@ inline Time Days (double days)
  * Simulator::Schedule (Years (5.0), ...);
  * \endcode
  * \param years years value
- * \relates ns3::Time
+ * \relates Time
  */
 inline Time Years (double years)
 {
@@ -873,7 +914,7 @@ inline Time Years (double years)
 
 /**
  * \see Seconds(double)
- * \relates ns3::Time
+ * \relates Time
  */
 inline Time Seconds (int64x64_t seconds)
 {
@@ -881,7 +922,7 @@ inline Time Seconds (int64x64_t seconds)
 }
 /**
  * \see MilliSeconds(uint64_t)
- * \relates ns3::Time
+ * \relates Time
  */
 inline Time MilliSeconds (int64x64_t ms)
 {
@@ -889,7 +930,7 @@ inline Time MilliSeconds (int64x64_t ms)
 }
 /**
  * \see MicroSeconds(uint64_t)
- * \relates ns3::Time
+ * \relates Time
  */
 inline Time MicroSeconds (int64x64_t us)
 {
@@ -897,7 +938,7 @@ inline Time MicroSeconds (int64x64_t us)
 }
 /**
  * \see NanoSeconds(uint64_t)
- * \relates ns3::Time
+ * \relates Time
  */
 inline Time NanoSeconds (int64x64_t ns)
 {
@@ -905,7 +946,7 @@ inline Time NanoSeconds (int64x64_t ns)
 }
 /**
  * \see PicoSeconds(uint64_t)
- * \relates ns3::Time
+ * \relates Time
  */
 inline Time PicoSeconds (int64x64_t ps)
 {
@@ -913,7 +954,7 @@ inline Time PicoSeconds (int64x64_t ps)
 }
 /**
  * \see FemtoSeconds(uint64_t)
- * \relates ns3::Time
+ * \relates Time
  */
 inline Time FemtoSeconds (int64x64_t fs)
 {
@@ -921,7 +962,7 @@ inline Time FemtoSeconds (int64x64_t fs)
 }
 /**
  * \see Minutes(uint64_t)
- * \relates ns3::Time
+ * \relates Time
  */
 inline Time Minutes (int64x64_t minutes)
 {
@@ -929,7 +970,7 @@ inline Time Minutes (int64x64_t minutes)
 }
 /**
  * \see Minutes(uint64_t)
- * \relates ns3::Time
+ * \relates Time
  */
 inline Time Hours (int64x64_t hours)
 {
@@ -937,7 +978,7 @@ inline Time Hours (int64x64_t hours)
 }
 /**
  * \see Minutes(uint64_t)
- * \relates ns3::Time
+ * \relates Time
  */
 inline Time Days (int64x64_t days)
 {
@@ -945,7 +986,7 @@ inline Time Days (int64x64_t days)
 }
 /**
  * \see Minutes(uint64_t)
- * \relates ns3::Time
+ * \relates Time
  */
 inline Time Years (int64x64_t years)
 {
@@ -997,6 +1038,32 @@ Ptr<const AttributeChecker> MakeTimeChecker (const Time min)
   return MakeTimeChecker (min, Time::Max ());
 }
 
+/**
+ * \ingroup time
+ * \brief A Time with attached unit, to facilitate output in that unit.
+ */
+class TimeWithUnit
+{
+public:
+  /**
+   * Attach a unit to a Time
+   *
+   * \param [in] time The time.
+   * \param [in] unit The unit to use for output
+   */
+  TimeWithUnit (const Time time, const Time::Unit unit)
+    : m_time (time),
+      m_unit (unit)
+  { };
+
+private:
+  Time m_time;        //!< The time
+  Time::Unit m_unit;  //!< The unit to use in output
+
+  /// Output streamer
+  friend std::ostream & operator << (std::ostream & os, const TimeWithUnit & time);
+
+};  // class TimeWithUnit
 
 } // namespace ns3
 

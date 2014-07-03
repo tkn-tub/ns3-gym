@@ -1,5 +1,5 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def build(bld):
-    obj = bld.create_ns3_program('object-names', ['core', 'csma', 'internet'])
+    obj = bld.create_ns3_program('object-names', ['core', 'csma', 'internet', 'applications'])
     obj.source = 'object-names.cc'

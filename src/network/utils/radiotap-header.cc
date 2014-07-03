@@ -27,8 +27,7 @@ NS_LOG_COMPONENT_DEFINE ("RadiotapHeader");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (RadiotapHeader)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (RadiotapHeader);
  
 RadiotapHeader::RadiotapHeader()
   : m_length (8),

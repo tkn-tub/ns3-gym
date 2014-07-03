@@ -29,6 +29,10 @@ modules_enabled  = ['all_modules']
 examples_enabled = False
 tests_enabled    = False
 
+# Bug 1868:  be conservative about -Wstrict-overflow for optimized builds
+# on older compilers; it can generate spurious warnings.  
+cc_version_warn_strict_overflow = ('4', '8', '2')
+
 # Get the information out of the NS-3 configuration file.
 config_file_exists = False
 (config_file_exists, modules_enabled, examples_enabled, tests_enabled) = read_config_file()
@@ -325,6 +329,9 @@ def configure(conf):
         if Options.options.build_profile == 'optimized': 
             if conf.check_compilation_flag('-march=native'):
                 env.append_value('CXXFLAGS', '-march=native') 
+            env.append_value('CXXFLAGS', '-fstrict-overflow')
+            if conf.env['CC_VERSION'] == cc_version_warn_strict_overflow:
+                env.append_value('CXXFLAGS', '-Wstrict-overflow=5')
 
         if sys.platform == 'win32':
             env.append_value("LINKFLAGS", "-Wl,--enable-runtime-pseudo-reloc")
@@ -524,6 +531,13 @@ def configure(conf):
 
     # Write a summary of optional features status
     print "---- Summary of optional NS-3 features:"
+    print "%-30s: %s%s%s" % ("Build profile", Logs.colors('GREEN'),
+                             Options.options.build_profile, Logs.colors('NORMAL'))
+    bld = wutils.bld
+    print "%-30s: %s%s%s" % ("Build directory", Logs.colors('GREEN'),
+                             Context.out_dir, Logs.colors('NORMAL'))
+    
+    
     for (name, caption, was_enabled, reason_not_enabled) in conf.env['NS3_OPTIONAL_FEATURES']:
         if was_enabled:
             status = 'enabled'

@@ -336,8 +336,7 @@ UanPdp::CreateImpulsePdp (void)
   return pdp;
 }
 
-NS_OBJECT_ENSURE_REGISTERED (UanPropModel)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (UanPropModel);
 
 TypeId UanPropModel::GetTypeId (void)
 {

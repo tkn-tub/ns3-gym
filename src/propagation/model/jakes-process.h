@@ -71,11 +71,11 @@ private:
     Oscillator (std::complex<double> amplitude, double initialPhase, double omega);
     // Get the complex amplitude at moment \param t
     std::complex<double> GetValueAt (Time t) const;
-    /// Complex number \f[Re=\cos(\psi_n), Im = i\sin(\psi_n)]
+    /// Complex number \f$Re=\cos(\psi_n), Im = i\sin(\psi_n)]\f$
     std::complex<double> m_amplitude;
-    /// Phase \f[\phi_n] of the oscillator
+    /// Phase \f$\phi_n\f$ of the oscillator
     double m_phase;
-    /// Rotation speed of the oscillator \f[\omega_d \cos(\alpha_n)]
+    /// Rotation speed of the oscillator \f$\omega_d \cos(\alpha_n)\f$
     double m_omega;
   };
 private:

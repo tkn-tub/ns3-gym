@@ -222,9 +222,9 @@ BlockAckManager::GetNextPacket (WifiMacHeader &hdr)
 {
   NS_LOG_FUNCTION (this << &hdr);
   Ptr<const Packet> packet = 0;
+  CleanupBuffers ();
   if (m_retryPackets.size () > 0)
     {
-      CleanupBuffers ();
       PacketQueueI queueIt = m_retryPackets.front ();
       m_retryPackets.pop_front ();
       packet = queueIt->packet;

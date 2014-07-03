@@ -23,8 +23,7 @@
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (QosTag)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (QosTag);
 
 TypeId
 QosTag::GetTypeId (void)

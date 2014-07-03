@@ -30,8 +30,7 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("BuildingList")
-  ;
+NS_LOG_COMPONENT_DEFINE ("BuildingList");
 
 /**
  * \brief private implementation detail of the BuildingList API.
@@ -58,8 +57,7 @@ private:
   std::vector<Ptr<Building> > m_buildings;
 };
 
-NS_OBJECT_ENSURE_REGISTERED (BuildingListPriv)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (BuildingListPriv);
 
 TypeId
 BuildingListPriv::GetTypeId (void)

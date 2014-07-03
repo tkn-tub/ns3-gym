@@ -1,3 +1,4 @@
+from __future__ import print_function
 import warnings
 import sys
 import os
@@ -5,6 +6,8 @@ import pybindgen.settings
 from pybindgen import Module, FileCodeSink, param, retval, cppclass, typehandlers
 from pybindgen.module import MultiSectionFactory
 import ns3modulegen_core_customizations
+
+import logging
 
 pybindgen.settings.wrapper_registry = pybindgen.settings.StdMapWrapperRegistry
 
@@ -55,6 +58,9 @@ class MyMultiSectionFactory(MultiSectionFactory):
 
 
 def main(argv):
+    logging.basicConfig()
+    logging.getLogger("pybindgen.typehandlers").setLevel(logging.DEBUG)
+
     module_abs_src_path, target, extension_name, output_cc_file_name = argv[1:]
     module_name = os.path.basename(module_abs_src_path)
     out = MyMultiSectionFactory(output_cc_file_name)
@@ -71,11 +77,11 @@ def main(argv):
 
         try:
             from callbacks_list import callback_classes
-        except ImportError, ex:
-            print >> sys.stderr, "***************", repr(ex)
+        except ImportError as ex:
+            print("***************", repr(ex), file=sys.stderr)
             callback_classes = []
         else:
-            print >> sys.stderr, ">>>>>>>>>>>>>>>>", repr(callback_classes)
+            print(">>>>>>>>>>>>>>>>", repr(callback_classes), file=sys.stderr)
 
     finally:
         sys.path.pop(0)

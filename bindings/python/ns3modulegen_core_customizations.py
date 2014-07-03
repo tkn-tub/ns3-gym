@@ -1,3 +1,5 @@
+from __future__ import print_function
+import sys
 import re
 
 from pybindgen.typehandlers import base as typehandlers
@@ -26,11 +28,13 @@ class SmartPointerTransformation(typehandlers.TypeTransformation):
     def __init__(self):
         super(SmartPointerTransformation, self).__init__()
         self.rx = re.compile(r'(ns3::|::ns3::|)Ptr<([^>]+)>\s*$')
+        print("{0!r}".format(self), file=sys.stderr)
 
     def _get_untransformed_type_traits(self, name):
         m = self.rx.match(name)
         is_const = False
         if m is None:
+            print("{0!r} did not match".format(name), file=sys.stderr)
             return None, False
         else:
             name1 = m.group(2).strip()
@@ -61,9 +65,9 @@ class SmartPointerTransformation(typehandlers.TypeTransformation):
         ## fix the ctype, add ns3:: namespace
         orig_ctype, is_const = self._get_untransformed_type_traits(args[0])
         if is_const:
-            correct_ctype = 'ns3::Ptr< %s const >' % orig_ctype[:-2]
+            correct_ctype = 'ns3::Ptr< {0} const >'.format(orig_ctype[:-2])
         else:
-            correct_ctype = 'ns3::Ptr< %s >' % orig_ctype[:-2]
+            correct_ctype = 'ns3::Ptr< {0} >'.format(orig_ctype[:-2])
         args = tuple([correct_ctype] + list(args[1:]))
 
         handler = type_handler(*args, **kwargs)
@@ -82,58 +86,6 @@ transf = SmartPointerTransformation()
 typehandlers.return_type_matcher.register_transformation(transf)
 typehandlers.param_type_matcher.register_transformation(transf)
 del transf
-
-
-class ArgvParam(Parameter):
-    """
-    Converts a python list-of-strings argument to a pair of 'int argc,
-    char *argv[]' arguments to pass into C.
-
-    One Python argument becomes two C function arguments -> it's a miracle!
-
-    Note: this parameter type handler is not registered by any name;
-    must be used explicitly.
-    """
-
-    DIRECTIONS = [Parameter.DIRECTION_IN]
-    CTYPES = []
-    
-    def convert_c_to_python(self, wrapper):
-        raise NotImplementedError
-
-    def convert_python_to_c(self, wrapper):
-        py_name = wrapper.declarations.declare_variable('PyObject*', 'py_' + self.name)
-        argc_var = wrapper.declarations.declare_variable('int', 'argc')
-        name = wrapper.declarations.declare_variable('char**', self.name)
-        idx = wrapper.declarations.declare_variable('Py_ssize_t', 'idx')
-        wrapper.parse_params.add_parameter('O!', ['&PyList_Type', '&'+py_name], self.name)
-
-        #wrapper.before_call.write_error_check('!PyList_Check(%s)' % py_name) # XXX
-
-        wrapper.before_call.write_code("%s = (char **) malloc(sizeof(char*)*PyList_Size(%s));"
-                                       % (name, py_name))
-        wrapper.before_call.add_cleanup_code('free(%s);' % name)
-        wrapper.before_call.write_code('''
-for (%(idx)s = 0; %(idx)s < PyList_Size(%(py_name)s); %(idx)s++)
-{
-''' % vars())
-        wrapper.before_call.sink.indent()
-        wrapper.before_call.write_code('''
-PyObject *item = PyList_GET_ITEM(%(py_name)s, %(idx)s);
-''' % vars())
-        #wrapper.before_call.write_error_check('item == NULL')
-        wrapper.before_call.write_error_check(
-            '!PyString_Check(item)',
-            failure_cleanup=('PyErr_SetString(PyExc_TypeError, '
-                             '"argument %s must be a list of strings");') % self.name)
-        wrapper.before_call.write_code(
-            '%s[%s] = PyString_AsString(item);' % (name, idx))
-        wrapper.before_call.sink.unindent()
-        wrapper.before_call.write_code('}')
-        wrapper.before_call.write_code('%s = PyList_Size(%s);' % (argc_var, py_name))
-        
-        wrapper.call_params.append(argc_var)
-        wrapper.call_params.append(name)
 
 
 class CallbackImplProxyMethod(typehandlers.ReverseWrapperBase):
@@ -204,7 +156,7 @@ public:
             kwargs = {}
         try:
             return_type = ReturnValue.new(str(return_ctype), **kwargs)
-        except (typehandlers.TypeLookupError, typehandlers.TypeConfigurationError), ex:
+        except (typehandlers.TypeLookupError, typehandlers.TypeConfigurationError) as ex:
             warnings.warn("***** Unable to register callback; Return value '%s' error (used in %s): %r"
                           % (callback_return, cls_name, ex),
                           Warning)
@@ -223,7 +175,7 @@ public:
                 kwargs = {}
             try:
                 arguments.append(Parameter.new(str(param_ctype), arg_name, **kwargs))
-            except (typehandlers.TypeLookupError, typehandlers.TypeConfigurationError), ex:
+            except (typehandlers.TypeLookupError, typehandlers.TypeConfigurationError) as ex:
                 warnings.warn("***** Unable to register callback; parameter '%s %s' error (used in %s): %r"
                               % (arg_type, arg_name, cls_name, ex),
                               Warning)
@@ -241,7 +193,7 @@ public:
         class PythonCallbackParameter(Parameter):
             "Class handlers"
             CTYPES = [cls_name]
-            print >> sys.stderr, "***** registering callback handler: %r" % ctypeparser.normalize_type_string(cls_name)
+            print("***** registering callback handler: %r" % ctypeparser.normalize_type_string(cls_name), file=sys.stderr)
             DIRECTIONS = [Parameter.DIRECTION_IN]
             PYTHON_CALLBACK_IMPL_NAME = class_name
             TEMPLATE_ARGS = template_parameters

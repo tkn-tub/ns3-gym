@@ -43,7 +43,7 @@ NS_LOG_COMPONENT_DEFINE ("CqaFfMacScheduler");
 
 namespace ns3 {
 
-int CqaType0AllocationRbg[4] = {
+static const int CqaType0AllocationRbg[4] = {
   10,       // RGB size 1
   26,       // RGB size 2
   63,       // RGB size 3
@@ -1799,20 +1799,13 @@ CqaFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sche
   if (m_harqOn == true)
     {
       //   Process UL HARQ feedback
-      //   update UL HARQ proc id
-      std::map <uint16_t, uint8_t>::iterator itProcId;
-      for (itProcId = m_ulHarqCurrentProcessId.begin (); itProcId != m_ulHarqCurrentProcessId.end (); itProcId++)
-        {
-          (*itProcId).second = ((*itProcId).second + 1) % HARQ_PROC_NUM;
-        }
-
       for (uint16_t i = 0; i < params.m_ulInfoList.size (); i++)
         {
           if (params.m_ulInfoList.at (i).m_receptionStatus == UlInfoListElement_s::NotOk)
             {
               // retx correspondent block: retrieve the UL-DCI
               uint16_t rnti = params.m_ulInfoList.at (i).m_rnti;
-              itProcId = m_ulHarqCurrentProcessId.find (rnti);
+              std::map <uint16_t, uint8_t>::iterator itProcId = m_ulHarqCurrentProcessId.find (rnti);
               if (itProcId == m_ulHarqCurrentProcessId.end ())
                 {
                   NS_LOG_ERROR ("No info find in HARQ buffer for UE (might change eNB) " << rnti);
@@ -1895,6 +1888,7 @@ CqaFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sche
     {
       if (ret.m_dciList.size () > 0)
         {
+          m_allocationMaps.insert (std::pair <uint16_t, std::vector <uint16_t> > (params.m_sfnSf, rbgAllocationMap));
           m_schedSapUser->SchedUlConfigInd (ret);
         }
 
@@ -1962,7 +1956,7 @@ CqaFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sche
       uldci.m_rbLen = rbPerFlow;
       bool allocated = false;
       NS_LOG_INFO (this << " RB Allocated " << rbAllocated << " rbPerFlow " << rbPerFlow << " flows " << nflows);
-      while ((!allocated)&&((rbAllocated + rbPerFlow - 1) < m_cschedCellConfig.m_ulBandwidth) && (rbPerFlow != 0))
+      while ((!allocated)&&((rbAllocated + rbPerFlow - m_cschedCellConfig.m_ulBandwidth) < 1) && (rbPerFlow != 0))
         {
           // check availability
           bool free = true;
@@ -2099,6 +2093,13 @@ CqaFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sche
               NS_FATAL_ERROR ("Unable to find RNTI entry in UL DCI HARQ buffer for RNTI " << uldci.m_rnti);
             }
           (*itDci).second.at (harqId) = uldci;
+          // Update HARQ process status (RV 0)
+          std::map <uint16_t, UlHarqProcessesStatus_t>::iterator itStat = m_ulHarqProcessesStatus.find (uldci.m_rnti);
+          if (itStat == m_ulHarqProcessesStatus.end ())
+            {
+              NS_LOG_ERROR ("No info find in HARQ buffer for UE (might change eNB) " << uldci.m_rnti);
+            }
+          (*itStat).second.at (harqId) = 0;
         }
 
       NS_LOG_INFO (this << " UE Allocation RNTI " << (*it).first << " startPRB " << (uint32_t)uldci.m_rbStart << " nPRB " << (uint32_t)uldci.m_rbLen << " CQI " << cqi << " MCS " << (uint32_t)uldci.m_mcs << " TBsize " << uldci.m_tbSize << " RbAlloc " << rbAllocated << " harqId " << (uint16_t)harqId);

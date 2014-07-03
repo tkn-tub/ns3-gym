@@ -48,8 +48,7 @@ WifiPhyListener::~WifiPhyListener ()
  *       The actual WifiPhy class
  ****************************************************************/
 
-NS_OBJECT_ENSURE_REGISTERED (WifiPhy)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (WifiPhy);
 
 TypeId
 WifiPhy::GetTypeId (void)

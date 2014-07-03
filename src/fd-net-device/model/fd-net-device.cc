@@ -74,8 +74,7 @@ FdReader::Data FdNetDeviceFdReader::DoRead (void)
   return FdReader::Data (buf, len);
 }
 
-NS_OBJECT_ENSURE_REGISTERED (FdNetDevice)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (FdNetDevice);
 
 TypeId
 FdNetDevice::GetTypeId (void)

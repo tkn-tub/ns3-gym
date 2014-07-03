@@ -32,8 +32,7 @@ NS_LOG_COMPONENT_DEFINE ("Ipv4NixVectorRouting");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv4NixVectorRouting)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (Ipv4NixVectorRouting);
 
 TypeId 
 Ipv4NixVectorRouting::GetTypeId (void)

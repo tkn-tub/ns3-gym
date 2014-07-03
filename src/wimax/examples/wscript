@@ -7,5 +7,5 @@ def build(bld):
     obj = bld.create_ns3_program( 'wimax-multicast', ['wimax', 'internet', 'csma'])
     obj.source = 'wimax-multicast.cc'
         
-    obj = bld.create_ns3_program( 'wimax-simple', ['wimax', 'internet', 'mobility'])
+    obj = bld.create_ns3_program( 'wimax-simple', ['wimax', 'internet', 'mobility', 'applications'])
     obj.source = 'wimax-simple.cc'

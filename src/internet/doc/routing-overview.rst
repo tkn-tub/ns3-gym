@@ -215,7 +215,7 @@ is finally used to populate the routes themselves.
 Unicast routing
 ***************
 
-There are presently seven unicast routing protocols defined for IPv4 and two for
+There are presently seven unicast routing protocols defined for IPv4 and three for
 IPv6:
 
 * class Ipv4StaticRouting (covering both unicast and multicast)
@@ -224,6 +224,7 @@ IPv6:
 * IPv4 Ad Hoc On Demand Distance Vector (AODV) (a MANET protocol defined in
   :rfc:`3561`)
 * IPv4 Destination Sequenced Distance Vector (DSDV) (a MANET protocol)
+* IPv4 Dynamic Source Routing (DSR) (a MANET protocol)
 * class Ipv4ListRouting (used to store a prioritized list of routing protocols)
 * class Ipv4GlobalRouting (used to store routes computed by the global route
   manager, if that is used)
@@ -231,19 +232,20 @@ IPv6:
   stores source routes in a packet header field)
 * class Ipv6ListRouting (used to store a prioritized list of routing protocols)
 * class Ipv6StaticRouting 
+* class RipNg - the IPv6 RIPng protocol (:rfc:`2080`)
 
 In the future, this architecture should also allow someone to implement a
 Linux-like implementation with routing cache, or a Click modular router, but
 those are out of scope for now.
 
-Ipv4ListRouting
-+++++++++++++++
+Ipv[4,6]ListRouting
++++++++++++++++++++
 
-This section describes the current default |ns3| Ipv4RoutingProtocol. Typically,
+This section describes the current default |ns3| Ipv[4,6]RoutingProtocol. Typically,
 multiple routing protocols are supported in user space and coordinate to write a
 single forwarding table in the kernel. Presently in |ns3|, the implementation
 instead allows for multiple routing protocols to build/keep their own routing
-state, and the IPv4 implementation will query each one of these routing
+state, and the IP implementation will query each one of these routing
 protocols (in some order determined by the simulation author) until a route is
 found.  
 
@@ -253,23 +255,26 @@ a single table, approaches where more information than destination IP address
 (e.g., source routing) is used to determine the next hop, and on-demand routing
 approaches where packets must be cached.  
 
-Ipv4ListRouting::AddRoutingProtocol
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Ipv[4,6]4ListRouting::AddRoutingProtocol
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Class Ipv4ListRouting provides a pure virtual function declaration for the
-method that allows one to add a routing protocol::
+Classes Ipv4ListRouting and Ipv6ListRouting provides a pure virtual function declaration
+for the method that allows one to add a routing protocol::
 
   void AddRoutingProtocol (Ptr<Ipv4RoutingProtocol> routingProtocol,
                            int16_t priority);
 
-This method is implemented by class Ipv4ListRoutingImpl in the internet-stack
-module.
+  void AddRoutingProtocol (Ptr<Ipv6RoutingProtocol> routingProtocol,
+                           int16_t priority);
+
+These methods are implemented respectively by class Ipv4ListRoutingImpl and by class 
+Ipv6ListRoutingImpl in the internet module.
 
 The priority variable above governs the priority in which the routing protocols
 are inserted. Notice that it is a signed int.  By default in |ns3|, the helper
-classes will instantiate a Ipv4ListRoutingImpl object, and add to it an
-Ipv4StaticRoutingImpl object at priority zero.  Internally, a list of
-Ipv4RoutingProtocols is stored, and and the routing protocols are each consulted
+classes will instantiate a Ipv[4,6]ListRoutingImpl object, and add to it an
+Ipv[4,6]StaticRoutingImpl object at priority zero.  Internally, a list of
+Ipv[4,6]RoutingProtocols is stored, and and the routing protocols are each consulted
 in decreasing order of priority to see whether a match is found. Therefore, if
 you want your Ipv4RoutingProtocol to have priority lower than the static
 routing, insert it with priority less than 0; e.g.::
@@ -328,6 +333,116 @@ Presently, OLSR is limited to use with an Ipv4ListRouting object, and does not
 respond to dynamic changes to a device's IP address or link up/down
 notifications; i.e. the topology changes are due to loss/gain of connectivity
 over a wireless channel.
+
+RIPng
++++++
+
+This IPv6 routing protocol (:rfc:`2080`) is the evolution of the well-known 
+RIPv1 anf RIPv2 (see :rfc:`1058` and :rfc:`1723`) routing protocols for IPv4.
+
+The protocol is very simple, and it is normally suitable for flat, simple 
+network topologies.
+
+RIPng is strongly based on RIPv1 and RIPv2, and it have the very same goals and
+limitations. In particular, RIP considers any route with a metric equal or greater 
+than 16 as unreachable. As a consequence, the maximum number of hops is the
+network must be less than 15 (the number of routers is not set).
+Users are encouraged to read :rfc:`2080` and :rfc:`1058` to fully understand
+RIPng behaviour and limitations.
+
+
+Routing convergence
+~~~~~~~~~~~~~~~~~~~
+
+RIPng uses a Distance-Vector algorithm, and routes are updated according to
+the Bellman-Ford algorithm (sometimes known as Ford-Fulkerson algorithm).
+The algorithm has a convergence time of O(\|V\|*\|E\|) where \|V\| and \|E\| 
+are the number of vertices (routers) and edges (links) respectively.
+It should be stressed that the convergence time is the number of steps in
+the algorithm, and each step is triggered by a message.
+Since Triggered Updates (i.e., when a route is changed) have a 1-5 seconds 
+cooldown, the toplogy can require some time to be stabilized.
+
+Users should be aware that, during routing tables construction, the routers 
+might drop packets. Data traffic should be sent only after a time long
+enough to allow RIPng to build the network topology.
+Usually 80 seconds should be enough to have a suboptimal (but working)
+routing setup. This includes the time needed to propagate the routes to the
+most distant router (16 hops) with Triggered Updates.
+
+If the network topology is changed (e.g., a link is broken), the recovery 
+time might be quite high, and it might be even higher than the initial 
+setup time. Moreover, the network topology recovery is affected by
+the Split Horizoning strategy.
+
+The example ``examples/routing/ripng-simple-network.cc`` shows both the
+network setup and network recovery phases.
+
+Split Horizoning
+~~~~~~~~~~~~~~~~
+
+Split Horizon is a strategy to prevent routing instability. Three options are possible:
+
+* No Split Horizon
+* Split Horizon
+* Poison Reverse
+
+In the first case, routes are advertised on all the router's interfaces.
+In the second case, routers will not advertise a route on the interface
+from which it was learned.
+Poison Reverse will advertise the route on the interface from which it 
+was learned, but with a metric of 16 (infinity).
+For a full analysis of the three techniques, see :rfc:`1058`, section 2.2.
+
+The example ``ripng-simple-network.cc`` is based on the network toplogy
+described in the RFC, but it does not show the effect described there.
+
+The reason are the Triggered Updates, together with the fact that when a 
+router invalidates a route, it will immediately propagate the route 
+unreachability, thus preventing most of the issues described in the RFC.
+
+However, with complex toplogies, it is still possible to have route 
+instability phenomena similar to the one described in the RFC after a 
+link failure. As a consequence, all the considerations about Split Horizon
+remanins valid.
+
+
+Default routes
+~~~~~~~~~~~~~~
+
+RIPng protocol should be installed *only* on routers. As a consequence, 
+nodes will not know what is the default router.
+
+To overcome this limitation, users should either install the default route
+manually (e.g., by resorting to Ipv6StaticRouting), or by using RADVd.
+RADVd is available in |ns3| in the Applications module, and it is strongly 
+suggested.
+ 
+Protocol parameters and options
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The RIPng |ns3| implementation allows to change all the timers associated 
+with route updates and routes lifetime.
+
+Moreover, users can change the interface metrics on a per-node basis.
+
+The type of Split Horizoning (to avoid routes back-propagation) can be 
+selected on a per-node basis, with the choices being "no split horizon", 
+"split horizon" and "poison reverse". See :rfc:`2080` for further details,
+and :rfc:`1058` for a complete discussion on the split horizoning strategies.
+
+Limitations
+~~~~~~~~~~~
+
+There is no support for the Next Hop option (:rfc:`2080`, Section 2.1.1).
+The Next Hop option is useful when RIPng is not being run on all of the 
+routers on a network.
+Support for this option may be considered in the future.
+
+There is no support for CIDR prefix aggregation. As a result, both routing 
+tables and route advertisements may be larger than necessary. 
+Prefix aggregation may be added in the future.
+
 
 .. _Multicast-routing:
 

@@ -25,8 +25,7 @@
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (LteRadioBearerTag)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (LteRadioBearerTag);
 
 TypeId
 LteRadioBearerTag::GetTypeId (void)

@@ -103,12 +103,6 @@ bool
 Ipv4FlowClassifier::Classify (const Ipv4Header &ipHeader, Ptr<const Packet> ipPayload,
                               uint32_t *out_flowId, uint32_t *out_packetId)
 {
-  if (ipHeader.GetDestination () == Ipv4Address::GetBroadcast ())
-    {
-      // we are not prepared to handle broadcast yet
-      return false;
-    }
-
   if (ipHeader.GetFragmentOffset () > 0 )
     {
       // Ignore fragments: they don't carry a valid L4 header
@@ -159,11 +153,17 @@ Ipv4FlowClassifier::Classify (const Ipv4Header &ipHeader, Ptr<const Packet> ipPa
   // if the insertion succeeded, we need to assign this tuple a new flow identifier
   if (insert.second)
     {
-      insert.first->second = GetNewFlowId ();
+      FlowId newFlowId = GetNewFlowId ();
+      insert.first->second = newFlowId;
+      m_flowPktIdMap[newFlowId] = 0;
+    }
+  else
+    {
+      m_flowPktIdMap[insert.first->second] ++;
     }
 
   *out_flowId = insert.first->second;
-  *out_packetId = ipHeader.GetIdentification ();
+  *out_packetId = m_flowPktIdMap[*out_flowId];
 
   return true;
 }

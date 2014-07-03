@@ -32,8 +32,7 @@ NS_LOG_COMPONENT_DEFINE ("SpectrumAnalyzer");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (SpectrumAnalyzer)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (SpectrumAnalyzer);
 
 SpectrumAnalyzer::SpectrumAnalyzer ()
   : m_mobility (0),

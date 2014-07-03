@@ -131,6 +131,12 @@ public:
   /// Inject Associations from an Ipv4StaticRouting instance
   void SetRoutingTableAssociation (Ptr<Ipv4StaticRouting> routingTable);
 
+  /**
+   * \brief Returns the internal HNA table
+   * \returns the internal HNA table
+   */
+  Ptr<const Ipv4StaticRouting> GetRoutingTableAssociation () const;
+
 protected:
   virtual void DoInitialize (void);
 private:

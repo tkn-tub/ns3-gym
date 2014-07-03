@@ -49,8 +49,7 @@ NS_LOG_COMPONENT_DEFINE ("LteEnbPhy");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (LteEnbPhy)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (LteEnbPhy);
 
 // duration of the data part of a subframe in DL
 // = 0.001 / 14 * 11 (fixed to 11 symbols) -1ns as margin to avoid overlapping simulator events
@@ -814,7 +813,7 @@ LteEnbPhy::DoSetBandwidth (uint8_t ulBandwidth, uint8_t dlBandwidth)
   m_ulBandwidth = ulBandwidth;
   m_dlBandwidth = dlBandwidth;
 
-  int Type0AllocationRbg[4] = {
+  static const int Type0AllocationRbg[4] = {
     10,     // RGB size 1
     26,     // RGB size 2
     63,     // RGB size 3

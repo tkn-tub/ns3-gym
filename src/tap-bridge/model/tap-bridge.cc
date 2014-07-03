@@ -73,8 +73,7 @@ FdReader::Data TapBridgeFdReader::DoRead (void)
 
 #define TAP_MAGIC 95549
 
-NS_OBJECT_ENSURE_REGISTERED (TapBridge)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (TapBridge);
 
 TypeId
 TapBridge::GetTypeId (void)
@@ -833,7 +832,8 @@ TapBridge::Filter (Ptr<Packet> p, Address *src, Address *dst, uint16_t *type)
       return 0;
     }
 
-  p->RemoveHeader (header);
+  uint32_t headerSize = p->PeekHeader (header);
+  p->RemoveAtStart (headerSize);
 
   NS_LOG_LOGIC ("Pkt source is " << header.GetSource ());
   NS_LOG_LOGIC ("Pkt destination is " << header.GetDestination ());

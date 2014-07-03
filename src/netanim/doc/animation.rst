@@ -17,19 +17,12 @@ NetAnim
 NetAnim is a standalone, Qt4-based software executable that uses a trace file generated during 
 an |ns3| simulation to display the topology and animate the packet flow between nodes.
 
-.. figure:: figures/Dumbbell.*
+.. figure:: figures/NetAnim_3_105.*
    :align: center
    :width: 500px
    :height: 400px
 
    An example of packet animation on wired-links
-
-.. figure:: figures/Wireless.*
-   :align: center
-   :width: 480px
-   :height: 400px
-
-   An example of packet animation on wireless-links
 
 In addition, NetAnim also provides useful features such as tables to display meta-data of packets like the image below
 
@@ -39,13 +32,35 @@ In addition, NetAnim also provides useful features such as tables to display met
 
    An example of tables for packet meta-data with protocol filters
 
-and a way to visualize the trajectory of a mobile node
+A way to visualize the trajectory of a mobile node
 
 .. figure:: figures/Trajectory.*
    :align: center
    :width: 500px
 
    An example of the trajectory of a mobile node
+
+A way to display the routing-tables of multiple nodes at various points in time
+
+.. figure:: figures/RoutingTables.*
+   :align: center
+   :width: 500px
+
+A way to display counters associated with multiple nodes as a chart or a table
+
+.. figure:: figures/NodeCountersChart.*
+   :align: center
+   :width: 500px
+
+.. figure:: figures/NodeCountersTable.*
+   :align: center
+   :width: 500px
+
+A way to view the timeline of packet transmit and receive events
+
+.. figure:: figures/PacketTimeline.*
+   :align: center
+   :width: 500px
 
 Methodology
 ===========
@@ -200,6 +215,29 @@ With the above statement, AnimationInterface records the meta-data of each packe
 CAUTION: Enabling this feature will result in larger XML trace files.
 Please do NOT enable this feature when using Wimax links.
 
+::
+
+  // Step 6
+  anim.UpdateNodeDescription (5, "Access-point");
+
+With the above statement, AnimationInterface assigns the text "Access-point" to node 5.
+
+::
+
+  // Step 7
+  anim.UpdateNodeSize (6, 1.5, 1.5);
+
+With the above statement, AnimationInterface sets the node size to scale by 1.5. NetAnim automatically scales the graphics view to fit the oboundaries of the topology. This means that NetAnim, can abnormally scale a node's size too high or too low. Using AnimationInterface::UpdateNodeSize allows you to overwrite the default scaling in NetAnim and use your own custom scale.
+
+:: 
+
+  // Step 8
+  anim.UpdateNodeCounter (89, 7, 3.4);
+
+With the above statement, AnimationInterface sets the counter with Id == 89, associated with Node 7 with the value 3.4.
+The counter with Id 89 is obtained using AnimationInterface::AddNodeCounter. An example usage for this is in src/netanim/examples/resources_demo.cc.
+
+
 Step 2: Loading the XML in NetAnim
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -209,138 +247,6 @@ Step 2: Loading the XML in NetAnim
 
 Here is a video illustrating this
 http://www.youtube.com/watch?v=tz_hUuNwFDs
-
-Essential settings of NetAnim
-=============================
-
-Persist combobox
-~~~~~~~~~~~~~~~~
-.. figure:: figures/Persist.*
-   :width: 150px
-
-   The persist combobox
-
-When packets are transmitted and received very quickly, they can be almost invisible. The persist time setting
-allows the user to control the duration for which a packet should be visible on the animation canvas. 
-
-Update-interval slider
-~~~~~~~~~~~~~~~~~~~~~~
-.. figure:: figures/UpdateRateInterval.*
-   :width: 150px
-
-   The update-interval slider
-
-The update-interval slider controls the rate at which NetAnim refreshes the canvas screen. For instance, 
-for the setting above, NetAnim, updates the position of nodes and packets only once in 250 ms.
-
-
-Parts of the XML
-================
-The XML trace files has the following main sections
-
-1. Topology
-
-   - Nodes
-   - Links
-2. packets (packets over wired-links)
-3. wpackets (packets over wireless-links)
-
-XML tags
-~~~~~~~~
-.. highlight:: xml
-
-Nodes are identified by their unique Node id. The XML begins with the "information" element describing the rest of the elements
-
-<anim> Element
-##############
-
-This is the XML root element. All other elements fall within this element.
-  Attributes are::
-
-    lp = Logical Processor Id (Used for distributed simulations only)
-
-<topology> Element
-##################
-
-This elements contains the Node and Link elements.It describes, the co-ordinates of the canvas used for animation.
-   Attributes are::
-
-     minX = minimum X coordinate of the animation canvas
-     minY = minimum Y coordinate of the animation canvas
-     maxX = maximum X coordinate of the animation canvas
-     maxY = maximum Y coordinate of the animation canvas
-
-Example::
-
-  <topology minX = "-6.42025" minY = "-6.48444" maxX = "186.187" maxY = "188.049">
-
-<node> Element
-##############
-
-This element describes each Node's Id and X,Y co-ordinate (position).
-  Attributes are::
-
-   id = Node Id
-   locX = X coordinate
-   locY = Y coordinate
-
-Example::
-
-  <node id = "8" locX = "107.599" locY = "96.9366" />
-
-<link> Element
-##############
-
-This element describes wired links between two nodes.
- Attributes are::
-
-   fromId = From Node Id (first node id)
-   toId   = To Node Id (second node id)
- 
-Example::
-
-  <link fromId="0" toId="1"/>
-
-<p> Element
-###########
-
-This element describes a packet over wired links being transmitted at some node and received at another. 
-
-The reception details are described in its associated rx element
- Attributes are::
-
-   fId = Node Id transmitting the packet
-   fbTx = First bit transmit time of the packet
-   lbTx = Last bit transmit time of the packet
-   toId = Node Id receiving the packet
-   fbRx = First bit Reception Time of the packet
-   lbRx = Last bit Reception Time of the packet
-
-Example::
-
-  <p fId="1" fbTx="1" lbTx="1.000067199" tId="0" fbRx="1.002" lbRx="1.002067199"/>
-
-A packet over wired-links from Node 1 was received at Node 0. The first bit of the packet was transmitted at  the 1st second, the last bit was transmitted at the 1.000067199th second of the simulation Node 0 received the first bit of the packet at the 1.002th second and the last bit of the packet at the 1.002067199th second of the simulation
-NOTE: A packet with fromId == toId is a dummy packet used internally by the AnimationInterface. Please ignore this packet
-
-<wp> Element
-############
-
-This element describes a packet over wireless links being transmitted at some node and received at another. 
-
-The reception details are described in its associated rx element.
- Attributes are::
-
-   fromId = Node Id transmitting the packet
-   fbTx = First bit transmit time of the packet
-   lbTx = Last bit transmit time of the packet
-   range = Range of the transmission
-
-Example::
-
-  <wp fId = "20" fbTx = "0.003" lbTx = "0.003254" range = "59.68176982" tId="32" fbRx="0.003000198" lbRx="0.003254198"/>
-
-A packet over wireless-links from Node 20 was received at Node 32. The first bit of the packet was transmitted at  the 0.003th second, the last bit was transmitted at the 0.003254 second of the simulation Node 0 received the first bit of the packet at the 0.003000198 second and the last bit of the packet at the 0.003254198 second of the simulation
 
 Wiki
 ====

@@ -54,6 +54,26 @@ using namespace ns3;
 
 class UdpSocketImpl;
 
+/* ----------------------------------------------------------------------------------
+ * Tag
+ --------------------------------------------------------------------------------- */
+class IPv4TestTag : public Tag {
+private:
+  uint64_t token;
+public:
+  static TypeId GetTypeId () {
+    static TypeId tid = TypeId ("ns3::IPv4TestTag").SetParent<Tag> ().AddConstructor<IPv4TestTag> ();
+    return tid;
+  }
+  virtual TypeId GetInstanceTypeId () const { return GetTypeId (); }
+  virtual uint32_t GetSerializedSize () const { return sizeof (token); }
+  virtual void Serialize (TagBuffer buffer) const { buffer.WriteU64 (token); }
+  virtual void Deserialize (TagBuffer buffer) { token = buffer.ReadU64 (); }
+  virtual void Print (std::ostream &os) const { os << "token=" << token; }
+  void setToken (uint64_t token) { this->token = token; }
+  uint64_t getToken () { return token; }
+};
+
 static void
 AddInternetStack (Ptr<Node> node)
 {
@@ -161,9 +181,6 @@ Ipv4FragmentationTest::HandleReadServer (Ptr<Socket> socket)
     {
       if (InetSocketAddress::IsMatchingType (from))
         {
-          packet->RemoveAllPacketTags ();
-          packet->RemoveAllByteTags ();
-
           m_receivedPacketServer = packet->Copy();
         }
     }
@@ -247,6 +264,11 @@ Ptr<Packet> Ipv4FragmentationTest::SendClient (void)
     {
       p = Create<Packet> (m_size);
     }
+  IPv4TestTag tag;
+  tag.setToken (42);
+  p->AddPacketTag (tag);
+  p->AddByteTag (tag);
+
   m_socketClient->Send (p);
 
   return p;
@@ -396,6 +418,56 @@ Ipv4FragmentationTest::DoRun (void)
 
       NS_TEST_EXPECT_MSG_EQ ((recvSize == 0), true, "Server got a packet, something wrong");
       NS_TEST_EXPECT_MSG_EQ ((m_icmpType == 11), true, "Client did not receive ICMP::TIME_EXCEEDED");
+    }
+
+  // Fourth test: normal channel, no errors, no delays.
+  // We check tags
+  clientDevErrorModel->Disable ();
+  serverDevErrorModel->Disable ();
+  for (int i= 0; i<5; i++)
+    {
+      uint32_t packetSize = packetSizes[i];
+
+      SetFill (fillData, 78, packetSize);
+
+      m_receivedPacketServer = Create<Packet> ();
+      Simulator::ScheduleWithContext (m_socketClient->GetNode ()->GetId (), Seconds (0),
+                                      &Ipv4FragmentationTest::SendClient, this);
+      Simulator::Run ();
+
+      IPv4TestTag packetTag;
+      bool found = m_receivedPacketServer->PeekPacketTag (packetTag);
+
+      NS_TEST_EXPECT_MSG_EQ (found, true, "PacketTag not found");
+      NS_TEST_EXPECT_MSG_EQ (packetTag.getToken (), 42, "PacketTag value not correct");
+
+      ByteTagIterator iter = m_receivedPacketServer->GetByteTagIterator ();
+
+      uint32_t end = 0;
+      uint32_t tagStart = 0;
+      uint32_t tagEnd = 0;
+      while (iter.HasNext ())
+        {
+          ByteTagIterator::Item item = iter.Next ();
+          NS_TEST_EXPECT_MSG_EQ (item.GetTypeId ().GetName (), "ns3::IPv4TestTag", "ByteTag name not correct");
+          tagStart = item.GetStart ();
+          tagEnd = item.GetEnd ();
+          if (end == 0)
+            {
+              NS_TEST_EXPECT_MSG_EQ (tagStart, 0, "First ByteTag Start not correct");
+            }
+          if (end != 0)
+            {
+              NS_TEST_EXPECT_MSG_EQ (tagStart, end, "ByteTag End not correct");
+            }
+          end = tagEnd;
+          IPv4TestTag *byteTag = dynamic_cast<IPv4TestTag *> (item.GetTypeId ().GetConstructor () ());
+          NS_TEST_EXPECT_MSG_NE (byteTag, 0, "ByteTag not found");
+          item.GetTag (*byteTag);
+          NS_TEST_EXPECT_MSG_EQ (byteTag->getToken (), 42, "ByteTag value not correct");
+          delete byteTag;
+        }
+      NS_TEST_EXPECT_MSG_EQ (end, m_receivedPacketServer->GetSize (), "trivial");
     }
 
 

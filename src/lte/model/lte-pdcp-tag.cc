@@ -25,8 +25,7 @@
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (PdcpTag)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (PdcpTag);
 
 PdcpTag::PdcpTag ()
   : m_senderTimestamp (Seconds (0))

@@ -30,8 +30,7 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("Test")
-  ;
+NS_LOG_COMPONENT_DEFINE ("Test");
 
 bool
 TestDoubleIsEqual (const double x1, const double x2, const double epsilon)
@@ -256,6 +255,12 @@ TestCase::GetName (void) const
   NS_LOG_FUNCTION (this);
   return m_name;
 }
+TestCase *
+TestCase::GetParent () const
+{
+  return m_parent;
+}
+
 void
 TestCase::ReportTestFailure (std::string cond, std::string actual, 
                              std::string limit, std::string message, 

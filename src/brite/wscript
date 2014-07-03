@@ -14,33 +14,39 @@ def options(opt):
 def configure(conf):
     conf.env['ENABLE_BRITE'] = False
 
+    lib_to_check = 'libbrite.so'
     if Options.options.with_brite:
-        if os.path.isdir(Options.options.with_brite):
-            conf.msg("Checking BRITE location", ("%s (given)" % Options.options.with_brite))
+        conf.msg("Checking BRITE location", ("%s (given)" % Options.options.with_brite))
+        brite_dir = Options.options.with_brite
+        if os.path.exists(os.path.join(brite_dir, lib_to_check)):
             conf.env['WITH_BRITE'] = os.path.abspath(Options.options.with_brite)
         else:
-            brite_dir = os.path.join('..','BRITE')
-            if os.path.isdir(brite_dir):
-                conf.msg("Checking for BRITE location", ("%s (guessed)" % brite_dir))
-                conf.env['WITH_BRITE'] = os.path.abspath(brite_dir)
-                del brite_dir
-            if not conf.env['WITH_BRITE']:
-                conf.msg("Checking for BRITE location", False)
-                conf.report_optional_feature("brite", "BRITE Integration", False,
-                                     "BRITE not found (see option --with-brite)")
-                # Add this module to the list of modules that won't be built
-                # if they are enabled.
-                conf.env['MODULES_NOT_BUILT'].append('brite')
-
-                return
+            conf.report_optional_feature("brite", "BRITE Integration", False,
+                                 "BRITE not found at requested location")
+            # Add this module to the list of modules that won't be built
+            # if they are enabled.
+            conf.env['MODULES_NOT_BUILT'].append('brite')
+            return
     else:
-        conf.report_optional_feature("brite", "BRITE Integration", False, 'BRITE not enabled (see option --with-brite)')
+        # No user specified '--with-brite' option, try to guess
+        # bake.py uses ../../build, while ns-3-dev uses ../click
+        brite_dir = os.path.join('..','BRITE')
+        brite_bake_build_dir = os.path.join('..', '..', 'build') 
+        brite_bake_lib_dir = os.path.join(brite_bake_build_dir, 'lib')
+        if os.path.exists(os.path.join(brite_dir, lib_to_check)):
+            conf.msg("Checking for BRITE location", ("%s (guessed)" % brite_dir))
+            conf.env['WITH_BRITE'] = os.path.abspath(brite_dir)
+# Below is not yet ready (bake does not install BRITE yet, just builds it)
+#        elif os.path.exists(os.path.join(brite_bake_lib_dir, lib_to_check)):
+#            conf.msg("Checking for BRITE location", ("%s (guessed)" % brite_bake_lib_dir))
+#            conf.env['WITH_BRITE'] = os.path.abspath(brite_bake_lib_dir)
+        else:
+            conf.report_optional_feature("brite", "BRITE Integration", False, 'BRITE not enabled (see option --with-brite)')
 
-        # Add this module to the list of modules that won't be built
-        # if they are enabled.
-        conf.env['MODULES_NOT_BUILT'].append('brite')
-
-        return
+            # Add this module to the list of modules that won't be built
+            # if they are enabled.
+            conf.env['MODULES_NOT_BUILT'].append('brite')
+            return
 
     test_code = '''
 #include "Brite.h"

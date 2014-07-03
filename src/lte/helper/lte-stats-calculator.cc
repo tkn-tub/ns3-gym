@@ -29,8 +29,7 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("LteStatsCalculator")
-  ;
+NS_LOG_COMPONENT_DEFINE ("LteStatsCalculator");
 
 LteStatsCalculator::LteStatsCalculator ()
   : m_dlOutputFilename (""),

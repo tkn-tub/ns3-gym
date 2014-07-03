@@ -50,8 +50,7 @@ struct ArfWifiRemoteStation : public WifiRemoteStation
   uint32_t m_rate;
 };
 
-NS_OBJECT_ENSURE_REGISTERED (ArfWifiManager)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (ArfWifiManager);
 
 TypeId
 ArfWifiManager::GetTypeId (void)

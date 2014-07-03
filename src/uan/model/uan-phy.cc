@@ -22,8 +22,7 @@
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (UanPhyCalcSinr)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (UanPhyCalcSinr);
 
 TypeId UanPhyCalcSinr::GetTypeId (void)
 {
@@ -44,8 +43,7 @@ UanPhyCalcSinr::DoDispose ()
   Object::DoDispose ();
 }
 
-NS_OBJECT_ENSURE_REGISTERED (UanPhyPer)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (UanPhyPer);
 
 TypeId UanPhyPer::GetTypeId (void)
 {
@@ -66,8 +64,7 @@ UanPhyPer::DoDispose ()
   Object::DoDispose ();
 }
 
-NS_OBJECT_ENSURE_REGISTERED (UanPhy)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (UanPhy);
 
 TypeId UanPhy::GetTypeId (void)
 {

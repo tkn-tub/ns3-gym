@@ -27,8 +27,7 @@ NS_LOG_COMPONENT_DEFINE ("NistErrorRateModel");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (NistErrorRateModel)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (NistErrorRateModel);
 
 TypeId
 NistErrorRateModel::GetTypeId (void)
@@ -77,7 +76,7 @@ NistErrorRateModel::Get64QamBer (double snr) const
   return ber;
 }
 double
-NistErrorRateModel::GetFecBpskBer (double snr, double nbits,
+NistErrorRateModel::GetFecBpskBer (double snr, uint32_t nbits,
                                    uint32_t bValue) const
 {
   double ber = GetBpskBer (snr);
@@ -87,11 +86,11 @@ NistErrorRateModel::GetFecBpskBer (double snr, double nbits,
     }
   double pe = CalculatePe (ber, bValue);
   pe = std::min (pe, 1.0);
-  double pms = std::pow (1 - pe, nbits);
+  double pms = std::pow (1 - pe, (double)nbits);
   return pms;
 }
 double
-NistErrorRateModel::GetFecQpskBer (double snr, double nbits,
+NistErrorRateModel::GetFecQpskBer (double snr, uint32_t nbits,
                                    uint32_t bValue) const
 {
   double ber = GetQpskBer (snr);
@@ -101,7 +100,7 @@ NistErrorRateModel::GetFecQpskBer (double snr, double nbits,
     }
   double pe = CalculatePe (ber, bValue);
   pe = std::min (pe, 1.0);
-  double pms = std::pow (1 - pe, nbits);
+  double pms = std::pow (1 - pe, (double)nbits);
   return pms;
 }
 double
@@ -112,47 +111,47 @@ NistErrorRateModel::CalculatePe (double p, uint32_t bValue) const
   if (bValue == 1)
     {
       // code rate 1/2, use table 3.1.1
-      pe = 0.5 * ( 36.0 * std::pow (D, 10.0)
-                   + 211.0 * std::pow (D, 12.0)
-                   + 1404.0 * std::pow (D, 14.0)
-                   + 11633.0 * std::pow (D, 16.0)
-                   + 77433.0 * std::pow (D, 18.0)
-                   + 502690.0 * std::pow (D, 20.0)
-                   + 3322763.0 * std::pow (D, 22.0)
-                   + 21292910.0 * std::pow (D, 24.0)
-                   + 134365911.0 * std::pow (D, 26.0)
+      pe = 0.5 * ( 36.0 * std::pow (D, 10)
+                   + 211.0 * std::pow (D, 12)
+                   + 1404.0 * std::pow (D, 14)
+                   + 11633.0 * std::pow (D, 16)
+                   + 77433.0 * std::pow (D, 18)
+                   + 502690.0 * std::pow (D, 20)
+                   + 3322763.0 * std::pow (D, 22)
+                   + 21292910.0 * std::pow (D, 24)
+                   + 134365911.0 * std::pow (D, 26)
                    );
     }
   else if (bValue == 2)
     {
       // code rate 2/3, use table 3.1.2
       pe = 1.0 / (2.0 * bValue) *
-        ( 3.0 * std::pow (D, 6.0)
-          + 70.0 * std::pow (D, 7.0)
-          + 285.0 * std::pow (D, 8.0)
-          + 1276.0 * std::pow (D, 9.0)
-          + 6160.0 * std::pow (D, 10.0)
-          + 27128.0 * std::pow (D, 11.0)
-          + 117019.0 * std::pow (D, 12.0)
-          + 498860.0 * std::pow (D, 13.0)
-          + 2103891.0 * std::pow (D, 14.0)
-          + 8784123.0 * std::pow (D, 15.0)
+        ( 3.0 * std::pow (D, 6)
+          + 70.0 * std::pow (D, 7)
+          + 285.0 * std::pow (D, 8)
+          + 1276.0 * std::pow (D, 9)
+          + 6160.0 * std::pow (D, 10)
+          + 27128.0 * std::pow (D, 11)
+          + 117019.0 * std::pow (D, 12)
+          + 498860.0 * std::pow (D, 13)
+          + 2103891.0 * std::pow (D, 14)
+          + 8784123.0 * std::pow (D, 15)
         );
     }
   else if (bValue == 3)
     {
       // code rate 3/4, use table 3.1.2
       pe = 1.0 / (2.0 * bValue) *
-        ( 42.0 * std::pow (D, 5.0)
-          + 201.0 * std::pow (D, 6.0)
-          + 1492.0 * std::pow (D, 7.0)
-          + 10469.0 * std::pow (D, 8.0)
-          + 62935.0 * std::pow (D, 9.0)
-          + 379644.0 * std::pow (D, 10.0)
-          + 2253373.0 * std::pow (D, 11.0)
-          + 13073811.0 * std::pow (D, 12.0)
-          + 75152755.0 * std::pow (D, 13.0)
-          + 428005675.0 * std::pow (D, 14.0)
+        ( 42.0 * std::pow (D, 5)
+          + 201.0 * std::pow (D, 6)
+          + 1492.0 * std::pow (D, 7)
+          + 10469.0 * std::pow (D, 8)
+          + 62935.0 * std::pow (D, 9)
+          + 379644.0 * std::pow (D, 10)
+          + 2253373.0 * std::pow (D, 11)
+          + 13073811.0 * std::pow (D, 12)
+          + 75152755.0 * std::pow (D, 13)
+          + 428005675.0 * std::pow (D, 14)
         );
     }
   else

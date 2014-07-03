@@ -50,8 +50,7 @@ struct AmrrWifiRemoteStation : public WifiRemoteStation
 };
 
 
-NS_OBJECT_ENSURE_REGISTERED (AmrrWifiManager)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (AmrrWifiManager);
 
 TypeId
 AmrrWifiManager::GetTypeId (void)

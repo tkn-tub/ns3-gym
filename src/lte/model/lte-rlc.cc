@@ -81,8 +81,7 @@ LteRlcSpecificLteMacSapUser::ReceivePdu (Ptr<Packet> p)
 
 ///////////////////////////////////////
 
-NS_OBJECT_ENSURE_REGISTERED (LteRlc)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (LteRlc);
 
 LteRlc::LteRlc ()
   : m_rlcSapUser (0),
@@ -168,8 +167,7 @@ LteRlc::GetLteMacSapUser ()
 
 ////////////////////////////////////////
 
-NS_OBJECT_ENSURE_REGISTERED (LteRlcSm)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (LteRlcSm);
 
 LteRlcSm::LteRlcSm ()
 {

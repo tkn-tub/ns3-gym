@@ -312,8 +312,7 @@ OfdmDlBurstProfile::Read (Buffer::Iterator start)
 
 // ----------------------------------------------------------------------------------------------------------
 
-NS_OBJECT_ENSURE_REGISTERED (Dcd)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (Dcd);
 
 Dcd::Dcd (void)
   : m_reserved (0),
@@ -545,8 +544,7 @@ OfdmDlMapIe::Read (Buffer::Iterator start)
 
 // ----------------------------------------------------------------------------------------------------------
 
-NS_OBJECT_ENSURE_REGISTERED (DlMap)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (DlMap);
 
 DlMap::DlMap (void)
   : m_dcdCount (0),

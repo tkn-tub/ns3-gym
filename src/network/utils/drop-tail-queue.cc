@@ -25,8 +25,7 @@ NS_LOG_COMPONENT_DEFINE ("DropTailQueue");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (DropTailQueue)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (DropTailQueue);
 
 TypeId DropTailQueue::GetTypeId (void) 
 {

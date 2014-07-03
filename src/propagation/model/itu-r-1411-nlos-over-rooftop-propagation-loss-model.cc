@@ -31,8 +31,7 @@ NS_LOG_COMPONENT_DEFINE ("ItuR1411NlosOverRooftopPropagationLossModel");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (ItuR1411NlosOverRooftopPropagationLossModel)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (ItuR1411NlosOverRooftopPropagationLossModel);
 
 
 TypeId
@@ -41,6 +40,7 @@ ItuR1411NlosOverRooftopPropagationLossModel::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::ItuR1411NlosOverRooftopPropagationLossModel")
 
     .SetParent<PropagationLossModel> ()
+    .AddConstructor<ItuR1411NlosOverRooftopPropagationLossModel> ()
 
     .AddAttribute ("Frequency",
                    "The Frequency  (default is 2.106 GHz).",
@@ -98,6 +98,14 @@ ItuR1411NlosOverRooftopPropagationLossModel::GetTypeId (void)
   return tid;
 }
 
+ItuR1411NlosOverRooftopPropagationLossModel::ItuR1411NlosOverRooftopPropagationLossModel ()
+  : PropagationLossModel ()
+{
+}
+
+ItuR1411NlosOverRooftopPropagationLossModel::~ItuR1411NlosOverRooftopPropagationLossModel ()
+{
+}
 
 double
 ItuR1411NlosOverRooftopPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const

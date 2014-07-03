@@ -37,10 +37,8 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("UdpTraceClient")
-  ;
-NS_OBJECT_ENSURE_REGISTERED (UdpTraceClient)
-  ;
+NS_LOG_COMPONENT_DEFINE ("UdpTraceClient");
+NS_OBJECT_ENSURE_REGISTERED (UdpTraceClient);
 
 /**
  * \brief Default trace to send
@@ -188,8 +186,7 @@ void
 UdpTraceClient::LoadTrace (std::string filename)
 {
   NS_LOG_FUNCTION (this << filename);
-  uint32_t time, index, prevTime = 0;
-  uint16_t size;
+  uint32_t time, index, size, prevTime = 0;
   char frameType;
   TraceEntry entry;
   std::ifstream ifTraceFile;
@@ -329,7 +326,7 @@ UdpTraceClient::Send (void)
   struct TraceEntry *entry = &m_entries[m_currentEntry];
   do
     {
-      for (int i = 0; i < entry->packetSize / m_maxPacketSize; i++)
+      for (uint32_t i = 0; i < entry->packetSize / m_maxPacketSize; i++)
         {
           SendPacket (m_maxPacketSize);
         }

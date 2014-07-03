@@ -23,30 +23,11 @@
 
 #include <ostream>
 
-/**
- * \ingroup debugging
- * \defgroup fatalHandler Fatal Error Handler 
- *
- * \brief Functions to help clean up when fatal error
- * is encountered.
- *
- * The functions in this group are used to perform
- * limited clean up, like flushing active streams, when
- * fatal error are encountered (through assertion fail,
- * calls to NS_ABORT_* and calls to NS_FATAL_ERROR.
- *
- * Currently, other than flushing active ostreams, these
- * functions does not interfere with outside memory. There
- * is still a residual risk that may be invalid ostream
- * pointers may be present, and may corrupt the memory
- * on the attempt to execute the flush() function.
- */
-
 namespace ns3 {
 namespace FatalImpl {
 
 /**
- * \ingroup fatalHandler
+ * \ingroup fatal
  * \param stream The stream to be flushed on abnormal exit.
  *
  * \brief Register a stream to be flushed on abnormal exit.
@@ -60,7 +41,7 @@ namespace FatalImpl {
 void RegisterStream (std::ostream* stream);
 
 /**
- * \ingroup fatalHandler
+ * \ingroup fatal
  * \param stream The stream to be unregistered.
  *
  * \brief Unregister a stream for flushing on abnormal exit.
@@ -74,7 +55,7 @@ void RegisterStream (std::ostream* stream);
 void UnregisterStream (std::ostream* stream);
 
 /**
- * \ingroup fatalHandler
+ * \ingroup fatal
  *
  * \brief Flush all currently registered streams.
  *

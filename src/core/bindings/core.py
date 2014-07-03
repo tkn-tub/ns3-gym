@@ -1,10 +1,10 @@
-
+from __future__ import absolute_import
 # "from _core import *" doesn't work here because symbols starting
 # with underscore would not be imported.  But they are needed because
 # other modules depend on them...
-import _core
+from . import _core
 g = globals()
-for k,v in _core.__dict__.iteritems():
+for k,v in _core.__dict__.items():
     g[k] = v
 del g, k, v, _core
 

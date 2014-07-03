@@ -30,6 +30,7 @@ namespace ns3 {
 /**
  * \ingroup core
  * \defgroup ptr Smart Pointer
+ * \brief Heap memory management.
  */
 /**
  * \ingroup ptr

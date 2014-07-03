@@ -46,8 +46,7 @@ NS_LOG_COMPONENT_DEFINE ("SubscriberStationNetDevice");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (SubscriberStationNetDevice)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (SubscriberStationNetDevice);
 
 Time SubscriberStationNetDevice::GetDefaultLostDlMapInterval ()
 {

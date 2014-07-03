@@ -26,8 +26,7 @@
 namespace ns3 
 {
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv6RoutingProtocol)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (Ipv6RoutingProtocol);
 
 TypeId Ipv6RoutingProtocol::GetTypeId ()
 {

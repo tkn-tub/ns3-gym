@@ -98,14 +98,14 @@ CidFactory::Allocate (enum Cid::Type type)
 bool
 CidFactory::IsTransport (Cid cid) const
 {
-  uint16_t id = cid.m_identifier;
-  return id >= 2 * m_m + 1 && id <= 0xfefe;
+  int id = cid.m_identifier;
+  return (id - 2 * m_m > 0) && (id <= 0xfefe);
 }
 bool
 CidFactory::IsPrimary (Cid cid) const
 {
-  uint16_t id = cid.m_identifier;
-  return id >= m_m + 1 && id <= 2 * m_m;
+  int id = cid.m_identifier;
+  return (id - m_m > 0) && (id <= 2 * m_m);
 }
 bool
 CidFactory::IsBasic (Cid cid) const

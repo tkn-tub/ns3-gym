@@ -37,8 +37,7 @@ NS_LOG_COMPONENT_DEFINE ("BuildingPositionAllocator");
 
 using namespace ns3;
 
-NS_OBJECT_ENSURE_REGISTERED (RandomBuildingPositionAllocator)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (RandomBuildingPositionAllocator);
 
 
 RandomBuildingPositionAllocator::RandomBuildingPositionAllocator ()
@@ -105,8 +104,7 @@ RandomBuildingPositionAllocator::AssignStreams (int64_t stream)
 }
 
 
-NS_OBJECT_ENSURE_REGISTERED (RandomRoomPositionAllocator)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (RandomRoomPositionAllocator);
 
 
 RandomRoomPositionAllocator::RandomRoomPositionAllocator ()
@@ -194,8 +192,7 @@ RandomRoomPositionAllocator::AssignStreams (int64_t stream)
 
 
 
-NS_OBJECT_ENSURE_REGISTERED (SameRoomPositionAllocator)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (SameRoomPositionAllocator);
 
 SameRoomPositionAllocator::SameRoomPositionAllocator ()
 {
@@ -285,8 +282,7 @@ SameRoomPositionAllocator::AssignStreams (int64_t stream)
   return 1;
 }
 
-NS_OBJECT_ENSURE_REGISTERED (FixedRoomPositionAllocator)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (FixedRoomPositionAllocator);
 
 
 FixedRoomPositionAllocator::FixedRoomPositionAllocator (

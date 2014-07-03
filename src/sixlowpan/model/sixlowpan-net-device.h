@@ -175,6 +175,23 @@ private:
   void ReceiveFromDevice (Ptr<NetDevice> device, Ptr<const Packet> packet, uint16_t protocol,
                           Address const &source, Address const &destination, PacketType packetType);
 
+
+  /**
+   * \param packet packet sent from above down to Network Device
+   * \param source source mac address (so called "MAC spoofing")
+   * \param dest mac address of the destination (already resolved)
+   * \param protocolNumber identifies the type of payload contained in
+   *        this packet. Used to call the right L3Protocol when the packet
+   *        is received.
+   * \param doSendFrom perform a SendFrom instead of a Send
+   *
+   *  Called from higher layer to send packet into Network Device
+   *  with the specified source and destination Addresses.
+   *
+   * \return whether the Send operation succeeded
+   */
+  bool DoSend (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber, bool doSendFrom);
+
   /**
    * The callback used to notify higher layers that a packet has been received.
    */
@@ -459,6 +476,8 @@ private:
 
   uint16_t m_etherType; /**< EtherType number (used only if m_forceEtherType is true) */
   bool m_omitUdpChecksum; /**< Omit UDP checksum in NC1 encoding */
+
+  uint32_t m_compressionThreshold; /**< Minimum L2 payload size */
 
   Ptr<UniformRandomVariable> m_rng; //!< Rng for the fragments tag.
 };

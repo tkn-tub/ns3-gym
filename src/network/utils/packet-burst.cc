@@ -28,8 +28,7 @@ NS_LOG_COMPONENT_DEFINE ("PacketBurst");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (PacketBurst)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (PacketBurst);
 
 TypeId
 PacketBurst::GetTypeId (void)

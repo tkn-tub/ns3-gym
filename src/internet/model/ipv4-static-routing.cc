@@ -40,8 +40,7 @@ using std::make_pair;
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv4StaticRouting)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (Ipv4StaticRouting);
 
 TypeId
 Ipv4StaticRouting::GetTypeId (void)

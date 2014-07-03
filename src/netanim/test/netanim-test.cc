@@ -166,7 +166,7 @@ AnimationInterfaceTestCase::PrepareNetwork (void)
 void
 AnimationInterfaceTestCase::CheckLogic (void)
 {
-  NS_TEST_ASSERT_MSG_EQ (m_anim->GetTracePktCount (), 32, "Expected 32 packets traced");
+  NS_TEST_ASSERT_MSG_EQ (m_anim->GetTracePktCount (), 16, "Expected 16 packets traced");
 }
 
 class AnimationRemainingEnergyTestCase : public AbstractAnimationInterfaceTestCase

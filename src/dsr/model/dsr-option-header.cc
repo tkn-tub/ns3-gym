@@ -42,8 +42,7 @@ namespace ns3 {
 namespace dsr {
 NS_LOG_COMPONENT_DEFINE ("DsrOptionHeader");
 
-NS_OBJECT_ENSURE_REGISTERED (DsrOptionHeader)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (DsrOptionHeader);
 
 TypeId DsrOptionHeader::GetTypeId ()
 {
@@ -131,8 +130,7 @@ DsrOptionHeader::Alignment DsrOptionHeader::GetAlignment () const
   return retVal;
 }
 
-NS_OBJECT_ENSURE_REGISTERED (DsrOptionPad1Header)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (DsrOptionPad1Header);
 
 TypeId DsrOptionPad1Header::GetTypeId ()
 {
@@ -183,8 +181,7 @@ uint32_t DsrOptionPad1Header::Deserialize (Buffer::Iterator start)
   return GetSerializedSize ();
 }
 
-NS_OBJECT_ENSURE_REGISTERED (DsrOptionPadnHeader)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (DsrOptionPadnHeader);
 
 TypeId DsrOptionPadnHeader::GetTypeId ()
 {
@@ -244,8 +241,7 @@ uint32_t DsrOptionPadnHeader::Deserialize (Buffer::Iterator start)
   return GetSerializedSize ();
 }
 
-NS_OBJECT_ENSURE_REGISTERED (DsrOptionRreqHeader)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (DsrOptionRreqHeader);
 
 TypeId DsrOptionRreqHeader::GetTypeId ()
 {
@@ -392,8 +388,7 @@ DsrOptionHeader::Alignment DsrOptionRreqHeader::GetAlignment () const
   return retVal;
 }
 
-NS_OBJECT_ENSURE_REGISTERED (DsrOptionRrepHeader)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (DsrOptionRrepHeader);
 
 TypeId DsrOptionRrepHeader::GetTypeId ()
 {
@@ -514,8 +509,7 @@ DsrOptionHeader::Alignment DsrOptionRrepHeader::GetAlignment () const
   return retVal;
 }
 
-NS_OBJECT_ENSURE_REGISTERED (DsrOptionSRHeader)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (DsrOptionSRHeader);
 
 TypeId DsrOptionSRHeader::GetTypeId ()
 {
@@ -657,20 +651,13 @@ DsrOptionHeader::Alignment DsrOptionSRHeader::GetAlignment () const
   return retVal;
 }
 
-NS_OBJECT_ENSURE_REGISTERED (DsrOptionRerrHeader)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (DsrOptionRerrHeader);
 
 TypeId DsrOptionRerrHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::dsr::DsrOptionRerrHeader")
     .AddConstructor<DsrOptionRerrHeader> ()
     .SetParent<DsrOptionHeader> ()
-    .AddAttribute ("ErrorType","Type of route errors",
-                   EnumValue (NODE_UNREACHABLE),
-                   MakeEnumAccessor (&DsrOptionRerrHeader::m_errorType),
-                   MakeEnumChecker (NODE_UNREACHABLE, "Node unreachable",
-                                    FLOW_STATE_NOT_SUPPORTED, "Flow state not supported",
-                                    OPTION_NOT_SUPPORTED, "Option not supported"))
   ;
   return tid;
 }
@@ -786,8 +773,7 @@ DsrOptionHeader::Alignment DsrOptionRerrHeader::GetAlignment () const
   return retVal;
 }
 
-NS_OBJECT_ENSURE_REGISTERED (DsrOptionRerrUnreachHeader)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (DsrOptionRerrUnreachHeader);
 
 TypeId DsrOptionRerrUnreachHeader::GetTypeId ()
 {
@@ -915,8 +901,7 @@ DsrOptionHeader::Alignment DsrOptionRerrUnreachHeader::GetAlignment () const
   return retVal;
 }
 
-NS_OBJECT_ENSURE_REGISTERED (DsrOptionRerrUnsupportHeader)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (DsrOptionRerrUnsupportHeader);
 
 TypeId DsrOptionRerrUnsupportHeader::GetTypeId ()
 {
@@ -1034,8 +1019,7 @@ DsrOptionHeader::Alignment DsrOptionRerrUnsupportHeader::GetAlignment () const
   return retVal;
 }
 
-NS_OBJECT_ENSURE_REGISTERED (DsrOptionAckReqHeader)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (DsrOptionAckReqHeader);
 
 TypeId DsrOptionAckReqHeader::GetTypeId ()
 {
@@ -1110,8 +1094,7 @@ DsrOptionHeader::Alignment DsrOptionAckReqHeader::GetAlignment () const
   return retVal;
 }
 
-NS_OBJECT_ENSURE_REGISTERED (DsrOptionAckHeader)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (DsrOptionAckHeader);
 
 TypeId DsrOptionAckHeader::GetTypeId ()
 {

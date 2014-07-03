@@ -138,8 +138,7 @@ private:
   EdcaTxopN *m_txop;
 };
 
-NS_OBJECT_ENSURE_REGISTERED (EdcaTxopN)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (EdcaTxopN);
 
 TypeId
 EdcaTxopN::GetTypeId (void)

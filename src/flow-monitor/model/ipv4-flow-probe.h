@@ -106,6 +106,7 @@ private:
   void QueueDropLogger (Ptr<const Packet> ipPayload);
 
   Ptr<Ipv4FlowClassifier> m_classifier; //!< the Ipv4FlowClassifier this probe is associated with
+  Ptr<Ipv4L3Protocol> m_ipv4; //!< the Ipv4L3Protocol this probe is bound to
 };
 
 

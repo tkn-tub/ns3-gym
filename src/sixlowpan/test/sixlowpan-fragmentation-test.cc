@@ -17,8 +17,6 @@
  *
  * Author: Tommaso Pecorella <tommaso.pecorella@unifi.it>
  */
-#define NS3_LOG_ENABLE 1
-
 #include "ns3/test.h"
 #include "ns3/config.h"
 #include "ns3/uinteger.h"

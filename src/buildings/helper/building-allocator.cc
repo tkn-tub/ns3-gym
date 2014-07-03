@@ -31,8 +31,7 @@ NS_LOG_COMPONENT_DEFINE ("BuildingAllocator");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (GridBuildingAllocator)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (GridBuildingAllocator);
 
 GridBuildingAllocator::GridBuildingAllocator ()
   : m_current (0)

@@ -29,8 +29,7 @@ NS_LOG_COMPONENT_DEFINE ("HeapScheduler");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (HeapScheduler)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (HeapScheduler);
 
 TypeId
 HeapScheduler::GetTypeId (void)

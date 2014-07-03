@@ -1,7 +1,7 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def build(bld):
-    module = bld.create_ns3_module('point-to-point-layout', ['internet', 'point-to-point', 'mobility', 'netanim'])
+    module = bld.create_ns3_module('point-to-point-layout', ['internet', 'point-to-point', 'mobility'])
     module.includes = '.'
     module.source = [
         'model/point-to-point-dumbbell.cc',

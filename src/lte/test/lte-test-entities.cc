@@ -186,7 +186,7 @@ void
 LteTestRrc::Start ()
 {
   NS_LOG_FUNCTION (this);
-  NS_ASSERT_MSG (m_arrivalTime != 0, "Arrival time must be different from 0");
+  NS_ASSERT_MSG (m_arrivalTime != Time (0), "Arrival time must be different from 0");
 
   // Stats
   m_txPdus++;
@@ -608,8 +608,7 @@ LteTestMac::Receive (Ptr<NetDevice> nd, Ptr<const Packet> p, uint16_t protocol, 
 
 
 
-NS_OBJECT_ENSURE_REGISTERED (EpcTestRrc)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (EpcTestRrc);
 
 EpcTestRrc::EpcTestRrc ()
   : m_s1SapProvider (0)

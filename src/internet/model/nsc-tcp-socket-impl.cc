@@ -47,8 +47,7 @@ NS_LOG_COMPONENT_DEFINE ("NscTcpSocketImpl");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (NscTcpSocketImpl)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (NscTcpSocketImpl);
 
 TypeId
 NscTcpSocketImpl::GetTypeId ()

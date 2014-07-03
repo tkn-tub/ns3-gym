@@ -52,8 +52,7 @@ struct AarfWifiRemoteStation : public WifiRemoteStation
 };
 
 
-NS_OBJECT_ENSURE_REGISTERED (AarfWifiManager)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (AarfWifiManager);
 
 TypeId
 AarfWifiManager::GetTypeId (void)

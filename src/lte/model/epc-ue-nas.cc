@@ -35,7 +35,7 @@ namespace ns3 {
 
 
 
-const char* g_ueNasStateName[EpcUeNas::NUM_STATES] =
+static const std::string g_ueNasStateName[EpcUeNas::NUM_STATES] =
 {
   "OFF",
   "ATTACHING",
@@ -44,16 +44,15 @@ const char* g_ueNasStateName[EpcUeNas::NUM_STATES] =
   "ACTIVE"
 };
 
-std::string ToString (EpcUeNas::State s)
+static inline const std::string & ToString (EpcUeNas::State s)
 {
-  return std::string (g_ueNasStateName[s]);
+  return g_ueNasStateName[s];
 }
 
 
 
 
-NS_OBJECT_ENSURE_REGISTERED (EpcUeNas)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (EpcUeNas);
 
 EpcUeNas::EpcUeNas ()
   : m_state (OFF),

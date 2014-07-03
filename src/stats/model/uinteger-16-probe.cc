@@ -31,8 +31,7 @@ NS_LOG_COMPONENT_DEFINE ("Uinteger16Probe");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (Uinteger16Probe)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (Uinteger16Probe);
 
 TypeId
 Uinteger16Probe::GetTypeId ()

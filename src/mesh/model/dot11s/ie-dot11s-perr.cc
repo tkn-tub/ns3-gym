@@ -108,7 +108,12 @@ IePerr::AddAddressUnit (HwmpProtocol::FailedDestination unit)
 bool
 IePerr::IsFull () const
 {
-  return (GetInformationFieldSize () + 2 /* ID + LENGTH*/+ 10 /* Size of Mac48Address + uint32_t (one unit)*/> 255);
+  // -fstrict-overflow sensitive, see bug 1868
+  return (GetInformationFieldSize ()
+          > 255
+          -   2 /* ID + LENGTH*/
+          -  10 /* Size of Mac48Address + uint32_t (one unit)*/
+          );
 }
 std::vector<HwmpProtocol::FailedDestination>
 IePerr::GetAddressUnitVector () const

@@ -249,8 +249,7 @@ HighLatencyCtsToSelfTxVectorTag::Print (std::ostream &os) const
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (WifiRemoteStationManager)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (WifiRemoteStationManager);
 
 TypeId
 WifiRemoteStationManager::GetTypeId (void)

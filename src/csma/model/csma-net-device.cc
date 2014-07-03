@@ -37,8 +37,7 @@ NS_LOG_COMPONENT_DEFINE ("CsmaNetDevice");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (CsmaNetDevice)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (CsmaNetDevice);
 
 TypeId
 CsmaNetDevice::GetTypeId (void)

@@ -17,13 +17,13 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "int64x64-cairo.h"
 #include "test.h"
 #include "abort.h"
 #include "assert.h"
 #include "log.h"
 #include <cmath>
 #include <iostream>
+#include "int64x64-cairo.h"
 
 // Note:  Logging in this file is largely avoided due to the
 // number of calls that are made to these functions and the possibility
@@ -31,38 +31,45 @@
 
 NS_LOG_COMPONENT_DEFINE ("int64x64-cairo");
 
+// Include directly to allow optimizations within this compilation unit.
+extern "C" {
+#include "cairo-wideint.c"
+}
+
+
 namespace ns3 {
 
-#define OUTPUT_SIGN(sa,sb,ua,ub)                                        \
-  ({ bool negA, negB;                                                    \
-     negA = _cairo_int128_negative (sa);                                   \
-     negB = _cairo_int128_negative (sb);                                   \
-     ua = _cairo_int128_to_uint128 (sa);                                   \
-     ub = _cairo_int128_to_uint128 (sb);                                   \
-     ua = negA ? _cairo_uint128_negate (ua) : ua;                          \
-     ub = negB ? _cairo_uint128_negate (ub) : ub;                          \
-     (negA && !negB) || (!negA && negB); })
+static inline  
+bool
+output_sign (const cairo_int128_t sa,
+             const cairo_int128_t sb,
+             cairo_uint128_t & ua,
+             cairo_uint128_t & ub)
+{
+  bool negA = _cairo_int128_negative (sa);
+  bool negB = _cairo_int128_negative (sb);
+  ua = _cairo_int128_to_uint128 (sa);
+  ub = _cairo_int128_to_uint128 (sb);
+  ua = negA ? _cairo_uint128_negate (ua) : ua;
+  ub = negB ? _cairo_uint128_negate (ub) : ub;
+  return (negA && !negB) || (!negA && negB);
+}
 
 void
-int64x64_t::Mul (int64x64_t const &o)
+int64x64_t::Mul (const int64x64_t & o)
 {
-  cairo_uint128_t a, b, result;
-  bool sign = OUTPUT_SIGN (_v, o._v, a, b);
-  result = Umul (a, b);
+  cairo_uint128_t a, b;
+  bool sign = output_sign (_v, o._v, a, b);
+  cairo_uint128_t result = Umul (a, b);
   _v = sign ? _cairo_uint128_negate (result) : result;
 }
 
-/**
- * this function multiplies two 128 bits fractions considering
- * the high 64 bits as the integer part and the low 64 bits
- * as the fractional part. It takes into account the sign
- * of the operands to produce a signed 128 bits result.
- */
 cairo_uint128_t
-int64x64_t::Umul (cairo_uint128_t a, cairo_uint128_t b)
+int64x64_t::Umul (const cairo_uint128_t a, const cairo_uint128_t b)
 {
   cairo_uint128_t result;
-  cairo_uint128_t hiPart,loPart,midPart;
+  cairo_uint128_t hiPart, loPart, midPart;
+  cairo_uint128_t res1, res2;
 
   // Multiplying (a.h 2^64 + a.l) x (b.h 2^64 + b.l) =
   //			2^128 a.h b.h + 2^64*(a.h b.l+b.h a.l) + a.l b.l
@@ -72,62 +79,114 @@ int64x64_t::Umul (cairo_uint128_t a, cairo_uint128_t b)
   // compute the middle part 2^64*(a.h b.l+b.h a.l)
   midPart = _cairo_uint128_add (_cairo_uint64x64_128_mul (a.lo, b.hi),
                                 _cairo_uint64x64_128_mul (a.hi, b.lo));
-  // truncate the low part
-  result.lo = _cairo_uint64_add (loPart.hi,midPart.lo);
   // compute the high part 2^128 a.h b.h
   hiPart = _cairo_uint64x64_128_mul (a.hi, b.hi);
-  // truncate the high part and only use the low part
-  result.hi = _cairo_uint64_add (hiPart.lo,midPart.hi);
   // if the high part is not zero, put a warning
   NS_ABORT_MSG_IF (hiPart.hi != 0,
                    "High precision 128 bits multiplication error: multiplication overflow.");
+
+  // Adding 64-bit terms to get 128-bit results, with carries
+  res1 = _cairo_uint64_to_uint128 (loPart.hi);
+  res2 = _cairo_uint64_to_uint128 (midPart.lo);
+  result  = _cairo_uint128_add (res1, res2);
+
+  res1 = _cairo_uint64_to_uint128 (midPart.hi);
+  res2 = _cairo_uint64_to_uint128 (hiPart.lo);
+  res1 = _cairo_uint128_add (res1, res2);
+  res1 = _cairo_uint128_lsl (res1, 64);
+  
+  result  = _cairo_uint128_add (result, res1);
+  
   return result;
 }
 
 void
-int64x64_t::Div (int64x64_t const &o)
+int64x64_t::Div (const int64x64_t & o)
 {
-  cairo_uint128_t a, b, result;
-  bool sign = OUTPUT_SIGN (_v, o._v, a, b);
-  result = Udiv (a, b);
+  cairo_uint128_t a, b;
+  bool sign = output_sign (_v, o._v, a, b);
+  cairo_uint128_t result = Udiv (a, b);
   _v = sign ? _cairo_uint128_negate (result) : result;
 }
 
 cairo_uint128_t
-int64x64_t::Udiv (cairo_uint128_t a, cairo_uint128_t b)
+int64x64_t::Udiv (const cairo_uint128_t a, const cairo_uint128_t b)
 {
+  cairo_uint128_t den = b;
   cairo_uquorem128_t qr = _cairo_uint128_divrem (a, b);
-  cairo_uint128_t result = _cairo_uint128_lsl (qr.quo, 64);
+  cairo_uint128_t result = qr.quo;
+  cairo_uint128_t rem = qr.rem;
+
   // Now, manage the remainder
-  cairo_uint128_t tmp = _cairo_uint128_rsl (qr.rem, 64);
-  cairo_uint128_t zero = _cairo_uint64_to_uint128 (0);
-  cairo_uint128_t rem, div;
-  if (_cairo_uint128_eq (tmp, zero))
+  const uint64_t DIGITS = 64;  // Number of fraction digits (bits) we need
+  const cairo_uint128_t ZERO = _cairo_uint32_to_uint128 ((uint32_t)0);
+  
+  NS_ASSERT_MSG (_cairo_uint128_lt (rem, den),
+                 "Remainder not less than divisor");
+  
+  uint64_t digis = 0;          // Number of digits we have already
+  uint64_t shift = 0;          // Number we are going to get this round
+  
+    // Skip trailing zeros in divisor
+  while ( (shift < DIGITS) && !(den.lo & 0x1))
     {
-      rem = _cairo_uint128_lsl (qr.rem, 64);
-      div = b;
+      ++shift;
+      den = _cairo_uint128_rsl (den, 1);
     }
-  else
+  
+  while ( (digis < DIGITS) && !(_cairo_uint128_eq(rem, ZERO)) )
     {
+      // Skip leading zeros in remainder
+      while ( (digis + shift < DIGITS) &&
+              !(rem.hi & HPCAIRO_MASK_HI_BIT) )
+        {      
+          ++shift;
+          rem = _cairo_int128_lsl (rem, 1);
+        }
+
+      // Cast off denominator bits if:
+      //   Need more digits and
+      //     LSB is zero or 
+      //     rem < den
+      while ( (digis + shift < DIGITS) &&
+              ( !(den.lo & 0x1) || _cairo_uint128_lt (rem, den) ) )
+        {
+          ++shift;
+          den = _cairo_uint128_rsl (den, 1);
+        }
+
+      // Do the division
+      qr = _cairo_uint128_divrem (rem, den);
+
+      // Add in the quotient as shift bits of the fraction
+      result = _cairo_uint128_lsl (result, shift);
+      result = _cairo_uint128_add (result, qr.quo);
       rem = qr.rem;
-      div = _cairo_uint128_rsl (b, 64);
+      digis += shift;
+      shift = 0;
     }
-  qr = _cairo_uint128_divrem (rem, div);
-  result = _cairo_uint128_add (result, qr.quo);
+  // Did we run out of remainder?
+  if (digis < DIGITS)
+    {
+      shift = DIGITS - digis;
+      result = _cairo_uint128_lsl (result, shift);
+    }
+  
   return result;
 }
 
 void 
-int64x64_t::MulByInvert (const int64x64_t &o)
+int64x64_t::MulByInvert (const int64x64_t & o)
 {
-  bool negResult = _cairo_int128_negative (_v);
-  cairo_uint128_t a = negResult ? _cairo_int128_negate (_v) : _v;
+  bool sign = _cairo_int128_negative (_v);
+  cairo_uint128_t a = sign ? _cairo_int128_negate (_v) : _v;
   cairo_uint128_t result = UmulByInvert (a, o._v);
 
-  _v = negResult ? _cairo_int128_negate (result) : result;
+  _v = sign ? _cairo_int128_negate (result) : result;
 }
+  
 cairo_uint128_t
-int64x64_t::UmulByInvert (cairo_uint128_t a, cairo_uint128_t b)
+int64x64_t::UmulByInvert (const cairo_uint128_t a, const cairo_uint128_t b)
 {
   cairo_uint128_t result;
   cairo_uint128_t hi, mid;
@@ -139,8 +198,9 @@ int64x64_t::UmulByInvert (cairo_uint128_t a, cairo_uint128_t b)
   result = _cairo_uint128_add (hi,mid);
   return result;
 }
+
 int64x64_t 
-int64x64_t::Invert (uint64_t v)
+int64x64_t::Invert (const uint64_t v)
 {
   NS_ASSERT (v > 1);
   cairo_uint128_t a, factor;
@@ -162,8 +222,3 @@ int64x64_t::Invert (uint64_t v)
 
 
 } // namespace ns3
-
-// include directly to allow optimizations within the compilation unit.
-extern "C" {
-#include "cairo-wideint.c"
-}

@@ -38,8 +38,7 @@ NS_LOG_COMPONENT_DEFINE ("RegularWifiMac");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (RegularWifiMac)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (RegularWifiMac);
 
 RegularWifiMac::RegularWifiMac ()
 {
@@ -58,6 +57,7 @@ RegularWifiMac::RegularWifiMac ()
   m_dca = CreateObject<DcaTxop> ();
   m_dca->SetLow (m_low);
   m_dca->SetManager (m_dcfManager);
+  m_dca->SetTxMiddle(m_txMiddle);
   m_dca->SetTxOkCallback (MakeCallback (&RegularWifiMac::TxOk, this));
   m_dca->SetTxFailedCallback (MakeCallback (&RegularWifiMac::TxFailed, this));
 

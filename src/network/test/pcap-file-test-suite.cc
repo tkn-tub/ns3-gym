@@ -993,8 +993,8 @@ ReadFileTestCase::DoTeardown (void)
 {
 }
 
-const uint32_t N_KNOWN_PACKETS = 6;
-const uint32_t N_PACKET_BYTES = 16;
+static const uint32_t N_KNOWN_PACKETS = 6;
+static const uint32_t N_PACKET_BYTES = 16;
 
 typedef struct PACKET_ENTRY {
   uint32_t tsSec;
@@ -1004,7 +1004,7 @@ typedef struct PACKET_ENTRY {
   uint16_t data[N_PACKET_BYTES];
 } PacketEntry;
 
-PacketEntry knownPackets[] = {
+static const PacketEntry knownPackets[] = {
   { 2, 3696,   46,   46, { 0x0001, 0x0800, 0x0604, 0x0001, 0x0000, 0x0000, 0x0003, 0x0a01,
                            0x0201, 0xffff, 0xffff, 0xffff, 0x0a01, 0x0204, 0x0000, 0x0000}},
   { 2, 3707,   46,   46, { 0x0001, 0x0800, 0x0604, 0x0002, 0x0000, 0x0000, 0x0006, 0x0a01,
@@ -1043,16 +1043,16 @@ ReadFileTestCase::DoRun (void)
   uint8_t data[N_PACKET_BYTES];
   uint32_t tsSec, tsUsec, inclLen, origLen, readLen;
 
-  PacketEntry *p = knownPackets;
-
-  for (uint32_t i = 0; i < N_KNOWN_PACKETS; ++i, ++p)
+  for (uint32_t i = 0; i < N_KNOWN_PACKETS; ++i)
     {
+      PacketEntry const & p = knownPackets[i];
+
       f.Read (data, sizeof(data), tsSec, tsUsec, inclLen, origLen, readLen);
       NS_TEST_ASSERT_MSG_EQ (f.Fail (), false, "Read() of known good pcap file returns error");
-      NS_TEST_ASSERT_MSG_EQ (tsSec, p->tsSec, "Incorrectly read seconds timestap from known good pcap file");
-      NS_TEST_ASSERT_MSG_EQ (tsUsec, p->tsUsec, "Incorrectly read microseconds timestap from known good pcap file");
-      NS_TEST_ASSERT_MSG_EQ (inclLen, p->inclLen, "Incorrectly read included length from known good packet");
-      NS_TEST_ASSERT_MSG_EQ (origLen, p->origLen, "Incorrectly read original length from known good packet");
+      NS_TEST_ASSERT_MSG_EQ (tsSec, p.tsSec, "Incorrectly read seconds timestap from known good pcap file");
+      NS_TEST_ASSERT_MSG_EQ (tsUsec, p.tsUsec, "Incorrectly read microseconds timestap from known good pcap file");
+      NS_TEST_ASSERT_MSG_EQ (inclLen, p.inclLen, "Incorrectly read included length from known good packet");
+      NS_TEST_ASSERT_MSG_EQ (origLen, p.origLen, "Incorrectly read original length from known good packet");
       NS_TEST_ASSERT_MSG_EQ (readLen, N_PACKET_BYTES, "Incorrect actual read length from known good packet given buffer size");
     }
 

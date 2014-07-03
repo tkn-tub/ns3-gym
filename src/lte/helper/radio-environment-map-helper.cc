@@ -46,8 +46,7 @@ namespace ns3 {
 
 
 
-NS_OBJECT_ENSURE_REGISTERED (RadioEnvironmentMapHelper)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (RadioEnvironmentMapHelper);
 
 RadioEnvironmentMapHelper::RadioEnvironmentMapHelper ()
 {
@@ -115,7 +114,7 @@ RadioEnvironmentMapHelper::GetTypeId (void)
                    MakeBooleanChecker ())
     .AddAttribute ("NoisePower",
                    "the power of the measuring instrument noise, in Watts. Default to a kT of -174 dBm with a noise figure of 9 dB and a bandwidth of 25 LTE Resource Blocks",
-                   DoubleValue (1.4230e-10),
+                   DoubleValue (1.4230e-13),
                    MakeDoubleAccessor (&RadioEnvironmentMapHelper::m_noisePower),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("MaxPointsPerIteration", "Maximum number of REM points to be calculated per iteration. Every point consumes approximately 5KB of memory.",

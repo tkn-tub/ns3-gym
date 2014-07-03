@@ -225,6 +225,18 @@ public:
 
   Ptr<NetDevice> GetNetDevice (uint32_t i);
 
+  /**
+   * \brief Check if an IPv4 address is unicast according to the node.
+   *
+   * This function checks all the node's interfaces and the respective subnet masks.
+   * An address is considered unicast if it's not broadcast, subnet-broadcast or multicast.
+   *
+   * \param ad address
+   *
+   * \return true if the address is unicast
+   */
+  bool IsUnicast (Ipv4Address ad) const;
+
 protected:
 
   virtual void DoDispose (void);
@@ -396,7 +408,7 @@ private:
   Ipv4InterfaceList m_interfaces; //!< List of IPv4 interfaces.
   uint8_t m_defaultTos;  //!< Default TOS
   uint8_t m_defaultTtl;  //!< Default TTL
-  uint16_t m_identification; //!< Identification
+  std::map<uint8_t, uint16_t> m_identification; //!< Identification (for each protocol)
   Ptr<Node> m_node; //!< Node attached to stack.
 
   /// Trace of sent packets

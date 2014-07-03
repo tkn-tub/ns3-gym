@@ -25,18 +25,18 @@ using namespace ns3;
 
 class PtrTestCase;
 
-class Base
+class PtrTestBase
 {
 public:
-  Base ();
-  virtual ~Base ();
+  PtrTestBase ();
+  virtual ~PtrTestBase ();
   void Ref (void) const;
   void Unref (void) const;
 private:
   mutable uint32_t m_count;
 };
 
-class NoCount : public Base
+class NoCount : public PtrTestBase
 {
 public:
   NoCount (PtrTestCase *test);
@@ -60,20 +60,20 @@ private:
 };
 
 
-Base::Base ()
+PtrTestBase::PtrTestBase ()
   : m_count (1)
 {
 }
-Base::~Base ()
+PtrTestBase::~PtrTestBase ()
 {
 }
 void
-Base::Ref (void) const
+PtrTestBase::Ref (void) const
 {
   m_count++;
 }
 void
-Base::Unref (void) const
+PtrTestBase::Unref (void) const
 {
   m_count--;
   if (m_count == 0)
@@ -256,7 +256,7 @@ PtrTestCase::DoRun (void)
   NS_TEST_EXPECT_MSG_EQ (m_nDestroyed, 1, "013");
 
   {
-    Ptr<Base> p0 = Create<NoCount> (this);
+    Ptr<PtrTestBase> p0 = Create<NoCount> (this);
     Ptr<NoCount> p1 = Create<NoCount> (this);
     NS_TEST_EXPECT_MSG_EQ ((p0 == p1), false, "operator == failed");
     NS_TEST_EXPECT_MSG_EQ ((p0 != p1), true, "operator != failed");

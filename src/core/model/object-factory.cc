@@ -23,8 +23,7 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE("ObjectFactory")
-  ;
+NS_LOG_COMPONENT_DEFINE("ObjectFactory");
 
 ObjectFactory::ObjectFactory ()
 {

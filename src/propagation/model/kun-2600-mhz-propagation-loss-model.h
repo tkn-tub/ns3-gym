@@ -46,6 +46,9 @@ public:
   // inherited from Object
   static TypeId GetTypeId (void);
 
+  Kun2600MhzPropagationLossModel ();
+  virtual ~Kun2600MhzPropagationLossModel ();
+
   /** 
    * \param a the first mobility model
    * \param b the second mobility model

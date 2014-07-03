@@ -1,7 +1,7 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def build(bld):
-    obj = bld.create_ns3_module('energy', ['internet', 'wifi'])
+    obj = bld.create_ns3_module('energy', ['wifi'])
     obj.source = [
         'model/wifi-radio-energy-model.cc',
         'model/energy-source.cc',

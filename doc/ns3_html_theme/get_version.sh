@@ -71,6 +71,7 @@ EOF
 
 # script arguments
 say
+say using doxygen: $(which doxygen) $(doxygen --version)
 public=0
 nsnam=0
 daily=0

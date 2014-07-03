@@ -26,8 +26,7 @@ NS_LOG_COMPONENT_DEFINE ("WifiPhyStateHelper");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (WifiPhyStateHelper)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (WifiPhyStateHelper);
 
 TypeId
 WifiPhyStateHelper::GetTypeId (void)

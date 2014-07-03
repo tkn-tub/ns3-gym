@@ -28,8 +28,7 @@
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (SnrTag)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (SnrTag);
 
 TypeId
 SnrTag::GetTypeId (void)

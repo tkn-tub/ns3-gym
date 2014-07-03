@@ -22,8 +22,7 @@
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (HierarchicalMobilityModel)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (HierarchicalMobilityModel);
 
 TypeId 
 HierarchicalMobilityModel::GetTypeId (void)

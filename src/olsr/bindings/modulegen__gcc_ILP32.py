@@ -114,8 +114,6 @@ def register_types(module):
     module.add_class('ObjectFactory', import_from_module='ns.core')
     ## olsr-helper.h (module 'olsr'): ns3::OlsrHelper [class]
     module.add_class('OlsrHelper', parent=root_module['ns3::Ipv4RoutingHelper'])
-    ## olsr-state.h (module 'olsr'): ns3::OlsrState [class]
-    module.add_class('OlsrState')
     ## packet-metadata.h (module 'network'): ns3::PacketMetadata [class]
     module.add_class('PacketMetadata', import_from_module='ns.network')
     ## packet-metadata.h (module 'network'): ns3::PacketMetadata::Item [struct]
@@ -144,6 +142,8 @@ def register_types(module):
     module.add_class('Tag', import_from_module='ns.network', parent=root_module['ns3::ObjectBase'])
     ## tag-buffer.h (module 'network'): ns3::TagBuffer [class]
     module.add_class('TagBuffer', import_from_module='ns.network')
+    ## nstime.h (module 'core'): ns3::TimeWithUnit [class]
+    module.add_class('TimeWithUnit', import_from_module='ns.core')
     ## timer.h (module 'core'): ns3::Timer [class]
     module.add_class('Timer', import_from_module='ns.core')
     ## timer.h (module 'core'): ns3::Timer::DestroyPolicy [enumeration]
@@ -164,6 +164,8 @@ def register_types(module):
     module.add_class('empty', import_from_module='ns.core')
     ## int64x64-double.h (module 'core'): ns3::int64x64_t [class]
     module.add_class('int64x64_t', import_from_module='ns.core')
+    ## int64x64-double.h (module 'core'): ns3::int64x64_t::impl_type [enumeration]
+    module.add_enum('impl_type', ['int128_impl', 'cairo_impl', 'ld_impl'], outer_class=root_module['ns3::int64x64_t'], import_from_module='ns.core')
     ## chunk.h (module 'network'): ns3::Chunk [class]
     module.add_class('Chunk', import_from_module='ns.network', parent=root_module['ns3::ObjectBase'])
     ## header.h (module 'network'): ns3::Header [class]
@@ -332,18 +334,8 @@ def register_types(module):
     module.add_class('AddressValue', import_from_module='ns.network', parent=root_module['ns3::AttributeValue'])
     ## ipv4-list-routing.h (module 'internet'): ns3::Ipv4ListRouting [class]
     module.add_class('Ipv4ListRouting', import_from_module='ns.internet', parent=root_module['ns3::Ipv4RoutingProtocol'])
-    module.add_container('std::vector< ns3::olsr::MprSelectorTuple >', 'ns3::olsr::MprSelectorTuple', container_type='vector')
-    module.add_container('std::vector< ns3::olsr::NeighborTuple >', 'ns3::olsr::NeighborTuple', container_type='vector')
-    module.add_container('std::vector< ns3::olsr::TwoHopNeighborTuple >', 'ns3::olsr::TwoHopNeighborTuple', container_type='vector')
-    module.add_container('ns3::olsr::MprSet', 'ns3::Ipv4Address', container_type='set')
-    module.add_container('std::vector< ns3::olsr::LinkTuple >', 'ns3::olsr::LinkTuple', container_type='vector')
-    module.add_container('std::vector< ns3::olsr::TopologyTuple >', 'ns3::olsr::TopologyTuple', container_type='vector')
-    module.add_container('std::vector< ns3::olsr::IfaceAssocTuple >', 'ns3::olsr::IfaceAssocTuple', container_type='vector')
-    module.add_container('std::vector< ns3::olsr::AssociationTuple >', 'ns3::olsr::AssociationTuple', container_type='vector')
-    module.add_container('std::vector< ns3::olsr::Association >', 'ns3::olsr::Association', container_type='vector')
-    module.add_container('std::vector< ns3::Ipv4Address >', 'ns3::Ipv4Address', container_type='vector')
-    module.add_container('std::map< unsigned int, unsigned int >', ('unsigned int', 'unsigned int'), container_type='map')
-    module.add_container('std::vector< unsigned int >', 'unsigned int', container_type='vector')
+    module.add_container('std::map< unsigned int, unsigned int >', ('unsigned int', 'unsigned int'), container_type=u'map')
+    module.add_container('std::vector< unsigned int >', 'unsigned int', container_type=u'vector')
     
     ## Register a nested module for the namespace FatalImpl
     
@@ -372,12 +364,12 @@ def register_types_ns3_Hash(module):
     
     ## hash-function.h (module 'core'): ns3::Hash::Implementation [class]
     module.add_class('Implementation', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::Hash::Implementation, ns3::empty, ns3::DefaultDeleter<ns3::Hash::Implementation> >'])
-    typehandlers.add_type_alias('uint32_t ( * ) ( char const *, size_t ) *', 'ns3::Hash::Hash32Function_ptr')
-    typehandlers.add_type_alias('uint32_t ( * ) ( char const *, size_t ) **', 'ns3::Hash::Hash32Function_ptr*')
-    typehandlers.add_type_alias('uint32_t ( * ) ( char const *, size_t ) *&', 'ns3::Hash::Hash32Function_ptr&')
-    typehandlers.add_type_alias('uint64_t ( * ) ( char const *, size_t ) *', 'ns3::Hash::Hash64Function_ptr')
-    typehandlers.add_type_alias('uint64_t ( * ) ( char const *, size_t ) **', 'ns3::Hash::Hash64Function_ptr*')
-    typehandlers.add_type_alias('uint64_t ( * ) ( char const *, size_t ) *&', 'ns3::Hash::Hash64Function_ptr&')
+    typehandlers.add_type_alias(u'uint32_t ( * ) ( char const *, size_t ) *', u'ns3::Hash::Hash32Function_ptr')
+    typehandlers.add_type_alias(u'uint32_t ( * ) ( char const *, size_t ) **', u'ns3::Hash::Hash32Function_ptr*')
+    typehandlers.add_type_alias(u'uint32_t ( * ) ( char const *, size_t ) *&', u'ns3::Hash::Hash32Function_ptr&')
+    typehandlers.add_type_alias(u'uint64_t ( * ) ( char const *, size_t ) *', u'ns3::Hash::Hash64Function_ptr')
+    typehandlers.add_type_alias(u'uint64_t ( * ) ( char const *, size_t ) **', u'ns3::Hash::Hash64Function_ptr*')
+    typehandlers.add_type_alias(u'uint64_t ( * ) ( char const *, size_t ) *&', u'ns3::Hash::Hash64Function_ptr&')
     
     ## Register a nested module for the namespace Function
     
@@ -432,6 +424,8 @@ def register_types_ns3_olsr(module):
     module.add_class('NeighborTuple')
     ## olsr-repositories.h (module 'olsr'): ns3::olsr::NeighborTuple::Status [enumeration]
     module.add_enum('Status', ['STATUS_NOT_SYM', 'STATUS_SYM'], outer_class=root_module['ns3::olsr::NeighborTuple'])
+    ## olsr-state.h (module 'olsr'): ns3::olsr::OlsrState [class]
+    module.add_class('OlsrState')
     ## olsr-header.h (module 'olsr'): ns3::olsr::PacketHeader [class]
     module.add_class('PacketHeader', parent=root_module['ns3::Header'])
     ## olsr-routing-protocol.h (module 'olsr'): ns3::olsr::RoutingProtocol [class]
@@ -442,43 +436,53 @@ def register_types_ns3_olsr(module):
     module.add_class('TopologyTuple')
     ## olsr-repositories.h (module 'olsr'): ns3::olsr::TwoHopNeighborTuple [struct]
     module.add_class('TwoHopNeighborTuple')
-    module.add_container('std::vector< ns3::olsr::MessageHeader::Hello::LinkMessage >', 'ns3::olsr::MessageHeader::Hello::LinkMessage', container_type='vector')
-    module.add_container('std::vector< ns3::olsr::MessageHeader::Hna::Association >', 'ns3::olsr::MessageHeader::Hna::Association', container_type='vector')
-    module.add_container('std::vector< ns3::olsr::RoutingTableEntry >', 'ns3::olsr::RoutingTableEntry', container_type='vector')
-    module.add_container('std::set< unsigned int >', 'unsigned int', container_type='set')
-    typehandlers.add_type_alias('std::vector< ns3::olsr::DuplicateTuple, std::allocator< ns3::olsr::DuplicateTuple > >', 'ns3::olsr::DuplicateSet')
-    typehandlers.add_type_alias('std::vector< ns3::olsr::DuplicateTuple, std::allocator< ns3::olsr::DuplicateTuple > >*', 'ns3::olsr::DuplicateSet*')
-    typehandlers.add_type_alias('std::vector< ns3::olsr::DuplicateTuple, std::allocator< ns3::olsr::DuplicateTuple > >&', 'ns3::olsr::DuplicateSet&')
-    typehandlers.add_type_alias('std::vector< ns3::olsr::MprSelectorTuple, std::allocator< ns3::olsr::MprSelectorTuple > >', 'ns3::olsr::MprSelectorSet')
-    typehandlers.add_type_alias('std::vector< ns3::olsr::MprSelectorTuple, std::allocator< ns3::olsr::MprSelectorTuple > >*', 'ns3::olsr::MprSelectorSet*')
-    typehandlers.add_type_alias('std::vector< ns3::olsr::MprSelectorTuple, std::allocator< ns3::olsr::MprSelectorTuple > >&', 'ns3::olsr::MprSelectorSet&')
-    typehandlers.add_type_alias('std::vector< ns3::olsr::NeighborTuple, std::allocator< ns3::olsr::NeighborTuple > >', 'ns3::olsr::NeighborSet')
-    typehandlers.add_type_alias('std::vector< ns3::olsr::NeighborTuple, std::allocator< ns3::olsr::NeighborTuple > >*', 'ns3::olsr::NeighborSet*')
-    typehandlers.add_type_alias('std::vector< ns3::olsr::NeighborTuple, std::allocator< ns3::olsr::NeighborTuple > >&', 'ns3::olsr::NeighborSet&')
-    typehandlers.add_type_alias('std::vector< ns3::olsr::LinkTuple, std::allocator< ns3::olsr::LinkTuple > >', 'ns3::olsr::LinkSet')
-    typehandlers.add_type_alias('std::vector< ns3::olsr::LinkTuple, std::allocator< ns3::olsr::LinkTuple > >*', 'ns3::olsr::LinkSet*')
-    typehandlers.add_type_alias('std::vector< ns3::olsr::LinkTuple, std::allocator< ns3::olsr::LinkTuple > >&', 'ns3::olsr::LinkSet&')
-    typehandlers.add_type_alias('std::vector< ns3::olsr::MessageHeader, std::allocator< ns3::olsr::MessageHeader > >', 'ns3::olsr::MessageList')
-    typehandlers.add_type_alias('std::vector< ns3::olsr::MessageHeader, std::allocator< ns3::olsr::MessageHeader > >*', 'ns3::olsr::MessageList*')
-    typehandlers.add_type_alias('std::vector< ns3::olsr::MessageHeader, std::allocator< ns3::olsr::MessageHeader > >&', 'ns3::olsr::MessageList&')
-    typehandlers.add_type_alias('std::vector< ns3::olsr::AssociationTuple, std::allocator< ns3::olsr::AssociationTuple > >', 'ns3::olsr::AssociationSet')
-    typehandlers.add_type_alias('std::vector< ns3::olsr::AssociationTuple, std::allocator< ns3::olsr::AssociationTuple > >*', 'ns3::olsr::AssociationSet*')
-    typehandlers.add_type_alias('std::vector< ns3::olsr::AssociationTuple, std::allocator< ns3::olsr::AssociationTuple > >&', 'ns3::olsr::AssociationSet&')
-    typehandlers.add_type_alias('std::vector< ns3::olsr::Association, std::allocator< ns3::olsr::Association > >', 'ns3::olsr::Associations')
-    typehandlers.add_type_alias('std::vector< ns3::olsr::Association, std::allocator< ns3::olsr::Association > >*', 'ns3::olsr::Associations*')
-    typehandlers.add_type_alias('std::vector< ns3::olsr::Association, std::allocator< ns3::olsr::Association > >&', 'ns3::olsr::Associations&')
-    typehandlers.add_type_alias('std::vector< ns3::olsr::IfaceAssocTuple, std::allocator< ns3::olsr::IfaceAssocTuple > >', 'ns3::olsr::IfaceAssocSet')
-    typehandlers.add_type_alias('std::vector< ns3::olsr::IfaceAssocTuple, std::allocator< ns3::olsr::IfaceAssocTuple > >*', 'ns3::olsr::IfaceAssocSet*')
-    typehandlers.add_type_alias('std::vector< ns3::olsr::IfaceAssocTuple, std::allocator< ns3::olsr::IfaceAssocTuple > >&', 'ns3::olsr::IfaceAssocSet&')
-    typehandlers.add_type_alias('std::set< ns3::Ipv4Address, std::less< ns3::Ipv4Address >, std::allocator< ns3::Ipv4Address > >', 'ns3::olsr::MprSet')
-    typehandlers.add_type_alias('std::set< ns3::Ipv4Address, std::less< ns3::Ipv4Address >, std::allocator< ns3::Ipv4Address > >*', 'ns3::olsr::MprSet*')
-    typehandlers.add_type_alias('std::set< ns3::Ipv4Address, std::less< ns3::Ipv4Address >, std::allocator< ns3::Ipv4Address > >&', 'ns3::olsr::MprSet&')
-    typehandlers.add_type_alias('std::vector< ns3::olsr::TwoHopNeighborTuple, std::allocator< ns3::olsr::TwoHopNeighborTuple > >', 'ns3::olsr::TwoHopNeighborSet')
-    typehandlers.add_type_alias('std::vector< ns3::olsr::TwoHopNeighborTuple, std::allocator< ns3::olsr::TwoHopNeighborTuple > >*', 'ns3::olsr::TwoHopNeighborSet*')
-    typehandlers.add_type_alias('std::vector< ns3::olsr::TwoHopNeighborTuple, std::allocator< ns3::olsr::TwoHopNeighborTuple > >&', 'ns3::olsr::TwoHopNeighborSet&')
-    typehandlers.add_type_alias('std::vector< ns3::olsr::TopologyTuple, std::allocator< ns3::olsr::TopologyTuple > >', 'ns3::olsr::TopologySet')
-    typehandlers.add_type_alias('std::vector< ns3::olsr::TopologyTuple, std::allocator< ns3::olsr::TopologyTuple > >*', 'ns3::olsr::TopologySet*')
-    typehandlers.add_type_alias('std::vector< ns3::olsr::TopologyTuple, std::allocator< ns3::olsr::TopologyTuple > >&', 'ns3::olsr::TopologySet&')
+    module.add_container('std::vector< ns3::Ipv4Address >', 'ns3::Ipv4Address', container_type=u'vector')
+    module.add_container('std::vector< ns3::olsr::MessageHeader::Hello::LinkMessage >', 'ns3::olsr::MessageHeader::Hello::LinkMessage', container_type=u'vector')
+    module.add_container('std::vector< ns3::olsr::MessageHeader::Hna::Association >', 'ns3::olsr::MessageHeader::Hna::Association', container_type=u'vector')
+    module.add_container('std::vector< ns3::olsr::MprSelectorTuple >', 'ns3::olsr::MprSelectorTuple', container_type=u'vector')
+    module.add_container('std::vector< ns3::olsr::NeighborTuple >', 'ns3::olsr::NeighborTuple', container_type=u'vector')
+    module.add_container('std::vector< ns3::olsr::TwoHopNeighborTuple >', 'ns3::olsr::TwoHopNeighborTuple', container_type=u'vector')
+    module.add_container('ns3::olsr::MprSet', 'ns3::Ipv4Address', container_type=u'set')
+    module.add_container('std::vector< ns3::olsr::LinkTuple >', 'ns3::olsr::LinkTuple', container_type=u'vector')
+    module.add_container('std::vector< ns3::olsr::TopologyTuple >', 'ns3::olsr::TopologyTuple', container_type=u'vector')
+    module.add_container('std::vector< ns3::olsr::IfaceAssocTuple >', 'ns3::olsr::IfaceAssocTuple', container_type=u'vector')
+    module.add_container('std::vector< ns3::olsr::AssociationTuple >', 'ns3::olsr::AssociationTuple', container_type=u'vector')
+    module.add_container('std::vector< ns3::olsr::Association >', 'ns3::olsr::Association', container_type=u'vector')
+    module.add_container('std::vector< ns3::olsr::RoutingTableEntry >', 'ns3::olsr::RoutingTableEntry', container_type=u'vector')
+    module.add_container('std::set< unsigned int >', 'unsigned int', container_type=u'set')
+    typehandlers.add_type_alias(u'std::vector< ns3::olsr::DuplicateTuple, std::allocator< ns3::olsr::DuplicateTuple > >', u'ns3::olsr::DuplicateSet')
+    typehandlers.add_type_alias(u'std::vector< ns3::olsr::DuplicateTuple, std::allocator< ns3::olsr::DuplicateTuple > >*', u'ns3::olsr::DuplicateSet*')
+    typehandlers.add_type_alias(u'std::vector< ns3::olsr::DuplicateTuple, std::allocator< ns3::olsr::DuplicateTuple > >&', u'ns3::olsr::DuplicateSet&')
+    typehandlers.add_type_alias(u'std::vector< ns3::olsr::MprSelectorTuple, std::allocator< ns3::olsr::MprSelectorTuple > >', u'ns3::olsr::MprSelectorSet')
+    typehandlers.add_type_alias(u'std::vector< ns3::olsr::MprSelectorTuple, std::allocator< ns3::olsr::MprSelectorTuple > >*', u'ns3::olsr::MprSelectorSet*')
+    typehandlers.add_type_alias(u'std::vector< ns3::olsr::MprSelectorTuple, std::allocator< ns3::olsr::MprSelectorTuple > >&', u'ns3::olsr::MprSelectorSet&')
+    typehandlers.add_type_alias(u'std::vector< ns3::olsr::NeighborTuple, std::allocator< ns3::olsr::NeighborTuple > >', u'ns3::olsr::NeighborSet')
+    typehandlers.add_type_alias(u'std::vector< ns3::olsr::NeighborTuple, std::allocator< ns3::olsr::NeighborTuple > >*', u'ns3::olsr::NeighborSet*')
+    typehandlers.add_type_alias(u'std::vector< ns3::olsr::NeighborTuple, std::allocator< ns3::olsr::NeighborTuple > >&', u'ns3::olsr::NeighborSet&')
+    typehandlers.add_type_alias(u'std::vector< ns3::olsr::LinkTuple, std::allocator< ns3::olsr::LinkTuple > >', u'ns3::olsr::LinkSet')
+    typehandlers.add_type_alias(u'std::vector< ns3::olsr::LinkTuple, std::allocator< ns3::olsr::LinkTuple > >*', u'ns3::olsr::LinkSet*')
+    typehandlers.add_type_alias(u'std::vector< ns3::olsr::LinkTuple, std::allocator< ns3::olsr::LinkTuple > >&', u'ns3::olsr::LinkSet&')
+    typehandlers.add_type_alias(u'std::vector< ns3::olsr::MessageHeader, std::allocator< ns3::olsr::MessageHeader > >', u'ns3::olsr::MessageList')
+    typehandlers.add_type_alias(u'std::vector< ns3::olsr::MessageHeader, std::allocator< ns3::olsr::MessageHeader > >*', u'ns3::olsr::MessageList*')
+    typehandlers.add_type_alias(u'std::vector< ns3::olsr::MessageHeader, std::allocator< ns3::olsr::MessageHeader > >&', u'ns3::olsr::MessageList&')
+    typehandlers.add_type_alias(u'std::vector< ns3::olsr::AssociationTuple, std::allocator< ns3::olsr::AssociationTuple > >', u'ns3::olsr::AssociationSet')
+    typehandlers.add_type_alias(u'std::vector< ns3::olsr::AssociationTuple, std::allocator< ns3::olsr::AssociationTuple > >*', u'ns3::olsr::AssociationSet*')
+    typehandlers.add_type_alias(u'std::vector< ns3::olsr::AssociationTuple, std::allocator< ns3::olsr::AssociationTuple > >&', u'ns3::olsr::AssociationSet&')
+    typehandlers.add_type_alias(u'std::vector< ns3::olsr::Association, std::allocator< ns3::olsr::Association > >', u'ns3::olsr::Associations')
+    typehandlers.add_type_alias(u'std::vector< ns3::olsr::Association, std::allocator< ns3::olsr::Association > >*', u'ns3::olsr::Associations*')
+    typehandlers.add_type_alias(u'std::vector< ns3::olsr::Association, std::allocator< ns3::olsr::Association > >&', u'ns3::olsr::Associations&')
+    typehandlers.add_type_alias(u'std::vector< ns3::olsr::IfaceAssocTuple, std::allocator< ns3::olsr::IfaceAssocTuple > >', u'ns3::olsr::IfaceAssocSet')
+    typehandlers.add_type_alias(u'std::vector< ns3::olsr::IfaceAssocTuple, std::allocator< ns3::olsr::IfaceAssocTuple > >*', u'ns3::olsr::IfaceAssocSet*')
+    typehandlers.add_type_alias(u'std::vector< ns3::olsr::IfaceAssocTuple, std::allocator< ns3::olsr::IfaceAssocTuple > >&', u'ns3::olsr::IfaceAssocSet&')
+    typehandlers.add_type_alias(u'std::set< ns3::Ipv4Address, std::less< ns3::Ipv4Address >, std::allocator< ns3::Ipv4Address > >', u'ns3::olsr::MprSet')
+    typehandlers.add_type_alias(u'std::set< ns3::Ipv4Address, std::less< ns3::Ipv4Address >, std::allocator< ns3::Ipv4Address > >*', u'ns3::olsr::MprSet*')
+    typehandlers.add_type_alias(u'std::set< ns3::Ipv4Address, std::less< ns3::Ipv4Address >, std::allocator< ns3::Ipv4Address > >&', u'ns3::olsr::MprSet&')
+    typehandlers.add_type_alias(u'std::vector< ns3::olsr::TwoHopNeighborTuple, std::allocator< ns3::olsr::TwoHopNeighborTuple > >', u'ns3::olsr::TwoHopNeighborSet')
+    typehandlers.add_type_alias(u'std::vector< ns3::olsr::TwoHopNeighborTuple, std::allocator< ns3::olsr::TwoHopNeighborTuple > >*', u'ns3::olsr::TwoHopNeighborSet*')
+    typehandlers.add_type_alias(u'std::vector< ns3::olsr::TwoHopNeighborTuple, std::allocator< ns3::olsr::TwoHopNeighborTuple > >&', u'ns3::olsr::TwoHopNeighborSet&')
+    typehandlers.add_type_alias(u'std::vector< ns3::olsr::TopologyTuple, std::allocator< ns3::olsr::TopologyTuple > >', u'ns3::olsr::TopologySet')
+    typehandlers.add_type_alias(u'std::vector< ns3::olsr::TopologyTuple, std::allocator< ns3::olsr::TopologyTuple > >*', u'ns3::olsr::TopologySet*')
+    typehandlers.add_type_alias(u'std::vector< ns3::olsr::TopologyTuple, std::allocator< ns3::olsr::TopologyTuple > >&', u'ns3::olsr::TopologySet&')
 
 def register_methods(root_module):
     register_Ns3Address_methods(root_module, root_module['ns3::Address'])
@@ -515,7 +519,6 @@ def register_methods(root_module):
     register_Ns3ObjectDeleter_methods(root_module, root_module['ns3::ObjectDeleter'])
     register_Ns3ObjectFactory_methods(root_module, root_module['ns3::ObjectFactory'])
     register_Ns3OlsrHelper_methods(root_module, root_module['ns3::OlsrHelper'])
-    register_Ns3OlsrState_methods(root_module, root_module['ns3::OlsrState'])
     register_Ns3PacketMetadata_methods(root_module, root_module['ns3::PacketMetadata'])
     register_Ns3PacketMetadataItem_methods(root_module, root_module['ns3::PacketMetadata::Item'])
     register_Ns3PacketMetadataItemIterator_methods(root_module, root_module['ns3::PacketMetadata::ItemIterator'])
@@ -528,6 +531,7 @@ def register_methods(root_module):
     register_Ns3SystemWallClockMs_methods(root_module, root_module['ns3::SystemWallClockMs'])
     register_Ns3Tag_methods(root_module, root_module['ns3::Tag'])
     register_Ns3TagBuffer_methods(root_module, root_module['ns3::TagBuffer'])
+    register_Ns3TimeWithUnit_methods(root_module, root_module['ns3::TimeWithUnit'])
     register_Ns3Timer_methods(root_module, root_module['ns3::Timer'])
     register_Ns3TimerImpl_methods(root_module, root_module['ns3::TimerImpl'])
     register_Ns3TypeId_methods(root_module, root_module['ns3::TypeId'])
@@ -631,6 +635,7 @@ def register_methods(root_module):
     register_Ns3OlsrMessageHeaderTc_methods(root_module, root_module['ns3::olsr::MessageHeader::Tc'])
     register_Ns3OlsrMprSelectorTuple_methods(root_module, root_module['ns3::olsr::MprSelectorTuple'])
     register_Ns3OlsrNeighborTuple_methods(root_module, root_module['ns3::olsr::NeighborTuple'])
+    register_Ns3OlsrOlsrState_methods(root_module, root_module['ns3::olsr::OlsrState'])
     register_Ns3OlsrPacketHeader_methods(root_module, root_module['ns3::olsr::PacketHeader'])
     register_Ns3OlsrRoutingProtocol_methods(root_module, root_module['ns3::olsr::RoutingProtocol'])
     register_Ns3OlsrRoutingTableEntry_methods(root_module, root_module['ns3::olsr::RoutingTableEntry'])
@@ -883,6 +888,10 @@ def register_Ns3BufferIterator_methods(root_module, cls):
     cls.add_method('Next', 
                    'void', 
                    [param('uint32_t', 'delta')])
+    ## buffer.h (module 'network'): uint8_t ns3::Buffer::Iterator::PeekU8() [member function]
+    cls.add_method('PeekU8', 
+                   'uint8_t', 
+                   [])
     ## buffer.h (module 'network'): void ns3::Buffer::Iterator::Prev() [member function]
     cls.add_method('Prev', 
                    'void', 
@@ -895,6 +904,10 @@ def register_Ns3BufferIterator_methods(root_module, cls):
     cls.add_method('Read', 
                    'void', 
                    [param('uint8_t *', 'buffer'), param('uint32_t', 'size')])
+    ## buffer.h (module 'network'): void ns3::Buffer::Iterator::Read(ns3::Buffer::Iterator start, uint32_t size) [member function]
+    cls.add_method('Read', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start'), param('uint32_t', 'size')])
     ## buffer.h (module 'network'): uint16_t ns3::Buffer::Iterator::ReadLsbtohU16() [member function]
     cls.add_method('ReadLsbtohU16', 
                    'uint16_t', 
@@ -2064,234 +2077,6 @@ def register_Ns3OlsrHelper_methods(root_module, cls):
                    [param('ns3::NodeContainer', 'c'), param('int64_t', 'stream')])
     return
 
-def register_Ns3OlsrState_methods(root_module, cls):
-    ## olsr-state.h (module 'olsr'): ns3::OlsrState::OlsrState(ns3::OlsrState const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::OlsrState const &', 'arg0')])
-    ## olsr-state.h (module 'olsr'): ns3::OlsrState::OlsrState() [constructor]
-    cls.add_constructor([])
-    ## olsr-state.h (module 'olsr'): void ns3::OlsrState::EraseAssociation(ns3::olsr::Association const & tuple) [member function]
-    cls.add_method('EraseAssociation', 
-                   'void', 
-                   [param('ns3::olsr::Association const &', 'tuple')])
-    ## olsr-state.h (module 'olsr'): void ns3::OlsrState::EraseAssociationTuple(ns3::olsr::AssociationTuple const & tuple) [member function]
-    cls.add_method('EraseAssociationTuple', 
-                   'void', 
-                   [param('ns3::olsr::AssociationTuple const &', 'tuple')])
-    ## olsr-state.h (module 'olsr'): void ns3::OlsrState::EraseDuplicateTuple(ns3::olsr::DuplicateTuple const & tuple) [member function]
-    cls.add_method('EraseDuplicateTuple', 
-                   'void', 
-                   [param('ns3::olsr::DuplicateTuple const &', 'tuple')])
-    ## olsr-state.h (module 'olsr'): void ns3::OlsrState::EraseIfaceAssocTuple(ns3::olsr::IfaceAssocTuple const & tuple) [member function]
-    cls.add_method('EraseIfaceAssocTuple', 
-                   'void', 
-                   [param('ns3::olsr::IfaceAssocTuple const &', 'tuple')])
-    ## olsr-state.h (module 'olsr'): void ns3::OlsrState::EraseLinkTuple(ns3::olsr::LinkTuple const & tuple) [member function]
-    cls.add_method('EraseLinkTuple', 
-                   'void', 
-                   [param('ns3::olsr::LinkTuple const &', 'tuple')])
-    ## olsr-state.h (module 'olsr'): void ns3::OlsrState::EraseMprSelectorTuple(ns3::olsr::MprSelectorTuple const & tuple) [member function]
-    cls.add_method('EraseMprSelectorTuple', 
-                   'void', 
-                   [param('ns3::olsr::MprSelectorTuple const &', 'tuple')])
-    ## olsr-state.h (module 'olsr'): void ns3::OlsrState::EraseMprSelectorTuples(ns3::Ipv4Address const & mainAddr) [member function]
-    cls.add_method('EraseMprSelectorTuples', 
-                   'void', 
-                   [param('ns3::Ipv4Address const &', 'mainAddr')])
-    ## olsr-state.h (module 'olsr'): void ns3::OlsrState::EraseNeighborTuple(ns3::olsr::NeighborTuple const & neighborTuple) [member function]
-    cls.add_method('EraseNeighborTuple', 
-                   'void', 
-                   [param('ns3::olsr::NeighborTuple const &', 'neighborTuple')])
-    ## olsr-state.h (module 'olsr'): void ns3::OlsrState::EraseNeighborTuple(ns3::Ipv4Address const & mainAddr) [member function]
-    cls.add_method('EraseNeighborTuple', 
-                   'void', 
-                   [param('ns3::Ipv4Address const &', 'mainAddr')])
-    ## olsr-state.h (module 'olsr'): void ns3::OlsrState::EraseOlderTopologyTuples(ns3::Ipv4Address const & lastAddr, uint16_t ansn) [member function]
-    cls.add_method('EraseOlderTopologyTuples', 
-                   'void', 
-                   [param('ns3::Ipv4Address const &', 'lastAddr'), param('uint16_t', 'ansn')])
-    ## olsr-state.h (module 'olsr'): void ns3::OlsrState::EraseTopologyTuple(ns3::olsr::TopologyTuple const & tuple) [member function]
-    cls.add_method('EraseTopologyTuple', 
-                   'void', 
-                   [param('ns3::olsr::TopologyTuple const &', 'tuple')])
-    ## olsr-state.h (module 'olsr'): void ns3::OlsrState::EraseTwoHopNeighborTuple(ns3::olsr::TwoHopNeighborTuple const & tuple) [member function]
-    cls.add_method('EraseTwoHopNeighborTuple', 
-                   'void', 
-                   [param('ns3::olsr::TwoHopNeighborTuple const &', 'tuple')])
-    ## olsr-state.h (module 'olsr'): void ns3::OlsrState::EraseTwoHopNeighborTuples(ns3::Ipv4Address const & neighbor) [member function]
-    cls.add_method('EraseTwoHopNeighborTuples', 
-                   'void', 
-                   [param('ns3::Ipv4Address const &', 'neighbor')])
-    ## olsr-state.h (module 'olsr'): void ns3::OlsrState::EraseTwoHopNeighborTuples(ns3::Ipv4Address const & neighbor, ns3::Ipv4Address const & twoHopNeighbor) [member function]
-    cls.add_method('EraseTwoHopNeighborTuples', 
-                   'void', 
-                   [param('ns3::Ipv4Address const &', 'neighbor'), param('ns3::Ipv4Address const &', 'twoHopNeighbor')])
-    ## olsr-state.h (module 'olsr'): ns3::olsr::AssociationTuple * ns3::OlsrState::FindAssociationTuple(ns3::Ipv4Address const & gatewayAddr, ns3::Ipv4Address const & networkAddr, ns3::Ipv4Mask const & netmask) [member function]
-    cls.add_method('FindAssociationTuple', 
-                   'ns3::olsr::AssociationTuple *', 
-                   [param('ns3::Ipv4Address const &', 'gatewayAddr'), param('ns3::Ipv4Address const &', 'networkAddr'), param('ns3::Ipv4Mask const &', 'netmask')])
-    ## olsr-state.h (module 'olsr'): ns3::olsr::DuplicateTuple * ns3::OlsrState::FindDuplicateTuple(ns3::Ipv4Address const & address, uint16_t sequenceNumber) [member function]
-    cls.add_method('FindDuplicateTuple', 
-                   'ns3::olsr::DuplicateTuple *', 
-                   [param('ns3::Ipv4Address const &', 'address'), param('uint16_t', 'sequenceNumber')])
-    ## olsr-state.h (module 'olsr'): ns3::olsr::IfaceAssocTuple * ns3::OlsrState::FindIfaceAssocTuple(ns3::Ipv4Address const & ifaceAddr) [member function]
-    cls.add_method('FindIfaceAssocTuple', 
-                   'ns3::olsr::IfaceAssocTuple *', 
-                   [param('ns3::Ipv4Address const &', 'ifaceAddr')])
-    ## olsr-state.h (module 'olsr'): ns3::olsr::IfaceAssocTuple const * ns3::OlsrState::FindIfaceAssocTuple(ns3::Ipv4Address const & ifaceAddr) const [member function]
-    cls.add_method('FindIfaceAssocTuple', 
-                   'ns3::olsr::IfaceAssocTuple const *', 
-                   [param('ns3::Ipv4Address const &', 'ifaceAddr')], 
-                   is_const=True)
-    ## olsr-state.h (module 'olsr'): ns3::olsr::LinkTuple * ns3::OlsrState::FindLinkTuple(ns3::Ipv4Address const & ifaceAddr) [member function]
-    cls.add_method('FindLinkTuple', 
-                   'ns3::olsr::LinkTuple *', 
-                   [param('ns3::Ipv4Address const &', 'ifaceAddr')])
-    ## olsr-state.h (module 'olsr'): bool ns3::OlsrState::FindMprAddress(ns3::Ipv4Address const & address) [member function]
-    cls.add_method('FindMprAddress', 
-                   'bool', 
-                   [param('ns3::Ipv4Address const &', 'address')])
-    ## olsr-state.h (module 'olsr'): ns3::olsr::MprSelectorTuple * ns3::OlsrState::FindMprSelectorTuple(ns3::Ipv4Address const & mainAddr) [member function]
-    cls.add_method('FindMprSelectorTuple', 
-                   'ns3::olsr::MprSelectorTuple *', 
-                   [param('ns3::Ipv4Address const &', 'mainAddr')])
-    ## olsr-state.h (module 'olsr'): std::vector<ns3::Ipv4Address, std::allocator<ns3::Ipv4Address> > ns3::OlsrState::FindNeighborInterfaces(ns3::Ipv4Address const & neighborMainAddr) const [member function]
-    cls.add_method('FindNeighborInterfaces', 
-                   'std::vector< ns3::Ipv4Address >', 
-                   [param('ns3::Ipv4Address const &', 'neighborMainAddr')], 
-                   is_const=True)
-    ## olsr-state.h (module 'olsr'): ns3::olsr::NeighborTuple * ns3::OlsrState::FindNeighborTuple(ns3::Ipv4Address const & mainAddr) [member function]
-    cls.add_method('FindNeighborTuple', 
-                   'ns3::olsr::NeighborTuple *', 
-                   [param('ns3::Ipv4Address const &', 'mainAddr')])
-    ## olsr-state.h (module 'olsr'): ns3::olsr::NeighborTuple * ns3::OlsrState::FindNeighborTuple(ns3::Ipv4Address const & mainAddr, uint8_t willingness) [member function]
-    cls.add_method('FindNeighborTuple', 
-                   'ns3::olsr::NeighborTuple *', 
-                   [param('ns3::Ipv4Address const &', 'mainAddr'), param('uint8_t', 'willingness')])
-    ## olsr-state.h (module 'olsr'): ns3::olsr::TopologyTuple * ns3::OlsrState::FindNewerTopologyTuple(ns3::Ipv4Address const & lastAddr, uint16_t ansn) [member function]
-    cls.add_method('FindNewerTopologyTuple', 
-                   'ns3::olsr::TopologyTuple *', 
-                   [param('ns3::Ipv4Address const &', 'lastAddr'), param('uint16_t', 'ansn')])
-    ## olsr-state.h (module 'olsr'): ns3::olsr::LinkTuple * ns3::OlsrState::FindSymLinkTuple(ns3::Ipv4Address const & ifaceAddr, ns3::Time time) [member function]
-    cls.add_method('FindSymLinkTuple', 
-                   'ns3::olsr::LinkTuple *', 
-                   [param('ns3::Ipv4Address const &', 'ifaceAddr'), param('ns3::Time', 'time')])
-    ## olsr-state.h (module 'olsr'): ns3::olsr::NeighborTuple const * ns3::OlsrState::FindSymNeighborTuple(ns3::Ipv4Address const & mainAddr) const [member function]
-    cls.add_method('FindSymNeighborTuple', 
-                   'ns3::olsr::NeighborTuple const *', 
-                   [param('ns3::Ipv4Address const &', 'mainAddr')], 
-                   is_const=True)
-    ## olsr-state.h (module 'olsr'): ns3::olsr::TopologyTuple * ns3::OlsrState::FindTopologyTuple(ns3::Ipv4Address const & destAddr, ns3::Ipv4Address const & lastAddr) [member function]
-    cls.add_method('FindTopologyTuple', 
-                   'ns3::olsr::TopologyTuple *', 
-                   [param('ns3::Ipv4Address const &', 'destAddr'), param('ns3::Ipv4Address const &', 'lastAddr')])
-    ## olsr-state.h (module 'olsr'): ns3::olsr::TwoHopNeighborTuple * ns3::OlsrState::FindTwoHopNeighborTuple(ns3::Ipv4Address const & neighbor, ns3::Ipv4Address const & twoHopNeighbor) [member function]
-    cls.add_method('FindTwoHopNeighborTuple', 
-                   'ns3::olsr::TwoHopNeighborTuple *', 
-                   [param('ns3::Ipv4Address const &', 'neighbor'), param('ns3::Ipv4Address const &', 'twoHopNeighbor')])
-    ## olsr-state.h (module 'olsr'): ns3::olsr::AssociationSet const & ns3::OlsrState::GetAssociationSet() const [member function]
-    cls.add_method('GetAssociationSet', 
-                   'ns3::olsr::AssociationSet const &', 
-                   [], 
-                   is_const=True)
-    ## olsr-state.h (module 'olsr'): ns3::olsr::Associations const & ns3::OlsrState::GetAssociations() const [member function]
-    cls.add_method('GetAssociations', 
-                   'ns3::olsr::Associations const &', 
-                   [], 
-                   is_const=True)
-    ## olsr-state.h (module 'olsr'): ns3::olsr::IfaceAssocSet const & ns3::OlsrState::GetIfaceAssocSet() const [member function]
-    cls.add_method('GetIfaceAssocSet', 
-                   'ns3::olsr::IfaceAssocSet const &', 
-                   [], 
-                   is_const=True)
-    ## olsr-state.h (module 'olsr'): ns3::olsr::IfaceAssocSet & ns3::OlsrState::GetIfaceAssocSetMutable() [member function]
-    cls.add_method('GetIfaceAssocSetMutable', 
-                   'ns3::olsr::IfaceAssocSet &', 
-                   [])
-    ## olsr-state.h (module 'olsr'): ns3::olsr::LinkSet const & ns3::OlsrState::GetLinks() const [member function]
-    cls.add_method('GetLinks', 
-                   'ns3::olsr::LinkSet const &', 
-                   [], 
-                   is_const=True)
-    ## olsr-state.h (module 'olsr'): ns3::olsr::MprSelectorSet const & ns3::OlsrState::GetMprSelectors() const [member function]
-    cls.add_method('GetMprSelectors', 
-                   'ns3::olsr::MprSelectorSet const &', 
-                   [], 
-                   is_const=True)
-    ## olsr-state.h (module 'olsr'): ns3::olsr::MprSet ns3::OlsrState::GetMprSet() const [member function]
-    cls.add_method('GetMprSet', 
-                   'ns3::olsr::MprSet', 
-                   [], 
-                   is_const=True)
-    ## olsr-state.h (module 'olsr'): ns3::olsr::NeighborSet const & ns3::OlsrState::GetNeighbors() const [member function]
-    cls.add_method('GetNeighbors', 
-                   'ns3::olsr::NeighborSet const &', 
-                   [], 
-                   is_const=True)
-    ## olsr-state.h (module 'olsr'): ns3::olsr::NeighborSet & ns3::OlsrState::GetNeighbors() [member function]
-    cls.add_method('GetNeighbors', 
-                   'ns3::olsr::NeighborSet &', 
-                   [])
-    ## olsr-state.h (module 'olsr'): ns3::olsr::TopologySet const & ns3::OlsrState::GetTopologySet() const [member function]
-    cls.add_method('GetTopologySet', 
-                   'ns3::olsr::TopologySet const &', 
-                   [], 
-                   is_const=True)
-    ## olsr-state.h (module 'olsr'): ns3::olsr::TwoHopNeighborSet const & ns3::OlsrState::GetTwoHopNeighbors() const [member function]
-    cls.add_method('GetTwoHopNeighbors', 
-                   'ns3::olsr::TwoHopNeighborSet const &', 
-                   [], 
-                   is_const=True)
-    ## olsr-state.h (module 'olsr'): ns3::olsr::TwoHopNeighborSet & ns3::OlsrState::GetTwoHopNeighbors() [member function]
-    cls.add_method('GetTwoHopNeighbors', 
-                   'ns3::olsr::TwoHopNeighborSet &', 
-                   [])
-    ## olsr-state.h (module 'olsr'): void ns3::OlsrState::InsertAssociation(ns3::olsr::Association const & tuple) [member function]
-    cls.add_method('InsertAssociation', 
-                   'void', 
-                   [param('ns3::olsr::Association const &', 'tuple')])
-    ## olsr-state.h (module 'olsr'): void ns3::OlsrState::InsertAssociationTuple(ns3::olsr::AssociationTuple const & tuple) [member function]
-    cls.add_method('InsertAssociationTuple', 
-                   'void', 
-                   [param('ns3::olsr::AssociationTuple const &', 'tuple')])
-    ## olsr-state.h (module 'olsr'): void ns3::OlsrState::InsertDuplicateTuple(ns3::olsr::DuplicateTuple const & tuple) [member function]
-    cls.add_method('InsertDuplicateTuple', 
-                   'void', 
-                   [param('ns3::olsr::DuplicateTuple const &', 'tuple')])
-    ## olsr-state.h (module 'olsr'): void ns3::OlsrState::InsertIfaceAssocTuple(ns3::olsr::IfaceAssocTuple const & tuple) [member function]
-    cls.add_method('InsertIfaceAssocTuple', 
-                   'void', 
-                   [param('ns3::olsr::IfaceAssocTuple const &', 'tuple')])
-    ## olsr-state.h (module 'olsr'): ns3::olsr::LinkTuple & ns3::OlsrState::InsertLinkTuple(ns3::olsr::LinkTuple const & tuple) [member function]
-    cls.add_method('InsertLinkTuple', 
-                   'ns3::olsr::LinkTuple &', 
-                   [param('ns3::olsr::LinkTuple const &', 'tuple')])
-    ## olsr-state.h (module 'olsr'): void ns3::OlsrState::InsertMprSelectorTuple(ns3::olsr::MprSelectorTuple const & tuple) [member function]
-    cls.add_method('InsertMprSelectorTuple', 
-                   'void', 
-                   [param('ns3::olsr::MprSelectorTuple const &', 'tuple')])
-    ## olsr-state.h (module 'olsr'): void ns3::OlsrState::InsertNeighborTuple(ns3::olsr::NeighborTuple const & tuple) [member function]
-    cls.add_method('InsertNeighborTuple', 
-                   'void', 
-                   [param('ns3::olsr::NeighborTuple const &', 'tuple')])
-    ## olsr-state.h (module 'olsr'): void ns3::OlsrState::InsertTopologyTuple(ns3::olsr::TopologyTuple const & tuple) [member function]
-    cls.add_method('InsertTopologyTuple', 
-                   'void', 
-                   [param('ns3::olsr::TopologyTuple const &', 'tuple')])
-    ## olsr-state.h (module 'olsr'): void ns3::OlsrState::InsertTwoHopNeighborTuple(ns3::olsr::TwoHopNeighborTuple const & tuple) [member function]
-    cls.add_method('InsertTwoHopNeighborTuple', 
-                   'void', 
-                   [param('ns3::olsr::TwoHopNeighborTuple const &', 'tuple')])
-    ## olsr-state.h (module 'olsr'): std::string ns3::OlsrState::PrintMprSelectorSet() const [member function]
-    cls.add_method('PrintMprSelectorSet', 
-                   'std::string', 
-                   [], 
-                   is_const=True)
-    ## olsr-state.h (module 'olsr'): void ns3::OlsrState::SetMprSet(ns3::olsr::MprSet mprSet) [member function]
-    cls.add_method('SetMprSet', 
-                   'void', 
-                   [param('ns3::olsr::MprSet', 'mprSet')])
-    return
-
 def register_Ns3PacketMetadata_methods(root_module, cls):
     ## packet-metadata.h (module 'network'): ns3::PacketMetadata::PacketMetadata(uint64_t uid, uint32_t size) [constructor]
     cls.add_constructor([param('uint64_t', 'uid'), param('uint32_t', 'size')])
@@ -2700,6 +2485,14 @@ def register_Ns3TagBuffer_methods(root_module, cls):
                    [param('uint8_t', 'v')])
     return
 
+def register_Ns3TimeWithUnit_methods(root_module, cls):
+    cls.add_output_stream_operator()
+    ## nstime.h (module 'core'): ns3::TimeWithUnit::TimeWithUnit(ns3::TimeWithUnit const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::TimeWithUnit const &', 'arg0')])
+    ## nstime.h (module 'core'): ns3::TimeWithUnit::TimeWithUnit(ns3::Time const time, ns3::Time::Unit const unit) [constructor]
+    cls.add_constructor([param('ns3::Time const', 'time'), param('ns3::Time::Unit const', 'unit')])
+    return
+
 def register_Ns3Timer_methods(root_module, cls):
     ## timer.h (module 'core'): ns3::Timer::Timer(ns3::Timer const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::Timer const &', 'arg0')])
@@ -2981,62 +2774,18 @@ def register_Ns3Empty_methods(root_module, cls):
     return
 
 def register_Ns3Int64x64_t_methods(root_module, cls):
-    cls.add_binary_numeric_operator('*', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('long long unsigned int const', 'right'))
-    cls.add_binary_numeric_operator('*', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('long unsigned int const', 'right'))
-    cls.add_binary_numeric_operator('*', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('unsigned int const', 'right'))
-    cls.add_binary_numeric_operator('*', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('short unsigned int const', 'right'))
-    cls.add_binary_numeric_operator('*', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('unsigned char const', 'right'))
-    cls.add_binary_numeric_operator('*', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('long long int const', 'right'))
-    cls.add_binary_numeric_operator('*', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('long int const', 'right'))
-    cls.add_binary_numeric_operator('*', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('int const', 'right'))
-    cls.add_binary_numeric_operator('*', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('short int const', 'right'))
-    cls.add_binary_numeric_operator('*', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('signed char const', 'right'))
-    cls.add_binary_numeric_operator('*', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('double const', 'right'))
-    cls.add_binary_numeric_operator('*', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('ns3::int64x64_t const &', 'right'))
-    cls.add_binary_numeric_operator('+', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('long long unsigned int const', 'right'))
-    cls.add_binary_numeric_operator('+', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('long unsigned int const', 'right'))
-    cls.add_binary_numeric_operator('+', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('unsigned int const', 'right'))
-    cls.add_binary_numeric_operator('+', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('short unsigned int const', 'right'))
-    cls.add_binary_numeric_operator('+', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('unsigned char const', 'right'))
-    cls.add_binary_numeric_operator('+', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('long long int const', 'right'))
-    cls.add_binary_numeric_operator('+', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('long int const', 'right'))
-    cls.add_binary_numeric_operator('+', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('int const', 'right'))
-    cls.add_binary_numeric_operator('+', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('short int const', 'right'))
-    cls.add_binary_numeric_operator('+', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('signed char const', 'right'))
-    cls.add_binary_numeric_operator('+', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('double const', 'right'))
-    cls.add_binary_numeric_operator('+', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('ns3::int64x64_t const &', 'right'))
-    cls.add_binary_numeric_operator('-', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('long long unsigned int const', 'right'))
-    cls.add_binary_numeric_operator('-', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('long unsigned int const', 'right'))
-    cls.add_binary_numeric_operator('-', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('unsigned int const', 'right'))
-    cls.add_binary_numeric_operator('-', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('short unsigned int const', 'right'))
-    cls.add_binary_numeric_operator('-', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('unsigned char const', 'right'))
-    cls.add_binary_numeric_operator('-', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('long long int const', 'right'))
-    cls.add_binary_numeric_operator('-', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('long int const', 'right'))
-    cls.add_binary_numeric_operator('-', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('int const', 'right'))
-    cls.add_binary_numeric_operator('-', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('short int const', 'right'))
-    cls.add_binary_numeric_operator('-', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('signed char const', 'right'))
-    cls.add_binary_numeric_operator('-', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('double const', 'right'))
+    cls.add_binary_numeric_operator('*', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('ns3::int64x64_t const &', u'right'))
+    cls.add_binary_numeric_operator('+', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('ns3::int64x64_t const &', u'right'))
+    cls.add_binary_numeric_operator('-', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('ns3::int64x64_t const &', u'right'))
     cls.add_unary_numeric_operator('-')
-    cls.add_binary_numeric_operator('-', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('ns3::int64x64_t const &', 'right'))
-    cls.add_binary_numeric_operator('/', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('long long unsigned int const', 'right'))
-    cls.add_binary_numeric_operator('/', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('long unsigned int const', 'right'))
-    cls.add_binary_numeric_operator('/', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('unsigned int const', 'right'))
-    cls.add_binary_numeric_operator('/', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('short unsigned int const', 'right'))
-    cls.add_binary_numeric_operator('/', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('unsigned char const', 'right'))
-    cls.add_binary_numeric_operator('/', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('long long int const', 'right'))
-    cls.add_binary_numeric_operator('/', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('long int const', 'right'))
-    cls.add_binary_numeric_operator('/', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('int const', 'right'))
-    cls.add_binary_numeric_operator('/', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('short int const', 'right'))
-    cls.add_binary_numeric_operator('/', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('signed char const', 'right'))
-    cls.add_binary_numeric_operator('/', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('double const', 'right'))
-    cls.add_binary_numeric_operator('/', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('ns3::int64x64_t const &', 'right'))
+    cls.add_binary_numeric_operator('/', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('ns3::int64x64_t const &', u'right'))
     cls.add_binary_comparison_operator('<')
     cls.add_binary_comparison_operator('>')
     cls.add_binary_comparison_operator('!=')
-    cls.add_inplace_numeric_operator('*=', param('ns3::int64x64_t const &', 'right'))
-    cls.add_inplace_numeric_operator('+=', param('ns3::int64x64_t const &', 'right'))
-    cls.add_inplace_numeric_operator('-=', param('ns3::int64x64_t const &', 'right'))
-    cls.add_inplace_numeric_operator('/=', param('ns3::int64x64_t const &', 'right'))
+    cls.add_inplace_numeric_operator('*=', param('ns3::int64x64_t const &', u'right'))
+    cls.add_inplace_numeric_operator('+=', param('ns3::int64x64_t const &', u'right'))
+    cls.add_inplace_numeric_operator('-=', param('ns3::int64x64_t const &', u'right'))
+    cls.add_inplace_numeric_operator('/=', param('ns3::int64x64_t const &', u'right'))
     cls.add_output_stream_operator()
     cls.add_binary_comparison_operator('<=')
     cls.add_binary_comparison_operator('==')
@@ -3045,6 +2794,8 @@ def register_Ns3Int64x64_t_methods(root_module, cls):
     cls.add_constructor([])
     ## int64x64-double.h (module 'core'): ns3::int64x64_t::int64x64_t(double v) [constructor]
     cls.add_constructor([param('double', 'v')])
+    ## int64x64-double.h (module 'core'): ns3::int64x64_t::int64x64_t(long double v) [constructor]
+    cls.add_constructor([param('long double', 'v')])
     ## int64x64-double.h (module 'core'): ns3::int64x64_t::int64x64_t(int v) [constructor]
     cls.add_constructor([param('int', 'v')])
     ## int64x64-double.h (module 'core'): ns3::int64x64_t::int64x64_t(long int v) [constructor]
@@ -3085,6 +2836,8 @@ def register_Ns3Int64x64_t_methods(root_module, cls):
     cls.add_method('MulByInvert', 
                    'void', 
                    [param('ns3::int64x64_t const &', 'o')])
+    ## int64x64-double.h (module 'core'): ns3::int64x64_t::implementation [variable]
+    cls.add_static_attribute('implementation', 'ns3::int64x64_t::impl_type const', is_const=True)
     return
 
 def register_Ns3Chunk_methods(root_module, cls):
@@ -4219,13 +3972,15 @@ def register_Ns3SocketSetDontFragmentTag_methods(root_module, cls):
     return
 
 def register_Ns3Time_methods(root_module, cls):
-    cls.add_binary_numeric_operator('+', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::Time const &', 'right'))
-    cls.add_binary_numeric_operator('-', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::Time const &', 'right'))
+    cls.add_binary_numeric_operator('*', root_module['ns3::Time'], root_module['ns3::Time'], param('int64_t const &', u'right'))
+    cls.add_binary_numeric_operator('+', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::Time const &', u'right'))
+    cls.add_binary_numeric_operator('-', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::Time const &', u'right'))
+    cls.add_binary_numeric_operator('/', root_module['ns3::Time'], root_module['ns3::Time'], param('int64_t const &', u'right'))
     cls.add_binary_comparison_operator('<')
     cls.add_binary_comparison_operator('>')
     cls.add_binary_comparison_operator('!=')
-    cls.add_inplace_numeric_operator('+=', param('ns3::Time const &', 'right'))
-    cls.add_inplace_numeric_operator('-=', param('ns3::Time const &', 'right'))
+    cls.add_inplace_numeric_operator('+=', param('ns3::Time const &', u'right'))
+    cls.add_inplace_numeric_operator('-=', param('ns3::Time const &', u'right'))
     cls.add_output_stream_operator()
     cls.add_binary_comparison_operator('<=')
     cls.add_binary_comparison_operator('==')
@@ -4252,6 +4007,11 @@ def register_Ns3Time_methods(root_module, cls):
     cls.add_constructor([param('std::string const &', 's')])
     ## nstime.h (module 'core'): ns3::Time::Time(ns3::int64x64_t const & value) [constructor]
     cls.add_constructor([param('ns3::int64x64_t const &', 'value')])
+    ## nstime.h (module 'core'): ns3::TimeWithUnit ns3::Time::As(ns3::Time::Unit const unit) const [member function]
+    cls.add_method('As', 
+                   'ns3::TimeWithUnit', 
+                   [param('ns3::Time::Unit const', 'unit')], 
+                   is_const=True)
     ## nstime.h (module 'core'): int ns3::Time::Compare(ns3::Time const & o) const [member function]
     cls.add_method('Compare', 
                    'int', 
@@ -6240,10 +6000,10 @@ def register_Ns3Packet_methods(root_module, cls):
                    'uint32_t', 
                    [param('uint8_t *', 'buffer'), param('uint32_t', 'maxSize')], 
                    is_const=True)
-    ## packet.h (module 'network'): void ns3::Packet::SetNixVector(ns3::Ptr<ns3::NixVector> arg0) [member function]
+    ## packet.h (module 'network'): void ns3::Packet::SetNixVector(ns3::Ptr<ns3::NixVector> nixVector) [member function]
     cls.add_method('SetNixVector', 
                    'void', 
-                   [param('ns3::Ptr< ns3::NixVector >', 'arg0')])
+                   [param('ns3::Ptr< ns3::NixVector >', 'nixVector')])
     return
 
 def register_Ns3ParetoRandomVariable_methods(root_module, cls):
@@ -6970,6 +6730,234 @@ def register_Ns3OlsrNeighborTuple_methods(root_module, cls):
     cls.add_instance_attribute('willingness', 'uint8_t', is_const=False)
     return
 
+def register_Ns3OlsrOlsrState_methods(root_module, cls):
+    ## olsr-state.h (module 'olsr'): ns3::olsr::OlsrState::OlsrState(ns3::olsr::OlsrState const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::olsr::OlsrState const &', 'arg0')])
+    ## olsr-state.h (module 'olsr'): ns3::olsr::OlsrState::OlsrState() [constructor]
+    cls.add_constructor([])
+    ## olsr-state.h (module 'olsr'): void ns3::olsr::OlsrState::EraseAssociation(ns3::olsr::Association const & tuple) [member function]
+    cls.add_method('EraseAssociation', 
+                   'void', 
+                   [param('ns3::olsr::Association const &', 'tuple')])
+    ## olsr-state.h (module 'olsr'): void ns3::olsr::OlsrState::EraseAssociationTuple(ns3::olsr::AssociationTuple const & tuple) [member function]
+    cls.add_method('EraseAssociationTuple', 
+                   'void', 
+                   [param('ns3::olsr::AssociationTuple const &', 'tuple')])
+    ## olsr-state.h (module 'olsr'): void ns3::olsr::OlsrState::EraseDuplicateTuple(ns3::olsr::DuplicateTuple const & tuple) [member function]
+    cls.add_method('EraseDuplicateTuple', 
+                   'void', 
+                   [param('ns3::olsr::DuplicateTuple const &', 'tuple')])
+    ## olsr-state.h (module 'olsr'): void ns3::olsr::OlsrState::EraseIfaceAssocTuple(ns3::olsr::IfaceAssocTuple const & tuple) [member function]
+    cls.add_method('EraseIfaceAssocTuple', 
+                   'void', 
+                   [param('ns3::olsr::IfaceAssocTuple const &', 'tuple')])
+    ## olsr-state.h (module 'olsr'): void ns3::olsr::OlsrState::EraseLinkTuple(ns3::olsr::LinkTuple const & tuple) [member function]
+    cls.add_method('EraseLinkTuple', 
+                   'void', 
+                   [param('ns3::olsr::LinkTuple const &', 'tuple')])
+    ## olsr-state.h (module 'olsr'): void ns3::olsr::OlsrState::EraseMprSelectorTuple(ns3::olsr::MprSelectorTuple const & tuple) [member function]
+    cls.add_method('EraseMprSelectorTuple', 
+                   'void', 
+                   [param('ns3::olsr::MprSelectorTuple const &', 'tuple')])
+    ## olsr-state.h (module 'olsr'): void ns3::olsr::OlsrState::EraseMprSelectorTuples(ns3::Ipv4Address const & mainAddr) [member function]
+    cls.add_method('EraseMprSelectorTuples', 
+                   'void', 
+                   [param('ns3::Ipv4Address const &', 'mainAddr')])
+    ## olsr-state.h (module 'olsr'): void ns3::olsr::OlsrState::EraseNeighborTuple(ns3::olsr::NeighborTuple const & neighborTuple) [member function]
+    cls.add_method('EraseNeighborTuple', 
+                   'void', 
+                   [param('ns3::olsr::NeighborTuple const &', 'neighborTuple')])
+    ## olsr-state.h (module 'olsr'): void ns3::olsr::OlsrState::EraseNeighborTuple(ns3::Ipv4Address const & mainAddr) [member function]
+    cls.add_method('EraseNeighborTuple', 
+                   'void', 
+                   [param('ns3::Ipv4Address const &', 'mainAddr')])
+    ## olsr-state.h (module 'olsr'): void ns3::olsr::OlsrState::EraseOlderTopologyTuples(ns3::Ipv4Address const & lastAddr, uint16_t ansn) [member function]
+    cls.add_method('EraseOlderTopologyTuples', 
+                   'void', 
+                   [param('ns3::Ipv4Address const &', 'lastAddr'), param('uint16_t', 'ansn')])
+    ## olsr-state.h (module 'olsr'): void ns3::olsr::OlsrState::EraseTopologyTuple(ns3::olsr::TopologyTuple const & tuple) [member function]
+    cls.add_method('EraseTopologyTuple', 
+                   'void', 
+                   [param('ns3::olsr::TopologyTuple const &', 'tuple')])
+    ## olsr-state.h (module 'olsr'): void ns3::olsr::OlsrState::EraseTwoHopNeighborTuple(ns3::olsr::TwoHopNeighborTuple const & tuple) [member function]
+    cls.add_method('EraseTwoHopNeighborTuple', 
+                   'void', 
+                   [param('ns3::olsr::TwoHopNeighborTuple const &', 'tuple')])
+    ## olsr-state.h (module 'olsr'): void ns3::olsr::OlsrState::EraseTwoHopNeighborTuples(ns3::Ipv4Address const & neighbor) [member function]
+    cls.add_method('EraseTwoHopNeighborTuples', 
+                   'void', 
+                   [param('ns3::Ipv4Address const &', 'neighbor')])
+    ## olsr-state.h (module 'olsr'): void ns3::olsr::OlsrState::EraseTwoHopNeighborTuples(ns3::Ipv4Address const & neighbor, ns3::Ipv4Address const & twoHopNeighbor) [member function]
+    cls.add_method('EraseTwoHopNeighborTuples', 
+                   'void', 
+                   [param('ns3::Ipv4Address const &', 'neighbor'), param('ns3::Ipv4Address const &', 'twoHopNeighbor')])
+    ## olsr-state.h (module 'olsr'): ns3::olsr::AssociationTuple * ns3::olsr::OlsrState::FindAssociationTuple(ns3::Ipv4Address const & gatewayAddr, ns3::Ipv4Address const & networkAddr, ns3::Ipv4Mask const & netmask) [member function]
+    cls.add_method('FindAssociationTuple', 
+                   'ns3::olsr::AssociationTuple *', 
+                   [param('ns3::Ipv4Address const &', 'gatewayAddr'), param('ns3::Ipv4Address const &', 'networkAddr'), param('ns3::Ipv4Mask const &', 'netmask')])
+    ## olsr-state.h (module 'olsr'): ns3::olsr::DuplicateTuple * ns3::olsr::OlsrState::FindDuplicateTuple(ns3::Ipv4Address const & address, uint16_t sequenceNumber) [member function]
+    cls.add_method('FindDuplicateTuple', 
+                   'ns3::olsr::DuplicateTuple *', 
+                   [param('ns3::Ipv4Address const &', 'address'), param('uint16_t', 'sequenceNumber')])
+    ## olsr-state.h (module 'olsr'): ns3::olsr::IfaceAssocTuple * ns3::olsr::OlsrState::FindIfaceAssocTuple(ns3::Ipv4Address const & ifaceAddr) [member function]
+    cls.add_method('FindIfaceAssocTuple', 
+                   'ns3::olsr::IfaceAssocTuple *', 
+                   [param('ns3::Ipv4Address const &', 'ifaceAddr')])
+    ## olsr-state.h (module 'olsr'): ns3::olsr::IfaceAssocTuple const * ns3::olsr::OlsrState::FindIfaceAssocTuple(ns3::Ipv4Address const & ifaceAddr) const [member function]
+    cls.add_method('FindIfaceAssocTuple', 
+                   'ns3::olsr::IfaceAssocTuple const *', 
+                   [param('ns3::Ipv4Address const &', 'ifaceAddr')], 
+                   is_const=True)
+    ## olsr-state.h (module 'olsr'): ns3::olsr::LinkTuple * ns3::olsr::OlsrState::FindLinkTuple(ns3::Ipv4Address const & ifaceAddr) [member function]
+    cls.add_method('FindLinkTuple', 
+                   'ns3::olsr::LinkTuple *', 
+                   [param('ns3::Ipv4Address const &', 'ifaceAddr')])
+    ## olsr-state.h (module 'olsr'): bool ns3::olsr::OlsrState::FindMprAddress(ns3::Ipv4Address const & address) [member function]
+    cls.add_method('FindMprAddress', 
+                   'bool', 
+                   [param('ns3::Ipv4Address const &', 'address')])
+    ## olsr-state.h (module 'olsr'): ns3::olsr::MprSelectorTuple * ns3::olsr::OlsrState::FindMprSelectorTuple(ns3::Ipv4Address const & mainAddr) [member function]
+    cls.add_method('FindMprSelectorTuple', 
+                   'ns3::olsr::MprSelectorTuple *', 
+                   [param('ns3::Ipv4Address const &', 'mainAddr')])
+    ## olsr-state.h (module 'olsr'): std::vector<ns3::Ipv4Address, std::allocator<ns3::Ipv4Address> > ns3::olsr::OlsrState::FindNeighborInterfaces(ns3::Ipv4Address const & neighborMainAddr) const [member function]
+    cls.add_method('FindNeighborInterfaces', 
+                   'std::vector< ns3::Ipv4Address >', 
+                   [param('ns3::Ipv4Address const &', 'neighborMainAddr')], 
+                   is_const=True)
+    ## olsr-state.h (module 'olsr'): ns3::olsr::NeighborTuple * ns3::olsr::OlsrState::FindNeighborTuple(ns3::Ipv4Address const & mainAddr) [member function]
+    cls.add_method('FindNeighborTuple', 
+                   'ns3::olsr::NeighborTuple *', 
+                   [param('ns3::Ipv4Address const &', 'mainAddr')])
+    ## olsr-state.h (module 'olsr'): ns3::olsr::NeighborTuple * ns3::olsr::OlsrState::FindNeighborTuple(ns3::Ipv4Address const & mainAddr, uint8_t willingness) [member function]
+    cls.add_method('FindNeighborTuple', 
+                   'ns3::olsr::NeighborTuple *', 
+                   [param('ns3::Ipv4Address const &', 'mainAddr'), param('uint8_t', 'willingness')])
+    ## olsr-state.h (module 'olsr'): ns3::olsr::TopologyTuple * ns3::olsr::OlsrState::FindNewerTopologyTuple(ns3::Ipv4Address const & lastAddr, uint16_t ansn) [member function]
+    cls.add_method('FindNewerTopologyTuple', 
+                   'ns3::olsr::TopologyTuple *', 
+                   [param('ns3::Ipv4Address const &', 'lastAddr'), param('uint16_t', 'ansn')])
+    ## olsr-state.h (module 'olsr'): ns3::olsr::LinkTuple * ns3::olsr::OlsrState::FindSymLinkTuple(ns3::Ipv4Address const & ifaceAddr, ns3::Time time) [member function]
+    cls.add_method('FindSymLinkTuple', 
+                   'ns3::olsr::LinkTuple *', 
+                   [param('ns3::Ipv4Address const &', 'ifaceAddr'), param('ns3::Time', 'time')])
+    ## olsr-state.h (module 'olsr'): ns3::olsr::NeighborTuple const * ns3::olsr::OlsrState::FindSymNeighborTuple(ns3::Ipv4Address const & mainAddr) const [member function]
+    cls.add_method('FindSymNeighborTuple', 
+                   'ns3::olsr::NeighborTuple const *', 
+                   [param('ns3::Ipv4Address const &', 'mainAddr')], 
+                   is_const=True)
+    ## olsr-state.h (module 'olsr'): ns3::olsr::TopologyTuple * ns3::olsr::OlsrState::FindTopologyTuple(ns3::Ipv4Address const & destAddr, ns3::Ipv4Address const & lastAddr) [member function]
+    cls.add_method('FindTopologyTuple', 
+                   'ns3::olsr::TopologyTuple *', 
+                   [param('ns3::Ipv4Address const &', 'destAddr'), param('ns3::Ipv4Address const &', 'lastAddr')])
+    ## olsr-state.h (module 'olsr'): ns3::olsr::TwoHopNeighborTuple * ns3::olsr::OlsrState::FindTwoHopNeighborTuple(ns3::Ipv4Address const & neighbor, ns3::Ipv4Address const & twoHopNeighbor) [member function]
+    cls.add_method('FindTwoHopNeighborTuple', 
+                   'ns3::olsr::TwoHopNeighborTuple *', 
+                   [param('ns3::Ipv4Address const &', 'neighbor'), param('ns3::Ipv4Address const &', 'twoHopNeighbor')])
+    ## olsr-state.h (module 'olsr'): ns3::olsr::AssociationSet const & ns3::olsr::OlsrState::GetAssociationSet() const [member function]
+    cls.add_method('GetAssociationSet', 
+                   'ns3::olsr::AssociationSet const &', 
+                   [], 
+                   is_const=True)
+    ## olsr-state.h (module 'olsr'): ns3::olsr::Associations const & ns3::olsr::OlsrState::GetAssociations() const [member function]
+    cls.add_method('GetAssociations', 
+                   'ns3::olsr::Associations const &', 
+                   [], 
+                   is_const=True)
+    ## olsr-state.h (module 'olsr'): ns3::olsr::IfaceAssocSet const & ns3::olsr::OlsrState::GetIfaceAssocSet() const [member function]
+    cls.add_method('GetIfaceAssocSet', 
+                   'ns3::olsr::IfaceAssocSet const &', 
+                   [], 
+                   is_const=True)
+    ## olsr-state.h (module 'olsr'): ns3::olsr::IfaceAssocSet & ns3::olsr::OlsrState::GetIfaceAssocSetMutable() [member function]
+    cls.add_method('GetIfaceAssocSetMutable', 
+                   'ns3::olsr::IfaceAssocSet &', 
+                   [])
+    ## olsr-state.h (module 'olsr'): ns3::olsr::LinkSet const & ns3::olsr::OlsrState::GetLinks() const [member function]
+    cls.add_method('GetLinks', 
+                   'ns3::olsr::LinkSet const &', 
+                   [], 
+                   is_const=True)
+    ## olsr-state.h (module 'olsr'): ns3::olsr::MprSelectorSet const & ns3::olsr::OlsrState::GetMprSelectors() const [member function]
+    cls.add_method('GetMprSelectors', 
+                   'ns3::olsr::MprSelectorSet const &', 
+                   [], 
+                   is_const=True)
+    ## olsr-state.h (module 'olsr'): ns3::olsr::MprSet ns3::olsr::OlsrState::GetMprSet() const [member function]
+    cls.add_method('GetMprSet', 
+                   'ns3::olsr::MprSet', 
+                   [], 
+                   is_const=True)
+    ## olsr-state.h (module 'olsr'): ns3::olsr::NeighborSet const & ns3::olsr::OlsrState::GetNeighbors() const [member function]
+    cls.add_method('GetNeighbors', 
+                   'ns3::olsr::NeighborSet const &', 
+                   [], 
+                   is_const=True)
+    ## olsr-state.h (module 'olsr'): ns3::olsr::NeighborSet & ns3::olsr::OlsrState::GetNeighbors() [member function]
+    cls.add_method('GetNeighbors', 
+                   'ns3::olsr::NeighborSet &', 
+                   [])
+    ## olsr-state.h (module 'olsr'): ns3::olsr::TopologySet const & ns3::olsr::OlsrState::GetTopologySet() const [member function]
+    cls.add_method('GetTopologySet', 
+                   'ns3::olsr::TopologySet const &', 
+                   [], 
+                   is_const=True)
+    ## olsr-state.h (module 'olsr'): ns3::olsr::TwoHopNeighborSet const & ns3::olsr::OlsrState::GetTwoHopNeighbors() const [member function]
+    cls.add_method('GetTwoHopNeighbors', 
+                   'ns3::olsr::TwoHopNeighborSet const &', 
+                   [], 
+                   is_const=True)
+    ## olsr-state.h (module 'olsr'): ns3::olsr::TwoHopNeighborSet & ns3::olsr::OlsrState::GetTwoHopNeighbors() [member function]
+    cls.add_method('GetTwoHopNeighbors', 
+                   'ns3::olsr::TwoHopNeighborSet &', 
+                   [])
+    ## olsr-state.h (module 'olsr'): void ns3::olsr::OlsrState::InsertAssociation(ns3::olsr::Association const & tuple) [member function]
+    cls.add_method('InsertAssociation', 
+                   'void', 
+                   [param('ns3::olsr::Association const &', 'tuple')])
+    ## olsr-state.h (module 'olsr'): void ns3::olsr::OlsrState::InsertAssociationTuple(ns3::olsr::AssociationTuple const & tuple) [member function]
+    cls.add_method('InsertAssociationTuple', 
+                   'void', 
+                   [param('ns3::olsr::AssociationTuple const &', 'tuple')])
+    ## olsr-state.h (module 'olsr'): void ns3::olsr::OlsrState::InsertDuplicateTuple(ns3::olsr::DuplicateTuple const & tuple) [member function]
+    cls.add_method('InsertDuplicateTuple', 
+                   'void', 
+                   [param('ns3::olsr::DuplicateTuple const &', 'tuple')])
+    ## olsr-state.h (module 'olsr'): void ns3::olsr::OlsrState::InsertIfaceAssocTuple(ns3::olsr::IfaceAssocTuple const & tuple) [member function]
+    cls.add_method('InsertIfaceAssocTuple', 
+                   'void', 
+                   [param('ns3::olsr::IfaceAssocTuple const &', 'tuple')])
+    ## olsr-state.h (module 'olsr'): ns3::olsr::LinkTuple & ns3::olsr::OlsrState::InsertLinkTuple(ns3::olsr::LinkTuple const & tuple) [member function]
+    cls.add_method('InsertLinkTuple', 
+                   'ns3::olsr::LinkTuple &', 
+                   [param('ns3::olsr::LinkTuple const &', 'tuple')])
+    ## olsr-state.h (module 'olsr'): void ns3::olsr::OlsrState::InsertMprSelectorTuple(ns3::olsr::MprSelectorTuple const & tuple) [member function]
+    cls.add_method('InsertMprSelectorTuple', 
+                   'void', 
+                   [param('ns3::olsr::MprSelectorTuple const &', 'tuple')])
+    ## olsr-state.h (module 'olsr'): void ns3::olsr::OlsrState::InsertNeighborTuple(ns3::olsr::NeighborTuple const & tuple) [member function]
+    cls.add_method('InsertNeighborTuple', 
+                   'void', 
+                   [param('ns3::olsr::NeighborTuple const &', 'tuple')])
+    ## olsr-state.h (module 'olsr'): void ns3::olsr::OlsrState::InsertTopologyTuple(ns3::olsr::TopologyTuple const & tuple) [member function]
+    cls.add_method('InsertTopologyTuple', 
+                   'void', 
+                   [param('ns3::olsr::TopologyTuple const &', 'tuple')])
+    ## olsr-state.h (module 'olsr'): void ns3::olsr::OlsrState::InsertTwoHopNeighborTuple(ns3::olsr::TwoHopNeighborTuple const & tuple) [member function]
+    cls.add_method('InsertTwoHopNeighborTuple', 
+                   'void', 
+                   [param('ns3::olsr::TwoHopNeighborTuple const &', 'tuple')])
+    ## olsr-state.h (module 'olsr'): std::string ns3::olsr::OlsrState::PrintMprSelectorSet() const [member function]
+    cls.add_method('PrintMprSelectorSet', 
+                   'std::string', 
+                   [], 
+                   is_const=True)
+    ## olsr-state.h (module 'olsr'): void ns3::olsr::OlsrState::SetMprSet(ns3::olsr::MprSet mprSet) [member function]
+    cls.add_method('SetMprSet', 
+                   'void', 
+                   [param('ns3::olsr::MprSet', 'mprSet')])
+    return
+
 def register_Ns3OlsrPacketHeader_methods(root_module, cls):
     cls.add_output_stream_operator()
     ## olsr-header.h (module 'olsr'): ns3::olsr::PacketHeader::PacketHeader(ns3::olsr::PacketHeader const & arg0) [copy constructor]
@@ -7046,6 +7034,11 @@ def register_Ns3OlsrRoutingProtocol_methods(root_module, cls):
     ## olsr-routing-protocol.h (module 'olsr'): std::set<unsigned int, std::less<unsigned int>, std::allocator<unsigned int> > ns3::olsr::RoutingProtocol::GetInterfaceExclusions() const [member function]
     cls.add_method('GetInterfaceExclusions', 
                    'std::set< unsigned int >', 
+                   [], 
+                   is_const=True)
+    ## olsr-routing-protocol.h (module 'olsr'): ns3::Ptr<const ns3::Ipv4StaticRouting> ns3::olsr::RoutingProtocol::GetRoutingTableAssociation() const [member function]
+    cls.add_method('GetRoutingTableAssociation', 
+                   'ns3::Ptr< ns3::Ipv4StaticRouting const >', 
                    [], 
                    is_const=True)
     ## olsr-routing-protocol.h (module 'olsr'): std::vector<ns3::olsr::RoutingTableEntry,std::allocator<ns3::olsr::RoutingTableEntry> > ns3::olsr::RoutingProtocol::GetRoutingTableEntries() const [member function]

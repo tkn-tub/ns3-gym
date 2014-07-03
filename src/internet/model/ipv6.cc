@@ -29,8 +29,7 @@
 namespace ns3 
 {
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv6)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (Ipv6);
 
 TypeId Ipv6::GetTypeId (void)
 {

@@ -32,10 +32,8 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("Ipv6StaticRouting")
-  ;
-NS_OBJECT_ENSURE_REGISTERED (Ipv6StaticRouting)
-  ;
+NS_LOG_COMPONENT_DEFINE ("Ipv6StaticRouting");
+NS_OBJECT_ENSURE_REGISTERED (Ipv6StaticRouting);
 
 TypeId Ipv6StaticRouting::GetTypeId ()
 {
@@ -292,7 +290,7 @@ Ptr<Ipv6Route> Ipv6StaticRouting::LookupStatic (Ipv6Address dst, Ptr<NetDevice> 
     {
       NS_ASSERT_MSG (interface, "Try to send on link-local multicast address, and no interface index is given!");
       rtentry = Create<Ipv6Route> ();
-      rtentry->SetSource (SourceAddressSelection (m_ipv6->GetInterfaceForDevice (interface), dst));
+      rtentry->SetSource (m_ipv6->SourceAddressSelection (m_ipv6->GetInterfaceForDevice (interface), dst));
       rtentry->SetDestination (dst);
       rtentry->SetGateway (Ipv6Address::GetZero ());
       rtentry->SetOutputDevice (interface);
@@ -311,7 +309,7 @@ Ptr<Ipv6Route> Ipv6StaticRouting::LookupStatic (Ipv6Address dst, Ptr<NetDevice> 
 
       if (mask.IsMatch (dst, entry))
         {
-          NS_LOG_LOGIC ("Found global network route " << j << ", mask length " << maskLen << ", metric " << metric);
+          NS_LOG_LOGIC ("Found global network route " << *j << ", mask length " << maskLen << ", metric " << metric);
 
           /* if interface is given, check the route will output on this interface */
           if (!interface || interface == m_ipv6->GetNetDevice (j->GetInterface ()))
@@ -341,15 +339,15 @@ Ptr<Ipv6Route> Ipv6StaticRouting::LookupStatic (Ipv6Address dst, Ptr<NetDevice> 
 
               if (route->GetGateway ().IsAny ())
                 {
-                  rtentry->SetSource (SourceAddressSelection (interfaceIdx, route->GetDest ()));
+                  rtentry->SetSource (m_ipv6->SourceAddressSelection (interfaceIdx, route->GetDest ()));
                 }
               else if (route->GetDest ().IsAny ()) /* default route */
                 {
-                  rtentry->SetSource (SourceAddressSelection (interfaceIdx, route->GetPrefixToUse ().IsAny () ? dst : route->GetPrefixToUse ()));
+                  rtentry->SetSource (m_ipv6->SourceAddressSelection (interfaceIdx, route->GetPrefixToUse ().IsAny () ? dst : route->GetPrefixToUse ()));
                 }
               else
                 {
-                  rtentry->SetSource (SourceAddressSelection (interfaceIdx, route->GetGateway ()));
+                  rtentry->SetSource (m_ipv6->SourceAddressSelection (interfaceIdx, route->GetGateway ()));
                 }
 
               rtentry->SetDestination (route->GetDest ());
@@ -361,7 +359,7 @@ Ptr<Ipv6Route> Ipv6StaticRouting::LookupStatic (Ipv6Address dst, Ptr<NetDevice> 
 
   if (rtentry)
     {
-      NS_LOG_LOGIC ("Matching route via " << rtentry->GetDestination () << " (throught " << rtentry->GetGateway () << ") at the end");
+      NS_LOG_LOGIC ("Matching route via " << rtentry->GetDestination () << " (Through " << rtentry->GetGateway () << ") at the end");
     }
   return rtentry;
 }
@@ -793,35 +791,6 @@ void Ipv6StaticRouting::NotifyRemoveRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv
       /* default route case */
       RemoveRoute (dst, mask, interface, prefixToUse);
     }
-}
-
-Ipv6Address Ipv6StaticRouting::SourceAddressSelection (uint32_t interface, Ipv6Address dest)
-{
-  NS_LOG_FUNCTION (this << interface << dest);
-  Ipv6Address ret;
-
-  /* first address of an IPv6 interface is link-local ones */
-  ret = m_ipv6->GetAddress (interface, 0).GetAddress ();
-
-  if (dest == Ipv6Address::GetAllNodesMulticast () || dest == Ipv6Address::GetAllRoutersMulticast () || dest == Ipv6Address::GetAllHostsMulticast ())
-    {
-      return ret;
-    }
-
-  /* usually IPv6 interfaces have one link-local address and one global address */
-
-  for (uint32_t i = 1; i < m_ipv6->GetNAddresses (interface); i++)
-    {
-      Ipv6InterfaceAddress test = m_ipv6->GetAddress (interface, i);
-      Ipv6InterfaceAddress dst(dest);
-
-      if (test.GetScope() == dst.GetScope())
-        {
-          return test.GetAddress ();
-        }
-    }
-
-  return ret;
 }
 
 } /* namespace ns3 */

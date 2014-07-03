@@ -67,6 +67,7 @@ public:
 
   static const uint64_t US_PER_NS = (uint64_t)1000;
   static const uint64_t US_PER_SEC = (uint64_t)1000000;
+  /// Conversion from ns to s.
   static const uint64_t NS_PER_SEC = (uint64_t)1000000000;
 
 protected:
@@ -156,8 +157,9 @@ protected:
  * real-time-clock-specific work of waiting (either busy-waiting or sleeping,
  * or some combination) until the requested simulation time.
  *
- * @param ns The simulation time we need to wait for (normalized to nanosecond
- * units).
+ * @param nsCurrent The current simulation time.
+ * @param nsDelay The simulation time of the next event (in nanosecond units).
+ *
  * @see TimeStepPrecision::Get
  */
   virtual bool DoSynchronize (uint64_t nsCurrent, uint64_t nsDelay);

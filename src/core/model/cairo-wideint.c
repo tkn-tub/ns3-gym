@@ -32,6 +32,8 @@
 
 #if HAVE_UINT64_T
 
+const char * cairo_impl64 = "uint64_t";
+
 #define _cairo_uint32s_to_uint64(h,l) ((uint64_t) (h) << 32 | (l))
 
 cairo_uquorem64_t
@@ -45,6 +47,8 @@ _cairo_uint64_divrem (cairo_uint64_t num, cairo_uint64_t den)
 }
 
 #else
+
+const char * cairo_impl64 = "uint32_t";
 
 cairo_uint64_t
 _cairo_uint32_to_uint64 (uint32_t i)
@@ -312,6 +316,8 @@ _cairo_int64_divrem (cairo_int64_t num, cairo_int64_t den)
 
 #if HAVE_UINT128_T
 
+const char * cairo_impl128 = "uint128_t";
+
 cairo_uquorem128_t
 _cairo_uint128_divrem (cairo_uint128_t num, cairo_uint128_t den)
 {
@@ -323,6 +329,8 @@ _cairo_uint128_divrem (cairo_uint128_t num, cairo_uint128_t den)
 }
 
 #else
+
+const char * cairo_impl128 = "cairo_uint64_t";
 
 cairo_uint128_t
 _cairo_uint32_to_uint128 (uint32_t i)
@@ -610,16 +618,16 @@ _cairo_uint128_divrem (cairo_uint128_t num, cairo_uint128_t den)
     return qr;
 }
 
-cairo_int128_t
-_cairo_int128_negate (cairo_int128_t a)
+cairo_uint128_t
+_cairo_uint128_negate (cairo_uint128_t a)
 {
     a.lo = _cairo_uint64_not (a.lo);
     a.hi = _cairo_uint64_not (a.hi);
     return _cairo_uint128_add (a, _cairo_uint32_to_uint128 (1));
 }
 
-cairo_int128_t
-_cairo_int128_not (cairo_int128_t a)
+cairo_uint128_t
+_cairo_uint128_not (cairo_uint128_t a)
 {
     a.lo = _cairo_uint64_not (a.lo);
     a.hi = _cairo_uint64_not (a.hi);
@@ -659,7 +667,7 @@ _cairo_int128_divrem (cairo_int128_t num, cairo_int128_t den)
  * dividend and 64 bit divisor.  If the quotient doesn't fit into 32
  * bits then the returned remainder is equal to the divisor, and the
  * quotient is the largest representable 64 bit integer.  It is an
- * error to call this function with the high 32 bits of @num being
+ * error to call this function with the high 32 bits of `num' being
  * non-zero. */
 cairo_uquorem64_t
 _cairo_uint_96by64_32x64_divrem (cairo_uint128_t num,

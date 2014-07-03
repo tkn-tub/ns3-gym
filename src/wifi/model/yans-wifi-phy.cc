@@ -42,8 +42,7 @@ NS_LOG_COMPONENT_DEFINE ("YansWifiPhy");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (YansWifiPhy)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (YansWifiPhy);
 
 TypeId
 YansWifiPhy::GetTypeId (void)
@@ -452,7 +451,7 @@ YansWifiPhy::StartReceivePacket (Ptr<Packet> packet,
   rxPowerDbm += m_rxGainDb;
   double rxPowerW = DbmToW (rxPowerDbm);
   Time rxDuration = CalculateTxDuration (packet->GetSize (), txVector, preamble);
-WifiMode txMode=txVector.GetMode();
+  WifiMode txMode = txVector.GetMode();
   Time endRx = Simulator::Now () + rxDuration;
 
   Ptr<InterferenceHelper::Event> event;
@@ -509,15 +508,24 @@ WifiMode txMode=txVector.GetMode();
     case YansWifiPhy::IDLE:
       if (rxPowerW > m_edThresholdW)
         {
-          NS_LOG_DEBUG ("sync to signal (power=" << rxPowerW << "W)");
-          // sync to signal
-          m_state->SwitchToRx (rxDuration);
-          NS_ASSERT (m_endRxEvent.IsExpired ());
-          NotifyRxBegin (packet);
-          m_interference.NotifyRxStart ();
-          m_endRxEvent = Simulator::Schedule (rxDuration, &YansWifiPhy::EndReceive, this,
-                                              packet,
-                                              event);
+          if (IsModeSupported (txMode) || IsMcsSupported(txMode))
+            {
+              NS_LOG_DEBUG ("sync to signal (power=" << rxPowerW << "W)");
+              // sync to signal
+              m_state->SwitchToRx (rxDuration);
+              NS_ASSERT (m_endRxEvent.IsExpired ());
+              NotifyRxBegin (packet);
+              m_interference.NotifyRxStart ();
+              m_endRxEvent = Simulator::Schedule (rxDuration, &YansWifiPhy::EndReceive, this,
+                                                  packet,
+                                                  event);
+            }
+          else
+            {
+              NS_LOG_DEBUG ("drop packet because it was sent using an unsupported mode (" << txMode << ")");
+              NotifyRxDrop (packet);
+              goto maybeCcaBusy;
+            }
         }
       else
         {
@@ -579,6 +587,30 @@ WifiMode
 YansWifiPhy::GetMode (uint32_t mode) const
 {
   return m_deviceRateSet[mode];
+}
+bool
+YansWifiPhy::IsModeSupported (WifiMode mode) const
+{
+  for (uint32_t i = 0; i < GetNModes (); i++)
+    {
+      if (mode == GetMode (i))
+        {
+          return true;
+        }
+    }
+  return false;
+}
+bool
+YansWifiPhy::IsMcsSupported (WifiMode mode)
+{
+  for (uint32_t i = 0; i < GetNMcs (); i++)
+    {
+      if (mode == McsToWifiMode(GetMcs (i)))
+        {
+          return true;
+        }
+    }
+  return false;
 }
 uint32_t
 YansWifiPhy::GetNTxPower (void) const

@@ -30,11 +30,9 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("InetTopologyReader")
-  ;
+NS_LOG_COMPONENT_DEFINE ("InetTopologyReader");
 
-NS_OBJECT_ENSURE_REGISTERED (InetTopologyReader)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (InetTopologyReader);
 
 TypeId InetTopologyReader::GetTypeId (void)
 {

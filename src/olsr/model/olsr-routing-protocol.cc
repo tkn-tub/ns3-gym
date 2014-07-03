@@ -146,8 +146,7 @@ NS_LOG_COMPONENT_DEFINE ("OlsrRoutingProtocol");
 
 /********** OLSR class **********/
 
-NS_OBJECT_ENSURE_REGISTERED (RoutingProtocol)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (RoutingProtocol);
 
 TypeId 
 RoutingProtocol::GetTypeId (void)
@@ -2426,9 +2425,8 @@ RoutingProtocol::RemoveLinkTuple (const LinkTuple &tuple)
                 << "s: OLSR Node " << m_mainAddress
                 << " LinkTuple " << tuple << " REMOVED.");
 
-  m_state.EraseLinkTuple (tuple);
   m_state.EraseNeighborTuple (GetMainAddress (tuple.neighborIfaceAddr));
-
+  m_state.EraseLinkTuple (tuple);
 }
 
 ///
@@ -2457,9 +2455,7 @@ RoutingProtocol::LinkTupleUpdated (const LinkTuple &tuple, uint8_t willingness)
 
   if (nb_tuple != NULL)
     {
-#ifdef NS3_LOG_ENABLE
       int statusBefore = nb_tuple->status;
-#endif // NS3_LOG_ENABLE
 
       bool hasSymmetricLink = false;
 
@@ -3357,6 +3353,12 @@ RoutingProtocol::Dump (void)
     }
   NS_LOG_DEBUG ("");
 #endif  //NS3_LOG_ENABLE
+}
+
+Ptr<const Ipv4StaticRouting>
+RoutingProtocol::GetRoutingTableAssociation () const
+{
+  return m_hnaRoutingTable;
 }
 
 } // namespace olsr

@@ -30,8 +30,7 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("Histogram")
-  ;
+NS_LOG_COMPONENT_DEFINE ("Histogram");
  
 // uint32_t 
 // Histogram::GetSize () const

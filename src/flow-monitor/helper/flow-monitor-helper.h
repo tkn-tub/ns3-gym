@@ -30,10 +30,11 @@ namespace ns3 {
 
 class AttributeValue;
 class Ipv4FlowClassifier;
+class Ipv6FlowClassifier;
 
 /**
  * \ingroup flow-monitor
- * \brief Helper to enable IPv4 flow monitoring on a set of Nodes
+ * \brief Helper to enable IP flow monitoring on a set of Nodes
  */
 class FlowMonitorHelper
 {
@@ -74,10 +75,42 @@ public:
   Ptr<FlowMonitor> GetMonitor ();
 
   /**
-   * \brief Retrieve the FlowClassifier object created by the Install* methods
+   * \brief Retrieve the FlowClassifier object for IPv4 created by the Install* methods
    * \returns a pointer to the FlowClassifier object
    */
   Ptr<FlowClassifier> GetClassifier ();
+
+  /**
+   * \brief Retrieve the FlowClassifier object for IPv6 created by the Install* methods
+   * \returns a pointer to the FlowClassifier object
+   */
+  Ptr<FlowClassifier> GetClassifier6 ();
+
+  /**
+   * Serializes the results to an std::ostream in XML format
+   * \param os the output stream
+   * \param indent number of spaces to use as base indentation level
+   * \param enableHistograms if true, include also the histograms in the output
+   * \param enableProbes if true, include also the per-probe/flow pair statistics in the output
+   */
+  void SerializeToXmlStream (std::ostream &os, int indent, bool enableHistograms, bool enableProbes);
+
+  /**
+   * Same as SerializeToXmlStream, but returns the output as a std::string
+   * \param indent number of spaces to use as base indentation level
+   * \param enableHistograms if true, include also the histograms in the output
+   * \param enableProbes if true, include also the per-probe/flow pair statistics in the output
+   * \return the XML output as string
+   */
+  std::string SerializeToXmlString (int indent, bool enableHistograms, bool enableProbes);
+
+  /**
+   * Same as SerializeToXmlStream, but writes to a file instead
+   * \param fileName name or path of the output file that will be created
+   * \param enableHistograms if true, include also the histograms in the output
+   * \param enableProbes if true, include also the per-probe/flow pair statistics in the output
+   */
+  void SerializeToXmlFile (std::string fileName, bool enableHistograms, bool enableProbes);
 
 private:
   /**
@@ -94,9 +127,10 @@ private:
    */
   FlowMonitorHelper& operator= (const FlowMonitorHelper&);
 
-  ObjectFactory m_monitorFactory;       //!< Object factory
-  Ptr<FlowMonitor> m_flowMonitor;       //!< the FlowMonitor object
-  Ptr<FlowClassifier> m_flowClassifier; //!< the FlowClassifier object
+  ObjectFactory m_monitorFactory;        //!< Object factory
+  Ptr<FlowMonitor> m_flowMonitor;        //!< the FlowMonitor object
+  Ptr<FlowClassifier> m_flowClassifier4; //!< the FlowClassifier object for IPv4
+  Ptr<FlowClassifier> m_flowClassifier6; //!< the FlowClassifier object for IPv6
 };
 
 } // namespace ns3

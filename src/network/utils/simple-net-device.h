@@ -45,6 +45,10 @@ class ErrorModel;
 class SimpleNetDevice : public NetDevice
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   SimpleNetDevice ();
 
@@ -112,14 +116,14 @@ public:
 protected:
   virtual void DoDispose (void);
 private:
-  Ptr<SimpleChannel> m_channel;
-  NetDevice::ReceiveCallback m_rxCallback;
-  NetDevice::PromiscReceiveCallback m_promiscCallback;
-  Ptr<Node> m_node;
-  uint16_t m_mtu;
-  uint32_t m_ifIndex;
-  Mac48Address m_address;
-  Ptr<ErrorModel> m_receiveErrorModel;
+  Ptr<SimpleChannel> m_channel; //!< the channel the device is connected to
+  NetDevice::ReceiveCallback m_rxCallback; //!< Receive callback
+  NetDevice::PromiscReceiveCallback m_promiscCallback; //!< Promiscuous receive callback
+  Ptr<Node> m_node; //!< Node this netDevice is associated to
+  uint16_t m_mtu;   //!< MTU
+  uint32_t m_ifIndex; //!< Interface index
+  Mac48Address m_address; //!< MAC address
+  Ptr<ErrorModel> m_receiveErrorModel; //!< Receive error model.
   /**
    * The trace source fired when the phy layer drops a packet it has received
    * due to the error model being active.  Although SimpleNetDevice doesn't 

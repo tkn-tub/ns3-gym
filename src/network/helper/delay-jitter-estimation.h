@@ -69,10 +69,10 @@ public:
   uint64_t GetLastJitter (void) const;
 
 private:
-  Time m_previousRx;
-  Time m_previousRxTx;
-  int64x64_t m_jitter;
-  Time m_delay;
+  Time m_previousRx;   //!< Previous Rx time
+  Time m_previousRxTx; //!< Previous Rx or Tx time
+  int64x64_t m_jitter; //!< Jitter estimation
+  Time m_delay;        //!< Delay estimation
 };
 
 } // namespace ns3

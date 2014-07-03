@@ -43,8 +43,7 @@ NS_LOG_COMPONENT_DEFINE ("UdpSocketImpl");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (UdpSocketImpl)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (UdpSocketImpl);
 
 // The correct maximum UDP message size is 65507, as determined by the following formula:
 // 0xffff - (sizeof(IP Header) + sizeof(UDP Header)) = 65535-(20+8) = 65507
@@ -873,10 +872,14 @@ UdpSocketImpl::GetSockName (Address &address) const
     {
       address = InetSocketAddress (m_endPoint->GetLocalAddress (), m_endPoint->GetLocalPort ());
     }
-  else
+  else if (m_endPoint6 != 0)
     {
-      // It is possible to call this method on a socket without a name
+      address = Inet6SocketAddress (m_endPoint6->GetLocalAddress (), m_endPoint6->GetLocalPort ());
+    }
+  else
+    { // It is possible to call this method on a socket without a name
       // in which case, behavior is unspecified
+      // Should this return an InetSocketAddress or an Inet6SocketAddress?
       address = InetSocketAddress (Ipv4Address::GetZero (), 0);
     }
   return 0;

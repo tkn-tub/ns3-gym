@@ -184,6 +184,7 @@ public:
    * Assignment
    *
    * \param [in] o The PacketTagList to copy.
+   * \returns the copied object
    *
    * This makes a light-weight copy by #RemoveAll, then
    * pointing to the same \ref TagData as \pname{o}.

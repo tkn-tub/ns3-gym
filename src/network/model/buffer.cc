@@ -30,6 +30,10 @@ NS_LOG_COMPONENT_DEFINE ("Buffer");
 
 namespace {
 
+/**
+ * \ingroup packet
+ * \brief Zero-filled buffer.
+ */
 static struct Zeroes
 {
   Zeroes ()
@@ -37,9 +41,9 @@ static struct Zeroes
   {
     memset (buffer, 0, size);
   }
-  char buffer[1000];
-  const uint32_t size;
-} g_zeroes;
+  char buffer[1000];    //!< buffer containing zero values
+  const uint32_t size;  //!< buffer size
+} g_zeroes; //!< Zero-filled buffer
 
 }
 

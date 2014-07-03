@@ -29,8 +29,7 @@ NS_LOG_COMPONENT_DEFINE ("BasicEnergySource");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (BasicEnergySource)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (BasicEnergySource);
 
 TypeId
 BasicEnergySource::GetTypeId (void)

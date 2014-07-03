@@ -40,6 +40,10 @@ namespace ns3 {
 class Trailer : public Chunk
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   virtual ~Trailer ();
   /**
@@ -93,6 +97,13 @@ public:
   virtual void Print (std::ostream &os) const = 0;
 };
 
+/**
+ * \brief Stream insertion operator.
+ *
+ * \param os the stream
+ * \param trailer the trailer
+ * \returns a reference to the stream
+ */
 std::ostream & operator << (std::ostream &os, const Trailer &trailer);
 
 } // namespace ns3

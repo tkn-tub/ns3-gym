@@ -89,7 +89,7 @@ private:
    * \param bValue
    * \return BER of BPSK at the given SNR after applying FEC
    */
-  double GetFecBpskBer (double snr, double nbits,
+  double GetFecBpskBer (double snr, uint32_t nbits,
                         uint32_t bValue) const;
   /**
    * Return BER of QPSK at the given SNR after applying FEC.
@@ -99,7 +99,7 @@ private:
    * \param bValue
    * \return BER of QPSK at the given SNR after applying FEC
    */
-  double GetFecQpskBer (double snr, double nbits,
+  double GetFecQpskBer (double snr, uint32_t nbits,
                         uint32_t bValue) const;
   /**
    * Return BER of QAM16 at the given SNR after applying FEC.

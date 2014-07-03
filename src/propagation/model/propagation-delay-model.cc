@@ -25,8 +25,7 @@
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (PropagationDelayModel)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (PropagationDelayModel);
 
 TypeId 
 PropagationDelayModel::GetTypeId (void)
@@ -49,8 +48,7 @@ PropagationDelayModel::AssignStreams (int64_t stream)
 
 // ------------------------------------------------------------------------- //
 
-NS_OBJECT_ENSURE_REGISTERED (RandomPropagationDelayModel)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (RandomPropagationDelayModel);
 
 TypeId
 RandomPropagationDelayModel::GetTypeId (void)
@@ -86,8 +84,7 @@ RandomPropagationDelayModel::DoAssignStreams (int64_t stream)
   return 1;
 }
 
-NS_OBJECT_ENSURE_REGISTERED (ConstantSpeedPropagationDelayModel)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (ConstantSpeedPropagationDelayModel);
 
 TypeId
 ConstantSpeedPropagationDelayModel::GetTypeId (void)

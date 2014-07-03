@@ -21,8 +21,7 @@
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (ErrorRateModel)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (ErrorRateModel);
 
 TypeId ErrorRateModel::GetTypeId (void)
 {

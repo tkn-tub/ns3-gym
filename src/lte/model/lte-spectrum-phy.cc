@@ -53,7 +53,7 @@ static const Time UL_SRS_DURATION = NanoSeconds (71429 -1);
 // = 0.001 / 14 * 3 (ctrl fixed to 3 symbols) -1ns as margin to avoid overlapping simulator events
 static const Time DL_CTRL_DURATION = NanoSeconds (214286 -1);
 
-double EffectiveCodingRate[29] = {
+static const double EffectiveCodingRate[29] = {
   0.08,
   0.1,
   0.11,
@@ -110,8 +110,7 @@ operator < (const TbId_t& a, const TbId_t& b)
   return ( (a.m_rnti < b.m_rnti) || ( (a.m_rnti == b.m_rnti) && (a.m_layer < b.m_layer) ) );
 }
 
-NS_OBJECT_ENSURE_REGISTERED (LteSpectrumPhy)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (LteSpectrumPhy);
 
 LteSpectrumPhy::LteSpectrumPhy ()
   : m_state (IDLE),

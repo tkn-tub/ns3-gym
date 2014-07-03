@@ -288,7 +288,7 @@ class RandomVariableStreamConstantTestCase : public TestCase
 {
 public:
   static const uint32_t N_MEASUREMENTS = 1000000;
-  static const double TOLERANCE = 1e-8;
+  static const double TOLERANCE;
 
   RandomVariableStreamConstantTestCase ();
   virtual ~RandomVariableStreamConstantTestCase ();
@@ -296,6 +296,8 @@ public:
 private:
   virtual void DoRun (void);
 };
+
+const double RandomVariableStreamConstantTestCase::TOLERANCE = 1e-8;
 
 RandomVariableStreamConstantTestCase::RandomVariableStreamConstantTestCase ()
   : TestCase ("Constant Random Variable Stream Generator")
@@ -336,7 +338,7 @@ RandomVariableStreamConstantTestCase::DoRun (void)
 class RandomVariableStreamSequentialTestCase : public TestCase
 {
 public:
-  static const double TOLERANCE = 1e-8;
+  static const double TOLERANCE;
 
   RandomVariableStreamSequentialTestCase ();
   virtual ~RandomVariableStreamSequentialTestCase ();
@@ -344,6 +346,8 @@ public:
 private:
   virtual void DoRun (void);
 };
+
+const double RandomVariableStreamSequentialTestCase::TOLERANCE = 1e-8;
 
 RandomVariableStreamSequentialTestCase::RandomVariableStreamSequentialTestCase ()
   : TestCase ("Sequential Random Variable Stream Generator")
@@ -2590,7 +2594,7 @@ RandomVariableStreamZetaAntitheticTestCase::DoRun (void)
 class RandomVariableStreamDeterministicTestCase : public TestCase
 {
 public:
-  static const double TOLERANCE = 1e-8;
+  static const double TOLERANCE;
 
   RandomVariableStreamDeterministicTestCase ();
   virtual ~RandomVariableStreamDeterministicTestCase ();
@@ -2598,6 +2602,8 @@ public:
 private:
   virtual void DoRun (void);
 };
+
+const double RandomVariableStreamDeterministicTestCase::TOLERANCE = 1e-8;
 
 RandomVariableStreamDeterministicTestCase::RandomVariableStreamDeterministicTestCase ()
   : TestCase ("Deterministic Random Variable Stream Generator")

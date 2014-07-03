@@ -22,8 +22,7 @@
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (LteRlcSduStatusTag)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (LteRlcSduStatusTag);
 
 LteRlcSduStatusTag::LteRlcSduStatusTag ()
 {

@@ -38,11 +38,9 @@
 namespace ns3 
 {
 
-NS_LOG_COMPONENT_DEFINE ("Ping6Application")
-  ;
+NS_LOG_COMPONENT_DEFINE ("Ping6Application");
 
-NS_OBJECT_ENSURE_REGISTERED (Ping6)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (Ping6);
 
 TypeId Ping6::GetTypeId ()
 {
@@ -111,7 +109,6 @@ void Ping6::StartApplication ()
       NS_ASSERT (m_socket);
 
       m_socket->Bind (Inet6SocketAddress (m_localAddress, 0));
-      m_socket->Connect (Inet6SocketAddress (m_peerAddress, 0));
       m_socket->SetAttribute ("Protocol", UintegerValue (Ipv6Header::IPV6_ICMPV6));
       m_socket->SetRecvCallback (MakeCallback (&Ping6::HandleRead, this));
     }
@@ -173,13 +170,14 @@ void Ping6::Send ()
       /* hack to have ifIndex in Ipv6RawSocketImpl
        * maybe add a SetIfIndex in Ipv6RawSocketImpl directly 
        */
-      Ipv6InterfaceAddress dstIa (m_peerAddress);
       for (uint32_t i = 0; i < GetNode ()->GetObject<Ipv6> ()->GetNAddresses (m_ifIndex); i++)
         {
-          src = GetNode ()->GetObject<Ipv6> ()->GetAddress (m_ifIndex, i).GetAddress ();
-          Ipv6InterfaceAddress srcIa (src);
-          if ( srcIa.GetScope() == dstIa.GetScope() )
+          Ipv6InterfaceAddress srcIa;
+          srcIa = GetNode ()->GetObject<Ipv6> ()->GetAddress (m_ifIndex, i);
+
+          if (srcIa.IsInSameSubnet (m_peerAddress))
             {
+              src = srcIa.GetAddress ();
               break;
             }
         }
@@ -223,7 +221,7 @@ void Ping6::Send ()
       m_socket->SetAttribute ("Protocol", UintegerValue (Ipv6Header::IPV6_EXT_ROUTING));
     }
 
-  m_socket->Send (p, 0);
+  m_socket->SendTo (p, 0, Inet6SocketAddress (m_peerAddress, 0));
   ++m_sent;
 
   NS_LOG_INFO ("Sent " << p->GetSize () << " bytes to " << m_peerAddress);
@@ -248,6 +246,8 @@ void Ping6::HandleRead (Ptr<Socket> socket)
         {
           Ipv6Header hdr;
           Icmpv6Echo reply (0);
+          Icmpv6DestinationUnreachable destUnreach;
+          Icmpv6TimeExceeded timeExceeded;
           Inet6SocketAddress address = Inet6SocketAddress::ConvertFrom (from);
 
           packet->RemoveHeader (hdr);
@@ -260,10 +260,23 @@ void Ping6::HandleRead (Ptr<Socket> socket)
             case Icmpv6Header::ICMPV6_ECHO_REPLY:
               packet->RemoveHeader (reply);
 
-              NS_LOG_INFO ("Received Echo Reply size  = " << std::dec << packet->GetSize () << " bytes from " << address.GetIpv6 () << " id =  " << (uint16_t)reply.GetId () << " seq = " << (uint16_t)reply.GetSeq ());
+              NS_LOG_INFO ("Received Echo Reply size  = " << std::dec << packet->GetSize () <<
+                           " bytes from " << address.GetIpv6 () <<
+                           " id =  " << (uint16_t)reply.GetId () <<
+                           " seq = " << (uint16_t)reply.GetSeq () <<
+                           " Hop Count = " << (uint16_t) (64 - hdr.GetHopLimit ()));
+              break;
+            case Icmpv6Header::ICMPV6_ERROR_DESTINATION_UNREACHABLE:
+              packet->RemoveHeader (destUnreach);
+
+              NS_LOG_INFO ("Received Destination Unreachable from " << address.GetIpv6 ());
+              break;
+            case Icmpv6Header::ICMPV6_ERROR_TIME_EXCEEDED:
+              packet->RemoveHeader (timeExceeded);
+
+              NS_LOG_INFO ("Received Time Exceeded from " << address.GetIpv6 ());
               break;
             default:
-              /* other type, discard */
               break;
             }
         }

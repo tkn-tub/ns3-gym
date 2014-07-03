@@ -37,10 +37,9 @@ NS_LOG_COMPONENT_DEFINE ("LteRrcProtocolIdeal");
 namespace ns3 {
 
 
-const Time RRC_IDEAL_MSG_DELAY = MilliSeconds (0); 
+static const Time RRC_IDEAL_MSG_DELAY = MilliSeconds (0);
 
-NS_OBJECT_ENSURE_REGISTERED (LteUeRrcProtocolIdeal)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (LteUeRrcProtocolIdeal);
 
 LteUeRrcProtocolIdeal::LteUeRrcProtocolIdeal ()
   :  m_ueRrcSapProvider (0),
@@ -207,8 +206,7 @@ LteUeRrcProtocolIdeal::SetEnbRrcSapProvider ()
 }
 
 
-NS_OBJECT_ENSURE_REGISTERED (LteEnbRrcProtocolIdeal)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (LteEnbRrcProtocolIdeal);
 
 LteEnbRrcProtocolIdeal::LteEnbRrcProtocolIdeal ()
   :  m_enbRrcSapProvider (0)
@@ -421,8 +419,8 @@ LteEnbRrcProtocolIdeal::DoSendRrcConnectionReject (uint16_t rnti, LteRrcSap::Rrc
  * 
  */
 
-std::map<uint32_t, LteRrcSap::HandoverPreparationInfo> g_handoverPreparationInfoMsgMap;
-uint32_t g_handoverPreparationInfoMsgIdCounter = 0;
+static std::map<uint32_t, LteRrcSap::HandoverPreparationInfo> g_handoverPreparationInfoMsgMap;
+static uint32_t g_handoverPreparationInfoMsgIdCounter = 0;
 
 /*
  * This header encodes the map key discussed above. We keep this
@@ -527,8 +525,8 @@ LteEnbRrcProtocolIdeal::DoDecodeHandoverPreparationInformation (Ptr<Packet> p)
 
 
 
-std::map<uint32_t, LteRrcSap::RrcConnectionReconfiguration> g_handoverCommandMsgMap;
-uint32_t g_handoverCommandMsgIdCounter = 0;
+static std::map<uint32_t, LteRrcSap::RrcConnectionReconfiguration> g_handoverCommandMsgMap;
+static uint32_t g_handoverCommandMsgIdCounter = 0;
 
 /*
  * This header encodes the map key discussed above. We keep this

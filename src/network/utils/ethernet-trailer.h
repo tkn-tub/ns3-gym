@@ -90,6 +90,10 @@ public:
    */ 
   uint32_t GetTrailerSize () const;
 
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
   virtual void Print (std::ostream &os) const;
@@ -102,7 +106,7 @@ private:
    * returns true.
    */
   bool m_calcFcs;
-  uint32_t m_fcs; /// Value of the fcs contained in the trailer
+  uint32_t m_fcs; //!< Value of the fcs contained in the trailer
 
 };
 

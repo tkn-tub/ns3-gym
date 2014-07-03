@@ -26,8 +26,7 @@ NS_LOG_COMPONENT_DEFINE ("Ipv6PmtuCache");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv6PmtuCache)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (Ipv6PmtuCache);
 
 TypeId Ipv6PmtuCache::GetTypeId ()
 {

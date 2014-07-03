@@ -370,7 +370,7 @@ private:
    *
    * \brief Non-templated internal version of Names::Find
    *
-   * \param name A string containing the path of the object to look for.
+   * \param path A string containing the path of the object to look for.
    *
    * \returns a smart pointer to the named object.
    */
@@ -381,7 +381,7 @@ private:
    *
    * \brief Non-templated internal version of Names::Find
    *
-   * \param context A string containing the path to search for the object in.
+   * \param path A string containing the path to search for the object in.
    * \param name A string containing the name of the object to look for.
    *
    * \returns a smart pointer to the named object.

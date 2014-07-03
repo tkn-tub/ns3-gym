@@ -35,6 +35,8 @@ namespace ns3 {
 /**
  * \ingroup core
  * \defgroup hash Hash Functions
+ *
+ *  \brief Generic Hash function interface
  */
 /**
  *  \ingroup hash
@@ -70,7 +72,7 @@ namespace ns3 {
  *  offer \c unsigned.
  *
  *  Longer hashes require returning a byte buffer of some sort,
- *  but our \ref buffer class seems a bit overkill for this case.
+ *  but our \ref Buffer class seems a bit overkill for this case.
  *
  */
 class Hasher

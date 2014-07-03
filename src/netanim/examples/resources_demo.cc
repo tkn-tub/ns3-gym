@@ -64,12 +64,6 @@ void modify ()
   pAnim->UpdateLinkDescription (1, 10, oss.str ());
   pAnim->UpdateLinkDescription (1, 11, oss.str ());
   
-  // After 5 seconds mark node 3 as invisible 
-  if (Simulator::Now ().GetSeconds () > 5)
-  {
-    pAnim->ShowNode (3, false);
-  }
-
   // Every update change the node description for node 2
   std::ostringstream node0Oss;
   node0Oss << "-----Node:" << Simulator::Now ().GetSeconds ();
@@ -179,7 +173,7 @@ int main (int argc, char *argv[])
 
 
   // Create the animation object and configure for specified output
-  pAnim = new AnimationInterface (animFile, true); // true --> Enable 3.105 behavior
+  pAnim = new AnimationInterface (animFile); 
   // Provide the absolute path to the resource
   resourceId1 = pAnim->AddResource ("/Users/john/ns3/netanim-3.105/ns-3-logo1.png");
   resourceId2 = pAnim->AddResource ("/Users/john/ns3/netanim-3.105/ns-3-logo2.png");

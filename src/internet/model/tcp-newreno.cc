@@ -32,8 +32,7 @@ NS_LOG_COMPONENT_DEFINE ("TcpNewReno");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (TcpNewReno)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (TcpNewReno);
 
 TypeId
 TcpNewReno::GetTypeId (void)
@@ -128,8 +127,9 @@ TcpNewReno::NewAck (const SequenceNumber32& seq)
       m_cWnd -= seq - m_txBuffer.HeadSequence ();
       m_cWnd += m_segmentSize;  // increase cwnd
       NS_LOG_INFO ("Partial ACK in fast recovery: cwnd set to " << m_cWnd);
-      TcpSocketBase::NewAck (seq); // update m_nextTxSequence and send new data if allowed by window
+      m_txBuffer.DiscardUpTo(seq);  //Bug 1850:  retransmit before newack
       DoRetransmit (); // Assume the next seq is lost. Retransmit lost packet
+      TcpSocketBase::NewAck (seq); // update m_nextTxSequence and send new data if allowed by window
       return;
     }
   else if (m_inFastRec && seq >= m_recover)

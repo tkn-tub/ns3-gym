@@ -83,8 +83,7 @@ struct MinstrelWifiRemoteStation : public WifiRemoteStation
   bool m_initialized;  ///< for initializing tables
 };
 
-NS_OBJECT_ENSURE_REGISTERED (MinstrelWifiManager)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (MinstrelWifiManager);
 
 TypeId
 MinstrelWifiManager::GetTypeId (void)

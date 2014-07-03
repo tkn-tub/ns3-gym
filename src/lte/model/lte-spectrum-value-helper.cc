@@ -54,7 +54,7 @@ namespace ns3 {
  * The table was converted to C syntax doing a cut & paste from TS 36.101 and running the following filter:
  * awk '{if ((NR % 7) == 1) printf("{"); printf ("%s",$0); if ((NR % 7) == 0) printf("},\n"); else printf(", ");}' | sed 's/ – /, /g' 
  */
-struct EutraChannelNumbers
+static const struct EutraChannelNumbers
 {
   uint8_t band;
   double fDlLow;

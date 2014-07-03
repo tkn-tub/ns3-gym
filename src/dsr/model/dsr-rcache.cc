@@ -131,8 +131,7 @@ RouteCacheEntry::Print (std::ostream & os) const
      << "\t";
 }
 
-NS_OBJECT_ENSURE_REGISTERED (RouteCache)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (RouteCache);
 
 TypeId RouteCache::GetTypeId ()
 {
@@ -696,7 +695,7 @@ RouteCache::AddRoute (RouteCacheEntry & rt)
       else
         {
           // Check if the expire time for the new route has expired or not
-          if (rt.GetExpireTime () > 0)
+          if (rt.GetExpireTime () > Time (0))
             {
               rtVector.push_back (rt);
               // This sort function will sort the route cache entries based on the size of route in each of the

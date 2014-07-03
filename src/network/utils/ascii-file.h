@@ -85,8 +85,8 @@ public:
                     uint64_t & lineNumber);
 
 private:
-  std::string    m_filename;
-  std::fstream   m_file;
+  std::string    m_filename; //!< output file name
+  std::fstream   m_file;     //!< output file
 };
 
 } // namespace ns3

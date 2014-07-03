@@ -31,8 +31,7 @@ NS_LOG_COMPONENT_DEFINE ("AcousticModemEnergyModel");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (AcousticModemEnergyModel)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (AcousticModemEnergyModel);
 
 TypeId
 AcousticModemEnergyModel::GetTypeId (void)

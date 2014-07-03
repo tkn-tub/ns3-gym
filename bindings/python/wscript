@@ -13,7 +13,7 @@ from waflib.Errors import WafError
 # after = TaskGen.after
 
 ## https://launchpad.net/pybindgen/
-REQUIRED_PYBINDGEN_VERSION = (0, 16, 0, 834)
+REQUIRED_PYBINDGEN_VERSION = (0, 17, 0, 876)
 REQUIRED_PYGCCXML_VERSION = (0, 9, 5)
 
 RUN_ME=-3
@@ -47,6 +47,10 @@ def options(opt):
     opt.add_option('--with-python',
                    help=('Path to the Python interpreter to use.'),
                    default=None, dest='with_python', type="string")
+    opt.add_option('--no32bit-scan',
+                   help=("Don't scan for the 32-bit variant of the bindings on 64-bit platforms."),
+                   action="store_true", default=False,
+                   dest='no32bit_scan')
 
 
 def configure(conf):
@@ -161,7 +165,7 @@ def configure(conf):
     else:
         out = subprocess.Popen([conf.env['PYTHON'][0], "-c",
                                 "import pybindgen.version; "
-                                "print '.'.join([str(x) for x in pybindgen.version.__version__])"],
+                                "print('.'.join([str(x) for x in pybindgen.version.__version__]))"],
                                 stdout=subprocess.PIPE).communicate()[0]
         pybindgen_version_str = out.strip()
         pybindgen_version = tuple([int(x) for x in pybindgen_version_str.split('.')])
@@ -436,7 +440,9 @@ def build(bld):
         else:
             import struct
             if struct.calcsize('I') == 4 and struct.calcsize('L') == 8 and struct.calcsize('P') == 8:
-                scan_targets.extend([('gcc_ILP32', '-m32'), ('gcc_LP64', '-m64')])
+                if not Options.options.no32bit_scan:
+                    scan_targets.append(('gcc_ILP32', '-m32'))
+                scan_targets.append(('gcc_LP64', '-m64'))
             elif struct.calcsize('I') == 4 and struct.calcsize('L') == 4 and struct.calcsize('P') == 4:
                 scan_targets.append(('gcc_ILP32', ''))
             else:

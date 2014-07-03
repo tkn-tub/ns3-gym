@@ -30,8 +30,7 @@ namespace ns3 {
  *        GTP-U-v1 Header
  ********************************************************/
 
-NS_OBJECT_ENSURE_REGISTERED (GtpuHeader)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (GtpuHeader);
 
 TypeId
 GtpuHeader::GetTypeId (void)

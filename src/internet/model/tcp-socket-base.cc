@@ -54,8 +54,7 @@ NS_LOG_COMPONENT_DEFINE ("TcpSocketBase");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (TcpSocketBase)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (TcpSocketBase);
 
 TypeId
 TcpSocketBase::GetTypeId (void)
@@ -265,7 +264,11 @@ TcpSocketBase::Bind (void)
       m_errno = ERROR_ADDRNOTAVAIL;
       return -1;
     }
-  m_tcp->m_sockets.push_back (this);
+
+  if (std::find(m_tcp->m_sockets.begin(), m_tcp->m_sockets.end(), this) == m_tcp->m_sockets.end())
+    {
+      m_tcp->m_sockets.push_back (this);
+    }
   return SetupCallback ();
 }
 
@@ -279,7 +282,11 @@ TcpSocketBase::Bind6 (void)
       m_errno = ERROR_ADDRNOTAVAIL;
       return -1;
     }
-  m_tcp->m_sockets.push_back (this);
+
+  if (std::find(m_tcp->m_sockets.begin(), m_tcp->m_sockets.end(), this) == m_tcp->m_sockets.end())
+    {
+      m_tcp->m_sockets.push_back (this);
+    }
   return SetupCallback ();
 }
 
@@ -347,7 +354,11 @@ TcpSocketBase::Bind (const Address &address)
       m_errno = ERROR_INVAL;
       return -1;
     }
-  m_tcp->m_sockets.push_back (this);
+
+  if (std::find(m_tcp->m_sockets.begin(), m_tcp->m_sockets.end(), this) == m_tcp->m_sockets.end())
+    {
+      m_tcp->m_sockets.push_back (this);
+    }
   NS_LOG_LOGIC ("TcpSocketBase " << this << " got an endpoint: " << m_endPoint);
 
   return SetupCallback ();
@@ -770,10 +781,12 @@ TcpSocketBase::CloseAndNotify (void)
     {
       NotifyNormalClose ();
     }
+
   if (m_state != TIME_WAIT)
     {
       DeallocateEndPoint ();
     }
+    
   m_closeNotified = true;
   NS_LOG_INFO (TcpStateName[m_state] << " -> CLOSED");
   CancelAllTimers ();
@@ -2083,7 +2096,7 @@ TcpSocketBase::EstimateRtt (const TcpHeader& tcpHeader)
 
   //nextRtt will be zero for dup acks.  Don't want to update lastRtt in that case
   //but still needed to do list clearing that is done in AckSeq. 
-  if(nextRtt != 0)
+  if(nextRtt != Time (0))
   {
     m_lastRtt = nextRtt;
     NS_LOG_FUNCTION(this << m_lastRtt);

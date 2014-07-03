@@ -46,8 +46,7 @@ namespace ns3 {
 
 const uint16_t Ipv4L3Protocol::PROT_NUMBER = 0x0800;
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv4L3Protocol)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (Ipv4L3Protocol);
 
 TypeId 
 Ipv4L3Protocol::GetTypeId (void)
@@ -91,8 +90,6 @@ Ipv4L3Protocol::GetTypeId (void)
 }
 
 Ipv4L3Protocol::Ipv4L3Protocol()
-  : m_identification (0)
-
 {
   NS_LOG_FUNCTION (this);
 }
@@ -541,6 +538,35 @@ Ipv4L3Protocol::GetIcmp (void) const
 }
 
 bool
+Ipv4L3Protocol::IsUnicast (Ipv4Address ad) const
+{
+  NS_LOG_FUNCTION (this << ad);
+
+  if (ad.IsBroadcast () || ad.IsMulticast ())
+    {
+      return false;
+    }
+  else
+    {
+      // check for subnet-broadcast
+      for (uint32_t ifaceIndex = 0; ifaceIndex < GetNInterfaces (); ifaceIndex++)
+        {
+          for (uint32_t j = 0; j < GetNAddresses (ifaceIndex); j++)
+            {
+              Ipv4InterfaceAddress ifAddr = GetAddress (ifaceIndex, j);
+              NS_LOG_LOGIC ("Testing address " << ad << " with subnet-directed broadcast " << ifAddr.GetBroadcast () );
+              if (ad == ifAddr.GetBroadcast () )
+                {
+                  return false;
+                }
+            }
+        }
+    }
+
+  return true;
+}
+
+bool
 Ipv4L3Protocol::IsUnicast (Ipv4Address ad, Ipv4Mask interfaceMask) const
 {
   NS_LOG_FUNCTION (this << ad << interfaceMask);
@@ -712,15 +738,18 @@ Ipv4L3Protocol::BuildHeader (
   if (mayFragment == true)
     {
       ipHeader.SetMayFragment ();
-      ipHeader.SetIdentification (m_identification);
-      m_identification++;
+      ipHeader.SetIdentification (m_identification[protocol]);
+      m_identification[protocol]++;
     }
   else
     {
       ipHeader.SetDontFragment ();
-      // TBD:  set to zero here; will cause traces to change
-      ipHeader.SetIdentification (m_identification);
-      m_identification++;
+      // RFC 6864 does not state anything about atomic datagrams
+      // identification requirement:
+      // >> Originating sources MAY set the IPv4 ID field of atomic datagrams
+      //    to any value.
+      ipHeader.SetIdentification (m_identification[protocol]);
+      m_identification[protocol]++;
     }
   if (Node::ChecksumEnabled ())
     {
@@ -1290,8 +1319,8 @@ Ipv4L3Protocol::ProcessFragment (Ptr<Packet>& packet, Ipv4Header& ipHeader, uint
 {
   NS_LOG_FUNCTION (this << packet << ipHeader << iif);
 
-  uint64_t addressCombination = uint64_t (ipHeader.GetSource ().Get ()) << 32 & uint64_t (ipHeader.GetDestination ().Get ());
-  uint32_t idProto = uint32_t (ipHeader.GetIdentification ()) << 16 & uint32_t (ipHeader.GetProtocol ());
+  uint64_t addressCombination = uint64_t (ipHeader.GetSource ().Get ()) << 32 | uint64_t (ipHeader.GetDestination ().Get ());
+  uint32_t idProto = uint32_t (ipHeader.GetIdentification ()) << 16 | uint32_t (ipHeader.GetProtocol ());
   std::pair<uint64_t, uint32_t> key;
   bool ret = false;
   Ptr<Packet> p = packet->Copy ();

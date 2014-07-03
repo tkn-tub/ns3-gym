@@ -31,8 +31,7 @@ NS_LOG_COMPONENT_DEFINE ("OkumuraHataPropagationLossModel");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (OkumuraHataPropagationLossModel)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (OkumuraHataPropagationLossModel);
 
 
 TypeId
@@ -41,6 +40,7 @@ OkumuraHataPropagationLossModel::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::OkumuraHataPropagationLossModel")
 
     .SetParent<PropagationLossModel> ()
+    .AddConstructor<OkumuraHataPropagationLossModel> ()
 
     .AddAttribute ("Frequency",
                    "The propagation frequency in Hz",
@@ -65,6 +65,15 @@ OkumuraHataPropagationLossModel::GetTypeId (void)
                                     LargeCity, "Large"));
 
   return tid;
+}
+
+OkumuraHataPropagationLossModel::OkumuraHataPropagationLossModel ()
+  : PropagationLossModel ()
+{
+}
+
+OkumuraHataPropagationLossModel::~OkumuraHataPropagationLossModel ()
+{
 }
 
 double

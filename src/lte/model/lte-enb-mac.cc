@@ -43,8 +43,7 @@ NS_LOG_COMPONENT_DEFINE ("LteEnbMac");
 namespace ns3 {
 
 
-NS_OBJECT_ENSURE_REGISTERED (LteEnbMac)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (LteEnbMac);
 
 
 

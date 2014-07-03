@@ -211,7 +211,7 @@ protected:
    *
    * \param packet the incoming packet
    * \param header the packet's IPv4 header
-   * \param port the incoming port
+   * \param port the remote port
    * \param incomingInterface the incoming interface
    */
   void ForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port, Ptr<Ipv4Interface> incomingInterface);
@@ -221,7 +221,7 @@ protected:
    *
    * \param packet the incoming packet
    * \param header the packet's IPv6 header
-   * \param port the incoming port
+   * \param port the remote port
    * \param incomingInterface the incoming interface
    */
   void ForwardUp6 (Ptr<Packet> packet, Ipv6Header header, uint16_t port, Ptr<Ipv6Interface> incomingInterface);
@@ -231,7 +231,7 @@ protected:
    *
    * \param packet the incoming packet
    * \param header the packet's IPv4 header
-   * \param port the incoming port
+   * \param port the remote port
    * \param incomingInterface the incoming interface
    */
   virtual void DoForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port, Ptr<Ipv4Interface> incomingInterface); //Get a pkt from L3
@@ -241,7 +241,7 @@ protected:
    *
    * \param packet the incoming packet
    * \param header the packet's IPv6 header
-   * \param port the incoming port
+   * \param port the remote port
    */
   virtual void DoForwardUp (Ptr<Packet> packet, Ipv6Header header, uint16_t port);
 

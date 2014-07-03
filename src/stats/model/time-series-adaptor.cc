@@ -31,8 +31,7 @@ NS_LOG_COMPONENT_DEFINE ("TimeSeriesAdaptor");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (TimeSeriesAdaptor)
-  ;
+NS_OBJECT_ENSURE_REGISTERED (TimeSeriesAdaptor);
 
 TypeId
 TimeSeriesAdaptor::GetTypeId (void)
