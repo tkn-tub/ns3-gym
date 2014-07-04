@@ -194,7 +194,7 @@ WaveformGenerator::GenerateWaveform ()
   NS_LOG_FUNCTION (this);
 
   Ptr<SpectrumSignalParameters> txParams = Create<SpectrumSignalParameters> ();
-  txParams->duration = Time (m_period * m_dutyCycle);
+  txParams->duration = Time (m_period.GetTimeStep () * m_dutyCycle);
   txParams->psd = m_txPowerSpectralDensity;
   txParams->txPhy = GetObject<SpectrumPhy> ();
   txParams->txAntenna = m_antenna;
