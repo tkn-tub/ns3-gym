@@ -41,7 +41,6 @@ def build(bld):
         'helper/lte-stats-calculator.cc',
         'helper/epc-helper.cc',
         'helper/point-to-point-epc-helper.cc',
-        'helper/emu-epc-helper.cc',
         'helper/radio-bearer-stats-calculator.cc',
         'helper/radio-bearer-stats-connector.cc',
         'helper/phy-stats-calculator.cc',
@@ -198,7 +197,6 @@ def build(bld):
         'helper/lte-stats-calculator.h',
         'helper/epc-helper.h',
         'helper/point-to-point-epc-helper.h',
-        'helper/emu-epc-helper.h',
         'helper/phy-stats-calculator.h',
         'helper/mac-stats-calculator.h',
         'helper/phy-tx-stats-calculator.h',
@@ -266,6 +264,10 @@ def build(bld):
         'model/lte-anr-sap.h',
         'model/lte-anr.h',
         ]
+
+    if (bld.env['ENABLE_EMU']):
+        module.source.append ('helper/emu-epc-helper.cc')
+        headers.source.append ('helper/emu-epc-helper.h')
 
     if (bld.env['ENABLE_EXAMPLES']):
       bld.recurse('examples')
