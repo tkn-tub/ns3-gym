@@ -46,6 +46,12 @@ SpectrumValue:: operator[] (size_t index)
   return m_values.at (index);
 }
 
+const double&
+SpectrumValue:: operator[] (size_t index) const
+{
+  return m_values.at (index);
+}
+
 
 SpectrumModelUid_t
 SpectrumValue::GetSpectrumModelUid () const
