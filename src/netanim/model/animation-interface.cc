@@ -1616,7 +1616,7 @@ AnimationInterface::WriteNodes ()
       Ptr<Node> n = *i;
       NS_LOG_INFO ("Update Position for Node: " << n->GetId ());
       Vector v = UpdatePosition (n);
-      WriteXmlNode (n->GetId (), v.x, v.y);
+      WriteXmlNode (n->GetId (), n->GetSystemId (), v.x, v.y);
     }
 }
 
@@ -2072,10 +2072,11 @@ AnimationInterface::WriteXmlClose (std::string name, bool routing)
 }
 
 void 
-AnimationInterface::WriteXmlNode (uint32_t id, double locX, double locY)
+AnimationInterface::WriteXmlNode (uint32_t id, uint32_t sysId, double locX, double locY)
 {
   AnimXmlElement element ("node");
   element.AddAttribute ("id", id);
+  element.AddAttribute ("sysId", sysId);
   element.AddAttribute ("locX", locX);
   element.AddAttribute ("locY", locY);
   element.Close ();

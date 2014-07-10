@@ -780,7 +780,7 @@ private:
   void WriteXmlAddNodeCounter (uint32_t counterId, std::string counterName, CounterType counterType);
   void WriteXmlUpdateNodeImage (uint32_t nodeId, uint32_t resourceId);
   void WriteXmlUpdateNodeCounter (uint32_t counterId, uint32_t nodeId, double value);
-  void WriteXmlNode (uint32_t id, double locX, double locY);
+  void WriteXmlNode (uint32_t id, uint32_t sysId, double locX, double locY);
   void WriteXmlLink (uint32_t fromId, uint32_t toLp, uint32_t toId);
   void WriteXmlUpdateLink (uint32_t fromId, uint32_t toId, std::string);
   void WriteXmlP (std::string pktType, 
