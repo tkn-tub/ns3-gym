@@ -87,10 +87,11 @@
 #ifndef NS_LOG_APPEND_CONTEXT
 /**
  * \ingroup logging
- * Append the node id to a log message.
+ * Append the node id (or other file-local programatic context, such as
+ * MPI rank) to a log message.
  *
  * This is implemented locally in `.cc` files because
- * the the relevant variable is only known there.
+ * the relevant variable is only known there.
  *
  * Preferred format is something like (assuming the node id is
  * accessible from `var`:
@@ -100,14 +101,28 @@
  *       std::clog << "[node " << var->GetObject<Node> ()->GetId () << "] ";
  *     }
  * \endcode
- *
- * \internal
- * Logging implementation macro; should not be called directly.
- *
  */
 #define NS_LOG_APPEND_CONTEXT
 #endif /* NS_LOG_APPEND_CONTEXT */
 
+
+#ifndef NS_LOG_CONDITION
+/**
+ * \ingroup logging
+ * Limit logging output based on some file-local condition,
+ * such as MPI rank.
+ *
+ * This is implemented locally in `.cc` files because
+ * the relevant condition variable is only known there.
+ *
+ * Since this appears immediately before the `do { ... } while false`
+ * construct of \c NS_LOG(level, msg), it must have the form
+ * \code
+ *   #define NS_LOG_CONDITION    if (condition)
+ * \endcode
+ */
+#define NS_LOG_CONDITION
+#endif
 
 /**
  * \ingroup logging
@@ -129,6 +144,7 @@
  * Logging implementation macro; should not be called directly.
  */
 #define NS_LOG(level, msg)                                      \
+  NS_LOG_CONDITION                                              \
   do                                                            \
     {                                                           \
       if (g_log.IsEnabled (level))                              \
@@ -152,6 +168,7 @@
  * should instead use NS_LOG_FUNCTION().
  */
 #define NS_LOG_FUNCTION_NOARGS()                                \
+  NS_LOG_CONDITION                                              \
   do                                                            \
     {                                                           \
       if (g_log.IsEnabled (ns3::LOG_FUNCTION))                  \
@@ -188,6 +205,7 @@
  * \param parameters the parameters to output.
  */
 #define NS_LOG_FUNCTION(parameters)                             \
+  NS_LOG_CONDITION                                              \
   do                                                            \
     {                                                           \
       if (g_log.IsEnabled (ns3::LOG_FUNCTION))                  \
@@ -212,6 +230,7 @@
  * \param msg the message to log
  */
 #define NS_LOG_UNCOND(msg)              \
+  NS_LOG_CONDITION                                              \
   do                                    \
     {                                   \
       std::clog << msg << std::endl;    \
