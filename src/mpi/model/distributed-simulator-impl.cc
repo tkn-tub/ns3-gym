@@ -76,7 +76,7 @@ LbtsMessage::IsFinished ()
   return m_isFinished;
 }
 
-Time DistributedSimulatorImpl::m_lookAhead = Seconds (0);
+Time DistributedSimulatorImpl::m_lookAhead = Seconds (-1);
 
 TypeId
 DistributedSimulatorImpl::GetTypeId (void)
@@ -167,14 +167,15 @@ DistributedSimulatorImpl::CalculateLookAhead (void)
 #ifdef NS3_MPI
   if (MpiInterface::GetSize () <= 1)
     {
-      DistributedSimulatorImpl::m_lookAhead = Seconds (0);
-      m_grantedTime = Seconds (0);
+      m_lookAhead = Seconds (0);
     }
   else
     {
-      DistributedSimulatorImpl::m_lookAhead = GetMaximumSimulationTime ();
-
-      m_grantedTime = GetMaximumSimulationTime ();
+      if (m_lookAhead == Seconds (-1))
+        {
+          m_lookAhead = GetMaximumSimulationTime ();
+        }
+      // else it was already set by SetLookAhead
 
       NodeContainer c = NodeContainer::GetGlobal ();
       for (NodeContainer::Iterator iter = c.Begin (); iter != c.End (); ++iter)
@@ -221,14 +222,16 @@ DistributedSimulatorImpl::CalculateLookAhead (void)
               TimeValue delay;
               channel->GetAttribute ("Delay", delay);
 
-              if (delay.Get ().GetSeconds () < DistributedSimulatorImpl::m_lookAhead.GetSeconds ())
+              if (delay.Get () < m_lookAhead)
                 {
-                  DistributedSimulatorImpl::m_lookAhead = delay.Get ();
-                  m_grantedTime = delay.Get ();
+                  m_lookAhead = delay.Get ();
                 }
             }
         }
     }
+
+  // m_lookAhead is now set
+  m_grantedTime = m_lookAhead;
 
   /*
    * Compute the maximum inter-task latency and use that value
@@ -275,6 +278,20 @@ DistributedSimulatorImpl::CalculateLookAhead (void)
 #else
   NS_FATAL_ERROR ("Can't use distributed simulator without MPI compiled in");
 #endif
+}
+
+void
+DistributedSimulatorImpl::SetMaximumLookAhead (const Time lookAhead)
+{
+  if (lookAhead > 0)
+    {
+      NS_LOG_FUNCTION (this << lookAhead);
+      m_lookAhead = lookAhead;
+    }
+  else
+    {
+      NS_LOG_WARN ("attempted to set look ahead negative: " << lookAhead);
+    }
 }
 
 void
