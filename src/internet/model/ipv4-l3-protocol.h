@@ -388,7 +388,7 @@ private:
    * \param iif Input Interface
    */
   void HandleFragmentsTimeout ( std::pair<uint64_t, uint32_t> key, Ipv4Header & ipHeader, uint32_t iif);
-
+  
   /**
    * \brief Container of the IPv4 Interfaces.
    */
@@ -408,7 +408,7 @@ private:
   Ipv4InterfaceList m_interfaces; //!< List of IPv4 interfaces.
   uint8_t m_defaultTos;  //!< Default TOS
   uint8_t m_defaultTtl;  //!< Default TTL
-  std::map<uint8_t, uint16_t> m_identification; //!< Identification (for each protocol)
+  std::map<std::pair<uint64_t, uint8_t>, uint16_t> m_identification; //!< Identification (for each {src, dst, proto} tuple)
   Ptr<Node> m_node; //!< Node attached to stack.
 
   /// Trace of sent packets

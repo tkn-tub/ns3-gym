@@ -735,11 +735,17 @@ Ipv4L3Protocol::BuildHeader (
   ipHeader.SetPayloadSize (payloadSize);
   ipHeader.SetTtl (ttl);
   ipHeader.SetTos (tos);
+
+  uint64_t src = source.Get ();
+  uint64_t dst = destination.Get ();
+  uint64_t srcDst = dst | (src << 32);
+  std::pair<uint64_t, uint8_t> key = std::make_pair (srcDst, protocol);
+
   if (mayFragment == true)
     {
       ipHeader.SetMayFragment ();
-      ipHeader.SetIdentification (m_identification[protocol]);
-      m_identification[protocol]++;
+      ipHeader.SetIdentification (m_identification[key]);
+      m_identification[key]++;
     }
   else
     {
@@ -748,8 +754,8 @@ Ipv4L3Protocol::BuildHeader (
       // identification requirement:
       // >> Originating sources MAY set the IPv4 ID field of atomic datagrams
       //    to any value.
-      ipHeader.SetIdentification (m_identification[protocol]);
-      m_identification[protocol]++;
+      ipHeader.SetIdentification (m_identification[key]);
+      m_identification[key]++;
     }
   if (Node::ChecksumEnabled ())
     {
@@ -1524,5 +1530,4 @@ Ipv4L3Protocol::HandleFragmentsTimeout (std::pair<uint64_t, uint32_t> key, Ipv4H
   m_fragments.erase (key);
   m_fragmentsTimers.erase (key);
 }
-
 } // namespace ns3
