@@ -129,7 +129,7 @@ Ipv6ListRouting::RouteInput (Ptr<const Packet> p, const Ipv6Header &header, Ptr<
         }
 
       /* do not forward link-local multicast address */
-      if (dst == Ipv6Address::GetAllNodesMulticast () || dst == Ipv6Address::GetAllRoutersMulticast () || dst == Ipv6Address::GetAllHostsMulticast ())
+      if (dst.IsLinkLocalMulticast ())
         {
           return retVal;
         }
