@@ -527,6 +527,8 @@ LteUeMac::DoReset ()
           m_lcInfoMap.erase (it++);
         }
     }
+
+  m_noRaResponseReceivedEvent.Cancel ();
   m_rachConfigured = false;
   m_freshUlBsr = false;
   m_ulBsrReceived.clear ();

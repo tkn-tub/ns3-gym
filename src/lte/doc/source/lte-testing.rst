@@ -1007,12 +1007,19 @@ The test suite ``lte-rrc`` tests the correct functionality of the following aspe
  #. RRC Connection Establishment 
  #. RRC Reconfiguration
 
-The test suite considers a type of scenario with a single eNB and multiple UEs that are instructed to connect to the eNB. Each test case implement an instance of this scenario with specific values of the following parameters:
+The test suite considers a type of scenario with four eNBs aligned in a square
+layout with 100-meter edges. Multiple UEs are located at a specific spot on the
+diagonal of the square and are instructed to connect to the first eNB. Each test
+case implements an instance of this scenario with specific values of the
+following parameters:
 
  - number of UEs
  - number of Data Radio Bearers to be activated for each UE
  - time :math:`t^c_0` at which the first UE is instructed to start connecting to the eNB
  - time interval :math:`d^i` between the start of connection of UE :math:`n` and UE :math:`n+1`; the time at which user :math:`n` connects is thus determined as :math:`t^c_n = t^c_0 + n d^i` sdf
+ - the relative position of the UEs on the diagonal of the square, where higher
+   values indicate larger distance from the serving eNodeB, i.e., higher
+   interference from the other eNodeBs
  - a boolean flag indicating whether the ideal or the real RRC protocol model is used
 
 Each test cases passes if a number of test conditions are positively evaluated for each UE after a delay :math:`d^e` from the time it started connecting to the eNB. The delay :math:`d^e` is determined as 
@@ -1031,9 +1038,9 @@ where:
    to allocate the UL grant because of lack of resources. The number
    of collisions depends on the number of UEs that try to access
    simultaneously; we estimated that for a :math:`0.99` RA success
-   probability, 5 attempts are sufficient for up to 20 UEs, and 10
-   attempts for up to 50 UEs. For the UL
-   grant, considered the system bandwidth and the
+   probability, 5 attempts are sufficient for up to 20 UEs, 10 attempts for up
+   to 50 UEs, 20 attempts for up to 100 UEs, and 40 attempts for up to 200 UEs.
+   For the UL grant, considered the system bandwidth and the
    default MCS used for the UL grant (MCS 0), at most 4 UL grants can
    be assigned in a TTI; so for :math:`n` UEs trying to
    do RA simultaneously the max number of attempts due to the UL grant
@@ -1045,7 +1052,10 @@ where:
    SETUP + RRC CONNECTION SETUP COMPLETED. We consider a round trip
    delay of 10ms plus :math:`\lceil 2n/4 \rceil` considering that 2
    RRC packets have to be transmitted and that at most 4 such packets
-   can be transmitted per TTI.
+   can be transmitted per TTI. In cases where interference is high, we
+   accommodate one retry attempt by the UE, so we double the :math:`d^{ce}`
+   value and then add :math:`d^{si}` on top of it (because the timeout has
+   reset the previously received SIB2).
  - :math:`d^{cr}` is the delay required for eventually needed RRC
    CONNECTION RECONFIGURATION transactions. The number of transactions needed is
    1 for each bearer activation. Similarly to what done for
@@ -1056,9 +1066,6 @@ where:
 The conditions that are evaluated for a test case to pass are, for
 each UE:
 
- - the eNB has the context of the UE (identified by the RNTI value
-   retrieved from the UE RRC)
- - the RRC state of the UE at the eNB is CONNECTED_NORMALLY
  - the RRC state at the UE is CONNECTED_NORMALLY
  - the UE is configured with the CellId, DlBandwidth, UlBandwidth,
    DlEarfcn and UlEarfcn of the eNB
@@ -1068,6 +1075,12 @@ each UE:
  - for each Data Radio Bearer, the following identifiers match between
    the UE and the eNB: EPS bearer id, DRB id, LCID
 
+Ideally, the UE context at the serving eNodeB would have an RRC state of
+CONNECTED_NORMALLY at the end of the procedure. But in the rare case of error
+while transmitting RRC CONNECTION SETUP COMPLETE message, the eNodeB would have
+removed the context because of *connection setup timeout*. A better way to
+handle this error is to make the UE fall back to Idle mode and retry the
+connection, but this behaviour is not yet implemented at the moment.
  
 
 Initial cell selection

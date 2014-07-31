@@ -189,6 +189,12 @@ LteUeRrc::GetTypeId (void)
                    UintegerValue (0), // unused, read-only attribute
                    MakeUintegerAccessor (&LteUeRrc::GetRnti),
                    MakeUintegerChecker<uint16_t> ())
+    .AddAttribute ("T300",
+                   "Timer for the RRC Connection Establishment procedure "
+                   "(i.e., the procedure is deemed as failed if it takes longer than this)",
+                   TimeValue (MilliSeconds (100)),
+                   MakeTimeAccessor (&LteUeRrc::m_t300),
+                   MakeTimeChecker ())
     .AddTraceSource ("MibReceived",
                      "trace fired upon reception of Master Information Block",
                      MakeTraceSourceAccessor (&LteUeRrc::m_mibReceivedTrace))
@@ -216,6 +222,9 @@ LteUeRrc::GetTypeId (void)
     .AddTraceSource ("ConnectionEstablished",
                      "trace fired upon successful RRC connection establishment",
                      MakeTraceSourceAccessor (&LteUeRrc::m_connectionEstablishedTrace))
+    .AddTraceSource ("ConnectionTimeout",
+                     "trace fired upon timeout RRC connection establishment because of T300",
+                     MakeTraceSourceAccessor (&LteUeRrc::m_connectionTimeoutTrace))
     .AddTraceSource ("ConnectionReconfiguration",
                      "trace fired upon RRC connection reconfiguration",
                      MakeTraceSourceAccessor (&LteUeRrc::m_connectionReconfigurationTrace))
@@ -487,6 +496,9 @@ LteUeRrc::DoNotifyRandomAccessSuccessful ()
         LteRrcSap::RrcConnectionRequest msg;
         msg.ueIdentity = m_imsi;
         m_rrcSapUser->SendRrcConnectionRequest (msg); 
+        m_connectionTimeout = Simulator::Schedule (m_t300,
+                                                   &LteUeRrc::ConnectionTimeout,
+                                                   this);
       }
       break;
 
@@ -821,6 +833,7 @@ LteUeRrc::DoRecvRrcConnectionSetup (LteRrcSap::RrcConnectionSetup msg)
     case IDLE_CONNECTING:
       {
         ApplyRadioResourceConfigDedicated (msg.radioResourceConfigDedicated);
+        m_connectionTimeout.Cancel ();
         SwitchToState (CONNECTED_NORMALLY);
         LteRrcSap::RrcConnectionSetupCompleted msg2;
         msg2.rrcTransactionIdentifier = msg.rrcTransactionIdentifier;
@@ -964,8 +977,12 @@ void
 LteUeRrc::DoRecvRrcConnectionReject (LteRrcSap::RrcConnectionReject msg)
 {
   NS_LOG_FUNCTION (this);
-  m_cmacSapProvider->Reset ();
+  m_connectionTimeout.Cancel ();
+
+  m_cmacSapProvider->Reset ();       // reset the MAC
+  m_hasReceivedSib2 = false;         // invalidate the previously received SIB2
   SwitchToState (IDLE_CAMPED_NORMALLY);
+  m_asSapUser->NotifyConnectionFailed ();  // inform upper layer
 }
 
 
@@ -2725,6 +2742,17 @@ LteUeRrc::LeaveConnectedMode ()
   m_bid2DrbidMap.clear ();
   m_srb1 = 0;
   SwitchToState (IDLE_CAMPED_NORMALLY);
+}
+
+void
+LteUeRrc::ConnectionTimeout ()
+{
+  NS_LOG_FUNCTION (this << m_imsi);
+  m_cmacSapProvider->Reset ();       // reset the MAC
+  m_hasReceivedSib2 = false;         // invalidate the previously received SIB2
+  SwitchToState (IDLE_CAMPED_NORMALLY);
+  m_connectionTimeoutTrace (m_imsi, m_cellId, m_rnti);
+  m_asSapUser->NotifyConnectionFailed ();  // inform upper layer
 }
 
 void

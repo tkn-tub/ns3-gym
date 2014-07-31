@@ -526,6 +526,8 @@ private:
   //             imsi      cellId    rnti
   TracedCallback<uint64_t, uint16_t, uint16_t> m_connectionEstablishedTrace;
   //             imsi      cellId    rnti
+  TracedCallback<uint64_t, uint16_t, uint16_t> m_connectionTimeoutTrace;
+  //             imsi      cellId    rnti
   TracedCallback<uint64_t, uint16_t, uint16_t> m_connectionReconfigurationTrace;
   //             imsi      cellId    rnti      targetCellId
   TracedCallback<uint64_t, uint16_t, uint16_t, uint16_t> m_handoverStartTrace;
@@ -795,6 +797,25 @@ private:
    * \sa LteUeRrc::m_leavingTriggerQueue
    */
   void CancelLeavingTrigger (uint8_t measId, uint16_t cellId);
+
+  /**
+   * \brief Timer for RRC connection establishment procedure.
+   *
+   * Section 7.3 of 3GPP TS 36.331.
+   */
+  Time m_t300;
+
+  /**
+   * \brief Invokes ConnectionEstablishmentTimeout() if RRC connection
+   *        establishment procedure for this UE takes longer than T300.
+   */
+  EventId m_connectionTimeout;
+
+  /**
+   * \brief Invoked after timer T300 expires, notifying upper layers that RRC
+   *        connection establishment procedure has failed.
+   */
+  void ConnectionTimeout ();
 
 }; // end of class LteUeRrc
 

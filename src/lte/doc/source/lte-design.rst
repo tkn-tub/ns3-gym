@@ -2755,6 +2755,39 @@ interaction with the other layers.
 
    Sequence diagram of the RRC Connection Establishment procedure
 
+There are several timeouts related to this procedure, which are listed in the
+following Table :ref:`tab-rrc-connection_establishment_timer`. If any of these
+timers expired, the RRC connection establishment procedure is terminated in
+failure. In this case, the upper layer (UE NAS) will immediately attempt to
+retry the procedure until it completes successfully.
+
+.. _tab-rrc-connection_establishment_timer:
+
+.. table:: Timers in RRC connection establishment procedure
+
+   +------------+----------+------------+-------------+----------+------------+
+   | Name       | Location | Timer      | Timer       | Default  | When timer |
+   |            |          | starts     | stops       | duration | expired    |
+   +============+==========+============+=============+==========+============+
+   | Connection | eNodeB   | New UE     | Receive RRC | 15 ms    | Remove UE  |
+   | request    | RRC      | context    | CONNECTION  |          | context    |
+   | timeout    |          | added      | REQUEST     |          |            |
+   +------------+----------+------------+-------------+----------+------------+
+   | Connection | UE RRC   | Send RRC   | Receive RRC | 100 ms   | Reset UE   |
+   | timeout    |          | CONNECTION | CONNECTION  |          | MAC        |
+   | (T300      |          | REQUEST    | SETUP or    |          |            |
+   | timer)     |          |            | REJECT      |          |            |
+   +------------+----------+------------+-------------+----------+------------+
+   | Connection | eNodeB   | Send RRC   | Receive RRC | 100 ms   | Remove UE  |
+   | setup      | RRC      | CONNECTION | CONNECTION  |          | context    |
+   | timeout    |          | SETUP      | SETUP       |          |            |
+   |            |          |            | COMPLETE    |          |            |
+   +------------+----------+------------+-------------+----------+------------+
+   | Connection | eNodeB   | Send RRC   | Never       | 30 ms    | Remove UE  |
+   | rejected   | RRC      | CONNECTION |             |          | context    |
+   | timeout    |          | REJECT     |             |          |            |
+   +------------+----------+------------+-------------+----------+------------+
+
 
 
 .. _sec-rrc-connection-reconfiguration:

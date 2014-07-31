@@ -236,17 +236,13 @@ EpcUeNas::DoNotifyConnectionSuccessful ()
   SwitchToState (ACTIVE); // will eventually activate dedicated bearers
 }
 
-void 
+void
 EpcUeNas::DoNotifyConnectionFailed ()
 {
   NS_LOG_FUNCTION (this);
 
-  SwitchToState (OFF);
-  /**
-   * \todo Currently not implemented, action by NAS and upper layers after UE
-   *       fails to switch to CONNNECTED mode. Maybe a retry, or just stop here
-   *       and fire a trace to let user know.
-   */
+  // immediately retry the connection
+  Simulator::ScheduleNow (&LteAsSapProvider::Connect, m_asSapProvider);
 }
 
 void

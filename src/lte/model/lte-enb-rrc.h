@@ -410,7 +410,8 @@ private:
   std::list<uint8_t> m_drbsToBeStarted;
   bool m_needTransmissionModeConfiguration;
 
-  EventId m_connectionTimeout;
+  EventId m_connectionRequestTimeout;
+  EventId m_connectionSetupTimeout;
   EventId m_connectionRejectedTimeout;
   EventId m_handoverJoiningTimeout;
   EventId m_handoverLeavingTimeout;
@@ -569,6 +570,15 @@ public:
    * 
    * \param rnti the identifier of an UE
    * 
+   * \return true if the corresponding UeManager instance exists
+   */
+  bool HasUeManager (uint16_t rnti) const;
+
+  /**
+   *
+   *
+   * \param rnti the identifier of an UE
+   *
    * \return the corresponding UeManager instance
    */
   Ptr<UeManager> GetUeManager (uint16_t rnti);
@@ -644,14 +654,22 @@ public:
   void SetForwardUpCallback (Callback <void, Ptr<Packet> > cb);
 
   /** 
-   * Method triggered when a UE is expected to get connected but does
+   * Method triggered when a UE is expected to request for connection but does
    * not do so in a reasonable time
    * 
    * \param rnti the T-C-RNTI whose timeout expired
    */
-  void ConnectionTimeout (uint16_t rnti);
+  void ConnectionRequestTimeout (uint16_t rnti);
 
   /** 
+   * Method triggered when a UE is expected to complete a connection setup
+   * procedure but does not do so in a reasonable time
+   *
+   * \param rnti the T-C-RNTI whose timeout expired
+   */
+  void ConnectionSetupTimeout (uint16_t rnti);
+
+  /**
    * Method triggered a while after sending RRC Connection Rejected
    * 
    * \param rnti the T-C-RNTI whose timeout expired
@@ -950,7 +968,8 @@ private:
   uint8_t m_rsrqFilterCoefficient;
 
   // timeouts
-  Time m_connectionTimeoutDuration;
+  Time m_connectionRequestTimeoutDuration;
+  Time m_connectionSetupTimeoutDuration;
   Time m_connectionRejectedTimeoutDuration;
   Time m_handoverJoiningTimeoutDuration;
   Time m_handoverLeavingTimeoutDuration;
