@@ -1038,8 +1038,8 @@ where:
    to allocate the UL grant because of lack of resources. The number
    of collisions depends on the number of UEs that try to access
    simultaneously; we estimated that for a :math:`0.99` RA success
-   probability, 5 attempts are sufficient for up to 20 UEs, 10 attempts for up
-   to 50 UEs, 20 attempts for up to 100 UEs, and 40 attempts for up to 200 UEs.
+   probability, 5 attempts are sufficient for up to 20 UEs, and  10 attempts for up
+   to 50 UEs.
    For the UL grant, considered the system bandwidth and the
    default MCS used for the UL grant (MCS 0), at most 4 UL grants can
    be assigned in a TTI; so for :math:`n` UEs trying to
@@ -1063,8 +1063,11 @@ where:
    delay of 10ms plus :math:`\lceil 2n/4 \rceil`.
    delay of 20ms.
 
-The conditions that are evaluated for a test case to pass are, for
-each UE:
+
+The base version of the test ``LteRrcConnectionEstablishmentTestCase``
+tests for correct RRC connection establishment in absence of channel
+errors. The conditions that are evaluated for this test case to pass
+are, for each UE: 
 
  - the RRC state at the UE is CONNECTED_NORMALLY
  - the UE is configured with the CellId, DlBandwidth, UlBandwidth,
@@ -1075,12 +1078,24 @@ each UE:
  - for each Data Radio Bearer, the following identifiers match between
    the UE and the eNB: EPS bearer id, DRB id, LCID
 
-Ideally, the UE context at the serving eNodeB would have an RRC state of
-CONNECTED_NORMALLY at the end of the procedure. But in the rare case of error
-while transmitting RRC CONNECTION SETUP COMPLETE message, the eNodeB would have
-removed the context because of *connection setup timeout*. A better way to
-handle this error is to make the UE fall back to Idle mode and retry the
-connection, but this behaviour is not yet implemented at the moment.
+The test variant ``LteRrcConnectionEstablishmentErrorTestCase`` is
+similar except for the presence of errors in the transmission of a
+particular RRC message of choice during the first connection
+attempt. The error is obtained by temporarily moving the UE to a far
+away location; the time of movement has been determined empyrically
+for each instance of the test case based on the message that it was
+desidred to be in error.  the test case checks that at least one of the following
+conditions is false at the time right before the UE is moved back to
+the original location:
+
+ - the RRC state at the UE is CONNECTED_NORMALLY 
+ - the UE context at the eNB is present
+ - the RRC state of the UE Context at the eNB is CONNECTED_NORMALLY
+  
+Additionally, all the conditions of the
+``LteRrcConnectionEstablishmentTestCase`` are evaluated - they are
+espected to be true because of the NAS behavior of immediately
+re-attempting the connection establishment if it fails.
  
 
 Initial cell selection

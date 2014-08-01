@@ -57,11 +57,10 @@ public:
                                          std::string description = "");
 
 protected:
+
   virtual void DoRun (void);
-  virtual void SetupNodes (NodeContainer &enbNodes, NodeContainer &ueNodes);
   uint32_t m_nUes; // number of UEs in the test
 
-private:
   static std::string BuildNameString (uint32_t nUes,
                                       uint32_t nBearers,
                                       uint32_t tConnBase,
@@ -72,6 +71,7 @@ private:
                                       std::string description = "");
   void Connect (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice);
   void CheckConnected (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice);
+  void CheckNotConnected(Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice);
   void ConnectionEstablishedCallback (std::string context, uint64_t imsi,
                                       uint16_t cellId, uint16_t rnti);
   void ConnectionTimeoutCallback (std::string context, uint64_t imsi,
@@ -237,7 +237,15 @@ LteRrcConnectionEstablishmentTestCase::DoRun ()
   NodeContainer enbNodes;
   NodeContainer ueNodes;
 
-  SetupNodes (enbNodes, ueNodes);
+
+  enbNodes.Create (1);
+  ueNodes.Create (m_nUes);
+
+  // the following positions all nodes at (0, 0, 0)
+  MobilityHelper mobility;
+  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
+  mobility.Install (enbNodes);
+  mobility.Install (ueNodes);
 
   int64_t stream = 1;
   NetDeviceContainer enbDevs;
@@ -305,22 +313,6 @@ LteRrcConnectionEstablishmentTestCase::DoRun ()
 
   Simulator::Destroy ();
 
-}
-
-void
-LteRrcConnectionEstablishmentTestCase::SetupNodes (NodeContainer &enbNodes,
-                                                   NodeContainer &ueNodes)
-{
-  NS_LOG_FUNCTION (this);
-
-  enbNodes.Create (1);
-  ueNodes.Create (m_nUes);
-
-  // the following positions all nodes at (0, 0, 0)
-  MobilityHelper mobility;
-  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
-  mobility.Install (enbNodes);
-  mobility.Install (ueNodes);
 }
 
 void
@@ -453,6 +445,37 @@ LteRrcConnectionEstablishmentTestCase::CheckConnected (Ptr<NetDevice> ueDevice, 
 }
 
 void
+LteRrcConnectionEstablishmentTestCase::CheckNotConnected (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice)
+{
+  Ptr<LteUeNetDevice> ueLteDevice = ueDevice->GetObject<LteUeNetDevice> ();
+  Ptr<LteUeRrc> ueRrc = ueLteDevice->GetRrc ();
+  const uint64_t imsi = ueLteDevice->GetImsi ();
+  const uint16_t rnti = ueRrc->GetRnti ();
+  NS_LOG_FUNCTION (this << imsi << rnti);
+  NS_ASSERT_MSG (m_isConnectionEstablished.find (imsi) != m_isConnectionEstablished.end (),
+                 "Invalid IMSI " << imsi);
+
+  bool ueStateIsConnectedNormally = (LteUeRrc::CONNECTED_NORMALLY == ueRrc->GetState ());
+
+  Ptr<LteEnbNetDevice> enbLteDevice = enbDevice->GetObject<LteEnbNetDevice> ();
+  Ptr<LteEnbRrc> enbRrc = enbLteDevice->GetRrc ();
+  const bool hasContext = enbRrc->HasUeManager (rnti);
+  bool contextStateIsConnectedNormally = false;
+  if (hasContext)
+    {
+      Ptr<UeManager> ueManager = enbRrc->GetUeManager (rnti);
+      NS_ASSERT (ueManager != 0);
+      contextStateIsConnectedNormally = (UeManager::CONNECTED_NORMALLY == ueManager->GetState ());
+    }
+  NS_TEST_ASSERT_MSG_EQ ((!m_isConnectionEstablished[imsi]
+                          || !ueStateIsConnectedNormally
+                          || !hasContext
+                          || !contextStateIsConnectedNormally),
+                         true,
+                         "it should not happen that connection is completed both at the UE and at the eNB side");
+}
+
+void
 LteRrcConnectionEstablishmentTestCase::ConnectionEstablishedCallback (
     std::string context, uint64_t imsi, uint16_t cellId, uint16_t rnti)
 {
@@ -470,7 +493,7 @@ LteRrcConnectionEstablishmentTestCase::ConnectionTimeoutCallback (
 
 
 
-class LteRrcConnectionEstablishmentInterferenceTestCase
+class LteRrcConnectionEstablishmentErrorTestCase
   : public LteRrcConnectionEstablishmentTestCase
 {
 public:
@@ -481,10 +504,10 @@ public:
    *                     high-interference position and stay there for 100 ms
    * \param description additional description of the test case
    */
-  LteRrcConnectionEstablishmentInterferenceTestCase (Time jumpAwayTime,
+  LteRrcConnectionEstablishmentErrorTestCase (Time jumpAwayTime,
                                                      std::string description = "");
 protected:
-  virtual void SetupNodes (NodeContainer &enbNodes, NodeContainer &ueNodes);
+  virtual void DoRun (void);
 
 private:
   void JumpAway ();
@@ -495,7 +518,7 @@ private:
 };
 
 
-LteRrcConnectionEstablishmentInterferenceTestCase::LteRrcConnectionEstablishmentInterferenceTestCase (
+LteRrcConnectionEstablishmentErrorTestCase::LteRrcConnectionEstablishmentErrorTestCase (
   Time jumpAwayTime, std::string description)
   : LteRrcConnectionEstablishmentTestCase (1, 1, 0, 0, 1, true, false, true,
                                            description),
@@ -506,10 +529,35 @@ LteRrcConnectionEstablishmentInterferenceTestCase::LteRrcConnectionEstablishment
 
 
 void
-LteRrcConnectionEstablishmentInterferenceTestCase::SetupNodes (NodeContainer &enbNodes,
-                                                               NodeContainer &ueNodes)
+LteRrcConnectionEstablishmentErrorTestCase::DoRun ()
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << GetName ());
+  Config::Reset ();
+
+  if (m_nUes < 25)
+    {
+      Config::SetDefault ("ns3::LteEnbRrc::SrsPeriodicity", UintegerValue (40));
+    }
+  else if (m_nUes < 60)
+    {
+      Config::SetDefault ("ns3::LteEnbRrc::SrsPeriodicity", UintegerValue (80));
+    }
+  else if (m_nUes < 120)
+    {
+      Config::SetDefault ("ns3::LteEnbRrc::SrsPeriodicity", UintegerValue (160));
+    }
+  else 
+    {
+      Config::SetDefault ("ns3::LteEnbRrc::SrsPeriodicity", UintegerValue (320));
+    }
+
+  // normal code
+  m_lteHelper = CreateObject<LteHelper> ();
+  m_lteHelper->SetAttribute ("UseIdealRrc", BooleanValue (m_useIdealRrc));
+
+  NodeContainer enbNodes;
+  NodeContainer ueNodes;
+
 
   enbNodes.Create (4);
   ueNodes.Create (1);
@@ -527,31 +575,102 @@ LteRrcConnectionEstablishmentInterferenceTestCase::SetupNodes (NodeContainer &en
   mobility.SetPositionAllocator (enbPosition);
   mobility.Install (enbNodes);
 
+  int64_t stream = 1;
+  NetDeviceContainer enbDevs;
+  enbDevs = m_lteHelper->InstallEnbDevice (enbNodes);
+  stream += m_lteHelper->AssignStreams (enbDevs, stream);
+
+  NetDeviceContainer ueDevs;
+  ueDevs = m_lteHelper->InstallUeDevice (ueNodes);
+  stream += m_lteHelper->AssignStreams (ueDevs, stream);
+
+  // custom code used for testing purposes
+  // instead of lteHelper->Attach () and lteHelper->ActivateXxx
+
+  // Set AdmitConnectionRequest attribute
+  for (NetDeviceContainer::Iterator it = enbDevs.Begin ();
+       it != enbDevs.End ();
+       ++it)
+    {
+      Ptr<LteEnbRrc> enbRrc = (*it)->GetObject<LteEnbNetDevice> ()->GetRrc ();
+      enbRrc->SetAttribute ("AdmitRrcConnectionRequest",
+                            BooleanValue (m_admitRrcConnectionRequest));
+    }
+
+
+  uint32_t i = 0;
+  uint32_t tmax = 0;
+  for (NetDeviceContainer::Iterator it = ueDevs.Begin (); it != ueDevs.End (); ++it)
+    {
+      Ptr<NetDevice> ueDevice = *it;
+      Ptr<NetDevice> enbDevice = enbDevs.Get (0);
+      Ptr<LteUeNetDevice> ueLteDevice = ueDevice->GetObject<LteUeNetDevice> ();
+
+      uint32_t tc = m_tConnBase + m_tConnIncrPerUe * i; // time connection start
+      uint32_t tcc = tc + m_delayConnEnd; // time check connection completed;
+      uint32_t td =  tcc + m_delayDiscStart; // time disconnect start
+      uint32_t tcd = td + m_delayDiscEnd; // time check disconnection completed
+      tmax = std::max (tmax, tcd);
+
+      // trick to resolve overloading
+      //void (LteHelper::* overloadedAttachFunctionPointer) (Ptr<NetDevice>, Ptr<NetDevice>) = &LteHelper::Attach;
+      //Simulator::Schedule (MilliSeconds (tc), overloadedAttachFunctionPointer, lteHelper, *it, enbDevice);
+      Simulator::Schedule (MilliSeconds (tc), &LteRrcConnectionEstablishmentErrorTestCase::Connect, this, ueDevice, enbDevice);
+
+      Simulator::Schedule (MilliSeconds (tcc), &LteRrcConnectionEstablishmentErrorTestCase::CheckConnected, this, *it, enbDevice);
+
+      // disconnection not supported yet
+
+      uint64_t imsi = ueLteDevice->GetImsi ();
+      m_isConnectionEstablished[imsi] = false;
+
+      ++i;
+    }
+
+  // Connect to trace sources in UEs
+  Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/ConnectionEstablished",
+                   MakeCallback (&LteRrcConnectionEstablishmentErrorTestCase::ConnectionEstablishedCallback,
+                                 this));
+  Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/ConnectionTimeout",
+                   MakeCallback (&LteRrcConnectionEstablishmentErrorTestCase::ConnectionTimeoutCallback,
+                                 this));
+
+
   Simulator::Schedule (m_jumpAwayTime,
-                       &LteRrcConnectionEstablishmentInterferenceTestCase::JumpAway,
+                       &LteRrcConnectionEstablishmentErrorTestCase::JumpAway,
                        this);
+  Simulator::Schedule (m_jumpAwayTime + MilliSeconds (99),
+                       &LteRrcConnectionEstablishmentErrorTestCase::CheckNotConnected,
+                       this, ueDevs.Get (0), enbDevs.Get (0));
   Simulator::Schedule (m_jumpAwayTime + MilliSeconds (100),
-                       &LteRrcConnectionEstablishmentInterferenceTestCase::JumpBack,
+                       &LteRrcConnectionEstablishmentErrorTestCase::JumpBack,
                        this);
+
+  Simulator::Stop (MilliSeconds (tmax + 1));
+
+  Simulator::Run ();
+
+  Simulator::Destroy ();
+
 }
 
 
 void
-LteRrcConnectionEstablishmentInterferenceTestCase::JumpAway ()
+LteRrcConnectionEstablishmentErrorTestCase::JumpAway ()
 {
   NS_LOG_FUNCTION (this);
-  // Position with high interference from other eNodeBs.
-  m_ueMobility->SetPosition (Vector (100.0, 100.0, 0.0));
+  // move to a really far away location so that transmission errors occur
+  m_ueMobility->SetPosition (Vector (10000.0, 0.0, 0.0));
 }
 
 
 void
-LteRrcConnectionEstablishmentInterferenceTestCase::JumpBack ()
+LteRrcConnectionEstablishmentErrorTestCase::JumpBack ()
 {
   NS_LOG_FUNCTION (this);
-  // Position with low interference.
   m_ueMobility->SetPosition (Vector (0.0, 0.0, 0.0));
 }
+
 
 
 class LteRrcTestSuite : public TestSuite
@@ -609,15 +728,15 @@ LteRrcTestSuite::LteRrcTestSuite ()
     }
 
   // Test cases with transmission error
-  AddTestCase (new LteRrcConnectionEstablishmentInterferenceTestCase (
+  AddTestCase (new LteRrcConnectionEstablishmentErrorTestCase (
                    Seconds (0.020214),
                    "failure at RRC Connection Request"),
                TestCase::QUICK);
-  AddTestCase (new LteRrcConnectionEstablishmentInterferenceTestCase (
+  AddTestCase (new LteRrcConnectionEstablishmentErrorTestCase (
                    Seconds (0.025),
                    "failure at RRC Connection Setup"),
                TestCase::QUICK);
-  AddTestCase (new LteRrcConnectionEstablishmentInterferenceTestCase (
+  AddTestCase (new LteRrcConnectionEstablishmentErrorTestCase (
                    Seconds (0.030),
                    "failure at RRC Connection Setup Complete"),
                TestCase::QUICK);
