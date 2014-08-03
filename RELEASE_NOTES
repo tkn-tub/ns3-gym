@@ -36,6 +36,7 @@ Bugs fixed
 - Bug 1943 - Waveform generator signal duration calc error
 - Bug 1951 - AODV does not update nexthop for 1-hop nodes
 - Bug 1955 - The IPv4 identification field should be unique per (source, destination, protocol) tuple
+- Bug 1960 - Wrong information on index range, about Node::GetDevice
 
 Known issues
 ------------

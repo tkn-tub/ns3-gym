@@ -84,19 +84,18 @@ public:
   uint32_t GetSystemId (void) const;
 
   /**
+   * \brief Associate a NetDevice to this node.
+   *
    * \param device NetDevice to associate to this node.
    * \returns the index of the NetDevice into the Node's list of
    *          NetDevice.
-   *
-   * Associate this device to this node.
    */
   uint32_t AddDevice (Ptr<NetDevice> device);
   /**
-   * \param index the index of the requested NetDevice
-   * \returns the requested NetDevice associated to this Node.
+   * \brief Retrieve the index-th NetDevice associated to this node.
    *
-   * The indexes used by the GetDevice method start at one and
-   * end at GetNDevices ()
+   * \param index the index of the requested NetDevice
+   * \returns the requested NetDevice.
    */
   Ptr<NetDevice> GetDevice (uint32_t index) const;
   /**
@@ -106,22 +105,23 @@ public:
   uint32_t GetNDevices (void) const;
 
   /**
+   * \brief Associate an Application to this Node.
+   *
    * \param application Application to associate to this node.
    * \returns the index of the Application within the Node's list
    *          of Application.
-   *
-   * Associated this Application to this Node. 
    */
   uint32_t AddApplication (Ptr<Application> application);
   /**
-   * \param index
-   * \returns the application associated to this requested index
-   *          within this Node.
+   * \brief Retrieve the index-th Application associated to this node.
+   *
+   * \param index the index of the requested Application
+   * \returns the requested Application.
    */
   Ptr<Application> GetApplication (uint32_t index) const;
 
   /**
-   * \returns the number of applications associated to this Node.
+   * \returns the number of Application instances associated to this Node.
    */
   uint32_t GetNApplications (void) const;
 
