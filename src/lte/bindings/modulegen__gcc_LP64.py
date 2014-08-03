@@ -1226,6 +1226,8 @@ def register_types(module):
     module.add_class('DlDciLteControlMessage', parent=root_module['ns3::LteControlMessage'])
     ## lte-control-messages.h (module 'lte'): ns3::DlHarqFeedbackLteControlMessage [class]
     module.add_class('DlHarqFeedbackLteControlMessage', parent=root_module['ns3::LteControlMessage'])
+    ## emu-epc-helper.h (module 'lte'): ns3::EmuEpcHelper [class]
+    module.add_class('EmuEpcHelper', parent=root_module['ns3::EpcHelper'])
     ## fdbet-ff-mac-scheduler.h (module 'lte'): ns3::FdBetFfMacScheduler [class]
     module.add_class('FdBetFfMacScheduler', parent=root_module['ns3::FfMacScheduler'])
     ## fdmt-ff-mac-scheduler.h (module 'lte'): ns3::FdMtFfMacScheduler [class]
@@ -2033,6 +2035,7 @@ def register_methods(root_module):
     register_Ns3DlCqiLteControlMessage_methods(root_module, root_module['ns3::DlCqiLteControlMessage'])
     register_Ns3DlDciLteControlMessage_methods(root_module, root_module['ns3::DlDciLteControlMessage'])
     register_Ns3DlHarqFeedbackLteControlMessage_methods(root_module, root_module['ns3::DlHarqFeedbackLteControlMessage'])
+    register_Ns3EmuEpcHelper_methods(root_module, root_module['ns3::EmuEpcHelper'])
     register_Ns3FdBetFfMacScheduler_methods(root_module, root_module['ns3::FdBetFfMacScheduler'])
     register_Ns3FdMtFfMacScheduler_methods(root_module, root_module['ns3::FdMtFfMacScheduler'])
     register_Ns3FdTbfqFfMacScheduler_methods(root_module, root_module['ns3::FdTbfqFfMacScheduler'])
@@ -14552,8 +14555,12 @@ def register_Ns3LteEnbRrc_methods(root_module, cls):
     cls.add_method('ConnectionRejectedTimeout', 
                    'void', 
                    [param('uint16_t', 'rnti')])
-    ## lte-enb-rrc.h (module 'lte'): void ns3::LteEnbRrc::ConnectionTimeout(uint16_t rnti) [member function]
-    cls.add_method('ConnectionTimeout', 
+    ## lte-enb-rrc.h (module 'lte'): void ns3::LteEnbRrc::ConnectionRequestTimeout(uint16_t rnti) [member function]
+    cls.add_method('ConnectionRequestTimeout', 
+                   'void', 
+                   [param('uint16_t', 'rnti')])
+    ## lte-enb-rrc.h (module 'lte'): void ns3::LteEnbRrc::ConnectionSetupTimeout(uint16_t rnti) [member function]
+    cls.add_method('ConnectionSetupTimeout', 
                    'void', 
                    [param('uint16_t', 'rnti')])
     ## lte-enb-rrc.h (module 'lte'): ns3::EpcX2SapUser * ns3::LteEnbRrc::GetEpcX2SapUser() [member function]
@@ -14606,6 +14613,11 @@ def register_Ns3LteEnbRrc_methods(root_module, cls):
     cls.add_method('HandoverLeavingTimeout', 
                    'void', 
                    [param('uint16_t', 'rnti')])
+    ## lte-enb-rrc.h (module 'lte'): bool ns3::LteEnbRrc::HasUeManager(uint16_t rnti) const [member function]
+    cls.add_method('HasUeManager', 
+                   'bool', 
+                   [param('uint16_t', 'rnti')], 
+                   is_const=True)
     ## lte-enb-rrc.h (module 'lte'): bool ns3::LteEnbRrc::SendData(ns3::Ptr<ns3::Packet> p) [member function]
     cls.add_method('SendData', 
                    'bool', 
@@ -18864,6 +18876,63 @@ def register_Ns3DlHarqFeedbackLteControlMessage_methods(root_module, cls):
     cls.add_method('SetDlHarqFeedback', 
                    'void', 
                    [param('ns3::DlInfoListElement_s', 'm')])
+    return
+
+def register_Ns3EmuEpcHelper_methods(root_module, cls):
+    ## emu-epc-helper.h (module 'lte'): ns3::EmuEpcHelper::EmuEpcHelper(ns3::EmuEpcHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::EmuEpcHelper const &', 'arg0')])
+    ## emu-epc-helper.h (module 'lte'): ns3::EmuEpcHelper::EmuEpcHelper() [constructor]
+    cls.add_constructor([])
+    ## emu-epc-helper.h (module 'lte'): void ns3::EmuEpcHelper::ActivateEpsBearer(ns3::Ptr<ns3::NetDevice> ueLteDevice, uint64_t imsi, ns3::Ptr<ns3::EpcTft> tft, ns3::EpsBearer bearer) [member function]
+    cls.add_method('ActivateEpsBearer', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::NetDevice >', 'ueLteDevice'), param('uint64_t', 'imsi'), param('ns3::Ptr< ns3::EpcTft >', 'tft'), param('ns3::EpsBearer', 'bearer')], 
+                   is_virtual=True)
+    ## emu-epc-helper.h (module 'lte'): void ns3::EmuEpcHelper::AddEnb(ns3::Ptr<ns3::Node> enbNode, ns3::Ptr<ns3::NetDevice> lteEnbNetDevice, uint16_t cellId) [member function]
+    cls.add_method('AddEnb', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Node >', 'enbNode'), param('ns3::Ptr< ns3::NetDevice >', 'lteEnbNetDevice'), param('uint16_t', 'cellId')], 
+                   is_virtual=True)
+    ## emu-epc-helper.h (module 'lte'): void ns3::EmuEpcHelper::AddUe(ns3::Ptr<ns3::NetDevice> ueLteDevice, uint64_t imsi) [member function]
+    cls.add_method('AddUe', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::NetDevice >', 'ueLteDevice'), param('uint64_t', 'imsi')], 
+                   is_virtual=True)
+    ## emu-epc-helper.h (module 'lte'): void ns3::EmuEpcHelper::AddX2Interface(ns3::Ptr<ns3::Node> enbNode1, ns3::Ptr<ns3::Node> enbNode2) [member function]
+    cls.add_method('AddX2Interface', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Node >', 'enbNode1'), param('ns3::Ptr< ns3::Node >', 'enbNode2')], 
+                   is_virtual=True)
+    ## emu-epc-helper.h (module 'lte'): ns3::Ipv4InterfaceContainer ns3::EmuEpcHelper::AssignUeIpv4Address(ns3::NetDeviceContainer ueDevices) [member function]
+    cls.add_method('AssignUeIpv4Address', 
+                   'ns3::Ipv4InterfaceContainer', 
+                   [param('ns3::NetDeviceContainer', 'ueDevices')], 
+                   is_virtual=True)
+    ## emu-epc-helper.h (module 'lte'): void ns3::EmuEpcHelper::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## emu-epc-helper.h (module 'lte'): void ns3::EmuEpcHelper::DoInitialize() [member function]
+    cls.add_method('DoInitialize', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## emu-epc-helper.h (module 'lte'): ns3::Ptr<ns3::Node> ns3::EmuEpcHelper::GetPgwNode() [member function]
+    cls.add_method('GetPgwNode', 
+                   'ns3::Ptr< ns3::Node >', 
+                   [], 
+                   is_virtual=True)
+    ## emu-epc-helper.h (module 'lte'): static ns3::TypeId ns3::EmuEpcHelper::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## emu-epc-helper.h (module 'lte'): ns3::Ipv4Address ns3::EmuEpcHelper::GetUeDefaultGatewayAddress() [member function]
+    cls.add_method('GetUeDefaultGatewayAddress', 
+                   'ns3::Ipv4Address', 
+                   [], 
+                   is_virtual=True)
     return
 
 def register_Ns3FdBetFfMacScheduler_methods(root_module, cls):
