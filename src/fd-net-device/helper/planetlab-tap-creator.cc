@@ -142,7 +142,6 @@ SetTunUp (const char *ip, const char *prefix, const char *if_name)
   FILE *in;
   FILE *out;
   char errbuff[4096];
-  int nbytes;
 
   memset(errbuff, 0, 4096);
 
@@ -166,7 +165,7 @@ SetTunUp (const char *ip, const char *prefix, const char *if_name)
   // close pipe to indicate end parameter passing and flush the fifo
   fclose (in);
 
-  nbytes = fread((void*)errbuff, 4096, 1, out);
+  fread((void*)errbuff, 4096, 1, out);
  
   // the error buffer will not be empty if we read an error
   ABORT_IF (strcmp(errbuff, "") != 0, errbuff, 0);
