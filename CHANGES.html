@@ -56,11 +56,16 @@ us a note on ns-developers mailing list.</p>
 <ul>
   <li> New "const double& SpectrumValue:: operator[] (size_t index) const".
   </li>
+  <li> A new TraceSource has been added to TCP sockets: SlowStartThreshold.
+  </li>
 </ul>
 
 <h2>Changes to existing API:</h2>
 <ul>
   <li> "Icmpv6L4Protocol::ForgeEchoRequest" is now returning a packet with the proper IPv6 header.
+  </li>
+  <li> The TCP socket Attribute "SlowStartThreshold" has been renamed "InitialSlowStartThreshold" to
+       clarify that the effect is only on the initial value.
   </li>
 </ul>
 

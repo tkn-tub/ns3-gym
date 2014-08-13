@@ -63,13 +63,13 @@ TcpRfc793::DupAck (const TcpHeader& t, uint32_t count)
 }
 
 void
-TcpRfc793::SetSSThresh (uint32_t threshold)
+TcpRfc793::SetInitialSSThresh (uint32_t threshold)
 {
   NS_LOG_WARN ("DoD TCP does not perform slow start");
 }
 
 uint32_t
-TcpRfc793::GetSSThresh (void) const
+TcpRfc793::GetInitialSSThresh (void) const
 {
   NS_LOG_WARN ("DoD TCP does not perform slow start");
   return 0;

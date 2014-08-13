@@ -56,6 +56,9 @@ TcpWestwood::GetTypeId (void)
       .AddConstructor<TcpWestwood>()
       .AddTraceSource("CongestionWindow", "The TCP connection's congestion window",
                       MakeTraceSourceAccessor(&TcpWestwood::m_cWnd))
+      .AddTraceSource ("SlowStartThreshold",
+                       "TCP slow start threshold (bytes)",
+                       MakeTraceSourceAccessor (&TcpWestwood::m_ssThresh))
       .AddAttribute("FilterType", "Use this to choose no filter or Tustin's approximation filter",
                     EnumValue(TcpWestwood::TUSTIN), MakeEnumAccessor(&TcpWestwood::m_fType),
                     MakeEnumChecker(TcpWestwood::NONE, "None", TcpWestwood::TUSTIN, "Tustin"))
@@ -88,6 +91,7 @@ TcpWestwood::TcpWestwood (const TcpWestwood& sock) :
   m_cWnd(sock.m_cWnd),
   m_ssThresh(sock.m_ssThresh),
   m_initialCWnd(sock.m_initialCWnd),
+  m_initialSsThresh (sock.m_initialSsThresh),
   m_inFastRec(false),
   m_currentBW(sock.m_currentBW),
   m_lastSampleBW(sock.m_lastSampleBW),
@@ -272,7 +276,7 @@ TcpWestwood::DupAck (const TcpHeader& header, uint32_t count)
   if (count == 3 && !m_inFastRec)
     {// Triple duplicate ACK triggers fast retransmit
      // Adjust cwnd and ssthresh based on the estimated BW
-      m_ssThresh = m_currentBW * static_cast<double> (m_minRtt.GetSeconds());
+      m_ssThresh = uint32_t(m_currentBW * static_cast<double> (m_minRtt.GetSeconds()));
       if (m_cWnd > m_ssThresh)
         {
           m_cWnd = m_ssThresh;
@@ -380,17 +384,18 @@ TcpWestwood::SetSegSize (uint32_t size)
 }
 
 void
-TcpWestwood::SetSSThresh (uint32_t threshold)
+TcpWestwood::SetInitialSSThresh (uint32_t threshold)
 {
   NS_LOG_FUNCTION (this);
-  m_ssThresh = threshold;
+  NS_ABORT_MSG_UNLESS (m_state == CLOSED, "TcpWestwood::SetSSThresh() cannot change initial ssThresh after connection started.");
+  m_initialSsThresh = threshold;
 }
 
 uint32_t
-TcpWestwood::GetSSThresh (void) const
+TcpWestwood::GetInitialSSThresh (void) const
 {
   NS_LOG_FUNCTION (this);
-  return m_ssThresh;
+  return m_initialSsThresh;
 }
 
 void
@@ -417,6 +422,7 @@ TcpWestwood::InitializeCwnd(void)
    * m_segmentSize are set by the attribute system in ns3::TcpSocket.
    */
   m_cWnd = m_initialCWnd * m_segmentSize;
+  m_ssThresh = m_initialSsThresh;
 }
 
 } // namespace ns3

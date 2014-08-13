@@ -47,6 +47,9 @@ TcpTahoe::GetTypeId (void)
     .AddTraceSource ("CongestionWindow",
                      "The TCP connection's congestion window",
                      MakeTraceSourceAccessor (&TcpTahoe::m_cWnd))
+    .AddTraceSource ("SlowStartThreshold",
+                     "TCP slow start threshold (bytes)",
+                     MakeTraceSourceAccessor (&TcpTahoe::m_ssThresh))
   ;
   return tid;
 }
@@ -61,6 +64,7 @@ TcpTahoe::TcpTahoe (const TcpTahoe& sock)
     m_cWnd (sock.m_cWnd),
     m_ssThresh (sock.m_ssThresh),
     m_initialCWnd (sock.m_initialCWnd),
+    m_initialSsThresh (sock.m_initialSsThresh),
     m_retxThresh (sock.m_retxThresh)
 {
   NS_LOG_FUNCTION (this);
@@ -108,7 +112,7 @@ void
 TcpTahoe::NewAck (SequenceNumber32 const& seq)
 {
   NS_LOG_FUNCTION (this << seq);
-  NS_LOG_LOGIC ("TcpTahoe receieved ACK for seq " << seq <<
+  NS_LOG_LOGIC ("TcpTahoe received ACK for seq " << seq <<
                 " cwnd " << m_cWnd <<
                 " ssthresh " << m_ssThresh);
   if (m_cWnd < m_ssThresh)
@@ -172,15 +176,16 @@ TcpTahoe::SetSegSize (uint32_t size)
 }
 
 void
-TcpTahoe::SetSSThresh (uint32_t threshold)
+TcpTahoe::SetInitialSSThresh (uint32_t threshold)
 {
-  m_ssThresh = threshold;
+  NS_ABORT_MSG_UNLESS (m_state == CLOSED, "TcpTahoe::SetSSThresh() cannot change initial ssThresh after connection started.");
+  m_initialSsThresh = threshold;
 }
 
 uint32_t
-TcpTahoe::GetSSThresh (void) const
+TcpTahoe::GetInitialSSThresh (void) const
 {
-  return m_ssThresh;
+  return m_initialSsThresh;
 }
 
 void
@@ -205,6 +210,7 @@ TcpTahoe::InitializeCwnd (void)
    * m_segmentSize are set by the attribute system in ns3::TcpSocket.
    */
   m_cWnd = m_initialCWnd * m_segmentSize;
+  m_ssThresh = m_initialSsThresh;
 }
 
 } // namespace ns3

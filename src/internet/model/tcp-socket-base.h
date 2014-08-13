@@ -132,8 +132,8 @@ protected:
   virtual uint32_t GetRcvBufSize (void) const;
   virtual void     SetSegSize (uint32_t size);
   virtual uint32_t GetSegSize (void) const;
-  virtual void     SetSSThresh (uint32_t threshold) = 0;
-  virtual uint32_t GetSSThresh (void) const = 0;
+  virtual void     SetInitialSSThresh (uint32_t threshold) = 0;
+  virtual uint32_t GetInitialSSThresh (void) const = 0;
   virtual void     SetInitialCwnd (uint32_t cwnd) = 0;
   virtual uint32_t GetInitialCwnd (void) const = 0;
   virtual void     SetConnTimeout (Time timeout);

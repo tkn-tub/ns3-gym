@@ -187,8 +187,8 @@ private:
    * \returns the window size
    */
   virtual uint32_t GetAdvWin (void) const;
-  virtual void SetSSThresh (uint32_t threshold);
-  virtual uint32_t GetSSThresh (void) const;
+  virtual void SetInitialSSThresh (uint32_t threshold);
+  virtual uint32_t GetInitialSSThresh (void) const;
   virtual void SetInitialCwnd (uint32_t cwnd);
   virtual uint32_t GetInitialCwnd (void) const;
   virtual void SetConnTimeout (Time timeout);
@@ -240,9 +240,10 @@ private:
   uint32_t                       m_segmentSize;          //!< SegmentSize
   uint32_t                       m_rxWindowSize;         //!< Receive window size
   uint32_t                       m_advertisedWindowSize; //!< Window to advertise
+  TracedValue<uint32_t>          m_ssThresh;             //!< Slow Start Threshold
   TracedValue<uint32_t>          m_cWnd;                 //!< Congestion window
-  uint32_t                       m_ssThresh;             //!< Slow Start Threshold
   uint32_t                       m_initialCWnd;          //!< Initial cWnd value
+  uint32_t                       m_initialSsThresh;      //!< Initial Slow Start Threshold
 
   // Round trip time estimation
   Time m_lastMeasuredRtt; //!< Last measured RTT
