@@ -36,7 +36,7 @@ namespace ns3 {
 /**
  * \defgroup ripng RIPng
  *
- * The RIPng protocol (\rfc{2080}) is a unicast-only IPv6 IGP (Interior Gateway Protocol).
+ * The RIPng protocol (\RFC{2080}) is a unicast-only IPv6 IGP (Interior Gateway Protocol).
  * Its convergence time is rather long. As a consequence, it is suggested to
  * carefully check the network topology and the route status before sending
  * data flows.
@@ -168,7 +168,7 @@ std::ostream& operator<< (std::ostream& os, RipNgRoutingTableEntry const& route)
 /**
  * \ingroup ripng
  *
- * \brief RIPng Routing Protocol, defined in \rfc{2080}.
+ * \brief RIPng Routing Protocol, defined in \RFC{2080}.
  */
 class RipNg : public Ipv6RoutingProtocol
 {

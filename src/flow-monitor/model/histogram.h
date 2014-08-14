@@ -38,7 +38,7 @@ namespace ns3 {
  *
  * \todo Add support for negative data.
  *
- * \todo Add method(s) to estimate \f$N\f$, \f$\mu\f$, and \f$s^2\f$ from the histogram,
+ * \todo Add method(s) to estimate parameters from the histogram,
  * see http://www.dspguide.com/ch2/4.htm
  *
  */

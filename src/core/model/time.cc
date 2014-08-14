@@ -44,6 +44,8 @@ Time::MarkedTimes * Time::g_markingTimes = 0;
  * \internal
  * Get mutex for critical sections around modification of Time::g_markingTimes
  *
+ * \returns The static mutex to control access to Time::g_markingTimes.
+ *
  * \relates Time
  */
 SystemMutex &
@@ -387,8 +389,8 @@ Time::As (const enum Unit unit) const
 }
  
 
-std::ostream&
-operator<< (std::ostream& os, const Time & time)
+std::ostream &
+operator << (std::ostream & os, const Time & time)
 {
   os << time.As (Time::GetResolution ());
   return os;
@@ -427,7 +429,8 @@ operator << (std::ostream & os, const TimeWithUnit & timeU)
 }
 
 
-std::istream& operator>> (std::istream& is, Time & time)
+std::istream &
+operator >> (std::istream & is, Time & time)
 {
   std::string value;
   is >> value;
