@@ -8961,6 +8961,11 @@ def register_Ns3TcpSocket_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_pure_virtual=True, is_const=True, visibility='private', is_virtual=True)
+    ## tcp-socket.h (module 'internet'): uint32_t ns3::TcpSocket::GetInitialSSThresh() const [member function]
+    cls.add_method('GetInitialSSThresh', 
+                   'uint32_t', 
+                   [], 
+                   is_pure_virtual=True, is_const=True, visibility='private', is_virtual=True)
     ## tcp-socket.h (module 'internet'): ns3::Time ns3::TcpSocket::GetPersistTimeout() const [member function]
     cls.add_method('GetPersistTimeout', 
                    'ns3::Time', 
@@ -8968,11 +8973,6 @@ def register_Ns3TcpSocket_methods(root_module, cls):
                    is_pure_virtual=True, is_const=True, visibility='private', is_virtual=True)
     ## tcp-socket.h (module 'internet'): uint32_t ns3::TcpSocket::GetRcvBufSize() const [member function]
     cls.add_method('GetRcvBufSize', 
-                   'uint32_t', 
-                   [], 
-                   is_pure_virtual=True, is_const=True, visibility='private', is_virtual=True)
-    ## tcp-socket.h (module 'internet'): uint32_t ns3::TcpSocket::GetSSThresh() const [member function]
-    cls.add_method('GetSSThresh', 
                    'uint32_t', 
                    [], 
                    is_pure_virtual=True, is_const=True, visibility='private', is_virtual=True)
@@ -9016,6 +9016,11 @@ def register_Ns3TcpSocket_methods(root_module, cls):
                    'void', 
                    [param('uint32_t', 'cwnd')], 
                    is_pure_virtual=True, visibility='private', is_virtual=True)
+    ## tcp-socket.h (module 'internet'): void ns3::TcpSocket::SetInitialSSThresh(uint32_t threshold) [member function]
+    cls.add_method('SetInitialSSThresh', 
+                   'void', 
+                   [param('uint32_t', 'threshold')], 
+                   is_pure_virtual=True, visibility='private', is_virtual=True)
     ## tcp-socket.h (module 'internet'): void ns3::TcpSocket::SetPersistTimeout(ns3::Time timeout) [member function]
     cls.add_method('SetPersistTimeout', 
                    'void', 
@@ -9025,11 +9030,6 @@ def register_Ns3TcpSocket_methods(root_module, cls):
     cls.add_method('SetRcvBufSize', 
                    'void', 
                    [param('uint32_t', 'size')], 
-                   is_pure_virtual=True, visibility='private', is_virtual=True)
-    ## tcp-socket.h (module 'internet'): void ns3::TcpSocket::SetSSThresh(uint32_t threshold) [member function]
-    cls.add_method('SetSSThresh', 
-                   'void', 
-                   [param('uint32_t', 'threshold')], 
                    is_pure_virtual=True, visibility='private', is_virtual=True)
     ## tcp-socket.h (module 'internet'): void ns3::TcpSocket::SetSegSize(uint32_t size) [member function]
     cls.add_method('SetSegSize', 
@@ -9323,6 +9323,11 @@ def register_Ns3TcpSocketBase_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_pure_virtual=True, is_const=True, visibility='protected', is_virtual=True)
+    ## tcp-socket-base.h (module 'internet'): uint32_t ns3::TcpSocketBase::GetInitialSSThresh() const [member function]
+    cls.add_method('GetInitialSSThresh', 
+                   'uint32_t', 
+                   [], 
+                   is_pure_virtual=True, is_const=True, visibility='protected', is_virtual=True)
     ## tcp-socket-base.h (module 'internet'): ns3::Time ns3::TcpSocketBase::GetPersistTimeout() const [member function]
     cls.add_method('GetPersistTimeout', 
                    'ns3::Time', 
@@ -9333,11 +9338,6 @@ def register_Ns3TcpSocketBase_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_const=True, visibility='protected', is_virtual=True)
-    ## tcp-socket-base.h (module 'internet'): uint32_t ns3::TcpSocketBase::GetSSThresh() const [member function]
-    cls.add_method('GetSSThresh', 
-                   'uint32_t', 
-                   [], 
-                   is_pure_virtual=True, is_const=True, visibility='protected', is_virtual=True)
     ## tcp-socket-base.h (module 'internet'): uint32_t ns3::TcpSocketBase::GetSegSize() const [member function]
     cls.add_method('GetSegSize', 
                    'uint32_t', 
@@ -9488,6 +9488,11 @@ def register_Ns3TcpSocketBase_methods(root_module, cls):
                    'void', 
                    [param('uint32_t', 'cwnd')], 
                    is_pure_virtual=True, visibility='protected', is_virtual=True)
+    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::SetInitialSSThresh(uint32_t threshold) [member function]
+    cls.add_method('SetInitialSSThresh', 
+                   'void', 
+                   [param('uint32_t', 'threshold')], 
+                   is_pure_virtual=True, visibility='protected', is_virtual=True)
     ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::SetPersistTimeout(ns3::Time timeout) [member function]
     cls.add_method('SetPersistTimeout', 
                    'void', 
@@ -9498,11 +9503,6 @@ def register_Ns3TcpSocketBase_methods(root_module, cls):
                    'void', 
                    [param('uint32_t', 'size')], 
                    visibility='protected', is_virtual=True)
-    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::SetSSThresh(uint32_t threshold) [member function]
-    cls.add_method('SetSSThresh', 
-                   'void', 
-                   [param('uint32_t', 'threshold')], 
-                   is_pure_virtual=True, visibility='protected', is_virtual=True)
     ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::SetSegSize(uint32_t size) [member function]
     cls.add_method('SetSegSize', 
                    'void', 
@@ -9597,8 +9597,8 @@ def register_Ns3TcpTahoe_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_const=True, visibility='protected', is_virtual=True)
-    ## tcp-tahoe.h (module 'internet'): uint32_t ns3::TcpTahoe::GetSSThresh() const [member function]
-    cls.add_method('GetSSThresh', 
+    ## tcp-tahoe.h (module 'internet'): uint32_t ns3::TcpTahoe::GetInitialSSThresh() const [member function]
+    cls.add_method('GetInitialSSThresh', 
                    'uint32_t', 
                    [], 
                    is_const=True, visibility='protected', is_virtual=True)
@@ -9617,8 +9617,8 @@ def register_Ns3TcpTahoe_methods(root_module, cls):
                    'void', 
                    [param('uint32_t', 'cwnd')], 
                    visibility='protected', is_virtual=True)
-    ## tcp-tahoe.h (module 'internet'): void ns3::TcpTahoe::SetSSThresh(uint32_t threshold) [member function]
-    cls.add_method('SetSSThresh', 
+    ## tcp-tahoe.h (module 'internet'): void ns3::TcpTahoe::SetInitialSSThresh(uint32_t threshold) [member function]
+    cls.add_method('SetInitialSSThresh', 
                    'void', 
                    [param('uint32_t', 'threshold')], 
                    visibility='protected', is_virtual=True)
@@ -9736,8 +9736,8 @@ def register_Ns3TcpWestwood_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_const=True, visibility='protected', is_virtual=True)
-    ## tcp-westwood.h (module 'internet'): uint32_t ns3::TcpWestwood::GetSSThresh() const [member function]
-    cls.add_method('GetSSThresh', 
+    ## tcp-westwood.h (module 'internet'): uint32_t ns3::TcpWestwood::GetInitialSSThresh() const [member function]
+    cls.add_method('GetInitialSSThresh', 
                    'uint32_t', 
                    [], 
                    is_const=True, visibility='protected', is_virtual=True)
@@ -9761,8 +9761,8 @@ def register_Ns3TcpWestwood_methods(root_module, cls):
                    'void', 
                    [param('uint32_t', 'cwnd')], 
                    visibility='protected', is_virtual=True)
-    ## tcp-westwood.h (module 'internet'): void ns3::TcpWestwood::SetSSThresh(uint32_t threshold) [member function]
-    cls.add_method('SetSSThresh', 
+    ## tcp-westwood.h (module 'internet'): void ns3::TcpWestwood::SetInitialSSThresh(uint32_t threshold) [member function]
+    cls.add_method('SetInitialSSThresh', 
                    'void', 
                    [param('uint32_t', 'threshold')], 
                    visibility='protected', is_virtual=True)
@@ -15206,8 +15206,8 @@ def register_Ns3TcpNewReno_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_const=True, visibility='protected', is_virtual=True)
-    ## tcp-newreno.h (module 'internet'): uint32_t ns3::TcpNewReno::GetSSThresh() const [member function]
-    cls.add_method('GetSSThresh', 
+    ## tcp-newreno.h (module 'internet'): uint32_t ns3::TcpNewReno::GetInitialSSThresh() const [member function]
+    cls.add_method('GetInitialSSThresh', 
                    'uint32_t', 
                    [], 
                    is_const=True, visibility='protected', is_virtual=True)
@@ -15226,8 +15226,8 @@ def register_Ns3TcpNewReno_methods(root_module, cls):
                    'void', 
                    [param('uint32_t', 'cwnd')], 
                    visibility='protected', is_virtual=True)
-    ## tcp-newreno.h (module 'internet'): void ns3::TcpNewReno::SetSSThresh(uint32_t threshold) [member function]
-    cls.add_method('SetSSThresh', 
+    ## tcp-newreno.h (module 'internet'): void ns3::TcpNewReno::SetInitialSSThresh(uint32_t threshold) [member function]
+    cls.add_method('SetInitialSSThresh', 
                    'void', 
                    [param('uint32_t', 'threshold')], 
                    visibility='protected', is_virtual=True)
@@ -15278,8 +15278,8 @@ def register_Ns3TcpReno_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_const=True, visibility='protected', is_virtual=True)
-    ## tcp-reno.h (module 'internet'): uint32_t ns3::TcpReno::GetSSThresh() const [member function]
-    cls.add_method('GetSSThresh', 
+    ## tcp-reno.h (module 'internet'): uint32_t ns3::TcpReno::GetInitialSSThresh() const [member function]
+    cls.add_method('GetInitialSSThresh', 
                    'uint32_t', 
                    [], 
                    is_const=True, visibility='protected', is_virtual=True)
@@ -15298,8 +15298,8 @@ def register_Ns3TcpReno_methods(root_module, cls):
                    'void', 
                    [param('uint32_t', 'cwnd')], 
                    visibility='protected', is_virtual=True)
-    ## tcp-reno.h (module 'internet'): void ns3::TcpReno::SetSSThresh(uint32_t threshold) [member function]
-    cls.add_method('SetSSThresh', 
+    ## tcp-reno.h (module 'internet'): void ns3::TcpReno::SetInitialSSThresh(uint32_t threshold) [member function]
+    cls.add_method('SetInitialSSThresh', 
                    'void', 
                    [param('uint32_t', 'threshold')], 
                    visibility='protected', is_virtual=True)
@@ -15340,8 +15340,8 @@ def register_Ns3TcpRfc793_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_const=True, visibility='protected', is_virtual=True)
-    ## tcp-rfc793.h (module 'internet'): uint32_t ns3::TcpRfc793::GetSSThresh() const [member function]
-    cls.add_method('GetSSThresh', 
+    ## tcp-rfc793.h (module 'internet'): uint32_t ns3::TcpRfc793::GetInitialSSThresh() const [member function]
+    cls.add_method('GetInitialSSThresh', 
                    'uint32_t', 
                    [], 
                    is_const=True, visibility='protected', is_virtual=True)
@@ -15350,8 +15350,8 @@ def register_Ns3TcpRfc793_methods(root_module, cls):
                    'void', 
                    [param('uint32_t', 'cwnd')], 
                    visibility='protected', is_virtual=True)
-    ## tcp-rfc793.h (module 'internet'): void ns3::TcpRfc793::SetSSThresh(uint32_t threshold) [member function]
-    cls.add_method('SetSSThresh', 
+    ## tcp-rfc793.h (module 'internet'): void ns3::TcpRfc793::SetInitialSSThresh(uint32_t threshold) [member function]
+    cls.add_method('SetInitialSSThresh', 
                    'void', 
                    [param('uint32_t', 'threshold')], 
                    visibility='protected', is_virtual=True)
