@@ -50,14 +50,13 @@ namespace ns3 {
  * can be processed via a Callback.
  *
  * CommandLine also provides handlers for these standard arguments:
- * \code
- *   --PrintGlobals:              Print the list of globals.
- *   --PrintGroups:               Print the list of groups.
- *   --PrintGroup=[group]:        Print all TypeIds of group.
- *   --PrintTypeIds:              Print all TypeIds.
- *   --PrintAttributes=[typeid]:  Print all attributes of typeid.
- *   --PrintHelp:                 Print this help message.
- * \endcode
+ * \verbatim
+   --PrintGlobals:              Print the list of globals.
+   --PrintGroups:               Print the list of groups.
+   --PrintGroup=[group]:        Print all TypeIds of group.
+   --PrintTypeIds:              Print all TypeIds.
+   --PrintAttributes=[typeid]:  Print all attributes of typeid.
+   --PrintHelp:                 Print this help message. \endverbatim
  * 
  * The more common \c --help is a synonym for \c --PrintHelp; an example
  * is given below.
@@ -65,15 +64,13 @@ namespace ns3 {
  * Finally, CommandLine processes Attribute and GlobalValue arguments.
  *
  * In use, arguments are given in the form
- * \code
- *   --arg=value --toggle
- * \endcode
+ * \verbatim
+   --arg=value --toggle \endverbatim
  * Most arguments expect a value, as in the first form, \c --arg=value.
  * Toggles, corresponding to boolean arguments, can be given in any of
  * the forms
- * \code
- *   --toggle1 --toggle2=1 --toggle3=t --toggle4=true
- * \endcode
+ * \verbatim
+   --toggle1 --toggle2=1 --toggle3=t --toggle4=true \endverbatim
  * The first form changes the state of toggle1 from its default; 
  * all the rest set the corresponding boolean variable to true.
  * \c 0, \c f and \c false are accepted to set the variable to false.
@@ -81,15 +78,13 @@ namespace ns3 {
  * CommandLine can set the initial value of every attribute in the system
  * with the 
  * \c --TypeIdName::AttributeName=value syntax, for example
- * \code
- *   --Application::StartTime=3s
- * \endcode
+ * \verbatim
+   --Application::StartTime=3s \endverbatim
  *
  * CommandLine can also set the value of every GlobalValue
  * in the system with the \c --GlobalValueName=value syntax, for example
- * \code
- *   --SchedulerType=HeapScheduler
- * \endcode
+ * \verbatim
+   --SchedulerType=HeapScheduler \endverbatim
  *
  * A simple example is in `src/core/example/ command-line-example.cc`
  * The heart of that example is this code:
@@ -99,55 +94,54 @@ namespace ns3 {
  *    bool        boolArg = false;
  *    std::string strArg  = "strArg default";
  *  
- *  CommandLine cmd;
- *  cmd.Usage ("CommandLine example program.\n"
- *             "\n"
- *             "This little program demonstrates how to use CommandLine.");
+ *    CommandLine cmd;
+ *    cmd.Usage ("CommandLine example program.\n"
+ *               "\n"
+ *               "This little program demonstrates how to use CommandLine.");
  *    cmd.AddValue ("intArg",  "an int argument",       intArg);
  *    cmd.AddValue ("boolArg", "a bool argument",       boolArg);
  *    cmd.AddValue ("strArg",  "a string argument",     strArg);
  *    cmd.AddValue ("cbArg",   "a string via callback", MakeCallback (SetCbArg));
- *  cmd.Parse (argc, argv);
+ *    cmd.Parse (argc, argv);
  * \endcode
  * after which it prints the values of each variable.  (The \c SetCbArg function
  * is not shown here; see `src/core/example/ command-line-example.cc`)
  *
  * Here is the output from a few runs of that program:
  *
- * \code
- *   $ ./waf --run="command-line-example"
- *   intArg:   1
- *   boolArg:  false
- *   strArg:   "strArg default"
- *   cbArg:    "cbArg default"
- *
- *   $ ./waf --run="command-line-example --intArg=2 --boolArg --strArg=Hello --cbArg=World"
- *   intArg:   2
- *   boolArg:  true
- *   strArg:   "Hello"
- *   cbArg:    "World"
- *   
- *   $ ./waf --run="command-line-example --help"
- *   ns3-dev-command-line-example-debug [Program Arguments] [General Arguments]
- *   
- *   CommandLine example program.
- *   
- *   This little program demonstrates how to use CommandLine.
- *   
- *   Program Arguments:
- *       --intArg:   an int argument [1]
- *       --boolArg:  a bool argument [false]
- *       --strArg:   a string argument [strArg default]
- *       --cbArg:    a string via callback
- *   
- *   General Arguments:
- *       --PrintGlobals:              Print the list of globals.
- *       --PrintGroups:               Print the list of groups.
- *       --PrintGroup=[group]:        Print all TypeIds of group.
- *       --PrintTypeIds:              Print all TypeIds.
- *       --PrintAttributes=[typeid]:  Print all attributes of typeid.
- *       --PrintHelp:                 Print this help message.
- * \endcode
+ * \verbatim
+   $ ./waf --run="command-line-example"
+   intArg:   1
+   boolArg:  false
+   strArg:   "strArg default"
+   cbArg:    "cbArg default"
+
+   $ ./waf --run="command-line-example --intArg=2 --boolArg --strArg=Hello --cbArg=World"
+   intArg:   2
+   boolArg:  true
+   strArg:   "Hello"
+   cbArg:    "World"
+   
+   $ ./waf --run="command-line-example --help"
+   ns3-dev-command-line-example-debug [Program Arguments] [General Arguments]
+   
+   CommandLine example program.
+   
+   This little program demonstrates how to use CommandLine.
+   
+   Program Arguments:
+       --intArg:   an int argument [1]
+       --boolArg:  a bool argument [false]
+       --strArg:   a string argument [strArg default]
+       --cbArg:    a string via callback
+   
+   General Arguments:
+       --PrintGlobals:              Print the list of globals.
+       --PrintGroups:               Print the list of groups.
+       --PrintGroup=[group]:        Print all TypeIds of group.
+       --PrintTypeIds:              Print all TypeIds.
+       --PrintAttributes=[typeid]:  Print all attributes of typeid.
+       --PrintHelp:                 Print this help message. \endverbatim
  *
  * Having parsed the arguments, some programs will need to perform
  * some additional validation of the received values.  A common issue at this
@@ -215,7 +209,6 @@ public:
   void AddValue (const std::string &name,
                  const std::string &help,
                  T &value);
-
 
   /**
    * Add a program argument, using a Callback to parse the value
