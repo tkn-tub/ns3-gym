@@ -51,6 +51,7 @@ int main (int argc, char *argv[])
   cmd.AddValue ("intArg",  "an int argument",       intArg);
   cmd.AddValue ("boolArg", "a bool argument",       boolArg);
   cmd.AddValue ("strArg",  "a string argument",     strArg);
+  cmd.AddValue ("anti",    "ns3::RandomVariableStream::Antithetic");
   cmd.AddValue ("cbArg",   "a string via callback", MakeCallback (SetCbArg));
   cmd.Parse (argc, argv);
 

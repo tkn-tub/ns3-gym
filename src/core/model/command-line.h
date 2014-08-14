@@ -62,6 +62,8 @@ namespace ns3 {
  * is given below.
  *
  * Finally, CommandLine processes Attribute and GlobalValue arguments.
+ * Default values for chosen attributes can be set using a shorthand
+ * argument name.
  *
  * In use, arguments are given in the form
  * \verbatim
@@ -80,6 +82,12 @@ namespace ns3 {
  * \c --TypeIdName::AttributeName=value syntax, for example
  * \verbatim
    --Application::StartTime=3s \endverbatim
+ * In some cases you may want to highlight the use of a particular
+ * attribute for a simulation script.  For example, you might want
+ * to make it easy to set the \c Application::StartTime using
+ * the argument \c --start, and have its help string show as part
+ * of the help message.  This can be done using the
+ * <tt>AddValue(const std::string, const std::string path)</tt> method.
  *
  * CommandLine can also set the value of every GlobalValue
  * in the system with the \c --GlobalValueName=value syntax, for example
@@ -101,6 +109,7 @@ namespace ns3 {
  *    cmd.AddValue ("intArg",  "an int argument",       intArg);
  *    cmd.AddValue ("boolArg", "a bool argument",       boolArg);
  *    cmd.AddValue ("strArg",  "a string argument",     strArg);
+ *    cmd.AddValue ("anti",    "ns3::RandomVariableStream::Antithetic");
  *    cmd.AddValue ("cbArg",   "a string via callback", MakeCallback (SetCbArg));
  *    cmd.Parse (argc, argv);
  * \endcode
@@ -133,6 +142,7 @@ namespace ns3 {
        --intArg:   an int argument [1]
        --boolArg:  a bool argument [false]
        --strArg:   a string argument [strArg default]
+       --anti:     Set this RNG stream to generate antithetic values (ns3::RandomVariableStream::Antithetic) [false]
        --cbArg:    a string via callback
    
    General Arguments:
@@ -224,6 +234,15 @@ public:
   void AddValue (const std::string &name,
                  const std::string &help,
                  Callback<bool, std::string> callback);
+
+  /**
+   * Add a program argument as a shorthand for an Attribute.
+   *
+   * \param name the name of the program-supplied argument.
+   * \param attributePath the fully-qualified name of the Attribute
+   */
+  void AddValue (const std::string &name,
+                 const std::string &attributePath);
 
   /**
    * Parse the program arguments
@@ -341,6 +360,15 @@ private:
    * \param value the command line value
    */
   void HandleArgument (const std::string &name, const std::string &value) const;
+  /**
+   * Callback function to handle attributes.
+   *
+   * \param name The full name of the Attribute.
+   * \param value The value to assign to \p name.
+   * \return true if the value was set successfully, false otherwise.
+   */  
+  static bool HandleAttribute (const std::string name, const std::string value);
+
   /** Handler for \c \-\-PrintGlobals:  print all global variables and values */
   void PrintGlobals (std::ostream &os) const;
   /**

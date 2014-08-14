@@ -436,6 +436,60 @@ CommandLine::AddValue (const std::string &name,
   m_items.push_back (item);
 }
 
+void
+CommandLine::AddValue (const std::string &name,
+                       const std::string &attibutePath)
+{
+  NS_LOG_FUNCTION (this << name << attibutePath);
+  // Attribute name is last token
+  size_t colon = attibutePath.rfind ("::");
+  const std::string typeName = attibutePath.substr (0, colon);
+  NS_LOG_DEBUG ("typeName: '" << typeName << "', colon: " << colon);
+  
+  TypeId tid;
+  if (!TypeId::LookupByNameFailSafe (typeName, &tid))
+    {
+      NS_FATAL_ERROR ("Unknown type=" << typeName);
+    }
+
+  uint32_t attrId = 0;
+  while (attrId <  tid.GetAttributeN ())
+    {
+      if (attibutePath == tid.GetAttributeFullName (attrId)) break;
+      ++attrId;
+    }
+
+  // Make sure we found it
+  if (attrId == tid.GetAttributeN ())
+    {
+      NS_FATAL_ERROR ("Attribute not found: " << attibutePath);
+    }
+      
+  struct TypeId::AttributeInformation info = tid.GetAttribute (attrId);
+  std::stringstream ss;
+  ss << info.help
+     << " (" << attibutePath << ") ["
+     << info.initialValue->SerializeToString (info.checker) << "]";
+  
+  AddValue (name, ss.str (),
+            MakeBoundCallback (CommandLine::HandleAttribute, attibutePath)) ;
+}
+
+
+/* static */
+bool
+CommandLine::HandleAttribute (const std::string name,
+                              const std::string value)
+{
+  bool success = true;
+  if (!Config::SetGlobalFailSafe (name, StringValue (value))
+      && !Config::SetDefaultFailSafe (name, StringValue (value)))
+    {
+      success = false;
+    }
+  return success;
+}
+    
 
 bool
 CommandLine::Item::HasDefault () const

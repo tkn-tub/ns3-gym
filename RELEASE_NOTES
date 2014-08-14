@@ -24,6 +24,8 @@ New user-visible features
 
 - The LTE module now supports the transport of the S1-U, X2-U and X2-C
   interfaces over emulated links via the new helper class EmuEpcHelper.
+- CommandLine can now provide a shorthand argument name for any
+  Attribute.
 
 Bugs fixed
 ----------
