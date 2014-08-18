@@ -240,8 +240,8 @@ private:
   uint32_t                       m_segmentSize;          //!< SegmentSize
   uint32_t                       m_rxWindowSize;         //!< Receive window size
   uint32_t                       m_advertisedWindowSize; //!< Window to advertise
-  TracedValue<uint32_t>          m_ssThresh;             //!< Slow Start Threshold
   TracedValue<uint32_t>          m_cWnd;                 //!< Congestion window
+  TracedValue<uint32_t>          m_ssThresh;             //!< Slow Start Threshold
   uint32_t                       m_initialCWnd;          //!< Initial cWnd value
   uint32_t                       m_initialSsThresh;      //!< Initial Slow Start Threshold
 
