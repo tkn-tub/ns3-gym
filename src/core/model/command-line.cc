@@ -438,12 +438,12 @@ CommandLine::AddValue (const std::string &name,
 
 void
 CommandLine::AddValue (const std::string &name,
-                       const std::string &attibutePath)
+                       const std::string &attributePath)
 {
-  NS_LOG_FUNCTION (this << name << attibutePath);
+  NS_LOG_FUNCTION (this << name << attributePath);
   // Attribute name is last token
-  size_t colon = attibutePath.rfind ("::");
-  const std::string typeName = attibutePath.substr (0, colon);
+  size_t colon = attributePath.rfind ("::");
+  const std::string typeName = attributePath.substr (0, colon);
   NS_LOG_DEBUG ("typeName: '" << typeName << "', colon: " << colon);
   
   TypeId tid;
@@ -452,27 +452,20 @@ CommandLine::AddValue (const std::string &name,
       NS_FATAL_ERROR ("Unknown type=" << typeName);
     }
 
-  uint32_t attrId = 0;
-  while (attrId <  tid.GetAttributeN ())
+  const std::string attrName = attributePath.substr (colon + 2);
+  struct TypeId::AttributeInformation info;  
+  if (!tid.LookupAttributeByName (attrName, &info))
     {
-      if (attibutePath == tid.GetAttributeFullName (attrId)) break;
-      ++attrId;
-    }
-
-  // Make sure we found it
-  if (attrId == tid.GetAttributeN ())
-    {
-      NS_FATAL_ERROR ("Attribute not found: " << attibutePath);
+      NS_FATAL_ERROR ("Attribute not found: " << attributePath);
     }
       
-  struct TypeId::AttributeInformation info = tid.GetAttribute (attrId);
   std::stringstream ss;
   ss << info.help
-     << " (" << attibutePath << ") ["
+     << " (" << attributePath << ") ["
      << info.initialValue->SerializeToString (info.checker) << "]";
   
   AddValue (name, ss.str (),
-            MakeBoundCallback (CommandLine::HandleAttribute, attibutePath)) ;
+            MakeBoundCallback (CommandLine::HandleAttribute, attributePath)) ;
 }
 
 
