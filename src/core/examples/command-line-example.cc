@@ -60,7 +60,7 @@ int main (int argc, char *argv[])
   {
     struct TypeId::AttributeInformation info;
     tid.LookupAttributeByName (attrName, &info);
-    attrDef = info.initialValue->SerializeToString (info.checker);
+    attrDef = info.originalInitialValue->SerializeToString (info.checker);
   }
   
   
@@ -90,18 +90,9 @@ int main (int argc, char *argv[])
   std::cout << std::setw (10)              << "strArg:"
             << "\""            << strDef   << "\""
             << std::endl;
-
-  // Look up new default value for attribute
-  {
-    struct TypeId::AttributeInformation info;
-    tid.LookupAttributeByName (attrName, &info);
-  
-    std::cout << std::setw (10)            << "anti:"
-              << "\""
-              << info.originalInitialValue->SerializeToString (info.checker)
-              << "\""
-              << std::endl;
-  }
+  std::cout << std::setw (10)              << "anti:"
+            << "\""            << attrDef  << "\""
+            << std::endl;
   std::cout << std::setw (10)              << "cbArg:"
             << "\""            << cbDef    << "\""
             << std::endl;
@@ -109,6 +100,7 @@ int main (int argc, char *argv[])
 
 
   // Show final values
+  std::cout << "Final values:" << std::endl;
   std::cout << std::left << std::setw (10) << "intArg:"
             <<                    intArg
             << std::endl;
