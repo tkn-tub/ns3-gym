@@ -98,7 +98,7 @@ int main (int argc, char *argv[])
   
     std::cout << std::setw (10)            << "anti:"
               << "\""
-              << info.initialValue->SerializeToString (info.checker)
+              << info.originalInitialValue->SerializeToString (info.checker)
               << "\""
               << std::endl;
   }
