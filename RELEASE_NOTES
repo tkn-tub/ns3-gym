@@ -41,6 +41,7 @@ Bugs fixed
 - Bug 1955 - The IPv4 identification field should be unique per (source, destination, protocol) tuple
 - Bug 1960 - Wrong information on index range, about Node::GetDevice
 - Bug 1961 - planetlab-tap-creator "variable set but not used"
+- Bug 1963 - AODV can tag the same packet twice (and raise an assert)
 
 Known issues
 ------------

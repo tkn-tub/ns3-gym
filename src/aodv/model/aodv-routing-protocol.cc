@@ -1806,7 +1806,9 @@ RoutingProtocol::SendRerrMessage (Ptr<Packet> packet, std::vector<Ipv4Address> p
       Ptr<Socket> socket = FindSocketWithInterfaceAddress (*i);
       NS_ASSERT (socket);
       NS_LOG_LOGIC ("Broadcast RERR message from interface " << i->GetLocal ());
+      // std::cout << "Broadcast RERR message from interface " << i->GetLocal () << std::endl;
       // Send to all-hosts broadcast if on /32 addr, subnet-directed otherwise
+      Ptr<Packet> p = packet->Copy ();
       Ipv4Address destination;
       if (i->GetMask () == Ipv4Mask::GetOnes ())
         {
@@ -1816,7 +1818,7 @@ RoutingProtocol::SendRerrMessage (Ptr<Packet> packet, std::vector<Ipv4Address> p
         { 
           destination = i->GetBroadcast ();
         }
-      Simulator::Schedule (Time (MilliSeconds (m_uniformRandomVariable->GetInteger (0, 10))), &RoutingProtocol::SendTo, this, socket, packet, destination);
+      Simulator::Schedule (Time (MilliSeconds (m_uniformRandomVariable->GetInteger (0, 10))), &RoutingProtocol::SendTo, this, socket, p, destination);
     }
 }
 
