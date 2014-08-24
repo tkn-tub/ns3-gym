@@ -379,7 +379,7 @@ public:
    *
    * This function is used by Fragment Timeout handling to signal a fragment drop.
    *
-   * \param ipv6Header the IPv6 header of dropped packet
+   * \param ipHeader the IPv6 header of dropped packet
    * \param p the packet (if available)
    * \param dropReason the drop reason
    *

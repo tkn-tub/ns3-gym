@@ -128,6 +128,14 @@ private:
   uint8_t m_metric; //!< route metric
 };
 
+/**
+ * \brief Stream insertion operator.
+ *
+ * \param os the reference to the output stream
+ * \param h the Routing Table Entry
+ * \returns the reference to the output stream
+ */
+std::ostream & operator << (std::ostream & os, const RipNgRte & h);
 
 /**
  * \ingroup ripng
@@ -219,6 +227,15 @@ private:
   uint8_t m_command; //!< command type
   std::list<RipNgRte> m_rteList; //!< list of the RTEs in the message
 };
+
+/**
+ * \brief Stream insertion operator.
+ *
+ * \param os the reference to the output stream
+ * \param h the RIPng header
+ * \returns the reference to the output stream
+ */
+std::ostream & operator << (std::ostream & os, const RipNgHeader & h);
 
 }
 

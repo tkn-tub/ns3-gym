@@ -135,7 +135,7 @@ private:
    */
   RipNgHelper &operator = (const RipNgHelper &o);
 
-  ObjectFactory m_factory; //|< Object Factory
+  ObjectFactory m_factory; //!< Object Factory
 
   std::map< Ptr<Node>, std::set<uint32_t> > m_interfaceExclusions; //!< Interface Exclusion set
   std::map< Ptr<Node>, std::map<uint32_t, uint8_t> > m_interfaceMetrics; //!< Interface Metric set

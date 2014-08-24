@@ -136,7 +136,7 @@ public:
    * After a Triggered Update, all the changed flags are cleared
    * from the routing table.
    *
-   * \param true if route is changed
+   * \param changed true if route is changed
    */
   void SetRouteChanged (bool changed);
 
@@ -177,6 +177,10 @@ public:
   RipNg ();
   virtual ~RipNg ();
 
+  /**
+   * \brief Get the type ID
+   * \return type ID
+   */
   static TypeId GetTypeId (void);
 
   // \name From Ipv6RoutingProtocol
@@ -198,10 +202,13 @@ public:
   virtual void PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const;
   // \}
 
+  /**
+   * Split Horizon strategy type. See \RFC{2080}.
+   */
   enum SplitHorizonType_e {
-    NO_SPLIT_HORIZON,
-    SPLIT_HORIZON,
-    POISON_REVERSE,
+    NO_SPLIT_HORIZON,//!< No Split Horizon
+    SPLIT_HORIZON,   //!< Split Horizon
+    POISON_REVERSE,  //!< Poison Reverse Split Horizon
   };
 
   /**
@@ -323,11 +330,10 @@ private:
   /**
    * \brief Add route to network.
    * \param network network address
-   * \param networkPrefix network prefix*
+   * \param networkPrefix network prefix
    * \param nextHop next hop address to route the packet.
    * \param interface interface index
    * \param prefixToUse prefix that should be used for source address for this destination
-   * \param metric metric of route in case of multiple routes to same destination
    */
   void AddNetworkRouteTo (Ipv6Address network, Ipv6Prefix networkPrefix, Ipv6Address nextHop, uint32_t interface, Ipv6Address prefixToUse);
 
@@ -336,7 +342,6 @@ private:
    * \param network network address
    * \param networkPrefix network prefix
    * \param interface interface index
-   * \param metric metric of route in case of multiple routes to same destination
    */
   void AddNetworkRouteTo (Ipv6Address network, Ipv6Prefix networkPrefix, uint32_t interface);
 
@@ -391,19 +396,19 @@ private:
   typedef std::map<Ptr<Socket>, uint32_t>::const_iterator SocketListCI;
 
   SocketList m_sendSocketList; //!< list of sockets for sending (socket, interface index)
-  Ptr<Socket> m_recvSocket;
+  Ptr<Socket> m_recvSocket; //!< receive socket
 
   EventId m_nextUnsolicitedUpdate; //!< Next Unsolicited Update event
   EventId m_nextTriggeredUpdate; //!< Next Triggered Update event
 
   Ptr<UniformRandomVariable> m_rng; //!< Rng stream.
 
-  std::set<uint32_t> m_interfaceExclusions; // Set of excluded interfaces
-  std::map<uint32_t, uint8_t> m_interfaceMetrics; // Map of interface metrics
+  std::set<uint32_t> m_interfaceExclusions; //!< Set of excluded interfaces
+  std::map<uint32_t, uint8_t> m_interfaceMetrics; //!< Map of interface metrics
 
-  SplitHorizonType_e m_splitHorizonStrategy; // Split Horizon strategy
+  SplitHorizonType_e m_splitHorizonStrategy; //!< Split Horizon strategy
 
-  bool m_initialized; // flag to allow socket's late-creation.
+  bool m_initialized; //!< flag to allow socket's late-creation.
 };
 
 } // namespace ns3

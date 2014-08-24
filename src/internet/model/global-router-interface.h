@@ -376,6 +376,7 @@ public:
 /**
  * @brief Print the contents of the Global Routing Link State Advertisement and
  * any Global Routing Link Records present in the list.  Quite verbose.
+ * @param os the output stream
  */
   void Print (std::ostream &os) const;
 
