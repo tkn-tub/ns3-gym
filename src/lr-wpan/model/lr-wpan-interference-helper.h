@@ -87,7 +87,14 @@ public:
   Ptr<const SpectrumModel> GetSpectrumModel (void) const;
 private:
   // Disable implicit copy constructors
+  /**
+   * \brief Copy constructor - defined and not implemented.
+   */
   LrWpanInterferenceHelper (LrWpanInterferenceHelper const &);
+  /**
+   * \brief Copy constructor - defined and not implemented.
+   * \returns
+   */
   LrWpanInterferenceHelper& operator= (LrWpanInterferenceHelper const &);
   /**
    * The helpers SpectrumModel.

@@ -27,8 +27,12 @@ NS_LOG_COMPONENT_DEFINE ("LrWpanSpectrumValueHelper");
 
 namespace ns3 {
 
-Ptr<SpectrumModel> g_LrWpanSpectrumModel;
+Ptr<SpectrumModel> g_LrWpanSpectrumModel; //!< Global object used to initialize the LrWpan Spectrum Model
 
+/**
+ * \ingroup lr-wpan
+ * \brief Helper class used to automatically initialize the LrWpan Spectrum Model objects
+ */
 class LrWpanSpectrumModelInitializer
 {
 public:
@@ -50,7 +54,7 @@ public:
     g_LrWpanSpectrumModel = Create<SpectrumModel> (bands);
   }
 
-} g_LrWpanSpectrumModelInitializerInstance;
+} g_LrWpanSpectrumModelInitializerInstance;  //!< Global object used to initialize the LrWpan Spectrum Model
 
 LrWpanSpectrumValueHelper::LrWpanSpectrumValueHelper (void)
 {

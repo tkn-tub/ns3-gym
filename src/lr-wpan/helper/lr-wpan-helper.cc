@@ -32,6 +32,12 @@ NS_LOG_COMPONENT_DEFINE ("LrWpanHelper");
 
 namespace ns3 {
 
+/**
+ * @brief Output an ascii line representing the Transmit event (with context)
+ * @param stream the output stream
+ * @param context the context
+ * @param p the packet
+ */
 static void
 AsciiLrWpanMacTransmitSinkWithContext (
   Ptr<OutputStreamWrapper> stream,
@@ -41,6 +47,11 @@ AsciiLrWpanMacTransmitSinkWithContext (
   *stream->GetStream () << "t " << Simulator::Now ().GetSeconds () << " " << context << " " << *p << std::endl;
 }
 
+/**
+ * @brief Output an ascii line representing the Transmit event (without context)
+ * @param stream the output stream
+ * @param p the packet
+ */
 static void
 AsciiLrWpanMacTransmitSinkWithoutContext (
   Ptr<OutputStreamWrapper> stream,
@@ -198,6 +209,11 @@ LrWpanHelper::AssociateToPan (NetDeviceContainer c, uint16_t panId)
   return;
 }
 
+/**
+ * @brief Write a packet in a PCAP file
+ * @param file the output file
+ * @param packet the packet
+ */
 static void
 PcapSniffLrWpan (Ptr<PcapFileWrapper> file, Ptr<const Packet> packet)
 {

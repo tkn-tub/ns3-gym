@@ -82,7 +82,7 @@ public:
    * trailer. The packet itself should contain no trailer. If FCS calculation is
    * disabled for this trailer, CheckFcs() will always return true.
    *
-   * \param the packet to be checked
+   * \param p the packet to be checked
    * \return false, if the FCS values do not match, true otherwise
    */
   bool CheckFcs (Ptr<const Packet> p);

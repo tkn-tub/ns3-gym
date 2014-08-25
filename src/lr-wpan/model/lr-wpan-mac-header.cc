@@ -110,21 +110,9 @@ LrWpanMacHeader::IsSecEnable (void) const
 }
 
 bool
-LrWpanMacHeader::IsSecDisable (void) const
-{
-  return (m_fctrlSecU == 0);
-}
-
-bool
 LrWpanMacHeader::IsFrmPend (void) const
 {
   return (m_fctrlFrmPending == 1);
-}
-
-bool
-LrWpanMacHeader::IsNoFrmPend (void) const
-{
-  return (m_fctrlFrmPending == 0);
 }
 
 bool
@@ -134,21 +122,9 @@ LrWpanMacHeader::IsAckReq (void) const
 }
 
 bool
-LrWpanMacHeader::IsNoAckReq (void) const
-{
-  return (m_fctrlAckReq == 0);
-}
-
-bool
 LrWpanMacHeader::IsPanIdComp (void) const
 {
   return (m_fctrlPanIdComp == 1);
-}
-
-bool
-LrWpanMacHeader::IsNoPanIdComp (void) const
-{
-  return (m_fctrlPanIdComp == 0);
 }
 
 uint8_t
@@ -252,7 +228,7 @@ LrWpanMacHeader::GetKeyIdMode (void) const
 }
 
 uint8_t
-LrWpanMacHeader::GetsecctrlReserved (void) const
+LrWpanMacHeader::GetSecCtrlReserved (void) const
 {
   return (m_secctrlReserved);
 }
@@ -475,7 +451,7 @@ LrWpanMacHeader::SetKeyIdMode (uint8_t keyIdMode)
 }
 
 void
-LrWpanMacHeader::SetsecctrlReserved (uint8_t res)
+LrWpanMacHeader::SetSecCtrlReserved (uint8_t res)
 {
   m_secctrlReserved = res;
 }
@@ -504,13 +480,6 @@ LrWpanMacHeader::SetKeyId (uint64_t keySrc,
   m_auxKeyIdKeySrc64 = keySrc;
 }
 
-
-std::string
-LrWpanMacHeader::GetName (void) const
-{
-  return "LrWpan MAC Header";
-}
-
 TypeId
 LrWpanMacHeader::GetTypeId (void)
 {
@@ -520,7 +489,6 @@ LrWpanMacHeader::GetTypeId (void)
   return tid;
 }
 
-
 TypeId
 LrWpanMacHeader::GetInstanceTypeId (void) const
 {
@@ -528,18 +496,13 @@ LrWpanMacHeader::GetInstanceTypeId (void) const
 }
 
 void
-LrWpanMacHeader::PrintFrameControl (std::ostream &os) const
+LrWpanMacHeader::Print (std::ostream &os) const
 {
   os << "  Frame Type = " << (uint32_t) m_fctrlFrmType << ", Sec Enable = " << (uint32_t) m_fctrlSecU
      << ", Frame Pending = " << (uint32_t) m_fctrlFrmPending << ", Ack Request = " << (uint32_t) m_fctrlAckReq
      << ", PAN ID Compress = " << (uint32_t) m_fctrlPanIdComp << ", Frame Vers = " << (uint32_t) m_fctrlFrmVer
      << ", Dst Addrs Mode = " << (uint32_t) m_fctrlDstAddrMode << ", Src Addr Mode = " << (uint32_t) m_fctrlSrcAddrMode;
-}
 
-void
-LrWpanMacHeader::Print (std::ostream &os) const
-{
-  PrintFrameControl (os);
   os << ", Sequence Num = " << static_cast<uint16_t> (m_SeqNum);
 
   switch (m_fctrlDstAddrMode)
@@ -629,7 +592,7 @@ LrWpanMacHeader::GetSerializedSize (void) const
       break;
     case SHORTADDR:
       // check if PAN Id compression is enabled
-      if (IsNoPanIdComp ())
+      if (!IsPanIdComp ())
         {
           size += 4;
         }
@@ -640,7 +603,7 @@ LrWpanMacHeader::GetSerializedSize (void) const
       break;
     case EXTADDR:
       // check if PAN Id compression is enabled
-      if (IsNoPanIdComp ())
+      if (!IsPanIdComp ())
         {
           size += 10;
         }
@@ -703,14 +666,14 @@ LrWpanMacHeader::Serialize (Buffer::Iterator start) const
     case NOADDR:
       break;
     case SHORTADDR:
-      if (IsNoPanIdComp ())
+      if (!IsPanIdComp ())
         {
           i.WriteHtolsbU16 (GetSrcPanId ());
         }
       WriteTo (i, m_addrShortSrcAddr);
       break;
     case EXTADDR:
-      if (IsNoPanIdComp ())
+      if (!IsPanIdComp ())
         {
           i.WriteHtolsbU16 (GetSrcPanId ());
         }
@@ -771,7 +734,7 @@ LrWpanMacHeader::Deserialize (Buffer::Iterator start)
     case NOADDR:
       break;
     case SHORTADDR:
-      if (IsNoPanIdComp ())
+      if (!IsPanIdComp ())
         {
           m_addrSrcPanId = i.ReadLsbtohU16 ();
         }
@@ -785,7 +748,7 @@ LrWpanMacHeader::Deserialize (Buffer::Iterator start)
       ReadFrom (i, m_addrShortSrcAddr);
       break;
     case EXTADDR:
-      if (IsNoPanIdComp ())
+      if (!IsPanIdComp ())
         {
           m_addrSrcPanId = i.ReadLsbtohU16 ();
         }
