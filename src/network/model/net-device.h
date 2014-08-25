@@ -293,12 +293,14 @@ public:
    * \returns true if the callback could handle the packet successfully, false
    *          otherwise.
    */
-  typedef Callback<bool,Ptr<NetDevice>,Ptr<const Packet>,uint16_t,const Address &> ReceiveCallback;
+  typedef Callback< bool, Ptr<NetDevice>, Ptr<const Packet>, uint16_t, const Address & > ReceiveCallback;
 
   /**
    * \param cb callback to invoke whenever a packet has been received and must
    *        be forwarded to the higher layers.
    *
+   * Set the callback to be used to notify higher layers when a packet has been
+   * received.
    */
   virtual void SetReceiveCallback (ReceiveCallback cb) = 0;
 
