@@ -1003,6 +1003,8 @@ void Icmpv6L4Protocol::SendNS (Ipv6Address src, Ipv6Address dst, Ipv6Address tar
   else
     {
       NS_LOG_LOGIC ("Destination is Multicast, using DelayedSendMessage");
+      std::cout << Simulator::Now ().GetSeconds () << " - " << this << " - " << m_node->GetId () << " - ";
+      std::cout << src << " -> " << dst << " - " << *p << std::endl;
       Simulator::Schedule (Time (MilliSeconds (m_solicitationJitter->GetValue ())), &Icmpv6L4Protocol::DelayedSendMessage, this, p, src, dst, 255);
     }
 }

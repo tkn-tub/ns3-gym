@@ -944,14 +944,14 @@ SixLowPanNetDevice::CompressLowPanIphc (Ptr<Packet> packet, Address const &src, 
           // The address takes the form ffXX::00XX:XXXX.
           //                            ffXX:0000:0000:0000:0000:0000:00XX:XXXX.
           else if ( (addressBuf[0] == multicastAddrCheckerBuf[0])
-                    && (memcmp (addressBuf + 2, multicastAddrCheckerBuf + 2, 11) ) )
+                    && (memcmp (addressBuf + 2, multicastAddrCheckerBuf + 2, 11) == 0) )
             {
               iphcHeader.SetDam (SixLowPanIphc::HC_COMPR_16);
             }
           // The address takes the form ffXX::00XX:XXXX:XXXX.
           //                            ffXX:0000:0000:0000:0000:00XX:XXXX:XXXX.
           else if ( (addressBuf[0] == multicastAddrCheckerBuf[0])
-                    && (memcmp (addressBuf + 2, multicastAddrCheckerBuf + 2, 9) ) )
+                    && (memcmp (addressBuf + 2, multicastAddrCheckerBuf + 2, 9) == 0) )
             {
               iphcHeader.SetDam (SixLowPanIphc::HC_COMPR_64);
             }
