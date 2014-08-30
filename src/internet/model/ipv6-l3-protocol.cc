@@ -820,13 +820,10 @@ void Ipv6L3Protocol::Send (Ptr<Packet> packet, Ipv6Address source, Ipv6Address d
   //for link-local traffic, we need to determine the interface
   if (source.IsLinkLocal ()
       || destination.IsLinkLocal ()
-      || destination.IsAllNodesMulticast ()
-      || destination.IsAllRoutersMulticast ()
-      || destination.IsAllHostsMulticast ()
-      || destination.IsSolicitedMulticast ())
+      || destination.IsLinkLocalMulticast ())
     {
       int32_t index = GetInterfaceForAddress (source);
-      NS_ASSERT (index >= 0);
+      NS_ASSERT_MSG (index >= 0, "Can not find an outgoing interface for a packet with src " << source << " and dst " << destination);
       oif = GetNetDevice (index);
     }
 
