@@ -697,7 +697,6 @@ FdBetFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sc
         {
           m_rachAllocationMap.at (i) = (*itRach).m_rnti;
         }
-      rbStart = rbStart + rbLen;
 
       if (m_harqOn == true)
         {
@@ -737,6 +736,7 @@ FdBetFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sc
           (*itDci).second.at (harqId) = uldci;
         }
 
+      rbStart = rbStart + rbLen;
       ret.m_buildRarList.push_back (newRar);
     }
   m_rachList.clear ();

@@ -740,9 +740,8 @@ FdTbfqFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::S
         {
           m_rachAllocationMap.at (i) = (*itRach).m_rnti;
         }
-      rbStart = rbStart + rbLen;
 
-            if (m_harqOn == true)
+      if (m_harqOn == true)
         {
           // generate UL-DCI for HARQ retransmissions
           UlDciListElement_s uldci;
@@ -780,6 +779,7 @@ FdTbfqFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::S
           (*itDci).second.at (harqId) = uldci;
         }
 
+      rbStart = rbStart + rbLen;
       ret.m_buildRarList.push_back (newRar);
     }
   m_rachList.clear ();
