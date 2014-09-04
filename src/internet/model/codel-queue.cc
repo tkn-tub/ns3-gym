@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- * 
+ *
  * Codel, the COntrolled DELay Queueing discipline
  * Based on ns2 simulation code presented by Kathie Nichols
  *
@@ -35,46 +35,21 @@ NS_LOG_COMPONENT_DEFINE ("CoDelQueue");
 
 namespace ns3 {
 
-#define BITS_PER_LONG (8 * sizeof (unsigned long))
-
 /* borrowed from the linux kernel */
-#define do_div(n,base)						\
-({								\
-	int __res;						\
-	__res = ((unsigned long)n) % (unsigned int)base;	\
-	n = ((unsigned long)n) / (unsigned int)base;		\
-	__res;							\
-})
-
-static inline uint32_t reciprocal_divide(uint32_t A, uint32_t R)
+static inline uint32_t ReciprocalDivide (uint32_t A, uint32_t R)
 {
-	return (uint32_t)(((uint64_t)A * R) >> 32);
+  return (uint32_t)(((uint64_t)A * R) >> 32);
 }
 
 /* end kernel borrowings */
 
-static codel_time_t codel_get_time(void)
+static uint32_t CoDelGetTime (void)
 {
   Time time = Simulator::Now ();
   uint64_t ns = time.GetNanoSeconds ();
 
   return ns >> CODEL_SHIFT;
 }
-
-#define codel_time_after(a, b)	 ((int)(a) - (int)(b) > 0)
-#define codel_time_after_eq(a, b) ((int)(a) - (int)(b) >= 0)
-#define codel_time_before(a, b)	 ((int)(a) - (int)(b) < 0)
-#define codel_time_before_eq(a, b) ((int)(a) - (int)(b) <= 0)
-
-#define NSEC_PER_MSEC 1000000
-#define NSEC_PER_USEC 1000
-#define MS2TIME(a) ((a * NSEC_PER_MSEC) >> CODEL_SHIFT)
-#define US2TIME(a) ((a * NSEC_PER_USEC) >> CODEL_SHIFT)
-#define NS2TIME(a) ((a) >> CODEL_SHIFT)
-#define TIME2CODEL(a) NS2TIME(a.GetNanoSeconds())
-
-#define DEFAULT_CODEL_LIMIT 1000
-
 
 class CoDelTimestampTag : public Tag
 {
@@ -101,7 +76,7 @@ CoDelTimestampTag::CoDelTimestampTag ()
 TypeId
 CoDelTimestampTag::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("anon::CoDelTimestampTag")
+  static TypeId tid = TypeId ("ns3::CoDelTimestampTag")
     .SetParent<Tag> ()
     .AddConstructor<CoDelTimestampTag> ()
     .AddAttribute ("CreationTime",
@@ -112,6 +87,7 @@ CoDelTimestampTag::GetTypeId (void)
   ;
   return tid;
 }
+
 TypeId
 CoDelTimestampTag::GetInstanceTypeId (void) const
 {
@@ -146,141 +122,154 @@ CoDelTimestampTag::GetTxTime (void) const
 
 NS_OBJECT_ENSURE_REGISTERED (CoDelQueue);
 
-TypeId CoDelQueue::GetTypeId (void) 
+TypeId CoDelQueue::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::CoDelQueue")
     .SetParent<Queue> ()
     .AddConstructor<CoDelQueue> ()
-    .AddAttribute ("Mode", 
+    .AddAttribute ("Mode",
                    "Whether to use Bytes (see MaxBytes) or Packets (see MaxPackets) as the maximum queue size metric.",
-                   EnumValue (BYTES),
+                   EnumValue (QUEUE_MODE_BYTES),
                    MakeEnumAccessor (&CoDelQueue::SetMode),
-                   MakeEnumChecker (BYTES, "Bytes",
-                                    PACKETS, "Packets"))
-    .AddAttribute ("MaxPackets", 
+                   MakeEnumChecker (QUEUE_MODE_BYTES, "QUEUE_MODE_BYTES",
+                                    QUEUE_MODE_PACKETS, "QUEUE_MODE_PACKETS"))
+    .AddAttribute ("MaxPackets",
                    "The maximum number of packets accepted by this CoDelQueue.",
                    UintegerValue (DEFAULT_CODEL_LIMIT),
                    MakeUintegerAccessor (&CoDelQueue::m_maxPackets),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("MaxBytes", 
+    .AddAttribute ("MaxBytes",
                    "The maximum number of bytes accepted by this CoDelQueue.",
-                   UintegerValue (1500*DEFAULT_CODEL_LIMIT),
+                   UintegerValue (1500 * DEFAULT_CODEL_LIMIT),
                    MakeUintegerAccessor (&CoDelQueue::m_maxBytes),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("MinBytes", 
+    .AddAttribute ("MinBytes",
                    "The CoDel algorithm minbytes parameter.",
                    UintegerValue (1500),
-                   MakeUintegerAccessor (&CoDelQueue::m_minbytes),
+                   MakeUintegerAccessor (&CoDelQueue::m_minBytes),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("Interval",
                    "The CoDel algorithm interval",
                    StringValue ("100ms"),
-                   MakeTimeAccessor (&CoDelQueue::m_Interval),
+                   MakeTimeAccessor (&CoDelQueue::m_interval),
                    MakeTimeChecker ())
     .AddAttribute ("Target",
                    "The CoDel algorithm target queue delay",
                    StringValue ("5ms"),
-                   MakeTimeAccessor (&CoDelQueue::m_Target),
+                   MakeTimeAccessor (&CoDelQueue::m_target),
                    MakeTimeChecker ())
-    .AddTraceSource("count",
-                    "CoDel count",
-                    MakeTraceSourceAccessor(&CoDelQueue::m_count))
-    .AddTraceSource("drop_count",
-                    "CoDel drop count",
-                    MakeTraceSourceAccessor(&CoDelQueue::m_drop_count))
-    .AddTraceSource("last_count",
-                    "CoDel lastcount",
-                    MakeTraceSourceAccessor(&CoDelQueue::m_lastcount))
-    // .AddTraceSource("bytesInQueue",
-    //                 "Number of bytes in the queue",
-    //                 MakeTraceSourceAccessor(&CoDelQueue::m_bytesInQueue))
+    .AddTraceSource ("Count",
+                     "CoDel count",
+                     MakeTraceSourceAccessor (&CoDelQueue::m_count))
+    .AddTraceSource ("DropCount",
+                     "CoDel drop count",
+                     MakeTraceSourceAccessor (&CoDelQueue::m_dropCount))
+    .AddTraceSource ("LastCount",
+                     "CoDel lastcount",
+                     MakeTraceSourceAccessor (&CoDelQueue::m_lastCount))
+    .AddTraceSource ("DropState",
+                     "Dropping state",
+                     MakeTraceSourceAccessor (&CoDelQueue::m_dropping))
+    .AddTraceSource ("BytesInQueue",
+                     "Number of bytes in the queue",
+                     MakeTraceSourceAccessor (&CoDelQueue::m_bytesInQueue))
+    .AddTraceSource ("Sojourn",
+                     "Time in the queue",
+                     MakeTraceSourceAccessor (&CoDelQueue::m_sojourn))
+    .AddTraceSource ("DropNext",
+                     "Time until next packet drop",
+                     MakeTraceSourceAccessor (&CoDelQueue::m_dropNext))
   ;
 
   return tid;
 }
 
-CoDelQueue::CoDelQueue () :
-  Queue (),
-  m_packets (),
-  m_maxBytes(),
-  m_bytesInQueue(0),
-  backlog(&m_bytesInQueue),
-  m_count(0),
-  m_drop_count(0),
-  m_lastcount(0),
-  m_dropping(false),
-  m_rec_inv_sqrt(~0U >> REC_INV_SQRT_SHIFT),
-  m_first_above_time(0),
-  m_drop_next(0),
-  m_state1(0),
-  m_state2(0),
-  m_state3(0),
-  m_states(0),
-  m_drop_overlimit(0)  
+CoDelQueue::CoDelQueue ()
+  : Queue (),
+    m_packets (),
+    m_maxBytes (),
+    m_bytesInQueue (0),
+    m_count (0),
+    m_dropCount (0),
+    m_lastCount (0),
+    m_dropping (false),
+    m_recInvSqrt (~0U >> REC_INV_SQRT_SHIFT),
+    m_firstAboveTime (0),
+    m_dropNext (0),
+    m_state1 (0),
+    m_state2 (0),
+    m_state3 (0),
+    m_states (0),
+    m_dropOverLimit (0),
+    m_sojourn (0)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 CoDelQueue::~CoDelQueue ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 void
-CoDelQueue::NewtonStep(void)
+CoDelQueue::NewtonStep (void)
 {
-  uint32_t invsqrt = ((uint32_t) m_rec_inv_sqrt) << REC_INV_SQRT_SHIFT;
-  uint32_t invsqrt2 = ((uint64_t) invsqrt*invsqrt) >> 32;
-  uint64_t val = (3ll<<32) - ((uint64_t) m_count * invsqrt2);
+  NS_LOG_FUNCTION (this);
+  uint32_t invsqrt = ((uint32_t) m_recInvSqrt) << REC_INV_SQRT_SHIFT;
+  uint32_t invsqrt2 = ((uint64_t) invsqrt * invsqrt) >> 32;
+  uint64_t val = (3ll << 32) - ((uint64_t) m_count * invsqrt2);
 
   val >>= 2; /* avoid overflow */
-  val = (val * invsqrt) >> (32-2+1);
-  m_rec_inv_sqrt = val >> REC_INV_SQRT_SHIFT;
+  val = (val * invsqrt) >> (32 - 2 + 1);
+  m_recInvSqrt = val >> REC_INV_SQRT_SHIFT;
 }
 
-codel_time_t 
-CoDelQueue::ControlLaw(codel_time_t t)
+uint32_t
+CoDelQueue::ControlLaw (uint32_t t)
 {
-  return t + reciprocal_divide(TIME2CODEL(m_Interval), m_rec_inv_sqrt << REC_INV_SQRT_SHIFT);
+  NS_LOG_FUNCTION (this);
+  return t + ReciprocalDivide (Time2CoDel (m_interval), m_recInvSqrt << REC_INV_SQRT_SHIFT);
 }
 
 void
-CoDelQueue::SetMode (enum Mode mode)
+CoDelQueue::SetMode (CoDelQueue::QueueMode mode)
 {
   NS_LOG_FUNCTION (mode);
   m_mode = mode;
 }
 
-CoDelQueue::Mode
+CoDelQueue::QueueMode
 CoDelQueue::GetMode (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return m_mode;
 }
 
-bool 
+bool
 CoDelQueue::DoEnqueue (Ptr<Packet> p)
 {
   NS_LOG_FUNCTION (this << p);
 
-  if (m_mode == PACKETS && (m_packets.size () >= m_maxPackets))
+  if (m_mode == QUEUE_MODE_PACKETS && (m_packets.size () + 1 > m_maxPackets))
     {
       NS_LOG_LOGIC ("Queue full (at max packets) -- droppping pkt");
       Drop (p);
-      ++m_drop_overlimit;
+      ++m_dropOverLimit;
       return false;
     }
 
-  if (m_mode == BYTES && (m_bytesInQueue + p->GetSize () >= m_maxBytes))
+  if (m_mode == QUEUE_MODE_BYTES && (m_bytesInQueue + p->GetSize () > m_maxBytes))
     {
       NS_LOG_LOGIC ("Queue full (packet would exceed max bytes) -- droppping pkt");
       Drop (p);
-      ++m_drop_overlimit;
+      ++m_dropOverLimit;
       return false;
     }
 
+  // Tag packet with current time for DoDequeue() to compute sojourn time
   CoDelTimestampTag tag;
-  p->AddByteTag (tag);
+  p->AddPacketTag (tag);
+
   m_bytesInQueue += p->GetSize ();
   m_packets.push (p);
 
@@ -291,39 +280,45 @@ CoDelQueue::DoEnqueue (Ptr<Packet> p)
 }
 
 bool
-CoDelQueue::ShouldDrop(Ptr<Packet> p, codel_time_t now)
+CoDelQueue::OkToDrop (Ptr<Packet> p, uint32_t now)
 {
+  NS_LOG_FUNCTION (this);
   CoDelTimestampTag tag;
-  bool drop;
+  bool okToDrop;
   p->FindFirstMatchingByteTag (tag);
+  bool found = p->RemovePacketTag (tag);
+  NS_ASSERT_MSG (found, "found a packet without an input timestamp tag");
+  NS_UNUSED (found);    //silence compiler warning
   Time delta = Simulator::Now () - tag.GetTxTime ();
-  NS_LOG_INFO ("Sojourn time "<<delta.GetSeconds ());
-  codel_time_t sojourn_time = TIME2CODEL(delta);
-  
-  if (codel_time_before(sojourn_time, TIME2CODEL(m_Target)) || 
-      *backlog < m_minbytes)
+  NS_LOG_INFO ("Sojourn time " << delta.GetSeconds ());
+  m_sojourn = delta;
+  uint32_t sojournTime = Time2CoDel (delta);
+
+  if (CoDelTimeBefore (sojournTime, Time2CoDel (m_target))
+      || m_bytesInQueue < m_minBytes)
     {
-      /* went below so we'll stay below for at least q->interval */
-      m_first_above_time = 0;
+      // went below so we'll stay below for at least q->interval
+      NS_LOG_LOGIC ("Sojourn time is below target or number of bytes in queue is less than minBytes; packet should not be dropped");
+      m_firstAboveTime = 0;
       return false;
     }
-  drop = false;
-  if (m_first_above_time == 0) 
+  okToDrop = false;
+  if (m_firstAboveTime == 0)
     {
       /* just went above from below. If we stay above
        * for at least q->interval we'll say it's ok to drop
        */
-      m_first_above_time = now + TIME2CODEL(m_Interval);
-    } 
-  else 
-    if (codel_time_after(now, m_first_above_time)) 
-      {
-        drop = true;
-        ++m_state1;
-      }
-  if (!drop)
-    Drop (p);
-  return drop;
+      NS_LOG_LOGIC ("Sojourn time has just gone above target from below, need to stay above for at least q->interval before packet can be dropped. ");
+      m_firstAboveTime = now + Time2CoDel (m_interval);
+    }
+  else
+  if (CoDelTimeAfter (now, m_firstAboveTime))
+    {
+      NS_LOG_LOGIC ("Sojourn time has been above target for at least q->interval; it's OK to (possibly) drop packet.");
+      okToDrop = true;
+      ++m_state1;
+    }
+  return okToDrop;
 }
 
 Ptr<Packet>
@@ -333,46 +328,51 @@ CoDelQueue::DoDequeue (void)
 
   if (m_packets.empty ())
     {
+      // Leave dropping state when queue is empty
       m_dropping = false;
-      m_first_above_time = 0;
+      m_firstAboveTime = 0;
       NS_LOG_LOGIC ("Queue empty");
       return 0;
     }
-  codel_time_t now = codel_get_time();
+  uint32_t now = CoDelGetTime ();
   Ptr<Packet> p = m_packets.front ();
   m_packets.pop ();
   m_bytesInQueue -= p->GetSize ();
 
   NS_LOG_LOGIC ("Popped " << p);
-  NS_LOG_LOGIC ("Number packets " << m_packets.size ());
-  NS_LOG_LOGIC ("Number bytes " << m_bytesInQueue);
+  NS_LOG_LOGIC ("Number packets remaining " << m_packets.size ());
+  NS_LOG_LOGIC ("Number bytes remaining " << m_bytesInQueue);
 
-  bool drop = ShouldDrop(p, now);
+  // Determine if p should be dropped
+  bool okToDrop = OkToDrop (p, now);
+
   if (m_dropping)
-    {
-      if (!drop)
+    { // In the dropping state (sojourn time has gone above target and hasn't come down yet)
+      // Check if we can leave the dropping state or next drop should occur
+      NS_LOG_LOGIC ("In dropping state, check if it's OK to leave or next drop should occur");
+      if (!okToDrop)
         {
-          /* sojourn time below target - leave dropping state */    
+          /* sojourn time fell below target - leave dropping state */
+          NS_LOG_LOGIC ("Sojourn time goes below target, it's OK to leave dropping state.");
           m_dropping = false;
         }
       else
-        if (codel_time_after_eq(now, m_drop_next))
-          {
-            m_state2++;
-            /* It's time for the next drop. Drop the current
-             * packet and dequeue the next. The dequeue might 
-             * take us out of dropping state. 
-             * If not, schedule the next drop.
-             * A large backlog might result in drop rates so high
-             * that the next drop should happen now, 
-             * hence the while loop.
-             */  
-            while (m_dropping && 
-                   codel_time_after_eq(now, m_drop_next)) {
-              Drop(p);
-              ++m_drop_count;
+      if (CoDelTimeAfterEq (now, m_dropNext))
+        {
+          m_state2++;
+          while (m_dropping && CoDelTimeAfterEq (now, m_dropNext))
+            {
+              // It's time for the next drop. Drop the current packet and
+              // dequeue the next. The dequeue might take us out of dropping
+              // state. If not, schedule the next drop.
+              // A large amount of packets in queue might result in drop
+              // rates so high that the next drop should happen now,
+              // hence the while loop.
+              NS_LOG_LOGIC ("Sojourn time is still above target and it's time for next drop; dropping " << p);
+              Drop (p);
+              ++m_dropCount;
               ++m_count;
-              NewtonStep();
+              NewtonStep ();
               if (m_packets.empty ())
                 {
                   m_dropping = false;
@@ -385,58 +385,79 @@ CoDelQueue::DoDequeue (void)
               m_bytesInQueue -= p->GetSize ();
 
               NS_LOG_LOGIC ("Popped " << p);
-              NS_LOG_LOGIC ("Number packets " << m_packets.size ());
-              NS_LOG_LOGIC ("Number bytes " << m_bytesInQueue);
+              NS_LOG_LOGIC ("Number packets remaining " << m_packets.size ());
+              NS_LOG_LOGIC ("Number bytes remaining " << m_bytesInQueue);
 
-              if (!ShouldDrop(p, now)) 
+              if (!OkToDrop (p, now))
                 {
                   /* leave dropping state */
+                  NS_LOG_LOGIC ("Leaving dropping state");
                   m_dropping = false;
                 }
-              else 
+              else
                 {
-                  /* and schedule the next drop */
-                  m_drop_next = ControlLaw(m_drop_next);
+                  /* schedule the next drop */
+                  NS_LOG_LOGIC ("Running ControlLaw for input m_dropNext: " << (double)m_dropNext / 1000000);
+                  m_dropNext = ControlLaw (m_dropNext);
+                  NS_LOG_LOGIC ("Scheduled next drop at " << (double)m_dropNext / 1000000);
                 }
             }
-          }
+        }
     }
-  else 
-    if (drop &&
-        (codel_time_before(now - m_drop_next,
-                           TIME2CODEL(m_Interval)) ||
-         codel_time_after_eq(now - m_first_above_time,
-                             TIME2CODEL(m_Interval)))) 
-      {
-        ++m_drop_count;
+  else
+    {
+      // Not in the dropping state
+      // Decide if we have to enter the dropping state and drop the first packet
+      NS_LOG_LOGIC ("Not in dropping state; decide if we have to enter the state and drop the first packet");
+      if (okToDrop)
+        {
+          // Drop the first packet and enter dropping state unless the queue is empty
+          NS_LOG_LOGIC ("Sojourn time goes above target, dropping the first packet " << p << " and entering the dropping state");
+          ++m_dropCount;
+          Drop (p);
+          if (m_packets.empty ())
+            {
+              m_dropping = false;
+              okToDrop = false;
+              NS_LOG_LOGIC ("Queue empty");
+              ++m_states;
+            }
+          else
+            {
+              p = m_packets.front ();
+              m_packets.pop ();
+              m_bytesInQueue -= p->GetSize ();
 
-        NS_LOG_LOGIC ("Popped " << p);
-        NS_LOG_LOGIC ("Number packets " << m_packets.size ());
-        NS_LOG_LOGIC ("Number bytes " << m_bytesInQueue);
+              NS_LOG_LOGIC ("Popped " << p);
+              NS_LOG_LOGIC ("Number packets remaining " << m_packets.size ());
+              NS_LOG_LOGIC ("Number bytes remaining " << m_bytesInQueue);
 
-        drop = ShouldDrop(p, now);
-        m_dropping = true;
-        ++m_state3;
-        /* 
-         * if min went above target close to when we last went below it
-         * assume that the drop rate that controlled the queue on the
-         * last cycle is a good starting point to control it now.
-         */
-        int delta = m_count - m_lastcount;
-        if (delta > 1 && codel_time_after(now - m_drop_next, TIME2CODEL(m_Interval))) 
-          {
-            m_count = delta;
-            NewtonStep();
-          } 
-        else
-          {
-            m_count = 1;
-            m_rec_inv_sqrt = ~0U >> REC_INV_SQRT_SHIFT;
-          }
-        m_lastcount = m_count;
-        m_drop_next = ControlLaw(now);
-        p = NULL;
-      }
+              okToDrop = OkToDrop (p, now);
+              m_dropping = true;
+            }
+          ++m_state3;
+          /*
+           * if min went above target close to when we last went below it
+           * assume that the drop rate that controlled the queue on the
+           * last cycle is a good starting point to control it now.
+           */
+          int delta = m_count - m_lastCount;
+          if (delta > 1 && CoDelTimeBefore (now - m_dropNext, 16 * Time2CoDel (m_interval)))
+            {
+              m_count = delta;
+              NewtonStep ();
+            }
+          else
+            {
+              m_count = 1;
+              m_recInvSqrt = ~0U >> REC_INV_SQRT_SHIFT;
+            }
+          m_lastCount = m_count;
+          NS_LOG_LOGIC ("Running ControlLaw for input now: " << (double)now);
+          m_dropNext = ControlLaw (now);
+          NS_LOG_LOGIC ("Scheduled next drop at " << (double)m_dropNext / 1000000 << " now " << (double)now / 1000000);
+        }
+    }
   ++m_states;
   return p;
 }
@@ -444,12 +465,12 @@ CoDelQueue::DoDequeue (void)
 uint32_t
 CoDelQueue::GetQueueSize (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
-  if (GetMode () == BYTES)
+  NS_LOG_FUNCTION (this);
+  if (GetMode () == QUEUE_MODE_BYTES)
     {
       return m_bytesInQueue;
     }
-  else if (GetMode () == PACKETS)
+  else if (GetMode () == QUEUE_MODE_PACKETS)
     {
       return m_packets.size ();
     }
@@ -457,6 +478,36 @@ CoDelQueue::GetQueueSize (void)
     {
       NS_ABORT_MSG ("Unknown mode.");
     }
+}
+
+uint32_t
+CoDelQueue::GetDropOverLimit (void)
+{
+  return m_dropOverLimit;
+}
+
+uint32_t
+CoDelQueue::GetDropCount (void)
+{
+  return m_dropCount;
+}
+
+Time
+CoDelQueue::GetTarget (void)
+{
+  return m_target;
+}
+
+Time
+CoDelQueue::GetInterval (void)
+{
+  return m_interval;
+}
+
+uint32_t
+CoDelQueue::GetDropNext (void)
+{
+  return m_dropNext;
 }
 
 Ptr<const Packet>
@@ -477,6 +528,37 @@ CoDelQueue::DoPeek (void) const
 
   return p;
 }
+
+bool
+CoDelQueue::CoDelTimeAfter (uint32_t a, uint32_t b)
+{
+  return  ((int)(a) - (int)(b) > 0);
+}
+
+bool
+CoDelQueue::CoDelTimeAfterEq (uint32_t a, uint32_t b)
+{
+  return ((int)(a) - (int)(b) >= 0);
+}
+
+bool
+CoDelQueue::CoDelTimeBefore (uint32_t a, uint32_t b)
+{
+  return  ((int)(a) - (int)(b) < 0);
+}
+
+bool
+CoDelQueue::CoDelTimeBeforeEq (uint32_t a, uint32_t b)
+{
+  return ((int)(a) - (int)(b) <= 0);
+}
+
+uint32_t
+CoDelQueue::Time2CoDel (Time t)
+{
+  return (t.GetNanoSeconds () >> CODEL_SHIFT);
+}
+
 
 } // namespace ns3
 
