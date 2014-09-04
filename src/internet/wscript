@@ -240,6 +240,7 @@ def build(bld):
         'test/ipv6-ripng-test.cc',
      	'test/ipv6-address-helper-test-suite.cc',
         'test/rtt-test.cc',
+        'test/codel-queue-test-suite.cc',
         ]
     headers = bld(features='ns3header')
     headers.module = 'internet'
