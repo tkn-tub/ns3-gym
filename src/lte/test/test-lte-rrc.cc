@@ -71,7 +71,7 @@ protected:
                                       std::string description = "");
   void Connect (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice);
   void CheckConnected (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice);
-  void CheckNotConnected(Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice);
+  void CheckNotConnected (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice);
   void ConnectionEstablishedCallback (std::string context, uint64_t imsi,
                                       uint16_t cellId, uint16_t rnti);
   void ConnectionTimeoutCallback (std::string context, uint64_t imsi,
@@ -225,7 +225,7 @@ LteRrcConnectionEstablishmentTestCase::DoRun ()
     {
       Config::SetDefault ("ns3::LteEnbRrc::SrsPeriodicity", UintegerValue (160));
     }
-  else 
+  else
     {
       Config::SetDefault ("ns3::LteEnbRrc::SrsPeriodicity", UintegerValue (320));
     }
@@ -505,7 +505,7 @@ public:
    * \param description additional description of the test case
    */
   LteRrcConnectionEstablishmentErrorTestCase (Time jumpAwayTime,
-                                                     std::string description = "");
+                                              std::string description = "");
 protected:
   virtual void DoRun (void);
 
@@ -546,7 +546,7 @@ LteRrcConnectionEstablishmentErrorTestCase::DoRun ()
     {
       Config::SetDefault ("ns3::LteEnbRrc::SrsPeriodicity", UintegerValue (160));
     }
-  else 
+  else
     {
       Config::SetDefault ("ns3::LteEnbRrc::SrsPeriodicity", UintegerValue (320));
     }
@@ -660,7 +660,7 @@ LteRrcConnectionEstablishmentErrorTestCase::JumpAway ()
 {
   NS_LOG_FUNCTION (this);
   // move to a really far away location so that transmission errors occur
-  m_ueMobility->SetPosition (Vector (10000.0, 0.0, 0.0));
+  m_ueMobility->SetPosition (Vector (100000.0, 100000.0, 0.0));
 }
 
 
@@ -736,10 +736,14 @@ LteRrcTestSuite::LteRrcTestSuite ()
                    Seconds (0.025),
                    "failure at RRC Connection Setup"),
                TestCase::QUICK);
-  AddTestCase (new LteRrcConnectionEstablishmentErrorTestCase (
-                   Seconds (0.030),
-                   "failure at RRC Connection Setup Complete"),
-               TestCase::QUICK);
+  /*
+   * The following test case is related to the Idle mode, which is an
+   * unsupported feature at the moment. See also Bug 1762 Comment #25.
+   */
+  // AddTestCase (new LteRrcConnectionEstablishmentErrorTestCase (
+  //                  Seconds (0.030),
+  //                  "failure at RRC Connection Setup Complete"),
+  //              TestCase::QUICK);
 
 }
 
