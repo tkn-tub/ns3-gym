@@ -31,7 +31,7 @@
 #include "lte-spectrum-signal-parameters.h"
 #include "lte-net-device.h"
 #include "lte-radio-bearer-tag.h"
-#include "lte-sinr-chunk-processor.h"
+#include "lte-chunk-processor.h"
 #include "lte-phy-tag.h"
 #include <ns3/lte-mi-error-model.h>
 #include <ns3/lte-radio-bearer-tag.h>
@@ -1116,32 +1116,37 @@ LteSpectrumPhy::SetCellId (uint16_t cellId)
 
 
 void
-LteSpectrumPhy::AddRsPowerChunkProcessor (Ptr<LteSinrChunkProcessor> p)
+LteSpectrumPhy::AddRsPowerChunkProcessor (Ptr<LteChunkProcessor> p)
 {
   m_interferenceCtrl->AddRsPowerChunkProcessor (p);
 }
 
+void
+LteSpectrumPhy::AddDataPowerChunkProcessor (Ptr<LteChunkProcessor> p)
+{
+  m_interferenceData->AddRsPowerChunkProcessor (p);
+}
 
 void
-LteSpectrumPhy::AddDataSinrChunkProcessor (Ptr<LteSinrChunkProcessor> p)
+LteSpectrumPhy::AddDataSinrChunkProcessor (Ptr<LteChunkProcessor> p)
 {
   m_interferenceData->AddSinrChunkProcessor (p);
 }
 
 void
-LteSpectrumPhy::AddInterferenceCtrlChunkProcessor (Ptr<LteSinrChunkProcessor> p)
+LteSpectrumPhy::AddInterferenceCtrlChunkProcessor (Ptr<LteChunkProcessor> p)
 {
   m_interferenceCtrl->AddInterferenceChunkProcessor (p);
 }
 
 void
-LteSpectrumPhy::AddInterferenceDataChunkProcessor (Ptr<LteSinrChunkProcessor> p)
+LteSpectrumPhy::AddInterferenceDataChunkProcessor (Ptr<LteChunkProcessor> p)
 {
   m_interferenceData->AddInterferenceChunkProcessor (p);
 }
 
 void
-LteSpectrumPhy::AddCtrlSinrChunkProcessor (Ptr<LteSinrChunkProcessor> p)
+LteSpectrumPhy::AddCtrlSinrChunkProcessor (Ptr<LteChunkProcessor> p)
 {
   m_interferenceCtrl->AddSinrChunkProcessor (p);
 }

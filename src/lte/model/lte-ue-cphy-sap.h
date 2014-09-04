@@ -116,6 +116,13 @@ public:
    */
   virtual void ConfigureUplink (uint16_t ulEarfcn, uint8_t ulBandwidth) = 0;
 
+  /**
+   * \brief Configure referenceSignalPower
+   *
+   * \param referenceSignalPower received from eNB in SIB2
+   */
+  virtual void ConfigureReferenceSignalPower (int8_t referenceSignalPower) = 0;
+
   /** 
    * 
    * \param rnti the cell-specific UE identifier
@@ -220,6 +227,7 @@ public:
   virtual void SynchronizeWithEnb (uint16_t cellId, uint16_t dlEarfcn);
   virtual void SetDlBandwidth (uint8_t dlBandwidth);
   virtual void ConfigureUplink (uint16_t ulEarfcn, uint8_t ulBandwidth);
+  virtual void ConfigureReferenceSignalPower (int8_t referenceSignalPower);
   virtual void SetRnti (uint16_t rnti);
   virtual void SetTransmissionMode (uint8_t txMode);
   virtual void SetSrsConfigurationIndex (uint16_t srcCi);
@@ -284,6 +292,13 @@ MemberLteUeCphySapProvider<C>::ConfigureUplink (uint16_t ulEarfcn, uint8_t ulBan
 
 template <class C>
 void 
+MemberLteUeCphySapProvider<C>::ConfigureReferenceSignalPower (int8_t referenceSignalPower)
+{
+  m_owner->DoConfigureReferenceSignalPower (referenceSignalPower);
+}
+
+template <class C>
+void
 MemberLteUeCphySapProvider<C>::SetRnti (uint16_t rnti)
 {
   m_owner->DoSetRnti (rnti);

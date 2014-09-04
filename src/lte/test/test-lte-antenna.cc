@@ -99,6 +99,10 @@ LteEnbAntennaTestCase::DoRun (void)
   Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue (false));
   Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));
   Config::SetDefault ("ns3::LteHelper::UseIdealRrc", BooleanValue (true));
+
+  //Disable Uplink Power Control
+  Config::SetDefault ("ns3::LteUePhy::EnableUplinkPowerControl", BooleanValue (false));
+
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
 
   // use 0dB Pathloss, since we are testing only the antenna gain
@@ -145,11 +149,11 @@ LteEnbAntennaTestCase::DoRun (void)
   // Use testing chunk processor in the PHY layer
   // It will be used to test that the SNR is as intended
   Ptr<LtePhy> uePhy = ueDevs.Get (0)->GetObject<LteUeNetDevice> ()->GetPhy ()->GetObject<LtePhy> ();
-  Ptr<LteTestSinrChunkProcessor> testDlSinr = Create<LteTestSinrChunkProcessor> (uePhy);
+  Ptr<LteTestSinrChunkProcessor> testDlSinr = Create<LteTestSinrChunkProcessor> ();
   uePhy->GetDownlinkSpectrumPhy ()->AddDataSinrChunkProcessor (testDlSinr);
 
   Ptr<LtePhy> enbphy = enbDevs.Get (0)->GetObject<LteEnbNetDevice> ()->GetPhy ()->GetObject<LtePhy> ();
-  Ptr<LteTestSinrChunkProcessor> testUlSinr = Create<LteTestSinrChunkProcessor> (enbphy);
+  Ptr<LteTestSinrChunkProcessor> testUlSinr = Create<LteTestSinrChunkProcessor> ();
   enbphy->GetUplinkSpectrumPhy ()->AddDataSinrChunkProcessor (testUlSinr);
 
 

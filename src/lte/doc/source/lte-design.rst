@@ -503,7 +503,15 @@ The generation of CQI feedback is done accordingly to what specified in [FFAPI]_
 of periodic wideband CQI (i.e., a single value of channel state that is deemed representative of all RBs
 in use) and inband CQIs (i.e., a set of value representing the channel state for each RB).
 
-In downlink, the CQI feedbacks are currently evaluated according to the SINR perceived by control channel (i.e., PDCCH + PCFIC) in order to have an estimation of the interference when all the eNB are transmitting simultaneously. In uplink, two types of CQIs are implemented:
+In downlink, the CQI feedbacks can be generated in two different ways.
+First one is legacy approach and CQI are evaluated according to the SINR perceived by control channel (i.e., PDCCH + PCFIC) in order to have an estimation of the interference when all the eNB are transmitting simultaneously. 
+Second approach was created for better utilization of data channel resources, when using Frequency Reuse algorithms.
+Frequency Reuse algorithms are applied only to PDSCH and they can reduce inter-cell interferences only during PDSCH duration. Since in legacy approach CQI feedback is generated from control channels, it does not allow to use higher MCS for data channels and to achieve any gain in throughput. Generation CQI feedback only from data channels would be the best option. Unfortunately is impossible solution, because PDSCH is be sent only if there is data to be sent, and CQI needs to be generated every TTI. Some mixed approach was implemented. CQI are generated from control channels as signal and data channels (if received) as interference. It there is no transmission in data channel, CQI is generated only from control channels, as in legacy solution. 
+To switch between this two CQI generation approaches, ``LteHelper::UsePdschForCqiGeneration`` needs to be configured: false for first approach and true for second approach (true is default value)::
+
+   Config::SetDefault ("ns3::LteHelper::UsePdschForCqiGeneration", BooleanValue (true));
+
+In uplink, two types of CQIs are implemented:
 
  - SRS based, periodically sent by the UEs.
  - PUSCH based, calculated from the actual transmitted data.
@@ -542,7 +550,8 @@ The usage of the radio spectrum by eNBs and UEs in LTE is described in
 Let :math:`f_c` denote the  LTE Absolute Radio Frequency Channel Number, which
 identifies the carrier frequency on a 100 kHz raster; furthermore, let :math:`B` be
 the Transmission Bandwidth Configuration in number of Resource Blocks. For every
-pair :math:`(f_c,B)` used in the simulation we define a corresponding SpectrumModel using the functionality provided by the :ref:`sec-spetrum-module` .
+pair :math:`(f_c,B)` used in the simulation we define a corresponding SpectrumModel using 
+the functionality provided by the :ref:`sec-spectrum-module` .
 model using the Spectrum framework described
 in [Baldo2009]_.  :math:`f_c` and :math:`B` can be configured for every eNB instantiated
 in the simulation; hence, each eNB can use a different spectrum model. Every UE
@@ -690,7 +699,7 @@ The BLER perfomance of all MCS obtained with the link level simulator are plotte
 Integration of the BLER curves in the ns-3 LTE module
 -----------------------------------------------------
 
-The model implemented uses the curves for the LSM of the recently LTE PHY Error Model released in the ns3 community by the Signet Group [PaduaPEM]_ and the new ones generated for different CB sizes. The ``LteSpectrumPhy`` class is in charge of evaluating the TB BLER thanks to the methods provided by the ``LteMiErrorModel`` class, which is in charge of evaluating the TB BLER according to the vector of the perceived SINR per RB, the MCS and the size in order to proper model the segmentation of the TB in CBs. In order to obtain the vector of the perceived SINR two instances of ``LtePemSinrChunkProcessor`` (child of ``LteSinrChunkProcessor`` dedicated to evaluate the SINR for obtaining physical error performance) have been attached to UE downlink and eNB uplink ``LteSpectrumPhy`` modules for evaluating the error model distribution respectively of PDSCH (UE side) and ULSCH (eNB side).
+The model implemented uses the curves for the LSM of the recently LTE PHY Error Model released in the ns3 community by the Signet Group [PaduaPEM]_ and the new ones generated for different CB sizes. The ``LteSpectrumPhy`` class is in charge of evaluating the TB BLER thanks to the methods provided by the ``LteMiErrorModel`` class, which is in charge of evaluating the TB BLER according to the vector of the perceived SINR per RB, the MCS and the size in order to proper model the segmentation of the TB in CBs. In order to obtain the vector of the perceived SINR two instances of ``LtePemSinrChunkProcessor`` (child of ``LteChunkProcessor`` dedicated to evaluate the SINR for obtaining physical error performance) have been attached to UE downlink and eNB uplink ``LteSpectrumPhy`` modules for evaluating the error model distribution respectively of PDSCH (UE side) and ULSCH (eNB side).
 
 The model can be disabled for working with a zero-losses channel by setting the ``PemEnabled`` attribute of the ``LteSpectrumPhy`` class (by default is active). This can be done according to the standard ns3 attribute system procedure, that is::
 
@@ -3552,6 +3561,541 @@ SWITCH REQUEST S1-AP message.
     .. raw:: latex
 
         \clearpage
+
+
+-------------
+Power Control
+-------------
+This section describes the ns-3 implementation of Downlink and Uplink Power Control.
+
+Downlink Power Control
+++++++++++++++++++++++
+
+Since some of Frequency Reuse Algorithms require Downlink Power Control, 
+this feature was also implemented in ns-3. 
+
+.. _fig-lte-downlik-power-control:
+ 
+.. figure:: figures/lte-dl-power-control.*
+   :align: center
+
+   Sequence diagram of Downlink Power Control
+
+
+Figure :ref:`fig-lte-downlik-power-control` shows the sequence diagram of 
+setting downlink P_A value for UE, highlighting the interactions between 
+the RRC and the other entities. FR algorithm triggers RRC to change P_A values 
+for UE. Then RRC starts RrcConnectionReconfiguration function to inform UE 
+about new configuration. After successful RrcConnectionReconfiguration, RRC 
+can set P_A value for UE by calling function SetPa from CphySap, value is 
+saved in new map m_paMap which contain P_A values for each UE served by eNb.
+
+When LteEnbPhy starts new subframe, DCI control messages are processed to get 
+vector of used RBs. Now also GeneratePowerAllocationMap(uint16_t rnti, int rbId) 
+function is also called. This function check P_A value for UE, generate power 
+for each RB and store it in m_dlPowerAllocationMap. Then this map is used by 
+CreateTxPowerSpectralDensityWithPowerAllocation function to create 
+Ptr<SpectrumValue> txPsd.
+
+PdschConfigDedicated (TS 36.331, 6.3.2 PDSCH-Config) was added in 
+LteRrcSap::PhysicalConfigDedicated struct, which is used in 
+RrcConnectionReconfiguration process.
+
+Uplink Power Control
+++++++++++++++++++++++
+
+Uplink power control controls the transmit power of the different uplink physical 
+channels. This functionality is described in 3GPP TS 36.213 section 5.
+
+Uplink Power Control is enabled by default, and can be disabled by attribute system::
+
+   Config::SetDefault ("ns3::LteUePhy::EnableUplinkPowerControl", BooleanValue (false));
+
+
+Two Uplink Power Control mechanisms are implemented:
+
+ * Open Loop Uplink Power Control: the UE transmission power depends on estimation of
+   the downlink path-loss and channel configuration
+ * Closed Loop Uplink Power Control: as in Open Loop, in addition eNB can control the UE
+   transmission power by means of explicit Transmit Power Control TPC commands transmitted 
+   in the downlink. 
+
+To switch between these two mechanism types, one should change parameter::
+
+  Config::SetDefault ("ns3::LteUePowerControl::ClosedLoop", BooleanValue (true));
+
+By default, Closed Loop Power Control is enabled.
+
+
+Two modes of Closed Loop Uplink Power Control are available: 
+ * Absolute mode: TxPower is computed with absolute TPC values
+ * Accumulative mode: TxPower is computed with accumulated TPC values
+
+To switch between these two modes, one should change parameter::
+
+  Config::SetDefault ("ns3::LteUePowerControl::AccumulationEnabled", BooleanValue (true));
+
+By default, Accumulation Mode is enabled and TPC commands in DL-DCI are set by all schedulers to 1, 
+what is mapped to value of 0 in Accumulation Mode. 
+
+
+.. _sec-uplink-power-control-pusch:
+
+Uplink Power Control for PUSCH
+------------------------------
+
+The setting of the UE Transmit power for a Physical Uplink Shared Channel (PUSCH) transmission 
+is defined as follows:
+
+ * If the UE transmits PUSCH without a simultaneous PUCCH for the serving cell :math:`c`, then the 
+   UE transmit power :math:`P_{PUSCH,c}(i)` for PUSCH transmission in subframe :math:`i` for the 
+   serving cell :math:`c` is given by:
+
+   .. math::
+
+      P_{PUSCH,c}(i)=\min\begin{Bmatrix}
+                     P_{CMAX,c}(i)\\ 
+                     10\log_{10}(M_{PUSCH,c}(i))+ P_{O\_PUSCH,c}(j) 
+                     + \alpha_{c} (j) * PL_{c} + \Delta_{TF,c}(i) + f_{c}(i)
+                     \end{Bmatrix} [dBm]
+
+ * If the UE transmits PUSCH simultaneous with PUCCH for the serving cell :math:`c`, then the UE 
+   transmit power :math:`P_{PUSCH,c}(i)` for the PUSCH transmission in subframe :math:`i` for 
+   the serving cell :math:`c` is given by:
+
+   .. math::
+
+      P_{PUSCH,c}(i)=\min\begin{Bmatrix}
+                     10\log_{10}(\hat{P}_{CMAX,c}(i) - \hat{P}_{PUCCH}(i))\\ 
+                     10\log_{10}(M_{PUSCH,c}(i))+ P_{O\_PUSCH,c}(j) 
+                     + \alpha_{c} (j) * PL_{c} + \Delta_{TF,c}(i) + f_{c}(i)
+                     \end{Bmatrix} [dBm]
+
+   Since Uplink Power Control for PUCCH is not implemented, this case is not implemented as well.
+
+ * If the UE is not transmitting PUSCH for the serving cell :math:`c`, for the accumulation of 
+   TPC command received with DCI format 3/3A for PUSCH, the UE shall assume that the UE transmit 
+   power :math:`P_{PUSCH,c}(i)` for the PUSCH transmission in    subframe :math:`i` for the serving 
+   cell :math:`c` is computed by
+
+   .. math::
+
+      P_{PUSCH,c}(i)=\min\begin{Bmatrix}
+                     {P}_{CMAX,c}(i)\\ 
+                     P_{O\_PUSCH,c}(1) + \alpha_{c} (1) * PL_{c} + f_{c}(i)
+                     \end{Bmatrix} [dBm]
+
+where:
+ * :math:`P_{CMAX,c}(i)` is the configured UE transmit power defined in 3GPP 36.101. Table 6.2.2-1
+   in subframe :math:`i` for serving cell :math:`c` and :math:`\hat{P}_{CMAX,c}(i)` is the linear 
+   value of :math:`P_{CMAX,c}(i)`. Default value for :math:`P_{CMAX,c}(i)` is 23 dBm
+
+ * :math:`M_{PUSCH,c}(i)` is the bandwidth of the PUSCH resource assignment expressed in number 
+   of resource blocks valid for subframe :math:`i` and serving cell :math:`c` .
+
+ * :math:`P_{O\_PUSCH,c}(j)` is a parameter composed of the sum of a component :math:`P_{O\_NOMINAL\_PUSCH,c}(j)`
+   provided from higher layers for :math:`j={0,1}` and a component :math:`P_{O\_UE\_PUSCH,c}(j)` provided by higher 
+   layers for :math:`j={0,1}` for serving cell :math:`c`. SIB2 message needs to be extended to carry these two 
+   components, but currently they can be set via attribute system::
+
+      Config::SetDefault ("ns3::LteUePowerControl::PoNominalPusch", IntegerValue (-90));
+      Config::SetDefault ("ns3::LteUePowerControl::PoUePusch", IntegerValue (7));
+
+ * :math:`\alpha_{c} (j)` is a 3-bit parameter provided by higher layers for serving cell :math:`c`. 
+   For :math:`j=0,1`,   :math:`\alpha_c \in \left \{ 0, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1 \right \}` 
+   For :math:`j=2`,   :math:`\alpha_{c} (j) = 1`. 
+   This parameter is configurable by attribute system::
+
+      Config::SetDefault ("ns3::LteUePowerControl::Alpha", DoubleValue (0.8));
+
+ * :math:`PL_{c}` is the downlink pathloss estimate calculated in the UE for serving cell :math:`c` in dB 
+   and :math:`PL_{c} = referenceSignalPower – higher layer filtered RSRP`, where :math:`referenceSignalPower`
+   is provided by higher layers and RSRP. :math:`referenceSignalPower` is provided in SIB2 message
+
+ * :math:`\Delta_{TF,c}(i) = 10\log_{10}((2^{BPRE\cdot K_s}-1)\cdot\beta_{offset}^{PUSCH} )` for :math:`K_{s} = 1.25`
+   and :math:`\Delta_{TF,c}(i) = 0` for :math:`K_{s} = 0`. Only second case is implemented.
+
+ * :math:`f_{c}(i)` is component of Closed Loop Power Control. It is the current PUSCH power control
+   adjustment state for serving cell :math:`c`. 
+
+   If Accumulation Mode is enabled :math:`f_{c}(i)` is given by:
+
+      .. math::
+
+         f_{c}(i) = f_{c}(i-1) + \delta_{PUSCH,c}(i - K_{PUSCH})
+
+   where: :math:`\delta_{PUSCH,c}` is a correction value, also referred to as a TPC command and is included 
+   in PDCCH with DCI; :math:`\delta_{PUSCH,c}(i - K_{PUSCH})` was signalled on PDCCH/EPDCCH with DCI for
+   serving cell :math:`c` on subframe :math:`i − K_{PUSCH}`; :math:`K_{PUSCH} = 4` for FDD.
+
+   If UE has reached :math:`P_{CMAX,c}(i)` for serving cell :math:`c`, positive TPC commands for serving cell
+   :math:`c` are not be accumulated. If UE has reached minimum power, negative TPC commands are not be accumulated.
+   Minimum UE power is defined in TS36.101 section 6.2.3.  Default value is -40 dBm.
+
+   If Accumulation Mode is not enabled :math:`f_{c}(i)` is given by:
+      
+      .. math::
+
+         f_{c}(i) = \delta_{PUSCH,c}(i - K_{PUSCH})
+
+   where: :math:`\delta_{PUSCH,c}` is a correction value, also referred to as a TPC command and is included 
+   in PDCCH with DCI; :math:`\delta_{PUSCH,c}(i - K_{PUSCH})` was signalled on PDCCH/EPDCCH with DCI for
+   serving cell :math:`c` on subframe :math:`i − K_{PUSCH}`; :math:`K_{PUSCH} = 4` for FDD.
+
+   Mapping of TPC Command Field in DCI format 0/3/4 to absolute and accumulated :math:`\delta_{PUSCH,c}`
+   values is defined in TS36.231 section 5.1.1.1 Table 5.1.1.1-2
+
+
+Uplink Power Control for PUCCH
+------------------------------
+
+Since all uplink control messages are an ideal messages and do not consume any radio resources, 
+Uplink Power Control for PUCCH is not needed and it is not implemented.
+
+
+Uplink Power Control for SRS
+------------------------------
+
+The setting of the UE Transmit power :math:`P_{SRS}` for the SRS transmitted on subframe :math:`i` 
+for serving cell :math:`c` is defined by
+
+   .. math::
+
+      P_{PUSCH,c}(i)=\min\begin{Bmatrix}
+                     {P}_{CMAX,c}(i)\\ 
+                     P_{SRS\_OFFSET,c}(m) + 10\log_{10}(M_{SRS,c})+ 
+                     P_{O\_PUSCH,c}(j) + \alpha_{c}(j) * PL_{c} + f_{c}(i)
+                     \end{Bmatrix} [dBm]
+
+
+where:
+ * :math:`P_{CMAX,c}(i)` is the configured UE transmit power defined in 3GPP 36.101. Table 6.2.2-1. 
+   Default value for :math:`P_{CMAX,c}(i)` is 23 dBm
+
+ * :math:`P_{SRS\_OFFSET,c}(m)` is semi-statically configured by higher layers for :math:`m=0,1` for 
+   serving cell :math:`c` . For SRS transmission given trigger type 0 then :math:`m=0,1` and for SRS 
+   transmission given trigger type 1 then :math:`m=1`.
+   For :math:`K_{s} = 0` P_Srs_Offset_Value is computed with equation:
+
+   .. math::
+
+      P_{SRS\_OFFSET,c}(m)value = -10.5 + P_{SRS\_OFFSET,c}(m) * 1.5 [dBm]
+
+   This parameter is configurable by attribute system::
+
+      Config::SetDefault ("ns3::LteUePowerControl::PsrsOffset", IntegerValue (7));
+
+ * :math:`M_{SRS,c}` is the bandwidth of the SRS transmission in subframe :math:`i` for serving 
+   cell :math:`c` expressed in number of resource blocks. In current implementation SRS is sent 
+   over entire UL bandwidth. 
+
+ * :math:`f_{c}(i)` is the current PUSCH power control adjustment state for serving cell :math:`c`,
+   as defined in    :ref:`sec-uplink-power-control-pusch`
+
+ * :math:`P_{O\_PUSCH,c}(j)` and :math:`\alpha_{c}(j)` are parameters as defined in
+   :ref:`sec-uplink-power-control-pusch`, where :math:`j = 1` .
+
+--------------------------
+Fractional Frequency Reuse
+--------------------------
+
+
+Overview
+++++++++
+
+This section describes the ns-3 support for Fractional Frequency Reuse 
+algorithms. All implemented algorithms are described in [ASHamza2013]_.
+Currently 7 FR algorithms are implemented:
+
+ * ``ns3::LteFrNoOpAlgorithm``
+ * ``ns3::LteFrHardAlgorithm``
+ * ``ns3::LteFrStrictAlgorithm``
+ * ``ns3::LteFrSoftAlgorithm``
+ * ``ns3::LteFfrSoftAlgorithm``
+ * ``ns3::LteFfrEnhancedAlgorithm``
+ * ``ns3::LteFfrDistributedAlgorithm``
+
+
+New LteFfrAlgorithm class was created and it is a abstract class for 
+Frequency Reuse algorithms implementation. Also, two new SAPs between 
+FR-Scheduler and FR-RRC were added. 
+
+
+.. _fig-lte-ffr-scheduling:
+ 
+.. figure:: figures/lte-ffr-scheduling.*
+   :align: center
+
+   Sequence diagram of Scheduling with FR algorithm
+
+Figure :ref:`fig-lte-ffr-scheduling` shows the sequence diagram of 
+scheduling process with FR algorithm. In the beginning of scheduling 
+process, scheduler asks FR entity for avaiable RBGs. According to 
+implementation FR returns all RBGs available in cell or filter them based 
+on its policy. Then when trying to assign some RBG to UE, scheduler asks FR 
+entity if this RBG is allowed for this UE. When FR returns true, scheduler 
+can assign this RBG to this UE, if not scheduler is checking another RBG 
+for this UE. Again, FR response depends on implementation and policy applied 
+to UE.
+
+
+Supported FR algorithms
+++++++++++++++++++++++++
+
+No Frequency Reuse
+------------------
+The NoOp FR algorithm (LteFrNoOpAlgorithm class) is implementation of 
+Full Frequency Reuse scheme, that means no frequency partitioning is performed 
+between eNBs of the same network (frequency reuse factor, FRF equals 1). eNBs 
+uses entire system bandwidth and transmit with uniform power over all RBGs. It 
+is the simplest scheme and is the basic way of operating an LTE network. This 
+scheme allows for achieving the high peak data rate. But from the other hand, 
+due to heavy interference levels from neighbouring cells, cell-edge users 
+performance is greatly limited. 
+
+Figure :ref:`fig-lte-full-frequency-reuse-scheme` below presents frequency and 
+power plan for Full Frequency Reuse scheme.
+
+.. _fig-lte-full-frequency-reuse-scheme:
+ 
+.. figure:: figures/fr-full-frequency-reuse-scheme.*
+   :scale: 40 %
+   :align: center
+
+   Full Frequency Reuse scheme 
+
+In ns-3, the NoOp FR algorithm always allows scheduler to use full bandwidth 
+and allows all UEs to use any RBG. It simply does nothing new (i.e. it does not 
+limit eNB bandwidth, FR algorithm is disabled), it is the simplest implementation 
+of FrAlgorithm class and is installed in eNb by default. 
+
+.. _sec-fr-hard-algorithm:
+
+Hard Frequency Reuse
+--------------------
+The Hard Frequency Reuse algorithm provides the simplest scheme which allows to 
+reduce inter-cell interference level. In this scheme whole frequency bandwidth is 
+divided into few (typically 3, 4, or 7) disjoint sub-bands. Adjacent eNBs are 
+allocated with different sub-band. Frequency reuse factor equals the number 
+of sub-bands. This scheme allows to significanlty reduce ICI at the cell edge, 
+so the performance of cell-users is improved. But due to the fact, that each 
+eNB uses only one part of whole bandwidth, peak data rate level is also reduced 
+by the factor equal to the reuse factor.
+
+Figure :ref:`fig-lte-hard-frequency-reuse-scheme` below presents frequency and 
+power plan for Hard Frequency Reuse scheme.
+
+.. _fig-lte-hard-frequency-reuse-scheme:
+ 
+.. figure:: figures/fr-hard-frequency-reuse-scheme.*
+   :scale: 40 %
+   :align: center
+
+   Hard Frequency Reuse scheme 
+
+In our implementation, the Hard FR algorithm has only vector of RBGs available 
+for eNB and pass it to MAC Scheduler during scheduling functions. When scheduler 
+ask, if RBG is allowed for specific UE it allways return true.
+
+Strict Frequency Reuse
+----------------------
+Strict Frequency Reuse scheme is combination of Full and Hard Frequency Reuse 
+schemes. It consists of dividing the system bandwidth into two parts which will 
+have different frequency reuse. One common sub-band of the system bandwidth is 
+used in each cell interior (frequency reuse-1), while the other part of the 
+bandwidth is divided among the neighboring eNBs as in hard frequency reuse 
+(frequency reuse-N, N>1), in order to create one sub-band with a low inter-cell 
+interference level in each sector. Center UEs will be granted with the fully-reused 
+frequency chunks, while cell-edge UEs with ortogonal chunks. It means that interior 
+UEs from one cell do not share any spectrum with edge UEs from second cell, which 
+reduces interference for both. As can be noticed, Strict FR requires a total of 
+N + 1 sub-bands, and allows to achieve RFR in the middle between 1 and 3.
+
+Figure :ref:`fig-lte-strict-frequency-reuse-scheme` below presents frequency and 
+power plan for Strict Frequency Reuse scheme with a cell-edge reuse factor of N = 3.
+
+.. _fig-lte-strict-frequency-reuse-scheme:
+ 
+.. figure:: figures/fr-strict-frequency-reuse-scheme.*
+   :scale: 40 %
+   :align: center
+
+   Strict Frequency Reuse scheme 
+
+In our implementation, Strict FR algorithm has two maps, one for each sub-band. 
+If UE can be served within private sub-band, its RNTI is added to m_privateSubBandUe 
+map. If UE can be served within common sub-band, its RNTI is added to 
+m_commonSubBandUe map. Strict FR algorithm needs to decide within which sub-band 
+UE should be served. It uses UE measurements provided by RRB and compare them 
+with signal quality threshold (this parameter can be easily tuned by attribute 
+mechanism). Threshold has influence on interior to cell radius ratio.
+
+
+Soft Frequency Reuse
+--------------------
+In Soft Frequency Reuse (SFR) scheme each eNb transmits over the entire system 
+bandwidth, but there are two sub-bands, within UEs are served with different power 
+level. Since cell-center UEs share the bandwidth with neighboring cells, they 
+usually transmit at lower power level than the cell-edge UEs. SFR is more bandwidth 
+efficient than Strict FR, because it uses entire system bandwidth, but it also 
+results in more interference to both cell interior and edge users.
+
+There are two possible versions of SFR scheme:
+
+ * In first version, the sub-band dedicated for the cell-edge UEs may also be used 
+   by the cell-center UEs but with reduced power level and only if it is not occupied 
+   by the cell-edge UEs. Cell-center sub-band is available to the centre UEs only. 
+   Figure :ref:`fig-lte-soft-frequency-reuse-scheme-v1` below presents frequency and 
+   power plan for this version of Soft Frequency Reuse scheme.
+
+   .. _fig-lte-soft-frequency-reuse-scheme-v1:
+ 
+   .. figure:: figures/fr-soft-frequency-reuse-scheme-v1.*
+      :scale: 40 %
+      :align: center
+
+      Soft Frequency Reuse scheme version 1 
+
+ * In second version, cell-center UEs do not have access to cell-edge sub-band. 
+   In this way, each cell can use the whole system bandwidth while reducing the 
+   interference to the neighbors cells. From the other hand, lower ICI level at 
+   the cell-edge is achieved at the expense of lower spectrum utilization. 
+   Figure :ref:`fig-lte-soft-frequency-reuse-scheme-v2` below presents frequency 
+   and power plan for this version of Soft Frequency Reuse scheme. 
+
+   .. _fig-lte-soft-frequency-reuse-scheme-v2:
+ 
+   .. figure:: figures/fr-soft-frequency-reuse-scheme-v2.*
+      :scale: 40 %
+      :align: center
+
+      Soft Frequency Reuse scheme version 2
+
+SFR algorithm maintain two maps. If UE should be served with lower power level, 
+its RNTI is added to m_lowPowerSubBandUe map. If UE should be served with higher 
+power level, its RNTI is added to m_highPowerSubBandUe map. To decide with which 
+power level UE should be served SFR algorithm utilize UE measurements, and 
+compares them to threshold. Signal quality threshold and PdschConfigDedicated 
+(i.e. P_A value) for inner and outer area can be configured by attributes system. 
+SFR utilizes Downlink Power Control described here.
+
+
+Soft Fractional Frequency Reuse
+-------------------------------
+
+Soft Fractional Frequency Reuse (SFFR) is an combination of Strict and Soft 
+Frequency Reuse schemes. While Strict FR do not use the subbands allocated 
+for outer region in the adjacent cells, soft FFR uses these subbands for the 
+inner UEs with low transmit power. As a result, the SFFR, like SFR, use the 
+subband with high transmit power level and with low transmit power level. 
+Unlike the Soft FR and like Strict FR, the Soft FFR uses the common sub-band 
+which can enhance the throughput of the inner users.
+
+Figure :ref:`fig-lte-soft-fractional-frequency-reuse-scheme` below presents 
+frequency and power plan for Soft Fractional Frequency Reuse.
+
+.. _fig-lte-soft-fractional-frequency-reuse-scheme:
+ 
+.. figure:: figures/fr-soft-fractional-frequency-reuse-scheme.*
+   :scale: 40 %
+   :align: center
+
+   Soft Fractional Fractional Frequency Reuse scheme
+
+Enhanced Fractional Frequency Reuse
+-----------------------------------
+
+Enhanced Fractional Frequency Reuse (EFFR) described in [ZXie2009]_ defines 3 
+cell-types for directly neighboring cells in a cellular system, and reserves 
+for each cell-type a part of the whole frequency band named `Primary Segment`,
+which among different type cells should be orthogonal. The remaining subchannels 
+constitute the `Secondary Segment`. The `Primary Segment` of a cell-type is 
+at the same time a part of the `Secondary Segments` belonging to the other two 
+cell-types. Each cell can occupy all subchannels of its `Primary Segment` at 
+will, whereas only a part of subchannels in the `Secondary Segment` can be used 
+by this cell in an interference-aware manner.The `Primary Segment` of each cell 
+is divided into a reuse-3 part and reuse-1 part. The reuse-1 part can be reused 
+by all types of cells in the system, whereas reuse-3 part can only be exclusively 
+reused by other same type cells( i.e. the reuse-3 subchannels cannot be reused 
+by directly neighboring cells). On the `Secondary Segment` cell acts as a guest, 
+and occupying secondary subchannels is actually reuse the primary subchannels 
+belonging to the directly neighboring cells, thus reuse on the `Secondary Segment` 
+by each cell should conform to two rules:
+
+ * monitor before use
+ * resource reuse based on SINR estimation
+
+Each cell listens on every secondary subchannel all the time. And before occupation, 
+it makes SINR evaluation according to the gathered channel quality information (CQI) 
+and chooses resources with best estimation values for reuse. If CQI value for RBG is 
+above configured threshold for some user, transmission for this user can be performed 
+using this RBG.
+
+In [ZXie2009]_ scheduling process is described, it consist of three steps and two 
+scheduling polices. Since none of currently implemented schedulers allow for
+this behaviour, some simplification were applied. In our implementation reuse-1 
+subchannels can be used only by cell center users. Reuse-3 subchannels can be used by
+edge users, and only if there is no edge user, transmission for cell center users can
+be served in reuse-3 subchannels.
+
+Figure :ref:`fig-lte-enhanced-fractional-frequency-reuse-scheme` below presents 
+frequency and power plan for Enhanced Fractional Frequency Reuse.
+
+.. _fig-lte-enhanced-fractional-frequency-reuse-scheme:
+ 
+.. figure:: figures/fr-enhanced-fractional-frequency-reuse-scheme.*
+   :scale: 40 %
+   :align: center
+
+   Enhanced Fractional Fractional Frequency Reuse scheme
+
+
+Distributed Fractional Frequency Reuse
+--------------------------------------
+
+This Distributed Fractional Frequency Reuse Algorithm was presented in [DKimura2012]_. It 
+automatically optimizes cell-edge sub-bands by focusing on user distribution (in particular,
+receive-power distribution). This algorithm adaptively selects RBs for cell-edge sub-band on 
+basis of coordination information from adjecent cells and notifies the base stations of the 
+adjacent cells, which RBs it selected to use in edge sub-band. The base station of each cell 
+uses the received information and the following equation to compute cell-edge-band metric 
+:math:`A_{k}` for each RB.
+
+.. math::
+
+   A_{k} = \sum_{j\in J}w_{j}X_{j,k}
+
+where :math:`J` is a set of neighbor cells, :math:`X_{j,k}=\{0,1\}` is the RNTP from the :math:`j`-th
+neighbor cell. It takes a value of 1 when the :math:`k`-th RB in the :math:`j`-th neighbor cell is used 
+as a cell-edge sub-band and 0 otherwise. The symbol :math:`w_{j}` denotes weight with respect to adjacent 
+cell :math:`j`, that is, the number of users for which the difference between the power of the signal 
+received from the serving cell :math:`i` and the power of the signal received from the adjacent cell :math:`j`
+is less than a threshold value (i.e., the number of users near the cell edge in the service cell). A large 
+received power difference means that cell-edge users in the :math:`i`-th cell suffer strong interference 
+from the :math:`j`-th cell.
+
+The RB for which metric :math:`A_{k}` is smallest is considered to be least affected by interference from 
+another cell. Serving cell selects a configured number of RBs as cell-edge sub-band in ascending order 
+of :math:`A_{k}`. As a result, the RBs in which a small number of cell-edge users receive high
+interference from adjacent base stations are selected. 
+
+The updated RNTP is then sent to all the neighbor cells. In order to avoid the meaningless oscillation 
+of cell-edge-band selection, a base station ignores an RNTP from another base station that has larger 
+cell ID than the base station. 
+
+Repeating this process across all cells enables the allocation of RBs to cell-edge areas to be optimized 
+over the system and to be adjusted with changes in user distribution.
+
+Figure :ref:`fig-lte-distributed-fractional-frequency-reuse-scheme` below presents 
+sequence diagram of Distributed Fractional Frequency Reuse Scheme.
+
+.. _fig-lte-distributed-fractional-frequency-reuse-scheme:
+ 
+.. figure:: figures/ffr-distributed-scheme.*
+   :scale: 100 %
+   :align: center
+
+   Sequence diagram of Distributed Frequency Reuse Scheme
 
 
 -------

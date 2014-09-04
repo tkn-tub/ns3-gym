@@ -177,6 +177,32 @@ SOURCEFIGS = \
 	$(SRC)/lte/doc/source/figures/fading_vehicular.png \
 	$(SRC)/lte/doc/source/figures/fading_urban_3kmph.pdf \
 	$(SRC)/lte/doc/source/figures/fading_urban_3kmph.png \
+	$(SRC)/lte/doc/source/figures/fr-enhanced-fractional-frequency-reuse-scheme.png \
+	$(SRC)/lte/doc/source/figures/fr-enhanced-fractional-frequency-reuse-scheme.pdf \
+	$(SRC)/lte/doc/source/figures/fr-full-frequency-reuse-scheme.png \
+	$(SRC)/lte/doc/source/figures/fr-full-frequency-reuse-scheme.pdf \
+	$(SRC)/lte/doc/source/figures/fr-hard-frequency-reuse-scheme.png \
+	$(SRC)/lte/doc/source/figures/fr-hard-frequency-reuse-scheme.pdf \
+	$(SRC)/lte/doc/source/figures/fr-soft-fractional-frequency-reuse-scheme.png \
+	$(SRC)/lte/doc/source/figures/fr-soft-fractional-frequency-reuse-scheme.pdf \
+	$(SRC)/lte/doc/source/figures/fr-soft-frequency-reuse-scheme-v1.png \
+	$(SRC)/lte/doc/source/figures/fr-soft-frequency-reuse-scheme-v1.pdf \
+	$(SRC)/lte/doc/source/figures/fr-soft-frequency-reuse-scheme-v2.png \
+	$(SRC)/lte/doc/source/figures/fr-soft-frequency-reuse-scheme-v2.pdf \
+	$(SRC)/lte/doc/source/figures/fr-strict-frequency-reuse-scheme.png \
+	$(SRC)/lte/doc/source/figures/fr-strict-frequency-reuse-scheme.pdf \
+	$(SRC)/lte/doc/source/figures/ffr-distributed-scheme.png \
+	$(SRC)/lte/doc/source/figures/ffr-distributed-scheme.pdf \
+	$(SRC)/lte/doc/source/figures/lte-fr-soft-1-rem.png \
+	$(SRC)/lte/doc/source/figures/lte-fr-soft-1-rem.pdf \
+	$(SRC)/lte/doc/source/figures/lte-ffr-soft-2-spectrum-trace.png \
+	$(SRC)/lte/doc/source/figures/lte-ffr-soft-2-spectrum-trace.pdf \
+	$(SRC)/lte/doc/source/figures/lte-fr-hard-1-rem.png \
+	$(SRC)/lte/doc/source/figures/lte-fr-hard-1-rem.pdf \
+	$(SRC)/lte/doc/source/figures/lte-fr-hard-2-rem.png \
+	$(SRC)/lte/doc/source/figures/lte-fr-hard-2-rem.pdf \
+	$(SRC)/lte/doc/source/figures/lte-fr-hard-3-rem.png \
+	$(SRC)/lte/doc/source/figures/lte-fr-hard-3-rem.pdf \
 	$(SRC)/lte/doc/source/figures/MCS_1_4.pdf \
 	$(SRC)/lte/doc/source/figures/MCS_1_4.png \
 	$(SRC)/lte/doc/source/figures/MCS_5_8.pdf \
@@ -201,6 +227,10 @@ SOURCEFIGS = \
 	$(SRC)/lte/doc/source/figures/MCS_16_test.pdf \
 	$(SRC)/lte/doc/source/figures/miesm_scheme.pdf \
 	$(SRC)/lte/doc/source/figures/miesm_scheme.png \
+	$(SRC)/lte/doc/source/figures/lte-dl-power-control.png \
+	$(SRC)/lte/doc/source/figures/lte-dl-power-control.pdf \
+	$(SRC)/lte/doc/source/figures/lte-ffr-scheduling.png \
+	$(SRC)/lte/doc/source/figures/lte-ffr-scheduling.pdf \
 	$(SRC)/lte/doc/source/figures/lte-handover-campaign-rem.pdf \
 	$(SRC)/lte/doc/source/figures/lte-handover-campaign-rem.png \
 	$(SRC)/lte/doc/source/figures/lte-legacy-handover-algorithm.pdf \

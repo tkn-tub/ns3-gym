@@ -26,6 +26,19 @@ New user-visible features
   interfaces over emulated links via the new helper class EmuEpcHelper.
 - CommandLine can now provide a shorthand argument name for any
   Attribute.
+- Implemented support for Frequency Reuse algorithms in LTE module, as the 
+  outcome of GSoC 2014 project. 
+  The project also includes several sub-features, such as:
+   - implementation of Downlink Power Control
+   - implementation of Uplink Power Control
+   - new DL-CQI generation approach, which increases throughput if FR algorithms 
+     are used
+   - seven options of Frequency Reuse algorithms: LteFrNoOpAlgorithm, 
+     LteFrHardAlgorithm, LteFrStrictAlgorithm, LteFrSoftAlgorithm, 
+     LteFfrSoftAlgorithm, LteFfrEnhancedAlgorithm, LteFfrDistributedAlgorithm
+   - updated RadioEnvironmentMapHelper. Now RadioEnvironmentMap can be generated 
+     for Data or Control channel and for specified RbId, what is helpful when 
+     using FR algorithms
 
 Bugs fixed
 ----------
@@ -45,6 +58,8 @@ Bugs fixed
 - Bug 1961 - planetlab-tap-creator "variable set but not used"
 - Bug 1963 - AODV can tag the same packet twice (and raise an assert)
 - Bug 1967 - LL Multicast is not compressed in the right way in IPHC
+- Bug 1942 - refactoring of lte-sinr-chunk-processor -> lte-chunk-processor
+
 
 Known issues
 ------------

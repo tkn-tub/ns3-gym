@@ -20,7 +20,7 @@
 
 
 #include "lte-interference.h"
-#include "lte-sinr-chunk-processor.h"
+#include "lte-chunk-processor.h"
 
 #include <ns3/simulator.h>
 #include <ns3/log.h>
@@ -78,15 +78,15 @@ LteInterference::StartRx (Ptr<const SpectrumValue> rxPsd)
       m_rxSignal = rxPsd->Copy ();
       m_lastChangeTime = Now ();
       m_receiving = true;
-      for (std::list<Ptr<LteSinrChunkProcessor> >::const_iterator it = m_rsPowerChunkProcessorList.begin (); it != m_rsPowerChunkProcessorList.end (); ++it)
+      for (std::list<Ptr<LteChunkProcessor> >::const_iterator it = m_rsPowerChunkProcessorList.begin (); it != m_rsPowerChunkProcessorList.end (); ++it)
         {
           (*it)->Start ();
         }
-      for (std::list<Ptr<LteSinrChunkProcessor> >::const_iterator it = m_interfChunkProcessorList.begin (); it != m_interfChunkProcessorList.end (); ++it)
+      for (std::list<Ptr<LteChunkProcessor> >::const_iterator it = m_interfChunkProcessorList.begin (); it != m_interfChunkProcessorList.end (); ++it)
         {
           (*it)->Start ();
         }
-      for (std::list<Ptr<LteSinrChunkProcessor> >::const_iterator it = m_sinrChunkProcessorList.begin (); it != m_sinrChunkProcessorList.end (); ++it)
+      for (std::list<Ptr<LteChunkProcessor> >::const_iterator it = m_sinrChunkProcessorList.begin (); it != m_sinrChunkProcessorList.end (); ++it)
         {
           (*it)->Start (); 
         }
@@ -115,15 +115,15 @@ LteInterference::EndRx ()
     {
       ConditionallyEvaluateChunk ();
       m_receiving = false;
-      for (std::list<Ptr<LteSinrChunkProcessor> >::const_iterator it = m_rsPowerChunkProcessorList.begin (); it != m_rsPowerChunkProcessorList.end (); ++it)
+      for (std::list<Ptr<LteChunkProcessor> >::const_iterator it = m_rsPowerChunkProcessorList.begin (); it != m_rsPowerChunkProcessorList.end (); ++it)
         {
           (*it)->End ();
         }
-      for (std::list<Ptr<LteSinrChunkProcessor> >::const_iterator it = m_interfChunkProcessorList.begin (); it != m_interfChunkProcessorList.end (); ++it)
+      for (std::list<Ptr<LteChunkProcessor> >::const_iterator it = m_interfChunkProcessorList.begin (); it != m_interfChunkProcessorList.end (); ++it)
         {
           (*it)->End ();
         }
-      for (std::list<Ptr<LteSinrChunkProcessor> >::const_iterator it = m_sinrChunkProcessorList.begin (); it != m_sinrChunkProcessorList.end (); ++it)
+      for (std::list<Ptr<LteChunkProcessor> >::const_iterator it = m_sinrChunkProcessorList.begin (); it != m_sinrChunkProcessorList.end (); ++it)
         {
           (*it)->End (); 
         }
@@ -192,17 +192,17 @@ LteInterference::ConditionallyEvaluateChunk ()
 
       SpectrumValue sinr = (*m_rxSignal) / interf;
       Time duration = Now () - m_lastChangeTime;
-      for (std::list<Ptr<LteSinrChunkProcessor> >::const_iterator it = m_sinrChunkProcessorList.begin (); it != m_sinrChunkProcessorList.end (); ++it)
+      for (std::list<Ptr<LteChunkProcessor> >::const_iterator it = m_sinrChunkProcessorList.begin (); it != m_sinrChunkProcessorList.end (); ++it)
         {
-          (*it)->EvaluateSinrChunk (sinr, duration);
+          (*it)->EvaluateChunk (sinr, duration);
         }
-      for (std::list<Ptr<LteSinrChunkProcessor> >::const_iterator it = m_interfChunkProcessorList.begin (); it != m_interfChunkProcessorList.end (); ++it)
+      for (std::list<Ptr<LteChunkProcessor> >::const_iterator it = m_interfChunkProcessorList.begin (); it != m_interfChunkProcessorList.end (); ++it)
         {
-          (*it)->EvaluateSinrChunk (interf, duration);
+          (*it)->EvaluateChunk (interf, duration);
         }
-      for (std::list<Ptr<LteSinrChunkProcessor> >::const_iterator it = m_rsPowerChunkProcessorList.begin (); it != m_rsPowerChunkProcessorList.end (); ++it)
+      for (std::list<Ptr<LteChunkProcessor> >::const_iterator it = m_rsPowerChunkProcessorList.begin (); it != m_rsPowerChunkProcessorList.end (); ++it)
         {
-          (*it)->EvaluateSinrChunk (*m_rxSignal, duration);
+          (*it)->EvaluateChunk (*m_rxSignal, duration);
         }
       m_lastChangeTime = Now ();
     }
@@ -228,21 +228,21 @@ LteInterference::SetNoisePowerSpectralDensity (Ptr<const SpectrumValue> noisePsd
 }
 
 void
-LteInterference::AddRsPowerChunkProcessor (Ptr<LteSinrChunkProcessor> p)
+LteInterference::AddRsPowerChunkProcessor (Ptr<LteChunkProcessor> p)
 {
   NS_LOG_FUNCTION (this << p);
   m_rsPowerChunkProcessorList.push_back (p);
 }
 
 void
-LteInterference::AddSinrChunkProcessor (Ptr<LteSinrChunkProcessor> p)
+LteInterference::AddSinrChunkProcessor (Ptr<LteChunkProcessor> p)
 {
   NS_LOG_FUNCTION (this << p);
   m_sinrChunkProcessorList.push_back (p);
 }
 
 void
-LteInterference::AddInterferenceChunkProcessor (Ptr<LteSinrChunkProcessor> p)
+LteInterference::AddInterferenceChunkProcessor (Ptr<LteChunkProcessor> p)
 {
   NS_LOG_FUNCTION (this << p);
   m_interfChunkProcessorList.push_back (p);

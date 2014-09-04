@@ -43,3 +43,12 @@ def build(bld):
     obj = bld.create_ns3_program('lena-simple-epc-emu',
                                  ['lte', 'emu'])
     obj.source = 'lena-simple-epc-emu.cc'
+    obj = bld.create_ns3_program('lena-frequency-reuse',
+                                 ['lte'])
+    obj.source = 'lena-frequency-reuse.cc'
+    obj = bld.create_ns3_program('lena-distributed-ffr',
+                                 ['lte'])
+    obj.source = 'lena-distributed-ffr.cc'
+    obj = bld.create_ns3_program('lena-uplink-power-control',
+                                 ['lte'])
+    obj.source = 'lena-uplink-power-control.cc'

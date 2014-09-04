@@ -188,6 +188,9 @@ LenaRrFfMacSchedulerTestCase::DoRun (void)
   // This is needed as the RR scheduler does not allocate resources properly for retransmission
   Config::SetDefault ("ns3::LteRlcAm::TxOpportunityForRetxAlwaysBigEnough", BooleanValue (true));
 
+  //Disable Uplink Power Control
+  Config::SetDefault ("ns3::LteUePhy::EnableUplinkPowerControl", BooleanValue (false));
+
   /**
    * Initialize Simulation Scenario: 1 eNB and m_nUser UEs
    */

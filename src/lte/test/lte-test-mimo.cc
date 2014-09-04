@@ -121,6 +121,9 @@ LenaMimoTestCase::DoRun (void)
   Config::SetDefault ("ns3::LteAmc::AmcModel", EnumValue (LteAmc::PiroEW2010));
   Config::SetDefault ("ns3::LteHelper::UseIdealRrc", BooleanValue (m_useIdealRrc));
 
+  //Disable Uplink Power Control
+  Config::SetDefault ("ns3::LteUePhy::EnableUplinkPowerControl", BooleanValue (false));
+
   /**
    * Initialize Simulation Scenario: 1 eNB and m_nUser UEs
    */

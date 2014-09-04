@@ -20,7 +20,7 @@ Spectrum Module
 The Spectrum module aims at providing support for modeling the frequency-dependent 
 aspects of communications in |ns3|. 
 The model was first introduced in
-[Baldo2009]_, and has been enhanced and refined over the years. 
+[Baldo2009Spectrum]_, and has been enhanced and refined over the years. 
 
 
 
@@ -84,7 +84,7 @@ provides means for the conversion of ``SpectrumValue`` instances from
 one ``SpectrumModel`` to another.
 
 For a more formal mathematical description of the signal model just
-described, the reader is referred to [Baldo2009]_.
+described, the reader is referred to [Baldo2009Spectrum]_.
 
 The ``SpectrumSignalParameters`` class is meant to include only
 information that is valid for all signals; as such, it is not meant to
@@ -168,7 +168,7 @@ of the available implementations:
  * ``HalfDuplexIdealPhy``: a basic PHY model using a gaussian
    interference model (implemented in ``SpectrumInterference``)
    together with an error model based on Shannon capacity (described
-   in [Baldo2009]_ and implemented in ``SpectrumErrorModel``. This PHY
+   in [Baldo2009Spectrum]_ and implemented in ``SpectrumErrorModel``. This PHY
    uses the ``GenericPhy`` interface. Its addditional custom signal
    parameters are defined in ``HalfDuplexIdealPhySignalParameters``.
 
@@ -194,7 +194,7 @@ of the available implementations:
 References
 ==========
 
-.. [Baldo2009] N. Baldo and M. Miozzo, "Spectrum-aware Channel and PHY layer modeling for ns3", 
+.. [Baldo2009Spectrum] N. Baldo and M. Miozzo, "Spectrum-aware Channel and PHY layer modeling for ns3", 
    Proceedings of ICST NSTools 2009, Pisa, Italy
 
 
@@ -275,8 +275,7 @@ Helpers
 
 
 The helpers provided in ``src/spectrum/helpers`` are mainly intended
-for the example implementations described in :ref:`Example model
-implementations`. 
+for the example implementations described in :ref:`sec-example-model-implementations`. 
 If you are developing your custom model based on the
 spectrum framework, you will probably prefer to define your own
 helpers.

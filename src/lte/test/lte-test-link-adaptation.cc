@@ -162,6 +162,9 @@ LteLinkAdaptationTestCase::DoRun (void)
   Config::SetDefault ("ns3::LteEnbRrc::SrsPeriodicity", UintegerValue (2));
   Config::SetDefault ("ns3::LteHelper::UseIdealRrc", BooleanValue (true));
 
+  //Disable Uplink Power Control
+  Config::SetDefault ("ns3::LteUePhy::EnableUplinkPowerControl", BooleanValue (false));
+
   /**
     * Simulation Topology
     */
@@ -204,7 +207,7 @@ LteLinkAdaptationTestCase::DoRun (void)
   // Use testing chunk processor in the PHY layer
   // It will be used to test that the SNR is as intended
   Ptr<LtePhy> uePhy = ueDevs.Get (0)->GetObject<LteUeNetDevice> ()->GetPhy ()->GetObject<LtePhy> ();
-  Ptr<LteTestSinrChunkProcessor> testSinr = Create<LteTestSinrChunkProcessor> (uePhy);
+  Ptr<LteTestSinrChunkProcessor> testSinr = Create<LteTestSinrChunkProcessor> ();
   uePhy->GetDownlinkSpectrumPhy ()->AddCtrlSinrChunkProcessor (testSinr);
 
   Config::Connect ("/NodeList/0/DeviceList/0/LteEnbMac/DlScheduling",

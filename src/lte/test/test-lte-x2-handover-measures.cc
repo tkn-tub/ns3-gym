@@ -197,6 +197,8 @@ LteX2HandoverMeasuresTestCase::DoRun ()
   Config::SetDefault ("ns3::LteEnbRrc::HandoverJoiningTimeoutDuration", TimeValue (MilliSeconds (200)));
   Config::SetDefault ("ns3::LteEnbPhy::TxPower", DoubleValue (20));
 
+  //Disable Uplink Power Control
+  Config::SetDefault ("ns3::LteUePhy::EnableUplinkPowerControl", BooleanValue (false));
 
   int64_t stream = 1;
 

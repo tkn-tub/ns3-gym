@@ -29,6 +29,7 @@
 #include <map>
 #include <ns3/lte-common.h>
 #include <ns3/lte-amc.h>
+#include <ns3/lte-ffr-sap.h>
 
 #define HARQ_PROC_NUM 8
 #define HARQ_DL_TIMEOUT 11
@@ -79,6 +80,10 @@ public:
   virtual void SetFfMacSchedSapUser (FfMacSchedSapUser* s);
   virtual FfMacCschedSapProvider* GetFfMacCschedSapProvider ();
   virtual FfMacSchedSapProvider* GetFfMacSchedSapProvider ();
+
+  // FFR SAPs
+  virtual void SetLteFfrSapProvider (LteFfrSapProvider* s);
+  virtual LteFfrSapUser* GetLteFfrSapUser ();
 
   friend class RrSchedulerMemberCschedSapProvider;
   friend class RrSchedulerMemberSchedSapProvider;
@@ -205,6 +210,9 @@ private:
   FfMacCschedSapProvider* m_cschedSapProvider;
   FfMacSchedSapProvider* m_schedSapProvider;
 
+  // FFR SAPs
+  LteFfrSapUser* m_ffrSapUser;
+  LteFfrSapProvider* m_ffrSapProvider;
 
   // Internal parameters
   FfMacCschedSapProvider::CschedCellConfigReqParameters m_cschedCellConfig;

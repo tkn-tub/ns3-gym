@@ -33,6 +33,7 @@
 #include <ns3/ptr.h>
 #include <ns3/lte-amc.h>
 #include <set>
+#include <ns3/lte-ue-power-control.h>
 
 
 namespace ns3 {
@@ -117,6 +118,12 @@ public:
    * \return the transmission power in dBm
    */
   double GetTxPower () const;
+
+  /**
+   * \return ptr to UE Uplink Power Control entity
+   */
+  Ptr<LteUePowerControl> GetUplinkPowerControl () const;
+
   /**
    * \param nf the noise figure in dB
    */
@@ -183,7 +190,9 @@ public:
   // inherited from LtePhy
   virtual void GenerateCtrlCqiReport (const SpectrumValue& sinr);
   virtual void GenerateDataCqiReport (const SpectrumValue& sinr);
+  virtual void GenerateMixedCqiReport (const SpectrumValue& sinr);
   virtual void ReportInterference (const SpectrumValue& interf);
+  virtual void ReportDataInterference (const SpectrumValue& interf);
   virtual void ReportRsReceivedPower (const SpectrumValue& power);
 
   // callbacks for LteSpectrumPhy
@@ -260,6 +269,7 @@ private:
   void DoSynchronizeWithEnb (uint16_t cellId, uint16_t dlEarfcn);
   void DoSetDlBandwidth (uint8_t ulBandwidth);
   void DoConfigureUplink (uint16_t ulEarfcn, uint8_t ulBandwidth);
+  void DoConfigureReferenceSignalPower (int8_t referenceSignalPower);
   void DoSetRnti (uint16_t rnti);
   void DoSetTransmissionMode (uint8_t txMode);
   void DoSetSrsConfigurationIndex (uint16_t srcCi);
@@ -276,6 +286,9 @@ private:
 
 
   Ptr<LteAmc> m_amc;
+
+  bool m_enableUplinkPowerControl;
+  Ptr<LteUePowerControl> m_powerControl;
 
   Time m_p10CqiPeriocity; /**< Wideband Periodic CQI: 2, 5, 10, 16, 20, 32, 40, 64, 80 or 160 ms */
   Time m_p10CqiLast;
@@ -315,6 +328,9 @@ private:
 
   bool m_rsInterferencePowerUpdated;
   SpectrumValue m_rsInterferencePower;
+
+  bool m_dataInterferencePowerUpdated;
+  SpectrumValue m_dataInterferencePower;
 
   bool m_pssReceived;
   struct PssElement

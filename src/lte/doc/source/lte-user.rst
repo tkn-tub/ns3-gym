@@ -665,7 +665,10 @@ Radio Environment Maps
 By using the class ``RadioEnvironmentMapHelper`` it is possible to output
 to a file a Radio Environment Map (REM), i.e., a uniform 2D grid of values
 that represent the Signal-to-noise ratio in the downlink with respect
-to the eNB that has the strongest signal at each point. 
+to the eNB that has the strongest signal at each point. It is possible
+to specify if REM should be generated for data or control channel. Also user
+can set the RbId, for which REM will be generated. Default RbId is -1, what
+means that REM will generated with averaged Signal-to-noise ratio from all RBs.
 
 To do this, you just need to add the following code to your simulation
 program towards the end, right before the call to Simulator::Run ()::
@@ -680,6 +683,8 @@ program towards the end, right before the call to Simulator::Run ()::
   remHelper->SetAttribute ("YMax", DoubleValue (300.0));
   remHelper->SetAttribute ("YRes", UintegerValue (75));
   remHelper->SetAttribute ("Z", DoubleValue (0.0));
+  remHelper->SetAttribute ("UseDataChannel", BooleanValue (true));
+  remHelper->SetAttribute ("RbId", IntegerValue (10));
   remHelper->Install ();
 
 By configuring the attributes of the ``RadioEnvironmentMapHelper`` object
@@ -1501,7 +1506,404 @@ information, you can run the program like this::
     NS_LOG=LteEnbRrc:LteUeRrc:EpcX2 ./waf --run lena-x2-handover
 
 
+Frequency Reuse Algorithms
+--------------------------
 
+In this section we will describe how to use Frequency Reuse Algorithms 
+in eNb within LTE simulations. 
+There are two possible ways of configuration. The first approach is the 
+"manual" one, it requires more parameters to be configured, but allow user 
+to configure FR algorithm as he/she needs. The second approach is more 
+"automatic". It is very convenient, because is the same for each FR algorithm, 
+so user can switch FR algorithm very quickly by changing only type of FR 
+algorithm. One drawback is that "automatic" approach uses only limited set 
+of configurations for each algorithm, what make it less flexible, but is 
+sufficient for most of cases.
+
+These two approaches will be described more in following sub-section.
+
+If user do not configure Frequency Reuse algorithm, default one 
+(i.e. LteFrNoOpAlgorithm) is installed in eNb. It acts as if FR 
+algorithm was disabled.
+
+One thing that should be mentioned is that most of implemented FR algorithms work with
+cell bandwidth greater or equal than 15 RBs. This limitation is caused by requirement
+that at least three continuous RBs have to be assigned to UE for transmission.
+
+Manual configuration
+********************
+
+Frequency reuse algorithm can be configured "manually" within the simulation 
+program by setting type of FR algorithm and all its attributes. Currently, 
+seven FR algorithms are implemented:
+
+ - ``ns3::LteFrNoOpAlgorithm``
+ - ``ns3::LteFrHardAlgorithm``
+ - ``ns3::LteFrStrictAlgorithm``
+ - ``ns3::LteFrSoftAlgorithm``
+ - ``ns3::LteFfrSoftAlgorithm``
+ - ``ns3::LteFfrEnhancedAlgorithm``
+ - ``ns3::LteFfrDistributedAlgorithm``
+
+
+Selecting a FR algorithm is done via the ``LteHelper`` object and 
+its ``SetFfrAlgorithmType`` method as shown below::
+
+   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
+   lteHelper->SetFfrAlgorithmType ("ns3::LteFrHardAlgorithm");
+
+Each implemented FR algorithm provide several configurable attributes. Users do 
+not have to care about UL and DL bandwidth configuration, because it is done 
+automatically during cell configuration. To change bandwidth for FR algorithm,
+configure required values for ``LteEnbNetDevice``::
+
+   uint8_t bandwidth = 100;
+   lteHelper->SetEnbDeviceAttribute ("DlBandwidth", UintegerValue (bandwidth));
+   lteHelper->SetEnbDeviceAttribute ("UlBandwidth", UintegerValue (bandwidth));
+
+
+Now, each FR algorithms configuration will be described. 
+
+Hard Frequency Reuse Algorithm
+++++++++++++++++++++++++++++++
+
+As described in Section :ref:`sec-fr-hard-algorithm` of the Design Documentation 
+``ns3::LteFrHardAlgorithm`` uses one sub-band. To configure this sub-band user need 
+to specify offset and bandwidth for DL and UL in number of RBs. 
+
+Hard Frequency Reuse Algorithm provides following attributes:
+
+ * ``DlSubBandOffset``: Downlink Offset in number of Resource Block Groups
+ * ``DlSubBandwidth``: Downlink Transmission SubBandwidth Configuration in number of Resource Block Groups
+ * ``UlSubBandOffset``: Uplink Offset in number of Resource Block Groups
+ * ``UlSubBandwidth``: Uplink Transmission SubBandwidth Configuration in number of Resource Block Groups
+
+Example configuration of LteFrHardAlgorithm can be done in following way::
+
+   lteHelper->SetFfrAlgorithmType ("ns3::LteFrHardAlgorithm");
+   lteHelper->SetFfrAlgorithmAttribute ("DlSubBandOffset", UintegerValue (8));
+   lteHelper->SetFfrAlgorithmAttribute ("DlSubBandwidth", UintegerValue (8));
+   lteHelper->SetFfrAlgorithmAttribute ("UlSubBandOffset", UintegerValue (8));
+   lteHelper->SetFfrAlgorithmAttribute ("UlSubBandwidth", UintegerValue (8));
+   NetDeviceContainer enbDevs = lteHelper->InstallEnbDevice (enbNodes.Get(0));
+
+Above example allow eNB to use only RBs from 8 to 16 in DL and UL, while entire cell
+bandwidth is 25. 
+
+
+Strict Frequency Reuse Algorithm
+++++++++++++++++++++++++++++++++
+
+Strict Frequency Reuse Algorithm uses two sub-bands: one common for each cell and one 
+private. There is also RSRQ threshold, which is needed to decide within which sub-band 
+UE should be served. Moreover the power transmission in these sub-bands can be different. 
+
+Strict Frequency Reuse Algorithm provides following attributes:
+
+ * ``UlCommonSubBandwidth``: Uplink Common SubBandwidth Configuration in number of Resource Block Groups
+ * ``UlEdgeSubBandOffset``: Uplink Edge SubBand Offset in number of Resource Block Groups
+ * ``UlEdgeSubBandwidth``: Uplink Edge SubBandwidth Configuration in number of Resource Block Groups
+ * ``DlCommonSubBandwidth``: Downlink Common SubBandwidth Configuration in number of Resource Block Groups
+ * ``DlEdgeSubBandOffset``: Downlink Edge SubBand Offset in number of Resource Block Groups
+ * ``DlEdgeSubBandwidth``: Downlink Edge SubBandwidth Configuration in number of Resource Block Groups
+ * ``RsrqThreshold``: If the RSRQ of is worse than this threshold, UE should be served in edge sub-band
+ * ``CenterPowerOffset``: PdschConfigDedicated::Pa value for center sub-band, default value dB0
+ * ``EdgePowerOffset``: PdschConfigDedicated::Pa value for edge sub-band, default value dB0
+ * ``CenterAreaTpc``: TPC value which will be set in DL-DCI for UEs in center area, 
+   Absolute mode is used, default value 1 is mapped to -1 according to TS36.213 Table 5.1.1.1-2
+ * ``EdgeAreaTpc``: TPC value which will be set in DL-DCI for UEs in edge area,
+   Absolute mode is used, default value 1 is mapped to -1 according to TS36.213 Table 5.1.1.1-2
+
+
+Example below allow eNB to use RBs from 0 to 6 as common sub-band and from 12 to 18 as 
+private sub-band in DL and UL, RSRQ threshold is 20 dB, power in center area equals 
+``LteEnbPhy::TxPower - 3dB``, power in edge area equals ``LteEnbPhy::TxPower + 3dB``::
+
+   lteHelper->SetFfrAlgorithmType ("ns3::LteFrStrictAlgorithm");
+   lteHelper->SetFfrAlgorithmAttribute ("DlCommonSubBandwidth", UintegerValue (6));
+   lteHelper->SetFfrAlgorithmAttribute ("UlCommonSubBandwidth", UintegerValue (6));
+   lteHelper->SetFfrAlgorithmAttribute ("DlEdgeSubBandOffset", UintegerValue (6));
+   lteHelper->SetFfrAlgorithmAttribute ("DlEdgeSubBandwidth", UintegerValue (6));
+   lteHelper->SetFfrAlgorithmAttribute ("UlEdgeSubBandOffset", UintegerValue (6));
+   lteHelper->SetFfrAlgorithmAttribute ("UlEdgeSubBandwidth", UintegerValue (6));
+   lteHelper->SetFfrAlgorithmAttribute ("RsrqThreshold", UintegerValue (20));
+   lteHelper->SetFfrAlgorithmAttribute ("CenterPowerOffset",
+			 UintegerValue (LteRrcSap::PdschConfigDedicated::dB_3));
+   lteHelper->SetFfrAlgorithmAttribute ("EdgePowerOffset",
+			 UintegerValue (LteRrcSap::PdschConfigDedicated::dB3));
+   lteHelper->SetFfrAlgorithmAttribute ("CenterAreaTpc", UintegerValue (1));
+   lteHelper->SetFfrAlgorithmAttribute ("EdgeAreaTpc", UintegerValue (2));
+   NetDeviceContainer enbDevs = lteHelper->InstallEnbDevice (enbNodes.Get(0));
+
+
+Soft Frequency Reuse Algorithm
+++++++++++++++++++++++++++++++
+
+With Soft Frequency Reuse Algorithm, eNb uses entire cell bandwidth, but there are two 
+sub-bands, within UEs are served with different power level. 
+
+Soft Frequency Reuse Algorithm provides following attributes:
+
+ * ``UlEdgeSubBandOffset``: Uplink Edge SubBand Offset in number of Resource Block Groups
+ * ``UlEdgeSubBandwidth``: Uplink Edge SubBandwidth Configuration in number of Resource Block Groups
+ * ``DlEdgeSubBandOffset``: Downlink Edge SubBand Offset in number of Resource Block Groups
+ * ``DlEdgeSubBandwidth``: Downlink Edge SubBandwidth Configuration in number of Resource Block Groups
+ * ``AllowCenterUeUseEdgeSubBand``: If true center UEs can receive on edge sub-band RBGs, otherwise 
+   edge sub-band is allowed only for edge UEs, default value is true
+ * ``RsrqThreshold``: If the RSRQ of is worse than this threshold, UE should be served in edge sub-band
+ * ``CenterPowerOffset``: PdschConfigDedicated::Pa value for center sub-band, default value dB0
+ * ``EdgePowerOffset``: PdschConfigDedicated::Pa value for edge sub-band, default value dB0
+ * ``CenterAreaTpc``: TPC value which will be set in DL-DCI for UEs in center area, 
+   Absolute mode is used, default value 1 is mapped to -1 according to TS36.213 Table 5.1.1.1-2
+ * ``EdgeAreaTpc``: TPC value which will be set in DL-DCI for UEs in edge area,
+   Absolute mode is used, default value 1 is mapped to -1 according to TS36.213 Table 5.1.1.1-2
+
+Example below configures RBs from 8 to 16 to be used by cell edge UEs and this sub-band 
+is not available for cell center users. RSRQ threshold is 20 dB, power in center area
+equals ``LteEnbPhy::TxPower``, power in edge area equals ``LteEnbPhy::TxPower + 3dB``::
+
+   lteHelper->SetFfrAlgorithmType ("ns3::LteFrSoftAlgorithm");
+   lteHelper->SetFfrAlgorithmAttribute ("DlEdgeSubBandOffset", UintegerValue (8));
+   lteHelper->SetFfrAlgorithmAttribute ("DlEdgeSubBandwidth", UintegerValue (8));
+   lteHelper->SetFfrAlgorithmAttribute ("UlEdgeSubBandOffset", UintegerValue (8));
+   lteHelper->SetFfrAlgorithmAttribute ("UlEdgeSubBandwidth", UintegerValue (8));
+   lteHelper->SetFfrAlgorithmAttribute ("AllowCenterUeUseEdgeSubBand", BooleanValue (false));
+   lteHelper->SetFfrAlgorithmAttribute ("RsrqThreshold", UintegerValue (20));
+   lteHelper->SetFfrAlgorithmAttribute ("CenterPowerOffset",
+			 UintegerValue (LteRrcSap::PdschConfigDedicated::dB0));
+   lteHelper->SetFfrAlgorithmAttribute ("EdgePowerOffset",
+		         UintegerValue (LteRrcSap::PdschConfigDedicated::dB3));
+   NetDeviceContainer enbDevs = lteHelper->InstallEnbDevice (enbNodes.Get(0));
+
+
+Soft Fractional Frequency Reuse Algorithm
++++++++++++++++++++++++++++++++++++++++++
+
+Soft Fractional Frequency Reuse (SFFR) uses three sub-bands: center, medium (common)
+and edge. User have to configure only two of them: common and edge. Center sub-band
+will be composed from the remaining bandwidth. Each sub-band can be served with
+different transmission power. Since there are three sub-bands, two RSRQ thresholds needs to
+be configured.
+
+
+Soft Fractional Frequency Reuse Algorithm provides following attributes:
+
+ * ``UlCommonSubBandwidth``: Uplink Common SubBandwidth Configuration in number of Resource Block Groups
+ * ``UlEdgeSubBandOffset``: Uplink Edge SubBand Offset in number of Resource Block Groups
+ * ``UlEdgeSubBandwidth``: Uplink Edge SubBandwidth Configuration in number of Resource Block Groups
+ * ``DlCommonSubBandwidth``: Downlink Common SubBandwidth Configuration in number of Resource Block Groups
+ * ``DlEdgeSubBandOffset``: Downlink Edge SubBand Offset in number of Resource Block Groups
+ * ``DlEdgeSubBandwidth``: Downlink Edge SubBandwidth Configuration in number of Resource Block Groups
+ * ``CenterRsrqThreshold``: If the RSRQ of is worse than this threshold, UE should be served in medium sub-band
+ * ``EdgeRsrqThreshold``: If the RSRQ of is worse than this threshold, UE should be served in edge sub-band
+ * ``CenterAreaPowerOffset``: PdschConfigDedicated::Pa value for center sub-band, default value dB0
+ * ``MediumAreaPowerOffset``: PdschConfigDedicated::Pa value for medium sub-band, default value dB0
+ * ``EdgeAreaPowerOffset``: PdschConfigDedicated::Pa value for edge sub-band, default value dB0
+ * ``CenterAreaTpc``: TPC value which will be set in DL-DCI for UEs in center area, 
+   Absolute mode is used, default value 1 is mapped to -1 according to TS36.213 Table 5.1.1.1-2
+ * ``MediumAreaTpc``: TPC value which will be set in DL-DCI for UEs in medium area, 
+   Absolute mode is used, default value 1 is mapped to -1 according to TS36.213 Table 5.1.1.1-2
+ * ``EdgeAreaTpc``: TPC value which will be set in DL-DCI for UEs in edge area,
+   Absolute mode is used, default value 1 is mapped to -1 according to TS36.213 Table 5.1.1.1-2
+
+
+In example below RBs from 0 to 6 will be used as common (medium) sub-band,
+RBs from 6 to 12 will be used as edge sub-band and RBs from 12 to 24 will be used as
+center sub-band (it is composed with remaining RBs). RSRQ threshold between center 
+and medium area is 28 dB, RSRQ threshold between medium and edge area is 18 dB.
+Power in center area equals ``LteEnbPhy::TxPower - 3dB``, power in medium area equals 
+``LteEnbPhy::TxPower + 3dB``, power in edge area equals ``LteEnbPhy::TxPower + 3dB``::
+
+   lteHelper->SetFfrAlgorithmType ("ns3::LteFfrSoftAlgorithm");
+   lteHelper->SetFfrAlgorithmAttribute ("UlCommonSubBandwidth", UintegerValue (6));
+   lteHelper->SetFfrAlgorithmAttribute ("DlCommonSubBandwidth", UintegerValue (6));
+   lteHelper->SetFfrAlgorithmAttribute ("DlEdgeSubBandOffset", UintegerValue (0));
+   lteHelper->SetFfrAlgorithmAttribute ("DlEdgeSubBandwidth", UintegerValue (6));
+   lteHelper->SetFfrAlgorithmAttribute ("UlEdgeSubBandOffset", UintegerValue (0));
+   lteHelper->SetFfrAlgorithmAttribute ("UlEdgeSubBandwidth", UintegerValue (6));
+   lteHelper->SetFfrAlgorithmAttribute ("CenterRsrqThreshold", UintegerValue (28));
+   lteHelper->SetFfrAlgorithmAttribute ("EdgeRsrqThreshold", UintegerValue (18));
+   lteHelper->SetFfrAlgorithmAttribute ("CenterAreaPowerOffset",
+			 UintegerValue (LteRrcSap::PdschConfigDedicated::dB_3));
+   lteHelper->SetFfrAlgorithmAttribute ("MediumAreaPowerOffset",
+			 UintegerValue (LteRrcSap::PdschConfigDedicated::dB0));
+   lteHelper->SetFfrAlgorithmAttribute ("EdgeAreaPowerOffset",
+			 UintegerValue (LteRrcSap::PdschConfigDedicated::dB3));
+   NetDeviceContainer enbDevs = lteHelper->InstallEnbDevice (enbNodes.Get(0));
+
+
+Enhanced Fractional Frequency Reuse Algorithm
++++++++++++++++++++++++++++++++++++++++++++++
+
+Enhanced Fractional Frequency Reuse (EFFR) reserve part of system bandwidth for each cell
+(typically there are 3 cell types and each one gets 1/3 of system bandwidth). Then part of
+this subbandwidth it used as `Primary Segment` with reuse factor 3 and as `Secondary Segment`
+with reuse factor 1. User has to configure (for DL and UL) offset of the cell subbandwidth 
+in number of RB, number of RB which will be used as `Primary Segment` and number of RB which 
+will be used as `Secondary Segment`. `Primary Segment` is used by cell at will, but RBs from 
+`Secondary Segment` can be assigned to UE only is CQI feedback from this UE have higher value 
+than configured CQI threshold. UE is considered as edge UE when its RSRQ is lower than ``RsrqThreshold``.
+
+Since each eNb needs to know where are Primary and Secondary of other cell types, 
+it will calculate them assuming configuration is the same for each cell and only subbandwidth offsets
+are different. So it is important to divide available system bandwidth equally to each cell and apply 
+the same configuration of Primary and Secondary Segments to them. 
+
+
+Enhanced Fractional Frequency Reuse Algorithm provides following attributes:
+
+ * ``UlSubBandOffset``: Uplink SubBand Offset for this cell in number of Resource Block Groups
+ * ``UlReuse3SubBandwidth``: Uplink Reuse 3 SubBandwidth Configuration in number of Resource Block Groups
+ * ``UlReuse1SubBandwidth``: Uplink Reuse 1 SubBandwidth Configuration in number of Resource Block Groups
+ * ``DlSubBandOffset``: Downlink SubBand Offset for this cell in number of Resource Block Groups
+ * ``DlReuse3SubBandwidth``: Downlink Reuse 3 SubBandwidth Configuration in number of Resource Block Groups
+ * ``DlReuse1SubBandwidth``: Downlink Reuse 1 SubBandwidth Configuration in number of Resource Block Groups
+ * ``RsrqThreshold``: If the RSRQ of is worse than this threshold, UE should be served in edge sub-band
+ * ``CenterAreaPowerOffset``: PdschConfigDedicated::Pa value for center sub-band, default value dB0
+ * ``EdgeAreaPowerOffset``: PdschConfigDedicated::Pa value for edge sub-band, default value dB0
+ * ``DlCqiThreshold``: If the DL-CQI for RBG of is higher than this threshold, transmission on RBG is possible
+ * ``UlCqiThreshold``: If the UL-CQI for RBG of is higher than this threshold, transmission on RBG is possible
+ * ``CenterAreaTpc``: TPC value which will be set in DL-DCI for UEs in center area, 
+   Absolute mode is used, default value 1 is mapped to -1 according to TS36.213 Table 5.1.1.1-2
+ * ``EdgeAreaTpc``: TPC value which will be set in DL-DCI for UEs in edge area,
+   Absolute mode is used, default value 1 is mapped to -1 according to TS36.213 Table 5.1.1.1-2
+
+
+In example below offset in DL and UL is 0 RB, 4 RB will be used in `Primary Segment` and 
+`Secondary Segment`. RSRQ threshold between center and edge area is 25 dB. DL and UL CQI 
+thresholds are set to value of 10. Power in center area equals ``LteEnbPhy::TxPower - 6dB``, 
+power in edge area equals ``LteEnbPhy::TxPower + 0dB``::
+
+   lteHelper->SetFfrAlgorithmType("ns3::LteFfrEnhancedAlgorithm");
+   lteHelper->SetFfrAlgorithmAttribute("RsrqThreshold", UintegerValue (25));
+   lteHelper->SetFfrAlgorithmAttribute("DlCqiThreshold", UintegerValue (10));
+   lteHelper->SetFfrAlgorithmAttribute("UlCqiThreshold", UintegerValue (10));
+   lteHelper->SetFfrAlgorithmAttribute("CenterAreaPowerOffset",
+		  UintegerValue (LteRrcSap::PdschConfigDedicated::dB_6));
+   lteHelper->SetFfrAlgorithmAttribute("EdgeAreaPowerOffset",
+		  UintegerValue (LteRrcSap::PdschConfigDedicated::dB0));
+   lteHelper->SetFfrAlgorithmAttribute("UlSubBandOffset", UintegerValue (0));
+   lteHelper->SetFfrAlgorithmAttribute("UlReuse3SubBandwidth", UintegerValue (4));
+   lteHelper->SetFfrAlgorithmAttribute("UlReuse1SubBandwidth", UintegerValue (4));
+   lteHelper->SetFfrAlgorithmAttribute("DlSubBandOffset", UintegerValue (0));
+   lteHelper->SetFfrAlgorithmAttribute("DlReuse3SubBandwidth", UintegerValue (4));
+   lteHelper->SetFfrAlgorithmAttribute("DlReuse1SubBandwidth", UintegerValue (4));
+
+
+Distributed Fractional Frequency Reuse Algorithm
+++++++++++++++++++++++++++++++++++++++++++++++++
+
+Distributed Fractional Frequency Reuse requires X2 interface between all eNB to be installed. 
+X2 interfaces can be installed only when EPC is configured, so this FFR scheme can be used only with
+EPC scenarios. 
+
+With Distributed Fractional Frequency Reuse  Algorithm, eNb uses entire cell bandwidth and there can 
+be two sub-bands: center sub-band and edge sub-band . Within these sub-bands UEs can be served with 
+different power level. Algorithm adaptively selects RBs for cell-edge sub-band on basis of 
+coordination information (i.e. RNTP) from adjecent cells and notifies the base stations of the adjacent cells, 
+which RBs it selected to use in edge sub-band. If there are no UE classified as edge UE in cell, 
+eNB will not use any RBs as edge sub-band.
+
+Distributed Fractional Frequency Reuse Algorithm provides following attributes:
+
+ * ``CalculationInterval``: Time interval between calculation of Edge sub-band, Default value 1 second
+ * ``RsrqThreshold``: If the RSRQ of is worse than this threshold, UE should be served in edge sub-band
+ * ``RsrpDifferenceThreshold``: If the difference between the power of the signal received by UE from
+   the serving cell and the power of the signal received from the adjacent cell is less than a 
+   RsrpDifferenceThreshold value, the cell weight is incremented
+ * ``CenterPowerOffset``: PdschConfigDedicated::Pa value for edge sub-band, default value dB0
+ * ``EdgePowerOffset``: PdschConfigDedicated::Pa value for edge sub-band, default value dB0
+ * ``EdgeRbNum``: Number of RB that can be used in edge sub-band
+ * ``CenterAreaTpc``: TPC value which will be set in DL-DCI for UEs in center area, 
+   Absolute mode is used, default value 1 is mapped to -1 according to TS36.213 Table 5.1.1.1-2
+ * ``EdgeAreaTpc``: TPC value which will be set in DL-DCI for UEs in edge area,
+   Absolute mode is used, default value 1 is mapped to -1 according to TS36.213 Table 5.1.1.1-2
+
+In example below calculation interval is 500 ms. RSRQ threshold between center and edge area is 25. 
+RSRP Difference Threshold is set to be 5. In DL and UL 6 RB will be used by each cell in edge sub-band.  
+Power in center area equals ``LteEnbPhy::TxPower - 0dB``, power in edge area equals ``LteEnbPhy::TxPower + 3dB``::
+
+  lteHelper->SetFfrAlgorithmType("ns3::LteFfrDistributedAlgorithm");
+  lteHelper->SetFfrAlgorithmAttribute("CalculationInterval", TimeValue(MilliSeconds(500)));
+  lteHelper->SetFfrAlgorithmAttribute ("RsrqThreshold", UintegerValue (25));
+  lteHelper->SetFfrAlgorithmAttribute ("RsrpDifferenceThreshold", UintegerValue (5));
+  lteHelper->SetFfrAlgorithmAttribute ("EdgeRbNum", UintegerValue (6));
+  lteHelper->SetFfrAlgorithmAttribute ("CenterPowerOffset",
+		  UintegerValue (LteRrcSap::PdschConfigDedicated::dB0));
+  lteHelper->SetFfrAlgorithmAttribute ("EdgePowerOffset",
+		  UintegerValue (LteRrcSap::PdschConfigDedicated::dB3));
+
+
+Automatic configuration
+***********************
+
+Frequency Reuse algorithms can also be configured in more “automatic” way by setting 
+only the bandwidth and FrCellTypeId. During initialization of FR instance, configuration 
+for set bandwidth and FrCellTypeId will be taken from configuration table. It is important 
+that only sub-bands will be configured, thresholds and transmission power will be set 
+to default values. If one wants, he/she can change thresholds and transmission power 
+as show in previous sub-section. 
+
+There are three FrCellTypeId : ``1, 2, 3``, which correspond to three different 
+configurations for each bandwidth. Three configurations allow to have different 
+configurations in neighbouring cells in hexagonal eNB layout. If user needs to have
+more different configuration for neighbouring cells, he/she need to use manual 
+configuration.
+
+Example below show automatic FR algorithm configuration::
+
+   lteHelper->SetFfrAlgorithmType("ns3::LteFfrSoftAlgorithm");
+   lteHelper->SetFfrAlgorithmAttribute("FrCellTypeId", UintegerValue (1));
+   NetDeviceContainer enbDevs = lteHelper->InstallEnbDevice (enbNodes.Get(0));
+
+
+Uplink Power Control
+--------------------
+
+Uplink Power Control functionality is enabled by default. User can disable it by setting 
+the boolean attribute ``ns3::LteUePhy::EnableUplinkPowerControl`` to true.
+
+User can switch between Open Loop Power Control and Closed Loop Power Control mechanisms
+by setting the boolean attribute ``ns3::LteUePowerControl::ClosedLoop``. 
+By default Closed Loop Power Control with Accumulation Mode is enabled.
+
+Path-loss is key component of Uplink Power Control. It is computed as difference between 
+filtered RSRP and ReferenceSignalPower parameter. ReferenceSignalPower is 
+sent with SIB2.
+
+Attributes available in Uplink Power Control:
+
+ * ``ClosedLoop``: if true Closed Loop Uplink Power Control mode is enabled and Open Loop 
+   Power Control otherwise, default value is false
+ * ``AccumulationEnabled``: if true Accumulation Mode is enabled and Absolute mode otherwise, 
+   default value is false 
+ * ``Alpha``: the path loss compensation factor, default value is 1.0
+ * ``Pcmin``: minimal UE TxPower, default value is -40 dBm
+ * ``Pcmax``: maximal UE TxPower, default value is 23 dBm
+ * ``PoNominalPusch``: this parameter should be set by higher layers, but currently 
+   it needs to be configured by attribute system, possible values are 
+   integers in range (-126 ... 24), Default value is -80
+ * ``PoUePusch``: this parameter should be set by higher layers, but currently 
+   it needs to be configured by attribute system, possible values are 
+   integers in range (-8 ... 7), Default value is 0
+ * ``PsrsOffset``: this parameter should be set by higher layers, but currently 
+   it needs to be configured by attribute system, possible values are 
+   integers in range (0 ... 15), Default value is 7, what gives P_Srs_Offset_Value = 0
+
+Traced values in Uplink Power Control:
+ * ``ReportPuschTxPower``: Current UE TxPower for PUSCH
+ * ``ReportPucchTxPower``: Current UE TxPower for PUCCH
+ * ``ReportSrsTxPower``: Current UE TxPower for SRS
+
+
+Example configuration is presented below::
+
+  Config::SetDefault ("ns3::LteUePhy::EnableUplinkPowerControl", BooleanValue (true));
+  Config::SetDefault ("ns3::LteEnbPhy::TxPower", DoubleValue (30));
+  Config::SetDefault ("ns3::LteUePowerControl::ClosedLoop", BooleanValue (true));
+  Config::SetDefault ("ns3::LteUePowerControl::AccumulationEnabled", BooleanValue (true));
+
+As an example, user can take a look and run the lena-uplink-power-control program.
 
 
 Examples Programs
@@ -1509,7 +1911,6 @@ Examples Programs
 
 The directory ``src/lte/examples/`` contains some example simulation programs that
 show how to simulate different LTE scenarios. 
-
 
 
 Reference scenarios
@@ -1819,3 +2220,123 @@ improves both user throughput and SINR significantly. There is little difference
 between the two handover algorithms in this campaign scenario. It would be
 interesting to see their performance in different scenarios, such as scenarios
 with home eNodeBs deployment.
+
+
+Frequency Reuse examples
+**********************************
+
+There are two examples showing Frequency Reuse Algorithms functionality.
+
+``lena-frequency-reuse`` is simple example with 3 eNBs in triangle layout. 
+There are 3 cell edge UEs, which are located in the center of this triangle and 
+3 cell center UEs (one near each eNB). User can also specify the number of randomly 
+located UEs. FR algorithm is installed in eNBs and each eNB has different FrCellTypeId, 
+what means each eNB uses different FR configuration. User can run ``lena-frequency-reuse`` 
+with 6 different FR algorithms: NoOp, Hard FR, Strict FR, Soft FR, Soft FFR and Enhanced FFR.
+To run scenario with Distributed FFR algorithm, user should use ``lena-distributed-ffr``. 
+These two examples are very similar, but they were splitted because Distributed FFR requires 
+EPC to be used, and other algorihtms do not. 
+
+To run ``lena-frequency-reuse`` with different Frequency Reuse algorithms, user needs to specify 
+FR algorithm by overriding the default attribute ``ns3::LteHelper::FfrAlgorithm``.
+Example command to run ``lena-frequency-reuse`` with Soft FR algorithm is presented below::
+
+   $ ./waf --run "lena-frequency-reuse --ns3::LteHelper::FfrAlgorithm=ns3::LteFrSoftAlgorithm"
+
+In these examples functionality to generate REM and spectrum analyzer trace was added. 
+User can enable generation of it by setting ``generateRem`` and ``generateSpectrumTrace``
+attributes. 
+
+Command to generate REM for RB 1 in data channel from ``lena-frequency-reuse`` scenario 
+with Soft FR algorithm is presented below::
+
+   $ ./waf --run "lena-frequency-reuse --ns3::LteHelper::FfrAlgorithm=ns3::LteFrSoftAlgorithm
+     --generateRem=true --remRbId=1"
+
+Radio Environment Map for Soft FR is presented in Figure :ref:`fig-lte-soft-fr-1-rem`.
+
+.. _fig-lte-soft-fr-1-rem:
+
+.. figure:: figures/lte-fr-soft-1-rem.*
+   :align: center
+
+   REM for RB 1 obtained from ``lena-frequency-reuse`` example with Soft FR 
+   algorithm enabled
+
+
+Command to generate spectrum trace from ``lena-frequency-reuse`` scenario 
+with Soft FFR algorithm is presented below (Spectrum Analyzer position needs to be configured 
+inside script)::
+
+   $ ./waf --run "lena-frequency-reuse --ns3::LteHelper::FfrAlgorithm=ns3::LteFfrSoftAlgorithm
+     --generateSpectrumTrace=true"
+
+Example spectrum analyzer trace is presented in figure :ref:`fig-lte-soft-ffr-2-spectrum-trace`.
+As can be seen, different data channel subbands are sent with different power level
+(according to configuration), while control channel is transmitted with uniform power 
+along entire system bandwidth.
+
+
+.. _fig-lte-soft-ffr-2-spectrum-trace:
+
+.. figure:: figures/lte-ffr-soft-2-spectrum-trace.*
+   :align: center
+
+   Spectrum Analyzer trace obtained from ``lena-frequency-reuse`` example 
+   with Soft FFR algorithm enabled. Spectrum Analyzer was located need eNB 
+   with FrCellTypeId 2.
+
+
+``lena-dual-stripe`` can be also run with Frequency Reuse algorithms installed in all macro eNB. 
+User needs to specify FR algorithm by overriding the default attribute ``ns3::LteHelper::FfrAlgorithm``.
+Example command to run ``lena-dual-stripe`` with Hard FR algorithm is presented below::
+
+   $ ./waf --run="lena-dual-stripe
+     --simTime=50 --nBlocks=0 --nMacroEnbSites=7 --nMacroEnbSitesX=2
+     --epc=1 --useUdp=0 --outdoorUeMinSpeed=16.6667 --outdoorUeMaxSpeed=16.6667
+     --ns3::LteHelper::HandoverAlgorithm=ns3::NoOpHandoverAlgorithm
+     --ns3::LteHelper::FfrAlgorithm=ns3::LteFrHardAlgorithm
+     --ns3::RadioBearerStatsCalculator::DlRlcOutputFilename=no-op-DlRlcStats.txt
+     --ns3::RadioBearerStatsCalculator::UlRlcOutputFilename=no-op-UlRlcStats.txt
+     --ns3::PhyStatsCalculator::DlRsrpSinrFilename=no-op-DlRsrpSinrStats.txt
+     --ns3::PhyStatsCalculator::UlSinrFilename=no-op-UlSinrStats.txt
+     --RngRun=1" > no-op.txt
+
+Example command to generate REM for RB 1 in data channel from ``lena-dual-stripe`` scenario 
+with Hard FR algorithm is presented below::
+
+   $ ./waf --run="lena-dual-stripe
+     --simTime=50 --nBlocks=0 --nMacroEnbSites=7 --nMacroEnbSitesX=2
+     --epc=0 --useUdp=0 --outdoorUeMinSpeed=16.6667 --outdoorUeMaxSpeed=16.6667
+     --ns3::LteHelper::HandoverAlgorithm=ns3::NoOpHandoverAlgorithm
+     --ns3::LteHelper::FfrAlgorithm=ns3::LteFrHardAlgorithm
+     --ns3::RadioBearerStatsCalculator::DlRlcOutputFilename=no-op-DlRlcStats.txt
+     --ns3::RadioBearerStatsCalculator::UlRlcOutputFilename=no-op-UlRlcStats.txt
+     --ns3::PhyStatsCalculator::DlRsrpSinrFilename=no-op-DlRsrpSinrStats.txt
+     --ns3::PhyStatsCalculator::UlSinrFilename=no-op-UlSinrStats.txt
+     --RngRun=1 --generateRem=true --remRbId=1" > no-op.txt
+
+Radio Environment Maps for RB 1, 10 and 20 generated from ``lena-dual-stripe``
+scenario with Hard Frequency Reuse algorithm are presented in the figures 
+below. These RB were selected because each one is used by different FR cell type.
+
+.. _fig-lte-hard-fr-1-rem:
+
+.. figure:: figures/lte-fr-hard-1-rem.*
+   :align: center
+
+   REM for RB 1 obtained from ``lena-dual-stripe`` simulation with Hard FR algorithm enabled
+
+.. _fig-lte-hard-fr-2-rem:
+
+.. figure:: figures/lte-fr-hard-2-rem.*
+   :align: center
+
+   REM for RB 10 obtained from ``lena-dual-stripe`` simulation with Hard FR algorithm enabled
+
+.. _fig-lte-hard-fr-3-rem:
+
+.. figure:: figures/lte-fr-hard-3-rem.*
+   :align: center
+
+   REM for RB 20 obtained from ``lena-dual-stripe`` simulation with Hard FR algorithm enabled

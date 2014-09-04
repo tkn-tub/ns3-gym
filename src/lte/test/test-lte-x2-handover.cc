@@ -151,6 +151,9 @@ LteX2HandoverTestCase::DoRun ()
   Config::SetDefault ("ns3::UdpClient::MaxPackets", UintegerValue (1000000));  
   Config::SetDefault ("ns3::UdpClient::PacketSize", UintegerValue (m_udpClientPktSize));  
 
+  //Disable Uplink Power Control
+  Config::SetDefault ("ns3::LteUePhy::EnableUplinkPowerControl", BooleanValue (false));
+
   int64_t stream = 1;
   
   m_lteHelper = CreateObject<LteHelper> ();

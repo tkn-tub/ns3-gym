@@ -20,7 +20,7 @@
  */
 
 #include <ns3/log.h>
-
+#include <ns3/spectrum-value.h>
 #include "lte-test-sinr-chunk-processor.h"
 
 NS_LOG_COMPONENT_DEFINE ("LteTestSinrChunkProcessor");
@@ -28,14 +28,18 @@ NS_LOG_COMPONENT_DEFINE ("LteTestSinrChunkProcessor");
 namespace ns3 {
 
 
-LteTestSinrChunkProcessor::LteTestSinrChunkProcessor (Ptr<LtePhy> p)
-  : m_phy (p)
+LteTestSinrChunkProcessor::LteTestSinrChunkProcessor ()
 {
-  NS_LOG_FUNCTION (this << p);
-  NS_ASSERT (m_phy);
+  NS_LOG_FUNCTION (this);
 }
 
 LteTestSinrChunkProcessor::~LteTestSinrChunkProcessor ()
+{
+  NS_LOG_FUNCTION (this);
+}
+
+void
+LteTestSinrChunkProcessor::AddCallback (LteChunkProcessorCallback c)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -49,7 +53,7 @@ LteTestSinrChunkProcessor::Start ()
 }
 
 void
-LteTestSinrChunkProcessor::EvaluateSinrChunk (const SpectrumValue& sinr, Time duration)
+LteTestSinrChunkProcessor::EvaluateChunk (const SpectrumValue& sinr, Time duration)
 {
   NS_LOG_FUNCTION (this << sinr << duration);
   if (m_sumSinr == 0)

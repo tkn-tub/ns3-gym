@@ -24,6 +24,7 @@
 #include <ns3/abort.h>
 #include <ns3/log.h>
 #include <ns3/double.h>
+#include <ns3/integer.h>
 #include <ns3/uinteger.h>
 #include <ns3/string.h>
 #include <ns3/boolean.h>
@@ -133,6 +134,17 @@ RadioEnvironmentMapHelper::GetTypeId (void)
                    MakeUintegerAccessor (&RadioEnvironmentMapHelper::SetBandwidth, 
                                          &RadioEnvironmentMapHelper::GetBandwidth),
                    MakeUintegerChecker<uint16_t> ())
+    .AddAttribute ("UseDataChannel",
+                   "If true, REM will be generated for PDSCH and for PDCCH otherwise ",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&RadioEnvironmentMapHelper::m_useDataChannel),
+                   MakeBooleanChecker ())
+    .AddAttribute ("RbId",
+                   "Resource block Id, for which REM will be generated,"
+                   "default value is -1, what means REM will be averaged from all RBs",
+                   IntegerValue (-1),
+                   MakeIntegerAccessor (&RadioEnvironmentMapHelper::m_rbId),
+                   MakeIntegerChecker<int32_t> ())
   ;
   return tid;
 }
@@ -189,9 +201,17 @@ RadioEnvironmentMapHelper::Install ()
       return;
     }
   
-  Simulator::Schedule (Seconds (0.0026), 
+  double startDelay = 0.0026;
+
+  if (m_useDataChannel)
+    {
+      //need time to start transmission of data channel
+      startDelay = 0.5001;
+    }
+
+  Simulator::Schedule (Seconds (startDelay),
                        &RadioEnvironmentMapHelper::DelayedInstall,
-                                   this);
+                       this);
 }
 
 
@@ -216,6 +236,8 @@ RadioEnvironmentMapHelper::DelayedInstall ()
       p.bmm->AggregateObject (buildingInfo); // operation usually done by BuildingsHelper::Install
       p.phy->SetRxSpectrumModel (LteSpectrumValueHelper::GetSpectrumModel (m_earfcn, m_bandwidth));
       p.phy->SetMobility (p.bmm);
+      p.phy->SetUseDataChannel (m_useDataChannel);
+      p.phy->SetRbId (m_rbId);
       m_channel->AddRx (p.phy);
       m_rem.push_back (p);
     }
@@ -249,6 +271,7 @@ RadioEnvironmentMapHelper::DelayedInstall ()
             }
         }      
     }
+
   Simulator::Schedule (Seconds (remIterationStartTime), 
                        &RadioEnvironmentMapHelper::Finalize,
                        this);
@@ -268,7 +291,7 @@ RadioEnvironmentMapHelper::RunOneIteration (double xMin, double xMax, double yMi
            y < ((x == xMax) ? yMax : m_yMax) + 0.5*m_yStep;
            y += m_yStep)
         {
-          NS_ASSERT (remIt != m_rem.end ());          
+          NS_ASSERT (remIt != m_rem.end ());
           remIt->bmm->SetPosition (Vector (x, y, m_z));
           BuildingsHelper::MakeConsistent (remIt->bmm);
           ++remIt;

@@ -147,6 +147,9 @@ LteUeMeasurementsTestCase::DoRun (void)
   lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
   lteHelper->SetAttribute ("UseIdealRrc", BooleanValue (false));
 
+  //Disable Uplink Power Control
+  Config::SetDefault ("ns3::LteUePhy::EnableUplinkPowerControl", BooleanValue (false));
+
   // LogComponentEnable ("LteUeMeasurementsTest", LOG_LEVEL_ALL);
 
   // Create Nodes: eNodeB and UE
@@ -201,11 +204,11 @@ LteUeMeasurementsTestCase::DoRun (void)
   // we plug in two instances, one for DL and one for UL
 
   Ptr<LtePhy> ue1Phy = ueDevs1.Get (0)->GetObject<LteUeNetDevice> ()->GetPhy ()->GetObject<LtePhy> ();
-  Ptr<LteTestSinrChunkProcessor> testDlSinr1 = Create<LteTestSinrChunkProcessor> (ue1Phy);
+  Ptr<LteTestSinrChunkProcessor> testDlSinr1 = Create<LteTestSinrChunkProcessor> ();
   ue1Phy->GetDownlinkSpectrumPhy ()->AddDataSinrChunkProcessor (testDlSinr1);
 
   Ptr<LtePhy> enb1phy = enbDevs.Get (0)->GetObject<LteEnbNetDevice> ()->GetPhy ()->GetObject<LtePhy> ();
-  Ptr<LteTestSinrChunkProcessor> testUlSinr1 = Create<LteTestSinrChunkProcessor> (enb1phy);
+  Ptr<LteTestSinrChunkProcessor> testUlSinr1 = Create<LteTestSinrChunkProcessor> ();
   enb1phy->GetUplinkSpectrumPhy ()->AddDataSinrChunkProcessor (testUlSinr1);
 
   Config::Connect ("/NodeList/2/DeviceList/0/LteUePhy/ReportUeMeasurements",
@@ -216,11 +219,11 @@ LteUeMeasurementsTestCase::DoRun (void)
   // same as above for eNB2 and UE2
 
   Ptr<LtePhy> ue2Phy = ueDevs2.Get (0)->GetObject<LteUeNetDevice> ()->GetPhy ()->GetObject<LtePhy> ();
-  Ptr<LteTestSinrChunkProcessor> testDlSinr2 = Create<LteTestSinrChunkProcessor> (ue2Phy);
+  Ptr<LteTestSinrChunkProcessor> testDlSinr2 = Create<LteTestSinrChunkProcessor> ();
   ue2Phy->GetDownlinkSpectrumPhy ()->AddDataSinrChunkProcessor (testDlSinr2);
 
   Ptr<LtePhy> enb2phy = enbDevs.Get (1)->GetObject<LteEnbNetDevice> ()->GetPhy ()->GetObject<LtePhy> ();
-  Ptr<LteTestSinrChunkProcessor> testUlSinr2 = Create<LteTestSinrChunkProcessor> (enb2phy);
+  Ptr<LteTestSinrChunkProcessor> testUlSinr2 = Create<LteTestSinrChunkProcessor> ();
   enb1phy->GetUplinkSpectrumPhy ()->AddDataSinrChunkProcessor (testUlSinr2);
 
   Config::Connect ("/NodeList/3/DeviceList/0/LteUePhy/ReportUeMeasurements",
@@ -573,6 +576,9 @@ LteUeMeasurementsPiecewiseTestCase1::DoRun ()
   lteHelper->SetAttribute ("PathlossModel",
                            StringValue ("ns3::FriisSpectrumPropagationLossModel"));
   lteHelper->SetAttribute ("UseIdealRrc", BooleanValue (true));
+
+  //Disable Uplink Power Control
+  Config::SetDefault ("ns3::LteUePhy::EnableUplinkPowerControl", BooleanValue (false));
 
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
@@ -1156,6 +1162,9 @@ LteUeMeasurementsPiecewiseTestCase2::DoRun ()
                            StringValue ("ns3::FriisSpectrumPropagationLossModel"));
   lteHelper->SetAttribute ("UseIdealRrc", BooleanValue (true));
 
+  //Disable Uplink Power Control
+  Config::SetDefault ("ns3::LteUePhy::EnableUplinkPowerControl", BooleanValue (false));
+
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
   NodeContainer ueNodes;
@@ -1705,6 +1714,10 @@ LteUeMeasurementsHandoverTestCase::DoRun ()
   lteHelper->SetAttribute ("PathlossModel",
                            StringValue ("ns3::FriisSpectrumPropagationLossModel"));
   lteHelper->SetAttribute ("UseIdealRrc", BooleanValue (true));
+
+  //Disable Uplink Power Control
+  Config::SetDefault ("ns3::LteUePhy::EnableUplinkPowerControl", BooleanValue (false));
+
 
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;

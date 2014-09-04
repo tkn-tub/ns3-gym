@@ -295,6 +295,18 @@ TtaFfMacScheduler::GetFfMacSchedSapProvider ()
 }
 
 void
+TtaFfMacScheduler::SetLteFfrSapProvider (LteFfrSapProvider* s)
+{
+  m_ffrSapProvider = s;
+}
+
+LteFfrSapUser*
+TtaFfMacScheduler::GetLteFfrSapUser ()
+{
+  return m_ffrSapUser;
+}
+
+void
 TtaFfMacScheduler::DoCschedCellConfigReq (const struct FfMacCschedSapProvider::CschedCellConfigReqParameters& params)
 {
   NS_LOG_FUNCTION (this);
@@ -870,7 +882,7 @@ TtaFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
                       dciRbg.at (j) = rbgId;
                       j++;
                     }
-                  rbgId++;
+                  rbgId = (rbgId + 1) % rbgNum;
                 }
               if (j == dciRbg.size ())
                 {
@@ -888,7 +900,7 @@ TtaFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
               else
                 {
                   // HARQ retx cannot be performed on this TTI -> store it
-                  dlInfoListUntxed.push_back (params.m_dlInfoList.at (i));
+                  dlInfoListUntxed.push_back (m_dlInfoListBuffered.at (i));
                   NS_LOG_INFO (this << " No resource for this retx -> buffer it");
                 }
             }
@@ -1264,6 +1276,8 @@ TtaFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
           newDci.m_ndi.push_back (1);
           newDci.m_rv.push_back (0);
         }
+
+      newDci.m_tpc = 1; //1 is mapped to 0 in Accumulated Mode and to -1 in Absolute Mode
 
       newEl.m_dci = newDci;
 

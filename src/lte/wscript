@@ -69,7 +69,7 @@ def build(bld):
         'model/lte-ue-phy-sap.cc',
         'model/lte-ue-cphy-sap.cc',
         'model/lte-interference.cc',
-        'model/lte-sinr-chunk-processor.cc',
+        'model/lte-chunk-processor.cc',
         'model/pf-ff-mac-scheduler.cc',
         'model/fdmt-ff-mac-scheduler.cc',
         'model/tdmt-ff-mac-scheduler.cc',
@@ -107,6 +107,17 @@ def build(bld):
         'model/no-op-handover-algorithm.cc',
         'model/lte-anr-sap.cc',
         'model/lte-anr.cc',
+        'model/lte-ffr-algorithm.cc',
+        'model/lte-ffr-sap.cc',
+        'model/lte-ffr-rrc-sap.cc',
+        'model/lte-fr-no-op-algorithm.cc',
+        'model/lte-fr-hard-algorithm.cc',
+        'model/lte-fr-strict-algorithm.cc',
+        'model/lte-fr-soft-algorithm.cc',
+        'model/lte-ffr-soft-algorithm.cc',
+        'model/lte-ffr-enhanced-algorithm.cc',
+        'model/lte-ffr-distributed-algorithm.cc',
+        'model/lte-ue-power-control.cc',
         ]
 
     module_test = bld.create_ns3_module_test_library('lte')
@@ -155,6 +166,13 @@ def build(bld):
         'test/lte-test-cell-selection.cc',
         'test/test-lte-handover-delay.cc',
         'test/test-lte-handover-target.cc',
+        'test/lte-ffr-simple.cc',
+        'test/lte-test-downlink-power-control.cc',
+        'test/lte-test-uplink-power-control.cc',
+        'test/lte-test-frequency-reuse.cc',
+        'test/lte-test-interference-fr.cc',
+        'test/lte-test-cqi-generation.cc',
+        'test/lte-simple-spectrum-phy.cc',
         ]
 
     headers = bld(features='ns3header')
@@ -225,7 +243,7 @@ def build(bld):
         'model/lte-ue-phy-sap.h',
         'model/lte-ue-cphy-sap.h',
         'model/lte-interference.h',
-        'model/lte-sinr-chunk-processor.h',
+        'model/lte-chunk-processor.h',
         'model/pf-ff-mac-scheduler.h',
         'model/fdmt-ff-mac-scheduler.h',
         'model/tdmt-ff-mac-scheduler.h',
@@ -263,6 +281,17 @@ def build(bld):
         'model/no-op-handover-algorithm.h',
         'model/lte-anr-sap.h',
         'model/lte-anr.h',
+        'model/lte-ffr-algorithm.h',
+        'model/lte-ffr-sap.h',
+        'model/lte-ffr-rrc-sap.h',
+        'model/lte-fr-no-op-algorithm.h',
+        'model/lte-fr-hard-algorithm.h',
+        'model/lte-fr-strict-algorithm.h',
+        'model/lte-fr-soft-algorithm.h',
+        'model/lte-ffr-soft-algorithm.h',
+        'model/lte-ffr-enhanced-algorithm.h',
+        'model/lte-ffr-distributed-algorithm.h',     
+		'model/lte-ue-power-control.h',           
         ]
 
     if (bld.env['ENABLE_EMU']):

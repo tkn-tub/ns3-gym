@@ -270,6 +270,8 @@ CqaFfMacScheduler::CqaFfMacScheduler ()
   m_amc = CreateObject <LteAmc> ();
   m_cschedSapProvider = new CqaSchedulerMemberCschedSapProvider (this);
   m_schedSapProvider = new CqaSchedulerMemberSchedSapProvider (this);
+  m_ffrSapProvider = 0;
+  m_ffrSapUser = new MemberLteFfrSapUser<CqaFfMacScheduler> (this);
 }
 
 CqaFfMacScheduler::~CqaFfMacScheduler ()
@@ -290,6 +292,7 @@ CqaFfMacScheduler::DoDispose ()
   m_ulHarqProcessesDciBuffer.clear ();
   delete m_cschedSapProvider;
   delete m_schedSapProvider;
+  delete m_ffrSapUser;
 }
 
 TypeId
@@ -346,6 +349,18 @@ FfMacSchedSapProvider*
 CqaFfMacScheduler::GetFfMacSchedSapProvider ()
 {
   return m_schedSapProvider;
+}
+
+void
+CqaFfMacScheduler::SetLteFfrSapProvider (LteFfrSapProvider* s)
+{
+  m_ffrSapProvider = s;
+}
+
+LteFfrSapUser*
+CqaFfMacScheduler::GetLteFfrSapUser ()
+{
+  return m_ffrSapUser;
 }
 
 void
@@ -785,6 +800,16 @@ CqaFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
   uint16_t rbgAllocatedNum = 0;
   std::set <uint16_t> rntiAllocated;
   rbgMap.resize (m_cschedCellConfig.m_dlBandwidth / rbgSize, false);
+
+  rbgMap = m_ffrSapProvider->GetAvailableDlRbg ();
+  for (std::vector<bool>::iterator it = rbgMap.begin (); it != rbgMap.end (); it++)
+    {
+      if ((*it) == true )
+        {
+          rbgAllocatedNum++;
+        }
+    }
+
   FfMacSchedSapUser::SchedDlConfigIndParameters ret;
 
   //   update UL HARQ proc id
@@ -796,8 +821,48 @@ CqaFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
 
 
   // RACH Allocation
+  uint16_t rbAllocatedNum = 0;
+  std::vector <bool> ulRbMap;
+  ulRbMap.resize (m_cschedCellConfig.m_ulBandwidth, false);
+  ulRbMap = m_ffrSapProvider->GetAvailableUlRbg ();
+  uint8_t maxContinuousUlBandwidth = 0;
+  uint8_t tmpMinBandwidth = 0;
+  uint16_t ffrRbStartOffset = 0;
+  uint16_t tmpFfrRbStartOffset = 0;
+  uint16_t index = 0;
+
+  for (std::vector<bool>::iterator it = ulRbMap.begin (); it != ulRbMap.end (); it++)
+    {
+      if ((*it) == true )
+        {
+          rbAllocatedNum++;
+          if (tmpMinBandwidth > maxContinuousUlBandwidth)
+            {
+              maxContinuousUlBandwidth = tmpMinBandwidth;
+              ffrRbStartOffset = tmpFfrRbStartOffset;
+            }
+          tmpMinBandwidth = 0;
+        }
+      else
+        {
+          if (tmpMinBandwidth == 0)
+            {
+              tmpFfrRbStartOffset = index;
+            }
+          tmpMinBandwidth++;
+        }
+      index++;
+    }
+
+  if (tmpMinBandwidth > maxContinuousUlBandwidth)
+    {
+      maxContinuousUlBandwidth = tmpMinBandwidth;
+      ffrRbStartOffset = tmpFfrRbStartOffset;
+    }
+
   m_rachAllocationMap.resize (m_cschedCellConfig.m_ulBandwidth, 0);
   uint16_t rbStart = 0;
+  rbStart = ffrRbStartOffset;
   std::vector <struct RachListElement_s>::iterator itRach;
   for (itRach = m_rachList.begin (); itRach != m_rachList.end (); itRach++)
     {
@@ -812,7 +877,7 @@ CqaFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
       uint16_t rbLen = 1;
       uint16_t tbSizeBits = 0;
       // find lowest TB size that fits UL grant estimated size
-      while ((tbSizeBits < (*itRach).m_estimatedSize) && (rbStart + rbLen < m_cschedCellConfig.m_ulBandwidth))
+      while ((tbSizeBits < (*itRach).m_estimatedSize) && (rbStart + rbLen < (ffrRbStartOffset + maxContinuousUlBandwidth)))
         {
           rbLen++;
           tbSizeBits = m_amc->GetTbSizeFromMcs (m_ulGrantMcs, rbLen);
@@ -1019,7 +1084,7 @@ CqaFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
                       dciRbg.at (j) = rbgId;
                       j++;
                     }
-                  rbgId++;
+                  rbgId = (rbgId + 1) % numberOfRBGs;
                 }
               if (j == dciRbg.size ())
                 {
@@ -1037,7 +1102,7 @@ CqaFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
               else
                 {
                   // HARQ retx cannot be performed on this TTI -> store it
-                  dlInfoListUntxed.push_back (params.m_dlInfoList.at (i));
+                  dlInfoListUntxed.push_back (m_dlInfoListBuffered.at (i));
                   NS_LOG_INFO (this << " No resource for this retx -> buffer it");
                 }
             }
@@ -1287,7 +1352,9 @@ CqaFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
   for (int i = 0; i <  numberOfRBGs; i++)
     {
       if (rbgMap.at (i) == false)
-        availableRBGs.insert (i);
+        {
+          availableRBGs.insert (i);
+        }
     }
 
   t_it_HOLgroupToUEs itGBRgroups = map_GBRHOLgroupToUE.begin ();
@@ -1319,6 +1386,7 @@ CqaFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
 
       while (availableRBGs.size ()>0 and itCurrentGroup->second.size ()>0)
         {
+          bool currentRBchecked = false;
           int currentRB = *(availableRBGs.begin ());
           std::map<LteFlowId_t, CQI_value> UeToCQIValue;
           std::map<LteFlowId_t, double > UeToCoitaMetric;
@@ -1343,10 +1411,16 @@ CqaFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
 
               std::map <uint16_t, CqasFlowPerf_t>::iterator itStats;
 
+              if ((m_ffrSapProvider->IsDlRbgAvailableForUe (currentRB, flowId.m_rnti)) == false)
+                {
+                  continue;
+                }
+
               if (m_flowStatsDl.find (flowId.m_rnti) == m_flowStatsDl.end ())
                 {
                   continue;                               // TO DO:  check if this should be logged and how.
                 }
+              currentRBchecked = true;
 
               itStats = m_flowStatsDl.find (flowId.m_rnti);
               double tbr_weight = (*itStats).second.targetThroughput / (*itStats).second.lastAveragedThroughput;
@@ -1459,6 +1533,13 @@ CqaFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
                   maximumValueMetric = metric;
                   userWithMaximumMetric = flowId;
                 }
+            }
+
+          if (!currentRBchecked)
+            {
+              // erase current RBG from the list of available RBG
+              availableRBGs.erase (currentRB);
+              continue;
             }
 
           qos_rb_and_CQI_assigned_to_lc s;
@@ -1595,6 +1676,8 @@ CqaFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
       newDci.m_rv.push_back (0);
       //}
 
+      newDci.m_tpc = m_ffrSapProvider->GetTpc ((*itMap).first);
+
       newEl.m_dci = newDci;
 
       if (m_harqOn == true)
@@ -1677,6 +1760,7 @@ void
 CqaFfMacScheduler::DoSchedDlCqiInfoReq (const struct FfMacSchedSapProvider::SchedDlCqiInfoReqParameters& params)
 {
   NS_LOG_FUNCTION (this);
+  m_ffrSapProvider->ReportDlCqiInfo (params);
 
   for (unsigned int i = 0; i < params.m_cqiList.size (); i++)
     {
@@ -1771,6 +1855,7 @@ CqaFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sche
   NS_LOG_FUNCTION (this << " UL - Frame no. " << (params.m_sfnSf >> 4) << " subframe no. " << (0xF & params.m_sfnSf) << " size " << params.m_ulInfoList.size ());
 
   RefreshUlCqiMaps ();
+  m_ffrSapProvider->ReportUlCqiInfo (m_ueCqi);
 
   // Generate RBs map
   FfMacSchedSapUser::SchedUlConfigIndParameters ret;
@@ -1785,6 +1870,20 @@ CqaFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sche
   m_rachAllocationMap.resize (m_cschedCellConfig.m_ulBandwidth, 0);
 
   rbMap.resize (m_cschedCellConfig.m_ulBandwidth, false);
+
+  rbMap = m_ffrSapProvider->GetAvailableUlRbg ();
+
+  for (std::vector<bool>::iterator it = rbMap.begin (); it != rbMap.end (); it++)
+    {
+      if ((*it) == true )
+        {
+          rbAllocatedNum++;
+        }
+    }
+
+  uint8_t minContinuousUlBandwidth = m_ffrSapProvider->GetMinContinuousUlBandwidth ();
+  uint8_t ffrUlBandwidth = m_cschedCellConfig.m_ulBandwidth - rbAllocatedNum;
+
   // remove RACH allocation
   for (uint16_t i = 0; i < m_cschedCellConfig.m_ulBandwidth; i++)
     {
@@ -1897,7 +1996,9 @@ CqaFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sche
 
 
   // Divide the remaining resources equally among the active users starting from the subsequent one served last scheduling trigger
-  uint16_t rbPerFlow = (m_cschedCellConfig.m_ulBandwidth) / (nflows + rntiAllocated.size ());
+  uint16_t tempRbPerFlow = (ffrUlBandwidth) / (nflows + rntiAllocated.size ());
+  uint16_t rbPerFlow = (minContinuousUlBandwidth < tempRbPerFlow) ? minContinuousUlBandwidth : tempRbPerFlow;
+
   if (rbPerFlow < 3)
     {
       rbPerFlow = 3;  // at least 3 rbg per flow (till available resource) to ensure TxOpportunity >= 7 bytes
@@ -1951,6 +2052,7 @@ CqaFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sche
             }
         }
 
+      rbAllocated = 0;
       UlDciListElement_s uldci;
       uldci.m_rnti = (*it).first;
       uldci.m_rbLen = rbPerFlow;
@@ -1967,9 +2069,15 @@ CqaFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sche
                   free = false;
                   break;
                 }
+              if ((m_ffrSapProvider->IsUlRbgAvailableForUe (j, (*it).first)) == false)
+                {
+                  free = false;
+                  break;
+                }
             }
           if (free)
             {
+        	  NS_LOG_INFO (this << "RNTI: "<< (*it).first<< " RB Allocated " << rbAllocated << " rbPerFlow " << rbPerFlow << " flows " << nflows);
               uldci.m_rbStart = rbAllocated;
 
               for (uint16_t j = rbAllocated; j < rbAllocated + rbPerFlow; j++)
@@ -1998,13 +2106,14 @@ CqaFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sche
       if (!allocated)
         {
           // unable to allocate new resource: finish scheduling
-          m_nextRntiUl = (*it).first;
-          if (ret.m_dciList.size () > 0)
-            {
-              m_schedSapUser->SchedUlConfigInd (ret);
-            }
-          m_allocationMaps.insert (std::pair <uint16_t, std::vector <uint16_t> > (params.m_sfnSf, rbgAllocationMap));
-          return;
+//          m_nextRntiUl = (*it).first;
+//          if (ret.m_dciList.size () > 0)
+//            {
+//              m_schedSapUser->SchedUlConfigInd (ret);
+//            }
+//          m_allocationMaps.insert (std::pair <uint16_t, std::vector <uint16_t> > (params.m_sfnSf, rbgAllocationMap));
+//          return;
+          break;
         }
 
 

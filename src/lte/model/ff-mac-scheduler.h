@@ -33,6 +33,8 @@ class FfMacCschedSapUser;
 class FfMacSchedSapUser;
 class FfMacCschedSapProvider;
 class FfMacSchedSapProvider;
+class LteFfrSapProvider;
+class LteFfrSapUser;
 
 /**
  * \ingroup lte
@@ -106,6 +108,21 @@ public:
    */
   virtual FfMacSchedSapProvider* GetFfMacSchedSapProvider () = 0;
 
+  //FFR SAPs
+  /**
+   *
+   * Set the Provider part of the LteFfrSap that this Scheduler will
+   * interact with
+   *
+   * \param s
+   */
+  virtual void SetLteFfrSapProvider (LteFfrSapProvider* s) = 0;
+
+  /**
+   *
+   * \return the User part of the LteFfrSap provided by the FfrAlgorithm
+   */
+  virtual LteFfrSapUser* GetLteFfrSapUser () = 0;
   
 protected:
     

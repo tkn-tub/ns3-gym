@@ -159,3 +159,8 @@ References
    (Spain). 
 
 
+.. [ASHamza2013] Abdelbaset S. Hamza, Shady S. Khalifa, Haitham S. Hamza, and Khaled Elsayed, "A Survey on Inter-Cell Interference Coordination Techniques in OFDMA-based Cellular Networks", IEEE Communications Surveys & Tutorials, March 19, 2013
+
+.. [ZXie2009] Zheng Xie, Bernhard Walke, "Enhanced Fractional Frequency Reuse to Increase Capacity of OFDMA Systems", Proceedings of the 3rd international conference on New technologies, mobility and security, NTMS 2009
+
+.. [DKimura2012] D. Kimura, H. Seki, "Inter-Cell Interference Coordination (ICIC) Technology", FUJITSU Sci. Tech. J., Vol. 48, No. 1 (January 2012)

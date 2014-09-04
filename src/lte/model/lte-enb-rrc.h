@@ -39,6 +39,7 @@
 #include <ns3/lte-enb-cphy-sap.h>
 #include <ns3/lte-rrc-sap.h>
 #include <ns3/lte-anr-sap.h>
+#include <ns3/lte-ffr-rrc-sap.h>
 
 #include <map>
 #include <set>
@@ -139,7 +140,7 @@ public:
    * 
    */
   void RecordDataRadioBearersToBeStarted ();
-  
+
   /** 
    * Start the data radio bearers that have been previously recorded
    * to be started using RecordDataRadioBearersToBeStarted() 
@@ -174,7 +175,7 @@ public:
    * \param params 
    */
   void RecvHandoverRequestAck (EpcX2SapUser::HandoverRequestAckParams params);
-  
+
   /** 
    * 
    * \return the HandoverPreparationInfo sent by the source eNB to the
@@ -261,7 +262,7 @@ public:
   // METHODS FORWARDED FROM ENB PDCP SAP //////////////////////////////////////
 
   void DoReceivePdcpSdu (LtePdcpSapUser::ReceivePdcpSduParameters params);
-  
+
   /** 
    * 
    * \return the RNTI, i.e., an UE identifier that is unique within
@@ -294,6 +295,13 @@ public:
    */
   State GetState () const;
 
+  /**
+   * Configure PdschConfigDedicated (i.e. P_A value) for UE and start RrcConnectionReconfiguration
+   * to inform UE about new PdschConfigDedicated
+   *
+   * \param pdschConfigDedicated new pdschConfigDedicated (i.e. P_A value) to be set
+   */
+  void SetPdschConfigDedicated (LteRrcSap::PdschConfigDedicated pdschConfigDedicated);
 
 private:
 
@@ -381,7 +389,7 @@ private:
    * \return the corresponding Data Radio Bearer Id
    */
   uint8_t Bid2Drbid (uint8_t bid);
-  
+
   /** 
    * Switch the UeManager to the given state
    * 
@@ -408,7 +416,7 @@ private:
   uint16_t m_sourceCellId;
   uint16_t m_targetCellId;
   std::list<uint8_t> m_drbsToBeStarted;
-  bool m_needTransmissionModeConfiguration;
+  bool m_needPhyMacConfiguration;
 
   EventId m_connectionRequestTimeout;
   EventId m_connectionSetupTimeout;
@@ -431,6 +439,7 @@ class LteEnbRrc : public Object
   friend class EnbRrcMemberLteEnbCmacSapUser;
   friend class MemberLteHandoverManagementSapUser<LteEnbRrc>;
   friend class MemberLteAnrSapUser<LteEnbRrc>;
+  friend class MemberLteFfrRrcSapUser<LteEnbRrc>;
   friend class MemberLteEnbRrcSapProvider<LteEnbRrc>;
   friend class MemberEpcEnbS1SapUser<LteEnbRrc>;
   friend class EpcX2SpecificEpcX2SapUser<LteEnbRrc>;
@@ -512,6 +521,21 @@ public:
    */
   LteAnrSapUser* GetLteAnrSapUser ();
 
+
+
+  /**
+   * set the FFR SAP this RRC should interact with
+   *
+   * \param s the FFR SAP Provider to be used by this RRC
+   */
+  void SetLteFfrRrcSapProvider (LteFfrRrcSapProvider * s);
+
+  /**
+   * Get the FFR SAP offered by this RRC
+   * \return s the FFR SAP User interface offered to the ANR instance by this
+   *           RRC
+   */
+  LteFfrRrcSapUser* GetLteFfrRrcSapUser ();
 
   /**
    * set the RRC SAP this RRC should interact with
@@ -764,6 +788,10 @@ private:
 
   uint8_t DoAddUeMeasReportConfigForAnr (LteRrcSap::ReportConfigEutra reportConfig);
 
+  // FFR RRC SAP methods
+  uint8_t DoAddUeMeasReportConfigForFfr (LteRrcSap::ReportConfigEutra reportConfig);
+  void DoSetPdschConfigDedicated (uint16_t rnti, LteRrcSap::PdschConfigDedicated pa);
+  void DoSendLoadInformation (EpcX2Sap::LoadInformationParams params);
 
   // Internal methods
 
@@ -902,6 +930,9 @@ private:
   LteAnrSapUser* m_anrSapUser;
   LteAnrSapProvider* m_anrSapProvider;
 
+  LteFfrRrcSapUser* m_ffrRrcSapUser;
+  LteFfrRrcSapProvider* m_ffrRrcSapProvider;
+
   LteEnbRrcSapUser* m_rrcSapUser;
   LteEnbRrcSapProvider* m_rrcSapProvider;
 
@@ -934,6 +965,7 @@ private:
 
   std::set<uint8_t> m_handoverMeasIds;
   std::set<uint8_t> m_anrMeasIds;
+  std::set<uint8_t> m_ffrMeasIds;
 
   struct X2uTeidInfo
   {
@@ -974,15 +1006,15 @@ private:
   Time m_handoverJoiningTimeoutDuration;
   Time m_handoverLeavingTimeoutDuration;
 
-  //             cellid    rnti   
+  //             cellid    rnti
   TracedCallback<uint16_t, uint16_t> m_newUeContextTrace;
-  //             imsi      cellid    rnti   
+  //             imsi      cellid    rnti
   TracedCallback<uint64_t, uint16_t, uint16_t> m_connectionEstablishedTrace;
-  //             imsi      cellid    rnti   
+  //             imsi      cellid    rnti
   TracedCallback<uint64_t, uint16_t, uint16_t> m_connectionReconfigurationTrace;
   //             imsi      cellid    rnti     targetCellId
   TracedCallback<uint64_t, uint16_t, uint16_t, uint16_t> m_handoverStartTrace;
-  //             imsi      cellid    rnti    
+  //             imsi      cellid    rnti
   TracedCallback<uint64_t, uint16_t, uint16_t> m_handoverEndOkTrace;
 
   //             imsi      cellid    rnti

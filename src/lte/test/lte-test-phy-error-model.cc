@@ -169,6 +169,9 @@ LenaDataPhyErrorModelTestCase::DoRun (void)
   Config::SetDefault ("ns3::RrFfMacScheduler::HarqEnabled", BooleanValue (false));
   Config::SetGlobal ("RngRun", IntegerValue (m_rngRun));
 
+  //Disable Uplink Power Control
+  Config::SetDefault ("ns3::LteUePhy::EnableUplinkPowerControl", BooleanValue (false));
+
   /*
    * Initialize Simulation Scenario: 1 eNB and m_nUser UEs
    */
@@ -321,6 +324,9 @@ LenaDlCtrlPhyErrorModelTestCase::DoRun (void)
   Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));
   Config::SetDefault ("ns3::RrFfMacScheduler::HarqEnabled", BooleanValue (false));
   Config::SetGlobal ("RngRun", IntegerValue (m_rngRun));
+
+  //Disable Uplink Power Control
+  Config::SetDefault ("ns3::LteUePhy::EnableUplinkPowerControl", BooleanValue (false));
 
   /*
    * Initialize Simulation Scenario: 1 eNB and m_nUser UEs

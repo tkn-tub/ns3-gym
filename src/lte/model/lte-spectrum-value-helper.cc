@@ -36,7 +36,7 @@ operator << (ostream& os, const vector<int>& v)
   vector<int>::const_iterator it = v.begin ();
   while (it != v.end ())
     {
-      os << *it << " " ;
+      os << *it << " ";
       ++it;
     }
   os << endl;
@@ -52,7 +52,7 @@ namespace ns3 {
 /**
  * Table 5.7.3-1 "E-UTRA channel numbers" from 3GPP TS 36.101
  * The table was converted to C syntax doing a cut & paste from TS 36.101 and running the following filter:
- * awk '{if ((NR % 7) == 1) printf("{"); printf ("%s",$0); if ((NR % 7) == 0) printf("},\n"); else printf(", ");}' | sed 's/ – /, /g' 
+ * awk '{if ((NR % 7) == 1) printf("{"); printf ("%s",$0); if ((NR % 7) == 0) printf("},\n"); else printf(", ");}' | sed 's/ – /, /g'
  */
 static const struct EutraChannelNumbers
 {
@@ -254,6 +254,45 @@ LteSpectrumValueHelper::CreateTxPowerSpectralDensity (uint16_t earfcn, uint8_t t
 
   return txPsd;
 }
+
+Ptr<SpectrumValue>
+LteSpectrumValueHelper::CreateTxPowerSpectralDensity (uint16_t earfcn, uint8_t txBandwidthConfiguration, double powerTx, std::map<int, double> powerTxMap, std::vector <int> activeRbs)
+{
+  NS_LOG_FUNCTION (earfcn << (uint16_t) txBandwidthConfiguration << activeRbs);
+
+  Ptr<SpectrumModel> model = GetSpectrumModel (earfcn, txBandwidthConfiguration);
+  Ptr<SpectrumValue> txPsd = Create <SpectrumValue> (model);
+
+  // powerTx is expressed in dBm. We must convert it into natural unit.
+  double powerTxW = std::pow (10., (powerTx - 30) / 10);
+  double basicPowerTxW = std::pow (10., (powerTx - 30) / 10);
+
+  double txPowerDensity = (powerTxW / (txBandwidthConfiguration * 180000));
+
+  for (std::vector <int>::iterator it = activeRbs.begin (); it != activeRbs.end (); it++)
+    {
+      int rbId = (*it);
+
+      std::map<int, double>::iterator powerIt = powerTxMap.find (rbId);
+
+      if (powerIt != powerTxMap.end ())
+        {
+          powerTxW = std::pow (10., (powerIt->second - 30) / 10);
+          txPowerDensity = (powerTxW / (txBandwidthConfiguration * 180000));
+        }
+      else
+        {
+          txPowerDensity = (basicPowerTxW / (txBandwidthConfiguration * 180000));
+        }
+
+      (*txPsd)[rbId] = txPowerDensity;
+    }
+
+  NS_LOG_LOGIC (*txPsd);
+
+  return txPsd;
+}
+
 
 
 Ptr<SpectrumValue>

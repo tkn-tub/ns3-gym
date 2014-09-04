@@ -133,6 +133,66 @@ public:
     uint8_t transmissionMode;
   };
 
+  struct PdschConfigCommon
+  {
+	int8_t referenceSignalPower;  // INTEGER (-60..50),
+    int8_t pb;                    // INTEGER (0..3),
+  };
+
+  struct PdschConfigDedicated
+  {
+    /*
+     * P_A values, TS 36.331 6.3.2 PDSCH-Config
+     * ENUMERATED { dB-6, dB-4dot77, dB-3, dB-1dot77, dB0, dB1, dB2, dB3 }
+     */
+    enum
+    {
+      dB_6,
+      dB_4dot77,
+      dB_3,
+      dB_1dot77,
+      dB0,
+      dB1,
+      dB2,
+      dB3
+    } value;
+    uint8_t pa;
+  };
+
+  static double ConvertPdschConfigDedicated2Double (PdschConfigDedicated pdschConfigDedicated)
+  {
+    double pa = 0;
+    switch (pdschConfigDedicated.pa)
+      {
+      case PdschConfigDedicated::dB_6:
+        pa = -6;
+        break;
+      case PdschConfigDedicated::dB_4dot77:
+        pa = -4.77;
+        break;
+      case PdschConfigDedicated::dB_3:
+        pa = -3;
+        break;
+      case PdschConfigDedicated::dB_1dot77:
+        pa = -1.77;
+        break;
+      case PdschConfigDedicated::dB0:
+        pa = 0;
+        break;
+      case PdschConfigDedicated::dB1:
+        pa = 1;
+        break;
+      case PdschConfigDedicated::dB2:
+        pa = 2;
+        break;
+      case PdschConfigDedicated::dB3:
+        pa = 3;
+        break;
+      default:
+        break;
+      }
+    return pa;
+  }
 
   struct PhysicalConfigDedicated
   {
@@ -140,6 +200,8 @@ public:
     SoundingRsUlConfigDedicated soundingRsUlConfigDedicated;
     bool haveAntennaInfoDedicated;
     AntennaInfoDedicated antennaInfo;
+    bool havePdschConfigDedicated;
+    PdschConfigDedicated pdschConfigDedicated;
   };
 
 
@@ -183,6 +245,7 @@ public:
   struct RadioResourceConfigCommonSib
   {
     RachConfigCommon rachConfigCommon;
+    PdschConfigCommon pdschConfigCommon;
   };
 
   struct RadioResourceConfigDedicated

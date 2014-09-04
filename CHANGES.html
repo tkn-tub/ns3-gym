@@ -63,6 +63,32 @@ us a note on ns-developers mailing list.</p>
        the effect of including the help string for the Attribute in the
        Usage message.
   </li>
+  <li> The GSoC 2014 project in the LTE module has brought some additional APIs:
+    <ul>
+      <li>a new abstract class LteFfrAlgorithm, which every future
+          implementation of frequency reuse algorithm should inherit from</li>
+      <li>a new SAPs: one between MAC Scheduler and FrAlgorithm, one between
+	  RRC and FrAlgorithm</li>
+      <li>new attribute to enable Uplink Power Control in LteUePhy</li>
+      <li>new LteUePowerControl class, an implementation of Uplink Power Control, which is 
+          configurable by attributes. ReferenceSignalPower is sent by eNB in SIB2. 
+          Uplink Power Control in Closed Loop Accumulative Mode is enabled by default</li>
+      <li>seven different Frequency Reuse Algorithms (each has its own attributes): </li>
+        <ul>
+          <li>LteFrNoOpAlgorithm</li>
+          <li>LteFrHardAlgorithm</li>
+          <li>LteFrStrictAlgorithm</li>
+          <li>LteFrSoftAlgorithm</li>
+          <li>LteFfrSoftAlgorithm</li>
+          <li>LteFfrEnhancedAlgorithm</li>
+          <li>LteFfrDistributedAlgorithm</li>
+        </ul>
+      <li>attribute in LteFfrAlgorithm to set FrCellTypeId which is used in automatic 
+          Frequency Reuse algorithm configuration</li>
+      <li>LteHelper has been updated with new methods related to frequency reuse algorithm: 
+          SetFfrAlgorithmType and SetFfrAlgorithmAttribute</li>
+    </ul>
+  </li>
 </ul>
 
 <h2>Changes to existing API:</h2>
@@ -72,6 +98,18 @@ us a note on ns-developers mailing list.</p>
   <li> The TCP socket Attribute "SlowStartThreshold" has been renamed "InitialSlowStartThreshold" to
        clarify that the effect is only on the initial value.
   </li>
+  <li> all schedulers were updated to interact with FR entity via FFR-SAP. Only PF, PSS, CQA, 
+       FD-TBFQ, TD-TBFQ schedulers supports Frequency Reuse functionality. In the beginning 
+       of scheduling process, schedulers ask FR entity for avaiable RBGs and then ask if UE 
+       can be scheduled on RB</li>
+  <li> eNB RRC interacts with FFR entity via RRC-FFR SAP</li>
+  <li> new DL-CQI generation approach was implemented. Now DL-CQI is computed from control channel as signal
+       and data channel (if received) as interference. New attribute in LteHelper was added to specify 
+       DL-CQI generation approach. New approach is default one in LteHelper </li>
+  <li> RadioEnvironmentMap can be generated for Data or Control channel and for specified RbId;
+       Data or Control channel and RbId can be configured by new attributes in RadioEnvironmentMapHelper </li>
+  <li> lte-sinr-chunk-processor refactored to lte-chunk-processor. Removed all lte-xxx-chunk-processor 
+       implementations</li>
 </ul>
 
 <h2>Changes to build system:</h2>

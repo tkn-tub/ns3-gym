@@ -501,6 +501,8 @@ private:
 
   uint8_t m_lastRrcTransactionIdentifier;
 
+  LteRrcSap::PdschConfigDedicated m_pdschConfigDedicated;
+
   uint8_t m_dlBandwidth; /**< downlink bandwidth in RBs */
   uint8_t m_ulBandwidth; /**< uplink bandwidth in RBs */
 

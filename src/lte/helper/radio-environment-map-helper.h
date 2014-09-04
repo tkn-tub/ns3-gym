@@ -112,6 +112,9 @@ private:
 
   std::ofstream m_outFile;
 
+  bool m_useDataChannel;
+  int32_t m_rbId;
+
 };
 
 

@@ -808,6 +808,7 @@ LteUeRrc::DoRecvSystemInformation (LteRrcSap::SystemInformation msg)
           rc.raResponseWindowSize = msg.sib2.radioResourceConfigCommon.rachConfigCommon.raSupervisionInfo.raResponseWindowSize;
           m_cmacSapProvider->ConfigureRach (rc);
           m_cphySapProvider->ConfigureUplink (m_ulEarfcn, m_ulBandwidth);
+          m_cphySapProvider->ConfigureReferenceSignalPower(msg.sib2.radioResourceConfigCommon.pdschConfigCommon.referenceSignalPower);
           if (m_state == IDLE_WAIT_SIB2)
             {
               NS_ASSERT (m_connectionPending);
@@ -1102,7 +1103,7 @@ LteUeRrc::ApplyRadioResourceConfigDedicated (LteRrcSap::RadioResourceConfigDedic
 {
   NS_LOG_FUNCTION (this);
   const struct LteRrcSap::PhysicalConfigDedicated& pcd = rrcd.physicalConfigDedicated;
-  
+
   if (pcd.haveAntennaInfoDedicated)
     {
       m_cphySapProvider->SetTransmissionMode (pcd.antennaInfo.transmissionMode);
@@ -1111,6 +1112,12 @@ LteUeRrc::ApplyRadioResourceConfigDedicated (LteRrcSap::RadioResourceConfigDedic
     {
       m_cphySapProvider->SetSrsConfigurationIndex (pcd.soundingRsUlConfigDedicated.srsConfigIndex);
     }
+
+  if (pcd.havePdschConfigDedicated)
+    {
+      // update PdschConfigDedicated (i.e. P_A value)
+	  m_pdschConfigDedicated = pcd.pdschConfigDedicated;
+   }
 
   std::list<LteRrcSap::SrbToAddMod>::const_iterator stamIt = rrcd.srbToAddModList.begin ();
   if (stamIt != rrcd.srbToAddModList.end ())

@@ -207,6 +207,9 @@ LenaTdBetFfMacSchedulerTestCase1::DoRun (void)
 
   Config::SetDefault ("ns3::LteHelper::UseIdealRrc", BooleanValue (true));
 
+  //Disable Uplink Power Control
+  Config::SetDefault ("ns3::LteUePhy::EnableUplinkPowerControl", BooleanValue (false));
+
   /**
    * Initialize Simulation Scenario: 1 eNB and m_nUser UEs
    */

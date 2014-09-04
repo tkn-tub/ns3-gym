@@ -114,6 +114,26 @@ public:
 
   /**
    *
+   * \param type the type of FFR algorithm to be used for the eNBs
+   */
+  void SetFfrAlgorithmType (std::string type);
+
+  /**
+   *
+   * \return the FFR algorithm type
+   */
+  std::string GetFfrAlgorithmType () const;
+
+  /**
+   * set an attribute for the FFR algorithm to be created
+   *
+   * \param n the name of the attribute
+   * \param v the value of the attribute
+   */
+  void SetFfrAlgorithmAttribute (std::string n, const AttributeValue &v);
+
+  /**
+   *
    * \param type the type of handover algorithm to be used for the eNBs
    */
   void SetHandoverAlgorithmType (std::string type);
@@ -538,6 +558,7 @@ private:
   Ptr<Object> m_uplinkPathlossModel;
 
   ObjectFactory m_schedulerFactory;
+  ObjectFactory m_ffrAlgorithmFactory;
   ObjectFactory m_handoverAlgorithmFactory;
   ObjectFactory m_propagationModelFactory;
   ObjectFactory m_enbNetDeviceFactory;
@@ -570,6 +591,8 @@ private:
 
   bool m_useIdealRrc;
   bool m_isAnrEnabled;
+
+  bool m_usePdschForCqiGeneration;
 };
 
 

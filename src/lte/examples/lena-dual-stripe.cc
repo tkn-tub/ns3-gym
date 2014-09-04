@@ -299,6 +299,12 @@ static ns3::GlobalValue g_generateRem ("generateRem",
                                        "if false, will run the simulation normally (without generating any REM)",
                                        ns3::BooleanValue (false),
                                        ns3::MakeBooleanChecker ());
+static ns3::GlobalValue g_remRbId ("remRbId",
+                                   "Resource Block Id of Data Channel, for which REM will be generated;"
+                                   "default value is -1, what means REM will be averaged from all RBs of "
+                                   "Control Channel",
+                                   ns3::IntegerValue (-1),
+                                   MakeIntegerChecker<int32_t> ());
 static ns3::GlobalValue g_epc ("epc",
                                "If true, will setup the EPC to simulate an end-to-end topology, "
                                "with real IP applications over PDCP and RLC UM (or RLC AM by changing "
@@ -366,6 +372,7 @@ main (int argc, char *argv[])
 
   // the scenario parameters get their values from the global attributes defined above
   UintegerValue uintegerValue;
+  IntegerValue integerValue;
   DoubleValue doubleValue;
   BooleanValue booleanValue;
   StringValue stringValue;
@@ -415,6 +422,8 @@ main (int argc, char *argv[])
   bool useUdp = booleanValue.Get ();
   GlobalValue::GetValueByName ("generateRem", booleanValue);
   bool generateRem = booleanValue.Get ();
+  GlobalValue::GetValueByName ("remRbId", integerValue);
+  int32_t remRbId = integerValue.Get ();
   GlobalValue::GetValueByName ("fadingTrace", stringValue);
   std::string fadingTrace = stringValue.Get ();
   GlobalValue::GetValueByName ("numBearersPerUe", uintegerValue);
@@ -832,6 +841,13 @@ main (int argc, char *argv[])
       remHelper->SetAttribute ("YMin", DoubleValue (macroUeBox.yMin));
       remHelper->SetAttribute ("YMax", DoubleValue (macroUeBox.yMax));
       remHelper->SetAttribute ("Z", DoubleValue (1.5));
+
+      if (remRbId >= 0)
+        {
+          remHelper->SetAttribute ("UseDataChannel", BooleanValue (true));
+          remHelper->SetAttribute ("RbId", IntegerValue (remRbId));
+        }
+
       remHelper->Install ();
       // simulation will stop right after the REM has been generated
     }

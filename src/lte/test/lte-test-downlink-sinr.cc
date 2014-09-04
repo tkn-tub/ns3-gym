@@ -135,7 +135,7 @@ LteDownlinkDataSinrTestCase::DoRun (void)
   dlPhy->SetCellId (cellId);
   ulPhy->SetCellId (cellId);
 
-  Ptr<LteTestSinrChunkProcessor> chunkProcessor = Create<LteTestSinrChunkProcessor> (uePhy->GetObject<LtePhy> ());
+  Ptr<LteTestSinrChunkProcessor> chunkProcessor = Create<LteTestSinrChunkProcessor> ();
   dlPhy->AddDataSinrChunkProcessor (chunkProcessor);
 
   /**
@@ -261,7 +261,7 @@ LteDownlinkDataSinrTestCase::DoRun (void)
   Simulator::Run ();
 
   /**
-   * Check that the values passed to LteSinrChunkProcessor::EvaluateSinrChunk () correspond
+   * Check that the values passed to LteChunkProcessor::EvaluateChunk () correspond
    * to known values which have been calculated offline (with octave) for the generated signals
    */
   Ptr<SpectrumValue> calculatedSinr = chunkProcessor->GetSinr ();
@@ -307,7 +307,7 @@ LteDownlinkCtrlSinrTestCase::DoRun (void)
   dlPhy->SetCellId (cellId);
   ulPhy->SetCellId (cellId);
   
-  Ptr<LteTestSinrChunkProcessor> chunkProcessor = Create<LteTestSinrChunkProcessor> (uePhy->GetObject<LtePhy> ());
+  Ptr<LteTestSinrChunkProcessor> chunkProcessor = Create<LteTestSinrChunkProcessor> ();
   dlPhy->AddCtrlSinrChunkProcessor (chunkProcessor);
   
   /**
@@ -433,7 +433,7 @@ LteDownlinkCtrlSinrTestCase::DoRun (void)
   Simulator::Run ();
   
   /**
-  * Check that the values passed to LteSinrChunkProcessor::EvaluateSinrChunk () correspond
+  * Check that the values passed to LteChunkProcessor::EvaluateChunk () correspond
   * to known values which have been calculated offline (with octave) for the generated signals
   */
   Ptr<SpectrumValue> calculatedSinr = chunkProcessor->GetSinr ();

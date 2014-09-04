@@ -48,7 +48,7 @@ class LteEnbPhy : public LtePhy
 {
   friend class EnbMemberLteEnbPhySapProvider;
   friend class MemberLteEnbCphySapProvider<LteEnbPhy>;
-  
+
 public:
   /**
    * @warning the default constructor should not be used
@@ -104,6 +104,10 @@ public:
    */
   double GetTxPower () const;
 
+  /**
+   * \return the transmission power in dBm
+   */
+  int8_t DoGetReferenceSignalPower () const;
 
   /**
    * \param pow the noise figure in dB
@@ -119,7 +123,7 @@ public:
    * \param delay the TTI delay between MAC and channel
    */
   void SetMacChDelay (uint8_t delay);
-  
+
   /**
    * \returns the TTI delay between MAC and channel
    */
@@ -134,7 +138,7 @@ public:
    * \return a pointer to the LteSpectrumPhy instance relative to the uplink
    */
   Ptr<LteSpectrumPhy> GetUlSpectrumPhy () const;
-  
+
 
   /**
    * \brief set the resource blocks (a.k.a. sub channels) to be used in the downlink for transmission
@@ -146,7 +150,16 @@ public:
    */
   void SetDownlinkSubChannels (std::vector<int> mask );
 
-
+  /**
+   * \brief set the resource blocks (a.k.a. sub channels) and its power
+   * to be used in the downlink for transmission
+   *
+   * \param mask a vector of integers, if the i-th value is j it means
+   * that the j-th resource block is used for transmission in the
+   * downlink. If there is no i such that the value of the i-th
+   * element is j, it means that RB j is not used.
+   */
+  void SetDownlinkSubChannelsWithPowerAllocation (std::vector<int> mask);
   /**
    * 
    * \return  a vector of integers, if the i-th value is j it means
@@ -156,10 +169,25 @@ public:
    */
   std::vector<int> GetDownlinkSubChannels (void);
 
+
+  /**
+   * \brief Generate power allocation map (i.e. tx power level for each RB)
+   *
+   * \param rnti indicates which UE will occupy this RB
+   * \param rbId indicates which RB UE is using,
+   * power level for this RB is power level of UE
+   */
+  void GeneratePowerAllocationMap (uint16_t rnti, int rbId);
+
   /**
    * \brief Create the PSD for TX
    */
   virtual Ptr<SpectrumValue> CreateTxPowerSpectralDensity ();
+
+  /**
+   * \brief Create the PSD for TX with power allocation for each RB
+   */
+  virtual Ptr<SpectrumValue> CreateTxPowerSpectralDensityWithPowerAllocation ();
 
   /**
    * \brief Calculate the channel quality for a given UE
@@ -181,7 +209,7 @@ public:
   * \return UL CQI feedback in the format usable by an FF MAC scheduler
   */
   FfMacSchedSapProvider::SchedUlCqiInfoReqParameters CreatePuschCqiReport (const SpectrumValue& sinr);
-  
+
   /**
   * \brief Create the UL CQI feedback from SINR values perceived at
   * the physical layer with the SRS signal received from eNB
@@ -195,18 +223,18 @@ public:
   * \param ctrlMsgList the list of control messages of PDCCH
   */
   void SendControlChannels (std::list<Ptr<LteControlMessage> > ctrlMsgList);
-  
+
   /**
   * \brief Send the PDSCH
   * \param pb the PacketBurst to be sent
   */
   void SendDataChannels (Ptr<PacketBurst> pb);
-  
+
   /**
   * \param m the UL-CQI to be queued
   */
   void QueueUlDci (UlDciLteControlMessage m);
-  
+
   /**
   * \returns the list of UL-CQI to be processed
   */
@@ -234,7 +262,7 @@ public:
    * \brief PhySpectrum received a new PHY-PDU
    */
   void PhyPduReceived (Ptr<Packet> p);
-  
+
   /**
   * \brief PhySpectrum received a new list of LteControlMessage
   */
@@ -261,31 +289,39 @@ private:
   // LteEnbCphySapProvider forwarded methods
   void DoSetBandwidth (uint8_t ulBandwidth, uint8_t dlBandwidth);
   void DoSetEarfcn (uint16_t dlEarfcn, uint16_t ulEarfcn);
-  void DoAddUe (uint16_t rnti);  
-  void DoRemoveUe (uint16_t rnti);  
+  void DoAddUe (uint16_t rnti);
+  void DoRemoveUe (uint16_t rnti);
+  void DoSetPa (uint16_t rnti, double pa);
   void DoSetTransmissionMode (uint16_t  rnti, uint8_t txMode);
-  void DoSetSrsConfigurationIndex (uint16_t  rnti, uint16_t srcCi);  
+  void DoSetSrsConfigurationIndex (uint16_t  rnti, uint16_t srcCi);
   void DoSetMasterInformationBlock (LteRrcSap::MasterInformationBlock mib);
   void DoSetSystemInformationBlockType1 (LteRrcSap::SystemInformationBlockType1 sib1);
 
   // LteEnbPhySapProvider forwarded methods
-  void DoSendMacPdu (Ptr<Packet> p);  
-  void DoSendLteControlMessage (Ptr<LteControlMessage> msg);  
-  uint8_t DoGetMacChTtiDelay ();  
+  void DoSendMacPdu (Ptr<Packet> p);
+  void DoSendLteControlMessage (Ptr<LteControlMessage> msg);
+  uint8_t DoGetMacChTtiDelay ();
 
   bool AddUePhy (uint16_t rnti);
 
   bool DeleteUePhy (uint16_t rnti);
 
-  void CreateSrsReport(uint16_t rnti, double srs);
+  void CreateSrsReport (uint16_t rnti, double srs);
 
 
   std::set <uint16_t> m_ueAttached;
-  
+
+
+  // P_A per UE RNTI
+  std::map <uint16_t,double> m_paMap;
+
+  // DL power allocation map
+  std::map <int, double> m_dlPowerAllocationMap;
+
   std::vector <int> m_listOfDownlinkSubchannel;
-  
+
   std::vector <int> m_dlDataRbMap;
-  
+
   std::vector< std::list<UlDciLteControlMessage> > m_ulDciQueue; // for storing info on future receptions
 
   LteEnbPhySapProvider* m_enbPhySapProvider;
@@ -293,10 +329,10 @@ private:
 
   LteEnbCphySapProvider* m_enbCphySapProvider;
   LteEnbCphySapUser* m_enbCphySapUser;
-  
+
   uint32_t m_nrFrames;
   uint32_t m_nrSubFrames;
-  
+
   uint16_t m_srsPeriodicity;
   Time m_srsStartTime;
   std::map <uint16_t,uint16_t> m_srsCounter;
@@ -330,7 +366,7 @@ private:
    * PhyTrasmissionStatParameters see lte-common.h
    */
   TracedCallback<PhyTransmissionStatParameters> m_dlPhyTransmission;
-  
+
 };
 
 

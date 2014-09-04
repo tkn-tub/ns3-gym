@@ -263,7 +263,7 @@ RrcAsn1Header::SerializePhysicalConfigDedicated (LteRrcSap::PhysicalConfigDedica
 {
   // Serialize PhysicalConfigDedicated Sequence
   std::bitset<10> optionalFieldsPhysicalConfigDedicated;
-  optionalFieldsPhysicalConfigDedicated.set (9,0);  // pdsch-ConfigDedicated not present
+  optionalFieldsPhysicalConfigDedicated.set (9,physicalConfigDedicated.havePdschConfigDedicated);  // pdsch-ConfigDedicated
   optionalFieldsPhysicalConfigDedicated.set (8,0);  // pucch-ConfigDedicated not present
   optionalFieldsPhysicalConfigDedicated.set (7,0);  // pusch-ConfigDedicated not present
   optionalFieldsPhysicalConfigDedicated.set (6,0);  // uplinkPowerControlDedicated not present
@@ -274,6 +274,20 @@ RrcAsn1Header::SerializePhysicalConfigDedicated (LteRrcSap::PhysicalConfigDedica
   optionalFieldsPhysicalConfigDedicated.set (1,physicalConfigDedicated.haveAntennaInfoDedicated);  // antennaInfo
   optionalFieldsPhysicalConfigDedicated.set (0,0);  // schedulingRequestConfig not present
   SerializeSequence (optionalFieldsPhysicalConfigDedicated,true);
+
+  if (physicalConfigDedicated.havePdschConfigDedicated)
+    {
+      // Serialize Pdsch-ConfigDedicated Sequence:
+      // 0 optional / default fields, no extension marker.
+      SerializeSequence (std::bitset<0> (),false);
+
+      // Serialize  p-a
+      // Assuming the value in the struct is the enum index
+      SerializeEnum (8,physicalConfigDedicated.pdschConfigDedicated.pa);
+
+      // Serialize release
+      SerializeNull ();
+    }
 
   if (physicalConfigDedicated.haveSoundingRsUlConfigDedicated)
     {
@@ -2093,10 +2107,21 @@ RrcAsn1Header::DeserializePhysicalConfigDedicated (LteRrcSap::PhysicalConfigDedi
   std::bitset<10> optionalFieldPresent;
   bIterator = DeserializeSequence (&optionalFieldPresent,true,bIterator);
 
+  physicalConfigDedicated->havePdschConfigDedicated = optionalFieldPresent[9];
   if (optionalFieldPresent[9])
     {
       // Deserialize pdsch-ConfigDedicated
-      // ...
+      std::bitset<0> bitset0;
+      bIterator = DeserializeSequence (&bitset0,false,bIterator);
+
+      int slct;
+
+      // Deserialize p-a
+      bIterator = DeserializeEnum (8,&slct,bIterator);
+      physicalConfigDedicated->pdschConfigDedicated.pa = slct;
+
+      bIterator = DeserializeNull (bIterator);
+
     }
   if (optionalFieldPresent[8])
     {

@@ -150,6 +150,9 @@ RrcHeaderTestCase :: CreateRadioResourceConfigDedicated ()
   physicalConfigDedicated.haveAntennaInfoDedicated = true;
   physicalConfigDedicated.antennaInfo.transmissionMode = 2;
 
+  physicalConfigDedicated.havePdschConfigDedicated = true;
+  physicalConfigDedicated.pdschConfigDedicated.pa = LteRrcSap::PdschConfigDedicated::dB0;
+
   rrd.physicalConfigDedicated = physicalConfigDedicated;
 
   return rrd;
@@ -235,6 +238,17 @@ RrcHeaderTestCase :: AssertEqualRadioResourceConfigDedicated (LteRrcSap::RadioRe
           NS_TEST_ASSERT_MSG_EQ (rrcd1.physicalConfigDedicated.antennaInfo.transmissionMode,
                                  rrcd2.physicalConfigDedicated.antennaInfo.transmissionMode,
                                  "antennaInfo.transmissionMode");
+        }
+
+      NS_TEST_ASSERT_MSG_EQ (rrcd1.physicalConfigDedicated.havePdschConfigDedicated,
+                             rrcd2.physicalConfigDedicated.havePdschConfigDedicated,
+                             "havePdschConfigDedicated");
+
+      if (rrcd1.physicalConfigDedicated.havePdschConfigDedicated)
+        {
+          NS_TEST_ASSERT_MSG_EQ (rrcd1.physicalConfigDedicated.pdschConfigDedicated.pa,
+                                 rrcd2.physicalConfigDedicated.pdschConfigDedicated.pa,
+                                 "pdschConfigDedicated.pa");
         }
     }
 }
