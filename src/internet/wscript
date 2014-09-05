@@ -14,10 +14,17 @@ def options(opt):
                    help=('Use Network Simulation Cradle, given by the indicated path,'
                          ' to allow the use of real-world network stacks'),
                    default='', dest='with_nsc')
-
+    opt.add_option('--disable-nsc',
+                   help=('Disable Network Simulation Cradle support'),
+                   dest='disable_nsc', default=False, action="store_true")
 
 def configure(conf):
     conf.env['ENABLE_NSC'] = False
+
+    if Options.options.disable_nsc:
+        conf.report_optional_feature("nsc", "Network Simulation Cradle", False,
+                                     "disabled by user request")
+        return
 
     # checks for flex and bison, which is needed to build NSCs globaliser
     # TODO: how to move these checks into the allinone scripts?
