@@ -223,6 +223,12 @@ protected:
   void NotifyEnergyDrained (void);
 
   /**
+   * This function notifies all DeviceEnergyModel of energy recharged event. It
+   * is called by the child EnergySource class when energy source is recharged.
+   */
+  void NotifyEnergyRecharged (void);
+
+  /**
    * This function is called to break reference cycle between EnergySource and
    * DeviceEnergyModel. Child of the EnergySource base class must call this
    * function in their implementation of DoDispose to make sure the reference

@@ -479,6 +479,7 @@ The PHY layer can be in one of three states:
 #. RX: the PHY is synchronized on a signal and is waiting until it has received
    its last bit to forward it to the MAC.
 #. IDLE: the PHY is not in the TX or RX states.
+#. SLEEP: the PHY is in a power save mode and cannot send nor receive frames.
 
 When the first bit of a new packet is received while the PHY is not IDLE (that
 is, it is already synchronized on the reception of another earlier packet or it

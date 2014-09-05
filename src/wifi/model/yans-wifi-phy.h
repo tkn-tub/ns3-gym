@@ -247,14 +247,17 @@ public:
   virtual uint32_t GetNTxPower (void) const;
   virtual void SetReceiveOkCallback (WifiPhy::RxOkCallback callback);
   virtual void SetReceiveErrorCallback (WifiPhy::RxErrorCallback callback);
-  virtual void SendPacket (Ptr<const Packet> packet, WifiMode mode, enum WifiPreamble preamble, WifiTxVector txvector);
+  virtual void SendPacket (Ptr<const Packet> packet, WifiTxVector txvector, enum WifiPreamble preamble);
   virtual void RegisterListener (WifiPhyListener *listener);
+  virtual void SetSleepMode (void);
+  virtual void ResumeFromSleep (void);
   virtual bool IsStateCcaBusy (void);
   virtual bool IsStateIdle (void);
   virtual bool IsStateBusy (void);
   virtual bool IsStateRx (void);
   virtual bool IsStateTx (void);
   virtual bool IsStateSwitching (void);
+  virtual bool IsStateSleep (void);
   virtual Time GetStateDuration (void);
   virtual Time GetDelayUntilIdle (void);
   virtual Time GetLastRxStartTime (void) const;

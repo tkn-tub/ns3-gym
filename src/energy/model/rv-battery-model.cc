@@ -44,6 +44,11 @@ RvBatteryModel::GetTypeId (void)
                    MakeTimeAccessor (&RvBatteryModel::SetSamplingInterval,
                                      &RvBatteryModel::GetSamplingInterval),
                    MakeTimeChecker ())
+    .AddAttribute ("RvBatteryModelLowBatteryThreshold",
+                   "Low battery threshold.",
+                   DoubleValue (0.10), // as a fraction of the initial energy
+                   MakeDoubleAccessor (&RvBatteryModel::m_lowBatteryTh),
+                   MakeDoubleChecker<double> ())
     .AddAttribute ("RvBatteryModelOpenCircuitVoltage",
                    "RV battery model open circuit voltage.",
                    DoubleValue (4.1),
@@ -164,7 +169,7 @@ RvBatteryModel::UpdateEnergySource (void)
     }
 
   // check if battery is dead.
-  if (calculatedAlpha >= m_alpha)
+  if (m_batteryLevel <= m_lowBatteryTh)
     {
       m_lifetime = Simulator::Now ();
       NS_LOG_DEBUG ("RvBatteryModel:Battery is dead!");

@@ -201,6 +201,18 @@ EnergySource::NotifyEnergyDrained (void)
 }
 
 void
+EnergySource::NotifyEnergyRecharged (void)
+{
+  NS_LOG_FUNCTION (this);
+  // notify all device energy models installed on node
+  DeviceEnergyModelContainer::Iterator i;
+  for (i = m_models.Begin (); i != m_models.End (); i++)
+    {
+      (*i)->HandleEnergyRecharged ();
+    }
+}
+
+void
 EnergySource::BreakDeviceEnergyModelRefCycle (void)
 {
   NS_LOG_FUNCTION (this);

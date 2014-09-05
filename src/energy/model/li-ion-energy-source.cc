@@ -45,6 +45,11 @@ LiIonEnergySource::GetTypeId (void)
                    MakeDoubleAccessor (&LiIonEnergySource::SetInitialEnergy,
                                        &LiIonEnergySource::GetInitialEnergy),
                    MakeDoubleChecker<double> ())
+    .AddAttribute ("LiIonEnergyLowBatteryThreshold",
+                   "Low battery threshold for LiIon energy source.",
+                   DoubleValue (0.10), // as a fraction of the initial energy
+                   MakeDoubleAccessor (&LiIonEnergySource::m_lowBatteryTh),
+                   MakeDoubleChecker<double> ())
     .AddAttribute ("InitialCellVoltage",
                    "Initial (maximum) voltage of the cell (fully charged).",
                    DoubleValue (4.05), // in Volts
@@ -219,13 +224,13 @@ LiIonEnergySource::UpdateEnergySource (void)
 
   CalculateRemainingEnergy ();
 
-  if (m_remainingEnergyJ <= 0)
+  m_lastUpdateTime = Simulator::Now ();
+
+  if (m_remainingEnergyJ <= m_lowBatteryTh * m_initialEnergyJ)
     {
       HandleEnergyDrainedEvent ();
       return; // stop periodic update
     }
-
-  m_lastUpdateTime = Simulator::Now ();
 
   m_energyUpdateEvent = Simulator::Schedule (m_energyUpdateInterval,
                                              &LiIonEnergySource::UpdateEnergySource,
@@ -259,7 +264,10 @@ LiIonEnergySource::HandleEnergyDrainedEvent (void)
   NS_LOG_DEBUG ("LiIonEnergySource:Energy depleted at node #" <<
                 GetNode ()->GetId ());
   NotifyEnergyDrained (); // notify DeviceEnergyModel objects
-  m_remainingEnergyJ = 0; // energy never goes below 0
+  if (m_remainingEnergyJ <= 0)
+    {
+      m_remainingEnergyJ = 0; // energy never goes below 0
+    }
 }
 
 

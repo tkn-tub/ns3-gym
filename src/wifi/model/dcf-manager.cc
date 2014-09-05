@@ -239,7 +239,7 @@ public:
   {
     m_dcf->NotifyRxEndErrorNow ();
   }
-  virtual void NotifyTxStart (Time duration)
+  virtual void NotifyTxStart (Time duration, double txPowerDbm)
   {
     m_dcf->NotifyTxStartNow (duration);
   }
@@ -250,6 +250,14 @@ public:
   virtual void NotifySwitchingStart (Time duration)
   {
     m_dcf->NotifySwitchingStartNow (duration);
+  }
+  virtual void NotifySleep (void)
+  {
+    m_dcf->NotifySleepNow ();
+  }
+  virtual void NotifyWakeup (void)
+  {
+    m_dcf->NotifyWakeupNow ();
   }
 private:
   ns3::DcfManager *m_dcf;  //!< DcfManager to forward events to
@@ -275,6 +283,7 @@ DcfManager::DcfManager ()
     m_lastSwitchingStart (MicroSeconds (0)),
     m_lastSwitchingDuration (MicroSeconds (0)),
     m_rxing (false),
+    m_sleeping (false),
     m_slotTimeUs (0),
     m_sifs (Seconds (0.0)),
     m_phyListener (0),
@@ -423,6 +432,9 @@ void
 DcfManager::RequestAccess (DcfState *state)
 {
   NS_LOG_FUNCTION (this << state);
+  // Deny access if in sleep mode
+  if (m_sleeping)
+    return;
   UpdateBackoff ();
   NS_ASSERT (!state->IsAccessRequested ());
   state->NotifyAccessRequested ();
@@ -741,6 +753,38 @@ DcfManager::NotifySwitchingStartNow (Time duration)
   m_lastSwitchingStart = Simulator::Now ();
   m_lastSwitchingDuration = duration;
 
+}
+
+void
+DcfManager::NotifySleepNow (void)
+{
+  NS_LOG_FUNCTION (this);
+  m_sleeping = true;
+  // Cancel timeout
+  if (m_accessTimeout.IsRunning ())
+    {
+      m_accessTimeout.Cancel ();
+    }
+}
+
+void
+DcfManager::NotifyWakeupNow (void)
+{
+  NS_LOG_FUNCTION (this);
+  m_sleeping = false;
+  // Reset backoffs
+  for (States::iterator i = m_states.begin (); i != m_states.end (); i++)
+    {
+      DcfState *state = *i;
+      uint32_t remainingSlots = state->GetBackoffSlots ();
+      if (remainingSlots > 0)
+        {
+          state->UpdateBackoffSlotsNow (remainingSlots, Simulator::Now ());
+          NS_ASSERT (state->GetBackoffSlots () == 0);
+        }
+      state->ResetCw ();
+      state->m_accessRequested = false;
+    }
 }
 
 void

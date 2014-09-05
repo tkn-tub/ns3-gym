@@ -169,6 +169,15 @@ public:
    */
   virtual void HandleEnergyDepletion (void);
 
+  /**
+   * \brief Handles energy recharged.
+   *
+   * Not implemented
+   */
+  virtual void HandleEnergyRecharged (void)
+  {
+  }
+
 
 private:
   void DoDispose (void);

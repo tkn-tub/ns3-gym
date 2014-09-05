@@ -643,6 +643,12 @@ public:
    */
   void NotifySwitchingStartNow (Time duration);
   /**
+   * This method is typically invoked by the PhyMacLowListener to notify
+   * the MAC layer that the device has been put into sleep mode. When the device is put
+   * into sleep mode, pending MAC transmissions (RTS, CTS, DATA and ACK) are cancelled.
+   */
+  void NotifySleepNow (void);
+  /**
    * \param respHdr Add block ack response from originator (action
    * frame).
    * \param originator Address of peer station involved in block ack

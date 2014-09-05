@@ -73,6 +73,7 @@ public:
   virtual void NotifyRxEndError (void) = 0;
   /**
    * \param duration the expected transmission duration.
+   * \param txPowerDbm the nominal tx power in dBm
    *
    * We are about to send the first bit of the packet.
    * We do not send any event to notify the end of
@@ -80,7 +81,7 @@ public:
    * channel implicitely reverts to the idle state
    * unless they have received a cca busy report.
    */
-  virtual void NotifyTxStart (Time duration) = 0;
+  virtual void NotifyTxStart (Time duration, double txPowerDbm) = 0;
 
   /**
    * \param duration the expected busy duration.
@@ -106,6 +107,14 @@ public:
    * channel implicitely reverts to the idle or busy states.
    */
   virtual void NotifySwitchingStart (Time duration) = 0;
+  /**
+   * Notify listeners that we went to sleep
+   */
+  virtual void NotifySleep (void) = 0;
+  /**
+   * Notify listeners that we woke up
+   */
+  virtual void NotifyWakeup (void) = 0;
 };
 
 
@@ -141,7 +150,11 @@ public:
     /**
      * The PHY layer is switching to other channel.
      */
-    SWITCHING
+    SWITCHING,
+    /**
+     * The PHY layer is sleeping.
+     */
+    SLEEP
   };
 
   /**
@@ -193,11 +206,12 @@ public:
   /**
    * \param packet the packet to send
    * \param mode the transmission mode to use to send this packet
+   * \param txvector the txvector that has tx parameters such as mode, the transmission mode to use to send
+   *        this packet, and txPowerLevel, a power level to use to send this packet. The real transmission
+   *        power is calculated as txPowerMin + txPowerLevel * (txPowerMax - txPowerMin) / nTxLevels
    * \param preamble the type of preamble to use to send this packet.
-   * \param txvector the txvector that has tx parameters as txPowerLevel a power level to use to send this packet. The real
-   *        transmission power is calculated as txPowerMin + txPowerLevel * (txPowerMax - txPowerMin) / nTxLevels
    */
-  virtual void SendPacket (Ptr<const Packet> packet, WifiMode mode, enum WifiPreamble preamble, WifiTxVector txvector) = 0;
+  virtual void SendPacket (Ptr<const Packet> packet, WifiTxVector txvector, enum WifiPreamble preamble) = 0;
 
   /**
    * \param listener the new listener
@@ -206,6 +220,15 @@ public:
    * PHY-level events.
    */
   virtual void RegisterListener (WifiPhyListener *listener) = 0;
+
+  /**
+   * Put in sleep mode.
+   */
+  virtual void SetSleepMode (void) = 0;
+  /**
+   * Resume from sleep mode.
+   */
+  virtual void ResumeFromSleep (void) = 0;
 
   /**
    * \return true of the current state of the PHY layer is WifiPhy::IDLE, false otherwise.
@@ -231,6 +254,10 @@ public:
    * \return true of the current state of the PHY layer is WifiPhy::SWITCHING, false otherwise.
    */
   virtual bool IsStateSwitching (void) = 0;
+  /**
+   * \return true if the current state of the PHY layer is WifiPhy::SLEEP, false otherwise.
+   */
+  virtual bool IsStateSleep (void) = 0;
   /**
    * \return the amount of time since the current state has started.
    */

@@ -270,7 +270,7 @@ public:
   virtual void NotifyRxEndError (void)
   {
   }
-  virtual void NotifyTxStart (Time duration)
+  virtual void NotifyTxStart (Time duration, double txPowerDbm)
   {
   }
   virtual void NotifyMaybeCcaBusyStart (Time duration)
@@ -279,6 +279,13 @@ public:
   virtual void NotifySwitchingStart (Time duration)
   {
     m_macLow->NotifySwitchingStartNow (duration);
+  }
+  virtual void NotifySleep (void)
+  {
+    m_macLow->NotifySleepNow ();
+  }
+  virtual void NotifyWakeup (void)
+  {
   }
 private:
   ns3::MacLow *m_macLow;
@@ -640,6 +647,22 @@ void
 MacLow::NotifySwitchingStartNow (Time duration)
 {
   NS_LOG_DEBUG ("switching channel. Cancelling MAC pending events");
+  m_stationManager->Reset ();
+  CancelAllEvents ();
+  if (m_navCounterResetCtsMissed.IsRunning ())
+    {
+      m_navCounterResetCtsMissed.Cancel ();
+    }
+  m_lastNavStart = Simulator::Now ();
+  m_lastNavDuration = Seconds (0);
+  m_currentPacket = 0;
+  m_listener = 0;
+}
+
+void
+MacLow::NotifySleepNow (void)
+{
+  NS_LOG_DEBUG ("Device in sleep mode. Cancelling MAC pending events");
   m_stationManager->Reset ();
   CancelAllEvents ();
   if (m_navCounterResetCtsMissed.IsRunning ())
@@ -1249,7 +1272,7 @@ MacLow::ForwardDown (Ptr<const Packet> packet, const WifiMacHeader* hdr,
                 ", mode=" << txVector.GetMode() <<
                 ", duration=" << hdr->GetDuration () <<
                 ", seq=0x" << std::hex << m_currentHdr.GetSequenceControl () << std::dec);
-  m_phy->SendPacket (packet, txVector.GetMode(), preamble, txVector);
+  m_phy->SendPacket (packet, txVector, preamble);
 }
 
 void

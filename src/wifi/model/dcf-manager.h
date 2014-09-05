@@ -335,6 +335,14 @@ public:
    */
   void NotifySwitchingStartNow (Time duration);
   /**
+   * Notify the DCF that the device has been put in sleep mode.
+   */
+  void NotifySleepNow (void);
+  /**
+   * Notify the DCF that the device has been resumed from sleep mode.
+   */
+  void NotifyWakeupNow (void);
+  /**
    * \param duration the value of the received NAV.
    *
    * Called at end of rx
@@ -487,6 +495,7 @@ private:
   Time m_lastSwitchingStart;
   Time m_lastSwitchingDuration;
   bool m_rxing;
+  bool m_sleeping;
   Time m_eifsNoDifs;
   EventId m_accessTimeout;
   uint32_t m_slotTimeUs;
