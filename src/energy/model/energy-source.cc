@@ -16,6 +16,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Sidharth Nabar <snabar@uw.edu>, He Wu <mdzz@u.washington.edu>
+ *
+ * Copyright (c) 2014 Wireless Communications and Networking Group (WCNG),
+ * University of Rochester, Rochester, NY, USA.
+ *
+ * Modifications made by: Cristiano Tapparello <cristiano.tapparello@rochester.edu>
  */
 
 #include "energy-source.h"
@@ -130,6 +135,14 @@ EnergySource::DisposeDeviceModels (void)
       (*i)->Dispose ();
     }
 }
+  
+void
+EnergySource::ConnectEnergyHarvester (Ptr<EnergyHarvester> energyHarvesterPtr)
+{
+  NS_LOG_FUNCTION (this << energyHarvesterPtr);
+  NS_ASSERT (energyHarvesterPtr != 0); // energy harvester must exist
+  m_harvesters.push_back (energyHarvesterPtr);
+}
 
 /*
  * Private function starts here.
@@ -156,6 +169,22 @@ EnergySource::CalculateTotalCurrent (void)
     {
       totalCurrentA += (*i)->GetCurrentA ();
     }
+  
+  double totalHarvestedPower = 0.0;
+  
+  std::vector< Ptr<EnergyHarvester> >::const_iterator harvester;
+  for (harvester = m_harvesters.begin (); harvester != m_harvesters.end (); harvester++)
+  {
+    totalHarvestedPower += (*harvester)->GetPower ();
+  }
+  
+  NS_LOG_DEBUG ("EnergySource("<< GetNode ()->GetId () << "): Total harvested power = " << totalHarvestedPower);
+
+  double currentHarvestersA = totalHarvestedPower / GetSupplyVoltage ();
+  NS_LOG_DEBUG ("EnergySource("<< GetNode ()->GetId () << "): Current from harvesters = " << currentHarvestersA);
+  
+  totalCurrentA -= currentHarvestersA;
+  
   return totalCurrentA;
 }
 
@@ -176,6 +205,7 @@ EnergySource::BreakDeviceEnergyModelRefCycle (void)
 {
   NS_LOG_FUNCTION (this);
   m_models.Clear ();
+  m_harvesters.clear ();
   m_node = NULL;
 }
 

@@ -1,7 +1,7 @@
 Energy Framework
 ----------------
 
-Energy consumption is a key issue for wireless devices, and wireless network researchers often need to investigate the energy consumption at a node or in the overall network while running network simulations in ns-3. This requires ns-3 to support energy consumption modeling. Further, as concepts such as fuel cells and energy scavenging are becoming viable for low power wireless devices, incorporating the effect of these emerging technologies into simulations requires support for modeling diverse energy sources in ns-3. The ns-3 Energy Framework provides the basis for energy consumption and energy source modeling.
+Energy consumption is a key issue for wireless devices, and wireless network researchers often need to investigate the energy consumption at a node or in the overall network while running network simulations in ns-3. This requires ns-3 to support energy consumption modeling. Further, as concepts such as fuel cells and energy scavenging are becoming viable for low power wireless devices, incorporating the effect of these emerging technologies into simulations requires support for modeling diverse energy sources in ns-3. The ns-3 Energy Framework provides the basis for energy consumption, energy source and energy harvesting modeling.
 
 
 Model Description
@@ -12,8 +12,8 @@ The source code for the Energy Framework is currently at: ``src/energy``.
 Design
 ******
 
-The ns-3 Energy Framework is composed of 2 parts: Energy Source and Device Energy Model. 
-The framework will be implemented into the ``src/energy/models`` folder.
+The ns-3 Energy Framework is composed of 3 parts: Energy Source, Device Energy Model and Energy Harvester. 
+The framework is implemented into the ``src/energy/models`` folder.
 
 Energy Source
 #############
@@ -25,21 +25,28 @@ In order to model a wide range of power supplies such as batteries, the Energy S
 * Rate Capacity Effect: Decrease of battery lifetime when the current draw is higher than the rated value of the battery.
 * Recovery Effect: Increase of battery lifetime when the battery is alternating between discharge and idle states.
 
-In order to incorporate the Rate Capacity Effect, the Energy Source uses current draw from all devices on the same node to calculate energy consumption. The Energy Source polls all devices on the same node periodically to calculate the total current draw and hence the energy consumption. When a device changes state, its corresponding Device Energy Model will notify the Energy Source of this change and new total current draw will be calculated.
+In order to incorporate the Rate Capacity Effect, the Energy Source uses current draw from all the devices on the same node to calculate energy consumption. Moreover, multiple Energy Harvesters can be connected to the Energy Source in order to replenish its energy. The Energy Source periodically polls all the devices and energy harvesters on the same node to calculate the total current drain and hence the energy consumption. When a device changes state, its corresponding Device Energy Model will notify the Energy Source of this change and new total current draw will be calculated. Similarly, every Energy Harvester update triggers an update to the connected Energy Source.
 
-The Energy Source base class keeps a list of devices (Device Energy Model objects) using the particular Energy Source as power supply. When energy is completely drained, the Energy Source will notify all devices on this list. Each device can then handle this event independently, based on the desired behavior when power supply is drained.
+The Energy Source base class keeps a list of devices (Device Energy Model objects) and energy harvesters (Energy Harvester objects) that are using the particular Energy Source as power supply. When energy is completely drained, the Energy Source will notify all devices on this list. Each device can then handle this event independently, based on the desired behavior that should be followed in case of power outage.
+
 
 Device Energy Model
 ###################
 
-The Device Energy Model is the energy consumption model of a device on node. It is designed to be a state based model where each device is assumed to have a number of states, and each state is associated with a power consumption value. Whenever the state of the device changes, the corresponding Device Energy Model will notify the Energy Source of the new current draw of the device. The Energy Source will then calculate the new total current draw and update the remaining energy.
+The Device Energy Model is the energy consumption model of a device installed on the node. It is designed to be a state based model where each device is assumed to have a number of states, and each state is associated with a power consumption value. Whenever the state of the device changes, the corresponding Device Energy Model will notify the Energy Source of the new current draw of the device. The Energy Source will then calculate the new total current draw and update the remaining energy.
 
 The Device Energy Model can also be used for devices that do not have finite number of states. For example, in an electric vehicle, the current draw of the motor is determined by its speed. Since the vehicle's speed can take continuous values within a certain range, it is infeasible to define a set of discrete states of operation. However, by converting the speed value into current directly, the same set of Device Energy Model APIs can still be used.
+
+Energy Harvester
+#############
+
+The energy harvester represents the elements that harvest energy from the environment and recharge the Energy Source to which it is connected. The energy harvester includes the complete implementation of the actual energy harvesting device (e.g., a solar panel) and the environment (e.g., the solar radiation). This means that in implementing an energy harvester, the energy contribution of the environment and the additional energy requirements of the energy harvesting device such as the conversion efficiency and the internal power consumption of the device needs to be jointly modeled.
+
 
 Future Work
 ***********
 
-For Device Energy Models, we are planning to include support for other PHY layer models provided in ns-3 such as WiMAX. For Energy Sources, we are planning to included new types of Energy Sources such as energy scavenging.
+For Device Energy Models, we are planning to include support for other PHY layer models provided in ns-3 such as WiMAX, and to model the energy consumptions of other non communicating devices, like a generic sensor and a CPU. For Energy Sources, we are planning to included new types of Energy Sources such as Supercapacitor and Nickel�Metal Hydride (Ni-MH) battery. For the Energy Harvesters, we are planning to implement an energy harvester that recharges the energy sources according to the power levels defined in a user customizable dataset of real measurements.
 
 References
 **********
@@ -51,19 +58,21 @@ References
        (ASM), 2003.
 .. [4] D. N. Rakhmatov and S. B. Vrudhula. An analytical high-level battery model for use in energy 
        management of portable electronic systems. In Proc. of IEEE/ACM International Conference on 
-       Computer Aided Design (ICCAD’01), pages 488–493, November 2001.
+       Computer Aided Design (ICCAD'01), pages 488-493, November 2001.
 .. [5] D. N. Rakhmatov, S. B. Vrudhula, and D. A. Wallach. Battery lifetime prediction for 
        energy-aware computing. In Proc. of the 2002 International Symposium on Low Power 
-       Electronics and Design (ISLPED’02), pages 154–159, 2002.
+       Electronics and Design (ISLPED'02), pages 154-159, 2002.
+.. [6] C. Tapparello, H. Ayatollahi and W. Heinzelman. Extending the Energy Framework for Network 
+       Simulator 3 (ns-3). Workshop on ns-3 (WNS3), Poster Session, Atlanta, GA, USA. May, 2014.
 
 Usage
 =====
 
 The main way that ns-3 users will typically interact with the Energy Framework is through the helper API and through the publicly visible attributes of the framework. The helper API is defined in ``src/energy/helper/*.h``.
 
-In order to use the energy framework, the user must install an Energy Source for the node of interest and the corresponding Device Energy Model for the network devices. Energy Source (objects) are aggregated onto each node by the Energy Source Helper. In order to allow multiple energy sources per node, we aggregate an Energy Source Container rather than directly aggregating a source object.
+In order to use the energy framework, the user must install an Energy Source for the node of interest, the corresponding Device Energy Model for the network devices and, if necessary, the one or more Energy Harvester. Energy Source (objects) are aggregated onto each node by the Energy Source Helper. In order to allow multiple energy sources per node, we aggregate an Energy Source Container rather than directly aggregating a source object.  
 
-The Energy Source object also keeps a list of Device Energy Model objects using the source as power supply. Device Energy Model objects are installed onto the Energy Source by the Device Energy Model Helper. User can access the Device Energy Model objects through the Energy Source object to obtain energy consumption information of individual devices.
+The Energy Source object keeps a list of Device Energy Model and Energy Harvester objects using the source as power supply. Device Energy Model objects are installed onto the Energy Source by the Device Energy Model Helper, while Energy Harvester object are installed by the Energy Harvester Helper. User can access the Device Energy Model objects through the Energy Source object to obtain energy consumption information of individual devices. Moreover, the user can access to the Energy Harvester objects in order to gather information regarding the current harvestable power and the total energy harvested by the harvester. 
 
 
 Examples
@@ -86,10 +95,16 @@ Device Energy Model Helper
 
 Base helper class for Device Energy Model objects, this helper attaches Device Energy Model objects onto Energy Source objects. Child implementation of this class creates the actual Device Energy Model object.
 
+Energy Harvesting Helper
+##########################
+
+Base helper class for Energy Harvester objects, this helper attaches Energy Harvester objects onto Energy Source objects. Child implementation of this class creates the actual Energy Harvester object.
+
+
 Attributes
 **********
 
-Attributes differ between Energy Sources and Devices Energy Models implementations, please look at the specific child class for details.
+Attributes differ between Energy Sources, Devices Energy Models and Energy Harvesters implementations, please look at the specific child class for details.
 
 Basic Energy Source
 ###################
@@ -117,10 +132,16 @@ WiFi Radio Energy Model
 * ``RxCurrentA``: The radio Rx current in Ampere.
 * ``SwitchingCurrentA``: The default radio Channel Switch current in Ampere.
 
+Basic Energy Harvester
+#######################
+
+* ``PeriodicHarvestedPowerUpdateInterval``: Time between two consecutive periodic updates of the harvested power.
+* ``HarvestablePower``: Random variables that represents the amount of power that is provided by the energy harvester.
+
 Tracing
 *******
 
-Traced values differ between Energy Sources and Devices Energy Models implementations, please look at the specific child class for details.
+Traced values differ between Energy Sources, Devices Energy Models and Energy Harvesters implementations, please look at the specific child class for details.
 
 Basic Energy Source
 ###################
@@ -137,6 +158,13 @@ WiFi Radio Energy Model
 #######################
 
 * ``TotalEnergyConsumption``: Total energy consumption of the radio device.
+
+Basic Energy Harvester
+#######################
+
+* ``HarvestedPower``: Current power provided by the BasicEnergyHarvester.
+* ``TotalEnergyHarvested``: Total energy harvested by the BasicEnergyHarvester.
+
 
 Validation
 **********
