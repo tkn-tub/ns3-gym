@@ -97,7 +97,7 @@ public:
    * \param ackSeq the ack sequence number.
    * \return The measured RTT for this ack.
    */
-  virtual Time AckSeq (SequenceNumber32 ackSeq);
+  virtual Time EstimateRttFromSeq (SequenceNumber32 ackSeq);
 
   /**
    * \brief Clear all history entries

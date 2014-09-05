@@ -168,7 +168,7 @@ void RttEstimator::SentSeq (SequenceNumber32 seq, uint32_t size)
     }
 }
 
-Time RttEstimator::AckSeq (SequenceNumber32 ackSeq)
+Time RttEstimator::EstimateRttFromSeq (SequenceNumber32 ackSeq)
 { 
   NS_LOG_FUNCTION (this << ackSeq);
   // An ack has been received, calculate rtt and log this measurement

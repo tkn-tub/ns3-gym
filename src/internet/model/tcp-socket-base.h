@@ -539,16 +539,75 @@ protected:
   virtual void DoRetransmit (void);
 
   /**
-   * \brief Read option from incoming packets
+   * \brief Read TCP options from incoming packets
+   *  
+   * This method sequentially checks each kind of option, and if it
+   * is present in the header, starts its processing.
+   *
+   * To deal with hosts which don't have the option enabled (or
+   * implemented) we disable all options, and then re-enable them
+   * if in the packet there is the option itself.
+   *
    * \param tcpHeader the packet's TCP header
    */
   virtual void ReadOptions (const TcpHeader& tcpHeader);
 
-  /**
-   * \brief Add option to outgoing packets
-   * \param tcpHeader the packet's TCP header
+  /** \brief Add options to TcpHeader
+   *
+   * Test each option, and if it is enabled on our side, add it
+   * to the header
+   *
+   * \param tcpHeader TcpHeader to add options to
    */
   virtual void AddOptions (TcpHeader& tcpHeader);
+
+  /**
+   * \brief Read and parse the Window scale option
+   *
+   * Read the window scale option (encoded logarithmically) and save it.
+   * Per RFC 1323, the value can't exceed 14.
+   *
+   * \param option Window scale option read from the header
+   */
+  void ProcessOptionWScale (const Ptr<const TcpOption> option);
+  /**
+   * \brief Add the window scale option to the header
+   *
+   * Calculate our factor from the rxBuffer max size, and add it
+   * to the header.
+   *
+   * \param header TcpHeader where the method should add the window scale option
+   */
+  void AddOptionWScale (TcpHeader& header);
+
+  /**
+   * \brief Calculate window scale value based on receive buffer space
+   *
+   * Calculate our factor from the rxBuffer max size
+   *
+   * \param header TcpHeader where the method should add the window scale option
+   */
+  uint8_t CalculateWScale () const;
+
+  /** \brief Process the timestamp option from other side
+   *
+   * Get the timestamp and the echo, then save timestamp (which will
+   * be the echo value in our out-packets) and save the echoed timestamp,
+   * to utilize later to calculate RTT.
+   *
+   * \see EstimateRtt
+   * \param option Option from the packet
+   */
+  void ProcessOptionTimestamp (const Ptr<const TcpOption> option);
+  /**
+   * \brief Add the timestamp option to the header
+   *
+   * Set the timestamp as the lower bits of the Simulator::Now time,
+   * and the echo value as the last seen timestamp from the other part.
+   *
+   * \param header TcpHeader to which add the option to
+   */
+  void AddOptionTimestamp (TcpHeader& header);
 
 
 protected:
@@ -600,6 +659,15 @@ protected:
   uint32_t              m_segmentSize; //!< Segment size
   uint16_t              m_maxWinSize;  //!< Maximum window size to advertise
   TracedValue<uint32_t> m_rWnd;        //!< Flow control window at remote side
+
+  // Options
+  bool    m_winScalingEnabled;
+  uint8_t m_sndScaleFactor;
+  uint8_t m_rcvScaleFactor;
+
+  bool     m_timestampEnabled;
+  uint32_t m_timestampToEcho;
+  uint32_t m_lastEchoedTime;
 };
 
 } // namespace ns3

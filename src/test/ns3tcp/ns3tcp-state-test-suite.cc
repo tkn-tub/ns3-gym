@@ -26,6 +26,7 @@
 #include "ns3/config.h"
 #include "ns3/string.h"
 #include "ns3/uinteger.h"
+#include "ns3/boolean.h"
 #include "ns3/data-rate.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/point-to-point-helper.h"
@@ -273,6 +274,7 @@ Ns3TcpStateTestCase::DoRun (void)
   Config::SetDefault ("ns3::TcpSocket::SegmentSize", UintegerValue (1000));
   Config::SetDefault ("ns3::TcpSocket::DelAckCount", UintegerValue (1));
   Config::SetDefault ("ns3::DropTailQueue::MaxPackets", UintegerValue (20));
+  Config::SetDefault ("ns3::TcpSocketBase::Timestamp", BooleanValue (false));
 
   if (m_writeLogging)
     {

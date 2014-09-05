@@ -302,13 +302,13 @@ Ns3TcpLossTestCase::DoRun (void)
 
   Config::SetDefault ("ns3::TcpSocket::SegmentSize", UintegerValue (1000));
   Config::SetDefault ("ns3::TcpSocket::DelAckCount", UintegerValue (1));
+  Config::SetDefault ("ns3::TcpSocketBase::Timestamp", BooleanValue (false));
 
   if (m_writeLogging)
     {
       LogComponentEnableAll (LOG_PREFIX_FUNC);
-      LogComponentEnable ("TcpLossResponse", LOG_LEVEL_ALL);
+      LogComponentEnable ("Ns3TcpLossTest", LOG_LEVEL_ALL);
       LogComponentEnable ("ErrorModel", LOG_LEVEL_DEBUG);
-      LogComponentEnable ("TcpLossResponse", LOG_LEVEL_ALL);
       LogComponentEnable ("TcpWestwood", LOG_LEVEL_ALL);
       LogComponentEnable ("TcpNewReno", LOG_LEVEL_INFO);
       LogComponentEnable ("TcpReno", LOG_LEVEL_INFO);
