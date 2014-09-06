@@ -21,6 +21,7 @@
 #include <stdint.h>
 #include <iostream>
 #include "tcp-header.h"
+#include "tcp-option.h"
 #include "ns3/buffer.h"
 #include "ns3/address-utils.h"
 #include "ns3/log.h"
@@ -326,12 +327,19 @@ TcpHeader::Serialize (Buffer::Iterator start)  const
       i.Next ((*op)->GetSerializedSize ());
     }
 
-  // padding
+  // padding to word alignment; add NOPs as needed until last byte which is END
   while (optionLen % 4)
-    {
-      ++optionLen;
-      i.WriteU8 (0);
-    }
+  {
+    if ((optionLen % 4) == 3)
+      {
+        i.WriteU8 (TcpOption::END);
+      }
+    else
+      {
+        i.WriteU8 (TcpOption::NOP);
+      }
+    ++optionLen;
+  }
 
   // Make checksum
   if(m_calcChecksum)

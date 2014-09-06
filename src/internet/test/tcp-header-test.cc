@@ -265,21 +265,18 @@ TcpHeaderWithRFC793OptionTestCase::OneOptionAtTime ()
                            buffer.GetSize (), "Header not correctly serialized");
 
     // Inserted only 1 byte NOP, and so implementation should pad; so
-    // the other 3 bytes should be NOP (so 4 byte NOP)
+    // the other 3 bytes should be NOP, NOP, END
     Buffer::Iterator i = buffer.Begin ();
     i.Next (20);
 
     uint8_t value = i.ReadU8 ();
-    NS_TEST_ASSERT_MSG_EQ (value, TcpOption::NOP, "NOP not present");
-    for (uint32_t j = 1; j < 4; ++j)
-      {
-        std::stringstream ss;
-        ss << j;
-
-        value = i.ReadU8 ();
-        NS_TEST_ASSERT_MSG_EQ (value, 0,
-                               "Header not padded with 0 at position " + ss.str ());
-      }
+    NS_TEST_ASSERT_MSG_EQ (value, TcpOption::NOP, "NOP not present at byte 1");
+    value = i.ReadU8 ();
+    NS_TEST_ASSERT_MSG_EQ (value, TcpOption::NOP, "NOP not present at byte 2");
+    value = i.ReadU8 ();
+    NS_TEST_ASSERT_MSG_EQ (value, TcpOption::NOP, "NOP not present at byte 3");
+    value = i.ReadU8 ();
+    NS_TEST_ASSERT_MSG_EQ (value, TcpOption::END, "END not present at byte 4");
   }
 
   {
