@@ -18,47 +18,79 @@
 
 #include "ns3/boolean.h"
 #include "ns3/config.h"
-#include "ns3/csma-helper.h"
-#include "ns3/csma-net-device.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/internet-stack-helper.h"
 #include "ns3/ipv4-address-helper.h"
 #include "ns3/ipv4-static-routing-helper.h"
 #include "ns3/node.h"
 #include "ns3/node-container.h"
-#include "ns3/on-off-helper.h"
 #include "ns3/packet.h"
-#include "ns3/packet-sink-helper.h"
-#include "ns3/packet-sink.h"
-#include "ns3/packet-socket-helper.h"
-#include "ns3/packet-socket-address.h"
-#include "ns3/point-to-point-helper.h"
 #include "ns3/pointer.h"
 #include "ns3/simulator.h"
 #include "ns3/string.h"
 #include "ns3/test.h"
 #include "ns3/uinteger.h"
+#include "ns3/simple-net-device.h"
+#include "ns3/simple-channel.h"
+#include "ns3/simple-net-device-helper.h"
+#include "ns3/socket-factory.h"
+#include "ns3/udp-socket-factory.h"
 
 using namespace ns3;
 
-class StaticRoutingSlash32TestCase : public TestCase
+class Ipv4StaticRoutingSlash32TestCase : public TestCase
 {
 public:
-  StaticRoutingSlash32TestCase ();
-  virtual ~StaticRoutingSlash32TestCase ();
+  Ipv4StaticRoutingSlash32TestCase ();
+  virtual ~Ipv4StaticRoutingSlash32TestCase ();
+
+  Ptr<Packet> m_receivedPacket;
+  void ReceivePkt (Ptr<Socket> socket);
+  void DoSendData (Ptr<Socket> socket, std::string to);
+  void SendData (Ptr<Socket> socket, std::string to);
 
 private:
   virtual void DoRun (void);
 };
 
 // Add some help text to this case to describe what it is intended to test
-StaticRoutingSlash32TestCase::StaticRoutingSlash32TestCase ()
+Ipv4StaticRoutingSlash32TestCase::Ipv4StaticRoutingSlash32TestCase ()
   : TestCase ("Slash 32 static routing example")
 {
 }
 
-StaticRoutingSlash32TestCase::~StaticRoutingSlash32TestCase ()
+Ipv4StaticRoutingSlash32TestCase::~Ipv4StaticRoutingSlash32TestCase ()
 {
+}
+
+void
+Ipv4StaticRoutingSlash32TestCase::ReceivePkt (Ptr<Socket> socket)
+{
+  uint32_t availableData;
+  availableData = socket->GetRxAvailable ();
+  m_receivedPacket = socket->Recv (std::numeric_limits<uint32_t>::max (), 0);
+  NS_ASSERT (availableData == m_receivedPacket->GetSize ());
+  //cast availableData to void, to suppress 'availableData' set but not used
+  //compiler warning
+  (void) availableData;
+}
+
+void
+Ipv4StaticRoutingSlash32TestCase::DoSendData (Ptr<Socket> socket, std::string to)
+{
+  Address realTo = InetSocketAddress (Ipv4Address (to.c_str ()), 1234);
+  NS_TEST_EXPECT_MSG_EQ (socket->SendTo (Create<Packet> (123), 0, realTo),
+                         123, "100");
+}
+
+void
+Ipv4StaticRoutingSlash32TestCase::SendData (Ptr<Socket> socket, std::string to)
+{
+  m_receivedPacket = Create<Packet> ();
+  Simulator::ScheduleWithContext (socket->GetNode ()->GetId (), Seconds (60),
+                                  &Ipv4StaticRoutingSlash32TestCase::DoSendData, this, socket, to);
+  Simulator::Stop (Seconds (66));
+  Simulator::Run ();
 }
 
 // Test program for this 3-router scenario, using static routing
@@ -66,7 +98,7 @@ StaticRoutingSlash32TestCase::~StaticRoutingSlash32TestCase ()
 // (a.a.a.a/32)A<--x.x.x.0/30-->B<--y.y.y.0/30-->C(c.c.c.c/32)
 //
 void
-StaticRoutingSlash32TestCase::DoRun (void)
+Ipv4StaticRoutingSlash32TestCase::DoRun (void)
 {
   Ptr<Node> nA = CreateObject<Node> ();
   Ptr<Node> nB = CreateObject<Node> ();
@@ -77,23 +109,20 @@ StaticRoutingSlash32TestCase::DoRun (void)
   InternetStackHelper internet;
   internet.Install (c);
 
-  // Point-to-point links
+  // simple links
   NodeContainer nAnB = NodeContainer (nA, nB);
   NodeContainer nBnC = NodeContainer (nB, nC);
 
-  // We create the channels first without any IP addressing information
-  PointToPointHelper p2p;
-  p2p.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
-  p2p.SetChannelAttribute ("Delay", StringValue ("2ms"));
-  NetDeviceContainer dAdB = p2p.Install (nAnB);
+  SimpleNetDeviceHelper devHelper;
 
-  NetDeviceContainer dBdC = p2p.Install (nBnC);;
-
-  Ptr<CsmaNetDevice> deviceA = CreateObject<CsmaNetDevice> ();
+  Ptr<SimpleNetDevice> deviceA = CreateObject<SimpleNetDevice> ();
   deviceA->SetAddress (Mac48Address::Allocate ());
   nA->AddDevice (deviceA);
 
-  Ptr<CsmaNetDevice> deviceC = CreateObject<CsmaNetDevice> ();
+  NetDeviceContainer dAdB = devHelper.Install (nAnB);
+  NetDeviceContainer dBdC = devHelper.Install (nBnC);
+
+  Ptr<SimpleNetDevice> deviceC = CreateObject<SimpleNetDevice> ();
   deviceC->SetAddress (Mac48Address::Allocate ());
   nC->AddDevice (deviceC);
 
@@ -130,41 +159,37 @@ StaticRoutingSlash32TestCase::DoRun (void)
   Ptr<Ipv4StaticRouting> staticRoutingB = ipv4RoutingHelper.GetStaticRouting (ipv4B);
   // The ifIndex we want on node B is 2; 0 corresponds to loopback, and 1 to the first point to point link
   staticRoutingB->AddHostRouteTo (Ipv4Address ("192.168.1.1"), Ipv4Address ("10.1.1.6"), 2);
-  // Create the OnOff application to send UDP datagrams of size
-  // 210 bytes at a rate of 448 Kb/s
-  uint16_t port = 9;   // Discard port (RFC 863)
-  OnOffHelper onoff ("ns3::UdpSocketFactory", 
-                     Address (InetSocketAddress (ifInAddrC.GetLocal (), port)));
-  onoff.SetConstantRate (DataRate (6000));
-  ApplicationContainer apps = onoff.Install (nA);
-  apps.Start (Seconds (1.0));
-  apps.Stop (Seconds (10.0));
 
-  // Create a packet sink to receive these packets
-  PacketSinkHelper sink ("ns3::UdpSocketFactory",
-                         Address (InetSocketAddress (Ipv4Address::GetAny (), port)));
-  apps = sink.Install (nC);
-  apps.Start (Seconds (1.0));
-  apps.Stop (Seconds (10.0));
+  // Create the UDP sockets
+  Ptr<SocketFactory> rxSocketFactory = nC->GetObject<UdpSocketFactory> ();
+  Ptr<Socket> rxSocket = rxSocketFactory->CreateSocket ();
+  NS_TEST_EXPECT_MSG_EQ (rxSocket->Bind (InetSocketAddress (Ipv4Address ("192.168.1.1"), 1234)), 0, "trivial");
+  rxSocket->SetRecvCallback (MakeCallback (&Ipv4StaticRoutingSlash32TestCase::ReceivePkt, this));
 
-  Simulator::Run ();
-  // Check that we received 13 * 512 = 6656 bytes
-  Ptr<PacketSink> sinkPtr = DynamicCast <PacketSink> (apps.Get (0));
-  NS_TEST_ASSERT_MSG_EQ (sinkPtr->GetTotalRx (), 6656, "Static routing with /32 did not deliver all packets");
+  Ptr<SocketFactory> txSocketFactory = nA->GetObject<UdpSocketFactory> ();
+  Ptr<Socket> txSocket = txSocketFactory->CreateSocket ();
+  txSocket->SetAllowBroadcast (true);
+
+  // ------ Now the tests ------------
+
+  // Unicast test
+  SendData (txSocket, "192.168.1.1");
+  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 123, "Static routing with /32 did not deliver all packets.");
+
   Simulator::Destroy ();
 }
 
-class StaticRoutingTestSuite : public TestSuite
+class Ipv4StaticRoutingTestSuite : public TestSuite
 {
 public:
-  StaticRoutingTestSuite ();
+  Ipv4StaticRoutingTestSuite ();
 };
 
-StaticRoutingTestSuite::StaticRoutingTestSuite ()
-  : TestSuite ("static-routing", UNIT)
+Ipv4StaticRoutingTestSuite::Ipv4StaticRoutingTestSuite ()
+  : TestSuite ("ipv4-static-routing", UNIT)
 {
-  AddTestCase (new StaticRoutingSlash32TestCase, TestCase::QUICK);
+  AddTestCase (new Ipv4StaticRoutingSlash32TestCase, TestCase::QUICK);
 }
 
 // Do not forget to allocate an instance of this TestSuite
-static StaticRoutingTestSuite staticRoutingTestSuite;
+static Ipv4StaticRoutingTestSuite ipv4StaticRoutingTestSuite;

@@ -222,6 +222,8 @@ def build(bld):
         'test/ipv4-forwarding-test.cc',
         'test/error-channel.cc',
         'test/ipv4-test.cc',
+        'test/ipv4-static-routing-test-suite.cc',
+        'test/ipv4-global-routing-test-suite.cc',
         'test/ipv6-extension-header-test-suite.cc',
         'test/ipv6-list-routing-test-suite.cc',
         'test/ipv6-packet-info-tag-test-suite.cc',
