@@ -30,6 +30,7 @@
 #include "ns3/simulator.h"
 #include "error-channel.h"
 #include "ns3/simple-net-device.h"
+#include "ns3/simple-net-device-helper.h"
 #include "ns3/drop-tail-queue.h"
 #include "ns3/socket.h"
 #include "ns3/udp-socket.h"
@@ -45,6 +46,7 @@
 #include "ns3/ipv4-list-routing.h"
 #include "ns3/ipv4-static-routing.h"
 #include "ns3/udp-l4-protocol.h"
+#include "ns3/internet-stack-helper.h"
 
 #include <string>
 #include <limits>
@@ -73,29 +75,6 @@ public:
   void setToken (uint64_t token) { this->token = token; }
   uint64_t getToken () { return token; }
 };
-
-static void
-AddInternetStack (Ptr<Node> node)
-{
-  //ARP
-  Ptr<ArpL3Protocol> arp = CreateObject<ArpL3Protocol> ();
-  node->AggregateObject(arp);
-  //IPV4
-  Ptr<Ipv4L3Protocol> ipv4 = CreateObject<Ipv4L3Protocol> ();
-  //Routing for Ipv4
-  Ptr<Ipv4ListRouting> ipv4Routing = CreateObject<Ipv4ListRouting> ();
-  ipv4->SetRoutingProtocol (ipv4Routing);
-  Ptr<Ipv4StaticRouting> ipv4staticRouting = CreateObject<Ipv4StaticRouting> ();
-  ipv4Routing->AddRoutingProtocol (ipv4staticRouting, 0);
-  node->AggregateObject(ipv4);
-  //ICMP
-  Ptr<Icmpv4L4Protocol> icmp = CreateObject<Icmpv4L4Protocol> ();
-  node->AggregateObject(icmp);
-  // //Ipv4Raw
-  Ptr<UdpL4Protocol> udp = CreateObject<UdpL4Protocol> ();
-  node->AggregateObject(udp);
-}
-
 
 class Ipv4FragmentationTest: public TestCase
 {
@@ -283,52 +262,52 @@ Ipv4FragmentationTest::DoRun (void)
 
   // Create topology
   
-  // Receiver Node
+   // Receiver Node
   Ptr<Node> serverNode = CreateObject<Node> ();
-  AddInternetStack (serverNode);
-  Ptr<SimpleNetDevice> serverDev;
-  Ptr<BinaryErrorModel> serverDevErrorModel = CreateObject<BinaryErrorModel> ();
-  {
-    serverDev = CreateObject<SimpleNetDevice> ();
-    serverDev->SetAddress (Mac48Address::ConvertFrom (Mac48Address::Allocate ()));
-    serverDev->SetMtu(1500);
-    serverDev->SetReceiveErrorModel(serverDevErrorModel);
-    serverDevErrorModel->Disable();
-    serverNode->AddDevice (serverDev);
-    Ptr<Ipv4> ipv4 = serverNode->GetObject<Ipv4> ();
-    uint32_t netdev_idx = ipv4->AddInterface (serverDev);
-    Ipv4InterfaceAddress ipv4Addr = Ipv4InterfaceAddress (Ipv4Address ("10.0.0.1"), Ipv4Mask (0xffff0000U));
-    ipv4->AddAddress (netdev_idx, ipv4Addr);
-    ipv4->SetUp (netdev_idx);
-  }
-  StartServer(serverNode);
-
   // Sender Node
   Ptr<Node> clientNode = CreateObject<Node> ();
-  AddInternetStack (clientNode);
-  Ptr<SimpleNetDevice> clientDev;
-  Ptr<BinaryErrorModel> clientDevErrorModel = CreateObject<BinaryErrorModel> ();
-  {
-    clientDev = CreateObject<SimpleNetDevice> ();
-    clientDev->SetAddress (Mac48Address::ConvertFrom (Mac48Address::Allocate ()));
-    clientDev->SetMtu(1000);
-    clientDev->SetReceiveErrorModel(clientDevErrorModel);
-    clientDevErrorModel->Disable();
-    clientNode->AddDevice (clientDev);
-    Ptr<Ipv4> ipv4 = clientNode->GetObject<Ipv4> ();
-    uint32_t netdev_idx = ipv4->AddInterface (clientDev);
-    Ipv4InterfaceAddress ipv4Addr = Ipv4InterfaceAddress (Ipv4Address ("10.0.0.2"), Ipv4Mask (0xffff0000U));
-    ipv4->AddAddress (netdev_idx, ipv4Addr);
-    ipv4->SetUp (netdev_idx);
-  }
-  StartClient(clientNode);
 
-  // link the two nodes
+  NodeContainer nodes (serverNode, clientNode);
+
   Ptr<ErrorChannel> channel = CreateObject<ErrorChannel> ();
-  serverDev->SetChannel (channel);
-  clientDev->SetChannel (channel);
-  channel->SetJumpingTime(Seconds(0.5));
+  channel->SetJumpingTime (Seconds (0.5));
 
+  SimpleNetDeviceHelper helperChannel;
+  helperChannel.SetNetDevicePointToPointMode (true);
+  NetDeviceContainer net = helperChannel.Install (nodes, channel);
+
+  InternetStackHelper internet;
+  internet.Install (nodes);
+
+  Ptr<Ipv4> ipv4;
+  uint32_t netdev_idx;
+  Ipv4InterfaceAddress ipv4Addr;
+
+  // Receiver Node
+  ipv4 = serverNode->GetObject<Ipv4> ();
+  netdev_idx = ipv4->AddInterface (net.Get (0));
+  ipv4Addr = Ipv4InterfaceAddress (Ipv4Address ("10.0.0.1"), Ipv4Mask (0xffff0000U));
+  ipv4->AddAddress (netdev_idx, ipv4Addr);
+  ipv4->SetUp (netdev_idx);
+  Ptr<BinaryErrorModel> serverDevErrorModel = CreateObject<BinaryErrorModel> ();
+  Ptr<SimpleNetDevice> serverDev = DynamicCast<SimpleNetDevice> (net.Get (0));
+  serverDevErrorModel->Disable ();
+  serverDev->SetMtu(1500);
+  serverDev->SetReceiveErrorModel (serverDevErrorModel);
+  StartServer (serverNode);
+
+  // Sender Node
+  ipv4 = clientNode->GetObject<Ipv4> ();
+  netdev_idx = ipv4->AddInterface (net.Get (1));
+  ipv4Addr = Ipv4InterfaceAddress (Ipv4Address ("10.0.0.2"), Ipv4Mask (0xffff0000U));
+  ipv4->AddAddress (netdev_idx, ipv4Addr);
+  ipv4->SetUp (netdev_idx);
+  Ptr<BinaryErrorModel> clientDevErrorModel = CreateObject<BinaryErrorModel> ();
+  Ptr<SimpleNetDevice> clientDev = DynamicCast<SimpleNetDevice> (net.Get (1));
+  clientDevErrorModel->Disable ();
+  clientDev->SetMtu(1500);
+  clientDev->SetReceiveErrorModel (clientDevErrorModel);
+  StartClient (clientNode);
 
   // some small packets, some rather big ones
   uint32_t packetSizes[5] = {1000, 2000, 5000, 10000, 65000};

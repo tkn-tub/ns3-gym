@@ -61,6 +61,7 @@ def build(bld):
         'helper/packet-socket-helper.cc',
         'helper/trace-helper.cc',
         'helper/delay-jitter-estimation.cc',
+        'helper/simple-net-device-helper.cc',
         ]
 
     network_test = bld.create_ns3_module_test_library('network')
@@ -143,6 +144,7 @@ def build(bld):
         'helper/packet-socket-helper.h',
         'helper/trace-helper.h',
         'helper/delay-jitter-estimation.h',
+        'helper/simple-net-device-helper.h',
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):

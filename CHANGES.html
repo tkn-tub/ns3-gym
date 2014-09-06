@@ -89,6 +89,8 @@ us a note on ns-developers mailing list.</p>
           SetFfrAlgorithmType and SetFfrAlgorithmAttribute</li>
     </ul>
   </li>
+  <li> A new SimpleNetDeviceHelper can now be used to install SimpleNetDevices.
+  </li>
 </ul>
 
 <h2>Changes to existing API:</h2>
@@ -273,6 +275,10 @@ failure.  </li>
   <li> Additional time units (Year, Day, Hour, Minute) were added to the time
   value class that represents simulation time; the largest unit prior to 
   this addition was Second.
+  </li>
+  <li> SimpleNetDevice and SimpleChannel are not so simple anymore. SimpleNetDevice can be now a
+       Broadcast or PointToPoint NetDevice, it can have a limited bandwidth and it uses an output
+       queue.       
   </li>
 </ul>
 

@@ -39,7 +39,12 @@ New user-visible features
    - updated RadioEnvironmentMapHelper. Now RadioEnvironmentMap can be generated 
      for Data or Control channel and for specified RbId, what is helpful when 
      using FR algorithms
-
+- SimpleNetDevice and SimpleChannel are not so simple anymore. 
+  SimpleNetDevice can be now a Broadcast or PointToPoint NetDevice, 
+  it can have a limited bandwidth and it uses an output queue.
+- SimpleNetDevice and SimpleChannel can be installed in a node through 
+  an helper: SimpleNetDeviceHelper.
+  
 Bugs fixed
 ----------
 

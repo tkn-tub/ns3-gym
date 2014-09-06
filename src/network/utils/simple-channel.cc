@@ -36,6 +36,10 @@ SimpleChannel::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::SimpleChannel")
     .SetParent<Channel> ()
     .AddConstructor<SimpleChannel> ()
+    .AddAttribute ("Delay", "Transmission delay through the channel",
+                   TimeValue (Seconds (0)),
+                   MakeTimeAccessor (&SimpleChannel::m_delay),
+                   MakeTimeChecker ())
   ;
   return tid;
 }
@@ -58,7 +62,7 @@ SimpleChannel::Send (Ptr<Packet> p, uint16_t protocol,
         {
           continue;
         }
-      Simulator::ScheduleWithContext (tmp->GetNode ()->GetId (), Seconds (0),
+      Simulator::ScheduleWithContext (tmp->GetNode ()->GetId (), m_delay,
                                       &SimpleNetDevice::Receive, tmp, p->Copy (), protocol, to, from);
     }
 }
