@@ -56,6 +56,8 @@ def register_types(module):
     module.add_class('DeviceEnergyModelContainer')
     ## energy-model-helper.h (module 'energy'): ns3::DeviceEnergyModelHelper [class]
     module.add_class('DeviceEnergyModelHelper', allow_subclassing=True)
+    ## energy-harvester-helper.h (module 'energy'): ns3::EnergyHarvesterHelper [class]
+    module.add_class('EnergyHarvesterHelper', allow_subclassing=True)
     ## energy-model-helper.h (module 'energy'): ns3::EnergySourceHelper [class]
     module.add_class('EnergySourceHelper', allow_subclassing=True)
     ## event-id.h (module 'core'): ns3::EventId [class]
@@ -140,6 +142,8 @@ def register_types(module):
     module.add_class('int64x64_t', import_from_module='ns.core')
     ## int64x64-double.h (module 'core'): ns3::int64x64_t::impl_type [enumeration]
     module.add_enum('impl_type', ['int128_impl', 'cairo_impl', 'ld_impl'], outer_class=root_module['ns3::int64x64_t'], import_from_module='ns.core')
+    ## basic-energy-harvester-helper.h (module 'energy'): ns3::BasicEnergyHarvesterHelper [class]
+    module.add_class('BasicEnergyHarvesterHelper', parent=root_module['ns3::EnergyHarvesterHelper'])
     ## basic-energy-source-helper.h (module 'energy'): ns3::BasicEnergySourceHelper [class]
     module.add_class('BasicEnergySourceHelper', parent=root_module['ns3::EnergySourceHelper'])
     ## chunk.h (module 'network'): ns3::Chunk [class]
@@ -150,6 +154,10 @@ def register_types(module):
     module.add_class('Object', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::Object, ns3::ObjectBase, ns3::ObjectDeleter >'])
     ## object.h (module 'core'): ns3::Object::AggregateIterator [class]
     module.add_class('AggregateIterator', import_from_module='ns.core', outer_class=root_module['ns3::Object'])
+    ## random-variable-stream.h (module 'core'): ns3::RandomVariableStream [class]
+    module.add_class('RandomVariableStream', import_from_module='ns.core', parent=root_module['ns3::Object'])
+    ## random-variable-stream.h (module 'core'): ns3::SequentialRandomVariable [class]
+    module.add_class('SequentialRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor> > [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', template_parameters=['ns3::AttributeAccessor', 'ns3::empty', 'ns3::DefaultDeleter<ns3::AttributeAccessor>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter<ns3::AttributeChecker> > [class]
@@ -182,10 +190,22 @@ def register_types(module):
     root_module['ns3::TracedValue< ns3::Time >'].implicitly_converts_to(root_module['ns3::Time'])
     ## trailer.h (module 'network'): ns3::Trailer [class]
     module.add_class('Trailer', import_from_module='ns.network', parent=root_module['ns3::Chunk'])
+    ## random-variable-stream.h (module 'core'): ns3::TriangularRandomVariable [class]
+    module.add_class('TriangularRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
+    ## random-variable-stream.h (module 'core'): ns3::UniformRandomVariable [class]
+    module.add_class('UniformRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
+    ## random-variable-stream.h (module 'core'): ns3::WeibullRandomVariable [class]
+    module.add_class('WeibullRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
     ## wifi-phy.h (module 'wifi'): ns3::WifiPhy [class]
     module.add_class('WifiPhy', import_from_module='ns.wifi', parent=root_module['ns3::Object'])
     ## wifi-phy.h (module 'wifi'): ns3::WifiPhy::State [enumeration]
-    module.add_enum('State', ['IDLE', 'CCA_BUSY', 'TX', 'RX', 'SWITCHING'], outer_class=root_module['ns3::WifiPhy'], import_from_module='ns.wifi')
+    module.add_enum('State', ['IDLE', 'CCA_BUSY', 'TX', 'RX', 'SWITCHING', 'SLEEP'], outer_class=root_module['ns3::WifiPhy'], import_from_module='ns.wifi')
+    ## wifi-tx-current-model.h (module 'energy'): ns3::WifiTxCurrentModel [class]
+    module.add_class('WifiTxCurrentModel', parent=root_module['ns3::Object'])
+    ## random-variable-stream.h (module 'core'): ns3::ZetaRandomVariable [class]
+    module.add_class('ZetaRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
+    ## random-variable-stream.h (module 'core'): ns3::ZipfRandomVariable [class]
+    module.add_class('ZipfRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
     ## attribute.h (module 'core'): ns3::AttributeAccessor [class]
     module.add_class('AttributeAccessor', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor> >'])
     ## attribute.h (module 'core'): ns3::AttributeChecker [class]
@@ -202,12 +222,22 @@ def register_types(module):
     module.add_class('CallbackImplBase', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::CallbackImplBase, ns3::empty, ns3::DefaultDeleter<ns3::CallbackImplBase> >'])
     ## callback.h (module 'core'): ns3::CallbackValue [class]
     module.add_class('CallbackValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
+    ## random-variable-stream.h (module 'core'): ns3::ConstantRandomVariable [class]
+    module.add_class('ConstantRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
+    ## random-variable-stream.h (module 'core'): ns3::DeterministicRandomVariable [class]
+    module.add_class('DeterministicRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
     ## device-energy-model.h (module 'energy'): ns3::DeviceEnergyModel [class]
     module.add_class('DeviceEnergyModel', parent=root_module['ns3::Object'])
     ## double.h (module 'core'): ns3::DoubleValue [class]
     module.add_class('DoubleValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
+    ## random-variable-stream.h (module 'core'): ns3::EmpiricalRandomVariable [class]
+    module.add_class('EmpiricalRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
     ## attribute.h (module 'core'): ns3::EmptyAttributeValue [class]
     module.add_class('EmptyAttributeValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
+    ## energy-harvester.h (module 'energy'): ns3::EnergyHarvester [class]
+    module.add_class('EnergyHarvester', parent=root_module['ns3::Object'])
+    ## energy-harvester-container.h (module 'energy'): ns3::EnergyHarvesterContainer [class]
+    module.add_class('EnergyHarvesterContainer', parent=root_module['ns3::Object'])
     ## energy-source.h (module 'energy'): ns3::EnergySource [class]
     module.add_class('EnergySource', parent=root_module['ns3::Object'])
     ## energy-source-container.h (module 'energy'): ns3::EnergySourceContainer [class]
@@ -216,8 +246,14 @@ def register_types(module):
     module.add_class('EnumChecker', import_from_module='ns.core', parent=root_module['ns3::AttributeChecker'])
     ## enum.h (module 'core'): ns3::EnumValue [class]
     module.add_class('EnumValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
+    ## random-variable-stream.h (module 'core'): ns3::ErlangRandomVariable [class]
+    module.add_class('ErlangRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
     ## event-impl.h (module 'core'): ns3::EventImpl [class]
     module.add_class('EventImpl', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::EventImpl, ns3::empty, ns3::DefaultDeleter<ns3::EventImpl> >'])
+    ## random-variable-stream.h (module 'core'): ns3::ExponentialRandomVariable [class]
+    module.add_class('ExponentialRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
+    ## random-variable-stream.h (module 'core'): ns3::GammaRandomVariable [class]
+    module.add_class('GammaRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
     ## integer.h (module 'core'): ns3::IntegerValue [class]
     module.add_class('IntegerValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
     ## ipv4-address.h (module 'network'): ns3::Ipv4AddressChecker [class]
@@ -238,6 +274,10 @@ def register_types(module):
     module.add_class('Ipv6PrefixValue', import_from_module='ns.network', parent=root_module['ns3::AttributeValue'])
     ## li-ion-energy-source.h (module 'energy'): ns3::LiIonEnergySource [class]
     module.add_class('LiIonEnergySource', parent=root_module['ns3::EnergySource'])
+    ## wifi-tx-current-model.h (module 'energy'): ns3::LinearWifiTxCurrentModel [class]
+    module.add_class('LinearWifiTxCurrentModel', parent=root_module['ns3::WifiTxCurrentModel'])
+    ## random-variable-stream.h (module 'core'): ns3::LogNormalRandomVariable [class]
+    module.add_class('LogNormalRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
     ## net-device.h (module 'network'): ns3::NetDevice [class]
     module.add_class('NetDevice', import_from_module='ns.network', parent=root_module['ns3::Object'])
     ## net-device.h (module 'network'): ns3::NetDevice::PacketType [enumeration]
@@ -246,12 +286,16 @@ def register_types(module):
     module.add_class('NixVector', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::NixVector, ns3::empty, ns3::DefaultDeleter<ns3::NixVector> >'])
     ## node.h (module 'network'): ns3::Node [class]
     module.add_class('Node', import_from_module='ns.network', parent=root_module['ns3::Object'])
+    ## random-variable-stream.h (module 'core'): ns3::NormalRandomVariable [class]
+    module.add_class('NormalRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
     ## object-factory.h (module 'core'): ns3::ObjectFactoryChecker [class]
     module.add_class('ObjectFactoryChecker', import_from_module='ns.core', parent=root_module['ns3::AttributeChecker'])
     ## object-factory.h (module 'core'): ns3::ObjectFactoryValue [class]
     module.add_class('ObjectFactoryValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
     ## packet.h (module 'network'): ns3::Packet [class]
     module.add_class('Packet', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet> >'])
+    ## random-variable-stream.h (module 'core'): ns3::ParetoRandomVariable [class]
+    module.add_class('ParetoRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
     ## rv-battery-model.h (module 'energy'): ns3::RvBatteryModel [class]
     module.add_class('RvBatteryModel', parent=root_module['ns3::EnergySource'])
     ## simple-device-energy-model.h (module 'energy'): ns3::SimpleDeviceEnergyModel [class]
@@ -274,6 +318,8 @@ def register_types(module):
     module.add_class('AddressChecker', import_from_module='ns.network', parent=root_module['ns3::AttributeChecker'])
     ## address.h (module 'network'): ns3::AddressValue [class]
     module.add_class('AddressValue', import_from_module='ns.network', parent=root_module['ns3::AttributeValue'])
+    ## basic-energy-harvester.h (module 'energy'): ns3::BasicEnergyHarvester [class]
+    module.add_class('BasicEnergyHarvester', parent=root_module['ns3::EnergyHarvester'])
     ## basic-energy-source.h (module 'energy'): ns3::BasicEnergySource [class]
     module.add_class('BasicEnergySource', parent=root_module['ns3::EnergySource'])
     module.add_container('ns3::WifiModeList', 'ns3::WifiMode', container_type=u'vector')
@@ -360,6 +406,7 @@ def register_methods(root_module):
     register_Ns3CallbackBase_methods(root_module, root_module['ns3::CallbackBase'])
     register_Ns3DeviceEnergyModelContainer_methods(root_module, root_module['ns3::DeviceEnergyModelContainer'])
     register_Ns3DeviceEnergyModelHelper_methods(root_module, root_module['ns3::DeviceEnergyModelHelper'])
+    register_Ns3EnergyHarvesterHelper_methods(root_module, root_module['ns3::EnergyHarvesterHelper'])
     register_Ns3EnergySourceHelper_methods(root_module, root_module['ns3::EnergySourceHelper'])
     register_Ns3EventId_methods(root_module, root_module['ns3::EventId'])
     register_Ns3Hasher_methods(root_module, root_module['ns3::Hasher'])
@@ -396,11 +443,14 @@ def register_methods(root_module):
     register_Ns3WifiTxVector_methods(root_module, root_module['ns3::WifiTxVector'])
     register_Ns3Empty_methods(root_module, root_module['ns3::empty'])
     register_Ns3Int64x64_t_methods(root_module, root_module['ns3::int64x64_t'])
+    register_Ns3BasicEnergyHarvesterHelper_methods(root_module, root_module['ns3::BasicEnergyHarvesterHelper'])
     register_Ns3BasicEnergySourceHelper_methods(root_module, root_module['ns3::BasicEnergySourceHelper'])
     register_Ns3Chunk_methods(root_module, root_module['ns3::Chunk'])
     register_Ns3Header_methods(root_module, root_module['ns3::Header'])
     register_Ns3Object_methods(root_module, root_module['ns3::Object'])
     register_Ns3ObjectAggregateIterator_methods(root_module, root_module['ns3::Object::AggregateIterator'])
+    register_Ns3RandomVariableStream_methods(root_module, root_module['ns3::RandomVariableStream'])
+    register_Ns3SequentialRandomVariable_methods(root_module, root_module['ns3::SequentialRandomVariable'])
     register_Ns3SimpleRefCount__Ns3AttributeAccessor_Ns3Empty_Ns3DefaultDeleter__lt__ns3AttributeAccessor__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor> >'])
     register_Ns3SimpleRefCount__Ns3AttributeChecker_Ns3Empty_Ns3DefaultDeleter__lt__ns3AttributeChecker__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter<ns3::AttributeChecker> >'])
     register_Ns3SimpleRefCount__Ns3AttributeValue_Ns3Empty_Ns3DefaultDeleter__lt__ns3AttributeValue__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::AttributeValue, ns3::empty, ns3::DefaultDeleter<ns3::AttributeValue> >'])
@@ -414,7 +464,13 @@ def register_methods(root_module):
     register_Ns3TraceSourceAccessor_methods(root_module, root_module['ns3::TraceSourceAccessor'])
     register_Ns3TracedValue__Ns3Time_methods(root_module, root_module['ns3::TracedValue< ns3::Time >'])
     register_Ns3Trailer_methods(root_module, root_module['ns3::Trailer'])
+    register_Ns3TriangularRandomVariable_methods(root_module, root_module['ns3::TriangularRandomVariable'])
+    register_Ns3UniformRandomVariable_methods(root_module, root_module['ns3::UniformRandomVariable'])
+    register_Ns3WeibullRandomVariable_methods(root_module, root_module['ns3::WeibullRandomVariable'])
     register_Ns3WifiPhy_methods(root_module, root_module['ns3::WifiPhy'])
+    register_Ns3WifiTxCurrentModel_methods(root_module, root_module['ns3::WifiTxCurrentModel'])
+    register_Ns3ZetaRandomVariable_methods(root_module, root_module['ns3::ZetaRandomVariable'])
+    register_Ns3ZipfRandomVariable_methods(root_module, root_module['ns3::ZipfRandomVariable'])
     register_Ns3AttributeAccessor_methods(root_module, root_module['ns3::AttributeAccessor'])
     register_Ns3AttributeChecker_methods(root_module, root_module['ns3::AttributeChecker'])
     register_Ns3AttributeValue_methods(root_module, root_module['ns3::AttributeValue'])
@@ -423,14 +479,22 @@ def register_methods(root_module):
     register_Ns3CallbackChecker_methods(root_module, root_module['ns3::CallbackChecker'])
     register_Ns3CallbackImplBase_methods(root_module, root_module['ns3::CallbackImplBase'])
     register_Ns3CallbackValue_methods(root_module, root_module['ns3::CallbackValue'])
+    register_Ns3ConstantRandomVariable_methods(root_module, root_module['ns3::ConstantRandomVariable'])
+    register_Ns3DeterministicRandomVariable_methods(root_module, root_module['ns3::DeterministicRandomVariable'])
     register_Ns3DeviceEnergyModel_methods(root_module, root_module['ns3::DeviceEnergyModel'])
     register_Ns3DoubleValue_methods(root_module, root_module['ns3::DoubleValue'])
+    register_Ns3EmpiricalRandomVariable_methods(root_module, root_module['ns3::EmpiricalRandomVariable'])
     register_Ns3EmptyAttributeValue_methods(root_module, root_module['ns3::EmptyAttributeValue'])
+    register_Ns3EnergyHarvester_methods(root_module, root_module['ns3::EnergyHarvester'])
+    register_Ns3EnergyHarvesterContainer_methods(root_module, root_module['ns3::EnergyHarvesterContainer'])
     register_Ns3EnergySource_methods(root_module, root_module['ns3::EnergySource'])
     register_Ns3EnergySourceContainer_methods(root_module, root_module['ns3::EnergySourceContainer'])
     register_Ns3EnumChecker_methods(root_module, root_module['ns3::EnumChecker'])
     register_Ns3EnumValue_methods(root_module, root_module['ns3::EnumValue'])
+    register_Ns3ErlangRandomVariable_methods(root_module, root_module['ns3::ErlangRandomVariable'])
     register_Ns3EventImpl_methods(root_module, root_module['ns3::EventImpl'])
+    register_Ns3ExponentialRandomVariable_methods(root_module, root_module['ns3::ExponentialRandomVariable'])
+    register_Ns3GammaRandomVariable_methods(root_module, root_module['ns3::GammaRandomVariable'])
     register_Ns3IntegerValue_methods(root_module, root_module['ns3::IntegerValue'])
     register_Ns3Ipv4AddressChecker_methods(root_module, root_module['ns3::Ipv4AddressChecker'])
     register_Ns3Ipv4AddressValue_methods(root_module, root_module['ns3::Ipv4AddressValue'])
@@ -441,12 +505,16 @@ def register_methods(root_module):
     register_Ns3Ipv6PrefixChecker_methods(root_module, root_module['ns3::Ipv6PrefixChecker'])
     register_Ns3Ipv6PrefixValue_methods(root_module, root_module['ns3::Ipv6PrefixValue'])
     register_Ns3LiIonEnergySource_methods(root_module, root_module['ns3::LiIonEnergySource'])
+    register_Ns3LinearWifiTxCurrentModel_methods(root_module, root_module['ns3::LinearWifiTxCurrentModel'])
+    register_Ns3LogNormalRandomVariable_methods(root_module, root_module['ns3::LogNormalRandomVariable'])
     register_Ns3NetDevice_methods(root_module, root_module['ns3::NetDevice'])
     register_Ns3NixVector_methods(root_module, root_module['ns3::NixVector'])
     register_Ns3Node_methods(root_module, root_module['ns3::Node'])
+    register_Ns3NormalRandomVariable_methods(root_module, root_module['ns3::NormalRandomVariable'])
     register_Ns3ObjectFactoryChecker_methods(root_module, root_module['ns3::ObjectFactoryChecker'])
     register_Ns3ObjectFactoryValue_methods(root_module, root_module['ns3::ObjectFactoryValue'])
     register_Ns3Packet_methods(root_module, root_module['ns3::Packet'])
+    register_Ns3ParetoRandomVariable_methods(root_module, root_module['ns3::ParetoRandomVariable'])
     register_Ns3RvBatteryModel_methods(root_module, root_module['ns3::RvBatteryModel'])
     register_Ns3SimpleDeviceEnergyModel_methods(root_module, root_module['ns3::SimpleDeviceEnergyModel'])
     register_Ns3TimeValue_methods(root_module, root_module['ns3::TimeValue'])
@@ -458,6 +526,7 @@ def register_methods(root_module):
     register_Ns3WifiRadioEnergyModel_methods(root_module, root_module['ns3::WifiRadioEnergyModel'])
     register_Ns3AddressChecker_methods(root_module, root_module['ns3::AddressChecker'])
     register_Ns3AddressValue_methods(root_module, root_module['ns3::AddressValue'])
+    register_Ns3BasicEnergyHarvester_methods(root_module, root_module['ns3::BasicEnergyHarvester'])
     register_Ns3BasicEnergySource_methods(root_module, root_module['ns3::BasicEnergySource'])
     register_Ns3HashImplementation_methods(root_module, root_module['ns3::Hash::Implementation'])
     register_Ns3HashFunctionFnv1a_methods(root_module, root_module['ns3::Hash::Function::Fnv1a'])
@@ -1025,6 +1094,38 @@ def register_Ns3DeviceEnergyModelHelper_methods(root_module, cls):
     cls.add_method('DoInstall', 
                    'ns3::Ptr< ns3::DeviceEnergyModel >', 
                    [param('ns3::Ptr< ns3::NetDevice >', 'device'), param('ns3::Ptr< ns3::EnergySource >', 'source')], 
+                   is_pure_virtual=True, is_const=True, visibility='private', is_virtual=True)
+    return
+
+def register_Ns3EnergyHarvesterHelper_methods(root_module, cls):
+    ## energy-harvester-helper.h (module 'energy'): ns3::EnergyHarvesterHelper::EnergyHarvesterHelper() [constructor]
+    cls.add_constructor([])
+    ## energy-harvester-helper.h (module 'energy'): ns3::EnergyHarvesterHelper::EnergyHarvesterHelper(ns3::EnergyHarvesterHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::EnergyHarvesterHelper const &', 'arg0')])
+    ## energy-harvester-helper.h (module 'energy'): ns3::EnergyHarvesterContainer ns3::EnergyHarvesterHelper::Install(ns3::Ptr<ns3::EnergySource> source) const [member function]
+    cls.add_method('Install', 
+                   'ns3::EnergyHarvesterContainer', 
+                   [param('ns3::Ptr< ns3::EnergySource >', 'source')], 
+                   is_const=True)
+    ## energy-harvester-helper.h (module 'energy'): ns3::EnergyHarvesterContainer ns3::EnergyHarvesterHelper::Install(ns3::EnergySourceContainer sourceContainer) const [member function]
+    cls.add_method('Install', 
+                   'ns3::EnergyHarvesterContainer', 
+                   [param('ns3::EnergySourceContainer', 'sourceContainer')], 
+                   is_const=True)
+    ## energy-harvester-helper.h (module 'energy'): ns3::EnergyHarvesterContainer ns3::EnergyHarvesterHelper::Install(std::string sourceName) const [member function]
+    cls.add_method('Install', 
+                   'ns3::EnergyHarvesterContainer', 
+                   [param('std::string', 'sourceName')], 
+                   is_const=True)
+    ## energy-harvester-helper.h (module 'energy'): void ns3::EnergyHarvesterHelper::Set(std::string name, ns3::AttributeValue const & v) [member function]
+    cls.add_method('Set', 
+                   'void', 
+                   [param('std::string', 'name'), param('ns3::AttributeValue const &', 'v')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## energy-harvester-helper.h (module 'energy'): ns3::Ptr<ns3::EnergyHarvester> ns3::EnergyHarvesterHelper::DoInstall(ns3::Ptr<ns3::EnergySource> source) const [member function]
+    cls.add_method('DoInstall', 
+                   'ns3::Ptr< ns3::EnergyHarvester >', 
+                   [param('ns3::Ptr< ns3::EnergySource >', 'source')], 
                    is_pure_virtual=True, is_const=True, visibility='private', is_virtual=True)
     return
 
@@ -2422,15 +2523,25 @@ def register_Ns3WifiPhyListener_methods(root_module, cls):
                    'void', 
                    [param('ns3::Time', 'duration')], 
                    is_pure_virtual=True, is_virtual=True)
+    ## wifi-phy.h (module 'wifi'): void ns3::WifiPhyListener::NotifySleep() [member function]
+    cls.add_method('NotifySleep', 
+                   'void', 
+                   [], 
+                   is_pure_virtual=True, is_virtual=True)
     ## wifi-phy.h (module 'wifi'): void ns3::WifiPhyListener::NotifySwitchingStart(ns3::Time duration) [member function]
     cls.add_method('NotifySwitchingStart', 
                    'void', 
                    [param('ns3::Time', 'duration')], 
                    is_pure_virtual=True, is_virtual=True)
-    ## wifi-phy.h (module 'wifi'): void ns3::WifiPhyListener::NotifyTxStart(ns3::Time duration) [member function]
+    ## wifi-phy.h (module 'wifi'): void ns3::WifiPhyListener::NotifyTxStart(ns3::Time duration, double txPowerDbm) [member function]
     cls.add_method('NotifyTxStart', 
                    'void', 
-                   [param('ns3::Time', 'duration')], 
+                   [param('ns3::Time', 'duration'), param('double', 'txPowerDbm')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## wifi-phy.h (module 'wifi'): void ns3::WifiPhyListener::NotifyWakeup() [member function]
+    cls.add_method('NotifyWakeup', 
+                   'void', 
+                   [], 
                    is_pure_virtual=True, is_virtual=True)
     return
 
@@ -2448,6 +2559,14 @@ def register_Ns3WifiRadioEnergyModelHelper_methods(root_module, cls):
     cls.add_method('SetDepletionCallback', 
                    'void', 
                    [param('ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')])
+    ## wifi-radio-energy-model-helper.h (module 'energy'): void ns3::WifiRadioEnergyModelHelper::SetRechargedCallback(ns3::Callback<void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [member function]
+    cls.add_method('SetRechargedCallback', 
+                   'void', 
+                   [param('ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')])
+    ## wifi-radio-energy-model-helper.h (module 'energy'): void ns3::WifiRadioEnergyModelHelper::SetTxCurrentModel(std::string name, std::string n0="", ns3::AttributeValue const & v0=ns3::EmptyAttributeValue(), std::string n1="", ns3::AttributeValue const & v1=ns3::EmptyAttributeValue(), std::string n2="", ns3::AttributeValue const & v2=ns3::EmptyAttributeValue(), std::string n3="", ns3::AttributeValue const & v3=ns3::EmptyAttributeValue(), std::string n4="", ns3::AttributeValue const & v4=ns3::EmptyAttributeValue(), std::string n5="", ns3::AttributeValue const & v5=ns3::EmptyAttributeValue(), std::string n6="", ns3::AttributeValue const & v6=ns3::EmptyAttributeValue(), std::string n7="", ns3::AttributeValue const & v7=ns3::EmptyAttributeValue()) [member function]
+    cls.add_method('SetTxCurrentModel', 
+                   'void', 
+                   [param('std::string', 'name'), param('std::string', 'n0', default_value='""'), param('ns3::AttributeValue const &', 'v0', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n1', default_value='""'), param('ns3::AttributeValue const &', 'v1', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n2', default_value='""'), param('ns3::AttributeValue const &', 'v2', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n3', default_value='""'), param('ns3::AttributeValue const &', 'v3', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n4', default_value='""'), param('ns3::AttributeValue const &', 'v4', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n5', default_value='""'), param('ns3::AttributeValue const &', 'v5', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n6', default_value='""'), param('ns3::AttributeValue const &', 'v6', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n7', default_value='""'), param('ns3::AttributeValue const &', 'v7', default_value='ns3::EmptyAttributeValue()')])
     ## wifi-radio-energy-model-helper.h (module 'energy'): ns3::Ptr<ns3::DeviceEnergyModel> ns3::WifiRadioEnergyModelHelper::DoInstall(ns3::Ptr<ns3::NetDevice> device, ns3::Ptr<ns3::EnergySource> source) const [member function]
     cls.add_method('DoInstall', 
                    'ns3::Ptr< ns3::DeviceEnergyModel >', 
@@ -2480,20 +2599,34 @@ def register_Ns3WifiRadioEnergyModelPhyListener_methods(root_module, cls):
                    'void', 
                    [param('ns3::Time', 'duration')], 
                    is_virtual=True)
+    ## wifi-radio-energy-model.h (module 'energy'): void ns3::WifiRadioEnergyModelPhyListener::NotifySleep() [member function]
+    cls.add_method('NotifySleep', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
     ## wifi-radio-energy-model.h (module 'energy'): void ns3::WifiRadioEnergyModelPhyListener::NotifySwitchingStart(ns3::Time duration) [member function]
     cls.add_method('NotifySwitchingStart', 
                    'void', 
                    [param('ns3::Time', 'duration')], 
                    is_virtual=True)
-    ## wifi-radio-energy-model.h (module 'energy'): void ns3::WifiRadioEnergyModelPhyListener::NotifyTxStart(ns3::Time duration) [member function]
+    ## wifi-radio-energy-model.h (module 'energy'): void ns3::WifiRadioEnergyModelPhyListener::NotifyTxStart(ns3::Time duration, double txPowerDbm) [member function]
     cls.add_method('NotifyTxStart', 
                    'void', 
-                   [param('ns3::Time', 'duration')], 
+                   [param('ns3::Time', 'duration'), param('double', 'txPowerDbm')], 
+                   is_virtual=True)
+    ## wifi-radio-energy-model.h (module 'energy'): void ns3::WifiRadioEnergyModelPhyListener::NotifyWakeup() [member function]
+    cls.add_method('NotifyWakeup', 
+                   'void', 
+                   [], 
                    is_virtual=True)
     ## wifi-radio-energy-model.h (module 'energy'): void ns3::WifiRadioEnergyModelPhyListener::SetChangeStateCallback(ns3::Callback<void, int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [member function]
     cls.add_method('SetChangeStateCallback', 
                    'void', 
                    [param('ns3::Callback< void, int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')])
+    ## wifi-radio-energy-model.h (module 'energy'): void ns3::WifiRadioEnergyModelPhyListener::SetUpdateTxCurrentCallback(ns3::Callback<void, double, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [member function]
+    cls.add_method('SetUpdateTxCurrentCallback', 
+                   'void', 
+                   [param('ns3::Callback< void, double, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')])
     return
 
 def register_Ns3WifiTxVector_methods(root_module, cls):
@@ -2643,6 +2776,23 @@ def register_Ns3Int64x64_t_methods(root_module, cls):
     cls.add_static_attribute('implementation', 'ns3::int64x64_t::impl_type const', is_const=True)
     return
 
+def register_Ns3BasicEnergyHarvesterHelper_methods(root_module, cls):
+    ## basic-energy-harvester-helper.h (module 'energy'): ns3::BasicEnergyHarvesterHelper::BasicEnergyHarvesterHelper(ns3::BasicEnergyHarvesterHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::BasicEnergyHarvesterHelper const &', 'arg0')])
+    ## basic-energy-harvester-helper.h (module 'energy'): ns3::BasicEnergyHarvesterHelper::BasicEnergyHarvesterHelper() [constructor]
+    cls.add_constructor([])
+    ## basic-energy-harvester-helper.h (module 'energy'): void ns3::BasicEnergyHarvesterHelper::Set(std::string name, ns3::AttributeValue const & v) [member function]
+    cls.add_method('Set', 
+                   'void', 
+                   [param('std::string', 'name'), param('ns3::AttributeValue const &', 'v')], 
+                   is_virtual=True)
+    ## basic-energy-harvester-helper.h (module 'energy'): ns3::Ptr<ns3::EnergyHarvester> ns3::BasicEnergyHarvesterHelper::DoInstall(ns3::Ptr<ns3::EnergySource> source) const [member function]
+    cls.add_method('DoInstall', 
+                   'ns3::Ptr< ns3::EnergyHarvester >', 
+                   [param('ns3::Ptr< ns3::EnergySource >', 'source')], 
+                   is_const=True, visibility='private', is_virtual=True)
+    return
+
 def register_Ns3BasicEnergySourceHelper_methods(root_module, cls):
     ## basic-energy-source-helper.h (module 'energy'): ns3::BasicEnergySourceHelper::BasicEnergySourceHelper(ns3::BasicEnergySourceHelper const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::BasicEnergySourceHelper const &', 'arg0')])
@@ -2779,6 +2929,89 @@ def register_Ns3ObjectAggregateIterator_methods(root_module, cls):
     cls.add_method('Next', 
                    'ns3::Ptr< ns3::Object const >', 
                    [])
+    return
+
+def register_Ns3RandomVariableStream_methods(root_module, cls):
+    ## random-variable-stream.h (module 'core'): static ns3::TypeId ns3::RandomVariableStream::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## random-variable-stream.h (module 'core'): ns3::RandomVariableStream::RandomVariableStream() [constructor]
+    cls.add_constructor([])
+    ## random-variable-stream.h (module 'core'): void ns3::RandomVariableStream::SetStream(int64_t stream) [member function]
+    cls.add_method('SetStream', 
+                   'void', 
+                   [param('int64_t', 'stream')])
+    ## random-variable-stream.h (module 'core'): int64_t ns3::RandomVariableStream::GetStream() const [member function]
+    cls.add_method('GetStream', 
+                   'int64_t', 
+                   [], 
+                   is_const=True)
+    ## random-variable-stream.h (module 'core'): void ns3::RandomVariableStream::SetAntithetic(bool isAntithetic) [member function]
+    cls.add_method('SetAntithetic', 
+                   'void', 
+                   [param('bool', 'isAntithetic')])
+    ## random-variable-stream.h (module 'core'): bool ns3::RandomVariableStream::IsAntithetic() const [member function]
+    cls.add_method('IsAntithetic', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## random-variable-stream.h (module 'core'): double ns3::RandomVariableStream::GetValue() [member function]
+    cls.add_method('GetValue', 
+                   'double', 
+                   [], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## random-variable-stream.h (module 'core'): uint32_t ns3::RandomVariableStream::GetInteger() [member function]
+    cls.add_method('GetInteger', 
+                   'uint32_t', 
+                   [], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## random-variable-stream.h (module 'core'): ns3::RngStream * ns3::RandomVariableStream::Peek() const [member function]
+    cls.add_method('Peek', 
+                   'ns3::RngStream *', 
+                   [], 
+                   is_const=True, visibility='protected')
+    return
+
+def register_Ns3SequentialRandomVariable_methods(root_module, cls):
+    ## random-variable-stream.h (module 'core'): static ns3::TypeId ns3::SequentialRandomVariable::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## random-variable-stream.h (module 'core'): ns3::SequentialRandomVariable::SequentialRandomVariable() [constructor]
+    cls.add_constructor([])
+    ## random-variable-stream.h (module 'core'): double ns3::SequentialRandomVariable::GetMin() const [member function]
+    cls.add_method('GetMin', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## random-variable-stream.h (module 'core'): double ns3::SequentialRandomVariable::GetMax() const [member function]
+    cls.add_method('GetMax', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## random-variable-stream.h (module 'core'): ns3::Ptr<ns3::RandomVariableStream> ns3::SequentialRandomVariable::GetIncrement() const [member function]
+    cls.add_method('GetIncrement', 
+                   'ns3::Ptr< ns3::RandomVariableStream >', 
+                   [], 
+                   is_const=True)
+    ## random-variable-stream.h (module 'core'): uint32_t ns3::SequentialRandomVariable::GetConsecutive() const [member function]
+    cls.add_method('GetConsecutive', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## random-variable-stream.h (module 'core'): double ns3::SequentialRandomVariable::GetValue() [member function]
+    cls.add_method('GetValue', 
+                   'double', 
+                   [], 
+                   is_virtual=True)
+    ## random-variable-stream.h (module 'core'): uint32_t ns3::SequentialRandomVariable::GetInteger() [member function]
+    cls.add_method('GetInteger', 
+                   'uint32_t', 
+                   [], 
+                   is_virtual=True)
     return
 
 def register_Ns3SimpleRefCount__Ns3AttributeAccessor_Ns3Empty_Ns3DefaultDeleter__lt__ns3AttributeAccessor__gt___methods(root_module, cls):
@@ -2921,10 +3154,10 @@ def register_Ns3Time_methods(root_module, cls):
     cls.add_constructor([param('long unsigned int', 'v')])
     ## nstime.h (module 'core'): ns3::Time::Time(long long unsigned int v) [constructor]
     cls.add_constructor([param('long long unsigned int', 'v')])
+    ## nstime.h (module 'core'): ns3::Time::Time(ns3::int64x64_t const & v) [constructor]
+    cls.add_constructor([param('ns3::int64x64_t const &', 'v')])
     ## nstime.h (module 'core'): ns3::Time::Time(std::string const & s) [constructor]
     cls.add_constructor([param('std::string const &', 's')])
-    ## nstime.h (module 'core'): ns3::Time::Time(ns3::int64x64_t const & value) [constructor]
-    cls.add_constructor([param('ns3::int64x64_t const &', 'value')])
     ## nstime.h (module 'core'): ns3::TimeWithUnit ns3::Time::As(ns3::Time::Unit const unit) const [member function]
     cls.add_method('As', 
                    'ns3::TimeWithUnit', 
@@ -2935,25 +3168,25 @@ def register_Ns3Time_methods(root_module, cls):
                    'int', 
                    [param('ns3::Time const &', 'o')], 
                    is_const=True)
-    ## nstime.h (module 'core'): static ns3::Time ns3::Time::From(ns3::int64x64_t const & from, ns3::Time::Unit timeUnit) [member function]
-    cls.add_method('From', 
-                   'ns3::Time', 
-                   [param('ns3::int64x64_t const &', 'from'), param('ns3::Time::Unit', 'timeUnit')], 
-                   is_static=True)
     ## nstime.h (module 'core'): static ns3::Time ns3::Time::From(ns3::int64x64_t const & value) [member function]
     cls.add_method('From', 
                    'ns3::Time', 
                    [param('ns3::int64x64_t const &', 'value')], 
                    is_static=True)
-    ## nstime.h (module 'core'): static ns3::Time ns3::Time::FromDouble(double value, ns3::Time::Unit timeUnit) [member function]
+    ## nstime.h (module 'core'): static ns3::Time ns3::Time::From(ns3::int64x64_t const & value, ns3::Time::Unit unit) [member function]
+    cls.add_method('From', 
+                   'ns3::Time', 
+                   [param('ns3::int64x64_t const &', 'value'), param('ns3::Time::Unit', 'unit')], 
+                   is_static=True)
+    ## nstime.h (module 'core'): static ns3::Time ns3::Time::FromDouble(double value, ns3::Time::Unit unit) [member function]
     cls.add_method('FromDouble', 
                    'ns3::Time', 
-                   [param('double', 'value'), param('ns3::Time::Unit', 'timeUnit')], 
+                   [param('double', 'value'), param('ns3::Time::Unit', 'unit')], 
                    is_static=True)
-    ## nstime.h (module 'core'): static ns3::Time ns3::Time::FromInteger(uint64_t value, ns3::Time::Unit timeUnit) [member function]
+    ## nstime.h (module 'core'): static ns3::Time ns3::Time::FromInteger(uint64_t value, ns3::Time::Unit unit) [member function]
     cls.add_method('FromInteger', 
                    'ns3::Time', 
-                   [param('uint64_t', 'value'), param('ns3::Time::Unit', 'timeUnit')], 
+                   [param('uint64_t', 'value'), param('ns3::Time::Unit', 'unit')], 
                    is_static=True)
     ## nstime.h (module 'core'): double ns3::Time::GetDays() const [member function]
     cls.add_method('GetDays', 
@@ -3070,20 +3303,20 @@ def register_Ns3Time_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_static=True)
-    ## nstime.h (module 'core'): ns3::int64x64_t ns3::Time::To(ns3::Time::Unit timeUnit) const [member function]
+    ## nstime.h (module 'core'): ns3::int64x64_t ns3::Time::To(ns3::Time::Unit unit) const [member function]
     cls.add_method('To', 
                    'ns3::int64x64_t', 
-                   [param('ns3::Time::Unit', 'timeUnit')], 
+                   [param('ns3::Time::Unit', 'unit')], 
                    is_const=True)
-    ## nstime.h (module 'core'): double ns3::Time::ToDouble(ns3::Time::Unit timeUnit) const [member function]
+    ## nstime.h (module 'core'): double ns3::Time::ToDouble(ns3::Time::Unit unit) const [member function]
     cls.add_method('ToDouble', 
                    'double', 
-                   [param('ns3::Time::Unit', 'timeUnit')], 
+                   [param('ns3::Time::Unit', 'unit')], 
                    is_const=True)
-    ## nstime.h (module 'core'): int64_t ns3::Time::ToInteger(ns3::Time::Unit timeUnit) const [member function]
+    ## nstime.h (module 'core'): int64_t ns3::Time::ToInteger(ns3::Time::Unit unit) const [member function]
     cls.add_method('ToInteger', 
                    'int64_t', 
-                   [param('ns3::Time::Unit', 'timeUnit')], 
+                   [param('ns3::Time::Unit', 'unit')], 
                    is_const=True)
     return
 
@@ -3179,6 +3412,130 @@ def register_Ns3Trailer_methods(root_module, cls):
                    'void', 
                    [param('ns3::Buffer::Iterator', 'start')], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
+    return
+
+def register_Ns3TriangularRandomVariable_methods(root_module, cls):
+    ## random-variable-stream.h (module 'core'): static ns3::TypeId ns3::TriangularRandomVariable::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## random-variable-stream.h (module 'core'): ns3::TriangularRandomVariable::TriangularRandomVariable() [constructor]
+    cls.add_constructor([])
+    ## random-variable-stream.h (module 'core'): double ns3::TriangularRandomVariable::GetMean() const [member function]
+    cls.add_method('GetMean', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## random-variable-stream.h (module 'core'): double ns3::TriangularRandomVariable::GetMin() const [member function]
+    cls.add_method('GetMin', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## random-variable-stream.h (module 'core'): double ns3::TriangularRandomVariable::GetMax() const [member function]
+    cls.add_method('GetMax', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## random-variable-stream.h (module 'core'): double ns3::TriangularRandomVariable::GetValue(double mean, double min, double max) [member function]
+    cls.add_method('GetValue', 
+                   'double', 
+                   [param('double', 'mean'), param('double', 'min'), param('double', 'max')])
+    ## random-variable-stream.h (module 'core'): uint32_t ns3::TriangularRandomVariable::GetInteger(uint32_t mean, uint32_t min, uint32_t max) [member function]
+    cls.add_method('GetInteger', 
+                   'uint32_t', 
+                   [param('uint32_t', 'mean'), param('uint32_t', 'min'), param('uint32_t', 'max')])
+    ## random-variable-stream.h (module 'core'): double ns3::TriangularRandomVariable::GetValue() [member function]
+    cls.add_method('GetValue', 
+                   'double', 
+                   [], 
+                   is_virtual=True)
+    ## random-variable-stream.h (module 'core'): uint32_t ns3::TriangularRandomVariable::GetInteger() [member function]
+    cls.add_method('GetInteger', 
+                   'uint32_t', 
+                   [], 
+                   is_virtual=True)
+    return
+
+def register_Ns3UniformRandomVariable_methods(root_module, cls):
+    ## random-variable-stream.h (module 'core'): static ns3::TypeId ns3::UniformRandomVariable::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## random-variable-stream.h (module 'core'): ns3::UniformRandomVariable::UniformRandomVariable() [constructor]
+    cls.add_constructor([])
+    ## random-variable-stream.h (module 'core'): double ns3::UniformRandomVariable::GetMin() const [member function]
+    cls.add_method('GetMin', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## random-variable-stream.h (module 'core'): double ns3::UniformRandomVariable::GetMax() const [member function]
+    cls.add_method('GetMax', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## random-variable-stream.h (module 'core'): double ns3::UniformRandomVariable::GetValue(double min, double max) [member function]
+    cls.add_method('GetValue', 
+                   'double', 
+                   [param('double', 'min'), param('double', 'max')])
+    ## random-variable-stream.h (module 'core'): uint32_t ns3::UniformRandomVariable::GetInteger(uint32_t min, uint32_t max) [member function]
+    cls.add_method('GetInteger', 
+                   'uint32_t', 
+                   [param('uint32_t', 'min'), param('uint32_t', 'max')])
+    ## random-variable-stream.h (module 'core'): double ns3::UniformRandomVariable::GetValue() [member function]
+    cls.add_method('GetValue', 
+                   'double', 
+                   [], 
+                   is_virtual=True)
+    ## random-variable-stream.h (module 'core'): uint32_t ns3::UniformRandomVariable::GetInteger() [member function]
+    cls.add_method('GetInteger', 
+                   'uint32_t', 
+                   [], 
+                   is_virtual=True)
+    return
+
+def register_Ns3WeibullRandomVariable_methods(root_module, cls):
+    ## random-variable-stream.h (module 'core'): static ns3::TypeId ns3::WeibullRandomVariable::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## random-variable-stream.h (module 'core'): ns3::WeibullRandomVariable::WeibullRandomVariable() [constructor]
+    cls.add_constructor([])
+    ## random-variable-stream.h (module 'core'): double ns3::WeibullRandomVariable::GetScale() const [member function]
+    cls.add_method('GetScale', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## random-variable-stream.h (module 'core'): double ns3::WeibullRandomVariable::GetShape() const [member function]
+    cls.add_method('GetShape', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## random-variable-stream.h (module 'core'): double ns3::WeibullRandomVariable::GetBound() const [member function]
+    cls.add_method('GetBound', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## random-variable-stream.h (module 'core'): double ns3::WeibullRandomVariable::GetValue(double scale, double shape, double bound) [member function]
+    cls.add_method('GetValue', 
+                   'double', 
+                   [param('double', 'scale'), param('double', 'shape'), param('double', 'bound')])
+    ## random-variable-stream.h (module 'core'): uint32_t ns3::WeibullRandomVariable::GetInteger(uint32_t scale, uint32_t shape, uint32_t bound) [member function]
+    cls.add_method('GetInteger', 
+                   'uint32_t', 
+                   [param('uint32_t', 'scale'), param('uint32_t', 'shape'), param('uint32_t', 'bound')])
+    ## random-variable-stream.h (module 'core'): double ns3::WeibullRandomVariable::GetValue() [member function]
+    cls.add_method('GetValue', 
+                   'double', 
+                   [], 
+                   is_virtual=True)
+    ## random-variable-stream.h (module 'core'): uint32_t ns3::WeibullRandomVariable::GetInteger() [member function]
+    cls.add_method('GetInteger', 
+                   'uint32_t', 
+                   [], 
+                   is_virtual=True)
     return
 
 def register_Ns3WifiPhy_methods(root_module, cls):
@@ -3726,6 +4083,11 @@ def register_Ns3WifiPhy_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_pure_virtual=True, is_virtual=True)
+    ## wifi-phy.h (module 'wifi'): bool ns3::WifiPhy::IsStateSleep() [member function]
+    cls.add_method('IsStateSleep', 
+                   'bool', 
+                   [], 
+                   is_pure_virtual=True, is_virtual=True)
     ## wifi-phy.h (module 'wifi'): bool ns3::WifiPhy::IsStateSwitching() [member function]
     cls.add_method('IsStateSwitching', 
                    'bool', 
@@ -3778,10 +4140,15 @@ def register_Ns3WifiPhy_methods(root_module, cls):
                    'void', 
                    [param('ns3::WifiPhyListener *', 'listener')], 
                    is_pure_virtual=True, is_virtual=True)
-    ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::SendPacket(ns3::Ptr<const ns3::Packet> packet, ns3::WifiMode mode, ns3::WifiPreamble preamble, ns3::WifiTxVector txvector) [member function]
+    ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::ResumeFromSleep() [member function]
+    cls.add_method('ResumeFromSleep', 
+                   'void', 
+                   [], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::SendPacket(ns3::Ptr<const ns3::Packet> packet, ns3::WifiTxVector txvector, ns3::WifiPreamble preamble) [member function]
     cls.add_method('SendPacket', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('ns3::WifiMode', 'mode'), param('ns3::WifiPreamble', 'preamble'), param('ns3::WifiTxVector', 'txvector')], 
+                   [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('ns3::WifiTxVector', 'txvector'), param('ns3::WifiPreamble', 'preamble')], 
                    is_pure_virtual=True, is_virtual=True)
     ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::SetChannelBonding(bool channelbonding) [member function]
     cls.add_method('SetChannelBonding', 
@@ -3833,6 +4200,11 @@ def register_Ns3WifiPhy_methods(root_module, cls):
                    'void', 
                    [param('ns3::Callback< void, ns3::Ptr< ns3::Packet >, double, ns3::WifiMode, ns3::WifiPreamble, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')], 
                    is_pure_virtual=True, is_virtual=True)
+    ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::SetSleepMode() [member function]
+    cls.add_method('SetSleepMode', 
+                   'void', 
+                   [], 
+                   is_pure_virtual=True, is_virtual=True)
     ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::SetStbc(bool stbc) [member function]
     cls.add_method('SetStbc', 
                    'void', 
@@ -3843,6 +4215,99 @@ def register_Ns3WifiPhy_methods(root_module, cls):
                    'uint32_t', 
                    [param('ns3::WifiMode', 'mode')], 
                    is_pure_virtual=True, is_virtual=True)
+    return
+
+def register_Ns3WifiTxCurrentModel_methods(root_module, cls):
+    ## wifi-tx-current-model.h (module 'energy'): ns3::WifiTxCurrentModel::WifiTxCurrentModel(ns3::WifiTxCurrentModel const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::WifiTxCurrentModel const &', 'arg0')])
+    ## wifi-tx-current-model.h (module 'energy'): ns3::WifiTxCurrentModel::WifiTxCurrentModel() [constructor]
+    cls.add_constructor([])
+    ## wifi-tx-current-model.h (module 'energy'): double ns3::WifiTxCurrentModel::CalcTxCurrent(double txPowerDbm) const [member function]
+    cls.add_method('CalcTxCurrent', 
+                   'double', 
+                   [param('double', 'txPowerDbm')], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## wifi-tx-current-model.h (module 'energy'): static double ns3::WifiTxCurrentModel::DbmToW(double dbm) [member function]
+    cls.add_method('DbmToW', 
+                   'double', 
+                   [param('double', 'dbm')], 
+                   is_static=True)
+    ## wifi-tx-current-model.h (module 'energy'): static ns3::TypeId ns3::WifiTxCurrentModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    return
+
+def register_Ns3ZetaRandomVariable_methods(root_module, cls):
+    ## random-variable-stream.h (module 'core'): static ns3::TypeId ns3::ZetaRandomVariable::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## random-variable-stream.h (module 'core'): ns3::ZetaRandomVariable::ZetaRandomVariable() [constructor]
+    cls.add_constructor([])
+    ## random-variable-stream.h (module 'core'): double ns3::ZetaRandomVariable::GetAlpha() const [member function]
+    cls.add_method('GetAlpha', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## random-variable-stream.h (module 'core'): double ns3::ZetaRandomVariable::GetValue(double alpha) [member function]
+    cls.add_method('GetValue', 
+                   'double', 
+                   [param('double', 'alpha')])
+    ## random-variable-stream.h (module 'core'): uint32_t ns3::ZetaRandomVariable::GetInteger(uint32_t alpha) [member function]
+    cls.add_method('GetInteger', 
+                   'uint32_t', 
+                   [param('uint32_t', 'alpha')])
+    ## random-variable-stream.h (module 'core'): double ns3::ZetaRandomVariable::GetValue() [member function]
+    cls.add_method('GetValue', 
+                   'double', 
+                   [], 
+                   is_virtual=True)
+    ## random-variable-stream.h (module 'core'): uint32_t ns3::ZetaRandomVariable::GetInteger() [member function]
+    cls.add_method('GetInteger', 
+                   'uint32_t', 
+                   [], 
+                   is_virtual=True)
+    return
+
+def register_Ns3ZipfRandomVariable_methods(root_module, cls):
+    ## random-variable-stream.h (module 'core'): static ns3::TypeId ns3::ZipfRandomVariable::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## random-variable-stream.h (module 'core'): ns3::ZipfRandomVariable::ZipfRandomVariable() [constructor]
+    cls.add_constructor([])
+    ## random-variable-stream.h (module 'core'): uint32_t ns3::ZipfRandomVariable::GetN() const [member function]
+    cls.add_method('GetN', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## random-variable-stream.h (module 'core'): double ns3::ZipfRandomVariable::GetAlpha() const [member function]
+    cls.add_method('GetAlpha', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## random-variable-stream.h (module 'core'): double ns3::ZipfRandomVariable::GetValue(uint32_t n, double alpha) [member function]
+    cls.add_method('GetValue', 
+                   'double', 
+                   [param('uint32_t', 'n'), param('double', 'alpha')])
+    ## random-variable-stream.h (module 'core'): uint32_t ns3::ZipfRandomVariable::GetInteger(uint32_t n, uint32_t alpha) [member function]
+    cls.add_method('GetInteger', 
+                   'uint32_t', 
+                   [param('uint32_t', 'n'), param('uint32_t', 'alpha')])
+    ## random-variable-stream.h (module 'core'): double ns3::ZipfRandomVariable::GetValue() [member function]
+    cls.add_method('GetValue', 
+                   'double', 
+                   [], 
+                   is_virtual=True)
+    ## random-variable-stream.h (module 'core'): uint32_t ns3::ZipfRandomVariable::GetInteger() [member function]
+    cls.add_method('GetInteger', 
+                   'uint32_t', 
+                   [], 
+                   is_virtual=True)
     return
 
 def register_Ns3AttributeAccessor_methods(root_module, cls):
@@ -4024,6 +4489,63 @@ def register_Ns3CallbackValue_methods(root_module, cls):
                    [param('ns3::CallbackBase', 'base')])
     return
 
+def register_Ns3ConstantRandomVariable_methods(root_module, cls):
+    ## random-variable-stream.h (module 'core'): static ns3::TypeId ns3::ConstantRandomVariable::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## random-variable-stream.h (module 'core'): ns3::ConstantRandomVariable::ConstantRandomVariable() [constructor]
+    cls.add_constructor([])
+    ## random-variable-stream.h (module 'core'): double ns3::ConstantRandomVariable::GetConstant() const [member function]
+    cls.add_method('GetConstant', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## random-variable-stream.h (module 'core'): double ns3::ConstantRandomVariable::GetValue(double constant) [member function]
+    cls.add_method('GetValue', 
+                   'double', 
+                   [param('double', 'constant')])
+    ## random-variable-stream.h (module 'core'): uint32_t ns3::ConstantRandomVariable::GetInteger(uint32_t constant) [member function]
+    cls.add_method('GetInteger', 
+                   'uint32_t', 
+                   [param('uint32_t', 'constant')])
+    ## random-variable-stream.h (module 'core'): double ns3::ConstantRandomVariable::GetValue() [member function]
+    cls.add_method('GetValue', 
+                   'double', 
+                   [], 
+                   is_virtual=True)
+    ## random-variable-stream.h (module 'core'): uint32_t ns3::ConstantRandomVariable::GetInteger() [member function]
+    cls.add_method('GetInteger', 
+                   'uint32_t', 
+                   [], 
+                   is_virtual=True)
+    return
+
+def register_Ns3DeterministicRandomVariable_methods(root_module, cls):
+    ## random-variable-stream.h (module 'core'): static ns3::TypeId ns3::DeterministicRandomVariable::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## random-variable-stream.h (module 'core'): ns3::DeterministicRandomVariable::DeterministicRandomVariable() [constructor]
+    cls.add_constructor([])
+    ## random-variable-stream.h (module 'core'): void ns3::DeterministicRandomVariable::SetValueArray(double * values, uint64_t length) [member function]
+    cls.add_method('SetValueArray', 
+                   'void', 
+                   [param('double *', 'values'), param('uint64_t', 'length')])
+    ## random-variable-stream.h (module 'core'): double ns3::DeterministicRandomVariable::GetValue() [member function]
+    cls.add_method('GetValue', 
+                   'double', 
+                   [], 
+                   is_virtual=True)
+    ## random-variable-stream.h (module 'core'): uint32_t ns3::DeterministicRandomVariable::GetInteger() [member function]
+    cls.add_method('GetInteger', 
+                   'uint32_t', 
+                   [], 
+                   is_virtual=True)
+    return
+
 def register_Ns3DeviceEnergyModel_methods(root_module, cls):
     ## device-energy-model.h (module 'energy'): ns3::DeviceEnergyModel::DeviceEnergyModel(ns3::DeviceEnergyModel const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::DeviceEnergyModel const &', 'arg0')])
@@ -4051,6 +4573,11 @@ def register_Ns3DeviceEnergyModel_methods(root_module, cls):
                    is_static=True)
     ## device-energy-model.h (module 'energy'): void ns3::DeviceEnergyModel::HandleEnergyDepletion() [member function]
     cls.add_method('HandleEnergyDepletion', 
+                   'void', 
+                   [], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## device-energy-model.h (module 'energy'): void ns3::DeviceEnergyModel::HandleEnergyRecharged() [member function]
+    cls.add_method('HandleEnergyRecharged', 
                    'void', 
                    [], 
                    is_pure_virtual=True, is_virtual=True)
@@ -4099,6 +4626,40 @@ def register_Ns3DoubleValue_methods(root_module, cls):
                    [param('double const &', 'value')])
     return
 
+def register_Ns3EmpiricalRandomVariable_methods(root_module, cls):
+    ## random-variable-stream.h (module 'core'): ns3::EmpiricalRandomVariable::EmpiricalRandomVariable() [constructor]
+    cls.add_constructor([])
+    ## random-variable-stream.h (module 'core'): void ns3::EmpiricalRandomVariable::CDF(double v, double c) [member function]
+    cls.add_method('CDF', 
+                   'void', 
+                   [param('double', 'v'), param('double', 'c')])
+    ## random-variable-stream.h (module 'core'): uint32_t ns3::EmpiricalRandomVariable::GetInteger() [member function]
+    cls.add_method('GetInteger', 
+                   'uint32_t', 
+                   [], 
+                   is_virtual=True)
+    ## random-variable-stream.h (module 'core'): static ns3::TypeId ns3::EmpiricalRandomVariable::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## random-variable-stream.h (module 'core'): double ns3::EmpiricalRandomVariable::GetValue() [member function]
+    cls.add_method('GetValue', 
+                   'double', 
+                   [], 
+                   is_virtual=True)
+    ## random-variable-stream.h (module 'core'): double ns3::EmpiricalRandomVariable::Interpolate(double arg0, double arg1, double arg2, double arg3, double arg4) [member function]
+    cls.add_method('Interpolate', 
+                   'double', 
+                   [param('double', 'arg0'), param('double', 'arg1'), param('double', 'arg2'), param('double', 'arg3'), param('double', 'arg4')], 
+                   visibility='private', is_virtual=True)
+    ## random-variable-stream.h (module 'core'): void ns3::EmpiricalRandomVariable::Validate() [member function]
+    cls.add_method('Validate', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
+    return
+
 def register_Ns3EmptyAttributeValue_methods(root_module, cls):
     ## attribute.h (module 'core'): ns3::EmptyAttributeValue::EmptyAttributeValue(ns3::EmptyAttributeValue const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::EmptyAttributeValue const &', 'arg0')])
@@ -4121,6 +4682,115 @@ def register_Ns3EmptyAttributeValue_methods(root_module, cls):
                    is_const=True, visibility='private', is_virtual=True)
     return
 
+def register_Ns3EnergyHarvester_methods(root_module, cls):
+    ## energy-harvester.h (module 'energy'): ns3::EnergyHarvester::EnergyHarvester(ns3::EnergyHarvester const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::EnergyHarvester const &', 'arg0')])
+    ## energy-harvester.h (module 'energy'): ns3::EnergyHarvester::EnergyHarvester() [constructor]
+    cls.add_constructor([])
+    ## energy-harvester.h (module 'energy'): ns3::Ptr<ns3::EnergySource> ns3::EnergyHarvester::GetEnergySource() const [member function]
+    cls.add_method('GetEnergySource', 
+                   'ns3::Ptr< ns3::EnergySource >', 
+                   [], 
+                   is_const=True)
+    ## energy-harvester.h (module 'energy'): ns3::Ptr<ns3::Node> ns3::EnergyHarvester::GetNode() const [member function]
+    cls.add_method('GetNode', 
+                   'ns3::Ptr< ns3::Node >', 
+                   [], 
+                   is_const=True)
+    ## energy-harvester.h (module 'energy'): double ns3::EnergyHarvester::GetPower() const [member function]
+    cls.add_method('GetPower', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## energy-harvester.h (module 'energy'): static ns3::TypeId ns3::EnergyHarvester::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## energy-harvester.h (module 'energy'): void ns3::EnergyHarvester::SetEnergySource(ns3::Ptr<ns3::EnergySource> source) [member function]
+    cls.add_method('SetEnergySource', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::EnergySource >', 'source')])
+    ## energy-harvester.h (module 'energy'): void ns3::EnergyHarvester::SetNode(ns3::Ptr<ns3::Node> node) [member function]
+    cls.add_method('SetNode', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Node >', 'node')])
+    ## energy-harvester.h (module 'energy'): void ns3::EnergyHarvester::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
+    ## energy-harvester.h (module 'energy'): double ns3::EnergyHarvester::DoGetPower() const [member function]
+    cls.add_method('DoGetPower', 
+                   'double', 
+                   [], 
+                   is_const=True, visibility='private', is_virtual=True)
+    return
+
+def register_Ns3EnergyHarvesterContainer_methods(root_module, cls):
+    ## energy-harvester-container.h (module 'energy'): ns3::EnergyHarvesterContainer::EnergyHarvesterContainer(ns3::EnergyHarvesterContainer const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::EnergyHarvesterContainer const &', 'arg0')])
+    ## energy-harvester-container.h (module 'energy'): ns3::EnergyHarvesterContainer::EnergyHarvesterContainer() [constructor]
+    cls.add_constructor([])
+    ## energy-harvester-container.h (module 'energy'): ns3::EnergyHarvesterContainer::EnergyHarvesterContainer(ns3::Ptr<ns3::EnergyHarvester> harvester) [constructor]
+    cls.add_constructor([param('ns3::Ptr< ns3::EnergyHarvester >', 'harvester')])
+    ## energy-harvester-container.h (module 'energy'): ns3::EnergyHarvesterContainer::EnergyHarvesterContainer(std::string harvesterName) [constructor]
+    cls.add_constructor([param('std::string', 'harvesterName')])
+    ## energy-harvester-container.h (module 'energy'): ns3::EnergyHarvesterContainer::EnergyHarvesterContainer(ns3::EnergyHarvesterContainer const & a, ns3::EnergyHarvesterContainer const & b) [constructor]
+    cls.add_constructor([param('ns3::EnergyHarvesterContainer const &', 'a'), param('ns3::EnergyHarvesterContainer const &', 'b')])
+    ## energy-harvester-container.h (module 'energy'): void ns3::EnergyHarvesterContainer::Add(ns3::EnergyHarvesterContainer container) [member function]
+    cls.add_method('Add', 
+                   'void', 
+                   [param('ns3::EnergyHarvesterContainer', 'container')])
+    ## energy-harvester-container.h (module 'energy'): void ns3::EnergyHarvesterContainer::Add(ns3::Ptr<ns3::EnergyHarvester> harvester) [member function]
+    cls.add_method('Add', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::EnergyHarvester >', 'harvester')])
+    ## energy-harvester-container.h (module 'energy'): void ns3::EnergyHarvesterContainer::Add(std::string harvesterName) [member function]
+    cls.add_method('Add', 
+                   'void', 
+                   [param('std::string', 'harvesterName')])
+    ## energy-harvester-container.h (module 'energy'): __gnu_cxx::__normal_iterator<const ns3::Ptr<ns3::EnergyHarvester>*,std::vector<ns3::Ptr<ns3::EnergyHarvester>, std::allocator<ns3::Ptr<ns3::EnergyHarvester> > > > ns3::EnergyHarvesterContainer::Begin() const [member function]
+    cls.add_method('Begin', 
+                   '__gnu_cxx::__normal_iterator< ns3::Ptr< ns3::EnergyHarvester > const, std::vector< ns3::Ptr< ns3::EnergyHarvester > > >', 
+                   [], 
+                   is_const=True)
+    ## energy-harvester-container.h (module 'energy'): void ns3::EnergyHarvesterContainer::Clear() [member function]
+    cls.add_method('Clear', 
+                   'void', 
+                   [])
+    ## energy-harvester-container.h (module 'energy'): __gnu_cxx::__normal_iterator<const ns3::Ptr<ns3::EnergyHarvester>*,std::vector<ns3::Ptr<ns3::EnergyHarvester>, std::allocator<ns3::Ptr<ns3::EnergyHarvester> > > > ns3::EnergyHarvesterContainer::End() const [member function]
+    cls.add_method('End', 
+                   '__gnu_cxx::__normal_iterator< ns3::Ptr< ns3::EnergyHarvester > const, std::vector< ns3::Ptr< ns3::EnergyHarvester > > >', 
+                   [], 
+                   is_const=True)
+    ## energy-harvester-container.h (module 'energy'): ns3::Ptr<ns3::EnergyHarvester> ns3::EnergyHarvesterContainer::Get(uint32_t i) const [member function]
+    cls.add_method('Get', 
+                   'ns3::Ptr< ns3::EnergyHarvester >', 
+                   [param('uint32_t', 'i')], 
+                   is_const=True)
+    ## energy-harvester-container.h (module 'energy'): uint32_t ns3::EnergyHarvesterContainer::GetN() const [member function]
+    cls.add_method('GetN', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## energy-harvester-container.h (module 'energy'): static ns3::TypeId ns3::EnergyHarvesterContainer::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## energy-harvester-container.h (module 'energy'): void ns3::EnergyHarvesterContainer::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
+    ## energy-harvester-container.h (module 'energy'): void ns3::EnergyHarvesterContainer::DoInitialize() [member function]
+    cls.add_method('DoInitialize', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
+    return
+
 def register_Ns3EnergySource_methods(root_module, cls):
     ## energy-source.h (module 'energy'): ns3::EnergySource::EnergySource(ns3::EnergySource const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::EnergySource const &', 'arg0')])
@@ -4130,6 +4800,10 @@ def register_Ns3EnergySource_methods(root_module, cls):
     cls.add_method('AppendDeviceEnergyModel', 
                    'void', 
                    [param('ns3::Ptr< ns3::DeviceEnergyModel >', 'deviceEnergyModelPtr')])
+    ## energy-source.h (module 'energy'): void ns3::EnergySource::ConnectEnergyHarvester(ns3::Ptr<ns3::EnergyHarvester> energyHarvesterPtr) [member function]
+    cls.add_method('ConnectEnergyHarvester', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::EnergyHarvester >', 'energyHarvesterPtr')])
     ## energy-source.h (module 'energy'): void ns3::EnergySource::DisposeDeviceModels() [member function]
     cls.add_method('DisposeDeviceModels', 
                    'void', 
@@ -4197,6 +4871,11 @@ def register_Ns3EnergySource_methods(root_module, cls):
                    visibility='protected')
     ## energy-source.h (module 'energy'): void ns3::EnergySource::NotifyEnergyDrained() [member function]
     cls.add_method('NotifyEnergyDrained', 
+                   'void', 
+                   [], 
+                   visibility='protected')
+    ## energy-source.h (module 'energy'): void ns3::EnergySource::NotifyEnergyRecharged() [member function]
+    cls.add_method('NotifyEnergyRecharged', 
                    'void', 
                    [], 
                    visibility='protected')
@@ -4345,6 +5024,44 @@ def register_Ns3EnumValue_methods(root_module, cls):
                    [param('int', 'v')])
     return
 
+def register_Ns3ErlangRandomVariable_methods(root_module, cls):
+    ## random-variable-stream.h (module 'core'): static ns3::TypeId ns3::ErlangRandomVariable::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## random-variable-stream.h (module 'core'): ns3::ErlangRandomVariable::ErlangRandomVariable() [constructor]
+    cls.add_constructor([])
+    ## random-variable-stream.h (module 'core'): uint32_t ns3::ErlangRandomVariable::GetK() const [member function]
+    cls.add_method('GetK', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## random-variable-stream.h (module 'core'): double ns3::ErlangRandomVariable::GetLambda() const [member function]
+    cls.add_method('GetLambda', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## random-variable-stream.h (module 'core'): double ns3::ErlangRandomVariable::GetValue(uint32_t k, double lambda) [member function]
+    cls.add_method('GetValue', 
+                   'double', 
+                   [param('uint32_t', 'k'), param('double', 'lambda')])
+    ## random-variable-stream.h (module 'core'): uint32_t ns3::ErlangRandomVariable::GetInteger(uint32_t k, uint32_t lambda) [member function]
+    cls.add_method('GetInteger', 
+                   'uint32_t', 
+                   [param('uint32_t', 'k'), param('uint32_t', 'lambda')])
+    ## random-variable-stream.h (module 'core'): double ns3::ErlangRandomVariable::GetValue() [member function]
+    cls.add_method('GetValue', 
+                   'double', 
+                   [], 
+                   is_virtual=True)
+    ## random-variable-stream.h (module 'core'): uint32_t ns3::ErlangRandomVariable::GetInteger() [member function]
+    cls.add_method('GetInteger', 
+                   'uint32_t', 
+                   [], 
+                   is_virtual=True)
+    return
+
 def register_Ns3EventImpl_methods(root_module, cls):
     ## event-impl.h (module 'core'): ns3::EventImpl::EventImpl(ns3::EventImpl const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::EventImpl const &', 'arg0')])
@@ -4367,6 +5084,82 @@ def register_Ns3EventImpl_methods(root_module, cls):
                    'void', 
                    [], 
                    is_pure_virtual=True, visibility='protected', is_virtual=True)
+    return
+
+def register_Ns3ExponentialRandomVariable_methods(root_module, cls):
+    ## random-variable-stream.h (module 'core'): static ns3::TypeId ns3::ExponentialRandomVariable::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## random-variable-stream.h (module 'core'): ns3::ExponentialRandomVariable::ExponentialRandomVariable() [constructor]
+    cls.add_constructor([])
+    ## random-variable-stream.h (module 'core'): double ns3::ExponentialRandomVariable::GetMean() const [member function]
+    cls.add_method('GetMean', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## random-variable-stream.h (module 'core'): double ns3::ExponentialRandomVariable::GetBound() const [member function]
+    cls.add_method('GetBound', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## random-variable-stream.h (module 'core'): double ns3::ExponentialRandomVariable::GetValue(double mean, double bound) [member function]
+    cls.add_method('GetValue', 
+                   'double', 
+                   [param('double', 'mean'), param('double', 'bound')])
+    ## random-variable-stream.h (module 'core'): uint32_t ns3::ExponentialRandomVariable::GetInteger(uint32_t mean, uint32_t bound) [member function]
+    cls.add_method('GetInteger', 
+                   'uint32_t', 
+                   [param('uint32_t', 'mean'), param('uint32_t', 'bound')])
+    ## random-variable-stream.h (module 'core'): double ns3::ExponentialRandomVariable::GetValue() [member function]
+    cls.add_method('GetValue', 
+                   'double', 
+                   [], 
+                   is_virtual=True)
+    ## random-variable-stream.h (module 'core'): uint32_t ns3::ExponentialRandomVariable::GetInteger() [member function]
+    cls.add_method('GetInteger', 
+                   'uint32_t', 
+                   [], 
+                   is_virtual=True)
+    return
+
+def register_Ns3GammaRandomVariable_methods(root_module, cls):
+    ## random-variable-stream.h (module 'core'): static ns3::TypeId ns3::GammaRandomVariable::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## random-variable-stream.h (module 'core'): ns3::GammaRandomVariable::GammaRandomVariable() [constructor]
+    cls.add_constructor([])
+    ## random-variable-stream.h (module 'core'): double ns3::GammaRandomVariable::GetAlpha() const [member function]
+    cls.add_method('GetAlpha', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## random-variable-stream.h (module 'core'): double ns3::GammaRandomVariable::GetBeta() const [member function]
+    cls.add_method('GetBeta', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## random-variable-stream.h (module 'core'): double ns3::GammaRandomVariable::GetValue(double alpha, double beta) [member function]
+    cls.add_method('GetValue', 
+                   'double', 
+                   [param('double', 'alpha'), param('double', 'beta')])
+    ## random-variable-stream.h (module 'core'): uint32_t ns3::GammaRandomVariable::GetInteger(uint32_t alpha, uint32_t beta) [member function]
+    cls.add_method('GetInteger', 
+                   'uint32_t', 
+                   [param('uint32_t', 'alpha'), param('uint32_t', 'beta')])
+    ## random-variable-stream.h (module 'core'): double ns3::GammaRandomVariable::GetValue() [member function]
+    cls.add_method('GetValue', 
+                   'double', 
+                   [], 
+                   is_virtual=True)
+    ## random-variable-stream.h (module 'core'): uint32_t ns3::GammaRandomVariable::GetInteger() [member function]
+    cls.add_method('GetInteger', 
+                   'uint32_t', 
+                   [], 
+                   is_virtual=True)
     return
 
 def register_Ns3IntegerValue_methods(root_module, cls):
@@ -4636,6 +5429,88 @@ def register_Ns3LiIonEnergySource_methods(root_module, cls):
                    visibility='private', is_virtual=True)
     return
 
+def register_Ns3LinearWifiTxCurrentModel_methods(root_module, cls):
+    ## wifi-tx-current-model.h (module 'energy'): ns3::LinearWifiTxCurrentModel::LinearWifiTxCurrentModel(ns3::LinearWifiTxCurrentModel const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::LinearWifiTxCurrentModel const &', 'arg0')])
+    ## wifi-tx-current-model.h (module 'energy'): ns3::LinearWifiTxCurrentModel::LinearWifiTxCurrentModel() [constructor]
+    cls.add_constructor([])
+    ## wifi-tx-current-model.h (module 'energy'): double ns3::LinearWifiTxCurrentModel::CalcTxCurrent(double txPowerDbm) const [member function]
+    cls.add_method('CalcTxCurrent', 
+                   'double', 
+                   [param('double', 'txPowerDbm')], 
+                   is_const=True, is_virtual=True)
+    ## wifi-tx-current-model.h (module 'energy'): double ns3::LinearWifiTxCurrentModel::GetEta() const [member function]
+    cls.add_method('GetEta', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## wifi-tx-current-model.h (module 'energy'): double ns3::LinearWifiTxCurrentModel::GetIdleCurrent() const [member function]
+    cls.add_method('GetIdleCurrent', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## wifi-tx-current-model.h (module 'energy'): static ns3::TypeId ns3::LinearWifiTxCurrentModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## wifi-tx-current-model.h (module 'energy'): double ns3::LinearWifiTxCurrentModel::GetVoltage() const [member function]
+    cls.add_method('GetVoltage', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## wifi-tx-current-model.h (module 'energy'): void ns3::LinearWifiTxCurrentModel::SetEta(double eta) [member function]
+    cls.add_method('SetEta', 
+                   'void', 
+                   [param('double', 'eta')])
+    ## wifi-tx-current-model.h (module 'energy'): void ns3::LinearWifiTxCurrentModel::SetIdleCurrent(double idleCurrent) [member function]
+    cls.add_method('SetIdleCurrent', 
+                   'void', 
+                   [param('double', 'idleCurrent')])
+    ## wifi-tx-current-model.h (module 'energy'): void ns3::LinearWifiTxCurrentModel::SetVoltage(double voltage) [member function]
+    cls.add_method('SetVoltage', 
+                   'void', 
+                   [param('double', 'voltage')])
+    return
+
+def register_Ns3LogNormalRandomVariable_methods(root_module, cls):
+    ## random-variable-stream.h (module 'core'): static ns3::TypeId ns3::LogNormalRandomVariable::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## random-variable-stream.h (module 'core'): ns3::LogNormalRandomVariable::LogNormalRandomVariable() [constructor]
+    cls.add_constructor([])
+    ## random-variable-stream.h (module 'core'): double ns3::LogNormalRandomVariable::GetMu() const [member function]
+    cls.add_method('GetMu', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## random-variable-stream.h (module 'core'): double ns3::LogNormalRandomVariable::GetSigma() const [member function]
+    cls.add_method('GetSigma', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## random-variable-stream.h (module 'core'): double ns3::LogNormalRandomVariable::GetValue(double mu, double sigma) [member function]
+    cls.add_method('GetValue', 
+                   'double', 
+                   [param('double', 'mu'), param('double', 'sigma')])
+    ## random-variable-stream.h (module 'core'): uint32_t ns3::LogNormalRandomVariable::GetInteger(uint32_t mu, uint32_t sigma) [member function]
+    cls.add_method('GetInteger', 
+                   'uint32_t', 
+                   [param('uint32_t', 'mu'), param('uint32_t', 'sigma')])
+    ## random-variable-stream.h (module 'core'): double ns3::LogNormalRandomVariable::GetValue() [member function]
+    cls.add_method('GetValue', 
+                   'double', 
+                   [], 
+                   is_virtual=True)
+    ## random-variable-stream.h (module 'core'): uint32_t ns3::LogNormalRandomVariable::GetInteger() [member function]
+    cls.add_method('GetInteger', 
+                   'uint32_t', 
+                   [], 
+                   is_virtual=True)
+    return
+
 def register_Ns3NetDevice_methods(root_module, cls):
     ## net-device.h (module 'network'): ns3::NetDevice::NetDevice() [constructor]
     cls.add_constructor([])
@@ -4895,6 +5770,51 @@ def register_Ns3Node_methods(root_module, cls):
                    visibility='protected', is_virtual=True)
     return
 
+def register_Ns3NormalRandomVariable_methods(root_module, cls):
+    ## random-variable-stream.h (module 'core'): ns3::NormalRandomVariable::INFINITE_VALUE [variable]
+    cls.add_static_attribute('INFINITE_VALUE', 'double const', is_const=True)
+    ## random-variable-stream.h (module 'core'): static ns3::TypeId ns3::NormalRandomVariable::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## random-variable-stream.h (module 'core'): ns3::NormalRandomVariable::NormalRandomVariable() [constructor]
+    cls.add_constructor([])
+    ## random-variable-stream.h (module 'core'): double ns3::NormalRandomVariable::GetMean() const [member function]
+    cls.add_method('GetMean', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## random-variable-stream.h (module 'core'): double ns3::NormalRandomVariable::GetVariance() const [member function]
+    cls.add_method('GetVariance', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## random-variable-stream.h (module 'core'): double ns3::NormalRandomVariable::GetBound() const [member function]
+    cls.add_method('GetBound', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## random-variable-stream.h (module 'core'): double ns3::NormalRandomVariable::GetValue(double mean, double variance, double bound=ns3::NormalRandomVariable::INFINITE_VALUE) [member function]
+    cls.add_method('GetValue', 
+                   'double', 
+                   [param('double', 'mean'), param('double', 'variance'), param('double', 'bound', default_value='ns3::NormalRandomVariable::INFINITE_VALUE')])
+    ## random-variable-stream.h (module 'core'): uint32_t ns3::NormalRandomVariable::GetInteger(uint32_t mean, uint32_t variance, uint32_t bound) [member function]
+    cls.add_method('GetInteger', 
+                   'uint32_t', 
+                   [param('uint32_t', 'mean'), param('uint32_t', 'variance'), param('uint32_t', 'bound')])
+    ## random-variable-stream.h (module 'core'): double ns3::NormalRandomVariable::GetValue() [member function]
+    cls.add_method('GetValue', 
+                   'double', 
+                   [], 
+                   is_virtual=True)
+    ## random-variable-stream.h (module 'core'): uint32_t ns3::NormalRandomVariable::GetInteger() [member function]
+    cls.add_method('GetInteger', 
+                   'uint32_t', 
+                   [], 
+                   is_virtual=True)
+    return
+
 def register_Ns3ObjectFactoryChecker_methods(root_module, cls):
     ## object-factory.h (module 'core'): ns3::ObjectFactoryChecker::ObjectFactoryChecker() [constructor]
     cls.add_constructor([])
@@ -5120,6 +6040,49 @@ def register_Ns3Packet_methods(root_module, cls):
                    [param('ns3::Ptr< ns3::NixVector >', 'nixVector')])
     return
 
+def register_Ns3ParetoRandomVariable_methods(root_module, cls):
+    ## random-variable-stream.h (module 'core'): static ns3::TypeId ns3::ParetoRandomVariable::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## random-variable-stream.h (module 'core'): ns3::ParetoRandomVariable::ParetoRandomVariable() [constructor]
+    cls.add_constructor([])
+    ## random-variable-stream.h (module 'core'): double ns3::ParetoRandomVariable::GetMean() const [member function]
+    cls.add_method('GetMean', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## random-variable-stream.h (module 'core'): double ns3::ParetoRandomVariable::GetShape() const [member function]
+    cls.add_method('GetShape', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## random-variable-stream.h (module 'core'): double ns3::ParetoRandomVariable::GetBound() const [member function]
+    cls.add_method('GetBound', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## random-variable-stream.h (module 'core'): double ns3::ParetoRandomVariable::GetValue(double mean, double shape, double bound) [member function]
+    cls.add_method('GetValue', 
+                   'double', 
+                   [param('double', 'mean'), param('double', 'shape'), param('double', 'bound')])
+    ## random-variable-stream.h (module 'core'): uint32_t ns3::ParetoRandomVariable::GetInteger(uint32_t mean, uint32_t shape, uint32_t bound) [member function]
+    cls.add_method('GetInteger', 
+                   'uint32_t', 
+                   [param('uint32_t', 'mean'), param('uint32_t', 'shape'), param('uint32_t', 'bound')])
+    ## random-variable-stream.h (module 'core'): double ns3::ParetoRandomVariable::GetValue() [member function]
+    cls.add_method('GetValue', 
+                   'double', 
+                   [], 
+                   is_virtual=True)
+    ## random-variable-stream.h (module 'core'): uint32_t ns3::ParetoRandomVariable::GetInteger() [member function]
+    cls.add_method('GetInteger', 
+                   'uint32_t', 
+                   [], 
+                   is_virtual=True)
+    return
+
 def register_Ns3RvBatteryModel_methods(root_module, cls):
     ## rv-battery-model.h (module 'energy'): ns3::RvBatteryModel::RvBatteryModel(ns3::RvBatteryModel const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::RvBatteryModel const &', 'arg0')])
@@ -5257,6 +6220,11 @@ def register_Ns3SimpleDeviceEnergyModel_methods(root_module, cls):
                    is_static=True)
     ## simple-device-energy-model.h (module 'energy'): void ns3::SimpleDeviceEnergyModel::HandleEnergyDepletion() [member function]
     cls.add_method('HandleEnergyDepletion', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## simple-device-energy-model.h (module 'energy'): void ns3::SimpleDeviceEnergyModel::HandleEnergyRecharged() [member function]
+    cls.add_method('HandleEnergyRecharged', 
                    'void', 
                    [], 
                    is_virtual=True)
@@ -5466,6 +6434,11 @@ def register_Ns3WifiRadioEnergyModel_methods(root_module, cls):
                    'double', 
                    [], 
                    is_const=True)
+    ## wifi-radio-energy-model.h (module 'energy'): double ns3::WifiRadioEnergyModel::GetSleepCurrentA() const [member function]
+    cls.add_method('GetSleepCurrentA', 
+                   'double', 
+                   [], 
+                   is_const=True)
     ## wifi-radio-energy-model.h (module 'energy'): double ns3::WifiRadioEnergyModel::GetSwitchingCurrentA() const [member function]
     cls.add_method('GetSwitchingCurrentA', 
                    'double', 
@@ -5491,12 +6464,21 @@ def register_Ns3WifiRadioEnergyModel_methods(root_module, cls):
                    'void', 
                    [], 
                    is_virtual=True)
+    ## wifi-radio-energy-model.h (module 'energy'): void ns3::WifiRadioEnergyModel::HandleEnergyRecharged() [member function]
+    cls.add_method('HandleEnergyRecharged', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
     ## wifi-radio-energy-model.h (module 'energy'): void ns3::WifiRadioEnergyModel::SetCcaBusyCurrentA(double ccaBusyCurrentA) [member function]
     cls.add_method('SetCcaBusyCurrentA', 
                    'void', 
                    [param('double', 'ccaBusyCurrentA')])
     ## wifi-radio-energy-model.h (module 'energy'): void ns3::WifiRadioEnergyModel::SetEnergyDepletionCallback(ns3::Callback<void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [member function]
     cls.add_method('SetEnergyDepletionCallback', 
+                   'void', 
+                   [param('ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')])
+    ## wifi-radio-energy-model.h (module 'energy'): void ns3::WifiRadioEnergyModel::SetEnergyRechargedCallback(ns3::Callback<void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [member function]
+    cls.add_method('SetEnergyRechargedCallback', 
                    'void', 
                    [param('ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')])
     ## wifi-radio-energy-model.h (module 'energy'): void ns3::WifiRadioEnergyModel::SetEnergySource(ns3::Ptr<ns3::EnergySource> source) [member function]
@@ -5512,6 +6494,10 @@ def register_Ns3WifiRadioEnergyModel_methods(root_module, cls):
     cls.add_method('SetRxCurrentA', 
                    'void', 
                    [param('double', 'rxCurrentA')])
+    ## wifi-radio-energy-model.h (module 'energy'): void ns3::WifiRadioEnergyModel::SetSleepCurrentA(double sleepCurrentA) [member function]
+    cls.add_method('SetSleepCurrentA', 
+                   'void', 
+                   [param('double', 'sleepCurrentA')])
     ## wifi-radio-energy-model.h (module 'energy'): void ns3::WifiRadioEnergyModel::SetSwitchingCurrentA(double switchingCurrentA) [member function]
     cls.add_method('SetSwitchingCurrentA', 
                    'void', 
@@ -5520,6 +6506,14 @@ def register_Ns3WifiRadioEnergyModel_methods(root_module, cls):
     cls.add_method('SetTxCurrentA', 
                    'void', 
                    [param('double', 'txCurrentA')])
+    ## wifi-radio-energy-model.h (module 'energy'): void ns3::WifiRadioEnergyModel::SetTxCurrentFromModel(double txPowerDbm) [member function]
+    cls.add_method('SetTxCurrentFromModel', 
+                   'void', 
+                   [param('double', 'txPowerDbm')])
+    ## wifi-radio-energy-model.h (module 'energy'): void ns3::WifiRadioEnergyModel::SetTxCurrentModel(ns3::Ptr<ns3::WifiTxCurrentModel> model) [member function]
+    cls.add_method('SetTxCurrentModel', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::WifiTxCurrentModel >', 'model')])
     ## wifi-radio-energy-model.h (module 'energy'): void ns3::WifiRadioEnergyModel::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
@@ -5570,6 +6564,48 @@ def register_Ns3AddressValue_methods(root_module, cls):
     cls.add_method('Set', 
                    'void', 
                    [param('ns3::Address const &', 'value')])
+    return
+
+def register_Ns3BasicEnergyHarvester_methods(root_module, cls):
+    ## basic-energy-harvester.h (module 'energy'): ns3::BasicEnergyHarvester::BasicEnergyHarvester(ns3::BasicEnergyHarvester const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::BasicEnergyHarvester const &', 'arg0')])
+    ## basic-energy-harvester.h (module 'energy'): ns3::BasicEnergyHarvester::BasicEnergyHarvester() [constructor]
+    cls.add_constructor([])
+    ## basic-energy-harvester.h (module 'energy'): ns3::BasicEnergyHarvester::BasicEnergyHarvester(ns3::Time updateInterval) [constructor]
+    cls.add_constructor([param('ns3::Time', 'updateInterval')])
+    ## basic-energy-harvester.h (module 'energy'): int64_t ns3::BasicEnergyHarvester::AssignStreams(int64_t stream) [member function]
+    cls.add_method('AssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'stream')])
+    ## basic-energy-harvester.h (module 'energy'): ns3::Time ns3::BasicEnergyHarvester::GetHarvestedPowerUpdateInterval() const [member function]
+    cls.add_method('GetHarvestedPowerUpdateInterval', 
+                   'ns3::Time', 
+                   [], 
+                   is_const=True)
+    ## basic-energy-harvester.h (module 'energy'): static ns3::TypeId ns3::BasicEnergyHarvester::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## basic-energy-harvester.h (module 'energy'): void ns3::BasicEnergyHarvester::SetHarvestedPowerUpdateInterval(ns3::Time updateInterval) [member function]
+    cls.add_method('SetHarvestedPowerUpdateInterval', 
+                   'void', 
+                   [param('ns3::Time', 'updateInterval')])
+    ## basic-energy-harvester.h (module 'energy'): void ns3::BasicEnergyHarvester::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
+    ## basic-energy-harvester.h (module 'energy'): double ns3::BasicEnergyHarvester::DoGetPower() const [member function]
+    cls.add_method('DoGetPower', 
+                   'double', 
+                   [], 
+                   is_const=True, visibility='private', is_virtual=True)
+    ## basic-energy-harvester.h (module 'energy'): void ns3::BasicEnergyHarvester::DoInitialize() [member function]
+    cls.add_method('DoInitialize', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3BasicEnergySource_methods(root_module, cls):
