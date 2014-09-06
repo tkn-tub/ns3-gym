@@ -77,7 +77,7 @@ CoDelQueueBasicEnqueueDequeue::DoRun (void)
   Ptr<CoDelQueue> queue = CreateObject<CoDelQueue> ();
 
   uint32_t pktSize = 1000;
-  uint32_t modeSize;
+  uint32_t modeSize = 0;
 
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Mode", m_mode), true,
                          "Verify that we can actually set the attribute Mode");
@@ -185,7 +185,7 @@ CoDelQueueBasicOverflow::DoRun (void)
 {
   Ptr<CoDelQueue> queue = CreateObject<CoDelQueue> ();
   uint32_t pktSize = 1000;
-  uint32_t modeSize;
+  uint32_t modeSize = 0;
 
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Mode", m_mode), true,
                          "Verify that we can actually set the attribute Mode");
@@ -347,7 +347,7 @@ CoDelQueueBasicDrop::DoRun (void)
 {
   Ptr<CoDelQueue> queue = CreateObject<CoDelQueue> ();
   uint32_t pktSize = 1000;
-  uint32_t modeSize;
+  uint32_t modeSize = 0;
 
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Mode", m_mode), true,
                          "Verify that we can actually set the attribute Mode");
