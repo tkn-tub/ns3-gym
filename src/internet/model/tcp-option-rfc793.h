@@ -25,7 +25,7 @@
 namespace ns3 {
 
 /**
- * Defines the TCP option of kind 0 (end of option list) as in RFC793
+ * Defines the TCP option of kind 0 (end of option list) as in \RFC{793}
  */
 class TcpOptionEnd : public TcpOption
 {
@@ -33,6 +33,10 @@ public:
   TcpOptionEnd ();
   virtual ~TcpOptionEnd ();
 
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
 
@@ -46,7 +50,7 @@ public:
 };
 
 /**
- * Defines the TCP option of kind 1 (no operation) as in RFC793
+ * Defines the TCP option of kind 1 (no operation) as in \RFC{793}
  */
 class TcpOptionNOP : public TcpOption
 {
@@ -54,6 +58,10 @@ public:
   TcpOptionNOP ();
   virtual ~TcpOptionNOP ();
 
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
 
@@ -66,7 +74,7 @@ public:
 };
 
 /**
- * Defines the TCP option of kind 2 (maximum segment size) as in RFC793
+ * Defines the TCP option of kind 2 (maximum segment size) as in \RFC{793}
  */
 class TcpOptionMSS : public TcpOption
 {
@@ -74,6 +82,10 @@ public:
   TcpOptionMSS ();
   virtual ~TcpOptionMSS ();
 
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
 
@@ -84,14 +96,26 @@ public:
   virtual uint8_t GetKind (void) const;
   virtual uint32_t GetSerializedSize (void) const;
 
+  /**
+   * \brief Get the Maximum Segment Size stored in the Option
+   * \return The Maximum Segment Size
+   */
   uint16_t GetMSS (void) const;
+  /**
+   * \brief Set the Maximum Segment Size stored in the Option
+   * \param mss The Maximum Segment Size
+   */
   void SetMSS (uint16_t mss);
+
 protected:
-  uint16_t m_mss; // maximum segment size
+  uint16_t m_mss; //!< maximum segment size
 };
 
 /**
- * \brief An unknown tcp option
+ * \brief An unknown TCP option.
+ *
+ * An unknown option can be deserialized and (only if deserialized previously)
+ * serialized again.
  */
 class TcpOptionUnknown : public TcpOption
 {
@@ -99,6 +123,10 @@ public:
   TcpOptionUnknown ();
   virtual ~TcpOptionUnknown ();
 
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
 
@@ -108,6 +136,12 @@ public:
 
   virtual uint8_t GetKind (void) const;
   virtual uint32_t GetSerializedSize (void) const;
+
+private:
+  uint8_t m_kind; //!< The unknown option kind
+  uint32_t m_size; //!< The unknown option size
+  uint8_t m_content[40]; //!< The option data
+
 };
 
 } // namespace ns3

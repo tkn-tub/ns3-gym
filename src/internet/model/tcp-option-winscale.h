@@ -27,14 +27,14 @@
 namespace ns3 {
 
 /**
- * \brief Defines the TCP option of kind 3 (window scale option) as in RFC1323
+ * \brief Defines the TCP option of kind 3 (window scale option) as in \RFC{1323}
  *
  * For more efficient use of high bandwidth networks, a larger TCP window size
  * may be used. The TCP window size field controls the flow of data and its
  * value is limited to between 2 and 65,535 bytes.
  *
  * Since the size field cannot be expanded, a scaling factor is used.
- * The TCP window scale option, as defined in RFC 1323, is an option used
+ * The TCP window scale option, as defined in \RFC{1323}, is an option used
  * to increase the maximum window size from 65,535 bytes to 1 gigabyte.
  * Scaling up to larger window sizes is a part of what is necessary for TCP Tuning.
  *
@@ -48,61 +48,21 @@ namespace ns3 {
 class TcpOptionWinScale : public TcpOption
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
 
-  /**
-   * \brief Create the option
-   *
-   * The scale is initialized with a 0U value.
-   */
   TcpOptionWinScale ();
-
-  /**
-   * \brief Deconstructor
-   */
   virtual ~TcpOptionWinScale ();
 
-  /**
-   * \brief Print the option to a ostream
-   *
-   * Only the window scale (uint8_t) is printed out.
-   *
-   * \param os Stream to which print the option to
-   */
   virtual void Print (std::ostream &os) const;
-
-  /**
-   * \brief Serialize the option to a Buffer
-   *
-   * The option writes three U8: kind, length, and the scale.
-   *
-   * \param start Buffer::Iterator to which write to
-   */
   virtual void Serialize (Buffer::Iterator start) const;
-
-  /**
-   * \brief Deserialize the option from a Buffer
-   *
-   * The option read two U8: length, and the scale. Kind SHOULD be read
-   * before call this method.
-   *
-   * \param start Buffer::Iterator to which read from
-   */
   virtual uint32_t Deserialize (Buffer::Iterator start);
 
-  /**
-   * \brief Get the kind value for this option
-   *
-   * \return Fixed value, TcpOption::WINSCALE
-   */
   virtual uint8_t GetKind (void) const;
-
-  /**
-   * \brief Get the serialized size of the option
-   *
-   * \return Fixed value, 3
-   */
   virtual uint32_t GetSerializedSize (void) const;
 
   /**
@@ -114,7 +74,7 @@ public:
   /**
    * \brief Set the scale option
    *
-   * The scale option SHOULD be <= 14 (as RFC).
+   * The scale option SHOULD be <= 14 (as \RFC{1323}).
    *
    * \param scale Scale factor
    */

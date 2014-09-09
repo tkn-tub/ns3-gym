@@ -27,7 +27,7 @@
 namespace ns3 {
 
 /**
- * Defines the TCP option of kind 8 (timestamp option) as in RFC1323
+ * Defines the TCP option of kind 8 (timestamp option) as in \RFC{1323}
  */
 
 class TcpOptionTS : public TcpOption
@@ -36,6 +36,10 @@ public:
   TcpOptionTS ();
   virtual ~TcpOptionTS ();
 
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
 
@@ -46,9 +50,25 @@ public:
   virtual uint8_t GetKind (void) const;
   virtual uint32_t GetSerializedSize (void) const;
 
+  /**
+   * \brief Get the timestamp stored in the Option
+   * \return the timestamp
+   */
   uint32_t GetTimestamp (void) const;
+  /**
+   * \brief Get the timestamp echo stored in the Option
+   * \return the timestamp echo
+   */
   uint32_t GetEcho (void) const;
+  /**
+   * \brief Set the timestamp stored in the Option
+   * \param ts the timestamp
+   */
   void SetTimestamp (uint32_t ts);
+  /**
+   * \brief Set the timestamp echo stored in the Option
+   * \param ts the timestamp echo
+   */
   void SetEcho (uint32_t ts);
 
   /**
@@ -79,8 +99,8 @@ public:
   static Time ElapsedTimeFromTsValue (uint32_t echoTime);
 
 protected:
-  uint32_t m_timestamp; // local timestamp
-  uint32_t m_echo; // echo timestamp
+  uint32_t m_timestamp; //!< local timestamp
+  uint32_t m_echo; //!< echo timestamp
 };
 
 } // namespace ns3

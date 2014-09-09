@@ -37,28 +37,72 @@ public:
   TcpOption ();
   virtual ~TcpOption ();
 
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
+
   virtual TypeId GetInstanceTypeId (void) const;
 
+  /**
+   * The option Kind, as defined in the respective RFCs.
+   */
   enum Kind
   {
-    END = 0,
-    NOP = 1,
-    MSS = 2,
-    WINSCALE = 3,
-    SACK_PERM = 4,
-    SACK = 5,
-    TS = 8
+    END = 0,      //!< END
+    NOP = 1,      //!< NOP
+    MSS = 2,      //!< MSS
+    WINSCALE = 3, //!< WINSCALE
+    SACK_PERM = 4,//!< SACK_PERM
+    SACK = 5,     //!< SACK
+    TS = 8        //!< TS
   };
 
+  /**
+   * \brief Print the Option contents
+   * \param os the output stream
+   */
   virtual void Print (std::ostream &os) const = 0;
+  /**
+   * \brief Serialize the Option to a buffer iterator
+   * \param start the buffer iterator
+   */
   virtual void Serialize (Buffer::Iterator start) const = 0;
+
+  /**
+   * \brief Deserialize the Option from a buffer iterator
+   * \param start the buffer iterator
+   * \returns the number of deserialized bytes
+   */
   virtual uint32_t Deserialize (Buffer::Iterator start) = 0;
 
-  virtual uint8_t GetKind (void) const = 0; // Get the `kind' (as in RFC793) of this option
-  virtual uint32_t GetSerializedSize (void) const = 0; // Get the total length of this option, >= 1
+  /**
+   * \brief Get the `kind' (as in \RFC{793}) of this option
+   * \return the Option Kind
+   */
+  virtual uint8_t GetKind (void) const = 0;
+  /**
+   * \brief Returns number of bytes required for Option
+   * serialization.
+   *
+   * \returns number of bytes required for Option
+   * serialization
+   */
+  virtual uint32_t GetSerializedSize (void) const = 0;
 
-  static Ptr<TcpOption> CreateOption (uint8_t kind); // Factory method for all options
+  /**
+   * \brief Creates an option
+   * \param kind the option kind
+   * \return the requested option or an ns3::UnknownOption if the option is not supported
+   */
+  static Ptr<TcpOption> CreateOption (uint8_t kind);
+
+  /**
+   * \brief Check if the option is implemented
+   * \param kind the Option kind
+   * \return true if the option is known
+   */
   static bool IsKindKnown (uint8_t kind);
 };
 

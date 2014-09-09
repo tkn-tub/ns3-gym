@@ -377,8 +377,12 @@ TcpHeader::Deserialize (Buffer::Iterator start)
       uint8_t kind = i.PeekU8 ();
       Ptr<TcpOption> op = TcpOption::CreateOption (kind);
 
-      optionLen -= op->Deserialize (i);
-      i.Next (op->GetSerializedSize ());
+      uint32_t optionSize;
+      optionSize = op->Deserialize (i);
+
+      NS_ASSERT_MSG (optionSize, "Unable to Deserialize an Option of Kind " << int (kind) << ", sorry.");
+      optionLen -= optionSize;
+      i.Next (optionSize);
 
       if (op->GetKind () != TcpOption::END)
         {

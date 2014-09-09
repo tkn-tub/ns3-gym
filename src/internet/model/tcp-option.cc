@@ -74,7 +74,7 @@ TcpOption::CreateOption (uint8_t kind)
     { TcpOption::WINSCALE,  TcpOptionWinScale::GetTypeId () }
   };
 
-  for (unsigned int i = 0; i < sizeof(toTid) / sizeof(kindToTid); ++i)
+  for (unsigned int i = 0; i < sizeof (toTid) / sizeof (kindToTid); ++i)
     {
       if (toTid[i].kind == kind)
         {

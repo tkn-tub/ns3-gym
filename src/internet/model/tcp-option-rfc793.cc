@@ -83,7 +83,7 @@ TcpOptionEnd::Deserialize (Buffer::Iterator start)
   if (readKind != GetKind ())
     {
       NS_LOG_WARN ("Malformed END option");
-      return 1;
+      return 0;
     }
 
   return GetSerializedSize ();
@@ -153,7 +153,7 @@ TcpOptionNOP::Deserialize (Buffer::Iterator start)
   if (readKind != GetKind ())
     {
       NS_LOG_WARN ("Malformed NOP option");
-      return 1;
+      return 0;
     }
 
   return GetSerializedSize ();
@@ -225,7 +225,7 @@ TcpOptionMSS::Deserialize (Buffer::Iterator start)
   if (readKind != GetKind ())
     {
       NS_LOG_WARN ("Malformed MSS option");
-      return 1;
+      return 0;
     }
 
   uint8_t size = i.ReadU8 ();
@@ -261,6 +261,8 @@ NS_OBJECT_ENSURE_REGISTERED (TcpOptionUnknown);
 TcpOptionUnknown::TcpOptionUnknown ()
   : TcpOption ()
 {
+  m_kind = 0xFF;
+  m_size = 0;
 }
 
 TcpOptionUnknown::~TcpOptionUnknown ()
@@ -292,15 +294,21 @@ TcpOptionUnknown::Print (std::ostream &os) const
 uint32_t
 TcpOptionUnknown::GetSerializedSize (void) const
 {
-  return 0;
+  return m_size;
 }
 
 void
-TcpOptionUnknown::Serialize (Buffer::Iterator start) const
+TcpOptionUnknown::Serialize (Buffer::Iterator i) const
 {
-  NS_LOG_WARN ("Can't Serialize an Unknown Tcp Option");
+  if (m_size == 0)
+    {
+      NS_LOG_WARN ("Can't Serialize an Unknown Tcp Option");
+      return;
+    }
 
-  (void) start;
+  i.WriteU8 (GetKind ());
+  i.WriteU8 (GetSerializedSize ());
+  i.Write (m_content, m_size-2);
 }
 
 uint32_t
@@ -308,28 +316,21 @@ TcpOptionUnknown::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
 
-  uint8_t readKind = i.ReadU8 ();
-  NS_LOG_WARN ("Trying to Deserialize an Unknown Option of Kind=" << readKind);
+  m_kind = i.ReadU8 ();
+  NS_LOG_WARN ("Trying to Deserialize an Unknown Option of Kind " << int (m_kind));
 
-  uint8_t size = i.ReadU8 ();
+  m_size = i.ReadU8 ();
+  NS_ASSERT_MSG ((m_size >= 2) && (m_size < 40), "Unable to parse an Unknown Option of Kind " << int (m_kind) << " with apparent size " << int (m_size));
 
-  if (size < 2)
-    {
-      return 0;
-    }
+  i.Read (m_content, m_size-2);
 
-  for (uint8_t j = 2; j < size; ++j)
-    {
-      i.ReadU8 ();
-    }
-
-  return static_cast<uint32_t> (size);
+  return m_size;
 }
 
 uint8_t
 TcpOptionUnknown::GetKind (void) const
 {
-  return 100;
+  return m_kind;
 }
 
 } // namespace ns3
