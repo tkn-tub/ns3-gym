@@ -187,28 +187,42 @@ LteRlcAmE2eTestCase::DoRun (void)
 //   enbLteDevs.Get (0)->SetAttribute ("ReceiveErrorModel", PointerValue (enbEm));
 //   enbLteDevs.Get (0)->TraceConnectWithoutContext ("PhyRxDrop", MakeCallback (&LteRlcAmE2eTestCase::EnbDropEvent, this));
 
+  double sduArrivalTimeSeconds = 0.010;
+  uint32_t sduSizeBytes = 100;
+  double sduStartTimeSeconds = 0.100;
+  double sduStopTimeSeconds = 10.100;
+  uint32_t dlTxOppSizeBytes = 150;
+  double dlTxOpprTimeSeconds = 0.003;
+  uint32_t ulTxOppSizeBytes = 140;
+  double ulTxOpprTimeSeconds = 0.003;
+
+  
+  
+
   // Sending packets from RRC layer
-  lteSimpleHelper->m_enbRrc->SetArrivalTime (Seconds (0.010));
-  lteSimpleHelper->m_enbRrc->SetPduSize (100);
+  lteSimpleHelper->m_enbRrc->SetArrivalTime (Seconds (sduArrivalTimeSeconds));
+  lteSimpleHelper->m_enbRrc->SetPduSize (sduSizeBytes);
 
   // MAC sends transmission opportunities (TxOpp)
-  lteSimpleHelper->m_enbMac->SetTxOppSize (150);
-  lteSimpleHelper->m_enbMac->SetTxOppTime (Seconds (0.003));
+  lteSimpleHelper->m_enbMac->SetTxOppSize (dlTxOppSizeBytes);
+  lteSimpleHelper->m_enbMac->SetTxOppTime (Seconds (dlTxOpprTimeSeconds));
   lteSimpleHelper->m_enbMac->SetTxOpportunityMode (LteTestMac::AUTOMATIC_MODE);
 
   // MAC sends transmission opportunities (TxOpp)
-  lteSimpleHelper->m_ueMac->SetTxOppSize (140);
-  lteSimpleHelper->m_ueMac->SetTxOppTime (Seconds (0.003));
+  lteSimpleHelper->m_ueMac->SetTxOppSize (ulTxOppSizeBytes);
+  lteSimpleHelper->m_ueMac->SetTxOppTime (Seconds (ulTxOpprTimeSeconds));
   lteSimpleHelper->m_ueMac->SetTxOpportunityMode (LteTestMac::AUTOMATIC_MODE);
 
   // Start/Stop pseudo-application at RRC layer
-  Simulator::Schedule (Seconds (0.100), &LteTestRrc::Start, lteSimpleHelper->m_enbRrc);
-  Simulator::Schedule (Seconds (10.100), &LteTestRrc::Stop, lteSimpleHelper->m_enbRrc);
+  Simulator::Schedule (Seconds (sduStartTimeSeconds), &LteTestRrc::Start, lteSimpleHelper->m_enbRrc);
+  Simulator::Schedule (Seconds (sduStopTimeSeconds), &LteTestRrc::Stop, lteSimpleHelper->m_enbRrc);
 
-  double throughput = (150.0/0.005) * (1.0-m_losses);
-  double totBytes = ((100 + 4) * 10.0 / 0.010);
-  Time stopTime = Seconds (std::max (totBytes/throughput, 10.0) + 10);
-  NS_LOG_INFO ("throughput=" << throughput << ", totBytes=" << totBytes << ", stopTime=" << stopTime);
+  //double throughput = (150.0/0.005) * (1.0-m_losses);
+  double throughput = (dlTxOppSizeBytes/(dlTxOppSizeBytes+4.0))*(dlTxOppSizeBytes/dlTxOpprTimeSeconds) * (1.0-m_losses);
+  //double totBytes = ((100 + 4) * 10.0 / 0.010);
+  double totBytes = ((sduSizeBytes) * (sduStopTimeSeconds - sduStartTimeSeconds) / sduArrivalTimeSeconds);
+  Time stopTime = Seconds (std::max (totBytes/throughput, 10.0) + 20);
+  NS_LOG_INFO ("throughput=" << throughput << ", totBytes=" << totBytes << ", stopTime=" << stopTime.GetSeconds () << "s");
   
   Simulator::Stop (stopTime);
   Simulator::Run ();
@@ -216,16 +230,23 @@ LteRlcAmE2eTestCase::DoRun (void)
   uint32_t txEnbRrcPdus = lteSimpleHelper->m_enbRrc->GetTxPdus ();
   uint32_t rxUeRrcPdus = lteSimpleHelper->m_ueRrc->GetRxPdus ();
 
+  uint txEnbRlcPdus = lteSimpleHelper->m_enbMac->GetTxPdus ();
+  uint rxUeRlcPdus = lteSimpleHelper->m_ueMac->GetRxPdus ();
+
   NS_LOG_INFO ("Run = " << m_run);
-  NS_LOG_INFO ("Losses (%) = " << uint32_t (m_losses * 100));
+  NS_LOG_INFO ("Loss rate (%) = " << uint32_t (m_losses * 100));
 
-  NS_LOG_INFO ("dl dev drops = " << m_dlDrops);
-  NS_LOG_INFO ("ul dev drops = " << m_ulDrops);
+  
+  NS_LOG_INFO ("RLC PDUs   TX: " << txEnbRlcPdus 
+               << "   RX: " << rxUeRlcPdus 
+               << "   LOST: " << m_dlDrops
+               << " (" << (100.0 * (double) m_dlDrops)/txEnbRlcPdus << "%)");
 
+  NS_TEST_ASSERT_MSG_EQ (txEnbRlcPdus,  rxUeRlcPdus + m_dlDrops, "lost RLC PDUs don't match TX + RX");  
+                          
   NS_LOG_INFO ("eNB tx RRC count = " << txEnbRrcPdus);
   NS_LOG_INFO ("UE rx RRC count = " << rxUeRrcPdus);
 
-  NS_LOG_INFO (m_run << "\t" << m_losses << "\t" << txEnbRrcPdus << "\t" << rxUeRrcPdus << "\t" << m_dlDrops);
 
   NS_TEST_ASSERT_MSG_EQ (txEnbRrcPdus, rxUeRrcPdus,
                          "TX PDUs (" << txEnbRrcPdus << ") != RX PDUs (" << rxUeRrcPdus << ")");
