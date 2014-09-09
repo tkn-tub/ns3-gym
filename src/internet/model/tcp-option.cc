@@ -95,8 +95,6 @@ TcpOption::IsKindKnown (uint8_t kind)
     case NOP:
     case MSS:
     case WINSCALE:
-    case SACK_PERM:
-    case SACK:
     case TS:
       return true;
     }

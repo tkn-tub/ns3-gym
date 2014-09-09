@@ -50,12 +50,12 @@ public:
    */
   enum Kind
   {
+    // Remember to extend IsKindKnown() with new value, when adding values here
+    //
     END = 0,      //!< END
     NOP = 1,      //!< NOP
     MSS = 2,      //!< MSS
     WINSCALE = 3, //!< WINSCALE
-    SACK_PERM = 4,//!< SACK_PERM
-    SACK = 5,     //!< SACK
     TS = 8        //!< TS
   };
 
