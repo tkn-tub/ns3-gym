@@ -105,8 +105,6 @@ private:
       std::list < Ptr<Packet> >  m_byteSegments;
 
       bool      m_pduComplete;
-      uint16_t  m_totalSize;
-      uint16_t  m_currSize;
     };
 
     std::map <uint16_t, PduBuffer > m_rxonBuffer; // Reception buffer
