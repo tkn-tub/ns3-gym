@@ -881,8 +881,11 @@ LteRlcAm::DoReceivePdu (Ptr<Packet> p)
           //         - discard the duplicate byte segments.
           // note: re-segmentation of AMD PDU is currently not supported, 
           // so we just check that the segment was not received before
-          if (m_rxonBuffer[ seqNumber.GetValue () ].m_byteSegments.size () == 1)
+          std::map <uint16_t, PduBuffer>::iterator it = m_rxonBuffer.find (seqNumber.GetValue ());
+          if (it != m_rxonBuffer.end () )
             {
+              NS_ASSERT (it->second.m_byteSegments.size () > 0);
+              NS_ASSERT_MSG (it->second.m_byteSegments.size () == 1, "re-segmentation not supported");
               NS_LOG_LOGIC ("PDU segment already received, discarded");
             }
           else
@@ -914,11 +917,11 @@ LteRlcAm::DoReceivePdu (Ptr<Packet> p)
 
       std::map <uint16_t, PduBuffer>::iterator it = m_rxonBuffer.find (m_vrMs.GetValue ());
       if ( it != m_rxonBuffer.end () &&
-           m_rxonBuffer[ m_vrMs.GetValue () ].m_pduComplete )
+           it->second.m_pduComplete )
         {
           int firstVrMs = m_vrMs.GetValue ();
           while ( it != m_rxonBuffer.end () &&
-                  m_rxonBuffer[ m_vrMs.GetValue () ].m_pduComplete )
+                  it->second.m_pduComplete )
             {
               m_vrMs++;
               it = m_rxonBuffer.find (m_vrMs.GetValue ());
@@ -939,17 +942,17 @@ LteRlcAm::DoReceivePdu (Ptr<Packet> p)
         {
           std::map <uint16_t, PduBuffer>::iterator it = m_rxonBuffer.find (seqNumber.GetValue ());
           if ( it != m_rxonBuffer.end () &&
-               m_rxonBuffer[ seqNumber.GetValue () ].m_pduComplete )
+               it->second.m_pduComplete )
             {
               it = m_rxonBuffer.find (m_vrR.GetValue ());
               int firstVrR = m_vrR.GetValue ();
               while ( it != m_rxonBuffer.end () &&
-                      m_rxonBuffer[ m_vrR.GetValue () ].m_pduComplete )
+                      it->second.m_pduComplete )
                 {
                   NS_LOG_LOGIC ("Reassemble and Deliver ( SN = " << m_vrR << " )");
-                  NS_ASSERT_MSG (m_rxonBuffer[ m_vrR.GetValue () ].m_byteSegments.size () == 1,
+                  NS_ASSERT_MSG (it->second.m_byteSegments.size () == 1,
                                 "Too many segments. PDU Reassembly process didn't work");
-                  ReassembleAndDeliver (m_rxonBuffer[ m_vrR.GetValue () ].m_byteSegments.front ());
+                  ReassembleAndDeliver (it->second.m_byteSegments.front ());
                   m_rxonBuffer.erase (m_vrR.GetValue ());
 
                   m_vrR++;
@@ -1792,7 +1795,7 @@ LteRlcAm::ExpireReorderingTimer (void)
   int firstVrMs = m_vrMs.GetValue ();
   std::map <uint16_t, PduBuffer>::iterator it = m_rxonBuffer.find (m_vrMs.GetValue ());
   while ( it != m_rxonBuffer.end () &&
-          m_rxonBuffer[ m_vrMs.GetValue () ].m_pduComplete )
+          it->second.m_pduComplete )
     {
       m_vrMs++;
       it = m_rxonBuffer.find (m_vrMs.GetValue ());
