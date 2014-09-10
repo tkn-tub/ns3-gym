@@ -408,8 +408,12 @@ def register_types(module):
     module.add_class('PacketSizeMinMaxAvgTotalCalculator', parent=root_module['ns3::MinMaxAvgTotalCalculator< unsigned int >'])
     ## packet-socket.h (module 'network'): ns3::PacketSocket [class]
     module.add_class('PacketSocket', parent=root_module['ns3::Socket'])
+    ## packet-socket-client.h (module 'network'): ns3::PacketSocketClient [class]
+    module.add_class('PacketSocketClient', parent=root_module['ns3::Application'])
     ## packet-socket-factory.h (module 'network'): ns3::PacketSocketFactory [class]
     module.add_class('PacketSocketFactory', parent=root_module['ns3::SocketFactory'])
+    ## packet-socket-server.h (module 'network'): ns3::PacketSocketServer [class]
+    module.add_class('PacketSocketServer', parent=root_module['ns3::Application'])
     ## random-variable-stream.h (module 'core'): ns3::ParetoRandomVariable [class]
     module.add_class('ParetoRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
     ## packetbb.h (module 'network'): ns3::PbbAddressBlock [class]
@@ -725,7 +729,9 @@ def register_methods(root_module):
     register_Ns3Packet_methods(root_module, root_module['ns3::Packet'])
     register_Ns3PacketSizeMinMaxAvgTotalCalculator_methods(root_module, root_module['ns3::PacketSizeMinMaxAvgTotalCalculator'])
     register_Ns3PacketSocket_methods(root_module, root_module['ns3::PacketSocket'])
+    register_Ns3PacketSocketClient_methods(root_module, root_module['ns3::PacketSocketClient'])
     register_Ns3PacketSocketFactory_methods(root_module, root_module['ns3::PacketSocketFactory'])
+    register_Ns3PacketSocketServer_methods(root_module, root_module['ns3::PacketSocketServer'])
     register_Ns3ParetoRandomVariable_methods(root_module, root_module['ns3::ParetoRandomVariable'])
     register_Ns3PbbAddressBlock_methods(root_module, root_module['ns3::PbbAddressBlock'])
     register_Ns3PbbAddressBlockIpv4_methods(root_module, root_module['ns3::PbbAddressBlockIpv4'])
@@ -7962,6 +7968,37 @@ def register_Ns3PacketSocket_methods(root_module, cls):
                    visibility='private', is_virtual=True)
     return
 
+def register_Ns3PacketSocketClient_methods(root_module, cls):
+    ## packet-socket-client.h (module 'network'): ns3::PacketSocketClient::PacketSocketClient(ns3::PacketSocketClient const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PacketSocketClient const &', 'arg0')])
+    ## packet-socket-client.h (module 'network'): ns3::PacketSocketClient::PacketSocketClient() [constructor]
+    cls.add_constructor([])
+    ## packet-socket-client.h (module 'network'): static ns3::TypeId ns3::PacketSocketClient::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## packet-socket-client.h (module 'network'): void ns3::PacketSocketClient::SetRemote(ns3::PacketSocketAddress addr) [member function]
+    cls.add_method('SetRemote', 
+                   'void', 
+                   [param('ns3::PacketSocketAddress', 'addr')])
+    ## packet-socket-client.h (module 'network'): void ns3::PacketSocketClient::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    ## packet-socket-client.h (module 'network'): void ns3::PacketSocketClient::StartApplication() [member function]
+    cls.add_method('StartApplication', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
+    ## packet-socket-client.h (module 'network'): void ns3::PacketSocketClient::StopApplication() [member function]
+    cls.add_method('StopApplication', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
+    return
+
 def register_Ns3PacketSocketFactory_methods(root_module, cls):
     ## packet-socket-factory.h (module 'network'): ns3::PacketSocketFactory::PacketSocketFactory(ns3::PacketSocketFactory const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::PacketSocketFactory const &', 'arg0')])
@@ -7977,6 +8014,37 @@ def register_Ns3PacketSocketFactory_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    return
+
+def register_Ns3PacketSocketServer_methods(root_module, cls):
+    ## packet-socket-server.h (module 'network'): ns3::PacketSocketServer::PacketSocketServer(ns3::PacketSocketServer const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PacketSocketServer const &', 'arg0')])
+    ## packet-socket-server.h (module 'network'): ns3::PacketSocketServer::PacketSocketServer() [constructor]
+    cls.add_constructor([])
+    ## packet-socket-server.h (module 'network'): static ns3::TypeId ns3::PacketSocketServer::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## packet-socket-server.h (module 'network'): void ns3::PacketSocketServer::SetLocal(ns3::PacketSocketAddress addr) [member function]
+    cls.add_method('SetLocal', 
+                   'void', 
+                   [param('ns3::PacketSocketAddress', 'addr')])
+    ## packet-socket-server.h (module 'network'): void ns3::PacketSocketServer::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    ## packet-socket-server.h (module 'network'): void ns3::PacketSocketServer::StartApplication() [member function]
+    cls.add_method('StartApplication', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
+    ## packet-socket-server.h (module 'network'): void ns3::PacketSocketServer::StopApplication() [member function]
+    cls.add_method('StopApplication', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3ParetoRandomVariable_methods(root_module, cls):
