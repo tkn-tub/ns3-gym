@@ -140,7 +140,11 @@ TcpSocketBase::TcpSocketBase (void)
     // For attribute initialization consistency (quiet valgrind)
     m_rWnd (0),
     m_sndScaleFactor (0),
-    m_rcvScaleFactor (0)
+    m_rcvScaleFactor (0),
+    m_timestampEnabled (true),
+    m_timestampToEcho (0),
+    m_lastEchoedTime (0)
+
 {
   NS_LOG_FUNCTION (this);
 }
@@ -179,7 +183,10 @@ TcpSocketBase::TcpSocketBase (const TcpSocketBase& sock)
     m_winScalingEnabled (sock.m_winScalingEnabled),
     m_sndScaleFactor (sock.m_sndScaleFactor),
     m_rcvScaleFactor (sock.m_rcvScaleFactor),
-    m_timestampEnabled (sock.m_timestampEnabled)
+    m_timestampEnabled (sock.m_timestampEnabled),
+    m_timestampToEcho (sock.m_timestampToEcho),
+    m_lastEchoedTime (sock.m_lastEchoedTime)
+
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_LOGIC ("Invoked the copy constructor");
