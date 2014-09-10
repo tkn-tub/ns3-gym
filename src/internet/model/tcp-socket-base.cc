@@ -2557,6 +2557,7 @@ TcpSocketBase::ProcessOptionWScale (const Ptr<const TcpOption> option)
 uint8_t
 TcpSocketBase::CalculateWScale () const
 {
+  NS_LOG_FUNCTION (this);
   uint32_t maxSpace = m_rxBuffer.MaxBufferSize ();
   uint8_t scale = 0;
 
@@ -2572,6 +2573,8 @@ TcpSocketBase::CalculateWScale () const
       scale = 14;
     }
 
+  NS_LOG_INFO ("Node " << m_node->GetId () << " calculated wscale factor of " <<
+               static_cast<int> (scale) << " for buffer size " << m_rxBuffer.MaxBufferSize ());
   return scale;
 }
 
