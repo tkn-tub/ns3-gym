@@ -53,12 +53,15 @@ Bugs fixed
 - Bug 1762 - UE stuck in IDLE_CONNECTING because RRC CONN REQ is not transmitted
 - Bug 1811 - basic traffic generator for network module 
 - Bug 1831 - TcpSocket SlowStartThreshold is not a TraceSource
+- Bug 1851 - WifiRadioEnergyModel energy consumption values are taken from a 802.15.4 chip
 - Bug 1854 - std::out_of_range Problem
+- Bug 1860 - TCP needs the Window Scale option
 - Bug 1893 - issue in DoSchedUlTriggerReq with harq
 - Bug 1921 - Icmpv6L4Protocol::ForgeEchoRequest returns a malformed packet
 - Bug 1930 - Use of invalid reference in OLSR RemoveLinkTuple
 - Bug 1932 - NdiscCache entry is not failsafe on double neighbor probing.
 - Bug 1937 - FlowMonitor fails to track multiplexed packets
+- Bug 1942 - refactoring of lte-sinr-chunk-processor -> lte-chunk-processor
 - Bug 1943 - Waveform generator signal duration calc error
 - Bug 1951 - AODV does not update nexthop for 1-hop nodes
 - Bug 1955 - The IPv4 identification field should be unique per (source, destination, protocol) tuple
@@ -66,7 +69,6 @@ Bugs fixed
 - Bug 1961 - planetlab-tap-creator "variable set but not used"
 - Bug 1963 - AODV can tag the same packet twice (and raise an assert)
 - Bug 1967 - LL Multicast is not compressed in the right way in IPHC
-- Bug 1942 - refactoring of lte-sinr-chunk-processor -> lte-chunk-processor
 
 Known issues
 ------------
