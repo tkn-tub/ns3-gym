@@ -55,6 +55,7 @@ Bugs fixed
 - Bug 1831 - TcpSocket SlowStartThreshold is not a TraceSource
 - Bug 1851 - WifiRadioEnergyModel energy consumption values are taken from a 802.15.4 chip
 - Bug 1854 - std::out_of_range Problem
+- Bug 1858 - wireless examples not correctly recording packet reception
 - Bug 1860 - TCP needs the Window Scale option
 - Bug 1893 - issue in DoSchedUlTriggerReq with harq
 - Bug 1921 - Icmpv6L4Protocol::ForgeEchoRequest returns a malformed packet

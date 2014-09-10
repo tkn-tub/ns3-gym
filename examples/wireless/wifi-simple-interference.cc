@@ -99,11 +99,16 @@ using namespace ns3;
 static inline std::string PrintReceivedPacket (Ptr<Socket> socket)
 {
   Address addr;
-  socket->GetSockName (addr);
-  InetSocketAddress iaddr = InetSocketAddress::ConvertFrom (addr);
 
   std::ostringstream oss;
-  oss << "Received one packet!  Socket: " << iaddr.GetIpv4 () << " port: " << iaddr.GetPort ();
+
+  while (socket->Recv ())
+    {
+      socket->GetSockName (addr);
+      InetSocketAddress iaddr = InetSocketAddress::ConvertFrom (addr);
+
+      oss << "Received one packet!  Socket: " << iaddr.GetIpv4 () << " port: " << iaddr.GetPort ();
+    }
 
   return oss.str ();
 }
