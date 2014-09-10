@@ -1666,8 +1666,8 @@ TcpSocketBase::SendEmptyPacket (uint8_t flags)
       header.SetSourcePort (m_endPoint6->GetLocalPort ());
       header.SetDestinationPort (m_endPoint6->GetPeerPort ());
     }
-  header.SetWindowSize (AdvertisedWindowSize ());
   AddOptions (header);
+  header.SetWindowSize (AdvertisedWindowSize ());
   m_rto = m_rtt->RetransmitTimeout ();
   bool hasSyn = flags & TcpHeader::SYN;
   bool hasFin = flags & TcpHeader::FIN;
@@ -2547,8 +2547,6 @@ TcpSocketBase::ProcessOptionWScale (const Ptr<const TcpOption> option)
       NS_LOG_WARN ("Possible error; m_rcvScaleFactor exceeds 14: " << m_rcvScaleFactor);
       m_rcvScaleFactor = 14;
     }
-
-  m_sndScaleFactor = CalculateWScale ();
 
   NS_LOG_INFO (m_node->GetId () << " Received a scale factor of " <<
                  static_cast<int> (m_rcvScaleFactor));
