@@ -2,7 +2,7 @@
 
 def build(bld):
 
-    module = bld.create_ns3_module('spectrum', ['propagation', 'antenna', 'applications'])
+    module = bld.create_ns3_module('spectrum', ['propagation', 'antenna'])
     module.source = [
         'model/spectrum-model.cc',
         'model/spectrum-value.cc',

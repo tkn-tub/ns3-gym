@@ -15,3 +15,7 @@ def build(bld):
 
     obj = bld.create_ns3_program('droptail_vs_red', ['point-to-point', 'point-to-point-layout', 'internet', 'applications'])
     obj.source = 'droptail_vs_red.cc'
+
+    obj = bld.create_ns3_program('packet-socket-apps', ['core', 'network'])
+    obj.source = 'packet-socket-apps.cc'
+    

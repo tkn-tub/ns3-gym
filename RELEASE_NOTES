@@ -44,11 +44,14 @@ New user-visible features
   it can have a limited bandwidth and it uses an output queue.
 - SimpleNetDevice and SimpleChannel can be installed in a node through 
   an helper: SimpleNetDeviceHelper.
+- Implemented new PacketSocketServer and PacketSocketClient applications.
+  The primary use is in tests, to avoid the ones from the application module.
   
 Bugs fixed
 ----------
 
 - Bug 1762 - UE stuck in IDLE_CONNECTING because RRC CONN REQ is not transmitted
+- Bug 1811 - basic traffic generator for network module 
 - Bug 1831 - TcpSocket SlowStartThreshold is not a TraceSource
 - Bug 1854 - std::out_of_range Problem
 - Bug 1893 - issue in DoSchedUlTriggerReq with harq
@@ -64,7 +67,6 @@ Bugs fixed
 - Bug 1963 - AODV can tag the same packet twice (and raise an assert)
 - Bug 1967 - LL Multicast is not compressed in the right way in IPHC
 - Bug 1942 - refactoring of lte-sinr-chunk-processor -> lte-chunk-processor
-
 
 Known issues
 ------------

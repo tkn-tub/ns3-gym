@@ -53,6 +53,8 @@ def build(bld):
         'utils/red-queue.cc',
         'utils/simple-channel.cc',
         'utils/simple-net-device.cc',
+        'utils/packet-socket-client.cc',
+        'utils/packet-socket-server.cc',
         'utils/packet-data-calculators.cc',
         'utils/packet-probe.cc',
         'helper/application-container.cc',
@@ -76,6 +78,7 @@ def build(bld):
         'test/pcap-file-test-suite.cc',
         'test/red-queue-test-suite.cc',
         'test/sequence-number-test-suite.cc',
+        'test/packet-socket-apps-test-suite.cc',
         ]
 
     headers = bld(features='ns3header')
@@ -135,6 +138,8 @@ def build(bld):
         'utils/sgi-hashmap.h',
         'utils/simple-channel.h',
         'utils/simple-net-device.h',
+        'utils/packet-socket-client.h',
+        'utils/packet-socket-server.h',
         'utils/pcap-test.h',
         'utils/packet-data-calculators.h',
         'utils/packet-probe.h',
