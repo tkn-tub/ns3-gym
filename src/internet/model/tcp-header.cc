@@ -317,7 +317,9 @@ TcpHeader::Serialize (Buffer::Iterator start)  const
   i.WriteHtonU16 (0);
   i.WriteHtonU16 (m_urgentPointer);
 
-  // Serialize options if they exists
+  // Serialize options if they exist
+  // This implementation does not presently try to align options on word
+  // boundaries using NOP options
   uint32_t optionLen = 0;
   TcpOptionList::const_iterator op;
   for (op = m_options.begin (); op != m_options.end (); ++op)
@@ -327,17 +329,10 @@ TcpHeader::Serialize (Buffer::Iterator start)  const
       i.Next ((*op)->GetSerializedSize ());
     }
 
-  // padding to word alignment; add NOPs as needed until last byte which is END
+  // padding to word alignment; add ENDs and/or pad values (they are the same)
   while (optionLen % 4)
   {
-    if ((optionLen % 4) == 3)
-      {
-        i.WriteU8 (TcpOption::END);
-      }
-    else
-      {
-        i.WriteU8 (TcpOption::NOP);
-      }
+    i.WriteU8 (TcpOption::END);
     ++optionLen;
   }
 
