@@ -56,7 +56,8 @@ public:
     NOP = 1,      //!< NOP
     MSS = 2,      //!< MSS
     WINSCALE = 3, //!< WINSCALE
-    TS = 8        //!< TS
+    TS = 8,       //!< TS
+    UNKNOWN = 255 //!< not a standardized value; for unknown recv'd options
   };
 
   /**

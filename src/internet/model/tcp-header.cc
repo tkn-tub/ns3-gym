@@ -22,6 +22,7 @@
 #include <iostream>
 #include "tcp-header.h"
 #include "tcp-option.h"
+#include "tcp-option-rfc793.h"
 #include "ns3/buffer.h"
 #include "ns3/address-utils.h"
 #include "ns3/log.h"
@@ -367,30 +368,34 @@ TcpHeader::Deserialize (Buffer::Iterator start)
   // Deserialize options if they exist
   m_options.clear ();
   uint32_t optionLen = (m_length - 5) * 4;
+  NS_ASSERT_MSG (optionLen <= 40, "Illegal TCP option length");
   while (optionLen)
     {
       uint8_t kind = i.PeekU8 ();
-      Ptr<TcpOption> op = TcpOption::CreateOption (kind);
-
+      Ptr<TcpOption> op;
       uint32_t optionSize;
-      optionSize = op->Deserialize (i);
-
-      NS_ASSERT_MSG (optionSize, "Unable to Deserialize an Option of Kind " << int (kind) << ", sorry.");
-      optionLen -= optionSize;
-      i.Next (optionSize);
-
-      if (op->GetKind () != TcpOption::END)
+      if (TcpOption::IsKindKnown (kind))
         {
-          if (TcpOption::IsKindKnown (op->GetKind ()))
-            {
-              m_options.push_back (op);
-            }
-          else
-            {
-              NS_LOG_WARN ("Ignored option kind=" << op->GetKind ());
-            }
+          op = TcpOption::CreateOption (kind);
+        }
+      else 
+        {
+          op = TcpOption::CreateOption (TcpOption::UNKNOWN);
+          NS_LOG_WARN ("Option kind " << static_cast<int> (kind) << " unknown, skipping.");
+        }
+      optionSize = op->Deserialize (i);
+      NS_ASSERT_MSG (optionSize == op->GetSerializedSize (), "Option did not deserialize correctly");
+      if (optionLen >= optionSize)
+        {
+          optionLen -= optionSize;
+          i.Next (optionSize);
+          m_options.push_back (op);
         }
       else
+        {
+          NS_ASSERT_MSG (false, "Option exceeds TCP option space");
+        }
+      if (op->GetKind () == TcpOption::END)
         {
           while (optionLen)
             {
@@ -438,7 +443,7 @@ TcpHeader::AppendOption (Ptr<TcpOption> option)
     {
       if (!TcpOption::IsKindKnown (option->GetKind ()))
         {
-          NS_LOG_WARN ("The option kind " << option->GetKind () << " is unknown");
+          NS_LOG_WARN ("The option kind " << static_cast<int> (option->GetKind ()) << " is unknown");
           return false;
         }
 

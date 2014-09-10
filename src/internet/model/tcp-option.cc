@@ -71,7 +71,8 @@ TcpOption::CreateOption (uint8_t kind)
     { TcpOption::MSS,       TcpOptionMSS::GetTypeId () },
     { TcpOption::NOP,       TcpOptionNOP::GetTypeId () },
     { TcpOption::TS,        TcpOptionTS::GetTypeId () },
-    { TcpOption::WINSCALE,  TcpOptionWinScale::GetTypeId () }
+    { TcpOption::WINSCALE,  TcpOptionWinScale::GetTypeId () },
+    { TcpOption::UNKNOWN,  TcpOptionUnknown::GetTypeId () }
   };
 
   for (unsigned int i = 0; i < sizeof (toTid) / sizeof (kindToTid); ++i)
@@ -96,6 +97,7 @@ TcpOption::IsKindKnown (uint8_t kind)
     case MSS:
     case WINSCALE:
     case TS:
+    // Do not add UNKNOWN here
       return true;
     }
 
