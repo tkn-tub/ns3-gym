@@ -51,7 +51,7 @@ const uint32_t PCAP_LINK_TYPE = 1187373554; // Some large random number -- we us
 const uint32_t PCAP_SNAPLEN   = 64;         // Don't bother to save much data
 
 // ===========================================================================
-// Tests of TCP implementation loss behavior
+// Tests of TCP implementation state machine behavior
 // ===========================================================================
 //
 
@@ -279,9 +279,8 @@ Ns3TcpStateTestCase::DoRun (void)
   if (m_writeLogging)
     {
       LogComponentEnableAll (LOG_PREFIX_FUNC);
-      LogComponentEnable ("TcpTestCases", LOG_LEVEL_ALL);
       LogComponentEnable ("ErrorModel", LOG_LEVEL_DEBUG);
-      LogComponentEnable ("TcpTestCases", LOG_LEVEL_ALL);
+      LogComponentEnable ("Ns3TcpStateTest", LOG_LEVEL_DEBUG);
       LogComponentEnable ("TcpNewReno", LOG_LEVEL_INFO);
       LogComponentEnable ("TcpReno", LOG_LEVEL_INFO);
       LogComponentEnable ("TcpTahoe", LOG_LEVEL_INFO);
