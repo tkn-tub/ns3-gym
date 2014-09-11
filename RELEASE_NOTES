@@ -70,6 +70,7 @@ Bugs fixed
 - Bug 1961 - planetlab-tap-creator "variable set but not used"
 - Bug 1963 - AODV can tag the same packet twice (and raise an assert)
 - Bug 1967 - LL Multicast is not compressed in the right way in IPHC
+- Bug 1981 - PyViz shell not compatible with ipython >= 0.11
 
 Known issues
 ------------
