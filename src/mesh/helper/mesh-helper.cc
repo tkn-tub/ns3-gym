@@ -20,7 +20,10 @@
  */
 #include "mesh-helper.h"
 #include "ns3/simulator.h"
+#include "ns3/pointer.h"
 #include "ns3/mesh-point-device.h"
+#include "ns3/dca-txop.h"
+#include "ns3/edca-txop-n.h"
 #include "ns3/wifi-net-device.h"
 #include "ns3/minstrel-wifi-manager.h"
 #include "ns3/mesh-wifi-interface-mac.h"
@@ -243,6 +246,30 @@ MeshHelper::AssignStreams (NetDeviceContainer c, int64_t stream)
                 {
                   currentStream += mac->AssignStreams (currentStream);
                 }
+              Ptr<RegularWifiMac> rmac = DynamicCast<RegularWifiMac> (mac);
+              if (rmac)
+                {
+                  PointerValue ptr;
+                  rmac->GetAttribute ("DcaTxop", ptr);
+                  Ptr<DcaTxop> dcaTxop = ptr.Get<DcaTxop> ();
+                  currentStream += dcaTxop->AssignStreams (currentStream);
+
+                  rmac->GetAttribute ("VO_EdcaTxopN", ptr);
+                  Ptr<EdcaTxopN> vo_edcaTxopN = ptr.Get<EdcaTxopN> ();
+                  currentStream += vo_edcaTxopN->AssignStreams (currentStream);
+
+                  rmac->GetAttribute ("VI_EdcaTxopN", ptr);
+                  Ptr<EdcaTxopN> vi_edcaTxopN = ptr.Get<EdcaTxopN> ();
+                  currentStream += vi_edcaTxopN->AssignStreams (currentStream);
+
+                  rmac->GetAttribute ("BE_EdcaTxopN", ptr);
+                  Ptr<EdcaTxopN> be_edcaTxopN = ptr.Get<EdcaTxopN> ();
+                  currentStream += be_edcaTxopN->AssignStreams (currentStream);
+
+                  rmac->GetAttribute ("BK_EdcaTxopN", ptr);
+                  Ptr<EdcaTxopN> bk_edcaTxopN = ptr.Get<EdcaTxopN> ();
+                  currentStream += bk_edcaTxopN->AssignStreams (currentStream);
+               }
             }
         }
     }
