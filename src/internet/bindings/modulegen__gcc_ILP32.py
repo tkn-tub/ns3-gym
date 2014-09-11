@@ -443,7 +443,9 @@ def register_types(module):
     ## tcp-option.h (module 'internet'): ns3::TcpOption [class]
     module.add_class('TcpOption', parent=root_module['ns3::Object'])
     ## tcp-option.h (module 'internet'): ns3::TcpOption::Kind [enumeration]
-    module.add_enum('Kind', ['END', 'NOP', 'MSS', 'WINSCALE', 'SACK_PERM', 'SACK', 'TS'], outer_class=root_module['ns3::TcpOption'])
+    module.add_enum('Kind', ['END', 'NOP', 'MSS', 'WINSCALE', 'TS', 'UNKNOWN'], outer_class=root_module['ns3::TcpOption'])
+    ## tcp-option.h (module 'internet'): ns3::TcpOptionUnknown [class]
+    module.add_class('TcpOptionUnknown', parent=root_module['ns3::TcpOption'])
     ## tcp-rx-buffer.h (module 'internet'): ns3::TcpRxBuffer [class]
     module.add_class('TcpRxBuffer', parent=root_module['ns3::Object'])
     ## tcp-socket.h (module 'internet'): ns3::TcpSocket [class]
@@ -969,6 +971,7 @@ def register_methods(root_module):
     register_Ns3SocketSetDontFragmentTag_methods(root_module, root_module['ns3::SocketSetDontFragmentTag'])
     register_Ns3TcpHeader_methods(root_module, root_module['ns3::TcpHeader'])
     register_Ns3TcpOption_methods(root_module, root_module['ns3::TcpOption'])
+    register_Ns3TcpOptionUnknown_methods(root_module, root_module['ns3::TcpOptionUnknown'])
     register_Ns3TcpRxBuffer_methods(root_module, root_module['ns3::TcpRxBuffer'])
     register_Ns3TcpSocket_methods(root_module, root_module['ns3::TcpSocket'])
     register_Ns3TcpSocketBase_methods(root_module, root_module['ns3::TcpSocketBase'])
@@ -9052,6 +9055,48 @@ def register_Ns3TcpOption_methods(root_module, cls):
                    'void', 
                    [param('ns3::Buffer::Iterator', 'start')], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
+    return
+
+def register_Ns3TcpOptionUnknown_methods(root_module, cls):
+    ## tcp-option.h (module 'internet'): ns3::TcpOptionUnknown::TcpOptionUnknown(ns3::TcpOptionUnknown const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::TcpOptionUnknown const &', 'arg0')])
+    ## tcp-option.h (module 'internet'): ns3::TcpOptionUnknown::TcpOptionUnknown() [constructor]
+    cls.add_constructor([])
+    ## tcp-option.h (module 'internet'): uint32_t ns3::TcpOptionUnknown::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## tcp-option.h (module 'internet'): ns3::TypeId ns3::TcpOptionUnknown::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## tcp-option.h (module 'internet'): uint8_t ns3::TcpOptionUnknown::GetKind() const [member function]
+    cls.add_method('GetKind', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## tcp-option.h (module 'internet'): uint32_t ns3::TcpOptionUnknown::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## tcp-option.h (module 'internet'): static ns3::TypeId ns3::TcpOptionUnknown::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## tcp-option.h (module 'internet'): void ns3::TcpOptionUnknown::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## tcp-option.h (module 'internet'): void ns3::TcpOptionUnknown::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
     return
 
 def register_Ns3TcpRxBuffer_methods(root_module, cls):
