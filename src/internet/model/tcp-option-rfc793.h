@@ -111,39 +111,6 @@ protected:
   uint16_t m_mss; //!< maximum segment size
 };
 
-/**
- * \brief An unknown TCP option.
- *
- * An unknown option can be deserialized and (only if deserialized previously)
- * serialized again.
- */
-class TcpOptionUnknown : public TcpOption
-{
-public:
-  TcpOptionUnknown ();
-  virtual ~TcpOptionUnknown ();
-
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
-
-  virtual void Print (std::ostream &os) const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start);
-
-  virtual uint8_t GetKind (void) const;
-  virtual uint32_t GetSerializedSize (void) const;
-
-private:
-  uint8_t m_kind; //!< The unknown option kind
-  uint32_t m_size; //!< The unknown option size
-  uint8_t m_content[40]; //!< The option data
-
-};
-
 } // namespace ns3
 
 #endif // TCPOPTIONRFC793_H

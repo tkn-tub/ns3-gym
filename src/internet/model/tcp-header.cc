@@ -22,7 +22,6 @@
 #include <iostream>
 #include "tcp-header.h"
 #include "tcp-option.h"
-#include "tcp-option-rfc793.h"
 #include "ns3/buffer.h"
 #include "ns3/address-utils.h"
 #include "ns3/log.h"
