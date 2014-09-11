@@ -15,6 +15,12 @@
  *
  */
 
+// OLSR was observed to not converge in simple 3-nodes varying topology.
+// https://www.nsnam.org/bugzilla/show_bug.cgi?id=780
+// tcpdump -r bug780-0-0.pcap -nn -tt icmp | wc  
+// should show about 395 packets; there is a ping outage from time
+// 123-127 due to the mobility.
+
 #include <fstream>
 #include <iostream>
 
