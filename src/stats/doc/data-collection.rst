@@ -32,6 +32,5 @@ low-level coding examples.
    collector.rst
    aggregator.rst
    adaptor.rst
-   statistics.rst
    scope-and-limitations.rst
 
