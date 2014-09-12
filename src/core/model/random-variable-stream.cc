@@ -184,7 +184,7 @@ UniformRandomVariable::GetInteger (uint32_t min, uint32_t max)
 {
   NS_LOG_FUNCTION (this << min << max);
   NS_ASSERT (min <= max);
-  return static_cast<uint32_t> ( GetValue (min, max + 1) );
+  return static_cast<uint32_t> ( GetValue ((double) (min), (double) (max) + 1.0) );
 }
 
 double 
