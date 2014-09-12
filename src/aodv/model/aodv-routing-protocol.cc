@@ -613,8 +613,8 @@ RoutingProtocol::NotifyInterfaceUp (uint32_t i)
                                              UdpSocketFactory::GetTypeId ());
   NS_ASSERT (socket != 0);
   socket->SetRecvCallback (MakeCallback (&RoutingProtocol::RecvAodv, this));
-  socket->BindToNetDevice (l3->GetNetDevice (i));
   socket->Bind (InetSocketAddress (Ipv4Address::GetAny (), AODV_PORT));
+  socket->BindToNetDevice (l3->GetNetDevice (i));
   socket->SetAllowBroadcast (true);
   socket->SetAttribute ("IpTtl", UintegerValue (1));
   m_socketAddresses.insert (std::make_pair (socket, iface));
@@ -693,9 +693,9 @@ RoutingProtocol::NotifyAddAddress (uint32_t i, Ipv4InterfaceAddress address)
                                                      UdpSocketFactory::GetTypeId ());
           NS_ASSERT (socket != 0);
           socket->SetRecvCallback (MakeCallback (&RoutingProtocol::RecvAodv,this));
-          socket->BindToNetDevice (l3->GetNetDevice (i));
           // Bind to any IP address so that broadcasts can be received
-          socket->Bind (InetSocketAddress (Ipv4Address::GetAny (), AODV_PORT));
+          socket->Bind (InetSocketAddress (iface.GetLocal (), AODV_PORT));
+          socket->BindToNetDevice (l3->GetNetDevice (i));
           socket->SetAllowBroadcast (true);
           m_socketAddresses.insert (std::make_pair (socket, iface));
 
