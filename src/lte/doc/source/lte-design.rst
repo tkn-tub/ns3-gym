@@ -3726,7 +3726,7 @@ where:
 
    where: :math:`\delta_{PUSCH,c}` is a correction value, also referred to as a TPC command and is included 
    in PDCCH with DCI; :math:`\delta_{PUSCH,c}(i - K_{PUSCH})` was signalled on PDCCH/EPDCCH with DCI for
-   serving cell :math:`c` on subframe :math:`i − K_{PUSCH}`; :math:`K_{PUSCH} = 4` for FDD.
+   serving cell :math:`c` on subframe :math:`(i - K_{PUSCH})`; :math:`K_{PUSCH} = 4` for FDD.
 
    If UE has reached :math:`P_{CMAX,c}(i)` for serving cell :math:`c`, positive TPC commands for serving cell
    :math:`c` are not be accumulated. If UE has reached minimum power, negative TPC commands are not be accumulated.
@@ -3740,7 +3740,7 @@ where:
 
    where: :math:`\delta_{PUSCH,c}` is a correction value, also referred to as a TPC command and is included 
    in PDCCH with DCI; :math:`\delta_{PUSCH,c}(i - K_{PUSCH})` was signalled on PDCCH/EPDCCH with DCI for
-   serving cell :math:`c` on subframe :math:`i − K_{PUSCH}`; :math:`K_{PUSCH} = 4` for FDD.
+   serving cell :math:`c` on subframe :math:`(i - K_{PUSCH})`; :math:`K_{PUSCH} = 4` for FDD.
 
    Mapping of TPC Command Field in DCI format 0/3/4 to absolute and accumulated :math:`\delta_{PUSCH,c}`
    values is defined in TS36.231 section 5.1.1.1 Table 5.1.1.1-2
