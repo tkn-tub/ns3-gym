@@ -18,6 +18,8 @@
 #ifdef NS3_OPENFLOW
 
 #include "openflow-switch-net-device.h"
+#include "ns3/udp-l4-protocol.h"
+#include "ns3/tcp-l4-protocol.h"
 
 NS_LOG_COMPONENT_DEFINE ("OpenFlowSwitchNetDevice");
 
@@ -517,36 +519,40 @@ OpenFlowSwitchNetDevice::BufferFromPacket (Ptr<Packet> packet, Address src, Addr
         }
     }
 
-  TcpHeader tcp_hd;
-  if (packet->PeekHeader (tcp_hd))
+  if (protocol == Ipv4L3Protocol::PROT_NUMBER)
     {
-      buffer->l4 = new tcp_header;
-      tcp_header* tcp_h = (tcp_header*)buffer->l4;
-      tcp_h->tcp_src = htons (tcp_hd.GetSourcePort ());         // Source Port
-      tcp_h->tcp_dst = htons (tcp_hd.GetDestinationPort ());    // Destination Port
-      tcp_h->tcp_seq = tcp_hd.GetSequenceNumber ().GetValue (); // Sequence Number
-      tcp_h->tcp_ack = tcp_hd.GetAckNumber ().GetValue ();      // ACK Number
-      tcp_h->tcp_ctl = TCP_FLAGS (tcp_hd.GetFlags ());  // Data Offset + Reserved + Flags
-      tcp_h->tcp_winsz = tcp_hd.GetWindowSize ();       // Window Size
-      tcp_h->tcp_urg = tcp_hd.GetUrgentPointer ();      // Urgent Pointer
-      tcp_h->tcp_csum = csum (&tcp_h, sizeof tcp_h);    // Header Checksum
-      NS_LOG_INFO ("Parsed TcpHeader");
-
-      l4_length = TCP_HEADER_LEN;
-    }
-  else
-    {
-      UdpHeader udp_hd;
-      if (packet->PeekHeader (udp_hd))
+      ip_header* ip_h = (ip_header*)buffer->l3;
+      if (ip_h->ip_proto == TcpL4Protocol::PROT_NUMBER)
         {
-          buffer->l4 = new udp_header;
-          udp_header* udp_h = (udp_header*)buffer->l4;
-          udp_h->udp_src = htons (udp_hd.GetSourcePort ());     // Source Port
-          udp_h->udp_dst = htons (udp_hd.GetDestinationPort ()); // Destination Port
-          udp_h->udp_len = htons (UDP_HEADER_LEN + packet->GetSize ());
-
-          if (protocol == Ipv4L3Protocol::PROT_NUMBER)
+          TcpHeader tcp_hd;
+          if (packet->PeekHeader (tcp_hd))
             {
+              buffer->l4 = new tcp_header;
+              tcp_header* tcp_h = (tcp_header*)buffer->l4;
+              tcp_h->tcp_src = htons (tcp_hd.GetSourcePort ());         // Source Port
+              tcp_h->tcp_dst = htons (tcp_hd.GetDestinationPort ());    // Destination Port
+              tcp_h->tcp_seq = tcp_hd.GetSequenceNumber ().GetValue (); // Sequence Number
+              tcp_h->tcp_ack = tcp_hd.GetAckNumber ().GetValue ();      // ACK Number
+              tcp_h->tcp_ctl = TCP_FLAGS (tcp_hd.GetFlags ());  // Data Offset + Reserved + Flags
+              tcp_h->tcp_winsz = tcp_hd.GetWindowSize ();       // Window Size
+              tcp_h->tcp_urg = tcp_hd.GetUrgentPointer ();      // Urgent Pointer
+              tcp_h->tcp_csum = csum (&tcp_h, sizeof tcp_h);    // Header Checksum
+              NS_LOG_INFO ("Parsed TcpHeader");
+
+              l4_length = TCP_HEADER_LEN;
+            }
+        }
+      else if (ip_h->ip_proto == UdpL4Protocol::PROT_NUMBER)
+        {
+          UdpHeader udp_hd;
+          if (packet->PeekHeader (udp_hd))
+            {
+              buffer->l4 = new udp_header;
+              udp_header* udp_h = (udp_header*)buffer->l4;
+              udp_h->udp_src = htons (udp_hd.GetSourcePort ());     // Source Port
+              udp_h->udp_dst = htons (udp_hd.GetDestinationPort ()); // Destination Port
+              udp_h->udp_len = htons (UDP_HEADER_LEN + packet->GetSize ());
+
               ip_header* ip_h = (ip_header*)buffer->l3;
               uint32_t udp_csum = csum_add32 (0, ip_h->ip_src);
               udp_csum = csum_add32 (udp_csum, ip_h->ip_dst);
@@ -554,14 +560,10 @@ OpenFlowSwitchNetDevice::BufferFromPacket (Ptr<Packet> packet, Address src, Addr
               udp_csum = csum_add16 (udp_csum, udp_h->udp_len);
               udp_csum = csum_continue (udp_csum, udp_h, sizeof udp_h);
               udp_h->udp_csum = csum_finish (csum_continue (udp_csum, buffer->data, buffer->size)); // Header Checksum
-            }
-          else
-            {
-              udp_h->udp_csum = htons (0);
-            }
-          NS_LOG_INFO ("Parsed UdpHeader");
+              NS_LOG_INFO ("Parsed UdpHeader");
 
-          l4_length = UDP_HEADER_LEN;
+              l4_length = UDP_HEADER_LEN;
+            }
         }
     }
 
