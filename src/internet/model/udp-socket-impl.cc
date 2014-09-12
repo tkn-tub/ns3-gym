@@ -247,6 +247,8 @@ UdpSocketImpl::Bind (const Address &address)
 
   if (InetSocketAddress::IsMatchingType (address))
     {
+      NS_ASSERT_MSG (m_endPoint == 0, "Endpoint already allocated (maybe you used BindToNetDevice before Bind).");
+
       InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
       Ipv4Address ipv4 = transport.GetIpv4 ();
       uint16_t port = transport.GetPort ();
@@ -274,6 +276,8 @@ UdpSocketImpl::Bind (const Address &address)
     }
   else if (Inet6SocketAddress::IsMatchingType (address))
     {
+      NS_ASSERT_MSG (m_endPoint == 0, "Endpoint already allocated (maybe you used BindToNetDevice before Bind).");
+
       Inet6SocketAddress transport = Inet6SocketAddress::ConvertFrom (address);
       Ipv6Address ipv6 = transport.GetIpv6 ();
       uint16_t port = transport.GetPort ();
@@ -917,6 +921,7 @@ void
 UdpSocketImpl::BindToNetDevice (Ptr<NetDevice> netdevice)
 {
   NS_LOG_FUNCTION (netdevice);
+
   Socket::BindToNetDevice (netdevice); // Includes sanity check
   if (m_endPoint == 0)
     {
@@ -928,6 +933,17 @@ UdpSocketImpl::BindToNetDevice (Ptr<NetDevice> netdevice)
       NS_ASSERT (m_endPoint != 0);
     }
   m_endPoint->BindToNetDevice (netdevice);
+
+  if (m_endPoint6 == 0)
+    {
+      if (Bind6 () == -1)
+        {
+          NS_ASSERT (m_endPoint6 == 0);
+          return;
+        }
+      NS_ASSERT (m_endPoint6 != 0);
+    }
+  m_endPoint6->BindToNetDevice (netdevice);
   return;
 }
 

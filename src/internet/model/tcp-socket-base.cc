@@ -686,21 +686,28 @@ TcpSocketBase::BindToNetDevice (Ptr<NetDevice> netdevice)
 {
   NS_LOG_FUNCTION (netdevice);
   Socket::BindToNetDevice (netdevice); // Includes sanity check
-  if (m_endPoint == 0 && m_endPoint6 == 0)
+  if (m_endPoint == 0)
     {
       if (Bind () == -1)
         {
-          NS_ASSERT ((m_endPoint == 0 && m_endPoint6 == 0));
+          NS_ASSERT (m_endPoint == 0);
           return;
         }
-      NS_ASSERT ((m_endPoint != 0 && m_endPoint6 != 0));
+      NS_ASSERT (m_endPoint != 0);
     }
+  m_endPoint->BindToNetDevice (netdevice);
 
-  if (m_endPoint != 0)
+  if (m_endPoint6 == 0)
     {
-      m_endPoint->BindToNetDevice (netdevice);
+      if (Bind6 () == -1)
+        {
+          NS_ASSERT (m_endPoint6 == 0);
+          return;
+        }
+      NS_ASSERT (m_endPoint6 != 0);
     }
-  // No BindToNetDevice() for Ipv6EndPoint
+  m_endPoint6->BindToNetDevice (netdevice);
+
   return;
 }
 

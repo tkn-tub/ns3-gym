@@ -52,6 +52,7 @@ Bugs fixed
 
 - Bug 1762 - UE stuck in IDLE_CONNECTING because RRC CONN REQ is not transmitted
 - Bug 1811 - basic traffic generator for network module 
+- Bug 1824 - L4 protocol sockets should support BindToNetDevice over IPv6
 - Bug 1831 - TcpSocket SlowStartThreshold is not a TraceSource
 - Bug 1851 - WifiRadioEnergyModel energy consumption values are taken from a 802.15.4 chip
 - Bug 1854 - std::out_of_range Problem

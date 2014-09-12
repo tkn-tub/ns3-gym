@@ -114,6 +114,9 @@ us a note on ns-developers mailing list.</p>
        Data or Control channel and RbId can be configured by new attributes in RadioEnvironmentMapHelper </li>
   <li> lte-sinr-chunk-processor refactored to lte-chunk-processor. Removed all lte-xxx-chunk-processor 
        implementations</li>
+  <li> BindToNetDevice affects also sockets using IPv6.</li>
+  <li> BindToNetDevice now calls implicitly Bind (). To bind a socket to a NetDevice and to a specific address,
+       the correct sequence is Bind (address) - BindToNetDevice (device). The opposite will raise an error.</li>
 </ul>
 
 <h2>Changes to build system:</h2>
