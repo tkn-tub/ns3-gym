@@ -301,7 +301,7 @@ TcpHeader::Print (std::ostream &os)  const
 uint32_t
 TcpHeader::GetSerializedSize (void)  const
 {
-  return 4*GetLength ();
+  return CalculateHeaderLength () * 4;
 }
 
 void
@@ -367,7 +367,11 @@ TcpHeader::Deserialize (Buffer::Iterator start)
   // Deserialize options if they exist
   m_options.clear ();
   uint32_t optionLen = (m_length - 5) * 4;
-  NS_ASSERT_MSG (optionLen <= 40, "Illegal TCP option length");
+  if (optionLen > 40)
+    {
+      NS_LOG_ERROR ("Illegal TCP option length " << optionLen << "; options discarded");
+      return 20;
+    }
   while (optionLen)
     {
       uint8_t kind = i.PeekU8 ();
@@ -383,7 +387,11 @@ TcpHeader::Deserialize (Buffer::Iterator start)
           NS_LOG_WARN ("Option kind " << static_cast<int> (kind) << " unknown, skipping.");
         }
       optionSize = op->Deserialize (i);
-      NS_ASSERT_MSG (optionSize == op->GetSerializedSize (), "Option did not deserialize correctly");
+      if (optionSize != op->GetSerializedSize ())
+        {
+          NS_LOG_ERROR ("Option did not deserialize correctly");
+          break;
+        }
       if (optionLen >= optionSize)
         {
           optionLen -= optionSize;
@@ -392,12 +400,14 @@ TcpHeader::Deserialize (Buffer::Iterator start)
         }
       else
         {
-          NS_ASSERT_MSG (false, "Option exceeds TCP option space");
+          NS_LOG_ERROR ("Option exceeds TCP option space; option discarded");
+          break;
         }
       if (op->GetKind () == TcpOption::END)
         {
           while (optionLen)
             {
+              // Discard padding bytes without adding to option list
               i.Next (1);
               --optionLen;
             }
@@ -406,7 +416,7 @@ TcpHeader::Deserialize (Buffer::Iterator start)
 
   if (m_length != CalculateHeaderLength ())
     {
-      NS_LOG_WARN ("Mismatch between calculated length and in-header value");
+      NS_LOG_ERROR ("Mismatch between calculated length and in-header value");
     }
 
   // Do checksum
@@ -431,7 +441,11 @@ TcpHeader::CalculateHeaderLength () const
     {
       len += (*i)->GetSerializedSize ();
     }
-
+  // Option list may not include padding; need to pad up to word boundary
+  if (len % 4)
+    {
+      len += 4 - (len % 4);
+    }
   return len >> 2;
 }
 

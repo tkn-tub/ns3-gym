@@ -903,7 +903,12 @@ TcpSocketBase::DoForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port
 
   // Peel off TCP header and do validity checking
   TcpHeader tcpHeader;
-  packet->RemoveHeader (tcpHeader);
+  uint32_t bytesRemoved = packet->RemoveHeader (tcpHeader);
+  if (bytesRemoved == 0 || bytesRemoved > 60)
+    {
+      NS_LOG_ERROR ("Bytes removed: " << bytesRemoved << " invalid");
+      return; // Discard invalid packet
+    }
 
   ReadOptions (tcpHeader);
 
@@ -988,6 +993,7 @@ TcpSocketBase::DoForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port
     }
 }
 
+// XXX this is duplicate code with the other DoForwardUp()
 void
 TcpSocketBase::DoForwardUp (Ptr<Packet> packet, Ipv6Header header, uint16_t port)
 {
@@ -1001,7 +1007,12 @@ TcpSocketBase::DoForwardUp (Ptr<Packet> packet, Ipv6Header header, uint16_t port
 
   // Peel off TCP header and do validity checking
   TcpHeader tcpHeader;
-  packet->RemoveHeader (tcpHeader);
+  uint32_t bytesRemoved = packet->RemoveHeader (tcpHeader);
+  if (bytesRemoved == 0 || bytesRemoved > 60)
+    {
+      NS_LOG_ERROR ("Bytes removed: " << bytesRemoved << " invalid");
+      return; // Discard invalid packet
+    }
 
   ReadOptions (tcpHeader);
 

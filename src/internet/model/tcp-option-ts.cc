@@ -88,7 +88,11 @@ TcpOptionTS::Deserialize (Buffer::Iterator start)
     }
 
   uint8_t size = i.ReadU8 ();
-  NS_ASSERT (size == 10);
+  if (size != 10)
+    {
+      NS_LOG_WARN ("Malformed Timestamp option");
+      return 0;
+    }
   m_timestamp = i.ReadNtohU32 ();
   m_echo = i.ReadNtohU32 ();
   return GetSerializedSize ();

@@ -275,7 +275,7 @@ private:
    * Given the standard size of the header, the method checks for options
    * and calculates the real length (in words).
    *
-   * \return header length
+   * \return header length in 4-byte words
    */
   uint8_t CalculateHeaderLength () const;
 

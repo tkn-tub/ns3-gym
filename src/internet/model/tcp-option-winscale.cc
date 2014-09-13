@@ -86,7 +86,11 @@ TcpOptionWinScale::Deserialize (Buffer::Iterator start)
       return 0;
     }
   uint8_t size = i.ReadU8 ();
-  NS_ASSERT (size == 3);
+  if (size != 3)
+    {
+      NS_LOG_WARN ("Malformed Window Scale option");
+      return 0;
+    }
   m_scale = i.ReadU8 ();
   return GetSerializedSize ();
 }

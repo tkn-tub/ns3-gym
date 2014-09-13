@@ -171,7 +171,11 @@ TcpOptionUnknown::Deserialize (Buffer::Iterator start)
   NS_LOG_WARN ("Trying to Deserialize an Unknown Option of Kind " << int (m_kind));
 
   m_size = i.ReadU8 ();
-  NS_ASSERT_MSG ((m_size >= 2) && (m_size < 40), "Unable to parse an Unknown Option of Kind " << int (m_kind) << " with apparent size " << int (m_size));
+  if (m_size < 2 || m_size > 40)
+    {
+      NS_LOG_WARN ("Unable to parse an unknown option of kind " << int (m_kind) << " with apparent size " << int (m_size));
+      return 0;
+    }
 
   i.Read (m_content, m_size-2);
 
