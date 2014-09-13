@@ -403,52 +403,62 @@ Resolver::DoResolve (std::string path, Ptr<Object> root)
   else 
     {
       // this is a normal attribute.
-      TypeId tid = root->GetInstanceTypeId ();
+      TypeId tid;
+      TypeId nextTid = root->GetInstanceTypeId ();
       bool foundMatch = false;
-      for (uint32_t i = 0; i < tid.GetAttributeN(); i++)
+      
+      do
         {
-          struct TypeId::AttributeInformation info;
-          info = tid.GetAttribute(i);
-          if (info.name != item && item != "*")
+          tid = nextTid;
+          
+          for (uint32_t i = 0; i < tid.GetAttributeN(); i++)
             {
-              continue;
-            }
-          // attempt to cast to a pointer checker.
-          const PointerChecker *ptr = dynamic_cast<const PointerChecker *> (PeekPointer (info.checker));
-          if (ptr != 0)
-            {
-              NS_LOG_DEBUG ("GetAttribute(ptr)="<<info.name<<" on path="<<GetResolvedPath ());
-              PointerValue ptr;
-              root->GetAttribute (info.name, ptr);
-              Ptr<Object> object = ptr.Get<Object> ();
-              if (object == 0)
+              struct TypeId::AttributeInformation info;
+              info = tid.GetAttribute(i);
+              if (info.name != item && item != "*")
                 {
-                  NS_LOG_ERROR ("Requested object name=\""<<item<<
-                                "\" exists on path=\""<<GetResolvedPath ()<<"\""
-                                " but is null.");
                   continue;
                 }
-              foundMatch = true;
-              m_workStack.push_back (info.name);
-              DoResolve (pathLeft, object);
-              m_workStack.pop_back ();
+              // attempt to cast to a pointer checker.
+              const PointerChecker *ptr = dynamic_cast<const PointerChecker *> (PeekPointer (info.checker));
+              if (ptr != 0)
+                {
+                  NS_LOG_DEBUG ("GetAttribute(ptr)="<<info.name<<" on path="<<GetResolvedPath ());
+                  PointerValue ptr;
+                  root->GetAttribute (info.name, ptr);
+                  Ptr<Object> object = ptr.Get<Object> ();
+                  if (object == 0)
+                    {
+                      NS_LOG_ERROR ("Requested object name=\""<<item<<
+                                    "\" exists on path=\""<<GetResolvedPath ()<<"\""
+                                    " but is null.");
+                      continue;
+                    }
+                  foundMatch = true;
+                  m_workStack.push_back (info.name);
+                  DoResolve (pathLeft, object);
+                  m_workStack.pop_back ();
+                }
+              // attempt to cast to an object vector.
+              const ObjectPtrContainerChecker *vectorChecker = 
+                dynamic_cast<const ObjectPtrContainerChecker *> (PeekPointer (info.checker));
+              if (vectorChecker != 0)
+                {
+                  NS_LOG_DEBUG ("GetAttribute(vector)="<<info.name<<" on path="<<GetResolvedPath () << pathLeft);
+                  foundMatch = true;
+                  ObjectPtrContainerValue vector;
+                  root->GetAttribute (info.name, vector);
+                  m_workStack.push_back (info.name);
+                  DoArrayResolve (pathLeft, vector);
+                  m_workStack.pop_back ();
+                }
+              // this could be anything else and we don't know what to do with it.
+              // So, we just ignore it.
             }
-          // attempt to cast to an object vector.
-          const ObjectPtrContainerChecker *vectorChecker = 
-            dynamic_cast<const ObjectPtrContainerChecker *> (PeekPointer (info.checker));
-          if (vectorChecker != 0)
-            {
-              NS_LOG_DEBUG ("GetAttribute(vector)="<<info.name<<" on path="<<GetResolvedPath () << pathLeft);
-              foundMatch = true;
-              ObjectPtrContainerValue vector;
-              root->GetAttribute (info.name, vector);
-              m_workStack.push_back (info.name);
-              DoArrayResolve (pathLeft, vector);
-              m_workStack.pop_back ();
-            }
-          // this could be anything else and we don't know what to do with it.
-          // So, we just ignore it.
-        }
+
+          nextTid = tid.GetParent ();
+        } while (nextTid != tid);
+      
       if (!foundMatch)
         {
           NS_LOG_DEBUG ("Requested item="<<item<<" does not exist on path="<<GetResolvedPath ());
