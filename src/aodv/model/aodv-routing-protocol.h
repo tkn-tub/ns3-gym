@@ -140,8 +140,10 @@ private:
 
   /// IP protocol
   Ptr<Ipv4> m_ipv4;
-  /// Raw socket per each IP interface, map socket -> iface address (IP + mask)
+  /// Raw unicast socket per each IP interface, map socket -> iface address (IP + mask)
   std::map< Ptr<Socket>, Ipv4InterfaceAddress > m_socketAddresses;
+  /// Raw subnet directed broadcast socket per each IP interface, map socket -> iface address (IP + mask)
+  std::map< Ptr<Socket>, Ipv4InterfaceAddress > m_socketSubnetBroadcastAddresses;
   /// Loopback device used to defer RREQ until packet will be fully formed
   Ptr<NetDevice> m_lo; 
 
@@ -191,8 +193,10 @@ private:
   void UpdateRouteToNeighbor (Ipv4Address sender, Ipv4Address receiver);
   /// Check that packet is send from own interface
   bool IsMyOwnAddress (Ipv4Address src);
-  /// Find socket with local interface address iface
+  /// Find unicast socket with local interface address iface
   Ptr<Socket> FindSocketWithInterfaceAddress (Ipv4InterfaceAddress iface) const;
+  /// Find subnet directed broadcast socket with local interface address iface
+  Ptr<Socket> FindSubnetBroadcastSocketWithInterfaceAddress (Ipv4InterfaceAddress iface) const;
   /// Process hello message
   void ProcessHello (RrepHeader const & rrepHeader, Ipv4Address receiverIfaceAddr);
   /// Create loopback route for given header
