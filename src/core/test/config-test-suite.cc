@@ -138,6 +138,67 @@ ConfigTestObject::GetB (void) const
   return m_b;
 }
 
+// Other test objects
+//
+
+class DerivedConfigTestObject : public ConfigTestObject
+{
+public:
+  static TypeId GetTypeId (void);
+  DerivedConfigTestObject (void) {}
+  virtual ~DerivedConfigTestObject (void) {}
+};
+
+TypeId
+DerivedConfigTestObject::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("DerivedConfigTestObject")
+    .SetParent<ConfigTestObject> ()
+    ;
+  return tid;
+}
+
+class BaseConfigObject : public Object
+{
+public:
+  static TypeId GetTypeId (void);
+  BaseConfigObject (void) {}
+  virtual ~BaseConfigObject (void) {}
+private:
+  int8_t m_x;
+};
+
+TypeId
+BaseConfigObject::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("BaseConfigObject")
+    .SetParent<Object> ()
+    .AddAttribute ("X", "",
+                   IntegerValue (10),
+                   MakeIntegerAccessor (&BaseConfigObject::m_x),
+                   MakeIntegerChecker<int8_t> ())
+    ;
+  return tid;
+}
+
+class DerivedConfigObject : public BaseConfigObject
+{
+public:
+  static TypeId GetTypeId (void);
+  DerivedConfigObject (void) {}
+  virtual ~DerivedConfigObject (void) {}
+};
+
+TypeId
+DerivedConfigObject::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("DerivedConfigObject")
+    .SetParent<BaseConfigObject> ()
+    ;
+  return tid;
+}
+
+
 // ===========================================================================
 // Test for the ability to register and use a root namespace
 // ===========================================================================
@@ -607,6 +668,58 @@ ObjectVectorTraceConfigTestCase::DoRun (void)
 }
 
 // ===========================================================================
+// Test for the ability to search attributes of parent classes
+// when Resolver searches for attributes in a derived class object.
+// This test passes with the patch found in
+// https://www.nsnam.org/bugzilla/show_bug.cgi?id=1673
+// (also reported in https://www.nsnam.org/bugzilla/show_bug.cgi?id=1959)
+// ===========================================================================
+class SearchAttributesOfParentObjectsTestCase : public TestCase
+{
+public:
+  SearchAttributesOfParentObjectsTestCase ();
+  virtual ~SearchAttributesOfParentObjectsTestCase () {}
+
+private:
+  virtual void DoRun (void);
+
+};
+
+SearchAttributesOfParentObjectsTestCase::SearchAttributesOfParentObjectsTestCase ()
+  : TestCase ("Check that attributes of base class are searchable from paths including objects of derived class")
+{
+}
+
+void
+SearchAttributesOfParentObjectsTestCase::DoRun (void)
+{
+  IntegerValue iv;
+  //
+  // Create a root namespace object that doesn't have attributes but
+  // whose parent class has 'NodeA' attribute
+  //
+  Ptr<DerivedConfigTestObject> root = CreateObject<DerivedConfigTestObject> ();
+  Config::RegisterRootNamespaceObject (root);
+
+  //
+  //  Instantiate /NodeA
+  //
+  Ptr<DerivedConfigTestObject> a = CreateObject<DerivedConfigTestObject> ();
+  root->SetNodeA (a);
+
+  //
+  // BaseConfigObject has attribute X, but we aggregate DerivedConfigObject 
+  // instead
+  //
+  Ptr<DerivedConfigObject> derived = CreateObject<DerivedConfigObject> ();
+  a->AggregateObject (derived);
+  Config::Set ("/NodeA/$DerivedConfigObject/X", IntegerValue (42));
+  derived->GetAttribute ("X", iv);
+  NS_TEST_ASSERT_MSG_EQ (iv.Get (), 42, "Object Attribute \"X\" not settable in derived class");
+
+}
+
+// ===========================================================================
 // The Test Suite that glues all of the Test Cases together.
 // ===========================================================================
 class ConfigTestSuite : public TestSuite
@@ -621,6 +734,7 @@ ConfigTestSuite::ConfigTestSuite ()
   AddTestCase (new RootNamespaceConfigTestCase, TestCase::QUICK);
   AddTestCase (new UnderRootNamespaceConfigTestCase, TestCase::QUICK);
   AddTestCase (new ObjectVectorConfigTestCase, TestCase::QUICK);
+  AddTestCase (new SearchAttributesOfParentObjectsTestCase, TestCase::QUICK);
 }
 
 static ConfigTestSuite configTestSuite;
