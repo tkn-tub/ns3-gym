@@ -162,10 +162,11 @@ class BaseConfigObject : public Object
 {
 public:
   static TypeId GetTypeId (void);
-  BaseConfigObject (void) {}
+  BaseConfigObject (void) : m_x(15) {}
   virtual ~BaseConfigObject (void) {}
 private:
   int8_t m_x;
+  void Increment (void) { m_x++; } // silence unused variable warning
 };
 
 TypeId
