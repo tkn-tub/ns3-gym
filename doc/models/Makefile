@@ -76,7 +76,6 @@ SOURCES = \
 	$(SRC)/stats/doc/data-collection.rst \
 	$(SRC)/stats/doc/probe.rst \
 	$(SRC)/stats/doc/scope-and-limitations.rst \
-	$(SRC)/stats/doc/statistics.rst \
 	$(SRC)/netanim/doc/animation.rst \
 	$(SRC)/flow-monitor/doc/flow-monitor.rst \
 	$(SRC)/wave/doc/wave.rst \
