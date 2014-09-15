@@ -77,6 +77,19 @@ namespace ns3 {
  * all the rest set the corresponding boolean variable to true.
  * \c 0, \c f and \c false are accepted to set the variable to false.
  *
+ * Arguments can be repeated on the command line; the last value given
+ * will be the final value used.  For example,
+ * \verbatim
+   --arg=one --toggle=f --arg=another --toggle \endverbatim
+ * The variable set by \c --arg will end up with the value \c "another";
+ * the boolean set by \c --toggle will end up as \c true.
+ *
+ * Because arguments can be repeated it can be hard to decipher what
+ * value each variable ended up with, especially when using boolean toggles.
+ * Suggested best practice is for scripts to report the values of all items
+ * settable throught CommandLine, as done by the example below.
+ * 
+ *
  * CommandLine can set the initial value of every attribute in the system
  * with the 
  * \c --TypeIdName::AttributeName=value syntax, for example
@@ -87,14 +100,16 @@ namespace ns3 {
  * to make it easy to set the \c Application::StartTime using
  * the argument \c --start, and have its help string show as part
  * of the help message.  This can be done using the
- * <tt>AddValue(const std::string, const std::string path)</tt> method.
+ * \link AddValue(const std::string, const std::string)
+ * AddValue (name, attributePath) \endlink
+ * method.
  *
  * CommandLine can also set the value of every GlobalValue
  * in the system with the \c --GlobalValueName=value syntax, for example
  * \verbatim
    --SchedulerType=HeapScheduler \endverbatim
  *
- * A simple example is in `src/core/example/ command-line-example.cc`
+ * A simple example is in `src/core/example/``command-line-example.cc`
  * The heart of that example is this code:
  *
  * \code
@@ -114,7 +129,7 @@ namespace ns3 {
  *    cmd.Parse (argc, argv);
  * \endcode
  * after which it prints the values of each variable.  (The \c SetCbArg function
- * is not shown here; see `src/core/example/ command-line-example.cc`)
+ * is not shown here; see `src/core/example/``command-line-example.cc`)
  *
  * Here is the output from a few runs of that program:
  *
