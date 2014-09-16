@@ -155,7 +155,7 @@ public:
       dB1,
       dB2,
       dB3
-    } value;
+    };
     uint8_t pa;
   };
 
