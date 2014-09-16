@@ -292,6 +292,8 @@ def register_types(module):
     module.add_class('EmpiricalRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
     ## attribute.h (module 'core'): ns3::EmptyAttributeValue [class]
     module.add_class('EmptyAttributeValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
+    ## energy-harvester.h (module 'energy'): ns3::EnergyHarvester [class]
+    module.add_class('EnergyHarvester', import_from_module='ns.energy', parent=root_module['ns3::Object'])
     ## energy-source.h (module 'energy'): ns3::EnergySource [class]
     module.add_class('EnergySource', import_from_module='ns.energy', parent=root_module['ns3::Object'])
     ## energy-source-container.h (module 'energy'): ns3::EnergySourceContainer [class]
@@ -583,6 +585,7 @@ def register_methods(root_module):
     register_Ns3DoubleValue_methods(root_module, root_module['ns3::DoubleValue'])
     register_Ns3EmpiricalRandomVariable_methods(root_module, root_module['ns3::EmpiricalRandomVariable'])
     register_Ns3EmptyAttributeValue_methods(root_module, root_module['ns3::EmptyAttributeValue'])
+    register_Ns3EnergyHarvester_methods(root_module, root_module['ns3::EnergyHarvester'])
     register_Ns3EnergySource_methods(root_module, root_module['ns3::EnergySource'])
     register_Ns3EnergySourceContainer_methods(root_module, root_module['ns3::EnergySourceContainer'])
     register_Ns3EnumChecker_methods(root_module, root_module['ns3::EnumChecker'])
@@ -3452,10 +3455,10 @@ def register_Ns3Time_methods(root_module, cls):
     cls.add_constructor([param('long unsigned int', 'v')])
     ## nstime.h (module 'core'): ns3::Time::Time(long long unsigned int v) [constructor]
     cls.add_constructor([param('long long unsigned int', 'v')])
+    ## nstime.h (module 'core'): ns3::Time::Time(ns3::int64x64_t const & v) [constructor]
+    cls.add_constructor([param('ns3::int64x64_t const &', 'v')])
     ## nstime.h (module 'core'): ns3::Time::Time(std::string const & s) [constructor]
     cls.add_constructor([param('std::string const &', 's')])
-    ## nstime.h (module 'core'): ns3::Time::Time(ns3::int64x64_t const & value) [constructor]
-    cls.add_constructor([param('ns3::int64x64_t const &', 'value')])
     ## nstime.h (module 'core'): ns3::TimeWithUnit ns3::Time::As(ns3::Time::Unit const unit) const [member function]
     cls.add_method('As', 
                    'ns3::TimeWithUnit', 
@@ -3466,25 +3469,25 @@ def register_Ns3Time_methods(root_module, cls):
                    'int', 
                    [param('ns3::Time const &', 'o')], 
                    is_const=True)
-    ## nstime.h (module 'core'): static ns3::Time ns3::Time::From(ns3::int64x64_t const & from, ns3::Time::Unit timeUnit) [member function]
-    cls.add_method('From', 
-                   'ns3::Time', 
-                   [param('ns3::int64x64_t const &', 'from'), param('ns3::Time::Unit', 'timeUnit')], 
-                   is_static=True)
     ## nstime.h (module 'core'): static ns3::Time ns3::Time::From(ns3::int64x64_t const & value) [member function]
     cls.add_method('From', 
                    'ns3::Time', 
                    [param('ns3::int64x64_t const &', 'value')], 
                    is_static=True)
-    ## nstime.h (module 'core'): static ns3::Time ns3::Time::FromDouble(double value, ns3::Time::Unit timeUnit) [member function]
+    ## nstime.h (module 'core'): static ns3::Time ns3::Time::From(ns3::int64x64_t const & value, ns3::Time::Unit unit) [member function]
+    cls.add_method('From', 
+                   'ns3::Time', 
+                   [param('ns3::int64x64_t const &', 'value'), param('ns3::Time::Unit', 'unit')], 
+                   is_static=True)
+    ## nstime.h (module 'core'): static ns3::Time ns3::Time::FromDouble(double value, ns3::Time::Unit unit) [member function]
     cls.add_method('FromDouble', 
                    'ns3::Time', 
-                   [param('double', 'value'), param('ns3::Time::Unit', 'timeUnit')], 
+                   [param('double', 'value'), param('ns3::Time::Unit', 'unit')], 
                    is_static=True)
-    ## nstime.h (module 'core'): static ns3::Time ns3::Time::FromInteger(uint64_t value, ns3::Time::Unit timeUnit) [member function]
+    ## nstime.h (module 'core'): static ns3::Time ns3::Time::FromInteger(uint64_t value, ns3::Time::Unit unit) [member function]
     cls.add_method('FromInteger', 
                    'ns3::Time', 
-                   [param('uint64_t', 'value'), param('ns3::Time::Unit', 'timeUnit')], 
+                   [param('uint64_t', 'value'), param('ns3::Time::Unit', 'unit')], 
                    is_static=True)
     ## nstime.h (module 'core'): double ns3::Time::GetDays() const [member function]
     cls.add_method('GetDays', 
@@ -3601,20 +3604,20 @@ def register_Ns3Time_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_static=True)
-    ## nstime.h (module 'core'): ns3::int64x64_t ns3::Time::To(ns3::Time::Unit timeUnit) const [member function]
+    ## nstime.h (module 'core'): ns3::int64x64_t ns3::Time::To(ns3::Time::Unit unit) const [member function]
     cls.add_method('To', 
                    'ns3::int64x64_t', 
-                   [param('ns3::Time::Unit', 'timeUnit')], 
+                   [param('ns3::Time::Unit', 'unit')], 
                    is_const=True)
-    ## nstime.h (module 'core'): double ns3::Time::ToDouble(ns3::Time::Unit timeUnit) const [member function]
+    ## nstime.h (module 'core'): double ns3::Time::ToDouble(ns3::Time::Unit unit) const [member function]
     cls.add_method('ToDouble', 
                    'double', 
-                   [param('ns3::Time::Unit', 'timeUnit')], 
+                   [param('ns3::Time::Unit', 'unit')], 
                    is_const=True)
-    ## nstime.h (module 'core'): int64_t ns3::Time::ToInteger(ns3::Time::Unit timeUnit) const [member function]
+    ## nstime.h (module 'core'): int64_t ns3::Time::ToInteger(ns3::Time::Unit unit) const [member function]
     cls.add_method('ToInteger', 
                    'int64_t', 
-                   [param('ns3::Time::Unit', 'timeUnit')], 
+                   [param('ns3::Time::Unit', 'unit')], 
                    is_const=True)
     return
 
@@ -6102,6 +6105,11 @@ def register_Ns3DeviceEnergyModel_methods(root_module, cls):
                    'void', 
                    [], 
                    is_pure_virtual=True, is_virtual=True)
+    ## device-energy-model.h (module 'energy'): void ns3::DeviceEnergyModel::HandleEnergyRecharged() [member function]
+    cls.add_method('HandleEnergyRecharged', 
+                   'void', 
+                   [], 
+                   is_pure_virtual=True, is_virtual=True)
     ## device-energy-model.h (module 'energy'): void ns3::DeviceEnergyModel::SetEnergySource(ns3::Ptr<ns3::EnergySource> source) [member function]
     cls.add_method('SetEnergySource', 
                    'void', 
@@ -6203,6 +6211,51 @@ def register_Ns3EmptyAttributeValue_methods(root_module, cls):
                    is_const=True, visibility='private', is_virtual=True)
     return
 
+def register_Ns3EnergyHarvester_methods(root_module, cls):
+    ## energy-harvester.h (module 'energy'): ns3::EnergyHarvester::EnergyHarvester(ns3::EnergyHarvester const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::EnergyHarvester const &', 'arg0')])
+    ## energy-harvester.h (module 'energy'): ns3::EnergyHarvester::EnergyHarvester() [constructor]
+    cls.add_constructor([])
+    ## energy-harvester.h (module 'energy'): ns3::Ptr<ns3::EnergySource> ns3::EnergyHarvester::GetEnergySource() const [member function]
+    cls.add_method('GetEnergySource', 
+                   'ns3::Ptr< ns3::EnergySource >', 
+                   [], 
+                   is_const=True)
+    ## energy-harvester.h (module 'energy'): ns3::Ptr<ns3::Node> ns3::EnergyHarvester::GetNode() const [member function]
+    cls.add_method('GetNode', 
+                   'ns3::Ptr< ns3::Node >', 
+                   [], 
+                   is_const=True)
+    ## energy-harvester.h (module 'energy'): double ns3::EnergyHarvester::GetPower() const [member function]
+    cls.add_method('GetPower', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## energy-harvester.h (module 'energy'): static ns3::TypeId ns3::EnergyHarvester::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## energy-harvester.h (module 'energy'): void ns3::EnergyHarvester::SetEnergySource(ns3::Ptr<ns3::EnergySource> source) [member function]
+    cls.add_method('SetEnergySource', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::EnergySource >', 'source')])
+    ## energy-harvester.h (module 'energy'): void ns3::EnergyHarvester::SetNode(ns3::Ptr<ns3::Node> node) [member function]
+    cls.add_method('SetNode', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Node >', 'node')])
+    ## energy-harvester.h (module 'energy'): void ns3::EnergyHarvester::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
+    ## energy-harvester.h (module 'energy'): double ns3::EnergyHarvester::DoGetPower() const [member function]
+    cls.add_method('DoGetPower', 
+                   'double', 
+                   [], 
+                   is_const=True, visibility='private', is_virtual=True)
+    return
+
 def register_Ns3EnergySource_methods(root_module, cls):
     ## energy-source.h (module 'energy'): ns3::EnergySource::EnergySource(ns3::EnergySource const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::EnergySource const &', 'arg0')])
@@ -6212,6 +6265,10 @@ def register_Ns3EnergySource_methods(root_module, cls):
     cls.add_method('AppendDeviceEnergyModel', 
                    'void', 
                    [param('ns3::Ptr< ns3::DeviceEnergyModel >', 'deviceEnergyModelPtr')])
+    ## energy-source.h (module 'energy'): void ns3::EnergySource::ConnectEnergyHarvester(ns3::Ptr<ns3::EnergyHarvester> energyHarvesterPtr) [member function]
+    cls.add_method('ConnectEnergyHarvester', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::EnergyHarvester >', 'energyHarvesterPtr')])
     ## energy-source.h (module 'energy'): void ns3::EnergySource::DisposeDeviceModels() [member function]
     cls.add_method('DisposeDeviceModels', 
                    'void', 
@@ -6279,6 +6336,11 @@ def register_Ns3EnergySource_methods(root_module, cls):
                    visibility='protected')
     ## energy-source.h (module 'energy'): void ns3::EnergySource::NotifyEnergyDrained() [member function]
     cls.add_method('NotifyEnergyDrained', 
+                   'void', 
+                   [], 
+                   visibility='protected')
+    ## energy-source.h (module 'energy'): void ns3::EnergySource::NotifyEnergyRecharged() [member function]
+    cls.add_method('NotifyEnergyRecharged', 
                    'void', 
                    [], 
                    visibility='protected')
@@ -7988,6 +8050,11 @@ def register_Ns3AcousticModemEnergyModel_methods(root_module, cls):
                    is_static=True)
     ## acoustic-modem-energy-model.h (module 'uan'): void ns3::AcousticModemEnergyModel::HandleEnergyDepletion() [member function]
     cls.add_method('HandleEnergyDepletion', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## acoustic-modem-energy-model.h (module 'uan'): void ns3::AcousticModemEnergyModel::HandleEnergyRecharged() [member function]
+    cls.add_method('HandleEnergyRecharged', 
                    'void', 
                    [], 
                    is_virtual=True)

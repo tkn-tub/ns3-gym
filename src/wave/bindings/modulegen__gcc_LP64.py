@@ -295,7 +295,7 @@ def register_types(module):
     ## wifi-phy.h (module 'wifi'): ns3::WifiPhy [class]
     module.add_class('WifiPhy', import_from_module='ns.wifi', parent=root_module['ns3::Object'])
     ## wifi-phy.h (module 'wifi'): ns3::WifiPhy::State [enumeration]
-    module.add_enum('State', ['IDLE', 'CCA_BUSY', 'TX', 'RX', 'SWITCHING'], outer_class=root_module['ns3::WifiPhy'], import_from_module='ns.wifi')
+    module.add_enum('State', ['IDLE', 'CCA_BUSY', 'TX', 'RX', 'SWITCHING', 'SLEEP'], outer_class=root_module['ns3::WifiPhy'], import_from_module='ns.wifi')
     ## wifi-remote-station-manager.h (module 'wifi'): ns3::WifiRemoteStationManager [class]
     module.add_class('WifiRemoteStationManager', import_from_module='ns.wifi', parent=root_module['ns3::Object'])
     ## attribute.h (module 'core'): ns3::AttributeAccessor [class]
@@ -3582,15 +3582,25 @@ def register_Ns3WifiPhyListener_methods(root_module, cls):
                    'void', 
                    [param('ns3::Time', 'duration')], 
                    is_pure_virtual=True, is_virtual=True)
+    ## wifi-phy.h (module 'wifi'): void ns3::WifiPhyListener::NotifySleep() [member function]
+    cls.add_method('NotifySleep', 
+                   'void', 
+                   [], 
+                   is_pure_virtual=True, is_virtual=True)
     ## wifi-phy.h (module 'wifi'): void ns3::WifiPhyListener::NotifySwitchingStart(ns3::Time duration) [member function]
     cls.add_method('NotifySwitchingStart', 
                    'void', 
                    [param('ns3::Time', 'duration')], 
                    is_pure_virtual=True, is_virtual=True)
-    ## wifi-phy.h (module 'wifi'): void ns3::WifiPhyListener::NotifyTxStart(ns3::Time duration) [member function]
+    ## wifi-phy.h (module 'wifi'): void ns3::WifiPhyListener::NotifyTxStart(ns3::Time duration, double txPowerDbm) [member function]
     cls.add_method('NotifyTxStart', 
                    'void', 
-                   [param('ns3::Time', 'duration')], 
+                   [param('ns3::Time', 'duration'), param('double', 'txPowerDbm')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## wifi-phy.h (module 'wifi'): void ns3::WifiPhyListener::NotifyWakeup() [member function]
+    cls.add_method('NotifyWakeup', 
+                   'void', 
+                   [], 
                    is_pure_virtual=True, is_virtual=True)
     return
 
@@ -4792,10 +4802,10 @@ def register_Ns3Time_methods(root_module, cls):
     cls.add_constructor([param('long unsigned int', 'v')])
     ## nstime.h (module 'core'): ns3::Time::Time(long long unsigned int v) [constructor]
     cls.add_constructor([param('long long unsigned int', 'v')])
+    ## nstime.h (module 'core'): ns3::Time::Time(ns3::int64x64_t const & v) [constructor]
+    cls.add_constructor([param('ns3::int64x64_t const &', 'v')])
     ## nstime.h (module 'core'): ns3::Time::Time(std::string const & s) [constructor]
     cls.add_constructor([param('std::string const &', 's')])
-    ## nstime.h (module 'core'): ns3::Time::Time(ns3::int64x64_t const & value) [constructor]
-    cls.add_constructor([param('ns3::int64x64_t const &', 'value')])
     ## nstime.h (module 'core'): ns3::TimeWithUnit ns3::Time::As(ns3::Time::Unit const unit) const [member function]
     cls.add_method('As', 
                    'ns3::TimeWithUnit', 
@@ -4806,25 +4816,25 @@ def register_Ns3Time_methods(root_module, cls):
                    'int', 
                    [param('ns3::Time const &', 'o')], 
                    is_const=True)
-    ## nstime.h (module 'core'): static ns3::Time ns3::Time::From(ns3::int64x64_t const & from, ns3::Time::Unit timeUnit) [member function]
-    cls.add_method('From', 
-                   'ns3::Time', 
-                   [param('ns3::int64x64_t const &', 'from'), param('ns3::Time::Unit', 'timeUnit')], 
-                   is_static=True)
     ## nstime.h (module 'core'): static ns3::Time ns3::Time::From(ns3::int64x64_t const & value) [member function]
     cls.add_method('From', 
                    'ns3::Time', 
                    [param('ns3::int64x64_t const &', 'value')], 
                    is_static=True)
-    ## nstime.h (module 'core'): static ns3::Time ns3::Time::FromDouble(double value, ns3::Time::Unit timeUnit) [member function]
+    ## nstime.h (module 'core'): static ns3::Time ns3::Time::From(ns3::int64x64_t const & value, ns3::Time::Unit unit) [member function]
+    cls.add_method('From', 
+                   'ns3::Time', 
+                   [param('ns3::int64x64_t const &', 'value'), param('ns3::Time::Unit', 'unit')], 
+                   is_static=True)
+    ## nstime.h (module 'core'): static ns3::Time ns3::Time::FromDouble(double value, ns3::Time::Unit unit) [member function]
     cls.add_method('FromDouble', 
                    'ns3::Time', 
-                   [param('double', 'value'), param('ns3::Time::Unit', 'timeUnit')], 
+                   [param('double', 'value'), param('ns3::Time::Unit', 'unit')], 
                    is_static=True)
-    ## nstime.h (module 'core'): static ns3::Time ns3::Time::FromInteger(uint64_t value, ns3::Time::Unit timeUnit) [member function]
+    ## nstime.h (module 'core'): static ns3::Time ns3::Time::FromInteger(uint64_t value, ns3::Time::Unit unit) [member function]
     cls.add_method('FromInteger', 
                    'ns3::Time', 
-                   [param('uint64_t', 'value'), param('ns3::Time::Unit', 'timeUnit')], 
+                   [param('uint64_t', 'value'), param('ns3::Time::Unit', 'unit')], 
                    is_static=True)
     ## nstime.h (module 'core'): double ns3::Time::GetDays() const [member function]
     cls.add_method('GetDays', 
@@ -4941,20 +4951,20 @@ def register_Ns3Time_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_static=True)
-    ## nstime.h (module 'core'): ns3::int64x64_t ns3::Time::To(ns3::Time::Unit timeUnit) const [member function]
+    ## nstime.h (module 'core'): ns3::int64x64_t ns3::Time::To(ns3::Time::Unit unit) const [member function]
     cls.add_method('To', 
                    'ns3::int64x64_t', 
-                   [param('ns3::Time::Unit', 'timeUnit')], 
+                   [param('ns3::Time::Unit', 'unit')], 
                    is_const=True)
-    ## nstime.h (module 'core'): double ns3::Time::ToDouble(ns3::Time::Unit timeUnit) const [member function]
+    ## nstime.h (module 'core'): double ns3::Time::ToDouble(ns3::Time::Unit unit) const [member function]
     cls.add_method('ToDouble', 
                    'double', 
-                   [param('ns3::Time::Unit', 'timeUnit')], 
+                   [param('ns3::Time::Unit', 'unit')], 
                    is_const=True)
-    ## nstime.h (module 'core'): int64_t ns3::Time::ToInteger(ns3::Time::Unit timeUnit) const [member function]
+    ## nstime.h (module 'core'): int64_t ns3::Time::ToInteger(ns3::Time::Unit unit) const [member function]
     cls.add_method('ToInteger', 
                    'int64_t', 
-                   [param('ns3::Time::Unit', 'timeUnit')], 
+                   [param('ns3::Time::Unit', 'unit')], 
                    is_const=True)
     return
 
@@ -6500,6 +6510,11 @@ def register_Ns3WifiPhy_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_pure_virtual=True, is_virtual=True)
+    ## wifi-phy.h (module 'wifi'): bool ns3::WifiPhy::IsStateSleep() [member function]
+    cls.add_method('IsStateSleep', 
+                   'bool', 
+                   [], 
+                   is_pure_virtual=True, is_virtual=True)
     ## wifi-phy.h (module 'wifi'): bool ns3::WifiPhy::IsStateSwitching() [member function]
     cls.add_method('IsStateSwitching', 
                    'bool', 
@@ -6552,10 +6567,15 @@ def register_Ns3WifiPhy_methods(root_module, cls):
                    'void', 
                    [param('ns3::WifiPhyListener *', 'listener')], 
                    is_pure_virtual=True, is_virtual=True)
-    ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::SendPacket(ns3::Ptr<ns3::Packet const> packet, ns3::WifiMode mode, ns3::WifiPreamble preamble, ns3::WifiTxVector txvector) [member function]
+    ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::ResumeFromSleep() [member function]
+    cls.add_method('ResumeFromSleep', 
+                   'void', 
+                   [], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::SendPacket(ns3::Ptr<ns3::Packet const> packet, ns3::WifiTxVector txvector, ns3::WifiPreamble preamble) [member function]
     cls.add_method('SendPacket', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('ns3::WifiMode', 'mode'), param('ns3::WifiPreamble', 'preamble'), param('ns3::WifiTxVector', 'txvector')], 
+                   [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('ns3::WifiTxVector', 'txvector'), param('ns3::WifiPreamble', 'preamble')], 
                    is_pure_virtual=True, is_virtual=True)
     ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::SetChannelBonding(bool channelbonding) [member function]
     cls.add_method('SetChannelBonding', 
@@ -6606,6 +6626,11 @@ def register_Ns3WifiPhy_methods(root_module, cls):
     cls.add_method('SetReceiveOkCallback', 
                    'void', 
                    [param('ns3::Callback< void, ns3::Ptr< ns3::Packet >, double, ns3::WifiMode, ns3::WifiPreamble, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::SetSleepMode() [member function]
+    cls.add_method('SetSleepMode', 
+                   'void', 
+                   [], 
                    is_pure_virtual=True, is_virtual=True)
     ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::SetStbc(bool stbc) [member function]
     cls.add_method('SetStbc', 
@@ -8269,6 +8294,10 @@ def register_Ns3MacLow_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True)
+    ## mac-low.h (module 'wifi'): void ns3::MacLow::NotifySleepNow() [member function]
+    cls.add_method('NotifySleepNow', 
+                   'void', 
+                   [])
     ## mac-low.h (module 'wifi'): void ns3::MacLow::NotifySwitchingStartNow(ns3::Time duration) [member function]
     cls.add_method('NotifySwitchingStartNow', 
                    'void', 

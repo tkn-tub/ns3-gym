@@ -406,6 +406,10 @@ def register_types(module):
     typehandlers.add_type_alias(u'ns3::Vector3DValue*', u'ns3::VectorValue*')
     typehandlers.add_type_alias(u'ns3::Vector3DValue&', u'ns3::VectorValue&')
     module.add_typedef(root_module['ns3::Vector3DValue'], 'VectorValue')
+    typehandlers.add_type_alias(u'ns3::Vector3D', u'ns3::Vector')
+    typehandlers.add_type_alias(u'ns3::Vector3D*', u'ns3::Vector*')
+    typehandlers.add_type_alias(u'ns3::Vector3D&', u'ns3::Vector&')
+    module.add_typedef(root_module['ns3::Vector3D'], 'Vector')
     typehandlers.add_type_alias(u'ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', u'ns3::GenericPhyRxStartCallback')
     typehandlers.add_type_alias(u'ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::GenericPhyRxStartCallback*')
     typehandlers.add_type_alias(u'ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::GenericPhyRxStartCallback&')
@@ -415,10 +419,6 @@ def register_types(module):
     typehandlers.add_type_alias(u'uint32_t', u'ns3::SpectrumModelUid_t')
     typehandlers.add_type_alias(u'uint32_t*', u'ns3::SpectrumModelUid_t*')
     typehandlers.add_type_alias(u'uint32_t&', u'ns3::SpectrumModelUid_t&')
-    typehandlers.add_type_alias(u'ns3::Vector3D', u'ns3::Vector')
-    typehandlers.add_type_alias(u'ns3::Vector3D*', u'ns3::Vector*')
-    typehandlers.add_type_alias(u'ns3::Vector3D&', u'ns3::Vector&')
-    module.add_typedef(root_module['ns3::Vector3D'], 'Vector')
     typehandlers.add_type_alias(u'std::map< unsigned int, ns3::TxSpectrumModelInfo, std::less< unsigned int >, std::allocator< std::pair< unsigned int const, ns3::TxSpectrumModelInfo > > >', u'ns3::TxSpectrumModelInfoMap_t')
     typehandlers.add_type_alias(u'std::map< unsigned int, ns3::TxSpectrumModelInfo, std::less< unsigned int >, std::allocator< std::pair< unsigned int const, ns3::TxSpectrumModelInfo > > >*', u'ns3::TxSpectrumModelInfoMap_t*')
     typehandlers.add_type_alias(u'std::map< unsigned int, ns3::TxSpectrumModelInfo, std::less< unsigned int >, std::allocator< std::pair< unsigned int const, ns3::TxSpectrumModelInfo > > >&', u'ns3::TxSpectrumModelInfoMap_t&')
@@ -3894,10 +3894,10 @@ def register_Ns3Time_methods(root_module, cls):
     cls.add_constructor([param('long unsigned int', 'v')])
     ## nstime.h (module 'core'): ns3::Time::Time(long long unsigned int v) [constructor]
     cls.add_constructor([param('long long unsigned int', 'v')])
+    ## nstime.h (module 'core'): ns3::Time::Time(ns3::int64x64_t const & v) [constructor]
+    cls.add_constructor([param('ns3::int64x64_t const &', 'v')])
     ## nstime.h (module 'core'): ns3::Time::Time(std::string const & s) [constructor]
     cls.add_constructor([param('std::string const &', 's')])
-    ## nstime.h (module 'core'): ns3::Time::Time(ns3::int64x64_t const & value) [constructor]
-    cls.add_constructor([param('ns3::int64x64_t const &', 'value')])
     ## nstime.h (module 'core'): ns3::TimeWithUnit ns3::Time::As(ns3::Time::Unit const unit) const [member function]
     cls.add_method('As', 
                    'ns3::TimeWithUnit', 
@@ -3908,25 +3908,25 @@ def register_Ns3Time_methods(root_module, cls):
                    'int', 
                    [param('ns3::Time const &', 'o')], 
                    is_const=True)
-    ## nstime.h (module 'core'): static ns3::Time ns3::Time::From(ns3::int64x64_t const & from, ns3::Time::Unit timeUnit) [member function]
-    cls.add_method('From', 
-                   'ns3::Time', 
-                   [param('ns3::int64x64_t const &', 'from'), param('ns3::Time::Unit', 'timeUnit')], 
-                   is_static=True)
     ## nstime.h (module 'core'): static ns3::Time ns3::Time::From(ns3::int64x64_t const & value) [member function]
     cls.add_method('From', 
                    'ns3::Time', 
                    [param('ns3::int64x64_t const &', 'value')], 
                    is_static=True)
-    ## nstime.h (module 'core'): static ns3::Time ns3::Time::FromDouble(double value, ns3::Time::Unit timeUnit) [member function]
+    ## nstime.h (module 'core'): static ns3::Time ns3::Time::From(ns3::int64x64_t const & value, ns3::Time::Unit unit) [member function]
+    cls.add_method('From', 
+                   'ns3::Time', 
+                   [param('ns3::int64x64_t const &', 'value'), param('ns3::Time::Unit', 'unit')], 
+                   is_static=True)
+    ## nstime.h (module 'core'): static ns3::Time ns3::Time::FromDouble(double value, ns3::Time::Unit unit) [member function]
     cls.add_method('FromDouble', 
                    'ns3::Time', 
-                   [param('double', 'value'), param('ns3::Time::Unit', 'timeUnit')], 
+                   [param('double', 'value'), param('ns3::Time::Unit', 'unit')], 
                    is_static=True)
-    ## nstime.h (module 'core'): static ns3::Time ns3::Time::FromInteger(uint64_t value, ns3::Time::Unit timeUnit) [member function]
+    ## nstime.h (module 'core'): static ns3::Time ns3::Time::FromInteger(uint64_t value, ns3::Time::Unit unit) [member function]
     cls.add_method('FromInteger', 
                    'ns3::Time', 
-                   [param('uint64_t', 'value'), param('ns3::Time::Unit', 'timeUnit')], 
+                   [param('uint64_t', 'value'), param('ns3::Time::Unit', 'unit')], 
                    is_static=True)
     ## nstime.h (module 'core'): double ns3::Time::GetDays() const [member function]
     cls.add_method('GetDays', 
@@ -4043,20 +4043,20 @@ def register_Ns3Time_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_static=True)
-    ## nstime.h (module 'core'): ns3::int64x64_t ns3::Time::To(ns3::Time::Unit timeUnit) const [member function]
+    ## nstime.h (module 'core'): ns3::int64x64_t ns3::Time::To(ns3::Time::Unit unit) const [member function]
     cls.add_method('To', 
                    'ns3::int64x64_t', 
-                   [param('ns3::Time::Unit', 'timeUnit')], 
+                   [param('ns3::Time::Unit', 'unit')], 
                    is_const=True)
-    ## nstime.h (module 'core'): double ns3::Time::ToDouble(ns3::Time::Unit timeUnit) const [member function]
+    ## nstime.h (module 'core'): double ns3::Time::ToDouble(ns3::Time::Unit unit) const [member function]
     cls.add_method('ToDouble', 
                    'double', 
-                   [param('ns3::Time::Unit', 'timeUnit')], 
+                   [param('ns3::Time::Unit', 'unit')], 
                    is_const=True)
-    ## nstime.h (module 'core'): int64_t ns3::Time::ToInteger(ns3::Time::Unit timeUnit) const [member function]
+    ## nstime.h (module 'core'): int64_t ns3::Time::ToInteger(ns3::Time::Unit unit) const [member function]
     cls.add_method('ToInteger', 
                    'int64_t', 
-                   [param('ns3::Time::Unit', 'timeUnit')], 
+                   [param('ns3::Time::Unit', 'unit')], 
                    is_const=True)
     return
 
