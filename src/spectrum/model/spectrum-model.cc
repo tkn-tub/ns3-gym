@@ -45,7 +45,6 @@ SpectrumModel::SpectrumModel (std::vector<double> centerFreqs)
 {
   NS_ASSERT (centerFreqs.size () > 1);
   m_uid = ++m_uidCount;
-  NS_LOG_INFO ("creating new SpectrumModel, m_uid=" << m_uid);
 
   for (std::vector<double>::const_iterator it = centerFreqs.begin ();
        it != centerFreqs.end ();
