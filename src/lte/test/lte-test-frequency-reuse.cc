@@ -35,6 +35,7 @@
 #include "ns3/internet-module.h"
 #include "ns3/point-to-point-module.h"
 #include "ns3/applications-module.h"
+#include "ns3/config-store-module.h"
 
 #include <ns3/ff-mac-scheduler.h>
 #include <ns3/lte-enb-net-device.h>
@@ -65,9 +66,9 @@ LteFrequencyReuseTestSuite::LteFrequencyReuseTestSuite ()
 {
 //  LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_DEBUG);
 //  LogComponentEnable ("LteFrequencyReuseTest", logLevel);
-
   std::vector<bool> availableDlRb;
   std::vector<bool> availableUlRb;
+#if 0
   for (uint32_t i = 0; i < 12; i++)
     {
       availableDlRb.push_back (true);
@@ -92,6 +93,7 @@ LteFrequencyReuseTestSuite::LteFrequencyReuseTestSuite ()
 
   availableDlRb.clear ();
   availableUlRb.clear ();
+#endif
   for (uint32_t i = 0; i < 6; i++)
     {
       availableDlRb.push_back (true);
@@ -112,7 +114,7 @@ LteFrequencyReuseTestSuite::LteFrequencyReuseTestSuite ()
       availableDlRb.push_back (false);
       availableUlRb.push_back (false);
     }
-
+#if 0
   AddTestCase (new LteStrictFrTestCase ("DownlinkStrictFrPf1", 1, "ns3::PfFfMacScheduler", 25, 25, 6, 6, 6, 6, 6, 6, availableDlRb, availableUlRb), TestCase::QUICK);
   AddTestCase (new LteStrictFrTestCase ("DownlinkStrictFrPf2", 5, "ns3::PfFfMacScheduler", 25, 25, 6, 6, 6, 6, 6, 6, availableDlRb, availableUlRb), TestCase::QUICK);
   AddTestCase (new LteStrictFrTestCase ("DownlinkStrictFrPss1", 1, "ns3::PssFfMacScheduler", 25, 25, 6, 6, 6, 6, 6, 6, availableDlRb, availableUlRb), TestCase::QUICK);
@@ -131,7 +133,9 @@ LteFrequencyReuseTestSuite::LteFrequencyReuseTestSuite ()
   AddTestCase (new LteStrictFrAreaTestCase ("LteStrictFrAreaTestCaseTdTbfq1", "ns3::TdTbfqFfMacScheduler"), TestCase::QUICK);
 
   AddTestCase (new LteSoftFrAreaTestCase ("LteSoftFrAreaTestCasePf1", "ns3::PfFfMacScheduler"), TestCase::QUICK);
+#endif
   AddTestCase (new LteSoftFrAreaTestCase ("LteSoftFrAreaTestCasePss1", "ns3::PssFfMacScheduler"), TestCase::QUICK);
+#if 0
   AddTestCase (new LteSoftFrAreaTestCase ("LteSoftFrAreaTestCaseCqa1", "ns3::CqaFfMacScheduler"), TestCase::QUICK);
   AddTestCase (new LteSoftFrAreaTestCase ("LteSoftFrAreaTestCaseFdTbfq1", "ns3::FdTbfqFfMacScheduler"), TestCase::QUICK);
   AddTestCase (new LteSoftFrAreaTestCase ("LteSoftFrAreaTestCaseTdTbfq1", "ns3::TdTbfqFfMacScheduler"), TestCase::QUICK);
@@ -153,6 +157,7 @@ LteFrequencyReuseTestSuite::LteFrequencyReuseTestSuite ()
   AddTestCase (new LteDistributedFfrAreaTestCase ("LteDistributedFfrAreaTestCaseCqa1", "ns3::CqaFfMacScheduler"), TestCase::QUICK);
   AddTestCase (new LteDistributedFfrAreaTestCase ("LteDistributedFfrAreaTestCaseFdTbfq1", "ns3::FdTbfqFfMacScheduler"), TestCase::QUICK);
   AddTestCase (new LteDistributedFfrAreaTestCase ("LteDistributedFfrAreaTestCaseTdTbfq1", "ns3::TdTbfqFfMacScheduler"), TestCase::QUICK);
+#endif
 }
 
 static LteFrequencyReuseTestSuite lteFrequencyReuseTestSuite;
@@ -804,8 +809,10 @@ LteSoftFrAreaTestCase::DoRun (void)
   Config::SetDefault ("ns3::LteUePowerControl::AccumulationEnabled", BooleanValue (false));
 
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
+  lteHelper->EnableLogComponents ();
 
   // Create Nodes: eNodeB and UE
+  int64_t stream = 1;
   NodeContainer enbNodes;
   NodeContainer ueNodes1;
   NodeContainer ueNodes2;
@@ -863,9 +870,12 @@ LteSoftFrAreaTestCase::DoRun (void)
 
   lteHelper->SetFfrAlgorithmType ("ns3::LteFrNoOpAlgorithm");
   enbDevs.Add (lteHelper->InstallEnbDevice (enbNodes.Get (1)));
+  stream += lteHelper->AssignStreams (enbDevs, stream);
 
   ueDevs1 = lteHelper->InstallUeDevice (ueNodes1);
+  stream += lteHelper->AssignStreams (ueDevs1, stream);
   ueDevs2 = lteHelper->InstallUeDevice (ueNodes2);
+  stream += lteHelper->AssignStreams (ueDevs2, stream);
 
   // Attach a UE to a eNB
   lteHelper->Attach (ueDevs1, enbDevs.Get (0));
@@ -944,14 +954,19 @@ LteSoftFrAreaTestCase::DoRun (void)
   Simulator::Schedule (MilliSeconds (1001),
                        &LteFrAreaTestCase::SetUlExpectedValues, this, 0.0150543, expectedUlRbCenterArea );
 
+  Config::SetDefault ("ns3::ConfigStore::Filename", StringValue ("output-attributes.txt"));
+  Config::SetDefault ("ns3::ConfigStore::FileFormat", StringValue ("RawText"));
+  Config::SetDefault ("ns3::ConfigStore::Mode", StringValue ("Save"));
+  ConfigStore outputConfig2;
+  outputConfig2.ConfigureDefaults ();
+  outputConfig2.ConfigureAttributes ();
+
   Simulator::Stop (Seconds (1.500));
   Simulator::Run ();
 
-#if 0
   NS_TEST_ASSERT_MSG_EQ (m_usedWrongDlRbg, false,
                          "Scheduler used DL RBG muted by FFR Algorithm");
 
-#endif
   NS_TEST_ASSERT_MSG_EQ (m_usedWrongUlRbg, false,
                          "Scheduler used UL RB muted by FFR Algorithm");
 
@@ -1705,10 +1720,8 @@ LteDistributedFfrAreaTestCase::DoRun (void)
   Simulator::Stop (Seconds (2.500));
   Simulator::Run ();
 
-#if 0
   NS_TEST_ASSERT_MSG_EQ (m_usedWrongDlRbg, false,
                          "Scheduler used DL RBG muted by FFR Algorithm");
-#endif
 
   NS_TEST_ASSERT_MSG_EQ (m_usedWrongUlRbg, false,
                          "Scheduler used UL RB muted by FFR Algorithm");

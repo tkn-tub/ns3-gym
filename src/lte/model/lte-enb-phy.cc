@@ -644,12 +644,14 @@ LteEnbPhy::StartSubFrame (void)
               uint32_t mask = 0x1;
               for (int i = 0; i < 32; i++)
                 {
+                  std::cout << std::hex << dci->GetDci ().m_rbBitmap << std::endl;
                   if (((dci->GetDci ().m_rbBitmap & mask) >> i) == 1)
                     {
                       for (int k = 0; k < GetRbgSize (); k++)
                         {
                           m_dlDataRbMap.push_back ((i * GetRbgSize ()) + k);
-                          //NS_LOG_DEBUG(this << " [enb]DL-DCI allocated PRB " << (i*GetRbgSize()) + k);
+                          NS_LOG_DEBUG(this << " [enb]DL-DCI allocated PRB " << (i*GetRbgSize()) + k);
+                          NS_LOG_DEBUG("YY i " << i << " RbgSize " << (uint16_t) GetRbgSize() << " k " << k);
                           GeneratePowerAllocationMap (dci->GetDci ().m_rnti, (i * GetRbgSize ()) + k );
                         }
                     }

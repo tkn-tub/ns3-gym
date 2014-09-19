@@ -9,12 +9,32 @@ http://www.nsnam.org including tutorials: http://www.nsnam.org/tutorials.html
 Consult the file CHANGES.html for more detailed information about changed
 API and behavior across ns-3 releases.
 
+Release 3-dev
+=============
+
+Availability
+------------
+This release is not yet available.
+
+Supported platforms
+-------------------
+
+New user-visible features
+-------------------------
+
+Bugs fixed
+----------
+
+Known issues
+------------
+
 Release 3.21
 ============
 
 Availability
 ------------
-This release is not yet available.
+This release is available from:
+http://www.nsnam.org/release/ns-allinone-3.21.tar.bz2
 
 Supported platforms
 -------------------

@@ -1002,6 +1002,8 @@ LteHelper::EnableLogComponents (void)
   LogComponentEnable ("PhyTxStatsCalculator", LOG_LEVEL_ALL);
   LogComponentEnable ("PhyRxStatsCalculator", LOG_LEVEL_ALL);
   LogComponentEnable ("PhyStatsCalculator", LOG_LEVEL_ALL);
+  LogComponentEnable ("PssFfMacScheduler", LOG_LEVEL_ALL);
+  LogComponentEnable ("SpectrumModel", LOG_LEVEL_ALL);
 
 
 }

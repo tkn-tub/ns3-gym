@@ -224,7 +224,11 @@ LteSpectrumValueHelper::GetSpectrumModel (uint16_t earfcn, uint8_t txBandwidthCo
           rb.fh = f;
           rbs.push_back (rb);
         }
+      NS_LOG_DEBUG ("XX txBandwidth " << (int16_t) txBandwidthConfiguration << " f " << f);
+      std::cout.precision(15);
+      std::cout << "XX f " << std::fixed << f << std::endl;
       ret = Create<SpectrumModel> (rbs);
+      NS_LOG_DEBUG ("XX numBands " << ret->GetNumBands ());
       g_lteSpectrumModelMap.insert (std::pair<LteSpectrumModelId, Ptr<SpectrumModel> > (key, ret));
     }
   NS_LOG_LOGIC ("returning SpectrumModel::GetUid () == " << ret->GetUid ());

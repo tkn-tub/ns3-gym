@@ -985,6 +985,7 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
                       rbgMask = rbgMask + (0x1 << dciRbg.at (k));
                       rbgAllocatedNum++;
                     }
+	          std::cout << "ZZ " << std::hex << dci.m_rbBitmap << ":" << std::hex<< rbgMask << std::endl;
                   dci.m_rbBitmap = rbgMask;
                   rbgMap = rbgMapCopy;
                   NS_LOG_INFO (this << " Move retx in RBGs " << dciRbg.size ());
