@@ -24,6 +24,7 @@ New user-visible features
 
 Bugs fixed
 ----------
+- Bug 1991 - PcapFileWrapper::CaptureSize attribute (snaplen) has no effect.
 
 Known issues
 ------------
