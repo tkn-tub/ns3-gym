@@ -211,16 +211,30 @@ public:
   void CheckForLostPackets (Time maxDelay);
 
   // --- methods to get the results ---
+
+  /// Container: FlowId, FlowStats
+  typedef std::map<FlowId, FlowStats> FlowStatsContainer;
+  /// Container Iterator: FlowId, FlowStats
+  typedef std::map<FlowId, FlowStats>::iterator FlowStatsContainerI;
+  /// Container Const Iterator: FlowId, FlowStats
+  typedef std::map<FlowId, FlowStats>::const_iterator FlowStatsContainerCI;
+  /// Container: FlowProbe
+  typedef std::vector< Ptr<FlowProbe> > FlowProbeContainer;
+  /// Container Iterator: FlowProbe
+  typedef std::vector< Ptr<FlowProbe> >::iterator FlowProbeContainerI;
+  /// Container Const Iterator: FlowProbe
+  typedef std::vector< Ptr<FlowProbe> >::const_iterator FlowProbeContainerCI;
+
   /// Retrieve all collected the flow statistics.  Note, if the
   /// FlowMonitor has not stopped monitoring yet, you should call
   /// CheckForLostPackets() to make sure all possibly lost packets are
   /// accounted for.
   /// \returns the flows statistics
-  std::map<FlowId, FlowStats> GetFlowStats () const;
+  const FlowStatsContainer& GetFlowStats () const;
 
   /// Get a list of all FlowProbe's associated with this FlowMonitor
   /// \returns a list of all the probes
-  std::vector< Ptr<FlowProbe> > GetAllProbes () const;
+  const FlowProbeContainer& GetAllProbes () const;
 
   /// Serializes the results to an std::ostream in XML format
   /// \param os the output stream
@@ -228,12 +242,14 @@ public:
   /// \param enableHistograms if true, include also the histograms in the output
   /// \param enableProbes if true, include also the per-probe/flow pair statistics in the output
   void SerializeToXmlStream (std::ostream &os, int indent, bool enableHistograms, bool enableProbes);
+
   /// Same as SerializeToXmlStream, but returns the output as a std::string
   /// \param indent number of spaces to use as base indentation level
   /// \param enableHistograms if true, include also the histograms in the output
   /// \param enableProbes if true, include also the per-probe/flow pair statistics in the output
   /// \return the XML output as string
   std::string SerializeToXmlString (int indent, bool enableHistograms, bool enableProbes);
+
   /// Same as SerializeToXmlStream, but writes to a file instead
   /// \param fileName name or path of the output file that will be created
   /// \param enableHistograms if true, include also the histograms in the output
@@ -257,13 +273,13 @@ private:
   };
 
   /// FlowId --> FlowStats
-  std::map<FlowId, FlowStats> m_flowStats;
+  FlowStatsContainer m_flowStats;
 
   /// (FlowId,PacketId) --> TrackedPacket
   typedef std::map< std::pair<FlowId, FlowPacketId>, TrackedPacket> TrackedPacketMap;
   TrackedPacketMap m_trackedPackets; //!< Tracked packets
   Time m_maxPerHopDelay; //!< Minimum per-hop delay
-  std::vector< Ptr<FlowProbe> > m_flowProbes; //!< all the FlowProbes
+  FlowProbeContainer m_flowProbes; //!< all the FlowProbes
 
   // note: this is needed only for serialization
   std::list<Ptr<FlowClassifier> > m_classifiers; //!< the FlowClassifiers

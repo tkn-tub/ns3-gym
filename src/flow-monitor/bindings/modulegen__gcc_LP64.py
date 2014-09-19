@@ -4239,14 +4239,14 @@ def register_Ns3FlowMonitor_methods(root_module, cls):
     cls.add_method('CheckForLostPackets', 
                    'void', 
                    [param('ns3::Time', 'maxDelay')])
-    ## flow-monitor.h (module 'flow-monitor'): std::vector<ns3::Ptr<ns3::FlowProbe>, std::allocator<ns3::Ptr<ns3::FlowProbe> > > ns3::FlowMonitor::GetAllProbes() const [member function]
+    ## flow-monitor.h (module 'flow-monitor'): std::vector<ns3::Ptr<ns3::FlowProbe>, std::allocator<ns3::Ptr<ns3::FlowProbe> > > const & ns3::FlowMonitor::GetAllProbes() const [member function]
     cls.add_method('GetAllProbes', 
-                   'std::vector< ns3::Ptr< ns3::FlowProbe > >', 
+                   'std::vector< ns3::Ptr< ns3::FlowProbe > > const &', 
                    [], 
                    is_const=True)
-    ## flow-monitor.h (module 'flow-monitor'): std::map<unsigned int, ns3::FlowMonitor::FlowStats, std::less<unsigned int>, std::allocator<std::pair<unsigned int const, ns3::FlowMonitor::FlowStats> > > ns3::FlowMonitor::GetFlowStats() const [member function]
+    ## flow-monitor.h (module 'flow-monitor'): std::map<unsigned int, ns3::FlowMonitor::FlowStats, std::less<unsigned int>, std::allocator<std::pair<unsigned int const, ns3::FlowMonitor::FlowStats> > > const & ns3::FlowMonitor::GetFlowStats() const [member function]
     cls.add_method('GetFlowStats', 
-                   'std::map< unsigned int, ns3::FlowMonitor::FlowStats >', 
+                   'std::map< unsigned int, ns3::FlowMonitor::FlowStats > const &', 
                    [], 
                    is_const=True)
     ## flow-monitor.h (module 'flow-monitor'): ns3::TypeId ns3::FlowMonitor::GetInstanceTypeId() const [member function]
