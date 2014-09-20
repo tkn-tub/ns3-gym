@@ -33,6 +33,7 @@
 #include "ns3/object.h"
 #include "ns3/traced-callback.h"
 #include "ns3/sgi-hashmap.h"
+#include "ns3/output-stream-wrapper.h"
 
 namespace ns3 {
 
@@ -76,8 +77,8 @@ public:
   /**
    * \brief Set the NetDevice and Ipv4Interface associated with the ArpCache
    *
-   * \param device The hardware NetDevice associated with this ARP chache
-   * \param interface the Ipv4Interface associated with this ARP chache
+   * \param device The hardware NetDevice associated with this ARP cache
+   * \param interface the Ipv4Interface associated with this ARP cache
    */
   void SetDevice (Ptr<NetDevice> device, Ptr<Ipv4Interface> interface);
   /**
@@ -153,6 +154,13 @@ public:
    * \brief Clear the ArpCache of all entries
    */
   void Flush (void);
+
+  /**
+   * \brief Print the ARP cache entries
+   *
+   * \param stream the ostream the ARP cache entries is printed to
+   */
+  void PrintArpCache (Ptr<OutputStreamWrapper> stream);
 
   /**
    * \brief A record that that holds information about an ArpCache entry

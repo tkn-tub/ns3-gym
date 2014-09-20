@@ -21,6 +21,8 @@ Supported platforms
 
 New user-visible features
 -------------------------
+- It is now possible to print the Neighbor Cache (ARP and NDISC) by using
+  the RoutingProtocolHelper
 
 Bugs fixed
 ----------

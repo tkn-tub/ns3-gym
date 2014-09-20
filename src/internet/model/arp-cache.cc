@@ -24,6 +24,7 @@
 #include "ns3/log.h"
 #include "ns3/node.h"
 #include "ns3/trace-source-accessor.h"
+#include "ns3/names.h"
 
 #include "arp-cache.h"
 #include "arp-header.h"
@@ -242,6 +243,42 @@ ArpCache::Flush (void)
     }
 }
 
+void
+ArpCache::PrintArpCache (Ptr<OutputStreamWrapper> stream)
+{
+  NS_LOG_FUNCTION (this << stream);
+  std::ostream* os = stream->GetStream ();
+
+  for (CacheI i = m_arpCache.begin (); i != m_arpCache.end (); i++)
+    {
+      *os << i->first << " dev ";
+      std::string found = Names::FindName (m_device);
+      if (Names::FindName (m_device) != "")
+        {
+          *os << found;
+        }
+      else
+        {
+          *os << static_cast<int> (m_device->GetIfIndex ());
+        }
+
+      *os << " lladdr " << i->second->GetMacAddress ();
+
+      if (i->second->IsAlive ())
+        {
+          *os << " REACHABLE\n";
+        }
+      else if (i->second->IsWaitReply ())
+        {
+          *os << " DELAY\n";
+        }
+      else
+        {
+          *os << " STALE\n";
+        }
+    }
+}
+
 ArpCache::Entry *
 ArpCache::Lookup (Ipv4Address to)
 {
@@ -346,7 +383,6 @@ Address
 ArpCache::Entry::GetMacAddress (void) const
 {
   NS_LOG_FUNCTION (this);
-  NS_ASSERT (m_state == ALIVE);
   return m_macAddress;
 }
 Ipv4Address 

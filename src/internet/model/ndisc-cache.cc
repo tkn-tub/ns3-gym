@@ -21,6 +21,7 @@
 #include "ns3/log.h"
 #include "ns3/uinteger.h"
 #include "ns3/node.h"
+#include "ns3/names.h"
 
 #include "ipv6-l3-protocol.h" 
 #include "icmpv6-l4-protocol.h"
@@ -147,6 +148,49 @@ uint32_t NdiscCache::GetUnresQlen ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_unresQlen;
+}
+
+void NdiscCache::PrintNdiscCache (Ptr<OutputStreamWrapper> stream)
+{
+  NS_LOG_FUNCTION (this << stream);
+  std::ostream* os = stream->GetStream ();
+
+  for (CacheI i = m_ndCache.begin (); i != m_ndCache.end (); i++)
+    {
+      *os << i->first << " dev ";
+      std::string found = Names::FindName (m_device);
+      if (Names::FindName (m_device) != "")
+        {
+          *os << found;
+        }
+      else
+        {
+          *os << static_cast<int> (m_device->GetIfIndex ());
+        }
+
+      *os << " lladdr " << i->second->GetMacAddress ();
+
+      if (i->second->IsReachable ())
+        {
+          *os << " REACHABLE\n";
+        }
+      else if (i->second->IsDelay ())
+        {
+          *os << " DELAY\n";
+        }
+      else if (i->second->IsIncomplete ())
+        {
+          *os << " INCOMPLETE\n";
+        }
+      else if (i->second->IsProbe ())
+        {
+          *os << " PROBE\n";
+        }
+      else
+        {
+          *os << " STALE\n";
+        }
+    }
 }
 
 NdiscCache::Entry::Entry (NdiscCache* nd)
