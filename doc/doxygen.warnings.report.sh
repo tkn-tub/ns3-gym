@@ -7,6 +7,34 @@ me=$(basename $0)
 DIR="$(dirname $0)"
 ROOT="$(hg root)"
 
+# Use file handle 6 for verbose output
+exec 6>/dev/null
+
+function verbose
+{
+    if [ $verbosity -eq 1 ]; then
+	if [ "$1" == "-n" ]; then
+	    shift
+	    echo -n "$1"
+	else
+	    echo "$1"
+	fi
+    fi
+    echo "$2"
+}
+
+function status_report
+{
+    local status="$1"
+    local long_msg="$2"
+    if [ $status -eq 0 ]; then
+	verbose "$long_msg "  "done."
+    else
+	verbose "$long_msg "  "FAILED."
+	exit 1
+    fi
+}
+   
 # Known log files
 STANDARDLOGFILE=doxygen.log
 WARNINGSLOGFILE=doxygen.warnings.log
@@ -21,7 +49,7 @@ function usage
 {
     cat <<-EOF
 	
-	Usage: $me [-eth] [-f <log-file> | -l | -s] [-m <module> | -F <regex>]
+	Usage: $me [-ethv] [-f <log-file> | -l | -s] [-m <module> | -F <regex>]
 	
 	Run doxygen to generate all errors; report error counts
 	by module and file.
@@ -49,7 +77,8 @@ function usage
 	-f  Skip doxygen run; use existing <log-file>.
 	-s  Skip doxygen run; use existing warnings log doc/$WARNINGSLOGFILE
 	-l  Skip doxygen run; use the normal doxygen log doc/$STANDARDLOGFILE
-		
+
+	-v  Show the doxygen run output
 	-h  Print this usage message
 	    
 EOF
@@ -66,6 +95,7 @@ logfilearg=
 usestandard=0
 # skip doxygen run; using existing log file
 SKIPDOXY=0
+verbosity=0
 
 # Filtering flags
 filter_examples=0
@@ -73,19 +103,19 @@ filter_test=0
 filter_module=""
 filter_regex=""
 
-while getopts :etm:F:lF:sh option ; do
+while getopts :etm:F:lF:svh option ; do
 
     case $option in
 	
-	(e)  filter_examples=1        ;;
+	(e)  filter_examples=1          ;;
 	
-	(t)  filter_test=1            ;;
+	(t)  filter_test=1              ;;
 
-	(m)  filter_module="$OPTARG"  ;;
+	(m)  filter_module="$OPTARG"    ;;
 
-	(F)  filter_regex="$OPTARG"   ;;
+	(F)  filter_regex="$OPTARG"     ;;
 
-	(l)  usestandard=1            ;;
+	(l)  usestandard=1              ;;
 
 	(f)  usefilearg=1
 	     logfilearg="$OPTARG"
@@ -95,9 +125,16 @@ while getopts :etm:F:lF:sh option ; do
 	     logfilearg="$DIR/$WARNINGSLOGFILE"
 	     ;;
 
-	(h)  usage ;;
+	(v)  verbosity=1
+	     exec 6>&1
+	     ;;
+
+	(h)  usage                      ;;
+	
 	(:)  echo "$me: Missing argument to -$OPTARG" ; usage ;;
+	
 	(\?) echo "$me: Invalid option: -$OPTARG"     ; usage ;;
+	
     esac
 done
 
@@ -128,7 +165,10 @@ if [ $SKIPDOXY -eq 1 ]; then
 else
 
     # Run introspection, which may require a build
-    (cd "$ROOT" && ./waf --run print-introspected-doxygen >doc/introspected-doxygen.h)
+    verbose -n "Building and running print-introspected-doxygen..."
+    (cd "$ROOT" && ./waf --run print-introspected-doxygen >doc/introspected-doxygen.h >&6 2>&6 )
+    status=$?
+    status_report $status "./waf build"
 
     # Modify doxygen.conf to generate all the warnings
     # (We also suppress dot graphs, so shorten the run time.)
@@ -138,19 +178,14 @@ else
     sed -i.bak -E '/^EXTRACT_ALL |^HAVE_DOT |^WARNINGS /s/YES/no/' $conf
 
     echo
-    echo -n "Rebuilding doxygen docs with full errors..."
-    (cd "$ROOT" && ./waf --doxygen >/dev/null 2>&1)
+    verbose -n "Rebuilding doxygen docs with full errors..."
+    (cd "$ROOT" && ./waf --doxygen >&6 2>&6 )
     status=$?
 
     rm -f $conf
     mv -f $conf.bak $conf
 
-    if [ $status -eq 0 ]; then
-	echo "Done."
-    else
-	echo "FAILED."
-	exit 1
-    fi
+    status_report $status "Doxygen run"
 
     cp -f "$DIR/$STANDARDLOGFILE" "$DIR/$WARNINGSLOGFILE"
 
