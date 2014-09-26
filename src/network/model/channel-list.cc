@@ -24,9 +24,9 @@
 #include "channel-list.h"
 #include "channel.h"
 
-namespace ns3 {
-
 NS_LOG_COMPONENT_DEFINE ("ChannelList");
+
+namespace ns3 {
 
 /**
  * \ingroup network

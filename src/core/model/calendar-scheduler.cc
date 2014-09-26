@@ -26,9 +26,9 @@
 #include "assert.h"
 #include "log.h"
 
-namespace ns3 {
-
 NS_LOG_COMPONENT_DEFINE ("CalendarScheduler");
+
+namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (CalendarScheduler);
 

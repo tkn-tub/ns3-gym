@@ -9,9 +9,9 @@
 #include "ns3/boolean.h"
 #include "ns3/ipv4-route.h"
 
-namespace ns3 {
-
 NS_LOG_COMPONENT_DEFINE ("Icmpv4L4Protocol");
+
+namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (Icmpv4L4Protocol);
 

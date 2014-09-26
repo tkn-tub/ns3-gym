@@ -26,10 +26,9 @@
 
 #include <limits>
 
-namespace ns3 {
-
 NS_LOG_COMPONENT_DEFINE ("LteGlobalPathlossDatabase");
 
+namespace ns3 {
 
 LteGlobalPathlossDatabase::~LteGlobalPathlossDatabase (void)
 {

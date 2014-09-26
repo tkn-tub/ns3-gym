@@ -28,9 +28,9 @@
 #include "inet-topology-reader.h"
 
 
-namespace ns3 {
-
 NS_LOG_COMPONENT_DEFINE ("InetTopologyReader");
+
+namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (InetTopologyReader);
 

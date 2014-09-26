@@ -28,9 +28,9 @@
 #include "ns3/config.h"
 #include "ns3/get-wildcard-matches.h"
 
-namespace ns3 {
-
 NS_LOG_COMPONENT_DEFINE ("FileHelper");
+
+namespace ns3 {
 
 FileHelper::FileHelper ()
   : m_aggregator                     (0),

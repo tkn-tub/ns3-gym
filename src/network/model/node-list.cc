@@ -27,9 +27,9 @@
 #include "node-list.h"
 #include "node.h"
 
-namespace ns3 {
-
 NS_LOG_COMPONENT_DEFINE ("NodeList");
+
+namespace ns3 {
 
 /**
  * \ingroup network

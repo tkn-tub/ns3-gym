@@ -29,9 +29,10 @@
 #include "ns3/trace-source-accessor.h"
 #include "udp-echo-client.h"
 
+NS_LOG_COMPONENT_DEFINE ("UdpEchoClientApplication");
+
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("UdpEchoClientApplication");
 NS_OBJECT_ENSURE_REGISTERED (UdpEchoClient);
 
 TypeId

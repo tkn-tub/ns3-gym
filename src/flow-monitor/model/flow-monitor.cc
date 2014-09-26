@@ -29,9 +29,9 @@
 
 #define PERIODIC_CHECK_INTERVAL (Seconds (1))
 
-namespace ns3 {
-
 NS_LOG_COMPONENT_DEFINE ("FlowMonitor");
+
+namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (FlowMonitor);
 

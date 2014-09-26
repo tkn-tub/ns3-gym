@@ -30,9 +30,9 @@
 #include "ns3/log.h"
 #include "ns3/get-wildcard-matches.h"
 
-namespace ns3 {
-
 NS_LOG_COMPONENT_DEFINE ("GnuplotHelper");
+
+namespace ns3 {
 
 GnuplotHelper::GnuplotHelper ()
   : m_aggregator                     (0),

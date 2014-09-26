@@ -28,10 +28,10 @@
 // #define RESERVED_BINS_INC	10
 
 
+NS_LOG_COMPONENT_DEFINE ("Histogram");
+
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("Histogram");
- 
 // uint32_t 
 // Histogram::GetSize () const
 // {

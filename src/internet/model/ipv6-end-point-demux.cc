@@ -22,9 +22,9 @@
 #include "ipv6-end-point.h"
 #include "ns3/log.h"
 
-namespace ns3 {
-
 NS_LOG_COMPONENT_DEFINE ("Ipv6EndPointDemux");
+
+namespace ns3 {
 
 Ipv6EndPointDemux::Ipv6EndPointDemux ()
   : m_ephemeral (49152),

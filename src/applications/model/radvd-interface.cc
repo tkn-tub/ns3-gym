@@ -21,10 +21,10 @@
 #include "radvd-interface.h"
 #include <ns3/log.h>
 
+NS_LOG_COMPONENT_DEFINE ("RadvdInterface");
+
 namespace ns3 
 {
-
-NS_LOG_COMPONENT_DEFINE ("RadvdInterface");
 
 RadvdInterface::RadvdInterface (uint32_t interface)
   : m_interface (interface)

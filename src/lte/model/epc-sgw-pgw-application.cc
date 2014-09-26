@@ -28,9 +28,9 @@
 #include "ns3/epc-gtpu-header.h"
 #include "ns3/abort.h"
 
-namespace ns3 {
-
 NS_LOG_COMPONENT_DEFINE ("EpcSgwPgwApplication");
+
+namespace ns3 {
 
 
 /////////////////////////

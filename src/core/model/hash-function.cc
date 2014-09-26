@@ -22,9 +22,9 @@
 #include "hash-function.h"
 
 
-namespace ns3 {
-
 NS_LOG_COMPONENT_DEFINE ("HashFunction");
+
+namespace ns3 {
 
 namespace Hash {
 

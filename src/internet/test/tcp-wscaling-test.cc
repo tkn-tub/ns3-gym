@@ -50,9 +50,9 @@
 
 #include "ns3/tcp-socket-base.h"
 
-namespace ns3 {
-
 NS_LOG_COMPONENT_DEFINE ("WScalingTestSuite");
+
+namespace ns3 {
 
 class WScalingTestCase : public TestCase
 {

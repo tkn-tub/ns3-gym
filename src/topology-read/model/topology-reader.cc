@@ -24,9 +24,9 @@
 #include "topology-reader.h"
 
 
-namespace ns3 {
-
 NS_LOG_COMPONENT_DEFINE ("TopologyReader");
+
+namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (TopologyReader);
 

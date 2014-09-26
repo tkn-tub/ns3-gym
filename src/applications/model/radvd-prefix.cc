@@ -21,10 +21,10 @@
 #include "radvd-prefix.h"
 #include <ns3/log.h>
 
+NS_LOG_COMPONENT_DEFINE ("RadvdPrefix");
+
 namespace ns3
 {
-
-NS_LOG_COMPONENT_DEFINE ("RadvdPrefix");
 
 RadvdPrefix::RadvdPrefix (Ipv6Address network, uint8_t prefixLength, uint32_t preferredLifeTime, uint32_t validLifeTime, bool onLinkFlag, bool autonomousFlag, bool routerAddrFlag)
   : m_network (network),

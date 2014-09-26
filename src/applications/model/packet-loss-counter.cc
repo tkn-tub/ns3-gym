@@ -24,9 +24,9 @@
 #include "ns3/uinteger.h"
 #include "packet-loss-counter.h"
 
-namespace ns3 {
-
 NS_LOG_COMPONENT_DEFINE ("PacketLossCounter");
+
+namespace ns3 {
 
 
 PacketLossCounter::PacketLossCounter (uint8_t bitmapSize)

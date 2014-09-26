@@ -26,6 +26,7 @@ New user-visible features
 
 Bugs fixed
 ----------
+- Bug 1551 - NS_LOG_COMPONENT_DEFINE inside or outside of ns3 namespace?
 - Bug 1983 - FlowMonitor returns containers copies instead of references.
 - Bug 1991 - PcapFileWrapper::CaptureSize attribute (snaplen) has no effect.
 

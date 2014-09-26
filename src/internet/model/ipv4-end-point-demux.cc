@@ -22,9 +22,9 @@
 #include "ipv4-end-point.h"
 #include "ns3/log.h"
 
-namespace ns3 {
-
 NS_LOG_COMPONENT_DEFINE ("Ipv4EndPointDemux");
+
+namespace ns3 {
 
 Ipv4EndPointDemux::Ipv4EndPointDemux ()
   : m_ephemeral (49152), m_portLast (65535), m_portFirst (49152)

@@ -29,9 +29,9 @@
 #include <cstdlib>
 #endif
 
-namespace ns3 {
-
 NS_LOG_COMPONENT_DEFINE ("GlobalValue");
+
+namespace ns3 {
 
 GlobalValue::GlobalValue (std::string name, std::string help,
                           const AttributeValue &initialValue,

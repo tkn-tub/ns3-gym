@@ -29,10 +29,9 @@
 #include "ns3/config.h"
 #include "ns3/flow-id-tag.h"
 
-namespace ns3 {
+NS_LOG_COMPONENT_DEFINE ("Ipv6FlowProbe");
 
-NS_LOG_COMPONENT_DEFINE ("Ipv6FlowProbe")
-  ;
+namespace ns3 {
 
 //////////////////////////////////////
 // Ipv6FlowProbeTag class implementation //

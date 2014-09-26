@@ -23,9 +23,9 @@
 #include <ns3/simulator.h>
 #include <ns3/log.h>
 
-namespace ns3 {
-
 NS_LOG_COMPONENT_DEFINE ("MacStatsCalculator");
+
+namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (MacStatsCalculator);
 

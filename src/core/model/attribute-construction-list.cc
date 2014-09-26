@@ -20,9 +20,9 @@
 #include "attribute-construction-list.h"
 #include "log.h"
 
-namespace ns3 {
-
 NS_LOG_COMPONENT_DEFINE("AttributeConstructionList");
+
+namespace ns3 {
 
 AttributeConstructionList::AttributeConstructionList ()
 {
