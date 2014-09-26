@@ -54,10 +54,9 @@
 #include "lte-test-sinr-chunk-processor.h"
 #include <ns3/lte-common.h>
 
-NS_LOG_COMPONENT_DEFINE ("LteUeMeasurementsTest");
-
 using namespace ns3;
 
+NS_LOG_COMPONENT_DEFINE ("LteUeMeasurementsTest");
 
 // ===== LTE-UE-MEASUREMENTS TEST SUITE ==================================== //
 

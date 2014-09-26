@@ -26,10 +26,9 @@
 
 #include "epc-test-gtpu.h"
 
-NS_LOG_COMPONENT_DEFINE ("EpcGtpuTest");
-
 using namespace ns3;
 
+NS_LOG_COMPONENT_DEFINE ("EpcGtpuTest");
 
 /**
  * TestSuite

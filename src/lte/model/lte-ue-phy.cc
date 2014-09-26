@@ -41,10 +41,9 @@
 #include <ns3/boolean.h>
 #include <ns3/lte-ue-power-control.h>
 
-NS_LOG_COMPONENT_DEFINE ("LteUePhy");
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("LteUePhy");
 
 
 

@@ -46,9 +46,9 @@
 #include "ns3/ipv4-address.h"
 #include "ns3/llc-snap-header.h"
 
-NS_LOG_COMPONENT_DEFINE ("BaseStationNetDevice");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("BaseStationNetDevice");
 
 NS_OBJECT_ENSURE_REGISTERED (BaseStationNetDevice);
 

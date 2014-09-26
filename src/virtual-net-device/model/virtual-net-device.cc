@@ -30,9 +30,9 @@
 #include "ns3/uinteger.h"
 
 
-NS_LOG_COMPONENT_DEFINE ("VirtualNetDevice");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("VirtualNetDevice");
 
 NS_OBJECT_ENSURE_REGISTERED (VirtualNetDevice);
 

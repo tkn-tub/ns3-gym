@@ -22,9 +22,9 @@
 #include <ns3/packet-burst.h>
 
 
-NS_LOG_COMPONENT_DEFINE ("LrWpanSpectrumSignalParameters");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("LrWpanSpectrumSignalParameters");
 
 LrWpanSpectrumSignalParameters::LrWpanSpectrumSignalParameters (void)
 {

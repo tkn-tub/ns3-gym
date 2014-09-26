@@ -33,11 +33,9 @@
 
 #include "buildings-shadowing-test.h"
 
-NS_LOG_COMPONENT_DEFINE ("BuildingsShadowingTest");
-
-
 using namespace ns3;
 
+NS_LOG_COMPONENT_DEFINE ("BuildingsShadowingTest");
 
 
 /**

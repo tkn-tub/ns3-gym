@@ -40,8 +40,9 @@
 #include <sstream>
 #include <string>
 
-NS_LOG_COMPONENT_DEFINE ("UanHelper");
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("UanHelper");
 
 /**
  * Ascii trace callback on Phy transmit events.

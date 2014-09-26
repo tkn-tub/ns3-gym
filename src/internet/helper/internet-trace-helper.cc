@@ -31,9 +31,9 @@
 
 #include "internet-trace-helper.h"
 
-NS_LOG_COMPONENT_DEFINE ("InternetTraceHelper");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("InternetTraceHelper");
 
 void 
 PcapHelperForIpv4::EnablePcapIpv4 (std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface, bool explicitFilename)

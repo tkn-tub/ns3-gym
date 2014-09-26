@@ -25,9 +25,9 @@
 #include <ns3/simulator.h>
 #include <ns3/log.h>
 
-NS_LOG_COMPONENT_DEFINE ("PhyTxStatsCalculator");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("PhyTxStatsCalculator");
 
 NS_OBJECT_ENSURE_REGISTERED (PhyTxStatsCalculator);
 

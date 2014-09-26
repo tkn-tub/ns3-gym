@@ -24,10 +24,9 @@
 #include <fstream>
 
 
-NS_LOG_COMPONENT_DEFINE ("GtkconfigStore");
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("GtkconfigStore");
 
 GtkConfigStore::GtkConfigStore ()
 {

@@ -40,10 +40,9 @@
 #include <mpi.h>
 #endif
 
-NS_LOG_COMPONENT_DEFINE ("GrantedTimeWindowMpiInterface");
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("GrantedTimeWindowMpiInterface");
 
 SentBuffer::SentBuffer ()
 {

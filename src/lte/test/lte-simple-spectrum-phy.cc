@@ -30,9 +30,9 @@
 #include <ns3/boolean.h>
 #include <ns3/double.h>
 
-NS_LOG_COMPONENT_DEFINE ("LteSimpleSpectrumPhy");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("LteSimpleSpectrumPhy");
 
 NS_OBJECT_ENSURE_REGISTERED (LteSimpleSpectrumPhy);
 

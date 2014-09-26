@@ -47,9 +47,9 @@
 
 #include "../src/internet/model/tcp-option-ts.h"
 
-NS_LOG_COMPONENT_DEFINE ("TimestampTestSuite");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("TimestampTestSuite");
 
 class TimestampTestCase : public TestCase
 {

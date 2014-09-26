@@ -20,9 +20,9 @@
 #include "socket-factory.h"
 #include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("SocketFactory");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("SocketFactory");
 
 NS_OBJECT_ENSURE_REGISTERED (SocketFactory);
 

@@ -25,9 +25,9 @@
 #include <ns3/spectrum-value.h>
 #include "lte-chunk-processor.h"
 
-NS_LOG_COMPONENT_DEFINE ("LteChunkProcessor");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("LteChunkProcessor");
 
 LteChunkProcessor::LteChunkProcessor ()
 {

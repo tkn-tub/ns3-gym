@@ -28,10 +28,9 @@
 #include <ns3/ptr.h>
 #include <iostream>
 
-NS_LOG_COMPONENT_DEFINE ("SpectrumInterferenceTest");
-
 using namespace ns3;
 
+NS_LOG_COMPONENT_DEFINE ("SpectrumInterferenceTest");
 
 
 

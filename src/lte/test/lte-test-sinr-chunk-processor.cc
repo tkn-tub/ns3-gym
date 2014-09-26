@@ -23,10 +23,9 @@
 #include <ns3/spectrum-value.h>
 #include "lte-test-sinr-chunk-processor.h"
 
-NS_LOG_COMPONENT_DEFINE ("LteTestSinrChunkProcessor");
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("LteTestSinrChunkProcessor");
 
 LteTestSinrChunkProcessor::LteTestSinrChunkProcessor ()
 {

@@ -22,9 +22,9 @@
 #include "log.h"
 #include <sstream>
 
-NS_LOG_COMPONENT_DEFINE ("Uinteger");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Uinteger");
 
 ATTRIBUTE_VALUE_IMPLEMENT_WITH_NAME (uint64_t,Uinteger);
 

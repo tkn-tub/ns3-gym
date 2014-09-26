@@ -34,10 +34,9 @@
 
 
 
-NS_LOG_COMPONENT_DEFINE ("BuildingsPathlossTest");
-
 using namespace ns3;
 
+NS_LOG_COMPONENT_DEFINE ("BuildingsPathlossTest");
 
 /**
  * Test 1.1 BuildingsPathlossModel Pathloss compound test

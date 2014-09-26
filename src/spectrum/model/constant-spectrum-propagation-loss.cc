@@ -26,10 +26,9 @@
 #include "ns3/double.h"
 
 
-NS_LOG_COMPONENT_DEFINE ("ConstantSpectrumPropagationLossModel");
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("ConstantSpectrumPropagationLossModel");
 
 NS_OBJECT_ENSURE_REGISTERED (ConstantSpectrumPropagationLossModel);
 

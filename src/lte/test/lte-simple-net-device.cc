@@ -23,10 +23,9 @@
 #include "ns3/log.h"
 #include "lte-simple-net-device.h"
 
-NS_LOG_COMPONENT_DEFINE ("LteSimpleNetDevice");
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("LteSimpleNetDevice");
 
 NS_OBJECT_ENSURE_REGISTERED (LteSimpleNetDevice);
 

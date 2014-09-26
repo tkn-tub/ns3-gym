@@ -139,10 +139,10 @@
 
 
 namespace ns3 {
-namespace olsr {
 
 NS_LOG_COMPONENT_DEFINE ("OlsrRoutingProtocol");
-
+  
+namespace olsr {
 
 /********** OLSR class **********/
 

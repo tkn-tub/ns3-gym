@@ -26,9 +26,9 @@
 #include <ns3/lte-module.h>
 #include <cmath>
 
-NS_LOG_COMPONENT_DEFINE ("LteRrcTest");
-
 using namespace ns3;
+
+NS_LOG_COMPONENT_DEFINE ("LteRrcTest");
 
 class LteRrcConnectionEstablishmentTestCase : public TestCase
 {

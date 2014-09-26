@@ -29,12 +29,9 @@
 #include "non-communicating-net-device.h"
 
 
-NS_LOG_COMPONENT_DEFINE ("NonCommunicatingNetDevice");
-
-
 namespace ns3 {
 
-
+NS_LOG_COMPONENT_DEFINE ("NonCommunicatingNetDevice");
 
 NS_OBJECT_ENSURE_REGISTERED (NonCommunicatingNetDevice);
 

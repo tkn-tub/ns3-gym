@@ -38,9 +38,9 @@
 #include "ns3/boolean.h"
 #include <cmath>
 
-NS_LOG_COMPONENT_DEFINE ("YansWifiPhy");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("YansWifiPhy");
 
 NS_OBJECT_ENSURE_REGISTERED (YansWifiPhy);
 

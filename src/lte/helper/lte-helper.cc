@@ -62,9 +62,9 @@
 #include <ns3/lte-spectrum-value-helper.h>
 #include <ns3/epc-x2.h>
 
-NS_LOG_COMPONENT_DEFINE ("LteHelper");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("LteHelper");
 
 NS_OBJECT_ENSURE_REGISTERED (LteHelper);
 

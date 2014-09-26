@@ -27,9 +27,9 @@
 #include "ns3/log.h"
 #include <cmath>
 
-NS_LOG_COMPONENT_DEFINE ("BuildingAllocator");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("BuildingAllocator");
 
 NS_OBJECT_ENSURE_REGISTERED (GridBuildingAllocator);
 

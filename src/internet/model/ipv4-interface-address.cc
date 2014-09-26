@@ -22,9 +22,9 @@
 #include "ns3/assert.h"
 #include "ipv4-interface-address.h"
 
-NS_LOG_COMPONENT_DEFINE ("Ipv4InterfaceAddress");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Ipv4InterfaceAddress");
 
 Ipv4InterfaceAddress::Ipv4InterfaceAddress ()
   : m_scope (GLOBAL), 

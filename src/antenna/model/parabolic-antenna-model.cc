@@ -27,9 +27,9 @@
 #include "parabolic-antenna-model.h"
 
 
-NS_LOG_COMPONENT_DEFINE ("ParabolicAntennaModel");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("ParabolicAntennaModel");
 
 NS_OBJECT_ENSURE_REGISTERED (ParabolicAntennaModel);
 

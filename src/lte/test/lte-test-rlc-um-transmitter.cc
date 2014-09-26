@@ -27,10 +27,9 @@
 #include "lte-test-rlc-um-transmitter.h"
 #include "lte-test-entities.h"
 
-NS_LOG_COMPONENT_DEFINE ("LteRlcUmTransmitterTest");
-
 using namespace ns3;
 
+NS_LOG_COMPONENT_DEFINE ("LteRlcUmTransmitterTest");
 
 /**
  * TestSuite 4.1.1 RLC UM: Only transmitter

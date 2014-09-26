@@ -39,10 +39,9 @@
 #include <ns3/double.h>
 #include <ns3/config.h>
 
-NS_LOG_COMPONENT_DEFINE ("LteSpectrumPhy");
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("LteSpectrumPhy");
 
 
 // duration of SRS portion of UL subframe  

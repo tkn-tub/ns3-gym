@@ -39,10 +39,9 @@
 
 #include "lte-test-sinr-chunk-processor.h"
 
-NS_LOG_COMPONENT_DEFINE ("LteInterferenceTest");
-
 using namespace ns3;
 
+NS_LOG_COMPONENT_DEFINE ("LteInterferenceTest");
 
 void
 LteTestDlSchedulingCallback (LteInterferenceTestCase *testcase, std::string path,

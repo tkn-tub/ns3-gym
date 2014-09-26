@@ -34,9 +34,9 @@
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE ("lr-wpan-ack-test");
-
 using namespace ns3;
+
+NS_LOG_COMPONENT_DEFINE ("lr-wpan-ack-test");
 
 class LrWpanAckTestCase : public TestCase
 {

@@ -36,9 +36,10 @@
 #include "ns3/socket.h"
 #include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("DsrSendBuffer");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("DsrSendBuffer");
+  
 namespace dsr {
 
 uint32_t

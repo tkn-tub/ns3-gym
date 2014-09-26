@@ -39,9 +39,9 @@
 #include <vector>
 #include <algorithm>
 
-NS_LOG_COMPONENT_DEFINE ("UanMacRcGw");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("UanMacRcGw");
 
 NS_OBJECT_ENSURE_REGISTERED (UanMacRcGw);
 

@@ -22,9 +22,9 @@
 #include "ns3/simulator.h"
 #include "ns3/trace-source-accessor.h"
 
-NS_LOG_COMPONENT_DEFINE ("WifiPhyStateHelper");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("WifiPhyStateHelper");
 
 NS_OBJECT_ENSURE_REGISTERED (WifiPhyStateHelper);
 

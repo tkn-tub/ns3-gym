@@ -51,9 +51,9 @@
 #include <ctime>
 #include <unistd.h>
 
-NS_LOG_COMPONENT_DEFINE ("EmuNetDevice");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("EmuNetDevice");
 
 NS_OBJECT_ENSURE_REGISTERED (EmuNetDevice);
 

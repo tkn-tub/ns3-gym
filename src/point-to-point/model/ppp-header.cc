@@ -23,9 +23,9 @@
 #include "ns3/header.h"
 #include "ppp-header.h"
 
-NS_LOG_COMPONENT_DEFINE ("PppHeader");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("PppHeader");
 
 NS_OBJECT_ENSURE_REGISTERED (PppHeader);
 

@@ -30,10 +30,9 @@
 #include <fstream>
 
 
-NS_LOG_COMPONENT_DEFINE ("Athstats");
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("Athstats");
 
 AthstatsHelper::AthstatsHelper ()
   : m_interval (Seconds (1.0))

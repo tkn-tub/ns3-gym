@@ -48,10 +48,9 @@
 #include <ns3/lte-enb-net-device.h>
 #include <ns3/lte-enb-phy.h>
 
-NS_LOG_COMPONENT_DEFINE ("LteHandoverTargetTest");
-
 using namespace ns3;
 
+NS_LOG_COMPONENT_DEFINE ("LteHandoverTargetTest");
 
 /**
  * \brief Testing a handover algorithm, verifying that it selects the right

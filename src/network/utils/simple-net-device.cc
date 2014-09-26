@@ -30,9 +30,9 @@
 #include "ns3/simulator.h"
 #include "ns3/drop-tail-queue.h"
 
-NS_LOG_COMPONENT_DEFINE ("SimpleNetDevice");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("SimpleNetDevice");
 
 /**
  * \brief Internal tag to store source, destination and protocol of each packet.

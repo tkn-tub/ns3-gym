@@ -25,9 +25,9 @@
 #include "ns3/interference-helper.h"
 #include "ns3/wifi-phy.h"
 
-NS_LOG_COMPONENT_DEFINE ("InterferenceHelperTxDurationTest");
-
 using namespace ns3;
+
+NS_LOG_COMPONENT_DEFINE ("InterferenceHelperTxDurationTest");
 
 class TxDurationTest : public TestCase
 {

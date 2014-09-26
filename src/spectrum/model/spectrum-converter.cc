@@ -25,9 +25,9 @@
 
 
 
-NS_LOG_COMPONENT_DEFINE ("SpectrumConverter");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("SpectrumConverter");
 
 SpectrumConverter::SpectrumConverter ()
 {

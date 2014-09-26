@@ -33,11 +33,11 @@
 #include "ns3/cost231-propagation-loss-model.h"
 #include "simple-ofdm-send-param.h"
 
-NS_LOG_COMPONENT_DEFINE ("simpleOfdmWimaxChannel");
-
 namespace ns3 {
-// NS_OBJECT_ENSURE_REGISTERED (simpleOfdmWimaxChannel)
-//   ;
+
+NS_LOG_COMPONENT_DEFINE ("simpleOfdmWimaxChannel");
+  
+// NS_OBJECT_ENSURE_REGISTERED (simpleOfdmWimaxChannel);
 
 
 SimpleOfdmWimaxChannel::SimpleOfdmWimaxChannel (void)

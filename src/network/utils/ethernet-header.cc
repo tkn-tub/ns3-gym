@@ -26,9 +26,9 @@
 #include "ethernet-header.h"
 #include "address-utils.h"
 
-NS_LOG_COMPONENT_DEFINE ("EthernetHeader");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("EthernetHeader");
 
 NS_OBJECT_ENSURE_REGISTERED (EthernetHeader);
 

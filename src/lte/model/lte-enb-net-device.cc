@@ -45,9 +45,9 @@
 #include <ns3/abort.h>
 #include <ns3/log.h>
 
-NS_LOG_COMPONENT_DEFINE ("LteEnbNetDevice");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("LteEnbNetDevice");
 
 NS_OBJECT_ENSURE_REGISTERED ( LteEnbNetDevice);
 

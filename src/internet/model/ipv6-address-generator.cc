@@ -24,9 +24,9 @@
 #include "ns3/simulation-singleton.h"
 #include "ipv6-address-generator.h"
 
-NS_LOG_COMPONENT_DEFINE ("Ipv6AddressGenerator");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Ipv6AddressGenerator");
 
 /**
  * \internal

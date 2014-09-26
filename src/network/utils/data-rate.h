@@ -159,6 +159,26 @@ public:
   uint64_t GetBitRate () const;
 
 private:
+
+  /**
+   * \brief Parse a string representing a DataRate into an uint64_t
+   *
+   * Allowed unit representations include all combinations of
+   *
+   * * An SI prefix: k, K, M, G
+   * * Decimal or kibibit (as in "Kibps", meaning 1024 bps)
+   * * Bits or bytes (8 bits)
+   * * "bps" or "/s"
+   *
+   * \param [in] s The string representation, including unit
+   * \param [in,out] v The location to put the value, in bits/sec.
+   * \return true if parsing was successful.
+   */
+  static bool DoParse (const std::string s, uint64_t *v);
+
+  // Uses DoParse
+  friend std::istream &operator >> (std::istream &is, DataRate &rate);
+  
   uint64_t m_bps; //!< data rate [bps]
 };
 

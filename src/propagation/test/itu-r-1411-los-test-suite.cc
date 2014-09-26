@@ -33,7 +33,6 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("ItuR1411LosPropagationLossModelTest");
 
-
 class ItuR1411LosPropagationLossModelTestCase : public TestCase
 {
 public:

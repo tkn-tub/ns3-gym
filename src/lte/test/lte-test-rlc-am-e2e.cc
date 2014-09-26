@@ -37,10 +37,9 @@
 #include "lte-test-entities.h"
 
 
-NS_LOG_COMPONENT_DEFINE ("LteRlcAmE2eTest");
-
 using namespace ns3;
 
+NS_LOG_COMPONENT_DEFINE ("LteRlcAmE2eTest");
 
 /**
  * Test x.x.x RLC AM: End-to-end flow

@@ -27,10 +27,9 @@
 #include <ns3/applications-module.h>
 #include <ns3/point-to-point-module.h>
 
-NS_LOG_COMPONENT_DEFINE ("LteX2HandoverMeasuresTest");
-
 using namespace ns3;
 
+NS_LOG_COMPONENT_DEFINE ("LteX2HandoverMeasuresTest");
 
 struct CheckPointEvent
 {

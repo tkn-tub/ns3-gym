@@ -36,9 +36,9 @@
 #include <ns3/ipv4-l3-protocol.h>
 #include <ns3/log.h>
 
-NS_LOG_COMPONENT_DEFINE ("LteNetDevice");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("LteNetDevice");
 
 NS_OBJECT_ENSURE_REGISTERED ( LteNetDevice);
 

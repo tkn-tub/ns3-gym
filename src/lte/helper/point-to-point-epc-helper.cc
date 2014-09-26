@@ -40,9 +40,9 @@
 #include <ns3/epc-mme.h>
 #include <ns3/epc-ue-nas.h>
 
-NS_LOG_COMPONENT_DEFINE ("PointToPointEpcHelper");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("PointToPointEpcHelper");
 
 NS_OBJECT_ENSURE_REGISTERED (PointToPointEpcHelper);
 

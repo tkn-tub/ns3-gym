@@ -26,9 +26,9 @@
 #include "ns3/log.h"
 #include "wimax-tlv.h"
 
-NS_LOG_COMPONENT_DEFINE ("MACMESSAGES");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("MACMESSAGES");
 
 NS_OBJECT_ENSURE_REGISTERED (ManagementMessageType);
 

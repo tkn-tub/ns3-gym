@@ -35,13 +35,13 @@
 #include "edca-txop-n.h"
 #include "snr-tag.h"
 
-NS_LOG_COMPONENT_DEFINE ("MacLow");
-
 #undef NS_LOG_APPEND_CONTEXT
 #define NS_LOG_APPEND_CONTEXT std::clog << "[mac=" << m_self << "] "
 
 
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("MacLow");
 
 MacLowTransmissionListener::MacLowTransmissionListener ()
 {

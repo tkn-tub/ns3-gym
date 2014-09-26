@@ -64,9 +64,9 @@
 #include <vector>
 #include <string>
 
-NS_LOG_COMPONENT_DEFINE ("WifiSimpleInfra");
-
 using namespace ns3;
+
+NS_LOG_COMPONENT_DEFINE ("WifiSimpleInfra");
 
 void ReceivePacket (Ptr<Socket> socket)
 {

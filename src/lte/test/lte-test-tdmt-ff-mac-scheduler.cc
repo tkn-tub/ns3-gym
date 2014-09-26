@@ -53,9 +53,9 @@
 
 #include "lte-test-tdmt-ff-mac-scheduler.h"
 
-NS_LOG_COMPONENT_DEFINE ("LenaTestTdMtFfMacScheduler");
-
 using namespace ns3;
+
+NS_LOG_COMPONENT_DEFINE ("LenaTestTdMtFfMacScheduler");
 
 LenaTestTdMtFfMacSchedulerSuite::LenaTestTdMtFfMacSchedulerSuite ()
   : TestSuite ("lte-tdmt-ff-mac-scheduler", SYSTEM)

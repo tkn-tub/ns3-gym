@@ -42,7 +42,6 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("TopologyCreationExperiment");
 
-
 static std::list<unsigned int> data;
 
 static void SinkRx (Ptr<const Packet> p, const Address &ad)

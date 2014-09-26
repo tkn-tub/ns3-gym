@@ -32,11 +32,9 @@
 #include "lte-enb-net-device.h"
 #include "lte-ue-net-device.h"
 
-NS_LOG_COMPONENT_DEFINE ("LteRrcProtocolReal");
-
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("LteRrcProtocolReal");
 
 const Time RRC_REAL_MSG_DELAY = MilliSeconds (0); 
 

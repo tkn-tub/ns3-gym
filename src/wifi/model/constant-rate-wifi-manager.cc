@@ -24,11 +24,11 @@
 #include "ns3/assert.h"
 #include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("ConstantRateWifiManager");
-
 #define Min(a,b) ((a < b) ? a : b)
 
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("ConstantRateWifiManager");
 
 NS_OBJECT_ENSURE_REGISTERED (ConstantRateWifiManager);
 

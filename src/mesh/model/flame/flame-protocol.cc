@@ -31,10 +31,12 @@
 #include "ns3/mesh-point-device.h"
 #include "ns3/mesh-wifi-interface-mac.h"
 
-NS_LOG_COMPONENT_DEFINE ("FlameProtocol");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("FlameProtocol");
+  
 namespace flame {
+  
 //-----------------------------------------------------------------------------
 // FlameTag
 //-----------------------------------------------------------------------------

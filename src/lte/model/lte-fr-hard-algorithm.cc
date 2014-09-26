@@ -22,9 +22,9 @@
 #include "lte-fr-hard-algorithm.h"
 #include <ns3/log.h>
 
-NS_LOG_COMPONENT_DEFINE ("LteFrHardAlgorithm");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("LteFrHardAlgorithm");
 
 NS_OBJECT_ENSURE_REGISTERED (LteFrHardAlgorithm);
 

@@ -30,9 +30,9 @@
 #include "ipv6-static-routing.h"
 #include "ipv6-routing-table-entry.h"
 
-NS_LOG_COMPONENT_DEFINE ("Ipv6StaticRouting");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Ipv6StaticRouting");
 
 NS_OBJECT_ENSURE_REGISTERED (Ipv6StaticRouting);
 

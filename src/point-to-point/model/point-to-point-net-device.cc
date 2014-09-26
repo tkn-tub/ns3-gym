@@ -29,9 +29,9 @@
 #include "point-to-point-channel.h"
 #include "ppp-header.h"
 
-NS_LOG_COMPONENT_DEFINE ("PointToPointNetDevice");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("PointToPointNetDevice");
 
 NS_OBJECT_ENSURE_REGISTERED (PointToPointNetDevice);
 

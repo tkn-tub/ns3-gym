@@ -25,9 +25,9 @@
 #include <ns3/node.h>
 #include <ns3/ipv4-address.h>
 
-NS_LOG_COMPONENT_DEFINE ("EpcHelper");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("EpcHelper");
 
 NS_OBJECT_ENSURE_REGISTERED (EpcHelper);
 

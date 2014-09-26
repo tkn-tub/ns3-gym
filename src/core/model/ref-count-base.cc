@@ -1,9 +1,9 @@
 #include "ref-count-base.h"
 #include "log.h"
 
-NS_LOG_COMPONENT_DEFINE ("RefCountBase");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("RefCountBase");
 
 RefCountBase::~RefCountBase ()
 {

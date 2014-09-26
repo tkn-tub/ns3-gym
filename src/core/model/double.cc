@@ -22,9 +22,9 @@
 #include "log.h"
 #include <sstream>
 
-NS_LOG_COMPONENT_DEFINE ("Double");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Double");
 
 ATTRIBUTE_VALUE_IMPLEMENT_WITH_NAME (double, Double);
 

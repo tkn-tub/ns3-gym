@@ -40,9 +40,10 @@
 #include "ns3/double.h"
 #include "ns3/uinteger.h"
 
-NS_LOG_COMPONENT_DEFINE ("DsdvRoutingProtocol");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("DsdvRoutingProtocol");
+  
 namespace dsdv {
   
 NS_OBJECT_ENSURE_REGISTERED (RoutingProtocol);

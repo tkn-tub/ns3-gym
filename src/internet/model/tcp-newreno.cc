@@ -28,9 +28,9 @@
 #include "ns3/abort.h"
 #include "ns3/node.h"
 
-NS_LOG_COMPONENT_DEFINE ("TcpNewReno");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("TcpNewReno");
 
 NS_OBJECT_ENSURE_REGISTERED (TcpNewReno);
 

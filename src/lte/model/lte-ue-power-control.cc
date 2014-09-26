@@ -26,9 +26,9 @@
 #include <ns3/integer.h>
 #include <ns3/math.h>
 
-NS_LOG_COMPONENT_DEFINE ("LteUePowerControl");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("LteUePowerControl");
 
 NS_OBJECT_ENSURE_REGISTERED (LteUePowerControl);
 

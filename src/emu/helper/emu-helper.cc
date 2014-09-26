@@ -30,9 +30,9 @@
 #include "ns3/trace-helper.h"
 #include "emu-helper.h"
 
-NS_LOG_COMPONENT_DEFINE ("EmuHelper");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("EmuHelper");
 
 EmuHelper::EmuHelper ()
 {

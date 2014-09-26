@@ -28,9 +28,9 @@
 
 #include "waveform-generator.h"
 
-NS_LOG_COMPONENT_DEFINE ("WaveformGenerator");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("WaveformGenerator");
 
 NS_OBJECT_ENSURE_REGISTERED (WaveformGenerator);
 

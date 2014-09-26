@@ -1,9 +1,9 @@
 #include "simulator-impl.h"
 #include "log.h"
 
-NS_LOG_COMPONENT_DEFINE ("SimulatorImpl");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("SimulatorImpl");
 
 TypeId 
 SimulatorImpl::GetTypeId (void)

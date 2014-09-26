@@ -37,9 +37,9 @@
 #include <cmath>
 
 
-NS_LOG_COMPONENT_DEFINE ("UanPhyDual");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("UanPhyDual");
 
 NS_OBJECT_ENSURE_REGISTERED (UanPhyDual);
 NS_OBJECT_ENSURE_REGISTERED (UanPhyCalcSinrDual);

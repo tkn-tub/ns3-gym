@@ -27,9 +27,9 @@
 #include <ns3/lte-enb-net-device.h>
 #include <ns3/lte-ue-net-device.h>
 
-NS_LOG_COMPONENT_DEFINE ("LteStatsCalculator");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("LteStatsCalculator");
 
 LteStatsCalculator::LteStatsCalculator ()
   : m_dlOutputFilename (""),

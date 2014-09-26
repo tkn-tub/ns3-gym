@@ -25,9 +25,9 @@
 #include "ns3/pointer.h"
 #include "random-direction-2d-mobility-model.h"
 
-NS_LOG_COMPONENT_DEFINE ("RandomDirection2dMobilityModel");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("RandomDirection2dMobilityModel");
 
 const double RandomDirection2dMobilityModel::PI = 3.14159265358979323846;
 

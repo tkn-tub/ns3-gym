@@ -46,9 +46,9 @@
 #include <cstdlib>
 #include <unistd.h>
 
-NS_LOG_COMPONENT_DEFINE ("TapBridge");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("TapBridge");
 
 FdReader::Data TapBridgeFdReader::DoRead (void)
 {

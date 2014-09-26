@@ -92,9 +92,9 @@
 #include <vector>
 #include <string>
 
-NS_LOG_COMPONENT_DEFINE ("WifiSimpleInterference");
-
 using namespace ns3;
+
+NS_LOG_COMPONENT_DEFINE ("WifiSimpleInterference");
 
 static inline std::string PrintReceivedPacket (Ptr<Socket> socket)
 {

@@ -22,10 +22,10 @@
 #include "inet6-socket-address.h"
 #include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("Inet6SocketAddress");
-
 namespace ns3
 {
+
+NS_LOG_COMPONENT_DEFINE ("Inet6SocketAddress");
 
 Inet6SocketAddress::Inet6SocketAddress (Ipv6Address ipv6, uint16_t port)
   : m_ipv6 (ipv6),

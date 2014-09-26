@@ -28,10 +28,9 @@
 
 #include "spectrum-test.h"
 
-// NS_LOG_COMPONENT_DEFINE ("SpectrumValueTest");
-
 using namespace ns3;
 
+// NS_LOG_COMPONENT_DEFINE ("SpectrumValueTest");
 
 #define TOLERANCE 1e-6
 

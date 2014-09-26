@@ -30,9 +30,9 @@
 #include "ns3/pointer.h"
 #include <cmath>
 
-NS_LOG_COMPONENT_DEFINE ("PropagationLossModel");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("PropagationLossModel");
 
 // ------------------------------------------------------------------------- //
 

@@ -27,9 +27,9 @@
 #include "ns3/uan-net-device.h"
 #include "acoustic-modem-energy-model.h"
 
-NS_LOG_COMPONENT_DEFINE ("AcousticModemEnergyModel");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("AcousticModemEnergyModel");
 
 NS_OBJECT_ENSURE_REGISTERED (AcousticModemEnergyModel);
 

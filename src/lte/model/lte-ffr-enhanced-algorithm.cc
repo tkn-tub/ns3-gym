@@ -28,9 +28,9 @@
 #include <ns3/double.h>
 #include <cfloat>
 
-NS_LOG_COMPONENT_DEFINE ("LteFfrEnhancedAlgorithm");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("LteFfrEnhancedAlgorithm");
 
 NS_OBJECT_ENSURE_REGISTERED (LteFfrEnhancedAlgorithm);
 

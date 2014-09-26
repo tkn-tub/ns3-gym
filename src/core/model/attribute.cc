@@ -23,9 +23,9 @@
 #include "string.h"
 #include <sstream>
 
-NS_LOG_COMPONENT_DEFINE ("AttributeValue");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("AttributeValue");
 
 AttributeValue::AttributeValue ()
 {

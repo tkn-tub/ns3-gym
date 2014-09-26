@@ -27,10 +27,9 @@
 
 #include "lte-test-entities.h"
 
-NS_LOG_COMPONENT_DEFINE ("LteTestEntities");
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("LteTestEntities");
 
 /////////////////////////////////////////////////////////////////////
 

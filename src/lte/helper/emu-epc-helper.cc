@@ -45,9 +45,9 @@
 #include <iomanip>
 #include <iostream>
 
-NS_LOG_COMPONENT_DEFINE ("EmuEpcHelper");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("EmuEpcHelper");
 
 NS_OBJECT_ENSURE_REGISTERED (EmuEpcHelper);
 

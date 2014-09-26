@@ -37,8 +37,9 @@
 
 
 
-NS_LOG_COMPONENT_DEFINE ("UanMacRc");
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("UanMacRc");
 
 NS_OBJECT_ENSURE_REGISTERED (UanMacRc);
 

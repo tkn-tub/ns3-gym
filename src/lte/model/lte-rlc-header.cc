@@ -22,9 +22,9 @@
 
 #include "ns3/lte-rlc-header.h"
 
-NS_LOG_COMPONENT_DEFINE ("LteRlcHeader");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("LteRlcHeader");
 
 NS_OBJECT_ENSURE_REGISTERED (LteRlcHeader);
 

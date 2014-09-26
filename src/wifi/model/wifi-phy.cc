@@ -32,9 +32,9 @@
 #include "ns3/trace-source-accessor.h"
 #include <cmath>
 
-NS_LOG_COMPONENT_DEFINE ("WifiPhy");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("WifiPhy");
 
 /****************************************************************
  *       This destructor is needed.

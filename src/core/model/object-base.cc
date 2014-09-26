@@ -27,9 +27,9 @@
 #include <cstdlib>
 #endif
 
-NS_LOG_COMPONENT_DEFINE ("ObjectBase");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("ObjectBase");
 
 NS_OBJECT_ENSURE_REGISTERED (ObjectBase);
 

@@ -36,9 +36,9 @@
 #include "ns3/udp-l4-protocol.h"
 #include "ns3/tcp-l4-protocol.h"
 
-NS_LOG_COMPONENT_DEFINE ("EpcTftClassifier");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("EpcTftClassifier");
 
 EpcTftClassifier::EpcTftClassifier ()
 {

@@ -27,10 +27,9 @@
 #include "epc-ue-nas.h"
 #include "lte-as-sap.h"
 
-NS_LOG_COMPONENT_DEFINE ("EpcUeNas");
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("EpcUeNas");
 
 
 

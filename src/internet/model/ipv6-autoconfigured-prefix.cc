@@ -24,10 +24,10 @@
 #include "ipv6-l3-protocol.h"
 #include "ipv6-autoconfigured-prefix.h"
 
-NS_LOG_COMPONENT_DEFINE ("Ipv6AutoconfiguredPrefix");
-
 namespace ns3
 {
+
+NS_LOG_COMPONENT_DEFINE ("Ipv6AutoconfiguredPrefix");
 
 uint32_t Ipv6AutoconfiguredPrefix::m_prefixId = 0;
 

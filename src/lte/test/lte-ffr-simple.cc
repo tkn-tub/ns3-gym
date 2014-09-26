@@ -23,9 +23,9 @@
 #include <ns3/log.h>
 #include "ns3/lte-rrc-sap.h"
 
-NS_LOG_COMPONENT_DEFINE ("LteFfrSimple");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("LteFfrSimple");
 
 NS_OBJECT_ENSURE_REGISTERED (LteFfrSimple);
 

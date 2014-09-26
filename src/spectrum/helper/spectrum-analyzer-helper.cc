@@ -35,10 +35,9 @@
 
 
 
-NS_LOG_COMPONENT_DEFINE ("SpectrumAnalyzerHelper");
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("SpectrumAnalyzerHelper");
 
 static void
 WriteAveragePowerSpectralDensityReport (Ptr<OutputStreamWrapper> streamWrapper,

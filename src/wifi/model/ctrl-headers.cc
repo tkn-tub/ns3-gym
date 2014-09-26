@@ -22,9 +22,9 @@
 
 #include "ctrl-headers.h"
 
-NS_LOG_COMPONENT_DEFINE ("CtrlHeaders");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("CtrlHeaders");
 
 /***********************************
  *       Block ack request

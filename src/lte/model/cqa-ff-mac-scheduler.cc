@@ -39,9 +39,9 @@
 #include <ns3/integer.h>
 #include <ns3/string.h>
 
-NS_LOG_COMPONENT_DEFINE ("CqaFfMacScheduler");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("CqaFfMacScheduler");
 
 static const int CqaType0AllocationRbg[4] = {
   10,       // RGB size 1

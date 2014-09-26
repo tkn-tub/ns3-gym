@@ -39,10 +39,9 @@
 
 #include "lte-test-sinr-chunk-processor.h"
 
-NS_LOG_COMPONENT_DEFINE ("LteAntennaTest");
-
 using namespace ns3;
 
+NS_LOG_COMPONENT_DEFINE ("LteAntennaTest");
 
 
 class LteEnbAntennaTestCase : public TestCase

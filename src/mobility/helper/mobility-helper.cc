@@ -29,9 +29,9 @@
 #include "ns3/string.h"
 #include <iostream>
 
-NS_LOG_COMPONENT_DEFINE ("MobilityHelper");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("MobilityHelper");
 
 MobilityHelper::MobilityHelper ()
 {

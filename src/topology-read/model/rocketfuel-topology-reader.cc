@@ -28,9 +28,9 @@
 #include "ns3/unused.h"
 #include "rocketfuel-topology-reader.h"
 
-NS_LOG_COMPONENT_DEFINE ("RocketfuelTopologyReader");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("RocketfuelTopologyReader");
 
 NS_OBJECT_ENSURE_REGISTERED (RocketfuelTopologyReader);
 

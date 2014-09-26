@@ -25,10 +25,9 @@
 
 #define Min(a,b) ((a < b) ? a : b)
 
-NS_LOG_COMPONENT_DEFINE ("ns3::ArfWifiManager");
-
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("ns3::ArfWifiManager");
 
 /**
  * \brief hold per-remote-station state for ARF Wifi manager.

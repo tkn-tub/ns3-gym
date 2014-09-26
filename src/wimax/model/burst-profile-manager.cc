@@ -27,9 +27,9 @@
 #include "ns3/log.h"
 #include "mac-messages.h"
 
-NS_LOG_COMPONENT_DEFINE ("BurstProfileManager");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("BurstProfileManager");
 
 NS_OBJECT_ENSURE_REGISTERED (BurstProfileManager);
 

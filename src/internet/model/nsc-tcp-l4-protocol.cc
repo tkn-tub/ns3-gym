@@ -45,9 +45,9 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-NS_LOG_COMPONENT_DEFINE ("NscTcpL4Protocol");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("NscTcpL4Protocol");
 
 NS_OBJECT_ENSURE_REGISTERED (NscTcpL4Protocol);
 

@@ -23,9 +23,9 @@
 #include "ns3/log.h"
 #include "radiotap-header.h"
 
-NS_LOG_COMPONENT_DEFINE ("RadiotapHeader");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("RadiotapHeader");
 
 NS_OBJECT_ENSURE_REGISTERED (RadiotapHeader);
  

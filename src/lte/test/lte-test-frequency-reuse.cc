@@ -52,9 +52,9 @@
 #include "lte-test-frequency-reuse.h"
 
 
-NS_LOG_COMPONENT_DEFINE ("LteFrequencyReuseTest");
-
 using namespace ns3;
+
+NS_LOG_COMPONENT_DEFINE ("LteFrequencyReuseTest");
 
 /**
  * TestSuite

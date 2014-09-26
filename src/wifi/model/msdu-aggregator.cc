@@ -22,9 +22,9 @@
 #include "msdu-aggregator.h"
 #include "wifi-mac-header.h"
 
-NS_LOG_COMPONENT_DEFINE ("MsduAggregator");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("MsduAggregator");
 
 NS_OBJECT_ENSURE_REGISTERED (MsduAggregator);
 

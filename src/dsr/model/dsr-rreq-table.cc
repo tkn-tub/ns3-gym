@@ -34,9 +34,10 @@
 #include <algorithm>
 #include <iostream>
 
-NS_LOG_COMPONENT_DEFINE ("RreqTable");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("RreqTable");
+  
 namespace dsr {
 
 NS_OBJECT_ENSURE_REGISTERED (RreqTable);

@@ -44,6 +44,7 @@
 #include "ns3/csma-module.h"
 #include "ns3/applications-module.h"
 #include "ns3/ipv6-header.h"
+
 using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("LooseRoutingIpv6Example");

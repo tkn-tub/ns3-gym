@@ -25,9 +25,9 @@
 #include "ns3/lte-rlc-tm.h"
 #include "ns3/lte-rlc-tag.h"
 
-NS_LOG_COMPONENT_DEFINE ("LteRlcTm");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("LteRlcTm");
 
 NS_OBJECT_ENSURE_REGISTERED (LteRlcTm);
 

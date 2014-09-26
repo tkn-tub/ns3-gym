@@ -53,10 +53,9 @@
 
 #include "lte-test-phy-error-model.h"
 
-NS_LOG_COMPONENT_DEFINE ("LteTestPhyErrorModel");
-
 using namespace ns3;
 
+NS_LOG_COMPONENT_DEFINE ("LteTestPhyErrorModel");
 
 LenaTestPhyErrorModelSuite::LenaTestPhyErrorModelSuite ()
   : TestSuite ("lte-phy-error-model", SYSTEM)

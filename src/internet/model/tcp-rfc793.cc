@@ -21,9 +21,9 @@
 #include "tcp-rfc793.h"
 #include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("TcpRfc793");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("TcpRfc793");
 
 NS_OBJECT_ENSURE_REGISTERED (TcpRfc793);
 

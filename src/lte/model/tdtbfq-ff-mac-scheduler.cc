@@ -32,9 +32,9 @@
 #include <set>
 #include <cfloat>
 
-NS_LOG_COMPONENT_DEFINE ("TdTbfqFfMacScheduler");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("TdTbfqFfMacScheduler");
 
 static const int TdTbfqType0AllocationRbg[4] = {
   10,       // RGB size 1

@@ -24,9 +24,9 @@
 #include "ns3/names.h"
 #include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("EnergyHarvesterContainer");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("EnergyHarvesterContainer");
     
 TypeId
 EnergyHarvesterContainer::GetTypeId (void)

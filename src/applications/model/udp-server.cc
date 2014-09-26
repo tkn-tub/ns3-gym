@@ -34,9 +34,9 @@
 #include "seq-ts-header.h"
 #include "udp-server.h"
 
-NS_LOG_COMPONENT_DEFINE ("UdpServer");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("UdpServer");
 
 NS_OBJECT_ENSURE_REGISTERED (UdpServer);
 

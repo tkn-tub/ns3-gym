@@ -26,12 +26,9 @@
 
 #include "epc-mme.h"
 
-NS_LOG_COMPONENT_DEFINE ("EpcMme");
-
 namespace ns3 {
 
-
-
+NS_LOG_COMPONENT_DEFINE ("EpcMme");
 
 NS_OBJECT_ENSURE_REGISTERED (EpcMme);
 

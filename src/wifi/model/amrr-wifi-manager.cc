@@ -26,9 +26,9 @@
 
 #define Min(a,b) ((a < b) ? a : b)
 
-NS_LOG_COMPONENT_DEFINE ("AmrrWifiRemoteStation");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("AmrrWifiRemoteStation");
 
 /**
  * \brief hold per-remote-station state for AMRR Wifi manager.

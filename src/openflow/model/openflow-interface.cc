@@ -22,9 +22,9 @@
 
 namespace ns3 {
 
-namespace ofi {
-
 NS_LOG_COMPONENT_DEFINE ("OpenFlowInterface");
+
+namespace ofi {
 
 Stats::Stats (ofp_stats_types _type, size_t body_len)
 {

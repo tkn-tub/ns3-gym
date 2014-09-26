@@ -39,9 +39,9 @@
 #include "ipv6-end-point.h"
 #include <limits>
 
-NS_LOG_COMPONENT_DEFINE ("UdpSocketImpl");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("UdpSocketImpl");
 
 NS_OBJECT_ENSURE_REGISTERED (UdpSocketImpl);
 

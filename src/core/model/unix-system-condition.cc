@@ -25,9 +25,9 @@
 #include "log.h"
 
 
-NS_LOG_COMPONENT_DEFINE ("SystemCondition");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("SystemCondition");
 
 class SystemConditionPrivate {
 public:

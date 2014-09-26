@@ -40,9 +40,9 @@
 #include "ipv4-interface.h"
 #include "ipv4-raw-socket-impl.h"
 
-NS_LOG_COMPONENT_DEFINE ("Ipv4L3Protocol");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Ipv4L3Protocol");
 
 const uint16_t Ipv4L3Protocol::PROT_NUMBER = 0x0800;
 

@@ -49,8 +49,9 @@
 #include "ns3/wifi-80211p-helper.h"
 #include "ns3/wave-mac-helper.h"
 
-NS_LOG_COMPONENT_DEFINE ("WifiSimpleOcb");
 using namespace ns3;
+
+NS_LOG_COMPONENT_DEFINE ("WifiSimpleOcb");
 
 /*
  * In WAVE module, there is no net device class named like "Wifi80211pNetDevice",

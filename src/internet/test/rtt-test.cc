@@ -21,9 +21,9 @@
 #include "ns3/rtt-estimator.h"
 #include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("RttTestSuite");
-
 using namespace ns3;
+
+NS_LOG_COMPONENT_DEFINE ("RttTestSuite");
 
 class RttTestCase : public TestCase
 {

@@ -33,9 +33,9 @@
 #include <cstdlib>
 #include <cstdio>
 
-NS_LOG_COMPONENT_DEFINE ("UdpClient");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("UdpClient");
 
 NS_OBJECT_ENSURE_REGISTERED (UdpClient);
 

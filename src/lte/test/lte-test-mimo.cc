@@ -56,10 +56,9 @@
 #include "lte-test-mimo.h"
 
 
-NS_LOG_COMPONENT_DEFINE ("LteTestMimo");
-
 using namespace ns3;
 
+NS_LOG_COMPONENT_DEFINE ("LteTestMimo");
 
 LenaTestMimoSuite::LenaTestMimoSuite ()
   : TestSuite ("lte-mimo", SYSTEM)

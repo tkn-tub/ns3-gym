@@ -5,9 +5,9 @@
 #include "config.h"
 #include "log.h"
 
-NS_LOG_COMPONENT_DEFINE ("RngSeedManager");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("RngSeedManager");
 
 static uint64_t g_nextStreamIndex = 0;
 static ns3::GlobalValue g_rngSeed ("RngSeed", 

@@ -51,9 +51,9 @@
 #include "ns3/ipv4-routing-protocol.h"
 #include "ns3/energy-source-container.h"
 
-NS_LOG_COMPONENT_DEFINE ("AnimationInterface");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("AnimationInterface");
 
 // Globals
 

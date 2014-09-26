@@ -40,9 +40,9 @@
 #include "ipv6-l3-protocol.h"
 #include "udp-socket-impl.h"
 
-NS_LOG_COMPONENT_DEFINE ("UdpL4Protocol");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("UdpL4Protocol");
 
 NS_OBJECT_ENSURE_REGISTERED (UdpL4Protocol);
 

@@ -25,9 +25,9 @@
 #include "ipv6-list-routing.h"
 #include "ns3/simulator.h"
 
-NS_LOG_COMPONENT_DEFINE ("Ipv6ListRouting");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Ipv6ListRouting");
 
 NS_OBJECT_ENSURE_REGISTERED (Ipv6ListRouting);
 

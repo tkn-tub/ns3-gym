@@ -33,9 +33,9 @@
 
 #include <iomanip>
 
-NS_LOG_COMPONENT_DEFINE ("TestEpcTftClassifier");
-
 using namespace ns3;
+
+NS_LOG_COMPONENT_DEFINE ("TestEpcTftClassifier");
 
 class EpcTftClassifierTestCase : public TestCase
 {

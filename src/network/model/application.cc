@@ -27,9 +27,9 @@
 #include "ns3/nstime.h"
 #include "ns3/simulator.h"
 
-NS_LOG_COMPONENT_DEFINE ("Application");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Application");
 
 NS_OBJECT_ENSURE_REGISTERED (Application);
 

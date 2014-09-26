@@ -29,9 +29,9 @@
 #include <sstream>
 
 
-NS_LOG_COMPONENT_DEFINE ("TestParabolicAntennaModel");
-
 using namespace ns3;
+
+NS_LOG_COMPONENT_DEFINE ("TestParabolicAntennaModel");
 
 enum ParabolicAntennaModelGainTestCondition  {
   EQUAL = 0,

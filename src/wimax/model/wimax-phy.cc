@@ -30,9 +30,9 @@
 #include "ns3/uinteger.h"
 #include "ns3/double.h"
 
-NS_LOG_COMPONENT_DEFINE ("WimaxPhy");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("WimaxPhy");
 
 NS_OBJECT_ENSURE_REGISTERED (WimaxPhy);
 

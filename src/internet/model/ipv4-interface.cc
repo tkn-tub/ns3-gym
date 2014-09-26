@@ -30,9 +30,9 @@
 #include "ns3/node.h"
 #include "ns3/pointer.h"
 
-NS_LOG_COMPONENT_DEFINE ("Ipv4Interface");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Ipv4Interface");
 
 NS_OBJECT_ENSURE_REGISTERED (Ipv4Interface);
 

@@ -35,9 +35,9 @@
 #include <ns3/lte-control-messages.h>
 #include "ns3/lte-helper.h"
 
-NS_LOG_COMPONENT_DEFINE ("LteDownlinkSinrTest");
-
 using namespace ns3;
+
+NS_LOG_COMPONENT_DEFINE ("LteDownlinkSinrTest");
 
 /**
  * Test 1.1 SINR calculation in downlink

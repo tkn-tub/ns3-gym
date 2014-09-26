@@ -29,11 +29,9 @@
 #include <ns3/lte-ue-rrc.h>
 #include <ns3/lte-ue-net-device.h>
 
-NS_LOG_COMPONENT_DEFINE ("RadioBearerStatsConnector");
-
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("RadioBearerStatsConnector");
 
 
 bool

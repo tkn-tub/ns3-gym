@@ -34,9 +34,9 @@
 #include "ns3/trace-helper.h"
 #include "point-to-point-helper.h"
 
-NS_LOG_COMPONENT_DEFINE ("PointToPointHelper");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("PointToPointHelper");
 
 PointToPointHelper::PointToPointHelper ()
 {

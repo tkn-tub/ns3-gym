@@ -49,9 +49,9 @@
 #include "ns3/constant-velocity-mobility-model.h"
 #include "ns2-mobility-helper.h"
 
-NS_LOG_COMPONENT_DEFINE ("Ns2MobilityHelper");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Ns2MobilityHelper");
 
 // Constants definitions
 #define  NS2_AT       "at"

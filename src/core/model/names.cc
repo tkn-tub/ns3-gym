@@ -23,9 +23,9 @@
 #include "abort.h"
 #include "names.h"
 
-NS_LOG_COMPONENT_DEFINE ("Names");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Names");
 
 class NameNode
 {

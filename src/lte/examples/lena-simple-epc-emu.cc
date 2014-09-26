@@ -42,10 +42,8 @@ using namespace ns3;
  * via a real link. 
  */
 
-
-
-
 NS_LOG_COMPONENT_DEFINE ("EpcFirstExample");
+
 int
 main (int argc, char *argv[])
 {

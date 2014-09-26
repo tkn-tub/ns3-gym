@@ -31,9 +31,9 @@
 #include <set>
 
 
-NS_LOG_COMPONENT_DEFINE ("PfFfMacScheduler");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("PfFfMacScheduler");
 
 static const int PfType0AllocationRbg[4] = {
   10,       // RGB size 1

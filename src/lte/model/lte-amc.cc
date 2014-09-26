@@ -32,9 +32,9 @@
 #include <ns3/lte-mi-error-model.h>
 
 
-NS_LOG_COMPONENT_DEFINE ("LteAmc");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("LteAmc");
 
 NS_OBJECT_ENSURE_REGISTERED (LteAmc);
 

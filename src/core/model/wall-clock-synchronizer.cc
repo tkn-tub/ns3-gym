@@ -24,9 +24,9 @@
 
 #include "wall-clock-synchronizer.h"
 
-NS_LOG_COMPONENT_DEFINE ("WallClockSynchronizer");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("WallClockSynchronizer");
 
 WallClockSynchronizer::WallClockSynchronizer ()
 {

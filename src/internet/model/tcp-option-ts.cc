@@ -21,8 +21,9 @@
 #include "tcp-option-ts.h"
 #include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("TcpOptionTS");
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("TcpOptionTS");
 
 NS_OBJECT_ENSURE_REGISTERED (TcpOptionTS);
 

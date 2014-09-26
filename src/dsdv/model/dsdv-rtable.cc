@@ -33,9 +33,10 @@
 #include <iomanip>
 #include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("DsdvRoutingTable");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("DsdvRoutingTable");
+  
 namespace dsdv {
 RoutingTableEntry::RoutingTableEntry (Ptr<NetDevice> dev,
                                       Ipv4Address dst,

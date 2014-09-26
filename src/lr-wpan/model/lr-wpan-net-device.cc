@@ -34,9 +34,9 @@
 #include <ns3/packet.h>
 
 
-NS_LOG_COMPONENT_DEFINE ("LrWpanNetDevice");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("LrWpanNetDevice");
 
 NS_OBJECT_ENSURE_REGISTERED (LrWpanNetDevice);
 

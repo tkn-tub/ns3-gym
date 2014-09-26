@@ -21,9 +21,10 @@
 #include <stdint.h>
 #include "ns3/ipv4-address.h"
 #include "wimax-tlv.h"
-NS_LOG_COMPONENT_DEFINE ("IpcsClassifierRecord");
 
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("IpcsClassifierRecord");
 
 IpcsClassifierRecord::IpcsClassifierRecord (void)
 {

@@ -36,9 +36,9 @@
 #include "ns3/acoustic-modem-energy-model.h"
 
 
-NS_LOG_COMPONENT_DEFINE ("UanPhyGen");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("UanPhyGen");
 
 NS_OBJECT_ENSURE_REGISTERED (UanPhyGen);
 NS_OBJECT_ENSURE_REGISTERED (UanPhyPerGenDefault);

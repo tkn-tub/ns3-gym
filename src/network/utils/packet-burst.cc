@@ -24,9 +24,9 @@
 #include "packet-burst.h"
 #include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("PacketBurst");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("PacketBurst");
 
 NS_OBJECT_ENSURE_REGISTERED (PacketBurst);
 

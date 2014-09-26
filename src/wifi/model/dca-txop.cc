@@ -35,12 +35,12 @@
 #include "wifi-mac.h"
 #include "random-stream.h"
 
-NS_LOG_COMPONENT_DEFINE ("DcaTxop");
-
 #undef NS_LOG_APPEND_CONTEXT
 #define NS_LOG_APPEND_CONTEXT if (m_low != 0) { std::clog << "[mac=" << m_low->GetAddress () << "] "; }
 
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("DcaTxop");
 
 class DcaTxop::Dcf : public DcfState
 {

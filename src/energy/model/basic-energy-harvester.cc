@@ -28,9 +28,9 @@
 #include "ns3/trace-source-accessor.h"
 #include "ns3/simulator.h"
 
-NS_LOG_COMPONENT_DEFINE ("BasicEnergyHarvester");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("BasicEnergyHarvester");
   
 NS_OBJECT_ENSURE_REGISTERED (BasicEnergyHarvester);
 

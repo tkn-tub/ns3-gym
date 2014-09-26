@@ -16,9 +16,9 @@
 
 #include "ns3/core-module.h"
 
-NS_LOG_COMPONENT_DEFINE ("HelloSimulator");
-
 using namespace ns3;
+
+NS_LOG_COMPONENT_DEFINE ("HelloSimulator");
 
 int
 main (int argc, char *argv[])

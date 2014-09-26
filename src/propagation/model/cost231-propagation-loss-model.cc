@@ -27,9 +27,9 @@
 #include <cmath>
 #include "cost231-propagation-loss-model.h"
 
-NS_LOG_COMPONENT_DEFINE ("Cost231PropagationLossModel");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Cost231PropagationLossModel");
 
 NS_OBJECT_ENSURE_REGISTERED (Cost231PropagationLossModel);
 

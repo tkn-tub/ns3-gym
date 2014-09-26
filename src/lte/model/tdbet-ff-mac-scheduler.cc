@@ -31,9 +31,9 @@
 #include <set>
 #include <cfloat>
 
-NS_LOG_COMPONENT_DEFINE ("TdBetFfMacScheduler");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("TdBetFfMacScheduler");
 
 static const int TdBetType0AllocationRbg[4] = {
   10,       // RGB size 1

@@ -30,9 +30,9 @@
 #include <fstream>
 #include <ns3/simulator.h>
 
-NS_LOG_COMPONENT_DEFINE ("TraceFadingLossModel");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("TraceFadingLossModel");
 
 NS_OBJECT_ENSURE_REGISTERED (TraceFadingLossModel);
   

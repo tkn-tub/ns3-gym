@@ -27,10 +27,9 @@
 
 #define Min(a,b) ((a < b) ? a : b)
 
-NS_LOG_COMPONENT_DEFINE ("Cara");
-
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Cara");
 
 /**
  * \brief hold per-remote-station state for CARA Wifi manager.

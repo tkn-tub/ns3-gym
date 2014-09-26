@@ -45,9 +45,9 @@ operator << (ostream& os, const vector<int>& v)
 
 }
 
-NS_LOG_COMPONENT_DEFINE ("LteSpectrumValueHelper");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("LteSpectrumValueHelper");
 
 /**
  * Table 5.7.3-1 "E-UTRA channel numbers" from 3GPP TS 36.101

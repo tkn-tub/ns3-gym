@@ -38,9 +38,9 @@
 #include "fatal-error.h"
 #include "log.h"
 
-NS_LOG_COMPONENT_DEFINE ("RandomVariable");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("RandomVariable");
 
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------

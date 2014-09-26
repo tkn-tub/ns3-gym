@@ -27,9 +27,9 @@
 #include "ns3/pointer.h"
 
 
-NS_LOG_COMPONENT_DEFINE ("UanTransducerHd");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("UanTransducerHd");
 
 NS_OBJECT_ENSURE_REGISTERED (UanTransducerHd);
   

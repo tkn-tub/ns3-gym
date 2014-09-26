@@ -30,9 +30,9 @@
 #include "arp-header.h"
 #include "ipv4-interface.h"
 
-NS_LOG_COMPONENT_DEFINE ("ArpCache");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("ArpCache");
 
 NS_OBJECT_ENSURE_REGISTERED (ArpCache);
 

@@ -179,9 +179,9 @@
 #include <limits>
 #include <map>
 
-NS_LOG_COMPONENT_DEFINE ("InternetStackHelper");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("InternetStackHelper");
 
 //
 // Historically, the only context written to ascii traces was the protocol.

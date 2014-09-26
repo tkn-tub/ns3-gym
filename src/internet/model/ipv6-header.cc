@@ -25,9 +25,9 @@
 #include "ns3/address-utils.h"
 #include "ipv6-header.h"
 
-NS_LOG_COMPONENT_DEFINE ("Ipv6Header");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Ipv6Header");
 
 NS_OBJECT_ENSURE_REGISTERED (Ipv6Header);
 

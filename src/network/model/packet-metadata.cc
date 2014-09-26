@@ -27,9 +27,9 @@
 #include "header.h"
 #include "trailer.h"
 
-NS_LOG_COMPONENT_DEFINE ("PacketMetadata");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("PacketMetadata");
 
 bool PacketMetadata::m_enable = false;
 bool PacketMetadata::m_enableChecking = false;

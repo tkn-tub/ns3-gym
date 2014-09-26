@@ -23,9 +23,9 @@
 
 #include <cmath>
 
-NS_LOG_COMPONENT_DEFINE ("LrWpanSpectrumValueHelper");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("LrWpanSpectrumValueHelper");
 
 Ptr<SpectrumModel> g_LrWpanSpectrumModel; //!< Global object used to initialize the LrWpan Spectrum Model
 

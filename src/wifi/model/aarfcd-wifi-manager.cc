@@ -30,9 +30,9 @@
 #define Min(a,b) ((a < b) ? a : b)
 #define Max(a,b) ((a > b) ? a : b)
 
-NS_LOG_COMPONENT_DEFINE ("Aarfcd");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Aarfcd");
 
 /**
  * \brief hold per-remote-station state for AARF-CD Wifi manager.

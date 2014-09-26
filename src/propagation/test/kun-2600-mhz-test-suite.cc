@@ -33,7 +33,6 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("Kun2600MhzPropagationLossModelTest");
 
-
 class Kun2600MhzPropagationLossModelTestCase : public TestCase
 {
 public:

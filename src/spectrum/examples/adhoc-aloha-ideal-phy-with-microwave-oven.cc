@@ -43,9 +43,9 @@
 #include <ns3/non-communicating-net-device.h>
 #include <ns3/microwave-oven-spectrum-value-helper.h>
 
-NS_LOG_COMPONENT_DEFINE ("OfdmWithWaveformGenerator");
-
 using namespace ns3;
+
+NS_LOG_COMPONENT_DEFINE ("OfdmWithWaveformGenerator");
 
 static bool g_verbose = false;
 

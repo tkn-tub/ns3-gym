@@ -22,9 +22,9 @@
 #include "lte-ffr-distributed-algorithm.h"
 #include <ns3/log.h>
 
-NS_LOG_COMPONENT_DEFINE ("LteFfrDistributedAlgorithm");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("LteFfrDistributedAlgorithm");
 
 NS_OBJECT_ENSURE_REGISTERED (LteFfrDistributedAlgorithm);
 

@@ -45,9 +45,9 @@
 #include <ns3/lte-ue-net-device.h>
 #include <ns3/pointer.h>
 
-NS_LOG_COMPONENT_DEFINE ("LteEnbPhy");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("LteEnbPhy");
 
 NS_OBJECT_ENSURE_REGISTERED (LteEnbPhy);
 

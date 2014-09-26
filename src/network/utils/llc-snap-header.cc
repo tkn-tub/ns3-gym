@@ -23,9 +23,9 @@
 #include "ns3/log.h"
 #include <string>
 
-NS_LOG_COMPONENT_DEFINE ("LlcSnalHeader");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("LlcSnalHeader");
 
 NS_OBJECT_ENSURE_REGISTERED (LlcSnapHeader);
 

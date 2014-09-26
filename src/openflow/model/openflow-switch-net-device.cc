@@ -21,9 +21,9 @@
 #include "ns3/udp-l4-protocol.h"
 #include "ns3/tcp-l4-protocol.h"
 
-NS_LOG_COMPONENT_DEFINE ("OpenFlowSwitchNetDevice");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("OpenFlowSwitchNetDevice");
 
 NS_OBJECT_ENSURE_REGISTERED (OpenFlowSwitchNetDevice);
 

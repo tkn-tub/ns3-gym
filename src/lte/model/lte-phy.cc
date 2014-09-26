@@ -28,10 +28,9 @@
 #include "lte-phy.h"
 #include "lte-net-device.h"
 
-NS_LOG_COMPONENT_DEFINE ("LtePhy");
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("LtePhy");
 
 NS_OBJECT_ENSURE_REGISTERED (LtePhy);
 

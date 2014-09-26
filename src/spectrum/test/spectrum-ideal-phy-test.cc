@@ -50,10 +50,9 @@
 #include <ns3/config.h>
 
 
-NS_LOG_COMPONENT_DEFINE ("SpectrumIdealPhyTest");
-
 using namespace ns3;
 
+NS_LOG_COMPONENT_DEFINE ("SpectrumIdealPhyTest");
 
 static uint64_t g_rxBytes;
 static double g_bandwidth = 20e6; // Hz

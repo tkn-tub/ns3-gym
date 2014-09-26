@@ -37,8 +37,9 @@
 #include "uan-noise-model-default.h"
 #include "uan-prop-model-ideal.h"
 
-NS_LOG_COMPONENT_DEFINE ("UanChannel");
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("UanChannel");
 
 NS_OBJECT_ENSURE_REGISTERED (UanChannel);
 

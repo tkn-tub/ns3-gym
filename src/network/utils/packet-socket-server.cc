@@ -33,9 +33,9 @@
 #include <cstdlib>
 #include <cstdio>
 
-NS_LOG_COMPONENT_DEFINE ("PacketSocketServer");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("PacketSocketServer");
 
 NS_OBJECT_ENSURE_REGISTERED (PacketSocketServer);
 

@@ -36,10 +36,9 @@
 
 #include <cmath>
 
-NS_LOG_COMPONENT_DEFINE ("LteUeRrc");
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("LteUeRrc");
 
 /////////////////////////////
 // CMAC SAP forwarder

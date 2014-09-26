@@ -52,9 +52,9 @@
 #include "mac64-address.h"
 #include "ipv6-address.h"
 
-NS_LOG_COMPONENT_DEFINE ("Ipv6Address");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Ipv6Address");
 
 #ifdef __cplusplus
 extern "C"

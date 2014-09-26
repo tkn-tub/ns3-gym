@@ -32,10 +32,9 @@
 #include <ns3/simulator.h>
 #include <map>
 
-NS_LOG_COMPONENT_DEFINE ("BuildingPositionAllocatorTest");
-
 using namespace ns3;
 
+NS_LOG_COMPONENT_DEFINE ("BuildingPositionAllocatorTest");
 
 struct Room
 {

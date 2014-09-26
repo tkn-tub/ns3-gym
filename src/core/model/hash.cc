@@ -22,9 +22,9 @@
 #include "hash.h"
 
 
-NS_LOG_COMPONENT_DEFINE ("Hash");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Hash");
 
 Hasher::Hasher ()
 {

@@ -24,9 +24,9 @@
 
 #include "data-collection-object.h"
 
-NS_LOG_COMPONENT_DEFINE ("DataCollectionObject");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("DataCollectionObject");
 
 NS_OBJECT_ENSURE_REGISTERED (DataCollectionObject);
 

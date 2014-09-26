@@ -23,9 +23,9 @@
 #include "ns3/log.h"
 #include "tcp-rx-buffer.h"
 
-NS_LOG_COMPONENT_DEFINE ("TcpRxBuffer");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("TcpRxBuffer");
 
 TypeId
 TcpRxBuffer::GetTypeId (void)

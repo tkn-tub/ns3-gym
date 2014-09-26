@@ -31,9 +31,9 @@
 
 #include "rem-spectrum-phy.h"
 
-NS_LOG_COMPONENT_DEFINE ("RemSpectrumPhy");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("RemSpectrumPhy");
 
 NS_OBJECT_ENSURE_REGISTERED (RemSpectrumPhy);
 

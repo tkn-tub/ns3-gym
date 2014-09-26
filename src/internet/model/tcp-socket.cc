@@ -27,9 +27,9 @@
 #include "ns3/nstime.h"
 #include "tcp-socket.h"
 
-NS_LOG_COMPONENT_DEFINE ("TcpSocket");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("TcpSocket");
 
 NS_OBJECT_ENSURE_REGISTERED (TcpSocket);
 

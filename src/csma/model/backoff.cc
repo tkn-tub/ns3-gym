@@ -21,9 +21,9 @@
 #include "backoff.h"
 #include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("Backoff");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Backoff");
 
 Backoff::Backoff () 
 {

@@ -39,9 +39,9 @@
 #include "connection-manager.h"
 #include "bandwidth-manager.h"
 
-NS_LOG_COMPONENT_DEFINE ("WimaxNetDevice");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("WimaxNetDevice");
 
 NS_OBJECT_ENSURE_REGISTERED (WimaxNetDevice);
 

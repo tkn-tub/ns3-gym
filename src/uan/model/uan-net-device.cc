@@ -30,9 +30,9 @@
 #include "uan-transducer.h"
 #include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("UanNetDevice");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("UanNetDevice");
 
 NS_OBJECT_ENSURE_REGISTERED (UanNetDevice);
 

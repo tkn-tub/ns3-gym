@@ -34,9 +34,9 @@
 
 #include "lte-test-cqi-generation.h"
 
-NS_LOG_COMPONENT_DEFINE ("LteCqiGenerationTest");
-
 using namespace ns3;
+
+NS_LOG_COMPONENT_DEFINE ("LteCqiGenerationTest");
 
 void
 LteTestDlSchedulingCallback (LteCqiGenerationTestCase *testcase, std::string path,

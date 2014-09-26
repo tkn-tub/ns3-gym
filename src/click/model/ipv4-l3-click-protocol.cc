@@ -37,9 +37,9 @@
 #include "ns3/icmpv4-l4-protocol.h"
 #include "ns3/loopback-net-device.h"
 
-NS_LOG_COMPONENT_DEFINE ("Ipv4L3ClickProtocol");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Ipv4L3ClickProtocol");
 
 const uint16_t Ipv4L3ClickProtocol::PROT_NUMBER = 0x0800;
 

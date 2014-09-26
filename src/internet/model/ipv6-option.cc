@@ -24,10 +24,10 @@
 #include "ipv6-option.h"
 #include "ipv6-option-header.h"
 
-NS_LOG_COMPONENT_DEFINE ("Ipv6Option");
-
 namespace ns3
 {
+
+NS_LOG_COMPONENT_DEFINE ("Ipv6Option");
 
 NS_OBJECT_ENSURE_REGISTERED (Ipv6Option);
 

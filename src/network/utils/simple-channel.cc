@@ -24,9 +24,9 @@
 #include "ns3/node.h"
 #include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("SimpleChannel");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("SimpleChannel");
 
 NS_OBJECT_ENSURE_REGISTERED (SimpleChannel);
 

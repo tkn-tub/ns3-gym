@@ -47,9 +47,9 @@
 #include <sstream>
 #include <iomanip>
 
-NS_LOG_COMPONENT_DEFINE ("TcpL4Protocol");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("TcpL4Protocol");
 
 NS_OBJECT_ENSURE_REGISTERED (TcpL4Protocol);
 

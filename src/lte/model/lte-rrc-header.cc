@@ -36,9 +36,9 @@
 #define MAX_CELL_MEAS 32
 #define MAX_CELL_REPORT 8
 
-NS_LOG_COMPONENT_DEFINE ("RrcHeader");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("RrcHeader");
 
 //////////////////// RrcAsn1Header class ///////////////////////////////
 RrcAsn1Header::RrcAsn1Header ()

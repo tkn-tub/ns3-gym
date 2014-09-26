@@ -31,9 +31,9 @@
 #include "ss-net-device.h"
 #include "bs-net-device.h"
 
-NS_LOG_COMPONENT_DEFINE ("ConnectionManager");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("ConnectionManager");
 
 NS_OBJECT_ENSURE_REGISTERED (ConnectionManager);
 

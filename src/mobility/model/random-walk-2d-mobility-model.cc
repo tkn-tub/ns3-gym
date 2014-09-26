@@ -26,9 +26,9 @@
 #include "ns3/log.h"
 #include <cmath>
 
-NS_LOG_COMPONENT_DEFINE ("RandomWalk2d");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("RandomWalk2d");
 
 NS_OBJECT_ENSURE_REGISTERED (RandomWalk2dMobilityModel);
 

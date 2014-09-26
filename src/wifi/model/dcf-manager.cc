@@ -28,12 +28,12 @@
 #include "wifi-mac.h"
 #include "mac-low.h"
 
-NS_LOG_COMPONENT_DEFINE ("DcfManager");
-
 #define MY_DEBUG(x) \
   NS_LOG_DEBUG (Simulator::Now () << " " << this << " " << x)
 
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("DcfManager");
 
 /****************************************************************
  *      Implement the DCF state holder

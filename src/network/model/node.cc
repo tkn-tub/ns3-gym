@@ -32,9 +32,9 @@
 #include "ns3/boolean.h"
 #include "ns3/simulator.h"
 
-NS_LOG_COMPONENT_DEFINE ("Node");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Node");
 
 NS_OBJECT_ENSURE_REGISTERED (Node);
 

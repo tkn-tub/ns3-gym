@@ -26,10 +26,9 @@
 #include <ns3/log.h>
 
 
-NS_LOG_COMPONENT_DEFINE ("LteInterference");
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("LteInterference");
 
 LteInterference::LteInterference ()
   : m_receiving (false),

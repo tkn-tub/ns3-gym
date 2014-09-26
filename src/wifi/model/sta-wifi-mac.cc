@@ -39,9 +39,6 @@
 #include "mgt-headers.h"
 #include "ht-capabilities.h"
 
-NS_LOG_COMPONENT_DEFINE ("StaWifiMac");
-
-
 /*
  * The state machine for this STA is:
  --------------                                          -----------
@@ -59,6 +56,8 @@ NS_LOG_COMPONENT_DEFINE ("StaWifiMac");
  */
 
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("StaWifiMac");
 
 NS_OBJECT_ENSURE_REGISTERED (StaWifiMac);
 

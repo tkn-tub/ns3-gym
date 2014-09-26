@@ -39,8 +39,10 @@
 #include "ns3/enum.h"
 
 namespace ns3 {
-namespace dsr {
+
 NS_LOG_COMPONENT_DEFINE ("DsrOptionHeader");
+
+namespace dsr {
 
 NS_OBJECT_ENSURE_REGISTERED (DsrOptionHeader);
 

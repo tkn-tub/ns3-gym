@@ -42,10 +42,11 @@
 #include <algorithm>
 #include <limits>
 
-NS_LOG_COMPONENT_DEFINE ("AodvRoutingProtocol");
-
 namespace ns3
 {
+
+NS_LOG_COMPONENT_DEFINE ("AodvRoutingProtocol");
+
 namespace aodv
 {
 NS_OBJECT_ENSURE_REGISTERED (RoutingProtocol);

@@ -28,9 +28,9 @@
 
 #include "spectrum-analyzer.h"
 
-NS_LOG_COMPONENT_DEFINE ("SpectrumAnalyzer");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("SpectrumAnalyzer");
 
 NS_OBJECT_ENSURE_REGISTERED (SpectrumAnalyzer);
 

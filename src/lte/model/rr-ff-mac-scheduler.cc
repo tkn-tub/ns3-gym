@@ -32,9 +32,9 @@
 #include <ns3/lte-vendor-specific-parameters.h>
 #include <ns3/boolean.h>
 
-NS_LOG_COMPONENT_DEFINE ("RrFfMacScheduler");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("RrFfMacScheduler");
 
 static const int Type0AllocationRbg[4] = {
   10,       // RGB size 1

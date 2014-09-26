@@ -30,9 +30,9 @@
 #include "ns3/lte-rrc-header.h"
 #include "ns3/lte-rrc-sap.h"
 
-NS_LOG_COMPONENT_DEFINE ("Asn1EncodingTest");
-
 using namespace ns3;
+
+NS_LOG_COMPONENT_DEFINE ("Asn1EncodingTest");
 
 class TestUtils
 {

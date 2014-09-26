@@ -21,9 +21,9 @@
 #include "log.h"
 #include <sstream>
 
-NS_LOG_COMPONENT_DEFINE("ObjectFactory");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE("ObjectFactory");
 
 ObjectFactory::ObjectFactory ()
 {

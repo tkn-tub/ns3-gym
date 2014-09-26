@@ -26,9 +26,9 @@
 #include "ns3/simulator.h"
 #include "ipv4-address-helper.h"
 
-NS_LOG_COMPONENT_DEFINE ("Ipv4AddressHelper");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Ipv4AddressHelper");
 
 Ipv4AddressHelper::Ipv4AddressHelper () 
 {

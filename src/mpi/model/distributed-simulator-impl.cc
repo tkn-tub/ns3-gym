@@ -37,9 +37,9 @@
 #include <mpi.h>
 #endif
 
-NS_LOG_COMPONENT_DEFINE ("DistributedSimulatorImpl");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("DistributedSimulatorImpl");
 
 NS_OBJECT_ENSURE_REGISTERED (DistributedSimulatorImpl);
 

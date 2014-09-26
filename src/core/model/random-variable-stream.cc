@@ -36,9 +36,9 @@
 #include <cmath>
 #include <iostream>
 
-NS_LOG_COMPONENT_DEFINE ("RandomVariableStream");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("RandomVariableStream");
 
 NS_OBJECT_ENSURE_REGISTERED (RandomVariableStream);
 

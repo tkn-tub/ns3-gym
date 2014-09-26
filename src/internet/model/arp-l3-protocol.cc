@@ -32,9 +32,9 @@
 #include "arp-cache.h"
 #include "ipv4-interface.h"
 
-NS_LOG_COMPONENT_DEFINE ("ArpL3Protocol");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("ArpL3Protocol");
 
 const uint16_t ArpL3Protocol::PROT_NUMBER = 0x0806;
 

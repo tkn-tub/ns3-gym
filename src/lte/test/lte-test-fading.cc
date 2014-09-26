@@ -50,10 +50,9 @@
 // #include <ns3/trace-fading-loss-model.h>
 // #include <ns3/spectrum-value.h>
 
-NS_LOG_COMPONENT_DEFINE ("LteFadingTest");
-
 using namespace ns3;
 
+NS_LOG_COMPONENT_DEFINE ("LteFadingTest");
 
 /**
 * Test 1.1 Fading compound test

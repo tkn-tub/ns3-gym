@@ -25,9 +25,9 @@
 #include "ns3/log.h"
 #include "ns3/ipv6-address-generator.h"
 
-NS_LOG_COMPONENT_DEFINE ("PointToPointGridHelper");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("PointToPointGridHelper");
 
 PointToPointGridHelper::PointToPointGridHelper (uint32_t nRows, 
                                                 uint32_t nCols, 

@@ -53,9 +53,9 @@
 #include <math.h>
 #include <algorithm>
 
-NS_LOG_COMPONENT_DEFINE ("TcpSocketBase");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("TcpSocketBase");
 
 NS_OBJECT_ENSURE_REGISTERED (TcpSocketBase);
 

@@ -54,9 +54,9 @@
 
 #include <string>
 
-NS_LOG_COMPONENT_DEFINE ("TapFdNetDeviceHelper");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("TapFdNetDeviceHelper");
 
 #define TAP_MAGIC 95549
 

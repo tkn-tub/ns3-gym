@@ -36,9 +36,9 @@
 #include "hash-fnv.h"
 
 
-NS_LOG_COMPONENT_DEFINE ("Hash-Fnv");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Hash-Fnv");
 
 namespace Hash {
 

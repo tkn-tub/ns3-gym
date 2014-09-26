@@ -31,9 +31,9 @@
 #include "ns3/tcp-socket-factory.h"
 #include "bulk-send-application.h"
 
-NS_LOG_COMPONENT_DEFINE ("BulkSendApplication");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("BulkSendApplication");
 
 NS_OBJECT_ENSURE_REGISTERED (BulkSendApplication);
 

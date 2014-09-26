@@ -32,9 +32,9 @@
 
 #include "udp-echo-server.h"
 
-NS_LOG_COMPONENT_DEFINE ("UdpEchoServerApplication");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("UdpEchoServerApplication");
 
 NS_OBJECT_ENSURE_REGISTERED (UdpEchoServer);
 

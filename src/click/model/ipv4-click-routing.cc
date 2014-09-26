@@ -36,9 +36,9 @@
 #include <cstdlib>
 #include <cstdarg>
 
-NS_LOG_COMPONENT_DEFINE ("Ipv4ClickRouting");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Ipv4ClickRouting");
 
 // Values from nsclick ExtRouter implementation
 #define INTERFACE_ID_KERNELTAP 0

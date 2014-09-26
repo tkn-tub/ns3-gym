@@ -29,9 +29,9 @@
 #include "ns3/ipv4-routing-protocol.h"
 #include "ipv4-static-routing-helper.h"
 
-NS_LOG_COMPONENT_DEFINE ("Ipv4StaticRoutingHelper");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Ipv4StaticRoutingHelper");
 
 Ipv4StaticRoutingHelper::Ipv4StaticRoutingHelper()
 {

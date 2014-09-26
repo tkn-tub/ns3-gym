@@ -21,9 +21,9 @@
 #include "ns3/uinteger.h"
 #include "drop-tail-queue.h"
 
-NS_LOG_COMPONENT_DEFINE ("DropTailQueue");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("DropTailQueue");
 
 NS_OBJECT_ENSURE_REGISTERED (DropTailQueue);
 

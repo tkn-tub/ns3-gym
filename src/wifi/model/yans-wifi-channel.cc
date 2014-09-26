@@ -30,9 +30,9 @@
 #include "ns3/propagation-loss-model.h"
 #include "ns3/propagation-delay-model.h"
 
-NS_LOG_COMPONENT_DEFINE ("YansWifiChannel");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("YansWifiChannel");
 
 NS_OBJECT_ENSURE_REGISTERED (YansWifiChannel);
 

@@ -42,9 +42,9 @@
 
 
 
-NS_LOG_COMPONENT_DEFINE ("LteMiErrorModel");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("LteMiErrorModel");
 
   // global table of the effective code rates (ECR)s that have BLER performance curves
   static const double BlerCurvesEcrMap[38] = {

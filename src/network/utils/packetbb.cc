@@ -28,8 +28,6 @@
 #include "ns3/log.h"
 #include "packetbb.h"
 
-NS_LOG_COMPONENT_DEFINE ("PacketBB");
-
 static const uint8_t VERSION = 0;
 /* Packet flags */
 static const uint8_t PHAS_SEQ_NUM = 0x8;
@@ -57,6 +55,8 @@ static const uint8_t THAS_EXT_LEN = 0x08;
 static const uint8_t TIS_MULTIVALUE = 0x04;
 
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("PacketBB");
 
 NS_OBJECT_ENSURE_REGISTERED (PbbPacket);
 

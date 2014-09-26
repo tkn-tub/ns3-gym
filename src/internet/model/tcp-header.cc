@@ -26,9 +26,9 @@
 #include "ns3/address-utils.h"
 #include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("TcpHeader");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("TcpHeader");
 
 NS_OBJECT_ENSURE_REGISTERED (TcpHeader);
 

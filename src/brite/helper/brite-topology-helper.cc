@@ -30,9 +30,9 @@
 #include <iostream>
 #include <fstream>
 
-NS_LOG_COMPONENT_DEFINE ("BriteTopologyHelper");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("BriteTopologyHelper");
 
 BriteTopologyHelper::BriteTopologyHelper (std::string confFile,
                                           std::string seedFile,

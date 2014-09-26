@@ -26,9 +26,9 @@
 #include "ns3/simulator.h"
 #include <cmath>
 
-NS_LOG_COMPONENT_DEFINE ("RvBatteryModel");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("RvBatteryModel");
 
 NS_OBJECT_ENSURE_REGISTERED (RvBatteryModel);
 

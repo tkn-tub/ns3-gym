@@ -32,9 +32,9 @@
 #include "bs-uplink-scheduler.h"
 #include "connection-manager.h"
 
-NS_LOG_COMPONENT_DEFINE ("BSLinkManager");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("BSLinkManager");
 
 NS_OBJECT_ENSURE_REGISTERED (BSLinkManager);
 

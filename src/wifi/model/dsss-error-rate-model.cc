@@ -22,9 +22,9 @@
 #include "dsss-error-rate-model.h"
 #include <cmath>
 
-NS_LOG_COMPONENT_DEFINE ("DsssErrorRateModel");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("DsssErrorRateModel");
 
 #ifndef ENABLE_GSL
 const double DsssErrorRateModel::WLAN_SIR_PERFECT = 10.0;

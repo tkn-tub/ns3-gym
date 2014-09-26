@@ -20,9 +20,9 @@
 #include "block-ack-agreement.h"
 #include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("BlockAckAgreement");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("BlockAckAgreement");
 
 BlockAckAgreement::BlockAckAgreement ()
   : m_amsduSupported (0),

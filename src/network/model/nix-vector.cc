@@ -23,9 +23,9 @@
 
 #include "nix-vector.h"
 
-NS_LOG_COMPONENT_DEFINE ("NixVector");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("NixVector");
 
 typedef std::vector<uint32_t> NixBits_t;  //!< typedef for the nixVector
 

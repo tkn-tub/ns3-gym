@@ -35,10 +35,9 @@
 
 #include "lte-test-sinr-chunk-processor.h"
 
-NS_LOG_COMPONENT_DEFINE ("LteLinkAdaptationTest");
-
 using namespace ns3;
 
+NS_LOG_COMPONENT_DEFINE ("LteLinkAdaptationTest");
 
 /**
  * Test 1.3 Link Adaptation

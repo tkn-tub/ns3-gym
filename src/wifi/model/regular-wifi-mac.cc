@@ -34,9 +34,9 @@
 
 #include "msdu-aggregator.h"
 
-NS_LOG_COMPONENT_DEFINE ("RegularWifiMac");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("RegularWifiMac");
 
 NS_OBJECT_ENSURE_REGISTERED (RegularWifiMac);
 

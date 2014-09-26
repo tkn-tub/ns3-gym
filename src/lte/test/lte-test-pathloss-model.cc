@@ -51,10 +51,9 @@
 #include "lte-test-ue-phy.h"
 #include "lte-test-pathloss-model.h"
 
-NS_LOG_COMPONENT_DEFINE ("LtePathlossModelTest");
-
 using namespace ns3;
 
+NS_LOG_COMPONENT_DEFINE ("LtePathlossModelTest");
 
 /**
  * Test 1.1 Pathloss compound test

@@ -34,9 +34,9 @@
 #include "string.h"
 
 
-NS_LOG_COMPONENT_DEFINE ("CommandLine");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("CommandLine");
 
 CommandLine::CommandLine ()
 {

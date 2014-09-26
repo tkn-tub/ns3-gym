@@ -28,9 +28,9 @@
 
 #include <sstream>
 
-NS_LOG_COMPONENT_DEFINE ("Config");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Config");
 
 namespace Config {
 

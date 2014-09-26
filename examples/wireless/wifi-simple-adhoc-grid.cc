@@ -84,9 +84,9 @@
 #include <vector>
 #include <string>
 
-NS_LOG_COMPONENT_DEFINE ("WifiSimpleAdhocGrid");
-
 using namespace ns3;
+
+NS_LOG_COMPONENT_DEFINE ("WifiSimpleAdhocGrid");
 
 void ReceivePacket (Ptr<Socket> socket)
 {

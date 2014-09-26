@@ -62,9 +62,9 @@
 #include <string>
 #include <sstream>
 
-NS_LOG_COMPONENT_DEFINE ("WifiSleep");
-
 using namespace ns3;
+
+NS_LOG_COMPONENT_DEFINE ("WifiSleep");
 
 template <int node>
 void RemainingEnergyTrace (double oldValue, double newValue)

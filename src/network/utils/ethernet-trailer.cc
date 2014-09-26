@@ -24,9 +24,9 @@
 #include "ethernet-trailer.h"
 #include "crc32.h"
 
-NS_LOG_COMPONENT_DEFINE ("EthernetTrailer");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("EthernetTrailer");
 
 NS_OBJECT_ENSURE_REGISTERED (EthernetTrailer);
 

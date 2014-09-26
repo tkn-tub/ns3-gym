@@ -48,9 +48,9 @@
 #include "lte-test-uplink-power-control.h"
 #include <ns3/lte-rrc-sap.h>
 
-NS_LOG_COMPONENT_DEFINE ("LteUplinkPowerControlTest");
-
 using namespace ns3;
+
+NS_LOG_COMPONENT_DEFINE ("LteUplinkPowerControlTest");
 
 /**
  * TestSuite

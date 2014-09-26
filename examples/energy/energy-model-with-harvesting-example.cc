@@ -60,9 +60,9 @@
 #include <vector>
 #include <string>
 
-NS_LOG_COMPONENT_DEFINE ("EnergyWithHarvestingExample");
-
 using namespace ns3;
+
+NS_LOG_COMPONENT_DEFINE ("EnergyWithHarvestingExample");
 
 static inline std::string
 PrintReceivedPacket (Address& from)

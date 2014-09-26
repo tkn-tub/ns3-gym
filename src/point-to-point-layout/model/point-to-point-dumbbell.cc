@@ -32,9 +32,9 @@
 #include "ns3/vector.h"
 #include "ns3/ipv6-address-generator.h"
 
-NS_LOG_COMPONENT_DEFINE ("PointToPointDumbbellHelper");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("PointToPointDumbbellHelper");
 
 PointToPointDumbbellHelper::PointToPointDumbbellHelper (uint32_t nLeftLeaf,
                                                         PointToPointHelper leftHelper,

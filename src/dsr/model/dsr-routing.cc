@@ -75,9 +75,10 @@
 #include "dsr-fs-header.h"
 #include "dsr-options.h"
 
-NS_LOG_COMPONENT_DEFINE ("DsrRouting");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("DsrRouting");
+  
 namespace dsr {
 
 NS_OBJECT_ENSURE_REGISTERED (DsrRouting);

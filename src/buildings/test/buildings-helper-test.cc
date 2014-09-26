@@ -29,10 +29,9 @@
 #include <ns3/mobility-helper.h>
 #include <ns3/simulator.h>
 
-NS_LOG_COMPONENT_DEFINE ("BuildingsHelperTest");
-
 using namespace ns3;
 
+NS_LOG_COMPONENT_DEFINE ("BuildingsHelperTest");
 
 struct PositionInBuilding
 {

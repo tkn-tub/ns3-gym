@@ -21,9 +21,9 @@
 #include "fatal-error.h"
 #include "log.h"
 
-NS_LOG_COMPONENT_DEFINE ("Boolean");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("Boolean");
 
 BooleanValue::BooleanValue ()
   : m_value (false)

@@ -24,9 +24,9 @@
 #include <sys/times.h>
 #include <unistd.h>
 
-NS_LOG_COMPONENT_DEFINE ("SystemWallClockMsPrivate");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("SystemWallClockMsPrivate");
 
 class SystemWallClockMsPrivate {
 public:

@@ -27,9 +27,9 @@
 #include "log.h"
 
 
-NS_LOG_COMPONENT_DEFINE_MASK ("SystemMutex", ns3::LOG_PREFIX_TIME);
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE_MASK ("SystemMutex", ns3::LOG_PREFIX_TIME);
 
 class SystemMutexPrivate {
 public: 

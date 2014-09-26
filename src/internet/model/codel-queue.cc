@@ -31,9 +31,9 @@
 #include "ns3/abort.h"
 #include "codel-queue.h"
 
-NS_LOG_COMPONENT_DEFINE ("CoDelQueue");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("CoDelQueue");
 
 /* borrowed from the linux kernel */
 static inline uint32_t ReciprocalDivide (uint32_t A, uint32_t R)

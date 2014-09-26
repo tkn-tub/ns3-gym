@@ -40,9 +40,7 @@
 
 using namespace ns3;
 
-
 NS_LOG_COMPONENT_DEFINE ("LenaDualStripe");
-
 
 bool AreOverlapping (Box a, Box b)
 {

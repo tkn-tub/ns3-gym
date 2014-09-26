@@ -42,9 +42,9 @@
 #include "ns3/sequence-number.h"
 #include "rtt-estimator.h"
 
-NS_LOG_COMPONENT_DEFINE("TcpWestwood");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE("TcpWestwood");
 
 NS_OBJECT_ENSURE_REGISTERED(TcpWestwood);
 

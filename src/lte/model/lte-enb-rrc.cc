@@ -44,11 +44,9 @@
 
 
 
-NS_LOG_COMPONENT_DEFINE ("LteEnbRrc");
-
-
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("LteEnbRrc");
 
 ///////////////////////////////////////////
 // CMAC SAP forwarder

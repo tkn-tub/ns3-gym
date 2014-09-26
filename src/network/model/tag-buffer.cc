@@ -22,9 +22,9 @@
 #include "ns3/log.h"
 #include <cstring>
 
-NS_LOG_COMPONENT_DEFINE ("TagBuffer");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("TagBuffer");
 
 #ifndef TAG_BUFFER_USE_INLINE
 

@@ -40,9 +40,9 @@
 #include <arpa/inet.h>
 #include <net/ethernet.h>
 
-NS_LOG_COMPONENT_DEFINE ("FdNetDevice");
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("FdNetDevice");
 
 FdNetDeviceFdReader::FdNetDeviceFdReader ()
   : m_bufferSize (65536) // Defaults to maximum TCP window size

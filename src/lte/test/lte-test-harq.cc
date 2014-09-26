@@ -52,10 +52,9 @@
 
 #include "lte-test-harq.h"
 
-NS_LOG_COMPONENT_DEFINE ("LenaTestHarq");
-
 using namespace ns3;
 
+NS_LOG_COMPONENT_DEFINE ("LenaTestHarq");
 
 LenaTestHarqSuite::LenaTestHarqSuite ()
   : TestSuite ("lte-harq", SYSTEM)
