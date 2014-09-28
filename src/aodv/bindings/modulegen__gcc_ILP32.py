@@ -1553,6 +1553,26 @@ def register_Ns3Ipv4RoutingHelper_methods(root_module, cls):
                    'ns3::Ptr< ns3::Ipv4RoutingProtocol >', 
                    [param('ns3::Ptr< ns3::Node >', 'node')], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## ipv4-routing-helper.h (module 'internet'): void ns3::Ipv4RoutingHelper::PrintNeighborCacheAllAt(ns3::Time printTime, ns3::Ptr<ns3::OutputStreamWrapper> stream) const [member function]
+    cls.add_method('PrintNeighborCacheAllAt', 
+                   'void', 
+                   [param('ns3::Time', 'printTime'), param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream')], 
+                   is_const=True)
+    ## ipv4-routing-helper.h (module 'internet'): void ns3::Ipv4RoutingHelper::PrintNeighborCacheAllEvery(ns3::Time printInterval, ns3::Ptr<ns3::OutputStreamWrapper> stream) const [member function]
+    cls.add_method('PrintNeighborCacheAllEvery', 
+                   'void', 
+                   [param('ns3::Time', 'printInterval'), param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream')], 
+                   is_const=True)
+    ## ipv4-routing-helper.h (module 'internet'): void ns3::Ipv4RoutingHelper::PrintNeighborCacheAt(ns3::Time printTime, ns3::Ptr<ns3::Node> node, ns3::Ptr<ns3::OutputStreamWrapper> stream) const [member function]
+    cls.add_method('PrintNeighborCacheAt', 
+                   'void', 
+                   [param('ns3::Time', 'printTime'), param('ns3::Ptr< ns3::Node >', 'node'), param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream')], 
+                   is_const=True)
+    ## ipv4-routing-helper.h (module 'internet'): void ns3::Ipv4RoutingHelper::PrintNeighborCacheEvery(ns3::Time printInterval, ns3::Ptr<ns3::Node> node, ns3::Ptr<ns3::OutputStreamWrapper> stream) const [member function]
+    cls.add_method('PrintNeighborCacheEvery', 
+                   'void', 
+                   [param('ns3::Time', 'printInterval'), param('ns3::Ptr< ns3::Node >', 'node'), param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream')], 
+                   is_const=True)
     ## ipv4-routing-helper.h (module 'internet'): void ns3::Ipv4RoutingHelper::PrintRoutingTableAllAt(ns3::Time printTime, ns3::Ptr<ns3::OutputStreamWrapper> stream) const [member function]
     cls.add_method('PrintRoutingTableAllAt', 
                    'void', 
@@ -4891,6 +4911,10 @@ def register_Ns3ArpCache_methods(root_module, cls):
     cls.add_method('Lookup', 
                    'ns3::ArpCache::Entry *', 
                    [param('ns3::Ipv4Address', 'destination')])
+    ## arp-cache.h (module 'internet'): void ns3::ArpCache::PrintArpCache(ns3::Ptr<ns3::OutputStreamWrapper> stream) [member function]
+    cls.add_method('PrintArpCache', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream')])
     ## arp-cache.h (module 'internet'): void ns3::ArpCache::SetAliveTimeout(ns3::Time aliveTimeout) [member function]
     cls.add_method('SetAliveTimeout', 
                    'void', 
