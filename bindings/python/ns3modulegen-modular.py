@@ -103,7 +103,7 @@ def main(argv):
         module_customization.post_register_types(root_module)
 
     # register Callback<...> type handlers
-    ns3modulegen_core_customizations.generate_callback_classes(root_module.after_forward_declarations,
+    ns3modulegen_core_customizations.register_callback_classes(root_module.after_forward_declarations,
                                                                callback_classes)
 
     # -----------
@@ -114,14 +114,14 @@ def main(argv):
 
     ns3modulegen_core_customizations.Object_customizations(root_module)
     ns3modulegen_core_customizations.Attribute_customizations(root_module)
-
+    ns3modulegen_core_customizations.generate_callback_classes(root_module,
+                                                               callback_classes)
 
     # -----------
     module_apidefs.register_functions(root_module)
-    
+
     if hasattr(module_customization, 'post_register_functions'):
         module_customization.post_register_functions(root_module)
-
 
     # -----------
     root_module.generate(out)
@@ -129,5 +129,3 @@ def main(argv):
 if __name__ == '__main__':
     import sys
     main(sys.argv)
-
-    
