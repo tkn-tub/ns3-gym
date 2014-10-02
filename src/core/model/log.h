@@ -165,6 +165,24 @@ void LogComponentDisableAll (enum LogLevel level);
  * ns3::LogComponentDisable functions or with the NS_LOG
  * environment variable.
  *
+ * This macro should be placed within namespace ns3.  If functions
+ * outside of namespace ns3 require access to logging, the preferred
+ * solution is to add the following 'using' directive at file scope,
+ * outside of namespace ns3, and after the inclusion of
+ * NS_LOG_COMPONENT_DEFINE, such as follows:
+ * \code
+ * namespace ns3 {
+ * NS_LOG_COMPONENT_DEFINE ("...");
+ *
+ * \\ definitions within the ns3 namespace
+ *
+ * } // namespace ns3
+ *
+ * using ns3::g_log;
+ *
+ * // further definitions outside of the ns3 namespace
+ *\endcode
+ *
  * \param name a string
  */
 #define NS_LOG_COMPONENT_DEFINE(name)                           \

@@ -569,6 +569,8 @@ Ipv4ClickRouting::NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress 
 
 } // namespace ns3
 
+using ns3::g_log;
+
 static int simstrlcpy (char *buf, int len, const std::string &s)
 {
   if (len)
