@@ -5,7 +5,8 @@
 
 me=$(basename $0)
 DIR="$(dirname $0)"
-ROOT="$(hg root)"
+# Trick to get the absolute path, since doxygen prefixes errors that way
+ROOT=$(cd "$DIR/.."; pwd)
 
 # Use file handle 6 for verbose output
 exec 6>/dev/null
@@ -77,7 +78,7 @@ function usage
 	-f  Skip doxygen run; use existing <log-file>.
 	-s  Skip doxygen run; use existing warnings log doc/$WARNINGSLOGFILE
 	-l  Skip doxygen run; use the normal doxygen log doc/$STANDARDLOGFILE
-
+		
 	-v  Show the doxygen run output
 	-h  Print this usage message
 	    
@@ -107,15 +108,15 @@ while getopts :etm:F:lF:svh option ; do
 
     case $option in
 	
-	(e)  filter_examples=1          ;;
+	(e)  filter_examples=1        ;;
 	
-	(t)  filter_test=1              ;;
+	(t)  filter_test=1            ;;
 
-	(m)  filter_module="$OPTARG"    ;;
+	(m)  filter_module="$OPTARG"  ;;
 
-	(F)  filter_regex="$OPTARG"     ;;
+	(F)  filter_regex="$OPTARG"   ;;
 
-	(l)  usestandard=1              ;;
+	(l)  usestandard=1            ;;
 
 	(f)  usefilearg=1
 	     logfilearg="$OPTARG"
@@ -129,7 +130,7 @@ while getopts :etm:F:lF:svh option ; do
 	     exec 6>&1
 	     ;;
 
-	(h)  usage                      ;;
+	(h)  usage ;;
 	
 	(:)  echo "$me: Missing argument to -$OPTARG" ; usage ;;
 	
@@ -234,9 +235,15 @@ function filter_log
 	flog=$( echo "$flog" | grep -v "$filter_outRE" )
     fi
 
+    flog=$(                         \
+	echo "$flog"              | \
+	sort -t ':' -k1,1 -k2,2n  | \
+	uniq                        \
+	)
+
     echo "$flog"
 }
-    
+
 
 # Analyze the log ----------------------
 #
@@ -301,9 +308,9 @@ filecount=$(                        \
 # Filtered in warnings
 filterin=
 if [ "${filter_inRE:-}" != "" ] ; then
-    filterin=$(                 \
-	filter_log            | \
-	sed "s|$ROOT/||g"       \
+    filterin=$(              \
+	filter_log         | \
+	sed "s|$ROOT/||g"    \
 	)
 fi
 
