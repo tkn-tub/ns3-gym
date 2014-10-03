@@ -27,6 +27,7 @@
 #include "unused.h"
 #include <stdint.h>
 #include <limits>
+#include <cmath>
 #include <ostream>
 #include <set>
 
@@ -90,8 +91,6 @@ class TimeWithUnit;
  * resolution.  Therefore the maximum duration of your simulation,
  * if you use picoseconds, is 2^64 ps = 2^24 s = 7 months, whereas,
  * had you used nanoseconds, you could have run for 584 years.
- *
- * \see attribute_Time
  */
 class Time
 {
@@ -914,14 +913,24 @@ inline Time TimeStep (uint64_t ts)
   return Time (ts);
 }
 
+/**
+ * \ingroup time
+ * \class ns3::TimeValue
+ * \brief Attribute for objects of type ns3::Time
+ */
 ATTRIBUTE_VALUE_DEFINE (Time);
-ATTRIBUTE_ACCESSOR_DEFINE (Time);
 
 /**
- *  \ingroup attribute_Time
+ *  Attribute accessor function for Time
+ *  @{
+ */
+ATTRIBUTE_ACCESSOR_DEFINE (Time);
+/**@}*/
+
+/**
+ *  \ingroup time
  *  \brief Helper to make a Time checker with bounded range.
- *
- * The minimum and maximum values are included in the allowed range.
+ *  Both limits are inclusive
  *
  *  \param [in] min Minimum allowed value.
  *  \param [in] max Maximum allowed value.
@@ -929,6 +938,12 @@ ATTRIBUTE_ACCESSOR_DEFINE (Time);
  */
 Ptr<const AttributeChecker> MakeTimeChecker (const Time min, const Time max);
 
+/**
+ * \ingroup time
+ * \brief Helper to make an unbounded Time checker.
+ *
+ * \return the AttributeChecker
+ */
 inline
 Ptr<const AttributeChecker> MakeTimeChecker (void)
 {
@@ -936,10 +951,8 @@ Ptr<const AttributeChecker> MakeTimeChecker (void)
 }
 
 /**
- * \ingroup attribute_Time
+ * \ingroup time
  * \brief Helper to make a Time checker with a lower bound.
- *
- * The minimum value is included in the allowed range.
  *
  *  \param [in] min Minimum allowed value.
  * \return the AttributeChecker

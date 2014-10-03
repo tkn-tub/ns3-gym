@@ -81,10 +81,12 @@ WaveformGenerator::GetTypeId (void)
                    MakeDoubleChecker<double> ())
     .AddTraceSource ("TxStart",
                      "Trace fired when a new transmission is started",
-                     MakeTraceSourceAccessor (&WaveformGenerator::m_phyTxStartTrace))
+                     MakeTraceSourceAccessor (&WaveformGenerator::m_phyTxStartTrace),
+                     "ns3::Packet::TracedCallback")
     .AddTraceSource ("TxEnd",
                      "Trace fired when a previosuly started transmission is finished",
-                     MakeTraceSourceAccessor (&WaveformGenerator::m_phyTxEndTrace))
+                     MakeTraceSourceAccessor (&WaveformGenerator::m_phyTxEndTrace),
+                     "ns3::Packet::TracedCallback")
   ;
   return tid;
 }

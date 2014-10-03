@@ -219,8 +219,6 @@ UdpSocketImpl::FinishBind (void)
     }
   if (done)
     {
-      m_shutdownRecv = false;
-      m_shutdownSend = false;
       return 0;
     }
   return -1;

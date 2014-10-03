@@ -149,7 +149,7 @@ public:
   typedef void (* Int16Callback) (const int16_t  oldValue, const int16_t  newValue);
   typedef void (* Uint16Callback)(const uint16_t oldValue, const uint16_t newValue);
   typedef void (* Int32Callback) (const int32_t  oldValue, const int32_t  newValue);
-  typedef void (* Uint32Callback)(const int32_t  oldValue, const int32_t  newValue);
+  typedef void (* Uint32Callback)(const uint32_t oldValue, const uint32_t newValue);
   typedef void (* DoubleCallback)(const double   oldValue, const double   newValue);
   /**@}*/
 

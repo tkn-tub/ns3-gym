@@ -183,22 +183,27 @@ SubscriberStationNetDevice::GetTypeId (void)
 
     .AddTraceSource ("SSTxDrop",
                      "A packet has been dropped in the MAC layer before being queued for transmission.",
-                     MakeTraceSourceAccessor (&SubscriberStationNetDevice::m_ssTxDropTrace))
+                     MakeTraceSourceAccessor (&SubscriberStationNetDevice::m_ssTxDropTrace),
+                     "ns3::Packet::TracedCallback")
 
     .AddTraceSource ("SSPromiscRx",
                      "A packet has been received by this device, has been passed up from the physical layer "
                      "and is being forwarded up the local protocol stack.  This is a promiscuous trace,",
-                     MakeTraceSourceAccessor (&SubscriberStationNetDevice::m_ssPromiscRxTrace))
+                     MakeTraceSourceAccessor (&SubscriberStationNetDevice::m_ssPromiscRxTrace),
+                     "ns3::Packet::TracedCallback")
 
     .AddTraceSource ("SSRx",
                      "A packet has been received by this device, has been passed up from the physical layer "
                      "and is being forwarded up the local protocol stack.  This is a non-promiscuous trace,",
-                     MakeTraceSourceAccessor (&SubscriberStationNetDevice::m_ssRxTrace))
+                     MakeTraceSourceAccessor (&SubscriberStationNetDevice::m_ssRxTrace),
+                     "ns3::Packet::TracedCallback")
 
     .AddTraceSource ("SSRxDrop",
                      "A packet has been dropped in the MAC layer after it has been passed up from the physical "
                      "layer.",
-                     MakeTraceSourceAccessor (&SubscriberStationNetDevice::m_ssRxDropTrace));
+                     MakeTraceSourceAccessor (&SubscriberStationNetDevice::m_ssRxDropTrace),
+                     "ns3::Packet::TracedCallback")
+    ;
   return tid;
 }
 

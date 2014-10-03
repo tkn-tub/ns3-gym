@@ -92,62 +92,92 @@ CsmaNetDevice::GetTypeId (void)
     // to/from higher layers.
     //
     .AddTraceSource ("MacTx", 
-                     "Trace source indicating a packet has arrived for transmission by this device",
-                     MakeTraceSourceAccessor (&CsmaNetDevice::m_macTxTrace))
+                     "Trace source indicating a packet has "
+                     "arrived for transmission by this device",
+                     MakeTraceSourceAccessor (&CsmaNetDevice::m_macTxTrace),
+                     "ns3::Packet::TracedCallback")
     .AddTraceSource ("MacTxDrop", 
-                     "Trace source indicating a packet has been dropped by the device before transmission",
-                     MakeTraceSourceAccessor (&CsmaNetDevice::m_macTxDropTrace))
+                     "Trace source indicating a packet has been "
+                     "dropped by the device before transmission",
+                     MakeTraceSourceAccessor (&CsmaNetDevice::m_macTxDropTrace),
+                     "ns3::Packet::TracedCallback")
     .AddTraceSource ("MacPromiscRx", 
-                     "A packet has been received by this device, has been passed up from the physical layer "
-                     "and is being forwarded up the local protocol stack.  This is a promiscuous trace,",
-                     MakeTraceSourceAccessor (&CsmaNetDevice::m_macPromiscRxTrace))
+                     "A packet has been received by this device, "
+                     "has been passed up from the physical layer "
+                     "and is being forwarded up the local protocol stack.  "
+                     "This is a promiscuous trace,",
+                     MakeTraceSourceAccessor (&CsmaNetDevice::m_macPromiscRxTrace),
+                     "ns3::Packet::TracedCallback")
     .AddTraceSource ("MacRx", 
-                     "A packet has been received by this device, has been passed up from the physical layer "
-                     "and is being forwarded up the local protocol stack.  This is a non-promiscuous trace,",
-                     MakeTraceSourceAccessor (&CsmaNetDevice::m_macRxTrace))
+                     "A packet has been received by this device, "
+                     "has been passed up from the physical layer "
+                     "and is being forwarded up the local protocol stack.  "
+                     "This is a non-promiscuous trace,",
+                     MakeTraceSourceAccessor (&CsmaNetDevice::m_macRxTrace),
+                     "ns3::Packet::TracedCallback")
 #if 0
     // Not currently implemented in this device
     .AddTraceSource ("MacRxDrop", 
-                     "Trace source indicating a packet was received, but dropped before being forwarded up the stack",
-                     MakeTraceSourceAccessor (&CsmaNetDevice::m_macRxDropTrace))
+                     "Trace source indicating a packet was received, "
+                     "but dropped before being forwarded up the stack",
+                     MakeTraceSourceAccessor (&CsmaNetDevice::m_macRxDropTrace),
+                     "ns3::Packet::TracedCallback")
 #endif
     .AddTraceSource ("MacTxBackoff", 
-                     "Trace source indicating a packet has been delayed by the CSMA backoff process",
-                     MakeTraceSourceAccessor (&CsmaNetDevice::m_macTxBackoffTrace))
+                     "Trace source indicating a packet has been "
+                     "delayed by the CSMA backoff process",
+                     MakeTraceSourceAccessor (&CsmaNetDevice::m_macTxBackoffTrace),
+                     "ns3::Packet::TracedCallback")
     //
     // Trace souces at the "bottom" of the net device, where packets transition
     // to/from the channel.
     //
     .AddTraceSource ("PhyTxBegin", 
-                     "Trace source indicating a packet has begun transmitting over the channel",
-                     MakeTraceSourceAccessor (&CsmaNetDevice::m_phyTxBeginTrace))
+                     "Trace source indicating a packet has "
+                     "begun transmitting over the channel",
+                     MakeTraceSourceAccessor (&CsmaNetDevice::m_phyTxBeginTrace),
+                     "ns3::Packet::TracedCallback")
     .AddTraceSource ("PhyTxEnd", 
-                     "Trace source indicating a packet has been completely transmitted over the channel",
-                     MakeTraceSourceAccessor (&CsmaNetDevice::m_phyTxEndTrace))
+                     "Trace source indicating a packet has been "
+                     "completely transmitted over the channel",
+                     MakeTraceSourceAccessor (&CsmaNetDevice::m_phyTxEndTrace),
+                     "ns3::Packet::TracedCallback")
     .AddTraceSource ("PhyTxDrop", 
-                     "Trace source indicating a packet has been dropped by the device during transmission",
-                     MakeTraceSourceAccessor (&CsmaNetDevice::m_phyTxDropTrace))
+                     "Trace source indicating a packet has been "
+                     "dropped by the device during transmission",
+                     MakeTraceSourceAccessor (&CsmaNetDevice::m_phyTxDropTrace),
+                     "ns3::Packet::TracedCallback")
 #if 0
     // Not currently implemented in this device
     .AddTraceSource ("PhyRxBegin", 
-                     "Trace source indicating a packet has begun being received by the device",
-                     MakeTraceSourceAccessor (&CsmaNetDevice::m_phyRxBeginTrace))
+                     "Trace source indicating a packet has "
+                     "begun being received by the device",
+                     MakeTraceSourceAccessor (&CsmaNetDevice::m_phyRxBeginTrace),
+                     "ns3::Packet::TracedCallback")
 #endif
     .AddTraceSource ("PhyRxEnd", 
-                     "Trace source indicating a packet has been completely received by the device",
-                     MakeTraceSourceAccessor (&CsmaNetDevice::m_phyRxEndTrace))
+                     "Trace source indicating a packet has been "
+                     "completely received by the device",
+                     MakeTraceSourceAccessor (&CsmaNetDevice::m_phyRxEndTrace),
+                     "ns3::Packet::TracedCallback")
     .AddTraceSource ("PhyRxDrop", 
-                     "Trace source indicating a packet has been dropped by the device during reception",
-                     MakeTraceSourceAccessor (&CsmaNetDevice::m_phyRxDropTrace))
+                     "Trace source indicating a packet has been "
+                     "dropped by the device during reception",
+                     MakeTraceSourceAccessor (&CsmaNetDevice::m_phyRxDropTrace),
+                     "ns3::Packet::TracedCallback")
     //
     // Trace sources designed to simulate a packet sniffer facility (tcpdump). 
     //
     .AddTraceSource ("Sniffer", 
-                     "Trace source simulating a non-promiscuous packet sniffer attached to the device",
-                     MakeTraceSourceAccessor (&CsmaNetDevice::m_snifferTrace))
+                     "Trace source simulating a non-promiscuous "
+                     "packet sniffer attached to the device",
+                     MakeTraceSourceAccessor (&CsmaNetDevice::m_snifferTrace),
+                     "ns3::Packet::TracedCallback")
     .AddTraceSource ("PromiscSniffer", 
-                     "Trace source simulating a promiscuous packet sniffer attached to the device",
-                     MakeTraceSourceAccessor (&CsmaNetDevice::m_promiscSnifferTrace))
+                     "Trace source simulating a promiscuous "
+                     "packet sniffer attached to the device",
+                     MakeTraceSourceAccessor (&CsmaNetDevice::m_promiscSnifferTrace),
+                     "ns3::Packet::TracedCallback")
   ;
   return tid;
 }

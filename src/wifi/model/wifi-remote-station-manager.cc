@@ -301,16 +301,20 @@ WifiRemoteStationManager::GetTypeId (void)
                    MakeUintegerChecker<uint8_t> ())
     .AddTraceSource ("MacTxRtsFailed",
                      "The transmission of a RTS by the MAC layer has failed",
-                     MakeTraceSourceAccessor (&WifiRemoteStationManager::m_macTxRtsFailed))
+                     MakeTraceSourceAccessor (&WifiRemoteStationManager::m_macTxRtsFailed),
+                     "ns3::Mac48Address::TracedCallback")
     .AddTraceSource ("MacTxDataFailed",
                      "The transmission of a data packet by the MAC layer has failed",
-                     MakeTraceSourceAccessor (&WifiRemoteStationManager::m_macTxDataFailed))
+                     MakeTraceSourceAccessor (&WifiRemoteStationManager::m_macTxDataFailed),
+                     "ns3::Mac48Address::TracedCallback")
     .AddTraceSource ("MacTxFinalRtsFailed",
                      "The transmission of a RTS has exceeded the maximum number of attempts",
-                     MakeTraceSourceAccessor (&WifiRemoteStationManager::m_macTxFinalRtsFailed))
+                     MakeTraceSourceAccessor (&WifiRemoteStationManager::m_macTxFinalRtsFailed),
+                     "ns3::Mac48Address::TracedCallback")
     .AddTraceSource ("MacTxFinalDataFailed",
                      "The transmission of a data packet has exceeded the maximum number of attempts",
-                     MakeTraceSourceAccessor (&WifiRemoteStationManager::m_macTxFinalDataFailed))
+                     MakeTraceSourceAccessor (&WifiRemoteStationManager::m_macTxFinalDataFailed),
+                     "ns3::Mac48Address::TracedCallback")
   ;
   return tid;
 }

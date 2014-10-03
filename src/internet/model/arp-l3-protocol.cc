@@ -51,13 +51,20 @@ ArpL3Protocol::GetTypeId (void)
                    ObjectVectorValue (),
                    MakeObjectVectorAccessor (&ArpL3Protocol::m_cacheList),
                    MakeObjectVectorChecker<ArpCache> ())
-    .AddAttribute ("RequestJitter", "The jitter in ms a node is allowed to wait before sending an ARP request. Some jitter aims to prevent collisions. By default, the model will wait for a duration in ms defined by a uniform random-variable between 0 and RequestJitter",
+    .AddAttribute ("RequestJitter",
+                   "The jitter in ms a node is allowed to wait "
+                   "before sending an ARP request.  Some jitter aims "
+                   "to prevent collisions. By default, the model "
+                   "will wait for a duration in ms defined by "
+                   "a uniform random-variable between 0 and RequestJitter",
                    StringValue ("ns3::UniformRandomVariable[Min=0.0|Max=10.0]"),
                    MakePointerAccessor (&ArpL3Protocol::m_requestJitter),
                    MakePointerChecker<RandomVariableStream> ())
     .AddTraceSource ("Drop",
-                     "Packet dropped because not enough room in pending queue for a specific cache entry.",
-                     MakeTraceSourceAccessor (&ArpL3Protocol::m_dropTrace))
+                     "Packet dropped because not enough room "
+                     "in pending queue for a specific cache entry.",
+                     MakeTraceSourceAccessor (&ArpL3Protocol::m_dropTrace),
+                     "ns3::Packet::TracedCallback")
   ;
   return tid;
 }
@@ -190,7 +197,7 @@ ArpL3Protocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t pro
   /**
    * \internal
    * Note: we do not update the ARP cache when we receive an ARP request
-   * from an unknown node. See \bugid{107}
+   *  from an unknown node. See \bugid{107}
    */
   bool found = false;
   for (uint32_t i = 0; i < cache->GetInterface ()->GetNAddresses (); i++)

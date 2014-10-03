@@ -503,6 +503,12 @@ public:
    */
   Ptr<SpectrumValue> Copy () const;
 
+  /**
+   *  TracedCallback signature for SpectrumValue.
+   *
+   * \param [in] value Value of the traced variable.
+   */
+  typedef void (* TracedCallback)(const Ptr<const SpectrumValue> value);
 
 
 private:

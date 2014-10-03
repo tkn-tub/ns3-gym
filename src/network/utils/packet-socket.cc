@@ -42,7 +42,8 @@ PacketSocket::GetTypeId (void)
     .SetParent<Socket> ()
     .AddConstructor<PacketSocket> ()
     .AddTraceSource ("Drop", "Drop packet due to receive buffer overflow",
-                     MakeTraceSourceAccessor (&PacketSocket::m_dropTrace))
+                     MakeTraceSourceAccessor (&PacketSocket::m_dropTrace),
+                     "ns3::Packet::TracedCallback")
     .AddAttribute ("RcvBufSize",
                    "PacketSocket maximum receive buffer size (bytes)",
                    UintegerValue (131072),

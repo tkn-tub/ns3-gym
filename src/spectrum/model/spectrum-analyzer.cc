@@ -73,19 +73,24 @@ SpectrumAnalyzer::GetTypeId (void)
     .SetParent<SpectrumPhy> ()
     .AddConstructor<SpectrumAnalyzer> ()
     .AddAttribute ("Resolution",
-                   "the lengh of the time interval over which the power spectral "
-                   "density of incoming signals is averaged",
+                   "The lengh of the time interval over which the "
+                   "power spectral density of incoming signals is averaged",
                    TimeValue (MilliSeconds (1)),
                    MakeTimeAccessor (&SpectrumAnalyzer::m_resolution),
                    MakeTimeChecker ())
     .AddAttribute ("NoisePowerSpectralDensity",
-                   "the power spectral density of the measuring instrument noise, in Watt/Hz. Mostly useful to make spectrograms look more similar to those obtained by real devices. Defaults to the value for thermal noise at 300K.",
+                   "The power spectral density of the measuring instrument "
+                   "noise, in Watt/Hz. Mostly useful to make spectrograms "
+                   "look more similar to those obtained by real devices. "
+                   "Defaults to the value for thermal noise at 300K.",
                    DoubleValue (1.38e-23 * 300),
                    MakeDoubleAccessor (&SpectrumAnalyzer::m_noisePowerSpectralDensity),
                    MakeDoubleChecker<double> ())
     .AddTraceSource ("AveragePowerSpectralDensityReport",
-                     "Trace fired whenever a new value for the average Power Spectral Density is calculated",
-                     MakeTraceSourceAccessor (&SpectrumAnalyzer::m_averagePowerSpectralDensityReportTrace))
+                     "Trace fired whenever a new value for the average "
+                     "Power Spectral Density is calculated",
+                     MakeTraceSourceAccessor (&SpectrumAnalyzer::m_averagePowerSpectralDensityReportTrace),
+                     "ns3::SpectrumValue::TracedCallback")
   ;
   return tid;
 }

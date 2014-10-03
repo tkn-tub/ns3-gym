@@ -88,6 +88,16 @@ public:
   void operator() (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7) const;
   void operator() (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7, T8 a8) const;
 
+  /**
+   *  TracedCallback signature for POD.
+   *
+   * \param [in] value Value of the traced variable.
+   * @{
+   */
+  typedef void (* Uint32Callback)(const uint32_t value);
+  /**@}*/
+
+  
 private:
   typedef std::list<Callback<void,T1,T2,T3,T4,T5,T6,T7,T8> > CallbackList;
   CallbackList m_callbackList;

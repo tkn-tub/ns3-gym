@@ -164,7 +164,8 @@ HwmpProtocol::GetTypeId ()
     .AddTraceSource ( "RouteDiscoveryTime",
                       "The time of route discovery procedure",
                       MakeTraceSourceAccessor (
-                        &HwmpProtocol::m_routeDiscoveryTimeCallback)
+                        &HwmpProtocol::m_routeDiscoveryTimeCallback),
+                      "ns3::Time::TracedCallback"
                       )
   ;
   return tid;

@@ -209,8 +209,10 @@ SimpleNetDevice::GetTypeId (void)
                    MakeDataRateAccessor (&SimpleNetDevice::m_bps),
                    MakeDataRateChecker ())
     .AddTraceSource ("PhyRxDrop",
-                     "Trace source indicating a packet has been dropped by the device during reception",
-                     MakeTraceSourceAccessor (&SimpleNetDevice::m_phyRxDropTrace))
+                     "Trace source indicating a packet has been dropped "
+                     "by the device during reception",
+                     MakeTraceSourceAccessor (&SimpleNetDevice::m_phyRxDropTrace),
+                     "ns3::Packet::TracedCallback")
   ;
   return tid;
 }

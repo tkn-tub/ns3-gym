@@ -582,6 +582,13 @@ public:
    */
   const char * GetTypeString (void) const;
 
+  /**
+   * TracedCallback signature for WifiMacHeader
+   *
+   * \param [in] header The header 
+   */
+  typedef void (* TracedCallback)(const WifiMacHeader &header);
+  
 
 private:
   /**

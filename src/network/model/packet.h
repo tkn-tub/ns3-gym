@@ -652,6 +652,13 @@ public:
    */
   Ptr<NixVector> GetNixVector (void) const; 
 
+  /**
+   * TracedCallback signature for Ptr<Packet>
+   *
+   * \param [in] packet The packet.
+   */
+  typedef void (* TracedCallback) (const Ptr<const Packet> packet);
+  
 private:
   /**
    * \brief Constructor

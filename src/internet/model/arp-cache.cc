@@ -42,22 +42,29 @@ ArpCache::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::ArpCache")
     .SetParent<Object> ()
     .AddAttribute ("AliveTimeout",
-                   "When this timeout expires, the matching cache entry needs refreshing",
+                   "When this timeout expires, "
+                   "the matching cache entry needs refreshing",
                    TimeValue (Seconds (120)),
                    MakeTimeAccessor (&ArpCache::m_aliveTimeout),
                    MakeTimeChecker ())
     .AddAttribute ("DeadTimeout",
-                   "When this timeout expires, a new attempt to resolve the matching entry is made",
+                   "When this timeout expires, "
+                   "a new attempt to resolve the matching entry is made",
                    TimeValue (Seconds (100)),
                    MakeTimeAccessor (&ArpCache::m_deadTimeout),
                    MakeTimeChecker ())
     .AddAttribute ("WaitReplyTimeout",
-                   "When this timeout expires, the cache entries will be scanned and entries in WaitReply state will resend ArpRequest unless MaxRetries has been exceeded, in which case the entry is marked dead",
+                   "When this timeout expires, "
+                   "the cache entries will be scanned and "
+                   "entries in WaitReply state will resend ArpRequest "
+                   "unless MaxRetries has been exceeded, "
+                   "in which case the entry is marked dead",
                    TimeValue (Seconds (1)),
                    MakeTimeAccessor (&ArpCache::m_waitReplyTimeout),
                    MakeTimeChecker ())
     .AddAttribute ("MaxRetries",
-                   "Number of retransmissions of ArpRequest before marking dead",
+                   "Number of retransmissions of ArpRequest "
+                   "before marking dead",
                    UintegerValue (3),
                    MakeUintegerAccessor (&ArpCache::m_maxRetries),
                    MakeUintegerChecker<uint32_t> ())
@@ -67,8 +74,10 @@ ArpCache::GetTypeId (void)
                    MakeUintegerAccessor (&ArpCache::m_pendingQueueSize),
                    MakeUintegerChecker<uint32_t> ())
     .AddTraceSource ("Drop",
-                     "Packet dropped due to ArpCache entry in WaitReply expiring.",
-                     MakeTraceSourceAccessor (&ArpCache::m_dropTrace))
+                     "Packet dropped due to ArpCache entry "
+                     "in WaitReply expiring.",
+                     MakeTraceSourceAccessor (&ArpCache::m_dropTrace),
+                     "ns3::Packet::TracedCallback")
   ;
   return tid;
 }

@@ -149,27 +149,40 @@ TypeId BaseStationNetDevice::GetTypeId (void)
                                         &BaseStationNetDevice::SetServiceFlowManager),
                    MakePointerChecker<ServiceFlowManager> ())
 
-    .AddTraceSource ("BSTx", "A packet has been received from higher layers and is being processed in preparation for "
-                     "queueing for transmission.", MakeTraceSourceAccessor (&BaseStationNetDevice::m_bsTxTrace))
+    .AddTraceSource ("BSTx",
+                     "A packet has been received from higher layers "
+                     "and is being processed in preparation "
+                     "for queueing for transmission.",
+                     MakeTraceSourceAccessor (&BaseStationNetDevice::m_bsTxTrace),
+                     "ns3::Packet::TracedCallback")
 
     .AddTraceSource ("BSTxDrop",
-                     "A packet has been dropped in the MAC layer before being queued for transmission.",
-                     MakeTraceSourceAccessor (&BaseStationNetDevice::m_bsTxDropTrace))
+                     "A packet has been dropped in the MAC layer "
+                     "before being queued for transmission.",
+                     MakeTraceSourceAccessor (&BaseStationNetDevice::m_bsTxDropTrace),
+                     "ns3::Packet::TracedCallback")
 
     .AddTraceSource ("BSPromiscRx",
-                     "A packet has been received by this device, has been passed up from the physical layer "
-                     "and is being forwarded up the local protocol stack.  This is a promiscuous trace,",
-                     MakeTraceSourceAccessor (&BaseStationNetDevice::m_bsPromiscRxTrace))
+                     "A packet has been received by this device, "
+                     "has been passed up from the physical layer "
+                     "and is being forwarded up the local protocol stack.  "
+                     "This is a promiscuous trace,",
+                     MakeTraceSourceAccessor (&BaseStationNetDevice::m_bsPromiscRxTrace),
+                     "ns3::Packet::TracedCallback")
 
     .AddTraceSource ("BSRx",
-                     "A packet has been received by this device, has been passed up from the physical layer "
-                     "and is being forwarded up the local protocol stack.  This is a non-promiscuous trace,",
-                     MakeTraceSourceAccessor (&BaseStationNetDevice::m_bsRxTrace))
+                     "A packet has been received by this device, "
+                     "has been passed up from the physical layer "
+                     "and is being forwarded up the local protocol stack.  "
+                     "This is a non-promiscuous trace,",
+                     MakeTraceSourceAccessor (&BaseStationNetDevice::m_bsRxTrace),
+                     "ns3::Packet::TracedCallback")
 
     .AddTraceSource ("BSRxDrop",
-                     "A packet has been dropped in the MAC layer after it has been passed up from the physical "
-                     "layer.",
-                     MakeTraceSourceAccessor (&BaseStationNetDevice::m_bsRxDropTrace));
+                     "A packet has been dropped in the MAC layer "
+                     "after it has been passed up from the physical layer.",
+                     MakeTraceSourceAccessor (&BaseStationNetDevice::m_bsRxDropTrace),
+                     "ns3::Packet::TracedCallback");
   return tid;
 }
 

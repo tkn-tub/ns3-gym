@@ -86,7 +86,8 @@ OnOffApplication::GetTypeId (void)
                    MakeTypeIdAccessor (&OnOffApplication::m_tid),
                    MakeTypeIdChecker ())
     .AddTraceSource ("Tx", "A new packet is created and is sent",
-                     MakeTraceSourceAccessor (&OnOffApplication::m_txTrace))
+                     MakeTraceSourceAccessor (&OnOffApplication::m_txTrace),
+                     "ns3::Packet::TracedCallback")
   ;
   return tid;
 }

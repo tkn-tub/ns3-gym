@@ -667,6 +667,13 @@ public:
    */
   virtual Alignment GetAlignment () const;
 
+  /**
+   * TracedCallback signature for DsrOptionSrHeader.
+   *
+   * \param [in] header The DsrOptionsSRHeader
+   */
+  typedef void (* TracedCallback) (const DsrOptionSRHeader & header);
+
 private:
   /**
    * \brief The ip address header deserilize to

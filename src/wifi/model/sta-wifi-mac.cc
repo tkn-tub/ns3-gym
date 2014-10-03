@@ -86,9 +86,11 @@ StaWifiMac::GetTypeId (void)
                    MakeBooleanAccessor (&StaWifiMac::SetActiveProbing, &StaWifiMac::GetActiveProbing),
                    MakeBooleanChecker ())
     .AddTraceSource ("Assoc", "Associated with an access point.",
-                     MakeTraceSourceAccessor (&StaWifiMac::m_assocLogger))
+                     MakeTraceSourceAccessor (&StaWifiMac::m_assocLogger),
+                     "ns3::Mac48Address::TracedCallback")
     .AddTraceSource ("DeAssoc", "Association with an access point lost.",
-                     MakeTraceSourceAccessor (&StaWifiMac::m_deAssocLogger))
+                     MakeTraceSourceAccessor (&StaWifiMac::m_deAssocLogger),
+                     "ns3::Mac48Address::TracedCallback")
   ;
   return tid;
 }
@@ -257,8 +259,8 @@ StaWifiMac::TryToEnsureAssociated (void)
       m_linkDown ();
       if (m_activeProbing) 
         {
-          SetState (WAIT_PROBE_RESP);
-          SendProbeRequest ();
+      SetState (WAIT_PROBE_RESP);
+      SendProbeRequest ();
         }
       break;
     case WAIT_ASSOC_RESP:

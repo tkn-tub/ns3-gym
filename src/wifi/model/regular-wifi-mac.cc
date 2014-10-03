@@ -685,10 +685,12 @@ RegularWifiMac::GetTypeId (void)
                    MakePointerChecker<EdcaTxopN> ())
     .AddTraceSource ( "TxOkHeader",
                       "The header of successfully transmitted packet",
-                      MakeTraceSourceAccessor (&RegularWifiMac::m_txOkCallback))
+                     MakeTraceSourceAccessor (&RegularWifiMac::m_txOkCallback),
+                     "ns3::WifiMacHeader::TracedCallback")
     .AddTraceSource ("TxErrHeader",
                      "The header of unsuccessfully transmitted packet",
-                     MakeTraceSourceAccessor (&RegularWifiMac::m_txErrCallback))
+                     MakeTraceSourceAccessor (&RegularWifiMac::m_txErrCallback),
+                     "ns3::WifiMacHeader::TracedCallback")
   ;
 
   return tid;
