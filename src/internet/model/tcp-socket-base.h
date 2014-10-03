@@ -585,7 +585,7 @@ protected:
    *
    * Calculate our factor from the rxBuffer max size
    *
-   * \param header TcpHeader where the method should add the window scale option
+   * \returns the Window Scale factor
    */
   uint8_t CalculateWScale () const;
 
@@ -661,13 +661,13 @@ protected:
   TracedValue<uint32_t> m_rWnd;        //!< Flow control window at remote side
 
   // Options
-  bool    m_winScalingEnabled;
-  uint8_t m_sndScaleFactor;
-  uint8_t m_rcvScaleFactor;
+  bool    m_winScalingEnabled;    //!< Window Scale option enabled
+  uint8_t m_sndScaleFactor;       //!< Sent Window Scale (i.e., the one of the node)
+  uint8_t m_rcvScaleFactor;       //!< Received Window Scale (i.e., the one of the peer)
 
-  bool     m_timestampEnabled;
-  uint32_t m_timestampToEcho;
-  uint32_t m_lastEchoedTime;
+  bool     m_timestampEnabled;    //!< Timestamp option enabled
+  uint32_t m_timestampToEcho;     //!< Timestamp to echo
+  uint32_t m_lastEchoedTime;      //!< Last echoed timestamp
 };
 
 } // namespace ns3

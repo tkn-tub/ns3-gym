@@ -35,6 +35,13 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("CoDelQueue");
 
+/**
+ * Performs a reciprocal divide, similar to the
+ * Linux kernel reciprocal_divide function
+ * \param A numerator
+ * \param R reciprocal of the denominator B
+ * \return the value of A/B
+ */
 /* borrowed from the linux kernel */
 static inline uint32_t ReciprocalDivide (uint32_t A, uint32_t R)
 {
@@ -43,6 +50,10 @@ static inline uint32_t ReciprocalDivide (uint32_t A, uint32_t R)
 
 /* end kernel borrowings */
 
+/**
+ * Returns the current time translated in CoDel time representation
+ * \return the current time
+ */
 static uint32_t CoDelGetTime (void)
 {
   Time time = Simulator::Now ();
@@ -51,10 +62,17 @@ static uint32_t CoDelGetTime (void)
   return ns >> CODEL_SHIFT;
 }
 
+/**
+ * CoDel time stamp, used to carry CoDel time informations.
+ */
 class CoDelTimestampTag : public Tag
 {
 public:
   CoDelTimestampTag ();
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
 
@@ -63,9 +81,13 @@ public:
   virtual void Deserialize (TagBuffer i);
   virtual void Print (std::ostream &os) const;
 
+  /**
+   * Gets the Tag creation time
+   * @return the time object stored in the tag
+   */
   Time GetTxTime (void) const;
 private:
-  uint64_t m_creationTime;
+  uint64_t m_creationTime; //!< Tag creation time
 };
 
 CoDelTimestampTag::CoDelTimestampTag ()
@@ -292,7 +314,7 @@ CoDelQueue::OkToDrop (Ptr<Packet> p, uint32_t now)
   NS_LOG_FUNCTION (this);
   CoDelTimestampTag tag;
   bool okToDrop;
-  p->FindFirstMatchingByteTag (tag);
+
   bool found = p->RemovePacketTag (tag);
   NS_ASSERT_MSG (found, "found a packet without an input timestamp tag");
   NS_UNUSED (found);    //silence compiler warning

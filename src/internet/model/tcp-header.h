@@ -169,6 +169,7 @@ public:
   /**
    * \brief Append an option to the TCP header
    * \param option The option to append
+   * \return true if optionhas been appended, false otherwise
    */
   bool AppendOption (Ptr<TcpOption> option);
 
@@ -259,6 +260,12 @@ public:
    */
   bool IsChecksumOk (void) const;
 
+  /**
+   * Comparison operator
+   * \param lhs left operand
+   * \param rhs right operand
+   * \return true if the operands are equal
+   */
   friend bool operator== (const TcpHeader &lhs, const TcpHeader &rhs);
 
 private:

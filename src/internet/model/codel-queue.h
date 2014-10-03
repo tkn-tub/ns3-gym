@@ -42,9 +42,13 @@ class CoDelQueueControlLawTest;  // Forward declaration for unit test
 
 namespace ns3 {
 
+/**
+ * Number of bits discarded from the time representation.
+ * The time is assumed to be in nanoseconds.
+ */
 static const int  CODEL_SHIFT = 10;
-static const int DEFAULT_CODEL_LIMIT = 1000;
 
+#define DEFAULT_CODEL_LIMIT 1000
 #define REC_INV_SQRT_BITS (8 * sizeof(uint16_t))
 #define REC_INV_SQRT_SHIFT (32 - REC_INV_SQRT_BITS)
 
@@ -59,6 +63,11 @@ class TraceContainer;
 class CoDelQueue : public Queue
 {
 public:
+  /**
+   * Get the type ID.
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   /**
@@ -179,9 +188,33 @@ private:
    */
   bool OkToDrop (Ptr<Packet> p, uint32_t now);
 
+  /**
+   * Check if CoDel time a is successive to b
+   * @param a left operand
+   * @param b right operand
+   * @return true if a is greater than b
+   */
   bool CoDelTimeAfter (uint32_t a, uint32_t b);
+  /**
+   * Check if CoDel time a is successive or equal to b
+   * @param a left operand
+   * @param b right operand
+   * @return true if a is greater than or equal to b
+   */
   bool CoDelTimeAfterEq (uint32_t a, uint32_t b);
+  /**
+   * Check if CoDel time a is preceding b
+   * @param a left operand
+   * @param b right operand
+   * @return true if a is less than to b
+   */
   bool CoDelTimeBefore (uint32_t a, uint32_t b);
+  /**
+   * Check if CoDel time a is preceding or equal to b
+   * @param a left operand
+   * @param b right operand
+   * @return true if a is less than or equal to b
+   */
   bool CoDelTimeBeforeEq (uint32_t a, uint32_t b);
 
   /**
@@ -199,7 +232,7 @@ private:
   Time m_target;                          //!< 5 ms target queue delay
   TracedValue<uint32_t> m_count;          //!< Number of packets dropped since entering drop state
   TracedValue<uint32_t> m_dropCount;      //!< Number of dropped packets according CoDel algorithm
-  TracedValue<uint32_t> m_lastCount;      //<! Last number of packets dropped since entering drop state
+  TracedValue<uint32_t> m_lastCount;      //!< Last number of packets dropped since entering drop state
   TracedValue<bool> m_dropping;           //!< True if in dropping state
   uint16_t m_recInvSqrt;                  //!< Reciprocal inverse square root
   uint32_t m_firstAboveTime;              //!< Time to declare sojourn time above target
