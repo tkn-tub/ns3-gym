@@ -51,6 +51,10 @@ public:
    */
   void Reset ();
 
+  /**
+   * Outputs the data based on the provided callback
+   * \param callback
+   */
   virtual void Output (DataOutputCallback &callback) const;
 
   /**

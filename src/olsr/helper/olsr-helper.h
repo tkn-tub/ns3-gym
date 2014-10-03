@@ -101,11 +101,12 @@ private:
    * \internal
    * \brief Assignment operator declared private and not implemented to disallow
    * assignment and prevent the compiler from happily inserting its own.
+   * \returns
    */
-  OlsrHelper &operator = (const OlsrHelper &o);
-  ObjectFactory m_agentFactory;
+  OlsrHelper &operator = (const OlsrHelper &);
+  ObjectFactory m_agentFactory; //!< Object factory
 
-  std::map< Ptr<Node>, std::set<uint32_t> > m_interfaceExclusions;
+  std::map< Ptr<Node>, std::set<uint32_t> > m_interfaceExclusions; //!< container of interfaces excluded from OLSR operations
 };
 
 } // namespace ns3

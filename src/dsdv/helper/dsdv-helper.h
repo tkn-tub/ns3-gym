@@ -73,7 +73,7 @@ public:
   void Set (std::string name, const AttributeValue &value);
 
 private:
-  ObjectFactory m_agentFactory;
+  ObjectFactory m_agentFactory; //!< Object factory
 };
 
 }

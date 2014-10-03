@@ -174,7 +174,7 @@ private:
    * attaches the provided channel to the device.
    *
    * \param node The node to install the device in
-   * \param channelName The name of the channel to attach to the device.
+   * \param channel The channel to attach to the device.
    * \returns The new net device.
    */
   Ptr<NetDevice> InstallPriv (Ptr<Node> node, Ptr<SimpleChannel> channel) const;

@@ -36,7 +36,7 @@ namespace ns3 {
 class Ipv4NixVectorHelper : public Ipv4RoutingHelper
 {
 public:
-  /*
+  /**
    * Construct an Ipv4NixVectorHelper to make life easier while adding Nix-vector
    * routing to nodes.
    */
@@ -70,10 +70,11 @@ private:
    * \internal
    * \brief Assignment operator declared private and not implemented to disallow
    * assignment and prevent the compiler from happily inserting its own.
+   * \returns
    */
-  Ipv4NixVectorHelper &operator = (const Ipv4NixVectorHelper &o);
+  Ipv4NixVectorHelper &operator = (const Ipv4NixVectorHelper &);
 
-  ObjectFactory m_agentFactory;
+  ObjectFactory m_agentFactory; //!< Object factory
 };
 } // namespace ns3
 
