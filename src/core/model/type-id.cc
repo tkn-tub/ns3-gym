@@ -101,7 +101,8 @@ public:
   void AddTraceSource (uint16_t uid,
                        std::string name, 
                        std::string help,
-                       Ptr<const TraceSourceAccessor> accessor);
+                       Ptr<const TraceSourceAccessor> accessor,
+                       std::string callback);
   uint32_t GetTraceSourceN (uint16_t uid) const;
   struct TypeId::TraceSourceInformation GetTraceSource(uint16_t uid, uint32_t i) const;
   bool MustHideFromDocumentation (uint16_t uid) const;
@@ -471,7 +472,8 @@ void
 IidManager::AddTraceSource (uint16_t uid,
                             std::string name, 
                             std::string help,
-                            Ptr<const TraceSourceAccessor> accessor)
+                            Ptr<const TraceSourceAccessor> accessor,
+                            std::string callback)
 {
   NS_LOG_FUNCTION (this << uid << name << help << accessor);
   struct IidInformation *information  = LookupInformation (uid);
@@ -484,6 +486,7 @@ IidManager::AddTraceSource (uint16_t uid,
   source.name = name;
   source.help = help;
   source.accessor = accessor;
+  source.callback = callback;
   information->traceSources.push_back (source);
 }
 uint32_t 
@@ -771,10 +774,11 @@ TypeId::GetTraceSource(uint32_t i) const
 TypeId 
 TypeId::AddTraceSource (std::string name,
                         std::string help,
-                        Ptr<const TraceSourceAccessor> accessor)
+                        Ptr<const TraceSourceAccessor> accessor,
+                        std::string callback /* = "(not yet documented)" */)
 {
   NS_LOG_FUNCTION (this << name << help << accessor);
-  Singleton<IidManager>::Get ()->AddTraceSource (m_tid, name, help, accessor);
+  Singleton<IidManager>::Get ()->AddTraceSource (m_tid, name, help, accessor, callback);
   return *this;
 }
 

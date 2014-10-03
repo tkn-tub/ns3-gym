@@ -68,6 +68,7 @@ public:
 };
 
 /**
+ * \ingroup tracing
  * \param a the trace source
  *
  * Create a TraceSourceAccessor which will control access to the underlying

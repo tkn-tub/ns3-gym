@@ -70,6 +70,7 @@ public:
   struct TraceSourceInformation {
     std::string name;
     std::string help;
+    std::string callback;
     Ptr<const TraceSourceAccessor> accessor;
   };
 
@@ -298,11 +299,14 @@ public:
    *        trace source.
    * \param accessor a pointer to a TraceSourceAccessor which can be
    *        used to connect/disconnect sinks to this trace source.
+   * \param callback fully qualified typedef name for the callback signature.
+   *        Generally this should begin with the "ns3::" namespace qualifier.
    * \returns this TypeId instance.
    */
   TypeId AddTraceSource (std::string name,
                          std::string help,
-                         Ptr<const TraceSourceAccessor> accessor);
+                         Ptr<const TraceSourceAccessor> accessor,
+                         std::string callback = "(not yet documented)" );
 
   TypeId HideFromDocumentation (void);
 
@@ -358,7 +362,7 @@ private:
 
   uint16_t m_tid;
 };
-
+  
 std::ostream & operator << (std::ostream &os, TypeId tid);
 std::istream & operator >> (std::istream &is, TypeId &tid);
 inline bool operator == (TypeId a, TypeId b);

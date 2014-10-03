@@ -128,7 +128,10 @@ PrintTraceSources (TypeId tid, std::ostream &os)
     {
       struct TypeId::TraceSourceInformation info = tid.GetTraceSource (i);
       os << listLineStart << boldStart << info.name << boldStop << ": "
-	 << info.help
+	 << info.help << breakBoth
+	// '%' prevents doxygen from linking to the Callback class...
+	 << "%Callback signature: " 
+	 << info.callback
 	 << std::endl;
       os << listLineStop << std::endl;
     }
@@ -595,7 +598,7 @@ int main (int argc, char *argv[])
 	  for (uint32_t k = 0; k < paths.size (); ++k)
 	    {
 	      std::string path = paths[k];
-	      std::cout << listLineStart << path
+	      std::cout << listLineStart << "\"" << path << "\""
 			<< listLineStop  << breakTextOnly << std::endl;
 	    }
 	  std::cout << listStop << std::endl;
