@@ -140,8 +140,6 @@ RandomPropagationLossModel::DoAssignStreams (int64_t stream)
 
 NS_OBJECT_ENSURE_REGISTERED (FriisPropagationLossModel);
 
-const double FriisPropagationLossModel::PI = 3.14159265358979323846;
-
 TypeId 
 FriisPropagationLossModel::GetTypeId (void)
 {
@@ -264,7 +262,7 @@ FriisPropagationLossModel::DoCalcRxPower (double txPowerDbm,
       return txPowerDbm - m_minLoss;
     }
   double numerator = m_lambda * m_lambda;
-  double denominator = 16 * PI * PI * distance * distance * m_systemLoss;
+  double denominator = 16 * M_PI * M_PI * distance * distance * m_systemLoss;
   double lossDb = -10 * log10 (numerator / denominator);
   NS_LOG_DEBUG ("distance=" << distance<< "m, loss=" << lossDb <<"dB");
   return txPowerDbm - std::max (lossDb, m_minLoss);
@@ -280,8 +278,6 @@ FriisPropagationLossModel::DoAssignStreams (int64_t stream)
 // -- Two-Ray Ground Model ported from NS-2 -- tomhewer@mac.com -- Nov09 //
 
 NS_OBJECT_ENSURE_REGISTERED (TwoRayGroundPropagationLossModel);
-
-const double TwoRayGroundPropagationLossModel::PI = 3.14159265358979323846;
 
 TypeId 
 TwoRayGroundPropagationLossModel::GetTypeId (void)
@@ -419,13 +415,13 @@ TwoRayGroundPropagationLossModel::DoCalcRxPower (double txPowerDbm,
    *
    */
 
-  double dCross = (4 * PI * txAntHeight * rxAntHeight) / m_lambda;
+  double dCross = (4 * M_PI * txAntHeight * rxAntHeight) / m_lambda;
   double tmp = 0;
   if (distance <= dCross)
     {
       // We use Friis
       double numerator = m_lambda * m_lambda;
-      tmp = PI * distance;
+      tmp = M_PI * distance;
       double denominator = 16 * tmp * tmp * m_systemLoss;
       double pr = 10 * std::log10 (numerator / denominator);
       NS_LOG_DEBUG ("Receiver within crossover (" << dCross << "m) for Two_ray path; using Friis");

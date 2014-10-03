@@ -45,7 +45,10 @@ class OkumuraHataPropagationLossModel : public PropagationLossModel
 
 public:
 
-  // inherited from Object
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   OkumuraHataPropagationLossModel ();
@@ -61,16 +64,28 @@ public:
   double GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
 
 private:
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   */
+  OkumuraHataPropagationLossModel (const OkumuraHataPropagationLossModel &);
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   * \returns
+   */
+  OkumuraHataPropagationLossModel & operator = (const OkumuraHataPropagationLossModel &);
 
-  // inherited from PropagationLossModel
   virtual double DoCalcRxPower (double txPowerDbm,
                                 Ptr<MobilityModel> a,
                                 Ptr<MobilityModel> b) const;
   virtual int64_t DoAssignStreams (int64_t stream);
   
-  EnvironmentType m_environment;
-  CitySize m_citySize;
-  double m_frequency; // frequency in MHz
+  EnvironmentType m_environment;  //!< Environment Scenario
+  CitySize m_citySize;  //!< Size of the city
+  double m_frequency; //!< frequency in Hz
 };
 
 } // namespace ns3

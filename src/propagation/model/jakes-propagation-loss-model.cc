@@ -30,13 +30,11 @@ NS_LOG_COMPONENT_DEFINE ("Jakes");
 NS_OBJECT_ENSURE_REGISTERED (JakesPropagationLossModel);
 
 
-const double JakesPropagationLossModel::PI = 3.14159265358979323846;
-
 JakesPropagationLossModel::JakesPropagationLossModel()
 {
   m_uniformVariable = CreateObject<UniformRandomVariable> ();
-  m_uniformVariable->SetAttribute ("Min", DoubleValue (-1.0 * PI));
-  m_uniformVariable->SetAttribute ("Max", DoubleValue (PI));
+  m_uniformVariable->SetAttribute ("Min", DoubleValue (-1.0 * M_PI));
+  m_uniformVariable->SetAttribute ("Max", DoubleValue (M_PI));
 }
 
 JakesPropagationLossModel::~JakesPropagationLossModel()
@@ -62,7 +60,7 @@ JakesPropagationLossModel::DoCalcRxPower (double txPowerDbm,
     {
       pathData = CreateObject<JakesProcess> ();
       pathData->SetPropagationLossModel (this);
-      m_propagationCache.AddPathData (pathData, a, b, 0/**Spectrum model uid is not used in PropagationLossModel*/);
+      m_propagationCache.AddPathData (pathData, a, b, 0 /**Spectrum model uid is not used in PropagationLossModel*/);
     }
   return txPowerDbm + pathData->GetChannelGainDb ();
 }

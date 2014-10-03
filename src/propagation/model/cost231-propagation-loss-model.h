@@ -51,43 +51,101 @@ class Cost231PropagationLossModel : public PropagationLossModel
 {
 
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
   Cost231PropagationLossModel ();
-  enum Environment
-  {
-    SubUrban, MediumCity, Metropolitan
-  };
 
   /**
+   * Get the propagation loss
    * \param a the mobility model of the source
    * \param b the mobility model of the destination
    * \returns the propagation loss (in dBm)
    */
   double GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
+
+  /**
+   * Set the BS antenna height
+   * \param height BS antenna height [m]
+   */
   void SetBSAntennaHeight (double height);
+  /**
+   * Set the SS antenna height
+   * \param height SS antenna height [m]
+   */
   void SetSSAntennaHeight (double height);
-  void SetEnvironment (Environment env);
+
+  /**
+   * Set the wavelength
+   * \param lambda the wavelength
+   */
   void SetLambda (double lambda);
-  void SetMinDistance (double minDistance);
-  double GetBSAntennaHeight (void) const;
-  double GetSSAntennaHeight (void) const;
-  Environment GetEnvironment (void) const;
-  double GetMinDistance (void) const;
-  double GetLambda (void) const;
+  /**
+   * Set the wavelength
+   * \param frequency the signal frequency [Hz]
+   * \param speed the signal speed [m/s]
+   */
   void SetLambda (double frequency, double speed);
+  /**
+   * Set the minimum model distance
+   * \param minDistance the minimum model distance
+   */
+  void SetMinDistance (double minDistance);
+  /**
+   * Get the BS antenna height
+   * \returns BS antenna height [m]
+   */
+  double GetBSAntennaHeight (void) const;
+  /**
+   * Get the SS antenna height
+   * \returns SS antenna height [m]
+   */
+  double GetSSAntennaHeight (void) const;
+  /**
+   * Get the minimum model distance
+   * \returns the minimum model distance
+   */
+  double GetMinDistance (void) const;
+  /**
+   * Get the wavelength
+   * \returns the wavelength
+   */
+  double GetLambda (void) const;
+  /**
+   * Get the shadowing value
+   * \returns the shadowing value
+   */
   double GetShadowing (void);
+  /**
+   * Set the shadowing value
+   * \param shadowing the shadowing value
+   */
   void SetShadowing (double shadowing);
 private:
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   */
+  Cost231PropagationLossModel (const Cost231PropagationLossModel &);
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   * \returns
+   */
+  Cost231PropagationLossModel & operator = (const Cost231PropagationLossModel &);
+
   virtual double DoCalcRxPower (double txPowerDbm, Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
   virtual int64_t DoAssignStreams (int64_t stream);
-  double m_BSAntennaHeight; // in meter
-  double m_SSAntennaHeight; // in meter
-  double C;
-  double m_lambda;
-  Environment m_environment;
-  double m_minDistance; // in meter
-  double m_frequency; // frequency in MHz
-  double m_shadowing;
+  double m_BSAntennaHeight; //!< BS Antenna Height [m]
+  double m_SSAntennaHeight; //!< SS Antenna Height [m]
+  double m_lambda; //!< The wavelength
+  double m_minDistance; //!< minimum distance [m]
+  double m_frequency; //!< frequency [Hz]
+  double m_shadowing; //!< Shadowing loss [dB]
 
 };
 

@@ -55,13 +55,13 @@ Cost231PropagationLossModel::GetTypeId (void)
                    MakeDoubleChecker<double> ())
 
     .AddAttribute ("BSAntennaHeight",
-                   " BS Antenna Height (default is 50m).",
+                   "BS Antenna Height (default is 50m).",
                    DoubleValue (50.0),
                    MakeDoubleAccessor (&Cost231PropagationLossModel::m_BSAntennaHeight),
                    MakeDoubleChecker<double> ())
 
     .AddAttribute ("SSAntennaHeight",
-                   " SS Antenna Height (default is 3m).",
+                   "SS Antenna Height (default is 3m).",
                    DoubleValue (3),
                    MakeDoubleAccessor (&Cost231PropagationLossModel::m_SSAntennaHeight),
                    MakeDoubleChecker<double> ())
@@ -76,7 +76,6 @@ Cost231PropagationLossModel::GetTypeId (void)
 
 Cost231PropagationLossModel::Cost231PropagationLossModel ()
 {
-  C = 0;
   m_shadowing = 10;
 }
 
@@ -146,17 +145,6 @@ Cost231PropagationLossModel::GetSSAntennaHeight (void) const
   return m_SSAntennaHeight;
 }
 
-void
-Cost231PropagationLossModel::SetEnvironment (Environment env)
-{
-  m_environment = env;
-}
-Cost231PropagationLossModel::Environment
-Cost231PropagationLossModel::GetEnvironment (void) const
-{
-  return m_environment;
-}
-
 double
 Cost231PropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
 {
@@ -178,7 +166,7 @@ Cost231PropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel> b
   // Ch. 4, eq. 4.4.3, pg. 135
 
   double loss_in_db = 46.3 + (33.9 * std::log10(frequency_MHz)) - (13.82 * std::log10 (m_BSAntennaHeight)) - C_H
-		  	  	  + ((44.9 - 6.55 * std::log10 (m_BSAntennaHeight)) * std::log10 (distance_km)) + C + m_shadowing;
+		  	  	  + ((44.9 - 6.55 * std::log10 (m_BSAntennaHeight)) * std::log10 (distance_km)) + m_shadowing;
 
   NS_LOG_DEBUG ("dist =" << distance << ", Path Loss = " << loss_in_db);
 
