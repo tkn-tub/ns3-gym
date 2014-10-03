@@ -81,10 +81,12 @@ RvBatteryModel::GetTypeId (void)
                    MakeIntegerChecker<int> ())
     .AddTraceSource ("RvBatteryModelBatteryLevel",
                      "RV battery model battery level.",
-                     MakeTraceSourceAccessor (&RvBatteryModel::m_batteryLevel))
+                     MakeTraceSourceAccessor (&RvBatteryModel::m_batteryLevel),
+                     "ns3::TracedValue::DoubleCallback")
     .AddTraceSource ("RvBatteryModelBatteryLifetime",
                      "RV battery model battery lifetime.",
-                     MakeTraceSourceAccessor (&RvBatteryModel::m_lifetime))
+                     MakeTraceSourceAccessor (&RvBatteryModel::m_lifetime),
+                     "ns3::Time::TracedValueCallback")
   ;
   return tid;
 }

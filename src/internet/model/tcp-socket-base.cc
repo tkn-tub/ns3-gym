@@ -96,22 +96,28 @@ TcpSocketBase::GetTypeId (void)
                    MakeBooleanChecker ())
     .AddTraceSource ("RTO",
                      "Retransmission timeout",
-                     MakeTraceSourceAccessor (&TcpSocketBase::m_rto))
+                     MakeTraceSourceAccessor (&TcpSocketBase::m_rto),
+                     "ns3::Time::TracedValueCallback")
     .AddTraceSource ("RTT",
                      "Last RTT sample",
-                     MakeTraceSourceAccessor (&TcpSocketBase::m_lastRtt))
+                     MakeTraceSourceAccessor (&TcpSocketBase::m_lastRtt),
+                     "ns3::Time::TracedValueCallback")
     .AddTraceSource ("NextTxSequence",
                      "Next sequence number to send (SND.NXT)",
-                     MakeTraceSourceAccessor (&TcpSocketBase::m_nextTxSequence))
+                     MakeTraceSourceAccessor (&TcpSocketBase::m_nextTxSequence),
+                     "ns3::SequenceNumber32TracedValueCallback")
     .AddTraceSource ("HighestSequence",
                      "Highest sequence number ever sent in socket's life time",
-                     MakeTraceSourceAccessor (&TcpSocketBase::m_highTxMark))
+                     MakeTraceSourceAccessor (&TcpSocketBase::m_highTxMark),
+                     "ns3::SequenceNumber32TracedValueCallback")
     .AddTraceSource ("State",
                      "TCP state",
-                     MakeTraceSourceAccessor (&TcpSocketBase::m_state))
+                     MakeTraceSourceAccessor (&TcpSocketBase::m_state),
+                     "ns3::TcpStatesTracedValueCallback")
     .AddTraceSource ("RWND",
                      "Remote side's flow control window",
-                     MakeTraceSourceAccessor (&TcpSocketBase::m_rWnd))
+                     MakeTraceSourceAccessor (&TcpSocketBase::m_rWnd),
+                     "ns3::TracedValue::Uint32Callback")
   ;
   return tid;
 }

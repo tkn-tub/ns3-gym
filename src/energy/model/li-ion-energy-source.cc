@@ -104,7 +104,8 @@ LiIonEnergySource::GetTypeId (void)
                    MakeTimeChecker ())
     .AddTraceSource ("RemainingEnergy",
                      "Remaining energy at BasicEnergySource.",
-                     MakeTraceSourceAccessor (&LiIonEnergySource::m_remainingEnergyJ))
+                     MakeTraceSourceAccessor (&LiIonEnergySource::m_remainingEnergyJ),
+                     "ns3::TracedValue::DoubleCallback")
   ;
   return tid;
 }

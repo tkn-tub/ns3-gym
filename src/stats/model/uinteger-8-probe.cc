@@ -41,7 +41,8 @@ Uinteger8Probe::GetTypeId ()
     .AddConstructor<Uinteger8Probe> ()
     .AddTraceSource ( "Output",
                       "The uint8_t that serves as output for this probe",
-                      MakeTraceSourceAccessor (&Uinteger8Probe::m_output))
+                      MakeTraceSourceAccessor (&Uinteger8Probe::m_output),
+                     "ns3::TracedValue::Uint8Callback")
   ;
   return tid;
 }

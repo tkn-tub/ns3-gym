@@ -55,10 +55,12 @@ TcpWestwood::GetTypeId (void)
       .SetParent<TcpSocketBase>()
       .AddConstructor<TcpWestwood>()
       .AddTraceSource("CongestionWindow", "The TCP connection's congestion window",
-                      MakeTraceSourceAccessor(&TcpWestwood::m_cWnd))
+                      MakeTraceSourceAccessor(&TcpWestwood::m_cWnd),
+                      "ns3::TracedValue::Uint32Callback")
       .AddTraceSource ("SlowStartThreshold",
                        "TCP slow start threshold (bytes)",
-                       MakeTraceSourceAccessor (&TcpWestwood::m_ssThresh))
+                       MakeTraceSourceAccessor (&TcpWestwood::m_ssThresh),
+                       "ns3::TracedValue::Uint32Callback")
       .AddAttribute("FilterType", "Use this to choose no filter or Tustin's approximation filter",
                     EnumValue(TcpWestwood::TUSTIN), MakeEnumAccessor(&TcpWestwood::m_fType),
                     MakeEnumChecker(TcpWestwood::NONE, "None", TcpWestwood::TUSTIN, "Tustin"))
@@ -67,7 +69,8 @@ TcpWestwood::GetTypeId (void)
                     MakeEnumAccessor(&TcpWestwood::m_pType),
                     MakeEnumChecker(TcpWestwood::WESTWOOD, "Westwood",TcpWestwood::WESTWOODPLUS, "WestwoodPlus"))
       .AddTraceSource("EstimatedBW", "The estimated bandwidth",
-                    MakeTraceSourceAccessor(&TcpWestwood::m_currentBW));
+                    MakeTraceSourceAccessor(&TcpWestwood::m_currentBW),
+                      "ns3::TracedValue::DoubleCallback");
   return tid;
 }
 

@@ -160,25 +160,32 @@ TypeId CoDelQueue::GetTypeId (void)
                    MakeTimeChecker ())
     .AddTraceSource ("Count",
                      "CoDel count",
-                     MakeTraceSourceAccessor (&CoDelQueue::m_count))
+                     MakeTraceSourceAccessor (&CoDelQueue::m_count),
+                     "ns3::TracedValue::Uint32Callback")
     .AddTraceSource ("DropCount",
                      "CoDel drop count",
-                     MakeTraceSourceAccessor (&CoDelQueue::m_dropCount))
+                     MakeTraceSourceAccessor (&CoDelQueue::m_dropCount),
+                     "ns3::TracedValue::Uint32Callback")
     .AddTraceSource ("LastCount",
                      "CoDel lastcount",
-                     MakeTraceSourceAccessor (&CoDelQueue::m_lastCount))
+                     MakeTraceSourceAccessor (&CoDelQueue::m_lastCount),
+                     "ns3::TracedValue::Uint32Callback")
     .AddTraceSource ("DropState",
                      "Dropping state",
-                     MakeTraceSourceAccessor (&CoDelQueue::m_dropping))
+                     MakeTraceSourceAccessor (&CoDelQueue::m_dropping),
+                     "ns3::TracedValue::BoolCallback")
     .AddTraceSource ("BytesInQueue",
                      "Number of bytes in the queue",
-                     MakeTraceSourceAccessor (&CoDelQueue::m_bytesInQueue))
+                     MakeTraceSourceAccessor (&CoDelQueue::m_bytesInQueue),
+                     "ns3::TracedValue::Uint32Callback")
     .AddTraceSource ("Sojourn",
                      "Time in the queue",
-                     MakeTraceSourceAccessor (&CoDelQueue::m_sojourn))
+                     MakeTraceSourceAccessor (&CoDelQueue::m_sojourn),
+                     "ns3::Time::TracedValueCallback")
     .AddTraceSource ("DropNext",
                      "Time until next packet drop",
-                     MakeTraceSourceAccessor (&CoDelQueue::m_dropNext))
+                     MakeTraceSourceAccessor (&CoDelQueue::m_dropNext),
+                     "ns3::TracedValue::Uint32Callback")
   ;
 
   return tid;

@@ -46,10 +46,12 @@ TcpTahoe::GetTypeId (void)
                     MakeUintegerChecker<uint32_t> ())
     .AddTraceSource ("CongestionWindow",
                      "The TCP connection's congestion window",
-                     MakeTraceSourceAccessor (&TcpTahoe::m_cWnd))
+                     MakeTraceSourceAccessor (&TcpTahoe::m_cWnd),
+                     "ns3::TracedValue::Uint32Callback")
     .AddTraceSource ("SlowStartThreshold",
                      "TCP slow start threshold (bytes)",
-                     MakeTraceSourceAccessor (&TcpTahoe::m_ssThresh))
+                     MakeTraceSourceAccessor (&TcpTahoe::m_ssThresh),
+                     "ns3::TracedValue::Uint32Callback")
   ;
   return tid;
 }

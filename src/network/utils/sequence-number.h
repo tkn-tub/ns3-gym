@@ -471,6 +471,15 @@ typedef SequenceNumber<uint32_t, int32_t> SequenceNumber32;
 typedef SequenceNumber<uint16_t, int16_t> SequenceNumber16;
 typedef SequenceNumber<uint8_t, int8_t> SequenceNumber8;
 
+/**
+ * TracedValue callback signature for SequenceNumber32
+ *
+ * \param [in] oldValue original value of the traced variable
+ * \param [in] newValue new value of the traced variable
+ */
+typedef void (* SequenceNumber32TracedValueCallback)(const SequenceNumber32 oldValue,
+                                                     const SequenceNumber32 newValue);
+
 } // namespace ns3
 
 #endif /* NS3_SEQ_NUM_H */

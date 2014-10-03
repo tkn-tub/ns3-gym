@@ -40,7 +40,8 @@ TcpTxBuffer::GetTypeId (void)
     .AddConstructor<TcpTxBuffer> ()
     .AddTraceSource ("UnackSequence",
                      "First unacknowledged sequence number (SND.UNA)",
-                     MakeTraceSourceAccessor (&TcpTxBuffer::m_firstByteSeq))
+                     MakeTraceSourceAccessor (&TcpTxBuffer::m_firstByteSeq),
+                     "ns3::SequenceNumber32TracedValueCallback")
   ;
   return tid;
 }

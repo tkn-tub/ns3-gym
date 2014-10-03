@@ -31,7 +31,7 @@
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("BasicEnergyHarvester");
-  
+
 NS_OBJECT_ENSURE_REGISTERED (BasicEnergyHarvester);
 
 TypeId
@@ -53,10 +53,12 @@ BasicEnergyHarvester::GetTypeId (void)
                  MakePointerChecker<RandomVariableStream> ())
   .AddTraceSource ("HarvestedPower",
                    "Harvested power by the BasicEnergyHarvester.",
-                   MakeTraceSourceAccessor (&BasicEnergyHarvester::m_harvestedPower))
+                   MakeTraceSourceAccessor (&BasicEnergyHarvester::m_harvestedPower),
+                   "ns3::TracedValue::DoubleCallback")
   .AddTraceSource ("TotalEnergyHarvested",
                    "Total energy harvested by the harvester.",
-                   MakeTraceSourceAccessor (&BasicEnergyHarvester::m_totalEnergyHarvestedJ))
+                   MakeTraceSourceAccessor (&BasicEnergyHarvester::m_totalEnergyHarvestedJ),
+                   "ns3::TracedValue::DoubleCallback")
   ;
   return tid;
 }

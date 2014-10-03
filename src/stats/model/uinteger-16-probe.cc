@@ -41,7 +41,8 @@ Uinteger16Probe::GetTypeId ()
     .AddConstructor<Uinteger16Probe> ()
     .AddTraceSource ( "Output",
                       "The uint16_t that serves as output for this probe",
-                      MakeTraceSourceAccessor (&Uinteger16Probe::m_output))
+                      MakeTraceSourceAccessor (&Uinteger16Probe::m_output),
+                     "ns3::TracedValue::Uint16Callback")
   ;
   return tid;
 }

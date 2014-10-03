@@ -41,7 +41,8 @@ Uinteger32Probe::GetTypeId ()
     .AddConstructor<Uinteger32Probe> ()
     .AddTraceSource ( "Output",
                       "The uint32_t that serves as output for this probe",
-                      MakeTraceSourceAccessor (&Uinteger32Probe::m_output))
+                      MakeTraceSourceAccessor (&Uinteger32Probe::m_output),
+                     "ns3::TracedValue::Uint32Callback")
   ;
   return tid;
 }

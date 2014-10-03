@@ -42,7 +42,8 @@ DoubleProbe::GetTypeId ()
     .AddConstructor<DoubleProbe> ()
     .AddTraceSource ( "Output",
                       "The double that serves as output for this probe",
-                      MakeTraceSourceAccessor (&DoubleProbe::m_output))
+                      MakeTraceSourceAccessor (&DoubleProbe::m_output),
+                     "ns3::TracedValue::DoubleCallback")
   ;
   return tid;
 }

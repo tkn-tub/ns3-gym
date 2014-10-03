@@ -36,7 +36,10 @@ class Node;
 class Packet;
 
 /**
+ * \ingroup tcp
  * \brief Names of the 11 TCP states
+ *
+ * \todo This should be a member of TcpSocket.
  */
 typedef enum {
   CLOSED,       // 0
@@ -52,6 +55,16 @@ typedef enum {
   TIME_WAIT,   // 10
   LAST_STATE
 } TcpStates_t;
+
+/**
+ * \ingroup tcp
+ * TracedValue Callback signature for TcpStates_t
+ *
+ * \param [in] oldValue original value of the traced variable
+ * \param [in] newValue new value of the traced variable
+ */
+typedef void (* TcpStatesTracedValueCallback)(const TcpStates_t oldValue,
+                                              const TcpStates_t newValue);
 
 /**
  * \ingroup socket

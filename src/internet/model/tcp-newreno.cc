@@ -50,10 +50,12 @@ TcpNewReno::GetTypeId (void)
                    MakeBooleanChecker ())
     .AddTraceSource ("CongestionWindow",
                      "The TCP connection's congestion window",
-                     MakeTraceSourceAccessor (&TcpNewReno::m_cWnd))
+                     MakeTraceSourceAccessor (&TcpNewReno::m_cWnd),
+                     "ns3::TracedValue::Uint32Callback")
     .AddTraceSource ("SlowStartThreshold",
                      "TCP slow start threshold (bytes)",
-                     MakeTraceSourceAccessor (&TcpNewReno::m_ssThresh))
+                     MakeTraceSourceAccessor (&TcpNewReno::m_ssThresh),
+                     "ns3::TracedValue::Uint32Callback")
  ;
   return tid;
 }

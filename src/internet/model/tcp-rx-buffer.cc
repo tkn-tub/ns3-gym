@@ -35,7 +35,8 @@ TcpRxBuffer::GetTypeId (void)
     .AddConstructor<TcpRxBuffer> ()
     .AddTraceSource ("NextRxSequence",
                      "Next sequence number expected (RCV.NXT)",
-                     MakeTraceSourceAccessor (&TcpRxBuffer::m_nextRxSeq))
+                     MakeTraceSourceAccessor (&TcpRxBuffer::m_nextRxSeq),
+                     "ns3::SequenceNumber32TracedValueCallback")
   ;
   return tid;
 }

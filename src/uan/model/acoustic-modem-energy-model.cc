@@ -65,7 +65,8 @@ AcousticModemEnergyModel::GetTypeId (void)
                    MakeDoubleChecker<double> ())
     .AddTraceSource ("TotalEnergyConsumption",
                      "Total energy consumption of the modem device.",
-                     MakeTraceSourceAccessor (&AcousticModemEnergyModel::m_totalEnergyConsumption))
+                     MakeTraceSourceAccessor (&AcousticModemEnergyModel::m_totalEnergyConsumption),
+                     "ns3::TracedValue::DoubleCallback")
   ;
   return tid;
 }

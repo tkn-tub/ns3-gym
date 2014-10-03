@@ -42,7 +42,8 @@ BooleanProbe::GetTypeId ()
     .AddConstructor<BooleanProbe> ()
     .AddTraceSource ( "Output",
                       "The bool that serves as output for this probe",
-                      MakeTraceSourceAccessor (&BooleanProbe::m_output))
+                      MakeTraceSourceAccessor (&BooleanProbe::m_output),
+                      "ns3::TracedValue::BoolCallback")
   ;
   return tid;
 }
