@@ -46,9 +46,13 @@ public:
    * Create a waypoint at time 0 and position (0,0,0).
    */
   Waypoint ();
-  /* The waypoint time */
+  /**
+   * \brief The waypoint time
+   */
   Time time;
-  /* The position of the waypoint */
+  /**
+   * \brief The position of the waypoint 
+   */
   Vector position;
 };
 
