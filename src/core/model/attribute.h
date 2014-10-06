@@ -224,8 +224,25 @@ class EmptyAttributeValue : public AttributeValue
 public:
   EmptyAttributeValue ();
 private:
+  /**
+   * \returns a deep copy of this class, wrapped into an Attribute object.
+   */
   virtual Ptr<AttributeValue> Copy (void) const;
+  /**
+   * \param checker the checker associated to the attribute
+   * \returns a string representation of this value.
+   *
+   * In the EmptyAttributeValue case, the string returned will be simply ""
+   */
   virtual std::string SerializeToString (Ptr<const AttributeChecker> checker) const;
+  /**
+   * \param value a string representation of the value
+   * \param checker a pointer to the checker associated to the attribute.
+   * \returns true if the input string was correctly-formatted and could be
+   *          successfully deserialized, false otherwise.
+   *
+   * In the trivial case of EmptyAttributeValue, this should always return true
+   */
   virtual bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker);
 };
 
