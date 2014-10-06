@@ -43,11 +43,18 @@ namespace
   std::string pageGlobalValueList; ///< start GlobalValue page
   std::string pageTraceSourceList; ///< start Trace sources page
   std::string reference;           ///< reference tag
+  std::string sectionStart;        ///< start of a section or group
+  std::string subSectionStart;     ///< start a new subsection
   std::string temporaryCharacter;  ///< "%" placeholder
 
 } // anonymous namespace
 
 
+/**
+ * Initialize the markup strings, for either doxygen or text.
+ *
+ * \param [in] outpuText true for text output, false for doxygen output.
+ */
 void
 SetMarkup (bool outputText)
 {
@@ -77,6 +84,8 @@ SetMarkup (bool outputText)
       listLineStart                = "    * ";
       listLineStop                 = "";
       reference                    = "";
+      sectionStart                 = "Section ";
+      subSectionStart              = "Subsection ";
       temporaryCharacter           = "";
     }
   else
@@ -105,12 +114,21 @@ SetMarkup (bool outputText)
       listLineStart                = "<li>";
       listLineStop                 = "</li>";
       reference                    = "\\ref ";
+      sectionStart                 = "\\ingroup ";
+      subSectionStart              = "\\addtogroup ";
       temporaryCharacter           = "%";
     }
 }  // SetMarkup ()
 
 
-// Print direct Attributes for this tid
+/**
+ * Print direct Attributes for this TypeId.
+ *
+ * Only attributes defined directly by this TypeId will be printed.
+ *
+ * \param [in,out] os The output stream.
+ * \param [in] tid The TypeId to print.
+ */
 void
 PrintAttributesTid (std::ostream &os, const TypeId tid)
 {
@@ -121,11 +139,10 @@ PrintAttributesTid (std::ostream &os, const TypeId tid)
       os << listLineStart
 	 <<   boldStart << info.name << boldStop << ": "
 	 <<   info.help
-	 << std::endl;
+	 <<   std::endl;
       os <<   "  "
-	 <<   listStart
-	 << std::endl 
-	 <<     "    "
+	 <<   listStart << std::endl;
+      os <<     "    "
 	 <<     listLineStart
 	 <<       "Set with class: " << reference
 	 <<       info.checker->GetValueTypeName ()
@@ -199,16 +216,23 @@ PrintAttributesTid (std::ostream &os, const TypeId tid)
       os << listLineStop << std::endl;
       os << "  "
 	 << listStop
-	 << " "
-	 << std::endl;
+	 << " " << std::endl;
       
     }
   os << listStop << std::endl;
 }
 
 
-// Print the Attributes block for tid,
-// including Attributes declared in base classes.
+/**
+ * Print the Attributes block for tid,
+ * including Attributes declared in base classes.
+ *
+ * All Attributes of this TypeId will be printed,
+ * including those defined in parent classes.
+ *
+ * \param [in,out] os The output stream.
+ * \param [in] tid The TypeId to print.
+ */
 void
 PrintAttributes (std::ostream & os, const TypeId tid)
 {
@@ -246,7 +270,14 @@ PrintAttributes (std::ostream & os, const TypeId tid)
 } // PrintAttributes ()
 
 
-// Print direct Trace sources for this tid
+/**
+ * Print direct Trace sources for this TypeId.
+ *
+ * Only Trace sources defined directly by this TypeId will be printed.
+ *
+ * \param [in,out] os The output stream.
+ * \param [in] tid The TypeId to print.
+ */
 void
 PrintTraceSourcesTid (std::ostream & os, const TypeId tid)
 {
@@ -267,8 +298,16 @@ PrintTraceSourcesTid (std::ostream & os, const TypeId tid)
 }
 
 
-// Print the Trace Sources block for this tid,
-// including Trace sources declared in base classes.
+/**
+ * Print the Trace sources block for tid,
+ * including Trace sources declared in base classes.
+ *
+ * All Trace sources of this TypeId will be printed,
+ * including those defined in parent classes.
+ *
+ * \param [in,out] os The output stream.
+ * \param [in] tid The TypeId to print.
+ */
 void
 PrintTraceSources (std::ostream & os, const TypeId tid)
 {
@@ -304,6 +343,11 @@ PrintTraceSources (std::ostream & os, const TypeId tid)
 }  // PrintTraceSources ()
 
 
+/**
+ * Print the list of all Trace sources.
+ *
+ * \param [in,out] os The output stream.
+ */
 void
 PrintAllTraceSources (std::ostream & os)
 {
@@ -338,6 +382,11 @@ PrintAllTraceSources (std::ostream & os)
 }  // PrintAllTraceSources ()
 
 
+/**
+ * Print the list of all Attributes.
+ *
+ * \param [in,out] os The output stream.
+p */
 void
 PrintAllAttributes (std::ostream & os)
 {
@@ -373,6 +422,11 @@ PrintAllAttributes (std::ostream & os)
 }  // PrintAllAttributes ()
 
 
+/**
+ * Print the list of all global variables.
+ *
+ * \param [in,out] os The output stream.
+ */
 void
 PrintAllGlobals (std::ostream & os)
 {
