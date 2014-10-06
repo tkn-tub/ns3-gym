@@ -34,7 +34,6 @@ SOURCES = \
 	$(SRC)/csma/doc/csma.rst \
 	$(SRC)/dsdv/doc/dsdv.rst \
 	$(SRC)/dsr/doc/dsr.rst \
-	$(SRC)/emu/doc/emu.rst \
 	$(SRC)/mpi/doc/distributed.rst \
 	$(SRC)/energy/doc/energy.rst \
 	$(SRC)/fd-net-device/doc/fd-net-device.rst \

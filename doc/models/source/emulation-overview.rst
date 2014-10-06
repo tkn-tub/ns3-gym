@@ -18,8 +18,7 @@ any combination of simulated or emulated devices.
 
 **Note:** Prior to ns-3.17, the emulation capability was provided by a
 special device called an ``Emu`` NetDevice; the ``Emu`` NetDevice has
-been superseded by the ``FdNetDevice``, and will be deprecated and removed
-in future revisions of |ns3|.
+been replaced by the ``FdNetDevice``.
 
 One of the use-cases we want to support is that of a testbed. A concrete example
 of an environment of this kind is the ORBIT testbed. ORBIT is a laboratory
@@ -83,6 +82,5 @@ simulated |ns3| networks.
 
 .. toctree::
 
-  emu
   fd-net-device
   tap
