@@ -98,6 +98,7 @@ EnbRrcMemberLteEnbCmacSapUser::RrcConfigurationUpdateInd (UeConfig params)
 ///////////////////////////////////////////
 
 
+/// Map each of UE Manager states to its string representation.
 static const std::string g_ueManagerStateName[UeManager::NUM_STATES] =
 {
   "INITIAL_RANDOM_ACCESS",
@@ -112,6 +113,10 @@ static const std::string g_ueManagerStateName[UeManager::NUM_STATES] =
   "HANDOVER_LEAVING",
 };
 
+/**
+ * \param s The UE manager state.
+ * \return The string representation of the given state.
+ */
 static const std::string & ToString (UeManager::State s)
 {
   return g_ueManagerStateName[s];
@@ -301,7 +306,8 @@ TypeId UeManager::GetTypeId (void)
                    MakeUintegerAccessor (&UeManager::m_rnti),
                    MakeUintegerChecker<uint16_t> ())
     .AddTraceSource ("StateTransition",
-                     "fired upon every UE state transition seen by the UeManager at the eNB RRC",
+                     "Fired upon every UE state transition seen by the "
+                     "UeManager at the eNB RRC.",
                      MakeTraceSourceAccessor (&UeManager::m_stateTransitionTrace))
   ;
   return tid;
@@ -1428,22 +1434,22 @@ LteEnbRrc::GetTypeId (void)
 
     // Trace sources
     .AddTraceSource ("NewUeContext",
-                     "trace fired upon creation of a new UE context",
+                     "Fired upon creation of a new UE context.",
                      MakeTraceSourceAccessor (&LteEnbRrc::m_newUeContextTrace))
     .AddTraceSource ("ConnectionEstablished",
-                     "trace fired upon successful RRC connection establishment",
+                     "Fired upon successful RRC connection establishment.",
                      MakeTraceSourceAccessor (&LteEnbRrc::m_connectionEstablishedTrace))
     .AddTraceSource ("ConnectionReconfiguration",
-                     "trace fired upon RRC connection reconfiguration",
+                     "Fired upon RRC connection reconfiguration.",
                      MakeTraceSourceAccessor (&LteEnbRrc::m_connectionReconfigurationTrace))
     .AddTraceSource ("HandoverStart",
-                     "trace fired upon start of a handover procedure",
+                     "Fired upon start of a handover procedure.",
                      MakeTraceSourceAccessor (&LteEnbRrc::m_handoverStartTrace))
     .AddTraceSource ("HandoverEndOk",
-                     "trace fired upon successful termination of a handover procedure",
+                     "Fired upon successful termination of a handover procedure.",
                      MakeTraceSourceAccessor (&LteEnbRrc::m_handoverEndOkTrace))
     .AddTraceSource ("RecvMeasurementReport",
-                     "trace fired when measurement report is received",
+                     "Fired when measurement report is received.",
                      MakeTraceSourceAccessor (&LteEnbRrc::m_recvMeasurementReportTrace))
   ;
   return tid;
@@ -2305,10 +2311,24 @@ LteEnbRrc::SetCsgId (uint32_t csgId, bool csgIndication)
 }
 
 
-// from 3GPP TS 36.213 table 8.2-1 UE Specific SRS Periodicity
+/// Number of distinct SRS periodicity plus one.
 static const uint8_t SRS_ENTRIES = 9;
+/**
+ * Sounding Reference Symbol (SRS) periodicity (TSRS) in milliseconds. Taken
+ * from 3GPP TS 36.213 Table 8.2-1. Index starts from 1.
+ */
 static const uint16_t g_srsPeriodicity[SRS_ENTRIES] = {0, 2, 5, 10, 20, 40,  80, 160, 320};
+/**
+ * The lower bound (inclusive) of the SRS configuration indices (ISRS) which
+ * use the corresponding SRS periodicity (TSRS). Taken from 3GPP TS 36.213
+ * Table 8.2-1. Index starts from 1.
+ */
 static const uint16_t g_srsCiLow[SRS_ENTRIES] =       {0, 0, 2,  7, 17, 37,  77, 157, 317};
+/**
+ * The upper bound (inclusive) of the SRS configuration indices (ISRS) which
+ * use the corresponding SRS periodicity (TSRS). Taken from 3GPP TS 36.213
+ * Table 8.2-1. Index starts from 1.
+ */
 static const uint16_t g_srsCiHigh[SRS_ENTRIES] =      {0, 1, 6, 16, 36, 76, 156, 316, 636};
 
 void 

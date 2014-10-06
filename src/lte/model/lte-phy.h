@@ -212,29 +212,86 @@ public:
 
 
 protected:
+  /// Pointer to the NetDevice where this PHY layer is attached.
   Ptr<LteNetDevice> m_netDevice;
 
+  /**
+   * The downlink LteSpectrumPhy associated to this LtePhy. Also available as
+   * attribute `DlSpectrumPhy` in the child classes LteEnbPhy and LteUePhy.
+   */
   Ptr<LteSpectrumPhy> m_downlinkSpectrumPhy;
+  /**
+   * The uplink LteSpectrumPhy associated to this LtePhy. Also available as
+   * attribute `UlSpectrumPhy` in the child classes LteEnbPhy and LteUePhy.
+   */
   Ptr<LteSpectrumPhy> m_uplinkSpectrumPhy;
 
+  /**
+   * Transmission power in dBm. Also available as attribute `TxPower` in the
+   * child classes LteEnbPhy and LteUePhy.
+   */
   double m_txPower;
+  /**
+   * Loss (dB) in the Signal-to-Noise-Ratio due to non-idealities in the
+   * receiver. Also available as attribute `NoiseFigure` in the child classes
+   * LteEnbPhy and LteUePhy.
+   *
+   * According to [Wikipedia](http://en.wikipedia.org/wiki/Noise_figure), this
+   * is "the difference in decibels (dB) between the noise output of the actual
+   * receiver to the noise output of an ideal receiver with the same overall
+   * gain and bandwidth when the receivers are connected to sources at the
+   * standard noise temperature T0." In this model, we consider T0 = 290K.
+   */
   double m_noiseFigure;
 
+  /// Transmission time interval.
   double m_tti;
+  /**
+   * The UL bandwidth in number of PRBs.
+   * Specified by the upper layer through CPHY SAP.
+   */
   uint8_t m_ulBandwidth;
+  /**
+   * The DL bandwidth in number of PRBs.
+   * Specified by the upper layer through CPHY SAP.
+   */
   uint8_t m_dlBandwidth;
+  /// The RB gruop size according to the bandwidth.
   uint8_t m_rbgSize;
-
+  /**
+   * The downlink carrier frequency.
+   * Specified by the upper layer through CPHY SAP.
+   */
   uint16_t m_dlEarfcn;
+  /**
+   * The uplink carrier frequency.
+   * Specified by the upper layer through CPHY SAP.
+   */
   uint16_t m_ulEarfcn;
 
+  /// A queue of packet bursts to be sent.
   std::vector< Ptr<PacketBurst> > m_packetBurstQueue;
+  /// A queue of control messages to be sent.
   std::vector< std::list<Ptr<LteControlMessage> > > m_controlMessagesQueue;
-  uint8_t m_macChTtiDelay; // delay between MAC and channel layer in terms of TTIs
+  /**
+   * Delay between MAC and channel layer in terms of TTIs. It is the delay that
+   * occurs between a scheduling decision in the MAC and the actual start of
+   * the transmission by the PHY. This is intended to be used to model the
+   * latency of real PHY and MAC implementations.
+   *
+   * In LteEnbPhy, it is 2 TTIs by default and can be configured through the
+   * `MacToChannelDelay` attribute. In LteUePhy, it is 4 TTIs.
+   */
+  uint8_t m_macChTtiDelay;
 
+  /**
+   * Cell identifier. In LteEnbPhy, this corresponds to the ID of the cell
+   * which hosts this PHY layer. In LteUePhy, this corresponds to the ID of the
+   * eNodeB which this PHY layer is synchronized with.
+   */
   uint16_t m_cellId;
 
-};
+}; // end of `class LtePhy`
 
 
 }

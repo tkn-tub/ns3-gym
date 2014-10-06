@@ -38,10 +38,13 @@ NS_LOG_COMPONENT_DEFINE ("LteAmc");
 
 NS_OBJECT_ENSURE_REGISTERED (LteAmc);
 
-// from 3GPP R1-081483 "Conveying MCS and TB size via PDCCH"
-// file TBS_support.xls
-// tab "MCS table" (rounded to 2 decimal digits)
-// the index in the vector (0-15) identifies the CQI value
+/**
+ * Table of CQI index and its spectral efficiency. Taken from 3GPP TSG-RAN WG1
+ * [R1-081483 Conveying MCS and TB size via PDCCH]
+ * (http://www.3gpp.org/ftp/tsg_ran/WG1_RL1/TSGR1_52b/Docs/R1-081483.zip)
+ * file `TBS_support.xls` tab "MCS Table" (rounded to 2 decimal digits).
+ * The index of the vector (range 0-15) identifies the CQI value.
+ */
 static const double SpectralEfficiencyForCqi[16] = {
   0.0, // out of range
   0.15, 0.23, 0.38, 0.6, 0.88, 1.18,
@@ -49,13 +52,15 @@ static const double SpectralEfficiencyForCqi[16] = {
   2.73, 3.32, 3.9, 4.52, 5.12, 5.55
 };
 
-
 #if 0 // currently unused
-// Table 7.1.7.1-1 of 3GPP TS 36.213 v8.8.0
-// the index in the vector (range 0-31; valid values 0-28) identifies the MCS index
-// note that this is similar to the one in R1-081483 but:
-//  1) a few values are different
-//  2) in R1-081483, a valid MCS index is in the range 1-30 (not 0-28)
+/**
+ * Table of MCS index (IMCS) and its TBS index (ITBS). Taken from 3GPP TS
+ * 36.213 v8.8.0 Table 7.1.7.1-1: _Modulation and TBS index table for PDSCH_.
+ * The index of the vector (range 0-31; valid values 0-28) identifies the MCS
+ * index. Note that this is similar to the one in R1-081483, but:
+ * - a few values are different; and
+ * - in R1-081483, a valid MCS index is in the range of 1-30 (not 0-28).
+ */
 static const int ModulationSchemeForMcs[32] = {
   2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 
   4, 4, 4, 4, 4, 4, 4,
@@ -66,12 +71,15 @@ static const int ModulationSchemeForMcs[32] = {
 };
 #endif
 
-
-// from 3GPP R1-081483 "Conveying MCS and TB size via PDCCH"
-// file TBS_support.xls
-// tab "MCS table" (rounded to 2 decimal digits)
-// the index in the table corresponds to the MCS index according to the convention in TS 36.213
-// (i.e., the MCS index reported in R1-081483 minus one)
+/**
+ * Table of MCS index and its spectral efficiency. Taken from 3GPP TSG-RAN WG1
+ * [R1-081483 Conveying MCS and TB size via PDCCH]
+ * (http://www.3gpp.org/ftp/tsg_ran/WG1_RL1/TSGR1_52b/Docs/R1-081483.zip)
+ * file `TBS_support.xls` tab "MCS Table" (rounded to 2 decimal digits).
+ * The index of the vector (range 0-31) corresponds to the MCS index according
+ * to the convention in TS 36.213 (i.e., the MCS index reported in R1-081483
+ * minus one)
+ */
 static const double SpectralEfficiencyForMcs[32] = {
   0.15, 0.19, 0.23, 0.31, 0.38, 0.49, 0.6, 0.74, 0.88, 1.03, 1.18,
   1.33, 1.48, 1.7, 1.91, 2.16, 2.41, 2.57,
@@ -79,20 +87,26 @@ static const double SpectralEfficiencyForMcs[32] = {
   0, 0, 0
 };
 
-// Table 7.1.7.1-1 of 3GPP TS 36.213 v8.8.0
+/**
+ * Table of MCS index (IMCS) and its TBS index (ITBS). Taken from 3GPP TS
+ * 36.213 v8.8.0 Table 7.1.7.1-1: _Modulation and TBS index table for PDSCH_.
+ * The index of the vector (range 0-28) identifies the MCS index.
+ */
 static const int McsToItbs[29] = {
   0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 10, 11, 12, 13, 14, 15, 15, 16, 17, 18,
   19, 20, 21, 22, 23, 24, 25, 26
 };
 
-
-// 3GPP TS 36.213 v8.8.0 Table 7.1.7.2.1-1: Transport block size table (dimension 27×110)
-// for NPRB = 1 and Itbs = 6 the stadard returns 328, but it not consisent with the
-// other values, therefore we used 88 obtained following the sequence of NPRB = 1 values
+/**
+ * Table of number of physical resource blocks (NPRB), TBS index (ITBS), and
+ * their associated transport block size. Taken from 3GPP TS 36.213 v8.8.0
+ * Table 7.1.7.2.1-1: _Transport block size table (dimension 27×110)_.
+ * \note For NPRB = 1 and ITBS = 6 the standard returns 328, but it is not
+ *       consistent with the other values, therefore we use 88 obtained by
+ *       following the sequence of NPRB = 1 values.
+ */
 static const int TransportBlockSizeTable [110][27] = {
-
-  /* NPRB 001*/
-  { 16, 24, 32, 40, 56, 72, 88, 104, 120, 136, 144, 176, 208, 224, 256, 280, 328, 336, 376, 408, 440, 488, 520, 552, 584, 616, 712},
+  /* NPRB 001*/ { 16, 24, 32, 40, 56, 72, 88, 104, 120, 136, 144, 176, 208, 224, 256, 280, 328, 336, 376, 408, 440, 488, 520, 552, 584, 616, 712},
   /* NPRB 002*/ { 32, 56, 72, 104, 120, 144, 176, 224, 256, 296, 328, 376, 440, 488, 552, 600, 632, 696, 776, 840, 904, 1000, 1064, 1128, 1192, 1256, 1480},
   /* NPRB 003*/ { 56, 88, 144, 176, 208, 224, 256, 328, 392, 456, 504, 584, 680, 744, 840, 904, 968, 1064, 1160, 1288, 1384, 1480, 1608, 1736, 1800, 1864, 2216},
   /* NPRB 004*/ { 88, 144, 176, 208, 256, 328, 392, 472, 536, 616, 680, 776, 904, 1000, 1128, 1224, 1288, 1416, 1544, 1736, 1864, 1992, 2152, 2280, 2408, 2536, 2984},

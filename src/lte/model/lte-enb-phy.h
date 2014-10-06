@@ -302,27 +302,46 @@ private:
   void DoSendLteControlMessage (Ptr<LteControlMessage> msg);
   uint8_t DoGetMacChTtiDelay ();
 
+  /**
+   * Add the given RNTI to the list of attached UE #m_ueAttached.
+   * \param rnti RNTI of a UE
+   * \return true if the RNTI has _not_ existed before, or false otherwise.
+   */
   bool AddUePhy (uint16_t rnti);
-
+  /**
+   * Remove the given RNTI from the list of attached UE #m_ueAttached.
+   * \param rnti RNTI of a UE
+   * \return true if the RNTI has existed before, or false otherwise.
+   */
   bool DeleteUePhy (uint16_t rnti);
 
   void CreateSrsReport (uint16_t rnti, double srs);
 
-
+  /**
+   * List of RNTI of attached UEs. Used for quickly determining whether a UE is
+   * attached to this eNodeB or not.
+   */
   std::set <uint16_t> m_ueAttached;
 
 
-  // P_A per UE RNTI
+  /// P_A per UE RNTI.
   std::map <uint16_t,double> m_paMap;
 
-  // DL power allocation map
+  /// DL power allocation map.
   std::map <int, double> m_dlPowerAllocationMap;
 
+  /**
+   * A vector of integers, if the i-th value is j it means that the j-th
+   * resource block is used for transmission in the downlink. If there is
+   * no i such that the value of the i-th element is j, it means that RB j
+   * is not used.
+   */
   std::vector <int> m_listOfDownlinkSubchannel;
 
   std::vector <int> m_dlDataRbMap;
 
-  std::vector< std::list<UlDciLteControlMessage> > m_ulDciQueue; // for storing info on future receptions
+  /// For storing info on future receptions.
+  std::vector< std::list<UlDciLteControlMessage> > m_ulDciQueue;
 
   LteEnbPhySapProvider* m_enbPhySapProvider;
   LteEnbPhySapUser* m_enbPhySapUser;
@@ -330,7 +349,16 @@ private:
   LteEnbCphySapProvider* m_enbCphySapProvider;
   LteEnbCphySapUser* m_enbCphySapUser;
 
+  /**
+   * The frame number currently served. In ns-3, frame number starts from 1.
+   * In contrast, the 3GPP standard's frame number starts from 0.
+   */
   uint32_t m_nrFrames;
+  /**
+   * The subframe number currently served. In ns-3, subframe number starts
+   * from 1. In contrast, the 3GPP standard's subframe number starts from 0.
+   * The number resets to the beginning again after 10 subframes.
+   */
   uint32_t m_nrSubFrames;
 
   uint16_t m_srsPeriodicity;
@@ -339,35 +367,54 @@ private:
   std::vector <uint16_t> m_srsUeOffset;
   uint16_t m_currentSrsOffset;
 
+  /**
+   * The Master Information Block message to be broadcasted every frame.
+   * The message content is specified by the upper layer through the RRC SAP.
+   */
   LteRrcSap::MasterInformationBlock m_mib;
+  /**
+   * The System Information Block Type 1 message to be broadcasted. SIB1 is
+   * broadcasted every 6th subframe of every odd-numbered radio frame.
+   * The message content is specified by the upper layer through the RRC SAP.
+   */
   LteRrcSap::SystemInformationBlockType1 m_sib1;
 
   Ptr<LteHarqPhy> m_harqPhyModule;
 
   /**
-   * Trace reporting the linear average of SRS SINRs 
-   * uint16_t cellId, uint16_t rnti,  double sinrLinear
+   * The `ReportUeSinr` trace source. Reporting the linear average of SRS SINR.
+   * Exporting cell ID, RNTI, and SINR in linear unit.
    */
   TracedCallback<uint16_t, uint16_t, double> m_reportUeSinr;
+  /**
+   * The `UeSinrSamplePeriod` trace source. The sampling period for reporting
+   * UEs' SINR stats.
+   */
   uint16_t m_srsSamplePeriod;
   std::map <uint16_t,uint16_t> m_srsSampleCounterMap;
 
   /**
-   * Trace reporting the interference per PHY RB (TS 36.214 section 5.2.2,
-   *  measured on DATA) 
-   * uint16_t cellId, Ptr<SpectrumValue> interference linear power per RB basis
+   * The `ReportInterference` trace source. Reporting the interference per PHY
+   * RB (TS 36.214 section 5.2.2, measured on DATA). Exporting cell ID and
+   * interference linear power per RB basis.
    */
   TracedCallback<uint16_t, Ptr<SpectrumValue> > m_reportInterferenceTrace;
+  /**
+   * The `InterferenceSamplePeriod` attribute. The sampling period for
+   * reporting interference stats.
+   * \todo In what unit is this?
+   */
   uint16_t m_interferenceSamplePeriod;
   uint16_t m_interferenceSampleCounter;
 
   /**
-   * Trace information regarding PHY stats from UL Tx perspective
-   * PhyTrasmissionStatParameters see lte-common.h
+   * The `DlPhyTransmission` trace source. Contains trace information regarding
+   * PHY stats from DL Tx perspective. Exporting a structure with type
+   * PhyTransmissionStatParameters.
    */
   TracedCallback<PhyTransmissionStatParameters> m_dlPhyTransmission;
 
-};
+}; // end of `class LteEnbPhy`
 
 
 }

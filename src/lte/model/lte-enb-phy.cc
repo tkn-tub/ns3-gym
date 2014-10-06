@@ -51,19 +51,26 @@ NS_LOG_COMPONENT_DEFINE ("LteEnbPhy");
 
 NS_OBJECT_ENSURE_REGISTERED (LteEnbPhy);
 
-// duration of the data part of a subframe in DL
-// = 0.001 / 14 * 11 (fixed to 11 symbols) -1ns as margin to avoid overlapping simulator events
+/**
+ * Duration of the data portion of a DL subframe.
+ * Equals to "TTI length * (11/14) - margin".
+ * Data portion is fixed to 11 symbols out of the available 14 symbols.
+ * 1 nanosecond margin is added to avoid overlapping simulator events.
+ */
 static const Time DL_DATA_DURATION = NanoSeconds (785714 -1);
 
-//  delay from subframe start to transmission of the data in DL 
-// = 0.001 / 14 * 3 (ctrl fixed to 3 symbols)
+/**
+ * Delay from the start of a DL subframe to transmission of the data portion.
+ * Equals to "TTI length * (3/14)".
+ * Control portion is fixed to 3 symbols out of the available 14 symbols.
+ */
 static const Time DL_CTRL_DELAY_FROM_SUBFRAME_START = NanoSeconds (214286);
 
 ////////////////////////////////////////
 // member SAP forwarders
 ////////////////////////////////////////
 
-
+/// \todo SetBandwidth() and SetCellId() can be removed.
 class EnbMemberLteEnbPhySapProvider : public LteEnbPhySapProvider
 {
 public:
@@ -173,7 +180,10 @@ LteEnbPhy::GetTypeId (void)
                                        &LteEnbPhy::GetNoiseFigure),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("MacToChannelDelay",
-                   "The delay in TTI units that occurs between a scheduling decision in the MAC and the actual start of the transmission by the PHY. This is intended to be used to model the latency of real PHY and MAC implementations.",
+                   "The delay in TTI units that occurs between a scheduling "
+                   "decision in the MAC and the actual start of the "
+                   "transmission by the PHY. This is intended to be used to "
+                   "model the latency of real PHY and MAC implementations.",
                    UintegerValue (2),
                    MakeUintegerAccessor (&LteEnbPhy::SetMacChDelay, 
                                          &LteEnbPhy::GetMacChDelay),
@@ -183,6 +193,7 @@ LteEnbPhy::GetTypeId (void)
                      MakeTraceSourceAccessor (&LteEnbPhy::m_reportUeSinr))
     .AddAttribute ("UeSinrSamplePeriod",
                    "The sampling period for reporting UEs' SINR stats (default value 1)",
+                   /// \todo In what unit is this?
                    UintegerValue (1),
                    MakeUintegerAccessor (&LteEnbPhy::m_srsSamplePeriod),
                    MakeUintegerChecker<uint16_t> ())
@@ -191,6 +202,7 @@ LteEnbPhy::GetTypeId (void)
                      MakeTraceSourceAccessor (&LteEnbPhy::m_reportInterferenceTrace))
     .AddAttribute ("InterferenceSamplePeriod",
                    "The sampling period for reporting interference stats (default value 1)",
+                   /// \todo In what unit is this?
                    UintegerValue (1),
                    MakeUintegerAccessor (&LteEnbPhy::m_interferenceSamplePeriod),
                    MakeUintegerChecker<uint16_t> ())

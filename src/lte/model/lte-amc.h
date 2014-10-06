@@ -33,12 +33,12 @@ class SpectrumValue;
 
 /**
  * \ingroup lte
- * \brief The LteAmc class implements the Adaptive Modulation And Coding Scheme
- * as proposed in 3GPP TSG-RAN WG1 - R1-081483
- * http://www.3gpp.org/ftp/tsg_ran/WG1_RL1/TSGR1_52b/Docs/R1-081483.zip
+ * Implements the Adaptive Modulation And Coding Scheme. As proposed in 3GPP
+ * TSG-RAN WG1 [R1-081483 Conveying MCS and TB size via PDCCH]
+ * (http://www.3gpp.org/ftp/tsg_ran/WG1_RL1/TSGR1_52b/Docs/R1-081483.zip).
  *
  * \note All the methods of this class are static, so you'll never
- * need to create and manage instances of this class.
+ *       need to create and manage instances of this class.
  */
 class LteAmc : public Object
 {
@@ -49,13 +49,21 @@ public:
   LteAmc ();
   virtual ~LteAmc();
   
+  /// Types of AMC model.
   enum AmcModel
     {
+      /**
+       * \details
+       * An AMC model based on Piro, G.; Grieco, L.A; Boggia, G.; Camarda, P.,
+       * "A two-level scheduling algorithm for QoS support in the downlink of
+       * LTE cellular networks," _Wireless Conference (EW), 2010 European_,
+       * pp.246,253, 12-15 April 2010.
+       */
       PiroEW2010,
-      // model based on Piro, G.; Grieco, L.A.; Boggia, G.; Camarda, P.;
-      //A two-level scheduling algorithm for QoS support in the downlink of 
-      //LTE cellular networks European Wireless Conference (EW), 2010
-      MiErrorModel // model based on 10% of BER according to LteMiErrorModel
+      /**
+       * An AMC model based on 10% of BER according to LteMiErrorModel.
+       */
+      MiErrorModel
     };
   
   /**
@@ -102,12 +110,21 @@ public:
   
 private:
   
+  /**
+   * The `Ber` attribute.
+   *
+   * The requested BER in assigning MCS (default is 0.00005).
+   */
   double m_ber;
+
+  /**
+   * The `AmcModel` attribute.
+   *
+   * AMC model used to assign CQI.
+   */
   AmcModel m_amcModel;
 
-
-
-};
+}; // end of `class LteAmc`
 
 
 }

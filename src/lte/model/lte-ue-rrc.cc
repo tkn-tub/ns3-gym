@@ -86,7 +86,7 @@ UeMemberLteUeCmacSapUser::NotifyRandomAccessFailed ()
 
 
 
-
+/// Map each of UE RRC states to its string representation.
 static const std::string g_ueRrcStateName[LteUeRrc::NUM_STATES] =
 {
   "IDLE_START",
@@ -104,6 +104,10 @@ static const std::string g_ueRrcStateName[LteUeRrc::NUM_STATES] =
   "CONNECTED_REESTABLISHING"
 };
 
+/**
+ * \param s The UE RRC state.
+ * \return The string representation of the given state.
+ */
 static const std::string & ToString (LteUeRrc::State s)
 {
   return g_ueRrcStateName[s];
@@ -195,46 +199,46 @@ LteUeRrc::GetTypeId (void)
                    MakeTimeAccessor (&LteUeRrc::m_t300),
                    MakeTimeChecker ())
     .AddTraceSource ("MibReceived",
-                     "trace fired upon reception of Master Information Block",
+                     "Fired upon reception of Master Information Block.",
                      MakeTraceSourceAccessor (&LteUeRrc::m_mibReceivedTrace))
     .AddTraceSource ("Sib1Received",
-                     "trace fired upon reception of System Information Block Type 1",
+                     "Fired upon reception of System Information Block Type 1.",
                      MakeTraceSourceAccessor (&LteUeRrc::m_sib1ReceivedTrace))
     .AddTraceSource ("Sib2Received",
-                     "trace fired upon reception of System Information Block Type 2",
+                     "Fired upon reception of System Information Block Type 2.",
                      MakeTraceSourceAccessor (&LteUeRrc::m_sib2ReceivedTrace))
     .AddTraceSource ("StateTransition",
-                     "trace fired upon every UE RRC state transition",
+                     "Fired upon every UE RRC state transition.",
                      MakeTraceSourceAccessor (&LteUeRrc::m_stateTransitionTrace))
     .AddTraceSource ("InitialCellSelectionEndOk",
-                     "trace fired upon successful initial cell selection procedure",
+                     "Fired upon successful initial cell selection procedure.",
                      MakeTraceSourceAccessor (&LteUeRrc::m_initialCellSelectionEndOkTrace))
     .AddTraceSource ("InitialCellSelectionEndError",
-                     "trace fired upon failed initial cell selection procedure",
+                     "Fired upon failed initial cell selection procedure.",
                      MakeTraceSourceAccessor (&LteUeRrc::m_initialCellSelectionEndErrorTrace))
     .AddTraceSource ("RandomAccessSuccessful",
-                     "trace fired upon successful completion of the random access procedure",
+                     "Fired upon successful completion of the random access procedure.",
                      MakeTraceSourceAccessor (&LteUeRrc::m_randomAccessSuccessfulTrace))
     .AddTraceSource ("RandomAccessError",
-                     "trace fired upon failure of the random access procedure",
+                     "Fired upon failure of the random access procedure.",
                      MakeTraceSourceAccessor (&LteUeRrc::m_randomAccessErrorTrace))
     .AddTraceSource ("ConnectionEstablished",
-                     "trace fired upon successful RRC connection establishment",
+                     "Fired upon successful RRC connection establishment.",
                      MakeTraceSourceAccessor (&LteUeRrc::m_connectionEstablishedTrace))
     .AddTraceSource ("ConnectionTimeout",
-                     "trace fired upon timeout RRC connection establishment because of T300",
+                     "Fired upon timeout RRC connection establishment because of T300.",
                      MakeTraceSourceAccessor (&LteUeRrc::m_connectionTimeoutTrace))
     .AddTraceSource ("ConnectionReconfiguration",
-                     "trace fired upon RRC connection reconfiguration",
+                     "Fired upon RRC connection reconfiguration.",
                      MakeTraceSourceAccessor (&LteUeRrc::m_connectionReconfigurationTrace))
     .AddTraceSource ("HandoverStart",
-                     "trace fired upon start of a handover procedure",
+                     "Fired upon start of a handover procedure.",
                      MakeTraceSourceAccessor (&LteUeRrc::m_handoverStartTrace))
     .AddTraceSource ("HandoverEndOk",
-                     "trace fired upon successful termination of a handover procedure",
+                     "Fired upon successful termination of a handover procedure.",
                      MakeTraceSourceAccessor (&LteUeRrc::m_handoverEndOkTrace))
     .AddTraceSource ("HandoverEndError",
-                     "trace fired upon failure of a handover procedure",
+                     "Fired upon failure of a handover procedure.",
                      MakeTraceSourceAccessor (&LteUeRrc::m_handoverEndErrorTrace))
   ;
   return tid;

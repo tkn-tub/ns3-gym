@@ -66,13 +66,17 @@ A2A4RsrqHandoverAlgorithm::GetTypeId ()
     .SetParent<LteHandoverAlgorithm> ()
     .AddConstructor<A2A4RsrqHandoverAlgorithm> ()
     .AddAttribute ("ServingCellThreshold",
-                   "If the RSRQ of the serving cell is worse than this threshold, "
-                   "neighbour cells are consider for handover",
+                   "If the RSRQ of the serving cell is worse than this "
+                   "threshold, neighbour cells are consider for handover. "
+                   "Expressed in quantized range of [0..34] as per Section "
+                   "9.1.7 of 3GPP TS 36.133.",
                    UintegerValue (30),
                    MakeUintegerAccessor (&A2A4RsrqHandoverAlgorithm::m_servingCellThreshold),
-                   MakeUintegerChecker<uint8_t> (0, 34)) // RSRQ range is [0..34] as per Section 9.1.7 of 3GPP TS 36.133
+                   MakeUintegerChecker<uint8_t> (0, 34))
     .AddAttribute ("NeighbourCellOffset",
-                   "Minimum offset between serving and best neighbour cell to trigger the Handover",
+                   "Minimum offset between the serving and the best neighbour "
+                   "cell to trigger the handover. Expressed in quantized "
+                   "range of [0..34] as per Section 9.1.7 of 3GPP TS 36.133.",
                    UintegerValue (1),
                    MakeUintegerAccessor (&A2A4RsrqHandoverAlgorithm::m_neighbourCellOffset),
                    MakeUintegerChecker<uint8_t> ())

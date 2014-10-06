@@ -47,14 +47,19 @@ NS_LOG_COMPONENT_DEFINE ("LteUePhy");
 
 
 
-// duration of data portion of UL subframe
-// = TTI - 1 symbol for SRS - 1ns as margin to avoid overlapping simulator events
-// (symbol duration in nanoseconds = TTI / 14 (rounded))
-// in other words, duration of data portion of UL subframe = TTI*(13/14) -1ns
+/**
+ * Duration of the data portion of a UL subframe.
+ * Equals to "TTI length - 1 symbol length for SRS - margin".
+ * The margin is 1 nanosecond and is intended to avoid overlapping simulator
+ * events. The duration of one symbol is TTI/14 (rounded). In other words,
+ * duration of data portion of UL subframe = 1 ms * (13/14) - 1 ns.
+ */
 static const Time UL_DATA_DURATION = NanoSeconds (1e6 - 71429 - 1); 
 
-// delay from subframe start to transmission of SRS 
-// = TTI - 1 symbol for SRS 
+/**
+ * Delay from subframe start to transmission of SRS.
+ * Equals to "TTI length - 1 symbol for SRS".
+ */
 static const Time UL_SRS_DELAY_FROM_SUBFRAME_START = NanoSeconds (1e6 - 71429); 
 
 
@@ -107,12 +112,17 @@ UeMemberLteUePhySapProvider::SendRachPreamble (uint32_t prachId, uint32_t raRnti
 // LteUePhy methods
 ////////////////////////////////////////
 
+/// Map each of UE PHY states to its string representation.
 static const std::string g_uePhyStateName[LteUePhy::NUM_STATES] =
 {
   "CELL_SEARCH",
   "SYNCHRONIZED"
 };
 
+/**
+ * \param s The UE PHY state.
+ * \return The string representation of the given state.
+ */
 static inline const std::string & ToString (LteUePhy::State s)
 {
   return g_uePhyStateName[s];
@@ -243,7 +253,7 @@ LteUePhy::GetTypeId (void)
                    MakeUintegerAccessor (&LteUePhy::m_rsrpSinrSamplePeriod),
                    MakeUintegerChecker<uint16_t> ())
     .AddTraceSource ("UlPhyTransmission",
-                     "DL transmission PHY layer statistics.",
+                     "UL transmission PHY layer statistics.",
                      MakeTraceSourceAccessor (&LteUePhy::m_ulPhyTransmission))
     .AddAttribute ("DlSpectrumPhy",
                    "The downlink LteSpectrumPhy associated to this LtePhy",
@@ -263,7 +273,8 @@ LteUePhy::GetTypeId (void)
                    MakeDoubleAccessor (&LteUePhy::m_pssReceptionThreshold),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("UeMeasurementsFilterPeriod",
-                   "Time period for reporting UE measurements (default 200 ms.) ",
+                   "Time period for reporting UE measurements, i.e., the"
+                   "length of layer-1 filtering (default 200 ms).",
                    TimeValue (MilliSeconds (200)),
                    MakeTimeAccessor (&LteUePhy::m_ueMeasurementsFilterPeriod),
                    MakeTimeChecker ())
@@ -271,10 +282,10 @@ LteUePhy::GetTypeId (void)
                      "Report UE measurements RSRP (dBm) and RSRQ (dB).",
                      MakeTraceSourceAccessor (&LteUePhy::m_reportUeMeasurements))
     .AddTraceSource ("StateTransition",
-                     "Trace fired upon every UE PHY state transition",
+                     "Trace fired upon every UE PHY state transition.",
                      MakeTraceSourceAccessor (&LteUePhy::m_stateTransitionTrace))
     .AddAttribute ("EnableUplinkPowerControl",
-                   "If true Uplink Power Control will be enabled",
+                   "If true, Uplink Power Control will be enabled.",
                    BooleanValue (true),
                    MakeBooleanAccessor (&LteUePhy::m_enableUplinkPowerControl),
                    MakeBooleanChecker ())

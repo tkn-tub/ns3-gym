@@ -55,8 +55,9 @@ class Packet;
 
 
 /**
- * Manages all the radio bearer information possessed by the ENB RRC for a single UE
- *
+ * \ingroup lte
+ * Manages all the radio bearer information possessed by the ENB RRC for a
+ * single UE.
  */
 class UeManager : public Object
 {
@@ -397,34 +398,93 @@ private:
    */
   void SwitchToState (State s);
 
-
-  std::map <uint8_t, Ptr<LteDataRadioBearerInfo> > m_drbMap;
-  Ptr<LteSignalingRadioBearerInfo> m_srb0;
-  Ptr<LteSignalingRadioBearerInfo> m_srb1;
   uint8_t m_lastAllocatedDrbid;
+
+  /**
+   * The `DataRadioBearerMap` attribute. List of UE DataRadioBearerInfo by
+   * DRBID.
+   */
+  std::map <uint8_t, Ptr<LteDataRadioBearerInfo> > m_drbMap;
+
+  /**
+   * The `Srb0` attribute. SignalingRadioBearerInfo for SRB0.
+   */
+  Ptr<LteSignalingRadioBearerInfo> m_srb0;
+  /**
+   * The `Srb1` attribute. SignalingRadioBearerInfo for SRB1.
+   */
+  Ptr<LteSignalingRadioBearerInfo> m_srb1;
+
+  /**
+   * The `C-RNTI` attribute. Cell Radio Network Temporary Identifier.
+   */
   uint16_t m_rnti;
+  /**
+   * International Mobile Subscriber Identity assigned to this UE. A globally
+   * unique UE identifier.
+   */
   uint64_t m_imsi;
+  ///
   uint8_t m_lastRrcTransactionIdentifier;
+  ///
   LteRrcSap::PhysicalConfigDedicated m_physicalConfigDedicated;
+  /// Pointer to the parent eNodeB RRC.
   Ptr<LteEnbRrc> m_rrc;
+  /// The current UeManager state.
   State m_state;
+  ///
   LtePdcpSapUser* m_drbPdcpSapUser;
+  ///
   bool m_pendingRrcConnectionReconfiguration;
-  //             imsi      cellid    rnti      old    new
+
+  /**
+   * The `StateTransition` trace source. Fired upon every UE state transition
+   * seen by the UeManager at the eNB RRC. Exporting IMSI, cell ID, RNTI, old
+   * state, and new state.
+   */
   TracedCallback<uint64_t, uint16_t, uint16_t, State, State> m_stateTransitionTrace;
+
   uint16_t m_sourceX2apId;
   uint16_t m_sourceCellId;
   uint16_t m_targetCellId;
   std::list<uint8_t> m_drbsToBeStarted;
   bool m_needPhyMacConfiguration;
 
+  /**
+   * Time limit before a _connection request timeout_ occurs. Set after a new
+   * UE context is added after a successful Random Access. Calling
+   * LteEnbRrc::ConnectionRequestTimeout() when it expires. Cancelled when RRC
+   * CONNECTION REQUEST is received.
+   */
   EventId m_connectionRequestTimeout;
+  /**
+   * Time limit before a _connection setup timeout_ occurs. Set after an RRC
+   * CONNECTION SETUP is sent. Calling LteEnbRrc::ConnectionSetupTimeout() when
+   * it expires. Cancelled when RRC CONNECTION SETUP COMPLETE is received.
+   */
   EventId m_connectionSetupTimeout;
+  /**
+   * The delay before a _connection rejected timeout_ occurs. Set after an RRC
+   * CONNECTION REJECT is sent. Calling LteEnbRrc::ConnectionRejectedTimeout()
+   * when it expires.
+   */
   EventId m_connectionRejectedTimeout;
+  /**
+   * Time limit before a _handover joining timeout_ occurs. Set after a new UE
+   * context is added after receiving a handover request. Calling
+   * LteEnbRrc::HandoverJoiningTimeout() when it expires. Cancelled when
+   * RRC CONNECTION RECONFIGURATION COMPLETE is received.
+   */
   EventId m_handoverJoiningTimeout;
+  /**
+   * Time limit before a _handover leaving timeout_ occurs. Set after a
+   * handover command is sent. Calling LteEnbRrc::HandoverLeavingTimeout()
+   * when it expires. Cancelled when RRC CONNECTION RE-ESTABLISHMENT or X2
+   * UE CONTEXT RELEASE is received.
+   */
   EventId m_handoverLeavingTimeout;
 
-};
+}; // end of `class UeManager`
 
 
 
@@ -679,7 +739,7 @@ public:
 
   /** 
    * Method triggered when a UE is expected to request for connection but does
-   * not do so in a reasonable time
+   * not do so in a reasonable time. The method will remove the UE context.
    * 
    * \param rnti the T-C-RNTI whose timeout expired
    */
@@ -687,14 +747,16 @@ public:
 
   /** 
    * Method triggered when a UE is expected to complete a connection setup
-   * procedure but does not do so in a reasonable time
+   * procedure but does not do so in a reasonable time. The method will remove
+   * the UE context.
    *
    * \param rnti the T-C-RNTI whose timeout expired
    */
   void ConnectionSetupTimeout (uint16_t rnti);
 
   /**
-   * Method triggered a while after sending RRC Connection Rejected
+   * Method triggered a while after sending RRC Connection Rejected. The method
+   * will remove the UE context.
    * 
    * \param rnti the T-C-RNTI whose timeout expired
    */
@@ -702,7 +764,8 @@ public:
 
   /** 
    * Method triggered when a UE is expected to join the cell for a handover 
-   * but does not do so in a reasonable time
+   * but does not do so in a reasonable time. The method will remove the UE
+   * context.
    * 
    * \param rnti the C-RNTI whose timeout expired
    */
@@ -710,18 +773,17 @@ public:
 
   /** 
    * Method triggered when a UE is expected to leave a cell for a handover
-   * but no feedback is received in a reasonable time
+   * but no feedback is received in a reasonable time. The method will remove
+   * the UE context.
    * 
    * \param rnti the C-RNTI whose timeout expired
    */
   void HandoverLeavingTimeout (uint16_t rnti);
 
   /** 
-   * Send a HandoverRequest through the X2 SAP interface
-   * 
-   * This method will trigger a handover which is started by the RRC
-   * by sending a handover request to the target eNB over the X2
-   * interface 
+   * Send a HandoverRequest through the X2 SAP interface. This method will
+   * trigger a handover which is started by the RRC by sending a handover
+   * request to the target eNB over the X2 interface
    *
    * \param rnti the ID of the UE to be handed over
    * \param cellId the ID of the target eNB
@@ -918,53 +980,83 @@ private:
 
   Callback <void, Ptr<Packet> > m_forwardUpCallback;
 
+  /// Interface to receive messages from neighbour eNodeB over the X2 interface.
   EpcX2SapUser* m_x2SapUser;
+  /// Interface to send messages to neighbour eNodeB over the X2 interface.
   EpcX2SapProvider* m_x2SapProvider;
 
+  /// Receive API calls from the eNodeB MAC instance.
   LteEnbCmacSapUser* m_cmacSapUser;
+  /// Interface to the eNodeB MAC instance.
   LteEnbCmacSapProvider* m_cmacSapProvider;
 
+  /// Receive API calls from the handover algorithm instance.
   LteHandoverManagementSapUser* m_handoverManagementSapUser;
+  /// Interface to the handover algorithm instance.
   LteHandoverManagementSapProvider* m_handoverManagementSapProvider;
 
+  /// Receive API calls from the ANR instance.
   LteAnrSapUser* m_anrSapUser;
+  /// Interface to the ANR instance.
   LteAnrSapProvider* m_anrSapProvider;
 
+  /// Receive API calls from the FFR algorithm instance.
   LteFfrRrcSapUser* m_ffrRrcSapUser;
+  /// Interface to the FFR algorithm instance.
   LteFfrRrcSapProvider* m_ffrRrcSapProvider;
 
+  /// Interface to send messages to UE over the RRC protocol.
   LteEnbRrcSapUser* m_rrcSapUser;
+  /// Interface to receive messages from UE over the RRC protocol.
   LteEnbRrcSapProvider* m_rrcSapProvider;
 
+  /// Interface to the eNodeB MAC instance, to be used by RLC instances.
   LteMacSapProvider* m_macSapProvider;
 
+  /// Interface to send messages to core network over the S1 protocol.
   EpcEnbS1SapProvider* m_s1SapProvider;
+  /// Interface to receive messages from core network over the S1 protocol.
   EpcEnbS1SapUser* m_s1SapUser;
 
+  /// Receive API calls from the eNodeB PHY instance.
   LteEnbCphySapUser* m_cphySapUser;
+  /// Interface to the eNodeB PHY instance.
   LteEnbCphySapProvider* m_cphySapProvider;
 
+  /// True if ConfigureCell() has been completed.
   bool m_configured;
+  /// Cell identifier. Must be unique across the simulation.
   uint16_t m_cellId;
+  /// Downlink E-UTRA Absolute Radio Frequency Channel Number.
   uint16_t m_dlEarfcn;
+  /// Uplink E-UTRA Absolute Radio Frequency Channel Number.
   uint16_t m_ulEarfcn;
+  /// Downlink transmission bandwidth configuration in number of Resource Blocks.
   uint16_t m_dlBandwidth;
+  /// Uplink transmission bandwidth configuration in number of Resource Blocks.
   uint16_t m_ulBandwidth;
+  ///
   uint16_t m_lastAllocatedRnti;
 
-  /// the System Information Block Type 1 that is currently broadcasted over BCH
+  /// The System Information Block Type 1 that is currently broadcasted over BCH.
   LteRrcSap::SystemInformationBlockType1 m_sib1;
 
+  /**
+   * The `UeMap` attribute. List of UeManager by C-RNTI.
+   */
   std::map<uint16_t, Ptr<UeManager> > m_ueMap;
 
   /**
-   * \brief List of measurement configuration which are active in every UE
-   *        attached to this eNodeB instance.
+   * List of measurement configuration which are active in every UE attached to
+   * this eNodeB instance.
    */
   LteRrcSap::MeasConfig m_ueMeasConfig;
 
+  /// List of measurement identities which are intended for handover purpose.
   std::set<uint8_t> m_handoverMeasIds;
+  /// List of measurement identities which are intended for ANR purpose.
   std::set<uint8_t> m_anrMeasIds;
+  /// List of measurement identities which are intended for FFR purpose.
   std::set<uint8_t> m_ffrMeasIds;
 
   struct X2uTeidInfo
@@ -976,51 +1068,124 @@ private:
   //       TEID      RNTI, DRBID
   std::map<uint32_t, X2uTeidInfo> m_x2uTeidInfoMap;
 
+  /**
+   * The `DefaultTransmissionMode` attribute. The default UEs' transmission
+   * mode (0: SISO).
+   */
   uint8_t m_defaultTransmissionMode;
-
+  /**
+   * The `EpsBearerToRlcMapping` attribute. Specify which type of RLC will be
+   * used for each type of EPS bearer.
+   */
   enum LteEpsBearerToRlcMapping_t m_epsBearerToRlcMapping;
-
+  /**
+   * The `SystemInformationPeriodicity` attribute. The interval for sending
+   * system information.
+   */
   Time m_systemInformationPeriodicity;
-
-  // SRS related attributes
+  /**
+   * The `SrsPeriodicity` attribute. The SRS periodicity in milliseconds.
+   */
   uint16_t m_srsCurrentPeriodicityId;
   std::set<uint16_t> m_ueSrsConfigurationIndexSet;
   uint16_t m_lastAllocatedConfigurationIndex;
   bool m_reconfigureUes;
 
-  // Cell selection related attribute
+  /**
+   * The `QRxLevMin` attribute. One of information transmitted within the SIB1
+   * message, indicating the required minimum RSRP level that any UE must
+   * receive from this cell before it is allowed to camp to this cell.
+   */
   int8_t m_qRxLevMin;
-
-  // Handover related attributes
+  /**
+   * The `AdmitHandoverRequest` attribute. Whether to admit an X2 handover
+   * request from another eNB.
+   */
   bool m_admitHandoverRequest;
+  /**
+   * The `AdmitRrcConnectionRequest` attribute. Whether to admit a connection
+   * request from a UE.
+   */
   bool m_admitRrcConnectionRequest;
-
-  // UE measurements related attributes
+  /**
+   * The `RsrpFilterCoefficient` attribute. Determines the strength of
+   * smoothing effect induced by layer 3 filtering of RSRP in all attached UE.
+   * If equals to 0, no layer 3 filtering is applicable.
+   */
   uint8_t m_rsrpFilterCoefficient;
+  /**
+   * The `RsrqFilterCoefficient` attribute. Determines the strength of
+   * smoothing effect induced by layer 3 filtering of RSRQ in all attached UE.
+   * If equals to 0, no layer 3 filtering is applicable.
+   */
   uint8_t m_rsrqFilterCoefficient;
-
-  // timeouts
+  /**
+   * The `ConnectionRequestTimeoutDuration` attribute. After a RA attempt, if
+   * no RRC CONNECTION REQUEST is received before this time, the UE context is
+   * destroyed. Must account for reception of RAR and transmission of RRC
+   * CONNECTION REQUEST over UL GRANT.
+   */
   Time m_connectionRequestTimeoutDuration;
+  /**
+   * The `ConnectionSetupTimeoutDuration` attribute. After accepting connection
+   * request, if no RRC CONNECTION SETUP COMPLETE is received before this time,
+   * the UE context is destroyed. Must account for the UE's reception of RRC
+   * CONNECTION SETUP and transmission of RRC CONNECTION SETUP COMPLETE.
+   */
   Time m_connectionSetupTimeoutDuration;
+  /**
+   * The `ConnectionRejectedTimeoutDuration` attribute. Time to wait between
+   * sending a RRC CONNECTION REJECT and destroying the UE context.
+   */
   Time m_connectionRejectedTimeoutDuration;
+  /**
+   * The `HandoverJoiningTimeoutDuration` attribute. After accepting a handover
+   * request, if no RRC CONNECTION RECONFIGURATION COMPLETE is received before
+   * this time, the UE context is destroyed. Must account for reception of X2
+   * HO REQ ACK by source eNB, transmission of the Handover Command,
+   * non-contention-based random access and reception of the RRC CONNECTION
+   * RECONFIGURATION COMPLETE message.
+   */
   Time m_handoverJoiningTimeoutDuration;
+  /**
+   * The `HandoverLeavingTimeoutDuration` attribute. After issuing a Handover
+   * Command, if neither RRC CONNECTION RE-ESTABLISHMENT nor X2 UE Context
+   * Release has been previously received, the UE context is destroyed.
+   */
   Time m_handoverLeavingTimeoutDuration;
 
-  //             cellid    rnti
+  /**
+   * The `NewUeContext` trace source. Fired upon creation of a new UE context.
+   * Exporting cell ID and RNTI.
+   */
   TracedCallback<uint16_t, uint16_t> m_newUeContextTrace;
-  //             imsi      cellid    rnti
+  /**
+   * The `ConnectionEstablished` trace source. Fired upon successful RRC
+   * connection establishment. Exporting IMSI, cell ID, and RNTI.
+   */
   TracedCallback<uint64_t, uint16_t, uint16_t> m_connectionEstablishedTrace;
-  //             imsi      cellid    rnti
+  /**
+   * The `ConnectionReconfiguration` trace source. Fired upon RRC connection
+   * reconfiguration. Exporting IMSI, cell ID, and RNTI.
+   */
   TracedCallback<uint64_t, uint16_t, uint16_t> m_connectionReconfigurationTrace;
-  //             imsi      cellid    rnti     targetCellId
+  /**
+   * The `HandoverStart` trace source. Fired upon start of a handover
+   * procedure. Exporting IMSI, cell ID, RNTI, and target cell ID.
+   */
   TracedCallback<uint64_t, uint16_t, uint16_t, uint16_t> m_handoverStartTrace;
-  //             imsi      cellid    rnti
+  /**
+   * The `HandoverEndOk` trace source. Fired upon successful termination of a
+   * handover procedure. Exporting IMSI, cell ID, and RNTI.
+   */
   TracedCallback<uint64_t, uint16_t, uint16_t> m_handoverEndOkTrace;
-
-  //             imsi      cellid    rnti
+  /**
+   * The `RecvMeasurementReport` trace source. Fired when measurement report is
+   * received. Exporting IMSI, cell ID, and RNTI.
+   */
   TracedCallback<uint64_t, uint16_t, uint16_t, LteRrcSap::MeasurementReport> m_recvMeasurementReportTrace;
 
-};
+}; // end of `class LteEnbRrc`
 
 
 } // namespace ns3

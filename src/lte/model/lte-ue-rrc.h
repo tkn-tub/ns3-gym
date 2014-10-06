@@ -467,6 +467,10 @@ private:
   void LeaveConnectedMode ();
   void DisposeOldSrb1 ();
   uint8_t Bid2Drbid (uint8_t bid);
+  /**
+   * Switch the UE RRC to the given state.
+   * \param s the destination state
+   */
   void SwitchToState (State s);
 
   std::map<uint8_t, uint8_t> m_bid2DrbidMap;
@@ -486,62 +490,137 @@ private:
   LteAsSapProvider* m_asSapProvider;
   LteAsSapUser* m_asSapUser;
 
+  /// The current UE RRC state.
   State m_state;
 
+  /// The unique UE identifier.
   uint64_t m_imsi;
+  /**
+   * The `C-RNTI` attribute. Cell Radio Network Temporary Identifier.
+   */
   uint16_t m_rnti;
+  /**
+   * The `CellId` attribute. Serving cell identifier.
+   */
   uint16_t m_cellId;
 
+  /**
+   * The `Srb0` attribute. SignalingRadioBearerInfo for SRB0.
+   */
   Ptr<LteSignalingRadioBearerInfo> m_srb0;
+  /**
+   * The `Srb1` attribute. SignalingRadioBearerInfo for SRB1.
+   */
   Ptr<LteSignalingRadioBearerInfo> m_srb1;
+  /**
+   * SRB1 configuration before RRC connection reconfiguration. To be deleted
+   * soon by DisposeOldSrb1().
+   */
   Ptr<LteSignalingRadioBearerInfo> m_srb1Old;
+  /**
+   * The `DataRadioBearerMap` attribute. List of UE RadioBearerInfo for Data
+   * Radio Bearers by LCID.
+   */
   std::map <uint8_t, Ptr<LteDataRadioBearerInfo> > m_drbMap;
 
+  /**
+   * True if RLC SM is to be used, false if RLC UM/AM are to be used.
+   * Can be modified using SetUseRlcSm().
+   */
   bool m_useRlcSm;
 
   uint8_t m_lastRrcTransactionIdentifier;
 
   LteRrcSap::PdschConfigDedicated m_pdschConfigDedicated;
 
-  uint8_t m_dlBandwidth; /**< downlink bandwidth in RBs */
-  uint8_t m_ulBandwidth; /**< uplink bandwidth in RBs */
+  uint8_t m_dlBandwidth; /**< Downlink bandwidth in RBs. */
+  uint8_t m_ulBandwidth; /**< Uplink bandwidth in RBs. */
 
-  uint16_t m_dlEarfcn;  /**< downlink carrier frequency */
-  uint16_t m_ulEarfcn;  /**< uplink carrier frequency */
+  uint16_t m_dlEarfcn;  /**< Downlink carrier frequency. */
+  uint16_t m_ulEarfcn;  /**< Uplink carrier frequency. */
 
-  //             imsi      cellId    rnti,     sourceCellId
+  /**
+   * The `MibReceived` trace source. Fired upon reception of Master Information
+   * Block. Exporting IMSI, the serving cell ID, RNTI, and the source cell ID.
+   */
   TracedCallback<uint64_t, uint16_t, uint16_t, uint16_t> m_mibReceivedTrace;
-  //             imsi      cellId    rnti,     sourceCellId
+  /**
+   * The `Sib1Received` trace source. Fired upon reception of System
+   * Information Block Type 1. Exporting IMSI, the serving cell ID, RNTI, and
+   * the source cell ID.
+   */
   TracedCallback<uint64_t, uint16_t, uint16_t, uint16_t> m_sib1ReceivedTrace;
-  //             imsi      cellId    rnti
+  /**
+   * The `Sib2Received` trace source. Fired upon reception of System
+   * Information Block Type 2. Exporting IMSI, the serving cell ID, RNTI.
+   */
   TracedCallback<uint64_t, uint16_t, uint16_t> m_sib2ReceivedTrace;
-  //             imsi      cellId    rnti
+  /**
+   * The `StateTransition` trace source. Fired upon every UE RRC state
+   * transition. Exporting IMSI, the serving cell ID, RNTI, old state, and new
+   * state.
+   */
   TracedCallback<uint64_t, uint16_t, uint16_t, State, State> m_stateTransitionTrace;
-  //             imsi      cellId
+  /**
+   * The `InitialCellSelectionEndOk` trace source. Fired upon successful
+   * initial cell selection procedure. Exporting IMSI and the selected cell ID.
+   */
   TracedCallback<uint64_t, uint16_t> m_initialCellSelectionEndOkTrace;
-  //             imsi      cellId
+  /**
+   * The `InitialCellSelectionEndError` trace source. Fired upon failed initial
+   * cell selection procedure. Exporting IMSI and the cell ID under evaluation.
+   */
   TracedCallback<uint64_t, uint16_t> m_initialCellSelectionEndErrorTrace;
-  //             imsi      cellId    rnti
+  /**
+   * The `RandomAccessSuccessful` trace source. Fired upon successful
+   * completion of the random access procedure. Exporting IMSI, cell ID, and
+   * RNTI.
+   */
   TracedCallback<uint64_t, uint16_t, uint16_t> m_randomAccessSuccessfulTrace;
-  //             imsi      cellId    rnti
+  /**
+   * The `RandomAccessError` trace source. Fired upon failure of the random
+   * access procedure. Exporting IMSI, cell ID, and RNTI.
+   */
   TracedCallback<uint64_t, uint16_t, uint16_t> m_randomAccessErrorTrace;
-  //             imsi      cellId    rnti
+  /**
+   * The `ConnectionEstablished` trace source. Fired upon successful RRC
+   * connection establishment. Exporting IMSI, cell ID, and RNTI.
+   */
   TracedCallback<uint64_t, uint16_t, uint16_t> m_connectionEstablishedTrace;
-  //             imsi      cellId    rnti
+  /**
+   * The `ConnectionTimeout` trace source. Fired upon timeout RRC connection
+   * establishment because of T300. Exporting IMSI, cell ID, and RNTI.
+   */
   TracedCallback<uint64_t, uint16_t, uint16_t> m_connectionTimeoutTrace;
-  //             imsi      cellId    rnti
+  /**
+   * The `ConnectionReconfiguration` trace source. Fired upon RRC connection
+   * reconfiguration. Exporting IMSI, cell ID, and RNTI.
+   */
   TracedCallback<uint64_t, uint16_t, uint16_t> m_connectionReconfigurationTrace;
-  //             imsi      cellId    rnti      targetCellId
+  /**
+   * The `HandoverStart` trace source. Fired upon start of a handover
+   * procedure. Exporting IMSI, source cell ID, RNTI, and target cell ID.
+   */
   TracedCallback<uint64_t, uint16_t, uint16_t, uint16_t> m_handoverStartTrace;
-  //             imsi      cellId    rnti
+  /**
+   * The `HandoverEndOk` trace source. Fired upon successful termination of a
+   * handover procedure. Exporting IMSI, cell ID, and RNTI.
+   */
   TracedCallback<uint64_t, uint16_t, uint16_t> m_handoverEndOkTrace;
-  //             imsi      cellId    rnti
+  /**
+   * The `HandoverEndError` trace source. Fired upon failure of a handover
+   * procedure. Exporting IMSI, cell ID, and RNTI.
+   */
   TracedCallback<uint64_t, uint16_t, uint16_t> m_handoverEndErrorTrace;
 
-  bool m_connectionPending; /**< true if a connection request by upper layers is pending */
-  bool m_hasReceivedMib; /**< true if MIB was received for the current cell  */
-  bool m_hasReceivedSib1; /**< true if SIB1 was received for the current cell  */
-  bool m_hasReceivedSib2; /**< true if SIB2 was received for the current cell  */
+  /// True if a connection request by upper layers is pending.
+  bool m_connectionPending;
+  /// True if MIB was received for the current cell.
+  bool m_hasReceivedMib;
+  /// True if SIB1 was received for the current cell.
+  bool m_hasReceivedSib1;
+  /// True if SIB2 was received for the current cell.
+  bool m_hasReceivedSib2;
 
   /// Stored content of the last SIB1 received.
   LteRrcSap::SystemInformationBlockType1 m_lastSib1;
@@ -801,9 +880,9 @@ private:
   void CancelLeavingTrigger (uint8_t measId, uint16_t cellId);
 
   /**
-   * \brief Timer for RRC connection establishment procedure.
-   *
-   * Section 7.3 of 3GPP TS 36.331.
+   * The `T300` attribute. Timer for RRC connection establishment procedure
+   * (i.e., the procedure is deemed as failed if it takes longer than this).
+   * See Section 7.3 of 3GPP TS 36.331.
    */
   Time m_t300;
 
