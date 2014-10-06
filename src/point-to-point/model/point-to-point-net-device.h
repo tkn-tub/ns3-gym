@@ -39,7 +39,11 @@ class ErrorModel;
 
 /**
  * \defgroup point-to-point Point-To-Point Network Device
- * This section documents the API of the ns-3 point-to-point module. For a generic functional description, please refer to the ns-3 manual.
+ * This section documents the API of the ns-3 point-to-point module. For a
+ * functional description, please refer to the ns-3 manual here:
+ * http://www.nsnam.org/docs/models/html/point-to-point.html
+ *
+ * Be sure to read the manual BEFORE going down to the API.
  */
 
 /**
@@ -54,10 +58,20 @@ class ErrorModel;
  * Key parameters or objects that can be specified for this device 
  * include a queue, data rate, and interframe transmission gap (the 
  * propagation delay is set in the PointToPointChannel).
+ *
+ * \see SetDataRate
+ * \see SetInterframeGap
+ * \see SetReceiveErrorModel
+ *
  */
 class PointToPointNetDevice : public NetDevice
 {
 public:
+  /**
+   * \brief Get the TypeId
+   *
+   * \return The TypeId for this class
+   */
   static TypeId GetTypeId (void);
 
   /**
@@ -81,8 +95,8 @@ public:
    * set in the Attach () method from the corresponding field in the channel
    * to which the device is attached.  It can be overridden using this method.
    *
-   * @see Attach ()
-   * @param bps the data rate at which this object operates
+   * \see Attach ()
+   * \param bps the data rate at which this object operates
    */
   void SetDataRate (DataRate bps);
 
@@ -90,14 +104,15 @@ public:
    * Set the interframe gap used to separate packets.  The interframe gap
    * defines the minimum space required between packets sent by this device.
    *
-   * @param t the interframe gap time
+   * \param t the interframe gap time
    */
   void SetInterframeGap (Time t);
 
   /**
    * Attach the device to a channel.
    *
-   * @param ch Ptr to the channel to which this object is being attached.
+   * \param ch Ptr to the channel to which this object is being attached.
+   * \return true if the operation was successfull (always true actually)
    */
   bool Attach (Ptr<PointToPointChannel> ch);
 
@@ -107,16 +122,16 @@ public:
    * The PointToPointNetDevice "owns" a queue that implements a queueing 
    * method such as DropTail or RED.
    *
-   * @see Queue
-   * @see DropTailQueue
-   * @param queue Ptr to the new queue.
+   * \see Queue
+   * \see DropTailQueue
+   * \param queue Ptr to the new queue.
    */
   void SetQueue (Ptr<Queue> queue);
 
   /**
    * Get a copy of the attached Queue.
    *
-   * @returns Ptr to the queue.
+   * \returns Ptr to the queue.
    */
   Ptr<Queue> GetQueue (void) const;
 
@@ -126,8 +141,8 @@ public:
    * The PointToPointNetDevice may optionally include an ErrorModel in
    * the packet receive chain.
    *
-   * @see ErrorModel
-   * @param em Ptr to the ErrorModel.
+   * \see ErrorModel
+   * \param em Ptr to the ErrorModel.
    */
   void SetReceiveErrorModel (Ptr<ErrorModel> em);
 
@@ -139,8 +154,8 @@ public:
    * used by the channel to indicate that the last bit of a packet has 
    * arrived at the device.
    *
-   * @see PointToPointChannel
-   * @param p Ptr to the received packet.
+   * \see PointToPointChannel
+   * \param p Ptr to the received packet.
    */
   void Receive (Ptr<Packet> p);
 
@@ -186,13 +201,37 @@ public:
   virtual bool SupportsSendFrom (void) const;
 
 protected:
+  /**
+   * \brief Handler for MPI receive event
+   *
+   * \param p Packet received
+   */
   void DoMpiReceive (Ptr<Packet> p);
 
 private:
 
-  PointToPointNetDevice& operator = (const PointToPointNetDevice &);
-  PointToPointNetDevice (const PointToPointNetDevice &);
+  /**
+   * \brief Assign operator
+   *
+   * The method is private, so it is DISABLED.
+   *
+   * \param o Other NetDevice
+   * \return New instance of the NetDevice
+   */
+  PointToPointNetDevice& operator = (const PointToPointNetDevice &o);
 
+  /**
+   * \brief Copy constructor
+   *
+   * The method is private, so it is DISABLED.
+   
+   * \param o Other NetDevice
+   */
+  PointToPointNetDevice (const PointToPointNetDevice &o);
+
+  /**
+   * \brief Dispose of the object
+   */
   virtual void DoDispose (void);
 
 private:
@@ -231,10 +270,10 @@ private:
    * started sending signals.  An event is scheduled for the time at which
    * the bits have been completely transmitted.
    *
-   * @see PointToPointChannel::TransmitStart ()
-   * @see TransmitCompleteEvent ()
-   * @param p a reference to the packet to send
-   * @returns true if success, false on failure
+   * \see PointToPointChannel::TransmitStart ()
+   * \see TransmitCompleteEvent ()
+   * \param p a reference to the packet to send
+   * \returns true if success, false on failure
    */
   bool TransmitStart (Ptr<Packet> p);
 
@@ -246,6 +285,11 @@ private:
    */
   void TransmitComplete (void);
 
+  /**
+   * \brief Make the link up and running
+   *
+   * It calls also the linkChange callback.
+   */
   void NotifyLinkUp (void);
 
   /**
@@ -258,28 +302,28 @@ private:
   };
   /**
    * The state of the Net Device transmit state machine.
-   * @see TxMachineState
+   * \see TxMachineState
    */
   TxMachineState m_txMachineState;
 
   /**
    * The data rate that the Net Device uses to simulate packet transmission
    * timing.
-   * @see class DataRate
+   * \see class DataRate
    */
   DataRate       m_bps;
 
   /**
    * The interframe gap that the Net Device uses to throttle packet
    * transmission
-   * @see class Time
+   * \see class Time
    */
   Time           m_tInterframeGap;
 
   /**
    * The PointToPointChannel to which this PointToPointNetDevice has been
    * attached.
-   * @see class PointToPointChannel
+   * \see class PointToPointChannel
    */
   Ptr<PointToPointChannel> m_channel;
 
@@ -287,8 +331,8 @@ private:
    * The Queue which this PointToPointNetDevice uses as a packet source.
    * Management of this Queue has been delegated to the PointToPointNetDevice
    * and it has the responsibility for deletion.
-   * @see class Queue
-   * @see class DropTailQueue
+   * \see class Queue
+   * \see class DropTailQueue
    */
   Ptr<Queue> m_queue;
 
@@ -431,25 +475,28 @@ private:
    */
   TracedCallback<Ptr<const Packet> > m_promiscSnifferTrace;
 
-  Ptr<Node> m_node;
-  Mac48Address m_address;
-  NetDevice::ReceiveCallback m_rxCallback;
-  NetDevice::PromiscReceiveCallback m_promiscCallback;
-  uint32_t m_ifIndex;
-  bool m_linkUp;
-  TracedCallback<> m_linkChangeCallbacks;
+  Ptr<Node> m_node;         //!< Node owning this NetDevice
+  Mac48Address m_address;   //!< Address of this NetDevice
+  NetDevice::ReceiveCallback m_rxCallback;   //!< Receive callback
+  NetDevice::PromiscReceiveCallback m_promiscCallback;  //!< Receive callback
+                                                        //   (promisc data)
+  uint32_t m_ifIndex; //!< Index of the interface
+  bool m_linkUp;      //!< Identify if the link is up or not
+  TracedCallback<> m_linkChangeCallbacks;  //!< Callback for the link change event
 
-  static const uint16_t DEFAULT_MTU = 1500;
+  static const uint16_t DEFAULT_MTU = 1500; //!< Default MTU
 
   /**
-   * The Maximum Transmission Unit.  This corresponds to the maximum 
+   * \brief The Maximum Transmission Unit
+   *
+   * This corresponds to the maximum 
    * number of bytes that can be transmitted as seen from higher layers.
    * This corresponds to the 1500 byte MTU size often seen on IP over 
    * Ethernet.
    */
   uint32_t m_mtu;
 
-  Ptr<Packet> m_currentPkt;
+  Ptr<Packet> m_currentPkt; //!< Current packet processed
 
   /**
    * \brief PPP to Ethernet protocol number mapping
