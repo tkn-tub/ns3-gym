@@ -1,3 +1,23 @@
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+/*
+ * Copyright (c) 2007 INRIA
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ */
+
 #include <iostream>
 #include <algorithm>
 #include <map>
@@ -39,9 +59,7 @@ namespace
   std::string listLineStop;        ///< end unordered list item
   std::string listStart;           ///< start unordered list
   std::string listStop;            ///< end unordered list
-  std::string pageAttributeList;   ///< start Attributes list
-  std::string pageGlobalValueList; ///< start GlobalValue page
-  std::string pageTraceSourceList; ///< start Trace sources page
+  std::string page;                ///< start a separate page
   std::string reference;           ///< reference tag
   std::string sectionStart;        ///< start of a section or group
   std::string subSectionStart;     ///< start a new subsection
@@ -76,9 +94,7 @@ SetMarkup (bool outputText)
       headingStart                 = "";
       headingStop                  = "";
       indentHtmlOnly               = "";
-      pageAttributeList            = "";
-      pageGlobalValueList          = "";
-      pageTraceSourceList          = "";
+      page                         = "Page ";
       listStart                    = "";
       listStop                     = "";
       listLineStart                = "    * ";
@@ -106,9 +122,7 @@ SetMarkup (bool outputText)
       headingStart                 = "<h3>";
       headingStop                  = "</h3>";
       indentHtmlOnly               = "  ";
-      pageAttributeList            = "\\page AttributesList ";
-      pageGlobalValueList          = "\\page GlobalValueList ";
-      pageTraceSourceList          = "\\page TraceSourceList ";
+      page                         = "\\page ";
       listStart                    = "<ul>";
       listStop                     = "</ul>";
       listLineStart                = "<li>";
@@ -351,7 +365,7 @@ PrintTraceSources (std::ostream & os, const TypeId tid)
 void
 PrintAllTraceSources (std::ostream & os)
 {
-   os << commentStart << pageTraceSourceList << "All TraceSources\n"
+  os << commentStart << page << "TraceSourceList All TraceSources\n"
       << std::endl;
 
   for (uint32_t i = 0; i < TypeId::GetRegisteredN (); ++i)
@@ -390,8 +404,7 @@ p */
 void
 PrintAllAttributes (std::ostream & os)
 {
-  
-  os << commentStart << pageAttributeList << "All Attributes\n"
+  os << commentStart << page << "AttributeList All Attributes\n"
      << std::endl;
 
   for (uint32_t i = 0; i < TypeId::GetRegisteredN (); ++i)
@@ -430,8 +443,7 @@ PrintAllAttributes (std::ostream & os)
 void
 PrintAllGlobals (std::ostream & os)
 {
-  
-  os << commentStart << pageGlobalValueList << "All GlobalValues\n"
+  os << commentStart << page << "GlobalValueList All GlobalValues\n"
      << std::endl;
   
   os << listStart << std::endl;
@@ -456,6 +468,38 @@ PrintAllGlobals (std::ostream & os)
   os << commentStop << std::endl;
 
 }  // PrintAllGlobals ()
+
+
+/**
+ * Print the list of all LogComponents.
+ *
+ * \param [in,out] os The output stream.
+ */
+void
+PrintAllLogComponents (std::ostream & os)
+{
+  os << commentStart << page << "LogComponentList All LogComponents\n"
+     << std::endl;
+
+  os << listStart << std::endl;
+  LogComponent::ComponentList * logs = LogComponent::GetComponentList ();
+  LogComponent::ComponentList::const_iterator it;
+  for (it = logs->begin (); it != logs->end (); ++it)
+    {
+      std::string file = it->second->File ();
+      if (file.find ("../") == 0)
+        {
+          file = file.substr (3);
+        }
+      
+      os << listLineStart
+         <<   boldStart << it->first << boldStop <<   ": " << file
+         << listLineStop
+         << std::endl;
+    }
+  os << listStop << std::endl;
+  os << commentStop << std::endl;
+}  // PrintAllLogComponents
 
 
 /**
@@ -864,6 +908,14 @@ int main (int argc, char *argv[])
   NodeContainer c;
   c.Create (1);
 
+  // mode-line:  helpful when debugging introspected-doxygen.h
+  if (!outputText)
+    {
+      std::cout << "/* -*- Mode:C++; c-file-style:\"gnu\"; "
+	           "indent-tabs-mode:nil; -*- */\n"
+		<< std::endl;
+    }
+    
   // Get typical aggregation relationships.
   StaticInformation info = GetTypicalAggregations ();
   
@@ -897,9 +949,10 @@ int main (int argc, char *argv[])
     }  // class documentation
 
 
-  PrintAllTraceSources (std::cout);
   PrintAllAttributes (std::cout);
   PrintAllGlobals (std::cout);
+  PrintAllLogComponents (std::cout);
+  PrintAllTraceSources (std::cout);
 
   return 0;
 }
