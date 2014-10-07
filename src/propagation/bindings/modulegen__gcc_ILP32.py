@@ -130,8 +130,6 @@ def register_types(module):
     module.add_class('ConstantSpeedPropagationDelayModel', parent=root_module['ns3::PropagationDelayModel'])
     ## cost231-propagation-loss-model.h (module 'propagation'): ns3::Cost231PropagationLossModel [class]
     module.add_class('Cost231PropagationLossModel', parent=root_module['ns3::PropagationLossModel'])
-    ## cost231-propagation-loss-model.h (module 'propagation'): ns3::Cost231PropagationLossModel::Environment [enumeration]
-    module.add_enum('Environment', ['SubUrban', 'MediumCity', 'Metropolitan'], outer_class=root_module['ns3::Cost231PropagationLossModel'])
     ## random-variable-stream.h (module 'core'): ns3::DeterministicRandomVariable [class]
     module.add_class('DeterministicRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
     ## random-variable-stream.h (module 'core'): ns3::EmpiricalRandomVariable [class]
@@ -547,10 +545,10 @@ def register_Ns3TypeId_methods(root_module, cls):
     cls.add_method('AddAttribute', 
                    'ns3::TypeId', 
                    [param('std::string', 'name'), param('std::string', 'help'), param('uint32_t', 'flags'), param('ns3::AttributeValue const &', 'initialValue'), param('ns3::Ptr< ns3::AttributeAccessor const >', 'accessor'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')])
-    ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::AddTraceSource(std::string name, std::string help, ns3::Ptr<ns3::TraceSourceAccessor const> accessor) [member function]
+    ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::AddTraceSource(std::string name, std::string help, ns3::Ptr<ns3::TraceSourceAccessor const> accessor, std::string callback="(not yet documented)") [member function]
     cls.add_method('AddTraceSource', 
                    'ns3::TypeId', 
-                   [param('std::string', 'name'), param('std::string', 'help'), param('ns3::Ptr< ns3::TraceSourceAccessor const >', 'accessor')])
+                   [param('std::string', 'name'), param('std::string', 'help'), param('ns3::Ptr< ns3::TraceSourceAccessor const >', 'accessor'), param('std::string', 'callback', default_value='"(not yet documented)"')])
     ## type-id.h (module 'core'): ns3::TypeId::AttributeInformation ns3::TypeId::GetAttribute(uint32_t i) const [member function]
     cls.add_method('GetAttribute', 
                    'ns3::TypeId::AttributeInformation', 
@@ -711,6 +709,8 @@ def register_Ns3TypeIdTraceSourceInformation_methods(root_module, cls):
     cls.add_constructor([param('ns3::TypeId::TraceSourceInformation const &', 'arg0')])
     ## type-id.h (module 'core'): ns3::TypeId::TraceSourceInformation::accessor [variable]
     cls.add_instance_attribute('accessor', 'ns3::Ptr< ns3::TraceSourceAccessor const >', is_const=False)
+    ## type-id.h (module 'core'): ns3::TypeId::TraceSourceInformation::callback [variable]
+    cls.add_instance_attribute('callback', 'std::string', is_const=False)
     ## type-id.h (module 'core'): ns3::TypeId::TraceSourceInformation::help [variable]
     cls.add_instance_attribute('help', 'std::string', is_const=False)
     ## type-id.h (module 'core'): ns3::TypeId::TraceSourceInformation::name [variable]
@@ -1881,14 +1881,14 @@ def register_Ns3Cost231PropagationLossModel_methods(root_module, cls):
     cls.add_method('SetSSAntennaHeight', 
                    'void', 
                    [param('double', 'height')])
-    ## cost231-propagation-loss-model.h (module 'propagation'): void ns3::Cost231PropagationLossModel::SetEnvironment(ns3::Cost231PropagationLossModel::Environment env) [member function]
-    cls.add_method('SetEnvironment', 
-                   'void', 
-                   [param('ns3::Cost231PropagationLossModel::Environment', 'env')])
     ## cost231-propagation-loss-model.h (module 'propagation'): void ns3::Cost231PropagationLossModel::SetLambda(double lambda) [member function]
     cls.add_method('SetLambda', 
                    'void', 
                    [param('double', 'lambda')])
+    ## cost231-propagation-loss-model.h (module 'propagation'): void ns3::Cost231PropagationLossModel::SetLambda(double frequency, double speed) [member function]
+    cls.add_method('SetLambda', 
+                   'void', 
+                   [param('double', 'frequency'), param('double', 'speed')])
     ## cost231-propagation-loss-model.h (module 'propagation'): void ns3::Cost231PropagationLossModel::SetMinDistance(double minDistance) [member function]
     cls.add_method('SetMinDistance', 
                    'void', 
@@ -1903,11 +1903,6 @@ def register_Ns3Cost231PropagationLossModel_methods(root_module, cls):
                    'double', 
                    [], 
                    is_const=True)
-    ## cost231-propagation-loss-model.h (module 'propagation'): ns3::Cost231PropagationLossModel::Environment ns3::Cost231PropagationLossModel::GetEnvironment() const [member function]
-    cls.add_method('GetEnvironment', 
-                   'ns3::Cost231PropagationLossModel::Environment', 
-                   [], 
-                   is_const=True)
     ## cost231-propagation-loss-model.h (module 'propagation'): double ns3::Cost231PropagationLossModel::GetMinDistance() const [member function]
     cls.add_method('GetMinDistance', 
                    'double', 
@@ -1918,10 +1913,6 @@ def register_Ns3Cost231PropagationLossModel_methods(root_module, cls):
                    'double', 
                    [], 
                    is_const=True)
-    ## cost231-propagation-loss-model.h (module 'propagation'): void ns3::Cost231PropagationLossModel::SetLambda(double frequency, double speed) [member function]
-    cls.add_method('SetLambda', 
-                   'void', 
-                   [param('double', 'frequency'), param('double', 'speed')])
     ## cost231-propagation-loss-model.h (module 'propagation'): double ns3::Cost231PropagationLossModel::GetShadowing() [member function]
     cls.add_method('GetShadowing', 
                    'double', 
@@ -2290,15 +2281,13 @@ def register_Ns3JakesProcess_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## jakes-process.h (module 'propagation'): void ns3::JakesProcess::SetPropagationLossModel(ns3::Ptr<const ns3::PropagationLossModel> arg0) [member function]
+    ## jakes-process.h (module 'propagation'): void ns3::JakesProcess::SetPropagationLossModel(ns3::Ptr<const ns3::PropagationLossModel> model) [member function]
     cls.add_method('SetPropagationLossModel', 
                    'void', 
-                   [param('ns3::Ptr< ns3::PropagationLossModel const >', 'arg0')])
+                   [param('ns3::Ptr< ns3::PropagationLossModel const >', 'model')])
     return
 
 def register_Ns3JakesPropagationLossModel_methods(root_module, cls):
-    ## jakes-propagation-loss-model.h (module 'propagation'): ns3::JakesPropagationLossModel::PI [variable]
-    cls.add_static_attribute('PI', 'double const', is_const=True)
     ## jakes-propagation-loss-model.h (module 'propagation'): static ns3::TypeId ns3::JakesPropagationLossModel::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -2426,10 +2415,10 @@ def register_Ns3MatrixPropagationLossModel_methods(root_module, cls):
     cls.add_method('SetLoss', 
                    'void', 
                    [param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b'), param('double', 'loss'), param('bool', 'symmetric', default_value='true')])
-    ## propagation-loss-model.h (module 'propagation'): void ns3::MatrixPropagationLossModel::SetDefaultLoss(double arg0) [member function]
+    ## propagation-loss-model.h (module 'propagation'): void ns3::MatrixPropagationLossModel::SetDefaultLoss(double defaultLoss) [member function]
     cls.add_method('SetDefaultLoss', 
                    'void', 
-                   [param('double', 'arg0')])
+                   [param('double', 'defaultLoss')])
     ## propagation-loss-model.h (module 'propagation'): double ns3::MatrixPropagationLossModel::DoCalcRxPower(double txPowerDbm, ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
     cls.add_method('DoCalcRxPower', 
                    'double', 

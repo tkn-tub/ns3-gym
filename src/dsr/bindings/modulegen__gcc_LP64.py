@@ -2938,10 +2938,10 @@ def register_Ns3TypeId_methods(root_module, cls):
     cls.add_method('AddAttribute', 
                    'ns3::TypeId', 
                    [param('std::string', 'name'), param('std::string', 'help'), param('uint32_t', 'flags'), param('ns3::AttributeValue const &', 'initialValue'), param('ns3::Ptr< ns3::AttributeAccessor const >', 'accessor'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')])
-    ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::AddTraceSource(std::string name, std::string help, ns3::Ptr<ns3::TraceSourceAccessor const> accessor) [member function]
+    ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::AddTraceSource(std::string name, std::string help, ns3::Ptr<ns3::TraceSourceAccessor const> accessor, std::string callback="(not yet documented)") [member function]
     cls.add_method('AddTraceSource', 
                    'ns3::TypeId', 
-                   [param('std::string', 'name'), param('std::string', 'help'), param('ns3::Ptr< ns3::TraceSourceAccessor const >', 'accessor')])
+                   [param('std::string', 'name'), param('std::string', 'help'), param('ns3::Ptr< ns3::TraceSourceAccessor const >', 'accessor'), param('std::string', 'callback', default_value='"(not yet documented)"')])
     ## type-id.h (module 'core'): ns3::TypeId::AttributeInformation ns3::TypeId::GetAttribute(uint32_t i) const [member function]
     cls.add_method('GetAttribute', 
                    'ns3::TypeId::AttributeInformation', 
@@ -3102,6 +3102,8 @@ def register_Ns3TypeIdTraceSourceInformation_methods(root_module, cls):
     cls.add_constructor([param('ns3::TypeId::TraceSourceInformation const &', 'arg0')])
     ## type-id.h (module 'core'): ns3::TypeId::TraceSourceInformation::accessor [variable]
     cls.add_instance_attribute('accessor', 'ns3::Ptr< ns3::TraceSourceAccessor const >', is_const=False)
+    ## type-id.h (module 'core'): ns3::TypeId::TraceSourceInformation::callback [variable]
+    cls.add_instance_attribute('callback', 'std::string', is_const=False)
     ## type-id.h (module 'core'): ns3::TypeId::TraceSourceInformation::help [variable]
     cls.add_instance_attribute('help', 'std::string', is_const=False)
     ## type-id.h (module 'core'): ns3::TypeId::TraceSourceInformation::name [variable]
@@ -7274,6 +7276,10 @@ def register_Ns3ArpCache_methods(root_module, cls):
     cls.add_method('Lookup', 
                    'ns3::ArpCache::Entry *', 
                    [param('ns3::Ipv4Address', 'destination')])
+    ## arp-cache.h (module 'internet'): void ns3::ArpCache::PrintArpCache(ns3::Ptr<ns3::OutputStreamWrapper> stream) [member function]
+    cls.add_method('PrintArpCache', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream')])
     ## arp-cache.h (module 'internet'): void ns3::ArpCache::SetAliveTimeout(ns3::Time aliveTimeout) [member function]
     cls.add_method('SetAliveTimeout', 
                    'void', 
@@ -8869,6 +8875,11 @@ def register_Ns3Ipv6Interface_methods(root_module, cls):
     ## ipv6-interface.h (module 'internet'): uint32_t ns3::Ipv6Interface::GetNAddresses() const [member function]
     cls.add_method('GetNAddresses', 
                    'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## ipv6-interface.h (module 'internet'): ns3::Ptr<ns3::NdiscCache> ns3::Ipv6Interface::GetNdiscCache() const [member function]
+    cls.add_method('GetNdiscCache', 
+                   'ns3::Ptr< ns3::NdiscCache >', 
                    [], 
                    is_const=True)
     ## ipv6-interface.h (module 'internet'): uint16_t ns3::Ipv6Interface::GetReachableTime() const [member function]

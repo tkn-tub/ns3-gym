@@ -483,6 +483,9 @@ def register_types(module):
     typehandlers.add_type_alias(u'ns3::SequenceNumber< unsigned char, signed char >', u'ns3::SequenceNumber8')
     typehandlers.add_type_alias(u'ns3::SequenceNumber< unsigned char, signed char >*', u'ns3::SequenceNumber8*')
     typehandlers.add_type_alias(u'ns3::SequenceNumber< unsigned char, signed char >&', u'ns3::SequenceNumber8&')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::SequenceNumber32, ns3::SequenceNumber32 ) *', u'ns3::SequenceNumber32TracedValueCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::SequenceNumber32, ns3::SequenceNumber32 ) **', u'ns3::SequenceNumber32TracedValueCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::SequenceNumber32, ns3::SequenceNumber32 ) *&', u'ns3::SequenceNumber32TracedValueCallback&')
     typehandlers.add_type_alias(u'ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', u'ns3::GenericPhyRxEndErrorCallback')
     typehandlers.add_type_alias(u'ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::GenericPhyRxEndErrorCallback*')
     typehandlers.add_type_alias(u'ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::GenericPhyRxEndErrorCallback&')
@@ -766,8 +769,8 @@ def register_methods(root_module):
 
 def register_Ns3Address_methods(root_module, cls):
     cls.add_binary_comparison_operator('!=')
-    cls.add_binary_comparison_operator('<')
     cls.add_output_stream_operator()
+    cls.add_binary_comparison_operator('<')
     cls.add_binary_comparison_operator('==')
     ## address.h (module 'network'): ns3::Address::Address() [constructor]
     cls.add_constructor([])
@@ -1737,8 +1740,8 @@ def register_Ns3InetSocketAddress_methods(root_module, cls):
 
 def register_Ns3Ipv4Address_methods(root_module, cls):
     cls.add_binary_comparison_operator('!=')
-    cls.add_binary_comparison_operator('<')
     cls.add_output_stream_operator()
+    cls.add_binary_comparison_operator('<')
     cls.add_binary_comparison_operator('==')
     ## ipv4-address.h (module 'network'): ns3::Ipv4Address::Ipv4Address(ns3::Ipv4Address const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::Ipv4Address const &', 'arg0')])
@@ -1908,8 +1911,8 @@ def register_Ns3Ipv4Mask_methods(root_module, cls):
 
 def register_Ns3Ipv6Address_methods(root_module, cls):
     cls.add_binary_comparison_operator('!=')
-    cls.add_binary_comparison_operator('<')
     cls.add_output_stream_operator()
+    cls.add_binary_comparison_operator('<')
     cls.add_binary_comparison_operator('==')
     ## ipv6-address.h (module 'network'): ns3::Ipv6Address::Ipv6Address() [constructor]
     cls.add_constructor([])
@@ -2165,8 +2168,8 @@ def register_Ns3Ipv6Prefix_methods(root_module, cls):
 
 def register_Ns3Mac16Address_methods(root_module, cls):
     cls.add_binary_comparison_operator('!=')
-    cls.add_binary_comparison_operator('<')
     cls.add_output_stream_operator()
+    cls.add_binary_comparison_operator('<')
     cls.add_binary_comparison_operator('==')
     ## mac16-address.h (module 'network'): ns3::Mac16Address::Mac16Address(ns3::Mac16Address const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::Mac16Address const &', 'arg0')])
@@ -2202,8 +2205,8 @@ def register_Ns3Mac16Address_methods(root_module, cls):
 
 def register_Ns3Mac48Address_methods(root_module, cls):
     cls.add_binary_comparison_operator('!=')
-    cls.add_binary_comparison_operator('<')
     cls.add_output_stream_operator()
+    cls.add_binary_comparison_operator('<')
     cls.add_binary_comparison_operator('==')
     ## mac48-address.h (module 'network'): ns3::Mac48Address::Mac48Address(ns3::Mac48Address const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::Mac48Address const &', 'arg0')])
@@ -2274,8 +2277,8 @@ def register_Ns3Mac48Address_methods(root_module, cls):
 
 def register_Ns3Mac64Address_methods(root_module, cls):
     cls.add_binary_comparison_operator('!=')
-    cls.add_binary_comparison_operator('<')
     cls.add_output_stream_operator()
+    cls.add_binary_comparison_operator('<')
     cls.add_binary_comparison_operator('==')
     ## mac64-address.h (module 'network'): ns3::Mac64Address::Mac64Address(ns3::Mac64Address const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::Mac64Address const &', 'arg0')])
@@ -3545,8 +3548,8 @@ def register_Ns3TimeWithUnit_methods(root_module, cls):
 
 def register_Ns3TypeId_methods(root_module, cls):
     cls.add_binary_comparison_operator('!=')
-    cls.add_binary_comparison_operator('<')
     cls.add_output_stream_operator()
+    cls.add_binary_comparison_operator('<')
     cls.add_binary_comparison_operator('==')
     ## type-id.h (module 'core'): ns3::TypeId::TypeId(char const * name) [constructor]
     cls.add_constructor([param('char const *', 'name')])
@@ -3562,10 +3565,10 @@ def register_Ns3TypeId_methods(root_module, cls):
     cls.add_method('AddAttribute', 
                    'ns3::TypeId', 
                    [param('std::string', 'name'), param('std::string', 'help'), param('uint32_t', 'flags'), param('ns3::AttributeValue const &', 'initialValue'), param('ns3::Ptr< ns3::AttributeAccessor const >', 'accessor'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')])
-    ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::AddTraceSource(std::string name, std::string help, ns3::Ptr<ns3::TraceSourceAccessor const> accessor) [member function]
+    ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::AddTraceSource(std::string name, std::string help, ns3::Ptr<ns3::TraceSourceAccessor const> accessor, std::string callback="(not yet documented)") [member function]
     cls.add_method('AddTraceSource', 
                    'ns3::TypeId', 
-                   [param('std::string', 'name'), param('std::string', 'help'), param('ns3::Ptr< ns3::TraceSourceAccessor const >', 'accessor')])
+                   [param('std::string', 'name'), param('std::string', 'help'), param('ns3::Ptr< ns3::TraceSourceAccessor const >', 'accessor'), param('std::string', 'callback', default_value='"(not yet documented)"')])
     ## type-id.h (module 'core'): ns3::TypeId::AttributeInformation ns3::TypeId::GetAttribute(uint32_t i) const [member function]
     cls.add_method('GetAttribute', 
                    'ns3::TypeId::AttributeInformation', 
@@ -3726,6 +3729,8 @@ def register_Ns3TypeIdTraceSourceInformation_methods(root_module, cls):
     cls.add_constructor([param('ns3::TypeId::TraceSourceInformation const &', 'arg0')])
     ## type-id.h (module 'core'): ns3::TypeId::TraceSourceInformation::accessor [variable]
     cls.add_instance_attribute('accessor', 'ns3::Ptr< ns3::TraceSourceAccessor const >', is_const=False)
+    ## type-id.h (module 'core'): ns3::TypeId::TraceSourceInformation::callback [variable]
+    cls.add_instance_attribute('callback', 'std::string', is_const=False)
     ## type-id.h (module 'core'): ns3::TypeId::TraceSourceInformation::help [variable]
     cls.add_instance_attribute('help', 'std::string', is_const=False)
     ## type-id.h (module 'core'): ns3::TypeId::TraceSourceInformation::name [variable]
@@ -3740,8 +3745,10 @@ def register_Ns3Empty_methods(root_module, cls):
     return
 
 def register_Ns3Int64x64_t_methods(root_module, cls):
+    cls.add_binary_comparison_operator('<=')
     cls.add_binary_comparison_operator('!=')
     cls.add_inplace_numeric_operator('+=', param('ns3::int64x64_t const &', u'right'))
+    cls.add_output_stream_operator()
     cls.add_binary_numeric_operator('*', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('ns3::int64x64_t const &', u'right'))
     cls.add_binary_numeric_operator('+', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('ns3::int64x64_t const &', u'right'))
     cls.add_binary_numeric_operator('-', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('ns3::int64x64_t const &', u'right'))
@@ -3752,8 +3759,6 @@ def register_Ns3Int64x64_t_methods(root_module, cls):
     cls.add_inplace_numeric_operator('*=', param('ns3::int64x64_t const &', u'right'))
     cls.add_inplace_numeric_operator('-=', param('ns3::int64x64_t const &', u'right'))
     cls.add_inplace_numeric_operator('/=', param('ns3::int64x64_t const &', u'right'))
-    cls.add_output_stream_operator()
-    cls.add_binary_comparison_operator('<=')
     cls.add_binary_comparison_operator('==')
     cls.add_binary_comparison_operator('>=')
     ## int64x64-double.h (module 'core'): ns3::int64x64_t::int64x64_t() [constructor]
@@ -5385,8 +5390,10 @@ def register_Ns3SocketSetDontFragmentTag_methods(root_module, cls):
     return
 
 def register_Ns3Time_methods(root_module, cls):
+    cls.add_binary_comparison_operator('<=')
     cls.add_binary_comparison_operator('!=')
     cls.add_inplace_numeric_operator('+=', param('ns3::Time const &', u'right'))
+    cls.add_output_stream_operator()
     cls.add_binary_numeric_operator('*', root_module['ns3::Time'], root_module['ns3::Time'], param('int64_t const &', u'right'))
     cls.add_binary_numeric_operator('+', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::Time const &', u'right'))
     cls.add_binary_numeric_operator('-', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::Time const &', u'right'))
@@ -5394,8 +5401,6 @@ def register_Ns3Time_methods(root_module, cls):
     cls.add_binary_comparison_operator('<')
     cls.add_binary_comparison_operator('>')
     cls.add_inplace_numeric_operator('-=', param('ns3::Time const &', u'right'))
-    cls.add_output_stream_operator()
-    cls.add_binary_comparison_operator('<=')
     cls.add_binary_comparison_operator('==')
     cls.add_binary_comparison_operator('>=')
     ## nstime.h (module 'core'): ns3::Time::Time() [constructor]

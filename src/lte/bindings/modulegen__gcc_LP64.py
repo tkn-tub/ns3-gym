@@ -1078,8 +1078,6 @@ def register_types(module):
     module.add_class('LteHarqPhy', parent=root_module['ns3::SimpleRefCount< ns3::LteHarqPhy, ns3::empty, ns3::DefaultDeleter<ns3::LteHarqPhy> >'])
     ## lte-helper.h (module 'lte'): ns3::LteHelper [class]
     module.add_class('LteHelper', parent=root_module['ns3::Object'])
-    ## lte-helper.h (module 'lte'): ns3::LteHelper::LteEpsBearerToRlcMapping_t [enumeration]
-    module.add_enum('LteEpsBearerToRlcMapping_t', ['RLC_SM_ALWAYS', 'RLC_UM_ALWAYS', 'RLC_AM_ALWAYS', 'PER_BASED'], outer_class=root_module['ns3::LteHelper'])
     ## lte-hex-grid-enb-topology-helper.h (module 'lte'): ns3::LteHexGridEnbTopologyHelper [class]
     module.add_class('LteHexGridEnbTopologyHelper', parent=root_module['ns3::Object'])
     ## lte-interference.h (module 'lte'): ns3::LteInterference [class]
@@ -8320,10 +8318,10 @@ def register_Ns3TypeId_methods(root_module, cls):
     cls.add_method('AddAttribute', 
                    'ns3::TypeId', 
                    [param('std::string', 'name'), param('std::string', 'help'), param('uint32_t', 'flags'), param('ns3::AttributeValue const &', 'initialValue'), param('ns3::Ptr< ns3::AttributeAccessor const >', 'accessor'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')])
-    ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::AddTraceSource(std::string name, std::string help, ns3::Ptr<ns3::TraceSourceAccessor const> accessor) [member function]
+    ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::AddTraceSource(std::string name, std::string help, ns3::Ptr<ns3::TraceSourceAccessor const> accessor, std::string callback="(not yet documented)") [member function]
     cls.add_method('AddTraceSource', 
                    'ns3::TypeId', 
-                   [param('std::string', 'name'), param('std::string', 'help'), param('ns3::Ptr< ns3::TraceSourceAccessor const >', 'accessor')])
+                   [param('std::string', 'name'), param('std::string', 'help'), param('ns3::Ptr< ns3::TraceSourceAccessor const >', 'accessor'), param('std::string', 'callback', default_value='"(not yet documented)"')])
     ## type-id.h (module 'core'): ns3::TypeId::AttributeInformation ns3::TypeId::GetAttribute(uint32_t i) const [member function]
     cls.add_method('GetAttribute', 
                    'ns3::TypeId::AttributeInformation', 
@@ -8484,6 +8482,8 @@ def register_Ns3TypeIdTraceSourceInformation_methods(root_module, cls):
     cls.add_constructor([param('ns3::TypeId::TraceSourceInformation const &', 'arg0')])
     ## type-id.h (module 'core'): ns3::TypeId::TraceSourceInformation::accessor [variable]
     cls.add_instance_attribute('accessor', 'ns3::Ptr< ns3::TraceSourceAccessor const >', is_const=False)
+    ## type-id.h (module 'core'): ns3::TypeId::TraceSourceInformation::callback [variable]
+    cls.add_instance_attribute('callback', 'std::string', is_const=False)
     ## type-id.h (module 'core'): ns3::TypeId::TraceSourceInformation::help [variable]
     cls.add_instance_attribute('help', 'std::string', is_const=False)
     ## type-id.h (module 'core'): ns3::TypeId::TraceSourceInformation::name [variable]
@@ -12122,11 +12122,6 @@ def register_Ns3Asn1Header_methods(root_module, cls):
     cls.add_method('SerializeNull', 
                    'void', 
                    [], 
-                   is_const=True, visibility='protected')
-    ## lte-asn1-header.h (module 'lte'): void ns3::Asn1Header::SerializeOctetstring(std::string s) const [member function]
-    cls.add_method('SerializeOctetstring', 
-                   'void', 
-                   [param('std::string', 's')], 
                    is_const=True, visibility='protected')
     ## lte-asn1-header.h (module 'lte'): void ns3::Asn1Header::SerializeSequence(std::bitset<0ul> optionalOrDefaultMask, bool isExtensionMarkerPresent) const [member function]
     cls.add_method('SerializeSequence', 
@@ -16105,10 +16100,10 @@ def register_Ns3LteHelper_methods(root_module, cls):
     cls.add_method('SetEpcHelper', 
                    'void', 
                    [param('ns3::Ptr< ns3::EpcHelper >', 'h')])
-    ## lte-helper.h (module 'lte'): void ns3::LteHelper::SetFadingModel(std::string model) [member function]
+    ## lte-helper.h (module 'lte'): void ns3::LteHelper::SetFadingModel(std::string type) [member function]
     cls.add_method('SetFadingModel', 
                    'void', 
-                   [param('std::string', 'model')])
+                   [param('std::string', 'type')])
     ## lte-helper.h (module 'lte'): void ns3::LteHelper::SetFadingModelAttribute(std::string n, ns3::AttributeValue const & v) [member function]
     cls.add_method('SetFadingModelAttribute', 
                    'void', 
