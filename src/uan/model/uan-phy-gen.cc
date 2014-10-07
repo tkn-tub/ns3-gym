@@ -28,6 +28,7 @@
 #include "ns3/ptr.h"
 #include "ns3/trace-source-accessor.h"
 #include "ns3/double.h"
+#include "ns3/string.h"
 #include "ns3/log.h"
 #include "ns3/uan-tx-mode.h"
 #include "ns3/node.h"
@@ -458,12 +459,12 @@ UanPhyGen::GetTypeId (void)
                    MakeUanModesListChecker () )
     .AddAttribute ("PerModel",
                    "Functor to calculate PER based on SINR and TxMode.",
-                   PointerValue (CreateObject<UanPhyPerGenDefault> ()),
+                   StringValue ("ns3::UanPhyPerGenDefault"),
                    MakePointerAccessor (&UanPhyGen::m_per),
                    MakePointerChecker<UanPhyPer> ())
     .AddAttribute ("SinrModel",
                    "Functor to calculate SINR based on pkt arrivals and modes.",
-                   PointerValue (CreateObject<UanPhyCalcSinrDefault> ()),
+                   StringValue ("ns3::UanPhyCalcSinrDefault"),
                    MakePointerAccessor (&UanPhyGen::m_sinr),
                    MakePointerChecker<UanPhyCalcSinr> ())
     .AddTraceSource ("RxOk",

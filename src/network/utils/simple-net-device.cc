@@ -26,6 +26,7 @@
 #include "ns3/error-model.h"
 #include "ns3/trace-source-accessor.h"
 #include "ns3/boolean.h"
+#include "ns3/string.h"
 #include "ns3/tag.h"
 #include "ns3/simulator.h"
 #include "ns3/drop-tail-queue.h"
@@ -171,7 +172,7 @@ SimpleNetDevice::GetTypeId (void)
                    MakeBooleanChecker ())
     .AddAttribute ("TxQueue",
                    "A queue to use as the transmit queue in the device.",
-                   PointerValue (CreateObject<DropTailQueue> ()),
+                   StringValue ("ns3::DropTailQueue"),
                    MakePointerAccessor (&SimpleNetDevice::m_queue),
                    MakePointerChecker<Queue> ())
     .AddAttribute ("DataRate",

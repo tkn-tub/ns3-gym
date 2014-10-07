@@ -26,6 +26,7 @@
 #include "ns3/node.h"
 #include "ns3/log.h"
 #include "ns3/pointer.h"
+#include "ns3/string.h"
 #include "ns3/log.h"
 
 #include "uan-channel.h"
@@ -51,12 +52,12 @@ UanChannel::GetTypeId ()
     .AddConstructor<UanChannel> ()
     .AddAttribute ("PropagationModel",
                    "A pointer to the propagation model.",
-                   PointerValue (CreateObject<UanPropModelIdeal> ()),
+                   StringValue ("ns3::UanPropModelIdeal"),
                    MakePointerAccessor (&UanChannel::m_prop),
                    MakePointerChecker<UanPropModel> ())
     .AddAttribute ("NoiseModel",
                    "A pointer to the model of the channel ambient noise.",
-                   PointerValue (CreateObject<UanNoiseModelDefault> ()),
+                   StringValue ("ns3::UanNoiseModelDefault"),
                    MakePointerAccessor (&UanChannel::m_noise),
                    MakePointerChecker<UanNoiseModel> ())
   ;
