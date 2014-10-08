@@ -101,7 +101,6 @@ private:
    * \internal
    * \brief Assignment operator declared private and not implemented to disallow
    * assignment and prevent the compiler from happily inserting its own.
-   * \returns
    */
   OlsrHelper &operator = (const OlsrHelper &);
   ObjectFactory m_agentFactory; //!< Object factory

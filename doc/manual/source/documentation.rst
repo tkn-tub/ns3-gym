@@ -476,7 +476,7 @@ urgent in a single module:
    src/mesh/helper/dot11s/dot11s-installer.h:72: warning: Member m_root (variable) of class ns3::Dot11sStack is not documented.
    src/mesh/helper/dot11s/dot11s-installer.h:35: warning: return type of member ns3::Dot11sStack::GetTypeId is not documented
    src/mesh/helper/dot11s/dot11s-installer.h:56: warning: return type of member ns3::Dot11sStack::InstallStack is not documented
-   src/mesh/helper/flame/flame-installer.h:40: warning: Member GetTypeId() (function) of class ns3::FlameStack is not documented.
+   src/mesh/helper/flame/lfame-installer.h:40: warning: Member GetTypeId() (function) of class ns3::FlameStack is not documented.
    src/mesh/helper/flame/flame-installer.h:60: warning: return type of member ns3::FlameStack::InstallStack is not documented
    src/mesh/helper/mesh-helper.h:213: warning: Member m_nInterfaces (variable) of class ns3::MeshHelper is not documented.
    src/mesh/helper/mesh-helper.h:214: warning: Member m_spreadChannelPolicy (variable) of class ns3::MeshHelper is not documented.
@@ -519,6 +519,16 @@ usage for |ns3|.
     */
     class Foo
 
+* Did you know ``typedef``s can have formal arguments?  This enables
+  documentation of function pointer signatures::
+
+    /**
+     * Bar callback function signature.
+     *
+     * \param ale The size of a pint of ale, in Imperial ounces.
+     */
+    typedef void (* BarCallback)(const int ale);
+    
 * Copy the ``Attribute`` help strings from the ``GetTypeId`` method to use
   as the brief descriptions of associated members.
 

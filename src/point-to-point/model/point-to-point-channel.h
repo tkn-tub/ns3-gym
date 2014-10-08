@@ -60,7 +60,7 @@ public:
   /**
    * \brief Create a PointToPointChannel
    *
-   * By default, you get a channel that has an "infitely" fast 
+   * By default, you get a channel that has an "infinitely" fast 
    * transmission speed and zero delay.
    */
   PointToPointChannel ();
@@ -130,8 +130,8 @@ protected:
   Ptr<PointToPointNetDevice> GetDestination (uint32_t i) const;
 
 private:
-  static const int N_DEVICES = 2; //!< Each point to point link has
-                                  //   exactly two net devices
+  /** Each point to point link has exactly two net devices. */
+  static const int N_DEVICES = 2; 
 
   Time          m_delay;    //!< Propagation delay
   int32_t       m_nDevices; //!< Devices of this channel
@@ -157,12 +157,14 @@ private:
    */
   enum WireState
   {
-    INITIALIZING, //!< Initializing state
-    IDLE,         //!< Idle state (no transmission from NetDevice)
-    TRANSMITTING, //!< Transmitting state (data being transmitted from
-                  //   NetDevice
-    PROPAGATING   //!< Propagating state (data is being propagated in the
-                  //   channel
+    /** Initializing state */
+    INITIALIZING,
+    /** Idle state (no transmission from NetDevice) */
+    IDLE,
+    /** Transmitting state (data being transmitted from NetDevice. */
+    TRANSMITTING, 
+    /** Propagating state (data is being propagated in the channel. */
+    PROPAGATING   
   };
 
   /**

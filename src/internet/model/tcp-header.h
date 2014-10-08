@@ -169,7 +169,7 @@ public:
   /**
    * \brief Append an option to the TCP header
    * \param option The option to append
-   * \return true if optionhas been appended, false otherwise
+   * \return true if option has been appended, false otherwise
    */
   bool AppendOption (Ptr<TcpOption> option);
 

@@ -58,11 +58,6 @@ class ErrorModel;
  * Key parameters or objects that can be specified for this device 
  * include a queue, data rate, and interframe transmission gap (the 
  * propagation delay is set in the PointToPointChannel).
- *
- * \see SetDataRate
- * \see SetInterframeGap
- * \see SetReceiveErrorModel
- *
  */
 class PointToPointNetDevice : public NetDevice
 {
@@ -92,10 +87,9 @@ public:
 
   /**
    * Set the Data Rate used for transmission of packets.  The data rate is
-   * set in the Attach () method from the corresponding field in the channel
+   * set in the Attach() method from the corresponding field in the channel
    * to which the device is attached.  It can be overridden using this method.
    *
-   * \see Attach ()
    * \param bps the data rate at which this object operates
    */
   void SetDataRate (DataRate bps);
@@ -120,10 +114,8 @@ public:
    * Attach a queue to the PointToPointNetDevice.
    *
    * The PointToPointNetDevice "owns" a queue that implements a queueing 
-   * method such as DropTail or RED.
+   * method such as DropTailQueue or RedQueue
    *
-   * \see Queue
-   * \see DropTailQueue
    * \param queue Ptr to the new queue.
    */
   void SetQueue (Ptr<Queue> queue);
@@ -141,7 +133,6 @@ public:
    * The PointToPointNetDevice may optionally include an ErrorModel in
    * the packet receive chain.
    *
-   * \see ErrorModel
    * \param em Ptr to the ErrorModel.
    */
   void SetReceiveErrorModel (Ptr<ErrorModel> em);
@@ -154,7 +145,6 @@ public:
    * used by the channel to indicate that the last bit of a packet has 
    * arrived at the device.
    *
-   * \see PointToPointChannel
    * \param p Ptr to the received packet.
    */
   void Receive (Ptr<Packet> p);
@@ -271,7 +261,7 @@ private:
    * the bits have been completely transmitted.
    *
    * \see PointToPointChannel::TransmitStart ()
-   * \see TransmitCompleteEvent ()
+   * \see TransmitComplete()
    * \param p a reference to the packet to send
    * \returns true if success, false on failure
    */
@@ -302,28 +292,24 @@ private:
   };
   /**
    * The state of the Net Device transmit state machine.
-   * \see TxMachineState
    */
   TxMachineState m_txMachineState;
 
   /**
    * The data rate that the Net Device uses to simulate packet transmission
    * timing.
-   * \see class DataRate
    */
   DataRate       m_bps;
 
   /**
    * The interframe gap that the Net Device uses to throttle packet
    * transmission
-   * \see class Time
    */
   Time           m_tInterframeGap;
 
   /**
    * The PointToPointChannel to which this PointToPointNetDevice has been
    * attached.
-   * \see class PointToPointChannel
    */
   Ptr<PointToPointChannel> m_channel;
 
@@ -331,7 +317,6 @@ private:
    * The Queue which this PointToPointNetDevice uses as a packet source.
    * Management of this Queue has been delegated to the PointToPointNetDevice
    * and it has the responsibility for deletion.
-   * \see class Queue
    * \see class DropTailQueue
    */
   Ptr<Queue> m_queue;
@@ -344,16 +329,12 @@ private:
   /**
    * The trace source fired when packets come into the "top" of the device
    * at the L3/L2 transition, before being queued for transmission.
-   *
-   * \see class CallBackTraceSource
    */
   TracedCallback<Ptr<const Packet> > m_macTxTrace;
 
   /**
    * The trace source fired when packets coming into the "top" of the device
    * at the L3/L2 transition are dropped before being queued for transmission.
-   *
-   * \see class CallBackTraceSource
    */
   TracedCallback<Ptr<const Packet> > m_macTxDropTrace;
 
@@ -362,8 +343,6 @@ private:
    * immediately before being forwarded up to higher layers (at the L2/L3 
    * transition).  This is a promiscuous trace (which doesn't mean a lot here
    * in the point-to-point device).
-   *
-   * \see class CallBackTraceSource
    */
   TracedCallback<Ptr<const Packet> > m_macPromiscRxTrace;
 
@@ -372,8 +351,6 @@ private:
    * immediately before being forwarded up to higher layers (at the L2/L3 
    * transition).  This is a non-promiscuous trace (which doesn't mean a lot 
    * here in the point-to-point device).
-   *
-   * \see class CallBackTraceSource
    */
   TracedCallback<Ptr<const Packet> > m_macRxTrace;
 
@@ -381,48 +358,36 @@ private:
    * The trace source fired for packets successfully received by the device
    * but are dropped before being forwarded up to higher layers (at the L2/L3 
    * transition).
-   *
-   * \see class CallBackTraceSource
    */
   TracedCallback<Ptr<const Packet> > m_macRxDropTrace;
 
   /**
    * The trace source fired when a packet begins the transmission process on
    * the medium.
-   *
-   * \see class CallBackTraceSource
    */
   TracedCallback<Ptr<const Packet> > m_phyTxBeginTrace;
 
   /**
    * The trace source fired when a packet ends the transmission process on
    * the medium.
-   *
-   * \see class CallBackTraceSource
    */
   TracedCallback<Ptr<const Packet> > m_phyTxEndTrace;
 
   /**
    * The trace source fired when the phy layer drops a packet before it tries
    * to transmit it.
-   *
-   * \see class CallBackTraceSource
    */
   TracedCallback<Ptr<const Packet> > m_phyTxDropTrace;
 
   /**
    * The trace source fired when a packet begins the reception process from
    * the medium -- when the simulated first bit(s) arrive.
-   *
-   * \see class CallBackTraceSource
    */
   TracedCallback<Ptr<const Packet> > m_phyRxBeginTrace;
 
   /**
    * The trace source fired when a packet ends the reception process from
    * the medium.
-   *
-   * \see class CallBackTraceSource
    */
   TracedCallback<Ptr<const Packet> > m_phyRxEndTrace;
 
@@ -430,8 +395,6 @@ private:
    * The trace source fired when the phy layer drops a packet it has received.
    * This happens if the receiver is not enabled or the error model is active
    * and indicates that the packet is corrupt.
-   *
-   * \see class CallBackTraceSource
    */
   TracedCallback<Ptr<const Packet> > m_phyRxDropTrace;
 
@@ -442,16 +405,14 @@ private:
    *
    * On the transmit size, this trace hook will fire after a packet is dequeued
    * from the device queue for transmission.  In Linux, for example, this would
-   * correspond to the point just before a device hard_start_xmit where 
-   * dev_queue_xmit_nit is called to dispatch the packet to the PF_PACKET 
+   * correspond to the point just before a device \c hard_start_xmit where 
+   * \c dev_queue_xmit_nit is called to dispatch the packet to the PF_PACKET 
    * ETH_P_ALL handlers.
    *
    * On the receive side, this trace hook will fire when a packet is received,
    * just before the receive callback is executed.  In Linux, for example, 
    * this would correspond to the point at which the packet is dispatched to 
-   * packet sniffers in netif_receive_skb.
-   *
-   * \see class CallBackTraceSource
+   * packet sniffers in \c netif_receive_skb.
    */
   TracedCallback<Ptr<const Packet> > m_snifferTrace;
 
@@ -462,21 +423,19 @@ private:
    *
    * On the transmit size, this trace hook will fire after a packet is dequeued
    * from the device queue for transmission.  In Linux, for example, this would
-   * correspond to the point just before a device hard_start_xmit where 
-   * dev_queue_xmit_nit is called to dispatch the packet to the PF_PACKET 
+   * correspond to the point just before a device \c hard_start_xmit where 
+   * \c dev_queue_xmit_nit is called to dispatch the packet to the PF_PACKET 
    * ETH_P_ALL handlers.
    *
    * On the receive side, this trace hook will fire when a packet is received,
    * just before the receive callback is executed.  In Linux, for example, 
    * this would correspond to the point at which the packet is dispatched to 
-   * packet sniffers in netif_receive_skb.
-   *
-   * \see class CallBackTraceSource
+   * packet sniffers in \c netif_receive_skb.
    */
   TracedCallback<Ptr<const Packet> > m_promiscSnifferTrace;
 
   Ptr<Node> m_node;         //!< Node owning this NetDevice
-  Mac48Address m_address;   //!< Address of this NetDevice
+  Mac48Address m_address;   //!< Mac48Address of this NetDevice
   NetDevice::ReceiveCallback m_rxCallback;   //!< Receive callback
   NetDevice::PromiscReceiveCallback m_promiscCallback;  //!< Receive callback
                                                         //   (promisc data)

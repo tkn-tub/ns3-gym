@@ -54,12 +54,13 @@ public:
   virtual void Print (std::ostream &os) const = 0;
     
   /**
-   * This function serializes class attributes to m_serializationResult local Buffer.
-   * As ASN1 encoding produces a bitstream that does not have a fixed length,
-   * this function is needed to store the result, so its length can be retrieved
-   * with Header::GetSerializedSize() function.
-   * This method is pure virtual in this class (needs to be implemented in child classes)
-   * as the meaningful information elements are in the subclasses.
+   * This function serializes class attributes to m_serializationResult
+   * local Buffer.  As ASN1 encoding produces a bitstream that does not have
+   * a fixed length, this function is needed to store the result, so
+   * its length can be retrieved with Header::GetSerializedSize() function.
+   * This method is pure virtual in this class (needs to be implemented
+   * in child classes) as the meaningful information elements are in
+   * the subclasses.
    */
   virtual void PreSerialize (void) const = 0;
 
@@ -103,7 +104,8 @@ protected:
    * \param selectedOption selected option
    * \param isExtensionMarkerPresent true if extension mark is present
    */
-  void SerializeChoice (int numOptions, int selectedOption, bool isExtensionMarkerPresent) const;
+  void SerializeChoice (int numOptions, int selectedOption,
+                        bool isExtensionMarkerPresent) const;
   /**
    * Serialize an Enum
    * \param numElems number of elements in the enum
@@ -132,67 +134,78 @@ protected:
    * \param isExtensionMarkerPresent true if Extension Marker is present
    */
   template <int N>
-  void SerializeSequence (std::bitset<N> optionalOrDefaultMask, bool isExtensionMarkerPresent) const;
+  void SerializeSequence (std::bitset<N> optionalOrDefaultMask,
+                          bool isExtensionMarkerPresent) const;
   /**
    * Serialize a sequence
    * \param optionalOrDefaultMask Mask to serialize
    * \param isExtensionMarkerPresent true if Extension Marker is present
    */
-  void SerializeSequence (std::bitset<0> optionalOrDefaultMask, bool isExtensionMarkerPresent) const;
+  void SerializeSequence (std::bitset<0> optionalOrDefaultMask,
+                          bool isExtensionMarkerPresent) const;
   /**
    * Serialize a sequence
    * \param optionalOrDefaultMask Mask to serialize
    * \param isExtensionMarkerPresent true if Extension Marker is present
    */
-  void SerializeSequence (std::bitset<1> optionalOrDefaultMask, bool isExtensionMarkerPresent) const;
+  void SerializeSequence (std::bitset<1> optionalOrDefaultMask,
+                          bool isExtensionMarkerPresent) const;
   /**
    * Serialize a sequence
    * \param optionalOrDefaultMask Mask to serialize
    * \param isExtensionMarkerPresent true if Extension Marker is present
    */
-  void SerializeSequence (std::bitset<2> optionalOrDefaultMask, bool isExtensionMarkerPresent) const;
+  void SerializeSequence (std::bitset<2> optionalOrDefaultMask,
+                          bool isExtensionMarkerPresent) const;
   /**
    * Serialize a sequence
    * \param optionalOrDefaultMask Mask to serialize
    * \param isExtensionMarkerPresent true if Extension Marker is present
    */
-  void SerializeSequence (std::bitset<3> optionalOrDefaultMask, bool isExtensionMarkerPresent) const;
+  void SerializeSequence (std::bitset<3> optionalOrDefaultMask,
+                          bool isExtensionMarkerPresent) const;
   /**
    * Serialize a sequence
    * \param optionalOrDefaultMask Mask to serialize
    * \param isExtensionMarkerPresent true if Extension Marker is present
    */
-  void SerializeSequence (std::bitset<4> optionalOrDefaultMask, bool isExtensionMarkerPresent) const;
+  void SerializeSequence (std::bitset<4> optionalOrDefaultMask,
+                          bool isExtensionMarkerPresent) const;
   /**
    * Serialize a sequence
    * \param optionalOrDefaultMask Mask to serialize
    * \param isExtensionMarkerPresent true if Extension Marker is present
    */
-  void SerializeSequence (std::bitset<5> optionalOrDefaultMask, bool isExtensionMarkerPresent) const;
+  void SerializeSequence (std::bitset<5> optionalOrDefaultMask,
+                          bool isExtensionMarkerPresent) const;
   /**
    * Serialize a sequence
    * \param optionalOrDefaultMask Mask to serialize
    * \param isExtensionMarkerPresent true if Extension Marker is present
    */
-  void SerializeSequence (std::bitset<6> optionalOrDefaultMask, bool isExtensionMarkerPresent) const;
+  void SerializeSequence (std::bitset<6> optionalOrDefaultMask,
+                          bool isExtensionMarkerPresent) const;
   /**
    * Serialize a sequence
    * \param optionalOrDefaultMask Mask to serialize
    * \param isExtensionMarkerPresent true if Extension Marker is present
    */
-  void SerializeSequence (std::bitset<9> optionalOrDefaultMask, bool isExtensionMarkerPresent) const;
+  void SerializeSequence (std::bitset<9> optionalOrDefaultMask,
+                          bool isExtensionMarkerPresent) const;
   /**
    * Serialize a sequence
    * \param optionalOrDefaultMask Mask to serialize
    * \param isExtensionMarkerPresent true if Extension Marker is present
    */
-  void SerializeSequence (std::bitset<10> optionalOrDefaultMask, bool isExtensionMarkerPresent) const;
+  void SerializeSequence (std::bitset<10> optionalOrDefaultMask,
+                          bool isExtensionMarkerPresent) const;
   /**
    * Serialize a sequence
    * \param optionalOrDefaultMask Mask to serialize
    * \param isExtensionMarkerPresent true if Extension Marker is present
    */
-  void SerializeSequence (std::bitset<11> optionalOrDefaultMask, bool isExtensionMarkerPresent) const;
+  void SerializeSequence (std::bitset<11> optionalOrDefaultMask,
+                          bool isExtensionMarkerPresent) const;
 
   /**
    * Serialize a bitstring
@@ -250,14 +263,16 @@ protected:
    * \returns the modified buffer iterator
    */
   template <int N>
-  Buffer::Iterator DeserializeBitset (std::bitset<N> *data, Buffer::Iterator bIterator);
+  Buffer::Iterator DeserializeBitset (std::bitset<N> *data,
+                                      Buffer::Iterator bIterator);
   /**
    * Deserialize a bitset
    * \param data buffer to store the result
    * \param bIterator buffer iterator
    * \returns the modified buffer iterator
    */
-  Buffer::Iterator DeserializeBitset (std::bitset<8> *data, Buffer::Iterator bIterator);
+  Buffer::Iterator DeserializeBitset (std::bitset<8> *data,
+                                      Buffer::Iterator bIterator);
 
   /**
    * Deserialize a boolean
@@ -265,7 +280,8 @@ protected:
    * \param bIterator buffer iterator
    * \returns the modified buffer iterator
    */
-  Buffer::Iterator DeserializeBoolean (bool *value, Buffer::Iterator bIterator);
+  Buffer::Iterator DeserializeBoolean (bool *value,
+                                       Buffer::Iterator bIterator);
   /**
    * Deserialize an integer
    * \param n buffer to store the result
@@ -274,7 +290,8 @@ protected:
    * \param bIterator buffer iterator
    * \returns the modified buffer iterator
    */
-  Buffer::Iterator DeserializeInteger (int *n, int nmin, int nmax, Buffer::Iterator bIterator);
+  Buffer::Iterator DeserializeInteger (int *n, int nmin, int nmax,
+                                       Buffer::Iterator bIterator);
   /**
    * Deserialize a Choice (set of options)
    * \param numOptions number of options
@@ -283,7 +300,10 @@ protected:
    * \param bIterator buffer iterator
    * \returns the modified buffer iterator
    */
-  Buffer::Iterator DeserializeChoice (int numOptions, bool isExtensionMarkerPresent, int *selectedOption, Buffer::Iterator bIterator);
+  Buffer::Iterator DeserializeChoice (int numOptions,
+                                      bool isExtensionMarkerPresent,
+                                      int *selectedOption,
+                                      Buffer::Iterator bIterator);
   /**
    * Deserialize an Enum
    * \param numElems number of elements in the enum
@@ -291,7 +311,8 @@ protected:
    * \param bIterator buffer iterator
    * \returns the modified buffer iterator
    */
-  Buffer::Iterator DeserializeEnum (int numElems, int *selectedElem, Buffer::Iterator bIterator);
+  Buffer::Iterator DeserializeEnum (int numElems, int *selectedElem,
+                                    Buffer::Iterator bIterator);
 
   /**
    * Deserialize a sequence
@@ -308,7 +329,9 @@ protected:
    * \param bIterator buffer iterator
    * \returns the modified buffer iterator
    */
-  Buffer::Iterator DeserializeSequence (std::bitset<N> *optionalOrDefaultMask, bool isExtensionMarkerPresent, Buffer::Iterator bIterator);
+  Buffer::Iterator DeserializeSequence (std::bitset<N> *optionalOrDefaultMask,
+                                        bool isExtensionMarkerPresent,
+                                        Buffer::Iterator bIterator);
   /**
    * Deserialize a sequence
    * \param optionalOrDefaultMask buffer to store the result
@@ -316,7 +339,9 @@ protected:
    * \param bIterator buffer iterator
    * \returns the modified buffer iterator
    */
-  Buffer::Iterator DeserializeSequence (std::bitset<0> *optionalOrDefaultMask, bool isExtensionMarkerPresent, Buffer::Iterator bIterator);
+  Buffer::Iterator DeserializeSequence (std::bitset<0> *optionalOrDefaultMask,
+                                        bool isExtensionMarkerPresent,
+                                        Buffer::Iterator bIterator);
   /**
    * Deserialize a sequence
    * \param optionalOrDefaultMask buffer to store the result
@@ -324,7 +349,9 @@ protected:
    * \param bIterator buffer iterator
    * \returns the modified buffer iterator
    */
-  Buffer::Iterator DeserializeSequence (std::bitset<1> *optionalOrDefaultMask, bool isExtensionMarkerPresent, Buffer::Iterator bIterator);
+  Buffer::Iterator DeserializeSequence (std::bitset<1> *optionalOrDefaultMask,
+                                        bool isExtensionMarkerPresent,
+                                        Buffer::Iterator bIterator);
   /**
    * Deserialize a sequence
    * \param optionalOrDefaultMask buffer to store the result
@@ -332,7 +359,9 @@ protected:
    * \param bIterator buffer iterator
    * \returns the modified buffer iterator
    */
-  Buffer::Iterator DeserializeSequence (std::bitset<2> *optionalOrDefaultMask, bool isExtensionMarkerPresent, Buffer::Iterator bIterator);
+  Buffer::Iterator DeserializeSequence (std::bitset<2> *optionalOrDefaultMask,
+                                        bool isExtensionMarkerPresent,
+                                        Buffer::Iterator bIterator);
   /**
    * Deserialize a sequence
    * \param optionalOrDefaultMask buffer to store the result
@@ -340,7 +369,9 @@ protected:
    * \param bIterator buffer iterator
    * \returns the modified buffer iterator
    */
-  Buffer::Iterator DeserializeSequence (std::bitset<3> *optionalOrDefaultMask, bool isExtensionMarkerPresent, Buffer::Iterator bIterator);
+  Buffer::Iterator DeserializeSequence (std::bitset<3> *optionalOrDefaultMask,
+                                        bool isExtensionMarkerPresent,
+                                        Buffer::Iterator bIterator);
   /**
    * Deserialize a sequence
    * \param optionalOrDefaultMask buffer to store the result
@@ -348,7 +379,9 @@ protected:
    * \param bIterator buffer iterator
    * \returns the modified buffer iterator
    */
-  Buffer::Iterator DeserializeSequence (std::bitset<4> *optionalOrDefaultMask, bool isExtensionMarkerPresent, Buffer::Iterator bIterator);
+  Buffer::Iterator DeserializeSequence (std::bitset<4> *optionalOrDefaultMask,
+                                        bool isExtensionMarkerPresent,
+                                        Buffer::Iterator bIterator);
   /**
    * Deserialize a sequence
    * \param optionalOrDefaultMask buffer to store the result
@@ -356,7 +389,9 @@ protected:
    * \param bIterator buffer iterator
    * \returns the modified buffer iterator
    */
-  Buffer::Iterator DeserializeSequence (std::bitset<5> *optionalOrDefaultMask, bool isExtensionMarkerPresent, Buffer::Iterator bIterator);
+  Buffer::Iterator DeserializeSequence (std::bitset<5> *optionalOrDefaultMask,
+                                        bool isExtensionMarkerPresent,
+                                        Buffer::Iterator bIterator);
   /**
    * Deserialize a sequence
    * \param optionalOrDefaultMask buffer to store the result
@@ -364,7 +399,9 @@ protected:
    * \param bIterator buffer iterator
    * \returns the modified buffer iterator
    */
-  Buffer::Iterator DeserializeSequence (std::bitset<6> *optionalOrDefaultMask, bool isExtensionMarkerPresent, Buffer::Iterator bIterator);
+  Buffer::Iterator DeserializeSequence (std::bitset<6> *optionalOrDefaultMask,
+                                        bool isExtensionMarkerPresent,
+                                        Buffer::Iterator bIterator);
   /**
    * Deserialize a sequence
    * \param optionalOrDefaultMask buffer to store the result
@@ -372,7 +409,9 @@ protected:
    * \param bIterator buffer iterator
    * \returns the modified buffer iterator
    */
-  Buffer::Iterator DeserializeSequence (std::bitset<9> *optionalOrDefaultMask, bool isExtensionMarkerPresent, Buffer::Iterator bIterator);
+  Buffer::Iterator DeserializeSequence (std::bitset<9> *optionalOrDefaultMask,
+                                        bool isExtensionMarkerPresent,
+                                        Buffer::Iterator bIterator);
   /**
    * Deserialize a sequence
    * \param optionalOrDefaultMask buffer to store the result
@@ -380,7 +419,9 @@ protected:
    * \param bIterator buffer iterator
    * \returns the modified buffer iterator
    */
-  Buffer::Iterator DeserializeSequence (std::bitset<10> *optionalOrDefaultMask, bool isExtensionMarkerPresent, Buffer::Iterator bIterator);
+  Buffer::Iterator DeserializeSequence (std::bitset<10> *optionalOrDefaultMask,
+                                        bool isExtensionMarkerPresent,
+                                        Buffer::Iterator bIterator);
   /**
    * Deserialize a sequence
    * \param optionalOrDefaultMask buffer to store the result
@@ -388,7 +429,9 @@ protected:
    * \param bIterator buffer iterator
    * \returns the modified buffer iterator
    */
-  Buffer::Iterator DeserializeSequence (std::bitset<11> *optionalOrDefaultMask, bool isExtensionMarkerPresent, Buffer::Iterator bIterator);
+  Buffer::Iterator DeserializeSequence (std::bitset<11> *optionalOrDefaultMask,
+                                        bool isExtensionMarkerPresent,
+                                        Buffer::Iterator bIterator);
 
   /**
    * Deserialize a bitstring
@@ -397,63 +440,72 @@ protected:
    * \returns the modified buffer iterator
    */
  template <int N>
-  Buffer::Iterator DeserializeBitstring (std::bitset<N> *bitstring, Buffer::Iterator bIterator);
+  Buffer::Iterator DeserializeBitstring (std::bitset<N> *bitstring,
+                                         Buffer::Iterator bIterator);
  /**
   * Deserialize a bitstring
   * \param bitstring buffer to store the result
   * \param bIterator buffer iterator
   * \returns the modified buffer iterator
   */
-  Buffer::Iterator DeserializeBitstring (std::bitset<1> *bitstring, Buffer::Iterator bIterator);
+  Buffer::Iterator DeserializeBitstring (std::bitset<1> *bitstring,
+                                         Buffer::Iterator bIterator);
   /**
    * Deserialize a bitstring
    * \param bitstring buffer to store the result
    * \param bIterator buffer iterator
    * \returns the modified buffer iterator
    */
-  Buffer::Iterator DeserializeBitstring (std::bitset<2> *bitstring, Buffer::Iterator bIterator);
+  Buffer::Iterator DeserializeBitstring (std::bitset<2> *bitstring,
+                                         Buffer::Iterator bIterator);
   /**
    * Deserialize a bitstring
    * \param bitstring buffer to store the result
    * \param bIterator buffer iterator
    * \returns the modified buffer iterator
    */
-  Buffer::Iterator DeserializeBitstring (std::bitset<8> *bitstring, Buffer::Iterator bIterator);
+  Buffer::Iterator DeserializeBitstring (std::bitset<8> *bitstring,
+                                         Buffer::Iterator bIterator);
   /**
    * Deserialize a bitstring
    * \param bitstring buffer to store the result
    * \param bIterator buffer iterator
    * \returns the modified buffer iterator
    */
-  Buffer::Iterator DeserializeBitstring (std::bitset<10> *bitstring, Buffer::Iterator bIterator);
+  Buffer::Iterator DeserializeBitstring (std::bitset<10> *bitstring,
+                                         Buffer::Iterator bIterator);
   /**
    * Deserialize a bitstring
    * \param bitstring buffer to store the result
    * \param bIterator buffer iterator
    * \returns the modified buffer iterator
    */
-  Buffer::Iterator DeserializeBitstring (std::bitset<16> *bitstring, Buffer::Iterator bIterator);
+  Buffer::Iterator DeserializeBitstring (std::bitset<16> *bitstring,
+                                         Buffer::Iterator bIterator);
   /**
    * Deserialize a bitstring
    * \param bitstring buffer to store the result
    * \param bIterator buffer iterator
    * \returns the modified buffer iterator
    */
-  Buffer::Iterator DeserializeBitstring (std::bitset<27> *bitstring, Buffer::Iterator bIterator);
+  Buffer::Iterator DeserializeBitstring (std::bitset<27> *bitstring,
+                                         Buffer::Iterator bIterator);
   /**
    * Deserialize a bitstring
    * \param bitstring buffer to store the result
    * \param bIterator buffer iterator
    * \returns the modified buffer iterator
    */
-  Buffer::Iterator DeserializeBitstring (std::bitset<28> *bitstring, Buffer::Iterator bIterator);
+  Buffer::Iterator DeserializeBitstring (std::bitset<28> *bitstring,
+                                         Buffer::Iterator bIterator);
   /**
    * Deserialize a bitstring
    * \param bitstring buffer to store the result
    * \param bIterator buffer iterator
    * \returns the modified buffer iterator
    */
-  Buffer::Iterator DeserializeBitstring (std::bitset<32> *bitstring, Buffer::Iterator bIterator);
+  Buffer::Iterator DeserializeBitstring (std::bitset<32> *bitstring,
+                                         Buffer::Iterator bIterator);
 
   /**
    * Deserialize nothing (null op)
@@ -469,7 +521,8 @@ protected:
    * \param bIterator buffer iterator
    * \returns the modified buffer iterator
    */
-  Buffer::Iterator DeserializeSequenceOf (int *numElems, int nMax, int nMin, Buffer::Iterator bIterator);
+  Buffer::Iterator DeserializeSequenceOf (int *numElems, int nMax, int nMin,
+                                          Buffer::Iterator bIterator);
 };
 
 } // namespace ns3

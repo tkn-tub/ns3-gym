@@ -183,9 +183,7 @@ public:
    * multicast group.
    *
    * \warning Calling this method is invalid if IsMulticast returns not true.
-   * \see Ipv4Address
-   * \see Address
-   * \see NetDevice::IsMulticast
+   * \see IsMulticast()
    */
   virtual Address GetMulticast (Ipv4Address multicastGroup) const = 0;
 
