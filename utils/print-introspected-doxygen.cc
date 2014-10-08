@@ -76,6 +76,7 @@ namespace
 void
 SetMarkup (bool outputText)
 {
+  NS_LOG_FUNCTION (outputText);
   if (outputText)
     {
       anchor                       = "";
@@ -146,6 +147,7 @@ SetMarkup (bool outputText)
 void
 PrintAttributesTid (std::ostream &os, const TypeId tid)
 {
+  NS_LOG_FUNCTION (tid);
   os << listStart << std::endl;
   for (uint32_t j = 0; j < tid.GetAttributeN (); j++)
     {
@@ -250,6 +252,7 @@ PrintAttributesTid (std::ostream &os, const TypeId tid)
 void
 PrintAttributes (std::ostream & os, const TypeId tid)
 {
+  NS_LOG_FUNCTION (tid);
   if (tid.GetAttributeN () == 0)
     {
       os << "No Attributes are defined for this type."
@@ -295,6 +298,7 @@ PrintAttributes (std::ostream & os, const TypeId tid)
 void
 PrintTraceSourcesTid (std::ostream & os, const TypeId tid)
 {
+  NS_LOG_FUNCTION (tid);
   os << listStart << std::endl;
   for (uint32_t i = 0; i < tid.GetTraceSourceN (); ++i)
     {
@@ -325,6 +329,7 @@ PrintTraceSourcesTid (std::ostream & os, const TypeId tid)
 void
 PrintTraceSources (std::ostream & os, const TypeId tid)
 {
+  NS_LOG_FUNCTION (tid);
   if (tid.GetTraceSourceN () == 0)
     {
       os << "No TraceSources are defined for this type."
@@ -356,6 +361,25 @@ PrintTraceSources (std::ostream & os, const TypeId tid)
 
 }  // PrintTraceSources ()
 
+/**
+ * Print the size of the type represented by this tid.
+ *
+ * \param [in,out] os The output stream.
+ * \param [in] tid The TypeId to print.
+ */
+void PrintSize (std::ostream & os, const TypeId tid)
+{
+  NS_LOG_FUNCTION (tid);
+  NS_ASSERT_MSG (CHAR_BIT != 0, "CHAR_BIT is zero");
+  
+  std::size_t arch = (sizeof (void *) * CHAR_BIT);
+  
+  os << boldStart << "Size" << boldStop
+     << " of this type is " << tid.GetSize ()
+     << " bytes (on a " << arch << "-bit architecture)."
+     << std::endl;
+}
+
 
 /**
  * Print the list of all Trace sources.
@@ -365,6 +389,7 @@ PrintTraceSources (std::ostream & os, const TypeId tid)
 void
 PrintAllTraceSources (std::ostream & os)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   os << commentStart << page << "TraceSourceList All TraceSources\n"
       << std::endl;
 
@@ -400,10 +425,11 @@ PrintAllTraceSources (std::ostream & os)
  * Print the list of all Attributes.
  *
  * \param [in,out] os The output stream.
-p */
+ */
 void
 PrintAllAttributes (std::ostream & os)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   os << commentStart << page << "AttributeList All Attributes\n"
      << std::endl;
 
@@ -443,6 +469,7 @@ PrintAllAttributes (std::ostream & os)
 void
 PrintAllGlobals (std::ostream & os)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   os << commentStart << page << "GlobalValueList All GlobalValues\n"
      << std::endl;
   
@@ -478,6 +505,7 @@ PrintAllGlobals (std::ostream & os)
 void
 PrintAllLogComponents (std::ostream & os)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   os << commentStart << page << "LogComponentList All LogComponents\n"
      << std::endl;
 
@@ -586,6 +614,7 @@ private:
 void 
 StaticInformation::RecordAggregationInfo (std::string a, std::string b)
 {
+  NS_LOG_FUNCTION (this << a << b);
   m_aggregates.push_back (std::make_pair (TypeId::LookupByName (a), TypeId::LookupByName (b)));
 }
 
@@ -593,6 +622,7 @@ StaticInformation::RecordAggregationInfo (std::string a, std::string b)
 void 
 StaticInformation::Print (void) const
 {
+  NS_LOG_FUNCTION (this);
   for (std::vector<std::pair<TypeId,std::string> >::const_iterator i = m_output.begin (); i != m_output.end (); ++i)
     {
       std::pair<TypeId,std::string> item = *i;
@@ -604,6 +634,7 @@ StaticInformation::Print (void) const
 std::string
 StaticInformation::GetCurrentPath (void) const
 {
+  NS_LOG_FUNCTION (this);
   std::ostringstream oss;
   for (std::vector<std::string>::const_iterator i = m_currentPath.begin (); i != m_currentPath.end (); ++i)
     {
@@ -617,6 +648,7 @@ StaticInformation::GetCurrentPath (void) const
 void
 StaticInformation::RecordOutput (TypeId tid)
 {
+  NS_LOG_FUNCTION (this << tid);
   m_output.push_back (std::make_pair (tid, GetCurrentPath ()));
 }
 
@@ -624,6 +656,7 @@ StaticInformation::RecordOutput (TypeId tid)
 bool
 StaticInformation::HasAlreadyBeenProcessed (TypeId tid) const
 {
+  NS_LOG_FUNCTION (this << tid);
   for (uint32_t i = 0; i < m_alreadyProcessed.size (); ++i)
     {
       if (m_alreadyProcessed[i] == tid)
@@ -638,6 +671,7 @@ StaticInformation::HasAlreadyBeenProcessed (TypeId tid) const
 std::vector<std::string> 
 StaticInformation::Get (TypeId tid) const
 {
+  NS_LOG_FUNCTION (this << tid);
   std::vector<std::string> paths;
   for (uint32_t i = 0; i < m_output.size (); ++i)
     {
@@ -654,6 +688,7 @@ StaticInformation::Get (TypeId tid) const
 void
 StaticInformation::Gather (TypeId tid)
 {
+  NS_LOG_FUNCTION (this << tid);
   DoGather (tid);
 
   std::sort (m_output.begin (), m_output.end ());
@@ -664,7 +699,7 @@ StaticInformation::Gather (TypeId tid)
 void 
 StaticInformation::DoGather (TypeId tid)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << tid);
   if (HasAlreadyBeenProcessed (tid))
     {
       return;
@@ -768,6 +803,7 @@ StaticInformation::DoGather (TypeId tid)
 void 
 StaticInformation::find_and_replace( std::string &source, const std::string find, std::string replace )
 {
+  NS_LOG_FUNCTION (this << source << find << replace);
   size_t j; 
   j = source.find (find);
   while (j != std::string::npos ) 
@@ -781,6 +817,7 @@ StaticInformation::find_and_replace( std::string &source, const std::string find
 StaticInformation
 GetTypicalAggregations ()
 {
+  NS_LOG_FUNCTION_NOARGS ();
   // The below statements register typical aggregation relationships
   // in ns-3 programs, that otherwise aren't picked up automatically
   // by the creation of the above node.  To manually list other common
@@ -827,6 +864,7 @@ typedef NameMap::const_iterator          NameMapIterator;
 NameMap
 GetNameMap (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   NameMap nameMap;
   
   for (uint32_t i = 0; i < TypeId::GetRegisteredN (); i++)
@@ -856,6 +894,7 @@ void
 PrintConfigPaths (std::ostream & os, const StaticInformation & info,
 		  const TypeId tid)
 {
+  NS_LOG_FUNCTION (tid);
   std::vector<std::string> paths = info.Get (tid);
 
   // Config --------------
@@ -893,6 +932,7 @@ PrintConfigPaths (std::ostream & os, const StaticInformation & info,
 
 int main (int argc, char *argv[])
 {
+  NS_LOG_FUNCTION_NOARGS ();
   bool outputText = false;
 
   CommandLine cmd;
@@ -944,6 +984,7 @@ int main (int argc, char *argv[])
       PrintConfigPaths (std::cout, info, tid);
       PrintAttributes (std::cout, tid);
       PrintTraceSources (std::cout, tid);
+      PrintSize (std::cout, tid);
       
       std::cout << commentStop << std::endl;
     }  // class documentation

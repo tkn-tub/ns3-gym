@@ -169,6 +169,11 @@ public:
   hash_t GetHash (void) const;
 
   /**
+   * \returns the size of this interface.
+   */
+  std::size_t GetSize (void) const;
+
+  /**
    * \returns true if this TypeId has a constructor
    */
   bool HasConstructor (void) const;
@@ -240,6 +245,19 @@ public:
    */
   TypeId SetGroupName (std::string groupName);
 
+  /**
+   * Set the size of this type, based on the \p sizeof operator.
+   *
+   * Call this way:
+   * \code
+   *   SetSize (sizeof (<typename>));
+   * \endcode
+   *
+   * \param size The size of the object, in bytes.
+   * \returns this TypeId instance.
+   */
+  TypeId SetSize (std::size_t size);
+  
   /**
    * \returns this TypeId instance
    *

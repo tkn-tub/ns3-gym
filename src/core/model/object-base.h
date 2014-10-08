@@ -35,14 +35,15 @@
  * If the class is in a namespace, then the macro call should also be
  * in the namespace.
  */
-#define NS_OBJECT_ENSURE_REGISTERED(type)       \
-  static struct X ## type ## RegistrationClass      \
-  {                                             \
-    X ## type ## RegistrationClass () {             \
-      ns3::TypeId tid = type::GetTypeId ();     \
-      tid.GetParent ();                         \
-    }                                           \
-  } x_ ## type ## RegistrationVariable
+#define NS_OBJECT_ENSURE_REGISTERED(type)               \
+  static struct Object ## type ## RegistrationClass     \
+  {                                                     \
+    Object ## type ## RegistrationClass () {            \
+      ns3::TypeId tid = type::GetTypeId ();             \
+      tid.SetSize (sizeof (type));                      \
+      tid.GetParent ();                                 \
+    }                                                   \
+  } Object ## type ## RegistrationVariable
 
 namespace ns3 {
 

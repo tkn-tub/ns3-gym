@@ -74,6 +74,7 @@ public:
   uint16_t AllocateUid (std::string name);
   void SetParent (uint16_t uid, uint16_t parent);
   void SetGroupName (uint16_t uid, std::string groupName);
+  void SetSize (uint16_t uid, std::size_t size);
   void AddConstructor (uint16_t uid, Callback<ObjectBase *> callback);
   void HideFromDocumentation (uint16_t uid);
   uint16_t GetUid (std::string name) const;
@@ -82,6 +83,7 @@ public:
   TypeId::hash_t GetHash (uint16_t uid) const;
   uint16_t GetParent (uint16_t uid) const;
   std::string GetGroupName (uint16_t uid) const;
+  std::size_t GetSize (uint16_t uid) const;
   Callback<ObjectBase *> GetConstructor (uint16_t uid) const;
   bool HasConstructor (uint16_t uid) const;
   uint32_t GetRegisteredN (void) const;
@@ -117,6 +119,7 @@ private:
     TypeId::hash_t hash;
     uint16_t parent;
     std::string groupName;
+    std::size_t size;
     bool hasConstructor;
     Callback<ObjectBase *> constructor;
     bool mustHideFromDocumentation;
@@ -248,6 +251,13 @@ IidManager::SetGroupName (uint16_t uid, std::string groupName)
   information->groupName = groupName;
 }
 void
+IidManager::SetSize (uint16_t uid, std::size_t size)
+{
+  NS_LOG_FUNCTION (this << uid << size);
+  struct IidInformation *information = LookupInformation (uid);
+  information->size = size;
+}
+void
 IidManager::HideFromDocumentation (uint16_t uid)
 {
   NS_LOG_FUNCTION (this << uid);
@@ -322,6 +332,13 @@ IidManager::GetGroupName (uint16_t uid) const
   NS_LOG_FUNCTION (this << uid);
   struct IidInformation *information = LookupInformation (uid);
   return information->groupName;
+}
+std::size_t
+IidManager::GetSize (uint16_t uid) const
+{
+  NS_LOG_FUNCTION (this << uid);
+  struct IidInformation *information = LookupInformation (uid);
+  return information->size;
 }
 
 Callback<ObjectBase *> 
@@ -623,6 +640,13 @@ TypeId::SetGroupName (std::string groupName)
   Singleton<IidManager>::Get ()->SetGroupName (m_tid, groupName);
   return *this;
 }
+TypeId
+TypeId::SetSize (std::size_t size)
+{
+  NS_LOG_FUNCTION (this << size);
+  Singleton<IidManager>::Get ()->SetSize (m_tid, size);
+  return *this;
+}
 TypeId 
 TypeId::GetParent (void) const
 {
@@ -669,6 +693,13 @@ TypeId::GetHash (void) const
 {
   hash_t hash = Singleton<IidManager>::Get ()->GetHash (m_tid);
   return hash;
+}
+std::size_t
+TypeId::GetSize (void) const
+{
+  NS_LOG_FUNCTION (this);
+  std::size_t size = Singleton<IidManager>::Get ()->GetSize (m_tid);
+  return size;
 }
 
 bool 
