@@ -215,6 +215,7 @@ IidManager::AllocateUid (std::string name)
   information.hash = hash;
   information.parent = 0;
   information.groupName = "";
+  information.size = (std::size_t)(-1);
   information.hasConstructor = false;
   information.mustHideFromDocumentation = false;
   m_information.push_back (information);

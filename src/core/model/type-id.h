@@ -252,6 +252,9 @@ public:
    * \code
    *   SetSize (sizeof (<typename>));
    * \endcode
+   * This is done automatically by NS_LOG_ENSURE_REGISTERED()
+   * A ridiculously large reported size is a symptom that the
+   * type hasn't been registered.
    *
    * \param size The size of the object, in bytes.
    * \returns this TypeId instance.
