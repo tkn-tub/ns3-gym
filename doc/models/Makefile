@@ -388,11 +388,21 @@ IMAGES = $(IMAGES_EPS) $(IMAGES_PNG) $(IMAGES_PDF)
 
 RESCALE = ../../utils/rescale-pdf.sh
 
-%.eps : %.dia; $(DIA) -t eps $< -e $@
-%.png : %.dia; $(DIA) -t png $< -e $@
-%.png : %.eps; $(CONVERT) $< $@
+%.eps : %.dia
+	@echo dia $(notdir $<)
+	@$(DIA) -t eps $< -e $@ >/dev/null
+
+%.png : %.dia
+	@echo dia $(notdir $<)
+	@$(DIA) -t png $< -e $@ >/dev/null
+
+%.png : %.eps
+	@echo convert $(notdir $<)
+	@$(CONVERT) $< $@ >/dev/null
+
 %.pdf : %.eps
-	$(EPSTOPDF) $< -o=$@
+	@echo epstopdf $(notdir $<)
+	@$(EPSTOPDF) $< -o=$@ >/dev/null
 	@if test x$($@_width) != x; then $(RESCALE) $($@_width) $@ ; fi
 
 # You can set these variables from the command line.
