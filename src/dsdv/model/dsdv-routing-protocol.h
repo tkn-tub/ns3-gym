@@ -64,8 +64,7 @@ public:
   virtual void
   DoDispose ();
 
-  ///\name From Ipv4RoutingProtocol
-  // \{
+  // From Ipv4RoutingProtocol
   Ptr<Ipv4Route> RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDevice> oif, Socket::SocketErrno &sockerr);
   bool RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<const NetDevice> idev, UnicastForwardCallback ucb,
                    MulticastForwardCallback mcb, LocalDeliverCallback lcb, ErrorCallback ecb);
@@ -75,16 +74,14 @@ public:
   virtual void NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address);
   virtual void NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address);
   virtual void SetIpv4 (Ptr<Ipv4> ipv4);
-  // \}
-  ///\name Methods to handle protocol parameters
-  // \{
+
+  // Methods to handle protocol parameters
   void SetEnableBufferFlag (bool f);
   bool GetEnableBufferFlag () const;
   void SetWSTFlag (bool f);
   bool GetWSTFlag () const;
   void SetEnableRAFlag (bool f);
   bool GetEnableRAFlag () const;
-  // \}
 
  /**
   * Assign a fixed random variable stream number to the random variables
@@ -97,8 +94,8 @@ public:
   int64_t AssignStreams (int64_t stream);
 
 private:
-  ///\name Protocol parameters.
-  // \{
+  
+  // Protocol parameters.
   /// Holdtimes is the multiplicative factor of PeriodicUpdateInterval for which the node waits since the last update
   /// before flushing a route from the routing table. If PeriodicUpdateInterval is 8s and Holdtimes is 3, the node
   /// waits for 24s since the last update to flush this route from its routing table.
@@ -144,9 +141,9 @@ private:
   UnicastForwardCallback m_scb;
   /// Error callback for own packets
   ErrorCallback m_ecb;
-  // \}
 
 private:
+  
   /// Start protocol operation
   void
   Start ();
@@ -166,12 +163,12 @@ private:
   /// Find socket with local interface address iface
   Ptr<Socket>
   FindSocketWithInterfaceAddress (Ipv4InterfaceAddress iface) const;
-  ///\name Receive dsdv control packets
-  // \{
+  
+  // Receive dsdv control packets
   /// Receive and process dsdv control packet
   void
   RecvDsdv (Ptr<Socket> socket);
-  // \}
+
   void
   Send (Ptr<Ipv4Route>, Ptr<const Packet>, const Ipv4Header &);
   /// Create loopback route for given header

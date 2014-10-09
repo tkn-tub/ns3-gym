@@ -42,16 +42,14 @@ public:
   bool IsBroadcast (void) const;
   //uint32_t GetLength (void) const;
   char *PeekString (void) const;
-  /**
-   * \name Inherited from WifiInformationElement
-   * \{
-   */
+
+  // Inherited from WifiInformationElement
   virtual WifiInformationElementId ElementId () const;
   virtual void SerializeInformationField (Buffer::Iterator i) const;
   virtual uint8_t DeserializeInformationField (Buffer::Iterator start, uint8_t length);
   virtual void Print (std::ostream& os) const;
   virtual uint8_t GetInformationFieldSize () const;
-  ///\}
+
 private:
   uint8_t m_meshId[33];
   friend bool operator== (const IeMeshId & a, const IeMeshId & b);

@@ -214,12 +214,12 @@ private:
   ChannelPolicy m_spreadChannelPolicy;
   Ptr<MeshStack> m_stack;
   ObjectFactory m_stackFactory;
-  ///\name Interface factory
-  ///\{
+
+  // Interface factory
   ObjectFactory m_mac;
   ObjectFactory m_stationManager;
   enum WifiPhyStandard m_standard;
-  ///\}
+
 };
 } // namespace ns3
 

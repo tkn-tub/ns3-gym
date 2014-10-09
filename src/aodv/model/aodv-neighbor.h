@@ -85,11 +85,11 @@ public:
   /// Get callback to ProcessTxError
   Callback<void, WifiMacHeader const &> GetTxErrorCallback () const { return m_txErrorCallback; }
  
-  ///\name Handle link failure callback
-  //\{
+  /// Handle link failure callback
   void SetCallback (Callback<void, Ipv4Address> cb) { m_handleLinkFailure = cb; }
+  /// Handle link failure callback
   Callback<void, Ipv4Address> GetCallback () const { return m_handleLinkFailure; }
-  //\}
+
 private:
   /// link failure callback
   Callback<void, Ipv4Address> m_handleLinkFailure;

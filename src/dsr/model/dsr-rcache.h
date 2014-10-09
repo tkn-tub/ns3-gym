@@ -182,8 +182,8 @@ public:
 
   /// Mark entry as "down" (i.e. disable it)
   void Invalidate (Time badLinkLifetime);
-  ///\name Fields
-  // \{
+
+  // Fields
   void SetUnidirectional (bool u)
   {
     m_blackListState = u;
@@ -224,7 +224,7 @@ public:
   {
     return m_expire - Simulator::Now ();
   }
-  // \}
+
   /**
    * \brief Print necessary fields
    */
@@ -299,8 +299,8 @@ public:
    * \brief Define the vector of route entries.
    */
   typedef std::list<RouteCacheEntry::IP_VECTOR> routeVector;
-  ///\name Fields
-  // \{
+
+  // Fields
   bool GetSubRoute () const
   {
     return m_subRoute;
@@ -381,7 +381,7 @@ public:
   {
     m_useExtends = useExtends;
   }
-  // \}
+
   /**
    * \brief Update route cache entry if it has been recently used and successfully delivered the data packet
    * \param dst destination address of the route
@@ -520,17 +520,17 @@ public:
   {
     return m_txErrorCallback;
   }
-  ///\name Handle link failure callback
-  // \{
+  
+  /// Handle link failure callback
   void SetCallback (Callback<void, Ipv4Address, uint8_t > cb)
   {
     m_handleLinkFailure = cb;
   }
+  /// Handle link failure callback
   Callback<void, Ipv4Address, uint8_t > GetCallback () const
   {
     return m_handleLinkFailure;
   }
-  // \}
 
 private:
   RouteCache & operator= (RouteCache const &);

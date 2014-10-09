@@ -85,8 +85,8 @@ public:
    * \brief In proactive case: need we send PREP
    */
   void SetNeedNotPrep ();
-  ///\name Setters for fields:
-  ///\{
+
+  // Setters for fields:
   void SetHopcount (uint8_t hopcount);
   void SetTTL (uint8_t ttl);
   void SetPreqID (uint32_t id);
@@ -95,9 +95,8 @@ public:
   void SetLifetime (uint32_t lifetime);
   void SetMetric (uint32_t metric);
   void SetDestCount (uint8_t dest_count);
-  ///\}
-  ///\name Getters for fields:
-  ///\{
+
+  // Getters for fields:
   bool  IsUnicastPreq () const;
   bool  IsNeedNotPrep () const;
   uint8_t  GetHopCount () const;
@@ -108,7 +107,7 @@ public:
   uint32_t GetLifetime () const;
   uint32_t GetMetric () const;
   uint8_t  GetDestCount () const;
-  ///\}
+
   /// Handle TTL and Metric:
   void  DecrementTtl ();
   void  IncrementMetric (uint32_t metric);
@@ -118,24 +117,21 @@ public:
    */
   bool MayAddAddress (Mac48Address originator);
   bool IsFull () const;
-  /**
-   * \name Inherited from WifiInformationElement
-   * \{
-   */
+  
+  // Inherited from WifiInformationElement
   virtual WifiInformationElementId ElementId () const;
   virtual void SerializeInformationField (Buffer::Iterator i) const;
   virtual uint8_t DeserializeInformationField (Buffer::Iterator i, uint8_t length);
   virtual uint8_t GetInformationFieldSize () const;
   virtual void Print (std::ostream& os) const;
-  ///\}
+
 private:
   /**
    * how many destinations we support
+   * \todo make as an attribute
    */
-  uint8_t m_maxSize; /// \todo make as an attribute
-  /**
-   * Fields of information element:
-   */
+  uint8_t m_maxSize; 
+
   uint8_t m_flags;
   uint8_t m_hopCount;
   uint8_t m_ttl;

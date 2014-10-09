@@ -80,8 +80,8 @@ public:
   {
     return ((m_packet == o.m_packet) && (m_source == o.m_source) && (m_nextHop == o.m_nextHop) && (m_dst == o.m_dst) && (m_expire == o.m_expire));
   }
-  ///\name Fields
-  // \{
+
+  // Fields
   Ptr<const Packet> GetPacket () const
   {
     return m_packet;
@@ -154,7 +154,7 @@ public:
   {
     return m_protocol;
   }
-  // \}
+
 private:
   /// Data packet
   Ptr<const Packet> m_packet;
@@ -198,8 +198,8 @@ public:
   bool AllEqual (PassiveBuffEntry & entry);
   /// Number of entries
   uint32_t GetSize ();
-  ///\name Fields
-  // \{
+
+  // Fields
   uint32_t GetMaxQueueLen () const
   {
     return m_maxLen;
@@ -216,7 +216,6 @@ public:
   {
     m_passiveBufferTimeout = t;
   }
-  // \}
 
 private:
   /// The send buffer to cache unsent packet

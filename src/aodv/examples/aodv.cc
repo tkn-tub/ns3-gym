@@ -54,8 +54,8 @@ public:
   void Report (std::ostream & os);
 
 private:
-  ///\name parameters
-  //\{
+
+  // parameters
   /// Number of nodes
   uint32_t size;
   /// Distance between nodes, meters
@@ -66,14 +66,11 @@ private:
   bool pcap;
   /// Print routes if true
   bool printRoutes;
-  //\}
 
-  ///\name network
-  //\{
+  // network
   NodeContainer nodes;
   NetDeviceContainer devices;
   Ipv4InterfaceContainer interfaces;
-  //\}
 
 private:
   void CreateNodes ();

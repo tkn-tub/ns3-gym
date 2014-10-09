@@ -183,8 +183,7 @@ public:
    */
   static TypeId GetTypeId (void);
 
-  // \name From Ipv6RoutingProtocol
-  // \{
+  // From Ipv6RoutingProtocol
   Ptr<Ipv6Route> RouteOutput (Ptr<Packet> p, const Ipv6Header &header, Ptr<NetDevice> oif,
                               Socket::SocketErrno &sockerr);
   bool RouteInput (Ptr<const Packet> p, const Ipv6Header &header, Ptr<const NetDevice> idev,
@@ -200,7 +199,6 @@ public:
                                   uint32_t interface, Ipv6Address prefixToUse = Ipv6Address::GetZero ());
   virtual void SetIpv6 (Ptr<Ipv6> ipv6);
   virtual void PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const;
-  // \}
 
   /**
    * Split Horizon strategy type. See \RFC{2080}.

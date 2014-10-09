@@ -31,16 +31,14 @@ class IePeeringProtocol : public WifiInformationElement
 {
 public:
   IePeeringProtocol ();
-  /**
-   * \name Inherited from WifiInformationElement
-   * \{
-   */
+
+  // Inherited from WifiInformationElement
   virtual WifiInformationElementId ElementId () const;
   virtual uint8_t GetInformationFieldSize () const;
   virtual void SerializeInformationField (Buffer::Iterator i) const;
   virtual uint8_t DeserializeInformationField (Buffer::Iterator i, uint8_t length);
   virtual void Print (std::ostream& os) const;
-  ///\}
+
 private:
   uint8_t m_protocol;
 };

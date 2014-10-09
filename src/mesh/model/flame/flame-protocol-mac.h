@@ -36,8 +36,8 @@ class FlameProtocolMac : public MeshWifiInterfaceMacPlugin
 public:
   FlameProtocolMac (Ptr<FlameProtocol>);
   ~FlameProtocolMac ();
-  ///\name Inherited from MAC plugin
-  //\{
+  
+  // Inherited from MAC plugin
   void SetParent (Ptr<MeshWifiInterfaceMac> parent);
   bool Receive (Ptr<Packet> packet, const WifiMacHeader & header);
   bool UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from, Mac48Address to);
@@ -45,19 +45,17 @@ public:
   void UpdateBeacon (MeshWifiBeacon & beacon) const {};
   /// AssignStreams is empty, because this model doesn't use random variables
   int64_t AssignStreams (int64_t stream) { return 0; }
-  //\}
+
   uint16_t GetChannelId () const;
   /// Report statistics
   void Report (std::ostream &) const;
   void ResetStats ();
+
 private:
-  /**
-   * \name MeshPointDevice parameters:
-   * \{
-   */
+  
+  // MeshPointDevice parameters:
   Ptr<FlameProtocol> m_protocol;
   Ptr<MeshWifiInterfaceMac> m_parent;
-  ///\}
   ///\name Statistics:
   ///\{
   struct Statistics
