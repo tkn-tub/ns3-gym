@@ -519,7 +519,7 @@ usage for |ns3|.
     */
     class Foo
 
-* Did you know ``typedef``s can have formal arguments?  This enables
+* Did you know ``typedefs`` can have formal arguments?  This enables
   documentation of function pointer signatures::
 
     /**
