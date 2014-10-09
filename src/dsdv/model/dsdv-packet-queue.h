@@ -67,8 +67,8 @@ public:
   {
     return ((m_packet == o.m_packet) && (m_header.GetDestination () == o.m_header.GetDestination ()) && (m_expire == o.m_expire));
   }
-  ///\name Fields
-  // \{
+  
+  // Fields
   UnicastForwardCallback GetUnicastForwardCallback () const
   {
     return m_ucb;
@@ -109,7 +109,7 @@ public:
   {
     return m_expire - Simulator::Now ();
   }
-  // \}
+
 private:
   /// Data packet
   Ptr<const Packet> m_packet;
@@ -150,8 +150,8 @@ public:
   GetCountForPacketsWithDst (Ipv4Address dst);
   /// Number of entries
   uint32_t GetSize ();
-  ///\name Fields
-  // \{
+  
+  // Fields
   uint32_t GetMaxQueueLen () const
   {
     return m_maxLen;
@@ -176,7 +176,6 @@ public:
   {
     m_queueTimeout = t;
   }
-  // \}
 
 private:
   std::vector<QueueEntry> m_queue;

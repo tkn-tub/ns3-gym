@@ -62,15 +62,14 @@ public:
   FlameTag (Mac48Address a = Mac48Address ()) :
     receiver (a){}
 
-  ///\name Inherited from Tag
-  //\{
+  // Inherited from Tag
   static  TypeId  GetTypeId ();
   TypeId  GetInstanceTypeId () const;
   uint32_t GetSerializedSize () const;
   void  Serialize (TagBuffer i) const;
   void  Deserialize (TagBuffer i);
   void  Print (std::ostream &os) const;
-  //\}
+
 };
 
 /**

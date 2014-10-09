@@ -65,8 +65,7 @@ public:
     m_max = 0;
   }
 
-  ///\name Sample statistics
-  //\{
+  // Sample statistics
   /// Sample size
   uint32_t Count   () const { return m_size; }
   /// Minimum
@@ -81,24 +80,40 @@ public:
   double   Var     () const { return m_varianceCalculator.getVariance ();}
   /// Standard deviation
   double   Stddev  () const { return std::sqrt (Var ()); }
-  //\}
 
-  /** 
+  /**
    * \name Error of the mean estimates
+   *
+   * @{
+   */
+  /**
+   * \brief Margin of error of the mean for 90% confidence level
    *
    * Note that estimates are valid for 
    *   - uncorrelated measurements, 
    *   - normal distribution and
    *   - large enough sample size.
    */
-  //\{
-  /// Margin of error of the mean for 90% confidence level 
   double   Error90 () const { return 1.645 * std::sqrt (Var () / Count ()); }
-  /// Margin of error of the mean for 95% confidence level 
+  /**
+   * \brief Margin of error of the mean for 95% confidence level 
+   *
+   * Note that estimates are valid for 
+   *   - uncorrelated measurements, 
+   *   - normal distribution and
+   *   - large enough sample size.
+   */
   double   Error95 () const { return 1.960 * std::sqrt (Var () / Count ()); }
-  /// Margin of error of the mean for 99% confidence level 
+  /**
+  * \brief Margin of error of the mean for 99% confidence level 
+   *
+   * Note that estimates are valid for 
+   *   - uncorrelated measurements, 
+   *   - normal distribution and
+   *   - large enough sample size.
+   */
   double   Error99 () const { return 2.576 * std::sqrt (Var () / Count ()); }
-  //\}
+  /**@}*/
 
 private:
   uint32_t m_size; //!< Number of sampled data.

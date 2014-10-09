@@ -61,8 +61,7 @@ public:
   virtual ~RoutingProtocol();
   virtual void DoDispose ();
 
-  ///\name From Ipv4RoutingProtocol
-  //\{
+  // Inherited from Ipv4RoutingProtocol
   Ptr<Ipv4Route> RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDevice> oif, Socket::SocketErrno &sockerr);
   bool RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<const NetDevice> idev,
                    UnicastForwardCallback ucb, MulticastForwardCallback mcb,
@@ -73,10 +72,8 @@ public:
   virtual void NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address);
   virtual void SetIpv4 (Ptr<Ipv4> ipv4);
   virtual void PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const;
-  //\}
 
-  ///\name Handle protocol parameters
-  //\{
+  // Handle protocol parameters
   Time GetMaxQueueTime () const { return MaxQueueTime; }
   void SetMaxQueueTime (Time t);
   uint32_t GetMaxQueueLen () const { return MaxQueueLen; }
@@ -89,7 +86,6 @@ public:
   bool GetHelloEnable () const { return EnableHello; }
   void SetBroadcastEnable (bool f) { EnableBroadcast = f; }
   bool GetBroadcastEnable () const { return EnableBroadcast; }
-  //\}
 
  /**
   * Assign a fixed random variable stream number to the random variables
@@ -102,8 +98,8 @@ public:
   int64_t AssignStreams (int64_t stream);
 
 private:
-  ///\name Protocol parameters.
-  //\{
+  
+  // Protocol parameters.
   uint32_t RreqRetries;             ///< Maximum number of retransmissions of RREQ with TTL = NetDiameter to discover a route
   uint16_t RreqRateLimit;           ///< Maximum number of RREQ per second.
   uint16_t RerrRateLimit;           ///< Maximum number of REER per second.
@@ -245,7 +241,7 @@ private:
    * \param origin - originating node IP address
    */
   void SendRerrWhenNoRouteToForward (Ipv4Address dst, uint32_t dstSeqNo, Ipv4Address origin);
-  //\}
+  /// @}
 
   void SendTo (Ptr<Socket> socket, Ptr<Packet> packet, Ipv4Address destination);
 
