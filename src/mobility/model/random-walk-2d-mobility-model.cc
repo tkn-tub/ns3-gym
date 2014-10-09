@@ -62,7 +62,7 @@ RandomWalk2dMobilityModel::GetTypeId (void)
                    MakeEnumChecker (RandomWalk2dMobilityModel::MODE_DISTANCE, "Distance",
                                     RandomWalk2dMobilityModel::MODE_TIME, "Time"))
     .AddAttribute ("Direction",
-                   "A random variable used to pick the direction (gradients).",
+                   "A random variable used to pick the direction (radiants).",
                    StringValue ("ns3::UniformRandomVariable[Min=0.0|Max=6.283184]"),
                    MakePointerAccessor (&RandomWalk2dMobilityModel::m_direction),
                    MakePointerChecker<RandomVariableStream> ())
