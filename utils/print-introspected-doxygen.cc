@@ -21,6 +21,7 @@
 #include <iostream>
 #include <algorithm>
 #include <map>
+#include <climits>    // CHAR_BIT
 
 #include "ns3/command-line.h"
 #include "ns3/config.h"
