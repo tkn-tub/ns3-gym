@@ -23,6 +23,8 @@ New user-visible features
 -------------------------
 - It is now possible to print the Neighbor Cache (ARP and NDISC) by using
   the RoutingProtocolHelper
+- The PrintRoutingTable... and PrintNeighborCache... are now static funtions
+  i.e., it's not anymore needed to instantiate an helper just to use them.
 
 Bugs fixed
 ----------

@@ -74,7 +74,7 @@ public:
    * Ipv6RoutingProtocol stored in the Ipv6 object, for all nodes at the
    * specified time; the output format is routing protocol-specific.
    */
-  void PrintRoutingTableAllAt (Time printTime, Ptr<OutputStreamWrapper> stream) const;
+  static void PrintRoutingTableAllAt (Time printTime, Ptr<OutputStreamWrapper> stream);;
 
   /**
    * \brief prints the routing tables of all nodes at regular intervals specified by user.
@@ -85,7 +85,7 @@ public:
    * Ipv6RoutingProtocol stored in the Ipv6 object, for all nodes at the
    * specified time interval; the output format is routing protocol-specific.
    */
-  void PrintRoutingTableAllEvery (Time printInterval, Ptr<OutputStreamWrapper> stream) const;
+  static void PrintRoutingTableAllEvery (Time printInterval, Ptr<OutputStreamWrapper> stream);
 
   /**
    * \brief prints the routing tables of a node at a particular time.
@@ -97,7 +97,7 @@ public:
    * Ipv6RoutingProtocol stored in the Ipv6 object, for the selected node
    * at the specified time; the output format is routing protocol-specific.
    */
-  void PrintRoutingTableAt (Time printTime, Ptr<Node> node, Ptr<OutputStreamWrapper> stream) const;
+  static void PrintRoutingTableAt (Time printTime, Ptr<Node> node, Ptr<OutputStreamWrapper> stream);
 
   /**
    * \brief prints the routing tables of a node at regular intervals specified by user.
@@ -109,7 +109,7 @@ public:
    * Ipv6RoutingProtocol stored in the Ipv6 object, for the selected node
    * at the specified interval; the output format is routing protocol-specific.
    */
-  void PrintRoutingTableEvery (Time printInterval, Ptr<Node> node, Ptr<OutputStreamWrapper> stream) const;
+  static void PrintRoutingTableEvery (Time printInterval, Ptr<Node> node, Ptr<OutputStreamWrapper> stream);
 
   /**
    * \brief prints the neighbor cache of all nodes at a particular time.
@@ -124,7 +124,7 @@ public:
      \endverbatim
    * Note that the MAC address is printed as "type"-"size"-"actual address"
    */
-  void PrintNeighborCacheAllAt (Time printTime, Ptr<OutputStreamWrapper> stream) const;
+  static void PrintNeighborCacheAllAt (Time printTime, Ptr<OutputStreamWrapper> stream);
 
   /**
    * \brief prints the neighbor cache of all nodes at regular intervals specified by user.
@@ -139,7 +139,7 @@ public:
      \endverbatim
    * Note that the MAC address is printed as "type"-"size"-"actual address"
    */
-  void PrintNeighborCacheAllEvery (Time printInterval, Ptr<OutputStreamWrapper> stream) const;
+  static void PrintNeighborCacheAllEvery (Time printInterval, Ptr<OutputStreamWrapper> stream);
 
   /**
    * \brief prints the neighbor cache of a node at a particular time.
@@ -155,7 +155,7 @@ public:
      \endverbatim
    * Note that the MAC address is printed as "type"-"size"-"actual address"
    */
-  void PrintNeighborCacheAt (Time printTime, Ptr<Node> node, Ptr<OutputStreamWrapper> stream) const;
+  static void PrintNeighborCacheAt (Time printTime, Ptr<Node> node, Ptr<OutputStreamWrapper> stream);
 
   /**
    * \brief prints the neighbor cache of a node at regular intervals specified by user.
@@ -171,7 +171,7 @@ public:
      \endverbatim
    * Note that the MAC address is printed as "type"-"size"-"actual address"
    */
-   void PrintNeighborCacheEvery (Time printInterval, Ptr<Node> node, Ptr<OutputStreamWrapper> stream) const;
+  static void PrintNeighborCacheEvery (Time printInterval, Ptr<Node> node, Ptr<OutputStreamWrapper> stream);
 
   /**
    * \brief Request a specified routing protocol &lt;T&gt; from Ipv6RoutingProtocol protocol
@@ -197,7 +197,7 @@ private:
    * Ipv6RoutingProtocol stored in the Ipv6 object;
    * the output format is routing protocol-specific.
    */
-  void Print (Ptr<Node> node, Ptr<OutputStreamWrapper> stream) const;
+  static void Print (Ptr<Node> node, Ptr<OutputStreamWrapper> stream);
 
   /**
    * \internal
@@ -211,7 +211,7 @@ private:
    * Ipv6RoutingProtocol stored in the Ipv6 object, for the selected node
    * at the specified interval; the output format is routing protocol-specific.
    */
-  void PrintEvery (Time printInterval, Ptr<Node> node, Ptr<OutputStreamWrapper> stream) const;
+  static void PrintEvery (Time printInterval, Ptr<Node> node, Ptr<OutputStreamWrapper> stream);
 
   /**
    * \internal
@@ -228,7 +228,7 @@ private:
      \endverbatim
    * Note that the MAC address is printed as "type"-"size"-"actual address"
    */
-  void PrintNdiscCache (Ptr<Node> node, Ptr<OutputStreamWrapper> stream) const;
+  static void PrintNdiscCache (Ptr<Node> node, Ptr<OutputStreamWrapper> stream);
 
   /**
    * \internal
@@ -246,7 +246,7 @@ private:
      \endverbatim
    * Note that the MAC address is printed as "type"-"size"-"actual address"
    */
-  void PrintNdiscCacheEvery (Time printInterval, Ptr<Node> node, Ptr<OutputStreamWrapper> stream) const;
+  static void PrintNdiscCacheEvery (Time printInterval, Ptr<Node> node, Ptr<OutputStreamWrapper> stream);
 };
 
 /**

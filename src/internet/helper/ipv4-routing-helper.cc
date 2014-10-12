@@ -36,39 +36,39 @@ Ipv4RoutingHelper::~Ipv4RoutingHelper ()
 }
 
 void
-Ipv4RoutingHelper::PrintRoutingTableAllAt (Time printTime, Ptr<OutputStreamWrapper> stream) const
+Ipv4RoutingHelper::PrintRoutingTableAllAt (Time printTime, Ptr<OutputStreamWrapper> stream)
 {
   for (uint32_t i = 0; i < NodeList::GetNNodes (); i++)
     {
       Ptr<Node> node = NodeList::GetNode (i);
-      Simulator::Schedule (printTime, &Ipv4RoutingHelper::Print, this, node, stream);
+      Simulator::Schedule (printTime, &Ipv4RoutingHelper::Print, node, stream);
     }
 }
 
 void
-Ipv4RoutingHelper::PrintRoutingTableAllEvery (Time printInterval, Ptr<OutputStreamWrapper> stream) const
+Ipv4RoutingHelper::PrintRoutingTableAllEvery (Time printInterval, Ptr<OutputStreamWrapper> stream)
 {
   for (uint32_t i = 0; i < NodeList::GetNNodes (); i++)
     {
       Ptr<Node> node = NodeList::GetNode (i);
-      Simulator::Schedule (printInterval, &Ipv4RoutingHelper::PrintEvery, this, printInterval, node, stream);
+      Simulator::Schedule (printInterval, &Ipv4RoutingHelper::PrintEvery, printInterval, node, stream);
     }
 }
 
 void
-Ipv4RoutingHelper::PrintRoutingTableAt (Time printTime, Ptr<Node> node, Ptr<OutputStreamWrapper> stream) const
+Ipv4RoutingHelper::PrintRoutingTableAt (Time printTime, Ptr<Node> node, Ptr<OutputStreamWrapper> stream)
 {
-  Simulator::Schedule (printTime, &Ipv4RoutingHelper::Print, this, node, stream);
+  Simulator::Schedule (printTime, &Ipv4RoutingHelper::Print, node, stream);
 }
 
 void
-Ipv4RoutingHelper::PrintRoutingTableEvery (Time printInterval,Ptr<Node> node, Ptr<OutputStreamWrapper> stream) const
+Ipv4RoutingHelper::PrintRoutingTableEvery (Time printInterval,Ptr<Node> node, Ptr<OutputStreamWrapper> stream)
 {
-  Simulator::Schedule (printInterval, &Ipv4RoutingHelper::PrintEvery, this, printInterval, node, stream);
+  Simulator::Schedule (printInterval, &Ipv4RoutingHelper::PrintEvery, printInterval, node, stream);
 }
 
 void
-Ipv4RoutingHelper::Print (Ptr<Node> node, Ptr<OutputStreamWrapper> stream) const
+Ipv4RoutingHelper::Print (Ptr<Node> node, Ptr<OutputStreamWrapper> stream)
 {
   Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
   Ptr<Ipv4RoutingProtocol> rp = ipv4->GetRoutingProtocol ();
@@ -77,49 +77,49 @@ Ipv4RoutingHelper::Print (Ptr<Node> node, Ptr<OutputStreamWrapper> stream) const
 }
 
 void
-Ipv4RoutingHelper::PrintEvery (Time printInterval, Ptr<Node> node, Ptr<OutputStreamWrapper> stream) const
+Ipv4RoutingHelper::PrintEvery (Time printInterval, Ptr<Node> node, Ptr<OutputStreamWrapper> stream)
 {
   Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
   Ptr<Ipv4RoutingProtocol> rp = ipv4->GetRoutingProtocol ();
   NS_ASSERT (rp);
   rp->PrintRoutingTable (stream);
-  Simulator::Schedule (printInterval, &Ipv4RoutingHelper::PrintEvery, this, printInterval, node, stream);
+  Simulator::Schedule (printInterval, &Ipv4RoutingHelper::PrintEvery, printInterval, node, stream);
 }
 
 void
-Ipv4RoutingHelper::PrintNeighborCacheAllAt (Time printTime, Ptr<OutputStreamWrapper> stream) const
+Ipv4RoutingHelper::PrintNeighborCacheAllAt (Time printTime, Ptr<OutputStreamWrapper> stream)
 {
   for (uint32_t i = 0; i < NodeList::GetNNodes (); i++)
     {
       Ptr<Node> node = NodeList::GetNode (i);
-      Simulator::Schedule (printTime, &Ipv4RoutingHelper::PrintArpCache, this, node, stream);
+      Simulator::Schedule (printTime, &Ipv4RoutingHelper::PrintArpCache, node, stream);
     }
 }
 
 void
-Ipv4RoutingHelper::PrintNeighborCacheAllEvery (Time printInterval, Ptr<OutputStreamWrapper> stream) const
+Ipv4RoutingHelper::PrintNeighborCacheAllEvery (Time printInterval, Ptr<OutputStreamWrapper> stream)
 {
   for (uint32_t i = 0; i < NodeList::GetNNodes (); i++)
     {
       Ptr<Node> node = NodeList::GetNode (i);
-      Simulator::Schedule (printInterval, &Ipv4RoutingHelper::PrintArpCacheEvery, this, printInterval, node, stream);
+      Simulator::Schedule (printInterval, &Ipv4RoutingHelper::PrintArpCacheEvery, printInterval, node, stream);
     }
 }
 
 void
-Ipv4RoutingHelper::PrintNeighborCacheAt (Time printTime, Ptr<Node> node, Ptr<OutputStreamWrapper> stream) const
+Ipv4RoutingHelper::PrintNeighborCacheAt (Time printTime, Ptr<Node> node, Ptr<OutputStreamWrapper> stream)
 {
-  Simulator::Schedule (printTime, &Ipv4RoutingHelper::PrintArpCache, this, node, stream);
+  Simulator::Schedule (printTime, &Ipv4RoutingHelper::PrintArpCache, node, stream);
 }
 
 void
-Ipv4RoutingHelper::PrintNeighborCacheEvery (Time printInterval,Ptr<Node> node, Ptr<OutputStreamWrapper> stream) const
+Ipv4RoutingHelper::PrintNeighborCacheEvery (Time printInterval,Ptr<Node> node, Ptr<OutputStreamWrapper> stream)
 {
-  Simulator::Schedule (printInterval, &Ipv4RoutingHelper::PrintArpCacheEvery, this, printInterval, node, stream);
+  Simulator::Schedule (printInterval, &Ipv4RoutingHelper::PrintArpCacheEvery, printInterval, node, stream);
 }
 
 void
-Ipv4RoutingHelper::PrintArpCache (Ptr<Node> node, Ptr<OutputStreamWrapper> stream) const
+Ipv4RoutingHelper::PrintArpCache (Ptr<Node> node, Ptr<OutputStreamWrapper> stream)
 {
   std::ostream* os = stream->GetStream ();
 
@@ -147,7 +147,7 @@ Ipv4RoutingHelper::PrintArpCache (Ptr<Node> node, Ptr<OutputStreamWrapper> strea
 }
 
 void
-Ipv4RoutingHelper::PrintArpCacheEvery (Time printInterval, Ptr<Node> node, Ptr<OutputStreamWrapper> stream) const
+Ipv4RoutingHelper::PrintArpCacheEvery (Time printInterval, Ptr<Node> node, Ptr<OutputStreamWrapper> stream)
 {
   std::ostream* os = stream->GetStream ();
 
@@ -172,7 +172,7 @@ Ipv4RoutingHelper::PrintArpCacheEvery (Time printInterval, Ptr<Node> node, Ptr<O
           arpCache->PrintArpCache (stream);
         }
     }
-  Simulator::Schedule (printInterval, &Ipv4RoutingHelper::PrintArpCacheEvery, this, printInterval, node, stream);
+  Simulator::Schedule (printInterval, &Ipv4RoutingHelper::PrintArpCacheEvery, printInterval, node, stream);
 }
 
 } // namespace ns3
