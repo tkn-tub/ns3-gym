@@ -129,6 +129,7 @@ MeshWifiInterfaceMac::DoDispose ()
 void
 MeshWifiInterfaceMac::DoInitialize ()
 {
+  NS_LOG_FUNCTION (this);
   m_coefficient->SetAttribute ("Max", DoubleValue (m_randomStart.GetSeconds ()));
   if (m_beaconEnable)
     {

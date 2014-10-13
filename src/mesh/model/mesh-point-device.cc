@@ -57,13 +57,13 @@ MeshPointDevice::GetTypeId ()
 MeshPointDevice::MeshPointDevice () :
   m_ifIndex (0)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   m_channel = CreateObject<BridgeChannel> ();
 }
 
 MeshPointDevice::~MeshPointDevice ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   m_node = 0;
   m_channel = 0;
   m_routingProtocol = 0;
@@ -72,7 +72,7 @@ MeshPointDevice::~MeshPointDevice ()
 void
 MeshPointDevice::DoDispose ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   for (std::vector<Ptr<NetDevice> >::iterator iter = m_ifaces.begin (); iter != m_ifaces.end (); iter++)
     {
       *iter = 0;
@@ -93,7 +93,7 @@ void
 MeshPointDevice::ReceiveFromDevice (Ptr<NetDevice> incomingPort, Ptr<const Packet> packet, uint16_t protocol,
                                     Address const &src, Address const &dst, PacketType packetType)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << incomingPort << packet);
   NS_LOG_DEBUG ("UID is " << packet->GetUid ());
   const Mac48Address src48 = Mac48Address::ConvertFrom (src);
   const Mac48Address dst48 = Mac48Address::ConvertFrom (dst);
@@ -143,34 +143,35 @@ MeshPointDevice::Forward (Ptr<NetDevice> inport, Ptr<const Packet> packet, uint1
 void
 MeshPointDevice::SetIfIndex (const uint32_t index)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   m_ifIndex = index;
 }
 
 uint32_t
 MeshPointDevice::GetIfIndex () const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return m_ifIndex;
 }
 
 Ptr<Channel>
 MeshPointDevice::GetChannel () const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return m_channel;
 }
 
 Address
 MeshPointDevice::GetAddress () const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return m_address;
 }
 
 void
 MeshPointDevice::SetAddress (Address a)
 {
+  NS_LOG_FUNCTION (this);
   NS_LOG_WARN ("Manual changing mesh point address can cause routing errors.");
   m_address = Mac48Address::ConvertFrom (a);
 }
@@ -178,7 +179,7 @@ MeshPointDevice::SetAddress (Address a)
 bool
 MeshPointDevice::SetMtu (const uint16_t mtu)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   m_mtu = mtu;
   return true;
 }
@@ -186,41 +187,43 @@ MeshPointDevice::SetMtu (const uint16_t mtu)
 uint16_t
 MeshPointDevice::GetMtu () const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return m_mtu;
 }
 
 bool
 MeshPointDevice::IsLinkUp () const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return true;
 }
 
 void
 MeshPointDevice::AddLinkChangeCallback (Callback<void> callback)
 {
+  NS_LOG_FUNCTION (this);
   // do nothing
+  NS_LOG_WARN ("AddLinkChangeCallback does nothing");
 }
 
 bool
 MeshPointDevice::IsBroadcast () const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return true;
 }
 
 Address
 MeshPointDevice::GetBroadcast () const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return Mac48Address ("ff:ff:ff:ff:ff:ff");
 }
 
 bool
 MeshPointDevice::IsMulticast () const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return true;
 }
 
@@ -235,20 +238,21 @@ MeshPointDevice::GetMulticast (Ipv4Address multicastGroup) const
 bool
 MeshPointDevice::IsPointToPoint () const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return false;
 }
 
 bool
 MeshPointDevice::IsBridge () const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return false;
 }
 
 bool
 MeshPointDevice::Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber)
 {
+  NS_LOG_FUNCTION (this);
   const Mac48Address dst48 = Mac48Address::ConvertFrom (dest);
   return m_routingProtocol->RequestRoute (m_ifIndex, m_address, dst48, packet, protocolNumber, MakeCallback (
                                             &MeshPointDevice::DoSend, this));
@@ -258,6 +262,7 @@ bool
 MeshPointDevice::SendFrom (Ptr<Packet> packet, const Address& src, const Address& dest,
                            uint16_t protocolNumber)
 {
+  NS_LOG_FUNCTION (this);
   const Mac48Address src48 = Mac48Address::ConvertFrom (src);
   const Mac48Address dst48 = Mac48Address::ConvertFrom (dest);
   return m_routingProtocol->RequestRoute (m_ifIndex, src48, dst48, packet, protocolNumber, MakeCallback (
@@ -267,42 +272,42 @@ MeshPointDevice::SendFrom (Ptr<Packet> packet, const Address& src, const Address
 Ptr<Node>
 MeshPointDevice::GetNode () const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return m_node;
 }
 
 void
 MeshPointDevice::SetNode (Ptr<Node> node)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   m_node = node;
 }
 
 bool
 MeshPointDevice::NeedsArp () const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return true;
 }
 
 void
 MeshPointDevice::SetReceiveCallback (NetDevice::ReceiveCallback cb)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   m_rxCallback = cb;
 }
 
 void
 MeshPointDevice::SetPromiscReceiveCallback (NetDevice::PromiscReceiveCallback cb)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   m_promiscRxCallback = cb;
 }
 
 bool
 MeshPointDevice::SupportsSendFrom () const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return false; // don't allow to bridge mesh network with something else.
 }
 
@@ -319,13 +324,14 @@ MeshPointDevice::GetMulticast (Ipv6Address addr) const
 uint32_t
 MeshPointDevice::GetNInterfaces () const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return m_ifaces.size ();
 }
 
 Ptr<NetDevice>
 MeshPointDevice::GetInterface (uint32_t n) const
 {
+  NS_LOG_FUNCTION (this << n);
   for (std::vector<Ptr<NetDevice> >::const_iterator i = m_ifaces.begin (); i != m_ifaces.end (); i++)
     {
       if ((*i)->GetIfIndex () == n)
@@ -344,7 +350,7 @@ MeshPointDevice::GetInterfaces () const
 void
 MeshPointDevice::AddInterface (Ptr<NetDevice> iface)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << iface);
 
   NS_ASSERT (iface != this);
   if (!Mac48Address::IsMatchingType (iface->GetAddress ()))
@@ -388,7 +394,7 @@ MeshPointDevice::AddInterface (Ptr<NetDevice> iface)
 void
 MeshPointDevice::SetRoutingProtocol (Ptr<MeshL2RoutingProtocol> protocol)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << protocol);
   NS_ASSERT_MSG (PeekPointer (protocol->GetMeshPoint ()) == this,
                  "Routing protocol must be installed on mesh point to be useful.");
   m_routingProtocol = protocol;
@@ -397,6 +403,7 @@ MeshPointDevice::SetRoutingProtocol (Ptr<MeshL2RoutingProtocol> protocol)
 Ptr<MeshL2RoutingProtocol>
 MeshPointDevice::GetRoutingProtocol () const
 {
+  NS_LOG_FUNCTION (this);
   return m_routingProtocol;
 }
 
@@ -404,6 +411,7 @@ void
 MeshPointDevice::DoSend (bool success, Ptr<Packet> packet, Mac48Address src, Mac48Address dst,
                          uint16_t protocol, uint32_t outIface)
 {
+  NS_LOG_FUNCTION (this << success << packet << src << dst << protocol << outIface);
   if (!success)
     {
       NS_LOG_DEBUG ("Resolve failed");
@@ -440,11 +448,13 @@ MeshPointDevice::DoSend (bool success, Ptr<Packet> packet, Mac48Address src, Mac
 MeshPointDevice::Statistics::Statistics () :
   unicastData (0), unicastDataBytes (0), broadcastData (0), broadcastDataBytes (0)
 {
+  NS_LOG_FUNCTION (this);
 }
 
 void
 MeshPointDevice::Report (std::ostream & os) const
 {
+  NS_LOG_FUNCTION (this);
   os << "<Statistics" << std::endl <<
   "txUnicastData=\"" << m_txStats.unicastData << "\"" << std::endl <<
   "txUnicastDataBytes=\"" << m_txStats.unicastDataBytes << "\"" << std::endl <<
@@ -464,6 +474,7 @@ MeshPointDevice::Report (std::ostream & os) const
 void
 MeshPointDevice::ResetStats ()
 {
+  NS_LOG_FUNCTION (this);
   m_rxStats = Statistics ();
   m_txStats = Statistics ();
   m_fwdStats = Statistics ();
