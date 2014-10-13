@@ -145,7 +145,7 @@ WifiHelper::EnableLogComponents (void)
   LogComponentEnable ("AdhocWifiMac", LOG_LEVEL_ALL);
   LogComponentEnable ("AmrrWifiRemoteStation", LOG_LEVEL_ALL);
   LogComponentEnable ("ApWifiMac", LOG_LEVEL_ALL);
-  LogComponentEnable ("ns3::ArfWifiManager", LOG_LEVEL_ALL);
+  LogComponentEnable ("ArfWifiManager", LOG_LEVEL_ALL);
   LogComponentEnable ("Cara", LOG_LEVEL_ALL);
   LogComponentEnable ("DcaTxop", LOG_LEVEL_ALL);
   LogComponentEnable ("DcfManager", LOG_LEVEL_ALL);
