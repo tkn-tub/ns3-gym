@@ -450,7 +450,7 @@ ParetoRandomVariable::GetTypeId (void)
 		  DoubleValue(2.0),
 		  MakeDoubleAccessor(&ParetoRandomVariable::m_shape),
 		  MakeDoubleChecker<double>())
-    .AddAttribute("Bound", "The upper bound on the values returned by this RNG stream.",
+    .AddAttribute("Bound", "The upper bound on the values returned by this RNG stream (if non-zero).",
 		  DoubleValue(0.0),
 		  MakeDoubleAccessor(&ParetoRandomVariable::m_bound),
 		  MakeDoubleChecker<double>())

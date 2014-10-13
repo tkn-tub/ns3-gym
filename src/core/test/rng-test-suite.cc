@@ -22,7 +22,9 @@
 #include <fstream>
 
 #include "ns3/test.h"
-#include "ns3/random-variable.h"
+#include "ns3/double.h"
+#include "ns3/random-variable-stream.h"
+#include "ns3/rng-seed-manager.h"
 
 using namespace ns3;
 
@@ -52,7 +54,7 @@ public:
   RngUniformTestCase ();
   virtual ~RngUniformTestCase ();
 
-  double ChiSquaredTest (UniformVariable &u);
+  double ChiSquaredTest (Ptr<UniformRandomVariable> u);
 
 private:
   virtual void DoRun (void);
@@ -68,14 +70,14 @@ RngUniformTestCase::~RngUniformTestCase ()
 }
 
 double
-RngUniformTestCase::ChiSquaredTest (UniformVariable &u)
+RngUniformTestCase::ChiSquaredTest (Ptr<UniformRandomVariable> u)
 {
  gsl_histogram * h = gsl_histogram_alloc (N_BINS);
   gsl_histogram_set_ranges_uniform (h, 0., 1.);
 
   for (uint32_t i = 0; i < N_MEASUREMENTS; ++i)
     {
-      gsl_histogram_increment (h, u.GetValue ());
+      gsl_histogram_increment (h, u->GetValue ());
     }
 
   double tmp[N_BINS];
@@ -105,14 +107,14 @@ RngUniformTestCase::ChiSquaredTest (UniformVariable &u)
 void
 RngUniformTestCase::DoRun (void)
 {
-  SeedManager::SetSeed (time (0));
+  RngSeedManager::SetSeed (static_cast<uint32_t> (time (0)));
 
   double sum = 0.;
   double maxStatistic = gsl_cdf_chisq_Qinv (0.05, N_BINS);
 
   for (uint32_t i = 0; i < N_RUNS; ++i)
     {
-      UniformVariable u;
+      Ptr<UniformRandomVariable> u = CreateObject<UniformRandomVariable> ();
       double result = ChiSquaredTest (u);
       sum += result;
     }
@@ -135,7 +137,7 @@ public:
   RngNormalTestCase ();
   virtual ~RngNormalTestCase ();
 
-  double ChiSquaredTest (NormalVariable &n);
+  double ChiSquaredTest (Ptr<NormalRandomVariable> n);
 
 private:
   virtual void DoRun (void);
@@ -151,7 +153,7 @@ RngNormalTestCase::~RngNormalTestCase ()
 }
 
 double
-RngNormalTestCase::ChiSquaredTest (NormalVariable &n)
+RngNormalTestCase::ChiSquaredTest (Ptr<NormalRandomVariable> n)
 {
   gsl_histogram * h = gsl_histogram_alloc (N_BINS);
 
@@ -174,7 +176,7 @@ RngNormalTestCase::ChiSquaredTest (NormalVariable &n)
 
   for (uint32_t i = 0; i < N_MEASUREMENTS; ++i)
     {
-      gsl_histogram_increment (h, n.GetValue ());
+      gsl_histogram_increment (h, n->GetValue ());
     }
 
   double tmp[N_BINS];
@@ -202,14 +204,14 @@ RngNormalTestCase::ChiSquaredTest (NormalVariable &n)
 void
 RngNormalTestCase::DoRun (void)
 {
-  SeedManager::SetSeed (time (0));
+  RngSeedManager::SetSeed (static_cast<uint32_t> (time (0)));
 
   double sum = 0.;
   double maxStatistic = gsl_cdf_chisq_Qinv (0.05, N_BINS);
 
   for (uint32_t i = 0; i < N_RUNS; ++i)
     {
-      NormalVariable n;
+      Ptr<NormalRandomVariable> n = CreateObject<NormalRandomVariable> ();
       double result = ChiSquaredTest (n);
       sum += result;
     }
@@ -232,7 +234,7 @@ public:
   RngExponentialTestCase ();
   virtual ~RngExponentialTestCase ();
 
-  double ChiSquaredTest (ExponentialVariable &n);
+  double ChiSquaredTest (Ptr<ExponentialRandomVariable> n);
 
 private:
   virtual void DoRun (void);
@@ -248,7 +250,7 @@ RngExponentialTestCase::~RngExponentialTestCase ()
 }
 
 double
-RngExponentialTestCase::ChiSquaredTest (ExponentialVariable &e)
+RngExponentialTestCase::ChiSquaredTest (Ptr<ExponentialRandomVariable> e)
 {
   gsl_histogram * h = gsl_histogram_alloc (N_BINS);
 
@@ -270,7 +272,7 @@ RngExponentialTestCase::ChiSquaredTest (ExponentialVariable &e)
 
   for (uint32_t i = 0; i < N_MEASUREMENTS; ++i)
     {
-      gsl_histogram_increment (h, e.GetValue ());
+      gsl_histogram_increment (h, e->GetValue ());
     }
 
   double tmp[N_BINS];
@@ -298,14 +300,14 @@ RngExponentialTestCase::ChiSquaredTest (ExponentialVariable &e)
 void
 RngExponentialTestCase::DoRun (void)
 {
-  SeedManager::SetSeed (time (0));
+  RngSeedManager::SetSeed (static_cast<uint32_t> (time (0)));
 
   double sum = 0.;
   double maxStatistic = gsl_cdf_chisq_Qinv (0.05, N_BINS);
 
   for (uint32_t i = 0; i < N_RUNS; ++i)
     {
-      ExponentialVariable e;
+      Ptr<ExponentialRandomVariable> e = CreateObject<ExponentialRandomVariable> ();
       double result = ChiSquaredTest (e);
       sum += result;
     }
@@ -328,7 +330,7 @@ public:
   RngParetoTestCase ();
   virtual ~RngParetoTestCase ();
 
-  double ChiSquaredTest (ParetoVariable &p);
+  double ChiSquaredTest (Ptr<ParetoRandomVariable> p);
 
 private:
   virtual void DoRun (void);
@@ -344,7 +346,7 @@ RngParetoTestCase::~RngParetoTestCase ()
 }
 
 double
-RngParetoTestCase::ChiSquaredTest (ParetoVariable &p)
+RngParetoTestCase::ChiSquaredTest (Ptr<ParetoRandomVariable> p)
 {
   gsl_histogram * h = gsl_histogram_alloc (N_BINS);
 
@@ -359,6 +361,8 @@ RngParetoTestCase::ChiSquaredTest (ParetoVariable &p)
   double a = 1.5;
   double b = 0.33333333;
 
+  // mean is 1 with these values
+
   for (uint32_t i = 0; i < N_BINS; ++i)
     {
       expected[i] = gsl_cdf_pareto_P (range[i + 1], a, b) - gsl_cdf_pareto_P (range[i], a, b);
@@ -367,7 +371,7 @@ RngParetoTestCase::ChiSquaredTest (ParetoVariable &p)
 
   for (uint32_t i = 0; i < N_MEASUREMENTS; ++i)
     {
-      gsl_histogram_increment (h, p.GetValue ());
+      gsl_histogram_increment (h, p->GetValue ());
     }
 
   double tmp[N_BINS];
@@ -395,14 +399,15 @@ RngParetoTestCase::ChiSquaredTest (ParetoVariable &p)
 void
 RngParetoTestCase::DoRun (void)
 {
-  SeedManager::SetSeed (time (0));
+  RngSeedManager::SetSeed (static_cast<uint32_t> (time (0)));
 
   double sum = 0.;
   double maxStatistic = gsl_cdf_chisq_Qinv (0.05, N_BINS);
 
   for (uint32_t i = 0; i < N_RUNS; ++i)
     {
-      ParetoVariable e;
+      Ptr<ParetoRandomVariable> e = CreateObject<ParetoRandomVariable> ();
+      e->SetAttribute ("Shape", DoubleValue (1.5));
       double result = ChiSquaredTest (e);
       sum += result;
     }

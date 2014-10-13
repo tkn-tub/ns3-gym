@@ -25,7 +25,7 @@
 #include <ns3/pointer.h>
 #include <ns3/packet.h>
 #include <ns3/packet-burst.h>
-#include <ns3/random-variable.h>
+#include <ns3/random-variable-stream.h>
 
 #include "lte-ue-mac.h"
 #include "lte-ue-net-device.h"
