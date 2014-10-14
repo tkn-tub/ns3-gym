@@ -364,19 +364,6 @@ Packet::RemoveAllByteTags (void)
   m_byteTagList.RemoveAll ();
 }
 
-uint8_t const *
-Packet::PeekData (void) const
-{
-  NS_LOG_FUNCTION (this);
-  uint32_t oldStart = m_buffer.GetCurrentStartOffset ();
-  uint8_t const * data = m_buffer.PeekData ();
-  uint32_t newStart = m_buffer.GetCurrentStartOffset ();
- 
-  // Update tag offsets if buffer offsets were changed
-  const_cast<ByteTagList &>(m_byteTagList).AddAtStart (newStart - oldStart, newStart);
-  return data;
-}
-
 uint32_t 
 Packet::CopyData (uint8_t *buffer, uint32_t size) const
 {

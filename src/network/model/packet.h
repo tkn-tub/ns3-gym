@@ -388,21 +388,6 @@ public:
   void RemoveAtStart (uint32_t size);
 
   /**
-   * \returns a pointer to the internal buffer of the packet.
-   *
-   * If you try to change the content of the buffer
-   * returned by this method, you will die.
-   *
-   * \deprecated
-   * Note that this method is now deprecated and will be removed in
-   * a future version of ns-3. To get access to the content
-   * of the byte buffer of a packet, call CopyData"()" to perform
-   * an explicit copy.
-   *
-   */
-  uint8_t const *PeekData (void) const NS_DEPRECATED;
-
-  /**
    * \brief Copy the packet contents to a byte buffer.
    *
    * \param buffer a pointer to a byte buffer where the packet data 
