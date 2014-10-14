@@ -27,7 +27,6 @@
 #include "ns3/net-device-container.h"
 #include "ns3/node-container.h"
 #include "ns3/simple-channel.h"
-#include "ns3/deprecated.h"
 
 namespace ns3 {
 

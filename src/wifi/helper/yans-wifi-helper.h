@@ -23,7 +23,6 @@
 #include "wifi-helper.h"
 #include "ns3/trace-helper.h"
 #include "ns3/yans-wifi-channel.h"
-#include "ns3/deprecated.h"
 
 namespace ns3 {
 

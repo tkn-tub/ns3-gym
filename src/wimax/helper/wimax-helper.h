@@ -28,7 +28,6 @@
 #include "ns3/net-device-container.h"
 #include "ns3/bs-net-device.h"
 #include "ns3/ss-net-device.h"
-#include "ns3/deprecated.h"
 #include "ns3/service-flow.h"
 #include "ns3/propagation-loss-model.h"
 #include "ns3/simple-ofdm-wimax-channel.h"
