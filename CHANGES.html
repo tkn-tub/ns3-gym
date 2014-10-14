@@ -61,6 +61,12 @@ us a note on ns-developers mailing list.</p>
 
 <h2>Changes to existing API:</h2>
 <ul>
+  <li> Several deprecated classes and class methods were removed, including EmuNetDevice, RandomVariable and derived classes, Packet::PeekData(), Ipv6AddressHelper::NewNetwork(Ipv6Address, Ipv6Prefix), Ipv6InterfaceContainer::SetRouter(), Ipv4Route::GetOutputTtl(), TestCase::AddTestCase(TestCase*), and TestCase::GetErrorStatus().
+  </li>
+  <li> Print methods involving routing tables and neighbor caches, in classes Ipv4RoutingHelper and Ipv6RoutingHelper, were converted to static methods.
+  </li>  
+  <li>PointerValue attribute types in class UanChannel (NoiseModel), UanPhyGen (PerModel and SinrModel), UanPhyDual (PerModelPhy1, PerModelPhy2, SinrModelPhy1, and SinrModelPhy2), and SimpleNetDevice (TxQueue), were changed from PointerValue type to StringValue type, making them configurable via the Config subsystem. 
+  </li>
 </ul>
 
 <h2>Changes to build system:</h2>
