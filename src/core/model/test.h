@@ -29,7 +29,6 @@
 #include <stdint.h>
 
 #include "system-wall-clock-ms.h"
-#include "deprecated.h"
 
 /**
  * \ingroup core
@@ -1140,16 +1139,6 @@ protected:
   TestCase (std::string name);
 
   /**
-   * \brief Add an individual child TestCase case to this TestCase.
-   *
-   * \param testCase Pointer to the TestCase object to be added.
-   *
-   * \deprecated this method will go away in future versions of 
-   * ns-3. Please use instead AddTestCase (TestCase, TestDuration)  
-   */
-  void AddTestCase (TestCase *testCase) NS_DEPRECATED;
-
-  /**
    * \brief Add an individual child TestCase to this test suite.
    *
    * \param testCase Pointer to the TestCase object to be added.
@@ -1171,11 +1160,6 @@ protected:
    */
   void SetDataDir (std::string directory);
 
-  /**
-   * \deprecated
-   * This method is deprecated. IsStatusFailure replaces it.
-   */
-  bool GetErrorStatus (void) const NS_DEPRECATED;
   /**
    * \return true if the tests have failed, false otherwise.
    */
