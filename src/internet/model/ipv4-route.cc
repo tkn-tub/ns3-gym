@@ -161,17 +161,6 @@ Ipv4MulticastRoute::SetOutputTtl (uint32_t oif, uint32_t ttl)
     }
 }
 
-uint32_t
-Ipv4MulticastRoute::GetOutputTtl (uint32_t oif)
-{
-  NS_LOG_FUNCTION (this << oif);
-  // We keep this interface around for compatibility (for now)
-  std::map<uint32_t, uint32_t>::const_iterator iter = m_ttls.find (oif);
-  if (iter == m_ttls.end ())
-    return((uint32_t)MAX_TTL);
-  return(iter->second);
-}
-
 std::map<uint32_t, uint32_t>
 Ipv4MulticastRoute::GetOutputTtlMap () const
 {

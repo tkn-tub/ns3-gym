@@ -22,8 +22,6 @@
 #ifndef GLOBAL_ROUTE_MANAGER_H
 #define GLOBAL_ROUTE_MANAGER_H
 
-#include "ns3/deprecated.h"
-
 namespace ns3 {
 
 /**

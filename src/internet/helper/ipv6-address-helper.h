@@ -27,7 +27,6 @@
 #include "ns3/ipv6-address.h"
 #include "ns3/net-device-container.h"
 #include "ipv6-interface-container.h"
-#include "ns3/deprecated.h"
 
 namespace ns3 {
 
@@ -105,19 +104,6 @@ public:
    */
   void SetBase (Ipv6Address network, Ipv6Prefix prefix,
                 Ipv6Address base = Ipv6Address ("::1"));
-
-  /**
-   * \brief Allocate a new network.
-   *
-   * This method will reset the network for future
-   * network IDs, and resets the interface ID to the previously used
-   * base.
-   *  
-   * \param network The IPv6 network
-   * \param prefix The prefix
-   * \deprecated
-   */
-  void NewNetwork (Ipv6Address network, Ipv6Prefix prefix) NS_DEPRECATED;
 
   /**
    * \brief Allocate a new network.
