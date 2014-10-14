@@ -2099,11 +2099,6 @@ def register_Ns3Ipv6AddressHelper_methods(root_module, cls):
     cls.add_method('NewAddress', 
                    'ns3::Ipv6Address', 
                    [])
-    ## ipv6-address-helper.h (module 'internet'): void ns3::Ipv6AddressHelper::NewNetwork(ns3::Ipv6Address network, ns3::Ipv6Prefix prefix) [member function]
-    cls.add_method('NewNetwork', 
-                   'void', 
-                   [param('ns3::Ipv6Address', 'network'), param('ns3::Ipv6Prefix', 'prefix')], 
-                   deprecated=True)
     ## ipv6-address-helper.h (module 'internet'): void ns3::Ipv6AddressHelper::NewNetwork() [member function]
     cls.add_method('NewNetwork', 
                    'void', 
@@ -2244,11 +2239,6 @@ def register_Ns3Ipv6InterfaceContainer_methods(root_module, cls):
     cls.add_method('SetForwarding', 
                    'void', 
                    [param('uint32_t', 'i'), param('bool', 'state')])
-    ## ipv6-interface-container.h (module 'internet'): void ns3::Ipv6InterfaceContainer::SetRouter(uint32_t i, bool router) [member function]
-    cls.add_method('SetRouter', 
-                   'void', 
-                   [param('uint32_t', 'i'), param('bool', 'router')], 
-                   deprecated=True)
     return
 
 def register_Ns3Ipv6Prefix_methods(root_module, cls):
@@ -5872,11 +5862,6 @@ def register_Ns3Ipv4MulticastRoute_methods(root_module, cls):
                    'ns3::Ipv4Address', 
                    [], 
                    is_const=True)
-    ## ipv4-route.h (module 'internet'): uint32_t ns3::Ipv4MulticastRoute::GetOutputTtl(uint32_t oif) [member function]
-    cls.add_method('GetOutputTtl', 
-                   'uint32_t', 
-                   [param('uint32_t', 'oif')], 
-                   deprecated=True)
     ## ipv4-route.h (module 'internet'): std::map<unsigned int, unsigned int, std::less<unsigned int>, std::allocator<std::pair<unsigned int const, unsigned int> > > ns3::Ipv4MulticastRoute::GetOutputTtlMap() const [member function]
     cls.add_method('GetOutputTtlMap', 
                    'std::map< unsigned int, unsigned int >', 
@@ -6944,11 +6929,6 @@ def register_Ns3Packet_methods(root_module, cls):
                    'uint64_t', 
                    [], 
                    is_const=True)
-    ## packet.h (module 'network'): uint8_t const * ns3::Packet::PeekData() const [member function]
-    cls.add_method('PeekData', 
-                   'uint8_t const *', 
-                   [], 
-                   deprecated=True, is_const=True)
     ## packet.h (module 'network'): uint32_t ns3::Packet::PeekHeader(ns3::Header & header) const [member function]
     cls.add_method('PeekHeader', 
                    'uint32_t', 
