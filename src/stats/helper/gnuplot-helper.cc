@@ -113,8 +113,8 @@ GnuplotHelper::PlotProbe (const std::string &typeId,
   // Get a pointer to the aggregator.
   Ptr<GnuplotAggregator> aggregator = GetAggregator ();
 
-  // Add a subtitle to the title to show the probe's path.
-  aggregator->SetTitle ( m_title + " \\n\\nProbe Path: " + path);
+  // Add a subtitle to the title to show the trace source's path.
+  aggregator->SetTitle ( m_title + " \\n\\nTrace Source Path: " + path);
 
   // Set the default dataset plotting style for the values.
   aggregator->Set2dDatasetDefaultStyle (Gnuplot2dDataset::LINES_POINTS);
@@ -128,7 +128,8 @@ GnuplotHelper::PlotProbe (const std::string &typeId,
   // See if the path has any wildcards.
   bool pathHasNoWildcards = path.find ("*") == std::string::npos;
 
-  // Remove the last token from the path.
+  // Remove the last token from the path; this should correspond to the 
+  // trace source attribute.
   size_t lastSlash = path.find_last_of ("/");
   if (lastSlash == std::string::npos)
     {
@@ -145,9 +146,11 @@ GnuplotHelper::PlotProbe (const std::string &typeId,
     }
 
   // See if there are any matches for the probe's path with the last
-  // token removed.
+  // token removed; this corresponds to the traced object itself.
+  NS_LOG_DEBUG ("Searching config database for trace source " << path);
   Config::MatchContainer matches = Config::LookupMatches (pathWithoutLastToken);
   uint32_t matchCount = matches.GetN ();
+  NS_LOG_DEBUG ("Found " << matchCount << " matches for trace source " << path);
 
   // This is used to make the probe's context be unique.
   std::string matchIdentifier;

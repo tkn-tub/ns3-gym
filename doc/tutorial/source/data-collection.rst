@@ -103,19 +103,19 @@ some of the new lines of this diff:
 
 ::
 
-  +  std::string probeName;
-  +  std::string probeTrace;
+  +  std::string probeType;
+  +  std::string tracePath;
   +  if (useV6 == false)
   +    {
      ...
-  +      probeName = "ns3::Ipv4PacketProbe";
-  +      probeTrace = "/NodeList/*/$ns3::Ipv4L3Protocol/Tx";
+  +      probeType = "ns3::Ipv4PacketProbe";
+  +      tracePath = "/NodeList/*/$ns3::Ipv4L3Protocol/Tx";
   +    }
   +  else
   +    {
      ...
-  +      probeName = "ns3::Ipv6PacketProbe";
-  +      probeTrace = "/NodeList/*/$ns3::Ipv6L3Protocol/Tx";
+  +      probeType = "ns3::Ipv6PacketProbe";
+  +      tracePath = "/NodeList/*/$ns3::Ipv6L3Protocol/Tx";
   +    }
    ...
   +   // Use GnuplotHelper to plot the packet byte count over time
@@ -129,12 +129,12 @@ some of the new lines of this diff:
   +                             "Time (Seconds)",
   +                             "Packet Byte Count");
   + 
-  +   // Specify the probe type, probe path (in configuration namespace), and
+  +   // Specify the probe type, trace source path (in configuration namespace), and
   +   // probe output trace source ("OutputBytes") to plot.  The fourth argument
   +   // specifies the name of the data series label on the plot.  The last
   +   // argument formats the plot by specifying where the key should be placed.
-  +   plotHelper.PlotProbe (probeName,
-  +                         probeTrace,
+  +   plotHelper.PlotProbe (probeType,
+  +                         tracePath,
   +                         "OutputBytes",
   +                         "Packet Byte Count",
   +                         GnuplotAggregator::KEY_BELOW);
@@ -151,8 +151,8 @@ some of the new lines of this diff:
   + 
   +   // Specify the probe type, probe path (in configuration namespace), and
   +   // probe output trace source ("OutputBytes") to write.
-  +   fileHelper.WriteProbe (probeName,
-  +                          probeTrace,
+  +   fileHelper.WriteProbe (probeType,
+  +                          tracePath,
   +                          "OutputBytes");
   + 
       Simulator::Stop (Seconds (20));
@@ -161,7 +161,7 @@ some of the new lines of this diff:
   
 
 The careful reader will have noticed, when testing the IPv6 command
-line attribute, that ``seventh.cc`` had created a number of new output files:
+line attribute above, that ``seventh.cc`` had created a number of new output files:
 
 ::
 
@@ -257,26 +257,26 @@ variables for later use:
 
 ::
 
-  +  std::string probeName;
-  +  std::string probeTrace;
-  +  probeName = "ns3::Ipv6PacketProbe";
-  +  probeTrace = "/NodeList/*/$ns3::Ipv6L3Protocol/Tx";
+  +  std::string probeType;
+  +  std::string tracePath;
+  +  probeType = "ns3::Ipv6PacketProbe";
+  +  tracePath = "/NodeList/*/$ns3::Ipv6L3Protocol/Tx";
 
 We use them here:
 
 ::
    
-  +  // Specify the probe type, probe path (in configuration namespace), and
+  +  // Specify the probe type, trace source path (in configuration namespace), and
   +  // probe output trace source ("OutputBytes") to plot.  The fourth argument
   +  // specifies the name of the data series label on the plot.  The last
   +  // argument formats the plot by specifying where the key should be placed.
-  +  plotHelper.PlotProbe (probeName,
-  +                        probeTrace,
+  +  plotHelper.PlotProbe (probeType,
+  +                        tracePath,
   +                        "OutputBytes",
   +                        "Packet Byte Count",
   +                        GnuplotAggregator::KEY_BELOW);
 
-The first two arguments are the name of the probe type and the probe trace.
+The first two arguments are the name of the probe type and the trace source path.
 These two are probably the hardest to determine when you try to use
 this framework to plot other traces.  The probe trace here is the ``Tx``
 trace source of class ``Ipv6L3Protocol``.  When we examine this class
@@ -417,17 +417,17 @@ FORMATTED is specified) with a format string such as follows:
   +   // Set the labels for this formatted output file.
   +   fileHelper.Set2dFormat ("Time (Seconds) = %.3e\tPacket Byte Count = %.0f");
 
-Finally, the probe of interest must be hooked.  Again, the probeName and
-probeTrace variables in this example are used, and the probe's output
+Finally, the trace source of interest must be hooked.  Again, the probeType and
+tracePath variables in this example are used, and the probe's output
 trace source "OutputBytes" is hooked:
 
 ::
 
   + 
-  +   // Specify the probe type, probe path (in configuration namespace), and
+  +   // Specify the probe type, trace source path (in configuration namespace), and
   +   // probe output trace source ("OutputBytes") to write.
-  +   fileHelper.WriteProbe (probeName,
-  +                          probeTrace,
+  +   fileHelper.WriteProbe (probeType,
+  +                          tracePath,
   +                          "OutputBytes");
   + 
 

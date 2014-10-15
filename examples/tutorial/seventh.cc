@@ -210,8 +210,8 @@ main (int argc, char *argv[])
   uint16_t sinkPort = 8080;
   Address sinkAddress;
   Address anyAddress;
-  std::string probeName;
-  std::string probeTrace;
+  std::string probeType;
+  std::string tracePath;
   if (useV6 == false)
     {
       Ipv4AddressHelper address;
@@ -219,8 +219,8 @@ main (int argc, char *argv[])
       Ipv4InterfaceContainer interfaces = address.Assign (devices);
       sinkAddress = InetSocketAddress (interfaces.GetAddress (1), sinkPort);
       anyAddress = InetSocketAddress (Ipv4Address::GetAny (), sinkPort);
-      probeName = "ns3::Ipv4PacketProbe";
-      probeTrace = "/NodeList/*/$ns3::Ipv4L3Protocol/Tx";
+      probeType = "ns3::Ipv4PacketProbe";
+      tracePath = "/NodeList/*/$ns3::Ipv4L3Protocol/Tx";
     }
   else
     {
@@ -229,8 +229,8 @@ main (int argc, char *argv[])
       Ipv6InterfaceContainer interfaces = address.Assign (devices);
       sinkAddress = Inet6SocketAddress (interfaces.GetAddress (1,1), sinkPort);
       anyAddress = Inet6SocketAddress (Ipv6Address::GetAny (), sinkPort);
-      probeName = "ns3::Ipv6PacketProbe";
-      probeTrace = "/NodeList/*/$ns3::Ipv6L3Protocol/Tx";
+      probeType = "ns3::Ipv6PacketProbe";
+      tracePath = "/NodeList/*/$ns3::Ipv6L3Protocol/Tx";
     }
 
   PacketSinkHelper packetSinkHelper ("ns3::TcpSocketFactory", anyAddress);
@@ -265,12 +265,12 @@ main (int argc, char *argv[])
                             "Time (Seconds)",
                             "Packet Byte Count");
 
-  // Specify the probe type, probe path (in configuration namespace), and
+  // Specify the probe type, trace source path (in configuration namespace), and
   // probe output trace source ("OutputBytes") to plot.  The fourth argument
   // specifies the name of the data series label on the plot.  The last
   // argument formats the plot by specifying where the key should be placed.
-  plotHelper.PlotProbe (probeName,
-                        probeTrace,
+  plotHelper.PlotProbe (probeType,
+                        tracePath,
                         "OutputBytes",
                         "Packet Byte Count",
                         GnuplotAggregator::KEY_BELOW);
@@ -285,10 +285,10 @@ main (int argc, char *argv[])
   // Set the labels for this formatted output file.
   fileHelper.Set2dFormat ("Time (Seconds) = %.3e\tPacket Byte Count = %.0f");
 
-  // Specify the probe type, probe path (in configuration namespace), and
+  // Specify the probe type, trace source path (in configuration namespace), and
   // probe output trace source ("OutputBytes") to write.
-  fileHelper.WriteProbe (probeName,
-                         probeTrace,
+  fileHelper.WriteProbe (probeType,
+                         tracePath,
                          "OutputBytes");
 
   Simulator::Stop (Seconds (20));

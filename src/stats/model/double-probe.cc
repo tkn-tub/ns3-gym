@@ -85,7 +85,7 @@ bool
 DoubleProbe::ConnectByObject (std::string traceSource, Ptr<Object> obj)
 {
   NS_LOG_FUNCTION (this << traceSource << obj);
-  NS_LOG_DEBUG ("Name of probe (if any) in names database: " << Names::FindPath (obj));
+  NS_LOG_DEBUG ("Name of trace source (if any) in names database: " << Names::FindPath (obj));
   bool connected = obj->TraceConnectWithoutContext (traceSource, MakeCallback (&ns3::DoubleProbe::TraceSink, this));
   return connected;
 }
@@ -94,7 +94,7 @@ void
 DoubleProbe::ConnectByPath (std::string path)
 {
   NS_LOG_FUNCTION (this << path);
-  NS_LOG_DEBUG ("Name of probe to search for in config database: " << path);
+  NS_LOG_DEBUG ("Name of trace source to search for in config database: " << path);
   Config::ConnectWithoutContext (path, MakeCallback (&ns3::DoubleProbe::TraceSink, this));
 }
 
