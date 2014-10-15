@@ -25,6 +25,8 @@ New user-visible features
   the RoutingProtocolHelper
 - The PrintRoutingTable... and PrintNeighborCache... are now static funtions
   i.e., it's not anymore needed to instantiate an helper just to use them.
+- A new TimeProbe class has been added to hook the data collection framework
+  to traced values emitting Time objects
 
 Bugs fixed
 ----------

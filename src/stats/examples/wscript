@@ -10,6 +10,9 @@ def build(bld):
     program = bld.create_ns3_program('double-probe-example', ['network', 'stats'])
     program.source = 'double-probe-example.cc'
 
+    program = bld.create_ns3_program('time-probe-example', ['stats'])
+    program.source = 'time-probe-example.cc'
+
     program = bld.create_ns3_program('gnuplot-aggregator-example', ['network', 'stats'])
     program.source = 'gnuplot-aggregator-example.cc'
 

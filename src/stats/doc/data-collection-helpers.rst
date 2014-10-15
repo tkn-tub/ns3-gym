@@ -605,6 +605,7 @@ to the GnuplotHelper and to the FileHelper:
 - Uinteger8Probe
 - Uinteger16Probe
 - Uinteger32Probe
+- TimeProbe
 - PacketProbe
 - ApplicationPacketProbe
 - Ipv4PacketProbe

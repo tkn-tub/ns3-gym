@@ -403,6 +403,13 @@ GnuplotHelper::ConnectProbeToAggregator (const std::string &typeId,
         MakeCallback (&TimeSeriesAdaptor::TraceSinkUinteger32,
                       m_timeSeriesAdaptorMap[probeContext]));
     }
+  else if (m_probeMap[probeName].second == "ns3::TimeProbe")
+    {
+      m_probeMap[probeName].first->TraceConnectWithoutContext
+        (probeTraceSource,
+        MakeCallback (&TimeSeriesAdaptor::TraceSinkDouble,
+                      m_timeSeriesAdaptorMap[probeContext]));
+    }
   else
     {
       NS_FATAL_ERROR ("Unknown probe type " << m_probeMap[probeName].second << "; need to add support in the helper for this");

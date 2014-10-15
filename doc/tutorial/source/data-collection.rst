@@ -359,6 +359,8 @@ The following traced values are supported with Probes as of this writing:
   +------------------+-------------------+------------------------------------+
   | bool             | BooleanProbe      | stats/model/uinteger-16-probe.h    |
   +------------------+-------------------+------------------------------------+
+  | ns3::Time        | TimeProbe         | stats/model/time-probe.h           |
+  +------------------+-------------------+------------------------------------+
 
 The following TraceSource types are supported by Probes as of this writing:
 
