@@ -1446,12 +1446,14 @@ MacLow::StartDataTxTimers (WifiTxVector dataTxVector)
     {
       Time timerDelay = txDuration + GetBasicBlockAckTimeout ();
       NS_ASSERT (m_blockAckTimeoutEvent.IsExpired ());
+      NotifyAckTimeoutStartNow (timerDelay);
       m_blockAckTimeoutEvent = Simulator::Schedule (timerDelay, &MacLow::BlockAckTimeout, this);
     }
   else if (m_txParams.MustWaitCompressedBlockAck ())
     {
       Time timerDelay = txDuration + GetCompressedBlockAckTimeout ();
       NS_ASSERT (m_blockAckTimeoutEvent.IsExpired ());
+      NotifyAckTimeoutStartNow (timerDelay);
       m_blockAckTimeoutEvent = Simulator::Schedule (timerDelay, &MacLow::BlockAckTimeout, this);
     }
   else if (m_txParams.HasNextPacket ())
