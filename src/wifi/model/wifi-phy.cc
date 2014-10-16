@@ -1487,7 +1487,14 @@ public:
     ns3::WifiPhy::GetOfdmRate57_8MbpsBW20MHz ();
     ns3::WifiPhy::GetOfdmRate65MbpsBW20MHzShGi ();
     ns3::WifiPhy::GetOfdmRate72_2MbpsBW20MHz ();
-
+    ns3::WifiPhy::GetOfdmRate15MbpsBW40MHz ();
+    ns3::WifiPhy::GetOfdmRate30MbpsBW40MHz ();
+    ns3::WifiPhy::GetOfdmRate45MbpsBW40MHz ();
+    ns3::WifiPhy::GetOfdmRate60MbpsBW40MHz ();
+    ns3::WifiPhy::GetOfdmRate90MbpsBW40MHz ();
+    ns3::WifiPhy::GetOfdmRate120MbpsBW40MHz ();
+    ns3::WifiPhy::GetOfdmRate135MbpsBW40MHzShGi ();
+    ns3::WifiPhy::GetOfdmRate150MbpsBW40MHz ();
   }
 } g_constructor;
 }
