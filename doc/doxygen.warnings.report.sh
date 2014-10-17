@@ -8,39 +8,14 @@ DIR="$(dirname $0)"
 # Trick to get the absolute path, since doxygen prefixes errors that way
 ROOT=$(cd "$DIR/.."; pwd)
 
-# Use file handle 6 for verbose output
-exec 6>/dev/null
-
-function verbose
-{
-    if [ $verbosity -eq 1 ]; then
-	if [ "$1" == "-n" ]; then
-	    shift
-	    echo -n "$1"
-	else
-	    echo "$1"
-	fi
-    fi
-    echo "$2"
-}
-
-function status_report
-{
-    local status="$1"
-    local long_msg="$2"
-    if [ $status -eq 0 ]; then
-	verbose "$long_msg "  "done."
-    else
-	verbose "$long_msg "  "FAILED."
-	exit 1
-    fi
-}
-   
 # Known log files
 STANDARDLOGFILE=doxygen.log
 WARNINGSLOGFILE=doxygen.warnings.log
 # Default choice:  generate it
 LOG="$DIR/$WARNINGSLOGFILE"
+
+# Verbose log
+VERBLOG="$DIR/doxygen.verbose.log"
 
 
 # Options ------------------------------
@@ -86,6 +61,43 @@ EOF
     exit 1
 }
 
+# Messaging ----------------------------
+#
+
+# Arg -v Verbosity level
+verbosity=0
+
+function verbose
+{
+    if [ "$1" == "-n" ]; then
+	echo -n "$2"
+    elif [ $verbosity -eq 1 ]; then
+	echo "$1 $2"
+    else
+	echo "$2"
+    fi
+}
+
+# Use file handle 6 for verbose output
+rm -f $VERBLOG
+exec 6>$VERBLOG
+
+function status_report
+{
+    local status="$1"
+    local long_msg="$2"
+    if [ $status -eq 0 ]; then
+	verbose "$long_msg "  "done."
+	rm -f $VERBLOG
+    else
+	verbose "$long_msg "  "FAILED.  Details:"
+	cat $VERBLOG
+	rm -f $VERBLOG
+	exit 1
+    fi
+}
+   
+
 # Argument processing ------------------
 #
 
@@ -96,13 +108,15 @@ logfilearg=
 usestandard=0
 # skip doxygen run; using existing log file
 SKIPDOXY=0
-verbosity=0
 
 # Filtering flags
 filter_examples=0
 filter_test=0
 filter_module=""
 filter_regex=""
+
+echo
+echo "$me:"
 
 while getopts :etm:F:lF:svh option ; do
 
@@ -168,8 +182,7 @@ else
     # Run introspection, which may require a build
     verbose -n "Building and running print-introspected-doxygen..."
     (cd "$ROOT" && ./waf --run print-introspected-doxygen >doc/introspected-doxygen.h >&6 2>&6 )
-    status=$?
-    status_report $status "./waf build"
+    status_report $? "./waf build"
 
     # Modify doxygen.conf to generate all the warnings
     # (We also suppress dot graphs, so shorten the run time.)
@@ -178,8 +191,7 @@ else
 
     sed -i.bak -E '/^EXTRACT_ALL |^HAVE_DOT |^WARNINGS /s/YES/no/' $conf
 
-    echo
-    verbose -n "Rebuilding doxygen docs with full errors..."
+    verbose -n "Rebuilding doxygen (v$(doxygen --version)) docs with full errors..."
     (cd "$ROOT" && ./waf --doxygen >&6 2>&6 )
     status=$?
 
@@ -198,7 +210,7 @@ fi
 # Filter regular expression for -m and -F
 filter_inRE=""
 if [ "$filter_module" != "" ] ; then
-    filter_inRE="src/$filter_module"
+    filter_inRE="${filter_inRE:-}${filter_inRE:+\\|}src/$filter_module"
 fi
 if [ "$filter_regex" != "" ] ; then
     filter_inRE="${filter_inRE:-}${filter_inRE:+\\|}$filter_regex"
@@ -207,7 +219,7 @@ fi
 # Filter regular expression for -e and -t
 filter_outRE=""
 if [ $filter_examples -eq 1 ]; then
-    filter_outRE="/examples/"
+    filter_outRE="${filter_outRE:-}${filter_outRE:+\\|}/examples/"
 fi
 if [ $filter_test -eq 1 ]; then
     filter_outRE="${filter_outRE:-}${filter_outRE:+\\|}/test/"
@@ -243,7 +255,6 @@ function filter_log
 
     echo "$flog"
 }
-
 
 # Analyze the log ----------------------
 #
