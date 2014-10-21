@@ -38,6 +38,8 @@ namespace ns3 {
  * \ingroup wifi
  *
  * This class knows how to serialise and deserialise the Ht Capabilities Information Element
+ *
+ * \see attribute_HtCapabilities
  */
 class HtCapabilities: public WifiInformationElement
 {

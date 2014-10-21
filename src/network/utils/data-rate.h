@@ -41,32 +41,48 @@ namespace ns3 {
  * Allows for natural and familiar use of data rates.  Allows construction
  * from strings, natural multiplication e.g.:
  * \code
- * DataRate x("56kbps");
- * double nBits = x*ns3::Seconds(19.2);
- * uint32_t nBytes = 20;
- * double txtime = x.CalclulateTxTime(nBytes);
+ *   DataRate x("56kbps");
+ *   double nBits = x*ns3::Seconds(19.2);
+ *   uint32_t nBytes = 20;
+ *   double txtime = x.CalclulateTxTime(nBytes);
  * \endcode
- * This class also supports the regular comparison operators <, >, <=, >=, ==,
- * and !=
+ * This class also supports the regular comparison operators \c <, \c >,
+ * \c <=, \c >=, \c ==, and \c !=
  *
- * Conventions used:
- * "b" stands for bits, "B" for bytes (8 bits) \n
- * "k" stands for 1000, "K" also stands for 1000, "Ki" stands for 1024 \n
- * "M" stand for 1000000, "Mib" stands for 1024 kibibits, or 1048576 bits \n
- * "G" stand for 10^9, "Gib" stands for 1024 mebibits \n
- * whitespace is allowed but not required between the numeric value and units
+ * Data rate specifiers consist of
+ * * A numeric value,
+ * * An optional multiplier prefix and
+ * * A unit.
+ *
+ * Whitespace is allowed but not required between the numeric value and
+ * multipler or unit.
+ *
+ * Supported multiplier prefixes:
+ *
+ * | Prefix   | Value       |
+ * | :------- | ----------: |
+ * | "k", "K" | 1000        |
+ * | "Ki"     | 1024        |
+ * | "M"      | 1000000     |
+ * | "Mi"     | 1024 Ki     |
+ * | "G"      | 10^9        |
+ * | "Gi "    | 1024 Mi     |
  *
  * Supported unit strings:
- * bps, b/s, Bps, B/s \n
- * kbps, kb/s, Kbps, Kb/s, kBps, kB/s, KBps, KB/s, Kib/s, KiB/s \n
- * Mbps, Mb/s, MBps, MB/s, Mib/s, MiB/s \n
- * Gbps, Gb/s, GBps, GB/s, Gib/s, GiB/s \n
- * 
+ *
+ * | Symbol   | Meaning     |
+ * | :------- | :---------- |
+ * | "b"      | bits        |
+ * | "B"      | 8-bit bytes |
+ * | "s", "/s"| per second  |
+ *
  * Examples:
- * "56kbps" = 56,000 bits/s \n
- * "128 kb/s" = 128,000 bits/s \n
- * "8Kib/s" = 1 KiB/s = 8192 bits/s \n
- * "1kB/s" = 8000 bits/s 
+ * * "56kbps" = 56,000 bits/s
+ * * "128 kb/s" = 128,000 bits/s
+ * * "8Kib/s" = 1 KiB/s = 8192 bits/s
+ * * "1kB/s" = 8000 bits/s 
+ *
+ * \see attribute_DataRate
  */
 class DataRate
 {
@@ -200,13 +216,7 @@ std::ostream &operator << (std::ostream &os, const DataRate &rate);
  */
 std::istream &operator >> (std::istream &is, DataRate &rate);
 
-/**
- * \class ns3::DataRateValue
- * \brief hold objects of type ns3::DataRate
- */
-
-
-ATTRIBUTE_HELPER_HEADER (DataRate);   //!< Macro to make help make data-rate an ns-3 attribute
+ATTRIBUTE_HELPER_HEADER (DataRate);
 
 
 /**

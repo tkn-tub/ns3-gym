@@ -38,8 +38,10 @@ namespace ns3 {
 class ObjectPtrContainerValue : public AttributeValue
 {
 public:
+  /** Iterator type for traversing this container. */
   typedef std::map<uint32_t, Ptr<Object> >::const_iterator Iterator;
 
+  /** Default constructor. */
   ObjectPtrContainerValue ();
 
   /**
@@ -66,15 +68,45 @@ public:
 
 private:
   friend class ObjectPtrContainerAccessor;
+  /** The container implementation. */
   std::map<uint32_t, Ptr<Object> > m_objects;
 };
 
-
+/**
+ * \ingroup attribute_ObjectPtrContainer
+ * Create an AttributeAccessor using a container class indexed get method.
+ *
+ * The two versions of this function differ only in argument order.
+ *
+ * \tparam T The container class type.
+ * \tparam U The type of object the get method returns.
+ * \tparam INDEX The type of the index variable.
+ * \param [in] get The class method to get a specific instance
+ *             from the container.
+ * \param [in] getN The class method to return the number of objects
+ *             in the container.
+ * \return The AttributeAccessor.
+ */
 template <typename T, typename U, typename INDEX>
 Ptr<const AttributeAccessor>
 MakeObjectPtrContainerAccessor (Ptr<U> (T::*get)(INDEX) const,
 				INDEX (T::*getN)(void) const);
 
+/**
+ * \ingroup attribute_ObjectPtrContainer
+ * Create an AttributeAccessor using a container class indexed get method.
+ *
+ * The two versions of this function differ only in argument order.
+ *
+ * \tparam T The container class type.
+ * \tparam U The type of object the get method returns.
+ * \tparam INDEX The type of the index variable.
+ * \param [in] get The class method to get a specific instance
+ *             from the container.
+ * \param [in] getN The class method to return the number of objects
+ *             in the container.
+ * \return The AttributeAccessor.
+ */
 template <typename T, typename U, typename INDEX>
 Ptr<const AttributeAccessor>
 MakeObjectPtrContainerAccessor (INDEX (T::*getN)(void) const,
@@ -83,6 +115,10 @@ MakeObjectPtrContainerAccessor (INDEX (T::*getN)(void) const,
 class ObjectPtrContainerChecker : public AttributeChecker
 {
 public:
+  /**
+   * Get the TypeId of the container class type.
+   * \returns The class TypeId.
+   */
   virtual TypeId GetItemTypeId (void) const = 0;
 };
 
@@ -91,12 +127,18 @@ Ptr<const AttributeChecker> MakeObjectPtrContainerChecker (void);
 
 } // namespace ns3
 
+
+/***************************************************************
+ *        The implementation of the above functions.
+ ***************************************************************/
+
 namespace ns3 {
 
 namespace internal {
 
+/** ObjectPtrContainerChecker implementation class. */
 template <typename T>
-class AnObjectPtrContainerChecker : public ObjectPtrContainerChecker
+class ObjectPtrContainerChecker : public ns3::ObjectPtrContainerChecker
 {
 public:
   virtual TypeId GetItemTypeId (void) const {
@@ -131,7 +173,8 @@ public:
 
 } // namespace internal
 
-
+  
+/** AttributeAccessor implementation for ObjectPtrContainerValue. */
 class ObjectPtrContainerAccessor : public AttributeAccessor
 {
 public:
@@ -140,7 +183,22 @@ public:
   virtual bool HasGetter (void) const;
   virtual bool HasSetter (void) const;
 private:
+  /**
+   * Get the number of instances in the container.
+   *
+   * \param [in] object The container object.
+   * \param [out] n The number of instances in the container.
+   * \returns true if the value could be obtained successfully.
+   */
   virtual bool DoGetN (const ObjectBase *object, uint32_t *n) const = 0;
+  /**
+   * Get an instance from the container, identified by index.
+   *
+   * \param [in] object The container object.
+   * \param [in] i The desired instance index.
+   * \param [out] index The index retrieved.
+   * \returns The index requested.
+   */
   virtual Ptr<Object> DoGet (const ObjectBase *object, uint32_t i, uint32_t *index) const = 0;
 };
 
@@ -184,7 +242,7 @@ MakeObjectPtrContainerAccessor (INDEX (T::*getN)(void) const,
 template <typename T>
 Ptr<const AttributeChecker> MakeObjectPtrContainerChecker (void)
 {
-  return Create<internal::AnObjectPtrContainerChecker<T> > ();
+  return Create<internal::ObjectPtrContainerChecker<T> > ();
 }
 
 

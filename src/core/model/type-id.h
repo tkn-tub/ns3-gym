@@ -42,10 +42,11 @@ class ObjectBase;
  *  - the set of accessible constructors in the subclass
  *  - the set of 'attributes' accessible in the subclass
  *
+ * \see attribute_TypeId
+ *
  * \internal
  *  See the discussion in IidManager about hash chaining of TypeId's.
- *
- */
+  */
 class TypeId
 {
 public:

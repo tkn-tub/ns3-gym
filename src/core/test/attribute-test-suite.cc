@@ -37,6 +37,10 @@
 
 using namespace ns3;
 
+/**
+ * Test class for TracedValue callbacks.
+ * \see attribute_ValueClassTest
+ */
 class ValueClassTest 
 {
 public:

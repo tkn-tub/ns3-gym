@@ -29,7 +29,7 @@ namespace ns3 {
 namespace dot11s {
 /**
  * \brief a IEEE 802.11s Mesh ID 7.3.287 of 802.11s draft 3.0
- *
+ * \see attribute_IeMeshId
  */
 class IeMeshId : public WifiInformationElement
 {

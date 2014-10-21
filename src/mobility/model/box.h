@@ -29,6 +29,7 @@ namespace ns3 {
 /**
  * \ingroup mobility
  * \brief a 3d box
+ * \see attribute_Box
  */
 class Box
 {
@@ -101,11 +102,6 @@ public:
 
 std::ostream &operator << (std::ostream &os, const Box &box);
 std::istream &operator >> (std::istream &is, Box &box);
-
-/**
- * \class ns3::BoxValue
- * \brief hold objects of type ns3::Box
- */
 
 ATTRIBUTE_HELPER_HEADER (Box);
 

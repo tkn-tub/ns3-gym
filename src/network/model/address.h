@@ -32,6 +32,8 @@ namespace ns3 {
 /**
  * \ingroup network
  * \defgroup address Address
+ *
+ * Network Address abstractions, including MAC, IPv4 and IPv6.
  */
 /**
  * \ingroup address
@@ -82,6 +84,8 @@ namespace ns3 {
  *   return type;
  * }
  * \endcode
+ *
+ * \see attribute_Address
  */
 class Address 
 {
@@ -271,12 +275,7 @@ private:
   uint8_t m_data[MAX_SIZE]; //!< The address value
 };
 
-/**
- * \class ns3::AddressValue
- * \brief hold objects of type ns3::Address
- */
-
-ATTRIBUTE_HELPER_HEADER (Address);  //!< Macro to make help make class an ns-3 attribute
+ATTRIBUTE_HELPER_HEADER (Address);
 
 bool operator == (const Address &a, const Address &b);
 bool operator != (const Address &a, const Address &b);

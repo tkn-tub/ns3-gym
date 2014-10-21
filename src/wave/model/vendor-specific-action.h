@@ -45,6 +45,8 @@ class VendorSpecificContentManager;
  * Normally the value is assigned by IEEE and the length of field is
  * either 24 bits or 36 bits.
  * For more, see IEEE802.11p-2010 section 7.3.1.31 and 7.4.5
+ *
+ * \see attribute_OrganizationIdentifier
  */
 class OrganizationIdentifier
 {

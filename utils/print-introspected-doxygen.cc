@@ -41,18 +41,23 @@ NS_LOG_COMPONENT_DEFINE ("PrintIntrospectedDoxygen");
 namespace
 {
   std::string anchor;              ///< hyperlink anchor
+  std::string argument;            ///< function argument
   std::string boldStart;           ///< start of bold span
   std::string boldStop;            ///< end of bold span
   std::string breakBoth;           ///< linebreak
   std::string breakHtmlOnly;       ///< linebreak for html output only
   std::string breakTextOnly;       ///< linebreak for text output only
   std::string brief;               ///< brief tag
+  std::string classStart;          ///< start of a class
+  std::string classStop;           ///< end of a class
+  std::string codeWord;            ///< format next word as source code
   std::string commentStart;        ///< start of code comment
   std::string commentStop;         ///< end of code comment
+  std::string copyDoc;             ///< copy (or refer) to docs elsewhere
   std::string flagSpanStart;       ///< start of Attribute flag value
   std::string flagSpanStop;        ///< end of Attribute flag value
-  std::string functionStart;       ///< start of a class/function
-  std::string functionStop;        ///< end of a class/function
+  std::string functionStart;       ///< start of a method/function
+  std::string functionStop;        ///< end of a method/function
   std::string headingStart;        ///< start of section heading (h3)
   std::string headingStop;         ///< end of section heading (h3)
   std::string indentHtmlOnly;      ///< small indent
@@ -62,9 +67,12 @@ namespace
   std::string listStop;            ///< end unordered list
   std::string page;                ///< start a separate page
   std::string reference;           ///< reference tag
+  std::string returns;             ///< the return value
   std::string sectionStart;        ///< start of a section or group
+  std::string seeAlso;             ///< Reference to other docs
   std::string subSectionStart;     ///< start a new subsection
   std::string temporaryCharacter;  ///< "%" placeholder
+  std::string variable;            ///< variable or class member
 
 } // anonymous namespace
 
@@ -72,7 +80,7 @@ namespace
 /**
  * Initialize the markup strings, for either doxygen or text.
  *
- * \param [in] outpuText true for text output, false for doxygen output.
+ * \param [in] outputText true for text output, false for doxygen output.
  */
 void
 SetMarkup (bool outputText)
@@ -81,14 +89,19 @@ SetMarkup (bool outputText)
   if (outputText)
     {
       anchor                       = "";
+      argument                     = "  Arg: ";
       boldStart                    = "";
       boldStop                     = "";
       breakBoth                    = "\n";
       breakHtmlOnly                = "";
       breakTextOnly                = "\n";
       brief                        = "";
+      classStart                   = "";
+      classStop                    = "\n\n";
+      codeWord                     = " ";
       commentStart                 = "===============================================================\n";
       commentStop                  = "";
+      copyDoc                      = "  See: ";
       flagSpanStart                = "";
       flagSpanStop                 = "";
       functionStart                = "";
@@ -101,25 +114,33 @@ SetMarkup (bool outputText)
       listStop                     = "";
       listLineStart                = "    * ";
       listLineStop                 = "";
-      reference                    = "";
+      reference                    = " ";
+      returns                      = "  Returns: ";
       sectionStart                 = "Section ";
+      seeAlso                      = "  See: ";
       subSectionStart              = "Subsection ";
       temporaryCharacter           = "";
+      variable                     = "Variable: ";
     }
   else
     {
       anchor                       = "\\anchor ";
+      argument                     = "\\param ";
       boldStart                    = "<b>";
       boldStop                     = "</b>";
       breakBoth                    = "<br>";
       breakHtmlOnly                = "<br>";
       breakTextOnly                = "";
       brief                        = "\\brief ";
+      classStart                   = "\\class ";
+      classStop                    = "";
+      codeWord                     = "\\p ";
       commentStart                 = "/*!\n";
       commentStop                  = "*/\n";
+      copyDoc                      = "\\copydoc ";
       flagSpanStart                = "<span class=\"mlabel\">";
       flagSpanStop                 = "</span>";
-      functionStart                = "\\class ";
+      functionStart                = "\\fn ";
       functionStop                 = "";
       headingStart                 = "<h3>";
       headingStop                  = "</h3>";
@@ -129,13 +150,20 @@ SetMarkup (bool outputText)
       listStop                     = "</ul>";
       listLineStart                = "<li>";
       listLineStop                 = "</li>";
-      reference                    = "\\ref ";
+      reference                    = " \\ref ";
+      returns                      = "\\returns ";
       sectionStart                 = "\\ingroup ";
+      seeAlso                      = "\\see ";
       subSectionStart              = "\\addtogroup ";
       temporaryCharacter           = "%";
+      variable                     = "\\var ";
     }
 }  // SetMarkup ()
 
+
+/***************************************************************
+ *        Docs for a single TypeId
+ ***************************************************************/
 
 /**
  * Print direct Attributes for this TypeId.
@@ -170,14 +198,15 @@ PrintAttributesTid (std::ostream &os, const TypeId tid)
 	  os << "    "
 	     << listLineStart
 	     <<   "Underlying type: ";
-	  if (    (info.checker->GetValueTypeName () != "ns3::EnumValue")
-	       && (info.checker->GetUnderlyingTypeInformation () != "std::string")
-	      )
+          
+          std::string valType = info.checker->GetValueTypeName ();
+          std::string underType = info.checker->GetUnderlyingTypeInformation ();
+	  if ((valType   != "ns3::EnumValue") && (underType != "std::string"))
 	    {
-	      // Two indirect cases to handle
+	      // Indirect cases to handle
 	      bool handled = false;
-
-	      if (info.checker->GetValueTypeName () == "ns3::PointerValue")
+              
+	      if (valType == "ns3::PointerValue")
 		{
 		  const PointerChecker *ptrChecker =
 		    dynamic_cast<const PointerChecker *> (PeekPointer (info.checker));
@@ -189,7 +218,7 @@ PrintAttributesTid (std::ostream &os, const TypeId tid)
 		      handled = true;
 		    }
 		}
-	      else if (info.checker->GetValueTypeName () == "ns3::ObjectPtrContainerValue")
+	      else if (valType == "ns3::ObjectPtrContainerValue")
 		{
 		  const ObjectPtrContainerChecker * ptrChecker =
 		    dynamic_cast<const ObjectPtrContainerChecker *> (PeekPointer (info.checker));
@@ -201,9 +230,35 @@ PrintAttributesTid (std::ostream &os, const TypeId tid)
 		      handled = true;
 		    }
 		}
+              // Helper to match first part of string
+              class StringBeginMatcher
+              {
+              public:
+                StringBeginMatcher (const std::string s)
+                  : m_string (s) { };
+                bool operator () (const std::string t)
+                {
+                  std::size_t pos = m_string.find (t);
+                  return pos == 0;
+                };
+              private:
+                std::string m_string;
+              };
+              StringBeginMatcher match (underType);
+                  
+              if ( match ("bool")     || match ("double")   ||
+                   match ("int8_t")   || match ("uint8_t")  ||
+                   match ("int16_t")  || match ("uint16_t") ||
+                   match ("int32_t")  || match ("uint32_t") ||
+                   match ("int64_t")  || match ("uint64_t")
+                   )
+                {
+                  os << underType;
+                  handled = true;
+                }
 	      if (! handled)
 		{
-		  os << reference << info.checker->GetUnderlyingTypeInformation ();
+		  os << reference << underType;
 		}
 	    }
 	  os << listLineStop << std::endl;
@@ -237,7 +292,7 @@ PrintAttributesTid (std::ostream &os, const TypeId tid)
       
     }
   os << listStop << std::endl;
-}
+}  // PrintAttributesTid ()
 
 
 /**
@@ -314,7 +369,7 @@ PrintTraceSourcesTid (std::ostream & os, const TypeId tid)
       os << listLineStop << std::endl;
     }
   os << listStop << std::endl;
-}
+}  // PrintTraceSourcesTid ()
 
 
 /**
@@ -379,48 +434,12 @@ void PrintSize (std::ostream & os, const TypeId tid)
      << " of this type is " << tid.GetSize ()
      << " bytes (on a " << arch << "-bit architecture)."
      << std::endl;
-}
+}  // PrintSize ()
 
 
-/**
- * Print the list of all Trace sources.
- *
- * \param [in,out] os The output stream.
- */
-void
-PrintAllTraceSources (std::ostream & os)
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  os << commentStart << page << "TraceSourceList All TraceSources\n"
-      << std::endl;
-
-  for (uint32_t i = 0; i < TypeId::GetRegisteredN (); ++i)
-    {
-      TypeId tid = TypeId::GetRegistered (i);
-      if (tid.GetTraceSourceN () == 0 ||
-	  tid.MustHideFromDocumentation ())
-	{
-	  continue;
-	}
-      os << boldStart << tid.GetName () << boldStop  << breakHtmlOnly
-	 << std::endl;
-      
-      os << listStart << std::endl;
-      for (uint32_t j = 0; j < tid.GetTraceSourceN (); ++j)
-	{
-	  struct TypeId::TraceSourceInformation info = tid.GetTraceSource(j);
-	  os << listLineStart 
-	     <<   boldStart << info.name << boldStop
-	     <<   ": "      << info.help
-	     << listLineStop
-	     << std::endl;
-	}
-      os << listStop << std::endl;
-    }
-  os << commentStop << std::endl;
-
-}  // PrintAllTraceSources ()
-
+/***************************************************************
+ *        Lists of All things
+ ***************************************************************/
 
 /**
  * Print the list of all Attributes.
@@ -432,6 +451,11 @@ PrintAllAttributes (std::ostream & os)
 {
   NS_LOG_FUNCTION_NOARGS ();
   os << commentStart << page << "AttributeList All Attributes\n"
+     << std::endl;
+  os << "This is a list of all" << reference << "attribute by class.  "
+     << "For more information see the" << reference << "attribute "
+     << "section of this API documentation and the Attributes sections "
+     << "in the Tutorial and Manual.\n"
      << std::endl;
 
   for (uint32_t i = 0; i < TypeId::GetRegisteredN (); ++i)
@@ -473,6 +497,8 @@ PrintAllGlobals (std::ostream & os)
   NS_LOG_FUNCTION_NOARGS ();
   os << commentStart << page << "GlobalValueList All GlobalValues\n"
      << std::endl;
+  os << "This is a list of all" << reference << "ns3::GlobalValue instances.\n"
+     << std::endl;
   
   os << listStart << std::endl;
   for (GlobalValue::Iterator i = GlobalValue::Begin ();
@@ -509,6 +535,8 @@ PrintAllLogComponents (std::ostream & os)
   NS_LOG_FUNCTION_NOARGS ();
   os << commentStart << page << "LogComponentList All LogComponents\n"
      << std::endl;
+  os << "This is a list of all" << reference << "ns3::LogComponent instances.\n"
+     << std::endl;
 
   os << listStart << std::endl;
   LogComponent::ComponentList * logs = LogComponent::GetComponentList ();
@@ -516,7 +544,8 @@ PrintAllLogComponents (std::ostream & os)
   for (it = logs->begin (); it != logs->end (); ++it)
     {
       std::string file = it->second->File ();
-      if (file.find ("../") == 0)
+      // Strip leading "../" related to depth in build directory
+      while (file.find ("../") == 0)
         {
           file = file.substr (3);
         }
@@ -528,8 +557,376 @@ PrintAllLogComponents (std::ostream & os)
     }
   os << listStop << std::endl;
   os << commentStop << std::endl;
-}  // PrintAllLogComponents
+}  // PrintAllLogComponents ()
 
+
+/**
+ * Print the list of all Trace sources.
+ *
+ * \param [in,out] os The output stream.
+ */
+void
+PrintAllTraceSources (std::ostream & os)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  os << commentStart << page << "TraceSourceList All TraceSources\n"
+     << std::endl;
+  os << "This is a list of all" << reference << "tracing sources.  "
+     << "For more information see the " << reference << "tracing "
+     << "section of this API documentation and the Tracing sections "
+     << "in the Tutorial and Manual.\n"
+     << std::endl;
+
+  for (uint32_t i = 0; i < TypeId::GetRegisteredN (); ++i)
+    {
+      TypeId tid = TypeId::GetRegistered (i);
+      if (tid.GetTraceSourceN () == 0 ||
+	  tid.MustHideFromDocumentation ())
+	{
+	  continue;
+	}
+      os << boldStart << tid.GetName () << boldStop  << breakHtmlOnly
+	 << std::endl;
+      
+      os << listStart << std::endl;
+      for (uint32_t j = 0; j < tid.GetTraceSourceN (); ++j)
+	{
+	  struct TypeId::TraceSourceInformation info = tid.GetTraceSource(j);
+	  os << listLineStart 
+	     <<   boldStart << info.name << boldStop
+	     <<   ": "      << info.help
+	     << listLineStop
+	     << std::endl;
+	}
+      os << listStop << std::endl;
+    }
+  os << commentStop << std::endl;
+
+}  // PrintAllTraceSources ()
+
+
+/***************************************************************
+ *        Docs for Attribute classes
+ ***************************************************************/
+
+
+/**
+ * Print the section definition for an AttributeValue.
+ *
+ * In doxygen form this will print a comment block with
+ * \verbatim
+ *   \ingroup attribute
+ *   \defgroup attribute_<name>Value <name>Value
+ * \endverbatim
+ *
+ * \param [in,out] os The output stream.
+ * \param [in] name The base name of the resulting AttributeValue type.
+ * \param [in] seeBase Print a "see also" pointing to the base class.
+ */
+void
+PrintAttributeValueSection (std::ostream & os,
+                            const std::string & name,
+                            const bool seeBase = true)
+{
+  NS_LOG_FUNCTION (name);
+  std::string section = "attribute_" + name;
+
+  // \ingroup attribute
+  // \defgroup attribute_<name>Value <name> Attribute
+  os << commentStart << sectionStart << "attribute\n"
+     <<   subSectionStart << "attribute_" << name << " "
+     <<     name << " Attribute\n"
+     <<     "Attribute implementation for " << name << "\n";
+  if (seeBase)
+    {
+      // Some classes don't live in ns3::.  Yuck
+      if (name != "IeMeshId")
+        {
+          os << seeAlso << "ns3::" << name << "\n";
+        }
+      else
+        {
+          os << seeAlso << "ns3::dot11s::" << name << "\n";
+        }
+    }
+  os << commentStop;
+
+}  // PrintAttributeValueSection ()
+
+
+/**
+ * Print the AttributeValue documentation for a class.
+ *
+ * This will print documentation for the \p <name>Value class and methods.
+ *
+ * \param [in,out] os The output stream.
+ * \param [in] name The token to use in defining the accessor name.
+ * \param [in] type The underlying type name.
+ * \param [in] header The header file which contains this declaration.
+ */
+void
+PrintAttributeValueWithName (std::ostream & os,
+                             const std::string & name,
+                             const std::string & type,
+                             const std::string & header)
+{
+  NS_LOG_FUNCTION (name << type << header);
+  std::string sectAttr = sectionStart + "attribute_" + name;
+  
+  // \ingroup attribute_<name>Value
+  // \class ns3::<name>Value "header"
+  std::string valClass  = name + "Value";
+  std::string qualClass = " ns3::" + valClass;
+  
+  os << commentStart << sectAttr << std::endl;
+  os <<   classStart << qualClass << " \"" << header << "\"" << std::endl;
+  os <<   "AttributeValue implementation for " << name << "." << std::endl;
+  os <<   seeAlso << "AttributeValue" << std::endl;
+  os << commentStop;
+
+  // Copy ctor: <name>Value::<name>Value
+  os << commentStart
+     <<   functionStart << name
+     <<     qualClass << "::" << valClass;
+  if ( (name == "EmptyAttribute") ||
+       (name == "ObjectPtrContainer") )
+    {
+      // Just default constructors.
+      os << "(void)\n";
+    }
+  else
+    {
+      // Copy constructors
+      os << "(const " << type << " & value)\n"
+         << "Copy constructor.\n"
+         << argument << "[in] value The " << name << " value to copy.\n";
+    }
+  os << commentStop;
+
+  // <name>Value::Get (void) const
+  os << commentStart
+     <<   functionStart << type
+     <<     qualClass << "::Get (void) const\n"
+     <<   returns << "The " << name << " value.\n"
+     << commentStop;
+
+  // <name>Value::GetAccessor (T & value) const
+  os << commentStart
+     <<   functionStart << "bool"
+     <<     qualClass << "::GetAccessor (T & value) const\n"
+     <<   "Access the " << name << " value as type " << codeWord << "T.\n"
+     <<   argument << "[out] value The " << name << " value, as type "
+     <<     codeWord << "T.\n"
+     <<   returns << "true.\n"
+     << commentStop;
+
+  // <name>Value::Set (const name & value)
+  if (type != "Callback")  // Yuck
+    {
+      os << commentStart
+         <<   functionStart << "void"
+         <<     qualClass << "::Set (const " << type << " & value)\n"
+         <<   "Set the value.\n"
+         <<   argument << "[in] value The value to adopt.\n"
+         << commentStop;
+    }
+
+  // <name>Value::m_value
+  os << commentStart
+     <<   variable << type
+     <<     qualClass << "::m_value\n" 
+     <<   "The stored " << name << " instance.\n"
+     << commentStop
+     << std::endl;
+  
+}  // PrintAttributeValueWithName ()
+
+
+/**
+ * Print the AttributeValue MakeAccessor documentation for a class.
+ *
+ * This will print documentation for the \p Make<name>Accessor functions.
+ *
+ * \param [in,out] os The output stream.
+ * \param [in] name The token to use in defining the accessor name.
+ */
+void
+PrintMakeAccessors (std::ostream & os, const std::string & name)
+{
+  NS_LOG_FUNCTION (name);
+  std::string sectAttr = sectionStart + "attribute_" + name + "\n";
+  std::string make = "ns3::Make" + name + "Accessor ";
+  
+  // \ingroup attribute_<name>Value
+  // Make<name>Accessor (T1 a1)
+  os << commentStart << sectAttr
+     <<   functionStart << "ns3::Ptr<const ns3::AttributeAccessor> "
+     <<     make << "(T1 a1)\n"
+     <<   copyDoc << "ns3::MakeAccessorHelper(T1)\n"
+     <<   seeAlso << "AttributeAccessor\n"
+     << commentStop;
+
+  // \ingroup attribute_<name>Value
+  // Make<name>Accessor (T1 a1)
+  os << commentStart << sectAttr
+     <<   functionStart << "ns3::Ptr<const ns3::AttributeAccessor> "
+     <<     make << "(T1 a1, T2 a2)\n"
+     <<   copyDoc << "ns3::MakeAccessorHelper(T1,T2)\n"
+     <<   seeAlso << "AttributeAccessor\n"
+     << commentStop;
+}  // PrintMakeAccessors ()
+
+
+/**
+ * Print the AttributeValue MakeChecker documentation for a class.
+ *
+ * This will print documentation for the \p Make<name>Checker function.
+ *
+ * \param [in,out] os The output stream.
+ * \param [in] name The token to use in defining the accessor name.
+ * \param [in] header The header file which contains this declaration.
+ */
+void
+PrintMakeChecker (std::ostream & os,
+                  const std::string & name,
+                  const std::string & header)
+{
+  NS_LOG_FUNCTION (name << header);
+  std::string sectAttr = sectionStart + "attribute_" + name + "\n";
+  std::string make = "ns3::Make" + name + "Checker ";
+
+  // \ingroup attribute_<name>Value
+  // class <name>Checker
+  os << commentStart << sectAttr << std::endl;
+  os <<   classStart << " ns3::" << name << "Checker"
+     <<   " \"" << header << "\"" << std::endl;
+  os <<   "AttributeChecker implementation for " << name << "Value." << std::endl;
+  os <<   seeAlso << "AttributeChecker" << std::endl;
+  os << commentStop;
+    
+  // \ingroup attribute_<name>Value
+  // Make<name>Checker (void)
+  os << commentStart << sectAttr
+     <<   functionStart << "ns3::Ptr<const ns3::AttributeChecker> "
+     <<     make << "(void)\n"
+     <<   returns << "The AttributeChecker.\n"
+     <<   seeAlso << "AttributeChecker\n"
+     << commentStop;
+}  // PrintMakeChecker ()
+
+
+/**Descriptor for an AttributeValue. */
+typedef struct {
+  const std::string m_name;   //!< The base name of the resulting AttributeValue type.
+  const std::string m_type;   //!< The name of the underlying type.
+  const bool m_seeBase;       //!< Print a "see also" pointing to the base class.
+  const std::string m_header; //!< The header file name.
+} AttributeDescriptor;
+
+
+/**
+ * Print documentation corresponding to use of the
+ * ATTRIBUTE_HELPER_HEADER macro or
+ * ATTRIBUTE_VALUE_DEFINE_WITH_NAME macro.
+ *
+ * \param [in,out] os The output stream.
+ * \param [in] attr The AttributeDescriptor.
+ */
+void
+PrintAttributeHelper (std::ostream & os,
+                      const AttributeDescriptor & attr)
+{
+  NS_LOG_FUNCTION (attr.m_name << attr.m_type << attr.m_seeBase <<
+                   attr.m_header);
+  PrintAttributeValueSection  (os, attr.m_name, attr.m_seeBase);
+  PrintAttributeValueWithName (os, attr.m_name, attr.m_type, attr.m_header);
+  PrintMakeAccessors          (os, attr.m_name);
+  PrintMakeChecker            (os, attr.m_name, attr.m_header);
+}  // PrintAttributeHelper ()
+
+
+/**
+ * Print documentation for Attribute implementations.
+ */
+void
+PrintAttributeImplementations (std::ostream & os)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+
+  const AttributeDescriptor attributes [] =
+    {
+      // Users of ATTRIBUTE_HELPER_HEADER
+      //
+      { "Address",        "Address",        true,  "address.h"          },
+      { "Box",            "Box",            true,  "box.h"              },
+      { "DataRate",       "DataRate",       true,  "data-rate.h"        },
+      { "HtCapabilities", "HtCapabilities", true,  "ht-capabilities.h"  },
+      { "IeMeshId",       "IeMeshId",       true,  "id-dot11s-id.h"     },
+      { "Ipv4Address",    "Ipv4Address",    true,  "ipv4-address.h"     },
+      { "Ipv4Mask",       "Ipv4Mask",       true,  "ipv4-address.h"     },
+      { "Ipv6Address",    "Ipv6Address",    true,  "ipv6-address.h"     },
+      { "Ipv6Prefix",     "Ipv6Prefix",     true,  "ipv6-address.h"     },
+      { "Mac16Address",   "Mac16Address",   true,  "mac16-address.h"    },
+      { "Mac48Address",   "Mac48Address",   true,  "mac48-address.h"    },
+      { "Mac64Address",   "Mac64Address",   true,  "mac64-address.h"    },
+      { "ObjectFactory",  "ObjectFactory",  true,  "object-factory.h"   },
+      { "OrganizationIdentifier",
+                          "OrganizationIdentifier",
+                                            true,  "vendor-specific-action.h" },
+      { "Rectangle",      "Rectangle",      true,  "rectangle.h"        },
+      { "Ssid",           "Ssid",           true,  "ssid.h"             },
+      { "TypeId",         "TypeId",         true,  "type-id.h"          },
+      { "UanModesList",   "UanModesList",   true,  "uan-tx-mode.h"      },
+      { "ValueClassTest", "ValueClassTest", false, "" /* outside ns3 */ },
+      { "Vector2D",       "Vector2D",       true,  "vector.h"           },
+      { "Vector3D",       "Vector3D",       true,  "vector.h"           },
+      { "Waypoint",       "Waypoint",       true,  "waypoint.h"         },
+      { "WifiMode",       "WifiMode",       true,  "wifi-mode.h"        },
+      
+      // All three (Value, Access and Checkers) defined, but custom
+      { "Boolean",        "Boolean",        false, "boolean.h"          },
+      { "Callback",       "Callback",       true,  "callback.h"         },
+      { "Double",         "double",         false, "double.h"           },
+      { "Enum",           "int",            false, "enum.h"             },
+      { "Integer",        "int64_t",        false, "integer.h"          },
+      { "Pointer",        "Pointer",        false, "pointer.h"          },
+      { "RandomVariable", "RandomVariable", true,  "random-variable.h"  },
+      { "String",         "std::string",    false, "string.h"           },
+      { "Time",           "Time",           true,  "nstime.h"           },
+      { "Uinteger",       "uint64_t",       false, "uinteger.h"         },
+      { "",               "",               false, "last placeholder"   }
+    };
+
+  int i = 0;
+  while (attributes[i].m_name != "")
+    {
+      PrintAttributeHelper (os, attributes[i]);
+      ++i;
+    }
+
+  // Special cases
+  PrintAttributeValueSection  (os, "EmptyAttribute", false);
+  PrintAttributeValueWithName (os, "EmptyAttribute", "EmptyAttribute",
+                                   "attribute.h");
+
+  PrintAttributeValueSection  (os, "ObjectPtrContainer", false);
+  PrintAttributeValueWithName (os, "ObjectPtrContainer", "ObjectPtrContainer", "object-ptr-container.h");
+  PrintMakeChecker            (os, "ObjectPtrContainer",  "object-ptr-container.h");
+
+  PrintAttributeValueSection  (os, "ObjectVector", false);
+  PrintMakeAccessors          (os, "ObjectVector");
+  PrintMakeChecker            (os, "ObjectVector", "object-vector.h");
+
+  PrintAttributeValueSection  (os, "ObjectMap", false);
+  PrintMakeAccessors          (os, "ObjectMap");
+  PrintMakeChecker            (os, "ObjectMap", "object-map.h");
+  
+}  // PrintAttributeImplementations ()
+
+
+/***************************************************************
+ *        Aggregation and configuration paths
+ ***************************************************************/
 
 /**
  * Gather aggregation and configuration path information from registered types.
@@ -609,7 +1006,7 @@ private:
    * List of aggregation relationships.
    */
   std::vector<std::pair<TypeId,TypeId> > m_aggregates;
-};
+};  // class StaticInformation
 
 
 void 
@@ -798,7 +1195,7 @@ StaticInformation::DoGather (TypeId tid)
           m_currentPath.pop_back ();	  
         }
     }
-}
+}  // StaticInformation::DoGather ()
 
 
 void 
@@ -928,8 +1325,12 @@ PrintConfigPaths (std::ostream & os, const StaticInformation & info,
 	}
       os << listStop << std::endl;
     }
-}  // PrintConfigPaths
+}  // PrintConfigPaths ()
       
+
+/***************************************************************
+ *        Main
+ ***************************************************************/
 
 int main (int argc, char *argv[])
 {
@@ -979,7 +1380,7 @@ int main (int argc, char *argv[])
 	  continue;
 	}
       
-      std::cout << functionStart << tid.GetName () << std::endl;
+      std::cout << classStart << tid.GetName () << std::endl;
       std::cout << std::endl;
 
       PrintConfigPaths (std::cout, info, tid);
@@ -995,6 +1396,7 @@ int main (int argc, char *argv[])
   PrintAllGlobals (std::cout);
   PrintAllLogComponents (std::cout);
   PrintAllTraceSources (std::cout);
+  PrintAttributeImplementations (std::cout);
 
   return 0;
 }

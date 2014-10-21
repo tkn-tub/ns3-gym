@@ -30,6 +30,7 @@ namespace ns3 {
 /**
  * \ingroup mobility
  * \brief a (time, location) pair.
+ * \see attribute_Waypoint
  */
 class Waypoint
 {

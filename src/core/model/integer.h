@@ -27,30 +27,42 @@
 
 namespace ns3 {
 
+//  Additional docs for class DoubleValue:
 /**
- * \ingroup attribute
- * \class ns3::IntegerValue
- * \brief Hold a signed integer type
- *
- * \anchor int8_t
- * \anchor int16_t
- * \anchor int32_t
- * \anchor int64_t
+ * Hold a signed integer type
  *
  * This class can be used to hold variables of signed integer
  * type such as int8_t, int16_t, int32_t, int64_t, or,
  * int, etc.
  */
-
 ATTRIBUTE_VALUE_DEFINE_WITH_NAME (int64_t, Integer);
 ATTRIBUTE_ACCESSOR_DEFINE (Integer);
 
 template <typename T>
 Ptr<const AttributeChecker> MakeIntegerChecker (void);
 
+/**
+ * Make a checker with a minimum value.
+ *
+ * The minimum value is included in the allowed range.
+ *
+ * \param [in] min The minimum value.
+ * \returns The AttributeChecker.
+ * \see AttributeChecker
+ */
 template <typename T>
 Ptr<const AttributeChecker> MakeIntegerChecker (int64_t min);
 
+/**
+ * Make a checker with a minimum and a maximum value.
+ *
+ * The minimum and maximum values are included in the allowed range.
+ *
+ * \param [in] min The minimum value.
+ * \param [in] max The maximum value.
+ * \returns The AttributeChecker.
+ * \see AttributeChecker
+ */
 template <typename T>
 Ptr<const AttributeChecker> MakeIntegerChecker (int64_t min, int64_t max);
 

@@ -25,26 +25,25 @@
 
 namespace ns3 {
 
-/**
- * \ingroup attribute
- *
- * \brief Hold a bool native type
- *
- * \anchor bool
- *
- * This class can be used to hold bool variables
- * which must go through the Attribute system.
- */
 class BooleanValue : public AttributeValue
 {
 public:
   BooleanValue ();
+  /**
+   * Construct from an explicit value.
+   *
+   * \param [in] value The boolean value to begin with.
+   */
   BooleanValue (bool value);
   void Set (bool value);
   bool Get (void) const;
   template <typename T>
   bool GetAccessor (T &v) const;
 
+  /**
+   * Functor returning the value.
+   * \returns The value.
+   */
   operator bool () const;
 
   virtual Ptr<AttributeValue> Copy (void) const;
@@ -61,6 +60,15 @@ bool BooleanValue::GetAccessor (T &v) const
   return true;
 }
 
+/**
+ * Output streamer.
+ *
+ * The value is printed as "true" or "false".
+ *
+ * \param [in,out] os The stream.
+ * \param [in] value The BooleanValue to print.
+ * \returns The stream.
+ */
 std::ostream & operator << (std::ostream &os, const BooleanValue &value);
 
 ATTRIBUTE_CHECKER_DEFINE (Boolean);

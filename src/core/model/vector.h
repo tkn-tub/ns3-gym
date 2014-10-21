@@ -27,6 +27,7 @@ namespace ns3 {
 
 /**
  * \brief a 3d vector
+ * \see attribute_Vector3D
  */
 class Vector3D
 {
@@ -55,10 +56,15 @@ public:
    * z coordinate of vector
    */
   double z;
+  
+  friend double CalculateDistance (const Vector3D &a, const Vector3D &b);
+  friend std::ostream &operator << (std::ostream &os, const Vector3D &vector);
+  friend std::istream &operator >> (std::istream &is, Vector3D &vector);
 };
 
 /**
- * \brief a 3d vector
+ * \brief a 2d vector
+ * \see attribute_Vector2D
  */
 class Vector2D
 {
@@ -82,6 +88,10 @@ public:
    * y coordinate of vector
    */
   double y;
+
+  friend double CalculateDistance (const Vector2D &a, const Vector2D &b);
+  friend std::ostream &operator << (std::ostream &os, const Vector2D &vector);
+  friend std::istream &operator >> (std::istream &is, Vector2D &vector);
 };
 
 /**
@@ -90,7 +100,6 @@ public:
  * \returns the cartesian distance between a and b.
  */
 double CalculateDistance (const Vector3D &a, const Vector3D &b);
-
 /**
  * \param a one point
  * \param b another point
@@ -98,28 +107,91 @@ double CalculateDistance (const Vector3D &a, const Vector3D &b);
  */
 double CalculateDistance (const Vector2D &a, const Vector2D &b);
 
-/**
- * \class ns3::Vector3DValue
- * \brief hold objects of type ns3::Vector3D
- */
-/**
- * \class ns3::Vector2DValue
- * \brief hold objects of type ns3::Vector2D
- */
 ATTRIBUTE_HELPER_HEADER (Vector3D);
 ATTRIBUTE_HELPER_HEADER (Vector2D);
 
+/**
+ * Output streamer.
+ *
+ * Vectors are written as "x:y:z".
+ *
+ * \param [in,out] os The stream.
+ * \param [in] vector The vector to stream
+ * \return The stream.
+ */
 std::ostream &operator << (std::ostream &os, const Vector3D &vector);
-std::istream &operator >> (std::istream &is, Vector3D &vector);
+/**
+ * Output streamer.
+ *
+ * Vectors are written as "x:y".
+ *
+ * \param [in,out] os The stream.
+ * \param [in] vector The vector to stream
+ * \return The stream.
+ */
 std::ostream &operator << (std::ostream &os, const Vector2D &vector);
+
+/**
+ * Input streamer.
+ *
+ * Vectors are expected to be in the form "x:y:z".
+ *
+ * \param [in,out] is The stream.
+ * \param [in] vector The vector.
+ * \returns The stream.
+ */
+std::istream &operator >> (std::istream &is, Vector3D &vector);
+/**
+ * Input streamer.
+ *
+ * Vectors are expected to be in the form "x:y".
+ *
+ * \param [in,out] is The stream.
+ * \param [in] vector The vector.
+ * \returns The stream.
+ */
 std::istream &operator >> (std::istream &is, Vector2D &vector);
 
-// for compatibility with mobility models
+
+/**
+ * \relates Vector3D
+ * Vector alias typedef for compatibility with mobility models
+ */
 typedef Vector3D Vector;
+/** 
+ * \ingroup attribute_Vector3D
+ * Vector alias typedef for compatibility with mobility models
+ */
 typedef Vector3DValue VectorValue;
+/** 
+ * \ingroup attribute_Vector3D
+ * Vector alias typedef for compatibility with mobility models
+ */
 typedef Vector3DChecker VectorChecker;
+
+
+// Document these by hand so they go in group attribute_Vector3D  
+/**
+ * \ingroup attribute_Vector3D
+ * \fn ns3::Ptr<const ns3::AttributeAccessor> ns3::MakeVectorAccessor (T1 a1)
+ * \copydoc ns3::MakeAccessorHelper(T1)
+ * \see AttributeAccessor
+ */
+/**
+ * \ingroup attribute_Vector3D
+ * \fn ns3::Ptr<const ns3::AttributeAccessor> ns3::MakeVectorAccessor (T1 a1, T2 a2)
+ * \copydoc ns3::MakeAccessorHelper(T1,T2)
+ * \see AttributeAccessor
+ */
+
 ATTRIBUTE_ACCESSOR_DEFINE (Vector);
-Ptr<const AttributeChecker> MakeVectorChecker (void);
+
+/**
+ * \ingroup attribute_Vector3D
+ * \returns The AttributeChecker.
+ * \see AttributeChecker
+ */
+Ptr<const AttributeChecker> MakeVectorChecker (void);  
 
 } // namespace ns3
 

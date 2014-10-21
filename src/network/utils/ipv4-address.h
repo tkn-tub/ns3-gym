@@ -34,6 +34,8 @@ class Ipv4Mask;
  * \ingroup address
  *
  * \brief Ipv4 addresses are stored in host order in this class.
+ *
+ * \see attribute_Ipv4Address
  */
 class Ipv4Address {
 public:
@@ -218,6 +220,8 @@ private:
  * The constructor takes arguments according to a few formats. 
  * Ipv4Mask ("255.255.255.255"), Ipv4Mask ("/32"), and Ipv4Mask (0xffffffff)
  * are all equivalent.
+ *
+ * \see attribute_Ipv4Mask
  */
 class Ipv4Mask {
 public:

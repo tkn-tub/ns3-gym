@@ -31,6 +31,8 @@ namespace ns3 {
  * \ingroup wifi
  *
  * The IEEE 802.11 SSID Information Element
+ *
+ * \see attribute_Ssid
  */
 class Ssid : public WifiInformationElement
 {
