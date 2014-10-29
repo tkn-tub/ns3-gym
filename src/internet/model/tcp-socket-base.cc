@@ -812,6 +812,8 @@ TcpSocketBase::DoClose (void)
 void
 TcpSocketBase::CloseAndNotify (void)
 {
+  Ptr<TcpSocketBase> l_ptr = (m_state == TIME_WAIT ? this : 0);
+
   NS_LOG_FUNCTION (this);
 
   if (!m_closeNotified)
@@ -819,11 +821,7 @@ TcpSocketBase::CloseAndNotify (void)
       NotifyNormalClose ();
     }
 
-  if (m_state != TIME_WAIT)
-    {
-      DeallocateEndPoint ();
-    }
-    
+  DeallocateEndPoint ();  
   m_closeNotified = true;
   NS_LOG_INFO (TcpStateName[m_state] << " -> CLOSED");
   CancelAllTimers ();
