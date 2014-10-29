@@ -281,10 +281,11 @@ public:
    * \param size the number of bytes in the packet to send
    * \param txvector the transmission parameters used for this packet
    * \param preamble the type of preamble to use for this packet.
+   * \param frequency the channel center frequency (MHz)
    * \return the total amount of time this PHY will stay busy for
    *          the transmission of these bytes.
    */
-  static Time CalculateTxDuration (uint32_t size, WifiTxVector txvector, enum WifiPreamble preamble);
+  static Time CalculateTxDuration (uint32_t size, WifiTxVector txvector, enum WifiPreamble preamble, double frequency);
 
 /** 
    * \param payloadMode the WifiMode use for the transmission of the payload
@@ -337,10 +338,11 @@ public:
   /** 
    * \param size the number of bytes in the packet to send
    * \param txvector the transmission parameters used for this packet
+   * \param frequency the channel center frequency (MHz)
    * 
    * \return the duration of the payload in microseconds
    */
-  static double GetPayloadDurationMicroSeconds (uint32_t size, WifiTxVector txvector);
+  static double GetPayloadDurationMicroSeconds (uint32_t size, WifiTxVector txvector, double frequency);
 
   /**
    * The WifiPhy::GetNModes() and WifiPhy::GetMode() methods are used

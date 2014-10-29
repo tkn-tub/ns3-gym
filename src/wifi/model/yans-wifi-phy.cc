@@ -506,7 +506,7 @@ YansWifiPhy::StartReceivePacket (Ptr<Packet> packet,
   NS_LOG_FUNCTION (this << packet << rxPowerDbm << txVector.GetMode()<< preamble);
   rxPowerDbm += m_rxGainDb;
   double rxPowerW = DbmToW (rxPowerDbm);
-  Time rxDuration = CalculateTxDuration (packet->GetSize (), txVector, preamble);
+  Time rxDuration = CalculateTxDuration (packet->GetSize (), txVector, preamble, GetFrequency());
   WifiMode txMode = txVector.GetMode();
   Time endRx = Simulator::Now () + rxDuration;
 
@@ -631,7 +631,7 @@ YansWifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, WifiPr
       return;
     }
 
-  Time txDuration = CalculateTxDuration (packet->GetSize (), txVector, preamble);
+  Time txDuration = CalculateTxDuration (packet->GetSize (), txVector, preamble, GetFrequency());
   if (m_state->IsStateRx ())
     {
       m_endRxEvent.Cancel ();

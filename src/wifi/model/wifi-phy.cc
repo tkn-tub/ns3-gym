@@ -329,7 +329,7 @@ WifiPhy::GetPlcpPreambleDurationMicroSeconds (WifiMode payloadMode, WifiPreamble
 }
 
 double
-WifiPhy::GetPayloadDurationMicroSeconds (uint32_t size, WifiTxVector txvector)
+WifiPhy::GetPayloadDurationMicroSeconds (uint32_t size, WifiTxVector txvector, double frequency)
 {
   WifiMode payloadMode=txvector.GetMode();
 
@@ -418,9 +418,15 @@ WifiPhy::GetPayloadDurationMicroSeconds (uint32_t size, WifiTxVector txvector)
          double Nes=1;
         // IEEE Std 802.11n, section 20.3.11, equation (20-32)
         uint32_t numSymbols = lrint (m_Stbc*ceil ((16 + size * 8.0 + 6.0*Nes) / (m_Stbc* numDataBitsPerSymbol)));
-       
-        return numSymbols * symbolDurationUs;
-         
+
+        if (frequency >= 2400 && frequency <= 2500) //at 2.4 GHz
+          {
+            return (numSymbols * symbolDurationUs) + 6;
+          }
+        else  //at 5 GHz
+          {
+            return (numSymbols * symbolDurationUs);
+          }
       }
     case WIFI_MOD_CLASS_DSSS:
       // (Section 17.2.3.6 "Long PLCP LENGTH field"; IEEE Std 802.11-2012)
@@ -436,14 +442,14 @@ WifiPhy::GetPayloadDurationMicroSeconds (uint32_t size, WifiTxVector txvector)
 }
 
 Time
-WifiPhy::CalculateTxDuration (uint32_t size, WifiTxVector txvector, WifiPreamble preamble)
+WifiPhy::CalculateTxDuration (uint32_t size, WifiTxVector txvector, WifiPreamble preamble, double frequency)
 {
   WifiMode payloadMode=txvector.GetMode();
   double duration = GetPlcpPreambleDurationMicroSeconds (payloadMode, preamble)
     + GetPlcpHeaderDurationMicroSeconds (payloadMode, preamble)
     + GetPlcpHtSigHeaderDurationMicroSeconds (payloadMode, preamble)
     + GetPlcpHtTrainingSymbolDurationMicroSeconds (payloadMode, preamble,txvector)
-    + GetPayloadDurationMicroSeconds (size, txvector);
+    + GetPayloadDurationMicroSeconds (size, txvector, frequency);
   return MicroSeconds (duration);
 }
 
