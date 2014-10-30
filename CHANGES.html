@@ -72,14 +72,20 @@ us a note on ns-developers mailing list.</p>
   </li>  
   <li>PointerValue attribute types in class UanChannel (NoiseModel), UanPhyGen (PerModel and SinrModel), UanPhyDual (PerModelPhy1, PerModelPhy2, SinrModelPhy1, and SinrModelPhy2), and SimpleNetDevice (TxQueue), were changed from PointerValue type to StringValue type, making them configurable via the Config subsystem. 
   </li>
+  <li> WifiPhy::CalculateTxDuration() and WifiPhy::GetPayloadDurationMicroSeconds () now take an additional frequency parameter.
+  </li>
 </ul>
 
 <h2>Changes to build system:</h2>
-<ul>
+<ul> 
+  <li> waf was upgraded to version 1.7.16
+  </li>
 </ul>
 
 <h2>Changed behavior:</h2>
 <ul>
+  <li> The default value of the `Speed` attribute of ConstantSpeedPropagationDelayModel was changed from 300,000,000 m/s to 299,792,458 m/s (speed of light in a vacuum), causing propagation delays using this model to vary slightly.
+  </li>
 </ul>
 
 <hr>

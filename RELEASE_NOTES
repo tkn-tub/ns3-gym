@@ -31,9 +31,15 @@ New user-visible features
 Bugs fixed
 ----------
 - Bug 1551 - NS_LOG_COMPONENT_DEFINE inside or outside of ns3 namespace?
+- Bug 1791 - TCP Endpoint never deallocates when closing
 - Bug 1957 - UdpSocketImpl is stuck after a Close()
+- Bug 1968 - Missing supported 802.11n HT rates in the WifiPhy constructor
+- Bug 1970 - Missing NotifyAckTimeoutStartNow in MacLow::StartDataTxTimers
+- Bug 1971 - 802.11n at 2.4 GHz should include a signal extension duration
 - Bug 1983 - FlowMonitor returns containers copies instead of references.
 - Bug 1991 - PcapFileWrapper::CaptureSize attribute (snaplen) has no effect.
+- Bug 1997 - Fix PlotProbe() documentation and usage for GnuplotHelper and FileHelper
+- Bug 2011 - Default Speed attribute in ConstantSpeedPropagationDelayModel
 
 Known issues
 ------------
